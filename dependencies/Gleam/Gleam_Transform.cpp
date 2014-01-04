@@ -1,0 +1,128 @@
+/************************************************************************************
+Copyright (C) 2013 by Nicholas LaCroix
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+************************************************************************************/
+
+#include "Gleam_Transform.h"
+
+NS_GLEAM
+
+Transform::Transform(const Vec4& scale, const Quaternion& rotation, const Vec4& translation):
+	_rotation(rotation), _translation(translation), _scale(scale)
+{
+}
+
+Transform::Transform(void):
+	_rotation(Quaternion::identity), _translation(0.0f, 0.0f, 0.0f, 0.0f), _scale(1.0f, 1.0f, 1.0f, 0.0f)
+{
+}
+
+Transform::~Transform(void)
+{
+}
+
+const Transform& Transform::operator=(const Transform& rhs)
+{
+	_scale = rhs._scale;
+	_rotation = rhs._rotation;
+	_translation = rhs._translation;
+	return *this;
+}
+
+bool Transform::operator==(const Transform& rhs) const
+{
+	return _scale == rhs._scale &&
+			_rotation == rhs._rotation &&
+			_translation == rhs._translation;
+}
+
+bool Transform::operator!=(const Transform& rhs) const
+{
+	return !(*this == rhs);
+}
+
+const Transform& Transform::operator+=(const Transform& rhs)
+{
+	concat(rhs);
+	return *this;
+}
+
+Transform Transform::operator+(const Transform& rhs) const
+{
+	Transform temp(_scale, _rotation, _translation);
+	temp.concat(rhs);
+	return temp;
+}
+
+const Vec4& Transform::getScale(void) const
+{
+	return _scale;
+}
+
+void Transform::setScale(const Vec4& scale)
+{
+	_scale = scale;
+}
+
+const Quaternion& Transform::getRotation(void) const
+{
+	return _rotation;
+}
+
+void Transform::setRotation(const Quaternion& rotation)
+{
+	_rotation = rotation;
+}
+
+const Vec4& Transform::getTranslation(void) const
+{
+	return _translation;
+}
+
+void Transform::setTranslation(const Vec4& translation)
+{
+	_translation = translation;
+}
+
+void Transform::concat(const Transform& rhs)
+{
+	_scale *= rhs._scale;
+	_rotation *= rhs._rotation;
+	_translation += rhs._translation;
+}
+
+void Transform::inverse(void)
+{
+	_scale.set(1.0f / _scale[0], 1.0f / _scale[1], 1.0f / _scale[2], 0.0f);
+	_rotation.conjugate();
+	_translation = -_translation;
+}
+
+Matrix4x4 Transform::matrix(void) const
+{
+	Matrix4x4 temp = _rotation.matrix();
+	temp[3][0] = _translation[0];
+	temp[3][1] = _translation[1];
+	temp[3][2] = _translation[2];
+	temp *= Matrix4x4::MakeScale(_scale);
+	return temp;
+}
+
+NS_END

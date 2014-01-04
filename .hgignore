@@ -1,0 +1,7 @@
+syntax: glob
+*.suo
+*.user
+build/*
+*.ncb
+*.sdf
+*.opensdf

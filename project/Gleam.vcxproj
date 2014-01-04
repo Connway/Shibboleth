@@ -1,0 +1,510 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug_Direct3D|Win32">
+      <Configuration>Debug_Direct3D</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug_Direct3D|x64">
+      <Configuration>Debug_Direct3D</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug_OpenGL|Win32">
+      <Configuration>Debug_OpenGL</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug_OpenGL|x64">
+      <Configuration>Debug_OpenGL</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release_Direct3D|Win32">
+      <Configuration>Release_Direct3D</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release_Direct3D|x64">
+      <Configuration>Release_Direct3D</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release_OpenGL|Win32">
+      <Configuration>Release_OpenGL</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release_OpenGL|x64">
+      <Configuration>Release_OpenGL</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\dependencies\Gleam\include\Gleam_AABB.h" />
+    <ClInclude Include="..\dependencies\Gleam\include\Gleam_AlignedDefaultAllocator.h" />
+    <ClInclude Include="..\dependencies\Gleam\include\Gleam_Array.h" />
+    <ClInclude Include="..\dependencies\Gleam\include\Gleam_Buffer.h" />
+    <ClInclude Include="..\dependencies\Gleam\include\Gleam_Buffer_Direct3D.h" />
+    <ClInclude Include="..\dependencies\Gleam\include\Gleam_Buffer_OpenGL.h" />
+    <ClInclude Include="..\dependencies\Gleam\include\Gleam_Defines.h" />
+    <ClInclude Include="..\dependencies\Gleam\include\Gleam_Global.h" />
+    <ClInclude Include="..\dependencies\Gleam\include\Gleam_HashMap.h" />
+    <ClInclude Include="..\dependencies\Gleam\include\Gleam_IBuffer.h" />
+    <ClInclude Include="..\dependencies\Gleam\include\Gleam_IInputDevice.h" />
+    <ClInclude Include="..\dependencies\Gleam\include\Gleam_IInputHandler.h" />
+    <ClInclude Include="..\dependencies\Gleam\include\Gleam_ILayout.h" />
+    <ClInclude Include="..\dependencies\Gleam\include\Gleam_IMesh.h" />
+    <ClInclude Include="..\dependencies\Gleam\include\Gleam_IModel.h" />
+    <ClInclude Include="..\dependencies\Gleam\include\Gleam_IncludeD3D11.h" />
+    <ClInclude Include="..\dependencies\Gleam\include\Gleam_InputManager.h" />
+    <ClInclude Include="..\dependencies\Gleam\include\Gleam_IProgram.h" />
+    <ClInclude Include="..\dependencies\Gleam\include\Gleam_IRenderDevice.h" />
+    <ClInclude Include="..\dependencies\Gleam\include\Gleam_IRenderer.h" />
+    <ClInclude Include="..\dependencies\Gleam\include\Gleam_IRenderStage.h" />
+    <ClInclude Include="..\dependencies\Gleam\include\Gleam_IRenderState.h" />
+    <ClInclude Include="..\dependencies\Gleam\include\Gleam_IRenderTarget.h" />
+    <ClInclude Include="..\dependencies\Gleam\include\Gleam_ISamplerState.h" />
+    <ClInclude Include="..\dependencies\Gleam\include\Gleam_ISceneNode.h" />
+    <ClInclude Include="..\dependencies\Gleam\include\Gleam_IShader.h" />
+    <ClInclude Include="..\dependencies\Gleam\include\Gleam_IShaderResourceView.h" />
+    <ClInclude Include="..\dependencies\Gleam\include\Gleam_ITexture.h" />
+    <ClInclude Include="..\dependencies\Gleam\include\Gleam_IWindowMessageHandler.h" />
+    <ClInclude Include="..\dependencies\Gleam\include\Gleam_Keyboard.h" />
+    <ClInclude Include="..\dependencies\Gleam\include\Gleam_Keyboard_Defines.h" />
+    <ClInclude Include="..\dependencies\Gleam\include\Gleam_Keyboard_DirectInput.h" />
+    <ClInclude Include="..\dependencies\Gleam\include\Gleam_Keyboard_MessagePump.h" />
+    <ClInclude Include="..\dependencies\Gleam\include\Gleam_Layout.h" />
+    <ClInclude Include="..\dependencies\Gleam\include\Gleam_Layout_Direct3D.h" />
+    <ClInclude Include="..\dependencies\Gleam\include\Gleam_Layout_OpenGL.h" />
+    <ClInclude Include="..\dependencies\Gleam\include\Gleam_LightInfo.h" />
+    <ClInclude Include="..\dependencies\Gleam\include\Gleam_Matrix4x4.h" />
+    <ClInclude Include="..\dependencies\Gleam\include\Gleam_Matrix4x4_CPU.h" />
+    <ClInclude Include="..\dependencies\Gleam\include\Gleam_Matrix4x4_SIMD.h" />
+    <ClInclude Include="..\dependencies\Gleam\include\Gleam_Mesh.h" />
+    <ClInclude Include="..\dependencies\Gleam\include\Gleam_Mesh_Direct3D.h" />
+    <ClInclude Include="..\dependencies\Gleam\include\Gleam_Mesh_OpenGL.h" />
+    <ClInclude Include="..\dependencies\Gleam\include\Gleam_Model.h" />
+    <ClInclude Include="..\dependencies\Gleam\include\Gleam_ModelManager.h" />
+    <ClInclude Include="..\dependencies\Gleam\include\Gleam_Mouse.h" />
+    <ClInclude Include="..\dependencies\Gleam\include\Gleam_MouseData.h" />
+    <ClInclude Include="..\dependencies\Gleam\include\Gleam_Mouse_DirectInput.h" />
+    <ClInclude Include="..\dependencies\Gleam\include\Gleam_Mouse_MessagePump.h" />
+    <ClInclude Include="..\dependencies\Gleam\include\Gleam_OBB.h" />
+    <ClInclude Include="..\dependencies\Gleam\include\Gleam_Program.h" />
+    <ClInclude Include="..\dependencies\Gleam\include\Gleam_Program_Direct3D.h" />
+    <ClInclude Include="..\dependencies\Gleam\include\Gleam_Program_OpenGL.h" />
+    <ClInclude Include="..\dependencies\Gleam\include\Gleam_ProxyAllocator.h" />
+    <ClInclude Include="..\dependencies\Gleam\include\Gleam_Quaternion.h" />
+    <ClInclude Include="..\dependencies\Gleam\include\Gleam_Quaternion_CPU.h" />
+    <ClInclude Include="..\dependencies\Gleam\include\Gleam_Quaternion_SIMD.h" />
+    <ClInclude Include="..\dependencies\Gleam\include\Gleam_RefCounted.h" />
+    <ClInclude Include="..\dependencies\Gleam\include\Gleam_RenderDevice.h" />
+    <ClInclude Include="..\dependencies\Gleam\include\Gleam_RenderDevice_Direct3D.h" />
+    <ClInclude Include="..\dependencies\Gleam\include\Gleam_RenderDevice_OpenGL.h" />
+    <ClInclude Include="..\dependencies\Gleam\include\Gleam_RenderDevice_OpenGL_Windows.h" />
+    <ClInclude Include="..\dependencies\Gleam\include\Gleam_RenderState.h" />
+    <ClInclude Include="..\dependencies\Gleam\include\Gleam_RenderState_Direct3D.h" />
+    <ClInclude Include="..\dependencies\Gleam\include\Gleam_RenderState_OpenGL.h" />
+    <ClInclude Include="..\dependencies\Gleam\include\Gleam_RenderTarget.h" />
+    <ClInclude Include="..\dependencies\Gleam\include\Gleam_RenderTarget_Direct3D.h" />
+    <ClInclude Include="..\dependencies\Gleam\include\Gleam_RenderTarget_OpenGL.h" />
+    <ClInclude Include="..\dependencies\Gleam\include\Gleam_SamplerState.h" />
+    <ClInclude Include="..\dependencies\Gleam\include\Gleam_SamplerState_Direct3D.h" />
+    <ClInclude Include="..\dependencies\Gleam\include\Gleam_SamplerState_OpenGL.h" />
+    <ClInclude Include="..\dependencies\Gleam\include\Gleam_Scene.h" />
+    <ClInclude Include="..\dependencies\Gleam\include\Gleam_Shader.h" />
+    <ClInclude Include="..\dependencies\Gleam\include\Gleam_ShaderInclude.h" />
+    <ClInclude Include="..\dependencies\Gleam\include\Gleam_ShaderProgramManager.h" />
+    <ClInclude Include="..\dependencies\Gleam\include\Gleam_ShaderResourceView.h" />
+    <ClInclude Include="..\dependencies\Gleam\include\Gleam_ShaderResourceView_Direct3D.h" />
+    <ClInclude Include="..\dependencies\Gleam\include\Gleam_ShaderResourceView_OpenGL.h" />
+    <ClInclude Include="..\dependencies\Gleam\include\Gleam_Shader_Direct3D.h" />
+    <ClInclude Include="..\dependencies\Gleam\include\Gleam_Shader_OpenGL.h" />
+    <ClInclude Include="..\dependencies\Gleam\include\Gleam_SIMDMath.h" />
+    <ClInclude Include="..\dependencies\Gleam\include\Gleam_SIMDMath_x86.h" />
+    <ClInclude Include="..\dependencies\Gleam\include\Gleam_StagedRenderer.h" />
+    <ClInclude Include="..\dependencies\Gleam\include\Gleam_String.h" />
+    <ClInclude Include="..\dependencies\Gleam\include\Gleam_Texture.h" />
+    <ClInclude Include="..\dependencies\Gleam\include\Gleam_Texture_Direct3D.h" />
+    <ClInclude Include="..\dependencies\Gleam\include\Gleam_Texture_OpenGL.h" />
+    <ClInclude Include="..\dependencies\Gleam\include\Gleam_Transform.h" />
+    <ClInclude Include="..\dependencies\Gleam\include\Gleam_Vector4.h" />
+    <ClInclude Include="..\dependencies\Gleam\include\Gleam_Vector4_CPU.h" />
+    <ClInclude Include="..\dependencies\Gleam\include\Gleam_Vector4_SIMD.h" />
+    <ClInclude Include="..\dependencies\Gleam\include\Gleam_Window.h" />
+    <ClInclude Include="..\dependencies\Gleam\include\Gleam_Window_Defines.h" />
+    <ClInclude Include="..\dependencies\Gleam\include\Gleam_Window_Windows.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\dependencies\Gleam\Gleam_AABB.cpp" />
+    <ClCompile Include="..\dependencies\Gleam\Gleam_Buffer_Direct3D.cpp" />
+    <ClCompile Include="..\dependencies\Gleam\Gleam_Buffer_OpenGL.cpp" />
+    <ClCompile Include="..\dependencies\Gleam\Gleam_Global.cpp" />
+    <ClCompile Include="..\dependencies\Gleam\Gleam_IMesh.cpp" />
+    <ClCompile Include="..\dependencies\Gleam\Gleam_IModel.cpp" />
+    <ClCompile Include="..\dependencies\Gleam\Gleam_InputManager.cpp" />
+    <ClCompile Include="..\dependencies\Gleam\Gleam_IProgram.cpp" />
+    <ClCompile Include="..\dependencies\Gleam\Gleam_ISceneNode.cpp" />
+    <ClCompile Include="..\dependencies\Gleam\Gleam_Keyboard_DirectInput.cpp" />
+    <ClCompile Include="..\dependencies\Gleam\Gleam_Keyboard_MessagePump.cpp" />
+    <ClCompile Include="..\dependencies\Gleam\Gleam_Layout_Direct3D.cpp" />
+    <ClCompile Include="..\dependencies\Gleam\Gleam_Layout_OpenGL.cpp" />
+    <ClCompile Include="..\dependencies\Gleam\Gleam_Matrix4x4_CPU.cpp" />
+    <ClCompile Include="..\dependencies\Gleam\Gleam_Matrix4x4_SIMD.cpp" />
+    <ClCompile Include="..\dependencies\Gleam\Gleam_Mesh_Direct3D.cpp" />
+    <ClCompile Include="..\dependencies\Gleam\Gleam_Mesh_OpenGL.cpp" />
+    <ClCompile Include="..\dependencies\Gleam\Gleam_Model.cpp" />
+    <ClCompile Include="..\dependencies\Gleam\Gleam_ModelManager.cpp" />
+    <ClCompile Include="..\dependencies\Gleam\Gleam_Mouse_DirectInput.cpp" />
+    <ClCompile Include="..\dependencies\Gleam\Gleam_Mouse_MessagePump.cpp" />
+    <ClCompile Include="..\dependencies\Gleam\Gleam_OBB.cpp" />
+    <ClCompile Include="..\dependencies\Gleam\Gleam_Program_Direct3D.cpp" />
+    <ClCompile Include="..\dependencies\Gleam\Gleam_Program_OpenGL.cpp" />
+    <ClCompile Include="..\dependencies\Gleam\Gleam_Quaternion_CPU.cpp" />
+    <ClCompile Include="..\dependencies\Gleam\Gleam_Quaternion_SIMD.cpp" />
+    <ClCompile Include="..\dependencies\Gleam\Gleam_RenderDevice_Direct3D.cpp" />
+    <ClCompile Include="..\dependencies\Gleam\Gleam_RenderDevice_OpenGL_Windows.cpp" />
+    <ClCompile Include="..\dependencies\Gleam\Gleam_RenderState_Direct3D.cpp" />
+    <ClCompile Include="..\dependencies\Gleam\Gleam_RenderState_OpenGL.cpp" />
+    <ClCompile Include="..\dependencies\Gleam\Gleam_RenderTarget_Direct3D.cpp" />
+    <ClCompile Include="..\dependencies\Gleam\Gleam_RenderTarget_OpenGL.cpp" />
+    <ClCompile Include="..\dependencies\Gleam\Gleam_SamplerState_Direct3D.cpp" />
+    <ClCompile Include="..\dependencies\Gleam\Gleam_SamplerState_OpenGL.cpp" />
+    <ClCompile Include="..\dependencies\Gleam\Gleam_Scene.cpp" />
+    <ClCompile Include="..\dependencies\Gleam\Gleam_ShaderInclude.cpp" />
+    <ClCompile Include="..\dependencies\Gleam\Gleam_ShaderProgramManager.cpp" />
+    <ClCompile Include="..\dependencies\Gleam\Gleam_ShaderResourceView_Direct3D.cpp" />
+    <ClCompile Include="..\dependencies\Gleam\Gleam_ShaderResourceView_OpenGL.cpp" />
+    <ClCompile Include="..\dependencies\Gleam\Gleam_Shader_Direct3D.cpp" />
+    <ClCompile Include="..\dependencies\Gleam\Gleam_Shader_OpenGL.cpp" />
+    <ClCompile Include="..\dependencies\Gleam\Gleam_SIMDMath_x86.cpp" />
+    <ClCompile Include="..\dependencies\Gleam\Gleam_StagedRenderer.cpp" />
+    <ClCompile Include="..\dependencies\Gleam\Gleam_Texture_Direct3D.cpp" />
+    <ClCompile Include="..\dependencies\Gleam\Gleam_Texture_OpenGL.cpp" />
+    <ClCompile Include="..\dependencies\Gleam\Gleam_Transform.cpp" />
+    <ClCompile Include="..\dependencies\Gleam\Gleam_Vector4_CPU.cpp" />
+    <ClCompile Include="..\dependencies\Gleam\Gleam_Vector4_SIMD.cpp" />
+    <ClCompile Include="..\dependencies\Gleam\Gleam_Window_Windows.cpp" />
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{9241F3DF-555F-4B21-A495-5F6AC1DABD05}</ProjectGuid>
+    <RootNamespace>Gleam</RootNamespace>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug_Direct3D|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v120</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug_OpenGL|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v120</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug_Direct3D|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v120</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug_OpenGL|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v120</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_Direct3D|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v120</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_OpenGL|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v120</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_Direct3D|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v120</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_OpenGL|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v120</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug_Direct3D|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug_OpenGL|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug_Direct3D|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug_OpenGL|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release_Direct3D|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release_OpenGL|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release_Direct3D|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release_OpenGL|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug_Direct3D|x64'">
+    <OutDir>$(SolutionDir)..\..\build\Output\$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>$(SolutionDir)..\..\build\Intermediate\$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
+    <IncludePath>$(IncludePath)</IncludePath>
+    <LibraryPath>$(LibraryPath)</LibraryPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug_OpenGL|x64'">
+    <OutDir>$(SolutionDir)..\..\build\Output\$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>$(SolutionDir)..\..\build\Intermediate\$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
+    <IncludePath>$(IncludePath)</IncludePath>
+    <LibraryPath>$(LibraryPath)</LibraryPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_Direct3D|x64'">
+    <OutDir>$(SolutionDir)..\..\build\Output\$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>$(SolutionDir)..\..\build\Intermediate\$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
+    <IncludePath>$(IncludePath)</IncludePath>
+    <LibraryPath>$(LibraryPath)</LibraryPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_OpenGL|x64'">
+    <OutDir>$(SolutionDir)..\..\build\Output\$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>$(SolutionDir)..\..\build\Intermediate\$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
+    <IncludePath>$(IncludePath)</IncludePath>
+    <LibraryPath>$(LibraryPath)</LibraryPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug_Direct3D|Win32'">
+    <OutDir>$(SolutionDir)..\..\build\Output\$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>$(SolutionDir)..\..\build\Intermediate\$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
+    <IncludePath>$(IncludePath)</IncludePath>
+    <LibraryPath>$(LibraryPath)</LibraryPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug_OpenGL|Win32'">
+    <OutDir>$(SolutionDir)..\..\build\Output\$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>$(SolutionDir)..\..\build\Intermediate\$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
+    <IncludePath>$(IncludePath)</IncludePath>
+    <LibraryPath>$(LibraryPath)</LibraryPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_Direct3D|Win32'">
+    <OutDir>$(SolutionDir)..\..\build\Output\$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>$(SolutionDir)..\..\build\Intermediate\$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
+    <LibraryPath>$(LibraryPath)</LibraryPath>
+    <IncludePath>$(IncludePath)</IncludePath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_OpenGL|Win32'">
+    <OutDir>$(SolutionDir)..\..\build\Output\$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>$(SolutionDir)..\..\build\Intermediate\$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
+    <LibraryPath>$(LibraryPath)</LibraryPath>
+    <IncludePath>$(IncludePath)</IncludePath>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug_Direct3D|Win32'">
+    <ClCompile>
+      <WarningLevel>Level4</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <FloatingPointModel>Fast</FloatingPointModel>
+      <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
+      <AdditionalIncludeDirectories>$(SolutionDir)..\..\dependencies\Gaff\include;$(SolutionDir)..\..\dependencies\Gleam\include;$(SolutionDir)..\..\dependencies\glew\include</AdditionalIncludeDirectories>
+      <CallingConvention>StdCall</CallingConvention>
+      <PreprocessorDefinitions>GLEW_STATIC;NO_LINKING;USE_DX;USE_DI;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ProgramDataBaseFileName>$(OutDir)Gleam.pdb</ProgramDataBaseFileName>
+      <MultiProcessorCompilation>false</MultiProcessorCompilation>
+      <SDLCheck>true</SDLCheck>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+    <Lib>
+      <AdditionalDependencies>
+      </AdditionalDependencies>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug_OpenGL|Win32'">
+    <ClCompile>
+      <WarningLevel>Level4</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <FloatingPointModel>Fast</FloatingPointModel>
+      <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
+      <AdditionalIncludeDirectories>$(SolutionDir)..\..\dependencies\Gaff\include;$(SolutionDir)..\..\dependencies\Gleam\include;$(SolutionDir)..\..\dependencies\glew\include</AdditionalIncludeDirectories>
+      <CallingConvention>StdCall</CallingConvention>
+      <PreprocessorDefinitions>GLEW_STATIC;NO_LINKING;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ProgramDataBaseFileName>$(OutDir)Gleam.pdb</ProgramDataBaseFileName>
+      <MultiProcessorCompilation>false</MultiProcessorCompilation>
+      <SDLCheck>true</SDLCheck>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+    <Lib>
+      <AdditionalDependencies>
+      </AdditionalDependencies>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug_Direct3D|x64'">
+    <ClCompile>
+      <WarningLevel>Level4</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <FloatingPointModel>Fast</FloatingPointModel>
+      <EnableEnhancedInstructionSet>NotSet</EnableEnhancedInstructionSet>
+      <AdditionalIncludeDirectories>$(SolutionDir)..\..\dependencies\Gaff\include;$(SolutionDir)..\..\dependencies\Gleam\include;$(SolutionDir)..\..\dependencies\glew\include</AdditionalIncludeDirectories>
+      <CallingConvention>Cdecl</CallingConvention>
+      <PreprocessorDefinitions>GLEW_STATIC;NO_LINKING;USE_DX;USE_DI;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ProgramDataBaseFileName>$(OutDir)Gleam.pdb</ProgramDataBaseFileName>
+      <MultiProcessorCompilation>false</MultiProcessorCompilation>
+      <SDLCheck>true</SDLCheck>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+    <Lib>
+      <AdditionalDependencies>
+      </AdditionalDependencies>
+    </Lib>
+    <ProjectReference>
+      <LinkLibraryDependencies>false</LinkLibraryDependencies>
+    </ProjectReference>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug_OpenGL|x64'">
+    <ClCompile>
+      <WarningLevel>Level4</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <FloatingPointModel>Fast</FloatingPointModel>
+      <EnableEnhancedInstructionSet>NotSet</EnableEnhancedInstructionSet>
+      <AdditionalIncludeDirectories>$(SolutionDir)..\..\dependencies\Gaff\include;$(SolutionDir)..\..\dependencies\Gleam\include;$(SolutionDir)..\..\dependencies\glew\include</AdditionalIncludeDirectories>
+      <CallingConvention>Cdecl</CallingConvention>
+      <PreprocessorDefinitions>GLEW_STATIC;NO_LINKING;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ProgramDataBaseFileName>$(OutDir)Gleam.pdb</ProgramDataBaseFileName>
+      <MultiProcessorCompilation>false</MultiProcessorCompilation>
+      <SDLCheck>true</SDLCheck>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+    <Lib>
+      <AdditionalDependencies>
+      </AdditionalDependencies>
+    </Lib>
+    <ProjectReference>
+      <LinkLibraryDependencies>false</LinkLibraryDependencies>
+    </ProjectReference>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release_Direct3D|Win32'">
+    <ClCompile>
+      <WarningLevel>Level4</WarningLevel>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <FloatingPointModel>Fast</FloatingPointModel>
+      <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
+      <AdditionalIncludeDirectories>$(SolutionDir)..\..\dependencies\Gaff\include;$(SolutionDir)..\..\dependencies\Gleam\include;$(SolutionDir)..\..\dependencies\glew\include</AdditionalIncludeDirectories>
+      <CallingConvention>StdCall</CallingConvention>
+      <PreprocessorDefinitions>GLEW_STATIC;NO_LINKING;USE_DX;USE_DI;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ProgramDataBaseFileName>$(OutDir)Gleam.pdb</ProgramDataBaseFileName>
+      <MultiProcessorCompilation>false</MultiProcessorCompilation>
+      <SDLCheck>true</SDLCheck>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+    <Lib>
+      <AdditionalDependencies>
+      </AdditionalDependencies>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release_OpenGL|Win32'">
+    <ClCompile>
+      <WarningLevel>Level4</WarningLevel>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <FloatingPointModel>Fast</FloatingPointModel>
+      <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
+      <AdditionalIncludeDirectories>$(SolutionDir)..\..\dependencies\Gaff\include;$(SolutionDir)..\..\dependencies\Gleam\include;$(SolutionDir)..\..\dependencies\glew\include</AdditionalIncludeDirectories>
+      <CallingConvention>StdCall</CallingConvention>
+      <PreprocessorDefinitions>GLEW_STATIC;NO_LINKING;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ProgramDataBaseFileName>$(OutDir)Gleam.pdb</ProgramDataBaseFileName>
+      <MultiProcessorCompilation>false</MultiProcessorCompilation>
+      <SDLCheck>true</SDLCheck>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+    <Lib>
+      <AdditionalDependencies>
+      </AdditionalDependencies>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release_Direct3D|x64'">
+    <ClCompile>
+      <WarningLevel>Level4</WarningLevel>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <FloatingPointModel>Fast</FloatingPointModel>
+      <EnableEnhancedInstructionSet>NotSet</EnableEnhancedInstructionSet>
+      <AdditionalIncludeDirectories>$(SolutionDir)..\..\dependencies\Gaff\include;$(SolutionDir)..\..\dependencies\Gleam\include;$(SolutionDir)..\..\dependencies\glew\include</AdditionalIncludeDirectories>
+      <CallingConvention>StdCall</CallingConvention>
+      <PreprocessorDefinitions>GLEW_STATIC;NO_LINKING;USE_DX;USE_DI;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ProgramDataBaseFileName>$(OutDir)Gleam.pdb</ProgramDataBaseFileName>
+      <MultiProcessorCompilation>false</MultiProcessorCompilation>
+      <SDLCheck>true</SDLCheck>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+    <Lib>
+      <AdditionalDependencies>
+      </AdditionalDependencies>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release_OpenGL|x64'">
+    <ClCompile>
+      <WarningLevel>Level4</WarningLevel>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <FloatingPointModel>Fast</FloatingPointModel>
+      <EnableEnhancedInstructionSet>NotSet</EnableEnhancedInstructionSet>
+      <AdditionalIncludeDirectories>$(SolutionDir)..\..\dependencies\Gaff\include;$(SolutionDir)..\..\dependencies\Gleam\include;$(SolutionDir)..\..\dependencies\glew\include</AdditionalIncludeDirectories>
+      <CallingConvention>StdCall</CallingConvention>
+      <PreprocessorDefinitions>GLEW_STATIC;NO_LINKING;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ProgramDataBaseFileName>$(OutDir)Gleam.pdb</ProgramDataBaseFileName>
+      <MultiProcessorCompilation>false</MultiProcessorCompilation>
+      <SDLCheck>true</SDLCheck>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+    <Lib>
+      <AdditionalDependencies>
+      </AdditionalDependencies>
+    </Lib>
+  </ItemDefinitionGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>
