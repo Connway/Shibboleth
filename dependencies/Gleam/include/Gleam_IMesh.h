@@ -1,0 +1,112 @@
+/************************************************************************************
+Copyright (C) 2013 by Nicholas LaCroix
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+************************************************************************************/
+
+#pragma once
+
+#include "Gleam_RefCounted.h"
+#include "Gleam_String.h"
+#include "Gleam_AABB.h"
+
+NS_GLEAM
+
+class IRenderDevice;
+class IBuffer;
+
+// Considering only one function is virtual, it should probably be called MeshDataBase?
+// But I really don't like that name for some reason ...
+class IMesh : public RefCounted
+{
+public:
+	enum TOPOLOGY_TYPE {
+		POINT_LIST = 0,
+		LINE_LIST,
+		LINE_STRIP,
+		TRIANGLE_LIST,
+		TRIANGLE_STRIP,
+
+		LINE_LIST_ADJ,
+		LINE_STRIP_ADJ,
+		TRIANGLE_LIST_ADJ,
+		TRIANGLE_STRIP_ADJ,
+
+		TOPOLOGY_SIZE
+	};
+
+	IMesh(void);
+	virtual ~IMesh(void);
+
+	void destroy(void);
+
+	INLINE template <class Vertex>
+	bool addVertData(
+		const IRenderDevice& rd, const Vertex* vert_data, unsigned int vert_count,
+		unsigned int* indices, unsigned int index_count, TOPOLOGY_TYPE primitive_type = TRIANGLE_LIST)
+	{
+		return addVertData(rd, vert_data, vert_count, sizeof(Vertex), indices, index_count, primitive_type);
+	}
+
+	INLINE template <class Buffer>
+	const Buffer* getCastedBuffer(const GleamAString& tag)
+	{
+		return (Buffer*)getBuffer(tag);
+	}
+
+	// Note, this function assumes the first three elements of a vertex are the position
+	bool addVertData(
+		const IRenderDevice& rd, const void* vert_data, unsigned int vert_count, unsigned int vert_size,
+		unsigned int* indices, unsigned int index_count, TOPOLOGY_TYPE primitive_type = TRIANGLE_LIST
+	);
+
+	INLINE void addBuffer(IBuffer* buffer);
+	INLINE const IBuffer* getBuffer(unsigned int index) const;
+	INLINE IBuffer* getBuffer(unsigned int index);
+	INLINE unsigned int getBufferCount(void) const;
+
+	INLINE void setBoundingBox(const AABB& bounding_box);
+	INLINE const AABB& getBoundingBox(void) const;
+
+	// Note, this function assumes the first three elements of a vertex are the position
+	void setBoundingBox(const void* vert_data, unsigned int vert_count, unsigned int vert_size);
+
+	virtual void setTopologyType(TOPOLOGY_TYPE topology) = 0;
+	INLINE TOPOLOGY_TYPE getTopologyType(void) const;
+
+	INLINE void setIndexCount(unsigned int count);
+	INLINE unsigned int getIndexCount(void) const;
+
+	virtual void render(const IRenderDevice& rd) = 0;
+
+	virtual bool isD3D(void) const = 0;
+
+protected:
+	GleamArray(IBuffer*) _vert_data;
+	IBuffer* _indices;
+	TOPOLOGY_TYPE _topology;
+
+private:
+	unsigned int _index_count;
+	AABB _bounding_box;
+
+	GAFF_NO_COPY(IMesh);
+};
+
+NS_END

@@ -1,0 +1,463 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Model">
+      <UniqueIdentifier>{ee65da86-f900-42ca-93d5-dda29582ef60}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Math">
+      <UniqueIdentifier>{193ccdbe-670e-4be0-ad3e-70ecc4e04a16}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Render Device">
+      <UniqueIdentifier>{b3c29487-dc45-437b-bbf0-01ad01b5c17d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Window">
+      <UniqueIdentifier>{d25c1b27-048b-482f-a317-e1a925515267}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Input">
+      <UniqueIdentifier>{9a167f74-ca53-4b4d-88ab-fb87b0eb9247}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Texture">
+      <UniqueIdentifier>{406edb81-7e35-49f4-b0cb-a7ce9c0df115}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Utilities">
+      <UniqueIdentifier>{fd6221ab-7f43-4c15-89fa-48c5253cad38}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shader">
+      <UniqueIdentifier>{280f0310-0610-4342-b44e-cd2833384d90}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Renderer">
+      <UniqueIdentifier>{498f0cad-2f33-426b-b0aa-46b848b459f4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Buffer">
+      <UniqueIdentifier>{b8abe81a-1fbc-40fc-af15-c7ab050f8cdf}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\src\Gleam_Global.cpp" />
+    <ClCompile Include="..\src\Gleam_RenderDevice_OpenGL_Windows.cpp">
+      <Filter>Render Device</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\Gleam_RenderDevice_Direct3D.cpp">
+      <Filter>Render Device</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\Gleam_Window_Windows.cpp">
+      <Filter>Window</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\Gleam_InputManager.cpp">
+      <Filter>Input</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\Gleam_Mouse_MessagePump.cpp">
+      <Filter>Input</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\Gleam_Mouse_DirectInput.cpp">
+      <Filter>Input</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\Gleam_Keyboard_DirectInput.cpp">
+      <Filter>Input</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\Gleam_Keyboard_MessagePump.cpp">
+      <Filter>Input</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\Gleam_Texture_OpenGL.cpp">
+      <Filter>Texture</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\Gleam_Texture_Direct3D.cpp">
+      <Filter>Texture</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\Gleam_RenderTarget_Direct3D.cpp">
+      <Filter>Render Device</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\Gleam_RenderTarget_OpenGL.cpp">
+      <Filter>Render Device</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\Gleam_Shader_Direct3D.cpp">
+      <Filter>Shader</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\Gleam_ShaderInclude.cpp">
+      <Filter>Shader</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\Gleam_Program_Direct3D.cpp">
+      <Filter>Shader</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\Gleam_Program_OpenGL.cpp">
+      <Filter>Shader</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\Gleam_Shader_OpenGL.cpp">
+      <Filter>Shader</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\Gleam_Matrix4x4_SIMD.cpp">
+      <Filter>Math</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\Gleam_Matrix4x4_CPU.cpp">
+      <Filter>Math</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\Gleam_Vector4_SIMD.cpp">
+      <Filter>Math</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\Gleam_Vector4_CPU.cpp">
+      <Filter>Math</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\Gleam_AABB.cpp">
+      <Filter>Math</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\Gleam_OBB.cpp">
+      <Filter>Math</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\Gleam_Buffer_Direct3D.cpp">
+      <Filter>Buffer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\Gleam_Buffer_OpenGL.cpp">
+      <Filter>Buffer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\Gleam_ShaderProgramManager.cpp">
+      <Filter>Shader</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\Gleam_IMesh.cpp">
+      <Filter>Model</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\Gleam_Mesh_Direct3D.cpp">
+      <Filter>Model</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\Gleam_Mesh_OpenGL.cpp">
+      <Filter>Model</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\Gleam_Quaternion_CPU.cpp">
+      <Filter>Math</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\Gleam_Quaternion_SIMD.cpp">
+      <Filter>Math</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\Gleam_Transform.cpp">
+      <Filter>Math</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\Gleam_StagedRenderer.cpp">
+      <Filter>Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\Gleam_SIMDMath_x86.cpp">
+      <Filter>Math</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\Gleam_RenderState_Direct3D.cpp">
+      <Filter>Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\Gleam_RenderState_OpenGL.cpp">
+      <Filter>Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\Gleam_Layout_Direct3D.cpp">
+      <Filter>Shader</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\Gleam_Layout_OpenGL.cpp">
+      <Filter>Shader</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\Gleam_ShaderResourceView_Direct3D.cpp">
+      <Filter>Shader</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\Gleam_ShaderResourceView_OpenGL.cpp">
+      <Filter>Shader</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\Gleam_SamplerState_Direct3D.cpp">
+      <Filter>Texture</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\Gleam_SamplerState_OpenGL.cpp">
+      <Filter>Texture</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\Gleam_IProgram.cpp">
+      <Filter>Shader</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\Gleam_ModelManager.cpp">
+      <Filter>Model</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\Gleam_IModel.cpp">
+      <Filter>Model</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\Gleam_Model.cpp">
+      <Filter>Model</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\include\Gleam_LightInfo.h">
+      <Filter>Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\Gleam_ISceneNode.cpp">
+      <Filter>Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\Gleam_Scene.cpp">
+      <Filter>Renderer</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\src\include\Gleam_Defines.h" />
+    <ClInclude Include="..\src\include\Gleam_Global.h" />
+    <ClInclude Include="..\src\include\Gleam_Matrix4x4.h">
+      <Filter>Math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\include\Gleam_Vector4.h">
+      <Filter>Math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\include\Gleam_RenderDevice_OpenGL_Windows.h">
+      <Filter>Render Device</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\include\Gleam_RenderDevice_OpenGL.h">
+      <Filter>Render Device</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\include\Gleam_RenderDevice_Direct3D.h">
+      <Filter>Render Device</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\include\Gleam_Window_Windows.h">
+      <Filter>Window</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\include\Gleam_Window.h">
+      <Filter>Window</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\include\Gleam_Window_Defines.h">
+      <Filter>Window</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\include\Gleam_Mouse.h">
+      <Filter>Input</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\include\Gleam_IInputDevice.h">
+      <Filter>Input</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\include\Gleam_InputManager.h">
+      <Filter>Input</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\include\Gleam_Mouse_MessagePump.h">
+      <Filter>Input</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\include\Gleam_IWindowMessageHandler.h">
+      <Filter>Window</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\include\Gleam_MouseData.h">
+      <Filter>Input</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\include\Gleam_ProxyAllocator.h" />
+    <ClInclude Include="..\src\include\Gleam_Keyboard.h">
+      <Filter>Input</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\include\Gleam_Keyboard_DirectInput.h">
+      <Filter>Input</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\include\Gleam_Mouse_DirectInput.h">
+      <Filter>Input</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\include\Gleam_Keyboard_MessagePump.h">
+      <Filter>Input</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\include\Gleam_Keyboard_Defines.h">
+      <Filter>Input</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\include\Gleam_IInputHandler.h">
+      <Filter>Input</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\include\Gleam_ITexture.h">
+      <Filter>Texture</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\include\Gleam_Texture_OpenGL.h">
+      <Filter>Texture</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\include\Gleam_Texture_Direct3D.h">
+      <Filter>Texture</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\include\Gleam_IRenderTarget.h">
+      <Filter>Render Device</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\include\Gleam_RenderTarget_Direct3D.h">
+      <Filter>Render Device</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\include\Gleam_RenderTarget_OpenGL.h">
+      <Filter>Render Device</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\include\Gleam_IRenderDevice.h">
+      <Filter>Render Device</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\include\Gleam_String.h">
+      <Filter>Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\include\Gleam_Array.h">
+      <Filter>Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\include\Gleam_HashMap.h">
+      <Filter>Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\include\Gleam_IShader.h">
+      <Filter>Shader</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\include\Gleam_AlignedDefaultAllocator.h">
+      <Filter>Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\include\Gleam_Shader_Direct3D.h">
+      <Filter>Shader</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\include\Gleam_Shader.h">
+      <Filter>Shader</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\include\Gleam_ShaderInclude.h">
+      <Filter>Shader</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\include\Gleam_Shader_OpenGL.h">
+      <Filter>Shader</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\include\Gleam_IProgram.h">
+      <Filter>Shader</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\include\Gleam_Program_Direct3D.h">
+      <Filter>Shader</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\include\Gleam_Program_OpenGL.h">
+      <Filter>Shader</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\include\Gleam_IncludeD3D11.h">
+      <Filter>Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\include\Gleam_Program.h">
+      <Filter>Shader</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\include\Gleam_Matrix4x4_SIMD.h">
+      <Filter>Math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\include\Gleam_Matrix4x4_CPU.h">
+      <Filter>Math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\include\Gleam_Vector4_SIMD.h">
+      <Filter>Math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\include\Gleam_Vector4_CPU.h">
+      <Filter>Math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\include\Gleam_AABB.h">
+      <Filter>Math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\include\Gleam_OBB.h">
+      <Filter>Math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\include\Gleam_IBuffer.h">
+      <Filter>Buffer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\include\Gleam_Buffer_Direct3D.h">
+      <Filter>Buffer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\include\Gleam_Buffer_OpenGL.h">
+      <Filter>Buffer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\include\Gleam_Buffer.h">
+      <Filter>Buffer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\include\Gleam_Texture.h">
+      <Filter>Texture</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\include\Gleam_RenderTarget.h">
+      <Filter>Render Device</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\include\Gleam_RenderDevice.h">
+      <Filter>Render Device</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\include\Gleam_RefCounted.h">
+      <Filter>Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\include\Gleam_ShaderProgramManager.h">
+      <Filter>Shader</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\include\Gleam_Mesh.h">
+      <Filter>Model</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\include\Gleam_IMesh.h">
+      <Filter>Model</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\include\Gleam_Mesh_Direct3D.h">
+      <Filter>Model</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\include\Gleam_Mesh_OpenGL.h">
+      <Filter>Model</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\include\Gleam_Quaternion.h">
+      <Filter>Math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\include\Gleam_Quaternion_CPU.h">
+      <Filter>Math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\include\Gleam_Quaternion_SIMD.h">
+      <Filter>Math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\include\Gleam_SIMDMath.h">
+      <Filter>Math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\include\Gleam_Transform.h">
+      <Filter>Math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\include\Gleam_StagedRenderer.h">
+      <Filter>Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\include\Gleam_IRenderer.h">
+      <Filter>Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\include\Gleam_SIMDMath_x86.h">
+      <Filter>Math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\include\Gleam_RenderState_OpenGL.h">
+      <Filter>Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\include\Gleam_RenderState_Direct3D.h">
+      <Filter>Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\include\Gleam_IRenderState.h">
+      <Filter>Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\include\Gleam_ILayout.h">
+      <Filter>Shader</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\include\Gleam_Layout_Direct3D.h">
+      <Filter>Shader</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\include\Gleam_Layout.h">
+      <Filter>Shader</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\include\Gleam_Layout_OpenGL.h">
+      <Filter>Shader</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\include\Gleam_RenderState.h">
+      <Filter>Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\include\Gleam_IShaderResourceView.h">
+      <Filter>Shader</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\include\Gleam_ShaderResourceView_Direct3D.h">
+      <Filter>Shader</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\include\Gleam_ShaderResourceView_OpenGL.h">
+      <Filter>Shader</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\include\Gleam_ISamplerState.h">
+      <Filter>Texture</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\include\Gleam_SamplerState.h">
+      <Filter>Texture</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\include\Gleam_SamplerState_Direct3D.h">
+      <Filter>Texture</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\include\Gleam_SamplerState_OpenGL.h">
+      <Filter>Texture</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\include\Gleam_ShaderResourceView.h">
+      <Filter>Shader</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\include\Gleam_ModelManager.h">
+      <Filter>Model</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\include\Gleam_IModel.h">
+      <Filter>Model</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\include\Gleam_Model.h">
+      <Filter>Model</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\include\Gleam_ISceneNode.h">
+      <Filter>Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\include\Gleam_Scene.h">
+      <Filter>Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\include\Gleam_IRenderStage.h">
+      <Filter>Renderer</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="..\TODO.txt" />
+  </ItemGroup>
+</Project>

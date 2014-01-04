@@ -1,0 +1,163 @@
+/************************************************************************************
+Copyright (C) 2013 by Nicholas LaCroix
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+************************************************************************************/
+
+#include "Gleam_RenderTarget_OpenGL.h"
+#include "Gleam_Texture_OpenGL.h"
+#include "Gleam_IRenderDevice.h"
+#include "Gaff_IncludeAssert.h"
+#include <GL/glew.h>
+
+NS_GLEAM
+
+RenderTargetGL::RenderTargetGL(void):
+	_frame_buffer(0), _attach_count(0)
+{
+}
+
+RenderTargetGL::~RenderTargetGL(void)
+{
+	destroy();
+}
+
+void RenderTargetGL::destroy(void)
+{
+	if (_frame_buffer) {
+		glDeleteFramebuffers(1, &_frame_buffer);
+	}
+}
+
+bool RenderTargetGL::addTexture(const IRenderDevice&, const ITexture* color_texture, CUBE_FACE face)
+{
+#ifdef _DEBUG
+	{
+		GLint max_color_attachments = 0;
+		glGetIntegerv(GL_MAX_COLOR_ATTACHMENTS, &max_color_attachments);
+		assert(_attach_count < GL_MAX_COLOR_ATTACHMENTS);
+	}
+#endif
+
+	assert(color_texture && !color_texture->isD3D());
+
+	GLint fb = 0;
+	glGetIntegerv(GL_FRAMEBUFFER_BINDING, &fb);
+
+	createFramebuffer();
+	glBindFramebuffer(GL_FRAMEBUFFER, _frame_buffer);
+
+	GLuint target = GL_TEXTURE_2D;
+
+	if (face != NONE) {
+		target = face + GL_TEXTURE_CUBE_MAP_POSITIVE_X;
+	}
+
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + _attach_count, target, ((const TextureGL*)color_texture)->getTexture(), 0);
+	glBindFramebuffer(GL_FRAMEBUFFER, (GLuint)fb);
+
+	if (glGetError() == GL_NO_ERROR) {
+		_draw_buffers.push(GL_COLOR_ATTACHMENT0 + _attach_count);
+		++_attach_count;
+		return true;
+	}
+
+	return false;
+}
+
+void RenderTargetGL::popTexture(void)
+{
+	assert(_attach_count > 0);
+	_draw_buffers.pop();
+	--_attach_count;
+}
+
+bool RenderTargetGL::addDepthStencilBuffer(const IRenderDevice&, const ITexture* depth_stencil_texture)
+{
+	assert(depth_stencil_texture && !depth_stencil_texture->isD3D());
+
+	GLint fb = 0;
+	glGetIntegerv(GL_FRAMEBUFFER_BINDING, &fb);
+
+	createFramebuffer();
+	glBindFramebuffer(GL_FRAMEBUFFER, _frame_buffer);
+
+	GLenum attachment = 0;
+
+	switch (depth_stencil_texture->getType()) {
+		case ITexture::DEPTH:
+			attachment = GL_DEPTH_ATTACHMENT;
+			break;
+
+		case ITexture::DEPTH_STENCIL:
+			attachment = GL_DEPTH_STENCIL_ATTACHMENT;
+			break;
+	}
+
+	assert(attachment != 0);
+
+	glFramebufferTexture2D(GL_FRAMEBUFFER, attachment, GL_TEXTURE_2D, ((const TextureGL*)depth_stencil_texture)->getTexture(), 0);
+	glBindFramebuffer(GL_FRAMEBUFFER, (GLuint)fb);
+
+	return glGetError() == GL_NO_ERROR;
+}
+
+void RenderTargetGL::bind(IRenderDevice& rd)
+{
+	glBindFramebuffer(GL_FRAMEBUFFER, _frame_buffer);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT); 
+	glDrawBuffers(_draw_buffers.size(), _draw_buffers.getArray());
+	setPrevRenderTarget(rd);
+}
+
+void RenderTargetGL::unbind(const IRenderDevice&)
+{
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+}
+
+bool RenderTargetGL::isComplete(void) const
+{
+	if (!_frame_buffer) {
+		return false;
+	}
+
+	GLint fb = 0;
+	glGetIntegerv(GL_FRAMEBUFFER_BINDING, &fb);
+	glBindFramebuffer(GL_FRAMEBUFFER, _frame_buffer);
+
+	bool complete = glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE;
+
+	glBindFramebuffer(GL_FRAMEBUFFER, (GLuint)fb);
+
+	return complete;
+}
+
+bool RenderTargetGL::isD3D(void) const
+{
+	return false;
+}
+
+void RenderTargetGL::createFramebuffer(void)
+{
+	if (!_frame_buffer) {
+		glGenFramebuffers(1, &_frame_buffer);
+	}
+}
+
+NS_END

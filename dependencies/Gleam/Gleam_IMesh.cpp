@@ -1,0 +1,146 @@
+/************************************************************************************
+Copyright (C) 2013 by Nicholas LaCroix
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+************************************************************************************/
+
+#include "Gleam_IMesh.h"
+#include "Gleam_IRenderDevice.h"
+#include "Gleam_Buffer.h"
+#include <Gaff_IncludeAssert.h>
+
+NS_GLEAM
+
+IMesh::IMesh(void):
+	_indices(NULLPTR), _index_count(0)
+{
+}
+
+IMesh::~IMesh(void)
+{
+}
+
+void IMesh::destroy(void)
+{
+	for (unsigned int i = 0; i < _vert_data.size(); ++i) {
+		_vert_data[i]->destroy();
+	}
+
+	_vert_data.clear();
+}
+
+bool IMesh::addVertData(
+	const IRenderDevice& rd, const void* vert_data, unsigned int vert_count, unsigned int vert_size,
+	unsigned int* indices, unsigned int index_count, TOPOLOGY_TYPE primitive_type)
+{
+	IBuffer* index_buffer = GleamClassAllocate(Buffer);
+	IBuffer* vert_buffer = GleamClassAllocate(Buffer);
+
+	if (!index_buffer || !vert_buffer) {
+		if (index_buffer) {
+			GleamFree(index_buffer);
+		}
+
+		return false;
+	}
+
+	if (!vert_buffer->init(rd, vert_data, vert_count * vert_size, IBuffer::VERTEX_DATA, vert_size)) {
+		GleamFree(index_buffer);
+		GleamFree(vert_buffer);
+		return false;
+	}
+
+	if (!index_buffer->init(rd, indices, sizeof(unsigned int) * index_count, IBuffer::INDEX_DATA, sizeof(unsigned int))) {
+		GleamFree(index_buffer);
+		GleamFree(vert_buffer);
+		return false;
+	}
+
+	addBuffer(vert_buffer);
+	SAFEGLEAMRELEASE(_indices);
+	_indices = index_buffer;
+	_index_count = index_count;
+	_indices->addRef();
+
+	setBoundingBox(vert_data, vert_count, vert_size);
+	setTopologyType(primitive_type);
+
+	return true;
+}
+
+void IMesh::addBuffer(IBuffer* buffer)
+{
+	_vert_data.push(buffer);
+	buffer->addRef();
+}
+
+const IBuffer* IMesh::getBuffer(unsigned int index) const
+{
+	assert(index < _vert_data.size());
+	return _vert_data[index];
+}
+
+IBuffer* IMesh::getBuffer(unsigned int index)
+{
+	assert(index < _vert_data.size());
+	return _vert_data[index];
+}
+
+unsigned int IMesh::getBufferCount(void) const
+{
+	return _vert_data.size();
+}
+
+void IMesh::setBoundingBox(const AABB& bounding_box)
+{
+	_bounding_box = bounding_box;
+}
+
+const AABB& IMesh::getBoundingBox(void) const
+{
+	return _bounding_box;
+}
+
+// Note, this function assumes the first three elements of a vertex are the position
+void IMesh::setBoundingBox(const void* vert_data, unsigned int vert_count, unsigned int vert_size)
+{
+	const float* verts = (const float*)vert_data;
+
+	for (unsigned int i = 0; i < vert_count; ++i) {
+		_bounding_box.addPoint(verts[0], verts[1], verts[2]);
+		verts = (const float*)((char*)verts + vert_size);
+	}
+}
+
+IMesh::TOPOLOGY_TYPE IMesh::getTopologyType(void) const
+{
+	return _topology;
+}
+
+void IMesh::setIndexCount(unsigned int count)
+{
+	_index_count = count;
+}
+
+unsigned int IMesh::getIndexCount(void) const
+{
+	return _index_count;
+}
+
+NS_END
