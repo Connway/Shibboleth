@@ -1,5 +1,5 @@
 /************************************************************************************
-Copyright (C) 2013 by Nicholas LaCroix
+Copyright (C) 2014 by Nicholas LaCroix
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -37,27 +37,33 @@ NS_GAFF
 const float Pi = 3.141592654f;
 
 template <class T>
-T min(T v1, T v2)
+const T& Min(const T& v1, const T& v2)
 {
 	return (v1 < v2) ? v1 : v2;
 }
 
 template <class T>
-T max(T v1, T v2)
+const T& Max(const T& v1, const T& v2)
 {
 	return (v1 > v2) ? v1 : v2;
 }
 
 template <class T>
-T clamp(T val, T min_bound, T max_bound)
+const T& Clamp(const T& val, const T& min_bound, const T& max_bound)
 {
-	return min(max(val, min_bound), max_bound);
+	return Min(Max(val, min_bound), max_bound);
 }
 
 template <class T>
-T lerp(T begin, T end, float t)
+T Lerp(const T& begin, const T& end, float t)
 {
 	return begin + t * (end - begin);
+}
+
+template <class T>
+bool Between(const T& val, const T& min_val, const T& max_val)
+{
+	return val >= min_val && val <= max_val;
 }
 
 // Not really sure this is a good candidate for inlining,

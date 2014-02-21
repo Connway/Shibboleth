@@ -1,0 +1,63 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="..\dependencies\LibTIFF\tif_swab.c" />
+    <ClCompile Include="..\dependencies\LibTIFF\tif_thunder.c" />
+    <ClCompile Include="..\dependencies\LibTIFF\tif_tile.c" />
+    <ClCompile Include="..\dependencies\LibTIFF\tif_version.c" />
+    <ClCompile Include="..\dependencies\LibTIFF\tif_warning.c" />
+    <ClCompile Include="..\dependencies\LibTIFF\tif_win32.c" />
+    <ClCompile Include="..\dependencies\LibTIFF\tif_write.c" />
+    <ClCompile Include="..\dependencies\LibTIFF\tif_zip.c" />
+    <ClCompile Include="..\dependencies\LibTIFF\mkg3states.c" />
+    <ClCompile Include="..\dependencies\LibTIFF\tif_aux.c" />
+    <ClCompile Include="..\dependencies\LibTIFF\tif_close.c" />
+    <ClCompile Include="..\dependencies\LibTIFF\tif_codec.c" />
+    <ClCompile Include="..\dependencies\LibTIFF\tif_color.c" />
+    <ClCompile Include="..\dependencies\LibTIFF\tif_compress.c" />
+    <ClCompile Include="..\dependencies\LibTIFF\tif_dir.c" />
+    <ClCompile Include="..\dependencies\LibTIFF\tif_dirinfo.c" />
+    <ClCompile Include="..\dependencies\LibTIFF\tif_dirread.c" />
+    <ClCompile Include="..\dependencies\LibTIFF\tif_dirwrite.c" />
+    <ClCompile Include="..\dependencies\LibTIFF\tif_dumpmode.c" />
+    <ClCompile Include="..\dependencies\LibTIFF\tif_error.c" />
+    <ClCompile Include="..\dependencies\LibTIFF\tif_extension.c" />
+    <ClCompile Include="..\dependencies\LibTIFF\tif_fax3.c" />
+    <ClCompile Include="..\dependencies\LibTIFF\tif_fax3sm.c" />
+    <ClCompile Include="..\dependencies\LibTIFF\tif_flush.c" />
+    <ClCompile Include="..\dependencies\LibTIFF\tif_getimage.c" />
+    <ClCompile Include="..\dependencies\LibTIFF\tif_jbig.c" />
+    <ClCompile Include="..\dependencies\LibTIFF\tif_jpeg.c" />
+    <ClCompile Include="..\dependencies\LibTIFF\tif_jpeg_12.c" />
+    <ClCompile Include="..\dependencies\LibTIFF\tif_luv.c" />
+    <ClCompile Include="..\dependencies\LibTIFF\tif_lzma.c" />
+    <ClCompile Include="..\dependencies\LibTIFF\tif_lzw.c" />
+    <ClCompile Include="..\dependencies\LibTIFF\tif_next.c" />
+    <ClCompile Include="..\dependencies\LibTIFF\tif_ojpeg.c" />
+    <ClCompile Include="..\dependencies\LibTIFF\tif_open.c" />
+    <ClCompile Include="..\dependencies\LibTIFF\tif_packbits.c" />
+    <ClCompile Include="..\dependencies\LibTIFF\tif_pixarlog.c" />
+    <ClCompile Include="..\dependencies\LibTIFF\tif_predict.c" />
+    <ClCompile Include="..\dependencies\LibTIFF\tif_print.c" />
+    <ClCompile Include="..\dependencies\LibTIFF\tif_read.c" />
+    <ClCompile Include="..\dependencies\LibTIFF\tif_stream.cxx" />
+    <ClCompile Include="..\dependencies\LibTIFF\tif_strip.c" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\dependencies\LibTIFF\tiff.h" />
+    <ClInclude Include="..\dependencies\LibTIFF\tiffconf.h" />
+    <ClInclude Include="..\dependencies\LibTIFF\tiffio.h" />
+    <ClInclude Include="..\dependencies\LibTIFF\tiffio.hxx" />
+    <ClInclude Include="..\dependencies\LibTIFF\tiffiop.h" />
+    <ClInclude Include="..\dependencies\LibTIFF\tiffvers.h" />
+    <ClInclude Include="..\dependencies\LibTIFF\uvcode.h" />
+    <ClInclude Include="..\dependencies\LibTIFF\t4.h" />
+    <ClInclude Include="..\dependencies\LibTIFF\tif_config.h" />
+    <ClInclude Include="..\dependencies\LibTIFF\tif_dir.h" />
+    <ClInclude Include="..\dependencies\LibTIFF\tif_fax3.h" />
+    <ClInclude Include="..\dependencies\LibTIFF\tif_predict.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="..\dependencies\LibTIFF\LICENSE.txt" />
+  </ItemGroup>
+</Project>

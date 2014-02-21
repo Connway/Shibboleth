@@ -1,5 +1,5 @@
 /************************************************************************************
-Copyright (C) 2013 by Nicholas LaCroix
+Copyright (C) 2014 by Nicholas LaCroix
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -22,17 +22,8 @@ THE SOFTWARE.
 
 #pragma once
 
-// Define for unicode builds.
-// This is for non-MSVC build systems.
-//#ifndef _UNICODE
-//	#define _UNICODE
-//#endif
-
-//#ifndef UNICODE
-//	#define UNICODE
-//#endif
-
 //#define ATTEMPT_INLINE
+//#define DYNAMIC_LIBRARY
 
 #define NS_GAFF namespace Gaff {
 #ifndef NS_END
@@ -43,7 +34,6 @@ THE SOFTWARE.
 	private: \
 		x(const x&); \
 		const x& operator=(const x&)
-
 
 #define GAFF_NO_MOVE(x) \
 	private: \
@@ -70,9 +60,21 @@ THE SOFTWARE.
 	#define SAFERELEASE(x) if (x) { x->Release(); x = nullptr; }
 #endif
 
+#ifndef SAFEADDREF
+	#define SAFEADDREF(x) if (x) { x->AddRef(); }
+#endif
+
 #define SAFEGAFFRELEASE(x) if (x) { x->release(); x = nullptr; }
+#define SAFEGAFFADDREF(x) if (x) { x->addRef(); }
 
 #if defined(_WIN32) || defined(_WIN64)
+	#ifndef _CRT_SECURE_NO_WARNINGS
+		#define _CRT_SECURE_NO_WARNINGS
+	#endif
+
+	#define DYNAMICEXPORT extern "C" __declspec(dllexport)
+	#define DYNAMICIMPORT extern "C" __declspec(dllimport)
+
 	#ifdef _UNICODE
 		#define GaffFullMain int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR lpCmdLine, int nShowCmd)
 		#define GaffMain WINAPI wWinMain
@@ -85,6 +87,31 @@ THE SOFTWARE.
 	#define GaffMain main
 #endif
 
-#ifndef _CRT_SECURE_NO_WARNINGS
-	#define _CRT_SECURE_NO_WARNINGS
+#ifdef __linux__
+	#define DYNAMICEXPORT __attribute__((visibility("default")))
+	#define DYNAMICIMPORT
+#elif defined(__APPLE__)
+	#define DYNAMICEXPORT
+	#define DYNAMICIMPORT
 #endif
+
+#ifdef DYNAMIC_LIBRARY
+	#define DYNAMICTAG DYNAMICEXPORT
+#else
+	#define DYNAMICTAG DYNAMICIMPORT
+#endif
+
+#if defined(__amd64__) || defined(__x86_64__) || defined(_M_X64) || defined(_M_AMD64) || \
+	defined(__i686__) || defined(_M_IX86) || defined(_X86_)
+
+	#define BITS_PER_BYTE 8
+
+#else
+	#error "Unknown architecture. Cannot deduce number of bits per byte."
+#endif
+
+template <class T>
+T&& Move(T& data)
+{
+	return (T&&)data;
+}

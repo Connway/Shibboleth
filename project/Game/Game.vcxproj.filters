@@ -2,5 +2,20 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <ClCompile Include="..\..\src\Game\Game_main.cpp" />
+    <ClCompile Include="..\..\src\Game\Game.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\src\Game\include\Game.h" />
+    <ClInclude Include="..\..\src\Shared\include\Shibboleth_Defines.h">
+      <Filter>Shared</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Shared\include\Shibboleth_Registry.h">
+      <Filter>Shared</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Shared">
+      <UniqueIdentifier>{ec60e9f8-fb75-4621-9858-0b8104f4b015}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
 </Project>

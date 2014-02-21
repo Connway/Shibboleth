@@ -1,5 +1,5 @@
 /************************************************************************************
-Copyright (C) 2013 by Nicholas LaCroix
+Copyright (C) 2014 by Nicholas LaCroix
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -24,6 +24,7 @@ THE SOFTWARE.
 
 #include "Gaff_DefaultAllocator.h"
 #include "Gaff_IncludeAssert.h"
+#include "Gaff_Predicates.h"
 #include <cstring>
 
 NS_GAFF
@@ -32,318 +33,130 @@ template <class T, class Allocator = DefaultAllocator>
 class Array
 {
 public:
-	Array(const Allocator& allocator = Allocator()) : _allocator(allocator), _used(0), _size(0), _array(nullptr) {}
+#if defined(__LP64__) || defined(_WIN64)
+	typedef long long OffsetType;
+#else
+	typedef int OffsetType;
+#endif
 
-	explicit Array(unsigned int start_alloc, const Allocator& allocator = Allocator()) :
-	_allocator(allocator), _used(0), _size(start_alloc)
+	class Iterator
 	{
-		_array = (T*)_allocator.alloc(sizeof(T) * start_alloc);
+	public:
+		Iterator(const Iterator& it);
+		Iterator(void);
 
-		for (unsigned int i = 0; i < start_alloc; ++i) {
-			construct(_array + i);
-		}
-	}
+		const Iterator& operator++(void) const;
+		const Iterator& operator--(void) const;
+		Iterator operator++(int) const;
+		Iterator operator--(int) const;
 
-	Array(unsigned int start_alloc, const T& init_val, const Allocator& allocator = Allocator()) :
-		_allocator(allocator), _array(nullptr), _used(start_alloc), _size(start_alloc)
-	{
-		_array = (T*)_allocator.alloc(sizeof(T) * start_alloc);
+		const Iterator& operator+=(int rhs) const;
+		const Iterator& operator-=(int rhs) const;
+		Iterator operator+(int rhs) const;
+		Iterator operator-(int rhs) const;
 
-		for (unsigned int i = 0; i < start_alloc; ++i) {
-			construct(_array + i, init_val);
-		}
-	}
+		OffsetType operator+(const Iterator& rhs) const;
+		OffsetType operator-(const Iterator& rhs) const;
 
-	Array(unsigned int size, const T* data, const Allocator& allocator = Allocator()) :
-		_allocator(allocator), _array(nullptr), _used(size), _size(size)
-	{
-		_array = (T*)_allocator.alloc(sizeof(T) * size);
+		bool operator==(const Iterator& rhs) const;
+		bool operator!=(const Iterator& rhs) const;
 
-		for (unsigned int i = 0; i < size; ++i) {
-			construct(_array + i, data[i]);
-		}
-	}
+		const Iterator& operator=(const Iterator& rhs) const;
 
-	Array(const Array<T, Allocator>& rhs):
-		_allocator(rhs._allocator), _used(0), _size(0), _array(nullptr)
-	{
-		*this = rhs;
-	}
+		const T& operator*(void) const;
+		T& operator*(void);
 
-	~Array(void)
-	{
-		clear();
-	}
+		const T* operator->(void) const;
+		T* operator->(void);
 
-	const Array<T, Allocator>& operator=(const Array<T, Allocator>& rhs)
-	{
-		if (this == &rhs) {
-			return *this;
-		}
+	private:
+		Iterator(T* element);
 
-		clear();
-
-		if (rhs._size == 0) {
-			return *this;
-		}
-
-		if (rhs._size > 0) {
-			_array = (T*)_allocator.alloc(sizeof(T) * rhs._size);
-
-			for (unsigned int i = 0; i < rhs._used; ++i) {
-				construct(_array + i, rhs._array[i]);
-			}
-
-		}
-
-		_used = rhs._used;
-		_size = rhs._size;
-
-		return *this;
-	}
-
-	bool operator==(const Array<T, Allocator>& rhs)
-	{
-		if (_used != rhs._used) {
-			return false;
-		}
-
-		for (unsigned int i = 0; i < _used; ++i) {
-			if (_array[i] != rhs._array[i]) {
-				return false;
-			}
-		}
-
-		return true;
-	}
-
-	bool operator!=(const Array<T, Allocator>& rhs)
-	{
-		return !(*this == rhs);
-	}
-
-	const T& operator[](unsigned int index) const
-	{
-		assert(index < _used);
-		return _array[index];
-	}
-
-	T& operator[](unsigned int index)
-	{
-		assert(index < _used);
-		return _array[index];
-	}
-
-	void clear(void)
-	{
-		if (_array) {
-			for (unsigned int i = 0; i < _used; ++i) {
-				deconstruct(_array + i);
-			}
-
-			_allocator.free(_array);
-			_used = _size = 0;
-			_array = nullptr;
-		}
-	}
-
-	void clearNoFree(void)
-	{
-		if (_array) {
-			for (unsigned int i = 0; i < _used; ++i) {
-				deconstruct(_array + i);
-			}
-
-			_used = 0;
-		}
-	}
-
-	const T& last(void) const
-	{
-		assert(_used > 0);
-		return _array[_used - 1];
-	}
-
-	T& last(void)
-	{
-		assert(_used > 0);
-		return _array[_used - 1];
-	}
-
-	const T* getArray(void) const
-	{
-		return _array;
-	}
-
-	T* getArray(void)
-	{
-		return _array;
-	}
-
-	bool empty(void) const
-	{
-		return _used == 0;
-	}
-
-	void push(const T& data)
-	{
-		if (_used == _size) {
-			if (_size == 0) {
-				reserve(1);
-			} else {
-				reserve(_size * 2);
-			}
-		}
-
-		construct(_array + _used, data);
-		++_used;
-	}
-
-	void push(T& data)
-	{
-		if (_used == _size) {
-			if (_size == 0) {
-				reserve(1);
-			}
-			else {
-				reserve(_size * 2);
-			}
-		}
-
-		construct(_array + _used, data);
-		++_used;
-	}
-
-	void pop(void)
-	{
-		assert(_used > 0);
-		deconstruct(_array + _used - 1);
-		--_used;
-	}
-
-	void insert(const T& data, unsigned int index)
-	{
-		if (_used + 1 > _size) {
-			if (_size == 0) {
-				reserve(1);
-			} else {
-				reserve(_size * 2);
-			}
-		}
-
-		construct(_array + _used, _array[_used - 1]);
-
-		for (unsigned int i = _used - 1; i > index; --i) {
-			deconstruct(_array + i);
-			construct(_array + i, _array[i - 1]);
-		}
-
-		construct(_array + index, data);
-		++_used;
-	}
-
-	void erase(unsigned int index)
-	{
-		assert(index < _used && _used > 0);
-
-		deconstruct(_array + index);
-		memcpy(_array + index, _array + index + 1, (_used - index - 1) * sizeof(T));
-		--_used;
-	}
-
-	void resize(unsigned int new_size)
-	{
-		if (new_size == _size) {
-			return;
-		}
-
-		T* old_data = _array;
-
-		_array = (T*)_allocator.alloc(sizeof(T) * new_size);
-
-		for (unsigned int i = _used; i < new_size; ++i) {
-			construct(_array + i);
-		}
-
-		if (old_data) {
-			if (new_size < _size) {
-				for (unsigned int i = new_size; i < _size; ++i) {
-					deconstruct(old_data + i);
-				}
-			}
-
-			memcpy(_array, old_data, sizeof(T) * _used);
-			_allocator.free(old_data);
-		}
-
-		_size = new_size;
-		_used = new_size;
-	}
-
-	void reserve(unsigned int reserve_size)
-	{
-		if (reserve_size <= _size) {
-			return;
-		}
-
-		T* old_data = _array;
-
-		_array = (T*)_allocator.alloc(sizeof(T) * reserve_size);
-		_size = reserve_size;
-
-		if (old_data) {
-			memcpy(_array, old_data, sizeof(T) * _used);
-			_allocator.free(old_data);
-		}
-	}
-
-	int linearFind(const T& data) const
-	{
-		for (unsigned int i = 0; i < _used; ++i) {
-			if (_array[i] == data) {
-				return i;
-			}
-		}
-
-		return -1;
-	}
-
-	unsigned int size(void) const
-	{
-		return _used;
+		mutable T* _element;
+		friend class Array<T, Allocator>;
 	};
 
-	unsigned int capacity(void) const
-	{
-		return _size;
-	}
+	Array(const Allocator& allocator = Allocator());
+	explicit Array(unsigned int start_alloc, const Allocator& allocator = Allocator());
+	Array(unsigned int start_alloc, const T& init_val, const Allocator& allocator = Allocator());
+	Array(unsigned int size, const T* data, const Allocator& allocator = Allocator());
+	Array(const Array<T, Allocator>& rhs);
+	Array(Array<T, Allocator>&& rhs);
+	~Array(void);
 
-	Array(Array<T, Allocator>&& rhs):
-		_allocator(rhs._allocator), _used(rhs._used),
-		_size(rhs._size), _array(rhs._array)
-	{
-		rhs._used = rhs._size = 0;
-		rhs._array = nullptr;
-	}
+	// For some reason, this is compiling, but debugger says it's using the old version of operator=? ... what
+	//template <class Allocator2>
+	//const Array<T, Allocator>& operator=(const Array<T, Allocator2>& rhs);
 
-	const Array<T, Allocator>& operator=(Array<T, Allocator>&& rhs)
-	{
-		clear();
+	const Array<T, Allocator>& operator=(const Array<T, Allocator>& rhs);
+	const Array<T, Allocator>& operator=(Array<T, Allocator>&& rhs);
 
-		_used = rhs._used;
-		_size = rhs._size;
-		_array = rhs._array;
+	template <class Allocator2>
+	bool operator==(const Array<T, Allocator2>& rhs) const;
 
-		rhs._used = rhs._size = 0;
-		rhs._array = nullptr;
+	template <class Allocator2>
+	bool operator!=(const Array<T, Allocator2>& rhs) const;
 
-		return *this;
-	}
+	const T& operator[](unsigned int index) const;
+	T& operator[](unsigned int index);
+
+	void clear(void);
+	void clearNoFree(void);
+
+	const T& first(void) const;
+	T& first(void);
+
+	const T& last(void) const;
+	T& last(void);
+
+	const T* getArray(void) const;
+	T* getArray(void);
+
+	Iterator begin(void) const;
+	Iterator end(void) const;
+	Iterator rbegin(void) const;
+	Iterator rend(void) const;
+
+	bool empty(void) const;
+
+	void push(const T& data);
+	void push(T& data);
+	void pop(void);
+	Iterator insert(const T& data, const Iterator& it);
+	void insert(const T& data, unsigned int index);
+	Iterator erase(const Iterator& it);
+	void erase(unsigned int index);
+
+	void resize(unsigned int new_size);
+	void reserve(unsigned int reserve_size);
+
+	template < class T2, class Pred = Equal<T, T2> >
+	Iterator linearSearch(const Iterator& range_beg, const Iterator& range_end, const T2& data, const Pred& pred = Pred()) const;
+
+	template < class T2, class Pred = Equal<T, T2> >
+	int linearSearch(unsigned int range_beg, unsigned int range_end, const T2& data, const Pred& pred = Pred()) const;
+
+	template < class T2, class Pred = Equal<T, T2> >
+	Iterator linearSearch(const T2& data, const Pred& pred = Pred()) const;
+
+	template < class T2, class Pred = Less<T, T2> >
+	Iterator binarySearch(const Iterator& range_beg, const Iterator& range_end, const T2& data, const Pred& pred = Pred()) const;
+
+	template < class T2, class Pred = Less<T, T2> >
+	int binarySearch(unsigned int range_beg, unsigned int range_end, const T2& data, const Pred& pred = Pred()) const;
+
+	template < class T2, class Pred = Less<T, T2> >
+	Iterator binarySearch(const T2& data, const Pred& pred = Pred()) const;
+
+	unsigned int size(void) const;
+	unsigned int capacity(void) const;
 
 private:
 	Allocator _allocator;
 	unsigned int _used, _size;
 	T* _array;
 };
+
+#include "Gaff_Array.inl"
 
 NS_END

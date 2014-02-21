@@ -1,5 +1,5 @@
 /************************************************************************************
-Copyright (C) 2013 by Nicholas LaCroix
+Copyright (C) 2014 by Nicholas LaCroix
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -30,21 +30,6 @@ static const char* _open_modes_a[12] = {
 		"rb", "wb", "ab", "rb+", "wb+", "ab+"
 };
 
-/*bool File::checkExtension(const char* file_name, const char* extension)
-{
-	size_t len = strlen(file_name);
-	assert(len > strlen(extension));
-
-	for (size_t i = len - 1; i >= 0; --i) {
-		// find the last occurrence of '.' character
-		if (file_name[i] == '.') {
-			return strcmp(file_name + i, extension) == 0;
-		}
-	}
-
-	return false;
-}*/
-
 bool File::remove(const char* file_name)
 {
 	assert(file_name);
@@ -56,14 +41,6 @@ bool File::rename(const char* old_file_name, const char* new_file_name)
 	assert(old_file_name && new_file_name);
 	return !::rename(old_file_name, new_file_name);
 }
-
-bool File::generateTempName(char* out)
-{
-	assert(out);
-	char* tmp = tmpnam(out);
-	return tmp != NULL && tmp != nullptr;
-}
-
 
 #ifdef _UNICODE
 static const wchar_t* _open_modes_u[12] = {
@@ -83,12 +60,6 @@ bool File::rename(const wchar_t* old_file_name, const wchar_t* new_file_name)
 	return !::_wrename(old_file_name, new_file_name);
 }
 
-bool File::generateTempName(wchar_t* out)
-{
-	assert(out);
-	wchar_t* tmp = _wtmpnam(out);
-	return tmp != NULL && tmp != nullptr;
-}
 #endif
 
 // File::File(const Gaff::AString<>& file_name, OPEN_MODE mode):
@@ -313,21 +284,6 @@ bool File::readEntireFile(char* buffer)
 
 // Unicode functions
 #ifdef _UNICODE
-/*bool File::checkExtension(const wchar_t* file_name, const wchar_t* extension)
-{
-	size_t len = wcslen(file_name);
-	assert(len > wcslen(extension));
-
-	for (size_t i = len - 1; i >= 0; --i) {
-		// find the last occurrence of '.' character
-		if (file_name[i] == L'.') {
-			return wcscmp(file_name + i, extension) == 0;
-		}
-	}
-
-	return false;
-}*/
-
 // File::File(const Gaff::WString& file_name, OPEN_MODE mode):
 // 	_file(nullptr)
 // {
