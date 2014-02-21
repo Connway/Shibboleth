@@ -1,0 +1,309 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="add_ons">
+      <UniqueIdentifier>{cda99116-e29e-4337-809c-0517c7adb5ed}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="source">
+      <UniqueIdentifier>{e3f0ea4e-651f-44e7-8f0a-929d58d64214}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\dependencies\AngelScript\add_on\autowrapper\aswrappedcall.h">
+      <Filter>add_ons</Filter>
+    </ClInclude>
+    <ClInclude Include="..\dependencies\AngelScript\add_on\contextmgr\contextmgr.h">
+      <Filter>add_ons</Filter>
+    </ClInclude>
+    <ClInclude Include="..\dependencies\AngelScript\add_on\debugger\debugger.h">
+      <Filter>add_ons</Filter>
+    </ClInclude>
+    <ClInclude Include="..\dependencies\AngelScript\add_on\scriptany\scriptany.h">
+      <Filter>add_ons</Filter>
+    </ClInclude>
+    <ClInclude Include="..\dependencies\AngelScript\add_on\scriptarray\scriptarray.h">
+      <Filter>add_ons</Filter>
+    </ClInclude>
+    <ClInclude Include="..\dependencies\AngelScript\add_on\scriptbuilder\scriptbuilder.h">
+      <Filter>add_ons</Filter>
+    </ClInclude>
+    <ClInclude Include="..\dependencies\AngelScript\add_on\scriptdictionary\scriptdictionary.h">
+      <Filter>add_ons</Filter>
+    </ClInclude>
+    <ClInclude Include="..\dependencies\AngelScript\add_on\scriptfile\scriptfile.h">
+      <Filter>add_ons</Filter>
+    </ClInclude>
+    <ClInclude Include="..\dependencies\AngelScript\add_on\scripthandle\scripthandle.h">
+      <Filter>add_ons</Filter>
+    </ClInclude>
+    <ClInclude Include="..\dependencies\AngelScript\add_on\scripthelper\scripthelper.h">
+      <Filter>add_ons</Filter>
+    </ClInclude>
+    <ClInclude Include="..\dependencies\AngelScript\add_on\scriptmath\scriptmath.h">
+      <Filter>add_ons</Filter>
+    </ClInclude>
+    <ClInclude Include="..\dependencies\AngelScript\add_on\scriptmath\scriptmathcomplex.h">
+      <Filter>add_ons</Filter>
+    </ClInclude>
+    <ClInclude Include="..\dependencies\AngelScript\add_on\scriptstdstring\scriptstdstring.h">
+      <Filter>add_ons</Filter>
+    </ClInclude>
+    <ClInclude Include="..\dependencies\AngelScript\add_on\serializer\serializer.h">
+      <Filter>add_ons</Filter>
+    </ClInclude>
+    <ClInclude Include="..\dependencies\AngelScript\add_on\weakref\weakref.h">
+      <Filter>add_ons</Filter>
+    </ClInclude>
+    <ClInclude Include="..\dependencies\AngelScript\angelscript\source\as_bytecode.h">
+      <Filter>source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\dependencies\AngelScript\angelscript\source\as_callfunc.h">
+      <Filter>source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\dependencies\AngelScript\angelscript\source\as_compiler.h">
+      <Filter>source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\dependencies\AngelScript\angelscript\source\as_config.h">
+      <Filter>source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\dependencies\AngelScript\angelscript\source\as_configgroup.h">
+      <Filter>source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\dependencies\AngelScript\angelscript\source\as_context.h">
+      <Filter>source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\dependencies\AngelScript\angelscript\source\as_criticalsection.h">
+      <Filter>source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\dependencies\AngelScript\angelscript\source\as_datatype.h">
+      <Filter>source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\dependencies\AngelScript\angelscript\source\as_debug.h">
+      <Filter>source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\dependencies\AngelScript\angelscript\source\as_gc.h">
+      <Filter>source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\dependencies\AngelScript\angelscript\source\as_generic.h">
+      <Filter>source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\dependencies\AngelScript\angelscript\source\as_map.h">
+      <Filter>source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\dependencies\AngelScript\angelscript\source\as_memory.h">
+      <Filter>source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\dependencies\AngelScript\angelscript\source\as_module.h">
+      <Filter>source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\dependencies\AngelScript\angelscript\source\as_objecttype.h">
+      <Filter>source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\dependencies\AngelScript\angelscript\source\as_outputbuffer.h">
+      <Filter>source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\dependencies\AngelScript\angelscript\source\as_parser.h">
+      <Filter>source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\dependencies\AngelScript\angelscript\source\as_property.h">
+      <Filter>source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\dependencies\AngelScript\angelscript\source\as_restore.h">
+      <Filter>source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\dependencies\AngelScript\angelscript\source\as_scriptcode.h">
+      <Filter>source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\dependencies\AngelScript\angelscript\source\as_scriptengine.h">
+      <Filter>source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\dependencies\AngelScript\angelscript\source\as_scriptfunction.h">
+      <Filter>source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\dependencies\AngelScript\angelscript\source\as_scriptnode.h">
+      <Filter>source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\dependencies\AngelScript\angelscript\source\as_scriptobject.h">
+      <Filter>source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\dependencies\AngelScript\angelscript\source\as_string.h">
+      <Filter>source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\dependencies\AngelScript\angelscript\source\as_string_util.h">
+      <Filter>source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\dependencies\AngelScript\angelscript\source\as_symboltable.h">
+      <Filter>source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\dependencies\AngelScript\angelscript\source\as_texts.h">
+      <Filter>source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\dependencies\AngelScript\angelscript\source\as_thread.h">
+      <Filter>source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\dependencies\AngelScript\angelscript\source\as_tokendef.h">
+      <Filter>source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\dependencies\AngelScript\angelscript\source\as_tokenizer.h">
+      <Filter>source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\dependencies\AngelScript\angelscript\source\as_typeinfo.h">
+      <Filter>source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\dependencies\AngelScript\angelscript\source\as_variablescope.h">
+      <Filter>source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\dependencies\AngelScript\angelscript\source\as_array.h">
+      <Filter>source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\dependencies\AngelScript\angelscript\source\as_atomic.h">
+      <Filter>source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\dependencies\AngelScript\angelscript\source\as_builder.h">
+      <Filter>source</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\dependencies\AngelScript\add_on\autowrapper\generator\generateheader.cpp">
+      <Filter>add_ons</Filter>
+    </ClCompile>
+    <ClCompile Include="..\dependencies\AngelScript\add_on\contextmgr\contextmgr.cpp">
+      <Filter>add_ons</Filter>
+    </ClCompile>
+    <ClCompile Include="..\dependencies\AngelScript\add_on\debugger\debugger.cpp">
+      <Filter>add_ons</Filter>
+    </ClCompile>
+    <ClCompile Include="..\dependencies\AngelScript\add_on\scriptany\scriptany.cpp">
+      <Filter>add_ons</Filter>
+    </ClCompile>
+    <ClCompile Include="..\dependencies\AngelScript\add_on\scriptarray\scriptarray.cpp">
+      <Filter>add_ons</Filter>
+    </ClCompile>
+    <ClCompile Include="..\dependencies\AngelScript\add_on\scriptbuilder\scriptbuilder.cpp">
+      <Filter>add_ons</Filter>
+    </ClCompile>
+    <ClCompile Include="..\dependencies\AngelScript\add_on\scriptdictionary\scriptdictionary.cpp">
+      <Filter>add_ons</Filter>
+    </ClCompile>
+    <ClCompile Include="..\dependencies\AngelScript\add_on\scriptfile\scriptfile.cpp">
+      <Filter>add_ons</Filter>
+    </ClCompile>
+    <ClCompile Include="..\dependencies\AngelScript\add_on\scripthandle\scripthandle.cpp">
+      <Filter>add_ons</Filter>
+    </ClCompile>
+    <ClCompile Include="..\dependencies\AngelScript\add_on\scripthelper\scripthelper.cpp">
+      <Filter>add_ons</Filter>
+    </ClCompile>
+    <ClCompile Include="..\dependencies\AngelScript\add_on\scriptmath\scriptmath.cpp">
+      <Filter>add_ons</Filter>
+    </ClCompile>
+    <ClCompile Include="..\dependencies\AngelScript\add_on\scriptmath\scriptmathcomplex.cpp">
+      <Filter>add_ons</Filter>
+    </ClCompile>
+    <ClCompile Include="..\dependencies\AngelScript\add_on\scriptstdstring\scriptstdstring.cpp">
+      <Filter>add_ons</Filter>
+    </ClCompile>
+    <ClCompile Include="..\dependencies\AngelScript\add_on\scriptstdstring\scriptstdstring_utils.cpp">
+      <Filter>add_ons</Filter>
+    </ClCompile>
+    <ClCompile Include="..\dependencies\AngelScript\add_on\serializer\serializer.cpp">
+      <Filter>add_ons</Filter>
+    </ClCompile>
+    <ClCompile Include="..\dependencies\AngelScript\add_on\weakref\weakref.cpp">
+      <Filter>add_ons</Filter>
+    </ClCompile>
+    <ClCompile Include="..\dependencies\AngelScript\angelscript\source\as_callfunc.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\dependencies\AngelScript\angelscript\source\as_callfunc_x64_msvc.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\dependencies\AngelScript\angelscript\source\as_callfunc_x86.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\dependencies\AngelScript\angelscript\source\as_compiler.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\dependencies\AngelScript\angelscript\source\as_configgroup.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\dependencies\AngelScript\angelscript\source\as_context.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\dependencies\AngelScript\angelscript\source\as_datatype.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\dependencies\AngelScript\angelscript\source\as_gc.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\dependencies\AngelScript\angelscript\source\as_generic.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\dependencies\AngelScript\angelscript\source\as_globalproperty.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\dependencies\AngelScript\angelscript\source\as_memory.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\dependencies\AngelScript\angelscript\source\as_module.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\dependencies\AngelScript\angelscript\source\as_objecttype.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\dependencies\AngelScript\angelscript\source\as_outputbuffer.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\dependencies\AngelScript\angelscript\source\as_parser.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\dependencies\AngelScript\angelscript\source\as_restore.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\dependencies\AngelScript\angelscript\source\as_scriptcode.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\dependencies\AngelScript\angelscript\source\as_scriptengine.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\dependencies\AngelScript\angelscript\source\as_scriptfunction.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\dependencies\AngelScript\angelscript\source\as_scriptnode.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\dependencies\AngelScript\angelscript\source\as_scriptobject.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\dependencies\AngelScript\angelscript\source\as_string.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\dependencies\AngelScript\angelscript\source\as_string_util.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\dependencies\AngelScript\angelscript\source\as_thread.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\dependencies\AngelScript\angelscript\source\as_tokenizer.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\dependencies\AngelScript\angelscript\source\as_typeinfo.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\dependencies\AngelScript\angelscript\source\as_variablescope.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\dependencies\AngelScript\angelscript\source\as_atomic.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\dependencies\AngelScript\angelscript\source\as_builder.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\dependencies\AngelScript\angelscript\source\as_bytecode.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="..\dependencies\AngelScript\angelscript\source\as_callfunc_x64_msvc_asm.asm" />
+  </ItemGroup>
+</Project>

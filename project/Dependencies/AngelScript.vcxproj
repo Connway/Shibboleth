@@ -1,0 +1,267 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{EE251F49-8564-4A96-9BF4-D9337AEF38E2}</ProjectGuid>
+    <RootNamespace>AngelScript</RootNamespace>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v120</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+    <WholeProgramOptimization>false</WholeProgramOptimization>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v120</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+    <WholeProgramOptimization>false</WholeProgramOptimization>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v120</PlatformToolset>
+    <WholeProgramOptimization>false</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v120</PlatformToolset>
+    <WholeProgramOptimization>false</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <OutDir>$(SolutionDir)..\build\Output\$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>$(SolutionDir)..\build\Intermediate\$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <OutDir>$(SolutionDir)..\build\Output\$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>$(SolutionDir)..\build\Intermediate\$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <OutDir>$(SolutionDir)..\build\Output\$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>$(SolutionDir)..\build\Intermediate\$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <OutDir>$(SolutionDir)..\build\Output\$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>$(SolutionDir)..\build\Intermediate\$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <SDLCheck>true</SDLCheck>
+      <AdditionalIncludeDirectories>$(SolutionDir)\..\dependencies\AngelScript\angelscript\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>ANGELSCRIPT_EXPORT;AS_DEBUG;NDEBUG;WIN32;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <FloatingPointModel>Fast</FloatingPointModel>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <StringPooling>true</StringPooling>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <SDLCheck>true</SDLCheck>
+      <AdditionalIncludeDirectories>$(SolutionDir)\..\dependencies\AngelScript\angelscript\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>ANGELSCRIPT_EXPORT;AS_DEBUG;NDEBUG;WIN32;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <FloatingPointModel>Fast</FloatingPointModel>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <StringPooling>true</StringPooling>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <AdditionalIncludeDirectories>$(SolutionDir)\..\dependencies\AngelScript\angelscript\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>ANGELSCRIPT_EXPORT;WIN32;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <FloatingPointModel>Fast</FloatingPointModel>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <StringPooling>true</StringPooling>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <AdditionalIncludeDirectories>$(SolutionDir)\..\dependencies\AngelScript\angelscript\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>ANGELSCRIPT_EXPORT;WIN32;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <FloatingPointModel>Fast</FloatingPointModel>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <StringPooling>true</StringPooling>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClInclude Include="..\dependencies\AngelScript\add_on\autowrapper\aswrappedcall.h" />
+    <ClInclude Include="..\dependencies\AngelScript\add_on\contextmgr\contextmgr.h" />
+    <ClInclude Include="..\dependencies\AngelScript\add_on\debugger\debugger.h" />
+    <ClInclude Include="..\dependencies\AngelScript\add_on\scriptany\scriptany.h" />
+    <ClInclude Include="..\dependencies\AngelScript\add_on\scriptarray\scriptarray.h" />
+    <ClInclude Include="..\dependencies\AngelScript\add_on\scriptbuilder\scriptbuilder.h" />
+    <ClInclude Include="..\dependencies\AngelScript\add_on\scriptdictionary\scriptdictionary.h" />
+    <ClInclude Include="..\dependencies\AngelScript\add_on\scriptfile\scriptfile.h" />
+    <ClInclude Include="..\dependencies\AngelScript\add_on\scripthandle\scripthandle.h" />
+    <ClInclude Include="..\dependencies\AngelScript\add_on\scripthelper\scripthelper.h" />
+    <ClInclude Include="..\dependencies\AngelScript\add_on\scriptmath\scriptmath.h" />
+    <ClInclude Include="..\dependencies\AngelScript\add_on\scriptmath\scriptmathcomplex.h" />
+    <ClInclude Include="..\dependencies\AngelScript\add_on\scriptstdstring\scriptstdstring.h" />
+    <ClInclude Include="..\dependencies\AngelScript\add_on\serializer\serializer.h" />
+    <ClInclude Include="..\dependencies\AngelScript\add_on\weakref\weakref.h" />
+    <ClInclude Include="..\dependencies\AngelScript\angelscript\source\as_array.h" />
+    <ClInclude Include="..\dependencies\AngelScript\angelscript\source\as_atomic.h" />
+    <ClInclude Include="..\dependencies\AngelScript\angelscript\source\as_builder.h" />
+    <ClInclude Include="..\dependencies\AngelScript\angelscript\source\as_bytecode.h" />
+    <ClInclude Include="..\dependencies\AngelScript\angelscript\source\as_callfunc.h" />
+    <ClInclude Include="..\dependencies\AngelScript\angelscript\source\as_compiler.h" />
+    <ClInclude Include="..\dependencies\AngelScript\angelscript\source\as_config.h" />
+    <ClInclude Include="..\dependencies\AngelScript\angelscript\source\as_configgroup.h" />
+    <ClInclude Include="..\dependencies\AngelScript\angelscript\source\as_context.h" />
+    <ClInclude Include="..\dependencies\AngelScript\angelscript\source\as_criticalsection.h" />
+    <ClInclude Include="..\dependencies\AngelScript\angelscript\source\as_datatype.h" />
+    <ClInclude Include="..\dependencies\AngelScript\angelscript\source\as_debug.h" />
+    <ClInclude Include="..\dependencies\AngelScript\angelscript\source\as_gc.h" />
+    <ClInclude Include="..\dependencies\AngelScript\angelscript\source\as_generic.h" />
+    <ClInclude Include="..\dependencies\AngelScript\angelscript\source\as_map.h" />
+    <ClInclude Include="..\dependencies\AngelScript\angelscript\source\as_memory.h" />
+    <ClInclude Include="..\dependencies\AngelScript\angelscript\source\as_module.h" />
+    <ClInclude Include="..\dependencies\AngelScript\angelscript\source\as_objecttype.h" />
+    <ClInclude Include="..\dependencies\AngelScript\angelscript\source\as_outputbuffer.h" />
+    <ClInclude Include="..\dependencies\AngelScript\angelscript\source\as_parser.h" />
+    <ClInclude Include="..\dependencies\AngelScript\angelscript\source\as_property.h" />
+    <ClInclude Include="..\dependencies\AngelScript\angelscript\source\as_restore.h" />
+    <ClInclude Include="..\dependencies\AngelScript\angelscript\source\as_scriptcode.h" />
+    <ClInclude Include="..\dependencies\AngelScript\angelscript\source\as_scriptengine.h" />
+    <ClInclude Include="..\dependencies\AngelScript\angelscript\source\as_scriptfunction.h" />
+    <ClInclude Include="..\dependencies\AngelScript\angelscript\source\as_scriptnode.h" />
+    <ClInclude Include="..\dependencies\AngelScript\angelscript\source\as_scriptobject.h" />
+    <ClInclude Include="..\dependencies\AngelScript\angelscript\source\as_string.h" />
+    <ClInclude Include="..\dependencies\AngelScript\angelscript\source\as_string_util.h" />
+    <ClInclude Include="..\dependencies\AngelScript\angelscript\source\as_symboltable.h" />
+    <ClInclude Include="..\dependencies\AngelScript\angelscript\source\as_texts.h" />
+    <ClInclude Include="..\dependencies\AngelScript\angelscript\source\as_thread.h" />
+    <ClInclude Include="..\dependencies\AngelScript\angelscript\source\as_tokendef.h" />
+    <ClInclude Include="..\dependencies\AngelScript\angelscript\source\as_tokenizer.h" />
+    <ClInclude Include="..\dependencies\AngelScript\angelscript\source\as_typeinfo.h" />
+    <ClInclude Include="..\dependencies\AngelScript\angelscript\source\as_variablescope.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\dependencies\AngelScript\add_on\autowrapper\generator\generateheader.cpp" />
+    <ClCompile Include="..\dependencies\AngelScript\add_on\contextmgr\contextmgr.cpp" />
+    <ClCompile Include="..\dependencies\AngelScript\add_on\debugger\debugger.cpp" />
+    <ClCompile Include="..\dependencies\AngelScript\add_on\scriptany\scriptany.cpp" />
+    <ClCompile Include="..\dependencies\AngelScript\add_on\scriptarray\scriptarray.cpp" />
+    <ClCompile Include="..\dependencies\AngelScript\add_on\scriptbuilder\scriptbuilder.cpp" />
+    <ClCompile Include="..\dependencies\AngelScript\add_on\scriptdictionary\scriptdictionary.cpp" />
+    <ClCompile Include="..\dependencies\AngelScript\add_on\scriptfile\scriptfile.cpp" />
+    <ClCompile Include="..\dependencies\AngelScript\add_on\scripthandle\scripthandle.cpp" />
+    <ClCompile Include="..\dependencies\AngelScript\add_on\scripthelper\scripthelper.cpp" />
+    <ClCompile Include="..\dependencies\AngelScript\add_on\scriptmath\scriptmath.cpp" />
+    <ClCompile Include="..\dependencies\AngelScript\add_on\scriptmath\scriptmathcomplex.cpp" />
+    <ClCompile Include="..\dependencies\AngelScript\add_on\scriptstdstring\scriptstdstring.cpp" />
+    <ClCompile Include="..\dependencies\AngelScript\add_on\scriptstdstring\scriptstdstring_utils.cpp" />
+    <ClCompile Include="..\dependencies\AngelScript\add_on\serializer\serializer.cpp" />
+    <ClCompile Include="..\dependencies\AngelScript\add_on\weakref\weakref.cpp" />
+    <ClCompile Include="..\dependencies\AngelScript\angelscript\source\as_atomic.cpp" />
+    <ClCompile Include="..\dependencies\AngelScript\angelscript\source\as_builder.cpp" />
+    <ClCompile Include="..\dependencies\AngelScript\angelscript\source\as_bytecode.cpp" />
+    <ClCompile Include="..\dependencies\AngelScript\angelscript\source\as_callfunc.cpp" />
+    <ClCompile Include="..\dependencies\AngelScript\angelscript\source\as_callfunc_x64_msvc.cpp" />
+    <ClCompile Include="..\dependencies\AngelScript\angelscript\source\as_callfunc_x86.cpp" />
+    <ClCompile Include="..\dependencies\AngelScript\angelscript\source\as_compiler.cpp" />
+    <ClCompile Include="..\dependencies\AngelScript\angelscript\source\as_configgroup.cpp" />
+    <ClCompile Include="..\dependencies\AngelScript\angelscript\source\as_context.cpp" />
+    <ClCompile Include="..\dependencies\AngelScript\angelscript\source\as_datatype.cpp" />
+    <ClCompile Include="..\dependencies\AngelScript\angelscript\source\as_gc.cpp" />
+    <ClCompile Include="..\dependencies\AngelScript\angelscript\source\as_generic.cpp" />
+    <ClCompile Include="..\dependencies\AngelScript\angelscript\source\as_globalproperty.cpp" />
+    <ClCompile Include="..\dependencies\AngelScript\angelscript\source\as_memory.cpp" />
+    <ClCompile Include="..\dependencies\AngelScript\angelscript\source\as_module.cpp" />
+    <ClCompile Include="..\dependencies\AngelScript\angelscript\source\as_objecttype.cpp" />
+    <ClCompile Include="..\dependencies\AngelScript\angelscript\source\as_outputbuffer.cpp" />
+    <ClCompile Include="..\dependencies\AngelScript\angelscript\source\as_parser.cpp" />
+    <ClCompile Include="..\dependencies\AngelScript\angelscript\source\as_restore.cpp" />
+    <ClCompile Include="..\dependencies\AngelScript\angelscript\source\as_scriptcode.cpp" />
+    <ClCompile Include="..\dependencies\AngelScript\angelscript\source\as_scriptengine.cpp" />
+    <ClCompile Include="..\dependencies\AngelScript\angelscript\source\as_scriptfunction.cpp" />
+    <ClCompile Include="..\dependencies\AngelScript\angelscript\source\as_scriptnode.cpp" />
+    <ClCompile Include="..\dependencies\AngelScript\angelscript\source\as_scriptobject.cpp" />
+    <ClCompile Include="..\dependencies\AngelScript\angelscript\source\as_string.cpp" />
+    <ClCompile Include="..\dependencies\AngelScript\angelscript\source\as_string_util.cpp" />
+    <ClCompile Include="..\dependencies\AngelScript\angelscript\source\as_thread.cpp" />
+    <ClCompile Include="..\dependencies\AngelScript\angelscript\source\as_tokenizer.cpp" />
+    <ClCompile Include="..\dependencies\AngelScript\angelscript\source\as_typeinfo.cpp" />
+    <ClCompile Include="..\dependencies\AngelScript\angelscript\source\as_variablescope.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="..\dependencies\AngelScript\angelscript\source\as_callfunc_x64_msvc_asm.asm">
+      <FileType>Document</FileType>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">ml64.exe /c  /nologo /Fo$(IntDir)as_callfunc_x64_msvc_asm.obj /W3 /Zi /Ta %(RootDir)%(Directory)\%(Filename)%(Extension)</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(IntDir)as_callfunc_x64_msvc_asm.obj;%(Outputs)</Outputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">ml64.exe /c  /nologo /Fo$(IntDir)as_callfunc_x64_msvc_asm.obj /W3 /Zi /Ta %(RootDir)%(Directory)\%(Filename)%(Extension)</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(IntDir)as_callfunc_x64_msvc_asm.obj;%(Outputs)</Outputs>
+    </CustomBuild>
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

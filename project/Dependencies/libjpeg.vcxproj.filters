@@ -1,0 +1,69 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClInclude Include="..\dependencies\libjpeg\jconfig.h" />
+    <ClInclude Include="..\dependencies\libjpeg\jdct.h" />
+    <ClInclude Include="..\dependencies\libjpeg\jerror.h" />
+    <ClInclude Include="..\dependencies\libjpeg\jinclude.h" />
+    <ClInclude Include="..\dependencies\libjpeg\jmemsys.h" />
+    <ClInclude Include="..\dependencies\libjpeg\jmorecfg.h" />
+    <ClInclude Include="..\dependencies\libjpeg\jpegint.h" />
+    <ClInclude Include="..\dependencies\libjpeg\jpeglib.h" />
+    <ClInclude Include="..\dependencies\libjpeg\jversion.h" />
+    <ClInclude Include="..\dependencies\libjpeg\transupp.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\dependencies\libjpeg\jaricom.c" />
+    <ClCompile Include="..\dependencies\libjpeg\jcapimin.c" />
+    <ClCompile Include="..\dependencies\libjpeg\jcapistd.c" />
+    <ClCompile Include="..\dependencies\libjpeg\jcarith.c" />
+    <ClCompile Include="..\dependencies\libjpeg\jccoefct.c" />
+    <ClCompile Include="..\dependencies\libjpeg\jccolor.c" />
+    <ClCompile Include="..\dependencies\libjpeg\jcdctmgr.c" />
+    <ClCompile Include="..\dependencies\libjpeg\jchuff.c" />
+    <ClCompile Include="..\dependencies\libjpeg\jcinit.c" />
+    <ClCompile Include="..\dependencies\libjpeg\jcmainct.c" />
+    <ClCompile Include="..\dependencies\libjpeg\jcmarker.c" />
+    <ClCompile Include="..\dependencies\libjpeg\jcmaster.c" />
+    <ClCompile Include="..\dependencies\libjpeg\jcomapi.c" />
+    <ClCompile Include="..\dependencies\libjpeg\jcparam.c" />
+    <ClCompile Include="..\dependencies\libjpeg\jcprepct.c" />
+    <ClCompile Include="..\dependencies\libjpeg\jcsample.c" />
+    <ClCompile Include="..\dependencies\libjpeg\jctrans.c" />
+    <ClCompile Include="..\dependencies\libjpeg\jdapimin.c" />
+    <ClCompile Include="..\dependencies\libjpeg\jdapistd.c" />
+    <ClCompile Include="..\dependencies\libjpeg\jdarith.c" />
+    <ClCompile Include="..\dependencies\libjpeg\jdatadst.c" />
+    <ClCompile Include="..\dependencies\libjpeg\jdatasrc.c" />
+    <ClCompile Include="..\dependencies\libjpeg\jdcoefct.c" />
+    <ClCompile Include="..\dependencies\libjpeg\jdcolor.c" />
+    <ClCompile Include="..\dependencies\libjpeg\jddctmgr.c" />
+    <ClCompile Include="..\dependencies\libjpeg\jdhuff.c" />
+    <ClCompile Include="..\dependencies\libjpeg\jdinput.c" />
+    <ClCompile Include="..\dependencies\libjpeg\jdmainct.c" />
+    <ClCompile Include="..\dependencies\libjpeg\jdmarker.c" />
+    <ClCompile Include="..\dependencies\libjpeg\jdmaster.c" />
+    <ClCompile Include="..\dependencies\libjpeg\jdmerge.c" />
+    <ClCompile Include="..\dependencies\libjpeg\jdpostct.c" />
+    <ClCompile Include="..\dependencies\libjpeg\jdsample.c" />
+    <ClCompile Include="..\dependencies\libjpeg\jdtrans.c" />
+    <ClCompile Include="..\dependencies\libjpeg\jerror.c" />
+    <ClCompile Include="..\dependencies\libjpeg\jfdctflt.c" />
+    <ClCompile Include="..\dependencies\libjpeg\jfdctfst.c" />
+    <ClCompile Include="..\dependencies\libjpeg\jfdctint.c" />
+    <ClCompile Include="..\dependencies\libjpeg\jidctflt.c" />
+    <ClCompile Include="..\dependencies\libjpeg\jidctfst.c" />
+    <ClCompile Include="..\dependencies\libjpeg\jidctint.c" />
+    <ClCompile Include="..\dependencies\libjpeg\jmemmgr.c" />
+    <ClCompile Include="..\dependencies\libjpeg\jquant1.c" />
+    <ClCompile Include="..\dependencies\libjpeg\jquant2.c" />
+    <ClCompile Include="..\dependencies\libjpeg\jutils.c" />
+    <ClCompile Include="..\dependencies\libjpeg\transupp.c" />
+    <ClCompile Include="..\dependencies\libjpeg\jmemnobs.c" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\dependencies\libjpeg\jconfig.cfg" />
+    <None Include="..\dependencies\libjpeg\jconfig.mac" />
+    <None Include="..\dependencies\libjpeg\jconfig.vc" />
+  </ItemGroup>
+</Project>

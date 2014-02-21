@@ -1,0 +1,136 @@
+/************************************************************************************
+Copyright (C) 2014 by Nicholas LaCroix
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+************************************************************************************/
+
+#pragma once
+
+#include "Gaff_DefaultAllocator.h"
+
+NS_GAFF
+
+template <class T, class Allocator = DefaultAllocator>
+class SmartPtr
+{
+public:
+	SmartPtr(T* data = nullptr, const Allocator& allocator = Allocator()):
+		_allocator(allocator), _data(data)
+	{
+	}
+
+	SmartPtr(const SmartPtr<T, Allocator>& data):
+		_allocator(data._allocator), _data(data._data)
+	{
+		((SmartPtr<T, Allocator>&)data)._data = nullptr;
+	}
+
+	~SmartPtr(void)
+	{
+		destroy();
+	}
+
+	bool operator==(const SmartPtr<T, Allocator>& rhs) const
+	{
+		return _data == rhs._data;
+	}
+
+	bool operator!=(const SmartPtr<T, Allocator>& rhs) const
+	{
+		return _data != rhs._data;
+	}
+
+	bool operator==(const T* rhs) const
+	{
+		return _data == rhs;
+	}
+
+	bool operator!=(const T* rhs) const
+	{
+		return _data != rhs;
+	}
+
+	const SmartPtr<T, Allocator>& operator=(SmartPtr<T, Allocator>& rhs)
+	{
+		destroy();
+		_data = rhs._data;
+		rhs._data = nullptr;
+		return *this;
+	}
+
+	const SmartPtr<T, Allocator>& operator=(T* data)
+	{
+		destroy();
+		_data = data;
+		return *this;
+	}
+
+	const T* operator->(void) const
+	{
+		return _data;
+	}
+
+	T* operator->(void)
+	{
+		return _data;
+	}
+
+	const T& operator*(void) const
+	{
+		return *_data;
+	}
+
+	T& operator*(void)
+	{
+		return *_data;
+	}
+
+	const T* get(void) const
+	{
+		return _data;
+	}
+
+	T* get(void)
+	{
+		return _data;
+	}
+
+	bool valid(void) const
+	{
+		return _data != nullptr;
+	}
+
+	operator bool(void) const
+	{
+		return valid();
+	}
+
+private:
+	Allocator _allocator;
+	T* _data;
+
+	void destroy(void)
+	{
+		if (_data) {
+			_allocator.freeT(_data);
+		}
+	}
+};
+
+NS_END

@@ -1,5 +1,5 @@
 /************************************************************************************
-Copyright (C) 2013 by Nicholas LaCroix
+Copyright (C) 2014 by Nicholas LaCroix
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -27,6 +27,24 @@ THE SOFTWARE.
 
 NS_GAFF
 
+template <class T, class... Args>
+T* construct(T* data, Args... args)
+{
+	return new (data) T(args...);
+}
+
+// This is giving a warning saying data is unreferenced ... what?
+template <class T>
+void deconstruct(T* data)
+{
+	// To get rid of the stupid unreferenced parameter warning in VS.
+#if defined(_WIN32) || defined(_WIN64)
+	(data);
+#endif
+
+	data->~T();
+}
+
 class IAllocator
 {
 public:
@@ -35,48 +53,41 @@ public:
 	virtual void* alloc(unsigned int size_bytes) = 0;
 	virtual void free(void* data) = 0;
 
-	template <class T>
-	T* allocT(unsigned int count = 1)
+	template <class T, class... Args>
+	T* allocArrayT(unsigned int count, Args... args)
 	{
-		return (T*)alloc(sizeof(T) * count);
+		T* data = (T*)alloc(sizeof(T) * count);
+
+		for (unsigned int i = 0; i < count; ++i) {
+			construct(data + i, args...);
+		}
+
+		return data;
+	}
+
+	template <class T, class... Args>
+	T* allocT(Args... args)
+	{
+		T* data = (T*)alloc(sizeof(T));
+		return construct(data, args...);
+	}
+
+	template <class T>
+	void freeArrayT(T* data, unsigned int count)
+	{
+		for (unsigned int i = 0; i < count; ++i) {
+			(data + i)->~T();
+		}
+
+		free(data);
+	}
+
+	template <class T>
+	void freeT(T* data)
+	{
+		data->~T();
+		free((void*)data);
 	}
 };
-
-//template <class T>
-//T* construct(T* data)
-//{
-//	return new (data) T();
-//}
-//
-//template <class T, class ARG1>
-//T* construct(T* data, ARG1 arg1)
-//{
-//	return new (data) T(arg1);
-//}
-//
-//template <class T, class ARG1, class ARG2>
-//T* construct(T* data, ARG1 arg1, ARG2 arg2)
-//{
-//	return new (data)T(arg1, arg2);
-//}
-//
-//template <class T, class ARG1, class ARG2, class ARG3>
-//T* construct(T* data, ARG1 arg1, ARG2 arg2, ARG3 arg3)
-//{
-//	return new (data)T(arg1, arg2, arg3);
-//}
-
-template <class T, class... Args>
-T* construct(T* data, Args... args)
-{
-	return new (data)T(args...);
-}
-
-// this is giving a warning saying data is unreferenced ... what?
-template <class T>
-void deconstruct(T* data)
-{
-	data->~T();
-}
 
 NS_END

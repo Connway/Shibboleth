@@ -1,0 +1,97 @@
+/************************************************************************************
+Copyright (C) 2013 by Nicholas LaCroix
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+************************************************************************************/
+
+#ifdef __APPLE__
+
+#include "Gaff_Timer_Mac.h"
+#include <mach/clock.h>
+
+NS_GAFF
+
+Timer::Timer(void):
+	_deltaTime(0), _totalTime(0.0)
+{
+	// if it fails, oh well
+	host_get_clock_service(mach_host_self(), CALENDAR_CLOCK, &_clock_serv);
+}
+
+bool Timer::start(void)
+{
+	return clock_get_time(_clock_serv, &_start) == KERN_SUCCESS;
+}
+
+bool Timer::stop(void)
+{
+	if (clock_get_time(_clock_serv, &_stop) != KERN_SUCCESS) {
+		return false;
+	}
+
+	_deltaTime = (_stop.tv_sec - _start.tv_sec) * 1000000 + (LONGLONG)((double)(_stop.tv_nsec - _start.tv_nsec) * 0.001);
+	_totalTime += getDeltaSec();
+
+	return true;
+}
+
+double Timer::getDeltaSec(void) const
+{
+	return (double)getDeltaMicro() * 0.000001;
+}
+
+LONGLONG Timer::getDeltaMilli(void) const
+{
+	return getDeltaMicro() / 1000;
+}
+
+LONGLONG Timer::getDeltaMicro(void) const
+{
+	return _deltaTime;
+}
+
+double Timer::getCurrSec(void) const
+{
+	return (double)getCurrMicro() * 0.000001;
+}
+
+LONGLONG Timer::getCurrMilli(void) const
+{
+	return getCurrMicro() / 1000;
+}
+
+LONGLONG Timer::getCurrMicro(void) const
+{
+	mach_timespec_t temp;
+
+	if (clock_get_time(_clock_serv, &temp) != KERN_SUCCESS) {
+		return -1;
+	}
+
+	return temp.tv_sec * 1000000 + (LONGLONG)((double)temp.tv_nsec * 0.001);
+}
+
+double Timer::getTotalTime(void) const
+{
+	return _totalTime;
+}
+
+NS_END
+
+#endif

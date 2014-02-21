@@ -1,0 +1,25 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClInclude Include="..\dependencies\enet\include\enet\callbacks.h" />
+    <ClInclude Include="..\dependencies\enet\include\enet\enet.h" />
+    <ClInclude Include="..\dependencies\enet\include\enet\list.h" />
+    <ClInclude Include="..\dependencies\enet\include\enet\protocol.h" />
+    <ClInclude Include="..\dependencies\enet\include\enet\time.h" />
+    <ClInclude Include="..\dependencies\enet\include\enet\types.h" />
+    <ClInclude Include="..\dependencies\enet\include\enet\unix.h" />
+    <ClInclude Include="..\dependencies\enet\include\enet\utility.h" />
+    <ClInclude Include="..\dependencies\enet\include\enet\win32.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\dependencies\enet\src\callbacks.c" />
+    <ClCompile Include="..\dependencies\enet\src\compress.c" />
+    <ClCompile Include="..\dependencies\enet\src\host.c" />
+    <ClCompile Include="..\dependencies\enet\src\list.c" />
+    <ClCompile Include="..\dependencies\enet\src\packet.c" />
+    <ClCompile Include="..\dependencies\enet\src\peer.c" />
+    <ClCompile Include="..\dependencies\enet\src\protocol.c" />
+    <ClCompile Include="..\dependencies\enet\src\unix.c" />
+    <ClCompile Include="..\dependencies\enet\src\win32.c" />
+  </ItemGroup>
+</Project>

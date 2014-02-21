@@ -1,5 +1,5 @@
 /************************************************************************************
-Copyright (C) 2013 by Nicholas LaCroix
+Copyright (C) 2014 by Nicholas LaCroix
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -29,9 +29,6 @@ THE SOFTWARE.
 
 NS_GAFF
 
-#define FILE_BUFFER_SIZE BUFSIZ
-#define TEMP_NAME_SIZE L_tmpnam
-
 class File
 {
 public:
@@ -58,7 +55,6 @@ public:
 
 	INLINE static bool remove(const char* file_name);
 	INLINE static bool rename(const char* old_file_name, const char* new_file_name);
-	INLINE static bool generateTempName(char* out);
 
 	enum OPEN_MODE
 	{
@@ -83,7 +79,6 @@ public:
 		END = SEEK_END
 	};
 
-	//File(const Gaff::AString<>& file_name, OPEN_MODE mode = READ);
 	File(const char* file_name, OPEN_MODE mode = READ);
 	File(void);
 	~File(void);
@@ -94,31 +89,43 @@ public:
 	INLINE OPEN_MODE getMode(void) const;
 
 	template <class Allocator>
-	INLINE bool open(const Gaff::AString<Allocator>& file_name, OPEN_MODE mode = READ)
+	bool open(const Gaff::AString<Allocator>& file_name, OPEN_MODE mode = READ)
 	{
 		assert(file_name.size());
 		return open(file_name.getBuffer(), mode);
 	}
 
 	template <class Allocator>
-	INLINE bool redirect(FILE* file, const Gaff::AString<Allocator>& file_name, OPEN_MODE mode = WRITE)
+	bool redirect(FILE* file, const Gaff::AString<Allocator>& file_name, OPEN_MODE mode = WRITE)
 	{
 		assert(!_file && file_name.size());
 		return redirect(file, file_name.getBuffer(), mode);
 	}
 
 	template <class Allocator>
-	INLINE bool redirect(const Gaff::AString<Allocator>& file_name, OPEN_MODE mode = WRITE)
+	bool redirect(const Gaff::AString<Allocator>& file_name, OPEN_MODE mode = WRITE)
 	{
 		assert(file_name.size() && _file);
 		return redirect(file_name.getBuffer(), mode);
 	}
 
 	template <class Allocator>
-	INLINE bool writeString(const Gaff::AString<Allocator>& s)
+	bool writeString(const Gaff::AString<Allocator>& s)
 	{
 		assert(_file && s.size());
 		return writeString(s.getBuffer());
+	}
+
+	template <class T>
+	size_t writeT(const T* data, size_t element_count)
+	{
+		return write(data, sizeof(T), element_count);
+	}
+
+	template <class T>
+	size_t writeT(const T& data)
+	{
+		return write(&data, sizeof(T), 1);
 	}
 
 	bool open(const char* file_name, OPEN_MODE mode = READ);
@@ -159,7 +166,7 @@ public:
 	// Unicode functions
 #ifdef _UNICODE
 	template <class Allocator>
-	INLINE static bool checkExtension(const Gaff::WString<Allocator>& file_name, const Gaff::WString<Allocator>& extension)
+	static bool checkExtension(const Gaff::WString<Allocator>& file_name, const Gaff::WString<Allocator>& extension)
 	{
 		return checkExtension(file_name.getBuffer(), extension.getBuffer());
 	}
@@ -181,34 +188,33 @@ public:
 
 	INLINE static bool remove(const wchar_t* file_name);
 	INLINE static bool rename(const wchar_t* old_file_name, const wchar_t* new_file_name);
-	INLINE static bool generateTempName(wchar_t* out);
 
 	// File(const Gaff::WString& file_name, OPEN_MODE mode = READ);
 	File(const wchar_t* file_name, OPEN_MODE mode = READ);
 
 	template <class Allocator>
-	INLINE bool open(const Gaff::WString<Allocator>& file_name, OPEN_MODE mode = READ)
+	bool open(const Gaff::WString<Allocator>& file_name, OPEN_MODE mode = READ)
 	{
 		assert(file_name.size());
 		return open(file_name.getBuffer(), mode);
 	}
 
 	template <class Allocator>
-	INLINE bool redirect(FILE* file, const Gaff::WString<Allocator>& file_name, OPEN_MODE mode = WRITE)
+	bool redirect(FILE* file, const Gaff::WString<Allocator>& file_name, OPEN_MODE mode = WRITE)
 	{
 		assert(!_file && file_name.size());
 		return redirect(file, file_name.getBuffer(), mode);
 	}
 
 	template <class Allocator>
-	INLINE bool redirect(const Gaff::WString<Allocator>& file_name, OPEN_MODE mode = WRITE)
+	bool redirect(const Gaff::WString<Allocator>& file_name, OPEN_MODE mode = WRITE)
 	{
 		assert(file_name.size() && _file);
 		return redirect(file_name.getBuffer(), mode);
 	}
 
 	template <class Allocator>
-	INLINE bool writeString(const Gaff::WString<Allocator>& s)
+	bool writeString(const Gaff::WString<Allocator>& s)
 	{
 		assert(_file && s.size());
 		return writeString(s.getBuffer());

@@ -1,5 +1,5 @@
 /************************************************************************************
-Copyright (C) 2013 by Nicholas LaCroix
+Copyright (C) 2014 by Nicholas LaCroix
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -34,7 +34,7 @@ struct Pair
 };
 
 template <class T1, class T2>
-INLINE Pair<T1, T2> MakePair(T1 first, T2 second)
+Pair<T1, T2> MakePair(T1 first, T2 second)
 {
 	Pair<T1, T2> pair;
 	pair.first = first;
