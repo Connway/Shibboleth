@@ -20,9 +20,15 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#include "Game.h"
+#include "Shibboleth_Game.h"
 
 int main(void)
 {
+	Shibboleth::Game game;
+
+	if (!game.init()) {
+		return -1;
+	}
+
 	return 0;
 }

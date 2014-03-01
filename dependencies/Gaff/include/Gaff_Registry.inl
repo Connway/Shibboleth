@@ -22,7 +22,7 @@ THE SOFTWARE.
 
 template <class Allocator>
 Registry<Allocator>::Registry(const Allocator& allocator):
-	_registry(allocator)
+	_registry(FNVHash, allocator)
 {
 }
 

@@ -159,13 +159,13 @@ Array<T, Allocator>::Iterator::Iterator(T* element):
 /////////////////
 template <class T, class Allocator>
 Array<T, Allocator>::Array(const Allocator& allocator):
-	_allocator(allocator), _used(0), _size(0), _array(nullptr)
+	_allocator(allocator), _array(nullptr), _used(0), _size(0)
 {
 }
 
 template <class T, class Allocator>
 Array<T, Allocator>::Array(unsigned int start_alloc, const Allocator& allocator):
-	_allocator(allocator), _used(0), _size(start_alloc)
+	_allocator(allocator), _array(nullptr), _used(0), _size(start_alloc)
 {
 	_array = (T*)_allocator.alloc(sizeof(T) * start_alloc);
 }
@@ -194,15 +194,15 @@ Array<T, Allocator>::Array(unsigned int size, const T* data, const Allocator& al
 
 template <class T, class Allocator>
 Array<T, Allocator>::Array(const Array<T, Allocator>& rhs):
-	_allocator(rhs._allocator), _used(0), _size(0), _array(nullptr)
+	_allocator(rhs._allocator), _array(nullptr), _used(0), _size(0)
 {
 	*this = rhs;
 }
 
 template <class T, class Allocator>
 Array<T, Allocator>::Array(Array<T, Allocator>&& rhs):
-	_allocator(rhs._allocator), _used(rhs._used),
-	_size(rhs._size), _array(rhs._array)
+	_allocator(rhs._allocator), _array(rhs._array),
+	_used(rhs._used), _size(rhs._size)
 {
 	rhs._used = rhs._size = 0;
 	rhs._array = nullptr;

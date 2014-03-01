@@ -153,8 +153,8 @@ public:
 
 private:
 	Allocator _allocator;
-	unsigned int _used, _size;
 	T* _array;
+	unsigned int _used, _size;
 };
 
 #include "Gaff_Array.inl"

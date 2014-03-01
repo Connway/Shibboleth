@@ -20,11 +20,29 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#include "Shibboleth_Defines.h"
-#include <Gaff_Registry.h>
+#pragma once
+
+#include "Shibboleth_DynamicLoader.h"
+#include "Shibboleth_Registry.h"
 
 NS_SHIBBOLETH
 
-typedef Gaff::Registry<Gaff::DefaultAllocator> Registry;
+class Game
+{
+public:
+	Game(void);
+	~Game(void);
+
+	bool init(void);
+
+private:
+	Gaff::DefaultAllocator _allocator;
+
+	DynamicLoader _dynamic_loader;
+	Registry _manager_registry;
+
+	GAFF_NO_COPY(Game);
+	GAFF_NO_MOVE(Game);
+};
 
 NS_END

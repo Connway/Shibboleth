@@ -32,13 +32,28 @@ DynamicLoader<Allocator>::~DynamicLoader(void)
 }
 
 template <class Allocator>
-typename DynamicLoader<Allocator>::ModulePtr DynamicLoader<Allocator>::loadModule(const char* filename)
+template <class Allocator2>
+typename DynamicLoader<Allocator>::ModulePtr DynamicLoader<Allocator>::loadModule(const AString<Allocator2>& filename, const AString<Allocator2>& name)
+{
+	return loadModule(filename.getBuffer(), name.getBuffer());
+}
+
+template <class Allocator>
+template <class Allocator2>
+typename DynamicLoader<Allocator>::ModulePtr DynamicLoader<Allocator>::loadModule(const AString<Allocator2>& filename, const char* name)
+{
+	return loadModule(filename.getBuffer(), name);
+}
+
+template <class Allocator>
+typename DynamicLoader<Allocator>::ModulePtr DynamicLoader<Allocator>::loadModule(const char* filename, const char* name)
 {
 	ModulePtr module = _allocator.template allocT<DynamicModule>();
 
 	if (module.valid()) {
 		if (module->load(filename)) {
-			_modules.push(module);
+			HString str(name, FNVHash, _allocator);
+			_modules.insert(str, module);
 			return module;
 		}
 	}
@@ -46,16 +61,51 @@ typename DynamicLoader<Allocator>::ModulePtr DynamicLoader<Allocator>::loadModul
 	return ModulePtr();
 }
 
+template <class Allocator>
+typename DynamicLoader<Allocator>::ModulePtr DynamicLoader<Allocator>::getModule(const AHashString<Allocator> name)
+{
+	return _modules[str];
+}
+
+template <class Allocator>
+typename DynamicLoader<Allocator>::ModulePtr DynamicLoader<Allocator>::getModule(const AString<Allocator>& name)
+{
+	HString str(name, FNVHash, _allocator);
+	return _modules[str];
+}
+
+template <class Allocator>
+typename DynamicLoader<Allocator>::ModulePtr DynamicLoader<Allocator>::getModule(const char* name)
+{
+	HString str(name, FNVHash, _allocator);
+	return _modules[str];
+}
+
 #ifdef _UNICODE
 
 template <class Allocator>
-typename DynamicLoader<Allocator>::ModulePtr DynamicLoader<Allocator>::loadModule(const wchar_t* filename)
+template <class Allocator2>
+typename DynamicLoader<Allocator>::ModulePtr DynamicLoader<Allocator>::loadModule(const WString<Allocator2>& filename, const AString<Allocator2>& name)
+{
+	return loadModule(filename.getBuffer(), name.getBuffer());
+}
+
+template <class Allocator>
+template <class Allocator2>
+typename DynamicLoader<Allocator>::ModulePtr DynamicLoader<Allocator>::loadModule(const WString<Allocator2>& filename, const char* name)
+{
+	return loadModule(filename.getBuffer(), name);
+}
+
+template <class Allocator>
+typename DynamicLoader<Allocator>::ModulePtr DynamicLoader<Allocator>::loadModule(const wchar_t* filename, const char* name)
 {
 	ModulePtr module = _allocator.template allocT<DynamicModule>();
 
 	if (module.valid()) {
 		if (module->load(filename)) {
-			_modules.push(module);
+			HString str(name, FNVHash, _allocator);
+			_modules.insert(str, module);
 			return module;
 		}
 	}

@@ -24,7 +24,7 @@ THE SOFTWARE.
 
 #include "Gaff_DynamicModule.h"
 #include "Gaff_SharedPtr.h"
-#include "Gaff_Array.h"
+#include "Gaff_HashMap.h"
 
 NS_GAFF
 
@@ -34,29 +34,36 @@ class DynamicLoader
 public:
 	typedef SharedPtr<DynamicModule, Allocator> ModulePtr;
 
-	template <class Allocator>
-	ModulePtr loadModule(const AString<Allocator>& filename)
-	{
-		return loadModule(filename.getBuffer());
-	}
+	template <class Allocator2>
+	ModulePtr loadModule(const AString<Allocator2>& filename, const AString<Allocator2>& name);
+
+	template <class Allocator2>
+	ModulePtr loadModule(const AString<Allocator2>& filename, const char* name);
 
 	DynamicLoader(const Allocator& allocator = Allocator());
 	~DynamicLoader(void);
 
-	ModulePtr loadModule(const char* filename);
+	ModulePtr loadModule(const char* filename, const char* name);
+
+	ModulePtr getModule(const AHashString<Allocator> name);
+	ModulePtr getModule(const AString<Allocator>& name);
+	ModulePtr getModule(const char* name);
 
 #ifdef _UNICODE
-	template <class Allocator>
-	ModulePtr loadModule(const WString<Allocator>& filename)
-	{
-		return loadModule(filename.getBuffer());
-	}
+	template <class Allocator2>
+	ModulePtr loadModule(const WString<Allocator2>& filename, const AString<Allocator2>& name);
 
-	ModulePtr loadModule(const wchar_t* filename);
+	template <class Allocator2>
+	ModulePtr loadModule(const WString<Allocator2>& filename, const char* name);
+
+	ModulePtr loadModule(const wchar_t* filename, const char* name);
 #endif
 
 private:
-	Array<ModulePtr, Allocator> _modules;
+	typedef AHashString<Allocator> HString;
+	typedef HashMap<HString, ModulePtr, Allocator> HMap;
+
+	HMap _modules;
 	Allocator _allocator;
 };
 

@@ -20,3 +20,25 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
+#include "Shibboleth_Game.h"
+
+NS_SHIBBOLETH
+
+Game::Game(void):
+	_manager_registry(_allocator)
+{
+}
+
+Game::~Game(void)
+{
+}
+
+bool Game::init(void)
+{
+	// Traverse Manager director
+	// Load DLLs and store manager in registry
+
+	return true;
+}
+
+NS_END
