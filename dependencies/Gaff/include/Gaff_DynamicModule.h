@@ -25,10 +25,10 @@ THE SOFTWARE.
 #if defined(_WIN32) || defined(_WIN64)
 	#include "Gaff_DynamicModule_Windows.h"
 	#define DYNAMIC_EXTENSION ".dll"
-#elif __linux__
+#elif defined(__linux__)
 	#include "Gaff_DynamicModule_Linux.h"
 	#define DYNAMIC_EXTENSION ".so"
-#elif __APPLE__
+#elif defined(__APPLE__)
 	#include "Gaff_DynamicModule_Linux.h"
 	#define DYNAMIC_EXTENSION ".dylib"
 #else

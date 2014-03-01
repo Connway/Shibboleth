@@ -87,8 +87,8 @@ THE SOFTWARE.
 	#define GaffMain main
 #endif
 
-#ifdef __linux__
-	#define DYNAMICEXPORT __attribute__((visibility("default")))
+#if defined(__linux__)
+	#define DYNAMICEXPORT extern "C" __attribute__((visibility("default")))
 	#define DYNAMICIMPORT
 #elif defined(__APPLE__)
 	#define DYNAMICEXPORT

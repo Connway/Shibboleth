@@ -2,14 +2,17 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <ClCompile Include="..\..\src\Game\Game_main.cpp" />
-    <ClCompile Include="..\..\src\Game\Game.cpp" />
+    <ClCompile Include="..\..\src\Game\Shibboleth_Game.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\src\Game\include\Game.h" />
     <ClInclude Include="..\..\src\Shared\include\Shibboleth_Defines.h">
       <Filter>Shared</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\Shared\include\Shibboleth_Registry.h">
+      <Filter>Shared</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Game\include\Shibboleth_Game.h" />
+    <ClInclude Include="..\..\src\Shared\include\Shibboleth_DynamicLoader.h">
       <Filter>Shared</Filter>
     </ClInclude>
   </ItemGroup>
