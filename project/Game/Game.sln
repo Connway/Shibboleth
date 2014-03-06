@@ -9,6 +9,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Dependencies", "Dependencie
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Gaff", "..\Dependencies\Gaff.vcxproj", "{A63D072E-20CB-47AA-A110-65CA8FCC524D}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "jansson", "..\Dependencies\jansson.vcxproj", "{EE9E1124-CE92-4113-A64B-D4784E6A626B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -31,11 +33,20 @@ Global
 		{A63D072E-20CB-47AA-A110-65CA8FCC524D}.Release|Win32.Build.0 = Release|Win32
 		{A63D072E-20CB-47AA-A110-65CA8FCC524D}.Release|x64.ActiveCfg = Release|x64
 		{A63D072E-20CB-47AA-A110-65CA8FCC524D}.Release|x64.Build.0 = Release|x64
+		{EE9E1124-CE92-4113-A64B-D4784E6A626B}.Debug|Win32.ActiveCfg = Debug|Win32
+		{EE9E1124-CE92-4113-A64B-D4784E6A626B}.Debug|Win32.Build.0 = Debug|Win32
+		{EE9E1124-CE92-4113-A64B-D4784E6A626B}.Debug|x64.ActiveCfg = Debug|x64
+		{EE9E1124-CE92-4113-A64B-D4784E6A626B}.Debug|x64.Build.0 = Debug|x64
+		{EE9E1124-CE92-4113-A64B-D4784E6A626B}.Release|Win32.ActiveCfg = Release|Win32
+		{EE9E1124-CE92-4113-A64B-D4784E6A626B}.Release|Win32.Build.0 = Release|Win32
+		{EE9E1124-CE92-4113-A64B-D4784E6A626B}.Release|x64.ActiveCfg = Release|x64
+		{EE9E1124-CE92-4113-A64B-D4784E6A626B}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{A63D072E-20CB-47AA-A110-65CA8FCC524D} = {9EBC8FD5-6787-457B-95FB-021B22EC110A}
+		{EE9E1124-CE92-4113-A64B-D4784E6A626B} = {9EBC8FD5-6787-457B-95FB-021B22EC110A}
 	EndGlobalSection
 EndGlobal

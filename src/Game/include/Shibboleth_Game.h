@@ -24,6 +24,9 @@ THE SOFTWARE.
 
 #include "Shibboleth_DynamicLoader.h"
 #include "Shibboleth_Registry.h"
+#include "Shibboleth_IState.h"
+#include "Shibboleth_Array.h"
+#include <Gaff_INamedObject.h>
 
 NS_SHIBBOLETH
 
@@ -36,10 +39,40 @@ public:
 	bool init(void);
 
 private:
-	Gaff::DefaultAllocator _allocator;
+	struct ManagerEntry
+	{
+		typedef Gaff::INamedObject* (*CreateManagerFunc)(Gaff::IAllocator*);
+		typedef void (*DestroyManagerFunc)(Gaff::IAllocator*, Gaff::INamedObject*);
+
+		CreateManagerFunc create_func;
+		DestroyManagerFunc destroy_func;
+		Gaff::INamedObject* manager;
+	};
+
+	struct StateEntry
+	{
+		typedef IState* (*CreateStateFunc)(Gaff::IAllocator*);
+		typedef void (*DestroyStateFunc)(Gaff::IAllocator*, IState*);
+
+		CreateStateFunc create_func;
+		DestroyStateFunc destroy_func;
+		IState* state;
+	};
+
+	typedef Gaff::HashMap<Gaff::AHashString<Gaff::DefaultAllocator>, ManagerEntry, Gaff::DefaultAllocator> ManagerMap;
+
+	ManagerMap _manager_map;
 
 	DynamicLoader _dynamic_loader;
-	Registry _manager_registry;
+	//Registry _manager_registry;
+	Array<StateEntry> _states;
+
+	void loadManagers(void);
+	bool loadStates(void);
+
+	static Gaff::DefaultAllocator _allocator;
+	static void* ShibbolethAllocate(size_t size);
+	static void ShibbolethFree(void* data);
 
 	GAFF_NO_COPY(Game);
 	GAFF_NO_MOVE(Game);

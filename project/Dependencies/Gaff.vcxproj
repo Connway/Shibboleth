@@ -25,6 +25,7 @@
     <ClCompile Include="..\..\dependencies\Gaff\Gaff_DynamicModule_Windows.cpp" />
     <ClCompile Include="..\..\dependencies\Gaff\Gaff_File.cpp" />
     <ClCompile Include="..\..\dependencies\Gaff\Gaff_Image.cpp" />
+    <ClCompile Include="..\..\dependencies\Gaff\Gaff_JSON.cpp" />
     <ClCompile Include="..\..\dependencies\Gaff\Gaff_ReadWriteSpinLock.cpp" />
     <ClCompile Include="..\..\dependencies\Gaff\Gaff_SpinLock.cpp" />
     <ClCompile Include="..\..\dependencies\Gaff\Gaff_Thread_Linux.cpp" />
@@ -59,9 +60,12 @@
     <ClInclude Include="..\..\dependencies\Gaff\include\Gaff_IncludeWindows.h" />
     <ClInclude Include="..\..\dependencies\Gaff\include\Gaff_IRefCounted.h" />
     <ClInclude Include="..\..\dependencies\Gaff\include\Gaff_ITask.h" />
+    <ClInclude Include="..\..\dependencies\Gaff\include\Gaff_JSON.h" />
     <ClInclude Include="..\..\dependencies\Gaff\include\Gaff_List.h" />
     <ClInclude Include="..\..\dependencies\Gaff\include\Gaff_Math.h" />
     <ClInclude Include="..\..\dependencies\Gaff\include\Gaff_MessageBroadcaster.h" />
+    <ClInclude Include="..\..\dependencies\Gaff\include\Gaff_INamedObject.h" />
+    <ClInclude Include="..\..\dependencies\Gaff\include\Gaff_NetworkDefines.h" />
     <ClInclude Include="..\..\dependencies\Gaff\include\Gaff_Pair.h" />
     <ClInclude Include="..\..\dependencies\Gaff\include\Gaff_Predicates.h" />
     <ClInclude Include="..\..\dependencies\Gaff\include\Gaff_Queue.h" />
@@ -102,6 +106,7 @@
     <None Include="..\..\dependencies\Gaff\include\Gaff_Registry.inl" />
     <None Include="..\..\dependencies\Gaff\include\Gaff_String.inl" />
     <None Include="..\..\dependencies\Gaff\include\Gaff_TimerCallbackManager.inl" />
+    <None Include="..\..\dependencies\Gaff\include\Gaff_Utils_Common.inl" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{A63D072E-20CB-47AA-A110-65CA8FCC524D}</ProjectGuid>
@@ -175,7 +180,7 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>$(SolutionDir)..\..\dependencies\Gaff\include;$(SolutionDir)..\..\dependencies\AngelScript\angelscript\include;$(SolutionDir)..\..\dependencies\AngelScript\;$(SolutionDir)\..\..\dependencies\enet\include;$(SolutionDir)\..\..\dependencies\ResIL\include;$(SolutionDir)\..\..\dependencies\ResIL\IL\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)..\..\dependencies\jansson;$(SolutionDir)..\..\dependencies\dirent;$(SolutionDir)..\..\dependencies\Gaff\include;$(SolutionDir)..\..\dependencies\AngelScript\angelscript\include;$(SolutionDir)..\..\dependencies\AngelScript\;$(SolutionDir)..\..\dependencies\enet\include;$(SolutionDir)..\..\dependencies\ResIL\include;$(SolutionDir)..\..\dependencies\ResIL\IL\include</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>ENET_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ProgramDataBaseFileName>$(OutDir)Gaff.pdb</ProgramDataBaseFileName>
       <SDLCheck>true</SDLCheck>
@@ -188,7 +193,7 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>$(SolutionDir)..\..\dependencies\Gaff\include;$(SolutionDir)..\..\dependencies\AngelScript\angelscript\include;$(SolutionDir)..\..\dependencies\AngelScript\;$(SolutionDir)\..\..\dependencies\enet\include;$(SolutionDir)\..\..\dependencies\ResIL\include;$(SolutionDir)\..\..\dependencies\ResIL\IL\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)..\..\dependencies\jansson;$(SolutionDir)..\..\dependencies\dirent;$(SolutionDir)..\..\dependencies\Gaff\include;$(SolutionDir)..\..\dependencies\AngelScript\angelscript\include;$(SolutionDir)..\..\dependencies\AngelScript\;$(SolutionDir)..\..\dependencies\enet\include;$(SolutionDir)..\..\dependencies\ResIL\include;$(SolutionDir)..\..\dependencies\ResIL\IL\include</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>ENET_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ProgramDataBaseFileName>$(OutDir)Gaff.pdb</ProgramDataBaseFileName>
       <SDLCheck>true</SDLCheck>
@@ -203,7 +208,7 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <AdditionalIncludeDirectories>$(SolutionDir)..\..\dependencies\Gaff\include;$(SolutionDir)..\..\dependencies\AngelScript\angelscript\include;$(SolutionDir)..\..\dependencies\AngelScript\;$(SolutionDir)\..\..\dependencies\enet\include;$(SolutionDir)\..\..\dependencies\ResIL\include;$(SolutionDir)\..\..\dependencies\ResIL\IL\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)..\..\dependencies\jansson;$(SolutionDir)..\..\dependencies\dirent;$(SolutionDir)..\..\dependencies\Gaff\include;$(SolutionDir)..\..\dependencies\AngelScript\angelscript\include;$(SolutionDir)..\..\dependencies\AngelScript\;$(SolutionDir)..\..\dependencies\enet\include;$(SolutionDir)..\..\dependencies\ResIL\include;$(SolutionDir)..\..\dependencies\ResIL\IL\include</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ProgramDataBaseFileName>$(OutDir)Gaff.pdb</ProgramDataBaseFileName>
       <SDLCheck>true</SDLCheck>
@@ -220,7 +225,7 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <AdditionalIncludeDirectories>$(SolutionDir)..\..\dependencies\Gaff\include;$(SolutionDir)..\..\dependencies\AngelScript\angelscript\include;$(SolutionDir)..\..\dependencies\AngelScript\;$(SolutionDir)\..\..\dependencies\enet\include;$(SolutionDir)\..\..\dependencies\ResIL\include;$(SolutionDir)\..\..\dependencies\ResIL\IL\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)..\..\dependencies\jansson;$(SolutionDir)..\..\dependencies\dirent;$(SolutionDir)..\..\dependencies\Gaff\include;$(SolutionDir)..\..\dependencies\AngelScript\angelscript\include;$(SolutionDir)..\..\dependencies\AngelScript\;$(SolutionDir)..\..\dependencies\enet\include;$(SolutionDir)..\..\dependencies\ResIL\include;$(SolutionDir)..\..\dependencies\ResIL\IL\include</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ProgramDataBaseFileName>$(OutDir)Gaff.pdb</ProgramDataBaseFileName>
       <SDLCheck>true</SDLCheck>

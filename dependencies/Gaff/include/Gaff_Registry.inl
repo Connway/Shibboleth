@@ -32,27 +32,27 @@ Registry<Allocator>::~Registry(void)
 }
 
 template <class Allocator>
-void Registry<Allocator>::addItem(IRefCounted* manager, const AString<Allocator>& name)
+void Registry<Allocator>::addItem(IRefCounted* item, const AString<Allocator>& name)
 {
-	_registry.insert(name, manager);
+	_registry.insert(name, item);
 }
 
 template <class Allocator>
-void Registry<Allocator>::addItem(IRefCounted* manager, const char* name)
+void Registry<Allocator>::addItem(IRefCounted* item, const char* name)
 {
-	_registry.insert(name, manager);
+	_registry.insert(name, item);
 }
 
 template <class Allocator>
-void Registry<Allocator>::addItem(const IRefPtr& manager, const AString<Allocator>& name)
+void Registry<Allocator>::addItem(const IRefPtr& item, const AString<Allocator>& name)
 {
-	_registry.insert(name, manager);
+	_registry.insert(name, item);
 }
 
 template <class Allocator>
-void Registry<Allocator>::addItem(const IRefPtr& manager, const char* name)
+void Registry<Allocator>::addItem(const IRefPtr& item, const char* name)
 {
-	_registry.insert(name, manager);
+	_registry.insert(name, item);
 }
 
 template <class Allocator>

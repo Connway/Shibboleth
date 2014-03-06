@@ -16,6 +16,7 @@
     <ClCompile Include="..\..\dependencies\Gaff\Gaff_Timer_Windows.cpp" />
     <ClCompile Include="..\..\dependencies\Gaff\Gaff_Utils_Linux.cpp" />
     <ClCompile Include="..\..\dependencies\Gaff\Gaff_Utils_Windows.cpp" />
+    <ClCompile Include="..\..\dependencies\Gaff\Gaff_JSON.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Headers">
@@ -179,6 +180,15 @@
     <ClInclude Include="..\..\dependencies\Gaff\include\Gaff_WeakPtr.h">
       <Filter>Headers</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\dependencies\Gaff\include\Gaff_INamedObject.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\dependencies\Gaff\include\Gaff_NetworkDefines.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\dependencies\Gaff\include\Gaff_JSON.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\dependencies\Gaff\include\Gaff_Array.inl">
@@ -215,6 +225,9 @@
       <Filter>Headers</Filter>
     </None>
     <None Include="..\..\dependencies\Gaff\include\Gaff_TimerCallbackManager.inl">
+      <Filter>Headers</Filter>
+    </None>
+    <None Include="..\..\dependencies\Gaff\include\Gaff_Utils_Common.inl">
       <Filter>Headers</Filter>
     </None>
   </ItemGroup>

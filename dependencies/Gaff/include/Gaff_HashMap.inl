@@ -1402,13 +1402,7 @@ bool HashMap<HashString<T, Allocator>, Value, Allocator>::empty(void) const
 template <class Value, class Allocator, class T>
 typename HashMap<HashString<T, Allocator>, Value, Allocator>::Iterator HashMap<HashString<T, Allocator>, Value, Allocator>::begin(void) const
 {
-	const Iterator it = rend();
-
-	if (_used) {
-		++it;
-	}
-
-	return it;
+	return Iterator(_slots, _slots + _size, _slots - 1);
 }
 
 template <class Value, class Allocator, class T>
@@ -1420,13 +1414,7 @@ typename HashMap<HashString<T, Allocator>, Value, Allocator>::Iterator HashMap<H
 template <class Value, class Allocator, class T>
 typename HashMap<HashString<T, Allocator>, Value, Allocator>::Iterator HashMap<HashString<T, Allocator>, Value, Allocator>::rbegin(void) const
 {
-	const Iterator it = end();
-
-	if (_used) {
-		--it;
-	}
-
-	return it;
+	return Iterator(_slots + _size - 1, _slots + _size, _slots - 1);
 }
 
 template <class Value, class Allocator, class T>

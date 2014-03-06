@@ -23,7 +23,6 @@ THE SOFTWARE.
 #if defined(_WIN32) || defined(_WIN64)
 
 #include "Gaff_Utils.h"
-#include "Gaff_IncludeWindows.h"
 
 NS_GAFF
 

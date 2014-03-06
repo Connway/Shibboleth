@@ -1,0 +1,23 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClInclude Include="..\..\dependencies\jansson\hashtable.h" />
+    <ClInclude Include="..\..\dependencies\jansson\jansson.h" />
+    <ClInclude Include="..\..\dependencies\jansson\jansson_config.h" />
+    <ClInclude Include="..\..\dependencies\jansson\jansson_private.h" />
+    <ClInclude Include="..\..\dependencies\jansson\strbuffer.h" />
+    <ClInclude Include="..\..\dependencies\jansson\utf.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\dependencies\jansson\load.c" />
+    <ClCompile Include="..\..\dependencies\jansson\memory.c" />
+    <ClCompile Include="..\..\dependencies\jansson\pack_unpack.c" />
+    <ClCompile Include="..\..\dependencies\jansson\strbuffer.c" />
+    <ClCompile Include="..\..\dependencies\jansson\strconv.c" />
+    <ClCompile Include="..\..\dependencies\jansson\utf.c" />
+    <ClCompile Include="..\..\dependencies\jansson\value.c" />
+    <ClCompile Include="..\..\dependencies\jansson\dump.c" />
+    <ClCompile Include="..\..\dependencies\jansson\error.c" />
+    <ClCompile Include="..\..\dependencies\jansson\hashtable.c" />
+  </ItemGroup>
+</Project>

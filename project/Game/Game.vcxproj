@@ -51,7 +51,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>$(SolutionDir)..\..\dependencies\Gaff\include;$(SolutionDir)..\..\src\Game\include;$(SolutionDir)..\..\src\Shared\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)..\..\dependencies\jansson;$(SolutionDir)..\..\dependencies\dirent;$(SolutionDir)..\..\dependencies\Gaff\include;$(SolutionDir)..\..\src\Game\include;$(SolutionDir)..\..\src\Shared\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -64,7 +64,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>$(SolutionDir)..\..\dependencies\Gaff\include;$(SolutionDir)..\..\src\Game\include;$(SolutionDir)..\..\src\Shared\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)..\..\dependencies\jansson;$(SolutionDir)..\..\dependencies\dirent;$(SolutionDir)..\..\dependencies\Gaff\include;$(SolutionDir)..\..\src\Game\include;$(SolutionDir)..\..\src\Shared\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -78,13 +78,19 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\Game\include\Shibboleth_Game.h" />
+    <ClInclude Include="..\..\src\Shared\include\Shibboleth_Array.h" />
     <ClInclude Include="..\..\src\Shared\include\Shibboleth_Defines.h" />
     <ClInclude Include="..\..\src\Shared\include\Shibboleth_DynamicLoader.h" />
+    <ClInclude Include="..\..\src\Shared\include\Shibboleth_IState.h" />
     <ClInclude Include="..\..\src\Shared\include\Shibboleth_Registry.h" />
+    <ClInclude Include="..\..\src\Shared\include\Shibboleth_String.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Dependencies\Gaff.vcxproj">
       <Project>{a63d072e-20cb-47aa-a110-65ca8fcc524d}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\Dependencies\jansson.vcxproj">
+      <Project>{ee9e1124-ce92-4113-a64b-d4784e6a626b}</Project>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

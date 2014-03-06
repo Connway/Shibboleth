@@ -22,6 +22,7 @@ THE SOFTWARE.
 
 #pragma once
 
+#include "Gaff_NetworkDefines.h"
 #include "Gaff_Function.h"
 
 struct _ENetPeer;
@@ -54,7 +55,7 @@ public:
 
 	void destroy(void);
 
-	INLINE unsigned int getID(void) const;
+	INLINE PeerIDType getID(void) const;
 	INLINE unsigned int getHost(void) const;
 	INLINE unsigned short getPort(void) const;
 

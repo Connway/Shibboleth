@@ -22,44 +22,14 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Gaff_RefPtr.h"
-#include "Gaff_HashMap.h"
+#include "Gaff_Defines.h"
 
 NS_GAFF
 
-template <class Allocator>
-class Registry
-{
-public:
-	Registry(const Allocator& allocator = Allocator());
-	~Registry(void);
-
-	void addItem(IRefCounted* item, const AString<Allocator>& name);
-	void addItem(IRefCounted* item, const char* name);
-	void addItem(const IRefPtr& item, const AString<Allocator>& name);
-	void addItem(const IRefPtr& item, const char* name);
-
-	void removeItem(const AString<Allocator>& name);
-	void removeItem(const char* name);
-
-	template <class T>
-	const T* getItem(const AString<Allocator>& name) const;
-
-	template <class T>
-	const T* getItem(const char* name) const;
-
-	template <class T>
-	T* getItem(const AString<Allocator>& name);
-
-	template <class T>
-	T* getItem(const char* name);
-
-private:
-	HashMap<AString<Allocator>, IRefPtr, Allocator> _registry;
-
-	void* getItemHelper(const AString<Allocator>& name);
-};
-
-#include "Gaff_Registry.inl"
+#if defined(__LP64__) || defined(_WIN64)
+	typedef unsigned long long PeerIDType;
+#else
+	typedef unsigned int PeerIDType;
+#endif
 
 NS_END
