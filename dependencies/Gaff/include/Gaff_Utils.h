@@ -22,10 +22,48 @@ THE SOFTWARE.
 
 #pragma once
 
+#if defined(_WIN32) || defined(_WIN64)
+	#include "Gaff_IncludeWindows.h"
+#endif
+
 #include "Gaff_Defines.h"
+#include <dirent.h>
 
 NS_GAFF
 
+enum DataType
+{
+	DT_Unknown = 0,
+	DT_RegularFile = 0x8000,
+	DT_Directory = 0x4000,
+	DT_Pipe = 0x1000,
+	//DT_Socket
+	DT_Character = 0x2000
+	//DT_Block
+};
+
+typedef bool (*FileDirTraversalFunc)(const char* name, size_t name_len, DataType type);
+typedef bool (*FileDirTraversalFuncUnicode)(const wchar_t* name, size_t name_len, DataType type);
+
+typedef bool (*FileDirTraversalFuncSpecific)(const char* name, size_t name_len);
+typedef bool (*FileDirTraversalFuncSpecificUnicode)(const wchar_t* name, size_t name_len);
+
 INLINE unsigned long GetNumberOfCores(void);
+
+template <class Callback>
+void ForEachInDirectory(const char* directory, Callback&& callback);
+
+template <DataType type, class Callback>
+void ForEachTypeInDirectory(const char* directory, Callback&& callback);
+
+#ifdef _UNICODE
+template <class Callback>
+void ForEachInDirectory(const wchar_t* directory, Callback&& callback);
+
+template <DataType type, class Callback>
+void ForEachTypeInDirectory(const wchar_t* directory, Callback&& callback);
+#endif
+
+#include "Gaff_Utils_Common.inl"
 
 NS_END

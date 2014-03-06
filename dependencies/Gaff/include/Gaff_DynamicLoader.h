@@ -49,6 +49,8 @@ public:
 	ModulePtr getModule(const AString<Allocator>& name);
 	ModulePtr getModule(const char* name);
 
+	void removeModule(const char* name);
+
 #ifdef _UNICODE
 	template <class Allocator2>
 	ModulePtr loadModule(const WString<Allocator2>& filename, const AString<Allocator2>& name);

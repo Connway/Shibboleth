@@ -33,8 +33,8 @@ THE SOFTWARE.
 #define NETWORK_CALLBACK __cdecl
 
 // Convenience function for the callback, cause damn that's a pain to type out
-#define NETWORK_FUNCTION_TEMPLATE void, Gaff::Host&, Gaff::Host::EventType, Gaff::Host::PeerIDType, unsigned char, unsigned int, void*, size_t
-#define NETWORK_FUNCTION_IMPL Gaff::Host& host, Gaff::Host::EventType event_type, Gaff::Host::PeerIDType peer_id, unsigned char channel, unsigned int user_data, void* data, size_t data_size
+#define NETWORK_FUNCTION_TEMPLATE void, Gaff::Host&, Gaff::Host::EventType, Gaff::PeerIDType, unsigned char, unsigned int, void*, size_t
+#define NETWORK_FUNCTION_IMPL Gaff::Host& host, Gaff::Host::EventType event_type, Gaff::PeerIDType peer_id, unsigned char channel, unsigned int user_data, void* data, size_t data_size
 
 struct _ENetHost;
 struct _ENetPeer;
@@ -59,12 +59,6 @@ public:
 		EVENT_DISCONNECT,
 		EVENT_RECEIVED_PACKET
 	};
-
-#if defined(__LP64__) || defined(_WIN64)
-	typedef unsigned long long PeerIDType;
-#else
-	typedef unsigned int PeerIDType;
-#endif
 
 	typedef IFunction<void, Host&, EventType, PeerIDType, unsigned char, unsigned int, void*, size_t> EventCallbackType;
 

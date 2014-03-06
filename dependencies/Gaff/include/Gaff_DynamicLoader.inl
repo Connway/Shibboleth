@@ -81,6 +81,13 @@ typename DynamicLoader<Allocator>::ModulePtr DynamicLoader<Allocator>::getModule
 	return _modules[str];
 }
 
+template <class Allocator>
+void DynamicLoader<Allocator>::removeModule(const char* name)
+{
+	HString str(name, FNVHash, _allocator);
+	_modules.erase(str);
+}
+
 #ifdef _UNICODE
 
 template <class Allocator>

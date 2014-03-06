@@ -61,12 +61,12 @@ void Connection::destroy(void)
 	}
 }
 
-unsigned int Connection::getID(void) const
+PeerIDType Connection::getID(void) const
 {
 	// Lazy way for giving a unique ID.
 	// This is mainly used for the checkForEvent()/waitForEvent() callback
 	// to identify which Connection the event came from.
-	return (Host::PeerIDType)_peer;
+	return (PeerIDType)_peer;
 }
 
 unsigned int Connection::getHost(void) const
