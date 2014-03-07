@@ -585,6 +585,7 @@ Value& HashMap<Key, Value, Allocator>::operator[](const Key& key)
 		construct(&_slots[index].key, key);
 		construct(&_slots[index].value);
 		_slots[index].occupied = true;
+		++_used;
 	}
 
 	if (i == _size) {
@@ -683,9 +684,13 @@ template <class Key, class Value, class Allocator>
 void HashMap<Key, Value, Allocator>::clear(void)
 {
 	if (_slots) {
-		for (unsigned int i = 0; i < _used; ++i) {
-			deconstruct(&_slots[i].key);
-			deconstruct(&_slots[i].value);
+		for (unsigned int i = 0; i < _size; ++i) {
+			if (_slots[i].occupied) {
+				deconstruct(&_slots[i].key);
+				deconstruct(&_slots[i].value);
+			}
+
+			_slots[i].occupied = false;
 		}
 
 		_allocator.free(_slots);
@@ -741,13 +746,7 @@ bool HashMap<Key, Value, Allocator>::empty(void) const
 template <class Key, class Value, class Allocator>
 typename HashMap<Key, Value, Allocator>::Iterator HashMap<Key, Value, Allocator>::begin(void) const
 {
-	const Iterator it = rend();
-
-	if (_used) {
-		++it;
-	}
-
-	return it;
+	return Iterator(_slots, _slots + _size, _slots - 1);
 }
 
 template <class Key, class Value, class Allocator>
@@ -759,13 +758,7 @@ typename HashMap<Key, Value, Allocator>::Iterator HashMap<Key, Value, Allocator>
 template <class Key, class Value, class Allocator>
 typename HashMap<Key, Value, Allocator>::Iterator HashMap<Key, Value, Allocator>::rbegin(void) const
 {
-	const Iterator it = end();
-
-	if (_used) {
-		--it;
-	}
-
-	return it;
+	return Iterator(_slots + _size - 1, _slots + _size, _slots - 1);
 }
 
 template <class Key, class Value, class Allocator>
@@ -916,6 +909,7 @@ Value& HashMap<String<T, Allocator>, Value, Allocator>::operator[](const String<
 		construct(&_slots[index].key, key);
 		construct(&_slots[index].value);
 		_slots[index].occupied = true;
+		++_used;
 	}
 
 	if (i == _size) {
@@ -1014,9 +1008,13 @@ template <class Value, class Allocator, class T>
 void HashMap<String<T, Allocator>, Value, Allocator>::clear(void)
 {
 	if (_slots) {
-		for (unsigned int i = 0; i < _used; ++i) {
-			deconstruct(&_slots[i].key);
-			deconstruct(&_slots[i].value);
+		for (unsigned int i = 0; i < _size; ++i) {
+			if (_slots[i].occupied) {
+				deconstruct(&_slots[i].key);
+				deconstruct(&_slots[i].value);
+			}
+
+			_slots[i].occupied = false;
 		}
 
 		_allocator.free(_slots);
@@ -1072,13 +1070,7 @@ bool HashMap<String<T, Allocator>, Value, Allocator>::empty(void) const
 template <class Value, class Allocator, class T>
 typename HashMap<String<T, Allocator>, Value, Allocator>::Iterator HashMap<String<T, Allocator>, Value, Allocator>::begin(void) const
 {
-	const Iterator it = rend();
-
-	if (_used) {
-		++it;
-	}
-
-	return it;
+	return Iterator(_slots, _slots + _size, _slots - 1);
 }
 
 template <class Value, class Allocator, class T>
@@ -1090,13 +1082,7 @@ typename HashMap<String<T, Allocator>, Value, Allocator>::Iterator HashMap<Strin
 template <class Value, class Allocator, class T>
 typename HashMap<String<T, Allocator>, Value, Allocator>::Iterator HashMap<String<T, Allocator>, Value, Allocator>::rbegin(void) const
 {
-	const Iterator it = end();
-
-	if (_used) {
-		--it;
-	}
-
-	return it;
+	return Iterator(_slots + _size - 1, _slots + _size, _slots - 1);
 }
 
 template <class Value, class Allocator, class T>
@@ -1246,6 +1232,7 @@ Value& HashMap<HashString<T, Allocator>, Value, Allocator>::operator[](const Has
 		construct(&_slots[index].key, key);
 		construct(&_slots[index].value);
 		_slots[index].occupied = true;
+		++_used;
 	}
 
 	if (i == _size) {
@@ -1344,9 +1331,13 @@ template <class Value, class Allocator, class T>
 void HashMap<HashString<T, Allocator>, Value, Allocator>::clear(void)
 {
 	if (_slots) {
-		for (unsigned int i = 0; i < _used; ++i) {
-			deconstruct(&_slots[i].key);
-			deconstruct(&_slots[i].value);
+		for (unsigned int i = 0; i < _size; ++i) {
+			if (_slots[i].occupied) {
+				deconstruct(&_slots[i].key);
+				deconstruct(&_slots[i].value);
+			}
+
+			_slots[i].occupied = false;
 		}
 
 		_allocator.free(_slots);

@@ -20,11 +20,11 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#include "Shibboleth_Defines.h"
+#include "Shibboleth_Allocator.h"
 #include <Gaff_Registry.h>
 
 NS_SHIBBOLETH
 
-typedef Gaff::Registry<Gaff::DefaultAllocator> Registry;
+typedef Gaff::Registry<Allocator> Registry;
 
 NS_END

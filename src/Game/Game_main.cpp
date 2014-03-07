@@ -30,5 +30,7 @@ int main(void)
 		return -1;
 	}
 
+	game.run();
+
 	return 0;
 }

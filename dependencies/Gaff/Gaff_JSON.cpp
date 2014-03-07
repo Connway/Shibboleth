@@ -31,6 +31,51 @@ void JSON::SetMemoryFunctions(json_malloc_t alloc_func, json_free_t free_func)
 	json_set_alloc_funcs(alloc_func, free_func);
 }
 
+JSON JSON::createArray(void)
+{
+	return JSON(json_array(), false);
+}
+
+JSON JSON::createObject(void)
+{
+	return JSON(json_object(), false);
+}
+
+JSON JSON::createInteger(json_int_t val)
+{
+	return JSON(json_integer(val), false);
+}
+
+JSON JSON::createReal(double val)
+{
+	return JSON(json_real(val), false);
+}
+
+JSON JSON::createString(const char* val)
+{
+	return JSON(json_string(val), false);
+}
+
+JSON JSON::createBoolean(bool val)
+{
+	return JSON(json_boolean(val), true);
+}
+
+JSON JSON::createTrue(void)
+{
+	return JSON(json_true(), true);
+}
+
+JSON JSON::createFalse(void)
+{
+	return JSON(json_false(), true);
+}
+
+JSON JSON::createNull(void)
+{
+	return JSON(json_null(), true);
+}
+
 JSON::JSON(json_t* json, bool increment_ref_count):
 	_value(json)
 {

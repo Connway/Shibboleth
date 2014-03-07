@@ -43,6 +43,8 @@ public:
 	DynamicLoader(const Allocator& allocator = Allocator());
 	~DynamicLoader(void);
 
+	void clear(void);
+
 	ModulePtr loadModule(const char* filename, const char* name);
 
 	ModulePtr getModule(const AHashString<Allocator> name);

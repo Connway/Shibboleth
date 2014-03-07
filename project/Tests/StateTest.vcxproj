@@ -11,18 +11,18 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{3D350E40-760D-49FD-8292-C524F9A0E6DC}</ProjectGuid>
-    <RootNamespace>Game</RootNamespace>
+    <ProjectGuid>{022EB289-794F-4532-B07A-9A18CE2B6B94}</ProjectGuid>
+    <RootNamespace>StateTest</RootNamespace>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v120</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v120</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
@@ -39,11 +39,11 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <OutDir>$(SolutionDir)..\..\build\Output\$(Platform)\$(Configuration)\</OutDir>
+    <OutDir>$(SolutionDir)..\..\workingdir\game\States\</OutDir>
     <IntDir>$(SolutionDir)..\..\build\Intermediate\$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <OutDir>$(SolutionDir)..\..\build\Output\$(Platform)\$(Configuration)\</OutDir>
+    <OutDir>$(SolutionDir)..\..\workingdir\game\States\</OutDir>
     <IntDir>$(SolutionDir)..\..\build\Intermediate\$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -51,7 +51,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>$(SolutionDir)..\..\dependencies\jansson;$(SolutionDir)..\..\dependencies\dirent;$(SolutionDir)..\..\dependencies\Gaff\include;$(SolutionDir)..\..\src\Game\include;$(SolutionDir)..\..\src\Shared\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)..\..\dependencies\Gaff\include;$(SolutionDir)..\..\src\Shared\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -64,7 +64,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>$(SolutionDir)..\..\dependencies\jansson;$(SolutionDir)..\..\dependencies\dirent;$(SolutionDir)..\..\dependencies\Gaff\include;$(SolutionDir)..\..\src\Game\include;$(SolutionDir)..\..\src\Shared\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)..\..\dependencies\Gaff\include;$(SolutionDir)..\..\src\Shared\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -73,18 +73,11 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\src\Game\Shibboleth_Game.cpp" />
-    <ClCompile Include="..\..\src\Game\Game_main.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="..\..\src\Game\include\Shibboleth_Game.h" />
+    <ClCompile Include="..\..\src\Tests\StateTest.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Dependencies\Gaff.vcxproj">
       <Project>{a63d072e-20cb-47aa-a110-65ca8fcc524d}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\Dependencies\jansson.vcxproj">
-      <Project>{ee9e1124-ce92-4113-a64b-d4784e6a626b}</Project>
     </ProjectReference>
     <ProjectReference Include="..\Shared.vcxproj">
       <Project>{1972702e-61a8-4883-baae-8c3644ba4b3e}</Project>

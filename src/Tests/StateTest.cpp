@@ -20,15 +20,37 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#pragma once
+#include <Shibboleth_IState.h>
+#include <Gaff_IAllocator.h>
+#include <iostream>
 
-#include "Shibboleth_Allocator.h"
-#include <Gaff_String.h>
+class TestState : public Shibboleth::IState
+{
+public:
+	TestState(void) {}
 
-NS_SHIBBOLETH
+	void enter(void)
+	{
+		std::cout << "Test State ENTER" << std::endl;
+	}
 
-template <class T> using String = Gaff::String<T, Allocator>;
-typedef Gaff::String<char, Allocator> AString;
-typedef Gaff::String<wchar_t, Allocator> WString;
+	void update(void)
+	{
+		std::cout << "Test State UPDATE" << std::endl;
+	}
 
-NS_END
+	void exit(void)
+	{
+		std::cout << "Test State EXIT" << std::endl;
+	}
+};
+
+DYNAMICEXPORT Shibboleth::IState* CreateState(Gaff::IAllocator* allocator)
+{
+	return allocator->template allocT<TestState>();
+}
+
+DYNAMICEXPORT void DestroyState(Gaff::IAllocator* allocator, Shibboleth::IState* state)
+{
+	allocator->freeT(state);
+}

@@ -29,23 +29,25 @@ THE SOFTWARE.
 
 NS_SHIBBOLETH
 
-Gaff::DefaultAllocator Game::_allocator;
-
 Game::Game(void):
-	_manager_map(_allocator)
+	_running(true)
 {
 }
 
 Game::~Game(void)
 {
 	for (ManagerMap::Iterator it = _manager_map.begin(); it != _manager_map.end(); ++it) {
-		it->destroy_func(&_allocator, it->manager);
+		it->destroy_func(GetAllocator(), it->manager);
 	}
+
+	//_state_machine.clear();
+
+	_dynamic_loader.clear();
 }
 
 bool Game::init(void)
 {
-	Gaff::JSON::SetMemoryFunctions(&Game::ShibbolethAllocate, &Game::ShibbolethFree);
+	Gaff::JSON::SetMemoryFunctions(&ShibbolethAllocate, &ShibbolethFree);
 
 	loadManagers();
 
@@ -65,7 +67,7 @@ void Game::loadManagers(void)
 			return false;
 		}
 
-		AString rel_path = AString("./Managers/", _allocator) + name;
+		AString rel_path = AString("./Managers/") + name;
 
 		DynamicLoader::ModulePtr module = _dynamic_loader.loadModule(rel_path.getBuffer(), name);
 
@@ -75,11 +77,10 @@ void Game::loadManagers(void)
 			entry.destroy_func = module->GetFunc<ManagerEntry::DestroyManagerFunc>("DestroyManager");
 
 			if (entry.create_func && entry.destroy_func) {
-				entry.manager = entry.create_func(&_allocator);
+				entry.manager = entry.create_func(GetAllocator());
 
 				if (entry.manager) {
-					Gaff::AHashString<Gaff::DefaultAllocator> hstr(entry.manager->GetName(), Gaff::FNVHash, _allocator);
-					_manager_map[hstr] = entry;
+					_manager_map[entry.manager->GetName()] = entry;
 				}
 			} else {
 				_dynamic_loader.removeModule(name);
@@ -93,38 +94,67 @@ void Game::loadManagers(void)
 bool Game::loadStates(void)
 {
 	Gaff::JSON state_data;
-	
+
 	if (!state_data.parseFile("./States/states.json")) {
 		return false;
 	}
 
-	if (!state_data.isArray()) {
+	if (!state_data.isObject()) {
 		return false;
 	}
 
-	for (size_t i = 0; i < state_data.size(); ++i) {
-		Gaff::JSON val = state_data[i];
-		assert(val.isString());
+	Gaff::JSON starting_state = state_data["starting_state"];
+	Gaff::JSON states = state_data["states"];
 
-		AString filename("./States/", _allocator);
-		filename += val.getString();
+	if (!starting_state.isString() || !states.isArray()) {
+		return false;
+	}
+
+	for (size_t i = 0; i < states.size(); ++i) {
+		Gaff::JSON state = states[i];
+
+		if (!state.isObject()) {
+			return false;
+		}
+
+		Gaff::JSON transitions = state["transitions"];
+		Gaff::JSON name = state["name"];
+
+		if (!transitions.isArray() || !name.isString()) {
+			return false;
+		}
+
+		AString filename("./States/");
+		filename += name.getString();
 		filename += DYNAMIC_EXTENSION;
-		
-		DynamicLoader::ModulePtr module = _dynamic_loader.loadModule(filename, val.getString());
+
+		DynamicLoader::ModulePtr module = _dynamic_loader.loadModule(filename, name.getString());
 
 		if (module) {
-			StateEntry entry = { nullptr, nullptr, nullptr };
-			entry.create_func = module->GetFunc<StateEntry::CreateStateFunc>("CreateState");
-			entry.destroy_func = module->GetFunc<StateEntry::DestroyStateFunc>("DestroyState");
+			StateMachine::StateEntry entry = { Array<unsigned int>(), name.getString(), nullptr, nullptr, nullptr };
+			entry.create_func = module->GetFunc<StateMachine::StateEntry::CreateStateFunc>("CreateState");
+			entry.destroy_func = module->GetFunc<StateMachine::StateEntry::DestroyStateFunc>("DestroyState");
 
 			if (entry.create_func && entry.destroy_func) {
-				entry.state = entry.create_func(&_allocator);
+				entry.state = entry.create_func(GetAllocator());
 
 				if (entry.state) {
-					_states.push(entry);
+					entry.transitions.reserve(transitions.size());
+
+					for (size_t j = 0; j < transitions.size(); ++j) {
+						Gaff::JSON val = transitions[j];
+
+						if (!val.isInteger()) {
+							return false;
+						}
+
+						entry.transitions.push((unsigned int)val.getInteger());
+					}
+
+					//_state_machine.addState(entry);
 				}
 			} else {
-				_dynamic_loader.removeModule(val.getString());
+				_dynamic_loader.removeModule(name.getString());
 			}
 		}
 	}
@@ -132,14 +162,10 @@ bool Game::loadStates(void)
 	return true;
 }
 
-void* Game::ShibbolethAllocate(size_t size)
+void Game::run(void)
 {
-	return _allocator.alloc((unsigned int)size);
-}
-
-void Game::ShibbolethFree(void* data)
-{
-	_allocator.free(data);
+	while (_running) {
+	}
 }
 
 NS_END

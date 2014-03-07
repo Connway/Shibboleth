@@ -22,13 +22,39 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Shibboleth_Allocator.h"
-#include <Gaff_String.h>
+#include "Shibboleth_Defines.h"
+#include <Gaff_IAllocator.h>
+#include <Gaff_SpinLock.h>
+#include <stdlib.h>
 
 NS_SHIBBOLETH
 
-template <class T> using String = Gaff::String<T, Allocator>;
-typedef Gaff::String<char, Allocator> AString;
-typedef Gaff::String<wchar_t, Allocator> WString;
+class Allocator : public Gaff::IAllocator
+{
+public:
+	Allocator(void);
+	~Allocator(void);
+
+	void* alloc(unsigned int size_bytes);
+	INLINE void free(void* data);
+
+	INLINE unsigned int getTotalBytesAllocated(void) const;
+	INLINE unsigned int getNumAllocations(void) const;
+	INLINE unsigned int getNumFrees(void) const;
+
+private:
+	static volatile unsigned int _total_bytes_allocated;
+	static volatile unsigned int _num_allocations;
+	static volatile unsigned int _num_frees;
+
+	static Gaff::SpinLock _lock;
+
+	GAFF_NO_MOVE(Allocator);
+};
+
+INLINE Gaff::IAllocator* GetAllocator(void);
+
+void* ShibbolethAllocate(size_t size);
+void ShibbolethFree(void* data);
 
 NS_END

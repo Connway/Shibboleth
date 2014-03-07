@@ -1,0 +1,11 @@
+{
+	"starting_state": "StateTest",
+
+	"states":
+	[
+		{
+			"name": "StateTest",
+			"transitions": []
+		}
+	]
+}
