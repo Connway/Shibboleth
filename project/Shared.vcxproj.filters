@@ -1,0 +1,18 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="..\src\Shared\Shibboleth_Allocator.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\src\Shared\include\Shibboleth_Array.h" />
+    <ClInclude Include="..\src\Shared\include\Shibboleth_Defines.h" />
+    <ClInclude Include="..\src\Shared\include\Shibboleth_DynamicLoader.h" />
+    <ClInclude Include="..\src\Shared\include\Shibboleth_IState.h" />
+    <ClInclude Include="..\src\Shared\include\Shibboleth_Registry.h" />
+    <ClInclude Include="..\src\Shared\include\Shibboleth_String.h" />
+    <ClInclude Include="..\src\Shared\include\Shibboleth_Allocator.h" />
+    <ClInclude Include="..\src\Shared\include\Shibboleth_StateMachine.h" />
+    <ClInclude Include="..\src\Shared\include\Shibboleth_HashMap.h" />
+    <ClInclude Include="..\src\Shared\include\Shibboleth_HashString.h" />
+  </ItemGroup>
+</Project>

@@ -22,19 +22,26 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Shibboleth_Defines.h"
+#include "Shibboleth_Array.h"
 
 NS_SHIBBOLETH
 
 class IState
 {
 public:
-	IState(void) {}
 	virtual ~IState(void) {}
 
 	virtual void enter(void) = 0;
 	virtual void update(void) = 0;
 	virtual void exit(void) = 0;
+
+	void setTransitions(const Array<unsigned int>* transitions)
+	{
+		_transitions = transitions;
+	}
+
+protected:
+	const Array<unsigned int>* _transitions;
 };
 
 NS_END

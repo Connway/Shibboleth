@@ -20,11 +20,11 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#include "Shibboleth_Defines.h"
+#include "Shibboleth_Allocator.h"
 #include <Gaff_DynamicLoader.h>
 
 NS_SHIBBOLETH
 
-typedef Gaff::DynamicLoader<Gaff::DefaultAllocator> DynamicLoader;
+typedef Gaff::DynamicLoader<Allocator> DynamicLoader;
 
 NS_END

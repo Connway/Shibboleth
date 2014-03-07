@@ -5,29 +5,6 @@
     <ClCompile Include="..\..\src\Game\Shibboleth_Game.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\src\Shared\include\Shibboleth_Defines.h">
-      <Filter>Shared</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Shared\include\Shibboleth_Registry.h">
-      <Filter>Shared</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\src\Game\include\Shibboleth_Game.h" />
-    <ClInclude Include="..\..\src\Shared\include\Shibboleth_DynamicLoader.h">
-      <Filter>Shared</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Shared\include\Shibboleth_IState.h">
-      <Filter>Shared</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Shared\include\Shibboleth_String.h">
-      <Filter>Shared</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Shared\include\Shibboleth_Array.h">
-      <Filter>Shared</Filter>
-    </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <Filter Include="Shared">
-      <UniqueIdentifier>{ec60e9f8-fb75-4621-9858-0b8104f4b015}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
 </Project>

@@ -49,6 +49,15 @@ public:
 	}
 
 	static INLINE void SetMemoryFunctions(json_malloc_t alloc_func, json_free_t free_func);
+	static INLINE JSON createArray(void);
+	static INLINE JSON createObject(void);
+	static INLINE JSON createInteger(json_int_t val);
+	static INLINE JSON createReal(double val);
+	static INLINE JSON createString(const char* val);
+	static INLINE JSON createBoolean(bool val);
+	static INLINE JSON createTrue(void);
+	static INLINE JSON createFalse(void);
+	static INLINE JSON createNull(void);
 
 	JSON(const JSON& json);
 	JSON(void);

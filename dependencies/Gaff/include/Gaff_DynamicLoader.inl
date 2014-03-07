@@ -29,6 +29,13 @@ DynamicLoader<Allocator>::DynamicLoader(const Allocator& allocator):
 template <class Allocator>
 DynamicLoader<Allocator>::~DynamicLoader(void)
 {
+	clear();
+}
+
+template <class Allocator>
+void DynamicLoader<Allocator>::clear(void)
+{
+	_modules.clear();
 }
 
 template <class Allocator>

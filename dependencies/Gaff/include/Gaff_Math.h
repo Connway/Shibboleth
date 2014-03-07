@@ -69,7 +69,7 @@ bool Between(const T& val, const T& min_val, const T& max_val)
 // Not really sure this is a good candidate for inlining,
 // but I don't want to have a compiled cpp file for Gaff_Math.h.
 // Inlining this removes redefinition linker warning.
-inline unsigned int FNVHash (const char* key, int len)
+inline unsigned int FNVHash(const char* key, int len)
 {
 	unsigned int hash = 2166136261;
 

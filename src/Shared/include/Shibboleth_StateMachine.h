@@ -22,13 +22,37 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Shibboleth_Allocator.h"
-#include <Gaff_String.h>
+#include "Shibboleth_IState.h"
+#include "Shibboleth_String.h"
 
 NS_SHIBBOLETH
 
-template <class T> using String = Gaff::String<T, Allocator>;
-typedef Gaff::String<char, Allocator> AString;
-typedef Gaff::String<wchar_t, Allocator> WString;
+class StateMachine
+{
+public:
+	struct StateEntry
+	{
+		typedef IState* (*CreateStateFunc)(Gaff::IAllocator*);
+		typedef void (*DestroyStateFunc)(Gaff::IAllocator*, IState*);
+
+		Array<unsigned int> transitions;
+		AString name;
+
+		CreateStateFunc create_func;
+		DestroyStateFunc destroy_func;
+		IState* state;
+	};
+
+	StateMachine(void);
+	~StateMachine(void);
+
+
+
+private:
+	Array<StateEntry> _states;
+
+	GAFF_NO_COPY(StateMachine);
+	GAFF_NO_MOVE(StateMachine);
+};
 
 NS_END

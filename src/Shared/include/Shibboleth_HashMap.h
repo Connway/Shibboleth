@@ -23,12 +23,10 @@ THE SOFTWARE.
 #pragma once
 
 #include "Shibboleth_Allocator.h"
-#include <Gaff_String.h>
+#include <Gaff_HashMap.h>
 
 NS_SHIBBOLETH
 
-template <class T> using String = Gaff::String<T, Allocator>;
-typedef Gaff::String<char, Allocator> AString;
-typedef Gaff::String<wchar_t, Allocator> WString;
+template <class Key, class Value> using HashMap = Gaff::HashMap<Key, Value, Allocator>;
 
 NS_END
