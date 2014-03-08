@@ -30,48 +30,15 @@ NS_GAFF
 class DefaultAllocator : public IAllocator
 {
 public:
-	DefaultAllocator(void):
-		_total_bytes_allocated(0), _num_allocations(0), _num_frees(0)
-	{
-	}
-
 	void* alloc(unsigned int size_bytes)
 	{
-		void* data = malloc(size_bytes);
-
-		if (data) {
-			_total_bytes_allocated += size_bytes;
-			++_num_allocations;
-		}
-
-		return data;
+		return malloc(size_bytes);
 	}
 
 	void free(void* data)
 	{
-		++_num_frees;
 		::free(data);
 	}
-
-	unsigned int getTotalBytesAllocated(void) const
-	{
-		return _total_bytes_allocated;
-	}
-
-	unsigned int getNumAllocations(void) const
-	{
-		return _num_allocations;
-	}
-
-	unsigned int getNumFrees(void) const
-	{
-		return _num_frees;
-	}
-
-private:
-	unsigned int _total_bytes_allocated;
-	unsigned int _num_allocations;
-	unsigned int _num_frees;
 };
 
 NS_END

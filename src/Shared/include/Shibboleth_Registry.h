@@ -20,11 +20,11 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#include "Shibboleth_Allocator.h"
+#include "Shibboleth_ProxyAllocator.h"
 #include <Gaff_Registry.h>
 
 NS_SHIBBOLETH
 
-typedef Gaff::Registry<Allocator> Registry;
+typedef Gaff::Registry<ProxyAllocator> Registry;
 
 NS_END

@@ -21,13 +21,14 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include <Shibboleth_IState.h>
-#include <Gaff_IAllocator.h>
+#include <Shibboleth_Array.h>
 #include <iostream>
 
 class TestState : public Shibboleth::IState
 {
 public:
 	TestState(void) {}
+	~TestState(void) {}
 
 	void enter(void)
 	{
@@ -45,12 +46,14 @@ public:
 	}
 };
 
-DYNAMICEXPORT Shibboleth::IState* CreateState(Gaff::IAllocator* allocator)
+DYNAMICEXPORT Shibboleth::IState* CreateState(Shibboleth::ProxyAllocator& allocator)
 {
-	return allocator->template allocT<TestState>();
+	Shibboleth::Array<unsigned int> test(3, allocator);
+
+	return allocator.template allocT<TestState>();
 }
 
-DYNAMICEXPORT void DestroyState(Gaff::IAllocator* allocator, Shibboleth::IState* state)
+DYNAMICEXPORT void DestroyState(Shibboleth::ProxyAllocator& allocator, Shibboleth::IState* state)
 {
-	allocator->freeT(state);
+	allocator.freeT(state);
 }

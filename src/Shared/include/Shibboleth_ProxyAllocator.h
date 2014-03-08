@@ -22,13 +22,35 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Shibboleth_ProxyAllocator.h"
-#include <Gaff_HashString.h>
+#include "Shibboleth_Allocator.h"
 
 NS_SHIBBOLETH
 
-template <class T> using HashString = Gaff::HashString<T, ProxyAllocator>;
-typedef Gaff::HashString<char, ProxyAllocator> AHashString;
-typedef Gaff::HashString<wchar_t, ProxyAllocator> WHashString;
+class ProxyAllocator : public Gaff::IAllocator
+{
+public:
+	ProxyAllocator(const ProxyAllocator& allocator):
+		_allocator(allocator._allocator)
+	{
+	}
+
+	explicit ProxyAllocator(Gaff::IAllocator& allocator = GetAllocator()):
+		_allocator(allocator)
+	{
+	}
+
+	void* alloc(unsigned int size_bytes)
+	{
+		return _allocator.alloc(size_bytes);
+	}
+
+	void free(void* data)
+	{
+		return _allocator.free(data);
+	}
+
+private:
+	Gaff::IAllocator& _allocator;
+};
 
 NS_END

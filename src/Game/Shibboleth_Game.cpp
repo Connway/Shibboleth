@@ -21,6 +21,7 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Shibboleth_Game.h"
+#include "Shibboleth_Allocator.h"
 #include "Shibboleth_String.h"
 #include <Gaff_Utils.h>
 #include <Gaff_File.h>
@@ -37,11 +38,10 @@ Game::Game(void):
 Game::~Game(void)
 {
 	for (ManagerMap::Iterator it = _manager_map.begin(); it != _manager_map.end(); ++it) {
-		it->destroy_func(GetAllocator(), it->manager);
+		it->destroy_func(ProxyAllocator(), it->manager);
 	}
 
-	//_state_machine.clear();
-
+	_state_machine.clear();
 	_dynamic_loader.clear();
 }
 
@@ -77,7 +77,7 @@ void Game::loadManagers(void)
 			entry.destroy_func = module->GetFunc<ManagerEntry::DestroyManagerFunc>("DestroyManager");
 
 			if (entry.create_func && entry.destroy_func) {
-				entry.manager = entry.create_func(GetAllocator());
+				entry.manager = entry.create_func(ProxyAllocator());
 
 				if (entry.manager) {
 					_manager_map[entry.manager->GetName()] = entry;
@@ -136,7 +136,7 @@ bool Game::loadStates(void)
 			entry.destroy_func = module->GetFunc<StateMachine::StateEntry::DestroyStateFunc>("DestroyState");
 
 			if (entry.create_func && entry.destroy_func) {
-				entry.state = entry.create_func(GetAllocator());
+				entry.state = entry.create_func(ProxyAllocator());
 
 				if (entry.state) {
 					entry.transitions.reserve(transitions.size());
@@ -151,7 +151,7 @@ bool Game::loadStates(void)
 						entry.transitions.push((unsigned int)val.getInteger());
 					}
 
-					//_state_machine.addState(entry);
+					_state_machine.addState(entry);
 				}
 			} else {
 				_dynamic_loader.removeModule(name.getString());

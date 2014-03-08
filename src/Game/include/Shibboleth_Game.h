@@ -45,8 +45,8 @@ public:
 private:
 	struct ManagerEntry
 	{
-		typedef Gaff::INamedObject* (*CreateManagerFunc)(Gaff::IAllocator*);
-		typedef void (*DestroyManagerFunc)(Gaff::IAllocator*, Gaff::INamedObject*);
+		typedef Gaff::INamedObject* (*CreateManagerFunc)(ProxyAllocator&);
+		typedef void (*DestroyManagerFunc)(ProxyAllocator&, Gaff::INamedObject*);
 
 		CreateManagerFunc create_func;
 		DestroyManagerFunc destroy_func;
@@ -57,7 +57,7 @@ private:
 
 	DynamicLoader _dynamic_loader;
 	ManagerMap _manager_map;
-	//StateMachine _state_machine;
+	StateMachine _state_machine;
 
 	bool _running;
 
