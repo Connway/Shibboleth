@@ -76,7 +76,7 @@ public:
 		friend class Array<T, Allocator>;
 	};
 
-	Array(const Allocator& allocator = Allocator());
+	explicit Array(const Allocator& allocator = Allocator());
 	explicit Array(unsigned int start_alloc, const Allocator& allocator = Allocator());
 	Array(unsigned int start_alloc, const T& init_val, const Allocator& allocator = Allocator());
 	Array(unsigned int size, const T* data, const Allocator& allocator = Allocator());

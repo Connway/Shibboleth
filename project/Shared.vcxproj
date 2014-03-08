@@ -12,6 +12,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\Shared\Shibboleth_Allocator.cpp" />
+    <ClCompile Include="..\src\Shared\Shibboleth_StateMachine.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\Shared\include\Shibboleth_Allocator.h" />
@@ -21,6 +22,7 @@
     <ClInclude Include="..\src\Shared\include\Shibboleth_HashMap.h" />
     <ClInclude Include="..\src\Shared\include\Shibboleth_HashString.h" />
     <ClInclude Include="..\src\Shared\include\Shibboleth_IState.h" />
+    <ClInclude Include="..\src\Shared\include\Shibboleth_ProxyAllocator.h" />
     <ClInclude Include="..\src\Shared\include\Shibboleth_Registry.h" />
     <ClInclude Include="..\src\Shared\include\Shibboleth_StateMachine.h" />
     <ClInclude Include="..\src\Shared\include\Shibboleth_String.h" />

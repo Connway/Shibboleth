@@ -25,14 +25,11 @@ THE SOFTWARE.
 
 NS_SHIBBOLETH
 
-volatile unsigned int Allocator::_total_bytes_allocated = 0;
-volatile unsigned int Allocator::_num_allocations = 0;
-volatile unsigned int Allocator::_num_frees = 0;
-Gaff::SpinLock Allocator::_lock;
-
 static Allocator gAllocator;
 
-Allocator::Allocator(void)
+Allocator::Allocator(void):
+	_total_bytes_allocated(0), _num_allocations(0),
+	_num_frees(0)
 {
 }
 
@@ -76,9 +73,9 @@ unsigned int Allocator::getNumFrees(void) const
 	return _num_frees;
 }
 
-Gaff::IAllocator* GetAllocator(void)
+Allocator& GetAllocator(void)
 {
-	return &gAllocator;
+	return gAllocator;
 }
 
 void* ShibbolethAllocate(size_t size)

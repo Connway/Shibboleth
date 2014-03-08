@@ -36,23 +36,23 @@ public:
 	~Allocator(void);
 
 	void* alloc(unsigned int size_bytes);
-	INLINE void free(void* data);
+	void free(void* data);
 
 	INLINE unsigned int getTotalBytesAllocated(void) const;
 	INLINE unsigned int getNumAllocations(void) const;
 	INLINE unsigned int getNumFrees(void) const;
 
 private:
-	static volatile unsigned int _total_bytes_allocated;
-	static volatile unsigned int _num_allocations;
-	static volatile unsigned int _num_frees;
+	unsigned int _total_bytes_allocated;
+	unsigned int _num_allocations;
+	unsigned int _num_frees;
 
-	static Gaff::SpinLock _lock;
+	Gaff::SpinLock _lock;
 
 	GAFF_NO_MOVE(Allocator);
 };
 
-INLINE Gaff::IAllocator* GetAllocator(void);
+INLINE Allocator& GetAllocator(void);
 
 void* ShibbolethAllocate(size_t size);
 void ShibbolethFree(void* data);

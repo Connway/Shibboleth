@@ -2,6 +2,7 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <ClCompile Include="..\src\Shared\Shibboleth_Allocator.cpp" />
+    <ClCompile Include="..\src\Shared\Shibboleth_StateMachine.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\Shared\include\Shibboleth_Array.h" />
@@ -14,5 +15,6 @@
     <ClInclude Include="..\src\Shared\include\Shibboleth_StateMachine.h" />
     <ClInclude Include="..\src\Shared\include\Shibboleth_HashMap.h" />
     <ClInclude Include="..\src\Shared\include\Shibboleth_HashString.h" />
+    <ClInclude Include="..\src\Shared\include\Shibboleth_ProxyAllocator.h" />
   </ItemGroup>
 </Project>

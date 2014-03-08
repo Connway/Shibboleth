@@ -22,13 +22,13 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Shibboleth_Allocator.h"
+#include "Shibboleth_ProxyAllocator.h"
 #include <Gaff_String.h>
 
 NS_SHIBBOLETH
 
-template <class T> using String = Gaff::String<T, Allocator>;
-typedef Gaff::String<char, Allocator> AString;
-typedef Gaff::String<wchar_t, Allocator> WString;
+template <class T> using String = Gaff::String<T, ProxyAllocator>;
+typedef Gaff::String<char, ProxyAllocator> AString;
+typedef Gaff::String<wchar_t, ProxyAllocator> WString;
 
 NS_END

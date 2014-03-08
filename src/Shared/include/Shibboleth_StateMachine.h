@@ -32,8 +32,8 @@ class StateMachine
 public:
 	struct StateEntry
 	{
-		typedef IState* (*CreateStateFunc)(Gaff::IAllocator*);
-		typedef void (*DestroyStateFunc)(Gaff::IAllocator*, IState*);
+		typedef IState* (*CreateStateFunc)(ProxyAllocator&);
+		typedef void (*DestroyStateFunc)(ProxyAllocator&, IState*);
 
 		Array<unsigned int> transitions;
 		AString name;
@@ -41,15 +41,34 @@ public:
 		CreateStateFunc create_func;
 		DestroyStateFunc destroy_func;
 		IState* state;
+
+		bool operator==(const char* rhs) const
+		{
+			return name == rhs;
+		}
 	};
 
 	StateMachine(void);
 	~StateMachine(void);
 
+	void clear(void);
 
+	void update(void);
+
+	INLINE void addState(const StateEntry& state);
+	INLINE void switchState(unsigned int state);
+	INLINE void switchState(const AString& name);
+	INLINE void switchState(const char* name);
+
+	INLINE const Array<unsigned int>& getTransitions(unsigned int state);
+	INLINE const AString& getName(unsigned int state);
+	INLINE unsigned int getStateID(const AString& name);
+	INLINE unsigned int getStateID(const char* name);
 
 private:
 	Array<StateEntry> _states;
+	unsigned int _curr_state;
+	unsigned int _next_state;
 
 	GAFF_NO_COPY(StateMachine);
 	GAFF_NO_MOVE(StateMachine);

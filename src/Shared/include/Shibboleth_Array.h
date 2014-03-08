@@ -22,11 +22,11 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Shibboleth_Allocator.h"
+#include "Shibboleth_ProxyAllocator.h"
 #include <Gaff_Array.h>
 
 NS_SHIBBOLETH
 
-template <class T> using Array = Gaff::Array<T, Allocator>;
+template <class T> using Array = Gaff::Array<T, ProxyAllocator>;
 
 NS_END

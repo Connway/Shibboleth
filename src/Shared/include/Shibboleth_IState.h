@@ -29,6 +29,7 @@ NS_SHIBBOLETH
 class IState
 {
 public:
+	IState(void): _transitions(nullptr) {}
 	virtual ~IState(void) {}
 
 	virtual void enter(void) = 0;

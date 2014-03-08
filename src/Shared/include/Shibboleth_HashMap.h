@@ -22,11 +22,11 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Shibboleth_Allocator.h"
+#include "Shibboleth_ProxyAllocator.h"
 #include <Gaff_HashMap.h>
 
 NS_SHIBBOLETH
 
-template <class Key, class Value> using HashMap = Gaff::HashMap<Key, Value, Allocator>;
+template <class Key, class Value> using HashMap = Gaff::HashMap<Key, Value, ProxyAllocator>;
 
 NS_END

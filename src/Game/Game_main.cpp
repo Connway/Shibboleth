@@ -24,13 +24,16 @@ THE SOFTWARE.
 
 int main(void)
 {
-	Shibboleth::Game game;
+	// Scope is used so that everything cleans up before the allocator does
+	{
+		Shibboleth::Game game;
 
-	if (!game.init()) {
-		return -1;
+		if (!game.init()) {
+			return -1;
+		}
+
+		game.run();
 	}
-
-	game.run();
 
 	return 0;
 }
