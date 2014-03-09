@@ -28,7 +28,7 @@ THE SOFTWARE.
 NS_GAFF
 
 template <class T, class... Args>
-T* construct(T* data, Args... args)
+T* construct(T* data, Args&&... args)
 {
 	return new (data) T(args...);
 }
@@ -66,7 +66,7 @@ public:
 	}
 
 	template <class T, class... Args>
-	T* allocT(Args... args)
+	T* allocT(Args&&... args)
 	{
 		T* data = (T*)alloc(sizeof(T));
 		return construct(data, args...);

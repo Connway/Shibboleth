@@ -108,7 +108,8 @@ bool Game::loadManagers(void)
 				entry.manager = entry.create_func(ProxyAllocator(), *this);
 
 				if (entry.manager) {
-					_manager_map[entry.manager->GetName()] = entry;
+					_manager_map[entry.manager->getName()] = entry;
+					_log_file->printf("Loaded manager '%s'\n", entry.manager->getName());
 				} else {
 					_log_file->printf("ERROR - Failed to create manager from dynamic module '%s'\n", rel_path.getBuffer());
 					error = true;
@@ -211,6 +212,7 @@ bool Game::loadStates(void)
 					}
 
 					_state_machine.addState(entry);
+					_log_file->printf("Loaded state '%s'\n", name.getString());
 
 					if (entry.name == starting_state.getString()) {
 						_state_machine.switchState(i);
