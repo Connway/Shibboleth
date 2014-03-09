@@ -26,7 +26,8 @@ THE SOFTWARE.
 NS_SHIBBOLETH
 
 StateMachine::StateMachine(void):
-	_curr_state((unsigned int)-1), _next_state((unsigned int)-1)
+	_curr_state((unsigned int)-1), _next_state((unsigned int)-1),
+	_restart(false)
 {
 }
 
@@ -47,17 +48,27 @@ void StateMachine::clear(void)
 
 void StateMachine::update(void)
 {
-	if (_next_state != _curr_state) {
-		_states[_curr_state].state->exit();
-
-		if (_next_state != (unsigned int)-1) {
-			_states[_next_state].state->enter();
+	if (_next_state != _curr_state || _restart) {
+		if (_curr_state != (unsigned int)-1) {
+			_states[_curr_state].state->exit();
 		}
 
+		_states[_next_state].state->enter();
 		_curr_state = _next_state;
+		_restart = false;
 	}
 
 	_states[_curr_state].state->update();
+}
+
+unsigned int StateMachine::getCurrentState(void) const
+{
+	return _curr_state;
+}
+
+unsigned int StateMachine::getNextState(void) const
+{
+	return _next_state;
 }
 
 void StateMachine::addState(const StateEntry& state)
@@ -69,18 +80,30 @@ void StateMachine::switchState(unsigned int state)
 {
 	assert(state < _states.size());
 	_next_state = state;
+
+	if (_next_state == _curr_state) {
+		_restart = true;
+	}
 }
 
 void StateMachine::switchState(const AString& name)
 {
 	assert(name.size());
 	_next_state = getStateID(name.getBuffer());
+
+	if (_next_state == _curr_state) {
+		_restart = true;
+	}
 }
 
 void StateMachine::switchState(const char* name)
 {
 	assert(name);
 	_next_state = getStateID(name);
+
+	if (_next_state == _curr_state) {
+		_restart = true;
+	}
 }
 
 const Array<unsigned int>& StateMachine::getTransitions(unsigned int state)
@@ -107,6 +130,11 @@ unsigned int StateMachine::getStateID(const char* name)
 	auto it = _states.linearSearch(name);
 	assert(it != _states.end());
 	return (unsigned int)(it - _states.begin());
+}
+
+unsigned int StateMachine::getNumStates(void) const
+{
+	return _states.size();
 }
 
 NS_END

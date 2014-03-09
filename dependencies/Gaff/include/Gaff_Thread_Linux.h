@@ -46,6 +46,7 @@ public:
 		FAILED			// Something went wrong!
 	};
 
+	Thread(Thread&& thread);
 	Thread(void);
 	~Thread(void);
 
@@ -53,6 +54,8 @@ public:
 	bool terminate(void);
 	bool close(void);
 	WaitCode wait(unsigned int ms = INF);
+
+	const Thread& operator=(Thread&& thread);
 
 private:
 	pthread_t _thread;

@@ -653,6 +653,12 @@ void HashMap<Key, Value, Allocator>::erase(const Key& key)
 }
 
 template <class Key, class Value, class Allocator>
+void HashMap<Key, Value, Allocator>::insert(const Key& key, Value&& value)
+{
+	operator[](key) = Move(value);
+}
+
+template <class Key, class Value, class Allocator>
 void HashMap<Key, Value, Allocator>::insert(const Key& key, const Value& value)
 {
 	operator[](key) = value;
@@ -717,7 +723,7 @@ void HashMap<Key, Value, Allocator>::reserve(unsigned int new_size)
 	if (old_data) {
 		for (unsigned int i = 0; i < old_size; ++i) {
 			if (old_data[i].occupied) {
-				insert(old_data[i].key, old_data[i].value);
+				insert(old_data[i].key, Move(old_data[i].value));
 			}
 		}
 
@@ -977,6 +983,12 @@ void HashMap<String<T, Allocator>, Value, Allocator>::erase(const String<T, Allo
 }
 
 template <class Value, class Allocator, class T>
+void HashMap<String<T, Allocator>, Value, Allocator>::insert(const String<T, Allocator>& key, Value&& value)
+{
+	operator[](key) = Move(value);
+}
+
+template <class Value, class Allocator, class T>
 void HashMap<String<T, Allocator>, Value, Allocator>::insert(const String<T, Allocator>& key, const Value& value)
 {
 	operator[](key) = value;
@@ -1041,7 +1053,7 @@ void HashMap<String<T, Allocator>, Value, Allocator>::reserve(unsigned int new_s
 	if (old_data) {
 		for (unsigned int i = 0; i < old_size; ++i) {
 			if (old_data[i].occupied) {
-				insert(old_data[i].key, old_data[i].value);
+				insert(old_data[i].key, Move(old_data[i].value));
 			}
 		}
 
@@ -1300,6 +1312,12 @@ void HashMap<HashString<T, Allocator>, Value, Allocator>::erase(const HashString
 }
 
 template <class Value, class Allocator, class T>
+void HashMap<HashString<T, Allocator>, Value, Allocator>::insert(const HashString<T, Allocator>& key, Value&& value)
+{
+	operator[](key) = Move(value);
+}
+
+template <class Value, class Allocator, class T>
 void HashMap<HashString<T, Allocator>, Value, Allocator>::insert(const HashString<T, Allocator>& key, const Value& value)
 {
 	operator[](key) = value;
@@ -1364,7 +1382,7 @@ void HashMap<HashString<T, Allocator>, Value, Allocator>::reserve(unsigned int n
 	if (old_data) {
 		for (unsigned int i = 0; i < old_size; ++i) {
 			if (old_data[i].occupied) {
-				insert(old_data[i].key, old_data[i].value);
+				insert(old_data[i].key, Move(old_data[i].value));
 			}
 		}
 

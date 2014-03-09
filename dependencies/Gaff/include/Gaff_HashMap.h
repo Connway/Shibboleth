@@ -110,6 +110,7 @@ public:
 	void erase(unsigned int index);
 	void erase(const Key& key);
 
+	void insert(const Key& key, Value&& value);
 	void insert(const Key& key, const Value& value);
 
 	int indexOf(const Key& key) const;
@@ -212,6 +213,8 @@ public:
 	void erase(const Iterator& it);
 	void erase(unsigned int index);
 	void erase(const String<T, Allocator>& key);
+
+	void insert(const String<T, Allocator>& key, Value&& value);
 	void insert(const String<T, Allocator>& key, const Value& value);
 
 	int indexOf(const String<T, Allocator>& key) const;
@@ -314,6 +317,8 @@ public:
 	void erase(const Iterator& it);
 	void erase(unsigned int index);
 	void erase(const HashString<T, Allocator>& key);
+
+	void insert(const HashString<T, Allocator>& key, Value&& value);
 	void insert(const HashString<T, Allocator>& key, const Value& value);
 
 	int indexOf(const HashString<T, Allocator>& key) const;

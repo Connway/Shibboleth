@@ -17,6 +17,7 @@
     <ClCompile Include="..\..\dependencies\Gaff\Gaff_Utils_Linux.cpp" />
     <ClCompile Include="..\..\dependencies\Gaff\Gaff_Utils_Windows.cpp" />
     <ClCompile Include="..\..\dependencies\Gaff\Gaff_JSON.cpp" />
+    <ClCompile Include="..\..\dependencies\Gaff\Gaff_Utils_Common.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Headers">

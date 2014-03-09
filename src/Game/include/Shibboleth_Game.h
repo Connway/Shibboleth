@@ -28,24 +28,75 @@ THE SOFTWARE.
 #include "Shibboleth_Registry.h"
 #include "Shibboleth_HashMap.h"
 #include "Shibboleth_IState.h"
+#include "Shibboleth_Logger.h"
 #include "Shibboleth_Array.h"
 #include <Gaff_INamedObject.h>
+#include <Gaff_ThreadPool.h>
 
 NS_SHIBBOLETH
 
 class Game
 {
 public:
+	template <class T>
+	const T& getManager(const AHashString& name) const
+	{
+		assert(name.size() && _manager_map.indexOf(name) != -1);
+		return *(T*)_manager_map[name];
+	}
+
+	template <class T>
+	T& getManager(const AHashString& name)
+	{
+		assert(name.size() && _manager_map.indexOf(name) != -1);
+		return *(T*)_manager_map[name];
+	}
+
+	template <class T>
+	const T& getManager(const AString& name) const
+	{
+		assert(name.size() && _manager_map.indexOf(name) != -1);
+		return *(T*)_manager_map[name];
+	}
+
+	template <class T>
+	T& getManager(const AString& name)
+	{
+		assert(name.size() && _manager_map.indexOf(name) != -1);
+		return *(T*)_manager_map[name];
+	}
+
+	template <class T>
+	const T& getManager(const char* name) const
+	{
+		assert(name && _manager_map.indexOf(name) != -1);
+		return *(T*)_manager_map[name];
+	}
+
+	template <class T>
+	T& getManager(const char* name)
+	{
+		assert(name && _manager_map.indexOf(name) != -1);
+		return *(T*)_manager_map[name];
+	}
+
 	Game(void);
 	~Game(void);
 
 	bool init(void);
 	void run(void);
 
+	INLINE ProxyAllocator& getProxyAllocator(void);
+	INLINE Allocator& getAllocator(void) const;
+	INLINE Logger& getLogger(void) const;
+
+	INLINE void addTask(Gaff::ITask<ProxyAllocator>* task);
+	INLINE StateMachine& getStateMachine(void);
+
 private:
 	struct ManagerEntry
 	{
-		typedef Gaff::INamedObject* (*CreateManagerFunc)(ProxyAllocator&);
+		typedef Gaff::INamedObject* (*CreateManagerFunc)(ProxyAllocator&, Game& game);
 		typedef void (*DestroyManagerFunc)(ProxyAllocator&, Gaff::INamedObject*);
 
 		CreateManagerFunc create_func;
@@ -59,9 +110,17 @@ private:
 	ManagerMap _manager_map;
 	StateMachine _state_machine;
 
+	Gaff::ThreadPool<ProxyAllocator> _thread_pool;
+
+	ProxyAllocator _proxy_allocator;
+	Allocator& _allocator;
+	Logger& _logger;
+
+	Gaff::File* _log_file;
+
 	bool _running;
 
-	void loadManagers(void);
+	bool loadManagers(void);
 	bool loadStates(void);
 
 	GAFF_NO_COPY(Game);

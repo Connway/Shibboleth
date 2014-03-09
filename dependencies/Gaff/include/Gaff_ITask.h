@@ -31,7 +31,7 @@ template <class Allocator = DefaultAllocator>
 class ITask
 {
 public:
-	typedef SmartPtr< ITask<Allocator> > TaskPointer;
+	typedef SmartPtr<ITask<Allocator>, Allocator> TaskPointer;
 
 	ITask(const Allocator& allocator = Allocator()):
 		_dependent_tasks(allocator)

@@ -62,13 +62,6 @@ bool File::rename(const wchar_t* old_file_name, const wchar_t* new_file_name)
 
 #endif
 
-// File::File(const Gaff::AString<>& file_name, OPEN_MODE mode):
-// 	_file(nullptr)
-// {
-// 	assert(file_name.size());
-// 	open(file_name.getBuffer(), mode);
-// }
-
 File::File(const char* file_name, OPEN_MODE mode):
 	_file(nullptr)
 {
@@ -76,8 +69,8 @@ File::File(const char* file_name, OPEN_MODE mode):
 	open(file_name, mode);
 }
 
-File::File(void) :
-_file(nullptr)
+File::File(void):
+	_file(nullptr)
 {
 }
 
@@ -131,6 +124,7 @@ bool File::redirect(const char* file_name, OPEN_MODE mode)
 bool File::close(void)
 {
 	bool ret = false;
+
 	if (_file) {
 		ret = !fclose(_file);
 		_file = nullptr;
@@ -368,7 +362,7 @@ bool File::readString(wchar_t* buffer, int max_count)
 #endif
 
 	File::File(File&& rhs):
-		_file(rhs._file)
+		_file(rhs._file), _mode(rhs._mode)
 	{
 		rhs._file = nullptr;
 	}
@@ -376,6 +370,7 @@ bool File::readString(wchar_t* buffer, int max_count)
 	const File& File::operator=(File&& rhs)
 	{
 		_file = rhs._file;
+		_mode = rhs._mode;
 		rhs._file = nullptr;
 		return *this;
 	}

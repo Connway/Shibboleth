@@ -31,7 +31,8 @@ THE SOFTWARE.
 NS_SHIBBOLETH
 
 Game::Game(void):
-	_running(true)
+	_thread_pool(ProxyAllocator()), _allocator(GetAllocator()),
+	_logger(GetLogger()), _running(true)
 {
 }
 
@@ -47,27 +48,54 @@ Game::~Game(void)
 
 bool Game::init(void)
 {
+	char logFilename[64] = { 0 };
+	Gaff::GetCurrentTimeString(logFilename, 64, "Logs/GameLog %m-%d-%Y %H-%M.txt");
+
+	if (!Gaff::CreateDir("./Logs", 0777) || !_logger.openLogFile(logFilename)) {
+		return false;
+	}
+
+	_log_file = &_logger.getLogFile(logFilename);
+
+	_log_file->writeString("==================================================\n");
+	_log_file->writeString("==================================================\n");
+	_log_file->writeString("Initializing Game\n");
+
 	Gaff::JSON::SetMemoryFunctions(&ShibbolethAllocate, &ShibbolethFree);
 
-	loadManagers();
+	if (!_thread_pool.init(128)) {
+		_log_file->writeString("ERROR - Failed to initialize thread pool\n");
+		return false;
+	}
+
+	if (!loadManagers()) {
+		return false;
+	}
 
 	if (!loadStates()) {
 		return false;
 	}
 
+	_log_file->writeString("Game Successfully Initialized\n");
 	return true;
 }
 
-void Game::loadManagers(void)
+bool Game::loadManagers(void)
 {
-	// Load managers from DLLs
-	Gaff::ForEachTypeInDirectory<Gaff::DT_RegularFile>("./Managers", [&](const char* name, size_t name_len) -> bool
-	{
-		if (!Gaff::File::checkExtension(name, DYNAMIC_EXTENSION)) {
-			return false;
-		}
+	_log_file->writeString("Loading Managers\n");
 
+	bool error = false;
+
+	// Load managers from DLLs
+	Gaff::ForEachTypeInDirectory<Gaff::FDT_RegularFile>("./Managers", [&](const char* name, size_t name_len) -> bool
+	{
 		AString rel_path = AString("./Managers/") + name;
+
+		if (!Gaff::File::checkExtension(name, DYNAMIC_EXTENSION)) {
+			_log_file->printf("ERROR - '%s' is not a dynamic module.\n", rel_path.getBuffer());
+			error = true;
+			return true;
+		}
 
 		DynamicLoader::ModulePtr module = _dynamic_loader.loadModule(rel_path.getBuffer(), name);
 
@@ -77,36 +105,60 @@ void Game::loadManagers(void)
 			entry.destroy_func = module->GetFunc<ManagerEntry::DestroyManagerFunc>("DestroyManager");
 
 			if (entry.create_func && entry.destroy_func) {
-				entry.manager = entry.create_func(ProxyAllocator());
+				entry.manager = entry.create_func(ProxyAllocator(), *this);
 
 				if (entry.manager) {
 					_manager_map[entry.manager->GetName()] = entry;
+				} else {
+					_log_file->printf("ERROR - Failed to create manager from dynamic module '%s'\n", rel_path.getBuffer());
+					error = true;
+					return true;
 				}
 			} else {
 				_dynamic_loader.removeModule(name);
+				_log_file->printf("ERROR - Failed to find functions 'CreateManager' and 'DestroyManager' in dynamic module '%s'\n", rel_path.getBuffer());
+				error = true;
+				return true;
 			}
+
+		} else {
+			_log_file->printf("ERROR - Failed to load dynamic module '%s'\n", rel_path.getBuffer());
+			error = true;
+			return true;
 		}
 
 		return false;
 	});
+
+	return !error;
 }
 
 bool Game::loadStates(void)
 {
+	_log_file->writeString("Loading States\n");
+
 	Gaff::JSON state_data;
 
 	if (!state_data.parseFile("./States/states.json")) {
+		_log_file->writeString("ERROR - Could not find './States/states.json'\n");
 		return false;
 	}
 
 	if (!state_data.isObject()) {
+		_log_file->writeString("ERROR - './States/states.json' is malformed. Root is not an object.\n");
 		return false;
 	}
 
 	Gaff::JSON starting_state = state_data["starting_state"];
 	Gaff::JSON states = state_data["states"];
 
-	if (!starting_state.isString() || !states.isArray()) {
+	if (!starting_state.isString()) {
+		_log_file->writeString("ERROR - './States/states.json' is malformed. 'starting_state' is not a string.\n");
+		return false;
+	}
+
+	if (!states.isArray()) {
+		_log_file->writeString("ERROR - './States/states.json' is malformed. 'states' is not an array.\n");
 		return false;
 	}
 
@@ -120,7 +172,13 @@ bool Game::loadStates(void)
 		Gaff::JSON transitions = state["transitions"];
 		Gaff::JSON name = state["name"];
 
-		if (!transitions.isArray() || !name.isString()) {
+		if (!transitions.isArray()) {
+			_log_file->printf("ERROR - './States/states.json' is malformed. Transitions for state entry %i is not an array.\n", i);
+			return false;
+		}
+
+		if (!name.isString()) {
+			_log_file->printf("ERROR - './States/states.json' is malformed. Name for state entry %i is not a string.\n", i);
 			return false;
 		}
 
@@ -136,7 +194,7 @@ bool Game::loadStates(void)
 			entry.destroy_func = module->GetFunc<StateMachine::StateEntry::DestroyStateFunc>("DestroyState");
 
 			if (entry.create_func && entry.destroy_func) {
-				entry.state = entry.create_func(ProxyAllocator());
+				entry.state = entry.create_func(ProxyAllocator(), *this);
 
 				if (entry.state) {
 					entry.transitions.reserve(transitions.size());
@@ -145,6 +203,7 @@ bool Game::loadStates(void)
 						Gaff::JSON val = transitions[j];
 
 						if (!val.isInteger()) {
+							_log_file->printf("ERROR - './States/states.json' is malformed. Name for state entry %i is not a string.\n", i);
 							return false;
 						}
 
@@ -152,11 +211,30 @@ bool Game::loadStates(void)
 					}
 
 					_state_machine.addState(entry);
+
+					if (entry.name == starting_state.getString()) {
+						_state_machine.switchState(i);
+					}
+
+				} else {
+					_log_file->printf("ERROR - Failed to create state '%s' from dynamic module '%s'\n", entry.name.getBuffer(), filename.getBuffer());
+					return false;
 				}
+
 			} else {
 				_dynamic_loader.removeModule(name.getString());
+				_log_file->printf("ERROR - Failed to find functions 'CreateState' and 'DestroyState' in dynamic module '%s'\n", filename.getBuffer());
+				return false;
 			}
+
+		} else {
+			_log_file->printf("ERROR - Failed to load dynamic module '%s'\n", filename.getBuffer());
 		}
+	}
+
+	if (_state_machine.getNextState() == -1) {
+		_log_file->writeString("ERROR - 'starting_state' is set to an invalid state name\n");
+		return false;
 	}
 
 	return true;
@@ -165,7 +243,33 @@ bool Game::loadStates(void)
 void Game::run(void)
 {
 	while (_running) {
+		_state_machine.update();
 	}
+}
+
+ProxyAllocator& Game::getProxyAllocator(void)
+{
+	return _proxy_allocator;
+}
+
+Allocator& Game::getAllocator(void) const
+{
+	return _allocator;
+}
+
+Logger& Game::getLogger(void) const
+{
+	return _logger;
+}
+
+void Game::addTask(Gaff::ITask<ProxyAllocator>* task)
+{
+	_thread_pool.addTask(task);
+}
+
+StateMachine& Game::getStateMachine(void)
+{
+	return _state_machine;
 }
 
 NS_END

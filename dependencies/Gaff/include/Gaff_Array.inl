@@ -398,6 +398,22 @@ bool Array<T, Allocator>::empty(void) const
 }
 
 template <class T, class Allocator>
+void Array<T, Allocator>::push(T&& data)
+{
+	if (_used == _size) {
+		if (_size == 0) {
+			reserve(1);
+		} else {
+			reserve(_size * 2);
+		}
+	}
+
+	construct(_array + _used);
+	_array[_used] = Move(data);
+	++_used;
+}
+
+template <class T, class Allocator>
 void Array<T, Allocator>::push(const T& data)
 {
 	if (_used == _size) {
