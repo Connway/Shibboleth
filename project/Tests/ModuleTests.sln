@@ -9,6 +9,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Shared", "..\Shared.vcxproj
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Gaff", "..\Dependencies\Gaff.vcxproj", "{A63D072E-20CB-47AA-A110-65CA8FCC524D}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ManagerTest", "ManagerTest.vcxproj", "{CC0AC1BA-54C8-4C00-895A-E26CBF073844}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -37,6 +39,12 @@ Global
 		{A63D072E-20CB-47AA-A110-65CA8FCC524D}.Release|Win32.Build.0 = Release|Win32
 		{A63D072E-20CB-47AA-A110-65CA8FCC524D}.Release|x64.ActiveCfg = Release|x64
 		{A63D072E-20CB-47AA-A110-65CA8FCC524D}.Release|x64.Build.0 = Release|x64
+		{CC0AC1BA-54C8-4C00-895A-E26CBF073844}.Debug|Win32.ActiveCfg = Debug|Win32
+		{CC0AC1BA-54C8-4C00-895A-E26CBF073844}.Debug|Win32.Build.0 = Debug|Win32
+		{CC0AC1BA-54C8-4C00-895A-E26CBF073844}.Debug|x64.ActiveCfg = Debug|Win32
+		{CC0AC1BA-54C8-4C00-895A-E26CBF073844}.Release|Win32.ActiveCfg = Release|Win32
+		{CC0AC1BA-54C8-4C00-895A-E26CBF073844}.Release|Win32.Build.0 = Release|Win32
+		{CC0AC1BA-54C8-4C00-895A-E26CBF073844}.Release|x64.ActiveCfg = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

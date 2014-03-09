@@ -20,19 +20,39 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#pragma once
+#include <Shibboleth_Game.h>
+#include <Gaff_INamedObject.h>
+#include <iostream>
 
-#include "Gaff_Defines.h"
-
-NS_GAFF
-
-class INamedObject
+class TestManager : public Gaff::INamedObject
 {
 public:
-	INamedObject(void) {}
-	virtual ~INamedObject(void) {}
+	TestManager(Shibboleth::Game& game):
+		_game(game)
+	{
+		std::cout << "Test Manager CREATED" << std::endl;
+	}
 
-	virtual const char* getName(void) const = 0;
+	~TestManager(void)
+	{
+		std::cout << "Test Manager DESTROYED" << std::endl;
+	}
+
+	const char* getName(void) const
+	{
+		return "Test Manager";
+	}
+
+private:
+	Shibboleth::Game& _game;
 };
 
-NS_END
+DYNAMICEXPORT Gaff::INamedObject* CreateManager(Shibboleth::ProxyAllocator& allocator, Shibboleth::Game& game)
+{
+	return allocator.allocT<TestManager>(game);
+}
+
+DYNAMICEXPORT void DestroyManager(Shibboleth::ProxyAllocator& allocator, Gaff::INamedObject* manager)
+{
+	allocator.freeT(manager);
+}
