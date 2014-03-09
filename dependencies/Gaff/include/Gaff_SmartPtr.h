@@ -66,11 +66,11 @@ public:
 		return _data != rhs;
 	}
 
-	const SmartPtr<T, Allocator>& operator=(SmartPtr<T, Allocator>& rhs)
+	const SmartPtr<T, Allocator>& operator=(const SmartPtr<T, Allocator>& rhs)
 	{
 		destroy();
 		_data = rhs._data;
-		rhs._data = nullptr;
+		((SmartPtr<T, Allocator>&)rhs)._data = nullptr;
 		return *this;
 	}
 

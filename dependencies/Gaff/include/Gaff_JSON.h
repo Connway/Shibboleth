@@ -30,6 +30,36 @@ NS_GAFF
 class JSON
 {
 public:
+	template <class Callback>
+	void forEachInObject(Callback&& callback)
+	{
+		assert(_value && isObject());
+		const char* key = nullptr;
+		json_t* value = nullptr;
+
+		json_object_foreach(_value, key, value)
+		{
+			if (callback(key, JSON(value))) {
+				break;
+			}
+		}
+	}
+
+	template <class Callback>
+	void forEachInArray(Callback&& callback)
+	{
+		assert(_value && isArray());
+		json_t* value = nullptr;
+		size_t index = 0;
+
+		json_array_foreach(_value, index, value)
+		{
+			if (callback(index, JSON(value))) {
+				break;
+			}
+		}
+	}
+
 	template <class Allocator>
 	JSON getObject(const AString<Allocator> key)
 	{

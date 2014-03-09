@@ -23,13 +23,21 @@ THE SOFTWARE.
 #if defined(__linux__) || defined(__APPLE__)
 
 #include "Gaff_Utils.h"
+#include <sys/stat.h>
 #include <unistd.h>
+#include <errno.h>
 
 NS_GAFF
 
 unsigned long GetNumberOfCores(void)
 {
 	return sysconf(_SC_NPROCESSORS_ONLN);
+}
+
+bool CreateDir(const char* dirname, unsigned short mode)
+{
+	assert(dirname);
+	return mkdir(dirname, mode) == 0 || errno == EEXIST;
 }
 
 NS_END

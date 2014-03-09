@@ -20,46 +20,15 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#pragma once
-
-#include "Gaff_Defines.h"
-#include "Gaff_IncludeWindows.h"
-
-#define THREAD_CALLTYPE __stdcall
-#define YieldThread() Sleep(0)
+#include "Gaff_Utils.h"
 
 NS_GAFF
 
-class Thread
+void GetCurrentTimeString(char* buff, size_t size, const char* format)
 {
-public:
-	static unsigned int INF; // value for infinite waiting period
-
-	typedef DWORD ReturnType;
-	typedef ReturnType (THREAD_CALLTYPE *ThreadFunc)(void*);
-
-	enum WaitCode
-	{
-		THREAD_FINISHED = 0, // Thread has finished executing
-		THREAD_TIMEOUT,		 // Thread is still running and has timed out
-		THREAD_FAILED		 // Something went wrong!
-	};
-
-	Thread(Thread&& thread);
-	Thread(void);
-	~Thread(void);
-
-	INLINE bool create(ThreadFunc thread_func, void* thread_data = 0);
-	INLINE bool terminate(void);
-	INLINE bool close(void);
-	WaitCode wait(unsigned int ms = INF);
-
-	const Thread& operator=(Thread&& thread);
-
-private:
-	HANDLE _thread;
-
-	GAFF_NO_COPY(Thread);
-};
+	time_t t = time(0);
+	tm* now = localtime(&t);
+	strftime(buff, size, format, now);
+}
 
 NS_END

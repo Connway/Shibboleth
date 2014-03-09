@@ -22,44 +22,36 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Gaff_Defines.h"
-#include "Gaff_IncludeWindows.h"
+#include "Shibboleth_HashString.h"
+#include "Shibboleth_HashMap.h"
+#include "Shibboleth_String.h"
+#include <Gaff_File.h>
 
-#define THREAD_CALLTYPE __stdcall
-#define YieldThread() Sleep(0)
+NS_SHIBBOLETH
 
-NS_GAFF
-
-class Thread
+class Logger
 {
 public:
-	static unsigned int INF; // value for infinite waiting period
+	Logger(void);
+	~Logger(void);
 
-	typedef DWORD ReturnType;
-	typedef ReturnType (THREAD_CALLTYPE *ThreadFunc)(void*);
-
-	enum WaitCode
-	{
-		THREAD_FINISHED = 0, // Thread has finished executing
-		THREAD_TIMEOUT,		 // Thread is still running and has timed out
-		THREAD_FAILED		 // Something went wrong!
-	};
-
-	Thread(Thread&& thread);
-	Thread(void);
-	~Thread(void);
-
-	INLINE bool create(ThreadFunc thread_func, void* thread_data = 0);
-	INLINE bool terminate(void);
-	INLINE bool close(void);
-	WaitCode wait(unsigned int ms = INF);
-
-	const Thread& operator=(Thread&& thread);
+	bool openLogFile(const AHashString& filename);
+	INLINE bool openLogFile(const AString& filename);
+	INLINE bool openLogFile(const char* filename);
+	INLINE void closeLogFile(const AHashString& filename);
+	INLINE void closeLogFile(const AString& filename);
+	INLINE void closeLogFile(const char* filename);
+	INLINE Gaff::File& getLogFile(const AHashString& filename);
+	INLINE Gaff::File& getLogFile(const AString& filename);
+	INLINE Gaff::File& getLogFile(const char* filename);
 
 private:
-	HANDLE _thread;
+	HashMap<AHashString, Gaff::File> _files;
 
-	GAFF_NO_COPY(Thread);
+	GAFF_NO_COPY(Logger);
+	GAFF_NO_MOVE(Logger);
 };
+
+INLINE Logger& GetLogger(void);
 
 NS_END

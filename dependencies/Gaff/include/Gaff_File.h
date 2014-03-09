@@ -239,8 +239,8 @@ public:
 	const File& operator=(File&& rhs);
 
 private:
-	OPEN_MODE _mode;
 	FILE* _file;
+	OPEN_MODE _mode;
 
 	GAFF_NO_COPY(File);
 };

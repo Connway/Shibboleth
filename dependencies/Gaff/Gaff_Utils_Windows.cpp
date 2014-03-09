@@ -22,7 +22,11 @@ THE SOFTWARE.
 
 #if defined(_WIN32) || defined(_WIN64)
 
+#include "Gaff_IncludeWindows.h"
 #include "Gaff_Utils.h"
+#include "Gaff_IncludeAssert.h"
+#include <direct.h>
+#include <errno.h>
 
 NS_GAFF
 
@@ -32,6 +36,20 @@ unsigned long GetNumberOfCores(void)
 	GetSystemInfo(&info);
 	return info.dwNumberOfProcessors;
 }
+
+bool CreateDir(const char* dirname, unsigned short)
+{
+	assert(dirname);
+	return !_mkdir(dirname) || errno == EEXIST;
+}
+
+#ifdef _UNICODE
+bool CreateDir(const wchar_t* dirname, unsigned short)
+{
+	assert(dirname);
+	return !_wmkdir(dirname) || errno == EEXIST;
+}
+#endif
 
 NS_END
 

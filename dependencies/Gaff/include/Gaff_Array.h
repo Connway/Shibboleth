@@ -119,6 +119,7 @@ public:
 
 	bool empty(void) const;
 
+	void push(T&& data);
 	void push(const T& data);
 	void push(T& data);
 	void pop(void);

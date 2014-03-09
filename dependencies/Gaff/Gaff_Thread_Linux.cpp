@@ -34,7 +34,18 @@ unsigned int Thread::INF = (unsigned int)-1;
 static pthread_mutex_t MUTEX_NULL = PTHREAD_MUTEX_INITIALIZER;
 static pthread_cond_t COND_NULL = PTHREAD_COND_INITIALIZER;
 
-Thread::Thread(void): _thread(0), _mutex(MUTEX_NULL), _cond(COND_NULL) {}
+Thread::Thread(Thread&& thread):
+	_thread(thread._thread), _mutex(thread._mutex), _cond(thread._cond)
+{
+	thread._thread = 0;
+	thread._mutex = MUTEX_NULL;
+	thread._cond = COND_NULL;
+}
+
+Thread::Thread(void):
+	_thread(0), _mutex(MUTEX_NULL), _cond(COND_NULL)
+{
+}
 
 Thread::~Thread(void)
 {
@@ -62,13 +73,13 @@ bool Thread::close(void)
 
 Thread::WaitCode Thread::wait(unsigned int ms)
 {
-    WaitCode ret = FINISHED;
+	WaitCode ret = FINISHED;
 
 	if (ms == INF) {
 		ret = (pthread_join(_thread, 0)) ? FAILED : FINISHED;
 
 	} else {
-        // Might want to find a better way of getting the final timespec struct
+		// Might want to find a better way of getting the final timespec struct
 		// calculate time to wait for
 		timeval time;
 		gettimeofday(&time, 0);
@@ -76,7 +87,7 @@ Thread::WaitCode Thread::wait(unsigned int ms)
 		time.tv_sec += ms / 1000;
 		time.tv_usec += (ms % 1000) * 1000;
 
-        timespec temp = { time.tv_sec, time.tv_usec * 1000 };
+		timespec temp = { time.tv_sec, time.tv_usec * 1000 };
 
 		pthread_mutex_lock(&_mutex);
 		int r = pthread_cond_timedwait(&_cond, &_mutex, &temp);
@@ -97,6 +108,23 @@ Thread::WaitCode Thread::wait(unsigned int ms)
 	}
 
 	return ret;
+}
+
+const Thread& Thread::operator=(Thread&& rhs)
+{
+	if (_thread) {
+		close();
+	}
+
+	_thread = rhs._thread;
+	_mutex = rhs._mutex;
+	_cond = rhs._cond;
+
+	rhs._thread = 0;
+	rhs._mutex = MUTEX_NULL;
+	rhs._cond = COND_NULL;
+
+	return *this;
 }
 
 NS_END

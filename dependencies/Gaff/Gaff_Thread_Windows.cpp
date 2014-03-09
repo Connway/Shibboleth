@@ -28,6 +28,12 @@ NS_GAFF
 
 unsigned int Thread::INF = (unsigned int)-1;
 
+Thread::Thread(Thread&& thread):
+	_thread(thread._thread)
+{
+	thread._thread = nullptr;
+}
+
 Thread::Thread(void):
 	_thread(nullptr)
 {
@@ -75,6 +81,18 @@ Thread::WaitCode Thread::wait(unsigned int ms)
 		default:
 			return THREAD_FINISHED;
 	}
+}
+
+const Thread& Thread::operator=(Thread&& rhs)
+{
+	if (_thread) {
+		close();
+	}
+
+	_thread = rhs._thread;
+	rhs._thread = nullptr;
+
+	return *this;
 }
 
 NS_END
