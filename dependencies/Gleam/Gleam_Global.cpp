@@ -1,5 +1,5 @@
 /************************************************************************************
-Copyright (C) 2013 by Nicholas LaCroix
+Copyright (C) 2014 by Nicholas LaCroix
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -68,7 +68,7 @@ void* GleamAlloc(unsigned int size_bytes, const char* filename, unsigned int lin
 
 		// attempt to write a log about what happened
 		PrintfToLog("Failed to allocate %i bytes in \'%s\':%i", LOG_ERROR, filename, line_number);
-		return NULLPTR;
+		return nullptr;
 	}
 
 	return data;

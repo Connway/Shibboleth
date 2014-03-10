@@ -20,7 +20,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#include "Shibboleth_Game.h"
+#include "Shibboleth_App.h"
 #include "Shibboleth_Allocator.h"
 #include "Shibboleth_String.h"
 #include <Gaff_Utils.h>
@@ -30,13 +30,13 @@ THE SOFTWARE.
 
 NS_SHIBBOLETH
 
-Game::Game(void):
+App::App(void):
 	_thread_pool(ProxyAllocator()), _allocator(GetAllocator()),
 	_logger(GetLogger()), _running(true)
 {
 }
 
-Game::~Game(void)
+App::~App(void)
 {
 	for (ManagerMap::Iterator it = _manager_map.begin(); it != _manager_map.end(); ++it) {
 		it->destroy_func(ProxyAllocator(), it->manager);
@@ -46,7 +46,7 @@ Game::~Game(void)
 	_dynamic_loader.clear();
 }
 
-bool Game::init(void)
+bool App::init(void)
 {
 	char logFilename[64] = { 0 };
 	Gaff::GetCurrentTimeString(logFilename, 64, "Logs/GameLog %m-%d-%Y %H-%M.txt");
@@ -80,7 +80,7 @@ bool Game::init(void)
 	return true;
 }
 
-bool Game::loadManagers(void)
+bool App::loadManagers(void)
 {
 	_log_file->writeString("Loading Managers\n");
 
@@ -91,10 +91,16 @@ bool Game::loadManagers(void)
 	{
 		AString rel_path = AString("./Managers/") + name;
 
+		// Error out if it's not a dynamic module
 		if (!Gaff::File::checkExtension(name, DYNAMIC_EXTENSION)) {
 			_log_file->printf("ERROR - '%s' is not a dynamic module.\n", rel_path.getBuffer());
 			error = true;
 			return true;
+
+		// It is a dynamic module, but not compiled for our architecture.
+		// Or not compiled in our build mode. Just skip over it.
+		} else if (!Gaff::File::checkExtension(name, BIT_EXTENSION DYNAMIC_EXTENSION)) {
+			return false;
 		}
 
 		DynamicLoader::ModulePtr module = _dynamic_loader.loadModule(rel_path.getBuffer(), name);
@@ -134,7 +140,7 @@ bool Game::loadManagers(void)
 	return !error;
 }
 
-bool Game::loadStates(void)
+bool App::loadStates(void)
 {
 	_log_file->writeString("Loading States\n");
 
@@ -185,7 +191,7 @@ bool Game::loadStates(void)
 
 		AString filename("./States/");
 		filename += name.getString();
-		filename += DYNAMIC_EXTENSION;
+		filename += BIT_EXTENSION DYNAMIC_EXTENSION;
 
 		DynamicLoader::ModulePtr module = _dynamic_loader.loadModule(filename, name.getString());
 
@@ -198,7 +204,7 @@ bool Game::loadStates(void)
 				entry.state = entry.create_func(ProxyAllocator(), *this);
 
 				if (entry.state) {
-					entry.transitions.reserve(transitions.size());
+					entry.transitions.reserve((unsigned int)transitions.size());
 
 					for (size_t j = 0; j < transitions.size(); ++j) {
 						Gaff::JSON val = transitions[j];
@@ -215,7 +221,7 @@ bool Game::loadStates(void)
 					_log_file->printf("Loaded state '%s'\n", name.getString());
 
 					if (entry.name == starting_state.getString()) {
-						_state_machine.switchState(i);
+						_state_machine.switchState((unsigned int)i);
 					}
 
 				} else {
@@ -242,36 +248,41 @@ bool Game::loadStates(void)
 	return true;
 }
 
-void Game::run(void)
+void App::run(void)
 {
 	while (_running) {
 		_state_machine.update();
 	}
 }
 
-ProxyAllocator& Game::getProxyAllocator(void)
+ProxyAllocator& App::getProxyAllocator(void)
 {
 	return _proxy_allocator;
 }
 
-Allocator& Game::getAllocator(void) const
+Allocator& App::getAllocator(void) const
 {
 	return _allocator;
 }
 
-Logger& Game::getLogger(void) const
+Logger& App::getLogger(void) const
 {
 	return _logger;
 }
 
-void Game::addTask(Gaff::ITask<ProxyAllocator>* task)
+void App::addTask(Gaff::ITask<ProxyAllocator>* task)
 {
 	_thread_pool.addTask(task);
 }
 
-StateMachine& Game::getStateMachine(void)
+StateMachine& App::getStateMachine(void)
 {
 	return _state_machine;
+}
+
+void App::quit(void)
+{
+	_running = false;
 }
 
 NS_END

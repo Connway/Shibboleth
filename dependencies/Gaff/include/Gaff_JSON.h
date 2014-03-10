@@ -39,7 +39,7 @@ public:
 
 		json_object_foreach(_value, key, value)
 		{
-			if (callback(key, JSON(value))) {
+			if (callback(key, JSON(value, true))) {
 				break;
 			}
 		}
@@ -54,7 +54,7 @@ public:
 
 		json_array_foreach(_value, index, value)
 		{
-			if (callback(index, JSON(value))) {
+			if (callback(index, JSON(value, true))) {
 				break;
 			}
 		}

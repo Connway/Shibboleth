@@ -1,5 +1,5 @@
 /************************************************************************************
-Copyright (C) 2013 by Nicholas LaCroix
+Copyright (C) 2014 by Nicholas LaCroix
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -34,14 +34,11 @@ public:
 
 	void destroy(void);
 
-	bool init3D(const IRenderDevice&, int width, int height, int depth, FORMAT format, int mip_levels = 1, const void* buffer = NULLPTR);
-	bool init2D(const IRenderDevice&, int width, int height, FORMAT format, int mip_levels = 1, const void* buffer = NULLPTR);
-	bool init1D(const IRenderDevice&, int width, FORMAT format, int mip_levels = 1, const void* buffer = NULLPTR);
-	bool initCubemap(const IRenderDevice&, int width, int height, FORMAT format, int mip_levels = 1, const void* buffer = NULLPTR);
-					//const void* pos_x_buffer = NULLPTR, const void* neg_x_buffer = NULLPTR,
-					//const void* pos_y_buffer = NULLPTR, const void* neg_y_buffer = NULLPTR,
-					//const void* pos_z_buffer = NULLPTR, const void* neg_z_buffer = NULLPTR);
-	bool initDepthStencil(const IRenderDevice& rd, int width, int height, FORMAT format);
+	bool init3D(IRenderDevice&, int width, int height, int depth, FORMAT format, int mip_levels = 1, const void* buffer = nullptr);
+	bool init2D(IRenderDevice&, int width, int height, FORMAT format, int mip_levels = 1, const void* buffer = nullptr);
+	bool init1D(IRenderDevice&, int width, FORMAT format, int mip_levels = 1, const void* buffer = nullptr);
+	bool initCubemap(IRenderDevice&, int width, int height, FORMAT format, int mip_levels = 1, const void* buffer = nullptr);
+	bool initDepthStencil(IRenderDevice& rd, int width, int height, FORMAT format);
 
 	INLINE bool isD3D(void) const;
 
@@ -51,8 +48,8 @@ public:
 private:
 	unsigned int _texture;
 
-	unsigned int determineChannels(FORMAT format) const;
-	unsigned int determineType(FORMAT format) const;
+	static unsigned int determineChannels(FORMAT format);
+	static unsigned int determineType(FORMAT format);
 };
 
 NS_END

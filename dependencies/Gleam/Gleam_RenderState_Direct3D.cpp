@@ -1,5 +1,5 @@
 /************************************************************************************
-Copyright (C) 2013 by Nicholas LaCroix
+Copyright (C) 2014 by Nicholas LaCroix
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -29,8 +29,8 @@ THE SOFTWARE.
 NS_GLEAM
 
 RenderStateD3D::RenderStateD3D(void):
-	_depth_stencil_state(NULLPTR), _raster_state(NULLPTR),
-	_blend_state(NULLPTR), _depth_stencil_ref(0)
+	_depth_stencil_state(nullptr), _raster_state(nullptr),
+	_blend_state(nullptr), _depth_stencil_ref(0)
 {
 }
 
@@ -39,7 +39,7 @@ RenderStateD3D::~RenderStateD3D(void)
 	destroy();
 }
 
-bool RenderStateD3D::init(const IRenderDevice& rd, bool wireframe, bool depth_test, bool stencil_test,
+bool RenderStateD3D::init(IRenderDevice& rd, bool wireframe, bool depth_test, bool stencil_test,
 							COMPARISON_FUNC depth_func, StencilData front_face,
 							StencilData back_face, unsigned int depth_stencil_ref,
 							char stencil_read_mask, char stencil_write_mask,
@@ -48,7 +48,7 @@ bool RenderStateD3D::init(const IRenderDevice& rd, bool wireframe, bool depth_te
 {
 	assert(rd.isD3D());
 
-	ID3D11Device* device = ((const RenderDeviceD3D&)rd).getDevice();
+	ID3D11Device* device = ((RenderDeviceD3D&)rd).getActiveDevice();
 
 	D3D11_DEPTH_STENCIL_DESC depth_stencil_desc;
 	depth_stencil_desc.DepthEnable = depth_test;
@@ -116,7 +116,7 @@ bool RenderStateD3D::init(const IRenderDevice& rd, bool wireframe, bool depth_te
 	return true;
 }
 
-bool RenderStateD3D::init(const IRenderDevice& rd, bool wireframe, bool depth_test, bool stencil_test,
+bool RenderStateD3D::init(IRenderDevice& rd, bool wireframe, bool depth_test, bool stencil_test,
 							COMPARISON_FUNC depth_func, StencilData front_face,
 							StencilData back_face, unsigned int depth_stencil_ref,
 							char stencil_read_mask, char stencil_write_mask,
@@ -125,7 +125,7 @@ bool RenderStateD3D::init(const IRenderDevice& rd, bool wireframe, bool depth_te
 {
 	assert(rd.isD3D());
 
-	ID3D11Device* device = ((const RenderDeviceD3D&)rd).getDevice();
+	ID3D11Device* device = ((RenderDeviceD3D&)rd).getActiveDevice();
 
 	D3D11_DEPTH_STENCIL_DESC depth_stencil_desc;
 	depth_stencil_desc.DepthEnable = depth_test;
@@ -201,7 +201,7 @@ void RenderStateD3D::destroy(void)
 void RenderStateD3D::set(IRenderDevice& rd) const
 {
 	assert(rd.isD3D());
-	ID3D11DeviceContext* context = ((const RenderDeviceD3D&)rd).getDeviceContext();
+	ID3D11DeviceContext* context = ((RenderDeviceD3D&)rd).getActiveDeviceContext();
 
 	context->OMSetDepthStencilState(_depth_stencil_state, _depth_stencil_ref);
 	context->OMSetBlendState(_blend_state, NULL, 0xFFFFFFFF);

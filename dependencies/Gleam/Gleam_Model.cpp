@@ -1,5 +1,5 @@
 /************************************************************************************
-Copyright (C) 2013 by Nicholas LaCroix
+Copyright (C) 2014 by Nicholas LaCroix
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -34,19 +34,19 @@ Model::~Model(void)
 {
 }
 
-ILayout* Model::createLayout(const IRenderDevice& rd, const LayoutDescription* layout_desc, unsigned int desc_size, const IShader* shader)
+ILayout* Model::createLayout(IRenderDevice& rd, const LayoutDescription* layout_desc, unsigned int desc_size, const IShader* shader)
 {
-	ILayout* layout = GleamClassAllocate(Layout);
+	ILayout* layout = GleamAllocateT(Layout);
 
 	if (!layout) {
-		return NULLPTR;
+		return nullptr;
 	}
 
 	layout->addRef();
 
 	if (!layout->init(rd, layout_desc, desc_size, shader)) {
 		layout->release();
-		return NULLPTR;
+		return nullptr;
 	}
 
 	addLayout(layout);
@@ -57,10 +57,10 @@ ILayout* Model::createLayout(const IRenderDevice& rd, const LayoutDescription* l
 
 IMesh* Model::createMesh(void)
 {
-	IMesh* mesh = GleamClassAllocate(Mesh);
+	IMesh* mesh = GleamAllocateT(Mesh);
 
 	if (!mesh) {
-		return NULLPTR;
+		return nullptr;
 	}
 
 	addMesh(mesh);

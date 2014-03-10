@@ -1,5 +1,5 @@
 /************************************************************************************
-Copyright (C) 2013 by Nicholas LaCroix
+Copyright (C) 2014 by Nicholas LaCroix
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -22,26 +22,52 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Gleam_Defines.h"
-#include "Gaff_Defines.h"
+#include "Gleam_Array.h"
 
 NS_GLEAM
 
 class IRenderTarget;
-class IBuffer;
 class Window;
 
 class IRenderDevice
 {
 public:
-	IRenderDevice(void): _prev_rt(NULLPTR) {}
+	struct DisplayMode
+	{
+		unsigned int refresh_rate;
+		unsigned int width;
+		unsigned int height;
+		unsigned int id;
+		int x;
+		int y;
+	};
+	
+	struct Display
+	{
+		GleamArray<DisplayMode> display_modes;
+		unsigned int id;
+	};
+
+	struct Adapter
+	{
+		char adapter_name[128];
+		GleamArray<Display> displays;
+		unsigned int memory;
+		unsigned int id;
+	};
+
+	typedef GleamArray<Adapter> AdapterList;
+
+	IRenderDevice(void) {}
 	virtual ~IRenderDevice(void) {}
 
-	virtual bool init(const Window& window, bool vsync = false, int compat1 = 28, unsigned int compat2 = 1UL) = 0;
+	virtual AdapterList getDisplayModes(int compat = 28) = 0;
+
+	virtual bool init(const Window& window, unsigned int adapter_id, unsigned int display_id, unsigned int display_mode_id, bool vsync = false) = 0;
 	virtual void destroy(void) = 0;
 
-	virtual bool isVsync(void) const = 0;
-	virtual bool setVsync(bool vsync) = 0;
+	virtual bool isVsync(unsigned int device, unsigned int output) const = 0;
+	virtual void setVsync(bool vsync, unsigned int device, unsigned int output) = 0;
 
 	virtual void setClearColor(float r, float g, float b, float a) = 0;
 
@@ -50,19 +76,27 @@ public:
 
 	virtual bool resize(const Window& window) = 0;
 
-	virtual void unbindRenderTarget(void) = 0;
 	virtual void resetRenderState(void) = 0;
 
 	virtual bool isD3D(void) const = 0;
 
-	virtual unsigned int getViewportWidth(void) const = 0;
-	virtual unsigned int getViewportHeight(void) const = 0;
+	virtual unsigned int getViewportWidth(unsigned int device, unsigned int output) const = 0;
+	virtual unsigned int getViewportHeight(unsigned int device, unsigned int output) const = 0;
 
-	IRenderTarget* getPrevRenderTarget(void) const { return _prev_rt; }
+	virtual unsigned int getActiveViewportWidth(void) = 0;
+	virtual unsigned int getActiveViewportHeight(void) = 0;
 
-protected:
-	IRenderTarget* _prev_rt;
-	friend class IRenderTarget;
+	virtual unsigned int getNumOutputs(unsigned int device) const = 0;
+	virtual unsigned int getNumDevices(void) const = 0;
+
+	virtual IRenderTarget* getOutputRenderTarget(unsigned int device, unsigned int output) = 0;
+	virtual IRenderTarget* getActiveOutputRenderTarget(void) = 0;
+
+	virtual bool setCurrentOutput(unsigned int output) = 0;
+	virtual unsigned int getCurrentOutput(void) const = 0;
+
+	virtual bool setCurrentDevice(unsigned int device) = 0;
+	virtual unsigned int getCurrentDevice(void) const = 0;
 
 	GAFF_NO_COPY(IRenderDevice);
 };

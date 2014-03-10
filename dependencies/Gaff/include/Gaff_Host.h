@@ -30,21 +30,46 @@ THE SOFTWARE.
 #define CONNECTION_SPEED_128K 16384
 #define CONNECTION_SPEED_56K 7168
 
-#define NETWORK_CALLBACK __cdecl
-
-// Convenience function for the callback, cause damn that's a pain to type out
-#define NETWORK_FUNCTION_TEMPLATE void, Gaff::Host&, Gaff::Host::EventType, Gaff::PeerIDType, unsigned char, unsigned int, void*, size_t
-#define NETWORK_FUNCTION_IMPL Gaff::Host& host, Gaff::Host::EventType event_type, Gaff::PeerIDType peer_id, unsigned char channel, unsigned int user_data, void* data, size_t data_size
+#if defined(_WIN32) || defined(_WIN64)
+	#define NETWORK_CALLBACK __cdecl
+#else
+	#define NETWORK_CALLBACK
+#endif
 
 struct _ENetHost;
 struct _ENetPeer;
 
 NS_GAFF
 
+typedef void* (NETWORK_CALLBACK *NetworkAllocFunc)(size_t size);
+typedef void (NETWORK_CALLBACK *NetworkFreeFunc)(void* memory);
+typedef void (NETWORK_CALLBACK *NetworkNoMemoryFunc)(void);
+
+enum NetworkEventType
+{
+	EVENT_NONE = 0,
+	EVENT_CONNECTION,
+	EVENT_DISCONNECT,
+	EVENT_RECEIVED_PACKET
+};
+
+struct NetworkCallbackData
+{
+	Gaff::Host& host;
+	Gaff::NetworkEventType event_type;
+	Gaff::PeerIDType peer_id;
+	unsigned char channel;
+	unsigned int user_data;
+	void* data;
+	size_t data_size;
+};
+
+typedef IFunction<void, const NetworkCallbackData&> NetworkEventCallback;
+
 bool NetworkInit(
-	void* (NETWORK_CALLBACK *alloc)(size_t size) = nullptr,
-	void (NETWORK_CALLBACK *free)(void* memory) = nullptr,
-	void (NETWORK_CALLBACK *no_memory_callback)(void) = nullptr
+	NetworkAllocFunc alloc_func = nullptr,
+	NetworkFreeFunc free_func = nullptr,
+	NetworkNoMemoryFunc no_mem_func = nullptr
 );
 
 void NetworkDestroy(void);
@@ -52,16 +77,6 @@ void NetworkDestroy(void);
 class Host
 {
 public:
-	enum EventType
-	{
-		EVENT_NONE = 0,
-		EVENT_CONNECTION,
-		EVENT_DISCONNECT,
-		EVENT_RECEIVED_PACKET
-	};
-
-	typedef IFunction<void, Host&, EventType, PeerIDType, unsigned char, unsigned int, void*, size_t> EventCallbackType;
-
 	template <class T>
 	void broadcastT(unsigned char channel, T* data, unsigned int packet_flags = PACKET_RELIABLE)
 	{
@@ -89,8 +104,8 @@ public:
 	INLINE Connection connect(const char* address, unsigned short port, size_t channels = 2);
 	INLINE Connection getLatestConnection(void);
 
-	void waitForEvent(EventCallbackType& callback, unsigned int timeout);
-	void checkForEvent(EventCallbackType& callback);
+	void waitForEvent(NetworkEventCallback& callback, unsigned int timeout);
+	void checkForEvent(NetworkEventCallback& callback);
 
 	INLINE void broadcast(unsigned char channel, void* data, size_t data_size, unsigned int packet_flags = PACKET_RELIABLE);
 	INLINE void flush(void);

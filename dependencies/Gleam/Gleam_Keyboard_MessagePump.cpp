@@ -1,5 +1,5 @@
 /************************************************************************************
-Copyright (C) 2013 by Nicholas LaCroix
+Copyright (C) 2014 by Nicholas LaCroix
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -26,7 +26,7 @@ THE SOFTWARE.
 
 NS_GLEAM
 
-static GleamHashMap(KeyCode, KeyboardCode) _key_map;
+static GleamHashMap<KeyCode, KeyboardCode> _key_map;
 static bool _first_init = true;
 
 KeyboardMP::KeyboardMP(void):
@@ -34,7 +34,7 @@ KeyboardMP::KeyboardMP(void):
 	_curr_state(_keyboard_state_a),
 	_prev_state(_keyboard_state_b),
 #endif
-	_window(NULLPTR)
+	_window(nullptr)
 {
 #ifdef ONLY_INPUT_CHANGES
 	memset(_keyboard_state_a, 0, sizeof(_keyboard_state_a));
@@ -172,7 +172,7 @@ KeyboardMP::~KeyboardMP(void)
 bool KeyboardMP::init(const Window& window, void*, bool)
 {
 	_window = (Window*)&window;
-	_window->addWindowMessageHandler(this);
+	_window->addWindowMessageHandler(this, &KeyboardMP::handleMessage);
 
 #ifdef ONLY_INPUT_CHANGES
 	_window->allowRepeats(false);
@@ -184,8 +184,8 @@ bool KeyboardMP::init(const Window& window, void*, bool)
 void KeyboardMP::destroy(void)
 {
 	if (_window) {
-		_window->removeWindowMessageHandler(this);
-		_window = NULLPTR;
+		_window->removeWindowMessageHandler(this, &KeyboardMP::handleMessage);
+		_window = nullptr;
 	}
 }
 
@@ -199,27 +199,19 @@ bool KeyboardMP::update(void)
 
 	for (unsigned int i = 0; i < 256; ++i) {
 #ifdef ONLY_INPUT_CHANGES
-		bool curr = _curr_state[i];
-		bool prev = _prev_state[i];
+		unsigned char curr = _curr_state[i];
+		unsigned char prev = _prev_state[i];
 
 		if (curr != prev) {
-			for (unsigned int j = 0; j < _input_handlers_func.size(); ++j) {
-				_input_handlers_func[j](this, i, (float)curr);
-			}
-
-			for (unsigned int j = 0; j < _input_handlers_class.size(); ++j) {
-				_input_handlers_class[j]->handleInput(this, i, (float)curr);
+			for (unsigned int j = 0; j < _input_handlers.size(); ++j) {
+				_input_handlers[j](this, i, (float)curr);
 			}
 		}
 #else
-		bool curr = _keyboard_state[i];
+		unsigned char curr = _keyboard_state[i];
 
-		for (unsigned int j = 0; j < _input_handlers_func.size(); ++j) {
-			_input_handlers_func[j](this, i, (float)curr);
-		}
-
-		for (unsigned int j = 0; j < _input_handlers_class.size(); ++j) {
-			_input_handlers_class[j]->handleInput(this, i, (float)curr);
+		for (unsigned int j = 0; j < _input_handlers.size(); ++j) {
+			_input_handlers[j](this, i, (float)curr);
 		}
 #endif
 	}
@@ -230,22 +222,22 @@ bool KeyboardMP::update(void)
 bool KeyboardMP::isKeyDown(KeyboardCode key) const
 {
 #ifdef ONLY_INPUT_CHANGES
-	return _curr_state[key];
+	return _curr_state[key] != 0;
 #else
-	return _keyboard_state[key];
+	return _keyboard_state[key] != 0;
 #endif
 }
 
 bool KeyboardMP::isKeyUp(KeyboardCode key) const
 {
 #ifdef ONLY_INPUT_CHANGES
-	return !_curr_state[key];
+	return !_curr_state[key] == 0;
 #else
-	return !_keyboard_state[key];
+	return !_keyboard_state[key] == 0;
 #endif
 }
 
-const bool* KeyboardMP::getKeyboardData(void) const
+const unsigned char* KeyboardMP::getKeyboardData(void) const
 {
 #ifdef ONLY_INPUT_CHANGES
 	return _curr_state;
@@ -267,16 +259,6 @@ const GChar* KeyboardMP::getPlatformImplementationString(void) const
 const Window* KeyboardMP::getAssociatedWindow(void) const
 {
 	return _window;
-}
-
-bool KeyboardMP::isKeyboard(void) const
-{
-	return true;
-}
-
-bool KeyboardMP::isMouse(void) const
-{
-	return false;
 }
 
 bool KeyboardMP::handleMessage(const AnyMessage& message)

@@ -1,5 +1,5 @@
 /************************************************************************************
-Copyright (C) 2013 by Nicholas LaCroix
+Copyright (C) 2014 by Nicholas LaCroix
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -19,8 +19,6 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
-
-#pragma once
 
 #include "Gleam_IShaderResourceView.h"
 #include "Gleam_ISamplerState.h"
@@ -45,9 +43,9 @@ void IProgram::destroy(void)
 void IProgram::clearResources(void)
 {
 	for (unsigned int i = 0; i < IShader::SHADER_TYPE_SIZE - 1; ++i) {
-		GleamArray(IShaderResourceView*)& resource_views = _resource_views[i];
-		GleamArray(ISamplerState*)& samplers = _sampler_states[i];
-		GleamArray(IBuffer*)& const_bufs = _constant_buffers[i];
+		GleamArray<IShaderResourceView*>& resource_views = _resource_views[i];
+		GleamArray<ISamplerState*>& samplers = _sampler_states[i];
+		GleamArray<IBuffer*>& const_bufs = _constant_buffers[i];
 
 		for (unsigned int j = 0; j < resource_views.size(); ++j) {
 			resource_views[j]->release();
@@ -107,6 +105,7 @@ unsigned int IProgram::getConstantBufferCount(IShader::SHADER_TYPE type) const
 unsigned int IProgram::getConstantBufferCount(void) const
 {
 	unsigned int count = 0;
+
 	for (unsigned int i = 0; i < IShader::SHADER_TYPE_SIZE - 1; ++i) {
 		count += _constant_buffers[i].size();
 	}
@@ -115,6 +114,12 @@ unsigned int IProgram::getConstantBufferCount(void) const
 }
 
 const IShaderResourceView* IProgram::getResourceView(IShader::SHADER_TYPE type, unsigned int index) const
+{
+	assert(type < IShader::SHADER_TYPE_SIZE && index < _resource_views[type].size());
+	return _resource_views[type][index];
+}
+
+IShaderResourceView* IProgram::getResourceView(IShader::SHADER_TYPE type, unsigned int index)
 {
 	assert(type < IShader::SHADER_TYPE_SIZE && index < _resource_views[type].size());
 	return _resource_views[type][index];
@@ -146,7 +151,24 @@ unsigned int IProgram::getResourceViewCount(IShader::SHADER_TYPE type) const
 	return _resource_views[type].size();
 }
 
+unsigned int IProgram::getResourceViewCount(void) const
+{
+	unsigned int count = 0;
+
+	for (unsigned int i = 0; i < IShader::SHADER_TYPE_SIZE - 1; ++i) {
+		count += _resource_views[i].size();
+	}
+
+	return count;
+}
+
 const ISamplerState* IProgram::getSamplerState(IShader::SHADER_TYPE type, unsigned int index) const
+{
+	assert(type < IShader::SHADER_TYPE_SIZE && index < _sampler_states[type].size());
+	return _sampler_states[type][index];
+}
+
+ISamplerState* IProgram::getSamplerState(IShader::SHADER_TYPE type, unsigned int index)
 {
 	assert(type < IShader::SHADER_TYPE_SIZE && index < _sampler_states[type].size());
 	return _sampler_states[type][index];
@@ -176,6 +198,17 @@ unsigned int IProgram::getSamplerCount(IShader::SHADER_TYPE type) const
 {
 	assert(type < IShader::SHADER_TYPE_SIZE);
 	return _sampler_states[type].size();
+}
+
+unsigned int IProgram::getSamplerCount(void) const
+{
+	unsigned int count = 0;
+
+	for (unsigned int i = 0; i < IShader::SHADER_TYPE_SIZE - 1; ++i) {
+		count += _sampler_states[i].size();
+	}
+
+	return count;
 }
 
 NS_END

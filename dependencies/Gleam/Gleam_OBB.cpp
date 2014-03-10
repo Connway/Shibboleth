@@ -1,5 +1,5 @@
 /************************************************************************************
-Copyright (C) 2013 by Nicholas LaCroix
+Copyright (C) 2014 by Nicholas LaCroix
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -123,7 +123,7 @@ const Vec4& OBB::getAxis(int axis) const
 	return _axes[axis];
 }
 
-const GleamArray(Vec4)& OBB::generatePoints(GleamArray(Vec4)& out) const
+const GleamArray<Vec4>& OBB::generatePoints(GleamArray<Vec4>& out) const
 {
 	if (out.size() < 8) {
 		out.resize(8);
@@ -144,9 +144,9 @@ const GleamArray(Vec4)& OBB::generatePoints(GleamArray(Vec4)& out) const
 	return out;
 }
 
-GleamArray(Vec4) OBB::generatePoints(void) const
+GleamArray<Vec4> OBB::generatePoints(void) const
 {
-	GleamArray(Vec4) points(8);
+	GleamArray<Vec4> points(8);
 
 	// top plane
 	points.push(_center + _axes[0] * _lengths[0] + _axes[1] * _lengths[1] + _axes[2] * _lengths[2]);

@@ -1,5 +1,5 @@
 /************************************************************************************
-Copyright (C) 2013 by Nicholas LaCroix
+Copyright (C) 2014 by Nicholas LaCroix
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -40,7 +40,7 @@ static D3D11_FILTER _filter_map[ISamplerState::FILTER_SIZE] = {
 };
 
 SamplerStateD3D::SamplerStateD3D(void):
-	_sampler_state(NULLPTR)
+	_sampler_state(nullptr)
 {
 }
 
@@ -50,7 +50,7 @@ SamplerStateD3D::~SamplerStateD3D(void)
 }
 
 bool SamplerStateD3D::init(
-	const IRenderDevice& rd,
+	IRenderDevice& rd,
 	FILTER filter, WRAP u, WRAP v, WRAP w,
 	float min_lod, float max_lod, float lod_bias,
 	unsigned int max_anisotropy,
@@ -76,7 +76,7 @@ bool SamplerStateD3D::init(
 	desc.MinLOD = min_lod;
 	desc.MipLODBias = lod_bias;
 
-	HRESULT result = ((const RenderDeviceD3D&)rd).getDevice()->CreateSamplerState(&desc, &_sampler_state);
+	HRESULT result = ((RenderDeviceD3D&)rd).getActiveDevice()->CreateSamplerState(&desc, &_sampler_state);
 	return SUCCEEDED(result);
 }
 

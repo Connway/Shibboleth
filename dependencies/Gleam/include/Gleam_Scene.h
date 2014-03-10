@@ -1,5 +1,5 @@
 /************************************************************************************
-Copyright (C) 2013 by Nicholas LaCroix
+Copyright (C) 2014 by Nicholas LaCroix
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -42,22 +42,22 @@ public:
 	INLINE ISceneNode* getCamera(void);
 	INLINE void setCamera(ISceneNode* camera);
 
-	INLINE const GleamArray(ISceneNode*)& getNodesOfType(unsigned int type) const;
-	INLINE GleamArray(ISceneNode*)& getNodesOfType(unsigned int type);
+	INLINE const GleamArray<ISceneNode*>& getNodesOfType(unsigned int type) const;
+	INLINE GleamArray<ISceneNode*>& getNodesOfType(unsigned int type);
 
 	// these should be used for all nodes added to/removed from the scene
 	void addNode(ISceneNode* node, ISceneNode* parent);
 	INLINE void addNode(ISceneNode* node);
 	void removeNode(ISceneNode* node);
 
-	INLINE const GleamArray(ISceneNode*)& getChangeList(void) const;
-	INLINE GleamArray(ISceneNode*)& getChangeList(void);
+	INLINE const GleamArray<ISceneNode*>& getChangeList(void) const;
+	INLINE GleamArray<ISceneNode*>& getChangeList(void);
 
 	void update(float dt);
 
 private:
-	GleamArray(GleamArray(ISceneNode*)) _node_types;
-	GleamArray(ISceneNode*) _change_list;
+	GleamArray< GleamArray<ISceneNode*> > _node_types;
+	GleamArray<ISceneNode*> _change_list;
 
 	ISceneNode* _camera;
 	ISceneNode* _root;

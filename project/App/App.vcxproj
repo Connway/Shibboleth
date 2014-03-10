@@ -18,51 +18,33 @@
       <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="..\src\Shared\Shibboleth_Allocator.cpp" />
-    <ClCompile Include="..\src\Shared\Shibboleth_Logger.cpp" />
-    <ClCompile Include="..\src\Shared\Shibboleth_StateMachine.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="..\src\Shared\include\Shibboleth_Allocator.h" />
-    <ClInclude Include="..\src\Shared\include\Shibboleth_Array.h" />
-    <ClInclude Include="..\src\Shared\include\Shibboleth_Defines.h" />
-    <ClInclude Include="..\src\Shared\include\Shibboleth_DynamicLoader.h" />
-    <ClInclude Include="..\src\Shared\include\Shibboleth_HashMap.h" />
-    <ClInclude Include="..\src\Shared\include\Shibboleth_HashString.h" />
-    <ClInclude Include="..\src\Shared\include\Shibboleth_IState.h" />
-    <ClInclude Include="..\src\Shared\include\Shibboleth_Logger.h" />
-    <ClInclude Include="..\src\Shared\include\Shibboleth_ProxyAllocator.h" />
-    <ClInclude Include="..\src\Shared\include\Shibboleth_Registry.h" />
-    <ClInclude Include="..\src\Shared\include\Shibboleth_StateMachine.h" />
-    <ClInclude Include="..\src\Shared\include\Shibboleth_String.h" />
-  </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{1972702E-61A8-4883-BAAE-8C3644BA4B3E}</ProjectGuid>
-    <RootNamespace>Shared</RootNamespace>
+    <ProjectGuid>{3D350E40-760D-49FD-8292-C524F9A0E6DC}</ProjectGuid>
+    <RootNamespace>Game</RootNamespace>
+    <ProjectName>App</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v120</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v120</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v120</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v120</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
@@ -85,27 +67,27 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <IntDir>$(SolutionDir)..\..\build\Intermediate\$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
     <OutDir>$(SolutionDir)..\..\build\Output\$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>$(SolutionDir)..\..\build\Intermediate\$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IntDir>$(SolutionDir)..\..\build\Intermediate\$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
     <OutDir>$(SolutionDir)..\..\build\Output\$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>$(SolutionDir)..\..\build\Intermediate\$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <IntDir>$(SolutionDir)..\..\build\Intermediate\$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
     <OutDir>$(SolutionDir)..\..\build\Output\$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>$(SolutionDir)..\..\build\Intermediate\$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <IntDir>$(SolutionDir)..\..\build\Intermediate\$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
     <OutDir>$(SolutionDir)..\..\build\Output\$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>$(SolutionDir)..\..\build\Intermediate\$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>$(SolutionDir)..\..\dependencies\Gaff\include;$(SolutionDir)..\..\src\Shared\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)..\..\dependencies\jansson;$(SolutionDir)..\..\dependencies\dirent;$(SolutionDir)..\..\dependencies\Gaff\include;$(SolutionDir)..\..\src\App\include;$(SolutionDir)..\..\src\Shared\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -116,7 +98,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>$(SolutionDir)..\..\dependencies\Gaff\include;$(SolutionDir)..\..\src\Shared\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)..\..\dependencies\jansson;$(SolutionDir)..\..\dependencies\dirent;$(SolutionDir)..\..\dependencies\Gaff\include;$(SolutionDir)..\..\src\App\include;$(SolutionDir)..\..\src\Shared\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -129,7 +111,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>$(SolutionDir)..\..\dependencies\Gaff\include;$(SolutionDir)..\..\src\Shared\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)..\..\dependencies\jansson;$(SolutionDir)..\..\dependencies\dirent;$(SolutionDir)..\..\dependencies\Gaff\include;$(SolutionDir)..\..\src\App\include;$(SolutionDir)..\..\src\Shared\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -144,7 +126,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>$(SolutionDir)..\..\dependencies\Gaff\include;$(SolutionDir)..\..\src\Shared\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)..\..\dependencies\jansson;$(SolutionDir)..\..\dependencies\dirent;$(SolutionDir)..\..\dependencies\Gaff\include;$(SolutionDir)..\..\src\App\include;$(SolutionDir)..\..\src\Shared\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -152,6 +134,24 @@
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
   </ItemDefinitionGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Dependencies\Gaff.vcxproj">
+      <Project>{a63d072e-20cb-47aa-a110-65ca8fcc524d}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\Dependencies\jansson.vcxproj">
+      <Project>{ee9e1124-ce92-4113-a64b-d4784e6a626b}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\Shared.vcxproj">
+      <Project>{1972702e-61a8-4883-baae-8c3644ba4b3e}</Project>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\src\App\App_main.cpp" />
+    <ClCompile Include="..\..\src\App\Shibboleth_App.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\src\App\include\Shibboleth_App.h" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

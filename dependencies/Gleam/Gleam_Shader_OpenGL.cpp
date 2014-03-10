@@ -1,5 +1,5 @@
 /************************************************************************************
-Copyright (C) 2013 by Nicholas LaCroix
+Copyright (C) 2014 by Nicholas LaCroix
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -37,168 +37,168 @@ ShaderGL::~ShaderGL(void)
 	destroy();
 }
 
-bool ShaderGL::initVertex(const IRenderDevice&, const GleamGString& file_path)
+bool ShaderGL::initVertex(IRenderDevice&, const GleamGString& file_path)
 {
 	assert(file_path.size());
 	_type = SHADER_VERTEX;
 	return loadFileAndCompileShader(GL_VERTEX_SHADER, file_path.getBuffer());
 }
 
-bool ShaderGL::initPixel(const IRenderDevice&, const GleamGString& file_path)
+bool ShaderGL::initPixel(IRenderDevice&, const GleamGString& file_path)
 {
 	assert(file_path.size());
 	_type = SHADER_PIXEL;
 	return loadFileAndCompileShader(GL_FRAGMENT_SHADER, file_path.getBuffer());
 }
 
-bool ShaderGL::initDomain(const IRenderDevice&, const GleamGString& file_path)
+bool ShaderGL::initDomain(IRenderDevice&, const GleamGString& file_path)
 {
 	assert(file_path.size());
 	_type = SHADER_DOMAIN;
 	return loadFileAndCompileShader(GL_TESS_EVALUATION_SHADER, file_path.getBuffer());
 }
 
-bool ShaderGL::initGeometry(const IRenderDevice&, const GleamGString& file_path)
+bool ShaderGL::initGeometry(IRenderDevice&, const GleamGString& file_path)
 {
 	assert(file_path.size());
 	_type = SHADER_GEOMETRY;
 	return loadFileAndCompileShader(GL_GEOMETRY_SHADER, file_path.getBuffer());
 }
 
-bool ShaderGL::initHull(const IRenderDevice&, const GleamGString& file_path)
+bool ShaderGL::initHull(IRenderDevice&, const GleamGString& file_path)
 {
 	assert(file_path.size());
 	_type = SHADER_HULL;
 	return loadFileAndCompileShader(GL_TESS_CONTROL_SHADER, file_path.getBuffer());
 }
 
-bool ShaderGL::initCompute(const IRenderDevice&, const GleamGString& file_path)
+bool ShaderGL::initCompute(IRenderDevice&, const GleamGString& file_path)
 {
 	assert(file_path.size());
 	_type = SHADER_COMPUTE;
 	return loadFileAndCompileShader(GL_COMPUTE_SHADER, file_path.getBuffer());
 }
 
-bool ShaderGL::initVertex(const IRenderDevice&, const GChar* file_path)
+bool ShaderGL::initVertex(IRenderDevice&, const GChar* file_path)
 {
 	assert(file_path);
 	_type = SHADER_VERTEX;
 	return loadFileAndCompileShader(GL_VERTEX_SHADER, file_path);
 }
 
-bool ShaderGL::initPixel(const IRenderDevice&, const GChar* file_path)
+bool ShaderGL::initPixel(IRenderDevice&, const GChar* file_path)
 {
 	assert(file_path);
 	_type = SHADER_PIXEL;
 	return loadFileAndCompileShader(GL_FRAGMENT_SHADER, file_path);
 }
 
-bool ShaderGL::initDomain(const IRenderDevice&, const GChar* file_path)
+bool ShaderGL::initDomain(IRenderDevice&, const GChar* file_path)
 {
 	assert(file_path);
 	_type = SHADER_DOMAIN;
 	return loadFileAndCompileShader(GL_TESS_EVALUATION_SHADER, file_path);
 }
 
-bool ShaderGL::initGeometry(const IRenderDevice&, const GChar* file_path)
+bool ShaderGL::initGeometry(IRenderDevice&, const GChar* file_path)
 {
 	assert(file_path);
 	_type = SHADER_GEOMETRY;
 	return loadFileAndCompileShader(GL_GEOMETRY_SHADER, file_path);
 }
 
-bool ShaderGL::initHull(const IRenderDevice&, const GChar* file_path)
+bool ShaderGL::initHull(IRenderDevice&, const GChar* file_path)
 {
 	assert(file_path);
 	_type = SHADER_HULL;
 	return loadFileAndCompileShader(GL_TESS_CONTROL_SHADER, file_path);
 }
 
-bool ShaderGL::initCompute(const IRenderDevice&, const GChar* file_path)
+bool ShaderGL::initCompute(IRenderDevice&, const GChar* file_path)
 {
 	assert(file_path);
 	_type = SHADER_COMPUTE;
 	return loadFileAndCompileShader(GL_COMPUTE_SHADER, file_path);
 }
 
-bool ShaderGL::initVertexSource(const IRenderDevice&, const GleamAString& source)
+bool ShaderGL::initVertexSource(IRenderDevice&, const GleamAString& source)
 {
 	assert(source.size());
 	_type = SHADER_VERTEX;
 	return compileShader(source.getBuffer(), source.size(), GL_VERTEX_SHADER);
 }
 
-bool ShaderGL::initPixelSource(const IRenderDevice&, const GleamAString& source)
+bool ShaderGL::initPixelSource(IRenderDevice&, const GleamAString& source)
 {
 	assert(source.size());
 	_type = SHADER_PIXEL;
 	return compileShader(source.getBuffer(), source.size(), GL_FRAGMENT_SHADER);
 }
 
-bool ShaderGL::initDomainSource(const IRenderDevice&, const GleamAString& source)
+bool ShaderGL::initDomainSource(IRenderDevice&, const GleamAString& source)
 {
 	assert(source.size());
 	_type = SHADER_DOMAIN;
 	return compileShader(source.getBuffer(), source.size(), GL_TESS_EVALUATION_SHADER);
 }
 
-bool ShaderGL::initGeometrySource(const IRenderDevice&, const GleamAString& source)
+bool ShaderGL::initGeometrySource(IRenderDevice&, const GleamAString& source)
 {
 	assert(source.size());
 	_type = SHADER_GEOMETRY;
 	return compileShader(source.getBuffer(), source.size(), GL_GEOMETRY_SHADER);
 }
 
-bool ShaderGL::initHullSource(const IRenderDevice&, const GleamAString& source)
+bool ShaderGL::initHullSource(IRenderDevice&, const GleamAString& source)
 {
 	assert(source.size());
 	_type = SHADER_HULL;
 	return compileShader(source.getBuffer(), source.size(), GL_TESS_CONTROL_SHADER);
 }
 
-bool ShaderGL::initComputeSource(const IRenderDevice&, const GleamAString& source)
+bool ShaderGL::initComputeSource(IRenderDevice&, const GleamAString& source)
 {
 	assert(source.size());
 	_type = SHADER_COMPUTE;
 	return compileShader(source.getBuffer(), source.size(), GL_COMPUTE_SHADER);
 }
 
-bool ShaderGL::initVertexSource(const IRenderDevice&, const char* source)
+bool ShaderGL::initVertexSource(IRenderDevice&, const char* source)
 {
 	assert(source);
 	_type = SHADER_VERTEX;
 	return compileShader(source, (int)strlen(source), GL_VERTEX_SHADER);
 }
 
-bool ShaderGL::initPixelSource(const IRenderDevice&, const char* source)
+bool ShaderGL::initPixelSource(IRenderDevice&, const char* source)
 {
 	assert(source);
 	_type = SHADER_PIXEL;
 	return compileShader(source, (int)strlen(source), GL_FRAGMENT_SHADER);
 }
 
-bool ShaderGL::initDomainSource(const IRenderDevice&, const char* source)
+bool ShaderGL::initDomainSource(IRenderDevice&, const char* source)
 {
 	assert(source);
 	_type = SHADER_DOMAIN;
 	return compileShader(source, (int)strlen(source), GL_TESS_EVALUATION_SHADER);
 }
 
-bool ShaderGL::initGeometrySource(const IRenderDevice&, const char* source)
+bool ShaderGL::initGeometrySource(IRenderDevice&, const char* source)
 {
 	assert(source);
 	_type = SHADER_GEOMETRY;
 	return compileShader(source, (int)strlen(source), GL_GEOMETRY_SHADER);
 }
 
-bool ShaderGL::initHullSource(const IRenderDevice&, const char* source)
+bool ShaderGL::initHullSource(IRenderDevice&, const char* source)
 {
 	assert(source);
 	_type = SHADER_HULL;
 	return compileShader(source, (int)strlen(source), GL_TESS_CONTROL_SHADER);
 }
 
-bool ShaderGL::initComputeSource(const IRenderDevice&, const char* source)
+bool ShaderGL::initComputeSource(IRenderDevice&, const char* source)
 {
 	assert(source);
 	_type = SHADER_COMPUTE;

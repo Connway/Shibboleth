@@ -1,5 +1,5 @@
 /************************************************************************************
-Copyright (C) 2013 by Nicholas LaCroix
+Copyright (C) 2014 by Nicholas LaCroix
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -28,14 +28,14 @@ THE SOFTWARE.
 NS_GLEAM
 
 ISceneNode::ISceneNode(Scene& scene, const Transform& model_transform):
-	_parent(NULLPTR), _model_transform(model_transform),
+	_model_transform(model_transform), _parent(nullptr),
 	_node_type(0), _changed(true), _enabled(true),
 	_scene(scene)
 {
 }
 
 ISceneNode::ISceneNode(Scene& scene):
-	_parent(NULLPTR), _node_type(0),
+	_parent(nullptr), _node_type(0),
 	_changed(true), _enabled(true),
 	_scene(scene)
 {
@@ -94,12 +94,12 @@ void ISceneNode::setBoundingBox(const OBB& bounding_box)
 	_bounding_box = bounding_box;
 }
 
-const GleamArray(ISceneNode*)& ISceneNode::getChildren(void) const
+const GleamArray<ISceneNode*>& ISceneNode::getChildren(void) const
 {
 	return _children;
 }
 
-GleamArray(ISceneNode*)& ISceneNode::getChildren(void)
+GleamArray<ISceneNode*>& ISceneNode::getChildren(void)
 {
 	return _children;
 }
@@ -115,10 +115,10 @@ void ISceneNode::removeChild(const ISceneNode* child)
 {
 	assert(child && _children.size());
 
-	int index = _children.linearFind((ISceneNode* const)child);
-	assert(index > -1);
+	GleamArray<ISceneNode*>::Iterator it = _children.linearSearch(child);
+	assert(it != _children.end());
 
-	_children.erase(index);
+	_children.erase(it);
 	child->release();
 }
 
@@ -142,7 +142,7 @@ void ISceneNode::removeFromParent(void)
 	assert(_parent);
 	_parent->removeChild(this);
 	_parent->release();
-	_parent = NULLPTR;
+	_parent = nullptr;
 }
 
 bool ISceneNode::hasChanged(void) const
@@ -164,6 +164,12 @@ bool ISceneNode::isEnabled(void) const
 void ISceneNode::setEnabled(bool enabled)
 {
 	_enabled = enabled;
+
+	if (_enabled) {
+		enable();
+	} else {
+		disable();
+	}
 
 	for (unsigned int i = 0; i < _children.size(); ++i) {
 		_children[i]->setEnabled(enabled);
@@ -200,6 +206,14 @@ void ISceneNode::update(float dt)
 			_children[i]->update(dt);
 		}
 	}
+}
+
+void ISceneNode::enable(void)
+{
+}
+
+void ISceneNode::disable(void)
+{
 }
 
 NS_END

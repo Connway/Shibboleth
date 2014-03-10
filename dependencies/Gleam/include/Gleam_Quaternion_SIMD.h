@@ -1,5 +1,5 @@
 /************************************************************************************
-Copyright (C) 2013 by Nicholas LaCroix
+Copyright (C) 2014 by Nicholas LaCroix
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -22,25 +22,14 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Gleam_Matrix4x4_SIMD.h"
-#include "Gleam_Vector4_SIMD.h"
-#include <xmmintrin.h>
-
-#ifdef ALIGN_SIMD
-	#define SIMDLOAD _mm_load_ps
-	#define SIMDSTORE _mm_store_ps
-#else
-	#define SIMDLOAD _mm_loadu_ps
-	#define SIMDSTORE _mm_storeu_ps
-#endif
+#include "Gleam_SIMDMath.h"
 
 NS_GLEAM
 
-#ifdef ALIGN_SIMD
-__declspec(align(16)) class QuaternionSIMD
-#else
-class QuaternionSIMD
-#endif
+class Matrix4x4SIMD;
+class Vector4SIMD;
+
+class ALIGN16 QuaternionSIMD
 {
 public:
 	QuaternionSIMD(void);

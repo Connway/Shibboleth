@@ -35,7 +35,7 @@ THE SOFTWARE.
 
 NS_SHIBBOLETH
 
-class Game
+class App
 {
 public:
 	template <class T>
@@ -80,8 +80,8 @@ public:
 		return *(T*)_manager_map[name];
 	}
 
-	Game(void);
-	~Game(void);
+	App(void);
+	~App(void);
 
 	bool init(void);
 	void run(void);
@@ -93,10 +93,12 @@ public:
 	INLINE void addTask(Gaff::ITask<ProxyAllocator>* task);
 	INLINE StateMachine& getStateMachine(void);
 
+	INLINE void quit(void);
+
 private:
 	struct ManagerEntry
 	{
-		typedef Gaff::INamedObject* (*CreateManagerFunc)(ProxyAllocator&, Game& game);
+		typedef Gaff::INamedObject* (*CreateManagerFunc)(ProxyAllocator&, App& game);
 		typedef void (*DestroyManagerFunc)(ProxyAllocator&, Gaff::INamedObject*);
 
 		CreateManagerFunc create_func;
@@ -123,8 +125,8 @@ private:
 	bool loadManagers(void);
 	bool loadStates(void);
 
-	GAFF_NO_COPY(Game);
-	GAFF_NO_MOVE(Game);
+	GAFF_NO_COPY(App);
+	GAFF_NO_MOVE(App);
 };
 
 NS_END

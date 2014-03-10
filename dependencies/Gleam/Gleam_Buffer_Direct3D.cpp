@@ -1,5 +1,5 @@
 /************************************************************************************
-Copyright (C) 2013 by Nicholas LaCroix
+Copyright (C) 2014 by Nicholas LaCroix
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -41,7 +41,7 @@ static D3D11_MAP _map_map[IBuffer::MAP_TYPE_SIZE] = {
 };
 
 BufferD3D::BufferD3D(void):
-	_buffer(NULLPTR)
+	_buffer(nullptr)
 {
 }
 
@@ -50,10 +50,10 @@ BufferD3D::~BufferD3D(void)
 	destroy();
 }
 
-bool BufferD3D::init(const IRenderDevice& rd, const void* data, unsigned int size, BUFFER_TYPE buffer_type, unsigned int stride, MAP_TYPE cpu_access)
+bool BufferD3D::init(IRenderDevice& rd, const void* data, unsigned int size, BUFFER_TYPE buffer_type, unsigned int stride, MAP_TYPE cpu_access)
 {
 	assert(rd.isD3D() && !_buffer);
-	ID3D11Device* device = ((const RenderDeviceD3D&)rd).getDevice();
+	ID3D11Device* device = ((RenderDeviceD3D&)rd).getActiveDevice();
 
 	D3D11_SUBRESOURCE_DATA subres_data;
 	D3D11_BUFFER_DESC desc;
@@ -87,7 +87,7 @@ bool BufferD3D::init(const IRenderDevice& rd, const void* data, unsigned int siz
 	_stride = stride;
 	_size = size;
 
-	return SUCCEEDED(device->CreateBuffer(&desc, (data) ? &subres_data : NULLPTR, &_buffer));
+	return SUCCEEDED(device->CreateBuffer(&desc, (data) ? &subres_data : nullptr, &_buffer));
 }
 
 void BufferD3D::destroy(void)
@@ -95,10 +95,10 @@ void BufferD3D::destroy(void)
 	SAFERELEASE(_buffer)
 }
 
-bool BufferD3D::update(const IRenderDevice& rd, const void* data, unsigned int size)
+bool BufferD3D::update(IRenderDevice& rd, const void* data, unsigned int size)
 {
 	assert(rd.isD3D() && data);
-	ID3D11DeviceContext* context = ((const RenderDeviceD3D&)rd).getDeviceContext();
+	ID3D11DeviceContext* context = ((RenderDeviceD3D&)rd).getActiveDeviceContext();
 	D3D11_MAPPED_SUBRESOURCE mapped_resource;
 
 	HRESULT result = context->Map(_buffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mapped_resource);
@@ -110,20 +110,20 @@ bool BufferD3D::update(const IRenderDevice& rd, const void* data, unsigned int s
 	return true;
 }
 
-void* BufferD3D::map(const IRenderDevice& rd, MAP_TYPE map_type)
+void* BufferD3D::map(IRenderDevice& rd, MAP_TYPE map_type)
 {
 	assert(rd.isD3D() && map_type != NONE);
-	ID3D11DeviceContext* context = ((const RenderDeviceD3D&)rd).getDeviceContext();
+	ID3D11DeviceContext* context = ((RenderDeviceD3D&)rd).getActiveDeviceContext();
 	D3D11_MAPPED_SUBRESOURCE mapped_resource;
 
 	HRESULT result = context->Map(_buffer, 0, _map_map[map_type], 0, &mapped_resource);
-	return (FAILED(result)) ? NULLPTR : mapped_resource.pData;
+	return (FAILED(result)) ? nullptr : mapped_resource.pData;
 }
 
-void BufferD3D::unmap(const IRenderDevice& rd)
+void BufferD3D::unmap(IRenderDevice& rd)
 {
 	assert(rd.isD3D());
-	ID3D11DeviceContext* context = ((const RenderDeviceD3D&)rd).getDeviceContext();
+	ID3D11DeviceContext* context = ((RenderDeviceD3D&)rd).getActiveDeviceContext();
 	context->Unmap(_buffer, 0);
 }
 

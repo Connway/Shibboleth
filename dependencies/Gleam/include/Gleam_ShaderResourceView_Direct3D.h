@@ -1,5 +1,5 @@
 /************************************************************************************
-Copyright (C) 2013 by Nicholas LaCroix
+Copyright (C) 2014 by Nicholas LaCroix
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -34,7 +34,7 @@ public:
 	ShaderResourceViewD3D(void);
 	~ShaderResourceViewD3D(void);
 
-	bool init(const IRenderDevice& rd, const ITexture* texture);
+	bool init(IRenderDevice& rd, const ITexture* texture);
 	void destroy(void);
 
 	INLINE bool isD3D(void) const;

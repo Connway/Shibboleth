@@ -1,5 +1,5 @@
 /************************************************************************************
-Copyright (C) 2013 by Nicholas LaCroix
+Copyright (C) 2014 by Nicholas LaCroix
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -34,13 +34,13 @@ public:
 	BufferD3D(void);
 	~BufferD3D(void);
 
-	bool init(const IRenderDevice& rd, const void* data, unsigned int size, BUFFER_TYPE buffer_type = SHADER_DATA,
+	bool init(IRenderDevice& rd, const void* data, unsigned int size, BUFFER_TYPE buffer_type = SHADER_DATA,
 				unsigned int stride = 0, MAP_TYPE cpu_access = NONE);
 	void destroy(void);
 
-	bool update(const IRenderDevice& rd, const void* data, unsigned int size);
-	void* map(const IRenderDevice& rd, MAP_TYPE map_type = WRITE);
-	void unmap(const IRenderDevice& rd);
+	bool update(IRenderDevice& rd, const void* data, unsigned int size);
+	void* map(IRenderDevice& rd, MAP_TYPE map_type = WRITE);
+	void unmap(IRenderDevice& rd);
 
 	INLINE bool isD3D(void) const;
 

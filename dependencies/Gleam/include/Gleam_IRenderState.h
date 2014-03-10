@@ -1,5 +1,5 @@
 /************************************************************************************
-Copyright (C) 2013 by Nicholas LaCroix
+Copyright (C) 2014 by Nicholas LaCroix
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -28,7 +28,7 @@ NS_GLEAM
 
 class IRenderDevice;
 
-class IRenderState : public RefCounted
+class IRenderState : public GleamRefCounted
 {
 public:
 	enum BLEND_FACTOR
@@ -128,14 +128,14 @@ public:
 	IRenderState(void) {}
 	virtual ~IRenderState(void) {}
 
-	virtual bool init(const IRenderDevice& rd, bool wireframe, bool depth_test, bool stencil_test,
+	virtual bool init(IRenderDevice& rd, bool wireframe, bool depth_test, bool stencil_test,
 						COMPARISON_FUNC depth_func, StencilData front_face,
 						StencilData back_face, unsigned int depth_stencil_ref,
 						char stencil_read_mask, char stencil_write_mask,
 						CULL_MODE cull_face_mode, bool front_face_counter_clockwise,
 						const BlendData* blend_data) = 0;
 
-	virtual bool init(const IRenderDevice& rd, bool wireframe, bool depth_test, bool stencil_test,
+	virtual bool init(IRenderDevice& rd, bool wireframe, bool depth_test, bool stencil_test,
 						COMPARISON_FUNC depth_func, StencilData front_face,
 						StencilData back_face, unsigned int depth_stencil_ref,
 						char stencil_read_mask, char stencil_write_mask,

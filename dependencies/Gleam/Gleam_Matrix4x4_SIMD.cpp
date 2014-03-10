@@ -1,5 +1,5 @@
 /************************************************************************************
-Copyright (C) 2013 by Nicholas LaCroix
+Copyright (C) 2014 by Nicholas LaCroix
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -22,7 +22,6 @@ THE SOFTWARE.
 
 #include "Gleam_Matrix4x4_SIMD.h"
 #include "Gleam_Vector4_SIMD.h"
-#include "Gleam_SIMDMath.h"
 #include <Gaff_IncludeAssert.h>
 #include <Gaff_Defines.h>
 #include <cmath>
@@ -875,8 +874,6 @@ void Matrix4x4SIMD::setLookToRH(float eye_x, float eye_y, float eye_z,
 		Vector4SIMD(up_x, up_y, up_z, 0.0f)
 	);
 }
-
-#include <DirectXMath.h>
 
 void Matrix4x4SIMD::setOrthographicLH(float left, float right, float bottom, float top, float z_near, float z_far)
 {

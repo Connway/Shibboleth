@@ -27,14 +27,14 @@ THE SOFTWARE.
 
 NS_SHIBBOLETH
 
-class Game;
+class App;
 
 class StateMachine
 {
 public:
 	struct StateEntry
 	{
-		typedef IState* (*CreateStateFunc)(ProxyAllocator&, Game&);
+		typedef IState* (*CreateStateFunc)(ProxyAllocator&, App&);
 		typedef void (*DestroyStateFunc)(ProxyAllocator&, IState*);
 
 		Array<unsigned int> transitions;

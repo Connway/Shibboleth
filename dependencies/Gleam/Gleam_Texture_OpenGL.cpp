@@ -1,5 +1,5 @@
 /************************************************************************************
-Copyright (C) 2013 by Nicholas LaCroix
+Copyright (C) 2014 by Nicholas LaCroix
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -22,7 +22,9 @@ THE SOFTWARE.
 
 #include "Gleam_Texture_OpenGL.h"
 #include <Gaff_IncludeAssert.h>
+#include <Gaff_Math.h>
 #include <GL/glew.h>
+#include <cmath>
 
 NS_GLEAM
 
@@ -172,19 +174,21 @@ void TextureGL::destroy(void)
 	}
 }
 
-bool TextureGL::init3D(const IRenderDevice&, int width, int height, int depth, FORMAT format, int mip_levels, const void* buffer)
+bool TextureGL::init3D(IRenderDevice&, int width, int height, int depth, FORMAT format, int mip_levels, const void* buffer)
 {
 	assert(width > 0 && height > 0 && depth > 0 && mip_levels > 0);
 
 	_mip_levels = (unsigned int)mip_levels;
 	_format = format;
 	_type = THREED;
+	_width = width;
+	_height = height;
+	_depth = depth;
 
 	glGenTextures(1, &_texture);
 	glBindTexture(GL_TEXTURE_3D, _texture);
 
 	GLenum gl_format = _format_map[format];
-	glTexStorage3D(GL_TEXTURE_3D, mip_levels, gl_format, width, height, depth);
 
 	if (buffer) {
 		GLenum gl_channels = determineChannels(format);
@@ -193,8 +197,25 @@ bool TextureGL::init3D(const IRenderDevice&, int width, int height, int depth, F
 		// if this is zero, something seriously went wrong
 		assert(gl_channels != 0 && gl_type != 0);
 
-		glTexSubImage3D(GL_TEXTURE_3D, 0, 0, 0, 0, width, height, depth, gl_channels, gl_type, buffer);
+		//glTexSubImage3D(GL_TEXTURE_3D, 0, 0, 0, 0, width, height, depth, gl_channels, gl_type, buffer);
+		//glTexImage3D(GL_TEXTURE_3D, 0, gl_format, width, height, depth, 0, gl_channels, gl_type, buffer);
+
+		unsigned int byte_size = _format_size[format];
+
+		for (int i = 0; i < mip_levels; ++i) {
+			glTexImage3D(GL_TEXTURE_3D, i, gl_format, width, height, depth, 0, gl_channels, gl_type, buffer);
+			buffer = ((unsigned char*)buffer) + width * height * depth * byte_size;
+			width = Gaff::Max(1, width / 2);
+			height = Gaff::Max(1, height / 2);
+			depth = Gaff::Max(1, depth / 2);
+		}
+
+		glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MAX_LEVEL, mip_levels);
 		glGenerateMipmap(GL_TEXTURE_3D);
+
+	} else {
+		glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MAX_LEVEL, mip_levels);
+		glTexStorage3D(GL_TEXTURE_3D, mip_levels, gl_format, width, height, depth);
 	}
 
 	glBindTexture(GL_TEXTURE_3D, 0);
@@ -202,19 +223,21 @@ bool TextureGL::init3D(const IRenderDevice&, int width, int height, int depth, F
 	return glGetError() == GL_NO_ERROR;
 }
 
-bool TextureGL::init2D(const IRenderDevice&, int width, int height, FORMAT format, int mip_levels, const void* buffer)
+bool TextureGL::init2D(IRenderDevice&, int width, int height, FORMAT format, int mip_levels, const void* buffer)
 {
 	assert(width > 0 && height > 0 && mip_levels > 0);
 
 	_mip_levels = (unsigned int)mip_levels;
 	_format = format;
 	_type = TWOD;
+	_width = width;
+	_height = height;
+	_depth = 0;
 
 	glGenTextures(1, &_texture);
 	glBindTexture(GL_TEXTURE_2D, _texture);
 
 	GLenum gl_format = _format_map[format];
-	glTexStorage2D(GL_TEXTURE_2D, mip_levels, gl_format, width, height);
 
 	if (buffer) {
 		GLenum gl_channels = determineChannels(format);
@@ -223,8 +246,24 @@ bool TextureGL::init2D(const IRenderDevice&, int width, int height, FORMAT forma
 		// if this is zero, something seriously went wrong
 		assert(gl_channels != 0 && gl_type != 0);
 
-		glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, width, height, gl_channels, gl_type, buffer);
+		//glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, width, height, gl_channels, gl_type, buffer);
+		//glTexImage2D(GL_TEXTURE_2D, 0, gl_format, width, height, 0, gl_channels, gl_type, buffer);
+
+		unsigned int byte_size = _format_size[format];
+
+		for (int i = 0; i < mip_levels; ++i) {
+			glTexImage2D(GL_TEXTURE_2D, i, gl_format, width, height, 0, gl_channels, gl_type, buffer);
+			buffer = ((unsigned char*)buffer) + width * height * byte_size;
+			width = Gaff::Max(1, width / 2);
+			height = Gaff::Max(1, height / 2);
+		}
+
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, mip_levels);
 		glGenerateMipmap(GL_TEXTURE_2D);
+
+	} else {
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, mip_levels);
+		glTexStorage2D(GL_TEXTURE_2D, mip_levels, gl_format, width, height);
 	}
 
 	glBindTexture(GL_TEXTURE_2D, 0);
@@ -232,19 +271,21 @@ bool TextureGL::init2D(const IRenderDevice&, int width, int height, FORMAT forma
 	return glGetError() == GL_NO_ERROR;
 }
 
-bool TextureGL::init1D(const IRenderDevice&, int width, FORMAT format, int mip_levels, const void* buffer)
+bool TextureGL::init1D(IRenderDevice&, int width, FORMAT format, int mip_levels, const void* buffer)
 {
 	assert(width > 0 && mip_levels > 0);
 
 	_mip_levels = (unsigned int)mip_levels;
 	_format = format;
 	_type = ONED;
+	_width = width;
+	_height = 0;
+	_depth = 0;
 
 	glGenTextures(1, &_texture);
 	glBindTexture(GL_TEXTURE_1D, _texture);
 
 	GLenum gl_format = _format_map[format];
-	glTexStorage1D(GL_TEXTURE_1D, mip_levels, gl_format, width);
 
 	if (buffer) {
 		GLenum gl_channels = determineChannels(format);
@@ -253,8 +294,23 @@ bool TextureGL::init1D(const IRenderDevice&, int width, FORMAT format, int mip_l
 		// if this is zero, something seriously went wrong
 		assert(gl_channels != 0 && gl_type != 0);
 
-		glTexSubImage1D(GL_TEXTURE_1D, 0, 0, width, gl_channels, gl_type, buffer);
+		//glTexSubImage1D(GL_TEXTURE_1D, 0, 0, width, gl_channels, gl_type, buffer);
+		//glTexImage1D(GL_TEXTURE_1D, 0, gl_format, width, 0, gl_channels, gl_type, buffer);
+
+		unsigned int byte_size = _format_size[format];
+
+		for (int i = 0; i < mip_levels; ++i) {
+			glTexImage1D(GL_TEXTURE_1D, i, gl_format, width, 0, gl_channels, gl_type, buffer);
+			buffer = ((unsigned char*)buffer) + width * byte_size;
+			width = Gaff::Max(1, width / 2);
+		}
+
+		glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_MAX_LEVEL, mip_levels);
 		glGenerateMipmap(GL_TEXTURE_1D);
+
+	} else {
+		glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_MAX_LEVEL, mip_levels);
+		glTexStorage1D(GL_TEXTURE_1D, mip_levels, gl_format, width);
 	}
 
 	glBindTexture(GL_TEXTURE_1D, 0);
@@ -262,30 +318,22 @@ bool TextureGL::init1D(const IRenderDevice&, int width, FORMAT format, int mip_l
 	return glGetError() == GL_NO_ERROR;
 }
 
-bool TextureGL::initCubemap(const IRenderDevice&, int width, int height, FORMAT format, int mip_levels, const void* buffer)
-							//const void* pos_x_buffer, const void* neg_x_buffer,
-							//const void* pos_y_buffer, const void* neg_y_buffer,
-							//const void* pos_z_buffer, const void* neg_z_buffer)
+bool TextureGL::initCubemap(IRenderDevice&, int width, int height, FORMAT format, int mip_levels, const void* buffer)
 {
 	assert(width > 0 && height > 0 && mip_levels > 0);
 
 	_mip_levels = (unsigned int)mip_levels;
 	_format = format;
 	_type = CUBE;
+	_width = width;
+	_height = height;
+	_depth = 0;
 
 	glGenTextures(1, &_texture);
 	glBindTexture(GL_TEXTURE_CUBE_MAP, _texture);
 
 	GLenum gl_format = _format_map[format];
 
-	glTexStorage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X, mip_levels, gl_format, width, height);
-	glTexStorage2D(GL_TEXTURE_CUBE_MAP_NEGATIVE_X, mip_levels, gl_format, width, height);
-	glTexStorage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_Y, mip_levels, gl_format, width, height);
-	glTexStorage2D(GL_TEXTURE_CUBE_MAP_NEGATIVE_Y, mip_levels, gl_format, width, height);
-	glTexStorage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_Z, mip_levels, gl_format, width, height);
-	glTexStorage2D(GL_TEXTURE_CUBE_MAP_NEGATIVE_Z, mip_levels, gl_format, width, height);
-
-	//if (pos_x_buffer && neg_x_buffer && pos_y_buffer && neg_y_buffer && pos_z_buffer && neg_z_buffer) {
 	if (buffer) {
 		GLenum gl_channels = determineChannels(format);
 		GLenum gl_type = determineType(format);
@@ -293,22 +341,50 @@ bool TextureGL::initCubemap(const IRenderDevice&, int width, int height, FORMAT 
 		// if this is zero, something seriously went wrong
 		assert(gl_channels != 0 && gl_type != 0);
 
-		unsigned int buf_size = width * height * _format_size[format];
+		//glTexSubImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X, 0, 0, 0, width, height, gl_channels, gl_type, buf);
+		//glTexSubImage2D(GL_TEXTURE_CUBE_MAP_NEGATIVE_X, 0, 0, 0, width, height, gl_channels, gl_type, buf + buf_size);
+		//glTexSubImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_Y, 0, 0, 0, width, height, gl_channels, gl_type, buf + 2 * buf_size);
+		//glTexSubImage2D(GL_TEXTURE_CUBE_MAP_NEGATIVE_Y, 0, 0, 0, width, height, gl_channels, gl_type, buf + 3 * buf_size);
+		//glTexSubImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_Z, 0, 0, 0, width, height, gl_channels, gl_type, buf + 4 * buf_size);
+		//glTexSubImage2D(GL_TEXTURE_CUBE_MAP_NEGATIVE_Z, 0, 0, 0, width, height, gl_channels, gl_type, buf + 5 * buf_size);
+
+		//glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X, 0, gl_format, width, height, 0, gl_channels, gl_type, buf);
+		//glTexImage2D(GL_TEXTURE_CUBE_MAP_NEGATIVE_X, 0, gl_format, width, height, 0, gl_channels, gl_type, buf + buf_size);
+		//glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_Y, 0, gl_format, width, height, 0, gl_channels, gl_type, buf + 2 * buf_size);
+		//glTexImage2D(GL_TEXTURE_CUBE_MAP_NEGATIVE_Y, 0, gl_format, width, height, 0, gl_channels, gl_type, buf + 3 * buf_size);
+		//glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_Z, 0, gl_format, width, height, 0, gl_channels, gl_type, buf + 4 * buf_size);
+		//glTexImage2D(GL_TEXTURE_CUBE_MAP_NEGATIVE_Z, 0, gl_format, width, height, 0, gl_channels, gl_type, buf + 5 * buf_size);
+
+		unsigned int byte_size = _format_size[format];
+		unsigned int buf_size = width * height * byte_size;
 		const char* buf = (const char*)buffer;
 
-		//glTexSubImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X, 0, 0, 0, width, height, gl_channels, gl_type, pos_x_buffer);
-		//glTexSubImage2D(GL_TEXTURE_CUBE_MAP_NEGATIVE_X, 0, 0, 0, width, height, gl_channels, gl_type, neg_x_buffer);
-		//glTexSubImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_Y, 0, 0, 0, width, height, gl_channels, gl_type, pos_y_buffer);
-		//glTexSubImage2D(GL_TEXTURE_CUBE_MAP_NEGATIVE_Y, 0, 0, 0, width, height, gl_channels, gl_type, neg_y_buffer);
-		//glTexSubImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_Z, 0, 0, 0, width, height, gl_channels, gl_type, pos_z_buffer);
-		//glTexSubImage2D(GL_TEXTURE_CUBE_MAP_NEGATIVE_Z, 0, 0, 0, width, height, gl_channels, gl_type, neg_z_buffer);
+		for (int i = 0; i < mip_levels; ++i) {
+			glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X, 0, gl_format, width, height, 0, gl_channels, gl_type, buf);
+			glTexImage2D(GL_TEXTURE_CUBE_MAP_NEGATIVE_X, 0, gl_format, width, height, 0, gl_channels, gl_type, buf + buf_size);
+			glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_Y, 0, gl_format, width, height, 0, gl_channels, gl_type, buf + 2 * buf_size);
+			glTexImage2D(GL_TEXTURE_CUBE_MAP_NEGATIVE_Y, 0, gl_format, width, height, 0, gl_channels, gl_type, buf + 3 * buf_size);
+			glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_Z, 0, gl_format, width, height, 0, gl_channels, gl_type, buf + 4 * buf_size);
+			glTexImage2D(GL_TEXTURE_CUBE_MAP_NEGATIVE_Z, 0, gl_format, width, height, 0, gl_channels, gl_type, buf + 5 * buf_size);
 
-		glTexSubImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X, 0, 0, 0, width, height, gl_channels, gl_type, buf);
-		glTexSubImage2D(GL_TEXTURE_CUBE_MAP_NEGATIVE_X, 0, 0, 0, width, height, gl_channels, gl_type, buf + buf_size);
-		glTexSubImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_Y, 0, 0, 0, width, height, gl_channels, gl_type, buf + 2 * buf_size);
-		glTexSubImage2D(GL_TEXTURE_CUBE_MAP_NEGATIVE_Y, 0, 0, 0, width, height, gl_channels, gl_type, buf + 3 * buf_size);
-		glTexSubImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_Z, 0, 0, 0, width, height, gl_channels, gl_type, buf + 4 * buf_size);
-		glTexSubImage2D(GL_TEXTURE_CUBE_MAP_NEGATIVE_Z, 0, 0, 0, width, height, gl_channels, gl_type, buf + 5 * buf_size);
+			width = Gaff::Max(1, width / 2);
+			height = Gaff::Max(1, height / 2);
+			buf_size = width * height * byte_size;
+			buf += 6 * buf_size;
+		}
+
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, mip_levels);
+		glGenerateMipmap(GL_TEXTURE_CUBE_MAP);
+
+	} else {
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, mip_levels);
+
+		glTexStorage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X, mip_levels, gl_format, width, height);
+		glTexStorage2D(GL_TEXTURE_CUBE_MAP_NEGATIVE_X, mip_levels, gl_format, width, height);
+		glTexStorage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_Y, mip_levels, gl_format, width, height);
+		glTexStorage2D(GL_TEXTURE_CUBE_MAP_NEGATIVE_Y, mip_levels, gl_format, width, height);
+		glTexStorage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_Z, mip_levels, gl_format, width, height);
+		glTexStorage2D(GL_TEXTURE_CUBE_MAP_NEGATIVE_Z, mip_levels, gl_format, width, height);
 	}
 
 	glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
@@ -316,12 +392,15 @@ bool TextureGL::initCubemap(const IRenderDevice&, int width, int height, FORMAT 
 	return glGetError() == GL_NO_ERROR;
 }
 
-bool TextureGL::initDepthStencil(const IRenderDevice&, int width, int height, FORMAT format)
+bool TextureGL::initDepthStencil(IRenderDevice&, int width, int height, FORMAT format)
 {
 	assert(width > 0 && height > 0);
 
 	_format = format;
 	_mip_levels = 1;
+	_width = width;
+	_height = height;
+	_depth = 0;
 
 	switch (format) {
 		case DEPTH_16_UNORM:
@@ -344,7 +423,6 @@ bool TextureGL::initDepthStencil(const IRenderDevice&, int width, int height, FO
 	glGenTextures(1, &_texture);
 	glBindTexture(GL_TEXTURE_2D, _texture);
 
-	//glTexImage2D(GL_TEXTURE_2D, 0, _format_map[format], width, height, 0, determineChannels(format), determineType(format), NULLPTR);
 	glTexStorage2D(GL_TEXTURE_2D, 1, _format_map[format], width, height);
 
 	glBindTexture(GL_TEXTURE_2D, 0);
@@ -362,7 +440,34 @@ unsigned int TextureGL::getTexture(void) const
 	return _texture;
 }
 
-unsigned int TextureGL::determineChannels(FORMAT format) const
+unsigned int TextureGL::getTexType(void) const
+{
+	switch (_type) {
+		case ONED:
+			return GL_TEXTURE_1D;
+
+		case TWOD:
+			return GL_TEXTURE_2D;
+
+		case THREED:
+			return GL_TEXTURE_3D;
+
+		case CUBE:
+			return GL_TEXTURE_CUBE_MAP;
+
+		case DEPTH:
+		case DEPTH_STENCIL:
+			return GL_TEXTURE_2D;
+
+		default:
+			break;
+	}
+
+	// should never happen
+	return 0;
+}
+
+unsigned int TextureGL::determineChannels(FORMAT format)
 {
 	GLenum channels = 0;
 
@@ -439,12 +544,16 @@ unsigned int TextureGL::determineChannels(FORMAT format) const
 		case DEPTH_STENCIL_32_8_F:
 			channels = GL_DEPTH_STENCIL;
 			break;
+
+		// To get GCC to stop erroring
+		case FORMAT_SIZE:
+			break;
 	}
 
 	return channels;
 }
 
-unsigned int TextureGL::determineType(FORMAT format) const
+unsigned int TextureGL::determineType(FORMAT format)
 {
 	GLenum type = 0;
 
@@ -509,7 +618,6 @@ unsigned int TextureGL::determineType(FORMAT format) const
 		case RG_16_F:
 		case RGB_16_F:
 		case RGBA_16_F:
-		case RGB_11_11_10_F:
 			type = GL_HALF_FLOAT;
 			break;
 
@@ -518,6 +626,23 @@ unsigned int TextureGL::determineType(FORMAT format) const
 		case RGB_32_F:
 		case RGBA_32_F:
 			type = GL_FLOAT;
+			break;
+
+		case RGB_11_11_10_F:
+			type = GL_UNSIGNED_INT_10F_11F_11F_REV;
+			break;
+
+		case RGBE_9_9_9_5:
+			type = GL_UNSIGNED_INT_5_9_9_9_REV;
+			break;
+
+		case RGBA_10_10_10_2_UNORM:
+		case RGBA_10_10_10_2_UI:
+			type = GL_UNSIGNED_INT_10_10_10_2;
+			break;
+
+		case SRGBA_8_UNORM:
+			type = GL_UNSIGNED_BYTE;
 			break;
 
 		case DEPTH_16_UNORM:
@@ -535,33 +660,13 @@ unsigned int TextureGL::determineType(FORMAT format) const
 		case DEPTH_STENCIL_32_8_F:
 			type = GL_FLOAT_32_UNSIGNED_INT_24_8_REV;
 			break;
+
+		// To get GCC to stop erroring
+		case FORMAT_SIZE:
+			break;
 	}
 
 	return type;
-}
-
-unsigned int TextureGL::getTexType(void) const
-{
-	switch (_type) {
-		case ONED:
-			return GL_TEXTURE_1D;
-
-		case TWOD:
-			return GL_TEXTURE_2D;
-
-		case THREED:
-			return GL_TEXTURE_3D;
-
-		case CUBE:
-			return GL_TEXTURE_CUBE_MAP;
-
-		case DEPTH:
-		case DEPTH_STENCIL:
-			return GL_TEXTURE_2D;
-	}
-
-	// should never happen
-	return 0;
 }
 
 NS_END

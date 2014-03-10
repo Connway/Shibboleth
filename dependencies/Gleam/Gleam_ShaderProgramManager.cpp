@@ -1,5 +1,5 @@
 /************************************************************************************
-Copyright (C) 2013 by Nicholas LaCroix
+Copyright (C) 2014 by Nicholas LaCroix
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -21,11 +21,9 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Gleam_ShaderProgramManager.h"
-#include "Gleam_Program_Direct3D.h"
-#include "Gleam_Program_OpenGL.h"
-#include "Gleam_Shader_Direct3D.h"
-#include "Gleam_Shader_OpenGL.h"
 #include "Gleam_IRenderDevice.h"
+#include "Gleam_Program.h"
+#include "Gleam_Shader.h"
 
 NS_GLEAM
 
@@ -57,14 +55,10 @@ void ShaderProgramManager::destroy(void)
 
 IProgram* ShaderProgramManager::createProgram(const GleamAString& name)
 {
-#ifdef USE_DX
-	IProgram* program = GleamClassAllocate(ProgramD3D);
-#else
-	IProgram* program = GleamClassAllocate(ProgramGL);
-#endif
+	IProgram* program = GleamAllocateT(Program);
 
 	if (!program) {
-		return NULLPTR;
+		return nullptr;
 	}
 
 	_programs.push((IProgram* const)program);
@@ -75,16 +69,12 @@ IProgram* ShaderProgramManager::createProgram(const GleamAString& name)
 	return program;
 }
 
-IShader* ShaderProgramManager::createShader(const IRenderDevice& rd, const GleamGString& file_path, IShader::SHADER_TYPE shader_type, const GleamAString& name)
+IShader* ShaderProgramManager::createShader(IRenderDevice& rd, const GleamGString& file_path, IShader::SHADER_TYPE shader_type, const GleamAString& name)
 {
-#ifdef USE_DX
-	IShader* shader = GleamClassAllocate(ShaderD3D);
-#else
-	IShader* shader = GleamClassAllocate(ShaderGL);
-#endif
+	IShader* shader = GleamAllocateT(Shader);
 
 	if (!shader) {
-		return NULLPTR;
+		return nullptr;
 	}
 
 	bool result = false;
@@ -113,11 +103,15 @@ IShader* ShaderProgramManager::createShader(const IRenderDevice& rd, const Gleam
 		case IShader::SHADER_COMPUTE:
 			result = shader->initCompute(rd, file_path);
 			break;
+
+		// To get GCC to stop erroring
+		default:
+			break;
 	}
 
 	if (!result) {
 		GleamFree(shader);
-		return NULLPTR;
+		return nullptr;
 	}
 
 	_shaders.push((IShader* const)shader);
@@ -152,10 +146,10 @@ int ShaderProgramManager::addShader(IShader* shader, const GleamAString& name)
 bool ShaderProgramManager::removeProgram(const IProgram* program)
 {
 	assert(program);
-	int index = _programs.linearFind((IProgram* const)program);
+	GleamArray<IProgram*>::Iterator it = _programs.linearSearch(program);
 
-	if (index > -1) {
-		_programs.erase(index);
+	if (it != _programs.end()) {
+		_programs.erase(it);
 		program->release();
 		return true;
 	}
@@ -173,10 +167,10 @@ void ShaderProgramManager::removeProgram(int index)
 bool ShaderProgramManager::removeShader(const IShader* shader)
 {
 	assert(shader);
-	int index = _shaders.linearFind((IShader* const)shader);
+	GleamArray<IShader*>::Iterator it = _shaders.linearSearch(shader);
 
-	if (index > -1) {
-		_shaders.erase(index);
+	if (it != _shaders.end()) {
+		_shaders.erase(it);
 		shader->release();
 		return true;
 	}
@@ -206,13 +200,13 @@ int ShaderProgramManager::getShaderIndex(const GleamAString& name) const
 int ShaderProgramManager::getIndex(const IProgram* program) const
 {
 	assert(program);
-	return _programs.linearFind((IProgram* const)program);
+	return _programs.linearSearch(0, _programs.size(), program);
 }
 
 int ShaderProgramManager::getIndex(const IShader* shader) const
 {
 	assert(shader);
-	return _shaders.linearFind((IShader* const)shader);
+	return _shaders.linearSearch(0, _shaders.size(), shader);
 }
 
 const IProgram* ShaderProgramManager::getProgram(int index) const

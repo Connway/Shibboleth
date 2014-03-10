@@ -1,5 +1,5 @@
 /************************************************************************************
-Copyright (C) 2013 by Nicholas LaCroix
+Copyright (C) 2014 by Nicholas LaCroix
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -22,13 +22,14 @@ THE SOFTWARE.
 
 #include "Gleam_IMesh.h"
 #include "Gleam_IRenderDevice.h"
-#include "Gleam_Buffer.h"
+#include "Gleam_Global.h"
+#include "Gleam_IBuffer.h"
 #include <Gaff_IncludeAssert.h>
 
 NS_GLEAM
 
 IMesh::IMesh(void):
-	_indices(NULLPTR), _index_count(0)
+	_indices(nullptr), _index_count(0)
 {
 }
 
@@ -43,45 +44,6 @@ void IMesh::destroy(void)
 	}
 
 	_vert_data.clear();
-}
-
-bool IMesh::addVertData(
-	const IRenderDevice& rd, const void* vert_data, unsigned int vert_count, unsigned int vert_size,
-	unsigned int* indices, unsigned int index_count, TOPOLOGY_TYPE primitive_type)
-{
-	IBuffer* index_buffer = GleamClassAllocate(Buffer);
-	IBuffer* vert_buffer = GleamClassAllocate(Buffer);
-
-	if (!index_buffer || !vert_buffer) {
-		if (index_buffer) {
-			GleamFree(index_buffer);
-		}
-
-		return false;
-	}
-
-	if (!vert_buffer->init(rd, vert_data, vert_count * vert_size, IBuffer::VERTEX_DATA, vert_size)) {
-		GleamFree(index_buffer);
-		GleamFree(vert_buffer);
-		return false;
-	}
-
-	if (!index_buffer->init(rd, indices, sizeof(unsigned int) * index_count, IBuffer::INDEX_DATA, sizeof(unsigned int))) {
-		GleamFree(index_buffer);
-		GleamFree(vert_buffer);
-		return false;
-	}
-
-	addBuffer(vert_buffer);
-	SAFEGLEAMRELEASE(_indices);
-	_indices = index_buffer;
-	_index_count = index_count;
-	_indices->addRef();
-
-	setBoundingBox(vert_data, vert_count, vert_size);
-	setTopologyType(primitive_type);
-
-	return true;
 }
 
 void IMesh::addBuffer(IBuffer* buffer)
@@ -105,6 +67,13 @@ IBuffer* IMesh::getBuffer(unsigned int index)
 unsigned int IMesh::getBufferCount(void) const
 {
 	return _vert_data.size();
+}
+
+void IMesh::setIndiceBuffer(IBuffer* buffer)
+{
+	assert(buffer);
+	SAFEGAFFRELEASE(_indices);
+	_indices = buffer;
 }
 
 void IMesh::setBoundingBox(const AABB& bounding_box)
@@ -141,6 +110,35 @@ void IMesh::setIndexCount(unsigned int count)
 unsigned int IMesh::getIndexCount(void) const
 {
 	return _index_count;
+}
+
+bool IMesh::addVertDataHelper(
+	IRenderDevice& rd, const void* vert_data, unsigned int vert_count, unsigned int vert_size,
+	unsigned int* indices, unsigned int index_count, TOPOLOGY_TYPE primitive_type,
+	IBuffer* index_buffer, IBuffer* vert_buffer
+)
+{
+	assert(vert_data && vert_count && vert_size && indices && index_count &&
+			index_buffer && vert_buffer);
+
+	if (!vert_buffer->init(rd, vert_data, vert_count * vert_size, IBuffer::VERTEX_DATA, vert_size)) {
+		return false;
+	}
+
+	if (!index_buffer->init(rd, indices, sizeof(unsigned int) * index_count, IBuffer::INDEX_DATA, sizeof(unsigned int))) {
+		return false;
+	}
+
+	addBuffer(vert_buffer);
+	SAFEGAFFRELEASE(_indices);
+	_indices = index_buffer;
+	_index_count = index_count;
+	_indices->addRef();
+
+	setBoundingBox(vert_data, vert_count, vert_size);
+	setTopologyType(primitive_type);
+
+	return true;
 }
 
 NS_END

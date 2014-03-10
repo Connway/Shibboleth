@@ -1,5 +1,5 @@
 /************************************************************************************
-Copyright (C) 2013 by Nicholas LaCroix
+Copyright (C) 2014 by Nicholas LaCroix
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -33,7 +33,7 @@ class IRenderDevice;
 class IShader;
 class IBuffer;
 
-class IProgram : public RefCounted
+class IProgram : public GleamRefCounted
 {
 public:
 	IProgram(void);
@@ -55,30 +55,35 @@ public:
 
 	INLINE const IBuffer* getConstantBuffer(IShader::SHADER_TYPE type, unsigned int index) const;
 	INLINE IBuffer* getConstantBuffer(IShader::SHADER_TYPE type, unsigned int index);
-	void addConstantBuffer(IShader::SHADER_TYPE type, IBuffer* const_buffer);
-	void removeConstantBuffer(IShader::SHADER_TYPE type, unsigned int index);
-	void popConstantBuffer(IShader::SHADER_TYPE type);
+	virtual void addConstantBuffer(IShader::SHADER_TYPE type, IBuffer* const_buffer);
+	virtual void removeConstantBuffer(IShader::SHADER_TYPE type, unsigned int index);
+	virtual void popConstantBuffer(IShader::SHADER_TYPE type);
 
 	INLINE unsigned int getConstantBufferCount(IShader::SHADER_TYPE type) const;
 	unsigned int getConstantBufferCount(void) const;
 
-	const IShaderResourceView* getResourceView(IShader::SHADER_TYPE type, unsigned int index) const;
-	void addResourceView(IShader::SHADER_TYPE type, IShaderResourceView* resource_view);
-	void removeResourceView(IShader::SHADER_TYPE type,unsigned int index);
-	void popResourceView(IShader::SHADER_TYPE type);
+	INLINE const IShaderResourceView* getResourceView(IShader::SHADER_TYPE type, unsigned int index) const;
+	INLINE IShaderResourceView* getResourceView(IShader::SHADER_TYPE type, unsigned int index);
+	virtual void addResourceView(IShader::SHADER_TYPE type, IShaderResourceView* resource_view);
+	virtual void removeResourceView(IShader::SHADER_TYPE type, unsigned int index);
+	virtual void popResourceView(IShader::SHADER_TYPE type);
 
-	unsigned int getResourceViewCount(IShader::SHADER_TYPE type) const;
+	INLINE unsigned int getResourceViewCount(IShader::SHADER_TYPE type) const;
+	unsigned int getResourceViewCount(void) const;
 
-	const ISamplerState* getSamplerState(IShader::SHADER_TYPE type, unsigned int index) const;
-	void addSamplerState(IShader::SHADER_TYPE type, ISamplerState* sampler);
-	void removeSamplerState(IShader::SHADER_TYPE type, unsigned int index);
-	void popSamplerState(IShader::SHADER_TYPE type);
-	unsigned int getSamplerCount(IShader::SHADER_TYPE type) const;
+	INLINE const ISamplerState* getSamplerState(IShader::SHADER_TYPE type, unsigned int index) const;
+	INLINE ISamplerState* getSamplerState(IShader::SHADER_TYPE type, unsigned int index);
+	virtual void addSamplerState(IShader::SHADER_TYPE type, ISamplerState* sampler);
+	virtual void removeSamplerState(IShader::SHADER_TYPE type, unsigned int index);
+	virtual void popSamplerState(IShader::SHADER_TYPE type);
+
+	INLINE unsigned int getSamplerCount(IShader::SHADER_TYPE type) const;
+	unsigned int getSamplerCount(void) const;
 
 protected:
-	GleamArray(IShaderResourceView*) _resource_views[IShader::SHADER_TYPE_SIZE];
-	GleamArray(ISamplerState*) _sampler_states[IShader::SHADER_TYPE_SIZE];
-	GleamArray(IBuffer*) _constant_buffers[IShader::SHADER_TYPE_SIZE];
+	GleamArray<IShaderResourceView*> _resource_views[IShader::SHADER_TYPE_SIZE];
+	GleamArray<ISamplerState*> _sampler_states[IShader::SHADER_TYPE_SIZE];
+	GleamArray<IBuffer*> _constant_buffers[IShader::SHADER_TYPE_SIZE];
 };
 
 NS_END

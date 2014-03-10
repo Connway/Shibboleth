@@ -1,5 +1,5 @@
 /************************************************************************************
-Copyright (C) 2013 by Nicholas LaCroix
+Copyright (C) 2014 by Nicholas LaCroix
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -21,17 +21,15 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Gleam_RenderDevice_Direct3D.h"
-#include "Gleam_Buffer_Direct3D.h"
+#include "Gleam_RenderTarget_Direct3D.h"
 #include "Gleam_Window_Windows.h"
-#include "Gaff_IncludeAssert.h"
 #include "Gleam_Global.h"
+#include <Gaff_IncludeAssert.h>
 
 NS_GLEAM
 
 RenderDeviceD3D::RenderDeviceD3D(void):
-	_vsync(false), _display_mode_list(NULLPTR),
-	_render_target_view(NULLPTR), _device_context(NULLPTR),
-	_swap_chain(NULLPTR), _device(NULLPTR)
+	_video_memory(0), _curr_output(0), _curr_device(0)
 {
 	_clear_color[0] = 0.0f;
 	_clear_color[1] = 0.0f;
@@ -44,154 +42,298 @@ RenderDeviceD3D::~RenderDeviceD3D(void)
 	destroy();
 }
 
-bool RenderDeviceD3D::init(const Window& window, bool vsync, int color_format, unsigned int flags)
+IRenderDevice::AdapterList RenderDeviceD3D::getDisplayModes(int color_format)
 {
 	IDXGIFactory* factory;
 	IDXGIAdapter* adapter;
-	IDXGIOutput* adapterOutput;
-	DXGI_ADAPTER_DESC adapterDesc;
-	DXGI_SWAP_CHAIN_DESC swapChainDesc;
-	D3D_FEATURE_LEVEL featureLevel;
-	ID3D11Texture2D* backBufferPtr;
-	unsigned int numerator, denominator;
-	HRESULT result;
+	IDXGIOutput* adapter_output;
+	DXGI_ADAPTER_DESC adapter_desc;
 
-	_vsync = vsync;
+	HRESULT result = CreateDXGIFactory(__uuidof(IDXGIFactory), (void**)&factory);
 
-	result = CreateDXGIFactory(__uuidof(IDXGIFactory), (void**)&factory);
-	RETURNIFFAILED(result)
-
-	result = factory->EnumAdapters(0, &adapter);
-	RETURNIFFAILED(result)
-
-	result = adapter->EnumOutputs(0, &adapterOutput);
-	RETURNIFFAILED(result)
-
-	result = adapterOutput->GetDisplayModeList((DXGI_FORMAT)color_format, flags, &_num_modes, NULL);
-	RETURNIFFAILED(result)
-
-	_display_mode_list = (DXGI_MODE_DESC*)GleamAllocate(sizeof(DXGI_MODE_DESC) * _num_modes);
-	if (!_display_mode_list) {
-		return false;
+	if (FAILED(result)) {
+		return AdapterList();
 	}
 
-	result = adapterOutput->GetDisplayModeList((DXGI_FORMAT)color_format, flags, &_num_modes, _display_mode_list);
-	RETURNIFFAILED(result)
+	for (unsigned int i = 0; factory->EnumAdapters(i, &adapter) != DXGI_ERROR_NOT_FOUND; ++i) {
+		AdapterInfo info;
+		info.adapter.set(adapter);
 
-	numerator = 0;
-	denominator = 0;
+		result = adapter->GetDesc(&adapter_desc);
 
-	bool found = false;
-	for (UINT i = 0; i < _num_modes; ++i) {
-		if (_display_mode_list[i].Width == window.getWidth() && _display_mode_list[i].Height == window.getHeight()) {
-			numerator = _display_mode_list[i].RefreshRate.Numerator;
-			denominator = _display_mode_list[i].RefreshRate.Denominator;
-			found = true;
-			break;
+		if (FAILED(result)) {
+			continue;
 		}
+
+		info.memory = (UINT)(adapter_desc.DedicatedVideoMemory / 1024) / 1024;
+		wcsncpy_s(info.adapter_name, 128, adapter_desc.Description, 128);
+
+		for (unsigned int j = 0; adapter->EnumOutputs(j, &adapter_output) != DXGI_ERROR_NOT_FOUND; ++j) {
+			OutputInfo out_info;
+			out_info.output.set(adapter_output);
+
+			unsigned int num_modes;
+
+			result = adapter_output->GetDisplayModeList((DXGI_FORMAT)color_format, 0UL, &num_modes, nullptr);
+
+			if (FAILED(result)) {
+				continue;
+			}
+
+			out_info.display_mode_list.resize(num_modes);
+			adapter_output->GetDisplayModeList((DXGI_FORMAT)color_format, 0UL, &num_modes, out_info.display_mode_list.getArray());
+
+			// Remove duplicate entries. We don't care about the scaling or scanline order
+			for (unsigned int k = 1; k < out_info.display_mode_list.size();) {
+				const DXGI_MODE_DESC& curr = out_info.display_mode_list[k];
+				const DXGI_MODE_DESC& prev = out_info.display_mode_list[k - 1];
+
+				if (curr.Width == prev.Width && curr.Height == prev.Height &&
+					curr.RefreshRate.Numerator == prev.RefreshRate.Numerator &&
+					curr.RefreshRate.Denominator == prev.RefreshRate.Denominator) {
+
+					out_info.display_mode_list.erase(k);
+
+				} else {
+					++k;
+				}
+			}
+
+			info.output_info.push(out_info);
+		}
+
+		_display_info.push(info);
 	}
 
-	if (!found) {
-		return false;
-	}
-
-	result = adapter->GetDesc(&adapterDesc);
-	RETURNIFFAILED(result)
-
-	_video_memory = (UINT)adapterDesc.DedicatedVideoMemory;
-	wcsncpy_s(_video_card_name, 128, adapterDesc.Description, 128);
-
-	adapterOutput->Release();
-	adapter->Release();
 	factory->Release();
 
-	ZeroMemory(&swapChainDesc, sizeof(swapChainDesc));
-	swapChainDesc.BufferCount = 1;
-	swapChainDesc.BufferDesc.Width = window.getWidth();
-	swapChainDesc.BufferDesc.Height = window.getHeight();
-	swapChainDesc.BufferDesc.Format = (DXGI_FORMAT)color_format;
-	swapChainDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
-	swapChainDesc.OutputWindow = window.getHWnd();
-	swapChainDesc.SampleDesc.Count = 1;
-	swapChainDesc.SampleDesc.Quality = 0;
-	swapChainDesc.Windowed = !window.isFullScreen();
-	swapChainDesc.BufferDesc.ScanlineOrdering = DXGI_MODE_SCANLINE_ORDER_UNSPECIFIED;
-	swapChainDesc.BufferDesc.Scaling = DXGI_MODE_SCALING_UNSPECIFIED;
-	swapChainDesc.SwapEffect = DXGI_SWAP_EFFECT_DISCARD;
-	swapChainDesc.Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH;
+	_display_info.resize(_display_info.size()); // Trim off unused entries
 
-	if (vsync) {
-		swapChainDesc.BufferDesc.RefreshRate.Numerator = numerator;
-		swapChainDesc.BufferDesc.RefreshRate.Denominator = denominator;
-	} else {
-		swapChainDesc.BufferDesc.RefreshRate.Numerator = 0;
-		swapChainDesc.BufferDesc.RefreshRate.Denominator = 1;
+	// convert DirectX data structures into our structure
+	AdapterList out(_display_info.size());
+
+	for (unsigned int i = 0; i < _display_info.size(); ++i) {
+		const AdapterInfo& adpt_info = _display_info[i];
+		Adapter adpt;
+
+		adpt.displays.reserve(adpt_info.output_info.size());
+		wcstombs(adpt.adapter_name, adapter_desc.Description, 128);
+		adpt.memory = adpt_info.memory;
+		adpt.id = i;
+
+		for (unsigned int j = 0; j < adpt_info.output_info.size(); ++j) {
+			const OutputInfo& out_info = adpt_info.output_info[j];
+			Display display;
+			display.display_modes.reserve(out_info.display_mode_list.size());
+			display.id = j;
+
+			for (unsigned int k = 0; k < out_info.display_mode_list.size(); ++k) {
+				const DXGI_MODE_DESC& mode_desc = out_info.display_mode_list[k];
+
+				DisplayMode mode = {
+					mode_desc.RefreshRate.Numerator / mode_desc.RefreshRate.Denominator,
+					mode_desc.Width,
+					mode_desc.Height,
+					k,
+					0, 0
+				};
+
+				display.display_modes.push(mode);
+			}
+
+			adpt.displays.push(display);
+		}
+
+		out.push(adpt);
 	}
 
-	featureLevel = D3D_FEATURE_LEVEL_11_0;
-	result = D3D11CreateDeviceAndSwapChain(0, D3D_DRIVER_TYPE_HARDWARE, 0, 0, &featureLevel, 1, D3D11_SDK_VERSION,
-											&swapChainDesc, &_swap_chain, &_device, 0, &_device_context);
-	RETURNIFFAILED(result)
+	return out;
+}
 
-	result = _swap_chain->GetBuffer(0, __uuidof(ID3D11Texture2D), (LPVOID*)&backBufferPtr);
-	RETURNIFFAILED(result)
+bool RenderDeviceD3D::init(const Window& window, unsigned int adapter_id, unsigned int display_id, unsigned int display_mode_id, bool vsync)
+{
+	assert(	_display_info.size() > adapter_id &&
+			_display_info[adapter_id].output_info.size() > display_id &&
+			_display_info[adapter_id].output_info[display_id].display_mode_list.size() > display_id
+	);
 
-	result = _device->CreateRenderTargetView(backBufferPtr, 0, &_render_target_view);
-	RETURNIFFAILED(result)
+	AdapterInfo& adapter =_display_info[adapter_id];
+	const DXGI_MODE_DESC& mode = adapter.output_info[display_id].display_mode_list[display_mode_id];
 
-	backBufferPtr->Release();
+	DXGI_SWAP_CHAIN_DESC swap_chain_desc;
+	ZeroMemory(&swap_chain_desc, sizeof(DXGI_SWAP_CHAIN_DESC));
+	swap_chain_desc.BufferCount = 1;
+	swap_chain_desc.BufferDesc = mode;
+	swap_chain_desc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
+	swap_chain_desc.OutputWindow = window.getHWnd();
+	swap_chain_desc.SampleDesc.Count = 1;
+	swap_chain_desc.SampleDesc.Quality = 0;
+	swap_chain_desc.Windowed = TRUE;
+	swap_chain_desc.BufferDesc.ScanlineOrdering = DXGI_MODE_SCANLINE_ORDER_UNSPECIFIED;
+	swap_chain_desc.BufferDesc.Scaling = DXGI_MODE_SCALING_UNSPECIFIED;
+	swap_chain_desc.SwapEffect = DXGI_SWAP_EFFECT_DISCARD;
+	swap_chain_desc.Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH;
 
-	_viewport.Width = (float)window.getWidth();
-	_viewport.Height = (float)window.getHeight();
-	_viewport.MinDepth = 0.0f;
-	_viewport.MaxDepth = 1.0f;
-	_viewport.TopLeftX = 0.0f;
-	_viewport.TopLeftY = 0.0f;
+	if (!vsync) {
+		swap_chain_desc.BufferDesc.RefreshRate.Numerator = 0;
+		swap_chain_desc.BufferDesc.RefreshRate.Denominator = 1;
+	}
+
+	GleamArray<Device>::Iterator it = _devices.linearSearch(adapter_id, [](const Device& lhs, unsigned int rhs) -> bool
+	{
+		return lhs.adapter_id == rhs;
+	});
+
+	// We didn't find the device, so just make it and add it to the list
+	if (it == _devices.end())
+	{
+		ID3D11DeviceContext* device_context = nullptr;
+		IDXGISwapChain* swap_chain = nullptr;
+		ID3D11Device* device = nullptr;
+
+// Apparently trying to make the device as debug/debuggable causes it to fail. :/
+//#ifdef _DEBUG
+//		unsigned int flags = /*D3D11_CREATE_DEVICE_DEBUG | D3D11_CREATE_DEVICE_DEBUGGABLE*/ 0;
+//#else
+		unsigned int flags = 0;
+//#endif
+
+		D3D_FEATURE_LEVEL feature_level = D3D_FEATURE_LEVEL_11_0;
+		HRESULT result = D3D11CreateDeviceAndSwapChain(adapter.adapter.get(), D3D_DRIVER_TYPE_UNKNOWN, 0, flags, &feature_level, 1, D3D11_SDK_VERSION,
+														&swap_chain_desc, &swap_chain, &device, 0, &device_context);
+
+		RETURNIFFAILED(result)
+
+		ID3D11Texture2D* back_buffer_ptr = nullptr;
+		result = swap_chain->GetBuffer(0, __uuidof(ID3D11Texture2D), (LPVOID*)&back_buffer_ptr);
+
+		if (FAILED(result)) {
+			swap_chain->Release();
+			device_context->Release();
+			device->Release();
+			return false;
+		}
+
+		ID3D11RenderTargetView* render_target_view = nullptr;
+		result = device->CreateRenderTargetView(back_buffer_ptr, nullptr, &render_target_view);
+
+		back_buffer_ptr->Release();
+
+		if (FAILED(result)) {
+			swap_chain->Release();
+			device_context->Release();
+			device->Release();
+			return false;
+		}
+
+		swap_chain->SetFullscreenState(
+			(window.getWindowMode() == Window::FULLSCREEN) ? TRUE : FALSE,
+			_display_info[adapter_id].output_info[display_id].output.get()
+		);
+
+		D3D11_VIEWPORT viewport;
+		viewport.Width = (float)window.getWidth();
+		viewport.Height = (float)window.getHeight();
+		viewport.MinDepth = 0.0f;
+		viewport.MaxDepth = 1.0f;
+		viewport.TopLeftX = 0.0f;
+		viewport.TopLeftY = 0.0f;
+
+		Gaff::COMRefPtr<ID3D11RenderTargetView> rtv;
+		Gaff::COMRefPtr<IDXGISwapChain> sc;
+		rtv.set(render_target_view);
+		sc.set(swap_chain);
+
+		Device dvc;
+		dvc.render_targets.push(rtv);
+		dvc.swap_chains.push(sc);
+		dvc.viewports.push(viewport);
+		dvc.context.set(device_context);
+		dvc.device.set(device);
+		dvc.vsync.push(vsync);
+		dvc.adapter_id = adapter_id;
+
+		_devices.push(dvc);
+
+	// We found the device already made, so make a new swap chain and render target and add them to the list
+	} else {
+		IDXGISwapChain* swap_chain = nullptr;
+		IDXGIFactory* factory = nullptr;
+
+		HRESULT result = CreateDXGIFactory(__uuidof(IDXGIFactory), (void**)&factory);
+		RETURNIFFAILED(result)
+
+		result = factory->CreateSwapChain(it->device.get(), &swap_chain_desc, &swap_chain);
+
+		factory->Release();
+		RETURNIFFAILED(result)
+
+		ID3D11Texture2D* back_buffer_ptr = nullptr;
+		result = swap_chain->GetBuffer(0, __uuidof(ID3D11Texture2D), (LPVOID*)&back_buffer_ptr);
+
+		if (FAILED(result)) {
+			swap_chain->Release();
+			return false;
+		}
+
+		ID3D11RenderTargetView* render_target_view = nullptr;
+		result = it->device->CreateRenderTargetView(back_buffer_ptr, nullptr, &render_target_view);
+
+		back_buffer_ptr->Release();
+
+		if (FAILED(result)) {
+			swap_chain->Release();
+			return false;
+		}
+
+		swap_chain->SetFullscreenState(
+			(window.getWindowMode() == Window::FULLSCREEN) ? TRUE : FALSE,
+			_display_info[adapter_id].output_info[display_id].output.get()
+		);
+
+		Gaff::COMRefPtr<ID3D11RenderTargetView> rtv;
+		Gaff::COMRefPtr<IDXGISwapChain> sc;
+		rtv.set(render_target_view);
+		sc.set(swap_chain);
+
+		it->render_targets.push(rtv);
+		it->swap_chains.push(sc);
+		it->vsync.push(vsync);
+
+		D3D11_VIEWPORT viewport;
+		viewport.Width = (float)window.getWidth();
+		viewport.Height = (float)window.getHeight();
+		viewport.MinDepth = 0.0f;
+		viewport.MaxDepth = 1.0f;
+		viewport.TopLeftX = 0.0f;
+		viewport.TopLeftY = 0.0f;
+
+		it->viewports.push(viewport);
+	}
+
+	if (!_active_device) {
+		setCurrentDevice(0);
+	}
 
 	return true;
 }
 
 void RenderDeviceD3D::destroy(void)
 {
-	if (_swap_chain) {
-		_swap_chain->SetFullscreenState(false, NULLPTR);
-	}
-
-	if (_render_target_view) {
-		_render_target_view->Release();
-		_render_target_view = NULLPTR;
-	}
-
-	if (_device_context) {
-		_device_context->Release();
-		_device_context = NULLPTR;
-	}
-
-	if (_device) {
-		_device->Release();
-		_device = NULLPTR;
-	}
-
-	if (_swap_chain) {
-		_swap_chain->Release();
-		_swap_chain = NULLPTR;
-	}
-
-	if (_display_mode_list) {
-		GleamFree(_display_mode_list);
-		_display_mode_list = NULLPTR;
-	}
+	_display_info.clear();
+	_devices.clear();
 }
 
-bool RenderDeviceD3D::isVsync(void) const
+bool RenderDeviceD3D::isVsync(unsigned int device, unsigned int output) const
 {
-	return _vsync;
+	assert(_devices.size() > device && _devices[device].vsync.size() > output);
+	return _devices[device].vsync[output];
 }
 
-bool RenderDeviceD3D::setVsync(bool vsync)
+void RenderDeviceD3D::setVsync(bool vsync, unsigned int device, unsigned int output)
 {
-	_vsync = vsync;
-	return createSwapChain();
+	assert(_devices.size() > device && _devices[device].vsync.size() > output);
+	_devices[device].vsync.setBit(output, vsync);
 }
 
 void RenderDeviceD3D::setClearColor(float r, float g, float b, float a)
@@ -205,54 +347,59 @@ void RenderDeviceD3D::setClearColor(float r, float g, float b, float a)
 void RenderDeviceD3D::beginFrame(void)
 {
 	resetRenderState();
-	_device_context->ClearRenderTargetView(_render_target_view, _clear_color);
+	_active_context->RSSetViewports(1, &_active_viewport);
+	_active_context->ClearRenderTargetView(_active_render_target.get(), _clear_color);
 }
 
 void RenderDeviceD3D::endFrame(void)
 {
-	_swap_chain->Present((_vsync) ? 1 : 0, 0);
+	_active_swap_chain->Present(_active_vsync, 0);
 }
 
 bool RenderDeviceD3D::resize(const Window& window)
 {
-	_render_target_view->Release();
-	_render_target_view = NULLPTR;
+	for (unsigned int i = 0; i < _devices.size(); ++i) {
+		Device& device = _devices[i];
 
-	HRESULT result = _swap_chain->ResizeBuffers(0, window.getWidth(), window.getHeight(), DXGI_FORMAT_UNKNOWN, DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH);
-	RETURNIFFAILED(result)
+		for (unsigned int j = 0; j < device.swap_chains.size(); ++j) {
+			Gaff::COMRefPtr<ID3D11RenderTargetView>& rtv = device.render_targets[j];
+			Gaff::COMRefPtr<IDXGISwapChain>& sc = device.swap_chains[j];
+			D3D11_VIEWPORT& viewport = device.viewports[j];
+			DXGI_SWAP_CHAIN_DESC sc_desc;
 
-	ID3D11Texture2D* backBufferPtr;
-	result = _swap_chain->GetBuffer(0, __uuidof(ID3D11Texture2D), (LPVOID*)&backBufferPtr);
-	RETURNIFFAILED(result)
+			if (SUCCEEDED(sc->GetDesc(&sc_desc))) {
+				if (sc_desc.OutputWindow == window.getHWnd()) {
+					HRESULT result = sc->ResizeBuffers(1, window.getWidth(), window.getHeight(), DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH);
+					RETURNIFFAILED(result)
 
-	result = _device->CreateRenderTargetView(backBufferPtr, 0, &_render_target_view);
-	RETURNIFFAILED(result)
+					ID3D11Texture2D* back_buffer_ptr;
+					result = sc->GetBuffer(0, __uuidof(ID3D11Texture2D), (LPVOID*)&back_buffer_ptr);
+					RETURNIFFAILED(result)
 
-	backBufferPtr->Release();
+					ID3D11RenderTargetView* render_target_view = nullptr;
+					result = device.device->CreateRenderTargetView(back_buffer_ptr, nullptr, &render_target_view);
+					back_buffer_ptr->Release();
+					RETURNIFFAILED(result)
 
-	_viewport.Width = (float)window.getWidth();
-	_viewport.Height = (float)window.getHeight();
-	_viewport.MinDepth = 0.0f;
-	_viewport.MaxDepth = 1.0f;
-	_viewport.TopLeftX = 0.0f;
-	_viewport.TopLeftY = 0.0f;
+					viewport.Width = (float)window.getWidth();
+					viewport.Height = (float)window.getHeight();
+					rtv = render_target_view;
 
-	result = _swap_chain->SetFullscreenState(window.getWindowMode() == Window::FULLSCREEN, NULLPTR);
-	return SUCCEEDED(result);
-}
+					result = sc->SetFullscreenState(window.getWindowMode() == Window::FULLSCREEN, _display_info[i].output_info[j].output.get());
+					return SUCCEEDED(result);
+				}
+			}
+		}
+	}
 
-void RenderDeviceD3D::unbindRenderTarget(void)
-{
-	_device_context->OMSetRenderTargets(1, &_render_target_view, NULL);
-	_prev_rt = NULLPTR;
+	return false;
 }
 
 void RenderDeviceD3D::resetRenderState(void)
 {
-	_device_context->OMSetDepthStencilState(NULL, 0);
-	_device_context->OMSetBlendState(NULL, NULL, 0xFFFFFFFF);
-	_device_context->RSSetState(NULL);
-	_device_context->RSSetViewports(1, &_viewport);
+	_active_context->OMSetDepthStencilState(NULL, 0);
+	_active_context->OMSetBlendState(NULL, NULL, 0xFFFFFFFF);
+	_active_context->RSSetState(NULL);
 }
 
 bool RenderDeviceD3D::isD3D(void) const
@@ -260,97 +407,113 @@ bool RenderDeviceD3D::isD3D(void) const
 	return true;
 }
 
-unsigned int RenderDeviceD3D::getViewportWidth(void) const
+unsigned int RenderDeviceD3D::getViewportWidth(unsigned int device, unsigned int output) const
 {
-	return (unsigned int)_viewport.Width;
+	assert(_devices.size() > device && _devices[device].viewports.size() > output);
+	return (unsigned int)_devices[device].viewports[output].Width;
 }
 
-unsigned int RenderDeviceD3D::getViewportHeight(void) const
+unsigned int RenderDeviceD3D::getViewportHeight(unsigned int device, unsigned int output) const
 {
-	return (unsigned int)_viewport.Height;
+	assert(_devices.size() > device && _devices[device].viewports.size() > output);
+	return (unsigned int)_devices[device].viewports[output].Height;
 }
 
-ID3D11DeviceContext* RenderDeviceD3D::getDeviceContext(void) const
+unsigned int RenderDeviceD3D::getActiveViewportWidth(void)
 {
-	return _device_context;
+	assert(_devices.size() > _curr_device && _devices[_curr_device].viewports.size() > _curr_output);
+	return getViewportWidth(_curr_device, _curr_output);
 }
 
-ID3D11Device* RenderDeviceD3D::getDevice(void) const
+unsigned int RenderDeviceD3D::getActiveViewportHeight(void)
 {
-	return _device;
+	assert(_devices.size() > _curr_device && _devices[_curr_device].viewports.size() > _curr_output);
+	return getViewportHeight(_curr_device, _curr_output);
 }
 
-// Unknown if this function actually works.
-bool RenderDeviceD3D::createSwapChain(void)
+ID3D11DeviceContext* RenderDeviceD3D::getDeviceContext(unsigned int device)
 {
-	if (_swap_chain) {
-		DXGI_SWAP_CHAIN_DESC swap_desc;
-		HRESULT result = _swap_chain->GetDesc(&swap_desc);
-		RETURNIFFAILED(result)
+	assert(_devices.size() > device);
+	return _devices[device].context.get();
+}
 
-		if (_vsync) {
-			unsigned int numerator = 0;
-			unsigned int denominator = 0;
+ID3D11Device* RenderDeviceD3D::getDevice(unsigned int device)
+{
+	assert(_devices.size() > device);
+	return _devices[device].device.get();
+}
 
-			bool found = false;
-			for (UINT i = 0; i < _num_modes; ++i) {
-				if (_display_mode_list[i].Width == swap_desc.BufferDesc.Width && _display_mode_list[i].Height == swap_desc.BufferDesc.Height) {
-					numerator = _display_mode_list[i].RefreshRate.Numerator;
-					denominator = _display_mode_list[i].RefreshRate.Denominator;
-					found = true;
-					break;
-				}
-			}
+ID3D11DeviceContext* RenderDeviceD3D::getActiveDeviceContext(void)
+{
+	return _active_context.get();
+}
 
-			if (!found) {
-				return false;
-			}
+ID3D11Device* RenderDeviceD3D::getActiveDevice(void)
+{
+	return _active_device.get();
+}
 
-			swap_desc.BufferDesc.RefreshRate.Numerator = numerator;
-			swap_desc.BufferDesc.RefreshRate.Denominator = denominator;
+unsigned int RenderDeviceD3D::getNumOutputs(unsigned int device) const
+{
+	assert(_devices.size() > device);
+	return _devices[device].render_targets.size();
+}
 
-		} else {
-			swap_desc.BufferDesc.RefreshRate.Numerator = 0;
-			swap_desc.BufferDesc.RefreshRate.Denominator = 1;
-		}
+unsigned int RenderDeviceD3D::getNumDevices(void) const
+{
+	return _devices.size();
+}
 
-		IDXGIFactory* factory;
-		result = CreateDXGIFactory(__uuidof(IDXGIFactory), (void**)&factory);
-		RETURNIFFAILED(result)
+IRenderTarget* RenderDeviceD3D::getOutputRenderTarget(unsigned int device, unsigned int output)
+{
+	assert(_devices.size() > device && _devices[device].render_targets.size() > output);
 
-		IDXGISwapChain* swap_chain = NULLPTR;
-		result = factory->CreateSwapChain(_device, &swap_desc, &swap_chain);
-		factory->Release();
-		RETURNIFFAILED(result)
+	RenderTargetD3D* render_target = (RenderTargetD3D*)GleamAllocate(sizeof(RenderTargetD3D));
+	new (render_target) RenderTargetD3D(_devices[device].render_targets[output].get(), _active_viewport);
 
-		ID3D11Texture2D* back_buffer = NULLPTR;
-		result = swap_chain->GetBuffer(0, __uuidof(ID3D11Texture2D), (LPVOID*)&back_buffer);
+	render_target->addRef();
+	return render_target;
+}
 
-		if (FAILED(result)) {
-			swap_chain->Release();
-			return false;
-		}
+IRenderTarget* RenderDeviceD3D::getActiveOutputRenderTarget(void)
+{
+	assert(_devices.size() > _curr_device && _devices[_curr_device].render_targets.size() > _curr_output);
+	return getOutputRenderTarget(_curr_device, _curr_output);
+}
 
-		ID3D11RenderTargetView* render_target_view = NULLPTR;
-		result = _device->CreateRenderTargetView(back_buffer, 0, &render_target_view);
+bool RenderDeviceD3D::setCurrentOutput(unsigned int output)
+{
+	assert(_devices[_curr_device].swap_chains.size() > output);
 
-		if (FAILED(result)) {
-			swap_chain->Release();
-			return false;
-		}
+	_active_render_target = _devices[_curr_device].render_targets[output];
+	_active_swap_chain = _devices[_curr_device].swap_chains[output];
+	_active_viewport = _devices[_curr_device].viewports[output];
+	_active_vsync = _devices[_curr_device].vsync[output];
 
-		_swap_chain->Release();
-		_swap_chain = swap_chain;
+	_curr_output = output;
 
-		_render_target_view->Release();
-		_render_target_view = render_target_view;
+	return true;
+}
 
-		back_buffer->Release();
+unsigned int RenderDeviceD3D::getCurrentOutput(void) const
+{
+	return _curr_output;
+}
 
-		return true;
-	}
+bool RenderDeviceD3D::setCurrentDevice(unsigned int device)
+{
+	assert(_devices.size() > device);
 
-	return false;
+	_active_context = _devices[device].context;
+	_active_device = _devices[device].device;
+	_curr_device = device;
+
+	return setCurrentOutput(0);
+}
+
+unsigned int RenderDeviceD3D::getCurrentDevice(void) const
+{
+	return _curr_device;
 }
 
 NS_END

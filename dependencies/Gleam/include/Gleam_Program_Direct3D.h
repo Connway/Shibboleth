@@ -1,5 +1,5 @@
 /************************************************************************************
-Copyright (C) 2013 by Nicholas LaCroix
+Copyright (C) 2014 by Nicholas LaCroix
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -31,6 +31,10 @@ struct ID3D11GeometryShader;
 struct ID3D11HullShader;
 struct ID3D11ComputeShader;
 
+struct ID3D11ShaderResourceView;
+struct ID3D11SamplerState;
+struct ID3D11Buffer;
+
 NS_GLEAM
 
 class ProgramD3D : public IProgram
@@ -51,6 +55,18 @@ public:
 
 	bool isD3D(void) const;
 
+	virtual void addConstantBuffer(IShader::SHADER_TYPE type, IBuffer* const_buffer);
+	virtual void removeConstantBuffer(IShader::SHADER_TYPE type, unsigned int index);
+	virtual void popConstantBuffer(IShader::SHADER_TYPE type);
+
+	virtual void addResourceView(IShader::SHADER_TYPE type, IShaderResourceView* resource_view);
+	virtual void removeResourceView(IShader::SHADER_TYPE type, unsigned int index);
+	virtual void popResourceView(IShader::SHADER_TYPE type);
+
+	virtual void addSamplerState(IShader::SHADER_TYPE type, ISamplerState* sampler);
+	virtual void removeSamplerState(IShader::SHADER_TYPE type, unsigned int index);
+	virtual void popSamplerState(IShader::SHADER_TYPE type);
+
 private:
 	ID3D11VertexShader* _shader_vertex;
 	ID3D11PixelShader* _shader_pixel;
@@ -58,6 +74,14 @@ private:
 	ID3D11GeometryShader* _shader_geometry;
 	ID3D11HullShader* _shader_hull;
 	ID3D11ComputeShader* _shader_compute;
+
+	GleamArray < GleamArray<ID3D11ShaderResourceView*> > _res_views;
+	GleamArray < GleamArray<ID3D11SamplerState*> > _samplers;
+	GleamArray < GleamArray<ID3D11Buffer*> > _buffers;
+
+	void cacheResViews(void);
+	void cacheSamplers(void);
+	void cacheBuffers(void);
 };
 
 NS_END

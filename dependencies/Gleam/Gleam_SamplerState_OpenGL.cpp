@@ -1,5 +1,5 @@
 /************************************************************************************
-Copyright (C) 2013 by Nicholas LaCroix
+Copyright (C) 2014 by Nicholas LaCroix
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -21,7 +21,6 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Gleam_SamplerState_OpenGL.h"
-#include "Gleam_IncludeD3D11.h"
 #include <Gaff_IncludeAssert.h>
 #include <GL/glew.h>
 
@@ -70,7 +69,7 @@ SamplerStateGL::~SamplerStateGL(void)
 }
 
 bool SamplerStateGL::init(
-	const IRenderDevice&,
+	IRenderDevice&,
 	FILTER filter, WRAP u, WRAP v, WRAP w,
 	float min_lod, float max_lod, float lod_bias,
 	unsigned int max_anisotropy,
@@ -98,7 +97,7 @@ bool SamplerStateGL::init(
 	glSamplerParameterfv(_sampler_state, GL_TEXTURE_BORDER_COLOR, border_color);
 
 	if (filter == FILTER_ANISOTROPIC) {
-		glSamplerParameterf(_sampler_state, GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, max_anisotropy);
+		glSamplerParameterf(_sampler_state, GL_TEXTURE_MAX_ANISOTROPY_EXT, (float)max_anisotropy);
 	}
 
 	return glGetError() == GL_NO_ERROR;

@@ -1,10 +1,10 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <ClCompile Include="..\..\src\Game\Game_main.cpp" />
-    <ClCompile Include="..\..\src\Game\Shibboleth_Game.cpp" />
+    <ClCompile Include="..\..\src\App\App_main.cpp" />
+    <ClCompile Include="..\..\src\App\Shibboleth_App.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\src\Game\include\Shibboleth_Game.h" />
+    <ClInclude Include="..\..\src\App\include\Shibboleth_App.h" />
   </ItemGroup>
 </Project>

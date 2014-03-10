@@ -1,5 +1,5 @@
 /************************************************************************************
-Copyright (C) 2013 by Nicholas LaCroix
+Copyright (C) 2014 by Nicholas LaCroix
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -33,11 +33,11 @@ public:
 	LayoutGL(void);
 	~LayoutGL(void);
 
-	bool init(const IRenderDevice&, const LayoutDescription* layout_desc, unsigned int layout_desc_size, const IShader*);
+	bool init(IRenderDevice&, const LayoutDescription* layout_desc, unsigned int layout_desc_size, const IShader*);
 	void destroy(void);
 
-	void setLayout(const IRenderDevice&, const IMesh* mesh);
-	INLINE void unsetLayout(const IRenderDevice&);
+	void setLayout(IRenderDevice&, const IMesh* mesh);
+	INLINE void unsetLayout(IRenderDevice&);
 
 private:
 	struct LayoutData
@@ -48,7 +48,7 @@ private:
 		bool normalized;
 	};
 
-	GleamArray( GleamArray(LayoutData) ) _layout_descs;
+	GleamArray< GleamArray<LayoutData> > _layout_descs;
 };
 
 NS_END

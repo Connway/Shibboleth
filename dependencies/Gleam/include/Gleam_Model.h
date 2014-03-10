@@ -1,5 +1,5 @@
 /************************************************************************************
-Copyright (C) 2013 by Nicholas LaCroix
+Copyright (C) 2014 by Nicholas LaCroix
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -32,7 +32,7 @@ public:
 	Model(void);
 	~Model(void);
 
-	ILayout* createLayout(const IRenderDevice& rd, const LayoutDescription* layout_desc, unsigned int desc_size, const IShader* shader);
+	ILayout* createLayout(IRenderDevice& rd, const LayoutDescription* layout_desc, unsigned int desc_size, const IShader* shader);
 	IMesh* createMesh(void);
 };
 

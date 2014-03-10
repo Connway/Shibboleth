@@ -22,7 +22,7 @@ THE SOFTWARE.
 
 #include <Shibboleth_IState.h>
 #include <Shibboleth_Array.h>
-#include <Shibboleth_Game.h>
+#include <Shibboleth_App.h>
 #include <iostream>
 
 class TestState : public Shibboleth::IState
@@ -47,7 +47,7 @@ public:
 	}
 };
 
-DYNAMICEXPORT Shibboleth::IState* CreateState(Shibboleth::ProxyAllocator& allocator, Shibboleth::Game& game)
+DYNAMICEXPORT Shibboleth::IState* CreateState(Shibboleth::ProxyAllocator& allocator, Shibboleth::App& game)
 {
 	return allocator.template allocT<TestState>();
 }

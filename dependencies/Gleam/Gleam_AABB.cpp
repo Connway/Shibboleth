@@ -1,5 +1,5 @@
 /************************************************************************************
-Copyright (C) 2013 by Nicholas LaCroix
+Copyright (C) 2014 by Nicholas LaCroix
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -71,35 +71,35 @@ void AABB::setMax(const Vec4& max)
 
 void AABB::addPoint(float x, float y, float z)
 {
-	_min[0] = Gaff::min(_min[0], x);
-	_min[1] = Gaff::min(_min[1], y);
-	_min[2] = Gaff::min(_min[2], z);
+	_min[0] = Gaff::Min(_min[0], x);
+	_min[1] = Gaff::Min(_min[1], y);
+	_min[2] = Gaff::Min(_min[2], z);
 
-	_max[0] = Gaff::max(_max[0], x);
-	_max[1] = Gaff::max(_max[1], y);
-	_max[2] = Gaff::max(_max[2], z);
+	_max[0] = Gaff::Max(_max[0], x);
+	_max[1] = Gaff::Max(_max[1], y);
+	_max[2] = Gaff::Max(_max[2], z);
 }
 
 void AABB::addPoint(const float* point)
 {
-	_min[0] = Gaff::min(_min[0], point[0]);
-	_min[1] = Gaff::min(_min[1], point[1]);
-	_min[2] = Gaff::min(_min[2], point[2]);
+	_min[0] = Gaff::Min(_min[0], point[0]);
+	_min[1] = Gaff::Min(_min[1], point[1]);
+	_min[2] = Gaff::Min(_min[2], point[2]);
 
-	_max[0] = Gaff::max(_max[0], point[0]);
-	_max[1] = Gaff::max(_max[1], point[1]);
-	_max[2] = Gaff::max(_max[2], point[2]);
+	_max[0] = Gaff::Max(_max[0], point[0]);
+	_max[1] = Gaff::Max(_max[1], point[1]);
+	_max[2] = Gaff::Max(_max[2], point[2]);
 }
 
 void AABB::addPoint(const Vec4& point)
 {
-	_min[0] = Gaff::min(_min[0], point[0]);
-	_min[1] = Gaff::min(_min[1], point[1]);
-	_min[2] = Gaff::min(_min[2], point[2]);
+	_min[0] = Gaff::Min(_min[0], point[0]);
+	_min[1] = Gaff::Min(_min[1], point[1]);
+	_min[2] = Gaff::Min(_min[2], point[2]);
 
-	_max[0] = Gaff::max(_max[0], point[0]);
-	_max[1] = Gaff::max(_max[1], point[1]);
-	_max[2] = Gaff::max(_max[2], point[2]);
+	_max[0] = Gaff::Max(_max[0], point[0]);
+	_max[1] = Gaff::Max(_max[1], point[1]);
+	_max[2] = Gaff::Max(_max[2], point[2]);
 }
 
 void AABB::addPoints(const float* points, unsigned int num_points, unsigned int stride)
@@ -117,7 +117,7 @@ void AABB::addPoints(const Vec4* points, unsigned int num_points)
 	}
 }
 
-void AABB::addPoints(const GleamArray(Vec4)& points)
+void AABB::addPoints(const GleamArray<Vec4>& points)
 {
 	for (unsigned int i = 0; i < points.size(); ++i) {
 		addPoint(points[i]);
@@ -136,7 +136,7 @@ void AABB::reset(void)
 	_max.set(0.0f, 0.0f, 0.0f, 1.0f);
 }
 
-const GleamArray(Vec4)& AABB::generatePoints(GleamArray(Vec4)& out) const
+const GleamArray<Vec4>& AABB::generatePoints(GleamArray<Vec4>& out) const
 {
 	if (out.size() < 8) {
 		out.resize(8);
@@ -157,9 +157,9 @@ const GleamArray(Vec4)& AABB::generatePoints(GleamArray(Vec4)& out) const
 	return out;
 }
 
-GleamArray(Vec4) AABB::generatePoints(void) const
+GleamArray<Vec4> AABB::generatePoints(void) const
 {
-	GleamArray(Vec4) points(8);
+	GleamArray<Vec4> points(8);
 
 	// bottom plane
 	points.push(_min);
@@ -195,7 +195,7 @@ const Vec4* AABB::generatePoints(Vec4* out) const
 
 void AABB::transform(const Mtx4x4& transform)
 {
-	GleamArray(Vec4) points = generatePoints();
+	GleamArray<Vec4> points = generatePoints();
 	setMin(Vec4::zero);
 	setMax(Vec4::zero);
 

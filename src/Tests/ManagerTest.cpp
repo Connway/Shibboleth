@@ -20,15 +20,14 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#include <Shibboleth_Game.h>
-#include <Gaff_INamedObject.h>
+#include <Shibboleth_App.h>
 #include <iostream>
 
 class TestManager : public Gaff::INamedObject
 {
 public:
-	TestManager(Shibboleth::Game& game):
-		_game(game)
+	TestManager(Shibboleth::App& app):
+		_app(app)
 	{
 		std::cout << "Test Manager CREATED" << std::endl;
 	}
@@ -44,10 +43,10 @@ public:
 	}
 
 private:
-	Shibboleth::Game& _game;
+	Shibboleth::App& _app;
 };
 
-DYNAMICEXPORT Gaff::INamedObject* CreateManager(Shibboleth::ProxyAllocator& allocator, Shibboleth::Game& game)
+DYNAMICEXPORT Gaff::INamedObject* CreateManager(Shibboleth::ProxyAllocator& allocator, Shibboleth::App& game)
 {
 	return allocator.allocT<TestManager>(game);
 }

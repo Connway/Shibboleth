@@ -1,5 +1,5 @@
 /************************************************************************************
-Copyright (C) 2013 by Nicholas LaCroix
+Copyright (C) 2014 by Nicholas LaCroix
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -23,6 +23,7 @@ THE SOFTWARE.
 #pragma once
 
 #include "Gleam_IRenderTarget.h"
+#include "Gleam_IncludeD3D11.h"
 #include "Gleam_Array.h"
 
 struct ID3D11RenderTargetView;
@@ -38,21 +39,25 @@ public:
 
 	void destroy(void);
 
-	bool addTexture(const IRenderDevice& rd, const ITexture* color_texture, CUBE_FACE face = NONE);
+	bool addTexture(IRenderDevice& rd, const ITexture* color_texture, CUBE_FACE face = NONE);
 	INLINE void popTexture(void);
 
-	bool addDepthStencilBuffer(const IRenderDevice& rd, const ITexture* depth_stencil_texture);
+	bool addDepthStencilBuffer(IRenderDevice& rd, const ITexture* depth_stencil_texture);
 
 	INLINE void bind(IRenderDevice& rd);
-	INLINE void unbind(const IRenderDevice& rd);
+	INLINE void unbind(IRenderDevice& rd);
 
 	bool isComplete(void) const;
 
 	bool isD3D(void) const;
 
 private:
-	GleamArray(ID3D11RenderTargetView*) _render_target_views;
+	GleamArray<ID3D11RenderTargetView*> _render_target_views;
+	D3D11_VIEWPORT _viewport;
 	ID3D11DepthStencilView* _depth_stencil_view;
+
+	friend class RenderDeviceD3D;
+	RenderTargetD3D(ID3D11RenderTargetView* rt, const D3D11_VIEWPORT& viewport);
 };
 
 NS_END

@@ -1,5 +1,5 @@
 /************************************************************************************
-Copyright (C) 2013 by Nicholas LaCroix
+Copyright (C) 2014 by Nicholas LaCroix
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -48,14 +48,14 @@ public:
 
 	void addPoints(const float* points, unsigned int num_points, unsigned int stride = 3);
 	void addPoints(const Vec4* points, unsigned int num_points);
-	void addPoints(const GleamArray(Vec4)& points);
+	void addPoints(const GleamArray<Vec4>& points);
 
 	void addAABB(const AABB& aabb);
 
 	void reset(void);
 
-	const GleamArray(Vec4)& generatePoints(GleamArray(Vec4)& out) const;
-	GleamArray(Vec4) generatePoints(void) const;
+	const GleamArray<Vec4>& generatePoints(GleamArray<Vec4>& out) const;
+	GleamArray<Vec4> generatePoints(void) const;
 	const Vec4* generatePoints(Vec4* out) const;
 
 	void transform(const Mtx4x4& transform);

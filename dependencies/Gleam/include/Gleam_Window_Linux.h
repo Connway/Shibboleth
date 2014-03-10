@@ -22,8 +22,9 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Gleam_IWindowMessageHandler.h"
+#include "Gleam_Window_Defines.h"
 #include "Gleam_Array.h"
+#include <Gaff_Function.h>
 #include <X11/X.h>
 #include <X11/Xlib.h>
 #include <X11/extensions/Xrandr.h>
@@ -34,21 +35,48 @@ NS_GLEAM
 class Window
 {
 public:
+	template <class T>
+	void addWindowMessageHandler(T* object, bool (T::*cb)(const AnyMessage&))
+	{
+		Gaff::FunctionBinder<bool, const AnyMessage&> function = Gaff::Bind(object, cb);
+		addWindowMessageHandlerHelper(function);
+	}
+
+	template <class T>
+	bool removeWindowMessageHandler(T* object, bool (T::*cb)(const AnyMessage&))
+	{
+		Gaff::FunctionBinder<bool, const AnyMessage&> function = Gaff::Bind(object, cb);
+		return removeWindowMessageHandlerHelper(function);
+	}
+
+	template <class T>
+	void addWindowMessageHandler(const T& cb)
+	{
+		Gaff::FunctionBinder<bool, const AnyMessage&> function = Gaff::Bind(cb);
+		addWindowMessageHandlerHelper(function);
+	}
+
+	template <class T>
+	bool removeWindowMessageHandler(const T& cb)
+	{
+		Gaff::FunctionBinder<bool, const AnyMessage&> function = Gaff::Bind(cb);
+		return removeWindowMessageHandlerHelper(function);
+	}
+
 	enum MODE { FULLSCREEN = 0, WINDOWED, FULLSCREEN_WINDOWED };
 
 	Window(void);
 	~Window(void);
 
 	bool init(const GChar* app_name, MODE window_mode = FULLSCREEN,
-					unsigned int width = 0, unsigned int height = 0,
-					short refresh_rate = 60, int pos_x = -1, int pos_y = -1);
+				unsigned int width = 0, unsigned int height = 0,
+				short refresh_rate = 60, int pos_x = -1, int pos_y = -1,
+				const char* device_name = nullptr);
 	void destroy(void);
 
 	INLINE void handleWindowMessages(void);
 	INLINE void addWindowMessageHandler(WindowCallback callback);
 	bool removeWindowMessageHandler(WindowCallback callback);
-	INLINE void addWindowMessageHandler(IWindowMessageHandler* handler);
-	bool removeWindowMessageHandler(IWindowMessageHandler* handler);
 
 	void showCursor(bool show);
 	INLINE void allowRepeats(bool allow);
@@ -99,17 +127,22 @@ private:
 	int chooseClosestRate(short* rates, int num_rates, short rate);
 	void setToOriginalResolutionRate(void);
 
-	GleamArray(IWindowMessageHandler*) _window_message_handlers;
-	GleamArray(WindowCallback) _window_callbacks;
+	GleamArray< Gaff::FunctionBinder<bool, const AnyMessage&> > _window_callbacks;
 
 	static void WindowProc(const XEvent& event);
-	static GleamArray(Window*) gWindows;
+	static GleamArray<Window*> gWindows;
 
 	unsigned int _prev_keycode;
 
 	unsigned int _mouse_prev_x;
 	unsigned int _mouse_prev_y;
 	bool _first_mouse;
+
+	void addWindowMessageHandlerHelper(const Gaff::FunctionBinder<bool, const AnyMessage&>& cb);
+	bool removeWindowMessageHandlerHelper(const Gaff::FunctionBinder<bool, const AnyMessage&>& cb);
+
+	GAFF_NO_COPY(Window);
+	GAFF_NO_MOVE(Window);
 };
 
 NS_END

@@ -1,5 +1,5 @@
 /************************************************************************************
-Copyright (C) 2013 by Nicholas LaCroix
+Copyright (C) 2014 by Nicholas LaCroix
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -23,13 +23,12 @@ THE SOFTWARE.
 #include "Gleam_RenderTarget_Direct3D.h"
 #include "Gleam_RenderDevice_Direct3D.h"
 #include "Gleam_Texture_Direct3D.h"
-#include "Gaff_IncludeAssert.h"
-#include "Gleam_IncludeD3D11.h"
+#include <Gaff_IncludeAssert.h>
 
 NS_GLEAM
 
 RenderTargetD3D::RenderTargetD3D(void):
-	_depth_stencil_view(NULLPTR)
+	_depth_stencil_view(nullptr)
 {
 }
 
@@ -49,12 +48,12 @@ void RenderTargetD3D::destroy(void)
 	_render_target_views.clear();
 }
 
-bool RenderTargetD3D::addTexture(const IRenderDevice& rd, const ITexture* color_texture, CUBE_FACE face)
+bool RenderTargetD3D::addTexture(IRenderDevice& rd, const ITexture* color_texture, CUBE_FACE face)
 {
 	assert(color_texture && color_texture->isD3D());
 	assert(rd.isD3D());
 
-	ID3D11RenderTargetView* render_target_view = NULLPTR;
+	ID3D11RenderTargetView* render_target_view = nullptr;
 
 	D3D11_RENDER_TARGET_VIEW_DESC desc;
 	desc.Format = TextureD3D::getD3DFormat(color_texture->getFormat());
@@ -70,8 +69,18 @@ bool RenderTargetD3D::addTexture(const IRenderDevice& rd, const ITexture* color_
 		desc.Texture2DArray.FirstArraySlice = face;
 	}
 
-	HRESULT result = ((const RenderDeviceD3D&)rd).getDevice()->CreateRenderTargetView(((const TextureD3D*)color_texture)->getTexture2D(), &desc, &render_target_view);
+	HRESULT result = ((RenderDeviceD3D&)rd).getActiveDevice()->CreateRenderTargetView(((const TextureD3D*)color_texture)->getTexture2D(), &desc, &render_target_view);
 	RETURNIFFAILED(result)
+
+	// This is the first one, use this texture's width/height
+	if (_render_target_views.empty()) {
+		_viewport.TopLeftX = 0.0f;
+		_viewport.TopLeftY = 0.0f;
+		_viewport.Width = (float)color_texture->getWidth();
+		_viewport.Height = (float)color_texture->getHeight();
+		_viewport.MinDepth = 0.0f;
+		_viewport.MaxDepth = 1.0f;
+	}
 
 	_render_target_views.push(render_target_view);
 	return true;
@@ -83,7 +92,7 @@ void RenderTargetD3D::popTexture(void)
 	_render_target_views.pop();
 }
 
-bool RenderTargetD3D::addDepthStencilBuffer(const IRenderDevice& rd, const ITexture* depth_stencil_texture)
+bool RenderTargetD3D::addDepthStencilBuffer(IRenderDevice& rd, const ITexture* depth_stencil_texture)
 {
 	assert(depth_stencil_texture && depth_stencil_texture->isD3D());
 	assert(rd.isD3D());
@@ -98,7 +107,7 @@ bool RenderTargetD3D::addDepthStencilBuffer(const IRenderDevice& rd, const IText
 	desc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
 	desc.Texture2D.MipSlice = 0;
 
-	HRESULT result = ((const RenderDeviceD3D&)rd).getDevice()->CreateDepthStencilView(((const TextureD3D*)depth_stencil_texture)->getTexture2D(), &desc, &_depth_stencil_view);
+	HRESULT result = ((RenderDeviceD3D&)rd).getActiveDevice()->CreateDepthStencilView(((const TextureD3D*)depth_stencil_texture)->getTexture2D(), &desc, &_depth_stencil_view);
 	return SUCCEEDED(result);
 }
 
@@ -109,21 +118,21 @@ void RenderTargetD3D::bind(IRenderDevice& rd)
 	float clear_color[4] = { 0.0f, 0.0f, 0.0f, 1.0f };
 
 	for (unsigned int i = 0; i < _render_target_views.size(); ++i) {
-		((RenderDeviceD3D&)rd).getDeviceContext()->ClearRenderTargetView(_render_target_views[i], clear_color);
+		((RenderDeviceD3D&)rd).getActiveDeviceContext()->ClearRenderTargetView(_render_target_views[i], clear_color);
 	}
 
 	if (_depth_stencil_view) {
-		((RenderDeviceD3D&)rd).getDeviceContext()->ClearDepthStencilView(_depth_stencil_view, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
+		((RenderDeviceD3D&)rd).getActiveDeviceContext()->ClearDepthStencilView(_depth_stencil_view, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 	}
 
-	((RenderDeviceD3D&)rd).getDeviceContext()->OMSetRenderTargets(_render_target_views.size(), _render_target_views.getArray(), _depth_stencil_view);
-	setPrevRenderTarget(rd);
+	((RenderDeviceD3D&)rd).getActiveDeviceContext()->OMSetRenderTargets(_render_target_views.size(), _render_target_views.getArray(), _depth_stencil_view);
+	((RenderDeviceD3D&)rd).getActiveDeviceContext()->RSSetViewports(1, &_viewport);
 }
 
-void RenderTargetD3D::unbind(const IRenderDevice& rd)
+void RenderTargetD3D::unbind(IRenderDevice& rd)
 {
 	assert(rd.isD3D());
-	((RenderDeviceD3D&)rd).unbindRenderTarget();
+	((RenderDeviceD3D&)rd).getActiveDeviceContext()->OMSetRenderTargets(0, nullptr, nullptr);
 }
 
 bool RenderTargetD3D::isComplete(void) const
@@ -135,5 +144,13 @@ bool RenderTargetD3D::isD3D(void) const
 {
 	return true;
 }
+
+RenderTargetD3D::RenderTargetD3D(ID3D11RenderTargetView* rt, const D3D11_VIEWPORT& viewport):
+	_viewport(viewport), _depth_stencil_view(nullptr)
+{
+	_render_target_views.push(rt);
+	rt->AddRef();
+}
+
 
 NS_END

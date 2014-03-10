@@ -1,5 +1,5 @@
 /************************************************************************************
-Copyright (C) 2013 by Nicholas LaCroix
+Copyright (C) 2014 by Nicholas LaCroix
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -25,7 +25,7 @@ THE SOFTWARE.
 NS_GLEAM
 
 Scene::Scene(unsigned int num_stages):
-	_node_types(num_stages, GleamArray(ISceneNode*)()), _camera(NULLPTR), _root(NULLPTR)
+	_node_types(num_stages, GleamArray<ISceneNode*>()), _camera(nullptr), _root(nullptr)
 {
 }
 
@@ -38,7 +38,7 @@ bool Scene::init(void)
 {
 	assert(!_root);
 
-	_root = GleamAllocateT(ISceneNode);
+	_root = (ISceneNode*)GleamAllocate(sizeof(ISceneNode));
 	Gaff::construct<ISceneNode, Scene&>(_root, *this);
 
 	if (!_root) {
@@ -53,11 +53,11 @@ void Scene::destroy(void)
 {
 	if (_camera) {
 		_camera->release();
-		_camera = NULLPTR;
+		_camera = nullptr;
 	}
 
 	for (unsigned int i = 0; i < _node_types.size(); ++i) {
-		GleamArray(ISceneNode*)& nodes = _node_types[i];
+		GleamArray<ISceneNode*>& nodes = _node_types[i];
 
 		for (unsigned int j = 0; j < nodes.size(); ++j) {
 			nodes[j]->removeFromParent();
@@ -68,7 +68,7 @@ void Scene::destroy(void)
 	_node_types.clear();
 
 	_root->release();
-	_root = NULLPTR;
+	_root = nullptr;
 }
 
 const ISceneNode* Scene::getRoot(void) const
@@ -95,18 +95,18 @@ ISceneNode* Scene::getCamera(void)
 
 void Scene::setCamera(ISceneNode* camera)
 {
-	SAFEGLEAMRELEASE(_camera)
+	SAFEGAFFRELEASE(_camera)
 	_camera = camera;
 	camera->addRef();
 }
 
-const GleamArray(ISceneNode*)& Scene::getNodesOfType(unsigned int type) const
+const GleamArray<ISceneNode*>& Scene::getNodesOfType(unsigned int type) const
 {
 	assert(type < _node_types.size());
 	return _node_types[type];
 }
 
-GleamArray(ISceneNode*)& Scene::getNodesOfType(unsigned int type)
+GleamArray<ISceneNode*>& Scene::getNodesOfType(unsigned int type)
 {
 	assert(type < _node_types.size());
 	return _node_types[type];
@@ -121,7 +121,7 @@ void Scene::addNode(ISceneNode* node, ISceneNode* parent)
 	unsigned int node_type = node->getNodeType();
 
 	while (_node_types.size() < node_type + 1) {
-		_node_types.push(GleamArray(ISceneNode*)());
+		_node_types.push(GleamArray<ISceneNode*>());
 	}
 
 	_node_types[node_type].push(node);
@@ -137,20 +137,20 @@ void Scene::addNode(ISceneNode* node)
 void Scene::removeNode(ISceneNode* node)
 {
 	assert(node && node->getNodeType() < _node_types.size());
-	int index = _node_types[node->getNodeType()].linearFind(node);
-	assert(index > -1);
+	GleamArray<ISceneNode*>::Iterator it = _node_types[node->getNodeType()].linearSearch(node);
+	assert(it != _node_types[node->getNodeType()].end());
 
 	node->removeFromParent();
-	_node_types[node->getNodeType()].erase(index);
+	_node_types[node->getNodeType()].erase(it);
 	node->release();
 }
 
-const GleamArray(ISceneNode*)& Scene::getChangeList(void) const
+const GleamArray<ISceneNode*>& Scene::getChangeList(void) const
 {
 	return _change_list;
 }
 
-GleamArray(ISceneNode*)& Scene::getChangeList(void)
+GleamArray<ISceneNode*>& Scene::getChangeList(void)
 {
 	return _change_list;
 }

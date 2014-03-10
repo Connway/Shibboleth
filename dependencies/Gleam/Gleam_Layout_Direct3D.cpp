@@ -1,5 +1,5 @@
 /************************************************************************************
-Copyright (C) 2013 by Nicholas LaCroix
+Copyright (C) 2014 by Nicholas LaCroix
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -40,7 +40,7 @@ static const char* _semantic_names[SEMANTIC_SIZE] = {
 };
 
 LayoutD3D::LayoutD3D(void):
-	_layout(NULLPTR)
+	_layout(nullptr)
 {
 }
 
@@ -49,11 +49,11 @@ LayoutD3D::~LayoutD3D(void)
 	destroy();
 }
 
-bool LayoutD3D::init(const IRenderDevice& rd, const LayoutDescription* layout_desc, unsigned int layout_desc_size, const IShader* shader)
+bool LayoutD3D::init(IRenderDevice& rd, const LayoutDescription* layout_desc, unsigned int layout_desc_size, const IShader* shader)
 {
 	assert(rd.isD3D() && shader->isD3D());
 
-	GleamArray(D3D11_INPUT_ELEMENT_DESC) input_desc(layout_desc_size, D3D11_INPUT_ELEMENT_DESC());
+	GleamArray<D3D11_INPUT_ELEMENT_DESC> input_desc(layout_desc_size, D3D11_INPUT_ELEMENT_DESC());
 
 	for (unsigned int i = 0; i < layout_desc_size; ++i) {
 		input_desc[i].SemanticName = _semantic_names[layout_desc[i].semantic];
@@ -66,7 +66,7 @@ bool LayoutD3D::init(const IRenderDevice& rd, const LayoutDescription* layout_de
 	}
 
 	ID3DBlob* shader_buffer = ((const ShaderD3D*)shader)->getByteCodeBuffer();
-	ID3D11Device* device = ((const RenderDeviceD3D&)rd).getDevice();
+	ID3D11Device* device = ((RenderDeviceD3D&)rd).getActiveDevice();
 
 	HRESULT result = device->CreateInputLayout(input_desc.getArray(), layout_desc_size, shader_buffer->GetBufferPointer(), shader_buffer->GetBufferSize(), &_layout);
 	return SUCCEEDED(result);
@@ -77,16 +77,16 @@ void LayoutD3D::destroy(void)
 	SAFERELEASE(_layout)
 }
 
-void LayoutD3D::setLayout(const IRenderDevice& rd, const IMesh*)
+void LayoutD3D::setLayout(IRenderDevice& rd, const IMesh*)
 {
 	assert(rd.isD3D());
-	((const RenderDeviceD3D&)rd).getDeviceContext()->IASetInputLayout(_layout);
+	((RenderDeviceD3D&)rd).getActiveDeviceContext()->IASetInputLayout(_layout);
 }
 
-void LayoutD3D::unsetLayout(const IRenderDevice& rd)
+void LayoutD3D::unsetLayout(IRenderDevice& rd)
 {
 	assert(rd.isD3D());
-	((const RenderDeviceD3D&)rd).getDeviceContext()->IASetInputLayout(NULL);
+	((RenderDeviceD3D&)rd).getActiveDeviceContext()->IASetInputLayout(NULL);
 }
 
 NS_END

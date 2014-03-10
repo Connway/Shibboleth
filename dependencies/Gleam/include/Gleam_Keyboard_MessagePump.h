@@ -1,5 +1,5 @@
 /************************************************************************************
-Copyright (C) 2013 by Nicholas LaCroix
+Copyright (C) 2014 by Nicholas LaCroix
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -22,47 +22,42 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Gleam_IWindowMessageHandler.h"
-#include "Gleam_Keyboard_Defines.h"
-#include "Gleam_IInputDevice.h"
+#include "Gleam_IKeyboard.h"
 
 NS_GLEAM
 
 class Window;
 
-class KeyboardMP : public IInputDevice, public IWindowMessageHandler
+class KeyboardMP : public IKeyboard
 {
 public:
 	KeyboardMP(void);
 	~KeyboardMP(void);
 
-	bool init(const Window& window, void* compat = NULLPTR, bool no_windows_key = false);
+	bool init(const Window& window, void* compat = nullptr, bool no_windows_key = false);
 	void destroy(void);
-	INLINE bool update(void);
+	bool update(void);
 
-	INLINE bool isKeyDown(KeyboardCode key) const;
-	INLINE bool isKeyUp(KeyboardCode key) const;
+	bool isKeyDown(KeyboardCode key) const;
+	bool isKeyUp(KeyboardCode key) const;
 
-	INLINE const bool* getKeyboardData(void) const;
+	const unsigned char* getKeyboardData(void) const;
 
-	INLINE const GChar* getDeviceName(void) const;
-	INLINE const GChar* getPlatformImplementationString(void) const;
+	const GChar* getDeviceName(void) const;
+	const GChar* getPlatformImplementationString(void) const;
 
-	INLINE const Window* getAssociatedWindow(void) const;
-
-	INLINE bool isKeyboard(void) const;
-	INLINE bool isMouse(void) const;
+	const Window* getAssociatedWindow(void) const;
 
 	bool handleMessage(const AnyMessage& message);
 
 private:
 #ifdef ONLY_INPUT_CHANGES
-	bool _keyboard_state_a[256];
-	bool _keyboard_state_b[256];
-	bool* _curr_state;
-	bool* _prev_state;
+	unsigned char _keyboard_state_a[256];
+	unsigned char _keyboard_state_b[256];
+	unsigned char* _curr_state;
+	unsigned char* _prev_state;
 #else
-	bool _keyboard_state[256];
+	unsigned char _keyboard_state[256];
 #endif
 	Window* _window;
 };

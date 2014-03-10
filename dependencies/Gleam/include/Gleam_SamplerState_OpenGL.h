@@ -1,5 +1,5 @@
 /************************************************************************************
-Copyright (C) 2013 by Nicholas LaCroix
+Copyright (C) 2014 by Nicholas LaCroix
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -33,7 +33,7 @@ public:
 	~SamplerStateGL(void);
 
 	bool init(
-		const IRenderDevice&,
+		IRenderDevice&,
 		FILTER filter, WRAP u, WRAP v, WRAP w,
 		float min_lod, float max_lod, float lod_bias,
 		unsigned int max_anisotropy,

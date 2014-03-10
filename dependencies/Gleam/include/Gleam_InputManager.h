@@ -1,5 +1,5 @@
 /************************************************************************************
-Copyright (C) 2013 by Nicholas LaCroix
+Copyright (C) 2014 by Nicholas LaCroix
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -60,7 +60,7 @@ public:
 	IInputDevice* createMouse(void);
 
 private:
-	GleamArray(IInputDevice*) _input_devices;
+	GleamArray<IInputDevice*> _input_devices;
 	const Window* _window;
 
 #ifdef USE_DI

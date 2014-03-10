@@ -1,5 +1,5 @@
 /************************************************************************************
-Copyright (C) 2013 by Nicholas LaCroix
+Copyright (C) 2014 by Nicholas LaCroix
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -29,7 +29,7 @@ NS_GLEAM
 
 class IRenderDevice;
 
-class IBuffer : public RefCounted
+class IBuffer : public GleamRefCounted
 {
 public:
 	enum BUFFER_TYPE {
@@ -48,7 +48,7 @@ public:
 	};
 
 	template <class T>
-	bool update(const IRenderDevice& rd, const T& data)
+	bool update(IRenderDevice& rd, const T& data)
 	{
 		return update(rd, &data, sizeof(T));
 	}
@@ -56,13 +56,13 @@ public:
 	IBuffer(void) {}
 	virtual ~IBuffer(void) {}
 
-	virtual bool init(const IRenderDevice& rd, const void* data, unsigned int size, BUFFER_TYPE buffer_type = SHADER_DATA,
+	virtual bool init(IRenderDevice& rd, const void* data, unsigned int size, BUFFER_TYPE buffer_type = SHADER_DATA,
 						unsigned int stride = 0, MAP_TYPE cpu_access = NONE) = 0;
 	virtual void destroy(void) = 0;
 
-	virtual bool update(const IRenderDevice& rd, const void* data, unsigned int size) = 0;
-	virtual void* map(const IRenderDevice& rd, MAP_TYPE map_type = WRITE) = 0;
-	virtual void unmap(const IRenderDevice& rd) = 0;
+	virtual bool update(IRenderDevice& rd, const void* data, unsigned int size) = 0;
+	virtual void* map(IRenderDevice& rd, MAP_TYPE map_type = WRITE) = 0;
+	virtual void unmap(IRenderDevice& rd) = 0;
 
 	virtual bool isD3D(void) const = 0;
 

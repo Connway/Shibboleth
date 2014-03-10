@@ -1,5 +1,5 @@
 /************************************************************************************
-Copyright (C) 2013 by Nicholas LaCroix
+Copyright (C) 2014 by Nicholas LaCroix
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -29,7 +29,8 @@ THE SOFTWARE.
 NS_GLEAM
 
 RenderTargetGL::RenderTargetGL(void):
-	_frame_buffer(0), _attach_count(0)
+	_frame_buffer(0), _attach_count(0),
+	_viewport_width(0), _viewport_height(0)
 {
 }
 
@@ -45,7 +46,7 @@ void RenderTargetGL::destroy(void)
 	}
 }
 
-bool RenderTargetGL::addTexture(const IRenderDevice&, const ITexture* color_texture, CUBE_FACE face)
+bool RenderTargetGL::addTexture(IRenderDevice&, const ITexture* color_texture, CUBE_FACE face)
 {
 #ifdef _DEBUG
 	{
@@ -72,6 +73,11 @@ bool RenderTargetGL::addTexture(const IRenderDevice&, const ITexture* color_text
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + _attach_count, target, ((const TextureGL*)color_texture)->getTexture(), 0);
 	glBindFramebuffer(GL_FRAMEBUFFER, (GLuint)fb);
 
+	if (!_attach_count) {
+		_viewport_width = color_texture->getWidth();
+		_viewport_height = color_texture->getHeight();
+	}
+
 	if (glGetError() == GL_NO_ERROR) {
 		_draw_buffers.push(GL_COLOR_ATTACHMENT0 + _attach_count);
 		++_attach_count;
@@ -88,7 +94,7 @@ void RenderTargetGL::popTexture(void)
 	--_attach_count;
 }
 
-bool RenderTargetGL::addDepthStencilBuffer(const IRenderDevice&, const ITexture* depth_stencil_texture)
+bool RenderTargetGL::addDepthStencilBuffer(IRenderDevice&, const ITexture* depth_stencil_texture)
 {
 	assert(depth_stencil_texture && !depth_stencil_texture->isD3D());
 
@@ -108,6 +114,10 @@ bool RenderTargetGL::addDepthStencilBuffer(const IRenderDevice&, const ITexture*
 		case ITexture::DEPTH_STENCIL:
 			attachment = GL_DEPTH_STENCIL_ATTACHMENT;
 			break;
+
+		// To get GCC to stop erroring
+		default:
+			break;
 	}
 
 	assert(attachment != 0);
@@ -118,15 +128,21 @@ bool RenderTargetGL::addDepthStencilBuffer(const IRenderDevice&, const ITexture*
 	return glGetError() == GL_NO_ERROR;
 }
 
-void RenderTargetGL::bind(IRenderDevice& rd)
+void RenderTargetGL::bind(IRenderDevice&)
 {
-	glBindFramebuffer(GL_FRAMEBUFFER, _frame_buffer);
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT); 
-	glDrawBuffers(_draw_buffers.size(), _draw_buffers.getArray());
-	setPrevRenderTarget(rd);
+	if (_frame_buffer) {
+		glBindFramebuffer(GL_FRAMEBUFFER, _frame_buffer);
+		glDrawBuffers(_draw_buffers.size(), _draw_buffers.getArray());
+		glViewport(0, 0, _viewport_width, _viewport_height);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT); 
+
+	} else {
+		glViewport(0, 0, _viewport_width, _viewport_height);
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	}
 }
 
-void RenderTargetGL::unbind(const IRenderDevice&)
+void RenderTargetGL::unbind(IRenderDevice&)
 {
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
@@ -158,6 +174,12 @@ void RenderTargetGL::createFramebuffer(void)
 	if (!_frame_buffer) {
 		glGenFramebuffers(1, &_frame_buffer);
 	}
+}
+
+RenderTargetGL::RenderTargetGL(int viewport_width, int viewport_height):
+	_frame_buffer(0), _attach_count(0),
+	_viewport_width(viewport_width), _viewport_height(viewport_height)
+{
 }
 
 NS_END

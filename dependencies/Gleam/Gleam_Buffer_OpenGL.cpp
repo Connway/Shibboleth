@@ -1,5 +1,5 @@
 /************************************************************************************
-Copyright (C) 2013 by Nicholas LaCroix
+Copyright (C) 2014 by Nicholas LaCroix
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -49,7 +49,7 @@ BufferGL::~BufferGL(void)
 	destroy();
 }
 
-bool BufferGL::init(const IRenderDevice&, const void* data, unsigned int size, BUFFER_TYPE buffer_type, unsigned int stride, MAP_TYPE cpu_access)
+bool BufferGL::init(IRenderDevice&, const void* data, unsigned int size, BUFFER_TYPE buffer_type, unsigned int stride, MAP_TYPE cpu_access)
 {
 	assert(!_buffer);
 
@@ -75,14 +75,18 @@ void BufferGL::destroy(void)
 	}
 }
 
-bool BufferGL::update(const IRenderDevice&, const void* data, unsigned int size)
+bool BufferGL::update(IRenderDevice&, const void* data, unsigned int size)
 {
-	assert(data);
-	glBufferSubData(_buffer, 0, size, data);
+	assert(data && size);
+
+	GLenum buff_type = _type_map[_buffer_type];
+	glBindBuffer(buff_type, _buffer);
+
+	glBufferSubData(buff_type, 0, size, data);
 	return true;
 }
 
-void* BufferGL::map(const IRenderDevice&, MAP_TYPE map_type)
+void* BufferGL::map(IRenderDevice&, MAP_TYPE map_type)
 {
 	assert(map_type != NONE);
 	GLenum buff_type = _type_map[_buffer_type];
@@ -90,7 +94,7 @@ void* BufferGL::map(const IRenderDevice&, MAP_TYPE map_type)
 	return glMapBuffer(buff_type, _map_map[map_type - 1]);
 }
 
-void BufferGL::unmap(const IRenderDevice&)
+void BufferGL::unmap(IRenderDevice&)
 {
 	glUnmapBuffer(_type_map[_buffer_type]);
 }

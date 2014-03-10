@@ -1,5 +1,5 @@
 /************************************************************************************
-Copyright (C) 2013 by Nicholas LaCroix
+Copyright (C) 2014 by Nicholas LaCroix
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -94,7 +94,7 @@ RenderStateGL::~RenderStateGL(void)
 {
 }
 
-bool RenderStateGL::init(const IRenderDevice&, bool wireframe, bool depth_test, bool stencil_test,
+bool RenderStateGL::init(IRenderDevice&, bool wireframe, bool depth_test, bool stencil_test,
 							COMPARISON_FUNC depth_func, StencilData front_face,
 							StencilData back_face, unsigned int depth_stencil_ref,
 							char stencil_read_mask, char stencil_write_mask,
@@ -120,7 +120,7 @@ bool RenderStateGL::init(const IRenderDevice&, bool wireframe, bool depth_test, 
 	return true;
 }
 
-bool RenderStateGL::init(const IRenderDevice&, bool wireframe, bool depth_test, bool stencil_test,
+bool RenderStateGL::init(IRenderDevice&, bool wireframe, bool depth_test, bool stencil_test,
 							COMPARISON_FUNC depth_func, StencilData front_face,
 							StencilData back_face, unsigned int depth_stencil_ref,
 							char stencil_read_mask, char stencil_write_mask,

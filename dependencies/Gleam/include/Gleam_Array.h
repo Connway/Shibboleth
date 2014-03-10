@@ -1,5 +1,5 @@
 /************************************************************************************
-Copyright (C) 2013 by Nicholas LaCroix
+Copyright (C) 2014 by Nicholas LaCroix
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -25,4 +25,4 @@ THE SOFTWARE.
 #include "Gleam_ProxyAllocator.h"
 #include <Gaff_Array.h>
 
-#define GleamArray(T) Gaff::Array<T, Gleam::ProxyAllocator>
+template <class T> using GleamArray = Gaff::Array<T, Gleam::ProxyAllocator>;

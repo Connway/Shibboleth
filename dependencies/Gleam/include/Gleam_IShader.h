@@ -1,5 +1,5 @@
 /************************************************************************************
-Copyright (C) 2013 by Nicholas LaCroix
+Copyright (C) 2014 by Nicholas LaCroix
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -29,7 +29,7 @@ NS_GLEAM
 
 class IRenderDevice;
 
-class IShader : public RefCounted
+class IShader : public GleamRefCounted
 {
 public:
 	enum SHADER_TYPE
@@ -45,33 +45,33 @@ public:
 
 	virtual ~IShader(void) {}
 
-	virtual bool initVertex(const IRenderDevice& rd, const GleamGString& file_path) = 0;
-	virtual bool initPixel(const IRenderDevice& rd, const GleamGString& file_path) = 0;
-	virtual bool initDomain(const IRenderDevice& rd, const GleamGString& file_path) = 0;
-	virtual bool initGeometry(const IRenderDevice& rd, const GleamGString& file_path) = 0;
-	virtual bool initHull(const IRenderDevice& rd, const GleamGString& file_path) = 0;
-	virtual bool initCompute(const IRenderDevice& rd, const GleamGString& file_path) = 0;
+	virtual bool initVertex(IRenderDevice& rd, const GleamGString& file_path) = 0;
+	virtual bool initPixel(IRenderDevice& rd, const GleamGString& file_path) = 0;
+	virtual bool initDomain(IRenderDevice& rd, const GleamGString& file_path) = 0;
+	virtual bool initGeometry(IRenderDevice& rd, const GleamGString& file_path) = 0;
+	virtual bool initHull(IRenderDevice& rd, const GleamGString& file_path) = 0;
+	virtual bool initCompute(IRenderDevice& rd, const GleamGString& file_path) = 0;
 
-	virtual bool initVertex(const IRenderDevice&, const GChar* file_path) = 0;
-	virtual bool initPixel(const IRenderDevice&, const GChar* file_path) = 0;
-	virtual bool initDomain(const IRenderDevice&, const GChar* file_path) = 0;
-	virtual bool initGeometry(const IRenderDevice&, const GChar* file_path) = 0;
-	virtual bool initHull(const IRenderDevice&, const GChar* file_path) = 0;
-	virtual bool initCompute(const IRenderDevice&, const GChar* file_path) = 0;
+	virtual bool initVertex(IRenderDevice&, const GChar* file_path) = 0;
+	virtual bool initPixel(IRenderDevice&, const GChar* file_path) = 0;
+	virtual bool initDomain(IRenderDevice&, const GChar* file_path) = 0;
+	virtual bool initGeometry(IRenderDevice&, const GChar* file_path) = 0;
+	virtual bool initHull(IRenderDevice&, const GChar* file_path) = 0;
+	virtual bool initCompute(IRenderDevice&, const GChar* file_path) = 0;
 
-	virtual bool initVertexSource(const IRenderDevice& rd, const GleamAString& source) = 0;
-	virtual bool initPixelSource(const IRenderDevice& rd, const GleamAString& source) = 0;
-	virtual bool initDomainSource(const IRenderDevice& rd, const GleamAString& source) = 0;
-	virtual bool initGeometrySource(const IRenderDevice& rd, const GleamAString& source) = 0;
-	virtual bool initHullSource(const IRenderDevice& rd, const GleamAString& source) = 0;
-	virtual bool initComputeSource(const IRenderDevice& rd, const GleamAString& source) = 0;
+	virtual bool initVertexSource(IRenderDevice& rd, const GleamAString& source) = 0;
+	virtual bool initPixelSource(IRenderDevice& rd, const GleamAString& source) = 0;
+	virtual bool initDomainSource(IRenderDevice& rd, const GleamAString& source) = 0;
+	virtual bool initGeometrySource(IRenderDevice& rd, const GleamAString& source) = 0;
+	virtual bool initHullSource(IRenderDevice& rd, const GleamAString& source) = 0;
+	virtual bool initComputeSource(IRenderDevice& rd, const GleamAString& source) = 0;
 
-	virtual bool initVertexSource(const IRenderDevice& rd, const char* source) = 0;
-	virtual bool initPixelSource(const IRenderDevice& rd, const char* source) = 0;
-	virtual bool initDomainSource(const IRenderDevice& rd, const char* source) = 0;
-	virtual bool initGeometrySource(const IRenderDevice& rd, const char* source) = 0;
-	virtual bool initHullSource(const IRenderDevice& rd, const char* source) = 0;
-	virtual bool initComputeSource(const IRenderDevice& rd, const char* source) = 0;
+	virtual bool initVertexSource(IRenderDevice& rd, const char* source) = 0;
+	virtual bool initPixelSource(IRenderDevice& rd, const char* source) = 0;
+	virtual bool initDomainSource(IRenderDevice& rd, const char* source) = 0;
+	virtual bool initGeometrySource(IRenderDevice& rd, const char* source) = 0;
+	virtual bool initHullSource(IRenderDevice& rd, const char* source) = 0;
+	virtual bool initComputeSource(IRenderDevice& rd, const char* source) = 0;
 
 	virtual void destroy(void) = 0;
 

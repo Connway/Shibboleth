@@ -1,5 +1,5 @@
 /************************************************************************************
-Copyright (C) 2013 by Nicholas LaCroix
+Copyright (C) 2014 by Nicholas LaCroix
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -65,7 +65,7 @@ ILayout* IModel::getLayout(unsigned int index)
 int IModel::getIndex(const ILayout* layout) const
 {
 	assert(layout);
-	return _layouts.linearFind((ILayout* const)layout);
+	return _layouts.linearSearch(0, _layouts.size(), layout);
 }
 
 unsigned int IModel::addLayout(ILayout* layout)
@@ -96,7 +96,7 @@ unsigned int IModel::getMeshCount(void) const
 int IModel::getIndex(const IMesh* mesh) const
 {
 	assert(mesh);
-	return _meshes.linearFind((IMesh* const)mesh);
+	return _meshes.linearSearch(0, _meshes.size(), mesh);
 }
 
 unsigned int IModel::addMesh(IMesh* mesh)

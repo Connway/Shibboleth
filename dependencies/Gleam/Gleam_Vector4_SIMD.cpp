@@ -1,5 +1,5 @@
 /************************************************************************************
-Copyright (C) 2013 by Nicholas LaCroix
+Copyright (C) 2014 by Nicholas LaCroix
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -21,7 +21,6 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Gleam_Vector4_SIMD.h"
-#include "Gleam_SIMDMath.h"
 #include <Gaff_IncludeAssert.h>
 #include <cmath>
 

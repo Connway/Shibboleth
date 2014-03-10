@@ -1,5 +1,5 @@
 /************************************************************************************
-Copyright (C) 2013 by Nicholas LaCroix
+Copyright (C) 2014 by Nicholas LaCroix
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -23,6 +23,7 @@ THE SOFTWARE.
 #include "Gleam_Texture_Direct3D.h"
 #include "Gleam_RenderDevice_Direct3D.h"
 #include <Gaff_IncludeAssert.h>
+#include <cmath>
 
 NS_GLEAM
 
@@ -190,7 +191,7 @@ DXGI_FORMAT TextureD3D::getTypedFormat(FORMAT format)
 
 
 TextureD3D::TextureD3D(void):
-	_depth_stencil_view(NULLPTR), _texture(NULLPTR)
+	_depth_stencil_view(nullptr), _texture(nullptr)
 {
 }
 
@@ -219,20 +220,23 @@ void TextureD3D::destroy(void)
 				break;
 		}
 
-		_texture = NULLPTR;
+		_texture = nullptr;
 	}
 }
 
-bool TextureD3D::init3D(const IRenderDevice& rd, int width, int height, int depth, FORMAT format, int mip_levels, const void* buffer)
+bool TextureD3D::init3D(IRenderDevice& rd, int width, int height, int depth, FORMAT format, int mip_levels, const void* buffer)
 {
 	assert(width > 0 && height > 0 && depth > 0 && mip_levels > 0);
 	assert(rd.isD3D());
 
-	ID3D11Device* device = ((const RenderDeviceD3D&)rd).getDevice();
+	ID3D11Device* device = ((RenderDeviceD3D&)rd).getActiveDevice();
 
 	_mip_levels = (unsigned int)mip_levels;
 	_format = format;
 	_type = THREED;
+	_width = width;
+	_height = height;
+	_depth = depth;
 
 	D3D11_TEXTURE3D_DESC desc;
 	desc.Width = (UINT)width;
@@ -250,6 +254,7 @@ bool TextureD3D::init3D(const IRenderDevice& rd, int width, int height, int dept
 	if (buffer) {
 		D3D11_SUBRESOURCE_DATA sub;
 		sub.pSysMem = buffer;
+
 		sub.SysMemPitch = width * _format_size[format];
 		sub.SysMemSlicePitch = width * height * _format_size[format];
 
@@ -257,22 +262,25 @@ bool TextureD3D::init3D(const IRenderDevice& rd, int width, int height, int dept
 
 	} else {
 		desc.BindFlags |= D3D11_BIND_RENDER_TARGET;
-		result = device->CreateTexture3D(&desc, NULLPTR, &_texture_3d);
+		result = device->CreateTexture3D(&desc, nullptr, &_texture_3d);
 	}
 
 	return SUCCEEDED(result);
 }
 
-bool TextureD3D::init2D(const IRenderDevice& rd, int width, int height, FORMAT format, int mip_levels, const void* buffer)
+bool TextureD3D::init2D(IRenderDevice& rd, int width, int height, FORMAT format, int mip_levels, const void* buffer)
 {
 	assert(width > 0 && height > 0 && mip_levels > 0);
 	assert(rd.isD3D());
 
-	ID3D11Device* device = ((const RenderDeviceD3D&)rd).getDevice();
+	ID3D11Device* device = ((RenderDeviceD3D&)rd).getActiveDevice();
 
 	_mip_levels = (unsigned int)mip_levels;
 	_format = format;
 	_type = TWOD;
+	_width = width;
+	_height = height;
+	_depth = 0;
 
 	D3D11_TEXTURE2D_DESC desc;
 	desc.Width = (UINT)width;
@@ -292,6 +300,7 @@ bool TextureD3D::init2D(const IRenderDevice& rd, int width, int height, FORMAT f
 	if (buffer) {
 		D3D11_SUBRESOURCE_DATA sub;
 		sub.pSysMem = buffer;
+
 		sub.SysMemPitch = width * _format_size[format];
 		sub.SysMemSlicePitch = width * height * _format_size[format];
 
@@ -299,22 +308,25 @@ bool TextureD3D::init2D(const IRenderDevice& rd, int width, int height, FORMAT f
 
 	} else {
 		desc.BindFlags |= D3D11_BIND_RENDER_TARGET;
-		result = device->CreateTexture2D(&desc, NULLPTR, &_texture_2d);
+		result = device->CreateTexture2D(&desc, nullptr, &_texture_2d);
 	}
 
 	return SUCCEEDED(result);
 }
 
-bool TextureD3D::init1D(const IRenderDevice& rd, int width, FORMAT format, int mip_levels, const void* buffer)
+bool TextureD3D::init1D(IRenderDevice& rd, int width, FORMAT format, int mip_levels, const void* buffer)
 {
 	assert(width > 0 && mip_levels > 0);
 	assert(rd.isD3D());
 
-	ID3D11Device* device = ((const RenderDeviceD3D&)rd).getDevice();
+	ID3D11Device* device = ((RenderDeviceD3D&)rd).getActiveDevice();
 
 	_mip_levels = (unsigned int)mip_levels;
 	_format = format;
 	_type = ONED;
+	_width = width;
+	_height = 0;
+	_depth = 0;
 
 	D3D11_TEXTURE1D_DESC desc;
 	desc.Width = (UINT)width;
@@ -331,32 +343,33 @@ bool TextureD3D::init1D(const IRenderDevice& rd, int width, FORMAT format, int m
 	if (buffer) {
 		D3D11_SUBRESOURCE_DATA sub;
 		sub.pSysMem = buffer;
-		sub.SysMemPitch = width * _format_size[format];
 		sub.SysMemSlicePitch = 0;
+
+		sub.SysMemPitch = width * _format_size[format];
 
 		result = device->CreateTexture1D(&desc, &sub, &_texture_1d);
 
 	} else {
 		desc.BindFlags |= D3D11_BIND_RENDER_TARGET;
-		result = device->CreateTexture1D(&desc, NULLPTR, &_texture_1d);
+		result = device->CreateTexture1D(&desc, nullptr, &_texture_1d);
 	}
 
 	return SUCCEEDED(result);
 }
 
-bool TextureD3D::initCubemap(const IRenderDevice& rd, int width, int height, FORMAT format, int mip_levels, const void* buffer)
-							//const void* pos_x_buffer, const void* neg_x_buffer,
-							//const void* pos_y_buffer, const void* neg_y_buffer,
-							//const void* pos_z_buffer, const void* neg_z_buffer)
+bool TextureD3D::initCubemap(IRenderDevice& rd, int width, int height, FORMAT format, int mip_levels, const void* buffer)
 {
 	assert(width > 0 && height > 0 && mip_levels > 0);
 	assert(rd.isD3D());
 
-	ID3D11Device* device = ((const RenderDeviceD3D&)rd).getDevice();
+	ID3D11Device* device = ((RenderDeviceD3D&)rd).getActiveDevice();
 
 	_mip_levels = (unsigned int)mip_levels;
 	_format = format;
 	_type = CUBE;
+	_width = width;
+	_height = height;
+	_depth = 0;
 
 	D3D11_TEXTURE2D_DESC desc;
 	desc.Width = (UINT)width;
@@ -373,10 +386,10 @@ bool TextureD3D::initCubemap(const IRenderDevice& rd, int width, int height, FOR
 
 	HRESULT result;
 
-	//if (pos_x_buffer && neg_x_buffer && pos_y_buffer && neg_y_buffer && pos_z_buffer && neg_z_buffer) {
 	if (buffer) {
 		D3D11_SUBRESOURCE_DATA sub;
 		sub.pSysMem = buffer;
+
 		sub.SysMemPitch = width * _format_size[format];
 		sub.SysMemSlicePitch = width * height * _format_size[format];
 
@@ -390,16 +403,19 @@ bool TextureD3D::initCubemap(const IRenderDevice& rd, int width, int height, FOR
 	return SUCCEEDED(result);
 }
 
-bool TextureD3D::initDepthStencil(const IRenderDevice& rd, int width, int height, FORMAT format)
+bool TextureD3D::initDepthStencil(IRenderDevice& rd, int width, int height, FORMAT format)
 {
 	assert(width > 0 && height > 0);
 	assert(rd.isD3D());
 
-	ID3D11Device* device = ((const RenderDeviceD3D&)rd).getDevice();
+	ID3D11Device* device = ((RenderDeviceD3D&)rd).getActiveDevice();
 	DXGI_FORMAT typeless_format = DXGI_FORMAT_R24G8_TYPELESS;
 
 	_format = format;
 	_mip_levels = 1;
+	_width = width;
+	_height = height;
+	_depth = 0;
 
 	switch (format) {
 		case DEPTH_16_UNORM:

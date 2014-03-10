@@ -1,5 +1,5 @@
 /************************************************************************************
-Copyright (C) 2013 by Nicholas LaCroix
+Copyright (C) 2014 by Nicholas LaCroix
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -112,7 +112,7 @@ LayoutGL::~LayoutGL(void)
 }
 
 // Ugh, this function is so ugly looking
-bool LayoutGL::init(const IRenderDevice&, const LayoutDescription* layout_desc, unsigned int layout_desc_size, const IShader*)
+bool LayoutGL::init(IRenderDevice&, const LayoutDescription* layout_desc, unsigned int layout_desc_size, const IShader*)
 {
 	LayoutData layout_data;
 	unsigned int input_slot = 0;
@@ -121,7 +121,7 @@ bool LayoutGL::init(const IRenderDevice&, const LayoutDescription* layout_desc, 
 		input_slot = layout_desc[i].input_slot;
 
 		if (_layout_descs.size() <= input_slot) {
-			_layout_descs.push(GleamArray(LayoutData)());
+			_layout_descs.push(GleamArray<LayoutData>());
 		}
 
 		layout_data.size = _format_sizes[layout_desc[i].format].size;
@@ -148,17 +148,17 @@ void LayoutGL::destroy(void)
 	_layout_descs.clear();
 }
 
-void LayoutGL::setLayout(const IRenderDevice&, const IMesh* mesh)
+void LayoutGL::setLayout(IRenderDevice&, const IMesh* mesh)
 {
 	assert(!mesh->isD3D());
 
-	LayoutData* layout_data = NULLPTR;
-	const BufferGL* buffer = NULLPTR;
+	LayoutData* layout_data = nullptr;
+	const BufferGL* buffer = nullptr;
 	unsigned int stride = 0;
 	unsigned int count = 0;
 
 	for (unsigned int i = 0; i < _layout_descs.size(); ++i) {
-		GleamArray(LayoutData)& ld = _layout_descs[i];
+		GleamArray<LayoutData>& ld = _layout_descs[i];
 		buffer = (const BufferGL*)mesh->getBuffer(i);
 		stride = buffer->getStride();
 
@@ -178,7 +178,7 @@ void LayoutGL::setLayout(const IRenderDevice&, const IMesh* mesh)
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
-void LayoutGL::unsetLayout(const IRenderDevice&)
+void LayoutGL::unsetLayout(IRenderDevice&)
 {
 	unsigned int count = 0;
 

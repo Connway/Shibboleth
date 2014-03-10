@@ -1,5 +1,5 @@
 /************************************************************************************
-Copyright (C) 2013 by Nicholas LaCroix
+Copyright (C) 2014 by Nicholas LaCroix
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -27,10 +27,10 @@ NS_GLEAM
 
 KeyboardDI::KeyboardDI(void):
 #ifdef ONLY_INPUT_CHANGES
-	_keyboard(NULLPTR), _curr_state(_keyboard_state_a),
-	_prev_state(_keyboard_state_b),	_window(NULLPTR)
+	_keyboard(nullptr), _curr_state(_keyboard_state_a),
+	_prev_state(_keyboard_state_b),	_window(nullptr)
 #else
-	_keyboard(NULLPTR), _window(NULLPTR)
+	_keyboard(nullptr), _window(nullptr)
 #endif
 {
 }
@@ -49,7 +49,7 @@ bool KeyboardDI::init(const Window& window, void* direct_input, bool no_windows_
 
 	IDirectInput8* dinput = (IDirectInput8*)direct_input;
 
-	HRESULT result = dinput->CreateDevice(GUID_SysKeyboard, &_keyboard, NULLPTR);
+	HRESULT result = dinput->CreateDevice(GUID_SysKeyboard, &_keyboard, nullptr);
 	RETURNIFFAILED(result)
 
 	result = _keyboard->SetDataFormat(&c_dfDIKeyboard);
@@ -68,10 +68,10 @@ void KeyboardDI::destroy(void)
 	if (_keyboard) {
 		_keyboard->Unacquire();
 		_keyboard->Release();
-		_keyboard = NULLPTR;
+		_keyboard = nullptr;
 	}
 
-	_window = NULLPTR;
+	_window = nullptr;
 }
 
 bool KeyboardDI::update(void)
@@ -100,23 +100,15 @@ bool KeyboardDI::update(void)
 			bool prev = (_prev_state[i] & 0x80) != 0;
 
 			if (curr != prev) {
-				for (unsigned int j = 0; j < _input_handlers_func.size(); ++j) {
-					_input_handlers_func[j](this, i, (float)curr);
-				}
-
-				for (unsigned int j = 0; j < _input_handlers_class.size(); ++j) {
-					_input_handlers_class[j]->handleInput(this, i, (float)curr);
+				for (unsigned int j = 0; j < _input_handlers.size(); ++j) {
+					_input_handlers[j](this, i, (float)curr);
 				}
 			}
 #else
 			bool curr = (_keyboard_state[i] & 0x80) != 0;
 
-			for (unsigned int j = 0; j < _input_handlers_func.size(); ++j) {
-				_input_handlers_func[j](this, i, (float)curr);
-			}
-
-			for (unsigned int j = 0; j < _input_handlers_class.size(); ++j) {
-				_input_handlers_class[j]->handleInput(this, i, (float)curr);
+			for (unsigned int j = 0; j < _input_handlers.size(); ++j) {
+				_input_handlers[j](this, i, (float)curr);
 			}
 #endif
 		}
@@ -165,16 +157,6 @@ const GChar* KeyboardDI::getPlatformImplementationString(void) const
 const Window* KeyboardDI::getAssociatedWindow(void) const
 {
 	return _window;
-}
-
-bool KeyboardDI::isKeyboard(void) const
-{
-	return true;
-}
-
-bool KeyboardDI::isMouse(void) const
-{
-	return false;
 }
 
 NS_END

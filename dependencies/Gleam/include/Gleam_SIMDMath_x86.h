@@ -1,5 +1,5 @@
 /************************************************************************************
-Copyright (C) 2013 by Nicholas LaCroix
+Copyright (C) 2014 by Nicholas LaCroix
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -36,15 +36,15 @@ THE SOFTWARE.
 
 NS_GLEAM
 
-__declspec(align(16)) struct SIMDMaskStruct
+struct COMPILERALIGN16 SIMDMaskStruct
 {
 	union
 	{
-		int ints[4];
+		unsigned int ints[4];
 		__m128 vec;
 	};
 
-	INLINE operator const int*() const { return ints; }
+	INLINE operator const unsigned int*() const { return ints; }
 	INLINE operator __m128(void) const { return vec; }
 };
 

@@ -1,5 +1,5 @@
 /************************************************************************************
-Copyright (C) 2013 by Nicholas LaCroix
+Copyright (C) 2014 by Nicholas LaCroix
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -22,15 +22,44 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Gleam_IWindowMessageHandler.h"
-#include "Gaff_IncludeWindows.h"
+#include "Gleam_Window_Defines.h"
 #include "Gleam_Array.h"
+#include <Gaff_IncludeWindows.h>
+#include <Gaff_Function.h>
 
 NS_GLEAM
 
 class Window
 {
 public:
+	template <class T>
+	void addWindowMessageHandler(T* object, bool (T::*cb)(const AnyMessage&))
+	{
+		Gaff::FunctionBinder<bool, const AnyMessage&> function = Gaff::Bind(object, cb);
+		addWindowMessageHandlerHelper(function);
+	}
+
+	template <class T>
+	bool removeWindowMessageHandler(T* object, bool (T::*cb)(const AnyMessage&))
+	{
+		Gaff::FunctionBinder<bool, const AnyMessage&> function = Gaff::Bind(object, cb);
+		return removeWindowMessageHandlerHelper(function);
+	}
+
+	template <class T>
+	void addWindowMessageHandler(const T& cb)
+	{
+		Gaff::FunctionBinder<bool, const AnyMessage&> function = Gaff::Bind(cb);
+		addWindowMessageHandlerHelper(function);
+	}
+
+	template <class T>
+	bool removeWindowMessageHandler(const T& cb)
+	{
+		Gaff::FunctionBinder<bool, const AnyMessage&> function = Gaff::Bind(cb);
+		return removeWindowMessageHandlerHelper(function);
+	}
+
 	enum MODE { FULLSCREEN = 0, WINDOWED, FULLSCREEN_WINDOWED };
 
 	Window(void);
@@ -38,14 +67,13 @@ public:
 
 	bool init(const GChar* app_name, MODE window_mode = FULLSCREEN,
 					unsigned int width = 0, unsigned int height = 0,
-					int pos_x = -1, int pos_y = -1);
+					int pos_x = -1, int pos_y = -1,
+					const char* compat = nullptr);
 	void destroy(void);
 
 	INLINE void handleWindowMessages(void);
 	INLINE void addWindowMessageHandler(WindowCallback callback);
 	bool removeWindowMessageHandler(WindowCallback callback);
-	INLINE void addWindowMessageHandler(IWindowMessageHandler* handler);
-	bool removeWindowMessageHandler(IWindowMessageHandler* handler);
 
 	INLINE void showCursor(bool show);
 	INLINE void allowRepeats(bool allow);
@@ -76,15 +104,20 @@ private:
 	MSG _msg_temp;
 	bool _no_repeats;
 
-	GleamArray(IWindowMessageHandler*) _window_message_handlers;
-	GleamArray(WindowCallback) _window_callbacks;
+	GleamArray< Gaff::FunctionBinder<bool, const AnyMessage&> > _window_callbacks;
 
 	static LRESULT CALLBACK WindowProc(HWND hwnd, UINT msg, WPARAM w, LPARAM l);
-	static GleamArray(Window*) gWindows;
+	static GleamArray<Window*> gWindows;
 
 	unsigned int _mouse_prev_x;
 	unsigned int _mouse_prev_y;
 	bool _first_mouse;
+
+	void addWindowMessageHandlerHelper(const Gaff::FunctionBinder<bool, const AnyMessage&>& cb);
+	bool removeWindowMessageHandlerHelper(const Gaff::FunctionBinder<bool, const AnyMessage&>& cb);
+
+	GAFF_NO_COPY(Window);
+	GAFF_NO_MOVE(Window);
 };
 
 NS_END

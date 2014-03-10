@@ -1,5 +1,5 @@
 /************************************************************************************
-Copyright (C) 2013 by Nicholas LaCroix
+Copyright (C) 2014 by Nicholas LaCroix
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -22,24 +22,25 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Gleam_Defines.h"
+#include "Gleam_Keyboard_Defines.h"
+#include "Gleam_Window_Defines.h"
+#include "Gleam_IInputDevice.h"
 
 NS_GLEAM
 
-enum LightType
+class IKeyboard : public IInputDevice
 {
-	LIGHT_POINT = 0,
-	LIGHT_SPOT,
-	LIGHT_SIZE
-};
+public:
+	IKeyboard(void) {}
+	virtual ~IKeyboard(void) {}
 
-struct LightData
-{
-	//int type;
-	float position[3];
-	//float direction[3];
-	float attenuation[3];
-	float color[4];
+	virtual bool isKeyDown(KeyboardCode key) const = 0;
+	virtual bool isKeyUp(KeyboardCode key) const = 0;
+
+	virtual const unsigned char* getKeyboardData(void) const = 0;
+
+	bool isKeyboard(void) const { return true; }
+	bool isMouse(void) const { return false; }
 };
 
 NS_END

@@ -1,5 +1,5 @@
 /************************************************************************************
-Copyright (C) 2013 by Nicholas LaCroix
+Copyright (C) 2014 by Nicholas LaCroix
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -46,8 +46,8 @@ public:
 
 	INLINE const Vec4& getAxis(int axis) const;
 
-	const GleamArray(Vec4)& generatePoints(GleamArray(Vec4)& out) const;
-	GleamArray(Vec4) generatePoints(void) const;
+	const GleamArray<Vec4>& generatePoints(GleamArray<Vec4>& out) const;
+	GleamArray<Vec4> generatePoints(void) const;
 	const Vec4* generatePoints(Vec4* out) const;
 
 	void transform(const Mtx4x4& transform);

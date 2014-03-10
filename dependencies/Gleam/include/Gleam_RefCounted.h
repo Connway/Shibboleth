@@ -1,5 +1,5 @@
 /************************************************************************************
-Copyright (C) 2013 by Nicholas LaCroix
+Copyright (C) 2014 by Nicholas LaCroix
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -22,33 +22,7 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Gleam_Global.h"
+#include "Gleam_ProxyAllocator.h"
+#include <Gaff_RefCounted.h>
 
-NS_GLEAM
-
-class RefCounted
-{
-public:
-	RefCounted(void): _count(0) {}
-	virtual ~RefCounted(void) {}
-
-	void addRef(void) const { ++_count; }
-	void release(void) const
-	{
-		--_count;
-
-		if (!_count) {
-			this->~RefCounted();
-			GleamFree((void*)this);
-		}
-	}
-
-	unsigned int getRefCount(void) { return _count; }
-
-private:
-	mutable unsigned int _count;
-
-	GAFF_NO_COPY(RefCounted);
-};
-
-NS_END
+typedef Gaff::RefCounted<Gleam::ProxyAllocator> GleamRefCounted;
