@@ -1,5 +1,5 @@
 /************************************************************************************
-Copyright (C) 2013 by Nicholas LaCroix
+Copyright (C) 2014 by Nicholas LaCroix
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -28,7 +28,7 @@ NS_GLEAM
 
 class IRenderDevice;
 
-class IShaderResourceView : public RefCounted
+class IShaderResourceView : public GleamRefCounted
 {
 public:
 	enum RES_VIEW_TYPE { VIEW_TEXTURE = 0 };
@@ -36,7 +36,7 @@ public:
 	IShaderResourceView(void) {}
 	virtual ~IShaderResourceView(void) {}
 
-	virtual bool init(const IRenderDevice& rd, const ITexture* texture) = 0;
+	virtual bool init(IRenderDevice& rd, const ITexture* texture) = 0;
 	virtual void destroy(void) = 0;
 
 	INLINE RES_VIEW_TYPE getViewType(void) const { return _view_type; }

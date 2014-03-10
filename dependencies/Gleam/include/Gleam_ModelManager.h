@@ -1,5 +1,5 @@
 /************************************************************************************
-Copyright (C) 2013 by Nicholas LaCroix
+Copyright (C) 2014 by Nicholas LaCroix
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -64,20 +64,20 @@ public:
 	INLINE int getIndex(const GleamAString& name) const;
 	INLINE int getIndex(const IModel* model) const;
 
-	bool createPlaneModel(const IRenderDevice& rd, unsigned int subdivisions, unsigned int dtg_flags, const IShader* shader, IModel* model);
-	bool createSphereModel(const IRenderDevice& rd, unsigned int subdivisions, unsigned int dtg_flags, const IShader* shader, IModel* model);
-	bool createCubeModel(const IRenderDevice& rd, unsigned int subdivisions, unsigned int dtg_flags, const IShader* shader, IModel* model);
+	bool createPlaneModel(IRenderDevice& rd, unsigned int subdivisions, unsigned int dtg_flags, const IShader* shader, IModel* model);
+	bool createSphereModel(IRenderDevice& rd, unsigned int subdivisions, unsigned int dtg_flags, const IShader* shader, IModel* model);
+	bool createCubeModel(IRenderDevice& rd, unsigned int subdivisions, unsigned int dtg_flags, const IShader* shader, IModel* model);
 
 private:
-	GleamHashMap(GleamAString, int) _name_map;
-	GleamArray(IModel*) _models;
+	GleamHashMap<GleamAString, int> _name_map;
+	GleamArray<IModel*> _models;
 
 	void calculateLayoutDescSizeAndNameString(unsigned int dtg_flags, unsigned int subdivisions, 
-											GleamArray(LayoutDescription)& layout_desc, unsigned int& size,
+											GleamArray<LayoutDescription>& layout_desc, unsigned int& size,
 											GleamAString& name) const;
 	void generateTangents(float* vertices, unsigned int uv_offset, unsigned int tan_offset,
 						unsigned int bitan_offset, unsigned int num_verts, unsigned int vert_size,
-						const GleamArray(unsigned int)& indices, unsigned int dtg_flags);
+						const GleamArray<unsigned int>& indices, unsigned int dtg_flags);
 	void addEntry(const GleamAString& name);
 };
 

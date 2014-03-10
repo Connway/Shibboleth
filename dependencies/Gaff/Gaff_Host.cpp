@@ -27,16 +27,16 @@ THE SOFTWARE.
 NS_GAFF
 
 bool NetworkInit(
-	void* (NETWORK_CALLBACK *alloc)(size_t size),
-	void (NETWORK_CALLBACK *free)(void* memory),
-	void (NETWORK_CALLBACK *no_memory_callback)(void))
+	NetworkAllocFunc alloc_func,
+	NetworkFreeFunc free_func,
+	NetworkNoMemoryFunc no_mem_func)
 {
-	assert((alloc == nullptr && free == nullptr) || (alloc != nullptr && free != nullptr));
+	assert((alloc_func == nullptr && free_func == nullptr) || (alloc_func != nullptr && free_func != nullptr));
 
 	ENetCallbacks callbacks;
-	callbacks.malloc = alloc;
-	callbacks.free = free;
-	callbacks.no_memory = no_memory_callback;
+	callbacks.malloc = alloc_func;
+	callbacks.free = free_func;
+	callbacks.no_memory = no_mem_func;
 
 	return !enet_initialize_with_callbacks(ENET_VERSION, &callbacks);
 }
@@ -133,7 +133,7 @@ Connection Host::getLatestConnection(void)
 	return connection;
 }
 
-void Host::waitForEvent(EventCallbackType& callback, unsigned int timeout)
+void Host::waitForEvent(NetworkEventCallback& callback, unsigned int timeout)
 {
 	assert(_host);
 	ENetEvent event;
@@ -143,11 +143,15 @@ void Host::waitForEvent(EventCallbackType& callback, unsigned int timeout)
 			_latest_connection = event.peer;
 		}
 
-		callback(
-			*this, (EventType)event.type, (PeerIDType)event.peer, event.channelID, event.data,
-			(event.packet) ? event.packet->data : nullptr,
+		NetworkCallbackData data = {
+			*this, (NetworkEventType)event.type,
+			(PeerIDType)event.peer, event.channelID,
+			event.data, (event.packet) ? event.packet->data : nullptr,
 			(event.packet) ? event.packet->dataLength : 0
-		);
+		};
+
+		callback(data);
+
 		// Destroy the packet. This means callbacks that do stuff with the packet data
 		// that want to retain that data for later will need to copy it in the callback.
 		if (event.type == ENET_EVENT_TYPE_RECEIVE) {
@@ -156,7 +160,7 @@ void Host::waitForEvent(EventCallbackType& callback, unsigned int timeout)
 	}
 }
 
-void Host::checkForEvent(EventCallbackType& callback)
+void Host::checkForEvent(NetworkEventCallback& callback)
 {
 	assert(_host);
 	ENetEvent event;
@@ -166,11 +170,14 @@ void Host::checkForEvent(EventCallbackType& callback)
 			_latest_connection = event.peer;
 		}
 
-		callback(
-			*this, (EventType)event.type, (PeerIDType)event.peer, event.channelID, event.data,
-			(event.packet) ? event.packet->data : nullptr,
+		NetworkCallbackData data = {
+			*this, (NetworkEventType)event.type,
+			(PeerIDType)event.peer, event.channelID,
+			event.data, (event.packet) ? event.packet->data : nullptr,
 			(event.packet) ? event.packet->dataLength : 0
-		);
+		};
+
+		callback(data);
 
 		// Destroy the packet. This means callbacks that do stuff with the packet data
 		// that want to retain that data for later will need to copy it in the callback.

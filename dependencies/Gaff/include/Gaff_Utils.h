@@ -22,8 +22,13 @@ THE SOFTWARE.
 
 #pragma once
 
+#if defined(_WIN32) || defined(_WIN64)
+	#include "Gaff_IncludeWindows.h"
+#endif
+
 #include "Gaff_Defines.h"
 #include <dirent.h>
+#include <cstring>
 #include <ctime>
 
 NS_GAFF

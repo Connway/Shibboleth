@@ -1,5 +1,5 @@
 /************************************************************************************
-Copyright (C) 2013 by Nicholas LaCroix
+Copyright (C) 2014 by Nicholas LaCroix
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -34,7 +34,7 @@ class IRenderDevice;
 class Scene;
 
 // another class that probably would qualify to be called <class_name>Base
-class ISceneNode : public RefCounted
+class ISceneNode : public GleamRefCounted
 {
 public:
 	ISceneNode(Scene& scene, const Transform& model_transform);
@@ -56,8 +56,8 @@ public:
 	INLINE const OBB& getBoundingBox(void) const;
 	INLINE void setBoundingBox(const OBB& bounding_box);
 
-	INLINE const GleamArray(ISceneNode*)& getChildren(void) const;
-	INLINE GleamArray(ISceneNode*)& getChildren(void);
+	INLINE const GleamArray<ISceneNode*>& getChildren(void) const;
+	INLINE GleamArray<ISceneNode*>& getChildren(void);
 	void addChild(ISceneNode* child);
 	void removeChild(const ISceneNode* child);
 
@@ -69,21 +69,24 @@ public:
 	INLINE void setChanged(bool changed);
 
 	INLINE bool isEnabled(void) const;
-	INLINE void setEnabled(bool enabled);
+	void setEnabled(bool enabled);
 
 	virtual void updateTransform(void);
 	virtual void update(float dt);
 
+	virtual void enable(void);
+	virtual void disable(void);
+
 private:
-	//GleamArray(IAnimator*) _animators;
-	GleamArray(ISceneNode*) _children;
-	ISceneNode* _parent;
+	GleamArray<ISceneNode*> _children;
 
 	Transform _world_transform;
 	Transform _model_transform;
 
-	unsigned int _node_type;
 	OBB _bounding_box;
+
+	ISceneNode* _parent;
+	unsigned int _node_type;
 	bool _changed;
 	bool _enabled;
 

@@ -1,5 +1,5 @@
 /************************************************************************************
-Copyright (C) 2013 by Nicholas LaCroix
+Copyright (C) 2014 by Nicholas LaCroix
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -33,7 +33,7 @@ class IBuffer;
 
 // Considering only one function is virtual, it should probably be called MeshDataBase?
 // But I really don't like that name for some reason ...
-class IMesh : public RefCounted
+class IMesh : public GleamRefCounted
 {
 public:
 	enum TOPOLOGY_TYPE {
@@ -56,30 +56,26 @@ public:
 
 	void destroy(void);
 
-	INLINE template <class Vertex>
+	template <class Vertex>
 	bool addVertData(
-		const IRenderDevice& rd, const Vertex* vert_data, unsigned int vert_count,
+		IRenderDevice& rd, const Vertex* vert_data, unsigned int vert_count,
 		unsigned int* indices, unsigned int index_count, TOPOLOGY_TYPE primitive_type = TRIANGLE_LIST)
 	{
 		return addVertData(rd, vert_data, vert_count, sizeof(Vertex), indices, index_count, primitive_type);
 	}
 
-	INLINE template <class Buffer>
-	const Buffer* getCastedBuffer(const GleamAString& tag)
-	{
-		return (Buffer*)getBuffer(tag);
-	}
-
 	// Note, this function assumes the first three elements of a vertex are the position
-	bool addVertData(
-		const IRenderDevice& rd, const void* vert_data, unsigned int vert_count, unsigned int vert_size,
+	virtual bool addVertData(
+		IRenderDevice& rd, const void* vert_data, unsigned int vert_count, unsigned int vert_size,
 		unsigned int* indices, unsigned int index_count, TOPOLOGY_TYPE primitive_type = TRIANGLE_LIST
-	);
+	) = 0;
 
-	INLINE void addBuffer(IBuffer* buffer);
+	virtual void addBuffer(IBuffer* buffer);
 	INLINE const IBuffer* getBuffer(unsigned int index) const;
 	INLINE IBuffer* getBuffer(unsigned int index);
 	INLINE unsigned int getBufferCount(void) const;
+
+	INLINE void setIndiceBuffer(IBuffer* buffer);
 
 	INLINE void setBoundingBox(const AABB& bounding_box);
 	INLINE const AABB& getBoundingBox(void) const;
@@ -93,14 +89,21 @@ public:
 	INLINE void setIndexCount(unsigned int count);
 	INLINE unsigned int getIndexCount(void) const;
 
-	virtual void render(const IRenderDevice& rd) = 0;
+	virtual void render(IRenderDevice& rd) = 0;
+	virtual void renderInstanced(IRenderDevice& rd, unsigned int count) = 0;
 
 	virtual bool isD3D(void) const = 0;
 
 protected:
-	GleamArray(IBuffer*) _vert_data;
+	GleamArray<IBuffer*> _vert_data;
 	IBuffer* _indices;
 	TOPOLOGY_TYPE _topology;
+
+	bool addVertDataHelper(
+		IRenderDevice& rd, const void* vert_data, unsigned int vert_count, unsigned int vert_size,
+		unsigned int* indices, unsigned int index_count, TOPOLOGY_TYPE primitive_type,
+		IBuffer* index_buffer, IBuffer* vert_buffer
+	);
 
 private:
 	unsigned int _index_count;

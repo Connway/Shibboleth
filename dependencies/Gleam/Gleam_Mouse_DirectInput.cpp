@@ -1,5 +1,5 @@
 /************************************************************************************
-Copyright (C) 2013 by Nicholas LaCroix
+Copyright (C) 2014 by Nicholas LaCroix
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -28,10 +28,10 @@ NS_GLEAM
 
 MouseDI::MouseDI(void):
 #ifdef ONLY_INPUT_CHANGES
-	_mouse(NULLPTR), _curr_state(&_mouse_state_a),
-	_prev_state(&_mouse_state_b), _window(NULLPTR)
+	_mouse(nullptr), _curr_state(&_mouse_state_a),
+	_prev_state(&_mouse_state_b), _window(nullptr)
 #else
-	_mouse(NULLPTR), _window(NULLPTR)
+	_mouse(nullptr), _window(nullptr)
 #endif
 {
 }
@@ -59,7 +59,7 @@ bool MouseDI::init(const Window& window, void* direct_input, bool)
 		_data.y = point.y - window.getPosY();
 	}
 
-	HRESULT result = dinput->CreateDevice(GUID_SysMouse, &_mouse, NULLPTR);
+	HRESULT result = dinput->CreateDevice(GUID_SysMouse, &_mouse, nullptr);
 	RETURNIFFAILED(result)
 
 	result = _mouse->SetDataFormat(&c_dfDIMouse2);
@@ -79,10 +79,10 @@ void MouseDI::destroy(void)
 	if (_mouse) {
 		_mouse->Unacquire();
 		_mouse->Release();
-		_mouse = NULLPTR;
+		_mouse = nullptr;
 	}
 
-	_window = NULLPTR;
+	_window = nullptr;
 }
 
 bool MouseDI::update(void)
@@ -112,38 +112,22 @@ bool MouseDI::update(void)
 		_data.y += _data.dy;
 		_data.wheel = (short)_curr_state->lZ / 120;
 
-		_data.x = Gaff::clamp(_data.x, 0, (int)_window->getWidth());
-		_data.y = Gaff::clamp(_data.y, 0, (int)_window->getHeight());
+		_data.x = Gaff::Clamp(_data.x, 0, (int)_window->getWidth());
+		_data.y = Gaff::Clamp(_data.y, 0, (int)_window->getHeight());
 
-		for (unsigned int i = 0; i < _input_handlers_func.size(); ++i) {
+		for (unsigned int i = 0; i < _input_handlers.size(); ++i) {
 			if (_curr_state->lX != _prev_state->lX) {
-				_input_handlers_func[i](this, MOUSE_DELTA_X, (float)_data.dx);
-				_input_handlers_func[i](this, MOUSE_POS_X, (float)_data.x);
+				_input_handlers[i](this, MOUSE_DELTA_X, (float)_data.dx);
+				_input_handlers[i](this, MOUSE_POS_X, (float)_data.x);
 			}
 
 			if (_curr_state->lY != _prev_state->lY) {
-				_input_handlers_func[i](this, MOUSE_DELTA_Y, (float)_data.dy);
-				_input_handlers_func[i](this, MOUSE_POS_Y, (float)_data.y);
+				_input_handlers[i](this, MOUSE_DELTA_Y, (float)_data.dy);
+				_input_handlers[i](this, MOUSE_POS_Y, (float)_data.y);
 			}
 
 			if (_curr_state->lZ != _prev_state->lZ) {
-				_input_handlers_func[i](this, MOUSE_WHEEL, (float)_data.wheel);
-			}
-		}
-
-		for (unsigned int i = 0; i < _input_handlers_class.size(); ++i) {
-			if (_curr_state->lX != _prev_state->lX) {
-				_input_handlers_class[i]->handleInput(this, MOUSE_DELTA_X, (float)_data.dx);
-				_input_handlers_class[i]->handleInput(this, MOUSE_POS_X, (float)_data.x);
-			}
-
-			if (_curr_state->lY != _prev_state->lY) {
-				_input_handlers_class[i]->handleInput(this, MOUSE_DELTA_Y, (float)_data.dy);
-				_input_handlers_class[i]->handleInput(this, MOUSE_POS_Y, (float)_data.y);
-			}
-
-			if (_curr_state->lZ != _prev_state->lZ) {
-				_input_handlers_class[i]->handleInput(this, MOUSE_WHEEL, (float)_data.wheel);
+				_input_handlers[i](this, MOUSE_WHEEL, (float)_data.wheel);
 			}
 		}
 
@@ -154,12 +138,8 @@ bool MouseDI::update(void)
 			_data.buttons[i] = curr;
 
 			if (curr != prev) {
-				for (unsigned int j = 0; j < _input_handlers_func.size(); ++j) {
-					_input_handlers_func[j](this, i, (float)curr);
-				}
-
-				for (unsigned int j = 0; j < _input_handlers_class.size(); ++j) {
-					_input_handlers_class[j]->handleInput(this, i, (float)curr);
+				for (unsigned int j = 0; j < _input_handlers.size(); ++j) {
+					_input_handlers[j](this, i, (float)curr);
 				}
 			}
 		}
@@ -170,34 +150,22 @@ bool MouseDI::update(void)
 		_data.y += _data.dy;
 		_data.wheel = (short)_mouse_state.lZ / 120;
 
-		_data.x = Gaff::clamp(_data.x, 0, (int)_window->getWidth());
-		_data.y = Gaff::clamp(_data.y, 0, (int)_window->getHeight());
+		_data.x = Gaff::Clamp(_data.x, 0, (int)_window->getWidth());
+		_data.y = Gaff::Clamp(_data.y, 0, (int)_window->getHeight());
 
-		for (unsigned int i = 0; i < _input_handlers_func.size(); ++i) {
-			_input_handlers_func[i](this, MOUSE_DELTA_X, (float)_data.dx);
-			_input_handlers_func[i](this, MOUSE_DELTA_Y, (float)_data.dy);
-			_input_handlers_func[i](this, MOUSE_POS_X, (float)_data.x);
-			_input_handlers_func[i](this, MOUSE_POS_Y, (float)_data.y);
-			_input_handlers_func[i](this, MOUSE_WHEEL, (float)_data.wheel);
-		}
-
-		for (unsigned int i = 0; i < _input_handlers_class.size(); ++i) {
-			_input_handlers_class[i]->handleInput(this, MOUSE_DELTA_X, (float)_data.dx);
-			_input_handlers_class[i]->handleInput(this, MOUSE_DELTA_Y, (float)_data.dy);
-			_input_handlers_class[i]->handleInput(this, MOUSE_POS_X, (float)_data.x);
-			_input_handlers_class[i]->handleInput(this, MOUSE_POS_Y, (float)_data.y);
-			_input_handlers_class[i]->handleInput(this, MOUSE_WHEEL, (float)_data.wheel);
+		for (unsigned int i = 0; i < _input_handlers.size(); ++i) {
+			_input_handlers[i](this, MOUSE_DELTA_X, (float)_data.dx);
+			_input_handlers[i](this, MOUSE_DELTA_Y, (float)_data.dy);
+			_input_handlers[i](this, MOUSE_POS_X, (float)_data.x);
+			_input_handlers[i](this, MOUSE_POS_Y, (float)_data.y);
+			_input_handlers[i](this, MOUSE_WHEEL, (float)_data.wheel);
 		}
 
 		for (int i = 0; i < MOUSE_BUTTON_COUNT; ++i) {
 			_data.buttons[i] = (_mouse_state.rgbButtons[i] & 0x80) != 0;
 
-			for (unsigned int j = 0; j < _input_handlers_func.size(); ++j) {
-				_input_handlers_func[j](this, i, (float)_data.buttons[i]);
-			}
-
-			for (unsigned int j = 0; j < _input_handlers_class.size(); ++j) {
-				_input_handlers_class[j]->handleInput(this, i, (float)_data.buttons[i]);
+			for (unsigned int j = 0; j < _input_handlers.size(); ++j) {
+				_input_handlers[j](this, i, (float)_data.buttons[i]);
 			}
 		}
 #endif
@@ -253,16 +221,6 @@ const GChar* MouseDI::getPlatformImplementationString(void) const
 const Window* MouseDI::getAssociatedWindow(void) const
 {
 	return _window;
-}
-
-bool MouseDI::isKeyboard(void) const
-{
-	return false;
-}
-
-bool MouseDI::isMouse(void) const
-{
-	return true;
 }
 
 NS_END

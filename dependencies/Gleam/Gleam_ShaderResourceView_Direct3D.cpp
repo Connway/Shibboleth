@@ -1,5 +1,5 @@
 /************************************************************************************
-Copyright (C) 2013 by Nicholas LaCroix
+Copyright (C) 2014 by Nicholas LaCroix
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -38,7 +38,7 @@ static D3D11_SRV_DIMENSION _dimension_map[ITexture::TYPE_SIZE] = {
 };
 
 ShaderResourceViewD3D::ShaderResourceViewD3D(void):
-	_resource_view(NULLPTR)
+	_resource_view(nullptr)
 {
 
 }
@@ -48,9 +48,9 @@ ShaderResourceViewD3D::~ShaderResourceViewD3D(void)
 	destroy();
 }
 
-bool ShaderResourceViewD3D::init(const IRenderDevice& rd, const ITexture* texture)
+bool ShaderResourceViewD3D::init(IRenderDevice& rd, const ITexture* texture)
 {
-	ID3D11Device* device = ((const RenderDeviceD3D&)rd).getDevice();
+	ID3D11Device* device = ((RenderDeviceD3D&)rd).getActiveDevice();
 	assert(texture);
 
 	_view_type = VIEW_TEXTURE;

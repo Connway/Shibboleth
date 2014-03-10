@@ -1,5 +1,5 @@
 /************************************************************************************
-Copyright (C) 2013 by Nicholas LaCroix
+Copyright (C) 2014 by Nicholas LaCroix
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -29,7 +29,7 @@ NS_GLEAM
 
 class IRenderDevice;
 
-class ISamplerState : public RefCounted
+class ISamplerState : public GleamRefCounted
 {
 public:
 	enum WRAP { WRAP_REPEAT = 1, WRAP_MIRROR, WRAP_CLAMP, WRAP_BORDER, /*WRAP_MIRROR_ONCE,*/ WRAP_SIZE = WRAP_BORDER/*WRAP_MIRROR_ONCE*/ };
@@ -51,7 +51,7 @@ public:
 	virtual ~ISamplerState(void) {}
 
 	virtual bool init(
-		const IRenderDevice& rd,
+		IRenderDevice& rd,
 		FILTER filter, WRAP u, WRAP v, WRAP w,
 		float min_lod, float max_lod, float lod_bias,
 		unsigned int max_anisotropy,

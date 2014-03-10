@@ -1,5 +1,5 @@
 /************************************************************************************
-Copyright (C) 2013 by Nicholas LaCroix
+Copyright (C) 2014 by Nicholas LaCroix
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -35,25 +35,31 @@ public:
 
 	void destroy(void);
 
-	bool addTexture(const IRenderDevice& rd, const ITexture* color_texture, CUBE_FACE face = NONE);
-	INLINE void popTexture(void);
+	bool addTexture(IRenderDevice& rd, const ITexture* color_texture, CUBE_FACE face = NONE);
+	void popTexture(void);
 
-	bool addDepthStencilBuffer(const IRenderDevice& rd, const ITexture* depth_stencil_texture);
+	bool addDepthStencilBuffer(IRenderDevice& rd, const ITexture* depth_stencil_texture);
 
-	INLINE void bind(IRenderDevice& rd);
-	INLINE void unbind(const IRenderDevice& rd);
+	void bind(IRenderDevice& rd);
+	void unbind(IRenderDevice& rd);
 
 	bool isComplete(void) const;
 
 	bool isD3D(void) const;
 
 private:
+	GleamArray<unsigned int> _draw_buffers;
+
 	unsigned int _frame_buffer;
 	unsigned int _attach_count;
 
-	GleamArray(unsigned int) _draw_buffers;
+	int _viewport_width;
+	int _viewport_height;
 
 	INLINE void createFramebuffer(void);
+
+	friend class RenderDeviceGL;
+	RenderTargetGL(int viewport_width, int viewport_height);
 };
 
 NS_END

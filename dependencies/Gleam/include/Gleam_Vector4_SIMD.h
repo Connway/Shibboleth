@@ -1,5 +1,5 @@
 /************************************************************************************
-Copyright (C) 2013 by Nicholas LaCroix
+Copyright (C) 2014 by Nicholas LaCroix
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -22,16 +22,11 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Gleam_Defines.h"
-#include <xmmintrin.h>
+#include "Gleam_SIMDMath.h"
 
 NS_GLEAM
 
-#ifdef ALIGN_SIMD
-__declspec(align(16)) class Vector4SIMD
-#else
-class Vector4SIMD
-#endif
+class ALIGN16 Vector4SIMD
 {
 public:
 	Vector4SIMD(void);

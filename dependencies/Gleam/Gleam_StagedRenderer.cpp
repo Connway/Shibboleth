@@ -1,5 +1,5 @@
 /************************************************************************************
-Copyright (C) 2013 by Nicholas LaCroix
+Copyright (C) 2014 by Nicholas LaCroix
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -64,11 +64,11 @@ void StagedRenderer::addStage(IRenderStage* stage)
 bool StagedRenderer::removeStage(const IRenderStage* stage)
 {
 	assert(stage);
-	int index = _stages.linearFind((IRenderStage* const)stage);
+	GleamArray<IRenderStage*>::Iterator it = _stages.linearSearch(stage);
 
-	if (index > -1) {
+	if (it != _stages.end()) {
 		stage->release();
-		_stages.erase(index);
+		_stages.erase(it);
 		return true;
 	}
 

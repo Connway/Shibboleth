@@ -1,5 +1,5 @@
 /************************************************************************************
-Copyright (C) 2013 by Nicholas LaCroix
+Copyright (C) 2014 by Nicholas LaCroix
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -107,9 +107,9 @@ void ProgramGL::bind(IRenderDevice&)
 		assert(_sampler_states[i].size() <= _resource_views[i].size());
 		unsigned int sampler_count = 0;
 
-		GleamArray(IShaderResourceView*)& resource_views = _resource_views[i];
-		GleamArray(ISamplerState*)& sampler_states = _sampler_states[i];
-		GleamArray(IBuffer*)& const_bufs = _constant_buffers[i];
+		GleamArray<IShaderResourceView*>& resource_views = _resource_views[i];
+		GleamArray<ISamplerState*>& sampler_states = _sampler_states[i];
+		GleamArray<IBuffer*>& const_bufs = _constant_buffers[i];
 
 		for (unsigned int j = 0; j < const_bufs.size(); ++j) {
 			glBindBufferBase(GL_UNIFORM_BUFFER, count, ((const BufferGL*)const_bufs[j])->getBuffer());

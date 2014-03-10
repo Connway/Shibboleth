@@ -1,5 +1,5 @@
 /************************************************************************************
-Copyright (C) 2013 by Nicholas LaCroix
+Copyright (C) 2014 by Nicholas LaCroix
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -62,9 +62,12 @@ static SamplerSetFunction sampler_set[IShader::SHADER_TYPE_SIZE] = {
 };
 
 ProgramD3D::ProgramD3D(void):
-	_shader_vertex(NULLPTR), _shader_pixel(NULLPTR),
-	_shader_domain(NULLPTR), _shader_geometry(NULLPTR),
-	_shader_hull(NULLPTR), _shader_compute(NULLPTR)
+	_shader_vertex(nullptr), _shader_pixel(nullptr),
+	_shader_domain(nullptr), _shader_geometry(nullptr),
+	_shader_hull(nullptr), _shader_compute(nullptr),
+	_res_views(IShader::SHADER_TYPE_SIZE, GleamArray<ID3D11ShaderResourceView*>()),
+	_samplers(IShader::SHADER_TYPE_SIZE, GleamArray<ID3D11SamplerState*>()),
+	_buffers(IShader::SHADER_TYPE_SIZE, GleamArray<ID3D11Buffer*>())
 {
 }
 
@@ -139,32 +142,32 @@ void ProgramD3D::detach(const IShader* shader)
 	switch (shader->getType()) {
 		case IShader::SHADER_VERTEX:
 			SAFERELEASE(_shader_vertex)
-			_shader_vertex = NULLPTR;
+			_shader_vertex = nullptr;
 			break;
 
 		case IShader::SHADER_PIXEL:
 			SAFERELEASE(_shader_pixel)
-			_shader_pixel = NULLPTR;
+			_shader_pixel = nullptr;
 			break;
 
 		case IShader::SHADER_DOMAIN:
 			SAFERELEASE(_shader_domain)
-			_shader_domain = NULLPTR;
+			_shader_domain = nullptr;
 			break;
 
 		case IShader::SHADER_GEOMETRY:
 			SAFERELEASE(_shader_geometry)
-			_shader_geometry = NULLPTR;
+			_shader_geometry = nullptr;
 			break;
 
 		case IShader::SHADER_HULL:
 			SAFERELEASE(_shader_hull)
-			_shader_hull = NULLPTR;
+			_shader_hull = nullptr;
 			break;
 
 		case IShader::SHADER_COMPUTE:
 			SAFERELEASE(_shader_compute)
-			_shader_compute = NULLPTR;
+			_shader_compute = nullptr;
 			break;
 	}
 }
@@ -178,7 +181,7 @@ void ProgramD3D::bind(IRenderDevice& rd)
 {
 	assert(rd.isD3D());
 
-	ID3D11DeviceContext* context = ((const RenderDeviceD3D&)rd).getDeviceContext();
+	ID3D11DeviceContext* context = ((RenderDeviceD3D&)rd).getActiveDeviceContext();
 
 	context->VSSetShader(_shader_vertex, NULL, 0);
 	context->PSSetShader(_shader_pixel, NULL, 0);
@@ -188,32 +191,9 @@ void ProgramD3D::bind(IRenderDevice& rd)
 	context->CSSetShader(_shader_compute, NULL, 0);
 
 	for (unsigned int i = 0; i < IShader::SHADER_TYPE_SIZE; ++i) {
-		///////////////////////////////////////////////////////////////////////
-		// We can save performance here by caching these once ahead of time.
-		// These will never change unless we add/remove more at run-time.
-		// So, generate these caches in the add/remove calls so we don't have to
-		// generate them every frame.
-		///////////////////////////////////////////////////////////////////////
-		GleamArray(IShaderResourceView*)& resource_views = _resource_views[i];
-		GleamArray(ISamplerState*)& sampler_states = _sampler_states[i];
-		GleamArray(IBuffer*)& const_bufs = _constant_buffers[i];
-
-		GleamArray(ID3D11ShaderResourceView*) res_views(resource_views.size());
-		GleamArray(ID3D11SamplerState*) samplers(sampler_states.size());
-		GleamArray(ID3D11Buffer*) buffers(const_bufs.size());
-
-		for (unsigned int j = 0; j < const_bufs.size(); ++j) {
-			buffers.push(((BufferD3D*)const_bufs[j])->getBuffer());
-		}
-
-		for (unsigned int j = 0; j < resource_views.size(); ++j) {
-			res_views.push(((const ShaderResourceViewD3D*)resource_views[j])->getResourceView());
-		}
-
-		for (unsigned int j = 0; j < sampler_states.size(); ++j) {
-			samplers.push(((const SamplerStateD3D*)sampler_states[j])->getSamplerState());
-		}
-		///////////////////////////////////////////////////////////////////////
+		GleamArray<ID3D11ShaderResourceView*>& res_views = _res_views[i];
+		GleamArray<ID3D11SamplerState*>& samplers = _samplers[i];
+		GleamArray<ID3D11Buffer*>& buffers = _buffers[i];
 
 		(context->*shader_set[i])(0, buffers.size(), buffers.getArray());
 		(context->*resource_set[i])(0, res_views.size(), res_views.getArray());
@@ -224,7 +204,7 @@ void ProgramD3D::bind(IRenderDevice& rd)
 void ProgramD3D::unbind(IRenderDevice& rd)
 {
 	assert(rd.isD3D());
-	ID3D11DeviceContext* context = ((const RenderDeviceD3D&)rd).getDeviceContext();
+	ID3D11DeviceContext* context = ((RenderDeviceD3D&)rd).getActiveDeviceContext();
 
 	context->VSSetShader(NULL, NULL, 0);
 	context->PSSetShader(NULL, NULL, 0);
@@ -237,6 +217,99 @@ void ProgramD3D::unbind(IRenderDevice& rd)
 bool ProgramD3D::isD3D(void) const
 {
 	return true;
+}
+
+void ProgramD3D::addConstantBuffer(IShader::SHADER_TYPE type, IBuffer* const_buffer)
+{
+	IProgram::addConstantBuffer(type, const_buffer);
+	cacheBuffers();
+}
+
+void ProgramD3D::removeConstantBuffer(IShader::SHADER_TYPE type, unsigned int index)
+{
+	IProgram::removeConstantBuffer(type, index);
+	cacheBuffers();
+}
+
+void ProgramD3D::popConstantBuffer(IShader::SHADER_TYPE type)
+{
+	IProgram::popConstantBuffer(type);
+	cacheBuffers();
+}
+
+void ProgramD3D::addResourceView(IShader::SHADER_TYPE type, IShaderResourceView* resource_view)
+{
+	IProgram::addResourceView(type, resource_view);
+	cacheResViews();
+}
+
+void ProgramD3D::removeResourceView(IShader::SHADER_TYPE type, unsigned int index)
+{
+	IProgram::removeResourceView(type, index);
+	cacheResViews();
+}
+
+void ProgramD3D::popResourceView(IShader::SHADER_TYPE type)
+{
+	IProgram::popResourceView(type);
+	cacheResViews();
+}
+
+void ProgramD3D::addSamplerState(IShader::SHADER_TYPE type, ISamplerState* sampler)
+{
+	IProgram::addSamplerState(type, sampler);
+	cacheSamplers();
+}
+
+void ProgramD3D::removeSamplerState(IShader::SHADER_TYPE type, unsigned int index)
+{
+	IProgram::removeSamplerState(type, index);
+	cacheSamplers();
+}
+
+void ProgramD3D::popSamplerState(IShader::SHADER_TYPE type)
+{
+	IProgram::popSamplerState(type);
+	cacheSamplers();
+}
+
+void ProgramD3D::cacheResViews(void)
+{
+	for (unsigned int i = 0; i < IShader::SHADER_TYPE_SIZE; ++i) {
+		GleamArray<IShaderResourceView*>& resource_views = _resource_views[i];
+		GleamArray<ID3D11ShaderResourceView*>& res_views = _res_views[i];
+		res_views.clear();
+
+		for (unsigned int j = 0; j < resource_views.size(); ++j) {
+			res_views.push(((const ShaderResourceViewD3D*)resource_views[j])->getResourceView());
+		}
+	}
+}
+
+void ProgramD3D::cacheSamplers(void)
+{
+	for (unsigned int i = 0; i < IShader::SHADER_TYPE_SIZE; ++i) {
+		GleamArray<ISamplerState*>& sampler_states = _sampler_states[i];
+		GleamArray<ID3D11SamplerState*>& samplers = _samplers[i];
+		samplers.clear();
+
+		for (unsigned int j = 0; j < sampler_states.size(); ++j) {
+			samplers.push(((const SamplerStateD3D*)sampler_states[j])->getSamplerState());
+		}
+	}
+}
+
+void ProgramD3D::cacheBuffers(void)
+{
+	for (unsigned int i = 0; i < IShader::SHADER_TYPE_SIZE; ++i) {
+		GleamArray<IBuffer*>& const_bufs = _constant_buffers[i];
+		GleamArray<ID3D11Buffer*>& buffers = _buffers[i];
+		buffers.clear();
+
+		for (unsigned int j = 0; j < const_bufs.size(); ++j) {
+			buffers.push(((BufferD3D*)const_bufs[j])->getBuffer());
+		}
+	}
 }
 
 NS_END

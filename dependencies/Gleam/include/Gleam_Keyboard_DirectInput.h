@@ -1,5 +1,5 @@
 /************************************************************************************
-Copyright (C) 2013 by Nicholas LaCroix
+Copyright (C) 2014 by Nicholas LaCroix
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -26,15 +26,14 @@ THE SOFTWARE.
 	#define WIN32_LEAN_AND_MEAN
 #endif
 
-#include "Gleam_Keyboard_Defines.h"
-#include "Gleam_IInputDevice.h"
+#include "Gleam_IKeyboard.h"
 #include <dinput.h>
 
 NS_GLEAM
 
 class Window;
 
-class KeyboardDI : public IInputDevice
+class KeyboardDI : public IKeyboard
 {
 public:
 	KeyboardDI(void);
@@ -44,18 +43,15 @@ public:
 	void destroy(void);
 	bool update(void);
 
-	INLINE bool isKeyDown(KeyboardCode key) const;
-	INLINE bool isKeyUp(KeyboardCode key) const;
+	bool isKeyDown(KeyboardCode key) const;
+	bool isKeyUp(KeyboardCode key) const;
 
-	INLINE const unsigned char* getKeyboardData(void) const;
+	const unsigned char* getKeyboardData(void) const;
 
-	INLINE const GChar* getDeviceName(void) const;
-	INLINE const GChar* getPlatformImplementationString(void) const;
+	const GChar* getDeviceName(void) const;
+	const GChar* getPlatformImplementationString(void) const;
 
-	INLINE const Window* getAssociatedWindow(void) const;
-
-	INLINE bool isKeyboard(void) const;
-	INLINE bool isMouse(void) const;
+	const Window* getAssociatedWindow(void) const;
 
 private:
 	IDirectInputDevice8* _keyboard;

@@ -1,5 +1,5 @@
 /************************************************************************************
-Copyright (C) 2013 by Nicholas LaCroix
+Copyright (C) 2014 by Nicholas LaCroix
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -41,7 +41,7 @@ public:
 	void destroy(void);
 
 	IProgram* createProgram(const GleamAString& name = "");
-	IShader* createShader(const IRenderDevice& rd, const GleamGString& file_path, IShader::SHADER_TYPE shader_type, const GleamAString& name = "");
+	IShader* createShader(IRenderDevice& rd, const GleamGString& file_path, IShader::SHADER_TYPE shader_type, const GleamAString& name = "");
 
 	int addProgram(IProgram* program, const GleamAString& name = "");
 	int addShader(IShader* shader, const GleamAString& name = "");
@@ -64,10 +64,10 @@ public:
 	INLINE IShader* getShader(int index);
 
 private:
-	GleamHashMap(GleamAString, int) _program_map;
-	GleamHashMap(GleamAString, int) _shader_map;
-	GleamArray(IProgram*) _programs;
-	GleamArray(IShader*) _shaders;
+	GleamHashMap<GleamAString, int> _program_map;
+	GleamHashMap<GleamAString, int> _shader_map;
+	GleamArray<IProgram*> _programs;
+	GleamArray<IShader*> _shaders;
 
 	void addProgramEntry(const GleamAString& name);
 	void addShaderEntry(const GleamAString& name);

@@ -1,5 +1,5 @@
 /************************************************************************************
-Copyright (C) 2013 by Nicholas LaCroix
+Copyright (C) 2014 by Nicholas LaCroix
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -21,6 +21,20 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #pragma once
+
+#if defined(_WIN32) || defined(_WIN64)
+	#define COMPILERALIGN16 __declspec(align(16))
+#elif defined(__linux__) || defined(__APPLE__)
+	#define COMPILERALIGN16 __attribute__((aligned(16)))
+#else
+	#error Platform not supported
+#endif
+
+#ifdef ALIGN_SIMD
+	#define ALIGN16 COMPILERALIGN16
+#else
+	#define ALIGN16
+#endif
 
 #ifndef NO_LINKING
 	#ifdef USE_DX
@@ -45,19 +59,10 @@ THE SOFTWARE.
 	#define NS_END }
 #endif
 
-#ifndef NULLPTR
-	#define NULLPTR nullptr
-#endif
-
 #define RETURNIFFAILEDCLEANUP(r, c) if (FAILED(r)) { c; return false; }
 #define RETURNIFFAILED(r) if (FAILED(r)) { return false; }
 #define RETURNIFFALSECLEANUP(r, c) if (!r) { c; return false; }
 #define RETURNIFFALSE(r) if (!r) { return false; }
-#define SAFEGLEAMRELEASE(x) if (x) { x->release(); x = NULLPTR; }
-
-#ifndef SAFERELEASE
-	#define SAFERELEASE(x) if (x) { x->Release(); x = NULLPTR; }
-#endif
 
 #ifndef INLINE
 	#ifdef ATTEMPT_INLINE
@@ -73,4 +78,6 @@ THE SOFTWARE.
 
 #if defined(_WIN32) || defined(_WIN64)
 	#pragma warning(disable : 4201)
+#else
+	#define __stdcall
 #endif

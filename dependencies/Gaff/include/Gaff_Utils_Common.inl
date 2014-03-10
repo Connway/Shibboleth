@@ -32,7 +32,7 @@ void ForEachInDirectory(const char* directory, Callback&& callback)
 	dirent* entry = readdir(dir);
 
 	while (entry) {
-		if (callback(entry->d_name, entry->d_namlen, (FileDataType)entry->d_type)) {
+		if (callback(entry->d_name, _D_EXACT_NAMLEN(entry), (FileDataType)entry->d_type)) {
 			break;
 		}
 
@@ -55,7 +55,7 @@ void ForEachTypeInDirectory(const char* directory, Callback&& callback)
 
 	while (entry) {
 		if (entry->d_type == type) {
-			if (callback(entry->d_name, entry->d_namlen)) {
+			if (callback(entry->d_name, _D_EXACT_NAMLEN(entry))) {
 				break;
 			}
 		}
@@ -79,7 +79,7 @@ void ForEachInDirectory(const wchar_t* directory, Callback&& callback)
 	wdirent* entry = wreaddir(dir);
 
 	while (entry) {
-		if (callback(entry->d_name, entry->d_namlen, (FileDataType)entry->d_type)) {
+		if (callback(entry->d_name, _D_EXACT_NAMLEN(entry), (FileDataType)entry->d_type)) {
 			break;
 		}
 
@@ -102,7 +102,7 @@ void ForEachTypeInDirectory(const wchar_t* directory, Callback&& callback)
 
 	while (entry) {
 		if (entry->d_type == type) {
-			if (callback(entry->d_name, entry->d_namlen)) {
+			if (callback(entry->d_name, _D_EXACT_NAMLEN(entry))) {
 				break;
 			}
 		}

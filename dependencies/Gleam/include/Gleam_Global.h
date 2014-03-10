@@ -1,5 +1,5 @@
 /************************************************************************************
-Copyright (C) 2013 by Nicholas LaCroix
+Copyright (C) 2014 by Nicholas LaCroix
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -25,6 +25,10 @@ THE SOFTWARE.
 #include "Gleam_Defines.h"
 #include <Gaff_IAllocator.h>
 
+#ifdef __linux__
+	#include <stddef.h>
+#endif
+
 NS_GLEAM
 
 enum LOG_MSG_TYPE
@@ -44,13 +48,13 @@ INLINE const GChar* GetLogFileName(void);
 void WriteMessageToLog(const char* msg, size_t size, LOG_MSG_TYPE type = LOG_NORMAL);
 void PrintfToLog(const char* format_string, LOG_MSG_TYPE type, ...);
 
-template <class T>
-T* GleamClassAlloc(const char* filename, unsigned int line_number)
+template <class T, class... Args>
+T* GleamAllocT(const char* filename, unsigned int line_number, Args... args)
 {
 	T* data = (T*)GleamAlloc(sizeof(T), filename, line_number);
 
 	if (data) {
-		Gaff::construct(data);
+		Gaff::construct(data, args...);
 	}
 
 	return data;
@@ -58,6 +62,5 @@ T* GleamClassAlloc(const char* filename, unsigned int line_number)
 
 NS_END
 
-#define GleamClassAllocate(T) Gleam::GleamClassAlloc<T>(__FILE__, __LINE__)
+#define GleamAllocateT(T, ...) Gleam::GleamAllocT<T>(__FILE__, __LINE__, ##__VA_ARGS__)
 #define GleamAllocate(size_bytes) Gleam::GleamAlloc(size_bytes, __FILE__, __LINE__)
-#define GleamAllocateT(T) (T*)Gleam::GleamAlloc(sizeof(T), __FILE__, __LINE__)

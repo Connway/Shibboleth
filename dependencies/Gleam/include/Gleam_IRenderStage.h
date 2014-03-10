@@ -1,5 +1,5 @@
 /************************************************************************************
-Copyright (C) 2013 by Nicholas LaCroix
+Copyright (C) 2014 by Nicholas LaCroix
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -31,7 +31,7 @@ NS_GLEAM
 class IRenderDevice;
 class Scene;
 
-class IRenderStage : public RefCounted
+class IRenderStage : public GleamRefCounted
 {
 public:
 	IRenderStage(void) {}

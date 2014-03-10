@@ -23,6 +23,7 @@ THE SOFTWARE.
 #if defined(__linux__) || defined(__APPLE__)
 
 #include "Gaff_Utils.h"
+#include "Gaff_IncludeAssert.h"
 #include <sys/stat.h>
 #include <unistd.h>
 #include <errno.h>

@@ -1,5 +1,5 @@
 /************************************************************************************
-Copyright (C) 2013 by Nicholas LaCroix
+Copyright (C) 2014 by Nicholas LaCroix
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -22,9 +22,10 @@ THE SOFTWARE.
 
 #pragma once
 
-
 #include "Gleam_IRenderDevice.h"
 #include "Gleam_IncludeD3D11.h"
+#include "Gleam_BitArray.h"
+#include <Gaff_RefPtr.h>
 #include <dxgi.h>
 
 NS_GLEAM
@@ -35,48 +36,94 @@ public:
 	RenderDeviceD3D(void);
 	~RenderDeviceD3D(void);
 
-	bool init(const Window& window, bool vsync = false,
-				int color_format = 28, unsigned int flags = 1UL);
+	AdapterList getDisplayModes(int color_format = DXGI_FORMAT_R8G8B8A8_UNORM);
+
+	bool init(const Window& window, unsigned int adapter_id, unsigned int display_id, unsigned int display_mode_id, bool vsync = false);
 	void destroy(void);
 
-	INLINE bool isVsync(void) const;
-	bool setVsync(bool vsync);
+	bool isVsync(unsigned int device, unsigned int output) const;
+	void setVsync(bool vsync, unsigned int device, unsigned int output);
 
-	INLINE void setClearColor(float r, float g, float b, float a);
+	void setClearColor(float r, float g, float b, float a);
 
-	INLINE void beginFrame(void);
-	INLINE void endFrame(void);
+	void beginFrame(void);
+	void endFrame(void);
 
 	bool resize(const Window& window);
 
-	INLINE void unbindRenderTarget(void);
 	void resetRenderState(void);
 
-	INLINE bool isD3D(void) const;
+	bool isD3D(void) const;
 
-	INLINE unsigned int getViewportWidth(void) const;
-	INLINE unsigned int getViewportHeight(void) const;
+	unsigned int getViewportWidth(unsigned int device, unsigned int output) const;
+	unsigned int getViewportHeight(unsigned int device, unsigned int output) const;
 
-	INLINE ID3D11DeviceContext* getDeviceContext(void) const;
-	INLINE ID3D11Device* getDevice(void) const;
+	unsigned int getActiveViewportWidth(void);
+	unsigned int getActiveViewportHeight(void);
+
+	unsigned int getNumOutputs(unsigned int device) const;
+	unsigned int getNumDevices(void) const;
+
+	IRenderTarget* getOutputRenderTarget(unsigned int device, unsigned int output);
+	IRenderTarget* getActiveOutputRenderTarget(void);
+
+	bool setCurrentOutput(unsigned int output);
+	unsigned int getCurrentOutput(void) const;
+
+	bool setCurrentDevice(unsigned int device);
+	unsigned int getCurrentDevice(void) const;
+
+	INLINE ID3D11DeviceContext* getDeviceContext(unsigned int device);
+	INLINE ID3D11Device* getDevice(unsigned int device);
+
+	INLINE ID3D11DeviceContext* getActiveDeviceContext(void);
+	INLINE ID3D11Device* getActiveDevice(void);
 
 private:
-	float _clear_color[4];
-	bool _vsync;
+	struct OutputInfo
+	{
+		GleamArray<DXGI_MODE_DESC> display_mode_list;
+		Gaff::COMRefPtr<IDXGIOutput> output;
+	};
 
-	unsigned int _num_modes;
-	DXGI_MODE_DESC* _display_mode_list;
+	struct AdapterInfo
+	{
+		wchar_t adapter_name[128];
+		GleamArray<OutputInfo> output_info;
+		Gaff::COMRefPtr<IDXGIAdapter> adapter;
+		unsigned int memory;
+	};
+
+	struct Device
+	{
+		GleamArray< Gaff::COMRefPtr<ID3D11RenderTargetView> > render_targets;
+		GleamArray< Gaff::COMRefPtr<IDXGISwapChain> > swap_chains;
+		GleamBitArray vsync;
+		GleamArray<D3D11_VIEWPORT> viewports;
+
+		Gaff::COMRefPtr<ID3D11DeviceContext> context;
+		Gaff::COMRefPtr<ID3D11Device> device;
+
+		unsigned int adapter_id;
+	};
+
+	GleamArray<AdapterInfo> _display_info;
+	GleamArray<Device> _devices;
+
 	wchar_t _video_card_name[128];
+	float _clear_color[4];
+
+	Gaff::COMRefPtr<ID3D11RenderTargetView> _active_render_target;
+	Gaff::COMRefPtr<ID3D11DeviceContext> _active_context;
+	Gaff::COMRefPtr<IDXGISwapChain> _active_swap_chain;
+	Gaff::COMRefPtr<ID3D11Device> _active_device;
+	D3D11_VIEWPORT _active_viewport;
+	bool _active_vsync;
+
 	unsigned int _video_memory;
 
-	ID3D11RenderTargetView* _render_target_view;
-	ID3D11DeviceContext* _device_context;
-	IDXGISwapChain* _swap_chain;
-	ID3D11Device* _device;
-
-	D3D11_VIEWPORT _viewport;
-
-	bool createSwapChain(void);
+	unsigned int _curr_output;
+	unsigned int _curr_device;
 };
 
 NS_END

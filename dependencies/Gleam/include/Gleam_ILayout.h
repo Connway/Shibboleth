@@ -1,5 +1,5 @@
 /************************************************************************************
-Copyright (C) 2013 by Nicholas LaCroix
+Copyright (C) 2014 by Nicholas LaCroix
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -54,17 +54,17 @@ struct LayoutDescription
 	unsigned int aligned_byte_offset;
 };
 
-class ILayout : public RefCounted
+class ILayout : public GleamRefCounted
 {
 public:
 	ILayout(void) {}
 	virtual ~ILayout(void) {}
 
-	virtual bool init(const IRenderDevice& rd, const LayoutDescription* layout_desc, unsigned int layout_desc_size, const IShader* shader) = 0;
+	virtual bool init(IRenderDevice& rd, const LayoutDescription* layout_desc, unsigned int layout_desc_size, const IShader* shader) = 0;
 	virtual void destroy(void) = 0;
 
-	virtual void setLayout(const IRenderDevice& rd, const IMesh* mesh) = 0;
-	virtual void unsetLayout(const IRenderDevice& rd) = 0;
+	virtual void setLayout(IRenderDevice& rd, const IMesh* mesh) = 0;
+	virtual void unsetLayout(IRenderDevice& rd) = 0;
 };
 
 NS_END

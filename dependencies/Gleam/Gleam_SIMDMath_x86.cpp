@@ -1,5 +1,5 @@
 /************************************************************************************
-Copyright (C) 2013 by Nicholas LaCroix
+Copyright (C) 2014 by Nicholas LaCroix
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -272,8 +272,6 @@ __m128 SIMDCos(const __m128& vec)
 
 __m128 SIMDATan2(const __m128& y, const __m128& x)
 {
-	static __m128 atan2consts = { 3.141592654f, 3.141592654f/2.0f, 3.141592654f/4.0f, 3.141592654f*3.0f/4.0f };
-
 	__m128i tempi = _mm_set1_epi32(-1);
 	__m128 valid_result = ((__m128*)&tempi)[0];
 	__m128 pi = gPi;

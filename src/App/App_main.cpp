@@ -1,5 +1,5 @@
 /************************************************************************************
-Copyright (C) 2013 by Nicholas LaCroix
+Copyright (C) 2014 by Nicholas LaCroix
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -20,17 +20,20 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#pragma once
+#include "Shibboleth_App.h"
 
-#include "Gleam_Window_Defines.h"
-
-NS_GLEAM
-
-class IWindowMessageHandler
+int main(void)
 {
-public:
-	virtual ~IWindowMessageHandler(void) {}
-	virtual bool handleMessage(const AnyMessage& message) = 0;
-};
+	// Scope is used so that everything cleans up before the allocator does
+	{
+		Shibboleth::App app;
 
-NS_END
+		if (!app.init()) {
+			return -1;
+		}
+
+		app.run();
+	}
+
+	return 0;
+}

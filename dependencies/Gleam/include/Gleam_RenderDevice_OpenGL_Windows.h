@@ -1,5 +1,5 @@
 /************************************************************************************
-Copyright (C) 2013 by Nicholas LaCroix
+Copyright (C) 2014 by Nicholas LaCroix
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -23,7 +23,9 @@ THE SOFTWARE.
 #pragma once
 
 #include "Gleam_IRenderDevice.h"
-#include "Gaff_IncludeWindows.h"
+#include "Gleam_BitArray.h"
+#include "Gleam_String.h"
+#include <Gaff_IncludeWindows.h>
 
 NS_GLEAM
 
@@ -35,36 +37,86 @@ public:
 
 	static bool CheckRequiredExtensions(void);
 
-	bool init(const Window& window, bool vsync = false, int compat1 = 28, unsigned int compat2 = 1UL);
+	AdapterList getDisplayModes(int compat = 28);
+
+	bool init(const Window& window, unsigned int adapter_id, unsigned int display_id, unsigned int display_mode_id, bool vsync = false);
 	void destroy(void);
 
-	INLINE HGLRC getDeviceContext(void) const;
+	bool isVsync(unsigned int device, unsigned int output) const;
+	void setVsync(bool vsync, unsigned int device, unsigned int output);
 
-	INLINE bool isVsync(void) const;
-	bool setVsync(bool vsync);
+	void setClearColor(float r, float g, float b, float a);
 
-	INLINE void setClearColor(float r, float g, float b, float a);
-
-	INLINE void beginFrame(void);
-	INLINE void endFrame(void);
+	void beginFrame(void);
+	void endFrame(void);
 
 	bool resize(const Window& window);
 
-	INLINE void unbindRenderTarget(void);
 	void resetRenderState(void);
 
-	INLINE bool isD3D(void) const;
+	bool isD3D(void) const;
 
-	INLINE unsigned int getViewportWidth(void) const;
-	INLINE unsigned int getViewportHeight(void) const;
+	unsigned int getViewportWidth(unsigned int device, unsigned int output) const;
+	unsigned int getViewportHeight(unsigned int device, unsigned int output) const;
+
+	unsigned int getActiveViewportWidth(void);
+	unsigned int getActiveViewportHeight(void);
+
+	unsigned int getNumOutputs(unsigned int device) const;
+	unsigned int getNumDevices(void) const;
+
+	IRenderTarget* getOutputRenderTarget(unsigned int device, unsigned int output);
+	IRenderTarget* getActiveOutputRenderTarget(void);
+
+	bool setCurrentOutput(unsigned int output);
+	unsigned int getCurrentOutput(void) const;
+
+	bool setCurrentDevice(unsigned int device);
+	unsigned int getCurrentDevice(void) const;
 
 private:
-	unsigned int _width, _height;
-	bool _vsync;
+	struct OutputInfo
+	{
+		GleamArray<DEVMODE> display_mode_list;
+		GleamGString name;
+	};
 
-	HGLRC _context;
-	HWND _hwnd;
-	HDC _hdc;
+	struct AdapterInfo
+	{
+		GleamArray<OutputInfo> output_info;
+		DISPLAY_DEVICE display_device;
+		GleamGString name;
+	};
+
+	struct Viewport
+	{
+		int x;
+		int y;
+		int width;
+		int height;
+	};
+
+	struct Device
+	{
+		GleamArray<HGLRC> contexts;
+		GleamArray<HDC> outputs;
+		GleamArray<Viewport> viewports;
+		GleamArray<HWND> windows;
+		GleamBitArray vsync; // Change to BitArray when finished
+
+		unsigned int adapter_id;
+	};
+
+	GleamArray<AdapterInfo> _display_info;
+	GleamArray<Device> _devices;
+
+	const Viewport* _active_viewport;
+	HDC _active_output;
+
+	unsigned int _curr_output;
+	unsigned int _curr_device;
+
+	bool _glew_already_initialized;
 };
 
 NS_END

@@ -1,5 +1,5 @@
 /************************************************************************************
-Copyright (C) 2013 by Nicholas LaCroix
+Copyright (C) 2014 by Nicholas LaCroix
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -25,6 +25,7 @@ THE SOFTWARE.
 #include "Gleam_Model.h"
 #include "Gleam_IMesh.h"
 #include <cstdio>
+#include <cmath>
 
 NS_GLEAM
 
@@ -79,10 +80,10 @@ bool ModelManager::removeModel(const GleamAString& name)
 bool ModelManager::removeModel(const IModel* model)
 {
 	assert(model);
-	int index = _models.linearFind((IModel* const)model);
+	GleamArray<IModel*>::Iterator it = _models.linearSearch(model);
 
-	if (index > -1) {
-		removeModel(index);
+	if (it != _models.end()) {
+		removeModel(it - _models.begin());
 		return true;
 	}
 
@@ -112,7 +113,7 @@ const IModel* ModelManager::getModel(const GleamAString& name) const
 		return _models[index];
 	}
 
-	return NULLPTR;
+	return nullptr;
 }
 
 IModel* ModelManager::getModel(const GleamAString& name)
@@ -124,7 +125,7 @@ IModel* ModelManager::getModel(const GleamAString& name)
 		return _models[index];
 	}
 
-	return NULLPTR;
+	return nullptr;
 }
 
 const IModel* ModelManager::getModel(int index) const
@@ -148,28 +149,28 @@ int ModelManager::getIndex(const GleamAString& name) const
 int ModelManager::getIndex(const IModel* model) const
 {
 	assert(model);
-	return _models.linearFind((IModel*)model);
+	return _models.linearSearch(0, _models.size(), model);
 }
 
-bool ModelManager::createPlaneModel(const IRenderDevice& rd, unsigned int subdivisions, unsigned int dtg_flags, const IShader* shader, IModel* model)
+bool ModelManager::createPlaneModel(IRenderDevice& rd, unsigned int subdivisions, unsigned int dtg_flags, const IShader* shader, IModel* model)
 {
 	unsigned int size = 0;
 
-	GleamArray(LayoutDescription) layout_desc;
+	GleamArray<LayoutDescription> layout_desc;
 	GleamAString name = "plane";
 
 	calculateLayoutDescSizeAndNameString(dtg_flags, subdivisions, layout_desc, size, name);
 
 	assert(_name_map.indexOf(name) == -1);
 
-	GleamArray(unsigned int) indices;
+	GleamArray<unsigned int> indices;
 	unsigned int num_verts = (subdivisions + 2) * (subdivisions + 2);
 	float* vertices = (float*)GleamAllocate(sizeof(float) * num_verts * size);
 	float* curr_vert = vertices;
 	float x, y;
 
 	if (!vertices) {
-		return NULLPTR;
+		return nullptr;
 	}
 
 	for (unsigned int j = 0; j < subdivisions + 2; ++j) {
@@ -245,11 +246,11 @@ bool ModelManager::createPlaneModel(const IRenderDevice& rd, unsigned int subdiv
 	return true;
 }
 
-bool ModelManager::createSphereModel(const IRenderDevice& rd, unsigned int subdivisions, unsigned int dtg_flags, const IShader* shader, IModel* model)
+bool ModelManager::createSphereModel(IRenderDevice& rd, unsigned int subdivisions, unsigned int dtg_flags, const IShader* shader, IModel* model)
 {
 	unsigned int size = 0;
 
-	GleamArray(LayoutDescription) layout_desc;
+	GleamArray<LayoutDescription> layout_desc;
 	GleamAString name = "sphere";
 
 	calculateLayoutDescSizeAndNameString(dtg_flags, subdivisions, layout_desc, size, name);
@@ -273,7 +274,7 @@ bool ModelManager::createSphereModel(const IRenderDevice& rd, unsigned int subdi
 		bitan_offset += 3;
 	}
 
-	GleamArray(unsigned int) indices;
+	GleamArray<unsigned int> indices;
 	unsigned int num_verts = (subdivisions + 2) * (subdivisions + 2);
 	float* vertices = (float*)GleamAllocate(sizeof(float) * num_verts * size);
 	float* curr_vert = vertices;
@@ -282,7 +283,7 @@ bool ModelManager::createSphereModel(const IRenderDevice& rd, unsigned int subdi
 	float x, y;
 
 	if (!vertices) {
-		return NULLPTR;
+		return nullptr;
 	}
 
 	for (unsigned int j = 0; j < subdivisions + 2; ++j) {
@@ -378,18 +379,18 @@ bool ModelManager::createSphereModel(const IRenderDevice& rd, unsigned int subdi
 	return true;
 }
 
-bool ModelManager::createCubeModel(const IRenderDevice& rd, unsigned int subdivisions, unsigned int dtg_flags, const IShader* shader, IModel* model)
+bool ModelManager::createCubeModel(IRenderDevice& rd, unsigned int subdivisions, unsigned int dtg_flags, const IShader* shader, IModel* model)
 {
 	unsigned int size = 0;
 
-	GleamArray(LayoutDescription) layout_desc;
-	GleamAString name = "plane";
+	GleamArray<LayoutDescription> layout_desc;
+	GleamAString name = "cube";
 
 	calculateLayoutDescSizeAndNameString(dtg_flags, subdivisions, layout_desc, size, name);
 
 	assert(_name_map.indexOf(name) == -1);
 
-	GleamArray(unsigned int) indices;
+	GleamArray<unsigned int> indices;
 	unsigned int num_verts = (subdivisions + 2) * (subdivisions + 2);
 	float* vertices = (float*)GleamAllocate(sizeof(float) * num_verts * size * 6);
 	float* curr_vert = vertices;
@@ -397,7 +398,7 @@ bool ModelManager::createCubeModel(const IRenderDevice& rd, unsigned int subdivi
 	float rot = 0.0f;
 
 	if (!vertices) {
-		return NULLPTR;
+		return nullptr;
 	}
 
 	for (unsigned int side = 0; side < 6; ++side) {
@@ -428,8 +429,9 @@ bool ModelManager::createCubeModel(const IRenderDevice& rd, unsigned int subdivi
 					curr_vert[1] = vec[1];
 					curr_vert[2] = vec[2];
 					curr_vert += 3;
-
-				} if (dtg_flags & DTG_NORMALS) {
+				}
+				
+				if (dtg_flags & DTG_NORMALS) {
 					vec.set(0.0f, 0.0f, -1.0f, 0.0f);
 					vec = rot_matrix * vec;
 
@@ -437,13 +439,15 @@ bool ModelManager::createCubeModel(const IRenderDevice& rd, unsigned int subdivi
 					curr_vert[1] = vec[1];
 					curr_vert[2] = vec[2];
 					curr_vert += 3;
-
-				} if (dtg_flags & DTG_UVS) {
+				}
+				
+				if (dtg_flags & DTG_UVS) {
 					curr_vert[0] = 1.0f - x;
 					curr_vert[1] = y;
 					curr_vert += 2;
-
-				} if (dtg_flags & DTG_TANGENTS) {
+				}
+				
+				if (dtg_flags & DTG_TANGENTS) {
 					vec.set(1.0f, 0.0f, 0.0f, 0.0f);
 					vec = rot_matrix * vec;
 
@@ -451,8 +455,9 @@ bool ModelManager::createCubeModel(const IRenderDevice& rd, unsigned int subdivi
 					curr_vert[1] = vec[1];
 					curr_vert[2] = vec[2];
 					curr_vert += 3;
-
-				} if (dtg_flags & DTG_BITANGENTS) {
+				}
+				
+				if (dtg_flags & DTG_BITANGENTS) {
 					vec.set(0.0f, 1.0f, 0.0f, 0.0f);
 					vec = rot_matrix * vec;
 
@@ -514,7 +519,7 @@ bool ModelManager::createCubeModel(const IRenderDevice& rd, unsigned int subdivi
 }
 
 void ModelManager::calculateLayoutDescSizeAndNameString(unsigned int dtg_flags, unsigned int subdivisions,
-														GleamArray(LayoutDescription)& layout_desc,
+														GleamArray<LayoutDescription>& layout_desc,
 														unsigned int& size, GleamAString& name) const
 {
 	bool first = true;
@@ -607,9 +612,9 @@ void ModelManager::calculateLayoutDescSizeAndNameString(unsigned int dtg_flags, 
 
 void ModelManager::generateTangents(float* vertices, unsigned int uv_offset, unsigned int tan_offset,
 									unsigned int bitan_offset, unsigned int num_verts, unsigned int vert_size,
-									const GleamArray(unsigned int)& indices, unsigned int dtg_flags)
+									const GleamArray<unsigned int>& indices, unsigned int dtg_flags)
 {
-	GleamArray(unsigned int) face_count(num_verts, (unsigned int)0);
+	GleamArray<unsigned int> face_count(num_verts, (unsigned int)0);
 
 	Vec4 v1, v2, v3;
 	Vec4 st1, st2, st3;

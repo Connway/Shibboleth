@@ -22,8 +22,8 @@ THE SOFTWARE.
 
 #include "Gleam_Window_Linux.h"
 #include "Gaff_IncludeAssert.h"
-#include <cmath>
 #include <iostream>
+#include <cmath>
 
 NS_GLEAM
 
@@ -36,18 +36,18 @@ typedef struct
 	unsigned long status;
 } Hints;
 
-GleamArray(Window*) Window::gWindows;
+GleamArray<Window*> Window::gWindows;
 
 void Window::WindowProc(const XEvent& event)
 {
 	char buffer[sizeof(AnyMessage)];
-	char secondary_buffer[sizeof(AnyMessage)];
+	// char secondary_buffer[sizeof(AnyMessage)];
 
 	// if we make more than one window in our application
 	for (unsigned int i = 0; i < gWindows.size(); ++i) {
 		if (gWindows[i]->getWindow() == event.xany.window) {
-			AnyMessage* message = NULLPTR;
-			AnyMessage* secondary_message = NULLPTR;
+			AnyMessage* message = nullptr;
+			//AnyMessage* secondary_message = nullptr;
 			Window* window = gWindows[i];
 
 			switch (event.type) {
@@ -167,9 +167,9 @@ void Window::WindowProc(const XEvent& event)
 					break;
 			}
 
-			if (secondary_message) {
-				secondary_message->base.window = window;
-			}
+			// if (secondary_message) {
+			// 	secondary_message->base.window = window;
+			// }
 
 			if (message) {
 				message->base.window = window;
@@ -177,17 +177,9 @@ void Window::WindowProc(const XEvent& event)
 				for (unsigned int j = 0; j < window->_window_callbacks.size(); ++j) {
 					window->_window_callbacks[j](*message);
 
-					if (secondary_message) {
-						window->_window_callbacks[j](*secondary_message);
-					}
-				}
-
-				for (unsigned int j = 0; j < window->_window_message_handlers.size(); ++j) {
-					window->_window_message_handlers[j]->handleMessage(*message);
-
-					if (secondary_message) {
-						window->_window_message_handlers[j]->handleMessage(*secondary_message);
-					}
+					//if (secondary_message) {
+					//	window->_window_callbacks[j](*secondary_message);
+					//}
 				}
 			}
 			break;
@@ -197,9 +189,9 @@ void Window::WindowProc(const XEvent& event)
 
 
 Window::Window(void):
-	_application_name(NULLPTR), _window_mode(FULLSCREEN),
-	_no_repeats(false), _contain(false), _display(NULLPTR),
-	_visual_info(NULLPTR), _window(0), _delete_window(None),
+	_application_name(nullptr), _window_mode(FULLSCREEN),
+	_no_repeats(false), _contain(false), _display(nullptr),
+	_visual_info(nullptr), _window(0), _delete_window(None),
 	_protocols(None), _prev_keycode(0), _mouse_prev_x(0),
 	_mouse_prev_y(0), _first_mouse(true)
 {
@@ -211,10 +203,11 @@ Window::~Window(void)
 }
 
 bool Window::init(const GChar* app_name, MODE window_mode,
-						unsigned int width, unsigned int height,
-						short refresh_rate, int pos_x, int pos_y)
+					unsigned int width, unsigned int height,
+					short refresh_rate, int pos_x, int pos_y,
+					const char* display_name)
 {
-	_display = XOpenDisplay(NULL);
+	_display = XOpenDisplay(display_name);
 
 	if (!_display) {
 		return false;
@@ -242,8 +235,8 @@ bool Window::init(const GChar* app_name, MODE window_mode,
 					PointerMotionMask | ResizeRedirectMask |
 					FocusChangeMask | SubstructureNotifyMask;
 
-	int final_size, final_rate, num_sizes, num_rates;
-	short* rates = NULLPTR;
+	int final_size = 0, final_rate = 0, num_sizes = 0, num_rates = 0;
+	short* rates = nullptr;
 	XRRScreenConfiguration* config = XRRGetScreenInfo(_display, root);
 	XRRScreenSize* sizes = XRRConfigSizes(config, &num_sizes);
 
@@ -353,7 +346,7 @@ bool Window::init(const GChar* app_name, MODE window_mode,
 	}
 
 	XSetWMProtocols(_display, _window, &_delete_window, 1);
-	XSetStandardProperties(_display, _window, app_name, app_name, None, NULLPTR, 0, NULLPTR);
+	XSetStandardProperties(_display, _window, app_name, app_name, None, nullptr, 0, nullptr);
 
 	switch (_window_mode) {
 		case FULLSCREEN_WINDOWED: {
@@ -403,7 +396,7 @@ void Window::destroy(void)
 		}
 
 		XCloseDisplay(_display);
-		_display = NULLPTR;
+		_display = nullptr;
 	}
 
 	for (unsigned int i = 0; i < gWindows.size(); ++i) {
@@ -427,36 +420,14 @@ void Window::handleWindowMessages(void)
 
 void Window::addWindowMessageHandler(WindowCallback callback)
 {
-	_window_callbacks.push(callback);
+	Gaff::FunctionBinder<bool, const AnyMessage&> function = Gaff::Bind(callback);
+	addWindowMessageHandlerHelper(function);
 }
 
 bool Window::removeWindowMessageHandler(WindowCallback callback)
 {
-	for (unsigned int i = 0; i < _window_callbacks.size(); ++i) {
-		if (_window_callbacks[i] == callback) {
-			_window_callbacks.erase(i);
-			return true;
-		}
-	}
-
-	return false;
-}
-
-void Window::addWindowMessageHandler(IWindowMessageHandler* handler)
-{
-	_window_message_handlers.push(handler);
-}
-
-bool Window::removeWindowMessageHandler(IWindowMessageHandler* handler)
-{
-	for (unsigned int i = 0; i < _window_message_handlers.size(); ++i) {
-		if (_window_message_handlers[i] == handler) {
-			_window_message_handlers.erase(i);
-			return true;
-		}
-	}
-
-	return false;
+	Gaff::FunctionBinder<bool, const AnyMessage&> function = Gaff::Bind(callback);
+	return removeWindowMessageHandlerHelper(function);
 }
 
 void Window::showCursor(bool show)
@@ -728,7 +699,7 @@ XRRScreenSize* Window::getResolutions(int& num_sizes, int screen) const
 	
 	XRRScreenSize* sizes = XRRSizes(_display, screen, &num_sizes);
 	if (!sizes || num_sizes < 0) {
-		return NULLPTR;
+		return nullptr;
 	}
 
 	return sizes;
@@ -744,13 +715,13 @@ short* Window::getRefreshRates(int& num_rates, int screen) const
 	XRRScreenSize* sizes = getResolutions(ns, screen);
 	
 	if (!sizes || ns < 0) {
-		return NULLPTR;
+		return nullptr;
 	}
 	
 	short* rates = XRRRates(_display, screen, 0, &num_rates);
 	
 	if (!rates || num_rates < 0) {
-		return NULLPTR;
+		return nullptr;
 	}
 
 	return rates;	
@@ -766,7 +737,7 @@ short* Window::getRefreshRates(const XRRScreenSize& resolution, int& num_rates, 
 	XRRScreenSize* sizes = getResolutions(ns, screen);
 	
 	if (!sizes || ns < 0) {
-		return NULLPTR;
+		return nullptr;
 	}
 	
 	int i = 0;
@@ -779,13 +750,13 @@ short* Window::getRefreshRates(const XRRScreenSize& resolution, int& num_rates, 
 	}
 	
 	if (i == ns) {
-		return NULLPTR;
+		return nullptr;
 	}
 	
 	short* rates = XRRRates(_display, screen, i, &num_rates);
 	
 	if (!rates || num_rates < 0) {
-		return NULLPTR;
+		return nullptr;
 	}
 
 	return rates;	
@@ -864,6 +835,23 @@ void Window::setToOriginalResolutionRate(void)
 							_original_rate, CurrentTime);
 
 	XRRFreeScreenConfigInfo(config);
+}
+
+void Window::addWindowMessageHandlerHelper(const Gaff::FunctionBinder<bool, const AnyMessage&>& cb)
+{
+	_window_callbacks.push(cb);
+}
+
+bool Window::removeWindowMessageHandlerHelper(const Gaff::FunctionBinder<bool, const AnyMessage&>& cb)
+{
+	auto it = _window_callbacks.linearSearch(cb);
+
+	if (it != _window_callbacks.end()) {
+		_window_callbacks.erase(it);
+		return true;
+	}
+
+	return false;
 }
 
 NS_END

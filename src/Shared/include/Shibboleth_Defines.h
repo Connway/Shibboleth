@@ -26,3 +26,19 @@ THE SOFTWARE.
 #ifndef NS_END
 	#define NS_END }
 #endif
+
+#if defined(__LP64__) || defined(_WIN64)
+	#ifdef _DEBUG
+		#define BIT_EXTENSION "64d"
+	#else
+		#define BIT_EXTENSION "64"
+	#endif
+#elif defined(__LP32__) || defined(_WIN32)
+	#ifdef _DEBUG
+		#define BIT_EXTENSION "32d"
+	#else
+		#define BIT_EXTENSION "32"
+	#endif
+#else
+	#error "Cannot deduce platform bit-age."
+#endif

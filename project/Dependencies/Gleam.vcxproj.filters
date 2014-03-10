@@ -172,9 +172,6 @@
     <ClCompile Include="..\src\Gleam_Model.cpp">
       <Filter>Model</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\include\Gleam_LightInfo.h">
-      <Filter>Renderer</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\Gleam_ISceneNode.cpp">
       <Filter>Renderer</Filter>
     </ClCompile>
@@ -221,12 +218,6 @@
     <ClInclude Include="..\src\include\Gleam_Mouse_MessagePump.h">
       <Filter>Input</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\include\Gleam_IWindowMessageHandler.h">
-      <Filter>Window</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\include\Gleam_MouseData.h">
-      <Filter>Input</Filter>
-    </ClInclude>
     <ClInclude Include="..\src\include\Gleam_ProxyAllocator.h" />
     <ClInclude Include="..\src\include\Gleam_Keyboard.h">
       <Filter>Input</Filter>
@@ -241,9 +232,6 @@
       <Filter>Input</Filter>
     </ClInclude>
     <ClInclude Include="..\src\include\Gleam_Keyboard_Defines.h">
-      <Filter>Input</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\include\Gleam_IInputHandler.h">
       <Filter>Input</Filter>
     </ClInclude>
     <ClInclude Include="..\src\include\Gleam_ITexture.h">
@@ -347,9 +335,6 @@
     </ClInclude>
     <ClInclude Include="..\src\include\Gleam_RenderDevice.h">
       <Filter>Render Device</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\include\Gleam_RefCounted.h">
-      <Filter>Utilities</Filter>
     </ClInclude>
     <ClInclude Include="..\src\include\Gleam_ShaderProgramManager.h">
       <Filter>Shader</Filter>
@@ -455,6 +440,18 @@
     </ClInclude>
     <ClInclude Include="..\src\include\Gleam_IRenderStage.h">
       <Filter>Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\include\Gleam_RefCounted.h">
+      <Filter>Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\include\Gleam_BitArray.h">
+      <Filter>Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\include\Gleam_IMouse.h">
+      <Filter>Input</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\include\Gleam_IKeyboard.h">
+      <Filter>Input</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

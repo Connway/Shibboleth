@@ -1,5 +1,5 @@
 /************************************************************************************
-Copyright (C) 2013 by Nicholas LaCroix
+Copyright (C) 2014 by Nicholas LaCroix
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -26,7 +26,7 @@ THE SOFTWARE.
 NS_GLEAM
 
 MouseMP::MouseMP(void):
-	_window(NULLPTR)
+	_window(nullptr)
 {
 }
 
@@ -40,7 +40,7 @@ bool MouseMP::init(const Window& window, void*, bool)
 	memset(&_data, 0, sizeof(MouseData));
 	_window = (Window*)&window;
 
-	_window->addWindowMessageHandler(this);
+	_window->addWindowMessageHandler(this, &MouseMP::handleMessage);
 
 #ifdef ONLY_INPUT_CHANGES
 	_window->allowRepeats(false);
@@ -52,36 +52,24 @@ bool MouseMP::init(const Window& window, void*, bool)
 void MouseMP::destroy(void)
 {
 	if (_window) {
-		_window->removeWindowMessageHandler(this);
-		_window = NULLPTR;
+		_window->removeWindowMessageHandler(this, &MouseMP::handleMessage);
+		_window = nullptr;
 	}
 }
 
 bool MouseMP::update(void)
 {
-	for (unsigned int i = 0; i < _input_handlers_func.size(); ++i) {
-		_input_handlers_func[i](this, MOUSE_DELTA_X, (float)_data.dx);
-		_input_handlers_func[i](this, MOUSE_DELTA_Y, (float)_data.dy);
-		_input_handlers_func[i](this, MOUSE_POS_X, (float)_data.x);
-		_input_handlers_func[i](this, MOUSE_POS_Y, (float)_data.y);
-		_input_handlers_func[i](this, MOUSE_WHEEL, (float)_data.wheel);
-	}
-
-	for (unsigned int i = 0; i < _input_handlers_class.size(); ++i) {
-		_input_handlers_class[i]->handleInput(this, MOUSE_DELTA_X, (float)_data.dx);
-		_input_handlers_class[i]->handleInput(this, MOUSE_DELTA_Y, (float)_data.dy);
-		_input_handlers_class[i]->handleInput(this, MOUSE_POS_X, (float)_data.x);
-		_input_handlers_class[i]->handleInput(this, MOUSE_POS_Y, (float)_data.y);
-		_input_handlers_class[i]->handleInput(this, MOUSE_WHEEL, (float)_data.wheel);
+	for (unsigned int i = 0; i < _input_handlers.size(); ++i) {
+		_input_handlers[i](this, MOUSE_DELTA_X, (float)_data.dx);
+		_input_handlers[i](this, MOUSE_DELTA_Y, (float)_data.dy);
+		_input_handlers[i](this, MOUSE_POS_X, (float)_data.x);
+		_input_handlers[i](this, MOUSE_POS_Y, (float)_data.y);
+		_input_handlers[i](this, MOUSE_WHEEL, (float)_data.wheel);
 	}
 
 	for (int i = 0; i < MOUSE_BUTTON_COUNT; ++i) {
-		for (unsigned int j = 0; j < _input_handlers_func.size(); ++j) {
-			_input_handlers_func[j](this, i, (float)_data.buttons[i]);
-		}
-
-		for (unsigned int j = 0; j < _input_handlers_class.size(); ++j) {
-			_input_handlers_class[j]->handleInput(this, i, (float)_data.buttons[i]);
+		for (unsigned int j = 0; j < _input_handlers.size(); ++j) {
+			_input_handlers[j](this, i, (float)_data.buttons[i]);
 		}
 	}
 
@@ -137,16 +125,6 @@ const GChar* MouseMP::getPlatformImplementationString(void) const
 const Window* MouseMP::getAssociatedWindow(void) const
 {
 	return _window;
-}
-
-bool MouseMP::isKeyboard(void) const
-{
-	return false;
-}
-
-bool MouseMP::isMouse(void) const
-{
-	return true;
 }
 
 bool MouseMP::handleMessage(const AnyMessage& message)

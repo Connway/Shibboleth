@@ -1,5 +1,5 @@
 /************************************************************************************
-Copyright (C) 2013 by Nicholas LaCroix
+Copyright (C) 2014 by Nicholas LaCroix
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -34,33 +34,33 @@ public:
 	ShaderD3D(void);
 	~ShaderD3D(void);
 
-	INLINE bool initVertex(const IRenderDevice& rd, const GleamGString& file_path);
-	INLINE bool initPixel(const IRenderDevice& rd, const GleamGString& file_path);
-	INLINE bool initDomain(const IRenderDevice& rd, const GleamGString& file_path);
-	INLINE bool initGeometry(const IRenderDevice& rd, const GleamGString& file_path);
-	INLINE bool initHull(const IRenderDevice& rd, const GleamGString& file_path);
-	INLINE bool initCompute(const IRenderDevice& rd, const GleamGString& file_path);
+	INLINE bool initVertex(IRenderDevice& rd, const GleamGString& file_path);
+	INLINE bool initPixel(IRenderDevice& rd, const GleamGString& file_path);
+	INLINE bool initDomain(IRenderDevice& rd, const GleamGString& file_path);
+	INLINE bool initGeometry(IRenderDevice& rd, const GleamGString& file_path);
+	INLINE bool initHull(IRenderDevice& rd, const GleamGString& file_path);
+	INLINE bool initCompute(IRenderDevice& rd, const GleamGString& file_path);
 
-	bool initVertex(const IRenderDevice&, const GChar* file_path);
-	bool initPixel(const IRenderDevice&, const GChar* file_path);
-	bool initDomain(const IRenderDevice&, const GChar* file_path);
-	bool initGeometry(const IRenderDevice&, const GChar* file_path);
-	bool initHull(const IRenderDevice&, const GChar* file_path);
-	bool initCompute(const IRenderDevice&, const GChar* file_path);
+	bool initVertex(IRenderDevice&, const GChar* file_path);
+	bool initPixel(IRenderDevice&, const GChar* file_path);
+	bool initDomain(IRenderDevice&, const GChar* file_path);
+	bool initGeometry(IRenderDevice&, const GChar* file_path);
+	bool initHull(IRenderDevice&, const GChar* file_path);
+	bool initCompute(IRenderDevice&, const GChar* file_path);
 
-	bool initVertexSource(const IRenderDevice& rd, const GleamAString& source);
-	bool initPixelSource(const IRenderDevice& rd, const GleamAString& source);
-	bool initDomainSource(const IRenderDevice& rd, const GleamAString& source);
-	bool initGeometrySource(const IRenderDevice& rd, const GleamAString& source);
-	bool initHullSource(const IRenderDevice& rd, const GleamAString& source);
-	bool initComputeSource(const IRenderDevice& rd, const GleamAString& source);
+	bool initVertexSource(IRenderDevice& rd, const GleamAString& source);
+	bool initPixelSource(IRenderDevice& rd, const GleamAString& source);
+	bool initDomainSource(IRenderDevice& rd, const GleamAString& source);
+	bool initGeometrySource(IRenderDevice& rd, const GleamAString& source);
+	bool initHullSource(IRenderDevice& rd, const GleamAString& source);
+	bool initComputeSource(IRenderDevice& rd, const GleamAString& source);
 
-	bool initVertexSource(const IRenderDevice& rd, const char* source);
-	bool initPixelSource(const IRenderDevice& rd, const char* source);
-	bool initDomainSource(const IRenderDevice& rd, const char* source);
-	bool initGeometrySource(const IRenderDevice& rd, const char* source);
-	bool initHullSource(const IRenderDevice& rd, const char* source);
-	bool initComputeSource(const IRenderDevice& rd, const char* source);
+	bool initVertexSource(IRenderDevice& rd, const char* source);
+	bool initPixelSource(IRenderDevice& rd, const char* source);
+	bool initDomainSource(IRenderDevice& rd, const char* source);
+	bool initGeometrySource(IRenderDevice& rd, const char* source);
+	bool initHullSource(IRenderDevice& rd, const char* source);
+	bool initComputeSource(IRenderDevice& rd, const char* source);
 
 	void destroy(void);
 

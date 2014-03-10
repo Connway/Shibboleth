@@ -28,8 +28,10 @@ NS_GAFF
 
 #if defined(__LP64__) || defined(_WIN64)
 	typedef unsigned long long PeerIDType;
-#else
+#elif defined(__LP32__) || defined(_WIN32)
 	typedef unsigned int PeerIDType;
+#else
+	#error "Cannot deduce platform bit-age."
 #endif
 
 NS_END

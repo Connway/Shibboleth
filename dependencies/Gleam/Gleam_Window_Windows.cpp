@@ -1,5 +1,5 @@
 /************************************************************************************
-Copyright (C) 2013 by Nicholas LaCroix
+Copyright (C) 2014 by Nicholas LaCroix
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -25,7 +25,7 @@ THE SOFTWARE.
 
 NS_GLEAM
 
-GleamArray(Window*) Window::gWindows;
+GleamArray<Window*> Window::gWindows;
 
 LRESULT CALLBACK Window::WindowProc(HWND hwnd, UINT msg, WPARAM w, LPARAM l)
 {
@@ -36,7 +36,7 @@ LRESULT CALLBACK Window::WindowProc(HWND hwnd, UINT msg, WPARAM w, LPARAM l)
 	// if we make more than one window in our application
 	for (unsigned int i = 0; i < gWindows.size(); ++i) {
 		if (gWindows[i]->getHWnd() == hwnd) {
-			AnyMessage* message = NULLPTR;
+			AnyMessage* message = nullptr;
 			Window* window = gWindows[i];
 
 			switch (msg) {
@@ -162,10 +162,6 @@ LRESULT CALLBACK Window::WindowProc(HWND hwnd, UINT msg, WPARAM w, LPARAM l)
 				for (unsigned int j = 0; j < window->_window_callbacks.size(); ++j) {
 					handled = handled || window->_window_callbacks[j](*message);
 				}
-
-				for (unsigned int j = 0; j < window->_window_message_handlers.size(); ++j) {
-					handled = handled || window->_window_message_handlers[j]->handleMessage(*message);
-				}
 			}
 			break;
 		}
@@ -179,7 +175,7 @@ LRESULT CALLBACK Window::WindowProc(HWND hwnd, UINT msg, WPARAM w, LPARAM l)
 }
 
 Window::Window(void):
-	_application_name(NULLPTR), _hinstance(NULLPTR), _hwnd(NULLPTR),
+	_application_name(nullptr), _hinstance(nullptr), _hwnd(nullptr),
 	_window_mode(FULLSCREEN), _no_repeats(false),
 	_mouse_prev_x(0), _mouse_prev_y(0),
 	_first_mouse(true)
@@ -193,7 +189,7 @@ Window::~Window(void)
 
 bool Window::init(const GChar* app_name, MODE window_mode,
 					unsigned int width, unsigned int height,
-					int pos_x, int pos_y)
+					int pos_x, int pos_y, const char*)
 {
 	assert(app_name);
 
@@ -316,13 +312,13 @@ void Window::destroy(void)
 
 	if (_hwnd) {
 		DestroyWindow(_hwnd);
-		_hwnd = NULLPTR;
+		_hwnd = nullptr;
 	}
 
 	if (_hinstance) {
 		UnregisterClass(_application_name, _hinstance);
-		_application_name = NULLPTR;
-		_hinstance = NULLPTR;
+		_application_name = nullptr;
+		_hinstance = nullptr;
 	}
 
 	for (unsigned int i = 0; i < gWindows.size(); ++i) {
@@ -346,36 +342,14 @@ void Window::handleWindowMessages(void)
 
 void Window::addWindowMessageHandler(WindowCallback callback)
 {
-	_window_callbacks.push(callback);
+	Gaff::FunctionBinder<bool, const AnyMessage&> function = Gaff::Bind(callback);
+	addWindowMessageHandlerHelper(function);
 }
 
 bool Window::removeWindowMessageHandler(WindowCallback callback)
 {
-	for (unsigned int i = 0; i < _window_callbacks.size(); ++i) {
-		if (_window_callbacks[i] == callback) {
-			_window_callbacks.erase(i);
-			return true;
-		}
-	}
-
-	return false;
-}
-
-void Window::addWindowMessageHandler(IWindowMessageHandler* handler)
-{
-	_window_message_handlers.push(handler);
-}
-
-bool Window::removeWindowMessageHandler(IWindowMessageHandler* handler)
-{
-	for (unsigned int i = 0; i < _window_message_handlers.size(); ++i) {
-		if (_window_message_handlers[i] == handler) {
-			_window_message_handlers.erase(i);
-			return true;
-		}
-	}
-
-	return false;
+	Gaff::FunctionBinder<bool, const AnyMessage&> function = Gaff::Bind(callback);
+	return removeWindowMessageHandlerHelper(function);
 }
 
 void Window::showCursor(bool show)
@@ -498,6 +472,23 @@ HINSTANCE Window::getHInstance(void) const
 HWND Window::getHWnd(void) const
 {
 	return _hwnd;
+}
+
+void Window::addWindowMessageHandlerHelper(const Gaff::FunctionBinder<bool, const AnyMessage&>& cb)
+{
+	_window_callbacks.push(cb);
+}
+
+bool Window::removeWindowMessageHandlerHelper(const Gaff::FunctionBinder<bool, const AnyMessage&>& cb)
+{
+	auto it = _window_callbacks.linearSearch(cb);
+
+	if (it != _window_callbacks.end()) {
+		_window_callbacks.erase(it);
+		return true;
+	}
+
+	return false;
 }
 
 NS_END

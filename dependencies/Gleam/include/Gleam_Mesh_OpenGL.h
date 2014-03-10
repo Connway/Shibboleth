@@ -1,5 +1,5 @@
 /************************************************************************************
-Copyright (C) 2013 by Nicholas LaCroix
+Copyright (C) 2014 by Nicholas LaCroix
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -32,10 +32,16 @@ public:
 	MeshGL(void);
 	~MeshGL(void);
 
-	INLINE void setTopologyType(TOPOLOGY_TYPE topology);
-	void render(const IRenderDevice&);
+	bool addVertData(
+		IRenderDevice& rd, const void* vert_data, unsigned int vert_count, unsigned int vert_size,
+		unsigned int* indices, unsigned int index_count, TOPOLOGY_TYPE primitive_type = TRIANGLE_LIST
+	);
 
-	INLINE bool isD3D(void) const;
+	void setTopologyType(TOPOLOGY_TYPE topology);
+	void render(IRenderDevice&);
+	void renderInstanced(IRenderDevice&, unsigned int count);
+
+	bool isD3D(void) const;
 
 private:
 	unsigned int _gl_topology;

@@ -1,5 +1,5 @@
 /************************************************************************************
-Copyright (C) 2013 by Nicholas LaCroix
+Copyright (C) 2014 by Nicholas LaCroix
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -36,9 +36,9 @@ NS_GLEAM
 
 InputManager::InputManager(void):
 #ifdef USE_DI
-	_dinput(NULLPTR), _window(NULLPTR)
+	_dinput(nullptr), _window(nullptr)
 #else
-	_window(NULLPTR)
+	_window(nullptr)
 #endif
 {
 }
@@ -52,7 +52,7 @@ bool InputManager::init(const Window& window)
 	_window = &window;
 
 #ifdef USE_DI
-	HRESULT result = DirectInput8Create(window.getHInstance(), DIRECTINPUT_VERSION, IID_IDirectInput8, (void**)&_dinput, NULLPTR);
+	HRESULT result = DirectInput8Create(window.getHInstance(), DIRECTINPUT_VERSION, IID_IDirectInput8, (void**)&_dinput, nullptr);
 	return SUCCEEDED(result);
 #else
 	return true;
@@ -71,7 +71,7 @@ void InputManager::destroy(void)
 	_dinput->Release();
 #endif
 
-	_window = NULLPTR;
+	_window = nullptr;
 }
 
 bool InputManager::update(void)
@@ -92,10 +92,10 @@ void InputManager::addInputDevice(IInputDevice* device)
 bool InputManager::removeInputDevice(const IInputDevice* device)
 {
 	assert(device);
-	int index = _input_devices.linearFind((IInputDevice* const)device);
+	GleamArray<IInputDevice*>::Iterator it = _input_devices.linearSearch(device);
 
-	if (index > -1) {
-		_input_devices.erase(index);
+	if (it != _input_devices.end()) {
+		_input_devices.erase(it);
 		return true;
 	}
 
@@ -113,7 +113,7 @@ IDirectInput8* InputManager::getDirectInput(void) const
 #ifdef USE_DI
 	return _dinput;
 #else
-	return NULLPTR;
+	return nullptr;
 #endif
 }
 
@@ -122,13 +122,13 @@ IInputDevice* InputManager::createKeyboard(bool no_windows_key)
 	assert(_window);
 
 #ifdef USE_DI
-	IInputDevice* keyboard = GleamClassAllocate(KeyboardDI);
+	IInputDevice* keyboard = GleamAllocateT(KeyboardDI);
 #else
-	IInputDevice* keyboard = GleamClassAllocate(KeyboardMP);
+	IInputDevice* keyboard = GleamAllocateT(KeyboardMP);
 #endif
 
 	if (!keyboard || !keyboard->init(*_window, getDirectInput(), no_windows_key)) {
-		return NULLPTR;
+		return nullptr;
 	}
 
 	_input_devices.push(keyboard);
@@ -140,13 +140,13 @@ IInputDevice* InputManager::createMouse(void)
 	assert(_window);
 
 #ifdef USE_DI
-	IInputDevice* mouse = GleamClassAllocate(MouseDI);
+	IInputDevice* mouse = GleamAllocateT(MouseDI);
 #else
-	IInputDevice* mouse = GleamClassAllocate(MouseMP);
+	IInputDevice* mouse = GleamAllocateT(MouseMP);
 #endif
 
 	if (!mouse || !mouse->init(*_window, getDirectInput())) {
-		return NULLPTR;
+		return nullptr;
 	}
 
 	_input_devices.push(mouse);

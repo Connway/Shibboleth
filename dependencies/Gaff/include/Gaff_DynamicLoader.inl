@@ -71,21 +71,21 @@ typename DynamicLoader<Allocator>::ModulePtr DynamicLoader<Allocator>::loadModul
 template <class Allocator>
 typename DynamicLoader<Allocator>::ModulePtr DynamicLoader<Allocator>::getModule(const AHashString<Allocator> name)
 {
-	return _modules[str];
+	return _modules[name];
 }
 
 template <class Allocator>
 typename DynamicLoader<Allocator>::ModulePtr DynamicLoader<Allocator>::getModule(const AString<Allocator>& name)
 {
 	HString str(name, FNVHash, _allocator);
-	return _modules[str];
+	return _modules[name];
 }
 
 template <class Allocator>
 typename DynamicLoader<Allocator>::ModulePtr DynamicLoader<Allocator>::getModule(const char* name)
 {
 	HString str(name, FNVHash, _allocator);
-	return _modules[str];
+	return _modules[name];
 }
 
 template <class Allocator>

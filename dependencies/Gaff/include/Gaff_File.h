@@ -38,19 +38,11 @@ public:
 		return checkExtension(file_name.getBuffer(), extension.getBuffer());
 	}
 
-	static bool checkExtension(const char* file_name, const char* extension)
+	INLINE static bool checkExtension(const char* file_name, const char* extension)
 	{
 		size_t len = strlen(file_name);
 		assert(len > strlen(extension));
-
-		for (size_t i = len - 1; i > 0; --i) {
-			// find the last occurrence of '.' character
-			if (file_name[i] == '.') {
-				return strcmp(file_name + i, extension) == 0;
-			}
-		}
-
-		return false;
+		return strcmp(file_name + len - strlen(extension), extension) == 0;
 	}
 
 	INLINE static bool remove(const char* file_name);

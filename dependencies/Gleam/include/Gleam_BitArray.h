@@ -20,20 +20,9 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#include "Shibboleth_Game.h"
+#pragma once
 
-int main(void)
-{
-	// Scope is used so that everything cleans up before the allocator does
-	{
-		Shibboleth::Game game;
+#include "Gleam_ProxyAllocator.h"
+#include <Gaff_BitArray.h>
 
-		if (!game.init()) {
-			return -1;
-		}
-
-		game.run();
-	}
-
-	return 0;
-}
+typedef Gaff::BitArray<Gleam::ProxyAllocator> GleamBitArray;

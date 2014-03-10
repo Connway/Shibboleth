@@ -23,12 +23,12 @@ THE SOFTWARE.
 #pragma once
 
 #include "Gleam_IRenderDevice.h"
+#include "Gleam_BitArray.h"
+#include "Gleam_String.h"
 #include <GL/glew.h>
 #include <GL/glxew.h>
 
 NS_GLEAM
-
-class Window;
 
 class RenderDeviceGL : public IRenderDevice
 {
@@ -36,36 +36,94 @@ public:
 	RenderDeviceGL(void);
 	~RenderDeviceGL(void);
 
-	INLINE static bool CheckRequiredExtensions(void);
+	static bool CheckRequiredExtensions(void);
 
-	bool init(const Window& window, bool vsync = false, int compat1 = 28, unsigned int compat2 = 1UL);
+	AdapterList getDisplayModes(int compat = 28);
+
+	bool init(const Window& window, unsigned int adapter_id, unsigned int display_id, unsigned int display_mode_id, bool vsync = false);
 	void destroy(void);
 
-	INLINE GLXContext getDeviceContext(void) const;
+	bool isVsync(unsigned int device, unsigned int output) const;
+	void setVsync(bool vsync, unsigned int device, unsigned int output);
 
-	INLINE bool isVsync(void) const;
-	bool setVsync(bool vsync);
+	void setClearColor(float r, float g, float b, float a);
 
-	INLINE void setClearColor(float r, float g, float b, float a);
-
-	INLINE void beginFrame(void);
-	INLINE void endFrame(void);
+	void beginFrame(void);
+	void endFrame(void);
 
 	bool resize(const Window& window);
 
-	INLINE void unbindRenderTarget(void);
 	void resetRenderState(void);
 
-	INLINE bool isD3D(void) const;
+	bool isD3D(void) const;
 
-	INLINE unsigned int getViewportWidth(void) const;
-	INLINE unsigned int getViewportHeight(void) const;
+	unsigned int getViewportWidth(unsigned int device, unsigned int output) const;
+	unsigned int getViewportHeight(unsigned int device, unsigned int output) const;
+
+	unsigned int getActiveViewportWidth(void);
+	unsigned int getActiveViewportHeight(void);
+
+	unsigned int getNumOutputs(unsigned int device) const;
+	unsigned int getNumDevices(void) const;
+
+	IRenderTarget* getOutputRenderTarget(unsigned int device, unsigned int output);
+	IRenderTarget* getActiveOutputRenderTarget(void);
+
+	bool setCurrentOutput(unsigned int output);
+	unsigned int getCurrentOutput(void) const;
+
+	bool setCurrentDevice(unsigned int device);
+	unsigned int getCurrentDevice(void) const;
 
 private:
-	const Window* _window;
-	bool _vsync;
+	struct ScreenMode
+	{
+		int width;
+		int height;
+		short refresh_rate;
+	};
 
-	GLXContext _context;
+	struct OutputInfo
+	{
+		GleamArray<ScreenMode> display_mode_list; // figure out xrandr data structure
+		GleamGString name;
+	};
+
+	struct AdapterInfo
+	{
+		GleamArray<OutputInfo> output_info;
+		//DISPLAY_DEVICE display_device; // figure out xrandr data structure
+		//GleamGString name;
+	};
+
+	struct Viewport
+	{
+		int x;
+		int y;
+		int width;
+		int height;
+	};
+
+	struct Device
+	{
+		GleamArray<GLXContext> contexts;
+		GleamArray<Viewport> viewports;
+		GleamArray<Window*> windows;
+		GleamBitArray vsync;
+
+		unsigned int adapter_id;
+	};
+
+	GleamArray<AdapterInfo> _display_info;
+	GleamArray<Device> _devices;
+
+	const Viewport* _active_viewport;
+	Window* _active_window;
+
+	unsigned int _curr_output;
+	unsigned int _curr_device;
+
+	bool _glew_already_initialized;
 };
 
 NS_END

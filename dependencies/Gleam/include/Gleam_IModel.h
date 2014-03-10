@@ -1,5 +1,5 @@
 /************************************************************************************
-Copyright (C) 2013 by Nicholas LaCroix
+Copyright (C) 2014 by Nicholas LaCroix
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -35,7 +35,7 @@ class ILayout;
 class IShader;
 class IMesh;
 
-class IModel : public RefCounted
+class IModel : public GleamRefCounted
 {
 public:
 	IModel(void);
@@ -47,7 +47,7 @@ public:
 	ILayout* getLayout(unsigned int index);
 	int getIndex(const ILayout* layout) const;
 
-	virtual ILayout* createLayout(const IRenderDevice& rd, const LayoutDescription* layout_desc, unsigned int desc_size, const IShader* shader) = 0;
+	virtual ILayout* createLayout(IRenderDevice& rd, const LayoutDescription* layout_desc, unsigned int desc_size, const IShader* shader) = 0;
 	unsigned int addLayout(ILayout* layout);
 
 	INLINE const IMesh* getMesh(unsigned int index) const;
@@ -64,8 +64,8 @@ public:
 	void render(IRenderDevice& rd, unsigned int index);
 
 private:
-	GleamArray(ILayout*) _layouts;
-	GleamArray(IMesh*) _meshes;
+	GleamArray<ILayout*> _layouts;
+	GleamArray<IMesh*> _meshes;
 
 	AABB _bounding_box;
 

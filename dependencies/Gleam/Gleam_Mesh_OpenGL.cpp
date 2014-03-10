@@ -1,5 +1,5 @@
 /************************************************************************************
-Copyright (C) 2013 by Nicholas LaCroix
+Copyright (C) 2014 by Nicholas LaCroix
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -49,17 +49,53 @@ MeshGL::~MeshGL(void)
 	destroy();
 }
 
+bool MeshGL::addVertData(
+	IRenderDevice& rd, const void* vert_data, unsigned int vert_count, unsigned int vert_size,
+	unsigned int* indices, unsigned int index_count, TOPOLOGY_TYPE primitive_type
+)
+{
+	IBuffer* index_buffer = GleamAllocateT(BufferGL);
+	IBuffer* vert_buffer = GleamAllocateT(BufferGL);
+
+	if (!index_buffer || !vert_buffer) {
+		if (index_buffer) {
+			GleamFree(index_buffer);
+		}
+
+		return false;
+	}
+
+	bool ret = addVertDataHelper(
+		rd, vert_data, vert_count, vert_size, indices, index_count,
+		primitive_type, index_buffer, vert_buffer
+	);
+
+	if (!ret) {
+		GleamFree(index_buffer);
+		GleamFree(vert_buffer);
+	}
+
+	return ret;
+}
+
 void MeshGL::setTopologyType(TOPOLOGY_TYPE topology)
 {
 	_gl_topology = _topology_map[topology];
 	_topology = topology;
 }
 
-void MeshGL::render(const IRenderDevice&)
+void MeshGL::render(IRenderDevice&)
 {
 	assert(_vert_data.size() && _indices && !_indices->isD3D());
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ((BufferGL*)_indices)->getBuffer());
 	glDrawElements(_gl_topology, getIndexCount(), GL_UNSIGNED_INT, 0);
+}
+
+void MeshGL::renderInstanced(IRenderDevice&, unsigned int count)
+{
+	assert(_vert_data.size() && _indices && !_indices->isD3D());
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ((BufferGL*)_indices)->getBuffer());
+	glDrawElementsInstanced(_gl_topology, getIndexCount(), GL_UNSIGNED_INT, 0, count);
 }
 
 bool MeshGL::isD3D(void) const

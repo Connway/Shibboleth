@@ -1,5 +1,5 @@
 /************************************************************************************
-Copyright (C) 2013 by Nicholas LaCroix
+Copyright (C) 2014 by Nicholas LaCroix
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -24,14 +24,14 @@ THE SOFTWARE.
 
 #include "Gleam_IRenderDevice.h"
 #include "Gleam_RefCounted.h"
-#include "Gaff_Defines.h"
+#include <Gaff_RefPtr.h>
 
 NS_GLEAM
 
 class IRenderDevice;
 class ITexture;
 
-class IRenderTarget : public RefCounted
+class IRenderTarget : public GleamRefCounted
 {
 public:
 	enum CUBE_FACE { POS_X = 0, NEG_X, POS_Y, NEG_Y, POS_Z, NEG_Z, NONE };
@@ -41,22 +41,21 @@ public:
 
 	virtual void destroy(void) = 0;
 
-	virtual bool addTexture(const IRenderDevice& rd, const ITexture* texture, CUBE_FACE face = NONE) = 0;
+	virtual bool addTexture(IRenderDevice& rd, const ITexture* texture, CUBE_FACE face = NONE) = 0;
 	virtual void popTexture(void) = 0;
 
-	virtual bool addDepthStencilBuffer(const IRenderDevice& rd, const ITexture* depth_stencil_texture) = 0;
+	virtual bool addDepthStencilBuffer(IRenderDevice& rd, const ITexture* depth_stencil_texture) = 0;
 
 	virtual void bind(IRenderDevice& rd) = 0;
-	virtual void unbind(const IRenderDevice& rd) = 0;
+	virtual void unbind(IRenderDevice& rd) = 0;
 
 	virtual bool isComplete(void) const = 0;
 
 	virtual bool isD3D(void) const = 0;
 
-protected:
-	void setPrevRenderTarget(IRenderDevice& rd) const { rd._prev_rt = (IRenderTarget*)this; }
-
 	GAFF_NO_COPY(IRenderTarget);
 };
+
+typedef Gaff::RefPtr<IRenderTarget> IRenderTargetPtr;
 
 NS_END

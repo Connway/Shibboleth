@@ -1,5 +1,5 @@
 /************************************************************************************
-Copyright (C) 2013 by Nicholas LaCroix
+Copyright (C) 2014 by Nicholas LaCroix
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -22,17 +22,18 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Gleam_Window_Defines.h"
+#include "Shibboleth_Defines.h"
+#include <Gaff_INamedObject.h>
 
-NS_GLEAM
+NS_SHIBBOLETH
 
-class IInputDevice;
-
-class IInputHandler
+class IComponent : public Gaff::INamedObject
 {
 public:
-	virtual ~IInputHandler(void) {}
-	virtual bool handleInput(IInputDevice* device, unsigned int code, float value) = 0;
+	IComponent(void) {}
+	virtual ~IComponent(void) {}
+
+
 };
 
 NS_END

@@ -1,5 +1,5 @@
 /************************************************************************************
-Copyright (C) 2013 by Nicholas LaCroix
+Copyright (C) 2014 by Nicholas LaCroix
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -22,44 +22,37 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Gleam_IWindowMessageHandler.h"
-#include "Gleam_IInputDevice.h"
-#include "Gleam_MouseData.h"
+#include "Gleam_IMouse.h"
 
 NS_GLEAM
 
-class Window;
-
-class MouseMP : public IInputDevice, public IWindowMessageHandler
+class MouseMP : public IMouse
 {
 public:
 	MouseMP(void);
 	~MouseMP(void);
 
-	bool init(const Window& window, void* compat1 = NULLPTR, bool compat2 = false);
+	bool init(const Window& window, void* compat1 = nullptr, bool compat2 = false);
 	void destroy(void);
-	INLINE bool update(void);
+	bool update(void);
 
-	INLINE const MouseData& getMouseData(void) const;
-	INLINE void getPosition(int& x, int& y) const;
-	INLINE void getDeltas(int& dx, int& dy) const;
-	INLINE void getNormalizedPosition(float& nx, float& ny) const;
-	INLINE void getNormalizedDeltas(float& ndx, float& ndy) const;
-	INLINE short getWheelDelta(void) const;
+	const MouseData& getMouseData(void) const;
+	void getPosition(int& x, int& y) const;
+	void getDeltas(int& dx, int& dy) const;
+	void getNormalizedPosition(float& nx, float& ny) const;
+	void getNormalizedDeltas(float& ndx, float& ndy) const;
+	short getWheelDelta(void) const;
 
-	INLINE const GChar* getDeviceName(void) const;
-	INLINE const GChar* getPlatformImplementationString(void) const;
+	const GChar* getDeviceName(void) const;
+	const GChar* getPlatformImplementationString(void) const;
 
-	INLINE const Window* getAssociatedWindow(void) const;
-
-	INLINE bool isKeyboard(void) const;
-	INLINE bool isMouse(void) const;
-
-	bool handleMessage(const AnyMessage& message);
+	const Window* getAssociatedWindow(void) const;
 
 private:
 	MouseData _data;
 	Window* _window;
+
+	bool handleMessage(const AnyMessage& message);
 };
 
 NS_END

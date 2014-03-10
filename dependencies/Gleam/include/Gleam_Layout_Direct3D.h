@@ -1,5 +1,5 @@
 /************************************************************************************
-Copyright (C) 2013 by Nicholas LaCroix
+Copyright (C) 2014 by Nicholas LaCroix
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -34,11 +34,11 @@ public:
 	LayoutD3D(void);
 	~LayoutD3D(void);
 
-	bool init(const IRenderDevice& rd, const LayoutDescription* layout_desc, unsigned int layout_desc_size, const IShader* shader);
+	bool init(IRenderDevice& rd, const LayoutDescription* layout_desc, unsigned int layout_desc_size, const IShader* shader);
 	void destroy(void);
 
-	INLINE void setLayout(const IRenderDevice& rd, const IMesh*);
-	INLINE void unsetLayout(const IRenderDevice& rd);
+	INLINE void setLayout(IRenderDevice& rd, const IMesh*);
+	INLINE void unsetLayout(IRenderDevice& rd);
 
 private:
 	ID3D11InputLayout* _layout;
