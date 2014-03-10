@@ -167,15 +167,7 @@ public:
 	{
 		size_t len = wcslen(file_name);
 		assert(len > wcslen(extension));
-
-		for (size_t i = len - 1; i > 0; --i) {
-			// find the last occurrence of '.' character
-			if (file_name[i] == L'.') {
-				return wcscmp(file_name + i, extension) == 0;
-			}
-		}
-
-		return false;
+		return wcscmp(file_name + len - wcslen(extension), extension) == 0;
 	}
 
 	INLINE static bool remove(const wchar_t* file_name);
