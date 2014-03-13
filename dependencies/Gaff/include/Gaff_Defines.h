@@ -25,6 +25,10 @@ THE SOFTWARE.
 //#define ATTEMPT_INLINE
 //#define DYNAMIC_LIBRARY
 
+#ifndef _CRT_SECURE_NO_WARNINGS
+	#define _CRT_SECURE_NO_WARNINGS
+#endif
+
 #define NS_GAFF namespace Gaff {
 #ifndef NS_END
 	#define NS_END }
@@ -110,8 +114,20 @@ THE SOFTWARE.
 	#error "Unknown architecture. Cannot deduce number of bits per byte."
 #endif
 
+NS_GAFF
+
 template <class T>
 T&& Move(T& data)
 {
 	return (T&&)data;
 }
+
+template <class T>
+void Swap(T& lhs, T& rhs)
+{
+	T temp = lhs;
+	lhs = rhs;
+	rhs = temp;
+}
+
+NS_END

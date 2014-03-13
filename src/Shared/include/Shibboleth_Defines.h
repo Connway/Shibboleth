@@ -22,6 +22,10 @@ THE SOFTWARE.
 
 #pragma once
 
+#ifndef _CRT_SECURE_NO_WARNINGS
+	#define _CRT_SECURE_NO_WARNINGS
+#endif
+
 #define NS_SHIBBOLETH namespace Shibboleth {
 #ifndef NS_END
 	#define NS_END }
