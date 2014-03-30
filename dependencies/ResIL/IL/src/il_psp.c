@@ -15,7 +15,7 @@
 #include "il_psp.h"
 #ifndef IL_NO_PSP
 
-
+// Global variables
 ILubyte PSPSignature[32] = {
 	0x50, 0x61, 0x69, 0x6E, 0x74, 0x20, 0x53, 0x68, 0x6F, 0x70, 0x20, 0x50, 0x72, 0x6F, 0x20, 0x49,
 	0x6D, 0x61, 0x67, 0x65, 0x20, 0x46, 0x69, 0x6C, 0x65, 0x0A, 0x1A, 0x00, 0x00, 0x00, 0x00, 0x00
@@ -109,7 +109,7 @@ ILboolean iIsValidPsp()
 // Internal function used to check if the HEADER is a valid Psp header.
 ILboolean iCheckPsp()
 {
-	if (stricmp(Header.FileSig, "Paint Shop Pro Image File\n\x1a"))
+	if (_stricmp(Header.FileSig, "Paint Shop Pro Image File\n\x1a"))
 		return IL_FALSE;
 	if (Header.MajorVersion < 3 || Header.MajorVersion > 5)
 		return IL_FALSE;

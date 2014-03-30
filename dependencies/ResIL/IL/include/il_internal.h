@@ -533,6 +533,12 @@ ILboolean ilLoadXpmL(const void *Lump, ILuint Size);
 //ILboolean ilLoadExr(ILconst_string FileName);
 
 
+#ifdef _WIN32
+#ifndef strnicmp
+#define strnicmp _strnicmp
+#endif
+#endif
+
 #ifdef __cplusplus
 }
 #endif

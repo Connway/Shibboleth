@@ -46,6 +46,7 @@ ILint		readpng_init(void);
 ILboolean	readpng_get_image(ILdouble display_exponent);
 void		readpng_cleanup(void);
 
+// Global variables
 png_structp png_ptr = NULL;
 png_infop   info_ptr = NULL;
 ILint		png_color_type;

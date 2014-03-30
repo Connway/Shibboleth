@@ -32,9 +32,9 @@ public:
 	MouseMP(void);
 	~MouseMP(void);
 
-	bool init(const Window& window, void* compat1 = nullptr, bool compat2 = false);
+	bool init(const Window& window);
 	void destroy(void);
-	bool update(void);
+	void update(void);
 
 	const MouseData& getMouseData(void) const;
 	void getPosition(int& x, int& y) const;
@@ -49,8 +49,12 @@ public:
 	const Window* getAssociatedWindow(void) const;
 
 private:
-	MouseData _data;
+	MouseData _curr_data;
+	MouseData _prev_data;
 	Window* _window;
+
+	int _dx, _dy;
+	short _wheel;
 
 	bool handleMessage(const AnyMessage& message);
 };

@@ -24,18 +24,23 @@ THE SOFTWARE.
 
 #include "Shibboleth_Allocator.h"
 
+// Disable warning for no assignment operator generated
+#if defined(_WIN32) || defined(_WIN64)
+	#pragma warning(disable : 4512)
+#endif
+
 NS_SHIBBOLETH
 
 class ProxyAllocator : public Gaff::IAllocator
 {
 public:
-	ProxyAllocator(const ProxyAllocator& allocator):
-		_allocator(allocator._allocator)
+	explicit ProxyAllocator(Gaff::IAllocator& allocator = GetAllocator()):
+		_allocator(allocator)
 	{
 	}
 
-	explicit ProxyAllocator(Gaff::IAllocator& allocator = GetAllocator()):
-		_allocator(allocator)
+	ProxyAllocator(const ProxyAllocator& allocator):
+		_allocator(allocator._allocator)
 	{
 	}
 
@@ -54,3 +59,8 @@ private:
 };
 
 NS_END
+
+// Disable warning for no assignment operator generated
+#if defined(_WIN32) || defined(_WIN64)
+	#pragma warning(default : 4512)
+#endif

@@ -20,6 +20,8 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
+#if defined(_WIN32) || defined(_WIN64)
+
 #include "Gleam_RenderDevice_Direct3D.h"
 #include "Gleam_RenderTarget_Direct3D.h"
 #include "Gleam_Window_Windows.h"
@@ -176,7 +178,7 @@ bool RenderDeviceD3D::init(const Window& window, unsigned int adapter_id, unsign
 
 	if (!vsync) {
 		swap_chain_desc.BufferDesc.RefreshRate.Numerator = 0;
-		swap_chain_desc.BufferDesc.RefreshRate.Denominator = 1;
+		swap_chain_desc.BufferDesc.RefreshRate.Denominator = 0;
 	}
 
 	GleamArray<Device>::Iterator it = _devices.linearSearch(adapter_id, [](const Device& lhs, unsigned int rhs) -> bool
@@ -226,10 +228,18 @@ bool RenderDeviceD3D::init(const Window& window, unsigned int adapter_id, unsign
 			return false;
 		}
 
-		swap_chain->SetFullscreenState(
-			(window.getWindowMode() == Window::FULLSCREEN) ? TRUE : FALSE,
-			_display_info[adapter_id].output_info[display_id].output.get()
-		);
+		if (window.getWindowMode() == Window::FULLSCREEN) {
+			result = swap_chain->SetFullscreenState(TRUE, _display_info[adapter_id].output_info[display_id].output.get());
+		} else {
+			result = swap_chain->SetFullscreenState(FALSE, nullptr);
+		}
+
+		Gaff::COMRefPtr<ID3D11RenderTargetView> rtv;
+		Gaff::COMRefPtr<IDXGISwapChain> sc;
+		rtv.set(render_target_view);
+		sc.set(swap_chain);
+
+		RETURNIFFAILED(result)
 
 		D3D11_VIEWPORT viewport;
 		viewport.Width = (float)window.getWidth();
@@ -239,11 +249,6 @@ bool RenderDeviceD3D::init(const Window& window, unsigned int adapter_id, unsign
 		viewport.TopLeftX = 0.0f;
 		viewport.TopLeftY = 0.0f;
 
-		Gaff::COMRefPtr<ID3D11RenderTargetView> rtv;
-		Gaff::COMRefPtr<IDXGISwapChain> sc;
-		rtv.set(render_target_view);
-		sc.set(swap_chain);
-
 		Device dvc;
 		dvc.render_targets.push(rtv);
 		dvc.swap_chains.push(sc);
@@ -252,6 +257,11 @@ bool RenderDeviceD3D::init(const Window& window, unsigned int adapter_id, unsign
 		dvc.device.set(device);
 		dvc.vsync.push(vsync);
 		dvc.adapter_id = adapter_id;
+
+		RenderTargetD3D* rt = GleamAllocateT(RenderTargetD3D);
+		rt->setRTV(rtv.get(), viewport);
+
+		dvc.gleam_rts.push(rt);
 
 		_devices.push(dvc);
 
@@ -286,15 +296,18 @@ bool RenderDeviceD3D::init(const Window& window, unsigned int adapter_id, unsign
 			return false;
 		}
 
-		swap_chain->SetFullscreenState(
-			(window.getWindowMode() == Window::FULLSCREEN) ? TRUE : FALSE,
-			_display_info[adapter_id].output_info[display_id].output.get()
-		);
+		if (window.getWindowMode() == Window::FULLSCREEN) {
+			result = swap_chain->SetFullscreenState(TRUE, _display_info[adapter_id].output_info[display_id].output.get());
+		} else {
+			result = swap_chain->SetFullscreenState(FALSE, nullptr);
+		}
 
 		Gaff::COMRefPtr<ID3D11RenderTargetView> rtv;
 		Gaff::COMRefPtr<IDXGISwapChain> sc;
 		rtv.set(render_target_view);
 		sc.set(swap_chain);
+
+		RETURNIFFAILED(result)
 
 		it->render_targets.push(rtv);
 		it->swap_chains.push(sc);
@@ -309,6 +322,11 @@ bool RenderDeviceD3D::init(const Window& window, unsigned int adapter_id, unsign
 		viewport.TopLeftY = 0.0f;
 
 		it->viewports.push(viewport);
+
+		RenderTargetD3D* rt = GleamAllocateT(RenderTargetD3D);
+		rt->setRTV(rtv.get(), viewport);
+
+		it->gleam_rts.push(rt);
 	}
 
 	if (!_active_device) {
@@ -344,6 +362,11 @@ void RenderDeviceD3D::setClearColor(float r, float g, float b, float a)
 	_clear_color[3] = a;
 }
 
+const float* RenderDeviceD3D::getClearColor(void) const
+{
+	return _clear_color;
+}
+
 void RenderDeviceD3D::beginFrame(void)
 {
 	resetRenderState();
@@ -364,12 +387,23 @@ bool RenderDeviceD3D::resize(const Window& window)
 		for (unsigned int j = 0; j < device.swap_chains.size(); ++j) {
 			Gaff::COMRefPtr<ID3D11RenderTargetView>& rtv = device.render_targets[j];
 			Gaff::COMRefPtr<IDXGISwapChain>& sc = device.swap_chains[j];
+			IRenderTargetPtr rt = device.gleam_rts[j];
 			D3D11_VIEWPORT& viewport = device.viewports[j];
 			DXGI_SWAP_CHAIN_DESC sc_desc;
 
 			if (SUCCEEDED(sc->GetDesc(&sc_desc))) {
 				if (sc_desc.OutputWindow == window.getHWnd()) {
-					HRESULT result = sc->ResizeBuffers(1, window.getWidth(), window.getHeight(), DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH);
+					bool resizing_active_output = false;
+
+					if (rtv == _active_render_target) {
+						resizing_active_output = true;
+						_active_render_target = nullptr;
+						_active_swap_chain = nullptr;
+					}
+
+					rtv = nullptr;
+					rt->destroy();
+					HRESULT result = sc->ResizeBuffers(0, 0, 0, DXGI_FORMAT_UNKNOWN, DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH);
 					RETURNIFFAILED(result)
 
 					ID3D11Texture2D* back_buffer_ptr;
@@ -383,10 +417,44 @@ bool RenderDeviceD3D::resize(const Window& window)
 
 					viewport.Width = (float)window.getWidth();
 					viewport.Height = (float)window.getHeight();
-					rtv = render_target_view;
+					rtv.set(render_target_view);
+					((RenderTargetD3D*)rt.get())->setRTV(render_target_view, viewport);
 
-					result = sc->SetFullscreenState(window.getWindowMode() == Window::FULLSCREEN, _display_info[i].output_info[j].output.get());
+					if (window.getWindowMode() == Window::FULLSCREEN) {
+						result = sc->SetFullscreenState(TRUE, _display_info[i].output_info[j].output.get());
+					} else {
+						result = sc->SetFullscreenState(FALSE, nullptr);
+					}
+
+					if (resizing_active_output) {
+						setCurrentOutput(getCurrentOutput());
+					}
+
 					return SUCCEEDED(result);
+				}
+			}
+		}
+	}
+
+	return false;
+}
+
+bool RenderDeviceD3D::handleFocusGained(const Window& window)
+{
+	for (unsigned int i = 0; i < _devices.size(); ++i) {
+		Device& device = _devices[i];
+
+		for (unsigned int j = 0; j < device.swap_chains.size(); ++j) {
+			Gaff::COMRefPtr<IDXGISwapChain>& sc = device.swap_chains[j];
+			DXGI_SWAP_CHAIN_DESC sc_desc;
+
+			if (SUCCEEDED(sc->GetDesc(&sc_desc))) {
+				if (sc_desc.OutputWindow == window.getHWnd()) {
+					if (window.getWindowMode() == Window::FULLSCREEN) {
+						return SUCCEEDED(sc->SetFullscreenState(TRUE, _display_info[i].output_info[j].output.get()));
+					} else {
+						return SUCCEEDED(sc->SetFullscreenState(FALSE, nullptr));
+					}
 				}
 			}
 		}
@@ -464,20 +532,15 @@ unsigned int RenderDeviceD3D::getNumDevices(void) const
 	return _devices.size();
 }
 
-IRenderTarget* RenderDeviceD3D::getOutputRenderTarget(unsigned int device, unsigned int output)
+IRenderTargetPtr RenderDeviceD3D::getOutputRenderTarget(unsigned int device, unsigned int output)
 {
-	assert(_devices.size() > device && _devices[device].render_targets.size() > output);
-
-	RenderTargetD3D* render_target = (RenderTargetD3D*)GleamAllocate(sizeof(RenderTargetD3D));
-	new (render_target) RenderTargetD3D(_devices[device].render_targets[output].get(), _active_viewport);
-
-	render_target->addRef();
-	return render_target;
+	assert(_devices.size() > device && _devices[device].gleam_rts.size() > output);
+	return _devices[device].gleam_rts[output];
 }
 
-IRenderTarget* RenderDeviceD3D::getActiveOutputRenderTarget(void)
+IRenderTargetPtr RenderDeviceD3D::getActiveOutputRenderTarget(void)
 {
-	assert(_devices.size() > _curr_device && _devices[_curr_device].render_targets.size() > _curr_output);
+	assert(_devices.size() > _curr_device && _devices[_curr_device].gleam_rts.size() > _curr_output);
 	return getOutputRenderTarget(_curr_device, _curr_output);
 }
 
@@ -517,3 +580,5 @@ unsigned int RenderDeviceD3D::getCurrentDevice(void) const
 }
 
 NS_END
+
+#endif

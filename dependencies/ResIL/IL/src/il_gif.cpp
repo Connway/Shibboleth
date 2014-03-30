@@ -543,15 +543,15 @@ ILboolean iLoadGifInternal(ILimage* image)
 	GlobalPal.PalSize = 0;
 
 	// Read header
-   iread(&Header, 1, sizeof(Header));
-   #ifdef __BIG_ENDIAN__
-   iSwapUShort(Header.Width);
-   iSwapUShort(Header.Height);
-   #endif
+	iread(&Header, 1, sizeof(Header));
+	#ifdef __BIG_ENDIAN__
+	iSwapUShort(Header.Width);
+	iSwapUShort(Header.Height);
+	#endif
 
 	if (strnicmp(Header.Sig, "GIF87A", 6) != 0 
-   &&  strnicmp(Header.Sig, "GIF89A", 6) != 0) 
-   {
+	&&  strnicmp(Header.Sig, "GIF89A", 6) != 0) 
+	{
 		ilSetError(IL_INVALID_FILE_HEADER);
 		return IL_FALSE;
 	}

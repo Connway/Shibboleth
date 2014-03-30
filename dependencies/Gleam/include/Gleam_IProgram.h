@@ -24,13 +24,13 @@ THE SOFTWARE.
 
 #include "Gleam_IShader.h"
 #include "Gleam_Array.h"
+#include "Gaff_RefPtr.h"
 
 NS_GLEAM
 
 class IShaderResourceView;
 class ISamplerState;
 class IRenderDevice;
-class IShader;
 class IBuffer;
 
 class IProgram : public GleamRefCounted
@@ -42,9 +42,8 @@ public:
 	virtual bool init(void) = 0;
 	virtual void destroy(void);
 
-	virtual void attach(const IShader* shader) = 0;
-	virtual void detach(const IShader* shader) = 0;
-	virtual bool link(void) = 0;
+	virtual void attach(IShader* shader) = 0;
+	virtual void detach(IShader::SHADER_TYPE shader) = 0;
 
 	virtual void bind(IRenderDevice& rd) = 0;
 	virtual void unbind(IRenderDevice& rd) = 0;
@@ -84,6 +83,7 @@ protected:
 	GleamArray<IShaderResourceView*> _resource_views[IShader::SHADER_TYPE_SIZE];
 	GleamArray<ISamplerState*> _sampler_states[IShader::SHADER_TYPE_SIZE];
 	GleamArray<IBuffer*> _constant_buffers[IShader::SHADER_TYPE_SIZE];
+	Gaff::RefPtr<IShader> _attached_shaders[IShader::SHADER_TYPE_SIZE];
 };
 
 NS_END

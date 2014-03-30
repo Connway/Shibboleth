@@ -67,24 +67,28 @@ ILboolean ilIsValidBmpL(const void * Lump, ILuint Size)
 }
 
 // Internal function used to get the .bmp header from the current file.
-ILboolean iGetBmpHead(BMPHEAD * const Header)
+ILboolean iGetBmpHead(BMPHEAD * const header)
 {
-	Header->bfType = GetLittleUShort();
-	Header->bfSize = GetLittleInt();
-	Header->bfReserved = GetLittleUInt();
-	Header->bfDataOff = GetLittleInt();
-	Header->biSize = GetLittleInt();
-	Header->biWidth = GetLittleInt();
-	Header->biHeight = GetLittleInt();
-	Header->biPlanes = GetLittleShort();
-	Header->biBitCount = GetLittleShort();
-	Header->biCompression = GetLittleInt();
-	Header->biSizeImage = GetLittleInt();
-	Header->biXPelsPerMeter = GetLittleInt();
-	Header->biYPelsPerMeter = GetLittleInt();
-	Header->biClrUsed = GetLittleInt();
-	Header->biClrImportant = GetLittleInt();
-	return IL_TRUE;
+	ILboolean result = iread(header, sizeof(BMPHEAD), 1);
+
+#ifdef __BIG_ENDIAN__
+	iSwapInt(Header->bfSize); //= GetLittleInt();
+	iSwapUInt(Header->bfReserved); // = GetLittleUInt();
+	iSwapInt(Header->bfDataOff); // = GetLittleInt();
+	iSwapInt(Header->biSize); // = GetLittleInt();
+	iSwapInt(Header->biWidth); // = GetLittleInt();
+	iSwapInt(Header->biHeight); // = GetLittleInt();
+	iSwapShort(Header->biPlanes); // = GetLittleShort();
+	iSwapShort(Header->biBitCount); // = GetLittleShort();
+	iSwapInt(Header->biCompression); // = GetLittleInt();
+	iSwapInt(Header->biSizeImage); // = GetLittleInt();
+	iSwapInt(Header->biXPelsPerMeter); // = GetLittleInt();
+	iSwapInt(Header->biYPelsPerMeter); // = GetLittleInt();
+	iSwapInt(Header->biClrUsed); // = GetLittleInt();
+	iSwapInt(Header->biClrImportant); // = GetLittleInt();
+#endif
+
+	return result;
 }
 
 
@@ -136,7 +140,9 @@ ILboolean iIsValidBmp()
 ILboolean iCheckBmp (const BMPHEAD * CONST_RESTRICT Header)
 {
 	//if ((Header->bfType != ('B'|('M'<<8))) || ((Header->biSize != 0x28) && (Header->biSize != 0x0C)))
-	if ((Header->bfType != ('B'|('M'<<8))) || (Header->biSize != 0x28))
+	if (Header->bfType[0] != 'B' || Header->bfType[1] != 'M')
+		return IL_FALSE;
+	if (Header->biSize < 0x28)
 		return IL_FALSE;
 	if (Header->biHeight == 0 || Header->biWidth < 1)
 		return IL_FALSE;

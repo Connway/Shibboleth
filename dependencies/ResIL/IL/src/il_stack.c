@@ -566,7 +566,7 @@ ILboolean iEnlargeStack()
 	return IL_TRUE;
 }
 
-
+// Global variables
 static ILboolean IsInit = IL_FALSE;
 
 // ONLY call at startup.

@@ -1,67 +1,68 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <ClCompile Include="..\..\dependencies\Gaff\Gaff_CriticalSection_Linux.cpp" />
-    <ClCompile Include="..\..\dependencies\Gaff\Gaff_CriticalSection_Windows.cpp" />
-    <ClCompile Include="..\..\dependencies\Gaff\Gaff_DynamicModule_Linux.cpp" />
-    <ClCompile Include="..\..\dependencies\Gaff\Gaff_DynamicModule_Windows.cpp" />
-    <ClCompile Include="..\..\dependencies\Gaff\Gaff_File.cpp" />
-    <ClCompile Include="..\..\dependencies\Gaff\Gaff_Image.cpp" />
-    <ClCompile Include="..\..\dependencies\Gaff\Gaff_ReadWriteSpinLock.cpp" />
-    <ClCompile Include="..\..\dependencies\Gaff\Gaff_SpinLock.cpp" />
-    <ClCompile Include="..\..\dependencies\Gaff\Gaff_Thread_Linux.cpp" />
-    <ClCompile Include="..\..\dependencies\Gaff\Gaff_Thread_Windows.cpp" />
-    <ClCompile Include="..\..\dependencies\Gaff\Gaff_Timer_Linux.cpp" />
-    <ClCompile Include="..\..\dependencies\Gaff\Gaff_Timer_Mac.cpp" />
-    <ClCompile Include="..\..\dependencies\Gaff\Gaff_Timer_Windows.cpp" />
-    <ClCompile Include="..\..\dependencies\Gaff\Gaff_Utils_Linux.cpp" />
-    <ClCompile Include="..\..\dependencies\Gaff\Gaff_Utils_Windows.cpp" />
-    <ClCompile Include="..\..\dependencies\Gaff\Gaff_JSON.cpp" />
-    <ClCompile Include="..\..\dependencies\Gaff\Gaff_Utils_Common.cpp" />
+    <Filter Include="Headers">
+      <UniqueIdentifier>{d2625c79-e5f6-440a-ae9b-01ad3b1e396d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <Filter Include="Headers">
-      <UniqueIdentifier>{3e2d6165-3eac-4a7a-8dc4-2bd1ad26b640}</UniqueIdentifier>
-    </Filter>
+    <None Include="..\..\dependencies\Gaff\include\Gaff_Array.inl">
+      <Filter>Headers</Filter>
+    </None>
+    <None Include="..\..\dependencies\Gaff\include\Gaff_BitArray.inl">
+      <Filter>Headers</Filter>
+    </None>
+    <None Include="..\..\dependencies\Gaff\include\Gaff_Function.inl">
+      <Filter>Headers</Filter>
+    </None>
+    <None Include="..\..\dependencies\Gaff\include\Gaff_HashMap.inl">
+      <Filter>Headers</Filter>
+    </None>
+    <None Include="..\..\dependencies\Gaff\include\Gaff_HashString.inl">
+      <Filter>Headers</Filter>
+    </None>
+    <None Include="..\..\dependencies\Gaff\include\Gaff_String.inl">
+      <Filter>Headers</Filter>
+    </None>
+    <None Include="..\..\dependencies\Gaff\include\Gaff_Map.inl">
+      <Filter>Headers</Filter>
+    </None>
+    <None Include="..\..\dependencies\Gaff\include\Gaff_AngelScriptEngineTemplateFunctions.inl">
+      <Filter>Headers</Filter>
+    </None>
+    <None Include="..\..\dependencies\Gaff\include\Gaff_DynamicLoader.inl">
+      <Filter>Headers</Filter>
+    </None>
+    <None Include="..\..\dependencies\Gaff\include\Gaff_List.inl">
+      <Filter>Headers</Filter>
+    </None>
+    <None Include="..\..\dependencies\Gaff\include\Gaff_MessageBroadcaster.inl">
+      <Filter>Headers</Filter>
+    </None>
+    <None Include="..\..\dependencies\Gaff\include\Gaff_Queue.inl">
+      <Filter>Headers</Filter>
+    </None>
+    <None Include="..\..\dependencies\Gaff\include\Gaff_Registry.inl">
+      <Filter>Headers</Filter>
+    </None>
+    <None Include="..\..\dependencies\Gaff\include\Gaff_TimerCallbackManager.inl">
+      <Filter>Headers</Filter>
+    </None>
+    <None Include="..\..\dependencies\Gaff\include\Gaff_Utils_Common.inl">
+      <Filter>Headers</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\dependencies\Gaff\include\Gaff_Array.h">
       <Filter>Headers</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\dependencies\Gaff\include\Gaff_Atomic.h">
-      <Filter>Headers</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\dependencies\Gaff\include\Gaff_BitArray.h">
-      <Filter>Headers</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\dependencies\Gaff\include\Gaff_BitFlags.h">
-      <Filter>Headers</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\dependencies\Gaff\include\Gaff_CriticalSection.h">
-      <Filter>Headers</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\dependencies\Gaff\include\Gaff_CriticalSection_Linux.h">
-      <Filter>Headers</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\dependencies\Gaff\include\Gaff_CriticalSection_Windows.h">
       <Filter>Headers</Filter>
     </ClInclude>
     <ClInclude Include="..\..\dependencies\Gaff\include\Gaff_DefaultAllocator.h">
       <Filter>Headers</Filter>
     </ClInclude>
     <ClInclude Include="..\..\dependencies\Gaff\include\Gaff_Defines.h">
-      <Filter>Headers</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\dependencies\Gaff\include\Gaff_DynamicLoader.h">
-      <Filter>Headers</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\dependencies\Gaff\include\Gaff_DynamicModule.h">
-      <Filter>Headers</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\dependencies\Gaff\include\Gaff_DynamicModule_Linux.h">
-      <Filter>Headers</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\dependencies\Gaff\include\Gaff_DynamicModule_Windows.h">
       <Filter>Headers</Filter>
     </ClInclude>
     <ClInclude Include="..\..\dependencies\Gaff\include\Gaff_File.h">
@@ -91,22 +92,115 @@
     <ClInclude Include="..\..\dependencies\Gaff\include\Gaff_IRefCounted.h">
       <Filter>Headers</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\dependencies\Gaff\include\Gaff_ITask.h">
-      <Filter>Headers</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\dependencies\Gaff\include\Gaff_List.h">
-      <Filter>Headers</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\dependencies\Gaff\include\Gaff_Math.h">
-      <Filter>Headers</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\dependencies\Gaff\include\Gaff_MessageBroadcaster.h">
       <Filter>Headers</Filter>
     </ClInclude>
     <ClInclude Include="..\..\dependencies\Gaff\include\Gaff_Pair.h">
       <Filter>Headers</Filter>
     </ClInclude>
     <ClInclude Include="..\..\dependencies\Gaff\include\Gaff_Predicates.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\dependencies\Gaff\include\Gaff_RefCounted.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\dependencies\Gaff\include\Gaff_RefPtr.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\dependencies\Gaff\include\Gaff_String.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\dependencies\Gaff\include\Gaff_Animation.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\dependencies\Gaff\include\Gaff_Camera.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\dependencies\Gaff\include\Gaff_Light.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\dependencies\Gaff\include\Gaff_Map.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\dependencies\Gaff\include\Gaff_Mesh.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\dependencies\Gaff\include\Gaff_MeshAnimation.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\dependencies\Gaff\include\Gaff_NodeAnimation.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\dependencies\Gaff\include\Gaff_Scene.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\dependencies\Gaff\include\Gaff_SceneImporter.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\dependencies\Gaff\include\Gaff_AngelScriptContext.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\dependencies\Gaff\include\Gaff_AngelScriptEngine.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\dependencies\Gaff\include\Gaff_AngelScriptFunction.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\dependencies\Gaff\include\Gaff_AngelScriptModule.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\dependencies\Gaff\include\Gaff_Atomic.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\dependencies\Gaff\include\Gaff_BitFlags.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\dependencies\Gaff\include\Gaff_Connection.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\dependencies\Gaff\include\Gaff_CriticalSection.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\dependencies\Gaff\include\Gaff_CriticalSection_Linux.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\dependencies\Gaff\include\Gaff_CriticalSection_Windows.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\dependencies\Gaff\include\Gaff_DynamicLoader.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\dependencies\Gaff\include\Gaff_DynamicModule.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\dependencies\Gaff\include\Gaff_DynamicModule_Linux.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\dependencies\Gaff\include\Gaff_DynamicModule_Windows.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\dependencies\Gaff\include\Gaff_Host.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\dependencies\Gaff\include\Gaff_INamedObject.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\dependencies\Gaff\include\Gaff_IncludeAngelScript.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\dependencies\Gaff\include\Gaff_ITask.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\dependencies\Gaff\include\Gaff_JSON.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\dependencies\Gaff\include\Gaff_List.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\dependencies\Gaff\include\Gaff_MessageBroadcaster.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\dependencies\Gaff\include\Gaff_NetworkDefines.h">
       <Filter>Headers</Filter>
     </ClInclude>
     <ClInclude Include="..\..\dependencies\Gaff\include\Gaff_Queue.h">
@@ -116,12 +210,6 @@
       <Filter>Headers</Filter>
     </ClInclude>
     <ClInclude Include="..\..\dependencies\Gaff\include\Gaff_ReadWriteSpinLock.h">
-      <Filter>Headers</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\dependencies\Gaff\include\Gaff_RefCounted.h">
-      <Filter>Headers</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\dependencies\Gaff\include\Gaff_RefPtr.h">
       <Filter>Headers</Filter>
     </ClInclude>
     <ClInclude Include="..\..\dependencies\Gaff\include\Gaff_Registry.h">
@@ -140,9 +228,6 @@
       <Filter>Headers</Filter>
     </ClInclude>
     <ClInclude Include="..\..\dependencies\Gaff\include\Gaff_StackLockFree.h">
-      <Filter>Headers</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\dependencies\Gaff\include\Gaff_String.h">
       <Filter>Headers</Filter>
     </ClInclude>
     <ClInclude Include="..\..\dependencies\Gaff\include\Gaff_Thread.h">
@@ -181,55 +266,38 @@
     <ClInclude Include="..\..\dependencies\Gaff\include\Gaff_WeakPtr.h">
       <Filter>Headers</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\dependencies\Gaff\include\Gaff_INamedObject.h">
-      <Filter>Headers</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\dependencies\Gaff\include\Gaff_NetworkDefines.h">
-      <Filter>Headers</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\dependencies\Gaff\include\Gaff_JSON.h">
-      <Filter>Headers</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\dependencies\Gaff\include\Gaff_Array.inl">
-      <Filter>Headers</Filter>
-    </None>
-    <None Include="..\..\dependencies\Gaff\include\Gaff_BitArray.inl">
-      <Filter>Headers</Filter>
-    </None>
-    <None Include="..\..\dependencies\Gaff\include\Gaff_DynamicLoader.inl">
-      <Filter>Headers</Filter>
-    </None>
-    <None Include="..\..\dependencies\Gaff\include\Gaff_Function.inl">
-      <Filter>Headers</Filter>
-    </None>
-    <None Include="..\..\dependencies\Gaff\include\Gaff_HashMap.inl">
-      <Filter>Headers</Filter>
-    </None>
-    <None Include="..\..\dependencies\Gaff\include\Gaff_HashString.inl">
-      <Filter>Headers</Filter>
-    </None>
-    <None Include="..\..\dependencies\Gaff\include\Gaff_List.inl">
-      <Filter>Headers</Filter>
-    </None>
-    <None Include="..\..\dependencies\Gaff\include\Gaff_MessageBroadcaster.inl">
-      <Filter>Headers</Filter>
-    </None>
-    <None Include="..\..\dependencies\Gaff\include\Gaff_Queue.inl">
-      <Filter>Headers</Filter>
-    </None>
-    <None Include="..\..\dependencies\Gaff\include\Gaff_Registry.inl">
-      <Filter>Headers</Filter>
-    </None>
-    <None Include="..\..\dependencies\Gaff\include\Gaff_String.inl">
-      <Filter>Headers</Filter>
-    </None>
-    <None Include="..\..\dependencies\Gaff\include\Gaff_TimerCallbackManager.inl">
-      <Filter>Headers</Filter>
-    </None>
-    <None Include="..\..\dependencies\Gaff\include\Gaff_Utils_Common.inl">
-      <Filter>Headers</Filter>
-    </None>
+    <ClCompile Include="..\..\dependencies\Gaff\Gaff_File.cpp" />
+    <ClCompile Include="..\..\dependencies\Gaff\Gaff_Image.cpp" />
+    <ClCompile Include="..\..\dependencies\Gaff\Gaff_Animation.cpp" />
+    <ClCompile Include="..\..\dependencies\Gaff\Gaff_Camera.cpp" />
+    <ClCompile Include="..\..\dependencies\Gaff\Gaff_Light.cpp" />
+    <ClCompile Include="..\..\dependencies\Gaff\Gaff_Mesh.cpp" />
+    <ClCompile Include="..\..\dependencies\Gaff\Gaff_MeshAnimation.cpp" />
+    <ClCompile Include="..\..\dependencies\Gaff\Gaff_NodeAnimation.cpp" />
+    <ClCompile Include="..\..\dependencies\Gaff\Gaff_Scene.cpp" />
+    <ClCompile Include="..\..\dependencies\Gaff\Gaff_SceneImporter.cpp" />
+    <ClCompile Include="..\..\dependencies\Gaff\Gaff_AngelScriptContext.cpp" />
+    <ClCompile Include="..\..\dependencies\Gaff\Gaff_AngelScriptEngine.cpp" />
+    <ClCompile Include="..\..\dependencies\Gaff\Gaff_AngelScriptFunction.cpp" />
+    <ClCompile Include="..\..\dependencies\Gaff\Gaff_AngelScriptModule.cpp" />
+    <ClCompile Include="..\..\dependencies\Gaff\Gaff_Connection.cpp" />
+    <ClCompile Include="..\..\dependencies\Gaff\Gaff_CriticalSection_Linux.cpp" />
+    <ClCompile Include="..\..\dependencies\Gaff\Gaff_CriticalSection_Windows.cpp" />
+    <ClCompile Include="..\..\dependencies\Gaff\Gaff_DynamicModule_Linux.cpp" />
+    <ClCompile Include="..\..\dependencies\Gaff\Gaff_DynamicModule_Windows.cpp" />
+    <ClCompile Include="..\..\dependencies\Gaff\Gaff_Host.cpp" />
+    <ClCompile Include="..\..\dependencies\Gaff\Gaff_JSON.cpp" />
+    <ClCompile Include="..\..\dependencies\Gaff\Gaff_ReadWriteSpinLock.cpp" />
+    <ClCompile Include="..\..\dependencies\Gaff\Gaff_SpinLock.cpp" />
+    <ClCompile Include="..\..\dependencies\Gaff\Gaff_Thread_Linux.cpp" />
+    <ClCompile Include="..\..\dependencies\Gaff\Gaff_Thread_Windows.cpp" />
+    <ClCompile Include="..\..\dependencies\Gaff\Gaff_Timer_Linux.cpp" />
+    <ClCompile Include="..\..\dependencies\Gaff\Gaff_Timer_Mac.cpp" />
+    <ClCompile Include="..\..\dependencies\Gaff\Gaff_Timer_Windows.cpp" />
+    <ClCompile Include="..\..\dependencies\Gaff\Gaff_Utils_Common.cpp" />
+    <ClCompile Include="..\..\dependencies\Gaff\Gaff_Utils_Linux.cpp" />
+    <ClCompile Include="..\..\dependencies\Gaff\Gaff_Utils_Windows.cpp" />
   </ItemGroup>
 </Project>

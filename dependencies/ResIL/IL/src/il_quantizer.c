@@ -56,6 +56,7 @@ typedef struct Box
  * NB: these must start out 0!
  */
 
+// Global variables
 ILfloat		gm2[33][33][33];
 ILint		wt[33][33][33], mr[33][33][33],	mg[33][33][33],	mb[33][33][33];
 ILuint		size; //image size

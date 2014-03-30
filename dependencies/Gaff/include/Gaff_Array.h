@@ -33,14 +33,6 @@ template <class T, class Allocator = DefaultAllocator>
 class Array
 {
 public:
-#if defined(__LP64__) || defined(_WIN64)
-	typedef long long OffsetType;
-#elif defined(__LP32__) || defined(_WIN32)
-	typedef int OffsetType;
-#else
-	#error "Cannot deduce platform bit-age."
-#endif
-
 	class Iterator
 	{
 	public:

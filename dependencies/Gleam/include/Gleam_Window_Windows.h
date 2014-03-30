@@ -23,6 +23,7 @@ THE SOFTWARE.
 #pragma once
 
 #include "Gleam_Window_Defines.h"
+#include "Gleam_HashMap.h"
 #include "Gleam_Array.h"
 #include <Gaff_IncludeWindows.h>
 #include <Gaff_Function.h>
@@ -67,7 +68,7 @@ public:
 
 	bool init(const GChar* app_name, MODE window_mode = FULLSCREEN,
 					unsigned int width = 0, unsigned int height = 0,
-					int pos_x = -1, int pos_y = -1,
+					int pos_x = 0, int pos_y = 0,
 					const char* compat = nullptr);
 	void destroy(void);
 
@@ -76,8 +77,13 @@ public:
 	bool removeWindowMessageHandler(WindowCallback callback);
 
 	INLINE void showCursor(bool show);
-	INLINE void allowRepeats(bool allow);
 	void containCursor(bool contain);
+
+	INLINE bool isCursorVisible(void) const;
+	INLINE bool isCursorContained(void) const;
+
+	INLINE void allowRepeats(bool allow);
+	INLINE bool areRepeatsAllowed(void) const;
 
 	bool setWindowMode(MODE window_mode);
 	INLINE MODE getWindowMode(void) const;
@@ -102,16 +108,20 @@ private:
 
 	MODE _window_mode;
 	MSG _msg_temp;
+	unsigned int _original_width;
+	unsigned int _original_height;
+	bool _cursor_visible;
 	bool _no_repeats;
+	bool _contain;
 
 	GleamArray< Gaff::FunctionBinder<bool, const AnyMessage&> > _window_callbacks;
 
 	static LRESULT CALLBACK WindowProc(HWND hwnd, UINT msg, WPARAM w, LPARAM l);
 	static GleamArray<Window*> gWindows;
 
-	unsigned int _mouse_prev_x;
-	unsigned int _mouse_prev_y;
-	bool _first_mouse;
+	static GleamHashMap<unsigned short, KeyCode> _left_keys;
+	static GleamHashMap<unsigned short, KeyCode> _right_keys;
+	static bool _first_init;
 
 	void addWindowMessageHandlerHelper(const Gaff::FunctionBinder<bool, const AnyMessage&>& cb);
 	bool removeWindowMessageHandlerHelper(const Gaff::FunctionBinder<bool, const AnyMessage&>& cb);

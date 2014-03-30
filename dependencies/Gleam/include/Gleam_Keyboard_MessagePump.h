@@ -34,12 +34,13 @@ public:
 	KeyboardMP(void);
 	~KeyboardMP(void);
 
-	bool init(const Window& window, void* compat = nullptr, bool no_windows_key = false);
+	bool init(const Window& window, bool no_windows_key);
+	bool init(const Window& window);
 	void destroy(void);
-	bool update(void);
+	void update(void);
 
-	bool isKeyDown(KeyboardCode key) const;
-	bool isKeyUp(KeyboardCode key) const;
+	bool isKeyDown(KeyCode key) const;
+	bool isKeyUp(KeyCode key) const;
 
 	const unsigned char* getKeyboardData(void) const;
 
@@ -51,14 +52,9 @@ public:
 	bool handleMessage(const AnyMessage& message);
 
 private:
-#ifdef ONLY_INPUT_CHANGES
-	unsigned char _keyboard_state_a[256];
-	unsigned char _keyboard_state_b[256];
-	unsigned char* _curr_state;
-	unsigned char* _prev_state;
-#else
-	unsigned char _keyboard_state[256];
-#endif
+	unsigned char _curr_state[256];
+	unsigned char _prev_state[256];
+
 	Window* _window;
 };
 

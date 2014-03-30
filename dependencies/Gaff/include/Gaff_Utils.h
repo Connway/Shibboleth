@@ -22,6 +22,10 @@ THE SOFTWARE.
 
 #pragma once
 
+#ifndef _CRT_SECURE_NO_WARNINGS
+	#define _CRT_SECURE_NO_WARNINGS
+#endif
+
 #if defined(_WIN32) || defined(_WIN64)
 	#include "Gaff_IncludeWindows.h"
 #endif

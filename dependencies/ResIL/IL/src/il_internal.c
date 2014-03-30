@@ -16,6 +16,7 @@
 #include <stdlib.h>
 
 
+// Global variable: stores the currently used image
 ILimage *iCurImage = NULL;
 
 
@@ -33,7 +34,7 @@ ILimage *iCurImage = NULL;
 #elif _WIN32_WCE
 	int stricmp(const char *src1, const char *src2)
 	{
-		return stricmp(src1, src2);
+		return _stricmp(src1, src2);
 	}
 	int strnicmp(const char *src1, const char *src2, size_t max)
 	{
@@ -44,7 +45,7 @@ ILimage *iCurImage = NULL;
 #ifdef _WIN32_WCE
 	char *strdup(const char *src)
 	{
-		return strdup(src);
+		return _strdup(src);
 	}
 #endif//_WIN32_WCE
 

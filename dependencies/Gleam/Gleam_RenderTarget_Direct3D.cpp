@@ -20,6 +20,8 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
+#if defined(_WIN32) || defined(_WIN64)
+
 #include "Gleam_RenderTarget_Direct3D.h"
 #include "Gleam_RenderDevice_Direct3D.h"
 #include "Gleam_Texture_Direct3D.h"
@@ -115,18 +117,18 @@ void RenderTargetD3D::bind(IRenderDevice& rd)
 {
 	assert(rd.isD3D());
 
-	float clear_color[4] = { 0.0f, 0.0f, 0.0f, 1.0f };
+	RenderDeviceD3D& device = ((RenderDeviceD3D&)rd);
 
 	for (unsigned int i = 0; i < _render_target_views.size(); ++i) {
-		((RenderDeviceD3D&)rd).getActiveDeviceContext()->ClearRenderTargetView(_render_target_views[i], clear_color);
+		device.getActiveDeviceContext()->ClearRenderTargetView(_render_target_views[i], device.getClearColor());
 	}
 
 	if (_depth_stencil_view) {
-		((RenderDeviceD3D&)rd).getActiveDeviceContext()->ClearDepthStencilView(_depth_stencil_view, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
+		device.getActiveDeviceContext()->ClearDepthStencilView(_depth_stencil_view, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 	}
 
-	((RenderDeviceD3D&)rd).getActiveDeviceContext()->OMSetRenderTargets(_render_target_views.size(), _render_target_views.getArray(), _depth_stencil_view);
-	((RenderDeviceD3D&)rd).getActiveDeviceContext()->RSSetViewports(1, &_viewport);
+	device.getActiveDeviceContext()->OMSetRenderTargets(_render_target_views.size(), _render_target_views.getArray(), _depth_stencil_view);
+	device.getActiveDeviceContext()->RSSetViewports(1, &_viewport);
 }
 
 void RenderTargetD3D::unbind(IRenderDevice& rd)
@@ -145,12 +147,14 @@ bool RenderTargetD3D::isD3D(void) const
 	return true;
 }
 
-RenderTargetD3D::RenderTargetD3D(ID3D11RenderTargetView* rt, const D3D11_VIEWPORT& viewport):
-	_viewport(viewport), _depth_stencil_view(nullptr)
+void RenderTargetD3D::setRTV(ID3D11RenderTargetView* rt, const D3D11_VIEWPORT& viewport)
 {
+	assert(rt);
 	_render_target_views.push(rt);
+	_viewport = viewport;
 	rt->AddRef();
 }
 
-
 NS_END
+
+#endif

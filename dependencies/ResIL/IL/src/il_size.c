@@ -16,6 +16,7 @@
 ILuint iTargaSize(void);
 
 
+// Global variables
 ILuint CurPos;  // Fake "file" pointer.
 ILuint MaxPos;
 

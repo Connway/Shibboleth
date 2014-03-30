@@ -20,6 +20,8 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
+#if defined(_WIN32) || defined(_WIN64)
+
 #include "Gleam_Mesh_Direct3D.h"
 #include "Gleam_RenderDevice_Direct3D.h"
 #include "Gleam_Buffer_Direct3D.h"
@@ -135,3 +137,5 @@ void MeshD3D::cacheBuffers(void)
 }
 
 NS_END
+
+#endif

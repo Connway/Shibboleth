@@ -22,15 +22,7 @@ THE SOFTWARE.
 
 #pragma once
 
-#ifdef USE_DI
-	#include "Gleam_Mouse_DirectInput.h"
-
+#include "Gleam_Mouse_MessagePump.h"
 NS_GLEAM
-	typedef MouseDI Mouse;
+	typedef MouseMP Mouse;
 NS_END
-#else
-	#include "Gleam_Mouse_MessagePump.h"
-	NS_GLEAM
-		typedef MouseMP Mouse;
-	NS_END
-#endif

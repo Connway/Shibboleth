@@ -22,11 +22,11 @@ THE SOFTWARE.
 
 #pragma once
 
+#include "Gleam_IRenderTarget.h"
 #include "Gleam_Array.h"
 
 NS_GLEAM
 
-class IRenderTarget;
 class Window;
 
 class IRenderDevice
@@ -75,6 +75,7 @@ public:
 	virtual void endFrame(void) = 0;
 
 	virtual bool resize(const Window& window) = 0;
+	virtual bool handleFocusGained(const Window& window) = 0;
 
 	virtual void resetRenderState(void) = 0;
 
@@ -89,8 +90,8 @@ public:
 	virtual unsigned int getNumOutputs(unsigned int device) const = 0;
 	virtual unsigned int getNumDevices(void) const = 0;
 
-	virtual IRenderTarget* getOutputRenderTarget(unsigned int device, unsigned int output) = 0;
-	virtual IRenderTarget* getActiveOutputRenderTarget(void) = 0;
+	virtual IRenderTargetPtr getOutputRenderTarget(unsigned int device, unsigned int output) = 0;
+	virtual IRenderTargetPtr getActiveOutputRenderTarget(void) = 0;
 
 	virtual bool setCurrentOutput(unsigned int output) = 0;
 	virtual unsigned int getCurrentOutput(void) const = 0;

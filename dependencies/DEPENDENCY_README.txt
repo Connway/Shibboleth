@@ -5,9 +5,6 @@ trivial compilation fixes. I have also added a custom config header for projects
 that require them. My config header simply includes the appropriate header for
 the OS it is being compiled on.
 
-LibRaw has tons of warnings and had some silly errors involving unary minus on
-unsigned values. These have also been altered to compile.
-
 While not that much different than the original source, these packages ARE NOT
 the original source.
 
@@ -15,3 +12,6 @@ Libraries Affected:
 	LibTIFF
 	libjpeg
 	zlib
+	jansson (changed header files with the line #include <jansson_config.h> to #include "jansson_config.h")
+	assimp (changed '#include "../contrib/unzip/unzip.h' lines to "#include <unzip.h>", as I already have minizip compiled into a separate lib)
+	minizip (commented out a block that says #define _CRT_SECURE_NO_WARNINGS, as I have it defined at the project level)

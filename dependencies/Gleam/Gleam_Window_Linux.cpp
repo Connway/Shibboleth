@@ -20,10 +20,18 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
+#ifdef __linux__
+
 #include "Gleam_Window_Linux.h"
-#include "Gaff_IncludeAssert.h"
-#include <iostream>
+#include "Gleam_RawInputRegisterFunction.h"
+#include <Gaff_IncludeAssert.h>
+#include <X11/extensions/XInput2.h>
+#include <X11/cursorfont.h>
 #include <cmath>
+
+#define _NET_WM_STATE_REMOVE    0
+#define _NET_WM_STATE_ADD       1
+#define _NET_WM_STATE_TOGGLE    2
 
 NS_GLEAM
 
@@ -38,16 +46,157 @@ typedef struct
 
 GleamArray<Window*> Window::gWindows;
 
-void Window::WindowProc(const XEvent& event)
+void Window::WindowProc(XEvent& event)
 {
 	char buffer[sizeof(AnyMessage)];
-	// char secondary_buffer[sizeof(AnyMessage)];
+	char secondary_buffer[sizeof(AnyMessage)];
+
+	if (event.xcookie.type == GenericEvent && event.xcookie.extension == gOpCode) {		
+		for (unsigned int i = 0; i < gWindows.size(); ++i) {
+			if (gWindows[i]->getDisplay() == event.xcookie.display) {
+				if (!XGetEventData(gWindows[i]->getDisplay(), &event.xcookie)) {
+					break;
+				}
+
+				AnyMessage* message = nullptr;
+				Window* window = gWindows[i];
+
+				switch (event.xcookie.evtype) {
+					case XI_ButtonPress: {
+						XIDeviceEvent* de = (XIDeviceEvent*)event.xcookie.data;
+
+						if (de->detail == 4 || de->detail == 5) {
+							message = (AnyMessage*)buffer;
+							message->base.type = IN_MOUSEWHEEL;
+							message->mouse_state.wheel = (de->detail == 4) ? 1 : -1;
+						} else if (de->detail == 8 || de->detail == 9) {
+							message = (AnyMessage*)buffer;
+							message->base.type = IN_MOUSEDOWN;
+							message->mouse_state.button = (MouseCode)(de->detail - 5);
+						} else if (de->detail < 4) {
+							message = (AnyMessage*)buffer;
+							message->base.type = IN_MOUSEDOWN;
+							message->mouse_state.button = (MouseCode)(de->detail - 1);
+						}
+					} break;
+
+					case XI_ButtonRelease: {
+						XIDeviceEvent* de = (XIDeviceEvent*)event.xcookie.data;
+
+						if (de->detail == 8 || de->detail == 9) {
+							message = (AnyMessage*)buffer;
+							message->base.type = IN_MOUSEUP;
+							message->mouse_state.button = (MouseCode)(de->detail - 5);
+						} else if (de->detail < 4) {
+							message = (AnyMessage*)buffer;
+							message->base.type = IN_MOUSEUP;
+							message->mouse_state.button = (MouseCode)(de->detail - 1);
+						}
+					} break;
+
+					case XI_RawMotion: {
+						XIRawEvent* re = (XIRawEvent*)event.xcookie.data;
+
+						// Ignore mouse wheel
+						if (!XIMaskIsSet(re->valuators.mask, 0) && !XIMaskIsSet(re->valuators.mask, 1)) {
+							break;
+						}
+
+						message = (AnyMessage*)buffer;
+						message->base.type = IN_MOUSEMOVE;
+
+						// We have DX and DY changes together
+						if (XIMaskIsSet(re->valuators.mask, 0) && XIMaskIsSet(re->valuators.mask, 1)) {
+							message->mouse_move.dx = (int)re->raw_values[0];
+							message->mouse_move.dy = (int)re->raw_values[1];
+
+						// If only sending DX/DY changes, need to figure out which one it is and grab the first raw_value
+						} else if (XIMaskIsSet(re->valuators.mask, 0)) {
+							message->mouse_move.dx = (int)re->raw_values[0];
+							message->mouse_move.dy = 0;
+						} else if (XIMaskIsSet(re->valuators.mask, 1)) {
+							message->mouse_move.dx = 0;
+							message->mouse_move.dy = (int)re->raw_values[0];
+						}
+
+						// Grab the mouse X/Y position relative to the window's top-left corner
+						double root_x, root_y, win_x, win_y;
+						::Window root, child;
+						XIButtonState button_state;
+						XIModifierState mods;
+						XIGroupState group;
+
+						XIQueryPointer(window->getDisplay(), re->deviceid, window->getWindow(), &root, &child, &root_x, &root_y, &win_x, &win_y, &button_state, &mods, &group);
+
+						// Make sure the cursor is contained within the window.
+						// If it is not, move it inside the window.
+						if (window->_contain) {
+							bool moved = false;
+
+							if (win_x < 0.0) {
+								win_x = 0.0;
+								moved = true;
+							} else if (win_x > (double)window->_width) {
+								win_x = (double)window->_width;
+								moved = true;
+							}
+
+							if (win_y < 0.0) {
+								win_y = 0.0;
+								moved = true;
+							} else if (win_y > (double)window->_height) {
+								win_y = (double)window->_height;
+								moved = true;
+							}
+
+							// This is not working 100%.
+							// There's a frame of two where the mouse is actually outside the window.
+							if (moved) {
+								XWarpPointer(
+									window->_display, None, window->_window,
+									0, 0, 0, 0, (int)win_x, (int)win_y
+								);
+
+								XFlush(window->_display);
+							}
+						}
+
+						message->mouse_move.x = (int)win_x;
+						message->mouse_move.y = (int)win_y;
+					} break;
+
+					case XI_KeyPress: {
+						XIDeviceEvent* de = (XIDeviceEvent*)event.xcookie.data;
+						message = (AnyMessage*)buffer;
+						message->base.type = IN_KEYDOWN;
+						message->key_char.key = (KeyCode)de->detail;
+					} break;
+
+					case XI_KeyRelease: {
+						XIDeviceEvent* de = (XIDeviceEvent*)event.xcookie.data;
+						message = (AnyMessage*)buffer;
+						message->base.type = IN_KEYUP;
+						message->key_char.key = (KeyCode)de->detail;
+					} break;
+				}
+
+				XFreeEventData(window->getDisplay(), &event.xcookie);
+
+				if (message) {
+					message->base.window = window;
+					window->handleMessage(message);
+				}
+
+				break;
+			}
+		}
+	}
 
 	// if we make more than one window in our application
 	for (unsigned int i = 0; i < gWindows.size(); ++i) {
 		if (gWindows[i]->getWindow() == event.xany.window) {
 			AnyMessage* message = nullptr;
-			//AnyMessage* secondary_message = nullptr;
+			AnyMessage* secondary_message = nullptr;
 			Window* window = gWindows[i];
 
 			switch (event.type) {
@@ -65,123 +214,48 @@ void Window::WindowProc(const XEvent& event)
 					message->base.type = WND_DESTROYED;
 					break;
 
-				case ResizeRequest:
-					window->_width = event.xresizerequest.width;
-					window->_height = event.xresizerequest.height;
+				case ConfigureNotify:
+					if (event.xconfigure.width != (int)window->_width ||
+						event.xconfigure.height != (int)window->_height) {
 
-					message = (AnyMessage*)buffer;
-					message->base.type = WND_RESIZED;
+						message = (AnyMessage*)buffer;
+						message->base.type = WND_RESIZED;
 
-					// if (event.xconfigure.x != window->_pos_x ||
-					// 	event.xconfigure.y != window->_pos_x) {
+						window->_width = event.xconfigure.width;
+						window->_height = event.xconfigure.height;
+					}
+
+					if (event.xconfigure.x != window->_pos_x ||
+						event.xconfigure.y != window->_pos_x) {
 						
-					// 	window->_pos_x = event.xconfigure.x;
-					// 	window->_pos_y = event.xconfigure.y;
+						AnyMessage* msg = nullptr;
 
-					// 	AnyMessage* msg;
+						window->_pos_x = event.xconfigure.x;
+						window->_pos_y = event.xconfigure.y;
 
-					// 	if (message) {
-					// 		secondary_message = (AnyMessage*)secondary_buffer;
-					// 		msg = secondary_message;
-					// 	} else {
-					// 	}
-
-					// 	msg->base.type = WND_MOVED;
-					// }
-					break;
-
-				case KeyPress:
-					// Only send one event for each KeyPress. No repeating events.
-					if (window->_no_repeats && window->_prev_keycode == event.xkey.keycode) {
-						break;
-					}
-
-					message = (AnyMessage*)buffer;
-					message->base.type = IN_KEYDOWN;
-					message->key_char.key = (KeyCode)XLookupKeysym((XKeyEvent*)&event.xkey, 0);
-
-					window->_prev_keycode = event.xkey.keycode;
-
-					// convert keysym to character code
-					// secondary_message = (AnyMessage*)secondary_buffer;
-					// secondary_message->base.type = IN_CHARACTER;
-					// secondary_message->key_char.character = event.xkey.keycode;
-					break;
-
-				case KeyRelease: {
-					// emulate how Windows does it's key repeat
-					if (XEventsQueued(window->getDisplay(), QueuedAfterReading)) {
-						XEvent next_event;
-						XPeekEvent(window->getDisplay(), &next_event);
-
-						// If the next event is a KeyPress with the same keycode as us, we didn't actually
-						// release the key
-						if (next_event.type == KeyPress && next_event.xkey.time == event.xkey.time &&
-							next_event.xkey.keycode == event.xkey.keycode) {
-
-							break;
+						if (message) {
+							secondary_message = (AnyMessage*)secondary_buffer;
+							msg = secondary_message;
+						} else {
+							message = (AnyMessage*)buffer;
+							msg = message;
 						}
+
+						msg->base.type = WND_MOVED;
 					}
-
-					message = (AnyMessage*)buffer;
-					message->base.type = IN_KEYUP;
-					message->key_char.key = (KeyCode)XLookupKeysym((XKeyEvent*)&event.xkey, 0);
-				} break;
-
-				case MotionNotify:
-					message = (AnyMessage*)buffer;
-					message->base.type = IN_MOUSEMOVE;
-					message->mouse_move.x = event.xmotion.x;
-					message->mouse_move.y = event.xmotion.y;
-
-					if (window->_first_mouse) {
-						window->_first_mouse = false;
-						message->mouse_move.dx = 0;
-						message->mouse_move.dy = 0;
-					} else {
-						message->mouse_move.dx = message->mouse_move.x - window->_mouse_prev_x;
-						message->mouse_move.dy = message->mouse_move.y - window->_mouse_prev_y;
-					}
-
-					window->_mouse_prev_x = message->mouse_move.x;
-					window->_mouse_prev_y = message->mouse_move.y;
-					break;
-
-				case ButtonPress:
-					message = (AnyMessage*)buffer;
-
-					if (event.xbutton.button == Button4 || event.xbutton.button == Button5) {
-						message->base.type = IN_MOUSEWHEEL;
-						message->mouse_state.wheel = (event.xbutton.button == Button4) ? 1 : -1;
-
-					} else {
-						message->base.type = IN_MOUSEDOWN;
-						message->mouse_state.button = (MouseCode)(event.xbutton.button - 1);
-					}
-					break;
-
-				case ButtonRelease:
-					message = (AnyMessage*)buffer;
-					message->base.type = IN_MOUSEUP;
-					message->mouse_state.button = (MouseCode)(event.xbutton.button - 1);
 					break;
 			}
-
-			// if (secondary_message) {
-			// 	secondary_message->base.window = window;
-			// }
 
 			if (message) {
 				message->base.window = window;
-
-				for (unsigned int j = 0; j < window->_window_callbacks.size(); ++j) {
-					window->_window_callbacks[j](*message);
-
-					//if (secondary_message) {
-					//	window->_window_callbacks[j](*secondary_message);
-					//}
-				}
+				window->handleMessage(message);
 			}
+
+			if (secondary_message) {
+				secondary_message->base.window = window;
+				window->handleMessage(secondary_message);
+			}
+
 			break;
 		}
 	}
@@ -190,10 +264,9 @@ void Window::WindowProc(const XEvent& event)
 
 Window::Window(void):
 	_application_name(nullptr), _window_mode(FULLSCREEN),
-	_no_repeats(false), _contain(false), _display(nullptr),
-	_visual_info(nullptr), _window(0), _delete_window(None),
-	_protocols(None), _prev_keycode(0), _mouse_prev_x(0),
-	_mouse_prev_y(0), _first_mouse(true)
+	_cursor_visible(true), _no_repeats(false), _contain(false),
+	_display(nullptr), _visual_info(nullptr), _window(0),
+	_delete_window(None), _protocols(None)
 {
 }
 
@@ -220,7 +293,7 @@ bool Window::init(const GChar* app_name, MODE window_mode,
 	}
 
 	GLint att[] = { GLX_RGBA, GLX_DEPTH_SIZE, 24, GLX_DOUBLEBUFFER, None };
-	_visual_info = glXChooseVisual(_display, 0, att);
+	_visual_info = glXChooseVisual(_display, DefaultScreen(_display), att);
 
 	if (!_visual_info) {
 		return false;
@@ -229,11 +302,9 @@ bool Window::init(const GChar* app_name, MODE window_mode,
 	XSetWindowAttributes swa;
 	swa.border_pixel = 0;
 	swa.colormap = XCreateColormap(_display, root, _visual_info->visual, AllocNone);
-	swa.event_mask = ExposureMask | KeyPressMask | KeyReleaseMask |
-					ButtonPressMask | ButtonReleaseMask |
-					EnterWindowMask | LeaveWindowMask |
-					PointerMotionMask | ResizeRedirectMask |
-					FocusChangeMask | SubstructureNotifyMask;
+	swa.event_mask = ExposureMask | EnterWindowMask |
+					LeaveWindowMask | FocusChangeMask |
+					StructureNotifyMask | SubstructureNotifyMask;
 
 	int final_size = 0, final_rate = 0, num_sizes = 0, num_rates = 0;
 	short* rates = nullptr;
@@ -254,13 +325,11 @@ bool Window::init(const GChar* app_name, MODE window_mode,
 		case FULLSCREEN_WINDOWED:
 			pos_x = pos_y = 0;
 
-			if (!width || !height) {
-				XWindowAttributes attributes;
-				XGetWindowAttributes(_display, root, &attributes);
+			XWindowAttributes attributes;
+			XGetWindowAttributes(_display, root, &attributes);
 
-				width = attributes.width;
-				height = attributes.height;
-			}
+			width = attributes.width;
+			height = attributes.height;
 			break;
 
 		case FULLSCREEN: {
@@ -305,14 +374,6 @@ bool Window::init(const GChar* app_name, MODE window_mode,
 				width = 800;
 				height = 600;
 			}
-
-			if (pos_x < 0 || pos_y < 0) {
-				XWindowAttributes attributes;
-				XGetWindowAttributes(_display, root, &attributes);
-
-				pos_x = (attributes.width - width)  / 2;
-				pos_y = (attributes.height - height) / 2;
-			}
 			break;
 	}
 
@@ -323,10 +384,8 @@ bool Window::init(const GChar* app_name, MODE window_mode,
 	_window_mode = window_mode;
 	_refresh_rate = refresh_rate;
 
-	Rotation rotation;
-
 	_original_rate = XRRConfigCurrentRate(config);
-	_original_size = sizes[XRRConfigCurrentConfiguration(config, &rotation)];
+	_original_size = sizes[XRRConfigCurrentConfiguration(config, &_original_rotation)];
 
 	_window = XCreateWindow(_display, root, _pos_x, _pos_y, _width, _height, 0,
 							_visual_info->depth, InputOutput, _visual_info->visual,
@@ -349,10 +408,20 @@ bool Window::init(const GChar* app_name, MODE window_mode,
 	XSetStandardProperties(_display, _window, app_name, app_name, None, nullptr, 0, nullptr);
 
 	switch (_window_mode) {
+		// On Linux, FULLSCREEN and FULLSCREEN_WINDOWED are basically the same thing
+		case FULLSCREEN:
+			XRRSetScreenConfigAndRate(_display, config, root, final_size, _original_rotation, rates[final_rate], CurrentTime);
+
 		case FULLSCREEN_WINDOWED: {
 			Atom motif = XInternAtom(_display, "_MOTIF_WM_HINTS", False);
+			Atom state = XInternAtom(_display, "_NET_WM_STATE", False);
+			Atom fscreen = XInternAtom(_display, "_NET_WM_STATE_FULLSCREEN", False);
+			Atom max_vert = XInternAtom(_display, "_NET_WM_STATE_MAXIMIZED_VERT", False);
+			Atom max_horz = XInternAtom(_display, "_NET_WM_STATE_MAXIMIZED_HORZ", False);
 
-			if (motif == None) {
+			if (motif == None || state == None ||
+				max_vert == None || max_horz == None) {
+
 				XRRFreeScreenConfigInfo(config);
 				return false;
 			}
@@ -362,18 +431,23 @@ bool Window::init(const GChar* app_name, MODE window_mode,
 
 			XChangeProperty(_display, _window, motif, motif, 32, PropModeReplace, (unsigned char*)&hints, 5);
 
+			XEvent xev;
+			memset(&xev, 0, sizeof(xev));
+			xev.type = ClientMessage;
+			xev.xclient.window = _window;
+			xev.xclient.message_type = state;
+			xev.xclient.format = 32;
+			xev.xclient.data.l[0] = _NET_WM_STATE_ADD;
+			xev.xclient.data.l[1] = fscreen;
+			xev.xclient.data.l[2] = max_vert;
+			xev.xclient.data.l[3] = max_horz;
+			xev.xclient.data.l[4] = 0;
+
+			XSendEvent(_display, root, False, SubstructureRedirectMask | SubstructureNotifyMask, &xev);
 		} break;
-
-		case FULLSCREEN: {
-			XRRSetScreenConfigAndRate(_display, config, root, final_size, rotation, rates[final_rate], CurrentTime);
-
-			XGrabKeyboard(_display, _window, False, GrabModeAsync, GrabModeAsync, CurrentTime);
-			XGrabPointer(_display, _window, False, ButtonPressMask | ButtonReleaseMask | PointerMotionMask,
-						GrabModeAsync, GrabModeAsync, None, None, CurrentTime);
-		} break;
-
 
 		case WINDOWED:
+			// Nothing more to do
 			break;
 	}
 
@@ -387,9 +461,9 @@ bool Window::init(const GChar* app_name, MODE window_mode,
 
 void Window::destroy(void)
 {
-	setToOriginalResolutionRate();
-
 	if (_display) {
+		setToOriginalResolutionRate();
+
 		if (_window) {
 			XDestroyWindow(_display, _window);
 			_window = 0;
@@ -405,9 +479,6 @@ void Window::destroy(void)
 			break;
 		}
 	}
-
-	_first_mouse = true;
-	_prev_keycode = 0;
 }
 
 void Window::handleWindowMessages(void)
@@ -432,6 +503,8 @@ bool Window::removeWindowMessageHandler(WindowCallback callback)
 
 void Window::showCursor(bool show)
 {
+	_cursor_visible = show;
+
 	if (show) {
 		XUndefineCursor(_display, _window);
 
@@ -457,29 +530,48 @@ void Window::showCursor(bool show)
 	}
 }
 
+void Window::containCursor(bool contain)
+{
+	_contain = contain;
+}
+
+bool Window::isCursorVisible(void) const
+{
+	return _cursor_visible;
+}
+
+bool Window::isCursorContained(void) const
+{
+	return _contain;
+}
+
 void Window::allowRepeats(bool allow)
 {
 	_no_repeats = !allow;
 }
 
-void Window::containCursor(bool contain)
+bool Window::areRepeatsAllowed(void) const
 {
-	_contain = contain;
-	XUngrabPointer(_display, CurrentTime);
-	XGrabPointer(_display, _window, (_window_mode == FULLSCREEN) ? False : True, ButtonPressMask | ButtonReleaseMask | PointerMotionMask,
-				GrabModeAsync, GrabModeAsync, (contain) ? _window : None, None, CurrentTime);
+	return !_no_repeats;
 }
 
-bool Window::setWindowMode(MODE window_mode, int width, int height)
+bool Window::setWindowMode(MODE window_mode, int width, int height, short refresh_rate)
 {
-	if (_window_mode == FULLSCREEN || _window_mode == FULLSCREEN_WINDOWED) {
-		setToOriginalResolutionRate();
-		XUngrabKeyboard(_display, CurrentTime);
-		XUngrabPointer(_display, CurrentTime);
+	if (window_mode == window_mode && width == _width &&
+		height == _height && refresh_rate == _refresh_rate) {
+		return true;
 	}
+
+	setToOriginalResolutionRate();
 
 	switch (window_mode) {
 		case FULLSCREEN: {
+			// If not defined, just use the desktop resolution
+			if (!width || !height) {
+				width = _width; 
+				height = _height;
+			}
+
 			::Window root = DefaultRootWindow(_display);
 			int num_sizes;
 
@@ -494,7 +586,7 @@ bool Window::setWindowMode(MODE window_mode, int width, int height)
 				return false;
 			}
 
-			int index = chooseClosestResolution(sizes, num_sizes, _width, _height);
+			int index = chooseClosestResolution(sizes, num_sizes, width, height);
 
 			if (index < 0) {
 				XRRFreeScreenConfigInfo(config);
@@ -509,97 +601,86 @@ bool Window::setWindowMode(MODE window_mode, int width, int height)
 				return false;
 			}
 
-			int final_rate = chooseClosestRate(rates, num_rates, _refresh_rate);
+			int final_rate = chooseClosestRate(rates, num_rates, refresh_rate);
 			
 			if (final_rate < 0) {
 				XRRFreeScreenConfigInfo(config);
 				return false;
 			}
 
+			_width = sizes[index].width;
+			_width = sizes[index].height;
 			_refresh_rate = rates[final_rate];
 
-			printf("%d %d %d %d\n", sizes[index].width, sizes[index].height, _width, _height);
-
-			Rotation rotation;
-			XRRSetScreenConfigAndRate(_display, config, root, index,
-									XRRConfigRotations(config, &rotation),
-									_refresh_rate, CurrentTime);
+			XRRSetScreenConfigAndRate(
+				_display, config, root, index,
+				_original_rotation, _refresh_rate, CurrentTime
+			);
 			XRRFreeScreenConfigInfo(config);
+		}
 
-			Atom state = XInternAtom(_display, "_NET_WM_STATE", False);
-			Atom fscreen = XInternAtom(_display, "_NET_WM_STATE_FULLSCREEN", False);
-
-			if (state == None || fscreen == None) {
-				return false;
-			}
-
-			XEvent xev;
-			memset(&xev, 0, sizeof(xev));
-			xev.type = ClientMessage;
-			xev.xclient.window = _window;
-			xev.xclient.message_type = state;
-			xev.xclient.format = 32;
-			xev.xclient.data.l[0] = 1;
-			xev.xclient.data.l[1] = fscreen;
-			xev.xclient.data.l[2] = 0;
-
-			XSendEvent(_display, root, False, SubstructureRedirectMask | SubstructureNotifyMask, &xev);
-
-			XGrabKeyboard(_display, _window, False, GrabModeAsync, GrabModeAsync, CurrentTime);
-			XGrabPointer(_display, _window, False, ButtonPressMask | ButtonReleaseMask | PointerMotionMask,
-						GrabModeAsync, GrabModeAsync, (_window_mode == FULLSCREEN) ? _window : None, None, CurrentTime);
-		} break;
-
+		// Fullscreen will drop down to here and run this code as well
 		case FULLSCREEN_WINDOWED: {
+			Atom motif = XInternAtom(_display, "_MOTIF_WM_HINTS", False);
 			Atom state = XInternAtom(_display, "_NET_WM_STATE", False);
 			Atom fscreen = XInternAtom(_display, "_NET_WM_STATE_FULLSCREEN", False);
+			Atom max_vert = XInternAtom(_display, "_NET_WM_STATE_MAXIMIZED_VERT", False);
+			Atom max_horz = XInternAtom(_display, "_NET_WM_STATE_MAXIMIZED_HORZ", False);
 
-			if (state == None || fscreen == None) {
+			if (motif == None || state == None || fscreen == None || max_vert == None || max_horz == None) {
 				return false;
 			}
-
-			XEvent xev;
-			memset(&xev, 0, sizeof(xev));
-			xev.type = ClientMessage;
-			xev.xclient.window = _window;
-			xev.xclient.message_type = state;
-			xev.xclient.format = 32;
-			xev.xclient.data.l[0] = 0;
-			xev.xclient.data.l[1] = fscreen;
-			xev.xclient.data.l[2] = 0;
-
-			XSendEvent(_display, DefaultRootWindow(_display), False, SubstructureRedirectMask | SubstructureNotifyMask, &xev);
 
 			// Remove title bar
-			Atom motif = XInternAtom(_display, "_MOTIF_WM_HINTS", False);
-
-			if (motif == None) {
-				return false;
-			}
-
 			Hints hints = { 0 };
 			hints.flags = 2;
 
 			XChangeProperty(_display, _window, motif, motif, 32, PropModeReplace, (unsigned char*)&hints, 5);
 
+			XEvent xev;
+			memset(&xev, 0, sizeof(xev));
+			xev.type = ClientMessage;
+			xev.xclient.window = _window;
+			xev.xclient.message_type = state;
+			xev.xclient.format = 32;
+			xev.xclient.data.l[0] = _NET_WM_STATE_ADD;
+			xev.xclient.data.l[1] = fscreen;
+			xev.xclient.data.l[2] = max_vert;
+			xev.xclient.data.l[3] = max_horz;
+			xev.xclient.data.l[4] = 0;
+
+			XSendEvent(_display, DefaultRootWindow(_display), False, SubstructureRedirectMask | SubstructureNotifyMask, &xev);
+
 			_pos_x = _pos_y = 0;
-
-			XWindowAttributes attributes;
-			XGetWindowAttributes(_display, DefaultRootWindow(_display), &attributes);
-
-			_width = attributes.width;
-			_height = attributes.height;
 
 			XMoveResizeWindow(_display, _window, 0, 0, _width, _height);
 		} break;
 
 		case WINDOWED: {
+			if (!width || !height) {
+				width = 800;
+				height = 600;
+			}
+
+			_width = width;
+			_height = height;
+
+			Atom motif = XInternAtom(_display, "_MOTIF_WM_HINTS", False);
 			Atom state = XInternAtom(_display, "_NET_WM_STATE", False);
 			Atom fscreen = XInternAtom(_display, "_NET_WM_STATE_FULLSCREEN", False);
+			Atom max_vert = XInternAtom(_display, "_NET_WM_STATE_MAXIMIZED_VERT", False);
+			Atom max_horz = XInternAtom(_display, "_NET_WM_STATE_MAXIMIZED_HORZ", False);
 
-			if (state == None || fscreen == None) {
+			if (motif == None || state == None || fscreen == None || max_vert == None || max_horz == None) {
 				return false;
 			}
+
+			// Add title bar back
+			Hints hints = { 0 };
+			hints.flags = 2;
+			hints.decorations = 1;
+
+			XChangeProperty(_display, _window, motif, motif, 32, PropModeReplace, (unsigned char*)&hints, 5);
 
 			XEvent xev;
 			memset(&xev, 0, sizeof(xev));
@@ -607,24 +688,15 @@ bool Window::setWindowMode(MODE window_mode, int width, int height)
 			xev.xclient.window = _window;
 			xev.xclient.message_type = state;
 			xev.xclient.format = 32;
-			xev.xclient.data.l[0] = 0;
+			xev.xclient.data.l[0] = _NET_WM_STATE_REMOVE;
 			xev.xclient.data.l[1] = fscreen;
-			xev.xclient.data.l[2] = 0;
+			xev.xclient.data.l[2] = max_vert;
+			xev.xclient.data.l[3] = max_horz;
+			xev.xclient.data.l[4] = 0;
 
 			XSendEvent(_display, DefaultRootWindow(_display), False, SubstructureRedirectMask | SubstructureNotifyMask, &xev);
 
-			// Add title bar back
-			Atom motif = XInternAtom(_display, "_MOTIF_WM_HINTS", False);
-
-			if (motif == None) {
-				return false;
-			}
-
-			Hints hints = { 0 };
-			hints.flags = 2;
-			hints.decorations = 1;
-
-			XChangeProperty(_display, _window, motif, motif, 32, PropModeReplace, (unsigned char*)&hints, 5);
+			XMoveResizeWindow(_display, _window, _pos_x, _pos_y, _width, _height);
 		} break;
 	}
 
@@ -807,6 +879,15 @@ int Window::chooseClosestRate(short* rates, int num_rates, short rate)
 
 void Window::setToOriginalResolutionRate(void)
 {
+	if (_window_mode != FULLSCREEN || ((int)_width == _original_size.width &&
+		(int)_height == _original_size.height && _refresh_rate == _original_rate)) {
+
+		// Setting _width and _height for calls to setWindowMode()
+		_width = _original_size.width;
+		_height = _original_size.height;
+		return;
+	}
+
 	int num_sizes, size_index = -1;
 	::Window root = DefaultRootWindow(_display);
 	XRRScreenConfiguration* config = XRRGetScreenInfo(_display, root);
@@ -829,10 +910,13 @@ void Window::setToOriginalResolutionRate(void)
 		return;
 	}
 
-	Rotation rotation;
-	XRRSetScreenConfigAndRate(_display, config, root, size_index,
-							XRRConfigRotations(config, &rotation),
-							_original_rate, CurrentTime);
+	_width = sizes[size_index].width;
+	_height = sizes[size_index].height;
+
+	XRRSetScreenConfigAndRate(
+		_display, config, root, size_index,
+		_original_rotation, _original_rate, CurrentTime
+	);
 
 	XRRFreeScreenConfigInfo(config);
 }
@@ -854,4 +938,13 @@ bool Window::removeWindowMessageHandlerHelper(const Gaff::FunctionBinder<bool, c
 	return false;
 }
 
+void Window::handleMessage(AnyMessage* message)
+{
+	for (unsigned int i = 0; i < _window_callbacks.size(); ++i) {
+		_window_callbacks[i](*message);
+	}
+}
+
 NS_END
+
+#endif

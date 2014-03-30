@@ -35,9 +35,8 @@ public:
 	INLINE bool init(void);
 	INLINE void destroy(void);
 
-	INLINE void attach(const IShader* shader);
-	INLINE void detach(const IShader* shader);
-	bool link(void);
+	INLINE void attach(IShader* shader);
+	INLINE void detach(IShader::SHADER_TYPE shader);
 
 	INLINE void bind(IRenderDevice&);
 	INLINE void unbind(IRenderDevice&);
@@ -46,6 +45,8 @@ public:
 
 private:
 	unsigned int _program;
+
+	static unsigned int _stages[IShader::SHADER_TYPE_SIZE];
 };
 
 NS_END

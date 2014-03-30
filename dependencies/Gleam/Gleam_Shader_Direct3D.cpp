@@ -20,6 +20,8 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
+#if defined(_WIN32) || defined(_WIN64)
+
 #include "Gleam_Shader_Direct3D.h"
 #include "Gleam_RenderDevice_Direct3D.h"
 #include <d3dcompiler.h>
@@ -547,6 +549,9 @@ bool ShaderD3D::loadFile(const GChar* file_path, char*& shader_src, SIZE_T& shad
 
 		#ifdef _UNICODE
 			// convert file_path to ASCII
+			char dest[256] = { 0 };
+			wcstombs(dest, file_path, wcsnlen(file_path, 256));
+			msg += dest;
 		#else
 			msg += file_path;
 		#endif
@@ -610,3 +615,5 @@ ID3DBlob* ShaderD3D::compileShader(const char* shader_src, SIZE_T shader_size, /
 }
 
 NS_END
+
+#endif

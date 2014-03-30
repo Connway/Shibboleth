@@ -1491,9 +1491,6 @@ ILboolean ILAPIENTRY ilLoadF(ILenum Type, ILHANDLE File)
 	return IL_FALSE;
 }
 
-// Forward...
-ILboolean __stdcall skiaLoadImage(void* buf, size_t bufSize);
-
 //! Attempts to load an image from a memory buffer.  The file format is specified by the user.
 /*! \param Type Format of this file.  Acceptable values are IL_BLP, IL_BMP, IL_CUT, IL_DCX, IL_DDS,
 	IL_DICOM, IL_DOOM, IL_DOOM_FLAT, IL_DPX, IL_EXR, IL_FITS, IL_FTX, IL_GIF, IL_HDR, IL_ICO, IL_ICNS,
@@ -1510,10 +1507,6 @@ ILboolean ILAPIENTRY ilLoadL(ILenum Type, const void *Lump, ILuint Size)
 		ilSetError(IL_INVALID_PARAM);
 		return IL_FALSE;
 	}
-
-   /*if (skiaLoadImage(Lump, Size)) {
-      return IL_TRUE;
-   }*/
 
 	if (Type == IL_TYPE_UNKNOWN)
 		Type = ilDetermineTypeL(Lump, Size);

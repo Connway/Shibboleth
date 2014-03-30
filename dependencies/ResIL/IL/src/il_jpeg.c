@@ -62,8 +62,9 @@
 	#endif
 #endif
 
-
+// Global variables
 static ILboolean jpgErrorOccured = IL_FALSE;
+jmp_buf	JpegJumpBuffer;
 
 // define a protype of ilLoadFromJpegStruct
 ILboolean ilLoadFromJpegStruct(void *_JpegInfo);
@@ -305,8 +306,6 @@ devil_jpeg_read_init (j_decompress_ptr cinfo)
 	src->pub.next_input_byte = NULL;  // until buffer loaded
 }
 
-
-jmp_buf	JpegJumpBuffer;
 
 static void iJpegErrorExit( j_common_ptr cinfo )
 {

@@ -1,6 +1,6 @@
 /*
    AngelCode Scripting Library
-   Copyright (c) 2003-2013 Andreas Jonsson
+   Copyright (c) 2003-2014 Andreas Jonsson
 
    This software is provided 'as-is', without any express or implied
    warranty. In no event will the authors be held liable for any
@@ -58,8 +58,8 @@ BEGIN_AS_NAMESPACE
 
 // AngelScript version
 
-#define ANGELSCRIPT_VERSION        22701
-#define ANGELSCRIPT_VERSION_STRING "2.27.1"
+#define ANGELSCRIPT_VERSION        22802
+#define ANGELSCRIPT_VERSION_STRING "2.28.2"
 
 // Data types
 
@@ -76,6 +76,39 @@ class asIThreadManager;
 class asILockableSharedBool;
 
 // Enumerations and constants
+
+// Return codes
+enum asERetCodes
+{
+	asSUCCESS                              =  0,
+	asERROR                                = -1,
+	asCONTEXT_ACTIVE                       = -2,
+	asCONTEXT_NOT_FINISHED                 = -3,
+	asCONTEXT_NOT_PREPARED                 = -4,
+	asINVALID_ARG                          = -5,
+	asNO_FUNCTION                          = -6,
+	asNOT_SUPPORTED                        = -7,
+	asINVALID_NAME                         = -8,
+	asNAME_TAKEN                           = -9,
+	asINVALID_DECLARATION                  = -10,
+	asINVALID_OBJECT                       = -11,
+	asINVALID_TYPE                         = -12,
+	asALREADY_REGISTERED                   = -13,
+	asMULTIPLE_FUNCTIONS                   = -14,
+	asNO_MODULE                            = -15,
+	asNO_GLOBAL_VAR                        = -16,
+	asINVALID_CONFIGURATION                = -17,
+	asINVALID_INTERFACE                    = -18,
+	asCANT_BIND_ALL_FUNCTIONS              = -19,
+	asLOWER_ARRAY_DIMENSION_NOT_REGISTERED = -20,
+	asWRONG_CONFIG_GROUP                   = -21,
+	asCONFIG_GROUP_IS_IN_USE               = -22,
+	asILLEGAL_BEHAVIOUR_FOR_TYPE           = -23,
+	asWRONG_CALLING_CONV                   = -24,
+	asBUILD_IN_PROGRESS                    = -25,
+	asINIT_GLOBAL_VARS_FAILED              = -26,
+	asOUT_OF_MEMORY                        = -27
+};
 
 // Engine properties
 enum asEEngineProp
@@ -99,7 +132,9 @@ enum asEEngineProp
 	asEP_DISALLOW_GLOBAL_VARS               = 17,
 	asEP_ALWAYS_IMPL_DEFAULT_CONSTRUCT      = 18,
 	asEP_COMPILER_WARNINGS                  = 19,
-	asEP_DISALLOW_VALUE_ASSIGN_FOR_REF_TYPE = 20
+	asEP_DISALLOW_VALUE_ASSIGN_FOR_REF_TYPE = 20,
+
+	asEP_LAST_PROPERTY
 };
 
 // Calling conventions
@@ -163,6 +198,7 @@ enum asEBehaviours
 {
 	// Value object memory management
 	asBEHAVE_CONSTRUCT,
+	asBEHAVE_LIST_CONSTRUCT,
 	asBEHAVE_DESTRUCT,
 
 	// Reference object memory management
@@ -189,39 +225,6 @@ enum asEBehaviours
 	asBEHAVE_LAST_GC = asBEHAVE_RELEASEREFS,
 
 	asBEHAVE_MAX
-};
-
-// Return codes
-enum asERetCodes
-{
-	asSUCCESS                              =  0,
-	asERROR                                = -1,
-	asCONTEXT_ACTIVE                       = -2,
-	asCONTEXT_NOT_FINISHED                 = -3,
-	asCONTEXT_NOT_PREPARED                 = -4,
-	asINVALID_ARG                          = -5,
-	asNO_FUNCTION                          = -6,
-	asNOT_SUPPORTED                        = -7,
-	asINVALID_NAME                         = -8,
-	asNAME_TAKEN                           = -9,
-	asINVALID_DECLARATION                  = -10,
-	asINVALID_OBJECT                       = -11,
-	asINVALID_TYPE                         = -12,
-	asALREADY_REGISTERED                   = -13,
-	asMULTIPLE_FUNCTIONS                   = -14,
-	asNO_MODULE                            = -15,
-	asNO_GLOBAL_VAR                        = -16,
-	asINVALID_CONFIGURATION                = -17,
-	asINVALID_INTERFACE                    = -18,
-	asCANT_BIND_ALL_FUNCTIONS              = -19,
-	asLOWER_ARRAY_DIMENSION_NOT_REGISTERED = -20,
-	asWRONG_CONFIG_GROUP                   = -21,
-	asCONFIG_GROUP_IS_IN_USE               = -22,
-	asILLEGAL_BEHAVIOUR_FOR_TYPE           = -23,
-	asWRONG_CALLING_CONV                   = -24,
-	asBUILD_IN_PROGRESS                    = -25,
-	asINIT_GLOBAL_VARS_FAILED              = -26,
-	asOUT_OF_MEMORY                        = -27
 };
 
 // Context states
@@ -376,6 +379,15 @@ typedef void (*asCLEANCONTEXTFUNC_t)(asIScriptContext *);
 typedef void (*asCLEANFUNCTIONFUNC_t)(asIScriptFunction *);
 typedef void (*asCLEANOBJECTTYPEFUNC_t)(asIObjectType *);
 
+// Check if the compiler can use C++11 features
+#if !defined(_MSC_VER) || _MSC_VER >= 1700   // MSVC 2012
+#if !defined(__GNUC__) || __GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ >= 7)  // gnuc 4.7
+#if !(defined(__GNUC__) && defined(__cplusplus) && __cplusplus < 201103L) // g++ -std=c++11
+#define AS_CAN_USE_CPP11 1
+#endif
+#endif
+#endif
+
 // This macro does basically the same thing as offsetof defined in stddef.h, but
 // GNUC should not complain about the usage as I'm not using 0 as the base pointer.
 #define asOFFSET(s,m) ((size_t)(&reinterpret_cast<s*>(100000)->m)-100000)
@@ -398,7 +410,7 @@ typedef void (asCUnknownClass::*asMETHOD_t)();
 
 struct asSFuncPtr
 {
-	asSFuncPtr(asBYTE f)
+	asSFuncPtr(asBYTE f = 0)
 	{
 		for( size_t n = 0; n < sizeof(ptr.dummy); n++ )
 			ptr.dummy[n] = 0;
@@ -617,10 +629,12 @@ public:
 	// Script modules
 	virtual asIScriptModule *GetModule(const char *module, asEGMFlags flag = asGM_ONLY_IF_EXISTS) = 0;
 	virtual int              DiscardModule(const char *module) = 0;
+	virtual asUINT           GetModuleCount() const = 0;
+	virtual asIScriptModule *GetModuleByIndex(asUINT index) const = 0;
 
 	// Script functions
 	virtual asIScriptFunction *GetFunctionById(int funcId) const = 0;
-    virtual asIScriptFunction *GetFuncDefFromTypeId(int typeId) const = 0;
+	virtual asIScriptFunction *GetFuncDefFromTypeId(int typeId) const = 0;
 
 	// Type identification
 	virtual asIObjectType *GetObjectTypeById(int typeId) const = 0;
@@ -812,7 +826,7 @@ public:
 	virtual int                GetLineNumber(asUINT stackLevel = 0, int *column = 0, const char **sectionName = 0) = 0;
 	virtual int                GetVarCount(asUINT stackLevel = 0) = 0;
 	virtual const char        *GetVarName(asUINT varIndex, asUINT stackLevel = 0) = 0;
-	virtual const char        *GetVarDeclaration(asUINT varIndex, asUINT stackLevel = 0) = 0;
+	virtual const char        *GetVarDeclaration(asUINT varIndex, asUINT stackLevel = 0, bool includeNamespace = false) = 0;
 	virtual int                GetVarTypeId(asUINT varIndex, asUINT stackLevel = 0) = 0;
 	virtual void              *GetAddressOfVar(asUINT varIndex, asUINT stackLevel = 0) = 0;
 	virtual bool               IsVarInScope(asUINT varIndex, asUINT stackLevel = 0) = 0;
@@ -935,7 +949,7 @@ public:
 	// Properties
 	virtual asUINT      GetPropertyCount() const = 0;
 	virtual int         GetProperty(asUINT index, const char **name, int *typeId = 0, bool *isPrivate = 0, int *offset = 0, bool *isReference = 0, asDWORD *accessMask = 0) const = 0;
-	virtual const char *GetPropertyDeclaration(asUINT index) const = 0;
+	virtual const char *GetPropertyDeclaration(asUINT index, bool includeNamespace = false) const = 0;
 
 	// Behaviours
 	virtual asUINT             GetBehaviourCount() const = 0;
@@ -994,7 +1008,7 @@ public:
 	// Debug information
 	virtual asUINT           GetVarCount() const = 0;
 	virtual int              GetVar(asUINT index, const char **name, int *typeId = 0) const = 0;
-	virtual const char      *GetVarDecl(asUINT index) const = 0;
+	virtual const char      *GetVarDecl(asUINT index, bool includeNamespace = false) const = 0;
 	virtual int              FindNextLineWithCode(int line) const = 0;
 
 	// For JIT compilation
@@ -1419,8 +1433,19 @@ enum asEBCInstr
 	asBC_RefCpyV		= 186,
 	asBC_JLowZ			= 187,
 	asBC_JLowNZ			= 188,
+	asBC_AllocMem		= 189,
+	asBC_SetListSize	= 190,
+	asBC_PshListElmnt	= 191,
+	asBC_SetListType	= 192,
+	asBC_POWi			= 193,
+	asBC_POWu			= 194,
+	asBC_POWf			= 195,
+	asBC_POWd			= 196,
+	asBC_POWdi			= 197,
+	asBC_POWi64			= 198,
+	asBC_POWu64			= 199,
 
-	asBC_MAXBYTECODE	= 189,
+	asBC_MAXBYTECODE	= 200,
 
 	// Temporary tokens. Can't be output to the final program
 	asBC_VarDecl		= 251,
@@ -1452,11 +1477,12 @@ enum asEBCType
 	asBCTYPE_QW_DW_ARG    = 16,
 	asBCTYPE_rW_QW_ARG    = 17,
 	asBCTYPE_W_DW_ARG     = 18,
-	asBCTYPE_rW_W_DW_ARG  = 19
+	asBCTYPE_rW_W_DW_ARG  = 19,
+	asBCTYPE_rW_DW_DW_ARG = 20
 };
 
 // Instruction type sizes
-const int asBCTypeSize[20] =
+const int asBCTypeSize[21] =
 {
 	0, // asBCTYPE_INFO
 	1, // asBCTYPE_NO_ARG
@@ -1477,7 +1503,8 @@ const int asBCTypeSize[20] =
 	4, // asBCTYPE_QW_DW_ARG
 	3, // asBCTYPE_rW_QW_ARG
 	2, // asBCTYPE_W_DW_ARG
-	3  // asBCTYPE_rW_W_DW_ARG
+	3, // asBCTYPE_rW_W_DW_ARG
+	3  // asBCTYPE_rW_DW_DW_ARG
 };
 
 // Instruction info
@@ -1701,18 +1728,18 @@ const asSBCInfo asBCInfo[256] =
 	asBCINFO(RefCpyV,	wW_PTR_ARG,		0),
 	asBCINFO(JLowZ,		DW_ARG,			0),
 	asBCINFO(JLowNZ,	DW_ARG,			0),
+	asBCINFO(AllocMem,	wW_DW_ARG,		0),
+	asBCINFO(SetListSize, rW_DW_DW_ARG,	0),
+	asBCINFO(PshListElmnt, rW_DW_ARG,	AS_PTR_SIZE),
+	asBCINFO(SetListType, rW_DW_DW_ARG,	0),
+	asBCINFO(POWi,		wW_rW_rW_ARG,	0),
+	asBCINFO(POWu,		wW_rW_rW_ARG,	0),
+	asBCINFO(POWf,		wW_rW_rW_ARG,	0),
+	asBCINFO(POWd,		wW_rW_rW_ARG,	0),
+	asBCINFO(POWdi,		wW_rW_rW_ARG,	0),
+	asBCINFO(POWi64,	wW_rW_rW_ARG,	0),
+	asBCINFO(POWu64,	wW_rW_rW_ARG,	0),
 
-	asBCINFO_DUMMY(189),
-	asBCINFO_DUMMY(190),
-	asBCINFO_DUMMY(191),
-	asBCINFO_DUMMY(192),
-	asBCINFO_DUMMY(193),
-	asBCINFO_DUMMY(194),
-	asBCINFO_DUMMY(195),
-	asBCINFO_DUMMY(196),
-	asBCINFO_DUMMY(197),
-	asBCINFO_DUMMY(198),
-	asBCINFO_DUMMY(199),
 	asBCINFO_DUMMY(200),
 	asBCINFO_DUMMY(201),
 	asBCINFO_DUMMY(202),
@@ -1773,11 +1800,11 @@ const asSBCInfo asBCInfo[256] =
 };
 
 // Macros to access bytecode instruction arguments
-#define asBC_DWORDARG(x)  (asDWORD(*(x+1)))
-#define asBC_INTARG(x)    (int(*(x+1)))
-#define asBC_QWORDARG(x)  (*(asQWORD*)(x+1))
-#define asBC_FLOATARG(x)  (*(float*)(x+1))
-#define asBC_PTRARG(x)    (*(asPWORD*)(x+1))
+#define asBC_DWORDARG(x)  (*(((asDWORD*)x)+1))
+#define asBC_INTARG(x)    (*(int*)(((asDWORD*)x)+1))
+#define asBC_QWORDARG(x)  (*(asQWORD*)(((asDWORD*)x)+1))
+#define asBC_FLOATARG(x)  (*(float*)(((asDWORD*)x)+1))
+#define asBC_PTRARG(x)    (*(asPWORD*)(((asDWORD*)x)+1))
 #define asBC_WORDARG0(x)  (*(((asWORD*)x)+1))
 #define asBC_WORDARG1(x)  (*(((asWORD*)x)+2))
 #define asBC_SWORDARG0(x) (*(((short*)x)+1))

@@ -38,6 +38,14 @@ NS_GLEAM
 
 struct COMPILERALIGN16 SIMDMaskStruct
 {
+	SIMDMaskStruct(unsigned int a, unsigned int b, unsigned int c, unsigned int d)
+	{
+		ints[0] = a;
+		ints[1] = b;
+		ints[2] = c;
+		ints[3] = d;
+	}
+
 	union
 	{
 		unsigned int ints[4];

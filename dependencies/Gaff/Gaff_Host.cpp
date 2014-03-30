@@ -144,7 +144,7 @@ void Host::waitForEvent(NetworkEventCallback& callback, unsigned int timeout)
 		}
 
 		NetworkCallbackData data = {
-			*this, (NetworkEventType)event.type,
+			this, (NetworkEventType)event.type,
 			(PeerIDType)event.peer, event.channelID,
 			event.data, (event.packet) ? event.packet->data : nullptr,
 			(event.packet) ? event.packet->dataLength : 0
@@ -171,7 +171,7 @@ void Host::checkForEvent(NetworkEventCallback& callback)
 		}
 
 		NetworkCallbackData data = {
-			*this, (NetworkEventType)event.type,
+			this, (NetworkEventType)event.type,
 			(PeerIDType)event.peer, event.channelID,
 			event.data, (event.packet) ? event.packet->data : nullptr,
 			(event.packet) ? event.packet->dataLength : 0

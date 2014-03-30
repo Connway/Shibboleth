@@ -27,19 +27,10 @@ THE SOFTWARE.
 #include "Gleam_Global.h"
 #include "Gaff_IncludeAssert.h"
 
-#ifdef USE_DI
-	#include "Gleam_Keyboard_DirectInput.h"
-	#include "Gleam_Mouse_DirectInput.h"
-#endif
-
 NS_GLEAM
 
 InputManager::InputManager(void):
-#ifdef USE_DI
-	_dinput(nullptr), _window(nullptr)
-#else
 	_window(nullptr)
-#endif
 {
 }
 
@@ -50,13 +41,7 @@ InputManager::~InputManager(void)
 bool InputManager::init(const Window& window)
 {
 	_window = &window;
-
-#ifdef USE_DI
-	HRESULT result = DirectInput8Create(window.getHInstance(), DIRECTINPUT_VERSION, IID_IDirectInput8, (void**)&_dinput, nullptr);
-	return SUCCEEDED(result);
-#else
 	return true;
-#endif
 }
 
 void InputManager::destroy(void)
@@ -66,22 +51,14 @@ void InputManager::destroy(void)
 	}
 
 	_input_devices.clear();
-
-#ifdef USE_DI
-	_dinput->Release();
-#endif
-
 	_window = nullptr;
 }
 
-bool InputManager::update(void)
+void InputManager::update(void)
 {
-	bool fail = false;
 	for (unsigned int i = 0; i < _input_devices.size(); ++i) {
-		fail = fail || !_input_devices[i]->update();
+		_input_devices[i]->update();
 	}
-
-	return !fail;
 }
 
 void InputManager::addInputDevice(IInputDevice* device)
@@ -108,26 +85,13 @@ IInputDevice* InputManager::getInputDevice(unsigned int i) const
 	return _input_devices[i];
 }
 
-IDirectInput8* InputManager::getDirectInput(void) const
-{
-#ifdef USE_DI
-	return _dinput;
-#else
-	return nullptr;
-#endif
-}
-
 IInputDevice* InputManager::createKeyboard(bool no_windows_key)
 {
 	assert(_window);
 
-#ifdef USE_DI
-	IInputDevice* keyboard = GleamAllocateT(KeyboardDI);
-#else
-	IInputDevice* keyboard = GleamAllocateT(KeyboardMP);
-#endif
+	IKeyboard* keyboard = GleamAllocateT(KeyboardMP);
 
-	if (!keyboard || !keyboard->init(*_window, getDirectInput(), no_windows_key)) {
+	if (!keyboard || !keyboard->init(*_window, no_windows_key)) {
 		return nullptr;
 	}
 
@@ -139,13 +103,9 @@ IInputDevice* InputManager::createMouse(void)
 {
 	assert(_window);
 
-#ifdef USE_DI
-	IInputDevice* mouse = GleamAllocateT(MouseDI);
-#else
-	IInputDevice* mouse = GleamAllocateT(MouseMP);
-#endif
+	IMouse* mouse = GleamAllocateT(MouseMP);
 
-	if (!mouse || !mouse->init(*_window, getDirectInput())) {
+	if (!mouse || !mouse->init(*_window)) {
 		return nullptr;
 	}
 

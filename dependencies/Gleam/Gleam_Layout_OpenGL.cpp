@@ -168,8 +168,14 @@ void LayoutGL::setLayout(IRenderDevice&, const IMesh* mesh)
 			layout_data = &ld[j];
 
 			glEnableVertexAttribArray(count);
+
+#if defined(_WIN64) || defined(__LP64__)
+			glVertexAttribPointer(count, layout_data->size, layout_data->type, layout_data->normalized,
+								stride, (void*)(unsigned long long)layout_data->aligned_byte_offset);
+#else
 			glVertexAttribPointer(count, layout_data->size, layout_data->type, layout_data->normalized,
 								stride, (void*)layout_data->aligned_byte_offset);
+#endif
 
 			++count;
 		}

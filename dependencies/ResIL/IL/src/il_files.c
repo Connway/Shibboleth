@@ -41,6 +41,8 @@ void 		*WriteLump = NULL;
 ILuint		ReadLumpPos = 0, ReadLumpSize = 0, ReadFileStart = 0, WriteFileStart = 0;
 ILuint		WriteLumpPos = 0, WriteLumpSize = 0;
 
+// Global variables: functions
+// Access would have to be protected by mutexes in a multithreaded environment
 fGetcProc	GetcProcCopy;
 fReadProc	ReadProcCopy;
 fSeekRProc	SeekProcCopy;
@@ -48,6 +50,8 @@ fTellRProc	TellProcCopy;
 ILHANDLE	(ILAPIENTRY *iopenCopy)(ILconst_string);
 void		(ILAPIENTRY *icloseCopy)(ILHANDLE);
 
+// Global variables: functions
+// Access would have to be protected by mutexes in a multithreaded environment
 fPutcProc	PutcProcCopy;
 fSeekWProc	SeekWProcCopy;
 fTellWProc	TellWProcCopy;
@@ -59,8 +63,9 @@ ILboolean	UseCache = IL_FALSE;
 ILubyte		*Cache = NULL;
 ILuint		CacheSize, CachePos, CacheStartPos, CacheBytesRead;
 
-// "Fake" size functions
-//  Definitions are in il_size.c.
+// Global variables: "Fake" size functions
+// Definitions are in il_size.c
+// Access would have to be protected by mutexes in a multithreaded environment
 ILint		ILAPIENTRY iSizeSeek(ILint Offset, ILuint Mode);
 ILuint		ILAPIENTRY iSizeTell(void);
 ILint		ILAPIENTRY iSizePutc(ILubyte Char);

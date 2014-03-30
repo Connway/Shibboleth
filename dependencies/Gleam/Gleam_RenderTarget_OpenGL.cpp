@@ -176,10 +176,10 @@ void RenderTargetGL::createFramebuffer(void)
 	}
 }
 
-RenderTargetGL::RenderTargetGL(int viewport_width, int viewport_height):
-	_frame_buffer(0), _attach_count(0),
-	_viewport_width(viewport_width), _viewport_height(viewport_height)
+void RenderTargetGL::setViewport(int viewport_width, int viewport_height)
 {
+	_viewport_width = viewport_width;
+	_viewport_height =viewport_height;
 }
 
 NS_END

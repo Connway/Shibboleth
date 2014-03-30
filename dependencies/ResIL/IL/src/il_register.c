@@ -18,7 +18,7 @@
 #include <string.h>
 
 
-// Linked lists of registered formats
+// Global variables: Linked lists of registered formats
 iFormatL *LoadProcs = NULL;
 iFormatS *SaveProcs = NULL;
 

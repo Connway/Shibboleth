@@ -25,24 +25,43 @@ THE SOFTWARE.
 #include "Gleam_Global.h"
 #include <Gaff_IAllocator.h>
 
+// Disable warning for no assignment operator generated
+#if defined(_WIN32) || defined(_WIN64)
+	#pragma warning(disable : 4512)
+#endif
+
 NS_GLEAM
 
 class ProxyAllocator : public Gaff::IAllocator
 {
 public:
-	ProxyAllocator(void)
+	explicit ProxyAllocator(Gaff::IAllocator& allocator = *GetAllocator()):
+			_allocator(allocator)
+	{
+	}
+
+	ProxyAllocator(const ProxyAllocator& allocator):
+		_allocator(allocator._allocator)
 	{
 	}
 
 	void* alloc(unsigned int size_bytes)
 	{
-		return GleamAllocate(size_bytes);
+		return _allocator.alloc(size_bytes);
 	}
 
 	void free(void* data)
 	{
-		GleamFree(data);
+		//GleamFree(data);
+		return _allocator.free(data);
 	}
+
+private:
+	Gaff::IAllocator& _allocator;
 };
 
 NS_END
+
+#if defined(_WIN32) || defined(_WIN64)
+	#pragma warning(default : 4512)
+#endif
