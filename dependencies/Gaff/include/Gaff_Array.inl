@@ -610,13 +610,7 @@ typename ARRAY_ITERATOR Array<T, Allocator>::binarySearch(
 	unsigned int index2 = range_end._element - _array;
 
 	int result = binarySearch(index1, index2, data, pred);
-	Iterator ret = end();
-
-	if (result > -1) {
-		ret = Iterator(_array + result);
-	}
-
-	return ret;
+	return Iterator(_array + result);
 }
 
 template <class T, class Allocator>
@@ -629,12 +623,7 @@ int Array<T, Allocator>::binarySearch(
 {
 	assert(range_end <= _used && range_begin <= range_end);
 
-	if (!_used) {
-		return -1;
-	}
-
-	--range_end;
-	int mid = 0;
+	unsigned int mid = 0;
 
 	while (range_begin != range_end) {
 		mid = range_begin + (range_end - range_begin) / 2;
