@@ -1,6 +1,6 @@
 /*
    AngelCode Scripting Library
-   Copyright (c) 2003-2013 Andreas Jonsson
+   Copyright (c) 2003-2014 Andreas Jonsson
 
    This software is provided 'as-is', without any express or implied 
    warranty. In no event will the authors be held liable for any 
@@ -179,7 +179,7 @@ asCString asCDataType::Format(bool includeNamespace) const
 	else if( objectType )
 	{
 		str += objectType->name;
-		if( objectType->flags & asOBJ_TEMPLATE )
+		if( objectType->templateSubTypes.GetLength() > 0 )
 		{
 			str += "<";
 			for( asUINT subtypeIndex = 0; subtypeIndex < objectType->templateSubTypes.GetLength(); subtypeIndex++ )
@@ -361,6 +361,14 @@ bool asCDataType::IsHandleToConst() const
 	return isReadOnly;
 }
 
+bool asCDataType::IsObjectConst() const
+{
+	if( IsObjectHandle() )
+		return IsHandleToConst();
+
+	return IsReadOnly();
+}
+
 // TODO: 3.0.0: This should be removed
 bool asCDataType::IsArrayType() const
 {
@@ -505,13 +513,14 @@ bool asCDataType::IsBooleanType() const
 
 bool asCDataType::IsObject() const
 {
-	//	Enumerations are not objects, even though they are described with an objectType.
-	if( IsEnumType() )
+	if( IsPrimitive() )
 		return false;
 
-	if( objectType ) return true;
+	// Null handle doesn't have an object type but should still be considered an object
+	if( objectType == 0 ) 
+		return IsNullHandle();
 
-	return false;
+	return true;
 }
 
 int asCDataType::GetSizeInMemoryBytes() const

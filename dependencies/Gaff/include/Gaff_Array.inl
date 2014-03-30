@@ -94,13 +94,13 @@ typename ARRAY_ITERATOR Array<T, Allocator>::Iterator::operator-(int rhs) const
 }
 
 template <class T, class Allocator>
-typename Array<T, Allocator>::OffsetType Array<T, Allocator>::Iterator::operator+(const typename ARRAY_ITERATOR& rhs) const
+typename OffsetType Array<T, Allocator>::Iterator::operator+(const typename ARRAY_ITERATOR& rhs) const
 {
 	return _element + rhs._element;
 }
 
 template <class T, class Allocator>
-typename Array<T, Allocator>::OffsetType Array<T, Allocator>::Iterator::operator-(const typename ARRAY_ITERATOR& rhs) const
+typename OffsetType Array<T, Allocator>::Iterator::operator-(const typename ARRAY_ITERATOR& rhs) const
 {
 	return _element - rhs._element;
 }
@@ -456,7 +456,7 @@ template <class T, class Allocator>
 typename ARRAY_ITERATOR Array<T, Allocator>::insert(const T& data, const typename ARRAY_ITERATOR& it)
 {
 	assert(it._element >= _array && it._element <= _array + _used);
-	unsigned int index = it._element - _array;
+	unsigned int index = (unsigned int)(it._element - _array);
 	insert(data, index);
 	return Iterator(_array + index);
 }

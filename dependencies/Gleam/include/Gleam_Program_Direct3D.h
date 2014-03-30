@@ -44,11 +44,9 @@ public:
 	~ProgramD3D(void);
 
 	INLINE bool init(void);
-	void destroy(void);
 
-	void attach(const IShader* shader);
-	void detach(const IShader* shader);
-	bool link(void);
+	void attach(IShader* shader);
+	void detach(IShader::SHADER_TYPE shader);
 
 	void bind(IRenderDevice& rd);
 	void unbind(IRenderDevice& rd);

@@ -20,6 +20,8 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
+#if defined(_WIN32) || defined(_WIN64)
+
 #include "Gleam_RenderDevice_OpenGL_Windows.h"
 #include "Gleam_RenderTarget_OpenGL.h"
 #include "Gleam_Window_Windows.h"
@@ -239,6 +241,10 @@ bool RenderDeviceGL::init(const Window& window, unsigned int adapter_id, unsigne
 		device.vsync.push(vsync);
 		device.adapter_id = adapter_id;
 
+		RenderTargetGL* rt = GleamAllocateT(RenderTargetGL);
+		rt->setViewport(viewport.width, viewport.height);
+		device.rts.push(rt);
+
 		_devices.push(device);
 
 	// We found the device already made, so add our new outputs to the list
@@ -256,6 +262,10 @@ bool RenderDeviceGL::init(const Window& window, unsigned int adapter_id, unsigne
 		it->windows.push(hwnd);
 		it->outputs.push(hdc);
 		it->vsync.push(vsync);
+
+		RenderTargetGL* rt = GleamAllocateT(RenderTargetGL);
+		rt->setViewport(viewport.width, viewport.height);
+		it->rts.push(rt);
 	}
 
 	if (!_glew_already_initialized) {
@@ -332,6 +342,7 @@ bool RenderDeviceGL::resize(const Window& window)
 		if (index > -1) {
 			it->viewports[index].width = window.getWidth();
 			it->viewports[index].height = window.getHeight();
+			((RenderTargetGL*)it->rts[index].get())->setViewport(window.getWidth(), window.getHeight());
 		} else {
 			return false;
 		}
@@ -339,6 +350,11 @@ bool RenderDeviceGL::resize(const Window& window)
 		// Maybe detect and handle fullscreen changes here?
 	}
 
+	return true;
+}
+
+bool RenderDeviceGL::handleFocusGained(const Window&)
+{
 	return true;
 }
 
@@ -395,21 +411,15 @@ unsigned int RenderDeviceGL::getNumDevices(void) const
 	return _devices.size();
 }
 
-IRenderTarget* RenderDeviceGL::getOutputRenderTarget(unsigned int device, unsigned int output)
+IRenderTargetPtr RenderDeviceGL::getOutputRenderTarget(unsigned int device, unsigned int output)
 {
-	assert(_devices.size() > device && _devices[device].outputs.size() > output);
-	(device); (output); // remove complaints about unreferenced parameters in release mode
-
-	RenderTargetGL* render_target = (RenderTargetGL*)GleamAllocate(sizeof(RenderTargetGL));
-	new (render_target) RenderTargetGL(_active_viewport->width, _active_viewport->height);
-
-	render_target->addRef();
-	return render_target;
+	assert(_devices.size() > device && _devices[device].rts.size() > output);
+	return _devices[device].rts[output];
 }
 
-IRenderTarget* RenderDeviceGL::getActiveOutputRenderTarget(void)
+IRenderTargetPtr RenderDeviceGL::getActiveOutputRenderTarget(void)
 {
-	assert(_devices.size() > _curr_device && _devices[_curr_device].outputs.size() > _curr_output);
+	assert(_devices.size() > _curr_device && _devices[_curr_device].rts.size() > _curr_output);
 	return getOutputRenderTarget(_curr_device, _curr_output);
 }
 
@@ -460,3 +470,5 @@ unsigned int RenderDeviceGL::getCurrentDevice(void) const
 }
 
 NS_END
+
+#endif

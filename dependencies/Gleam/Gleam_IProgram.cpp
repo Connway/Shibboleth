@@ -94,6 +94,7 @@ void IProgram::removeConstantBuffer(IShader::SHADER_TYPE type, unsigned int inde
 void IProgram::popConstantBuffer(IShader::SHADER_TYPE type)
 {
 	assert(type < IShader::SHADER_TYPE_SIZE && _constant_buffers[type].size());
+	_constant_buffers[type].last()->release();
 	_constant_buffers[type].pop();
 }
 
@@ -142,6 +143,7 @@ void IProgram::removeResourceView(IShader::SHADER_TYPE type, unsigned int index)
 void IProgram::popResourceView(IShader::SHADER_TYPE type)
 {
 	assert(type < IShader::SHADER_TYPE_SIZE && _resource_views[type].size());
+	_resource_views[type].last()->release();
 	_resource_views[type].pop();
 }
 
@@ -191,6 +193,7 @@ void IProgram::removeSamplerState(IShader::SHADER_TYPE type, unsigned int index)
 void IProgram::popSamplerState(IShader::SHADER_TYPE type)
 {
 	assert(type < IShader::SHADER_TYPE_SIZE && _sampler_states[type].size());
+	_sampler_states[type].last()->release();
 	_sampler_states[type].pop();
 }
 

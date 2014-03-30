@@ -45,11 +45,13 @@ public:
 	void setVsync(bool vsync, unsigned int device, unsigned int output);
 
 	void setClearColor(float r, float g, float b, float a);
+	const float* getClearColor(void) const;
 
 	void beginFrame(void);
 	void endFrame(void);
 
 	bool resize(const Window& window);
+	bool handleFocusGained(const Window& window);
 
 	void resetRenderState(void);
 
@@ -64,8 +66,8 @@ public:
 	unsigned int getNumOutputs(unsigned int device) const;
 	unsigned int getNumDevices(void) const;
 
-	IRenderTarget* getOutputRenderTarget(unsigned int device, unsigned int output);
-	IRenderTarget* getActiveOutputRenderTarget(void);
+	IRenderTargetPtr getOutputRenderTarget(unsigned int device, unsigned int output);
+	IRenderTargetPtr getActiveOutputRenderTarget(void);
 
 	bool setCurrentOutput(unsigned int output);
 	unsigned int getCurrentOutput(void) const;
@@ -98,6 +100,7 @@ private:
 	{
 		GleamArray< Gaff::COMRefPtr<ID3D11RenderTargetView> > render_targets;
 		GleamArray< Gaff::COMRefPtr<IDXGISwapChain> > swap_chains;
+		GleamArray<IRenderTargetPtr> gleam_rts;
 		GleamBitArray vsync;
 		GleamArray<D3D11_VIEWPORT> viewports;
 

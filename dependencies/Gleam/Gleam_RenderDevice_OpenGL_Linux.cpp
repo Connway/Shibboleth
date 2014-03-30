@@ -20,6 +20,8 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
+#ifdef __linux__
+
 #include "Gleam_RenderDevice_OpenGL_Linux.h"
 #include "Gleam_RenderTarget_OpenGL.h"
 #include "Gleam_Window_Linux.h"
@@ -68,8 +70,6 @@ IRenderDevice::AdapterList RenderDeviceGL::getDisplayModes(int)
 			char buff[8] = { 0 };
 			sprintf(buff, ":%i.%i", i, j);
 
-			printf(buff); // Debug
-
 			::Display* display = XOpenDisplay(buff);
 
 			// We didn't open, we've probably reached the number of monitors attached to the device
@@ -88,7 +88,7 @@ IRenderDevice::AdapterList RenderDeviceGL::getDisplayModes(int)
 				return AdapterList();
 			}
 
-			int final_size = 0, final_rate = 0, num_sizes = 0, num_rates = 0;
+			int final_size = 0, num_sizes = 0, num_rates = 0;
 			short* rates = nullptr;
 			XRRScreenConfiguration* config = XRRGetScreenInfo(display, root);
 			XRRScreenSize* sizes = XRRConfigSizes(config, &num_sizes);
@@ -119,8 +119,12 @@ IRenderDevice::AdapterList RenderDeviceGL::getDisplayModes(int)
 				}
 			}
 
+			adapter.output_info.push(output);
+
 			XCloseDisplay(display);
 		}
+
+		_display_info.push(adapter);
 	}
 
 	AdapterList out(_display_info.size());
@@ -168,8 +172,6 @@ bool RenderDeviceGL::init(const Window& window, unsigned int adapter_id, unsigne
 		_display_info[adapter_id].output_info[display_id].display_mode_list.size() > display_mode_id
 	);
 
-	// Move window to appropriate section
-
 	GleamArray<Device>::Iterator it = _devices.linearSearch(adapter_id, [](const Device& lhs, unsigned int rhs) -> bool
 	{
 		return lhs.adapter_id == rhs;
@@ -194,6 +196,11 @@ bool RenderDeviceGL::init(const Window& window, unsigned int adapter_id, unsigne
 		device.vsync.push(vsync);
 		device.adapter_id = adapter_id;
 
+		RenderTargetGL* rt = GleamAllocateT(RenderTargetGL);
+		rt->setViewport(viewport.width, viewport.height);
+
+		device.rts.push(IRenderTargetPtr(rt));
+
 		_devices.push(device);
 
 	} else {
@@ -209,6 +216,11 @@ bool RenderDeviceGL::init(const Window& window, unsigned int adapter_id, unsigne
 		it->viewports.push(viewport);
 		it->windows.push((Window*)&window);
 		it->vsync.push(vsync);
+
+		RenderTargetGL* rt = GleamAllocateT(RenderTargetGL);
+		rt->setViewport(viewport.width, viewport.height);
+
+		it->rts.push(IRenderTargetPtr(rt));
 	}
 
 	if (!_glew_already_initialized) {
@@ -264,9 +276,9 @@ void RenderDeviceGL::setClearColor(float r, float g, float b, float a)
 void RenderDeviceGL::beginFrame(void)
 {
 	assert(_devices.size() > _curr_device && _devices[_curr_device].windows.size() > _curr_output);
-	glViewport(_active_viewport->x, _active_viewport->y, _active_viewport->width, _active_viewport->height);
 	resetRenderState();
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT); 
+	glViewport(_active_viewport->x, _active_viewport->y, _active_viewport->width, _active_viewport->height);	
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 }
 
 void RenderDeviceGL::endFrame(void)
@@ -285,9 +297,18 @@ bool RenderDeviceGL::resize(const Window& window)
 			it->viewports[index].height = window.getHeight();
 		}
 
+		if (&window == _active_window) {
+			glViewport(0, 0, window.getWidth(), window.getHeight());
+		}
+
 		// Maybe detect and handle fullscreen changes here?
 	}
 
+	return true;
+}
+
+bool RenderDeviceGL::handleFocusGained(const Window&)
+{
 	return true;
 }
 
@@ -344,21 +365,15 @@ unsigned int RenderDeviceGL::getNumDevices(void) const
 	return _devices.size();
 }
 
-IRenderTarget* RenderDeviceGL::getOutputRenderTarget(unsigned int device, unsigned int output)
+IRenderTargetPtr RenderDeviceGL::getOutputRenderTarget(unsigned int device, unsigned int output)
 {
-	assert(_devices.size() > device && _devices[device].windows.size() > output);
-	(device); (output); // remove complaints about unreferenced parameters in release mode
-
-	RenderTargetGL* render_target = (RenderTargetGL*)GleamAllocate(sizeof(RenderTargetGL));
-	new (render_target) RenderTargetGL(_active_viewport->width, _active_viewport->height);
-
-	render_target->addRef();
-	return render_target;
+	assert(_devices.size() > device && _devices[device].rts.size() > output);
+	return _devices[device].rts[output];
 }
 
-IRenderTarget* RenderDeviceGL::getActiveOutputRenderTarget(void)
+IRenderTargetPtr RenderDeviceGL::getActiveOutputRenderTarget(void)
 {
-	assert(_devices.size() > _curr_device && _devices[_curr_device].windows.size() > _curr_output);
+	assert(_devices.size() > _curr_device && _devices[_curr_device].rts.size() > _curr_output);
 	return getOutputRenderTarget(_curr_device, _curr_output);
 }
 
@@ -409,3 +424,5 @@ unsigned int RenderDeviceGL::getCurrentDevice(void) const
 }
 
 NS_END
+
+#endif

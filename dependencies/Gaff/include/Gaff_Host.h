@@ -55,7 +55,7 @@ enum NetworkEventType
 
 struct NetworkCallbackData
 {
-	Gaff::Host& host;
+	Gaff::Host* host;
 	Gaff::NetworkEventType event_type;
 	Gaff::PeerIDType peer_id;
 	unsigned char channel;

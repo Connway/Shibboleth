@@ -34,8 +34,8 @@ void PrintException(asIScriptContext *ctx, bool printStack = false);
 
 // Determine traits of a type for registration of value types
 // Relies on C++11 features so it can not be used with non-compliant compilers
-#if !defined(_MSC_VER) || _MSC_VER >= 1700   // MSVC 2012
-#if !defined(__GNUC__) || __GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ >= 7)  // gnuc 4.7
+#ifdef AS_CAN_USE_CPP11
+
 END_AS_NAMESPACE
 #include <type_traits>
 BEGIN_AS_NAMESPACE
@@ -54,25 +54,33 @@ asUINT GetTypeTraits()
 	bool hasCopyConstructor = std::is_copy_constructible<T>::value && !std::has_trivial_copy_constructor<T>::value;
 	bool isFloat = std::is_floating_point<T>::value;
 	bool isPrimitive = std::is_integral<T>::value || std::is_pointer<T>::value || std::is_enum<T>::value;
+	bool isClass = std::is_class<T>::value;
+	bool isArray = std::is_array<T>::value;
 
 	if( isFloat )
 		return asOBJ_APP_FLOAT;
 	if( isPrimitive )
 		return asOBJ_APP_PRIMITIVE;
+	
+	if( isClass )
+	{
+		asDWORD flags = asOBJ_APP_CLASS;
+		if( hasConstructor )
+			flags |= asOBJ_APP_CLASS_CONSTRUCTOR;
+		if( hasDestructor )
+			flags |= asOBJ_APP_CLASS_DESTRUCTOR;
+		if( hasAssignmentOperator )
+			flags |= asOBJ_APP_CLASS_ASSIGNMENT;
+		if( hasCopyConstructor )
+			flags |= asOBJ_APP_CLASS_COPY_CONSTRUCTOR;
+		return flags;
+	}
 
-	asDWORD flags = asOBJ_APP_CLASS;
-	if( hasConstructor )
-		flags |= asOBJ_APP_CLASS_CONSTRUCTOR;
-	if( hasDestructor )
-		flags |= asOBJ_APP_CLASS_DESTRUCTOR;
-	if( hasAssignmentOperator )
-		flags |= asOBJ_APP_CLASS_ASSIGNMENT;
-	if( hasCopyConstructor )
-		flags |= asOBJ_APP_CLASS_COPY_CONSTRUCTOR;
-	return flags;
+	// Unknown type traits
+	return 0;
 }
-#endif // gnuc 4.7
-#endif // msvc 2012
+
+#endif // c++11
 
 END_AS_NAMESPACE
 

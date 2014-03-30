@@ -22,7 +22,6 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Gleam_IRenderDevice.h"
 #include "Gleam_RefCounted.h"
 #include <Gaff_RefPtr.h>
 

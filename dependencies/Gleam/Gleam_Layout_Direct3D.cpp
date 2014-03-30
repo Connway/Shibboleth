@@ -20,6 +20,8 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
+#if defined(_WIN32) || defined(_WIN64)
+
 #include "Gleam_Layout_Direct3D.h"
 #include "Gleam_RenderDevice_Direct3D.h"
 #include "Gleam_Texture_Direct3D.h"
@@ -90,3 +92,5 @@ void LayoutD3D::unsetLayout(IRenderDevice& rd)
 }
 
 NS_END
+
+#endif

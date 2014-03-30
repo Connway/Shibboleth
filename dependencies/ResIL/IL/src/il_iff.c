@@ -22,6 +22,7 @@ typedef struct _iff_chunk {
 	ILuint	chunkType;
 } iff_chunk;
 
+// Global variables
 #define CHUNK_STACK_SIZE (32)
 static iff_chunk chunkStack[CHUNK_STACK_SIZE];
 static int chunkDepth = -1;
@@ -225,7 +226,7 @@ ILboolean iLoadIffInternal(void)
 
 		// Read tiles
 		while ( (tileImage < tiles) || (tileZ < tiles)) {
-			char	 *tileData = 0;
+			char	 *tileData;
 			ILushort x1, x2, y1, y2, tile_width, tile_height;
 			ILuint remainingDataSize;
 			ILushort	tile_area;

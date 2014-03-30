@@ -22,7 +22,6 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Gleam_Keyboard_Defines.h"
 #include "Gleam_Window_Defines.h"
 #include "Gleam_IInputDevice.h"
 
@@ -34,8 +33,11 @@ public:
 	IKeyboard(void) {}
 	virtual ~IKeyboard(void) {}
 
-	virtual bool isKeyDown(KeyboardCode key) const = 0;
-	virtual bool isKeyUp(KeyboardCode key) const = 0;
+	virtual bool init(const Window& window, bool no_windows_key) = 0;
+	virtual bool init(const Window& window) = 0;
+
+	virtual bool isKeyDown(KeyCode key) const = 0;
+	virtual bool isKeyUp(KeyCode key) const = 0;
 
 	virtual const unsigned char* getKeyboardData(void) const = 0;
 

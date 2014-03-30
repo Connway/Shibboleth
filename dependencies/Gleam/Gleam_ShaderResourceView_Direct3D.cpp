@@ -20,6 +20,8 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
+#if defined(_WIN32) || defined(_WIN64)
+
 #include "Gleam_ShaderResourceView_Direct3D.h"
 #include "Gleam_RenderDevice_Direct3D.h"
 #include "Gleam_Texture_Direct3D.h"
@@ -64,24 +66,6 @@ bool ShaderResourceViewD3D::init(IRenderDevice& rd, const ITexture* texture)
 
 	ID3D11Resource* resource = (ID3D11Resource*)((const TextureD3D*)texture)->getTexture();
 
-	//switch (texture->getType()) {
-	//	case ITexture::ONED:
-	//		resource = ((const TextureD3D*)texture)->getTexture1D();
-	//		break;
-
-	//	case ITexture::TWOD:
-	//		resource = ((const TextureD3D*)texture)->getTexture2D();
-	//		break;
-
-	//	case ITexture::THREED:
-	//		resource = ((const TextureD3D*)texture)->getTexture2D();
-	//		break;
-
-	//	case ITexture::CUBE:
-	//		resource = ((const TextureD3D*)texture)->getTexture2D();
-	//		break;
-	//}
-
 	HRESULT result = device->CreateShaderResourceView(resource, &shader_desc, &_resource_view);
 	return SUCCEEDED(result);
 }
@@ -103,3 +87,5 @@ ID3D11ShaderResourceView* ShaderResourceViewD3D::getResourceView(void) const
 
 
 NS_END
+
+#endif

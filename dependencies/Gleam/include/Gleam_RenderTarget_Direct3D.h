@@ -57,7 +57,7 @@ private:
 	ID3D11DepthStencilView* _depth_stencil_view;
 
 	friend class RenderDeviceD3D;
-	RenderTargetD3D(ID3D11RenderTargetView* rt, const D3D11_VIEWPORT& viewport);
+	void setRTV(ID3D11RenderTargetView* rt, const D3D11_VIEWPORT& viewport);
 };
 
 NS_END

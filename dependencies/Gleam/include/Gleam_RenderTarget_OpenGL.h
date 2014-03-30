@@ -59,7 +59,7 @@ private:
 	INLINE void createFramebuffer(void);
 
 	friend class RenderDeviceGL;
-	RenderTargetGL(int viewport_width, int viewport_height);
+	void setViewport(int viewport_width, int viewport_height);
 };
 
 NS_END

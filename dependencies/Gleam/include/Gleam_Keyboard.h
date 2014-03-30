@@ -22,15 +22,8 @@ THE SOFTWARE.
 
 #pragma once
 
-#ifdef USE_DI
-	#include "Gleam_Keyboard_DInput_Windows.h"
+#include "Gleam_Keyboard_MessagePump.h"
 
 NS_GLEAM
-	typedef KeyboardDI Keyboard;
+	typedef KeyboardMP Mouse;
 NS_END
-#else
-	#include "Gleam_Keyboard_MessagePump.h"
-	NS_GLEAM
-		typedef KeyboardMP Mouse;
-	NS_END
-#endif

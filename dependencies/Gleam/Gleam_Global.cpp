@@ -137,7 +137,7 @@ void PrintfToLog(const char* format_string, LOG_MSG_TYPE type, ...)
 		}
 
 		va_list vl;
-		va_start(vl, format_string);
+		va_start(vl, type);
 
 		g_log_file.printfVA(format_string, vl);
 		g_log_file.writeChar('\n');

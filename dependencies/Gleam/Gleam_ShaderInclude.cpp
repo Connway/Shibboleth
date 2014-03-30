@@ -20,6 +20,8 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
+#if defined(_WIN32) || defined(_WIN64)
+
 #include "Gleam_ShaderInclude.h"
 #include "Gaff_IncludeAssert.h"
 #include "Gleam_Global.h"
@@ -106,3 +108,5 @@ NS_END
 //    delete[] buf;
 //    return S_OK;
 //}
+
+#endif

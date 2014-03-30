@@ -70,7 +70,7 @@ public:
 
 	bool init(const GChar* app_name, MODE window_mode = FULLSCREEN,
 				unsigned int width = 0, unsigned int height = 0,
-				short refresh_rate = 60, int pos_x = -1, int pos_y = -1,
+				short refresh_rate = 60, int pos_x = 0, int pos_y = 0,
 				const char* device_name = nullptr);
 	void destroy(void);
 
@@ -79,10 +79,15 @@ public:
 	bool removeWindowMessageHandler(WindowCallback callback);
 
 	void showCursor(bool show);
-	INLINE void allowRepeats(bool allow);
 	void containCursor(bool contain);
 
-	bool setWindowMode(MODE window_mode, int width = -1, int height = -1);
+	INLINE bool isCursorVisible(void) const;
+	INLINE bool isCursorContained(void) const;
+
+	INLINE void allowRepeats(bool allow);
+	INLINE bool areRepeatsAllowed(void) const;
+
+	bool setWindowMode(MODE window_mode, int width = 0, int height = 0, short refresh_rate = 60);
 	INLINE MODE getWindowMode(void) const;
 
 	INLINE void getPos(int& x, int& y) const;
@@ -108,6 +113,7 @@ private:
 	short _refresh_rate;
 
 	MODE _window_mode;
+	bool _cursor_visible;
 	bool _no_repeats;
 	bool _contain;
 
@@ -120,6 +126,7 @@ private:
 	Atom _protocols;
 
 	XRRScreenSize _original_size;
+	Rotation _original_rotation;
 	short _original_rate;
 
 	int chooseClosestResolution(XRRScreenSize* sizes, int num_sizes,
@@ -129,17 +136,13 @@ private:
 
 	GleamArray< Gaff::FunctionBinder<bool, const AnyMessage&> > _window_callbacks;
 
-	static void WindowProc(const XEvent& event);
+	static void WindowProc(XEvent& event);
 	static GleamArray<Window*> gWindows;
-
-	unsigned int _prev_keycode;
-
-	unsigned int _mouse_prev_x;
-	unsigned int _mouse_prev_y;
-	bool _first_mouse;
 
 	void addWindowMessageHandlerHelper(const Gaff::FunctionBinder<bool, const AnyMessage&>& cb);
 	bool removeWindowMessageHandlerHelper(const Gaff::FunctionBinder<bool, const AnyMessage&>& cb);
+
+	INLINE void handleMessage(AnyMessage* message);
 
 	GAFF_NO_COPY(Window);
 	GAFF_NO_MOVE(Window);

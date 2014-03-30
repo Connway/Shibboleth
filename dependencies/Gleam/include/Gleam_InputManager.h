@@ -25,16 +25,6 @@ THE SOFTWARE.
 #include "Gleam_IInputDevice.h"
 #include "Gleam_Array.h"
 
-#ifdef USE_DI
-	#ifndef WIN32_LEAN_AND_MEAN
-		#define WIN32_LEAN_AND_MEAN
-	#endif
-
-	#include <dinput.h>
-#else
-	#define IDirectInput8 void
-#endif
-
 NS_GLEAM
 
 class Window;
@@ -48,13 +38,11 @@ public:
 	bool init(const Window& window);
 	void destroy(void);
 
-	bool update(void);
+	void update(void);
 
 	INLINE void addInputDevice(IInputDevice* device);
 	bool removeInputDevice(const IInputDevice* device);
 	INLINE IInputDevice* getInputDevice(unsigned int i) const;
-
-	INLINE IDirectInput8* getDirectInput(void) const;
 
 	IInputDevice* createKeyboard(bool no_windows_key = false);
 	IInputDevice* createMouse(void);
@@ -62,10 +50,6 @@ public:
 private:
 	GleamArray<IInputDevice*> _input_devices;
 	const Window* _window;
-
-#ifdef USE_DI
-	IDirectInput8* _dinput;
-#endif
 
 	GAFF_NO_COPY(InputManager);
 };

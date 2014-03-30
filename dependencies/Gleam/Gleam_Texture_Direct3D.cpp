@@ -20,6 +20,8 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
+#if defined(_WIN32) || defined(_WIN64)
+
 #include "Gleam_Texture_Direct3D.h"
 #include "Gleam_RenderDevice_Direct3D.h"
 #include <Gaff_IncludeAssert.h>
@@ -507,3 +509,5 @@ ID3D11Texture3D* TextureD3D::getTexture3D(void) const
 }
 
 NS_END
+
+#endif

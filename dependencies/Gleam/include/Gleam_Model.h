@@ -22,18 +22,16 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Gleam_IModel.h"
+#ifdef USE_DX
+	#include "Gleam_Model_Direct3D.h"
 
-NS_GLEAM
+	NS_GLEAM
+		typedef ModelD3D Model;
+	NS_END
+#else
+	#include "Gleam_Model_OpenGL.h"
 
-class Model : public IModel
-{
-public:
-	Model(void);
-	~Model(void);
-
-	ILayout* createLayout(IRenderDevice& rd, const LayoutDescription* layout_desc, unsigned int desc_size, const IShader* shader);
-	IMesh* createMesh(void);
-};
-
-NS_END
+	NS_GLEAM
+		typedef ModelGL Model;
+	NS_END
+#endif

@@ -29,6 +29,15 @@ THE SOFTWARE.
 
 NS_GLEAM
 
+unsigned int ProgramGL::_stages[IShader::SHADER_TYPE_SIZE] = {
+	GL_VERTEX_SHADER_BIT,
+	GL_FRAGMENT_SHADER_BIT,
+	GL_TESS_EVALUATION_SHADER_BIT,
+	GL_GEOMETRY_SHADER_BIT,
+	GL_TESS_CONTROL_SHADER_BIT,
+	GL_COMPUTE_SHADER_BIT
+};
+
 ProgramGL::ProgramGL(void):
 	_program(0)
 {
@@ -42,63 +51,35 @@ ProgramGL::~ProgramGL(void)
 
 bool ProgramGL::init(void)
 {
-	_program = glCreateProgram();
+	glGenProgramPipelines(1, &_program);
 	return _program != 0;
 }
 
 void ProgramGL::destroy(void)
 {
 	if (_program) {
-		glDeleteProgram(_program);
+		glDeleteProgramPipelines(1, &_program);
 		_program = 0;
 	}
 }
 
-void ProgramGL::attach(const IShader* shader)
+void ProgramGL::attach(IShader* shader)
 {
-	assert(!shader->isD3D());
-	glAttachShader(_program, ((const ShaderGL*)shader)->getShader());
+	assert(!shader->isD3D() && shader->getType() >= IShader::SHADER_VERTEX && shader->getType() < IShader::SHADER_TYPE_SIZE);
+	glUseProgramStages(_program, _stages[shader->getType()], ((const ShaderGL*)shader)->getShader());
+	_attached_shaders[shader->getType()] = shader;
 }
 
-void ProgramGL::detach(const IShader* shader)
+void ProgramGL::detach(IShader::SHADER_TYPE shader)
 {
-	assert(!shader->isD3D());
-	glDetachShader(_program, ((const ShaderGL*)shader)->getShader());
-}
-
-bool ProgramGL::link(void)
-{
-	glLinkProgram(_program);
-
-	GLint linked;
-	glGetProgramiv(_program, GL_LINK_STATUS, &linked);
-
-	if (linked == GL_FALSE) {
-		GLint log_length;
-		glGetProgramiv(_program, GL_INFO_LOG_LENGTH, &log_length);
-
-		if (log_length) {
-			GLchar* log_buffer = (GLchar*)GleamAllocate(sizeof(GLchar) * (log_length + 1));
-
-			if (log_buffer) {
-				glGetProgramInfoLog(_program, log_length, NULL, log_buffer);
-
-				WriteMessageToLog(log_buffer, log_length - 1, LOG_ERROR);
-				GleamFree(log_buffer);
-			}
-		}
-
-		glDeleteProgram(_program);
-
-		return false;
-	}
-
-	return glGetError() == GL_NO_ERROR;
+	assert(shader >= IShader::SHADER_VERTEX && shader < IShader::SHADER_TYPE_SIZE);
+	glUseProgramStages(_program, _stages[shader], 0);
+	_attached_shaders[shader] = nullptr;
 }
 
 void ProgramGL::bind(IRenderDevice&)
 {
-	glUseProgram(_program);
+	glBindProgramPipeline(_program);
 
 	unsigned int texture_count = 0;
 	unsigned int count = 0;
@@ -140,7 +121,7 @@ void ProgramGL::bind(IRenderDevice&)
 
 void ProgramGL::unbind(IRenderDevice&)
 {
-	glUseProgram(0);
+	glBindProgramPipeline(0);
 }
 
 bool ProgramGL::isD3D(void) const

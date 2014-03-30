@@ -20,6 +20,8 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
+#if defined(_WIN32) || defined(_WIN64)
+
 #include "Gleam_SamplerState_Direct3D.h"
 #include "Gleam_RenderDevice_Direct3D.h"
 #include "Gleam_IncludeD3D11.h"
@@ -96,3 +98,5 @@ ID3D11SamplerState* SamplerStateD3D::getSamplerState(void) const
 }
 
 NS_END
+
+#endif

@@ -20,10 +20,16 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
+#if defined(_WIN32) || defined(_WIN64)
+
 #include "Gleam_Window_Windows.h"
 #include "Gaff_IncludeAssert.h"
 
 NS_GLEAM
+
+GleamHashMap<unsigned short, KeyCode> Window::_left_keys;
+GleamHashMap<unsigned short, KeyCode> Window::_right_keys;
+bool Window::_first_init = true;
 
 GleamArray<Window*> Window::gWindows;
 
@@ -66,46 +72,68 @@ LRESULT CALLBACK Window::WindowProc(HWND hwnd, UINT msg, WPARAM w, LPARAM l)
 					message->base.type = WND_RESIZED;
 					break;
 
-				case WM_KEYDOWN:
-					if (window->_no_repeats && l & 0x0000000040000000) {
-						break;
-					}
-
-					message = (AnyMessage*)buffer;
-					message->base.type = IN_KEYDOWN;
-					message->key_char.key = (KeyCode)w;
-					break;
-
-				case WM_KEYUP:
-					message = (AnyMessage*)buffer;
-					message->base.type = IN_KEYUP;
-					message->key_char.key = (KeyCode)w;
-					break;
-
 				case WM_CHAR:
 					message = (AnyMessage*)buffer;
 					message->base.type = IN_CHARACTER;
 					message->key_char.character = (unsigned int)w;
 					break;
 
-				case WM_MOUSEMOVE:
-					message = (AnyMessage*)buffer;
-					message->base.type = IN_MOUSEMOVE;
-					message->mouse_move.x = (int)(short)LOWORD(l);
-					message->mouse_move.y = (int)(short)HIWORD(l);
+				case WM_INPUT: {
+					UINT dwSize = 64;
+					BYTE lpb[64];
 
-					if (window->_first_mouse) {
-						window->_first_mouse = false;
-						message->mouse_move.dx = 0;
-						message->mouse_move.dy = 0;
-					} else {
-						message->mouse_move.dx = message->mouse_move.x - window->_mouse_prev_x;
-						message->mouse_move.dy = message->mouse_move.y - window->_mouse_prev_y;
+#ifdef _DEBUG
+					GetRawInputData((HRAWINPUT)l, RID_INPUT, nullptr, &dwSize, sizeof(RAWINPUTHEADER));
+					assert(dwSize <= 64);
+#endif
+
+					GetRawInputData((HRAWINPUT)l, RID_INPUT, lpb, &dwSize, sizeof(RAWINPUTHEADER));
+					RAWINPUT* raw = (RAWINPUT*)lpb;
+
+					if (raw->header.dwType == RIM_TYPEMOUSE && raw->data.mouse.usFlags == MOUSE_MOVE_RELATIVE) {
+						message = (AnyMessage*)buffer;
+						message->base.type = IN_MOUSEMOVE;
+
+						POINT pos;
+						if (GetCursorPos(&pos)) {
+							message->mouse_move.x = pos.x;
+							message->mouse_move.y = pos.y;
+						} else {
+							message->mouse_move.x += raw->data.mouse.lLastX;
+							message->mouse_move.y += raw->data.mouse.lLastY;
+						}
+
+						message->mouse_move.dx = raw->data.mouse.lLastX;
+						message->mouse_move.dy = raw->data.mouse.lLastY;
+
+					} else if (raw->header.dwType == RIM_TYPEKEYBOARD) {
+						message = (AnyMessage*)buffer;
+						message->base.type = (raw->data.keyboard.Flags & RI_KEY_BREAK) ? IN_KEYUP : IN_KEYDOWN;
+
+						switch (raw->data.keyboard.VKey) {
+							case VK_CONTROL:
+							case VK_SHIFT:
+								// For some reason, right shift isn't getting the RI_KEY_E0 flag set.
+								// Special case it so that we send the correct key.
+								if (raw->data.keyboard.MakeCode == 54) {
+									message->key_char.key = KEY_RIGHTSHIFT;
+									break;
+								}
+
+							case VK_MENU:
+								if (raw->data.keyboard.Flags & RI_KEY_E0) {
+									message->key_char.key = _right_keys[raw->data.keyboard.VKey];
+								} else {
+									message->key_char.key = _left_keys[raw->data.keyboard.VKey];
+								}
+								break;
+
+							default:
+								message->key_char.key = (KeyCode)raw->data.keyboard.VKey;
+								break;
+						}
 					}
-
-					window->_mouse_prev_x = message->mouse_move.x;
-					window->_mouse_prev_y = message->mouse_move.y;
-					break;
+				} break;
 
 				case WM_LBUTTONDOWN:
 					message = (AnyMessage*)buffer;
@@ -154,6 +182,41 @@ LRESULT CALLBACK Window::WindowProc(HWND hwnd, UINT msg, WPARAM w, LPARAM l)
 					message->base.type = IN_MOUSEWHEEL;
 					message->mouse_state.wheel = (short)HIWORD(w) / WHEEL_DELTA;
 					break;
+
+				case WM_SETFOCUS:
+					if (window->_window_mode == FULLSCREEN) {
+						// If full screen set the screen to maximum size of the users desktop and 32-bit.
+						DEVMODE dm_screen_settings;
+						memset(&dm_screen_settings, 0, sizeof(dm_screen_settings));
+						dm_screen_settings.dmSize = sizeof(dm_screen_settings);
+						dm_screen_settings.dmPelsWidth  = window->_width;
+						dm_screen_settings.dmPelsHeight = window->_height;
+						dm_screen_settings.dmBitsPerPel = 32;
+						dm_screen_settings.dmFields = DM_BITSPERPEL | DM_PELSWIDTH | DM_PELSHEIGHT;
+
+						ChangeDisplaySettings(&dm_screen_settings, CDS_FULLSCREEN);
+					}
+
+					message = (AnyMessage*)buffer;
+					message->base.type = WND_GAINEDFOCUS;
+					break;
+
+				case WM_KILLFOCUS:
+					if (window->_window_mode == FULLSCREEN) {
+						DEVMODE dm_screen_settings;
+						memset(&dm_screen_settings, 0, sizeof(dm_screen_settings));
+						dm_screen_settings.dmSize = sizeof(dm_screen_settings);
+						dm_screen_settings.dmPelsWidth  = window->_original_width;
+						dm_screen_settings.dmPelsHeight = window->_original_height;
+						dm_screen_settings.dmBitsPerPel = 32;
+						dm_screen_settings.dmFields = DM_BITSPERPEL | DM_PELSWIDTH | DM_PELSHEIGHT;
+
+						ChangeDisplaySettings(&dm_screen_settings, CDS_FULLSCREEN);
+					}
+
+					message = (AnyMessage*)buffer;
+					message->base.type = WND_LOSTFOCUS;
+					break;
 			}
 
 			if (message) {
@@ -176,9 +239,8 @@ LRESULT CALLBACK Window::WindowProc(HWND hwnd, UINT msg, WPARAM w, LPARAM l)
 
 Window::Window(void):
 	_application_name(nullptr), _hinstance(nullptr), _hwnd(nullptr),
-	_window_mode(FULLSCREEN), _no_repeats(false),
-	_mouse_prev_x(0), _mouse_prev_y(0),
-	_first_mouse(true)
+	_window_mode(FULLSCREEN), _cursor_visible(true), _no_repeats(false),
+	_contain(false)
 {
 }
 
@@ -192,6 +254,18 @@ bool Window::init(const GChar* app_name, MODE window_mode,
 					int pos_x, int pos_y, const char*)
 {
 	assert(app_name);
+
+	if (_first_init) {
+		_left_keys[VK_CONTROL] = KEY_LEFTCONTROL;
+		_left_keys[VK_MENU] = KEY_LEFTALT;
+		_left_keys[VK_SHIFT] = KEY_LEFTSHIFT;
+
+		_right_keys[VK_CONTROL] = KEY_RIGHTCONTROL;
+		_right_keys[VK_MENU] = KEY_RIGHTALT;
+		_right_keys[VK_SHIFT] = KEY_RIGHTSHIFT;
+
+		_first_init = false;
+	}
 
 	WNDCLASSEX wc;
 
@@ -223,19 +297,22 @@ bool Window::init(const GChar* app_name, MODE window_mode,
 
 	DWORD flags = 0;
 
+	_original_width = GetSystemMetrics(SM_CXSCREEN);
+	_original_height = GetSystemMetrics(SM_CYSCREEN);
+
 	switch (window_mode) {
 		case FULLSCREEN_WINDOWED:
 			pos_x = pos_y = 0;
-			width = GetSystemMetrics(SM_CXSCREEN);
-			height = GetSystemMetrics(SM_CYSCREEN);
+			width = _original_width;
+			height = _original_height;
 			break;
 
 		case FULLSCREEN:
 			pos_x = pos_y = 0;
 
 			if (!width || !height) {
-				width = GetSystemMetrics(SM_CXSCREEN);
-				height = GetSystemMetrics(SM_CYSCREEN);
+				width = _original_width;
+				height = _original_height;
 			}
 
 			flags = WS_POPUP;
@@ -245,12 +322,6 @@ bool Window::init(const GChar* app_name, MODE window_mode,
 			if (!width || !height) {
 				width = 800;
 				height = 600;
-			}
-
-			// set the window to be centered on the screen
-			if (pos_x < 0 || pos_y < 0) {
-				pos_x = (GetSystemMetrics(SM_CXSCREEN) - width)  / 2;
-				pos_y = (GetSystemMetrics(SM_CYSCREEN) - height) / 2;
 			}
 
 			flags = WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_THICKFRAME | WS_MINIMIZEBOX;
@@ -277,23 +348,34 @@ bool Window::init(const GChar* app_name, MODE window_mode,
 
 	// Adjust window to make the drawable area to be the desired resolution.
 	RECT window_rect = { _pos_x, pos_y, _pos_x + _width, _pos_y + _height };
-	AdjustWindowRectEx(&window_rect, flags, FALSE, WS_EX_APPWINDOW);
 
-	_hwnd = CreateWindowEx(WS_EX_APPWINDOW, _application_name, _application_name,
-							WS_CLIPSIBLINGS | WS_CLIPCHILDREN | flags,
-							window_rect.left, window_rect.top, window_rect.right - window_rect.left, window_rect.bottom - window_rect.top,
-							NULL, NULL, _hinstance, NULL);
+	if (window_mode == WINDOWED) {
+		AdjustWindowRectEx(&window_rect, flags, FALSE, WS_EX_APPWINDOW);
+
+		if (_pos_x == 0 && _pos_y == 0) {
+			window_rect.right += -window_rect.left;
+			window_rect.left = 0;
+
+			window_rect.bottom += -window_rect.top;
+			window_rect.top = 0;
+		}
+	}
+
+	_hwnd = CreateWindowEx(
+		WS_EX_APPWINDOW, _application_name, _application_name,
+		WS_CLIPSIBLINGS | WS_CLIPCHILDREN | flags,
+		window_rect.left, window_rect.top, window_rect.right - window_rect.left, window_rect.bottom - window_rect.top,
+		NULL, NULL, _hinstance, NULL
+	);
 
 	if (!_hwnd) {
 		return false;
 	}
 
 	// Bring the window up on the screen and set it as main focus.
-	ShowWindow(_hwnd, SW_SHOW);
+	ShowWindow(_hwnd, (window_mode == FULLSCREEN) ? SW_MAXIMIZE : SW_SHOW);
 	SetForegroundWindow(_hwnd);
 	SetFocus(_hwnd);
-
-	ShowCursor(false);
 
 	ZeroMemory(&_msg_temp, sizeof(MSG));
 
@@ -304,7 +386,8 @@ bool Window::init(const GChar* app_name, MODE window_mode,
 
 void Window::destroy(void)
 {
-	ShowCursor(true);
+	containCursor(false);
+	showCursor(true);
 
 	if (_window_mode == FULLSCREEN) {
 		ChangeDisplaySettings(NULL, 0);
@@ -327,8 +410,6 @@ void Window::destroy(void)
 			break;
 		}
 	}
-
-	_first_mouse = true;
 }
 
 void Window::handleWindowMessages(void)
@@ -354,7 +435,42 @@ bool Window::removeWindowMessageHandler(WindowCallback callback)
 
 void Window::showCursor(bool show)
 {
-	ShowCursor(show);
+	_cursor_visible = show;
+
+	if (show) {
+		ShowCursor(show);
+
+	} else {
+		while (ShowCursor(show) > 0) {
+		}
+	}
+}
+
+void Window::containCursor(bool contain)
+{
+	_contain = contain;
+
+	if (contain) {
+		RECT rect = {
+			_pos_x, _pos_y,
+			_pos_x + _width, _pos_y + _height
+		};
+
+		ClipCursor(&rect);
+
+	} else {
+		ClipCursor(nullptr);
+	}
+}
+
+bool Window::isCursorVisible(void) const
+{
+	return _cursor_visible;
+}
+
+bool Window::isCursorContained(void) const
+{
+	return _contain;
 }
 
 void Window::allowRepeats(bool allow)
@@ -362,8 +478,9 @@ void Window::allowRepeats(bool allow)
 	_no_repeats = !allow;
 }
 
-void Window::containCursor(bool contain)
+bool Window::areRepeatsAllowed(void) const
 {
+	return !_no_repeats;
 }
 
 bool Window::setWindowMode(MODE window_mode)
@@ -492,3 +609,5 @@ bool Window::removeWindowMessageHandlerHelper(const Gaff::FunctionBinder<bool, c
 }
 
 NS_END
+
+#endif

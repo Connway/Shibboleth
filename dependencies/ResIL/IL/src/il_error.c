@@ -16,7 +16,8 @@
 
 #define IL_ERROR_STACK_SIZE 32  // Needed elsewhere?
 
-
+// Global variable: ilError stack
+// Would have to be protected by a mutex in a multithreaded environment
 ILenum	ilErrorNum[IL_ERROR_STACK_SIZE];
 ILint	ilErrorPlace = (-1);
 

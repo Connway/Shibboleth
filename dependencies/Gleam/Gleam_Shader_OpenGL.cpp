@@ -271,35 +271,72 @@ bool ShaderGL::loadFileAndCompileShader(unsigned int shader_type, const GChar* f
 
 bool ShaderGL::compileShader(const char* source, int source_size, unsigned int shader_type)
 {
-	_shader = glCreateShader(shader_type);
+	unsigned int shader = glCreateShader(shader_type);
 
-	if (!_shader) {
+	if (!shader) {
 		return false;
 	}
 
-	glShaderSource(_shader, 1, (const GLchar**)&source, &source_size);
-	glCompileShader(_shader);
+	glShaderSource(shader, 1, (const GLchar**)&source, &source_size);
+	glCompileShader(shader);
 
 	GLint status;
-	glGetShaderiv(_shader, GL_COMPILE_STATUS, &status);
+	glGetShaderiv(shader, GL_COMPILE_STATUS, &status);
 
 	if (status == GL_FALSE) {
 		GLint log_length;
-		glGetShaderiv(_shader, GL_INFO_LOG_LENGTH, &log_length);
+		glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &log_length);
 
 		if (log_length) {
 			GLchar* log_buffer = (GLchar*)GleamAllocate(sizeof(GLchar) * (log_length + 1));
 
 			if (log_buffer) {
-				glGetShaderInfoLog(_shader, log_length, NULL, log_buffer);
+				glGetShaderInfoLog(shader, log_length, NULL, log_buffer);
 
 				WriteMessageToLog(log_buffer, log_length - 1, LOG_ERROR);
 				GleamFree(log_buffer);
 			}
 		}
 
-		glDeleteShader(_shader);
+		glDeleteShader(shader);
+		return false;
+	}
+
+	//_shader = glCreateShaderProgramv(shader_type, 1, &source);
+	_shader = glCreateProgram();
+
+	if (!_shader) {
+		glDeleteShader(shader);
+		return false;
+	}
+
+	glProgramParameteri(_shader, GL_PROGRAM_SEPARABLE, GL_TRUE);
+
+	glAttachShader(_shader, shader);
+	glLinkProgram(_shader);
+	glDetachShader(_shader, shader);
+	glDeleteShader(shader);
+
+	glGetProgramiv(_shader, GL_LINK_STATUS, &status);
+
+	if (status == GL_FALSE) {
+		GLint log_length;
+		glGetProgramiv(_shader, GL_INFO_LOG_LENGTH, &log_length);
+
+		if (log_length) {
+			GLchar* log_buffer = (GLchar*)GleamAllocate(sizeof(GLchar) * (log_length + 1));
+
+			if (log_buffer) {
+				glGetProgramInfoLog(_shader, log_length, NULL, log_buffer);
+
+				WriteMessageToLog(log_buffer, log_length - 1, LOG_ERROR);
+				GleamFree(log_buffer);
+			}
+		}
+
+		glDeleteProgram(_shader);
 		_shader = 0;
+
 		return false;
 	}
 

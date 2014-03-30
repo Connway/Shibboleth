@@ -99,11 +99,11 @@ ILboolean ilLoadJascPal(ILconst_string FileName)
 	}
 
 	iFgetw(Buff, BUFFLEN, PalFile);
-	if (stricmp((const char*)Buff, "JASC-PAL")) {
+	if (_stricmp((const char*)Buff, "JASC-PAL")) {
 		Error = IL_TRUE;
 	}
 	iFgetw(Buff, BUFFLEN, PalFile);
-	if (stricmp((const char*)Buff, "0100")) {
+	if (_stricmp((const char*)Buff, "0100")) {
 		Error = IL_TRUE;
 	}
 
@@ -896,8 +896,9 @@ ILAPI void ILAPIENTRY ilSetPal(ILpal *Pal)
 	return;
 }
 
-
+// Global variable
 ILuint CurSort = 0;
+
 typedef struct COL_CUBE
 {
 	ILubyte	Min[3];

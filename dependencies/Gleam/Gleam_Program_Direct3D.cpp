@@ -20,6 +20,8 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
+#if defined(_WIN32) || defined(_WIN64)
+
 #include "Gleam_Program_Direct3D.h"
 #include "Gleam_ShaderResourceView_Direct3D.h"
 #include "Gleam_SamplerState_Direct3D.h"
@@ -74,7 +76,6 @@ ProgramD3D::ProgramD3D(void):
 ProgramD3D::~ProgramD3D(void)
 {
 	destroy();
-	IProgram::destroy();
 }
 
 bool ProgramD3D::init(void)
@@ -82,64 +83,50 @@ bool ProgramD3D::init(void)
 	return true;
 }
 
-void ProgramD3D::destroy(void)
-{
-	SAFERELEASE(_shader_vertex)
-	SAFERELEASE(_shader_pixel)
-	SAFERELEASE(_shader_domain)
-	SAFERELEASE(_shader_geometry)
-	SAFERELEASE(_shader_hull)
-	SAFERELEASE(_shader_compute)
-}
-
-void ProgramD3D::attach(const IShader* shader)
+void ProgramD3D::attach(IShader* shader)
 {
 	assert(shader->isD3D());
+
+	_attached_shaders[shader->getType()] = shader;
 
 	switch (shader->getType()) {
 		case IShader::SHADER_VERTEX:
 			SAFERELEASE(_shader_vertex)
 			_shader_vertex = ((const ShaderD3D*)shader)->getVertexShader();
-			_shader_vertex->AddRef();
 			break;
 
 		case IShader::SHADER_PIXEL:
 			SAFERELEASE(_shader_pixel)
 			_shader_pixel = ((const ShaderD3D*)shader)->getPixelShader();
-			_shader_pixel->AddRef();
 			break;
 
 		case IShader::SHADER_DOMAIN:
 			SAFERELEASE(_shader_domain)
 			_shader_domain = ((const ShaderD3D*)shader)->getDomainShader();
-			_shader_domain->AddRef();
 			break;
 
 		case IShader::SHADER_GEOMETRY:
 			SAFERELEASE(_shader_geometry)
 			_shader_geometry = ((const ShaderD3D*)shader)->getGeometryShader();
-			_shader_geometry->AddRef();
 			break;
 
 		case IShader::SHADER_HULL:
 			SAFERELEASE(_shader_hull)
 			_shader_hull = ((const ShaderD3D*)shader)->getHullShader();
-			_shader_hull->AddRef();
 			break;
 
 		case IShader::SHADER_COMPUTE:
 			SAFERELEASE(_shader_compute)
 			_shader_compute = ((const ShaderD3D&)shader).getComputeShader();
-			_shader_compute->AddRef();
 			break;
 	}
 }
 
-void ProgramD3D::detach(const IShader* shader)
+void ProgramD3D::detach(IShader::SHADER_TYPE shader)
 {
-	assert(shader->isD3D());
+	_attached_shaders[shader] = nullptr;
 
-	switch (shader->getType()) {
+	switch (shader) {
 		case IShader::SHADER_VERTEX:
 			SAFERELEASE(_shader_vertex)
 			_shader_vertex = nullptr;
@@ -170,11 +157,6 @@ void ProgramD3D::detach(const IShader* shader)
 			_shader_compute = nullptr;
 			break;
 	}
-}
-
-bool ProgramD3D::link(void)
-{
-	return true;
 }
 
 void ProgramD3D::bind(IRenderDevice& rd)
@@ -313,3 +295,5 @@ void ProgramD3D::cacheBuffers(void)
 }
 
 NS_END
+
+#endif

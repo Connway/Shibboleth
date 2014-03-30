@@ -55,6 +55,8 @@ void CScriptHandle::ReleaseHandle()
 		asIScriptEngine *engine = m_type->GetEngine();
 		engine->ReleaseScriptObject(m_ref, m_type);
 
+		engine->Release();
+
 		m_ref  = 0;
 		m_type = 0;
 	}
@@ -66,21 +68,16 @@ void CScriptHandle::AddRefHandle()
 	{
 		asIScriptEngine *engine = m_type->GetEngine();
 		engine->AddRefScriptObject(m_ref, m_type);
+
+		// Hold on to the engine so it isn't destroyed while
+		// a reference to a script object is still held
+		engine->AddRef();
 	}
 }
 
 CScriptHandle &CScriptHandle::operator =(const CScriptHandle &other)
 {
-	// Don't do anything if it is the same reference
-	if( m_ref == other.m_ref )
-		return *this;
-
-	ReleaseHandle();
-
-	m_ref  = other.m_ref;
-	m_type = other.m_type;
-
-	AddRefHandle();
+	Set(other.m_ref, other.m_type);
 
 	return *this;
 }
@@ -97,9 +94,22 @@ void CScriptHandle::Set(void *ref, asIObjectType *type)
 	AddRefHandle();
 }
 
-asIObjectType *CScriptHandle::GetType()
+asIObjectType *CScriptHandle::GetType() const
 {
 	return m_type;
+}
+
+int CScriptHandle::GetTypeId() const
+{
+	if( m_type == 0 ) return 0;
+
+	if( m_type->GetFlags() & asOBJ_SCRIPT_FUNCTION )
+	{
+		asIScriptFunction *func = reinterpret_cast<asIScriptFunction*>(m_ref);
+		return func->GetTypeId() | asTYPEID_OBJHANDLE;
+	}
+
+	return m_type->GetTypeId() | asTYPEID_OBJHANDLE;
 }
 
 // This method shouldn't be called from the application 
@@ -202,7 +212,7 @@ void CScriptHandle::Cast(void **outRef, int typeId)
 		}
 
 		// Must increase the ref count as we're returning a new reference to the object
-		AddRefHandle();
+		engine->AddRefScriptObject(m_ref, m_type);
 		*outRef = m_ref;
 	}
 	else if( m_type->GetFlags() & asOBJ_SCRIPT_OBJECT )
@@ -211,7 +221,7 @@ void CScriptHandle::Cast(void **outRef, int typeId)
 		if( engine->IsHandleCompatibleWithObject(m_ref, m_type->GetTypeId(), typeId) )
 		{
 			// The script type is compatible so we can simply return the same pointer
-			AddRefHandle();
+			engine->AddRefScriptObject(m_ref, m_type);
 			*outRef = m_ref;
 		}
 	}

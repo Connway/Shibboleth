@@ -78,10 +78,10 @@ public:
 	IInputDevice(void) {}
 	virtual ~IInputDevice(void) {}
 
-	virtual bool init(const Window& window, void* compat = nullptr, bool no_windows_key = false) = 0;
+	virtual bool init(const Window& window) = 0;
 	virtual void destroy(void) = 0;
 
-	virtual bool update(void) = 0;
+	virtual void update(void) = 0;
 
 	virtual const GChar* getDeviceName(void) const = 0;
 	virtual const GChar* getPlatformImplementationString(void) const = 0;

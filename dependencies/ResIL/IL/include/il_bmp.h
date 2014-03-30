@@ -20,7 +20,7 @@
 	#pragma pack(push, bmp_struct, 1)
 #endif
 typedef struct BMPHEAD {
-	ILushort	bfType;
+	ILbyte		bfType[2];
 	ILint		bfSize;
 	ILuint		bfReserved;
 	ILint		bfDataOff;

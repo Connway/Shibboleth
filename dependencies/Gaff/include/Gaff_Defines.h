@@ -116,6 +116,14 @@ THE SOFTWARE.
 
 NS_GAFF
 
+#if defined(__LP64__) || defined(_WIN64)
+	typedef long long OffsetType;
+#elif defined(__LP32__) || defined(_WIN32)
+	typedef int OffsetType;
+#else
+	#error "Cannot deduce platform bit-age."
+#endif
+
 template <class T>
 T&& Move(T& data)
 {

@@ -23,8 +23,11 @@
 // According to the ppm specs, it's 70, but PSP
 //  likes to output longer lines.
 #define MAX_BUFFER 180  
+
+// Global variables
 static ILbyte LineBuffer[MAX_BUFFER];
 static ILbyte SmallBuff[MAX_BUFFER];
+ILstring FName = NULL;
 
 // Can't read direct bits from a lump yet
 ILboolean IsLump = IL_FALSE;
@@ -472,8 +475,6 @@ ILboolean iGetWord(ILboolean final)
 	return IL_TRUE;
 }
 
-
-ILstring FName = NULL;
 
 //! Writes a Pnm file
 ILboolean ilSavePnm(const ILstring FileName)
