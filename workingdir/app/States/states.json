@@ -1,8 +1,12 @@
 {
-	"starting_state": "StateTest",
+	"starting_state": "LoadComponentState",
 
 	"states":
 	[
+		{
+			"name": "LoadComponentState",
+			"transitions": [1]
+		},
 		{
 			"name": "StateTest",
 			"transitions": []

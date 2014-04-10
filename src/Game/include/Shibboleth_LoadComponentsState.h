@@ -20,44 +20,32 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#include <Shibboleth_IState.h>
-#include <Shibboleth_Array.h>
-#include <Shibboleth_App.h>
-#include <iostream>
+#pragma once
 
-class TestState : public Shibboleth::IState
+#include "Shibboleth_IState.h"
+
+NS_SHIBBOLETH
+
+class App;
+
+class LoadComponentsState : public IState
 {
 public:
-	TestState(void) {}
-	~TestState(void) {}
+	LoadComponentsState(App& app);
+	~LoadComponentsState(void);
 
-	bool init(unsigned int)
-	{
-		return true;
-	}
+	bool init(unsigned int state_id);
 
-	void enter(void)
-	{
-		std::cout << "Test State ENTER" << std::endl;
-	}
+	void enter(void);
+	void update(void);
+	void exit(void);
 
-	void update(void)
-	{
-		std::cout << "Test State UPDATE" << std::endl;
-	}
-
-	void exit(void)
-	{
-		std::cout << "Test State EXIT" << std::endl;
-	}
+private:
+	App& _app;
+	unsigned int _state_id;
 };
 
-DYNAMICEXPORT Shibboleth::IState* CreateState(Shibboleth::ProxyAllocator& allocator, Shibboleth::App& game)
-{
-	return allocator.template allocT<TestState>();
-}
+DYNAMICEXPORT IState* CreateState(ProxyAllocator& allocator, App&);
+DYNAMICEXPORT void DestroyState(ProxyAllocator& allocator, IState* state);
 
-DYNAMICEXPORT void DestroyState(Shibboleth::ProxyAllocator& allocator, Shibboleth::IState* state)
-{
-	allocator.freeT(state);
-}
+NS_END

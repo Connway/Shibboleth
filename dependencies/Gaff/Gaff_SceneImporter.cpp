@@ -26,10 +26,13 @@ NS_GAFF
 
 SceneImporter::SceneImporter(void)
 {
+	_importer.SetProgressHandler(&_loading_handler);
 }
 
 SceneImporter::~SceneImporter(void)
 {
+	// To stop assimp from attempting to delete our loading handler
+	_importer.SetProgressHandler(nullptr);
 }
 
 Scene SceneImporter::loadFile(const char* file_name, unsigned int processing_flags)
@@ -55,6 +58,11 @@ Scene SceneImporter::getScene(void) const
 Scene SceneImporter::applyProcessing(unsigned int processing_flags)
 {
 	return Scene(_importer.ApplyPostProcessing(processing_flags));
+}
+
+void SceneImporter::setProgressHandler(bool (*func)(float))
+{
+	_loading_handler.setProgressFunc(Bind(func));
 }
 
 const char* SceneImporter::getError(void) const

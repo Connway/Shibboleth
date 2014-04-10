@@ -33,7 +33,8 @@ public:
 	IComponent(void) {}
 	virtual ~IComponent(void) {}
 
-
+	// load
+	// save
 };
 
 NS_END

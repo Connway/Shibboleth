@@ -20,44 +20,14 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#include <Shibboleth_IState.h>
-#include <Shibboleth_Array.h>
-#include <Shibboleth_App.h>
-#include <iostream>
+#include "Shibboleth_ComponentManager.h"
 
-class TestState : public Shibboleth::IState
+DYNAMICEXPORT Gaff::INamedObject* CreateManager(Shibboleth::ProxyAllocator& allocator, Shibboleth::App& app)
 {
-public:
-	TestState(void) {}
-	~TestState(void) {}
-
-	bool init(unsigned int)
-	{
-		return true;
-	}
-
-	void enter(void)
-	{
-		std::cout << "Test State ENTER" << std::endl;
-	}
-
-	void update(void)
-	{
-		std::cout << "Test State UPDATE" << std::endl;
-	}
-
-	void exit(void)
-	{
-		std::cout << "Test State EXIT" << std::endl;
-	}
-};
-
-DYNAMICEXPORT Shibboleth::IState* CreateState(Shibboleth::ProxyAllocator& allocator, Shibboleth::App& game)
-{
-	return allocator.template allocT<TestState>();
+	return allocator.template allocT<Shibboleth::ComponentManager>(app);
 }
 
-DYNAMICEXPORT void DestroyState(Shibboleth::ProxyAllocator& allocator, Shibboleth::IState* state)
+DYNAMICEXPORT void DestroyManager(Shibboleth::ProxyAllocator& allocator, Gaff::INamedObject* manager)
 {
-	allocator.freeT(state);
+	allocator.freeT(manager);
 }

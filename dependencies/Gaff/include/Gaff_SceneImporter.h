@@ -20,7 +20,9 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
+#include "Gaff_Function.h"
 #include "Gaff_Scene.h"
+#include <assimp/ProgressHandler.hpp>
 #include <assimp/postprocess.h>
 #include <assimp/Importer.hpp>
 
@@ -59,6 +61,18 @@ enum SceneImportFlags
 class SceneImporter
 {
 public:
+	template <class T>
+	void setProgressHandler(T* object, bool (T::*func)(float))
+	{
+		_loading_handler.setProgressFunc(Bind(object, func));
+	}
+
+	template <class T>
+	void setProgressHandler(const T& functor)
+	{
+		_loading_handler.setProgressFunc(Bind(functor));
+	}
+
 	SceneImporter(void);
 	~SceneImporter(void);
 
@@ -70,6 +84,8 @@ public:
 
 	INLINE Scene applyProcessing(unsigned int processing_flags);
 
+	INLINE void setProgressHandler(bool (*func)(float));
+
 	// Register/Unregister file loader
 	// Register/Unregister processing
 
@@ -78,7 +94,35 @@ public:
 	INLINE void setExtraVerboseMode(bool enable);
 
 private:
+	class ProgressHandler : public Assimp::ProgressHandler
+	{
+	public:
+		ProgressHandler(void):
+			_progress_func(Bind(this, &ProgressHandler::defaultUpdate))
+		{
+		}
+
+		bool Update(float percentage)
+		{
+			return _progress_func(percentage);
+		}
+
+		bool defaultUpdate(float)
+		{
+			return true;
+		}
+
+		void setProgressFunc(const Gaff::FunctionBinder<bool, float>& func)
+		{
+			_progress_func = func;
+		}
+
+	private:
+		Gaff::FunctionBinder<bool, float> _progress_func;
+	};
+
 	Assimp::Importer _importer;
+	ProgressHandler _loading_handler;
 
 	GAFF_NO_COPY(SceneImporter);
 	GAFF_NO_MOVE(SceneImporter);

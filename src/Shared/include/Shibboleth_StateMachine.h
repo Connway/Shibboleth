@@ -37,7 +37,6 @@ public:
 		typedef IState* (*CreateStateFunc)(ProxyAllocator&, App&);
 		typedef void (*DestroyStateFunc)(ProxyAllocator&, IState*);
 
-		Array<unsigned int> transitions;
 		AString name;
 
 		CreateStateFunc create_func;

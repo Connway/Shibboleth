@@ -4,6 +4,7 @@
     <ClCompile Include="..\src\Shared\Shibboleth_Allocator.cpp" />
     <ClCompile Include="..\src\Shared\Shibboleth_StateMachine.cpp" />
     <ClCompile Include="..\src\Shared\Shibboleth_Logger.cpp" />
+    <ClCompile Include="..\src\Shared\Shibboleth_App.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\Shared\include\Shibboleth_Array.h" />
@@ -18,5 +19,6 @@
     <ClInclude Include="..\src\Shared\include\Shibboleth_HashString.h" />
     <ClInclude Include="..\src\Shared\include\Shibboleth_ProxyAllocator.h" />
     <ClInclude Include="..\src\Shared\include\Shibboleth_Logger.h" />
+    <ClInclude Include="..\src\Shared\include\Shibboleth_App.h" />
   </ItemGroup>
 </Project>

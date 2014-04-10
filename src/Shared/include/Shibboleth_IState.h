@@ -29,20 +29,24 @@ NS_SHIBBOLETH
 class IState
 {
 public:
-	IState(void): _transitions(nullptr) {}
+	IState(void) {}
 	virtual ~IState(void) {}
+
+	virtual bool init(unsigned int state_id) = 0;
 
 	virtual void enter(void) = 0;
 	virtual void update(void) = 0;
 	virtual void exit(void) = 0;
 
-	void setTransitions(const Array<unsigned int>* transitions)
+	const Array<unsigned int>& getTransitions(void) const
 	{
-		_transitions = transitions;
+		return _transitions;
 	}
 
 protected:
-	const Array<unsigned int>* _transitions;
+	Array<unsigned int> _transitions;
+
+	friend class App;
 };
 
 NS_END
