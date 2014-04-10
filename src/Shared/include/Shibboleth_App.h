@@ -42,42 +42,42 @@ public:
 	const T& getManager(const AHashString& name) const
 	{
 		assert(name.size() && _manager_map.indexOf(name) != -1);
-		return *(T*)_manager_map[name];
+		return *(T*)_manager_map[name].manager;
 	}
 
 	template <class T>
 	T& getManager(const AHashString& name)
 	{
 		assert(name.size() && _manager_map.indexOf(name) != -1);
-		return *(T*)_manager_map[name];
+		return *(T*)_manager_map[name].manager;
 	}
 
 	template <class T>
 	const T& getManager(const AString& name) const
 	{
 		assert(name.size() && _manager_map.indexOf(name) != -1);
-		return *(T*)_manager_map[name];
+		return *(T*)_manager_map[name].manager;
 	}
 
 	template <class T>
 	T& getManager(const AString& name)
 	{
 		assert(name.size() && _manager_map.indexOf(name) != -1);
-		return *(T*)_manager_map[name];
+		return *(T*)_manager_map[name].manager;
 	}
 
 	template <class T>
 	const T& getManager(const char* name) const
 	{
 		assert(name && _manager_map.indexOf(name) != -1);
-		return *(T*)_manager_map[name];
+		return *(T*)_manager_map[name].manager;
 	}
 
 	template <class T>
 	T& getManager(const char* name)
 	{
 		assert(name && _manager_map.indexOf(name) != -1);
-		return *(T*)_manager_map[name];
+		return *(T*)_manager_map[name].manager;
 	}
 
 	App(void);
@@ -92,6 +92,9 @@ public:
 
 	INLINE void addTask(Gaff::ITask<ProxyAllocator>* task);
 	INLINE StateMachine& getStateMachine(void);
+
+	INLINE DynamicLoader& getDynamicLoader(void);
+	INLINE Gaff::File& getGameLogFile(void);
 
 	INLINE void quit(void);
 

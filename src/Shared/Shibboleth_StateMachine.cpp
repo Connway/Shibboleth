@@ -109,7 +109,7 @@ void StateMachine::switchState(const char* name)
 const Array<unsigned int>& StateMachine::getTransitions(unsigned int state)
 {
 	assert(state < _states.size());
-	return _states[state].transitions;
+	return _states[state].state->getTransitions();
 }
 
 const AString& StateMachine::getName(unsigned int state)

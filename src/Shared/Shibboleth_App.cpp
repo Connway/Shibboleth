@@ -57,7 +57,7 @@ bool App::init(void)
 
 	_log_file = &_logger.getLogFile(logFilename);
 
-	_log_file->writeString("==================================================\n");
+	_log_file->writeString("\n==================================================\n");
 	_log_file->writeString("==================================================\n");
 	_log_file->writeString("Initializing Game\n");
 
@@ -76,7 +76,7 @@ bool App::init(void)
 		return false;
 	}
 
-	_log_file->writeString("Game Successfully Initialized\n");
+	_log_file->writeString("Game Successfully Initialized\n\n");
 	return true;
 }
 
@@ -147,7 +147,7 @@ bool App::loadStates(void)
 	Gaff::JSON state_data;
 
 	if (!state_data.parseFile("./States/states.json")) {
-		_log_file->writeString("ERROR - Could not find './States/states.json'\n");
+		_log_file->writeString("ERROR - Could not find './States/states.json' or there was a parsing error.\n");
 		return false;
 	}
 
@@ -196,7 +196,7 @@ bool App::loadStates(void)
 		DynamicLoader::ModulePtr module = _dynamic_loader.loadModule(filename, name.getString());
 
 		if (module) {
-			StateMachine::StateEntry entry = { Array<unsigned int>(), name.getString(), nullptr, nullptr, nullptr };
+			StateMachine::StateEntry entry = { name.getString(), nullptr, nullptr, nullptr };
 			entry.create_func = module->GetFunc<StateMachine::StateEntry::CreateStateFunc>("CreateState");
 			entry.destroy_func = module->GetFunc<StateMachine::StateEntry::DestroyStateFunc>("DestroyState");
 
@@ -204,7 +204,7 @@ bool App::loadStates(void)
 				entry.state = entry.create_func(ProxyAllocator(), *this);
 
 				if (entry.state) {
-					entry.transitions.reserve((unsigned int)transitions.size());
+					entry.state->_transitions.reserve((unsigned int)transitions.size());
 
 					for (size_t j = 0; j < transitions.size(); ++j) {
 						Gaff::JSON val = transitions[j];
@@ -214,7 +214,12 @@ bool App::loadStates(void)
 							return false;
 						}
 
-						entry.transitions.push((unsigned int)val.getInteger());
+						entry.state->_transitions.push((unsigned int)val.getInteger());
+					}
+
+					if (!entry.state->init(_state_machine.getNumStates())) {
+						_log_file->printf("ERROR - Failed to initialize state '%s'\n", name.getString());
+						return false;
 					}
 
 					_state_machine.addState(entry);
@@ -278,6 +283,16 @@ void App::addTask(Gaff::ITask<ProxyAllocator>* task)
 StateMachine& App::getStateMachine(void)
 {
 	return _state_machine;
+}
+
+DynamicLoader& App::getDynamicLoader(void)
+{
+	return _dynamic_loader;
+}
+
+Gaff::File& App::getGameLogFile(void)
+{
+	return *_log_file;
 }
 
 void App::quit(void)

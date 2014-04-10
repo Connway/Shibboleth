@@ -89,15 +89,12 @@
       <AdditionalIncludeDirectories>$(ProjectDir)..\..\dependencies\ResIL\include;$(ProjectDir)..\..\dependencies\ResIL\IL\include;$(ProjectDir)..\..\dependencies\LibTIFF;$(ProjectDir)..\..\dependencies\libjpeg;$(ProjectDir)..\..\dependencies\libpng;$(ProjectDir)..\..\dependencies\ResIL\ILU\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>IL_STATIC_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <DisableSpecificWarnings>4703</DisableSpecificWarnings>
-      <MultiProcessorCompilation>false</MultiProcessorCompilation>
+      <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
       <FloatingPointModel>Fast</FloatingPointModel>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
-    <Lib>
-      <Verbose>false</Verbose>
-    </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -107,15 +104,12 @@
       <AdditionalIncludeDirectories>$(ProjectDir)..\..\dependencies\ResIL\include;$(ProjectDir)..\..\dependencies\ResIL\IL\include;$(ProjectDir)..\..\dependencies\LibTIFF;$(ProjectDir)..\..\dependencies\libjpeg;$(ProjectDir)..\..\dependencies\libpng;$(ProjectDir)..\..\dependencies\ResIL\ILU\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>IL_STATIC_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <DisableSpecificWarnings>4703</DisableSpecificWarnings>
-      <MultiProcessorCompilation>false</MultiProcessorCompilation>
+      <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
       <FloatingPointModel>Fast</FloatingPointModel>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
-    <Lib>
-      <Verbose>false</Verbose>
-    </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -127,7 +121,7 @@
       <AdditionalIncludeDirectories>$(ProjectDir)..\..\dependencies\ResIL\include;$(ProjectDir)..\..\dependencies\ResIL\IL\include;$(ProjectDir)..\..\dependencies\LibTIFF;$(ProjectDir)..\..\dependencies\libjpeg;$(ProjectDir)..\..\dependencies\libpng;$(ProjectDir)..\..\dependencies\ResIL\ILU\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>IL_STATIC_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <DisableSpecificWarnings>4703</DisableSpecificWarnings>
-      <MultiProcessorCompilation>false</MultiProcessorCompilation>
+      <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
       <FloatingPointModel>Fast</FloatingPointModel>
     </ClCompile>
     <Link>
@@ -135,9 +129,6 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
-    <Lib>
-      <Verbose>false</Verbose>
-    </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -149,7 +140,7 @@
       <AdditionalIncludeDirectories>$(ProjectDir)..\..\dependencies\ResIL\include;$(ProjectDir)..\..\dependencies\ResIL\IL\include;$(ProjectDir)..\..\dependencies\LibTIFF;$(ProjectDir)..\..\dependencies\libjpeg;$(ProjectDir)..\..\dependencies\libpng;$(ProjectDir)..\..\dependencies\ResIL\ILU\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>IL_STATIC_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <DisableSpecificWarnings>4703</DisableSpecificWarnings>
-      <MultiProcessorCompilation>false</MultiProcessorCompilation>
+      <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
       <FloatingPointModel>Fast</FloatingPointModel>
     </ClCompile>
     <Link>
@@ -157,9 +148,6 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
-    <Lib>
-      <Verbose>false</Verbose>
-    </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="..\..\dependencies\ResIL\ILU\include\ilu_alloc.h" />

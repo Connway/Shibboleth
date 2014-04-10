@@ -19,91 +19,48 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\dependencies\LibTIFF\mkg3states.c" />
-    <ClCompile Include="..\..\dependencies\LibTIFF\tif_aux.c" />
-    <ClCompile Include="..\..\dependencies\LibTIFF\tif_close.c" />
-    <ClCompile Include="..\..\dependencies\LibTIFF\tif_codec.c" />
-    <ClCompile Include="..\..\dependencies\LibTIFF\tif_color.c" />
-    <ClCompile Include="..\..\dependencies\LibTIFF\tif_compress.c" />
-    <ClCompile Include="..\..\dependencies\LibTIFF\tif_dir.c" />
-    <ClCompile Include="..\..\dependencies\LibTIFF\tif_dirinfo.c" />
-    <ClCompile Include="..\..\dependencies\LibTIFF\tif_dirread.c" />
-    <ClCompile Include="..\..\dependencies\LibTIFF\tif_dirwrite.c" />
-    <ClCompile Include="..\..\dependencies\LibTIFF\tif_dumpmode.c" />
-    <ClCompile Include="..\..\dependencies\LibTIFF\tif_error.c" />
-    <ClCompile Include="..\..\dependencies\LibTIFF\tif_extension.c" />
-    <ClCompile Include="..\..\dependencies\LibTIFF\tif_fax3.c" />
-    <ClCompile Include="..\..\dependencies\LibTIFF\tif_fax3sm.c" />
-    <ClCompile Include="..\..\dependencies\LibTIFF\tif_flush.c" />
-    <ClCompile Include="..\..\dependencies\LibTIFF\tif_getimage.c" />
-    <ClCompile Include="..\..\dependencies\LibTIFF\tif_jbig.c" />
-    <ClCompile Include="..\..\dependencies\LibTIFF\tif_jpeg.c" />
-    <ClCompile Include="..\..\dependencies\LibTIFF\tif_jpeg_12.c" />
-    <ClCompile Include="..\..\dependencies\LibTIFF\tif_luv.c" />
-    <ClCompile Include="..\..\dependencies\LibTIFF\tif_lzma.c" />
-    <ClCompile Include="..\..\dependencies\LibTIFF\tif_lzw.c" />
-    <ClCompile Include="..\..\dependencies\LibTIFF\tif_next.c" />
-    <ClCompile Include="..\..\dependencies\LibTIFF\tif_ojpeg.c" />
-    <ClCompile Include="..\..\dependencies\LibTIFF\tif_open.c" />
-    <ClCompile Include="..\..\dependencies\LibTIFF\tif_packbits.c" />
-    <ClCompile Include="..\..\dependencies\LibTIFF\tif_pixarlog.c" />
-    <ClCompile Include="..\..\dependencies\LibTIFF\tif_predict.c" />
-    <ClCompile Include="..\..\dependencies\LibTIFF\tif_print.c" />
-    <ClCompile Include="..\..\dependencies\LibTIFF\tif_read.c" />
-    <ClCompile Include="..\..\dependencies\LibTIFF\tif_stream.cxx" />
-    <ClCompile Include="..\..\dependencies\LibTIFF\tif_strip.c" />
-    <ClCompile Include="..\..\dependencies\LibTIFF\tif_swab.c" />
-    <ClCompile Include="..\..\dependencies\LibTIFF\tif_thunder.c" />
-    <ClCompile Include="..\..\dependencies\LibTIFF\tif_tile.c" />
-    <ClCompile Include="..\..\dependencies\LibTIFF\tif_version.c" />
-    <ClCompile Include="..\..\dependencies\LibTIFF\tif_warning.c" />
-    <ClCompile Include="..\..\dependencies\LibTIFF\tif_win32.c" />
-    <ClCompile Include="..\..\dependencies\LibTIFF\tif_write.c" />
-    <ClCompile Include="..\..\dependencies\LibTIFF\tif_zip.c" />
+    <ProjectReference Include="..\Dependencies\Gaff.vcxproj">
+      <Project>{a63d072e-20cb-47aa-a110-65ca8fcc524d}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\Dependencies\jansson.vcxproj">
+      <Project>{ee9e1124-ce92-4113-a64b-d4784e6a626b}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\Shared.vcxproj">
+      <Project>{1972702e-61a8-4883-baae-8c3644ba4b3e}</Project>
+    </ProjectReference>
+    <ProjectReference Include="Game.vcxproj">
+      <Project>{afe6869b-c843-424b-b601-e5daf5252407}</Project>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\dependencies\LibTIFF\t4.h" />
-    <ClInclude Include="..\..\dependencies\LibTIFF\tiff.h" />
-    <ClInclude Include="..\..\dependencies\LibTIFF\tiffconf.h" />
-    <ClInclude Include="..\..\dependencies\LibTIFF\tiffio.h" />
-    <ClInclude Include="..\..\dependencies\LibTIFF\tiffio.hxx" />
-    <ClInclude Include="..\..\dependencies\LibTIFF\tiffiop.h" />
-    <ClInclude Include="..\..\dependencies\LibTIFF\tiffvers.h" />
-    <ClInclude Include="..\..\dependencies\LibTIFF\tif_config.h" />
-    <ClInclude Include="..\..\dependencies\LibTIFF\tif_dir.h" />
-    <ClInclude Include="..\..\dependencies\LibTIFF\tif_fax3.h" />
-    <ClInclude Include="..\..\dependencies\LibTIFF\tif_predict.h" />
-    <ClInclude Include="..\..\dependencies\LibTIFF\uvcode.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <Text Include="..\..\dependencies\LibTIFF\LICENSE.txt" />
+    <ClCompile Include="..\..\src\Game\Shibboleth_ComponentManagerDLL.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{F9F780F9-96A1-42FD-8169-CE1FE5BE8837}</ProjectGuid>
-    <RootNamespace>LibTIFF</RootNamespace>
+    <ProjectGuid>{611CD4AE-59AB-4F59-9918-A3DBCE5FC187}</ProjectGuid>
+    <RootNamespace>ComponentManager</RootNamespace>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v120</PlatformToolset>
-    <CharacterSet>MultiByte</CharacterSet>
+    <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v120</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v120</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
-    <CharacterSet>MultiByte</CharacterSet>
+    <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v120</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
@@ -128,26 +85,29 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <OutDir>$(ProjectDir)..\..\build\Output\$(Platform)\$(Configuration)\</OutDir>
     <IntDir>$(ProjectDir)..\..\build\Intermediate\$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
+    <TargetName>$(ProjectName)32d</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <OutDir>$(ProjectDir)..\..\build\Output\$(Platform)\$(Configuration)\</OutDir>
     <IntDir>$(ProjectDir)..\..\build\Intermediate\$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
+    <TargetName>$(ProjectName)64d</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <OutDir>$(ProjectDir)..\..\build\Output\$(Platform)\$(Configuration)\</OutDir>
     <IntDir>$(ProjectDir)..\..\build\Intermediate\$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
+    <TargetName>$(ProjectName)32</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <OutDir>$(ProjectDir)..\..\build\Output\$(Platform)\$(Configuration)\</OutDir>
     <IntDir>$(ProjectDir)..\..\build\Intermediate\$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
+    <TargetName>$(ProjectName)64</TargetName>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>$(ProjectDir)..\..\dependencies\zlib;$(ProjectDir)..\..\dependencies\libjpeg;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\..\dependencies\Gaff\include;$(ProjectDir)..\..\src\Shared\include;$(ProjectDir)..\..\src\Game\include;$(ProjectDir)..\..\dependencies\dirent;$(ProjectDir)..\..\src\App\include</AdditionalIncludeDirectories>
       <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
       <FloatingPointModel>Fast</FloatingPointModel>
     </ClCompile>
@@ -160,8 +120,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>$(ProjectDir)..\..\dependencies\zlib;$(ProjectDir)..\..\dependencies\libjpeg;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\..\dependencies\Gaff\include;$(ProjectDir)..\..\src\Shared\include;$(ProjectDir)..\..\src\Game\include;$(ProjectDir)..\..\dependencies\dirent;$(ProjectDir)..\..\src\App\include</AdditionalIncludeDirectories>
       <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
       <FloatingPointModel>Fast</FloatingPointModel>
     </ClCompile>
@@ -176,8 +135,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>$(ProjectDir)..\..\dependencies\zlib;$(ProjectDir)..\..\dependencies\libjpeg;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\..\dependencies\Gaff\include;$(ProjectDir)..\..\src\Shared\include;$(ProjectDir)..\..\src\Game\include;$(ProjectDir)..\..\dependencies\dirent;$(ProjectDir)..\..\src\App\include</AdditionalIncludeDirectories>
       <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
       <FloatingPointModel>Fast</FloatingPointModel>
     </ClCompile>
@@ -194,8 +152,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>$(ProjectDir)..\..\dependencies\zlib;$(ProjectDir)..\..\dependencies\libjpeg;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\..\dependencies\Gaff\include;$(ProjectDir)..\..\src\Shared\include;$(ProjectDir)..\..\src\Game\include;$(ProjectDir)..\..\dependencies\dirent;$(ProjectDir)..\..\src\App\include</AdditionalIncludeDirectories>
       <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
       <FloatingPointModel>Fast</FloatingPointModel>
     </ClCompile>

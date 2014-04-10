@@ -32,12 +32,15 @@ Logger::Logger(void)
 
 Logger::~Logger(void)
 {
+	for (auto it = _files.begin(); it != _files.end(); ++it) {
+		it->writeString("\nCLOSING LOG FILE\n\n");
+	}
 }
 
 bool Logger::openLogFile(const AHashString& filename)
 {
 	assert(filename.size() && _files.indexOf(filename) == -1);
-	Gaff::File file(filename.getBuffer(), Gaff::File::WRITE);
+	Gaff::File file(filename.getBuffer(), Gaff::File::APPEND);
 
 	if (!file.isOpen()) {
 		return false;

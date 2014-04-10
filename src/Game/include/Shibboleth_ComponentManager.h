@@ -20,44 +20,46 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#include <Shibboleth_IState.h>
-#include <Shibboleth_Array.h>
-#include <Shibboleth_App.h>
-#include <iostream>
+#pragma once
 
-class TestState : public Shibboleth::IState
+#include "Shibboleth_App.h"
+#include "Shibboleth_IComponent.h"
+#include "Shibboleth_HashString.h"
+#include "Shibboleth_HashMap.h"
+
+NS_SHIBBOLETH
+
+class ComponentManager : public Gaff::INamedObject
 {
 public:
-	TestState(void) {}
-	~TestState(void) {}
+	ComponentManager(App& app);
+	~ComponentManager(void);
 
-	bool init(unsigned int)
-	{
-		return true;
-	}
+	const char* getName(void) const;
 
-	void enter(void)
-	{
-		std::cout << "Test State ENTER" << std::endl;
-	}
+	bool addComponents(DynamicLoader::ModulePtr& module);
 
-	void update(void)
-	{
-		std::cout << "Test State UPDATE" << std::endl;
-	}
+	INLINE IComponent* createComponent(AHashString name);
+	INLINE IComponent* createComponent(AString name);
+	INLINE IComponent* createComponent(const char* name);
+	INLINE void destroyComponent(IComponent* component);
 
-	void exit(void)
+private:
+	typedef IComponent* (*CreateComponentFunc)(ProxyAllocator& allocator, App& app, unsigned int id);
+	typedef void (*DestroyComponentFunc)(ProxyAllocator& allocator, IComponent* component, unsigned int id);
+	typedef unsigned int (*GetNumComponentsFunc)(void);
+	typedef const char* (*GetComponentNameFunc)(unsigned int);
+
+	struct ComponentEntry
 	{
-		std::cout << "Test State EXIT" << std::endl;
-	}
+		DynamicLoader::ModulePtr module;
+		CreateComponentFunc create;
+		DestroyComponentFunc destroy;
+		unsigned int component_id;
+	};
+
+	HashMap<AHashString, ComponentEntry> _components;
+	App& _app;
 };
 
-DYNAMICEXPORT Shibboleth::IState* CreateState(Shibboleth::ProxyAllocator& allocator, Shibboleth::App& game)
-{
-	return allocator.template allocT<TestState>();
-}
-
-DYNAMICEXPORT void DestroyState(Shibboleth::ProxyAllocator& allocator, Shibboleth::IState* state)
-{
-	allocator.freeT(state);
-}
+NS_END
