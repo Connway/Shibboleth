@@ -144,6 +144,9 @@
     <ProjectReference Include="..\Dependencies\Gaff.vcxproj">
       <Project>{a63d072e-20cb-47aa-a110-65ca8fcc524d}</Project>
     </ProjectReference>
+    <ProjectReference Include="..\Dependencies\jansson.vcxproj">
+      <Project>{ee9e1124-ce92-4113-a64b-d4784e6a626b}</Project>
+    </ProjectReference>
     <ProjectReference Include="..\Shared.vcxproj">
       <Project>{1972702e-61a8-4883-baae-8c3644ba4b3e}</Project>
     </ProjectReference>

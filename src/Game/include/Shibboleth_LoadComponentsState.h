@@ -45,7 +45,7 @@ private:
 	unsigned int _state_id;
 };
 
-DYNAMICEXPORT IState* CreateState(ProxyAllocator& allocator, App&);
-DYNAMICEXPORT void DestroyState(ProxyAllocator& allocator, IState* state);
+DYNAMICEXPORT IState* CreateState(App&);
+DYNAMICEXPORT void DestroyState(IState* state);
 
 NS_END

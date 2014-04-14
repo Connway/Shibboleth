@@ -113,6 +113,27 @@ unsigned int MessageBroadcaster<Allocator>::Remover::getRefCount(void) const
 	return _ref_count;
 }
 
+//////////////////////////
+//    BROADCAST TASK    //
+//////////////////////////
+template <class Allocator>
+MessageBroadcaster<Allocator>::BroadcastTask::BroadcastTask(MessageBroadcaster<Allocator>& broadcaster, const AHashString<Allocator>& msg_type, void* msg):
+	_listeners(broadcaster._listeners[msg_type]), _broadcaster(broadcaster), _msg(msg)
+{
+}
+
+template <class Allocator>
+void MessageBroadcaster<Allocator>::BroadcastTask::doTask(void)
+{
+	ScopedReadLock<ReadWriteSpinLock> scope_lock(_listeners.first);
+
+	for (auto it = _listeners.second.begin(); it != _listeners.second.end(); ++it) {
+		(*it)->call(_msg);
+	}
+
+	_broadcaster._allocator.free(_msg);
+}
+
 ///////////////////////////////
 //    MESSAGE BROADCASTER    //
 ///////////////////////////////
@@ -125,6 +146,7 @@ MessageBroadcaster<Allocator>::MessageBroadcaster(const Allocator& allocator):
 template <class Allocator>
 MessageBroadcaster<Allocator>::~MessageBroadcaster(void)
 {
+	destroy();
 }
 
 template <class Allocator>
@@ -134,8 +156,13 @@ MessageReceipt MessageBroadcaster<Allocator>::listen(Object* object, void (Objec
 	MemberFunction<Message, Object>*  function_binder = (MemberFunction<Message, Object>*)_allocator.alloc(sizeof(MemberFunction<Message, Object>));
 	construct(function_binder, object, function);
 
-	IFuncPtr ptr = function_binder;
-	ListenerList& listeners = _listeners[Message::g_Hash];
+	IFuncPtr ptr(function_binder);
+
+	_listener_lock.lock();
+	ScopedWriteLock<ReadWriteSpinLock> scoped_lock(_listeners[Message::g_Hash].first);
+	_listener_lock.unlock();
+
+	ListenerList& listeners = _listeners[Message::g_Hash].second;
 	listeners.push(ptr);
 
 	Remover* temp = _allocator.template allocT<Remover>(this, &Message::g_Hash, function_binder);
@@ -149,8 +176,13 @@ MessageReceipt MessageBroadcaster<Allocator>::listen(void (*function)(const Mess
 	Function<Message>*  function_binder = (Function<Message>*)_allocator.alloc(sizeof(Function<Message>));
 	construct(function_binder, function);
 
-	IFuncPtr ptr = function_binder;
-	ListenerList& listeners = _listeners[Message::g_Hash];
+	IFuncPtr ptr(function_binder);
+
+	_listener_lock.lock();
+	ScopedWriteLock<ReadWriteSpinLock> scoped_lock(_listeners[Message::g_Hash].first);
+	_listener_lock.unlock();
+
+	ListenerList& listeners = _listeners[Message::g_Hash].second;
 	listeners.push(ptr);
 
 	Remover* temp = _allocator.template allocT<Remover>(this, &Message::g_Hash, function_binder);
@@ -164,24 +196,29 @@ MessageReceipt MessageBroadcaster<Allocator>::listen(const FunctorT& functor)
 	Functor<Message, FunctorT>*  function_binder = (Functor<Message, FunctorT>*)_allocator.alloc(sizeof(Functor<Message, FunctorT>));
 	construct(function_binder, functor);
 
-	IFuncPtr ptr = function_binder;
-	ListenerList& listeners = _listeners[Message::g_Hash];
+	IFuncPtr ptr(function_binder);
+
+	_listener_lock.lock();
+	ScopedWriteLock<ReadWriteSpinLock> scoped_lock(_listeners[Message::g_Hash].first);
+	_listener_lock.unlock();
+
+	ListenerList& listeners = _listeners[Message::g_Hash].second;
 	listeners.push(ptr);
 
 	Remover* temp = _allocator.template allocT<Remover>(this, &Message::g_Hash, function_binder);
 	return MessageReceipt(temp);
 }
 
-template <class Allocator>
-template <class Message>
-void MessageBroadcaster<Allocator>::broadcastNow(const Message& message)
-{
-	ListenerList& listeners = _listeners[Message::g_Hash];
+// template <class Allocator>
+// template <class Message>
+// void MessageBroadcaster<Allocator>::broadcastNow(const Message& message)
+// {
+// 	ListenerList& listeners = _listeners[Message::g_Hash].second;
 
-	for (unsigned int i = 0; i < listeners.size(); ++i) {
-		listeners[i]->call((void*)&message);
-	}
-}
+// 	for (unsigned int i = 0; i < listeners.size(); ++i) {
+// 		listeners[i]->call((void*)&message);
+// 	}
+// }
 
 template <class Allocator>
 template <class Message>
@@ -194,12 +231,33 @@ void MessageBroadcaster<Allocator>::broadcast(const Message& message)
 }
 
 template <class Allocator>
-void MessageBroadcaster<Allocator>::update(void)
+void MessageBroadcaster<Allocator>::update(ThreadPool<Allocator>& thread_pool)
 {
-	// possibility for optimization, if we sort this list by message type, we can do all similar messages at once
+	// Possibility for optimization, if we sort this list by message type, we can do all similar messages at once
 	for (unsigned int i = 0; i < _message_queue.size(); ++i) {
 		const Pair< AHashString<Allocator>, void*>& msg = _message_queue[i];
-		ListenerList& listeners = _listeners[msg.first];
+
+		_listener_lock.lock();
+		BroadcastTask* task = _allocator.template allocT<BroadcastTask>(*this, msg.first, msg.second);
+		_listener_lock.unlock();
+
+		TaskPtr<Allocator> task_ptr(task, _allocator);
+
+		if (task) {
+			thread_pool.addTask(task_ptr);
+		}
+	}
+
+	_message_queue.clear();
+}
+
+template <class Allocator>
+void MessageBroadcaster<Allocator>::update(void)
+{
+	// Possibility for optimization, if we sort this list by message type, we can do all similar messages at once
+	for (unsigned int i = 0; i < _message_queue.size(); ++i) {
+		const Pair< AHashString<Allocator>, void*>& msg = _message_queue[i];
+		ListenerList& listeners = _listeners[msg.first].second;
 
 		for (unsigned int j = 0; j < listeners.size(); ++j) {
 			listeners[j]->call(msg.second);
@@ -214,8 +272,14 @@ void MessageBroadcaster<Allocator>::update(void)
 template <class Allocator>
 void MessageBroadcaster<Allocator>::removeListener(const AHashString<Allocator>& message_type, const IFunction* listener)
 {
-	assert(message_type.size() && _listeners[message_type].size());
-	ListenerList& listeners = _listeners[message_type];
+#ifdef _DEBUG
+	_listener_lock.lock();
+	assert(message_type.size() && _listeners[message_type].second.size());
+	_listener_lock.unlock();
+#endif
+
+	ScopedWriteLock<ReadWriteSpinLock> scoped_lock(_listeners[message_type].first);
+	ListenerList& listeners = _listeners[message_type].second;
 
 	int index = listeners.linearSearch(0, listeners.size(), listener);
 
@@ -224,3 +288,13 @@ void MessageBroadcaster<Allocator>::removeListener(const AHashString<Allocator>&
 	}
 }
 
+template <class Allocator>
+void MessageBroadcaster<Allocator>::destroy(void)
+{
+	for (auto it = _message_queue.begin(); it != _message_queue.end(); ++it) {
+		_allocator.free(it->second);
+	}
+	
+	_message_queue.clear();
+	_listeners.clear();
+}

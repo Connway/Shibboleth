@@ -30,7 +30,7 @@ template <class T>
 class RefPtr
 {
 public:
-	RefPtr(T* data = nullptr):
+	explicit RefPtr(T* data = nullptr):
 		_data(data)
 	{
 		if (_data) {

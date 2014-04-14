@@ -398,7 +398,7 @@ bool Array<T, Allocator>::empty(void) const
 }
 
 template <class T, class Allocator>
-void Array<T, Allocator>::push(T&& data)
+void Array<T, Allocator>::movePush(T&& data)
 {
 	if (_used == _size) {
 		if (_size == 0) {
@@ -408,8 +408,7 @@ void Array<T, Allocator>::push(T&& data)
 		}
 	}
 
-	construct(_array + _used);
-	_array[_used] = Move(data);
+	moveConstruct(_array + _used, Move(data));
 	++_used;
 }
 
@@ -429,27 +428,37 @@ void Array<T, Allocator>::push(const T& data)
 }
 
 template <class T, class Allocator>
-void Array<T, Allocator>::push(T& data)
-{
-	if (_used == _size) {
-		if (_size == 0) {
-			reserve(1);
-		}
-		else {
-			reserve(_size * 2);
-		}
-	}
-
-	construct(_array + _used, data);
-	++_used;
-}
-
-template <class T, class Allocator>
 void Array<T, Allocator>::pop(void)
 {
 	assert(_used);
 	deconstruct(_array + _used - 1);
 	--_used;
+}
+
+template <class T, class Allocator>
+typename ARRAY_ITERATOR Array<T, Allocator>::moveInsert(T&& data, const typename ARRAY_ITERATOR& it)
+{
+	assert(it._element >= _array && it._element <= _array + _used);
+	unsigned int index = (unsigned int)(it._element - _array);
+	insert(Move(data), index);
+	return Iterator(_array + index);
+}
+
+template <class T, class Allocator>
+void Array<T, Allocator>::moveInsert(T&& data, unsigned int index)
+{
+	assert(index <= _size);
+
+	if (_used + 1 > _size) {
+		reserve((_size == 0) ? 1 : _size * 2);
+	}
+
+	for (unsigned int i = _used; i > index; --i) {
+		memcpy(_array + i, _array + i - 1, sizeof(T));
+	}
+
+	moveConstruct(_array + index, data);
+	++_used;
 }
 
 template <class T, class Allocator>

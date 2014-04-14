@@ -21,13 +21,12 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Shibboleth_StateMachine.h"
-#include "Shibboleth_Allocator.h"
 
 NS_SHIBBOLETH
 
-StateMachine::StateMachine(void):
-	_curr_state((unsigned int)-1), _next_state((unsigned int)-1),
-	_restart(false)
+StateMachine::StateMachine(ProxyAllocator& proxy_allocator):
+	_states(proxy_allocator), _curr_state((unsigned int)-1),
+	_next_state((unsigned int)-1), _restart(false)
 {
 }
 
@@ -40,7 +39,7 @@ void StateMachine::clear(void)
 	_curr_state = _next_state = (unsigned int)-1;
 
 	for (auto it = _states.begin(); it != _states.end(); ++it) {
-		it->destroy_func(ProxyAllocator(), it->state);
+		it->destroy_func(it->state);
 	}
 
 	_states.clear();

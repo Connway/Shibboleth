@@ -42,16 +42,10 @@ public:
 
 	~ThreadPool(void)
 	{
-		_thread_data.terminate = true;
-
-		for (unsigned int i = 0; i < _threads.size(); ++i) {
-			_threads[i].wait(); 
-		}
-
-		_threads.clear();
+		destroy();
 	}
 
-	bool init(unsigned int max_tasks)
+	bool init(unsigned int max_tasks, unsigned int num_threads = (unsigned int)GetNumberOfCores())
 	{
 		if (!_tasks.init(max_tasks)) {
 			return false;
@@ -60,20 +54,31 @@ public:
 		_thread_data.thread_pool = this;
 		_thread_data.terminate = false;
 
-		unsigned int num_cores = (unsigned int)GetNumberOfCores();
-		_threads.reserve(num_cores);
+		_threads.reserve(num_threads);
 
-		for (unsigned long i = 0; i < num_cores; ++i) {
+		for (unsigned long i = 0; i < num_threads; ++i) {
 			Thread thread;
 
 			if (!thread.create(TaskRunner, &_thread_data)) {
 				return false;
 			}
 
-			_threads.push(Move(thread));
+			_threads.movePush(Move(thread));
 		}
 
 		return true;
+	}
+
+	void destroy(void)
+	{
+		_thread_data.terminate = true;
+
+		for (unsigned int i = 0; i < _threads.size(); ++i) {
+			_threads[i].wait();
+		}
+
+		_threads.clear();
+		_tasks.clear();
 	}
 
 	void addTask(const TaskPtr<Allocator>& task)

@@ -22,12 +22,13 @@ THE SOFTWARE.
 
 #include "Shibboleth_ComponentManager.h"
 
-DYNAMICEXPORT Gaff::INamedObject* CreateManager(Shibboleth::ProxyAllocator& allocator, Shibboleth::App& app)
+DYNAMICEXPORT Gaff::INamedObject* CreateManager(Shibboleth::App& app)
 {
-	return allocator.template allocT<Shibboleth::ComponentManager>(app);
+	Shibboleth::SetAllocator(app.getAllocator());
+	return app.getAllocator().template allocT<Shibboleth::ComponentManager>(app);
 }
 
-DYNAMICEXPORT void DestroyManager(Shibboleth::ProxyAllocator& allocator, Gaff::INamedObject* manager)
+DYNAMICEXPORT void DestroyManager(Gaff::INamedObject* manager)
 {
-	allocator.freeT(manager);
+	Shibboleth::GetAllocator().freeT(manager);
 }

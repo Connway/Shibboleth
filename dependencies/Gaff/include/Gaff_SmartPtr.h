@@ -30,7 +30,7 @@ template <class T, class Allocator = DefaultAllocator>
 class SmartPtr
 {
 public:
-	SmartPtr(T* data = nullptr, const Allocator& allocator = Allocator()):
+	explicit SmartPtr(T* data = nullptr, const Allocator& allocator = Allocator()):
 		_allocator(allocator), _data(data)
 	{
 	}

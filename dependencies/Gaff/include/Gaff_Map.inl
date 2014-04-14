@@ -112,7 +112,19 @@ void Map<Key, Value, Allocator>::erase(const Key& key)
 }
 
 template <class Key, class Value, class Allocator>
-void Map<Key, Value, Allocator>::insert(const Key& key, Value&& value)
+void Map<Key, Value, Allocator>::moveMoveInsert(Key&& key, Value&& value)
+{
+	Iterator it = _array.binarySearch(_array.begin(), _array.end(), key, SearchPredicate());
+	assert(it == _array.end() || it->first != key);
+
+	Pair<Key, Value> pair;
+	pair.first = Move(key);
+	pair.second = Move(value);
+	_array.insert(Move(pair));
+}
+
+template <class Key, class Value, class Allocator>
+void Map<Key, Value, Allocator>::moveInsert(const Key& key, Value&& value)
 {
 	Iterator it = _array.binarySearch(_array.begin(), _array.end(), key, SearchPredicate());
 	assert(it == _array.end() || it->first != key);

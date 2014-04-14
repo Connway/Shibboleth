@@ -22,8 +22,10 @@ THE SOFTWARE.
 
 #pragma once
 
+#include "Shibboleth_MessageBroadcaster.h"
 #include "Shibboleth_DynamicLoader.h"
 #include "Shibboleth_StateMachine.h"
+#include "Shibboleth_ThreadPool.h"
 #include "Shibboleth_HashString.h"
 #include "Shibboleth_Registry.h"
 #include "Shibboleth_HashMap.h"
@@ -31,7 +33,6 @@ THE SOFTWARE.
 #include "Shibboleth_Logger.h"
 #include "Shibboleth_Array.h"
 #include <Gaff_INamedObject.h>
-#include <Gaff_ThreadPool.h>
 
 NS_SHIBBOLETH
 
@@ -86,11 +87,11 @@ public:
 	bool init(void);
 	void run(void);
 
-	INLINE ProxyAllocator& getProxyAllocator(void);
-	INLINE Allocator& getAllocator(void) const;
-	INLINE Logger& getLogger(void) const;
+	INLINE Allocator& getAllocator(void);
+	INLINE Logger& getLogger(void);
 
 	INLINE void addTask(Gaff::ITask<ProxyAllocator>* task);
+	INLINE MessageBroadcaster& getBroadcaster(void);
 	INLINE StateMachine& getStateMachine(void);
 
 	INLINE DynamicLoader& getDynamicLoader(void);
@@ -101,8 +102,8 @@ public:
 private:
 	struct ManagerEntry
 	{
-		typedef Gaff::INamedObject* (*CreateManagerFunc)(ProxyAllocator&, App& game);
-		typedef void (*DestroyManagerFunc)(ProxyAllocator&, Gaff::INamedObject*);
+		typedef Gaff::INamedObject* (*CreateManagerFunc)(App& game);
+		typedef void (*DestroyManagerFunc)(Gaff::INamedObject*);
 
 		CreateManagerFunc create_func;
 		DestroyManagerFunc destroy_func;
@@ -111,15 +112,14 @@ private:
 
 	typedef HashMap<AHashString, ManagerEntry> ManagerMap;
 
+	MessageBroadcaster _broadcaster;
 	DynamicLoader _dynamic_loader;
-	ManagerMap _manager_map;
 	StateMachine _state_machine;
+	ManagerMap _manager_map;
+	ThreadPool _thread_pool;
 
-	Gaff::ThreadPool<ProxyAllocator> _thread_pool;
-
-	ProxyAllocator _proxy_allocator;
-	Allocator& _allocator;
-	Logger& _logger;
+	Allocator _allocator;
+	Logger _logger;
 
 	Gaff::File* _log_file;
 

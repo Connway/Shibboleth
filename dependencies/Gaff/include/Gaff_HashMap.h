@@ -98,6 +98,7 @@ public:
 	// Dangerous function! Data potentially doesn't exist!
 	const Value& operator[](const Key& key) const;
 	Value& operator[](const Key& key);
+	Value& operator[](Key&& key);
 
 	// dangerous functions
 	// slots are potentially unoccupied
@@ -110,7 +111,8 @@ public:
 	void erase(unsigned int index);
 	void erase(const Key& key);
 
-	void insert(const Key& key, Value&& value);
+	void moveMoveInsert(Key&& key, Value&& value);
+	void moveInsert(const Key& key, Value&& value);
 	void insert(const Key& key, const Value& value);
 
 	int indexOf(const Key& key) const;
@@ -201,6 +203,7 @@ public:
 	// Dangerous function! Data potentially doesn't exist!
 	const Value& operator[](const String<T, Allocator>& key) const;
 	Value& operator[](const String<T, Allocator>& key);
+	Value& operator[](String<T, Allocator>&& key);
 
 	// dangerous functions
 	// slots are potentially unoccupied
@@ -214,7 +217,8 @@ public:
 	void erase(unsigned int index);
 	void erase(const String<T, Allocator>& key);
 
-	void insert(const String<T, Allocator>& key, Value&& value);
+	void moveMoveInsert(String<T, Allocator>&& key, Value&& value);
+	void moveInsert(const String<T, Allocator>& key, Value&& value);
 	void insert(const String<T, Allocator>& key, const Value& value);
 
 	int indexOf(const String<T, Allocator>& key) const;
@@ -305,6 +309,7 @@ public:
 	// Dangerous function! Data potentially doesn't exist!
 	const Value& operator[](const HashString<T, Allocator>& key) const;
 	Value& operator[](const HashString<T, Allocator>& key);
+	Value& operator[](HashString<T, Allocator>&& key);
 
 	// dangerous functions
 	// slots are potentially unoccupied
@@ -318,7 +323,8 @@ public:
 	void erase(unsigned int index);
 	void erase(const HashString<T, Allocator>& key);
 
-	void insert(const HashString<T, Allocator>& key, Value&& value);
+	void moveMoveInsert(HashString<T, Allocator>&& key, Value&& value);
+	void moveInsert(const HashString<T, Allocator>& key, Value&& value);
 	void insert(const HashString<T, Allocator>& key, const Value& value);
 
 	int indexOf(const HashString<T, Allocator>& key) const;

@@ -99,7 +99,7 @@ bool HashString<T, Allocator>::operator==(const HashString<T, Allocator>& rhs) c
 template <class T, class Allocator>
 bool HashString<T, Allocator>::operator!=(const HashString<T, Allocator>& rhs) const
 {
-	return !(*this == rhs);
+	return _hash_value != rhs._hash_value;
 }
 
 template <class T, class Allocator>

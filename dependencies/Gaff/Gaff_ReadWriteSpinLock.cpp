@@ -25,6 +25,11 @@ THE SOFTWARE.
 
 NS_GAFF
 
+ReadWriteSpinLock::ReadWriteSpinLock(ReadWriteSpinLock&& rwsl):
+	_write_lock(0), _read_lock(0)
+{
+}
+
 ReadWriteSpinLock::ReadWriteSpinLock(void):
 	_write_lock(0), _read_lock(0)
 {
@@ -32,6 +37,11 @@ ReadWriteSpinLock::ReadWriteSpinLock(void):
 
 ReadWriteSpinLock::~ReadWriteSpinLock(void)
 {
+}
+
+const ReadWriteSpinLock& ReadWriteSpinLock::operator=(ReadWriteSpinLock&& rhs)
+{
+	return *this;
 }
 
 void ReadWriteSpinLock::readLock(void) const

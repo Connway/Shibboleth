@@ -52,7 +52,8 @@ public:
 	void erase(unsigned int index);
 	void erase(const Key& key);
 
-	void insert(const Key& key, Value&& value);
+	void moveMoveInsert(Key&& key, Value&& value);
+	void moveInsert(const Key& key, Value&& value);
 	void insert(const Key& key, const Value& value);
 
 	void clear(void);

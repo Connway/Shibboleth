@@ -32,8 +32,10 @@ NS_SHIBBOLETH
 class Logger
 {
 public:
-	Logger(void);
+	Logger(ProxyAllocator& proxy_allocator);
 	~Logger(void);
+
+	void destroy(void);
 
 	bool openLogFile(const AHashString& filename);
 	INLINE bool openLogFile(const AString& filename);
@@ -51,7 +53,5 @@ private:
 	GAFF_NO_COPY(Logger);
 	GAFF_NO_MOVE(Logger);
 };
-
-INLINE Logger& GetLogger(void);
 
 NS_END
