@@ -33,6 +33,12 @@ T* construct(T* data, Args&&... args)
 	return new (data) T(args...);
 }
 
+template <class T, class... Args>
+T* moveConstruct(T* data, Args&&... args)
+{
+	return new (data) T(Move(args)...);
+}
+
 // This is giving a warning saying data is unreferenced ... what?
 template <class T>
 void deconstruct(T* data)
@@ -54,7 +60,7 @@ public:
 	virtual void free(void* data) = 0;
 
 	template <class T, class... Args>
-	T* allocArrayT(unsigned int count, Args... args)
+	T* allocArrayT(unsigned int count, Args&&... args)
 	{
 		T* data = (T*)alloc(sizeof(T) * count);
 

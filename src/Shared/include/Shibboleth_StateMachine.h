@@ -34,8 +34,8 @@ class StateMachine
 public:
 	struct StateEntry
 	{
-		typedef IState* (*CreateStateFunc)(ProxyAllocator&, App&);
-		typedef void (*DestroyStateFunc)(ProxyAllocator&, IState*);
+		typedef IState* (*CreateStateFunc)(App&);
+		typedef void (*DestroyStateFunc)(IState*);
 
 		AString name;
 
@@ -49,7 +49,7 @@ public:
 		}
 	};
 
-	StateMachine(void);
+	StateMachine(ProxyAllocator& proxy_allocator);
 	~StateMachine(void);
 
 	void clear(void);

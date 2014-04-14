@@ -28,7 +28,7 @@ THE SOFTWARE.
 class TestState : public Shibboleth::IState
 {
 public:
-	TestState(void) {}
+	TestState(Shibboleth::App& app): _app(app) {}
 	~TestState(void) {}
 
 	bool init(unsigned int)
@@ -43,21 +43,30 @@ public:
 
 	void update(void)
 	{
+		static int i = 0;
+		++i;
 		std::cout << "Test State UPDATE" << std::endl;
+
+		if (i >= 1000)
+			_app.quit();
 	}
 
 	void exit(void)
 	{
 		std::cout << "Test State EXIT" << std::endl;
 	}
+
+private:
+	Shibboleth::App& _app;
 };
 
-DYNAMICEXPORT Shibboleth::IState* CreateState(Shibboleth::ProxyAllocator& allocator, Shibboleth::App& game)
+DYNAMICEXPORT Shibboleth::IState* CreateState(Shibboleth::App& app)
 {
-	return allocator.template allocT<TestState>();
+	Shibboleth::SetAllocator(app.getAllocator());
+	return app.getAllocator().template allocT<TestState>(app);
 }
 
-DYNAMICEXPORT void DestroyState(Shibboleth::ProxyAllocator& allocator, Shibboleth::IState* state)
+DYNAMICEXPORT void DestroyState(Shibboleth::IState* state)
 {
-	allocator.freeT(state);
+	Shibboleth::GetAllocator().freeT(state);
 }

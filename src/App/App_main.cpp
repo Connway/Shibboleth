@@ -22,6 +22,10 @@ THE SOFTWARE.
 
 #include "Shibboleth_App.h"
 
+#ifdef _DEBUG
+	#include <vld.h>
+#endif
+
 int main(void)
 {
 	// Scope is used so that everything cleans up before the allocator does

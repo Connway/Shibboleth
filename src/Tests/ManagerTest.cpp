@@ -46,12 +46,13 @@ private:
 	Shibboleth::App& _app;
 };
 
-DYNAMICEXPORT Gaff::INamedObject* CreateManager(Shibboleth::ProxyAllocator& allocator, Shibboleth::App& game)
+DYNAMICEXPORT Gaff::INamedObject* CreateManager(Shibboleth::App& app)
 {
-	return allocator.allocT<TestManager>(game);
+	Shibboleth::SetAllocator(app.getAllocator());
+	return app.getAllocator().template allocT<TestManager>(app);
 }
 
-DYNAMICEXPORT void DestroyManager(Shibboleth::ProxyAllocator& allocator, Gaff::INamedObject* manager)
+DYNAMICEXPORT void DestroyManager(Gaff::INamedObject* manager)
 {
-	allocator.freeT(manager);
+	Shibboleth::GetAllocator().freeT(manager);
 }

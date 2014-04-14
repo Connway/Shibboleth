@@ -22,10 +22,15 @@ THE SOFTWARE.
 
 #pragma once
 
+#include "Gaff_ReadWriteSpinLock.h"
 #include "Gaff_IRefCounted.h"
+#include "Gaff_ThreadPool.h"
+#include "Gaff_ScopedLock.h"
+#include "Gaff_SpinLock.h"
 #include "Gaff_SmartPtr.h"
 #include "Gaff_HashMap.h"
 #include "Gaff_RefPtr.h"
+#include "Gaff_ITask.h"
 #include "Gaff_Array.h"
 #include "Gaff_Pair.h"
 
@@ -49,13 +54,17 @@ public:
 	template <class Message, class FunctorT>
 	MessageReceipt listen(const FunctorT& functor);
 
-	template <class Message>
-	void broadcastNow(const Message& message);
+	// template <class Message>
+	// void broadcastNow(const Message& message);
 
 	template <class Message>
 	void broadcast(const Message& message);
 
+	// Pass in a thread pool for multithreaded, normal one is singlethreaded
+	void update(ThreadPool<Allocator>& thread_pool);
 	void update(void);
+
+	void destroy(void);
 
 private:
 	// Base function class for function binders to inherit from
@@ -66,6 +75,10 @@ private:
 
 		virtual void call(void* message) = 0;
 	};
+
+	// Using a normal SmartPtr should be fine, as we're never exposing these outside the array
+	typedef SmartPtr<IFunction, Allocator> IFuncPtr;
+	typedef Array<IFuncPtr, Allocator> ListenerList;
 
 	// Binder for member functions
 	template <class Message, class Object>
@@ -129,16 +142,28 @@ private:
 		mutable unsigned int _ref_count;
 	};
 
-	// Using a normal SmartPtr should be fine, as we're never exposing these outside the array
-	typedef SmartPtr<IFunction, Allocator> IFuncPtr;
-	typedef Array<IFuncPtr, Allocator> ListenerList;
+	class BroadcastTask : public ITask<Allocator>
+	{
+	public:
+		BroadcastTask(MessageBroadcaster<Allocator>& broadcaster, const AHashString<Allocator>& msg_type, void* msg);
+
+		void doTask(void);
+
+	private:
+		Pair<ReadWriteSpinLock, ListenerList>& _listeners;
+		MessageBroadcaster<Allocator>& _broadcaster;
+		void* _msg;
+	};
 
 	Array< Pair<AHashString<Allocator>, void*> > _message_queue;
-	HashMap<AHashString<Allocator>, ListenerList> _listeners;
+	HashMap< AHashString<Allocator>, Pair<ReadWriteSpinLock, ListenerList> > _listeners;
+	SpinLock _listener_lock;
 	Allocator _allocator;
 
 	void removeListener(const AHashString<Allocator>& message_type, const IFunction* listener);
+	void updateHelper(const Pair< AHashString<Allocator>, void*>& msg_pair);
 
+	friend class BroadcastTask;
 	friend class Remover;
 };
 

@@ -29,12 +29,40 @@ NS_GAFF
 template <class T1, class T2>
 struct Pair
 {
+	Pair(const Pair& pair):
+		first(pair.first), second(pair.second)
+	{
+	}
+
+	Pair(Pair&& pair):
+		first(Move(pair.first), Move(pair.second))
+	{
+	}
+
+	Pair(void)
+	{
+	}
+
+	const Pair& operator=(const Pair& rhs)
+	{
+		first = rhs.first;
+		second = rhs.second;
+		return *this;
+	}
+
+	const Pair& operator=(Pair&& rhs)
+	{
+		first = Move(rhs.first);
+		second = Move(rhs.second);
+		return *this;
+	}
+
 	T1 first;
 	T2 second;
 };
 
 template <class T1, class T2>
-Pair<T1, T2> MakePair(T1 first, T2 second)
+Pair<T1, T2> MakePair(const T1& first, const T2& second)
 {
 	Pair<T1, T2> pair;
 	pair.first = first;

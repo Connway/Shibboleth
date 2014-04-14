@@ -11,6 +11,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Gaff", "..\Dependencies\Gaf
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ManagerTest", "ManagerTest.vcxproj", "{CC0AC1BA-54C8-4C00-895A-E26CBF073844}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "jansson", "..\Dependencies\jansson.vcxproj", "{EE9E1124-CE92-4113-A64B-D4784E6A626B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -51,6 +53,14 @@ Global
 		{CC0AC1BA-54C8-4C00-895A-E26CBF073844}.Release|Win32.Build.0 = Release|Win32
 		{CC0AC1BA-54C8-4C00-895A-E26CBF073844}.Release|x64.ActiveCfg = Release|x64
 		{CC0AC1BA-54C8-4C00-895A-E26CBF073844}.Release|x64.Build.0 = Release|x64
+		{EE9E1124-CE92-4113-A64B-D4784E6A626B}.Debug|Win32.ActiveCfg = Debug|Win32
+		{EE9E1124-CE92-4113-A64B-D4784E6A626B}.Debug|Win32.Build.0 = Debug|Win32
+		{EE9E1124-CE92-4113-A64B-D4784E6A626B}.Debug|x64.ActiveCfg = Debug|x64
+		{EE9E1124-CE92-4113-A64B-D4784E6A626B}.Debug|x64.Build.0 = Debug|x64
+		{EE9E1124-CE92-4113-A64B-D4784E6A626B}.Release|Win32.ActiveCfg = Release|Win32
+		{EE9E1124-CE92-4113-A64B-D4784E6A626B}.Release|Win32.Build.0 = Release|Win32
+		{EE9E1124-CE92-4113-A64B-D4784E6A626B}.Release|x64.ActiveCfg = Release|x64
+		{EE9E1124-CE92-4113-A64B-D4784E6A626B}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -35,7 +35,7 @@ public:
 	{
 	}
 
-	SharedPtr(T* data, const Allocator& allocator = Allocator()) :
+	explicit SharedPtr(T* data, const Allocator& allocator = Allocator()) :
 		_allocator(allocator), _count(nullptr), _data(nullptr)
 	{
 		*this = data;
@@ -45,6 +45,13 @@ public:
 		_allocator(data._allocator), _count(nullptr), _data(nullptr)
 	{
 		*this = data;
+	}
+
+	SharedPtr(SharedPtr<T, Allocator>&& data):
+		_allocator(data._allocator), _count(data._count), _data(data._data)
+	{
+		data._count = nullptr;
+		data._data = nullptr;
 	}
 
 	~SharedPtr(void)
@@ -62,6 +69,19 @@ public:
 		if (_count) {
 			++(*_count);
 		}
+
+		return *this;
+	}
+
+	const SharedPtr<T, Allocator>& operator=(SharedPtr<T, Allocator>&& rhs)
+	{
+		clear();
+
+		_count = rhs._count;
+		_data = rhs._data;
+
+		rhs._count = nullptr;
+		rhs._data = nullptr;
 
 		return *this;
 	}

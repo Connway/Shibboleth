@@ -24,17 +24,23 @@ THE SOFTWARE.
 
 NS_SHIBBOLETH
 
-static Logger gLogger;
-
-Logger::Logger(void)
+Logger::Logger(ProxyAllocator& proxy_allocator):
+	_files(proxy_allocator)
 {
 }
 
 Logger::~Logger(void)
 {
+	destroy();
+}
+
+void Logger::destroy(void)
+{
 	for (auto it = _files.begin(); it != _files.end(); ++it) {
 		it->writeString("\nCLOSING LOG FILE\n\n");
 	}
+
+	_files.clear();
 }
 
 bool Logger::openLogFile(const AHashString& filename)
@@ -97,11 +103,6 @@ Gaff::File& Logger::getLogFile(const char* filename)
 {
 	assert(filename && _files.indexOf(filename) != -1);
 	return _files[filename];
-}
-
-Logger& GetLogger(void)
-{
-	return gLogger;
 }
 
 NS_END

@@ -55,7 +55,7 @@ typename DynamicLoader<Allocator>::ModulePtr DynamicLoader<Allocator>::loadModul
 template <class Allocator>
 typename DynamicLoader<Allocator>::ModulePtr DynamicLoader<Allocator>::loadModule(const char* filename, const char* name)
 {
-	ModulePtr module = _allocator.template allocT<DynamicModule>();
+	ModulePtr module(_allocator.template allocT<DynamicModule>());
 
 	if (module.valid()) {
 		if (module->load(filename)) {

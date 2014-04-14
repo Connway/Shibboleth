@@ -598,6 +598,38 @@ Value& HashMap<Key, Value, Allocator>::operator[](const Key& key)
 	return _slots[index].value;
 }
 
+template <class Key, class Value, class Allocator>
+Value& HashMap<Key, Value, Allocator>::operator[](Key&& key)
+{
+	if (_size == 0) {
+		reserve(1);
+	}
+
+	unsigned int index = _hash((const char*)&key, sizeof(Key)) % _size;
+	unsigned int i = 0;
+
+	while (_slots[index].occupied && _slots[index].key != key && i < _size) {
+		index = (index + 1) % _size;
+		++i;
+	}
+
+	if (!_slots[index].occupied) {
+		moveConstruct(&_slots[index].key, Move(key));
+		construct(&_slots[index].value);
+		_slots[index].occupied = true;
+		++_used;
+	}
+
+	if (i == _size) {
+		reserve(_size * 2);
+
+		// try again
+		return operator[](Move(key));
+	}
+
+	return _slots[index].value;
+}
+
 // dangerous functions
 // slots are potentially unoccupied
 template <class Key, class Value, class Allocator>
@@ -653,7 +685,13 @@ void HashMap<Key, Value, Allocator>::erase(const Key& key)
 }
 
 template <class Key, class Value, class Allocator>
-void HashMap<Key, Value, Allocator>::insert(const Key& key, Value&& value)
+void HashMap<Key, Value, Allocator>::moveMoveInsert(Key&& key, Value&& value)
+{
+	operator[](Move(key)) = Move(value);
+}
+
+template <class Key, class Value, class Allocator>
+void HashMap<Key, Value, Allocator>::moveInsert(const Key& key, Value&& value)
 {
 	operator[](key) = Move(value);
 }
@@ -723,7 +761,7 @@ void HashMap<Key, Value, Allocator>::reserve(unsigned int new_size)
 	if (old_data) {
 		for (unsigned int i = 0; i < old_size; ++i) {
 			if (old_data[i].occupied) {
-				insert(old_data[i].key, Move(old_data[i].value));
+				moveMoveInsert(Move(old_data[i].key), Move(old_data[i].value));
 			}
 		}
 
@@ -928,6 +966,38 @@ Value& HashMap<String<T, Allocator>, Value, Allocator>::operator[](const String<
 	return _slots[index].value;
 }
 
+template <class Value, class Allocator, class T>
+Value& HashMap<String<T, Allocator>, Value, Allocator>::operator[](String<T, Allocator>&& key)
+{
+	if (_size == 0) {
+		reserve(1);
+	}
+
+	unsigned int index = _hash((const char*)key.getBuffer(), key.size() * sizeof(T)) % _size;
+	unsigned int i = 0;
+
+	while (_slots[index].occupied && _slots[index].key != key && i < _size) {
+		index = (index + 1) % _size;
+		++i;
+	}
+
+	if (!_slots[index].occupied) {
+		moveConstruct(&_slots[index].key, Move(key));
+		construct(&_slots[index].value);
+		_slots[index].occupied = true;
+		++_used;
+	}
+
+	if (i == _size) {
+		reserve(_size * 2);
+
+		// try again
+		return operator[](Move(key));
+	}
+
+	return _slots[index].value;
+}
+
 // dangerous functions
 // slots are potentially unoccupied
 template <class Value, class Allocator, class T>
@@ -983,7 +1053,13 @@ void HashMap<String<T, Allocator>, Value, Allocator>::erase(const String<T, Allo
 }
 
 template <class Value, class Allocator, class T>
-void HashMap<String<T, Allocator>, Value, Allocator>::insert(const String<T, Allocator>& key, Value&& value)
+void HashMap<String<T, Allocator>, Value, Allocator>::moveMoveInsert(String<T, Allocator>&& key, Value&& value)
+{
+	operator[](Move(key)) = Move(value);
+}
+
+template <class Value, class Allocator, class T>
+void HashMap<String<T, Allocator>, Value, Allocator>::moveInsert(const String<T, Allocator>& key, Value&& value)
 {
 	operator[](key) = Move(value);
 }
@@ -1053,7 +1129,7 @@ void HashMap<String<T, Allocator>, Value, Allocator>::reserve(unsigned int new_s
 	if (old_data) {
 		for (unsigned int i = 0; i < old_size; ++i) {
 			if (old_data[i].occupied) {
-				insert(old_data[i].key, Move(old_data[i].value));
+				moveMoveInsert(Move(old_data[i].key), Move(old_data[i].value));
 			}
 		}
 
@@ -1257,6 +1333,38 @@ Value& HashMap<HashString<T, Allocator>, Value, Allocator>::operator[](const Has
 	return _slots[index].value;
 }
 
+template <class Value, class Allocator, class T>
+Value& HashMap<HashString<T, Allocator>, Value, Allocator>::operator[](HashString<T, Allocator>&& key)
+{
+	if (_size == 0) {
+		reserve(1);
+	}
+
+	unsigned int index = key.getHash() % _size;
+	unsigned int i = 0;
+
+	while (_slots[index].occupied && _slots[index].key != key && i < _size) {
+		index = (index + 1) % _size;
+		++i;
+	}
+
+	if (!_slots[index].occupied) {
+		moveConstruct(&_slots[index].key, Move(key));
+		construct(&_slots[index].value);
+		_slots[index].occupied = true;
+		++_used;
+	}
+
+	if (i == _size) {
+		reserve(_size * 2);
+
+		// try again
+		return operator[](Move(key));
+	}
+
+	return _slots[index].value;
+}
+
 // dangerous functions
 // slots are potentially unoccupied
 template <class Value, class Allocator, class T>
@@ -1312,7 +1420,13 @@ void HashMap<HashString<T, Allocator>, Value, Allocator>::erase(const HashString
 }
 
 template <class Value, class Allocator, class T>
-void HashMap<HashString<T, Allocator>, Value, Allocator>::insert(const HashString<T, Allocator>& key, Value&& value)
+void HashMap<HashString<T, Allocator>, Value, Allocator>::moveMoveInsert(HashString<T, Allocator>&& key, Value&& value)
+{
+	operator[](Move(key)) = Move(value);
+}
+
+template <class Value, class Allocator, class T>
+void HashMap<HashString<T, Allocator>, Value, Allocator>::moveInsert(const HashString<T, Allocator>& key, Value&& value)
 {
 	operator[](key) = Move(value);
 }
@@ -1382,7 +1496,7 @@ void HashMap<HashString<T, Allocator>, Value, Allocator>::reserve(unsigned int n
 	if (old_data) {
 		for (unsigned int i = 0; i < old_size; ++i) {
 			if (old_data[i].occupied) {
-				insert(old_data[i].key, Move(old_data[i].value));
+				moveMoveInsert(Move(old_data[i].key), Move(old_data[i].value));
 			}
 		}
 

@@ -30,20 +30,28 @@ THE SOFTWARE.
 
 NS_SHIBBOLETH
 
+// Have to pass in the correct ProxyAllocator, as we have not registered our allocator globally yet
 App::App(void):
-	_thread_pool(ProxyAllocator()), _allocator(GetAllocator()),
-	_logger(GetLogger()), _running(true)
+	_broadcaster(ProxyAllocator(_allocator)), _dynamic_loader(ProxyAllocator(_allocator)),
+	_state_machine(ProxyAllocator(_allocator)), _manager_map(ProxyAllocator(_allocator)),
+	_thread_pool(ProxyAllocator(_allocator)), _logger(ProxyAllocator(_allocator)),
+	_running(true)
 {
+	SetAllocator(_allocator);
 }
 
 App::~App(void)
 {
 	for (ManagerMap::Iterator it = _manager_map.begin(); it != _manager_map.end(); ++it) {
-		it->destroy_func(ProxyAllocator(), it->manager);
+		it->destroy_func(it->manager);
 	}
 
+	_manager_map.clear();
+	_broadcaster.destroy();
 	_state_machine.clear();
 	_dynamic_loader.clear();
+	_thread_pool.destroy();
+	_logger.destroy();
 }
 
 bool App::init(void)
@@ -111,7 +119,7 @@ bool App::loadManagers(void)
 			entry.destroy_func = module->GetFunc<ManagerEntry::DestroyManagerFunc>("DestroyManager");
 
 			if (entry.create_func && entry.destroy_func) {
-				entry.manager = entry.create_func(ProxyAllocator(), *this);
+				entry.manager = entry.create_func(*this);
 
 				if (entry.manager) {
 					_manager_map[entry.manager->getName()] = entry;
@@ -201,7 +209,7 @@ bool App::loadStates(void)
 			entry.destroy_func = module->GetFunc<StateMachine::StateEntry::DestroyStateFunc>("DestroyState");
 
 			if (entry.create_func && entry.destroy_func) {
-				entry.state = entry.create_func(ProxyAllocator(), *this);
+				entry.state = entry.create_func(*this);
 
 				if (entry.state) {
 					entry.state->_transitions.reserve((unsigned int)transitions.size());
@@ -256,28 +264,29 @@ bool App::loadStates(void)
 void App::run(void)
 {
 	while (_running) {
+		_broadcaster.update(_thread_pool);
 		_state_machine.update();
 	}
 }
 
-ProxyAllocator& App::getProxyAllocator(void)
-{
-	return _proxy_allocator;
-}
-
-Allocator& App::getAllocator(void) const
+Allocator& App::getAllocator(void)
 {
 	return _allocator;
 }
 
-Logger& App::getLogger(void) const
+Logger& App::getLogger(void)
 {
 	return _logger;
 }
 
 void App::addTask(Gaff::ITask<ProxyAllocator>* task)
 {
-	_thread_pool.addTask(task);
+	_thread_pool.addTask(Gaff::TaskPtr<ProxyAllocator>(task, ProxyAllocator(_allocator)));
+}
+
+MessageBroadcaster& App::getBroadcaster(void)
+{
+	return _broadcaster;
 }
 
 StateMachine& App::getStateMachine(void)

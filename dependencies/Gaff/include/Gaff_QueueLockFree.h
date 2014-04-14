@@ -41,7 +41,7 @@ public:
 
 	~QueueLockFree(void)
 	{
-		_allocator.template freeArrayT<T>(_data, _size);
+		clear();
 	}
 
 	bool init(unsigned int size)
@@ -56,6 +56,25 @@ public:
 		}
 
 		return false;
+	}
+
+	// Assumed to be called on main thread
+	void clear(void)
+	{
+		if (_data) {
+			for (unsigned int i = 0; i < _used; ++i) {
+				deconstruct(_data + _read_index);
+				_read_index = (_read_index + 1) % _size;
+			}
+
+			_allocator.free(_data);
+		}
+
+		_read_index = 0;
+		_write_index = 0;
+		_used = 0;
+		_size = 0;
+		_data = nullptr;
 	}
 
 	bool push(const T& value)

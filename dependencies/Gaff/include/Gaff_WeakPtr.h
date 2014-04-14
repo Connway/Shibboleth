@@ -37,7 +37,7 @@ public:
 		*this = rhs;
 	}
 
-	WeakPtr(T* data = nullptr)
+	explicit WeakPtr(T* data = nullptr)
 	{
 		*this = data;
 	}

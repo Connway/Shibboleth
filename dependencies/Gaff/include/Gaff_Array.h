@@ -113,10 +113,11 @@ public:
 
 	bool empty(void) const;
 
-	void push(T&& data);
+	void movePush(T&& data);
 	void push(const T& data);
-	void push(T& data);
 	void pop(void);
+	Iterator moveInsert(T&& data, const Iterator& it);
+	void moveInsert(T&& data, unsigned int index);
 	Iterator insert(const T& data, const Iterator& it);
 	void insert(const T& data, unsigned int index);
 	Iterator erase(const Iterator& it);

@@ -106,14 +106,15 @@ void LoadComponentsState::exit(void)
 {
 }
 
-IState* CreateState(ProxyAllocator& allocator, App& app)
+IState* CreateState(App& app)
 {
-	return allocator.template allocT<LoadComponentsState>(app);
+	Shibboleth::SetAllocator(app.getAllocator());
+	return app.getAllocator().template allocT<LoadComponentsState>(app);
 }
 
-void DestroyState(ProxyAllocator& allocator, IState* state)
+void DestroyState(IState* state)
 {
-	allocator.freeT(state);
+	Shibboleth::GetAllocator().freeT(state);
 }
 
 NS_END

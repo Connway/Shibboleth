@@ -22,31 +22,11 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Gaff_Defines.h"
+#include "Shibboleth_ProxyAllocator.h"
+#include <Gaff_MessageBroadcaster.h>
 
-NS_GAFF
+NS_SHIBBOLETH
 
-class ReadWriteSpinLock
-{
-public:
-	ReadWriteSpinLock(ReadWriteSpinLock&& rwsl);
-	ReadWriteSpinLock(void);
-	~ReadWriteSpinLock(void);
-
-	const ReadWriteSpinLock& operator=(ReadWriteSpinLock&& rhs);
-
-	void readLock(void) const;
-	void readUnlock(void) const;
-
-	void writeLock(void) const;
-	void writeUnlock(void) const;
-
-private:
-	mutable volatile long _write_lock;
-	mutable volatile long _read_lock;
-
-	GAFF_NO_COPY(ReadWriteSpinLock);
-	//GAFF_NO_MOVE(ReadWriteSpinLock);
-};
+typedef Gaff::MessageBroadcaster<ProxyAllocator> MessageBroadcaster;
 
 NS_END

@@ -25,7 +25,8 @@ THE SOFTWARE.
 
 NS_SHIBBOLETH
 
-static Allocator gAllocator;
+//static Allocator gAllocator;
+static Allocator* gAllocator = nullptr;
 
 Allocator::Allocator(void):
 	_total_bytes_allocated(0), _num_allocations(0),
@@ -73,19 +74,24 @@ unsigned int Allocator::getNumFrees(void) const
 	return _num_frees;
 }
 
+void SetAllocator(Allocator& allocator)
+{
+	gAllocator = &allocator;
+}
+
 Allocator& GetAllocator(void)
 {
-	return gAllocator;
+	return *gAllocator;
 }
 
 void* ShibbolethAllocate(size_t size)
 {
-	return gAllocator.alloc((unsigned int)size);
+	return gAllocator->alloc((unsigned int)size);
 }
 
 void ShibbolethFree(void* data)
 {
-	gAllocator.free(data);
+	gAllocator->free(data);
 }
 
 NS_END
