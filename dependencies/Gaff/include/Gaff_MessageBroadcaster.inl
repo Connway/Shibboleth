@@ -93,15 +93,15 @@ MessageBroadcaster<Allocator>::Remover::~Remover(void)
 template <class Allocator>
 void MessageBroadcaster<Allocator>::Remover::addRef(void) const
 {
-	++_ref_count;
+	AtomicIncrement(&_ref_count);
 }
 
 template <class Allocator>
 void MessageBroadcaster<Allocator>::Remover::release(void) const
 {
-	--_ref_count;
+	unsigned int new_count = AtomicDecrement(&_ref_count);
 
-	if (!_ref_count) {
+	if (!new_count) {
 		_broadcaster->removeListener(*_message_type, _listener);
 		_broadcaster->_allocator.freeT(this);
 	}
@@ -139,7 +139,7 @@ void MessageBroadcaster<Allocator>::BroadcastTask::doTask(void)
 ///////////////////////////////
 template <class Allocator>
 MessageBroadcaster<Allocator>::MessageBroadcaster(const Allocator& allocator):
-	_allocator(allocator)
+	_listeners(allocator), _message_queue(allocator), _allocator(allocator)
 {
 }
 
@@ -209,25 +209,12 @@ MessageReceipt MessageBroadcaster<Allocator>::listen(const FunctorT& functor)
 	return MessageReceipt(temp);
 }
 
-// template <class Allocator>
-// template <class Message>
-// void MessageBroadcaster<Allocator>::broadcastNow(const Message& message)
-// {
-// 	ListenerList& listeners = _listeners[Message::g_Hash].second;
-
-// 	for (unsigned int i = 0; i < listeners.size(); ++i) {
-// 		listeners[i]->call((void*)&message);
-// 	}
-// }
-
 template <class Allocator>
 template <class Message>
 void MessageBroadcaster<Allocator>::broadcast(const Message& message)
 {
-	void* msg = _allocator.alloc(sizeof(Message));
-	memcpy(msg, &message, sizeof(Message));
-
-	_message_queue.push(MakePair(Message::g_Hash, msg));
+	Message* msg = _allocator.template allocT<Message>(message);
+	_message_queue.push(MakePair(Message::g_Hash, (void*)msg));
 }
 
 template <class Allocator>
@@ -237,11 +224,12 @@ void MessageBroadcaster<Allocator>::update(ThreadPool<Allocator>& thread_pool)
 	for (unsigned int i = 0; i < _message_queue.size(); ++i) {
 		const Pair< AHashString<Allocator>, void*>& msg = _message_queue[i];
 
+		// We lock here because we are potentially creating a new entry in the HashMap.
 		_listener_lock.lock();
 		BroadcastTask* task = _allocator.template allocT<BroadcastTask>(*this, msg.first, msg.second);
 		_listener_lock.unlock();
 
-		TaskPtr<Allocator> task_ptr(task, _allocator);
+		TaskPtr<Allocator> task_ptr(task);
 
 		if (task) {
 			thread_pool.addTask(task_ptr);

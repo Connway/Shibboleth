@@ -25,7 +25,6 @@ THE SOFTWARE.
 
 NS_SHIBBOLETH
 
-//static Allocator gAllocator;
 static Allocator* gAllocator = nullptr;
 
 Allocator::Allocator(void):
@@ -92,6 +91,11 @@ void* ShibbolethAllocate(size_t size)
 void ShibbolethFree(void* data)
 {
 	gAllocator->free(data);
+}
+
+void* ShibbolethAlloc(unsigned int size, const char* filename, unsigned int line_number)
+{
+	return gAllocator->alloc(size);
 }
 
 NS_END

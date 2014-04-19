@@ -24,6 +24,7 @@ THE SOFTWARE.
 
 #include "Gaff_DefaultAllocator.h"
 #include "Gaff_IRefCounted.h"
+#include "Gaff_Atomic.h"
 
 NS_GAFF
 
@@ -42,14 +43,14 @@ public:
 
 	void addRef(void) const
 	{
-		++_count;
+		AtomicIncrement(&_count);
 	}
 
 	void release(void) const
 	{
-		--_count;
+		unsigned int new_count = AtomicDecrement(&_count);
 
-		if (!_count) {
+		if (!new_count) {
 			// When the allocator resides in the object we are deleting,
 			// we need to make a copy, otherwise there will be crashes.
 			Allocator allocator(_allocator);
@@ -64,9 +65,10 @@ public:
 
 private:
 	mutable Allocator _allocator;
-	mutable unsigned int _count;
+	mutable volatile unsigned int _count;
 
 	GAFF_NO_COPY(RefCounted);
+	GAFF_NO_MOVE(RefCounted);
 };
 
 NS_END

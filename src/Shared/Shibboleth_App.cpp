@@ -71,7 +71,7 @@ bool App::init(void)
 
 	Gaff::JSON::SetMemoryFunctions(&ShibbolethAllocate, &ShibbolethFree);
 
-	if (!_thread_pool.init(128)) {
+	if (!_thread_pool.init()) {
 		_log_file->writeString("ERROR - Failed to initialize thread pool\n");
 		return false;
 	}
@@ -281,7 +281,7 @@ Logger& App::getLogger(void)
 
 void App::addTask(Gaff::ITask<ProxyAllocator>* task)
 {
-	_thread_pool.addTask(Gaff::TaskPtr<ProxyAllocator>(task, ProxyAllocator(_allocator)));
+	_thread_pool.addTask(Gaff::TaskPtr<ProxyAllocator>(task));
 }
 
 MessageBroadcaster& App::getBroadcaster(void)

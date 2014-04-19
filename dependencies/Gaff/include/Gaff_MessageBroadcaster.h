@@ -30,6 +30,7 @@ THE SOFTWARE.
 #include "Gaff_SmartPtr.h"
 #include "Gaff_HashMap.h"
 #include "Gaff_RefPtr.h"
+#include "Gaff_Atomic.h"
 #include "Gaff_ITask.h"
 #include "Gaff_Array.h"
 #include "Gaff_Pair.h"
@@ -54,9 +55,6 @@ public:
 	template <class Message, class FunctorT>
 	MessageReceipt listen(const FunctorT& functor);
 
-	// template <class Message>
-	// void broadcastNow(const Message& message);
-
 	template <class Message>
 	void broadcast(const Message& message);
 
@@ -75,10 +73,6 @@ private:
 
 		virtual void call(void* message) = 0;
 	};
-
-	// Using a normal SmartPtr should be fine, as we're never exposing these outside the array
-	typedef SmartPtr<IFunction, Allocator> IFuncPtr;
-	typedef Array<IFuncPtr, Allocator> ListenerList;
 
 	// Binder for member functions
 	template <class Message, class Object>
@@ -139,8 +133,12 @@ private:
 		const AHashString<Allocator>* _message_type;
 		const IFunction* _listener;
 
-		mutable unsigned int _ref_count;
+		mutable volatile unsigned int _ref_count;
 	};
+
+	// Using a normal SmartPtr should be fine, as we're never exposing these outside the array
+	typedef SmartPtr<IFunction, Allocator> IFuncPtr;
+	typedef Array<IFuncPtr, Allocator> ListenerList;
 
 	class BroadcastTask : public ITask<Allocator>
 	{
@@ -155,8 +153,8 @@ private:
 		void* _msg;
 	};
 
-	Array< Pair<AHashString<Allocator>, void*> > _message_queue;
-	HashMap< AHashString<Allocator>, Pair<ReadWriteSpinLock, ListenerList> > _listeners;
+	HashMap<AHashString<Allocator>, Pair<ReadWriteSpinLock, ListenerList>, Allocator> _listeners;
+	Array<Pair<AHashString<Allocator>, void*>, Allocator> _message_queue;
 	SpinLock _listener_lock;
 	Allocator _allocator;
 
@@ -165,6 +163,9 @@ private:
 
 	friend class BroadcastTask;
 	friend class Remover;
+
+	GAFF_NO_COPY(MessageBroadcaster);
+	GAFF_NO_MOVE(MessageBroadcaster);
 };
 
 #include "Gaff_MessageBroadcaster.inl"

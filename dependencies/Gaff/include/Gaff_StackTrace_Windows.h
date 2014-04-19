@@ -22,44 +22,41 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Shibboleth_Defines.h"
-#include <Gaff_IAllocator.h>
-#include <Gaff_SpinLock.h>
-#include <stdlib.h>
+#include "Gaff_Defines.h"
+#include "Gaff_IncludeWindows.h"
+#include <DbgHelp.h>
 
-NS_SHIBBOLETH
+NS_GAFF
 
-class Allocator : public Gaff::IAllocator
+#define MAX_FRAMES 128
+#define NAME_SIZE 256
+
+class StackTrace
 {
 public:
-	Allocator(void);
-	~Allocator(void);
+	static bool Init(void);
+	static void Destroy(void);
 
-	void* alloc(unsigned int size_bytes);
-	void free(void* data);
+	StackTrace(const StackTrace& trace);
+	StackTrace(void);
+	~StackTrace(void);
 
-	INLINE unsigned int getTotalBytesAllocated(void) const;
-	INLINE unsigned int getNumAllocations(void) const;
-	INLINE unsigned int getNumFrees(void) const;
+	const StackTrace& operator=(const StackTrace& rhs);
+
+	INLINE unsigned short captureStack(unsigned int frames_to_capture = 64);
+	INLINE unsigned short getTotalFrames(void) const;
+
+	bool loadFrameInfo(unsigned short frame);
+	const char* getFrameName(void) const;
+	unsigned long long getFrameAddress(void) const;
 
 private:
-	unsigned int _total_bytes_allocated;
-	unsigned int _num_allocations;
-	unsigned int _num_frees;
+	static HANDLE _handle;
 
-	Gaff::SpinLock _lock;
+	char _symbol_info[sizeof(SYMBOL_INFO) + NAME_SIZE - 1];
+	void* _stack[MAX_FRAMES];
 
-	GAFF_NO_MOVE(Allocator);
+	unsigned short _total_frames;
 };
-
-INLINE void SetAllocator(Allocator& allocator);
-INLINE Allocator& GetAllocator(void);
-
-void* ShibbolethAllocate(size_t size);
-void ShibbolethFree(void* data);
-
-void* ShibbolethAlloc(size_t size, const char* filename, unsigned int line_number);
-
-#define SHIBALLOC(size) ShibbolethALloc(size, __FILE__, __LINE__)
 
 NS_END

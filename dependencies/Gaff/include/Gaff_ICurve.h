@@ -22,44 +22,18 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Shibboleth_Defines.h"
-#include <Gaff_IAllocator.h>
-#include <Gaff_SpinLock.h>
-#include <stdlib.h>
+#include "Gaff_Defines.h"
 
-NS_SHIBBOLETH
+NS_GAFF
 
-class Allocator : public Gaff::IAllocator
+template<class PointType>
+class ICurve
 {
 public:
-	Allocator(void);
-	~Allocator(void);
+	ICurve(void) {}
+	virtual ~ICurve(void) {}
 
-	void* alloc(unsigned int size_bytes);
-	void free(void* data);
-
-	INLINE unsigned int getTotalBytesAllocated(void) const;
-	INLINE unsigned int getNumAllocations(void) const;
-	INLINE unsigned int getNumFrees(void) const;
-
-private:
-	unsigned int _total_bytes_allocated;
-	unsigned int _num_allocations;
-	unsigned int _num_frees;
-
-	Gaff::SpinLock _lock;
-
-	GAFF_NO_MOVE(Allocator);
+	virtual PointType sample(float t) const = 0;
 };
-
-INLINE void SetAllocator(Allocator& allocator);
-INLINE Allocator& GetAllocator(void);
-
-void* ShibbolethAllocate(size_t size);
-void ShibbolethFree(void* data);
-
-void* ShibbolethAlloc(size_t size, const char* filename, unsigned int line_number);
-
-#define SHIBALLOC(size) ShibbolethALloc(size, __FILE__, __LINE__)
 
 NS_END

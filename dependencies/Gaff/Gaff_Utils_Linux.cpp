@@ -41,6 +41,26 @@ bool CreateDir(const char* dirname, unsigned short mode)
 	return mkdir(dirname, mode) == 0 || errno == EEXIST;
 }
 
+void DebugPrintf(const char* format_string, ...)
+{
+	assert(format_string);
+
+	va_list vl;
+	va_start(vl, format_string);
+	vprintf(format_string, vl);
+	va_end(vl);
+}
+
+void DebugPrintf(const wchar_t* format_string, ...)
+{
+	assert(format_string);
+
+	va_list vl;
+	va_start(vl, format_string);
+	vwprintf(format_string, vl);
+	va_end(vl);
+}
+
 NS_END
 
 #endif

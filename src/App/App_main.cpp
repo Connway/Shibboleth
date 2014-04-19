@@ -28,16 +28,13 @@ THE SOFTWARE.
 
 int main(void)
 {
-	// Scope is used so that everything cleans up before the allocator does
-	{
-		Shibboleth::App app;
+	Shibboleth::App app;
 
-		if (!app.init()) {
-			return -1;
-		}
-
-		app.run();
+	if (!app.init()) {
+		return -1;
 	}
+
+	//app.run();
 
 	return 0;
 }

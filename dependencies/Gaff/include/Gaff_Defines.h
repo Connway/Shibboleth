@@ -25,10 +25,6 @@ THE SOFTWARE.
 //#define ATTEMPT_INLINE
 //#define DYNAMIC_LIBRARY
 
-#ifndef _CRT_SECURE_NO_WARNINGS
-	#define _CRT_SECURE_NO_WARNINGS
-#endif
-
 #define NS_GAFF namespace Gaff {
 #ifndef NS_END
 	#define NS_END }
@@ -86,9 +82,13 @@ THE SOFTWARE.
 		#define GaffFullMain int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR lpCmdLine, int nShowCmd)
 		#define GaffMain WINAPI WinMain
 	#endif
+
+	#define YieldThread() Sleep(0)
 #else
 	#define GaffFullMain int main(int argc, char** argv)
 	#define GaffMain main
+
+	#define YieldThread sched_yield
 #endif
 
 #if defined(__linux__)
@@ -133,9 +133,9 @@ T&& Move(T& data)
 template <class T>
 void Swap(T& lhs, T& rhs)
 {
-	T temp = lhs;
-	lhs = rhs;
-	rhs = temp;
+	T temp = Move(lhs);
+	lhs = Move(rhs);
+	rhs = Move(temp);
 }
 
 NS_END

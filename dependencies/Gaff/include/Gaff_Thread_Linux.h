@@ -27,7 +27,6 @@ THE SOFTWARE.
 #include <sched.h>
 
 #define THREAD_CALLTYPE
-#define YieldThread sched_yield
 
 NS_GAFF
 

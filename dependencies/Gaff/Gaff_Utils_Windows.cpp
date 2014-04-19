@@ -42,6 +42,34 @@ bool CreateDir(const char* dirname, unsigned short)
 	return !_mkdir(dirname) || errno == EEXIST;
 }
 
+void DebugPrintf(const char* format_string, ...)
+{
+	assert(format_string);
+
+	va_list vl;
+	va_start(vl, format_string);
+
+	char buf[256] = { 0 };
+	vsnprintf(buf, 256, format_string, vl);
+	OutputDebugStringA(buf);
+
+	va_end(vl);
+}
+
+void DebugPrintf(const wchar_t* format_string, ...)
+{
+	assert(format_string);
+
+	va_list vl;
+	va_start(vl, format_string);
+
+	wchar_t buf[256] = { 0 };
+	_vsnwprintf(buf, 256, format_string, vl);
+	OutputDebugStringW(buf);
+
+	va_end(vl);
+}
+
 #ifdef _UNICODE
 bool CreateDir(const wchar_t* dirname, unsigned short)
 {

@@ -26,6 +26,7 @@
     <None Include="..\..\dependencies\Gaff\include\Gaff_Function.inl" />
     <None Include="..\..\dependencies\Gaff\include\Gaff_HashMap.inl" />
     <None Include="..\..\dependencies\Gaff\include\Gaff_HashString.inl" />
+    <None Include="..\..\dependencies\Gaff\include\Gaff_LinearCurve.inl" />
     <None Include="..\..\dependencies\Gaff\include\Gaff_List.inl" />
     <None Include="..\..\dependencies\Gaff\include\Gaff_Map.inl" />
     <None Include="..\..\dependencies\Gaff\include\Gaff_MessageBroadcaster.inl" />
@@ -62,6 +63,7 @@
     <ClInclude Include="..\..\dependencies\Gaff\include\Gaff_HashString.h" />
     <ClInclude Include="..\..\dependencies\Gaff\include\Gaff_Host.h" />
     <ClInclude Include="..\..\dependencies\Gaff\include\Gaff_IAllocator.h" />
+    <ClInclude Include="..\..\dependencies\Gaff\include\Gaff_ICurve.h" />
     <ClInclude Include="..\..\dependencies\Gaff\include\Gaff_Image.h" />
     <ClInclude Include="..\..\dependencies\Gaff\include\Gaff_INamedObject.h" />
     <ClInclude Include="..\..\dependencies\Gaff\include\Gaff_IncludeAngelScript.h" />
@@ -71,6 +73,7 @@
     <ClInclude Include="..\..\dependencies\Gaff\include\Gaff_ITask.h" />
     <ClInclude Include="..\..\dependencies\Gaff\include\Gaff_JSON.h" />
     <ClInclude Include="..\..\dependencies\Gaff\include\Gaff_Light.h" />
+    <ClInclude Include="..\..\dependencies\Gaff\include\Gaff_LinearCurve.h" />
     <ClInclude Include="..\..\dependencies\Gaff\include\Gaff_List.h" />
     <ClInclude Include="..\..\dependencies\Gaff\include\Gaff_Map.h" />
     <ClInclude Include="..\..\dependencies\Gaff\include\Gaff_Math.h" />
@@ -94,6 +97,9 @@
     <ClInclude Include="..\..\dependencies\Gaff\include\Gaff_SmartPtr.h" />
     <ClInclude Include="..\..\dependencies\Gaff\include\Gaff_SpinLock.h" />
     <ClInclude Include="..\..\dependencies\Gaff\include\Gaff_StackLockFree.h" />
+    <ClInclude Include="..\..\dependencies\Gaff\include\Gaff_StackTrace.h" />
+    <ClInclude Include="..\..\dependencies\Gaff\include\Gaff_StackTrace_Linux.h" />
+    <ClInclude Include="..\..\dependencies\Gaff\include\Gaff_StackTrace_Windows.h" />
     <ClInclude Include="..\..\dependencies\Gaff\include\Gaff_String.h" />
     <ClInclude Include="..\..\dependencies\Gaff\include\Gaff_Thread.h" />
     <ClInclude Include="..\..\dependencies\Gaff\include\Gaff_ThreadPool.h" />
@@ -132,6 +138,8 @@
     <ClCompile Include="..\..\dependencies\Gaff\Gaff_Scene.cpp" />
     <ClCompile Include="..\..\dependencies\Gaff\Gaff_SceneImporter.cpp" />
     <ClCompile Include="..\..\dependencies\Gaff\Gaff_SpinLock.cpp" />
+    <ClCompile Include="..\..\dependencies\Gaff\Gaff_StackTrace_Linux.cpp" />
+    <ClCompile Include="..\..\dependencies\Gaff\Gaff_StackTrace_Windows.cpp" />
     <ClCompile Include="..\..\dependencies\Gaff\Gaff_Thread_Linux.cpp" />
     <ClCompile Include="..\..\dependencies\Gaff\Gaff_Thread_Windows.cpp" />
     <ClCompile Include="..\..\dependencies\Gaff\Gaff_Timer_Linux.cpp" />

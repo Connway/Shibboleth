@@ -26,7 +26,6 @@ THE SOFTWARE.
 #include "Gaff_IncludeWindows.h"
 
 #define THREAD_CALLTYPE __stdcall
-#define YieldThread() Sleep(0)
 
 NS_GAFF
 
