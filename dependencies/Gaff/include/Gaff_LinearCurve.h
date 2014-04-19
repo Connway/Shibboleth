@@ -22,44 +22,29 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Shibboleth_Defines.h"
-#include <Gaff_IAllocator.h>
-#include <Gaff_SpinLock.h>
-#include <stdlib.h>
+#include "Gaff_DefaultAllocator.h"
+#include "Gaff_ICurve.h"
+#include "Gaff_Array.h"
+#include "Gaff_Pair.h"
+#include "Gaff_Math.h"
 
-NS_SHIBBOLETH
+NS_GAFF
 
-class Allocator : public Gaff::IAllocator
+template <class PointType, class Allocator = DefaultAllocator>
+class LinearCurve : public ICurve<PointType>
 {
 public:
-	Allocator(void);
-	~Allocator(void);
+	LinearCurve(const Array<PointType, Allocator>& points);
+	LinearCurve(const Allocator& allocator = Allocator());
+	~LinearCurve(void);
 
-	void* alloc(unsigned int size_bytes);
-	void free(void* data);
-
-	INLINE unsigned int getTotalBytesAllocated(void) const;
-	INLINE unsigned int getNumAllocations(void) const;
-	INLINE unsigned int getNumFrees(void) const;
+	void addSamplePoint(float t, const PointType& point);
+	PointType sample(float t) const;
 
 private:
-	unsigned int _total_bytes_allocated;
-	unsigned int _num_allocations;
-	unsigned int _num_frees;
-
-	Gaff::SpinLock _lock;
-
-	GAFF_NO_MOVE(Allocator);
+	Array<Pair<float, PointType>, Allocator> _points;
 };
 
-INLINE void SetAllocator(Allocator& allocator);
-INLINE Allocator& GetAllocator(void);
-
-void* ShibbolethAllocate(size_t size);
-void ShibbolethFree(void* data);
-
-void* ShibbolethAlloc(size_t size, const char* filename, unsigned int line_number);
-
-#define SHIBALLOC(size) ShibbolethALloc(size, __FILE__, __LINE__)
+#include "Gaff_LinearCurve.inl"
 
 NS_END

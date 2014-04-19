@@ -21,6 +21,7 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Gaff_ReadWriteSpinLock.h"
+#include "Gaff_IncludeAssert.h"
 #include "Gaff_Atomic.h"
 
 NS_GAFF
@@ -46,14 +47,22 @@ const ReadWriteSpinLock& ReadWriteSpinLock::operator=(ReadWriteSpinLock&& rhs)
 
 void ReadWriteSpinLock::readLock(void) const
 {
-	AtomicIncrement(&_read_lock);
-
+	/*
+		We wait for the write lock to be released first
+		to avoid situations where someone requests to write,
+		but read requests come in too fast and never reaches
+		a read count of zero, causing the writing thread to
+		become frozen indefinitely.
+	*/
 	while (_write_lock) {
 	}
+
+	AtomicIncrement(&_read_lock);
 }
 
 void ReadWriteSpinLock::readUnlock(void) const
 {
+	assert(_read_lock);
 	AtomicDecrement(&_read_lock);
 }
 
@@ -70,6 +79,7 @@ void ReadWriteSpinLock::writeLock(void) const
 
 void ReadWriteSpinLock::writeUnlock(void) const
 {
+	assert(_write_lock);
 	AtomicRelease(&_write_lock);
 }
 

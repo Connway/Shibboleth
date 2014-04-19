@@ -35,7 +35,7 @@ struct Pair
 	}
 
 	Pair(Pair&& pair):
-		first(Move(pair.first), Move(pair.second))
+		first(Move(pair.first)), second(Move(pair.second))
 	{
 	}
 

@@ -40,6 +40,9 @@ NS_GAFF
 INLINE unsigned long GetNumberOfCores(void);
 INLINE void GetCurrentTimeString(char* buff, size_t count, const char* format);
 INLINE bool CreateDir(const char* dirname, unsigned short mode);
+void DebugPrintf(const char* format_string, ...);
+void DebugPrintf(const wchar_t* format_string, ...);
+
 
 enum FileDataType
 {

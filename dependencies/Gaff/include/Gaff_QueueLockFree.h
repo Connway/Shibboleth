@@ -109,8 +109,9 @@ public:
 			}
 
 			read_index = _read_index;
-			value = _data[read_index]; // can make this operation expensive if T is a complex object
 		} while (AtomicCompareExchange(&_read_index, (read_index + 1) % _size, read_index) != read_index);
+
+		value = _data[read_index];
 
 		deconstruct(_data + read_index);
 		AtomicDecrement(&_used);

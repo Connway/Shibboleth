@@ -22,25 +22,49 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Gaff_SmartPtr.h"
+#include "Gaff_RefCounted.h"
+#include "Gaff_RefPtr.h"
 #include "Gaff_Array.h"
 
 NS_GAFF
 
 template <class Allocator = DefaultAllocator>
-class ITask
+class ITask : public RefCounted<Allocator>
 {
 public:
-	typedef SmartPtr<ITask<Allocator>, Allocator> TaskPointer;
+	typedef RefPtr< ITask<Allocator> > TaskPointer;
 
 	ITask(const Allocator& allocator = Allocator()):
-		_dependent_tasks(allocator)
+		_dependent_tasks(allocator), _finished(false)
 	{
 	}
 
 	virtual ~ITask(void) {}
 
 	virtual void doTask(void) = 0;
+
+	void setFinished(bool finished)
+	{
+		_finished = finished;
+	}
+
+	bool isFinished(void) const
+	{
+		return _finished;
+	}
+
+	void yieldWait(void) const
+	{
+		while (!_finished) {
+			YieldThread();
+		}
+	}
+
+	void spinWait(void) const
+	{
+		while (!_finished) {
+		}
+	}
 
 	void addDependentTask(const TaskPointer& task)
 	{
@@ -54,9 +78,9 @@ public:
 
 private:
 	Array<TaskPointer, Allocator> _dependent_tasks;
+	bool _finished;
 };
 
-template <class Allocator = DefaultAllocator> using TaskPtr = SmartPtr<ITask<Allocator>, Allocator>;
-
+template <class Allocator = DefaultAllocator> using TaskPtr = RefPtr< ITask<Allocator> >;
 
 NS_END

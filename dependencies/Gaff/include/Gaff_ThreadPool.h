@@ -22,9 +22,9 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Gaff_QueueLockFree.h"
 #include "Gaff_SpinLock.h"
 #include "Gaff_Thread.h"
+#include "Gaff_Queue.h"
 #include "Gaff_Utils.h"
 #include "Gaff_ITask.h"
 
@@ -45,12 +45,8 @@ public:
 		destroy();
 	}
 
-	bool init(unsigned int max_tasks, unsigned int num_threads = (unsigned int)GetNumberOfCores())
+	bool init(unsigned int num_threads = (unsigned int)GetNumberOfCores())
 	{
-		if (!_tasks.init(max_tasks)) {
-			return false;
-		}
-
 		_thread_data.thread_pool = this;
 		_thread_data.terminate = false;
 
@@ -83,7 +79,9 @@ public:
 
 	void addTask(const TaskPtr<Allocator>& task)
 	{
+		_lock.lock();
 		_tasks.push(task);
+		_lock.unlock();
 	}
 
 	//unsigned int getNumActiveThreads(void) const
@@ -102,8 +100,9 @@ private:
 		bool terminate;
 	} _thread_data;
 
-	QueueLockFree<TaskPtr<Allocator>, Allocator> _tasks;
+	Queue<TaskPtr<Allocator>, Allocator> _tasks;
 	Array<Thread, Allocator> _threads;
+	SpinLock _lock;
 
 	Allocator _allocator;
 
@@ -115,13 +114,23 @@ private:
 		TaskPtr<Allocator> task;
 
 		while (!td->terminate) {
-			if (tp->_tasks.pop(task)) {
+			tp->_lock.lock();
+				if (!tp->_tasks.empty()) {
+					task = tp->_tasks.first();
+					tp->_tasks.pop();
+				}
+			tp->_lock.unlock();
+
+			if (task) {
 				const Array<TaskPtr<Allocator>, Allocator>& dep_tasks = task->getDependentTasks();
 				task->doTask();
+				task->setFinished(true);
 
-				for (unsigned int i = 0; i < dep_tasks.size(); ++i) {
-					tp->_tasks.push(dep_tasks[i]);
-				}
+				tp->_lock.lock();
+					for (unsigned int i = 0; i < dep_tasks.size(); ++i) {
+						tp->_tasks.push(dep_tasks[i]);
+					}
+				tp->_lock.unlock();
 
 				task = nullptr; // Free the task
 			} /*else {*/
@@ -138,6 +147,7 @@ private:
 	friend Thread::ReturnType THREAD_CALLTYPE TaskRunner(void*);
 
 	GAFF_NO_COPY(ThreadPool);
+	GAFF_NO_MOVE(ThreadPool);
 };
 
 NS_END

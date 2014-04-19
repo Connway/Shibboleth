@@ -51,6 +51,9 @@
     <None Include="..\..\dependencies\Gaff\include\Gaff_Utils_Common.inl">
       <Filter>Headers</Filter>
     </None>
+    <None Include="..\..\dependencies\Gaff\include\Gaff_LinearCurve.inl">
+      <Filter>Headers</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\dependencies\Gaff\include\Gaff_Array.h">
@@ -266,6 +269,21 @@
     <ClInclude Include="..\..\dependencies\Gaff\include\Gaff_WeakPtr.h">
       <Filter>Headers</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\dependencies\Gaff\include\Gaff_ICurve.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\dependencies\Gaff\include\Gaff_LinearCurve.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\dependencies\Gaff\include\Gaff_StackTrace.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\dependencies\Gaff\include\Gaff_StackTrace_Linux.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\dependencies\Gaff\include\Gaff_StackTrace_Windows.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\dependencies\Gaff\Gaff_File.cpp" />
@@ -299,5 +317,7 @@
     <ClCompile Include="..\..\dependencies\Gaff\Gaff_Utils_Common.cpp" />
     <ClCompile Include="..\..\dependencies\Gaff\Gaff_Utils_Linux.cpp" />
     <ClCompile Include="..\..\dependencies\Gaff\Gaff_Utils_Windows.cpp" />
+    <ClCompile Include="..\..\dependencies\Gaff\Gaff_StackTrace_Linux.cpp" />
+    <ClCompile Include="..\..\dependencies\Gaff\Gaff_StackTrace_Windows.cpp" />
   </ItemGroup>
 </Project>
