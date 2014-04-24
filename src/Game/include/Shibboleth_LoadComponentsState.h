@@ -43,6 +43,9 @@ public:
 private:
 	App& _app;
 	unsigned int _state_id;
+
+	GAFF_NO_COPY(LoadComponentsState);
+	GAFF_NO_MOVE(LoadComponentsState);
 };
 
 DYNAMICEXPORT IState* CreateState(App&);

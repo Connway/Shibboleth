@@ -95,7 +95,7 @@ bool App::loadManagers(void)
 	bool error = false;
 
 	// Load managers from DLLs
-	Gaff::ForEachTypeInDirectory<Gaff::FDT_RegularFile>("./Managers", [&](const char* name, size_t name_len) -> bool
+	Gaff::ForEachTypeInDirectory<Gaff::FDT_RegularFile>("./Managers", [&](const char* name, size_t) -> bool
 	{
 		AString rel_path = AString("./Managers/") + name;
 
