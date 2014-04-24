@@ -60,6 +60,9 @@ private:
 
 	HashMap<AHashString, ComponentEntry> _components;
 	App& _app;
+
+	GAFF_NO_COPY(ComponentManager);
+	GAFF_NO_MOVE(ComponentManager);
 };
 
 NS_END

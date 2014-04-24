@@ -24,7 +24,7 @@ THE SOFTWARE.
 
 NS_SHIBBOLETH
 
-Logger::Logger(ProxyAllocator& proxy_allocator):
+Logger::Logger(const ProxyAllocator& proxy_allocator):
 	_files(proxy_allocator)
 {
 }

@@ -32,7 +32,7 @@ NS_SHIBBOLETH
 class Logger
 {
 public:
-	Logger(ProxyAllocator& proxy_allocator);
+	Logger(const ProxyAllocator& proxy_allocator);
 	~Logger(void);
 
 	void destroy(void);

@@ -29,11 +29,11 @@ NS_GAFF
 class ReadWriteSpinLock
 {
 public:
-	ReadWriteSpinLock(ReadWriteSpinLock&& rwsl);
+	ReadWriteSpinLock(ReadWriteSpinLock&&);
 	ReadWriteSpinLock(void);
 	~ReadWriteSpinLock(void);
 
-	const ReadWriteSpinLock& operator=(ReadWriteSpinLock&& rhs);
+	const ReadWriteSpinLock& operator=(ReadWriteSpinLock&&);
 
 	void readLock(void) const;
 	void readUnlock(void) const;

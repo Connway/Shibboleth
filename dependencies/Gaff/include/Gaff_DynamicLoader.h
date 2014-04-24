@@ -69,6 +69,9 @@ private:
 
 	HMap _modules;
 	Allocator _allocator;
+
+	GAFF_NO_COPY(DynamicLoader);
+	GAFF_NO_MOVE(DynamicLoader);
 };
 
 #include "Gaff_DynamicLoader.inl"
