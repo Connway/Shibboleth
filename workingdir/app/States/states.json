@@ -5,10 +5,12 @@
 	[
 		{
 			"name": "LoadComponentState",
+			"module": "GameStates",
 			"transitions": [1]
 		},
 		{
 			"name": "StateTest",
+			"module": "StateTest",
 			"transitions": []
 		}
 	]

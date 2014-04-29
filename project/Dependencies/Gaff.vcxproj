@@ -21,6 +21,7 @@
   <ItemGroup>
     <None Include="..\..\dependencies\Gaff\include\Gaff_AngelScriptEngineTemplateFunctions.inl" />
     <None Include="..\..\dependencies\Gaff\include\Gaff_Array.inl" />
+    <None Include="..\..\dependencies\Gaff\include\Gaff_BezierCurve.inl" />
     <None Include="..\..\dependencies\Gaff\include\Gaff_BitArray.inl" />
     <None Include="..\..\dependencies\Gaff\include\Gaff_DynamicLoader.inl" />
     <None Include="..\..\dependencies\Gaff\include\Gaff_Function.inl" />
@@ -44,6 +45,7 @@
     <ClInclude Include="..\..\dependencies\Gaff\include\Gaff_Animation.h" />
     <ClInclude Include="..\..\dependencies\Gaff\include\Gaff_Array.h" />
     <ClInclude Include="..\..\dependencies\Gaff\include\Gaff_Atomic.h" />
+    <ClInclude Include="..\..\dependencies\Gaff\include\Gaff_BezierCurve.h" />
     <ClInclude Include="..\..\dependencies\Gaff\include\Gaff_BitArray.h" />
     <ClInclude Include="..\..\dependencies\Gaff\include\Gaff_BitFlags.h" />
     <ClInclude Include="..\..\dependencies\Gaff\include\Gaff_Camera.h" />
@@ -111,6 +113,7 @@
     <ClInclude Include="..\..\dependencies\Gaff\include\Gaff_Timer_Mac.h" />
     <ClInclude Include="..\..\dependencies\Gaff\include\Gaff_Timer_Windows.h" />
     <ClInclude Include="..\..\dependencies\Gaff\include\Gaff_Utils.h" />
+    <ClInclude Include="..\..\dependencies\Gaff\include\Gaff_IVirtualDestructor.h" />
     <ClInclude Include="..\..\dependencies\Gaff\include\Gaff_WeakObject.h" />
     <ClInclude Include="..\..\dependencies\Gaff\include\Gaff_WeakPtr.h" />
   </ItemGroup>
@@ -131,6 +134,7 @@
     <ClCompile Include="..\..\dependencies\Gaff\Gaff_Image.cpp" />
     <ClCompile Include="..\..\dependencies\Gaff\Gaff_JSON.cpp" />
     <ClCompile Include="..\..\dependencies\Gaff\Gaff_Light.cpp" />
+    <ClCompile Include="..\..\dependencies\Gaff\Gaff_Math.cpp" />
     <ClCompile Include="..\..\dependencies\Gaff\Gaff_Mesh.cpp" />
     <ClCompile Include="..\..\dependencies\Gaff\Gaff_MeshAnimation.cpp" />
     <ClCompile Include="..\..\dependencies\Gaff\Gaff_NodeAnimation.cpp" />

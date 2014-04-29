@@ -27,7 +27,6 @@ THE SOFTWARE.
 #include "Shibboleth_StateMachine.h"
 #include "Shibboleth_ThreadPool.h"
 #include "Shibboleth_HashString.h"
-#include "Shibboleth_Registry.h"
 #include "Shibboleth_HashMap.h"
 #include "Shibboleth_IState.h"
 #include "Shibboleth_Logger.h"
@@ -102,12 +101,15 @@ public:
 private:
 	struct ManagerEntry
 	{
-		typedef Gaff::INamedObject* (*CreateManagerFunc)(App& game);
-		typedef void (*DestroyManagerFunc)(Gaff::INamedObject*);
+		typedef Gaff::INamedObject* (*CreateManagerFunc)(App&, unsigned int);
+		typedef void (*DestroyManagerFunc)(Gaff::INamedObject*, unsigned int);
+		typedef unsigned int (*GetNumManagersFunc)(void);
 
+		DynamicLoader::ModulePtr module;
 		CreateManagerFunc create_func;
 		DestroyManagerFunc destroy_func;
 		Gaff::INamedObject* manager;
+		unsigned int manager_id;
 	};
 
 	typedef HashMap<AHashString, ManagerEntry> ManagerMap;

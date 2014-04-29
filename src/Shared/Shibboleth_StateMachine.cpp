@@ -39,7 +39,7 @@ void StateMachine::clear(void)
 	_curr_state = _next_state = (unsigned int)-1;
 
 	for (auto it = _states.begin(); it != _states.end(); ++it) {
-		it->destroy_func(it->state);
+		it->destroy_func(it->state, it->state_id);
 	}
 
 	_states.clear();

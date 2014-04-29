@@ -33,7 +33,10 @@ template <class T, class Allocator = DefaultAllocator>
 class String
 {
 public:
+	static const unsigned int npos;
+
 	String(const Allocator& allocator = Allocator());
+	String(const T* string, unsigned int size, const Allocator& allocator = Allocator());
 	String(const T* string, const Allocator& allocator = Allocator());
 	String(String<T, Allocator>&& rhs);
 	String(const String<T, Allocator>& string);
@@ -65,6 +68,13 @@ public:
 
 	const T* getBuffer(void) const;
 	T* getBuffer(void);
+
+	String<T, Allocator> getExtension(T delimiting_character) const;
+	String<T, Allocator> substring(unsigned int begin, unsigned int end) const;
+	String<T, Allocator> substring(unsigned int begin) const;
+
+	unsigned int findFirstOf(T character) const;
+	unsigned int findLastOf(T character) const;
 
 private:
 	Allocator _allocator;

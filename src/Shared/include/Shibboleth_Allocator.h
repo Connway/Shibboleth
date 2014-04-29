@@ -58,8 +58,4 @@ INLINE Allocator& GetAllocator(void);
 void* ShibbolethAllocate(size_t size);
 void ShibbolethFree(void* data);
 
-void* ShibbolethAlloc(size_t size, const char* filename, unsigned int line_number);
-
-#define SHIBALLOC(size) ShibbolethALloc(size, __FILE__, __LINE__)
-
 NS_END

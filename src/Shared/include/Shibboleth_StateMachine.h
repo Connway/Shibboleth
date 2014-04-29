@@ -34,14 +34,18 @@ class StateMachine
 public:
 	struct StateEntry
 	{
-		typedef IState* (*CreateStateFunc)(App&);
-		typedef void (*DestroyStateFunc)(IState*);
+		typedef const char* (*GetStateNameFunc)(unsigned int);
+		typedef unsigned int (*GetNumStatesFunc)(void);
+		typedef IState* (*CreateStateFunc)(App&, unsigned int);
+		typedef void (*DestroyStateFunc)(IState*, unsigned int);
 
 		AString name;
 
 		CreateStateFunc create_func;
 		DestroyStateFunc destroy_func;
 		IState* state;
+
+		unsigned int state_id;
 
 		bool operator==(const char* rhs) const
 		{

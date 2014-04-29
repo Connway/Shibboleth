@@ -175,13 +175,13 @@ unsigned int HashString<T, Allocator>::size(void) const
 }
 
 template <class T, class Allocator>
-const T* HashString<T, Allocator>::getBuffer(void) const
+const String<T, Allocator>& HashString<T, Allocator>::getString(void) const
 {
-	return _string.getBuffer();
+	return _string;
 }
 
 template <class T, class Allocator>
-T* HashString<T, Allocator>::getBuffer(void)
+const T* HashString<T, Allocator>::getBuffer(void) const
 {
 	return _string.getBuffer();
 }
