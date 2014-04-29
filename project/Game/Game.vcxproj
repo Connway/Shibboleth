@@ -20,10 +20,14 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\Game\include\Shibboleth_ComponentManager.h" />
+    <ClInclude Include="..\..\src\Game\include\Shibboleth_GameObject.h" />
     <ClInclude Include="..\..\src\Game\include\Shibboleth_IComponent.h" />
+    <ClInclude Include="..\..\src\Game\include\Shibboleth_IResourceLoader.h" />
+    <ClInclude Include="..\..\src\Game\include\Shibboleth_ResourceManager.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Game\Shibboleth_ComponentManager.cpp" />
+    <ClCompile Include="..\..\src\Game\Shibboleth_ResourceManager.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{AFE6869B-C843-424B-B601-E5DAF5252407}</ProjectGuid>

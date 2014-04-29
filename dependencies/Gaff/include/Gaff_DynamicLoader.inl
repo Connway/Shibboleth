@@ -42,6 +42,7 @@ template <class Allocator>
 template <class Allocator2>
 typename DynamicLoader<Allocator>::ModulePtr DynamicLoader<Allocator>::loadModule(const AString<Allocator2>& filename, const AString<Allocator2>& name)
 {
+	assert(filename.size() && name.size());
 	return loadModule(filename.getBuffer(), name.getBuffer());
 }
 
@@ -49,12 +50,19 @@ template <class Allocator>
 template <class Allocator2>
 typename DynamicLoader<Allocator>::ModulePtr DynamicLoader<Allocator>::loadModule(const AString<Allocator2>& filename, const char* name)
 {
+	assert(filename.size() && name && strlen(name));
 	return loadModule(filename.getBuffer(), name);
 }
 
 template <class Allocator>
 typename DynamicLoader<Allocator>::ModulePtr DynamicLoader<Allocator>::loadModule(const char* filename, const char* name)
 {
+	assert(filename && name && strlen(filename) && strlen(name));
+
+	if (_modules.indexOf(name) != -1) {
+		return getModule(name);
+	}
+
 	ModulePtr module(_allocator.template allocT<DynamicModule>());
 
 	if (module.valid()) {
@@ -71,12 +79,14 @@ typename DynamicLoader<Allocator>::ModulePtr DynamicLoader<Allocator>::loadModul
 template <class Allocator>
 typename DynamicLoader<Allocator>::ModulePtr DynamicLoader<Allocator>::getModule(const AHashString<Allocator> name)
 {
+	assert(name.size());
 	return _modules[name];
 }
 
 template <class Allocator>
 typename DynamicLoader<Allocator>::ModulePtr DynamicLoader<Allocator>::getModule(const AString<Allocator>& name)
 {
+	assert(name.size());
 	HString str(name, FNVHash, _allocator);
 	return _modules[name];
 }
@@ -84,6 +94,7 @@ typename DynamicLoader<Allocator>::ModulePtr DynamicLoader<Allocator>::getModule
 template <class Allocator>
 typename DynamicLoader<Allocator>::ModulePtr DynamicLoader<Allocator>::getModule(const char* name)
 {
+	assert(name && strlen(name));
 	HString str(name, FNVHash, _allocator);
 	return _modules[name];
 }
@@ -91,6 +102,7 @@ typename DynamicLoader<Allocator>::ModulePtr DynamicLoader<Allocator>::getModule
 template <class Allocator>
 void DynamicLoader<Allocator>::removeModule(const char* name)
 {
+	assert(name && strlen(name));
 	HString str(name, FNVHash, _allocator);
 	_modules.erase(str);
 }
@@ -101,6 +113,7 @@ template <class Allocator>
 template <class Allocator2>
 typename DynamicLoader<Allocator>::ModulePtr DynamicLoader<Allocator>::loadModule(const WString<Allocator2>& filename, const AString<Allocator2>& name)
 {
+	assert(filename.size() && name.size());
 	return loadModule(filename.getBuffer(), name.getBuffer());
 }
 
@@ -108,12 +121,19 @@ template <class Allocator>
 template <class Allocator2>
 typename DynamicLoader<Allocator>::ModulePtr DynamicLoader<Allocator>::loadModule(const WString<Allocator2>& filename, const char* name)
 {
+	assert(filename.size() && name && strlen(name));
 	return loadModule(filename.getBuffer(), name);
 }
 
 template <class Allocator>
 typename DynamicLoader<Allocator>::ModulePtr DynamicLoader<Allocator>::loadModule(const wchar_t* filename, const char* name)
 {
+	assert(filename && name && wcslen(filename) && strlen(name));
+
+	if (_modules.indexOf(name) != -1) {
+		return getModule(name);
+	}
+
 	ModulePtr module = _allocator.template allocT<DynamicModule>();
 
 	if (module.valid()) {

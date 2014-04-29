@@ -54,6 +54,9 @@
     <None Include="..\..\dependencies\Gaff\include\Gaff_LinearCurve.inl">
       <Filter>Headers</Filter>
     </None>
+    <None Include="..\..\dependencies\Gaff\include\Gaff_BezierCurve.inl">
+      <Filter>Headers</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\dependencies\Gaff\include\Gaff_Array.h">
@@ -284,6 +287,12 @@
     <ClInclude Include="..\..\dependencies\Gaff\include\Gaff_StackTrace_Windows.h">
       <Filter>Headers</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\dependencies\Gaff\include\Gaff_IVirtualDestructor.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\dependencies\Gaff\include\Gaff_BezierCurve.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\dependencies\Gaff\Gaff_File.cpp" />
@@ -319,5 +328,6 @@
     <ClCompile Include="..\..\dependencies\Gaff\Gaff_Utils_Windows.cpp" />
     <ClCompile Include="..\..\dependencies\Gaff\Gaff_StackTrace_Linux.cpp" />
     <ClCompile Include="..\..\dependencies\Gaff\Gaff_StackTrace_Windows.cpp" />
+    <ClCompile Include="..\..\dependencies\Gaff\Gaff_Math.cpp" />
   </ItemGroup>
 </Project>

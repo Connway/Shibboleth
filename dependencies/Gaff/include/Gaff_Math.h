@@ -66,20 +66,9 @@ bool Between(const T& val, const T& min_val, const T& max_val)
 	return val >= min_val && val <= max_val;
 }
 
-// Not really sure this is a good candidate for inlining,
-// but I don't want to have a compiled cpp file for Gaff_Math.h.
-// Inlining this removes redefinition linker warning.
-inline unsigned int FNVHash(const char* key, int len)
-{
-	unsigned int hash = 2166136261;
-
-	for (int i = 0; i < len; ++i) {
-		hash = (hash * 16777619) ^ key[i];
-	}
-
-	return hash;
-}
-
 typedef unsigned int (*HashFunc)(const char* data, int len);
+unsigned int FNVHash(const char* key, int len);
+INLINE float BinomialCoefficient(float n, float k);
+float BernsteinPolynomial(float t, float n, float k);
 
 NS_END

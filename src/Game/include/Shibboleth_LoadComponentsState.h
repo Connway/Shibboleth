@@ -48,7 +48,4 @@ private:
 	GAFF_NO_MOVE(LoadComponentsState);
 };
 
-DYNAMICEXPORT IState* CreateState(App&);
-DYNAMICEXPORT void DestroyState(IState* state);
-
 NS_END

@@ -63,8 +63,8 @@ public:
 	void clear(void);
 	unsigned int size(void) const;
 
+	const String<T, Allocator>& getString(void) const;
 	const T* getBuffer(void) const;
-	T* getBuffer(void);
 	unsigned int getHash(void) const;
 
 private:

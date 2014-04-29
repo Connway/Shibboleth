@@ -43,7 +43,7 @@ App::App(void):
 App::~App(void)
 {
 	for (ManagerMap::Iterator it = _manager_map.begin(); it != _manager_map.end(); ++it) {
-		it->destroy_func(it->manager);
+		it->destroy_func(it->manager, it->manager_id);
 	}
 
 	_manager_map.clear();
@@ -114,26 +114,39 @@ bool App::loadManagers(void)
 		DynamicLoader::ModulePtr module = _dynamic_loader.loadModule(rel_path.getBuffer(), name);
 
 		if (module) {
-			ManagerEntry entry = { nullptr, nullptr, nullptr };
-			entry.create_func = module->GetFunc<ManagerEntry::CreateManagerFunc>("CreateManager");
-			entry.destroy_func = module->GetFunc<ManagerEntry::DestroyManagerFunc>("DestroyManager");
+			ManagerEntry::GetNumManagersFunc num_mgrs_func = module->GetFunc<ManagerEntry::GetNumManagersFunc>("GetNumManagers");
 
-			if (entry.create_func && entry.destroy_func) {
-				entry.manager = entry.create_func(*this);
+			if (!num_mgrs_func) {
+				_dynamic_loader.removeModule(name);
+				_log_file->printf("ERROR - Failed to find function 'GetNumManagers' in dynamic module '%s'\n", rel_path.getBuffer());
+				error = true;
+				return true;
+			}
 
-				if (entry.manager) {
-					_manager_map[entry.manager->getName()] = entry;
-					_log_file->printf("Loaded manager '%s'\n", entry.manager->getName());
+			unsigned int num_managers = num_mgrs_func();
+
+			for (unsigned int i = 0; i < num_managers; ++i) {
+				ManagerEntry entry = { module, nullptr, nullptr, nullptr, i };
+				entry.create_func = module->GetFunc<ManagerEntry::CreateManagerFunc>("CreateManager");
+				entry.destroy_func = module->GetFunc<ManagerEntry::DestroyManagerFunc>("DestroyManager");
+
+				if (entry.create_func && entry.destroy_func) {
+					entry.manager = entry.create_func(*this, i);
+
+					if (entry.manager) {
+						_manager_map[entry.manager->getName()] = entry;
+						_log_file->printf("Loaded manager '%s'\n", entry.manager->getName());
+					} else {
+						_log_file->printf("ERROR - Failed to create manager from dynamic module '%s'\n", rel_path.getBuffer());
+						error = true;
+						return true;
+					}
 				} else {
-					_log_file->printf("ERROR - Failed to create manager from dynamic module '%s'\n", rel_path.getBuffer());
+					_dynamic_loader.removeModule(name);
+					_log_file->printf("ERROR - Failed to find functions 'CreateManager' and/or 'DestroyManager' in dynamic module '%s'\n", rel_path.getBuffer());
 					error = true;
 					return true;
 				}
-			} else {
-				_dynamic_loader.removeModule(name);
-				_log_file->printf("ERROR - Failed to find functions 'CreateManager' and 'DestroyManager' in dynamic module '%s'\n", rel_path.getBuffer());
-				error = true;
-				return true;
 			}
 
 		} else {
@@ -185,31 +198,59 @@ bool App::loadStates(void)
 		}
 
 		Gaff::JSON transitions = state["transitions"];
-		Gaff::JSON name = state["name"];
+		Gaff::JSON module_name = states["module"];
+		Gaff::JSON state_name = state["name"];
 
 		if (!transitions.isArray()) {
 			_log_file->printf("ERROR - './States/states.json' is malformed. Transitions for state entry %i is not an array.\n", i);
 			return false;
 		}
 
-		if (!name.isString()) {
+		if (!module_name.isString()) {
+			_log_file->printf("ERROR - './States/states.json' is malformed. Module name for state entry %i is not a string.\n", i);
+			return false;
+		}
+
+		if (!state_name.isString()) {
 			_log_file->printf("ERROR - './States/states.json' is malformed. Name for state entry %i is not a string.\n", i);
 			return false;
 		}
 
 		AString filename("./States/");
-		filename += name.getString();
+		filename += module_name.getString();
 		filename += BIT_EXTENSION DYNAMIC_EXTENSION;
 
-		DynamicLoader::ModulePtr module = _dynamic_loader.loadModule(filename, name.getString());
+		DynamicLoader::ModulePtr module = _dynamic_loader.loadModule(filename, state_name.getString());
 
 		if (module) {
-			StateMachine::StateEntry entry = { name.getString(), nullptr, nullptr, nullptr };
+			StateMachine::StateEntry::GetNumStatesFunc num_states_func = module->GetFunc<StateMachine::StateEntry::GetNumStatesFunc>("GetNumStates");
+			StateMachine::StateEntry::GetStateNameFunc get_state_name_func = module->GetFunc<StateMachine::StateEntry::GetStateNameFunc>("GetStateName");
+
+			if (!num_states_func || !get_state_name_func) {
+				_log_file->printf("ERROR - Failed to find functions 'GetNumStates' and/or 'GetStateName' in dynamic module '%s'\n", filename.getBuffer());
+				return false;
+			}
+
+			unsigned int num_states = num_states_func();
+			unsigned int state_id = 0;
+
+			for (; state_id < num_states; ++state_id) {
+				if (!strcmp(state_name.getString(), get_state_name_func(state_id))) {
+					break;
+				}
+			}
+
+			if (state_id == num_states) {
+				_log_file->printf("ERROR - Failed to find state with name '%s' in dynamic module '%s'\n", state_name.getString(), filename.getBuffer());
+				return false;
+			}
+
+			StateMachine::StateEntry entry = { state_name.getString(), nullptr, nullptr, nullptr, state_id };
 			entry.create_func = module->GetFunc<StateMachine::StateEntry::CreateStateFunc>("CreateState");
 			entry.destroy_func = module->GetFunc<StateMachine::StateEntry::DestroyStateFunc>("DestroyState");
 
 			if (entry.create_func && entry.destroy_func) {
-				entry.state = entry.create_func(*this);
+				entry.state = entry.create_func(*this, state_id);
 
 				if (entry.state) {
 					entry.state->_transitions.reserve((unsigned int)transitions.size());
@@ -226,12 +267,12 @@ bool App::loadStates(void)
 					}
 
 					if (!entry.state->init(_state_machine.getNumStates())) {
-						_log_file->printf("ERROR - Failed to initialize state '%s'\n", name.getString());
+						_log_file->printf("ERROR - Failed to initialize state '%s'\n", state_name.getString());
 						return false;
 					}
 
 					_state_machine.addState(entry);
-					_log_file->printf("Loaded state '%s'\n", name.getString());
+					_log_file->printf("Loaded state '%s'\n", state_name.getString());
 
 					if (entry.name == starting_state.getString()) {
 						_state_machine.switchState((unsigned int)i);
@@ -243,7 +284,6 @@ bool App::loadStates(void)
 				}
 
 			} else {
-				_dynamic_loader.removeModule(name.getString());
 				_log_file->printf("ERROR - Failed to find functions 'CreateState' and 'DestroyState' in dynamic module '%s'\n", filename.getBuffer());
 				return false;
 			}

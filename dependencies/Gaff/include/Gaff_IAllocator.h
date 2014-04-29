@@ -72,6 +72,13 @@ public:
 	}
 
 	template <class T, class... Args>
+	T* moveAllocT(Args&&... args)
+	{
+		T* data = (T*)alloc(sizeof(T));
+		return moveConstruct(data, args...);
+	}
+
+	template <class T, class... Args>
 	T* allocT(Args&&... args)
 	{
 		T* data = (T*)alloc(sizeof(T));

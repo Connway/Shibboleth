@@ -45,8 +45,8 @@ public:
 	INLINE void destroyComponent(IComponent* component);
 
 private:
-	typedef IComponent* (*CreateComponentFunc)(ProxyAllocator& allocator, App& app, unsigned int id);
-	typedef void (*DestroyComponentFunc)(ProxyAllocator& allocator, IComponent* component, unsigned int id);
+	typedef IComponent* (*CreateComponentFunc)(App&, unsigned int);
+	typedef void (*DestroyComponentFunc)(IComponent*, unsigned int);
 	typedef unsigned int (*GetNumComponentsFunc)(void);
 	typedef const char* (*GetComponentNameFunc)(unsigned int);
 

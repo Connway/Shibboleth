@@ -21,9 +21,27 @@ THE SOFTWARE.
 ************************************************************************************/
 
 template <class T, class Allocator>
+const unsigned int String<T, Allocator>::npos = (unsigned int)-1;
+
+
+template <class T, class Allocator>
 String<T, Allocator>::String(const Allocator& allocator):
 	_allocator(allocator), _size(0), _string(nullptr)
 {
+}
+
+template <class T, class Allocator>
+String<T, Allocator>::String(const T* string, unsigned int size, const Allocator& allocator):
+	_allocator(allocator), _size(0), _string(nullptr)
+{
+	_string = (T*)_allocator.alloc(sizeof(T) * (size + 1));
+	_size = size;
+
+	_string[_size] = 0; // set null-terminator
+
+	for (unsigned int i = 0; i < _size; ++i) {
+		_string[i] = string[i];
+	}
 }
 
 template <class T, class Allocator>
@@ -72,9 +90,9 @@ const String<T, Allocator>& String<T, Allocator>::operator=(String<T, Allocator>
 template <class T, class Allocator>
 const String<T, Allocator>& String<T, Allocator>::operator=(const String<T, Allocator>& rhs)
 {
-	if (this == &rhs) {
-		return *this;
-	}
+	//if (this == &rhs) {
+	//	return *this;
+	//}
 
 	clear();
 
@@ -93,9 +111,9 @@ const String<T, Allocator>& String<T, Allocator>::operator=(const String<T, Allo
 template <class T, class Allocator>
 const String<T, Allocator>& String<T, Allocator>::operator=(const T* rhs)
 {
-	if (_string == rhs) {
-		return *this;
-	}
+	//if (_string == rhs) {
+	//	return *this;
+	//}
 
 	clear();
 
@@ -263,6 +281,56 @@ template <class T, class Allocator>
 T* String<T, Allocator>::getBuffer(void)
 {
 	return _string;
+}
+
+template <class T, class Allocator>
+String<T, Allocator> String<T, Allocator>::getExtension(T delimiting_character) const
+{
+	assert(_string && _size);
+	unsigned int index = findLastOf(delimiting_character);
+	return (index == npos) ? String<T, Allocator>() : substring(index);
+}
+
+template <class T, class Allocator>
+String<T, Allocator> String<T, Allocator>::substring(unsigned int begin, unsigned int end) const
+{
+	assert(end > begin && begin < _size && end < _size);
+	return String<T, Allocator>(_string + begin, end - begin);
+}
+
+template <class T, class Allocator>
+String<T, Allocator> String<T, Allocator>::substring(unsigned int begin) const
+{
+	assert(begin < _size);
+	return String<T, Allocator>(_string + begin);
+}
+
+template <class T, class Allocator>
+unsigned int String<T, Allocator>::findFirstOf(T character) const
+{
+	for (unsigned int i = 0; i < _size; ++i) {
+		if (_string[i] == character) {
+			return i;
+		}
+	}
+
+	return npos;
+}
+
+template <class T, class Allocator>
+unsigned int String<T, Allocator>::findLastOf(T character) const
+{
+	if (!_size) {
+		return npos;
+	}
+
+	for (int i = (int)_size - 1; i >= 0; --i) {
+		if (_string[i] == character) {
+			return i;
+		}
+	}
+
+	return npos;
 }
 
 // From my benchmark tests, the loop isn't any slower than calling strlen() or wcslen()

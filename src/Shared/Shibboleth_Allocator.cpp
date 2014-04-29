@@ -93,9 +93,4 @@ void ShibbolethFree(void* data)
 	gAllocator->free(data);
 }
 
-void* ShibbolethAlloc(unsigned int size, const char* filename, unsigned int line_number)
-{
-	return gAllocator->alloc(size);
-}
-
 NS_END

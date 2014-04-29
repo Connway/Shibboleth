@@ -1,0 +1,71 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClInclude Include="..\..\dependencies\OtterUI\inc\Button.h" />
+    <ClInclude Include="..\..\dependencies\OtterUI\inc\Common\Array.h" />
+    <ClInclude Include="..\..\dependencies\OtterUI\inc\Common\BaseTypes.h" />
+    <ClInclude Include="..\..\dependencies\OtterUI\inc\Common\Event.h" />
+    <ClInclude Include="..\..\dependencies\OtterUI\inc\Common\Platforms.h" />
+    <ClInclude Include="..\..\dependencies\OtterUI\inc\Common\Types.h" />
+    <ClInclude Include="..\..\dependencies\OtterUI\inc\Common\UTF8String.h" />
+    <ClInclude Include="..\..\dependencies\OtterUI\inc\Control.h" />
+    <ClInclude Include="..\..\dependencies\OtterUI\inc\Graphics\Graphics.h" />
+    <ClInclude Include="..\..\dependencies\OtterUI\inc\Group.h" />
+    <ClInclude Include="..\..\dependencies\OtterUI\inc\Interfaces\IFileSystem.h" />
+    <ClInclude Include="..\..\dependencies\OtterUI\inc\Interfaces\IPlugin.h" />
+    <ClInclude Include="..\..\dependencies\OtterUI\inc\Interfaces\IRenderer.h" />
+    <ClInclude Include="..\..\dependencies\OtterUI\inc\Interfaces\ISoundSystem.h" />
+    <ClInclude Include="..\..\dependencies\OtterUI\inc\Label.h" />
+    <ClInclude Include="..\..\dependencies\OtterUI\inc\Mask.h" />
+    <ClInclude Include="..\..\dependencies\OtterUI\inc\Math\Matrix4.h" />
+    <ClInclude Include="..\..\dependencies\OtterUI\inc\Math\Vector2.h" />
+    <ClInclude Include="..\..\dependencies\OtterUI\inc\Math\Vector3.h" />
+    <ClInclude Include="..\..\dependencies\OtterUI\inc\Math\Vector4.h" />
+    <ClInclude Include="..\..\dependencies\OtterUI\inc\Math\VectorMath.h" />
+    <ClInclude Include="..\..\dependencies\OtterUI\inc\Otter.h" />
+    <ClInclude Include="..\..\dependencies\OtterUI\inc\Scene.h" />
+    <ClInclude Include="..\..\dependencies\OtterUI\inc\Slider.h" />
+    <ClInclude Include="..\..\dependencies\OtterUI\inc\Sprite.h" />
+    <ClInclude Include="..\..\dependencies\OtterUI\inc\System.h" />
+    <ClInclude Include="..\..\dependencies\OtterUI\inc\Table.h" />
+    <ClInclude Include="..\..\dependencies\OtterUI\inc\Toggle.h" />
+    <ClInclude Include="..\..\dependencies\OtterUI\inc\utf8proc\utf8proc.h" />
+    <ClInclude Include="..\..\dependencies\OtterUI\inc\View.h" />
+    <ClInclude Include="..\..\dependencies\OtterUI\src\Common\Log.h" />
+    <ClInclude Include="..\..\dependencies\OtterUI\src\Data\OtterData.h" />
+    <ClInclude Include="..\..\dependencies\OtterUI\src\Font.h" />
+    <ClInclude Include="..\..\dependencies\OtterUI\src\Memory\Memory.h" />
+    <ClInclude Include="..\..\dependencies\OtterUI\src\Memory\MemoryManager.h" />
+    <ClInclude Include="..\..\dependencies\OtterUI\src\Utilities\Utilities.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\dependencies\OtterUI\src\Button.cpp" />
+    <ClCompile Include="..\..\dependencies\OtterUI\src\Common\Log.cpp" />
+    <ClCompile Include="..\..\dependencies\OtterUI\src\Common\UTF8String.cpp" />
+    <ClCompile Include="..\..\dependencies\OtterUI\src\Control.cpp" />
+    <ClCompile Include="..\..\dependencies\OtterUI\src\Data\OtterData.cpp" />
+    <ClCompile Include="..\..\dependencies\OtterUI\src\Font.cpp" />
+    <ClCompile Include="..\..\dependencies\OtterUI\src\Graphics\Graphics.cpp" />
+    <ClCompile Include="..\..\dependencies\OtterUI\src\Group.cpp" />
+    <ClCompile Include="..\..\dependencies\OtterUI\src\Label.cpp" />
+    <ClCompile Include="..\..\dependencies\OtterUI\src\Mask.cpp" />
+    <ClCompile Include="..\..\dependencies\OtterUI\src\Math\Matrix4.cpp" />
+    <ClCompile Include="..\..\dependencies\OtterUI\src\Math\Vector2.cpp" />
+    <ClCompile Include="..\..\dependencies\OtterUI\src\Math\Vector3.cpp" />
+    <ClCompile Include="..\..\dependencies\OtterUI\src\Math\Vector4.cpp" />
+    <ClCompile Include="..\..\dependencies\OtterUI\src\Math\VectorMath.cpp" />
+    <ClCompile Include="..\..\dependencies\OtterUI\src\Memory\Memory.cpp" />
+    <ClCompile Include="..\..\dependencies\OtterUI\src\Memory\MemoryManager.cpp" />
+    <ClCompile Include="..\..\dependencies\OtterUI\src\Otter.cpp" />
+    <ClCompile Include="..\..\dependencies\OtterUI\src\Scene.cpp" />
+    <ClCompile Include="..\..\dependencies\OtterUI\src\Slider.cpp" />
+    <ClCompile Include="..\..\dependencies\OtterUI\src\Sprite.cpp" />
+    <ClCompile Include="..\..\dependencies\OtterUI\src\System.cpp" />
+    <ClCompile Include="..\..\dependencies\OtterUI\src\Table.cpp" />
+    <ClCompile Include="..\..\dependencies\OtterUI\src\Toggle.cpp" />
+    <ClCompile Include="..\..\dependencies\OtterUI\src\utf8proc\utf8proc.cpp" />
+    <ClCompile Include="..\..\dependencies\OtterUI\src\utf8proc\utf8proc_data.cpp" />
+    <ClCompile Include="..\..\dependencies\OtterUI\src\Utilities\Utilities.cpp" />
+    <ClCompile Include="..\..\dependencies\OtterUI\src\View.cpp" />
+  </ItemGroup>
+</Project>

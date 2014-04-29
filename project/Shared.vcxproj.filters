@@ -11,7 +11,6 @@
     <ClInclude Include="..\src\Shared\include\Shibboleth_Defines.h" />
     <ClInclude Include="..\src\Shared\include\Shibboleth_DynamicLoader.h" />
     <ClInclude Include="..\src\Shared\include\Shibboleth_IState.h" />
-    <ClInclude Include="..\src\Shared\include\Shibboleth_Registry.h" />
     <ClInclude Include="..\src\Shared\include\Shibboleth_String.h" />
     <ClInclude Include="..\src\Shared\include\Shibboleth_Allocator.h" />
     <ClInclude Include="..\src\Shared\include\Shibboleth_StateMachine.h" />
@@ -22,5 +21,6 @@
     <ClInclude Include="..\src\Shared\include\Shibboleth_App.h" />
     <ClInclude Include="..\src\Shared\include\Shibboleth_MessageBroadcaster.h" />
     <ClInclude Include="..\src\Shared\include\Shibboleth_ThreadPool.h" />
+    <ClInclude Include="..\src\Shared\include\Shibboleth_ITask.h" />
   </ItemGroup>
 </Project>

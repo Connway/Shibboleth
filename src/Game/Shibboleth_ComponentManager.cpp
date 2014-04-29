@@ -96,8 +96,7 @@ IComponent* ComponentManager::createComponent(AHashString name)
 {
 	assert(name.size() && _components.indexOf(name) != -1);
 	ComponentEntry& entry = _components[name];
-	ProxyAllocator allocator;
-	return entry.create(allocator, _app, entry.component_id);
+	return entry.create(_app, entry.component_id);
 }
 
 IComponent* ComponentManager::createComponent(AString name)
@@ -116,8 +115,7 @@ void ComponentManager::destroyComponent(IComponent* component)
 {
 	assert(component && _components.indexOf(component->getName()) != -1);
 	ComponentEntry& entry = _components[component->getName()];
-	ProxyAllocator allocator;
-	entry.destroy(allocator, component, entry.component_id);
+	entry.destroy(component, entry.component_id);
 }
 
 NS_END

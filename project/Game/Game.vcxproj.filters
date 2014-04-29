@@ -3,8 +3,12 @@
   <ItemGroup>
     <ClInclude Include="..\..\src\Game\include\Shibboleth_IComponent.h" />
     <ClInclude Include="..\..\src\Game\include\Shibboleth_ComponentManager.h" />
+    <ClInclude Include="..\..\src\Game\include\Shibboleth_GameObject.h" />
+    <ClInclude Include="..\..\src\Game\include\Shibboleth_ResourceManager.h" />
+    <ClInclude Include="..\..\src\Game\include\Shibboleth_IResourceLoader.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Game\Shibboleth_ComponentManager.cpp" />
+    <ClCompile Include="..\..\src\Game\Shibboleth_ResourceManager.cpp" />
   </ItemGroup>
 </Project>

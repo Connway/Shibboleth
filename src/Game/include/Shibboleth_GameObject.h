@@ -20,15 +20,24 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#include "Shibboleth_ComponentManager.h"
+#pragma once
 
-DYNAMICEXPORT Gaff::INamedObject* CreateManager(Shibboleth::App& app)
-{
-	Shibboleth::SetAllocator(app.getAllocator());
-	return app.getAllocator().template allocT<Shibboleth::ComponentManager>(app);
-}
+#include "Shibboleth_IComponent.h"
+#include <Gaff_JSON.h>
 
-DYNAMICEXPORT void DestroyManager(Gaff::INamedObject* manager)
+NS_SHIBBOLETH
+
+class GameObject : public Gaff::INamedObject
 {
-	Shibboleth::GetAllocator().freeT(manager);
-}
+public:
+	GameObject(void);
+	~GameObject(void);
+
+	bool init(const Gaff::JSON& json);
+
+	const char* getName(void) const;
+
+private:
+};
+
+NS_END

@@ -2,6 +2,7 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <ClCompile Include="..\..\src\Game\Shibboleth_LoadComponentsState.cpp" />
+    <ClCompile Include="..\..\src\Game\Shibboleth_StatesDLL.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\Game\include\Shibboleth_LoadComponentsState.h" />
