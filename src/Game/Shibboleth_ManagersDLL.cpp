@@ -22,6 +22,7 @@ THE SOFTWARE.
 
 #include <Shibboleth_ComponentManager.h>
 #include <Shibboleth_ResourceManager.h>
+#include <Shibboleth_OtterUIManager.h>
 
 template <class Manager>
 Gaff::INamedObject* CreateManagerT(Shibboleth::App& app)
@@ -29,10 +30,25 @@ Gaff::INamedObject* CreateManagerT(Shibboleth::App& app)
 	return app.getAllocator().template allocT<Manager>(app);
 }
 
+Gaff::INamedObject* CreateOtterUIManager(Shibboleth::App& app)
+{
+	Shibboleth::OtterUIManager* otter_manager = app.getAllocator().template allocT<Shibboleth::OtterUIManager>();
+
+	if (otter_manager) {
+		if (!otter_manager->init()) {
+			app.getAllocator().freeT(otter_manager);
+			otter_manager = nullptr;
+		}
+	}
+
+	return otter_manager;
+}
+
 enum Managers
 {
 	COMPONENT_MANAGER = 0,
 	RESOURCE_MANAGER,
+	OTTERUI_MANAGER,
 	NUM_MANAGERS
 };
 
@@ -41,7 +57,8 @@ typedef Gaff::INamedObject* (*CreateMgrFunc)(Shibboleth::App&);
 
 CreateMgrFunc create_funcs[] = {
 	&CreateManagerT<Shibboleth::ComponentManager>,
-	&CreateManagerT<Shibboleth::ResourceManager>
+	&CreateManagerT<Shibboleth::ResourceManager>,
+	&CreateOtterUIManager
 };
 
 DYNAMICEXPORT unsigned int GetNumManagers(void)

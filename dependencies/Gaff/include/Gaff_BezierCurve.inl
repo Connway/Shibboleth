@@ -38,7 +38,24 @@ BezierCurve<PointType, Allocator>::~BezierCurve(void)
 }
 
 template <class PointType, class Allocator>
-void BezierCurve<PointType, Allocator>::addSamplePoint(float t, const PointType& point)
+PointType BezierCurve<PointType, Allocator>::sample(float t) const
+{
+	assert(!_points.empty());
+
+	// Clamp to range and normalize
+	t = Clamp(t, _points.first().first, _points.last().first) / (_points.last().first - _points.first().first);
+
+	PointType point = PointType::zero;
+
+	for (unsigned int i = 0; i < _points.size(); ++i) {
+		point += _points[i].second * BernsteinPolynomial(t, (float)(_points.size() - 1), (float)i);
+	}
+
+	return point;
+}
+
+template <class PointType, class Allocator>
+void BezierCurve<PointType, Allocator>::addKey(float t, const PointType& point)
 {
 	unsigned int i = 0;
 
@@ -54,18 +71,21 @@ void BezierCurve<PointType, Allocator>::addSamplePoint(float t, const PointType&
 }
 
 template <class PointType, class Allocator>
-PointType BezierCurve<PointType, Allocator>::sample(float t) const
+void BezierCurve<PointType, Allocator>::removeKey(unsigned int index)
 {
-	assert(!_points.empty());
+	assert(index < _points.size());
+	_points.erase(index);
+}
 
-	// Clamp to range and normalize
-	t = Clamp(t, _points.first().first, _points.last().first) / (_points.last().first - _points.first().first);
+template <class PointType, class Allocator>
+unsigned int BezierCurve<PointType, Allocator>::getNumKeys(void) const
+{
+	return _points.size();
+}
 
-	PointType point = PointType::zero;
-
-	for (unsigned int i = 0; i < _points.size(); ++i) {
-		point += _points[i].second * BernsteinPolynomial(t, (float)(_points.size() - 1), (float)i);
-	}
-
-	return point;
+template <class PointType, class Allocator>
+typename BezierCurve<PointType, Allocator>::Key BezierCurve<PointType, Allocator>::getKey(unsigned int index)
+{
+	assert(index < _points.size());
+	return Key(_points[i].first, _points[i].second);
 }
