@@ -34,12 +34,19 @@ template <class PointType, class Allocator = DefaultAllocator>
 class BezierCurve : public ICurve<PointType>
 {
 public:
+	typedef Pair<float, PointType&> Key;
+
 	BezierCurve(const Array<PointType, Allocator>& points);
 	BezierCurve(const Allocator& allocator = Allocator());
 	~BezierCurve(void);
 
-	void addSamplePoint(float t, const PointType& point);
 	PointType sample(float t) const;
+
+	void addKey(float t, const PointType& point);
+	void removeKey(unsigned int index);
+
+	unsigned int getNumKeys(void) const;
+	Key getKey(unsigned int index);
 
 private:
 	Array<Pair<float, PointType>, Allocator> _points;

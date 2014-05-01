@@ -38,22 +38,6 @@ LinearCurve<PointType, Allocator>::~LinearCurve(void)
 }
 
 template <class PointType, class Allocator>
-void LinearCurve<PointType, Allocator>::addSamplePoint(float t, const PointType& point)
-{
-	unsigned int i = 0;
-
-	for (; i < _points.size(); ++i) {
-		assert(_points[i].first != t);
-
-		if (t < _points[i].first) {
-			break;
-		}
-	}
-
-	_points.insert(MakePair(t, point), i);
-}
-
-template <class PointType, class Allocator>
 PointType LinearCurve<PointType, Allocator>::sample(float t) const
 {
 	assert(!_points.empty());
@@ -81,4 +65,40 @@ PointType LinearCurve<PointType, Allocator>::sample(float t) const
 
 	t = (t - k1.first) / (k2.first - k1.first); // Normalize
 	return Lerp(k1.second, k2.second, t);
+}
+
+template <class PointType, class Allocator>
+void LinearCurve<PointType, Allocator>::addKey(float t, const PointType& point)
+{
+	unsigned int i = 0;
+
+	for (; i < _points.size(); ++i) {
+		assert(_points[i].first != t);
+
+		if (t < _points[i].first) {
+			break;
+		}
+	}
+
+	_points.insert(MakePair(t, point), i);
+}
+
+template <class PointType, class Allocator>
+void LinearCurve<PointType, Allocator>::removeKey(unsigned int index)
+{
+	assert(index < _points.size());
+	_points.erase(index);
+}
+
+template <class PointType, class Allocator>
+unsigned int LinearCurve<PointType, Allocator>::getNumKeys(void) const
+{
+	return _points.size();
+}
+
+template <class PointType, class Allocator>
+typename LinearCurve<PointType, Allocator>::Key LinearCurve<PointType, Allocator>::getKey(unsigned int index)
+{
+	assert(index < _points.size());
+	return Key(_points[i].first, _points[i].second);
 }

@@ -6,9 +6,11 @@
     <ClInclude Include="..\..\src\Game\include\Shibboleth_GameObject.h" />
     <ClInclude Include="..\..\src\Game\include\Shibboleth_ResourceManager.h" />
     <ClInclude Include="..\..\src\Game\include\Shibboleth_IResourceLoader.h" />
+    <ClInclude Include="..\..\src\Game\include\Shibboleth_OtterUIManager.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Game\Shibboleth_ComponentManager.cpp" />
     <ClCompile Include="..\..\src\Game\Shibboleth_ResourceManager.cpp" />
+    <ClCompile Include="..\..\src\Game\Shibboleth_OtterUIManager.cpp" />
   </ItemGroup>
 </Project>
