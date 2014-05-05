@@ -72,8 +72,11 @@ public:
 	};
 
 	File(const char* file_name, OPEN_MODE mode = READ);
+	File(File&& rhs);
 	File(void);
 	~File(void);
+
+	const File& operator=(File&& rhs);
 
 	INLINE const FILE* getFile(void) const;
 	INLINE FILE* getFile(void);
@@ -218,9 +221,6 @@ public:
 	INLINE bool writeString(const wchar_t* s);
 	INLINE bool readString(wchar_t* buffer, int max_count);
 #endif
-
-	File(File&& rhs);
-	const File& operator=(File&& rhs);
 
 private:
 	FILE* _file;

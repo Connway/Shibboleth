@@ -69,6 +69,12 @@ File::File(const char* file_name, OPEN_MODE mode):
 	open(file_name, mode);
 }
 
+File::File(File&& rhs):
+	_file(rhs._file), _mode(rhs._mode)
+{
+	rhs._file = nullptr;
+}
+
 File::File(void):
 	_file(nullptr)
 {
@@ -77,6 +83,14 @@ File::File(void):
 File::~File(void)
 {
 	close();
+}
+
+const File& File::operator=(File&& rhs)
+{
+	_file = rhs._file;
+	_mode = rhs._mode;
+	rhs._file = nullptr;
+	return *this;
 }
 
 const FILE* File::getFile(void) const
@@ -123,7 +137,7 @@ bool File::redirect(const char* file_name, OPEN_MODE mode)
 
 bool File::close(void)
 {
-	bool ret = false;
+	bool ret = true;
 
 	if (_file) {
 		ret = !fclose(_file);
@@ -360,19 +374,5 @@ bool File::readString(wchar_t* buffer, int max_count)
 	return tmp != NULL && tmp != nullptr;
 }
 #endif
-
-	File::File(File&& rhs):
-		_file(rhs._file), _mode(rhs._mode)
-	{
-		rhs._file = nullptr;
-	}
-
-	const File& File::operator=(File&& rhs)
-	{
-		_file = rhs._file;
-		_mode = rhs._mode;
-		rhs._file = nullptr;
-		return *this;
-	}
 
 NS_END

@@ -12,6 +12,6 @@ Libraries Affected:
 	LibTIFF
 	libjpeg
 	zlib
-	jansson (changed header files with the line #include <jansson_config.h> to #include "jansson_config.h")
+	jansson (changed header files with the line #include <jansson_config.h> to #include "jansson_config.h" and moved the #include <windows.h> in hashtable_seed.c from line 98 to line 42 to remove compile warnings)
 	assimp (changed '#include "../contrib/unzip/unzip.h' lines to "#include <unzip.h>", as I already have minizip compiled into a separate lib)
 	minizip (commented out a block that says #define _CRT_SECURE_NO_WARNINGS, as I have it defined at the project level)

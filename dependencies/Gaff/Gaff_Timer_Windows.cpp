@@ -39,7 +39,7 @@ Timer::Timer(void):
 
 bool Timer::start(void)
 {
-	return (QueryPerformanceCounter(&_start) == TRUE) ? true : false;
+	return QueryPerformanceCounter(&_start) == TRUE;
 }
 
 bool Timer::stop(void)
