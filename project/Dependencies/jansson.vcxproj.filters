@@ -7,6 +7,7 @@
     <ClInclude Include="..\..\dependencies\jansson\jansson_private.h" />
     <ClInclude Include="..\..\dependencies\jansson\strbuffer.h" />
     <ClInclude Include="..\..\dependencies\jansson\utf.h" />
+    <ClInclude Include="..\..\dependencies\jansson\lookup3.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\dependencies\jansson\load.c" />
@@ -19,5 +20,6 @@
     <ClCompile Include="..\..\dependencies\jansson\dump.c" />
     <ClCompile Include="..\..\dependencies\jansson\error.c" />
     <ClCompile Include="..\..\dependencies\jansson\hashtable.c" />
+    <ClCompile Include="..\..\dependencies\jansson\hashtable_seed.c" />
   </ItemGroup>
 </Project>
