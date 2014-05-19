@@ -41,8 +41,8 @@ public:
 	const Queue<T, Allocator>& operator=(const Queue<T, Allocator>& rhs);
 	const Queue<T, Allocator>& operator=(Queue<T, Allocator>&& rhs);
 
-	bool operator==(const Queue<T, Allocator>& rhs);
-	bool operator!=(const Queue<T, Allocator>& rhs);
+	bool operator==(const Queue<T, Allocator>& rhs) const;
+	bool operator!=(const Queue<T, Allocator>& rhs) const;
 
 	void clear(void);
 	void reallocate(unsigned int new_size);

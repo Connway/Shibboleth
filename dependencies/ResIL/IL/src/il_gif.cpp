@@ -2,7 +2,7 @@
 //
 // ImageLib Sources
 // Copyright (C) 2000-2008 by Denton Woods
-// Changed by by Björn Ganster
+// Last modified: 2014 by Björn Ganster
 //
 // Filename: src-IL/src/il_gif.c
 //
@@ -25,13 +25,13 @@
 // ILimage offers all the members needed to reflect a GIF
 
 // Set minimum image size for several images
-void setMinSizes(size_t w, size_t h, struct ILimage* img)
+ILboolean setMinSizes(ILuint w, ILuint h, struct ILimage* img)
 {
    struct ILimage* currImg = img;
    int resizeNeeded = IL_FALSE;
 
    if (img == NULL)
-      return;
+      return IL_FALSE;
 
    while (currImg != NULL) {
       if (currImg->Width > w)
@@ -46,12 +46,15 @@ void setMinSizes(size_t w, size_t h, struct ILimage* img)
    }
 
    if (resizeNeeded) {
-      struct ILimage* currImg = img;
-      while (currImg != NULL) {
-         ilResizeImage(currImg, w, h, 1, 1, 1);
-         currImg = currImg->Next;
-      }
-   }
+		ILboolean success = IL_TRUE;
+		struct ILimage* currImg = img;
+		while (currImg != NULL && success) {
+			success &= ilResizeImage(currImg, w, h, 1, 1, 1);
+			currImg = currImg->Next;
+		}
+		return success;
+   } else
+		return IL_TRUE;
 }
 
 //-----------------------------------------------------------------------------
@@ -67,14 +70,14 @@ ILboolean ilIsValidGif(ILconst_string FileName)
 		return bGif;
 	}
 
-	GifFile = iopenr(FileName);
+	GifFile = gIO.openReadOnly(FileName);
 	if (GifFile == NULL) {
 		ilSetError(IL_COULD_NOT_OPEN_FILE);
 		return bGif;
 	}
 
 	bGif = ilIsValidGifF(GifFile);
-	icloser(GifFile);
+	gIO.close(GifFile);
 
 	return bGif;
 }
@@ -87,9 +90,9 @@ ILboolean ilIsValidGifF(ILHANDLE File)
 	ILboolean	bRet;
 
 	iSetInputFile(File);
-	FirstPos = itell();
+	FirstPos = gIO.tell(gIO.handle);
 	bRet = iIsValidGif();
-	iseek(FirstPos, IL_SEEK_SET);
+	gIO.seek(gIO.handle, FirstPos, IL_SEEK_SET);
 
 	return bRet;
 }
@@ -107,11 +110,11 @@ ILboolean ilIsValidGifL(const void *Lump, ILuint Size)
 ILboolean iIsValidGif()
 {
 	char Header[6];
-	
-	if (iread(Header, 1, 6) != 6)
-		return IL_FALSE;
-	iseek(-6, IL_SEEK_CUR);
+	ILint64 read = gIO.read(gIO.handle, Header, 1, 6);
+	gIO.seek(gIO.handle, -read, IL_SEEK_CUR);
 
+	if (read != 6)
+		return IL_FALSE;
 	if (!strnicmp(Header, "GIF87A", 6))
 		return IL_TRUE;
 	if (!strnicmp(Header, "GIF89A", 6))
@@ -124,24 +127,25 @@ ILboolean iIsValidGif()
 // If a frame has a local pallette, the global palette is not used by this frame
 ILboolean iGetPalette(ILubyte Info, ILpal *Pal, ILimage *PrevImage)
 {
-   ILuint read = 0;
+	ILuint read = 0;
+
 	// The ld(palettes bpp - 1) is stored in the lower 3 bits of Info
 	Pal->PalSize = (1 << ((Info & 0x7) + 1)) * 3; // never larger than 768
 	Pal->PalType = IL_PAL_RGB24;
 	Pal->Palette = (ILubyte*)ialloc(256 * 3);
 
-   if (Pal->Palette == NULL) {
-      Pal->PalSize = 0;
+	if (Pal->Palette == NULL) {
+		Pal->PalSize = 0;
 		return IL_FALSE;
-   }
+	}
 
-   // Read the new palette
-   read = iread(Pal->Palette, 1, Pal->PalSize);
+	// Read the new palette
+	read = gIO.read(gIO.handle, Pal->Palette, 1, Pal->PalSize);
 	if (read != Pal->PalSize) {
-      memset(Pal->Palette + read, 0, Pal->PalSize-read);
+		memset(Pal->Palette + read, 0, Pal->PalSize-read);
 		return IL_FALSE;
 	} else
-	   return IL_TRUE;
+		return IL_TRUE;
 }
 
 #define MAX_CODES 4096
@@ -149,22 +153,139 @@ class GifLoadState {
 public:
    ILint	curr_size, clear, ending, newcodes, top_slot, slot, navail_bytes, nbits_left;
    ILubyte	b1;
-   ILubyte	byte_buff[257];
-   ILuint stackIndex;
-   ILubyte	*pbytes;
-   ILubyte	stack[MAX_CODES + 1];
-   ILubyte	suffix[MAX_CODES + 1];
-   ILshort	prefix[MAX_CODES + 1];
+	static const ILuint byte_buff_size = 257;
 
    // Default constructor
    GifLoadState() 
    {
+		mStackIndex = 0;
+		mBufIndex = 0;
+		mValidState = true;
    }
 
    // Destructor
    ~GifLoadState()
    {
    }
+
+	inline void setByteBuff(ILuint index, ILubyte value)
+	{
+		if (index < byte_buff_size)
+			mByteBuff[index] = value;
+		else
+			mValidState = false;
+	}
+
+	inline ILubyte getByteBuff(ILuint index)
+	{
+		if (index < byte_buff_size) {
+			return mByteBuff[index];
+		} else {
+			mValidState = false;
+			return 0;
+		}
+	}
+
+	inline void push(ILubyte value)
+	{
+		if (mStackIndex <= MAX_CODES) {
+			mStack[mStackIndex] = value;
+			++mStackIndex;
+		} else
+			mValidState = false;
+	}
+
+	inline ILboolean stackIndexLegal() 
+	{
+		if (mStackIndex >= MAX_CODES)
+			return IL_FALSE;
+		else
+			return IL_TRUE;
+	}
+
+	inline ILubyte getStack()
+	{
+		if (mStackIndex <= MAX_CODES) {
+			return mStack[mStackIndex];
+		} else {
+			mValidState = false;
+			return 0;
+		}
+	}
+
+	inline void pop() 
+	{
+		if (mStackIndex > 0)
+			mStackIndex--;
+		else
+			mValidState = false;
+	}
+
+	inline ILuint getStackIndex() const
+	{
+		return mStackIndex;
+	}
+
+	inline ILubyte getSuffix(ILint code)
+	{
+		if (code < MAX_CODES) {
+			return mSuffix[code];
+		} else {
+			mValidState = false;
+			return 0;
+		}
+	}
+
+	inline void setSuffix(ILubyte code)
+	{
+		if (slot < MAX_CODES)
+			mSuffix[slot] = code;
+		else
+			mValidState = false;
+	}
+
+	inline void setPrefix(ILshort code)
+	{
+		if (slot < MAX_CODES)
+				mPrefix[slot++] = code;
+		else
+			mValidState = false;
+	}
+
+	inline ILshort getPrefix(ILint code)
+	{
+		if (code >= 0 && code <= MAX_CODES) {
+			return mPrefix[code];
+		} else {
+			mValidState = false;
+			return 0;
+		}
+	}
+
+	inline void resetBufIndex()
+	{ mBufIndex = 0; }
+
+	inline ILubyte nextInBuffer()
+	{
+		if (mBufIndex < byte_buff_size) {
+			ILubyte val = mByteBuff[mBufIndex];
+			++mBufIndex;
+			return val;
+		} else 
+			return 0;
+	}
+
+	inline ILboolean isValid() const
+	{ return mValidState; }
+
+private:
+   ILuint mBufIndex;
+   ILubyte	mByteBuff[byte_buff_size];
+   ILuint mStackIndex;
+   ILubyte	mStack[MAX_CODES + 1];
+   ILubyte	mSuffix[MAX_CODES + 1];
+   ILshort	mPrefix[MAX_CODES + 1];
+	ILboolean mValidState;
 };
 
 ILuint code_mask[13] =
@@ -185,14 +306,14 @@ ILint get_next_code(GifLoadState* state) {
 	ILuint	ret;
 
 	//20050102: Tests for IL_EOF were added because this function
-	//crashed sometimes if igetc() returned IL_EOF
+	//crashed sometimes if gIO.getc(gIO.handle) returned IL_EOF
 	//(for example "table-add-column-before-active.gif" included in the
 	//mozilla source package)
 
-	if (!state->nbits_left) {
+	if (state->nbits_left == 0) {
 		if (state->navail_bytes <= 0) {
-			state->pbytes = state->byte_buff;
-			state->navail_bytes = igetc();
+			state->resetBufIndex();
+			state->navail_bytes = gIO.getc(gIO.handle);
 
 			if(state->navail_bytes == IL_EOF) {
 				return state->ending;
@@ -200,14 +321,14 @@ ILint get_next_code(GifLoadState* state) {
 
 			if (state->navail_bytes) {
 				for (i = 0; i < state->navail_bytes; i++) {
-					if((t = igetc()) == IL_EOF) {
+					if((t = gIO.getc(gIO.handle)) == IL_EOF) {
 						return state->ending;
 					}
-					state->byte_buff[i] = t;
+					state->setByteBuff(i, t);
 				}
 			}
 		}
-		state->b1 = *state->pbytes++;
+		state->b1 = state->nextInBuffer();
 		state->nbits_left = 8;
 		state->navail_bytes--;
 	}
@@ -215,8 +336,8 @@ ILint get_next_code(GifLoadState* state) {
 	ret = state->b1 >> (8 - state->nbits_left);
 	while (state->curr_size >state-> nbits_left) {
 		if (state->navail_bytes <= 0) {
-			state->pbytes = state->byte_buff;
-			state->navail_bytes = igetc();
+			state->resetBufIndex();
+			state->navail_bytes = gIO.getc(gIO.handle);
 
 			if(state->navail_bytes == IL_EOF) {
 				return state->ending;
@@ -224,14 +345,14 @@ ILint get_next_code(GifLoadState* state) {
 
 			if (state->navail_bytes) {
 				for (i = 0; i < state->navail_bytes; i++) {
-					if((t = igetc()) == IL_EOF) {
+					if((t = gIO.getc(gIO.handle)) == IL_EOF) {
 						return state->ending;
 					}
-					state->byte_buff[i] = t;
+					state->setByteBuff(i, t);
 				}
 			}
 		}
-		state->b1 = *state->pbytes++;
+		state->b1 = state->nextInBuffer();
 		ret |= state->b1 << state->nbits_left;
 		state->nbits_left += 8;
 		state->navail_bytes--;
@@ -246,19 +367,19 @@ ILboolean GifGetData(ILimage *Image, ILubyte *Data, ILuint ImageSize,
    ILuint OffX, ILuint OffY, ILuint Width, ILuint Height, ILuint Stride, 
    GFXCONTROL *Gfx)
 {
-   GifLoadState state;
+	GifLoadState state;
 	ILint	code, fc, oc;
 	ILubyte	DisposalMethod = 0;
 	ILint	c, size;
 	ILuint	x = OffX, Read = 0, y = OffY;
-   ILuint dataOffset = y * Stride + x;
+	ILuint dataOffset = y * Stride + x;
 
-   state.navail_bytes = 0;
-   state.nbits_left = 0;
+	state.navail_bytes = 0;
+	state.nbits_left = 0;
 
 	if (!Gfx->Used)
 		DisposalMethod = (Gfx->Packed & 0x1C) >> 2;
-	if((size = igetc()) == IL_EOF)
+	if((size = gIO.getc(gIO.handle)) == IL_EOF)
 		return IL_FALSE;
 
 	if (size < 2 || 9 < size) {
@@ -272,10 +393,10 @@ ILboolean GifGetData(ILimage *Image, ILubyte *Data, ILuint ImageSize,
 	state.slot = state.newcodes = state.ending + 1;
 	state.navail_bytes = state.nbits_left = 0;
 	oc = fc = 0;
-	state.stackIndex = 0;
 
 	while ((c = get_next_code(&state)) != state.ending 
-   &&     Read < Height) 
+	&&     Read < Height
+	&& state.isValid()) 
 	{
 		if (c == state.clear)
 		{
@@ -315,37 +436,33 @@ ILboolean GifGetData(ILimage *Image, ILubyte *Data, ILuint ImageSize,
 			if (code >= state.slot)
 			{
 				code = oc;
-                if (state.stackIndex >= MAX_CODES) {
-                   return IL_FALSE;
-                }
-                state.stack[state.stackIndex] = fc;
-                ++state.stackIndex;
+				if (!state.stackIndexLegal()) {
+					return IL_FALSE;
+				}
+				state.push(fc);
 			}
 
-            if (code >= MAX_CODES)
-                return IL_FALSE; 
-            while (code >= state.newcodes)
-				{
-					if (state.stackIndex >= MAX_CODES)
-					{
-					   return IL_FALSE;
-					}
-					state.stack[state.stackIndex] = state.suffix[code];
-               ++state.stackIndex;
-					code = state.prefix[code];
-				}
-            
-				if (state.stackIndex >= MAX_CODES) {
+			if (code >= MAX_CODES)
+				return IL_FALSE; 
+			while (code >= state.newcodes)
+			{
+				if (!state.stackIndexLegal()) {
 					return IL_FALSE;
-            }
+				}
+				state.push(state.getSuffix(code));
+				code = state.getPrefix(code);
+			}
+            
+			if (!state.stackIndexLegal()) {
+				return IL_FALSE;
+			}
 
-			state.stack[state.stackIndex] = (ILbyte)code;
-         ++state.stackIndex;
+			state.push((ILbyte)code);
 			if (state.slot < state.top_slot)
 			{
 				fc = code;
-				state.suffix[state.slot]   = fc;
-				state.prefix[state.slot++] = oc;
+				state.setSuffix(fc);
+				state.setPrefix(oc);
 				oc = c;
 			}
 			if (state.slot >= state.top_slot && state.curr_size < 12)
@@ -353,15 +470,15 @@ ILboolean GifGetData(ILimage *Image, ILubyte *Data, ILuint ImageSize,
 				state.top_slot <<= 1;
 				state.curr_size++;
 			}
-			while (state.stackIndex > 0)
+			while (state.getStackIndex() > 0)
 			{
-				state.stackIndex--;
-				if (DisposalMethod == 1 && !Gfx->Used && Gfx->Transparent == state.stack[state.stackIndex] 
+				state.pop();
+				if (DisposalMethod == 1 && !Gfx->Used && Gfx->Transparent == state.getStack()
             &&  (Gfx->Packed & 0x1) != 0)
             {
 					x++;
             } else if (x < Width) {
-					Data[dataOffset+x] = state.stack[state.stackIndex];
+					Data[dataOffset+x] = state.getStack();
                x++;
             }
 
@@ -377,7 +494,7 @@ ILboolean GifGetData(ILimage *Image, ILubyte *Data, ILuint ImageSize,
 		}
 	}
 
-   return IL_TRUE;
+	return state.isValid();
 }
 
 ILboolean GetImages(ILimage* Image, ILpal *GlobalPal, GIFHEAD *GifHead)
@@ -392,19 +509,19 @@ ILboolean GetImages(ILimage* Image, ILpal *GlobalPal, GIFHEAD *GifHead)
 	OldImageDesc.ImageInfo = 0; // to initialize the data with an harmless value 
 	Gfx.Used = IL_TRUE;
 
-	while (!ieof()) {
+	while (!gIO.eof(gIO.handle)) {
 		ILubyte DisposalMethod = 1;
 		
-		i = itell();
+		i = gIO.tell(gIO.handle);
 		if (!SkipExtensions(&Gfx))
 			goto error_clean;
-		i = itell();
+		i = gIO.tell(gIO.handle);
 
 		if (!Gfx.Used)
 			DisposalMethod = (Gfx.Packed & 0x1C) >> 2;
 
 		//read image descriptor
-      iread(&ImageDesc, 1, sizeof(ImageDesc));
+      gIO.read(gIO.handle, &ImageDesc, 1, sizeof(ImageDesc));
       #ifdef __BIG_ENDIAN__
       iSwapUShort(ImageDesc.OffX);
       iSwapUShort(ImageDesc.OffY);
@@ -415,9 +532,10 @@ ILboolean GetImages(ILimage* Image, ILpal *GlobalPal, GIFHEAD *GifHead)
 		if (ImageDesc.Separator != 0x2C) //end of image
 			break;
 
-      setMinSizes(ImageDesc.OffX + ImageDesc.Width, ImageDesc.OffY + ImageDesc.Height, Image);
+      if (!setMinSizes(ImageDesc.OffX + ImageDesc.Width, ImageDesc.OffY + ImageDesc.Height, Image))
+			goto error_clean;
 
-		if (ieof()) {
+		if (gIO.eof(gIO.handle)) {
 			ilGetError();  // Gets rid of the IL_FILE_READ_ERROR that inevitably results.
 			break;
 		}
@@ -495,13 +613,13 @@ ILboolean GetImages(ILimage* Image, ILpal *GlobalPal, GIFHEAD *GifHead)
 				}
 	    	}
 		}
-		i = itell();
+		i = gIO.tell(gIO.handle);
 		// Terminates each block.
-		if((input = igetc()) == IL_EOF)
+		if((input = gIO.getc(gIO.handle)) == IL_EOF)
 			goto error_clean;
 
 		if (input != 0x00)
-		    iseek(-1, IL_SEEK_CUR);
+		    gIO.seek(gIO.handle, -1, IL_SEEK_CUR);
 		//	break;
 
 		OldImageDesc = ImageDesc;
@@ -543,7 +661,7 @@ ILboolean iLoadGifInternal(ILimage* image)
 	GlobalPal.PalSize = 0;
 
 	// Read header
-	iread(&Header, 1, sizeof(Header));
+	gIO.read(gIO.handle, &Header, 1, sizeof(Header));
 	#ifdef __BIG_ENDIAN__
 	iSwapUShort(Header.Width);
 	iSwapUShort(Header.Height);
@@ -579,48 +697,6 @@ ILboolean iLoadGifInternal(ILimage* image)
 	return ilFixImage();
 }
 
-//! Reads an already-opened Gif file
-ILboolean ilLoadGifF(ILHANDLE File, ILimage* image)
-{
-	ILuint		FirstPos;
-	ILboolean	bRet;
-
-	iSetInputFile(File);
-	FirstPos = itell();
-	bRet = iLoadGifInternal(image);
-	iseek(FirstPos, IL_SEEK_SET);
-
-	return bRet;
-}
-
-
-//! Reads from a memory "lump" that contains a Gif
-ILboolean ilLoadGifL(ILimage* image, const void *Lump, ILuint Size)
-{
-	iSetInputLump(Lump, Size);
-   	return iLoadGifInternal(image);
-}
-
-
-//! Reads a Gif file
-ILboolean ilLoadGif(ILconst_string FileName, ILimage* image)
-{
-	ILHANDLE	GifFile;
-	ILboolean	bGif = IL_FALSE;
-
-	GifFile = iopenr(FileName);
-	if (GifFile == NULL) {
-		ilSetError(IL_COULD_NOT_OPEN_FILE);
-		return bGif;
-	}
-
-	bGif = ilLoadGifF(GifFile, image);
-	icloser(GifFile);
-
-	return bGif;
-}
-
-
 
 ILboolean SkipExtensions(GFXCONTROL *Gfx)
 {
@@ -629,26 +705,26 @@ ILboolean SkipExtensions(GFXCONTROL *Gfx)
 	ILint	Size;
 
 	do {
-		if((Code = igetc()) == IL_EOF)
+		if((Code = gIO.getc(gIO.handle)) == IL_EOF)
 			return IL_FALSE;
 
 		if (Code != 0x21) {
-			iseek(-1, IL_SEEK_CUR);
+			gIO.seek(gIO.handle, -1, IL_SEEK_CUR);
 			return IL_TRUE;
 		}
 
-		if((Label = igetc()) == IL_EOF)
+		if((Label = gIO.getc(gIO.handle)) == IL_EOF)
 			return IL_FALSE;
 
 		switch (Label)
 		{
 			case 0xF9:
-				Gfx->Size = igetc();
-				Gfx->Packed = igetc();
+				Gfx->Size = gIO.getc(gIO.handle);
+				Gfx->Packed = gIO.getc(gIO.handle);
 				Gfx->Delay = GetLittleUShort();
-				Gfx->Transparent = igetc();
-				Gfx->Terminator = igetc();
-				if (ieof())
+				Gfx->Transparent = gIO.getc(gIO.handle);
+				Gfx->Terminator = gIO.getc(gIO.handle);
+				if (gIO.eof(gIO.handle))
 					return IL_FALSE;
 				Gfx->Used = IL_FALSE;
 				break;
@@ -659,14 +735,14 @@ ILboolean SkipExtensions(GFXCONTROL *Gfx)
 				break;*/
 			default:
 				do {
-					if((Size = igetc()) == IL_EOF)
+					if((Size = gIO.getc(gIO.handle)) == IL_EOF)
 						return IL_FALSE;
-					iseek(Size, IL_SEEK_CUR);
-				} while (!ieof() && Size != 0);
+					gIO.seek(gIO.handle, Size, IL_SEEK_CUR);
+				} while (!gIO.eof(gIO.handle) && Size != 0);
 		}
 
 		// @TODO:  Handle this better.
-		if (ieof()) {
+		if (gIO.eof(gIO.handle)) {
 			ilSetError(IL_FILE_READ_ERROR);
 			return IL_FALSE;
 		}
@@ -729,26 +805,31 @@ ILboolean ConvertTransparent(ILimage *Image, ILubyte TransColour)
 {
 	ILubyte	*Palette;
 	ILuint	i, j;
-   ILuint newSize = Image->Pal.PalSize / 3 * 4;
+	ILuint newSize = Image->Pal.PalSize / 3 * 4;
 
-	if (Image->Pal.Palette == NULL 
-   ||  Image->Pal.PalSize == 0
-   ||  Image->Pal.PalType != IL_PAL_RGB24)
-   {
+	if (Image->Pal.Palette == NULL
+	||  Image->Pal.PalSize == 0
+	||  Image->Pal.PalType != IL_PAL_RGB24)
+	{
 		return IL_FALSE;
-   }
+	}
 
 	Palette = (ILubyte*)ialloc(newSize);
 	if (Palette == NULL)
 		return IL_FALSE;
 
+	// Copy all colors as opaque
 	for (i = 0, j = 0; i < Image->Pal.PalSize; i += 3, j += 4) {
 		Palette[j  ] = Image->Pal.Palette[i  ];
 		Palette[j+1] = Image->Pal.Palette[i+1];
 		Palette[j+2] = Image->Pal.Palette[i+2];
 		Palette[j+3] = 0xFF;
 	}
-   Palette[4*TransColour+3] = 0x00;
+
+	// Store transparent color if TransColour is a legal index
+	ILuint TransColourIndex = 4*TransColour+3;
+	if (TransColourIndex < newSize)
+		Palette[TransColourIndex] = 0x00;
 
 	ifree(Image->Pal.Palette);
 	Image->Pal.Palette = Palette;

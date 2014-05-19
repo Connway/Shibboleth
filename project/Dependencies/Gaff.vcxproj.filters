@@ -42,9 +42,6 @@
     <None Include="..\..\dependencies\Gaff\include\Gaff_Queue.inl">
       <Filter>Headers</Filter>
     </None>
-    <None Include="..\..\dependencies\Gaff\include\Gaff_Registry.inl">
-      <Filter>Headers</Filter>
-    </None>
     <None Include="..\..\dependencies\Gaff\include\Gaff_TimerCallbackManager.inl">
       <Filter>Headers</Filter>
     </None>
@@ -216,9 +213,6 @@
       <Filter>Headers</Filter>
     </ClInclude>
     <ClInclude Include="..\..\dependencies\Gaff\include\Gaff_ReadWriteSpinLock.h">
-      <Filter>Headers</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\dependencies\Gaff\include\Gaff_Registry.h">
       <Filter>Headers</Filter>
     </ClInclude>
     <ClInclude Include="..\..\dependencies\Gaff\include\Gaff_ScopedLock.h">

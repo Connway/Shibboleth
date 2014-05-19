@@ -91,7 +91,7 @@
       <WarningLevel>Level4</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>$(ProjectDir)..\..\dependencies\Gaff\include;$(ProjectDir)..\..\src\Shared\include;$(ProjectDir)..\..\src\Game\include;$(ProjectDir)..\..\dependencies\dirent;$(ProjectDir)..\..\src\App\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\..\dependencies\Gaff\include;$(ProjectDir)..\..\src\Shared\include;$(ProjectDir)..\..\src\Game\include;$(ProjectDir)..\..\dependencies\dirent;$(ProjectDir)..\..\src\App\include;$(ProjectDir)..\..\dependencies\OtterUI\inc;$(ProjectDir)..\..\dependencies\Gleam\include</AdditionalIncludeDirectories>
       <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
       <FloatingPointModel>Fast</FloatingPointModel>
     </ClCompile>
@@ -104,8 +104,8 @@
       <WarningLevel>Level4</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>$(ProjectDir)..\..\dependencies\Gaff\include;$(ProjectDir)..\..\src\Shared\include;$(ProjectDir)..\..\src\Game\include;$(ProjectDir)..\..\dependencies\dirent;$(ProjectDir)..\..\src\App\include</AdditionalIncludeDirectories>
-      <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\..\dependencies\Gaff\include;$(ProjectDir)..\..\src\Shared\include;$(ProjectDir)..\..\src\Game\include;$(ProjectDir)..\..\dependencies\dirent;$(ProjectDir)..\..\src\App\include;$(ProjectDir)..\..\dependencies\OtterUI\inc;$(ProjectDir)..\..\dependencies\Gleam\include</AdditionalIncludeDirectories>
+      <EnableEnhancedInstructionSet>NotSet</EnableEnhancedInstructionSet>
       <FloatingPointModel>Fast</FloatingPointModel>
     </ClCompile>
     <Link>
@@ -119,7 +119,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>$(ProjectDir)..\..\dependencies\Gaff\include;$(ProjectDir)..\..\src\Shared\include;$(ProjectDir)..\..\src\Game\include;$(ProjectDir)..\..\dependencies\dirent;$(ProjectDir)..\..\src\App\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\..\dependencies\Gaff\include;$(ProjectDir)..\..\src\Shared\include;$(ProjectDir)..\..\src\Game\include;$(ProjectDir)..\..\dependencies\dirent;$(ProjectDir)..\..\src\App\include;$(ProjectDir)..\..\dependencies\OtterUI\inc;$(ProjectDir)..\..\dependencies\Gleam\include</AdditionalIncludeDirectories>
       <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
       <FloatingPointModel>Fast</FloatingPointModel>
     </ClCompile>
@@ -136,8 +136,8 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>$(ProjectDir)..\..\dependencies\Gaff\include;$(ProjectDir)..\..\src\Shared\include;$(ProjectDir)..\..\src\Game\include;$(ProjectDir)..\..\dependencies\dirent;$(ProjectDir)..\..\src\App\include</AdditionalIncludeDirectories>
-      <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\..\dependencies\Gaff\include;$(ProjectDir)..\..\src\Shared\include;$(ProjectDir)..\..\src\Game\include;$(ProjectDir)..\..\dependencies\dirent;$(ProjectDir)..\..\src\App\include;$(ProjectDir)..\..\dependencies\OtterUI\inc;$(ProjectDir)..\..\dependencies\Gleam\include</AdditionalIncludeDirectories>
+      <EnableEnhancedInstructionSet>NotSet</EnableEnhancedInstructionSet>
       <FloatingPointModel>Fast</FloatingPointModel>
     </ClCompile>
     <Link>
@@ -148,10 +148,16 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Game\Shibboleth_LoadComponentsState.cpp" />
+    <ClCompile Include="..\..\src\Game\Shibboleth_OtterUIFileSystem.cpp" />
+    <ClCompile Include="..\..\src\Game\Shibboleth_OtterUIRenderer.cpp" />
+    <ClCompile Include="..\..\src\Game\Shibboleth_SetupOtterUIState.cpp" />
     <ClCompile Include="..\..\src\Game\Shibboleth_StatesDLL.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\Game\include\Shibboleth_LoadComponentsState.h" />
+    <ClInclude Include="..\..\src\Game\include\Shibboleth_OtterUIFileSystem.h" />
+    <ClInclude Include="..\..\src\Game\include\Shibboleth_OtterUIRenderer.h" />
+    <ClInclude Include="..\..\src\Game\include\Shibboleth_SetupOtterUIState.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Dependencies\Gaff.vcxproj">
@@ -159,6 +165,9 @@
     </ProjectReference>
     <ProjectReference Include="..\Dependencies\jansson.vcxproj">
       <Project>{ee9e1124-ce92-4113-a64b-d4784e6a626b}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\Dependencies\OtterUI.vcxproj">
+      <Project>{605cb239-c2ed-4188-b35f-55bdd82cc40b}</Project>
     </ProjectReference>
     <ProjectReference Include="..\Shared.vcxproj">
       <Project>{1972702e-61a8-4883-baae-8c3644ba4b3e}</Project>

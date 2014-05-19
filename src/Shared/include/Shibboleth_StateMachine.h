@@ -36,8 +36,9 @@ public:
 	{
 		typedef const char* (*GetStateNameFunc)(unsigned int);
 		typedef unsigned int (*GetNumStatesFunc)(void);
-		typedef IState* (*CreateStateFunc)(App&, unsigned int);
+		typedef IState* (*CreateStateFunc)(unsigned int);
 		typedef void (*DestroyStateFunc)(IState*, unsigned int);
+		typedef bool (*InitStateDLLFunc)(App&);
 
 		AString name;
 

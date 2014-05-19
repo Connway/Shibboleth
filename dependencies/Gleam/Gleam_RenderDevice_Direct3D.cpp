@@ -261,7 +261,7 @@ bool RenderDeviceD3D::init(const Window& window, unsigned int adapter_id, unsign
 		RenderTargetD3D* rt = GleamAllocateT(RenderTargetD3D);
 		rt->setRTV(rtv.get(), viewport);
 
-		dvc.gleam_rts.push(rt);
+		dvc.gleam_rts.push(IRenderTargetPtr(rt));
 
 		_devices.push(dvc);
 
@@ -326,7 +326,7 @@ bool RenderDeviceD3D::init(const Window& window, unsigned int adapter_id, unsign
 		RenderTargetD3D* rt = GleamAllocateT(RenderTargetD3D);
 		rt->setRTV(rtv.get(), viewport);
 
-		it->gleam_rts.push(rt);
+		it->gleam_rts.push(IRenderTargetPtr(rt));
 	}
 
 	if (!_active_device) {

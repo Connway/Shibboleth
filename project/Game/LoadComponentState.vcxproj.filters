@@ -3,8 +3,14 @@
   <ItemGroup>
     <ClCompile Include="..\..\src\Game\Shibboleth_LoadComponentsState.cpp" />
     <ClCompile Include="..\..\src\Game\Shibboleth_StatesDLL.cpp" />
+    <ClCompile Include="..\..\src\Game\Shibboleth_SetupOtterUIState.cpp" />
+    <ClCompile Include="..\..\src\Game\Shibboleth_OtterUIFileSystem.cpp" />
+    <ClCompile Include="..\..\src\Game\Shibboleth_OtterUIRenderer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\Game\include\Shibboleth_LoadComponentsState.h" />
+    <ClInclude Include="..\..\src\Game\include\Shibboleth_SetupOtterUIState.h" />
+    <ClInclude Include="..\..\src\Game\include\Shibboleth_OtterUIFileSystem.h" />
+    <ClInclude Include="..\..\src\Game\include\Shibboleth_OtterUIRenderer.h" />
   </ItemGroup>
 </Project>

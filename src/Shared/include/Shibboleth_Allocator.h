@@ -32,7 +32,7 @@ NS_SHIBBOLETH
 class Allocator : public Gaff::IAllocator
 {
 public:
-	Allocator(void);
+	Allocator(size_t alignment = 16);
 	~Allocator(void);
 
 	void* alloc(unsigned int size_bytes);
@@ -46,6 +46,7 @@ private:
 	unsigned int _total_bytes_allocated;
 	unsigned int _num_allocations;
 	unsigned int _num_frees;
+	size_t _alignment;
 
 	Gaff::SpinLock _lock;
 

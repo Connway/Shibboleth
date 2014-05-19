@@ -72,6 +72,7 @@ public:
 	void release(void) const;
 
 	INLINE unsigned int getRefCount(void) const;
+	INLINE unsigned long long getUserData(void) const;
 
 	INLINE const AHashString& getResourceKey(void) const;
 	INLINE bool isLoaded(void) const;
@@ -88,11 +89,14 @@ private:
 	Array< Gaff::FunctionBinder<void, const AHashString&, bool> > _callbacks;
 
 	volatile Gaff::IVirtualDestructor* _resource;
+
+	unsigned long long _user_data;
+
 	mutable volatile unsigned int _ref_count;
 
 	Gaff::SpinLock _callback_lock;
 
-	ResourceContainer(const AHashString& res_key, ResourceManager* res_manager, ZRC zero_ref_callback);
+	ResourceContainer(const AHashString& res_key, ResourceManager* res_manager, ZRC zero_ref_callback, unsigned long long user_data);
 	void setResource(Gaff::IVirtualDestructor* resource);
 	void callCallbacks(bool succeeded);
 
@@ -115,7 +119,7 @@ public:
 	void registerResourceLoader(IResourceLoader* res_loader, const Array<AString>& extensions);
 	INLINE void registerResourceLoader(IResourceLoader* res_loader, const char* extension);
 
-	ResourcePtr requestResource(const char* filename);
+	ResourcePtr requestResource(const char* filename, unsigned long long user_data = 0);
 
 private:
 	class ResourceLoadingTask : public ITask

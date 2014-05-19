@@ -111,7 +111,7 @@
       <WarningLevel>Level4</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>$(ProjectDir)..\..\dependencies\Gaff\include;$(ProjectDir)..\..\src\Shared\include;$(ProjectDir)..\..\src\Game\include;$(ProjectDir)..\..\dependencies\dirent;$(ProjectDir)..\..\src\App\include;$(ProjectDir)..\..\dependencies\OtterUI\inc</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\..\dependencies\Gaff\include;$(ProjectDir)..\..\src\Shared\include;$(ProjectDir)..\..\src\Game\include;$(ProjectDir)..\..\dependencies\dirent;$(ProjectDir)..\..\src\App\include;$(ProjectDir)..\..\dependencies\OtterUI\inc;$(ProjectDir)..\..\dependencies\jansson</AdditionalIncludeDirectories>
       <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
       <FloatingPointModel>Fast</FloatingPointModel>
     </ClCompile>
@@ -124,8 +124,8 @@
       <WarningLevel>Level4</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>$(ProjectDir)..\..\dependencies\Gaff\include;$(ProjectDir)..\..\src\Shared\include;$(ProjectDir)..\..\src\Game\include;$(ProjectDir)..\..\dependencies\dirent;$(ProjectDir)..\..\src\App\include;$(ProjectDir)..\..\dependencies\OtterUI\inc</AdditionalIncludeDirectories>
-      <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\..\dependencies\Gaff\include;$(ProjectDir)..\..\src\Shared\include;$(ProjectDir)..\..\src\Game\include;$(ProjectDir)..\..\dependencies\dirent;$(ProjectDir)..\..\src\App\include;$(ProjectDir)..\..\dependencies\OtterUI\inc;$(ProjectDir)..\..\dependencies\jansson</AdditionalIncludeDirectories>
+      <EnableEnhancedInstructionSet>NotSet</EnableEnhancedInstructionSet>
       <FloatingPointModel>Fast</FloatingPointModel>
     </ClCompile>
     <Link>
@@ -139,7 +139,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>$(ProjectDir)..\..\dependencies\Gaff\include;$(ProjectDir)..\..\src\Shared\include;$(ProjectDir)..\..\src\Game\include;$(ProjectDir)..\..\dependencies\dirent;$(ProjectDir)..\..\src\App\include;$(ProjectDir)..\..\dependencies\OtterUI\inc</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\..\dependencies\Gaff\include;$(ProjectDir)..\..\src\Shared\include;$(ProjectDir)..\..\src\Game\include;$(ProjectDir)..\..\dependencies\dirent;$(ProjectDir)..\..\src\App\include;$(ProjectDir)..\..\dependencies\OtterUI\inc;$(ProjectDir)..\..\dependencies\jansson</AdditionalIncludeDirectories>
       <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
       <FloatingPointModel>Fast</FloatingPointModel>
     </ClCompile>
@@ -156,8 +156,8 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>$(ProjectDir)..\..\dependencies\Gaff\include;$(ProjectDir)..\..\src\Shared\include;$(ProjectDir)..\..\src\Game\include;$(ProjectDir)..\..\dependencies\dirent;$(ProjectDir)..\..\src\App\include;$(ProjectDir)..\..\dependencies\OtterUI\inc</AdditionalIncludeDirectories>
-      <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\..\dependencies\Gaff\include;$(ProjectDir)..\..\src\Shared\include;$(ProjectDir)..\..\src\Game\include;$(ProjectDir)..\..\dependencies\dirent;$(ProjectDir)..\..\src\App\include;$(ProjectDir)..\..\dependencies\OtterUI\inc;$(ProjectDir)..\..\dependencies\jansson</AdditionalIncludeDirectories>
+      <EnableEnhancedInstructionSet>NotSet</EnableEnhancedInstructionSet>
       <FloatingPointModel>Fast</FloatingPointModel>
     </ClCompile>
     <Link>

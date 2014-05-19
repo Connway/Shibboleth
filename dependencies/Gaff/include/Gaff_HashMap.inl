@@ -1490,6 +1490,7 @@ void HashMap<HashString<T, Allocator>, Value, Allocator>::reserve(unsigned int n
 
 	_slots = (Slot*)_allocator.alloc(sizeof(Slot)* new_size);
 	_size = new_size;
+	_used = 0;
 
 	memset(_slots, 0, sizeof(Slot)* new_size);
 

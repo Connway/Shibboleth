@@ -54,22 +54,22 @@ void LoadComponentsState::enter(void)
 
 void LoadComponentsState::update(void)
 {
-	Gaff::File& log = _app.getGameLogFile();
+	LogManager::FileLockPair& log = _app.getGameLogFile();
 	//bool error = false;
 
 	ComponentManager& comp_man = _app.getManager<ComponentManager>("Component Manager");
 
-	log.writeString("==================================================\n");
-	log.writeString("==================================================\n");
-	log.writeString("Loading Components\n");
+	log.first.writeString("==================================================\n");
+	log.first.writeString("==================================================\n");
+	log.first.writeString("Loading Components\n");
 
-	Gaff::ForEachTypeInDirectory<Gaff::FDT_RegularFile>("./Components", [&](const char* name, size_t name_len) -> bool
+	Gaff::ForEachTypeInDirectory<Gaff::FDT_RegularFile>("./Components", [&](const char* name, size_t) -> bool
 	{
 		AString rel_path = AString("./Managers/") + name;
 
 		// Error out if it's not a dynamic module
 		if (!Gaff::File::checkExtension(name, DYNAMIC_EXTENSION)) {
-			log.printf("ERROR - '%s' is not a dynamic module.\n", rel_path.getBuffer());
+			log.first.printf("ERROR - '%s' is not a dynamic module.\n", rel_path.getBuffer());
 			//error = true;
 			_app.quit();
 			return true;
@@ -83,14 +83,14 @@ void LoadComponentsState::update(void)
 		DynamicLoader::ModulePtr module = _app.getDynamicLoader().loadModule(rel_path, name);
 
 		if (!module.valid()) {
-			log.printf("ERROR - Could not load dynamic module '%s'.\n", rel_path.getBuffer());
+			log.first.printf("ERROR - Could not load dynamic module '%s'.\n", rel_path.getBuffer());
 			//error = true;
 			_app.quit();
 			return true;
 		}
 
 		if (!comp_man.addComponents(module)) {
-			log.printf("ERROR - Could not load components in dynamic module '%s'.\n", rel_path.getBuffer());
+			log.first.printf("ERROR - Could not load components in dynamic module '%s'.\n", rel_path.getBuffer());
 			//error = true;
 			_app.quit();
 			return true;

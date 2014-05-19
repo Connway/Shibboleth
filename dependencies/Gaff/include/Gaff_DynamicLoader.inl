@@ -67,7 +67,7 @@ typename DynamicLoader<Allocator>::ModulePtr DynamicLoader<Allocator>::loadModul
 
 	if (module.valid()) {
 		if (module->load(filename)) {
-			HString str(name, FNVHash, _allocator);
+			HString str(name, FNV1Hash32, _allocator);
 			_modules.insert(str, module);
 			return module;
 		}
@@ -87,7 +87,7 @@ template <class Allocator>
 typename DynamicLoader<Allocator>::ModulePtr DynamicLoader<Allocator>::getModule(const AString<Allocator>& name)
 {
 	assert(name.size());
-	HString str(name, FNVHash, _allocator);
+	HString str(name, FNV1Hash32, _allocator);
 	return _modules[name];
 }
 
@@ -95,7 +95,7 @@ template <class Allocator>
 typename DynamicLoader<Allocator>::ModulePtr DynamicLoader<Allocator>::getModule(const char* name)
 {
 	assert(name && strlen(name));
-	HString str(name, FNVHash, _allocator);
+	HString str(name, FNV1Hash32, _allocator);
 	return _modules[name];
 }
 
@@ -103,7 +103,7 @@ template <class Allocator>
 void DynamicLoader<Allocator>::removeModule(const char* name)
 {
 	assert(name && strlen(name));
-	HString str(name, FNVHash, _allocator);
+	HString str(name, FNV1Hash32, _allocator);
 	_modules.erase(str);
 }
 
@@ -138,7 +138,7 @@ typename DynamicLoader<Allocator>::ModulePtr DynamicLoader<Allocator>::loadModul
 
 	if (module.valid()) {
 		if (module->load(filename)) {
-			HString str(name, FNVHash, _allocator);
+			HString str(name, FNV1Hash32, _allocator);
 			_modules.insert(str, module);
 			return module;
 		}

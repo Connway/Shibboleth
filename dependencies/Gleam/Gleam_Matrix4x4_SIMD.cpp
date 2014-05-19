@@ -600,15 +600,15 @@ bool Matrix4x4SIMD::inverse(void)
 }
 
 // Not sure if these are faster than normal versions of set().
-// Also unsure if faster that DXMath's versions.
+// Also unsure if faster than DXMath's versions.
 void Matrix4x4SIMD::setTranslate(const Vector4SIMD& translate)
 {
 	set(
 		_mm_set_ps(0.0f, 0.0f, 0.0f, 0.0f),
 		_mm_set_ps(0.0f, 0.0f, 0.0f, 0.0f),
 		_mm_set_ps(0.0f, 0.0f, 0.0f, 0.0f),
-		_mm_set_ps(translate[0], translate[1], translate[2], 1.0f)
-		);
+		_mm_set_ps(1.0f, translate[2], translate[1], translate[0])
+	);
 }
 
 void Matrix4x4SIMD::setTranslate(float x, float y, float z)
@@ -617,53 +617,38 @@ void Matrix4x4SIMD::setTranslate(float x, float y, float z)
 		_mm_set_ps(0.0f, 0.0f, 0.0f, 0.0f),
 		_mm_set_ps(0.0f, 0.0f, 0.0f, 0.0f),
 		_mm_set_ps(0.0f, 0.0f, 0.0f, 0.0f),
-		_mm_set_ps(x, y, z, 1.0f)
+		_mm_set_ps(1.0f, z, y, x)
 	);
-
-	//set(1.0f, 0.0f, 0.0f, 0.0f,
-	//	0.0f, 1.0f, 0.0f, 0.0f,
-	//	0.0f, 0.0f, 1.0f, 0.0f,
-	//	x, y, z, 1.0f);
 }
 
 void Matrix4x4SIMD::setScale(float x, float y, float z)
 {
 	set(
-		_mm_set_ps(x, 0.0f, 0.0f, 0.0f),
-		_mm_set_ps(0.0f, y, 0.0f, 0.0f),
-		_mm_set_ps(0.0f, 0.0f, z, 0.0f),
-		_mm_set_ps(0.0f, 0.0f, 0.0f, 1.0f)
+		_mm_set_ps(0.0f, 0.0f, 0.0f, x),
+		_mm_set_ps(0.0f, 0.0f, y, 0.0f),
+		_mm_set_ps(0.0f, z, 0.0f, 0.0f),
+		_mm_set_ps(1.0f, 0.0f, 0.0f, 0.0f)
 	);
-
-	//set(x, 0.0f, 0.0f, 0.0f,
-	//	0.0f, y, 0.0f, 0.0f,
-	//	0.0f, 0.0f, z, 0.0f,
-	//	0.0f, 0.0f, 0.0f, 1.0f);
 }
 
 void Matrix4x4SIMD::setScale(const Vector4SIMD& scale)
 {
 	set(
-		_mm_set_ps(scale[0], 0.0f, 0.0f, 0.0f),
-		_mm_set_ps(0.0f, scale[1], 0.0f, 0.0f),
-		_mm_set_ps(0.0f, 0.0f, scale[2], 0.0f),
-		_mm_set_ps(0.0f, 0.0f, 0.0f, 1.0f)
-		);
+		_mm_set_ps(0.0f, 0.0f, 0.0f, scale[0]),
+		_mm_set_ps(0.0f, 0.0f, scale[1], 0.0f),
+		_mm_set_ps(0.0f, scale[2], 0.0f, 0.0f),
+		_mm_set_ps(1.0f, 0.0f, 0.0f, 0.0f)
+	);
 }
 
 void Matrix4x4SIMD::setScale(float scale)
 {
 	set(
-		_mm_set_ps(scale, 0.0f, 0.0f, 0.0f),
-		_mm_set_ps(0.0f, scale, 0.0f, 0.0f),
+		_mm_set_ps(0.0f, 0.0f, 0.0f, scale),
 		_mm_set_ps(0.0f, 0.0f, scale, 0.0f),
-		_mm_set_ps(0.0f, 0.0f, 0.0f, 1.0f)
+		_mm_set_ps(0.0f, scale, 0.0f, 0.0f),
+		_mm_set_ps(1.0f, 0.0f, 0.0f, 0.0f)
 	);
-
-	//set(scale, 0.0f, 0.0f, 0.0f,
-	//	0.0f, scale, 0.0f, 0.0f,
-	//	0.0f, 0.0f, scale, 0.0f,
-	//	0.0f, 0.0f, 0.0f, 1.0f);
 }
 
 void Matrix4x4SIMD::setRotation(float radians, const Vector4SIMD& axis)
@@ -689,7 +674,7 @@ void Matrix4x4SIMD::setRotation(float radians, float x, float y, float z)
 	__m128 c0 = _mm_set1_ps(s);
 	__m128 c1 = _mm_set1_ps(c);
 	__m128 c2 = _mm_set1_ps(1.0f - c);
-	__m128 axis = _mm_set_ps(x, y, z, 0.0f);
+	__m128 axis = _mm_set_ps(0.0f, z, y, x);
 
 	__m128 n0 = _mm_shuffle_ps(axis, axis, _MM_SHUFFLE(3,0,2,1));
 	__m128 n1 = _mm_shuffle_ps(axis, axis, _MM_SHUFFLE(3,1,0,2));
@@ -707,7 +692,7 @@ void Matrix4x4SIMD::setRotation(float radians, float x, float y, float z)
 	__m128 r2 = _mm_mul_ps(c0, axis);
 	r2 = _mm_sub_ps(v0, r2);
 
-	v0 = _mm_and_ps(r0, _mm_set_ps(0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0x00000000));
+	v0 = _mm_and_ps(r0, _mm_set_ps(0x00000000, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF));
 
 	__m128 v1 = _mm_shuffle_ps(r1, r2, _MM_SHUFFLE(2,1,2,0));
 	v1 = _mm_shuffle_ps(v1, v1, _MM_SHUFFLE(0,3,2,1));
@@ -728,7 +713,7 @@ void Matrix4x4SIMD::setRotation(float radians, float x, float y, float z)
 	v2 = _mm_shuffle_ps(v2, v0, _MM_SHUFFLE(3,2,1,0));
 
 	SIMDSTORE(_m[2], v2);
-	SIMDSTORE(_m[3], _mm_set_ps(0.0f, 0.0f, 0.0f, 1.0f));
+	SIMDSTORE(_m[3], _mm_set_ps(1.0f, 0.0f, 0.0f, 0.0f));
 }
 
 void Matrix4x4SIMD::setRotationX(float radians)
@@ -737,16 +722,11 @@ void Matrix4x4SIMD::setRotationX(float radians)
 	float sf = sinf(radians);
 
 	set(
-		_mm_set_ps(1.0f, 0.0f, 0.0f, 0.0f),
-		_mm_set_ps(0.0f, cf, sf, 0.0f),
-		_mm_set_ps(0.0f, -sf, cf, 0.0f),
-		_mm_set_ps(0.0f, 0.0f, 0.0f, 1.0f)
+		_mm_set_ps(0.0f, 0.0f, 0.0f, 1.0f),
+		_mm_set_ps(0.0f, sf, cf, 0.0f),
+		_mm_set_ps(0.0f, cf, -sf, 0.0f),
+		_mm_set_ps(1.0f, 0.0f, 0.0f, 0.0f)
 	);
-
-	//set(1.0f, 0.0f, 0.0f, 0.0f,
-	//	0.0f, cf, sf, 0.0f,
-	//	0.0f, -sf, cf, 0.0f,
-	//	0.0f, 0.0f, 0.0f, 1.0f);
 }
 
 void Matrix4x4SIMD::setRotationY(float radians)
@@ -755,16 +735,11 @@ void Matrix4x4SIMD::setRotationY(float radians)
 	float sf = sinf(radians);
 
 	set(
-		_mm_set_ps(cf, 0.0f, -sf, 0.0f),
-		_mm_set_ps(0.0f, 1.0f, 0.0f, 0.0f),
-		_mm_set_ps(sf, 0.0f, cf, 0.0f),
-		_mm_set_ps(0.0f, 0.0f, 0.0f, 1.0f)
+		_mm_set_ps(-sf, 0.0f, cf, 0.0f),
+		_mm_set_ps(0.0f, 0.0f, 1.0f, 0.0f),
+		_mm_set_ps(cf, 0.0f, sf, 0.0f),
+		_mm_set_ps(1.0f, 0.0f, 0.0f, 0.0f)
 	);
-
-	//set(cf, 0.0f, -sf, 0.0f,
-	//	0.0f, 1.0f, 0.0f, 0.0f,
-	//	sf, 0.0f, cf, 0.0f,
-	//	0.0f, 0.0f, 0.0f, 1.0f);
 }
 
 void Matrix4x4SIMD::setRotationZ(float radians)
@@ -773,16 +748,11 @@ void Matrix4x4SIMD::setRotationZ(float radians)
 	float sf = sinf(radians);
 
 	set(
-		_mm_set_ps(cf, sf, 0.0f, 0.0f),
-		_mm_set_ps(-sf, cf, 0.0f, 0.0f),
-		_mm_set_ps(0.0f, 0.0f, 1.0f, 0.0f),
-		_mm_set_ps(0.0f, 0.0f, 0.0f, 1.0f)
+		_mm_set_ps(0.0f, 0.0f, sf, cf),
+		_mm_set_ps(0.0f, 0.0f, cf, -sf),
+		_mm_set_ps(0.0f, 1.0f, 0.0f, 0.0f),
+		_mm_set_ps(1.0f, 0.0f, 0.0f, 0.0f)
 	);
-
-	//set(cf, sf, 0.0f, 0.0f,
-	//	-sf, cf, 0.0f, 0.0f,
-	//	0.0f, 0.0f, 1.0f, 0.0f,
-	//	0.0f, 0.0f, 0.0f, 1.0f);
 }
 
 void Matrix4x4SIMD::setLookAtLH(const Vector4SIMD& eye, const Vector4SIMD& target, const Vector4SIMD& up)
@@ -832,7 +802,7 @@ void Matrix4x4SIMD::setLookToLH(const Vector4SIMD& eye, const Vector4SIMD& dir, 
 	__m128 final_dir = SIMDLOAD(d.getBuffer());
 	__m128 final_up = SIMDLOAD(u.getBuffer());
 
-	__m128 control = _mm_set_ps(0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0x00000000);
+	__m128 control = _mm_set_ps(0x00000000, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF);
 	__m128 temp1 = _mm_andnot_ps(control, d0);
 	__m128 temp2 = _mm_and_ps(final_right, control);
 	SIMDSTORE(_m[0], _mm_or_ps(temp1, temp2));
@@ -845,7 +815,7 @@ void Matrix4x4SIMD::setLookToLH(const Vector4SIMD& eye, const Vector4SIMD& dir, 
 	temp2 = _mm_and_ps(final_dir, control);
 	SIMDSTORE(_m[2], _mm_or_ps(temp1, temp2));
 
-	SIMDSTORE(_m[3], _mm_set_ps(0.0f, 0.0f, 0.0f, 1.0f));
+	SIMDSTORE(_m[3], _mm_set_ps(1.0f, 0.0f, 0.0f, 0.0f));
 }
 
 void Matrix4x4SIMD::setLookToLH(float eye_x, float eye_y, float eye_z,
@@ -880,8 +850,8 @@ void Matrix4x4SIMD::setOrthographicLH(float left, float right, float bottom, flo
 	float recip_width = 1.0f / (right - left);
 	float recip_height = 1.0f / (top - bottom);
 	float range = 1.0f / (z_far - z_near);
-	__m128 mem1 = _mm_set_ps(recip_width, recip_height, range, 1.0f);
-	__m128 mem2 = _mm_set_ps(-(left + right), -(top + bottom), -z_near, 1.0f);
+	__m128 mem1 = _mm_set_ps(1.0f, range, recip_height, recip_width);
+	__m128 mem2 = _mm_set_ps(1.0f, -z_near, -(top + bottom), -(left + right));
 	__m128 temp = _mm_setzero_ps();
 
 	temp = _mm_move_ss(temp, mem1);
@@ -902,7 +872,7 @@ void Matrix4x4SIMD::setOrthographicLH(float left, float right, float bottom, flo
 void Matrix4x4SIMD::setOrthographicLH(float width, float height, float z_near, float z_far)
 {
 	float range = 1.0f / (z_far - z_near);
-	__m128 mem = _mm_set_ps(2.0f / width, 2.0f / height, range, -range * z_near);
+	__m128 mem = _mm_set_ps(-range * z_near, range, 2.0f / height, 2.0f / width);
 	__m128 temp = _mm_setzero_ps();
 
 	temp = _mm_move_ss(temp, mem);
@@ -925,8 +895,8 @@ void Matrix4x4SIMD::setOrthographicRH(float left, float right, float bottom, flo
 	float recip_width = 1.0f / (right - left);
 	float recip_height = 1.0f / (top - bottom);
 	float range = 1.0f / (z_near - z_far);
-	__m128 mem1 = _mm_set_ps(recip_width, recip_height, range, 1.0f);
-	__m128 mem2 = _mm_set_ps(-(left + right), -(top + bottom), z_near, 1.0f);
+	__m128 mem1 = _mm_set_ps(1.0f, range, recip_height, recip_width);
+	__m128 mem2 = _mm_set_ps(1.0f, z_near, -(top + bottom), -(left + right));
 	__m128 temp = _mm_setzero_ps();
 
 	temp = _mm_move_ss(temp, mem1);
@@ -947,7 +917,7 @@ void Matrix4x4SIMD::setOrthographicRH(float left, float right, float bottom, flo
 void Matrix4x4SIMD::setOrthographicRH(float width, float height, float z_near, float z_far)
 {
 	float range = 1.0f / (z_near - z_far);
-	__m128 mem = _mm_set_ps(2.0f / width, 2.0f / height, range, range * z_near);
+	__m128 mem = _mm_set_ps(range * z_near, range, 2.0f / height, 2.0f / width);
 	__m128 temp = _mm_setzero_ps();
 
 	temp = _mm_move_ss(temp, mem);
@@ -974,7 +944,7 @@ void Matrix4x4SIMD::setPerspectiveLH(float fov, float aspect_ratio, float z_near
 	float width = height / aspect_ratio;
 	float range = z_far / (z_far - z_near);
 
-	__m128 mem = _mm_set_ps(width, height, range, -range * z_near);
+	__m128 mem = _mm_set_ps(-range * z_near, range, height, width);
 	__m128 temp = _mm_setzero_ps();
 
 	temp = _mm_move_ss(temp, mem);
@@ -1000,7 +970,7 @@ void Matrix4x4SIMD::setPerspectiveRH(float fov, float aspect_ratio, float z_near
 	float width = height / aspect_ratio;
 	float range = z_far / (z_near - z_far);
 
-	__m128 mem = _mm_set_ps(width, height, range, range * z_near);
+	__m128 mem = _mm_set_ps(range * z_near, range, height, width);
 	__m128 temp = _mm_setzero_ps();
 
 	temp = _mm_move_ss(temp, mem);

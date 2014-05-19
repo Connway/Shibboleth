@@ -35,6 +35,7 @@
     <ClInclude Include="..\src\Shared\include\Shibboleth_IState.h" />
     <ClInclude Include="..\src\Shared\include\Shibboleth_ITask.h" />
     <ClInclude Include="..\src\Shared\include\Shibboleth_Logger.h" />
+    <ClInclude Include="..\src\Shared\include\Shibboleth_Map.h" />
     <ClInclude Include="..\src\Shared\include\Shibboleth_MessageBroadcaster.h" />
     <ClInclude Include="..\src\Shared\include\Shibboleth_ProxyAllocator.h" />
     <ClInclude Include="..\src\Shared\include\Shibboleth_StateMachine.h" />
@@ -123,7 +124,7 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>$(ProjectDir)..\dependencies\jansson;$(ProjectDir)..\dependencies\dirent;$(ProjectDir)..\dependencies\Gaff\include;$(ProjectDir)..\src\Shared\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
+      <EnableEnhancedInstructionSet>NotSet</EnableEnhancedInstructionSet>
       <FloatingPointModel>Fast</FloatingPointModel>
     </ClCompile>
     <Link>
@@ -155,7 +156,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>$(ProjectDir)..\dependencies\jansson;$(ProjectDir)..\dependencies\dirent;$(ProjectDir)..\dependencies\Gaff\include;$(ProjectDir)..\src\Shared\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
+      <EnableEnhancedInstructionSet>NotSet</EnableEnhancedInstructionSet>
       <FloatingPointModel>Fast</FloatingPointModel>
     </ClCompile>
     <Link>

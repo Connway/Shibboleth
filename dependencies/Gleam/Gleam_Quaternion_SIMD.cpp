@@ -176,6 +176,8 @@ const QuaternionSIMD& QuaternionSIMD::operator*=(const QuaternionSIMD& rhs)
 	temp1 = _mm_add_ps(temp1, y);
 	temp1 = _mm_add_ps(temp1, z);
 
+	SIMDSTORE(_quat, temp1);
+
 	return *this;
 }
 
@@ -324,87 +326,6 @@ Matrix4x4SIMD QuaternionSIMD::matrix(void) const
 	col4 = gWAxis;
 
 	return Matrix4x4SIMD(col1, col2, col3, col4);
-
-	//__m128 xxyyzz = _mm_mul_ps(quat, quat);
-	//__m128 xyxzyz = _mm_shuffle_ps(quat, quat, _MM_SHUFFLE(3,1,0,0));
-	//__m128 wxwywz = _mm_shuffle_ps(quat, quat, _MM_SHUFFLE(3,2,2,1));
-
-	//xyxzyz = _mm_mul_ps(xyxzyz, wxwywz);
-
-	//wxwywz = _mm_shuffle_ps(quat, quat, _MM_SHUFFLE(3,3,3,3));
-	//wxwywz = _mm_mul_ps(wxwywz, _mm_shuffle_ps(quat, quat, _MM_SHUFFLE(3,2,1,0)));
-
-	//// make w component of all vectors 0
-	//xxyyzz = _mm_and_ps(xxyyzz, gXYZMask);
-	//xyxzyz = _mm_and_ps(xyxzyz, gXYZMask);
-	//wxwywz = _mm_and_ps(wxwywz, gXYZMask);
-
-	//// 1 - 2 * [yy+zz, xx+zz, xx+yy]
-	//__m128 temp1 = _mm_shuffle_ps(xxyyzz, xxyyzz, _MM_SHUFFLE(3,1,0,0));
-	//temp1 = _mm_add_ps(temp1, _mm_shuffle_ps(xxyyzz, xxyyzz, _MM_SHUFFLE(3,2,2,1)));
-	//temp1 = _mm_mul_ps(temp1, gTwo);
-	//temp1 = _mm_sub_ps(gOne, temp1);
-
-	//// 2 * [xy+wz, yz+wx, xz+wy]
-	//__m128 temp2 = _mm_shuffle_ps(xyxzyz, xyxzyz, _MM_SHUFFLE(3,1,2,0));
-	//temp2 = _mm_add_ps(temp2, _mm_shuffle_ps(wxwywz, wxwywz, _MM_SHUFFLE(3,1,0,2)));
-	//temp2 = _mm_mul_ps(temp2, gTwo);
-
-	//// 2 * [xz-wy, xy-wz, yz-wx]
-	//__m128 temp3 = _mm_shuffle_ps(xyxzyz, xyxzyz, _MM_SHUFFLE(3,2,0,1));
-	//temp3 = _mm_sub_ps(temp3, _mm_shuffle_ps(wxwywz, wxwywz, _MM_SHUFFLE(3,0,2,1)));
-	//temp3 = _mm_mul_ps(temp3, gTwo);
-
-	//__m128 col1 = _mm_shuffle_ps(temp2, temp3, _MM_SHUFFLE(3,0,0,3));
-	//__m128 col2 = _mm_shuffle_ps(temp1, temp2, _MM_SHUFFLE(3,1,1,3));
-	//__m128 col3 = _mm_shuffle_ps(temp3, temp1, _MM_SHUFFLE(3,2,2,3));
-	//// slide the elements down by one
-	//col1 = _mm_shuffle_ps(col1, col1, _MM_SHUFFLE(2,1,3,3));
-	//col2 = _mm_shuffle_ps(col2, col2, _MM_SHUFFLE(2,1,3,3));
-	//col3 = _mm_shuffle_ps(col3, col3, _MM_SHUFFLE(2,1,3,3));
-
-	//col1 = _mm_shuffle_ps(col1, temp1, _MM_SHUFFLE(3,2,3,0));
-	//col2 = _mm_shuffle_ps(col2, temp3, _MM_SHUFFLE(3,2,3,1));
-	//col3 = _mm_shuffle_ps(col3, temp2, _MM_SHUFFLE(3,2,3,2));
-
-	//// put elements in their proper order
-	//col1 = _mm_shuffle_ps(col1, col1, _MM_SHUFFLE(1,3,2,0));
-	//col2 = _mm_shuffle_ps(col2, col2, _MM_SHUFFLE(1,3,2,0));
-	//col3 = _mm_shuffle_ps(col3, col3, _MM_SHUFFLE(1,3,2,0));
-
-	//return Matrix4x4SIMD(col1, col2, col3, gWAxis);
-
-	//Matrix4x4CPU matrix;
-	//float* m = matrix.getBuffer();
-
-	//float xx = _x * _x;
-	//float yy = _y * _y;
-	//float zz = _z * _z;
-	//float xy = _x * _y;
-	//float xz = _x * _z;
-	//float yz = _y * _z;
-	//float wx = _w * _x;
-	//float wy = _w * _y;
-	//float wz = _w * _z;
-
-	//m[0] = 1.0f - 2.0f * (yy + zz);
-	//m[1] = 2.0f * (xy + wz);
-	//m[2] = 2.0f * (xz - wy);
-	//m[3] = 0.0f;
-	//m[4] = 2.0f * (xy - wz);
-	//m[5] = 1.0f - 2.0f * (xx + zz);
-	//m[6] = 2.0f * (yz + wx);
-	//m[7] = 0.0f;
-	//m[8] = 2.0f * (xz + wy);
-	//m[9] = 2.0f * (yz - wx);
-	//m[10] = 1.0f - 2.0f * (xx + yy);
-	//m[11] = 0.0f;
-	//m[12] = 0.0f;
-	//m[13] = 0.0f;
-	//m[14] = 0.0f;
-	//m[15] = 1.0f;
-
-	//return matrix;
 }
 
 void QuaternionSIMD::constructFromAxis(const Vector4SIMD& axis, float angle)

@@ -28,6 +28,8 @@ THE SOFTWARE.
 NS_GLEAM
 	typedef QuaternionSIMD Quaternion;
 NS_END
+
+	#error "Library projects are set to compile to SSE2 code and are more performant using the CPU versions of these classes."
 #else
 	#include "Gleam_Quaternion_CPU.h"
 

@@ -32,11 +32,9 @@ typedef struct HDRHEADER
 
 // Internal functions
 ILboolean ilIsValidHdrF(ILHANDLE file);
-ILboolean iIsValidHdr();
 ILboolean iCheckHdr(HDRHEADER *Header);
-ILboolean ilLoadHdrF(ILHANDLE file);
-ILboolean iLoadHdrInternal();
-ILboolean iSaveHdrInternal();
+ILboolean iLoadHdrInternal(ILimage* image);
+ILboolean iSaveHdrInternal(ILimage* image);
 
 void ReadScanline(ILubyte *scanline, ILuint w);
 

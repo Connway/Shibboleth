@@ -27,9 +27,9 @@ NS_SHIBBOLETH
 
 static Allocator* gAllocator = nullptr;
 
-Allocator::Allocator(void):
+Allocator::Allocator(size_t alignment):
 	_total_bytes_allocated(0), _num_allocations(0),
-	_num_frees(0)
+	_num_frees(0), _alignment(alignment)
 {
 }
 
@@ -41,7 +41,7 @@ void* Allocator::alloc(unsigned int size_bytes)
 {
 	Gaff::ScopedLock<Gaff::SpinLock> scoped_lock(_lock);
 
-	void* data = malloc(size_bytes);
+	void* data = _aligned_malloc(size_bytes, _alignment);
 
 	if (data) {
 		_total_bytes_allocated += size_bytes;
@@ -55,7 +55,7 @@ void Allocator::free(void* data)
 {
 	Gaff::ScopedLock<Gaff::SpinLock> scoped_lock(_lock);
 	++_num_frees;
-	::free(data);
+	_aligned_free(data);
 }
 
 unsigned int Allocator::getTotalBytesAllocated(void) const

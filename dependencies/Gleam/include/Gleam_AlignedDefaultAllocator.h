@@ -33,12 +33,12 @@ class AlignedDefaultAllocator : public Gaff::IAllocator
 public:
 	AlignedDefaultAllocator(size_t alignment): _alignment(alignment) {}
 
-	void* alloc(unsigned int size_bytes) const
+	void* alloc(unsigned int size_bytes)
 	{
 		return _aligned_malloc(size_bytes, _alignment);
 	}
 
-	void free(void* data) const
+	void free(void* data)
 	{
 		_aligned_free(data);
 	}

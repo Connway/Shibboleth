@@ -27,7 +27,6 @@ THE SOFTWARE.
 namespace Gaff
 {
 	class IVirtualDestructor;
-	class File;
 }
 
 NS_SHIBBOLETH
@@ -38,7 +37,7 @@ public:
 	IResourceLoader(void) {}
 	virtual ~IResourceLoader(void) {}
 
-	virtual Gaff::IVirtualDestructor* load(Gaff::File& file) = 0;
+	virtual Gaff::IVirtualDestructor* load(const char* file_name, unsigned long long user_data) = 0;
 	//virtual void unload(Gaff::IVirtualDestructor* resource) = 0;
 };
 

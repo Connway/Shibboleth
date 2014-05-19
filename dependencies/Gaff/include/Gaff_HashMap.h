@@ -84,7 +84,7 @@ public:
 		friend class HashMap<Key, Value, Allocator>;
 	};
 
-	HashMap(HashFunc hash = FNVHash, const Allocator& allocator = Allocator());
+	HashMap(HashFunc hash = FNV1Hash32, const Allocator& allocator = Allocator());
 	HashMap(const HashMap<Key, Value, Allocator>& rhs);
 	HashMap(HashMap<Key, Value, Allocator>&& rhs);
 	~HashMap(void);
@@ -189,7 +189,7 @@ public:
 		friend class HashMap<String<T, Allocator>, Value, Allocator>;
 	};
 
-	HashMap(HashFunc hash = FNVHash, const Allocator& allocator = Allocator());
+	HashMap(HashFunc hash = FNV1Hash32, const Allocator& allocator = Allocator());
 	HashMap(const HashMap<String<T, Allocator>, Value, Allocator>& rhs);
 	HashMap(HashMap<String<T, Allocator>, Value, Allocator>&& rhs);
 	~HashMap(void);

@@ -31,10 +31,10 @@ template <class T, class Allocator = DefaultAllocator>
 class HashString
 {
 public:
-	HashString(const HashString<T, Allocator>& string, HashFunc hash = FNVHash);
-	HashString(const String<T, Allocator>& string, HashFunc hash = FNVHash);
-	HashString(const T* string, HashFunc hash = FNVHash, const Allocator& allocator = Allocator());
-	HashString(HashFunc hash = FNVHash, const Allocator& allocator = Allocator());
+	HashString(const HashString<T, Allocator>& string, HashFunc hash = FNV1Hash32);
+	HashString(const String<T, Allocator>& string, HashFunc hash = FNV1Hash32);
+	HashString(const T* string, HashFunc hash = FNV1Hash32, const Allocator& allocator = Allocator());
+	HashString(HashFunc hash = FNV1Hash32, const Allocator& allocator = Allocator());
 	HashString(HashString<T, Allocator>&& rhs);
 
 	const HashString<T, Allocator>& operator=(const HashString<T, Allocator>& rhs);

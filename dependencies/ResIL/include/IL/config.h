@@ -4,6 +4,7 @@
 #undef ALTIVEC_GCC
 
 /* "Enable debug code features" */
+//#undef DEBUG
 #ifdef _DEBUG
 	#define DEBUG
 #endif
@@ -288,14 +289,14 @@
 /* LCMS include without lcms/ support */
 #undef LCMS_NODIRINCLUDE
 
+#define IL_NO_CHEAD
+
 /* Define to the sub-directory in which libtool stores uninstalled libraries.
    */
 #undef LT_OBJDIR
 
 /* Building on Mac OS X */
-#ifdef __APPLE__
-	#define MAX_OS_X
-#endif
+#undef MAX_OS_X
 
 /* define if you have memalign memory allocation */
 #undef MEMALIGN
@@ -341,7 +342,7 @@
 #define SSE2
 
 /* SSE3 extension found */
-#define SSE3
+#undef SSE3
 
 /* Define to 1 if you have the ANSI C header files. */
 #undef STDC_HEADERS
