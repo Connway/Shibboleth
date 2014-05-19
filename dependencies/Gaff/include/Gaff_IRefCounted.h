@@ -22,11 +22,11 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Gaff_Defines.h"
+#include "Gaff_IVirtualDestructor.h"
 
 NS_GAFF
 
-class IRefCounted
+class IRefCounted : public IVirtualDestructor
 {
 public:
 	IRefCounted(void) {}

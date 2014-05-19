@@ -27,8 +27,8 @@ THE SOFTWARE.
 
 NS_SHIBBOLETH
 
-ResourceContainer::ResourceContainer(const AHashString& res_key, ResourceManager* res_manager, ZRC zero_ref_callback):
-	_res_key(res_key), _zero_ref_callback(zero_ref_callback),
+ResourceContainer::ResourceContainer(const AHashString& res_key, ResourceManager* res_manager, ZRC zero_ref_callback, unsigned long long user_data):
+	_res_key(res_key), _user_data(user_data), _zero_ref_callback(zero_ref_callback),
 	_res_manager(res_manager), _resource(nullptr), _ref_count(0)
 {
 }
@@ -58,6 +58,11 @@ void ResourceContainer::release(void) const
 unsigned int ResourceContainer::getRefCount(void) const
 {
 	return _ref_count;
+}
+
+unsigned long long ResourceContainer::getUserData(void) const
+{
+	return _user_data;
 }
 
 const AHashString& ResourceContainer::getResourceKey(void) const
@@ -113,15 +118,11 @@ ResourceManager::ResourceLoadingTask::~ResourceLoadingTask(void)
 
 void ResourceManager::ResourceLoadingTask::doTask(void)
 {
-	Gaff::File file(_res_ptr->getResourceKey().getString().getBuffer());
-	Gaff::IVirtualDestructor* data = nullptr;
+	Gaff::IVirtualDestructor* data = _res_loader->load(_res_ptr->getResourceKey().getString().getBuffer(), _res_ptr->getUserData());
 
-	if (!file.isOpen()) {
-		data = _res_loader->load(file);
-
-		if (data) {
-			_res_ptr->setResource(data);
-		}
+	if (data) {
+		_res_ptr->setResource(data);
+	} else {
 	}
 
 	_res_ptr->callCallbacks(data != nullptr);
@@ -161,7 +162,7 @@ void ResourceManager::registerResourceLoader(IResourceLoader* res_loader, const 
 	_resource_loaders[AHashString(extension)] = res_loader;
 }
 
-ResourcePtr ResourceManager::requestResource(const char* filename)
+ResourcePtr ResourceManager::requestResource(const char* filename, unsigned long long user_data)
 {
 	AHashString res_key(filename);
 
@@ -175,7 +176,7 @@ ResourcePtr ResourceManager::requestResource(const char* filename)
 		assert(extension.size() && _resource_loaders.indexOf(AHashString(extension)) != -1);
 
 		ResourceContainer* res_cont = (ResourceContainer*)GetAllocator().alloc(sizeof(ResourceContainer));
-		new (res_cont) ResourceContainer(res_key, this, &ResourceManager::zeroRefCallback);
+		new (res_cont) ResourceContainer(res_key, this, &ResourceManager::zeroRefCallback, user_data);
 
 		ResourcePtr& res_ptr = _resource_cache[res_key];
 		res_ptr.set(res_cont);

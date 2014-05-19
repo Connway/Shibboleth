@@ -32,7 +32,6 @@
     <None Include="..\..\dependencies\Gaff\include\Gaff_Map.inl" />
     <None Include="..\..\dependencies\Gaff\include\Gaff_MessageBroadcaster.inl" />
     <None Include="..\..\dependencies\Gaff\include\Gaff_Queue.inl" />
-    <None Include="..\..\dependencies\Gaff\include\Gaff_Registry.inl" />
     <None Include="..\..\dependencies\Gaff\include\Gaff_String.inl" />
     <None Include="..\..\dependencies\Gaff\include\Gaff_TimerCallbackManager.inl" />
     <None Include="..\..\dependencies\Gaff\include\Gaff_Utils_Common.inl" />
@@ -91,7 +90,6 @@
     <ClInclude Include="..\..\dependencies\Gaff\include\Gaff_ReadWriteSpinLock.h" />
     <ClInclude Include="..\..\dependencies\Gaff\include\Gaff_RefCounted.h" />
     <ClInclude Include="..\..\dependencies\Gaff\include\Gaff_RefPtr.h" />
-    <ClInclude Include="..\..\dependencies\Gaff\include\Gaff_Registry.h" />
     <ClInclude Include="..\..\dependencies\Gaff\include\Gaff_Scene.h" />
     <ClInclude Include="..\..\dependencies\Gaff\include\Gaff_SceneImporter.h" />
     <ClInclude Include="..\..\dependencies\Gaff\include\Gaff_ScopedLock.h" />
@@ -250,7 +248,7 @@
       <SDLCheck>true</SDLCheck>
       <MultiProcessorCompilation>false</MultiProcessorCompilation>
       <FloatingPointModel>Fast</FloatingPointModel>
-      <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
+      <EnableEnhancedInstructionSet>NotSet</EnableEnhancedInstructionSet>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -294,7 +292,7 @@
       <SDLCheck>true</SDLCheck>
       <MultiProcessorCompilation>false</MultiProcessorCompilation>
       <FloatingPointModel>Fast</FloatingPointModel>
-      <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
+      <EnableEnhancedInstructionSet>NotSet</EnableEnhancedInstructionSet>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>

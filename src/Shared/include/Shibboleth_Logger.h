@@ -25,15 +25,19 @@ THE SOFTWARE.
 #include "Shibboleth_HashString.h"
 #include "Shibboleth_HashMap.h"
 #include "Shibboleth_String.h"
+#include <Gaff_SpinLock.h>
 #include <Gaff_File.h>
+#include <Gaff_Pair.h>
 
 NS_SHIBBOLETH
 
-class Logger
+class LogManager
 {
 public:
-	Logger(const ProxyAllocator& proxy_allocator);
-	~Logger(void);
+	typedef Gaff::Pair<Gaff::File, Gaff::SpinLock*> FileLockPair;
+
+	LogManager(Allocator& allocator);
+	~LogManager(void);
 
 	void destroy(void);
 
@@ -43,15 +47,16 @@ public:
 	INLINE void closeLogFile(const AHashString& filename);
 	INLINE void closeLogFile(const AString& filename);
 	INLINE void closeLogFile(const char* filename);
-	INLINE Gaff::File& getLogFile(const AHashString& filename);
-	INLINE Gaff::File& getLogFile(const AString& filename);
-	INLINE Gaff::File& getLogFile(const char* filename);
+	INLINE FileLockPair& getLogFile(const AHashString& filename);
+	INLINE FileLockPair& getLogFile(const AString& filename);
+	INLINE FileLockPair& getLogFile(const char* filename);
 
 private:
-	HashMap<AHashString, Gaff::File> _files;
+	HashMap< AHashString, Gaff::Pair<Gaff::File, Gaff::SpinLock*> > _files;
+	Allocator& _allocator;
 
-	GAFF_NO_COPY(Logger);
-	GAFF_NO_MOVE(Logger);
+	GAFF_NO_COPY(LogManager);
+	GAFF_NO_MOVE(LogManager);
 };
 
 NS_END

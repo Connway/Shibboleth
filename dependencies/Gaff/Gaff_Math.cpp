@@ -25,12 +25,45 @@ THE SOFTWARE.
 
 NS_GAFF
 
-unsigned int FNVHash(const char* key, int len)
+unsigned long long FNV1aHash64(const char* key, int len)
 {
-	unsigned int hash = 2166136261;
+	unsigned long long hash = 14695981039346656037ULL;
 
 	for (int i = 0; i < len; ++i) {
-		hash = (hash * 16777619) ^ key[i];
+		hash = (hash ^ (unsigned long long)key[i]) * 1099511628211ULL;
+	}
+
+	return hash;
+}
+
+unsigned long long FNV1Hash64(const char* key, int len)
+{
+	unsigned long long hash = 14695981039346656037ULL;
+
+	for (int i = 0; i < len; ++i) {
+		hash = (hash ^ 1099511628211ULL) * (unsigned long long)key[i];
+	}
+
+	return hash;
+}
+
+unsigned int FNV1aHash32(const char* key, int len)
+{
+	unsigned int hash = 2166136261U;
+
+	for (int i = 0; i < len; ++i) {
+		hash = (hash ^ (unsigned int)key[i]) * 16777619U;
+	}
+
+	return hash;
+}
+
+unsigned int FNV1Hash32(const char* key, int len)
+{
+	unsigned int hash = 2166136261U;
+
+	for (int i = 0; i < len; ++i) {
+		hash = (hash * 16777619U) ^ (unsigned int)key[i];
 	}
 
 	return hash;

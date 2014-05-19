@@ -70,12 +70,12 @@ public:
 
 	bool operator==(const T* rhs) const
 	{
-		return _weak_ref == rhs;
+		return _weak_ref == rhs->getWeakRef();
 	}
 
 	bool operator!=(const T* rhs) const
 	{
-		return _weak_ref != rhs;
+		return _weak_ref != rhs->getWeakRef();
 	}
 
 	const T* operator->(void) const
@@ -100,12 +100,12 @@ public:
 
 	const T* get(void) const
 	{
-		return (T*)_weak_ref.get();
+		return (T*)_weak_ref.getObject();
 	}
 
 	T* get(void)
 	{
-		return (T*)_weak_ref.get();
+		return (T*)_weak_ref.getObject();
 	}
 
 	void set(T* data)

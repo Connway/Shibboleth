@@ -178,12 +178,9 @@ void ISceneNode::setEnabled(bool enabled)
 
 void ISceneNode::updateTransform(void)
 {
-	Transform transform;
-
 	if (_parent) {
-		transform = _parent->getWorldTransform();
-		transform.concat(_model_transform);
-		_world_transform = transform;
+		_world_transform = _parent->getWorldTransform();
+		_world_transform.concat(_model_transform);
 	} else {
 		_world_transform = _model_transform;
 	}

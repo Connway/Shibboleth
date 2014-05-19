@@ -114,7 +114,7 @@ const Queue<T, Allocator>& Queue<T, Allocator>::operator=(Queue<T, Allocator>&& 
 }
 
 template <class T, class Allocator>
-bool Queue<T, Allocator>::operator==(const Queue<T, Allocator>& rhs)
+bool Queue<T, Allocator>::operator==(const Queue<T, Allocator>& rhs) const
 {
 	if (_used != rhs._used) {
 		return false;
@@ -128,15 +128,15 @@ bool Queue<T, Allocator>::operator==(const Queue<T, Allocator>& rhs)
 			return false;
 		}
 
-		increment(our_begin);
-		rhs.increment(rhs_begin);
+		increment(&our_begin);
+		rhs.increment(&rhs_begin);
 	}
 
 	return true;
 }
 
 template <class T, class Allocator>
-bool Queue<T, Allocator>::operator!=(const Queue<T, Allocator>& rhs)
+bool Queue<T, Allocator>::operator!=(const Queue<T, Allocator>& rhs) const
 {
 	return !(*this == rhs);
 }

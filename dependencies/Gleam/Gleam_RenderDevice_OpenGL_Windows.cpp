@@ -243,7 +243,7 @@ bool RenderDeviceGL::init(const Window& window, unsigned int adapter_id, unsigne
 
 		RenderTargetGL* rt = GleamAllocateT(RenderTargetGL);
 		rt->setViewport(viewport.width, viewport.height);
-		device.rts.push(rt);
+		device.rts.push(IRenderTargetPtr(rt));
 
 		_devices.push(device);
 
@@ -265,7 +265,7 @@ bool RenderDeviceGL::init(const Window& window, unsigned int adapter_id, unsigne
 
 		RenderTargetGL* rt = GleamAllocateT(RenderTargetGL);
 		rt->setViewport(viewport.width, viewport.height);
-		it->rts.push(rt);
+		it->rts.push(IRenderTargetPtr(rt));
 	}
 
 	if (!_glew_already_initialized) {

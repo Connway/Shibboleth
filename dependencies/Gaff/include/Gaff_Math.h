@@ -67,7 +67,11 @@ bool Between(const T& val, const T& min_val, const T& max_val)
 }
 
 typedef unsigned int (*HashFunc)(const char* data, int len);
-unsigned int FNVHash(const char* key, int len);
+unsigned long long FNV1aHash64(const char* key, int len);
+unsigned long long FNV1Hash64(const char* key, int len);
+unsigned int FNV1aHash32(const char* key, int len);
+unsigned int FNV1Hash32(const char* key, int len);
+
 INLINE float BinomialCoefficient(float n, float k);
 float BernsteinPolynomial(float t, float n, float k);
 

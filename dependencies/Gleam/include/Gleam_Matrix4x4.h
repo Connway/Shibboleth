@@ -27,14 +27,14 @@ THE SOFTWARE.
 
 NS_GLEAM
 	typedef Matrix4x4SIMD Matrix4x4;
-	typedef Matrix4x4SIMD Mtx4x4D3D;
 NS_END
+
+	#error "Library projects are set to compile to SSE2 code and are more performant using the CPU versions of these classes."
 #else
 	#include "Gleam_Matrix4x4_CPU.h"
 
 NS_GLEAM
 	typedef Matrix4x4CPU Matrix4x4;
-	typedef Matrix4x4CPU Mtx4x4CPU;
 NS_END
 #endif
 

@@ -38,7 +38,7 @@ public:
 
 	virtual void onAddToObject(void) {}
 	virtual void onAddToWorld(void) {}
-	virtual void onAllAssetsLoaded(void) {}
+	virtual void onAllComponentsLoaded(void) {}
 };
 
 NS_END

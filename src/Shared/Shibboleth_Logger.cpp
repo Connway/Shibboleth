@@ -24,26 +24,27 @@ THE SOFTWARE.
 
 NS_SHIBBOLETH
 
-Logger::Logger(const ProxyAllocator& proxy_allocator):
-	_files(proxy_allocator)
+LogManager::LogManager(Allocator& allocator):
+	_files(ProxyAllocator(allocator)), _allocator(allocator)
 {
+	_files.reserve(10);
 }
 
-Logger::~Logger(void)
+LogManager::~LogManager(void)
 {
 	destroy();
 }
 
-void Logger::destroy(void)
+void LogManager::destroy(void)
 {
 	for (auto it = _files.begin(); it != _files.end(); ++it) {
-		it->writeString("\nCLOSING LOG FILE\n\n");
+		it->first.writeString("\nCLOSING LOG FILE\n\n");
 	}
 
 	_files.clear();
 }
 
-bool Logger::openLogFile(const AHashString& filename)
+bool LogManager::openLogFile(const AHashString& filename)
 {
 	assert(filename.size() && _files.indexOf(filename) == -1);
 	Gaff::File file(filename.getBuffer(), Gaff::File::APPEND);
@@ -52,54 +53,64 @@ bool Logger::openLogFile(const AHashString& filename)
 		return false;
 	}
 
-	_files[filename] = Move(file);
+	Gaff::SpinLock* spin_lock = _allocator.template allocT<Gaff::SpinLock>();
+
+	if (!spin_lock) {
+		return false;
+	}
+
+	FileLockPair flp;
+	flp.first = Move(file);
+	flp.second = spin_lock;
+
+	_files[filename] = Move(flp);
 
 	return true;
 }
 
-bool Logger::openLogFile(const AString& filename)
+bool LogManager::openLogFile(const AString& filename)
 {
 	assert(filename.size() && _files.indexOf(filename) == -1);
 	return openLogFile(AHashString(filename));
 }
 
-bool Logger::openLogFile(const char* filename)
+bool LogManager::openLogFile(const char* filename)
 {
 	assert(filename && _files.indexOf(filename) == -1);
 	return openLogFile(AHashString(filename));
 }
 
-void Logger::closeLogFile(const AHashString& filename)
+void LogManager::closeLogFile(const AHashString& filename)
 {
 	assert(filename.size() && _files.indexOf(filename) != -1);
 	_files.erase(filename);
 }
 
-void Logger::closeLogFile(const AString& filename)
+void LogManager::closeLogFile(const AString& filename)
 {
 	assert(filename.size() && _files.indexOf(filename) != -1);
 	_files.erase(filename);
 }
 
-void Logger::closeLogFile(const char* filename)
+void LogManager::closeLogFile(const char* filename)
 {
 	assert(filename && _files.indexOf(filename) != -1);
 	_files.erase(filename);
 }
 
-Gaff::File& Logger::getLogFile(const AHashString& filename)
+LogManager::FileLockPair& LogManager::getLogFile(const AHashString& filename)
 {
 	assert(filename.size() && _files.indexOf(filename) != -1);
 	return _files[filename];
 }
 
-Gaff::File& Logger::getLogFile(const AString& filename)
+LogManager::FileLockPair& LogManager::getLogFile(const AString& filename)
 {
 	assert(filename.size() && _files.indexOf(filename) != -1);
 	return _files[filename];
 }
 
-Gaff::File& Logger::getLogFile(const char* filename)
+LogManager::FileLockPair& LogManager::getLogFile(const char* filename)
 {
 	assert(filename && _files.indexOf(filename) != -1);
 	return _files[filename];

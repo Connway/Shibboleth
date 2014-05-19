@@ -45,10 +45,8 @@ typedef struct PCXHEAD
 // For checking and reading
 ILboolean iIsValidPcx(void);
 ILboolean iCheckPcx(PCXHEAD *Header);
-ILboolean iLoadPcxInternal(void);
-ILboolean iSavePcxInternal(void);
-ILboolean iUncompressPcx(PCXHEAD *Header);
-ILboolean iUncompressSmall(PCXHEAD *Header);
+ILboolean iUncompressPcx(ILimage* image, PCXHEAD *Header);
+ILboolean iUncompressSmall(ILimage* image, PCXHEAD *Header);
 
 // For writing
 ILuint encput(ILubyte byt, ILubyte cnt);

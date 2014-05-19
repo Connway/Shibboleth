@@ -87,23 +87,24 @@ public:
 	void run(void);
 
 	INLINE Allocator& getAllocator(void);
-	INLINE Logger& getLogger(void);
+	INLINE LogManager& getLogManager(void);
 
 	INLINE void addTask(Gaff::ITask<ProxyAllocator>* task);
 	INLINE MessageBroadcaster& getBroadcaster(void);
 	INLINE StateMachine& getStateMachine(void);
 
 	INLINE DynamicLoader& getDynamicLoader(void);
-	INLINE Gaff::File& getGameLogFile(void);
+	INLINE LogManager::FileLockPair& getGameLogFile(void);
 
 	INLINE void quit(void);
 
 private:
 	struct ManagerEntry
 	{
-		typedef Gaff::INamedObject* (*CreateManagerFunc)(App&, unsigned int);
+		typedef Gaff::INamedObject* (*CreateManagerFunc)(unsigned int);
 		typedef void (*DestroyManagerFunc)(Gaff::INamedObject*, unsigned int);
 		typedef unsigned int (*GetNumManagersFunc)(void);
+		typedef bool (*InitManagerDLLFunc)(App&);
 
 		DynamicLoader::ModulePtr module;
 		CreateManagerFunc create_func;
@@ -121,9 +122,9 @@ private:
 	ThreadPool _thread_pool;
 
 	Allocator _allocator;
-	Logger _logger;
+	LogManager _logger;
 
-	Gaff::File* _log_file;
+	LogManager::FileLockPair* _log_file_pair;
 
 	bool _running;
 

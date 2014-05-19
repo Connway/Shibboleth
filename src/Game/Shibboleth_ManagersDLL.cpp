@@ -23,6 +23,7 @@ THE SOFTWARE.
 #include <Shibboleth_ComponentManager.h>
 #include <Shibboleth_ResourceManager.h>
 #include <Shibboleth_OtterUIManager.h>
+#include <Gaff_JSON.h>
 
 template <class Manager>
 Gaff::INamedObject* CreateManagerT(Shibboleth::App& app)
@@ -55,22 +56,31 @@ enum Managers
 
 typedef Gaff::INamedObject* (*CreateMgrFunc)(Shibboleth::App&);
 
-CreateMgrFunc create_funcs[] = {
+static CreateMgrFunc create_funcs[] = {
 	&CreateManagerT<Shibboleth::ComponentManager>,
 	&CreateManagerT<Shibboleth::ResourceManager>,
 	&CreateOtterUIManager
 };
+
+static Shibboleth::App* g_app = nullptr;
+
+DYNAMICEXPORT bool InitDLL(Shibboleth::App& app)
+{
+	Gaff::JSON::SetMemoryFunctions(&Shibboleth::ShibbolethAllocate, &Shibboleth::ShibbolethFree);
+	Shibboleth::SetAllocator(app.getAllocator());
+	g_app = &app;
+	return true;
+}
 
 DYNAMICEXPORT unsigned int GetNumManagers(void)
 {
 	return NUM_MANAGERS;
 }
 
-DYNAMICEXPORT Gaff::INamedObject* CreateManager(Shibboleth::App& app, unsigned int id)
+DYNAMICEXPORT Gaff::INamedObject* CreateManager(unsigned int id)
 {
 	assert(id < NUM_MANAGERS);
-	Shibboleth::SetAllocator(app.getAllocator());
-	return create_funcs[id](app);
+	return create_funcs[id](*g_app);
 }
 
 DYNAMICEXPORT void DestroyManager(Gaff::INamedObject* manager, unsigned int)

@@ -40,7 +40,7 @@ const char* ComponentManager::getName(void) const
 
 bool ComponentManager::addComponents(DynamicLoader::ModulePtr& module)
 {
-	Gaff::File& log = _app.getGameLogFile();
+	LogManager::FileLockPair& log = _app.getGameLogFile();
 
 	assert(module.valid());
 	GetNumComponentsFunc num_comp_func = module->GetFunc<GetNumComponentsFunc>("GetNumComponents");
@@ -49,22 +49,22 @@ bool ComponentManager::addComponents(DynamicLoader::ModulePtr& module)
 	DestroyComponentFunc destroy_comp_func = module->GetFunc<DestroyComponentFunc>("DestroyComponent");
 
 	if (!num_comp_func) {
-		log.writeString("ERROR - Could not find function named 'GetNumComponent'.\n");
+		log.first.writeString("ERROR - Could not find function named 'GetNumComponent'.\n");
 		return false;
 	}
 
 	if (!comp_name_func) {
-		log.writeString("ERROR - Could not find function named 'GetComponentName'.\n");
+		log.first.writeString("ERROR - Could not find function named 'GetComponentName'.\n");
 		return false;
 	}
 
 	if (!create_comp_func) {
-		log.writeString("ERROR - Could not find function named 'CreateComponent'.\n");
+		log.first.writeString("ERROR - Could not find function named 'CreateComponent'.\n");
 		return false;
 	}
 
 	if (!destroy_comp_func) {
-		log.writeString("ERROR - Could not find function named 'DestroyComponent'.\n");
+		log.first.writeString("ERROR - Could not find function named 'DestroyComponent'.\n");
 		return false;
 	}
 
@@ -74,7 +74,7 @@ bool ComponentManager::addComponents(DynamicLoader::ModulePtr& module)
 		AHashString name = comp_name_func(i);
 
 		if (_components.indexOf(name) != -1) {
-			log.printf("ERROR - Component with name '%s' already registered.\n", name.getBuffer());
+			log.first.printf("ERROR - Component with name '%s' already registered.\n", name.getBuffer());
 			return false;
 		}
 
@@ -86,7 +86,7 @@ bool ComponentManager::addComponents(DynamicLoader::ModulePtr& module)
 		};
 
 		_components.insert(name, entry);
-		log.printf("'%s' loaded\n", name.getBuffer());
+		log.first.printf("'%s' loaded\n", name.getBuffer());
 	}
 
 	return true;

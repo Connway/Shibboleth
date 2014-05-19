@@ -22,6 +22,8 @@ THE SOFTWARE.
 
 #pragma once
 
+//#define ALIGN_SIMD
+
 #if defined(_WIN32) || defined(_WIN64)
 	#define COMPILERALIGN16 __declspec(align(16))
 #elif defined(__linux__) || defined(__APPLE__)
@@ -45,12 +47,6 @@ THE SOFTWARE.
 	#else
 		#pragma message("Linking against OpenGL libraries")
 		#pragma comment(lib, "Opengl32.lib")
-	#endif
-
-	#ifdef USE_DI
-		#pragma message("Linking against DirectInput libraries")
-		#pragma comment(lib, "Dinput8.lib")
-		#pragma comment(lib,"dxguid.lib")
 	#endif
 #endif
 

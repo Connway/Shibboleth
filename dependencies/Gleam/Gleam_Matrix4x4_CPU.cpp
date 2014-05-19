@@ -458,42 +458,52 @@ bool Matrix4x4CPU::inverse(void)
 
 void Matrix4x4CPU::setTranslate(const Vector4CPU& translate)
 {
-	set(1.0f, 0.0f, 0.0f, 0.0f,
+	set(
+		1.0f, 0.0f, 0.0f, 0.0f,
 		0.0f, 1.0f, 0.0f, 0.0f,
 		0.0f, 0.0f, 1.0f, 0.0f,
-		translate[0], translate[1], translate[2], 1.0f);
+		translate[0], translate[1], translate[2], 1.0f
+	);
 }
 
 void Matrix4x4CPU::setTranslate(float x, float y, float z)
 {
-	set(1.0f, 0.0f, 0.0f, 0.0f,
+	set(
+		1.0f, 0.0f, 0.0f, 0.0f,
 		0.0f, 1.0f, 0.0f, 0.0f,
 		0.0f, 0.0f, 1.0f, 0.0f,
-		x, y, z, 1.0f);
+		x, y, z, 1.0f
+	);
 }
 
 void Matrix4x4CPU::setScale(float x, float y, float z)
 {
-	set(x, 0.0f, 0.0f, 0.0f,
+	set(
+		x, 0.0f, 0.0f, 0.0f,
 		0.0f, y, 0.0f, 0.0f,
 		0.0f, 0.0f, z, 0.0f,
-		0.0f, 0.0f, 0.0f, 1.0f);
+		0.0f, 0.0f, 0.0f, 1.0f
+	);
 }
 
 void Matrix4x4CPU::setScale(const Vector4CPU& scale)
 {
-	set(scale[0], 0.0f, 0.0f, 0.0f,
+	set(
+		scale[0], 0.0f, 0.0f, 0.0f,
 		0.0f, scale[1], 0.0f, 0.0f,
 		0.0f, 0.0f, scale[2], 0.0f,
-		0.0f, 0.0f, 0.0f, 1.0f);
+		0.0f, 0.0f, 0.0f, 1.0f
+	);
 }
 
 void Matrix4x4CPU::setScale(float scale)
 {
-	set(scale, 0.0f, 0.0f, 0.0f,
+	set(
+		scale, 0.0f, 0.0f, 0.0f,
 		0.0f, scale, 0.0f, 0.0f,
 		0.0f, 0.0f, scale, 0.0f,
-		0.0f, 0.0f, 0.0f, 1.0f);
+		0.0f, 0.0f, 0.0f, 1.0f
+	);
 }
 
 void Matrix4x4CPU::setRotation(float radians, const Vector4CPU& axis)
@@ -526,10 +536,12 @@ void Matrix4x4CPU::setRotationX(float radians)
 	float cf = cosf(radians);
 	float sf = sinf(radians);
 
-	set(1.0f, 0.0f, 0.0f, 0.0f,
+	set(
+		1.0f, 0.0f, 0.0f, 0.0f,
 		0.0f, cf, sf, 0.0f,
 		0.0f, -sf, cf, 0.0f,
-		0.0f, 0.0f, 0.0f, 1.0f);
+		0.0f, 0.0f, 0.0f, 1.0f
+	);
 }
 
 void Matrix4x4CPU::setRotationY(float radians)
@@ -537,10 +549,12 @@ void Matrix4x4CPU::setRotationY(float radians)
 	float cf = cosf(radians);
 	float sf = sinf(radians);
 
-	set(cf, 0.0f, -sf, 0.0f,
+	set(
+		cf, 0.0f, -sf, 0.0f,
 		0.0f, 1.0f, 0.0f, 0.0f,
 		sf, 0.0f, cf, 0.0f,
-		0.0f, 0.0f, 0.0f, 1.0f);
+		0.0f, 0.0f, 0.0f, 1.0f
+	);
 }
 
 void Matrix4x4CPU::setRotationZ(float radians)
@@ -548,10 +562,12 @@ void Matrix4x4CPU::setRotationZ(float radians)
 	float cf = cosf(radians);
 	float sf = sinf(radians);
 
-	set(cf, sf, 0.0f, 0.0f,
+	set(
+		cf, sf, 0.0f, 0.0f,
 		-sf, cf, 0.0f, 0.0f,
 		0.0f, 0.0f, 1.0f, 0.0f,
-		0.0f, 0.0f, 0.0f, 1.0f);
+		0.0f, 0.0f, 0.0f, 1.0f
+	);
 }
 
 void Matrix4x4CPU::setLookAtLH(const Vector4CPU& eye, const Vector4CPU& target, const Vector4CPU& up)

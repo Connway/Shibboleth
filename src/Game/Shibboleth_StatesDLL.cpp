@@ -37,13 +37,23 @@ enum States
 
 typedef Shibboleth::IState* (*CreateStateFunc)(Shibboleth::App&);
 
-CreateStateFunc create_funcs[] = {
+static CreateStateFunc create_funcs[] = {
 	&CreateStateT<Shibboleth::LoadComponentsState>
 };
 
-const char* state_names[] = {
+static const char* state_names[] = {
 	"LoadComponentState"
 };
+
+static Shibboleth::App* g_app = nullptr;
+
+DYNAMICEXPORT bool InitDLL(Shibboleth::App& app)
+{
+	//Gaff::JSON::SetMemoryFunctions(&Shibboleth::ShibbolethAllocate, &Shibboleth::ShibbolethFree);
+	Shibboleth::SetAllocator(app.getAllocator());
+	g_app = &app;
+	return true;
+}
 
 DYNAMICEXPORT const char* GetStateName(unsigned int id)
 {
@@ -56,11 +66,10 @@ DYNAMICEXPORT unsigned int GetNumStates(void)
 	return NUM_STATES;
 }
 
-DYNAMICEXPORT Shibboleth::IState* CreateState(Shibboleth::App& app, unsigned int id)
+DYNAMICEXPORT Shibboleth::IState* CreateState(unsigned int id)
 {
 	assert(id < NUM_STATES);
-	Shibboleth::SetAllocator(app.getAllocator());
-	return create_funcs[id](app);
+	return create_funcs[id](*g_app);
 }
 
 DYNAMICEXPORT void DestroyState(Shibboleth::IState* state, unsigned int)
