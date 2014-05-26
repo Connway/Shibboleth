@@ -755,6 +755,7 @@ void HashMap<Key, Value, Allocator>::reserve(unsigned int new_size)
 
 	_slots = (Slot*)_allocator.alloc(sizeof(Slot) * new_size);
 	_size = new_size;
+	_used = 0;
 
 	memset(_slots, 0, sizeof(Slot) * new_size);
 
@@ -762,6 +763,10 @@ void HashMap<Key, Value, Allocator>::reserve(unsigned int new_size)
 		for (unsigned int i = 0; i < old_size; ++i) {
 			if (old_data[i].occupied) {
 				moveMoveInsert(Move(old_data[i].key), Move(old_data[i].value));
+
+				// If Move semantics are not supported, then we still need to call destructor
+				deconstruct(&old_data[i].key);
+				deconstruct(&old_data[i].value);
 			}
 		}
 
@@ -1141,6 +1146,7 @@ void HashMap<String<T, Allocator>, Value, Allocator>::reserve(unsigned int new_s
 
 	_slots = (Slot*)_allocator.alloc(sizeof(Slot) * new_size);
 	_size = new_size;
+	_used = 0;
 
 	memset(_slots, 0, sizeof(Slot) * new_size);
 
@@ -1148,6 +1154,10 @@ void HashMap<String<T, Allocator>, Value, Allocator>::reserve(unsigned int new_s
 		for (unsigned int i = 0; i < old_size; ++i) {
 			if (old_data[i].occupied) {
 				moveMoveInsert(Move(old_data[i].key), Move(old_data[i].value));
+
+				// If Move semantics are not supported, then we still need to call destructor
+				deconstruct(&old_data[i].key);
+				deconstruct(&old_data[i].value);
 			}
 		}
 
@@ -1524,16 +1534,20 @@ void HashMap<HashString<T, Allocator>, Value, Allocator>::reserve(unsigned int n
 	Slot* old_data = _slots;
 	unsigned int old_size = _size;
 
-	_slots = (Slot*)_allocator.alloc(sizeof(Slot)* new_size);
+	_slots = (Slot*)_allocator.alloc(sizeof(Slot) * new_size);
 	_size = new_size;
 	_used = 0;
 
-	memset(_slots, 0, sizeof(Slot)* new_size);
+	memset(_slots, 0, sizeof(Slot) * new_size);
 
 	if (old_data) {
 		for (unsigned int i = 0; i < old_size; ++i) {
 			if (old_data[i].occupied) {
 				moveMoveInsert(Move(old_data[i].key), Move(old_data[i].value));
+
+				// If Move semantics are not supported, then we still need to call destructor
+				deconstruct(&old_data[i].key);
+				deconstruct(&old_data[i].value);
 			}
 		}
 
