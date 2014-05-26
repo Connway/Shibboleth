@@ -665,3 +665,9 @@ unsigned int Array<T, Allocator>::capacity(void) const
 {
 	return _size;
 }
+
+template <class T, class Allocator>
+void Array<T, Allocator>::setAllocator(const Allocator& allocator)
+{
+	_allocator = allocator;
+}

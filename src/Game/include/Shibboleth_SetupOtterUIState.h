@@ -36,7 +36,7 @@ public:
 	SetupOtterUIState(App& app);
 	~SetupOtterUIState(void);
 
-	bool init(unsigned int state_id);
+	bool init(unsigned int /*state_id*/);
 
 	void enter(void);
 	void update(void);
@@ -47,7 +47,7 @@ private:
 	OtterUIRenderer _renderer;
 
 	App& _app;
-	unsigned int _state_id;
+	//unsigned int _state_id;
 
 	GAFF_NO_COPY(SetupOtterUIState);
 	GAFF_NO_MOVE(SetupOtterUIState);

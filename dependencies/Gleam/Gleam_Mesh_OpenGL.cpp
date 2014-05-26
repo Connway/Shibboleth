@@ -84,11 +84,10 @@ void MeshGL::setTopologyType(TOPOLOGY_TYPE topology)
 	_topology = topology;
 }
 
-void MeshGL::render(IRenderDevice&)
+void MeshGL::renderNonIndexed(IRenderDevice&, unsigned int vert_count, unsigned int start_location)
 {
-	assert(_vert_data.size() && _indices && !_indices->isD3D());
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ((BufferGL*)_indices)->getBuffer());
-	glDrawElements(_gl_topology, getIndexCount(), GL_UNSIGNED_INT, 0);
+	assert(_vert_data.size());
+	glDrawArrays(_gl_topology, start_location, vert_count);
 }
 
 void MeshGL::renderInstanced(IRenderDevice&, unsigned int count)
@@ -96,6 +95,13 @@ void MeshGL::renderInstanced(IRenderDevice&, unsigned int count)
 	assert(_vert_data.size() && _indices && !_indices->isD3D());
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ((BufferGL*)_indices)->getBuffer());
 	glDrawElementsInstanced(_gl_topology, getIndexCount(), GL_UNSIGNED_INT, 0, count);
+}
+
+void MeshGL::render(IRenderDevice&)
+{
+	assert(_vert_data.size() && _indices && !_indices->isD3D());
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ((BufferGL*)_indices)->getBuffer());
+	glDrawElements(_gl_topology, getIndexCount(), GL_UNSIGNED_INT, 0);
 }
 
 bool MeshGL::isD3D(void) const

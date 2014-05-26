@@ -47,12 +47,14 @@ template <class Key, class Value, class Allocator>
 const Map<Key, Value, Allocator>& Map<Key, Value, Allocator>::operator=(const Map<Key, Value, Allocator>& rhs)
 {
 	_array = rhs._array;
+	return *this;
 }
 
 template <class Key, class Value, class Allocator>
 const Map<Key, Value, Allocator>& Map<Key, Value, Allocator>::operator=(Map<Key, Value, Allocator>&& rhs)
 {
 	_array = Move(rhs._array);
+	return *this;
 }
 
 template <class Key, class Value, class Allocator>
@@ -171,6 +173,13 @@ template <class Key, class Value, class Allocator>
 bool Map<Key, Value, Allocator>::empty(void) const
 {
 	return _array.empty();
+}
+
+template <class Key, class Value, class Allocator>
+void Map<Key, Value, Allocator>::setAllocator(const Allocator& allocator)
+{
+	_array.setAllocator(allocator);
+	_allocator = allocator;
 }
 
 template <class Key, class Value, class Allocator>

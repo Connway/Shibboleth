@@ -788,9 +788,21 @@ bool HashMap<Key, Value, Allocator>::empty(void) const
 }
 
 template <class Key, class Value, class Allocator>
+void HashMap<Key, Value, Allocator>::setAllocator(const Allocator& allocator)
+{
+	_allocator = allocator;
+}
+
+template <class Key, class Value, class Allocator>
 typename HashMap<Key, Value, Allocator>::Iterator HashMap<Key, Value, Allocator>::begin(void) const
 {
-	return Iterator(_slots, _slots + _size, _slots - 1);
+	Iterator it(_slots, _slots + _size, _slots - 1);
+
+	if (_slots && !_slots->occupied) {
+		++it;
+	}
+
+	return it;
 }
 
 template <class Key, class Value, class Allocator>
@@ -802,7 +814,13 @@ typename HashMap<Key, Value, Allocator>::Iterator HashMap<Key, Value, Allocator>
 template <class Key, class Value, class Allocator>
 typename HashMap<Key, Value, Allocator>::Iterator HashMap<Key, Value, Allocator>::rbegin(void) const
 {
-	return Iterator(_slots + _size - 1, _slots + _size, _slots - 1);
+	Iterator it(_slots + _size - 1, _slots + _size, _slots - 1);
+
+	if (((_slots + _size - 1)) && !(_slots + _size - 1)->occupied) {
+		--it;
+	}
+
+	return it;
 }
 
 template <class Key, class Value, class Allocator>
@@ -1156,9 +1174,21 @@ bool HashMap<String<T, Allocator>, Value, Allocator>::empty(void) const
 }
 
 template <class Value, class Allocator, class T>
+void HashMap<String<T, Allocator>, Value, Allocator>::setAllocator(const Allocator& allocator)
+{
+	_allocator = allocator;
+}
+
+template <class Value, class Allocator, class T>
 typename HashMap<String<T, Allocator>, Value, Allocator>::Iterator HashMap<String<T, Allocator>, Value, Allocator>::begin(void) const
 {
-	return Iterator(_slots, _slots + _size, _slots - 1);
+	Iterator it(_slots, _slots + _size, _slots - 1);
+
+	if (_slots && !_slots->occupied) {
+		++it;
+	}
+
+	return it;
 }
 
 template <class Value, class Allocator, class T>
@@ -1170,7 +1200,13 @@ typename HashMap<String<T, Allocator>, Value, Allocator>::Iterator HashMap<Strin
 template <class Value, class Allocator, class T>
 typename HashMap<String<T, Allocator>, Value, Allocator>::Iterator HashMap<String<T, Allocator>, Value, Allocator>::rbegin(void) const
 {
-	return Iterator(_slots + _size - 1, _slots + _size, _slots - 1);
+	Iterator it(_slots + _size - 1, _slots + _size, _slots - 1);
+
+	if (((_slots + _size - 1)) && !(_slots + _size - 1)->occupied) {
+		--it;
+	}
+
+	return it;
 }
 
 template <class Value, class Allocator, class T>
@@ -1524,9 +1560,21 @@ bool HashMap<HashString<T, Allocator>, Value, Allocator>::empty(void) const
 }
 
 template <class Value, class Allocator, class T>
+void HashMap<HashString<T, Allocator>, Value, Allocator>::setAllocator(const Allocator& allocator)
+{
+	_allocator = allocator;
+}
+
+template <class Value, class Allocator, class T>
 typename HashMap<HashString<T, Allocator>, Value, Allocator>::Iterator HashMap<HashString<T, Allocator>, Value, Allocator>::begin(void) const
 {
-	return Iterator(_slots, _slots + _size, _slots - 1);
+	Iterator it(_slots, _slots + _size, _slots - 1);
+
+	if (_slots && !_slots->occupied) {
+		++it;
+	}
+
+	return it;
 }
 
 template <class Value, class Allocator, class T>
@@ -1538,7 +1586,13 @@ typename HashMap<HashString<T, Allocator>, Value, Allocator>::Iterator HashMap<H
 template <class Value, class Allocator, class T>
 typename HashMap<HashString<T, Allocator>, Value, Allocator>::Iterator HashMap<HashString<T, Allocator>, Value, Allocator>::rbegin(void) const
 {
-	return Iterator(_slots + _size - 1, _slots + _size, _slots - 1);
+	Iterator it(_slots + _size - 1, _slots + _size, _slots - 1);
+
+	if (((_slots + _size - 1)) && !(_slots + _size - 1)->occupied) {
+		--it;
+	}
+
+	return it;
 }
 
 template <class Value, class Allocator, class T>

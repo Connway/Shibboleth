@@ -22,73 +22,61 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Shibboleth_ResourceDefines.h"
-#include "Shibboleth_ResourceManager.h"
-#include "Shibboleth_Map.h"
-#include <Interfaces/IRenderer.h>
+#include "Shibboleth_Array.h"
+#include <Gaff_IVirtualDestructor.h>
+#include <Gleam_IShader.h>
+#include <Gaff_RefPtr.h>
+
+#define TEX_LOADER_NORMALIZED 1
+#define TEX_LOADER_CUBEMAP 2
 
 namespace Gleam
 {
+	class IShaderResourceView;
 	class IRenderDevice;
+	class IRenderTarget;
+	class ISamplerState;
 	class IRenderState;
 	class ITexture;
+	class ILayout;
+	class IProgram;
+	class IShader;
 	class IBuffer;
+	class IModel;
+	class IMesh;
 }
 
 NS_SHIBBOLETH
 
-class App;
+typedef Gaff::RefPtr<Gleam::IShaderResourceView> ShaderResourceViewPtr;
+typedef Gaff::RefPtr<Gleam::IRenderDevice> RenderDevicePtr;
+typedef Gaff::RefPtr<Gleam::IRenderTarget> RenderTargetPtr;
+typedef Gaff::RefPtr<Gleam::ISamplerState> SamplerStatePtr;
+typedef Gaff::RefPtr<Gleam::IRenderState> RenderStatePtr;
+typedef Gaff::RefPtr<Gleam::ITexture> TexturePtr;
+typedef Gaff::RefPtr<Gleam::ILayout> LayoutPtr;
+typedef Gaff::RefPtr<Gleam::IProgram> ProgramPtr;
+typedef Gaff::RefPtr<Gleam::IShader> ShaderPtr;
+typedef Gaff::RefPtr<Gleam::IBuffer> BufferPtr;
+typedef Gaff::RefPtr<Gleam::IModel> ModelPtr;
+typedef Gaff::RefPtr<Gleam::IMesh> MeshPtr;
 
-class OtterUIRenderer : public Otter::IRenderer
+struct TextureData : public Gaff::IVirtualDestructor
 {
-public:
-	OtterUIRenderer(App& app);
-	~OtterUIRenderer(void);
+	Array<TexturePtr> textures;
+	bool normalized;
+	bool cubemap;
+};
 
-	bool init(void);
+struct ShaderData : public Gaff::IVirtualDestructor
+{
+	Array<ShaderPtr> shaders;
+	Gleam::IShader::SHADER_TYPE shader_type;
+};
 
-	// resize
-	// get output texture srv
-
-	void OnLoadTexture(sint32 textureID, const char* szPath);
-	void OnUnloadTexture(sint32 textureID);
-
-	void OnDrawBegin();
-	void OnDrawEnd();
-
-	void OnCommitVertexBuffer(const Otter::GUIVertex* pVertices, uint32 numVertices);
-	void OnDrawBatch(const Otter::DrawBatch& batch);
-
-	void SetStencilState(StencilState state);
-
-private:
-	struct OutputData
-	{
-		RenderTargetPtr render_target;
-		TexturePtr output_texture;
-		TexturePtr stencil_buffer;
-	};
-
-	struct DeviceData
-	{
-		Array<OutputData> output_data;
-		RenderStatePtr render_state[3];
-		BufferPtr vertex_buffer;
-		MeshPtr mesh;
-	};
-
-	ResourceManager& _resource_manager;
-	App& _app;
-
-	Gleam::IRenderDevice* _render_device;
-	Gaff::SpinLock* _rd_spinlock;
-
-	Map<int, ResourcePtr> _resource_map;
-	Array<DeviceData> _device_data;
-
-	Otter::IRenderer::StencilState _stencil_state;
-
-	GAFF_NO_COPY(OtterUIRenderer);
+struct ProgramData : public Gaff::IVirtualDestructor
+{
+	Array<ProgramPtr> programs;
 };
 
 NS_END

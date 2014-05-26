@@ -23,5 +23,6 @@
     <ClInclude Include="..\src\Shared\include\Shibboleth_ThreadPool.h" />
     <ClInclude Include="..\src\Shared\include\Shibboleth_ITask.h" />
     <ClInclude Include="..\src\Shared\include\Shibboleth_Map.h" />
+    <ClInclude Include="..\src\Shared\include\Shibboleth_LockDefines.h" />
   </ItemGroup>
 </Project>

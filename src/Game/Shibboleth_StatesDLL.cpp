@@ -20,8 +20,39 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
+#include "Shibboleth_CreateResourceLoadersState.h"
 #include "Shibboleth_LoadComponentsState.h"
+#include "Shibboleth_SetupOtterUIState.h"
 #include <Shibboleth_App.h>
+#include <Gleam_Global.h>
+#include <Gaff_JSON.h>
+
+class LoopState : public Shibboleth::IState
+{
+public:
+	LoopState(Shibboleth::App& app): _app(app) {}
+
+	bool init(unsigned int)
+	{
+		return true;
+	}
+
+	void enter(void)
+	{
+	}
+
+	void update(void)
+	{
+		_app.quit();
+	}
+
+	void exit(void)
+	{
+	}
+
+private:
+	Shibboleth::App& _app;
+};
 
 template <class State>
 Shibboleth::IState* CreateStateT(Shibboleth::App& app)
@@ -32,25 +63,35 @@ Shibboleth::IState* CreateStateT(Shibboleth::App& app)
 enum States
 {
 	LOAD_COMPONENT_STATE = 0,
+	CREATE_RESOURCE_LOADERS_STATE,
+	SETUP_OTTER_UI_STATE,
+	LOOP_FOREVER_STATE,
 	NUM_STATES
 };
 
 typedef Shibboleth::IState* (*CreateStateFunc)(Shibboleth::App&);
 
 static CreateStateFunc create_funcs[] = {
-	&CreateStateT<Shibboleth::LoadComponentsState>
+	&CreateStateT<Shibboleth::LoadComponentsState>,
+	&CreateStateT<Shibboleth::CreateResourceLoadersState>,
+	&CreateStateT<Shibboleth::SetupOtterUIState>,
+	&CreateStateT<LoopState>
 };
 
-static const char* state_names[] = {
-	"LoadComponentState"
+static const char* state_names[NUM_STATES] = {
+	"LoadComponentState",
+	"CreateResourceLoadersState",
+	"SetupOtterUIState",
+	"loopforeverstate"
 };
 
 static Shibboleth::App* g_app = nullptr;
 
 DYNAMICEXPORT bool InitDLL(Shibboleth::App& app)
 {
-	//Gaff::JSON::SetMemoryFunctions(&Shibboleth::ShibbolethAllocate, &Shibboleth::ShibbolethFree);
+	Gaff::JSON::SetMemoryFunctions(&Shibboleth::ShibbolethAllocate, &Shibboleth::ShibbolethFree);
 	Shibboleth::SetAllocator(app.getAllocator());
+	Gleam::SetAllocator(&app.getAllocator());
 	g_app = &app;
 	return true;
 }

@@ -52,7 +52,7 @@ bool OtterUIManager::init(unsigned int memory_size_bytes, bool enable_pre_transf
 	}
 
 	return _system->EnablePreTransformVerts(enable_pre_transformed_verts) == Otter::kResult_OK &&
-			_system->EnableLogging(true) == Otter::kResult_OK;
+		_system->EnableLogging(true) == Otter::kResult_OK;
 }
 
 void OtterUIManager::destroy(void)
@@ -83,10 +83,11 @@ bool OtterUIManager::loadScene(const char* filename, const char* name, Otter::Sc
 	return out_temp != nullptr;
 }
 
-bool OtterUIManager::loadScene(const char* filename, unsigned char* buffer, unsigned int buffer_size, bool copy_buffer, const char* name, Otter::Scene** scene_out)
+bool OtterUIManager::loadScene(unsigned char* buffer, unsigned int buffer_size, bool copy_buffer, const char* name, Otter::Scene** scene_out)
 {
-	assert(_system && filename && buffer && buffer_size && name && strlen(name));
+	assert(_system && buffer && buffer_size && name && strlen(name));
 	Otter::Scene* out_temp = nullptr;
+
 	_system->LoadScene(buffer, buffer_size, copy_buffer, &out_temp);
 
 	if (out_temp) {

@@ -85,7 +85,7 @@ static GLenum _compare_funcs[IRenderState::COMPARE_SIZE] = {
 
 RenderStateGL::RenderStateGL(void):
 	_wireframe(false), _depth_test(false), _stencil_test(false),
-	_depth_func(COMPARE_ALWAYS), _depth_stencil_ref(0), _stencil_read_mask(0xFF),
+	_depth_func(COMPARE_ALWAYS), _stencil_ref(0), _stencil_read_mask(0xFF),
 	_stencil_write_mask(0xFF), _cull_face_mode(CULL_BACK), _front_face_counter_clockwise(false)
 {
 }
@@ -96,7 +96,7 @@ RenderStateGL::~RenderStateGL(void)
 
 bool RenderStateGL::init(IRenderDevice&, bool wireframe, bool depth_test, bool stencil_test,
 							COMPARISON_FUNC depth_func, StencilData front_face,
-							StencilData back_face, unsigned int depth_stencil_ref,
+							StencilData back_face, unsigned int stencil_ref,
 							char stencil_read_mask, char stencil_write_mask,
 							CULL_MODE cull_face_mode, bool front_face_counter_clockwise,
 							const BlendData* blend_data)
@@ -107,7 +107,7 @@ bool RenderStateGL::init(IRenderDevice&, bool wireframe, bool depth_test, bool s
 	_depth_func = depth_func;
 	_front_face = front_face;
 	_back_face = back_face;
-	_depth_stencil_ref = depth_stencil_ref;
+	_stencil_ref = stencil_ref;
 	_stencil_read_mask = stencil_read_mask;
 	_stencil_write_mask = stencil_write_mask;
 	_cull_face_mode = cull_face_mode;
@@ -122,7 +122,7 @@ bool RenderStateGL::init(IRenderDevice&, bool wireframe, bool depth_test, bool s
 
 bool RenderStateGL::init(IRenderDevice&, bool wireframe, bool depth_test, bool stencil_test,
 							COMPARISON_FUNC depth_func, StencilData front_face,
-							StencilData back_face, unsigned int depth_stencil_ref,
+							StencilData back_face, unsigned int stencil_ref,
 							char stencil_read_mask, char stencil_write_mask,
 							CULL_MODE cull_face_mode, bool front_face_counter_clockwise,
 							BlendData blend_data)
@@ -133,7 +133,7 @@ bool RenderStateGL::init(IRenderDevice&, bool wireframe, bool depth_test, bool s
 	_depth_func = depth_func;
 	_front_face = front_face;
 	_back_face = back_face;
-	_depth_stencil_ref = depth_stencil_ref;
+	_stencil_ref = stencil_ref;
 	_stencil_read_mask = stencil_read_mask;
 	_stencil_write_mask = stencil_write_mask;
 	_cull_face_mode = cull_face_mode;
@@ -165,8 +165,8 @@ void RenderStateGL::set(IRenderDevice&) const
 	glStencilOpSeparate(GL_BACK, _stencil_ops[_back_face.stencil_depth_fail - 1],
 						_stencil_ops[_back_face.stencil_pass_depth_fail - 1],
 						_stencil_ops[_back_face.stencil_depth_pass - 1]);
-	glStencilFuncSeparate(GL_FRONT, _compare_funcs[_front_face.comp_func - 1], _depth_stencil_ref, _stencil_read_mask);
-	glStencilFuncSeparate(GL_BACK, _compare_funcs[_back_face.comp_func - 1], _depth_stencil_ref, _stencil_read_mask);
+	glStencilFuncSeparate(GL_FRONT, _compare_funcs[_front_face.comp_func - 1], _stencil_ref, _stencil_read_mask);
+	glStencilFuncSeparate(GL_BACK, _compare_funcs[_back_face.comp_func - 1], _stencil_ref, _stencil_read_mask);
 	glStencilMask(_stencil_write_mask);
 
 	_disableEnable[_cull_face_mode != CULL_NONE](GL_CULL_FACE);

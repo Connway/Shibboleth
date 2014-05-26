@@ -65,9 +65,9 @@ bool App::init(void)
 
 	_log_file_pair = &_logger.getLogFile(log_file_name);
 
-	_log_file_pair->first.writeString("\n==================================================\n");
 	_log_file_pair->first.writeString("==================================================\n");
-	_log_file_pair->first.writeString("Initializing Game\n");
+	_log_file_pair->first.writeString("==================================================\n");
+	_log_file_pair->first.writeString("Initializing Game...\n");
 
 	Gaff::JSON::SetMemoryFunctions(&ShibbolethAllocate, &ShibbolethFree);
 
@@ -91,7 +91,7 @@ bool App::init(void)
 // Still single-threaded at this point, so ok that we're not using the spinlock
 bool App::loadManagers(void)
 {
-	_log_file_pair->first.writeString("Loading Managers\n");
+	_log_file_pair->first.writeString("Loading Managers...\n");
 
 	bool error = false;
 
@@ -179,7 +179,7 @@ bool App::loadManagers(void)
 // Still single-threaded at this point, so ok that we're not using the spinlock
 bool App::loadStates(void)
 {
-	_log_file_pair->first.writeString("Loading States\n");
+	_log_file_pair->first.writeString("Loading States...\n");
 
 	Gaff::JSON state_data;
 
@@ -206,6 +206,8 @@ bool App::loadStates(void)
 		return false;
 	}
 
+	unsigned int state_id = 0;
+
 	for (size_t i = 0; i < states.size(); ++i) {
 		Gaff::JSON state = states[i];
 
@@ -214,7 +216,7 @@ bool App::loadStates(void)
 		}
 
 		Gaff::JSON transitions = state["transitions"];
-		Gaff::JSON module_name = states["module"];
+		Gaff::JSON module_name = state["module"];
 		Gaff::JSON state_name = state["name"];
 
 		if (!transitions.isArray()) {
@@ -236,7 +238,7 @@ bool App::loadStates(void)
 		filename += module_name.getString();
 		filename += BIT_EXTENSION DYNAMIC_EXTENSION;
 
-		DynamicLoader::ModulePtr module = _dynamic_loader.loadModule(filename, state_name.getString());
+		DynamicLoader::ModulePtr module = _dynamic_loader.loadModule(filename, module_name.getString());
 
 		if (module) {
 			StateMachine::StateEntry::InitStateDLLFunc init_func = module->GetFunc<StateMachine::StateEntry::InitStateDLLFunc>("InitDLL");
@@ -258,15 +260,15 @@ bool App::loadStates(void)
 			}
 
 			unsigned int num_states = num_states_func();
-			unsigned int state_id = 0;
+			unsigned int i = 0;
 
-			for (; state_id < num_states; ++state_id) {
-				if (!strcmp(state_name.getString(), get_state_name_func(state_id))) {
+			for (; i < num_states; ++i) {
+				if (!strcmp(state_name.getString(), get_state_name_func(i))) {
 					break;
 				}
 			}
 
-			if (state_id == num_states) {
+			if (i == num_states) {
 				_log_file_pair->first.printf("ERROR - Failed to find state with name '%s' in dynamic module '%s'\n", state_name.getString(), filename.getBuffer());
 				return false;
 			}
@@ -277,6 +279,7 @@ bool App::loadStates(void)
 
 			if (entry.create_func && entry.destroy_func) {
 				entry.state = entry.create_func(state_id);
+				++state_id;
 
 				if (entry.state) {
 					entry.state->_transitions.reserve((unsigned int)transitions.size());

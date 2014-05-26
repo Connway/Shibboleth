@@ -21,6 +21,8 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Gleam_Global.h"
+#include <Gaff_ScopedLock.h>
+#include <Gaff_SpinLock.h>
 #include <Gaff_File.h>
 #include <iostream>
 #include <cstdarg>
@@ -42,6 +44,7 @@ static Gaff::IAllocator* g_allocator = new Gaff::DefaultAllocator;
 static const GChar* g_log_file_name = GC("gleam.log");
 static bool default_alloc = true;
 
+static Gaff::SpinLock g_spin_lock;
 static Gaff::File g_log_file;
 
 void SetAllocator(Gaff::IAllocator* allocator)
@@ -91,6 +94,8 @@ const GChar* GetLogFileName(void)
 
 void WriteMessageToLog(const char* msg, size_t size, LOG_MSG_TYPE type)
 {
+	Gaff::ScopedLock<Gaff::SpinLock> scoped_lock(g_spin_lock);
+
 	if (!g_log_file.isOpen()) {
 		g_log_file.open(g_log_file_name, Gaff::File::APPEND);
 	}
@@ -117,6 +122,8 @@ void WriteMessageToLog(const char* msg, size_t size, LOG_MSG_TYPE type)
 
 void PrintfToLog(const char* format_string, LOG_MSG_TYPE type, ...)
 {
+	Gaff::ScopedLock<Gaff::SpinLock> scoped_lock(g_spin_lock);
+
 	if (!g_log_file.isOpen()) {
 		g_log_file.open(g_log_file_name, Gaff::File::APPEND);
 	}

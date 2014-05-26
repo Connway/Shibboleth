@@ -45,26 +45,125 @@ public:
 
 	virtual ~IShader(void) {}
 
-	virtual bool initVertex(IRenderDevice& rd, const GleamGString& file_path) = 0;
-	virtual bool initPixel(IRenderDevice& rd, const GleamGString& file_path) = 0;
-	virtual bool initDomain(IRenderDevice& rd, const GleamGString& file_path) = 0;
-	virtual bool initGeometry(IRenderDevice& rd, const GleamGString& file_path) = 0;
-	virtual bool initHull(IRenderDevice& rd, const GleamGString& file_path) = 0;
-	virtual bool initCompute(IRenderDevice& rd, const GleamGString& file_path) = 0;
+	INLINE bool init(IRenderDevice& rd, const GleamAString& file_path, SHADER_TYPE shader_type)
+	{
+		return init(rd, file_path.getBuffer(), shader_type);
+	}
 
-	virtual bool initVertex(IRenderDevice&, const GChar* file_path) = 0;
-	virtual bool initPixel(IRenderDevice&, const GChar* file_path) = 0;
-	virtual bool initDomain(IRenderDevice&, const GChar* file_path) = 0;
-	virtual bool initGeometry(IRenderDevice&, const GChar* file_path) = 0;
-	virtual bool initHull(IRenderDevice&, const GChar* file_path) = 0;
-	virtual bool initCompute(IRenderDevice&, const GChar* file_path) = 0;
+	INLINE bool initVertex(IRenderDevice& rd, const GleamAString& file_path)
+	{
+		return initVertex(rd, file_path.getBuffer());
+	}
 
-	virtual bool initVertexSource(IRenderDevice& rd, const GleamAString& source) = 0;
-	virtual bool initPixelSource(IRenderDevice& rd, const GleamAString& source) = 0;
-	virtual bool initDomainSource(IRenderDevice& rd, const GleamAString& source) = 0;
-	virtual bool initGeometrySource(IRenderDevice& rd, const GleamAString& source) = 0;
-	virtual bool initHullSource(IRenderDevice& rd, const GleamAString& source) = 0;
-	virtual bool initComputeSource(IRenderDevice& rd, const GleamAString& source) = 0;
+	INLINE bool initPixel(IRenderDevice& rd, const GleamAString& file_path)
+	{
+		return initPixel(rd, file_path.getBuffer());
+	}
+
+	INLINE bool initDomain(IRenderDevice& rd, const GleamAString& file_path)
+	{
+		return initDomain(rd, file_path.getBuffer());
+	}
+
+	INLINE bool initGeometry(IRenderDevice& rd, const GleamAString& file_path)
+	{
+		return initGeometry(rd, file_path.getBuffer());
+	}
+
+	INLINE bool initHull(IRenderDevice& rd, const GleamAString& file_path)
+	{
+		return initHull(rd, file_path.getBuffer());
+	}
+
+	INLINE bool initCompute(IRenderDevice& rd, const GleamAString& file_path)
+	{
+		return initCompute(rd, file_path.getBuffer());
+	}
+
+	INLINE bool initVertexSource(IRenderDevice& rd, const GleamAString& source)
+	{
+		return initVertexSource(rd, source.getBuffer());
+	}
+
+	INLINE bool initPixelSource(IRenderDevice& rd, const GleamAString& source)
+	{
+		return initPixelSource(rd, source.getBuffer());
+	}
+
+	INLINE bool initDomainSource(IRenderDevice& rd, const GleamAString& source)
+	{
+		return initDomainSource(rd, source.getBuffer());
+	}
+
+	INLINE bool initGeometrySource(IRenderDevice& rd, const GleamAString& source)
+	{
+		return initGeometrySource(rd, source.getBuffer());
+	}
+
+	INLINE bool initHullSource(IRenderDevice& rd, const GleamAString& source)
+	{
+		return initHullSource(rd, source.getBuffer());
+	}
+
+	INLINE bool initComputeSource(IRenderDevice& rd, const GleamAString& source)
+	{
+		return initComputeSource(rd, source.getBuffer());
+	}
+
+#ifdef _UNICODE
+	INLINE bool init(IRenderDevice& rd, const GleamWString& file_path, SHADER_TYPE shader_type)
+	{
+		return init(rd, file_path.getBuffer(), shader_type);
+	}
+
+	INLINE bool initVertex(IRenderDevice& rd, const GleamWString& file_path)
+	{
+		return initVertex(rd, file_path.getBuffer());
+	}
+
+	INLINE bool initPixel(IRenderDevice& rd, const GleamWString& file_path)
+	{
+		return initPixel(rd, file_path.getBuffer());
+	}
+
+	INLINE bool initDomain(IRenderDevice& rd, const GleamWString& file_path)
+	{
+		return initDomain(rd, file_path.getBuffer());
+	}
+
+	INLINE bool initGeometry(IRenderDevice& rd, const GleamWString& file_path)
+	{
+		return initGeometry(rd, file_path.getBuffer());
+	}
+
+	INLINE bool initHull(IRenderDevice& rd, const GleamWString& file_path)
+	{
+		return initHull(rd, file_path.getBuffer());
+	}
+
+	INLINE bool initCompute(IRenderDevice& rd, const GleamWString& file_path)
+	{
+		return initCompute(rd, file_path.getBuffer());
+	}
+
+	virtual bool init(IRenderDevice& rd, const char* file_path, SHADER_TYPE shader_type) = 0;
+
+	virtual bool initVertex(IRenderDevice&, const wchar_t* file_path) = 0;
+	virtual bool initPixel(IRenderDevice&, const wchar_t* file_path) = 0;
+	virtual bool initDomain(IRenderDevice&, const wchar_t* file_path) = 0;
+	virtual bool initGeometry(IRenderDevice&, const wchar_t* file_path) = 0;
+	virtual bool initHull(IRenderDevice&, const wchar_t* file_path) = 0;
+	virtual bool initCompute(IRenderDevice&, const wchar_t* file_path) = 0;
+#endif
+
+	virtual bool init(IRenderDevice& rd, const wchar_t* file_path, SHADER_TYPE shader_type) = 0;
+
+	virtual bool initVertex(IRenderDevice&, const char* file_path) = 0;
+	virtual bool initPixel(IRenderDevice&, const char* file_path) = 0;
+	virtual bool initDomain(IRenderDevice&, const char* file_path) = 0;
+	virtual bool initGeometry(IRenderDevice&, const char* file_path) = 0;
+	virtual bool initHull(IRenderDevice&, const char* file_path) = 0;
+	virtual bool initCompute(IRenderDevice&, const char* file_path) = 0;
 
 	virtual bool initVertexSource(IRenderDevice& rd, const char* source) = 0;
 	virtual bool initPixelSource(IRenderDevice& rd, const char* source) = 0;

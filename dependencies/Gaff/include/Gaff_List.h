@@ -110,6 +110,8 @@ public:
 	void insert(unsigned int position, const T& val);
 	void insert(const Iterator& it, const T& val);
 
+	void setAllocator(const Allocator& allocator);
+
 private:
 	Allocator _allocator;
 	unsigned int _size;

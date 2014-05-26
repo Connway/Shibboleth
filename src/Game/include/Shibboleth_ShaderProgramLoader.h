@@ -22,25 +22,34 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Gaff_Defines.h"
+#include "Shibboleth_IResourceLoader.h"
+#include "Shibboleth_ResourceDefines.h"
+#include "Shibboleth_Array.h"
+#include <Gleam_IShader.h>
 
-NS_GAFF
+NS_SHIBBOLETH
 
-class SpinLock
+class RenderManager;
+
+class ShaderProgramLoader : public IResourceLoader
 {
 public:
-	SpinLock(void);
-	~SpinLock(void);
+	ShaderProgramLoader(RenderManager& render_mgr);
+	~ShaderProgramLoader(void);
 
-	INLINE void lock(void) const;
-	INLINE bool tryLock(void);
-	INLINE void unlock(void) const;
+	Gaff::IVirtualDestructor* load(const char* file_name, unsigned long long);
 
 private:
-	mutable volatile long _lock;
+	RenderManager& _render_mgr;
 
-	GAFF_NO_COPY(SpinLock);
-	GAFF_NO_MOVE(SpinLock);
+	Array<ShaderPtr> loadShaders(const char* file_name, Gleam::IShader::SHADER_TYPE shader_type);
+	Array<ProgramPtr> createPrograms(
+		Array<ShaderPtr>& vert_shaders, Array<ShaderPtr>& pixel_shaders, Array<ShaderPtr>& hull_shaders,
+		Array<ShaderPtr>& geometry_shaders, Array<ShaderPtr>& domain_shaders
+	);
+
+	GAFF_NO_COPY(ShaderProgramLoader);
+	GAFF_NO_MOVE(ShaderProgramLoader);
 };
 
 NS_END

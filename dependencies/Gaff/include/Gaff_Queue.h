@@ -60,6 +60,8 @@ public:
 
 	bool empty(void) const;
 
+	void setAllocator(const Allocator& allocator);
+
 private:
 	Allocator _allocator;
 	unsigned int _used, _size;

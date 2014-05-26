@@ -48,7 +48,7 @@ public:
 	void destroy(void);
 
 	INLINE bool loadScene(const char* filename, const char* name, Otter::Scene** scene_out = nullptr);
-	INLINE bool loadScene(const char* filename, unsigned char* buffer, unsigned int buffer_size, bool copy_buffer, const char* name, Otter::Scene** scene_out = nullptr);
+	INLINE bool loadScene(unsigned char* buffer, unsigned int buffer_size, bool copy_buffer, const char* name, Otter::Scene** scene_out = nullptr);
 
 	INLINE void clear(void);
 

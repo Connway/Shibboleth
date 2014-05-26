@@ -147,6 +147,8 @@ public:
 	unsigned int size(void) const;
 	unsigned int capacity(void) const;
 
+	void setAllocator(const Allocator& allocator);
+
 private:
 	Allocator _allocator;
 	T* _array;

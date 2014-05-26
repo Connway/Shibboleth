@@ -89,8 +89,9 @@ public:
 	INLINE void setIndexCount(unsigned int count);
 	INLINE unsigned int getIndexCount(void) const;
 
-	virtual void render(IRenderDevice& rd) = 0;
+	virtual void renderNonIndexed(IRenderDevice& rd, unsigned int vert_count, unsigned int start_location = 0) = 0;
 	virtual void renderInstanced(IRenderDevice& rd, unsigned int count) = 0;
+	virtual void render(IRenderDevice& rd) = 0;
 
 	virtual bool isD3D(void) const = 0;
 

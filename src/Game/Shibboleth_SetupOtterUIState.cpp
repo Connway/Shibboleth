@@ -35,13 +35,13 @@ SetupOtterUIState::~SetupOtterUIState(void)
 {
 }
 
-bool SetupOtterUIState::init(unsigned int state_id)
+bool SetupOtterUIState::init(unsigned int /*state_id*/)
 {
 	// Make sure we have a transition for when we finish loading.
 	// If we have more than one transition, you're using this state wrong
 	// and should fix it.
 	assert(_transitions.size() == 1);
-	_state_id = state_id;
+	//_state_id = state_id;
 	return true;
 }
 
@@ -56,6 +56,8 @@ void SetupOtterUIState::update(void)
 	//otterui_manager.setSoundSystem();
 	otterui_manager.setFileSystem(&_file_system);
 	otterui_manager.setRenderer(&_renderer);
+
+	_app.getStateMachine().switchState(_transitions[0]);
 }
 
 void SetupOtterUIState::exit(void)

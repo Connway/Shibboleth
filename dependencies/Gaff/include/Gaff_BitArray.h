@@ -78,6 +78,8 @@ public:
 	void resize(unsigned int new_size);
 	void reserve(unsigned int reserve_size);
 
+	void setAllocator(const Allocator& allocator);
+
 private:
 	Array<unsigned char, Allocator> _bit_array;
 	unsigned int _used;

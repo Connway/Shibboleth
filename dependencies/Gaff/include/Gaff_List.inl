@@ -436,3 +436,9 @@ void List<T, Allocator>::insert(const Iterator& it, const T& val)
 		++_size;
 	}
 }
+
+template <class T, class Allocator>
+void List<T, Allocator>::setAllocator(const Allocator& allocator)
+{
+	_allocator = allocator;
+}

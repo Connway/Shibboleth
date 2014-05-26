@@ -48,9 +48,15 @@ public:
 	};
 
 	template <class T>
+	bool update(IRenderDevice& rd, const T* data, unsigned int count)
+	{
+		return update(rd, (void*)data, sizeof(T) * count);
+	}
+
+	template <class T>
 	bool update(IRenderDevice& rd, const T& data)
 	{
-		return update(rd, &data, sizeof(T));
+		return update(rd, (void*)&data, sizeof(T));
 	}
 
 	IBuffer(void) {}

@@ -130,14 +130,14 @@ public:
 
 	virtual bool init(IRenderDevice& rd, bool wireframe, bool depth_test, bool stencil_test,
 						COMPARISON_FUNC depth_func, StencilData front_face,
-						StencilData back_face, unsigned int depth_stencil_ref,
+						StencilData back_face, unsigned int stencil_ref,
 						char stencil_read_mask, char stencil_write_mask,
 						CULL_MODE cull_face_mode, bool front_face_counter_clockwise,
 						const BlendData* blend_data) = 0;
 
 	virtual bool init(IRenderDevice& rd, bool wireframe, bool depth_test, bool stencil_test,
 						COMPARISON_FUNC depth_func, StencilData front_face,
-						StencilData back_face, unsigned int depth_stencil_ref,
+						StencilData back_face, unsigned int stencil_ref,
 						char stencil_read_mask, char stencil_write_mask,
 						CULL_MODE cull_face_mode, bool front_face_counter_clockwise,
 						BlendData blend_data) = 0;

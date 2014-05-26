@@ -34,14 +34,14 @@ public:
 
 	bool init(IRenderDevice&, bool wireframe, bool depth_test, bool stencil_test,
 				COMPARISON_FUNC depth_func, StencilData front_face,
-				StencilData back_face, unsigned int depth_stencil_ref,
+				StencilData back_face, unsigned int stencil_ref,
 				char stencil_read_mask, char stencil_write_mask,
 				CULL_MODE cull_face_mode, bool front_face_counter_clockwise,
 				const BlendData* blend_data);
 
 	bool init(IRenderDevice&, bool wireframe, bool depth_test, bool stencil_test,
 				COMPARISON_FUNC depth_func, StencilData front_face,
-				StencilData back_face, unsigned int depth_stencil_ref,
+				StencilData back_face, unsigned int stencil_ref,
 				char stencil_read_mask, char stencil_write_mask,
 				CULL_MODE cull_face_mode, bool front_face_counter_clockwise,
 				BlendData blend_data);
@@ -60,7 +60,7 @@ private:
 	COMPARISON_FUNC _depth_func;
 	StencilData _front_face;
 	StencilData _back_face;
-	unsigned int _depth_stencil_ref;
+	unsigned int _stencil_ref;
 	char _stencil_read_mask;
 	char _stencil_write_mask;
 	CULL_MODE _cull_face_mode;

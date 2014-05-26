@@ -23,7 +23,6 @@ THE SOFTWARE.
 #pragma once
 
 #include "Shibboleth_IResourceLoader.h"
-#include "Shibboleth_RenderManager.h"
 #include <Gleam_ITexture.h>
 
 namespace Gaff
@@ -33,17 +32,11 @@ namespace Gaff
 
 NS_SHIBBOLETH
 
+class RenderManager;
+
 class TextureLoader : public IResourceLoader
 {
 public:
-	struct TextureData
-	{
-		unsigned char device_id : 3;
-		unsigned char output_id : 3;
-		bool normalized : 1;
-		bool cubemap : 1;
-	};
-
 	TextureLoader(RenderManager& render_mgr);
 	~TextureLoader(void);
 

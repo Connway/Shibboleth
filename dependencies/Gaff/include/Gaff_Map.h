@@ -63,6 +63,8 @@ public:
 	unsigned int size(void) const;
 	bool empty(void) const;
 
+	void setAllocator(const Allocator& allocator);
+
 	Iterator begin(void) const;
 	Iterator end(void) const;
 	Iterator rbegin(void) const;

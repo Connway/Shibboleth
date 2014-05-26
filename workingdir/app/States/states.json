@@ -9,8 +9,18 @@
 			"transitions": [1]
 		},
 		{
-			"name": "StateTest",
-			"module": "StateTest",
+			"name": "CreateResourceLoadersState",
+			"module": "GameStates",
+			"transitions": [2]
+		},
+		{
+			"name": "SetupOtterUIState",
+			"module": "GameStates",
+			"transitions": [3]
+		},
+		{
+			"name": "loopforeverstate",
+			"module": "GameStates",
 			"transitions": []
 		}
 	]

@@ -38,14 +38,14 @@ public:
 
 	bool init(IRenderDevice& rd, bool wireframe, bool depth_test, bool stencil_test, 
 				COMPARISON_FUNC depth_func, StencilData front_face,
-				StencilData back_face, unsigned int depth_stencil_ref,
+				StencilData back_face, unsigned int stencil_ref,
 				char stencil_read_mask, char stencil_write_mask,
 				CULL_MODE cull_face_mode, bool front_face_counter_clockwise,
 				const BlendData* blend_data);
 
 	bool init(IRenderDevice& rd, bool wireframe, bool depth_test, bool stencil_test,
 				COMPARISON_FUNC depth_func, StencilData front_face,
-				StencilData back_face, unsigned int depth_stencil_ref,
+				StencilData back_face, unsigned int stencil_ref,
 				char stencil_read_mask, char stencil_write_mask,
 				CULL_MODE cull_face_mode, bool front_face_counter_clockwise,
 				BlendData blend_data);
@@ -62,7 +62,7 @@ private:
 	ID3D11RasterizerState* _raster_state;
 	ID3D11BlendState* _blend_state;
 
-	unsigned int _depth_stencil_ref;
+	unsigned int _stencil_ref;
 };
 
 NS_END

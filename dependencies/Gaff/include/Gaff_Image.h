@@ -22,7 +22,7 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Gaff_Defines.h"
+#include "Gaff_String.h"
 
 NS_GAFF
 
@@ -54,16 +54,16 @@ public:
 		TYPE_HALF = 0x140B
 	};
 
-	//enum Language
-	//{
-	//	LANG_ENGLISH = 0x0800,
-	//	LANG_ARABIC = 0x0801,
-	//	LANG_DUTCH = 0x0802,
-	//	LANG_JAPANESE = 0x0803,
-	//	LANG_SPANISH = 0x0804,
-	//	LANG_GERMAN = 0x0805,
-	//	LANG_FRENCH = 0x0806
-	//};
+	enum ErrorLanguage
+	{
+		ERR_LANG_ENGLISH = 0x0800,
+		ERR_LANG_ARABIC = 0x0801,
+		ERR_LANG_DUTCH = 0x0802,
+		ERR_LANG_JAPANESE = 0x0803,
+		ERR_LANG_SPANISH = 0x0804,
+		ERR_LANG_GERMAN = 0x0805,
+		ERR_LANG_FRENCH = 0x0806
+	};
 
 	enum Filter
 	{
@@ -78,10 +78,6 @@ public:
 		FILTER_MITCHELL = 0x2609
 	};
 
-	enum Foo
-	{
-	};
-
 #if defined(_WIN32) || defined(_WIN64)
 	#define MEMCB __stdcall
 #else
@@ -91,11 +87,18 @@ public:
 	typedef void* (MEMCB *AllocFunc)(const size_t);
 	typedef void  (MEMCB *FreeFunc) (const void* const);
 
+	template <class T, class Allocator>
+	bool load(const String<T, Allocator>& filename)
+	{
+		assert(filename.size());
+		return load(filename.getBuffer());
+	}
+
 	static void SysInit(void);
 	static void SysShutdown(void);
 	static void SetMemoryFunctions(AllocFunc af, FreeFunc ff);
 	static const GChar* GetErrorString(unsigned int error);
-	//static void SetErrorLanguage(Language language);
+	static void SetErrorLanguage(ErrorLanguage language);
 	static unsigned int GetError(void);
 
 	Image(const Image& image);

@@ -118,7 +118,7 @@ private:
 
 	GraphicsFunctions _graphics_functions;
 	Array< Gaff::SmartPtr<Gleam::Window> > _windows;
-	Gaff::SmartPtr<Gleam::IRenderDevice> _render_device;
+	Gaff::SmartPtr<Gleam::IRenderDevice, ProxyAllocator> _render_device;
 	DynamicLoader::ModulePtr _gleam_module;
 	Gaff::SpinLock _spin_lock;
 

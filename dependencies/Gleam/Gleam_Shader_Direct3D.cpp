@@ -35,6 +35,28 @@ THE SOFTWARE.
 
 NS_GLEAM
 
+typedef bool (ShaderD3D::*ShaderInitFuncMB)(IRenderDevice&, const char*);
+static ShaderInitFuncMB mb_init_funcs[IShader::SHADER_TYPE_SIZE] = {
+	&ShaderD3D::initVertex,
+	&ShaderD3D::initPixel,
+	&ShaderD3D::initDomain,
+	&ShaderD3D::initGeometry,
+	&ShaderD3D::initHull,
+	&ShaderD3D::initCompute
+};
+
+#ifdef _UNICODE
+typedef bool (ShaderD3D::*ShaderInitFuncW)(IRenderDevice&, const wchar_t*);
+static ShaderInitFuncW w_init_funcs[IShader::SHADER_TYPE_SIZE] = {
+	&ShaderD3D::initVertex,
+	&ShaderD3D::initPixel,
+	&ShaderD3D::initDomain,
+	&ShaderD3D::initGeometry,
+	&ShaderD3D::initHull,
+	&ShaderD3D::initCompute
+};
+#endif
+
 ShaderD3D::ShaderD3D(void):
 	_shader(nullptr), _shader_buffer(nullptr)
 {
@@ -45,43 +67,13 @@ ShaderD3D::~ShaderD3D(void)
 	destroy();
 }
 
-bool ShaderD3D::initVertex(IRenderDevice& rd, const GleamGString& file_path)
+bool ShaderD3D::init(IRenderDevice& rd, const char* file_path, SHADER_TYPE shader_type)
 {
-	assert(rd.isD3D() && file_path.size());
-	return initVertex(rd, file_path.getBuffer());
+	assert(shader_type < SHADER_TYPE_SIZE);
+	return (this->*mb_init_funcs[shader_type])(rd, file_path);
 }
 
-bool ShaderD3D::initPixel(IRenderDevice& rd, const GleamGString& file_path)
-{
-	assert(rd.isD3D() && file_path.size());
-	return initPixel(rd, file_path.getBuffer());
-}
-
-bool ShaderD3D::initDomain(IRenderDevice& rd, const GleamGString& file_path)
-{
-	assert(rd.isD3D() && file_path.size());
-	return initDomain(rd, file_path.getBuffer());
-}
-
-bool ShaderD3D::initGeometry(IRenderDevice& rd, const GleamGString& file_path)
-{
-	assert(rd.isD3D() && file_path.size());
-	return initGeometry(rd, file_path.getBuffer());
-}
-
-bool ShaderD3D::initHull(IRenderDevice& rd, const GleamGString& file_path)
-{
-	assert(rd.isD3D() && file_path.size());
-	return initHull(rd, file_path.getBuffer());
-}
-
-bool ShaderD3D::initCompute(IRenderDevice& rd, const GleamGString& file_path)
-{
-	assert(rd.isD3D() && file_path.size());
-	return initCompute(rd, file_path.getBuffer());
-}
-
-bool ShaderD3D::initVertex(IRenderDevice& rd, const GChar* file_path)
+bool ShaderD3D::initVertex(IRenderDevice& rd, const char* file_path)
 {
 	assert(rd.isD3D() && file_path);
 
@@ -108,7 +100,7 @@ bool ShaderD3D::initVertex(IRenderDevice& rd, const GChar* file_path)
 	return SUCCEEDED(result);
 }
 
-bool ShaderD3D::initPixel(IRenderDevice& rd, const GChar* file_path)
+bool ShaderD3D::initPixel(IRenderDevice& rd, const char* file_path)
 {
 	assert(rd.isD3D() && file_path);
 
@@ -135,7 +127,7 @@ bool ShaderD3D::initPixel(IRenderDevice& rd, const GChar* file_path)
 	return SUCCEEDED(result);
 }
 
-bool ShaderD3D::initDomain(IRenderDevice& rd, const GChar* file_path)
+bool ShaderD3D::initDomain(IRenderDevice& rd, const char* file_path)
 {
 	assert(rd.isD3D() && file_path);
 
@@ -162,7 +154,7 @@ bool ShaderD3D::initDomain(IRenderDevice& rd, const GChar* file_path)
 	return SUCCEEDED(result);
 }
 
-bool ShaderD3D::initGeometry(IRenderDevice& rd, const GChar* file_path)
+bool ShaderD3D::initGeometry(IRenderDevice& rd, const char* file_path)
 {
 	assert(rd.isD3D() && file_path);
 
@@ -189,7 +181,7 @@ bool ShaderD3D::initGeometry(IRenderDevice& rd, const GChar* file_path)
 	return SUCCEEDED(result);
 }
 
-bool ShaderD3D::initHull(IRenderDevice& rd, const GChar* file_path)
+bool ShaderD3D::initHull(IRenderDevice& rd, const char* file_path)
 {
 	assert(rd.isD3D() && file_path);
 
@@ -216,7 +208,7 @@ bool ShaderD3D::initHull(IRenderDevice& rd, const GChar* file_path)
 	return SUCCEEDED(result);
 }
 
-bool ShaderD3D::initCompute(IRenderDevice& rd, const GChar* file_path)
+bool ShaderD3D::initCompute(IRenderDevice& rd, const char* file_path)
 {
 	assert(rd.isD3D() && file_path);
 
@@ -242,11 +234,27 @@ bool ShaderD3D::initCompute(IRenderDevice& rd, const GChar* file_path)
 	return SUCCEEDED(result);
 }
 
-bool ShaderD3D::initVertexSource(IRenderDevice& rd, const GleamAString& source)
+#ifdef _UNICODE
+bool ShaderD3D::init(IRenderDevice& rd, const wchar_t* file_path, SHADER_TYPE shader_type)
 {
-	assert(rd.isD3D() && source.size());
+	assert(shader_type < SHADER_TYPE_SIZE);
+	return (this->*w_init_funcs[shader_type])(rd, file_path);
+}
 
-	_shader_buffer = compileShader(source.getBuffer(), source.size(), "VertexMain", "vs_5_0");
+bool ShaderD3D::initVertex(IRenderDevice& rd, const wchar_t* file_path)
+{
+	assert(rd.isD3D() && file_path);
+
+	char* shader_src = nullptr;
+	SIZE_T shader_size = 0;
+
+	if (!loadFile(file_path, shader_src, shader_size)) {
+		return false;
+	}
+
+	_shader_buffer = compileShader(shader_src, shader_size, "VertexMain", "vs_5_0");
+
+	GleamFree(shader_src);
 
 	if (!_shader_buffer) {
 		return false;
@@ -260,11 +268,20 @@ bool ShaderD3D::initVertexSource(IRenderDevice& rd, const GleamAString& source)
 	return SUCCEEDED(result);
 }
 
-bool ShaderD3D::initPixelSource(IRenderDevice& rd, const GleamAString& source)
+bool ShaderD3D::initPixel(IRenderDevice& rd, const wchar_t* file_path)
 {
-	assert(rd.isD3D() && source.size());
+	assert(rd.isD3D() && file_path);
 
-	_shader_buffer = compileShader(source.getBuffer(), source.size(), "PixelMain", "ps_5_0");
+	char* shader_src = nullptr;
+	SIZE_T shader_size = 0;
+
+	if (!loadFile(file_path, shader_src, shader_size)) {
+		return false;
+	}
+
+	_shader_buffer = compileShader(shader_src, shader_size, "PixelMain", "ps_5_0");
+
+	GleamFree(shader_src);
 
 	if (!_shader_buffer) {
 		return false;
@@ -278,11 +295,20 @@ bool ShaderD3D::initPixelSource(IRenderDevice& rd, const GleamAString& source)
 	return SUCCEEDED(result);
 }
 
-bool ShaderD3D::initDomainSource(IRenderDevice& rd, const GleamAString& source)
+bool ShaderD3D::initDomain(IRenderDevice& rd, const wchar_t* file_path)
 {
-	assert(rd.isD3D() && source.size());
+	assert(rd.isD3D() && file_path);
 
-	_shader_buffer = compileShader(source.getBuffer(), source.size(), "DomainMain", "ds_5_0");
+	char* shader_src = nullptr;
+	SIZE_T shader_size = 0;
+
+	if (!loadFile(file_path, shader_src, shader_size)) {
+		return false;
+	}
+
+	_shader_buffer = compileShader(shader_src, shader_size, "DomainMain", "ds_5_0");
+
+	GleamFree(shader_src);
 
 	if (!_shader_buffer) {
 		return false;
@@ -296,11 +322,20 @@ bool ShaderD3D::initDomainSource(IRenderDevice& rd, const GleamAString& source)
 	return SUCCEEDED(result);
 }
 
-bool ShaderD3D::initGeometrySource(IRenderDevice& rd, const GleamAString& source)
+bool ShaderD3D::initGeometry(IRenderDevice& rd, const wchar_t* file_path)
 {
-	assert(rd.isD3D() && source.size());
+	assert(rd.isD3D() && file_path);
 
-	_shader_buffer = compileShader(source.getBuffer(), source.size(), "GeometryMain", "gs_5_0");
+	char* shader_src = nullptr;
+	SIZE_T shader_size = 0;
+
+	if (!loadFile(file_path, shader_src, shader_size)) {
+		return false;
+	}
+
+	_shader_buffer = compileShader(shader_src, shader_size, "GeometryMain", "gs_5_0");
+
+	GleamFree(shader_src);
 
 	if (!_shader_buffer) {
 		return false;
@@ -314,11 +349,20 @@ bool ShaderD3D::initGeometrySource(IRenderDevice& rd, const GleamAString& source
 	return SUCCEEDED(result);
 }
 
-bool ShaderD3D::initHullSource(IRenderDevice& rd, const GleamAString& source)
+bool ShaderD3D::initHull(IRenderDevice& rd, const wchar_t* file_path)
 {
-	assert(rd.isD3D() && source.size());
+	assert(rd.isD3D() && file_path);
 
-	_shader_buffer = compileShader(source.getBuffer(), source.size(), "HullMain", "hs_5_0");
+	char* shader_src = nullptr;
+	SIZE_T shader_size = 0;
+
+	if (!loadFile(file_path, shader_src, shader_size)) {
+		return false;
+	}
+
+	_shader_buffer = compileShader(shader_src, shader_size, "HullMain", "hs_5_0");
+
+	GleamFree(shader_src);
 
 	if (!_shader_buffer) {
 		return false;
@@ -332,11 +376,19 @@ bool ShaderD3D::initHullSource(IRenderDevice& rd, const GleamAString& source)
 	return SUCCEEDED(result);
 }
 
-bool ShaderD3D::initComputeSource(IRenderDevice& rd, const GleamAString& source)
+bool ShaderD3D::initCompute(IRenderDevice& rd, const wchar_t* file_path)
 {
-	assert(rd.isD3D() && source.size());
+	assert(rd.isD3D() && file_path);
 
-	_shader_buffer = compileShader(source.getBuffer(), source.size(), "ComputeMain", "cs_5_0");
+	char* shader_src = nullptr;
+	SIZE_T shader_size = 0;
+
+	if (!loadFile(file_path, shader_src, shader_size)) {
+		return false;
+	}
+
+	_shader_buffer = compileShader(shader_src, shader_size, "ComputeMain", "cs_5_0");
+	GleamFree(shader_src);
 
 	if (!_shader_buffer) {
 		return false;
@@ -349,6 +401,7 @@ bool ShaderD3D::initComputeSource(IRenderDevice& rd, const GleamAString& source)
 
 	return SUCCEEDED(result);
 }
+#endif
 
 bool ShaderD3D::initVertexSource(IRenderDevice& rd, const char* source)
 {
@@ -538,7 +591,8 @@ ID3DBlob* ShaderD3D::getByteCodeBuffer(void) const
 	return _shader_buffer;
 }
 
-bool ShaderD3D::loadFile(const GChar* file_path, char*& shader_src, SIZE_T& shader_size) const
+#ifdef _UNICODE
+bool ShaderD3D::loadFile(const wchar_t* file_path, char*& shader_src, SIZE_T& shader_size) const
 {
 	assert(file_path);
 
@@ -547,14 +601,10 @@ bool ShaderD3D::loadFile(const GChar* file_path, char*& shader_src, SIZE_T& shad
 	if (!shader.isOpen()) {
 		GleamAString msg("Failed to open shader file: ");
 
-		#ifdef _UNICODE
-			// convert file_path to ASCII
-			char dest[256] = { 0 };
-			wcstombs(dest, file_path, wcsnlen(file_path, 256));
-			msg += dest;
-		#else
-			msg += file_path;
-		#endif
+		// convert file_path to ASCII
+		char dest[256] = { 0 };
+		wcstombs(dest, file_path, wcsnlen(file_path, 256));
+		msg += dest;
 
 		WriteMessageToLog(msg.getBuffer(), msg.size(), LOG_ERROR);
 		return false;
@@ -576,11 +626,49 @@ bool ShaderD3D::loadFile(const GChar* file_path, char*& shader_src, SIZE_T& shad
 
 		GleamAString msg("Failed to read shader file: ");
 
-		#ifdef _UNICODE
-			// convert file_path to ASCII
-		#else
-			msg += file_path;
-		#endif
+		// convert file_path to ASCII
+		char dest[256] = { 0 };
+		wcstombs(dest, file_path, wcsnlen(file_path, 256));
+		msg += dest;
+
+		WriteMessageToLog(msg.getBuffer(), msg.size(), LOG_ERROR);
+		return false;
+	}
+
+	return true;
+}
+#endif
+
+bool ShaderD3D::loadFile(const char* file_path, char*& shader_src, SIZE_T& shader_size) const
+{
+	assert(file_path);
+
+	Gaff::File shader(file_path, Gaff::File::READ_BINARY);
+
+	if (!shader.isOpen()) {
+		GleamAString msg("Failed to open shader file: ");
+		msg += file_path;
+
+		WriteMessageToLog(msg.getBuffer(), msg.size(), LOG_ERROR);
+		return false;
+	}
+
+	long size = shader.getFileSize();
+
+	shader_size = size;
+	shader_src = (char*)GleamAllocate(sizeof(char) * (unsigned int)shader_size);
+
+	if (!shader_src || size == -1) {
+		return false;
+	}
+
+	if (!shader.readEntireFile(shader_src)) {
+		GleamFree(shader_src);
+		shader_src = nullptr;
+		shader_size = 0;
+
+		GleamAString msg("Failed to read shader file: ");
+		msg += file_path;
 
 		WriteMessageToLog(msg.getBuffer(), msg.size(), LOG_ERROR);
 		return false;
