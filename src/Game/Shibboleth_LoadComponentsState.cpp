@@ -38,13 +38,13 @@ LoadComponentsState::~LoadComponentsState(void)
 {
 }
 
-bool LoadComponentsState::init(unsigned int state_id)
+bool LoadComponentsState::init(unsigned int /*state_id*/)
 {
 	// Make sure we have a transition for when we finish loading.
 	// If we have more than one transition, you're using this state wrong
 	// and should fix it.
 	assert(_transitions.size() == 1);
-	_state_id = state_id;
+	//_state_id = state_id;
 	return true;
 }
 
@@ -61,7 +61,7 @@ void LoadComponentsState::update(void)
 
 	log.first.writeString("==================================================\n");
 	log.first.writeString("==================================================\n");
-	log.first.writeString("Loading Components\n");
+	log.first.writeString("Loading Components...\n");
 
 	Gaff::ForEachTypeInDirectory<Gaff::FDT_RegularFile>("./Components", [&](const char* name, size_t) -> bool
 	{
@@ -99,6 +99,7 @@ void LoadComponentsState::update(void)
 		return false;
 	});
 
+	log.first.writeString("Finished Loading Components\n\n");
 	_app.getStateMachine().switchState(_transitions[0]);
 }
 

@@ -34,7 +34,7 @@ public:
 	LoadComponentsState(App& app);
 	~LoadComponentsState(void);
 
-	bool init(unsigned int state_id);
+	bool init(unsigned int /*state_id*/);
 
 	void enter(void);
 	void update(void);
@@ -42,7 +42,7 @@ public:
 
 private:
 	App& _app;
-	unsigned int _state_id;
+	//unsigned int _state_id;
 
 	GAFF_NO_COPY(LoadComponentsState);
 	GAFF_NO_MOVE(LoadComponentsState);

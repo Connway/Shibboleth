@@ -21,6 +21,9 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Shibboleth_TextureLoader.h"
+#include "Shibboleth_ResourceDefines.h"
+#include "Shibboleth_RenderManager.h"
+#include <Gleam_IRenderDevice.h>
 #include <Gaff_Image.h>
 
 NS_SHIBBOLETH
@@ -51,64 +54,81 @@ Gaff::IVirtualDestructor* TextureLoader::load(const char* file_name, unsigned lo
 		return nullptr;
 	}
 
-	Gleam::ITexture* texture = _render_mgr.createTexture();
-	texture->addRef();
+	Gleam::ITexture::FORMAT texture_format = determineFormatAndType(image, user_data & TEX_LOADER_NORMALIZED);
 
-	if (!texture) {
+	TextureData* texture_data = GetAllocator().template allocT<TextureData>();
+	texture_data->normalized = (user_data & TEX_LOADER_NORMALIZED) != 0;
+	texture_data->cubemap = (user_data & TEX_LOADER_CUBEMAP) != 0;
+
+	if (!texture_data) {
+		_render_mgr.printfLoadLog("ERROR: Failed to allocate texture data structure\n", file_name);
 		return nullptr;
 	}
 
-	TextureData texture_data = *(TextureData*)&user_data;
+	Gaff::ScopedLock<Gaff::SpinLock> scoped_lock(_render_mgr.getSpinLock());
+	Gleam::IRenderDevice& rd = _render_mgr.getRenderDevice();
 
-	Gleam::ITexture::FORMAT texture_format = determineFormatAndType(image, texture_data.normalized);
+	// Load the texture for each device
+	for (unsigned int i = 0; i < rd.getNumDevices(); ++i) {
+		TexturePtr texture(_render_mgr.createTexture());
+		rd.setCurrentDevice(i);
 
-	if (texture_format == Gleam::ITexture::FORMAT_SIZE) {
-		_render_mgr.printfLoadLog("ERROR: Could not determine the pixel format of image at %s\n", file_name);
-		texture->release();
-		return nullptr;
-	}
-
-	unsigned int width = image.getWidth();
-	unsigned int height = image.getHeight();
-	unsigned int depth = image.getDepth();
-	bool success = false;
-
-	if (texture_data.cubemap) {
-		if (width == 1 || height == 1 || depth != 1) {
-			_render_mgr.printfLoadLog("ERROR: Image specified as cubemap, but is not a 2D image. IMAGE: %s\n", file_name);
-			texture->release();
+		if (!texture) {
+			GetAllocator().freeT(texture_data);
 			return nullptr;
 		}
 
-		if (!texture->initCubemap(_render_mgr.getRenderDevice(), width, height, texture_format, 1, image.getBuffer())) {
-			_render_mgr.printfLoadLog("ERROR: Failed to initialize cubemap texture using image at %s\n", file_name);
-			texture->release();
+		if (texture_format == Gleam::ITexture::FORMAT_SIZE) {
+			_render_mgr.printfLoadLog("ERROR: Could not determine the pixel format of image at %s\n", file_name);
+			GetAllocator().freeT(texture_data);
 			return nullptr;
 		}
 
-	} else {
+		unsigned int width = image.getWidth();
+		unsigned int height = image.getHeight();
+		unsigned int depth = image.getDepth();
+		bool success = false;
 
-		// 3D
-		if (width > 1 && height > 1 && depth > 1) {
-			success = texture->init3D(_render_mgr.getRenderDevice(), width, height, depth, texture_format, 1, image.getBuffer());
+		if (user_data & TEX_LOADER_CUBEMAP) {
+			if (width == 1 || height == 1 || depth != 1) {
+				_render_mgr.printfLoadLog("ERROR: Image specified as cubemap, but is not a 2D image. IMAGE: %s\n", file_name);
+				GetAllocator().freeT(texture_data);
+				return nullptr;
+			}
 
-		// 2D
-		} else if (width > 1 && height > 1) {
-			success = texture->init2D(_render_mgr.getRenderDevice(), width, height, texture_format, 1, image.getBuffer());
+			if (!texture->initCubemap(rd, width, height, texture_format, 1, image.getBuffer())) {
+				_render_mgr.printfLoadLog("ERROR: Failed to initialize cubemap texture using image at %s\n", file_name);
+				GetAllocator().freeT(texture_data);
+				return nullptr;
+			}
 
-		// 1D
-		} else if (image.getWidth() > 1) {
-			success = texture->init1D(_render_mgr.getRenderDevice(), width, texture_format, 1, image.getBuffer());
+		} else {
+			// 3D
+			if (width > 1 && height > 1 && depth > 1) {
+				success = texture->init3D(rd, width, height, depth, texture_format, 1, image.getBuffer());
+
+				// 2D
+			}
+			else if (width > 1 && height > 1) {
+				success = texture->init2D(rd, width, height, texture_format, 1, image.getBuffer());
+
+				// 1D
+			}
+			else if (image.getWidth() > 1) {
+				success = texture->init1D(rd, width, texture_format, 1, image.getBuffer());
+			}
 		}
+
+		if (!success) {
+			_render_mgr.printfLoadLog("ERROR: Failed to initialize texture using image at %s\n", file_name);
+			GetAllocator().freeT(texture_data);
+			return nullptr;
+		}
+
+		texture_data->textures.push(texture);
 	}
 
-	if (!success) {
-		_render_mgr.printfLoadLog("ERROR: Failed to initialize texture using image at %s\n", file_name);
-		texture->release();
-		return nullptr;
-	}
-
-	return texture;
+	return texture_data;
 }
 
 Gleam::ITexture::FORMAT TextureLoader::determineFormatAndType(const Gaff::Image& image, bool normalized) const

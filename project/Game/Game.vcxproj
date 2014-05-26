@@ -23,16 +23,25 @@
     <ClInclude Include="..\..\src\Game\include\Shibboleth_GameObject.h" />
     <ClInclude Include="..\..\src\Game\include\Shibboleth_IComponent.h" />
     <ClInclude Include="..\..\src\Game\include\Shibboleth_IResourceLoader.h" />
+    <ClInclude Include="..\..\src\Game\include\Shibboleth_OtterUIFileSystem.h" />
     <ClInclude Include="..\..\src\Game\include\Shibboleth_OtterUIManager.h" />
+    <ClInclude Include="..\..\src\Game\include\Shibboleth_OtterUIRenderer.h" />
     <ClInclude Include="..\..\src\Game\include\Shibboleth_RenderManager.h" />
     <ClInclude Include="..\..\src\Game\include\Shibboleth_ResourceManager.h" />
+    <ClInclude Include="..\..\src\Game\include\Shibboleth_ResourceDefines.h" />
+    <ClInclude Include="..\..\src\Game\include\Shibboleth_ShaderLoader.h" />
+    <ClInclude Include="..\..\src\Game\include\Shibboleth_ShaderProgramLoader.h" />
     <ClInclude Include="..\..\src\Game\include\Shibboleth_TextureLoader.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Game\Shibboleth_ComponentManager.cpp" />
+    <ClCompile Include="..\..\src\Game\Shibboleth_OtterUIFileSystem.cpp" />
     <ClCompile Include="..\..\src\Game\Shibboleth_OtterUIManager.cpp" />
+    <ClCompile Include="..\..\src\Game\Shibboleth_OtterUIRenderer.cpp" />
     <ClCompile Include="..\..\src\Game\Shibboleth_RenderManager.cpp" />
     <ClCompile Include="..\..\src\Game\Shibboleth_ResourceManager.cpp" />
+    <ClCompile Include="..\..\src\Game\Shibboleth_ShaderLoader.cpp" />
+    <ClCompile Include="..\..\src\Game\Shibboleth_ShaderProgramLoader.cpp" />
     <ClCompile Include="..\..\src\Game\Shibboleth_TextureLoader.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
@@ -106,6 +115,7 @@
       <AdditionalIncludeDirectories>$(ProjectDir)..\..\dependencies\Gaff\include;$(ProjectDir)..\..\src\Shared\include;$(ProjectDir)..\..\src\Game\include;$(ProjectDir)..\..\dependencies\dirent;$(ProjectDir)..\..\dependencies\OtterUI\inc;$(ProjectDir)..\..\dependencies\Gleam\include;$(ProjectDir)..\..\dependencies\jansson</AdditionalIncludeDirectories>
       <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
       <FloatingPointModel>Fast</FloatingPointModel>
+      <PreprocessorDefinitions>NO_LINKING;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -119,6 +129,7 @@
       <AdditionalIncludeDirectories>$(ProjectDir)..\..\dependencies\Gaff\include;$(ProjectDir)..\..\src\Shared\include;$(ProjectDir)..\..\src\Game\include;$(ProjectDir)..\..\dependencies\dirent;$(ProjectDir)..\..\dependencies\OtterUI\inc;$(ProjectDir)..\..\dependencies\Gleam\include;$(ProjectDir)..\..\dependencies\jansson</AdditionalIncludeDirectories>
       <EnableEnhancedInstructionSet>NotSet</EnableEnhancedInstructionSet>
       <FloatingPointModel>Fast</FloatingPointModel>
+      <PreprocessorDefinitions>NO_LINKING;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -134,6 +145,7 @@
       <AdditionalIncludeDirectories>$(ProjectDir)..\..\dependencies\Gaff\include;$(ProjectDir)..\..\src\Shared\include;$(ProjectDir)..\..\src\Game\include;$(ProjectDir)..\..\dependencies\dirent;$(ProjectDir)..\..\dependencies\OtterUI\inc;$(ProjectDir)..\..\dependencies\Gleam\include;$(ProjectDir)..\..\dependencies\jansson</AdditionalIncludeDirectories>
       <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
       <FloatingPointModel>Fast</FloatingPointModel>
+      <PreprocessorDefinitions>NO_LINKING;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -151,6 +163,7 @@
       <AdditionalIncludeDirectories>$(ProjectDir)..\..\dependencies\Gaff\include;$(ProjectDir)..\..\src\Shared\include;$(ProjectDir)..\..\src\Game\include;$(ProjectDir)..\..\dependencies\dirent;$(ProjectDir)..\..\dependencies\OtterUI\inc;$(ProjectDir)..\..\dependencies\Gleam\include;$(ProjectDir)..\..\dependencies\jansson</AdditionalIncludeDirectories>
       <EnableEnhancedInstructionSet>NotSet</EnableEnhancedInstructionSet>
       <FloatingPointModel>Fast</FloatingPointModel>
+      <PreprocessorDefinitions>NO_LINKING;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>

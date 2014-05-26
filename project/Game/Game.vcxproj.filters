@@ -9,6 +9,11 @@
     <ClInclude Include="..\..\src\Game\include\Shibboleth_OtterUIManager.h" />
     <ClInclude Include="..\..\src\Game\include\Shibboleth_RenderManager.h" />
     <ClInclude Include="..\..\src\Game\include\Shibboleth_TextureLoader.h" />
+    <ClInclude Include="..\..\src\Game\include\Shibboleth_ResourceDefines.h" />
+    <ClInclude Include="..\..\src\Game\include\Shibboleth_OtterUIRenderer.h" />
+    <ClInclude Include="..\..\src\Game\include\Shibboleth_OtterUIFileSystem.h" />
+    <ClInclude Include="..\..\src\Game\include\Shibboleth_ShaderLoader.h" />
+    <ClInclude Include="..\..\src\Game\include\Shibboleth_ShaderProgramLoader.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Game\Shibboleth_ComponentManager.cpp" />
@@ -16,5 +21,9 @@
     <ClCompile Include="..\..\src\Game\Shibboleth_OtterUIManager.cpp" />
     <ClCompile Include="..\..\src\Game\Shibboleth_RenderManager.cpp" />
     <ClCompile Include="..\..\src\Game\Shibboleth_TextureLoader.cpp" />
+    <ClCompile Include="..\..\src\Game\Shibboleth_OtterUIFileSystem.cpp" />
+    <ClCompile Include="..\..\src\Game\Shibboleth_OtterUIRenderer.cpp" />
+    <ClCompile Include="..\..\src\Game\Shibboleth_ShaderLoader.cpp" />
+    <ClCompile Include="..\..\src\Game\Shibboleth_ShaderProgramLoader.cpp" />
   </ItemGroup>
 </Project>

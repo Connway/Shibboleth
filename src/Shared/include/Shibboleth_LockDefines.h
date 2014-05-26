@@ -22,25 +22,12 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Gaff_Defines.h"
+#include "Shibboleth_Defines.h"
+#include <Gaff_ScopedLock.h>
+#include <Gaff_SpinLock.h>
 
-NS_GAFF
+NS_SHIBBOLETH
 
-class SpinLock
-{
-public:
-	SpinLock(void);
-	~SpinLock(void);
-
-	INLINE void lock(void) const;
-	INLINE bool tryLock(void);
-	INLINE void unlock(void) const;
-
-private:
-	mutable volatile long _lock;
-
-	GAFF_NO_COPY(SpinLock);
-	GAFF_NO_MOVE(SpinLock);
-};
+typedef Gaff::ScopedLock<Gaff::SpinLock> ScopedSpinLock;
 
 NS_END

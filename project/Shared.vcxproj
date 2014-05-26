@@ -34,6 +34,7 @@
     <ClInclude Include="..\src\Shared\include\Shibboleth_HashString.h" />
     <ClInclude Include="..\src\Shared\include\Shibboleth_IState.h" />
     <ClInclude Include="..\src\Shared\include\Shibboleth_ITask.h" />
+    <ClInclude Include="..\src\Shared\include\Shibboleth_LockDefines.h" />
     <ClInclude Include="..\src\Shared\include\Shibboleth_Logger.h" />
     <ClInclude Include="..\src\Shared\include\Shibboleth_Map.h" />
     <ClInclude Include="..\src\Shared\include\Shibboleth_MessageBroadcaster.h" />
@@ -113,6 +114,7 @@
       <AdditionalIncludeDirectories>$(ProjectDir)..\dependencies\jansson;$(ProjectDir)..\dependencies\dirent;$(ProjectDir)..\dependencies\Gaff\include;$(ProjectDir)..\src\Shared\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
       <FloatingPointModel>Fast</FloatingPointModel>
+      <PreprocessorDefinitions>NO_LINKING;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -126,6 +128,7 @@
       <AdditionalIncludeDirectories>$(ProjectDir)..\dependencies\jansson;$(ProjectDir)..\dependencies\dirent;$(ProjectDir)..\dependencies\Gaff\include;$(ProjectDir)..\src\Shared\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <EnableEnhancedInstructionSet>NotSet</EnableEnhancedInstructionSet>
       <FloatingPointModel>Fast</FloatingPointModel>
+      <PreprocessorDefinitions>NO_LINKING;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -141,6 +144,7 @@
       <AdditionalIncludeDirectories>$(ProjectDir)..\dependencies\jansson;$(ProjectDir)..\dependencies\dirent;$(ProjectDir)..\dependencies\Gaff\include;$(ProjectDir)..\src\Shared\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
       <FloatingPointModel>Fast</FloatingPointModel>
+      <PreprocessorDefinitions>NO_LINKING;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -158,6 +162,7 @@
       <AdditionalIncludeDirectories>$(ProjectDir)..\dependencies\jansson;$(ProjectDir)..\dependencies\dirent;$(ProjectDir)..\dependencies\Gaff\include;$(ProjectDir)..\src\Shared\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <EnableEnhancedInstructionSet>NotSet</EnableEnhancedInstructionSet>
       <FloatingPointModel>Fast</FloatingPointModel>
+      <PreprocessorDefinitions>NO_LINKING;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>

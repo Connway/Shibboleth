@@ -34,26 +34,25 @@ public:
 	ShaderD3D(void);
 	~ShaderD3D(void);
 
-	INLINE bool initVertex(IRenderDevice& rd, const GleamGString& file_path);
-	INLINE bool initPixel(IRenderDevice& rd, const GleamGString& file_path);
-	INLINE bool initDomain(IRenderDevice& rd, const GleamGString& file_path);
-	INLINE bool initGeometry(IRenderDevice& rd, const GleamGString& file_path);
-	INLINE bool initHull(IRenderDevice& rd, const GleamGString& file_path);
-	INLINE bool initCompute(IRenderDevice& rd, const GleamGString& file_path);
+	bool init(IRenderDevice& rd, const char* file_path, SHADER_TYPE shader_type);
 
-	bool initVertex(IRenderDevice&, const GChar* file_path);
-	bool initPixel(IRenderDevice&, const GChar* file_path);
-	bool initDomain(IRenderDevice&, const GChar* file_path);
-	bool initGeometry(IRenderDevice&, const GChar* file_path);
-	bool initHull(IRenderDevice&, const GChar* file_path);
-	bool initCompute(IRenderDevice&, const GChar* file_path);
+	bool initVertex(IRenderDevice& rd, const char* file_path);
+	bool initPixel(IRenderDevice& rd, const char* file_path);
+	bool initDomain(IRenderDevice& rd, const char* file_path);
+	bool initGeometry(IRenderDevice& rd, const char* file_path);
+	bool initHull(IRenderDevice& rd, const char* file_path);
+	bool initCompute(IRenderDevice& rd, const char* file_path);
 
-	bool initVertexSource(IRenderDevice& rd, const GleamAString& source);
-	bool initPixelSource(IRenderDevice& rd, const GleamAString& source);
-	bool initDomainSource(IRenderDevice& rd, const GleamAString& source);
-	bool initGeometrySource(IRenderDevice& rd, const GleamAString& source);
-	bool initHullSource(IRenderDevice& rd, const GleamAString& source);
-	bool initComputeSource(IRenderDevice& rd, const GleamAString& source);
+#ifdef _UNICODE
+	bool init(IRenderDevice& rd, const wchar_t* file_path, SHADER_TYPE shader_type);
+
+	bool initVertex(IRenderDevice& rd, const wchar_t* file_path);
+	bool initPixel(IRenderDevice& rd, const wchar_t* file_path);
+	bool initDomain(IRenderDevice& rd, const wchar_t* file_path);
+	bool initGeometry(IRenderDevice& rd, const wchar_t* file_path);
+	bool initHull(IRenderDevice& rd, const wchar_t* file_path);
+	bool initCompute(IRenderDevice& rd, const wchar_t* file_path);
+#endif
 
 	bool initVertexSource(IRenderDevice& rd, const char* source);
 	bool initPixelSource(IRenderDevice& rd, const char* source);
@@ -64,7 +63,7 @@ public:
 
 	void destroy(void);
 
-	INLINE bool isD3D(void) const;
+	bool isD3D(void) const;
 
 	INLINE void* getShader(void) const;
 	INLINE ID3D11VertexShader* getVertexShader(void) const;
@@ -90,7 +89,11 @@ private:
 
 	ID3DBlob* _shader_buffer;
 
-	bool loadFile(const GChar* file_path, char*& shader_src, SIZE_T& shader_size) const;
+#ifdef _UNICODE
+	bool loadFile(const wchar_t* file_path, char*& shader_src, SIZE_T& shader_size) const;
+#endif
+
+	bool loadFile(const char* file_path, char*& shader_src, SIZE_T& shader_size) const;
 	ID3DBlob* compileShader(const char* shader, SIZE_T shader_size, /*macro, include,*/ LPCSTR entry_point, LPCSTR target);
 };
 

@@ -299,6 +299,13 @@ void BitArray<Allocator>::reserve(unsigned int reserve_size)
 }
 
 template <class Allocator>
+void BitArray<Allocator>::setAllocator(const Allocator& allocator)
+{
+	_bit_array.setAllocator(allocator);
+	_allocator = allocator;
+}
+
+template <class Allocator>
 void BitArray<Allocator>::CalculateIndexAndShift(unsigned int index, unsigned int& array_index, unsigned int& shift)
 {
 	array_index = index / BITS_PER_BYTE;

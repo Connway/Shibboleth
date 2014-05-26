@@ -255,6 +255,12 @@ bool Queue<T, Allocator>::empty(void) const
 }
 
 template <class T, class Allocator>
+void Queue<T, Allocator>::setAllocator(const Allocator& allocator)
+{
+	_allocator = allocator;
+}
+
+template <class T, class Allocator>
 void Queue<T, Allocator>::increment(T** element, T* array, unsigned int array_size) const
 {
 	if (!array) {

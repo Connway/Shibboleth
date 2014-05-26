@@ -21,7 +21,7 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Shibboleth_Allocator.h"
-#include <Gaff_ScopedLock.h>
+#include <Gaff_Atomic.h>
 
 NS_SHIBBOLETH
 
@@ -39,13 +39,12 @@ Allocator::~Allocator(void)
 
 void* Allocator::alloc(unsigned int size_bytes)
 {
-	Gaff::ScopedLock<Gaff::SpinLock> scoped_lock(_lock);
 
 	void* data = _aligned_malloc(size_bytes, _alignment);
 
 	if (data) {
-		_total_bytes_allocated += size_bytes;
-		++_num_allocations;
+		AtomicUAdd(&_total_bytes_allocated, size_bytes);
+		AtomicIncrement(&_num_allocations);
 	}
 
 	return data;
@@ -53,8 +52,7 @@ void* Allocator::alloc(unsigned int size_bytes)
 
 void Allocator::free(void* data)
 {
-	Gaff::ScopedLock<Gaff::SpinLock> scoped_lock(_lock);
-	++_num_frees;
+	AtomicIncrement(&_num_frees);
 	_aligned_free(data);
 }
 

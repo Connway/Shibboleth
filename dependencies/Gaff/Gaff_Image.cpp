@@ -51,11 +51,11 @@ const GChar* Image::GetErrorString(unsigned int error)
 	return iluErrorString(error);
 }
 
-//void Image::SetErrorLanguage(Language language)
-//{
-//	assert(language >= LANG_ENGLISH && language <= LANG_FRENCH);
-//	iluSetLanguage(language);
-//}
+void Image::SetErrorLanguage(ErrorLanguage language)
+{
+	assert(language >= ERR_LANG_ENGLISH && language <= ERR_LANG_FRENCH);
+	iluSetLanguage(language);
+}
 
 unsigned int Image::GetError(void)
 {

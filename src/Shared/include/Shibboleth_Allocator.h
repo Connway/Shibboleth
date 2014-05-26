@@ -24,7 +24,6 @@ THE SOFTWARE.
 
 #include "Shibboleth_Defines.h"
 #include <Gaff_IAllocator.h>
-#include <Gaff_SpinLock.h>
 #include <stdlib.h>
 
 NS_SHIBBOLETH
@@ -43,12 +42,10 @@ public:
 	INLINE unsigned int getNumFrees(void) const;
 
 private:
-	unsigned int _total_bytes_allocated;
-	unsigned int _num_allocations;
-	unsigned int _num_frees;
+	volatile unsigned int _total_bytes_allocated;
+	volatile unsigned int _num_allocations;
+	volatile unsigned int _num_frees;
 	size_t _alignment;
-
-	Gaff::SpinLock _lock;
 
 	GAFF_NO_MOVE(Allocator);
 };

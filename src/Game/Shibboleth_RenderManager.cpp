@@ -69,32 +69,21 @@ bool RenderManager::init(const char* cfg_file)
 		return false;
 	}
 
-	// Hopefully won't need this
 	Gleam::SetAllocator(&_app.getAllocator());
 
 	_render_device = _graphics_functions.create_renderdevice();
 
-	TextureLoader* texture_loader = _app.getAllocator().template allocT<TextureLoader>(*this);
-
-	if (!texture_loader) {
-		return false;
-	}
-
-	ResourceManager& res_mgr = _app.getManager<ResourceManager>("Resource Manager");
-
-	Array<AString> extensions;
-	extensions.movePush(AString(".png"));
-	extensions.movePush(AString(".jpeg"));
-	extensions.movePush(AString(".jpg"));
-	extensions.movePush(AString(".bmp"));
-	extensions.movePush(AString(".tiff"));
-	extensions.movePush(AString(".tif"));
-	extensions.movePush(AString(".dds"));
-	extensions.movePush(AString(".tga"));
-
-	res_mgr.registerResourceLoader(texture_loader, extensions);
-
 	return _render_device;
+}
+
+Gleam::IRenderDevice& RenderManager::getRenderDevice(void)
+{
+	return *_render_device;
+}
+
+Gaff::SpinLock& RenderManager::getSpinLock(void)
+{
+	return _spin_lock;
 }
 
 void RenderManager::printfLoadLog(const char* format, ...)
@@ -190,9 +179,9 @@ void RenderManager::generateDefaultConfig(Gaff::JSON& cfg)
 {
 	cfg = Gaff::JSON::createObject();
 #if !defined(_WIN32) && !defined(_WIN64)
-	cfg.setObject("module", Gaff::JSON::createString("Graphics_OpenGL" BIT_EXTENSION));
+	cfg.setObject("module", Gaff::JSON::createString("Graphics_OpenGL"));
 #else
-	cfg.setObject("module", Gaff::JSON::createString("Graphics_Direct3D" BIT_EXTENSION));
+	cfg.setObject("module", Gaff::JSON::createString("Graphics_Direct3D"));
 #endif
 	cfg.setObject("pos_x", Gaff::JSON::createInteger(0));
 	cfg.setObject("pos_y", Gaff::JSON::createInteger(0));
@@ -209,10 +198,13 @@ bool RenderManager::cacheGleamFunctions(App& app, const Gaff::JSON& module, cons
 		return false;
 	}
 
-	_gleam_module = app.getDynamicLoader().loadModule(module.getString(), module.getString());
+	AString module_path = module.getString();
+	module_path += BIT_EXTENSION;
+
+	_gleam_module = app.getDynamicLoader().loadModule(module_path.getBuffer(), module.getString());
 
 	if (!_gleam_module) {
-		app.getGameLogFile().first.printf("ERROR - Failed to find graphics module '%s'.", module.getString());
+		app.getGameLogFile().first.printf("ERROR - Failed to find graphics module '%s'.", module_path.getBuffer());
 		return false;
 	}
 
@@ -220,7 +212,7 @@ bool RenderManager::cacheGleamFunctions(App& app, const Gaff::JSON& module, cons
 	GraphicsFunctions::InitGraphics init_graphics = _gleam_module->GetFunc<GraphicsFunctions::InitGraphics>("InitGraphics");
 
 	if (!init_graphics) {
-		app.getGameLogFile().first.printf("ERROR - Failed to find function 'InitGraphics' in graphics module '%s'.", module.getString());
+		app.getGameLogFile().first.printf("ERROR - Failed to find function 'InitGraphics' in graphics module '%s'.", module_path.getBuffer());
 		return false;
 	}
 
@@ -232,14 +224,14 @@ bool RenderManager::cacheGleamFunctions(App& app, const Gaff::JSON& module, cons
 	}
 
 	if (!init_graphics(app, log_file_name)) {
-		app.getGameLogFile().first.printf("ERROR - Graphics module '%s' failed to initialize.", module.getString());
+		app.getGameLogFile().first.printf("ERROR - Graphics module '%s' failed to initialize.", module_path.getBuffer());
 		return false;
 	}
 
 	_graphics_functions.shutdown = _gleam_module->GetFunc<GraphicsFunctions::ShutdownGraphics>("ShutdownGraphics");
 
 	if (!_graphics_functions.shutdown) {
-		app.getGameLogFile().first.printf("ERROR - Failed to find function 'ShutdownGraphics' in graphics module '%s'.", module.getString());
+		app.getGameLogFile().first.printf("ERROR - Failed to find function 'ShutdownGraphics' in graphics module '%s'.", module_path.getBuffer());
 		return false;
 	}
 
@@ -257,62 +249,62 @@ bool RenderManager::cacheGleamFunctions(App& app, const Gaff::JSON& module, cons
 	_graphics_functions.create_mesh = _gleam_module->GetFunc<GraphicsFunctions::CreateMesh>("CreateMesh");
 
 	if (!_graphics_functions.create_shaderresourceview) {
-		app.getGameLogFile().first.printf("ERROR - Failed to find function 'CreateShaderResourceView' in graphics module '%s'.", module.getString());
+		app.getGameLogFile().first.printf("ERROR - Failed to find function 'CreateShaderResourceView' in graphics module '%s'.", module_path.getBuffer());
 		return false;
 	}
 
 	if (!_graphics_functions.create_renderdevice) {
-		app.getGameLogFile().first.printf("ERROR - Failed to find function 'CreateRenderDevice' in graphics module '%s'.", module.getString());
+		app.getGameLogFile().first.printf("ERROR - Failed to find function 'CreateRenderDevice' in graphics module '%s'.", module_path.getBuffer());
 		return false;
 	}
 
 	if (!_graphics_functions.create_rendertarget) {
-		app.getGameLogFile().first.printf("ERROR - Failed to find function 'CreateRenderTarget' in graphics module '%s'.", module.getString());
+		app.getGameLogFile().first.printf("ERROR - Failed to find function 'CreateRenderTarget' in graphics module '%s'.", module_path.getBuffer());
 		return false;
 	}
 
 	if (!_graphics_functions.create_samplerstate) {
-		app.getGameLogFile().first.printf("ERROR - Failed to find function 'CreateSamplerState' in graphics module '%s'.", module.getString());
+		app.getGameLogFile().first.printf("ERROR - Failed to find function 'CreateSamplerState' in graphics module '%s'.", module_path.getBuffer());
 		return false;
 	}
 
 	if (!_graphics_functions.create_renderstate) {
-		app.getGameLogFile().first.printf("ERROR - Failed to find function 'CreateRenderState' in graphics module '%s'.", module.getString());
+		app.getGameLogFile().first.printf("ERROR - Failed to find function 'CreateRenderState' in graphics module '%s'.", module_path.getBuffer());
 		return false;
 	}
 
 	if (!_graphics_functions.create_texture) {
-		app.getGameLogFile().first.printf("ERROR - Failed to find function 'CreateTexture' in graphics module '%s'.", module.getString());
+		app.getGameLogFile().first.printf("ERROR - Failed to find function 'CreateTexture' in graphics module '%s'.", module_path.getBuffer());
 		return false;
 	}
 
 	if (!_graphics_functions.create_layout) {
-		app.getGameLogFile().first.printf("ERROR - Failed to find function 'CreateLayout' in graphics module '%s'.", module.getString());
+		app.getGameLogFile().first.printf("ERROR - Failed to find function 'CreateLayout' in graphics module '%s'.", module_path.getBuffer());
 		return false;
 	}
 
 	if (!_graphics_functions.create_program) {
-		app.getGameLogFile().first.printf("ERROR - Failed to find function 'CreateProgram' in graphics module '%s'.", module.getString());
+		app.getGameLogFile().first.printf("ERROR - Failed to find function 'CreateProgram' in graphics module '%s'.", module_path.getBuffer());
 		return false;
 	}
 
 	if (!_graphics_functions.create_shader) {
-		app.getGameLogFile().first.printf("ERROR - Failed to find function 'CreateShader' in graphics module '%s'.", module.getString());
+		app.getGameLogFile().first.printf("ERROR - Failed to find function 'CreateShader' in graphics module '%s'.", module_path.getBuffer());
 		return false;
 	}
 
 	if (!_graphics_functions.create_buffer) {
-		app.getGameLogFile().first.printf("ERROR - Failed to find function 'CreateBuffer' in graphics module '%s'.", module.getString());
+		app.getGameLogFile().first.printf("ERROR - Failed to find function 'CreateBuffer' in graphics module '%s'.", module_path.getBuffer());
 		return false;
 	}
 
 	if (!_graphics_functions.create_model) {
-		app.getGameLogFile().first.printf("ERROR - Failed to find function 'CreateModel' in graphics module '%s'.", module.getString());
+		app.getGameLogFile().first.printf("ERROR - Failed to find function 'CreateModel' in graphics module '%s'.", module_path.getBuffer());
 		return false;
 	}
 
 	if (!_graphics_functions.create_mesh) {
-		app.getGameLogFile().first.printf("ERROR - Failed to find function 'CreateMesh' in graphics module '%s'.", module.getString());
+		app.getGameLogFile().first.printf("ERROR - Failed to find function 'CreateMesh' in graphics module '%s'.", module_path.getBuffer());
 		return false;
 	}
 

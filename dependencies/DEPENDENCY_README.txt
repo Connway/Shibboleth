@@ -16,3 +16,4 @@ Libraries Affected:
 	assimp (changed '#include "../contrib/unzip/unzip.h' lines to "#include <unzip.h>", as I already have minizip compiled into a separate lib)
 	minizip (commented out a block that says #define _CRT_SECURE_NO_WARNINGS, as I have it defined at the project level)
 	ResIL (il_header.cpp, moved #include "il_internal.h" above #ifndef IL_NO_CHEAD)
+	OtterUI (System.cpp line 44, changed from "mGraphics = NULL;" to "mGraphics = OTTER_NEW(Graphics, ());")

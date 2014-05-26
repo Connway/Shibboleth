@@ -38,8 +38,9 @@ public:
 	);
 
 	void setTopologyType(TOPOLOGY_TYPE topology);
-	void render(IRenderDevice&);
+	void renderNonIndexed(IRenderDevice&, unsigned int vert_count, unsigned int start_location = 0);
 	void renderInstanced(IRenderDevice&, unsigned int count);
+	void render(IRenderDevice&);
 
 	bool isD3D(void) const;
 

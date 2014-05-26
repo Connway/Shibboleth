@@ -22,25 +22,26 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Gaff_Defines.h"
+#include "Shibboleth_IResourceLoader.h"
+#include <Gaff_Defines.h>
 
-NS_GAFF
+NS_SHIBBOLETH
 
-class SpinLock
+class RenderManager;
+
+class ShaderLoader : public IResourceLoader
 {
 public:
-	SpinLock(void);
-	~SpinLock(void);
+	ShaderLoader(RenderManager& render_mgr);
+	~ShaderLoader(void);
 
-	INLINE void lock(void) const;
-	INLINE bool tryLock(void);
-	INLINE void unlock(void) const;
+	Gaff::IVirtualDestructor* load(const char* file_name, unsigned long long user_data);
 
 private:
-	mutable volatile long _lock;
+	RenderManager& _render_mgr;
 
-	GAFF_NO_COPY(SpinLock);
-	GAFF_NO_MOVE(SpinLock);
+	GAFF_NO_COPY(ShaderLoader);
+	GAFF_NO_MOVE(ShaderLoader);
 };
 
 NS_END

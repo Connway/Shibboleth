@@ -41,8 +41,9 @@ public:
 	void addBuffer(IBuffer* buffer);
 
 	void setTopologyType(TOPOLOGY_TYPE topology);
-	void render(IRenderDevice& rd);
+	void renderNonIndexed(IRenderDevice& rd, unsigned int vert_count, unsigned int start_location = 0);
 	void renderInstanced(IRenderDevice& rd, unsigned int count);
+	void render(IRenderDevice& rd);
 
 	bool isD3D(void) const;
 

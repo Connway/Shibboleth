@@ -32,7 +32,7 @@ NS_GLEAM
 
 RenderStateD3D::RenderStateD3D(void):
 	_depth_stencil_state(nullptr), _raster_state(nullptr),
-	_blend_state(nullptr), _depth_stencil_ref(0)
+	_blend_state(nullptr), _stencil_ref(0)
 {
 }
 
@@ -43,7 +43,7 @@ RenderStateD3D::~RenderStateD3D(void)
 
 bool RenderStateD3D::init(IRenderDevice& rd, bool wireframe, bool depth_test, bool stencil_test,
 							COMPARISON_FUNC depth_func, StencilData front_face,
-							StencilData back_face, unsigned int depth_stencil_ref,
+							StencilData back_face, unsigned int stencil_ref,
 							char stencil_read_mask, char stencil_write_mask,
 							CULL_MODE cull_face_mode, bool front_face_counter_clockwise,
 							const BlendData* blend_data)
@@ -71,7 +71,7 @@ bool RenderStateD3D::init(IRenderDevice& rd, bool wireframe, bool depth_test, bo
 	depth_stencil_desc.BackFace.StencilFailOp = (D3D11_STENCIL_OP)back_face.stencil_depth_fail;
 	depth_stencil_desc.BackFace.StencilDepthFailOp = (D3D11_STENCIL_OP)back_face.stencil_pass_depth_fail;
 
-	_depth_stencil_ref = depth_stencil_ref;
+	_stencil_ref = stencil_ref;
 
 	HRESULT result = device->CreateDepthStencilState(&depth_stencil_desc, &_depth_stencil_state);
 	RETURNIFFAILED(result)
@@ -120,7 +120,7 @@ bool RenderStateD3D::init(IRenderDevice& rd, bool wireframe, bool depth_test, bo
 
 bool RenderStateD3D::init(IRenderDevice& rd, bool wireframe, bool depth_test, bool stencil_test,
 							COMPARISON_FUNC depth_func, StencilData front_face,
-							StencilData back_face, unsigned int depth_stencil_ref,
+							StencilData back_face, unsigned int stencil_ref,
 							char stencil_read_mask, char stencil_write_mask,
 							CULL_MODE cull_face_mode, bool front_face_counter_clockwise,
 							BlendData blend_data)
@@ -148,7 +148,7 @@ bool RenderStateD3D::init(IRenderDevice& rd, bool wireframe, bool depth_test, bo
 	depth_stencil_desc.BackFace.StencilFailOp = (D3D11_STENCIL_OP)back_face.stencil_depth_fail;
 	depth_stencil_desc.BackFace.StencilDepthFailOp = (D3D11_STENCIL_OP)back_face.stencil_pass_depth_fail;
 
-	_depth_stencil_ref = depth_stencil_ref;
+	_stencil_ref = stencil_ref;
 
 	HRESULT result = device->CreateDepthStencilState(&depth_stencil_desc, &_depth_stencil_state);
 	RETURNIFFAILED(result)
@@ -205,7 +205,7 @@ void RenderStateD3D::set(IRenderDevice& rd) const
 	assert(rd.isD3D());
 	ID3D11DeviceContext* context = ((RenderDeviceD3D&)rd).getActiveDeviceContext();
 
-	context->OMSetDepthStencilState(_depth_stencil_state, _depth_stencil_ref);
+	context->OMSetDepthStencilState(_depth_stencil_state, _stencil_ref);
 	context->OMSetBlendState(_blend_state, NULL, 0xFFFFFFFF);
 	context->RSSetState(_raster_state);
 }

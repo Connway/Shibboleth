@@ -22,25 +22,30 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Gaff_Defines.h"
+#include "Shibboleth_IState.h"
 
-NS_GAFF
+NS_SHIBBOLETH
 
-class SpinLock
+class App;
+
+class CreateResourceLoadersState : public IState
 {
 public:
-	SpinLock(void);
-	~SpinLock(void);
+	CreateResourceLoadersState(App& app);
+	~CreateResourceLoadersState(void);
 
-	INLINE void lock(void) const;
-	INLINE bool tryLock(void);
-	INLINE void unlock(void) const;
+	bool init(unsigned int /*state_id*/);
+
+	void enter(void);
+	void update(void);
+	void exit(void);
 
 private:
-	mutable volatile long _lock;
+	App& _app;
+	//unsigned int _state_id;
 
-	GAFF_NO_COPY(SpinLock);
-	GAFF_NO_MOVE(SpinLock);
+	GAFF_NO_COPY(CreateResourceLoadersState);
+	GAFF_NO_MOVE(CreateResourceLoadersState);
 };
 
 NS_END

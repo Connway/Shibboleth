@@ -23,6 +23,7 @@ THE SOFTWARE.
 #include <Shibboleth_ComponentManager.h>
 #include <Shibboleth_ResourceManager.h>
 #include <Shibboleth_OtterUIManager.h>
+#include <Shibboleth_RenderManager.h>
 #include <Gaff_JSON.h>
 
 template <class Manager>
@@ -45,11 +46,26 @@ Gaff::INamedObject* CreateOtterUIManager(Shibboleth::App& app)
 	return otter_manager;
 }
 
+Gaff::INamedObject* CreateRenderManager(Shibboleth::App& app)
+{
+	Shibboleth::RenderManager* render_manager = app.getAllocator().template allocT<Shibboleth::RenderManager>(app);
+
+	if (render_manager) {
+		if (!render_manager->init("graphics.cfg")) {
+			app.getAllocator().freeT(render_manager);
+			render_manager = nullptr;
+		}
+	}
+
+	return render_manager;
+}
+
 enum Managers
 {
 	COMPONENT_MANAGER = 0,
 	RESOURCE_MANAGER,
 	OTTERUI_MANAGER,
+	RENDER_MANAGER,
 	NUM_MANAGERS
 };
 
@@ -59,7 +75,8 @@ typedef Gaff::INamedObject* (*CreateMgrFunc)(Shibboleth::App&);
 static CreateMgrFunc create_funcs[] = {
 	&CreateManagerT<Shibboleth::ComponentManager>,
 	&CreateManagerT<Shibboleth::ResourceManager>,
-	&CreateOtterUIManager
+	&CreateOtterUIManager,
+	&CreateRenderManager
 };
 
 static Shibboleth::App* g_app = nullptr;

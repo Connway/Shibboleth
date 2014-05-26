@@ -38,7 +38,8 @@ LogManager::~LogManager(void)
 void LogManager::destroy(void)
 {
 	for (auto it = _files.begin(); it != _files.end(); ++it) {
-		it->first.writeString("\nCLOSING LOG FILE\n\n");
+		it->first.writeString("\nCLOSING LOG FILE\n");
+		_allocator.freeT(it->second);
 	}
 
 	_files.clear();

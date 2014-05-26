@@ -35,7 +35,7 @@ class ProxyAllocator : public Gaff::IAllocator
 {
 public:
 	explicit ProxyAllocator(Gaff::IAllocator& allocator = GetAllocator()):
-		_allocator(allocator)
+		_allocator(&allocator)
 	{
 	}
 
@@ -44,18 +44,24 @@ public:
 	{
 	}
 
+	const ProxyAllocator& operator=(const ProxyAllocator& rhs)
+	{
+		_allocator = rhs._allocator;
+		return *this;
+	}
+
 	void* alloc(unsigned int size_bytes)
 	{
-		return _allocator.alloc(size_bytes);
+		return _allocator->alloc(size_bytes);
 	}
 
 	void free(void* data)
 	{
-		return _allocator.free(data);
+		return _allocator->free(data);
 	}
 
 private:
-	Gaff::IAllocator& _allocator;
+	Gaff::IAllocator* _allocator;
 };
 
 NS_END
