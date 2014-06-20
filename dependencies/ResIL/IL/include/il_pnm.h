@@ -32,7 +32,10 @@ typedef struct PPMINFO
 	ILubyte	Bpp;
 } PPMINFO;
 
+ILboolean	iIsValidPnm(void);
 ILboolean	iCheckPnm(char Header[2]);
+ILboolean	iLoadPnmInternal(void);
+ILboolean	iSavePnmInternal(void);
 ILimage		*ilReadAsciiPpm(PPMINFO *Info);
 ILimage		*ilReadBinaryPpm(PPMINFO *Info);
 ILimage		*ilReadBitPbm(PPMINFO *Info);

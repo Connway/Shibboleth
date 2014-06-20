@@ -73,10 +73,10 @@ bool Thread::close(void)
 
 Thread::WaitCode Thread::wait(unsigned int ms)
 {
-	WaitCode ret = FINISHED;
+	WaitCode ret = THREAD_FINISHED;
 
 	if (ms == INF) {
-		ret = (pthread_join(_thread, 0)) ? FAILED : FINISHED;
+		ret = (pthread_join(_thread, 0)) ? THREAD_FAILED : THREAD_FINISHED;
 
 	} else {
 		// Might want to find a better way of getting the final timespec struct
@@ -95,15 +95,15 @@ Thread::WaitCode Thread::wait(unsigned int ms)
 
 		switch (r) {
 			case ETIMEDOUT:
-				ret = TIMEOUT;
+				ret = THREAD_TIMEOUT;
 				break;
 
 			case EINVAL:
-				ret = FAILED;
+				ret = THREAD_FAILED;
 				break;
 
 			default:
-				ret = FINISHED;
+				ret = THREAD_FINISHED;
 		}
 	}
 

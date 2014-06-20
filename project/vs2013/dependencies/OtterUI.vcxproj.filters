@@ -1,0 +1,240 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="inc">
+      <UniqueIdentifier>{1F80880B-8B89-887C-1405-9F7C800D947C}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="inc\Common">
+      <UniqueIdentifier>{7754420F-630C-845C-CC13-5DB8B8EA1E4D}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="inc\Graphics">
+      <UniqueIdentifier>{3FDB5365-2B3E-E309-D4C3-1BC0C005AF8C}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="inc\Interfaces">
+      <UniqueIdentifier>{12331991-FE00-0D97-E794-7DBDD301E9FB}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="inc\Math">
+      <UniqueIdentifier>{58D0A660-449D-016C-6DB6-EF1359E236FA}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src">
+      <UniqueIdentifier>{2DAB880B-99B4-887C-2230-9F7C8E38947C}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Common">
+      <UniqueIdentifier>{C5C39D09-B17B-DF56-1A83-B8B2065A7A47}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Data">
+      <UniqueIdentifier>{B6241DCF-A2F1-77DA-CB0A-6682B736AD68}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Graphics">
+      <UniqueIdentifier>{0D564864-F9B8-D708-A23E-10BF8E80A38B}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Math">
+      <UniqueIdentifier>{261422CF-12E1-7CDA-3BFA-6A822726B268}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Memory">
+      <UniqueIdentifier>{F56D3C20-E125-7E6D-4A2D-57C93604195E}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Utilities">
+      <UniqueIdentifier>{D86B3A83-442C-B6B9-0D67-FF3679E6FA95}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\utf8proc">
+      <UniqueIdentifier>{B709CA79-A36C-591E-4CF2-91D4383425A1}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\dependencies\OtterUI\inc\Button.h">
+      <Filter>inc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\OtterUI\inc\Common\Array.h">
+      <Filter>inc\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\OtterUI\inc\Common\BaseTypes.h">
+      <Filter>inc\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\OtterUI\inc\Common\Event.h">
+      <Filter>inc\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\OtterUI\inc\Common\Platforms.h">
+      <Filter>inc\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\OtterUI\inc\Common\Types.h">
+      <Filter>inc\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\OtterUI\inc\Common\UTF8String.h">
+      <Filter>inc\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\OtterUI\inc\Control.h">
+      <Filter>inc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\OtterUI\inc\Graphics\Graphics.h">
+      <Filter>inc\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\OtterUI\inc\Group.h">
+      <Filter>inc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\OtterUI\inc\Interfaces\IFileSystem.h">
+      <Filter>inc\Interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\OtterUI\inc\Interfaces\IPlugin.h">
+      <Filter>inc\Interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\OtterUI\inc\Interfaces\IRenderer.h">
+      <Filter>inc\Interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\OtterUI\inc\Interfaces\ISoundSystem.h">
+      <Filter>inc\Interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\OtterUI\inc\Label.h">
+      <Filter>inc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\OtterUI\inc\Mask.h">
+      <Filter>inc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\OtterUI\inc\Math\Matrix4.h">
+      <Filter>inc\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\OtterUI\inc\Math\Vector2.h">
+      <Filter>inc\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\OtterUI\inc\Math\Vector3.h">
+      <Filter>inc\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\OtterUI\inc\Math\Vector4.h">
+      <Filter>inc\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\OtterUI\inc\Math\VectorMath.h">
+      <Filter>inc\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\OtterUI\inc\Otter.h">
+      <Filter>inc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\OtterUI\inc\Scene.h">
+      <Filter>inc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\OtterUI\inc\Slider.h">
+      <Filter>inc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\OtterUI\inc\Sprite.h">
+      <Filter>inc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\OtterUI\inc\System.h">
+      <Filter>inc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\OtterUI\inc\Table.h">
+      <Filter>inc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\OtterUI\inc\Toggle.h">
+      <Filter>inc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\OtterUI\inc\View.h">
+      <Filter>inc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\OtterUI\src\Common\Log.h">
+      <Filter>src\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\OtterUI\src\Data\OtterData.h">
+      <Filter>src\Data</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\OtterUI\src\Font.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\OtterUI\src\Memory\Memory.h">
+      <Filter>src\Memory</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\OtterUI\src\Memory\MemoryManager.h">
+      <Filter>src\Memory</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\OtterUI\src\Utilities\Utilities.h">
+      <Filter>src\Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\OtterUI\src\utf8proc\utf8proc.h">
+      <Filter>src\utf8proc</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\..\dependencies\OtterUI\src\Button.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\dependencies\OtterUI\src\Common\Log.cpp">
+      <Filter>src\Common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\dependencies\OtterUI\src\Common\UTF8String.cpp">
+      <Filter>src\Common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\dependencies\OtterUI\src\Control.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\dependencies\OtterUI\src\Data\OtterData.cpp">
+      <Filter>src\Data</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\dependencies\OtterUI\src\Font.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\dependencies\OtterUI\src\Graphics\Graphics.cpp">
+      <Filter>src\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\dependencies\OtterUI\src\Group.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\dependencies\OtterUI\src\Label.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\dependencies\OtterUI\src\Mask.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\dependencies\OtterUI\src\Math\Matrix4.cpp">
+      <Filter>src\Math</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\dependencies\OtterUI\src\Math\Vector2.cpp">
+      <Filter>src\Math</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\dependencies\OtterUI\src\Math\Vector3.cpp">
+      <Filter>src\Math</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\dependencies\OtterUI\src\Math\Vector4.cpp">
+      <Filter>src\Math</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\dependencies\OtterUI\src\Math\VectorMath.cpp">
+      <Filter>src\Math</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\dependencies\OtterUI\src\Memory\Memory.cpp">
+      <Filter>src\Memory</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\dependencies\OtterUI\src\Memory\MemoryManager.cpp">
+      <Filter>src\Memory</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\dependencies\OtterUI\src\Otter.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\dependencies\OtterUI\src\Scene.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\dependencies\OtterUI\src\Slider.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\dependencies\OtterUI\src\Sprite.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\dependencies\OtterUI\src\System.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\dependencies\OtterUI\src\Table.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\dependencies\OtterUI\src\Toggle.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\dependencies\OtterUI\src\Utilities\Utilities.cpp">
+      <Filter>src\Utilities</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\dependencies\OtterUI\src\View.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\dependencies\OtterUI\src\utf8proc\utf8proc.cpp">
+      <Filter>src\utf8proc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\dependencies\OtterUI\src\utf8proc\utf8proc_data.cpp">
+      <Filter>src\utf8proc</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>

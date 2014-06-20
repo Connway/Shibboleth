@@ -169,6 +169,49 @@ void ilIStream::clear()
 	return;
 }
 
+
+//! Reads an .exr file.
+ILboolean ilLoadExr(ILconst_string FileName)
+{
+	ILHANDLE	ExrFile;
+	ILboolean	bExr = IL_FALSE;
+	
+	ExrFile = iopenr(FileName);
+	if (ExrFile == NULL) {
+		ilSetError(IL_COULD_NOT_OPEN_FILE);
+		return bExr;
+	}
+
+	bExr = ilLoadExrF(ExrFile);
+	icloser(ExrFile);
+
+	return bExr;
+}
+
+
+//! Reads an already-opened .exr file
+ILboolean ilLoadExrF(ILHANDLE File)
+{
+	ILuint		FirstPos;
+	ILboolean	bRet;
+	
+	iSetInputFile(File);
+	FirstPos = itell();
+	bRet = iLoadExrInternal();
+	iseek(FirstPos, IL_SEEK_SET);
+
+	return bRet;
+}
+
+
+//! Reads from a memory "lump" that contains an .exr
+ILboolean ilLoadExrL(const void *Lump, ILuint Size)
+{
+	iSetInputLump(Lump, Size);
+	return iLoadExrInternal();
+}
+
+
 using namespace Imath;
 using namespace Imf;
 using namespace std;
@@ -283,6 +326,57 @@ void ilOStream::seekp(Imf::Int64 Pos)
 	// iseekw only uses a 32-bit value!
 	iseekw((ILint)Pos, IL_SEEK_SET);  // I am assuming this is seeking from the beginning.
 	return;
+}
+
+
+//! Writes a Exr file
+ILboolean ilSaveExr(const ILstring FileName)
+{
+	ILHANDLE	ExrFile;
+	ILuint		ExrSize;
+
+	if (ilGetBoolean(IL_FILE_MODE) == IL_FALSE) {
+		if (iFileExists(FileName)) {
+			ilSetError(IL_FILE_ALREADY_EXISTS);
+			return IL_FALSE;
+		}
+	}
+
+	ExrFile = iopenw(FileName);
+	if (ExrFile == NULL) {
+		ilSetError(IL_COULD_NOT_OPEN_FILE);
+		return IL_FALSE;
+	}
+
+	ExrSize = ilSaveExrF(ExrFile);
+	iclosew(ExrFile);
+
+	if (ExrSize == 0)
+		return IL_FALSE;
+	return IL_TRUE;
+}
+
+
+//! Writes a Exr to an already-opened file
+ILuint ilSaveExrF(ILHANDLE File)
+{
+	ILuint Pos;
+	iSetOutputFile(File);
+	Pos = itellw();
+	if (iSaveExrInternal() == IL_FALSE)
+		return 0;  // Error occurred
+	return itellw() - Pos;  // Return the number of bytes written.
+}
+
+
+//! Writes a Exr to a memory "lump"
+ILuint ilSaveExrL(void *Lump, ILuint Size)
+{
+	ILuint Pos = itellw();
+	iSetOutputLump(Lump, Size);
+	if (iSaveExrInternal() == IL_FALSE)
+		return 0;  // Error occurred
+	return itellw() - Pos;  // Return the number of bytes written.
 }
 
 

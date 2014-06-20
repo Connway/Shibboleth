@@ -22,53 +22,142 @@ THE SOFTWARE.
 
 #include "Shibboleth_Allocator.h"
 #include <Gaff_Atomic.h>
+#include <Gaff_Utils.h>
+#include <Gaff_File.h>
 
 NS_SHIBBOLETH
 
 static Allocator* gAllocator = nullptr;
 
 Allocator::Allocator(size_t alignment):
-	_total_bytes_allocated(0), _num_allocations(0),
-	_num_frees(0), _alignment(alignment)
+	_tagged_pools(Gaff::DefaultAlignedAllocator(16)), _alignment(alignment)
 {
+	MemoryPoolInfo& mem_pool_info = _tagged_pools[0];
+	mem_pool_info.total_bytes_allocated = 0;
+	mem_pool_info.num_allocations = 0;
+	mem_pool_info.num_frees = 0;
+
+	strncpy(mem_pool_info.pool_name, "Untagged Allocations", POOL_NAME_SIZE);
 }
 
 Allocator::~Allocator(void)
 {
+	char log_file_name[64] = { 0 };
+	Gaff::GetCurrentTimeString(log_file_name, 64, "Logs/AllocationLog %m-%d-%Y %H-%M-%S.txt");
+
+	if (!Gaff::CreateDir("./Logs", 0777)) {
+		return;
+	}
+
+	Gaff::File log;
+
+	if (!log.open(log_file_name, Gaff::File::WRITE)) {
+		return;
+	}
+
+	unsigned int total_bytes = 0;
+	unsigned int total_allocs = 0;
+	unsigned int total_frees = 0;
+
+	log.printf("===========================================================\n");
+	log.printf("Tagged Memory Allocations Log\n");
+	log.printf("===========================================================\n\n");
+
+	for (auto it = _tagged_pools.begin(); it != _tagged_pools.end(); ++it) {
+		log.printf("%s:\n", it->second.pool_name);
+		log.printf("\tBytes Allocated: %i\n", it->second.total_bytes_allocated);
+		log.printf("\tAllocations: %i\n", it->second.num_allocations);
+		log.printf("\tFrees: %i\n\n", it->second.num_frees);
+
+		total_bytes += it->second.total_bytes_allocated;
+		total_allocs += it->second.num_allocations;
+		total_frees += it->second.num_frees;
+
+		if (it->second.num_allocations > it->second.num_frees) {
+			log.printf("\t===========================================================\n");
+			log.printf("\tWARNING: A memory leak was caused by this pool!\n");
+			log.printf("\t===========================================================\n\n");
+
+		} else if (it->second.num_allocations < it->second.num_frees) {
+			log.printf("\t===========================================================\n");
+			log.printf("\tWARNING: Memory was potentially allocated by another pool, but freed by this one!\n");
+			log.printf("\t===========================================================\n\n");
+		}
+	}
+
+	log.printf("Total Bytes Allocated: %i\n", total_bytes);
+	log.printf("Total Allocations: %i\n", total_allocs);
+	log.printf("Total Frees: %i\n", total_frees);
+
+	if (total_allocs != total_frees) {
+		log.printf("\n===========================================================\n");
+		log.printf("WARNING: Application has a memory leak(s)!\n");
+		log.printf("===========================================================\n");
+	}
 }
 
-void* Allocator::alloc(unsigned int size_bytes)
+void Allocator::createMemoryPool(const char* pool_name, unsigned int alloc_tag)
 {
+	if (!_tagged_pools.hasElementWithKey(alloc_tag)) {
+		MemoryPoolInfo& mem_pool_info = _tagged_pools[alloc_tag];
+		mem_pool_info.total_bytes_allocated = 0;
+		mem_pool_info.num_allocations = 0;
+		mem_pool_info.num_frees = 0;
+
+		strncpy(mem_pool_info.pool_name, pool_name, POOL_NAME_SIZE);
+	}
+}
+
+void* Allocator::alloc(unsigned int size_bytes, unsigned int alloc_tag)
+{
+	assert(_tagged_pools.hasElementWithKey(alloc_tag));
+	MemoryPoolInfo& mem_pool_info = _tagged_pools[alloc_tag];
 
 	void* data = _aligned_malloc(size_bytes, _alignment);
 
 	if (data) {
-		AtomicUAdd(&_total_bytes_allocated, size_bytes);
-		AtomicIncrement(&_num_allocations);
+		AtomicUAdd(&mem_pool_info.total_bytes_allocated, size_bytes);
+		AtomicIncrement(&mem_pool_info.num_allocations);
 	}
 
 	return data;
 }
 
-void Allocator::free(void* data)
+void Allocator::free(void* data, unsigned int alloc_tag)
 {
-	AtomicIncrement(&_num_frees);
+	assert(_tagged_pools.hasElementWithKey(alloc_tag));
+	assert(data);
+
+	MemoryPoolInfo& mem_pool_info = _tagged_pools[alloc_tag];
+	AtomicIncrement(&mem_pool_info.num_frees);
+
 	_aligned_free(data);
 }
 
-unsigned int Allocator::getTotalBytesAllocated(void) const
+void* Allocator::alloc(unsigned int size_bytes)
 {
-	return _total_bytes_allocated;
+
+	return alloc(size_bytes, 0);
 }
 
-unsigned int Allocator::getNumAllocations(void) const
+void Allocator::free(void* data)
 {
-	return _num_allocations;
+	free(data, 0);
 }
 
-unsigned int Allocator::getNumFrees(void) const
+unsigned int Allocator::getTotalBytesAllocated(unsigned int alloc_tag) const
 {
-	return _num_frees;
+	return _tagged_pools[alloc_tag].total_bytes_allocated;
+}
+
+unsigned int Allocator::getNumAllocations(unsigned int alloc_tag) const
+{
+	return _tagged_pools[alloc_tag].num_allocations;
+}
+
+unsigned int Allocator::getNumFrees(unsigned int alloc_tag) const
+{
+	return _tagged_pools[alloc_tag].num_frees;
 }
 
 void SetAllocator(Allocator& allocator)

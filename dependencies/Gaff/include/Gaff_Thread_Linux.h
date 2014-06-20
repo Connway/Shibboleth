@@ -40,9 +40,9 @@ public:
 
 	enum WaitCode
 	{
-		FINISHED = 0,	// Thread has finished executing
-		TIMEOUT,		// Thread is still running and has timed out
-		FAILED			// Something went wrong!
+		THREAD_FINISHED = 0,	// Thread has finished executing
+		THREAD_TIMEOUT,		// Thread is still running and has timed out
+		THREAD_FAILED			// Something went wrong!
 	};
 
 	Thread(Thread&& thread);

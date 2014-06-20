@@ -105,7 +105,7 @@ bool HashString<T, Allocator>::operator!=(const HashString<T, Allocator>& rhs) c
 template <class T, class Allocator>
 char HashString<T, Allocator>::operator[](unsigned int index) const
 {
-	assert(index < _size);
+	assert(index < _string.size());
 	return _string[index];
 }
 

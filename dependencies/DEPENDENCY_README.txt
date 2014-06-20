@@ -13,7 +13,6 @@ Libraries Affected:
 	libjpeg
 	zlib
 	jansson (changed header files with the line #include <jansson_config.h> to #include "jansson_config.h" and moved the #include <windows.h> in hashtable_seed.c from line 98 to line 42 to remove compile warnings)
-	assimp (changed '#include "../contrib/unzip/unzip.h' lines to "#include <unzip.h>", as I already have minizip compiled into a separate lib)
+	assimp (Changed '#include "../contrib/unzip/unzip.h' lines to "#include <unzip.h>", as I already have minizip compiled into a separate lib. Fixed compilation error because a variable wasn't initialized.)
 	minizip (commented out a block that says #define _CRT_SECURE_NO_WARNINGS, as I have it defined at the project level)
-	ResIL (il_header.cpp, moved #include "il_internal.h" above #ifndef IL_NO_CHEAD)
-	OtterUI (System.cpp line 44, changed from "mGraphics = NULL;" to "mGraphics = OTTER_NEW(Graphics, ());")
+	ResIL

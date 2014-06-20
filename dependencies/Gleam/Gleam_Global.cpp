@@ -28,7 +28,7 @@ THE SOFTWARE.
 #include <cstdarg>
 
 #ifdef ALIGN_SIMD
-#include "Gleam_AlignedDefaultAllocator.h"
+#include "Gaff_DefaultAlignedAllocator.h"
 #else
 #include "Gaff_DefaultAllocator.h"
 #endif
@@ -36,7 +36,7 @@ THE SOFTWARE.
 NS_GLEAM
 
 #ifdef ALIGN_SIMD
-static Gaff::IAllocator* g_allocator = new AlignedDefaultAllocator(16);
+static Gaff::IAllocator* g_allocator = new Gaff::DefaultAlignedAllocator(16);
 #else
 static Gaff::IAllocator* g_allocator = new Gaff::DefaultAllocator;
 #endif

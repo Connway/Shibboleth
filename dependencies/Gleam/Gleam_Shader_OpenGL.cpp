@@ -137,6 +137,13 @@ bool ShaderGL::initHull(IRenderDevice&, const wchar_t* file_path)
 	_type = SHADER_HULL;
 	return loadFileAndCompileShader(GL_TESS_CONTROL_SHADER, file_path);
 }
+
+bool ShaderGL::initCompute(IRenderDevice&, const wchar_t* file_path)
+{
+	assert(file_path);
+	_type = SHADER_COMPUTE;
+	return loadFileAndCompileShader(GL_COMPUTE_SHADER, file_path);
+}
 #endif
 
 bool ShaderGL::initVertexSource(IRenderDevice&, const char* source)

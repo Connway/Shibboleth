@@ -146,7 +146,7 @@ public:
 		return initCompute(rd, file_path.getBuffer());
 	}
 
-	virtual bool init(IRenderDevice& rd, const char* file_path, SHADER_TYPE shader_type) = 0;
+	virtual bool init(IRenderDevice& rd, const wchar_t* file_path, SHADER_TYPE shader_type) = 0;
 
 	virtual bool initVertex(IRenderDevice&, const wchar_t* file_path) = 0;
 	virtual bool initPixel(IRenderDevice&, const wchar_t* file_path) = 0;
@@ -156,7 +156,7 @@ public:
 	virtual bool initCompute(IRenderDevice&, const wchar_t* file_path) = 0;
 #endif
 
-	virtual bool init(IRenderDevice& rd, const wchar_t* file_path, SHADER_TYPE shader_type) = 0;
+	virtual bool init(IRenderDevice& rd, const char* file_path, SHADER_TYPE shader_type) = 0;
 
 	virtual bool initVertex(IRenderDevice&, const char* file_path) = 0;
 	virtual bool initPixel(IRenderDevice&, const char* file_path) = 0;

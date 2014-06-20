@@ -80,11 +80,11 @@ public:
 	void addCallback(const Gaff::FunctionBinder<void, const AHashString&, bool> callback);
 
 private:
-	AHashString _res_key;
-
 	typedef void (ResourceManager::*ZRC)(const AHashString&);
 	ResourceManager* _res_manager;
 	ZRC _zero_ref_callback;
+
+	AHashString _res_key;
 
 	Array< Gaff::FunctionBinder<void, const AHashString&, bool> > _callbacks;
 

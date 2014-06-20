@@ -27,6 +27,9 @@ THE SOFTWARE.
 #include <sys/stat.h>
 #include <unistd.h>
 #include <errno.h>
+#include <cstdarg>
+#include <cstdio>
+#include <cwchar>
 
 NS_GAFF
 

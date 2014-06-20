@@ -117,11 +117,12 @@ private:
 	//};
 
 	GraphicsFunctions _graphics_functions;
-	Array< Gaff::SmartPtr<Gleam::Window> > _windows;
+	Array< Gaff::SmartPtr<Gleam::Window, ProxyAllocator> > _windows;
 	Gaff::SmartPtr<Gleam::IRenderDevice, ProxyAllocator> _render_device;
 	DynamicLoader::ModulePtr _gleam_module;
 	Gaff::SpinLock _spin_lock;
 
+	ProxyAllocator _proxy_allocator;
 	App& _app;
 
 	void generateDefaultConfig(Gaff::JSON& cfg);

@@ -107,6 +107,8 @@ typedef long long unsigned int ILuint64;
 	#define ILchar wchar_t
 	#define ILstring wchar_t*
 	#define ILconst_string  wchar_t const *
+
+	#define PathCharMod "%S"
 #else
 	//if we use a define instead of a typedef,
 	//ILconst_string works as intended
@@ -500,16 +502,22 @@ typedef long long unsigned int ILuint64;
 #define IL_EOF		-1
 
 
-// Callback functions for file reading and writing
+// Callback functions for file reading
 typedef void* ILHANDLE;
-typedef void      (ILAPIENTRY *fCloseProc)(ILHANDLE);
+typedef void      (ILAPIENTRY *fCloseRProc)(ILHANDLE);
 typedef ILboolean (ILAPIENTRY *fEofProc)   (ILHANDLE);
 typedef ILint     (ILAPIENTRY *fGetcProc)  (ILHANDLE);
-typedef ILHANDLE  (ILAPIENTRY *fOpenProc) (ILconst_string);
-typedef ILuint     (ILAPIENTRY *fReadProc)  (ILHANDLE, void*, ILuint, ILuint);
-typedef ILint     (ILAPIENTRY *fSeekProc) (ILHANDLE, ILint64, ILuint);
-typedef ILuint     (ILAPIENTRY *fTellProc) (ILHANDLE);
+typedef ILHANDLE  (ILAPIENTRY *fOpenRProc) (ILconst_string);
+typedef ILint     (ILAPIENTRY *fReadProc)  (void*, ILuint, ILuint, ILHANDLE);
+typedef ILint     (ILAPIENTRY *fSeekRProc) (ILHANDLE, ILint, ILint);
+typedef ILint     (ILAPIENTRY *fTellRProc) (ILHANDLE);
+
+// Callback functions for file writing
+typedef void     (ILAPIENTRY *fCloseWProc)(ILHANDLE);
+typedef ILHANDLE (ILAPIENTRY *fOpenWProc) (ILconst_string);
 typedef ILint    (ILAPIENTRY *fPutcProc)  (ILubyte, ILHANDLE);
+typedef ILint    (ILAPIENTRY *fSeekWProc) (ILHANDLE, ILint, ILint);
+typedef ILint    (ILAPIENTRY *fTellWProc) (ILHANDLE);
 typedef ILint    (ILAPIENTRY *fWriteProc) (const void*, ILuint, ILuint, ILHANDLE);
 
 // Callback functions for allocation and deallocation
@@ -544,9 +552,7 @@ ILAPI ILuint    ILAPIENTRY ilCreateSubImage(ILenum Type, ILuint Num);
 ILAPI ILboolean ILAPIENTRY ilDefaultImage(void);
 ILAPI void		ILAPIENTRY ilDeleteImage(const ILuint Num);
 ILAPI void      ILAPIENTRY ilDeleteImages(ILsizei Num, const ILuint *Images);
-ILAPI ILuint	ILAPIENTRY ilDetermineSize(ILenum Type);
 ILAPI ILenum	ILAPIENTRY ilDetermineType(ILconst_string FileName);
-ILAPI ILenum	ILAPIENTRY ilDetermineTypeFuncs();
 ILAPI ILenum	ILAPIENTRY ilDetermineTypeF(ILHANDLE File);
 ILAPI ILenum	ILAPIENTRY ilDetermineTypeL(const void *Lump, ILuint Size);
 ILAPI ILboolean ILAPIENTRY ilDisable(ILenum Mode);
@@ -565,7 +571,7 @@ ILAPI ILuint    ILAPIENTRY ilGetDXTCData(void *Buffer, ILuint BufferSize, ILenum
 ILAPI ILenum    ILAPIENTRY ilGetError(void);
 ILAPI ILint     ILAPIENTRY ilGetInteger(ILenum Mode);
 ILAPI void      ILAPIENTRY ilGetIntegerv(ILenum Mode, ILint *Param);
-ILAPI ILuint64    ILAPIENTRY ilGetLumpPos(void);
+ILAPI ILuint    ILAPIENTRY ilGetLumpPos(void);
 ILAPI ILubyte*  ILAPIENTRY ilGetPalette(void);
 ILAPI ILconst_string  ILAPIENTRY ilGetString(ILenum StringName);
 ILAPI void      ILAPIENTRY ilHint(ILenum Target, ILenum Mode);
@@ -581,7 +587,6 @@ ILAPI ILboolean ILAPIENTRY ilIsValidL(ILenum Type, void *Lump, ILuint Size);
 ILAPI void      ILAPIENTRY ilKeyColour(ILclampf Red, ILclampf Green, ILclampf Blue, ILclampf Alpha);
 ILAPI ILboolean ILAPIENTRY ilLoad(ILenum Type, ILconst_string FileName);
 ILAPI ILboolean ILAPIENTRY ilLoadF(ILenum Type, ILHANDLE File);
-ILAPI ILboolean ILAPIENTRY ilLoadFuncs(ILenum Type);
 ILAPI ILboolean ILAPIENTRY ilLoadImage(ILconst_string FileName);
 ILAPI ILboolean ILAPIENTRY ilLoadL(ILenum Type, const void *Lump, ILuint Size);
 ILAPI ILboolean ILAPIENTRY ilLoadPal(ILconst_string FileName);
@@ -602,15 +607,10 @@ ILAPI void      ILAPIENTRY ilRegisterType(ILenum Type);
 ILAPI ILboolean ILAPIENTRY ilRemoveLoad(ILconst_string Ext);
 ILAPI ILboolean ILAPIENTRY ilRemoveSave(ILconst_string Ext);
 ILAPI void      ILAPIENTRY ilResetMemory(void); // Deprecated
-
-// Reset read, write procedures
-// @todo: Setting read calls currently zeroes the write calls, and vice versa - is this correct?
 ILAPI void      ILAPIENTRY ilResetRead(void);
 ILAPI void      ILAPIENTRY ilResetWrite(void);
-
 ILAPI ILboolean ILAPIENTRY ilSave(ILenum Type, ILconst_string FileName);
 ILAPI ILuint    ILAPIENTRY ilSaveF(ILenum Type, ILHANDLE File);
-ILAPI ILboolean ILAPIENTRY ilSaveFuncs(ILenum type);
 ILAPI ILboolean ILAPIENTRY ilSaveImage(ILconst_string FileName);
 ILAPI ILuint    ILAPIENTRY ilSaveL(ILenum Type, void *Lump, ILuint Size);
 ILAPI ILboolean ILAPIENTRY ilSavePal(ILconst_string FileName);
@@ -620,19 +620,9 @@ ILAPI ILboolean ILAPIENTRY ilSetDuration(ILuint Duration);
 ILAPI void      ILAPIENTRY ilSetInteger(ILenum Mode, ILint Param);
 ILAPI void      ILAPIENTRY ilSetMemory(mAlloc, mFree);
 ILAPI void      ILAPIENTRY ilSetPixels(ILint XOff, ILint YOff, ILint ZOff, ILuint Width, ILuint Height, ILuint Depth, ILenum Format, ILenum Type, void *Data);
-
-// Set read functions - currently not useful, because it is not possible to read files using these functions
-// Only ilLoad* functions can be used to load images, and these will override the settings defined here,
-// Therefore, unfortunately, this function is currently useful only within ResIL
-ILAPI void      ILAPIENTRY ilSetRead(fOpenProc, fCloseProc, fEofProc, fGetcProc, fReadProc, fSeekProc, fTellProc);
-
+ILAPI void      ILAPIENTRY ilSetRead(fOpenRProc, fCloseRProc, fEofProc, fGetcProc, fReadProc, fSeekRProc, fTellRProc);
 ILAPI void      ILAPIENTRY ilSetString(ILenum Mode, const char *String);
-
-// Set write functions - currently not useful, because it is not possible to write files using these functions
-// Only ilSave* functions can be used to write images, and these will override the settings defined here,
-// Therefore, unfortunately, this function is currently useful only within ResIL
-ILAPI void      ILAPIENTRY ilSetWrite(fOpenProc, fCloseProc, fPutcProc, fSeekProc, fTellProc, fWriteProc);
-
+ILAPI void      ILAPIENTRY ilSetWrite(fOpenWProc, fCloseWProc, fPutcProc, fSeekWProc, fTellWProc, fWriteProc);
 ILAPI void      ILAPIENTRY ilShutDown(void);
 ILAPI ILboolean ILAPIENTRY ilSurfaceToDxtcData(ILenum Format);
 ILAPI ILboolean ILAPIENTRY ilTexImage(ILuint Width, ILuint Height, ILuint Depth, ILubyte NumChannels, ILenum Format, ILenum Type, void *Data);

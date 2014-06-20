@@ -68,7 +68,7 @@ const StackTrace& StackTrace::operator=(const StackTrace& rhs)
 	memcpy(_stack, rhs._stack, sizeof(_stack));
 	_frame = rhs._frame;
 
-	_strings = backtrace_symbols(_frame, 1);
+	_strings = backtrace_symbols(&_frame, 1);
 
 	return *this;
 }
@@ -91,6 +91,8 @@ bool StackTrace::loadFrameInfo(unsigned short frame)
 
 	_strings = backtrace_symbols(_stack + frame, 1);
 	_frame = _stack[frame];
+
+	return _strings && _frame;
 }
 
 const char* StackTrace::getFrameName(void) const

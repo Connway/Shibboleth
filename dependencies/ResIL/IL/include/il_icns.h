@@ -35,7 +35,8 @@ typedef struct ICNSDATA
 	#pragma pack(pop, icns_struct)
 #endif
 
-ILboolean iIcnsReadData(ILimage* image, ILboolean *BaseCreated, ILboolean IsAlpha, 
-	ILint Width, ICNSDATA *Entry, ILimage **Image);
+ILboolean iIsValidIcns();
+ILboolean iLoadIcnsInternal();
+ILboolean iIcnsReadData(ILboolean *BaseCreated, ILboolean IsAlpha, ILint Width, ICNSDATA *Entry, ILimage **Image);
 
 #endif//ICNS_H

@@ -173,7 +173,7 @@ ILboolean	iIsValidDds(void);
 ILboolean	iCheckDds(DDSHEAD *Head);
 void		AdjustVolumeTexture(DDSHEAD *Head, ILuint CompFormat);
 ILboolean	ReadData();
-ILboolean	AllocImage(ILimage* image, ILuint CompFormat);
+ILboolean	AllocImage(ILuint CompFormat);
 ILboolean	DdsDecompress(ILuint CompFormat);
 ILboolean	ReadMipmaps(ILuint CompFormat);
 ILuint		DecodePixelFormat();

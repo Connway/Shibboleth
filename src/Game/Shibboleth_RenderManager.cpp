@@ -31,7 +31,8 @@ THE SOFTWARE.
 NS_SHIBBOLETH
 
 RenderManager::RenderManager(App& app):
-	_app(app)
+	_render_device(nullptr, ProxyAllocator(app.getAllocator(), "Graphics Allocations")),
+	_proxy_allocator(app.getAllocator(), "Graphics Allocations"), _app(app)
 {
 }
 
@@ -69,7 +70,7 @@ bool RenderManager::init(const char* cfg_file)
 		return false;
 	}
 
-	Gleam::SetAllocator(&_app.getAllocator());
+	Gleam::SetAllocator(&_proxy_allocator);
 
 	_render_device = _graphics_functions.create_renderdevice();
 

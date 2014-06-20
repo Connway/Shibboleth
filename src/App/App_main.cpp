@@ -20,7 +20,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#include "Shibboleth_App.h"
+#include <Shibboleth_App.h>
 
 #ifdef _DEBUG
 	#include <vld.h>
