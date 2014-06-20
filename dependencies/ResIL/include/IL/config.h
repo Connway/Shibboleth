@@ -4,10 +4,7 @@
 #undef ALTIVEC_GCC
 
 /* "Enable debug code features" */
-//#undef DEBUG
-#ifdef _DEBUG
-	#define DEBUG
-#endif
+#undef DEBUG
 
 /* PPC_ASM assembly found */
 #undef GCC_PCC_ASM
@@ -143,7 +140,7 @@
 
 /* gif support (GIF is lossy and proprietary format used mainly to make
    animations) */
-#undef IL_NO_GIF
+#define IL_NO_GIF
 
 /* hdr support (HDR is the Radiance High Dynamic Range format, using more bits
    per channel than normal.) */
@@ -288,8 +285,6 @@
 
 /* LCMS include without lcms/ support */
 #undef LCMS_NODIRINCLUDE
-
-#define IL_NO_CHEAD
 
 /* Define to the sub-directory in which libtool stores uninstalled libraries.
    */

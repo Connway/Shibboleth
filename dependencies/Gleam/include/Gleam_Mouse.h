@@ -23,6 +23,7 @@ THE SOFTWARE.
 #pragma once
 
 #include "Gleam_Mouse_MessagePump.h"
+
 NS_GLEAM
 	typedef MouseMP Mouse;
 NS_END

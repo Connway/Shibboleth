@@ -115,13 +115,14 @@ private:
 
 	typedef HashMap<AHashString, ManagerEntry> ManagerMap;
 
+	Allocator _allocator;
+
 	MessageBroadcaster _broadcaster;
 	DynamicLoader _dynamic_loader;
 	StateMachine _state_machine;
 	ManagerMap _manager_map;
 	ThreadPool _thread_pool;
 
-	Allocator _allocator;
 	LogManager _logger;
 
 	LogManager::FileLockPair* _log_file_pair;

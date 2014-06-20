@@ -25,5 +25,5 @@ THE SOFTWARE.
 #include "Gleam_Keyboard_MessagePump.h"
 
 NS_GLEAM
-	typedef KeyboardMP Mouse;
+	typedef KeyboardMP Keyboard;
 NS_END

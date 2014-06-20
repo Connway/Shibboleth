@@ -63,6 +63,8 @@ public:
 	unsigned int size(void) const;
 	bool empty(void) const;
 
+	bool hasElementWithKey(const Key& key) const;
+
 	void setAllocator(const Allocator& allocator);
 
 	Iterator begin(void) const;

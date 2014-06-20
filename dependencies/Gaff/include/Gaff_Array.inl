@@ -94,13 +94,13 @@ typename ARRAY_ITERATOR Array<T, Allocator>::Iterator::operator-(int rhs) const
 }
 
 template <class T, class Allocator>
-typename OffsetType Array<T, Allocator>::Iterator::operator+(const typename ARRAY_ITERATOR& rhs) const
+OffsetType Array<T, Allocator>::Iterator::operator+(const typename ARRAY_ITERATOR& rhs) const
 {
 	return _element + rhs._element;
 }
 
 template <class T, class Allocator>
-typename OffsetType Array<T, Allocator>::Iterator::operator-(const typename ARRAY_ITERATOR& rhs) const
+OffsetType Array<T, Allocator>::Iterator::operator-(const typename ARRAY_ITERATOR& rhs) const
 {
 	return _element - rhs._element;
 }
@@ -615,8 +615,8 @@ typename ARRAY_ITERATOR Array<T, Allocator>::binarySearch(
 	assert(range_end._element >= _array && range_end._element <= _array + _used);
 	assert(range_begin._element <= range_end._element);
 
-	unsigned int index1 = range_begin._element - _array;
-	unsigned int index2 = range_end._element - _array;
+	unsigned int index1 = (unsigned int)(range_begin._element - _array);
+	unsigned int index2 = (unsigned int)(range_end._element - _array);
 
 	int result = binarySearch(index1, index2, data, pred);
 	return Iterator(_array + result);

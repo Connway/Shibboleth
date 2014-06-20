@@ -23,8 +23,11 @@ THE SOFTWARE.
 #pragma once
 
 #include "Shibboleth_Defines.h"
+#include <Gaff_DefaultAlignedAllocator.h>
 #include <Gaff_IAllocator.h>
-#include <stdlib.h>
+#include <Gaff_Map.h>
+
+#define POOL_NAME_SIZE 32
 
 NS_SHIBBOLETH
 
@@ -34,17 +37,27 @@ public:
 	Allocator(size_t alignment = 16);
 	~Allocator(void);
 
+	void createMemoryPool(const char* pool_name, unsigned int alloc_tag);
+	void* alloc(unsigned int size_bytes, unsigned int alloc_tag);
+	void free(void* data, unsigned int alloc_tag);
+
 	void* alloc(unsigned int size_bytes);
 	void free(void* data);
 
-	INLINE unsigned int getTotalBytesAllocated(void) const;
-	INLINE unsigned int getNumAllocations(void) const;
-	INLINE unsigned int getNumFrees(void) const;
+	INLINE unsigned int getTotalBytesAllocated(unsigned int alloc_tag) const;
+	INLINE unsigned int getNumAllocations(unsigned int alloc_tag) const;
+	INLINE unsigned int getNumFrees(unsigned int alloc_tag) const;
 
 private:
-	volatile unsigned int _total_bytes_allocated;
-	volatile unsigned int _num_allocations;
-	volatile unsigned int _num_frees;
+	struct MemoryPoolInfo
+	{
+		volatile unsigned int total_bytes_allocated;
+		volatile unsigned int num_allocations;
+		volatile unsigned int num_frees;
+		char pool_name[POOL_NAME_SIZE];
+	};
+
+	Gaff::Map<unsigned int, MemoryPoolInfo, Gaff::DefaultAlignedAllocator> _tagged_pools;
 	size_t _alignment;
 
 	GAFF_NO_MOVE(Allocator);

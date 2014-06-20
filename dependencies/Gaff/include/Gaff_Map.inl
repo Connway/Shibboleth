@@ -73,13 +73,8 @@ bool Map<Key, Value, Allocator>::operator!=(const Map<Key, Value, Allocator>& rh
 template <class Key, class Value, class Allocator>
 const Value& Map<Key, Value, Allocator>::operator[](const Key& key) const
 {
+	assert(hasElementWithKey(key));
 	Iterator it = _array.binarySearch(_array.begin(), _array.end(), key, SearchPredicate());
-	assert(it != _array.end() && it->first == key);
-
-	//if (it == _array.end()) {
-	//	Pair<Key, Value> pair = MakePair(key, Value());
-	//	it = _array.insert(pair, it);
-	//}
 
 	return it->second;
 }
@@ -173,6 +168,13 @@ template <class Key, class Value, class Allocator>
 bool Map<Key, Value, Allocator>::empty(void) const
 {
 	return _array.empty();
+}
+
+template <class Key, class Value, class Allocator>
+bool Map<Key, Value, Allocator>::hasElementWithKey(const Key& key) const
+{
+	Iterator it = _array.binarySearch(_array.begin(), _array.end(), key, SearchPredicate());
+	return it != _array.end() && it->first == key;
 }
 
 template <class Key, class Value, class Allocator>

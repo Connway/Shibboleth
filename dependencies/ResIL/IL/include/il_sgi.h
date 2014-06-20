@@ -50,6 +50,7 @@ typedef struct iSgiHeader
 
 
 // Internal functions
+ILboolean	iIsValidSgi(void);
 ILboolean	iCheckSgi(iSgiHeader *Header);
 ILboolean	iLoadSgiInternal(void);
 ILboolean	iSaveSgiInternal(void);

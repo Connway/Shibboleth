@@ -118,6 +118,7 @@ enum
 
 
 // Internal functions
+ILboolean	iIsValidVtf(void);
 ILboolean	iGetVtfHead(VTFHEAD *Header);
 ILboolean	iCheckVtf(VTFHEAD *Header);
 ILboolean	iLoadVtfInternal(void);

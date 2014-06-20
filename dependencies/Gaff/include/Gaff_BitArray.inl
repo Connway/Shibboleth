@@ -302,7 +302,6 @@ template <class Allocator>
 void BitArray<Allocator>::setAllocator(const Allocator& allocator)
 {
 	_bit_array.setAllocator(allocator);
-	_allocator = allocator;
 }
 
 template <class Allocator>

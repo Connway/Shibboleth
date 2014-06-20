@@ -28,8 +28,8 @@ THE SOFTWARE.
 NS_SHIBBOLETH
 
 ResourceContainer::ResourceContainer(const AHashString& res_key, ResourceManager* res_manager, ZRC zero_ref_callback, unsigned long long user_data):
-	_res_key(res_key), _user_data(user_data), _zero_ref_callback(zero_ref_callback),
-	_res_manager(res_manager), _resource(nullptr), _ref_count(0)
+	_res_manager(res_manager), _zero_ref_callback(zero_ref_callback), _res_key(res_key),
+	_resource(nullptr), _user_data(user_data), _ref_count(0)
 {
 }
 

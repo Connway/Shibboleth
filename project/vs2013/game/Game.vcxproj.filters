@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="include">
+      <UniqueIdentifier>{89AF369E-F58E-B539-FEA6-40106A051C9B}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\src\Game\include\Shibboleth_ComponentManager.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\Game\include\Shibboleth_GameObject.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\Game\include\Shibboleth_IComponent.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\Game\include\Shibboleth_IResourceLoader.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\Game\include\Shibboleth_OtterUIFileSystem.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\Game\include\Shibboleth_OtterUIManager.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\Game\include\Shibboleth_OtterUIRenderer.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\Game\include\Shibboleth_RenderManager.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\Game\include\Shibboleth_ResourceDefines.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\Game\include\Shibboleth_ResourceManager.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\Game\include\Shibboleth_ShaderLoader.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\Game\include\Shibboleth_ShaderProgramLoader.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\Game\include\Shibboleth_TextureLoader.h">
+      <Filter>include</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\..\src\Game\Shibboleth_ComponentManager.cpp" />
+    <ClCompile Include="..\..\..\src\Game\Shibboleth_OtterUIFileSystem.cpp" />
+    <ClCompile Include="..\..\..\src\Game\Shibboleth_OtterUIManager.cpp" />
+    <ClCompile Include="..\..\..\src\Game\Shibboleth_OtterUIRenderer.cpp" />
+    <ClCompile Include="..\..\..\src\Game\Shibboleth_RenderManager.cpp" />
+    <ClCompile Include="..\..\..\src\Game\Shibboleth_ResourceManager.cpp" />
+    <ClCompile Include="..\..\..\src\Game\Shibboleth_ShaderLoader.cpp" />
+    <ClCompile Include="..\..\..\src\Game\Shibboleth_ShaderProgramLoader.cpp" />
+    <ClCompile Include="..\..\..\src\Game\Shibboleth_TextureLoader.cpp" />
+  </ItemGroup>
+</Project>
