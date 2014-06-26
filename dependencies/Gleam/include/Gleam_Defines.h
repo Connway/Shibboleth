@@ -38,18 +38,6 @@ THE SOFTWARE.
 	#define ALIGN16
 #endif
 
-/*#if !defined(NO_LINKING) && !(defined(_WIN32) || defined(_WIN64))
-	#ifdef USE_DX
-		#pragma message("Linking against DirectX libraries")
-		#pragma comment(lib, "d3d11.lib")
-		#pragma comment(lib, "D3dcompiler.lib")
-		#pragma comment(lib, "dxgi.lib")
-	#else
-		#pragma message("Linking against OpenGL libraries")
-		#pragma comment(lib, "Opengl32.lib")
-	#endif
-#endif*/
-
 #define NS_GLEAM namespace Gleam {
 #ifndef NS_END
 	#define NS_END }

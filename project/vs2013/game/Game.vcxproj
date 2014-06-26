@@ -183,9 +183,9 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\src\Game\include\Shibboleth_ComponentManager.h" />
-    <ClInclude Include="..\..\..\src\Game\include\Shibboleth_GameObject.h" />
     <ClInclude Include="..\..\..\src\Game\include\Shibboleth_IComponent.h" />
     <ClInclude Include="..\..\..\src\Game\include\Shibboleth_IResourceLoader.h" />
+    <ClInclude Include="..\..\..\src\Game\include\Shibboleth_Object.h" />
     <ClInclude Include="..\..\..\src\Game\include\Shibboleth_OtterUIFileSystem.h" />
     <ClInclude Include="..\..\..\src\Game\include\Shibboleth_OtterUIManager.h" />
     <ClInclude Include="..\..\..\src\Game\include\Shibboleth_OtterUIRenderer.h" />

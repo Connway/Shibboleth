@@ -9,13 +9,13 @@
     <ClInclude Include="..\..\..\src\Game\include\Shibboleth_ComponentManager.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\src\Game\include\Shibboleth_GameObject.h">
-      <Filter>include</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\src\Game\include\Shibboleth_IComponent.h">
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\src\Game\include\Shibboleth_IResourceLoader.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\Game\include\Shibboleth_Object.h">
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\src\Game\include\Shibboleth_OtterUIFileSystem.h">

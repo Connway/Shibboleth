@@ -99,7 +99,7 @@ group ""
 		files
 		{
 			"include/Shibboleth_ComponentManager.h",
-			"include/Shibboleth_GameObject.h",
+			"include/Shibboleth_Object.h",
 			"include/Shibboleth_IComponent.h",
 			"include/Shibboleth_IResourceLoader.h",
 			"include/Shibboleth_OtterUI*.h",
