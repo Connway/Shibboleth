@@ -25,19 +25,25 @@ THE SOFTWARE.
 #include "Shibboleth_IComponent.h"
 #include <Gaff_JSON.h>
 
+#define MAX_NAME_LENGTH 64
+
 NS_SHIBBOLETH
 
-class GameObject : public Gaff::INamedObject
+class Object : public Gaff::INamedObject
 {
 public:
-	GameObject(void);
-	~GameObject(void);
+	Object(void);
+	~Object(void);
 
 	bool init(const Gaff::JSON& json);
 
 	const char* getName(void) const;
 
 private:
+	char _name[MAX_NAME_LENGTH];
+
+	bool createComponents(const Gaff::JSON& json);
+	bool loadComponents(const Gaff::JSON& json);
 };
 
 NS_END

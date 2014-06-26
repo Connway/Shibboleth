@@ -27,16 +27,9 @@ THE SOFTWARE.
 #include "Shibboleth_Map.h"
 #include <Interfaces/IRenderer.h>
 
-namespace Gleam
-{
-	class IRenderDevice;
-	class IRenderState;
-	class ITexture;
-	class IBuffer;
-}
-
 NS_SHIBBOLETH
 
+class RenderManager;
 class App;
 
 class OtterUIRenderer : public Otter::IRenderer
@@ -49,6 +42,8 @@ public:
 
 	// resize
 	// get output texture srv
+
+	void setShaderProgram(ProgramPtr& program);
 
 	void OnLoadTexture(sint32 textureID, const char* szPath);
 	void OnUnloadTexture(sint32 textureID);
@@ -73,18 +68,29 @@ private:
 	{
 		Array<OutputData> output_data;
 		RenderStatePtr render_state[3];
+		SamplerStatePtr sampler;
+		BufferPtr constant_buffer;
 		BufferPtr vertex_buffer;
 		MeshPtr mesh;
 	};
 
+	struct ResourceData
+	{
+		Array<ShaderResourceViewPtr> resource_views;
+		ResourcePtr resource;
+	};
+
+	Map<int, ResourceData> _resource_map;
+	Array<DeviceData> _device_data;
+
 	ResourceManager& _resource_manager;
+	RenderManager& _render_manager;
 	App& _app;
 
 	Gleam::IRenderDevice* _render_device;
 	Gaff::SpinLock* _rd_spinlock;
 
-	Map<int, ResourcePtr> _resource_map;
-	Array<DeviceData> _device_data;
+	ProgramPtr _program;
 
 	Otter::IRenderer::StencilState _stencil_state;
 

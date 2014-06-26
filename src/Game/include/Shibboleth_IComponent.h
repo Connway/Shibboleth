@@ -33,12 +33,11 @@ public:
 	IComponent(void) {}
 	virtual ~IComponent(void) {}
 
-	virtual bool onLoad(void) {}
-	virtual bool onSave(void) {}
+	virtual bool load(void) { return true; }
+	virtual bool save(void) { return true; }
 
-	virtual void onAddToObject(void) {}
-	virtual void onAddToWorld(void) {}
-	virtual void onAllComponentsLoaded(void) {}
+	virtual void allComponentsLoaded(void) {}
+	virtual void allComponentsAdded(void) {}
 };
 
 NS_END
