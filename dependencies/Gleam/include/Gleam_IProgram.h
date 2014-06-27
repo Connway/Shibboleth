@@ -52,6 +52,9 @@ public:
 
 	void clearResources(void);
 
+	const IShader* getAttachedShader(IShader::SHADER_TYPE type) const;
+	IShader* getAttachedShader(IShader::SHADER_TYPE type);
+
 	INLINE const IBuffer* getConstantBuffer(IShader::SHADER_TYPE type, unsigned int index) const;
 	INLINE IBuffer* getConstantBuffer(IShader::SHADER_TYPE type, unsigned int index);
 	virtual void addConstantBuffer(IShader::SHADER_TYPE type, IBuffer* const_buffer);

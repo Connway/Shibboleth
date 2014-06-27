@@ -106,6 +106,7 @@ group ""
 			"include/Shibboleth_RenderManager.h",
 			"include/Shibboleth_ResourceDefines.h",
 			"include/Shibboleth_ResourceManager.h",
+			"include/Shibboleth_ResourceWrapper.h",
 			"include/Shibboleth_ShaderLoader.h",
 			"include/Shibboleth_ShaderProgramLoader.h",
 			"include/Shibboleth_TextureLoader.h",

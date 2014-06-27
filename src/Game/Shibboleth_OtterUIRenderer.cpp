@@ -29,6 +29,7 @@ THE SOFTWARE.
 #include <Gleam_IRenderState.h>
 #include <Gleam_IProgram.h>
 #include <Gleam_ITexture.h>
+#include <Gleam_ILayout.h>
 #include <Gleam_IBuffer.h>
 #include <Gleam_IMesh.h>
 
@@ -45,7 +46,8 @@ static Gleam::IMesh::TOPOLOGY_TYPE otter_topology_map[3] = {
 OtterUIRenderer::OtterUIRenderer(App& app):
 	_resource_manager(app.getManager<ResourceManager>("Resource Manager")),
 	_render_manager(_app.getManager<RenderManager>("Render Manager")),
-	_app(app), _render_device(nullptr), _rd_spinlock(nullptr)
+	_app(app), _render_device(_render_manager.getRenderDevice()),
+	_rd_spinlock(_render_manager.getSpinLock())
 {
 }
 
@@ -53,19 +55,24 @@ OtterUIRenderer::~OtterUIRenderer(void)
 {
 }
 
-bool OtterUIRenderer::init(void)
+bool OtterUIRenderer::init(const char* default_shader)
 {
-	Gleam::IRenderDevice& rd = _render_manager.getRenderDevice();
-	_rd_spinlock = &_render_manager.getSpinLock();
-	_render_device = &rd;
+	assert(default_shader && strlen(default_shader));
 
-	_rd_spinlock->lock();
+	// request default shader program
+	_programs = _resource_manager.requestResource(default_shader);
 
-	_device_data.resize(rd.getNumDevices());
+	while (!_programs.getResourcePtr()->isLoaded()) {
+		// Block until loaded
+	}
 
-	for (unsigned int i = 0; i < rd.getNumDevices(); ++i) {
-		_device_data[i].output_data.resize(rd.getNumOutputs(i));
-		rd.setCurrentDevice(i);
+	Gaff::ScopedLock<Gaff::SpinLock> scoped_lock(_rd_spinlock);
+
+	_device_data.resize(_render_device.getNumDevices());
+
+	for (unsigned int i = 0; i < _render_device.getNumDevices(); ++i) {
+		_device_data[i].output_data.resize(_render_device.getNumOutputs(i));
+		_render_device.setCurrentDevice(i);
 
 		_device_data[i].render_state[0] = RenderStatePtr(_render_manager.createRenderState());
 		_device_data[i].render_state[1] = RenderStatePtr(_render_manager.createRenderState());
@@ -73,6 +80,7 @@ bool OtterUIRenderer::init(void)
 		_device_data[i].sampler = SamplerStatePtr(_render_manager.createSamplerState());
 		_device_data[i].constant_buffer = BufferPtr(_render_manager.createBuffer());
 		_device_data[i].vertex_buffer = BufferPtr(_render_manager.createBuffer());
+		_device_data[i].layout = LayoutPtr(_render_manager.createLayout());
 		_device_data[i].mesh = MeshPtr(_render_manager.createMesh());
 
 		if (!_device_data[i].render_state[0] || !_device_data[i].render_state[1] || !_device_data[i].render_state[2]) {
@@ -119,7 +127,7 @@ bool OtterUIRenderer::init(void)
 		bd.color_write_mask = 0;
 
 		if (!_device_data[i].render_state[DRAW_TO_STENCIL]->init(
-				*_render_device, false, false, true, Gleam::IRenderState::COMPARE_ALWAYS,
+				_render_device, false, false, true, Gleam::IRenderState::COMPARE_ALWAYS,
 				front, back, 1, 0xFF, 0xFF, Gleam::IRenderState::CULL_BACK, false, bd
 			)) {
 
@@ -143,7 +151,7 @@ bool OtterUIRenderer::init(void)
 		bd.color_write_mask = Gleam::IRenderState::COLOR_ALL;
 
 		if (!_device_data[i].render_state[DRAW_USING_STENCIL]->init(
-			*_render_device, false, false, true, Gleam::IRenderState::COMPARE_ALWAYS,
+			_render_device, false, false, true, Gleam::IRenderState::COMPARE_ALWAYS,
 			front, back, 0, 0, 0, Gleam::IRenderState::CULL_BACK, false, bd
 			)) {
 
@@ -168,7 +176,7 @@ bool OtterUIRenderer::init(void)
 		bd.color_write_mask = Gleam::IRenderState::COLOR_ALL;
 
 		if (!_device_data[i].render_state[DISABLE_STENCIL]->init(
-			*_render_device, false, false, false, Gleam::IRenderState::COMPARE_ALWAYS,
+			_render_device, false, false, false, Gleam::IRenderState::COMPARE_ALWAYS,
 			front, back, 0, 0, 0, Gleam::IRenderState::CULL_BACK, false, bd
 			)) {
 
@@ -176,14 +184,14 @@ bool OtterUIRenderer::init(void)
 			return false;
 		}
 
-		if (!_device_data[i].vertex_buffer->init(rd, nullptr, sizeof(Otter::GUIVertex) * MAX_VERTICES, Gleam::IBuffer::VERTEX_DATA, 0, Gleam::IBuffer::WRITE)) {
+		if (!_device_data[i].vertex_buffer->init(_render_device, nullptr, sizeof(Otter::GUIVertex) * MAX_VERTICES, Gleam::IBuffer::VERTEX_DATA, 0, Gleam::IBuffer::WRITE)) {
 			// log error
 			return false;
 		}
 
 		_device_data[i].mesh->addBuffer(_device_data[i].vertex_buffer.get());
 
-		if (!_device_data[i].sampler->init(rd, Gleam::ISamplerState::FILTER_ANISOTROPIC,
+		if (!_device_data[i].sampler->init(_render_device, Gleam::ISamplerState::FILTER_ANISOTROPIC,
 			Gleam::ISamplerState::WRAP_REPEAT, Gleam::ISamplerState::WRAP_REPEAT,
 			Gleam::ISamplerState::WRAP_REPEAT, 0, 0, 0, 16, 0, 0, 0, 0)) {
 
@@ -191,13 +199,16 @@ bool OtterUIRenderer::init(void)
 			return false;
 		}
 
-		if (!_device_data[i].constant_buffer->init(rd, nullptr, sizeof(float) * 16, Gleam::IBuffer::SHADER_DATA, 0, Gleam::IBuffer::WRITE)) {
+		if (!_device_data[i].constant_buffer->init(_render_device, nullptr, sizeof(float) * 16, Gleam::IBuffer::SHADER_DATA, 0, Gleam::IBuffer::WRITE)) {
 			// log error
 			return false;
 		}
 
-		for (unsigned int j = 0; j < rd.getNumOutputs(i); ++j) {
-			rd.setCurrentOutput(j);
+		// use default shader program to create layout
+		//_device_data[i].layout->init(_render_device, layout_desc, sizeof(layout_desc), _programs->programs[i]->getAttachedShader(Gleam::IShader::SHADER_VERTEX));
+
+		for (unsigned int j = 0; j < _render_device.getNumOutputs(i); ++j) {
+			_render_device.setCurrentOutput(j);
 
 			// make output texture
 			// make output stencil buffer
@@ -205,36 +216,31 @@ bool OtterUIRenderer::init(void)
 		}
 	}
 
-	_rd_spinlock->unlock();
-
-	// request shader
-
 	return true;
 }
 
-void OtterUIRenderer::setShaderProgram(ProgramPtr& program)
+void OtterUIRenderer::setShaderProgram(const ResWrap<ProgramData>& programs)
 {
-	_program = program;
+	_programs = programs;
 }
 
 void OtterUIRenderer::OnLoadTexture(sint32 textureID, const char* szPath)
 {
 	assert(!_resource_map.hasElementWithKey(textureID));
 
-	ResourcePtr resource = _resource_manager.requestResource(szPath, TEX_LOADER_NORMALIZED);
+	ResWrap<TextureData> tex_res = _resource_manager.requestResource(szPath, TEX_LOADER_NORMALIZED);
 
-	while (!resource->isLoaded()) {
+	while (!tex_res.getResourcePtr()->isLoaded()) {
 		// Block until loaded
 	}
 
-	ResourceData res_data = { Array<ShaderResourceViewPtr>(), resource };
+	//ResourceData res_data = { Array<ShaderResourceViewPtr>(), resource };
+	ResourceData res_data = { Array<ShaderResourceViewPtr>(), tex_res };
 
-	Gaff::ScopedLock<Gaff::SpinLock> scoped_lock(*_rd_spinlock);
-	res_data.resource_views.resize(_render_device->getNumDevices());
+	Gaff::ScopedLock<Gaff::SpinLock> scoped_lock(_rd_spinlock);
+	res_data.resource_views.resize(_render_device.getNumDevices());
 
-	TextureData& tex_data = resource->getResource<TextureData>();
-
-	for (unsigned int i = 0; i < _render_device->getNumDevices(); ++i) {
+	for (unsigned int i = 0; i < _render_device.getNumDevices(); ++i) {
 		Gleam::IShaderResourceView* rsv = _render_manager.createShaderResourceView();
 
 		if (!rsv) {
@@ -242,7 +248,7 @@ void OtterUIRenderer::OnLoadTexture(sint32 textureID, const char* szPath)
 			return;
 		}
 
-		if (!rsv->init(*_render_device, tex_data.textures[i].get())) {
+		if (!rsv->init(_render_device, tex_res->textures[i].get())) {
 			// log error
 			return;
 		}
@@ -262,67 +268,70 @@ void OtterUIRenderer::OnDrawBegin()
 {
 	// Calls prior to this will set up the device and output
 
-	// set up shader, buffers, etc.
-
 	// Make sure no one tries to use the render device while we're drawing
-	_rd_spinlock->lock();
+	_rd_spinlock.lock();
+
+	// set up shader, buffers, etc.
+	DeviceData& device_data = _device_data[_render_device.getCurrentDevice()];
+	_programs->programs[_render_device.getCurrentDevice()]->addConstantBuffer(Gleam::IShader::SHADER_VERTEX, device_data.constant_buffer.get());
+	_programs->programs[_render_device.getCurrentDevice()]->addSamplerState(Gleam::IShader::SHADER_PIXEL, device_data.sampler.get());
 }
 
 void OtterUIRenderer::OnDrawEnd()
 {
-	_rd_spinlock->unlock();
+	_programs->programs[_render_device.getCurrentDevice()]->popConstantBuffer(Gleam::IShader::SHADER_VERTEX);
+	_programs->programs[_render_device.getCurrentDevice()]->popSamplerState(Gleam::IShader::SHADER_PIXEL);
+
+	_rd_spinlock.unlock();
 }
 
 void OtterUIRenderer::OnCommitVertexBuffer(const Otter::GUIVertex* pVertices, uint32 numVertices)
 {
-	assert(_render_device && _rd_spinlock);
-
-	// Do we need to lock the RD here?
-	// essentially just copy the vert buffer over to our buffer
-	DeviceData& device_data = _device_data[_render_device->getCurrentDevice()];
-	device_data.vertex_buffer->update(*_render_device, pVertices, numVertices);
+	// copy the vert buffer over to our buffer
+	DeviceData& device_data = _device_data[_render_device.getCurrentDevice()];
+	device_data.vertex_buffer->update(_render_device, pVertices, numVertices);
 }
 
 void OtterUIRenderer::OnDrawBatch(const Otter::DrawBatch& batch)
 {
-	assert(_program);
+	assert(_programs);
 
 	if (batch.mPrimitiveType == Otter::kPrim_TriangleFan) {
 		// not supported, report error
 		return;
 	}
 
-	unsigned int curr_device = _render_device->getCurrentDevice();
+	unsigned int curr_device = _render_device.getCurrentDevice();
 
 	Gleam::IMesh::TOPOLOGY_TYPE topology = otter_topology_map[batch.mPrimitiveType];
 	ResourceData& res_data = _resource_map[batch.mTextureID];
+	ProgramPtr& program = _programs->programs[curr_device];
 	const float* mtwTransform = batch.mTransform.mEntry;
 	assert(res_data.resource && !res_data.resource_views.empty());
 
 	DeviceData& device_data = _device_data[curr_device];
-	OutputData& output_data = device_data.output_data[_render_device->getCurrentOutput()];
+	OutputData& output_data = device_data.output_data[_render_device.getCurrentOutput()];
 
 	// update model-to-world transform
-	device_data.constant_buffer->update(*_render_device, batch.mTransform.mEntry, sizeof(batch.mTransform.mEntry));
+	device_data.constant_buffer->update(_render_device, batch.mTransform.mEntry, sizeof(batch.mTransform.mEntry));
 
-	// add appropriate buffers, textures, and samplers to the shader
-	_program->addConstantBuffer(Gleam::IShader::SHADER_VERTEX, device_data.constant_buffer.get());
-	_program->addResourceView(Gleam::IShader::SHADER_PIXEL, res_data.resource_views[curr_device].get());
-	_program->addSamplerState(Gleam::IShader::SHADER_PIXEL, device_data.sampler.get());
-	_program->bind(*_render_device);
+	// add appropriate textures
+	program->addResourceView(Gleam::IShader::SHADER_PIXEL, res_data.resource_views[curr_device].get());
+	program->bind(_render_device);
 
 	// bind layout
+	device_data.layout->setLayout(_render_device, device_data.mesh.get());
 
-	output_data.render_target->bind(*_render_device);
+	output_data.render_target->bind(_render_device);
 
 	device_data.mesh->setTopologyType(topology);
-	device_data.mesh->renderNonIndexed(*_render_device, batch.mVertexCount);
+	device_data.mesh->renderNonIndexed(_render_device, batch.mVertexCount);
 
-	output_data.render_target->unbind(*_render_device);
+	output_data.render_target->unbind(_render_device);
+	device_data.layout->unsetLayout(_render_device);
+	program->unbind(_render_device);
 
-	_program->popConstantBuffer(Gleam::IShader::SHADER_VERTEX);
-	_program->popResourceView(Gleam::IShader::SHADER_PIXEL);
-	_program->popSamplerState(Gleam::IShader::SHADER_PIXEL);
+	program->popResourceView(Gleam::IShader::SHADER_PIXEL);
 
 	// Example D3D9 code
 	//numBatches++;
