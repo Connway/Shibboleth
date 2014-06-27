@@ -25,6 +25,10 @@ THE SOFTWARE.
 #include "Shibboleth_Defines.h"
 #include <Gaff_INamedObject.h>
 
+NS_GAFF
+	class JSON;
+NS_END
+
 NS_SHIBBOLETH
 
 class IComponent : public Gaff::INamedObject
@@ -33,11 +37,10 @@ public:
 	IComponent(void) {}
 	virtual ~IComponent(void) {}
 
-	virtual bool load(void) { return true; }
-	virtual bool save(void) { return true; }
+	virtual bool load(const Gaff::JSON&) { return true; }
+	virtual bool save(Gaff::JSON&) { return true; }
 
 	virtual void allComponentsLoaded(void) {}
-	virtual void allComponentsAdded(void) {}
 };
 
 NS_END

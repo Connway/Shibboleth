@@ -36,6 +36,9 @@
     <ClInclude Include="..\..\..\src\Game\include\Shibboleth_ResourceManager.h">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\src\Game\include\Shibboleth_ResourceWrapper.h">
+      <Filter>include</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\src\Game\include\Shibboleth_ShaderLoader.h">
       <Filter>include</Filter>
     </ClInclude>

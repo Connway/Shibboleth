@@ -24,6 +24,7 @@ THE SOFTWARE.
 
 #include "Shibboleth_ResourceDefines.h"
 #include "Shibboleth_ResourceManager.h"
+#include "Shibboleth_ResourceWrapper.h"
 #include "Shibboleth_Map.h"
 #include <Interfaces/IRenderer.h>
 
@@ -38,12 +39,12 @@ public:
 	OtterUIRenderer(App& app);
 	~OtterUIRenderer(void);
 
-	bool init(void);
+	bool init(const char* default_shader);
 
 	// resize
 	// get output texture srv
 
-	void setShaderProgram(ProgramPtr& program);
+	void setShaderProgram(const ResWrap<ProgramData>& programs);
 
 	void OnLoadTexture(sint32 textureID, const char* szPath);
 	void OnUnloadTexture(sint32 textureID);
@@ -71,13 +72,14 @@ private:
 		SamplerStatePtr sampler;
 		BufferPtr constant_buffer;
 		BufferPtr vertex_buffer;
+		LayoutPtr layout;
 		MeshPtr mesh;
 	};
 
 	struct ResourceData
 	{
 		Array<ShaderResourceViewPtr> resource_views;
-		ResourcePtr resource;
+		ResWrap<TextureData> resource;
 	};
 
 	Map<int, ResourceData> _resource_map;
@@ -87,10 +89,10 @@ private:
 	RenderManager& _render_manager;
 	App& _app;
 
-	Gleam::IRenderDevice* _render_device;
-	Gaff::SpinLock* _rd_spinlock;
+	Gleam::IRenderDevice& _render_device;
+	Gaff::SpinLock& _rd_spinlock;
 
-	ProgramPtr _program;
+	ResWrap<ProgramData> _programs;
 
 	Otter::IRenderer::StencilState _stencil_state;
 

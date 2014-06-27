@@ -65,6 +65,18 @@ void IProgram::clearResources(void)
 	}
 }
 
+const IShader* IProgram::getAttachedShader(IShader::SHADER_TYPE type) const
+{
+	assert(type >= IShader::SHADER_VERTEX && type < IShader::SHADER_TYPE_SIZE);
+	return _attached_shaders[type].get();
+}
+
+IShader* IProgram::getAttachedShader(IShader::SHADER_TYPE type)
+{
+	assert(type >= IShader::SHADER_VERTEX && type < IShader::SHADER_TYPE_SIZE);
+	return _attached_shaders[type].get();
+}
+
 const IBuffer* IProgram::getConstantBuffer(IShader::SHADER_TYPE type, unsigned int index) const
 {
 	assert(type < IShader::SHADER_TYPE_SIZE - 1 && index < _constant_buffers[type].size());
