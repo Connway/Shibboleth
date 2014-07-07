@@ -33,7 +33,7 @@ NS_SHIBBOLETH
 App::App(void):
 	_broadcaster(ProxyAllocator(_allocator)), _dynamic_loader(ProxyAllocator(_allocator)),
 	_state_machine(ProxyAllocator(_allocator)), _manager_map(ProxyAllocator(_allocator)),
-	_thread_pool(ProxyAllocator(_allocator)), _logger(_allocator),
+	_thread_pool(ProxyAllocator(_allocator)), _logger(_allocator), _seed(0),
 	_running(true)
 {
 	SetAllocator(_allocator);
@@ -56,6 +56,10 @@ App::~App(void)
 // Still single-threaded at this point, so ok that we're not using the spinlock
 bool App::init(void)
 {
+	while (!_seed) {
+		_seed = (size_t)time(NULL);
+	}
+
 	char log_file_name[64] = { 0 };
 	Gaff::GetCurrentTimeString(log_file_name, 64, "Logs/GameLog %m-%d-%Y %H-%M-%S.txt");
 
@@ -70,6 +74,7 @@ bool App::init(void)
 	_log_file_pair->first.writeString("Initializing Game...\n");
 
 	Gaff::JSON::SetMemoryFunctions(&ShibbolethAllocate, &ShibbolethFree);
+	Gaff::JSON::SetHashSeed(_seed);
 
 	if (!_thread_pool.init()) {
 		_log_file_pair->first.writeString("ERROR - Failed to initialize thread pool\n");
@@ -371,6 +376,11 @@ DynamicLoader& App::getDynamicLoader(void)
 LogManager::FileLockPair& App::getGameLogFile(void)
 {
 	return *_log_file_pair;
+}
+
+size_t App::getSeed(void) const
+{
+	return _seed;
 }
 
 void App::quit(void)

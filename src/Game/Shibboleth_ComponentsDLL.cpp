@@ -21,61 +21,31 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include <Shibboleth_ComponentManager.h>
-#include <Shibboleth_ResourceManager.h>
-#include <Shibboleth_OtterUIManager.h>
-#include <Shibboleth_RenderManager.h>
+#include <Shibboleth_TestComponent.h>
+#include <Shibboleth_App.h>
 #include <Gaff_JSON.h>
 
-template <class Manager>
-Gaff::INamedObject* CreateManagerT(Shibboleth::App& app)
+template <class Component>
+Shibboleth::IComponent* CreateComponent(Shibboleth::App& app)
 {
-	return app.getAllocator().template allocT<Manager>(app);
+	return Shibboleth::GetAllocator().allocT<Component>(app);
 }
 
-Gaff::INamedObject* CreateOtterUIManager(Shibboleth::App& app)
+enum Components
 {
-	Shibboleth::OtterUIManager* otter_manager = app.getAllocator().template allocT<Shibboleth::OtterUIManager>();
-
-	if (otter_manager) {
-		if (!otter_manager->init()) {
-			app.getAllocator().freeT(otter_manager);
-			otter_manager = nullptr;
-		}
-	}
-
-	return otter_manager;
-}
-
-Gaff::INamedObject* CreateRenderManager(Shibboleth::App& app)
-{
-	Shibboleth::RenderManager* render_manager = app.getAllocator().template allocT<Shibboleth::RenderManager>(app);
-
-	if (render_manager) {
-		if (!render_manager->init("graphics.cfg")) {
-			app.getAllocator().freeT(render_manager);
-			render_manager = nullptr;
-		}
-	}
-
-	return render_manager;
-}
-
-enum Managers
-{
-	COMPONENT_MANAGER = 0,
-	RESOURCE_MANAGER,
-	OTTERUI_MANAGER,
-	RENDER_MANAGER,
-	NUM_MANAGERS
+	TEST_COMPONENT = 0,
+	NUM_COMPONENTS
 };
 
-typedef Gaff::INamedObject* (*CreateMgrFunc)(Shibboleth::App&);
+typedef Shibboleth::IComponent* (*CreateComponentFunc)(Shibboleth::App&);
+typedef const char* (*ComponentNameFunc)(void);
 
-static CreateMgrFunc create_funcs[] = {
-	&CreateManagerT<Shibboleth::ComponentManager>,
-	&CreateManagerT<Shibboleth::ResourceManager>,
-	&CreateOtterUIManager,
-	&CreateRenderManager
+static CreateComponentFunc create_funcs[] = {
+	&CreateComponent<Shibboleth::TestComponent>
+};
+
+static ComponentNameFunc name_funcs[] = {
+	&Shibboleth::TestComponent::getComponentName
 };
 
 static Shibboleth::App* g_app = nullptr;
@@ -83,24 +53,30 @@ static Shibboleth::App* g_app = nullptr;
 DYNAMICEXPORT bool InitDLL(Shibboleth::App& app)
 {
 	Gaff::JSON::SetMemoryFunctions(&Shibboleth::ShibbolethAllocate, &Shibboleth::ShibbolethFree);
-	Gaff::JSON::SetHashSeed(0);
+	Gaff::JSON::SetHashSeed(app.getSeed());
 	Shibboleth::SetAllocator(app.getAllocator());
 	g_app = &app;
 	return true;
 }
 
-DYNAMICEXPORT unsigned int GetNumManagers(void)
+DYNAMICEXPORT const char* GetComponentName(unsigned int id)
 {
-	return NUM_MANAGERS;
+	assert(id < NUM_COMPONENTS);
+	return name_funcs[id]();
 }
 
-DYNAMICEXPORT Gaff::INamedObject* CreateManager(unsigned int id)
+DYNAMICEXPORT unsigned int GetNumComponents(void)
 {
-	assert(id < NUM_MANAGERS);
+	return NUM_COMPONENTS;
+}
+
+DYNAMICEXPORT Shibboleth::IComponent* CreateComponent(unsigned int id)
+{
+	assert(id < NUM_COMPONENTS);
 	return create_funcs[id](*g_app);
 }
 
-DYNAMICEXPORT void DestroyManager(Gaff::INamedObject* manager, unsigned int)
+DYNAMICEXPORT void DestroyComponent(Shibboleth::IComponent* component, unsigned int)
 {
-	Shibboleth::GetAllocator().freeT(manager);
+	Shibboleth::GetAllocator().freeT(component);
 }

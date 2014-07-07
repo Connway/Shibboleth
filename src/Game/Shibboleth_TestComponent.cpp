@@ -20,62 +20,41 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#pragma once
-
-#include "Shibboleth_Defines.h"
-#include <Gaff_IVirtualDestructor.h>
-#include <Gaff_IncludeAssert.h>
-#include <cstring>
-
-NS_GAFF
-	class JSON;
-NS_END
+#include "Shibboleth_TestComponent.h"
+#include "Shibboleth_App.h"
 
 NS_SHIBBOLETH
 
-#define COMP_REF_DEF_LOAD(Class, RefDefName) \
-	bool Class::load(const Gaff::JSON& json) \
-	{ \
-		RefDefName.read(json, this); \
-		return true; \
-	}
+EnumReflectionDefinition<TestComponent::TestEnum> TestComponent::_enum_ref_def;
+ReflectionDefinition<TestComponent> TestComponent::_ref_def;
 
-#define COMP_REF_DEF_SAVE(Class, RefDefName) \
-	bool Class::save(Gaff::JSON& json) \
-	{ \
-		RefDefName.write(json, this); \
-		return true; \
-	}
+COMP_REF_DEF_LOAD(TestComponent, _ref_def);
+COMP_REF_DEF_SAVE(TestComponent, _ref_def);
 
-#define MAX_COMP_NAME_LENGTH 64
-
-class IComponent : public Gaff::IVirtualDestructor
+TestComponent::TestComponent(App& app):
+	_app(app)
 {
-public:
-	IComponent(void) {}
-	virtual ~IComponent(void) {}
+	if (!_enum_ref_def.isDefined()) {
+		_enum_ref_def.addValue("A", TE_A);
+		_enum_ref_def.addValue("B", TE_B);
 
-	virtual bool load(const Gaff::JSON&) { return true; }
-	virtual bool save(Gaff::JSON&) { return true; }
-
-	virtual void allComponentsLoaded(void) {}
-
-	const char* getName(void) const
-	{
-		return _name;
+		_enum_ref_def.markDefined();
 	}
 
-	void setName(const char* name)
-	{
-		assert(name && strlen(name));
-		strncpy(_name, name, MAX_COMP_NAME_LENGTH);
+	if (!_ref_def.isDefined()) {
+		_ref_def.setAllocator(ProxyAllocator());
+
+		_ref_def.addEnum("e", &TestComponent::_e, _enum_ref_def);
+		_ref_def.addFloat("a", &TestComponent::_a);
+		_ref_def.addShort("b", &TestComponent::_b);
+
+		// do addX() calls here
+		_ref_def.markDefined();
 	}
+}
 
-private:
-	char _name[MAX_COMP_NAME_LENGTH];
-
-	GAFF_NO_COPY(IComponent);
-	GAFF_NO_MOVE(IComponent);
-};
+void TestComponent::allComponentsLoaded(void)
+{
+}
 
 NS_END

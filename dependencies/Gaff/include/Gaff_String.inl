@@ -183,6 +183,30 @@ bool String<T, Allocator>::operator!=(const T* rhs) const
 }
 
 template <class T, class Allocator>
+bool String<T, Allocator>::operator<(const String& rhs) const
+{
+	return less(_string, _size, rhs._string, rhs._size);
+}
+
+template <class T, class Allocator>
+bool String<T, Allocator>::operator<(const T* rhs) const
+{
+	return less(_string, _size, rhs);
+}
+
+template <class T, class Allocator>
+bool String<T, Allocator>::operator>(const String& rhs) const
+{
+	return greater(_string, _size, rhs._string, rhs._size);
+}
+
+template <class T, class Allocator>
+bool String<T, Allocator>::operator>(const T* rhs) const
+{
+	return greater(_string, _size, rhs);
+}
+
+template <class T, class Allocator>
 char String<T, Allocator>::operator[](unsigned int index) const
 {
 	assert(index < _size);
@@ -333,19 +357,6 @@ unsigned int String<T, Allocator>::findLastOf(T character) const
 	return npos;
 }
 
-// From my benchmark tests, the loop isn't any slower than calling strlen() or wcslen()
-template <class T, class Allocator>
-unsigned int String<T, Allocator>::length(const T* string) const
-{
-	unsigned int i = 0;
-
-	while (string[i] != 0) {
-		++i;
-	}
-
-	return i;
-}
-
 // If my benchmarks from strlen() and wcslen() are any indicator, this is no slower than memcpy(),
 // and this gets rid of that damn compiler warning
 template <class T, class Allocator>
@@ -374,32 +385,6 @@ bool operator!=(const T* lhs, const String<T, Allocator>& rhs)
 	return rhs != lhs;
 }
 
-template <class T, class Allocator>
-std::ostream& operator<<(std::ostream& os, const String<T, Allocator>& string)
-{
-	os << string.getBuffer();
-	return os;
-}
-
-template <class T, class Allocator>
-std::wostream& operator<<(std::wostream& os, const String<T, Allocator>& string)
-{
-	os << string.getBuffer();
-	return os;
-}
-
-/*template <class T, class Allocator>
-std::istream& operator>>(std::istream& is, String<T, Allocator>& string)
-{
-	return is;
-}
-
-template <class T, class Allocator>
-std::wistream& operator>>(std::wistream& is, String<T, Allocator>& string)
-{
-	return is;
-}*/
-
 // This long and fancy version of operator+ avoids an allocation and copy
 template <class T, class Allocator>
 String<T, Allocator> operator+(const T* lhs, const String<T, Allocator>& rhs)
@@ -417,4 +402,62 @@ String<T, Allocator> operator+(const T* lhs, const String<T, Allocator>& rhs)
 	string._size = new_size;
 
 	return string;
+}
+
+template <class T>
+unsigned int length(const T* string)
+{
+	unsigned int i = 0;
+
+	while (string[i] != 0) {
+		++i;
+	}
+
+	return i;
+}
+
+template <class T>
+bool less(const T* s1, unsigned int n1, const T* s2, unsigned int n2)
+{
+	unsigned int size = Min(n1, n2);
+
+	for (unsigned int i = 0; i < size; ++i) {
+		if (_string[i] < rhs._string[i]) {
+			return true;
+		}
+		else if (_string[i] > rhs._string[i]) {
+			return false;
+		}
+	}
+
+	return false;
+}
+
+template <class T>
+bool less(const T* s1, unsigned int n1, const T* s2)
+{
+	return less(s1, n1, s2, length(s2));
+}
+
+template <class T>
+bool greater(const T* s1, unsigned int n1, const T* s2, unsigned int n2)
+{
+	unsigned int size = Min(n1, n2);
+
+	for (unsigned int i = 0; i < size; ++i) {
+		if (_string[i] > rhs._string[i]) {
+			return true;
+		}
+		else if (_string[i] < rhs._string[i]) {
+			return false;
+		}
+	}
+
+	return false;
+}
+
+template <class T>
+bool greater(const T* s1, unsigned int n1, const T* s2)
+{
+	return greater(s1, n1, s2, length(s2));
 }

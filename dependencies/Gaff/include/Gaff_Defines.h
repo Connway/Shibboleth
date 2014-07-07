@@ -105,11 +105,6 @@ THE SOFTWARE.
 	#define DYNAMICTAG DYNAMICIMPORT
 #endif
 
-// If we are not on Windows and not in 64-bit mode and __LP32__ not defined
-#if !defined(_WIN32) && !defined(_WIN64) && !defined(__LP64__) && !defined(__LP32__)
-	#define __LP32__
-#endif
-
 #if defined(__amd64__) || defined(__x86_64__) || defined(_M_X64) || defined(_M_AMD64) || \
 	defined(__i686__) || defined(_M_IX86) || defined(_X86_)
 

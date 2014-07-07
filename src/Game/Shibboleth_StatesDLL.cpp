@@ -27,6 +27,8 @@ THE SOFTWARE.
 #include <Gleam_Global.h>
 #include <Gaff_JSON.h>
 
+#include <Shibboleth_Object.h>
+
 class LoopState : public Shibboleth::IState
 {
 public:
@@ -43,6 +45,9 @@ public:
 
 	void update(void)
 	{
+		Shibboleth::Object obj(_app);
+		obj.init("./Objects/test.object");
+
 		_app.quit();
 	}
 
@@ -90,6 +95,7 @@ static Shibboleth::App* g_app = nullptr;
 DYNAMICEXPORT bool InitDLL(Shibboleth::App& app)
 {
 	Gaff::JSON::SetMemoryFunctions(&Shibboleth::ShibbolethAllocate, &Shibboleth::ShibbolethFree);
+	Gaff::JSON::SetHashSeed(app.getSeed());
 	Shibboleth::SetAllocator(app.getAllocator());
 	Gleam::SetAllocator(&app.getAllocator());
 	g_app = &app;

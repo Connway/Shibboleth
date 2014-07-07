@@ -115,6 +115,7 @@ public:
 	void moveInsert(const Key& key, Value&& value);
 	void insert(const Key& key, const Value& value);
 
+	bool hasElementWithKey(const Key& key) const;
 	int indexOf(const Key& key) const;
 
 	void clear(void);
@@ -223,6 +224,7 @@ public:
 	void moveInsert(const String<T, Allocator>& key, Value&& value);
 	void insert(const String<T, Allocator>& key, const Value& value);
 
+	bool hasElementWithKey(const String<T, Allocator>& key) const;
 	int indexOf(const String<T, Allocator>& key) const;
 
 	void clear(void);
@@ -331,6 +333,7 @@ public:
 	void moveInsert(const HashString<T, Allocator>& key, Value&& value);
 	void insert(const HashString<T, Allocator>& key, const Value& value);
 
+	bool hasElementWithKey(const HashString<T, Allocator>& key) const;
 	int indexOf(const HashString<T, Allocator>& key) const;
 
 	void clear(void);

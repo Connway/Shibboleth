@@ -23,27 +23,41 @@ THE SOFTWARE.
 #pragma once
 
 #include "Shibboleth_IComponent.h"
-#include <Gaff_JSON.h>
+#include "Shibboleth_Array.h"
+#include <Gaff_INamedObject.h>
+#include <Gaff_SmartPtr.h>
 
-#define MAX_NAME_LENGTH 64
+#define MAX_OBJ_NAME_LENGTH 64
 
 NS_SHIBBOLETH
+
+class ComponentManager;
+class App;
 
 class Object : public Gaff::INamedObject
 {
 public:
-	Object(void);
+	Object(App& app);
 	~Object(void);
 
 	bool init(const Gaff::JSON& json);
+	INLINE bool init(const char* file_name);
+	void destroy(void);
 
 	const char* getName(void) const;
 
 private:
-	char _name[MAX_NAME_LENGTH];
+	char _name[MAX_OBJ_NAME_LENGTH];
+
+	typedef Gaff::SmartPtr<IComponent, ProxyAllocator> ComponentPtr;
+
+	Array<ComponentPtr> _components;
+	App& _app;
 
 	bool createComponents(const Gaff::JSON& json);
-	bool loadComponents(const Gaff::JSON& json);
+
+	GAFF_NO_COPY(Object);
+	GAFF_NO_MOVE(Object);
 };
 
 NS_END

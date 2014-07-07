@@ -32,6 +32,11 @@ void JSON::SetMemoryFunctions(json_malloc_t alloc_func, json_free_t free_func)
 	json_set_alloc_funcs(alloc_func, free_func);
 }
 
+void JSON::SetHashSeed(size_t hash_seed)
+{
+	json_object_seed(hash_seed);
+}
+
 JSON JSON::createArray(void)
 {
 	return JSON(json_array(), false);
@@ -289,12 +294,12 @@ bool JSON::operator!=(const JSON& rhs) const
 	return !(*this == rhs);
 }
 
-JSON JSON::operator[](const char* key)
+JSON JSON::operator[](const char* key) const
 {
 	return getObject(key);
 }
 
-JSON JSON::operator[](size_t index)
+JSON JSON::operator[](size_t index) const
 {
 	return getObject(index);
 }

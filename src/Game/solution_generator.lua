@@ -112,6 +112,7 @@ group ""
 			"include/Shibboleth_TextureLoader.h",
 
 			"Shibboleth_ComponentManager.cpp",
+			"Shibboleth_Object.cpp",
 			"Shibboleth_OtterUI*.cpp",
 			"Shibboleth_RenderManager.cpp",
 			"Shibboleth_ResourceManager.cpp",
@@ -183,6 +184,49 @@ group ""
 			"Shibboleth_LoadComponentsState.cpp",
 			"Shibboleth_SetupOtterUIState.cpp",
 			"Shibboleth_StatesDLL.cpp"
+		}
+
+		includedirs
+		{
+			"include",
+			"../Shared/include",
+			"../../dependencies/OtterUI/inc",
+			"../../dependencies/jansson",
+			"../../dependencies/Gleam/include",
+			"../../dependencies/Gaff/include"
+		}
+
+		dependson
+		{
+			"Shared", "Gaff", "jansson",
+			"libjpeg", "libpng", "libtiff",
+			"OtterUI", "ResIL", "ResILU",
+			"zlib", "Gleam", "Game"
+		}
+
+		links
+		{
+			"Shared", "Gaff", "jansson",
+			"libjpeg", "libpng", "libtiff",
+			"OtterUI", "ResIL", "ResILU",
+			"zlib", "Gleam", "Game"
+		}
+
+	project "ComponentsDLL"
+		if _ACTION then
+			location ("../../project/" .. _ACTION .. "/game")
+		end
+
+		kind "SharedLib"
+		language "C++"
+
+		targetname "GameComponents"
+
+		files
+		{
+			"include/Shibboleth_TestComponent.h",
+			"Shibboleth_TestComponent.cpp",
+			"Shibboleth_ComponentsDLL.cpp"
 		}
 
 		includedirs

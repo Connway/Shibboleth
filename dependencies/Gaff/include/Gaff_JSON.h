@@ -31,7 +31,7 @@ class JSON
 {
 public:
 	template <class Callback>
-	void forEachInObject(Callback&& callback)
+	void forEachInObject(Callback&& callback) const
 	{
 		assert(_value && isObject());
 		const char* key = nullptr;
@@ -46,7 +46,7 @@ public:
 	}
 
 	template <class Callback>
-	void forEachInArray(Callback&& callback)
+	void forEachInArray(Callback&& callback) const
 	{
 		assert(_value && isArray());
 		json_t* value = nullptr;
@@ -79,6 +79,7 @@ public:
 	}
 
 	static INLINE void SetMemoryFunctions(json_malloc_t alloc_func, json_free_t free_func);
+	static INLINE void SetHashSeed(size_t hash_seed);
 	static INLINE JSON createArray(void);
 	static INLINE JSON createObject(void);
 	static INLINE JSON createInteger(json_int_t val);
@@ -135,8 +136,8 @@ public:
 
 	INLINE bool operator==(const JSON& rhs) const;
 	INLINE bool operator!=(const JSON& rhs) const;
-	INLINE JSON operator[](const char* key);
-	INLINE JSON operator[](size_t index);
+	INLINE JSON operator[](const char* key) const;
+	INLINE JSON operator[](size_t index) const;
 
 	INLINE operator bool(void) const { return valid(); }
 

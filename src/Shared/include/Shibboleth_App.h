@@ -96,6 +96,8 @@ public:
 	INLINE DynamicLoader& getDynamicLoader(void);
 	INLINE LogManager::FileLockPair& getGameLogFile(void);
 
+	INLINE size_t getSeed(void) const;
+
 	INLINE void quit(void);
 
 private:
@@ -126,6 +128,8 @@ private:
 	LogManager _logger;
 
 	LogManager::FileLockPair* _log_file_pair;
+
+	size_t _seed;
 
 	bool _running;
 

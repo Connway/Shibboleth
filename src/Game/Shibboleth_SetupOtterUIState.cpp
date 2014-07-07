@@ -24,6 +24,8 @@ THE SOFTWARE.
 #include "Shibboleth_OtterUIManager.h"
 #include "Shibboleth_App.h"
 
+#include "Shibboleth_Object.h"
+
 NS_SHIBBOLETH
 
 SetupOtterUIState::SetupOtterUIState(App& app):

@@ -703,6 +703,12 @@ void HashMap<Key, Value, Allocator>::insert(const Key& key, const Value& value)
 }
 
 template <class Key, class Value, class Allocator>
+bool HashMap<Key, Value, Allocator>::hasElementWithKey(const Key& key) const
+{
+	return indexOf(key) != -1;
+}
+
+template <class Key, class Value, class Allocator>
 int HashMap<Key, Value, Allocator>::indexOf(const Key& key) const
 {
 	if (!_size) {
@@ -1094,6 +1100,12 @@ void HashMap<String<T, Allocator>, Value, Allocator>::insert(const String<T, All
 }
 
 template <class Value, class Allocator, class T>
+bool HashMap<String<T, Allocator>, Value, Allocator>::hasElementWithKey(const String<T, Allocator>& key) const
+{
+	return indexOf(key) != -1;
+}
+
+template <class Value, class Allocator, class T>
 int HashMap<String<T, Allocator>, Value, Allocator>::indexOf(const String<T, Allocator>& key) const
 {
 	if (!_size) {
@@ -1481,6 +1493,12 @@ template <class Value, class Allocator, class T>
 void HashMap<HashString<T, Allocator>, Value, Allocator>::insert(const HashString<T, Allocator>& key, const Value& value)
 {
 	operator[](key) = value;
+}
+
+template <class Value, class Allocator, class T>
+bool HashMap<HashString<T, Allocator>, Value, Allocator>::hasElementWithKey(const HashString<T, Allocator>& key) const
+{
+	return indexOf(key) != -1;
 }
 
 template <class Value, class Allocator, class T>

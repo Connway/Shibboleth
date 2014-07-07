@@ -24,8 +24,6 @@ THE SOFTWARE.
 
 #include "Gaff_DefaultAllocator.h"
 #include "Gaff_IncludeAssert.h"
-#include <istream>
-#include <ostream>
 
 NS_GAFF
 
@@ -50,6 +48,11 @@ public:
 	bool operator==(const T* rhs) const;
 	bool operator!=(const String& rhs) const;
 	bool operator!=(const T* rhs) const;
+
+	bool operator<(const String& rhs) const;
+	bool operator<(const T* rhs) const;
+	bool operator>(const String& rhs) const;
+	bool operator>(const T* rhs) const;
 
 	char operator[](unsigned int index) const;
 	// required reference for operations like string[i] = 'a';
@@ -81,17 +84,54 @@ private:
 	unsigned int _size;
 	T* _string;
 
-	// From my benchmark tests, the loop isn't any slower than calling strlen() or wcslen()
-	unsigned int length(const T* string) const;
-
 	// If my benchmarks from strlen() and wcslen() are any indicator, this is no slower than memcpy(),
 	// and this gets rid of that damn compiler warning
 	void copy(const T* src, T* dest) const;
 
 	// allows for optimization
-	template < class T2, class Allocator2 >
+	template <class T2, class Allocator2>
 	friend String<T2, Allocator2> operator+(const T2* lhs, const String<T2, Allocator2>& rhs);
 };
+
+// Helper Functions
+template <class T>
+unsigned int length(const T* string);
+
+template <>
+unsigned int length(const char* string);
+
+template <>
+unsigned int length(const wchar_t* string);
+
+template <class T>
+bool less(const T* s1, unsigned int n1, const T* s2, unsigned int n2);
+
+template <class T>
+bool less(const T* s1, unsigned int n1, const T* s2);
+
+template <>
+bool less(const char* s1, unsigned int n1, const char* s2, unsigned int n2);
+
+template <>
+bool less(const wchar_t* s1, unsigned int n1, const wchar_t* s2, unsigned int n2);
+
+template <class T>
+bool greater(const T* s1, unsigned int n1, const T* s2, unsigned int n2);
+
+template <>
+bool greater(const char* s1, unsigned int n1, const char* s2, unsigned int n2);
+
+template <>
+bool greater(const wchar_t* s1, unsigned int n1, const wchar_t* s2, unsigned int n2);
+
+template <class T>
+bool greater(const T* s1, unsigned int n1, const T* s2);
+
+template <>
+bool greater(const char* s1, unsigned int n1, const char* s2);
+
+template <>
+bool greater(const wchar_t* s1, unsigned int n1, const wchar_t* s2);
 
 #include "Gaff_String.inl"
 

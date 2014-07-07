@@ -22,60 +22,43 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Shibboleth_Defines.h"
-#include <Gaff_IVirtualDestructor.h>
-#include <Gaff_IncludeAssert.h>
-#include <cstring>
-
-NS_GAFF
-	class JSON;
-NS_END
+#include "Shibboleth_ReflectionDefinitions.h"
+#include "Shibboleth_IComponent.h"
 
 NS_SHIBBOLETH
 
-#define COMP_REF_DEF_LOAD(Class, RefDefName) \
-	bool Class::load(const Gaff::JSON& json) \
-	{ \
-		RefDefName.read(json, this); \
-		return true; \
-	}
+class App;
 
-#define COMP_REF_DEF_SAVE(Class, RefDefName) \
-	bool Class::save(Gaff::JSON& json) \
-	{ \
-		RefDefName.write(json, this); \
-		return true; \
-	}
-
-#define MAX_COMP_NAME_LENGTH 64
-
-class IComponent : public Gaff::IVirtualDestructor
+class TestComponent : public IComponent
 {
 public:
-	IComponent(void) {}
-	virtual ~IComponent(void) {}
 
-	virtual bool load(const Gaff::JSON&) { return true; }
-	virtual bool save(Gaff::JSON&) { return true; }
+	TestComponent(App& app);
 
-	virtual void allComponentsLoaded(void) {}
+	bool load(const Gaff::JSON& json);
+	bool save(Gaff::JSON& json);
 
-	const char* getName(void) const
+	void allComponentsLoaded(void);
+
+	static const char* getComponentName(void)
 	{
-		return _name;
-	}
-
-	void setName(const char* name)
-	{
-		assert(name && strlen(name));
-		strncpy(_name, name, MAX_COMP_NAME_LENGTH);
+		return "Test Component";
 	}
 
 private:
-	char _name[MAX_COMP_NAME_LENGTH];
+	enum TestEnum
+	{
+		TE_A = 0,
+		TE_B
+	};
 
-	GAFF_NO_COPY(IComponent);
-	GAFF_NO_MOVE(IComponent);
+	static EnumReflectionDefinition<TestEnum> _enum_ref_def;
+	static ReflectionDefinition<TestComponent> _ref_def;
+	App& _app;
+
+	TestEnum _e;
+	float _a;
+	short _b;
 };
 
 NS_END
