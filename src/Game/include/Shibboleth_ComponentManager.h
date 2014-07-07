@@ -22,12 +22,16 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Shibboleth_App.h"
+#include "Shibboleth_DynamicLoader.h"
 #include "Shibboleth_IComponent.h"
 #include "Shibboleth_HashString.h"
 #include "Shibboleth_HashMap.h"
+#include "Shibboleth_String.h"
+#include <Gaff_INamedObject.h>
 
 NS_SHIBBOLETH
+
+class App;
 
 class ComponentManager : public Gaff::INamedObject
 {
@@ -45,7 +49,8 @@ public:
 	INLINE void destroyComponent(IComponent* component);
 
 private:
-	typedef IComponent* (*CreateComponentFunc)(App&, unsigned int);
+	typedef bool (*InitFunc)(App&);
+	typedef IComponent* (*CreateComponentFunc)(unsigned int);
 	typedef void (*DestroyComponentFunc)(IComponent*, unsigned int);
 	typedef unsigned int (*GetNumComponentsFunc)(void);
 	typedef const char* (*GetComponentNameFunc)(unsigned int);

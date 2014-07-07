@@ -45,9 +45,9 @@ static Gleam::IMesh::TOPOLOGY_TYPE otter_topology_map[3] = {
 
 OtterUIRenderer::OtterUIRenderer(App& app):
 	_resource_manager(app.getManager<ResourceManager>("Resource Manager")),
-	_render_manager(_app.getManager<RenderManager>("Render Manager")),
-	_app(app), _render_device(_render_manager.getRenderDevice()),
-	_rd_spinlock(_render_manager.getSpinLock())
+	_render_manager(app.getManager<RenderManager>("Render Manager")),
+	_app(app), _render_device(app.getManager<RenderManager>("Render Manager").getRenderDevice()),
+	_rd_spinlock(app.getManager<RenderManager>("Render Manager").getSpinLock())
 {
 }
 
@@ -306,7 +306,6 @@ void OtterUIRenderer::OnDrawBatch(const Otter::DrawBatch& batch)
 	Gleam::IMesh::TOPOLOGY_TYPE topology = otter_topology_map[batch.mPrimitiveType];
 	ResourceData& res_data = _resource_map[batch.mTextureID];
 	ProgramPtr& program = _programs->programs[curr_device];
-	const float* mtwTransform = batch.mTransform.mEntry;
 	assert(res_data.resource && !res_data.resource_views.empty());
 
 	DeviceData& device_data = _device_data[curr_device];

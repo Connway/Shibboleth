@@ -22,6 +22,7 @@ THE SOFTWARE.
 
 #include "Gaff_File.h"
 #include <cstdarg>
+#include <io.h>
 
 NS_GAFF
 

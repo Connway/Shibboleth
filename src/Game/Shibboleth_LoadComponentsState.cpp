@@ -65,7 +65,7 @@ void LoadComponentsState::update(void)
 
 	Gaff::ForEachTypeInDirectory<Gaff::FDT_RegularFile>("./Components", [&](const char* name, size_t) -> bool
 	{
-		AString rel_path = AString("./Managers/") + name;
+		AString rel_path = AString("./Components/") + name;
 
 		// Error out if it's not a dynamic module
 		if (!Gaff::File::checkExtension(name, DYNAMIC_EXTENSION)) {

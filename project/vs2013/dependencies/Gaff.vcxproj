@@ -279,6 +279,7 @@
     <ClCompile Include="..\..\..\dependencies\Gaff\Gaff_SpinLock.cpp" />
     <ClCompile Include="..\..\..\dependencies\Gaff\Gaff_StackTrace_Linux.cpp" />
     <ClCompile Include="..\..\..\dependencies\Gaff\Gaff_StackTrace_Windows.cpp" />
+    <ClCompile Include="..\..\..\dependencies\Gaff\Gaff_String.cpp" />
     <ClCompile Include="..\..\..\dependencies\Gaff\Gaff_Thread_Linux.cpp" />
     <ClCompile Include="..\..\..\dependencies\Gaff\Gaff_Thread_Windows.cpp" />
     <ClCompile Include="..\..\..\dependencies\Gaff\Gaff_Timer_Linux.cpp" />

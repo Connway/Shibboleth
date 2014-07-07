@@ -21,6 +21,7 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Shibboleth_ComponentManager.h"
+#include "Shibboleth_App.h"
 
 NS_SHIBBOLETH
 
@@ -47,6 +48,12 @@ bool ComponentManager::addComponents(DynamicLoader::ModulePtr& module)
 	GetComponentNameFunc comp_name_func = module->GetFunc<GetComponentNameFunc>("GetComponentName");
 	CreateComponentFunc create_comp_func = module->GetFunc<CreateComponentFunc>("CreateComponent");
 	DestroyComponentFunc destroy_comp_func = module->GetFunc<DestroyComponentFunc>("DestroyComponent");
+	InitFunc init_func = module->GetFunc<InitFunc>("InitDLL");
+
+	if (!init_func) {
+		log.first.writeString("ERROR - Could not find function named 'InitDLL'.\n");
+		return false;
+	}
 
 	if (!num_comp_func) {
 		log.first.writeString("ERROR - Could not find function named 'GetNumComponent'.\n");
@@ -65,6 +72,11 @@ bool ComponentManager::addComponents(DynamicLoader::ModulePtr& module)
 
 	if (!destroy_comp_func) {
 		log.first.writeString("ERROR - Could not find function named 'DestroyComponent'.\n");
+		return false;
+	}
+
+	if (!init_func(_app)) {
+		log.first.writeString("ERROR - Failed to initialize component module.\n");
 		return false;
 	}
 
@@ -96,7 +108,7 @@ IComponent* ComponentManager::createComponent(AHashString name)
 {
 	assert(name.size() && _components.indexOf(name) != -1);
 	ComponentEntry& entry = _components[name];
-	return entry.create(_app, entry.component_id);
+	return entry.create(entry.component_id);
 }
 
 IComponent* ComponentManager::createComponent(AString name)

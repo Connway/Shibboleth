@@ -74,7 +74,7 @@ template <class Key, class Value, class Allocator>
 const Value& Map<Key, Value, Allocator>::operator[](const Key& key) const
 {
 	assert(hasElementWithKey(key));
-	Iterator it = _array.binarySearch(_array.begin(), _array.end(), key, SearchPredicate());
+	Iterator it = _array.binarySearch(_array.begin(), _array.end(), key, KeySearchPredicate());
 
 	return it->second;
 }
@@ -82,7 +82,7 @@ const Value& Map<Key, Value, Allocator>::operator[](const Key& key) const
 template <class Key, class Value, class Allocator>
 Value& Map<Key, Value, Allocator>::operator[](const Key& key)
 {
-	Iterator it = _array.binarySearch(_array.begin(), _array.end(), key, SearchPredicate());
+	Iterator it = _array.binarySearch(_array.begin(), _array.end(), key, KeySearchPredicate());
 
 	if (it == _array.end() || it->first != key) {
 		Pair<Key, Value> pair = MakePair(key, Value());
@@ -103,7 +103,7 @@ void Map<Key, Value, Allocator>::erase(const typename Iterator& it)
 template <class Key, class Value, class Allocator>
 void Map<Key, Value, Allocator>::erase(const Key& key)
 {
-	Iterator it = _array.binarySearch(_array.begin(), _array.end(), key, SearchPredicate());
+	Iterator it = _array.binarySearch(_array.begin(), _array.end(), key, KeySearchPredicate());
 	assert(it != _array.end() && it->first == key);
 	_array.erase(it);
 }
@@ -111,33 +111,33 @@ void Map<Key, Value, Allocator>::erase(const Key& key)
 template <class Key, class Value, class Allocator>
 void Map<Key, Value, Allocator>::moveMoveInsert(Key&& key, Value&& value)
 {
-	Iterator it = _array.binarySearch(_array.begin(), _array.end(), key, SearchPredicate());
+	Iterator it = _array.binarySearch(_array.begin(), _array.end(), key, KeySearchPredicate());
 	assert(it == _array.end() || it->first != key);
 
 	Pair<Key, Value> pair;
 	pair.first = Move(key);
 	pair.second = Move(value);
-	_array.insert(Move(pair));
+	_array.insert(Move(pair), it);
 }
 
 template <class Key, class Value, class Allocator>
 void Map<Key, Value, Allocator>::moveInsert(const Key& key, Value&& value)
 {
-	Iterator it = _array.binarySearch(_array.begin(), _array.end(), key, SearchPredicate());
+	Iterator it = _array.binarySearch(_array.begin(), _array.end(), key, KeySearchPredicate());
 	assert(it == _array.end() || it->first != key);
 
 	Pair<Key, Value> pair;
 	pair.first = key;
 	pair.second = Move(value);
-	_array.insert(Move(pair));
+	_array.insert(Move(pair), it);
 }
 
 template <class Key, class Value, class Allocator>
 void Map<Key, Value, Allocator>::insert(const Key& key, const Value& value)
 {
-	Iterator it = _array.binarySearch(_array.begin(), _array.end(), key, SearchPredicate());
+	Iterator it = _array.binarySearch(_array.begin(), _array.end(), key, KeySearchPredicate());
 	assert(it == _array.end() || it->first != key);
-	_array.insert(MakePair(key, value));
+	_array.insert(MakePair(key, value), it);
 }
 
 template <class Key, class Value, class Allocator>
@@ -171,9 +171,16 @@ bool Map<Key, Value, Allocator>::empty(void) const
 }
 
 template <class Key, class Value, class Allocator>
+bool Map<Key, Value, Allocator>::hasElementWithValue(const Value& value) const
+{
+	Iterator it = _array.linearSearch(value, ValueSearchPredicate());
+	return it != _array.end();
+}
+
+template <class Key, class Value, class Allocator>
 bool Map<Key, Value, Allocator>::hasElementWithKey(const Key& key) const
 {
-	Iterator it = _array.binarySearch(_array.begin(), _array.end(), key, SearchPredicate());
+	Iterator it = _array.binarySearch(_array.begin(), _array.end(), key, KeySearchPredicate());
 	return it != _array.end() && it->first == key;
 }
 
@@ -206,4 +213,10 @@ template <class Key, class Value, class Allocator>
 typename Map<Key, Value, Allocator>::Iterator Map<Key, Value, Allocator>::rend(void) const
 {
 	return _array.rend();
+}
+
+template <class Key, class Value, class Allocator>
+typename Map<Key, Value, Allocator>::Iterator Map<Key, Value, Allocator>::findElementWithValue(const Value& value) const
+{
+	return _array.linearSearch(value, ValueSearchPredicate());
 }

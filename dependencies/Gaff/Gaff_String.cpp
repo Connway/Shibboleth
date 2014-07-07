@@ -20,62 +20,68 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#pragma once
-
-#include "Shibboleth_Defines.h"
-#include <Gaff_IVirtualDestructor.h>
-#include <Gaff_IncludeAssert.h>
-#include <cstring>
+#include "Gaff_String.h"
 
 NS_GAFF
-	class JSON;
-NS_END
 
-NS_SHIBBOLETH
-
-#define COMP_REF_DEF_LOAD(Class, RefDefName) \
-	bool Class::load(const Gaff::JSON& json) \
-	{ \
-		RefDefName.read(json, this); \
-		return true; \
-	}
-
-#define COMP_REF_DEF_SAVE(Class, RefDefName) \
-	bool Class::save(Gaff::JSON& json) \
-	{ \
-		RefDefName.write(json, this); \
-		return true; \
-	}
-
-#define MAX_COMP_NAME_LENGTH 64
-
-class IComponent : public Gaff::IVirtualDestructor
+template <>
+unsigned int length(const char* string)
 {
-public:
-	IComponent(void) {}
-	virtual ~IComponent(void) {}
+	return (unsigned int)strlen(string);
+}
 
-	virtual bool load(const Gaff::JSON&) { return true; }
-	virtual bool save(Gaff::JSON&) { return true; }
+template <>
+unsigned int length(const wchar_t* string)
+{
+	return (unsigned int)wcslen(string);
+}
 
-	virtual void allComponentsLoaded(void) {}
+template <>
+bool less(const char* s1, unsigned int, const char* s2, unsigned int)
+{
+	return strcmp(s1, s2) < 0;
+}
 
-	const char* getName(void) const
-	{
-		return _name;
-	}
+template <>
+bool less(const wchar_t* s1, unsigned int, const wchar_t* s2, unsigned int)
+{
+	return wcscmp(s1, s2) < 0;
+}
 
-	void setName(const char* name)
-	{
-		assert(name && strlen(name));
-		strncpy(_name, name, MAX_COMP_NAME_LENGTH);
-	}
+template <>
+bool less(const char* s1, unsigned int, const char* s2)
+{
+	return strcmp(s1, s2) < 0;
+}
 
-private:
-	char _name[MAX_COMP_NAME_LENGTH];
+template <>
+bool less(const wchar_t* s1, unsigned int, const wchar_t* s2)
+{
+	return wcscmp(s1, s2) < 0;
+}
 
-	GAFF_NO_COPY(IComponent);
-	GAFF_NO_MOVE(IComponent);
-};
+template <>
+bool greater(const char* s1, unsigned int, const char* s2, unsigned int)
+{
+	return strcmp(s1, s2) > 0;
+}
+
+template <>
+bool greater(const wchar_t* s1, unsigned int, const wchar_t* s2, unsigned int)
+{
+	return wcscmp(s1, s2) > 0;
+}
+
+template <>
+bool greater(const char* s1, unsigned int, const char* s2)
+{
+	return strcmp(s1, s2) > 0;
+}
+
+template <>
+bool greater(const wchar_t* s1, unsigned int, const wchar_t* s2)
+{
+	return wcscmp(s1, s2) > 0;
+}
 
 NS_END

@@ -63,6 +63,7 @@ public:
 	unsigned int size(void) const;
 	bool empty(void) const;
 
+	bool hasElementWithValue(const Value& value) const;
 	bool hasElementWithKey(const Key& key) const;
 
 	void setAllocator(const Allocator& allocator);
@@ -72,13 +73,24 @@ public:
 	Iterator rbegin(void) const;
 	Iterator rend(void) const;
 
+	Iterator findElementWithValue(const Value& value) const;
+
 private:
-	class SearchPredicate
+	class KeySearchPredicate
 	{
 	public:
 		bool operator()(const Pair<Key, Value>& lhs, const Key& rhs) const
 		{
 			return lhs.first < rhs;
+		}
+	};
+
+	class ValueSearchPredicate
+	{
+	public:
+		bool operator()(const Pair<Key, Value>& lhs, const Value& rhs) const
+		{
+			return lhs.second == rhs;
 		}
 	};
 

@@ -6,6 +6,11 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\..\src\Shared\include\Shibboleth_ReflectionDefinitions.inl">
+      <Filter>include</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
     <ClInclude Include="..\..\src\Shared\include\Shibboleth_Allocator.h">
       <Filter>include</Filter>
     </ClInclude>
@@ -46,6 +51,9 @@
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\Shared\include\Shibboleth_ProxyAllocator.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Shared\include\Shibboleth_ReflectionDefinitions.h">
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\Shared\include\Shibboleth_StateMachine.h">
