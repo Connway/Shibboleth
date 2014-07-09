@@ -154,7 +154,7 @@ const Value& HashMap<Key, Value, Allocator>::Iterator::getValue(void) const
 template <class Key, class Value, class Allocator>
 Value& HashMap<Key, Value, Allocator>::Iterator::getValue(void)
 {
-	_slot->value;
+	return _slot->value;
 }
 
 template <class Key, class Value, class Allocator>
@@ -434,7 +434,7 @@ const Value& HashMap<HashString<T, Allocator>, Value, Allocator>::Iterator::getV
 template <class Value, class Allocator, class T>
 Value& HashMap<HashString<T, Allocator>, Value, Allocator>::Iterator::getValue(void)
 {
-	_slot->value;
+	return _slot->value;
 }
 
 template <class Value, class Allocator, class T>
@@ -703,6 +703,18 @@ void HashMap<Key, Value, Allocator>::insert(const Key& key, const Value& value)
 }
 
 template <class Key, class Value, class Allocator>
+bool HashMap<Key, Value, Allocator>::hasElementWithValue(const Value& value) const
+{
+	for (auto it = begin(); it != end(); ++it) {
+		if (*it == value) {
+			return true;
+		}
+	}
+
+	return false;
+}
+
+template <class Key, class Value, class Allocator>
 bool HashMap<Key, Value, Allocator>::hasElementWithKey(const Key& key) const
 {
 	return indexOf(key) != -1;
@@ -802,6 +814,20 @@ template <class Key, class Value, class Allocator>
 void HashMap<Key, Value, Allocator>::setAllocator(const Allocator& allocator)
 {
 	_allocator = allocator;
+}
+
+template <class Key, class Value, class Allocator>
+typename HashMap<Key, Value, Allocator>::Iterator HashMap<Key, Value, Allocator>::findElementWithValue(const Value& value) const
+{
+	auto it = begin();
+
+	for (; it != end(); ++it) {
+		if (*it == value) {
+			break;
+		}
+	}
+
+	return it;
 }
 
 template <class Key, class Value, class Allocator>
@@ -1100,6 +1126,18 @@ void HashMap<String<T, Allocator>, Value, Allocator>::insert(const String<T, All
 }
 
 template <class Value, class Allocator, class T>
+bool HashMap<String<T, Allocator>, Value, Allocator>::hasElementWithValue(const Value& value) const
+{
+	for (auto it = begin(); it != end(); ++it) {
+		if (*it == value) {
+			return true;
+		}
+	}
+
+	return false;
+}
+
+template <class Value, class Allocator, class T>
 bool HashMap<String<T, Allocator>, Value, Allocator>::hasElementWithKey(const String<T, Allocator>& key) const
 {
 	return indexOf(key) != -1;
@@ -1199,6 +1237,20 @@ template <class Value, class Allocator, class T>
 void HashMap<String<T, Allocator>, Value, Allocator>::setAllocator(const Allocator& allocator)
 {
 	_allocator = allocator;
+}
+
+template <class Value, class Allocator, class T>
+typename HashMap<String<T, Allocator>, Value, Allocator>::Iterator HashMap<String<T, Allocator>, Value, Allocator>::findElementWithValue(const Value& value) const
+{
+	auto it = begin();
+
+	for (; it != end(); ++it) {
+		if (*it == value) {
+			break;
+		}
+	}
+
+	return it;
 }
 
 template <class Value, class Allocator, class T>
@@ -1496,6 +1548,18 @@ void HashMap<HashString<T, Allocator>, Value, Allocator>::insert(const HashStrin
 }
 
 template <class Value, class Allocator, class T>
+bool HashMap<HashString<T, Allocator>, Value, Allocator>::hasElementWithValue(const Value& value) const
+{
+	for (auto it = begin(); it != end(); ++it) {
+		if (*it == value) {
+			return true;
+		}
+	}
+
+	return false;
+}
+
+template <class Value, class Allocator, class T>
 bool HashMap<HashString<T, Allocator>, Value, Allocator>::hasElementWithKey(const HashString<T, Allocator>& key) const
 {
 	return indexOf(key) != -1;
@@ -1604,6 +1668,20 @@ typename HashMap<HashString<T, Allocator>, Value, Allocator>::Iterator HashMap<H
 
 	if (_slots && !_slots->occupied) {
 		++it;
+	}
+
+	return it;
+}
+
+template <class Value, class Allocator, class T>
+typename HashMap<HashString<T, Allocator>, Value, Allocator>::Iterator HashMap<HashString<T, Allocator>, Value, Allocator>::findElementWithValue(const Value& value) const
+{
+	auto it = begin();
+
+	for (; it != end(); ++it) {
+		if (*it == value) {
+			break;
+		}
 	}
 
 	return it;

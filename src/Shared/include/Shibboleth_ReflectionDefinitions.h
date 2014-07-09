@@ -25,8 +25,7 @@ THE SOFTWARE.
 #include "Shibboleth_HashString.h"
 #include "Shibboleth_HashMap.h"
 #include "Shibboleth_String.h"
-#include "Shibboleth_Map.h"
-#include <Gaff_SmartPtr.h>
+#include <Gaff_SharedPtr.h>
 #include <Gaff_JSON.h>
 
 #define VAR_CONTAINER(name, type) \
@@ -83,7 +82,7 @@ public:
 	void markDefined(void);
 
 private:
-	Map<AString, T> _values_map;
+	HashMap<AHashString, T> _values_map;
 	bool _defined;
 };
 
@@ -129,7 +128,9 @@ public:
 	void read(const Gaff::JSON& json, T* object);
 	void write(Gaff::JSON& json, T* object) const;
 
-	// Return a PropertyDefinition instead?
+	template <class T2>
+	ReflectionDefinition<T>& addBaseClass(const ReflectionDefinition<T2>& base_ref_def);
+
 	template <class T2>
 	ReflectionDefinition<T>& addObject(const char* key, T2 T::* var, ReflectionDefinition<T2> T2::* var_ref_def);
 
@@ -154,6 +155,8 @@ public:
 	void setAllocator(const ProxyAllocator& allocator);
 
 private:
+	typedef Gaff::SharedPtr<IValueContainer, ProxyAllocator> ValueContainerPtr;
+
 	VAR_CONTAINER(DoubleContainer, double);
 	VAR_CONTAINER(FloatContainer, float);
 	VAR_CONTAINER(UIntContainer, unsigned int);
@@ -194,13 +197,55 @@ private:
 	private:
 		const EnumReflectionDefinition<T2>& _var_ref_def;
 		T2 T::* _var;
+
+		GAFF_NO_COPY(EnumContainer);
 	};
 
-	typedef Gaff::SmartPtr<IValueContainer, ProxyAllocator> ValueContainerPtr;
-	HashMap<AHashString, ValueContainerPtr> _value_containers;
+	template <class T2>
+	class BaseValueContainer : public IValueContainer
+	{
+	public:
+		BaseValueContainer(const char* key, typename const ReflectionDefinition<T2>::ValueContainerPtr& value_ptr);
 
+		void read(const Gaff::JSON& json, T* object);
+		void write(Gaff::JSON& json, T* object) const;
+
+		ValueType getType(void) const;
+
+	private:
+		typename ReflectionDefinition<T2>::ValueContainerPtr _value_ptr;
+	};
+
+	HashMap<AHashString, ValueContainerPtr> _value_containers;
 	bool _defined;
 };
+
+/*
+	This function is useful for when you want to do something like this:
+
+	// In .h file
+	class SomeClass
+	{
+		static ReflectionDefinition<SomeClass> _ref_def;
+
+		int _a;
+	};
+
+	// In .cpp file
+	ReflectionDefinition<SomeClass> SomeClass::_ref_def = RefDef<SomeClass>()
+	.addInt("a", &SomeClass::_a)
+	.markDefined()
+	;
+
+	BE CAREFUL WITH THIS! If whatever allocator you are using is not initialized or
+	available during process/DLL global init, this will crash hard!
+*/
+// Commented out until I genericise the allocator for this and move it to Gaff.
+//template <class T>
+//ReflectionDefinition<T> RefDef(void)
+//{
+//	return ReflectionDefinition<T>();
+//}
 
 #include "Shibboleth_ReflectionDefinitions.inl"
 

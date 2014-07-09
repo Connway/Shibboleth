@@ -44,7 +44,7 @@ template <class T>
 const char* EnumReflectionDefinition<T>::getName(T value) const
 {
 	assert(_values_map.hasElementWithValue(value));
-	return _values_map.findElementWithValue(value)->first.getBuffer();
+	return _values_map.findElementWithValue(value).getKey().getBuffer();
 }
 
 template <class T>
@@ -269,6 +269,37 @@ typename ReflectionDefinition<T>::IValueContainer::ValueType ReflectionDefinitio
 
 
 
+// Base
+template <class T>
+template <class T2>
+ReflectionDefinition<T>::BaseValueContainer<T2>::BaseValueContainer(const char* key, typename const ReflectionDefinition<T2>::ValueContainerPtr& value_ptr):
+	IValueContainer(key), _value_ptr(value_ptr)
+{
+}
+
+template <class T>
+template <class T2>
+void ReflectionDefinition<T>::BaseValueContainer<T2>::read(const Gaff::JSON& json, T* object)
+{
+	_value_ptr->read(json, object);
+}
+
+template <class T>
+template <class T2>
+void ReflectionDefinition<T>::BaseValueContainer<T2>::write(Gaff::JSON& json, T* object) const
+{
+	_value_ptr->write(json, object);
+}
+
+template <class T>
+template <class T2>
+typename ReflectionDefinition<T>::IValueContainer::ValueType ReflectionDefinition<T>::BaseValueContainer<T2>::getType(void) const
+{
+	return _value_ptr->getType();
+}
+
+
+
 // Reflection Definition
 template <class T>
 ReflectionDefinition<T>::ReflectionDefinition(void) :
@@ -299,9 +330,25 @@ void ReflectionDefinition<T>::write(Gaff::JSON& json, T* object) const
 
 template <class T>
 template <class T2>
+ReflectionDefinition<T>& ReflectionDefinition<T>::addBaseClass(const ReflectionDefinition<T2>& base_ref_def)
+{
+	assert(this != &base_ref_def);
+
+	for (auto it = base_ref_def._value_containers.begin(); it != base_ref_def._value_containers.end(); ++it)
+	{
+		assert(!_value_containers.hasElementWithKey(it.getKey()));
+		BaseValueContainer<T2>* container = GetAllocator().allocT< BaseValueContainer<T2> >(it.getKey().getBuffer(), it.getValue());
+		_value_containers.insert(it.getKey(), ValueContainerPtr(container));
+	}
+
+	return *this;
+}
+
+template <class T>
+template <class T2>
 ReflectionDefinition<T>& ReflectionDefinition<T>::addObject(const char* key, T2 T::* var, ReflectionDefinition<T2> T2::* var_ref_def)
 {
-	assert(key && strlen(key) && _value_containers.indexOf(key) == -1);
+	assert(key && strlen(key) && !_value_containers.hasElementWithKey(key));
 	ObjectContainer<T2>* container = GetAllocator().allocT< ObjectContainer<T2> >(key, var);
 	_value_containers.insert(key, ValueContainerPtr(container));
 	return *this;
@@ -311,7 +358,7 @@ template <class T>
 template <class T2>
 ReflectionDefinition<T>& ReflectionDefinition<T>::addEnum(const char* key, T2 T::* var, const EnumReflectionDefinition<T2>& ref_def)
 {
-	assert(key && strlen(key) && _value_containers.indexOf(key) == -1);
+	assert(key && strlen(key) && !_value_containers.hasElementWithKey(key));
 	EnumContainer<T2>* container = GetAllocator().allocT< EnumContainer<T2> >(key, var, ref_def);
 	_value_containers.insert(key, ValueContainerPtr(container));
 	return *this;
@@ -320,7 +367,7 @@ ReflectionDefinition<T>& ReflectionDefinition<T>::addEnum(const char* key, T2 T:
 template <class T>
 ReflectionDefinition<T>& ReflectionDefinition<T>::addDouble(const char* key, double T::* var)
 {
-	assert(key && strlen(key) && _value_containers.indexOf(key) == -1);
+	assert(key && strlen(key) && !_value_containers.hasElementWithKey(key));
 	DoubleContainer* container = GetAllocator().allocT<DoubleContainer>(key, var);
 	_value_containers.insert(key, ValueContainerPtr(container));
 	return *this;
@@ -329,7 +376,7 @@ ReflectionDefinition<T>& ReflectionDefinition<T>::addDouble(const char* key, dou
 template <class T>
 ReflectionDefinition<T>& ReflectionDefinition<T>::addFloat(const char* key, float T::* var)
 {
-	assert(key && strlen(key) && _value_containers.indexOf(key) == -1);
+	assert(key && strlen(key) && !_value_containers.hasElementWithKey(key));
 	FloatContainer* container = GetAllocator().allocT<FloatContainer>(key, var);
 	_value_containers.insert(key, ValueContainerPtr(container));
 	return *this;
@@ -338,7 +385,7 @@ ReflectionDefinition<T>& ReflectionDefinition<T>::addFloat(const char* key, floa
 template <class T>
 ReflectionDefinition<T>& ReflectionDefinition<T>::addUInt(const char* key, unsigned int T::* var)
 {
-	assert(key && strlen(key) && _value_containers.indexOf(key) == -1);
+	assert(key && strlen(key) && !_value_containers.hasElementWithKey(key));
 	UIntContainer* container = GetAllocator().allocT<UIntContainer>(key, var);
 	_value_containers.insert(key, ValueContainerPtr(container));
 	return *this;
@@ -347,7 +394,7 @@ ReflectionDefinition<T>& ReflectionDefinition<T>::addUInt(const char* key, unsig
 template <class T>
 ReflectionDefinition<T>& ReflectionDefinition<T>::addInt(const char* key, int T::* var)
 {
-	assert(key && strlen(key) && _value_containers.indexOf(key) == -1);
+	assert(key && strlen(key) && !_value_containers.hasElementWithKey(key));
 	IntContainer* container = GetAllocator().allocT<IntContainer>(key, var);
 	_value_containers.insert(key, ValueContainerPtr(container));
 	return *this;
@@ -356,7 +403,7 @@ ReflectionDefinition<T>& ReflectionDefinition<T>::addInt(const char* key, int T:
 template <class T>
 ReflectionDefinition<T>& ReflectionDefinition<T>::addUShort(const char* key, unsigned short T::* var)
 {
-	assert(key && strlen(key) && _value_containers.indexOf(key) == -1);
+	assert(key && strlen(key) && !_value_containers.hasElementWithKey(key));
 	UShortContainer* container = GetAllocator().allocT<UShortContainer>(key, var);
 	_value_containers.insert(key, ValueContainerPtr(container));
 	return *this;
@@ -365,7 +412,7 @@ ReflectionDefinition<T>& ReflectionDefinition<T>::addUShort(const char* key, uns
 template <class T>
 ReflectionDefinition<T>& ReflectionDefinition<T>::addShort(const char* key, short T::* var)
 {
-	assert(key && strlen(key) && _value_containers.indexOf(key) == -1);
+	assert(key && strlen(key) && !_value_containers.hasElementWithKey(key));
 	ShortContainer* container = GetAllocator().allocT<ShortContainer>(key, var);
 	_value_containers.insert(key, ValueContainerPtr(container));
 	return *this;
@@ -374,7 +421,7 @@ ReflectionDefinition<T>& ReflectionDefinition<T>::addShort(const char* key, shor
 template <class T>
 ReflectionDefinition<T>& ReflectionDefinition<T>::addUChar(const char* key, unsigned char T::* var)
 {
-	assert(key && strlen(key) && _value_containers.indexOf(key) == -1);
+	assert(key && strlen(key) && !_value_containers.hasElementWithKey(key));
 	UCharContainer* container = GetAllocator().allocT<UCharContainer>(key, var);
 	_value_containers.insert(key, ValueContainerPtr(container));
 	return *this;
@@ -383,7 +430,7 @@ ReflectionDefinition<T>& ReflectionDefinition<T>::addUChar(const char* key, unsi
 template <class T>
 ReflectionDefinition<T>& ReflectionDefinition<T>::addChar(const char* key, char T::* var)
 {
-	assert(key && strlen(key) && _value_containers.indexOf(key) == -1);
+	assert(key && strlen(key) && !_value_containers.hasElementWithKey(key));
 	CharContainer* container = GetAllocator().allocT<CharContainer>(key, var);
 	_value_containers.insert(key, ValueContainerPtr(container));
 	return *this;
@@ -392,7 +439,7 @@ ReflectionDefinition<T>& ReflectionDefinition<T>::addChar(const char* key, char 
 template <class T>
 ReflectionDefinition<T>& ReflectionDefinition<T>::addBool(const char* key, bool T::* var)
 {
-	assert(key && strlen(key) && _value_containers.indexOf(key) == -1);
+	assert(key && strlen(key) && !_value_containers.hasElementWithKey(key));
 	BoolContainer* container = GetAllocator().allocT<BoolContainer>(key, var);
 	_value_containers.insert(key, ValueContainerPtr(container));
 	return *this;
@@ -401,7 +448,7 @@ ReflectionDefinition<T>& ReflectionDefinition<T>::addBool(const char* key, bool 
 template <class T>
 ReflectionDefinition<T>& ReflectionDefinition<T>::addCustom(const char* key, IValueContainer* container)
 {
-	assert(key && strlen(key) && _value_containers.indexOf(key) == -1);
+	assert(key && strlen(key) && !_value_containers.hasElementWithKey(key));
 	_value_containers.insert(key, ValueContainerPtr(container));
 	return *this;
 }

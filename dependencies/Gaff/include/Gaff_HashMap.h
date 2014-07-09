@@ -115,6 +115,7 @@ public:
 	void moveInsert(const Key& key, Value&& value);
 	void insert(const Key& key, const Value& value);
 
+	bool hasElementWithValue(const Value& value) const;
 	bool hasElementWithKey(const Key& key) const;
 	int indexOf(const Key& key) const;
 
@@ -126,6 +127,8 @@ public:
 	bool empty(void) const;
 
 	void setAllocator(const Allocator& allocator);
+
+	Iterator findElementWithValue(const Value& value) const;
 
 	Iterator begin(void) const;
 	Iterator end(void) const;
@@ -224,6 +227,7 @@ public:
 	void moveInsert(const String<T, Allocator>& key, Value&& value);
 	void insert(const String<T, Allocator>& key, const Value& value);
 
+	bool hasElementWithValue(const Value& value) const;
 	bool hasElementWithKey(const String<T, Allocator>& key) const;
 	int indexOf(const String<T, Allocator>& key) const;
 
@@ -235,6 +239,8 @@ public:
 	bool empty(void) const;
 
 	void setAllocator(const Allocator& allocator);
+
+	Iterator findElementWithValue(const Value& value) const;
 
 	Iterator begin(void) const;
 	Iterator end(void) const;
@@ -333,6 +339,7 @@ public:
 	void moveInsert(const HashString<T, Allocator>& key, Value&& value);
 	void insert(const HashString<T, Allocator>& key, const Value& value);
 
+	bool hasElementWithValue(const Value& value) const;
 	bool hasElementWithKey(const HashString<T, Allocator>& key) const;
 	int indexOf(const HashString<T, Allocator>& key) const;
 
@@ -344,6 +351,8 @@ public:
 	bool empty(void) const;
 
 	void setAllocator(const Allocator& allocator);
+
+	Iterator findElementWithValue(const Value& value) const;
 
 	Iterator begin(void) const;
 	Iterator end(void) const;
