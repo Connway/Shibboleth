@@ -117,7 +117,7 @@
       <ImportLibrary>..\..\..\build\output\x86\Debug\LuaJIT.lib</ImportLibrary>
     </Link>
     <PreBuildEvent>
-      <Command>cd ../../dependencies/LuaJIT-2.0.3
+      <Command>cd ../../../dependencies/LuaJIT-2.0.3
 build_luajit.bat x86 debug ..\..\build\output\x86\Debug</Command>
     </PreBuildEvent>
   </ItemDefinitionGroup>
@@ -166,7 +166,7 @@ build_luajit.bat x86 debug ..\..\build\output\x86\Debug</Command>
       <ImportLibrary>..\..\..\build\output\x86\Release\LuaJIT.lib</ImportLibrary>
     </Link>
     <PreBuildEvent>
-      <Command>cd ../../dependencies/LuaJIT-2.0.3
+      <Command>cd ../../../dependencies/LuaJIT-2.0.3
 build_luajit.bat x86 release ..\..\build\output\x86\Release</Command>
     </PreBuildEvent>
   </ItemDefinitionGroup>

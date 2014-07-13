@@ -48,10 +48,10 @@ bool ComponentManager::addComponents(DynamicLoader::ModulePtr& module)
 	GetComponentNameFunc comp_name_func = module->GetFunc<GetComponentNameFunc>("GetComponentName");
 	CreateComponentFunc create_comp_func = module->GetFunc<CreateComponentFunc>("CreateComponent");
 	DestroyComponentFunc destroy_comp_func = module->GetFunc<DestroyComponentFunc>("DestroyComponent");
-	InitFunc init_func = module->GetFunc<InitFunc>("InitDLL");
+	InitFunc init_func = module->GetFunc<InitFunc>("InitModule");
 
 	if (!init_func) {
-		log.first.writeString("ERROR - Could not find function named 'InitDLL'.\n");
+		log.first.writeString("ERROR - Could not find function named 'InitModule'.\n");
 		return false;
 	}
 

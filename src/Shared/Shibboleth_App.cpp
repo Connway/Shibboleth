@@ -120,11 +120,11 @@ bool App::loadManagers(void)
 		DynamicLoader::ModulePtr module = _dynamic_loader.loadModule(rel_path.getBuffer(), name);
 
 		if (module) {
-			ManagerEntry::InitManagerDLLFunc init_func = module->GetFunc<ManagerEntry::InitManagerDLLFunc>("InitDLL");
+			ManagerEntry::InitManagerDLLFunc init_func = module->GetFunc<ManagerEntry::InitManagerDLLFunc>("InitModule");
 
 			if (!init_func) {
 				//_dynamic_loader.removeModule(name);
-				_log_file_pair->first.printf("ERROR - Failed to find function 'InitDLL' in dynamic module '%s'\n", rel_path.getBuffer());
+				_log_file_pair->first.printf("ERROR - Failed to find function 'InitModule' in dynamic module '%s'\n", rel_path.getBuffer());
 				error = true;
 				return true;
 			} else if (!init_func(*this)) {
@@ -246,10 +246,10 @@ bool App::loadStates(void)
 		DynamicLoader::ModulePtr module = _dynamic_loader.loadModule(filename, module_name.getString());
 
 		if (module) {
-			StateMachine::StateEntry::InitStateDLLFunc init_func = module->GetFunc<StateMachine::StateEntry::InitStateDLLFunc>("InitDLL");
+			StateMachine::StateEntry::InitStateDLLFunc init_func = module->GetFunc<StateMachine::StateEntry::InitStateDLLFunc>("InitModule");
 
 			if (!init_func) {
-				_log_file_pair->first.printf("ERROR - Failed to find function 'InitDLL' in dynamic module '%s'\n", filename.getBuffer());
+				_log_file_pair->first.printf("ERROR - Failed to find function 'InitModule' in dynamic module '%s'\n", filename.getBuffer());
 				return false;
 			} else if (!init_func(*this)) {
 				_log_file_pair->first.printf("ERROR - Failed to initialize '%s'\n", filename.getBuffer());

@@ -92,7 +92,7 @@ static const char* state_names[NUM_STATES] = {
 
 static Shibboleth::App* g_app = nullptr;
 
-DYNAMICEXPORT bool InitDLL(Shibboleth::App& app)
+DYNAMICEXPORT bool InitModule(Shibboleth::App& app)
 {
 	Gaff::JSON::SetMemoryFunctions(&Shibboleth::ShibbolethAllocate, &Shibboleth::ShibbolethFree);
 	Gaff::JSON::SetHashSeed(app.getSeed());

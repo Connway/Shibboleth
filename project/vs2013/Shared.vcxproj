@@ -209,6 +209,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\src\Shared\include\Shibboleth_ReflectionDefinitions.inl" />
+    <None Include="..\..\src\Shared\include\Shibboleth_ReflectionDefinitionsContainers.inl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

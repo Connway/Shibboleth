@@ -164,8 +164,17 @@ namespace lua {
             
             return executeLoadedFunction(stackTop);
         }
-        
-        /// Execute string on Lua state
+
+		lua::Value doFile(const char* filePath) const {
+			int stackTop = stack::top(_luaState);
+
+			if (luaL_loadfile(_luaState, filePath))
+				throw LoadError(_luaState);
+
+			return executeLoadedFunction(stackTop);
+		}
+
+		/// Execute string on Lua state
         ///
         /// @throws lua::LoadError      When string cannot be loaded
         /// @throws lua::RuntimeError   When there is runtime error

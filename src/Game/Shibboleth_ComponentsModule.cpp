@@ -21,7 +21,7 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include <Shibboleth_ComponentManager.h>
-#include <Shibboleth_TestComponent.h>
+#include <Shibboleth_LuaComponent.h>
 #include <Shibboleth_App.h>
 #include <Gaff_JSON.h>
 
@@ -33,29 +33,42 @@ Shibboleth::IComponent* CreateComponent(Shibboleth::App& app)
 
 enum Components
 {
-	TEST_COMPONENT = 0,
+	LUA_COMPONENT = 0,
 	NUM_COMPONENTS
 };
 
 typedef Shibboleth::IComponent* (*CreateComponentFunc)(Shibboleth::App&);
 typedef const char* (*ComponentNameFunc)(void);
+typedef void (*RefDefInitFunc)(void);
 
 static CreateComponentFunc create_funcs[] = {
-	&CreateComponent<Shibboleth::TestComponent>
+	&CreateComponent<Shibboleth::LuaComponent>
 };
 
 static ComponentNameFunc name_funcs[] = {
-	&Shibboleth::TestComponent::getComponentName
+	&Shibboleth::LuaComponent::getComponentName
+};
+
+static RefDefInitFunc init_funcs[] = {
+	&Shibboleth::LuaComponent::InitReflectionDefinition
 };
 
 static Shibboleth::App* g_app = nullptr;
 
-DYNAMICEXPORT bool InitDLL(Shibboleth::App& app)
+DYNAMICEXPORT bool InitModule(Shibboleth::App& app)
 {
+	// set lua allocation function
+
 	Gaff::JSON::SetMemoryFunctions(&Shibboleth::ShibbolethAllocate, &Shibboleth::ShibbolethFree);
 	Gaff::JSON::SetHashSeed(app.getSeed());
 	Shibboleth::SetAllocator(app.getAllocator());
 	g_app = &app;
+
+	// Initialize all the reflection definitions
+	for (unsigned int i = 0; i < NUM_COMPONENTS; ++i) {
+		init_funcs[i]();
+	}
+
 	return true;
 }
 

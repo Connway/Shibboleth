@@ -20,6 +20,6 @@
     <ClCompile Include="..\..\..\src\Game\Shibboleth_CreateResourceLoadersState.cpp" />
     <ClCompile Include="..\..\..\src\Game\Shibboleth_LoadComponentsState.cpp" />
     <ClCompile Include="..\..\..\src\Game\Shibboleth_SetupOtterUIState.cpp" />
-    <ClCompile Include="..\..\..\src\Game\Shibboleth_StatesDLL.cpp" />
+    <ClCompile Include="..\..\..\src\Game\Shibboleth_StatesModule.cpp" />
   </ItemGroup>
 </Project>

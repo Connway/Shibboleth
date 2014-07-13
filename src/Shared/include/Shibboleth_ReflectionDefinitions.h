@@ -27,6 +27,15 @@ THE SOFTWARE.
 #include "Shibboleth_String.h"
 #include <Gaff_SharedPtr.h>
 #include <Gaff_JSON.h>
+#include <cstdlib>
+
+#if defined(_WIN32) || defined(_WIN64)
+	#ifndef snprintf
+		#define snprintf
+	#endif
+#else
+	#include <cstdio>
+#endif
 
 #define VAR_CONTAINER(name, type) \
 	class name : public IValueContainer \
@@ -36,6 +45,10 @@ THE SOFTWARE.
 		void read(const Gaff::JSON& json, T* object); \
 		void write(Gaff::JSON& json, T* object) const; \
 		ValueType getType(void) const; \
+		void set(const char* value, T* object); \
+		void set(unsigned int value, T* object); \
+		void set(int value, T* object); \
+		void set(double value, T* object); \
 	private: \
 		type T::* _var; \
 	}
@@ -58,6 +71,22 @@ THE SOFTWARE.
 	{ \
 		return type; \
 	}
+
+#define VAR_CONTAINER_SET_STRING(name) \
+	template <class T> \
+	void ReflectionDefinition<T>::name::set(const char* value, T* object)
+
+#define VAR_CONTAINER_SET_UINT(name) \
+	template <class T> \
+	void ReflectionDefinition<T>::name::set(unsigned int value, T* object)
+
+#define VAR_CONTAINER_SET_INT(name) \
+	template <class T> \
+	void ReflectionDefinition<T>::name::set(int value, T* object)
+
+#define VAR_CONTAINER_SET_DOUBLE(name) \
+	template <class T> \
+	void ReflectionDefinition<T>::name::set(double value, T* object)
 
 NS_GAFF
 	class JSON;
@@ -105,6 +134,7 @@ public:
 			VT_CHAR,
 			VT_BOOL,
 			VT_ENUM,
+			VT_ASTRING,
 			VT_OBJECT,
 			VT_CUSTOM,
 			VT_SIZE
@@ -115,6 +145,11 @@ public:
 
 		virtual void read(const Gaff::JSON& json, T* object) = 0;
 		virtual void write(Gaff::JSON& json, T* object) const = 0;
+
+		virtual void set(const char*, T*) {}
+		virtual void set(unsigned int, T*) {}
+		virtual void set(int, T*) {}
+		virtual void set(double, T*) {}
 
 		virtual ValueType getType(void) const = 0;
 
@@ -146,6 +181,7 @@ public:
 	ReflectionDefinition<T>& addUChar(const char* key, unsigned char T::* var);
 	ReflectionDefinition<T>& addChar(const char* key, char T::* var);
 	ReflectionDefinition<T>& addBool(const char* key, bool T::* var);
+	ReflectionDefinition<T>& addANSIString(const char* key, AString T::* var);
 
 	ReflectionDefinition<T>& addCustom(const char* key, IValueContainer* container);
 
@@ -166,6 +202,7 @@ private:
 	VAR_CONTAINER(UCharContainer, unsigned char);
 	VAR_CONTAINER(CharContainer, char);
 	VAR_CONTAINER(BoolContainer, bool);
+	VAR_CONTAINER(ANSIStringContainer, AString);
 
 	template <class T2>
 	class ObjectContainer : public IValueContainer
@@ -192,6 +229,11 @@ private:
 		void read(const Gaff::JSON& json, T* object);
 		void write(Gaff::JSON& json, T* object) const;
 
+		void set(const char* value, T* object);
+		void set(unsigned int value, T* object);
+		void set(int value, T* object);
+		void set(double value, T* object);
+
 		ValueType getType(void) const;
 
 	private:
@@ -209,6 +251,11 @@ private:
 
 		void read(const Gaff::JSON& json, T* object);
 		void write(Gaff::JSON& json, T* object) const;
+
+		void set(const char* value, T* object);
+		void set(unsigned int value, T* object);
+		void set(int value, T* object);
+		void set(double value, T* object);
 
 		ValueType getType(void) const;
 
@@ -247,6 +294,7 @@ private:
 //	return ReflectionDefinition<T>();
 //}
 
+#include "Shibboleth_ReflectionDefinitionsContainers.inl"
 #include "Shibboleth_ReflectionDefinitions.inl"
 
 NS_END
