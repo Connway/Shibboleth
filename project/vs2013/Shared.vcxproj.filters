@@ -9,6 +9,9 @@
     <None Include="..\..\src\Shared\include\Shibboleth_ReflectionDefinitions.inl">
       <Filter>include</Filter>
     </None>
+    <None Include="..\..\src\Shared\include\Shibboleth_ReflectionDefinitionsContainers.inl">
+      <Filter>include</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\Shared\include\Shibboleth_Allocator.h">

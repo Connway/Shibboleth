@@ -19,10 +19,10 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{D5F71405-4162-C97B-8AA0-7A21F649A7D0}</ProjectGuid>
+    <ProjectGuid>{39752E9D-2543-22A3-0ED7-92C9FA43FE07}</ProjectGuid>
     <IgnoreWarnCompileDuplicatedFilename>true</IgnoreWarnCompileDuplicatedFilename>
     <Keyword>Win32Proj</Keyword>
-    <RootNamespace>StatesDLL</RootNamespace>
+    <RootNamespace>ManagersModule</RootNamespace>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -70,29 +70,29 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
     <OutDir>..\..\..\build\output\x86\Debug\</OutDir>
-    <IntDir>..\..\..\build\intermediate\x86\Debug\StatesDLL\</IntDir>
-    <TargetName>GameStates32d</TargetName>
+    <IntDir>..\..\..\build\intermediate\x86\Debug\ManagersModule\</IntDir>
+    <TargetName>GameManagers32d</TargetName>
     <TargetExt>.dll</TargetExt>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
     <OutDir>..\..\..\build\output\x64\Debug\</OutDir>
-    <IntDir>..\..\..\build\intermediate\x64\Debug\StatesDLL\</IntDir>
-    <TargetName>GameStates64d</TargetName>
+    <IntDir>..\..\..\build\intermediate\x64\Debug\ManagersModule\</IntDir>
+    <TargetName>GameManagers64d</TargetName>
     <TargetExt>.dll</TargetExt>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
     <OutDir>..\..\..\build\output\x86\Release\</OutDir>
-    <IntDir>..\..\..\build\intermediate\x86\Release\StatesDLL\</IntDir>
-    <TargetName>GameStates32</TargetName>
+    <IntDir>..\..\..\build\intermediate\x86\Release\ManagersModule\</IntDir>
+    <TargetName>GameManagers32</TargetName>
     <TargetExt>.dll</TargetExt>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
     <OutDir>..\..\..\build\output\x64\Release\</OutDir>
-    <IntDir>..\..\..\build\intermediate\x64\Release\StatesDLL\</IntDir>
-    <TargetName>GameStates64</TargetName>
+    <IntDir>..\..\..\build\intermediate\x64\Release\ManagersModule\</IntDir>
+    <TargetName>GameManagers64</TargetName>
     <TargetExt>.dll</TargetExt>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -102,7 +102,7 @@
       <PreprocessorDefinitions>_DEBUG;DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>..\..\..\dependencies\dirent;..\..\..\src\Game\include;..\..\..\src\Shared\include;..\..\..\dependencies\OtterUI\inc;..\..\..\dependencies\jansson;..\..\..\dependencies\Gleam\include;..\..\..\dependencies\Gaff\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
-      <ProgramDataBaseFileName>$(OutDir)GameStates32d.pdb</ProgramDataBaseFileName>
+      <ProgramDataBaseFileName>$(OutDir)GameManagers32d.pdb</ProgramDataBaseFileName>
       <Optimization>Disabled</Optimization>
       <FloatingPointModel>Fast</FloatingPointModel>
       <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
@@ -115,7 +115,7 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <ImportLibrary>..\..\..\build\output\x86\Debug\GameStates32d.lib</ImportLibrary>
+      <ImportLibrary>..\..\..\build\output\x86\Debug\GameManagers32d.lib</ImportLibrary>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -125,7 +125,7 @@
       <PreprocessorDefinitions>_DEBUG;DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>..\..\..\dependencies\dirent;..\..\..\src\Game\include;..\..\..\src\Shared\include;..\..\..\dependencies\OtterUI\inc;..\..\..\dependencies\jansson;..\..\..\dependencies\Gleam\include;..\..\..\dependencies\Gaff\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <ProgramDataBaseFileName>$(OutDir)GameStates64d.pdb</ProgramDataBaseFileName>
+      <ProgramDataBaseFileName>$(OutDir)GameManagers64d.pdb</ProgramDataBaseFileName>
       <Optimization>Disabled</Optimization>
       <FloatingPointModel>Fast</FloatingPointModel>
       <AdditionalOptions>/sdl %(AdditionalOptions)</AdditionalOptions>
@@ -137,7 +137,7 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <ImportLibrary>..\..\..\build\output\x64\Debug\GameStates64d.lib</ImportLibrary>
+      <ImportLibrary>..\..\..\build\output\x64\Debug\GameManagers64d.lib</ImportLibrary>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -162,7 +162,7 @@
       <GenerateDebugInformation>false</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <ImportLibrary>..\..\..\build\output\x86\Release\GameStates32.lib</ImportLibrary>
+      <ImportLibrary>..\..\..\build\output\x86\Release\GameManagers32.lib</ImportLibrary>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -186,19 +186,11 @@
       <GenerateDebugInformation>false</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <ImportLibrary>..\..\..\build\output\x64\Release\GameStates64.lib</ImportLibrary>
+      <ImportLibrary>..\..\..\build\output\x64\Release\GameManagers64.lib</ImportLibrary>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\..\src\Game\include\Shibboleth_CreateResourceLoadersState.h" />
-    <ClInclude Include="..\..\..\src\Game\include\Shibboleth_LoadComponentsState.h" />
-    <ClInclude Include="..\..\..\src\Game\include\Shibboleth_SetupOtterUIState.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="..\..\..\src\Game\Shibboleth_CreateResourceLoadersState.cpp" />
-    <ClCompile Include="..\..\..\src\Game\Shibboleth_LoadComponentsState.cpp" />
-    <ClCompile Include="..\..\..\src\Game\Shibboleth_SetupOtterUIState.cpp" />
-    <ClCompile Include="..\..\..\src\Game\Shibboleth_StatesDLL.cpp" />
+    <ClCompile Include="..\..\..\src\Game\Shibboleth_ManagersModule.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Shared.vcxproj">
@@ -210,32 +202,14 @@
     <ProjectReference Include="..\dependencies\jansson.vcxproj">
       <Project>{41B9A8CD-AD98-2769-B6B0-B23F220F8ECA}</Project>
     </ProjectReference>
-    <ProjectReference Include="..\dependencies\libjpeg.vcxproj">
-      <Project>{42546879-AE33-E714-B74B-72EB23AA4D76}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\dependencies\libpng.vcxproj">
-      <Project>{C1DD6F0B-AD7F-9AE1-963A-AE35827B2132}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\dependencies\libtiff.vcxproj">
-      <Project>{65B26D79-D191-EC14-DAA9-77EB46085376}</Project>
-    </ProjectReference>
     <ProjectReference Include="..\dependencies\OtterUI.vcxproj">
       <Project>{D132FBDB-3D12-7A77-462A-054EB288E0D8}</Project>
     </ProjectReference>
-    <ProjectReference Include="..\dependencies\ResIL.vcxproj">
-      <Project>{A42E040E-1043-2CBF-D9C4-CF1E459828F0}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\dependencies\ResILU.vcxproj">
-      <Project>{79038ACE-65A5-B4A4-4E60-C8F83AA13BF5}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\dependencies\zlib.vcxproj">
-      <Project>{16CFA17C-0206-A30D-ABF2-881097081F0F}</Project>
+    <ProjectReference Include="Game.vcxproj">
+      <Project>{7FA9857C-6BE0-860D-14CD-6C1000E3020F}</Project>
     </ProjectReference>
     <ProjectReference Include="..\dependencies\Gleam.vcxproj">
       <Project>{6BBF400D-D7D3-68BE-A055-0C1E0C2965EF}</Project>
-    </ProjectReference>
-    <ProjectReference Include="Game.vcxproj">
-      <Project>{7FA9857C-6BE0-860D-14CD-6C1000E3020F}</Project>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

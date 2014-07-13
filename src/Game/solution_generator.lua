@@ -84,6 +84,7 @@ group "Dependencies"
 	dofile("../../dependencies/zlib/include_external.lua")
 	dofile("../../dependencies/Gleam/include_external.lua")
 	dofile("../../dependencies/Gaff/include_external.lua")
+	dofile("../../dependencies/LuaJIT-2.0.3/include_external.lua")
 
 group ""
 	dofile("../Shared/include_external.lua")
@@ -131,7 +132,7 @@ group ""
 			"../../dependencies/Gaff/include"
 		}
 
-	project "ManagersDLL"
+	project "ManagersModule"
 		if _ACTION then
 			location ("../../project/" .. _ACTION .. "/game")
 		end
@@ -141,7 +142,7 @@ group ""
 
 		targetname "GameManagers"
 
-		files { "Shibboleth_ManagersDLL.cpp" }
+		files { "Shibboleth_ManagersModule.cpp" }
 
 		includedirs
 		{
@@ -165,7 +166,7 @@ group ""
 			"OtterUI", "Game", "Gleam"
 		}
 
-	project "StatesDLL"
+	project "StatesModule"
 		if _ACTION then
 			location ("../../project/" .. _ACTION .. "/game")
 		end
@@ -183,7 +184,7 @@ group ""
 			"Shibboleth_CreateResourceLoadersState.cpp",
 			"Shibboleth_LoadComponentsState.cpp",
 			"Shibboleth_SetupOtterUIState.cpp",
-			"Shibboleth_StatesDLL.cpp"
+			"Shibboleth_StatesModule.cpp"
 		}
 
 		includedirs
@@ -212,7 +213,7 @@ group ""
 			"zlib", "Gleam", "Game"
 		}
 
-	project "ComponentsDLL"
+	project "ComponentsModule"
 		if _ACTION then
 			location ("../../project/" .. _ACTION .. "/game")
 		end
@@ -224,9 +225,9 @@ group ""
 
 		files
 		{
-			"include/Shibboleth_TestComponent.h",
-			"Shibboleth_TestComponent.cpp",
-			"Shibboleth_ComponentsDLL.cpp"
+			"include/Shibboleth_LuaComponent.h",
+			"Shibboleth_LuaComponent.cpp",
+			"Shibboleth_ComponentsModule.cpp"
 		}
 
 		includedirs
@@ -236,7 +237,10 @@ group ""
 			"../../dependencies/OtterUI/inc",
 			"../../dependencies/jansson",
 			"../../dependencies/Gleam/include",
-			"../../dependencies/Gaff/include"
+			"../../dependencies/Gaff/include",
+			"../../dependencies/LuaBridge",
+			"../../dependencies/LuaState",
+			"../../dependencies/LuaJIT-2.0.3/src",
 		}
 
 		dependson
@@ -245,6 +249,15 @@ group ""
 			"libjpeg", "libpng", "libtiff",
 			"OtterUI", "ResIL", "ResILU",
 			"zlib", "Gleam", "Game"
+
+			--[[
+				Adding LuaJIT as a dependency for some reason makes VS2013
+				not link in referenced project outputs. This means users
+				will have to make sure that they run the LuaJIT project
+				before the ComponentsModule project has had a chance to
+				link.
+			--]]
+			-- "LuaJIT"
 		}
 
 		links
@@ -252,5 +265,10 @@ group ""
 			"Shared", "Gaff", "jansson",
 			"libjpeg", "libpng", "libtiff",
 			"OtterUI", "ResIL", "ResILU",
-			"zlib", "Gleam", "Game"
+			"zlib", "Gleam", "Game",
+			"../../build/output/x86/Debug/lua51"
 		}
+
+		-- Don't know if this works, but trying it out
+		filter { "action:gmake" }
+			dependson { "LuaJIT" }

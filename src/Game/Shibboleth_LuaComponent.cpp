@@ -20,45 +20,45 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#pragma once
-
-#include "Shibboleth_ReflectionDefinitions.h"
-#include "Shibboleth_IComponent.h"
+#include "Shibboleth_LuaComponent.h"
+#include "Shibboleth_App.h"
+#include <LuaBridge.h>
 
 NS_SHIBBOLETH
 
-class App;
+ReflectionDefinition<LuaComponent> LuaComponent::_ref_def;
 
-class TestComponent : public IComponent
+COMP_REF_DEF_LOAD(LuaComponent, _ref_def);
+COMP_REF_DEF_SAVE(LuaComponent, _ref_def);
+
+LuaComponent::LuaComponent(App& app):
+	_app(app)
 {
-public:
+}
 
-	TestComponent(App& app);
+LuaComponent::~LuaComponent(void)
+{
+}
 
-	bool load(const Gaff::JSON& json);
-	bool save(Gaff::JSON& json);
+void LuaComponent::allComponentsLoaded(void)
+{
+	assert(_lua_file.size());
 
-	void allComponentsLoaded(void);
+	// get lua registration manager
+	// run register on _state
 
-	static const char* getComponentName(void)
-	{
-		return "Test Component";
+	_state.doFile(_lua_file.getBuffer());
+}
+
+void LuaComponent::InitReflectionDefinition(void)
+{
+	if (!_ref_def.isDefined()) {
+		_ref_def.setAllocator(ProxyAllocator());
+
+		_ref_def.addANSIString("Lua Filename", &LuaComponent::_lua_file);
+
+		_ref_def.markDefined();
 	}
-
-private:
-	enum TestEnum
-	{
-		TE_A = 0,
-		TE_B
-	};
-
-	static EnumReflectionDefinition<TestEnum> _enum_ref_def;
-	static ReflectionDefinition<TestComponent> _ref_def;
-	App& _app;
-
-	TestEnum _e;
-	float _a;
-	short _b;
-};
+}
 
 NS_END

@@ -20,41 +20,40 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#include "Shibboleth_TestComponent.h"
-#include "Shibboleth_App.h"
+#pragma once
+
+#include "Shibboleth_ReflectionDefinitions.h"
+#include "Shibboleth_IComponent.h"
+#include <LuaState.h>
 
 NS_SHIBBOLETH
 
-EnumReflectionDefinition<TestComponent::TestEnum> TestComponent::_enum_ref_def;
-ReflectionDefinition<TestComponent> TestComponent::_ref_def;
+class App;
 
-COMP_REF_DEF_LOAD(TestComponent, _ref_def);
-COMP_REF_DEF_SAVE(TestComponent, _ref_def);
-
-TestComponent::TestComponent(App& app):
-	_app(app)
+class LuaComponent : public IComponent
 {
-	if (!_enum_ref_def.isDefined()) {
-		_enum_ref_def.addValue("A", TE_A);
-		_enum_ref_def.addValue("B", TE_B);
+public:
+	LuaComponent(App& app);
+	~LuaComponent(void);
 
-		_enum_ref_def.markDefined();
+	bool load(const Gaff::JSON& json);
+	bool save(Gaff::JSON& json);
+
+	void allComponentsLoaded(void);
+
+	static const char* getComponentName(void)
+	{
+		return "Lua Component";
 	}
 
-	if (!_ref_def.isDefined()) {
-		_ref_def.setAllocator(ProxyAllocator());
+	static void InitReflectionDefinition(void);
 
-		_ref_def.addEnum("e", &TestComponent::_e, _enum_ref_def);
-		_ref_def.addFloat("a", &TestComponent::_a);
-		_ref_def.addShort("b", &TestComponent::_b);
+private:
+	static ReflectionDefinition<LuaComponent> _ref_def;
+	App& _app;
 
-		// do addX() calls here
-		_ref_def.markDefined();
-	}
-}
-
-void TestComponent::allComponentsLoaded(void)
-{
-}
+	AString _lua_file;
+	lua::State _state;
+};
 
 NS_END

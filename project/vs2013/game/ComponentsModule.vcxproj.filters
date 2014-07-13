@@ -6,12 +6,12 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\..\src\Game\include\Shibboleth_TestComponent.h">
+    <ClInclude Include="..\..\..\src\Game\include\Shibboleth_LuaComponent.h">
       <Filter>include</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\src\Game\Shibboleth_ComponentsDLL.cpp" />
-    <ClCompile Include="..\..\..\src\Game\Shibboleth_TestComponent.cpp" />
+    <ClCompile Include="..\..\..\src\Game\Shibboleth_ComponentsModule.cpp" />
+    <ClCompile Include="..\..\..\src\Game\Shibboleth_LuaComponent.cpp" />
   </ItemGroup>
 </Project>
