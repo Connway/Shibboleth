@@ -42,10 +42,12 @@ Gaff::IVirtualDestructor* TextureLoader::load(const char* file_name, unsigned lo
 	Gaff::Image image;
 
 	if (!image.init()) {
+		_render_mgr.printfLoadLog("ERROR: Failed to initialize image data structure when loading '%s.'\n", file_name);
 		return nullptr;
 	}
 
 	if (!image.load(file_name)) {
+		_render_mgr.printfLoadLog("ERROR: Failed to image '%s.'\n", file_name);
 		return nullptr;
 	}
 
@@ -61,7 +63,7 @@ Gaff::IVirtualDestructor* TextureLoader::load(const char* file_name, unsigned lo
 	texture_data->cubemap = (user_data & TEX_LOADER_CUBEMAP) != 0;
 
 	if (!texture_data) {
-		_render_mgr.printfLoadLog("ERROR: Failed to allocate texture data structure\n", file_name);
+		_render_mgr.printfLoadLog("ERROR: Failed to allocate texture data structure.\n", file_name);
 		return nullptr;
 	}
 
@@ -79,7 +81,7 @@ Gaff::IVirtualDestructor* TextureLoader::load(const char* file_name, unsigned lo
 		}
 
 		if (texture_format == Gleam::ITexture::FORMAT_SIZE) {
-			_render_mgr.printfLoadLog("ERROR: Could not determine the pixel format of image at %s\n", file_name);
+			_render_mgr.printfLoadLog("ERROR: Could not determine the pixel format of image at %s.\n", file_name);
 			GetAllocator().freeT(texture_data);
 			return nullptr;
 		}
@@ -91,13 +93,13 @@ Gaff::IVirtualDestructor* TextureLoader::load(const char* file_name, unsigned lo
 
 		if (user_data & TEX_LOADER_CUBEMAP) {
 			if (width == 1 || height == 1 || depth != 1) {
-				_render_mgr.printfLoadLog("ERROR: Image specified as cubemap, but is not a 2D image. IMAGE: %s\n", file_name);
+				_render_mgr.printfLoadLog("ERROR: Image specified as cubemap, but is not a 2D image. IMAGE: %s.\n", file_name);
 				GetAllocator().freeT(texture_data);
 				return nullptr;
 			}
 
 			if (!texture->initCubemap(rd, width, height, texture_format, 1, image.getBuffer())) {
-				_render_mgr.printfLoadLog("ERROR: Failed to initialize cubemap texture using image at %s\n", file_name);
+				_render_mgr.printfLoadLog("ERROR: Failed to initialize cubemap texture using image at %s.\n", file_name);
 				GetAllocator().freeT(texture_data);
 				return nullptr;
 			}
@@ -120,7 +122,7 @@ Gaff::IVirtualDestructor* TextureLoader::load(const char* file_name, unsigned lo
 		}
 
 		if (!success) {
-			_render_mgr.printfLoadLog("ERROR: Failed to initialize texture using image at %s\n", file_name);
+			_render_mgr.printfLoadLog("ERROR: Failed to initialize texture using image at %s.\n", file_name);
 			GetAllocator().freeT(texture_data);
 			return nullptr;
 		}

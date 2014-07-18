@@ -22,7 +22,8 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Shibboleth_App.h"
+#include <Shibboleth_IManager.h>
+#include <Shibboleth_App.h>
 #include <Gleam_Window.h>
 
 namespace Gaff
@@ -48,7 +49,7 @@ namespace Gleam
 
 NS_SHIBBOLETH
 
-class RenderManager : public Gaff::INamedObject
+class RenderManager : public IManager
 {
 public:
 	RenderManager(App& app);

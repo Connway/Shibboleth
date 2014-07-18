@@ -22,6 +22,7 @@ THE SOFTWARE.
 
 #include "Shibboleth_App.h"
 #include "Shibboleth_Allocator.h"
+#include "Shibboleth_IManager.h"
 #include "Shibboleth_String.h"
 #include <Gaff_Utils.h>
 #include <Gaff_JSON.h>
@@ -120,7 +121,7 @@ bool App::loadManagers(void)
 		DynamicLoader::ModulePtr module = _dynamic_loader.loadModule(rel_path.getBuffer(), name);
 
 		if (module) {
-			ManagerEntry::InitManagerDLLFunc init_func = module->GetFunc<ManagerEntry::InitManagerDLLFunc>("InitModule");
+			ManagerEntry::InitManagerModuleFunc init_func = module->GetFunc<ManagerEntry::InitManagerModuleFunc>("InitModule");
 
 			if (!init_func) {
 				//_dynamic_loader.removeModule(name);
@@ -177,6 +178,12 @@ bool App::loadManagers(void)
 
 		return false;
 	});
+
+	if (!error) {
+		for (auto it = _manager_map.begin(); it != _manager_map.end(); ++it) {
+			(*it).manager->allManagersCreated();
+		}
+	}
 
 	return !error;
 }
@@ -246,7 +253,7 @@ bool App::loadStates(void)
 		DynamicLoader::ModulePtr module = _dynamic_loader.loadModule(filename, module_name.getString());
 
 		if (module) {
-			StateMachine::StateEntry::InitStateDLLFunc init_func = module->GetFunc<StateMachine::StateEntry::InitStateDLLFunc>("InitModule");
+			StateMachine::StateEntry::InitStateModuleFunc init_func = module->GetFunc<StateMachine::StateEntry::InitStateModuleFunc>("InitModule");
 
 			if (!init_func) {
 				_log_file_pair->first.printf("ERROR - Failed to find function 'InitModule' in dynamic module '%s'\n", filename.getBuffer());

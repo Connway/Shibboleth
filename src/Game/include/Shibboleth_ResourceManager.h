@@ -23,9 +23,10 @@ THE SOFTWARE.
 #pragma once
 
 #include "Shibboleth_IResourceLoader.h"
-#include "Shibboleth_Array.h"
-#include "Shibboleth_ITask.h"
-#include "Shibboleth_App.h"
+#include <Shibboleth_IManager.h>
+#include <Shibboleth_Array.h>
+#include <Shibboleth_ITask.h>
+#include <Shibboleth_App.h>
 #include <Gaff_SharedPtr.h>
 #include <Gaff_SpinLock.h>
 #include <Gaff_Function.h>
@@ -108,7 +109,7 @@ typedef Gaff::SharedPtr<IResourceLoader, ProxyAllocator> ResourceLoaderPtr;
 typedef Gaff::RefPtr<ResourceContainer> ResourcePtr;
 
 
-class ResourceManager : public Gaff::INamedObject
+class ResourceManager : public IManager
 {
 public:
 	ResourceManager(App& app);

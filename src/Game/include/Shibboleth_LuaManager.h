@@ -22,10 +22,9 @@ THE SOFTWARE.
 
 #pragma once
 
-#include <Shibboleth_ReflectionDefinitions.h>
-#include <Shibboleth_ResourceDefines.h>
-#include <Shibboleth_ResourceWrapper.h>
-#include <Shibboleth_IComponent.h>
+#include <Shibboleth_IManager.h>
+#include <Shibboleth_Array.h>
+#include <Gaff_Function.h>
 
 namespace lua
 {
@@ -34,34 +33,26 @@ namespace lua
 
 NS_SHIBBOLETH
 
-class ResourceManager;
 class App;
 
-class LuaComponent : public IComponent
+class LuaManager : public IManager
 {
 public:
-	LuaComponent(App& app);
-	~LuaComponent(void);
+	LuaManager(App& app);
+	~LuaManager(void);
 
-	bool load(const Gaff::JSON& json);
-	bool save(Gaff::JSON& json);
+	const char* getName(void) const;
 
-	void allComponentsLoaded(void);
+	void addRegistrant(const Gaff::FunctionBinder<void, lua::State&>& registrant);
 
-	static const char* getComponentName(void)
-	{
-		return "Lua Component";
-	}
-
-	static void InitReflectionDefinition(void);
+	lua::State* createNewState(void);
 
 private:
-	static ReflectionDefinition<LuaComponent> _ref_def;
+	Array< Gaff::FunctionBinder<void, lua::State&> > _registrants;
+	App& _app;
 
-	ResourceWrapper< SingleDataWrapper<lua::State*> > _script_res;
-
-	ResourceManager& _res_mgr;
-	AString _lua_file;
+	GAFF_NO_COPY(LuaManager);
+	GAFF_NO_MOVE(LuaManager);
 };
 
 NS_END

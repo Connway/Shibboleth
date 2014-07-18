@@ -22,18 +22,18 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Shibboleth_DynamicLoader.h"
 #include "Shibboleth_IComponent.h"
-#include "Shibboleth_HashString.h"
-#include "Shibboleth_HashMap.h"
-#include "Shibboleth_String.h"
-#include <Gaff_INamedObject.h>
+#include <Shibboleth_DynamicLoader.h>
+#include <Shibboleth_HashString.h>
+#include <Shibboleth_IManager.h>
+#include <Shibboleth_HashMap.h>
+#include <Shibboleth_String.h>
 
 NS_SHIBBOLETH
 
 class App;
 
-class ComponentManager : public Gaff::INamedObject
+class ComponentManager : public IManager
 {
 public:
 	ComponentManager(App& app);

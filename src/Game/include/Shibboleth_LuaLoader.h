@@ -22,46 +22,26 @@ THE SOFTWARE.
 
 #pragma once
 
-#include <Shibboleth_ReflectionDefinitions.h>
-#include <Shibboleth_ResourceDefines.h>
-#include <Shibboleth_ResourceWrapper.h>
-#include <Shibboleth_IComponent.h>
-
-namespace lua
-{
-	class State;
-}
+#include "Shibboleth_IResourceLoader.h"
+#include <Gaff_Defines.h>
 
 NS_SHIBBOLETH
 
-class ResourceManager;
-class App;
+class LuaManager;
 
-class LuaComponent : public IComponent
+class LuaLoader : public IResourceLoader
 {
 public:
-	LuaComponent(App& app);
-	~LuaComponent(void);
+	LuaLoader(LuaManager& lua_manager);
+	~LuaLoader(void);
 
-	bool load(const Gaff::JSON& json);
-	bool save(Gaff::JSON& json);
-
-	void allComponentsLoaded(void);
-
-	static const char* getComponentName(void)
-	{
-		return "Lua Component";
-	}
-
-	static void InitReflectionDefinition(void);
+	Gaff::IVirtualDestructor* load(const char* file_name, unsigned long long user_data);
 
 private:
-	static ReflectionDefinition<LuaComponent> _ref_def;
+	LuaManager& _lua_manager;
 
-	ResourceWrapper< SingleDataWrapper<lua::State*> > _script_res;
-
-	ResourceManager& _res_mgr;
-	AString _lua_file;
+	GAFF_NO_COPY(LuaLoader);
+	GAFF_NO_MOVE(LuaLoader);
 };
 
 NS_END

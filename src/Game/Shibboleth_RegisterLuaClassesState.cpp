@@ -20,48 +20,47 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#pragma once
+#include "Shibboleth_RegisterLuaClassesState.h"
+#include <Shibboleth_LuaManager.h>
+#include <Shibboleth_App.h>
 
-#include <Shibboleth_ReflectionDefinitions.h>
-#include <Shibboleth_ResourceDefines.h>
-#include <Shibboleth_ResourceWrapper.h>
-#include <Shibboleth_IComponent.h>
+#include <Shibboleth_String.h>
 
-namespace lua
-{
-	class State;
-}
+#include <LuaState.h>
+#include <LuaBridge.h>
 
 NS_SHIBBOLETH
 
-class ResourceManager;
-class App;
-
-class LuaComponent : public IComponent
+static void RegisterBaseClassesWithLua(lua::State& state)
 {
-public:
-	LuaComponent(App& app);
-	~LuaComponent(void);
 
-	bool load(const Gaff::JSON& json);
-	bool save(Gaff::JSON& json);
+}
 
-	void allComponentsLoaded(void);
+RegisterLuaClassesState::RegisterLuaClassesState(App& app):
+	_app(app)
+{
+}
 
-	static const char* getComponentName(void)
-	{
-		return "Lua Component";
-	}
+RegisterLuaClassesState::~RegisterLuaClassesState(void)
+{
+}
 
-	static void InitReflectionDefinition(void);
+bool RegisterLuaClassesState::init(unsigned int)
+{
+	return true;
+}
 
-private:
-	static ReflectionDefinition<LuaComponent> _ref_def;
+void RegisterLuaClassesState::enter(void)
+{
+}
 
-	ResourceWrapper< SingleDataWrapper<lua::State*> > _script_res;
+void RegisterLuaClassesState::update(void)
+{
+	_app.getManager<LuaManager>("Lua Manager").addRegistrant(Gaff::Bind(RegisterBaseClassesWithLua));
+}
 
-	ResourceManager& _res_mgr;
-	AString _lua_file;
-};
+void RegisterLuaClassesState::exit(void)
+{
+}
 
 NS_END

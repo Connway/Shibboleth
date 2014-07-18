@@ -21,18 +21,17 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Shibboleth_LuaComponent.h"
-#include "Shibboleth_App.h"
-#include <LuaBridge.h>
+#include <Shibboleth_ResourceManager.h>
+#include <LuaState.h>
 
 NS_SHIBBOLETH
 
 ReflectionDefinition<LuaComponent> LuaComponent::_ref_def;
 
-COMP_REF_DEF_LOAD(LuaComponent, _ref_def);
 COMP_REF_DEF_SAVE(LuaComponent, _ref_def);
 
 LuaComponent::LuaComponent(App& app):
-	_app(app)
+	_res_mgr(app.getManager<ResourceManager>("Resource Manager"))
 {
 }
 
@@ -40,14 +39,16 @@ LuaComponent::~LuaComponent(void)
 {
 }
 
+bool LuaComponent::load(const Gaff::JSON& json)
+{
+	_ref_def.read(json, this);
+	assert(_lua_file.size());
+	_script_res = _res_mgr.requestResource(_lua_file.getBuffer());
+	return true;
+}
+
 void LuaComponent::allComponentsLoaded(void)
 {
-	assert(_lua_file.size());
-
-	// get lua registration manager
-	// run register on _state
-
-	_state.doFile(_lua_file.getBuffer());
 }
 
 void LuaComponent::InitReflectionDefinition(void)

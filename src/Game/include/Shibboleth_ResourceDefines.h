@@ -61,6 +61,12 @@ typedef Gaff::RefPtr<Gleam::IBuffer> BufferPtr;
 typedef Gaff::RefPtr<Gleam::IModel> ModelPtr;
 typedef Gaff::RefPtr<Gleam::IMesh> MeshPtr;
 
+template <class T>
+struct SingleDataWrapper : public Gaff::IVirtualDestructor
+{
+	T data;
+};
+
 struct TextureData : public Gaff::IVirtualDestructor
 {
 	Array<TexturePtr> textures;
