@@ -21,16 +21,17 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Shibboleth_CreateResourceLoadersState.h"
-#include "Shibboleth_ShaderProgramLoader.h"
-#include "Shibboleth_ResourceManager.h"
-#include "Shibboleth_TextureLoader.h"
-#include "Shibboleth_ShaderLoader.h"
-#include "Shibboleth_String.h"
-#include "Shibboleth_App.h"
+#include <Shibboleth_ShaderProgramLoader.h>
+#include <Shibboleth_ResourceManager.h>
+#include <Shibboleth_TextureLoader.h>
+#include <Shibboleth_ShaderLoader.h>
+#include <Shibboleth_LuaLoader.h>
+#include <Shibboleth_String.h>
+#include <Shibboleth_App.h>
 
 NS_SHIBBOLETH
 
-CreateResourceLoadersState::CreateResourceLoadersState(App& app) :
+CreateResourceLoadersState::CreateResourceLoadersState(App& app):
 	_app(app)
 {
 }
@@ -120,6 +121,21 @@ void CreateResourceLoadersState::update(void)
 
 		_app.getGameLogFile().first.printf("Adding Shader Program Loader\n");
 		res_mgr.registerResourceLoader(shader_program_loader, ".program");
+	}
+
+	// LUA LOADER
+	{
+		LuaLoader* lua_loader = _app.getAllocator().template allocT<LuaLoader>(_app.getManager<LuaManager>("Lua Manager"));
+
+		if (!lua_loader) {
+			// log error
+			_app.getGameLogFile().first.printf("ERROR - Failed to create Lua loader.\n");
+			_app.quit();
+			return;
+		}
+
+		_app.getGameLogFile().first.printf("Adding Lua Loader\n");
+		res_mgr.registerResourceLoader(lua_loader, ".lua");
 	}
 
 	_app.getGameLogFile().first.printf("Finished Creating Resource Loaders\n\n");
