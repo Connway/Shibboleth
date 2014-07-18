@@ -20,11 +20,10 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#include "Shibboleth_LoadComponentsState.h"
-#include "Shibboleth_ComponentManager.h"
-#include "Shibboleth_String.h"
-#include "Shibboleth_App.h"
-#include <Gaff_DynamicModule.h>
+#include <Shibboleth_LoadComponentsState.h>
+#include <Shibboleth_ComponentManager.h>
+#include <Shibboleth_String.h>
+#include <Shibboleth_App.h>
 #include <Gaff_Utils.h>
 
 NS_SHIBBOLETH
