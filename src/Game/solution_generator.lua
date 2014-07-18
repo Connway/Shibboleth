@@ -111,6 +111,9 @@ group ""
 			"include/Shibboleth_ShaderLoader.h",
 			"include/Shibboleth_ShaderProgramLoader.h",
 			"include/Shibboleth_TextureLoader.h",
+			"include/Shibboleth_LuaManager.h",
+			"include/Shibboleth_LuaLoader.h",
+			"include/Shibboleth_UpdateManager.h",
 
 			"Shibboleth_ComponentManager.cpp",
 			"Shibboleth_Object.cpp",
@@ -119,7 +122,10 @@ group ""
 			"Shibboleth_ResourceManager.cpp",
 			"Shibboleth_ShaderLoader.cpp",
 			"Shibboleth_ShaderProgramLoader.cpp",
-			"Shibboleth_TextureLoader.cpp"
+			"Shibboleth_TextureLoader.cpp",
+			"Shibboleth_LuaManager.cpp",
+			"Shibboleth_LuaLoader.cpp",
+			"Shibboleth_UpdateManager.cpp",
 		}
 
 		includedirs
@@ -129,7 +135,9 @@ group ""
 			"../../dependencies/OtterUI/inc",
 			"../../dependencies/jansson",
 			"../../dependencies/Gleam/include",
-			"../../dependencies/Gaff/include"
+			"../../dependencies/Gaff/include",
+			"../../dependencies/LuaState",
+			"../../dependencies/LuaJIT-2.0.3/src",
 		}
 
 	project "ManagersModule"
@@ -151,13 +159,24 @@ group ""
 			"../../dependencies/OtterUI/inc",
 			"../../dependencies/jansson",
 			"../../dependencies/Gleam/include",
-			"../../dependencies/Gaff/include"
+			"../../dependencies/Gaff/include",
+			"../../dependencies/LuaState",
+			"../../dependencies/LuaJIT-2.0.3/src",
 		}
 
 		dependson
 		{
 			"Shared", "Gaff", "jansson",
 			"OtterUI", "Game", "Gleam"
+
+			--[[
+				Adding LuaJIT as a dependency for some reason makes VS2013
+				not link in referenced project outputs. This means users
+				will have to make sure that they run the LuaJIT project
+				before the ComponentsModule project has had a chance to
+				link.
+			--]]
+			-- "LuaJIT"
 		}
 
 		links
@@ -165,6 +184,20 @@ group ""
 			"Shared", "Gaff", "jansson",
 			"OtterUI", "Game", "Gleam"
 		}
+
+		filter { "configurations:Debug", "platforms:x86" }
+			links { "../../build/output/x86/Debug/lua51" }
+
+		filter { "configurations:Debug", "platforms:x64" }
+			links { "../../build/output/x64/Debug/lua51" }
+
+		filter { "configurations:Release", "platforms:x86" }
+			links { "../../build/output/x86/Release/lua51" }
+
+		filter { "configurations:Release", "platforms:x64" }
+			links { "../../build/output/x64/Release/lua51" }
+
+		filter {}
 
 	project "StatesModule"
 		if _ACTION then
@@ -181,8 +214,10 @@ group ""
 			"include/Shibboleth_CreateResourceLoadersState.h",
 			"include/Shibboleth_LoadComponentsState.h",
 			"include/Shibboleth_SetupOtterUIState.h",
+			"include/Shibboleth_RegisterLuaClassesState.h",
 			"Shibboleth_CreateResourceLoadersState.cpp",
 			"Shibboleth_LoadComponentsState.cpp",
+			"Shibboleth_RegisterLuaClassesState.cpp",
 			"Shibboleth_SetupOtterUIState.cpp",
 			"Shibboleth_StatesModule.cpp"
 		}
@@ -194,7 +229,10 @@ group ""
 			"../../dependencies/OtterUI/inc",
 			"../../dependencies/jansson",
 			"../../dependencies/Gleam/include",
-			"../../dependencies/Gaff/include"
+			"../../dependencies/Gaff/include",
+			"../../dependencies/LuaBridge",
+			"../../dependencies/LuaState",
+			"../../dependencies/LuaJIT-2.0.3/src"
 		}
 
 		dependson
@@ -203,6 +241,15 @@ group ""
 			"libjpeg", "libpng", "libtiff",
 			"OtterUI", "ResIL", "ResILU",
 			"zlib", "Gleam", "Game"
+
+			--[[
+				Adding LuaJIT as a dependency for some reason makes VS2013
+				not link in referenced project outputs. This means users
+				will have to make sure that they run the LuaJIT project
+				before the ComponentsModule project has had a chance to
+				link.
+			--]]
+			-- "LuaJIT"
 		}
 
 		links
@@ -212,6 +259,20 @@ group ""
 			"OtterUI", "ResIL", "ResILU",
 			"zlib", "Gleam", "Game"
 		}
+
+		filter { "configurations:Debug", "platforms:x86" }
+			links { "../../build/output/x86/Debug/lua51" }
+
+		filter { "configurations:Debug", "platforms:x64" }
+			links { "../../build/output/x64/Debug/lua51" }
+
+		filter { "configurations:Release", "platforms:x86" }
+			links { "../../build/output/x86/Release/lua51" }
+
+		filter { "configurations:Release", "platforms:x64" }
+			links { "../../build/output/x64/Release/lua51" }
+
+		filter {}
 
 	project "ComponentsModule"
 		if _ACTION then
@@ -238,9 +299,8 @@ group ""
 			"../../dependencies/jansson",
 			"../../dependencies/Gleam/include",
 			"../../dependencies/Gaff/include",
-			"../../dependencies/LuaBridge",
 			"../../dependencies/LuaState",
-			"../../dependencies/LuaJIT-2.0.3/src",
+			"../../dependencies/LuaJIT-2.0.3/src"
 		}
 
 		dependson
@@ -265,10 +325,23 @@ group ""
 			"Shared", "Gaff", "jansson",
 			"libjpeg", "libpng", "libtiff",
 			"OtterUI", "ResIL", "ResILU",
-			"zlib", "Gleam", "Game",
-			"../../build/output/x86/Debug/lua51"
+			"zlib", "Gleam", "Game"
 		}
+
+		filter { "configurations:Debug", "platforms:x86" }
+			links { "../../build/output/x86/Debug/lua51" }
+
+		filter { "configurations:Debug", "platforms:x64" }
+			links { "../../build/output/x64/Debug/lua51" }
+
+		filter { "configurations:Release", "platforms:x86" }
+			links { "../../build/output/x86/Release/lua51" }
+
+		filter { "configurations:Release", "platforms:x64" }
+			links { "../../build/output/x64/Release/lua51" }
 
 		-- Don't know if this works, but trying it out
 		filter { "action:gmake" }
 			dependson { "LuaJIT" }
+
+		filter {}

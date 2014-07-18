@@ -60,6 +60,9 @@ public:
 
 	virtual void allComponentsLoaded(void) {}
 
+	virtual bool isUpdateable(void) const { return false; }
+	virtual void update(void) {}
+
 	const char* getName(void) const
 	{
 		return _name;

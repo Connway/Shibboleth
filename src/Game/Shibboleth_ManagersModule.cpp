@@ -24,15 +24,23 @@ THE SOFTWARE.
 #include <Shibboleth_ResourceManager.h>
 #include <Shibboleth_OtterUIManager.h>
 #include <Shibboleth_RenderManager.h>
+#include <Shibboleth_UpdateManager.h>
+#include <Shibboleth_LuaManager.h>
 #include <Gaff_JSON.h>
 
 template <class Manager>
-Gaff::INamedObject* CreateManagerT(Shibboleth::App& app)
+Shibboleth::IManager* CreateManagerT(Shibboleth::App& app)
 {
 	return app.getAllocator().template allocT<Manager>(app);
 }
 
-Gaff::INamedObject* CreateOtterUIManager(Shibboleth::App& app)
+template <class Manager>
+Shibboleth::IManager* CreateManagerTNoApp(Shibboleth::App& app)
+{
+	return app.getAllocator().template allocT<Manager>();
+}
+
+Shibboleth::IManager* CreateOtterUIManager(Shibboleth::App& app)
 {
 	Shibboleth::OtterUIManager* otter_manager = app.getAllocator().template allocT<Shibboleth::OtterUIManager>();
 
@@ -46,7 +54,7 @@ Gaff::INamedObject* CreateOtterUIManager(Shibboleth::App& app)
 	return otter_manager;
 }
 
-Gaff::INamedObject* CreateRenderManager(Shibboleth::App& app)
+Shibboleth::IManager* CreateRenderManager(Shibboleth::App& app)
 {
 	Shibboleth::RenderManager* render_manager = app.getAllocator().template allocT<Shibboleth::RenderManager>(app);
 
@@ -66,16 +74,20 @@ enum Managers
 	RESOURCE_MANAGER,
 	OTTERUI_MANAGER,
 	RENDER_MANAGER,
+	UPDATE_MANAGER,
+	LUA_MANAGER,
 	NUM_MANAGERS
 };
 
-typedef Gaff::INamedObject* (*CreateMgrFunc)(Shibboleth::App&);
+typedef Shibboleth::IManager* (*CreateMgrFunc)(Shibboleth::App&);
 
 static CreateMgrFunc create_funcs[] = {
 	&CreateManagerT<Shibboleth::ComponentManager>,
 	&CreateManagerT<Shibboleth::ResourceManager>,
 	&CreateOtterUIManager,
-	&CreateRenderManager
+	&CreateRenderManager,
+	&CreateManagerT<Shibboleth::UpdateManager>,
+	&CreateManagerT<Shibboleth::LuaManager>,
 };
 
 static Shibboleth::App* g_app = nullptr;
@@ -94,13 +106,13 @@ DYNAMICEXPORT unsigned int GetNumManagers(void)
 	return NUM_MANAGERS;
 }
 
-DYNAMICEXPORT Gaff::INamedObject* CreateManager(unsigned int id)
+DYNAMICEXPORT Shibboleth::IManager* CreateManager(unsigned int id)
 {
 	assert(id < NUM_MANAGERS);
 	return create_funcs[id](*g_app);
 }
 
-DYNAMICEXPORT void DestroyManager(Gaff::INamedObject* manager, unsigned int)
+DYNAMICEXPORT void DestroyManager(Shibboleth::IManager* manager, unsigned int)
 {
 	Shibboleth::GetAllocator().freeT(manager);
 }

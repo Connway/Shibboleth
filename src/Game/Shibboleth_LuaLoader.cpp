@@ -20,48 +20,35 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#pragma once
-
-#include <Shibboleth_ReflectionDefinitions.h>
-#include <Shibboleth_ResourceDefines.h>
-#include <Shibboleth_ResourceWrapper.h>
-#include <Shibboleth_IComponent.h>
-
-namespace lua
-{
-	class State;
-}
+#include "Shibboleth_LuaLoader.h"
+#include "Shibboleth_ResourceDefines.h"
+#include "Shibboleth_LuaManager.h"
+#include <LuaState.h>
 
 NS_SHIBBOLETH
 
-class ResourceManager;
-class App;
-
-class LuaComponent : public IComponent
+LuaLoader::LuaLoader(LuaManager& lua_manager):
+	_lua_manager(lua_manager)
 {
-public:
-	LuaComponent(App& app);
-	~LuaComponent(void);
+}
 
-	bool load(const Gaff::JSON& json);
-	bool save(Gaff::JSON& json);
+LuaLoader::~LuaLoader(void)
+{
+}
 
-	void allComponentsLoaded(void);
+Gaff::IVirtualDestructor* LuaLoader::load(const char* file_name, unsigned long long)
+{
+	SingleDataWrapper<lua::State*>* lua_data = GetAllocator().template allocT< SingleDataWrapper<lua::State*> >();
 
-	static const char* getComponentName(void)
-	{
-		return "Lua Component";
+	if (lua_data) {
+		lua_data->data = _lua_manager.createNewState();
+
+		if (lua_data->data) {
+			lua_data->data->doFile(file_name);
+		}
 	}
 
-	static void InitReflectionDefinition(void);
-
-private:
-	static ReflectionDefinition<LuaComponent> _ref_def;
-
-	ResourceWrapper< SingleDataWrapper<lua::State*> > _script_res;
-
-	ResourceManager& _res_mgr;
-	AString _lua_file;
-};
+	return lua_data;
+}
 
 NS_END

@@ -22,8 +22,8 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Shibboleth_HashMap.h"
-#include <Gaff_INamedObject.h>
+#include <Shibboleth_IManager.h>
+#include <Shibboleth_HashMap.h>
 
 #define OTTERUI_DEFAULT_MEMORY_BUFFER_SIZE 2 * 1024 * 1024
 
@@ -38,7 +38,7 @@ namespace Otter {
 
 NS_SHIBBOLETH
 
-class OtterUIManager : public Gaff::INamedObject
+class OtterUIManager : public IManager
 {
 public:
 	OtterUIManager(void);

@@ -31,9 +31,10 @@ THE SOFTWARE.
 #include "Shibboleth_IState.h"
 #include "Shibboleth_Logger.h"
 #include "Shibboleth_Array.h"
-#include <Gaff_INamedObject.h>
 
 NS_SHIBBOLETH
+
+class IManager;
 
 class App
 {
@@ -103,15 +104,15 @@ public:
 private:
 	struct ManagerEntry
 	{
-		typedef Gaff::INamedObject* (*CreateManagerFunc)(unsigned int);
-		typedef void (*DestroyManagerFunc)(Gaff::INamedObject*, unsigned int);
+		typedef IManager* (*CreateManagerFunc)(unsigned int);
+		typedef void(*DestroyManagerFunc)(IManager*, unsigned int);
 		typedef unsigned int (*GetNumManagersFunc)(void);
-		typedef bool (*InitManagerDLLFunc)(App&);
+		typedef bool (*InitManagerModuleFunc)(App&);
 
 		DynamicLoader::ModulePtr module;
 		CreateManagerFunc create_func;
 		DestroyManagerFunc destroy_func;
-		Gaff::INamedObject* manager;
+		IManager* manager;
 		unsigned int manager_id;
 	};
 

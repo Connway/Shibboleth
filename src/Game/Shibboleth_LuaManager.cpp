@@ -20,48 +20,42 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#pragma once
-
-#include <Shibboleth_ReflectionDefinitions.h>
-#include <Shibboleth_ResourceDefines.h>
-#include <Shibboleth_ResourceWrapper.h>
-#include <Shibboleth_IComponent.h>
-
-namespace lua
-{
-	class State;
-}
+#include "Shibboleth_LuaManager.h"
+#include "Shibboleth_App.h"
+#include <LuaState.h>
 
 NS_SHIBBOLETH
 
-class ResourceManager;
-class App;
-
-class LuaComponent : public IComponent
+LuaManager::LuaManager(App& app):
+	_app(app)
 {
-public:
-	LuaComponent(App& app);
-	~LuaComponent(void);
+}
 
-	bool load(const Gaff::JSON& json);
-	bool save(Gaff::JSON& json);
+LuaManager::~LuaManager(void)
+{
+}
 
-	void allComponentsLoaded(void);
+const char* LuaManager::getName(void) const
+{
+	return "Lua Manager";
+}
 
-	static const char* getComponentName(void)
-	{
-		return "Lua Component";
+void LuaManager::addRegistrant(const Gaff::FunctionBinder<void, lua::State&>& registrant)
+{
+	_registrants.push(registrant);
+}
+
+lua::State* LuaManager::createNewState(void)
+{
+	lua::State* state = _app.getAllocator().template allocT<lua::State>();
+
+	if (state) {
+		for (auto it = _registrants.begin(); it != _registrants.end(); ++it) {
+			(*it)(*state);
+		}
 	}
 
-	static void InitReflectionDefinition(void);
-
-private:
-	static ReflectionDefinition<LuaComponent> _ref_def;
-
-	ResourceWrapper< SingleDataWrapper<lua::State*> > _script_res;
-
-	ResourceManager& _res_mgr;
-	AString _lua_file;
-};
+	return state;
+}
 
 NS_END

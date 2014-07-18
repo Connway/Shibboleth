@@ -38,7 +38,7 @@ public:
 		typedef unsigned int (*GetNumStatesFunc)(void);
 		typedef IState* (*CreateStateFunc)(unsigned int);
 		typedef void (*DestroyStateFunc)(IState*, unsigned int);
-		typedef bool (*InitStateDLLFunc)(App&);
+		typedef bool (*InitStateModuleFunc)(App&);
 
 		AString name;
 
