@@ -26,7 +26,7 @@ THE SOFTWARE.
 NS_SHIBBOLETH
 
 UpdateManager::UpdateManager(App& app):
-	_app(app)
+	_app(app), _next_id(0)
 {
 }
 
@@ -41,20 +41,24 @@ const char* UpdateManager::getName(void) const
 
 UpdateManager::UpdateID UpdateManager::registerForUpdate(const UpdateCallback& callback, unsigned int row)
 {
-	assert(row < _table.size());
-	UpdateRow& row_ref = _table[row];
+	// Do we want to scrub row value down if it's greater than _table.size()?
+	//if (row >= _table.size()) {
+	//	row = _table.size();
+	//}
 
-	UpdateID id = { row, row_ref.next_id };
-	++row_ref.next_id;
+	Gaff::ScopedLock<Gaff::SpinLock> scoped_lock(_reg_queue_lock);
 
-	row_ref.callbacks.push(RowEntry(id.id, callback));
+	UpdateID id = { row, _next_id };
+	++_next_id;
+
+	_register_queue.push(Gaff::Pair<unsigned int, RowEntry>(row, RowEntry(id.id, callback)));
 
 	return id;
 }
 
 void UpdateManager::unregisterForUpdate(const UpdateID& id)
 {
-	assert(id.row < _table.size() && id.id < _table[id.row].next_id);
+	assert(id.row < _table.size() && id.id < _next_id);
 	Gaff::ScopedLock<Gaff::SpinLock> scoped_lock(_unreg_queue_lock);
 	_unregister_queue.push(id);
 }
@@ -64,16 +68,27 @@ void UpdateManager::update(double dt)
 	// Handle unregistration
 	{
 		Gaff::ScopedLock<Gaff::SpinLock> scoped_lock(_unreg_queue_lock);
-		for (auto it_unreq = _unregister_queue.begin(); it_unreq != _unregister_queue.end(); ++it_unreq) {
-			unregister(*it_unreq);
+		for (auto it_unreg = _unregister_queue.begin(); it_unreg != _unregister_queue.end(); ++it_unreg) {
+			unregisterHelper(*it_unreg);
 		}
 
 		// Might want to add code that will resize if the capacity is too large
 		_unregister_queue.clearNoFree();
 	}
 
+	// Handle registration
+	{
+		Gaff::ScopedLock<Gaff::SpinLock> scoped_lock(_reg_queue_lock);
+		for (auto it_reg = _register_queue.begin(); it_reg != _register_queue.end(); ++it_reg) {
+			registerHelper(*it_reg);
+		}
+
+		// Might want to add code that will resize if the capacity is too large
+		_register_queue.clearNoFree();
+	}
+
 	for (auto it_row = _table.begin(); it_row != _table.end(); ++it_row) {
-		for (auto it_entry = it_row->callbacks.begin(); it_entry != it_row->callbacks.end(); ++it_entry) {
+		for (auto it_entry = it_row->begin(); it_entry != it_row->end(); ++it_entry) {
 			// add update callback to job queue
 			Gaff::TaskPtr<ProxyAllocator> task(_app.getAllocator().template allocT<UpdateTask>(*it_entry, dt));
 			_tasks_cache.push(task);
@@ -90,18 +105,28 @@ void UpdateManager::update(double dt)
 	}
 }
 
-void UpdateManager::unregister(const UpdateID& id)
+void UpdateManager::registerHelper(const RegisterEntry& entry)
 {
-	assert(id.row < _table.size() && id.id < _table[id.row].next_id);
+	if (_table.size() < entry.first) {
+		_table.resize(entry.first);
+	}
+
+	UpdateRow& row = _table[entry.first];
+	row.push(entry.second);
+}
+
+void UpdateManager::unregisterHelper(const UpdateID& id)
+{
 	UpdateRow& row = _table[id.row];
 
-	auto it = row.callbacks.binarySearch(id.id, [](const RowEntry& lhs, unsigned int rhs) -> bool
+	// Rows should be sorted by id, so it should be safe to use a binary search
+	auto it = row.binarySearch(id.id, [](const RowEntry& lhs, unsigned int rhs) -> bool
 	{
 		return lhs.first < rhs;
 	});
 
-	if (it != row.callbacks.end() && it->first == id.id) {
-		row.callbacks.erase(it);
+	if (it != row.end() && it->first == id.id) {
+		row.erase(it);
 	}
 }
 

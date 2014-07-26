@@ -55,12 +55,8 @@ public:
 
 private:
 	typedef Gaff::Pair<unsigned int, UpdateCallback> RowEntry;
-
-	struct UpdateRow
-	{
-		Array<RowEntry> callbacks;
-		unsigned int next_id;
-	};
+	typedef Gaff::Pair<unsigned int, RowEntry> RegisterEntry;
+	typedef Array<RowEntry> UpdateRow;
 
 	class UpdateTask : public ITask
 	{
@@ -82,12 +78,18 @@ private:
 
 	Array< Gaff::TaskPtr<ProxyAllocator> > _tasks_cache;
 
+	Array<RegisterEntry> _register_queue;
 	Array<UpdateID> _unregister_queue;
+
 	Array<UpdateRow> _table;
 	App& _app;
 	Gaff::SpinLock _unreg_queue_lock;
+	Gaff::SpinLock _reg_queue_lock;
 
-	void unregister(const UpdateID& id);
+	unsigned int _next_id;
+
+	void registerHelper(const RegisterEntry& entry);
+	void unregisterHelper(const UpdateID& id);
 
 	GAFF_NO_COPY(UpdateManager);
 	GAFF_NO_MOVE(UpdateManager);
