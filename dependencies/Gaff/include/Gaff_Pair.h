@@ -29,6 +29,11 @@ NS_GAFF
 template <class T1, class T2>
 struct Pair
 {
+	Pair(const T1& f, const T2& s):
+		first(f), second(s)
+	{
+	}
+
 	Pair(const Pair& pair):
 		first(pair.first), second(pair.second)
 	{

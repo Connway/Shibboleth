@@ -24,7 +24,9 @@ THE SOFTWARE.
 
 #include <Shibboleth_IManager.h>
 #include <Shibboleth_Array.h>
+#include <Shibboleth_ITask.h>
 #include <Gaff_Function.h>
+#include <Gaff_SpinLock.h>
 
 NS_SHIBBOLETH
 
@@ -33,20 +35,59 @@ class App;
 class UpdateManager : public IManager
 {
 public:
+	typedef const Gaff::FunctionBinder<void, double> UpdateCallback;
+
+	struct UpdateID
+	{
+		unsigned int row;
+		unsigned int id;
+	};
+
 	UpdateManager(App& app);
 	~UpdateManager(void);
 
 	const char* getName(void) const;
 
-	//void addManagerNode();
-	//void clearManagerNodes();
+	UpdateID registerForUpdate(const UpdateCallback& callback, unsigned int row);
+	void unregisterForUpdate(const UpdateID& id);
 
-	//void addGraph();
-	//void clearNodes(void);
+	void update(double dt);
 
 private:
-	App& _app;
+	typedef Gaff::Pair<unsigned int, UpdateCallback> RowEntry;
 
+	struct UpdateRow
+	{
+		Array<RowEntry> callbacks;
+		unsigned int next_id;
+	};
+
+	class UpdateTask : public ITask
+	{
+	public:
+		UpdateTask(RowEntry& entry, double dt):
+			_entry(entry), _dt(dt)
+		{
+		}
+
+		void doTask(void)
+		{
+			_entry.second(_dt);
+		}
+
+	private:
+		RowEntry& _entry;
+		double _dt;
+	};
+
+	Array< Gaff::TaskPtr<ProxyAllocator> > _tasks_cache;
+
+	Array<UpdateID> _unregister_queue;
+	Array<UpdateRow> _table;
+	App& _app;
+	Gaff::SpinLock _unreg_queue_lock;
+
+	void unregister(const UpdateID& id);
 
 	GAFF_NO_COPY(UpdateManager);
 	GAFF_NO_MOVE(UpdateManager);
