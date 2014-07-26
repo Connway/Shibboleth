@@ -350,6 +350,11 @@ void App::run(void)
 	}
 }
 
+ThreadPool& App::getThreadPool(void)
+{
+	return _thread_pool;
+}
+
 Allocator& App::getAllocator(void)
 {
 	return _allocator;
@@ -360,9 +365,9 @@ LogManager& App::getLogManager(void)
 	return _logger;
 }
 
-void App::addTask(Gaff::ITask<ProxyAllocator>* task)
+void App::addTask(Gaff::TaskPtr<ProxyAllocator>& task)
 {
-	_thread_pool.addTask(Gaff::TaskPtr<ProxyAllocator>(task));
+	_thread_pool.addTask(task);
 }
 
 MessageBroadcaster& App::getBroadcaster(void)

@@ -37,10 +37,10 @@ public:
 	{
 	public:
 		// Didn't want to make this public, but no other way to get my allocators
-		// working without giving "cannot access private method" errors.
+		// working without getting "cannot access private method" errors.
 		// We can trust that no one will do stupid stuff by making their
 		// own WeakReference objects. :)
-		WeakReference(ObjType* object, const Allocator& allocator) :
+		WeakReference(ObjType* object, const Allocator& allocator):
 			RefCounted<Allocator>(allocator), _object(object)
 		{
 		}

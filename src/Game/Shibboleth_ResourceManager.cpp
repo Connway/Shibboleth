@@ -185,7 +185,7 @@ ResourcePtr ResourceManager::requestResource(const char* filename, unsigned long
 		ResourceLoaderPtr& res_loader = _resource_loaders[extension];
 
 		ResourceLoadingTask* load_task = GetAllocator().template allocT<ResourceLoadingTask>(res_loader, res_ptr);
-		_app.addTask(load_task);
+		_app.addTask(Gaff::TaskPtr<ProxyAllocator>(load_task));
 
 		return res_ptr;
 

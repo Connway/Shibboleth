@@ -87,10 +87,11 @@ public:
 	bool init(void);
 	void run(void);
 
+	INLINE ThreadPool& getThreadPool(void);
 	INLINE Allocator& getAllocator(void);
 	INLINE LogManager& getLogManager(void);
 
-	INLINE void addTask(Gaff::ITask<ProxyAllocator>* task);
+	INLINE void addTask(Gaff::TaskPtr<ProxyAllocator>& task);
 	INLINE MessageBroadcaster& getBroadcaster(void);
 	INLINE StateMachine& getStateMachine(void);
 
