@@ -81,6 +81,16 @@ public:
 		return *(T*)_manager_map[name].manager;
 	}
 
+	template <class Callback>
+	void forEachManager(Callback&& callback)
+	{
+		for (auto it = _manager_map.begin(); it != _manager_map.end(); ++it) {
+			if (callback(*it->manager)) {
+				break;
+			}
+		}
+	}
+
 	App(void);
 	~App(void);
 

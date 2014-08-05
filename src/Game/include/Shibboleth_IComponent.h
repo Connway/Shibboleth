@@ -49,19 +49,18 @@ NS_SHIBBOLETH
 
 #define MAX_COMP_NAME_LENGTH 64
 
+class Object;
+
 class IComponent : public Gaff::IVirtualDestructor
 {
 public:
-	IComponent(void) {}
+	IComponent(void): _owner(nullptr) {}
 	virtual ~IComponent(void) {}
 
 	virtual bool load(const Gaff::JSON&) { return true; }
 	virtual bool save(Gaff::JSON&) { return true; }
 
 	virtual void allComponentsLoaded(void) {}
-
-	virtual bool isUpdateable(void) const { return false; }
-	virtual void update(void) {}
 
 	const char* getName(void) const
 	{
@@ -74,8 +73,24 @@ public:
 		strncpy(_name, name, MAX_COMP_NAME_LENGTH);
 	}
 
+	const Object* getOwner(void) const
+	{
+		return _owner;
+	}
+
+	Object* getOwner(void)
+	{
+		return _owner;
+	}
+
+	void setOwner(Object* owner)
+	{
+		_owner = owner;
+	}
+
 private:
 	char _name[MAX_COMP_NAME_LENGTH];
+	Object* _owner;
 
 	GAFF_NO_COPY(IComponent);
 	GAFF_NO_MOVE(IComponent);

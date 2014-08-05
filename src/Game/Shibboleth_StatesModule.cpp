@@ -45,7 +45,7 @@ public:
 
 	void update(void)
 	{
-		Shibboleth::Object obj(_app);
+		Shibboleth::Object obj(_app, 0);
 		obj.init("./Objects/test.object");
 
 		_app.quit();

@@ -27,8 +27,8 @@ THE SOFTWARE.
 
 NS_SHIBBOLETH
 
-Object::Object(App& app):
-	_app(app)
+Object::Object(App& app, unsigned int id):
+	_app(app), _id(id)
 {
 }
 
@@ -88,6 +88,27 @@ const char* Object::getName(void) const
 	return _name;
 }
 
+unsigned int Object::getID(void) const
+{
+	return _id;
+}
+
+void Object::registerForPrePhysicsUpdate(const UpdateCallback& callback)
+{
+}
+
+void Object::registerForPostPhysicsUpdate(const UpdateCallback& callback)
+{
+}
+
+void Object::prePhysicsUpdate(double dt)
+{
+}
+
+void Object::postPhysicsUpdate(double dt)
+{
+}
+
 bool Object::createComponents(const Gaff::JSON& json)
 {
 	ComponentManager& component_manager = _app.getManager<ComponentManager>("Component Manager");
@@ -119,6 +140,7 @@ bool Object::createComponents(const Gaff::JSON& json)
 			return true;
 		}
 
+		component->setOwner(this);
 		component->setName(key);
 
 		if (!component->load(value)) {

@@ -157,6 +157,7 @@ bool App::loadManagers(void)
 					if (entry.manager) {
 						_manager_map[entry.manager->getName()] = entry;
 						_log_file_pair->first.printf("Loaded manager '%s'\n", entry.manager->getName());
+
 					} else {
 						_log_file_pair->first.printf("ERROR - Failed to create manager from dynamic module '%s'\n", rel_path.getBuffer());
 						error = true;

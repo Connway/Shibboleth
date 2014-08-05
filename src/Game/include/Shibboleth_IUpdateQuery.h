@@ -22,56 +22,21 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Shibboleth_IComponent.h"
-#include "Shibboleth_Array.h"
-#include <Gaff_INamedObject.h>
-#include <Gaff_WeakObject.h>
+#include <Shibboleth_String.h>
+#include <Shibboleth_Array.h>
 #include <Gaff_Function.h>
-#include <Gaff_SmartPtr.h>
-
-#define MAX_OBJ_NAME_LENGTH 64
+#include <Gaff_Pair.h>
 
 NS_SHIBBOLETH
 
-class App;
-
-class Object : public Gaff::INamedObject, public Gaff::WeakObject<ProxyAllocator>
+class IUpdateQuery
 {
 public:
-	typedef Gaff::FunctionBinder<void, double> UpdateCallback;
+	typedef Gaff::Pair< AString, Gaff::FunctionBinder<void, double> > UpdateEntry;
 
-	Object(App& app, unsigned int id);
-	~Object(void);
+	virtual ~IUpdateQuery(void) {}
 
-	bool init(const Gaff::JSON& json);
-	INLINE bool init(const char* file_name);
-	void destroy(void);
-
-	const char* getName(void) const;
-
-	unsigned int getID(void) const;
-	void setID(unsigned int);
-
-	void registerForPrePhysicsUpdate(const UpdateCallback& callback);
-	void registerForPostPhysicsUpdate(const UpdateCallback& callback);
-
-	void prePhysicsUpdate(double dt);
-	void postPhysicsUpdate(double dt);
-
-private:
-	char _name[MAX_OBJ_NAME_LENGTH];
-
-	typedef Gaff::SmartPtr<IComponent, ProxyAllocator> ComponentPtr;
-
-	Array<ComponentPtr> _components;
-	App& _app;
-
-	unsigned int _id;
-
-	bool createComponents(const Gaff::JSON& json);
-
-	GAFF_NO_COPY(Object);
-	GAFF_NO_MOVE(Object);
+	virtual void requestUpdateEntries(Array<UpdateEntry>& entries) = 0;
 };
 
 NS_END
