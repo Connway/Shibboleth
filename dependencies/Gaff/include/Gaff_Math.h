@@ -72,7 +72,17 @@ unsigned long long FNV1Hash64(const char* key, unsigned int len);
 unsigned int FNV1aHash32(const char* key, unsigned int len);
 unsigned int FNV1Hash32(const char* key, unsigned int len);
 
-INLINE float BinomialCoefficient(float n, float k);
+float BinomialCoefficient(float n, float k);
 float BernsteinPolynomial(float t, float n, float k);
+
+//static constexpr unsigned long long FNVBasis64 = 14695981039346656037ULL;
+//static constexpr unsigned long long FNVPrime64 = 1099511628211ULL;
+//static constexpr unsigned int FNVBasis32 = 2166136261U;
+//static constexpr unsigned int FNVPrime32 = 16777619U;
+
+//constexpr unsigned long long FNV1aHash64Const(const char* key, unsigned long long value = FNVBasis64)
+//{
+//	return (*key) ? FNV1aHash64Const(key + 1, (value ^ (unsigned long long)*key) * FNVPrime64) : value;
+//}
 
 NS_END

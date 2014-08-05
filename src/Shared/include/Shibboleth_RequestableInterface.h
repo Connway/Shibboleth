@@ -22,56 +22,26 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Shibboleth_IComponent.h"
-#include "Shibboleth_Array.h"
-#include <Gaff_INamedObject.h>
-#include <Gaff_WeakObject.h>
-#include <Gaff_Function.h>
-#include <Gaff_SmartPtr.h>
-
-#define MAX_OBJ_NAME_LENGTH 64
+#include "Shibboleth_Defines.h"
 
 NS_SHIBBOLETH
 
-class App;
-
-class Object : public Gaff::INamedObject, public Gaff::WeakObject<ProxyAllocator>
+class RequestableInterface
 {
 public:
-	typedef Gaff::FunctionBinder<void, double> UpdateCallback;
+	virtual ~RequestableInterface(void) {}
 
-	Object(App& app, unsigned int id);
-	~Object(void);
+	template <class Interface>
+	const Interface* requestInterface(void) const
+	{
+		return dynamic_cast<const Interface*>(this);
+	}
 
-	bool init(const Gaff::JSON& json);
-	INLINE bool init(const char* file_name);
-	void destroy(void);
-
-	const char* getName(void) const;
-
-	unsigned int getID(void) const;
-	void setID(unsigned int);
-
-	void registerForPrePhysicsUpdate(const UpdateCallback& callback);
-	void registerForPostPhysicsUpdate(const UpdateCallback& callback);
-
-	void prePhysicsUpdate(double dt);
-	void postPhysicsUpdate(double dt);
-
-private:
-	char _name[MAX_OBJ_NAME_LENGTH];
-
-	typedef Gaff::SmartPtr<IComponent, ProxyAllocator> ComponentPtr;
-
-	Array<ComponentPtr> _components;
-	App& _app;
-
-	unsigned int _id;
-
-	bool createComponents(const Gaff::JSON& json);
-
-	GAFF_NO_COPY(Object);
-	GAFF_NO_MOVE(Object);
+	template <class Interface>
+	Interface* requestInterface(void)
+	{
+		return dynamic_cast<Interface*>(this);
+	}
 };
 
 NS_END

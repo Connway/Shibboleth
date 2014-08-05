@@ -15,6 +15,9 @@
     <ClInclude Include="..\..\..\src\Game\include\Shibboleth_IResourceLoader.h">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\src\Game\include\Shibboleth_IUpdateQuery.h">
+      <Filter>include</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\src\Game\include\Shibboleth_LuaLoader.h">
       <Filter>include</Filter>
     </ClInclude>
@@ -22,6 +25,9 @@
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\src\Game\include\Shibboleth_Object.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\Game\include\Shibboleth_ObjectManager.h">
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\src\Game\include\Shibboleth_OtterUIFileSystem.h">
@@ -63,6 +69,7 @@
     <ClCompile Include="..\..\..\src\Game\Shibboleth_LuaLoader.cpp" />
     <ClCompile Include="..\..\..\src\Game\Shibboleth_LuaManager.cpp" />
     <ClCompile Include="..\..\..\src\Game\Shibboleth_Object.cpp" />
+    <ClCompile Include="..\..\..\src\Game\Shibboleth_ObjectManager.cpp" />
     <ClCompile Include="..\..\..\src\Game\Shibboleth_OtterUIFileSystem.cpp" />
     <ClCompile Include="..\..\..\src\Game\Shibboleth_OtterUIManager.cpp" />
     <ClCompile Include="..\..\..\src\Game\Shibboleth_OtterUIRenderer.cpp" />

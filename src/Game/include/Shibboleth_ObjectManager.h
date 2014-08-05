@@ -22,56 +22,48 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Shibboleth_IComponent.h"
-#include "Shibboleth_Array.h"
-#include <Gaff_INamedObject.h>
-#include <Gaff_WeakObject.h>
-#include <Gaff_Function.h>
-#include <Gaff_SmartPtr.h>
-
-#define MAX_OBJ_NAME_LENGTH 64
+#include "Shibboleth_IUpdateQuery.h"
+#include "Shibboleth_IManager.h"
+#include "Shibboleth_Object.h"
+#include <Shibboleth_Array.h>
+#include <Shibboleth_Map.h>
+#include <Gaff_SpinLock.h>
 
 NS_SHIBBOLETH
 
-class App;
-
-class Object : public Gaff::INamedObject, public Gaff::WeakObject<ProxyAllocator>
+class ObjectManager : public IManager, public IUpdateQuery
 {
 public:
-	typedef Gaff::FunctionBinder<void, double> UpdateCallback;
+	template <class Callback>
+	void forEachObject(Callback&& callback) const
+	{
+		for (auto it = _objects.begin(); it != _objects.end(); ++it) {
+			if (callback(*it)) {
+				break;
+			}
+		}
+	}
 
-	Object(App& app, unsigned int id);
-	~Object(void);
+	ObjectManager(App& app);
+	~ObjectManager(void);
 
-	bool init(const Gaff::JSON& json);
-	INLINE bool init(const char* file_name);
-	void destroy(void);
+	void requestUpdateEntries(Array<UpdateEntry>& entries);
 
-	const char* getName(void) const;
+private:
+	Array<unsigned int> _remove_queue;
+	Array<Object*> _add_queue;
+	Array<Object*> _objects;
 
-	unsigned int getID(void) const;
-	void setID(unsigned int);
+	App& _app;
 
-	void registerForPrePhysicsUpdate(const UpdateCallback& callback);
-	void registerForPostPhysicsUpdate(const UpdateCallback& callback);
+	Gaff::SpinLock _remove_lock;
+	Gaff::SpinLock _add_lock;
+
+	volatile unsigned int _next_id;
 
 	void prePhysicsUpdate(double dt);
 	void postPhysicsUpdate(double dt);
-
-private:
-	char _name[MAX_OBJ_NAME_LENGTH];
-
-	typedef Gaff::SmartPtr<IComponent, ProxyAllocator> ComponentPtr;
-
-	Array<ComponentPtr> _components;
-	App& _app;
-
-	unsigned int _id;
-
-	bool createComponents(const Gaff::JSON& json);
-
-	GAFF_NO_COPY(Object);
-	GAFF_NO_MOVE(Object);
+	//void update(double dt);
 };
 
 NS_END

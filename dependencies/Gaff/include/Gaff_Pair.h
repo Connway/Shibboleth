@@ -69,11 +69,7 @@ struct Pair
 template <class T1, class T2>
 Pair<T1, T2> MakePair(const T1& first, const T2& second)
 {
-	Pair<T1, T2> pair;
-	pair.first = first;
-	pair.second = second;
-
-	return pair;
+	return Pair<T1, T2>(first, second);
 }
 
 NS_END

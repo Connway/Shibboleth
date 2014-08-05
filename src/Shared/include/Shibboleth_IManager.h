@@ -22,12 +22,16 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Shibboleth_Defines.h"
+#include "Shibboleth_RequestableInterface.h"
+#include "Shibboleth_String.h"
+#include "Shibboleth_Array.h"
 #include <Gaff_INamedObject.h>
+#include <Gaff_Function.h>
+#include <Gaff_Pair.h>
 
 NS_SHIBBOLETH
 
-class IManager : public Gaff::INamedObject
+class IManager : public Gaff::INamedObject, public RequestableInterface
 {
 public:
 	IManager(void) {}

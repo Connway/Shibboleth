@@ -185,9 +185,11 @@
     <ClInclude Include="..\..\..\src\Game\include\Shibboleth_ComponentManager.h" />
     <ClInclude Include="..\..\..\src\Game\include\Shibboleth_IComponent.h" />
     <ClInclude Include="..\..\..\src\Game\include\Shibboleth_IResourceLoader.h" />
+    <ClInclude Include="..\..\..\src\Game\include\Shibboleth_IUpdateQuery.h" />
     <ClInclude Include="..\..\..\src\Game\include\Shibboleth_LuaLoader.h" />
     <ClInclude Include="..\..\..\src\Game\include\Shibboleth_LuaManager.h" />
     <ClInclude Include="..\..\..\src\Game\include\Shibboleth_Object.h" />
+    <ClInclude Include="..\..\..\src\Game\include\Shibboleth_ObjectManager.h" />
     <ClInclude Include="..\..\..\src\Game\include\Shibboleth_OtterUIFileSystem.h" />
     <ClInclude Include="..\..\..\src\Game\include\Shibboleth_OtterUIManager.h" />
     <ClInclude Include="..\..\..\src\Game\include\Shibboleth_OtterUIRenderer.h" />
@@ -205,6 +207,7 @@
     <ClCompile Include="..\..\..\src\Game\Shibboleth_LuaLoader.cpp" />
     <ClCompile Include="..\..\..\src\Game\Shibboleth_LuaManager.cpp" />
     <ClCompile Include="..\..\..\src\Game\Shibboleth_Object.cpp" />
+    <ClCompile Include="..\..\..\src\Game\Shibboleth_ObjectManager.cpp" />
     <ClCompile Include="..\..\..\src\Game\Shibboleth_OtterUIFileSystem.cpp" />
     <ClCompile Include="..\..\..\src\Game\Shibboleth_OtterUIManager.cpp" />
     <ClCompile Include="..\..\..\src\Game\Shibboleth_OtterUIRenderer.cpp" />

@@ -1,3 +1,29 @@
+local manager_files =
+{
+	"Shibboleth_ManagersModule.cpp"
+};
+
+local state_files =
+{
+	"include/Shibboleth_CreateResourceLoadersState.h",
+	"include/Shibboleth_LoadComponentsState.h",
+	"include/Shibboleth_SetupOtterUIState.h",
+	"include/Shibboleth_RegisterLuaClassesState.h",
+	"Shibboleth_CreateResourceLoadersState.cpp",
+	"Shibboleth_LoadComponentsState.cpp",
+	"Shibboleth_RegisterLuaClassesState.cpp",
+	"Shibboleth_SetupOtterUIState.cpp",
+	"Shibboleth_StatesModule.cpp"
+};
+
+local components_files =
+{
+	"include/Shibboleth_LuaComponent.h",
+	"Shibboleth_LuaComponent.cpp",
+	"Shibboleth_ComponentsModule.cpp"
+};
+
+
 solution "Game"
 	if _ACTION then
 		location ("../../project/" .. _ACTION .. "/game")
@@ -97,36 +123,11 @@ group ""
 		kind "StaticLib"
 		language "C++"
 
-		files
-		{
-			"include/Shibboleth_ComponentManager.h",
-			"include/Shibboleth_Object.h",
-			"include/Shibboleth_IComponent.h",
-			"include/Shibboleth_IResourceLoader.h",
-			"include/Shibboleth_OtterUI*.h",
-			"include/Shibboleth_RenderManager.h",
-			"include/Shibboleth_ResourceDefines.h",
-			"include/Shibboleth_ResourceManager.h",
-			"include/Shibboleth_ResourceWrapper.h",
-			"include/Shibboleth_ShaderLoader.h",
-			"include/Shibboleth_ShaderProgramLoader.h",
-			"include/Shibboleth_TextureLoader.h",
-			"include/Shibboleth_LuaManager.h",
-			"include/Shibboleth_LuaLoader.h",
-			"include/Shibboleth_UpdateManager.h",
+		files { "**.h", "**.cpp", "**.inl" }
 
-			"Shibboleth_ComponentManager.cpp",
-			"Shibboleth_Object.cpp",
-			"Shibboleth_OtterUI*.cpp",
-			"Shibboleth_RenderManager.cpp",
-			"Shibboleth_ResourceManager.cpp",
-			"Shibboleth_ShaderLoader.cpp",
-			"Shibboleth_ShaderProgramLoader.cpp",
-			"Shibboleth_TextureLoader.cpp",
-			"Shibboleth_LuaManager.cpp",
-			"Shibboleth_LuaLoader.cpp",
-			"Shibboleth_UpdateManager.cpp",
-		}
+		excludes(manager_files)
+		excludes(state_files)
+		excludes(components_files)
 
 		includedirs
 		{
@@ -150,7 +151,7 @@ group ""
 
 		targetname "GameManagers"
 
-		files { "Shibboleth_ManagersModule.cpp" }
+		files(manager_files)
 
 		includedirs
 		{
@@ -209,18 +210,7 @@ group ""
 
 		targetname "GameStates"
 
-		files
-		{
-			"include/Shibboleth_CreateResourceLoadersState.h",
-			"include/Shibboleth_LoadComponentsState.h",
-			"include/Shibboleth_SetupOtterUIState.h",
-			"include/Shibboleth_RegisterLuaClassesState.h",
-			"Shibboleth_CreateResourceLoadersState.cpp",
-			"Shibboleth_LoadComponentsState.cpp",
-			"Shibboleth_RegisterLuaClassesState.cpp",
-			"Shibboleth_SetupOtterUIState.cpp",
-			"Shibboleth_StatesModule.cpp"
-		}
+		files(state_files)
 
 		includedirs
 		{
@@ -284,12 +274,7 @@ group ""
 
 		targetname "GameComponents"
 
-		files
-		{
-			"include/Shibboleth_LuaComponent.h",
-			"Shibboleth_LuaComponent.cpp",
-			"Shibboleth_ComponentsModule.cpp"
-		}
+		files(components_files)
 
 		includedirs
 		{

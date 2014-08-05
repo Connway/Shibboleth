@@ -35,61 +35,39 @@ class App;
 class UpdateManager : public IManager
 {
 public:
-	typedef const Gaff::FunctionBinder<void, double> UpdateCallback;
-
-	struct UpdateID
-	{
-		unsigned int row;
-		unsigned int id;
-	};
+	typedef Gaff::FunctionBinder<void, double> UpdateCallback;
 
 	UpdateManager(App& app);
 	~UpdateManager(void);
 
 	const char* getName(void) const;
-
-	UpdateID registerForUpdate(const UpdateCallback& callback, unsigned int row);
-	void unregisterForUpdate(const UpdateID& id);
+	void allManagersCreated(void);
 
 	void update(double dt);
 
-private:
-	typedef Gaff::Pair<unsigned int, UpdateCallback> RowEntry;
-	typedef Gaff::Pair<unsigned int, RowEntry> RegisterEntry;
-	typedef Array<RowEntry> UpdateRow;
 
+private:
 	class UpdateTask : public ITask
 	{
 	public:
-		UpdateTask(RowEntry& entry, double dt):
-			_entry(entry), _dt(dt)
+		UpdateTask(UpdateCallback& callback, double dt):
+			_callback(callback), _dt(dt)
 		{
 		}
 
 		void doTask(void)
 		{
-			_entry.second(_dt);
+			_callback(_dt);
 		}
 
 	private:
-		RowEntry& _entry;
+		UpdateCallback& _callback;
 		double _dt;
 	};
 
 	Array< Gaff::TaskPtr<ProxyAllocator> > _tasks_cache;
-
-	Array<RegisterEntry> _register_queue;
-	Array<UpdateID> _unregister_queue;
-
-	Array<UpdateRow> _table;
+	Array< Array<UpdateCallback> > _table;
 	App& _app;
-	Gaff::SpinLock _unreg_queue_lock;
-	Gaff::SpinLock _reg_queue_lock;
-
-	unsigned int _next_id;
-
-	void registerHelper(const RegisterEntry& entry);
-	void unregisterHelper(const UpdateID& id);
 
 	GAFF_NO_COPY(UpdateManager);
 	GAFF_NO_MOVE(UpdateManager);

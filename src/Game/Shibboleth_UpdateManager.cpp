@@ -21,12 +21,14 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Shibboleth_UpdateManager.h"
+#include "Shibboleth_IUpdateQuery.h"
 #include <Shibboleth_App.h>
+#include <Gaff_JSON.h>
 
 NS_SHIBBOLETH
 
 UpdateManager::UpdateManager(App& app):
-	_app(app), _next_id(0)
+	_app(app)
 {
 }
 
@@ -39,54 +41,8 @@ const char* UpdateManager::getName(void) const
 	return "Update Manager";
 }
 
-UpdateManager::UpdateID UpdateManager::registerForUpdate(const UpdateCallback& callback, unsigned int row)
-{
-	// Do we want to scrub row value down if it's greater than _table.size()?
-	//if (row >= _table.size()) {
-	//	row = _table.size();
-	//}
-
-	Gaff::ScopedLock<Gaff::SpinLock> scoped_lock(_reg_queue_lock);
-
-	UpdateID id = { row, _next_id };
-	++_next_id;
-
-	_register_queue.push(Gaff::Pair<unsigned int, RowEntry>(row, RowEntry(id.id, callback)));
-
-	return id;
-}
-
-void UpdateManager::unregisterForUpdate(const UpdateID& id)
-{
-	assert(id.row < _table.size() && id.id < _next_id);
-	Gaff::ScopedLock<Gaff::SpinLock> scoped_lock(_unreg_queue_lock);
-	_unregister_queue.push(id);
-}
-
 void UpdateManager::update(double dt)
 {
-	// Handle unregistration
-	{
-		Gaff::ScopedLock<Gaff::SpinLock> scoped_lock(_unreg_queue_lock);
-		for (auto it_unreg = _unregister_queue.begin(); it_unreg != _unregister_queue.end(); ++it_unreg) {
-			unregisterHelper(*it_unreg);
-		}
-
-		// Might want to add code that will resize if the capacity is too large
-		_unregister_queue.clearNoFree();
-	}
-
-	// Handle registration
-	{
-		Gaff::ScopedLock<Gaff::SpinLock> scoped_lock(_reg_queue_lock);
-		for (auto it_reg = _register_queue.begin(); it_reg != _register_queue.end(); ++it_reg) {
-			registerHelper(*it_reg);
-		}
-
-		// Might want to add code that will resize if the capacity is too large
-		_register_queue.clearNoFree();
-	}
-
 	for (auto it_row = _table.begin(); it_row != _table.end(); ++it_row) {
 		for (auto it_entry = it_row->begin(); it_entry != it_row->end(); ++it_entry) {
 			// add update callback to job queue
@@ -105,28 +61,52 @@ void UpdateManager::update(double dt)
 	}
 }
 
-void UpdateManager::registerHelper(const RegisterEntry& entry)
+void UpdateManager::allManagersCreated(void)
 {
-	if (_table.size() < entry.first) {
-		_table.resize(entry.first);
-	}
+	// read JSON file
+	// get all update entries from app
+	// add update entries
 
-	UpdateRow& row = _table[entry.first];
-	row.push(entry.second);
-}
+	Array<IUpdateQuery::UpdateEntry> entries;
 
-void UpdateManager::unregisterHelper(const UpdateID& id)
-{
-	UpdateRow& row = _table[id.row];
-
-	// Rows should be sorted by id, so it should be safe to use a binary search
-	auto it = row.binarySearch(id.id, [](const RowEntry& lhs, unsigned int rhs) -> bool
+	_app.forEachManager([&](IManager& manager) -> bool
 	{
-		return lhs.first < rhs;
+		IUpdateQuery* update_query = manager.requestInterface<IUpdateQuery>();
+
+		if (update_query) {
+			update_query->requestUpdateEntries(entries);
+		}
+
+		return false;
 	});
 
-	if (it != row.end() && it->first == id.id) {
-		row.erase(it);
+	Gaff::JSON table;
+
+	if (table.parseFile("./update_entries.json")) {
+		assert(table.isArray());
+
+		table.forEachInArray([&](size_t index, const Gaff::JSON& value) -> bool
+		{
+			assert(value.isArray());
+
+			table.forEachInArray([&](size_t, const Gaff::JSON& value) -> bool
+			{
+				assert(value.isString());
+
+				auto it = entries.linearSearch(value.getString(), [&](const IUpdateQuery::UpdateEntry& lhs, const char* rhs) -> bool
+				{
+					return lhs.first == rhs;
+				});
+
+				assert(it != entries.end());
+
+				_table[index].push(it->second);
+
+				return false;
+			});
+
+			return false;
+		});
 	}
 }
 
