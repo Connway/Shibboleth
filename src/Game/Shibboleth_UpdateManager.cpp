@@ -63,10 +63,7 @@ void UpdateManager::update(double dt)
 
 void UpdateManager::allManagersCreated(void)
 {
-	// read JSON file
-	// get all update entries from app
-	// add update entries
-
+	LogManager::FileLockPair& log = _app.getGameLogFile();
 	Array<IUpdateQuery::UpdateEntry> entries;
 
 	_app.forEachManager([&](IManager& manager) -> bool
@@ -83,22 +80,40 @@ void UpdateManager::allManagersCreated(void)
 	Gaff::JSON table;
 
 	if (table.parseFile("./update_entries.json")) {
-		assert(table.isArray());
+		if (!table.isArray()) {
+			log.first.writeString("ERROR - Root of \"update_entries.json\" is not an array.\n");
+			_app.quit();
+			return;
+		}
 
-		table.forEachInArray([&](size_t index, const Gaff::JSON& value) -> bool
+		table.forEachInArray([&](size_t index, const Gaff::JSON& row) -> bool
 		{
-			assert(value.isArray());
+			if (!row.isArray()) {
+				log.first.writeString("ERROR - A row in \"update_entries.json\" is not an array.\n");
+				_app.quit();
+				return false;
+			}
 
-			table.forEachInArray([&](size_t, const Gaff::JSON& value) -> bool
+			_table.push(Array<UpdateCallback>());
+
+			row.forEachInArray([&](size_t, const Gaff::JSON& entry) -> bool
 			{
-				assert(value.isString());
+				if (!entry.isString()) {
+					log.first.writeString("ERROR - An entry in \"update_entries.json\" is not a string.\n");
+					_app.quit();
+					return true;
+				}
 
-				auto it = entries.linearSearch(value.getString(), [&](const IUpdateQuery::UpdateEntry& lhs, const char* rhs) -> bool
+				auto it = entries.linearSearch(entry.getString(), [&](const IUpdateQuery::UpdateEntry& lhs, const char* rhs) -> bool
 				{
 					return lhs.first == rhs;
 				});
 
-				assert(it != entries.end());
+				if (it == entries.end()) {
+					log.first.printf("ERROR - UpdateEntry for '%s' in \"update_entries.json\" was not found.\n", entry.getString());
+					_app.quit();
+					return true;
+				}
 
 				_table[index].push(it->second);
 
@@ -107,6 +122,10 @@ void UpdateManager::allManagersCreated(void)
 
 			return false;
 		});
+
+	} else {
+		log.first.writeString("ERROR - Failed to find/parse file \"update_entries.json\".\n");
+		_app.quit();
 	}
 }
 

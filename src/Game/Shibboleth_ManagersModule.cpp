@@ -25,6 +25,7 @@ THE SOFTWARE.
 #include <Shibboleth_OtterUIManager.h>
 #include <Shibboleth_RenderManager.h>
 #include <Shibboleth_UpdateManager.h>
+#include <Shibboleth_ObjectManager.h>
 #include <Shibboleth_LuaManager.h>
 #include <Gaff_JSON.h>
 
@@ -75,6 +76,7 @@ enum Managers
 	OTTERUI_MANAGER,
 	RENDER_MANAGER,
 	UPDATE_MANAGER,
+	OBJECT_MANAGER,
 	LUA_MANAGER,
 	NUM_MANAGERS
 };
@@ -87,6 +89,7 @@ static CreateMgrFunc create_funcs[] = {
 	&CreateOtterUIManager,
 	&CreateRenderManager,
 	&CreateManagerT<Shibboleth::UpdateManager>,
+	&CreateManagerT<Shibboleth::ObjectManager>,
 	&CreateManagerT<Shibboleth::LuaManager>,
 };
 
