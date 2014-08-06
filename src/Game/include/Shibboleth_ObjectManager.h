@@ -47,6 +47,8 @@ public:
 	ObjectManager(App& app);
 	~ObjectManager(void);
 
+	const char* getName(void) const;
+
 	void requestUpdateEntries(Array<UpdateEntry>& entries);
 
 private:

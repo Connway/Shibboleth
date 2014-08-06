@@ -184,10 +184,18 @@ void RenderManager::generateDefaultConfig(Gaff::JSON& cfg)
 #else
 	cfg.setObject("module", Gaff::JSON::createString("Graphics_Direct3D"));
 #endif
-	cfg.setObject("pos_x", Gaff::JSON::createInteger(0));
-	cfg.setObject("pos_y", Gaff::JSON::createInteger(0));
-	cfg.setObject("res_x", Gaff::JSON::createInteger(800));
-	cfg.setObject("res_y", Gaff::JSON::createInteger(600));
+
+	Gaff::JSON windows = Gaff::JSON::createArray();
+	Gaff::JSON window_entry = Gaff::JSON::createObject();
+
+	window_entry.setObject("pos_x", Gaff::JSON::createInteger(0));
+	window_entry.setObject("pos_y", Gaff::JSON::createInteger(0));
+	window_entry.setObject("res_x", Gaff::JSON::createInteger(800));
+	window_entry.setObject("res_y", Gaff::JSON::createInteger(600));
+
+	windows.setObject(size_t(0), window_entry);
+
+	cfg.setObject("windows", windows);
 }
 
 // Still single-threaded at this point, so ok that we're not using the spinlock
