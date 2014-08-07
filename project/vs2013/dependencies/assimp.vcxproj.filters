@@ -16,6 +16,9 @@
     <Filter Include="code\BoostWorkaround\boost\tuple">
       <UniqueIdentifier>{B12033CD-9D71-1E0F-C6D5-0CD1B285B178}</UniqueIdentifier>
     </Filter>
+    <Filter Include="code\res">
+      <UniqueIdentifier>{B9362C2A-A503-8735-CE1C-75DDBA48BCC3}</UniqueIdentifier>
+    </Filter>
     <Filter Include="contrib">
       <UniqueIdentifier>{16D079D3-82AF-F86E-8BC7-8345F7255FD0}</UniqueIdentifier>
     </Filter>
@@ -108,6 +111,9 @@
       <Filter>code</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\dependencies\assimp\code\BaseProcess.h">
+      <Filter>code</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\assimp\code\Bitmap.h">
       <Filter>code</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\dependencies\assimp\code\BlenderBMesh.h">
@@ -437,10 +443,25 @@
     <ClInclude Include="..\..\..\dependencies\assimp\code\ObjTools.h">
       <Filter>code</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\assimp\code\OgreBinarySerializer.h">
+      <Filter>code</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\assimp\code\OgreImporter.h">
+      <Filter>code</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\dependencies\assimp\code\OgreImporter.hpp">
       <Filter>code</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\assimp\code\OgreParsingUtils.h">
+      <Filter>code</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\assimp\code\OgreStructs.h">
+      <Filter>code</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\dependencies\assimp\code\OgreXmlHelper.hpp">
+      <Filter>code</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\assimp\code\OgreXmlSerializer.h">
       <Filter>code</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\dependencies\assimp\code\OptimizeGraph.h">
@@ -620,6 +641,12 @@
     <ClInclude Include="..\..\..\dependencies\assimp\code\qnan.h">
       <Filter>code</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\assimp\code\res\resource.h">
+      <Filter>code\res</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\assimp\code\revision.h">
+      <Filter>code</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\dependencies\assimp\contrib\ConvertUTF\ConvertUTF.h">
       <Filter>contrib\ConvertUTF</Filter>
     </ClInclude>
@@ -666,6 +693,9 @@
       <Filter>contrib\poly2tri\poly2tri\sweep</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\dependencies\assimp\include\assimp\Compiler\poppack1.h">
+      <Filter>include\assimp\Compiler</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\assimp\include\assimp\Compiler\pstdint.h">
       <Filter>include\assimp\Compiler</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\dependencies\assimp\include\assimp\Compiler\pushpack1.h">
@@ -770,7 +800,6 @@
     <ClInclude Include="..\..\..\dependencies\assimp\include\assimp\version.h">
       <Filter>include\assimp</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\dependencies\assimp\revision.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\dependencies\assimp\code\3DSConverter.cpp">
@@ -807,6 +836,9 @@
       <Filter>code</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\dependencies\assimp\code\BaseProcess.cpp">
+      <Filter>code</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\dependencies\assimp\code\Bitmap.cpp">
       <Filter>code</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\dependencies\assimp\code\BlenderBMesh.cpp">
@@ -1052,6 +1084,9 @@
     <ClCompile Include="..\..\..\dependencies\assimp\code\ObjFileParser.cpp">
       <Filter>code</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\dependencies\assimp\code\OgreBinarySerializer.cpp">
+      <Filter>code</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\..\dependencies\assimp\code\OgreImporter.cpp">
       <Filter>code</Filter>
     </ClCompile>
@@ -1062,6 +1097,12 @@
       <Filter>code</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\dependencies\assimp\code\OgreSkeleton.cpp">
+      <Filter>code</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\dependencies\assimp\code\OgreStructs.cpp">
+      <Filter>code</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\dependencies\assimp\code\OgreXmlSerializer.cpp">
       <Filter>code</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\dependencies\assimp\code\OptimizeGraph.cpp">

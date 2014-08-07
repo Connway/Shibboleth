@@ -28,6 +28,7 @@ THE SOFTWARE.
 #include <Gaff_WeakObject.h>
 #include <Gaff_Function.h>
 #include <Gaff_SmartPtr.h>
+#include <Gleam_AABB.h>
 
 #define MAX_OBJ_NAME_LENGTH 64
 
@@ -60,6 +61,9 @@ public:
 
 private:
 	char _name[MAX_OBJ_NAME_LENGTH];
+
+	Gleam::AABB _aabb;
+	Gleam::Vec4 _pos;
 
 	typedef Gaff::SmartPtr<IComponent, ProxyAllocator> ComponentPtr;
 

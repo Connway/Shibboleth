@@ -196,6 +196,7 @@
     <ClInclude Include="..\..\..\dependencies\assimp\code\BVHLoader.h" />
     <ClInclude Include="..\..\..\dependencies\assimp\code\BaseImporter.h" />
     <ClInclude Include="..\..\..\dependencies\assimp\code\BaseProcess.h" />
+    <ClInclude Include="..\..\..\dependencies\assimp\code\Bitmap.h" />
     <ClInclude Include="..\..\..\dependencies\assimp\code\BlenderBMesh.h" />
     <ClInclude Include="..\..\..\dependencies\assimp\code\BlenderDNA.h" />
     <ClInclude Include="..\..\..\dependencies\assimp\code\BlenderIntermediate.h" />
@@ -305,8 +306,13 @@
     <ClInclude Include="..\..\..\dependencies\assimp\code\ObjFileMtlImporter.h" />
     <ClInclude Include="..\..\..\dependencies\assimp\code\ObjFileParser.h" />
     <ClInclude Include="..\..\..\dependencies\assimp\code\ObjTools.h" />
+    <ClInclude Include="..\..\..\dependencies\assimp\code\OgreBinarySerializer.h" />
+    <ClInclude Include="..\..\..\dependencies\assimp\code\OgreImporter.h" />
     <ClInclude Include="..\..\..\dependencies\assimp\code\OgreImporter.hpp" />
+    <ClInclude Include="..\..\..\dependencies\assimp\code\OgreParsingUtils.h" />
+    <ClInclude Include="..\..\..\dependencies\assimp\code\OgreStructs.h" />
     <ClInclude Include="..\..\..\dependencies\assimp\code\OgreXmlHelper.hpp" />
+    <ClInclude Include="..\..\..\dependencies\assimp\code\OgreXmlSerializer.h" />
     <ClInclude Include="..\..\..\dependencies\assimp\code\OptimizeGraph.h" />
     <ClInclude Include="..\..\..\dependencies\assimp\code\OptimizeMeshes.h" />
     <ClInclude Include="..\..\..\dependencies\assimp\code\ParsingUtils.h" />
@@ -366,6 +372,8 @@
     <ClInclude Include="..\..\..\dependencies\assimp\code\irrXMLWrapper.h" />
     <ClInclude Include="..\..\..\dependencies\assimp\code\pstdint.h" />
     <ClInclude Include="..\..\..\dependencies\assimp\code\qnan.h" />
+    <ClInclude Include="..\..\..\dependencies\assimp\code\res\resource.h" />
+    <ClInclude Include="..\..\..\dependencies\assimp\code\revision.h" />
     <ClInclude Include="..\..\..\dependencies\assimp\contrib\ConvertUTF\ConvertUTF.h" />
     <ClInclude Include="..\..\..\dependencies\assimp\contrib\clipper\clipper.hpp" />
     <ClInclude Include="..\..\..\dependencies\assimp\contrib\irrXML\CXMLReaderImpl.h" />
@@ -382,6 +390,7 @@
     <ClInclude Include="..\..\..\dependencies\assimp\contrib\poly2tri\poly2tri\sweep\sweep.h" />
     <ClInclude Include="..\..\..\dependencies\assimp\contrib\poly2tri\poly2tri\sweep\sweep_context.h" />
     <ClInclude Include="..\..\..\dependencies\assimp\include\assimp\Compiler\poppack1.h" />
+    <ClInclude Include="..\..\..\dependencies\assimp\include\assimp\Compiler\pstdint.h" />
     <ClInclude Include="..\..\..\dependencies\assimp\include\assimp\Compiler\pushpack1.h" />
     <ClInclude Include="..\..\..\dependencies\assimp\include\assimp\DefaultLogger.hpp" />
     <ClInclude Include="..\..\..\dependencies\assimp\include\assimp\Exporter.hpp" />
@@ -416,7 +425,6 @@
     <ClInclude Include="..\..\..\dependencies\assimp\include\assimp\vector2.h" />
     <ClInclude Include="..\..\..\dependencies\assimp\include\assimp\vector3.h" />
     <ClInclude Include="..\..\..\dependencies\assimp\include\assimp\version.h" />
-    <ClInclude Include="..\..\..\dependencies\assimp\revision.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\dependencies\assimp\code\3DSConverter.cpp" />
@@ -431,6 +439,7 @@
     <ClCompile Include="..\..\..\dependencies\assimp\code\BVHLoader.cpp" />
     <ClCompile Include="..\..\..\dependencies\assimp\code\BaseImporter.cpp" />
     <ClCompile Include="..\..\..\dependencies\assimp\code\BaseProcess.cpp" />
+    <ClCompile Include="..\..\..\dependencies\assimp\code\Bitmap.cpp" />
     <ClCompile Include="..\..\..\dependencies\assimp\code\BlenderBMesh.cpp" />
     <ClCompile Include="..\..\..\dependencies\assimp\code\BlenderDNA.cpp" />
     <ClCompile Include="..\..\..\dependencies\assimp\code\BlenderLoader.cpp" />
@@ -512,10 +521,13 @@
     <ClCompile Include="..\..\..\dependencies\assimp\code\ObjFileImporter.cpp" />
     <ClCompile Include="..\..\..\dependencies\assimp\code\ObjFileMtlImporter.cpp" />
     <ClCompile Include="..\..\..\dependencies\assimp\code\ObjFileParser.cpp" />
+    <ClCompile Include="..\..\..\dependencies\assimp\code\OgreBinarySerializer.cpp" />
     <ClCompile Include="..\..\..\dependencies\assimp\code\OgreImporter.cpp" />
     <ClCompile Include="..\..\..\dependencies\assimp\code\OgreMaterial.cpp" />
     <ClCompile Include="..\..\..\dependencies\assimp\code\OgreMesh.cpp" />
     <ClCompile Include="..\..\..\dependencies\assimp\code\OgreSkeleton.cpp" />
+    <ClCompile Include="..\..\..\dependencies\assimp\code\OgreStructs.cpp" />
+    <ClCompile Include="..\..\..\dependencies\assimp\code\OgreXmlSerializer.cpp" />
     <ClCompile Include="..\..\..\dependencies\assimp\code\OptimizeGraph.cpp" />
     <ClCompile Include="..\..\..\dependencies\assimp\code\OptimizeMeshes.cpp" />
     <ClCompile Include="..\..\..\dependencies\assimp\code\PlyExporter.cpp" />
