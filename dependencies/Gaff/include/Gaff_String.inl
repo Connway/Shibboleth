@@ -389,7 +389,7 @@ bool operator!=(const T* lhs, const String<T, Allocator>& rhs)
 template <class T, class Allocator>
 String<T, Allocator> operator+(const T* lhs, const String<T, Allocator>& rhs)
 {
-	unsigned int lhs_length = rhs.length(lhs);
+	unsigned int lhs_length = length(lhs);
 	unsigned int new_size = rhs._size + lhs_length;
 	Allocator* allocator = const_cast<Allocator*>(&rhs._allocator); // this is to get rid of compiler error from rhs._allocator being const
 	T* new_string = (T*)allocator->alloc(sizeof(T) * (new_size + 1));

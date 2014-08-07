@@ -199,6 +199,7 @@
     <ClInclude Include="..\..\..\src\Game\include\Shibboleth_ResourceWrapper.h" />
     <ClInclude Include="..\..\..\src\Game\include\Shibboleth_ShaderLoader.h" />
     <ClInclude Include="..\..\..\src\Game\include\Shibboleth_ShaderProgramLoader.h" />
+    <ClInclude Include="..\..\..\src\Game\include\Shibboleth_SpatialManager.h" />
     <ClInclude Include="..\..\..\src\Game\include\Shibboleth_TextureLoader.h" />
     <ClInclude Include="..\..\..\src\Game\include\Shibboleth_UpdateManager.h" />
   </ItemGroup>
@@ -215,6 +216,7 @@
     <ClCompile Include="..\..\..\src\Game\Shibboleth_ResourceManager.cpp" />
     <ClCompile Include="..\..\..\src\Game\Shibboleth_ShaderLoader.cpp" />
     <ClCompile Include="..\..\..\src\Game\Shibboleth_ShaderProgramLoader.cpp" />
+    <ClCompile Include="..\..\..\src\Game\Shibboleth_SpatialManager.cpp" />
     <ClCompile Include="..\..\..\src\Game\Shibboleth_TextureLoader.cpp" />
     <ClCompile Include="..\..\..\src\Game\Shibboleth_UpdateManager.cpp" />
   </ItemGroup>
