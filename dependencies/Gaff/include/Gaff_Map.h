@@ -49,7 +49,6 @@ public:
 	Value& operator[](const Key& key);
 
 	void erase(const Iterator& it);
-	void erase(unsigned int index);
 	void erase(const Key& key);
 
 	void moveMoveInsert(Key&& key, Value&& value);

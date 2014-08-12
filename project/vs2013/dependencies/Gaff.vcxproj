@@ -253,6 +253,7 @@
     <ClInclude Include="..\..\..\dependencies\Gaff\include\Gaff_Timer_Mac.h" />
     <ClInclude Include="..\..\..\dependencies\Gaff\include\Gaff_Timer_Windows.h" />
     <ClInclude Include="..\..\..\dependencies\Gaff\include\Gaff_Utils.h" />
+    <ClInclude Include="..\..\..\dependencies\Gaff\include\Gaff_Watcher.h" />
     <ClInclude Include="..\..\..\dependencies\Gaff\include\Gaff_WeakObject.h" />
     <ClInclude Include="..\..\..\dependencies\Gaff\include\Gaff_WeakPtr.h" />
   </ItemGroup>
@@ -305,6 +306,7 @@
     <None Include="..\..\..\dependencies\Gaff\include\Gaff_String.inl" />
     <None Include="..\..\..\dependencies\Gaff\include\Gaff_TimerCallbackManager.inl" />
     <None Include="..\..\..\dependencies\Gaff\include\Gaff_Utils_Common.inl" />
+    <None Include="..\..\..\dependencies\Gaff\include\Gaff_Watcher.inl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

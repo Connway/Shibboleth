@@ -109,6 +109,41 @@ void Object::postPhysicsUpdate(double dt)
 {
 }
 
+MessageBroadcaster& Object::getBroadcaster(void)
+{
+	return _broadcaster;
+}
+
+Gaff::WatchReceipt Object::watchAABB(const Watcher<Gleam::AABB>::Callback& callback)
+{
+	return _aabb.addCallback(callback);
+}
+
+Gaff::WatchReceipt Object::watchPos(const Watcher<Gleam::Vec4>::Callback& callback)
+{
+	return _pos.addCallback(callback);
+}
+
+const Gleam::AABB& Object::getAABB(void) const
+{
+	return _aabb.get();
+}
+
+void Object::setAABB(const Gleam::AABB& aabb)
+{
+	_aabb = aabb;
+}
+
+const Gleam::Vec4& Object::getPos(void) const
+{
+	return _pos.get();
+}
+
+void Object::setPos(const Gleam::Vec4& pos)
+{
+	_pos = pos;
+}
+
 bool Object::createComponents(const Gaff::JSON& json)
 {
 	ComponentManager& component_manager = _app.getManager<ComponentManager>("Component Manager");

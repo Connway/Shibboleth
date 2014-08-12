@@ -69,21 +69,17 @@ public:
 	WeakObject(const Allocator& allocator = Allocator()):
 		_allocator(allocator)
 	{
+		// Allocate here so we don't have threading issues later
+		_weak_ref = _allocator.template allocT<WeakReference>((ObjType*)this, _allocator);
 	}
 
 	virtual ~WeakObject(void)
 	{
-		if (_weak_ref) {
-			_weak_ref->weakObjectDestroyed();
-		}
+		_weak_ref->weakObjectDestroyed();
 	}
 
 	const RefPtr<WeakReference>& getWeakRef(void) const
 	{
-		if (!_weak_ref) {
-			_weak_ref = _allocator.template allocT<WeakReference>((ObjType*)this, _allocator);
-		}
-
 		return _weak_ref;
 	}
 

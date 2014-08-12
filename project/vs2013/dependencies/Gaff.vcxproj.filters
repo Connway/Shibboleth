@@ -51,6 +51,9 @@
     <None Include="..\..\..\dependencies\Gaff\include\Gaff_Utils_Common.inl">
       <Filter>include</Filter>
     </None>
+    <None Include="..\..\..\dependencies\Gaff\include\Gaff_Watcher.inl">
+      <Filter>include</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\dependencies\Gaff\include\Gaff_Animation.h">
@@ -264,6 +267,9 @@
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\dependencies\Gaff\include\Gaff_Utils.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\Gaff\include\Gaff_Watcher.h">
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\dependencies\Gaff\include\Gaff_WeakObject.h">
