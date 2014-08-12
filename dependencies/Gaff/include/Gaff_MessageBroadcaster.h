@@ -62,6 +62,7 @@ public:
 	void update(ThreadPool<Allocator>& thread_pool);
 	void update(void);
 
+	bool init(void);
 	void destroy(void);
 
 private:
@@ -115,21 +116,40 @@ private:
 		FunctorT _functor;
 	};
 
-	class Remover : public IRefCounted
+	class Remover : public RefCounted < Allocator >
 	{
 	public:
-		Remover(MessageBroadcaster<Allocator>* broadcaster,
-				const AHashString<Allocator>* message_type,
-				const IFunction* listener);
+		Remover(MessageBroadcaster* broadcaster, const Allocator& allocator);
 		~Remover(void);
 
-	void addRef(void) const;
-	void release(void) const;
-
-	unsigned int getRefCount(void) const;
+		void removeListener(const AHashString<Allocator>& message_type, const IFunction* listener);
 
 	private:
-		MessageBroadcaster<Allocator>* _broadcaster;
+		MessageBroadcaster* _broadcaster;
+		SpinLock _lock;
+
+		void broadcasterDeleted(void);
+
+		friend class MessageBroadcaster;
+	};
+
+	class Receipt : public IRefCounted
+	{
+	public:
+		Receipt(const RefPtr<Remover>& remover,
+			const AHashString<Allocator>* message_type,
+			const IFunction* listener,
+			const Allocator& allocator);
+		~Receipt(void);
+
+		void addRef(void) const;
+		void release(void) const;
+
+		unsigned int getRefCount(void) const;
+
+	private:
+		mutable Allocator _allocator;
+		mutable RefPtr<Remover> _remover;
 		const AHashString<Allocator>* _message_type;
 		const IFunction* _listener;
 
@@ -155,14 +175,16 @@ private:
 
 	HashMap<AHashString<Allocator>, Pair<ReadWriteSpinLock, ListenerList>, Allocator> _listeners;
 	Array<Pair<AHashString<Allocator>, void*>, Allocator> _message_queue;
+	RefPtr<Remover> _remover;
 	SpinLock _listener_lock;
+	SpinLock _message_lock;
 	Allocator _allocator;
 
 	void removeListener(const AHashString<Allocator>& message_type, const IFunction* listener);
 	void updateHelper(const Pair< AHashString<Allocator>, void*>& msg_pair);
 
 	friend class BroadcastTask;
-	friend class Remover;
+	friend class Receipt;
 
 	GAFF_NO_COPY(MessageBroadcaster);
 	GAFF_NO_MOVE(MessageBroadcaster);

@@ -23,7 +23,9 @@ THE SOFTWARE.
 #pragma once
 
 #include "Shibboleth_IComponent.h"
-#include "Shibboleth_Array.h"
+#include <Shibboleth_MessageBroadcaster.h>
+#include <Shibboleth_Watcher.h>
+#include <Shibboleth_Array.h>
 #include <Gaff_INamedObject.h>
 #include <Gaff_WeakObject.h>
 #include <Gaff_Function.h>
@@ -59,11 +61,25 @@ public:
 	void prePhysicsUpdate(double dt);
 	void postPhysicsUpdate(double dt);
 
+	INLINE MessageBroadcaster& getBroadcaster(void);
+
+	// Should I move the AABB and Position into it's own component?
+	// That way we're not partially reliant on Gleam's math library?
+	INLINE Gaff::WatchReceipt watchAABB(const Watcher<Gleam::AABB>::Callback& callback);
+	INLINE Gaff::WatchReceipt watchPos(const Watcher<Gleam::Vec4>::Callback& callback);
+
+	INLINE const Gleam::AABB& getAABB(void) const;
+	INLINE void setAABB(const Gleam::AABB& aabb);
+	INLINE const Gleam::Vec4& getPos(void) const;
+	INLINE void setPos(const Gleam::Vec4& pos);
+
 private:
+	MessageBroadcaster _broadcaster;
+
 	char _name[MAX_OBJ_NAME_LENGTH];
 
-	Gleam::AABB _aabb;
-	Gleam::Vec4 _pos;
+	Watcher<Gleam::AABB> _aabb;
+	Watcher<Gleam::Vec4> _pos;
 
 	typedef Gaff::SmartPtr<IComponent, ProxyAllocator> ComponentPtr;
 

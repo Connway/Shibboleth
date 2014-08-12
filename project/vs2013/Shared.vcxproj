@@ -202,6 +202,7 @@
     <ClInclude Include="..\..\src\Shared\include\Shibboleth_StateMachine.h" />
     <ClInclude Include="..\..\src\Shared\include\Shibboleth_String.h" />
     <ClInclude Include="..\..\src\Shared\include\Shibboleth_ThreadPool.h" />
+    <ClInclude Include="..\..\src\Shared\include\Shibboleth_Watcher.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Shared\Shibboleth_Allocator.cpp" />

@@ -24,33 +24,70 @@ THE SOFTWARE.
 
 #include "Shibboleth_IUpdateQuery.h"
 #include <Shibboleth_IManager.h>
+#include <Shibboleth_Watcher.h>
+#include <Shibboleth_Array.h>
+#include <Shibboleth_Map.h>
+#include <Gleam_AABB.h>
 
 NS_SHIBBOLETH
+
+class Object;
+class App;
 
 class SpatialManager : public IManager, public IUpdateQuery
 {
 public:
-	enum MovementType
-	{
-		MT_STATIC = 0,
-		MT_DYNAMIC,
-		NUM_MOVE_TYPES
-	};
-
-	SpatialManager(void);
+	SpatialManager(App& app);
 	~SpatialManager(void);
 
 	void requestUpdateEntries(Array<UpdateEntry>& entries);
 	const char* getName(void) const;
 
-	unsigned int addObject(MovementType type/*, Object* object*/);
+	unsigned int addObject(Object* object);
 	void removeObject(unsigned int id);
 
-private:
-	//Array<Object*> _objects[NUM_MOVE_TYPES];
+	void update(double);
 
+private:
+	struct Node
+	{
+		// other data for pos, aabb, and children nodes
+
+		Gaff::WatchReceipt receipts[2];
+		Object* object;
+		unsigned int id;
+	};
+
+	class WatchUpdater
+	{
+	public:
+		WatchUpdater(SpatialManager* spatial_mgr, Node* node);
+		~WatchUpdater(void);
+
+		// Need const otherwise get funky compiler errors
+		void operator()(const Gleam::AABB&) const;
+		void operator()(const Gleam::Vec4&) const;
+
+	private:
+		SpatialManager* _spatial_mgr;
+		Node* _node;
+	};
+
+	Map<unsigned int, Node*> _node_map;
+	Array<Node*> _dirty_nodes;
+	Node* _bvh;
+
+	App& _app;
+
+	Gaff::SpinLock _dirty_lock;
+	Gaff::SpinLock _bvh_lock;
 
 	volatile unsigned int _next_id;
+
+	void removeNode(Node* node);
+	void insertNode(Node* node);
+
+	friend class WatchUpdater;
 };
 
 NS_END

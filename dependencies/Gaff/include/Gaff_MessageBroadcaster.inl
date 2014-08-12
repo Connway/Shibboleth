@@ -78,10 +78,8 @@ void MessageBroadcaster<Allocator>::Functor<Message, FunctorT>::call(void* messa
 //    REMOVER    //
 ///////////////////
 template <class Allocator>
-MessageBroadcaster<Allocator>::Remover::Remover(MessageBroadcaster<Allocator>* broadcaster,
-												const AHashString<Allocator>* message_type,
-												const IFunction* listener):
-	_broadcaster(broadcaster), _message_type(message_type), _listener(listener), _ref_count(0)
+MessageBroadcaster<Allocator>::Remover::Remover(MessageBroadcaster* broadcaster, const Allocator& allocator):
+	RefCounted<Allocator>(allocator), _broadcaster(broadcaster)
 {
 }
 
@@ -91,24 +89,64 @@ MessageBroadcaster<Allocator>::Remover::~Remover(void)
 }
 
 template <class Allocator>
-void MessageBroadcaster<Allocator>::Remover::addRef(void) const
+void MessageBroadcaster<Allocator>::Remover::removeListener(const AHashString<Allocator>& message_type, const IFunction* listener)
+{
+	ScopedLock<SpinLock> scoped_lock(_lock);
+
+	if (_broadcaster) {
+		_broadcaster->removeListener(message_type, listener);
+	}
+}
+
+template <class Allocator>
+void MessageBroadcaster<Allocator>::Remover::broadcasterDeleted(void)
+{
+	ScopedLock<SpinLock> scoped_lock(_lock);
+	_broadcaster = nullptr;
+}
+
+///////////////////
+//    RECEIPT    //
+///////////////////
+template <class Allocator>
+MessageBroadcaster<Allocator>::Receipt::Receipt(const RefPtr<Remover>& remover,
+												const AHashString<Allocator>* message_type,
+												const IFunction* listener,
+												const Allocator& allocator):
+	_allocator(allocator), _remover(remover),
+	_message_type(message_type), _listener(listener),
+	_ref_count(0)
+{
+}
+
+template <class Allocator>
+MessageBroadcaster<Allocator>::Receipt::~Receipt(void)
+{
+}
+
+template <class Allocator>
+void MessageBroadcaster<Allocator>::Receipt::addRef(void) const
 {
 	AtomicIncrement(&_ref_count);
 }
 
 template <class Allocator>
-void MessageBroadcaster<Allocator>::Remover::release(void) const
+void MessageBroadcaster<Allocator>::Receipt::release(void) const
 {
 	unsigned int new_count = AtomicDecrement(&_ref_count);
 
 	if (!new_count) {
-		_broadcaster->removeListener(*_message_type, _listener);
-		_broadcaster->_allocator.freeT(this);
+		_remover->removeListener(*_message_type, _listener);
+
+		// When the allocator resides in the object we are deleting,
+		// we need to make a copy, otherwise there will be crashes.
+		Allocator allocator = _allocator;
+		allocator.freeT(this);
 	}
 }
 
 template <class Allocator>
-unsigned int MessageBroadcaster<Allocator>::Remover::getRefCount(void) const
+unsigned int MessageBroadcaster<Allocator>::Receipt::getRefCount(void) const
 {
 	return _ref_count;
 }
@@ -165,7 +203,7 @@ MessageReceipt MessageBroadcaster<Allocator>::listen(Object* object, void (Objec
 	ListenerList& listeners = _listeners[Message::g_Hash].second;
 	listeners.push(ptr);
 
-	Remover* temp = _allocator.template allocT<Remover>(this, &Message::g_Hash, function_binder);
+	Receipt* temp = _allocator.template allocT<Receipt>(_remover, &Message::g_Hash, function_binder, _allocator);
 	return MessageReceipt(temp);
 }
 
@@ -185,7 +223,7 @@ MessageReceipt MessageBroadcaster<Allocator>::listen(void (*function)(const Mess
 	ListenerList& listeners = _listeners[Message::g_Hash].second;
 	listeners.push(ptr);
 
-	Remover* temp = _allocator.template allocT<Remover>(this, &Message::g_Hash, function_binder);
+	Receipt* temp = _allocator.template allocT<Receipt>(_remover, &Message::g_Hash, function_binder, _allocator);
 	return MessageReceipt(temp);
 }
 
@@ -205,7 +243,7 @@ MessageReceipt MessageBroadcaster<Allocator>::listen(const FunctorT& functor)
 	ListenerList& listeners = _listeners[Message::g_Hash].second;
 	listeners.push(ptr);
 
-	Remover* temp = _allocator.template allocT<Remover>(this, &Message::g_Hash, function_binder);
+	Receipt* temp = _allocator.template allocT<Receipt>(_remover, &Message::g_Hash, function_binder, _allocator);
 	return MessageReceipt(temp);
 }
 
@@ -214,12 +252,16 @@ template <class Message>
 void MessageBroadcaster<Allocator>::broadcast(const Message& message)
 {
 	Message* msg = _allocator.template allocT<Message>(message);
+
+	ScopedLock<SpinLock> scoped_lock(_message_lock);
 	_message_queue.push(MakePair(Message::g_Hash, (void*)msg));
 }
 
 template <class Allocator>
 void MessageBroadcaster<Allocator>::update(ThreadPool<Allocator>& thread_pool)
 {
+	ScopedLock<SpinLock> scoped_lock(_message_lock);
+
 	// Possibility for optimization, if we sort this list by message type, we can do all similar messages at once
 	for (unsigned int i = 0; i < _message_queue.size(); ++i) {
 		const Pair< AHashString<Allocator>, void*>& msg = _message_queue[i];
@@ -277,12 +319,23 @@ void MessageBroadcaster<Allocator>::removeListener(const AHashString<Allocator>&
 }
 
 template <class Allocator>
+bool MessageBroadcaster<Allocator>::init(void)
+{
+	_remover = _allocator.template allocT<Remover>(this, _allocator);
+	return _remover != nullptr;
+}
+
+template <class Allocator>
 void MessageBroadcaster<Allocator>::destroy(void)
 {
+	_remover->broadcasterDeleted();
+
+	ScopedLock<SpinLock> scoped_lock(_message_lock);
+
 	for (auto it = _message_queue.begin(); it != _message_queue.end(); ++it) {
 		_allocator.free(it->second);
 	}
-	
+
 	_message_queue.clear();
 	_listeners.clear();
 }

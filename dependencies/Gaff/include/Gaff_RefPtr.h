@@ -22,7 +22,7 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Gaff_RefCounted.h"
+#include "Gaff_Defines.h"
 
 NS_GAFF
 
@@ -265,7 +265,5 @@ public:
 private:
 	T* _data;
 };
-
-typedef RefPtr<IRefCounted> IRefPtr;
 
 NS_END

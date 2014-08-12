@@ -43,9 +43,8 @@ const char* ObjectManager::getName(void) const
 
 void ObjectManager::requestUpdateEntries(Array<UpdateEntry>& entries)
 {
-	entries.push(UpdateEntry("Object Manager: Pre-Physics Update", Gaff::Bind(this, &ObjectManager::prePhysicsUpdate)));
-	entries.push(UpdateEntry("Object Manager: Post-Physics Update", Gaff::Bind(this, &ObjectManager::prePhysicsUpdate)));
-	//entries.push(UpdateEntry("Object Manager: Update", Gaff::Bind(this, &ObjectManager::update)));
+	entries.movePush(UpdateEntry("Object Manager: Pre-Physics Update", Gaff::Bind(this, &ObjectManager::prePhysicsUpdate)));
+	entries.movePush(UpdateEntry("Object Manager: Post-Physics Update", Gaff::Bind(this, &ObjectManager::prePhysicsUpdate)));
 }
 
 void ObjectManager::prePhysicsUpdate(double dt)
@@ -87,9 +86,5 @@ void ObjectManager::prePhysicsUpdate(double dt)
 void ObjectManager::postPhysicsUpdate(double dt)
 {
 }
-
-//void ObjectManager::update(double dt)
-//{
-//}
 
 NS_END

@@ -22,49 +22,11 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Shibboleth_IUpdateQuery.h"
-#include "Shibboleth_IManager.h"
-#include "Shibboleth_Object.h"
-#include <Shibboleth_Array.h>
-#include <Shibboleth_Map.h>
-#include <Gaff_SpinLock.h>
+#include "Shibboleth_ProxyAllocator.h"
+#include <Gaff_Watcher.h>
 
 NS_SHIBBOLETH
 
-class ObjectManager : public IManager, public IUpdateQuery
-{
-public:
-	template <class Callback>
-	void forEachObject(Callback&& callback) const
-	{
-		for (auto it = _objects.begin(); it != _objects.end(); ++it) {
-			if (callback(*it)) {
-				break;
-			}
-		}
-	}
-
-	ObjectManager(App& app);
-	~ObjectManager(void);
-
-	const char* getName(void) const;
-
-	void requestUpdateEntries(Array<UpdateEntry>& entries);
-
-private:
-	Array<unsigned int> _remove_queue;
-	Array<Object*> _add_queue;
-	Array<Object*> _objects;
-
-	App& _app;
-
-	Gaff::SpinLock _remove_lock;
-	Gaff::SpinLock _add_lock;
-
-	volatile unsigned int _next_id;
-
-	void prePhysicsUpdate(double dt);
-	void postPhysicsUpdate(double dt);
-};
+template <class T> using Watcher = Gaff::Watcher<T, ProxyAllocator>;
 
 NS_END

@@ -95,9 +95,8 @@ Value& Map<Key, Value, Allocator>::operator[](const Key& key)
 template <class Key, class Value, class Allocator>
 void Map<Key, Value, Allocator>::erase(const typename Iterator& it)
 {
-	if (it != _array.end()) {
-		_array.erase(it);
-	}
+	assert(it != _array.end());
+	_array.erase(it);
 }
 
 template <class Key, class Value, class Allocator>
