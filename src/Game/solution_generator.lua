@@ -19,7 +19,9 @@ local state_files =
 local components_files =
 {
 	"include/Shibboleth_LuaComponent.h",
+	"include/Shibboleth_SimpleModelComponent.h",
 	"Shibboleth_LuaComponent.cpp",
+	"Shibboleth_SimpleModelComponent.cpp",
 	"Shibboleth_ComponentsModule.cpp"
 };
 
@@ -123,7 +125,7 @@ group ""
 		kind "StaticLib"
 		language "C++"
 
-		files { "**.h", "**.cpp", "**.inl" }
+		files { "**.h", "**.cpp", "**.inl", "solution_generator.lua" }
 
 		excludes(manager_files)
 		excludes(state_files)

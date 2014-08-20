@@ -9,9 +9,13 @@
     <ClInclude Include="..\..\..\src\Game\include\Shibboleth_LuaComponent.h">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\src\Game\include\Shibboleth_SimpleModelComponent.h">
+      <Filter>include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\src\Game\Shibboleth_ComponentsModule.cpp" />
     <ClCompile Include="..\..\..\src\Game\Shibboleth_LuaComponent.cpp" />
+    <ClCompile Include="..\..\..\src\Game\Shibboleth_SimpleModelComponent.cpp" />
   </ItemGroup>
 </Project>
