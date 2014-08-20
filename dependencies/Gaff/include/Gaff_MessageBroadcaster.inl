@@ -328,7 +328,9 @@ bool MessageBroadcaster<Allocator>::init(void)
 template <class Allocator>
 void MessageBroadcaster<Allocator>::destroy(void)
 {
-	_remover->broadcasterDeleted();
+	if (_remover) {
+		_remover->broadcasterDeleted();
+	}
 
 	ScopedLock<SpinLock> scoped_lock(_message_lock);
 

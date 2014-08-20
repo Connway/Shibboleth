@@ -195,10 +195,12 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\src\Game\include\Shibboleth_LuaComponent.h" />
+    <ClInclude Include="..\..\..\src\Game\include\Shibboleth_SimpleModelComponent.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\src\Game\Shibboleth_ComponentsModule.cpp" />
     <ClCompile Include="..\..\..\src\Game\Shibboleth_LuaComponent.cpp" />
+    <ClCompile Include="..\..\..\src\Game\Shibboleth_SimpleModelComponent.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Shared.vcxproj">

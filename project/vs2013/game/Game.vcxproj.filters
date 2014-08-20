@@ -6,6 +6,12 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\..\..\src\Game\solution_generator.lua" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\src\Game\include\Shibboleth_CameraManager.h">
+      <Filter>include</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\src\Game\include\Shibboleth_ComponentManager.h">
       <Filter>include</Filter>
     </ClInclude>
@@ -68,6 +74,7 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\..\src\Game\Shibboleth_CameraManager.cpp" />
     <ClCompile Include="..\..\..\src\Game\Shibboleth_ComponentManager.cpp" />
     <ClCompile Include="..\..\..\src\Game\Shibboleth_LuaLoader.cpp" />
     <ClCompile Include="..\..\..\src\Game\Shibboleth_LuaManager.cpp" />
