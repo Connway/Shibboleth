@@ -75,6 +75,8 @@ public:
 	bool setCurrentDevice(unsigned int device);
 	unsigned int getCurrentDevice(void) const;
 
+	int getDeviceForAdapter(unsigned int adapter_id) const;
+
 private:
 	struct OutputInfo
 	{

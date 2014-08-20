@@ -81,6 +81,8 @@ public:
 	INLINE ID3D11DeviceContext* getActiveDeviceContext(void);
 	INLINE ID3D11Device* getActiveDevice(void);
 
+	int getDeviceForAdapter(unsigned int adapter_id) const;
+
 private:
 	struct OutputInfo
 	{
