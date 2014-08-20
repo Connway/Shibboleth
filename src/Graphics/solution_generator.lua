@@ -3,7 +3,11 @@ solution "Graphics"
 		location ("../../project/" .. _ACTION .. "/graphics")
 	end
 
-	configurations { "Debug_OpenGL", "Release_OpenGL" }
+	if os.get() == "windows" then
+		configurations { "Debug_OpenGL", "Release_OpenGL", "Debug_Direct3D", "Release_Direct3D" }
+	else
+		configurations { "Debug_OpenGL", "Release_OpenGL" }
+	end
 
 	platforms { "x86", "x64" }
 	warnings "Extra"
@@ -12,9 +16,6 @@ solution "Graphics"
 	nativewchar "Default"
 	floatingpoint "Fast"
 	debugdir "../../workingdir"
-
-	filter { "system:windows" }
-		configurations { "Debug_Direct3D", "Release_Direct3D" }
 
 	filter { "platforms:x86" }
 		architecture "x32"

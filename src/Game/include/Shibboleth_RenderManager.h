@@ -66,6 +66,13 @@ public:
 
 	//void addRenderPacket();
 
+	bool createWindow(
+		const wchar_t* app_name, Gleam::Window::MODE window_mode,
+		int x, int y, unsigned int width, unsigned int height,
+		unsigned int refresh_rate, const char* device_name,
+		unsigned int adapter_id, unsigned int display_id, bool vsync
+	);
+
 	INLINE Gleam::IShaderResourceView* createShaderResourceView(void);
 	INLINE Gleam::IRenderDevice* createRenderDevice(void);
 	INLINE Gleam::IRenderTarget* createRenderTarget(void);
@@ -113,12 +120,19 @@ private:
 		CreateMesh create_mesh;
 	};
 
+	struct WindowData
+	{
+		Gaff::SmartPtr<Gleam::Window, ProxyAllocator> window;
+		unsigned int device;
+		unsigned int output;
+	};
+
 	//struct RenderPacket
 	//{
 	//};
 
 	GraphicsFunctions _graphics_functions;
-	Array< Gaff::SmartPtr<Gleam::Window, ProxyAllocator> > _windows;
+	Array<WindowData> _windows;
 	Gaff::SmartPtr<Gleam::IRenderDevice, ProxyAllocator> _render_device;
 	DynamicLoader::ModulePtr _gleam_module;
 	Gaff::SpinLock _spin_lock;
@@ -126,6 +140,7 @@ private:
 	ProxyAllocator _proxy_allocator;
 	App& _app;
 
+	int getDisplayModeID(unsigned int width, unsigned int height, unsigned int refresh_rate, unsigned int adapter_id, unsigned int display_id);
 	void generateDefaultConfig(Gaff::JSON& cfg);
 	bool cacheGleamFunctions(App& app, const Gaff::JSON& module, const char* cfg_file);
 };

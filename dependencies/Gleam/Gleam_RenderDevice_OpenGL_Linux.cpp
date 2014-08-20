@@ -423,6 +423,17 @@ unsigned int RenderDeviceGL::getCurrentDevice(void) const
 	return _curr_device;
 }
 
+int RenderDeviceGL::getDeviceForAdapter(unsigned int adapter_id) const
+{
+	for (unsigned int i = 0; i < _devices.size(); ++i) {
+		if (_devices[i].adapter_id == adapter_id) {
+			return i;
+		}
+	}
+
+	return -1;
+}
+
 NS_END
 
 #endif

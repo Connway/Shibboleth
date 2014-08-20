@@ -99,6 +99,8 @@ public:
 	virtual bool setCurrentDevice(unsigned int device) = 0;
 	virtual unsigned int getCurrentDevice(void) const = 0;
 
+	virtual int getDeviceForAdapter(unsigned int adapter_id) const = 0;
+
 	GAFF_NO_COPY(IRenderDevice);
 };
 

@@ -67,9 +67,9 @@ public:
 	~Window(void);
 
 	bool init(const GChar* app_name, MODE window_mode = FULLSCREEN,
-					unsigned int width = 0, unsigned int height = 0,
-					int pos_x = 0, int pos_y = 0,
-					const char* compat = nullptr);
+				unsigned int width = 0, unsigned int height = 0,
+				int pos_x = 0, int pos_y = 0,
+				const char* compat = nullptr);
 	void destroy(void);
 
 	INLINE void handleWindowMessages(void);

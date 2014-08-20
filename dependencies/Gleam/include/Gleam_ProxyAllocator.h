@@ -35,29 +35,15 @@ NS_GLEAM
 class ProxyAllocator : public Gaff::IAllocator
 {
 public:
-	explicit ProxyAllocator(Gaff::IAllocator& allocator = *GetAllocator()):
-			_allocator(allocator)
-	{
-	}
-
-	ProxyAllocator(const ProxyAllocator& allocator):
-		_allocator(allocator._allocator)
-	{
-	}
-
 	void* alloc(unsigned int size_bytes)
 	{
-		return _allocator.alloc(size_bytes);
+		return GetAllocator()->alloc(size_bytes);
 	}
 
 	void free(void* data)
 	{
-		//GleamFree(data);
-		return _allocator.free(data);
+		GleamFree(data);
 	}
-
-private:
-	Gaff::IAllocator& _allocator;
 };
 
 NS_END

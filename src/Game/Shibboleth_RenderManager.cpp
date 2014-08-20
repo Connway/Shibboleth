@@ -47,7 +47,8 @@ const char* RenderManager::getName(void) const
 
 bool RenderManager::init(const char* cfg_file)
 {
-	// open and store loading log file
+	LogManager::FileLockPair& log = _app.getGameLogFile();
+	log.first.writeString("Initializing Render Manager...\n");
 
 	bool file_exists = false;
 	Gaff::JSON cfg;
@@ -62,11 +63,13 @@ bool RenderManager::init(const char* cfg_file)
 		cfg.parseFile(cfg_file);
 
 	} else {
+		log.first.printf("No config file found at '%s'. Generating default config.\n", cfg_file);
 		generateDefaultConfig(cfg);
 		cfg.dumpToFile(cfg_file);
 	}
 
 	if (!cacheGleamFunctions(_app, cfg["module"], cfg_file)) {
+		log.first.writeString("ERROR - Failed to cache Gleam functions.\n");
 		return false;
 	}
 
@@ -74,7 +77,160 @@ bool RenderManager::init(const char* cfg_file)
 
 	_render_device = _graphics_functions.create_renderdevice();
 
-	return _render_device;
+	if (!_render_device) {
+		log.first.writeString("ERROR - Failed to create render device.\n");
+		return false;
+	}
+
+	Gaff::JSON windows = cfg["windows"];
+	
+	if (!windows.isArray()) {
+		log.first.writeString("ERROR - Malformed config file.\n");
+		return false;
+	}
+
+	bool failed = false;
+	windows.forEachInArray([&](size_t, const Gaff::JSON& value) -> bool
+	{
+		if (!value.isObject()) {
+			log.first.writeString("ERROR - Malformed config file.\n");
+			failed = true;
+			return true;
+		}
+
+		Gaff::JSON x = value["x"];
+		Gaff::JSON y = value["y"];
+		Gaff::JSON width = value["width"];
+		Gaff::JSON height = value["height"];
+		Gaff::JSON refresh_rate = value["refresh_rate"];
+		Gaff::JSON device_name = value["device_name"];
+		Gaff::JSON window_name = value["window_name"];
+		Gaff::JSON window_mode = value["window_mode"];
+		Gaff::JSON adapter_id = value["adapter_id"];
+		Gaff::JSON display_id = value["display_id"];
+		Gaff::JSON vsync = value["vsync"];
+
+
+		if (!x.isInteger()) {
+			log.first.writeString("ERROR - Malformed config file.\n");
+			failed = true;
+			return true;
+		}
+
+		if (!y.isInteger()) {
+			log.first.writeString("ERROR - Malformed config file.\n");
+			failed = true;
+			return true;
+		}
+
+		if (!width.isInteger()) {
+			log.first.writeString("ERROR - Malformed config file.\n");
+			failed = true;
+			return true;
+		}
+
+		if (!height.isInteger()) {
+			log.first.writeString("ERROR - Malformed config file.\n");
+			failed = true;
+			return true;
+		}
+
+		if (!refresh_rate.isInteger()) {
+			log.first.writeString("ERROR - Malformed config file.\n");
+			failed = true;
+			return true;
+		}
+
+		if (!device_name.isString()) {
+			log.first.writeString("ERROR - Malformed config file.\n");
+			failed = true;
+			return true;
+		}
+
+		if (!window_name.isString()) {
+			log.first.writeString("ERROR - Malformed config file.\n");
+			failed = true;
+			return true;
+		}
+
+		if (!window_mode.isString()) {
+			log.first.writeString("ERROR - Malformed config file.\n");
+			failed = true;
+			return true;
+		}
+
+		if (!adapter_id.isInteger()) {
+			log.first.writeString("ERROR - Malformed config file.\n");
+			failed = true;
+			return true;
+		}
+
+		if (!display_id.isInteger()) {
+			log.first.writeString("ERROR - Malformed config file.\n");
+			failed = true;
+			return true;
+		}
+
+		if (!vsync.isBoolean()) {
+			log.first.writeString("ERROR - Malformed config file.\n");
+			failed = true;
+			return true;
+		}
+
+		const GChar* wnd_name = nullptr;
+
+#ifdef _UNICODE
+		wchar_t temp[64] = { 0 };
+		mbstowcs(temp, window_name.getString(), 64);
+		wnd_name = temp;
+#else
+		wnd_name = window_name.getString();
+#endif
+
+		Gleam::Window::MODE wnd_mode;
+
+		if (!strncmp(window_mode.getString(), "Fullscreen", strlen("Fullscreen"))) {
+			wnd_mode = Gleam::Window::FULLSCREEN;
+		} else if (!strncmp(window_mode.getString(), "Windowed", strlen("Windowed"))) {
+			wnd_mode = Gleam::Window::WINDOWED;
+		} else if (!strncmp(window_mode.getString(), "Fullscreen-Windowed", strlen("Fullscreen-Windowed"))) {
+			wnd_mode = Gleam::Window::FULLSCREEN_WINDOWED;
+		} else {
+			log.first.writeString("ERROR - Malformed config file.\n");
+			failed = true;
+			return true;
+		}
+
+		if (!createWindow(wnd_name, wnd_mode,
+			(unsigned int)x.getInteger(), (unsigned int)y.getInteger(),
+			(unsigned int)width.getInteger(), (unsigned int)height.getInteger(),
+			(unsigned int)refresh_rate.getInteger(), device_name.getString(),
+			(unsigned int)adapter_id.getInteger(), (unsigned int)display_id.getInteger(),
+			vsync.isTrue())) {
+
+			log.first.printf("ERROR - Failed to create window with values\n"
+				"X: %i\n"
+				"Y: %i\n"
+				"Width: %i\n"
+				"Height: %i\n"
+				"Refresh Rate: %i\n"
+				"Device Name: %s\n"
+				"Adapter ID: %i\n"
+				"Display ID: %i\n",
+				x.getInteger(), y.getInteger(),
+				width.getInteger(), height.getInteger(),
+				refresh_rate.getInteger(), device_name.getString(),
+				adapter_id.getInteger(), display_id.getInteger()
+			);
+
+			failed = true;
+			return true;
+		}
+
+		return false;
+	});
+
+	return !failed;
 }
 
 Gleam::IRenderDevice& RenderManager::getRenderDevice(void)
@@ -103,6 +259,70 @@ void RenderManager::printfLoadLog(const char* format, ...)
 //void RenderManager::addRenderPacket()
 //{
 //}
+
+bool RenderManager::createWindow(
+	const wchar_t* app_name, Gleam::Window::MODE window_mode,
+	int x, int y, unsigned int width, unsigned int height,
+	unsigned int refresh_rate, const char* device_name,
+	unsigned int adapter_id, unsigned int display_id, bool vsync)
+{
+	LogManager::FileLockPair& log = _app.getGameLogFile();
+
+	assert(_render_device);
+	Gleam::Window* window = _app.getAllocator().template allocT<Gleam::Window>();
+
+	if (!window) {
+		Gaff::ScopedLock<Gaff::SpinLock> scoped_lock(*log.second);
+		log.first.writeString("ERROR - Failed to allocate memory for Window!\n");
+		return false;
+	}
+
+	if (!window->init(app_name, window_mode, width, height, x, y, device_name)) {
+		Gaff::ScopedLock<Gaff::SpinLock> scoped_lock(*log.second);
+		log.first.printf(
+			"ERROR - Failed to initialize window with settings\n"
+			"X: %i\n"
+			"Y: %i\n"
+			"Width: %i\n"
+			"Height: %i\n"
+			"Device Name: %s\n",
+			x, y, width, height, device_name
+		);
+
+		_app.getAllocator().freeT(window);
+		return false;
+	}
+
+	int display_mode_id = getDisplayModeID(width, height, refresh_rate, adapter_id, display_id);
+
+	if (display_mode_id < 0) {
+		Gaff::ScopedLock<Gaff::SpinLock> scoped_lock(*log.second);
+		log.first.printf(
+			"ERROR - Failed to find display mode with settings\n"
+			"Width: %i\n"
+			"Height: %i\n"
+			"Adapter ID: %i\n"
+			"Display ID: %i\n",
+			width, height, adapter_id, display_id
+		);
+
+		_app.getAllocator().freeT(window);
+		return false;
+	}
+
+	if (!_render_device->init(*window, adapter_id, display_id, (unsigned int)display_mode_id, vsync)) {
+		Gaff::ScopedLock<Gaff::SpinLock> scoped_lock(*log.second);
+		log.first.writeString("ERROR - Failed to initialize render device with window!\n");
+		_app.getAllocator().freeT(window);
+		return false;
+	}
+
+	unsigned int device_id = (unsigned int)_render_device->getDeviceForAdapter(adapter_id);
+
+	WindowData wnd_data = { Gaff::SmartPtr<Gleam::Window, ProxyAllocator>(window), device_id, _render_device->getNumOutputs(device_id) };
+	_windows.push(wnd_data);
+	return true;
+}
 
 Gleam::IShaderResourceView* RenderManager::createShaderResourceView(void)
 {
@@ -176,6 +396,43 @@ Gleam::IMesh* RenderManager::createMesh(void)
 	return _graphics_functions.create_mesh();
 }
 
+int RenderManager::getDisplayModeID(unsigned int width, unsigned int height, unsigned int refresh_rate, unsigned int adapter_id, unsigned int display_id)
+{
+	Gleam::IRenderDevice::AdapterList adpt_list = _render_device->getDisplayModes();
+
+	auto adpt_it = adpt_list.linearSearch(adapter_id, [](const Gleam::IRenderDevice::Adapter& lhs, unsigned int rhs) -> bool
+	{
+		return lhs.id == rhs;
+	});
+
+	if (adpt_it == adpt_list.end()) {
+		return -1;
+	}
+
+	auto display_it = adpt_it->displays.linearSearch(display_id, [](const Gleam::IRenderDevice::Display& lhs, unsigned int rhs) -> bool
+	{
+		return lhs.id == rhs;
+	});
+
+	if (display_it == adpt_it->displays.end()) {
+		return -1;
+	}
+
+	auto dm_it = display_it->display_modes.begin();
+
+	for (; dm_it != display_it->display_modes.end(); ++dm_it) {
+		if (dm_it->width == width && dm_it->height == height && dm_it->refresh_rate == refresh_rate) {
+			break;
+		}
+	}
+
+	if (dm_it == display_it->display_modes.end()) {
+		return -1;
+	}
+
+	return dm_it->id;
+}
+
 void RenderManager::generateDefaultConfig(Gaff::JSON& cfg)
 {
 	cfg = Gaff::JSON::createObject();
@@ -188,10 +445,16 @@ void RenderManager::generateDefaultConfig(Gaff::JSON& cfg)
 	Gaff::JSON windows = Gaff::JSON::createArray();
 	Gaff::JSON window_entry = Gaff::JSON::createObject();
 
-	window_entry.setObject("pos_x", Gaff::JSON::createInteger(0));
-	window_entry.setObject("pos_y", Gaff::JSON::createInteger(0));
-	window_entry.setObject("res_x", Gaff::JSON::createInteger(800));
-	window_entry.setObject("res_y", Gaff::JSON::createInteger(600));
+	window_entry.setObject("x", Gaff::JSON::createInteger(0));
+	window_entry.setObject("y", Gaff::JSON::createInteger(0));
+	window_entry.setObject("width", Gaff::JSON::createInteger(800));
+	window_entry.setObject("height", Gaff::JSON::createInteger(600));
+	window_entry.setObject("refresh_rate", Gaff::JSON::createInteger(60));
+	window_entry.setObject("window_name", Gaff::JSON::createString("Shibboleth"));
+	window_entry.setObject("windowed_mode", Gaff::JSON::createString("Windowed"));
+	window_entry.setObject("adapter_id", Gaff::JSON::createInteger(0));
+	window_entry.setObject("display_id", Gaff::JSON::createInteger(0));
+	window_entry.setObject("vsync", Gaff::JSON::createFalse());
 
 	windows.setObject(size_t(0), window_entry);
 
@@ -201,9 +464,11 @@ void RenderManager::generateDefaultConfig(Gaff::JSON& cfg)
 // Still single-threaded at this point, so ok that we're not using the spinlock
 bool RenderManager::cacheGleamFunctions(App& app, const Gaff::JSON& module, const char* cfg_file)
 {
+	LogManager::FileLockPair& log = _app.getGameLogFile();
+
 	// Instead of asserting, I'm going to log the errors and fail gracefully.
 	if (!module.isString()) {
-		app.getGameLogFile().first.printf("ERROR - Malformed graphics config file '%s'. 'module' field is not a string.", cfg_file);
+		log.first.printf("ERROR - Malformed graphics config file '%s'. 'module' field is not a string.", cfg_file);
 		return false;
 	}
 
@@ -213,7 +478,7 @@ bool RenderManager::cacheGleamFunctions(App& app, const Gaff::JSON& module, cons
 	_gleam_module = app.getDynamicLoader().loadModule(module_path.getBuffer(), module.getString());
 
 	if (!_gleam_module) {
-		app.getGameLogFile().first.printf("ERROR - Failed to find graphics module '%s'.", module_path.getBuffer());
+		log.first.printf("ERROR - Failed to find graphics module '%s'.", module_path.getBuffer());
 		return false;
 	}
 
@@ -221,7 +486,7 @@ bool RenderManager::cacheGleamFunctions(App& app, const Gaff::JSON& module, cons
 	GraphicsFunctions::InitGraphics init_graphics = _gleam_module->GetFunc<GraphicsFunctions::InitGraphics>("InitGraphics");
 
 	if (!init_graphics) {
-		app.getGameLogFile().first.printf("ERROR - Failed to find function 'InitGraphics' in graphics module '%s'.", module_path.getBuffer());
+		log.first.printf("ERROR - Failed to find function 'InitGraphics' in graphics module '%s'.", module_path.getBuffer());
 		return false;
 	}
 
@@ -233,14 +498,14 @@ bool RenderManager::cacheGleamFunctions(App& app, const Gaff::JSON& module, cons
 	}
 
 	if (!init_graphics(app, log_file_name)) {
-		app.getGameLogFile().first.printf("ERROR - Graphics module '%s' failed to initialize.", module_path.getBuffer());
+		log.first.printf("ERROR - Graphics module '%s' failed to initialize.", module_path.getBuffer());
 		return false;
 	}
 
 	_graphics_functions.shutdown = _gleam_module->GetFunc<GraphicsFunctions::ShutdownGraphics>("ShutdownGraphics");
 
 	if (!_graphics_functions.shutdown) {
-		app.getGameLogFile().first.printf("ERROR - Failed to find function 'ShutdownGraphics' in graphics module '%s'.", module_path.getBuffer());
+		log.first.printf("ERROR - Failed to find function 'ShutdownGraphics' in graphics module '%s'.", module_path.getBuffer());
 		return false;
 	}
 
@@ -258,62 +523,62 @@ bool RenderManager::cacheGleamFunctions(App& app, const Gaff::JSON& module, cons
 	_graphics_functions.create_mesh = _gleam_module->GetFunc<GraphicsFunctions::CreateMesh>("CreateMesh");
 
 	if (!_graphics_functions.create_shaderresourceview) {
-		app.getGameLogFile().first.printf("ERROR - Failed to find function 'CreateShaderResourceView' in graphics module '%s'.", module_path.getBuffer());
+		log.first.printf("ERROR - Failed to find function 'CreateShaderResourceView' in graphics module '%s'.", module_path.getBuffer());
 		return false;
 	}
 
 	if (!_graphics_functions.create_renderdevice) {
-		app.getGameLogFile().first.printf("ERROR - Failed to find function 'CreateRenderDevice' in graphics module '%s'.", module_path.getBuffer());
+		log.first.printf("ERROR - Failed to find function 'CreateRenderDevice' in graphics module '%s'.", module_path.getBuffer());
 		return false;
 	}
 
 	if (!_graphics_functions.create_rendertarget) {
-		app.getGameLogFile().first.printf("ERROR - Failed to find function 'CreateRenderTarget' in graphics module '%s'.", module_path.getBuffer());
+		log.first.printf("ERROR - Failed to find function 'CreateRenderTarget' in graphics module '%s'.", module_path.getBuffer());
 		return false;
 	}
 
 	if (!_graphics_functions.create_samplerstate) {
-		app.getGameLogFile().first.printf("ERROR - Failed to find function 'CreateSamplerState' in graphics module '%s'.", module_path.getBuffer());
+		log.first.printf("ERROR - Failed to find function 'CreateSamplerState' in graphics module '%s'.", module_path.getBuffer());
 		return false;
 	}
 
 	if (!_graphics_functions.create_renderstate) {
-		app.getGameLogFile().first.printf("ERROR - Failed to find function 'CreateRenderState' in graphics module '%s'.", module_path.getBuffer());
+		log.first.printf("ERROR - Failed to find function 'CreateRenderState' in graphics module '%s'.", module_path.getBuffer());
 		return false;
 	}
 
 	if (!_graphics_functions.create_texture) {
-		app.getGameLogFile().first.printf("ERROR - Failed to find function 'CreateTexture' in graphics module '%s'.", module_path.getBuffer());
+		log.first.printf("ERROR - Failed to find function 'CreateTexture' in graphics module '%s'.", module_path.getBuffer());
 		return false;
 	}
 
 	if (!_graphics_functions.create_layout) {
-		app.getGameLogFile().first.printf("ERROR - Failed to find function 'CreateLayout' in graphics module '%s'.", module_path.getBuffer());
+		log.first.printf("ERROR - Failed to find function 'CreateLayout' in graphics module '%s'.", module_path.getBuffer());
 		return false;
 	}
 
 	if (!_graphics_functions.create_program) {
-		app.getGameLogFile().first.printf("ERROR - Failed to find function 'CreateProgram' in graphics module '%s'.", module_path.getBuffer());
+		log.first.printf("ERROR - Failed to find function 'CreateProgram' in graphics module '%s'.", module_path.getBuffer());
 		return false;
 	}
 
 	if (!_graphics_functions.create_shader) {
-		app.getGameLogFile().first.printf("ERROR - Failed to find function 'CreateShader' in graphics module '%s'.", module_path.getBuffer());
+		log.first.printf("ERROR - Failed to find function 'CreateShader' in graphics module '%s'.", module_path.getBuffer());
 		return false;
 	}
 
 	if (!_graphics_functions.create_buffer) {
-		app.getGameLogFile().first.printf("ERROR - Failed to find function 'CreateBuffer' in graphics module '%s'.", module_path.getBuffer());
+		log.first.printf("ERROR - Failed to find function 'CreateBuffer' in graphics module '%s'.", module_path.getBuffer());
 		return false;
 	}
 
 	if (!_graphics_functions.create_model) {
-		app.getGameLogFile().first.printf("ERROR - Failed to find function 'CreateModel' in graphics module '%s'.", module_path.getBuffer());
+		log.first.printf("ERROR - Failed to find function 'CreateModel' in graphics module '%s'.", module_path.getBuffer());
 		return false;
 	}
 
 	if (!_graphics_functions.create_mesh) {
-		app.getGameLogFile().first.printf("ERROR - Failed to find function 'CreateMesh' in graphics module '%s'.", module_path.getBuffer());
+		log.first.printf("ERROR - Failed to find function 'CreateMesh' in graphics module '%s'.", module_path.getBuffer());
 		return false;
 	}
 

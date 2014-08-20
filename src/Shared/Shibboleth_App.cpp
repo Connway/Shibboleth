@@ -82,6 +82,11 @@ bool App::init(void)
 		return false;
 	}
 
+	if (!_broadcaster.init()) {
+		_log_file_pair->first.writeString("ERROR - Failed to initialize message broadcaster\n");
+		return false;
+	}
+
 	if (!loadManagers()) {
 		return false;
 	}
