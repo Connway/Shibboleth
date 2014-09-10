@@ -256,7 +256,7 @@ namespace Otter
 		
 	/* Points (touches/mouse/etc) were released
 	 */
-	bool Slider::OnPointsUp(const Point* points, sint32 numPoints)
+	bool Slider::OnPointsUp(const Point* /*points*/, sint32 /*numPoints*/)
 	{
 		mDraggingThumb = false;
 

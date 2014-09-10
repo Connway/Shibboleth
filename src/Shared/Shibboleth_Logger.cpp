@@ -25,7 +25,7 @@ THE SOFTWARE.
 NS_SHIBBOLETH
 
 LogManager::LogManager(Allocator& allocator):
-	_files(ProxyAllocator(allocator)), _allocator(allocator)
+	_files(ProxyAllocator(&allocator)), _allocator(allocator)
 {
 	_files.reserve(10);
 }

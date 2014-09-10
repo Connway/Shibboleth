@@ -65,6 +65,9 @@ private:
 
 	void prePhysicsUpdate(double dt);
 	void postPhysicsUpdate(double dt);
+
+	GAFF_NO_COPY(ObjectManager);
+	GAFF_NO_MOVE(ObjectManager);
 };
 
 NS_END

@@ -89,7 +89,8 @@ group ""
 		{
 			"../Shared/include",
 			"../../dependencies/jansson",
-			"../../dependencies/Gaff/include"
+			"../../dependencies/Gaff/include",
+			"../../dependencies/utf8-cpp"
 		}
 
 		dependson

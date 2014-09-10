@@ -42,6 +42,11 @@
 #include "utf8proc.h"
 #include "utf8proc_data.cpp"
 
+#if defined(_WIN32) || defined(_WIN64)
+	#pragma warning(push)
+	#pragma warning(disable : 4127)
+#endif
+
 
 const int8_t utf8proc_utf8class[256] = {
   1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
@@ -609,3 +614,6 @@ uint8_t *utf8proc_NFKC(const uint8_t *str) {
   return retval;
 }
 
+#if defined(_WIN32) || defined(_WIN64)
+	#pragma warning(pop)
+#endif

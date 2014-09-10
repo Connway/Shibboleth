@@ -22,6 +22,11 @@ THE SOFTWARE.
 
 #pragma once
 
+#if defined(_WIN32) || defined(_WIN64)
+	#pragma warning(push)
+	#pragma warning(disable : 4706)
+#endif
+
 #include "Gaff_String.h"
 #include <jansson.h>
 
@@ -31,7 +36,7 @@ class JSON
 {
 public:
 	template <class Callback>
-	void forEachInObject(Callback&& callback) const
+	bool forEachInObject(Callback&& callback) const
 	{
 		assert(_value && isObject());
 		const char* key = nullptr;
@@ -40,13 +45,15 @@ public:
 		json_object_foreach(_value, key, value)
 		{
 			if (callback(key, JSON(value, true))) {
-				break;
+				return true;
 			}
 		}
+
+		return false;
 	}
 
 	template <class Callback>
-	void forEachInArray(Callback&& callback) const
+	bool forEachInArray(Callback&& callback) const
 	{
 		assert(_value && isArray());
 		json_t* value = nullptr;
@@ -55,9 +62,11 @@ public:
 		json_array_foreach(_value, index, value)
 		{
 			if (callback(index, JSON(value, true))) {
-				break;
+				return true;
 			}
 		}
+
+		return false;
 	}
 
 	template <class Allocator>
@@ -149,3 +158,7 @@ private:
 };
 
 NS_END
+
+#if defined(_WIN32) || defined(_WIN64)
+	#pragma warning(pop)
+#endif

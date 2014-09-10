@@ -1,5 +1,10 @@
 #pragma once
 
+#if defined(_WIN32) || defined(_WIN64)
+	#pragma warning(push)
+	#pragma warning(disable : 4201)
+#endif
+
 namespace VectorMath
 {
 	/* 2 Dimension Vector
@@ -44,3 +49,7 @@ namespace VectorMath
 		};
 	};
 };
+
+#if defined(_WIN32) || defined(_WIN64)
+	#pragma warning(pop)
+#endif

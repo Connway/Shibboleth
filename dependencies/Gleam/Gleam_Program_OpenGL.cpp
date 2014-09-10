@@ -77,20 +77,22 @@ void ProgramGL::detach(IShader::SHADER_TYPE shader)
 	_attached_shaders[shader] = nullptr;
 }
 
-void ProgramGL::bind(IRenderDevice&)
+void ProgramGL::bind(IRenderDevice&, IProgramBuffers& program_buffers)
 {
+	assert(!program_buffers.isD3D());
+
 	glBindProgramPipeline(_program);
 
 	unsigned int texture_count = 0;
 	unsigned int count = 0;
 
 	for (unsigned int i = 0; i < IShader::SHADER_TYPE_SIZE - 1; ++i) {
-		assert(_sampler_states[i].size() <= _resource_views[i].size());
-		unsigned int sampler_count = 0;
+		const GleamArray<IShaderResourceView*>& resource_views = program_buffers.getResourceViews((Gleam::IShader::SHADER_TYPE)i);
+		const GleamArray<ISamplerState*>& sampler_states = program_buffers.getSamplerStates((Gleam::IShader::SHADER_TYPE)i);
+		const GleamArray<IBuffer*>& const_bufs = program_buffers.getConstantBuffers((Gleam::IShader::SHADER_TYPE)i);
 
-		GleamArray<IShaderResourceView*>& resource_views = _resource_views[i];
-		GleamArray<ISamplerState*>& sampler_states = _sampler_states[i];
-		GleamArray<IBuffer*>& const_bufs = _constant_buffers[i];
+		assert(sampler_states.size() <= resource_views.size());
+		unsigned int sampler_count = 0;
 
 		for (unsigned int j = 0; j < const_bufs.size(); ++j) {
 			glBindBufferBase(GL_UNIFORM_BUFFER, count, ((const BufferGL*)const_bufs[j])->getBuffer());

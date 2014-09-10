@@ -165,9 +165,9 @@ void SetAllocator(Allocator& allocator)
 	gAllocator = &allocator;
 }
 
-Allocator& GetAllocator(void)
+Allocator* GetAllocator(void)
 {
-	return *gAllocator;
+	return gAllocator;
 }
 
 void* ShibbolethAllocate(size_t size)

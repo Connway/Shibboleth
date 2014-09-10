@@ -35,21 +35,34 @@ SpatialManager::WatchUpdater::~WatchUpdater(void)
 {
 }
 
+void SpatialManager::WatchUpdater::operator()(const Gleam::Quaternion&) const
+{
+	addDirtyNode();
+}
+
 void SpatialManager::WatchUpdater::operator()(const Gleam::AABB&) const
 {
-	Gaff::ScopedLock<Gaff::SpinLock> scoped_lock(_spatial_mgr->_dirty_lock);
-
-	if (_spatial_mgr->_dirty_nodes.linearSearch(_node) == _spatial_mgr->_dirty_nodes.end()) {
-		_spatial_mgr->_dirty_nodes.push(_node);
-	}
+	addDirtyNode();
 }
 
 void SpatialManager::WatchUpdater::operator()(const Gleam::Vec4&) const
 {
-	Gaff::ScopedLock<Gaff::SpinLock> scoped_lock(_spatial_mgr->_dirty_lock);
+	addDirtyNode();
+}
 
-	if (_spatial_mgr->_dirty_nodes.linearSearch(_node) == _spatial_mgr->_dirty_nodes.end()) {
-		_spatial_mgr->_dirty_nodes.push(_node);
+void SpatialManager::WatchUpdater::addDirtyNode(void) const
+{
+	if (!_node->dirty) {
+		_node->_lock.lock();
+
+		// Check again in-case another thread changed the value before we acquired the lock
+		if (!_node->dirty) {
+			_node->dirty = true;
+			_node->_lock.unlock(); // We've set the flag, unlock so that other threads don't have to wait for the rest of the function to finish.
+
+			Gaff::ScopedLock<Gaff::SpinLock> scoped_lock(_spatial_mgr->_dirty_lock);
+			_spatial_mgr->_dirty_nodes.push(_node);
+		}
 	}
 }
 
@@ -67,7 +80,7 @@ SpatialManager::~SpatialManager(void)
 
 void SpatialManager::requestUpdateEntries(Array<UpdateEntry>& entries)
 {
-	entries.movePush(UpdateEntry("Spatial Manager: Update", Gaff::Bind(this, &SpatialManager::update)));
+	entries.movePush(UpdateEntry(AString("Spatial Manager: Update"), Gaff::Bind(this, &SpatialManager::update)));
 }
 
 const char* SpatialManager::getName(void) const
@@ -86,15 +99,18 @@ unsigned int SpatialManager::addObject(Object* object)
 	// register for position and aabb changes
 	WatchUpdater updater(this, node);
 
+	// Not watching scale because if the scale changes, so will the AABB.
 	node->receipts[0] = object->watchAABB(Gaff::Bind<WatchUpdater, void, const Gleam::AABB&>(updater));
-	node->receipts[1] = object->watchPos(Gaff::Bind<WatchUpdater, void, const Gleam::Vec4&>(updater));
+	node->receipts[1] = object->watchRotation(Gaff::Bind<WatchUpdater, void, const Gleam::Quaternion&>(updater));
+	node->receipts[2] = object->watchPosition(Gaff::Bind<WatchUpdater, void, const Gleam::Vec4&>(updater));
 	node->object = object;
-	node->id = AtomicIncrement(&_next_id);
+	node->dirty = false;
 
-	// add node to BVH
 	Gaff::ScopedLock<Gaff::SpinLock> scoped_lock(_bvh_lock);
+	node->id = _next_id;
 	_node_map[node->id] = node;
 	insertNode(node);
+	++_next_id;
 
 	return node->id;
 }
@@ -103,7 +119,7 @@ void SpatialManager::removeObject(unsigned int id)
 {
 	Gaff::ScopedLock<Gaff::SpinLock> bvh_lock(_bvh_lock);
 
-	// Split into two because VS2013 is retarded and think it's an uninitialized variable ...
+	// Split into two because VS2013 is retarded and thinks it's an uninitialized variable ...
 	Node* node = nullptr;
 	node = _node_map[node->id];
 

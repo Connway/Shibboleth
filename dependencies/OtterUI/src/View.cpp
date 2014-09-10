@@ -472,12 +472,12 @@ namespace Otter
 
 		if(strcmp((const char*)pAnimData->mName, "OnActivate") == 0)
 		{
-			activeAnimation.mID = ANIM_ONACTIVATE;
+			activeAnimation.mID = (uint32)ANIM_ONACTIVATE;
 			AnimateControls(pAnimData, activeAnimation);
 		}
 		else if(strcmp((const char*)pAnimData->mName, "OnDeactivate") == 0)
 		{
-			activeAnimation.mID = ANIM_ONDEACTIVATE;
+			activeAnimation.mID = (uint32)ANIM_ONDEACTIVATE;
 		}
 
 		if(bMakeInstance)

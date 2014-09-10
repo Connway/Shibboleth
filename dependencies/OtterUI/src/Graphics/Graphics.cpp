@@ -263,7 +263,7 @@ namespace Otter
 			DrawBatch& lastBatch = mBatches[mBatches.size() - 1];
 			if(	primType == Otter::kPrim_TriangleList && 
 				lastBatch.mPrimitiveType == primType && 
-				lastBatch.mTextureID == textureID &&
+				(uint32)lastBatch.mTextureID == textureID &&
 				lastBatch.mRenderFlags == renderFlags &&
 				!(!mPreTransformVerts && mStackUpdated) &&
 				!mPropertiesUpdated)

@@ -118,6 +118,21 @@ public:
 		return _res_ptr;
 	}
 
+	ResourcePtr& getResourcePtr(void)
+	{
+		return _res_ptr;
+	}
+
+	const T* getDataPtr(void) const
+	{
+		return _res_ptr->getResourcePtr<T>();
+	}
+
+	T* getDataPtr(void)
+	{
+		return _res_ptr->getResourcePtr<T>();
+	}
+
 	bool valid(void) const
 	{
 		return _res_ptr.get() != nullptr;

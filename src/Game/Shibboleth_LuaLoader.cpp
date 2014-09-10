@@ -38,7 +38,7 @@ LuaLoader::~LuaLoader(void)
 
 Gaff::IVirtualDestructor* LuaLoader::load(const char* file_name, unsigned long long)
 {
-	SingleDataWrapper<lua::State*>* lua_data = GetAllocator().template allocT< SingleDataWrapper<lua::State*> >();
+	SingleDataWrapper<lua::State*>* lua_data = GetAllocator()->template allocT< SingleDataWrapper<lua::State*> >();
 
 	if (lua_data) {
 		lua_data->data = _lua_manager.createNewState();

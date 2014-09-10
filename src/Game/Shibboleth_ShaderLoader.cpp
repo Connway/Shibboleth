@@ -46,7 +46,7 @@ Gaff::IVirtualDestructor* ShaderLoader::load(const char* file_name, unsigned lon
 		(!_render_mgr.getRenderDevice().isD3D() && Gaff::File::checkExtension(file_name, ".glsl"))
 	);
 
-	ShaderData* shader_data = GetAllocator().template allocT<ShaderData>();
+	ShaderData* shader_data = GetAllocator()->template allocT<ShaderData>();
 
 	if (!shader_data) {
 		return nullptr;
@@ -62,12 +62,12 @@ Gaff::IVirtualDestructor* ShaderLoader::load(const char* file_name, unsigned lon
 		rd.setCurrentDevice(i);
 
 		if (!shader) {
-			GetAllocator().freeT(shader_data);
+			GetAllocator()->freeT(shader_data);
 			return nullptr;
 		}
 
 		if (!shader->init(rd, file_name, shader_data->shader_type)) {
-			GetAllocator().freeT(shader_data);
+			GetAllocator()->freeT(shader_data);
 			return nullptr;
 		}
 

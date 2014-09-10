@@ -383,7 +383,7 @@ const float* Mesh::getTangents(unsigned int index) const
 	return &_mesh->mTangents[index].x;
 }
 
-const float* Mesh::getBiTangents(unsigned int index) const
+const float* Mesh::getBitangents(unsigned int index) const
 {
 	assert(_mesh && index < _mesh->mNumVertices);
 	return &_mesh->mBitangents[index].x;
@@ -407,6 +407,12 @@ Face Mesh::getFace(unsigned int index) const
 {
 	assert(_mesh && index < _mesh->mNumFaces);
 	return Face(_mesh->mFaces + index);
+}
+
+Bone Mesh::getBone(unsigned int index) const
+{
+	assert(_mesh && index < _mesh->mNumBones);
+	return Bone(_mesh->mBones[index]);
 }
 
 bool Mesh::valid(void) const

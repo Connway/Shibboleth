@@ -41,11 +41,11 @@ namespace Otter
 		InitLog(this);
 
 		mFileSystem = NULL;
-		mGraphics = OTTER_NEW(Graphics, ());
+		mGraphics = NULL;
 
 		mScreenWidth = 0;
 		mScreenHeight = 0;
-		mMemoryBuffer = NULL;
+		mMemoryBuffer = NULL;		
 
 		SetResolution(1024, 768);
 	}

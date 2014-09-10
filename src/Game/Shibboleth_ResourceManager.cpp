@@ -50,8 +50,8 @@ void ResourceContainer::release(void) const
 		// Tell ResourceManager that the client no longer has references to this resource, so remove it from your list.
 		(_res_manager->*_zero_ref_callback)(_res_key);
 
-		Shibboleth::GetAllocator().freeT(_resource);
-		Shibboleth::GetAllocator().freeT(this);
+		Shibboleth::GetAllocator()->freeT(_resource);
+		Shibboleth::GetAllocator()->freeT(this);
 	}
 }
 
@@ -123,6 +123,7 @@ void ResourceManager::ResourceLoadingTask::doTask(void)
 	if (data) {
 		_res_ptr->setResource(data);
 	} else {
+		// Log error
 	}
 
 	_res_ptr->callCallbacks(data != nullptr);
@@ -167,15 +168,16 @@ ResourcePtr ResourceManager::requestResource(const char* filename, unsigned long
 	AHashString res_key(filename);
 
 	Gaff::ScopedLock<Gaff::SpinLock> lock(_res_cache_lock);
+	auto it = _resource_cache.findElementWithKey(res_key);
 
-	if (_resource_cache.indexOf(res_key) == -1) {
+	if (it == _resource_cache.end()) {
 		// We have no cache of this resource or have yet to make a request for it,
 		// so make a load request.
 
 		AString extension = res_key.getString().getExtension('.');
 		assert(extension.size() && _resource_loaders.indexOf(AHashString(extension)) != -1);
 
-		ResourceContainer* res_cont = (ResourceContainer*)GetAllocator().alloc(sizeof(ResourceContainer));
+		ResourceContainer* res_cont = (ResourceContainer*)GetAllocator()->alloc(sizeof(ResourceContainer));
 		new (res_cont) ResourceContainer(res_key, this, &ResourceManager::zeroRefCallback, user_data);
 
 		ResourcePtr& res_ptr = _resource_cache[res_key];
@@ -184,15 +186,52 @@ ResourcePtr ResourceManager::requestResource(const char* filename, unsigned long
 		// make load task
 		ResourceLoaderPtr& res_loader = _resource_loaders[extension];
 
-		ResourceLoadingTask* load_task = GetAllocator().template allocT<ResourceLoadingTask>(res_loader, res_ptr);
-		_app.addTask(Gaff::TaskPtr<ProxyAllocator>(load_task));
+		ResourceLoadingTask* load_task = GetAllocator()->template allocT<ResourceLoadingTask>(res_loader, res_ptr);
+		Gaff::TaskPtr<ProxyAllocator> task(load_task);
+		_app.addTask(task);
 
 		return res_ptr;
 
 	} else {
 		// We have a cache of this resource or we've already made a request to load it.
 		// Send the container/future back.
-		return _resource_cache[res_key];
+		return it.getValue();
+	}
+}
+
+ResourcePtr ResourceManager::loadResourceImmediately(const char* filename, unsigned long long user_data)
+{
+	AHashString res_key(filename);
+
+	Gaff::ScopedLock<Gaff::SpinLock> lock(_res_cache_lock);
+	auto it = _resource_cache.findElementWithKey(res_key);
+
+	if (it == _resource_cache.end()) {
+		// We have no cache of this resource or have yet to make a request for it.
+		AString extension = res_key.getString().getExtension('.');
+		assert(extension.size() && _resource_loaders.indexOf(AHashString(extension)) != -1);
+
+		ResourceContainer* res_cont = (ResourceContainer*)GetAllocator()->alloc(sizeof(ResourceContainer));
+		new (res_cont)ResourceContainer(res_key, this, &ResourceManager::zeroRefCallback, user_data);
+
+		ResourcePtr& res_ptr = _resource_cache[res_key];
+		res_ptr.set(res_cont);
+
+		ResourceLoaderPtr& res_loader = _resource_loaders[extension];
+
+		Gaff::IVirtualDestructor* data = res_loader->load(filename, user_data);
+
+		if (data) {
+			res_ptr->setResource(data);
+		} else {
+			// Log error
+		}
+
+		return res_ptr;
+
+	} else {
+		// We have a cache of this resource. Send the container back.
+		return it.getValue();
 	}
 }
 

@@ -46,3 +46,5 @@ THE SOFTWARE.
 #else
 	#error "Cannot deduce platform bit-age."
 #endif
+
+#define UINT_FAIL static_cast<unsigned int>(-1)

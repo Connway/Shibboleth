@@ -223,34 +223,21 @@ char& String<T, Allocator>::operator[](unsigned int index)
 template <class T, class Allocator>
 const String<T, Allocator>& String<T, Allocator>::operator+=(const String<T, Allocator>& rhs)
 {
-	unsigned int new_size = _size + rhs._size;
-	T* new_string = (T*)_allocator.alloc(sizeof(T) * (new_size + 1));
-
-	copy(_string, new_string);
-	copy(rhs._string, new_string + _size);
-
-	_size = new_size;
-
-	_allocator.free(_string);
-	_string = new_string;
-
+	append(rhs.getBuffer(), rhs.size());
 	return *this;
 }
 
 template <class T, class Allocator>
 const String<T, Allocator>& String<T, Allocator>::operator+=(const T* rhs)
 {
-	unsigned int new_size = _size + length(rhs);
-	T* new_string = (T*)_allocator.alloc(sizeof(T) * (new_size + 1));
+	append(rhs);
+	return *this;
+}
 
-	copy(_string, new_string);
-	copy(rhs, new_string + _size);
-
-	_size = new_size;
-
-	_allocator.free(_string);
-	_string = new_string;
-
+template <class T, class Allocator>
+const String<T, Allocator>& String<T, Allocator>::operator+=(T rhs)
+{
+	append(&rhs, 1);
 	return *this;
 }
 
@@ -264,6 +251,14 @@ String<T, Allocator> String<T, Allocator>::operator+(const String<T, Allocator>&
 
 template <class T, class Allocator>
 String<T, Allocator> String<T, Allocator>::operator+(const T* rhs) const
+{
+	String<T, Allocator> str(*this);
+	str += rhs;
+	return str;
+}
+
+template <class T, class Allocator>
+String<T, Allocator> String<T, Allocator>::operator+(T rhs) const
 {
 	String<T, Allocator> str(*this);
 	str += rhs;
@@ -330,6 +325,90 @@ String<T, Allocator> String<T, Allocator>::substring(unsigned int begin) const
 }
 
 template <class T, class Allocator>
+void String<T, Allocator>::append(const T* string, unsigned int size)
+{
+	unsigned int new_size = _size + size;
+	T* new_string = (T*)_allocator.alloc(sizeof(T) * (new_size + 1));
+	new_string[new_size] = 0;
+
+	if (_string) {
+		copy(_string, new_string);
+	}
+
+	copy(string, new_string + _size, size);
+
+	_size = new_size;
+
+	_allocator.free(_string);
+	_string = new_string;
+}
+
+template <class T, class Allocator>
+void String<T, Allocator>::append(const T* string)
+{
+	append(string, length(string));
+}
+
+template <class T, class Allocator>
+void String<T, Allocator>::resize(unsigned int new_size)
+{
+	if (new_size == _size) {
+		return;
+	}
+
+	unsigned int copy_size = (new_size < _size) ? new_size : _size;
+	T* new_string = (T*)_allocator.alloc(sizeof(T) * (new_size + 1));
+
+	if (_string) {
+		copy(_string, new_string, copy_size);
+	}
+
+	zeroOut(new_string + copy_size, new_size + 1 - copy_size);
+
+	_size = new_size;
+
+	_allocator.free(_string);
+	_string = new_string;
+}
+
+template <class T, class Allocator>
+unsigned int String<T, Allocator>::findFirstOf(const T* string) const
+{
+	unsigned int len = length(string);
+
+	if (_size < len) {
+		return npos;
+	}
+
+	unsigned int num_iterations = _size - len + 1;
+
+	for (unsigned int i = 0; i < num_iterations; ++i) {
+		if (equal(_string + i, string, len)) {
+			return i;
+		}
+	}
+
+	return npos;
+}
+
+template <class T, class Allocator>
+unsigned int String<T, Allocator>::findLastOf(const T* character) const
+{
+	unsigned int len = length(string);
+
+	if (_size < len) {
+		return npos;
+	}
+
+	for (int i = (int)_size - len - 2; i >= 0; --i) {
+		if (equal(_string + i, string, len)) {
+			return (unsigned int)i;
+		}
+	}
+
+	return npos;
+}
+template <class T, class Allocator>
 unsigned int String<T, Allocator>::findFirstOf(T character) const
 {
 	for (unsigned int i = 0; i < _size; ++i) {
@@ -344,10 +423,6 @@ unsigned int String<T, Allocator>::findFirstOf(T character) const
 template <class T, class Allocator>
 unsigned int String<T, Allocator>::findLastOf(T character) const
 {
-	if (!_size) {
-		return npos;
-	}
-
 	for (int i = (int)_size - 1; i >= 0; --i) {
 		if (_string[i] == character) {
 			return i;
@@ -357,8 +432,51 @@ unsigned int String<T, Allocator>::findLastOf(T character) const
 	return npos;
 }
 
+template <class T, class Allocator>
+void String<T, Allocator>::convertToUTF8(const wchar_t* string, unsigned int size)
+{
+	resize(size * 4); // If somehow every character generates 4 octets
+	utf8::utf16to8(string, string + size, _string);
+	trimZeroes(); // Make string exact size
+}
+
+template <class T, class Allocator>
+void String<T, Allocator>::convertToUTF16(const char* string, unsigned int size)
+{
+	resize(size * 2); // If somehow every character generates surrogate pairs
+	utf8::utf8to16(string, string + size, _string);
+	trimZeroes(); // Make string exact size
+}
+
+template <class T, class Allocator>
+unsigned int String<T, Allocator>::findInvalidUTF8(void) const
+{
+	char* position = utf8::find_invalid(_string, _string + _size);
+	return (unsigned int)(position - _string);
+}
+
+template <class T, class Allocator>
+bool String<T, Allocator>::isValidUTF8(void) const
+{
+	return utf8::is_valid(_string, _string + _size);
+}
+
+
 // If my benchmarks from strlen() and wcslen() are any indicator, this is no slower than memcpy(),
 // and this gets rid of that damn compiler warning
+template <class T, class Allocator>
+void String<T, Allocator>::copy(const T* src, T* dest, unsigned int dest_size) const
+{
+	unsigned int i = 0;
+
+	while (src[i] != 0 && i < dest_size) {
+		dest[i] = src[i];
+		++i;
+	}
+
+	dest[i] = 0;
+}
+
 template <class T, class Allocator>
 void String<T, Allocator>::copy(const T* src, T* dest) const
 {
@@ -370,6 +488,37 @@ void String<T, Allocator>::copy(const T* src, T* dest) const
 	}
 
 	dest[i] = 0;
+}
+
+template <class T, class Allocator>
+void String<T, Allocator>::zeroOut(T* string, unsigned int size) const
+{
+	for (unsigned int i = 0; i < size; ++i) {
+		string[i] = 0;
+	}
+}
+
+template <class T, class Allocator>
+void String<T, Allocator>::trimZeroes(void)
+{
+	for (unsigned int i = 0; i < _size; ++i) {
+		if (_string[i] == 0) {
+			resize(i);
+			break;
+		}
+	}
+}
+
+template <class T, class Allocator>
+bool String<T, Allocator>::equal(const T* str1, const T* str2, unsigned int size) const
+{
+	for (unsigned int i = 0; i < size; ++i) {
+		if (str1[i] != str2[i]) {
+			return false;
+		}
+	}
+
+	return true;
 }
 
 

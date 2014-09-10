@@ -21,6 +21,7 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include <Shibboleth_ComponentManager.h>
+#include <Shibboleth_ModelComponent.h>
 #include <Shibboleth_LuaComponent.h>
 #include <Shibboleth_App.h>
 #include <Gaff_JSON.h>
@@ -28,12 +29,13 @@ THE SOFTWARE.
 template <class Component>
 Shibboleth::IComponent* CreateComponent(Shibboleth::App& app)
 {
-	return Shibboleth::GetAllocator().allocT<Component>(app);
+	return Shibboleth::GetAllocator()->allocT<Component>(app);
 }
 
 enum Components
 {
 	LUA_COMPONENT = 0,
+	MODEL_COMPONENT,
 	NUM_COMPONENTS
 };
 
@@ -42,18 +44,22 @@ typedef const char* (*ComponentNameFunc)(void);
 typedef void (*RefDefInitFunc)(void);
 
 static CreateComponentFunc create_funcs[] = {
-	&CreateComponent<Shibboleth::LuaComponent>
+	&CreateComponent<Shibboleth::LuaComponent>,
+	&CreateComponent<Shibboleth::ModelComponent>
 };
 
 static ComponentNameFunc name_funcs[] = {
-	&Shibboleth::LuaComponent::getComponentName
+	&Shibboleth::LuaComponent::getComponentName,
+	&Shibboleth::ModelComponent::getComponentName
 };
 
-static RefDefInitFunc init_funcs[] = {
-	&Shibboleth::LuaComponent::InitReflectionDefinition
+static RefDefInitFunc ref_def_init_funcs[] = {
+	&Shibboleth::LuaComponent::InitReflectionDefinition,
+	&Shibboleth::ModelComponent::InitReflectionDefinition
 };
 
 static Shibboleth::App* g_app = nullptr;
+
 
 DYNAMICEXPORT bool InitModule(Shibboleth::App& app)
 {
@@ -66,7 +72,7 @@ DYNAMICEXPORT bool InitModule(Shibboleth::App& app)
 
 	// Initialize all the reflection definitions
 	for (unsigned int i = 0; i < NUM_COMPONENTS; ++i) {
-		init_funcs[i]();
+		ref_def_init_funcs[i]();
 	}
 
 	return true;
@@ -91,5 +97,5 @@ DYNAMICEXPORT Shibboleth::IComponent* CreateComponent(unsigned int id)
 
 DYNAMICEXPORT void DestroyComponent(Shibboleth::IComponent* component, unsigned int)
 {
-	Shibboleth::GetAllocator().freeT(component);
+	Shibboleth::GetAllocator()->freeT(component);
 }

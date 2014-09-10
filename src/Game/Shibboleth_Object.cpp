@@ -114,14 +114,54 @@ MessageBroadcaster& Object::getBroadcaster(void)
 	return _broadcaster;
 }
 
+Gaff::WatchReceipt Object::watchRotation(const Watcher<Gleam::Quaternion>::Callback& callback)
+{
+	return _rotation.addCallback(callback);
+}
+
+Gaff::WatchReceipt Object::watchPosition(const Watcher<Gleam::Vec4>::Callback& callback)
+{
+	return _position.addCallback(callback);
+}
+
+Gaff::WatchReceipt Object::watchScale(const Watcher<Gleam::Vec4>::Callback& callback)
+{
+	return _scale.addCallback(callback);
+}
+
 Gaff::WatchReceipt Object::watchAABB(const Watcher<Gleam::AABB>::Callback& callback)
 {
 	return _aabb.addCallback(callback);
 }
 
-Gaff::WatchReceipt Object::watchPos(const Watcher<Gleam::Vec4>::Callback& callback)
+const Gleam::Quaternion& Object::getRotation(void) const
 {
-	return _pos.addCallback(callback);
+	return _rotation.get();
+}
+
+void Object::setRotation(const Gleam::Quaternion& rot)
+{
+	_rotation = rot;
+}
+
+const Gleam::Vec4& Object::getPosition(void) const
+{
+	return _position.get();
+}
+
+void Object::setPosition(const Gleam::Vec4& pos)
+{
+	_position = pos;
+}
+
+const Gleam::Vec4& Object::getScale(void) const
+{
+	return _scale.get();
+}
+
+void Object::setScale(const Gleam::Vec4& scale)
+{
+	_scale = scale;
 }
 
 const Gleam::AABB& Object::getAABB(void) const
@@ -132,16 +172,6 @@ const Gleam::AABB& Object::getAABB(void) const
 void Object::setAABB(const Gleam::AABB& aabb)
 {
 	_aabb = aabb;
-}
-
-const Gleam::Vec4& Object::getPos(void) const
-{
-	return _pos.get();
-}
-
-void Object::setPos(const Gleam::Vec4& pos)
-{
-	_pos = pos;
 }
 
 bool Object::createComponents(const Gaff::JSON& json)

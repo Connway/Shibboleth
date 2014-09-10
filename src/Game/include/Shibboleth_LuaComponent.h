@@ -62,6 +62,9 @@ private:
 
 	ResourceManager& _res_mgr;
 	AString _lua_file;
+
+	GAFF_NO_COPY(LuaComponent);
+	GAFF_NO_MOVE(LuaComponent);
 };
 
 NS_END

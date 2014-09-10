@@ -25,6 +25,7 @@ THE SOFTWARE.
 #include <Shibboleth_ResourceManager.h>
 #include <Shibboleth_TextureLoader.h>
 #include <Shibboleth_ShaderLoader.h>
+#include <Shibboleth_ModelLoader.h>
 #include <Shibboleth_LuaLoader.h>
 #include <Shibboleth_String.h>
 #include <Shibboleth_App.h>
@@ -136,6 +137,21 @@ void CreateResourceLoadersState::update(void)
 
 		_app.getGameLogFile().first.printf("Adding Lua Loader\n");
 		res_mgr.registerResourceLoader(lua_loader, ".lua");
+	}
+
+	// MODEL LOADER
+	{
+		ModelLoader* model_loader = _app.getAllocator().template allocT<ModelLoader>(render_manager);
+
+		if (!model_loader) {
+			// log error
+			_app.getGameLogFile().first.printf("ERROR - Failed to create Model loader.\n");
+			_app.quit();
+			return;
+		}
+
+		_app.getGameLogFile().first.printf("Adding Model Loader\n");
+		res_mgr.registerResourceLoader(model_loader, ".model");
 	}
 
 	_app.getGameLogFile().first.printf("Finished Creating Resource Loaders\n\n");

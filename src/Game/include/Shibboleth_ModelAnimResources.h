@@ -1,5 +1,3 @@
-changecom('!')dnl
-dnl
 /************************************************************************************
 Copyright (C) 2014 by Nicholas LaCroix
 
@@ -22,8 +20,25 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#include "NS_FILE"
+#pragma once
 
-NS_NAMESPACE
+#include "Shibboleth_ResourceDefines.h"
+#include <Gaff_IVirtualDestructor.h>
+#include <Gaff_SceneImporter.h>
+#include <Gleam_IModel.h>
+
+NS_SHIBBOLETH
+
+struct ModelData : public Gaff::IVirtualDestructor
+{
+	ModelData(void) {}
+	~ModelData(void) {}
+
+	Gaff::SceneImporter importer;
+	Gaff::Scene scene;
+
+	Array< Array<ModelPtr> > models;
+	// vertex weights
+};
 
 NS_END

@@ -32,9 +32,9 @@ NS_SHIBBOLETH
 
 // Have to pass in the correct ProxyAllocator, as we have not registered our allocator globally yet
 App::App(void):
-	_broadcaster(ProxyAllocator(_allocator)), _dynamic_loader(ProxyAllocator(_allocator)),
-	_state_machine(ProxyAllocator(_allocator)), _manager_map(ProxyAllocator(_allocator)),
-	_thread_pool(ProxyAllocator(_allocator)), _logger(_allocator), _seed(0),
+	_broadcaster(ProxyAllocator(&_allocator)), _dynamic_loader(ProxyAllocator(&_allocator)),
+	_state_machine(ProxyAllocator(&_allocator)), _manager_map(ProxyAllocator(&_allocator)),
+	_thread_pool(ProxyAllocator(&_allocator)), _logger(_allocator), _seed(0),
 	_running(true)
 {
 	SetAllocator(_allocator);
@@ -291,7 +291,7 @@ bool App::loadStates(void)
 				return false;
 			}
 
-			StateMachine::StateEntry entry = { state_name.getString(), nullptr, nullptr, nullptr, state_id };
+			StateMachine::StateEntry entry = { AString(state_name.getString()), nullptr, nullptr, nullptr, state_id };
 			entry.create_func = module->GetFunc<StateMachine::StateEntry::CreateStateFunc>("CreateState");
 			entry.destroy_func = module->GetFunc<StateMachine::StateEntry::DestroyStateFunc>("DestroyState");
 

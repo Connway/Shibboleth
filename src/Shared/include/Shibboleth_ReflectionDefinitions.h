@@ -113,6 +113,9 @@ public:
 private:
 	HashMap<AHashString, T> _values_map;
 	bool _defined;
+
+	GAFF_NO_COPY(EnumReflectionDefinition);
+	GAFF_NO_MOVE(EnumReflectionDefinition);
 };
 
 template <class T>
@@ -134,8 +137,9 @@ public:
 			VT_CHAR,
 			VT_BOOL,
 			VT_ENUM,
-			VT_ASTRING,
+			VT_STRING,
 			VT_OBJECT,
+			VT_ARRAY,
 			VT_CUSTOM,
 			VT_SIZE
 		};
@@ -167,10 +171,24 @@ public:
 	ReflectionDefinition<T>& addBaseClass(const ReflectionDefinition<T2>& base_ref_def);
 
 	template <class T2>
-	ReflectionDefinition<T>& addObject(const char* key, T2 T::* var, ReflectionDefinition<T2> T2::* var_ref_def);
+	ReflectionDefinition<T>& addObject(const char* key, T2 T::* var, ReflectionDefinition<T2>& var_ref_def);
 
 	template <class T2>
 	ReflectionDefinition<T>& addEnum(const char* key, T2 T::* var, const EnumReflectionDefinition<T2>& ref_def);
+
+	//template <class T2>
+	//ReflectionDefinition<T>& addArray(const char* key, Array<T2> T::* var, ReflectionDefinition<T2> T2::* elem_ref_def);
+
+	//ReflectionDefinition<T>& addArray(const char* key, Array<double> T::* var);
+	//ReflectionDefinition<T>& addArray(const char* key, Array<float> T::* var);
+	//ReflectionDefinition<T>& addArray(const char* key, Array<unsigned int> T::* var);
+	//ReflectionDefinition<T>& addArray(const char* key, Array<int> T::* var);
+	//ReflectionDefinition<T>& addArray(const char* key, Array<unsigned short> T::* var);
+	//ReflectionDefinition<T>& addArray(const char* key, Array<short> T::* var);
+	//ReflectionDefinition<T>& addArray(const char* key, Array<unsigned char> T::* var);
+	//ReflectionDefinition<T>& addArray(const char* key, Array<char> T::* var);
+	//ReflectionDefinition<T>& addArray(const char* key, Array<bool> T::* var);
+	//ReflectionDefinition<T>& addArray(const char* key, Array<AString> T::* var);
 
 	ReflectionDefinition<T>& addDouble(const char* key, double T::* var);
 	ReflectionDefinition<T>& addFloat(const char* key, float T::* var);
@@ -181,7 +199,7 @@ public:
 	ReflectionDefinition<T>& addUChar(const char* key, unsigned char T::* var);
 	ReflectionDefinition<T>& addChar(const char* key, char T::* var);
 	ReflectionDefinition<T>& addBool(const char* key, bool T::* var);
-	ReflectionDefinition<T>& addANSIString(const char* key, AString T::* var);
+	ReflectionDefinition<T>& addString(const char* key, AString T::* var);
 
 	ReflectionDefinition<T>& addCustom(const char* key, IValueContainer* container);
 
@@ -202,13 +220,13 @@ private:
 	VAR_CONTAINER(UCharContainer, unsigned char);
 	VAR_CONTAINER(CharContainer, char);
 	VAR_CONTAINER(BoolContainer, bool);
-	VAR_CONTAINER(ANSIStringContainer, AString);
+	VAR_CONTAINER(StringContainer, AString);
 
 	template <class T2>
 	class ObjectContainer : public IValueContainer
 	{
 	public:
-		ObjectContainer(const char* key, T2 T::* var, ReflectionDefinition<T2> T2::* var_ref_def);
+		ObjectContainer(const char* key, T2 T::* var, ReflectionDefinition<T2>& var_ref_def);
 
 		void read(const Gaff::JSON& json, T* object);
 		void write(Gaff::JSON& json, T* object) const;
@@ -216,7 +234,7 @@ private:
 		ValueType getType(void) const;
 
 	private:
-		ReflectionDefinition<T2> T2::* _var_ref_def;
+		ReflectionDefinition<T2>& _var_ref_def;
 		T2 T::* _var;
 	};
 
@@ -265,6 +283,9 @@ private:
 
 	HashMap<AHashString, ValueContainerPtr> _value_containers;
 	bool _defined;
+
+	GAFF_NO_COPY(ReflectionDefinition);
+	GAFF_NO_MOVE(ReflectionDefinition);
 };
 
 /*

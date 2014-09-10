@@ -417,21 +417,21 @@ namespace Otter
 
 	/* Points (touches/mouse/etc) were pressed down
 	 */
-	bool Control::OnPointsDown(const Point* points, sint32 numPoints)
+	bool Control::OnPointsDown(const Point* /*points*/, sint32 /*numPoints*/)
 	{
 		return false;
 	}
 		
 	/* Points (touches/mouse/etc) were released
 	 */
-	bool Control::OnPointsUp(const Point* points, sint32 numPoints)
+	bool Control::OnPointsUp(const Point* /*points*/, sint32 /*numPoints*/)
 	{
 		return false;
 	}
 		
 	/* Points (touches/mouse/etc) were moved.
 	 */
-	bool Control::OnPointsMove(const Point* points, sint32 numPoints)
+	bool Control::OnPointsMove(const Point* /*points*/, sint32 /*numPoints*/)
 	{
 		return false;
 	}

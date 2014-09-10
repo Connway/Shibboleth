@@ -64,7 +64,6 @@ public:
 		return addVertData(rd, vert_data, vert_count, sizeof(Vertex), indices, index_count, primitive_type);
 	}
 
-	// Note, this function assumes the first three elements of a vertex are the position
 	virtual bool addVertData(
 		IRenderDevice& rd, const void* vert_data, unsigned int vert_count, unsigned int vert_size,
 		unsigned int* indices, unsigned int index_count, TOPOLOGY_TYPE primitive_type = TRIANGLE_LIST
@@ -76,12 +75,6 @@ public:
 	INLINE unsigned int getBufferCount(void) const;
 
 	INLINE void setIndiceBuffer(IBuffer* buffer);
-
-	INLINE void setBoundingBox(const AABB& bounding_box);
-	INLINE const AABB& getBoundingBox(void) const;
-
-	// Note, this function assumes the first three elements of a vertex are the position
-	void setBoundingBox(const void* vert_data, unsigned int vert_count, unsigned int vert_size);
 
 	virtual void setTopologyType(TOPOLOGY_TYPE topology) = 0;
 	INLINE TOPOLOGY_TYPE getTopologyType(void) const;
@@ -108,7 +101,6 @@ protected:
 
 private:
 	unsigned int _index_count;
-	AABB _bounding_box;
 
 	GAFF_NO_COPY(IMesh);
 };

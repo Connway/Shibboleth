@@ -39,16 +39,16 @@ OtterUIManager::~OtterUIManager(void)
 
 bool OtterUIManager::init(unsigned int memory_size_bytes, bool enable_pre_transformed_verts)
 {
-	_memory_buffer = (unsigned char*)GetAllocator().alloc(memory_size_bytes);
+	_memory_buffer = (unsigned char*)GetAllocator()->alloc(memory_size_bytes);
 
 	if (!_memory_buffer) {
 		return false;
 	}
 
-	_system = GetAllocator().template allocT<Otter::System>(_memory_buffer, memory_size_bytes);
+	_system = GetAllocator()->template allocT<Otter::System>(_memory_buffer, memory_size_bytes);
 
 	if (!_system) {
-		GetAllocator().free(_memory_buffer);
+		GetAllocator()->free(_memory_buffer);
 	}
 
 	return _system->EnablePreTransformVerts(enable_pre_transformed_verts) == Otter::kResult_OK &&
@@ -58,11 +58,11 @@ bool OtterUIManager::init(unsigned int memory_size_bytes, bool enable_pre_transf
 void OtterUIManager::destroy(void)
 {
 	if (_system) {
-		GetAllocator().freeT(_system);
+		GetAllocator()->freeT(_system);
 	}
 
 	if (_memory_buffer) {
-		GetAllocator().free(_memory_buffer);
+		GetAllocator()->free(_memory_buffer);
 	}
 }
 

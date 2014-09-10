@@ -129,6 +129,7 @@ public:
 	void setAllocator(const Allocator& allocator);
 
 	Iterator findElementWithValue(const Value& value) const;
+	Iterator findElementWithKey(const Key& value) const;
 
 	Iterator begin(void) const;
 	Iterator end(void) const;
@@ -241,6 +242,7 @@ public:
 	void setAllocator(const Allocator& allocator);
 
 	Iterator findElementWithValue(const Value& value) const;
+	Iterator findElementWithKey(const String<T, Allocator>& value) const;
 
 	Iterator begin(void) const;
 	Iterator end(void) const;
@@ -353,6 +355,7 @@ public:
 	void setAllocator(const Allocator& allocator);
 
 	Iterator findElementWithValue(const Value& value) const;
+	Iterator findElementWithKey(const HashString<T, Allocator>& value) const;
 
 	Iterator begin(void) const;
 	Iterator end(void) const;

@@ -64,6 +64,6 @@ namespace Otter
 		/**
 		 * Sets the renderer to draw to the stencil buffer
 		 */
-		virtual void SetStencilState(StencilState state) { }
+		virtual void SetStencilState(StencilState /*state*/) { }
 	};
 }

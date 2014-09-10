@@ -27,6 +27,7 @@ THE SOFTWARE.
 #include <Shibboleth_Watcher.h>
 #include <Shibboleth_Array.h>
 #include <Shibboleth_Map.h>
+#include <Gleam_Quaternion.h>
 #include <Gleam_AABB.h>
 
 NS_SHIBBOLETH
@@ -53,9 +54,13 @@ private:
 	{
 		// other data for pos, aabb, and children nodes
 
-		Gaff::WatchReceipt receipts[2];
+		Gaff::WatchReceipt receipts[3];
 		Object* object;
 		unsigned int id;
+
+		// The lock is in the node instead of the watcher because SpinLock has no copy or assignment.
+		Gaff::SpinLock _lock;
+		bool dirty;
 	};
 
 	class WatchUpdater
@@ -65,12 +70,15 @@ private:
 		~WatchUpdater(void);
 
 		// Need const otherwise get funky compiler errors
+		void operator()(const Gleam::Quaternion&) const;
 		void operator()(const Gleam::AABB&) const;
 		void operator()(const Gleam::Vec4&) const;
 
 	private:
 		SpatialManager* _spatial_mgr;
 		Node* _node;
+
+		void addDirtyNode(void) const;
 	};
 
 	Map<unsigned int, Node*> _node_map;
@@ -82,12 +90,15 @@ private:
 	Gaff::SpinLock _dirty_lock;
 	Gaff::SpinLock _bvh_lock;
 
-	volatile unsigned int _next_id;
+	unsigned int _next_id;
 
 	void removeNode(Node* node);
 	void insertNode(Node* node);
 
 	friend class WatchUpdater;
+
+	GAFF_NO_COPY(SpatialManager);
+	GAFF_NO_MOVE(SpatialManager);
 };
 
 NS_END

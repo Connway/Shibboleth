@@ -170,7 +170,7 @@ namespace Otter
 
 	/* Draws the sprite with the specified texture ID
 	 */
-	void Sprite::Draw(Graphics* pGraphics, uint32 textureID)
+	void Sprite::Draw(Graphics* pGraphics, uint32 /*textureID*/)
 	{
 		if(!mEnabled)
 			return;		

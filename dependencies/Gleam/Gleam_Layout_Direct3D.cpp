@@ -36,7 +36,7 @@ static const char* _semantic_names[SEMANTIC_SIZE] = {
 	"POSITION",
 	"TEXCOORD",
 	"TANGENT",
-	"BITANGENT",
+	"BINORMAL",
 	"BLENDINDICES",
 	"BLENDWEIGHT"
 };

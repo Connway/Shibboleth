@@ -822,7 +822,21 @@ typename HashMap<Key, Value, Allocator>::Iterator HashMap<Key, Value, Allocator>
 	auto it = begin();
 
 	for (; it != end(); ++it) {
-		if (*it == value) {
+		if (it.getValue() == value) {
+			break;
+		}
+	}
+
+	return it;
+}
+
+template <class Key, class Value, class Allocator>
+typename HashMap<Key, Value, Allocator>::Iterator HashMap<Key, Value, Allocator>::findElementWithKey(const Key& key) const
+{
+	auto it = begin();
+
+	for (; it != end(); ++it) {
+		if (it.getKey() == key) {
 			break;
 		}
 	}
@@ -1245,7 +1259,21 @@ typename HashMap<String<T, Allocator>, Value, Allocator>::Iterator HashMap<Strin
 	auto it = begin();
 
 	for (; it != end(); ++it) {
-		if (*it == value) {
+		if (it.getValue() == value) {
+			break;
+		}
+	}
+
+	return it;
+}
+
+template <class Value, class Allocator, class T>
+typename HashMap<String<T, Allocator>, Value, Allocator>::Iterator HashMap<String<T, Allocator>, Value, Allocator>::findElementWithKey(const String<T, Allocator>& key) const
+{
+	auto it = begin();
+
+	for (; it != end(); ++it) {
+		if (it.getKey() == key) {
 			break;
 		}
 	}
@@ -1679,7 +1707,21 @@ typename HashMap<HashString<T, Allocator>, Value, Allocator>::Iterator HashMap<H
 	auto it = begin();
 
 	for (; it != end(); ++it) {
-		if (*it == value) {
+		if (it.getValue() == value) {
+			break;
+		}
+	}
+
+	return it;
+}
+
+template <class Value, class Allocator, class T>
+typename HashMap<HashString<T, Allocator>, Value, Allocator>::Iterator HashMap<HashString<T, Allocator>, Value, Allocator>::findElementWithKey(const HashString<T, Allocator>& key) const
+{
+	auto it = begin();
+
+	for (; it != end(); ++it) {
+		if (it.getKey() == key) {
 			break;
 		}
 	}

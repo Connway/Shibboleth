@@ -30,6 +30,7 @@ THE SOFTWARE.
 #include <Gaff_WeakObject.h>
 #include <Gaff_Function.h>
 #include <Gaff_SmartPtr.h>
+#include <Gleam_Quaternion.h>
 #include <Gleam_AABB.h>
 
 #define MAX_OBJ_NAME_LENGTH 64
@@ -65,13 +66,19 @@ public:
 
 	// Should I move the AABB and Position into it's own component?
 	// That way we're not partially reliant on Gleam's math library?
+	INLINE Gaff::WatchReceipt watchRotation(const Watcher<Gleam::Quaternion>::Callback& callback);
+	INLINE Gaff::WatchReceipt watchPosition(const Watcher<Gleam::Vec4>::Callback& callback);
+	INLINE Gaff::WatchReceipt watchScale(const Watcher<Gleam::Vec4>::Callback& callback);
 	INLINE Gaff::WatchReceipt watchAABB(const Watcher<Gleam::AABB>::Callback& callback);
-	INLINE Gaff::WatchReceipt watchPos(const Watcher<Gleam::Vec4>::Callback& callback);
 
+	INLINE const Gleam::Quaternion& getRotation(void) const;
+	INLINE void setRotation(const Gleam::Quaternion& rot);
+	INLINE const Gleam::Vec4& getPosition(void) const;
+	INLINE void setPosition(const Gleam::Vec4& pos);
+	INLINE const Gleam::Vec4& getScale(void) const;
+	INLINE void setScale(const Gleam::Vec4& scale);
 	INLINE const Gleam::AABB& getAABB(void) const;
 	INLINE void setAABB(const Gleam::AABB& aabb);
-	INLINE const Gleam::Vec4& getPos(void) const;
-	INLINE void setPos(const Gleam::Vec4& pos);
 
 private:
 	MessageBroadcaster _broadcaster;
@@ -79,8 +86,10 @@ private:
 	char _name[MAX_OBJ_NAME_LENGTH];
 
 	Watcher<Gleam::AABB> _aabb;
-	Watcher<Gleam::Vec4> _pos;
-
+	Watcher<Gleam::Quaternion> _rotation;
+	Watcher<Gleam::Vec4> _position;
+	Watcher<Gleam::Vec4> _scale;
+	
 	typedef Gaff::SmartPtr<IComponent, ProxyAllocator> ComponentPtr;
 
 	Array<ComponentPtr> _components;

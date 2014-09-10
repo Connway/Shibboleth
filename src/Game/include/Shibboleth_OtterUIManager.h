@@ -75,6 +75,9 @@ private:
 	unsigned char* _memory_buffer;
 	Otter::System* _system;
 	unsigned int _fps;
+
+	GAFF_NO_COPY(OtterUIManager);
+	GAFF_NO_MOVE(OtterUIManager);
 };
 
 NS_END

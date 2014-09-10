@@ -47,7 +47,7 @@ DYNAMICEXPORT bool InitGraphics(Shibboleth::App& app, const char* log_file_name)
 	Gleam::SetLogFileName(log_file_name);
 #endif
 
-	gProxy_allocator = Shibboleth::ProxyAllocator(app.getAllocator(), "Graphics Allocations");
+	gProxy_allocator = Shibboleth::ProxyAllocator(&app.getAllocator(), "Graphics Allocations");
 
 	Gleam::SetAllocator(&gProxy_allocator);
 	return true;
@@ -60,6 +60,11 @@ DYNAMICEXPORT void ShutdownGraphics(void)
 DYNAMICEXPORT Gleam::IShaderResourceView* CreateShaderResourceView(void)
 {
 	return Gleam::GetAllocator()->template allocT<Gleam::ShaderResourceView>();
+}
+
+DYNAMICEXPORT Gleam::IProgramBuffers* CreateProgramBuffers(void)
+{
+	return Gleam::GetAllocator()->template allocT<Gleam::ProgramBuffers>();
 }
 
 DYNAMICEXPORT Gleam::IRenderDevice* CreateRenderDevice(void)
