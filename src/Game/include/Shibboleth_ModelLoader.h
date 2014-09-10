@@ -1,5 +1,3 @@
-changecom('!')dnl
-dnl
 /************************************************************************************
 Copyright (C) 2014 by Nicholas LaCroix
 
@@ -24,8 +22,43 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "NS_FILE"
+#include "Shibboleth_IResourceLoader.h"
+#include <Gaff_Defines.h>
 
-NS_NAMESPACE
+NS_GAFF
+	class JSON;
+	class Mesh;
+NS_END
+
+namespace Gleam {
+	class IRenderDevice;
+	class IShader;
+	class IModel;
+}
+
+NS_SHIBBOLETH
+
+struct ModelData;
+class RenderManager;
+
+class ModelLoader : public IResourceLoader
+{
+public:
+	ModelLoader(RenderManager& render_mgr);
+	~ModelLoader(void);
+
+	Gaff::IVirtualDestructor* load(const char* file_name, unsigned long long user_data);
+
+private:
+	RenderManager& _render_mgr;
+
+	bool loadMeshes(ModelData* data, const Gaff::JSON& lod_tags, const Gaff::JSON& model_prefs);
+	bool createMeshAndLayout(Gleam::IRenderDevice& rd, const Gaff::Mesh& scene_mesh, Gleam::IModel* model, const Gaff::JSON& model_prefs);
+	unsigned int generateLoadingFlags(const Gaff::JSON& model_prefs);
+	Gleam::IShader* generateEmptyD3D11Shader(Gleam::IRenderDevice& rd, const Gaff::JSON& model_prefs, const Gaff::Mesh& scene_mesh) const;
+
+	GAFF_NO_COPY(ModelLoader);
+	GAFF_NO_MOVE(ModelLoader);
+};
 
 NS_END

@@ -92,6 +92,12 @@
 #ifndef DIRENT_H
 #define DIRENT_H
 
+#if defined(_WIN32) || defined(_WIN64)
+	// Might hide useful warning scenarios, but I'm tired of seeing that warning
+	#pragma warning(disable : 4505)
+#endif
+
+
 #if !defined(_68K_) && !defined(_MPPC_) && !defined(_X86_) && !defined(_IA64_) && !defined(_AMD64_) && defined(_M_IX86)
 #   define _X86_
 #endif
@@ -886,4 +892,3 @@ dirent_set_errno(
 }
 #endif
 #endif /*DIRENT_H*/
-

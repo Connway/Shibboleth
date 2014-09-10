@@ -27,20 +27,17 @@ THE SOFTWARE.
 
 NS_GLEAM
 
-IProgram::IProgram(void)
+// ProgramBuffers
+IProgramBuffers::IProgramBuffers(void)
 {
 }
 
-IProgram::~IProgram(void)
+IProgramBuffers::~IProgramBuffers(void)
 {
+	clear();
 }
 
-void IProgram::destroy(void)
-{
-	clearResources();
-}
-
-void IProgram::clearResources(void)
+void IProgramBuffers::clear(void)
 {
 	for (unsigned int i = 0; i < IShader::SHADER_TYPE_SIZE - 1; ++i) {
 		GleamArray<IShaderResourceView*>& resource_views = _resource_views[i];
@@ -65,57 +62,51 @@ void IProgram::clearResources(void)
 	}
 }
 
-const IShader* IProgram::getAttachedShader(IShader::SHADER_TYPE type) const
+const GleamArray<IBuffer*>& IProgramBuffers::getConstantBuffers(IShader::SHADER_TYPE type) const
 {
-	assert(type >= IShader::SHADER_VERTEX && type < IShader::SHADER_TYPE_SIZE);
-	return _attached_shaders[type].get();
+	assert(type < IShader::SHADER_TYPE_SIZE - 1);
+	return _constant_buffers[type];
 }
 
-IShader* IProgram::getAttachedShader(IShader::SHADER_TYPE type)
-{
-	assert(type >= IShader::SHADER_VERTEX && type < IShader::SHADER_TYPE_SIZE);
-	return _attached_shaders[type].get();
-}
-
-const IBuffer* IProgram::getConstantBuffer(IShader::SHADER_TYPE type, unsigned int index) const
+const IBuffer* IProgramBuffers::getConstantBuffer(IShader::SHADER_TYPE type, unsigned int index) const
 {
 	assert(type < IShader::SHADER_TYPE_SIZE - 1 && index < _constant_buffers[type].size());
 	return _constant_buffers[type][index];
 }
 
-IBuffer* IProgram::getConstantBuffer(IShader::SHADER_TYPE type, unsigned int index)
+IBuffer* IProgramBuffers::getConstantBuffer(IShader::SHADER_TYPE type, unsigned int index)
 {
 	assert(type < IShader::SHADER_TYPE_SIZE - 1 && index < _constant_buffers[type].size());
 	return _constant_buffers[type][index];
 }
 
-void IProgram::addConstantBuffer(IShader::SHADER_TYPE type, IBuffer* const_buffer)
+void IProgramBuffers::addConstantBuffer(IShader::SHADER_TYPE type, IBuffer* const_buffer)
 {
-	assert(type < IShader::SHADER_TYPE_SIZE - 1 && const_buffer);
+	assert(type < IShader::SHADER_TYPE_SIZE - 1 && const_buffer && const_buffer->isD3D() == isD3D());
 	_constant_buffers[type].push(const_buffer);
 	const_buffer->addRef();
 }
 
-void IProgram::removeConstantBuffer(IShader::SHADER_TYPE type, unsigned int index)
+void IProgramBuffers::removeConstantBuffer(IShader::SHADER_TYPE type, unsigned int index)
 {
 	assert(type < IShader::SHADER_TYPE_SIZE && index < _constant_buffers[type].size());
 	_constant_buffers[type][index]->release();
 	_constant_buffers[type].erase(index);
 }
 
-void IProgram::popConstantBuffer(IShader::SHADER_TYPE type)
+void IProgramBuffers::popConstantBuffer(IShader::SHADER_TYPE type)
 {
 	assert(type < IShader::SHADER_TYPE_SIZE && _constant_buffers[type].size());
 	_constant_buffers[type].last()->release();
 	_constant_buffers[type].pop();
 }
 
-unsigned int IProgram::getConstantBufferCount(IShader::SHADER_TYPE type) const
+unsigned int IProgramBuffers::getConstantBufferCount(IShader::SHADER_TYPE type) const
 {
 	return _constant_buffers[type].size();
 }
 
-unsigned int IProgram::getConstantBufferCount(void) const
+unsigned int IProgramBuffers::getConstantBufferCount(void) const
 {
 	unsigned int count = 0;
 
@@ -126,46 +117,52 @@ unsigned int IProgram::getConstantBufferCount(void) const
 	return count;
 }
 
-const IShaderResourceView* IProgram::getResourceView(IShader::SHADER_TYPE type, unsigned int index) const
+const GleamArray<IShaderResourceView*>& IProgramBuffers::getResourceViews(IShader::SHADER_TYPE type) const
+{
+	assert(type < IShader::SHADER_TYPE_SIZE - 1);
+	return _resource_views[type];
+}
+
+const IShaderResourceView* IProgramBuffers::getResourceView(IShader::SHADER_TYPE type, unsigned int index) const
 {
 	assert(type < IShader::SHADER_TYPE_SIZE && index < _resource_views[type].size());
 	return _resource_views[type][index];
 }
 
-IShaderResourceView* IProgram::getResourceView(IShader::SHADER_TYPE type, unsigned int index)
+IShaderResourceView* IProgramBuffers::getResourceView(IShader::SHADER_TYPE type, unsigned int index)
 {
 	assert(type < IShader::SHADER_TYPE_SIZE && index < _resource_views[type].size());
 	return _resource_views[type][index];
 }
 
-void IProgram::addResourceView(IShader::SHADER_TYPE type, IShaderResourceView* resource_view)
+void IProgramBuffers::addResourceView(IShader::SHADER_TYPE type, IShaderResourceView* resource_view)
 {
 	assert(type < IShader::SHADER_TYPE_SIZE && resource_view && resource_view->isD3D() == isD3D());
 	_resource_views[type].push(resource_view);
 	resource_view->addRef();
 }
 
-void IProgram::removeResourceView(IShader::SHADER_TYPE type, unsigned int index)
+void IProgramBuffers::removeResourceView(IShader::SHADER_TYPE type, unsigned int index)
 {
 	assert(type < IShader::SHADER_TYPE_SIZE && index < _resource_views[type].size());
 	_resource_views[type][index]->release();
 	_resource_views[type].erase(index);
 }
 
-void IProgram::popResourceView(IShader::SHADER_TYPE type)
+void IProgramBuffers::popResourceView(IShader::SHADER_TYPE type)
 {
 	assert(type < IShader::SHADER_TYPE_SIZE && _resource_views[type].size());
 	_resource_views[type].last()->release();
 	_resource_views[type].pop();
 }
 
-unsigned int IProgram::getResourceViewCount(IShader::SHADER_TYPE type) const
+unsigned int IProgramBuffers::getResourceViewCount(IShader::SHADER_TYPE type) const
 {
 	assert(type < IShader::SHADER_TYPE_SIZE);
 	return _resource_views[type].size();
 }
 
-unsigned int IProgram::getResourceViewCount(void) const
+unsigned int IProgramBuffers::getResourceViewCount(void) const
 {
 	unsigned int count = 0;
 
@@ -176,46 +173,52 @@ unsigned int IProgram::getResourceViewCount(void) const
 	return count;
 }
 
-const ISamplerState* IProgram::getSamplerState(IShader::SHADER_TYPE type, unsigned int index) const
+const GleamArray<ISamplerState*>& IProgramBuffers::getSamplerStates(IShader::SHADER_TYPE type) const
+{
+	assert(type < IShader::SHADER_TYPE_SIZE - 1);
+	return _sampler_states[type];
+}
+
+const ISamplerState* IProgramBuffers::getSamplerState(IShader::SHADER_TYPE type, unsigned int index) const
 {
 	assert(type < IShader::SHADER_TYPE_SIZE && index < _sampler_states[type].size());
 	return _sampler_states[type][index];
 }
 
-ISamplerState* IProgram::getSamplerState(IShader::SHADER_TYPE type, unsigned int index)
+ISamplerState* IProgramBuffers::getSamplerState(IShader::SHADER_TYPE type, unsigned int index)
 {
 	assert(type < IShader::SHADER_TYPE_SIZE && index < _sampler_states[type].size());
 	return _sampler_states[type][index];
 }
 
-void IProgram::addSamplerState(IShader::SHADER_TYPE type, ISamplerState* sampler)
+void IProgramBuffers::addSamplerState(IShader::SHADER_TYPE type, ISamplerState* sampler)
 {
 	assert(type < IShader::SHADER_TYPE_SIZE && sampler && sampler->isD3D() == isD3D());
 	_sampler_states[type].push(sampler);
 	sampler->addRef();
 }
 
-void IProgram::removeSamplerState(IShader::SHADER_TYPE type, unsigned int index)
+void IProgramBuffers::removeSamplerState(IShader::SHADER_TYPE type, unsigned int index)
 {
 	assert(type < IShader::SHADER_TYPE_SIZE && index < _sampler_states[type].size());
 	_sampler_states[type][index]->release();
 	_sampler_states[type].erase(index);
 }
 
-void IProgram::popSamplerState(IShader::SHADER_TYPE type)
+void IProgramBuffers::popSamplerState(IShader::SHADER_TYPE type)
 {
 	assert(type < IShader::SHADER_TYPE_SIZE && _sampler_states[type].size());
 	_sampler_states[type].last()->release();
 	_sampler_states[type].pop();
 }
 
-unsigned int IProgram::getSamplerCount(IShader::SHADER_TYPE type) const
+unsigned int IProgramBuffers::getSamplerCount(IShader::SHADER_TYPE type) const
 {
 	assert(type < IShader::SHADER_TYPE_SIZE);
 	return _sampler_states[type].size();
 }
 
-unsigned int IProgram::getSamplerCount(void) const
+unsigned int IProgramBuffers::getSamplerCount(void) const
 {
 	unsigned int count = 0;
 
@@ -224,6 +227,36 @@ unsigned int IProgram::getSamplerCount(void) const
 	}
 
 	return count;
+}
+
+
+
+// IProgram
+IProgram::IProgram(void)
+{
+}
+
+IProgram::~IProgram(void)
+{
+}
+
+void IProgram::destroy(void)
+{
+	for (unsigned int i = 0; i < IShader::SHADER_TYPE_SIZE - 1; ++i) {
+		_attached_shaders[i] = nullptr;
+	}
+}
+
+const IShader* IProgram::getAttachedShader(IShader::SHADER_TYPE type) const
+{
+	assert(type >= IShader::SHADER_VERTEX && type < IShader::SHADER_TYPE_SIZE);
+	return _attached_shaders[type].get();
+}
+
+IShader* IProgram::getAttachedShader(IShader::SHADER_TYPE type)
+{
+	assert(type >= IShader::SHADER_VERTEX && type < IShader::SHADER_TYPE_SIZE);
+	return _attached_shaders[type].get();
 }
 
 NS_END

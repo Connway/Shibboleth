@@ -86,7 +86,7 @@ Gaff::IVirtualDestructor* ShaderProgramLoader::load(const char* file_name, unsig
 
 	Array<ProgramPtr> programs = createPrograms(vertex_shader, pixel_shader, hull_shader, geometry_shader, domain_shader);
 
-	ProgramData* program_data = GetAllocator().template allocT<ProgramData>();
+	ProgramData* program_data = GetAllocator()->template allocT<ProgramData>();
 
 	if (!program_data) {
 		return nullptr;

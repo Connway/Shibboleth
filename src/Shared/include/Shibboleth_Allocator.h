@@ -64,7 +64,7 @@ private:
 };
 
 INLINE void SetAllocator(Allocator& allocator);
-INLINE Allocator& GetAllocator(void);
+INLINE Allocator* GetAllocator(void);
 
 void* ShibbolethAllocate(size_t size);
 void ShibbolethFree(void* data);

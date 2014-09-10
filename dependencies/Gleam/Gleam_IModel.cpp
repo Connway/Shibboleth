@@ -107,20 +107,6 @@ unsigned int IModel::addMesh(IMesh* mesh)
 	return _meshes.size() - 1;
 }
 
-const AABB& IModel::getBoundingBox(void) const
-{
-	return _bounding_box;
-}
-
-void IModel::updateBoundingBox(void)
-{
-	_bounding_box.reset();
-
-	for (unsigned int i = 0; i < _meshes.size(); ++i) {
-		_bounding_box.addAABB(_meshes[i]->getBoundingBox());
-	}
-}
-
 void IModel::render(IRenderDevice& rd, unsigned int index)
 {
 	assert(_layouts.size() == _meshes.size() && index < _meshes.size());

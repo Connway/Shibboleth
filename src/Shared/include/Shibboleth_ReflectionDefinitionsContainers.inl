@@ -29,7 +29,7 @@ VAR_CONTAINER_CONSTRUCTOR(ShortContainer, short);
 VAR_CONTAINER_CONSTRUCTOR(UCharContainer, unsigned char);
 VAR_CONTAINER_CONSTRUCTOR(CharContainer, char);
 VAR_CONTAINER_CONSTRUCTOR(BoolContainer, bool);
-VAR_CONTAINER_CONSTRUCTOR(ANSIStringContainer, AString);
+VAR_CONTAINER_CONSTRUCTOR(StringContainer, AString);
 
 VAR_CONTAINER_VAL_TYPE(DoubleContainer, VT_DOUBLE);
 VAR_CONTAINER_VAL_TYPE(FloatContainer, VT_FLOAT);
@@ -40,7 +40,7 @@ VAR_CONTAINER_VAL_TYPE(ShortContainer, VT_SHORT);
 VAR_CONTAINER_VAL_TYPE(UCharContainer, VT_UCHAR);
 VAR_CONTAINER_VAL_TYPE(CharContainer, VT_CHAR);
 VAR_CONTAINER_VAL_TYPE(BoolContainer, VT_BOOL);
-VAR_CONTAINER_VAL_TYPE(ANSIStringContainer, VT_ASTRING);
+VAR_CONTAINER_VAL_TYPE(StringContainer, VT_STRING);
 
 VAR_CONTAINER_READ(DoubleContainer)
 {
@@ -357,38 +357,38 @@ VAR_CONTAINER_SET_DOUBLE(BoolContainer)
 
 
 
-VAR_CONTAINER_READ(ANSIStringContainer)
+VAR_CONTAINER_READ(StringContainer)
 {
 	assert(json[(const char*)_key.getBuffer()].isString());
 	object->*_var = json[(const char*)_key.getBuffer()].getString();
 }
 
-VAR_CONTAINER_WRITE(ANSIStringContainer)
+VAR_CONTAINER_WRITE(StringContainer)
 {
 	assert(!json[_key.getBuffer()]);
 	json.setObject(_key.getBuffer(), Gaff::JSON::createString((object->*_var).getBuffer()));
 }
 
-VAR_CONTAINER_SET_STRING(ANSIStringContainer)
+VAR_CONTAINER_SET_STRING(StringContainer)
 {
 	object->*_var = value;
 }
 
-VAR_CONTAINER_SET_UINT(ANSIStringContainer)
+VAR_CONTAINER_SET_UINT(StringContainer)
 {
 	char temp[64] = { 0 };
 	snprintf(temp, 64, "%u", value);
 	object->*_var = temp;
 }
 
-VAR_CONTAINER_SET_INT(ANSIStringContainer)
+VAR_CONTAINER_SET_INT(StringContainer)
 {
 	char temp[64] = { 0 };
 	snprintf(temp, 64, "%i", value);
 	object->*_var = temp;
 }
 
-VAR_CONTAINER_SET_DOUBLE(ANSIStringContainer)
+VAR_CONTAINER_SET_DOUBLE(StringContainer)
 {
 	char temp[64] = { 0 };
 	snprintf(temp, 64, "%f", value);
@@ -401,8 +401,8 @@ VAR_CONTAINER_SET_DOUBLE(ANSIStringContainer)
 // Object
 template <class T>
 template <class T2>
-ReflectionDefinition<T>::ObjectContainer<T2>::ObjectContainer(const char* key, T2 T::* var, ReflectionDefinition<T2> T2::* var_ref_def) :
-IValueContainer(key), _var_ref_def(var_ref_def), _var(var)
+ReflectionDefinition<T>::ObjectContainer<T2>::ObjectContainer(const char* key, T2 T::* var, ReflectionDefinition<T2>& var_ref_def) :
+	IValueContainer(key), _var_ref_def(var_ref_def), _var(var)
 {
 }
 
@@ -411,7 +411,7 @@ template <class T2>
 void ReflectionDefinition<T>::ObjectContainer<T2>::read(const Gaff::JSON& json, T* object)
 {
 	assert(json[(const char*)_key.getBuffer()].isObject());
-	((object->*_var)->*_var_ref_def).read(json[(const char*)_key.getBuffer()], _object);
+	_var_ref_def.read(json[(const char*)_key.getBuffer()], _object);
 }
 
 template <class T>
@@ -420,7 +420,7 @@ void ReflectionDefinition<T>::ObjectContainer<T2>::write(Gaff::JSON& json, T* ob
 {
 	assert(!json[_key.getBuffer()]);
 	Gaff::JSON object = Gaff::JSON::createObject();
-	((object->*_var)->*_var_ref_def).write(object, _object);
+	_var_ref_def.write(object, _object);
 	json.setObject(_key.getBuffer(), object);
 }
 

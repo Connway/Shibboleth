@@ -76,27 +76,6 @@ void IMesh::setIndiceBuffer(IBuffer* buffer)
 	_indices = buffer;
 }
 
-void IMesh::setBoundingBox(const AABB& bounding_box)
-{
-	_bounding_box = bounding_box;
-}
-
-const AABB& IMesh::getBoundingBox(void) const
-{
-	return _bounding_box;
-}
-
-// Note, this function assumes the first three elements of a vertex are the position
-void IMesh::setBoundingBox(const void* vert_data, unsigned int vert_count, unsigned int vert_size)
-{
-	const float* verts = (const float*)vert_data;
-
-	for (unsigned int i = 0; i < vert_count; ++i) {
-		_bounding_box.addPoint(verts[0], verts[1], verts[2]);
-		verts = (const float*)((char*)verts + vert_size);
-	}
-}
-
 IMesh::TOPOLOGY_TYPE IMesh::getTopologyType(void) const
 {
 	return _topology;
@@ -135,7 +114,6 @@ bool IMesh::addVertDataHelper(
 	_index_count = index_count;
 	_indices->addRef();
 
-	setBoundingBox(vert_data, vert_count, vert_size);
 	setTopologyType(primitive_type);
 
 	return true;

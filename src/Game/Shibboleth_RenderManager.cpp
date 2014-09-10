@@ -31,8 +31,8 @@ THE SOFTWARE.
 NS_SHIBBOLETH
 
 RenderManager::RenderManager(App& app):
-	_render_device(nullptr, ProxyAllocator(app.getAllocator(), "Graphics Allocations")),
-	_proxy_allocator(app.getAllocator(), "Graphics Allocations"), _app(app)
+	_render_device(nullptr, ProxyAllocator(&app.getAllocator(), "Graphics Allocations")),
+	_proxy_allocator(&app.getAllocator(), "Graphics Allocations"), _app(app)
 {
 }
 
@@ -88,6 +88,8 @@ bool RenderManager::init(const char* cfg_file)
 		log.first.writeString("ERROR - Malformed config file.\n");
 		return false;
 	}
+
+	_windows.reserve(8); // Reserve 8 windows to be safe. Will probably never hit this many though.
 
 	bool failed = false;
 	windows.forEachInArray([&](size_t, const Gaff::JSON& value) -> bool
@@ -240,7 +242,7 @@ Gleam::IRenderDevice& RenderManager::getRenderDevice(void)
 
 Gaff::SpinLock& RenderManager::getSpinLock(void)
 {
-	return _spin_lock;
+	return _rd_lock;
 }
 
 void RenderManager::printfLoadLog(const char* format, ...)
@@ -324,10 +326,27 @@ bool RenderManager::createWindow(
 	return true;
 }
 
+unsigned int RenderManager::getNumWindows(void) const
+{
+	return _windows.size();
+}
+
+const RenderManager::WindowData& RenderManager::getWindowData(unsigned int window) const
+{
+	assert(window < _windows.size());
+	return _windows[window];
+}
+
 Gleam::IShaderResourceView* RenderManager::createShaderResourceView(void)
 {
 	assert(_graphics_functions.create_shaderresourceview);
 	return _graphics_functions.create_shaderresourceview();
+}
+
+Gleam::IProgramBuffers* RenderManager::createProgramBuffers(void)
+{
+	assert(_graphics_functions.create_programbuffers);
+	return _graphics_functions.create_programbuffers();
 }
 
 Gleam::IRenderDevice* RenderManager::createRenderDevice(void)
@@ -472,7 +491,7 @@ bool RenderManager::cacheGleamFunctions(App& app, const Gaff::JSON& module, cons
 		return false;
 	}
 
-	AString module_path = module.getString();
+	AString module_path(module.getString());
 	module_path += BIT_EXTENSION;
 
 	_gleam_module = app.getDynamicLoader().loadModule(module_path.getBuffer(), module.getString());
@@ -510,6 +529,7 @@ bool RenderManager::cacheGleamFunctions(App& app, const Gaff::JSON& module, cons
 	}
 
 	_graphics_functions.create_shaderresourceview = _gleam_module->GetFunc<GraphicsFunctions::CreateShaderResourceView>("CreateShaderResourceView");
+	_graphics_functions.create_programbuffers = _gleam_module->GetFunc<GraphicsFunctions::CreateProgramBuffers>("CreateProgramBuffers");
 	_graphics_functions.create_renderdevice = _gleam_module->GetFunc<GraphicsFunctions::CreateRenderDevice>("CreateRenderDevice");
 	_graphics_functions.create_rendertarget = _gleam_module->GetFunc<GraphicsFunctions::CreateRenderTarget>("CreateRenderTarget");
 	_graphics_functions.create_samplerstate = _gleam_module->GetFunc<GraphicsFunctions::CreateSamplerState>("CreateSamplerState");
@@ -524,6 +544,11 @@ bool RenderManager::cacheGleamFunctions(App& app, const Gaff::JSON& module, cons
 
 	if (!_graphics_functions.create_shaderresourceview) {
 		log.first.printf("ERROR - Failed to find function 'CreateShaderResourceView' in graphics module '%s'.", module_path.getBuffer());
+		return false;
+	}
+
+	if (!_graphics_functions.create_programbuffers) {
+		log.first.printf("ERROR - Failed to find function 'CreateProgramBuffers' in graphics module '%s'.", module_path.getBuffer());
 		return false;
 	}
 

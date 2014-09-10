@@ -25,7 +25,7 @@ namespace Otter
 		/**
 		 * Creates a control from the provided control data
 		 */
-		virtual Otter::Control* CreateControl(Scene* pScene, const ControlData* pControlData, Control* pParent)
+		virtual Otter::Control* CreateControl(Scene* /*pScene*/, const ControlData* /*pControlData*/, Control* /*pParent*/)
 		{
 			return NULL;
 		}
@@ -33,7 +33,7 @@ namespace Otter
 		/**
 		 * Destroys a previously created control
 		 */
-		virtual bool DestroyControl(Otter::Control* pControl)
+		virtual bool DestroyControl(Otter::Control* /*pControl*/)
 		{
 			return false;
 		}

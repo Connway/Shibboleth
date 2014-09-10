@@ -23,5 +23,6 @@ project "Gaff"
 		"../enet/include",
 		"../ResIL/IL/include",
 		"../ResIL/include",
-		"../assimp/include"
+		"../assimp/include",
+		"../utf8-cpp"
 	}

@@ -26,12 +26,14 @@ THE SOFTWARE.
 	#include "Gleam_Program_Direct3D.h"
 
 	NS_GLEAM
+		typedef ProgramBuffersD3D ProgramBuffers;
 		typedef ProgramD3D Program;
 	NS_END
 #else
 	#include "Gleam_Program_OpenGL.h"
 
 	NS_GLEAM
+		typedef ProgramBuffersGL ProgramBuffers;
 		typedef ProgramGL Program;
 	NS_END
 #endif

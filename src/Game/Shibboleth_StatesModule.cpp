@@ -121,5 +121,5 @@ DYNAMICEXPORT Shibboleth::IState* CreateState(unsigned int id)
 
 DYNAMICEXPORT void DestroyState(Shibboleth::IState* state, unsigned int)
 {
-	Shibboleth::GetAllocator().freeT(state);
+	Shibboleth::GetAllocator()->freeT(state);
 }

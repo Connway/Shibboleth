@@ -58,16 +58,11 @@ public:
 	virtual IMesh* createMesh(void) = 0;
 	unsigned int addMesh(IMesh* mesh);
 
-	const AABB& getBoundingBox(void) const;
-	void updateBoundingBox(void);
-
 	void render(IRenderDevice& rd, unsigned int index);
 
 private:
 	GleamArray<ILayout*> _layouts;
 	GleamArray<IMesh*> _meshes;
-
-	AABB _bounding_box;
 
 	GAFF_NO_COPY(IModel);
 };

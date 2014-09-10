@@ -117,5 +117,5 @@ DYNAMICEXPORT Shibboleth::IManager* CreateManager(unsigned int id)
 
 DYNAMICEXPORT void DestroyManager(Shibboleth::IManager* manager, unsigned int)
 {
-	Shibboleth::GetAllocator().freeT(manager);
+	Shibboleth::GetAllocator()->freeT(manager);
 }

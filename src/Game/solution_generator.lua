@@ -19,10 +19,10 @@ local state_files =
 local components_files =
 {
 	"include/Shibboleth_LuaComponent.h",
-	"include/Shibboleth_SimpleModelComponent.h",
+	"include/Shibboleth_ModelComponent.h",
 	"Shibboleth_LuaComponent.cpp",
-	"Shibboleth_SimpleModelComponent.cpp",
-	"Shibboleth_ComponentsModule.cpp"
+	"Shibboleth_ComponentsModule.cpp",
+	"Shibboleth_ModelComponent.cpp"
 };
 
 
@@ -113,6 +113,8 @@ group "Dependencies"
 	dofile("../../dependencies/Gleam/include_external.lua")
 	dofile("../../dependencies/Gaff/include_external.lua")
 	dofile("../../dependencies/LuaJIT-2.0.3/include_external.lua")
+	dofile("../../dependencies/assimp/include_external.lua")
+	dofile("../../dependencies/minizip/include_external.lua")
 
 group ""
 	dofile("../Shared/include_external.lua")
@@ -141,6 +143,8 @@ group ""
 			"../../dependencies/Gaff/include",
 			"../../dependencies/LuaState",
 			"../../dependencies/LuaJIT-2.0.3/src",
+			"../../dependencies/utf8-cpp",
+			"../../dependencies/assimp/include"
 		}
 
 	project "ManagersModule"
@@ -165,6 +169,7 @@ group ""
 			"../../dependencies/Gaff/include",
 			"../../dependencies/LuaState",
 			"../../dependencies/LuaJIT-2.0.3/src",
+			"../../dependencies/utf8-cpp"
 		}
 
 		dependson
@@ -224,7 +229,8 @@ group ""
 			"../../dependencies/Gaff/include",
 			"../../dependencies/LuaBridge",
 			"../../dependencies/LuaState",
-			"../../dependencies/LuaJIT-2.0.3/src"
+			"../../dependencies/LuaJIT-2.0.3/src",
+			"../../dependencies/utf8-cpp"
 		}
 
 		dependson
@@ -249,7 +255,8 @@ group ""
 			"Shared", "Gaff", "jansson",
 			"libjpeg", "libpng", "libtiff",
 			"OtterUI", "ResIL", "ResILU",
-			"zlib", "Gleam", "Game"
+			"zlib", "Gleam", "Game",
+			"assimp", "minizip"
 		}
 
 		filter { "configurations:Debug", "platforms:x86" }
@@ -287,7 +294,9 @@ group ""
 			"../../dependencies/Gleam/include",
 			"../../dependencies/Gaff/include",
 			"../../dependencies/LuaState",
-			"../../dependencies/LuaJIT-2.0.3/src"
+			"../../dependencies/LuaJIT-2.0.3/src",
+			"../../dependencies/utf8-cpp",
+			"../../dependencies/assimp/include"
 		}
 
 		dependson

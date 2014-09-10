@@ -14,5 +14,6 @@ project "Gleam"
 	{
 		"include",
 		"../Gaff/include",
-		"../glew/include"
+		"../glew/include",
+		"../utf8-cpp"
 	}

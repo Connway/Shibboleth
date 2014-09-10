@@ -35,12 +35,12 @@ NS_SHIBBOLETH
 class ProxyAllocator : public Gaff::IAllocator
 {
 public:
-	explicit ProxyAllocator(Allocator& allocator = GetAllocator(), const char* pool_tag = nullptr):
-		_allocator(&allocator), _alloc_tag(0)
+	explicit ProxyAllocator(Allocator* allocator = GetAllocator(), const char* pool_tag = nullptr):
+		_allocator(allocator), _alloc_tag(0)
 	{
 		if (pool_tag) {
 			_alloc_tag = Gaff::FNV1Hash32(pool_tag, (unsigned int)strlen(pool_tag));
-			allocator.createMemoryPool(pool_tag, _alloc_tag);
+			allocator->createMemoryPool(pool_tag, _alloc_tag);
 		}
 	}
 

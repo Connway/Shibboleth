@@ -1,4 +1,11 @@
 #pragma once
+
+#if defined(_WIN32) || defined(_WIN64)
+	#pragma warning(push)
+	#pragma warning(disable : 4706)
+#endif
+
+
 #include "Array.h"
 #include "Types.h"
 
@@ -197,3 +204,7 @@ namespace Otter
 		Array<IFunctor<P>*> mHandlers;
 	};
 }; // namespace Otter
+
+#if defined(_WIN32) || defined(_WIN64)
+	#pragma warning(pop)
+#endif

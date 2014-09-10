@@ -24,6 +24,7 @@ THE SOFTWARE.
 
 #include "Gaff_DefaultAllocator.h"
 #include "Gaff_IncludeAssert.h"
+#include <utf8.h>
 
 NS_GAFF
 
@@ -35,7 +36,7 @@ public:
 
 	String(const Allocator& allocator = Allocator());
 	String(const T* string, unsigned int size, const Allocator& allocator = Allocator());
-	String(const T* string, const Allocator& allocator = Allocator());
+	explicit String(const T* string, const Allocator& allocator = Allocator());
 	String(String<T, Allocator>&& rhs);
 	String(const String<T, Allocator>& string);
 	~String(void);
@@ -60,9 +61,11 @@ public:
 
 	const String<T, Allocator>& operator+=(const String<T, Allocator>& rhs);
 	const String<T, Allocator>& operator+=(const T* rhs);
+	const String<T, Allocator>& operator+=(T rhs);
 
 	String<T, Allocator> operator+(const String<T, Allocator>& rhs) const;
 	String<T, Allocator> operator+(const T* rhs) const;
+	String<T, Allocator> operator+(T rhs) const;
 
 	// WARNING: This function takes ownership of the string instead of copying
 	void set(T* string);
@@ -76,8 +79,20 @@ public:
 	String<T, Allocator> substring(unsigned int begin, unsigned int end) const;
 	String<T, Allocator> substring(unsigned int begin) const;
 
+	void append(const T* string, unsigned int size);
+	void append(const T* string);
+	void resize(unsigned int new_size);
+
+	unsigned int findFirstOf(const T* character) const;
+	unsigned int findLastOf(const T* character) const;
 	unsigned int findFirstOf(T character) const;
 	unsigned int findLastOf(T character) const;
+
+	// Only valid on String with type char. Conversion functions will erase current string.
+	void convertToUTF8(const wchar_t* string, unsigned int size);
+	void convertToUTF16(const char* string, unsigned int size);
+	unsigned int findInvalidUTF8(void) const;
+	bool isValidUTF8(void) const;
 
 private:
 	Allocator _allocator;
@@ -86,7 +101,11 @@ private:
 
 	// If my benchmarks from strlen() and wcslen() are any indicator, this is no slower than memcpy(),
 	// and this gets rid of that damn compiler warning
+	void copy(const T* src, T* dest, unsigned int dest_size) const;
 	void copy(const T* src, T* dest) const;
+	void zeroOut(T* string, unsigned int size) const;
+	void trimZeroes(void);
+	bool equal(const T* str1, const T* str2, unsigned int size) const;
 
 	// allows for optimization
 	template <class T2, class Allocator2>

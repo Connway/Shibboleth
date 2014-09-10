@@ -92,9 +92,9 @@ namespace Otter
 		{
 			if(mActiveViews[i] == pView)
 			{
-				if (pView->GetActiveAnimationName(Otter::ANIM_ONDEACTIVATE) != NULL)
+				if (pView->GetActiveAnimationName((uint32)Otter::ANIM_ONDEACTIVATE) != NULL)
 				{
-					pView->StopAnimation(Otter::ANIM_ONDEACTIVATE);
+					pView->StopAnimation((uint32)Otter::ANIM_ONDEACTIVATE);
 					break;
 				}
 				else
@@ -151,14 +151,14 @@ namespace Otter
 
 	/* Called when a view has activated
 	 */
-	void Scene::OnViewActivate(void* pSender, void* pContext)
+	void Scene::OnViewActivate(void* /*pSender*/, void* /*pContext*/)
 	{		
 	}
 
 	/* Called when a view has deactivated.
 	 * Remove the listeners here to ensure it's the very last thing the view does.
 	 */
-	void Scene::OnViewDeactivate(void* pSender, void* pContext)
+	void Scene::OnViewDeactivate(void* pSender, void* /*pContext*/)
 	{
 		View* pView = (View*)pSender;
 
@@ -172,7 +172,7 @@ namespace Otter
 
 	/* Called when a view's animation has started
 	 */
-	void Scene::OnViewAnimationStarted(void* pSender, uint32 animID)
+	void Scene::OnViewAnimationStarted(void* /*pSender*/, uint32 /*animID*/)
 	{
 	}
 

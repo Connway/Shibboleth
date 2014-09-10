@@ -34,6 +34,7 @@ namespace Gaff
 namespace Gleam
 {
 	class IShaderResourceView;
+	class IProgramBuffers;
 	class IRenderDevice;
 	class IRenderTarget;
 	class ISamplerState;
@@ -52,6 +53,15 @@ NS_SHIBBOLETH
 class RenderManager : public IManager
 {
 public:
+	struct WindowData
+	{
+		// DO NOT EVER MOVE THIS POINTER
+		Gaff::SmartPtr<Gleam::Window, ProxyAllocator> window;
+		unsigned int device;
+		unsigned int output;
+	};
+
+
 	RenderManager(App& app);
 	~RenderManager(void);
 
@@ -64,8 +74,7 @@ public:
 
 	void printfLoadLog(const char* format, ...);
 
-	//void addRenderPacket();
-
+	// Don't call this in a thread sensitive environment
 	bool createWindow(
 		const wchar_t* app_name, Gleam::Window::MODE window_mode,
 		int x, int y, unsigned int width, unsigned int height,
@@ -73,7 +82,11 @@ public:
 		unsigned int adapter_id, unsigned int display_id, bool vsync
 	);
 
+	INLINE unsigned int getNumWindows(void) const;
+	INLINE const WindowData& getWindowData(unsigned int window) const;
+
 	INLINE Gleam::IShaderResourceView* createShaderResourceView(void);
+	INLINE Gleam::IProgramBuffers* createProgramBuffers(void);
 	INLINE Gleam::IRenderDevice* createRenderDevice(void);
 	INLINE Gleam::IRenderTarget* createRenderTarget(void);
 	INLINE Gleam::ISamplerState* createSamplerState(void);
@@ -93,6 +106,7 @@ private:
 		typedef void (*ShutdownGraphics)(void);
 
 		typedef Gleam::IShaderResourceView* (*CreateShaderResourceView)(void);
+		typedef Gleam::IProgramBuffers* (*CreateProgramBuffers)(void);
 		typedef Gleam::IRenderDevice* (*CreateRenderDevice)(void);
 		typedef Gleam::IRenderTarget* (*CreateRenderTarget)(void);
 		typedef Gleam::ISamplerState* (*CreateSamplerState)(void);
@@ -107,6 +121,7 @@ private:
 
 		ShutdownGraphics shutdown;
 		CreateShaderResourceView create_shaderresourceview;
+		CreateProgramBuffers create_programbuffers;
 		CreateRenderDevice create_renderdevice;
 		CreateRenderTarget create_rendertarget;
 		CreateSamplerState create_samplerstate;
@@ -120,13 +135,6 @@ private:
 		CreateMesh create_mesh;
 	};
 
-	struct WindowData
-	{
-		Gaff::SmartPtr<Gleam::Window, ProxyAllocator> window;
-		unsigned int device;
-		unsigned int output;
-	};
-
 	//struct RenderPacket
 	//{
 	//};
@@ -135,7 +143,8 @@ private:
 	Array<WindowData> _windows;
 	Gaff::SmartPtr<Gleam::IRenderDevice, ProxyAllocator> _render_device;
 	DynamicLoader::ModulePtr _gleam_module;
-	Gaff::SpinLock _spin_lock;
+
+	Gaff::SpinLock _rd_lock;
 
 	ProxyAllocator _proxy_allocator;
 	App& _app;
@@ -143,6 +152,9 @@ private:
 	int getDisplayModeID(unsigned int width, unsigned int height, unsigned int refresh_rate, unsigned int adapter_id, unsigned int display_id);
 	void generateDefaultConfig(Gaff::JSON& cfg);
 	bool cacheGleamFunctions(App& app, const Gaff::JSON& module, const char* cfg_file);
+
+	GAFF_NO_COPY(RenderManager);
+	GAFF_NO_MOVE(RenderManager);
 };
 
 NS_END

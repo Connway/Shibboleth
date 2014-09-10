@@ -122,6 +122,15 @@ public:
 
 	ResourcePtr requestResource(const char* filename, unsigned long long user_data = 0);
 
+	/***********************************************************************************************************
+		Blocks calling thread. Calls the loader immediately. On return, resource should be valid if succeeded.
+		Should only be used by other resource loaders.
+
+		WARNING: DO NOT MIX requestResource() AND loadResourceImmediately() CALLS! USE ONE OR THE OTHER, NOT BOTH!
+		MIXING CALLS CAN POTENTIALLY CAUSE DEADLOCK!
+	***********************************************************************************************************/
+	ResourcePtr loadResourceImmediately(const char* filename, unsigned long long user_data = 0);
+
 private:
 	class ResourceLoadingTask : public ITask
 	{

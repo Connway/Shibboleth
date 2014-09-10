@@ -2,6 +2,11 @@
 #include "Common/UTF8String.h"
 #include "utf8proc/utf8proc.h"
 
+#if defined(_WIN32) || defined(_WIN64)
+	#pragma warning(push)
+	#pragma warning(disable : 4127)
+#endif
+
 namespace Otter
 {
 	/* Helper - returns the number of characters in a UTF8 string
@@ -230,3 +235,7 @@ namespace Otter
 		return !(lhs < rhs);
 	}
 }
+
+#if defined(_WIN32) || defined(_WIN64)
+	#pragma warning(pop)
+#endif

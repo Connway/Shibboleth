@@ -104,7 +104,7 @@ namespace Otter
 
 	/* Points (touches/mouse/etc) were pressed down
 	 */
-	bool Toggle::OnPointsDown(const Point* points, sint32 numPoints)
+	bool Toggle::OnPointsDown(const Point* /*points*/, sint32 /*numPoints*/)
 	{
 		if(!mTouchEnabled)
 			return false;

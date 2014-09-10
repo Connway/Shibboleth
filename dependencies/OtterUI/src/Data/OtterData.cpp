@@ -6,14 +6,14 @@ namespace Otter
 	{
 		/* Loads scene data from file
 		 */
-		const SceneData* LoadSceneData(const char* szFilename)
+		const SceneData* LoadSceneData(const char* /*szFilename*/)
 		{
 			return NULL;
 		}
 
 		/* Unloads scene data
 		 */
-		int UnloadSceneData(const SceneData* pData)
+		int UnloadSceneData(const SceneData* /*pData*/)
 		{
 			return 0;
 		}

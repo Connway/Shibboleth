@@ -68,6 +68,8 @@ THE SOFTWARE.
 #define SAFEGAFFADDREF(x) if (x) { x->addRef(); }
 
 #if defined(_WIN32) || defined(_WIN64)
+	#pragma warning(disable : 4201)
+
 	#ifndef _CRT_SECURE_NO_WARNINGS
 		#define _CRT_SECURE_NO_WARNINGS
 	#endif

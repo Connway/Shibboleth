@@ -56,7 +56,7 @@ void LuaComponent::InitReflectionDefinition(void)
 	if (!_ref_def.isDefined()) {
 		_ref_def.setAllocator(ProxyAllocator());
 
-		_ref_def.addANSIString("Lua Filename", &LuaComponent::_lua_file);
+		_ref_def.addString("Lua Filename", &LuaComponent::_lua_file);
 
 		_ref_def.markDefined();
 	}

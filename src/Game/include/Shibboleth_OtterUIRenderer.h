@@ -83,6 +83,7 @@ private:
 	};
 
 	Map<int, ResourceData> _resource_map;
+	Array<ProgramBuffersPtr> _program_buffers;
 	Array<DeviceData> _device_data;
 
 	ResourceManager& _resource_manager;

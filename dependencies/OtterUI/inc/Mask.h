@@ -56,7 +56,7 @@ namespace Otter
 		 */
 		virtual Control* Clone();
 
-		virtual void Draw(Graphics* pGraphics) {}
+		virtual void Draw(Graphics* /*pGraphics*/) {}
 
 		/**
 		 * Draws the mask to the stencil buffer

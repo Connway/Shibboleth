@@ -26,6 +26,15 @@ THE SOFTWARE.
 
 NS_GLEAM
 
+class ProgramBuffersGL : public IProgramBuffers
+{
+public:
+	ProgramBuffersGL(void) {}
+	~ProgramBuffersGL(void) {}
+
+	bool isD3D(void) const { return false; }
+};
+
 class ProgramGL : public IProgram
 {
 public:
@@ -38,7 +47,7 @@ public:
 	INLINE void attach(IShader* shader);
 	INLINE void detach(IShader::SHADER_TYPE shader);
 
-	INLINE void bind(IRenderDevice&);
+	INLINE void bind(IRenderDevice&, IProgramBuffers& program_buffers);
 	INLINE void unbind(IRenderDevice&);
 
 	bool isD3D(void) const;

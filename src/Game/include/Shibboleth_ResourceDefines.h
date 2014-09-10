@@ -33,6 +33,7 @@ THE SOFTWARE.
 namespace Gleam
 {
 	class IShaderResourceView;
+	class IProgramBuffers;
 	class IRenderDevice;
 	class IRenderTarget;
 	class ISamplerState;
@@ -49,6 +50,7 @@ namespace Gleam
 NS_SHIBBOLETH
 
 typedef Gaff::RefPtr<Gleam::IShaderResourceView> ShaderResourceViewPtr;
+typedef Gaff::RefPtr<Gleam::IProgramBuffers> ProgramBuffersPtr;
 typedef Gaff::RefPtr<Gleam::IRenderDevice> RenderDevicePtr;
 typedef Gaff::RefPtr<Gleam::IRenderTarget> RenderTargetPtr;
 typedef Gaff::RefPtr<Gleam::ISamplerState> SamplerStatePtr;
@@ -84,5 +86,6 @@ struct ProgramData : public Gaff::IVirtualDestructor
 {
 	Array<ProgramPtr> programs;
 };
+
 
 NS_END

@@ -39,7 +39,7 @@ enum MeshPrimitives
 class Face
 {
 public:
-	Face(const Face& weight);
+	Face(const Face& face);
 	Face(void);
 	~Face(void);
 
@@ -127,10 +127,10 @@ private:
 
 	const aiBone* _bone;
 
+	void setPosRot(void);
+
 	friend class Mesh;
 	Bone(const aiBone* bone);
-
-	void setPosRot(void);
 };
 
 class Mesh
@@ -162,11 +162,12 @@ public:
 	INLINE const float* getVertex(unsigned int index) const;
 	INLINE const float* getNormals(unsigned int index) const;
 	INLINE const float* getTangents(unsigned int index) const;
-	INLINE const float* getBiTangents(unsigned int index) const;
+	INLINE const float* getBitangents(unsigned int index) const;
 	INLINE const float* getVertexColor(unsigned int set, unsigned int index) const;
 	INLINE const float* getUV(unsigned int set, unsigned int index) const;
 
 	INLINE Face getFace(unsigned int index) const;
+	INLINE Bone getBone(unsigned int index) const;
 
 	INLINE bool valid(void) const;
 

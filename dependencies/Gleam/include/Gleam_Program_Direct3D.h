@@ -37,6 +37,39 @@ struct ID3D11Buffer;
 
 NS_GLEAM
 
+class ProgramBuffersD3D : public IProgramBuffers
+{
+public:
+	ProgramBuffersD3D(void);
+	~ProgramBuffersD3D(void);
+
+	void addConstantBuffer(IShader::SHADER_TYPE type, IBuffer* const_buffer);
+	void removeConstantBuffer(IShader::SHADER_TYPE type, unsigned int index);
+	void popConstantBuffer(IShader::SHADER_TYPE type);
+
+	void addResourceView(IShader::SHADER_TYPE type, IShaderResourceView* resource_view);
+	void removeResourceView(IShader::SHADER_TYPE type, unsigned int index);
+	void popResourceView(IShader::SHADER_TYPE type);
+
+	void addSamplerState(IShader::SHADER_TYPE type, ISamplerState* sampler);
+	void removeSamplerState(IShader::SHADER_TYPE type, unsigned int index);
+	void popSamplerState(IShader::SHADER_TYPE type);
+
+	bool isD3D(void) const;
+
+private:
+	GleamArray < GleamArray<ID3D11ShaderResourceView*> > _res_views;
+	GleamArray < GleamArray<ID3D11SamplerState*> > _samplers;
+	GleamArray < GleamArray<ID3D11Buffer*> > _buffers;
+
+	void cacheResViews(void);
+	void cacheSamplers(void);
+	void cacheBuffers(void);
+
+	friend class ProgramD3D;
+};
+
+
 class ProgramD3D : public IProgram
 {
 public:
@@ -48,22 +81,10 @@ public:
 	void attach(IShader* shader);
 	void detach(IShader::SHADER_TYPE shader);
 
-	void bind(IRenderDevice& rd);
+	void bind(IRenderDevice& rd, IProgramBuffers& program_buffers);
 	void unbind(IRenderDevice& rd);
 
 	bool isD3D(void) const;
-
-	virtual void addConstantBuffer(IShader::SHADER_TYPE type, IBuffer* const_buffer);
-	virtual void removeConstantBuffer(IShader::SHADER_TYPE type, unsigned int index);
-	virtual void popConstantBuffer(IShader::SHADER_TYPE type);
-
-	virtual void addResourceView(IShader::SHADER_TYPE type, IShaderResourceView* resource_view);
-	virtual void removeResourceView(IShader::SHADER_TYPE type, unsigned int index);
-	virtual void popResourceView(IShader::SHADER_TYPE type);
-
-	virtual void addSamplerState(IShader::SHADER_TYPE type, ISamplerState* sampler);
-	virtual void removeSamplerState(IShader::SHADER_TYPE type, unsigned int index);
-	virtual void popSamplerState(IShader::SHADER_TYPE type);
 
 private:
 	ID3D11VertexShader* _shader_vertex;
@@ -72,14 +93,6 @@ private:
 	ID3D11GeometryShader* _shader_geometry;
 	ID3D11HullShader* _shader_hull;
 	ID3D11ComputeShader* _shader_compute;
-
-	GleamArray < GleamArray<ID3D11ShaderResourceView*> > _res_views;
-	GleamArray < GleamArray<ID3D11SamplerState*> > _samplers;
-	GleamArray < GleamArray<ID3D11Buffer*> > _buffers;
-
-	void cacheResViews(void);
-	void cacheSamplers(void);
-	void cacheBuffers(void);
 };
 
 NS_END

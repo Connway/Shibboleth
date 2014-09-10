@@ -121,7 +121,8 @@ group ""
 			"../Shared/include",
 			"../../dependencies/jansson",
 			"../../dependencies/Gleam/include",
-			"../../dependencies/Gaff/include"
+			"../../dependencies/Gaff/include",
+			"../../dependencies/utf8-cpp"
 		}
 
 		dependson
