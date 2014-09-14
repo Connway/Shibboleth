@@ -11,6 +11,7 @@ project "Gaff"
 
 	configuration "windows"
 		includedirs { "../dirent" }
+		defines { "_CRT_SECURE_NO_WARNINGS" }
 
 	configuration {}
 

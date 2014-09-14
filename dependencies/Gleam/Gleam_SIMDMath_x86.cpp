@@ -20,7 +20,12 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
+#if defined(__amd64__) || defined(__x86_64__) || defined(_M_X64) || defined(_M_AMD64) || \
+	defined(__i686__) || defined(_M_IX86) || defined(_X86_)
+
 #include "Gleam_SIMDMath_x86.h"
+#include <emmintrin.h>
+#include <intrin.h>
 
 NS_GLEAM
 
@@ -37,63 +42,79 @@ const SIMDMaskStruct gSignMask(0x7FFFFFFF, 0x7FFFFFFF, 0x7FFFFFFF, 0x7FFFFFFF);
 const SIMDMaskStruct gInfinity(0x7F800000, 0x7F800000, 0x7F800000, 0x7F800000);
 const SIMDMaskStruct gNegZero(0x80000000, 0x80000000, 0x80000000, 0x80000000);
 
-const __m128 gOneXYZ = { 1.0f, 1.0f, 1.0f, 0.0f };
-const __m128 gOne = { 1.0f, 1.0f, 1.0f, 1.0f };
-const __m128 gTwo = { 2.0f, 2.0f, 2.0f, 2.0f };
-const __m128 gZero = { 0.0f, 0.0f, 0.0f, 0.0f };
-const __m128 gHalf = { 0.5f, 0.5f, 0.5f, 0.5f };
+const SIMDMaskStruct gYZWMask(0x00000000, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF);
+const SIMDMaskStruct gXZWMask(0xFFFFFFFF, 0x00000000, 0xFFFFFFFF, 0xFFFFFFFF);
+const SIMDMaskStruct gXYWMask(0xFFFFFFFF, 0xFFFFFFFF, 0x00000000, 0xFFFFFFFF);
 
-const __m128 gNegOneXYZ = { -1.0f, -1.0f, -1.0f, 1.0f };
-const __m128 gNegOne = { -1.0f, -1.0f, -1.0f, -1.0f };
+const SIMDType gOneXYZ = { 1.0f, 1.0f, 1.0f, 0.0f };
+const SIMDType gOne = { 1.0f, 1.0f, 1.0f, 1.0f };
+const SIMDType gTwo = { 2.0f, 2.0f, 2.0f, 2.0f };
+const SIMDType gZero = { 0.0f, 0.0f, 0.0f, 0.0f };
+const SIMDType gHalf = { 0.5f, 0.5f, 0.5f, 0.5f };
 
-const __m128 gPi = { 3.141592654f, 3.141592654f, 3.141592654f, 3.141592654f };
-const __m128 gTwoPi = { 2.0f*3.141592654f, 2.0f*3.141592654f, 2.0f*3.141592654f, 2.0f*3.141592654f };
-const __m128 gPiOverTwo = { 3.141592654f/2.0f, 3.141592654f/2.0f, 3.141592654f/2.0f, 3.141592654f/2.0f };
-const __m128 gPiOverFour = { 3.141592654f/4.0f, 3.141592654f/4.0f, 3.141592654f/4.0f, 3.141592654f/4.0f };
-const __m128 gThreePiOverFour = { 3.141592654f*3.0f/4.0f, 3.141592654f*3.0f/4.0f, 3.141592654f*3.0f/4.0f, 3.141592654f*3.0f/4.0f };
-const __m128 gReciprocalTwoPi = { 1.0f/(2.0f*3.141592654f), 1.0f/(2.0f*3.141592654f), 1.0f/(2.0f*3.141592654f), 1.0f/(2.0f*3.141592654f) };
+const SIMDType gNegOneXYZ = { -1.0f, -1.0f, -1.0f, 1.0f };
+const SIMDType gNegOne = { -1.0f, -1.0f, -1.0f, -1.0f };
 
-const __m128 gXAxis = { 1.0f, 0.0f, 0.0f, 1.0f };
-const __m128 gYAxis = { 0.0f, 1.0f, 0.0f, 1.0f };
-const __m128 gZAxis = { 0.0f, 0.0f, 1.0f, 0.0f };
-const __m128 gWAxis = { 0.0f, 0.0f, 0.0f, 1.0f };
+const SIMDType gPi = { 3.141592654f, 3.141592654f, 3.141592654f, 3.141592654f };
+const SIMDType gTwoPi = { 2.0f*3.141592654f, 2.0f*3.141592654f, 2.0f*3.141592654f, 2.0f*3.141592654f };
+const SIMDType gPiOverTwo = { 3.141592654f/2.0f, 3.141592654f/2.0f, 3.141592654f/2.0f, 3.141592654f/2.0f };
+const SIMDType gPiOverFour = { 3.141592654f/4.0f, 3.141592654f/4.0f, 3.141592654f/4.0f, 3.141592654f/4.0f };
+const SIMDType gThreePiOverFour = { 3.141592654f*3.0f/4.0f, 3.141592654f*3.0f/4.0f, 3.141592654f*3.0f/4.0f, 3.141592654f*3.0f/4.0f };
+const SIMDType gReciprocalTwoPi = { 1.0f/(2.0f*3.141592654f), 1.0f/(2.0f*3.141592654f), 1.0f/(2.0f*3.141592654f), 1.0f/(2.0f*3.141592654f) };
 
-const __m128 gATanCoeffs0 = { -0.3333314528f, +0.1999355085f, -0.1420889944f, +0.1065626393f };
-const __m128 gATanCoeffs1 = { -0.0752896400f, +0.0429096138f, -0.0161657367f, +0.0028662257f };
-const __m128 gArcCoeffs0 = { +1.5707963050f, -0.2145988016f, +0.0889789874f, -0.0501743046f };
-const __m128 gArcCoeffs1 = { +0.0308918810f, -0.0170881256f, +0.0066700901f, -0.0012624911f };
-const __m128 gSinCoeffs0 = { -0.16666667f, +0.0083333310f, -0.00019840874f, +2.7525562e-06f };
-const __m128 gSinCoeffs1 = { -2.3889859e-08f, -0.16665852f, +0.0083139502f, -0.00018524670f };
-const __m128 gCosCoeffs0 = { -0.5f, +0.041666638f, -0.0013888378f, +2.4760495e-05f };
-const __m128 gCosCoeffs1 = { -2.6051615e-07f, -0.49992746f, +0.041493919f, -0.0012712436f };
+const SIMDType gXAxis = { 1.0f, 0.0f, 0.0f, 1.0f };
+const SIMDType gYAxis = { 0.0f, 1.0f, 0.0f, 1.0f };
+const SIMDType gZAxis = { 0.0f, 0.0f, 1.0f, 0.0f };
+const SIMDType gWAxis = { 0.0f, 0.0f, 0.0f, 1.0f };
 
-__m128 SIMDNegate(const __m128& vec)
+const SIMDType gATanCoeffs0 = { -0.3333314528f, +0.1999355085f, -0.1420889944f, +0.1065626393f };
+const SIMDType gATanCoeffs1 = { -0.0752896400f, +0.0429096138f, -0.0161657367f, +0.0028662257f };
+const SIMDType gArcCoeffs0 = { +1.5707963050f, -0.2145988016f, +0.0889789874f, -0.0501743046f };
+const SIMDType gArcCoeffs1 = { +0.0308918810f, -0.0170881256f, +0.0066700901f, -0.0012624911f };
+const SIMDType gSinCoeffs0 = { -0.16666667f, +0.0083333310f, -0.00019840874f, +2.7525562e-06f };
+const SIMDType gSinCoeffs1 = { -2.3889859e-08f, -0.16665852f, +0.0083139502f, -0.00018524670f };
+const SIMDType gCosCoeffs0 = { -0.5f, +0.041666638f, -0.0013888378f, +2.4760495e-05f };
+const SIMDType gCosCoeffs1 = { -2.6051615e-07f, -0.49992746f, +0.041493919f, -0.0012712436f };
+
+typedef float (*GetElementFunc)(const SIMDType&);
+typedef void (*SetElementFunc)(SIMDType&, float);
+
+static GetElementFunc gGetFuncs[4] = {
+	&SIMDGet<0>, &SIMDGet<1>,
+	&SIMDGet<2>, &SIMDGet<3>,
+};
+
+static SetElementFunc gSetFuncs[4] = {
+	&SIMDSetX, &SIMDSetY,
+	&SIMDSetZ, &SIMDSetW
+};
+
+SIMDType SIMDNegate(const SIMDType& vec)
 {
 	return _mm_sub_ps(gZero, vec);
 }
 
-bool SIMDEqual(const __m128& left, const __m128& right)
+bool SIMDEqual(const SIMDType& left, const SIMDType& right)
 {
-	__m128 temp = _mm_cmpeq_ps(left, right);
+	SIMDType temp = _mm_cmpeq_ps(left, right);
 	return (_mm_movemask_ps(temp) == 0x0f) != 0;
 }
 
-bool SIMDRoughlyEqual(const __m128& left, const __m128& right, float epsilon)
+bool SIMDRoughlyEqual(const SIMDType& left, const SIMDType& right, const SIMDType& epsilon)
 {
-	__m128 eps = _mm_set1_ps(epsilon);
-	__m128 delta = _mm_sub_ps(left, right);
-	__m128 temp = gZero;
+	SIMDType delta = _mm_sub_ps(left, right);
+	SIMDType temp = gZero;
 
 	temp = _mm_sub_ps(temp, delta);
 	temp = _mm_max_ps(temp, delta);
-	temp = _mm_cmple_ps(temp, eps);
+	temp = _mm_cmple_ps(temp, epsilon);
 
 	return (_mm_movemask_ps(temp) == 0xf) != 0;
 }
 
-__m128 SIMDPermute(const __m128& left, const __m128& right, unsigned int x, unsigned int y, unsigned int z, unsigned int w)
+SIMDType SIMDPermute(const SIMDType& left, const SIMDType& right, unsigned int x, unsigned int y, unsigned int z, unsigned int w)
 {
-	__m128 temp;
+	SIMDType temp;
 	const unsigned int* uintptr[2];
 	unsigned int* workptr = (unsigned int*)&temp;
 	uintptr[0] = (const unsigned int*)&left;
@@ -119,36 +140,36 @@ __m128 SIMDPermute(const __m128& left, const __m128& right, unsigned int x, unsi
 	return temp;
 }
 
-__m128 SIMDRound(const __m128& vec)
+SIMDType SIMDRound(const SIMDType& vec)
 {
 	static __m128i fraction_test = _mm_castps_si128(_mm_set1_ps(8388608.0f));
 
 	__m128i test = _mm_and_si128(_mm_castps_si128(vec), _mm_castps_si128(gSignMask));
 	test = _mm_cmplt_epi32(test, fraction_test);
 
-	__m128 temp = _mm_cvtepi32_ps(_mm_cvtps_epi32(vec));
-	temp = _mm_and_ps(temp, ((__m128*)(&test))[0]);
+	SIMDType temp = _mm_cvtepi32_ps(_mm_cvtps_epi32(vec));
+	temp = _mm_and_ps(temp, ((SIMDType*)(&test))[0]);
 	test = _mm_andnot_si128(test, _mm_castps_si128(vec));
-	temp = _mm_or_ps(temp, ((__m128*)(&test))[0]);
+	temp = _mm_or_ps(temp, ((SIMDType*)(&test))[0]);
 
 	return temp;
 }
 
-__m128 SIMDAbs(const __m128& vec)
+SIMDType SIMDAbs(const SIMDType& vec)
 {
-	__m128 temp = _mm_sub_ps(gZero, vec);
+	SIMDType temp = _mm_sub_ps(gZero, vec);
 	return _mm_max_ps(temp, vec);
 }
 
-__m128 SIMDACos(const __m128& vec)
+SIMDType SIMDACos(const SIMDType& vec)
 {
-	__m128 abs = _mm_max_ps(vec, _mm_sub_ps(gZero, vec));
-	__m128 root = _mm_sub_ps(gOne, abs);
+	SIMDType abs = _mm_max_ps(vec, _mm_sub_ps(gZero, vec));
+	SIMDType root = _mm_sub_ps(gOne, abs);
 	root = _mm_max_ps(gZero, root);
 	root = _mm_sqrt_ps(root);
 
-	__m128 consts = _mm_shuffle_ps(gArcCoeffs1, gArcCoeffs1, _MM_SHUFFLE(3,3,3,3));
-	__m128 t0 = _mm_mul_ps(consts, abs);
+	SIMDType consts = _mm_shuffle_ps(gArcCoeffs1, gArcCoeffs1, _MM_SHUFFLE(3,3,3,3));
+	SIMDType t0 = _mm_mul_ps(consts, abs);
 
 	consts = _mm_shuffle_ps(gArcCoeffs1, gArcCoeffs1, _MM_SHUFFLE(2,2,2,2));
 	t0 = _mm_add_ps(t0, consts);
@@ -179,8 +200,8 @@ __m128 SIMDACos(const __m128& vec)
 	t0 = _mm_add_ps(t0, consts);
 	t0 = _mm_mul_ps(t0, root);
 
-	__m128 nn = _mm_cmpge_ps(vec, gZero);
-	__m128 t1 = _mm_sub_ps(gPi, t0);
+	SIMDType nn = _mm_cmpge_ps(vec, gZero);
+	SIMDType t1 = _mm_sub_ps(gPi, t0);
 	t0 = _mm_and_ps(nn, t0);
 	t1 = _mm_andnot_ps(nn, t1);
 	t0 = _mm_or_ps(t0, t1);
@@ -188,23 +209,23 @@ __m128 SIMDACos(const __m128& vec)
 	return t0;
 }
 
-__m128 SIMDSin(const __m128& vec)
+SIMDType SIMDSin(const SIMDType& vec)
 {
-	__m128 x = _mm_mul_ps(vec, gReciprocalTwoPi);
+	SIMDType x = _mm_mul_ps(vec, gReciprocalTwoPi);
 	x = SIMDRound(x);
 	x = _mm_mul_ps(x, gTwoPi);
 	x = _mm_sub_ps(vec, x);
 
-	__m128 sign = _mm_and_ps(x, gNegZero);
-	__m128 c = _mm_or_ps(gPi, sign);
-	__m128 absx = _mm_andnot_ps(sign, x);
-	__m128 rflx = _mm_sub_ps(c, x);
-	__m128 comp = _mm_cmple_ps(absx, gPiOverTwo);
+	SIMDType sign = _mm_and_ps(x, gNegZero);
+	SIMDType c = _mm_or_ps(gPi, sign);
+	SIMDType absx = _mm_andnot_ps(sign, x);
+	SIMDType rflx = _mm_sub_ps(c, x);
+	SIMDType comp = _mm_cmple_ps(absx, gPiOverTwo);
 	x = _mm_or_ps(_mm_and_ps(comp, x), _mm_andnot_ps(comp, rflx));
-	__m128 x_squared = _mm_mul_ps(x, x);
+	SIMDType x_squared = _mm_mul_ps(x, x);
 
-	__m128 consts = _mm_shuffle_ps(gSinCoeffs1, gSinCoeffs1, _MM_SHUFFLE(0,0,0,0));
-	__m128 temp = _mm_mul_ps(consts, x_squared);
+	SIMDType consts = _mm_shuffle_ps(gSinCoeffs1, gSinCoeffs1, _MM_SHUFFLE(0,0,0,0));
+	SIMDType temp = _mm_mul_ps(consts, x_squared);
 
 	consts = _mm_shuffle_ps(gSinCoeffs0, gSinCoeffs0, _MM_SHUFFLE(3,3,3,3));
 	temp = _mm_add_ps(temp, consts);
@@ -228,25 +249,25 @@ __m128 SIMDSin(const __m128& vec)
 	return temp;
 }
 
-__m128 SIMDCos(const __m128& vec)
+SIMDType SIMDCos(const SIMDType& vec)
 {
-	__m128 x = _mm_mul_ps(vec, gReciprocalTwoPi);
+	SIMDType x = _mm_mul_ps(vec, gReciprocalTwoPi);
 	x = SIMDRound(x);
 	x = _mm_mul_ps(x, gTwoPi);
 	x = _mm_sub_ps(vec, x);
 
-	__m128 sign = _mm_and_ps(x, gNegZero);
-	__m128 c = _mm_or_ps(gPi, sign);
-	__m128 absx = _mm_andnot_ps(sign, x);
-	__m128 rflx = _mm_sub_ps(c, x);
-	__m128 comp = _mm_cmple_ps(absx, gPiOverTwo);
+	SIMDType sign = _mm_and_ps(x, gNegZero);
+	SIMDType c = _mm_or_ps(gPi, sign);
+	SIMDType absx = _mm_andnot_ps(sign, x);
+	SIMDType rflx = _mm_sub_ps(c, x);
+	SIMDType comp = _mm_cmple_ps(absx, gPiOverTwo);
 	x = _mm_or_ps(_mm_and_ps(comp, x), _mm_andnot_ps(comp, rflx));
 	sign = _mm_or_ps(_mm_and_ps(comp, gOne), _mm_andnot_ps(comp, gNegOne));
 
-	__m128 x_squared = _mm_mul_ps(x, x);
+	SIMDType x_squared = _mm_mul_ps(x, x);
 
-	__m128 consts = _mm_shuffle_ps(gCosCoeffs1, gCosCoeffs1, _MM_SHUFFLE(0,0,0,0));
-	__m128 temp = _mm_mul_ps(consts, x_squared);
+	SIMDType consts = _mm_shuffle_ps(gCosCoeffs1, gCosCoeffs1, _MM_SHUFFLE(0,0,0,0));
+	SIMDType temp = _mm_mul_ps(consts, x_squared);
 
 	consts = _mm_shuffle_ps(gCosCoeffs0, gCosCoeffs0, _MM_SHUFFLE(3,3,3,3));
 	temp = _mm_add_ps(temp, consts);
@@ -270,70 +291,70 @@ __m128 SIMDCos(const __m128& vec)
 	return temp;
 }
 
-__m128 SIMDATan2(const __m128& y, const __m128& x)
+SIMDType SIMDATan2(const SIMDType& y, const SIMDType& x)
 {
 	__m128i tempi = _mm_set1_epi32(-1);
-	__m128 valid_result = ((__m128*)&tempi)[0];
-	__m128 pi = gPi;
-	__m128 piOverTwo = gPiOverTwo;
-	__m128 piOverFour = gPiOverFour;
-	__m128 threePiOverFour = gThreePiOverFour;
+	SIMDType valid_result = ((SIMDType*)&tempi)[0];
+	SIMDType pi = gPi;
+	SIMDType piOverTwo = gPiOverTwo;
+	SIMDType piOverFour = gPiOverFour;
+	SIMDType threePiOverFour = gThreePiOverFour;
 
-	__m128 x_zero = _mm_cmpeq_ps(x, gZero);
-	__m128 y_zero = _mm_cmpeq_ps(y, gZero);
-	__m128 x_positive = _mm_and_ps(x, gNegZero);
+	SIMDType x_zero = _mm_cmpeq_ps(x, gZero);
+	SIMDType y_zero = _mm_cmpeq_ps(y, gZero);
+	SIMDType x_positive = _mm_and_ps(x, gNegZero);
 
 	{
 		__m128i temp = _mm_cmpeq_epi32(_mm_castps_si128(x_positive), _mm_castps_si128(gZero));
-		x_positive = ((__m128*)(&temp))[0];
+		x_positive = ((SIMDType*)(&temp))[0];
 	}
 
-	__m128 x_infinite = _mm_and_ps(x, gSignMask);
+	SIMDType x_infinite = _mm_and_ps(x, gSignMask);
 	x_infinite = _mm_cmpeq_ps(x_infinite, gInfinity);
 
-	__m128 y_infinite = _mm_and_ps(y, gSignMask);
+	SIMDType y_infinite = _mm_and_ps(y, gSignMask);
 	y_infinite = _mm_cmpeq_ps(y_infinite, gInfinity);
 
-	__m128 y_sign = _mm_and_ps(y, gNegZero);
+	SIMDType y_sign = _mm_and_ps(y, gNegZero);
 	tempi = _mm_or_si128(_mm_castps_si128(pi), _mm_castps_si128(y_sign));
-	pi = ((__m128*)(&tempi))[0];
+	pi = ((SIMDType*)(&tempi))[0];
 	tempi = _mm_or_si128(_mm_castps_si128(piOverTwo), _mm_castps_si128(y_sign));
-	piOverTwo = ((__m128*)(&tempi))[0];
+	piOverTwo = ((SIMDType*)(&tempi))[0];
 	tempi = _mm_or_si128(_mm_castps_si128(piOverFour), _mm_castps_si128(y_sign));
-	piOverFour = ((__m128*)(&tempi))[0];
+	piOverFour = ((SIMDType*)(&tempi))[0];
 	tempi = _mm_or_si128(_mm_castps_si128(threePiOverFour), _mm_castps_si128(y_sign));
-	threePiOverFour = ((__m128*)(&tempi))[0];
+	threePiOverFour = ((SIMDType*)(&tempi))[0];
 
-	__m128 r1 = _mm_or_ps(_mm_andnot_ps(x_positive, pi), _mm_and_ps(y_sign, x_positive));
-	__m128 r2 = _mm_or_ps(_mm_andnot_ps(x_zero, valid_result), _mm_and_ps(piOverTwo, x_zero));
-	__m128 r3 = _mm_or_ps(_mm_andnot_ps(y_zero, r2), _mm_and_ps(r1, y_zero));
-	__m128 r4 = _mm_or_ps(_mm_andnot_ps(x_positive, threePiOverFour), _mm_and_ps(piOverFour, x_positive));
-	__m128 r5 = _mm_or_ps(_mm_andnot_ps(x_infinite, piOverTwo), _mm_and_ps(r4, x_infinite));
-	__m128 temp = _mm_or_ps(_mm_andnot_ps(y_infinite, r3), _mm_and_ps(r5, y_infinite));
+	SIMDType r1 = _mm_or_ps(_mm_andnot_ps(x_positive, pi), _mm_and_ps(y_sign, x_positive));
+	SIMDType r2 = _mm_or_ps(_mm_andnot_ps(x_zero, valid_result), _mm_and_ps(piOverTwo, x_zero));
+	SIMDType r3 = _mm_or_ps(_mm_andnot_ps(y_zero, r2), _mm_and_ps(r1, y_zero));
+	SIMDType r4 = _mm_or_ps(_mm_andnot_ps(x_positive, threePiOverFour), _mm_and_ps(piOverFour, x_positive));
+	SIMDType r5 = _mm_or_ps(_mm_andnot_ps(x_infinite, piOverTwo), _mm_and_ps(r4, x_infinite));
+	SIMDType temp = _mm_or_ps(_mm_andnot_ps(y_infinite, r3), _mm_and_ps(r5, y_infinite));
 	tempi = _mm_cmpeq_epi32(_mm_castps_si128(temp), _mm_castps_si128(valid_result));
-	valid_result = ((__m128*)(&tempi))[0];
+	valid_result = ((SIMDType*)(&tempi))[0];
 
-	__m128 v = _mm_div_ps(y, x);
-	__m128 r0 = SIMDATan(v);
+	SIMDType v = _mm_div_ps(y, x);
+	SIMDType r0 = SIMDATan(v);
 	r1 = _mm_or_ps(_mm_andnot_ps(x_positive, pi), _mm_and_ps(gZero, x_positive));
 	r2 = _mm_add_ps(r0, r1);
 
 	return _mm_or_ps(_mm_andnot_ps(valid_result, temp), _mm_and_ps(r2, valid_result));
 }
 
-__m128 SIMDATan(const __m128& vec)
+SIMDType SIMDATan(const SIMDType& vec)
 {
-	__m128 abs = SIMDAbs(vec);
-	__m128 inv = _mm_div_ps(gOne, vec);
-	__m128 comp = _mm_cmpgt_ps(vec, gOne);
-	__m128 sign = _mm_or_ps(_mm_and_ps(comp, gOne), _mm_andnot_ps(comp, gNegOne));
+	SIMDType abs = SIMDAbs(vec);
+	SIMDType inv = _mm_div_ps(gOne, vec);
+	SIMDType comp = _mm_cmpgt_ps(vec, gOne);
+	SIMDType sign = _mm_or_ps(_mm_and_ps(comp, gOne), _mm_andnot_ps(comp, gNegOne));
 	comp = _mm_cmple_ps(abs, gOne);
 	sign = _mm_or_ps(_mm_and_ps(comp, gZero), _mm_andnot_ps(comp, sign));
-	__m128 x = _mm_or_ps(_mm_and_ps(comp, vec), _mm_andnot_ps(comp, inv));
-	__m128 x_squared = _mm_mul_ps(x, x);
+	SIMDType x = _mm_or_ps(_mm_and_ps(comp, vec), _mm_andnot_ps(comp, inv));
+	SIMDType x_squared = _mm_mul_ps(x, x);
 
-	__m128 consts = _mm_shuffle_ps(gATanCoeffs1, gATanCoeffs1, _MM_SHUFFLE(3,3,3,3));
-	__m128 temp1 = _mm_mul_ps(consts, x_squared);
+	SIMDType consts = _mm_shuffle_ps(gATanCoeffs1, gATanCoeffs1, _MM_SHUFFLE(3,3,3,3));
+	SIMDType temp1 = _mm_mul_ps(consts, x_squared);
 
 	consts = _mm_shuffle_ps(gATanCoeffs1, gATanCoeffs1, _MM_SHUFFLE(2,2,2,2));
 	temp1 = _mm_add_ps(temp1, consts);
@@ -367,17 +388,18 @@ __m128 SIMDATan(const __m128& vec)
 	temp1 = _mm_add_ps(temp1, gOne);
 	temp1 = _mm_mul_ps(temp1, x);
 
-	__m128 temp2 = _mm_mul_ps(sign, gPiOverTwo);
+	SIMDType temp2 = _mm_mul_ps(sign, gPiOverTwo);
 	temp2 = _mm_sub_ps(temp2, temp1);
 
 	comp = _mm_cmpeq_ps(sign, gZero);
 	return _mm_or_ps(_mm_and_ps(comp, temp1), _mm_andnot_ps(comp, temp2));
 }
 
-__m128 SIMDVec4Dot(const __m128& left, const __m128& right)
+SIMDType SIMDVec4Dot(const SIMDType& left, const SIMDType& right)
 {
-	__m128 temp1 = _mm_mul_ps(left, right);
-	__m128 temp2 = right;
+#ifdef LIMIT_TO_SSE2
+	SIMDType temp1 = _mm_mul_ps(left, right);
+	SIMDType temp2 = right;
 
 	temp2 = _mm_shuffle_ps(temp2, temp1, _MM_SHUFFLE(1,0,0,0));
 	temp2 = _mm_add_ps(temp2, temp1);
@@ -385,50 +407,55 @@ __m128 SIMDVec4Dot(const __m128& left, const __m128& right)
 	temp1 = _mm_add_ps(temp1, temp2);
 
 	return _mm_shuffle_ps(temp1, temp1, _MM_SHUFFLE(2,2,2,2));
+#else
+	SIMDType temp = _mm_mul_ps(left, right);
+	temp = _mm_hadd_ps(temp, temp); // a[3]*b[3]+a[2]*b[2], a[1]*b[1]+a[0]*b[0], a[3]*b[3]+a[2]*b[2], a[1]*b[1]+a[0]*b[0]
+	return _mm_hadd_ps(temp, temp); // fill all elements with dot product
+#endif
 }
 
-__m128 SIMDVec4AngleUnit(const __m128& left, const __m128& right)
+SIMDType SIMDVec4AngleUnit(const SIMDType& left, const SIMDType& right)
 {
 	return SIMDACos(SIMDVec4Dot(left, right));
 }
 
-__m128 SIMDVec4Angle(const __m128& left, const __m128& right)
+SIMDType SIMDVec4Angle(const SIMDType& left, const SIMDType& right)
 {
 	return SIMDVec4AngleUnit(SIMDVec4Normalize(left), SIMDVec4Normalize(right));
 }
 
-__m128 SIMDVec4LengthSquared(const __m128& vec)
+SIMDType SIMDVec4LengthSquared(const SIMDType& vec)
 {
 	return SIMDVec4Dot(vec, vec);
 }
 
-__m128 SIMDVec4Length(const __m128& vec)
+SIMDType SIMDVec4Length(const SIMDType& vec)
 {
 	return _mm_sqrt_ps(SIMDVec4Dot(vec, vec));
 }
 
-__m128 SIMDVec4ReciprocalLengthSquared(const __m128& vec)
+SIMDType SIMDVec4ReciprocalLengthSquared(const SIMDType& vec)
 {
 	return _mm_div_ps(gOne, SIMDVec4Dot(vec, vec));
 }
 
-__m128 SIMDVec4ReciprocalLength(const __m128& vec)
+SIMDType SIMDVec4ReciprocalLength(const SIMDType& vec)
 {
 	return _mm_div_ps(gOne, _mm_sqrt_ps(SIMDVec4Dot(vec, vec)));
 }
 
-__m128 SIMDVec4Normalize(const __m128& vec)
+SIMDType SIMDVec4Normalize(const SIMDType& vec)
 {
-	__m128 length = _mm_sqrt_ps(SIMDVec4Dot(vec, vec));
+	SIMDType length = _mm_sqrt_ps(SIMDVec4Dot(vec, vec));
 	return _mm_div_ps(vec, length);
 }
 
-__m128 SIMDVec4Cross(const __m128& left, const __m128& right)
+SIMDType SIMDVec4Cross(const SIMDType& left, const SIMDType& right)
 {
-	__m128 temp1 = _mm_shuffle_ps(left, left, _MM_SHUFFLE(3,0,2,1));
-	__m128 temp2 = _mm_shuffle_ps(right, right, _MM_SHUFFLE(3,1,0,2));
+	SIMDType temp1 = _mm_shuffle_ps(left, left, _MM_SHUFFLE(3,0,2,1));
+	SIMDType temp2 = _mm_shuffle_ps(right, right, _MM_SHUFFLE(3,1,0,2));
 
-	__m128 result = _mm_mul_ps(temp1, temp2);
+	SIMDType result = _mm_mul_ps(temp1, temp2);
 
 	temp1 = _mm_shuffle_ps(temp1, temp1, _MM_SHUFFLE(3,0,2,1));
 	temp2 = _mm_shuffle_ps(temp2, temp2,_MM_SHUFFLE(3,1,0,2));
@@ -439,37 +466,165 @@ __m128 SIMDVec4Cross(const __m128& left, const __m128& right)
 	return _mm_and_ps(result, gXYZMask);
 }
 
-__m128 SIMDVec4Reflect(const __m128& vec, const __m128& normal)
+SIMDType SIMDVec4Reflect(const SIMDType& vec, const SIMDType& normal)
 {
-	__m128 result = _mm_mul_ps(gTwo, SIMDVec4Dot(vec, normal));
+	SIMDType result = _mm_mul_ps(gTwo, SIMDVec4Dot(vec, normal));
 	result = _mm_mul_ps(result, normal);
 	return _mm_sub_ps(vec, result);
 }
 
-__m128 SIMDVec4Refract(const __m128& vec, const __m128& normal, float refraction_index)
+SIMDType SIMDVec4Refract(const SIMDType& vec, const SIMDType& normal, const SIMDType& refraction_index)
 {
-	__m128 ri = _mm_set1_ps(refraction_index);
-	__m128 idn = SIMDVec4Dot(vec, normal);
-	__m128 k = _mm_mul_ps(idn, idn);
+	SIMDType idn = SIMDVec4Dot(vec, normal);
+	SIMDType k = _mm_mul_ps(idn, idn);
 	k = _mm_sub_ps(gOne, k);
-	k = _mm_mul_ps(k, ri);
-	k = _mm_mul_ps(k, ri);
+	k = _mm_mul_ps(k, refraction_index);
+	k = _mm_mul_ps(k, refraction_index);
 	k = _mm_sub_ps(gOne, k);
 
 	if (_mm_movemask_ps(_mm_cmple_ps(k, gZero))) {
 		return gZero;
 	}
 
-	k = _mm_add_ps(_mm_sqrt_ps(k), _mm_mul_ps(ri, idn));
+	k = _mm_add_ps(_mm_sqrt_ps(k), _mm_mul_ps(refraction_index, idn));
 	k = _mm_mul_ps(k, normal);
-	return _mm_sub_ps(_mm_mul_ps(ri, vec), k);
+	return _mm_sub_ps(_mm_mul_ps(refraction_index, vec), k);
 }
 
-__m128 SIMDVec4Lerp(const __m128& left, const __m128& right, float t)
+SIMDType SIMDVec4Lerp(const SIMDType& left, const SIMDType& right, const SIMDType& t)
 {
-	__m128 temp = _mm_set1_ps(t);
-	temp = _mm_mul_ps(temp, _mm_sub_ps(right, left));
+	SIMDType temp = _mm_mul_ps(t, _mm_sub_ps(right, left));
 	return _mm_add_ps(left, temp);
 }
 
+SIMDType SIMDSub(const SIMDType& left, const SIMDType& right)
+{
+	return _mm_sub_ps(left, right);
+}
+
+SIMDType SIMDAdd(const SIMDType& left, const SIMDType& right)
+{
+	return _mm_add_ps(left, right);
+}
+
+SIMDType SIMDMul(const SIMDType& left, const SIMDType& right)
+{
+	return _mm_mul_ps(left, right);
+}
+
+SIMDType SIMDDiv(const SIMDType& left, const SIMDType& right)
+{
+	return _mm_div_ps(left, right);
+}
+
+SIMDType SIMDAnd(const SIMDType& left, const SIMDType& right)
+{
+	return _mm_and_ps(left, right);
+}
+
+SIMDType SIMDOr(const SIMDType& left, const SIMDType& right)
+{
+	return _mm_or_ps(left, right);
+}
+
+SIMDType SIMDXOr(const SIMDType& left, const SIMDType& right)
+{
+	return _mm_xor_ps(left, right);
+}
+
+SIMDType SIMDAndNot(const SIMDType& left, const SIMDType& right)
+{
+	return _mm_andnot_ps(left, right);
+}
+
+SIMDType SIMDCreate(float x, float y, float z, float w)
+{
+	return _mm_set_ps(w, z, y, x);
+}
+
+SIMDType SIMDCreate(float value)
+{
+	return _mm_set_ps1(value);
+}
+
+float SIMDGet(const SIMDType& vec, unsigned int index)
+{
+	return gGetFuncs[index](vec);
+}
+
+float SIMDGetX(const SIMDType& vec)
+{
+	return _mm_cvtss_f32(vec);
+}
+
+float SIMDGetY(const SIMDType& vec)
+{
+	return SIMDGet<1>(vec);
+}
+
+float SIMDGetZ(const SIMDType& vec)
+{
+	return SIMDGet<2>(vec);
+}
+
+float SIMDGetW(const SIMDType& vec)
+{
+	return SIMDGet<3>(vec);
+}
+
+void SIMDSet(SIMDType& vec, float value, unsigned int index)
+{
+	gSetFuncs[index](vec, value);
+}
+
+void SIMDSetX(SIMDType& vec, float value)
+{
+	SIMDType temp = _mm_set_ps(value, 0.0f, 0.0f, 0.0f);
+	vec = _mm_and_ps(vec, gYZWMask); // clear x value
+	vec = _mm_or_ps(temp, vec);
+}
+
+void SIMDSetY(SIMDType& vec, float value)
+{
+	SIMDType temp = _mm_set_ps(0.0f, value, 0.0f, 0.0f);
+	vec = _mm_and_ps(vec, gXZWMask); // clear y value
+	vec = _mm_or_ps(temp, vec);
+}
+
+void SIMDSetZ(SIMDType& vec, float value)
+{
+	SIMDType temp = _mm_set_ps(0.0f, 0.0f, value, 0.0f);
+	vec = _mm_and_ps(vec, gXYWMask); // clear z value
+	vec = _mm_or_ps(temp, vec);
+}
+
+void SIMDSetW(SIMDType& vec, float value)
+{
+	SIMDType temp = _mm_set_ps(0.0f, 0.0f, 0.0f, value);
+	vec = _mm_and_ps(vec, gXYZMask); // clear w value
+	vec = _mm_or_ps(temp, vec);
+}
+
+void SIMDStoreAligned(const SIMDType& vec, float* buffer)
+{
+	_mm_storeu_ps(buffer, vec);
+}
+
+void SIMDStore(const SIMDType& vec, float* buffer)
+{
+	_mm_store_ps(buffer, vec);
+}
+
+SIMDType SIMDLoadAligned(float* buffer)
+{
+	return _mm_loadu_ps(buffer);
+}
+
+SIMDType SIMDLoad(float* buffer)
+{
+	return _mm_load_ps(buffer);
+}
+
 NS_END
+
+#endif

@@ -22,20 +22,12 @@ THE SOFTWARE.
 
 #pragma once
 
-//#define ALIGN_SIMD
-
 #if defined(_WIN32) || defined(_WIN64)
 	#define COMPILERALIGN16 __declspec(align(16))
 #elif defined(__linux__) || defined(__APPLE__)
 	#define COMPILERALIGN16 __attribute__((aligned(16)))
 #else
 	#error Platform not supported
-#endif
-
-#ifdef ALIGN_SIMD
-	#define ALIGN16 COMPILERALIGN16
-#else
-	#define ALIGN16
 #endif
 
 #define NS_GLEAM namespace Gleam {
