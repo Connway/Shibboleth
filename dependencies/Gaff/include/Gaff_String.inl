@@ -392,7 +392,7 @@ unsigned int String<T, Allocator>::findFirstOf(const T* string) const
 }
 
 template <class T, class Allocator>
-unsigned int String<T, Allocator>::findLastOf(const T* character) const
+unsigned int String<T, Allocator>::findLastOf(const T* string) const
 {
 	unsigned int len = length(string);
 
@@ -568,13 +568,12 @@ unsigned int length(const T* string)
 template <class T>
 bool less(const T* s1, unsigned int n1, const T* s2, unsigned int n2)
 {
-	unsigned int size = Min(n1, n2);
+	unsigned int size = (n1 < n2) ? n1 : n2;
 
 	for (unsigned int i = 0; i < size; ++i) {
-		if (_string[i] < rhs._string[i]) {
+		if (s1[i] < s2[i]) {
 			return true;
-		}
-		else if (_string[i] > rhs._string[i]) {
+		} else if (s1[i] > s2[i]) {
 			return false;
 		}
 	}
@@ -591,13 +590,12 @@ bool less(const T* s1, unsigned int n1, const T* s2)
 template <class T>
 bool greater(const T* s1, unsigned int n1, const T* s2, unsigned int n2)
 {
-	unsigned int size = Min(n1, n2);
+	unsigned int size = (n1 < n2) ? n1 : n2;
 
 	for (unsigned int i = 0; i < size; ++i) {
-		if (_string[i] > rhs._string[i]) {
+		if (s1[i] > s2[i]) {
 			return true;
-		}
-		else if (_string[i] < rhs._string[i]) {
+		} else if (s1[i] < s2[i]) {
 			return false;
 		}
 	}
