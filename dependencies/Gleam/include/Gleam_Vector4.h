@@ -22,23 +22,87 @@ THE SOFTWARE.
 
 #pragma once
 
-#ifdef USE_SIMD
-	#include "Gleam_Vector4_SIMD.h"
+#include "Gleam_Defines.h"
 
 NS_GLEAM
-	typedef Vector4SIMD Vector4;
-NS_END
 
-	#error "Library projects are set to compile to SSE2 code and are more performant using the CPU versions of these classes."
-#else
-	#include "Gleam_Vector4_CPU.h"
+class Vector4
+{
+public:
+	Vector4(void);
+	Vector4(const Vector4& rhs);
+	Vector4(float x, float y, float z, float w);
+	explicit Vector4(const float* elements);
+	~Vector4(void);
 
-NS_GLEAM
-	typedef Vector4CPU Vector4;
-NS_END
-#endif
+	bool operator==(const Vector4& rhs) const;
+	INLINE bool operator!=(const Vector4& rhs) const;
+	INLINE const Vector4& operator=(const Vector4& rhs);
 
-// typedef a shorthand version
-NS_GLEAM
-	typedef Vector4 Vec4;
+	INLINE float operator[](int index) const;
+	INLINE float& operator[](int index);
+
+	const Vector4& operator-=(const Vector4& rhs);
+	Vector4 operator-(const Vector4& rhs) const;
+	Vector4 operator-(void) const;
+
+	const Vector4& operator+=(const Vector4& rhs);
+	Vector4 operator+(const Vector4& rhs) const;
+	Vector4 operator+(void) const;
+
+	const Vector4& operator*=(const Vector4& rhs);
+	Vector4 operator*(const Vector4& rhs) const;
+	const Vector4& operator*=(float rhs);
+	Vector4 operator*(float rhs) const;
+
+	const Vector4& operator/=(const Vector4& rhs);
+	Vector4 operator/(const Vector4& rhs) const;
+	const Vector4& operator/=(float rhs);
+	Vector4 operator/(float rhs) const;
+
+	void set(float x, float y, float z, float w);
+	void set(const float* elements);
+	void set(float value, unsigned int index);
+
+	INLINE const float* getBuffer(void) const;
+	INLINE float* getBuffer(void);
+
+	float lengthSquared(void) const;
+	float length(void) const;
+	float reciprocalLengthSquared(void) const;
+	float reciprocalLength(void) const;
+	void normalize(void);
+
+	Vector4 cross(const Vector4& rhs) const;
+	float dot(const Vector4& rhs) const;
+	float angleUnit(const Vector4& rhs) const;
+	float angle(const Vector4& rhs) const;
+	Vector4 reflect(const Vector4& normal) const;
+	Vector4 refract(const Vector4& normal, float refraction_index) const;
+	Vector4 lerp(const Vector4& end, float t) const;
+
+	bool roughlyEqual(const Vector4& rhs, float epsilon = 0.000001f) const;
+
+	static Vector4 zero;
+	static Vector4 x_axis;
+	static Vector4 y_axis;
+	static Vector4 z_axis;
+	static Vector4 origin;
+
+private:
+	union
+	{
+		struct
+		{
+			float _x, _y, _z, _w;
+		};
+
+		float _vec[4];
+	};
+};
+
+INLINE Vector4 operator*(float lhs, const Vector4& rhs);
+
+typedef Vector4 Vec4;
+
 NS_END
