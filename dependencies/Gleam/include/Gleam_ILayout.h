@@ -45,6 +45,12 @@ enum SEMANTIC
 	SEMANTIC_SIZE
 };
 
+enum PerDataType
+{
+	PDT_PER_VERTEX = 0,
+	PDT_PER_INSTASNCE
+};
+
 struct LayoutDescription
 {
 	SEMANTIC semantic;
@@ -52,6 +58,7 @@ struct LayoutDescription
 	ITexture::FORMAT format;
 	unsigned int input_slot;
 	unsigned int aligned_byte_offset;
+	PerDataType per_data_type;
 };
 
 class ILayout : public GleamRefCounted

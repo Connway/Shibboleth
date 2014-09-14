@@ -514,9 +514,18 @@ void Array<T, Allocator>::erase(unsigned int index)
 template <class T, class Allocator>
 void Array<T, Allocator>::resize(unsigned int new_size)
 {
-	if (new_size == _size) {
-		return;
-	}
+	// Is this optimization really worth the cost of the two if checks? Given the rarity this will happen?
+	// If our new size is equal to our capacity, fill unused slots instead of allocating.
+	//if (new_size == _size) {
+	//	if (_used != _size) {
+	//		for (unsigned int i = _used; i < _size; ++i) {
+	//			construct(_array + i);
+	//		}
+	//	}
+
+	//	_used = _size;
+	//	return;
+	//}
 
 	T* old_data = _array;
 
@@ -556,6 +565,14 @@ void Array<T, Allocator>::reserve(unsigned int reserve_size)
 	if (old_data) {
 		memcpy(_array, old_data, sizeof(T) * _used);
 		_allocator.free(old_data);
+	}
+}
+
+template <class T, class Allocator>
+void Array<T, Allocator>::trim(void)
+{
+	if (_used != _size) {
+		resize(_used);
 	}
 }
 

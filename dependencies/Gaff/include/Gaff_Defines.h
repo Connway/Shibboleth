@@ -116,6 +116,8 @@ THE SOFTWARE.
 	#error "Unknown architecture. Cannot deduce number of bits per byte."
 #endif
 
+#define UINT_FAIL static_cast<unsigned int>(-1)
+
 NS_GAFF
 
 #if defined(__LP64__) || defined(_WIN64)

@@ -149,6 +149,7 @@ bool ModelLoader::loadMeshes(ModelData* data, const Gaff::JSON& lod_tags, const 
 
 	// First dimension is for each device.
 	data->models.resize(rd.getNumDevices());
+	data->aabbs.resize(num_lods);
 
 	// Second dimension is number of LODs. If we don't define LOD tags in
 	// the JSON file, then we assume all meshes are of LOD 0.
@@ -208,12 +209,28 @@ bool ModelLoader::loadMeshes(ModelData* data, const Gaff::JSON& lod_tags, const 
 				}
 			}
 
+			// Only need to do this once
+			if (i == 0) {
+				Gleam::AABB aabb;
+
+				for (unsigned int k = 0; k < scene_mesh.getNumVertices(); ++k) {
+					aabb.addPoint(Gleam::Vec4(scene_mesh.getVertex(k)[0], scene_mesh.getVertex(k)[1], scene_mesh.getVertex(k)[2], 1.0f));
+				}
+
+				data->aabbs[lod].push(aabb);
+			}
+
 			if (!createMeshAndLayout(rd, scene_mesh, data->models[i][lod].get(), model_prefs)) {
 				return false;
 			}
 
 			// load blend weights
 		}
+	}
+
+	// Resize the AABB arrays to be exact
+	for (auto it = data->aabbs.begin(); it != data->aabbs.end(); ++it) {
+		it->trim();
 	}
 
 	return true;
@@ -224,6 +241,7 @@ bool ModelLoader::createMeshAndLayout(Gleam::IRenderDevice& rd, const Gaff::Mesh
 	bool uvs = false;
 	bool normals = false;
 	bool tangents = false;
+	bool blend_data = false;
 	unsigned int vert_size = 3; // defaults to 3 for position
 	unsigned int uv_size = 0;
 
@@ -235,13 +253,14 @@ bool ModelLoader::createMeshAndLayout(Gleam::IRenderDevice& rd, const Gaff::Mesh
 			0,
 			Gleam::ITexture::RGB_32_F,
 			0,
-			0
+			0,
+			Gleam::PDT_PER_VERTEX
 		};
 
 		layout_desc.push(desc);
 	}
 
-	if (model_prefs["normals"] && model_prefs["normals"].isTrue()) {
+	if (model_prefs["normals"] && model_prefs["normals"].isTrue() && scene_mesh.hasVertices()) {
 		normals = true;
 		vert_size += 3;
 
@@ -250,13 +269,14 @@ bool ModelLoader::createMeshAndLayout(Gleam::IRenderDevice& rd, const Gaff::Mesh
 			0,
 			Gleam::ITexture::RGB_32_F,
 			0,
-			APPEND_ALIGNED
+			APPEND_ALIGNED,
+			Gleam::PDT_PER_VERTEX
 		};
 
 		layout_desc.push(desc);
 	}
 
-	if (model_prefs["tangents"] && model_prefs["tangents"].isTrue()) {
+	if (model_prefs["tangents"] && model_prefs["tangents"].isTrue() && scene_mesh.hasTangentsAndBitangents()) {
 		tangents = true;
 		vert_size += 6;
 
@@ -265,7 +285,8 @@ bool ModelLoader::createMeshAndLayout(Gleam::IRenderDevice& rd, const Gaff::Mesh
 			0,
 			Gleam::ITexture::RGB_32_F,
 			0,
-			APPEND_ALIGNED
+			APPEND_ALIGNED,
+			Gleam::PDT_PER_VERTEX
 		};
 
 		layout_desc.push(desc);
@@ -274,7 +295,7 @@ bool ModelLoader::createMeshAndLayout(Gleam::IRenderDevice& rd, const Gaff::Mesh
 		layout_desc.push(desc);
 	}
 
-	if (model_prefs["uvs"] && model_prefs["uvs"].isTrue()) {
+	if (model_prefs["uvs"] && model_prefs["uvs"].isTrue() && scene_mesh.hasUVs(0)) {
 		uvs = true;
 
 		for (unsigned int i = 0; i < scene_mesh.getNumUVChannels(); ++i) {
@@ -285,7 +306,8 @@ bool ModelLoader::createMeshAndLayout(Gleam::IRenderDevice& rd, const Gaff::Mesh
 				i,
 				Gleam::ITexture::RG_32_F,
 				0,
-				0
+				APPEND_ALIGNED,
+				Gleam::PDT_PER_VERTEX
 			};
 
 			switch (scene_mesh.getNumUVComponents(i)) {
@@ -309,6 +331,29 @@ bool ModelLoader::createMeshAndLayout(Gleam::IRenderDevice& rd, const Gaff::Mesh
 		}
 
 		vert_size += uv_size;
+	}
+
+	if (model_prefs["blend_indices_weights"] && model_prefs["blend_indices_weights"].isTrue() && scene_mesh.hasBones()) {
+		//blend_data = true;
+		//vert_size += 8;
+
+		//Gleam::LayoutDescription desc = {
+		//	Gleam::SEMANTIC_BLEND_INDICES,
+		//	0,
+		//	//Gleam::ITexture::RGBA_32_F,
+		//	Gleam::ITexture::RGBA_32_UI,
+		//	0,
+		//	APPEND_ALIGNED,
+		//	Gleam::PDT_PER_VERTEX
+		//};
+
+		//layout_desc.push(desc);
+
+		//desc.semantic = Gleam::SEMANTIC_BLEND_WEIGHT;
+		//desc.format = Gleam::ITexture::RGBA_32_F;
+		//layout_desc.push(desc);
+
+		// load skeleton
 	}
 
 	Gleam::IMesh* mesh = model->createMesh();
@@ -348,6 +393,33 @@ bool ModelLoader::createMeshAndLayout(Gleam::IRenderDevice& rd, const Gaff::Mesh
 				memcpy(current_vertex, scene_mesh.getUV(j, i), sizeof(float) * uv_size);
 				current_vertex += uv_size;
 			}
+		}
+
+		if (blend_data) {
+			//unsigned int* blend_indices = (unsigned int*)current_vertex;
+			//float* blend_weights = current_vertex + 4;
+			//unsigned int curr_ind = 0;
+
+			//blend_indices[0] = blend_indices[1] = blend_indices[2] = blend_indices[3] = 0;
+			//blend_weights[0] = blend_weights[1] = blend_weights[2] = blend_weights[3] = 0.0f;
+
+			//for (unsigned int j = 0; j < scene_mesh.getNumBones(); ++j) {
+			//	Gaff::Bone bone = scene_mesh.getBone(j);
+
+			//	if (bone) {
+			//		for (unsigned int k = 0; k < bone.getNumWeights(); ++k) {
+			//			Gaff::VertexWeight weight = bone.getWeight(k);
+
+			//			if (weight && weight.getVertexIndex() == i) {
+			//				blend_indices[curr_ind] = weight.getVertexIndex();
+			//				blend_weights[curr_ind] = weight.getWeight();
+			//				++curr_ind;
+			//			}
+			//		}
+			//	}
+			//}
+
+			//current_vertex += 8;
 		}
 	}
 
@@ -396,7 +468,8 @@ bool ModelLoader::createMeshAndLayout(Gleam::IRenderDevice& rd, const Gaff::Mesh
 
 unsigned int ModelLoader::generateLoadingFlags(const Gaff::JSON& model_prefs)
 {
-	unsigned int flags = 0;
+	// Assumes that the model will only have primitive types that are of type triangle or polygon.
+	unsigned int flags = Gaff::SI_LIMIT_BONE_WEIGHTS; // Limits bone weights to 4.
 
 	if (model_prefs["generate_smooth_normals"] && model_prefs["generate_smooth_normals"].isTrue()) {
 		flags |= Gaff::SI_GENERATE_SMOOTH_NORMALS;
