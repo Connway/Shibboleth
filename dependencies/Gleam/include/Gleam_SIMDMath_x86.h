@@ -24,17 +24,10 @@ THE SOFTWARE.
 
 #include "Gleam_Defines.h"
 #include <xmmintrin.h>
-#include <emmintrin.h>
-
-#ifdef ALIGN_SIMD
-	#define SIMDLOAD _mm_load_ps
-	#define SIMDSTORE _mm_store_ps
-#else
-	#define SIMDLOAD _mm_loadu_ps
-	#define SIMDSTORE _mm_storeu_ps
-#endif
 
 NS_GLEAM
+
+typedef __m128 SIMDType;
 
 struct COMPILERALIGN16 SIMDMaskStruct
 {
@@ -49,11 +42,11 @@ struct COMPILERALIGN16 SIMDMaskStruct
 	union
 	{
 		unsigned int ints[4];
-		__m128 vec;
+		SIMDType vec;
 	};
 
 	INLINE operator const unsigned int*() const { return ints; }
-	INLINE operator __m128(void) const { return vec; }
+	INLINE operator SIMDType(void) const { return vec; }
 };
 
 extern const SIMDMaskStruct gXMask;
@@ -69,57 +62,114 @@ extern const SIMDMaskStruct gSignMask;
 extern const SIMDMaskStruct gInfinity;
 extern const SIMDMaskStruct gNegZero;
 
-extern const __m128 gOneXYZ;
-extern const __m128 gOne;
-extern const __m128 gTwo;
-extern const __m128 gZero;
-extern const __m128 gHalf;
+extern const SIMDMaskStruct gYZWMask;
+extern const SIMDMaskStruct gXZWMask;
+extern const SIMDMaskStruct gXYWMask;
 
-extern const __m128 gNegOneXYZ;
-extern const __m128 gNegOne;
+extern const SIMDType gOneXYZ;
+extern const SIMDType gOne;
+extern const SIMDType gTwo;
+extern const SIMDType gZero;
+extern const SIMDType gHalf;
 
-extern const __m128 gPi;
-extern const __m128 gTwoPi;
-extern const __m128 gPiOverFour;
-extern const __m128 gThreePiOverFour;
-extern const __m128 gReciprocalTwoPi;
+extern const SIMDType gNegOneXYZ;
+extern const SIMDType gNegOne;
 
-extern const __m128 gXAxis;
-extern const __m128 gYAxis;
-extern const __m128 gZAxis;
-extern const __m128 gWAxis; // dunno wtf this means, but I'm callin' it that. :P
+extern const SIMDType gPi;
+extern const SIMDType gTwoPi;
+extern const SIMDType gPiOverFour;
+extern const SIMDType gThreePiOverFour;
+extern const SIMDType gReciprocalTwoPi;
 
-extern const __m128 gATanCoeffs0;
-extern const __m128 gATanCoeffs1;
-extern const __m128 gArcCoeffs0;
-extern const __m128 gArcCoeffs1;
-extern const __m128 gSinCoeffs0;
-extern const __m128 gSinCoeffs1;
-extern const __m128 gCosCoeffs0;
-extern const __m128 gCosCoeffs1;
+extern const SIMDType gXAxis;
+extern const SIMDType gYAxis;
+extern const SIMDType gZAxis;
+extern const SIMDType gWAxis; // dunno wtf this means, but I'm callin' it that. :P
 
-INLINE __m128 SIMDNegate(const __m128& vec);
-INLINE bool SIMDEqual(const __m128& left, const __m128& right);
-bool SIMDRoughlyEqual(const __m128& left, const __m128& right, float epsilon);
-__m128 SIMDPermute(const __m128& left, const __m128& right, unsigned int x, unsigned int y, unsigned int z, unsigned int w);
-__m128 SIMDRound(const __m128& vec);
-__m128 SIMDACos(const __m128& vec);
-__m128 SIMDSin(const __m128& vec);
-__m128 SIMDCos(const __m128& vec);
-__m128 SIMDATan2(const __m128& y, const __m128& x);
-__m128 SIMDATan(const __m128& vec);
+extern const SIMDType gATanCoeffs0;
+extern const SIMDType gATanCoeffs1;
+extern const SIMDType gArcCoeffs0;
+extern const SIMDType gArcCoeffs1;
+extern const SIMDType gSinCoeffs0;
+extern const SIMDType gSinCoeffs1;
+extern const SIMDType gCosCoeffs0;
+extern const SIMDType gCosCoeffs1;
 
-__m128 SIMDVec4Dot(const __m128& left, const __m128& right);
-INLINE __m128 SIMDVec4AngleUnit(const __m128& left, const __m128& right);
-INLINE __m128 SIMDVec4Angle(const __m128& left, const __m128& right);
-INLINE __m128 SIMDVec4LengthSquared(const __m128& vec);
-INLINE __m128 SIMDVec4Length(const __m128& vec);
-INLINE __m128 SIMDVec4ReciprocalLengthSquared(const __m128& vec);
-INLINE __m128 SIMDVec4ReciprocalLength(const __m128& vec);
-__m128 SIMDVec4Normalize(const __m128& vec);
-__m128 SIMDVec4Cross(const __m128& left, const __m128& right);
-__m128 SIMDVec4Reflect(const __m128& vec, const __m128& normal);
-__m128 SIMDVec4Refract(const __m128& vec, const __m128& normal, float refraction_index);
-__m128 SIMDVec4Lerp(const __m128& left, const __m128& right, float t);
+template <unsigned int a, unsigned int b, unsigned int c, unsigned int d>
+SIMDType SIMDShuffle(const SIMDType& left, const SIMDType& right)
+{
+	return _mm_shuffle_ps(left, right, _MM_SHUFFLE(a, b, c, d));
+}
+
+template <int index>
+float SIMDGet(const SIMDType& vec)
+{
+#ifdef LIMIT_TO_SSE2
+	return _mm_cvtss_f32(_mm_shuffle_ps(vec, vec, _MM_SHUFFLE(index, index, index, index)));
+#else
+	int temp = _mm_extract_ps(vec, index);
+	return *((float*)&temp);
+#endif
+}
+
+template<>
+float SIMDGet<0>(const SIMDType& vec)
+{
+	return _mm_cvtss_f32(vec);
+}
+
+INLINE SIMDType SIMDNegate(const SIMDType& vec);
+INLINE bool SIMDEqual(const SIMDType& left, const SIMDType& right);
+bool SIMDRoughlyEqual(const SIMDType& left, const SIMDType& right, const SIMDType& epsilon);
+SIMDType SIMDPermute(const SIMDType& left, const SIMDType& right, unsigned int x, unsigned int y, unsigned int z, unsigned int w);
+SIMDType SIMDRound(const SIMDType& vec);
+SIMDType SIMDACos(const SIMDType& vec);
+SIMDType SIMDSin(const SIMDType& vec);
+SIMDType SIMDCos(const SIMDType& vec);
+SIMDType SIMDATan2(const SIMDType& y, const SIMDType& x);
+SIMDType SIMDATan(const SIMDType& vec);
+
+SIMDType SIMDVec4Dot(const SIMDType& left, const SIMDType& right);
+INLINE SIMDType SIMDVec4AngleUnit(const SIMDType& left, const SIMDType& right);
+INLINE SIMDType SIMDVec4Angle(const SIMDType& left, const SIMDType& right);
+INLINE SIMDType SIMDVec4LengthSquared(const SIMDType& vec);
+INLINE SIMDType SIMDVec4Length(const SIMDType& vec);
+INLINE SIMDType SIMDVec4ReciprocalLengthSquared(const SIMDType& vec);
+INLINE SIMDType SIMDVec4ReciprocalLength(const SIMDType& vec);
+INLINE SIMDType SIMDVec4Normalize(const SIMDType& vec);
+SIMDType SIMDVec4Cross(const SIMDType& left, const SIMDType& right);
+INLINE SIMDType SIMDVec4Reflect(const SIMDType& vec, const SIMDType& normal);
+SIMDType SIMDVec4Refract(const SIMDType& vec, const SIMDType& normal, const SIMDType& refraction_index);
+INLINE SIMDType SIMDVec4Lerp(const SIMDType& left, const SIMDType& right, const SIMDType& t);
+
+INLINE SIMDType SIMDSub(const SIMDType& left, const SIMDType& right);
+INLINE SIMDType SIMDAdd(const SIMDType& left, const SIMDType& right);
+INLINE SIMDType SIMDMul(const SIMDType& left, const SIMDType& right);
+INLINE SIMDType SIMDDiv(const SIMDType& left, const SIMDType& right);
+
+INLINE SIMDType SIMDAnd(const SIMDType& left, const SIMDType& right);
+INLINE SIMDType SIMDOr(const SIMDType& left, const SIMDType& right);
+INLINE SIMDType SIMDXOr(const SIMDType& left, const SIMDType& right);
+INLINE SIMDType SIMDAndNot(const SIMDType& left, const SIMDType& right);
+
+INLINE SIMDType SIMDCreate(float x, float y, float z, float w);
+INLINE SIMDType SIMDCreate(float value);
+
+INLINE float SIMDGet(const SIMDType& vec, unsigned int index);
+INLINE float SIMDGetX(const SIMDType& vec);
+INLINE float SIMDGetY(const SIMDType& vec);
+INLINE float SIMDGetZ(const SIMDType& vec);
+INLINE float SIMDGetW(const SIMDType& vec);
+
+INLINE void SIMDSet(SIMDType& vec, float value, unsigned int index);
+void SIMDSetX(SIMDType& vec, float value);
+void SIMDSetY(SIMDType& vec, float value);
+void SIMDSetZ(SIMDType& vec, float value);
+void SIMDSetW(SIMDType& vec, float value);
+
+void SIMDStoreAligned(const SIMDType& vec, float* buffer);
+void SIMDStore(const SIMDType& vec, float* buffer);
+SIMDType SIMDLoadAligned(float* buffer);
+SIMDType SIMDLoad(float* buffer);
 
 NS_END

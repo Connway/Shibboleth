@@ -20,70 +20,70 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#include "Gleam_Quaternion_CPU.h"
+#include "Gleam_Quaternion.h"
 #include "Gaff_IncludeAssert.h"
 #include <cmath>
 
 NS_GLEAM
 
-QuaternionCPU QuaternionCPU::identity(0.0f, 0.0f, 0.0f, 1.0f);
+Quaternion Quaternion::identity(0.0f, 0.0f, 0.0f, 1.0f);
 
-QuaternionCPU::QuaternionCPU(void)
+Quaternion::Quaternion(void)
 {
 }
 
-QuaternionCPU::QuaternionCPU(const QuaternionCPU& rhs):
+Quaternion::Quaternion(const Quaternion& rhs):
 	_x(rhs._x), _y(rhs._y), _z(rhs._z), _w(rhs._w)
 {
 }
-QuaternionCPU::QuaternionCPU(float x, float y, float z, float w):
+Quaternion::Quaternion(float x, float y, float z, float w):
 	_x(x), _y(y), _z(z), _w(w)
 {
 }
 
-QuaternionCPU::QuaternionCPU(const float* elements)
+Quaternion::Quaternion(const float* elements)
 {
 	set(elements[0], elements[1], elements[2], elements[3]);
 }
 
-QuaternionCPU::QuaternionCPU(const Vector4CPU& vec):
+Quaternion::Quaternion(const Vector4& vec):
 	_x(vec[0]), _y(vec[1]), _z(vec[2]), _w(vec[3])
 {
 }
 
-QuaternionCPU::~QuaternionCPU(void)
+Quaternion::~Quaternion(void)
 {
 }
 
-bool QuaternionCPU::operator==(const QuaternionCPU& rhs) const
+bool Quaternion::operator==(const Quaternion& rhs) const
 {
 	return _x == rhs._x && _y == rhs._y && _z == rhs._z && _w == rhs._w;
 }
 
-bool QuaternionCPU::operator!=(const QuaternionCPU& rhs) const
+bool Quaternion::operator!=(const Quaternion& rhs) const
 {
 	return !(*this == rhs);
 }
 
-const QuaternionCPU& QuaternionCPU::operator=(const QuaternionCPU& rhs)
+const Quaternion& Quaternion::operator=(const Quaternion& rhs)
 {
 	set(rhs._quat);
 	return *this;
 }
 
-float QuaternionCPU::operator[](int index) const
+float Quaternion::operator[](int index) const
 {
 	assert(index > -1 && index < 4);
 	return _quat[index];
 }
 
-float& QuaternionCPU::operator[](int index)
+float& Quaternion::operator[](int index)
 {
 	assert(index > -1 && index < 4);
 	return _quat[index];
 }
 
-void QuaternionCPU::set(float x, float y, float z, float w)
+void Quaternion::set(float x, float y, float z, float w)
 {
 	_x = x;
 	_y = y;
@@ -91,7 +91,7 @@ void QuaternionCPU::set(float x, float y, float z, float w)
 	_w = w;
 }
 
-void QuaternionCPU::set(const float* elements)
+void Quaternion::set(const float* elements)
 {
 	_quat[0] = elements[0];
 	_quat[1] = elements[1];
@@ -99,7 +99,7 @@ void QuaternionCPU::set(const float* elements)
 	_quat[3] = elements[3];
 }
 
-void QuaternionCPU::set(const Vector4CPU& vec)
+void Quaternion::set(const Vector4& vec)
 {
 	_quat[0] = vec[0];
 	_quat[1] = vec[1];
@@ -107,19 +107,19 @@ void QuaternionCPU::set(const Vector4CPU& vec)
 	_quat[3] = vec[3];
 }
 
-const float* QuaternionCPU::getBuffer(void) const
+const float* Quaternion::getBuffer(void) const
 {
 	return _quat;
 }
 
-float* QuaternionCPU::getBuffer(void)
+float* Quaternion::getBuffer(void)
 {
 	return _quat;
 }
 
-QuaternionCPU QuaternionCPU::operator+(const QuaternionCPU& rhs) const
+Quaternion Quaternion::operator+(const Quaternion& rhs) const
 {
-	return QuaternionCPU(
+	return Quaternion(
 		_x + rhs._x,
 		_y + rhs._y,
 		_z + rhs._z,
@@ -127,7 +127,7 @@ QuaternionCPU QuaternionCPU::operator+(const QuaternionCPU& rhs) const
 	);
 }
 
-const QuaternionCPU& QuaternionCPU::operator+=(const QuaternionCPU& rhs)
+const Quaternion& Quaternion::operator+=(const Quaternion& rhs)
 {
 	_x += rhs._x;
 	_y += rhs._y;
@@ -137,9 +137,9 @@ const QuaternionCPU& QuaternionCPU::operator+=(const QuaternionCPU& rhs)
 	return *this;
 }
 
-QuaternionCPU QuaternionCPU::operator*(const QuaternionCPU& rhs) const
+Quaternion Quaternion::operator*(const Quaternion& rhs) const
 {
-	return QuaternionCPU(
+	return Quaternion(
 		(_quat[3] * rhs._quat[0]) + (_quat[0] * rhs._quat[3]) + (_quat[1] * rhs._quat[2]) - (_quat[2] * rhs._quat[1]),
 		(_quat[3] * rhs._quat[1]) - (_quat[0] * rhs._quat[2]) + (_quat[1] * rhs._quat[3]) + (_quat[2] * rhs._quat[0]),
 		(_quat[3] * rhs._quat[2]) + (_quat[0] * rhs._quat[1]) - (_quat[1] * rhs._quat[0]) + (_quat[2] * rhs._quat[3]),
@@ -147,7 +147,7 @@ QuaternionCPU QuaternionCPU::operator*(const QuaternionCPU& rhs) const
 	);
 }
 
-const QuaternionCPU& QuaternionCPU::operator*=(const QuaternionCPU& rhs)
+const Quaternion& Quaternion::operator*=(const Quaternion& rhs)
 {
 	float x = (_quat[3] * rhs._quat[0]) + (_quat[0] * rhs._quat[3]) + (_quat[1] * rhs._quat[2]) - (_quat[2] * rhs._quat[1]);
 	float y = (_quat[3] * rhs._quat[1]) - (_quat[0] * rhs._quat[2]) + (_quat[1] * rhs._quat[3]) + (_quat[2] * rhs._quat[0]);
@@ -162,9 +162,9 @@ const QuaternionCPU& QuaternionCPU::operator*=(const QuaternionCPU& rhs)
 	return *this;
 }
 
-Vector4CPU QuaternionCPU::transform(const Vector4CPU& vec) const
+Vector4 Quaternion::transform(const Vector4& vec) const
 {
-	QuaternionCPU p, q_conj;
+	Quaternion p, q_conj;
 	q_conj = *this;
 	q_conj.conjugate();
 
@@ -175,10 +175,18 @@ Vector4CPU QuaternionCPU::transform(const Vector4CPU& vec) const
 
 	p = *this * p * q_conj;
 
-	return Vector4CPU(p._x, p._y, p._z, 0.0f);
+	return Vector4(p._x, p._y, p._z, 0.0f);
 }
 
-bool QuaternionCPU::roughlyEqual(const QuaternionCPU& rhs, float epsilon) const
+bool Quaternion::roughlyEqual(const Quaternion& rhs, const Vector4& epsilon) const
+{
+	return fabsf(_x - rhs._x) <= epsilon[0] &&
+			fabsf(_y - rhs._y) <= epsilon[1] &&
+			fabsf(_z - rhs._z) <= epsilon[2] &&
+			fabsf(_w - rhs._w) <= epsilon[3];
+}
+
+bool Quaternion::roughlyEqual(const Quaternion& rhs, float epsilon) const
 {
 	return fabsf(_x - rhs._x) <= epsilon &&
 			fabsf(_y - rhs._y) <= epsilon &&
@@ -186,14 +194,14 @@ bool QuaternionCPU::roughlyEqual(const QuaternionCPU& rhs, float epsilon) const
 			fabsf(_w - rhs._w) <= epsilon;
 }
 
-QuaternionCPU QuaternionCPU::slerp(const QuaternionCPU& rhs, float t)
+Quaternion Quaternion::slerp(const Quaternion& rhs, float t)
 {
 	float theta = acosf(dot(rhs));
 	float st = sinf(theta);
 	float scale1 = sinf(theta * (1.0f - t)) / st;
 	float scale2 = sinf(theta * t) / st;
 
-	return QuaternionCPU(
+	return Quaternion(
 		_x * scale1 + rhs._x * scale2,
 		_y * scale1 + rhs._y * scale2,
 		_z * scale1 + rhs._z * scale2,
@@ -201,12 +209,12 @@ QuaternionCPU QuaternionCPU::slerp(const QuaternionCPU& rhs, float t)
 	);
 }
 
-float QuaternionCPU::dot(const QuaternionCPU& rhs) const
+float Quaternion::dot(const Quaternion& rhs) const
 {
 	return _x*rhs._x + _y*rhs._y + _z*rhs._z + _w*rhs._w;
 }
 
-void QuaternionCPU::normalize(void)
+void Quaternion::normalize(void)
 {
 	float scale = 1.0f / length();
 	_x *= scale;
@@ -215,14 +223,14 @@ void QuaternionCPU::normalize(void)
 	_w *= scale;
 }
 
-void QuaternionCPU::conjugate(void)
+void Quaternion::conjugate(void)
 {
 	_x = -_x;
 	_y = -_y;
 	_z = -_z;
 }
 
-void QuaternionCPU::inverse(void)
+void Quaternion::inverse(void)
 {
 	float norm = length();
 	norm = 1.0f / (norm * norm);
@@ -235,29 +243,29 @@ void QuaternionCPU::inverse(void)
 	_w *= norm;
 }
 
-float QuaternionCPU::lengthSquared(void) const
+float Quaternion::lengthSquared(void) const
 {
 	return _x*_x + _y*_y + _z*_z;
 }
 
-float QuaternionCPU::length(void) const
+float Quaternion::length(void) const
 {
 	return sqrtf(_x*_x + _y*_y + _z*_z);
 }
 
-Vector4CPU QuaternionCPU::axis(void) const
+Vector4 Quaternion::axis(void) const
 {
-	return Vector4CPU(_x, _y, _z, 0.0f);
+	return Vector4(_x, _y, _z, 0.0f);
 }
 
-float QuaternionCPU::angle(void) const
+float Quaternion::angle(void) const
 {
 	return 2.0f * acosf(_w);
 }
 
-Matrix4x4CPU QuaternionCPU::matrix(void) const
+Matrix4x4 Quaternion::matrix(void) const
 {
-	Matrix4x4CPU matrix;
+	Matrix4x4 matrix;
 	float* m = matrix.getBuffer();
 
 	float xx = _x * _x;
@@ -290,7 +298,7 @@ Matrix4x4CPU QuaternionCPU::matrix(void) const
 	return matrix;
 }
 
-void QuaternionCPU::constructFromAxis(const Vector4CPU& axis, float angle)
+void Quaternion::constructFromAxis(const Vector4& axis, float angle)
 {
 	angle *= 0.5f;
 	float s = sinf(angle);
@@ -301,7 +309,7 @@ void QuaternionCPU::constructFromAxis(const Vector4CPU& axis, float angle)
 	_w = cosf(angle);
 }
 
-void QuaternionCPU::constructFromMatrix(const Matrix4x4CPU& matrix)
+void Quaternion::constructFromMatrix(const Matrix4x4& matrix)
 {
 	const float* m = matrix.getBuffer();
 	float t = m[0] + m[5] + m[10] + 1.0f;
@@ -343,7 +351,7 @@ void QuaternionCPU::constructFromMatrix(const Matrix4x4CPU& matrix)
 	_w *= scale;
 }
 
-void QuaternionCPU::constructFromAngles(float x, float y, float z)
+void Quaternion::constructFromAngles(float x, float y, float z)
 {
 	float sr, sp, sy, cr, cp, cy;
 	x *= 0.5f;
@@ -363,35 +371,35 @@ void QuaternionCPU::constructFromAngles(float x, float y, float z)
 	_w = cr*cp*cy + sr*sp*sy;
 }
 
-void QuaternionCPU::constructFromAngles(const Vector4CPU& angles)
+void Quaternion::constructFromAngles(const Vector4& angles)
 {
 	constructFromAngles(angles[0], angles[1], angles[2]);
 }
 
-QuaternionCPU MakeFromAxis(const Vector4CPU& axis, float angle)
+Quaternion MakeFromAxis(const Vector4& axis, float angle)
 {
-	QuaternionCPU temp;
+	Quaternion temp;
 	temp.constructFromAxis(axis, angle);
 	return temp;
 }
 
-QuaternionCPU MakeFromMatrix(const Matrix4x4CPU& matrix)
+Quaternion MakeFromMatrix(const Matrix4x4& matrix)
 {
-	QuaternionCPU temp;
+	Quaternion temp;
 	temp.constructFromMatrix(matrix);
 	return temp;
 }
 
-QuaternionCPU MakeFromAngles(float x, float y, float z)
+Quaternion MakeFromAngles(float x, float y, float z)
 {
-	QuaternionCPU temp;
+	Quaternion temp;
 	temp.constructFromAngles(x, y, z);
 	return temp;
 }
 
-QuaternionCPU MakeFromAngles(const Vector4CPU& angles)
+Quaternion MakeFromAngles(const Vector4& angles)
 {
-	QuaternionCPU temp;
+	Quaternion temp;
 	temp.constructFromAngles(angles);
 	return temp;
 }

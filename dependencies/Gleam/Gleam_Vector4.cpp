@@ -20,69 +20,69 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#include "Gleam_Vector4_CPU.h"
+#include "Gleam_Vector4.h"
 #include "Gaff_IncludeAssert.h"
 #include <cmath>
 
 NS_GLEAM
 
-Vector4CPU Vector4CPU::zero(0.0f, 0.0f, 0.0f, 0.0f);
-Vector4CPU Vector4CPU::x_axis(1.0f, 0.0f, 0.0f, 0.0f);
-Vector4CPU Vector4CPU::y_axis(0.0f, 1.0f, 0.0f, 0.0f);
-Vector4CPU Vector4CPU::z_axis(0.0f, 0.0f, 1.0f, 0.0f);
-Vector4CPU Vector4CPU::origin(0.0f, 0.0f, 0.0f, 1.0f);
+Vector4 Vector4::zero(0.0f, 0.0f, 0.0f, 0.0f);
+Vector4 Vector4::x_axis(1.0f, 0.0f, 0.0f, 0.0f);
+Vector4 Vector4::y_axis(0.0f, 1.0f, 0.0f, 0.0f);
+Vector4 Vector4::z_axis(0.0f, 0.0f, 1.0f, 0.0f);
+Vector4 Vector4::origin(0.0f, 0.0f, 0.0f, 1.0f);
 
-Vector4CPU::Vector4CPU(void)
+Vector4::Vector4(void)
 {
 }
 
-Vector4CPU::Vector4CPU(const Vector4CPU& rhs):
+Vector4::Vector4(const Vector4& rhs):
 	_x(rhs._x), _y(rhs._y), _z(rhs._z), _w(rhs._w)
 {
 }
-Vector4CPU::Vector4CPU(float x, float y, float z, float w):
+Vector4::Vector4(float x, float y, float z, float w):
 	_x(x), _y(y), _z(z), _w(w)
 {
 }
 
-Vector4CPU::Vector4CPU(const float* elements)
+Vector4::Vector4(const float* elements)
 {
 	set(elements);
 }
 
-Vector4CPU::~Vector4CPU(void)
+Vector4::~Vector4(void)
 {
 }
 
-bool Vector4CPU::operator==(const Vector4CPU& rhs) const
+bool Vector4::operator==(const Vector4& rhs) const
 {
 	return _x == rhs._x && _y == rhs._y && _z == rhs._z && _w == rhs._w;
 }
 
-bool Vector4CPU::operator!=(const Vector4CPU& rhs) const
+bool Vector4::operator!=(const Vector4& rhs) const
 {
 	return !(*this == rhs);
 }
 
-const Vector4CPU& Vector4CPU::operator=(const Vector4CPU& rhs)
+const Vector4& Vector4::operator=(const Vector4& rhs)
 {
 	set(rhs._vec);
 	return *this;
 }
 
-float Vector4CPU::operator[](int index) const
+float Vector4::operator[](int index) const
 {
 	assert(index > -1 && index < 4);
 	return _vec[index];
 }
 
-float& Vector4CPU::operator[](int index)
+float& Vector4::operator[](int index)
 {
 	assert(index > -1 && index < 4);
 	return _vec[index];
 }
 
-const Vector4CPU& Vector4CPU::operator-=(const Vector4CPU& rhs)
+const Vector4& Vector4::operator-=(const Vector4& rhs)
 {
 	_x -= rhs._x;
 	_y -= rhs._y;
@@ -91,17 +91,17 @@ const Vector4CPU& Vector4CPU::operator-=(const Vector4CPU& rhs)
 	return *this;
 }
 
-Vector4CPU Vector4CPU::operator-(const Vector4CPU& rhs) const
+Vector4 Vector4::operator-(const Vector4& rhs) const
 {
-	return Vector4CPU(_x - rhs._x, _y - rhs._y, _z - rhs._z, _w - rhs._w);
+	return Vector4(_x - rhs._x, _y - rhs._y, _z - rhs._z, _w - rhs._w);
 }
 
-Vector4CPU Vector4CPU::operator-(void) const
+Vector4 Vector4::operator-(void) const
 {
-	return Vector4CPU(-_x, -_y, -_z, -_w);
+	return Vector4(-_x, -_y, -_z, -_w);
 }
 
-const Vector4CPU& Vector4CPU::operator+=(const Vector4CPU& rhs)
+const Vector4& Vector4::operator+=(const Vector4& rhs)
 {
 	_x += rhs._x;
 	_y += rhs._y;
@@ -110,17 +110,17 @@ const Vector4CPU& Vector4CPU::operator+=(const Vector4CPU& rhs)
 	return *this;
 }
 
-Vector4CPU Vector4CPU::operator+(const Vector4CPU& rhs) const
+Vector4 Vector4::operator+(const Vector4& rhs) const
 {
-	return Vector4CPU(_x + rhs._x, _y + rhs._y, _z + rhs._z, _w + rhs._w);
+	return Vector4(_x + rhs._x, _y + rhs._y, _z + rhs._z, _w + rhs._w);
 }
 
-Vector4CPU Vector4CPU::operator+(void) const
+Vector4 Vector4::operator+(void) const
 {
-	return Vector4CPU(+_x, +_y, +_z, +_w);
+	return Vector4(+_x, +_y, +_z, +_w);
 }
 
-void Vector4CPU::set(float x, float y, float z, float w)
+void Vector4::set(float x, float y, float z, float w)
 {
 	_x = x;
 	_y = y;
@@ -128,7 +128,7 @@ void Vector4CPU::set(float x, float y, float z, float w)
 	_w = w;
 }
 
-void Vector4CPU::set(const float* elements)
+void Vector4::set(const float* elements)
 {
 	assert(elements);
 	_vec[0] = elements[0];
@@ -137,7 +137,13 @@ void Vector4CPU::set(const float* elements)
 	_vec[3] = elements[3];
 }
 
-const Vector4CPU& Vector4CPU::operator*=(const Vector4CPU& rhs)
+void Vector4::set(float value, unsigned int index)
+{
+	assert(index > -1 && index < 4);
+	_vec[index] = value;
+}
+
+const Vector4& Vector4::operator*=(const Vector4& rhs)
 {
 	_x *= rhs._x;
 	_y *= rhs._y;
@@ -146,12 +152,12 @@ const Vector4CPU& Vector4CPU::operator*=(const Vector4CPU& rhs)
 	return *this;
 }
 
-Vector4CPU Vector4CPU::operator*(const Vector4CPU& rhs) const
+Vector4 Vector4::operator*(const Vector4& rhs) const
 {
-	return Vector4CPU(_x * rhs._x, _y * rhs._y, _z * rhs._z, _w * rhs._w);
+	return Vector4(_x * rhs._x, _y * rhs._y, _z * rhs._z, _w * rhs._w);
 }
 
-const Vector4CPU& Vector4CPU::operator*=(float rhs)
+const Vector4& Vector4::operator*=(float rhs)
 {
 	_x *= rhs;
 	_y *= rhs;
@@ -160,12 +166,12 @@ const Vector4CPU& Vector4CPU::operator*=(float rhs)
 	return *this;
 }
 
-Vector4CPU Vector4CPU::operator*(float rhs) const
+Vector4 Vector4::operator*(float rhs) const
 {
-	return Vector4CPU(_x * rhs, _y * rhs, _z * rhs, _w * rhs);
+	return Vector4(_x * rhs, _y * rhs, _z * rhs, _w * rhs);
 }
 
-const Vector4CPU& Vector4CPU::operator/=(const Vector4CPU& rhs)
+const Vector4& Vector4::operator/=(const Vector4& rhs)
 {
 	_x /= rhs._x;
 	_y /= rhs._y;
@@ -174,12 +180,12 @@ const Vector4CPU& Vector4CPU::operator/=(const Vector4CPU& rhs)
 	return *this;
 }
 
-Vector4CPU Vector4CPU::operator/(const Vector4CPU& rhs) const
+Vector4 Vector4::operator/(const Vector4& rhs) const
 {
-	return Vector4CPU(_x / rhs._x, _y / rhs._y, _z / rhs._z, _w / rhs._w);
+	return Vector4(_x / rhs._x, _y / rhs._y, _z / rhs._z, _w / rhs._w);
 }
 
-const Vector4CPU& Vector4CPU::operator/=(float rhs)
+const Vector4& Vector4::operator/=(float rhs)
 {
 	_x /= rhs;
 	_y /= rhs;
@@ -188,44 +194,44 @@ const Vector4CPU& Vector4CPU::operator/=(float rhs)
 	return *this;
 }
 
-Vector4CPU Vector4CPU::operator/(float rhs) const
+Vector4 Vector4::operator/(float rhs) const
 {
-	return Vector4CPU(_x / rhs, _y / rhs, _z / rhs, _w / rhs);
+	return Vector4(_x / rhs, _y / rhs, _z / rhs, _w / rhs);
 }
 
-const float* Vector4CPU::getBuffer(void) const
-{
-	return _vec;
-}
-
-float* Vector4CPU::getBuffer(void)
+const float* Vector4::getBuffer(void) const
 {
 	return _vec;
 }
 
-float Vector4CPU::lengthSquared(void) const
+float* Vector4::getBuffer(void)
+{
+	return _vec;
+}
+
+float Vector4::lengthSquared(void) const
 {
 	return _x*_x + _y*_y + _z*_z + _w*_w;
 }
 
-float Vector4CPU::length(void) const
+float Vector4::length(void) const
 {
 	return sqrtf(_x*_x + _y*_y + _z*_z + _w*_w);
 }
 
-float Vector4CPU::reciprocalLengthSquared(void) const
+float Vector4::reciprocalLengthSquared(void) const
 {
 	assert(length() != 0.0f);
 	return 1.0f / (_x*_x + _y*_y + _z*_z + _w*_w);
 }
 
-float Vector4CPU::reciprocalLength(void) const
+float Vector4::reciprocalLength(void) const
 {
 	assert(length() != 0.0f);
 	return 1.0f / sqrtf(_x*_x + _y*_y + _z*_z + _w*_w);
 }
 
-void Vector4CPU::normalize(void)
+void Vector4::normalize(void)
 {
 	assert(length() != 0.0f);
 	float inv_length = 1.0f / sqrtf(_x*_x + _y*_y + _z*_z + _w*_w);
@@ -235,9 +241,9 @@ void Vector4CPU::normalize(void)
 	_w *= inv_length;
 }
 
-Vector4CPU Vector4CPU::cross(const Vector4CPU& rhs) const
+Vector4 Vector4::cross(const Vector4& rhs) const
 {
-	return Vector4CPU(
+	return Vector4(
 		(_y * rhs._z) - (_z * rhs._y),
 		(_z * rhs._x) - (_x * rhs._z),
 		(_x * rhs._y) - (_y * rhs._x),
@@ -245,32 +251,32 @@ Vector4CPU Vector4CPU::cross(const Vector4CPU& rhs) const
 	);
 }
 
-float Vector4CPU::dot(const Vector4CPU& rhs) const
+float Vector4::dot(const Vector4& rhs) const
 {
 	return _x*rhs._x + _y*rhs._y + _z*rhs._z + _w*rhs._w;
 }
 
-float Vector4CPU::angleUnit(const Vector4CPU& rhs) const
+float Vector4::angleUnit(const Vector4& rhs) const
 {
 	return acosf(dot(rhs));
 }
 
-float Vector4CPU::angle(const Vector4CPU& rhs) const
+float Vector4::angle(const Vector4& rhs) const
 {
 	return acosf(dot(rhs) / (length() * rhs.length()));
 }
 
-Vector4CPU Vector4CPU::reflect(const Vector4CPU& normal) const
+Vector4 Vector4::reflect(const Vector4& normal) const
 {
 	float s = 2.0f * dot(normal);
-	return Vector4CPU(_x - s * normal._x, _y - s * normal._y, _z - s * normal._z, _w - s * normal._w);
+	return Vector4(_x - s * normal._x, _y - s * normal._y, _z - s * normal._z, _w - s * normal._w);
 }
 
-Vector4CPU Vector4CPU::refract(const Vector4CPU& normal, float refraction_index) const
+Vector4 Vector4::refract(const Vector4& normal, float refraction_index) const
 {
 	float t = dot(normal);
 	float r = 1.0f - refraction_index * refraction_index * (1.0f - t * t);
-	Vector4CPU result = zero;
+	Vector4 result = zero;
 
 	if (r >= 0.0f) {
 		float s = refraction_index * t + sqrtf(r);
@@ -285,12 +291,12 @@ Vector4CPU Vector4CPU::refract(const Vector4CPU& normal, float refraction_index)
 	return result;
 }
 
-Vector4CPU Vector4CPU::lerp(const Vector4CPU& end, float t) const
+Vector4 Vector4::lerp(const Vector4& end, float t) const
 {
 	return *this + t * (end - *this);
 }
 
-bool Vector4CPU::roughlyEqual(const Vector4CPU& rhs, float epsilon) const
+bool Vector4::roughlyEqual(const Vector4& rhs, float epsilon) const
 {
 	return fabsf(_x - rhs._x) <= epsilon &&
 			fabsf(_y - rhs._y) <= epsilon &&
@@ -298,7 +304,7 @@ bool Vector4CPU::roughlyEqual(const Vector4CPU& rhs, float epsilon) const
 			fabsf(_w - rhs._w) <= epsilon;
 }
 
-Vector4CPU operator*(float lhs, const Vector4CPU& rhs)
+Vector4 operator*(float lhs, const Vector4& rhs)
 {
 	return rhs * lhs;
 }
