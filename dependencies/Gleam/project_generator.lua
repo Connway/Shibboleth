@@ -6,7 +6,7 @@ project "Gleam"
 	kind "StaticLib"
 	language "C++"
 
-	defines { "NO_LINKING", "GLEW_STATIC" }
+	defines { "GLEW_STATIC" }
 
 	files { "**.h", "**.cpp" }
 

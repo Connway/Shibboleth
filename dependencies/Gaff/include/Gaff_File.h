@@ -22,8 +22,8 @@ THE SOFTWARE.
 
 #pragma once
 
+#include "Gaff_IncludeAssert.h"
 #include "Gaff_Defines.h"
-#include "Gaff_String.h"
 #include <cstring>
 #include <cstdio>
 
@@ -32,17 +32,16 @@ NS_GAFF
 class File
 {
 public:
-	template <class Allocator>
-	INLINE static bool checkExtension(const Gaff::AString<Allocator>& file_name, const Gaff::AString<Allocator>& extension)
+	INLINE static bool checkExtension(const char* file_name, size_t file_name_size, const char* extension, size_t extension_size)
 	{
-		return checkExtension(file_name.getBuffer(), extension.getBuffer());
+		assert(file_name && extension && file_name_size > extension_size);
+		return strcmp(file_name + file_name_size - extension_size, extension) == 0;
 	}
 
 	INLINE static bool checkExtension(const char* file_name, const char* extension)
 	{
-		size_t len = strlen(file_name);
-		assert(len > strlen(extension));
-		return strcmp(file_name + len - strlen(extension), extension) == 0;
+		assert(file_name && extension);
+		return checkExtension(file_name, strlen(file_name), extension, strlen(extension));
 	}
 
 	INLINE static bool remove(const char* file_name);
@@ -82,34 +81,6 @@ public:
 	INLINE FILE* getFile(void);
 
 	INLINE OPEN_MODE getMode(void) const;
-
-	template <class Allocator>
-	bool open(const Gaff::AString<Allocator>& file_name, OPEN_MODE mode = READ)
-	{
-		assert(file_name.size());
-		return open(file_name.getBuffer(), mode);
-	}
-
-	template <class Allocator>
-	bool redirect(FILE* file, const Gaff::AString<Allocator>& file_name, OPEN_MODE mode = WRITE)
-	{
-		assert(!_file && file_name.size());
-		return redirect(file, file_name.getBuffer(), mode);
-	}
-
-	template <class Allocator>
-	bool redirect(const Gaff::AString<Allocator>& file_name, OPEN_MODE mode = WRITE)
-	{
-		assert(file_name.size() && _file);
-		return redirect(file_name.getBuffer(), mode);
-	}
-
-	template <class Allocator>
-	bool writeString(const Gaff::AString<Allocator>& s)
-	{
-		assert(_file && s.size());
-		return writeString(s.getBuffer());
-	}
 
 	template <class T>
 	size_t writeT(const T* data, size_t element_count)
@@ -160,17 +131,16 @@ public:
 
 	// Unicode functions
 #ifdef _UNICODE
-	template <class Allocator>
-	static bool checkExtension(const Gaff::WString<Allocator>& file_name, const Gaff::WString<Allocator>& extension)
+	INLINE static bool checkExtension(const wchar_t* file_name, size_t file_name_size, const wchar_t* extension, size_t extension_size)
 	{
-		return checkExtension(file_name.getBuffer(), extension.getBuffer());
+		assert(file_name && extension && file_name_size > extension_size);
+		return wcscmp(file_name + file_name_size - extension_size, extension) == 0;
 	}
 
-	static bool checkExtension(const wchar_t* file_name, const wchar_t* extension)
+	INLINE static bool checkExtension(const wchar_t* file_name, const wchar_t* extension)
 	{
-		size_t len = wcslen(file_name);
-		assert(len > wcslen(extension));
-		return wcscmp(file_name + len - wcslen(extension), extension) == 0;
+		assert(file_name && extension);
+		return checkExtension(file_name, wcslen(file_name), extension, wcslen(extension));
 	}
 
 	INLINE static bool remove(const wchar_t* file_name);
@@ -178,34 +148,6 @@ public:
 
 	// File(const Gaff::WString& file_name, OPEN_MODE mode = READ);
 	File(const wchar_t* file_name, OPEN_MODE mode = READ);
-
-	template <class Allocator>
-	bool open(const Gaff::WString<Allocator>& file_name, OPEN_MODE mode = READ)
-	{
-		assert(file_name.size());
-		return open(file_name.getBuffer(), mode);
-	}
-
-	template <class Allocator>
-	bool redirect(FILE* file, const Gaff::WString<Allocator>& file_name, OPEN_MODE mode = WRITE)
-	{
-		assert(!_file && file_name.size());
-		return redirect(file, file_name.getBuffer(), mode);
-	}
-
-	template <class Allocator>
-	bool redirect(const Gaff::WString<Allocator>& file_name, OPEN_MODE mode = WRITE)
-	{
-		assert(file_name.size() && _file);
-		return redirect(file_name.getBuffer(), mode);
-	}
-
-	template <class Allocator>
-	bool writeString(const Gaff::WString<Allocator>& s)
-	{
-		assert(_file && s.size());
-		return writeString(s.getBuffer());
-	}
 
 	bool open(const wchar_t* file_name, OPEN_MODE mode = READ);
 
