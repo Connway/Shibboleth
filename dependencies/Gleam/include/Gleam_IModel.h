@@ -24,7 +24,6 @@ THE SOFTWARE.
 
 #include "Gleam_RefCounted.h"
 #include "Gleam_Array.h"
-#include "Gleam_AABB.h"
 
 NS_GLEAM
 

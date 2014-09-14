@@ -125,6 +125,7 @@ public:
 
 	void resize(unsigned int new_size);
 	void reserve(unsigned int reserve_size);
+	void trim(void);
 
 	template < class T2, class Pred = Equal<T, T2> >
 	Iterator linearSearch(const Iterator& range_beg, const Iterator& range_end, const T2& data, const Pred& pred = Pred()) const;

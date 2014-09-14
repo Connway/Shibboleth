@@ -287,7 +287,7 @@ bool Mesh::hasNormals(void) const
 	return _mesh->HasNormals();
 }
 
-bool Mesh::hasTangentsAndBiTangents(void) const
+bool Mesh::hasTangentsAndBitangents(void) const
 {
 	assert(_mesh);
 	return _mesh->HasTangentsAndBitangents();

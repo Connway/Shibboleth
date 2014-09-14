@@ -26,19 +26,30 @@ THE SOFTWARE.
 #include <Gaff_IVirtualDestructor.h>
 #include <Gaff_SceneImporter.h>
 #include <Gleam_IModel.h>
+#include <Gleam_AABB.h>
 
 NS_SHIBBOLETH
+
+struct AnimationData : public Gaff::IVirtualDestructor
+{
+	AnimationData() {}
+	~AnimationData() {}
+};
 
 struct ModelData : public Gaff::IVirtualDestructor
 {
 	ModelData(void) {}
 	~ModelData(void) {}
 
+	// This is storing the mesh in RAM. Will want to clean up if no other components are going to use it.
 	Gaff::SceneImporter importer;
 	Gaff::Scene scene;
 
-	Array< Array<ModelPtr> > models;
+	Array< Array<ModelPtr> > models; // [Device][LOD]
+	Array< Array<Gleam::AABB> > aabbs; // [LOD][Mesh]
+
 	// vertex weights
+	// skeleton
 };
 
 NS_END

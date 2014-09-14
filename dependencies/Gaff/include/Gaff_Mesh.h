@@ -144,7 +144,7 @@ public:
 	INLINE bool hasBones(void) const;
 	INLINE bool hasVertices(void) const;
 	INLINE bool hasNormals(void) const;
-	INLINE bool hasTangentsAndBiTangents(void) const;
+	INLINE bool hasTangentsAndBitangents(void) const;
 	INLINE bool hasColors(unsigned int set) const;
 	INLINE bool hasUVs(unsigned int set) const;
 
