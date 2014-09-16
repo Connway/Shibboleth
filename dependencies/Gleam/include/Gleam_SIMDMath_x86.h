@@ -24,9 +24,11 @@ THE SOFTWARE.
 
 #include "Gleam_Defines.h"
 #include <xmmintrin.h>
+#include <emmintrin.h>
 
 NS_GLEAM
 
+typedef __m128i SIMDTypei;
 typedef __m128 SIMDType;
 
 struct COMPILERALIGN16 SIMDMaskStruct
@@ -47,6 +49,18 @@ struct COMPILERALIGN16 SIMDMaskStruct
 
 	INLINE operator const unsigned int*() const { return ints; }
 	INLINE operator SIMDType(void) const { return vec; }
+};
+
+struct COMPILERALIGN16 SIMDTransform
+{
+	SIMDType translation;
+	SIMDType rotation;
+	SIMDType scale;
+};
+
+struct COMPILERALIGN16 SIMDMatrix
+{
+	SIMDType elements[4];
 };
 
 extern const SIMDMaskStruct gXMask;
@@ -95,6 +109,9 @@ extern const SIMDType gSinCoeffs1;
 extern const SIMDType gCosCoeffs0;
 extern const SIMDType gCosCoeffs1;
 
+extern const SIMDTransform gTransformIdentity;
+extern const SIMDMatrix gMatrixIdentity;
+
 template <unsigned int a, unsigned int b, unsigned int c, unsigned int d>
 SIMDType SIMDShuffle(const SIMDType& left, const SIMDType& right)
 {
@@ -113,7 +130,7 @@ float SIMDGet(const SIMDType& vec)
 }
 
 template<>
-float SIMDGet<0>(const SIMDType& vec)
+inline float SIMDGet<0>(const SIMDType& vec)
 {
 	return _mm_cvtss_f32(vec);
 }
@@ -171,5 +188,27 @@ void SIMDStoreAligned(const SIMDType& vec, float* buffer);
 void SIMDStore(const SIMDType& vec, float* buffer);
 SIMDType SIMDLoadAligned(float* buffer);
 SIMDType SIMDLoad(float* buffer);
+
+SIMDType SIMDQuatMul(const SIMDType& left, const SIMDType& right);
+INLINE SIMDType SIMDQuatConjugate(const SIMDType& quaternion);
+INLINE SIMDType SIMDQuatInverse(const SIMDType& quaternion);
+INLINE SIMDType SIMDQuatGetAxis(const SIMDType& quaternion);
+INLINE SIMDType SIMDQuatGetAngle(const SIMDType& quaternion);
+
+SIMDType SIMDQuatSlerp(const SIMDType& left, const SIMDType& right, const SIMDType& t);
+SIMDType SIMDQuatTransform(const SIMDType& quaternion, const SIMDType& vec);
+SIMDType SIMDQuatFromAxisAngle(const SIMDType& axis, const SIMDType& angle);
+SIMDType SIMDQuatFromAngles(const SIMDType& angles);
+SIMDMatrix SIMDQuatToMatrix(const SIMDType& quaternion);
+SIMDType SIMDQuatFromMatrix(const SIMDMatrix& matrix);
+
+SIMDType SIMDMatrixMulRow(const SIMDType& row, const SIMDType& col1, const SIMDType& col2, const SIMDType& col3, const SIMDType& col4);
+SIMDMatrix SIMDMatrixMul(const SIMDMatrix& left, const SIMDMatrix& right);
+SIMDMatrix SIMDMatrixTranspose(const SIMDMatrix& matrix);
+SIMDMatrix SIMDMatrixInverse(const SIMDMatrix& matrix);
+bool SIMDMatrixHasInfiniteElement(const SIMDMatrix& matrix);
+bool SIMDMatrixHasNaNElement(const SIMDMatrix& matrix);
+
+SIMDTransform SIMDTransformConcat(const SIMDTransform& left, const SIMDTransform& right);
 
 NS_END
