@@ -97,7 +97,7 @@ OBB::OBB(const OBB& obb):
 OBB::OBB(void):
 	_center(0.0f, 0.0f, 0.0f, 1.0f)
 {
-	_axes[0] = _axes[1] = _axes[2] = Vec4::zero;
+	_axes[0] = _axes[1] = _axes[2] = Vec4::Zero;
 	_lengths[0] = _lengths[1] = _lengths[2] = 0.0f;
 }
 

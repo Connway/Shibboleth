@@ -6,6 +6,14 @@ project "Gleam"
 	kind "StaticLib"
 	language "C++"
 
+	filter { "options:simd" }
+		defines { "USE_SIMD" }
+
+	filter { "options:simd_set_aligned"}
+		defines { "SIMD_SET_ALIGNED" }
+
+	filter {}
+
 	defines { "GLEW_STATIC" }
 
 	files { "**.h", "**.cpp" }

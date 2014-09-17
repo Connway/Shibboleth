@@ -79,6 +79,12 @@ solution "Graphics"
 	filter { "configurations:Release_OpenGL", "platforms:x64" }
 		targetsuffix "_OpenGL64"
 
+	filter { "options:simd" }
+		defines { "USE_SIMD" }
+
+	filter { "options:simd_set_aligned"}
+		defines { "SIMD_SET_ALIGNED" }
+
 	filter {}
 
 	configuration "vs*"

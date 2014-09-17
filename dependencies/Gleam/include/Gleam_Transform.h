@@ -49,9 +49,12 @@ public:
 	const Vec4& getTranslation(void) const;
 	void setTranslation(const Vec4& translation);
 
-	void concat(const Transform& rhs);
-	void inverse(void);
+	Transform concat(const Transform& rhs) const;
+	Transform inverse(void) const;
+	void concatThis(const Transform& rhs);
+	void inverseThis(void);
 
+	Vec4 transform(const Vec4& rhs) const;
 	Matrix4x4 matrix(void) const;
 
 private:

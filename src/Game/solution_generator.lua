@@ -84,6 +84,12 @@ solution "Game"
 	filter { "configurations:Release", "platforms:x64" }
 		targetsuffix "64"
 
+	filter { "options:simd" }
+		defines { "USE_SIMD" }
+
+	filter { "options:simd_set_aligned"}
+		defines { "SIMD_SET_ALIGNED" }
+
 	filter {}
 
 	configuration "vs*"

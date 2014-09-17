@@ -169,6 +169,9 @@ INLINE SIMDType SIMDOr(const SIMDType& left, const SIMDType& right);
 INLINE SIMDType SIMDXOr(const SIMDType& left, const SIMDType& right);
 INLINE SIMDType SIMDAndNot(const SIMDType& left, const SIMDType& right);
 
+INLINE SIMDType SIMDMin(const SIMDType& left, const SIMDType& right);
+INLINE SIMDType SIMDMax(const SIMDType& left, const SIMDType& right);
+
 INLINE SIMDType SIMDCreate(float x, float y, float z, float w);
 INLINE SIMDType SIMDCreate(float value);
 
@@ -186,8 +189,8 @@ void SIMDSetW(SIMDType& vec, float value);
 
 void SIMDStoreAligned(const SIMDType& vec, float* buffer);
 void SIMDStore(const SIMDType& vec, float* buffer);
-SIMDType SIMDLoadAligned(float* buffer);
-SIMDType SIMDLoad(float* buffer);
+SIMDType SIMDLoadAligned(const float* buffer);
+SIMDType SIMDLoad(const float* buffer);
 
 SIMDType SIMDQuatMul(const SIMDType& left, const SIMDType& right);
 INLINE SIMDType SIMDQuatConjugate(const SIMDType& quaternion);

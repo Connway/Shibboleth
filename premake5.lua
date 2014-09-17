@@ -10,6 +10,18 @@ newoption
 	description = "Generates the 'App' project to be a ConsoleApp instead of a WindowApp"
 }
 
+newoption
+{
+	trigger = "simd",
+	description = "Generate solution with defines for using SIMD instructions."
+}
+
+newoption
+{
+	trigger = "simd_set_aligned",
+	description = "Generate solution with defines for using SIMDStoreAligned and SIMDLoadAligned instructions."
+}
+
 solution "Temp"
 	platforms { "x86", "x64" }
 
