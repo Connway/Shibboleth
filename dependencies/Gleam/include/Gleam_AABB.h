@@ -36,30 +36,30 @@ public:
 	AABB(void);
 	~AABB(void);
 
-	const Vec4& getMin(void) const;
-	const Vec4& getMax(void) const;
-	Vec4 getCenter(void) const;
-	void setMin(const Vec4& min);
-	void setMax(const Vec4& max);
+	INLINE const Vec4& getMin(void) const;
+	INLINE const Vec4& getMax(void) const;
+	INLINE Vec4 getCenter(void) const;
+	INLINE void setMin(const Vec4& min);
+	INLINE void setMax(const Vec4& max);
 
-	void addPoint(float x, float y, float z);
-	void addPoint(const float* point);
-	void addPoint(const Vec4& point);
+	INLINE void addPoint(float x, float y, float z);
+	INLINE void addPoint(const float* point);
+	INLINE void addPoint(const Vec4& point);
 
 	void addPoints(const float* points, unsigned int num_points, unsigned int stride = 3);
 	void addPoints(const Vec4* points, unsigned int num_points);
 	void addPoints(const GleamArray<Vec4>& points);
 
-	void addAABB(const AABB& aabb);
+	INLINE void addAABB(const AABB& aabb);
 
-	void reset(void);
+	INLINE void reset(void);
 
 	const GleamArray<Vec4>& generatePoints(GleamArray<Vec4>& out) const;
 	GleamArray<Vec4> generatePoints(void) const;
 	const Vec4* generatePoints(Vec4* out) const;
 
 	void transform(const Mtx4x4& transform);
-	bool contains(const Vec4& point) const;
+	INLINE bool contains(const Vec4& point) const;
 
 private:
 	Vec4 _min;

@@ -30,7 +30,7 @@ Transform::Transform(const Vec4& scale, const Quaternion& rotation, const Vec4& 
 }
 
 Transform::Transform(void):
-	_rotation(Quaternion::identity), _translation(0.0f, 0.0f, 0.0f, 0.0f), _scale(1.0f, 1.0f, 1.0f, 0.0f)
+	_rotation(Quaternion::Identity), _translation(0.0f, 0.0f, 0.0f, 0.0f), _scale(1.0f, 1.0f, 1.0f, 1.0f)
 {
 }
 
@@ -101,26 +101,42 @@ void Transform::setTranslation(const Vec4& translation)
 	_translation = translation;
 }
 
-void Transform::concat(const Transform& rhs)
+Transform Transform::concat(const Transform& rhs) const
+{
+	return Transform(_scale * rhs._scale, _rotation * rhs._rotation, _translation + rhs._translation);
+}
+
+Transform Transform::inverse(void) const
+{
+	return Transform(Vec4(1.0f) / _scale, _rotation.conjugate(), -_translation);
+}
+
+void Transform::concatThis(const Transform& rhs)
 {
 	_scale *= rhs._scale;
 	_rotation *= rhs._rotation;
 	_translation += rhs._translation;
 }
 
-void Transform::inverse(void)
+void Transform::inverseThis(void)
 {
-	_scale.set(1.0f / _scale[0], 1.0f / _scale[1], 1.0f / _scale[2], 0.0f);
-	_rotation.conjugate();
+	_scale = Vec4(1.0f) / _scale;
+	_rotation.conjugateThis();
 	_translation = -_translation;
+}
+
+Vec4 Transform::transform(const Vec4& rhs) const
+{
+	Vec4 temp = rhs * _scale;
+	temp = _rotation.transform(temp);
+	temp += _translation;
+	return temp;
 }
 
 Matrix4x4 Transform::matrix(void) const
 {
 	Matrix4x4 temp = _rotation.matrix();
-	temp[3][0] = _translation[0];
-	temp[3][1] = _translation[1];
-	temp[3][2] = _translation[2];
+	temp.setTranslate(_translation);
 	temp *= Matrix4x4::MakeScale(_scale);
 	return temp;
 }

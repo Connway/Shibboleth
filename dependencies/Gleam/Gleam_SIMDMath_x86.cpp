@@ -545,6 +545,16 @@ SIMDType SIMDAndNot(const SIMDType& left, const SIMDType& right)
 	return _mm_andnot_ps(left, right);
 }
 
+SIMDType SIMDMin(const SIMDType& left, const SIMDType& right)
+{
+	return _mm_min_ps(left, right);
+}
+
+SIMDType SIMDMax(const SIMDType& left, const SIMDType& right)
+{
+	return _mm_max_ps(left, right);
+}
+
 SIMDType SIMDCreate(float x, float y, float z, float w)
 {
 	return _mm_set_ps(w, z, y, x);
@@ -623,12 +633,12 @@ void SIMDStore(const SIMDType& vec, float* buffer)
 	_mm_store_ps(buffer, vec);
 }
 
-SIMDType SIMDLoadAligned(float* buffer)
+SIMDType SIMDLoadAligned(const float* buffer)
 {
 	return _mm_loadu_ps(buffer);
 }
 
-SIMDType SIMDLoad(float* buffer)
+SIMDType SIMDLoad(const float* buffer)
 {
 	return _mm_load_ps(buffer);
 }

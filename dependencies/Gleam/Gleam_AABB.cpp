@@ -71,35 +71,18 @@ void AABB::setMax(const Vec4& max)
 
 void AABB::addPoint(float x, float y, float z)
 {
-	_min[0] = Gaff::Min(_min[0], x);
-	_min[1] = Gaff::Min(_min[1], y);
-	_min[2] = Gaff::Min(_min[2], z);
-
-	_max[0] = Gaff::Max(_max[0], x);
-	_max[1] = Gaff::Max(_max[1], y);
-	_max[2] = Gaff::Max(_max[2], z);
+	addPoint(Vec4(x, y, z, 1.0f));
 }
 
 void AABB::addPoint(const float* point)
 {
-	_min[0] = Gaff::Min(_min[0], point[0]);
-	_min[1] = Gaff::Min(_min[1], point[1]);
-	_min[2] = Gaff::Min(_min[2], point[2]);
-
-	_max[0] = Gaff::Max(_max[0], point[0]);
-	_max[1] = Gaff::Max(_max[1], point[1]);
-	_max[2] = Gaff::Max(_max[2], point[2]);
+	addPoint(Vec4(point));
 }
 
 void AABB::addPoint(const Vec4& point)
 {
-	_min[0] = Gaff::Min(_min[0], point[0]);
-	_min[1] = Gaff::Min(_min[1], point[1]);
-	_min[2] = Gaff::Min(_min[2], point[2]);
-
-	_max[0] = Gaff::Max(_max[0], point[0]);
-	_max[1] = Gaff::Max(_max[1], point[1]);
-	_max[2] = Gaff::Max(_max[2], point[2]);
+	_min.minimumThis(point);
+	_max.maximumThis(point);
 }
 
 void AABB::addPoints(const float* points, unsigned int num_points, unsigned int stride)
@@ -196,8 +179,8 @@ const Vec4* AABB::generatePoints(Vec4* out) const
 void AABB::transform(const Mtx4x4& transform)
 {
 	GleamArray<Vec4> points = generatePoints();
-	setMin(Vec4::zero);
-	setMax(Vec4::zero);
+	setMin(Vec4::Zero);
+	setMax(Vec4::Zero);
 
 	points[0] = transform * points[0];
 	points[1] = transform * points[1];
