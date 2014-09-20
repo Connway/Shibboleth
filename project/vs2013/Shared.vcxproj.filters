@@ -41,6 +41,12 @@
     <ClInclude Include="..\..\src\Shared\include\Shibboleth_IManager.h">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\Shared\include\Shibboleth_IReflectionDefinition.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Shared\include\Shibboleth_IRequestableInterface.h">
+      <Filter>include</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\src\Shared\include\Shibboleth_IState.h">
       <Filter>include</Filter>
     </ClInclude>
@@ -63,9 +69,6 @@
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\Shared\include\Shibboleth_ReflectionDefinitions.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Shared\include\Shibboleth_RequestableInterface.h">
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\Shared\include\Shibboleth_StateMachine.h">

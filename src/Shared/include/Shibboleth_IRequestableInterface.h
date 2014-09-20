@@ -26,22 +26,24 @@ THE SOFTWARE.
 
 NS_SHIBBOLETH
 
-class RequestableInterface
+class IRequestableInterface
 {
 public:
-	virtual ~RequestableInterface(void) {}
+	virtual ~IRequestableInterface(void) {}
 
 	template <class Interface>
 	const Interface* requestInterface(void) const
 	{
-		return dynamic_cast<const Interface*>(this);
+		return reinterpret_cast<Interface*>(rawRequestInterface(Interface::g_Hash));
 	}
 
 	template <class Interface>
 	Interface* requestInterface(void)
 	{
-		return dynamic_cast<Interface*>(this);
+		return reinterpret_cast<Interface*>(rawRequestInterface(Interface::g_Hash));
 	}
+
+	virtual void* rawRequestInterface(unsigned int class_id) const = 0;
 };
 
 NS_END

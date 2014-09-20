@@ -23,6 +23,7 @@ THE SOFTWARE.
 #pragma once
 
 #include "Shibboleth_IResourceLoader.h"
+#include <Shibboleth_ReflectionDefinitions.h>
 #include <Shibboleth_IManager.h>
 #include <Shibboleth_Array.h>
 #include <Shibboleth_ITask.h>
@@ -131,6 +132,10 @@ public:
 	***********************************************************************************************************/
 	ResourcePtr loadResourceImmediately(const char* filename, unsigned long long user_data = 0);
 
+	void* rawRequestInterface(unsigned int class_id) const;
+
+	static void InitReflectionDefinition(void);
+
 private:
 	class ResourceLoadingTask : public ITask
 	{
@@ -155,6 +160,8 @@ private:
 
 	GAFF_NO_COPY(ResourceManager);
 	GAFF_NO_MOVE(ResourceManager);
+
+	REF_DEF(ResourceManager);
 };
 
 NS_END

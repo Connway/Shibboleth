@@ -47,16 +47,18 @@ public:
 		return "Model Component";
 	}
 
+	void* rawRequestInterface(unsigned int class_id) const;
+
 	static void InitReflectionDefinition(void);
 
 private:
-	static ReflectionDefinition<ModelComponent> _ref_def;
-
 	ResourceWrapper<ModelData> _model_res;
 	AString _model_filename;
 	App& _app;
 
 	void ModelCallback(const AHashString&, bool success);
+
+	REF_DEF(ModelComponent);
 };
 
 NS_END

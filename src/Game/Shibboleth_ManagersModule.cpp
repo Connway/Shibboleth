@@ -82,6 +82,7 @@ enum Managers
 };
 
 typedef Shibboleth::IManager* (*CreateMgrFunc)(Shibboleth::App&);
+typedef void (*RefDefInitFunc)(void);
 
 static CreateMgrFunc create_funcs[] = {
 	&CreateManagerT<Shibboleth::ComponentManager>,
@@ -93,6 +94,16 @@ static CreateMgrFunc create_funcs[] = {
 	&CreateManagerT<Shibboleth::LuaManager>,
 };
 
+static RefDefInitFunc ref_def_init_funcs[] = {
+	&Shibboleth::ComponentManager::InitReflectionDefinition,
+	&Shibboleth::ResourceManager::InitReflectionDefinition,
+	&Shibboleth::OtterUIManager::InitReflectionDefinition,
+	&Shibboleth::RenderManager::InitReflectionDefinition,
+	&Shibboleth::UpdateManager::InitReflectionDefinition,
+	&Shibboleth::ObjectManager::InitReflectionDefinition,
+	&Shibboleth::LuaManager::InitReflectionDefinition
+};
+
 static Shibboleth::App* g_app = nullptr;
 
 DYNAMICEXPORT bool InitModule(Shibboleth::App& app)
@@ -101,6 +112,12 @@ DYNAMICEXPORT bool InitModule(Shibboleth::App& app)
 	Gaff::JSON::SetHashSeed(0);
 	Shibboleth::SetAllocator(app.getAllocator());
 	g_app = &app;
+
+	// Initialize all the reflection definitions
+	for (unsigned int i = 0; i < NUM_MANAGERS; ++i) {
+		ref_def_init_funcs[i]();
+	}
+
 	return true;
 }
 

@@ -22,51 +22,31 @@ THE SOFTWARE.
 
 #pragma once
 
-#include <Shibboleth_ReflectionDefinitions.h>
-#include <Shibboleth_ResourceDefines.h>
-#include <Shibboleth_ResourceWrapper.h>
-#include <Shibboleth_IComponent.h>
+#include "Shibboleth_Defines.h"
 
-namespace lua
+namespace Gaff
 {
-	class State;
+	class JSON;
 }
 
 NS_SHIBBOLETH
 
-class ResourceManager;
-class App;
-
-class LuaComponent : public IComponent
+class IReflectionDefinition
 {
 public:
-	LuaComponent(App& app);
-	~LuaComponent(void);
-
-	bool load(const Gaff::JSON& json);
-	bool save(Gaff::JSON& json);
-
-	void allComponentsLoaded(void);
-
-	void* rawRequestInterface(unsigned int class_id) const;
-
-	static const char* getComponentName(void)
+	template <class T>
+	T* getInterface(void* object) const
 	{
-		return "Lua Component";
+		return reinterpret_cast<T*>(getInterface(T::g_Hash));
 	}
 
-	static void InitReflectionDefinition(void);
+	IReflectionDefinition(void) {}
+	virtual ~IReflectionDefinition(void) {}
 
-private:
-	ResourceWrapper< SingleDataWrapper<lua::State*> > _script_res;
+	virtual void read(const Gaff::JSON& json, void* object) = 0;
+	virtual void write(Gaff::JSON& json, void* object) const = 0;
 
-	ResourceManager& _res_mgr;
-	AString _lua_file;
-
-	GAFF_NO_COPY(LuaComponent);
-	GAFF_NO_MOVE(LuaComponent);
-
-	REF_DEF(LuaComponent);
+	virtual void* getInterface(unsigned int class_id, const void* object) const = 0;
 };
 
 NS_END

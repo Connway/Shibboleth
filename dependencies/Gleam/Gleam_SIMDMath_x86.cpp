@@ -403,6 +403,11 @@ SIMDType SIMDATan(const SIMDType& vec)
 	return _mm_or_ps(_mm_and_ps(comp, temp1), _mm_andnot_ps(comp, temp2));
 }
 
+SIMDType SIMDSqrt(const SIMDType& vec)
+{
+	return _mm_sqrt_ps(vec);
+}
+
 SIMDType SIMDVec4Dot(const SIMDType& left, const SIMDType& right)
 {
 #ifdef LIMIT_TO_SSE2
@@ -888,6 +893,28 @@ SIMDType SIMDQuatFromMatrix(const SIMDMatrix& matrix)
 
 	t0 = SIMDVec4Length(t2);
 	return _mm_div_ps(t2, t0);
+}
+
+SIMDType SIMDQuatShortestRotation(const SIMDType& vec1, const SIMDType& vec2)
+{
+	//return CalQuaternion(cross[0], cross[1], cross[2], -dot / 2);
+
+	SIMDType cross = SIMDVec4Cross(vec1, vec2);
+	SIMDType dot = SIMDVec4Dot(vec1, vec2);
+
+	// sqrt(2 * (dot + 1))
+	dot = _mm_add_ps(dot, gOne);
+	dot = _mm_or_ps(dot, gTwo);
+	dot = _mm_sqrt_ps(dot);
+
+	cross = _mm_div_ps(cross, dot);
+
+	// dot = -dot / 2
+	dot = _mm_sub_ps(gZero, dot);
+	dot = _mm_div_ps(dot, gTwo);
+	
+	dot = _mm_shuffle_ps(cross, dot, _MM_SHUFFLE(0, 0, 1, 0)); // [-dot / 2, -dot / 2, cross[2], cross[3]]
+	return _mm_shuffle_ps(dot, cross, _MM_SHUFFLE(3, 2, 1, 3)); // [cross[0], cross[1], cross[2], -dot / 2]
 }
 
 SIMDType SIMDMatrixMulRow(const SIMDType& row, const SIMDType& col1, const SIMDType& col2, const SIMDType& col3, const SIMDType& col4)

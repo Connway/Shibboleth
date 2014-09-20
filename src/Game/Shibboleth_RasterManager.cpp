@@ -27,6 +27,9 @@ THE SOFTWARE.
 
 NS_SHIBBOLETH
 
+REF_IMPL_REQ(RasterManager);
+REF_IMPL(RasterManager);
+
 RasterManager::RasterManager(App& app):
 	_spatial_mgr(nullptr), _render_mgr(nullptr),
 	_app(app)
@@ -141,6 +144,14 @@ void RasterManager::setCameraRenderOrder(const Array<unsigned int>& order)
 {
 	assert(order.size() == _camera_data.size());
 	_camera_order = order;
+}
+
+void RasterManager::InitReflectionDefinition(void)
+{
+	if (!g_Ref_Def.isDefined()) {
+		g_Ref_Def.addBaseClassInterfaceOnly<IUpdateQuery>();
+		g_Ref_Def.markDefined();
+	}
 }
 
 NS_END

@@ -70,6 +70,8 @@ public:
 	QuaternionCPU conjugate(void) const;
 	void inverseThis(void);
 	QuaternionCPU inverse(void) const;
+	void shortestRotationThis(const Vector4CPU& vec1, const Vector4CPU& vec2);
+	QuaternionCPU shortestRotation(const Vector4CPU& vec1, const Vector4CPU& vec2) const;
 
 	INLINE float lengthSquared(void) const;
 	INLINE float length(void) const;

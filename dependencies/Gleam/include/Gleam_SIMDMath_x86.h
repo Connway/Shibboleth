@@ -145,6 +145,7 @@ SIMDType SIMDSin(const SIMDType& vec);
 SIMDType SIMDCos(const SIMDType& vec);
 SIMDType SIMDATan2(const SIMDType& y, const SIMDType& x);
 SIMDType SIMDATan(const SIMDType& vec);
+INLINE SIMDType SIMDSqrt(const SIMDType& vec);
 
 SIMDType SIMDVec4Dot(const SIMDType& left, const SIMDType& right);
 INLINE SIMDType SIMDVec4AngleUnit(const SIMDType& left, const SIMDType& right);
@@ -204,6 +205,7 @@ SIMDType SIMDQuatFromAxisAngle(const SIMDType& axis, const SIMDType& angle);
 SIMDType SIMDQuatFromAngles(const SIMDType& angles);
 SIMDMatrix SIMDQuatToMatrix(const SIMDType& quaternion);
 SIMDType SIMDQuatFromMatrix(const SIMDMatrix& matrix);
+SIMDType SIMDQuatShortestRotation(const SIMDType& vec1, const SIMDType& vec2);
 
 SIMDType SIMDMatrixMulRow(const SIMDType& row, const SIMDType& col1, const SIMDType& col2, const SIMDType& col3, const SIMDType& col4);
 SIMDMatrix SIMDMatrixMul(const SIMDMatrix& left, const SIMDMatrix& right);

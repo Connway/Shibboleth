@@ -72,6 +72,8 @@ public:
 	INLINE QuaternionSIMD conjugate(void) const;
 	INLINE void inverseThis(void);
 	INLINE QuaternionSIMD inverse(void) const;
+	INLINE void shortestRotationThis(const Vector4SIMD& vec1, const Vector4SIMD& vec2);
+	INLINE QuaternionSIMD shortestRotation(const Vector4SIMD& vec1, const Vector4SIMD& vec2) const;
 
 	INLINE float lengthSquared(void) const;
 	INLINE float length(void) const;

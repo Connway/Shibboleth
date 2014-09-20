@@ -296,6 +296,25 @@ QuaternionCPU QuaternionCPU::inverse(void) const
 	return temp;
 }
 
+void QuaternionCPU::shortestRotationThis(const Vector4CPU& vec1, const Vector4CPU& vec2)
+{
+	Vector4CPU cross = vec1.cross(vec2);
+	float dot = sqrtf(2.0f * (vec1.dot(vec2) + 1));
+
+	cross /= dot;
+	cross.set(-dot / 2.0f, 3);
+
+	set(cross.getBuffer());
+}
+
+QuaternionCPU QuaternionCPU::shortestRotation(const Vector4CPU& vec1, const Vector4CPU& vec2) const
+{
+	Vector4CPU cross = vec1.cross(vec2);
+	float dot = sqrtf(2.0f * (vec1.dot(vec2) + 1));
+	cross /= dot;
+	return QuaternionCPU(cross[0], cross[1], cross[2], -dot / 2.0f);
+}
+
 float QuaternionCPU::lengthSquared(void) const
 {
 	return _x*_x + _y*_y + _z*_z;

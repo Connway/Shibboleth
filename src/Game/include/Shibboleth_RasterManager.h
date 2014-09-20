@@ -23,6 +23,7 @@ THE SOFTWARE.
 #pragma once
 
 #include "Shibboleth_IUpdateQuery.h"
+#include <Shibboleth_ReflectionDefinitions.h>
 #include <Shibboleth_IManager.h>
 #include <Shibboleth_String.h>
 #include <Shibboleth_Array.h>
@@ -71,6 +72,10 @@ public:
 	void setCameraRenderOrder(const unsigned int* order, unsigned int size);
 	INLINE void setCameraRenderOrder(const Array<unsigned int>& order);
 
+	void* rawRequestInterface(unsigned int class_id) const;
+
+	static void InitReflectionDefinition(void);
+
 private:
 	struct CameraDeviceData
 	{
@@ -95,6 +100,8 @@ private:
 
 	GAFF_NO_COPY(RasterManager);
 	GAFF_NO_MOVE(RasterManager);
+
+	REF_DEF(RasterManager);
 };
 
 NS_END

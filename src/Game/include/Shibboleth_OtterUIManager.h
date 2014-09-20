@@ -22,6 +22,7 @@ THE SOFTWARE.
 
 #pragma once
 
+#include <Shibboleth_ReflectionDefinitions.h>
 #include <Shibboleth_IManager.h>
 #include <Shibboleth_HashMap.h>
 
@@ -69,6 +70,10 @@ public:
 
 	const char* getName(void) const;
 
+	void* rawRequestInterface(unsigned int class_id) const;
+
+	static void InitReflectionDefinition(void);
+
 private:
 	HashMap<const char*, Otter::Scene*> _scenes;
 
@@ -78,6 +83,8 @@ private:
 
 	GAFF_NO_COPY(OtterUIManager);
 	GAFF_NO_MOVE(OtterUIManager);
+	
+	REF_DEF(OtterUIManager);
 };
 
 NS_END

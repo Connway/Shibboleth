@@ -170,6 +170,8 @@ bool ModelLoader::loadMeshes(ModelData* data, const Gaff::JSON& lod_tags, const 
 		}
 	}
 
+	// load skeleton(s)
+
 	// Do this for each device
 	for (unsigned int i = 0; i < rd.getNumDevices(); ++i) {
 		rd.setCurrentDevice(i);
@@ -396,30 +398,33 @@ bool ModelLoader::createMeshAndLayout(Gleam::IRenderDevice& rd, const Gaff::Mesh
 		}
 
 		if (blend_data) {
-			//unsigned int* blend_indices = (unsigned int*)current_vertex;
-			//float* blend_weights = current_vertex + 4;
-			//unsigned int curr_ind = 0;
+			unsigned int* blend_indices = (unsigned int*)current_vertex;
+			float* blend_weights = current_vertex + 4;
+			unsigned int curr_ind = 0;
 
-			//blend_indices[0] = blend_indices[1] = blend_indices[2] = blend_indices[3] = 0;
-			//blend_weights[0] = blend_weights[1] = blend_weights[2] = blend_weights[3] = 0.0f;
+			blend_indices[0] = blend_indices[1] = blend_indices[2] = blend_indices[3] = 0;
+			blend_weights[0] = blend_weights[1] = blend_weights[2] = blend_weights[3] = 0.0f;
 
-			//for (unsigned int j = 0; j < scene_mesh.getNumBones(); ++j) {
-			//	Gaff::Bone bone = scene_mesh.getBone(j);
+			for (unsigned int j = 0; j < scene_mesh.getNumBones(); ++j) {
+				Gaff::Bone bone = scene_mesh.getBone(j);
 
-			//	if (bone) {
-			//		for (unsigned int k = 0; k < bone.getNumWeights(); ++k) {
-			//			Gaff::VertexWeight weight = bone.getWeight(k);
+				if (bone) {
+					for (unsigned int k = 0; k < bone.getNumWeights(); ++k) {
+						Gaff::VertexWeight weight = bone.getWeight(k);
 
-			//			if (weight && weight.getVertexIndex() == i) {
-			//				blend_indices[curr_ind] = weight.getVertexIndex();
-			//				blend_weights[curr_ind] = weight.getWeight();
-			//				++curr_ind;
-			//			}
-			//		}
-			//	}
-			//}
+						if (weight && weight.getVertexIndex() == i) {
+							// find bone index using vertex index
+							// blend_indices[curr_ind] = bone_index;
 
-			//current_vertex += 8;
+							blend_indices[curr_ind] = weight.getVertexIndex();
+							blend_weights[curr_ind] = weight.getWeight();
+							++curr_ind;
+						}
+					}
+				}
+			}
+
+			current_vertex += 8;
 		}
 	}
 

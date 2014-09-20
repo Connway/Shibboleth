@@ -22,11 +22,16 @@ THE SOFTWARE.
 
 #pragma once
 
+#include "Shibboleth_IReflectionDefinition.h"
 #include "Shibboleth_HashString.h"
 #include "Shibboleth_HashMap.h"
 #include "Shibboleth_String.h"
+#include "Shibboleth_Array.h"
 #include <Gaff_SharedPtr.h>
+#include <Gaff_Function.h>
 #include <Gaff_JSON.h>
+#include <Gaff_Pair.h>
+#include <Gaff_Math.h>
 #include <cstdlib>
 
 #if defined(_WIN32) || defined(_WIN64)
@@ -119,7 +124,7 @@ private:
 };
 
 template <class T>
-class ReflectionDefinition
+class ReflectionDefinition : public IReflectionDefinition
 {
 public:
 	class IValueContainer
@@ -164,11 +169,25 @@ public:
 	ReflectionDefinition(void);
 	~ReflectionDefinition(void);
 
+	void read(const Gaff::JSON& json, void* object);
+	void write(Gaff::JSON& json, void* object) const;
+
+	void* getInterface(unsigned int class_id, const void* object) const;
+
 	void read(const Gaff::JSON& json, T* object);
 	void write(Gaff::JSON& json, T* object) const;
 
 	template <class T2>
-	ReflectionDefinition<T>& addBaseClass(const ReflectionDefinition<T2>& base_ref_def);
+	ReflectionDefinition<T>& addBaseClass(const ReflectionDefinition<T2>& base_ref_def, unsigned int class_id);
+
+	template <class T2>
+	ReflectionDefinition<T>& addBaseClass(unsigned int class_id);
+
+	template <class T2>
+	ReflectionDefinition<T>& addBaseClass(void);
+
+	template <class T2>
+	ReflectionDefinition<T>& addBaseClassInterfaceOnly(void);
 
 	template <class T2>
 	ReflectionDefinition<T>& addObject(const char* key, T2 T::* var, ReflectionDefinition<T2>& var_ref_def);
@@ -281,12 +300,36 @@ private:
 		typename ReflectionDefinition<T2>::ValueContainerPtr _value_ptr;
 	};
 
+	template <class T2>
+	static void* BaseClassCast(const void* object)
+	{
+		// Holy balls batman. That's a lot of casts.
+		return static_cast<T2*>(reinterpret_cast<T*>(const_cast<void*>(object)));
+	}
+
 	HashMap<AHashString, ValueContainerPtr> _value_containers;
+	Array< Gaff::Pair<unsigned int, Gaff::FunctionBinder<void*, const void*> > > _base_ids;
 	bool _defined;
 
 	GAFF_NO_COPY(ReflectionDefinition);
 	GAFF_NO_MOVE(ReflectionDefinition);
 };
+
+#define REF_DEF(ClassName) \
+public: \
+	static unsigned int g_Hash; \
+	static ReflectionDefinition<ClassName> g_Ref_Def
+
+#define REF_IMPL(ClassName) \
+unsigned int ClassName::g_Hash = Gaff::FNV1aHash32(#ClassName, strlen(#ClassName)); \
+ReflectionDefinition<ClassName> ClassName::g_Ref_Def
+
+#define REF_IMPL_REQ(ClassName) \
+void* ClassName::rawRequestInterface(unsigned int class_id) const \
+{ \
+	return g_Ref_Def.getInterface(class_id, this); \
+}
+
 
 /*
 	This function is useful for when you want to do something like this:

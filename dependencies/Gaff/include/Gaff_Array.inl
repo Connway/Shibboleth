@@ -22,141 +22,6 @@ THE SOFTWARE.
 
 #define ARRAY_ITERATOR Array<T, Allocator>::Iterator
 
-////////////////////
-//    Iterator    //
-////////////////////
-template <class T, class Allocator>
-Array<T, Allocator>::Iterator::Iterator(const Iterator& it):
-	_element(it._element)
-{
-}
-
-template <class T, class Allocator>
-Array<T, Allocator>::Iterator::Iterator(void):
-	_element(nullptr)
-{
-}
-
-template <class T, class Allocator>
-const typename ARRAY_ITERATOR& Array<T, Allocator>::Iterator::operator++(void) const
-{
-	++_element;
-	return *this;
-}
-
-template <class T, class Allocator>
-const typename ARRAY_ITERATOR& Array<T, Allocator>::Iterator::operator--(void) const
-{
-	--_element;
-	return *this;
-}
-
-template <class T, class Allocator>
-typename ARRAY_ITERATOR Array<T, Allocator>::Iterator::operator++(int) const
-{
-	Iterator it = *this;
-	++_element;
-	return it;
-}
-
-template <class T, class Allocator>
-typename ARRAY_ITERATOR Array<T, Allocator>::Iterator::operator--(int) const
-{
-	Iterator it = *this;
-	--_element;
-	return it;
-}
-
-template <class T, class Allocator>
-const typename ARRAY_ITERATOR& Array<T, Allocator>::Iterator::operator+=(int rhs) const
-{
-	_element += rhs;
-	return *this;
-}
-
-template <class T, class Allocator>
-const typename ARRAY_ITERATOR& Array<T, Allocator>::Iterator::operator-=(int rhs) const
-{
-	_element -= rhs;
-	return *this;
-}
-
-template <class T, class Allocator>
-typename ARRAY_ITERATOR Array<T, Allocator>::Iterator::operator+(int rhs) const
-{
-	return Iterator(_element + rhs);
-}
-
-template <class T, class Allocator>
-typename ARRAY_ITERATOR Array<T, Allocator>::Iterator::operator-(int rhs) const
-{
-	return Iterator(_element - rhs);
-}
-
-template <class T, class Allocator>
-OffsetType Array<T, Allocator>::Iterator::operator+(const typename ARRAY_ITERATOR& rhs) const
-{
-	return _element + rhs._element;
-}
-
-template <class T, class Allocator>
-OffsetType Array<T, Allocator>::Iterator::operator-(const typename ARRAY_ITERATOR& rhs) const
-{
-	return _element - rhs._element;
-}
-
-template <class T, class Allocator>
-bool Array<T, Allocator>::Iterator::operator==(const typename ARRAY_ITERATOR& rhs) const
-{
-	return _element == rhs._element;
-}
-
-template <class T, class Allocator>
-bool Array<T, Allocator>::Iterator::operator!=(const typename ARRAY_ITERATOR& rhs) const
-{
-	return _element != rhs._element;
-}
-
-template <class T, class Allocator>
-const typename ARRAY_ITERATOR& Array<T, Allocator>::Iterator::operator=(const typename ARRAY_ITERATOR& rhs) const
-{
-	_element = rhs._element;
-	return *this;
-}
-
-template <class T, class Allocator>
-const T& Array<T, Allocator>::Iterator::operator*(void) const
-{
-	return *_element;
-}
-
-template <class T, class Allocator>
-T& Array<T, Allocator>::Iterator::operator*(void)
-{
-	return *_element;
-}
-
-template <class T, class Allocator>
-const T* Array<T, Allocator>::Iterator::operator->(void) const
-{
-	return _element;
-}
-
-template <class T, class Allocator>
-T* Array<T, Allocator>::Iterator::operator->(void)
-{
-	return _element;
-}
-
-template <class T, class Allocator>
-Array<T, Allocator>::Iterator::Iterator(T* element):
-	_element(element)
-{
-}
-
-/////////////////
-//    Array    //
-/////////////////
 template <class T, class Allocator>
 Array<T, Allocator>::Array(const Allocator& allocator):
 	_allocator(allocator), _array(nullptr), _used(0), _size(0)
@@ -436,10 +301,10 @@ void Array<T, Allocator>::pop(void)
 }
 
 template <class T, class Allocator>
-typename ARRAY_ITERATOR Array<T, Allocator>::moveInsert(T&& data, const typename ARRAY_ITERATOR& it)
+typename ARRAY_ITERATOR Array<T, Allocator>::moveInsert(T&& data, const typename ARRAY_ITERATOR it)
 {
-	assert(it._element >= _array && it._element <= _array + _used);
-	unsigned int index = (unsigned int)(it._element - _array);
+	assert(it >= _array && it <= _array + _used);
+	unsigned int index = (unsigned int)(it - _array);
 	insert(Move(data), index);
 	return Iterator(_array + index);
 }
@@ -462,10 +327,10 @@ void Array<T, Allocator>::moveInsert(T&& data, unsigned int index)
 }
 
 template <class T, class Allocator>
-typename ARRAY_ITERATOR Array<T, Allocator>::insert(const T& data, const typename ARRAY_ITERATOR& it)
+typename ARRAY_ITERATOR Array<T, Allocator>::insert(const T& data, const typename ARRAY_ITERATOR it)
 {
-	assert(it._element >= _array && it._element <= _array + _used);
-	unsigned int index = (unsigned int)(it._element - _array);
+	assert(it >= _array && it <= _array + _used);
+	unsigned int index = (unsigned int)(it - _array);
 	insert(data, index);
 	return Iterator(_array + index);
 }
@@ -488,12 +353,14 @@ void Array<T, Allocator>::insert(const T& data, unsigned int index)
 }
 
 template <class T, class Allocator>
-typename ARRAY_ITERATOR Array<T, Allocator>::erase(const typename ARRAY_ITERATOR& it)
+typename ARRAY_ITERATOR Array<T, Allocator>::erase(const typename ARRAY_ITERATOR it)
 {
-	assert(it._element >= _array && it._element < _array + _used);
+	assert(it >= _array && it < _array + _used);
+
 	// Gets rid of compiler warning. Making assumption that in 64-bit, array sizes will not exceed the maximum value of an unsigned int.
-	unsigned int index = (unsigned int)(it._element - _array);
+	unsigned int index = (unsigned int)(it - _array);
 	erase(index);
+
 	return Iterator(_array + index);
 }
 
@@ -507,6 +374,29 @@ void Array<T, Allocator>::erase(unsigned int index)
 	for (unsigned int i = index; i < _used - 1; ++i) {
 		memcpy(_array + i, _array + i + 1, sizeof(T));
 	}
+
+	--_used;
+}
+
+template <class T, class Allocator>
+typename ARRAY_ITERATOR Array<T, Allocator>::fastErase(const Iterator it)
+{
+	assert(it >= _array && it < _array + _used);
+
+	// Gets rid of compiler warning. Making assumption that in 64-bit, array sizes will not exceed the maximum value of an unsigned int.
+	unsigned int index = (unsigned int)(it - _array);
+	fastErase(index);
+
+	return Iterator(_array + index);
+}
+
+template <class T, class Allocator>
+void Array<T, Allocator>::fastErase(unsigned int index)
+{
+	assert(index < _used && _used > 0);
+
+	deconstruct(_array + index);
+	memcpy(_array + index, _array + _used - 1, sizeof(T));
 
 	--_used;
 }
@@ -578,15 +468,15 @@ void Array<T, Allocator>::trim(void)
 
 template <class T, class Allocator>
 template <class T2, class Pred>
-typename ARRAY_ITERATOR Array<T, Allocator>::linearSearch(const typename ARRAY_ITERATOR& range_begin, const typename ARRAY_ITERATOR& range_end, const T2& data, const Pred& pred) const
+typename ARRAY_ITERATOR Array<T, Allocator>::linearSearch(const typename ARRAY_ITERATOR range_begin, const typename ARRAY_ITERATOR range_end, const T2& data, const Pred& pred) const
 {
-	assert(range_begin._element >= _array && range_begin._element <= _array + _used);
-	assert(range_end._element >= _array && range_end._element <= _array + _used);
-	assert(range_begin._element <= range_end._element);
+	assert(range_begin >= _array && range_begin <= _array + _used);
+	assert(range_end >= _array && range_end <= _array + _used);
+	assert(range_begin <= range_end);
 
 	// Gets rid of compiler warning. Making assumption that in 64-bit, array sizes will not exceed the maximum value of an unsigned int.
-	unsigned int index1 = (unsigned int)(range_begin._element - _array);
-	unsigned int index2 = (unsigned int)(range_end._element - _array);
+	unsigned int index1 = (unsigned int)(range_begin - _array);
+	unsigned int index2 = (unsigned int)(range_end - _array);
 
 	int result = linearSearch(index1, index2, data, pred);
 	Iterator ret = end();
@@ -623,17 +513,17 @@ typename ARRAY_ITERATOR Array<T, Allocator>::linearSearch(const T2& data, const 
 template <class T, class Allocator>
 template <class T2, class Pred>
 typename ARRAY_ITERATOR Array<T, Allocator>::binarySearch(
-	const typename ARRAY_ITERATOR& range_begin,
-	const typename ARRAY_ITERATOR& range_end,
+	const typename ARRAY_ITERATOR range_begin,
+	const typename ARRAY_ITERATOR range_end,
 	const T2& data,
 	const Pred& pred) const
 {
-	assert(range_begin._element >= _array && range_begin._element <= _array + _used);
-	assert(range_end._element >= _array && range_end._element <= _array + _used);
-	assert(range_begin._element <= range_end._element);
+	assert(range_begin >= _array && range_begin <= _array + _used);
+	assert(range_end >= _array && range_end <= _array + _used);
+	assert(range_begin <= range_end);
 
-	unsigned int index1 = (unsigned int)(range_begin._element - _array);
-	unsigned int index2 = (unsigned int)(range_end._element - _array);
+	unsigned int index1 = (unsigned int)(range_begin - _array);
+	unsigned int index2 = (unsigned int)(range_end - _array);
 
 	int result = binarySearch(index1, index2, data, pred);
 	return Iterator(_array + result);

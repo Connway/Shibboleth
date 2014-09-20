@@ -25,6 +25,7 @@ THE SOFTWARE.
 #include "Shibboleth_IUpdateQuery.h"
 #include "Shibboleth_IManager.h"
 #include "Shibboleth_Object.h"
+#include <Shibboleth_ReflectionDefinitions.h>
 #include <Shibboleth_Array.h>
 #include <Shibboleth_Map.h>
 #include <Gaff_SpinLock.h>
@@ -50,6 +51,9 @@ public:
 	const char* getName(void) const;
 
 	void requestUpdateEntries(Array<UpdateEntry>& entries);
+	void* rawRequestInterface(unsigned int class_id) const;
+
+	static void InitReflectionDefinition(void);
 
 private:
 	Array<unsigned int> _remove_queue;
@@ -68,6 +72,8 @@ private:
 
 	GAFF_NO_COPY(ObjectManager);
 	GAFF_NO_MOVE(ObjectManager);
+
+	REF_DEF(ObjectManager);
 };
 
 NS_END

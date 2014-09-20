@@ -25,6 +25,9 @@ THE SOFTWARE.
 
 NS_SHIBBOLETH
 
+REF_IMPL_REQ(ComponentManager);
+REF_IMPL(ComponentManager);
+
 ComponentManager::ComponentManager(App& app):
 	_app(app)
 {
@@ -128,6 +131,13 @@ void ComponentManager::destroyComponent(IComponent* component)
 	assert(component && _components.indexOf(component->getName()) != -1);
 	ComponentEntry& entry = _components[component->getName()];
 	entry.destroy(component, entry.component_id);
+}
+
+void ComponentManager::InitReflectionDefinition(void)
+{
+	if (!g_Ref_Def.isDefined()) {
+		g_Ref_Def.markDefined();
+	}
 }
 
 NS_END
