@@ -104,7 +104,7 @@ protected:
 		auto it = _input_handlers.linearSearch(cb);
 
 		if (it != _input_handlers.end()) {
-			_input_handlers.erase(it);
+			_input_handlers.fastErase(it);
 			return true;
 		}
 

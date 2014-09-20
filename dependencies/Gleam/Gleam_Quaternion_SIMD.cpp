@@ -213,6 +213,16 @@ QuaternionSIMD QuaternionSIMD::inverse(void) const
 	return QuaternionSIMD(SIMDQuatInverse(_quat));
 }
 
+void QuaternionSIMD::shortestRotationThis(const Vector4SIMD& vec1, const Vector4SIMD& vec2)
+{
+	_quat = SIMDQuatShortestRotation(vec1.getSIMDType(), vec2.getSIMDType());
+}
+
+QuaternionSIMD QuaternionSIMD::shortestRotation(const Vector4SIMD& vec1, const Vector4SIMD& vec2) const
+{
+	return QuaternionSIMD(SIMDQuatShortestRotation(vec1.getSIMDType(), vec2.getSIMDType()));
+}
+
 float QuaternionSIMD::lengthSquared(void) const
 {
 	return lengthSquaredVec()[0];

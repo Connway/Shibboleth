@@ -24,12 +24,13 @@ THE SOFTWARE.
 
 #include "Shibboleth_ModelComponent.h"
 #include "Shibboleth_ModelAnimResources.h"
+#include <Shibboleth_ReflectionDefinitions.h>
 
 NS_SHIBBOLETH
 
-ReflectionDefinition<ModelComponent> ModelComponent::_ref_def;
-
-COMP_REF_DEF_SAVE(ModelComponent, _ref_def);
+COMP_REF_DEF_SAVE(ModelComponent, g_Ref_Def);
+REF_IMPL_REQ(ModelComponent);
+REF_IMPL(ModelComponent);
 
 ModelComponent::ModelComponent(App& app):
 	_app(app)
@@ -42,7 +43,7 @@ ModelComponent::~ModelComponent(void)
 
 bool ModelComponent::load(const Gaff::JSON& json)
 {
-	_ref_def.read(json, this);
+	g_Ref_Def.read(json, this);
 	assert(_model_filename.size());
 
 	_model_res = _app.getManager<ResourceManager>("Resource Manager").requestResource(_model_filename.getBuffer());
@@ -55,17 +56,6 @@ void ModelComponent::allComponentsLoaded(void)
 {
 }
 
-void ModelComponent::InitReflectionDefinition(void)
-{
-	if (!_ref_def.isDefined()) {
-		_ref_def.setAllocator(ProxyAllocator());
-
-		_ref_def.addString("Model File", &ModelComponent::_model_filename);
-
-		_ref_def.markDefined();
-	}
-}
-
 void ModelComponent::ModelCallback(const AHashString&, bool success)
 {
 	if (!success) {
@@ -74,6 +64,18 @@ void ModelComponent::ModelCallback(const AHashString&, bool success)
 	}
 
 	// process loaded data
+}
+
+void ModelComponent::InitReflectionDefinition(void)
+{
+	if (!g_Ref_Def.isDefined()) {
+		g_Ref_Def.setAllocator(ProxyAllocator());
+
+		g_Ref_Def.addString("Model File", &ModelComponent::_model_filename);
+		g_Ref_Def.addBaseClassInterfaceOnly<ModelComponent>();
+
+		g_Ref_Def.markDefined();
+	}
 }
 
 NS_END

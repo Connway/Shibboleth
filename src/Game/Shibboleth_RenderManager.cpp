@@ -30,6 +30,9 @@ THE SOFTWARE.
 
 NS_SHIBBOLETH
 
+REF_IMPL_REQ(RenderManager);
+REF_IMPL(RenderManager);
+
 RenderManager::RenderManager(App& app):
 	_render_device(nullptr, ProxyAllocator(&app.getAllocator(), "Graphics Allocations")),
 	_proxy_allocator(&app.getAllocator(), "Graphics Allocations"), _app(app)
@@ -608,6 +611,13 @@ bool RenderManager::cacheGleamFunctions(App& app, const Gaff::JSON& module, cons
 	}
 
 	return true;
+}
+
+void RenderManager::InitReflectionDefinition(void)
+{
+	if (!g_Ref_Def.isDefined()) {
+		g_Ref_Def.markDefined();
+	}
 }
 
 NS_END

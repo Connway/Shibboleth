@@ -33,42 +33,7 @@ template <class T, class Allocator = DefaultAllocator>
 class Array
 {
 public:
-	class Iterator
-	{
-	public:
-		Iterator(const Iterator& it);
-		Iterator(void);
-
-		const Iterator& operator++(void) const;
-		const Iterator& operator--(void) const;
-		Iterator operator++(int) const;
-		Iterator operator--(int) const;
-
-		const Iterator& operator+=(int rhs) const;
-		const Iterator& operator-=(int rhs) const;
-		Iterator operator+(int rhs) const;
-		Iterator operator-(int rhs) const;
-
-		OffsetType operator+(const Iterator& rhs) const;
-		OffsetType operator-(const Iterator& rhs) const;
-
-		bool operator==(const Iterator& rhs) const;
-		bool operator!=(const Iterator& rhs) const;
-
-		const Iterator& operator=(const Iterator& rhs) const;
-
-		const T& operator*(void) const;
-		T& operator*(void);
-
-		const T* operator->(void) const;
-		T* operator->(void);
-
-	private:
-		Iterator(T* element);
-
-		mutable T* _element;
-		friend class Array<T, Allocator>;
-	};
+	typedef T* Iterator;
 
 	explicit Array(const Allocator& allocator = Allocator());
 	explicit Array(unsigned int start_alloc, const Allocator& allocator = Allocator());
@@ -77,10 +42,6 @@ public:
 	Array(const Array<T, Allocator>& rhs);
 	Array(Array<T, Allocator>&& rhs);
 	~Array(void);
-
-	// For some reason, this is compiling, but debugger says it's using the old version of operator=? ... what
-	//template <class Allocator2>
-	//const Array<T, Allocator>& operator=(const Array<T, Allocator2>& rhs);
 
 	const Array<T, Allocator>& operator=(const Array<T, Allocator>& rhs);
 	const Array<T, Allocator>& operator=(Array<T, Allocator>&& rhs);
@@ -116,19 +77,25 @@ public:
 	void movePush(T&& data);
 	void push(const T& data);
 	void pop(void);
-	Iterator moveInsert(T&& data, const Iterator& it);
+	Iterator moveInsert(T&& data, const Iterator it);
 	void moveInsert(T&& data, unsigned int index);
-	Iterator insert(const T& data, const Iterator& it);
+	Iterator insert(const T& data, const Iterator it);
 	void insert(const T& data, unsigned int index);
-	Iterator erase(const Iterator& it);
+	Iterator erase(const Iterator it);
 	void erase(unsigned int index);
+
+	// Fast erase essentially deconstructs the element at index
+	// and then memcpy()'s the last element into the position of
+	// the element we just erased and then decrements the size count.
+	Iterator fastErase(const Iterator it);
+	void fastErase(unsigned int index);
 
 	void resize(unsigned int new_size);
 	void reserve(unsigned int reserve_size);
 	void trim(void);
 
 	template < class T2, class Pred = Equal<T, T2> >
-	Iterator linearSearch(const Iterator& range_beg, const Iterator& range_end, const T2& data, const Pred& pred = Pred()) const;
+	Iterator linearSearch(const Iterator range_beg, const Iterator range_end, const T2& data, const Pred& pred = Pred()) const;
 
 	template < class T2, class Pred = Equal<T, T2> >
 	int linearSearch(unsigned int range_beg, unsigned int range_end, const T2& data, const Pred& pred = Pred()) const;
@@ -137,7 +104,7 @@ public:
 	Iterator linearSearch(const T2& data, const Pred& pred = Pred()) const;
 
 	template < class T2, class Pred = Less<T, T2> >
-	Iterator binarySearch(const Iterator& range_beg, const Iterator& range_end, const T2& data, const Pred& pred = Pred()) const;
+	Iterator binarySearch(const Iterator range_beg, const Iterator range_end, const T2& data, const Pred& pred = Pred()) const;
 
 	template < class T2, class Pred = Less<T, T2> >
 	int binarySearch(unsigned int range_beg, unsigned int range_end, const T2& data, const Pred& pred = Pred()) const;

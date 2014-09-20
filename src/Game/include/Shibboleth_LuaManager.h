@@ -22,6 +22,7 @@ THE SOFTWARE.
 
 #pragma once
 
+#include <Shibboleth_ReflectionDefinitions.h>
 #include <Shibboleth_IManager.h>
 #include <Shibboleth_Array.h>
 #include <Gaff_Function.h>
@@ -47,12 +48,18 @@ public:
 
 	lua::State* createNewState(void);
 
+	void* rawRequestInterface(unsigned int class_id) const;
+
+	static void InitReflectionDefinition(void);
+
 private:
 	Array< Gaff::FunctionBinder<void, lua::State&> > _registrants;
 	App& _app;
 
 	GAFF_NO_COPY(LuaManager);
 	GAFF_NO_MOVE(LuaManager);
+
+	REF_DEF(LuaManager);
 };
 
 NS_END

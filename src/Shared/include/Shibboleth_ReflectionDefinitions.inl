@@ -87,6 +87,30 @@ ReflectionDefinition<T>::~ReflectionDefinition(void)
 }
 
 template <class T>
+void ReflectionDefinition<T>::read(const Gaff::JSON& json, void* object)
+{
+	read(json, reinterpret_cast<T*>(object));
+}
+
+template <class T>
+void ReflectionDefinition<T>::write(Gaff::JSON& json, void* object) const
+{
+	write(json, reinterpret_cast<T*>(object));
+}
+
+template <class T>
+void* ReflectionDefinition<T>::getInterface(unsigned int class_id, const void* object) const
+{
+	auto it = _base_ids.binarySearch(_base_ids.begin(), _base_ids.end(), class_id,
+		[](const Gaff::Pair< unsigned int, Gaff::FunctionBinder<void*, const void*> >& lhs, unsigned int rhs) -> bool
+		{
+			return lhs.first < rhs;
+		});
+
+	return (it != _base_ids.end() && it->first == class_id) ? it->second(object) : nullptr;
+}
+
+template <class T>
 void ReflectionDefinition<T>::read(const Gaff::JSON& json, T* object)
 {
 	for (auto it = _value_containers.begin(); it != _value_containers.end(); ++it) {
@@ -104,18 +128,61 @@ void ReflectionDefinition<T>::write(Gaff::JSON& json, T* object) const
 
 template <class T>
 template <class T2>
-ReflectionDefinition<T>& ReflectionDefinition<T>::addBaseClass(const ReflectionDefinition<T2>& base_ref_def)
+ReflectionDefinition<T>& ReflectionDefinition<T>::addBaseClass(const ReflectionDefinition<T2>& base_ref_def, unsigned int class_id)
 {
 	assert(this != &base_ref_def);
 
-	for (auto it = base_ref_def._value_containers.begin(); it != base_ref_def._value_containers.end(); ++it)
-	{
+	for (auto it = base_ref_def._value_containers.begin(); it != base_ref_def._value_containers.end(); ++it) {
 		assert(!_value_containers.hasElementWithKey(it.getKey()));
 		BaseValueContainer<T2>* container = GetAllocator()->allocT< BaseValueContainer<T2> >(it.getKey().getBuffer(), it.getValue());
 		_value_containers.insert(it.getKey(), ValueContainerPtr(container));
 	}
 
+	for (auto it_base = base_ref_def._base_ids.begin(); it_base != base_ref_def._base_ids.end(); ++it_base) {
+		auto it = _base_ids.binarySearch(_base_ids.begin(), _base_ids.end(), class_id,
+			[](const Gaff::Pair< unsigned int, Gaff::FunctionBinder<void*, const void*> >& lhs, unsigned int rhs) -> bool
+			{
+				return lhs.first < rhs;
+			});
+
+		assert(it == _base_ids.end() || it->first != class_id);
+
+		_base_ids.insert(*it_base, it);
+	}
+
 	return *this;
+}
+
+template <class T>
+template <class T2>
+ReflectionDefinition<T>& ReflectionDefinition<T>::addBaseClass(unsigned int class_id)
+{
+	auto it = _base_ids.binarySearch(_base_ids.begin(), _base_ids.end(), class_id,
+		[](const Gaff::Pair< unsigned int, Gaff::FunctionBinder<void*, const void*> >& lhs, unsigned int rhs) -> bool
+		{
+			return lhs.first < rhs;
+		});
+
+	assert(it == _base_ids.end() || it->first != class_id);
+
+	Gaff::Pair<unsigned int, Gaff::FunctionBinder<void*, const void*> > data(class_id, Gaff::Bind(&BaseClassCast<T2>));
+	_base_ids.insert(data, it);
+
+	return *this;
+}
+
+template <class T>
+template <class T2>
+ReflectionDefinition<T>& ReflectionDefinition<T>::addBaseClass(void)
+{
+	return addBaseClass<T2>(T2::g_Ref_Def, T2::g_Hash);
+}
+
+template <class T>
+template <class T2>
+ReflectionDefinition<T>& ReflectionDefinition<T>::addBaseClassInterfaceOnly(void)
+{
+	return addBaseClass<T2>(T2::g_Hash);
 }
 
 template <class T>

@@ -37,6 +37,8 @@ public:
 	virtual ~IUpdateQuery(void) {}
 
 	virtual void requestUpdateEntries(Array<UpdateEntry>& entries) = 0;
+
+	static unsigned int g_Hash;
 };
 
 NS_END

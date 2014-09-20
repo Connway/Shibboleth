@@ -72,7 +72,7 @@ bool InputManager::removeInputDevice(const IInputDevice* device)
 	GleamArray<IInputDevice*>::Iterator it = _input_devices.linearSearch(device);
 
 	if (it != _input_devices.end()) {
-		_input_devices.erase(it);
+		_input_devices.fastErase(it);
 		return true;
 	}
 

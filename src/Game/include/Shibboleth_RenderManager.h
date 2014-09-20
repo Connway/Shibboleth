@@ -22,6 +22,7 @@ THE SOFTWARE.
 
 #pragma once
 
+#include <Shibboleth_ReflectionDefinitions.h>
 #include <Shibboleth_IManager.h>
 #include <Shibboleth_App.h>
 #include <Gleam_Window.h>
@@ -99,6 +100,10 @@ public:
 	INLINE Gleam::IModel* createModel(void);
 	INLINE Gleam::IMesh* createMesh(void);
 
+	void* rawRequestInterface(unsigned int class_id) const;
+
+	static void InitReflectionDefinition(void);
+
 private:
 	struct GraphicsFunctions
 	{
@@ -155,6 +160,8 @@ private:
 
 	GAFF_NO_COPY(RenderManager);
 	GAFF_NO_MOVE(RenderManager);
+
+	REF_DEF(RenderManager);
 };
 
 NS_END

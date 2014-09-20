@@ -475,7 +475,7 @@ void Window::destroy(void)
 
 	for (unsigned int i = 0; i < gWindows.size(); ++i) {
 		if (gWindows[i] == this) {
-			gWindows.erase(i);
+			gWindows.fastErase(i);
 			break;
 		}
 	}
@@ -931,7 +931,7 @@ bool Window::removeWindowMessageHandlerHelper(const Gaff::FunctionBinder<bool, c
 	auto it = _window_callbacks.linearSearch(cb);
 
 	if (it != _window_callbacks.end()) {
-		_window_callbacks.erase(it);
+		_window_callbacks.fastErase(it);
 		return true;
 	}
 

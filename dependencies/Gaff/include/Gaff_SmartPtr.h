@@ -111,6 +111,13 @@ public:
 		return _data;
 	}
 
+	T* release(void)
+	{
+		T* data = _data;
+		_data = nullptr;
+		return data;
+	}
+
 	bool valid(void) const
 	{
 		return _data != nullptr;

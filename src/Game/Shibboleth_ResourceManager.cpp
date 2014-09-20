@@ -131,6 +131,9 @@ void ResourceManager::ResourceLoadingTask::doTask(void)
 
 
 
+REF_IMPL_REQ(ResourceManager);
+REF_IMPL(ResourceManager);
+
 ResourceManager::ResourceManager(App& app):
 	_app(app)
 {
@@ -241,6 +244,13 @@ void ResourceManager::zeroRefCallback(const AHashString& res_key)
 	Gaff::ScopedLock<Gaff::SpinLock> lock(_res_cache_lock);
 	_resource_cache[res_key].set(nullptr);
 	_resource_cache.erase(res_key);
+}
+
+void ResourceManager::InitReflectionDefinition(void)
+{
+	if (!g_Ref_Def.isDefined()) {
+		g_Ref_Def.markDefined();
+	}
 }
 
 NS_END

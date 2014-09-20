@@ -42,6 +42,34 @@ class App;
 class Object : public Gaff::INamedObject, public Gaff::WeakObject<ProxyAllocator>
 {
 public:
+	template <class Interface>
+	const Interface* getFirstComponentWithInterface(void) const
+	{
+		for (auto it = _components.begin(); it != _components.end(); ++it) {
+			const Interface* interface = (*it)->requestInterface<Interface>();
+
+			if (interface) {
+				return interface;
+			}
+		}
+
+		return nullptr;
+	}
+
+	template <class Interface>
+	Interface* getFirstComponentWithInterface(void)
+	{
+		for (auto it = _components.begin(); it != _components.end(); ++it) {
+			Interface* interface = (*it)->requestInterface<Interface>();
+
+			if (interface) {
+				return interface;
+			}
+		}
+
+		return nullptr;
+	}
+
 	typedef Gaff::FunctionBinder<void, double> UpdateCallback;
 
 	Object(App& app, unsigned int id);

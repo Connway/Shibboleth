@@ -20,53 +20,12 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#pragma once
+#include "Shibboleth_IUpdateQuery.h"
 
-#include <Shibboleth_ReflectionDefinitions.h>
-#include <Shibboleth_ResourceDefines.h>
-#include <Shibboleth_ResourceWrapper.h>
-#include <Shibboleth_IComponent.h>
-
-namespace lua
-{
-	class State;
-}
+#define IMPL_HASH(ClassName) unsigned int ClassName::g_Hash = Gaff::FNV1aHash32(#ClassName, strlen(#ClassName))
 
 NS_SHIBBOLETH
 
-class ResourceManager;
-class App;
-
-class LuaComponent : public IComponent
-{
-public:
-	LuaComponent(App& app);
-	~LuaComponent(void);
-
-	bool load(const Gaff::JSON& json);
-	bool save(Gaff::JSON& json);
-
-	void allComponentsLoaded(void);
-
-	void* rawRequestInterface(unsigned int class_id) const;
-
-	static const char* getComponentName(void)
-	{
-		return "Lua Component";
-	}
-
-	static void InitReflectionDefinition(void);
-
-private:
-	ResourceWrapper< SingleDataWrapper<lua::State*> > _script_res;
-
-	ResourceManager& _res_mgr;
-	AString _lua_file;
-
-	GAFF_NO_COPY(LuaComponent);
-	GAFF_NO_MOVE(LuaComponent);
-
-	REF_DEF(LuaComponent);
-};
+IMPL_HASH(IUpdateQuery);
 
 NS_END

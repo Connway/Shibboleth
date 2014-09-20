@@ -23,6 +23,7 @@ THE SOFTWARE.
 #pragma once
 
 #include "Shibboleth_Defines.h"
+#include <Shibboleth_IRequestableInterface.h>
 #include <Gaff_IVirtualDestructor.h>
 #include <Gaff_IncludeAssert.h>
 #include <cstring>
@@ -51,7 +52,7 @@ NS_SHIBBOLETH
 
 class Object;
 
-class IComponent : public Gaff::IVirtualDestructor
+class IComponent : public IRequestableInterface
 {
 public:
 	IComponent(void): _owner(nullptr) {}

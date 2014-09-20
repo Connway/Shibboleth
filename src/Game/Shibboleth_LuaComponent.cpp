@@ -26,9 +26,9 @@ THE SOFTWARE.
 
 NS_SHIBBOLETH
 
-ReflectionDefinition<LuaComponent> LuaComponent::_ref_def;
-
-COMP_REF_DEF_SAVE(LuaComponent, _ref_def);
+COMP_REF_DEF_SAVE(LuaComponent, g_Ref_Def);
+REF_IMPL_REQ(LuaComponent);
+REF_IMPL(LuaComponent);
 
 LuaComponent::LuaComponent(App& app):
 	_res_mgr(app.getManager<ResourceManager>("Resource Manager"))
@@ -41,7 +41,7 @@ LuaComponent::~LuaComponent(void)
 
 bool LuaComponent::load(const Gaff::JSON& json)
 {
-	_ref_def.read(json, this);
+	g_Ref_Def.read(json, this);
 	assert(_lua_file.size());
 	_script_res = _res_mgr.requestResource(_lua_file.getBuffer());
 	return true;
@@ -53,12 +53,13 @@ void LuaComponent::allComponentsLoaded(void)
 
 void LuaComponent::InitReflectionDefinition(void)
 {
-	if (!_ref_def.isDefined()) {
-		_ref_def.setAllocator(ProxyAllocator());
+	if (!g_Ref_Def.isDefined()) {
+		g_Ref_Def.setAllocator(ProxyAllocator());
 
-		_ref_def.addString("Lua Filename", &LuaComponent::_lua_file);
+		g_Ref_Def.addString("Lua Filename", &LuaComponent::_lua_file);
+		g_Ref_Def.addBaseClassInterfaceOnly<LuaComponent>();
 
-		_ref_def.markDefined();
+		g_Ref_Def.markDefined();
 	}
 }
 

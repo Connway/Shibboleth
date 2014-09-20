@@ -27,6 +27,9 @@ THE SOFTWARE.
 
 NS_SHIBBOLETH
 
+REF_IMPL_REQ(UpdateManager);
+REF_IMPL(UpdateManager);
+
 UpdateManager::UpdateManager(App& app):
 	_app(app)
 {
@@ -126,6 +129,13 @@ void UpdateManager::allManagersCreated(void)
 	} else {
 		log.first.writeString("ERROR - Failed to find/parse file \"update_entries.json\".\n");
 		_app.quit();
+	}
+}
+
+void UpdateManager::InitReflectionDefinition(void)
+{
+	if (!g_Ref_Def.isDefined()) {
+		g_Ref_Def.markDefined();
 	}
 }
 

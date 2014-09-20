@@ -26,6 +26,9 @@ THE SOFTWARE.
 
 NS_SHIBBOLETH
 
+REF_IMPL_REQ(LuaManager);
+REF_IMPL(LuaManager);
+
 LuaManager::LuaManager(App& app):
 	_app(app)
 {
@@ -56,6 +59,13 @@ lua::State* LuaManager::createNewState(void)
 	}
 
 	return state;
+}
+
+void LuaManager::InitReflectionDefinition(void)
+{
+	if (!g_Ref_Def.isDefined()) {
+		g_Ref_Def.markDefined();
+	}
 }
 
 NS_END

@@ -23,6 +23,7 @@ THE SOFTWARE.
 #pragma once
 
 #include "Shibboleth_IComponent.h"
+#include <Shibboleth_ReflectionDefinitions.h>
 #include <Shibboleth_DynamicLoader.h>
 #include <Shibboleth_HashString.h>
 #include <Shibboleth_IManager.h>
@@ -48,6 +49,10 @@ public:
 	INLINE IComponent* createComponent(const char* name);
 	INLINE void destroyComponent(IComponent* component);
 
+	void* rawRequestInterface(unsigned int class_id) const;
+
+	static void InitReflectionDefinition(void);
+
 private:
 	typedef bool (*InitFunc)(App&);
 	typedef IComponent* (*CreateComponentFunc)(unsigned int);
@@ -68,6 +73,8 @@ private:
 
 	GAFF_NO_COPY(ComponentManager);
 	GAFF_NO_MOVE(ComponentManager);
+
+	REF_DEF(ComponentManager);
 };
 
 NS_END

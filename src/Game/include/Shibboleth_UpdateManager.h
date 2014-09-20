@@ -22,6 +22,7 @@ THE SOFTWARE.
 
 #pragma once
 
+#include <Shibboleth_ReflectionDefinitions.h>
 #include <Shibboleth_IManager.h>
 #include <Shibboleth_Array.h>
 #include <Shibboleth_ITask.h>
@@ -45,6 +46,9 @@ public:
 
 	void update(double dt);
 
+	void* rawRequestInterface(unsigned int class_id) const;
+
+	static void InitReflectionDefinition(void);
 
 private:
 	class UpdateTask : public ITask
@@ -71,6 +75,8 @@ private:
 
 	GAFF_NO_COPY(UpdateManager);
 	GAFF_NO_MOVE(UpdateManager);
+
+	REF_DEF(UpdateManager);
 };
 
 NS_END

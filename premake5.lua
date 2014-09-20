@@ -27,7 +27,7 @@ solution "Temp"
 
 	configurations { "Debug", "Release" }
 	warnings "Extra"
-	flags { "Unicode" }
+	flags { "Unicode", "NoRTTI" }
 
 	nativewchar "Default"
 	floatingpoint "Fast"

@@ -84,6 +84,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\src\Game\Shibboleth_ComponentManager.cpp" />
+    <ClCompile Include="..\..\..\src\Game\Shibboleth_InterfaceReflection.cpp" />
     <ClCompile Include="..\..\..\src\Game\Shibboleth_LuaLoader.cpp" />
     <ClCompile Include="..\..\..\src\Game\Shibboleth_LuaManager.cpp" />
     <ClCompile Include="..\..\..\src\Game\Shibboleth_ModelLoader.cpp" />
