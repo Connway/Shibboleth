@@ -54,7 +54,7 @@ public:
 		}
 	};
 
-	StateMachine(const ProxyAllocator& proxy_allocator);
+	StateMachine(void);
 	~StateMachine(void);
 
 	void clear(void);

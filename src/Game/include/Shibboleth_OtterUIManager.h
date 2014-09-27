@@ -84,7 +84,7 @@ private:
 	GAFF_NO_COPY(OtterUIManager);
 	GAFF_NO_MOVE(OtterUIManager);
 	
-	REF_DEF(OtterUIManager);
+	REF_DEF_SHIB(OtterUIManager);
 };
 
 NS_END

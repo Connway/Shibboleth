@@ -1,17 +1,9 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="include">
       <UniqueIdentifier>{89AF369E-F58E-B539-FEA6-40106A051C9B}</UniqueIdentifier>
     </Filter>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="..\..\src\Shared\include\Shibboleth_ReflectionDefinitions.inl">
-      <Filter>include</Filter>
-    </None>
-    <None Include="..\..\src\Shared\include\Shibboleth_ReflectionDefinitionsContainers.inl">
-      <Filter>include</Filter>
-    </None>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\Shared\include\Shibboleth_Allocator.h">
@@ -41,12 +33,6 @@
     <ClInclude Include="..\..\src\Shared\include\Shibboleth_IManager.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\Shared\include\Shibboleth_IReflectionDefinition.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Shared\include\Shibboleth_IRequestableInterface.h">
-      <Filter>include</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\src\Shared\include\Shibboleth_IState.h">
       <Filter>include</Filter>
     </ClInclude>
@@ -68,9 +54,6 @@
     <ClInclude Include="..\..\src\Shared\include\Shibboleth_ProxyAllocator.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\Shared\include\Shibboleth_ReflectionDefinitions.h">
-      <Filter>include</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\src\Shared\include\Shibboleth_StateMachine.h">
       <Filter>include</Filter>
     </ClInclude>
@@ -81,6 +64,9 @@
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\Shared\include\Shibboleth_Watcher.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Shared\include\Shibboleth_ReflectionDefinitions.h">
       <Filter>include</Filter>
     </ClInclude>
   </ItemGroup>

@@ -132,7 +132,7 @@ void ResourceManager::ResourceLoadingTask::doTask(void)
 
 
 REF_IMPL_REQ(ResourceManager);
-REF_IMPL(ResourceManager);
+REF_IMPL_SHIB(ResourceManager);
 
 ResourceManager::ResourceManager(App& app):
 	_app(app)

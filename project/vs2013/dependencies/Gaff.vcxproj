@@ -217,6 +217,8 @@
     <ClInclude Include="..\..\..\dependencies\Gaff\include\Gaff_ICurve.h" />
     <ClInclude Include="..\..\..\dependencies\Gaff\include\Gaff_INamedObject.h" />
     <ClInclude Include="..\..\..\dependencies\Gaff\include\Gaff_IRefCounted.h" />
+    <ClInclude Include="..\..\..\dependencies\Gaff\include\Gaff_IReflectionDefinition.h" />
+    <ClInclude Include="..\..\..\dependencies\Gaff\include\Gaff_IRequestableInterface.h" />
     <ClInclude Include="..\..\..\dependencies\Gaff\include\Gaff_ITask.h" />
     <ClInclude Include="..\..\..\dependencies\Gaff\include\Gaff_IVirtualDestructor.h" />
     <ClInclude Include="..\..\..\dependencies\Gaff\include\Gaff_Image.h" />
@@ -240,6 +242,7 @@
     <ClInclude Include="..\..\..\dependencies\Gaff\include\Gaff_ReadWriteSpinLock.h" />
     <ClInclude Include="..\..\..\dependencies\Gaff\include\Gaff_RefCounted.h" />
     <ClInclude Include="..\..\..\dependencies\Gaff\include\Gaff_RefPtr.h" />
+    <ClInclude Include="..\..\..\dependencies\Gaff\include\Gaff_ReflectionDefinitions.h" />
     <ClInclude Include="..\..\..\dependencies\Gaff\include\Gaff_Scene.h" />
     <ClInclude Include="..\..\..\dependencies\Gaff\include\Gaff_SceneImporter.h" />
     <ClInclude Include="..\..\..\dependencies\Gaff\include\Gaff_ScopedLock.h" />
@@ -311,6 +314,8 @@
     <None Include="..\..\..\dependencies\Gaff\include\Gaff_Map.inl" />
     <None Include="..\..\..\dependencies\Gaff\include\Gaff_MessageBroadcaster.inl" />
     <None Include="..\..\..\dependencies\Gaff\include\Gaff_Queue.inl" />
+    <None Include="..\..\..\dependencies\Gaff\include\Gaff_ReflectionDefinitions.inl" />
+    <None Include="..\..\..\dependencies\Gaff\include\Gaff_ReflectionDefinitionsContainers.inl" />
     <None Include="..\..\..\dependencies\Gaff\include\Gaff_String.inl" />
     <None Include="..\..\..\dependencies\Gaff\include\Gaff_TimerCallbackManager.inl" />
     <None Include="..\..\..\dependencies\Gaff\include\Gaff_Utils_Common.inl" />

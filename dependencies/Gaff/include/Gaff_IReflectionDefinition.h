@@ -22,14 +22,11 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Shibboleth_Defines.h"
+#include "Gaff_Defines.h"
 
-namespace Gaff
-{
-	class JSON;
-}
+NS_GAFF
 
-NS_SHIBBOLETH
+class JSON;
 
 class IReflectionDefinition
 {

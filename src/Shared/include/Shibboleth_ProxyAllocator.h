@@ -26,54 +26,52 @@ THE SOFTWARE.
 #include <Gaff_Math.h>
 
 // Disable warning for no assignment operator generated
-#if defined(_WIN32) || defined(_WIN64)
-	#pragma warning(disable : 4512)
-#endif
+//#if defined(_WIN32) || defined(_WIN64)
+//	#pragma warning(disable : 4512)
+//#endif
 
 NS_SHIBBOLETH
 
 class ProxyAllocator : public Gaff::IAllocator
 {
 public:
-	explicit ProxyAllocator(Allocator* allocator = GetAllocator(), const char* pool_tag = nullptr):
-		_allocator(allocator), _alloc_tag(0)
+	explicit ProxyAllocator(const char* pool_tag = nullptr):
+		_alloc_tag(0)
 	{
 		if (pool_tag) {
 			_alloc_tag = Gaff::FNV1Hash32(pool_tag, (unsigned int)strlen(pool_tag));
-			allocator->createMemoryPool(pool_tag, _alloc_tag);
+			GetAllocator()->createMemoryPool(pool_tag, _alloc_tag);
 		}
 	}
 
 	ProxyAllocator(const ProxyAllocator& allocator):
-		_allocator(allocator._allocator), _alloc_tag(allocator._alloc_tag)
+		_alloc_tag(allocator._alloc_tag)
 	{
 	}
 
 	const ProxyAllocator& operator=(const ProxyAllocator& rhs)
 	{
-		_allocator = rhs._allocator;
 		_alloc_tag = rhs._alloc_tag;
 		return *this;
 	}
 
 	void* alloc(unsigned int size_bytes)
 	{
-		return _allocator->alloc(size_bytes, _alloc_tag);
+		return GetAllocator()->alloc(size_bytes, _alloc_tag);
 	}
 
 	void free(void* data)
 	{
-		return _allocator->free(data, _alloc_tag);
+		return GetAllocator()->free(data, _alloc_tag);
 	}
 
 private:
-	Allocator* _allocator;
 	unsigned int _alloc_tag;
 };
 
 NS_END
 
 // Disable warning for no assignment operator generated
-#if defined(_WIN32) || defined(_WIN64)
-	#pragma warning(default : 4512)
-#endif
+//#if defined(_WIN32) || defined(_WIN64)
+//	#pragma warning(default : 4512)
+//#endif

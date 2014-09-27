@@ -24,10 +24,8 @@ THE SOFTWARE.
 
 NS_SHIBBOLETH
 
-LogManager::LogManager(Allocator& allocator):
-	_files(ProxyAllocator(&allocator)), _allocator(allocator)
+LogManager::LogManager(void)
 {
-	_files.reserve(10);
 }
 
 LogManager::~LogManager(void)
@@ -35,11 +33,17 @@ LogManager::~LogManager(void)
 	destroy();
 }
 
+bool LogManager::init(void)
+{
+	_files.reserve(8);
+	return true;
+}
+
 void LogManager::destroy(void)
 {
 	for (auto it = _files.begin(); it != _files.end(); ++it) {
 		it->first.writeString("\nCLOSING LOG FILE\n");
-		_allocator.freeT(it->second);
+		GetAllocator()->freeT(it->second);
 	}
 
 	_files.clear();
@@ -54,7 +58,7 @@ bool LogManager::openLogFile(const AHashString& filename)
 		return false;
 	}
 
-	Gaff::SpinLock* spin_lock = _allocator.template allocT<Gaff::SpinLock>();
+	Gaff::SpinLock* spin_lock = GetAllocator()->template allocT<Gaff::SpinLock>();
 
 	if (!spin_lock) {
 		return false;

@@ -15,6 +15,9 @@ project "enet"
 
 	configuration {}
 
+	filter { "system:windows" }
+		defines { "_WINSOCK_DEPRECATED_NO_WARNINGS" }
+
 	filter { "system:not windows" }
 		defines { "HAS_SOCKLEN_T" }
 

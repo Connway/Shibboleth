@@ -161,7 +161,7 @@ private:
 	GAFF_NO_COPY(RenderManager);
 	GAFF_NO_MOVE(RenderManager);
 
-	REF_DEF(RenderManager);
+	REF_DEF_SHIB(RenderManager);
 };
 
 NS_END

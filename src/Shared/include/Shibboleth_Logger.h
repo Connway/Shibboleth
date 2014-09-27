@@ -36,9 +36,10 @@ class LogManager
 public:
 	typedef Gaff::Pair<Gaff::File, Gaff::SpinLock*> FileLockPair;
 
-	LogManager(Allocator& allocator);
+	LogManager(void);
 	~LogManager(void);
 
+	bool init(void);
 	void destroy(void);
 
 	bool openLogFile(const AHashString& filename);
@@ -53,7 +54,6 @@ public:
 
 private:
 	HashMap< AHashString, Gaff::Pair<Gaff::File, Gaff::SpinLock*> > _files;
-	Allocator& _allocator;
 
 	GAFF_NO_COPY(LogManager);
 	GAFF_NO_MOVE(LogManager);

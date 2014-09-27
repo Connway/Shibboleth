@@ -45,7 +45,7 @@ enum SceneImportFlags
 	SI_REMOVE_REDUNDANT_MATERIALS = aiProcess_RemoveRedundantMaterials,
 	SI_FIX_IN_FACING_NORMALS = aiProcess_FixInfacingNormals,
 	SI_SORT_BY_TYPE = aiProcess_SortByPType,
-	SI_FIND_DEGENERATERS = aiProcess_FindDegenerates,
+	SI_FIND_DEGENERATES = aiProcess_FindDegenerates,
 	SI_FIND_INVALID_DATA = aiProcess_FindInvalidData,
 	SI_GENERATE_UVS = aiProcess_GenUVCoords,
 	SI_TRANFORM_UVS = aiProcess_TransformUVCoords,

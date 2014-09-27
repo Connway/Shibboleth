@@ -42,6 +42,12 @@
     <None Include="..\..\..\dependencies\Gaff\include\Gaff_Queue.inl">
       <Filter>include</Filter>
     </None>
+    <None Include="..\..\..\dependencies\Gaff\include\Gaff_ReflectionDefinitions.inl">
+      <Filter>include</Filter>
+    </None>
+    <None Include="..\..\..\dependencies\Gaff\include\Gaff_ReflectionDefinitionsContainers.inl">
+      <Filter>include</Filter>
+    </None>
     <None Include="..\..\..\dependencies\Gaff\include\Gaff_String.inl">
       <Filter>include</Filter>
     </None>
@@ -137,6 +143,12 @@
     <ClInclude Include="..\..\..\dependencies\Gaff\include\Gaff_IRefCounted.h">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\Gaff\include\Gaff_IReflectionDefinition.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\Gaff\include\Gaff_IRequestableInterface.h">
+      <Filter>include</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\dependencies\Gaff\include\Gaff_ITask.h">
       <Filter>include</Filter>
     </ClInclude>
@@ -204,6 +216,9 @@
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\dependencies\Gaff\include\Gaff_RefPtr.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\Gaff\include\Gaff_ReflectionDefinitions.h">
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\dependencies\Gaff\include\Gaff_Scene.h">

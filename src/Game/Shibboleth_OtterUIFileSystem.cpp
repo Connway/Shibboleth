@@ -34,7 +34,6 @@ OtterUIFileSystem::OtterUIFileSystem(void)
 	//	gMap_init = true;
 	//}
 
-	gOpen_map.setAllocator(ProxyAllocator());
 	gOpen_map[Otter::AccessFlag(Otter::kBinary | Otter::kWrite)] = Gaff::File::WRITE_BINARY;
 	gOpen_map[Otter::AccessFlag(Otter::kBinary | Otter::kRead)] = Gaff::File::READ_BINARY;
 }

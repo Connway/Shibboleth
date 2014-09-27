@@ -32,10 +32,7 @@ NS_SHIBBOLETH
 
 // Have to pass in the correct ProxyAllocator, as we have not registered our allocator globally yet
 App::App(void):
-	_broadcaster(ProxyAllocator(&_allocator)), _dynamic_loader(ProxyAllocator(&_allocator)),
-	_state_machine(ProxyAllocator(&_allocator)), _manager_map(ProxyAllocator(&_allocator)),
-	_thread_pool(ProxyAllocator(&_allocator)), _logger(_allocator), _seed(0),
-	_running(true)
+	_seed(0), _running(true)
 {
 	SetAllocator(_allocator);
 }
@@ -57,6 +54,10 @@ App::~App(void)
 // Still single-threaded at this point, so ok that we're not using the spinlock
 bool App::init(void)
 {
+	if (!_logger.init()) {
+		return false;
+	}
+
 	while (!_seed) {
 		_seed = (size_t)time(NULL);
 	}
@@ -96,6 +97,7 @@ bool App::init(void)
 	}
 
 	_log_file_pair->first.writeString("Game Successfully Initialized\n\n");
+	_log_file_pair->first.flush();
 	return true;
 }
 

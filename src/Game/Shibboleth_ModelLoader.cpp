@@ -522,6 +522,10 @@ unsigned int ModelLoader::generateLoadingFlags(const Gaff::JSON& model_prefs)
 		flags |= Gaff::SI_FLIP_WINDING;
 	}
 
+	if (model_prefs["remove_degenerates"] && model_prefs["remove_degenerates"].isTrue()) {
+		flags |= Gaff::SI_FIND_DEGENERATES;
+	}
+
 	return flags;
 }
 

@@ -58,7 +58,7 @@ private:
 
 	void ModelCallback(const AHashString&, bool success);
 
-	REF_DEF(ModelComponent);
+	REF_DEF_SHIB(ModelComponent);
 };
 
 NS_END

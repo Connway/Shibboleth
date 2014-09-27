@@ -27,6 +27,7 @@ NS_GAFF
 SceneImporter::SceneImporter(void)
 {
 	_importer.SetProgressHandler(&_loading_handler);
+	_importer.SetPropertyInteger(AI_CONFIG_PP_FD_REMOVE, 0x1 | 0x2); // Removes degenerates
 }
 
 SceneImporter::~SceneImporter(void)
