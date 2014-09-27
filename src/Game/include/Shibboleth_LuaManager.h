@@ -59,7 +59,7 @@ private:
 	GAFF_NO_COPY(LuaManager);
 	GAFF_NO_MOVE(LuaManager);
 
-	REF_DEF(LuaManager);
+	REF_DEF_SHIB(LuaManager);
 };
 
 NS_END

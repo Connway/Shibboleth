@@ -101,7 +101,7 @@ private:
 	GAFF_NO_COPY(RasterManager);
 	GAFF_NO_MOVE(RasterManager);
 
-	REF_DEF(RasterManager);
+	REF_DEF_SHIB(RasterManager);
 };
 
 NS_END

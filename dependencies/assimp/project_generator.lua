@@ -26,7 +26,8 @@ project "assimp"
 
 	defines { "ASSIMP_BUILD_BOOST_WORKAROUND", "ASSIMP_BUILD_NO_OWN_ZLIB" }
 
-	configuration "vs*"
+	filter { "system:windows" }
 		defines { "_CRT_SECURE_NO_WARNINGS", "_SCL_SECURE_NO_WARNINGS" }
+		removeflags { "NoRTTI" }
 
-	configuration {}
+	filter {}

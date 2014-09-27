@@ -30,7 +30,7 @@ NS_SHIBBOLETH
 
 COMP_REF_DEF_SAVE(ModelComponent, g_Ref_Def);
 REF_IMPL_REQ(ModelComponent);
-REF_IMPL(ModelComponent);
+REF_IMPL_SHIB(ModelComponent);
 
 ModelComponent::ModelComponent(App& app):
 	_app(app)
@@ -69,8 +69,6 @@ void ModelComponent::ModelCallback(const AHashString&, bool success)
 void ModelComponent::InitReflectionDefinition(void)
 {
 	if (!g_Ref_Def.isDefined()) {
-		g_Ref_Def.setAllocator(ProxyAllocator());
-
 		g_Ref_Def.addString("Model File", &ModelComponent::_model_filename);
 		g_Ref_Def.addBaseClassInterfaceOnly<ModelComponent>();
 

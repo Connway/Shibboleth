@@ -26,7 +26,7 @@ THE SOFTWARE.
 NS_SHIBBOLETH
 
 REF_IMPL_REQ(ComponentManager);
-REF_IMPL(ComponentManager);
+REF_IMPL_SHIB(ComponentManager);
 
 ComponentManager::ComponentManager(App& app):
 	_app(app)

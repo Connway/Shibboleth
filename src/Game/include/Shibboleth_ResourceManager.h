@@ -161,7 +161,7 @@ private:
 	GAFF_NO_COPY(ResourceManager);
 	GAFF_NO_MOVE(ResourceManager);
 
-	REF_DEF(ResourceManager);
+	REF_DEF_SHIB(ResourceManager);
 };
 
 NS_END

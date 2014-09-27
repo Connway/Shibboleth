@@ -29,7 +29,7 @@ VAR_CONTAINER_CONSTRUCTOR(ShortContainer, short);
 VAR_CONTAINER_CONSTRUCTOR(UCharContainer, unsigned char);
 VAR_CONTAINER_CONSTRUCTOR(CharContainer, char);
 VAR_CONTAINER_CONSTRUCTOR(BoolContainer, bool);
-VAR_CONTAINER_CONSTRUCTOR(StringContainer, AString);
+VAR_CONTAINER_CONSTRUCTOR(StringContainer, AString<Allocator>);
 
 VAR_CONTAINER_VAL_TYPE(DoubleContainer, VT_DOUBLE);
 VAR_CONTAINER_VAL_TYPE(FloatContainer, VT_FLOAT);
@@ -399,24 +399,24 @@ VAR_CONTAINER_SET_DOUBLE(StringContainer)
 
 
 // Object
-template <class T>
+template <class T, class Allocator>
 template <class T2>
-ReflectionDefinition<T>::ObjectContainer<T2>::ObjectContainer(const char* key, T2 T::* var, ReflectionDefinition<T2>& var_ref_def) :
+ReflectionDefinition<T, Allocator>::ObjectContainer<T2>::ObjectContainer(const char* key, T2 T::* var, ReflectionDefinition<T2, Allocator>& var_ref_def) :
 	IValueContainer(key), _var_ref_def(var_ref_def), _var(var)
 {
 }
 
-template <class T>
+template <class T, class Allocator>
 template <class T2>
-void ReflectionDefinition<T>::ObjectContainer<T2>::read(const Gaff::JSON& json, T* object)
+void ReflectionDefinition<T, Allocator>::ObjectContainer<T2>::read(const Gaff::JSON& json, T* object)
 {
 	assert(json[(const char*)_key.getBuffer()].isObject());
 	_var_ref_def.read(json[(const char*)_key.getBuffer()], _object);
 }
 
-template <class T>
+template <class T, class Allocator>
 template <class T2>
-void ReflectionDefinition<T>::ObjectContainer<T2>::write(Gaff::JSON& json, T* object) const
+void ReflectionDefinition<T, Allocator>::ObjectContainer<T2>::write(Gaff::JSON& json, T* object) const
 {
 	assert(!json[_key.getBuffer()]);
 	Gaff::JSON object = Gaff::JSON::createObject();
@@ -424,9 +424,9 @@ void ReflectionDefinition<T>::ObjectContainer<T2>::write(Gaff::JSON& json, T* ob
 	json.setObject(_key.getBuffer(), object);
 }
 
-template <class T>
+template <class T, class Allocator>
 template <class T2>
-typename ReflectionDefinition<T>::IValueContainer::ValueType ReflectionDefinition<T>::ObjectContainer<T2>::getType(void) const
+typename ReflectionDefinition<T, Allocator>::IValueContainer::ValueType ReflectionDefinition<T, Allocator>::ObjectContainer<T2>::getType(void) const
 {
 	return VT_OBJECT;
 }
@@ -435,61 +435,61 @@ typename ReflectionDefinition<T>::IValueContainer::ValueType ReflectionDefinitio
 
 
 // Enum
-template <class T>
+template <class T, class Allocator>
 template <class T2>
-ReflectionDefinition<T>::EnumContainer<T2>::EnumContainer(const char* key, T2 T::* var, const EnumReflectionDefinition<T2>& var_ref_def):
+ReflectionDefinition<T, Allocator>::EnumContainer<T2>::EnumContainer(const char* key, T2 T::* var, const EnumReflectionDefinition<T2, Allocator>& var_ref_def):
 	IValueContainer(key), _var_ref_def(var_ref_def), _var(var)
 {
 }
 
-template <class T>
+template <class T, class Allocator>
 template <class T2>
-void ReflectionDefinition<T>::EnumContainer<T2>::read(const Gaff::JSON& json, T* object)
+void ReflectionDefinition<T, Allocator>::EnumContainer<T2>::read(const Gaff::JSON& json, T* object)
 {
 	assert(json[(const char*)_key.getBuffer()].isString());
 	object->*_var = _var_ref_def.getValue(json[(const char*)_key.getBuffer()].getString());
 }
 
-template <class T>
+template <class T, class Allocator>
 template <class T2>
-void ReflectionDefinition<T>::EnumContainer<T2>::write(Gaff::JSON& json, T* object) const
+void ReflectionDefinition<T, Allocator>::EnumContainer<T2>::write(Gaff::JSON& json, T* object) const
 {
 	assert(!json[_key.getBuffer()]);
 	Gaff::JSON val = Gaff::JSON::createString(_var_ref_def.getName(object->*_var));
 	json.setObject(_key.getBuffer(), val);
 }
 
-template <class T>
+template <class T, class Allocator>
 template <class T2>
-typename ReflectionDefinition<T>::IValueContainer::ValueType ReflectionDefinition<T>::EnumContainer<T2>::getType(void) const
+typename ReflectionDefinition<T, Allocator>::IValueContainer::ValueType ReflectionDefinition<T, Allocator>::EnumContainer<T2>::getType(void) const
 {
 	return VT_ENUM;
 }
 
-template <class T>
+template <class T, class Allocator>
 template <class T2>
-void ReflectionDefinition<T>::EnumContainer<T2>::set(const char* value, T* object)
+void ReflectionDefinition<T, Allocator>::EnumContainer<T2>::set(const char* value, T* object)
 {
 	object->*_var = _var_ref_def.getValue(value);
 }
 
-template <class T>
+template <class T, class Allocator>
 template <class T2>
-void ReflectionDefinition<T>::EnumContainer<T2>::set(unsigned int value, T* object)
+void ReflectionDefinition<T, Allocator>::EnumContainer<T2>::set(unsigned int value, T* object)
 {
 	object->*_var = (T2)value;
 }
 
-template <class T>
+template <class T, class Allocator>
 template <class T2>
-void ReflectionDefinition<T>::EnumContainer<T2>::set(int value, T* object)
+void ReflectionDefinition<T, Allocator>::EnumContainer<T2>::set(int value, T* object)
 {
 	object->*_var = (T2)value;
 }
 
-template <class T>
+template <class T, class Allocator>
 template <class T2>
-void ReflectionDefinition<T>::EnumContainer<T2>::set(double value, T* object)
+void ReflectionDefinition<T, Allocator>::EnumContainer<T2>::set(double value, T* object)
 {
 	// To circumvent compiler error saying it can't convert from
 	// double to an enum of type T2.
@@ -500,58 +500,58 @@ void ReflectionDefinition<T>::EnumContainer<T2>::set(double value, T* object)
 
 
 // Base
-template <class T>
+template <class T, class Allocator>
 template <class T2>
-ReflectionDefinition<T>::BaseValueContainer<T2>::BaseValueContainer(const char* key, typename const ReflectionDefinition<T2>::ValueContainerPtr& value_ptr):
+ReflectionDefinition<T, Allocator>::BaseValueContainer<T2>::BaseValueContainer(const char* key, typename const ReflectionDefinition<T2, Allocator>::ValueContainerPtr& value_ptr):
 	IValueContainer(key), _value_ptr(value_ptr)
 {
 }
 
-template <class T>
+template <class T, class Allocator>
 template <class T2>
-void ReflectionDefinition<T>::BaseValueContainer<T2>::read(const Gaff::JSON& json, T* object)
+void ReflectionDefinition<T, Allocator>::BaseValueContainer<T2>::read(const Gaff::JSON& json, T* object)
 {
 	_value_ptr->read(json, object);
 }
 
-template <class T>
+template <class T, class Allocator>
 template <class T2>
-void ReflectionDefinition<T>::BaseValueContainer<T2>::write(Gaff::JSON& json, T* object) const
+void ReflectionDefinition<T, Allocator>::BaseValueContainer<T2>::write(Gaff::JSON& json, T* object) const
 {
 	_value_ptr->write(json, object);
 }
 
-template <class T>
+template <class T, class Allocator>
 template <class T2>
-typename ReflectionDefinition<T>::IValueContainer::ValueType ReflectionDefinition<T>::BaseValueContainer<T2>::getType(void) const
+typename ReflectionDefinition<T, Allocator>::IValueContainer::ValueType ReflectionDefinition<T, Allocator>::BaseValueContainer<T2>::getType(void) const
 {
 	return _value_ptr->getType();
 }
 
-template <class T>
+template <class T, class Allocator>
 template <class T2>
-void ReflectionDefinition<T>::BaseValueContainer<T2>::set(const char* value, T* object)
+void ReflectionDefinition<T, Allocator>::BaseValueContainer<T2>::set(const char* value, T* object)
 {
 	_value_ptr->set(value, object);
 }
 
-template <class T>
+template <class T, class Allocator>
 template <class T2>
-void ReflectionDefinition<T>::BaseValueContainer<T2>::set(unsigned int value, T* object)
+void ReflectionDefinition<T, Allocator>::BaseValueContainer<T2>::set(unsigned int value, T* object)
 {
 	_value_ptr->set(value, object);
 }
 
-template <class T>
+template <class T, class Allocator>
 template <class T2>
-void ReflectionDefinition<T>::BaseValueContainer<T2>::set(int value, T* object)
+void ReflectionDefinition<T, Allocator>::BaseValueContainer<T2>::set(int value, T* object)
 {
 	_value_ptr->set(value, object);
 }
 
-template <class T>
+template <class T, class Allocator>
 template <class T2>
-void ReflectionDefinition<T>::BaseValueContainer<T2>::set(double value, T* object)
+void ReflectionDefinition<T, Allocator>::BaseValueContainer<T2>::set(double value, T* object)
 {
 	_value_ptr->set(value, object);
 }

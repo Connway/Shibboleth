@@ -28,7 +28,7 @@ THE SOFTWARE.
 NS_SHIBBOLETH
 
 REF_IMPL_REQ(RasterManager);
-REF_IMPL(RasterManager);
+REF_IMPL_SHIB(RasterManager);
 
 RasterManager::RasterManager(App& app):
 	_spatial_mgr(nullptr), _render_mgr(nullptr),

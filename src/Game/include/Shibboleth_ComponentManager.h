@@ -74,7 +74,7 @@ private:
 	GAFF_NO_COPY(ComponentManager);
 	GAFF_NO_MOVE(ComponentManager);
 
-	REF_DEF(ComponentManager);
+	REF_DEF_SHIB(ComponentManager);
 };
 
 NS_END

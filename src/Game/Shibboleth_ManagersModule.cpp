@@ -109,7 +109,7 @@ static Shibboleth::App* g_app = nullptr;
 DYNAMICEXPORT bool InitModule(Shibboleth::App& app)
 {
 	Gaff::JSON::SetMemoryFunctions(&Shibboleth::ShibbolethAllocate, &Shibboleth::ShibbolethFree);
-	Gaff::JSON::SetHashSeed(0);
+	Gaff::JSON::SetHashSeed(app.getSeed());
 	Shibboleth::SetAllocator(app.getAllocator());
 	g_app = &app;
 

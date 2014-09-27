@@ -27,7 +27,7 @@ THE SOFTWARE.
 NS_SHIBBOLETH
 
 REF_IMPL_REQ(LuaManager);
-REF_IMPL(LuaManager);
+REF_IMPL_SHIB(LuaManager);
 
 LuaManager::LuaManager(App& app):
 	_app(app)

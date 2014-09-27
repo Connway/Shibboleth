@@ -22,9 +22,9 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Shibboleth_Defines.h"
+#include "Gaff_Defines.h"
 
-NS_SHIBBOLETH
+NS_GAFF
 
 class IRequestableInterface
 {

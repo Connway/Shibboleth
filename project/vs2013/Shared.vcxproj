@@ -95,7 +95,7 @@
     <ClCompile>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level4</WarningLevel>
-      <PreprocessorDefinitions>_DEBUG;DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;DEBUG;USE_SIMD;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>..\..\dependencies\dirent;..\..\src\Shared\include;..\..\dependencies\jansson;..\..\dependencies\Gaff\include;..\..\dependencies\utf8-cpp;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <ProgramDataBaseFileName>$(OutDir)Shared.pdb</ProgramDataBaseFileName>
@@ -106,7 +106,7 @@
       <AdditionalOptions>/sdl %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <ResourceCompile>
-      <PreprocessorDefinitions>_DEBUG;DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;DEBUG;USE_SIMD;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>..\..\dependencies\dirent;..\..\src\Shared\include;..\..\dependencies\jansson;..\..\dependencies\Gaff\include;..\..\dependencies\utf8-cpp;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Link>
@@ -118,7 +118,7 @@
     <ClCompile>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level4</WarningLevel>
-      <PreprocessorDefinitions>_DEBUG;DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;DEBUG;USE_SIMD;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>..\..\dependencies\dirent;..\..\src\Shared\include;..\..\dependencies\jansson;..\..\dependencies\Gaff\include;..\..\dependencies\utf8-cpp;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <ProgramDataBaseFileName>$(OutDir)Shared.pdb</ProgramDataBaseFileName>
@@ -128,7 +128,7 @@
       <AdditionalOptions>/sdl %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <ResourceCompile>
-      <PreprocessorDefinitions>_DEBUG;DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;DEBUG;USE_SIMD;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>..\..\dependencies\dirent;..\..\src\Shared\include;..\..\dependencies\jansson;..\..\dependencies\Gaff\include;..\..\dependencies\utf8-cpp;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Link>
@@ -140,6 +140,7 @@
     <ClCompile>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level4</WarningLevel>
+      <PreprocessorDefinitions>USE_SIMD;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>..\..\dependencies\dirent;..\..\src\Shared\include;..\..\dependencies\jansson;..\..\dependencies\Gaff\include;..\..\dependencies\utf8-cpp;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -152,6 +153,7 @@
       <AdditionalOptions>/sdl %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <ResourceCompile>
+      <PreprocessorDefinitions>USE_SIMD;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>..\..\dependencies\dirent;..\..\src\Shared\include;..\..\dependencies\jansson;..\..\dependencies\Gaff\include;..\..\dependencies\utf8-cpp;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Link>
@@ -165,6 +167,7 @@
     <ClCompile>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level4</WarningLevel>
+      <PreprocessorDefinitions>USE_SIMD;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>..\..\dependencies\dirent;..\..\src\Shared\include;..\..\dependencies\jansson;..\..\dependencies\Gaff\include;..\..\dependencies\utf8-cpp;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -176,6 +179,7 @@
       <AdditionalOptions>/sdl %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <ResourceCompile>
+      <PreprocessorDefinitions>USE_SIMD;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>..\..\dependencies\dirent;..\..\src\Shared\include;..\..\dependencies\jansson;..\..\dependencies\Gaff\include;..\..\dependencies\utf8-cpp;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Link>
@@ -195,8 +199,6 @@
     <ClInclude Include="..\..\src\Shared\include\Shibboleth_HashMap.h" />
     <ClInclude Include="..\..\src\Shared\include\Shibboleth_HashString.h" />
     <ClInclude Include="..\..\src\Shared\include\Shibboleth_IManager.h" />
-    <ClInclude Include="..\..\src\Shared\include\Shibboleth_IReflectionDefinition.h" />
-    <ClInclude Include="..\..\src\Shared\include\Shibboleth_IRequestableInterface.h" />
     <ClInclude Include="..\..\src\Shared\include\Shibboleth_IState.h" />
     <ClInclude Include="..\..\src\Shared\include\Shibboleth_ITask.h" />
     <ClInclude Include="..\..\src\Shared\include\Shibboleth_LockDefines.h" />
@@ -215,10 +217,6 @@
     <ClCompile Include="..\..\src\Shared\Shibboleth_App.cpp" />
     <ClCompile Include="..\..\src\Shared\Shibboleth_Logger.cpp" />
     <ClCompile Include="..\..\src\Shared\Shibboleth_StateMachine.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="..\..\src\Shared\include\Shibboleth_ReflectionDefinitions.inl" />
-    <None Include="..\..\src\Shared\include\Shibboleth_ReflectionDefinitionsContainers.inl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

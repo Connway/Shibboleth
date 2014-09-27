@@ -28,7 +28,7 @@ THE SOFTWARE.
 NS_SHIBBOLETH
 
 REF_IMPL_REQ(ObjectManager);
-REF_IMPL(ObjectManager);
+REF_IMPL_SHIB(ObjectManager);
 
 ObjectManager::ObjectManager(App& app):
 	_app(app)

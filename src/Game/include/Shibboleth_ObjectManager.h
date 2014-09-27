@@ -73,7 +73,7 @@ private:
 	GAFF_NO_COPY(ObjectManager);
 	GAFF_NO_MOVE(ObjectManager);
 
-	REF_DEF(ObjectManager);
+	REF_DEF_SHIB(ObjectManager);
 };
 
 NS_END

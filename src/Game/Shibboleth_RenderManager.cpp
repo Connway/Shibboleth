@@ -31,11 +31,11 @@ THE SOFTWARE.
 NS_SHIBBOLETH
 
 REF_IMPL_REQ(RenderManager);
-REF_IMPL(RenderManager);
+REF_IMPL_SHIB(RenderManager);
 
 RenderManager::RenderManager(App& app):
-	_render_device(nullptr, ProxyAllocator(&app.getAllocator(), "Graphics Allocations")),
-	_proxy_allocator(&app.getAllocator(), "Graphics Allocations"), _app(app)
+	_render_device(nullptr, ProxyAllocator("Graphics Allocations")),
+	_proxy_allocator("Graphics Allocations"), _app(app)
 {
 }
 

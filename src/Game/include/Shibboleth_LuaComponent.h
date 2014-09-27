@@ -66,7 +66,7 @@ private:
 	GAFF_NO_COPY(LuaComponent);
 	GAFF_NO_MOVE(LuaComponent);
 
-	REF_DEF(LuaComponent);
+	REF_DEF_SHIB(LuaComponent);
 };
 
 NS_END

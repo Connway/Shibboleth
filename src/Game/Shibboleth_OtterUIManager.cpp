@@ -28,7 +28,7 @@ THE SOFTWARE.
 NS_SHIBBOLETH
 
 REF_IMPL_REQ(OtterUIManager);
-REF_IMPL(OtterUIManager);
+REF_IMPL_SHIB(OtterUIManager);
 
 OtterUIManager::OtterUIManager(void):
 	_memory_buffer(nullptr), _system(nullptr), _fps(60)

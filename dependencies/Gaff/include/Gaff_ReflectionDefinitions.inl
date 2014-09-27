@@ -21,53 +21,53 @@ THE SOFTWARE.
 ************************************************************************************/
 
 // Enum Reflection Definition
-template <class T>
-EnumReflectionDefinition<T>::EnumReflectionDefinition(void):
+template <class T, class Allocator>
+EnumReflectionDefinition<T, Allocator>::EnumReflectionDefinition(void):
 	_defined(false)
 {
 }
 
-template <class T>
-EnumReflectionDefinition<T>::~EnumReflectionDefinition(void)
+template <class T, class Allocator>
+EnumReflectionDefinition<T, Allocator>::~EnumReflectionDefinition(void)
 {
 }
 
-template <class T>
-EnumReflectionDefinition<T>& EnumReflectionDefinition<T>::addValue(const char* name, T value)
+template <class T, class Allocator>
+EnumReflectionDefinition<T, Allocator>& EnumReflectionDefinition<T, Allocator>::addValue(const char* name, T value)
 {
 	assert(!_values_map.hasElementWithKey(name));
 	_values_map.insert(name, value);
 	return *this;
 }
 
-template <class T>
-const char* EnumReflectionDefinition<T>::getName(T value) const
+template <class T, class Allocator>
+const char* EnumReflectionDefinition<T, Allocator>::getName(T value) const
 {
 	assert(_values_map.hasElementWithValue(value));
 	return _values_map.findElementWithValue(value).getKey().getBuffer();
 }
 
-template <class T>
-T EnumReflectionDefinition<T>::getValue(const char* name) const
+template <class T, class Allocator>
+T EnumReflectionDefinition<T, Allocator>::getValue(const char* name) const
 {
 	assert(_values_map.hasElementWithKey(name));
 	return _values_map[name];
 }
 
-template <class T>
-void EnumReflectionDefinition<T>::setAllocator(const ProxyAllocator& allocator)
+template <class T, class Allocator>
+void EnumReflectionDefinition<T, Allocator>::setAllocator(const Allocator& allocator)
 {
 	_values_map.setAllocator(allocator);
 }
 
-template <class T>
-bool EnumReflectionDefinition<T>::isDefined(void) const
+template <class T, class Allocator>
+bool EnumReflectionDefinition<T, Allocator>::isDefined(void) const
 {
 	return _defined;
 }
 
-template <class T>
-void EnumReflectionDefinition<T>::markDefined(void)
+template <class T, class Allocator>
+void EnumReflectionDefinition<T, Allocator>::markDefined(void)
 {
 	_defined = true;
 }
@@ -75,31 +75,31 @@ void EnumReflectionDefinition<T>::markDefined(void)
 
 
 // Reflection Definition
-template <class T>
-ReflectionDefinition<T>::ReflectionDefinition(void) :
+template <class T, class Allocator>
+ReflectionDefinition<T, Allocator>::ReflectionDefinition(void) :
 _defined(false)
 {
 }
 
-template <class T>
-ReflectionDefinition<T>::~ReflectionDefinition(void)
+template <class T, class Allocator>
+ReflectionDefinition<T, Allocator>::~ReflectionDefinition(void)
 {
 }
 
-template <class T>
-void ReflectionDefinition<T>::read(const Gaff::JSON& json, void* object)
+template <class T, class Allocator>
+void ReflectionDefinition<T, Allocator>::read(const Gaff::JSON& json, void* object)
 {
 	read(json, reinterpret_cast<T*>(object));
 }
 
-template <class T>
-void ReflectionDefinition<T>::write(Gaff::JSON& json, void* object) const
+template <class T, class Allocator>
+void ReflectionDefinition<T, Allocator>::write(Gaff::JSON& json, void* object) const
 {
 	write(json, reinterpret_cast<T*>(object));
 }
 
-template <class T>
-void* ReflectionDefinition<T>::getInterface(unsigned int class_id, const void* object) const
+template <class T, class Allocator>
+void* ReflectionDefinition<T, Allocator>::getInterface(unsigned int class_id, const void* object) const
 {
 	auto it = _base_ids.binarySearch(_base_ids.begin(), _base_ids.end(), class_id,
 		[](const Gaff::Pair< unsigned int, Gaff::FunctionBinder<void*, const void*> >& lhs, unsigned int rhs) -> bool
@@ -110,31 +110,31 @@ void* ReflectionDefinition<T>::getInterface(unsigned int class_id, const void* o
 	return (it != _base_ids.end() && it->first == class_id) ? it->second(object) : nullptr;
 }
 
-template <class T>
-void ReflectionDefinition<T>::read(const Gaff::JSON& json, T* object)
+template <class T, class Allocator>
+void ReflectionDefinition<T, Allocator>::read(const Gaff::JSON& json, T* object)
 {
 	for (auto it = _value_containers.begin(); it != _value_containers.end(); ++it) {
 		(*it)->read(json, object);
 	}
 }
 
-template <class T>
-void ReflectionDefinition<T>::write(Gaff::JSON& json, T* object) const
+template <class T, class Allocator>
+void ReflectionDefinition<T, Allocator>::write(Gaff::JSON& json, T* object) const
 {
 	for (auto it = _value_containers.begin(); it != _value_containers.end(); ++it) {
 		(*it)->write(json, object);
 	}
 }
 
-template <class T>
+template <class T, class Allocator>
 template <class T2>
-ReflectionDefinition<T>& ReflectionDefinition<T>::addBaseClass(const ReflectionDefinition<T2>& base_ref_def, unsigned int class_id)
+ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::addBaseClass(const ReflectionDefinition<T2, Allocator>& base_ref_def, unsigned int class_id)
 {
 	assert(this != &base_ref_def);
 
 	for (auto it = base_ref_def._value_containers.begin(); it != base_ref_def._value_containers.end(); ++it) {
 		assert(!_value_containers.hasElementWithKey(it.getKey()));
-		BaseValueContainer<T2>* container = GetAllocator()->allocT< BaseValueContainer<T2> >(it.getKey().getBuffer(), it.getValue());
+		BaseValueContainer<T2>* container = _allocator.template allocT< BaseValueContainer<T2> >(it.getKey().getBuffer(), it.getValue());
 		_value_containers.insert(it.getKey(), ValueContainerPtr(container));
 	}
 
@@ -153,9 +153,9 @@ ReflectionDefinition<T>& ReflectionDefinition<T>::addBaseClass(const ReflectionD
 	return *this;
 }
 
-template <class T>
+template <class T, class Allocator>
 template <class T2>
-ReflectionDefinition<T>& ReflectionDefinition<T>::addBaseClass(unsigned int class_id)
+ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::addBaseClass(unsigned int class_id)
 {
 	auto it = _base_ids.binarySearch(_base_ids.begin(), _base_ids.end(), class_id,
 		[](const Gaff::Pair< unsigned int, Gaff::FunctionBinder<void*, const void*> >& lhs, unsigned int rhs) -> bool
@@ -171,152 +171,153 @@ ReflectionDefinition<T>& ReflectionDefinition<T>::addBaseClass(unsigned int clas
 	return *this;
 }
 
-template <class T>
+template <class T, class Allocator>
 template <class T2>
-ReflectionDefinition<T>& ReflectionDefinition<T>::addBaseClass(void)
+ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::addBaseClass(void)
 {
 	return addBaseClass<T2>(T2::g_Ref_Def, T2::g_Hash);
 }
 
-template <class T>
+template <class T, class Allocator>
 template <class T2>
-ReflectionDefinition<T>& ReflectionDefinition<T>::addBaseClassInterfaceOnly(void)
+ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::addBaseClassInterfaceOnly(void)
 {
 	return addBaseClass<T2>(T2::g_Hash);
 }
 
-template <class T>
+template <class T, class Allocator>
 template <class T2>
-ReflectionDefinition<T>& ReflectionDefinition<T>::addObject(const char* key, T2 T::* var, ReflectionDefinition<T2>& var_ref_def)
+ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::addObject(const char* key, T2 T::* var, ReflectionDefinition<T2, Allocator>& var_ref_def)
 {
 	assert(key && strlen(key) && !_value_containers.hasElementWithKey(key));
-	ObjectContainer<T2>* container = GetAllocator()->allocT< ObjectContainer<T2> >(key, var, var_ref_def);
+	ObjectContainer<T2>* container = _allocator.template allocT< ObjectContainer<T2> >(key, var, var_ref_def);
 	_value_containers.insert(key, ValueContainerPtr(container));
 	return *this;
 }
 
-template <class T>
+template <class T, class Allocator>
 template <class T2>
-ReflectionDefinition<T>& ReflectionDefinition<T>::addEnum(const char* key, T2 T::* var, const EnumReflectionDefinition<T2>& ref_def)
+ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::addEnum(const char* key, T2 T::* var, const EnumReflectionDefinition<T2, Allocator>& ref_def)
 {
 	assert(key && strlen(key) && !_value_containers.hasElementWithKey(key));
-	EnumContainer<T2>* container = GetAllocator()->allocT< EnumContainer<T2> >(key, var, ref_def);
+	EnumContainer<T2>* container = _allocator.template allocT< EnumContainer<T2> >(key, var, ref_def);
 	_value_containers.insert(key, ValueContainerPtr(container));
 	return *this;
 }
 
-template <class T>
-ReflectionDefinition<T>& ReflectionDefinition<T>::addDouble(const char* key, double T::* var)
+template <class T, class Allocator>
+ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::addDouble(const char* key, double T::* var)
 {
 	assert(key && strlen(key) && !_value_containers.hasElementWithKey(key));
-	DoubleContainer* container = GetAllocator()->allocT<DoubleContainer>(key, var);
+	DoubleContainer* container = _allocator.template allocT<DoubleContainer>(key, var);
 	_value_containers.insert(key, ValueContainerPtr(container));
 	return *this;
 }
 
-template <class T>
-ReflectionDefinition<T>& ReflectionDefinition<T>::addFloat(const char* key, float T::* var)
+template <class T, class Allocator>
+ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::addFloat(const char* key, float T::* var)
 {
 	assert(key && strlen(key) && !_value_containers.hasElementWithKey(key));
-	FloatContainer* container = GetAllocator()->allocT<FloatContainer>(key, var);
+	FloatContainer* container = _allocator.template allocT<FloatContainer>(key, var);
 	_value_containers.insert(key, ValueContainerPtr(container));
 	return *this;
 }
 
-template <class T>
-ReflectionDefinition<T>& ReflectionDefinition<T>::addUInt(const char* key, unsigned int T::* var)
+template <class T, class Allocator>
+ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::addUInt(const char* key, unsigned int T::* var)
 {
 	assert(key && strlen(key) && !_value_containers.hasElementWithKey(key));
-	UIntContainer* container = GetAllocator()->allocT<UIntContainer>(key, var);
+	UIntContainer* container = _allocator.template allocT<UIntContainer>(key, var);
 	_value_containers.insert(key, ValueContainerPtr(container));
 	return *this;
 }
 
-template <class T>
-ReflectionDefinition<T>& ReflectionDefinition<T>::addInt(const char* key, int T::* var)
+template <class T, class Allocator>
+ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::addInt(const char* key, int T::* var)
 {
 	assert(key && strlen(key) && !_value_containers.hasElementWithKey(key));
-	IntContainer* container = GetAllocator()->allocT<IntContainer>(key, var);
+	IntContainer* container = _allocator.template allocT<IntContainer>(key, var);
 	_value_containers.insert(key, ValueContainerPtr(container));
 	return *this;
 }
 
-template <class T>
-ReflectionDefinition<T>& ReflectionDefinition<T>::addUShort(const char* key, unsigned short T::* var)
+template <class T, class Allocator>
+ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::addUShort(const char* key, unsigned short T::* var)
 {
 	assert(key && strlen(key) && !_value_containers.hasElementWithKey(key));
-	UShortContainer* container = GetAllocator()->allocT<UShortContainer>(key, var);
+	UShortContainer* container = _allocator.template allocT<UShortContainer>(key, var);
 	_value_containers.insert(key, ValueContainerPtr(container));
 	return *this;
 }
 
-template <class T>
-ReflectionDefinition<T>& ReflectionDefinition<T>::addShort(const char* key, short T::* var)
+template <class T, class Allocator>
+ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::addShort(const char* key, short T::* var)
 {
 	assert(key && strlen(key) && !_value_containers.hasElementWithKey(key));
-	ShortContainer* container = GetAllocator()->allocT<ShortContainer>(key, var);
+	ShortContainer* container = _allocator.template allocT<ShortContainer>(key, var);
 	_value_containers.insert(key, ValueContainerPtr(container));
 	return *this;
 }
 
-template <class T>
-ReflectionDefinition<T>& ReflectionDefinition<T>::addUChar(const char* key, unsigned char T::* var)
+template <class T, class Allocator>
+ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::addUChar(const char* key, unsigned char T::* var)
 {
 	assert(key && strlen(key) && !_value_containers.hasElementWithKey(key));
-	UCharContainer* container = GetAllocator()->allocT<UCharContainer>(key, var);
+	UCharContainer* container = _allocator.template allocT<UCharContainer>(key, var);
 	_value_containers.insert(key, ValueContainerPtr(container));
 	return *this;
 }
 
-template <class T>
-ReflectionDefinition<T>& ReflectionDefinition<T>::addChar(const char* key, char T::* var)
+template <class T, class Allocator>
+ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::addChar(const char* key, char T::* var)
 {
 	assert(key && strlen(key) && !_value_containers.hasElementWithKey(key));
-	CharContainer* container = GetAllocator()->allocT<CharContainer>(key, var);
+	CharContainer* container = _allocator.template allocT<CharContainer>(key, var);
 	_value_containers.insert(key, ValueContainerPtr(container));
 	return *this;
 }
 
-template <class T>
-ReflectionDefinition<T>& ReflectionDefinition<T>::addBool(const char* key, bool T::* var)
+template <class T, class Allocator>
+ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::addBool(const char* key, bool T::* var)
 {
 	assert(key && strlen(key) && !_value_containers.hasElementWithKey(key));
-	BoolContainer* container = GetAllocator()->allocT<BoolContainer>(key, var);
+	BoolContainer* container = _allocator.template allocT<BoolContainer>(key, var);
 	_value_containers.insert(key, ValueContainerPtr(container));
 	return *this;
 }
 
-template <class T>
-ReflectionDefinition<T>& ReflectionDefinition<T>::addString(const char* key, AString T::* var)
+template <class T, class Allocator>
+ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::addString(const char* key, AString<Allocator> T::* var)
 {
 	assert(key && strlen(key) && !_value_containers.hasElementWithKey(key));
-	StringContainer* container = GetAllocator()->allocT<StringContainer>(key, var);
+	StringContainer* container = _allocator.template allocT<StringContainer>(key, var);
 	_value_containers.insert(key, ValueContainerPtr(container));
 	return *this;
 }
 
-template <class T>
-ReflectionDefinition<T>& ReflectionDefinition<T>::addCustom(const char* key, IValueContainer* container)
+template <class T, class Allocator>
+ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::addCustom(const char* key, IValueContainer* container)
 {
 	assert(key && strlen(key) && !_value_containers.hasElementWithKey(key));
 	_value_containers.insert(key, ValueContainerPtr(container));
 	return *this;
 }
 
-template <class T>
-bool ReflectionDefinition<T>::isDefined(void) const
+template <class T, class Allocator>
+bool ReflectionDefinition<T, Allocator>::isDefined(void) const
 {
 	return _defined;
 }
 
-template <class T>
-void ReflectionDefinition<T>::markDefined(void)
+template <class T, class Allocator>
+void ReflectionDefinition<T, Allocator>::markDefined(void)
 {
 	_defined = true;
 }
 
-template <class T>
-void ReflectionDefinition<T>::setAllocator(const ProxyAllocator& allocator)
+template <class T, class Allocator>
+void ReflectionDefinition<T, Allocator>::setAllocator(const Allocator& allocator)
 {
 	_value_containers.setAllocator(allocator);
+	_allocator = allocator;
 }
