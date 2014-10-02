@@ -312,17 +312,17 @@ QuaternionSIMD QuaternionSIMD::MakeFromAxis(const Vector4SIMD& axis, float angle
 	return QuaternionSIMD(SIMDQuatFromAxisAngle(axis.getSIMDType(), SIMDCreate(angle)));
 }
 
-QuaternionSIMD MakeFromMatrix(const Matrix4x4SIMD& matrix)
+QuaternionSIMD QuaternionSIMD::MakeFromMatrix(const Matrix4x4SIMD& matrix)
 {
 	return QuaternionSIMD(SIMDQuatFromMatrix(matrix.getSIMDType()));
 }
 
-QuaternionSIMD MakeFromAngles(float x, float y, float z)
+QuaternionSIMD QuaternionSIMD::MakeFromAngles(float x, float y, float z)
 {
 	return QuaternionSIMD(SIMDQuatFromAngles(SIMDCreate(x, y, z, 0.0f)));
 }
 
-QuaternionSIMD MakeFromAngles(const Vector4SIMD& angles)
+QuaternionSIMD QuaternionSIMD::MakeFromAngles(const Vector4SIMD& angles)
 {
 	return QuaternionSIMD(SIMDQuatFromAngles(angles.getSIMDType()));
 }

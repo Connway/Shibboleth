@@ -22,9 +22,11 @@ THE SOFTWARE.
 
 #include "Shibboleth_ModelLoader.h"
 #include "Shibboleth_ModelAnimResources.h"
+#include "Shibboleth_ResourceManager.h"
 #include "Shibboleth_RenderManager.h"
 #include <Shibboleth_Allocator.h>
 #include <Gleam_IRenderDevice.h>
+#include <esprit_Skeleton.h>
 #include <Gleam_ILayout.h>
 #include <Gleam_IMesh.h>
 #include <Gaff_JSON.h>
@@ -41,6 +43,9 @@ static const char* d3d11_uv_1_shader_chunk = "float uv : TEXCOORD";
 static const char* d3d11_uv_2_shader_chunk = "float2 uv : TEXCOORD";
 static const char* d3d11_uv_3_shader_chunk = "float3 uv : TEXCOORD";
 static const char* d3d11_uv_4_shader_chunk = "float4 uv : TEXCOORD";
+static const char* d3d11_blend_indices_shader_chunk = "uint4 blend_indices : BLENDINDICES";
+static const char* d3d11_blend_weights_shader_chunk = "float4 blend_weights : BLENDWEIGHT";
+
 static const char* d3d11_end_shader_chunk = 
 "};" // For end of VertexInputType struct
 // This struct is empty, since the dummy shader doesn't need it
@@ -56,9 +61,10 @@ static const char* d3d11_end_shader_chunk =
 ;
 
 
-ModelLoader::ModelLoader(RenderManager& render_mgr):
-	_render_mgr(render_mgr)
+ModelLoader::ModelLoader(RenderManager& render_mgr, ResourceManager& res_mgr):
+	_render_mgr(render_mgr), _res_mgr(res_mgr), _esprit_proxy_allocator("esprit Allocations")
 {
+	esprit::SetAllocator(&_esprit_proxy_allocator);
 }
 
 ModelLoader::~ModelLoader(void)
@@ -70,6 +76,7 @@ Gaff::IVirtualDestructor* ModelLoader::load(const char* file_name, unsigned long
 	Gaff::JSON json;
 	
 	if (!json.parseFile(file_name)) {
+		// log error
 		return nullptr;
 	}
 
@@ -89,7 +96,7 @@ Gaff::IVirtualDestructor* ModelLoader::load(const char* file_name, unsigned long
 	// We either specify mesh LODs, or we don't. If we don't, then we assume all meshes are LOD 0.
 	// If we specify LOD tags and run across a mesh without the tag, we write a warning to the log
 	// and ignore the mesh.
-	if (!lod_tags.isArray() && !lod_tags.isNull()) {
+	if (!lod_tags.isArray() && lod_tags) {
 		// log error
 		return nullptr;
 	}
@@ -106,7 +113,7 @@ Gaff::IVirtualDestructor* ModelLoader::load(const char* file_name, unsigned long
 			return false;
 		});
 
-		if (!check_fail) {
+		if (check_fail) {
 			return nullptr;
 		}
 	}
@@ -114,19 +121,28 @@ Gaff::IVirtualDestructor* ModelLoader::load(const char* file_name, unsigned long
 	ModelData* data = GetAllocator()->template allocT<ModelData>();
 
 	if (data) {
-		data->scene = data->importer.loadFile(mesh_file.getString(), generateLoadingFlags(json));
+		data->holding_data = _res_mgr.loadResourceImmediately(mesh_file.getString(), generateLoadingFlags(json));
 
-		if (!data->scene) {
-			GetAllocator()->freeT(data);
-			data = nullptr;
+		// Loop until loaded. Just in case we got a resource reference requested from somewhere else.
+		while (!data->holding_data.getResourcePtr()->isLoaded() && !data->holding_data.getResourcePtr()->hasFailed()) {
 		}
 
-		// Log warnings if we have any
-		//if (data->scene.hasWarnings()) {
-		//}
+		if (!data->holding_data) {
+			GetAllocator()->freeT(data);
+			data = nullptr;
 
-		if (data && data->scene.hasMeshes()) {
-			if (data->scene.getNumMeshes() != lod_tags.size()) {
+		} else if (!data->holding_data->scene) {
+			// log error
+			GetAllocator()->freeT(data);
+			data = nullptr;
+
+		} else if (!data->holding_data->scene.hasMeshes()) {
+			// log error
+			GetAllocator()->freeT(data);
+			data = nullptr;
+
+		} else {
+			if (lod_tags && data->holding_data->scene.getNumMeshes() != lod_tags.size()) {
 				// log error
 				GetAllocator()->freeT(data);
 				data = nullptr;
@@ -145,7 +161,8 @@ bool ModelLoader::loadMeshes(ModelData* data, const Gaff::JSON& lod_tags, const 
 {
 	Gaff::ScopedLock<Gaff::SpinLock> scoped_lock(_render_mgr.getSpinLock());
 	Gleam::IRenderDevice& rd = _render_mgr.getRenderDevice();
-	unsigned int num_lods = (lod_tags.isNull()) ? 1 : lod_tags.size();
+	unsigned int num_lods = (!lod_tags) ? 1 : lod_tags.size();
+	unsigned int num_bone_weights = 0;
 
 	// First dimension is for each device.
 	data->models.resize(rd.getNumDevices());
@@ -170,15 +187,30 @@ bool ModelLoader::loadMeshes(ModelData* data, const Gaff::JSON& lod_tags, const 
 		}
 	}
 
-	// load skeleton(s)
+	if (model_prefs["blend_indices_weights"] && model_prefs["blend_indices_weights"].isTrue()) {
+		if (!model_prefs["skeleton_root"] || !model_prefs["skeleton_root"].isString()) {
+			// log error
+			return false;
+		}
+
+		//if (!model_prefs["bone_tag"] || !model_prefs["bone_tag"].isString()) {
+		//	// log warning
+		//}
+
+		if (!loadSkeleton(data, model_prefs, num_bone_weights)) {
+			// log error
+			return false;
+		}
+	}
+
 
 	// Do this for each device
 	for (unsigned int i = 0; i < rd.getNumDevices(); ++i) {
 		rd.setCurrentDevice(i);
 
 		// Iterate over all the meshes
-		for (unsigned int j = 0; j < data->scene.getNumMeshes(); ++j) {
-			Gaff::Mesh scene_mesh = data->scene.getMesh(j);
+		for (unsigned int j = 0; j < data->holding_data->scene.getNumMeshes(); ++j) {
+			Gaff::Mesh scene_mesh = data->holding_data->scene.getMesh(j);
 
 			if (!scene_mesh) {
 				// Log Error
@@ -188,7 +220,7 @@ bool ModelLoader::loadMeshes(ModelData* data, const Gaff::JSON& lod_tags, const 
 			// Determine the LOD level of this mesh
 			int lod = -1;
 
-			if (lod_tags.isNull()) {
+			if (!lod_tags) {
 				lod = 0;
 
 			} else {
@@ -222,7 +254,7 @@ bool ModelLoader::loadMeshes(ModelData* data, const Gaff::JSON& lod_tags, const 
 				data->aabbs[lod].push(aabb);
 			}
 
-			if (!createMeshAndLayout(rd, scene_mesh, data->models[i][lod].get(), model_prefs)) {
+			if (!createMeshAndLayout(rd, scene_mesh, data->models[i][lod].get(), model_prefs, data->skeleton, num_bone_weights)) {
 				return false;
 			}
 
@@ -238,7 +270,7 @@ bool ModelLoader::loadMeshes(ModelData* data, const Gaff::JSON& lod_tags, const 
 	return true;
 }
 
-bool ModelLoader::createMeshAndLayout(Gleam::IRenderDevice& rd, const Gaff::Mesh& scene_mesh, Gleam::IModel* model, const Gaff::JSON& model_prefs)
+bool ModelLoader::createMeshAndLayout(Gleam::IRenderDevice& rd, const Gaff::Mesh& scene_mesh, Gleam::IModel* model, const Gaff::JSON& model_prefs, const esprit::Skeleton& skeleton, unsigned int num_bone_weights)
 {
 	bool uvs = false;
 	bool normals = false;
@@ -335,27 +367,37 @@ bool ModelLoader::createMeshAndLayout(Gleam::IRenderDevice& rd, const Gaff::Mesh
 		vert_size += uv_size;
 	}
 
-	if (model_prefs["blend_indices_weights"] && model_prefs["blend_indices_weights"].isTrue() && scene_mesh.hasBones()) {
-		//blend_data = true;
-		//vert_size += 8;
+	if (model_prefs["blend_indices_weights"] && model_prefs["blend_indices_weights"].isTrue()) {
+		blend_data = true;
+		vert_size += 8 * num_bone_weights;
 
-		//Gleam::LayoutDescription desc = {
-		//	Gleam::SEMANTIC_BLEND_INDICES,
-		//	0,
-		//	//Gleam::ITexture::RGBA_32_F,
-		//	Gleam::ITexture::RGBA_32_UI,
-		//	0,
-		//	APPEND_ALIGNED,
-		//	Gleam::PDT_PER_VERTEX
-		//};
+		for (unsigned int i = 0; i < num_bone_weights; ++i) {
+			// Iterate and do this for every 4 blend indices/weights
+			Gleam::LayoutDescription desc = {
+				Gleam::SEMANTIC_BLEND_INDICES,
+				i,
+				Gleam::ITexture::RGBA_32_UI,
+				0,
+				APPEND_ALIGNED,
+				Gleam::PDT_PER_VERTEX
+			};
 
-		//layout_desc.push(desc);
+			layout_desc.push(desc);
+		}
 
-		//desc.semantic = Gleam::SEMANTIC_BLEND_WEIGHT;
-		//desc.format = Gleam::ITexture::RGBA_32_F;
-		//layout_desc.push(desc);
+		for (unsigned int i = 0; i < num_bone_weights; ++i) {
+			// Iterate and do this for every 4 blend indices/weights
+			Gleam::LayoutDescription desc = {
+				Gleam::SEMANTIC_BLEND_WEIGHT,
+				i,
+				Gleam::ITexture::RGBA_32_F,
+				0,
+				APPEND_ALIGNED,
+				Gleam::PDT_PER_VERTEX
+			};
 
-		// load skeleton
+			layout_desc.push(desc);
+		}
 	}
 
 	Gleam::IMesh* mesh = model->createMesh();
@@ -399,11 +441,13 @@ bool ModelLoader::createMeshAndLayout(Gleam::IRenderDevice& rd, const Gaff::Mesh
 
 		if (blend_data) {
 			unsigned int* blend_indices = (unsigned int*)current_vertex;
-			float* blend_weights = current_vertex + 4;
+			float* blend_weights = current_vertex + 4 * num_bone_weights;
 			unsigned int curr_ind = 0;
 
-			blend_indices[0] = blend_indices[1] = blend_indices[2] = blend_indices[3] = 0;
-			blend_weights[0] = blend_weights[1] = blend_weights[2] = blend_weights[3] = 0.0f;
+			// Initialize to zero
+			for (unsigned int j = 0; j < 8 * num_bone_weights; ++j) {
+				current_vertex[j] = 0.0f;
+			}
 
 			for (unsigned int j = 0; j < scene_mesh.getNumBones(); ++j) {
 				Gaff::Bone bone = scene_mesh.getBone(j);
@@ -413,10 +457,7 @@ bool ModelLoader::createMeshAndLayout(Gleam::IRenderDevice& rd, const Gaff::Mesh
 						Gaff::VertexWeight weight = bone.getWeight(k);
 
 						if (weight && weight.getVertexIndex() == i) {
-							// find bone index using vertex index
-							// blend_indices[curr_ind] = bone_index;
-
-							blend_indices[curr_ind] = weight.getVertexIndex();
+							blend_indices[curr_ind] = skeleton.getBoneIndex(bone.getName());
 							blend_weights[curr_ind] = weight.getWeight();
 							++curr_ind;
 						}
@@ -424,7 +465,7 @@ bool ModelLoader::createMeshAndLayout(Gleam::IRenderDevice& rd, const Gaff::Mesh
 				}
 			}
 
-			current_vertex += 8;
+			current_vertex += 8 * num_bone_weights;
 		}
 	}
 
@@ -452,7 +493,7 @@ bool ModelLoader::createMeshAndLayout(Gleam::IRenderDevice& rd, const Gaff::Mesh
 
 	// Generate bogus shader for use with model->createLayout()
 	if (rd.isD3D()) {
-		shader = generateEmptyD3D11Shader(rd, model_prefs, scene_mesh);
+		shader = generateEmptyD3D11Shader(rd, model_prefs, scene_mesh, num_bone_weights);
 
 		if (!shader) {
 			return false;
@@ -529,7 +570,7 @@ unsigned int ModelLoader::generateLoadingFlags(const Gaff::JSON& model_prefs)
 	return flags;
 }
 
-Gleam::IShader* ModelLoader::generateEmptyD3D11Shader(Gleam::IRenderDevice& rd, const Gaff::JSON& model_prefs, const Gaff::Mesh& scene_mesh) const
+Gleam::IShader* ModelLoader::generateEmptyD3D11Shader(Gleam::IRenderDevice& rd, const Gaff::JSON& model_prefs, const Gaff::Mesh& scene_mesh, unsigned int num_bone_weights) const
 {
 	Gleam::IShader* shader = _render_mgr.createShader();
 
@@ -549,10 +590,10 @@ Gleam::IShader* ModelLoader::generateEmptyD3D11Shader(Gleam::IRenderDevice& rd, 
 	}
 
 	if (model_prefs["uvs"] && model_prefs["uvs"].isTrue()) {
-		char temp[2] = { 0, 0 };
+		char temp[3] = { 0,0, 0 };
 
 		for (unsigned int i = 0; i < scene_mesh.getNumUVChannels(); ++i) {
-			shader_code += _itoa(scene_mesh.getNumUVComponents(i), temp, 10); // values should be in [1, 4]
+			_itoa(i, temp, 10); // values should be in [1, 9]
 
 			switch (scene_mesh.getNumUVComponents(i)) {
 				case 1:
@@ -585,6 +626,23 @@ Gleam::IShader* ModelLoader::generateEmptyD3D11Shader(Gleam::IRenderDevice& rd, 
 		}
 	}
 
+	if (model_prefs["blend_indices_weights"] && model_prefs["blend_indices_weights"].isTrue()) {
+
+		char temp[3] = { 0, 0, 0 }; // I imagine our bone count will always be below 100. :)
+
+		for (unsigned int i = 0; i < num_bone_weights; ++i) {
+			shader_code += d3d11_blend_indices_shader_chunk;
+			shader_code += _itoa(i, temp, 10);
+			shader_code += ';';
+		}
+
+		for (unsigned int i = 0; i < num_bone_weights; ++i) {
+			shader_code += d3d11_blend_weights_shader_chunk;
+			shader_code += _itoa(i, temp, 10);
+			shader_code += ';';
+		}
+	}
+
 	shader_code += d3d11_end_shader_chunk;
 
 	if (!shader->initVertexSource(rd, shader_code.getBuffer())) {
@@ -594,6 +652,111 @@ Gleam::IShader* ModelLoader::generateEmptyD3D11Shader(Gleam::IRenderDevice& rd, 
 	}
 
 	return shader;
+}
+
+bool ModelLoader::loadSkeleton(ModelData* data, const Gaff::JSON& model_prefs, unsigned int& num_bone_weights)
+{
+	// Determine number of float4's for vertex data
+	unsigned int max_vertex_bones = 0;
+	num_bone_weights = 0;
+
+	for (unsigned int k = 0; k < data->holding_data->scene.getNumMeshes(); ++k) {
+		Gaff::Mesh scene_mesh = data->holding_data->scene.getMesh(k);
+
+		// Temporarily to hold vertex bone weight count
+		Array<unsigned int> num_bones(scene_mesh.getNumVertices(), num_bone_weights);
+
+		for (unsigned int i = 0; i < scene_mesh.getNumBones(); ++i) {
+			Gaff::Bone bone = scene_mesh.getBone(i);
+
+			if (bone) {
+				for (unsigned int j = 0; j < bone.getNumWeights(); ++j) {
+					Gaff::VertexWeight weight = bone.getWeight(j);
+
+					if (weight) {
+						++num_bones[weight.getVertexIndex()];
+					}
+				}
+			}
+		}
+
+		for (auto it = num_bones.begin(); it != num_bones.end(); ++it) {
+			max_vertex_bones = Gaff::Max(max_vertex_bones, *it);
+		}
+	}
+
+	num_bone_weights = (unsigned int)ceilf((float)max_vertex_bones / 4.0f);
+
+	// Load skeleton hierarchy
+	// This should load a skeleton that is sorted by parent index. Root being bone 0.
+	Gaff::SceneNode root = data->holding_data->scene.getNode(model_prefs["skeleton_root"].getString());
+
+	if (!root) {
+		// log error
+		return false;
+	}
+
+	const char* bone_tag = (model_prefs["bone_tag"]) ? model_prefs["bone_tag"].getString() : nullptr;
+	Array<Gaff::SceneNode> nodes(1, root);
+
+	while (!nodes.empty()) {
+		for (unsigned int i = 0; i < nodes.size();) {
+			if (!nodes[i]) {
+				// log error
+				return false;
+			}
+
+			// If we don't have a bone tag, we assume everything in the hierarchy is a bone
+			if (bone_tag) {
+				AString name(nodes[i].getName());
+
+				// If this is not a bone, just ignore it
+				if (name.findFirstOf(bone_tag) != 0) {
+					nodes.erase(i);
+					continue;
+				}
+			}
+
+			unsigned int parent_index = UINT_FAIL;
+
+			if (nodes[i].getParent()) {
+				parent_index = data->skeleton.getBoneIndex(nodes[i].getParent().getName());
+			}
+
+			data->skeleton.addBone(parent_index, nodes[i].getName());
+
+			// If we do not have a parent index, then we are the root and just use identity transform
+			if (parent_index != UINT_FAIL) {
+				unsigned int my_index = data->skeleton.getNumBones() - 1;
+
+				Gleam::Matrix4x4 matrix(nodes[i].getTransform());
+				Gleam::Transform transform;
+
+				// We lose scale information when we convert this to our transform class.
+				// Most likely fine. Bones probably shouldn't have scale information anyways.
+				matrix.transposeThis(); // Make assimp's matrix match our major
+				transform.setTranslation(matrix.getColumn(3));
+				transform.setRotation(Gleam::Quaternion::MakeFromMatrix(matrix));
+
+				data->skeleton.setReferenceTransform(my_index, transform);
+			}
+
+			++i;
+		}
+
+		// Make the new list of nodes to add
+		Array<Gaff::SceneNode> new_nodes;
+
+		for (auto it = nodes.begin(); it != nodes.end(); ++it) {
+			for (unsigned int i = 0; i < it->getNumChildren(); ++i) {
+				new_nodes.push(it->getChild(i));
+			}
+		}
+
+		nodes = Gaff::Move(new_nodes);
+	}
+
+	return true;
 }
 
 NS_END

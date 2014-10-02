@@ -49,6 +49,9 @@ bool ModelComponent::load(const Gaff::JSON& json)
 	_model_res = _app.getManager<ResourceManager>("Resource Manager").requestResource(_model_filename.getBuffer());
 	_model_res.getResourcePtr()->addCallback(Gaff::Bind(this, &ModelComponent::ModelCallback));
 
+	while (!_model_res.getResourcePtr()->isLoaded() && !_model_res.getResourcePtr()->hasFailed()) {
+	}
+
 	return true;
 }
 

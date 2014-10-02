@@ -41,7 +41,7 @@ public:
 	~RotationKey(void);
 
 	INLINE double getTime(void) const;
-	INLINE const float* getQuaternion(void) const;
+	INLINE const float* getQuaternion(void) const; // w, x, y, z
 
 	INLINE bool valid(void) const;
 

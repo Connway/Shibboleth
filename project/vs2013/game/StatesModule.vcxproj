@@ -257,6 +257,9 @@
     <ProjectReference Include="..\dependencies\minizip.vcxproj">
       <Project>{C5553BC7-3135-BA62-3A4D-4539A6AB20C4}</Project>
     </ProjectReference>
+    <ProjectReference Include="..\dependencies\esprit.vcxproj">
+      <Project>{9C6BD8FB-880D-03D2-71C8-16265D098A22}</Project>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

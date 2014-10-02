@@ -30,7 +30,7 @@ Transform::Transform(const Vec4& scale, const Quaternion& rotation, const Vec4& 
 }
 
 Transform::Transform(void):
-	_rotation(Quaternion::Identity), _translation(0.0f, 0.0f, 0.0f, 0.0f), _scale(1.0f, 1.0f, 1.0f, 1.0f)
+	_rotation(Quaternion::Identity), _translation(0.0f, 0.0f, 0.0f, 1.0f), _scale(1.0f, 1.0f, 1.0f, 1.0f)
 {
 }
 

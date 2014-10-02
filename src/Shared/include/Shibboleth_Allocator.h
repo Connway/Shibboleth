@@ -63,7 +63,7 @@ private:
 	GAFF_NO_MOVE(Allocator);
 };
 
-INLINE void SetAllocator(Allocator& allocator);
+INLINE void SetAllocator(Allocator* allocator);
 INLINE Allocator* GetAllocator(void);
 
 void* ShibbolethAllocate(size_t size);

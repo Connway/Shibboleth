@@ -126,11 +126,13 @@ private:
 				task->doTask();
 				task->setFinished(true);
 
-				tp->_lock.lock();
-					for (unsigned int i = 0; i < dep_tasks.size(); ++i) {
-						tp->_tasks.push(dep_tasks[i]);
-					}
-				tp->_lock.unlock();
+				if (!dep_tasks.empty()) {
+					tp->_lock.lock();
+						for (unsigned int i = 0; i < dep_tasks.size(); ++i) {
+							tp->_tasks.push(dep_tasks[i]);
+						}
+					tp->_lock.unlock();
+				}
 
 				task = nullptr; // Free the task
 			} /*else {*/

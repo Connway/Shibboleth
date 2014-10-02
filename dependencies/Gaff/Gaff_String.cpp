@@ -21,6 +21,7 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Gaff_String.h"
+#include <cstring>
 
 NS_GAFF
 

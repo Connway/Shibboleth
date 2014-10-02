@@ -23,12 +23,23 @@ THE SOFTWARE.
 #pragma once
 
 #include "Shibboleth_ResourceDefines.h"
+#include "Shibboleth_ResourceWrapper.h"
 #include <Gaff_IVirtualDestructor.h>
 #include <Gaff_SceneImporter.h>
+#include <esprit_Skeleton.h>
 #include <Gleam_IModel.h>
 #include <Gleam_AABB.h>
 
 NS_SHIBBOLETH
+
+struct HoldingData : public Gaff::IVirtualDestructor
+{
+	HoldingData(void) {}
+	~HoldingData(void) {}
+
+	Gaff::SceneImporter importer;
+	Gaff::Scene scene;
+};
 
 struct AnimationData : public Gaff::IVirtualDestructor
 {
@@ -41,15 +52,11 @@ struct ModelData : public Gaff::IVirtualDestructor
 	ModelData(void) {}
 	~ModelData(void) {}
 
-	// This is storing the mesh in RAM. Will want to clean up if no other components are going to use it.
-	Gaff::SceneImporter importer;
-	Gaff::Scene scene;
-
 	Array< Array<ModelPtr> > models; // [Device][LOD]
 	Array< Array<Gleam::AABB> > aabbs; // [LOD][Mesh]
 
-	// vertex weights
-	// skeleton
+	ResourceWrapper<HoldingData> holding_data;
+	esprit::Skeleton skeleton;
 };
 
 NS_END

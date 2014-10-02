@@ -26,7 +26,7 @@ THE SOFTWARE.
 
 NS_GLEAM
 
-class QuaternionSIMD
+class COMPILERALIGN16 QuaternionSIMD
 {
 public:
 	QuaternionSIMD(void);

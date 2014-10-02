@@ -22,37 +22,11 @@ THE SOFTWARE.
 
 #pragma once
 
-#include <Shibboleth_Array.h>
-#include <Gleam_Transform.h>
+#include "esprit_ProxyAllocator.h"
+#include <Gaff_Array.h>
 
-NS_SHIBBOLETH
+NS_ESPRIT
 
-class AnimData;
-
-class Bone
-{
-public:
-	Bone(void);
-	~Bone(void);
-
-private:
-	Array<unsigned int> _parents;
-
-	Gleam::Transform _local_transform;
-	Gleam::Transform _world_transform;
-	Gleam::Matrix4x4 _matrix_cache;
-};
-
-class Skeleton
-{
-public:
-	Skeleton(void);
-	~Skeleton(void);
-
-	bool init(const AnimData& model_data);
-
-private:
-	Array<Bone> _bones;
-};
+template <class T> using Array = Gaff::Array <T, ProxyAllocator>;
 
 NS_END

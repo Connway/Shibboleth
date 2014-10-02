@@ -67,7 +67,7 @@ DYNAMICEXPORT bool InitModule(Shibboleth::App& app)
 
 	Gaff::JSON::SetMemoryFunctions(&Shibboleth::ShibbolethAllocate, &Shibboleth::ShibbolethFree);
 	Gaff::JSON::SetHashSeed(app.getSeed());
-	Shibboleth::SetAllocator(app.getAllocator());
+	Shibboleth::SetAllocator(&app.getAllocator());
 	g_app = &app;
 
 	// Initialize all the reflection definitions

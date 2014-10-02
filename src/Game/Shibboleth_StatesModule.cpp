@@ -46,7 +46,7 @@ public:
 	void update(void)
 	{
 		Shibboleth::Object obj(_app, 0);
-		obj.init("./Objects/test.object");
+		obj.init("./Resources/Objects/test.object");
 
 		_app.quit();
 	}
@@ -96,7 +96,7 @@ DYNAMICEXPORT bool InitModule(Shibboleth::App& app)
 {
 	Gaff::JSON::SetMemoryFunctions(&Shibboleth::ShibbolethAllocate, &Shibboleth::ShibbolethFree);
 	Gaff::JSON::SetHashSeed(app.getSeed());
-	Shibboleth::SetAllocator(app.getAllocator());
+	Shibboleth::SetAllocator(&app.getAllocator());
 	Gleam::SetAllocator(&app.getAllocator());
 	g_app = &app;
 	return true;

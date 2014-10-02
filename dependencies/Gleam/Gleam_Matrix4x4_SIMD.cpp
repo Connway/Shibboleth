@@ -290,6 +290,12 @@ void Matrix4x4SIMD::set(int column, int row, float value)
 	SIMDSet(_matrix.elements[column], value, (unsigned int)row);
 }
 
+Vector4SIMD Matrix4x4SIMD::getColumn(int column) const
+{
+	assert(column > -1 && column < 4);
+	return Vector4SIMD(_matrix.elements[column]);
+}
+
 bool Matrix4x4SIMD::isIdentity(void) const
 {
 	return SIMDEqual(_matrix.elements[0], gXAxis) &&

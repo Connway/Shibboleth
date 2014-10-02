@@ -191,6 +191,9 @@
     <ClInclude Include="..\..\..\dependencies\Gaff\include\Gaff_MessageBroadcaster.h">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\Gaff\include\Gaff_MetaData.h">
+      <Filter>include</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\dependencies\Gaff\include\Gaff_NetworkDefines.h">
       <Filter>include</Filter>
     </ClInclude>
@@ -225,6 +228,9 @@
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\dependencies\Gaff\include\Gaff_SceneImporter.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\Gaff\include\Gaff_SceneNode.h">
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\dependencies\Gaff\include\Gaff_ScopedLock.h">
@@ -310,10 +316,12 @@
     <ClCompile Include="..\..\..\dependencies\Gaff\Gaff_Math.cpp" />
     <ClCompile Include="..\..\..\dependencies\Gaff\Gaff_Mesh.cpp" />
     <ClCompile Include="..\..\..\dependencies\Gaff\Gaff_MeshAnimation.cpp" />
+    <ClCompile Include="..\..\..\dependencies\Gaff\Gaff_MetaData.cpp" />
     <ClCompile Include="..\..\..\dependencies\Gaff\Gaff_NodeAnimation.cpp" />
     <ClCompile Include="..\..\..\dependencies\Gaff\Gaff_ReadWriteSpinLock.cpp" />
     <ClCompile Include="..\..\..\dependencies\Gaff\Gaff_Scene.cpp" />
     <ClCompile Include="..\..\..\dependencies\Gaff\Gaff_SceneImporter.cpp" />
+    <ClCompile Include="..\..\..\dependencies\Gaff\Gaff_SceneNode.cpp" />
     <ClCompile Include="..\..\..\dependencies\Gaff\Gaff_SpinLock.cpp" />
     <ClCompile Include="..\..\..\dependencies\Gaff\Gaff_StackTrace_Linux.cpp" />
     <ClCompile Include="..\..\..\dependencies\Gaff\Gaff_StackTrace_Windows.cpp" />

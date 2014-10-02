@@ -121,6 +121,7 @@ group "Dependencies"
 	dofile("../../dependencies/LuaJIT-2.0.3/include_external.lua")
 	dofile("../../dependencies/assimp/include_external.lua")
 	dofile("../../dependencies/minizip/include_external.lua")
+	dofile("../../dependencies/esprit/include_external.lua")
 
 group ""
 	dofile("../Shared/include_external.lua")
@@ -150,7 +151,8 @@ group ""
 			"../../dependencies/LuaState",
 			"../../dependencies/LuaJIT-2.0.3/src",
 			"../../dependencies/utf8-cpp",
-			"../../dependencies/assimp/include"
+			"../../dependencies/assimp/include",
+			"../../dependencies/esprit/include"
 		}
 
 	project "ManagersModule"
@@ -244,7 +246,8 @@ group ""
 			"Shared", "Gaff", "jansson",
 			"libjpeg", "libpng", "libtiff",
 			"OtterUI", "ResIL", "ResILU",
-			"zlib", "Gleam", "Game"
+			"zlib", "Gleam", "Game",
+			"esprit"
 
 			--[[
 				Adding LuaJIT as a dependency for some reason makes VS2013
@@ -262,7 +265,8 @@ group ""
 			"libjpeg", "libpng", "libtiff",
 			"OtterUI", "ResIL", "ResILU",
 			"zlib", "Gleam", "Game",
-			"assimp", "minizip"
+			"assimp", "minizip",
+			"esprit"
 		}
 
 		filter { "configurations:Debug", "platforms:x86" }
@@ -302,7 +306,8 @@ group ""
 			"../../dependencies/LuaState",
 			"../../dependencies/LuaJIT-2.0.3/src",
 			"../../dependencies/utf8-cpp",
-			"../../dependencies/assimp/include"
+			"../../dependencies/assimp/include",
+			"../../dependencies/esprit/include"
 		}
 
 		dependson
@@ -310,7 +315,8 @@ group ""
 			"Shared", "Gaff", "jansson",
 			"libjpeg", "libpng", "libtiff",
 			"OtterUI", "ResIL", "ResILU",
-			"zlib", "Gleam", "Game"
+			"zlib", "Gleam", "Game",
+			"esprit"
 
 			--[[
 				Adding LuaJIT as a dependency for some reason makes VS2013
@@ -327,7 +333,8 @@ group ""
 			"Shared", "Gaff", "jansson",
 			"libjpeg", "libpng", "libtiff",
 			"OtterUI", "ResIL", "ResILU",
-			"zlib", "Gleam", "Game"
+			"zlib", "Gleam", "Game",
+			"esprit"
 		}
 
 		filter { "configurations:Debug", "platforms:x86" }

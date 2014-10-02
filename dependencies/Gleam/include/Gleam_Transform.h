@@ -28,7 +28,7 @@ THE SOFTWARE.
 
 NS_GLEAM
 
-class Transform
+class COMPILERALIGN16 Transform
 {
 public:
 	Transform(const Vec4& scale, const Quaternion& rotation, const Vec4& translation);
