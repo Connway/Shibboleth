@@ -34,7 +34,7 @@ NS_SHIBBOLETH
 App::App(void):
 	_seed(0), _running(true)
 {
-	SetAllocator(_allocator);
+	SetAllocator(&_allocator);
 }
 
 App::~App(void)

@@ -20,6 +20,9 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
+#pragma once
+
+#include "Gaff_SceneNode.h"
 #include "Gaff_Animation.h"
 #include "Gaff_Camera.h"
 #include "Gaff_Light.h"
@@ -58,6 +61,9 @@ public:
 	//INLINE Texture getTexture(unsigned int index) const;
 	INLINE Camera getCamera(unsigned int index) const;
 	INLINE Animation getAnimation(unsigned int index) const;
+
+	INLINE SceneNode getRootNode(void) const;
+	INLINE SceneNode getNode(const char* name) const;
 
 	INLINE bool hasWarnings(void) const;
 	INLINE bool valid(void) const;

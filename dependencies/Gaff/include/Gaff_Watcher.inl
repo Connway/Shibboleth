@@ -98,7 +98,9 @@ Watcher<T, Allocator>::Watcher(const Allocator& allocator):
 template <class T, class Allocator>
 Watcher<T, Allocator>::~Watcher(void)
 {
-	_remover->watcherDeleted();
+	if (_remover) {
+		_remover->watcherDeleted();
+	}
 }
 
 template <class T, class Allocator>

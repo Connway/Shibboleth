@@ -12,6 +12,9 @@
     <ClInclude Include="..\..\..\src\Game\include\Shibboleth_ComponentManager.h">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\src\Game\include\Shibboleth_HoldingLoader.h">
+      <Filter>include</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\src\Game\include\Shibboleth_IComponent.h">
       <Filter>include</Filter>
     </ClInclude>
@@ -69,9 +72,6 @@
     <ClInclude Include="..\..\..\src\Game\include\Shibboleth_ShaderProgramLoader.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\src\Game\include\Shibboleth_Skeleton.h">
-      <Filter>include</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\src\Game\include\Shibboleth_SpatialManager.h">
       <Filter>include</Filter>
     </ClInclude>
@@ -84,6 +84,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\src\Game\Shibboleth_ComponentManager.cpp" />
+    <ClCompile Include="..\..\..\src\Game\Shibboleth_HoldingLoader.cpp" />
     <ClCompile Include="..\..\..\src\Game\Shibboleth_InterfaceReflection.cpp" />
     <ClCompile Include="..\..\..\src\Game\Shibboleth_LuaLoader.cpp" />
     <ClCompile Include="..\..\..\src\Game\Shibboleth_LuaManager.cpp" />
@@ -98,7 +99,6 @@
     <ClCompile Include="..\..\..\src\Game\Shibboleth_ResourceManager.cpp" />
     <ClCompile Include="..\..\..\src\Game\Shibboleth_ShaderLoader.cpp" />
     <ClCompile Include="..\..\..\src\Game\Shibboleth_ShaderProgramLoader.cpp" />
-    <ClCompile Include="..\..\..\src\Game\Shibboleth_Skeleton.cpp" />
     <ClCompile Include="..\..\..\src\Game\Shibboleth_SpatialManager.cpp" />
     <ClCompile Include="..\..\..\src\Game\Shibboleth_TextureLoader.cpp" />
     <ClCompile Include="..\..\..\src\Game\Shibboleth_UpdateManager.cpp" />

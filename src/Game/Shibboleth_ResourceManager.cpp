@@ -29,7 +29,7 @@ NS_SHIBBOLETH
 
 ResourceContainer::ResourceContainer(const AHashString& res_key, ResourceManager* res_manager, ZRC zero_ref_callback, unsigned long long user_data):
 	_res_manager(res_manager), _zero_ref_callback(zero_ref_callback), _res_key(res_key),
-	_resource(nullptr), _user_data(user_data), _ref_count(0)
+	_resource(nullptr), _user_data(user_data), _ref_count(0), _failed(false)
 {
 }
 
@@ -50,7 +50,10 @@ void ResourceContainer::release(void) const
 		// Tell ResourceManager that the client no longer has references to this resource, so remove it from your list.
 		(_res_manager->*_zero_ref_callback)(_res_key);
 
-		Shibboleth::GetAllocator()->freeT(_resource);
+		if (_resource) {
+			Shibboleth::GetAllocator()->freeT(_resource);
+		}
+
 		Shibboleth::GetAllocator()->freeT(this);
 	}
 }
@@ -73,6 +76,16 @@ const AHashString& ResourceContainer::getResourceKey(void) const
 bool ResourceContainer::isLoaded(void) const
 {
 	return _resource != nullptr;
+}
+
+bool ResourceContainer::hasFailed(void) const
+{
+	return _failed;
+}
+
+void ResourceContainer::failed(void)
+{
+	_failed = true;
 }
 
 void ResourceContainer::addCallback(const Gaff::FunctionBinder<void, const AHashString&, bool> callback)
@@ -109,7 +122,6 @@ void ResourceContainer::callCallbacks(bool succeeded)
 ResourceManager::ResourceLoadingTask::ResourceLoadingTask(ResourceLoaderPtr& res_loader, ResourcePtr& res_ptr):
 	_res_loader(res_loader), _res_ptr(res_ptr)
 {
-
 }
 
 ResourceManager::ResourceLoadingTask::~ResourceLoadingTask(void)
@@ -124,6 +136,7 @@ void ResourceManager::ResourceLoadingTask::doTask(void)
 		_res_ptr->setResource(data);
 	} else {
 		// Log error
+		_res_ptr->failed();
 	}
 
 	_res_ptr->callCallbacks(data != nullptr);
@@ -176,7 +189,6 @@ ResourcePtr ResourceManager::requestResource(const char* filename, unsigned long
 	if (it == _resource_cache.end()) {
 		// We have no cache of this resource or have yet to make a request for it,
 		// so make a load request.
-
 		AString extension = res_key.getString().getExtension('.');
 		assert(extension.size() && _resource_loaders.indexOf(AHashString(extension)) != -1);
 
@@ -228,6 +240,7 @@ ResourcePtr ResourceManager::loadResourceImmediately(const char* filename, unsig
 			res_ptr->setResource(data);
 		} else {
 			// Log error
+			res_ptr->failed();
 		}
 
 		return res_ptr;

@@ -32,9 +32,9 @@ class Vector4SIMD;
 //
 // | 00 10 20 30 |
 // | 01 11 21 31 |
-// | 02 12 22 23 |
+// | 02 12 22 32 |
 // | 03 13 23 33 |
-class Matrix4x4SIMD
+class COMPILERALIGN16 Matrix4x4SIMD
 {
 public:
 	Matrix4x4SIMD(void);
@@ -82,6 +82,8 @@ public:
 			float m30, float m31, float m32, float m33);
 	INLINE void set(const float* elements);
 	INLINE void set(int column, int row, float value);
+
+	INLINE Vector4SIMD getColumn(int column) const;
 
 	INLINE bool isIdentity(void) const;
 	INLINE void setIdentity(void);

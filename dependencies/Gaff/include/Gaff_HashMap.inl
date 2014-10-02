@@ -492,9 +492,11 @@ const HashMap<Key, Value, Allocator>& HashMap<Key, Value, Allocator>::operator=(
 			construct(&_slots[i].key, rhs._slots[i].key);
 			construct(&_slots[i].value, rhs._slots[i].value);
 			construct(&_slots[i].occupied, rhs._slots[i].occupied);
+			_slots[i].initial_hash = rhs._slots[i].initial_hash;
 		}
 	}
 
+	_hash = rhs._hash;
 	_used = rhs._used;
 	_size = rhs._size;
 
@@ -529,7 +531,7 @@ bool HashMap<Key, Value, Allocator>::operator==(const HashMap<Key, Value, Alloca
 			_slots[i].key != rhs._slots[i].key ||
 			_slots[i].value != rhs._slots[i].value) {
 
-				return false;
+			return false;
 		}
 	}
 
@@ -574,6 +576,7 @@ Value& HashMap<Key, Value, Allocator>::operator[](const Key& key)
 	}
 
 	unsigned int index = _hash((const char*)&key, sizeof(Key)) % _size;
+	unsigned int initial_index = index;
 	unsigned int i = 0;
 
 	while (_slots[index].occupied && _slots[index].key != key && i < _size) {
@@ -584,6 +587,7 @@ Value& HashMap<Key, Value, Allocator>::operator[](const Key& key)
 	if (!_slots[index].occupied) {
 		construct(&_slots[index].key, key);
 		construct(&_slots[index].value);
+		_slots[index].initial_index = initial_index;
 		_slots[index].occupied = true;
 		++_used;
 	}
@@ -606,6 +610,7 @@ Value& HashMap<Key, Value, Allocator>::operator[](Key&& key)
 	}
 
 	unsigned int index = _hash((const char*)&key, sizeof(Key)) % _size;
+	unsigned int initial_index = index;
 	unsigned int i = 0;
 
 	while (_slots[index].occupied && _slots[index].key != key && i < _size) {
@@ -616,6 +621,7 @@ Value& HashMap<Key, Value, Allocator>::operator[](Key&& key)
 	if (!_slots[index].occupied) {
 		moveConstruct(&_slots[index].key, Move(key));
 		construct(&_slots[index].value);
+		_slots[index].initial_index = initial_index;
 		_slots[index].occupied = true;
 		++_used;
 	}
@@ -674,6 +680,8 @@ void HashMap<Key, Value, Allocator>::erase(unsigned int index)
 	deconstruct(&_slots[index].key);
 	deconstruct(&_slots[index].value);
 	_slots[index].occupied = false;
+
+	shiftBuckets(index);
 }
 
 template <class Key, class Value, class Allocator>
@@ -880,6 +888,43 @@ typename HashMap<Key, Value, Allocator>::Iterator HashMap<Key, Value, Allocator>
 	return Iterator(_slots - 1, _slots + _size, _slots - 1);
 }
 
+template <class Key, class Value, class Allocator>
+void HashMap<Key, Value, Allocator>::shiftBuckets(unsigned int index)
+{
+	unsigned int initial_index = _slots[index].initial_index;
+	unsigned int prev_index = index;
+	index = (index + 1) % _size;
+
+	// If the slot is occupied and its initial index is less than its current index,
+	// then shift it down one.
+	while (_slots[index].occupied && _slots[index].initial_index < index) {
+		_slots[prev_index].key = Gaff::Move(_slots[index].key);
+		_slots[prev_index].value = Gaff::Move(_slots[index].value);
+		_slots[prev_index].occupied = true;
+		_slots[index].occupied = false;
+
+		prev_index = index;
+		index = (index + 1) % _size;
+	}
+	
+	// We have looped to the beginning of the array
+	if (index == 0) {
+		// If the slot is occupied and its initial index is greater than its current index,
+		// then it was looped around because it had to insert past the end of the array.
+		// Shift it down one.
+		while (_slots[index].occupied && _slots[index].initial_index > index) {
+			_slots[prev_index].key = Gaff::Move(_slots[index].key);
+			_slots[prev_index].value = Gaff::Move(_slots[index].value);
+			_slots[prev_index].occupied = true;
+			_slots[index].occupied = false;
+
+			prev_index = index;
+			index = (index + 1) % _size;
+		}
+	}
+}
+
+
 // String Specialization
 template <class Value, class Allocator, class T>
 HashMap<String<T, Allocator>, Value, Allocator>::HashMap(HashFunc hash, const Allocator& allocator):
@@ -929,9 +974,11 @@ const HashMap<String<T, Allocator>, Value, Allocator>& HashMap<String<T, Allocat
 			construct(&_slots[i].key, rhs._slots[i].key);
 			construct(&_slots[i].value, rhs._slots[i].value);
 			construct(&_slots[i].occupied, rhs._slots[i].occupied);
+			_slots[i].initial_hash = rhs._slots[i].initial_hash;
 		}
 	}
 
+	_hash = rhs._hash;
 	_used = rhs._used;
 	_size = rhs._size;
 
@@ -966,7 +1013,7 @@ bool HashMap<String<T, Allocator>, Value, Allocator>::operator==(const HashMap<S
 			_slots[i].key != rhs._slots[i].key ||
 			_slots[i].value != rhs._slots[i].value) {
 
-				return false;
+			return false;
 		}
 	}
 
@@ -1011,6 +1058,7 @@ Value& HashMap<String<T, Allocator>, Value, Allocator>::operator[](const String<
 	}
 
 	unsigned int index = _hash((const char*)key.getBuffer(), key.size() * sizeof(T)) % _size;
+	unsigned int initial_index = index;
 	unsigned int i = 0;
 
 	while (_slots[index].occupied && _slots[index].key != key && i < _size) {
@@ -1021,6 +1069,7 @@ Value& HashMap<String<T, Allocator>, Value, Allocator>::operator[](const String<
 	if (!_slots[index].occupied) {
 		construct(&_slots[index].key, key);
 		construct(&_slots[index].value);
+		_slots[index].initial_index = initial_index;
 		_slots[index].occupied = true;
 		++_used;
 	}
@@ -1043,6 +1092,7 @@ Value& HashMap<String<T, Allocator>, Value, Allocator>::operator[](String<T, All
 	}
 
 	unsigned int index = _hash((const char*)key.getBuffer(), key.size() * sizeof(T)) % _size;
+	unsigned int initial_index = index;
 	unsigned int i = 0;
 
 	while (_slots[index].occupied && _slots[index].key != key && i < _size) {
@@ -1053,6 +1103,7 @@ Value& HashMap<String<T, Allocator>, Value, Allocator>::operator[](String<T, All
 	if (!_slots[index].occupied) {
 		moveConstruct(&_slots[index].key, Move(key));
 		construct(&_slots[index].value);
+		_slots[index].initial_index = initial_index;
 		_slots[index].occupied = true;
 		++_used;
 	}
@@ -1111,6 +1162,8 @@ void HashMap<String<T, Allocator>, Value, Allocator>::erase(unsigned int index)
 	deconstruct(&_slots[index].key);
 	deconstruct(&_slots[index].value);
 	_slots[index].occupied = false;
+
+	shiftBuckets(index);
 }
 
 template <class Value, class Allocator, class T>
@@ -1317,6 +1370,43 @@ typename HashMap<String<T, Allocator>, Value, Allocator>::Iterator HashMap<Strin
 	return Iterator(_slots - 1, _slots + _size, _slots - 1);
 }
 
+template <class Value, class Allocator, class T>
+void HashMap<String<T, Allocator>, Value, Allocator>::shiftBuckets(unsigned int index)
+{
+	unsigned int initial_index = _slots[index].initial_index;
+	unsigned int prev_index = index;
+	index = (index + 1) % _size;
+
+	// If the slot is occupied and its initial index is less than its current index,
+	// then shift it down one.
+	while (_slots[index].occupied && _slots[index].initial_index < index) {
+		_slots[prev_index].key = Gaff::Move(_slots[index].key);
+		_slots[prev_index].value = Gaff::Move(_slots[index].value);
+		_slots[prev_index].occupied = true;
+		_slots[index].occupied = false;
+
+		prev_index = index;
+		index = (index + 1) % _size;
+	}
+
+	// We have looped to the beginning of the array
+	if (index == 0) {
+		// If the slot is occupied and its initial index is greater than its current index,
+		// then it was looped around because it had to insert past the end of the array.
+		// Shift it down one.
+		while (_slots[index].occupied && _slots[index].initial_index > index) {
+			_slots[prev_index].key = Gaff::Move(_slots[index].key);
+			_slots[prev_index].value = Gaff::Move(_slots[index].value);
+			_slots[prev_index].occupied = true;
+			_slots[index].occupied = false;
+
+			prev_index = index;
+			index = (index + 1) % _size;
+		}
+	}
+}
+
+
 // HashString Specialization
 template <class Value, class Allocator, class T>
 HashMap<HashString<T, Allocator>, Value, Allocator>::HashMap(const Allocator& allocator):
@@ -1369,6 +1459,7 @@ const HashMap<HashString<T, Allocator>, Value, Allocator>& HashMap<HashString<T,
 		}
 	}
 
+	_hash = rhs._hash;
 	_used = rhs._used;
 	_size = rhs._size;
 
@@ -1382,6 +1473,7 @@ const HashMap<HashString<T, Allocator>, Value, Allocator>& HashMap<HashString<T,
 
 	_used = rhs._used;
 	_size = rhs._size;
+	_hash = rhs._hash;
 	_slots = rhs._slots;
 
 	rhs._used = rhs._size = 0;
@@ -1447,6 +1539,7 @@ Value& HashMap<HashString<T, Allocator>, Value, Allocator>::operator[](const Has
 	}
 
 	unsigned int index = key.getHash() % _size;
+	unsigned int initial_index = index;
 	unsigned int i = 0;
 
 	while (_slots[index].occupied && _slots[index].key != key && i < _size) {
@@ -1457,6 +1550,7 @@ Value& HashMap<HashString<T, Allocator>, Value, Allocator>::operator[](const Has
 	if (!_slots[index].occupied) {
 		construct(&_slots[index].key, key);
 		construct(&_slots[index].value);
+		_slots[index].initial_index = initial_index;
 		_slots[index].occupied = true;
 		++_used;
 	}
@@ -1479,6 +1573,7 @@ Value& HashMap<HashString<T, Allocator>, Value, Allocator>::operator[](HashStrin
 	}
 
 	unsigned int index = key.getHash() % _size;
+	unsigned int initial_index = index;
 	unsigned int i = 0;
 
 	while (_slots[index].occupied && _slots[index].key != key && i < _size) {
@@ -1489,6 +1584,7 @@ Value& HashMap<HashString<T, Allocator>, Value, Allocator>::operator[](HashStrin
 	if (!_slots[index].occupied) {
 		moveConstruct(&_slots[index].key, Move(key));
 		construct(&_slots[index].value);
+		_slots[index].initial_index = initial_index;
 		_slots[index].occupied = true;
 		++_used;
 	}
@@ -1547,6 +1643,8 @@ void HashMap<HashString<T, Allocator>, Value, Allocator>::erase(unsigned int ind
 	deconstruct(&_slots[index].key);
 	deconstruct(&_slots[index].value);
 	_slots[index].occupied = false;
+
+	shiftBuckets(index);
 }
 
 template <class Value, class Allocator, class T>
@@ -1751,4 +1849,40 @@ template <class Value, class Allocator, class T>
 typename HashMap<HashString<T, Allocator>, Value, Allocator>::Iterator HashMap<HashString<T, Allocator>, Value, Allocator>::rend(void) const
 {
 	return Iterator(_slots - 1, _slots + _size, _slots - 1);
+}
+
+template <class Value, class Allocator, class T>
+void HashMap<HashString<T, Allocator>, Value, Allocator>::shiftBuckets(unsigned int index)
+{
+	unsigned int initial_index = _slots[index].initial_index;
+	unsigned int prev_index = index;
+	index = (index + 1) % _size;
+
+	// If the slot is occupied and its initial index is less than its current index,
+	// then shift it down one.
+	while (_slots[index].occupied && _slots[index].initial_index < index) {
+		_slots[prev_index].key = Gaff::Move(_slots[index].key);
+		_slots[prev_index].value = Gaff::Move(_slots[index].value);
+		_slots[prev_index].occupied = true;
+		_slots[index].occupied = false;
+
+		prev_index = index;
+		index = (index + 1) % _size;
+	}
+
+	// We have looped to the beginning of the array
+	if (index == 0) {
+		// If the slot is occupied and its initial index is greater than its current index,
+		// then it was looped around because it had to insert past the end of the array.
+		// Shift it down one.
+		while (_slots[index].occupied && _slots[index].initial_index > index) {
+			_slots[prev_index].key = Gaff::Move(_slots[index].key);
+			_slots[prev_index].value = Gaff::Move(_slots[index].value);
+			_slots[prev_index].occupied = true;
+			_slots[index].occupied = false;
+
+			prev_index = index;
+			index = (index + 1) % _size;
+		}
+	}
 }

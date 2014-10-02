@@ -23,9 +23,11 @@ THE SOFTWARE.
 #pragma once
 
 #include "Shibboleth_IResourceLoader.h"
+#include <Shibboleth_ProxyAllocator.h>
 #include <Gaff_Defines.h>
 
 NS_GAFF
+	class SceneNode;
 	class JSON;
 	class Mesh;
 NS_END
@@ -36,26 +38,34 @@ namespace Gleam {
 	class IModel;
 }
 
+namespace esprit {
+	class Skeleton;
+}
+
 NS_SHIBBOLETH
 
-struct ModelData;
+class ResourceManager;
 class RenderManager;
+struct ModelData;
 
 class ModelLoader : public IResourceLoader
 {
 public:
-	ModelLoader(RenderManager& render_mgr);
+	ModelLoader(RenderManager& render_mgr, ResourceManager& res_mgr);
 	~ModelLoader(void);
 
 	Gaff::IVirtualDestructor* load(const char* file_name, unsigned long long user_data);
 
 private:
 	RenderManager& _render_mgr;
+	ResourceManager& _res_mgr;
+	ProxyAllocator _esprit_proxy_allocator;
 
 	bool loadMeshes(ModelData* data, const Gaff::JSON& lod_tags, const Gaff::JSON& model_prefs);
-	bool createMeshAndLayout(Gleam::IRenderDevice& rd, const Gaff::Mesh& scene_mesh, Gleam::IModel* model, const Gaff::JSON& model_prefs);
+	bool createMeshAndLayout(Gleam::IRenderDevice& rd, const Gaff::Mesh& scene_mesh, Gleam::IModel* model, const Gaff::JSON& model_prefs, const esprit::Skeleton& skeleton, unsigned int num_bone_weights);
 	unsigned int generateLoadingFlags(const Gaff::JSON& model_prefs);
-	Gleam::IShader* generateEmptyD3D11Shader(Gleam::IRenderDevice& rd, const Gaff::JSON& model_prefs, const Gaff::Mesh& scene_mesh) const;
+	Gleam::IShader* generateEmptyD3D11Shader(Gleam::IRenderDevice& rd, const Gaff::JSON& model_prefs, const Gaff::Mesh& scene_mesh, unsigned int num_bone_weights) const;
+	bool loadSkeleton(ModelData* data, const Gaff::JSON& model_prefs, unsigned int& num_bone_weights);
 
 	GAFF_NO_COPY(ModelLoader);
 	GAFF_NO_MOVE(ModelLoader);

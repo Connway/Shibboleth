@@ -153,6 +153,18 @@ Animation Scene::getAnimation(unsigned int index) const
 	return Animation(_scene->mAnimations[index]);
 }
 
+SceneNode Scene::getRootNode(void) const
+{
+	assert(_scene);
+	return SceneNode(_scene->mRootNode);
+}
+
+SceneNode Scene::getNode(const char* name) const
+{
+	assert(_scene);
+	return SceneNode(_scene->mRootNode->FindNode(name));
+}
+
 bool Scene::hasWarnings(void) const
 {
 	return (_scene->mFlags & AI_SCENE_FLAGS_VALIDATION_WARNING) != 0;

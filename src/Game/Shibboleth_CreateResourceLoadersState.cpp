@@ -24,6 +24,7 @@ THE SOFTWARE.
 #include <Shibboleth_ShaderProgramLoader.h>
 #include <Shibboleth_ResourceManager.h>
 #include <Shibboleth_TextureLoader.h>
+#include <Shibboleth_HoldingLoader.h>
 #include <Shibboleth_ShaderLoader.h>
 #include <Shibboleth_ModelLoader.h>
 #include <Shibboleth_LuaLoader.h>
@@ -31,6 +32,8 @@ THE SOFTWARE.
 #include <Shibboleth_App.h>
 
 NS_SHIBBOLETH
+
+static ProxyAllocator g_Esprit_Allocator;
 
 CreateResourceLoadersState::CreateResourceLoadersState(App& app):
 	_app(app)
@@ -139,9 +142,69 @@ void CreateResourceLoadersState::update(void)
 		res_mgr.registerResourceLoader(lua_loader, ".lua");
 	}
 
+	// HOLDING LOADER
+	{
+		HoldingLoader* holding_loader = _app.getAllocator().template allocT<HoldingLoader>();
+
+		if (!holding_loader) {
+			// log error
+			_app.getGameLogFile().first.printf("ERROR - Failed to create Holding loader.\n");
+			_app.quit();
+			return;
+		}
+
+		Array<AString> extensions;
+		extensions.movePush(AString(".b3d"));
+		extensions.movePush(AString(".dae"));
+		extensions.movePush(AString(".blend"));
+		extensions.movePush(AString(".3ds"));
+		extensions.movePush(AString(".ase"));
+		extensions.movePush(AString(".obj"));
+		extensions.movePush(AString(".ifc"));
+		extensions.movePush(AString(".xgl"));
+		extensions.movePush(AString(".zgl"));
+		extensions.movePush(AString(".ply"));
+		extensions.movePush(AString(".lwo"));
+		extensions.movePush(AString(".lws"));
+		extensions.movePush(AString(".lxo"));
+		extensions.movePush(AString(".stl"));
+		extensions.movePush(AString(".dxf"));
+		extensions.movePush(AString(".x"));
+		extensions.movePush(AString(".ac"));
+		extensions.movePush(AString(".ms3d"));
+		extensions.movePush(AString(".cob"));
+		extensions.movePush(AString(".scn"));
+		extensions.movePush(AString(".bvh"));
+		extensions.movePush(AString(".csm"));
+		extensions.movePush(AString(".irrmesh"));
+		extensions.movePush(AString(".irr"));
+		extensions.movePush(AString(".mdl"));
+		extensions.movePush(AString(".md2"));
+		extensions.movePush(AString(".md3"));
+		extensions.movePush(AString(".pk3"));
+		extensions.movePush(AString(".mdc"));
+		extensions.movePush(AString(".md5"));
+		extensions.movePush(AString(".smd"));
+		extensions.movePush(AString(".vta"));
+		extensions.movePush(AString(".m3"));
+		extensions.movePush(AString(".3d"));
+		extensions.movePush(AString(".q3d"));
+		extensions.movePush(AString(".q3s"));
+		extensions.movePush(AString(".nff"));
+		extensions.movePush(AString(".off"));
+		extensions.movePush(AString(".raw"));
+		extensions.movePush(AString(".ter"));
+		extensions.movePush(AString(".hmp"));
+		extensions.movePush(AString(".ndo"));
+		extensions.movePush(AString(".fbx"));
+
+		_app.getGameLogFile().first.printf("Adding Holding Loader\n");
+		res_mgr.registerResourceLoader(holding_loader, extensions);
+	}
+
 	// MODEL LOADER
 	{
-		ModelLoader* model_loader = _app.getAllocator().template allocT<ModelLoader>(render_manager);
+		ModelLoader* model_loader = _app.getAllocator().template allocT<ModelLoader>(render_manager, res_mgr);
 
 		if (!model_loader) {
 			// log error

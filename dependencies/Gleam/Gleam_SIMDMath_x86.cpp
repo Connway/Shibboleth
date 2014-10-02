@@ -630,22 +630,22 @@ void SIMDSetW(SIMDType& vec, float value)
 
 void SIMDStoreAligned(const SIMDType& vec, float* buffer)
 {
-	_mm_storeu_ps(buffer, vec);
+	_mm_store_ps(buffer, vec);
 }
 
 void SIMDStore(const SIMDType& vec, float* buffer)
 {
-	_mm_store_ps(buffer, vec);
+	_mm_storeu_ps(buffer, vec);
 }
 
 SIMDType SIMDLoadAligned(const float* buffer)
 {
-	return _mm_loadu_ps(buffer);
+	return _mm_load_ps(buffer);
 }
 
 SIMDType SIMDLoad(const float* buffer)
 {
-	return _mm_load_ps(buffer);
+	return _mm_loadu_ps(buffer);
 }
 
 SIMDType SIMDQuatMul(const SIMDType& left, const SIMDType& right)

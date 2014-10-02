@@ -565,7 +565,7 @@ template <class T, class Allocator>
 unsigned int Array<T, Allocator>::size(void) const
 {
 	return _used;
-};
+}
 
 template <class T, class Allocator>
 unsigned int Array<T, Allocator>::capacity(void) const

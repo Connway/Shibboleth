@@ -20,17 +20,23 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#include "Shibboleth_Skeleton.h"
+#pragma once
+
+#include "Shibboleth_IResourceLoader.h"
+#include <Gaff_Defines.h>
 
 NS_SHIBBOLETH
 
-Bone::Bone(void)
+class HoldingLoader : public IResourceLoader
 {
-}
+public:
+	HoldingLoader(void);
+	~HoldingLoader(void);
 
-Bone::~Bone(void)
-{
-}
+	Gaff::IVirtualDestructor* load(const char* file_name, unsigned long long user_data);
 
+	GAFF_NO_COPY(HoldingLoader);
+	GAFF_NO_MOVE(HoldingLoader);
+};
 
 NS_END

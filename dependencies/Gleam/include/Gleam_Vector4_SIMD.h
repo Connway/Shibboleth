@@ -26,7 +26,7 @@ THE SOFTWARE.
 
 NS_GLEAM
 
-class Vector4SIMD
+class COMPILERALIGN16 Vector4SIMD
 {
 public:
 	Vector4SIMD(void);

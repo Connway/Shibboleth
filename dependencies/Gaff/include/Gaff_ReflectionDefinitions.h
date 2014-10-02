@@ -49,7 +49,7 @@ THE SOFTWARE.
 		name(const char* key, type T::* var); \
 		void read(const Gaff::JSON& json, T* object); \
 		void write(Gaff::JSON& json, T* object) const; \
-		ValueType getType(void) const; \
+		typename IValueContainer::ValueType getType(void) const; \
 		void set(const char* value, T* object); \
 		void set(unsigned int value, T* object); \
 		void set(int value, T* object); \
@@ -74,7 +74,7 @@ THE SOFTWARE.
 	template <class T, class Allocator> \
 	typename ReflectionDefinition<T, Allocator>::IValueContainer::ValueType ReflectionDefinition<T, Allocator>::name::getType(void) const \
 	{ \
-		return type; \
+		return IValueContainer::type; \
 	}
 
 #define VAR_CONTAINER_SET_STRING(name) \
@@ -246,7 +246,7 @@ private:
 		void read(const Gaff::JSON& json, T* object);
 		void write(Gaff::JSON& json, T* object) const;
 
-		ValueType getType(void) const;
+		typename IValueContainer::ValueType getType(void) const;
 
 	private:
 		ReflectionDefinition<T2, Allocator>& _var_ref_def;
@@ -267,7 +267,7 @@ private:
 		void set(int value, T* object);
 		void set(double value, T* object);
 
-		ValueType getType(void) const;
+		typename IValueContainer::ValueType getType(void) const;
 
 	private:
 		const EnumReflectionDefinition<T2, Allocator>& _var_ref_def;
@@ -280,7 +280,7 @@ private:
 	class BaseValueContainer : public IValueContainer
 	{
 	public:
-		BaseValueContainer(const char* key, typename const ReflectionDefinition<T2, Allocator>::ValueContainerPtr& value_ptr);
+		BaseValueContainer(const char* key, const typename ReflectionDefinition<T2, Allocator>::ValueContainerPtr& value_ptr);
 
 		void read(const Gaff::JSON& json, T* object);
 		void write(Gaff::JSON& json, T* object) const;
@@ -290,7 +290,7 @@ private:
 		void set(int value, T* object);
 		void set(double value, T* object);
 
-		ValueType getType(void) const;
+		typename IValueContainer::ValueType getType(void) const;
 
 	private:
 		typename ReflectionDefinition<T2, Allocator>::ValueContainerPtr _value_ptr;

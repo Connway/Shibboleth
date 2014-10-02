@@ -310,6 +310,12 @@ void Matrix4x4CPU::set(int column, int row, float value)
 	_m[column][row] = value;
 }
 
+Vector4CPU Matrix4x4CPU::getColumn(int column) const
+{
+	assert(column > -1 && column < 4);
+	return Vector4CPU(_m[column]);
+}
+
 bool Matrix4x4CPU::isIdentity(void) const
 {
 	return _a[0] == 1.0f && _a[1] == 0.0f && _a[2] == 0.0f && _a[3] == 0.0f &&

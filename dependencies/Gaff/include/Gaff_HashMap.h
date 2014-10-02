@@ -42,6 +42,7 @@ private:
 	{
 		Key key;
 		Value value;
+		unsigned int initial_index;
 		bool occupied;
 	};
 
@@ -143,6 +144,8 @@ private:
 
 	HashFunc _hash;
 	Slot* _slots;
+
+	void shiftBuckets(unsigned int index);
 };
 
 // String Specialization
@@ -154,6 +157,7 @@ private:
 	{
 		String<T, Allocator> key;
 		Value value;
+		unsigned int initial_index;
 		bool occupied;
 	};
 
@@ -256,6 +260,8 @@ private:
 
 	HashFunc _hash;
 	Slot* _slots;
+
+	void shiftBuckets(unsigned int index);
 };
 
 // HashString Specialization
@@ -267,6 +273,7 @@ private:
 	{
 		HashString<T, Allocator> key;
 		Value value;
+		unsigned int initial_index;
 		bool occupied;
 	};
 
@@ -367,7 +374,10 @@ private:
 	unsigned int _size;
 	unsigned int _used;
 
+	HashFunc _hash;
 	Slot* _slots;
+
+	void shiftBuckets(unsigned int index);
 };
 
 #include "Gaff_HashMap.inl"

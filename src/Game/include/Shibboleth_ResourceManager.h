@@ -79,6 +79,9 @@ public:
 	INLINE const AHashString& getResourceKey(void) const;
 	INLINE bool isLoaded(void) const;
 
+	INLINE bool hasFailed(void) const;
+	INLINE void failed(void);
+
 	void addCallback(const Gaff::FunctionBinder<void, const AHashString&, bool> callback);
 
 private:
@@ -97,6 +100,8 @@ private:
 	mutable volatile unsigned int _ref_count;
 
 	Gaff::SpinLock _callback_lock;
+
+	bool _failed;
 
 	ResourceContainer(const AHashString& res_key, ResourceManager* res_manager, ZRC zero_ref_callback, unsigned long long user_data);
 	void setResource(Gaff::IVirtualDestructor* resource);
@@ -146,8 +151,8 @@ private:
 		void doTask(void);
 
 	private:
-		ResourceLoaderPtr& _res_loader;
-		ResourcePtr& _res_ptr;
+		ResourceLoaderPtr _res_loader;
+		ResourcePtr _res_ptr;
 	};
 
 	HashMap<AHashString, ResourceLoaderPtr> _resource_loaders;

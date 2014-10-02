@@ -22,7 +22,13 @@ THE SOFTWARE.
 
 #include "Gaff_File.h"
 #include <cstdarg>
-#include <io.h>
+
+#if defined(_WIN32) || defined(_WIN64)
+	#include <io.h>
+#else
+	#include <sys/io.h>
+#endif
+
 
 NS_GAFF
 
