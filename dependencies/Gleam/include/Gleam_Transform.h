@@ -28,7 +28,7 @@ THE SOFTWARE.
 
 NS_GLEAM
 
-class COMPILERALIGN16 Transform
+class Transform
 {
 public:
 	Transform(const Vec4& scale, const Quaternion& rotation, const Vec4& translation);
@@ -42,12 +42,12 @@ public:
 	const Transform& operator+=(const Transform& rhs);
 	Transform operator+(const Transform& rhs) const;
 
-	const Vec4& getScale(void) const;
-	void setScale(const Vec4& scale);
-	const Quaternion& getRotation(void) const;
-	void setRotation(const Quaternion& rotation);
-	const Vec4& getTranslation(void) const;
-	void setTranslation(const Vec4& translation);
+	INLINE const Vec4& getScale(void) const;
+	INLINE void setScale(const Vec4& scale);
+	INLINE const Quaternion& getRotation(void) const;
+	INLINE void setRotation(const Quaternion& rotation);
+	INLINE const Vec4& getTranslation(void) const;
+	INLINE void setTranslation(const Vec4& translation);
 
 	Transform concat(const Transform& rhs) const;
 	Transform inverse(void) const;
@@ -56,6 +56,12 @@ public:
 
 	Vec4 transform(const Vec4& rhs) const;
 	Matrix4x4 matrix(void) const;
+
+	Transform lerp(const Transform& end, const Vec4& t);
+	void lerpThis(const Transform& end, const Vec4& t);
+
+	INLINE Transform lerp(const Transform& end, float t);
+	INLINE void lerpThis(const Transform& end, float t);
 
 private:
 	Quaternion _rotation;

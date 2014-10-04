@@ -41,6 +41,12 @@ Shibboleth::IManager* CreateManagerTNoApp(Shibboleth::App& app)
 	return app.getAllocator().template allocT<Manager>();
 }
 
+template <class Manager>
+void ClearRefDef(void)
+{
+	Manager::g_Ref_Def.clear();
+}
+
 Shibboleth::IManager* CreateOtterUIManager(Shibboleth::App& app)
 {
 	Shibboleth::OtterUIManager* otter_manager = app.getAllocator().template allocT<Shibboleth::OtterUIManager>();
@@ -82,7 +88,7 @@ enum Managers
 };
 
 typedef Shibboleth::IManager* (*CreateMgrFunc)(Shibboleth::App&);
-typedef void (*RefDefInitFunc)(void);
+typedef void (*RefDefInitClearFunc)(void);
 
 static CreateMgrFunc create_funcs[] = {
 	&CreateManagerT<Shibboleth::ComponentManager>,
@@ -94,7 +100,7 @@ static CreateMgrFunc create_funcs[] = {
 	&CreateManagerT<Shibboleth::LuaManager>,
 };
 
-static RefDefInitFunc ref_def_init_funcs[] = {
+static RefDefInitClearFunc ref_def_init_funcs[] = {
 	&Shibboleth::ComponentManager::InitReflectionDefinition,
 	&Shibboleth::ResourceManager::InitReflectionDefinition,
 	&Shibboleth::OtterUIManager::InitReflectionDefinition,
@@ -102,6 +108,16 @@ static RefDefInitFunc ref_def_init_funcs[] = {
 	&Shibboleth::UpdateManager::InitReflectionDefinition,
 	&Shibboleth::ObjectManager::InitReflectionDefinition,
 	&Shibboleth::LuaManager::InitReflectionDefinition
+};
+
+static RefDefInitClearFunc ref_def_clear_funcs[] = {
+	&ClearRefDef<Shibboleth::ComponentManager>,
+	&ClearRefDef<Shibboleth::ResourceManager>,
+	&ClearRefDef<Shibboleth::OtterUIManager>,
+	&ClearRefDef<Shibboleth::RenderManager>,
+	&ClearRefDef<Shibboleth::UpdateManager>,
+	&ClearRefDef<Shibboleth::ObjectManager>,
+	&ClearRefDef<Shibboleth::LuaManager>
 };
 
 static Shibboleth::App* g_app = nullptr;
@@ -119,6 +135,14 @@ DYNAMICEXPORT bool InitModule(Shibboleth::App& app)
 	}
 
 	return true;
+}
+
+DYNAMICEXPORT void ShutdownModule(void)
+{
+	// Clear all the reflection definitions
+	for (unsigned int i = 0; i < NUM_MANAGERS; ++i) {
+		ref_def_clear_funcs[i]();
+	}
 }
 
 DYNAMICEXPORT unsigned int GetNumManagers(void)

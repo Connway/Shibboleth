@@ -160,6 +160,7 @@ unsigned int Allocator::getNumFrees(unsigned int alloc_tag) const
 	return _tagged_pools[alloc_tag].num_frees;
 }
 
+
 void SetAllocator(Allocator* allocator)
 {
 	gAllocator = allocator;

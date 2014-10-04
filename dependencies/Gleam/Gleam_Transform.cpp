@@ -141,4 +141,30 @@ Matrix4x4 Transform::matrix(void) const
 	return temp;
 }
 
+Transform Transform::lerp(const Transform& end, const Vec4& t)
+{
+	return Transform(
+		_scale.lerp(end._scale, t),
+		_rotation.slerp(end._rotation, t),
+		_translation.lerp(end._translation, t)
+	);
+}
+
+void Transform::lerpThis(const Transform& end, const Vec4& t)
+{
+	_scale.lerpThis(end._scale, t);
+	_rotation.slerpThis(end._rotation, t);
+	_translation.lerpThis(end._translation, t);
+}
+
+Transform Transform::lerp(const Transform& end, float t)
+{
+	return lerp(end, Vec4(t));
+}
+
+void Transform::lerpThis(const Transform& end, float t)
+{
+	lerpThis(end, Vec4(t));
+}
+
 NS_END

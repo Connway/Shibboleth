@@ -32,6 +32,12 @@ Shibboleth::IComponent* CreateComponent(Shibboleth::App& app)
 	return Shibboleth::GetAllocator()->allocT<Component>(app);
 }
 
+template <class Component>
+void ClearRefDef(void)
+{
+	Component::g_Ref_Def.clear();
+}
+
 enum Components
 {
 	LUA_COMPONENT = 0,
@@ -41,7 +47,7 @@ enum Components
 
 typedef Shibboleth::IComponent* (*CreateComponentFunc)(Shibboleth::App&);
 typedef const char* (*ComponentNameFunc)(void);
-typedef void (*RefDefInitFunc)(void);
+typedef void (*RefDefInitClearFunc)(void);
 
 static CreateComponentFunc create_funcs[] = {
 	&CreateComponent<Shibboleth::LuaComponent>,
@@ -53,9 +59,14 @@ static ComponentNameFunc name_funcs[] = {
 	&Shibboleth::ModelComponent::getComponentName
 };
 
-static RefDefInitFunc ref_def_init_funcs[] = {
+static RefDefInitClearFunc ref_def_init_funcs[] = {
 	&Shibboleth::LuaComponent::InitReflectionDefinition,
 	&Shibboleth::ModelComponent::InitReflectionDefinition
+};
+
+static RefDefInitClearFunc ref_def_clear_funcs[] = {
+	&ClearRefDef<Shibboleth::LuaComponent>,
+	&ClearRefDef<Shibboleth::ModelComponent>
 };
 
 static Shibboleth::App* g_app = nullptr;
@@ -76,6 +87,14 @@ DYNAMICEXPORT bool InitModule(Shibboleth::App& app)
 	}
 
 	return true;
+}
+
+DYNAMICEXPORT void ShutdownModule(void)
+{
+	// Clear all the reflection definitions
+	for (unsigned int i = 0; i < NUM_COMPONENTS; ++i) {
+		ref_def_clear_funcs[i]();
+	}
 }
 
 DYNAMICEXPORT const char* GetComponentName(unsigned int id)

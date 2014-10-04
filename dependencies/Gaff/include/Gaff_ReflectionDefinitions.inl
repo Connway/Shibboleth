@@ -61,6 +61,12 @@ void EnumReflectionDefinition<T, Allocator>::setAllocator(const Allocator& alloc
 }
 
 template <class T, class Allocator>
+void EnumReflectionDefinition<T, Allocator>::clear(void)
+{
+	_values_map.clear();
+}
+
+template <class T, class Allocator>
 bool EnumReflectionDefinition<T, Allocator>::isDefined(void) const
 {
 	return _defined;
@@ -320,4 +326,10 @@ void ReflectionDefinition<T, Allocator>::setAllocator(const Allocator& allocator
 {
 	_value_containers.setAllocator(allocator);
 	_allocator = allocator;
+}
+
+template <class T, class Allocator>
+void ReflectionDefinition<T, Allocator>::clear(void)
+{
+	_value_containers.clear();
 }
