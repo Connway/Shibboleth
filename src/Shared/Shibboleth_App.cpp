@@ -46,9 +46,21 @@ App::~App(void)
 	_manager_map.clear();
 	_broadcaster.destroy();
 	_state_machine.clear();
-	_dynamic_loader.clear();
 	_thread_pool.destroy();
 	_logger.destroy();
+
+	_dynamic_loader.forEachModule([](DynamicLoader::ModulePtr module) -> bool
+	{
+		void (*shutdown_func)(void) = module->GetFunc<void (*)(void)>("ShutdownModule");
+
+		if (shutdown_func) {
+			shutdown_func();
+		}
+
+		return false;
+	});
+
+	_dynamic_loader.clear();
 }
 
 // Still single-threaded at this point, so ok that we're not using the spinlock
@@ -280,15 +292,15 @@ bool App::loadStates(void)
 			}
 
 			unsigned int num_states = num_states_func();
-			unsigned int i = 0;
+			unsigned int j = 0;
 
-			for (; i < num_states; ++i) {
-				if (!strcmp(state_name.getString(), get_state_name_func(i))) {
+			for (; j < num_states; ++j) {
+				if (!strcmp(state_name.getString(), get_state_name_func(j))) {
 					break;
 				}
 			}
 
-			if (i == num_states) {
+			if (j == num_states) {
 				_log_file_pair->first.printf("ERROR - Failed to find state with name '%s' in dynamic module '%s'\n", state_name.getString(), filename.getBuffer());
 				return false;
 			}
@@ -304,8 +316,8 @@ bool App::loadStates(void)
 				if (entry.state) {
 					entry.state->_transitions.reserve((unsigned int)transitions.size());
 
-					for (size_t j = 0; j < transitions.size(); ++j) {
-						Gaff::JSON val = transitions[j];
+					for (size_t k = 0; k < transitions.size(); ++k) {
+						Gaff::JSON val = transitions[k];
 
 						if (!val.isInteger()) {
 							_log_file_pair->first.printf("ERROR - './States/states.json' is malformed. Name for state entry %i is not a string.\n", i);

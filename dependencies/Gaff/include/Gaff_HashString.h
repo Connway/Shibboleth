@@ -40,6 +40,7 @@ public:
 	const HashString<T, Allocator>& operator=(const HashString<T, Allocator>& rhs);
 	const HashString<T, Allocator>& operator=(const String<T, Allocator>& rhs);
 	const HashString<T, Allocator>& operator=(HashString<T, Allocator>&& rhs);
+	const HashString<T, Allocator>& operator=(String<T, Allocator>&& rhs);
 	const HashString<T, Allocator>& operator=(const T* rhs);
 
 	bool operator==(const HashString<T, Allocator>& rhs) const;

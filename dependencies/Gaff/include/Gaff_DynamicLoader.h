@@ -32,6 +32,18 @@ template <class Allocator = DefaultAllocator>
 class DynamicLoader
 {
 public:
+	template <class Callback>
+	bool forEachModule(Callback&& callback)
+	{
+		for (HMap::Iterator it = _modules.begin(); it != _modules.end(); ++it) {
+			if (callback(*it)) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
 	typedef SharedPtr<DynamicModule, Allocator> ModulePtr;
 
 	template <class Allocator2>

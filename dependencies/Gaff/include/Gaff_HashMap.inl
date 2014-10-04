@@ -491,8 +491,8 @@ const HashMap<Key, Value, Allocator>& HashMap<Key, Value, Allocator>::operator=(
 		for (unsigned int i = 0; i < _used; ++i) {
 			construct(&_slots[i].key, rhs._slots[i].key);
 			construct(&_slots[i].value, rhs._slots[i].value);
-			construct(&_slots[i].occupied, rhs._slots[i].occupied);
-			_slots[i].initial_hash = rhs._slots[i].initial_hash;
+			_slots[i].initial_index = rhs._slots[i].initial_index;
+			_slots[i].occupied, rhs._slots[i].occupied;
 		}
 	}
 
@@ -680,6 +680,7 @@ void HashMap<Key, Value, Allocator>::erase(unsigned int index)
 	deconstruct(&_slots[index].key);
 	deconstruct(&_slots[index].value);
 	_slots[index].occupied = false;
+	--_used;
 
 	shiftBuckets(index);
 }
@@ -891,15 +892,18 @@ typename HashMap<Key, Value, Allocator>::Iterator HashMap<Key, Value, Allocator>
 template <class Key, class Value, class Allocator>
 void HashMap<Key, Value, Allocator>::shiftBuckets(unsigned int index)
 {
-	unsigned int initial_index = _slots[index].initial_index;
 	unsigned int prev_index = index;
 	index = (index + 1) % _size;
 
 	// If the slot is occupied and its initial index is less than its current index,
 	// then shift it down one.
 	while (_slots[index].occupied && _slots[index].initial_index < index) {
-		_slots[prev_index].key = Gaff::Move(_slots[index].key);
-		_slots[prev_index].value = Gaff::Move(_slots[index].value);
+		moveConstruct(&_slots[prev_index].key, Gaff::Move(_slots[index].key));
+		moveConstruct(&_slots[prev_index].value, Gaff::Move(_slots[index].value));
+		deconstruct(&_slots[index].key);
+		deconstruct(&_slots[index].value);
+
+		_slots[prev_index].initial_index = _slots[index].initial_index;
 		_slots[prev_index].occupied = true;
 		_slots[index].occupied = false;
 
@@ -911,10 +915,16 @@ void HashMap<Key, Value, Allocator>::shiftBuckets(unsigned int index)
 	if (index == 0) {
 		// If the slot is occupied and its initial index is greater than its current index,
 		// then it was looped around because it had to insert past the end of the array.
+		// If the slot's initial index is less than it's current index, then the overflow,
+		// caused a collision with something who should be farther down in the array.
 		// Shift it down one.
-		while (_slots[index].occupied && _slots[index].initial_index > index) {
-			_slots[prev_index].key = Gaff::Move(_slots[index].key);
-			_slots[prev_index].value = Gaff::Move(_slots[index].value);
+		while (_slots[index].occupied && _slots[index].initial_index != index) {
+			moveConstruct(&_slots[prev_index].key, Gaff::Move(_slots[index].key));
+			moveConstruct(&_slots[prev_index].value, Gaff::Move(_slots[index].value));
+			deconstruct(&_slots[index].key);
+			deconstruct(&_slots[index].value);
+
+			_slots[prev_index].initial_index = _slots[index].initial_index;
 			_slots[prev_index].occupied = true;
 			_slots[index].occupied = false;
 
@@ -973,8 +983,8 @@ const HashMap<String<T, Allocator>, Value, Allocator>& HashMap<String<T, Allocat
 		for (unsigned int i = 0; i < _used; ++i) {
 			construct(&_slots[i].key, rhs._slots[i].key);
 			construct(&_slots[i].value, rhs._slots[i].value);
-			construct(&_slots[i].occupied, rhs._slots[i].occupied);
-			_slots[i].initial_hash = rhs._slots[i].initial_hash;
+			_slots[i].initial_index = rhs._slots[i].initial_index;
+			_slots[i].occupied, rhs._slots[i].occupied;
 		}
 	}
 
@@ -1162,6 +1172,7 @@ void HashMap<String<T, Allocator>, Value, Allocator>::erase(unsigned int index)
 	deconstruct(&_slots[index].key);
 	deconstruct(&_slots[index].value);
 	_slots[index].occupied = false;
+	--_used;
 
 	shiftBuckets(index);
 }
@@ -1373,15 +1384,18 @@ typename HashMap<String<T, Allocator>, Value, Allocator>::Iterator HashMap<Strin
 template <class Value, class Allocator, class T>
 void HashMap<String<T, Allocator>, Value, Allocator>::shiftBuckets(unsigned int index)
 {
-	unsigned int initial_index = _slots[index].initial_index;
 	unsigned int prev_index = index;
 	index = (index + 1) % _size;
 
 	// If the slot is occupied and its initial index is less than its current index,
 	// then shift it down one.
 	while (_slots[index].occupied && _slots[index].initial_index < index) {
-		_slots[prev_index].key = Gaff::Move(_slots[index].key);
-		_slots[prev_index].value = Gaff::Move(_slots[index].value);
+		moveConstruct(&_slots[prev_index].key, Gaff::Move(_slots[index].key));
+		moveConstruct(&_slots[prev_index].value, Gaff::Move(_slots[index].value));
+		deconstruct(&_slots[index].key);
+		deconstruct(&_slots[index].value);
+
+		_slots[prev_index].initial_index = _slots[index].initial_index;
 		_slots[prev_index].occupied = true;
 		_slots[index].occupied = false;
 
@@ -1393,10 +1407,16 @@ void HashMap<String<T, Allocator>, Value, Allocator>::shiftBuckets(unsigned int 
 	if (index == 0) {
 		// If the slot is occupied and its initial index is greater than its current index,
 		// then it was looped around because it had to insert past the end of the array.
+		// If the slot's initial index is less than it's current index, then the overflow,
+		// caused a collision with something who should be farther down in the array.
 		// Shift it down one.
-		while (_slots[index].occupied && _slots[index].initial_index > index) {
-			_slots[prev_index].key = Gaff::Move(_slots[index].key);
-			_slots[prev_index].value = Gaff::Move(_slots[index].value);
+		while (_slots[index].occupied && _slots[index].initial_index != index) {
+			moveConstruct(&_slots[prev_index].key, Gaff::Move(_slots[index].key));
+			moveConstruct(&_slots[prev_index].value, Gaff::Move(_slots[index].value));
+			deconstruct(&_slots[index].key);
+			deconstruct(&_slots[index].value);
+
+			_slots[prev_index].initial_index = _slots[index].initial_index;
 			_slots[prev_index].occupied = true;
 			_slots[index].occupied = false;
 
@@ -1455,7 +1475,8 @@ const HashMap<HashString<T, Allocator>, Value, Allocator>& HashMap<HashString<T,
 		for (unsigned int i = 0; i < _used; ++i) {
 			construct(&_slots[i].key, rhs._slots[i].key);
 			construct(&_slots[i].value, rhs._slots[i].value);
-			construct(&_slots[i].occupied, rhs._slots[i].occupied);
+			_slots[i].initial_index = rhs._slots[i].initial_index;
+			_slots[i].occupied, rhs._slots[i].occupied;
 		}
 	}
 
@@ -1643,6 +1664,7 @@ void HashMap<HashString<T, Allocator>, Value, Allocator>::erase(unsigned int ind
 	deconstruct(&_slots[index].key);
 	deconstruct(&_slots[index].value);
 	_slots[index].occupied = false;
+	--_used;
 
 	shiftBuckets(index);
 }
@@ -1854,15 +1876,18 @@ typename HashMap<HashString<T, Allocator>, Value, Allocator>::Iterator HashMap<H
 template <class Value, class Allocator, class T>
 void HashMap<HashString<T, Allocator>, Value, Allocator>::shiftBuckets(unsigned int index)
 {
-	unsigned int initial_index = _slots[index].initial_index;
 	unsigned int prev_index = index;
 	index = (index + 1) % _size;
 
 	// If the slot is occupied and its initial index is less than its current index,
 	// then shift it down one.
 	while (_slots[index].occupied && _slots[index].initial_index < index) {
-		_slots[prev_index].key = Gaff::Move(_slots[index].key);
-		_slots[prev_index].value = Gaff::Move(_slots[index].value);
+		moveConstruct(&_slots[prev_index].key, Gaff::Move(_slots[index].key));
+		moveConstruct(&_slots[prev_index].value, Gaff::Move(_slots[index].value));
+		deconstruct(&_slots[index].key);
+		deconstruct(&_slots[index].value);
+
+		_slots[prev_index].initial_index = _slots[index].initial_index;
 		_slots[prev_index].occupied = true;
 		_slots[index].occupied = false;
 
@@ -1874,10 +1899,16 @@ void HashMap<HashString<T, Allocator>, Value, Allocator>::shiftBuckets(unsigned 
 	if (index == 0) {
 		// If the slot is occupied and its initial index is greater than its current index,
 		// then it was looped around because it had to insert past the end of the array.
+		// If the slot's initial index is less than it's current index, then the overflow,
+		// caused a collision with something who should be farther down in the array.
 		// Shift it down one.
-		while (_slots[index].occupied && _slots[index].initial_index > index) {
-			_slots[prev_index].key = Gaff::Move(_slots[index].key);
-			_slots[prev_index].value = Gaff::Move(_slots[index].value);
+		while (_slots[index].occupied && _slots[index].initial_index != index) {
+			moveConstruct(&_slots[prev_index].key, Gaff::Move(_slots[index].key));
+			moveConstruct(&_slots[prev_index].value, Gaff::Move(_slots[index].value));
+			deconstruct(&_slots[index].key);
+			deconstruct(&_slots[index].value);
+
+			_slots[prev_index].initial_index = _slots[index].initial_index;
 			_slots[prev_index].occupied = true;
 			_slots[index].occupied = false;
 

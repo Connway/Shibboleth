@@ -47,8 +47,7 @@ HashString<T, Allocator>::HashString(HashFunc hash, const Allocator& allocator):
 
 template <class T, class Allocator>
 HashString<T, Allocator>::HashString(HashString<T, Allocator>&& rhs):
-	_string(Move(rhs._string)),
-	_hash_value(rhs._hash_value), _hash_func(rhs._hash_func)
+	_string(Move(rhs._string)), _hash_value(rhs._hash_value), _hash_func(rhs._hash_func)
 {
 }
 
@@ -78,7 +77,16 @@ template <class T, class Allocator>
 const HashString<T, Allocator>& HashString<T, Allocator>::operator=(HashString<T, Allocator>&& rhs)
 {
 	_string = Move(rhs._string);
+	_hash_value = rhs._hash_value;
 	_hash_func = rhs._hash_func;
+	return *this;
+}
+
+template <class T, class Allocator>
+const HashString<T, Allocator>& HashString<T, Allocator>::operator=(String<T, Allocator>&& rhs)
+{
+	_string = Move(rhs);
+	_hash_value = _hash_func((const char*)_string.getBuffer(), _string.size() * sizeof(T));
 	return *this;
 }
 

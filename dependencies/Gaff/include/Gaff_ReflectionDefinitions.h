@@ -107,6 +107,7 @@ public:
 	T getValue(const char* name) const;
 
 	void setAllocator(const Allocator& allocator);
+	void clear(void);
 
 	bool isDefined(void) const;
 	void markDefined(void);
@@ -222,6 +223,7 @@ public:
 	void markDefined(void);
 
 	void setAllocator(const Allocator& allocator);
+	void clear(void);
 
 private:
 	typedef Gaff::SharedPtr<IValueContainer, Allocator> ValueContainerPtr;
