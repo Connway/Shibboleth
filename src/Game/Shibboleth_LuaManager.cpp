@@ -29,7 +29,7 @@ NS_SHIBBOLETH
 REF_IMPL_REQ(LuaManager);
 REF_IMPL_SHIB(LuaManager);
 
-LuaManager::LuaManager(App& app):
+LuaManager::LuaManager(IApp& app):
 	_app(app)
 {
 }
@@ -64,6 +64,8 @@ lua::State* LuaManager::createNewState(void)
 void LuaManager::InitReflectionDefinition(void)
 {
 	if (!g_Ref_Def.isDefined()) {
+		g_Ref_Def.setAllocator(ProxyAllocator());
+
 		g_Ref_Def.markDefined();
 	}
 }

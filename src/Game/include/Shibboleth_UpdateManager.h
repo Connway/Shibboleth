@@ -31,14 +31,14 @@ THE SOFTWARE.
 
 NS_SHIBBOLETH
 
-class App;
+class IApp;
 
 class UpdateManager : public IManager
 {
 public:
 	typedef Gaff::FunctionBinder<void, double> UpdateCallback;
 
-	UpdateManager(App& app);
+	UpdateManager(IApp& app);
 	~UpdateManager(void);
 
 	const char* getName(void) const;
@@ -71,7 +71,7 @@ private:
 
 	Array< Gaff::TaskPtr<ProxyAllocator> > _tasks_cache;
 	Array< Array<UpdateCallback> > _table;
-	App& _app;
+	IApp& _app;
 
 	GAFF_NO_COPY(UpdateManager);
 	GAFF_NO_MOVE(UpdateManager);

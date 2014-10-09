@@ -25,7 +25,7 @@ THE SOFTWARE.
 
 NS_SHIBBOLETH
 
-static Gaff::Map<Otter::AccessFlag, Gaff::File::OPEN_MODE, ProxyAllocator> gOpen_map;
+static Gaff::Map<Otter::AccessFlag, Gaff::File::OPEN_MODE, ProxyAllocator> g_Open_Map;
 //static bool gMap_init = false;
 
 OtterUIFileSystem::OtterUIFileSystem(void)
@@ -34,8 +34,9 @@ OtterUIFileSystem::OtterUIFileSystem(void)
 	//	gMap_init = true;
 	//}
 
-	gOpen_map[Otter::AccessFlag(Otter::kBinary | Otter::kWrite)] = Gaff::File::WRITE_BINARY;
-	gOpen_map[Otter::AccessFlag(Otter::kBinary | Otter::kRead)] = Gaff::File::READ_BINARY;
+	g_Open_Map.setAllocator(ProxyAllocator());
+	g_Open_Map[Otter::AccessFlag(Otter::kBinary | Otter::kWrite)] = Gaff::File::WRITE_BINARY;
+	g_Open_Map[Otter::AccessFlag(Otter::kBinary | Otter::kRead)] = Gaff::File::READ_BINARY;
 }
 
 OtterUIFileSystem::~OtterUIFileSystem(void)
@@ -44,7 +45,7 @@ OtterUIFileSystem::~OtterUIFileSystem(void)
 
 void* OtterUIFileSystem::Open(const char* szFilename, Otter::AccessFlag flags)
 {
-	Gaff::File file(szFilename, gOpen_map[flags]);
+	Gaff::File file(szFilename, g_Open_Map[flags]);
 
 	if (!file.isOpen()) {
 		return nullptr;

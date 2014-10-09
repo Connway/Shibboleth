@@ -56,7 +56,7 @@ void RegisterLuaClassesState::enter(void)
 
 void RegisterLuaClassesState::update(void)
 {
-	_app.getManager<LuaManager>("Lua Manager").addRegistrant(Gaff::Bind(RegisterBaseClassesWithLua));
+	_app.getManagerT<LuaManager>("Lua Manager").addRegistrant(Gaff::Bind(RegisterBaseClassesWithLua));
 }
 
 void RegisterLuaClassesState::exit(void)

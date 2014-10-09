@@ -64,8 +64,8 @@ void CreateResourceLoadersState::update(void)
 	_app.getGameLogFile().first.writeString("==================================================\n");
 	_app.getGameLogFile().first.printf("Creating Resource Loaders...\n");
 
-	RenderManager& render_manager = _app.getManager<RenderManager>("Render Manager");
-	ResourceManager& res_mgr = _app.getManager<ResourceManager>("Resource Manager");
+	RenderManager& render_manager = _app.getManagerT<RenderManager>("Render Manager");
+	ResourceManager& res_mgr = _app.getManagerT<ResourceManager>("Resource Manager");
 
 	// TEXTURE LOADER
 	{
@@ -129,7 +129,7 @@ void CreateResourceLoadersState::update(void)
 
 	// LUA LOADER
 	{
-		LuaLoader* lua_loader = _app.getAllocator().template allocT<LuaLoader>(_app.getManager<LuaManager>("Lua Manager"));
+		LuaLoader* lua_loader = _app.getAllocator().template allocT<LuaLoader>(_app.getManagerT<LuaManager>("Lua Manager"));
 
 		if (!lua_loader) {
 			// log error
@@ -218,7 +218,7 @@ void CreateResourceLoadersState::update(void)
 	}
 
 	_app.getGameLogFile().first.printf("Finished Creating Resource Loaders\n\n");
-	_app.getStateMachine().switchState(_transitions[0]);
+	_app.switchState(_transitions[0]);
 }
 
 void CreateResourceLoadersState::exit(void)

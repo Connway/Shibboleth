@@ -31,56 +31,13 @@ THE SOFTWARE.
 #include "Shibboleth_IState.h"
 #include "Shibboleth_Logger.h"
 #include "Shibboleth_Array.h"
+#include "Shibboleth_IApp.h"
 
 NS_SHIBBOLETH
 
-class IManager;
-
-class App
+class App : public IApp
 {
 public:
-	template <class T>
-	const T& getManager(const AHashString& name) const
-	{
-		assert(name.size() && _manager_map.indexOf(name) != -1);
-		return *(T*)_manager_map[name].manager;
-	}
-
-	template <class T>
-	T& getManager(const AHashString& name)
-	{
-		assert(name.size() && _manager_map.indexOf(name) != -1);
-		return *(T*)_manager_map[name].manager;
-	}
-
-	template <class T>
-	const T& getManager(const AString& name) const
-	{
-		assert(name.size() && _manager_map.indexOf(name) != -1);
-		return *(T*)_manager_map[name].manager;
-	}
-
-	template <class T>
-	T& getManager(const AString& name)
-	{
-		assert(name.size() && _manager_map.indexOf(name) != -1);
-		return *(T*)_manager_map[name].manager;
-	}
-
-	template <class T>
-	const T& getManager(const char* name) const
-	{
-		assert(name && _manager_map.indexOf(name) != -1);
-		return *(T*)_manager_map[name].manager;
-	}
-
-	template <class T>
-	T& getManager(const char* name)
-	{
-		assert(name && _manager_map.indexOf(name) != -1);
-		return *(T*)_manager_map[name].manager;
-	}
-
 	template <class Callback>
 	void forEachManager(Callback&& callback)
 	{
@@ -97,20 +54,21 @@ public:
 	bool init(void);
 	void run(void);
 
-	INLINE ThreadPool& getThreadPool(void);
-	INLINE Allocator& getAllocator(void);
-	INLINE LogManager& getLogManager(void);
+	const IManager* getManager(const AHashString& name) const;
+	const IManager* getManager(const AString& name) const;
+	const IManager* getManager(const char* name) const;
+	IManager* getManager(const AHashString& name);
+	IManager* getManager(const AString& name);
+	IManager* getManager(const char* name);
 
-	INLINE void addTask(Gaff::TaskPtr<ProxyAllocator>& task);
-	INLINE MessageBroadcaster& getBroadcaster(void);
-	INLINE StateMachine& getStateMachine(void);
+	void switchState(unsigned int state);
 
-	INLINE DynamicLoader& getDynamicLoader(void);
-	INLINE LogManager::FileLockPair& getGameLogFile(void);
-
-	INLINE size_t getSeed(void) const;
-
-	INLINE void quit(void);
+	DynamicLoader::ModulePtr loadModule(const char* filename, const char* name);
+	Allocator& getAllocator(void);
+	void addTask(Gaff::TaskPtr<ProxyAllocator>& task);
+	LogManager::FileLockPair& getGameLogFile(void);
+	size_t getSeed(void) const;
+	void quit(void);
 
 private:
 	struct ManagerEntry
@@ -118,7 +76,7 @@ private:
 		typedef IManager* (*CreateManagerFunc)(unsigned int);
 		typedef void(*DestroyManagerFunc)(IManager*, unsigned int);
 		typedef unsigned int (*GetNumManagersFunc)(void);
-		typedef bool (*InitManagerModuleFunc)(App&);
+		typedef bool (*InitManagerModuleFunc)(IApp&);
 
 		DynamicLoader::ModulePtr module;
 		CreateManagerFunc create_func;

@@ -63,7 +63,7 @@ public:
 	};
 
 
-	RenderManager(App& app);
+	RenderManager(IApp& app);
 	~RenderManager(void);
 
 	const char* getName(void) const;
@@ -107,7 +107,7 @@ public:
 private:
 	struct GraphicsFunctions
 	{
-		typedef bool (*InitGraphics)(App& app, const char* log_file_name);
+		typedef bool (*InitGraphics)(IApp& app, const char* log_file_name);
 		typedef void (*ShutdownGraphics)(void);
 
 		typedef Gleam::IShaderResourceView* (*CreateShaderResourceView)(void);
@@ -152,11 +152,11 @@ private:
 	Gaff::SpinLock _rd_lock;
 
 	ProxyAllocator _proxy_allocator;
-	App& _app;
+	IApp& _app;
 
 	int getDisplayModeID(unsigned int width, unsigned int height, unsigned int refresh_rate, unsigned int adapter_id, unsigned int display_id);
 	void generateDefaultConfig(Gaff::JSON& cfg);
-	bool cacheGleamFunctions(App& app, const Gaff::JSON& module, const char* cfg_file);
+	bool cacheGleamFunctions(IApp& app, const Gaff::JSON& module, const char* cfg_file);
 
 	GAFF_NO_COPY(RenderManager);
 	GAFF_NO_MOVE(RenderManager);

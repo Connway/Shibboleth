@@ -32,6 +32,8 @@ THE SOFTWARE.
 
 NS_SHIBBOLETH
 
+class IApp;
+
 class ObjectManager : public IManager, public IUpdateQuery
 {
 public:
@@ -45,7 +47,7 @@ public:
 		}
 	}
 
-	ObjectManager(App& app);
+	ObjectManager(IApp& app);
 	~ObjectManager(void);
 
 	const char* getName(void) const;
@@ -60,7 +62,7 @@ private:
 	Array<Object*> _add_queue;
 	Array<Object*> _objects;
 
-	App& _app;
+	IApp& _app;
 
 	Gaff::SpinLock _remove_lock;
 	Gaff::SpinLock _add_lock;

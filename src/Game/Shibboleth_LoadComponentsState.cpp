@@ -56,7 +56,7 @@ void LoadComponentsState::update(void)
 	LogManager::FileLockPair& log = _app.getGameLogFile();
 	//bool error = false;
 
-	ComponentManager& comp_man = _app.getManager<ComponentManager>("Component Manager");
+	ComponentManager& comp_man = _app.getManagerT<ComponentManager>("Component Manager");
 
 	log.first.writeString("==================================================\n");
 	log.first.writeString("==================================================\n");
@@ -79,7 +79,7 @@ void LoadComponentsState::update(void)
 			return false;
 		}
 
-		DynamicLoader::ModulePtr module = _app.getDynamicLoader().loadModule(rel_path, name);
+		DynamicLoader::ModulePtr module = _app.loadModule(rel_path.getBuffer(), name);
 
 		if (!module.valid()) {
 			log.first.printf("ERROR - Could not load dynamic module '%s'.\n", rel_path.getBuffer());
@@ -99,7 +99,7 @@ void LoadComponentsState::update(void)
 	});
 
 	log.first.writeString("Finished Loading Components\n\n");
-	_app.getStateMachine().switchState(_transitions[0]);
+	_app.switchState(_transitions[0]);
 }
 
 void LoadComponentsState::exit(void)

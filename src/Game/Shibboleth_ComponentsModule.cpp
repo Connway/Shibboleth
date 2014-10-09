@@ -27,7 +27,7 @@ THE SOFTWARE.
 #include <Gaff_JSON.h>
 
 template <class Component>
-Shibboleth::IComponent* CreateComponent(Shibboleth::App& app)
+Shibboleth::IComponent* CreateComponent(Shibboleth::IApp& app)
 {
 	return Shibboleth::GetAllocator()->allocT<Component>(app);
 }
@@ -45,7 +45,7 @@ enum Components
 	NUM_COMPONENTS
 };
 
-typedef Shibboleth::IComponent* (*CreateComponentFunc)(Shibboleth::App&);
+typedef Shibboleth::IComponent* (*CreateComponentFunc)(Shibboleth::IApp&);
 typedef const char* (*ComponentNameFunc)(void);
 typedef void (*RefDefInitClearFunc)(void);
 
@@ -69,10 +69,10 @@ static RefDefInitClearFunc ref_def_clear_funcs[] = {
 	&ClearRefDef<Shibboleth::ModelComponent>
 };
 
-static Shibboleth::App* g_app = nullptr;
+static Shibboleth::IApp* g_app = nullptr;
 
 
-DYNAMICEXPORT bool InitModule(Shibboleth::App& app)
+DYNAMICEXPORT bool InitModule(Shibboleth::IApp& app)
 {
 	// set lua allocation function
 

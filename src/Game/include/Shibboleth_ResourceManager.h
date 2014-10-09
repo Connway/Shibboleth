@@ -118,7 +118,7 @@ typedef Gaff::RefPtr<ResourceContainer> ResourcePtr;
 class ResourceManager : public IManager
 {
 public:
-	ResourceManager(App& app);
+	ResourceManager(IApp& app);
 	~ResourceManager(void);
 
 	const char* getName(void) const;
@@ -157,7 +157,7 @@ private:
 
 	HashMap<AHashString, ResourceLoaderPtr> _resource_loaders;
 	HashMap<AHashString, ResourcePtr> _resource_cache;
-	App& _app;
+	IApp& _app;
 
 	Gaff::SpinLock _res_cache_lock;
 

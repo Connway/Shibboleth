@@ -176,7 +176,7 @@ void Object::setAABB(const Gleam::AABB& aabb)
 
 bool Object::createComponents(const Gaff::JSON& json)
 {
-	ComponentManager& component_manager = _app.getManager<ComponentManager>("Component Manager");
+	ComponentManager& component_manager = _app.getManagerT<ComponentManager>("Component Manager");
 	bool error = false;
 
 	_components.reserve(json.size());

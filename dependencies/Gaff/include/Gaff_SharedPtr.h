@@ -63,6 +63,7 @@ public:
 	{
 		clear();
 
+		_allocator = rhs._allocator;
 		_count = rhs._count;
 		_data = rhs._data;
 
@@ -77,6 +78,7 @@ public:
 	{
 		clear();
 
+		_allocator = rhs._allocator;
 		_count = rhs._count;
 		_data = rhs._data;
 

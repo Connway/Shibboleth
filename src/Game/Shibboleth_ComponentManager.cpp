@@ -21,14 +21,14 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Shibboleth_ComponentManager.h"
-#include "Shibboleth_App.h"
+#include "Shibboleth_IApp.h"
 
 NS_SHIBBOLETH
 
 REF_IMPL_REQ(ComponentManager);
 REF_IMPL_SHIB(ComponentManager);
 
-ComponentManager::ComponentManager(App& app):
+ComponentManager::ComponentManager(IApp& app):
 	_app(app)
 {
 }
@@ -136,6 +136,8 @@ void ComponentManager::destroyComponent(IComponent* component)
 void ComponentManager::InitReflectionDefinition(void)
 {
 	if (!g_Ref_Def.isDefined()) {
+		g_Ref_Def.setAllocator(ProxyAllocator());
+
 		g_Ref_Def.markDefined();
 	}
 }

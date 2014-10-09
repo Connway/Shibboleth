@@ -30,8 +30,8 @@ COMP_REF_DEF_SAVE(LuaComponent, g_Ref_Def);
 REF_IMPL_REQ(LuaComponent);
 REF_IMPL_SHIB(LuaComponent);
 
-LuaComponent::LuaComponent(App& app):
-	_res_mgr(app.getManager<ResourceManager>("Resource Manager"))
+LuaComponent::LuaComponent(IApp& app):
+	_res_mgr(app.getManagerT<ResourceManager>("Resource Manager"))
 {
 }
 
@@ -54,6 +54,8 @@ void LuaComponent::allComponentsLoaded(void)
 void LuaComponent::InitReflectionDefinition(void)
 {
 	if (!g_Ref_Def.isDefined()) {
+		g_Ref_Def.setAllocator(ProxyAllocator());
+
 		g_Ref_Def.addString("Lua Filename", &LuaComponent::_lua_file);
 		g_Ref_Def.addBaseClassInterfaceOnly<LuaComponent>();
 

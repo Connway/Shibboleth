@@ -44,10 +44,10 @@ static Gleam::IMesh::TOPOLOGY_TYPE otter_topology_map[3] = {
 };
 
 OtterUIRenderer::OtterUIRenderer(App& app):
-	_resource_manager(app.getManager<ResourceManager>("Resource Manager")),
-	_render_manager(app.getManager<RenderManager>("Render Manager")),
-	_app(app), _render_device(app.getManager<RenderManager>("Render Manager").getRenderDevice()),
-	_rd_spinlock(app.getManager<RenderManager>("Render Manager").getSpinLock())
+	_resource_manager(app.getManagerT<ResourceManager>("Resource Manager")),
+	_render_manager(app.getManagerT<RenderManager>("Render Manager")),
+	_app(app), _render_device(app.getManagerT<RenderManager>("Render Manager").getRenderDevice()),
+	_rd_spinlock(app.getManagerT<RenderManager>("Render Manager").getSpinLock())
 {
 }
 

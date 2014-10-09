@@ -30,7 +30,7 @@ NS_SHIBBOLETH
 REF_IMPL_REQ(UpdateManager);
 REF_IMPL_SHIB(UpdateManager);
 
-UpdateManager::UpdateManager(App& app):
+UpdateManager::UpdateManager(IApp& app):
 	_app(app)
 {
 }
@@ -69,7 +69,7 @@ void UpdateManager::allManagersCreated(void)
 	LogManager::FileLockPair& log = _app.getGameLogFile();
 	Array<IUpdateQuery::UpdateEntry> entries;
 
-	_app.forEachManager([&](IManager& manager) -> bool
+	((App&)_app).forEachManager([&](IManager& manager) -> bool
 	{
 		IUpdateQuery* update_query = manager.requestInterface<IUpdateQuery>();
 
@@ -135,6 +135,8 @@ void UpdateManager::allManagersCreated(void)
 void UpdateManager::InitReflectionDefinition(void)
 {
 	if (!g_Ref_Def.isDefined()) {
+		g_Ref_Def.setAllocator(ProxyAllocator());
+
 		g_Ref_Def.markDefined();
 	}
 }

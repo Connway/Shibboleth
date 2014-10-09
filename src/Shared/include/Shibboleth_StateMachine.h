@@ -27,7 +27,7 @@ THE SOFTWARE.
 
 NS_SHIBBOLETH
 
-class App;
+class IApp;
 
 class StateMachine
 {
@@ -38,7 +38,7 @@ public:
 		typedef unsigned int (*GetNumStatesFunc)(void);
 		typedef IState* (*CreateStateFunc)(unsigned int);
 		typedef void (*DestroyStateFunc)(IState*, unsigned int);
-		typedef bool (*InitStateModuleFunc)(App&);
+		typedef bool (*InitStateModuleFunc)(IApp&);
 
 		AString name;
 
@@ -54,7 +54,7 @@ public:
 		}
 	};
 
-	StateMachine(void);
+	StateMachine(const ProxyAllocator& allocator);
 	~StateMachine(void);
 
 	void clear(void);

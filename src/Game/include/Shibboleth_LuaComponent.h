@@ -35,12 +35,12 @@ namespace lua
 NS_SHIBBOLETH
 
 class ResourceManager;
-class App;
+class IApp;
 
 class LuaComponent : public IComponent
 {
 public:
-	LuaComponent(App& app);
+	LuaComponent(IApp& app);
 	~LuaComponent(void);
 
 	bool load(const Gaff::JSON& json);

@@ -34,7 +34,7 @@ struct ModelData;
 class ModelComponent : public IComponent
 {
 public:
-	ModelComponent(App& app);
+	ModelComponent(IApp& app);
 	~ModelComponent(void);
 
 	bool load(const Gaff::JSON& json);
@@ -54,7 +54,7 @@ public:
 private:
 	ResourceWrapper<ModelData> _model_res;
 	AString _model_filename;
-	App& _app;
+	IApp& _app;
 
 	void ModelCallback(const AHashString&, bool success);
 

@@ -53,13 +53,13 @@ void SetupOtterUIState::enter(void)
 
 void SetupOtterUIState::update(void)
 {
-	OtterUIManager& otterui_manager = _app.getManager<OtterUIManager>("OtterUI Manager");
+	OtterUIManager& otterui_manager = _app.getManagerT<OtterUIManager>("OtterUI Manager");
 
 	//otterui_manager.setSoundSystem();
 	otterui_manager.setFileSystem(&_file_system);
 	otterui_manager.setRenderer(&_renderer);
 
-	_app.getStateMachine().switchState(_transitions[0]);
+	_app.switchState(_transitions[0]);
 }
 
 void SetupOtterUIState::exit(void)

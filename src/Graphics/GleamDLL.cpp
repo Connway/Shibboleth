@@ -33,11 +33,11 @@ THE SOFTWARE.
 #include <Gleam_Model.h>
 #include <Gleam_Mesh.h>
 
-#include <Shibboleth_App.h>
+#include <Shibboleth_IApp.h>
 
 Shibboleth::ProxyAllocator g_Proxy_Allocator;
 
-DYNAMICEXPORT bool InitGraphics(Shibboleth::App& app, const char* log_file_name)
+DYNAMICEXPORT bool InitGraphics(Shibboleth::IApp& app, const char* log_file_name)
 {
 #ifdef _UNICODE
 	wchar_t buffer[256] = {0};
@@ -48,7 +48,7 @@ DYNAMICEXPORT bool InitGraphics(Shibboleth::App& app, const char* log_file_name)
 #endif
 
 	Shibboleth::SetAllocator(&app.getAllocator());
-	g_Proxy_Allocator = Shibboleth::ProxyAllocator("Graphics Allocations");
+	g_Proxy_Allocator = Shibboleth::ProxyAllocator(Shibboleth::GetAllocator(), "Graphics Allocations");
 
 	Gleam::SetAllocator(&g_Proxy_Allocator);
 	return true;
