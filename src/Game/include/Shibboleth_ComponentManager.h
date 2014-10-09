@@ -32,12 +32,12 @@ THE SOFTWARE.
 
 NS_SHIBBOLETH
 
-class App;
+class IApp;
 
 class ComponentManager : public IManager
 {
 public:
-	ComponentManager(App& app);
+	ComponentManager(IApp& app);
 	~ComponentManager(void);
 
 	const char* getName(void) const;
@@ -54,7 +54,7 @@ public:
 	static void InitReflectionDefinition(void);
 
 private:
-	typedef bool (*InitFunc)(App&);
+	typedef bool (*InitFunc)(IApp&);
 	typedef IComponent* (*CreateComponentFunc)(unsigned int);
 	typedef void (*DestroyComponentFunc)(IComponent*, unsigned int);
 	typedef unsigned int (*GetNumComponentsFunc)(void);
@@ -69,7 +69,7 @@ private:
 	};
 
 	HashMap<AHashString, ComponentEntry> _components;
-	App& _app;
+	IApp& _app;
 
 	GAFF_NO_COPY(ComponentManager);
 	GAFF_NO_MOVE(ComponentManager);

@@ -198,6 +198,7 @@
     <ClInclude Include="..\..\src\Shared\include\Shibboleth_DynamicLoader.h" />
     <ClInclude Include="..\..\src\Shared\include\Shibboleth_HashMap.h" />
     <ClInclude Include="..\..\src\Shared\include\Shibboleth_HashString.h" />
+    <ClInclude Include="..\..\src\Shared\include\Shibboleth_IApp.h" />
     <ClInclude Include="..\..\src\Shared\include\Shibboleth_IManager.h" />
     <ClInclude Include="..\..\src\Shared\include\Shibboleth_IState.h" />
     <ClInclude Include="..\..\src\Shared\include\Shibboleth_ITask.h" />

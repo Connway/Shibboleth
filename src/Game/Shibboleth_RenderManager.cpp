@@ -33,14 +33,21 @@ NS_SHIBBOLETH
 REF_IMPL_REQ(RenderManager);
 REF_IMPL_SHIB(RenderManager);
 
-RenderManager::RenderManager(App& app):
-	_render_device(nullptr, ProxyAllocator("Graphics Allocations")),
-	_proxy_allocator("Graphics Allocations"), _app(app)
+RenderManager::RenderManager(IApp& app):
+	_render_device(nullptr, ProxyAllocator(GetAllocator(), "Graphics Allocations")),
+	_proxy_allocator(GetAllocator(), "Graphics Allocations"), _app(app)
 {
+	memset(&_graphics_functions, 0, sizeof(GraphicsFunctions));
 }
 
 RenderManager::~RenderManager(void)
 {
+	_render_device = nullptr;
+	_windows.clear();
+
+	if (_graphics_functions.shutdown) {
+		_graphics_functions.shutdown();
+	}
 }
 
 const char* RenderManager::getName(void) const
@@ -50,6 +57,8 @@ const char* RenderManager::getName(void) const
 
 bool RenderManager::init(const char* cfg_file)
 {
+	Gleam::SetAllocator(&_proxy_allocator);
+
 	LogManager::FileLockPair& log = _app.getGameLogFile();
 	log.first.writeString("Initializing Render Manager...\n");
 
@@ -75,8 +84,6 @@ bool RenderManager::init(const char* cfg_file)
 		log.first.writeString("ERROR - Failed to cache Gleam functions.\n");
 		return false;
 	}
-
-	Gleam::SetAllocator(&_proxy_allocator);
 
 	_render_device = _graphics_functions.create_renderdevice();
 
@@ -114,7 +121,6 @@ bool RenderManager::init(const char* cfg_file)
 		Gaff::JSON adapter_id = value["adapter_id"];
 		Gaff::JSON display_id = value["display_id"];
 		Gaff::JSON vsync = value["vsync"];
-
 
 		if (!x.isInteger()) {
 			log.first.writeString("ERROR - Malformed config file.\n");
@@ -274,7 +280,7 @@ bool RenderManager::createWindow(
 	LogManager::FileLockPair& log = _app.getGameLogFile();
 
 	assert(_render_device);
-	Gleam::Window* window = _app.getAllocator().template allocT<Gleam::Window>();
+	Gleam::Window* window = _proxy_allocator.template allocT<Gleam::Window>();
 
 	if (!window) {
 		Gaff::ScopedLock<Gaff::SpinLock> scoped_lock(*log.second);
@@ -294,7 +300,7 @@ bool RenderManager::createWindow(
 			x, y, width, height, device_name
 		);
 
-		_app.getAllocator().freeT(window);
+		_proxy_allocator.freeT(window);
 		return false;
 	}
 
@@ -311,20 +317,20 @@ bool RenderManager::createWindow(
 			width, height, adapter_id, display_id
 		);
 
-		_app.getAllocator().freeT(window);
+		_proxy_allocator.freeT(window);
 		return false;
 	}
 
 	if (!_render_device->init(*window, adapter_id, display_id, (unsigned int)display_mode_id, vsync)) {
 		Gaff::ScopedLock<Gaff::SpinLock> scoped_lock(*log.second);
 		log.first.writeString("ERROR - Failed to initialize render device with window!\n");
-		_app.getAllocator().freeT(window);
+		_proxy_allocator.freeT(window);
 		return false;
 	}
 
 	unsigned int device_id = (unsigned int)_render_device->getDeviceForAdapter(adapter_id);
 
-	WindowData wnd_data = { Gaff::SmartPtr<Gleam::Window, ProxyAllocator>(window), device_id, _render_device->getNumOutputs(device_id) };
+	WindowData wnd_data = { Gaff::SmartPtr<Gleam::Window, ProxyAllocator>(window, _proxy_allocator), device_id, _render_device->getNumOutputs(device_id) };
 	_windows.push(wnd_data);
 	return true;
 }
@@ -484,7 +490,7 @@ void RenderManager::generateDefaultConfig(Gaff::JSON& cfg)
 }
 
 // Still single-threaded at this point, so ok that we're not using the spinlock
-bool RenderManager::cacheGleamFunctions(App& app, const Gaff::JSON& module, const char* cfg_file)
+bool RenderManager::cacheGleamFunctions(IApp& app, const Gaff::JSON& module, const char* cfg_file)
 {
 	LogManager::FileLockPair& log = _app.getGameLogFile();
 
@@ -497,7 +503,7 @@ bool RenderManager::cacheGleamFunctions(App& app, const Gaff::JSON& module, cons
 	AString module_path(module.getString());
 	module_path += BIT_EXTENSION;
 
-	_gleam_module = app.getDynamicLoader().loadModule(module_path.getBuffer(), module.getString());
+	_gleam_module = app.loadModule(module_path.getBuffer(), module.getString());
 
 	if (!_gleam_module) {
 		log.first.printf("ERROR - Failed to find graphics module '%s'.", module_path.getBuffer());
@@ -616,6 +622,8 @@ bool RenderManager::cacheGleamFunctions(App& app, const Gaff::JSON& module, cons
 void RenderManager::InitReflectionDefinition(void)
 {
 	if (!g_Ref_Def.isDefined()) {
+		g_Ref_Def.setAllocator(ProxyAllocator());
+
 		g_Ref_Def.markDefined();
 	}
 }

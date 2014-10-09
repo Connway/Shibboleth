@@ -147,7 +147,7 @@ void ResourceManager::ResourceLoadingTask::doTask(void)
 REF_IMPL_REQ(ResourceManager);
 REF_IMPL_SHIB(ResourceManager);
 
-ResourceManager::ResourceManager(App& app):
+ResourceManager::ResourceManager(IApp& app):
 	_app(app)
 {
 }
@@ -262,6 +262,8 @@ void ResourceManager::zeroRefCallback(const AHashString& res_key)
 void ResourceManager::InitReflectionDefinition(void)
 {
 	if (!g_Ref_Def.isDefined()) {
+		g_Ref_Def.setAllocator(ProxyAllocator());
+
 		g_Ref_Def.markDefined();
 	}
 }

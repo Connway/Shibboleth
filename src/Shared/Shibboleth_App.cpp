@@ -32,6 +32,9 @@ NS_SHIBBOLETH
 
 // Have to pass in the correct ProxyAllocator, as we have not registered our allocator globally yet
 App::App(void):
+	_broadcaster(ProxyAllocator(&_allocator)), _dynamic_loader(ProxyAllocator(&_allocator)),
+	_state_machine(ProxyAllocator(&_allocator)), _manager_map(ProxyAllocator(&_allocator)),
+	_thread_pool(ProxyAllocator(&_allocator)), _logger(ProxyAllocator(&_allocator)),
 	_seed(0), _running(true)
 {
 	SetAllocator(&_allocator);
@@ -66,10 +69,6 @@ App::~App(void)
 // Still single-threaded at this point, so ok that we're not using the spinlock
 bool App::init(void)
 {
-	if (!_logger.init()) {
-		return false;
-	}
-
 	while (!_seed) {
 		_seed = (size_t)time(NULL);
 	}
@@ -370,9 +369,50 @@ void App::run(void)
 	}
 }
 
-ThreadPool& App::getThreadPool(void)
+const IManager* App::getManager(const AHashString& name) const
 {
-	return _thread_pool;
+	assert(name.size() && _manager_map.indexOf(name) != -1);
+	return _manager_map[name].manager;
+}
+
+const IManager* App::getManager(const AString& name) const
+{
+	assert(name.size() && _manager_map.indexOf(name) != -1);
+	return _manager_map[name].manager;
+}
+
+const IManager* App::getManager(const char* name) const
+{
+	assert(name && _manager_map.indexOf(name) != -1);
+	return _manager_map[name].manager;
+}
+
+IManager* App::getManager(const AHashString& name)
+{
+	assert(name.size() && _manager_map.indexOf(name) != -1);
+	return _manager_map[name].manager;
+}
+
+IManager* App::getManager(const AString& name)
+{
+	assert(name.size() && _manager_map.indexOf(name) != -1);
+	return _manager_map[name].manager;
+}
+
+IManager* App::getManager(const char* name)
+{
+	assert(name && _manager_map.indexOf(name) != -1);
+	return _manager_map[name].manager;
+}
+
+void App::switchState(unsigned int state)
+{
+	_state_machine.switchState(state);
+}
+
+DynamicLoader::ModulePtr App::loadModule(const char* filename, const char* name)
+{
+	return _dynamic_loader.loadModule(filename, name);
 }
 
 Allocator& App::getAllocator(void)
@@ -380,29 +420,9 @@ Allocator& App::getAllocator(void)
 	return _allocator;
 }
 
-LogManager& App::getLogManager(void)
-{
-	return _logger;
-}
-
 void App::addTask(Gaff::TaskPtr<ProxyAllocator>& task)
 {
 	_thread_pool.addTask(task);
-}
-
-MessageBroadcaster& App::getBroadcaster(void)
-{
-	return _broadcaster;
-}
-
-StateMachine& App::getStateMachine(void)
-{
-	return _state_machine;
-}
-
-DynamicLoader& App::getDynamicLoader(void)
-{
-	return _dynamic_loader;
 }
 
 LogManager::FileLockPair& App::getGameLogFile(void)

@@ -34,12 +34,12 @@ namespace lua
 
 NS_SHIBBOLETH
 
-class App;
+class IApp;
 
 class LuaManager : public IManager
 {
 public:
-	LuaManager(App& app);
+	LuaManager(IApp& app);
 	~LuaManager(void);
 
 	const char* getName(void) const;
@@ -54,7 +54,7 @@ public:
 
 private:
 	Array< Gaff::FunctionBinder<void, lua::State&> > _registrants;
-	App& _app;
+	IApp& _app;
 
 	GAFF_NO_COPY(LuaManager);
 	GAFF_NO_MOVE(LuaManager);

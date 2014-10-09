@@ -34,7 +34,7 @@ int main(void)
 		return -1;
 	}
 
-	app.run();
+	//app.run();
 
 	return 0;
 }

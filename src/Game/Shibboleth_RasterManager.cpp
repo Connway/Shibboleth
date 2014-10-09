@@ -46,8 +46,8 @@ void RasterManager::requestUpdateEntries(Array<UpdateEntry>& entries)
 
 void RasterManager::allManagersCreated(void)
 {
-	_spatial_mgr = &_app.getManager<SpatialManager>("Spatial Manager");
-	_render_mgr = &_app.getManager<RenderManager>("Render Manager");
+	_spatial_mgr = &_app.getManagerT<SpatialManager>("Spatial Manager");
+	_render_mgr = &_app.getManagerT<RenderManager>("Render Manager");
 }
 
 unsigned int RasterManager::getNumCameras(void) const
@@ -149,6 +149,8 @@ void RasterManager::setCameraRenderOrder(const Array<unsigned int>& order)
 void RasterManager::InitReflectionDefinition(void)
 {
 	if (!g_Ref_Def.isDefined()) {
+		g_Ref_Def.setAllocator(ProxyAllocator());
+
 		g_Ref_Def.addBaseClassInterfaceOnly<IUpdateQuery>();
 		g_Ref_Def.markDefined();
 	}

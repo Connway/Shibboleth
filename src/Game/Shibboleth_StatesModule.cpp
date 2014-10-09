@@ -45,8 +45,8 @@ public:
 
 	void update(void)
 	{
-		Shibboleth::Object obj(_app, 0);
-		obj.init("./Resources/Objects/test.object");
+		//Shibboleth::Object obj(_app, 0);
+		//obj.init("./Resources/Objects/test.object");
 
 		_app.quit();
 	}
@@ -100,6 +100,10 @@ DYNAMICEXPORT bool InitModule(Shibboleth::App& app)
 	Gleam::SetAllocator(&app.getAllocator());
 	g_app = &app;
 	return true;
+}
+
+DYNAMICEXPORT void ShutdownModule(void)
+{
 }
 
 DYNAMICEXPORT const char* GetStateName(unsigned int id)

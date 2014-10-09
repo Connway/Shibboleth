@@ -63,7 +63,7 @@ typename DynamicLoader<Allocator>::ModulePtr DynamicLoader<Allocator>::loadModul
 		return getModule(name);
 	}
 
-	ModulePtr module(_allocator.template allocT<DynamicModule>());
+	ModulePtr module(_allocator.template allocT<DynamicModule>(), _allocator);
 
 	if (module.valid()) {
 		if (module->load(filename)) {
@@ -134,7 +134,7 @@ typename DynamicLoader<Allocator>::ModulePtr DynamicLoader<Allocator>::loadModul
 		return getModule(name);
 	}
 
-	ModulePtr module = _allocator.template allocT<DynamicModule>();
+	ModulePtr module(_allocator.template allocT<DynamicModule>(), _allocator);
 
 	if (module.valid()) {
 		if (module->load(filename)) {

@@ -32,7 +32,7 @@ COMP_REF_DEF_SAVE(ModelComponent, g_Ref_Def);
 REF_IMPL_REQ(ModelComponent);
 REF_IMPL_SHIB(ModelComponent);
 
-ModelComponent::ModelComponent(App& app):
+ModelComponent::ModelComponent(IApp& app):
 	_app(app)
 {
 }
@@ -46,7 +46,7 @@ bool ModelComponent::load(const Gaff::JSON& json)
 	g_Ref_Def.read(json, this);
 	assert(_model_filename.size());
 
-	_model_res = _app.getManager<ResourceManager>("Resource Manager").requestResource(_model_filename.getBuffer());
+	_model_res = _app.getManagerT<ResourceManager>("Resource Manager").requestResource(_model_filename.getBuffer());
 	_model_res.getResourcePtr()->addCallback(Gaff::Bind(this, &ModelComponent::ModelCallback));
 
 	while (!_model_res.getResourcePtr()->isLoaded() && !_model_res.getResourcePtr()->hasFailed()) {
@@ -72,6 +72,8 @@ void ModelComponent::ModelCallback(const AHashString&, bool success)
 void ModelComponent::InitReflectionDefinition(void)
 {
 	if (!g_Ref_Def.isDefined()) {
+		g_Ref_Def.setAllocator(ProxyAllocator());
+
 		g_Ref_Def.addString("Model File", &ModelComponent::_model_filename);
 		g_Ref_Def.addBaseClassInterfaceOnly<ModelComponent>();
 

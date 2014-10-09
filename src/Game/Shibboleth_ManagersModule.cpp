@@ -30,13 +30,13 @@ THE SOFTWARE.
 #include <Gaff_JSON.h>
 
 template <class Manager>
-Shibboleth::IManager* CreateManagerT(Shibboleth::App& app)
+Shibboleth::IManager* CreateManagerT(Shibboleth::IApp& app)
 {
 	return app.getAllocator().template allocT<Manager>(app);
 }
 
 template <class Manager>
-Shibboleth::IManager* CreateManagerTNoApp(Shibboleth::App& app)
+Shibboleth::IManager* CreateManagerTNoApp(Shibboleth::IApp& app)
 {
 	return app.getAllocator().template allocT<Manager>();
 }
@@ -47,7 +47,7 @@ void ClearRefDef(void)
 	Manager::g_Ref_Def.clear();
 }
 
-Shibboleth::IManager* CreateOtterUIManager(Shibboleth::App& app)
+Shibboleth::IManager* CreateOtterUIManager(Shibboleth::IApp& app)
 {
 	Shibboleth::OtterUIManager* otter_manager = app.getAllocator().template allocT<Shibboleth::OtterUIManager>();
 
@@ -61,7 +61,7 @@ Shibboleth::IManager* CreateOtterUIManager(Shibboleth::App& app)
 	return otter_manager;
 }
 
-Shibboleth::IManager* CreateRenderManager(Shibboleth::App& app)
+Shibboleth::IManager* CreateRenderManager(Shibboleth::IApp& app)
 {
 	Shibboleth::RenderManager* render_manager = app.getAllocator().template allocT<Shibboleth::RenderManager>(app);
 
@@ -87,7 +87,7 @@ enum Managers
 	NUM_MANAGERS
 };
 
-typedef Shibboleth::IManager* (*CreateMgrFunc)(Shibboleth::App&);
+typedef Shibboleth::IManager* (*CreateMgrFunc)(Shibboleth::IApp&);
 typedef void (*RefDefInitClearFunc)(void);
 
 static CreateMgrFunc create_funcs[] = {
@@ -120,9 +120,9 @@ static RefDefInitClearFunc ref_def_clear_funcs[] = {
 	&ClearRefDef<Shibboleth::LuaManager>
 };
 
-static Shibboleth::App* g_app = nullptr;
+static Shibboleth::IApp* g_app = nullptr;
 
-DYNAMICEXPORT bool InitModule(Shibboleth::App& app)
+DYNAMICEXPORT bool InitModule(Shibboleth::IApp& app)
 {
 	Gaff::JSON::SetMemoryFunctions(&Shibboleth::ShibbolethAllocate, &Shibboleth::ShibbolethFree);
 	Gaff::JSON::SetHashSeed(app.getSeed());

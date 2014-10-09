@@ -82,8 +82,8 @@ void EnumReflectionDefinition<T, Allocator>::markDefined(void)
 
 // Reflection Definition
 template <class T, class Allocator>
-ReflectionDefinition<T, Allocator>::ReflectionDefinition(void) :
-_defined(false)
+ReflectionDefinition<T, Allocator>::ReflectionDefinition(void):
+	_defined(false)
 {
 }
 
@@ -325,6 +325,7 @@ template <class T, class Allocator>
 void ReflectionDefinition<T, Allocator>::setAllocator(const Allocator& allocator)
 {
 	_value_containers.setAllocator(allocator);
+	_base_ids.setAllocator(allocator);
 	_allocator = allocator;
 }
 

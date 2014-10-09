@@ -21,7 +21,7 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Shibboleth_ObjectManager.h"
-#include <Shibboleth_App.h>
+#include <Shibboleth_IApp.h>
 #include <Gaff_ScopedLock.h>
 #include <Gaff_Atomic.h>
 
@@ -30,7 +30,7 @@ NS_SHIBBOLETH
 REF_IMPL_REQ(ObjectManager);
 REF_IMPL_SHIB(ObjectManager);
 
-ObjectManager::ObjectManager(App& app):
+ObjectManager::ObjectManager(IApp& app):
 	_app(app)
 {
 }
@@ -93,6 +93,8 @@ void ObjectManager::postPhysicsUpdate(double dt)
 void ObjectManager::InitReflectionDefinition(void)
 {
 	if (!g_Ref_Def.isDefined()) {
+		g_Ref_Def.setAllocator(ProxyAllocator());
+
 		g_Ref_Def.addBaseClassInterfaceOnly<IUpdateQuery>();
 		g_Ref_Def.markDefined();
 	}

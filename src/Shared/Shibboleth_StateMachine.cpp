@@ -24,7 +24,8 @@ THE SOFTWARE.
 
 NS_SHIBBOLETH
 
-StateMachine::StateMachine(void):
+StateMachine::StateMachine(const ProxyAllocator& allocator):
+	_states(allocator),
 	_curr_state(static_cast<unsigned int>(-1)),
 	_next_state(static_cast<unsigned int>(-1)),
 	_restart(false)
