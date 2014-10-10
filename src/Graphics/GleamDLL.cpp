@@ -33,6 +33,7 @@ THE SOFTWARE.
 #include <Gleam_Model.h>
 #include <Gleam_Mesh.h>
 
+#include <Gleam_Window.h>
 #include <Shibboleth_IApp.h>
 
 Shibboleth::ProxyAllocator g_Proxy_Allocator;
@@ -56,6 +57,7 @@ DYNAMICEXPORT bool InitGraphics(Shibboleth::IApp& app, const char* log_file_name
 
 DYNAMICEXPORT void ShutdownGraphics(void)
 {
+	Gleam::Window::clear();
 }
 
 DYNAMICEXPORT Gleam::IShaderResourceView* CreateShaderResourceView(void)

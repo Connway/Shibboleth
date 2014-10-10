@@ -33,6 +33,8 @@ NS_GLEAM
 class Window
 {
 public:
+	static void clear(void);
+
 	template <class T>
 	void addWindowMessageHandler(T* object, bool (T::*cb)(const AnyMessage&))
 	{

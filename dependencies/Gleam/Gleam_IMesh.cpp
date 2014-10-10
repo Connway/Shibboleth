@@ -40,8 +40,11 @@ IMesh::~IMesh(void)
 void IMesh::destroy(void)
 {
 	for (unsigned int i = 0; i < _vert_data.size(); ++i) {
-		_vert_data[i]->destroy();
+		_vert_data[i]->release();
 	}
+
+	SAFEGAFFRELEASE(_indices);
+	_index_count = 0;
 
 	_vert_data.clear();
 }
@@ -74,6 +77,7 @@ void IMesh::setIndiceBuffer(IBuffer* buffer)
 	assert(buffer);
 	SAFEGAFFRELEASE(_indices);
 	_indices = buffer;
+	buffer->addRef();
 }
 
 IMesh::TOPOLOGY_TYPE IMesh::getTopologyType(void) const
@@ -109,10 +113,8 @@ bool IMesh::addVertDataHelper(
 	}
 
 	addBuffer(vert_buffer);
-	SAFEGAFFRELEASE(_indices);
-	_indices = index_buffer;
+	setIndiceBuffer(index_buffer);
 	_index_count = index_count;
-	_indices->addRef();
 
 	setTopologyType(primitive_type);
 

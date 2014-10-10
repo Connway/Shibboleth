@@ -27,19 +27,11 @@ THE SOFTWARE.
 #include <iostream>
 #include <cstdarg>
 
-#ifdef ALIGN_SIMD
 #include "Gaff_DefaultAlignedAllocator.h"
-#else
-#include "Gaff_DefaultAllocator.h"
-#endif
 
 NS_GLEAM
 
-#ifdef ALIGN_SIMD
 static Gaff::IAllocator* g_allocator = new Gaff::DefaultAlignedAllocator(16);
-#else
-static Gaff::IAllocator* g_allocator = new Gaff::DefaultAllocator;
-#endif
 
 static const GChar* g_log_file_name = GC("gleam.log");
 static bool default_alloc = true;

@@ -33,6 +33,16 @@ bool Window::_first_init = true;
 
 GleamArray<Window*> Window::gWindows;
 
+void Window::clear(void)
+{
+	_left_keys.clear();
+	_right_keys.clear();
+
+	assert(gWindows.empty());
+	gWindows.clear();
+}
+
+
 LRESULT CALLBACK Window::WindowProc(HWND hwnd, UINT msg, WPARAM w, LPARAM l)
 {
 	bool handled = false;
