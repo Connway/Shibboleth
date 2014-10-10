@@ -44,6 +44,7 @@ RenderManager::~RenderManager(void)
 {
 	_render_device = nullptr;
 	_windows.clear();
+	Gleam::Window::clear(); // Remove this when IWindow interfaces get done.
 
 	if (_graphics_functions.shutdown) {
 		_graphics_functions.shutdown();

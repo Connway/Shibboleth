@@ -579,6 +579,8 @@ Gleam::IShader* ModelLoader::generateEmptyD3D11Shader(Gleam::IRenderDevice& rd, 
 		return nullptr;
 	}
 
+	shader->addRef(); // Count is initialized to zero. Increment so we clean up properly.
+
 	AString shader_code(d3d11_begin_shader_chunk);
 
 	if (model_prefs["normals"] && model_prefs["normals"].isTrue()) {

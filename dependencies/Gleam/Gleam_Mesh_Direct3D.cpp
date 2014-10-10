@@ -61,7 +61,11 @@ bool MeshD3D::addVertData(
 
 	if (!index_buffer || !vert_buffer) {
 		if (index_buffer) {
-			GleamFree(index_buffer);
+			GetAllocator()->freeT(index_buffer);
+		}
+
+		if (vert_buffer) {
+			GetAllocator()->freeT(vert_buffer);
 		}
 
 		return false;
@@ -73,8 +77,8 @@ bool MeshD3D::addVertData(
 	);
 
 	if (!ret) {
-		GleamFree(index_buffer);
-		GleamFree(vert_buffer);
+		GetAllocator()->freeT(index_buffer);
+		GetAllocator()->freeT(vert_buffer);
 	}
 
 	return ret;

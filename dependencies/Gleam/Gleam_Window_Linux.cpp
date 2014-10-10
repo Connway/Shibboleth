@@ -46,6 +46,10 @@ typedef struct
 
 GleamArray<Window*> Window::gWindows;
 
+void Window::clear(void)
+{
+}
+
 void Window::WindowProc(XEvent& event)
 {
 	char buffer[sizeof(AnyMessage)];
