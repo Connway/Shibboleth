@@ -21,6 +21,7 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Shibboleth_App.h"
+#include "Shibboleth_LooseFileSystem.h"
 #include "Shibboleth_Allocator.h"
 #include "Shibboleth_IManager.h"
 #include "Shibboleth_String.h"
@@ -35,6 +36,7 @@ App::App(void):
 	_broadcaster(ProxyAllocator(&_allocator)), _dynamic_loader(ProxyAllocator(&_allocator)),
 	_state_machine(ProxyAllocator(&_allocator)), _manager_map(ProxyAllocator(&_allocator)),
 	_thread_pool(ProxyAllocator(&_allocator)), _logger(ProxyAllocator(&_allocator)),
+	_cmd_line_args(ProxyAllocator(&_allocator)), _log_file_pair(nullptr),
 	_seed(0), _running(true)
 {
 	SetAllocator(&_allocator);
@@ -52,6 +54,14 @@ App::~App(void)
 	_thread_pool.destroy();
 	_logger.destroy();
 
+	// Destroy the file system
+	if (_fs.file_system_module) {
+		_fs.destroy_func(_fs.file_system);
+		_fs.file_system_module = nullptr;
+	} else {
+		_allocator.freeT(_fs.file_system);
+	}
+
 	_dynamic_loader.forEachModule([](DynamicLoader::ModulePtr module) -> bool
 	{
 		void (*shutdown_func)(void) = module->GetFunc<void (*)(void)>("ShutdownModule");
@@ -67,11 +77,13 @@ App::~App(void)
 }
 
 // Still single-threaded at this point, so ok that we're not using the spinlock
-bool App::init(void)
+bool App::init(int argc, char** argv)
 {
 	while (!_seed) {
 		_seed = (size_t)time(NULL);
 	}
+
+	_cmd_line_args = Gaff::ParseCommandLine<ProxyAllocator>(argc, argv);
 
 	char log_file_name[64] = { 0 };
 	Gaff::GetCurrentTimeString(log_file_name, 64, "Logs/GameLog %m-%d-%Y %H-%M-%S.txt");
@@ -99,6 +111,10 @@ bool App::init(void)
 		return false;
 	}
 
+	if (!loadFileSystem()) {
+		return false;
+	}
+
 	if (!loadManagers()) {
 		return false;
 	}
@@ -109,6 +125,56 @@ bool App::init(void)
 
 	_log_file_pair->first.writeString("Game Successfully Initialized\n\n");
 	_log_file_pair->first.flush();
+	return true;
+}
+
+// Still single-threaded at this point, so ok that we're not using the spinlock
+bool App::loadFileSystem(void)
+{
+	if (!_cmd_line_args.hasElementWithKey("lfs") && !_cmd_line_args.hasElementWithKey("loose_file_system")) {
+		_fs.file_system_module = _dynamic_loader.loadModule("./FileSystem" DYNAMIC_EXTENSION, "File System");
+	}
+
+	if (_fs.file_system_module) {
+		_log_file_pair->first.writeString("Found 'FileSystem" BIT_EXTENSION DYNAMIC_EXTENSION "'. Creating file system\n");
+
+		FileSystemData::InitFileSystemModuleFunc init_func = _fs.file_system_module->GetFunc<FileSystemData::InitFileSystemModuleFunc>("InitModule");
+
+		if (init_func && !init_func(*this)) {
+			_log_file_pair->first.writeString("ERROR - Failed to init file system module\n");
+			return false;
+		}
+
+		_fs.destroy_func = _fs.file_system_module->GetFunc<FileSystemData::DestroyFileSystemFunc>("DestroyFileSystem");
+		_fs.create_func = _fs.file_system_module->GetFunc<FileSystemData::CreateFileSystemFunc>("CreateFileSystem");
+
+		if (!_fs.create_func) {
+			_log_file_pair->first.writeString("ERROR - Failed to find 'CreateFileSystem' in 'FileSystem" BIT_EXTENSION DYNAMIC_EXTENSION "'\n");
+			return false;
+		}
+
+		if (!_fs.destroy_func) {
+			_log_file_pair->first.writeString("ERROR - Failed to find 'DestroyFileSystem' in 'FileSystem" BIT_EXTENSION DYNAMIC_EXTENSION "'\n");
+			return false;
+		}
+
+		_fs.file_system = _fs.create_func();
+
+		if (!_fs.file_system) {
+			_log_file_pair->first.writeString("ERROR - Failed to create file system from 'FileSystem" BIT_EXTENSION DYNAMIC_EXTENSION "'\n");
+			return false;
+		}
+
+	} else {
+		_log_file_pair->first.writeString("Could not find 'FileSystem" BIT_EXTENSION DYNAMIC_EXTENSION "' defaulting to loose file system\n");
+		_fs.file_system = _allocator.template allocT<LooseFileSystem>();
+
+		if (!_fs.file_system) {
+			_log_file_pair->first.writeString("ERROR - Failed to create loose file system\n");
+			return false;
+		}
+	}
+
 	return true;
 }
 
@@ -126,7 +192,7 @@ bool App::loadManagers(void)
 
 		// Error out if it's not a dynamic module
 		if (!Gaff::File::checkExtension(name, DYNAMIC_EXTENSION)) {
-			_log_file_pair->first.printf("ERROR - '%s' is not a dynamic module.\n", rel_path.getBuffer());
+			_log_file_pair->first.printf("ERROR - '%s' is not a dynamic module\n", rel_path.getBuffer());
 			error = true;
 			return true;
 
@@ -171,6 +237,7 @@ bool App::loadManagers(void)
 
 				if (entry.create_func && entry.destroy_func) {
 					entry.manager = entry.create_func(i);
+					entry.manager_id = i;
 
 					if (entry.manager) {
 						_manager_map[entry.manager->getName()] = entry;
@@ -304,12 +371,12 @@ bool App::loadStates(void)
 				return false;
 			}
 
-			StateMachine::StateEntry entry = { AString(state_name.getString()), nullptr, nullptr, nullptr, state_id };
+			StateMachine::StateEntry entry = { AString(state_name.getString()), nullptr, nullptr, nullptr, state_id, j };
 			entry.create_func = module->GetFunc<StateMachine::StateEntry::CreateStateFunc>("CreateState");
 			entry.destroy_func = module->GetFunc<StateMachine::StateEntry::DestroyStateFunc>("DestroyState");
 
 			if (entry.create_func && entry.destroy_func) {
-				entry.state = entry.create_func(state_id);
+				entry.state = entry.create_func(j);
 				++state_id;
 
 				if (entry.state) {
@@ -405,9 +472,34 @@ IManager* App::getManager(const char* name)
 	return _manager_map[name].manager;
 }
 
+const Array<unsigned int>& App::getStateTransitions(unsigned int state_id)
+{
+	return _state_machine.getTransitions(state_id);
+}
+
+unsigned int App::getStateID(const char* name)
+{
+	return _state_machine.getStateID(name);
+}
+
 void App::switchState(unsigned int state)
 {
 	_state_machine.switchState(state);
+}
+
+IFileSystem* App::getFileSystem(void)
+{
+	return _fs.file_system;
+}
+
+const HashMap<AHashString, AString>& App::getCmdLine(void) const
+{
+	return _cmd_line_args;
+}
+
+HashMap<AHashString, AString>& App::getCmdLine(void)
+{
+	return _cmd_line_args;
 }
 
 DynamicLoader::ModulePtr App::loadModule(const char* filename, const char* name)

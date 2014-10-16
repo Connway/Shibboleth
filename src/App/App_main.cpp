@@ -26,11 +26,11 @@ THE SOFTWARE.
 	#include <vld.h>
 #endif
 
-int main(void)
+int main(int argc, char** argv)
 {
 	Shibboleth::App app;
 
-	if (!app.init()) {
+	if (!app.init(argc, argv)) {
 		return -1;
 	}
 

@@ -198,6 +198,10 @@ ResourcePtr ResourceManager::requestResource(const char* filename, unsigned long
 		ResourcePtr& res_ptr = _resource_cache[res_key];
 		res_ptr.set(res_cont);
 
+		for (auto cbs = _request_added_callbacks.begin(); cbs != _request_added_callbacks.end(); ++cbs) {
+			(*cbs)(res_ptr);
+		}
+
 		// make load task
 		ResourceLoaderPtr& res_loader = _resource_loaders[extension];
 
@@ -249,6 +253,11 @@ ResourcePtr ResourceManager::loadResourceImmediately(const char* filename, unsig
 		// We have a cache of this resource. Send the container back.
 		return it.getValue();
 	}
+}
+
+void ResourceManager::addRequestAddedCallback(const Gaff::Function<void, ResourcePtr&>& callback)
+{
+	_request_added_callbacks.push(callback);
 }
 
 void ResourceManager::zeroRefCallback(const AHashString& res_key)

@@ -23,16 +23,17 @@ THE SOFTWARE.
 #include "Shibboleth_CreateResourceLoadersState.h"
 #include "Shibboleth_LoadComponentsState.h"
 #include "Shibboleth_SetupOtterUIState.h"
-#include <Shibboleth_App.h>
+#include <Shibboleth_IApp.h>
 #include <Gleam_Global.h>
 #include <Gaff_JSON.h>
 
+#include <Shibboleth_ObjectManager.h>
 #include <Shibboleth_Object.h>
 
 class LoopState : public Shibboleth::IState
 {
 public:
-	LoopState(Shibboleth::App& app): _app(app) {}
+	LoopState(Shibboleth::IApp& app): _object(nullptr), _app(app) {}
 
 	bool init(unsigned int)
 	{
@@ -41,14 +42,14 @@ public:
 
 	void enter(void)
 	{
+		_object = _app.getManagerT<Shibboleth::ObjectManager>("Object Manager").createObject();
+		
+		if (_object)
+			_object->init("./Resources/Objects/test.object");
 	}
 
 	void update(void)
 	{
-		Shibboleth::Object obj(_app, 0);
-		obj.init("./Resources/Objects/test.object");
-
-		_app.quit();
 	}
 
 	void exit(void)
@@ -56,11 +57,12 @@ public:
 	}
 
 private:
-	Shibboleth::App& _app;
+	Shibboleth::Object* _object;
+	Shibboleth::IApp& _app;
 };
 
 template <class State>
-Shibboleth::IState* CreateStateT(Shibboleth::App& app)
+Shibboleth::IState* CreateStateT(Shibboleth::IApp& app)
 {
 	return app.getAllocator().template allocT<State>(app);
 }
@@ -74,7 +76,7 @@ enum States
 	NUM_STATES
 };
 
-typedef Shibboleth::IState* (*CreateStateFunc)(Shibboleth::App&);
+typedef Shibboleth::IState* (*CreateStateFunc)(Shibboleth::IApp&);
 
 static CreateStateFunc create_funcs[] = {
 	&CreateStateT<Shibboleth::LoadComponentsState>,
@@ -90,9 +92,9 @@ static const char* state_names[NUM_STATES] = {
 	"loopforeverstate"
 };
 
-static Shibboleth::App* g_app = nullptr;
+static Shibboleth::IApp* g_app = nullptr;
 
-DYNAMICEXPORT bool InitModule(Shibboleth::App& app)
+DYNAMICEXPORT bool InitModule(Shibboleth::IApp& app)
 {
 	Gaff::JSON::SetMemoryFunctions(&Shibboleth::ShibbolethAllocate, &Shibboleth::ShibbolethFree);
 	Gaff::JSON::SetHashSeed(app.getSeed());

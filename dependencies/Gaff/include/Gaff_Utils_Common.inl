@@ -113,3 +113,50 @@ void ForEachTypeInDirectory(const wchar_t* directory, Callback&& callback)
 	wclosedir(dir);
 }
 #endif
+
+template <class Allocator>
+HashMap<AHashString<Allocator>, AString<Allocator>, Allocator> ParseCommandLine(int argc, char** argv)
+{
+	HashMap<AHashString<Allocator>, AString<Allocator>, Allocator> opt_flag_map;
+
+	if (argc == 1) {
+		return opt_flag_map;
+	}
+
+	AHashString<Allocator> option;
+	AString<Allocator> values;
+
+	for (int i = 1; i < argc; ++i) {
+		unsigned int option_begin = 0;
+		const char* value = argv[i];
+
+		// If it doesn't start with - or -- then skip it!
+		while (value[option_begin] == '-') {
+			++option_begin;
+		}
+
+		if (!option_begin) {
+			if (option.size()) {
+				if (values.size()) {
+					values += ' ';
+				}
+
+				values += value;
+			}
+
+		} else {
+			if (option.size()) {
+				opt_flag_map.insert(option, values);
+				values.clear();
+			}
+
+			option = value + option_begin;
+		}
+	}
+
+	if (option.size()) {
+		opt_flag_map.insert(option, values);
+	}
+
+	return opt_flag_map;
+}

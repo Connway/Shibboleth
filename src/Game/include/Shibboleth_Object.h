@@ -37,7 +37,8 @@ THE SOFTWARE.
 
 NS_SHIBBOLETH
 
-class App;
+class ComponentManager;
+class IApp;
 
 class Object : public Gaff::INamedObject, public Gaff::WeakObject<ProxyAllocator>
 {
@@ -70,9 +71,33 @@ public:
 		return nullptr;
 	}
 
+	template <class Interface>
+	void getComponentsWithInterface(Array<const Interface*>& components)
+	{
+		for (auto it = _components.begin(); it != _components.end(); ++it) {
+			const Interface* interface = (*it)->requestInterface<Interface>();
+
+			if (interface) {
+				components.push(interface);
+			}
+		}
+	}
+
+	template <class Interface>
+	void getComponentsWithInterface(Array<Interface*>& components)
+	{
+		for (auto it = _components.begin(); it != _components.end(); ++it) {
+			Interface* interface = (*it)->requestInterface<Interface>();
+
+			if (interface) {
+				components.push(interface);
+			}
+		}
+	}
+
 	typedef Gaff::FunctionBinder<void, double> UpdateCallback;
 
-	Object(App& app, unsigned int id);
+	Object(IApp& app, unsigned int id);
 	~Object(void);
 
 	bool init(const Gaff::JSON& json);
@@ -82,7 +107,7 @@ public:
 	const char* getName(void) const;
 
 	unsigned int getID(void) const;
-	void setID(unsigned int);
+	void setID(unsigned int id);
 
 	void registerForPrePhysicsUpdate(const UpdateCallback& callback);
 	void registerForPostPhysicsUpdate(const UpdateCallback& callback);
@@ -117,11 +142,11 @@ private:
 	Watcher<Gleam::Quaternion> _rotation;
 	Watcher<Gleam::Vec4> _position;
 	Watcher<Gleam::Vec4> _scale;
-	
-	typedef Gaff::SmartPtr<IComponent, ProxyAllocator> ComponentPtr;
 
-	Array<ComponentPtr> _components;
-	App& _app;
+	Array<IComponent*> _components;
+
+	ComponentManager& _comp_mgr;
+	IApp& _app;
 
 	unsigned int _id;
 

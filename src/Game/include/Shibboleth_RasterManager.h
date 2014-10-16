@@ -36,7 +36,7 @@ NS_SHIBBOLETH
 
 class SpatialManager;
 class RenderManager;
-class App;
+class IApp;
 
 class RasterManager : public IManager, public IUpdateQuery
 {
@@ -45,7 +45,7 @@ public:
 	typedef Gaff::RefPtr<Gleam::ITexture> TexturePtr;
 	typedef Gaff::Pair<TexturePtr, SRVPtr> RenderData;
 
-	RasterManager(App& app);
+	RasterManager(IApp& app);
 	~RasterManager(void);
 
 	void requestUpdateEntries(Array<UpdateEntry>& entries);
@@ -96,7 +96,7 @@ private:
 
 	SpatialManager* _spatial_mgr;
 	RenderManager* _render_mgr;
-	App& _app;
+	IApp& _app;
 
 	GAFF_NO_COPY(RasterManager);
 	GAFF_NO_MOVE(RasterManager);

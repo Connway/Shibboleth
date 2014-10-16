@@ -31,12 +31,12 @@ THE SOFTWARE.
 NS_SHIBBOLETH
 
 class RenderManager;
-class App;
+class IApp;
 
 class OtterUIRenderer : public Otter::IRenderer
 {
 public:
-	OtterUIRenderer(App& app);
+	OtterUIRenderer(IApp& app);
 	~OtterUIRenderer(void);
 
 	bool init(const char* default_shader);
@@ -88,7 +88,7 @@ private:
 
 	ResourceManager& _resource_manager;
 	RenderManager& _render_manager;
-	App& _app;
+	IApp& _app;
 
 	Gleam::IRenderDevice& _render_device;
 	Gaff::SpinLock& _rd_spinlock;

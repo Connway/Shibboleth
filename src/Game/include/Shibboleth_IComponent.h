@@ -55,7 +55,7 @@ class Object;
 class IComponent : public Gaff::IRequestableInterface
 {
 public:
-	IComponent(void): _owner(nullptr) {}
+	IComponent(void): _owner(nullptr), _comp_index(0) {}
 	virtual ~IComponent(void) {}
 
 	virtual bool load(const Gaff::JSON&) { return true; }
@@ -89,9 +89,20 @@ public:
 		_owner = owner;
 	}
 
+	unsigned int getIndex(void) const
+	{
+		return _comp_index;
+	}
+
+	void setIndex(unsigned int index)
+	{
+		_comp_index = index;
+	}
+
 private:
 	char _name[MAX_COMP_NAME_LENGTH];
 	Object* _owner;
+	unsigned int _comp_index;
 
 	GAFF_NO_COPY(IComponent);
 	GAFF_NO_MOVE(IComponent);

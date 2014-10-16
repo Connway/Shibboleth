@@ -24,10 +24,13 @@ THE SOFTWARE.
 
 #include "Shibboleth_MessageBroadcaster.h"
 #include "Shibboleth_DynamicLoader.h"
+#include "Shibboleth_HashMap.h"
 #include "Shibboleth_Logger.h"
+#include "Shibboleth_Array.h"
 
 NS_SHIBBOLETH
 
+class IFileSystem;
 class IManager;
 
 class IApp
@@ -79,7 +82,13 @@ public:
 	virtual IManager* getManager(const AString& name) = 0;
 	virtual IManager* getManager(const char* name) = 0;
 
-	virtual void switchState(unsigned int state) = 0;
+	virtual const Array<unsigned int>& getStateTransitions(unsigned int state_id) = 0;
+	virtual unsigned int getStateID(const char* name) = 0;
+	virtual void switchState(unsigned int state_id) = 0;
+
+	virtual IFileSystem* getFileSystem(void) = 0;
+	virtual const HashMap<AHashString, AString>& getCmdLine(void) const = 0;
+	virtual HashMap<AHashString, AString>& getCmdLine(void) = 0;
 
 	virtual DynamicLoader::ModulePtr loadModule(const char* filename, const char* name) = 0;
 	virtual Allocator& getAllocator(void) = 0;

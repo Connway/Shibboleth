@@ -29,13 +29,13 @@ THE SOFTWARE.
 #include <Shibboleth_ModelLoader.h>
 #include <Shibboleth_LuaLoader.h>
 #include <Shibboleth_String.h>
-#include <Shibboleth_App.h>
+#include <Shibboleth_IApp.h>
 
 NS_SHIBBOLETH
 
 static ProxyAllocator g_Esprit_Allocator;
 
-CreateResourceLoadersState::CreateResourceLoadersState(App& app):
+CreateResourceLoadersState::CreateResourceLoadersState(IApp& app):
 	_app(app)
 {
 }

@@ -28,12 +28,12 @@ THE SOFTWARE.
 
 NS_SHIBBOLETH
 
-class App;
+class IApp;
 
 class SetupOtterUIState : public IState
 {
 public:
-	SetupOtterUIState(App& app);
+	SetupOtterUIState(IApp& app);
 	~SetupOtterUIState(void);
 
 	bool init(unsigned int /*state_id*/);
@@ -46,7 +46,7 @@ private:
 	OtterUIFileSystem _file_system;
 	OtterUIRenderer _renderer;
 
-	App& _app;
+	IApp& _app;
 	//unsigned int _state_id;
 
 	GAFF_NO_COPY(SetupOtterUIState);

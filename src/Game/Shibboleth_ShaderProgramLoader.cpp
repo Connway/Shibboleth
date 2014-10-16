@@ -29,6 +29,11 @@ THE SOFTWARE.
 
 NS_SHIBBOLETH
 
+static const char* shader_extensions[] = {
+	".glsl",
+	".hlsl"
+};
+
 ShaderProgramLoader::ShaderProgramLoader(RenderManager& render_mgr):
 	_render_mgr(render_mgr)
 {
@@ -103,6 +108,9 @@ Array<ShaderPtr> ShaderProgramLoader::loadShaders(const char* file_name, Gleam::
 	Gleam::IRenderDevice& rd = _render_mgr.getRenderDevice();
 	Array<ShaderPtr> shaders;
 
+	// isD3D() will be replaced with getRendererType() eventually
+	AString shader_name = AString(file_name) + shader_extensions[rd.isD3D()];
+
 	for (unsigned int i = 0; i < rd.getNumDevices(); ++i) {
 		ShaderPtr shader(_render_mgr.createShader());
 		rd.setCurrentDevice(i);
@@ -112,7 +120,7 @@ Array<ShaderPtr> ShaderProgramLoader::loadShaders(const char* file_name, Gleam::
 			break;
 		}
 
-		if (!shader->init(rd, file_name, shader_type)) {
+		if (!shader->init(rd, shader_name.getBuffer(), shader_type)) {
 			shaders.clear();
 			break;
 		}

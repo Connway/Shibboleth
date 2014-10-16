@@ -47,6 +47,7 @@ public:
 		IState* state;
 
 		unsigned int state_id;
+		unsigned int module_id;
 
 		bool operator==(const char* rhs) const
 		{
@@ -65,11 +66,11 @@ public:
 	INLINE unsigned int getNextState(void) const;
 
 	INLINE void addState(const StateEntry& state);
-	INLINE void switchState(unsigned int state);
+	INLINE void switchState(unsigned int state_id);
 	INLINE void switchState(const AString& name);
 	INLINE void switchState(const char* name);
 
-	INLINE const Array<unsigned int>& getTransitions(unsigned int state);
+	INLINE const Array<unsigned int>& getTransitions(unsigned int state_id);
 	INLINE const AString& getName(unsigned int state);
 	INLINE unsigned int getStateID(const AString& name);
 	INLINE unsigned int getStateID(const char* name);

@@ -152,7 +152,9 @@ group ""
 			"../../dependencies/LuaJIT-2.0.3/src",
 			"../../dependencies/utf8-cpp",
 			"../../dependencies/assimp/include",
-			"../../dependencies/esprit/include"
+			"../../dependencies/esprit/include",
+			"../../dependencies/minizip",
+			"../../dependencies/zlib"
 		}
 
 	project "ManagersModule"

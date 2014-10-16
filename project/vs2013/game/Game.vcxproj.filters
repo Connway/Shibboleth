@@ -51,6 +51,9 @@
     <ClInclude Include="..\..\..\src\Game\include\Shibboleth_OtterUIRenderer.h">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\src\Game\include\Shibboleth_PackFileSystem.h">
+      <Filter>include</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\src\Game\include\Shibboleth_RasterManager.h">
       <Filter>include</Filter>
     </ClInclude>
@@ -94,6 +97,7 @@
     <ClCompile Include="..\..\..\src\Game\Shibboleth_OtterUIFileSystem.cpp" />
     <ClCompile Include="..\..\..\src\Game\Shibboleth_OtterUIManager.cpp" />
     <ClCompile Include="..\..\..\src\Game\Shibboleth_OtterUIRenderer.cpp" />
+    <ClCompile Include="..\..\..\src\Game\Shibboleth_PackFileSystem.cpp" />
     <ClCompile Include="..\..\..\src\Game\Shibboleth_RasterManager.cpp" />
     <ClCompile Include="..\..\..\src\Game\Shibboleth_RenderManager.cpp" />
     <ClCompile Include="..\..\..\src\Game\Shibboleth_ResourceManager.cpp" />

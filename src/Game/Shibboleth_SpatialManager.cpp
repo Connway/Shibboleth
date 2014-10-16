@@ -22,7 +22,7 @@ THE SOFTWARE.
 
 #include "Shibboleth_SpatialManager.h"
 #include "Shibboleth_Object.h"
-#include <Shibboleth_App.h>
+#include <Shibboleth_IApp.h>
 
 NS_SHIBBOLETH
 
@@ -69,7 +69,7 @@ void SpatialManager::WatchUpdater::addDirtyNode(void) const
 
 
 
-SpatialManager::SpatialManager(App& app):
+SpatialManager::SpatialManager(IApp& app):
 	_dirty_nodes(100, (Node*)nullptr), _bvh(nullptr), _app(app), _next_id(0)
 {
 }

@@ -24,7 +24,6 @@ THE SOFTWARE.
 
 #include "Shibboleth_IUpdateQuery.h"
 #include "Shibboleth_IManager.h"
-#include "Shibboleth_Object.h"
 #include <Shibboleth_ReflectionDefinitions.h>
 #include <Shibboleth_Array.h>
 #include <Shibboleth_Map.h>
@@ -32,6 +31,7 @@ THE SOFTWARE.
 
 NS_SHIBBOLETH
 
+class Object;
 class IApp;
 
 class ObjectManager : public IManager, public IUpdateQuery
@@ -50,6 +50,9 @@ public:
 	ObjectManager(IApp& app);
 	~ObjectManager(void);
 
+	Object* createObject(void);
+	void removeObject(unsigned int id);
+
 	const char* getName(void) const;
 
 	void requestUpdateEntries(Array<UpdateEntry>& entries);
@@ -58,14 +61,16 @@ public:
 	static void InitReflectionDefinition(void);
 
 private:
-	Array<unsigned int> _remove_queue;
-	Array<Object*> _add_queue;
+	//Array<unsigned int> _remove_queue;
+	//Array<Object*> _add_queue;
 	Array<Object*> _objects;
 
 	IApp& _app;
 
-	Gaff::SpinLock _remove_lock;
-	Gaff::SpinLock _add_lock;
+	//Gaff::SpinLock _remove_lock;
+	//Gaff::SpinLock _add_lock;
+
+	Gaff::SpinLock _objects_lock;
 
 	volatile unsigned int _next_id;
 

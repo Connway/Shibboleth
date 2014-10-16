@@ -26,12 +26,12 @@ THE SOFTWARE.
 
 NS_SHIBBOLETH
 
-class App;
+class IApp;
 
 class RegisterLuaClassesState : public IState
 {
 public:
-	RegisterLuaClassesState(App& app);
+	RegisterLuaClassesState(IApp& app);
 	~RegisterLuaClassesState(void);
 
 	bool init(unsigned int);
@@ -41,7 +41,7 @@ public:
 	void exit(void);
 
 private:
-	App& _app;
+	IApp& _app;
 
 	GAFF_NO_COPY(RegisterLuaClassesState);
 	GAFF_NO_MOVE(RegisterLuaClassesState);

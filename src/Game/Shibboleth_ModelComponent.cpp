@@ -29,8 +29,8 @@ THE SOFTWARE.
 NS_SHIBBOLETH
 
 COMP_REF_DEF_SAVE(ModelComponent, g_Ref_Def);
-REF_IMPL_REQ(ModelComponent);
 REF_IMPL_SHIB(ModelComponent);
+REF_IMPL_REQ(ModelComponent);
 
 ModelComponent::ModelComponent(IApp& app):
 	_app(app)
@@ -43,14 +43,17 @@ ModelComponent::~ModelComponent(void)
 
 bool ModelComponent::load(const Gaff::JSON& json)
 {
+	ResourceManager& res_mgr = _app.getManagerT<ResourceManager>("Resource Manager");
+
 	g_Ref_Def.read(json, this);
-	assert(_model_filename.size());
 
-	_model_res = _app.getManagerT<ResourceManager>("Resource Manager").requestResource(_model_filename.getBuffer());
-	_model_res.getResourcePtr()->addCallback(Gaff::Bind(this, &ModelComponent::ModelCallback));
+	_material_res = res_mgr.requestResource(_material_filename.getBuffer());
+	_model_res = res_mgr.requestResource(_model_filename.getBuffer());
 
-	while (!_model_res.getResourcePtr()->isLoaded() && !_model_res.getResourcePtr()->hasFailed()) {
-	}
+	auto callback_func = Gaff::Bind(this, &ModelComponent::LoadCallback);
+
+	_material_res.getResourcePtr()->addCallback(callback_func);
+	_model_res.getResourcePtr()->addCallback(callback_func);
 
 	return true;
 }
@@ -59,7 +62,7 @@ void ModelComponent::allComponentsLoaded(void)
 {
 }
 
-void ModelComponent::ModelCallback(const AHashString&, bool success)
+void ModelComponent::LoadCallback(const AHashString& resource, bool success)
 {
 	if (!success) {
 		// complain about something
@@ -74,6 +77,7 @@ void ModelComponent::InitReflectionDefinition(void)
 	if (!g_Ref_Def.isDefined()) {
 		g_Ref_Def.setAllocator(ProxyAllocator());
 
+		g_Ref_Def.addString("Material File", &ModelComponent::_material_filename);
 		g_Ref_Def.addString("Model File", &ModelComponent::_model_filename);
 		g_Ref_Def.addBaseClassInterfaceOnly<ModelComponent>();
 
