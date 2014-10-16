@@ -30,7 +30,7 @@ NS_SHIBBOLETH
 REF_IMPL_REQ(RasterManager);
 REF_IMPL_SHIB(RasterManager);
 
-RasterManager::RasterManager(App& app):
+RasterManager::RasterManager(IApp& app):
 	_spatial_mgr(nullptr), _render_mgr(nullptr),
 	_app(app)
 {

@@ -23,7 +23,7 @@ THE SOFTWARE.
 #include <Shibboleth_ComponentManager.h>
 #include <Shibboleth_ModelComponent.h>
 #include <Shibboleth_LuaComponent.h>
-#include <Shibboleth_App.h>
+#include <Shibboleth_IApp.h>
 #include <Gaff_JSON.h>
 
 template <class Component>

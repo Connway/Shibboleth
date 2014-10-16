@@ -22,12 +22,13 @@ THE SOFTWARE.
 
 #include "Shibboleth_Object.h"
 #include "Shibboleth_ComponentManager.h"
-#include "Shibboleth_App.h"
+#include "Shibboleth_IApp.h"
 #include <Gaff_JSON.h>
 
 NS_SHIBBOLETH
 
-Object::Object(App& app, unsigned int id):
+Object::Object(IApp& app, unsigned int id):
+	_comp_mgr(app.getManagerT<ComponentManager>("Component Manager")),
 	_app(app), _id(id)
 {
 }
@@ -81,6 +82,9 @@ bool Object::init(const char* file_name)
 
 void Object::destroy(void)
 {
+	for (auto it = _components.begin(); it != _components.end(); ++it) {
+		_comp_mgr.destroyComponent(*it);
+	}
 }
 
 const char* Object::getName(void) const
@@ -91,6 +95,11 @@ const char* Object::getName(void) const
 unsigned int Object::getID(void) const
 {
 	return _id;
+}
+
+void Object::setID(unsigned int id)
+{
+	_id = id;
 }
 
 void Object::registerForPrePhysicsUpdate(const UpdateCallback& callback)
@@ -176,7 +185,6 @@ void Object::setAABB(const Gleam::AABB& aabb)
 
 bool Object::createComponents(const Gaff::JSON& json)
 {
-	ComponentManager& component_manager = _app.getManagerT<ComponentManager>("Component Manager");
 	bool error = false;
 
 	_components.reserve(json.size());
@@ -197,7 +205,7 @@ bool Object::createComponents(const Gaff::JSON& json)
 			return true;
 		}
 
-		IComponent* component = component_manager.createComponent(type.getString());
+		IComponent* component = _comp_mgr.createComponent(type.getString());
 
 		if (!component) {
 			// log error
@@ -214,7 +222,7 @@ bool Object::createComponents(const Gaff::JSON& json)
 			return true;
 		}
 
-		_components.push(ComponentPtr(component));
+		_components.push(component);
 
 		return false;
 	});

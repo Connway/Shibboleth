@@ -30,7 +30,7 @@ THE SOFTWARE.
 	#include "Gaff_IncludeWindows.h"
 #endif
 
-#include "Gaff_Defines.h"
+#include "Gaff_HashMap.h"
 #include <dirent.h>
 #include <cstring>
 #include <ctime>
@@ -76,6 +76,10 @@ void ForEachTypeInDirectory(const wchar_t* directory, Callback&& callback);
 
 INLINE bool CreateDir(const wchar_t* dirname, unsigned short mode);
 #endif
+
+// Arguments must be in the form of --option or --option value value etc.
+template <class Allocator>
+HashMap<AHashString<Allocator>, AString<Allocator>, Allocator> ParseCommandLine(int argc, char** argv);
 
 #include "Gaff_Utils_Common.inl"
 

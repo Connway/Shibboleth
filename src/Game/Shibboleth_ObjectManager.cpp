@@ -21,6 +21,7 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Shibboleth_ObjectManager.h"
+#include "Shibboleth_Object.h"
 #include <Shibboleth_IApp.h>
 #include <Gaff_ScopedLock.h>
 #include <Gaff_Atomic.h>
@@ -39,6 +40,50 @@ ObjectManager::~ObjectManager(void)
 {
 }
 
+Object* ObjectManager::createObject(void)
+{
+	unsigned int id = AtomicUAddFetchOrig(&_next_id, 1);
+	Object* object = _app.getAllocator().template allocT<Object>(_app, id);
+
+	if (object) {
+		Gaff::ScopedLock<Gaff::SpinLock> scoped_lock(_objects_lock);
+
+		auto it = _objects.binarySearch(id, [](const Object* lhs, unsigned int rhs)
+		{
+			return lhs->getID() < rhs;
+		});
+
+		// If we generated a duplicate ID, then something is borked
+		assert(it == _objects.end() || (*it)->getID() != id);
+
+		_objects.insert(object, it);
+	}
+
+	return object;
+}
+
+void ObjectManager::removeObject(unsigned int id)
+{
+	Object* object = nullptr;
+
+	{
+		Gaff::ScopedLock<Gaff::SpinLock> scoped_lock(_objects_lock);
+
+		auto it = _objects.binarySearch(id, [](const Object* lhs, unsigned int rhs)
+		{
+			return lhs->getID() < rhs;
+		});
+
+		if (it != _objects.end() && (*it)->getID() == id) {
+			object = *it;
+		}
+	}
+
+	if (object) {
+		_app.getAllocator().freeT(object);
+	}
+}
+
 const char* ObjectManager::getName(void) const
 {
 	return "Object Manager";
@@ -53,37 +98,37 @@ void ObjectManager::requestUpdateEntries(Array<UpdateEntry>& entries)
 void ObjectManager::prePhysicsUpdate(double dt)
 {
 	// Add new objects
-	{
-		Gaff::ScopedLock<Gaff::SpinLock> scoped_lock(_add_lock);
+	//{
+	//	Gaff::ScopedLock<Gaff::SpinLock> scoped_lock(_add_lock);
 
-		for (auto it = _add_queue.begin(); it != _add_queue.end(); ++it) {
-			auto location =_objects.binarySearch((*it)->getID(), [](const Object* lhs, unsigned int rhs)
-			{
-				return lhs->getID() < rhs;
-			});
+	//	for (auto it = _add_queue.begin(); it != _add_queue.end(); ++it) {
+	//		auto location =_objects.binarySearch((*it)->getID(), [](const Object* lhs, unsigned int rhs)
+	//		{
+	//			return lhs->getID() < rhs;
+	//		});
 
-			// If we generated a duplicate ID, then something is borked
-			assert(location == _objects.end() || (*location)->getID() != (*it)->getID());
+	//		// If we generated a duplicate ID, then something is borked
+	//		assert(location == _objects.end() || (*location)->getID() != (*it)->getID());
 
-			_objects.insert(*it, location);
-		}
+	//		_objects.insert(*it, location);
+	//	}
 
-		_add_queue.clearNoFree();
-	}
+	//	_add_queue.clearNoFree();
+	//}
 
 	// Remove objects
-	{
-		Gaff::ScopedLock<Gaff::SpinLock> scoped_lock(_remove_lock);
+	//{
+	//	Gaff::ScopedLock<Gaff::SpinLock> scoped_lock(_remove_lock);
 
-		for (auto it = _remove_queue.begin(); it != _remove_queue.end(); ++it) {
-		}
+	//	for (auto it = _remove_queue.begin(); it != _remove_queue.end(); ++it) {
+	//	}
 
-		_remove_queue.clearNoFree();
-	}
+	//	_remove_queue.clearNoFree();
+	//}
 
 	// generate update jobs
-	for (auto it = _objects.begin(); it != _objects.end(); ++it) {
-	}
+	//for (auto it = _objects.begin(); it != _objects.end(); ++it) {
+	//}
 }
 
 void ObjectManager::postPhysicsUpdate(double dt)

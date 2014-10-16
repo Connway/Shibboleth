@@ -23,12 +23,12 @@ THE SOFTWARE.
 #include <Shibboleth_LoadComponentsState.h>
 #include <Shibboleth_ComponentManager.h>
 #include <Shibboleth_String.h>
-#include <Shibboleth_App.h>
+#include <Shibboleth_IApp.h>
 #include <Gaff_Utils.h>
 
 NS_SHIBBOLETH
 
-LoadComponentsState::LoadComponentsState(App& app):
+LoadComponentsState::LoadComponentsState(IApp& app):
 	_app(app)
 {
 }

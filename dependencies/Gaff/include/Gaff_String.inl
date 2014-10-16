@@ -339,7 +339,10 @@ void String<T, Allocator>::append(const T* string, unsigned int size)
 
 	_size = new_size;
 
-	_allocator.free(_string);
+	if (_string) {
+		_allocator.free(_string);
+	}
+
 	_string = new_string;
 }
 

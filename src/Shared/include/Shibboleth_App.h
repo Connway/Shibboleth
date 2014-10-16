@@ -26,8 +26,6 @@ THE SOFTWARE.
 #include "Shibboleth_DynamicLoader.h"
 #include "Shibboleth_StateMachine.h"
 #include "Shibboleth_ThreadPool.h"
-#include "Shibboleth_HashString.h"
-#include "Shibboleth_HashMap.h"
 #include "Shibboleth_IState.h"
 #include "Shibboleth_Logger.h"
 #include "Shibboleth_Array.h"
@@ -51,7 +49,7 @@ public:
 	App(void);
 	~App(void);
 
-	bool init(void);
+	bool init(int argc, char** argv);
 	void run(void);
 
 	const IManager* getManager(const AHashString& name) const;
@@ -61,7 +59,13 @@ public:
 	IManager* getManager(const AString& name);
 	IManager* getManager(const char* name);
 
+	const Array<unsigned int>& getStateTransitions(unsigned int state_id);
+	unsigned int getStateID(const char* name);
 	void switchState(unsigned int state);
+
+	IFileSystem* getFileSystem(void);
+	const HashMap<AHashString, AString>& getCmdLine(void) const;
+	HashMap<AHashString, AString>& getCmdLine(void);
 
 	DynamicLoader::ModulePtr loadModule(const char* filename, const char* name);
 	Allocator& getAllocator(void);
@@ -74,7 +78,7 @@ private:
 	struct ManagerEntry
 	{
 		typedef IManager* (*CreateManagerFunc)(unsigned int);
-		typedef void(*DestroyManagerFunc)(IManager*, unsigned int);
+		typedef void (*DestroyManagerFunc)(IManager*, unsigned int);
 		typedef unsigned int (*GetNumManagersFunc)(void);
 		typedef bool (*InitManagerModuleFunc)(IApp&);
 
@@ -83,6 +87,19 @@ private:
 		DestroyManagerFunc destroy_func;
 		IManager* manager;
 		unsigned int manager_id;
+	};
+
+	struct FileSystemData
+	{
+		typedef bool (*InitFileSystemModuleFunc)(IApp&);
+		typedef IFileSystem* (*CreateFileSystemFunc)(void);
+		typedef void (*DestroyFileSystemFunc)(IFileSystem*);
+
+		DynamicLoader::ModulePtr file_system_module;
+		IFileSystem* file_system;
+
+		DestroyFileSystemFunc destroy_func;
+		CreateFileSystemFunc create_func;
 	};
 
 	typedef HashMap<AHashString, ManagerEntry> ManagerMap;
@@ -97,12 +114,17 @@ private:
 
 	LogManager _logger;
 
+	FileSystemData _fs;
+
+	HashMap<AHashString, AString> _cmd_line_args;
+
 	LogManager::FileLockPair* _log_file_pair;
 
 	size_t _seed;
 
 	bool _running;
 
+	bool loadFileSystem(void);
 	bool loadManagers(void);
 	bool loadStates(void);
 

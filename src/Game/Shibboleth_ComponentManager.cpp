@@ -109,9 +109,17 @@ bool ComponentManager::addComponents(DynamicLoader::ModulePtr& module)
 
 IComponent* ComponentManager::createComponent(AHashString name)
 {
-	assert(name.size() && _components.indexOf(name) != -1);
-	ComponentEntry& entry = _components[name];
-	return entry.create(entry.component_id);
+	unsigned int index = _components.indexOf(name);
+	assert(name.size() && index != -1);
+
+	ComponentEntry& entry = _components.valueAt(index);
+	IComponent* component = entry.create(entry.component_id);
+
+	if (component) {
+		component->setIndex(index);
+	}
+
+	return component;
 }
 
 IComponent* ComponentManager::createComponent(AString name)
@@ -128,8 +136,12 @@ IComponent* ComponentManager::createComponent(const char* name)
 
 void ComponentManager::destroyComponent(IComponent* component)
 {
-	assert(component && _components.indexOf(component->getName()) != -1);
-	ComponentEntry& entry = _components[component->getName()];
+	assert(
+		component && _components.indexOf(component->getName()) != -1 &&
+		component->getIndex() == (unsigned int)_components.indexOf(component->getName())
+	);
+
+	ComponentEntry& entry = _components.valueAt(component->getIndex());
 	entry.destroy(component, entry.component_id);
 }
 

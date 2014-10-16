@@ -26,12 +26,12 @@ THE SOFTWARE.
 
 NS_SHIBBOLETH
 
-class App;
+class IApp;
 
 class CreateResourceLoadersState : public IState
 {
 public:
-	CreateResourceLoadersState(App& app);
+	CreateResourceLoadersState(IApp& app);
 	~CreateResourceLoadersState(void);
 
 	bool init(unsigned int /*state_id*/);
@@ -41,7 +41,7 @@ public:
 	void exit(void);
 
 private:
-	App& _app;
+	IApp& _app;
 	//unsigned int _state_id;
 
 	GAFF_NO_COPY(CreateResourceLoadersState);

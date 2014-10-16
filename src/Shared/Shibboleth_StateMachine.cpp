@@ -25,10 +25,8 @@ THE SOFTWARE.
 NS_SHIBBOLETH
 
 StateMachine::StateMachine(const ProxyAllocator& allocator):
-	_states(allocator),
-	_curr_state(static_cast<unsigned int>(-1)),
-	_next_state(static_cast<unsigned int>(-1)),
-	_restart(false)
+	_states(allocator), _curr_state(UINT_FAIL),
+	_next_state(UINT_FAIL), _restart(false)
 {
 }
 
@@ -41,7 +39,7 @@ void StateMachine::clear(void)
 	_curr_state = _next_state = (unsigned int)-1;
 
 	for (auto it = _states.begin(); it != _states.end(); ++it) {
-		it->destroy_func(it->state, it->state_id);
+		it->destroy_func(it->state, it->module_id);
 	}
 
 	_states.clear();
@@ -50,7 +48,7 @@ void StateMachine::clear(void)
 void StateMachine::update(void)
 {
 	if (_next_state != _curr_state || _restart) {
-		if (_curr_state != (unsigned int)-1) {
+		if (_curr_state != UINT_FAIL) {
 			_states[_curr_state].state->exit();
 		}
 
@@ -77,10 +75,10 @@ void StateMachine::addState(const StateEntry& state)
 	_states.push(state);
 }
 
-void StateMachine::switchState(unsigned int state)
+void StateMachine::switchState(unsigned int state_id)
 {
-	assert(state < _states.size());
-	_next_state = state;
+	assert(state_id < _states.size());
+	_next_state = state_id;
 
 	if (_next_state == _curr_state) {
 		_restart = true;
@@ -107,10 +105,10 @@ void StateMachine::switchState(const char* name)
 	}
 }
 
-const Array<unsigned int>& StateMachine::getTransitions(unsigned int state)
+const Array<unsigned int>& StateMachine::getTransitions(unsigned int state_id)
 {
-	assert(state < _states.size());
-	return _states[state].state->getTransitions();
+	assert(state_id < _states.size());
+	return _states[state_id].state->getTransitions();
 }
 
 const AString& StateMachine::getName(unsigned int state)

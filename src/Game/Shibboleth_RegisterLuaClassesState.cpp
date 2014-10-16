@@ -22,9 +22,9 @@ THE SOFTWARE.
 
 #include "Shibboleth_RegisterLuaClassesState.h"
 #include <Shibboleth_LuaManager.h>
-#include <Shibboleth_App.h>
+#include <Shibboleth_IApp.h>
 
-#include <Shibboleth_String.h>
+//#include <Shibboleth_String.h>
 
 #include <LuaState.h>
 #include <LuaBridge.h>
@@ -36,7 +36,7 @@ static void RegisterBaseClassesWithLua(lua::State& state)
 
 }
 
-RegisterLuaClassesState::RegisterLuaClassesState(App& app):
+RegisterLuaClassesState::RegisterLuaClassesState(IApp& app):
 	_app(app)
 {
 }

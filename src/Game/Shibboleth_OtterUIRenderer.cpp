@@ -22,7 +22,7 @@ THE SOFTWARE.
 
 #include "Shibboleth_OtterUIRenderer.h"
 #include "Shibboleth_RenderManager.h"
-#include "Shibboleth_App.h"
+#include "Shibboleth_IApp.h"
 #include <Gleam_IShaderResourceView.h>
 #include <Gleam_ISamplerState.h>
 #include <Gleam_IRenderDevice.h>
@@ -43,7 +43,7 @@ static Gleam::IMesh::TOPOLOGY_TYPE otter_topology_map[3] = {
 	Gleam::IMesh::TOPOLOGY_SIZE
 };
 
-OtterUIRenderer::OtterUIRenderer(App& app):
+OtterUIRenderer::OtterUIRenderer(IApp& app):
 	_resource_manager(app.getManagerT<ResourceManager>("Resource Manager")),
 	_render_manager(app.getManagerT<RenderManager>("Render Manager")),
 	_app(app), _render_device(app.getManagerT<RenderManager>("Render Manager").getRenderDevice()),

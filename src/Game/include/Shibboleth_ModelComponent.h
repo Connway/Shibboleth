@@ -29,6 +29,7 @@ THE SOFTWARE.
 
 NS_SHIBBOLETH
 
+struct ProgramData;
 struct ModelData;
 
 class ModelComponent : public IComponent
@@ -52,11 +53,13 @@ public:
 	static void InitReflectionDefinition(void);
 
 private:
+	ResourceWrapper<ProgramData> _material_res;
 	ResourceWrapper<ModelData> _model_res;
+	AString _material_filename;
 	AString _model_filename;
 	IApp& _app;
 
-	void ModelCallback(const AHashString&, bool success);
+	void LoadCallback(const AHashString& resource, bool success);
 
 	REF_DEF_SHIB(ModelComponent);
 };

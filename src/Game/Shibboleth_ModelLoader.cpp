@@ -164,6 +164,8 @@ bool ModelLoader::loadMeshes(ModelData* data, const Gaff::JSON& lod_tags, const 
 	unsigned int num_lods = (!lod_tags) ? 1 : lod_tags.size();
 	unsigned int num_bone_weights = 0;
 
+	Array< Array<VertSkeletonData> > vert_skeleton_data;
+
 	// First dimension is for each device.
 	data->models.resize(rd.getNumDevices());
 	data->aabbs.resize(num_lods);
@@ -197,7 +199,7 @@ bool ModelLoader::loadMeshes(ModelData* data, const Gaff::JSON& lod_tags, const 
 		//	// log warning
 		//}
 
-		if (!loadSkeleton(data, model_prefs, num_bone_weights)) {
+		if (!loadSkeleton(data, model_prefs, num_bone_weights, vert_skeleton_data)) {
 			// log error
 			return false;
 		}
@@ -254,7 +256,7 @@ bool ModelLoader::loadMeshes(ModelData* data, const Gaff::JSON& lod_tags, const 
 				data->aabbs[lod].push(aabb);
 			}
 
-			if (!createMeshAndLayout(rd, scene_mesh, data->models[i][lod].get(), model_prefs, data->skeleton, num_bone_weights)) {
+			if (!createMeshAndLayout(rd, scene_mesh, data->models[i][lod].get(), model_prefs, num_bone_weights, vert_skeleton_data[j])) {
 				return false;
 			}
 
@@ -270,7 +272,7 @@ bool ModelLoader::loadMeshes(ModelData* data, const Gaff::JSON& lod_tags, const 
 	return true;
 }
 
-bool ModelLoader::createMeshAndLayout(Gleam::IRenderDevice& rd, const Gaff::Mesh& scene_mesh, Gleam::IModel* model, const Gaff::JSON& model_prefs, const esprit::Skeleton& skeleton, unsigned int num_bone_weights)
+bool ModelLoader::createMeshAndLayout(Gleam::IRenderDevice& rd, const Gaff::Mesh& scene_mesh, Gleam::IModel* model, const Gaff::JSON& model_prefs, unsigned int num_bone_weights, const Array<VertSkeletonData>& vert_skeleton_data)
 {
 	bool uvs = false;
 	bool normals = false;
@@ -440,29 +442,19 @@ bool ModelLoader::createMeshAndLayout(Gleam::IRenderDevice& rd, const Gaff::Mesh
 		}
 
 		if (blend_data) {
-			unsigned int* blend_indices = (unsigned int*)current_vertex;
+			unsigned int* blend_indices = reinterpret_cast<unsigned int*>(current_vertex);
 			float* blend_weights = current_vertex + 4 * num_bone_weights;
-			unsigned int curr_ind = 0;
 
 			// Initialize to zero
 			for (unsigned int j = 0; j < 8 * num_bone_weights; ++j) {
 				current_vertex[j] = 0.0f;
 			}
 
-			for (unsigned int j = 0; j < scene_mesh.getNumBones(); ++j) {
-				Gaff::Bone bone = scene_mesh.getBone(j);
+			const VertSkeletonData& vsd = vert_skeleton_data[(current_vertex - vertices) / vert_size];
 
-				if (bone) {
-					for (unsigned int k = 0; k < bone.getNumWeights(); ++k) {
-						Gaff::VertexWeight weight = bone.getWeight(k);
-
-						if (weight && weight.getVertexIndex() == i) {
-							blend_indices[curr_ind] = skeleton.getBoneIndex(bone.getName());
-							blend_weights[curr_ind] = weight.getWeight();
-							++curr_ind;
-						}
-					}
-				}
+			for (unsigned int j = 0; j < vsd.bone_indices.size(); ++j) {
+				blend_indices[j] = vsd.bone_indices[j];
+				blend_weights[j] = vsd.bone_weights[j];
 			}
 
 			current_vertex += 8 * num_bone_weights;
@@ -656,12 +648,15 @@ Gleam::IShader* ModelLoader::generateEmptyD3D11Shader(Gleam::IRenderDevice& rd, 
 	return shader;
 }
 
-bool ModelLoader::loadSkeleton(ModelData* data, const Gaff::JSON& model_prefs, unsigned int& num_bone_weights)
+bool ModelLoader::loadSkeleton(ModelData* data, const Gaff::JSON& model_prefs, unsigned int& num_bone_weights, Array< Array<VertSkeletonData> >& vert_skeleton_data)
 {
 	// Determine number of float4's for vertex data
 	unsigned int max_vertex_bones = 0;
 	num_bone_weights = 0;
 
+	vert_skeleton_data.resize(data->holding_data->scene.getNumMeshes());
+
+	// Count which vertex has the most bones associated with it
 	for (unsigned int k = 0; k < data->holding_data->scene.getNumMeshes(); ++k) {
 		Gaff::Mesh scene_mesh = data->holding_data->scene.getMesh(k);
 
@@ -682,8 +677,13 @@ bool ModelLoader::loadSkeleton(ModelData* data, const Gaff::JSON& model_prefs, u
 			}
 		}
 
-		for (auto it = num_bones.begin(); it != num_bones.end(); ++it) {
-			max_vertex_bones = Gaff::Max(max_vertex_bones, *it);
+		vert_skeleton_data[k].resize(num_bones.size());
+
+		for (unsigned int i = 0; i < num_bones.size(); ++i) {
+			max_vertex_bones = Gaff::Max(max_vertex_bones, num_bones[i]);
+
+			vert_skeleton_data[k][i].bone_indices.reserve(num_bones[i]);
+			vert_skeleton_data[k][i].bone_weights.reserve(num_bones[i]);
 		}
 	}
 
@@ -756,6 +756,26 @@ bool ModelLoader::loadSkeleton(ModelData* data, const Gaff::JSON& model_prefs, u
 		}
 
 		nodes = Gaff::Move(new_nodes);
+	}
+
+	// Cache some bone vert data for later
+	for (unsigned int i = 0; i < data->holding_data->scene.getNumMeshes(); ++i) {
+		Gaff::Mesh scene_mesh = data->holding_data->scene.getMesh(i);
+
+		for (unsigned int j = 0; j < scene_mesh.getNumBones(); ++j) {
+			Gaff::Bone bone = scene_mesh.getBone(j);
+
+			if (bone) {
+				for (unsigned int k = 0; k < bone.getNumWeights(); ++k) {
+					Gaff::VertexWeight weight = bone.getWeight(k);
+
+					if (weight && weight.getVertexIndex() == i) {
+						vert_skeleton_data[i][weight.getVertexIndex()].bone_indices.push(data->skeleton.getBoneIndex(bone.getName()));
+						vert_skeleton_data[i][weight.getVertexIndex()].bone_weights.push(weight.getWeight());
+					}
+				}
+			}
+		}
 	}
 
 	return true;

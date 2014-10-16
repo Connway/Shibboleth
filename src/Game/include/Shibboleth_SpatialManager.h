@@ -33,12 +33,12 @@ THE SOFTWARE.
 NS_SHIBBOLETH
 
 class Object;
-class App;
+class IApp;
 
 class SpatialManager : public IManager, public IUpdateQuery
 {
 public:
-	SpatialManager(App& app);
+	SpatialManager(IApp& app);
 	~SpatialManager(void);
 
 	void requestUpdateEntries(Array<UpdateEntry>& entries);
@@ -85,7 +85,7 @@ private:
 	Array<Node*> _dirty_nodes;
 	Node* _bvh;
 
-	App& _app;
+	IApp& _app;
 
 	Gaff::SpinLock _dirty_lock;
 	Gaff::SpinLock _bvh_lock;

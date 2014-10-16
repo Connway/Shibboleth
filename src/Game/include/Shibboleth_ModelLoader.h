@@ -24,7 +24,7 @@ THE SOFTWARE.
 
 #include "Shibboleth_IResourceLoader.h"
 #include <Shibboleth_ProxyAllocator.h>
-#include <Gaff_Defines.h>
+#include <Shibboleth_Array.h>
 
 NS_GAFF
 	class SceneNode;
@@ -57,15 +57,21 @@ public:
 	Gaff::IVirtualDestructor* load(const char* file_name, unsigned long long user_data);
 
 private:
+	struct VertSkeletonData
+	{
+		Array<unsigned int> bone_indices;
+		Array<float> bone_weights;
+	};
+
 	RenderManager& _render_mgr;
 	ResourceManager& _res_mgr;
 	ProxyAllocator _esprit_proxy_allocator;
 
 	bool loadMeshes(ModelData* data, const Gaff::JSON& lod_tags, const Gaff::JSON& model_prefs);
-	bool createMeshAndLayout(Gleam::IRenderDevice& rd, const Gaff::Mesh& scene_mesh, Gleam::IModel* model, const Gaff::JSON& model_prefs, const esprit::Skeleton& skeleton, unsigned int num_bone_weights);
+	bool createMeshAndLayout(Gleam::IRenderDevice& rd, const Gaff::Mesh& scene_mesh, Gleam::IModel* model, const Gaff::JSON& model_prefs, unsigned int num_bone_weights, const Array<VertSkeletonData>& vert_skeleton_data);
 	unsigned int generateLoadingFlags(const Gaff::JSON& model_prefs);
 	Gleam::IShader* generateEmptyD3D11Shader(Gleam::IRenderDevice& rd, const Gaff::JSON& model_prefs, const Gaff::Mesh& scene_mesh, unsigned int num_bone_weights) const;
-	bool loadSkeleton(ModelData* data, const Gaff::JSON& model_prefs, unsigned int& num_bone_weights);
+	bool loadSkeleton(ModelData* data, const Gaff::JSON& model_prefs, unsigned int& num_bone_weights, Array< Array<VertSkeletonData> >& vert_skeleton_data);
 
 	GAFF_NO_COPY(ModelLoader);
 	GAFF_NO_MOVE(ModelLoader);
