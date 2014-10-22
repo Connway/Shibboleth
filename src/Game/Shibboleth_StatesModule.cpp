@@ -27,8 +27,11 @@ THE SOFTWARE.
 #include <Gleam_Global.h>
 #include <Gaff_JSON.h>
 
+#include <Shibboleth_ModelComponent.h>
 #include <Shibboleth_ObjectManager.h>
+#include <Shibboleth_RenderManager.h>
 #include <Shibboleth_Object.h>
+#include <Gleam_IRenderDevice.h>
 
 class LoopState : public Shibboleth::IState
 {
@@ -44,12 +47,25 @@ public:
 	{
 		_object = _app.getManagerT<Shibboleth::ObjectManager>("Object Manager").createObject();
 		
-		if (_object)
-			_object->init("./Resources/Objects/test.object");
+		if (_object) {
+			_object->init("Resources/Objects/test.object");
+		}
 	}
 
 	void update(void)
 	{
+		Shibboleth::RenderManager& rm = _app.getManagerT<Shibboleth::RenderManager>("Render Manager");
+		rm.updateWindows();
+
+		Shibboleth::ModelComponent* model = _object->getFirstComponentWithInterface<Shibboleth::ModelComponent>();
+
+		rm.getRenderDevice().beginFrame();
+
+		if (model) {
+			model->render();
+		}
+
+		rm.getRenderDevice().endFrame();
 	}
 
 	void exit(void)

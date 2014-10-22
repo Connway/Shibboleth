@@ -44,10 +44,24 @@ typedef struct
 	unsigned long status;
 } Hints;
 
+GleamArray<Display*> Window::gDisplays;
 GleamArray<Window*> Window::gWindows;
+XEvent Window::gEvent;
+
+void Window::handleWindowMessages(void)
+{
+	for (auto it = gDisplays.begin(); it != gDisplays.end(); ++it) {
+		while (XPending(*it)) {
+			XNextEvent(*it, &gEvent);
+			WindowProc(gEvent);
+		}
+	}
+}
 
 void Window::clear(void)
 {
+	gDisplays.clear();
+	gWindows.clear();
 }
 
 void Window::WindowProc(XEvent& event)
@@ -460,6 +474,10 @@ bool Window::init(const GChar* app_name, MODE window_mode,
 	XRRFreeScreenConfigInfo(config);
 	gWindows.push(this);
 
+	if (gDisplays.linearSearch(_display) == gDisplays.end()) {
+		gDisplays.push(_display);
+	}
+
 	return true;
 }
 
@@ -485,24 +503,21 @@ void Window::destroy(void)
 	}
 }
 
-void Window::handleWindowMessages(void)
-{
-	while (XPending(_display)) {
-		XNextEvent(_display, &_event);
-		WindowProc(_event);
-	}
-}
-
 void Window::addWindowMessageHandler(WindowCallback callback)
 {
-	Gaff::FunctionBinder<bool, const AnyMessage&> function = Gaff::Bind(callback);
-	addWindowMessageHandlerHelper(function);
+	_window_callbacks.push(callback);
 }
 
 bool Window::removeWindowMessageHandler(WindowCallback callback)
 {
-	Gaff::FunctionBinder<bool, const AnyMessage&> function = Gaff::Bind(callback);
-	return removeWindowMessageHandlerHelper(function);
+	auto it = _window_callbacks.linearSearch(cb);
+
+	if (it != _window_callbacks.end()) {
+		_window_callbacks.fastErase(it);
+		return true;
+	}
+
+	return false;
 }
 
 void Window::showCursor(bool show)
@@ -923,23 +938,6 @@ void Window::setToOriginalResolutionRate(void)
 	);
 
 	XRRFreeScreenConfigInfo(config);
-}
-
-void Window::addWindowMessageHandlerHelper(const Gaff::FunctionBinder<bool, const AnyMessage&>& cb)
-{
-	_window_callbacks.push(cb);
-}
-
-bool Window::removeWindowMessageHandlerHelper(const Gaff::FunctionBinder<bool, const AnyMessage&>& cb)
-{
-	auto it = _window_callbacks.linearSearch(cb);
-
-	if (it != _window_callbacks.end()) {
-		_window_callbacks.fastErase(it);
-		return true;
-	}
-
-	return false;
 }
 
 void Window::handleMessage(AnyMessage* message)

@@ -47,7 +47,7 @@ public:
 	INLINE void attach(IShader* shader);
 	INLINE void detach(IShader::SHADER_TYPE shader);
 
-	INLINE void bind(IRenderDevice&, IProgramBuffers& program_buffers);
+	INLINE void bind(IRenderDevice&, IProgramBuffers* program_buffers = nullptr);
 	INLINE void unbind(IRenderDevice&);
 
 	bool isD3D(void) const;

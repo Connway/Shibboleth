@@ -27,16 +27,26 @@ THE SOFTWARE.
 
 NS_GLEAM
 
-GleamHashMap<unsigned short, KeyCode> Window::_left_keys;
-GleamHashMap<unsigned short, KeyCode> Window::_right_keys;
-bool Window::_first_init = true;
+GleamHashMap<unsigned short, KeyCode> Window::g_Left_Keys;
+GleamHashMap<unsigned short, KeyCode> Window::g_Right_Keys;
+bool Window::g_First_Init = true;
+MSG Window::gMsg;
 
 GleamArray<Window*> Window::gWindows;
 
+void Window::handleWindowMessages(void)
+{
+	// Handle the windows messages.
+	while (PeekMessage(&gMsg, NULL, 0, 0, PM_REMOVE)) {
+		TranslateMessage(&gMsg);
+		DispatchMessage(&gMsg);
+	}
+}
+
 void Window::clear(void)
 {
-	_left_keys.clear();
-	_right_keys.clear();
+	g_Left_Keys.clear();
+	g_Right_Keys.clear();
 
 	assert(gWindows.empty());
 	gWindows.clear();
@@ -132,9 +142,9 @@ LRESULT CALLBACK Window::WindowProc(HWND hwnd, UINT msg, WPARAM w, LPARAM l)
 
 							case VK_MENU:
 								if (raw->data.keyboard.Flags & RI_KEY_E0) {
-									message->key_char.key = _right_keys[raw->data.keyboard.VKey];
+									message->key_char.key = g_Right_Keys[raw->data.keyboard.VKey];
 								} else {
-									message->key_char.key = _left_keys[raw->data.keyboard.VKey];
+									message->key_char.key = g_Left_Keys[raw->data.keyboard.VKey];
 								}
 								break;
 
@@ -265,16 +275,16 @@ bool Window::init(const GChar* app_name, MODE window_mode,
 {
 	assert(app_name);
 
-	if (_first_init) {
-		_left_keys[VK_CONTROL] = KEY_LEFTCONTROL;
-		_left_keys[VK_MENU] = KEY_LEFTALT;
-		_left_keys[VK_SHIFT] = KEY_LEFTSHIFT;
+	if (g_First_Init) {
+		g_Left_Keys[VK_CONTROL] = KEY_LEFTCONTROL;
+		g_Left_Keys[VK_MENU] = KEY_LEFTALT;
+		g_Left_Keys[VK_SHIFT] = KEY_LEFTSHIFT;
 
-		_right_keys[VK_CONTROL] = KEY_RIGHTCONTROL;
-		_right_keys[VK_MENU] = KEY_RIGHTALT;
-		_right_keys[VK_SHIFT] = KEY_RIGHTSHIFT;
+		g_Right_Keys[VK_CONTROL] = KEY_RIGHTCONTROL;
+		g_Right_Keys[VK_MENU] = KEY_RIGHTALT;
+		g_Right_Keys[VK_SHIFT] = KEY_RIGHTSHIFT;
 
-		_first_init = false;
+		g_First_Init = false;
 	}
 
 	WNDCLASSEX wc;
@@ -387,7 +397,7 @@ bool Window::init(const GChar* app_name, MODE window_mode,
 	SetForegroundWindow(_hwnd);
 	SetFocus(_hwnd);
 
-	ZeroMemory(&_msg_temp, sizeof(MSG));
+	ZeroMemory(&gMsg, sizeof(MSG));
 
 	gWindows.push(this);
 
@@ -422,25 +432,21 @@ void Window::destroy(void)
 	}
 }
 
-void Window::handleWindowMessages(void)
+void Window::addWindowMessageHandler(Gaff::FunctionBinder<bool, const AnyMessage&>& callback)
 {
-	// Handle the windows messages.
-	while (PeekMessage(&_msg_temp, NULL, 0, 0, PM_REMOVE)) {
-		TranslateMessage(&_msg_temp);
-		DispatchMessage(&_msg_temp);
+	_window_callbacks.push(callback);
+}
+
+bool Window::removeWindowMessageHandler(Gaff::FunctionBinder<bool, const AnyMessage&>& callback)
+{
+	auto it = _window_callbacks.linearSearch(callback);
+
+	if (it != _window_callbacks.end()) {
+		_window_callbacks.fastErase(it);
+		return true;
 	}
-}
 
-void Window::addWindowMessageHandler(WindowCallback callback)
-{
-	Gaff::FunctionBinder<bool, const AnyMessage&> function = Gaff::Bind(callback);
-	addWindowMessageHandlerHelper(function);
-}
-
-bool Window::removeWindowMessageHandler(WindowCallback callback)
-{
-	Gaff::FunctionBinder<bool, const AnyMessage&> function = Gaff::Bind(callback);
-	return removeWindowMessageHandlerHelper(function);
+	return false;
 }
 
 void Window::showCursor(bool show)
@@ -599,23 +605,6 @@ HINSTANCE Window::getHInstance(void) const
 HWND Window::getHWnd(void) const
 {
 	return _hwnd;
-}
-
-void Window::addWindowMessageHandlerHelper(const Gaff::FunctionBinder<bool, const AnyMessage&>& cb)
-{
-	_window_callbacks.push(cb);
-}
-
-bool Window::removeWindowMessageHandlerHelper(const Gaff::FunctionBinder<bool, const AnyMessage&>& cb)
-{
-	auto it = _window_callbacks.linearSearch(cb);
-
-	if (it != _window_callbacks.end()) {
-		_window_callbacks.fastErase(it);
-		return true;
-	}
-
-	return false;
 }
 
 NS_END

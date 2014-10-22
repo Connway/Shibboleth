@@ -77,45 +77,46 @@ void ProgramGL::detach(IShader::SHADER_TYPE shader)
 	_attached_shaders[shader] = nullptr;
 }
 
-void ProgramGL::bind(IRenderDevice&, IProgramBuffers& program_buffers)
+void ProgramGL::bind(IRenderDevice&, IProgramBuffers* program_buffers)
 {
-	assert(!program_buffers.isD3D());
-
 	glBindProgramPipeline(_program);
 
-	unsigned int texture_count = 0;
-	unsigned int count = 0;
+	if (program_buffers) {
+		assert(!program_buffers->isD3D());
+		unsigned int texture_count = 0;
+		unsigned int count = 0;
 
-	for (unsigned int i = 0; i < IShader::SHADER_TYPE_SIZE - 1; ++i) {
-		const GleamArray<IShaderResourceView*>& resource_views = program_buffers.getResourceViews((Gleam::IShader::SHADER_TYPE)i);
-		const GleamArray<ISamplerState*>& sampler_states = program_buffers.getSamplerStates((Gleam::IShader::SHADER_TYPE)i);
-		const GleamArray<IBuffer*>& const_bufs = program_buffers.getConstantBuffers((Gleam::IShader::SHADER_TYPE)i);
+		for (unsigned int i = 0; i < IShader::SHADER_TYPE_SIZE - 1; ++i) {
+			const GleamArray<IShaderResourceView*>& resource_views = program_buffers->getResourceViews((Gleam::IShader::SHADER_TYPE)i);
+			const GleamArray<ISamplerState*>& sampler_states = program_buffers->getSamplerStates((Gleam::IShader::SHADER_TYPE)i);
+			const GleamArray<IBuffer*>& const_bufs = program_buffers->getConstantBuffers((Gleam::IShader::SHADER_TYPE)i);
 
-		assert(sampler_states.size() <= resource_views.size());
-		unsigned int sampler_count = 0;
+			assert(sampler_states.size() <= resource_views.size());
+			unsigned int sampler_count = 0;
 
-		for (unsigned int j = 0; j < const_bufs.size(); ++j) {
-			glBindBufferBase(GL_UNIFORM_BUFFER, count, ((const BufferGL*)const_bufs[j])->getBuffer());
-			++count;
-		}
+			for (unsigned int j = 0; j < const_bufs.size(); ++j) {
+				glBindBufferBase(GL_UNIFORM_BUFFER, count, ((const BufferGL*)const_bufs[j])->getBuffer());
+				++count;
+			}
 
-		for (unsigned int j = 0; j < resource_views.size(); ++j) {
-			ShaderResourceViewGL* rv = (ShaderResourceViewGL*)resource_views[j];
+			for (unsigned int j = 0; j < resource_views.size(); ++j) {
+				ShaderResourceViewGL* rv = (ShaderResourceViewGL*)resource_views[j];
 
-			if (resource_views[j]->getViewType() == IShaderResourceView::VIEW_TEXTURE) {
-				// should probably assert that texture_count isn't higher than the supported number of textures
+				if (resource_views[j]->getViewType() == IShaderResourceView::VIEW_TEXTURE) {
+					// should probably assert that texture_count isn't higher than the supported number of textures
 
-				SamplerStateGL* st = (SamplerStateGL*)sampler_states[sampler_count];
+					SamplerStateGL* st = (SamplerStateGL*)sampler_states[sampler_count];
 
-				glActiveTexture(GL_TEXTURE0 + texture_count);
-				glBindTexture(rv->getTarget(), rv->getResourceView());
-				glBindSampler(texture_count, st->getSamplerState());
+					glActiveTexture(GL_TEXTURE0 + texture_count);
+					glBindTexture(rv->getTarget(), rv->getResourceView());
+					glBindSampler(texture_count, st->getSamplerState());
 
-				++texture_count;
-				++sampler_count;
+					++texture_count;
+					++sampler_count;
 
-			} else {
-				assert(0 && "How is your ShaderResourceView not a texture? That's the only type we have implemented ...");
+				} else {
+					assert(0 && "How is your ShaderResourceView not a texture? That's the only type we have implemented ...");
+				}
 			}
 		}
 	}

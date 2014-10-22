@@ -82,6 +82,9 @@ public:
 	void append(const T* string, unsigned int size);
 	void append(const T* string);
 	void resize(unsigned int new_size);
+	void erase(unsigned int begin_index, unsigned int end_index);
+	void erase(unsigned int index);
+	void erase(T character);
 
 	unsigned int findFirstOf(const T* character) const;
 	unsigned int findLastOf(const T* character) const;

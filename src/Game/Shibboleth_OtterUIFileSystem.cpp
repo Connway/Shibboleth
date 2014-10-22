@@ -25,66 +25,68 @@ THE SOFTWARE.
 
 NS_SHIBBOLETH
 
-static Gaff::Map<Otter::AccessFlag, Gaff::File::OPEN_MODE, ProxyAllocator> g_Open_Map;
-//static bool gMap_init = false;
-
-OtterUIFileSystem::OtterUIFileSystem(void)
+OtterUIFileSystem::OtterUIFileSystem(Shibboleth::IFileSystem& file_system):
+	_file_system(file_system)
 {
-	//if (!gMap_init) {
-	//	gMap_init = true;
-	//}
-
-	g_Open_Map.setAllocator(ProxyAllocator());
-	g_Open_Map[Otter::AccessFlag(Otter::kBinary | Otter::kWrite)] = Gaff::File::WRITE_BINARY;
-	g_Open_Map[Otter::AccessFlag(Otter::kBinary | Otter::kRead)] = Gaff::File::READ_BINARY;
 }
 
 OtterUIFileSystem::~OtterUIFileSystem(void)
 {
+	for (auto it = _files.begin(); it != _files.end(); ++it) {
+		_file_system.closeFile(*it);
+	}
 }
 
 void* OtterUIFileSystem::Open(const char* szFilename, Otter::AccessFlag flags)
 {
-	Gaff::File file(szFilename, g_Open_Map[flags]);
+	// To my knowledge, OtterUI doesn't ever request to write any files.
+	assert(flags == (Otter::kBinary | Otter::kRead));
 
-	if (!file.isOpen()) {
+	IFile* file = _file_system.openFile(szFilename);
+
+	if (!file) {
+		// log error
 		return nullptr;
 	}
 
-	void* file_ptr = file.getFile();
-	_file_map[file_ptr] = Move(file);
-	return file_ptr;
+	_files.push(file);
+	return file;
 }
 
 void OtterUIFileSystem::Close(void* pHandle)
 {
-	assert(_file_map.indexOf(pHandle) != -1);
-	_file_map[pHandle].close();
-	_file_map.erase(pHandle);
+	auto it = _files.linearSearch(pHandle);
+	assert(it != _files.end());
+
+	_file_system.closeFile(*it);
+	_files.fastErase(it);
 }
 
 uint32 OtterUIFileSystem::Read(void* pHandle, uint8* data, uint32 count)
 {
-	assert(_file_map.indexOf(pHandle) != -1);
-	return (uint32)_file_map[pHandle].read(data, sizeof(uint8), count);
+	assert(_files.linearSearch(pHandle) != _files.end());
+	IFile* file = (IFile*)pHandle;
+	unsigned int size = Gaff::Min(file->size(), count);
+
+	memcpy(data, file->getBuffer(), size);
+	return size;
 }
 
-uint32 OtterUIFileSystem::Write(void* pHandle, uint8* data, uint32 count)
+uint32 OtterUIFileSystem::Write(void* pHandle, uint8* /*data*/, uint32 /*count*/)
 {
-	assert(_file_map.indexOf(pHandle) != -1);
-	return (uint32)_file_map[pHandle].write(data, sizeof(uint8), count);
+	assert(_files.linearSearch(pHandle) != _files.end());
+	return 0;
 }
 
-void OtterUIFileSystem::Seek(void* pHandle, uint32 offset, Otter::SeekFlag seekFlag)
+void OtterUIFileSystem::Seek(void* pHandle, uint32 /*offset*/, Otter::SeekFlag /*seekFlag*/)
 {
-	assert(_file_map.indexOf(pHandle) != -1);
-	_file_map[pHandle].seek(offset, (Gaff::File::SEEK_ORIGIN)(seekFlag >> 1));
+	assert(_files.linearSearch(pHandle) != _files.end());
 }
 
 uint32 OtterUIFileSystem::Size(void* pHandle)
 {
-	assert(_file_map.indexOf(pHandle) != -1);
-	return (uint32)_file_map[pHandle].getFileSize();
+	assert(_files.linearSearch(pHandle) != _files.end());
+	return ((IFile*)pHandle)->size();
 }
 
 NS_END

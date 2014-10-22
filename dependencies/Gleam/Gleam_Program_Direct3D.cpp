@@ -266,12 +266,11 @@ void ProgramD3D::detach(IShader::SHADER_TYPE shader)
 	}
 }
 
-void ProgramD3D::bind(IRenderDevice& rd, IProgramBuffers& program_buffers)
+void ProgramD3D::bind(IRenderDevice& rd, IProgramBuffers* program_buffers)
 {
-	assert(rd.isD3D() && program_buffers.isD3D());
+	assert(rd.isD3D());
 
 	ID3D11DeviceContext* context = ((RenderDeviceD3D&)rd).getActiveDeviceContext();
-	ProgramBuffersD3D& pb = (ProgramBuffersD3D&)program_buffers;
 
 	context->VSSetShader(_shader_vertex, NULL, 0);
 	context->PSSetShader(_shader_pixel, NULL, 0);
@@ -280,14 +279,19 @@ void ProgramD3D::bind(IRenderDevice& rd, IProgramBuffers& program_buffers)
 	context->HSSetShader(_shader_hull, NULL, 0);
 	context->CSSetShader(_shader_compute, NULL, 0);
 
-	for (unsigned int i = 0; i < IShader::SHADER_TYPE_SIZE; ++i) {
-		GleamArray<ID3D11ShaderResourceView*>& res_views = pb._res_views[i];
-		GleamArray<ID3D11SamplerState*>& samplers = pb._samplers[i];
-		GleamArray<ID3D11Buffer*>& buffers = pb._buffers[i];
+	if (program_buffers) {
+		assert(program_buffers->isD3D());
+		ProgramBuffersD3D& pb = (ProgramBuffersD3D&)program_buffers;
 
-		(context->*shader_set[i])(0, buffers.size(), buffers.getArray());
-		(context->*resource_set[i])(0, res_views.size(), res_views.getArray());
-		(context->*sampler_set[i])(0, samplers.size(), samplers.getArray());
+		for (unsigned int i = 0; i < IShader::SHADER_TYPE_SIZE; ++i) {
+			GleamArray<ID3D11ShaderResourceView*>& res_views = pb._res_views[i];
+			GleamArray<ID3D11SamplerState*>& samplers = pb._samplers[i];
+			GleamArray<ID3D11Buffer*>& buffers = pb._buffers[i];
+
+			(context->*shader_set[i])(0, buffers.size(), buffers.getArray());
+			(context->*resource_set[i])(0, res_views.size(), res_views.getArray());
+			(context->*sampler_set[i])(0, samplers.size(), samplers.getArray());
+		}
 	}
 }
 

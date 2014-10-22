@@ -32,19 +32,24 @@ public:
 	IFile(void) {}
 	virtual ~IFile(void) {}
 
+	// Only used for files opened for read
 	virtual unsigned int size(void) const = 0;
 
 	virtual const char* getBuffer(void) const = 0;
 	virtual char* getBuffer(void) = 0;
+
+	//virtual void write(const char* buffer, unsigned int buffer_size) = 0;
 };
 
 class IFileSystem
 {
 public:
+	//enum OpenMode { OT_READ = 0, OT_WRITE };
+
 	IFileSystem(void) {}
 	virtual ~IFileSystem(void) {}
 
-	virtual IFile* openFile(const char* file_name) = 0;
+	virtual IFile* openFile(const char* file_name/*, OpenMode mode*/) = 0;
 	virtual void closeFile(IFile* file) = 0;
 };
 

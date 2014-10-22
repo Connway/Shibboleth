@@ -33,8 +33,8 @@ public:
 	IKeyboard(void) {}
 	virtual ~IKeyboard(void) {}
 
-	virtual bool init(const Window& window, bool no_windows_key) = 0;
-	virtual bool init(const Window& window) = 0;
+	virtual bool init(const IWindow& window, bool no_windows_key) = 0;
+	virtual bool init(const IWindow& window) = 0;
 
 	virtual bool isKeyDown(KeyCode key) const = 0;
 	virtual bool isKeyUp(KeyCode key) const = 0;

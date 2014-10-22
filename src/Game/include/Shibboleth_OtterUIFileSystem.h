@@ -22,16 +22,16 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Shibboleth_HashMap.h"
+#include <Shibboleth_IFileSystem.h>
 #include <Interfaces/IFileSystem.h>
-#include <Gaff_File.h>
+#include <Shibboleth_Array.h>
 
 NS_SHIBBOLETH
 
 class OtterUIFileSystem : public Otter::IFileSystem
 {
 public:
-	OtterUIFileSystem(void);
+	OtterUIFileSystem(Shibboleth::IFileSystem& file_system);
 	~OtterUIFileSystem(void);
 
 	void* Open(const char* szFilename, Otter::AccessFlag flags);
@@ -45,7 +45,8 @@ public:
 	uint32 Size(void* pHandle);
 
 private:
-	HashMap<void*, Gaff::File> _file_map;
+	Shibboleth::IFileSystem& _file_system;
+	Array<IFile*> _files;
 };
 
 NS_END

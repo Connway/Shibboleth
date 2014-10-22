@@ -32,7 +32,7 @@ public:
 	MouseMP(void);
 	~MouseMP(void);
 
-	bool init(const Window& window);
+	bool init(const IWindow& window);
 	void destroy(void);
 	void update(void);
 
@@ -46,12 +46,12 @@ public:
 	const GChar* getDeviceName(void) const;
 	const GChar* getPlatformImplementationString(void) const;
 
-	const Window* getAssociatedWindow(void) const;
+	const IWindow* getAssociatedWindow(void) const;
 
 private:
 	MouseData _curr_data;
 	MouseData _prev_data;
-	Window* _window;
+	IWindow* _window;
 
 	int _dx, _dy;
 	short _wheel;

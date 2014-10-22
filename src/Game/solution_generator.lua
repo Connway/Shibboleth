@@ -21,10 +21,13 @@ local components_files =
 	"include/Shibboleth_LuaComponent.h",
 	"include/Shibboleth_ModelComponent.h",
 	"Shibboleth_LuaComponent.cpp",
-	"Shibboleth_ComponentsModule.cpp",
 	"Shibboleth_ModelComponent.cpp"
 };
 
+local components_module_files =
+{
+	"Shibboleth_ComponentsModule.cpp"
+};
 
 solution "Game"
 	if _ACTION then
@@ -139,6 +142,7 @@ group ""
 		excludes(manager_files)
 		excludes(state_files)
 		excludes(components_files)
+		excludes(components_module_files)
 
 		includedirs
 		{
@@ -156,6 +160,41 @@ group ""
 			"../../dependencies/minizip",
 			"../../dependencies/zlib"
 		}
+
+		filter { "configurations:Debug or Release", "platforms:x86 or x64" }
+			targetsuffix ""
+
+		filter {}
+
+	project "Components"
+		if _ACTION then
+			location ("../../project/" .. _ACTION .. "/game")
+		end
+
+		kind "StaticLib"
+		language "C++"
+
+		files(components_files)
+
+		includedirs
+		{
+			"include",
+			"../Shared/include",
+			"../../dependencies/OtterUI/inc",
+			"../../dependencies/jansson",
+			"../../dependencies/Gleam/include",
+			"../../dependencies/Gaff/include",
+			"../../dependencies/LuaState",
+			"../../dependencies/LuaJIT-2.0.3/src",
+			"../../dependencies/utf8-cpp",
+			"../../dependencies/assimp/include",
+			"../../dependencies/esprit/include"
+		}
+
+		filter { "configurations:Debug or Release", "platforms:x86 or x64" }
+			targetsuffix ""
+
+		filter {}
 
 	project "ManagersModule"
 		if _ACTION then
@@ -295,7 +334,7 @@ group ""
 
 		targetname "GameComponents"
 
-		files(components_files)
+		files(components_module_files)
 
 		includedirs
 		{
@@ -318,7 +357,7 @@ group ""
 			"libjpeg", "libpng", "libtiff",
 			"OtterUI", "ResIL", "ResILU",
 			"zlib", "Gleam", "Game",
-			"esprit"
+			"esprit", "Components"
 
 			--[[
 				Adding LuaJIT as a dependency for some reason makes VS2013
@@ -336,7 +375,7 @@ group ""
 			"libjpeg", "libpng", "libtiff",
 			"OtterUI", "ResIL", "ResILU",
 			"zlib", "Gleam", "Game",
-			"esprit"
+			"esprit", "Components"
 		}
 
 		filter { "configurations:Debug", "platforms:x86" }

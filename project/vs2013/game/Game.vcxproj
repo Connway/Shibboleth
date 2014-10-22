@@ -70,25 +70,25 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <OutDir>..\..\..\build\output\x86\Debug\</OutDir>
     <IntDir>..\..\..\build\intermediate\x86\Debug\Game\</IntDir>
-    <TargetName>Game32d</TargetName>
+    <TargetName>Game</TargetName>
     <TargetExt>.lib</TargetExt>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <OutDir>..\..\..\build\output\x64\Debug\</OutDir>
     <IntDir>..\..\..\build\intermediate\x64\Debug\Game\</IntDir>
-    <TargetName>Game64d</TargetName>
+    <TargetName>Game</TargetName>
     <TargetExt>.lib</TargetExt>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <OutDir>..\..\..\build\output\x86\Release\</OutDir>
     <IntDir>..\..\..\build\intermediate\x86\Release\Game\</IntDir>
-    <TargetName>Game32</TargetName>
+    <TargetName>Game</TargetName>
     <TargetExt>.lib</TargetExt>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <OutDir>..\..\..\build\output\x64\Release\</OutDir>
     <IntDir>..\..\..\build\intermediate\x64\Release\Game\</IntDir>
-    <TargetName>Game64</TargetName>
+    <TargetName>Game</TargetName>
     <TargetExt>.lib</TargetExt>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -98,7 +98,7 @@
       <PreprocessorDefinitions>USE_SIMD;_DEBUG;DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>..\..\..\dependencies\dirent;..\..\..\src\Game\include;..\..\..\src\Shared\include;..\..\..\dependencies\OtterUI\inc;..\..\..\dependencies\jansson;..\..\..\dependencies\Gleam\include;..\..\..\dependencies\Gaff\include;..\..\..\dependencies\LuaState;..\..\..\dependencies\LuaJIT-2.0.3\src;..\..\..\dependencies\utf8-cpp;..\..\..\dependencies\assimp\include;..\..\..\dependencies\esprit\include;..\..\..\dependencies\minizip;..\..\..\dependencies\zlib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
-      <ProgramDataBaseFileName>$(OutDir)Game32d.pdb</ProgramDataBaseFileName>
+      <ProgramDataBaseFileName>$(OutDir)Game.pdb</ProgramDataBaseFileName>
       <Optimization>Disabled</Optimization>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <FloatingPointModel>Fast</FloatingPointModel>
@@ -121,7 +121,7 @@
       <PreprocessorDefinitions>USE_SIMD;_DEBUG;DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>..\..\..\dependencies\dirent;..\..\..\src\Game\include;..\..\..\src\Shared\include;..\..\..\dependencies\OtterUI\inc;..\..\..\dependencies\jansson;..\..\..\dependencies\Gleam\include;..\..\..\dependencies\Gaff\include;..\..\..\dependencies\LuaState;..\..\..\dependencies\LuaJIT-2.0.3\src;..\..\..\dependencies\utf8-cpp;..\..\..\dependencies\assimp\include;..\..\..\dependencies\esprit\include;..\..\..\dependencies\minizip;..\..\..\dependencies\zlib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <ProgramDataBaseFileName>$(OutDir)Game64d.pdb</ProgramDataBaseFileName>
+      <ProgramDataBaseFileName>$(OutDir)Game.pdb</ProgramDataBaseFileName>
       <Optimization>Disabled</Optimization>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <FloatingPointModel>Fast</FloatingPointModel>

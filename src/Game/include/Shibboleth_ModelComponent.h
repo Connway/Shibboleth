@@ -52,6 +52,8 @@ public:
 
 	static void InitReflectionDefinition(void);
 
+	void render(void); // Temporary test function
+
 private:
 	ResourceWrapper<ProgramData> _material_res;
 	ResourceWrapper<ModelData> _model_res;

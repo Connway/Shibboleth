@@ -128,6 +128,8 @@ private:
 	bool loadManagers(void);
 	bool loadStates(void);
 
+	void removeExtraLogs(void);
+
 	GAFF_NO_COPY(App);
 	GAFF_NO_MOVE(App);
 };

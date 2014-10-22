@@ -375,6 +375,37 @@ void String<T, Allocator>::resize(unsigned int new_size)
 }
 
 template <class T, class Allocator>
+void String<T, Allocator>::erase(unsigned int begin_index, unsigned int end_index)
+{
+	assert(begin_index < end_index && begin_index < _size && end_index < _size);
+	copy(_string + end_index, _string + begin_index);
+	_size -= end_index - begin_index;
+}
+
+template <class T, class Allocator>
+void String<T, Allocator>::erase(unsigned int index)
+{
+	assert(index < _size);
+	erase(index, index + 1);
+}
+
+template <class T, class Allocator>
+void String<T, Allocator>::erase(T character)
+{
+	for (unsigned int i = 0; i < _size; ++i) {
+		if (_string[i] == character) {
+			// Shift all characters above the erased character down one
+			for (unsigned int j = i; j < _size; ++j) {
+				_string[j] = _string[j +1];
+				_string[j + 1] = 0;
+			}
+
+			--_size;
+		}
+	}
+}
+
+template <class T, class Allocator>
 unsigned int String<T, Allocator>::findFirstOf(const T* string) const
 {
 	unsigned int len = length(string);

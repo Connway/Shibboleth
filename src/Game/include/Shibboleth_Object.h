@@ -133,6 +133,12 @@ public:
 	INLINE const Gleam::AABB& getAABB(void) const;
 	INLINE void setAABB(const Gleam::AABB& aabb);
 
+	INLINE unsigned int getNumComponents(void) const;
+	INLINE const IComponent* getComponent(unsigned int index) const;
+	INLINE IComponent* getComponent(unsigned int index);
+	INLINE const Array<IComponent*>& getComponents(void) const;
+	INLINE Array<IComponent*>& getComponents(void);
+
 private:
 	MessageBroadcaster _broadcaster;
 

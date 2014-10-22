@@ -23,14 +23,15 @@ THE SOFTWARE.
 #include "Shibboleth_ShaderLoader.h"
 #include "Shibboleth_ResourceDefines.h"
 #include "Shibboleth_RenderManager.h"
+#include <Shibboleth_IFileSystem.h>
 #include <Gleam_IRenderDevice.h>
 #include <Gleam_IShader.h>
 #include <Gaff_File.h>
 
 NS_SHIBBOLETH
 
-ShaderLoader::ShaderLoader(RenderManager& render_mgr):
-	_render_mgr(render_mgr)
+ShaderLoader::ShaderLoader(RenderManager& render_mgr, IFileSystem& file_system):
+	_render_mgr(render_mgr), _file_system(file_system)
 {
 }
 
@@ -40,15 +41,19 @@ ShaderLoader::~ShaderLoader(void)
 
 Gaff::IVirtualDestructor* ShaderLoader::load(const char* file_name, unsigned long long user_data)
 {
+	assert(Gaff::File::checkExtension(file_name, _render_mgr.getShaderExtension()));
 	assert(user_data < Gleam::IShader::SHADER_TYPE_SIZE);
-	assert(
-		(_render_mgr.getRenderDevice().isD3D() && Gaff::File::checkExtension(file_name, ".hlsl")) ||
-		(!_render_mgr.getRenderDevice().isD3D() && Gaff::File::checkExtension(file_name, ".glsl"))
-	);
+
+	IFile* file = _file_system.openFile(file_name);
+
+	if (!file) {
+		return nullptr;
+	}
 
 	ShaderData* shader_data = GetAllocator()->template allocT<ShaderData>();
 
 	if (!shader_data) {
+		_file_system.closeFile(file);
 		return nullptr;
 	}
 
@@ -63,17 +68,20 @@ Gaff::IVirtualDestructor* ShaderLoader::load(const char* file_name, unsigned lon
 
 		if (!shader) {
 			GetAllocator()->freeT(shader_data);
+			_file_system.closeFile(file);
 			return nullptr;
 		}
 
-		if (!shader->init(rd, file_name, shader_data->shader_type)) {
+		if (!shader->initSource(rd, file->getBuffer(), file->size(), shader_data->shader_type)) {
 			GetAllocator()->freeT(shader_data);
+			_file_system.closeFile(file);
 			return nullptr;
 		}
 
 		shader_data->shaders.push(shader);
 	}
 
+	_file_system.closeFile(file);
 	return shader_data;
 }
 

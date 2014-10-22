@@ -24,6 +24,7 @@ THE SOFTWARE.
 #include "Shibboleth_ModelAnimResources.h"
 #include "Shibboleth_ResourceManager.h"
 #include "Shibboleth_RenderManager.h"
+#include <Shibboleth_IFileSystem.h>
 #include <Shibboleth_Allocator.h>
 #include <Gleam_IRenderDevice.h>
 #include <esprit_Skeleton.h>
@@ -61,8 +62,9 @@ static const char* d3d11_end_shader_chunk =
 ;
 
 
-ModelLoader::ModelLoader(RenderManager& render_mgr, ResourceManager& res_mgr):
-	_render_mgr(render_mgr), _res_mgr(res_mgr), _esprit_proxy_allocator(GetAllocator(), "esprit Allocations")
+ModelLoader::ModelLoader(RenderManager& render_mgr, ResourceManager& res_mgr, IFileSystem& file_system):
+	_render_mgr(render_mgr), _res_mgr(res_mgr), _file_system(file_system),
+	_esprit_proxy_allocator(GetAllocator(), "esprit Allocations")
 {
 	esprit::SetAllocator(&_esprit_proxy_allocator);
 }
@@ -73,12 +75,21 @@ ModelLoader::~ModelLoader(void)
 
 Gaff::IVirtualDestructor* ModelLoader::load(const char* file_name, unsigned long long)
 {
-	Gaff::JSON json;
-	
-	if (!json.parseFile(file_name)) {
-		// log error
+	IFile* file = _file_system.openFile(file_name);
+
+	if (!file) {
 		return nullptr;
 	}
+
+	Gaff::JSON json;
+	
+	if (!json.parse(file->getBuffer())) {
+		// log error
+		_file_system.closeFile(file);
+		return nullptr;
+	}
+
+	_file_system.closeFile(file);
 
 	if (!json.isObject()) {
 		// log error

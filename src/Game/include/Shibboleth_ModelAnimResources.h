@@ -23,7 +23,6 @@ THE SOFTWARE.
 #pragma once
 
 #include "Shibboleth_ResourceDefines.h"
-#include "Shibboleth_ResourceWrapper.h"
 #include <Gaff_IVirtualDestructor.h>
 #include <Gaff_SceneImporter.h>
 #include <esprit_Skeleton.h>

@@ -39,7 +39,7 @@ public:
 
 	AdapterList getDisplayModes(int compat = 28);
 
-	bool init(const Window& window, unsigned int adapter_id, unsigned int display_id, unsigned int display_mode_id, bool vsync = false);
+	bool init(const IWindow& window, unsigned int adapter_id, unsigned int display_id, unsigned int display_mode_id, bool vsync = false);
 	void destroy(void);
 
 	bool isVsync(unsigned int device, unsigned int output) const;
@@ -50,8 +50,8 @@ public:
 	void beginFrame(void);
 	void endFrame(void);
 
-	bool resize(const Window& window);
-	bool handleFocusGained(const Window&);
+	bool resize(const IWindow& window);
+	bool handleFocusGained(const IWindow&);
 
 	void resetRenderState(void);
 

@@ -25,7 +25,7 @@ THE SOFTWARE.
 #include <Shibboleth_ReflectionDefinitions.h>
 #include <Shibboleth_IManager.h>
 #include <Shibboleth_App.h>
-#include <Gleam_Window.h>
+#include <Gleam_IWindow.h>
 
 namespace Gaff
 {
@@ -56,8 +56,7 @@ class RenderManager : public IManager
 public:
 	struct WindowData
 	{
-		// DO NOT EVER MOVE THIS POINTER
-		Gaff::SmartPtr<Gleam::Window, ProxyAllocator> window;
+		Gleam::IWindow* window;
 		unsigned int device;
 		unsigned int output;
 	};
@@ -77,15 +76,18 @@ public:
 
 	// Don't call this in a thread sensitive environment
 	bool createWindow(
-		const wchar_t* app_name, Gleam::Window::MODE window_mode,
+		const wchar_t* app_name, Gleam::IWindow::MODE window_mode,
 		int x, int y, unsigned int width, unsigned int height,
 		unsigned int refresh_rate, const char* device_name,
 		unsigned int adapter_id, unsigned int display_id, bool vsync
 	);
 
+	INLINE void updateWindows(void);
+
 	INLINE unsigned int getNumWindows(void) const;
 	INLINE const WindowData& getWindowData(unsigned int window) const;
 
+	INLINE const char* getShaderExtension(void) const;
 	INLINE Gleam::IShaderResourceView* createShaderResourceView(void);
 	INLINE Gleam::IProgramBuffers* createProgramBuffers(void);
 	INLINE Gleam::IRenderDevice* createRenderDevice(void);
@@ -109,6 +111,10 @@ private:
 	{
 		typedef bool (*InitGraphics)(IApp& app, const char* log_file_name);
 		typedef void (*ShutdownGraphics)(void);
+		typedef const char* (*GetShaderExtension)(void);
+		typedef void (*UpdateWindows)(void);
+		typedef Gleam::IWindow* (*CreateWindow)(void);
+		typedef void (*DestroyWindow)(Gleam::IWindow*);
 
 		typedef Gleam::IShaderResourceView* (*CreateShaderResourceView)(void);
 		typedef Gleam::IProgramBuffers* (*CreateProgramBuffers)(void);
@@ -125,6 +131,12 @@ private:
 		typedef Gleam::IMesh* (*CreateMesh)(void);
 
 		ShutdownGraphics shutdown;
+
+		UpdateWindows update_windows;
+		CreateWindow create_window;
+		DestroyWindow destroy_window;
+
+		GetShaderExtension get_shader_extension;
 		CreateShaderResourceView create_shaderresourceview;
 		CreateProgramBuffers create_programbuffers;
 		CreateRenderDevice create_renderdevice;
@@ -139,10 +151,6 @@ private:
 		CreateModel create_model;
 		CreateMesh create_mesh;
 	};
-
-	//struct RenderPacket
-	//{
-	//};
 
 	GraphicsFunctions _graphics_functions;
 	Array<WindowData> _windows;

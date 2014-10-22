@@ -60,67 +60,91 @@ DYNAMICEXPORT void ShutdownGraphics(void)
 	Gleam::Window::clear();
 }
 
+DYNAMICEXPORT Gleam::IWindow* CreateWindowS(void)
+{
+	return g_Proxy_Allocator.template allocT<Gleam::Window>();
+}
+
+DYNAMICEXPORT void DestroyWindowS(Gleam::IWindow* window)
+{
+	g_Proxy_Allocator.freeT(window);
+}
+
+DYNAMICEXPORT void UpdateWindows(void)
+{
+	Gleam::Window::handleWindowMessages();
+}
+
 DYNAMICEXPORT Gleam::IShaderResourceView* CreateShaderResourceView(void)
 {
-	return Gleam::GetAllocator()->template allocT<Gleam::ShaderResourceView>();
+	return g_Proxy_Allocator.template allocT<Gleam::ShaderResourceView>();
 }
 
 DYNAMICEXPORT Gleam::IProgramBuffers* CreateProgramBuffers(void)
 {
-	return Gleam::GetAllocator()->template allocT<Gleam::ProgramBuffers>();
+	return g_Proxy_Allocator.template allocT<Gleam::ProgramBuffers>();
 }
 
 DYNAMICEXPORT Gleam::IRenderDevice* CreateRenderDevice(void)
 {
-	return Gleam::GetAllocator()->template allocT<Gleam::RenderDevice>();
+	return g_Proxy_Allocator.template allocT<Gleam::RenderDevice>();
 }
 
 DYNAMICEXPORT Gleam::IRenderTarget* CreateRenderTarget(void)
 {
-	return Gleam::GetAllocator()->template allocT<Gleam::RenderTarget>();
+	return g_Proxy_Allocator.template allocT<Gleam::RenderTarget>();
 }
 
 DYNAMICEXPORT Gleam::ISamplerState* CreateSamplerState(void)
 {
-	return Gleam::GetAllocator()->template allocT<Gleam::SamplerState>();
+	return g_Proxy_Allocator.template allocT<Gleam::SamplerState>();
 }
 
 DYNAMICEXPORT Gleam::IRenderState* CreateRenderState(void)
 {
-	return Gleam::GetAllocator()->template allocT<Gleam::RenderState>();
+	return g_Proxy_Allocator.template allocT<Gleam::RenderState>();
 }
 
 DYNAMICEXPORT Gleam::ITexture* CreateTexture(void)
 {
-	return Gleam::GetAllocator()->template allocT<Gleam::Texture>();
+	return g_Proxy_Allocator.template allocT<Gleam::Texture>();
 }
 
 DYNAMICEXPORT Gleam::ILayout* CreateLayout(void)
 {
-	return Gleam::GetAllocator()->template allocT<Gleam::Layout>();
+	return g_Proxy_Allocator.template allocT<Gleam::Layout>();
 }
 
 DYNAMICEXPORT Gleam::IProgram* CreateProgram(void)
 {
-	return Gleam::GetAllocator()->template allocT<Gleam::Program>();
+	return g_Proxy_Allocator.template allocT<Gleam::Program>();
 }
 
 DYNAMICEXPORT Gleam::IShader* CreateShader(void)
 {
-	return Gleam::GetAllocator()->template allocT<Gleam::Shader>();
+	return g_Proxy_Allocator.template allocT<Gleam::Shader>();
 }
 
 DYNAMICEXPORT Gleam::IBuffer* CreateBuffer(void)
 {
-	return Gleam::GetAllocator()->template allocT<Gleam::Buffer>();
+	return g_Proxy_Allocator.template allocT<Gleam::Buffer>();
 }
 
 DYNAMICEXPORT Gleam::IModel* CreateModel(void)
 {
-	return Gleam::GetAllocator()->template allocT<Gleam::Model>();
+	return g_Proxy_Allocator.template allocT<Gleam::Model>();
 }
 
 DYNAMICEXPORT Gleam::IMesh* CreateMesh(void)
 {
-	return Gleam::GetAllocator()->template allocT<Gleam::Mesh>();
+	return g_Proxy_Allocator.template allocT<Gleam::Mesh>();
+}
+
+DYNAMICEXPORT const char* GetShaderExtension(void)
+{
+#ifdef USE_DX
+	return ".hlsl";
+#else
+	return ".glsl";
+#endif
 }

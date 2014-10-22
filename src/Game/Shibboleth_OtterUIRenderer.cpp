@@ -323,7 +323,7 @@ void OtterUIRenderer::OnDrawBatch(const Otter::DrawBatch& batch)
 
 	// add appropriate textures
 	program_buffers->addResourceView(Gleam::IShader::SHADER_PIXEL, res_data.resource_views[curr_device].get());
-	program->bind(_render_device, *program_buffers);
+	program->bind(_render_device, program_buffers.get());
 
 	// bind layout
 	device_data.layout->setLayout(_render_device, device_data.mesh.get());

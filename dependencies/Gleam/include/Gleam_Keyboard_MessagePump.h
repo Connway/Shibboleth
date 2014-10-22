@@ -26,16 +26,14 @@ THE SOFTWARE.
 
 NS_GLEAM
 
-class Window;
-
 class KeyboardMP : public IKeyboard
 {
 public:
 	KeyboardMP(void);
 	~KeyboardMP(void);
 
-	bool init(const Window& window, bool no_windows_key);
-	bool init(const Window& window);
+	bool init(const IWindow& window, bool no_windows_key);
+	bool init(const IWindow& window);
 	void destroy(void);
 	void update(void);
 
@@ -47,7 +45,7 @@ public:
 	const GChar* getDeviceName(void) const;
 	const GChar* getPlatformImplementationString(void) const;
 
-	const Window* getAssociatedWindow(void) const;
+	const IWindow* getAssociatedWindow(void) const;
 
 	bool handleMessage(const AnyMessage& message);
 
@@ -55,7 +53,7 @@ private:
 	unsigned char _curr_state[256];
 	unsigned char _prev_state[256];
 
-	Window* _window;
+	IWindow* _window;
 };
 
 NS_END

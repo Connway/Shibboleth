@@ -27,7 +27,7 @@ THE SOFTWARE.
 
 NS_GLEAM
 
-class Window;
+class IWindow;
 
 class IRenderDevice
 {
@@ -63,7 +63,7 @@ public:
 
 	virtual AdapterList getDisplayModes(int compat = 28) = 0;
 
-	virtual bool init(const Window& window, unsigned int adapter_id, unsigned int display_id, unsigned int display_mode_id, bool vsync = false) = 0;
+	virtual bool init(const IWindow& window, unsigned int adapter_id, unsigned int display_id, unsigned int display_mode_id, bool vsync = false) = 0;
 	virtual void destroy(void) = 0;
 
 	virtual bool isVsync(unsigned int device, unsigned int output) const = 0;
@@ -74,8 +74,8 @@ public:
 	virtual void beginFrame(void) = 0;
 	virtual void endFrame(void) = 0;
 
-	virtual bool resize(const Window& window) = 0;
-	virtual bool handleFocusGained(const Window& window) = 0;
+	virtual bool resize(const IWindow& window) = 0;
+	virtual bool handleFocusGained(const IWindow& window) = 0;
 
 	virtual void resetRenderState(void) = 0;
 

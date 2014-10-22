@@ -26,7 +26,7 @@ THE SOFTWARE.
 
 NS_GLEAM
 
-class Window;
+class IWindow;
 
 enum EventType
 {
@@ -324,13 +324,13 @@ enum KeyCode
 struct MessageBase
 {
 	EventType type;
-	Window* window;
+	IWindow* window;
 };
 
 struct MouseMoveMessage
 {
 	EventType type;
-	Window* window;
+	IWindow* window;
 	int x;
 	int y;
 	int dx;
@@ -340,7 +340,7 @@ struct MouseMoveMessage
 struct MouseStateMessage
 {
 	EventType type;
-	Window* window;
+	IWindow* window;
 
 	union
 	{
@@ -352,7 +352,7 @@ struct MouseStateMessage
 struct KeyCharMessage
 {
 	EventType type;
-	Window* window;
+	IWindow* window;
 
 	union
 	{
@@ -368,7 +368,5 @@ union AnyMessage
 	MouseStateMessage mouse_state;
 	KeyCharMessage key_char;
 };
-
-typedef bool (*WindowCallback)(const AnyMessage& message);
 
 NS_END

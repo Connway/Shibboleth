@@ -26,6 +26,9 @@ THE SOFTWARE.
 #include "Shibboleth_ModelAnimResources.h"
 #include <Shibboleth_ReflectionDefinitions.h>
 
+#include "Shibboleth_RenderManager.h"
+#include <Gleam_IProgram.h>
+
 NS_SHIBBOLETH
 
 COMP_REF_DEF_SAVE(ModelComponent, g_Ref_Def);
@@ -82,6 +85,20 @@ void ModelComponent::InitReflectionDefinition(void)
 		g_Ref_Def.addBaseClassInterfaceOnly<ModelComponent>();
 
 		g_Ref_Def.markDefined();
+	}
+}
+
+void ModelComponent::render(void)
+{
+	if (!_material_res || !_model_res || !_material_res.getResourcePtr()->isLoaded() ||
+		!_model_res.getResourcePtr()->isLoaded())
+		return;
+
+	RenderManager& rm = _app.getManagerT<RenderManager>("Render Manager");
+	_material_res->programs[0]->bind(rm.getRenderDevice());
+
+	for (unsigned int i = 0; i < _model_res->models[0][0]->getMeshCount(); ++i) {
+		_model_res->models[0][0]->render(rm.getRenderDevice(), i);
 	}
 }
 

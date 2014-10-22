@@ -23,7 +23,7 @@ THE SOFTWARE.
 #include "Gleam_InputManager.h"
 #include "Gleam_Keyboard_MessagePump.h"
 #include "Gleam_Mouse_MessagePump.h"
-#include "Gleam_Window.h"
+#include "Gleam_IWindow.h"
 #include "Gleam_Global.h"
 #include "Gaff_IncludeAssert.h"
 
@@ -38,7 +38,7 @@ InputManager::~InputManager(void)
 {
 	destroy();
 }
-bool InputManager::init(const Window& window)
+bool InputManager::init(const IWindow& window)
 {
 	_window = &window;
 	return true;

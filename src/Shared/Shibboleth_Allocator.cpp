@@ -43,7 +43,7 @@ Allocator::Allocator(size_t alignment):
 Allocator::~Allocator(void)
 {
 	char log_file_name[64] = { 0 };
-	Gaff::GetCurrentTimeString(log_file_name, 64, "Logs/AllocationLog %m-%d-%Y %H-%M-%S.txt");
+	Gaff::GetCurrentTimeString(log_file_name, 64, "Logs/AllocationLog %Y-%m-%d %H-%M-%S.txt");
 
 	if (!Gaff::CreateDir("./Logs", 0777)) {
 		return;

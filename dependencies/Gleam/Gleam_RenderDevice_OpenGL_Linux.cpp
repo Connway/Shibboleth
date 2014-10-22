@@ -164,13 +164,15 @@ IRenderDevice::AdapterList RenderDeviceGL::getDisplayModes(int)
 	return out;
 }
 
-bool RenderDeviceGL::init(const Window& window, unsigned int adapter_id, unsigned int display_id, unsigned int display_mode_id, bool vsync)
+bool RenderDeviceGL::init(const IWindow& window, unsigned int adapter_id, unsigned int display_id, unsigned int display_mode_id, bool vsync)
 {
 	assert(
 		_display_info.size() > adapter_id &&
 		_display_info[adapter_id].output_info.size() > display_id &&
 		_display_info[adapter_id].output_info[display_id].display_mode_list.size() > display_mode_id
 	);
+
+	const Window& wnd = (const Window&)window;
 
 	GleamArray<Device>::Iterator it = _devices.linearSearch(adapter_id, [](const Device& lhs, unsigned int rhs) -> bool
 	{
@@ -180,7 +182,7 @@ bool RenderDeviceGL::init(const Window& window, unsigned int adapter_id, unsigne
 	GLXContext context = nullptr;
 
 	if (it == _devices.end()) {
-		context = glXCreateContext(window.getDisplay(), window.getVisualInfo(), 0, True);
+		context = glXCreateContext(wnd.getDisplay(), wnd.getVisualInfo(), 0, True);
 
 		if (!context) {
 			return false;
@@ -188,7 +190,7 @@ bool RenderDeviceGL::init(const Window& window, unsigned int adapter_id, unsigne
 
 		Device device;
 
-		Viewport viewport = { 0, 0, (int)window.getWidth(), (int)window.getHeight() };
+		Viewport viewport = { 0, 0, (int)wnd.getWidth(), (int)wnd.getHeight() };
 
 		device.contexts.push(context);
 		device.viewports.push(viewport);
@@ -205,13 +207,13 @@ bool RenderDeviceGL::init(const Window& window, unsigned int adapter_id, unsigne
 
 	} else {
 		// Create the context with a share list
-		context = glXCreateContext(window.getDisplay(), window.getVisualInfo(), it->contexts[0], True);
+		context = glXCreateContext(wnd.getDisplay(), wnd.getVisualInfo(), it->contexts[0], True);
 
 		if (!context) {
 			return false;
 		}
 
-		Viewport viewport = { 0, 0, (int)window.getWidth(), (int)window.getHeight() };
+		Viewport viewport = { 0, 0, (int)wnd.getWidth(), (int)wnd.getHeight() };
 		it->contexts.push(context);
 		it->viewports.push(viewport);
 		it->windows.push((Window*)&window);
@@ -224,7 +226,7 @@ bool RenderDeviceGL::init(const Window& window, unsigned int adapter_id, unsigne
 	}
 
 	if (!_glew_already_initialized) {
-		if (glXMakeCurrent(window.getDisplay(), window.getWindow(), context) == False) {
+		if (glXMakeCurrent(wnd.getDisplay(), wnd.getWindow(), context) == False) {
 			return false;
 		}
 		
@@ -233,7 +235,7 @@ bool RenderDeviceGL::init(const Window& window, unsigned int adapter_id, unsigne
 		}
 
 		if (GLXEW_EXT_swap_control) {
-			glXSwapIntervalEXT(window.getDisplay(), glXGetCurrentDrawable(), vsync);
+			glXSwapIntervalEXT(wnd.getDisplay(), glXGetCurrentDrawable(), vsync);
 		}
 
 		_glew_already_initialized = true;
@@ -287,18 +289,20 @@ void RenderDeviceGL::endFrame(void)
 	glXSwapBuffers(_active_window->getDisplay(), _active_window->getWindow());
 }
 
-bool RenderDeviceGL::resize(const Window& window)
+bool RenderDeviceGL::resize(const IWindow& window)
 {
+	const Window& wnd = (const Window&)window;
+
 	for (auto it = _devices.begin(); it != _devices.end(); ++it) {
 		int index = it->windows.linearSearch(0, it->windows.size(), &window);
 
 		if (index > -1) {
-			it->viewports[index].width = window.getWidth();
-			it->viewports[index].height = window.getHeight();
+			it->viewports[index].width = wnd.getWidth();
+			it->viewports[index].height = wnd.getHeight();
 		}
 
 		if (&window == _active_window) {
-			glViewport(0, 0, window.getWidth(), window.getHeight());
+			glViewport(0, 0, wnd.getWidth(), wnd.getHeight());
 		}
 
 		// Maybe detect and handle fullscreen changes here?
@@ -307,7 +311,7 @@ bool RenderDeviceGL::resize(const Window& window)
 	return true;
 }
 
-bool RenderDeviceGL::handleFocusGained(const Window&)
+bool RenderDeviceGL::handleFocusGained(const IWindow&)
 {
 	return true;
 }

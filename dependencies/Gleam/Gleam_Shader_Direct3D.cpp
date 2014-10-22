@@ -45,6 +45,16 @@ static ShaderInitFuncMB mb_init_funcs[IShader::SHADER_TYPE_SIZE] = {
 	&ShaderD3D::initCompute
 };
 
+typedef bool (ShaderD3D::*ShaderInitSourceFunc)(IRenderDevice&, const char*, unsigned int);
+static ShaderInitSourceFunc source_init_funcs[IShader::SHADER_TYPE_SIZE] = {
+	&ShaderD3D::initVertexSource,
+	&ShaderD3D::initPixelSource,
+	&ShaderD3D::initDomainSource,
+	&ShaderD3D::initGeometrySource,
+	&ShaderD3D::initHullSource,
+	&ShaderD3D::initComputeSource
+};
+
 #ifdef _UNICODE
 typedef bool (ShaderD3D::*ShaderInitFuncW)(IRenderDevice&, const wchar_t*);
 static ShaderInitFuncW w_init_funcs[IShader::SHADER_TYPE_SIZE] = {
@@ -65,6 +75,18 @@ ShaderD3D::ShaderD3D(void):
 ShaderD3D::~ShaderD3D(void)
 {
 	destroy();
+}
+
+bool ShaderD3D::initSource(IRenderDevice& rd, const char* shader_source, unsigned int source_size, SHADER_TYPE shader_type)
+{
+	assert(shader_type < SHADER_TYPE_SIZE);
+	return (this->*source_init_funcs[shader_type])(rd, shader_source, source_size);
+}
+
+bool ShaderD3D::initSource(IRenderDevice& rd, const char* shader_source, SHADER_TYPE shader_type)
+{
+	assert(shader_type < SHADER_TYPE_SIZE);
+	return (this->*source_init_funcs[shader_type])(rd, shader_source, strlen(shader_source));
 }
 
 bool ShaderD3D::init(IRenderDevice& rd, const char* file_path, SHADER_TYPE shader_type)
@@ -403,11 +425,11 @@ bool ShaderD3D::initCompute(IRenderDevice& rd, const wchar_t* file_path)
 }
 #endif
 
-bool ShaderD3D::initVertexSource(IRenderDevice& rd, const char* source)
+bool ShaderD3D::initVertexSource(IRenderDevice& rd, const char* source, unsigned int source_size)
 {
 	assert(rd.isD3D() && source);
 
-	_shader_buffer = compileShader(source, strlen(source), "VertexMain", "vs_5_0");
+	_shader_buffer = compileShader(source, source_size, "VertexMain", "vs_5_0");
 
 	if (!_shader_buffer) {
 		return false;
@@ -421,11 +443,11 @@ bool ShaderD3D::initVertexSource(IRenderDevice& rd, const char* source)
 	return SUCCEEDED(result);
 }
 
-bool ShaderD3D::initPixelSource(IRenderDevice& rd, const char* source)
+bool ShaderD3D::initPixelSource(IRenderDevice& rd, const char* source, unsigned int source_size)
 {
 	assert(rd.isD3D() && source);
 
-	_shader_buffer = compileShader(source, strlen(source), "PixelMain", "ps_5_0");
+	_shader_buffer = compileShader(source, source_size, "PixelMain", "ps_5_0");
 
 	if (!_shader_buffer) {
 		return false;
@@ -439,11 +461,11 @@ bool ShaderD3D::initPixelSource(IRenderDevice& rd, const char* source)
 	return SUCCEEDED(result);
 }
 
-bool ShaderD3D::initDomainSource(IRenderDevice& rd, const char* source)
+bool ShaderD3D::initDomainSource(IRenderDevice& rd, const char* source, unsigned int source_size)
 {
 	assert(rd.isD3D() && source);
 
-	_shader_buffer = compileShader(source, strlen(source), "DomainMain", "ds_5_0");
+	_shader_buffer = compileShader(source, source_size, "DomainMain", "ds_5_0");
 
 	if (!_shader_buffer) {
 		return false;
@@ -457,11 +479,11 @@ bool ShaderD3D::initDomainSource(IRenderDevice& rd, const char* source)
 	return SUCCEEDED(result);
 }
 
-bool ShaderD3D::initGeometrySource(IRenderDevice& rd, const char* source)
+bool ShaderD3D::initGeometrySource(IRenderDevice& rd, const char* source, unsigned int source_size)
 {
 	assert(rd.isD3D() && source);
 
-	_shader_buffer = compileShader(source, strlen(source), "GeometryMain", "gs_5_0");
+	_shader_buffer = compileShader(source, source_size, "GeometryMain", "gs_5_0");
 
 	if (!_shader_buffer) {
 		return false;
@@ -475,11 +497,11 @@ bool ShaderD3D::initGeometrySource(IRenderDevice& rd, const char* source)
 	return SUCCEEDED(result);
 }
 
-bool ShaderD3D::initHullSource(IRenderDevice& rd, const char* source)
+bool ShaderD3D::initHullSource(IRenderDevice& rd, const char* source, unsigned int source_size)
 {
 	assert(rd.isD3D() && source);
 
-	_shader_buffer = compileShader(source, strlen(source), "HullMain", "hs_5_0");
+	_shader_buffer = compileShader(source, source_size, "HullMain", "hs_5_0");
 
 	if (!_shader_buffer) {
 		return false;
@@ -493,11 +515,11 @@ bool ShaderD3D::initHullSource(IRenderDevice& rd, const char* source)
 	return SUCCEEDED(result);
 }
 
-bool ShaderD3D::initComputeSource(IRenderDevice& rd, const char* source)
+bool ShaderD3D::initComputeSource(IRenderDevice& rd, const char* source, unsigned int source_size)
 {
 	assert(rd.isD3D() && source);
 
-	_shader_buffer = compileShader(source, strlen(source), "ComputeMain", "cs_5_0");
+	_shader_buffer = compileShader(source, source_size, "ComputeMain", "cs_5_0");
 
 	if (!_shader_buffer) {
 		return false;
@@ -679,7 +701,11 @@ bool ShaderD3D::loadFile(const char* file_path, char*& shader_src, SIZE_T& shade
 
 ID3DBlob* ShaderD3D::compileShader(const char* shader_src, SIZE_T shader_size, /*macro, include,*/ LPCSTR entry_point, LPCSTR target)
 {
-	assert(shader_src && shader_size && entry_point && target);
+	assert(shader_src && entry_point && target);
+
+	if (shader_size == UINT_FAIL) {
+		shader_size = strlen(shader_src);
+	}
 
 	ID3DBlob* shader_buffer;
 	ID3DBlob* error_buffer;

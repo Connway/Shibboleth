@@ -25,7 +25,7 @@ THE SOFTWARE.
 #include "Gleam_Defines.h"
 
 NS_GLEAM
-	class Window;
+	class IWindow;
 NS_END
 
 #if defined(_WIN32) || defined(_WIN64)
@@ -40,7 +40,7 @@ NS_END
 
 NS_GLEAM
 
-	INLINE bool RegisterForRawInput(unsigned short device, const Window& window);
+	INLINE bool RegisterForRawInput(unsigned short device, const IWindow& window);
 
 NS_END
 
@@ -57,7 +57,7 @@ NS_GLEAM
 	extern int gEvent;
 	extern int gError;
 
-	bool RegisterForRawInput(unsigned int device, const Window& window);
+	bool RegisterForRawInput(unsigned int device, const IWindow& window);
 
 NS_END
 
