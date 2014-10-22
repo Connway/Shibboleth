@@ -152,8 +152,7 @@ IFile* PackFileSystem::openFile(const char* file_name)
 		_files.movePush(Gaff::Move(file_data));
 		return file;
 
-	}
-	else {
+	} else {
 		AtomicIncrement(&it->count);
 		return it->file;
 	}

@@ -27,7 +27,7 @@ THE SOFTWARE.
 
 NS_GLEAM
 
-class Window;
+class IWindow;
 
 class InputManager
 {
@@ -35,7 +35,7 @@ public:
 	InputManager(void);
 	~InputManager(void);
 
-	bool init(const Window& window);
+	bool init(const IWindow& window);
 	void destroy(void);
 
 	void update(void);
@@ -49,7 +49,7 @@ public:
 
 private:
 	GleamArray<IInputDevice*> _input_devices;
-	const Window* _window;
+	const IWindow* _window;
 
 	GAFF_NO_COPY(InputManager);
 };

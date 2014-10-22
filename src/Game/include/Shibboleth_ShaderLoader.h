@@ -28,17 +28,19 @@ THE SOFTWARE.
 NS_SHIBBOLETH
 
 class RenderManager;
+class IFileSystem;
 
 class ShaderLoader : public IResourceLoader
 {
 public:
-	ShaderLoader(RenderManager& render_mgr);
+	ShaderLoader(RenderManager& render_mgr, IFileSystem& file_system);
 	~ShaderLoader(void);
 
 	Gaff::IVirtualDestructor* load(const char* file_name, unsigned long long user_data);
 
 private:
 	RenderManager& _render_mgr;
+	IFileSystem& _file_system;
 
 	GAFF_NO_COPY(ShaderLoader);
 	GAFF_NO_MOVE(ShaderLoader);

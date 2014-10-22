@@ -166,7 +166,7 @@ IRenderDevice::AdapterList RenderDeviceGL::getDisplayModes(int)
 	return out;
 }
 
-bool RenderDeviceGL::init(const Window& window, unsigned int adapter_id, unsigned int display_id, unsigned int display_mode_id, bool vsync)
+bool RenderDeviceGL::init(const IWindow& window, unsigned int adapter_id, unsigned int display_id, unsigned int display_mode_id, bool vsync)
 {
 	assert(
 		_display_info.size() > adapter_id &&
@@ -174,13 +174,14 @@ bool RenderDeviceGL::init(const Window& window, unsigned int adapter_id, unsigne
 		_display_info[adapter_id].output_info[display_id].display_mode_list.size() > display_mode_id
 	);
 
-	HWND hwnd = window.getHWnd();
+	const Window& wnd = (const Window&)window;
+	HWND hwnd = wnd.getHWnd();
 
 	// Move the window to the intended adapter/display combination, in hopes of forcing this window to be associated with the correct adapter
 	DEVMODE& mode = _display_info[adapter_id].output_info[display_id].display_mode_list[display_mode_id];
 	MoveWindow(hwnd, mode.dmPosition.x, mode.dmPosition.y, mode.dmPelsWidth, mode.dmPelsHeight, TRUE);
 
-	if (window.isFullScreen()) {
+	if (wnd.isFullScreen()) {
 		if (vsync) {
 			mode.dmFields |= DM_DISPLAYFREQUENCY;
 		} else {
@@ -232,7 +233,7 @@ bool RenderDeviceGL::init(const Window& window, unsigned int adapter_id, unsigne
 	if (it == _devices.end()) {
 		Device device;
 
-		Viewport viewport = { 0, 0, (int)window.getWidth(), (int)window.getHeight() };
+		Viewport viewport = { 0, 0, (int)wnd.getWidth(), (int)wnd.getHeight() };
 
 		device.contexts.push(context);
 		device.viewports.push(viewport);
@@ -256,7 +257,7 @@ bool RenderDeviceGL::init(const Window& window, unsigned int adapter_id, unsigne
 			return false;
 		}
 
-		Viewport viewport = { 0, 0, (int)window.getWidth(), (int)window.getHeight() };
+		Viewport viewport = { 0, 0, (int)wnd.getWidth(), (int)wnd.getHeight() };
 		it->contexts.push(context);
 		it->viewports.push(viewport);
 		it->windows.push(hwnd);
@@ -334,15 +335,17 @@ void RenderDeviceGL::endFrame(void)
 	SwapBuffers(_active_output);
 }
 
-bool RenderDeviceGL::resize(const Window& window)
+bool RenderDeviceGL::resize(const IWindow& window)
 {
+	const Window& wnd = (const Window&)window;
+
 	for (auto it = _devices.begin(); it != _devices.end(); ++it) {
-		int index = it->windows.linearSearch(0, it->windows.size(), window.getHWnd());
+		int index = it->windows.linearSearch(0, it->windows.size(), wnd.getHWnd());
 
 		if (index > -1) {
-			it->viewports[index].width = window.getWidth();
-			it->viewports[index].height = window.getHeight();
-			((RenderTargetGL*)it->rts[index].get())->setViewport(window.getWidth(), window.getHeight());
+			it->viewports[index].width = wnd.getWidth();
+			it->viewports[index].height = wnd.getHeight();
+			((RenderTargetGL*)it->rts[index].get())->setViewport(wnd.getWidth(), wnd.getHeight());
 		} else {
 			return false;
 		}
@@ -353,7 +356,7 @@ bool RenderDeviceGL::resize(const Window& window)
 	return true;
 }
 
-bool RenderDeviceGL::handleFocusGained(const Window&)
+bool RenderDeviceGL::handleFocusGained(const IWindow&)
 {
 	return true;
 }

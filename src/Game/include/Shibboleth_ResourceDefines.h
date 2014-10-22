@@ -22,7 +22,8 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Shibboleth_Array.h"
+#include "Shibboleth_ResourceWrapper.h"
+#include <Shibboleth_Array.h>
 #include <Gaff_IVirtualDestructor.h>
 #include <Gleam_IShader.h>
 #include <Gaff_RefPtr.h>
@@ -84,6 +85,7 @@ struct ShaderData : public Gaff::IVirtualDestructor
 
 struct ProgramData : public Gaff::IVirtualDestructor
 {
+	ResourceWrapper<ShaderData> shaders[Gleam::IShader::SHADER_TYPE_SIZE];
 	Array<ProgramPtr> programs;
 };
 

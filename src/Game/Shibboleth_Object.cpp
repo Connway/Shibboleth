@@ -183,6 +183,33 @@ void Object::setAABB(const Gleam::AABB& aabb)
 	_aabb = aabb;
 }
 
+unsigned int Object::getNumComponents(void) const
+{
+	return _components.size();
+}
+
+const IComponent* Object::getComponent(unsigned int index) const
+{
+	assert(index < _components.size());
+	return _components[index];
+}
+
+IComponent* Object::getComponent(unsigned int index)
+{
+	assert(index < _components.size());
+	return _components[index];
+}
+
+const Array<IComponent*>& Object::getComponents(void) const
+{
+	return _components;
+}
+
+Array<IComponent*>& Object::getComponents(void)
+{
+	return _components;
+}
+
 bool Object::createComponents(const Gaff::JSON& json)
 {
 	bool error = false;

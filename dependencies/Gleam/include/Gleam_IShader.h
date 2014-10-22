@@ -45,6 +45,11 @@ public:
 
 	virtual ~IShader(void) {}
 
+	INLINE bool initSource(IRenderDevice& rd, GleamAString& shader_source, SHADER_TYPE shader_type)
+	{
+		return initSource(rd, shader_source.getBuffer(), shader_source.size(), shader_type);
+	}
+
 	INLINE bool init(IRenderDevice& rd, const GleamAString& file_path, SHADER_TYPE shader_type)
 	{
 		return init(rd, file_path.getBuffer(), shader_type);
@@ -156,6 +161,8 @@ public:
 	virtual bool initCompute(IRenderDevice&, const wchar_t* file_path) = 0;
 #endif
 
+	virtual bool initSource(IRenderDevice& rd, const char* shader_source, unsigned int source_size, SHADER_TYPE shader_type) = 0;
+	virtual bool initSource(IRenderDevice& rd, const char* shader_source, SHADER_TYPE shader_type) = 0;
 	virtual bool init(IRenderDevice& rd, const char* file_path, SHADER_TYPE shader_type) = 0;
 
 	virtual bool initVertex(IRenderDevice&, const char* file_path) = 0;
@@ -165,12 +172,12 @@ public:
 	virtual bool initHull(IRenderDevice&, const char* file_path) = 0;
 	virtual bool initCompute(IRenderDevice&, const char* file_path) = 0;
 
-	virtual bool initVertexSource(IRenderDevice& rd, const char* source) = 0;
-	virtual bool initPixelSource(IRenderDevice& rd, const char* source) = 0;
-	virtual bool initDomainSource(IRenderDevice& rd, const char* source) = 0;
-	virtual bool initGeometrySource(IRenderDevice& rd, const char* source) = 0;
-	virtual bool initHullSource(IRenderDevice& rd, const char* source) = 0;
-	virtual bool initComputeSource(IRenderDevice& rd, const char* source) = 0;
+	virtual bool initVertexSource(IRenderDevice& rd, const char* source, unsigned int source_size = UINT_FAIL) = 0;
+	virtual bool initPixelSource(IRenderDevice& rd, const char* source, unsigned int source_size = UINT_FAIL) = 0;
+	virtual bool initDomainSource(IRenderDevice& rd, const char* source, unsigned int source_size = UINT_FAIL) = 0;
+	virtual bool initGeometrySource(IRenderDevice& rd, const char* source, unsigned int source_size = UINT_FAIL) = 0;
+	virtual bool initHullSource(IRenderDevice& rd, const char* source, unsigned int source_size = UINT_FAIL) = 0;
+	virtual bool initComputeSource(IRenderDevice& rd, const char* source, unsigned int source_size = UINT_FAIL) = 0;
 
 	virtual void destroy(void) = 0;
 

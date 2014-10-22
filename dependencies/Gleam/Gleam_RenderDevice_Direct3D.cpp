@@ -152,12 +152,14 @@ IRenderDevice::AdapterList RenderDeviceD3D::getDisplayModes(int color_format)
 	return out;
 }
 
-bool RenderDeviceD3D::init(const Window& window, unsigned int adapter_id, unsigned int display_id, unsigned int display_mode_id, bool vsync)
+bool RenderDeviceD3D::init(const IWindow& window, unsigned int adapter_id, unsigned int display_id, unsigned int display_mode_id, bool vsync)
 {
 	assert(	_display_info.size() > adapter_id &&
 			_display_info[adapter_id].output_info.size() > display_id &&
 			_display_info[adapter_id].output_info[display_id].display_mode_list.size() > display_id
 	);
+
+	Window& wnd = (Window&)window;
 
 	AdapterInfo& adapter =_display_info[adapter_id];
 	const DXGI_MODE_DESC& mode = adapter.output_info[display_id].display_mode_list[display_mode_id];
@@ -167,7 +169,7 @@ bool RenderDeviceD3D::init(const Window& window, unsigned int adapter_id, unsign
 	swap_chain_desc.BufferCount = 1;
 	swap_chain_desc.BufferDesc = mode;
 	swap_chain_desc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
-	swap_chain_desc.OutputWindow = window.getHWnd();
+	swap_chain_desc.OutputWindow = wnd.getHWnd();
 	swap_chain_desc.SampleDesc.Count = 1;
 	swap_chain_desc.SampleDesc.Quality = 0;
 	swap_chain_desc.Windowed = TRUE;
@@ -228,7 +230,7 @@ bool RenderDeviceD3D::init(const Window& window, unsigned int adapter_id, unsign
 			return false;
 		}
 
-		if (window.getWindowMode() == Window::FULLSCREEN) {
+		if (wnd.getWindowMode() == IWindow::FULLSCREEN) {
 			result = swap_chain->SetFullscreenState(TRUE, _display_info[adapter_id].output_info[display_id].output.get());
 		} else {
 			result = swap_chain->SetFullscreenState(FALSE, nullptr);
@@ -242,8 +244,8 @@ bool RenderDeviceD3D::init(const Window& window, unsigned int adapter_id, unsign
 		RETURNIFFAILED(result)
 
 		D3D11_VIEWPORT viewport;
-		viewport.Width = (float)window.getWidth();
-		viewport.Height = (float)window.getHeight();
+		viewport.Width = (float)wnd.getWidth();
+		viewport.Height = (float)wnd.getHeight();
 		viewport.MinDepth = 0.0f;
 		viewport.MaxDepth = 1.0f;
 		viewport.TopLeftX = 0.0f;
@@ -296,7 +298,7 @@ bool RenderDeviceD3D::init(const Window& window, unsigned int adapter_id, unsign
 			return false;
 		}
 
-		if (window.getWindowMode() == Window::FULLSCREEN) {
+		if (wnd.getWindowMode() == IWindow::FULLSCREEN) {
 			result = swap_chain->SetFullscreenState(TRUE, _display_info[adapter_id].output_info[display_id].output.get());
 		} else {
 			result = swap_chain->SetFullscreenState(FALSE, nullptr);
@@ -314,8 +316,8 @@ bool RenderDeviceD3D::init(const Window& window, unsigned int adapter_id, unsign
 		it->vsync.push(vsync);
 
 		D3D11_VIEWPORT viewport;
-		viewport.Width = (float)window.getWidth();
-		viewport.Height = (float)window.getHeight();
+		viewport.Width = (float)wnd.getWidth();
+		viewport.Height = (float)wnd.getHeight();
 		viewport.MinDepth = 0.0f;
 		viewport.MaxDepth = 1.0f;
 		viewport.TopLeftX = 0.0f;
@@ -379,8 +381,10 @@ void RenderDeviceD3D::endFrame(void)
 	_active_swap_chain->Present(_active_vsync, 0);
 }
 
-bool RenderDeviceD3D::resize(const Window& window)
+bool RenderDeviceD3D::resize(const IWindow& window)
 {
+	Window& wnd = (Window&)window;
+
 	for (unsigned int i = 0; i < _devices.size(); ++i) {
 		Device& device = _devices[i];
 
@@ -392,7 +396,7 @@ bool RenderDeviceD3D::resize(const Window& window)
 			DXGI_SWAP_CHAIN_DESC sc_desc;
 
 			if (SUCCEEDED(sc->GetDesc(&sc_desc))) {
-				if (sc_desc.OutputWindow == window.getHWnd()) {
+				if (sc_desc.OutputWindow == wnd.getHWnd()) {
 					bool resizing_active_output = false;
 
 					if (rtv == _active_render_target) {
@@ -415,12 +419,12 @@ bool RenderDeviceD3D::resize(const Window& window)
 					back_buffer_ptr->Release();
 					RETURNIFFAILED(result)
 
-					viewport.Width = (float)window.getWidth();
-					viewport.Height = (float)window.getHeight();
+					viewport.Width = (float)wnd.getWidth();
+					viewport.Height = (float)wnd.getHeight();
 					rtv.set(render_target_view);
 					((RenderTargetD3D*)rt.get())->setRTV(render_target_view, viewport);
 
-					if (window.getWindowMode() == Window::FULLSCREEN) {
+					if (wnd.getWindowMode() == IWindow::FULLSCREEN) {
 						result = sc->SetFullscreenState(TRUE, _display_info[i].output_info[j].output.get());
 					} else {
 						result = sc->SetFullscreenState(FALSE, nullptr);
@@ -439,8 +443,10 @@ bool RenderDeviceD3D::resize(const Window& window)
 	return false;
 }
 
-bool RenderDeviceD3D::handleFocusGained(const Window& window)
+bool RenderDeviceD3D::handleFocusGained(const IWindow& window)
 {
+	const Window& wnd = (const Window&)window;
+
 	for (unsigned int i = 0; i < _devices.size(); ++i) {
 		Device& device = _devices[i];
 
@@ -449,8 +455,8 @@ bool RenderDeviceD3D::handleFocusGained(const Window& window)
 			DXGI_SWAP_CHAIN_DESC sc_desc;
 
 			if (SUCCEEDED(sc->GetDesc(&sc_desc))) {
-				if (sc_desc.OutputWindow == window.getHWnd()) {
-					if (window.getWindowMode() == Window::FULLSCREEN) {
+				if (sc_desc.OutputWindow == wnd.getHWnd()) {
+					if (wnd.getWindowMode() == IWindow::FULLSCREEN) {
 						return SUCCEEDED(sc->SetFullscreenState(TRUE, _display_info[i].output_info[j].output.get()));
 					} else {
 						return SUCCEEDED(sc->SetFullscreenState(FALSE, nullptr));

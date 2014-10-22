@@ -91,7 +91,7 @@ public:
 	virtual void attach(IShader* shader) = 0;
 	virtual void detach(IShader::SHADER_TYPE shader) = 0;
 
-	virtual void bind(IRenderDevice& rd, IProgramBuffers& program_buffers) = 0;
+	virtual void bind(IRenderDevice& rd, IProgramBuffers* program_buffers = nullptr) = 0;
 	virtual void unbind(IRenderDevice& rd) = 0;
 
 	virtual bool isD3D(void) const = 0;

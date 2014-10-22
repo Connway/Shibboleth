@@ -46,6 +46,20 @@ ShaderGL::~ShaderGL(void)
 	destroy();
 }
 
+bool ShaderGL::initSource(IRenderDevice&, const char* shader_source, unsigned int source_size, SHADER_TYPE shader_type)
+{
+	assert(shader_source && source_size && shader_type < SHADER_TYPE_SIZE);
+	_type = shader_type;
+	return compileShader(shader_source, source_size, shader_type);
+}
+
+bool ShaderGL::initSource(IRenderDevice&, const char* shader_source, SHADER_TYPE shader_type)
+{
+	assert(shader_source && shader_type < SHADER_TYPE_SIZE);
+	_type = shader_type;
+	return compileShader(shader_source, strlen(shader_source), shader_type);
+}
+
 bool ShaderGL::init(IRenderDevice&, const char* file_path, SHADER_TYPE shader_type)
 {
 	assert(file_path && shader_type < SHADER_TYPE_SIZE);
@@ -146,46 +160,76 @@ bool ShaderGL::initCompute(IRenderDevice&, const wchar_t* file_path)
 }
 #endif
 
-bool ShaderGL::initVertexSource(IRenderDevice&, const char* source)
+bool ShaderGL::initVertexSource(IRenderDevice&, const char* source, unsigned int source_size)
 {
 	assert(source);
 	_type = SHADER_VERTEX;
-	return compileShader(source, (int)strlen(source), GL_VERTEX_SHADER);
+
+	if (source_size == UINT_FAIL) {
+		source_size = strlen(source);
+	}
+
+	return compileShader(source, source_size, GL_VERTEX_SHADER);
 }
 
-bool ShaderGL::initPixelSource(IRenderDevice&, const char* source)
+bool ShaderGL::initPixelSource(IRenderDevice&, const char* source, unsigned int source_size)
 {
 	assert(source);
 	_type = SHADER_PIXEL;
-	return compileShader(source, (int)strlen(source), GL_FRAGMENT_SHADER);
+
+	if (source_size == UINT_FAIL) {
+		source_size = strlen(source);
+	}
+
+	return compileShader(source, source_size, GL_FRAGMENT_SHADER);
 }
 
-bool ShaderGL::initDomainSource(IRenderDevice&, const char* source)
+bool ShaderGL::initDomainSource(IRenderDevice&, const char* source, unsigned int source_size)
 {
 	assert(source);
 	_type = SHADER_DOMAIN;
-	return compileShader(source, (int)strlen(source), GL_TESS_EVALUATION_SHADER);
+
+	if (source_size == UINT_FAIL) {
+		source_size = strlen(source);
+	}
+
+	return compileShader(source, source_size, GL_TESS_EVALUATION_SHADER);
 }
 
-bool ShaderGL::initGeometrySource(IRenderDevice&, const char* source)
+bool ShaderGL::initGeometrySource(IRenderDevice&, const char* source, unsigned int source_size)
 {
 	assert(source);
 	_type = SHADER_GEOMETRY;
-	return compileShader(source, (int)strlen(source), GL_GEOMETRY_SHADER);
+
+	if (source_size == UINT_FAIL) {
+		source_size = strlen(source);
+	}
+
+	return compileShader(source, source_size, GL_GEOMETRY_SHADER);
 }
 
-bool ShaderGL::initHullSource(IRenderDevice&, const char* source)
+bool ShaderGL::initHullSource(IRenderDevice&, const char* source, unsigned int source_size)
 {
 	assert(source);
 	_type = SHADER_HULL;
-	return compileShader(source, (int)strlen(source), GL_TESS_CONTROL_SHADER);
+
+	if (source_size == UINT_FAIL) {
+		source_size = strlen(source);
+	}
+
+	return compileShader(source, source_size, GL_TESS_CONTROL_SHADER);
 }
 
-bool ShaderGL::initComputeSource(IRenderDevice&, const char* source)
+bool ShaderGL::initComputeSource(IRenderDevice&, const char* source, unsigned int source_size)
 {
 	assert(source);
 	_type = SHADER_COMPUTE;
-	return compileShader(source, (int)strlen(source), GL_COMPUTE_SHADER);
+
+	if (source_size == UINT_FAIL) {
+		source_size = strlen(source);
+	}
+
+	return compileShader(source, source_size, GL_COMPUTE_SHADER);
 }
 
 void ShaderGL::destroy(void)

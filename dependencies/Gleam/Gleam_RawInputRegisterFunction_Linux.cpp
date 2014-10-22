@@ -33,18 +33,20 @@ int gOpCode;
 int gEvent;
 int gError;
 
-bool RegisterForRawInput(unsigned int device, const Window& window)
+bool RegisterForRawInput(unsigned int device, const IWindow& window)
 {
 	assert(device >= RAW_INPUT_MOUSE && device <= RAW_INPUT_KEYBOARD);
 
+	const Window& wnd = (const Window&)window;
+
 	if (!gAlreadyQueried) {
-		if (!XQueryExtension(window.getDisplay(), "XInputExtension", &gOpCode, &gEvent, &gError)) {
+		if (!XQueryExtension(wnd.getDisplay(), "XInputExtension", &gOpCode, &gEvent, &gError)) {
 			return false;
 		}
 
 		int major = 2;
 		int minor = 0;
-		if (XIQueryVersion(window.getDisplay(), &major, &minor) != Success) {
+		if (XIQueryVersion(wnd.getDisplay(), &major, &minor) != Success) {
 			return false;
 		}
 	}
@@ -62,7 +64,7 @@ bool RegisterForRawInput(unsigned int device, const Window& window)
 	int num_devices;
 	XIDeviceInfo* devices;
 
-	devices = XIQueryDevice(window.getDisplay(), XIAllMasterDevices, &num_devices);
+	devices = XIQueryDevice(wnd.getDisplay(), XIAllMasterDevices, &num_devices);
 
 	for (int i = 0; i < num_devices; ++i) {
 		switch(devices[i].use) {
@@ -100,7 +102,7 @@ bool RegisterForRawInput(unsigned int device, const Window& window)
 			break;
 	}
 
-	if (XISelectEvents(window.getDisplay(), window.getWindow(), &event_mask, 1) != Success) {
+	if (XISelectEvents(wnd.getDisplay(), wnd.getWindow(), &event_mask, 1) != Success) {
 		return false;
 	}
 
@@ -110,7 +112,7 @@ bool RegisterForRawInput(unsigned int device, const Window& window)
 		XIClearMask(masks, XI_ButtonPress);
 		XISetMask(masks, XI_RawMotion);
 
-		if (XISelectEvents(window.getDisplay(), DefaultRootWindow(window.getDisplay()), &event_mask, 1) != Success) {
+		if (XISelectEvents(wnd.getDisplay(), DefaultRootWindow(wnd.getDisplay()), &event_mask, 1) != Success) {
 			return false;
 		}
 	}

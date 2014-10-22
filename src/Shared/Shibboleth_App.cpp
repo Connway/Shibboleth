@@ -28,6 +28,7 @@ THE SOFTWARE.
 #include <Gaff_Utils.h>
 #include <Gaff_JSON.h>
 #include <iostream>
+#include <regex>
 
 NS_SHIBBOLETH
 
@@ -54,14 +55,6 @@ App::~App(void)
 	_thread_pool.destroy();
 	_logger.destroy();
 
-	// Destroy the file system
-	if (_fs.file_system_module) {
-		_fs.destroy_func(_fs.file_system);
-		_fs.file_system_module = nullptr;
-	} else {
-		_allocator.freeT(_fs.file_system);
-	}
-
 	_dynamic_loader.forEachModule([](DynamicLoader::ModulePtr module) -> bool
 	{
 		void (*shutdown_func)(void) = module->GetFunc<void (*)(void)>("ShutdownModule");
@@ -74,6 +67,14 @@ App::~App(void)
 	});
 
 	_dynamic_loader.clear();
+
+	// Destroy the file system
+	if (_fs.file_system_module) {
+		_fs.destroy_func(_fs.file_system);
+		_fs.file_system_module = nullptr;
+	} else {
+		_allocator.freeT(_fs.file_system);
+	}
 }
 
 // Still single-threaded at this point, so ok that we're not using the spinlock
@@ -85,8 +86,10 @@ bool App::init(int argc, char** argv)
 
 	_cmd_line_args = Gaff::ParseCommandLine<ProxyAllocator>(argc, argv);
 
+	removeExtraLogs(); // Make sure we don't have more than ten logs per log type
+
 	char log_file_name[64] = { 0 };
-	Gaff::GetCurrentTimeString(log_file_name, 64, "Logs/GameLog %m-%d-%Y %H-%M-%S.txt");
+	Gaff::GetCurrentTimeString(log_file_name, 64, "Logs/GameLog %Y-%m-%d %H-%M-%S.txt");
 
 	if (!Gaff::CreateDir("./Logs", 0777) || !_logger.openLogFile(log_file_name)) {
 		return false;
@@ -426,6 +429,44 @@ bool App::loadStates(void)
 	}
 
 	return true;
+}
+
+void App::removeExtraLogs(void)
+{
+	unsigned int alloc_log_count = 0;
+	unsigned int game_log_count = 0;
+
+	Gaff::ForEachTypeInDirectory<Gaff::FDT_RegularFile>("./Logs", [&](const char* name, size_t) -> bool
+	{
+		if (std::regex_match(name, std::regex("GameLog.+\.txt"))) {
+			++game_log_count;
+		} else if (std::regex_match(name, std::regex("AllocationLog.+\.txt"))) {
+			++alloc_log_count;
+		}
+
+		return false;
+	});
+
+	unsigned int alloc_logs_delete = (alloc_log_count > 10) ? alloc_log_count - 10 : 0;
+	unsigned int game_logs_delete = (game_log_count > 10) ? game_log_count - 10 : 0;
+	alloc_log_count = game_log_count = 0;
+	AString temp;
+
+	Gaff::ForEachTypeInDirectory<Gaff::FDT_RegularFile>("./Logs", [&](const char* name, size_t) -> bool
+	{
+		if (std::regex_match(name, std::regex("GameLog.+\.txt")) && game_log_count < game_logs_delete) {
+			temp = AString("./Logs/") + name;
+			std::remove(temp.getBuffer());
+			++game_log_count;
+
+		} else if (std::regex_match(name, std::regex("AllocationLog.+\.txt")) && alloc_log_count < alloc_logs_delete) {
+			temp = AString("./Logs/") + name;
+			std::remove(temp.getBuffer());
+			++alloc_log_count;
+		}
+
+		return false;
+	});
 }
 
 void App::run(void)

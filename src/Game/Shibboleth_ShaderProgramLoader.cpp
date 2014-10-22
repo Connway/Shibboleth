@@ -21,7 +21,9 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Shibboleth_ShaderProgramLoader.h"
+#include "Shibboleth_ResourceManager.h"
 #include "Shibboleth_RenderManager.h"
+#include <Shibboleth_IFileSystem.h>
 #include <Gleam_IRenderDevice.h>
 #include <Gleam_IProgram.h>
 #include <Gaff_File.h>
@@ -29,13 +31,8 @@ THE SOFTWARE.
 
 NS_SHIBBOLETH
 
-static const char* shader_extensions[] = {
-	".glsl",
-	".hlsl"
-};
-
-ShaderProgramLoader::ShaderProgramLoader(RenderManager& render_mgr):
-	_render_mgr(render_mgr)
+ShaderProgramLoader::ShaderProgramLoader(ResourceManager& res_mgr, RenderManager& render_mgr, IFileSystem& file_system):
+	_res_mgr(res_mgr), _render_mgr(render_mgr), _file_system(file_system)
 {
 }
 
@@ -45,11 +42,28 @@ ShaderProgramLoader::~ShaderProgramLoader(void)
 
 Gaff::IVirtualDestructor* ShaderProgramLoader::load(const char* file_name, unsigned long long)
 {
+	ProgramData* program_data = GetAllocator()->template allocT<ProgramData>();
+
+	if (!program_data) {
+		return nullptr;
+	}
+
+	IFile* file = _file_system.openFile(file_name);
+
+	if (!file) {
+		GetAllocator()->freeT(program_data);
+		return nullptr;
+	}
+
 	Gaff::JSON json;
 
-	if (!json.parseFile(file_name)) {
-		return false;
+	if (!json.parse(file->getBuffer())) {
+		GetAllocator()->freeT(program_data);
+		_file_system.closeFile(file);
+		return nullptr;
 	}
+
+	_file_system.closeFile(file);
 
 	Gaff::JSON vertex = json["vertex"];
 	Gaff::JSON pixel = json["pixel"];
@@ -57,126 +71,109 @@ Gaff::IVirtualDestructor* ShaderProgramLoader::load(const char* file_name, unsig
 	Gaff::JSON geometry = json["geometry"];
 	Gaff::JSON domain = json["domain"];
 
-	assert(!vertex.isNull() || !pixel.isNull() || !hull.isNull()
-			|| !geometry.isNull() || !domain.isNull());
+	assert(!vertex.isNull() || !pixel.isNull() || !hull.isNull() ||
+			!geometry.isNull() || !domain.isNull());
 
-	Array<ShaderPtr> vertex_shader, pixel_shader, hull_shader;
-	Array<ShaderPtr> geometry_shader, domain_shader;
-
-	if (vertex.isString()) {
-		vertex_shader = loadShaders(vertex.getString(), Gleam::IShader::SHADER_VERTEX);
-	}
-
-	if (pixel.isString()) {
-		pixel_shader = loadShaders(pixel.getString(), Gleam::IShader::SHADER_PIXEL);
-	}
-
-	if (hull.isString()) {
-		hull_shader = loadShaders(hull.getString(), Gleam::IShader::SHADER_HULL);
-	}
-
-	if (geometry.isString()) {
-		geometry_shader = loadShaders(geometry.getString(), Gleam::IShader::SHADER_GEOMETRY);
-	}
-
-	if (domain.isString()) {
-		domain_shader = loadShaders(domain.getString(), Gleam::IShader::SHADER_DOMAIN);
-	}
-
-	// If none of our shaders compiled, you dun-goofed.
-	if (vertex_shader.empty() && pixel_shader.empty() && hull_shader.empty() && geometry_shader.empty() && domain_shader.empty()) {
+	if (vertex.isString() && !loadShader(program_data, vertex.getString(), Gleam::IShader::SHADER_VERTEX)) {
 		// log error
+		GetAllocator()->freeT(program_data);
 		return nullptr;
 	}
 
-	Array<ProgramPtr> programs = createPrograms(vertex_shader, pixel_shader, hull_shader, geometry_shader, domain_shader);
-
-	ProgramData* program_data = GetAllocator()->template allocT<ProgramData>();
-
-	if (!program_data) {
+	if (pixel.isString() && !loadShader(program_data, pixel.getString(), Gleam::IShader::SHADER_PIXEL)) {
+		// log error
+		GetAllocator()->freeT(program_data);
 		return nullptr;
 	}
 
-	program_data->programs = programs;
+	if (hull.isString() && !loadShader(program_data, hull.getString(), Gleam::IShader::SHADER_HULL)) {
+		// log error
+		GetAllocator()->freeT(program_data);
+		return nullptr;
+	}
+
+	if (geometry.isString() && !loadShader(program_data, geometry.getString(), Gleam::IShader::SHADER_GEOMETRY)) {
+		// log error
+		GetAllocator()->freeT(program_data);
+		return nullptr;
+	}
+
+	if (domain.isString() && !loadShader(program_data, domain.getString(), Gleam::IShader::SHADER_DOMAIN)) {
+		// log error
+		GetAllocator()->freeT(program_data);
+		return nullptr;
+	}
+
+	if (!createPrograms(program_data)) {
+		GetAllocator()->freeT(program_data);
+		return nullptr;
+	}
 
 	return program_data;
 }
 
-Array<ShaderPtr> ShaderProgramLoader::loadShaders(const char* file_name, Gleam::IShader::SHADER_TYPE shader_type)
+
+bool ShaderProgramLoader::loadShader(ProgramData* data, const char* file_name, Gleam::IShader::SHADER_TYPE shader_type)
 {
-	Gaff::ScopedLock<Gaff::SpinLock> scoped_lock(_render_mgr.getSpinLock());
-	Gleam::IRenderDevice& rd = _render_mgr.getRenderDevice();
-	Array<ShaderPtr> shaders;
+	AString fname = AString(file_name) + _render_mgr.getShaderExtension();
+	data->shaders[shader_type] = _res_mgr.loadResourceImmediately(fname.getBuffer(), shader_type);
 
-	// isD3D() will be replaced with getRendererType() eventually
-	AString shader_name = AString(file_name) + shader_extensions[rd.isD3D()];
-
-	for (unsigned int i = 0; i < rd.getNumDevices(); ++i) {
-		ShaderPtr shader(_render_mgr.createShader());
-		rd.setCurrentDevice(i);
-
-		if (!shader) {
-			shaders.clear();
-			break;
-		}
-
-		if (!shader->init(rd, shader_name.getBuffer(), shader_type)) {
-			shaders.clear();
-			break;
-		}
-
-		shaders.push(shader);
+	// Loop until loaded
+	while (!data->shaders[shader_type].getResourcePtr()->isLoaded() &&
+			!data->shaders[shader_type].getResourcePtr()->hasFailed()) {
 	}
 
-	return shaders;
+	return !data->shaders[shader_type].getResourcePtr()->hasFailed();
 }
 
-Array<ProgramPtr> ShaderProgramLoader::createPrograms(
-	Array<ShaderPtr>& vert_shaders, Array<ShaderPtr>& pixel_shaders, Array<ShaderPtr>& hull_shaders,
-	Array<ShaderPtr>& geometry_shaders, Array<ShaderPtr>& domain_shaders)
+bool ShaderProgramLoader::createPrograms(ProgramData* data)
 {
 	Gaff::ScopedLock<Gaff::SpinLock> scoped_lock(_render_mgr.getSpinLock());
 	Gleam::IRenderDevice& rd = _render_mgr.getRenderDevice();
-	Array<ProgramPtr> programs;
 
 	for (unsigned int i = 0; i < rd.getNumDevices(); ++i) {
 		ProgramPtr program(_render_mgr.createProgram());
 		rd.setCurrentDevice(i);
 
 		if (!program) {
-			programs.clear();
-			break;
+			data->programs.clear();
+			return false;
 		}
 
 		if (!program->init()) {
-			programs.clear();
-			break;
+			data->programs.clear();
+			return false;
 		}
 
-		if (!vert_shaders.empty()) {
-			program->attach(vert_shaders[i].get());
+		if (data->shaders[Gleam::IShader::SHADER_VERTEX]) {
+			ShaderData* vert_shaders = data->shaders[Gleam::IShader::SHADER_VERTEX].getDataPtr();
+			program->attach(vert_shaders->shaders[i].get());
 		}
 
-		if (!pixel_shaders.empty()) {
-			program->attach(pixel_shaders[i].get());
+		if (data->shaders[Gleam::IShader::SHADER_PIXEL]) {
+			ShaderData* pixel_shaders = data->shaders[Gleam::IShader::SHADER_PIXEL].getDataPtr();
+			program->attach(pixel_shaders->shaders[i].get());
 		}
 
-		if (!hull_shaders.empty()) {
-			program->attach(hull_shaders[i].get());
+		if (data->shaders[Gleam::IShader::SHADER_HULL]) {
+			ShaderData* hull_shaders = data->shaders[Gleam::IShader::SHADER_HULL].getDataPtr();
+			program->attach(hull_shaders->shaders[i].get());
 		}
 
-		if (!geometry_shaders.empty()) {
-			program->attach(geometry_shaders[i].get());
+		if (data->shaders[Gleam::IShader::SHADER_GEOMETRY]) {
+			ShaderData* geo_shaders = data->shaders[Gleam::IShader::SHADER_GEOMETRY].getDataPtr();
+			program->attach(geo_shaders->shaders[i].get());
 		}
 
-		if (!domain_shaders.empty()) {
-			program->attach(domain_shaders[i].get());
+		if (data->shaders[Gleam::IShader::SHADER_DOMAIN]) {
+			ShaderData* domain_shaders = data->shaders[Gleam::IShader::SHADER_DOMAIN].getDataPtr();
+			program->attach(domain_shaders->shaders[i].get());
 		}
 
-		programs.push(program);
+		data->programs.push(program);
 	}
 
-	return programs;
+	return true;
 }
 
 NS_END

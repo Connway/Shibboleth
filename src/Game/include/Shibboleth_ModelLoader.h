@@ -46,12 +46,13 @@ NS_SHIBBOLETH
 
 class ResourceManager;
 class RenderManager;
+class IFileSystem;
 struct ModelData;
 
 class ModelLoader : public IResourceLoader
 {
 public:
-	ModelLoader(RenderManager& render_mgr, ResourceManager& res_mgr);
+	ModelLoader(RenderManager& render_mgr, ResourceManager& res_mgr, IFileSystem& file_system);
 	~ModelLoader(void);
 
 	Gaff::IVirtualDestructor* load(const char* file_name, unsigned long long user_data);
@@ -65,6 +66,7 @@ private:
 
 	RenderManager& _render_mgr;
 	ResourceManager& _res_mgr;
+	IFileSystem& _file_system;
 	ProxyAllocator _esprit_proxy_allocator;
 
 	bool loadMeshes(ModelData* data, const Gaff::JSON& lod_tags, const Gaff::JSON& model_prefs);

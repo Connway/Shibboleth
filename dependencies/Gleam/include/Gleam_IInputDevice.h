@@ -28,7 +28,7 @@ THE SOFTWARE.
 NS_GLEAM
 
 class IInputDevice;
-class Window;
+class IWindow;
 
 typedef void (*InputHandler)(IInputDevice*, unsigned int, float);
 
@@ -78,7 +78,7 @@ public:
 	IInputDevice(void) {}
 	virtual ~IInputDevice(void) {}
 
-	virtual bool init(const Window& window) = 0;
+	virtual bool init(const IWindow& window) = 0;
 	virtual void destroy(void) = 0;
 
 	virtual void update(void) = 0;
@@ -86,7 +86,7 @@ public:
 	virtual const GChar* getDeviceName(void) const = 0;
 	virtual const GChar* getPlatformImplementationString(void) const = 0;
 
-	virtual const Window* getAssociatedWindow(void) const = 0;
+	virtual const IWindow* getAssociatedWindow(void) const = 0;
 
 	virtual bool isKeyboard(void) const = 0;
 	virtual bool isMouse(void) const = 0;

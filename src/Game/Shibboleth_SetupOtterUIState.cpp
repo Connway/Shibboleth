@@ -29,7 +29,7 @@ THE SOFTWARE.
 NS_SHIBBOLETH
 
 SetupOtterUIState::SetupOtterUIState(IApp& app):
-	_renderer(app), _app(app)
+	_file_system(*app.getFileSystem()), _renderer(app), _app(app)
 {
 }
 

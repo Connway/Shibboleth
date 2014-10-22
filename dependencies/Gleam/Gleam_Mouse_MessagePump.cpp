@@ -22,7 +22,7 @@ THE SOFTWARE.
 
 #include "Gleam_Mouse_MessagePump.h"
 #include "Gleam_RawInputRegisterFunction.h"
-#include "Gleam_Window.h"
+#include "Gleam_IWindow.h"
 
 NS_GLEAM
 
@@ -36,13 +36,14 @@ MouseMP::~MouseMP(void)
 	destroy();
 }
 
-bool MouseMP::init(const Window& window)
+bool MouseMP::init(const IWindow& window)
 {
 	memset(&_curr_data, 0, sizeof(MouseData));
 	memset(&_prev_data, 0, sizeof(MouseData));
 
-	_window = (Window*)&window;
-	_window->addWindowMessageHandler(this, &MouseMP::handleMessage);
+	auto cb = Gaff::Bind(this, &MouseMP::handleMessage);
+	_window = (IWindow*)&window;
+	_window->addWindowMessageHandler(cb);
 
 	return RegisterForRawInput(RAW_INPUT_MOUSE, window);
 }
@@ -50,7 +51,8 @@ bool MouseMP::init(const Window& window)
 void MouseMP::destroy(void)
 {
 	if (_window) {
-		_window->removeWindowMessageHandler(this, &MouseMP::handleMessage);
+		auto cb = Gaff::Bind(this, &MouseMP::handleMessage);
+		_window->removeWindowMessageHandler(cb);
 		_window = nullptr;
 	}
 }
@@ -160,7 +162,7 @@ const GChar* MouseMP::getPlatformImplementationString(void) const
 	return GC("Agnostic:MessagePump");
 };
 
-const Window* MouseMP::getAssociatedWindow(void) const
+const IWindow* MouseMP::getAssociatedWindow(void) const
 {
 	return _window;
 }

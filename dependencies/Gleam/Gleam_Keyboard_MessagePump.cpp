@@ -22,8 +22,8 @@ THE SOFTWARE.
 
 #include "Gleam_Keyboard_MessagePump.h"
 #include "Gleam_RawInputRegisterFunction.h"
+#include "Gleam_IWindow.h"
 #include "Gleam_HashMap.h"
-#include "Gleam_Window.h"
 
 NS_GLEAM
 
@@ -39,7 +39,7 @@ KeyboardMP::~KeyboardMP(void)
 	destroy();
 }
 
-bool KeyboardMP::init(const Window& window, bool no_windows_key)
+bool KeyboardMP::init(const IWindow& window, bool no_windows_key)
 {
 	if (no_windows_key) {
 	}
@@ -47,10 +47,11 @@ bool KeyboardMP::init(const Window& window, bool no_windows_key)
 	return init(window);
 }
 
-bool KeyboardMP::init(const Window& window)
+bool KeyboardMP::init(const IWindow& window)
 {
-	_window = (Window*)&window;
-	_window->addWindowMessageHandler(this, &KeyboardMP::handleMessage);
+	auto cb = Gaff::Bind(this, &KeyboardMP::handleMessage);
+	_window = (IWindow*)&window;
+	_window->addWindowMessageHandler(cb);
 
 	return RegisterForRawInput(RAW_INPUT_KEYBOARD, window);
 }
@@ -58,7 +59,8 @@ bool KeyboardMP::init(const Window& window)
 void KeyboardMP::destroy(void)
 {
 	if (_window) {
-		_window->removeWindowMessageHandler(this, &KeyboardMP::handleMessage);
+		auto cb = Gaff::Bind(this, &KeyboardMP::handleMessage);
+		_window->removeWindowMessageHandler(cb);
 		_window = nullptr;
 	}
 }
@@ -115,7 +117,7 @@ const GChar* KeyboardMP::getPlatformImplementationString(void) const
 	return GC("Agnostic:MessagePump");
 };
 
-const Window* KeyboardMP::getAssociatedWindow(void) const
+const IWindow* KeyboardMP::getAssociatedWindow(void) const
 {
 	return _window;
 }

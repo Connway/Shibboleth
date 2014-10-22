@@ -43,8 +43,14 @@ RenderManager::RenderManager(IApp& app):
 RenderManager::~RenderManager(void)
 {
 	_render_device = nullptr;
+
+	if (_graphics_functions.destroy_window) {
+		for (auto it = _windows.begin(); it != _windows.end(); ++it) {
+			_graphics_functions.destroy_window(it->window);
+		}
+	}
+
 	_windows.clear();
-	Gleam::Window::clear(); // Remove this when IWindow interfaces get done.
 
 	if (_graphics_functions.shutdown) {
 		_graphics_functions.shutdown();
@@ -199,14 +205,14 @@ bool RenderManager::init(const char* cfg_file)
 		wnd_name = window_name.getString();
 #endif
 
-		Gleam::Window::MODE wnd_mode;
+		Gleam::IWindow::MODE wnd_mode;
 
 		if (!strncmp(window_mode.getString(), "Fullscreen", strlen("Fullscreen"))) {
-			wnd_mode = Gleam::Window::FULLSCREEN;
+			wnd_mode = Gleam::IWindow::FULLSCREEN;
 		} else if (!strncmp(window_mode.getString(), "Windowed", strlen("Windowed"))) {
-			wnd_mode = Gleam::Window::WINDOWED;
+			wnd_mode = Gleam::IWindow::WINDOWED;
 		} else if (!strncmp(window_mode.getString(), "Fullscreen-Windowed", strlen("Fullscreen-Windowed"))) {
-			wnd_mode = Gleam::Window::FULLSCREEN_WINDOWED;
+			wnd_mode = Gleam::IWindow::FULLSCREEN_WINDOWED;
 		} else {
 			log.first.writeString("ERROR - Malformed config file.\n");
 			failed = true;
@@ -268,20 +274,16 @@ void RenderManager::printfLoadLog(const char* format, ...)
 	va_end(vl);
 }
 
-//void RenderManager::addRenderPacket()
-//{
-//}
-
 bool RenderManager::createWindow(
-	const wchar_t* app_name, Gleam::Window::MODE window_mode,
+	const wchar_t* app_name, Gleam::IWindow::MODE window_mode,
 	int x, int y, unsigned int width, unsigned int height,
 	unsigned int refresh_rate, const char* device_name,
 	unsigned int adapter_id, unsigned int display_id, bool vsync)
 {
-	LogManager::FileLockPair& log = _app.getGameLogFile();
+	assert(_render_device && _graphics_functions.create_window && _graphics_functions.destroy_window);
 
-	assert(_render_device);
-	Gleam::Window* window = _proxy_allocator.template allocT<Gleam::Window>();
+	Gleam::IWindow* window = _graphics_functions.create_window();
+	LogManager::FileLockPair& log = _app.getGameLogFile();
 
 	if (!window) {
 		Gaff::ScopedLock<Gaff::SpinLock> scoped_lock(*log.second);
@@ -301,7 +303,8 @@ bool RenderManager::createWindow(
 			x, y, width, height, device_name
 		);
 
-		_proxy_allocator.freeT(window);
+
+		_graphics_functions.destroy_window(window);
 		return false;
 	}
 
@@ -318,22 +321,27 @@ bool RenderManager::createWindow(
 			width, height, adapter_id, display_id
 		);
 
-		_proxy_allocator.freeT(window);
+		_graphics_functions.destroy_window(window);
 		return false;
 	}
 
 	if (!_render_device->init(*window, adapter_id, display_id, (unsigned int)display_mode_id, vsync)) {
 		Gaff::ScopedLock<Gaff::SpinLock> scoped_lock(*log.second);
 		log.first.writeString("ERROR - Failed to initialize render device with window!\n");
-		_proxy_allocator.freeT(window);
+		_graphics_functions.destroy_window(window);
 		return false;
 	}
 
 	unsigned int device_id = (unsigned int)_render_device->getDeviceForAdapter(adapter_id);
 
-	WindowData wnd_data = { Gaff::SmartPtr<Gleam::Window, ProxyAllocator>(window, _proxy_allocator), device_id, _render_device->getNumOutputs(device_id) };
+	WindowData wnd_data = { window, device_id, _render_device->getNumOutputs(device_id) };
 	_windows.push(wnd_data);
 	return true;
+}
+
+void RenderManager::updateWindows(void)
+{
+	_graphics_functions.update_windows();
 }
 
 unsigned int RenderManager::getNumWindows(void) const
@@ -345,6 +353,12 @@ const RenderManager::WindowData& RenderManager::getWindowData(unsigned int windo
 {
 	assert(window < _windows.size());
 	return _windows[window];
+}
+
+const char* RenderManager::getShaderExtension(void) const
+{
+	assert(_graphics_functions.get_shader_extension);
+	return _graphics_functions.get_shader_extension();
 }
 
 Gleam::IShaderResourceView* RenderManager::createShaderResourceView(void)
@@ -538,6 +552,10 @@ bool RenderManager::cacheGleamFunctions(IApp& app, const Gaff::JSON& module, con
 		return false;
 	}
 
+	_graphics_functions.create_window = _gleam_module->GetFunc<GraphicsFunctions::CreateWindow>("CreateWindowS");
+	_graphics_functions.destroy_window = _gleam_module->GetFunc<GraphicsFunctions::DestroyWindow>("DestroyWindowS");
+	_graphics_functions.update_windows = _gleam_module->GetFunc<GraphicsFunctions::UpdateWindows>("UpdateWindows");
+	_graphics_functions.get_shader_extension = _gleam_module->GetFunc<GraphicsFunctions::GetShaderExtension>("GetShaderExtension");
 	_graphics_functions.create_shaderresourceview = _gleam_module->GetFunc<GraphicsFunctions::CreateShaderResourceView>("CreateShaderResourceView");
 	_graphics_functions.create_programbuffers = _gleam_module->GetFunc<GraphicsFunctions::CreateProgramBuffers>("CreateProgramBuffers");
 	_graphics_functions.create_renderdevice = _gleam_module->GetFunc<GraphicsFunctions::CreateRenderDevice>("CreateRenderDevice");
@@ -551,6 +569,26 @@ bool RenderManager::cacheGleamFunctions(IApp& app, const Gaff::JSON& module, con
 	_graphics_functions.create_buffer = _gleam_module->GetFunc<GraphicsFunctions::CreateBuffer>("CreateBuffer");
 	_graphics_functions.create_model = _gleam_module->GetFunc<GraphicsFunctions::CreateModel>("CreateModel");
 	_graphics_functions.create_mesh = _gleam_module->GetFunc<GraphicsFunctions::CreateMesh>("CreateMesh");
+	
+	if (!_graphics_functions.create_window) {
+		log.first.printf("ERROR - Failed to find function 'CreateWindowS' in graphics module '%s'.", module_path.getBuffer());
+		return false;
+	}
+
+	if (!_graphics_functions.destroy_window) {
+		log.first.printf("ERROR - Failed to find function 'DestroyWindowS' in graphics module '%s'.", module_path.getBuffer());
+		return false;
+	}
+
+	if (!_graphics_functions.update_windows) {
+		log.first.printf("ERROR - Failed to find function 'UpdateWindows' in graphics module '%s'.", module_path.getBuffer());
+		return false;
+	}
+
+	if (!_graphics_functions.get_shader_extension) {
+		log.first.printf("ERROR - Failed to find function 'GetShaderExtension' in graphics module '%s'.", module_path.getBuffer());
+		return false;
+	}
 
 	if (!_graphics_functions.create_shaderresourceview) {
 		log.first.printf("ERROR - Failed to find function 'CreateShaderResourceView' in graphics module '%s'.", module_path.getBuffer());

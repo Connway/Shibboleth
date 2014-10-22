@@ -23,6 +23,7 @@ THE SOFTWARE.
 #pragma once
 
 #include "Gleam_Window_Defines.h"
+#include "Gleam_IWindow.h"
 #include "Gleam_Array.h"
 #include <Gaff_Function.h>
 #include <X11/X.h>
@@ -32,40 +33,11 @@ THE SOFTWARE.
 
 NS_GLEAM
 
-class Window
+class Window : public IWindow
 {
 public:
+	static void handleWindowMessages(void);
 	static void clear(void);
-
-	template <class T>
-	void addWindowMessageHandler(T* object, bool (T::*cb)(const AnyMessage&))
-	{
-		Gaff::FunctionBinder<bool, const AnyMessage&> function = Gaff::Bind(object, cb);
-		addWindowMessageHandlerHelper(function);
-	}
-
-	template <class T>
-	bool removeWindowMessageHandler(T* object, bool (T::*cb)(const AnyMessage&))
-	{
-		Gaff::FunctionBinder<bool, const AnyMessage&> function = Gaff::Bind(object, cb);
-		return removeWindowMessageHandlerHelper(function);
-	}
-
-	template <class T>
-	void addWindowMessageHandler(const T& cb)
-	{
-		Gaff::FunctionBinder<bool, const AnyMessage&> function = Gaff::Bind(cb);
-		addWindowMessageHandlerHelper(function);
-	}
-
-	template <class T>
-	bool removeWindowMessageHandler(const T& cb)
-	{
-		Gaff::FunctionBinder<bool, const AnyMessage&> function = Gaff::Bind(cb);
-		return removeWindowMessageHandlerHelper(function);
-	}
-
-	enum MODE { FULLSCREEN = 0, WINDOWED, FULLSCREEN_WINDOWED };
 
 	Window(void);
 	~Window(void);
@@ -76,29 +48,28 @@ public:
 				const char* device_name = nullptr);
 	void destroy(void);
 
-	INLINE void handleWindowMessages(void);
-	INLINE void addWindowMessageHandler(WindowCallback callback);
-	bool removeWindowMessageHandler(WindowCallback callback);
+	void addWindowMessageHandler(Gaff::FunctionBinder<bool, const AnyMessage&>& callback);
+	bool removeWindowMessageHandler(Gaff::FunctionBinder<bool, const AnyMessage&>& callback);
 
 	void showCursor(bool show);
 	void containCursor(bool contain);
 
-	INLINE bool isCursorVisible(void) const;
-	INLINE bool isCursorContained(void) const;
+	bool isCursorVisible(void) const;
+	bool isCursorContained(void) const;
 
-	INLINE void allowRepeats(bool allow);
-	INLINE bool areRepeatsAllowed(void) const;
+	void allowRepeats(bool allow);
+	bool areRepeatsAllowed(void) const;
 
 	bool setWindowMode(MODE window_mode, int width = 0, int height = 0, short refresh_rate = 60);
-	INLINE MODE getWindowMode(void) const;
+	MODE getWindowMode(void) const;
 
-	INLINE void getPos(int& x, int& y) const;
-	INLINE void getDimensions(unsigned int& width, unsigned int& height) const;
-	INLINE int getPosX(void) const;
-	INLINE int getPosY(void) const;
-	INLINE unsigned int getWidth(void) const;
-	INLINE unsigned int getHeight(void) const;
-	INLINE bool isFullScreen(void) const;
+	void getPos(int& x, int& y) const;
+	void getDimensions(unsigned int& width, unsigned int& height) const;
+	int getPosX(void) const;
+	int getPosY(void) const;
+	unsigned int getWidth(void) const;
+	unsigned int getHeight(void) const;
+	bool isFullScreen(void) const;
 
 	INLINE XVisualInfo* getVisualInfo(void) const;
 	INLINE Display* getDisplay(void) const;
@@ -122,7 +93,6 @@ private:
 	Display* _display;
 	XVisualInfo* _visual_info;
 	::Window _window;
-	XEvent _event;
 
 	Atom _delete_window;
 	Atom _protocols;
@@ -139,10 +109,9 @@ private:
 	GleamArray< Gaff::FunctionBinder<bool, const AnyMessage&> > _window_callbacks;
 
 	static void WindowProc(XEvent& event);
+	static GleamArray<Display*> gDisplays;
 	static GleamArray<Window*> gWindows;
-
-	void addWindowMessageHandlerHelper(const Gaff::FunctionBinder<bool, const AnyMessage&>& cb);
-	bool removeWindowMessageHandlerHelper(const Gaff::FunctionBinder<bool, const AnyMessage&>& cb);
+	static XEvent gEvent;
 
 	INLINE void handleMessage(AnyMessage* message);
 

@@ -23,6 +23,7 @@ THE SOFTWARE.
 #pragma once
 
 #include "Gleam_Window_Defines.h"
+#include "Gleam_IWindow.h"
 #include "Gleam_HashMap.h"
 #include "Gleam_Array.h"
 #include <Gaff_IncludeWindows.h>
@@ -30,40 +31,11 @@ THE SOFTWARE.
 
 NS_GLEAM
 
-class Window
+class Window : public IWindow
 {
 public:
+	static void handleWindowMessages(void);
 	static void clear(void);
-
-	template <class T>
-	void addWindowMessageHandler(T* object, bool (T::*cb)(const AnyMessage&))
-	{
-		Gaff::FunctionBinder<bool, const AnyMessage&> function = Gaff::Bind(object, cb);
-		addWindowMessageHandlerHelper(function);
-	}
-
-	template <class T>
-	bool removeWindowMessageHandler(T* object, bool (T::*cb)(const AnyMessage&))
-	{
-		Gaff::FunctionBinder<bool, const AnyMessage&> function = Gaff::Bind(object, cb);
-		return removeWindowMessageHandlerHelper(function);
-	}
-
-	template <class T>
-	void addWindowMessageHandler(const T& cb)
-	{
-		Gaff::FunctionBinder<bool, const AnyMessage&> function = Gaff::Bind(cb);
-		addWindowMessageHandlerHelper(function);
-	}
-
-	template <class T>
-	bool removeWindowMessageHandler(const T& cb)
-	{
-		Gaff::FunctionBinder<bool, const AnyMessage&> function = Gaff::Bind(cb);
-		return removeWindowMessageHandlerHelper(function);
-	}
-
-	enum MODE { FULLSCREEN = 0, WINDOWED, FULLSCREEN_WINDOWED };
 
 	Window(void);
 	~Window(void);
@@ -74,29 +46,28 @@ public:
 				const char* compat = nullptr);
 	void destroy(void);
 
-	INLINE void handleWindowMessages(void);
-	INLINE void addWindowMessageHandler(WindowCallback callback);
-	bool removeWindowMessageHandler(WindowCallback callback);
+	void addWindowMessageHandler(Gaff::FunctionBinder<bool, const AnyMessage&>& callback);
+	bool removeWindowMessageHandler(Gaff::FunctionBinder<bool, const AnyMessage&>& callback);
 
-	INLINE void showCursor(bool show);
+	void showCursor(bool show);
 	void containCursor(bool contain);
 
-	INLINE bool isCursorVisible(void) const;
-	INLINE bool isCursorContained(void) const;
+	bool isCursorVisible(void) const;
+	bool isCursorContained(void) const;
 
-	INLINE void allowRepeats(bool allow);
-	INLINE bool areRepeatsAllowed(void) const;
+	void allowRepeats(bool allow);
+	bool areRepeatsAllowed(void) const;
 
 	bool setWindowMode(MODE window_mode);
-	INLINE MODE getWindowMode(void) const;
+	MODE getWindowMode(void) const;
 
-	INLINE void getPos(int& x, int& y) const;
-	INLINE void getDimensions(unsigned int& width, unsigned int& height) const;
-	INLINE int getPosX(void) const;
-	INLINE int getPosY(void) const;
-	INLINE unsigned int getWidth(void) const;
-	INLINE unsigned int getHeight(void) const;
-	INLINE bool isFullScreen(void) const;
+	void getPos(int& x, int& y) const;
+	void getDimensions(unsigned int& width, unsigned int& height) const;
+	int getPosX(void) const;
+	int getPosY(void) const;
+	unsigned int getWidth(void) const;
+	unsigned int getHeight(void) const;
+	bool isFullScreen(void) const;
 
 	INLINE HINSTANCE getHInstance(void) const;
 	INLINE HWND getHWnd(void) const;
@@ -109,7 +80,6 @@ private:
 	HWND _hwnd;
 
 	MODE _window_mode;
-	MSG _msg_temp;
 	unsigned int _original_width;
 	unsigned int _original_height;
 	bool _cursor_visible;
@@ -120,13 +90,11 @@ private:
 
 	static LRESULT CALLBACK WindowProc(HWND hwnd, UINT msg, WPARAM w, LPARAM l);
 	static GleamArray<Window*> gWindows;
+	static MSG gMsg;
 
-	static GleamHashMap<unsigned short, KeyCode> _left_keys;
-	static GleamHashMap<unsigned short, KeyCode> _right_keys;
-	static bool _first_init;
-
-	void addWindowMessageHandlerHelper(const Gaff::FunctionBinder<bool, const AnyMessage&>& cb);
-	bool removeWindowMessageHandlerHelper(const Gaff::FunctionBinder<bool, const AnyMessage&>& cb);
+	static GleamHashMap<unsigned short, KeyCode> g_Left_Keys;
+	static GleamHashMap<unsigned short, KeyCode> g_Right_Keys;
+	static bool g_First_Init;
 
 	GAFF_NO_COPY(Window);
 	GAFF_NO_MOVE(Window);

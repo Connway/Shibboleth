@@ -109,27 +109,27 @@ JSON::~JSON(void)
 bool JSON::parseFile(const char* filename)
 {
 	assert(!_value && filename && strlen(filename));
-	_value = json_load_file(filename, JSON_REJECT_DUPLICATES, &_error);
+	_value = json_load_file(filename, JSON_REJECT_DUPLICATES | JSON_DISABLE_EOF_CHECK, &_error);
 	return valid();
 }
 
 bool JSON::parse(const char* input)
 {
 	assert(!_value && input);
-	_value = json_loads(input, JSON_REJECT_DUPLICATES, &_error);
+	_value = json_loads(input, JSON_REJECT_DUPLICATES | JSON_DISABLE_EOF_CHECK, &_error);
 	return valid();
 }
 
 bool JSON::dumpToFile(const char* filename)
 {
 	assert(_value);
-	return !json_dump_file(_value, filename, JSON_INDENT(4) | JSON_ENSURE_ASCII | JSON_SORT_KEYS);
+	return !json_dump_file(_value, filename, JSON_INDENT(4) | JSON_SORT_KEYS);
 }
 
 char* JSON::dump(void)
 {
 	assert(_value);
-	return json_dumps(_value, JSON_INDENT(4) | JSON_ENSURE_ASCII | JSON_SORT_KEYS);
+	return json_dumps(_value, JSON_INDENT(4) | JSON_SORT_KEYS);
 }
 
 void JSON::destroy(void)

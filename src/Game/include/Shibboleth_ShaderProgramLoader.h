@@ -29,24 +29,25 @@ THE SOFTWARE.
 
 NS_SHIBBOLETH
 
+class ResourceManager;
 class RenderManager;
+class IFileSystem;
 
 class ShaderProgramLoader : public IResourceLoader
 {
 public:
-	ShaderProgramLoader(RenderManager& render_mgr);
+	ShaderProgramLoader(ResourceManager& res_mgr, RenderManager& render_mgr, IFileSystem& file_system);
 	~ShaderProgramLoader(void);
 
 	Gaff::IVirtualDestructor* load(const char* file_name, unsigned long long);
 
 private:
+	ResourceManager& _res_mgr;
 	RenderManager& _render_mgr;
+	IFileSystem& _file_system;
 
-	Array<ShaderPtr> loadShaders(const char* file_name, Gleam::IShader::SHADER_TYPE shader_type);
-	Array<ProgramPtr> createPrograms(
-		Array<ShaderPtr>& vert_shaders, Array<ShaderPtr>& pixel_shaders, Array<ShaderPtr>& hull_shaders,
-		Array<ShaderPtr>& geometry_shaders, Array<ShaderPtr>& domain_shaders
-	);
+	bool loadShader(ProgramData* data, const char* file_name, Gleam::IShader::SHADER_TYPE shader_type);
+	bool createPrograms(ProgramData* data);
 
 	GAFF_NO_COPY(ShaderProgramLoader);
 	GAFF_NO_MOVE(ShaderProgramLoader);

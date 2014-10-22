@@ -202,13 +202,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\..\src\Game\include\Shibboleth_LuaComponent.h" />
-    <ClInclude Include="..\..\..\src\Game\include\Shibboleth_ModelComponent.h" />
-  </ItemGroup>
-  <ItemGroup>
     <ClCompile Include="..\..\..\src\Game\Shibboleth_ComponentsModule.cpp" />
-    <ClCompile Include="..\..\..\src\Game\Shibboleth_LuaComponent.cpp" />
-    <ClCompile Include="..\..\..\src\Game\Shibboleth_ModelComponent.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Shared.vcxproj">
@@ -249,6 +243,9 @@
     </ProjectReference>
     <ProjectReference Include="..\dependencies\esprit.vcxproj">
       <Project>{9C6BD8FB-880D-03D2-71C8-16265D098A22}</Project>
+    </ProjectReference>
+    <ProjectReference Include="Components.vcxproj">
+      <Project>{6B7DD516-5735-1764-C03C-F0BFAC13B254}</Project>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

@@ -23,6 +23,7 @@ THE SOFTWARE.
 #include "Shibboleth_CreateResourceLoadersState.h"
 #include <Shibboleth_ShaderProgramLoader.h>
 #include <Shibboleth_ResourceManager.h>
+#include <Shibboleth_RenderManager.h>
 #include <Shibboleth_TextureLoader.h>
 #include <Shibboleth_HoldingLoader.h>
 #include <Shibboleth_ShaderLoader.h>
@@ -94,7 +95,7 @@ void CreateResourceLoadersState::update(void)
 
 	// SHADER LOADER
 	{
-		ShaderLoader* shader_loader = _app.getAllocator().template allocT<ShaderLoader>(render_manager);
+		ShaderLoader* shader_loader = _app.getAllocator().template allocT<ShaderLoader>(render_manager, *_app.getFileSystem());
 
 		if (!shader_loader) {
 			// log error
@@ -103,18 +104,13 @@ void CreateResourceLoadersState::update(void)
 			return;
 		}
 
-		Array<AString> extensions;
-		//extensions.movePush(AString(".shader"));
-		extensions.movePush(AString(".hlsl"));
-		extensions.movePush(AString(".glsl"));
-
 		_app.getGameLogFile().first.printf("Adding Shader Loader\n");
-		res_mgr.registerResourceLoader(shader_loader, extensions);
+		res_mgr.registerResourceLoader(shader_loader, render_manager.getShaderExtension());
 	}
 
 	// SHADER PROGRAM LOADER
 	{
-		ShaderProgramLoader* shader_program_loader = _app.getAllocator().template allocT<ShaderProgramLoader>(render_manager);
+		ShaderProgramLoader* shader_program_loader = _app.getAllocator().template allocT<ShaderProgramLoader>(res_mgr, render_manager, *_app.getFileSystem());
 
 		if (!shader_program_loader) {
 			// log error
@@ -204,7 +200,7 @@ void CreateResourceLoadersState::update(void)
 
 	// MODEL LOADER
 	{
-		ModelLoader* model_loader = _app.getAllocator().template allocT<ModelLoader>(render_manager, res_mgr);
+		ModelLoader* model_loader = _app.getAllocator().template allocT<ModelLoader>(render_manager, res_mgr, *_app.getFileSystem());
 
 		if (!model_loader) {
 			// log error
