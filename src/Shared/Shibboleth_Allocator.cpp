@@ -27,8 +27,6 @@ THE SOFTWARE.
 
 NS_SHIBBOLETH
 
-static Allocator* gAllocator = nullptr;
-
 Allocator::Allocator(size_t alignment):
 	_tagged_pools(Gaff::DefaultAlignedAllocator(16)), _alignment(alignment)
 {
@@ -158,27 +156,6 @@ unsigned int Allocator::getNumAllocations(unsigned int alloc_tag) const
 unsigned int Allocator::getNumFrees(unsigned int alloc_tag) const
 {
 	return _tagged_pools[alloc_tag].num_frees;
-}
-
-
-void SetAllocator(Allocator* allocator)
-{
-	gAllocator = allocator;
-}
-
-Allocator* GetAllocator(void)
-{
-	return gAllocator;
-}
-
-void* ShibbolethAllocate(size_t size)
-{
-	return gAllocator->alloc((unsigned int)size);
-}
-
-void ShibbolethFree(void* data)
-{
-	gAllocator->free(data);
 }
 
 NS_END

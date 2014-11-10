@@ -24,6 +24,7 @@ THE SOFTWARE.
 
 #include "Shibboleth_IResourceLoader.h"
 #include <Shibboleth_ReflectionDefinitions.h>
+#include <Shibboleth_RefCounted.h>
 #include <Shibboleth_IManager.h>
 #include <Shibboleth_Array.h>
 #include <Shibboleth_ITask.h>
@@ -141,8 +142,6 @@ public:
 
 	void* rawRequestInterface(unsigned int class_id) const;
 
-	static void InitReflectionDefinition(void);
-
 private:
 	class ResourceLoadingTask : public ITask
 	{
@@ -155,6 +154,8 @@ private:
 	private:
 		ResourceLoaderPtr _res_loader;
 		ResourcePtr _res_ptr;
+
+		SHIB_REF_COUNTED(ResourceLoadingTask);
 	};
 
 	HashMap<AHashString, ResourceLoaderPtr> _resource_loaders;

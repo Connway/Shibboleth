@@ -22,7 +22,7 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Gleam_IProgram.h"
+#include "Gleam_ProgramBase.h"
 
 struct ID3D11VertexShader;
 struct ID3D11PixelShader;
@@ -37,7 +37,7 @@ struct ID3D11Buffer;
 
 NS_GLEAM
 
-class ProgramBuffersD3D : public IProgramBuffers
+class ProgramBuffersD3D : public ProgramBuffersBase
 {
 public:
 	ProgramBuffersD3D(void);
@@ -58,9 +58,9 @@ public:
 	bool isD3D(void) const;
 
 private:
-	GleamArray < GleamArray<ID3D11ShaderResourceView*> > _res_views;
-	GleamArray < GleamArray<ID3D11SamplerState*> > _samplers;
-	GleamArray < GleamArray<ID3D11Buffer*> > _buffers;
+	GleamArray<ID3D11ShaderResourceView*> _res_views[IShader::SHADER_TYPE_SIZE];
+	GleamArray<ID3D11SamplerState*> _samplers[IShader::SHADER_TYPE_SIZE];
+	GleamArray<ID3D11Buffer*> _buffers[IShader::SHADER_TYPE_SIZE];
 
 	void cacheResViews(void);
 	void cacheSamplers(void);
@@ -70,13 +70,13 @@ private:
 };
 
 
-class ProgramD3D : public IProgram
+class ProgramD3D : public ProgramBase
 {
 public:
 	ProgramD3D(void);
 	~ProgramD3D(void);
 
-	INLINE bool init(void);
+	bool init(void);
 
 	void attach(IShader* shader);
 	void detach(IShader::SHADER_TYPE shader);

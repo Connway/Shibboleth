@@ -36,15 +36,15 @@ DynamicModule::~DynamicModule(void)
 	destroy();
 }
 
-bool DynamicModule::load(const char* filename)
-{
-	_module = LoadLibraryA(filename);
-	return _module != nullptr;
-}
-
 bool DynamicModule::load(const wchar_t* filename)
 {
 	_module = LoadLibraryW(filename);
+	return _module != nullptr;
+}
+
+bool DynamicModule::load(const char* filename)
+{
+	_module = LoadLibraryA(filename);
 	return _module != nullptr;
 }
 

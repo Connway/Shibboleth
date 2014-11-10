@@ -32,10 +32,7 @@ THE SOFTWARE.
 
 NS_GLEAM
 
-ProgramBuffersD3D::ProgramBuffersD3D(void):
-	_res_views(IShader::SHADER_TYPE_SIZE, GleamArray<ID3D11ShaderResourceView*>()),
-	_samplers(IShader::SHADER_TYPE_SIZE, GleamArray<ID3D11SamplerState*>()),
-	_buffers(IShader::SHADER_TYPE_SIZE, GleamArray<ID3D11Buffer*>())
+ProgramBuffersD3D::ProgramBuffersD3D(void)
 {
 }
 
@@ -45,55 +42,55 @@ ProgramBuffersD3D::~ProgramBuffersD3D(void)
 
 void ProgramBuffersD3D::addConstantBuffer(IShader::SHADER_TYPE type, IBuffer* const_buffer)
 {
-	IProgramBuffers::addConstantBuffer(type, const_buffer);
+	ProgramBuffersBase::addConstantBuffer(type, const_buffer);
 	cacheBuffers();
 }
 
 void ProgramBuffersD3D::removeConstantBuffer(IShader::SHADER_TYPE type, unsigned int index)
 {
-	IProgramBuffers::removeConstantBuffer(type, index);
+	ProgramBuffersBase::removeConstantBuffer(type, index);
 	cacheBuffers();
 }
 
 void ProgramBuffersD3D::popConstantBuffer(IShader::SHADER_TYPE type)
 {
-	IProgramBuffers::popConstantBuffer(type);
+	ProgramBuffersBase::popConstantBuffer(type);
 	cacheBuffers();
 }
 
 void ProgramBuffersD3D::addResourceView(IShader::SHADER_TYPE type, IShaderResourceView* resource_view)
 {
-	IProgramBuffers::addResourceView(type, resource_view);
+	ProgramBuffersBase::addResourceView(type, resource_view);
 	cacheResViews();
 }
 
 void ProgramBuffersD3D::removeResourceView(IShader::SHADER_TYPE type, unsigned int index)
 {
-	IProgramBuffers::removeResourceView(type, index);
+	ProgramBuffersBase::removeResourceView(type, index);
 	cacheResViews();
 }
 
 void ProgramBuffersD3D::popResourceView(IShader::SHADER_TYPE type)
 {
-	IProgramBuffers::popResourceView(type);
+	ProgramBuffersBase::popResourceView(type);
 	cacheResViews();
 }
 
 void ProgramBuffersD3D::addSamplerState(IShader::SHADER_TYPE type, ISamplerState* sampler)
 {
-	IProgramBuffers::addSamplerState(type, sampler);
+	ProgramBuffersBase::addSamplerState(type, sampler);
 	cacheSamplers();
 }
 
 void ProgramBuffersD3D::removeSamplerState(IShader::SHADER_TYPE type, unsigned int index)
 {
-	IProgramBuffers::removeSamplerState(type, index);
+	ProgramBuffersBase::removeSamplerState(type, index);
 	cacheSamplers();
 }
 
 void ProgramBuffersD3D::popSamplerState(IShader::SHADER_TYPE type)
 {
-	IProgramBuffers::popSamplerState(type);
+	ProgramBuffersBase::popSamplerState(type);
 	cacheSamplers();
 }
 
@@ -281,12 +278,12 @@ void ProgramD3D::bind(IRenderDevice& rd, IProgramBuffers* program_buffers)
 
 	if (program_buffers) {
 		assert(program_buffers->isD3D());
-		ProgramBuffersD3D& pb = (ProgramBuffersD3D&)program_buffers;
+		ProgramBuffersD3D* pb = (ProgramBuffersD3D*)program_buffers;
 
 		for (unsigned int i = 0; i < IShader::SHADER_TYPE_SIZE; ++i) {
-			GleamArray<ID3D11ShaderResourceView*>& res_views = pb._res_views[i];
-			GleamArray<ID3D11SamplerState*>& samplers = pb._samplers[i];
-			GleamArray<ID3D11Buffer*>& buffers = pb._buffers[i];
+			GleamArray<ID3D11ShaderResourceView*>& res_views = pb->_res_views[i];
+			GleamArray<ID3D11SamplerState*>& samplers = pb->_samplers[i];
+			GleamArray<ID3D11Buffer*>& buffers = pb->_buffers[i];
 
 			(context->*shader_set[i])(0, buffers.size(), buffers.getArray());
 			(context->*resource_set[i])(0, res_views.size(), res_views.getArray());

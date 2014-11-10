@@ -26,8 +26,11 @@ THE SOFTWARE.
 
 NS_GAFF
 
-unsigned int Thread::INF = (unsigned int)-1;
+unsigned int Thread::INF = UINT_FAIL;
 
+/*!
+	\note Move semantics supported to allow pushing Thread instances into containers.
+*/
 Thread::Thread(Thread&& thread):
 	_thread(thread._thread)
 {
@@ -46,17 +49,31 @@ Thread::~Thread(void)
 	}
 }
 
+/*!
+	\brief Creates a thread and starts running \a thread_func immediately.
+	\param thread_func The function to run on the thread.
+	\param thread_data The data to pass to the thread.
+	\return Whether the thread was successfully created.
+*/
 bool Thread::create(Thread::ThreadFunc thread_func, void* thread_data)
 {
 	_thread = CreateThread(nullptr, 0, thread_func, thread_data, 0, nullptr);
 	return (_thread) ? true : false;
 }
 
+/*!
+	\brief Forcefully terminates the thread.
+	\return Whether the thread was successfully terminated.
+*/
 bool Thread::terminate(void)
 {
 	return (TerminateThread(_thread, 0) == FALSE) ? false : true;
 }
 
+/*!
+	\brief Closes and cleans up a finished thread and its resources.
+	\return Whether the thread was successfully closed and cleaned up.
+*/
 bool Thread::close(void)
 {
 	bool ret = (CloseHandle(_thread) == FALSE) ? false : true;
@@ -64,6 +81,11 @@ bool Thread::close(void)
 	return ret;
 }
 
+/*!
+	\brief Waits for a thread for \a ms milliseconds or until it finishes executing, whichever comes first.
+	\param ms The time to wait on the thread in milliseconds.
+	\return The result of waiting on the thread.
+*/
 Thread::WaitCode Thread::wait(unsigned int ms)
 {
 	DWORD time = (ms == INF) ? INFINITE : ms;
@@ -72,17 +94,18 @@ Thread::WaitCode Thread::wait(unsigned int ms)
 	switch(ret) {
 		case WAIT_TIMEOUT:
 			return THREAD_TIMEOUT;
-			break;
 
 		case WAIT_FAILED:
 			return THREAD_FAILED;
-			break;
 
 		default:
 			return THREAD_FINISHED;
 	}
 }
 
+/*!
+	\note Move semantics supported to allow pushing Thread instances into containers.
+*/
 const Thread& Thread::operator=(Thread&& rhs)
 {
 	if (_thread) {

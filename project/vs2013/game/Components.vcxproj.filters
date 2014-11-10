@@ -6,10 +6,16 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\..\src\Game\include\Shibboleth_IComponent.h">
+      <Filter>include</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\src\Game\include\Shibboleth_LuaComponent.h">
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\src\Game\include\Shibboleth_ModelComponent.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\Game\include\Shibboleth_RenderComponent.h">
       <Filter>include</Filter>
     </ClInclude>
   </ItemGroup>

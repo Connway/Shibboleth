@@ -20,11 +20,20 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
+/*! \file */
+
+#pragma once
+
 #include "Gaff_NodeAnimation.h"
 #include "Gaff_MeshAnimation.h"
 
 NS_GAFF
 
+/*!
+	\brief
+		Class that wraps animation data extracted from a loaded Scene.
+		See <a href="http://assimp.sourceforge.net/lib_html/structai_animation.html">aiAnimation Documentation</a> for more details.
+*/
 class Animation
 {
 public:
@@ -35,7 +44,7 @@ public:
 	INLINE const char* getName(void) const;
 	INLINE double getDuration(void) const;
 	INLINE double getFramesPerSecond(void) const;
-	INLINE unsigned int getNumChannels(void) const;
+	INLINE unsigned int getNumNodeChannels(void) const;
 	INLINE unsigned int getNumMeshChannels(void) const;
 	INLINE NodeAnimation getNodeAnimation(unsigned int channel) const;
 	INLINE MeshAnimation getMeshAnimation(unsigned int channel) const;

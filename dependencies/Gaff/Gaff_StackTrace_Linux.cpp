@@ -30,20 +30,26 @@ THE SOFTWARE.
 
 NS_GAFF
 
-// Linux doesn't really need these Init/Destroy functions, but here for compatability
+/*!
+	\brief Global initialization of the stack trace system.
+	\note Must be called before using a StackTrace instance. And called per execution context. (eg EXE, DLL)
+*/
 bool StackTrace::Init(void)
 {
 	return true;
 }
 
+/*!
+	\brief Global destruction of the stack trace system.
+*/
 void StackTrace::Destroy(void)
 {
 }
 
 StackTrace::StackTrace(const StackTrace& trace):
-	_total_frames(trace._total_frames), _strings(nullptr),
-	_frame(trace._frame)
+	_strings(nullptr)
 {
+	*this = trace;
 }
 
 StackTrace::StackTrace(void):
@@ -73,16 +79,28 @@ const StackTrace& StackTrace::operator=(const StackTrace& rhs)
 	return *this;
 }
 
+/*!
+	\brief Captures the callstack \a frames_to_capture deep.
+	\return The number of callstack frames captured.
+*/
 unsigned short StackTrace::captureStack(unsigned int frames_to_capture)
 {
 	return (unsigned short)backtrace(_stack, frames_to_capture);
 }
 
+/*!
+	\brief Returns the total number of currently captured callstack frames.
+*/
 unsigned short StackTrace::getTotalFrames(void) const
 {
 	return _total_frames;
 }
 
+/*!
+	\brief Loads the frame information for the specified callstack \a frame.
+	\param frame The callstack frame whose information to load.
+	\return Whether the callstack frame information was successfully loaded.
+*/
 bool StackTrace::loadFrameInfo(unsigned short frame)
 {
 	if (_strings) {
@@ -95,11 +113,19 @@ bool StackTrace::loadFrameInfo(unsigned short frame)
 	return _strings && _frame;
 }
 
+/*!
+	\brief Returns the currently loaded callstack frame's name.
+	\note Must call loadFrameInfo() first.
+*/
 const char* StackTrace::getFrameName(void) const
 {
 	return *_strings;
 }
 
+/*!
+	\brief Gets the address of the currently loaded callstack frame.
+	\note Must call loadFrameInfo() first.
+*/
 unsigned long long StackTrace::getFrameAddress(void) const
 {
 	// No idea if this is correct, but close enough I guess :/

@@ -22,7 +22,8 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Gleam_RefCounted.h"
+#include "Gleam_Defines.h"
+#include <Gaff_IRefCounted.h>
 #include <Gaff_RefPtr.h>
 
 NS_GLEAM
@@ -30,7 +31,7 @@ NS_GLEAM
 class IRenderDevice;
 class ITexture;
 
-class IRenderTarget : public GleamRefCounted
+class IRenderTarget : public Gaff::IRefCounted
 {
 public:
 	enum CUBE_FACE { POS_X = 0, NEG_X, POS_Y, NEG_Y, POS_Z, NEG_Z, NONE };

@@ -93,7 +93,7 @@ Value& Map<Key, Value, Allocator>::operator[](const Key& key)
 }
 
 template <class Key, class Value, class Allocator>
-void Map<Key, Value, Allocator>::erase(const typename Iterator& it)
+void Map<Key, Value, Allocator>::erase(const Iterator& it)
 {
 	assert(it != _array.end());
 	_array.erase(it);
@@ -179,7 +179,7 @@ bool Map<Key, Value, Allocator>::hasElementWithValue(const Value& value) const
 template <class Key, class Value, class Allocator>
 bool Map<Key, Value, Allocator>::hasElementWithKey(const Key& key) const
 {
-	Iterator it = _array.binarySearch(_array.begin(), _array.end(), key, KeySearchPredicate());
+	Iterator it = _array.binarySearch(key, KeySearchPredicate());
 	return it != _array.end() && it->first == key;
 }
 
@@ -214,8 +214,21 @@ typename Map<Key, Value, Allocator>::Iterator Map<Key, Value, Allocator>::rend(v
 	return _array.rend();
 }
 
+/*!
+	\brief Returns an iterator to the FIRST element that contains \a value.
+*/
 template <class Key, class Value, class Allocator>
 typename Map<Key, Value, Allocator>::Iterator Map<Key, Value, Allocator>::findElementWithValue(const Value& value) const
 {
 	return _array.linearSearch(value, ValueSearchPredicate());
+}
+
+/*!
+	\brief Returns an iterator to the element that contains \a key.
+*/
+template <class Key, class Value, class Allocator>
+typename Map<Key, Value, Allocator>::Iterator Map<Key, Value, Allocator>::findElementWithKey(const Key& key) const
+{
+	Iterator it = _array.binarySearch(key, KeySearchPredicate());
+	return (it != _array.end() && it->first == key) ? it : end();
 }

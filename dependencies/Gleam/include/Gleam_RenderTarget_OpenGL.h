@@ -23,6 +23,7 @@ THE SOFTWARE.
 #pragma once
 
 #include "Gleam_IRenderTarget.h"
+#include "Gleam_RefCounted.h"
 #include "Gleam_Array.h"
 
 NS_GLEAM
@@ -60,6 +61,8 @@ private:
 
 	friend class RenderDeviceGL;
 	void setViewport(int viewport_width, int viewport_height);
+
+	GLEAM_REF_COUNTED(RenderTargetGL);
 };
 
 NS_END

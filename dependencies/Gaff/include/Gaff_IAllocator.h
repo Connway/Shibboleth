@@ -20,6 +20,8 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
+/*! \file */
+
 #pragma once
 
 #include "Gaff_Defines.h"
@@ -51,6 +53,9 @@ void deconstruct(T* data)
 	data->~T();
 }
 
+/*!
+	\brief Interface that all allocators inherit from.
+*/
 class IAllocator
 {
 public:

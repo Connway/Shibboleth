@@ -62,7 +62,7 @@ double Animation::getFramesPerSecond(void) const
 	return _animation->mTicksPerSecond;
 }
 
-unsigned int Animation::getNumChannels(void) const
+unsigned int Animation::getNumNodeChannels(void) const
 {
 	assert(_animation);
 	return _animation->mNumChannels;

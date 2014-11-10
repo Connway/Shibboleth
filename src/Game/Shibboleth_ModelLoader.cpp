@@ -241,7 +241,7 @@ bool ModelLoader::loadMeshes(ModelData* data, const Gaff::JSON& lod_tags, const 
 				{
 					AString mesh_name(scene_mesh.getName());
 
-					if (mesh_name.findFirstOf(value.getString()) != AString::npos) {
+					if (mesh_name.findFirstOf(value.getString()) != UINT_FAIL) {
 						lod = index;
 						return true;
 					}

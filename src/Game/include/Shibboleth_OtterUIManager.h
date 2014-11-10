@@ -72,8 +72,6 @@ public:
 
 	void* rawRequestInterface(unsigned int class_id) const;
 
-	static void InitReflectionDefinition(void);
-
 private:
 	HashMap<const char*, Otter::Scene*> _scenes;
 

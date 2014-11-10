@@ -27,7 +27,6 @@ THE SOFTWARE.
 #include <Shibboleth_Watcher.h>
 #include <Shibboleth_Array.h>
 #include <Gaff_INamedObject.h>
-#include <Gaff_WeakObject.h>
 #include <Gaff_Function.h>
 #include <Gaff_SmartPtr.h>
 #include <Gleam_Quaternion.h>
@@ -40,7 +39,7 @@ NS_SHIBBOLETH
 class ComponentManager;
 class IApp;
 
-class Object : public Gaff::INamedObject, public Gaff::WeakObject<ProxyAllocator>
+class Object : public Gaff::INamedObject
 {
 public:
 	template <class Interface>

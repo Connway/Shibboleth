@@ -20,6 +20,10 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
+/*! \file */
+
+#pragma once
+
 #include "Gaff_Function.h"
 #include "Gaff_Scene.h"
 #include <assimp/ProgressHandler.hpp>
@@ -58,6 +62,9 @@ enum SceneImportFlags
 	SI_DEBONE = aiProcess_Debone
 };
 
+/*!
+	\brief Class that wraps an assimp importer.
+*/
 class SceneImporter
 {
 public:

@@ -20,6 +20,8 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
+/*! \file */
+
 #pragma once
 
 #include "Gaff_IAllocator.h"
@@ -27,6 +29,9 @@ THE SOFTWARE.
 
 NS_GAFF
 
+/*!
+	\brief Simple malloc/free allocator.
+*/
 class DefaultAllocator : public IAllocator
 {
 public:

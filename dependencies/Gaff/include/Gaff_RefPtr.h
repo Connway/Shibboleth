@@ -20,12 +20,17 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
+/*! \file */
+
 #pragma once
 
 #include "Gaff_Defines.h"
 
 NS_GAFF
 
+/*!
+	A smart pointer for reference counted data types.
+*/
 template <class T>
 class RefPtr
 {
@@ -122,7 +127,9 @@ public:
 		return _data;
 	}
 
-	// use when you do not want to add a reference
+	/*!
+		\brief Sets the internal pointer without incrementing the reference count.
+	*/
 	void set(T* data)
 	{
 		_data = data;
@@ -146,6 +153,9 @@ private:
 	T* _data;
 };
 
+/*!
+	\brief A smart pointer for COM style reference counted objects. Essentially just changes the function name casing.
+*/
 template <class T>
 class COMRefPtr
 {
@@ -242,7 +252,9 @@ public:
 		return _data;
 	}
 
-	// use when you do not want to add a reference
+	/*!
+		\brief Sets the internal pointer without incrementing the reference count.
+	*/
 	void set(T* data)
 	{
 		_data = data;

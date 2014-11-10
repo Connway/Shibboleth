@@ -50,8 +50,6 @@ public:
 
 	void* rawRequestInterface(unsigned int class_id) const;
 
-	static void InitReflectionDefinition(void);
-
 private:
 	Array< Gaff::FunctionBinder<void, lua::State&> > _registrants;
 	IApp& _app;

@@ -23,6 +23,7 @@ THE SOFTWARE.
 #pragma once
 
 #include "Gleam_IRenderState.h"
+#include "Gleam_RefCounted.h"
 
 struct ID3D11DepthStencilState;
 struct ID3D11RasterizerState;
@@ -63,6 +64,8 @@ private:
 	ID3D11BlendState* _blend_state;
 
 	unsigned int _stencil_ref;
+
+	GLEAM_REF_COUNTED(RenderStateD3D);
 };
 
 NS_END

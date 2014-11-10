@@ -20,6 +20,8 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
+/*! \file */
+
 #pragma once
 
 #include "Gaff_Array.h"
@@ -27,6 +29,11 @@ THE SOFTWARE.
 
 NS_GAFF
 
+/*!
+	\brief
+		A normal, key/value pair map. Essentially an Array< Pair<Key, Value> >
+		that is managed using binary searches.
+*/
 template <class Key, class Value, class Allocator = DefaultAllocator>
 class Map
 {
@@ -73,6 +80,7 @@ public:
 	Iterator rend(void) const;
 
 	Iterator findElementWithValue(const Value& value) const;
+	Iterator findElementWithKey(const Key& key) const;
 
 private:
 	class KeySearchPredicate

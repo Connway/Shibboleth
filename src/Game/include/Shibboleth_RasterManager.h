@@ -74,8 +74,6 @@ public:
 
 	void* rawRequestInterface(unsigned int class_id) const;
 
-	static void InitReflectionDefinition(void);
-
 private:
 	struct CameraDeviceData
 	{

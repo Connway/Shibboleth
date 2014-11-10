@@ -22,6 +22,7 @@ THE SOFTWARE.
 
 #pragma once
 
+#include "Gleam_RefCounted.h"
 #include "Gleam_IShader.h"
 
 NS_GLEAM
@@ -76,6 +77,8 @@ private:
 
 	bool loadFileAndCompileShader(unsigned int shader_type, const char* file_path);
 	bool compileShader(const char* source, int source_size, unsigned int shader_type);
+
+	GLEAM_REF_COUNTED(ShaderGL);
 };
 
 NS_END

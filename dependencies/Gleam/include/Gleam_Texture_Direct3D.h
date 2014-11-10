@@ -22,8 +22,9 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Gleam_ITexture.h"
 #include "Gleam_IncludeD3D11.h"
+#include "Gleam_RefCounted.h"
+#include "Gleam_ITexture.h"
 
 NS_GLEAM
 
@@ -63,6 +64,8 @@ private:
 		ID3D11Texture2D* _texture_2d;
 		ID3D11Texture3D* _texture_3d;
 	};
+
+	GLEAM_REF_COUNTED(TextureD3D);
 };
 
 NS_END

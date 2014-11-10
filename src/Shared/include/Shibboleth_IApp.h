@@ -82,6 +82,8 @@ public:
 	virtual IManager* getManager(const AString& name) = 0;
 	virtual IManager* getManager(const char* name) = 0;
 
+	virtual MessageBroadcaster& getBroadcaster(void) = 0;
+
 	virtual const Array<unsigned int>& getStateTransitions(unsigned int state_id) = 0;
 	virtual unsigned int getStateID(const char* name) = 0;
 	virtual void switchState(unsigned int state_id) = 0;

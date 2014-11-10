@@ -30,6 +30,7 @@ NS_SHIBBOLETH
 template <class T> using EnumReflectionDefinition = Gaff::EnumReflectionDefinition<T, ProxyAllocator>;
 template <class T> using ReflectionDefinition = Gaff::ReflectionDefinition<T, ProxyAllocator>;
 
+#define REF_IMPL_ASSIGN_SHIB(ClassName) REF_IMPL_ASSIGN(ClassName, ProxyAllocator)
 #define REF_IMPL_SHIB(ClassName) REF_IMPL(ClassName, ProxyAllocator)
 #define REF_DEF_SHIB(ClassName) REF_DEF(ClassName, ProxyAllocator)
 

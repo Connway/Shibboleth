@@ -32,6 +32,13 @@ void JSON::SetMemoryFunctions(json_malloc_t alloc_func, json_free_t free_func)
 	json_set_alloc_funcs(alloc_func, free_func);
 }
 
+/*!
+	\brief Sets the seed the system uses to calculate hashes.
+	\param hash_seed The hash seed to use.
+	\note
+		If you are using JSON objects across DLL boundaries, make sure to call this in the DLL as well!
+		These hashes have to match, so they must use the same seed!
+*/
 void JSON::SetHashSeed(size_t hash_seed)
 {
 	json_object_seed(hash_seed);
@@ -195,13 +202,25 @@ bool JSON::isNull(void) const
 	return json_is_null(_value);
 }
 
+/*!
+	\brief If this is a JSON object, get the value associated with \a key.
+	\param key The key whose value to retrieve.
+	\return Returns the value found at \a key.
+*/
 JSON JSON::getObject(const char* key) const
 {
+	assert(isObject());
 	return JSON(json_object_get(_value, key), true);
 }
 
+/*!
+	\brief If this is a JSON array, get the value at \a index.
+	\param index The index in the array to retrieve.
+	\return Returns the value found at \a index.
+*/
 JSON JSON::getObject(size_t index) const
 {
+	assert(isArray() && index < size());
 	return JSON(json_array_get(_value, index), true);
 }
 
@@ -225,18 +244,33 @@ double JSON::getNumber(void) const
 	return json_number_value(_value);
 }
 
+/*!
+	\brief If this is a JSON object, set the value associated with \a key to \a json.
+	\param index The index in the array to set.
+	\param json The value associated with \a key.
+*/
 void JSON::setObject(const char* key, const JSON& json)
 {
 	assert(json.valid() && isObject());
 	json_object_set(_value, key, json._value);
 }
 
+/*!
+	\brief If this is a JSON array, set the value at \a index to \a json.
+	\param index The key whose value we are going to set.
+	\param json The value to set at \a index.
+*/
 void JSON::setObject(size_t index, const JSON& json)
 {
 	assert(json.valid() && isArray());
 	json_array_set(_value, index, json._value);
 }
 
+/*!
+	\brief
+		Gets either the number of key/value pairs or the number of elements,
+		depending on if it is a JSON object or a JSON array.
+*/
 size_t JSON::size(void) const
 {
 	assert(_value && (isArray() || isObject()));
@@ -294,11 +328,17 @@ bool JSON::operator!=(const JSON& rhs) const
 	return !(*this == rhs);
 }
 
+/*!
+	\brief This is the same as calling getObject(\a key).
+*/
 JSON JSON::operator[](const char* key) const
 {
 	return getObject(key);
 }
 
+/*!
+	\brief This is the same as calling getObject(\a index).
+*/
 JSON JSON::operator[](size_t index) const
 {
 	return getObject(index);

@@ -20,6 +20,8 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
+/*! \file */
+
 #pragma once
 
 #include "Gaff_DefaultAllocator.h"
@@ -30,13 +32,20 @@ THE SOFTWARE.
 
 NS_GAFF
 
+/*!
+	\brief Bezier Curve sampling implementation.
+
+	\tparam PointType The type that represents our point data.
+	\tparam Allocator The allocator we will use to allocate memory.
+*/
 template <class PointType, class Allocator = DefaultAllocator>
 class BezierCurve : public ICurve<PointType>
 {
 public:
-	typedef Pair<float, PointType&> Key;
+	typedef Pair<float, PointType> Key;
 
-	BezierCurve(const Array<PointType, Allocator>& points);
+	BezierCurve(const BezierCurve<PointType, Allocator>& curve);
+	BezierCurve(BezierCurve<PointType, Allocator>&& curve);
 	BezierCurve(const Allocator& allocator = Allocator());
 	~BezierCurve(void);
 
@@ -46,10 +55,10 @@ public:
 	void removeKey(unsigned int index);
 
 	unsigned int getNumKeys(void) const;
-	Key getKey(unsigned int index);
+	const Key& getKey(unsigned int index);
 
 private:
-	Array<Pair<float, PointType>, Allocator> _points;
+	Array<Key, Allocator> _points;
 };
 
 #include "Gaff_BezierCurve.inl"

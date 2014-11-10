@@ -20,6 +20,8 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
+/*! \file */
+
 #pragma once
 
 #include "Gaff_Defines.h"
@@ -28,6 +30,11 @@ struct aiMetadata;
 
 NS_GAFF
 
+/*!
+	\brief
+		Class that wraps metadata data extracted from a loaded SceneNode.
+		Unfortunately, assimp has no documentation on this structure.
+*/
 class MetaData
 {
 public:

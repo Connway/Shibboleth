@@ -37,6 +37,39 @@ static const char* _open_modes_a[12] = {
 		"rb", "wb", "ab", "rb+", "wb+", "ab+"
 };
 
+/*!
+	\brief Checks of the \a file_name ends with \a extension. This version takes string sizes to avoid calls to strlen().
+
+	\param file_name The name of the file we are checking the extension of.
+	\param file_name_size The length of \a file_name.
+	\param extension The extension we are checking for.
+	\param extension_size The length of \a extension.
+
+	\return Whether \a file_name has \a extension.
+*/
+bool File::checkExtension(const char* file_name, size_t file_name_size, const char* extension, size_t extension_size)
+{
+	assert(file_name && extension && file_name_size > extension_size);
+	return strcmp(file_name + file_name_size - extension_size, extension) == 0;
+}
+
+/*!
+	\brief Checks of the \a file_name ends with \a extension.
+
+	\param file_name The name of the file we are checking the extension of.
+	\param extension The extension we are checking for.
+
+	\return Whether \a file_name has \a extension.
+
+	\note This function makes calls to strlen().
+*/
+bool File::checkExtension(const char* file_name, const char* extension)
+{
+	assert(file_name && extension);
+	return checkExtension(file_name, strlen(file_name), extension, strlen(extension));
+}
+
+
 bool File::remove(const char* file_name)
 {
 	assert(file_name);
@@ -110,6 +143,9 @@ FILE* File::getFile(void)
 	return _file;
 }
 
+/*!
+	\brief Get's the mode that this file was opened with.
+*/
 File::OPEN_MODE File::getMode(void) const
 {
 	return _mode;
@@ -128,6 +164,15 @@ bool File::open(const char* file_name, OPEN_MODE mode)
 	return _file != NULL;
 }
 
+/*!
+	\brief Redirect's the \a file stream to the file found at \a file_name.
+
+	\param file The file stream to redirect.
+	\param file_name The file to redirect the \a file stream to.
+	\param mode The mode to open \a file_name with.
+
+	\return Whether the redirect succeeded.
+*/
 bool File::redirect(FILE* file, const char* file_name, OPEN_MODE mode)
 {
 	assert(!_file && file_name);
@@ -135,6 +180,14 @@ bool File::redirect(FILE* file, const char* file_name, OPEN_MODE mode)
 	return _file && _file == file;
 }
 
+/*!
+	\brief Redirects the file stream that this File currently has open to \a file_name.
+
+	\param file_name The file to redirect the currently opened file stream to.
+	\param mode The mode to open \a file_name with.
+
+	\return Whether the redirect succeeded.
+*/
 bool File::redirect(const char* file_name, OPEN_MODE mode)
 {
 	assert(_file && file_name);
@@ -159,24 +212,39 @@ bool File::isOpen(void) const
 	return _file != NULL && _file != nullptr;
 }
 
+/*!
+	\brief Not-End-of-File.
+	\return Returns true if we ARE NOT at the end of the file, false otherwise.
+*/
 bool File::neof(void) const
 {
 	assert(_file);
 	return !feof(_file);
 }
 
+/*!
+	\brief End-of-File.
+	\return Returns true if we ARE at the end of the file, false otherwise.
+*/
 bool File::eof(void) const
 {
 	assert(_file);
 	return feof(_file) != 0;
 }
 
+/*!
+	\brief Flushes the current file stream buffer to disk.
+	\bool Returns whether flushing succeeded.
+*/
 bool File::flush(void)
 {
 	assert(_file);
 	return !fflush(_file);
 }
 
+/*!
+	\brief Sets the internal buffer to use for I/O operations performed on the file stream.
+*/
 void File::setBuffer(char* buffer)
 {
 	assert(_file && buffer);
@@ -236,6 +304,10 @@ bool File::readString(char* buffer, int max_count)
 	return tmp != NULL && tmp != nullptr;
 }
 
+/*!
+	\brief Gets the current position in the file stream.
+	\return The current position in the file stream.
+*/
 long File::getFilePos(void) const
 {
 	assert(_file);
@@ -254,6 +326,10 @@ void File::rewind(void)
 	::rewind(_file);
 }
 
+/*!
+	\brief Opens a temporary file using the name returned by tmpfile().
+	\return Whether the file successfully opened.
+*/
 bool File::openTempFile(void)
 {
 	assert(!_file);
@@ -299,12 +375,17 @@ bool File::readEntireFile(char* buffer)
 
 // Unicode functions
 #ifdef _UNICODE
-// File::File(const Gaff::WString& file_name, OPEN_MODE mode):
-// 	_file(nullptr)
-// {
-// 	assert(file_name.size());
-// 	open(file_name.getBuffer(), mode);
-// }
+bool File::checkExtension(const wchar_t* file_name, size_t file_name_size, const wchar_t* extension, size_t extension_size)
+{
+	assert(file_name && extension && file_name_size > extension_size);
+	return wcscmp(file_name + file_name_size - extension_size, extension) == 0;
+}
+
+bool File::checkExtension(const wchar_t* file_name, const wchar_t* extension)
+{
+	assert(file_name && extension);
+	return checkExtension(file_name, wcslen(file_name), extension, wcslen(extension));
+}
 
 File::File(const wchar_t* file_name, OPEN_MODE mode):
 	_file(nullptr)

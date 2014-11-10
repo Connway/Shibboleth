@@ -20,6 +20,8 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
+/*! \file */
+
 #pragma once
 
 #include "Gaff_IncludeAssert.h"
@@ -30,6 +32,11 @@ THE SOFTWARE.
 
 NS_GAFF
 
+/*!
+	\brief Base class for all function bindings.
+	\tparam ReturnType The function return type.
+	\tparam Args The function argument types.
+*/
 template <class ReturnType, class... Args>
 class IFunction
 {
@@ -59,6 +66,11 @@ public:
 	virtual bool valid(void) const = 0;
 };
 
+/*!
+	\brief Function pointer binding implementation.
+	\tparam ReturnType The function return type.
+	\tparam Args The function argument types.
+*/
 template <class ReturnType, class... Args>
 class Function : public IFunction<ReturnType, Args...>
 {
@@ -88,6 +100,11 @@ private:
 	FunctionType _function;
 };
 
+/*!
+	\brief Member function pointer binding implementation.
+	\tparam ReturnType The function return type.
+	\tparam Args The function argument types.
+*/
 template <class T, class ReturnType, class... Args>
 class MemberFunction : public IFunction<ReturnType, Args...>
 {
@@ -118,6 +135,11 @@ private:
 	T* _object;
 };
 
+/*!
+	\brief Functor binding implementation.
+	\tparam ReturnType The function return type.
+	\tparam Args The function argument types.
+*/
 template <class T, class ReturnType, class... Args>
 class Functor : public IFunction<ReturnType, Args...>
 {
@@ -145,6 +167,11 @@ private:
 	T _functor;
 };
 
+/*!
+	\brief Generic class that can bind all three function types.
+	\tparam ReturnType The function return type.
+	\tparam Args The function argument types.
+*/
 template <class ReturnType, class... Args>
 class FunctionBinder
 {
@@ -180,12 +207,45 @@ private:
 	template <class T, class RT, class... Ags> friend FunctionBinder<RT, Ags...> Bind(const T&);
 };
 
+/*!
+	\brief Binds a member function pointer to a FunctionBinder.
+
+	\tparam T The object type whose member function we are binding.
+	\tparam ReturnType The function return type.
+	\tparam Args The function argument types.
+
+	\param object The object instance.
+	\param function The member function we are binding.
+
+	\return A FunctionBinder.
+*/
 template <class T, class ReturnType, class... Ags>
 FunctionBinder<ReturnType, Ags...> Bind(T* object, ReturnType (T::*function)(Ags...));
 
+/*!
+	\brief Binds a function pointer to a FunctionBinder.
+
+	\tparam ReturnType The function return type.
+	\tparam Args The function argument types.
+
+	\param function The function we are binding.
+
+	\return A FunctionBinder.
+*/
 template <class ReturnType, class... Ags>
 FunctionBinder<ReturnType, Ags...> Bind(ReturnType (*function)(Ags...));
 
+/*!
+	\brief Binds a functor to a FunctionBinder.
+
+	\tparam T The functor type.
+	\tparam ReturnType The function return type.
+	\tparam Args The function argument types.
+
+	\param functor The functor we are binding.
+
+	\return A FunctionBinder.
+*/
 template <class T, class ReturnType, class... Ags>
 FunctionBinder<ReturnType, Ags...> Bind(const T& functor);
 

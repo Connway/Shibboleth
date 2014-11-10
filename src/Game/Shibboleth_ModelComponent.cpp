@@ -25,18 +25,34 @@ THE SOFTWARE.
 #include "Shibboleth_ModelComponent.h"
 #include "Shibboleth_ModelAnimResources.h"
 #include <Shibboleth_ReflectionDefinitions.h>
+#include <Shibboleth_LoadingMessage.h>
 
 #include "Shibboleth_RenderManager.h"
 #include <Gleam_IProgram.h>
+#include <Gleam_Matrix4x4.h>
+#include <Gleam_IBuffer.h>
+#include <Gleam_IRenderDevice.h>
+
+#define RELEASE_HOLDING_FLAG 0
+#define LOAD_ONLY_HOLDING_FLAG 1
 
 NS_SHIBBOLETH
 
 COMP_REF_DEF_SAVE(ModelComponent, g_Ref_Def);
-REF_IMPL_SHIB(ModelComponent);
 REF_IMPL_REQ(ModelComponent);
 
+REF_IMPL_ASSIGN_SHIB(ModelComponent)
+.addBaseClassInterfaceOnly<ModelComponent>()
+.addString("Material File", &ModelComponent::_material_filename)
+.addString("Model File", &ModelComponent::_model_filename)
+.addBool("Load Only Holding Data", &ModelComponent::GetFlag<LOAD_ONLY_HOLDING_FLAG>, &ModelComponent::SetLoadOnlyHoldingFlag)
+.addBool("Release Holding Data", &ModelComponent::GetFlag<RELEASE_HOLDING_FLAG>, &ModelComponent::SetReleaseHoldingFlag)
+;
+
 ModelComponent::ModelComponent(IApp& app):
-	_app(app)
+	_render_mgr(app.getManagerT<Shibboleth::RenderManager>("Render Manager")),
+	_res_mgr(app.getManagerT<Shibboleth::ResourceManager>("Resource Manager")),
+	_app(app), _flags(0)
 {
 }
 
@@ -46,17 +62,36 @@ ModelComponent::~ModelComponent(void)
 
 bool ModelComponent::load(const Gaff::JSON& json)
 {
-	ResourceManager& res_mgr = _app.getManagerT<ResourceManager>("Resource Manager");
-
 	g_Ref_Def.read(json, this);
 
-	_material_res = res_mgr.requestResource(_material_filename.getBuffer());
-	_model_res = res_mgr.requestResource(_model_filename.getBuffer());
+	_material_res = _res_mgr.requestResource(_material_filename.getBuffer());
+	_model_res = _res_mgr.requestResource(_model_filename.getBuffer());
 
 	auto callback_func = Gaff::Bind(this, &ModelComponent::LoadCallback);
 
 	_material_res.getResourcePtr()->addCallback(callback_func);
 	_model_res.getResourcePtr()->addCallback(callback_func);
+
+	_program_buffers = _render_mgr.createProgramBuffers();
+
+	if (!_program_buffers) {
+		return false;
+	}
+
+	BufferPtr buffer(_render_mgr.createBuffer());
+
+	if (!buffer->init(
+		_render_mgr.getRenderDevice(), nullptr, sizeof(float) * 16 * 3,
+		Gleam::IBuffer::SHADER_DATA, 0, Gleam::IBuffer::WRITE)) {
+
+		return false;
+	}
+
+	_program_buffers->addConstantBuffer(Gleam::IShader::SHADER_VERTEX, buffer.get());
+
+	if (GetFlag<RELEASE_HOLDING_FLAG>()) {
+		_app.getBroadcaster().listen<LoadingMessage>(this, &ModelComponent::HandleLoadingMessage);
+	}
 
 	return true;
 }
@@ -75,16 +110,27 @@ void ModelComponent::LoadCallback(const AHashString& resource, bool success)
 	// process loaded data
 }
 
-void ModelComponent::InitReflectionDefinition(void)
+void ModelComponent::HandleLoadingMessage(const LoadingMessage& msg)
 {
-	if (!g_Ref_Def.isDefined()) {
-		g_Ref_Def.setAllocator(ProxyAllocator());
+}
 
-		g_Ref_Def.addString("Material File", &ModelComponent::_material_filename);
-		g_Ref_Def.addString("Model File", &ModelComponent::_model_filename);
-		g_Ref_Def.addBaseClassInterfaceOnly<ModelComponent>();
+void ModelComponent::SetReleaseHoldingFlag(bool value)
+{
+	if (value) {
+		_flags |= (1 << RELEASE_HOLDING_FLAG);
+		_flags &= ~(1 << LOAD_ONLY_HOLDING_FLAG); // If we are releasing holding data, then we can't only load holding data
+	} else {
+		_flags &= ~(1 << RELEASE_HOLDING_FLAG);
+	}
+}
 
-		g_Ref_Def.markDefined();
+void ModelComponent::SetLoadOnlyHoldingFlag(bool value)
+{
+	if (value) {
+		_flags |= (1 << LOAD_ONLY_HOLDING_FLAG);
+		_flags &= ~(1 << RELEASE_HOLDING_FLAG); // If we are loading only the holding data, then we can't release it
+	} else {
+		_flags &= ~(1 << LOAD_ONLY_HOLDING_FLAG);
 	}
 }
 
@@ -94,11 +140,26 @@ void ModelComponent::render(void)
 		!_model_res.getResourcePtr()->isLoaded())
 		return;
 
-	RenderManager& rm = _app.getManagerT<RenderManager>("Render Manager");
-	_material_res->programs[0]->bind(rm.getRenderDevice());
+	Gleam::Matrix4x4 tocamera, projection, toworld;
+	tocamera.setLookAtLH(0.0f, 0.0f, -10.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f);
+	projection.setPerspectiveLH(90.0f, 16.0f / 9.0f, 0.1f, 5000.0f);
+	toworld.setIdentity();
+
+	// Update camera data
+	Gleam::IBuffer* buffer = _program_buffers->getConstantBuffer(Gleam::IShader::SHADER_VERTEX, 0);
+
+	_render_mgr.getRenderDevice().getActiveOutputRenderTarget()->bind(_render_mgr.getRenderDevice());
+
+	float* matrix_data = (float*)buffer->map(_render_mgr.getRenderDevice());
+		memcpy(matrix_data, toworld.getBuffer(), sizeof(float) * 16);
+		memcpy(matrix_data + 16, tocamera.getBuffer(), sizeof(float) * 16);
+		memcpy(matrix_data + 32, projection.getBuffer(), sizeof(float) * 16);
+	buffer->unmap(_render_mgr.getRenderDevice());
+
+	_material_res->programs[0]->bind(_render_mgr.getRenderDevice(), _program_buffers.get());
 
 	for (unsigned int i = 0; i < _model_res->models[0][0]->getMeshCount(); ++i) {
-		_model_res->models[0][0]->render(rm.getRenderDevice(), i);
+		_model_res->models[0][0]->render(_render_mgr.getRenderDevice(), i);
 	}
 }
 

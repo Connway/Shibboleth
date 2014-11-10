@@ -27,17 +27,19 @@ THE SOFTWARE.
 
 NS_SHIBBOLETH
 
+class IFileSystem;
 class LuaManager;
 
 class LuaLoader : public IResourceLoader
 {
 public:
-	LuaLoader(LuaManager& lua_manager);
+	LuaLoader(LuaManager& lua_manager, IFileSystem& file_system);
 	~LuaLoader(void);
 
 	Gaff::IVirtualDestructor* load(const char* file_name, unsigned long long user_data);
 
 private:
+	IFileSystem& _file_system;
 	LuaManager& _lua_manager;
 
 	GAFF_NO_COPY(LuaLoader);

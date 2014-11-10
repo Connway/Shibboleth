@@ -20,12 +20,17 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
+/*! \file */
+
 #pragma once
 
 #include "Gaff_DefaultAllocator.h"
 
 NS_GAFF
 
+/*!
+	\brief A reference counted pointer where the reference count is separate from the object.
+*/
 template <class T, class Allocator = DefaultAllocator>
 class SharedPtr
 {

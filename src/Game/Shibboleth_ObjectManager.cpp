@@ -29,7 +29,10 @@ THE SOFTWARE.
 NS_SHIBBOLETH
 
 REF_IMPL_REQ(ObjectManager);
-REF_IMPL_SHIB(ObjectManager);
+REF_IMPL_ASSIGN_SHIB(ObjectManager)
+.addBaseClassInterfaceOnly<ObjectManager>()
+.addBaseClassInterfaceOnly<IUpdateQuery>()
+;
 
 ObjectManager::ObjectManager(IApp& app):
 	_app(app)
@@ -133,16 +136,6 @@ void ObjectManager::prePhysicsUpdate(double dt)
 
 void ObjectManager::postPhysicsUpdate(double dt)
 {
-}
-
-void ObjectManager::InitReflectionDefinition(void)
-{
-	if (!g_Ref_Def.isDefined()) {
-		g_Ref_Def.setAllocator(ProxyAllocator());
-
-		g_Ref_Def.addBaseClassInterfaceOnly<IUpdateQuery>();
-		g_Ref_Def.markDefined();
-	}
 }
 
 NS_END

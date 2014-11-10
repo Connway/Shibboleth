@@ -20,23 +20,23 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#include "Gleam_IModel.h"
+#include "Gleam_ModelBase.h"
 #include "Gleam_ILayout.h"
 #include "Gleam_IMesh.h"
 #include <Gaff_IncludeAssert.h>
 
 NS_GLEAM
 
-IModel::IModel(void)
+ModelBase::ModelBase(void)
 {
 }
 
-IModel::~IModel(void)
+ModelBase::~ModelBase(void)
 {
 	destroy();
 }
 
-void IModel::destroy(void)
+void ModelBase::destroy(void)
 {
 	for (unsigned int i = 0; i < _layouts.size(); ++i) {
 		_layouts[i]->release();
@@ -50,25 +50,25 @@ void IModel::destroy(void)
 	_meshes.clear();
 }
 
-const ILayout* IModel::getLayout(unsigned int index) const
+const ILayout* ModelBase::getLayout(unsigned int index) const
 {
 	assert(index < _meshes.size());
 	return _layouts[index];
 }
 
-ILayout* IModel::getLayout(unsigned int index)
+ILayout* ModelBase::getLayout(unsigned int index)
 {
 	assert(index < _meshes.size());
 	return _layouts[index];
 }
 
-int IModel::getIndex(const ILayout* layout) const
+int ModelBase::getIndex(const ILayout* layout) const
 {
 	assert(layout);
 	return _layouts.linearSearch(0, _layouts.size(), layout);
 }
 
-unsigned int IModel::addLayout(ILayout* layout)
+unsigned int ModelBase::addLayout(ILayout* layout)
 {
 	assert(layout);
 	_layouts.push(layout);
@@ -76,30 +76,30 @@ unsigned int IModel::addLayout(ILayout* layout)
 	return _layouts.size() - 1;
 }
 
-const IMesh* IModel::getMesh(unsigned int index) const
+const IMesh* ModelBase::getMesh(unsigned int index) const
 {
 	assert(index < _meshes.size());
 	return _meshes[index];
 }
 
-IMesh* IModel::getMesh(unsigned int index)
+IMesh* ModelBase::getMesh(unsigned int index)
 {
 	assert(index < _meshes.size());
 	return _meshes[index];
 }
 
-unsigned int IModel::getMeshCount(void) const
+unsigned int ModelBase::getMeshCount(void) const
 {
 	return _meshes.size();
 }
 
-int IModel::getIndex(const IMesh* mesh) const
+int ModelBase::getIndex(const IMesh* mesh) const
 {
 	assert(mesh);
 	return _meshes.linearSearch(0, _meshes.size(), mesh);
 }
 
-unsigned int IModel::addMesh(IMesh* mesh)
+unsigned int ModelBase::addMesh(IMesh* mesh)
 {
 	assert(mesh);
 	_meshes.push(mesh);
@@ -107,7 +107,7 @@ unsigned int IModel::addMesh(IMesh* mesh)
 	return _meshes.size() - 1;
 }
 
-void IModel::render(IRenderDevice& rd, unsigned int index)
+void ModelBase::render(IRenderDevice& rd, unsigned int index)
 {
 	assert(_layouts.size() == _meshes.size() && index < _meshes.size());
 	assert(_meshes[index] && _layouts[index]);

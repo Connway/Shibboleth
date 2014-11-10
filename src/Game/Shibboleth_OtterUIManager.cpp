@@ -28,7 +28,9 @@ THE SOFTWARE.
 NS_SHIBBOLETH
 
 REF_IMPL_REQ(OtterUIManager);
-REF_IMPL_SHIB(OtterUIManager);
+REF_IMPL_ASSIGN_SHIB(OtterUIManager)
+.addBaseClassInterfaceOnly<OtterUIManager>()
+;
 
 OtterUIManager::OtterUIManager(void):
 	_memory_buffer(nullptr), _system(nullptr), _fps(60)
@@ -177,15 +179,6 @@ unsigned int OtterUIManager::getNumScenes(void) const
 {
 	assert(_system);
 	return _system->GetSceneCount();
-}
-
-void OtterUIManager::InitReflectionDefinition(void)
-{
-	if (!g_Ref_Def.isDefined()) {
-		g_Ref_Def.setAllocator(ProxyAllocator());
-
-		g_Ref_Def.markDefined();
-	}
 }
 
 NS_END

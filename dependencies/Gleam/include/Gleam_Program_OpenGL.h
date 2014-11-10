@@ -22,11 +22,11 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Gleam_IProgram.h"
+#include "Gleam_ProgramBase.h"
 
 NS_GLEAM
 
-class ProgramBuffersGL : public IProgramBuffers
+class ProgramBuffersGL : public ProgramBuffersBase
 {
 public:
 	ProgramBuffersGL(void) {}
@@ -35,20 +35,20 @@ public:
 	bool isD3D(void) const { return false; }
 };
 
-class ProgramGL : public IProgram
+class ProgramGL : public ProgramBase
 {
 public:
 	ProgramGL(void);
 	~ProgramGL(void);
 
-	INLINE bool init(void);
-	INLINE void destroy(void);
+	bool init(void);
+	void destroy(void);
 
-	INLINE void attach(IShader* shader);
-	INLINE void detach(IShader::SHADER_TYPE shader);
+	void attach(IShader* shader);
+	void detach(IShader::SHADER_TYPE shader);
 
-	INLINE void bind(IRenderDevice&, IProgramBuffers* program_buffers = nullptr);
-	INLINE void unbind(IRenderDevice&);
+	void bind(IRenderDevice&, IProgramBuffers* program_buffers = nullptr);
+	void unbind(IRenderDevice&);
 
 	bool isD3D(void) const;
 

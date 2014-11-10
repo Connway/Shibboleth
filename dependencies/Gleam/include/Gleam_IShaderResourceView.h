@@ -28,7 +28,7 @@ NS_GLEAM
 
 class IRenderDevice;
 
-class IShaderResourceView : public GleamRefCounted
+class IShaderResourceView : public Gaff::IRefCounted
 {
 public:
 	enum RES_VIEW_TYPE { VIEW_TEXTURE = 0 };
@@ -45,6 +45,8 @@ public:
 
 protected:
 	RES_VIEW_TYPE _view_type;
+
+	GAFF_NO_COPY(IShaderResourceView);
 };
 
 NS_END

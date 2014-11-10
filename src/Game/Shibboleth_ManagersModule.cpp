@@ -88,7 +88,7 @@ enum Managers
 };
 
 typedef Shibboleth::IManager* (*CreateMgrFunc)(Shibboleth::IApp&);
-typedef void (*RefDefInitClearFunc)(void);
+typedef void (*RefDefClearFunc)(void);
 
 static CreateMgrFunc create_funcs[] = {
 	&CreateManagerT<Shibboleth::ComponentManager>,
@@ -100,17 +100,7 @@ static CreateMgrFunc create_funcs[] = {
 	&CreateManagerT<Shibboleth::LuaManager>,
 };
 
-static RefDefInitClearFunc ref_def_init_funcs[] = {
-	&Shibboleth::ComponentManager::InitReflectionDefinition,
-	&Shibboleth::ResourceManager::InitReflectionDefinition,
-	&Shibboleth::OtterUIManager::InitReflectionDefinition,
-	&Shibboleth::RenderManager::InitReflectionDefinition,
-	&Shibboleth::UpdateManager::InitReflectionDefinition,
-	&Shibboleth::ObjectManager::InitReflectionDefinition,
-	&Shibboleth::LuaManager::InitReflectionDefinition
-};
-
-static RefDefInitClearFunc ref_def_clear_funcs[] = {
+static RefDefClearFunc ref_def_clear_funcs[] = {
 	&ClearRefDef<Shibboleth::ComponentManager>,
 	&ClearRefDef<Shibboleth::ResourceManager>,
 	&ClearRefDef<Shibboleth::OtterUIManager>,
@@ -122,22 +112,16 @@ static RefDefInitClearFunc ref_def_clear_funcs[] = {
 
 static Shibboleth::IApp* g_app = nullptr;
 
-DYNAMICEXPORT bool InitModule(Shibboleth::IApp& app)
+DYNAMICEXPORT_C bool InitModule(Shibboleth::IApp& app)
 {
 	Gaff::JSON::SetMemoryFunctions(&Shibboleth::ShibbolethAllocate, &Shibboleth::ShibbolethFree);
 	Gaff::JSON::SetHashSeed(app.getSeed());
-	Shibboleth::SetAllocator(&app.getAllocator());
 	g_app = &app;
-
-	// Initialize all the reflection definitions
-	for (unsigned int i = 0; i < NUM_MANAGERS; ++i) {
-		ref_def_init_funcs[i]();
-	}
 
 	return true;
 }
 
-DYNAMICEXPORT void ShutdownModule(void)
+DYNAMICEXPORT_C void ShutdownModule(void)
 {
 	// Clear all the reflection definitions
 	for (unsigned int i = 0; i < NUM_MANAGERS; ++i) {
@@ -145,18 +129,18 @@ DYNAMICEXPORT void ShutdownModule(void)
 	}
 }
 
-DYNAMICEXPORT unsigned int GetNumManagers(void)
+DYNAMICEXPORT_C unsigned int GetNumManagers(void)
 {
 	return NUM_MANAGERS;
 }
 
-DYNAMICEXPORT Shibboleth::IManager* CreateManager(unsigned int id)
+DYNAMICEXPORT_C Shibboleth::IManager* CreateManager(unsigned int id)
 {
 	assert(id < NUM_MANAGERS);
 	return create_funcs[id](*g_app);
 }
 
-DYNAMICEXPORT void DestroyManager(Shibboleth::IManager* manager, unsigned int)
+DYNAMICEXPORT_C void DestroyManager(Shibboleth::IManager* manager, unsigned int)
 {
 	Shibboleth::GetAllocator()->freeT(manager);
 }

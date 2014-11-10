@@ -20,7 +20,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#include "Gleam_IMesh.h"
+#include "Gleam_MeshBase.h"
 #include "Gleam_IRenderDevice.h"
 #include "Gleam_Global.h"
 #include "Gleam_IBuffer.h"
@@ -28,16 +28,16 @@ THE SOFTWARE.
 
 NS_GLEAM
 
-IMesh::IMesh(void):
+MeshBase::MeshBase(void):
 	_indices(nullptr), _index_count(0)
 {
 }
 
-IMesh::~IMesh(void)
+MeshBase::~MeshBase(void)
 {
 }
 
-void IMesh::destroy(void)
+void MeshBase::destroy(void)
 {
 	for (unsigned int i = 0; i < _vert_data.size(); ++i) {
 		_vert_data[i]->release();
@@ -49,30 +49,30 @@ void IMesh::destroy(void)
 	_vert_data.clear();
 }
 
-void IMesh::addBuffer(IBuffer* buffer)
+void MeshBase::addBuffer(IBuffer* buffer)
 {
 	_vert_data.push(buffer);
 	buffer->addRef();
 }
 
-const IBuffer* IMesh::getBuffer(unsigned int index) const
+const IBuffer* MeshBase::getBuffer(unsigned int index) const
 {
 	assert(index < _vert_data.size());
 	return _vert_data[index];
 }
 
-IBuffer* IMesh::getBuffer(unsigned int index)
+IBuffer* MeshBase::getBuffer(unsigned int index)
 {
 	assert(index < _vert_data.size());
 	return _vert_data[index];
 }
 
-unsigned int IMesh::getBufferCount(void) const
+unsigned int MeshBase::getBufferCount(void) const
 {
 	return _vert_data.size();
 }
 
-void IMesh::setIndiceBuffer(IBuffer* buffer)
+void MeshBase::setIndiceBuffer(IBuffer* buffer)
 {
 	assert(buffer);
 	SAFEGAFFRELEASE(_indices);
@@ -80,22 +80,22 @@ void IMesh::setIndiceBuffer(IBuffer* buffer)
 	buffer->addRef();
 }
 
-IMesh::TOPOLOGY_TYPE IMesh::getTopologyType(void) const
+MeshBase::TOPOLOGY_TYPE MeshBase::getTopologyType(void) const
 {
 	return _topology;
 }
 
-void IMesh::setIndexCount(unsigned int count)
+void MeshBase::setIndexCount(unsigned int count)
 {
 	_index_count = count;
 }
 
-unsigned int IMesh::getIndexCount(void) const
+unsigned int MeshBase::getIndexCount(void) const
 {
 	return _index_count;
 }
 
-bool IMesh::addVertDataHelper(
+bool MeshBase::addVertDataHelper(
 	IRenderDevice& rd, const void* vert_data, unsigned int vert_count, unsigned int vert_size,
 	unsigned int* indices, unsigned int index_count, TOPOLOGY_TYPE primitive_type,
 	IBuffer* index_buffer, IBuffer* vert_buffer

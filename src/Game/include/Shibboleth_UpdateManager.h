@@ -23,6 +23,7 @@ THE SOFTWARE.
 #pragma once
 
 #include <Shibboleth_ReflectionDefinitions.h>
+#include <Shibboleth_RefCounted.h>
 #include <Shibboleth_IManager.h>
 #include <Shibboleth_Array.h>
 #include <Shibboleth_ITask.h>
@@ -48,8 +49,6 @@ public:
 
 	void* rawRequestInterface(unsigned int class_id) const;
 
-	static void InitReflectionDefinition(void);
-
 private:
 	class UpdateTask : public ITask
 	{
@@ -67,6 +66,8 @@ private:
 	private:
 		UpdateCallback& _callback;
 		double _dt;
+
+		SHIB_REF_COUNTED(UpdateTask);
 	};
 
 	Array< Gaff::TaskPtr<ProxyAllocator> > _tasks_cache;

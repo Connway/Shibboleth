@@ -26,6 +26,9 @@ THE SOFTWARE.
 
 NS_GAFF
 
+/*!
+	\brief I think I added this as a hack for something, cause it doesn't do anything.
+*/
 ReadWriteSpinLock::ReadWriteSpinLock(ReadWriteSpinLock&&):
 	_write_lock(0), _read_lock(0)
 {
@@ -40,11 +43,17 @@ ReadWriteSpinLock::~ReadWriteSpinLock(void)
 {
 }
 
+/*!
+	\brief I think I added this as a hack for something, cause it doesn't do anything.
+*/
 const ReadWriteSpinLock& ReadWriteSpinLock::operator=(ReadWriteSpinLock&&)
 {
 	return *this;
 }
 
+/*!
+	\brief Acquires a lock for read access. If the lock for write is already acquired, blocks until it is released.
+*/
 void ReadWriteSpinLock::readLock(void) const
 {
 	/*
@@ -60,12 +69,18 @@ void ReadWriteSpinLock::readLock(void) const
 	AtomicIncrement(&_read_lock);
 }
 
+/*!
+	\brief Releases a read lock.
+*/
 void ReadWriteSpinLock::readUnlock(void) const
 {
 	assert(_read_lock);
 	AtomicDecrement(&_read_lock);
 }
 
+/*!
+	\brief Acquires a lock for write access. If a lock for read or write is already acquired, blocks until they are released.
+*/
 void ReadWriteSpinLock::writeLock(void) const
 {
 	while (AtomicAcquire(&_write_lock)) {
@@ -77,6 +92,9 @@ void ReadWriteSpinLock::writeLock(void) const
 	}
 }
 
+/*!
+	\brief Releases a write lock.
+*/
 void ReadWriteSpinLock::writeUnlock(void) const
 {
 	assert(_write_lock);

@@ -24,42 +24,50 @@ THE SOFTWARE.
 
 #include "Gaff_Defines.h"
 
-#ifdef min
-	#undef min
-#endif
-
-#ifdef max
-	#undef max
-#endif
-
 NS_GAFF
 
 const float Pi = 3.141592654f;
 
+/*!
+	\brief Returns the minimum of \a v1 and \a v2
+*/
 template <class T>
 const T& Min(const T& v1, const T& v2)
 {
 	return (v1 < v2) ? v1 : v2;
 }
 
+/*!
+	\brief Returns the maximum of \a v1 and \a v2
+*/
 template <class T>
 const T& Max(const T& v1, const T& v2)
 {
 	return (v1 > v2) ? v1 : v2;
 }
 
+/*!
+	\brief Clamps \a val to the range [\a min_bound, \a max_bound].
+*/
 template <class T>
 const T& Clamp(const T& val, const T& min_bound, const T& max_bound)
 {
 	return Min(Max(val, min_bound), max_bound);
 }
 
+/*!
+	\brief Linearly interpolates between \a begin and \a end.
+	\note \a t must be in the range [0, 1].
+*/
 template <class T>
 T Lerp(const T& begin, const T& end, float t)
 {
 	return begin + t * (end - begin);
 }
 
+/*!
+	\brief Returns whether \a val is in the range [\a min_val, \a max_val].
+*/
 template <class T>
 bool Between(const T& val, const T& min_val, const T& max_val)
 {

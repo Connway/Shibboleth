@@ -51,8 +51,6 @@ public:
 
 	void* rawRequestInterface(unsigned int class_id) const;
 
-	static void InitReflectionDefinition(void);
-
 private:
 	typedef bool (*InitFunc)(IApp&);
 	typedef IComponent* (*CreateComponentFunc)(unsigned int);

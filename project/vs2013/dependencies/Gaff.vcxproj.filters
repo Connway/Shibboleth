@@ -30,9 +30,6 @@
     <None Include="..\..\..\dependencies\Gaff\include\Gaff_LinearCurve.inl">
       <Filter>include</Filter>
     </None>
-    <None Include="..\..\..\dependencies\Gaff\include\Gaff_List.inl">
-      <Filter>include</Filter>
-    </None>
     <None Include="..\..\..\dependencies\Gaff\include\Gaff_Map.inl">
       <Filter>include</Filter>
     </None>
@@ -49,9 +46,6 @@
       <Filter>include</Filter>
     </None>
     <None Include="..\..\..\dependencies\Gaff\include\Gaff_String.inl">
-      <Filter>include</Filter>
-    </None>
-    <None Include="..\..\..\dependencies\Gaff\include\Gaff_TimerCallbackManager.inl">
       <Filter>include</Filter>
     </None>
     <None Include="..\..\..\dependencies\Gaff\include\Gaff_Utils_Common.inl">
@@ -75,9 +69,6 @@
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\dependencies\Gaff\include\Gaff_BitArray.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\dependencies\Gaff\include\Gaff_BitFlags.h">
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\dependencies\Gaff\include\Gaff_Camera.h">
@@ -171,9 +162,6 @@
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\dependencies\Gaff\include\Gaff_LinearCurve.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\dependencies\Gaff\include\Gaff_List.h">
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\dependencies\Gaff\include\Gaff_Map.h">
@@ -275,9 +263,6 @@
     <ClInclude Include="..\..\..\dependencies\Gaff\include\Gaff_Timer.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\dependencies\Gaff\include\Gaff_TimerCallbackManager.h">
-      <Filter>include</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\dependencies\Gaff\include\Gaff_Timer_Linux.h">
       <Filter>include</Filter>
     </ClInclude>
@@ -291,12 +276,6 @@
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\dependencies\Gaff\include\Gaff_Watcher.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\dependencies\Gaff\include\Gaff_WeakObject.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\dependencies\Gaff\include\Gaff_WeakPtr.h">
       <Filter>include</Filter>
     </ClInclude>
   </ItemGroup>

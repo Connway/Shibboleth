@@ -58,8 +58,6 @@ public:
 	void requestUpdateEntries(Array<UpdateEntry>& entries);
 	void* rawRequestInterface(unsigned int class_id) const;
 
-	static void InitReflectionDefinition(void);
-
 private:
 	//Array<unsigned int> _remove_queue;
 	//Array<Object*> _add_queue;

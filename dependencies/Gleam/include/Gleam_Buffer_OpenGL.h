@@ -22,6 +22,7 @@ THE SOFTWARE.
 
 #pragma once
 
+#include "Gleam_RefCounted.h"
 #include "Gleam_IBuffer.h"
 
 NS_GLEAM
@@ -46,6 +47,8 @@ public:
 
 private:
 	unsigned int _buffer;
+
+	GLEAM_REF_COUNTED(BufferGL);
 };
 
 NS_END

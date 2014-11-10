@@ -55,8 +55,6 @@ public:
 		return "Lua Component";
 	}
 
-	static void InitReflectionDefinition(void);
-
 private:
 	ResourceWrapper< SingleDataWrapper<lua::State*> > _script_res;
 

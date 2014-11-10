@@ -282,15 +282,24 @@ bool App::loadStates(void)
 {
 	_log_file_pair->first.writeString("Loading States...\n");
 
+	IFile* states_file = _fs.file_system->openFile("States/states.json");
+
+	if (!states_file) {
+		_log_file_pair->first.writeString("ERROR - Could not find 'States/states.json'.\n");
+	}
+
 	Gaff::JSON state_data;
 
-	if (!state_data.parseFile("./States/states.json")) {
-		_log_file_pair->first.writeString("ERROR - Could not find './States/states.json' or there was a parsing error.\n");
+	if (!state_data.parse(states_file->getBuffer())) {
+		_log_file_pair->first.writeString("ERROR - When parsing 'States/states.json'.\n");
+		_fs.file_system->closeFile(states_file);
 		return false;
 	}
 
+	_fs.file_system->closeFile(states_file);
+
 	if (!state_data.isObject()) {
-		_log_file_pair->first.writeString("ERROR - './States/states.json' is malformed. Root is not an object.\n");
+		_log_file_pair->first.writeString("ERROR - 'States/states.json' is malformed. Root is not an object.\n");
 		return false;
 	}
 
@@ -298,12 +307,12 @@ bool App::loadStates(void)
 	Gaff::JSON states = state_data["states"];
 
 	if (!starting_state.isString()) {
-		_log_file_pair->first.writeString("ERROR - './States/states.json' is malformed. 'starting_state' is not a string.\n");
+		_log_file_pair->first.writeString("ERROR - 'States/states.json' is malformed. 'starting_state' is not a string.\n");
 		return false;
 	}
 
 	if (!states.isArray()) {
-		_log_file_pair->first.writeString("ERROR - './States/states.json' is malformed. 'states' is not an array.\n");
+		_log_file_pair->first.writeString("ERROR - 'States/states.json' is malformed. 'states' is not an array.\n");
 		return false;
 	}
 
@@ -321,17 +330,17 @@ bool App::loadStates(void)
 		Gaff::JSON state_name = state["name"];
 
 		if (!transitions.isArray()) {
-			_log_file_pair->first.printf("ERROR - './States/states.json' is malformed. Transitions for state entry %i is not an array.\n", i);
+			_log_file_pair->first.printf("ERROR - 'States/states.json' is malformed. Transitions for state entry %i is not an array.\n", i);
 			return false;
 		}
 
 		if (!module_name.isString()) {
-			_log_file_pair->first.printf("ERROR - './States/states.json' is malformed. Module name for state entry %i is not a string.\n", i);
+			_log_file_pair->first.printf("ERROR - 'States/states.json' is malformed. Module name for state entry %i is not a string.\n", i);
 			return false;
 		}
 
 		if (!state_name.isString()) {
-			_log_file_pair->first.printf("ERROR - './States/states.json' is malformed. Name for state entry %i is not a string.\n", i);
+			_log_file_pair->first.printf("ERROR - 'States/states.json' is malformed. Name for state entry %i is not a string.\n", i);
 			return false;
 		}
 
@@ -389,7 +398,7 @@ bool App::loadStates(void)
 						Gaff::JSON val = transitions[k];
 
 						if (!val.isInteger()) {
-							_log_file_pair->first.printf("ERROR - './States/states.json' is malformed. Name for state entry %i is not a string.\n", i);
+							_log_file_pair->first.printf("ERROR - 'States/states.json' is malformed. Name for state entry %i is not a string.\n", i);
 							return false;
 						}
 
@@ -511,6 +520,11 @@ IManager* App::getManager(const char* name)
 {
 	assert(name && _manager_map.indexOf(name) != -1);
 	return _manager_map[name].manager;
+}
+
+MessageBroadcaster& App::getBroadcaster(void)
+{
+	return _broadcaster;
 }
 
 const Array<unsigned int>& App::getStateTransitions(unsigned int state_id)

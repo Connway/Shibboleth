@@ -20,14 +20,21 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
+/*! \file */
+
 #pragma once
 
-#include "Gaff_Defines.h"
+#include "Gaff_MetaData.h"
 
 struct aiNode;
 
 NS_GAFF
 
+/*!
+	\brief
+		Class that wraps scene node data extracted from a loaded Scene.
+		See <a href="http://assimp.sourceforge.net/lib_html/structai_node.html">aiNode Documentation</a> for more details.
+*/
 class SceneNode
 {
 public:
@@ -43,6 +50,8 @@ public:
 
 	INLINE const float* getTransform(void) const;
 	INLINE const char* getName(void) const;
+
+	INLINE MetaData getMetaData(void) const;
 
 	INLINE bool valid(void) const;
 

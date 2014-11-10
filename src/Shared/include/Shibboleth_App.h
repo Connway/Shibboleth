@@ -59,6 +59,8 @@ public:
 	IManager* getManager(const AString& name);
 	IManager* getManager(const char* name);
 
+	MessageBroadcaster& getBroadcaster(void);
+
 	const Array<unsigned int>& getStateTransitions(unsigned int state_id);
 	unsigned int getStateID(const char* name);
 	void switchState(unsigned int state);

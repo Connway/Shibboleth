@@ -117,7 +117,7 @@ IRenderDevice::AdapterList RenderDeviceGL::getDisplayModes(int)
 		}
 	}
 
-	_display_info.resize(_display_info.size()); // Trim off unused entries
+	_display_info.trim();
 
 	// Convert Windows data structures into our structure
 	AdapterList out(_display_info.size());

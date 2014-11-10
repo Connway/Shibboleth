@@ -48,32 +48,53 @@ bool Timer::stop(void)
 	return true;
 }
 
+/*!
+	\brief Returns the delta time between start()/stop() calls in seconds.
+	\note Delta time is cached, so calling in between start()/stop() calls will not have adverse effects.
+*/
 double Timer::getDeltaSec(void) const
 {
 	return (double)getDeltaMicro() * 0.000001;
 }
 
-LONGLONG Timer::getDeltaMilli(void) const
+/*!
+	\brief Returns the delta time between start()/stop() calls in milliseconds.
+	\note Delta time is cached, so calling in between start()/stop() calls will not have adverse effects.
+*/
+long long Timer::getDeltaMilli(void) const
 {
 	return getDeltaMicro() / 1000;
 }
 
-LONGLONG Timer::getDeltaMicro(void) const
+/*!
+	\brief Returns the delta time between start()/stop() calls in microseconds.
+	\note Delta time is cached, so calling in between start()/stop() calls will not have adverse effects.
+*/
+long long Timer::getDeltaMicro(void) const
 {
 	return _deltaTime;
 }
 
+/*!
+	\brief Gets the current time from the epoch measured in seconds.
+*/
 double Timer::getCurrSec(void) const
 {
 	return (double)getCurrMicro() * 0.000001;
 }
 
-LONGLONG Timer::getCurrMilli(void) const
+/*!
+	\brief Gets the current time from the epoch measured in milliseconds.
+*/
+long long Timer::getCurrMilli(void) const
 {
 	return getCurrMicro() / 1000;
 }
 
-LONGLONG Timer::getCurrMicro(void) const
+/*!
+	\brief Gets the current time from the epoch measured in microseconds.
+*/
+long long Timer::getCurrMicro(void) const
 {
 	timespec temp;
 
@@ -84,9 +105,20 @@ LONGLONG Timer::getCurrMicro(void) const
 	return temp.tv_sec * 1000000 + temp.tv_nsec * 0.001;
 }
 
+/*!
+	\brief Gets the total amount of time measured across all start()/stop() calls measured in seconds.
+*/
 double Timer::getTotalTime(void) const
 {
 	return _totalTime;
+}
+
+/*!
+	\brief Resets the total time to zero.
+*/
+void Timer::resetTotalTime(void)
+{
+	_totalTime = 0.0f;
 }
 
 NS_END

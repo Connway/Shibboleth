@@ -36,7 +36,7 @@ Queue<T, Allocator>::Queue(unsigned int start_alloc, const Allocator& allocator)
 }
 
 template <class T, class Allocator>
-Queue<T, Allocator>::Queue(unsigned int size, const T* data, const Allocator& allocator) :
+Queue<T, Allocator>::Queue(const T* data, unsigned int size, const Allocator& allocator) :
 	_allocator(allocator), _used(0), _size(size)
 {
 	_array = (T*)_allocator.alloc(sizeof(T) * size);
@@ -156,6 +156,15 @@ void Queue<T, Allocator>::clear(void)
 	}
 }
 
+/*!
+	\brief Similar to Array::resize(), but does not initialize extra elements to a default value.
+
+	\param new_size The new size of the queue.
+
+	\note
+		If \a new_size is less than current size, it will erase data.
+		If \a new_size is greater than the current size, size will not change, but capacity will.
+*/
 template <class T, class Allocator>
 void Queue<T, Allocator>::reallocate(unsigned int new_size)
 {
@@ -243,7 +252,7 @@ unsigned int Queue<T, Allocator>::size(void) const
 }
 
 template <class T, class Allocator>
-unsigned int Queue<T, Allocator>::allocated(void) const
+unsigned int Queue<T, Allocator>::capacity(void) const
 {
 	return _size;
 }

@@ -28,7 +28,11 @@ NS_SHIBBOLETH
 
 COMP_REF_DEF_SAVE(LuaComponent, g_Ref_Def);
 REF_IMPL_REQ(LuaComponent);
-REF_IMPL_SHIB(LuaComponent);
+
+REF_IMPL_ASSIGN_SHIB(LuaComponent)
+.addBaseClassInterfaceOnly<LuaComponent>()
+.addString("Lua Filename", &LuaComponent::_lua_file)
+;
 
 LuaComponent::LuaComponent(IApp& app):
 	_res_mgr(app.getManagerT<ResourceManager>("Resource Manager"))
@@ -49,18 +53,6 @@ bool LuaComponent::load(const Gaff::JSON& json)
 
 void LuaComponent::allComponentsLoaded(void)
 {
-}
-
-void LuaComponent::InitReflectionDefinition(void)
-{
-	if (!g_Ref_Def.isDefined()) {
-		g_Ref_Def.setAllocator(ProxyAllocator());
-
-		g_Ref_Def.addString("Lua Filename", &LuaComponent::_lua_file);
-		g_Ref_Def.addBaseClassInterfaceOnly<LuaComponent>();
-
-		g_Ref_Def.markDefined();
-	}
 }
 
 NS_END

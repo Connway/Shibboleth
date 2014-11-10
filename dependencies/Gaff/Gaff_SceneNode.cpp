@@ -101,4 +101,10 @@ const char* SceneNode::getName(void) const
 	return _node->mName.C_Str();
 }
 
+MetaData SceneNode::getMetaData(void) const
+{
+	assert(_node);
+	return MetaData(_node->mMetaData);
+}
+
 NS_END

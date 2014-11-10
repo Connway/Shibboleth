@@ -20,6 +20,8 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
+/*! \file */
+
 #pragma once
 
 #include "Gaff_NetworkDefines.h"
@@ -29,16 +31,22 @@ struct _ENetPeer;
 
 NS_GAFF
 
+/*!
+	Flags that are used to determine how a packet is sent over the wire.
+*/
 enum PacketFlags
 {
-	PACKET_RELIABLE = (1 << 0),
-	PACKET_UNSEQUENCED = (1 << 1),
-	PACKET_NO_ALLOCATE = (1 << 2),
-	PACKET_UNRELIABLE_FRAGMENT = (1 << 3)
+	PACKET_RELIABLE = (1 << 0), //!< Ensures the packet will be received and be received in order.
+	PACKET_UNSEQUENCED = (1 << 1), //!< Packet will not be sequenced with other packets. Not supported for reliable packets.
+	PACKET_NO_ALLOCATE = (1 << 2), //!< Packet will not allocate data and user must supply it instead.
+	PACKET_UNRELIABLE_FRAGMENT = (1 << 3) //!< Packet will be fragmented using unreliable (instead of reliable) send if it exceeds the MTU.
 };
 
 class Host;
 
+/*!
+	\brief Class that represents a connection to another peer.
+*/
 class Connection
 {
 public:

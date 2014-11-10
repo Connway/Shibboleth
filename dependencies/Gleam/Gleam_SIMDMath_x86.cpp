@@ -61,8 +61,8 @@ const SIMDType gPiOverFour = { 3.141592654f/4.0f, 3.141592654f/4.0f, 3.141592654
 const SIMDType gThreePiOverFour = { 3.141592654f*3.0f/4.0f, 3.141592654f*3.0f/4.0f, 3.141592654f*3.0f/4.0f, 3.141592654f*3.0f/4.0f };
 const SIMDType gReciprocalTwoPi = { 1.0f/(2.0f*3.141592654f), 1.0f/(2.0f*3.141592654f), 1.0f/(2.0f*3.141592654f), 1.0f/(2.0f*3.141592654f) };
 
-const SIMDType gXAxis = { 1.0f, 0.0f, 0.0f, 1.0f };
-const SIMDType gYAxis = { 0.0f, 1.0f, 0.0f, 1.0f };
+const SIMDType gXAxis = { 1.0f, 0.0f, 0.0f, 0.0f };
+const SIMDType gYAxis = { 0.0f, 1.0f, 0.0f, 0.0f };
 const SIMDType gZAxis = { 0.0f, 0.0f, 1.0f, 0.0f };
 const SIMDType gWAxis = { 0.0f, 0.0f, 0.0f, 1.0f };
 

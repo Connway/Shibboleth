@@ -20,6 +20,8 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
+/*! \file */
+
 #pragma once
 
 #include "Gaff_SpinLock.h"
@@ -30,6 +32,10 @@ THE SOFTWARE.
 
 NS_GAFF
 
+/*!
+	\brief A collection of threads that execute tasks that are added to a queue.
+	\tparam Allocator The allocator used for the task queue.
+*/
 template <class Allocator = DefaultAllocator>
 class ThreadPool
 {
@@ -45,7 +51,14 @@ public:
 		destroy();
 	}
 
-	bool init(unsigned int num_threads = (unsigned int)GetNumberOfCores())
+	/*!
+		\brief Creates the threads.
+		\param num_threads
+			The number of threads to allocate for the ThreadPool.
+			Defaults to the number of physics cores minus one.
+		\return Whether the threads were successfully craeted.
+	*/
+	bool init(unsigned int num_threads = (unsigned int)GetNumberOfCores() - 1)
 	{
 		_thread_data.thread_pool = this;
 		_thread_data.terminate = false;
@@ -56,6 +69,7 @@ public:
 			Thread thread;
 
 			if (!thread.create(TaskRunner, &_thread_data)) {
+				destroy();
 				return false;
 			}
 
@@ -65,6 +79,9 @@ public:
 		return true;
 	}
 
+	/*!
+		\brief Tells all threads to terminate, waits for them to return, and then destroys them.
+	*/
 	void destroy(void)
 	{
 		_thread_data.terminate = true;
@@ -74,7 +91,6 @@ public:
 		}
 
 		_threads.clear();
-		_tasks.clear();
 	}
 
 	void addTask(const TaskPtr<Allocator>& task)
@@ -98,13 +114,16 @@ private:
 	{
 		ThreadPool<Allocator>* thread_pool;
 		bool terminate;
-	} _thread_data;
+	};
 
 	Queue<TaskPtr<Allocator>, Allocator> _tasks;
 	Array<Thread, Allocator> _threads;
+	ThreadData _thread_data;
 	SpinLock _lock;
 
 	Allocator _allocator;
+
+	//volatile unsigned int _active_threads;
 
 	static Thread::ReturnType THREAD_CALLTYPE TaskRunner(void* thread_data)
 	{
@@ -122,6 +141,8 @@ private:
 			tp->_lock.unlock();
 
 			if (task) {
+				// Atomic increment _active_threads
+
 				const Array<TaskPtr<Allocator>, Allocator>& dep_tasks = task->getDependentTasks();
 				task->doTask();
 				task->setFinished(true);
@@ -135,6 +156,8 @@ private:
 				}
 
 				task = nullptr; // Free the task
+
+				// Atomic decrement _active_threads
 			} /*else {*/
 				// Is this a better idea than yielding the thread every iteration?
 				// Only yield when we have nothing to do?

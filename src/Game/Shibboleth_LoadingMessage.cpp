@@ -20,50 +20,17 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#pragma once
+#include "Shibboleth_LoadingMessage.h"
+#include <Gaff_Math.h>
+#include <cstring>
 
-#include "Gaff_IncludeAssert.h"
-#include "Gaff_Defines.h"
+NS_SHIBBOLETH
 
-NS_GAFF
+AHashString LoadingMessage::g_Hash("LoadingMessage");
 
-template <class Storage>
-class BitFlags
+LoadingMessage::LoadingMessage(LoadingState _state, float _progress):
+	progress(_progress), state(_state)
 {
-public:
-	BitFlags(const BitFlags<Storage>& rhs):
-		_flags(rhs._flags)
-	{
-	}
-
-	BitFlags(Storage init_value = 0):
-		_flags(init_value)
-	{
-	}
-
-	void setFlags(Storage flags)
-	{
-		_flags |= flags;
-	}
-
-	void clearFlags(Storage flags)
-	{
-		_flags &= ~flags;
-	}
-
-	bool isFlagSet(Storage flags) const
-	{
-		return (_flags & flags) == flags;
-	}
-
-	bool isBitSet(unsigned int bit) const
-	{
-		assert(bit < (sizeof(Storage) * BITS_PER_BYTE));
-		return (1 << bit) & _flags;
-	}
-
-private:
-	Storage _flags;
-};
+}
 
 NS_END

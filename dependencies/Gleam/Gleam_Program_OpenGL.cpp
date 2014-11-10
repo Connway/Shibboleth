@@ -46,7 +46,7 @@ ProgramGL::ProgramGL(void):
 ProgramGL::~ProgramGL(void)
 {
 	destroy();
-	IProgram::destroy();
+	ProgramBase::destroy();
 }
 
 bool ProgramGL::init(void)

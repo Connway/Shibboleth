@@ -33,60 +33,55 @@ class ISamplerState;
 class IRenderDevice;
 class IBuffer;
 
-class IProgramBuffers : public GleamRefCounted
+class IProgramBuffers : public Gaff::IRefCounted
 {
 public:
-	IProgramBuffers(void);
-	virtual ~IProgramBuffers(void);
+	IProgramBuffers(void) {}
+	virtual ~IProgramBuffers(void) {}
 
-	void clear(void);
+	virtual void clear(void) = 0;
 
-	INLINE const GleamArray<IBuffer*>& getConstantBuffers(IShader::SHADER_TYPE type) const;
-	INLINE const IBuffer* getConstantBuffer(IShader::SHADER_TYPE type, unsigned int index) const;
-	INLINE IBuffer* getConstantBuffer(IShader::SHADER_TYPE type, unsigned int index);
-	virtual void addConstantBuffer(IShader::SHADER_TYPE type, IBuffer* const_buffer);
-	virtual void removeConstantBuffer(IShader::SHADER_TYPE type, unsigned int index);
-	virtual void popConstantBuffer(IShader::SHADER_TYPE type);
+	virtual const GleamArray<IBuffer*>& getConstantBuffers(IShader::SHADER_TYPE type) const = 0;
+	virtual const IBuffer* getConstantBuffer(IShader::SHADER_TYPE type, unsigned int index) const = 0;
+	virtual IBuffer* getConstantBuffer(IShader::SHADER_TYPE type, unsigned int index) = 0;
+	virtual void addConstantBuffer(IShader::SHADER_TYPE type, IBuffer* const_buffer) = 0;
+	virtual void removeConstantBuffer(IShader::SHADER_TYPE type, unsigned int index) = 0;
+	virtual void popConstantBuffer(IShader::SHADER_TYPE type) = 0;
 
-	INLINE unsigned int getConstantBufferCount(IShader::SHADER_TYPE type) const;
-	unsigned int getConstantBufferCount(void) const;
+	virtual unsigned int getConstantBufferCount(IShader::SHADER_TYPE type) const = 0;
+	virtual unsigned int getConstantBufferCount(void) const = 0;
 
-	INLINE const GleamArray<IShaderResourceView*>& getResourceViews(IShader::SHADER_TYPE type) const;
-	INLINE const IShaderResourceView* getResourceView(IShader::SHADER_TYPE type, unsigned int index) const;
-	INLINE IShaderResourceView* getResourceView(IShader::SHADER_TYPE type, unsigned int index);
-	virtual void addResourceView(IShader::SHADER_TYPE type, IShaderResourceView* resource_view);
-	virtual void removeResourceView(IShader::SHADER_TYPE type, unsigned int index);
-	virtual void popResourceView(IShader::SHADER_TYPE type);
+	virtual const GleamArray<IShaderResourceView*>& getResourceViews(IShader::SHADER_TYPE type) const = 0;
+	virtual const IShaderResourceView* getResourceView(IShader::SHADER_TYPE type, unsigned int index) const = 0;
+	virtual IShaderResourceView* getResourceView(IShader::SHADER_TYPE type, unsigned int index) = 0;
+	virtual void addResourceView(IShader::SHADER_TYPE type, IShaderResourceView* resource_view) = 0;
+	virtual void removeResourceView(IShader::SHADER_TYPE type, unsigned int index) = 0;
+	virtual void popResourceView(IShader::SHADER_TYPE type) = 0;
 
-	INLINE unsigned int getResourceViewCount(IShader::SHADER_TYPE type) const;
-	unsigned int getResourceViewCount(void) const;
+	virtual unsigned int getResourceViewCount(IShader::SHADER_TYPE type) const = 0;
+	virtual unsigned int getResourceViewCount(void) const = 0;
 
-	INLINE const GleamArray<ISamplerState*>& getSamplerStates(IShader::SHADER_TYPE type) const;
-	INLINE const ISamplerState* getSamplerState(IShader::SHADER_TYPE type, unsigned int index) const;
-	INLINE ISamplerState* getSamplerState(IShader::SHADER_TYPE type, unsigned int index);
-	virtual void addSamplerState(IShader::SHADER_TYPE type, ISamplerState* sampler);
-	virtual void removeSamplerState(IShader::SHADER_TYPE type, unsigned int index);
-	virtual void popSamplerState(IShader::SHADER_TYPE type);
+	virtual const GleamArray<ISamplerState*>& getSamplerStates(IShader::SHADER_TYPE type) const = 0;
+	virtual const ISamplerState* getSamplerState(IShader::SHADER_TYPE type, unsigned int index) const = 0;
+	virtual ISamplerState* getSamplerState(IShader::SHADER_TYPE type, unsigned int index) = 0;
+	virtual void addSamplerState(IShader::SHADER_TYPE type, ISamplerState* sampler) = 0;
+	virtual void removeSamplerState(IShader::SHADER_TYPE type, unsigned int index) = 0;
+	virtual void popSamplerState(IShader::SHADER_TYPE type) = 0;
 
-	INLINE unsigned int getSamplerCount(IShader::SHADER_TYPE type) const;
-	unsigned int getSamplerCount(void) const;
+	virtual unsigned int getSamplerCount(IShader::SHADER_TYPE type) const = 0;
+	virtual unsigned int getSamplerCount(void) const = 0;
 
 	virtual bool isD3D(void) const = 0;
-
-protected:
-	GleamArray<IShaderResourceView*> _resource_views[IShader::SHADER_TYPE_SIZE];
-	GleamArray<ISamplerState*> _sampler_states[IShader::SHADER_TYPE_SIZE];
-	GleamArray<IBuffer*> _constant_buffers[IShader::SHADER_TYPE_SIZE];
 };
 
-class IProgram : public GleamRefCounted
+class IProgram : public Gaff::IRefCounted
 {
 public:
-	IProgram(void);
-	virtual ~IProgram(void);
+	IProgram(void) {}
+	virtual ~IProgram(void) {}
 
 	virtual bool init(void) = 0;
-	virtual void destroy(void);
+	virtual void destroy(void) = 0;
 
 	virtual void attach(IShader* shader) = 0;
 	virtual void detach(IShader::SHADER_TYPE shader) = 0;
@@ -96,11 +91,8 @@ public:
 
 	virtual bool isD3D(void) const = 0;
 
-	const IShader* getAttachedShader(IShader::SHADER_TYPE type) const;
-	IShader* getAttachedShader(IShader::SHADER_TYPE type);
-
-protected:
-	Gaff::RefPtr<IShader> _attached_shaders[IShader::SHADER_TYPE_SIZE];
+	virtual const IShader* getAttachedShader(IShader::SHADER_TYPE type) const = 0;
+	virtual IShader* getAttachedShader(IShader::SHADER_TYPE type) = 0;
 };
 
 NS_END

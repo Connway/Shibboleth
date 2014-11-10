@@ -1,4 +1,4 @@
-/************************************************************************************
+	/************************************************************************************
 Copyright (C) 2014 by Nicholas LaCroix
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -20,19 +20,31 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
+/*!
+	\brief Traverses all filesystem entries in a specific directory.
+
+	\tparam
+		Callback The type used for the callback.
+		Callbacks take the signature bool CB(const char* name, size_t name_len, FileDataType type)
+		Returning true will end the loop early.
+
+	\return Returns whether the loop was terminated early.
+*/
 template <class Callback>
-void ForEachInDirectory(const char* directory, Callback&& callback)
+bool ForEachInDirectory(const char* directory, Callback&& callback)
 {
 	DIR* dir = opendir(directory);
 
 	if (!dir) {
-		return;
+		return true;
 	}
 
 	dirent* entry = readdir(dir);
+	bool early_out = false;
 
 	while (entry) {
 		if (callback(entry->d_name, _D_EXACT_NAMLEN(entry), (FileDataType)entry->d_type)) {
+			early_out = true;
 			break;
 		}
 
@@ -40,22 +52,36 @@ void ForEachInDirectory(const char* directory, Callback&& callback)
 	}
 
 	closedir(dir);
+	return early_out;
 }
 
+/*!
+	\brief Traverses filesystem entries of \a type in a specific directory.
+
+	\tparam type The filesystem entry type we are filtering to the callback.
+	\tparam
+		Callback The type used for the callback.
+		Callbacks take the signature bool CB(const char* name, size_t name_len)
+		Returning true will end the loop early.
+
+	\return Returns whether the loop was terminated early.
+*/
 template <FileDataType type, class Callback>
-void ForEachTypeInDirectory(const char* directory, Callback&& callback)
+bool ForEachTypeInDirectory(const char* directory, Callback&& callback)
 {
 	DIR* dir = opendir(directory);
 
 	if (!dir) {
-		return;
+		return true;
 	}
 
 	dirent* entry = readdir(dir);
+	bool early_out = false;
 
 	while (entry) {
 		if (entry->d_type == type) {
 			if (callback(entry->d_name, _D_EXACT_NAMLEN(entry))) {
+				early_out = true;
 				break;
 			}
 		}
@@ -64,22 +90,26 @@ void ForEachTypeInDirectory(const char* directory, Callback&& callback)
 	}
 
 	closedir(dir);
+	return early_out;
 }
 
 #ifdef _UNICODE
+//! wchar_t version of ForEachInDirectory().
 template <class Callback>
-void ForEachInDirectory(const wchar_t* directory, Callback&& callback)
+bool ForEachInDirectory(const wchar_t* directory, Callback&& callback)
 {
 	WDIR* dir = wopendir(directory);
 
 	if (!dir) {
-		return;
+		return true;
 	}
 
 	wdirent* entry = wreaddir(dir);
+	bool early_out = false;
 
 	while (entry) {
 		if (callback(entry->d_name, _D_EXACT_NAMLEN(entry), (FileDataType)entry->d_type)) {
+			early_out = true;
 			break;
 		}
 
@@ -87,22 +117,26 @@ void ForEachInDirectory(const wchar_t* directory, Callback&& callback)
 	}
 
 	wclosedir(dir);
+	return early_out;
 }
 
+//! whcar_t version of ForEachTypeInDirectory.
 template <FileDataType type, class Callback>
-void ForEachTypeInDirectory(const wchar_t* directory, Callback&& callback)
+bool ForEachTypeInDirectory(const wchar_t* directory, Callback&& callback)
 {
 	WDIR* dir = wopendir(directory);
 
 	if (!dir) {
-		return;
+		return true;
 	}
 
 	wdirent* entry = wreaddir(dir);
+	bool early_out = false;
 
 	while (entry) {
 		if (entry->d_type == type) {
 			if (callback(entry->d_name, _D_EXACT_NAMLEN(entry))) {
+				early_out = true;
 				break;
 			}
 		}
@@ -111,9 +145,22 @@ void ForEachTypeInDirectory(const wchar_t* directory, Callback&& callback)
 	}
 
 	wclosedir(dir);
+	return early_out;
 }
 #endif
 
+/*!
+	\brief Parses the command line into option/value(s) pairs using a hashmap.
+	\return A HashMap of option/value strings.
+	\note
+		Options start with either a '-' or '--'. Option values are space separated.
+
+		Example (using JSON style notation for result):
+
+		(cmdline): --option1 value1 value2 -option2 value3 -flag0
+
+		(result): { "option1": "value1 value2", "option2": "value3", "flag0": "" }
+*/
 template <class Allocator>
 HashMap<AHashString<Allocator>, AString<Allocator>, Allocator> ParseCommandLine(int argc, char** argv)
 {
@@ -159,4 +206,50 @@ HashMap<AHashString<Allocator>, AString<Allocator>, Allocator> ParseCommandLine(
 	}
 
 	return opt_flag_map;
+}
+
+/*!
+	\brief Same as ParseCommandLine, but the user provides the HashMap we are outputting to.
+*/
+template <class Allocator>
+void ParseCommandLine(int argc, char** argv, HashMap<AHashString<Allocator>, AString<Allocator>, Allocator>& out)
+{
+	if (argc == 1) {
+		return;
+	}
+
+	AHashString<Allocator> option;
+	AString<Allocator> values;
+
+	for (int i = 1; i < argc; ++i) {
+		unsigned int option_begin = 0;
+		const char* value = argv[i];
+
+		// If it doesn't start with - or -- then skip it!
+		while (value[option_begin] == '-') {
+			++option_begin;
+		}
+
+		if (!option_begin) {
+			if (option.size()) {
+				if (values.size()) {
+					values += ' ';
+				}
+
+				values += value;
+			}
+
+		} else {
+			if (option.size()) {
+				out.insert(option, values);
+				values.clear();
+			}
+
+			option = value + option_begin;
+		}
+	}
+
+	if (option.size()) {
+		out.insert(option, values);
+	}
 }

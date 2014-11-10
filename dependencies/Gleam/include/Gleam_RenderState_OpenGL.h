@@ -23,6 +23,7 @@ THE SOFTWARE.
 #pragma once
 
 #include "Gleam_IRenderState.h"
+#include "Gleam_RefCounted.h"
 
 NS_GLEAM
 
@@ -66,6 +67,8 @@ private:
 	CULL_MODE _cull_face_mode;
 	bool _front_face_counter_clockwise;
 	BlendData _blend_data[8];
+
+	GLEAM_REF_COUNTED(RenderStateGL);
 };
 
 NS_END

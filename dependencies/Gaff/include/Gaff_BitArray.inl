@@ -26,17 +26,33 @@ BitArray<Allocator>::BitArray(const Allocator& allocator):
 {
 }
 
+/*!
+	\brief Initializes the array to the nearest number of bytes that will contain the number of bits we wish to store.
+
+	\param start_size The number of bits we wish to store.
+	\param Allocator The allocator we will use to allocate memory.
+
+	\note Initializes all bits to zero.
+*/
 template <class Allocator>
-BitArray<Allocator>::BitArray(unsigned int start_alloc, const Allocator& allocator):
-	_bit_array(CalculateBytes(start_alloc), 0, allocator), _used(start_alloc),
+BitArray<Allocator>::BitArray(unsigned int start_size, const Allocator& allocator):
+	_bit_array(CalculateBytes(start_size), 0, allocator), _used(start_size),
 	_size(_bit_array.size() * BITS_PER_BYTE)
 {
 }
 
+/*!
+	\brief
+		Initializes the array to the nearest number of bytes that will contain the number of bits
+		we wish to store with each bit being set to \a init_val.
+
+	\param start_size The number of bits we wish to store.
+	\param Allocator The allocator we will use to allocate memory.
+*/
 template <class Allocator>
-BitArray<Allocator>::BitArray(unsigned int start_alloc, bool init_val, const Allocator& allocator):
-	_bit_array(CalculateBytes(start_alloc), init_val, allocator), _used(start_alloc),
-	_size(_bit_array.size() * BITS_PER_BYTE)
+BitArray<Allocator>::BitArray(unsigned int start_size, bool init_val, const Allocator& allocator):
+	_bit_array(CalculateBytes(start_size), (init_val) ? static_cast<unsigned char>(-1) : 0, allocator),
+	_used(start_size), _size(_bit_array.size() * BITS_PER_BYTE)
 {
 }
 
@@ -80,8 +96,7 @@ const BitArray<Allocator>& BitArray<Allocator>::operator=(BitArray<Allocator>&& 
 }
 
 template <class Allocator>
-template <class Allocator2>
-bool BitArray<Allocator>::operator==(const BitArray<Allocator2>& rhs) const
+bool BitArray<Allocator>::operator==(const BitArray<Allocator>& rhs) const
 {
 	if (this == &rhs) {
 		return true;
@@ -101,8 +116,7 @@ bool BitArray<Allocator>::operator==(const BitArray<Allocator2>& rhs) const
 }
 
 template <class Allocator>
-template <class Allocator2>
-bool BitArray<Allocator>::operator!=(const BitArray<Allocator2>& rhs) const
+bool BitArray<Allocator>::operator!=(const BitArray<Allocator>& rhs) const
 {
 	return !(*this == rhs);
 }
@@ -146,6 +160,9 @@ void BitArray<Allocator>::set(unsigned int index)
 	_bit_array[array_index] |= (1 << shift);
 }
 
+/*!
+	\brief Removes all values in the array and frees all used memory.
+*/
 template <class Allocator>
 void BitArray<Allocator>::clear(void)
 {
@@ -154,6 +171,9 @@ void BitArray<Allocator>::clear(void)
 	_size = 0;
 }
 
+/*!
+	\brief Removes all values in the array, but keeps its memory.
+*/
 template <class Allocator>
 void BitArray<Allocator>::clearNoFree(void)
 {

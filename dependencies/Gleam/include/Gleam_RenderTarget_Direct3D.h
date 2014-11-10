@@ -24,6 +24,7 @@ THE SOFTWARE.
 
 #include "Gleam_IRenderTarget.h"
 #include "Gleam_IncludeD3D11.h"
+#include "Gleam_RefCounted.h"
 #include "Gleam_Array.h"
 
 struct ID3D11RenderTargetView;
@@ -58,6 +59,8 @@ private:
 
 	friend class RenderDeviceD3D;
 	void setRTV(ID3D11RenderTargetView* rt, const D3D11_VIEWPORT& viewport);
+
+	GLEAM_REF_COUNTED(RenderTargetD3D);
 };
 
 NS_END

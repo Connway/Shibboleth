@@ -935,6 +935,7 @@ void HashMap<Key, Value, Allocator>::shiftBuckets(unsigned int index)
 }
 
 
+#ifndef DOXY_SKIP
 // String Specialization
 template <class Value, class Allocator, class T>
 HashMap<String<T, Allocator>, Value, Allocator>::HashMap(HashFunc hash, const Allocator& allocator):
@@ -1917,3 +1918,4 @@ void HashMap<HashString<T, Allocator>, Value, Allocator>::shiftBuckets(unsigned 
 		}
 	}
 }
+#endif

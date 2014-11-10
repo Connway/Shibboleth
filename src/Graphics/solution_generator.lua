@@ -134,13 +134,13 @@ group ""
 		dependson
 		{
 			"Shared", "Gaff", "jansson",
-			"Gleam", "glew"
+			"Gleam", "glew", "Memory"
 		}
 
 		links
 		{
 			"Shared", "Gaff", "jansson",
-			"Gleam", "glew"
+			"Gleam", "glew", "Memory"
 		}
 
 		filter { "configurations:*OpenGL", "system:windows" }

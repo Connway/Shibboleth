@@ -20,6 +20,8 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
+/*! \file */
+
 #pragma once
 
 #include "Gaff_DefaultAllocator.h"
@@ -27,13 +29,18 @@ THE SOFTWARE.
 
 NS_GAFF
 
+/*!
+	\brief A FIFO quque implemented with a circular buffer.
+	\tparam T The data type we are storing.
+	\tparam Allocator The memory allocator we will use.
+*/
 template <class T, class Allocator = DefaultAllocator>
 class Queue
 {
 public:
-	Queue(const Allocator& allocator = Allocator());
+	explicit Queue(const Allocator& allocator = Allocator());
 	explicit Queue(unsigned int start_alloc, const Allocator& allocator = Allocator());
-	explicit Queue(unsigned int size, const T* data, const Allocator& allocator = Allocator());
+	Queue(const T* data, unsigned int size, const Allocator& allocator = Allocator());
 	Queue(const Queue<T, Allocator>& rhs);
 	Queue(Queue<T, Allocator>&& rhs);
 	~Queue(void);
@@ -56,7 +63,7 @@ public:
 	T& last(void);
 
 	unsigned int size(void) const;
-	unsigned int allocated(void) const;
+	unsigned int capacity(void) const;
 
 	bool empty(void) const;
 

@@ -22,7 +22,7 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Shibboleth_Allocator.h"
+#include "Shibboleth_Memory.h"
 #include <Gaff_Math.h>
 
 // Disable warning for no assignment operator generated

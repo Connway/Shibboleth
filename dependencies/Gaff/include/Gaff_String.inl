@@ -21,10 +21,6 @@ THE SOFTWARE.
 ************************************************************************************/
 
 template <class T, class Allocator>
-const unsigned int String<T, Allocator>::npos = (unsigned int)-1;
-
-
-template <class T, class Allocator>
 String<T, Allocator>::String(const Allocator& allocator):
 	_allocator(allocator), _size(0), _string(nullptr)
 {
@@ -266,6 +262,11 @@ String<T, Allocator> String<T, Allocator>::operator+(T rhs) const
 }
 
 // WARNING: This function takes ownership of the string instead of copying
+/*!
+	\brief Sets the raw string to be used internally. Does not allocate to make a copy.
+	\param string The raw string to use.
+	\note Using this function means you are passing ownership of \a string to String.
+*/
 template <class T, class Allocator>
 void String<T, Allocator>::set(T* string)
 {
@@ -302,12 +303,21 @@ T* String<T, Allocator>::getBuffer(void)
 	return _string;
 }
 
+/*!
+	\brief Returns the substring of the extension denoted by the \a delimiting_character.
+
+	\return
+		The substring of all characters that occurs after the last instance of \a delimiting_character.
+		If \a delimiting_character was not found, it returns and empty string.
+
+	\note This is the same as calling substring(findLastOf(\a delimiting_character)). (but with some error checking)
+*/
 template <class T, class Allocator>
 String<T, Allocator> String<T, Allocator>::getExtension(T delimiting_character) const
 {
 	assert(_string && _size);
 	unsigned int index = findLastOf(delimiting_character);
-	return (index == npos) ? String<T, Allocator>() : substring(index);
+	return (index == UINT_FAIL) ? String<T, Allocator>() : substring(index);
 }
 
 template <class T, class Allocator>
@@ -321,7 +331,7 @@ template <class T, class Allocator>
 String<T, Allocator> String<T, Allocator>::substring(unsigned int begin) const
 {
 	assert(begin < _size);
-	return String<T, Allocator>(_string + begin);
+	return String<T, Allocator>(_string + begin, _size - begin);
 }
 
 template <class T, class Allocator>
@@ -411,7 +421,7 @@ unsigned int String<T, Allocator>::findFirstOf(const T* string) const
 	unsigned int len = length(string);
 
 	if (_size < len) {
-		return npos;
+		return UINT_FAIL;
 	}
 
 	unsigned int num_iterations = _size - len + 1;
@@ -422,7 +432,7 @@ unsigned int String<T, Allocator>::findFirstOf(const T* string) const
 		}
 	}
 
-	return npos;
+	return UINT_FAIL;
 }
 
 template <class T, class Allocator>
@@ -431,7 +441,7 @@ unsigned int String<T, Allocator>::findLastOf(const T* string) const
 	unsigned int len = length(string);
 
 	if (_size < len) {
-		return npos;
+		return UINT_FAIL;
 	}
 
 	for (int i = (int)_size - len - 2; i >= 0; --i) {
@@ -440,7 +450,7 @@ unsigned int String<T, Allocator>::findLastOf(const T* string) const
 		}
 	}
 
-	return npos;
+	return UINT_FAIL;
 }
 template <class T, class Allocator>
 unsigned int String<T, Allocator>::findFirstOf(T character) const
@@ -451,7 +461,7 @@ unsigned int String<T, Allocator>::findFirstOf(T character) const
 		}
 	}
 
-	return npos;
+	return UINT_FAIL;
 }
 
 template <class T, class Allocator>
@@ -463,9 +473,12 @@ unsigned int String<T, Allocator>::findLastOf(T character) const
 		}
 	}
 
-	return npos;
+	return UINT_FAIL;
 }
 
+/*!
+	\brief Converts a UTF-16 encoded string to UTF-8 encoding.
+*/
 template <class T, class Allocator>
 void String<T, Allocator>::convertToUTF8(const wchar_t* string, unsigned int size)
 {
@@ -474,6 +487,9 @@ void String<T, Allocator>::convertToUTF8(const wchar_t* string, unsigned int siz
 	trimZeroes(); // Make string exact size
 }
 
+/*!
+	\brief Converts a UTF-8 encoded string to UTF-16 encoding.
+*/
 template <class T, class Allocator>
 void String<T, Allocator>::convertToUTF16(const char* string, unsigned int size)
 {
@@ -482,6 +498,10 @@ void String<T, Allocator>::convertToUTF16(const char* string, unsigned int size)
 	trimZeroes(); // Make string exact size
 }
 
+/*!
+	\brief Find an invalid UTF-8 encoded character and returns its position.
+	\return The position of the first invalid UTF-8 encoded character.
+*/
 template <class T, class Allocator>
 unsigned int String<T, Allocator>::findInvalidUTF8(void) const
 {
@@ -489,6 +509,9 @@ unsigned int String<T, Allocator>::findInvalidUTF8(void) const
 	return (unsigned int)(position - _string);
 }
 
+/*!
+	\brief Checks if the string is a valid UTF-8 encoded string.
+*/
 template <class T, class Allocator>
 bool String<T, Allocator>::isValidUTF8(void) const
 {

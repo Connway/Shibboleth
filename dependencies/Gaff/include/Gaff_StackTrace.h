@@ -20,10 +20,14 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
+/*! \file */
+
 #pragma once
 
 #if defined(_WIN32) || defined(_WIN64)
 	#include "Gaff_StackTrace_Windows.h"
-#else
+#elif defined(__linux__) || defined(__APPLE__)
 	#include "Gaff_StackTrace_Linux.h"
+#else
+	#error Platform not supported.
 #endif

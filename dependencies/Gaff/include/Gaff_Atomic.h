@@ -20,7 +20,19 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
+/*!
+	\file
+
+	Preprocessor defines for platform specific versions of atomic functions.
+	Functions that do not end in FetchOrig will return the modified values.
+
+	For more information, visit this
+	<a href="http://msdn.microsoft.com/en-us/library/windows/desktop/ms686360%28v=vs.85%29.aspx">MSDN page</a>
+	for more details.
+*/
+
 #pragma once
+
 
 #if defined(_WIN32) || defined(_WIN64)
 	#include "Gaff_IncludeWindows.h"
@@ -35,8 +47,8 @@ THE SOFTWARE.
 	// Only supports long
 	#define AtomicAdd32 InterlockedAdd
 	#define AtomicSub32(ptr, val) InterlockedAdd(ptr, -val)
-	#define AtomicAddFetchOrig32 InterlockedExchangeAdd
-	#define AtomicSubFetchOrig32 InterlockedExchangeSubtract
+	#define AtomicAdd32FetchOrig InterlockedExchangeAdd
+	#define AtomicSub32FetchOrig InterlockedExchangeSubtract
 
 	#define AtomicAnd32(ptr, val) (InterlockedAnd(ptr, val) & val)
 	#define AtomicOr32(ptr, val) (InterlockedOr(ptr, val) | val)
@@ -78,8 +90,8 @@ THE SOFTWARE.
 	// Only supports long
 	#define AtomicAdd32 __sync_add_and_fetch
 	#define AtomicSub32 __sync_sub_and_fetch
-	#define AtomicAddFetchOrig32 __sync_fetch_and_add
-	#define AtomicSubFetchOrig32 __sync_fetch_and_sub
+	#define AtomicAdd32FetchOrig __sync_fetch_and_add
+	#define AtomicSub32FetchOrig __sync_fetch_and_sub
 
 	#define AtomicAnd32 __sync_and_and_fetch
 	#define AtomicOr32 __sync_or_and_fetch

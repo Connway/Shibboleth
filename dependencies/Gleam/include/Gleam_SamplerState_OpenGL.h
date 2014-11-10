@@ -23,6 +23,7 @@ THE SOFTWARE.
 #pragma once
 
 #include "Gleam_ISamplerState.h"
+#include "Gleam_RefCounted.h"
 
 NS_GLEAM
 
@@ -48,6 +49,8 @@ public:
 
 private:
 	unsigned int _sampler_state;
+
+	GLEAM_REF_COUNTED(SamplerStateGL);
 };
 
 NS_END

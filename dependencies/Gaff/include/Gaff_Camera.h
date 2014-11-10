@@ -20,12 +20,21 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
+/*! \file */
+
+#pragma once
+
 #include "Gaff_Defines.h"
 
 struct aiCamera;
 
 NS_GAFF
 
+/*!
+	\brief
+		Class that wraps camera data extracted from a loaded Scene.
+		See <a href="http://assimp.sourceforge.net/lib_html/structai_camera.html">aiCamera Documentation</a> for more details.
+*/
 class Camera
 {
 public:

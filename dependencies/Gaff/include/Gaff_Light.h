@@ -20,6 +20,10 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
+/*! \file */
+
+#pragma once
+
 #include "Gaff_Defines.h"
 #include <assimp/light.h>
 
@@ -33,6 +37,11 @@ enum LightType
 	LT_SPOT = aiLightSource_SPOT
 };
 
+/*!
+	\brief
+		Class that wraps light data extracted from a loaded Scene.
+		See <a href="http://assimp.sourceforge.net/lib_html/structai_light.html">aiLight Documentation</a> for more details.
+*/
 class Light
 {
 public:

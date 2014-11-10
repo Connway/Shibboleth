@@ -1,33 +1,43 @@
 local manager_files =
 {
+	"include/Shibboleth_*Manager.h",
+	"Shibboleth_*Manager.cpp",
+};
+
+local manager_module_files =
+{
 	"Shibboleth_ManagersModule.cpp"
 };
 
 local state_files =
 {
-	"include/Shibboleth_CreateResourceLoadersState.h",
-	"include/Shibboleth_LoadComponentsState.h",
-	"include/Shibboleth_SetupOtterUIState.h",
-	"include/Shibboleth_RegisterLuaClassesState.h",
-	"Shibboleth_CreateResourceLoadersState.cpp",
-	"Shibboleth_LoadComponentsState.cpp",
-	"Shibboleth_RegisterLuaClassesState.cpp",
-	"Shibboleth_SetupOtterUIState.cpp",
+	"include/Shibboleth_*State.h",
+	"Shibboleth_*State.cpp",
+};
+
+local state_module_files =
+{
 	"Shibboleth_StatesModule.cpp"
 };
 
-local components_files =
+local component_files =
 {
-	"include/Shibboleth_LuaComponent.h",
-	"include/Shibboleth_ModelComponent.h",
-	"Shibboleth_LuaComponent.cpp",
-	"Shibboleth_ModelComponent.cpp"
+	"include/Shibboleth_*Component.h",
+	"Shibboleth_*Component.cpp"
 };
 
-local components_module_files =
+local component_module_files =
 {
 	"Shibboleth_ComponentsModule.cpp"
 };
+
+local message_files =
+{
+	"include/Shibboleth_*Message.h",
+	"Shibboleth_*Message.cpp"
+};
+
+
 
 solution "Game"
 	if _ACTION then
@@ -140,9 +150,11 @@ group ""
 		files { "**.h", "**.cpp", "**.inl", "solution_generator.lua" }
 
 		excludes(manager_files)
+		excludes(manager_module_files)
 		excludes(state_files)
-		excludes(components_files)
-		excludes(components_module_files)
+		excludes(state_module_files)
+		excludes(component_files)
+		excludes(component_module_files)
 
 		includedirs
 		{
@@ -174,7 +186,7 @@ group ""
 		kind "StaticLib"
 		language "C++"
 
-		files(components_files)
+		files(component_files)
 
 		includedirs
 		{
@@ -196,6 +208,86 @@ group ""
 
 		filter {}
 
+	project "Managers"
+		if _ACTION then
+			location ("../../project/" .. _ACTION .. "/game")
+		end
+
+		kind "StaticLib"
+		language "C++"
+
+		files(manager_files)
+
+		includedirs
+		{
+			"include",
+			"../Shared/include",
+			"../../dependencies/OtterUI/inc",
+			"../../dependencies/jansson",
+			"../../dependencies/Gleam/include",
+			"../../dependencies/Gaff/include",
+			"../../dependencies/LuaState",
+			"../../dependencies/LuaJIT-2.0.3/src",
+			"../../dependencies/utf8-cpp"
+		}
+
+		filter { "configurations:Debug or Release", "platforms:x86 or x64" }
+			targetsuffix ""
+
+		filter {}
+
+	project "Messages"
+		if _ACTION then
+			location ("../../project/" .. _ACTION .. "/game")
+		end
+
+		kind "StaticLib"
+		language "C++"
+
+		files(message_files)
+
+		includedirs
+		{
+			"include",
+			"../Shared/include",
+			"../../dependencies/Gaff/include",
+			"../../dependencies/utf8-cpp"
+		}
+
+		filter { "configurations:Debug or Release", "platforms:x86 or x64" }
+			targetsuffix ""
+
+		filter {}
+
+	project "States"
+		if _ACTION then
+			location ("../../project/" .. _ACTION .. "/game")
+		end
+
+		kind "StaticLib"
+		language "C++"
+
+		files(state_files)
+
+		includedirs
+		{
+			"include",
+			"../Shared/include",
+			"../../dependencies/OtterUI/inc",
+			"../../dependencies/jansson",
+			"../../dependencies/Gleam/include",
+			"../../dependencies/Gaff/include",
+			"../../dependencies/LuaBridge",
+			"../../dependencies/LuaState",
+			"../../dependencies/LuaJIT-2.0.3/src",
+			"../../dependencies/utf8-cpp"
+		}
+
+		filter { "configurations:Debug or Release", "platforms:x86 or x64" }
+			targetsuffix ""
+
+		filter {}
+
 	project "ManagersModule"
 		if _ACTION then
 			location ("../../project/" .. _ACTION .. "/game")
@@ -206,7 +298,7 @@ group ""
 
 		targetname "GameManagers"
 
-		files(manager_files)
+		files(manager_module_files)
 
 		includedirs
 		{
@@ -224,7 +316,8 @@ group ""
 		dependson
 		{
 			"Shared", "Gaff", "jansson",
-			"OtterUI", "Game", "Gleam"
+			"OtterUI", "Game", "Gleam",
+			"Managers", "Memory"
 
 			--[[
 				Adding LuaJIT as a dependency for some reason makes VS2013
@@ -239,7 +332,8 @@ group ""
 		links
 		{
 			"Shared", "Gaff", "jansson",
-			"OtterUI", "Game", "Gleam"
+			"OtterUI", "Game", "Gleam",
+			"Managers", "Memory"
 		}
 
 		filter { "configurations:Debug", "platforms:x86" }
@@ -266,20 +360,17 @@ group ""
 
 		targetname "GameStates"
 
-		files(state_files)
+		files(state_module_files)
 
 		includedirs
 		{
 			"include",
 			"../Shared/include",
-			"../../dependencies/OtterUI/inc",
-			"../../dependencies/jansson",
-			"../../dependencies/Gleam/include",
 			"../../dependencies/Gaff/include",
-			"../../dependencies/LuaBridge",
-			"../../dependencies/LuaState",
-			"../../dependencies/LuaJIT-2.0.3/src",
-			"../../dependencies/utf8-cpp"
+			"../../dependencies/Gleam/include",
+			"../../dependencies/OtterUI/inc",
+			"../../dependencies/utf8-cpp",
+			"../../dependencies/jansson"
 		}
 
 		dependson
@@ -288,7 +379,9 @@ group ""
 			"libjpeg", "libpng", "libtiff",
 			"OtterUI", "ResIL", "ResILU",
 			"zlib", "Gleam", "Game",
-			"esprit"
+			"esprit", "Managers",
+			"Components", "States",
+			"Memory"
 
 			--[[
 				Adding LuaJIT as a dependency for some reason makes VS2013
@@ -307,7 +400,9 @@ group ""
 			"OtterUI", "ResIL", "ResILU",
 			"zlib", "Gleam", "Game",
 			"assimp", "minizip",
-			"esprit"
+			"esprit", "Managers",
+			"Components", "States",
+			"Memory"
 		}
 
 		filter { "configurations:Debug", "platforms:x86" }
@@ -334,7 +429,7 @@ group ""
 
 		targetname "GameComponents"
 
-		files(components_module_files)
+		files(component_module_files)
 
 		includedirs
 		{
@@ -357,7 +452,8 @@ group ""
 			"libjpeg", "libpng", "libtiff",
 			"OtterUI", "ResIL", "ResILU",
 			"zlib", "Gleam", "Game",
-			"esprit", "Components"
+			"esprit", "Components",
+			"Managers", "Memory"
 
 			--[[
 				Adding LuaJIT as a dependency for some reason makes VS2013
@@ -375,7 +471,8 @@ group ""
 			"libjpeg", "libpng", "libtiff",
 			"OtterUI", "ResIL", "ResILU",
 			"zlib", "Gleam", "Game",
-			"esprit", "Components"
+			"esprit", "Components",
+			"Managers", "Memory"
 		}
 
 		filter { "configurations:Debug", "platforms:x86" }
