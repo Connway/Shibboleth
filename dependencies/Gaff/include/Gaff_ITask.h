@@ -20,16 +20,21 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
+/*! \file */
+
 #pragma once
 
-#include "Gaff_RefCounted.h"
+#include "Gaff_IRefCounted.h"
 #include "Gaff_RefPtr.h"
 #include "Gaff_Array.h"
 
 NS_GAFF
 
+/*!
+	\brief Interface for tasks used with the ThreadPool.
+*/
 template <class Allocator = DefaultAllocator>
-class ITask : public RefCounted<Allocator>
+class ITask : public IRefCounted
 {
 public:
 	typedef RefPtr< ITask<Allocator> > TaskPointer;
@@ -53,6 +58,9 @@ public:
 		return _finished;
 	}
 
+	/*!
+		\brief Block thread until the task has finished. While waiting, yield the thread to the scheduler.
+	*/
 	void yieldWait(void) const
 	{
 		while (!_finished) {
@@ -60,12 +68,22 @@ public:
 		}
 	}
 
+	/*!
+		\brief Block thread until the task has finished. Waiting uses a spin lock.
+	*/
 	void spinWait(void) const
 	{
 		while (!_finished) {
 		}
 	}
 
+	/*!
+		\brief
+			Adds a task that is dependent on this task.
+			Dependent tasks will be added to the ThreadPool when this task finishes.
+
+		\param task The task that is dependent on this task.
+	*/
 	void addDependentTask(const TaskPointer& task)
 	{
 		_dependent_tasks.push(task);

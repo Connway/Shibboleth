@@ -20,50 +20,108 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
+/*! \file */
+
 #pragma once
 
 #include "Gaff_String.h"
 
 NS_GAFF
 
+/*!
+	\brief A class that represents a dynamically loaded module. (*.so, *.dll, *.dylib)
+*/
 class DynamicModule
 {
 public:
 	DynamicModule(void);
 	~DynamicModule(void);
 
+	/*!
+		\brief Retrieves a function from the dynamic module.
+
+		\tparam Func The function pointer type the address will be cast to.
+		\tparam Allocator The allocator the string uses.
+		\param name The name of the symbol to retrieve from the dynamic module.
+
+		\return The function with the symbol \a name, otherwise nullptr.
+	*/
 	template <class Func, class Allocator>
 	Func GetFunc(const AString<Allocator>& name) const
 	{
 		return (Func)GetAddress(name.getBuffer());
 	}
 
+	/*!
+		\brief Retrieves a variable from the dynamic module.
+
+		\tparam Func The type the address will be cast to.
+		\tparam Allocator The allocator the string uses.
+		\param name The name of the symbol to retrieve from the dynamic module.
+
+		\return The variable with the symbol \a name, otherwise nullptr.
+	*/
 	template <class T, class Allocator>
 	T* GetVariable(const AString<Allocator>& name) const
 	{
 		return (T*)GetAddress(name.getBuffer());
 	}
 
+	/*!
+		\brief Retrieves a function from the dynamic module.
+
+		\tparam Func The function pointer type the address will be cast to.
+		\param name The name of the symbol to retrieve from the dynamic module.
+
+		\return The function with the symbol \a name, otherwise nullptr.
+	*/
 	template <class Func>
 	Func GetFunc(const char* name) const
 	{
 		return (Func)GetAddress(name);
 	}
 
+	/*!
+		\brief Retrieves a variable from the dynamic module.
+
+		\tparam Func The type the address will be cast to.
+		\param name The name of the symbol to retrieve from the dynamic module.
+
+		\return The variable with the symbol \a name, otherwise nullptr.
+	*/
 	template <class T>
 	T* GetVariable(const char* name) const
 	{
 		return (T*)GetAddress(name);
 	}
 
+	/*!
+		\brief Retrieves the address of the requested symbol \a name.
+
+		\tparam Allocator The allocator the string uses.
+		\param name The name of the symbol to retrieve from the dynamic module.
+
+		\return The address of the symbol \a name, otherwise nullptr.
+	*/
 	template <class Allocator>
 	void* GetAddress(const AString<Allocator>& name) const
 	{
 		return GetAddress(name.getBuffer());
 	}
 
+	/*!
+		\brief Loads the dynamic module found at \a filename from the disk.
+		\param filename The name of the file to load off the disk.
+		\return Whether the dynamic module was successfully loaded.
+	*/
 	INLINE bool load(const char* filename);
 	INLINE bool destroy(void);
+
+	/*!
+		\brief Retrieves the address of the requested symbol \a name.
+		\param name The name of the symbol to retrieve from the dynamic module.
+		\return The address of the symbol \a name, otherwise nullptr.
+	*/
 	INLINE void* GetAddress(const char* name) const;
 
 	INLINE char* GetErrorString(void) const;

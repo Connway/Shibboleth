@@ -20,6 +20,8 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
+/*! \file */
+
 #pragma once
 
 #include "Gaff_DefaultAllocator.h"
@@ -29,28 +31,26 @@ THE SOFTWARE.
 
 NS_GAFF
 
+/*!
+	\brief An array implementation for storing bits.
+	\tparam Allocator The allocator we will use to allocate memory.
+*/
 template <class Allocator = DefaultAllocator>
 class BitArray
 {
 public:
 	BitArray(const Allocator& allocator = Allocator());
-	explicit BitArray(unsigned int start_alloc, const Allocator& allocator = Allocator());
-	BitArray(unsigned int start_alloc, bool init_val, const Allocator& allocator = Allocator());
+	explicit BitArray(unsigned int start_size, const Allocator& allocator = Allocator());
+	BitArray(unsigned int start_size, bool init_val, const Allocator& allocator = Allocator());
 	BitArray(const BitArray<Allocator>& rhs);
 	BitArray(BitArray<Allocator>&& rhs);
 	~BitArray(void);
 
-	//template <class Allocator2>
-	//const BitArray<Allocator>& operator=(const BitArray<Allocator2>& rhs);
-
 	const BitArray<Allocator>& operator=(const BitArray<Allocator>& rhs);
 	const BitArray<Allocator>& operator=(BitArray<Allocator>&& rhs);
 
-	template <class Allocator2>
-	bool operator==(const BitArray<Allocator2>& rhs) const;
-
-	template <class Allocator2>
-	bool operator!=(const BitArray<Allocator2>& rhs) const;
+	bool operator==(const BitArray<Allocator>& rhs) const;
+	bool operator!=(const BitArray<Allocator>& rhs) const;
 
 	bool operator[](unsigned int index) const;
 

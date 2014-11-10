@@ -45,33 +45,59 @@ VAR_CONTAINER_VAL_TYPE(StringContainer, VT_STRING);
 VAR_CONTAINER_READ(DoubleContainer)
 {
 	assert(json[(const char*)IValueContainer::_key.getBuffer()].isReal());
-	object->*_var = json[(const char*)IValueContainer::_key.getBuffer()].getReal();
+
+	if (_var) {
+		object->*_var = json[(const char*)IValueContainer::_key.getBuffer()].getReal();
+	} else if (_setter) {
+		(object->*_setter)(json[(const char*)IValueContainer::_key.getBuffer()].getReal());
+	}
 }
 
 VAR_CONTAINER_WRITE(DoubleContainer)
 {
 	assert(!json[IValueContainer::_key.getBuffer()]);
-	json.setObject(IValueContainer::_key.getBuffer(), Gaff::JSON::createReal(object->*_var));
+
+	if (_var) {
+		json.setObject(IValueContainer::_key.getBuffer(), Gaff::JSON::createReal(object->*_var));
+	} else if (_getter) {
+		json.setObject(IValueContainer::_key.getBuffer(), Gaff::JSON::createReal((object->*_getter)()));
+	}
 }
 
 VAR_CONTAINER_SET_STRING(DoubleContainer)
 {
-	object->*_var = atof(value);
+	if (_var) {
+		object->*_var = atof(value);
+	} else if (_setter) {
+		(object->*_setter)(atof(value));
+	}
 }
 
 VAR_CONTAINER_SET_UINT(DoubleContainer)
 {
-	object->*_var = (double)value;
+	if (_var) {
+		object->*_var = (double)value;
+	} else if (_setter) {
+		(object->*_setter)((double)value);
+	}
 }
 
 VAR_CONTAINER_SET_INT(DoubleContainer)
 {
-	object->*_var = (double)value;
+	if (_var) {
+		object->*_var = (double)value;
+	} else if (_setter) {
+		(object->*_setter)((double)value);
+	}
 }
 
 VAR_CONTAINER_SET_DOUBLE(DoubleContainer)
 {
-	object->*_var = value;
+	if (_var) {
+		object->*_var = value;
+	} else if (_setter) {
+		(object->*_setter)(value);
+	}
 }
 
 
@@ -80,33 +106,59 @@ VAR_CONTAINER_SET_DOUBLE(DoubleContainer)
 VAR_CONTAINER_READ(FloatContainer)
 {
 	assert(json[(const char*)IValueContainer::_key.getBuffer()].isReal());
-	object->*_var = (float)json[(const char*)IValueContainer::_key.getBuffer()].getReal();
+
+	if (_var) {
+		object->*_var = (float)json[(const char*)IValueContainer::_key.getBuffer()].getReal();
+	} else if (_setter) {
+		(object->*_setter)((float)json[(const char*)IValueContainer::_key.getBuffer()].getReal());
+	}
 }
 
 VAR_CONTAINER_WRITE(FloatContainer)
 {
 	assert(!json[IValueContainer::_key.getBuffer()]);
-	json.setObject(IValueContainer::_key.getBuffer(), Gaff::JSON::createReal(object->*_var));
+
+	if (_var) {
+		json.setObject(IValueContainer::_key.getBuffer(), Gaff::JSON::createReal(object->*_var));
+	} else if (_getter) {
+		json.setObject(IValueContainer::_key.getBuffer(), Gaff::JSON::createReal((object->*_getter)()));
+	}
 }
 
 VAR_CONTAINER_SET_STRING(FloatContainer)
 {
-	object->*_var = (float)atof(value);
+	if (_var) {
+		object->*_var = (float)atof(value);
+	} else if (_setter) {
+		(object->*_setter)((float)atof(value));
+	}
 }
 
 VAR_CONTAINER_SET_UINT(FloatContainer)
 {
-	object->*_var = (float)value;
+	if (_var) {
+		object->*_var = (float)value;
+	} else if (_setter) {
+		(object->*_setter)((float)value);
+	}
 }
 
 VAR_CONTAINER_SET_INT(FloatContainer)
 {
-	object->*_var = (float)value;
+	if (_var) {
+		object->*_var = (float)value;
+	} else if (_setter) {
+		(object->*_setter)((float)value);
+	}
 }
 
 VAR_CONTAINER_SET_DOUBLE(FloatContainer)
 {
-	object->*_var = (float)value;
+	if (_var) {
+		object->*_var = (float)value;
+	} else if (_setter) {
+		(object->*_setter)((float)value);
+	}
 }
 
 
@@ -115,33 +167,59 @@ VAR_CONTAINER_SET_DOUBLE(FloatContainer)
 VAR_CONTAINER_READ(UIntContainer)
 {
 	assert(json[(const char*)IValueContainer::_key.getBuffer()].isReal());
-	object->*_var = (unsigned int)json[(const char*)IValueContainer::_key.getBuffer()].getReal();
+
+	if (_var) {
+		object->*_var = (unsigned int)json[(const char*)IValueContainer::_key.getBuffer()].getReal();
+	} else if (setter) {
+		(object->*_setter)((unsigned int)json[(const char*)IValueContainer::_key.getBuffer()].getReal());
+	}
 }
 
 VAR_CONTAINER_WRITE(UIntContainer)
 {
 	assert(!json[IValueContainer::_key.getBuffer()]);
-	json.setObject(IValueContainer::_key.getBuffer(), Gaff::JSON::createReal(object->*_var));
+
+	if (_var) {
+		json.setObject(IValueContainer::_key.getBuffer(), Gaff::JSON::createReal(object->*_var));
+	} else if (_getter) {
+		json.setObject(IValueContainer::_key.getBuffer(), Gaff::JSON::createReal((object->*_getter)()));
+	}
 }
 
 VAR_CONTAINER_SET_STRING(UIntContainer)
 {
-	object->*_var = strtoul(value, nullptr, 10);
+	if (_var) {
+		object->*_var = strtoul(value, nullptr, 10);
+	} else if (_setter) {
+		(object->*_setter)(strtoul(value, nullptr, 10));
+	}
 }
 
 VAR_CONTAINER_SET_UINT(UIntContainer)
 {
-	object->*_var = value;
+	if (_var) {
+		object->*_var = value;
+	} else if (_setter) {
+		(object->*_setter)(value);
+	}
 }
 
 VAR_CONTAINER_SET_INT(UIntContainer)
 {
-	object->*_var = (unsigned int)value;
+	if (_var) {
+		object->*_var = (unsigned int)value;
+	} else if (_setter) {
+		(object->*_setter)((unsigned int)value);
+	}
 }
 
 VAR_CONTAINER_SET_DOUBLE(UIntContainer)
 {
-	object->*_var = (unsigned int)value;
+	if (_var) {
+		object->*_var = (unsigned int)value;
+	} else if (_setter) {
+		(object->*_setter)((unsigned int)value);
+	}
 }
 
 
@@ -150,33 +228,59 @@ VAR_CONTAINER_SET_DOUBLE(UIntContainer)
 VAR_CONTAINER_READ(IntContainer)
 {
 	assert(json[(const char*)IValueContainer::_key.getBuffer()].isInteger());
-	object->*_var = json[(const char*)IValueContainer::_key.getBuffer()].getInteger();
+
+	if (_var) {
+		object->*_var = json[(const char*)IValueContainer::_key.getBuffer()].getInteger();
+	} else if (_setter) {
+		(object->*_setter)(json[(const char*)IValueContainer::_key.getBuffer()].getInteger());
+	}
 }
 
 VAR_CONTAINER_WRITE(IntContainer)
 {
 	assert(!json[IValueContainer::_key.getBuffer()]);
-	json.setObject(IValueContainer::_key.getBuffer(), Gaff::JSON::createInteger(object->*_var));
+
+	if (_var) {
+		json.setObject(IValueContainer::_key.getBuffer(), Gaff::JSON::createInteger(object->*_var));
+	} else if (_getter) {
+		json.setObject(IValueContainer::_key.getBuffer(), Gaff::JSON::createInteger((object->*_getter)()));
+	}
 }
 
 VAR_CONTAINER_SET_STRING(IntContainer)
 {
-	object->*_var = atoi(value);
+	if (_var) {
+		object->*_var = atoi(value);
+	} else if (_setter) {
+		(object->*_setter)(atoi(value));
+	}
 }
 
 VAR_CONTAINER_SET_UINT(IntContainer)
 {
-	object->*_var = (int)value;
+	if (_var) {
+		object->*_var = (int)value;
+	} else if (_setter) {
+		(object->*_setter)((int)value);
+	}
 }
 
 VAR_CONTAINER_SET_INT(IntContainer)
 {
-	object->*_var = value;
+	if (_var) {
+		object->*_var = value;
+	} else if (_setter) {
+		(object->*_setter)(value);
+	}
 }
 
 VAR_CONTAINER_SET_DOUBLE(IntContainer)
 {
-	object->*_var = (int)value;
+	if (_var) {
+		object->*_var = (int)value;
+	} else if (_setter) {
+		(object->*_setter)((int)value);
+	}
 }
 
 
@@ -185,33 +289,59 @@ VAR_CONTAINER_SET_DOUBLE(IntContainer)
 VAR_CONTAINER_READ(UShortContainer)
 {
 	assert(json[(const char*)IValueContainer::_key.getBuffer()].isInteger());
-	object->*_var = (unsigned short)json[(const char*)IValueContainer::_key.getBuffer()].getInteger();
+
+	if (_var) {
+		object->*_var = (unsigned short)json[(const char*)IValueContainer::_key.getBuffer()].getInteger();
+	} else if (_setter) {
+		(object->*_setter)((unsigned short)json[(const char*)IValueContainer::_key.getBuffer()].getInteger());
+	}
 }
 
 VAR_CONTAINER_WRITE(UShortContainer)
 {
 	assert(!json[IValueContainer::_key.getBuffer()]);
-	json.setObject(IValueContainer::_key.getBuffer(), Gaff::JSON::createInteger((json_int_t)(object->*_var)));
+
+	if (_var) {
+		json.setObject(IValueContainer::_key.getBuffer(), Gaff::JSON::createInteger((json_int_t)(object->*_var)));
+	} else if (_getter) {
+		json.setObject(IValueContainer::_key.getBuffer(), Gaff::JSON::createInteger((json_int_t)((object->*_getter)())));
+	}
 }
 
 VAR_CONTAINER_SET_STRING(UShortContainer)
 {
-	object->*_var = (unsigned short)atoi(value);
+	if (_var) {
+		object->*_var = (unsigned short)atoi(value);
+	} else if (_setter) {
+		(object->*_setter)((unsigned short)atoi(value));
+	}
 }
 
 VAR_CONTAINER_SET_UINT(UShortContainer)
 {
-	object->*_var = (unsigned short)value;
+	if (_var) {
+		object->*_var = (unsigned short)value;
+	} else if (_setter) {
+		(object->*_setter)((unsigned short)value);
+	}
 }
 
 VAR_CONTAINER_SET_INT(UShortContainer)
 {
-	object->*_var = (unsigned short)value;
+	if (_var) {
+		object->*_var = (unsigned short)value;
+	} else if (_setter) {
+		(object->*_setter)((unsigned short)value);
+	}
 }
 
 VAR_CONTAINER_SET_DOUBLE(UShortContainer)
 {
-	object->*_var = (unsigned short)value;
+	if (_var) {
+		object->*_var = (unsigned short)value;
+	} else if (_setter) {
+		(object->*_setter)((unsigned short)value);
+	}
 }
 
 
@@ -220,33 +350,59 @@ VAR_CONTAINER_SET_DOUBLE(UShortContainer)
 VAR_CONTAINER_READ(ShortContainer)
 {
 	assert(json[(const char*)IValueContainer::_key.getBuffer()].isInteger());
-	object->*_var = (short)json[(const char*)IValueContainer::_key.getBuffer()].getInteger();
+
+	if (_var) {
+		object->*_var = (short)json[(const char*)IValueContainer::_key.getBuffer()].getInteger();
+	} else if (_setter) {
+		(object->*_setter)((short)json[(const char*)IValueContainer::_key.getBuffer()].getInteger());
+	}
 }
 
 VAR_CONTAINER_WRITE(ShortContainer)
 {
 	assert(!json[IValueContainer::_key.getBuffer()]);
-	json.setObject(IValueContainer::_key.getBuffer(), Gaff::JSON::createInteger((json_int_t)(object->*_var)));
+
+	if (_var) {
+		json.setObject(IValueContainer::_key.getBuffer(), Gaff::JSON::createInteger((json_int_t)(object->*_var)));
+	} else if (_getter) {
+		json.setObject(IValueContainer::_key.getBuffer(), Gaff::JSON::createInteger((json_int_t)((object->*_getter)())));
+	}
 }
 
 VAR_CONTAINER_SET_STRING(ShortContainer)
 {
-	object->*_var = (short)atoi(value);
+	if (_var) {
+		object->*_var = (short)atoi(value);
+	} else if (_setter) {
+		(object->*_setter)((short)atoi(value));
+	}
 }
 
 VAR_CONTAINER_SET_UINT(ShortContainer)
 {
-	object->*_var = (short)value;
+	if (_var) {
+		object->*_var = (short)value;
+	} else if (_setter) {
+		(object->*_setter)((short)value);
+	}
 }
 
 VAR_CONTAINER_SET_INT(ShortContainer)
 {
-	object->*_var = (short)value;
+	if (_var) {
+		object->*_var = (short)value;
+	} else if (_setter) {
+		(object->*_setter)((short)value);
+	}
 }
 
 VAR_CONTAINER_SET_DOUBLE(ShortContainer)
 {
-	object->*_var = (short)value;
+	if (_var) {
+		object->*_var = (short)value;
+	} else if (_setter) {
+		(object->*_setter)((short)value);
+	}
 }
 
 
@@ -255,33 +411,59 @@ VAR_CONTAINER_SET_DOUBLE(ShortContainer)
 VAR_CONTAINER_READ(UCharContainer)
 {
 	assert(json[(const char*)IValueContainer::_key.getBuffer()].isInteger());
-	object->*_var = (unsigned char)json[(const char*)IValueContainer::_key.getBuffer()].getInteger();
+
+	if (_var) {
+		object->*_var = (unsigned char)json[(const char*)IValueContainer::_key.getBuffer()].getInteger();
+	} else if (_setter) {
+		(object->*_setter)((unsigned char)json[(const char*)IValueContainer::_key.getBuffer()].getInteger());
+	}
 }
 
 VAR_CONTAINER_WRITE(UCharContainer)
 {
 	assert(!json[IValueContainer::_key.getBuffer()]);
-	json.setObject(IValueContainer::_key.getBuffer(), Gaff::JSON::createInteger((json_int_t)(object->*_var)));
+
+	if (_var) {
+		json.setObject(IValueContainer::_key.getBuffer(), Gaff::JSON::createInteger((json_int_t)(object->*_var)));
+	} else if (_getter) {
+		json.setObject(IValueContainer::_key.getBuffer(), Gaff::JSON::createInteger((json_int_t)((object->*_getter)())));
+	}
 }
 
 VAR_CONTAINER_SET_STRING(UCharContainer)
 {
-	object->*_var = (unsigned char)atoi(value);
+	if (_var) {
+		object->*_var = (unsigned char)atoi(value);
+	} else if (_setter) {
+		(object->*_setter)((unsigned char)atoi(value));
+	}
 }
 
 VAR_CONTAINER_SET_UINT(UCharContainer)
 {
-	object->*_var = (unsigned char)value;
+	if (_var) {
+		object->*_var = (unsigned char)value;
+	} else if (_setter) {
+		(object->*_setter)((unsigned char)value);
+	}
 }
 
 VAR_CONTAINER_SET_INT(UCharContainer)
 {
-	object->*_var = (unsigned char)value;
+	if (_var) {
+		object->*_var = (unsigned char)value;
+	} else if (_setter) {
+		(object->*_setter)((unsigned char)value);
+	}
 }
 
 VAR_CONTAINER_SET_DOUBLE(UCharContainer)
 {
-	object->*_var = (unsigned char)value;
+	if (_var) {
+		object->*_var = (unsigned char)value;
+	} else if (_setter) {
+		(object->*_setter)((unsigned char)value);
+	}
 }
 
 
@@ -290,33 +472,61 @@ VAR_CONTAINER_SET_DOUBLE(UCharContainer)
 VAR_CONTAINER_READ(CharContainer)
 {
 	assert(json[(const char*)IValueContainer::_key.getBuffer()].isInteger());
-	object->*_var = (char)json[(const char*)IValueContainer::_key.getBuffer()].getInteger();
+
+	if (_var) {
+		object->*_var = (char)json[(const char*)IValueContainer::_key.getBuffer()].getInteger();
+	} else if (_setter) {
+		(object->*_setter)((char)json[(const char*)IValueContainer::_key.getBuffer()].getInteger());
+	}
 }
 
 VAR_CONTAINER_WRITE(CharContainer)
 {
 	assert(!json[IValueContainer::_key.getBuffer()]);
-	json.setObject(IValueContainer::_key.getBuffer(), Gaff::JSON::createInteger((json_int_t)(object->*_var)));
+
+	if (_var) {
+		json.setObject(IValueContainer::_key.getBuffer(), Gaff::JSON::createInteger((json_int_t)(object->*_var)));
+	} else if (_getter) {
+		json.setObject(IValueContainer::_key.getBuffer(), Gaff::JSON::createInteger((json_int_t)((object->*_getter)())));
+	}
 }
 
 VAR_CONTAINER_SET_STRING(CharContainer)
 {
 	object->*_var = (char)atoi(value);
+
+	if (_var) {
+		object->*_var = (char)atoi(value);
+	} else if (_setter) {
+		(object->*_setter)((char)atoi(value));
+	}
 }
 
 VAR_CONTAINER_SET_UINT(CharContainer)
 {
-	object->*_var = (char)value;
+	if (_var) {
+		object->*_var = (char)value;
+	} else if (_setter) {
+		(object->*_setter)((char)value);
+	}
 }
 
 VAR_CONTAINER_SET_INT(CharContainer)
 {
-	object->*_var = (char)value;
+	if (_var) {
+		object->*_var = (char)value;
+	} else if (_setter) {
+		(object->*_setter)((char)value);
+	}
 }
 
 VAR_CONTAINER_SET_DOUBLE(CharContainer)
 {
-	object->*_var = (char)value;
+	if (_var) {
+		object->*_var = (char)value;
+	} else if (_setter) {
+		(object->*_setter)((char)value);
+	}
 }
 
 
@@ -325,33 +535,59 @@ VAR_CONTAINER_SET_DOUBLE(CharContainer)
 VAR_CONTAINER_READ(BoolContainer)
 {
 	assert(json[(const char*)IValueContainer::_key.getBuffer()].isBoolean());
-	object->*_var = json[(const char*)IValueContainer::_key.getBuffer()].isTrue();
+
+	if (_var) {
+		object->*_var = json[(const char*)IValueContainer::_key.getBuffer()].isTrue();
+	} else if (_setter) {
+		(object->*_setter)(json[(const char*)IValueContainer::_key.getBuffer()].isTrue());
+	}
 }
 
 VAR_CONTAINER_WRITE(BoolContainer)
 {
 	assert(!json[IValueContainer::_key.getBuffer()]);
-	json.setObject(IValueContainer::_key.getBuffer(), Gaff::JSON::createBoolean(object->*_var));
+
+	if (_var) {
+		json.setObject(IValueContainer::_key.getBuffer(), Gaff::JSON::createBoolean(object->*_var));
+	} else if (_getter) {
+		json.setObject(IValueContainer::_key.getBuffer(), Gaff::JSON::createBoolean((object->*_getter)()));
+	}
 }
 
 VAR_CONTAINER_SET_STRING(BoolContainer)
 {
-	object->*_var = atoi(value) != 0;
+	if (_var) {
+		object->*_var = atoi(value) != 0;
+	} else if (_setter) {
+		(object->*_setter)(atoi(value) != 0);
+	}
 }
 
 VAR_CONTAINER_SET_UINT(BoolContainer)
 {
-	object->*_var = value != 0;
+	if (_var) {
+		object->*_var = value != 0;
+	} else if (_setter) {
+		(object->*_setter)(value != 0);
+	}
 }
 
 VAR_CONTAINER_SET_INT(BoolContainer)
 {
-	object->*_var = value != 0;
+	if (_var) {
+		object->*_var = value != 0;
+	} else if (_setter) {
+		(object->*_setter)(value != 0);
+	}
 }
 
 VAR_CONTAINER_SET_DOUBLE(BoolContainer)
 {
-	object->*_var = value != 0.0;
+	if (_var) {
+		object->*_var = value != 0.0;
+	} else if (_setter) {
+		(object->*_setter)(value != 0.0);
+	}
 }
 
 
@@ -360,39 +596,68 @@ VAR_CONTAINER_SET_DOUBLE(BoolContainer)
 VAR_CONTAINER_READ(StringContainer)
 {
 	assert(json[(const char*)IValueContainer::_key.getBuffer()].isString());
-	object->*_var = json[(const char*)IValueContainer::_key.getBuffer()].getString();
+
+	if (_var) {
+		object->*_var = json[(const char*)IValueContainer::_key.getBuffer()].getString();
+	} else if (_setter) {
+		(object->*_setter)(AString<Allocator>(json[(const char*)IValueContainer::_key.getBuffer()].getString()));
+	}
 }
 
 VAR_CONTAINER_WRITE(StringContainer)
 {
 	assert(!json[IValueContainer::_key.getBuffer()]);
-	json.setObject(IValueContainer::_key.getBuffer(), Gaff::JSON::createString((object->*_var).getBuffer()));
+
+	if (_var) {
+		json.setObject(IValueContainer::_key.getBuffer(), Gaff::JSON::createString((object->*_var).getBuffer()));
+	} else if (_getter) {
+		json.setObject(IValueContainer::_key.getBuffer(), Gaff::JSON::createString((object->*_getter)().getBuffer()));
+	}
 }
 
 VAR_CONTAINER_SET_STRING(StringContainer)
 {
-	object->*_var = value;
+	if (_var) {
+		object->*_var = value;
+	} else if (_setter) {
+		(object->*_setter)(AString<Allocator>(value));
+	}
 }
 
 VAR_CONTAINER_SET_UINT(StringContainer)
 {
 	char temp[64] = { 0 };
 	snprintf(temp, 64, "%u", value);
-	object->*_var = temp;
+
+	if (_var) {
+		object->*_var = temp;
+	} else if (_setter) {
+		(object->*_setter)(AString<Allocator>(temp));
+	}
 }
 
 VAR_CONTAINER_SET_INT(StringContainer)
 {
 	char temp[64] = { 0 };
 	snprintf(temp, 64, "%i", value);
-	object->*_var = temp;
+
+	if (_var) {
+		object->*_var = temp;
+	} else if (_setter) {
+		(object->*_setter)(AString<Allocator>(temp));
+	}
 }
 
 VAR_CONTAINER_SET_DOUBLE(StringContainer)
 {
 	char temp[64] = { 0 };
 	snprintf(temp, 64, "%f", value);
-	object->*_var = temp;
+
+	if (_var) {
+		object->*_var = temp;
+	} else if (_setter) {
+		(object->*_setter)(AString<Allocator>(temp));
+	}
 }
 
 
@@ -401,8 +666,15 @@ VAR_CONTAINER_SET_DOUBLE(StringContainer)
 // Object
 template <class T, class Allocator>
 template <class T2>
+ReflectionDefinition<T, Allocator>::ObjectContainer<T2>::ObjectContainer(const char* key, ReflectionDefinition<T2, Allocator>& var_ref_def, Getter getter, Setter setter):
+	IValueContainer(key), _getter(getter), _setter(setter), _var_ref_def(var_ref_def), _var(nullptr)
+{
+}
+
+template <class T, class Allocator>
+template <class T2>
 ReflectionDefinition<T, Allocator>::ObjectContainer<T2>::ObjectContainer(const char* key, T2 T::* var, ReflectionDefinition<T2, Allocator>& var_ref_def) :
-	IValueContainer(key), _var_ref_def(var_ref_def), _var(var)
+	IValueContainer(key), _getter(nullptr), _setter(nullptr), _var_ref_def(var_ref_def), _var(var)
 {
 }
 
@@ -411,7 +683,14 @@ template <class T2>
 void ReflectionDefinition<T, Allocator>::ObjectContainer<T2>::read(const Gaff::JSON& json, T* object)
 {
 	assert(json[(const char*)IValueContainer::_key.getBuffer()].isObject());
-	_var_ref_def.read(json[(const char*)IValueContainer::_key.getBuffer()], object);
+
+	if (_var) {
+		_var_ref_def.read(json[(const char*)IValueContainer::_key.getBuffer()], &(object->*_var));
+	} else if (_setter) {
+		T2 value;
+		_var_ref_def.read(json[(const char*)IValueContainer::_key.getBuffer()], &value);
+		(object->*_setter)(value);
+	}
 }
 
 template <class T, class Allocator>
@@ -419,9 +698,29 @@ template <class T2>
 void ReflectionDefinition<T, Allocator>::ObjectContainer<T2>::write(Gaff::JSON& json, T* object) const
 {
 	assert(!json[IValueContainer::_key.getBuffer()]);
-	Gaff::JSON obj = Gaff::JSON::createObject();
-	_var_ref_def.write(obj, object);
-	json.setObject(IValueContainer::_key.getBuffer(), obj);
+
+	if (_var) {
+		Gaff::JSON obj = Gaff::JSON::createObject();
+		_var_ref_def.write(obj, &(object->*_var));
+		json.setObject(IValueContainer::_key.getBuffer(), obj);
+	} else if (_getter) {
+		T2* value = &const_cast<T2&>((object->*_getter)());
+
+		Gaff::JSON obj = Gaff::JSON::createObject();
+		_var_ref_def.write(obj, value);
+		json.setObject(IValueContainer::_key.getBuffer(), obj);
+	}
+}
+
+template <class T, class Allocator>
+template <class T2>
+void ReflectionDefinition<T, Allocator>::ObjectContainer<T2>::set(const T2& value, T* object)
+{
+	if (_var) {
+		object->*_var = value;
+	} else if (_setter) {
+		(object->*_setter)(value);
+	}
 }
 
 template <class T, class Allocator>
@@ -437,8 +736,15 @@ typename ReflectionDefinition<T, Allocator>::IValueContainer::ValueType Reflecti
 // Enum
 template <class T, class Allocator>
 template <class T2>
+ReflectionDefinition<T, Allocator>::EnumContainer<T2>::EnumContainer(const char* key, const EnumReflectionDefinition<T2, Allocator>& var_ref_def, Getter getter, Setter setter):
+	IValueContainer(key), _getter(getter), _setter(setter), _var_ref_def(var_ref_def), _var(nullptr)
+{
+}
+
+template <class T, class Allocator>
+template <class T2>
 ReflectionDefinition<T, Allocator>::EnumContainer<T2>::EnumContainer(const char* key, T2 T::* var, const EnumReflectionDefinition<T2, Allocator>& var_ref_def):
-	IValueContainer(key), _var_ref_def(var_ref_def), _var(var)
+	IValueContainer(key), _getter(nullptr), _setter(nullptr), _var_ref_def(var_ref_def), _var(var)
 {
 }
 
@@ -447,7 +753,13 @@ template <class T2>
 void ReflectionDefinition<T, Allocator>::EnumContainer<T2>::read(const Gaff::JSON& json, T* object)
 {
 	assert(json[(const char*)IValueContainer::_key.getBuffer()].isString());
-	object->*_var = _var_ref_def.getValue(json[(const char*)IValueContainer::_key.getBuffer()].getString());
+
+	if (_var) {
+		object->*_var = _var_ref_def.getValue(json[(const char*)IValueContainer::_key.getBuffer()].getString());
+	} else if (_setter) {
+		T2 value = _var_ref_def.getValue(json[(const char*)IValueContainer::_key.getBuffer()].getString());
+		(object->*_setter)(value);
+	}
 }
 
 template <class T, class Allocator>
@@ -455,8 +767,14 @@ template <class T2>
 void ReflectionDefinition<T, Allocator>::EnumContainer<T2>::write(Gaff::JSON& json, T* object) const
 {
 	assert(!json[IValueContainer::_key.getBuffer()]);
-	Gaff::JSON val = Gaff::JSON::createString(_var_ref_def.getName(object->*_var));
-	json.setObject(IValueContainer::_key.getBuffer(), val);
+
+	if (_var) {
+		Gaff::JSON val = Gaff::JSON::createString(_var_ref_def.getName(object->*_var));
+		json.setObject(IValueContainer::_key.getBuffer(), val);
+	} else if (_getter) {
+		Gaff::JSON val = Gaff::JSON::createString(_var_ref_def.getName((object->*_getter)()));
+		json.setObject(IValueContainer::_key.getBuffer(), val);
+	}
 }
 
 template <class T, class Allocator>
@@ -470,21 +788,34 @@ template <class T, class Allocator>
 template <class T2>
 void ReflectionDefinition<T, Allocator>::EnumContainer<T2>::set(const char* value, T* object)
 {
-	object->*_var = _var_ref_def.getValue(value);
+	if (_var) {
+		object->*_var = _var_ref_def.getValue(value);
+	} else if (_setter) {
+		(object->*_setter)(_var_ref_def.getValue(value));
+	}
 }
 
 template <class T, class Allocator>
 template <class T2>
 void ReflectionDefinition<T, Allocator>::EnumContainer<T2>::set(unsigned int value, T* object)
 {
-	object->*_var = (T2)value;
+	if (_var) {
+		object->*_var = (T2)value;
+	} else if (_setter) {
+		(object->*_setter)((T2)value);
+	}
 }
 
 template <class T, class Allocator>
 template <class T2>
 void ReflectionDefinition<T, Allocator>::EnumContainer<T2>::set(int value, T* object)
 {
-	object->*_var = (T2)value;
+	if (_var) {
+		object->*_var = (T2)value;
+	}
+	else if (_setter) {
+		(object->*_setter)((T2)value);
+	}
 }
 
 template <class T, class Allocator>
@@ -493,7 +824,12 @@ void ReflectionDefinition<T, Allocator>::EnumContainer<T2>::set(double value, T*
 {
 	// To circumvent compiler error saying it can't convert from
 	// double to an enum of type T2.
-	object->*_var = (T2)((int)value);
+	if (_var) {
+		object->*_var = (T2)((int)value);
+	}
+	else if (_setter) {
+		(object->*_setter)((T2)((int)value));
+	}
 }
 
 

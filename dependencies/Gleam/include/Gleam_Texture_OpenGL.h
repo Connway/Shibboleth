@@ -22,6 +22,7 @@ THE SOFTWARE.
 
 #pragma once
 
+#include "Gleam_RefCounted.h"
 #include "Gleam_ITexture.h"
 
 NS_GLEAM
@@ -50,6 +51,8 @@ private:
 
 	static unsigned int determineChannels(FORMAT format);
 	static unsigned int determineType(FORMAT format);
+
+	GLEAM_REF_COUNTED(TextureGL);
 };
 
 NS_END

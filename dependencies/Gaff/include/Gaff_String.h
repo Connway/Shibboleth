@@ -20,6 +20,8 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
+/*! \file */
+
 #pragma once
 
 #include "Gaff_DefaultAllocator.h"
@@ -28,12 +30,16 @@ THE SOFTWARE.
 
 NS_GAFF
 
+/*!
+	\brief A simple string implementation.
+	\param T The underlying data type of the string. Traditionally char or wchar_t.
+	\Allocator The allocator type to be used for memory operations.
+	\note Does not support iterators. Values accessed via indices only.
+*/
 template <class T, class Allocator = DefaultAllocator>
 class String
 {
 public:
-	static const unsigned int npos;
-
 	String(const Allocator& allocator = Allocator());
 	String(const T* string, unsigned int size, const Allocator& allocator = Allocator());
 	explicit String(const T* string, const Allocator& allocator = Allocator());
@@ -42,21 +48,20 @@ public:
 	~String(void);
 
 	const String<T, Allocator>& operator=(String<T, Allocator>&& rhs);
-	const String<T, Allocator>& operator=(const String& rhs);
+	const String<T, Allocator>& operator=(const String<T, Allocator>& rhs);
 	const String<T, Allocator>& operator=(const T* rhs);
 
-	bool operator==(const String& rhs) const;
+	bool operator==(const String<T, Allocator>& rhs) const;
 	bool operator==(const T* rhs) const;
-	bool operator!=(const String& rhs) const;
+	bool operator!=(const String<T, Allocator>& rhs) const;
 	bool operator!=(const T* rhs) const;
 
-	bool operator<(const String& rhs) const;
+	bool operator<(const String<T, Allocator>& rhs) const;
 	bool operator<(const T* rhs) const;
-	bool operator>(const String& rhs) const;
+	bool operator>(const String<T, Allocator>& rhs) const;
 	bool operator>(const T* rhs) const;
 
 	char operator[](unsigned int index) const;
-	// required reference for operations like string[i] = 'a';
 	char& operator[](unsigned int index);
 
 	const String<T, Allocator>& operator+=(const String<T, Allocator>& rhs);

@@ -20,6 +20,8 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
+/*! \file */
+
 #pragma once
 
 #include "Gaff_DefaultAllocator.h"
@@ -28,6 +30,10 @@ THE SOFTWARE.
 
 NS_GAFF
 
+/*!
+	\brief A simple, default implementation of a reference counted object.
+	\tparam Allocator The allocator type we will use to de-allocate ourselves.
+*/
 template <class Allocator = DefaultAllocator>
 class RefCounted : public IRefCounted
 {

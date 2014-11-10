@@ -22,24 +22,40 @@ THE SOFTWARE.
 
 #pragma once
 
+#include "Gleam_IModel.h"
 #include "Gleam_RefCounted.h"
-
-#define STAGE_BUFFER_SIZE 512
+#include "Gleam_Array.h"
 
 NS_GLEAM
 
-class IRenderDevice;
-class Scene;
-
-class IRenderStage : public GleamRefCounted
+class ModelBase : public IModel
 {
 public:
-	IRenderStage(void) {}
-	virtual ~IRenderStage(void) {}
+	ModelBase(void);
+	~ModelBase(void);
 
-	virtual void destroy(void) = 0;
+	void destroy(void);
 
-	virtual void render(IRenderDevice& rd, Scene& scene) = 0;
+	const ILayout* getLayout(unsigned int index) const;
+	ILayout* getLayout(unsigned int index);
+	int getIndex(const ILayout* layout) const;
+
+	unsigned int addLayout(ILayout* layout);
+
+	const IMesh* getMesh(unsigned int index) const;
+	IMesh* getMesh(unsigned int index);
+	unsigned int getMeshCount(void) const;
+	int getIndex(const IMesh* mesh) const;
+
+	unsigned int addMesh(IMesh* mesh);
+
+	void render(IRenderDevice& rd, unsigned int index);
+
+private:
+	GleamArray<ILayout*> _layouts;
+	GleamArray<IMesh*> _meshes;
+
+	GLEAM_REF_COUNTED(ModelBase);
 };
 
 NS_END

@@ -223,6 +223,12 @@
     <ProjectReference Include="..\dependencies\Gleam.vcxproj">
       <Project>{6BBF400D-D7D3-68BE-A055-0C1E0C2965EF}</Project>
     </ProjectReference>
+    <ProjectReference Include="Managers.vcxproj">
+      <Project>{B34CFEBD-9F19-59C9-C832-4771B45E8E57}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\Memory.vcxproj">
+      <Project>{BE94DDC2-AA36-0899-93F1-1BED7F328FE9}</Project>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

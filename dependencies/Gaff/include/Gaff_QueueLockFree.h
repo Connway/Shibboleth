@@ -20,6 +20,8 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
+/*! \file */
+
 #pragma once
 
 #include "Gaff_DefaultAllocator.h"
@@ -28,6 +30,10 @@ THE SOFTWARE.
 
 NS_GAFF
 
+/*!
+	\brief Same as Queue, except that it uses a single-producer, single-consumer, atomic operations.
+	\note Does not dynamically change size. Once it is full, elements cannot be pushed until a slot is freed.
+*/
 template<class T, class Allocator = DefaultAllocator>
 class QueueLockFree
 {
@@ -49,7 +55,7 @@ public:
 		assert(!_data);
 
 		_data = _allocator.template allocArrayT<T>(size);
-		
+
 		if (_data) {
 			_size = size;
 			return true;
@@ -77,6 +83,10 @@ public:
 		_data = nullptr;
 	}
 
+	/*!
+		\brief Pushes a value to the front of the queue.
+		\return Whether the value was successfully pushed into the queue.
+	*/
 	bool push(const T& value)
 	{
 		unsigned int write_index = 0;
@@ -98,6 +108,11 @@ public:
 		return true;
 	}
 
+	/*!
+		\brief Pops a value off the front of the queue.
+		\param value Where we store the popped value.
+		\return Whether a value was popped off the queue.
+	*/
 	bool pop(T& value)
 	{
 		unsigned int read_index = 0;
@@ -143,7 +158,9 @@ private:
 	GAFF_NO_MOVE(QueueLockFree);
 };
 
-// Same as QueueLockFree, but uses a staic array instead of a dynamically allocated array
+/*!
+	\brief Same as QueueLockFree, but uses a staic array instead of a dynamically allocated array.
+*/
 template<class T, unsigned int queue_size>
 class QueueLockFreeNoAlloc
 {

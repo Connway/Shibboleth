@@ -61,7 +61,7 @@ struct LayoutDescription
 	PerDataType per_data_type;
 };
 
-class ILayout : public GleamRefCounted
+class ILayout : public Gaff::IRefCounted
 {
 public:
 	ILayout(void) {}

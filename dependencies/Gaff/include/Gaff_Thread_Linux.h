@@ -20,29 +20,35 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
+/*! \file */
+
 #pragma once
 
 #include "Gaff_Defines.h"
 #include <pthread.h>
 #include <sched.h>
 
-#define THREAD_CALLTYPE
+#define THREAD_CALLTYPE //!< The calling convention used for a thread function.
 
 NS_GAFF
 
+/*!
+	\brief A simple thread wrapper class.
+*/
 class Thread
 {
 public:
-	static unsigned int INF; // value for infinite waiting period
+	static unsigned int INF; //!< Value for infinite waiting period.
 
-	typedef void* ReturnType;
+	typedef void* ReturnType; //!< The return type used by thread functions.
 	typedef ReturnType (THREAD_CALLTYPE *ThreadFunc)(void*);
 
+	//! The return values used by wait().
 	enum WaitCode
 	{
-		THREAD_FINISHED = 0,	// Thread has finished executing
-		THREAD_TIMEOUT,		// Thread is still running and has timed out
-		THREAD_FAILED			// Something went wrong!
+		THREAD_FINISHED = 0,	//!< Thread has finished executing
+		THREAD_TIMEOUT,			//!< Thread is still running and has timed out
+		THREAD_FAILED			//!< Something went wrong!
 	};
 
 	Thread(Thread&& thread);

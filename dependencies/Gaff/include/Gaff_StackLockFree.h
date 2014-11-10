@@ -20,6 +20,8 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
+/*! \file */
+
 #pragma once
 
 #include "Gaff_DefaultAllocator.h"
@@ -28,6 +30,10 @@ THE SOFTWARE.
 
 NS_GAFF
 
+/*!
+	\brief A LIFO stack implemented using single-producer, single-consumer, atomic operations.
+	\note Does not dynamically change size. Once it is full, elements cannot be pushed until a slot is freed.
+*/
 template<class T, class Allocator = DefaultAllocator>
 class StackLockFree
 {
@@ -57,6 +63,10 @@ public:
 		return false;
 	}
 
+	/*!
+		\brief Pushes a value to the top of the stack.
+		\return Whether the value was successfully pushed onto the stack.
+	*/
 	bool push(const T& value)
 	{
 		unsigned int old_size = 0;
@@ -77,6 +87,11 @@ public:
 		return true;
 	}
 
+	/*!
+		\brief Pops a value off the top of the stack.
+		\param value Where we store the popped value.
+		\return Whether the value was successfully popped off the stack.
+	*/
 	bool pop(T& value)
 	{
 		unsigned int old_size = 0;
@@ -119,7 +134,9 @@ private:
 	GAFF_NO_MOVE(StackLockFree);
 };
 
-// Same as StackLockFree, but uses a staic array instead of a dynamically allocated array
+/*!
+	\brief Same as StackLockFree, but uses a staic array instead of a dynamically allocated array.
+*/
 template<class T, unsigned int stack_size>
 class StackLockFreeNoAlloc
 {

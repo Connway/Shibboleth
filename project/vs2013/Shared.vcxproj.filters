@@ -63,6 +63,9 @@
     <ClInclude Include="..\..\src\Shared\include\Shibboleth_ProxyAllocator.h">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\Shared\include\Shibboleth_RefCounted.h">
+      <Filter>include</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\src\Shared\include\Shibboleth_ReflectionDefinitions.h">
       <Filter>include</Filter>
     </ClInclude>

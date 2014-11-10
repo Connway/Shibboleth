@@ -22,6 +22,7 @@ THE SOFTWARE.
 
 #pragma once
 
+#include "Gleam_RefCounted.h"
 #include "Gleam_ILayout.h"
 
 struct ID3D11InputLayout;
@@ -37,11 +38,13 @@ public:
 	bool init(IRenderDevice& rd, const LayoutDescription* layout_desc, unsigned int layout_desc_size, const IShader* shader);
 	void destroy(void);
 
-	INLINE void setLayout(IRenderDevice& rd, const IMesh*);
-	INLINE void unsetLayout(IRenderDevice& rd);
+	void setLayout(IRenderDevice& rd, const IMesh*);
+	void unsetLayout(IRenderDevice& rd);
 
 private:
 	ID3D11InputLayout* _layout;
+
+	GLEAM_REF_COUNTED(LayoutD3D);
 };
 
 NS_END

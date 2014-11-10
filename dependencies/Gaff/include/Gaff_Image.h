@@ -20,12 +20,17 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
+/*! \file */
+
 #pragma once
 
 #include "Gaff_String.h"
 
 NS_GAFF
 
+/*!
+	\brief Image read/write wrapper class.
+*/
 class Image
 {
 public:
@@ -41,6 +46,7 @@ public:
 		FMT_LIMUNANCE_ALPHA = 0x190A
 	};
 
+	//! Data type for each pixel.
 	enum Type
 	{
 		TYPE_BYTE = 0x1400,
@@ -112,6 +118,7 @@ public:
 	bool init(void);
 	void destroy();
 
+	bool load(void* image, unsigned int image_size);
 	bool load(const wchar_t* filename);
 	bool load(const char* filename);
 

@@ -28,12 +28,15 @@ THE SOFTWARE.
 
 NS_GAFF
 
-unsigned int Thread::INF = (unsigned int)-1;
+unsigned int Thread::INF = UINT_FAIL;
 
 // to make GCC stop complaining
 static pthread_mutex_t MUTEX_NULL = PTHREAD_MUTEX_INITIALIZER;
 static pthread_cond_t COND_NULL = PTHREAD_COND_INITIALIZER;
 
+/*!
+	\note Move semantics supported to allow pushing Thread instances into containers.
+*/
 Thread::Thread(Thread&& thread):
 	_thread(thread._thread), _mutex(thread._mutex), _cond(thread._cond)
 {
@@ -49,34 +52,62 @@ Thread::Thread(void):
 
 Thread::~Thread(void)
 {
-	if (_thread) {
-		close();
-	}
+	close();
 }
 
+/*!
+	\brief Creates a thread and starts running \a thread_func immediately.
+	\param thread_func The function to run on the thread.
+	\param thread_data The data to pass to the thread.
+	\return Whether the thread was successfully created.
+*/
 bool Thread::create(ThreadFunc thread_func, void* thread_data)
 {
 	return pthread_create(&_thread, 0, thread_func, thread_data) == 0;
 }
 
+/*!
+	\brief Forcefully terminates the thread.
+	\return Whether the thread was successfully terminated.
+*/
 bool Thread::terminate(void)
 {
 	return pthread_cancel(_thread) == 0;
 }
 
+/*!
+	\brief Closes and cleans up a finished thread and its resources.
+	\return Whether the thread was successfully closed and cleaned up.
+*/
 bool Thread::close(void)
 {
-	bool ret = pthread_detach(_thread) == 0;
-	_thread = 0;
-	return ret;
+	if (_thread) {
+		bool ret = pthread_detach(_thread) == 0;
+		_thread = 0;
+		_mutex = MUTEX_NULL;
+		_cond = COND_NULL;
+		return ret;
+	}
+
+	return true;
 }
 
+/*!
+	\brief Waits for a thread for \a ms milliseconds or until it finishes executing, whichever comes first.
+	\param ms The time to wait on the thread in milliseconds.
+	\return The result of waiting on the thread.
+*/
 Thread::WaitCode Thread::wait(unsigned int ms)
 {
-	WaitCode ret = THREAD_FINISHED;
-
 	if (ms == INF) {
-		ret = (pthread_join(_thread, 0)) ? THREAD_FAILED : THREAD_FINISHED;
+		WaitCode ret = (pthread_join(_thread, 0)) ? THREAD_FAILED : THREAD_FINISHED;
+
+		// Reset thread data, since pthread_join() cleaned up the thread for us.
+		_thread = 0;
+		_mutex = MUTEX_NULL;
+		_cond = COND_NULL;
+
+		return ret;
 
 	} else {
 		// Might want to find a better way of getting the final timespec struct
@@ -95,21 +126,20 @@ Thread::WaitCode Thread::wait(unsigned int ms)
 
 		switch (r) {
 			case ETIMEDOUT:
-				ret = THREAD_TIMEOUT;
-				break;
+				return THREAD_TIMEOUT;
 
 			case EINVAL:
-				ret = THREAD_FAILED;
-				break;
+				return THREAD_FAILED;
 
 			default:
-				ret = THREAD_FINISHED;
+				return THREAD_FINISHED;
 		}
 	}
-
-	return ret;
 }
 
+/*!
+	\note Move semantics supported to allow pushing Thread instances into containers.
+*/
 const Thread& Thread::operator=(Thread&& rhs)
 {
 	if (_thread) {

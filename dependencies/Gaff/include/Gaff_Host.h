@@ -20,6 +20,8 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
+/*! \file */
+
 #pragma once
 
 #include "Gaff_Connection.h"
@@ -31,9 +33,9 @@ THE SOFTWARE.
 #define CONNECTION_SPEED_56K 7168
 
 #if defined(_WIN32) || defined(_WIN64)
-	#define NETWORK_CALLBACK __cdecl
+	#define NETWORK_CALLBACK __cdecl //!< Calling convention for network callback functions
 #else
-	#define NETWORK_CALLBACK
+	#define NETWORK_CALLBACK //!< Calling convention for network callback functions
 #endif
 
 struct _ENetHost;
@@ -53,15 +55,18 @@ enum NetworkEventType
 	EVENT_RECEIVED_PACKET
 };
 
+/*!
+	\brief Data passed into the network callback function when an event occurs.
+*/
 struct NetworkCallbackData
 {
-	Gaff::Host* host;
+	Gaff::Host* host; //!< The host that generated this event.
 	Gaff::NetworkEventType event_type;
-	Gaff::PeerIDType peer_id;
-	unsigned char channel;
-	unsigned int user_data;
-	void* data;
-	size_t data_size;
+	Gaff::PeerIDType peer_id; //!< The ID of the peer that generated this event.
+	unsigned char channel; //!< The channel the packet data was sent over (if applicable).
+	unsigned int user_data; //!< User data sent with the event.
+	void* data; //!< Packet data (if applicable).
+	size_t data_size; //!< Packet data size (if applicable).
 };
 
 typedef IFunction<void, const NetworkCallbackData&> NetworkEventCallback;

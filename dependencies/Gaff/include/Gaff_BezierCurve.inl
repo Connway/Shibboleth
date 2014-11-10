@@ -21,8 +21,14 @@ THE SOFTWARE.
 ************************************************************************************/
 
 template <class PointType, class Allocator>
-BezierCurve<PointType, Allocator>::BezierCurve(const Array<PointType, Allocator>& points):
-	_points(points)
+BezierCurve<PointType, Allocator>::BezierCurve(const BezierCurve<PointType, Allocator>& curve):
+	_points(curve._points)
+{
+}
+
+template <class PointType, class Allocator>
+BezierCurve<PointType, Allocator>::BezierCurve(BezierCurve<PointType, Allocator>&& curve):
+	_points(Move(curve._points))
 {
 }
 
@@ -37,6 +43,11 @@ BezierCurve<PointType, Allocator>::~BezierCurve(void)
 {
 }
 
+/*!
+	\brief Samples the curve at time \a t. The keys are treated as control points of a bezier curve.
+	\param t The time at which we are sampling the curve. Will be clamped to be within the range of our keys.
+	\return The point along the curve we have sampled.
+*/
 template <class PointType, class Allocator>
 PointType BezierCurve<PointType, Allocator>::sample(float t) const
 {
@@ -84,7 +95,7 @@ unsigned int BezierCurve<PointType, Allocator>::getNumKeys(void) const
 }
 
 template <class PointType, class Allocator>
-typename BezierCurve<PointType, Allocator>::Key BezierCurve<PointType, Allocator>::getKey(unsigned int index)
+const typename BezierCurve<PointType, Allocator>::Key& BezierCurve<PointType, Allocator>::getKey(unsigned int index)
 {
 	assert(index < _points.size());
 	return Key(_points[i].first, _points[i].second);

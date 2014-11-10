@@ -25,6 +25,12 @@ THE SOFTWARE.
 
 NS_GAFF
 
+/*!
+	\brief Computes 64-bit hash using FNV-1a algorithm. See <a href="http://www.isthe.com/chongo/tech/comp/fnv/">this page</a> for more details.
+	\param key The buffer we are using to calculate the hash.
+	\param len The length of the buffer in bytes.
+	\return The calculated hash.
+*/
 unsigned long long FNV1aHash64(const char* key, unsigned int len)
 {
 	unsigned long long hash = 14695981039346656037ULL;
@@ -36,6 +42,12 @@ unsigned long long FNV1aHash64(const char* key, unsigned int len)
 	return hash;
 }
 
+/*!
+	\brief Computes 64-bit hash using FNV-1 algorithm. See <a href="http://www.isthe.com/chongo/tech/comp/fnv/">this page</a> for more details.
+	\param key The buffer we are using to calculate the hash.
+	\param len The length of the buffer in bytes.
+	\return The calculated hash.
+*/
 unsigned long long FNV1Hash64(const char* key, unsigned int len)
 {
 	unsigned long long hash = 14695981039346656037ULL;
@@ -47,6 +59,12 @@ unsigned long long FNV1Hash64(const char* key, unsigned int len)
 	return hash;
 }
 
+/*!
+	\brief Computes 32-bit hash using FNV-1a algorithm. See <a href="http://www.isthe.com/chongo/tech/comp/fnv/">this page</a> for more details.
+	\param key The buffer we are using to calculate the hash.
+	\param len The length of the buffer in bytes.
+	\return The calculated hash.
+*/
 unsigned int FNV1aHash32(const char* key, unsigned int len)
 {
 	unsigned int hash = 2166136261U;
@@ -58,6 +76,12 @@ unsigned int FNV1aHash32(const char* key, unsigned int len)
 	return hash;
 }
 
+/*!
+	\brief Computes 32-bit hash using FNV-1 algorithm. See <a href="http://www.isthe.com/chongo/tech/comp/fnv/">this page</a> for more details.
+	\param key The buffer we are using to calculate the hash.
+	\param len The length of the buffer in bytes.
+	\return The calculated hash.
+*/
 unsigned int FNV1Hash32(const char* key, unsigned int len)
 {
 	unsigned int hash = 2166136261U;
@@ -69,11 +93,17 @@ unsigned int FNV1Hash32(const char* key, unsigned int len)
 	return hash;
 }
 
+/*!
+	\brief See <a href="http://en.wikipedia.org/wiki/Binomial_coefficient">this Wikipedia page</a> for more information.
+*/
 float BinomialCoefficient(float n, float k)
 {
 	return tgammaf(n + 1.0f) / (tgammaf(k + 1.0f) * tgammaf(n - k + 1.0f));
 }
 
+/*!
+	\brief See <a href="http://en.wikipedia.org/wiki/Bernstein_polynomial">this Wikipedia page</a> for more information.
+*/
 float BernsteinPolynomial(float t, float n, float k)
 {
 	return BinomialCoefficient(n, k) * powf(t, k) * powf(1.0f - t, n - k);

@@ -16,6 +16,6 @@ Libraries Affected:
 	assimp (Changed '#include "../contrib/unzip/unzip.h' lines to "#include <unzip.h>", as I already have minizip compiled into a separate lib. Fixed compilation error because a variable wasn't initialized.)
 	minizip (commented out a block that says #define _CRT_SECURE_NO_WARNINGS, as I have it defined at the project level)
 	ResIL
-	LuaState (added const char* version of doFile)
+	LuaState (added const char* version of doFile and doString)
 	OtterUI (got rid of a lot of warnings in VS2013 and fixed a couple inconsistencies and crash bugs)
-	dirent (got rid of warning in VS2013)
+	dirent (got rid of warnings in VS2013)

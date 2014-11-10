@@ -20,6 +20,8 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
+/*! \file */
+
 #pragma once
 
 #include "Gaff_SceneNode.h"
@@ -32,6 +34,11 @@ struct aiScene;
 
 NS_GAFF
 
+/*!
+	\brief
+		Class that wraps scene loaded from a SceneImporter.
+		See <a href="http://assimp.sourceforge.net/lib_html/structai_scene.html">aiScene Documentation</a> for more details.
+*/
 class Scene
 {
 public:

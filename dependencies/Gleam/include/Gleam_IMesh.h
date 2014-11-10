@@ -22,18 +22,15 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Gleam_RefCounted.h"
-#include "Gleam_String.h"
-#include "Gleam_AABB.h"
+#include "Gleam_Defines.h"
+#include <Gaff_IRefCounted.h>
 
 NS_GLEAM
 
 class IRenderDevice;
 class IBuffer;
 
-// Considering only one function is virtual, it should probably be called MeshDataBase?
-// But I really don't like that name for some reason ...
-class IMesh : public GleamRefCounted
+class IMesh : public Gaff::IRefCounted
 {
 public:
 	enum TOPOLOGY_TYPE {
@@ -51,10 +48,10 @@ public:
 		TOPOLOGY_SIZE
 	};
 
-	IMesh(void);
-	virtual ~IMesh(void);
+	IMesh(void) {}
+	virtual ~IMesh(void) {}
 
-	void destroy(void);
+	virtual void destroy(void) = 0;
 
 	template <class Vertex>
 	bool addVertData(
@@ -69,38 +66,24 @@ public:
 		unsigned int* indices, unsigned int index_count, TOPOLOGY_TYPE primitive_type = TRIANGLE_LIST
 	) = 0;
 
-	virtual void addBuffer(IBuffer* buffer);
-	INLINE const IBuffer* getBuffer(unsigned int index) const;
-	INLINE IBuffer* getBuffer(unsigned int index);
-	INLINE unsigned int getBufferCount(void) const;
+	virtual void addBuffer(IBuffer* buffer) = 0;
+	virtual const IBuffer* getBuffer(unsigned int index) const = 0;
+	virtual IBuffer* getBuffer(unsigned int index) = 0;
+	virtual unsigned int getBufferCount(void) const = 0;
 
-	INLINE void setIndiceBuffer(IBuffer* buffer);
+	virtual void setIndiceBuffer(IBuffer* buffer) = 0;
 
 	virtual void setTopologyType(TOPOLOGY_TYPE topology) = 0;
-	INLINE TOPOLOGY_TYPE getTopologyType(void) const;
+	virtual TOPOLOGY_TYPE getTopologyType(void) const = 0;
 
-	INLINE void setIndexCount(unsigned int count);
-	INLINE unsigned int getIndexCount(void) const;
+	virtual void setIndexCount(unsigned int count) = 0;
+	virtual unsigned int getIndexCount(void) const = 0;
 
 	virtual void renderNonIndexed(IRenderDevice& rd, unsigned int vert_count, unsigned int start_location = 0) = 0;
 	virtual void renderInstanced(IRenderDevice& rd, unsigned int count) = 0;
 	virtual void render(IRenderDevice& rd) = 0;
 
 	virtual bool isD3D(void) const = 0;
-
-protected:
-	GleamArray<IBuffer*> _vert_data;
-	IBuffer* _indices;
-	TOPOLOGY_TYPE _topology;
-
-	bool addVertDataHelper(
-		IRenderDevice& rd, const void* vert_data, unsigned int vert_count, unsigned int vert_size,
-		unsigned int* indices, unsigned int index_count, TOPOLOGY_TYPE primitive_type,
-		IBuffer* index_buffer, IBuffer* vert_buffer
-	);
-
-private:
-	unsigned int _index_count;
 
 	GAFF_NO_COPY(IMesh);
 };

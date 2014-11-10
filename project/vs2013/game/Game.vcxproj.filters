@@ -9,13 +9,7 @@
     <None Include="..\..\..\src\Game\solution_generator.lua" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\..\src\Game\include\Shibboleth_ComponentManager.h">
-      <Filter>include</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\src\Game\include\Shibboleth_HoldingLoader.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\src\Game\include\Shibboleth_IComponent.h">
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\src\Game\include\Shibboleth_IResourceLoader.h">
@@ -24,10 +18,10 @@
     <ClInclude Include="..\..\..\src\Game\include\Shibboleth_IUpdateQuery.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\src\Game\include\Shibboleth_LuaLoader.h">
+    <ClInclude Include="..\..\..\src\Game\include\Shibboleth_LoadingMessage.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\src\Game\include\Shibboleth_LuaManager.h">
+    <ClInclude Include="..\..\..\src\Game\include\Shibboleth_LuaLoader.h">
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\src\Game\include\Shibboleth_ModelAnimResources.h">
@@ -39,13 +33,7 @@
     <ClInclude Include="..\..\..\src\Game\include\Shibboleth_Object.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\src\Game\include\Shibboleth_ObjectManager.h">
-      <Filter>include</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\src\Game\include\Shibboleth_OtterUIFileSystem.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\src\Game\include\Shibboleth_OtterUIManager.h">
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\src\Game\include\Shibboleth_OtterUIRenderer.h">
@@ -54,16 +42,7 @@
     <ClInclude Include="..\..\..\src\Game\include\Shibboleth_PackFileSystem.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\src\Game\include\Shibboleth_RasterManager.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\src\Game\include\Shibboleth_RenderManager.h">
-      <Filter>include</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\src\Game\include\Shibboleth_ResourceDefines.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\src\Game\include\Shibboleth_ResourceManager.h">
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\src\Game\include\Shibboleth_ResourceWrapper.h">
@@ -75,36 +54,22 @@
     <ClInclude Include="..\..\..\src\Game\include\Shibboleth_ShaderProgramLoader.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\src\Game\include\Shibboleth_SpatialManager.h">
-      <Filter>include</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\src\Game\include\Shibboleth_TextureLoader.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\src\Game\include\Shibboleth_UpdateManager.h">
       <Filter>include</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\src\Game\Shibboleth_ComponentManager.cpp" />
     <ClCompile Include="..\..\..\src\Game\Shibboleth_HoldingLoader.cpp" />
     <ClCompile Include="..\..\..\src\Game\Shibboleth_InterfaceReflection.cpp" />
+    <ClCompile Include="..\..\..\src\Game\Shibboleth_LoadingMessage.cpp" />
     <ClCompile Include="..\..\..\src\Game\Shibboleth_LuaLoader.cpp" />
-    <ClCompile Include="..\..\..\src\Game\Shibboleth_LuaManager.cpp" />
     <ClCompile Include="..\..\..\src\Game\Shibboleth_ModelLoader.cpp" />
     <ClCompile Include="..\..\..\src\Game\Shibboleth_Object.cpp" />
-    <ClCompile Include="..\..\..\src\Game\Shibboleth_ObjectManager.cpp" />
     <ClCompile Include="..\..\..\src\Game\Shibboleth_OtterUIFileSystem.cpp" />
-    <ClCompile Include="..\..\..\src\Game\Shibboleth_OtterUIManager.cpp" />
     <ClCompile Include="..\..\..\src\Game\Shibboleth_OtterUIRenderer.cpp" />
     <ClCompile Include="..\..\..\src\Game\Shibboleth_PackFileSystem.cpp" />
-    <ClCompile Include="..\..\..\src\Game\Shibboleth_RasterManager.cpp" />
-    <ClCompile Include="..\..\..\src\Game\Shibboleth_RenderManager.cpp" />
-    <ClCompile Include="..\..\..\src\Game\Shibboleth_ResourceManager.cpp" />
     <ClCompile Include="..\..\..\src\Game\Shibboleth_ShaderLoader.cpp" />
     <ClCompile Include="..\..\..\src\Game\Shibboleth_ShaderProgramLoader.cpp" />
-    <ClCompile Include="..\..\..\src\Game\Shibboleth_SpatialManager.cpp" />
     <ClCompile Include="..\..\..\src\Game\Shibboleth_TextureLoader.cpp" />
-    <ClCompile Include="..\..\..\src\Game\Shibboleth_UpdateManager.cpp" />
   </ItemGroup>
 </Project>

@@ -109,7 +109,7 @@ IRenderDevice::AdapterList RenderDeviceD3D::getDisplayModes(int color_format)
 
 	factory->Release();
 
-	_display_info.resize(_display_info.size()); // Trim off unused entries
+	_display_info.trim();
 
 	// convert DirectX data structures into our structure
 	AdapterList out(_display_info.size());

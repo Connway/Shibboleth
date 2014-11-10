@@ -20,10 +20,10 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
+/* \file */
+
 // A hash map implementation using open addressing.
 // Defaults to Fowler/Noll/Vo Hash
-
-// TODO: Add iterator support
 
 #pragma once
 
@@ -34,6 +34,13 @@ THE SOFTWARE.
 NS_GAFF
 
 // Normal
+/*!
+	\brief Open addressed, contiguous hash map. Has specialized implementations for String and HashString.
+
+	\tparam Key The type used as the key.
+	\tparam Value The type used as the value.
+	\tparam Allocator The allocator used to allocate memory.
+*/
 template <class Key, class Value, class Allocator = DefaultAllocator>
 class HashMap
 {
@@ -148,6 +155,7 @@ private:
 	void shiftBuckets(unsigned int index);
 };
 
+#ifndef DOXY_SKIP
 // String Specialization
 template <class Value, class Allocator, class T>
 class HashMap<String<T, Allocator>, Value, Allocator>
@@ -379,6 +387,7 @@ private:
 
 	void shiftBuckets(unsigned int index);
 };
+#endif
 
 #include "Gaff_HashMap.inl"
 

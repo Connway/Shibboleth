@@ -22,12 +22,12 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Gleam_IMesh.h"
 #include "Gleam_IncludeD3D11.h"
+#include "Gleam_MeshBase.h"
 
 NS_GLEAM
 
-class MeshD3D : public IMesh
+class MeshD3D : public MeshBase
 {
 public:
 	MeshD3D(void);

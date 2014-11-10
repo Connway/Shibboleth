@@ -22,11 +22,11 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Gleam_IModel.h"
+#include "Gleam_ModelBase.h"
 
 NS_GLEAM
 
-class ModelGL : public IModel
+class ModelGL : public ModelBase
 {
 public:
 	ModelGL(void);

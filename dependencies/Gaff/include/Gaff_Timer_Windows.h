@@ -20,6 +20,8 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
+/*! \file */
+
 #pragma once
 
 #include "Gaff_Defines.h"
@@ -27,6 +29,9 @@ THE SOFTWARE.
 
 NS_GAFF
 
+/*!
+	\brief High-performance timer class.
+*/
 class Timer
 {
 public:
@@ -36,21 +41,22 @@ public:
 	bool stop(void);
 
 	INLINE double getDeltaSec(void) const;
-	INLINE LONGLONG getDeltaMilli(void) const;
-	INLINE LONGLONG getDeltaMicro(void) const;
+	INLINE long long getDeltaMilli(void) const;
+	INLINE long long getDeltaMicro(void) const;
 
 	INLINE double getCurrSec(void) const;
-	INLINE LONGLONG getCurrMilli(void) const;
-	INLINE LONGLONG getCurrMicro(void) const;
+	INLINE long long getCurrMilli(void) const;
+	INLINE long long getCurrMicro(void) const;
 
 	INLINE double getTotalTime(void) const;
+	INLINE void resetTotalTime(void);
 
 private:
 	LARGE_INTEGER _start;
 	LARGE_INTEGER _stop;
 	LARGE_INTEGER _frequency;
 
-	LONGLONG _deltaTime;
+	long long _deltaTime;
 	double _totalTime;
 };
 

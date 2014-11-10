@@ -79,13 +79,35 @@ void MessageBroadcaster<Allocator>::Functor<Message, FunctorT>::call(void* messa
 ///////////////////
 template <class Allocator>
 MessageBroadcaster<Allocator>::Remover::Remover(MessageBroadcaster* broadcaster, const Allocator& allocator):
-	RefCounted<Allocator>(allocator), _broadcaster(broadcaster)
+	_broadcaster(broadcaster), _ref_count(0)
 {
 }
 
 template <class Allocator>
 MessageBroadcaster<Allocator>::Remover::~Remover(void)
 {
+}
+
+template <class Allocator>
+void MessageBroadcaster<Allocator>::Remover::addRef(void) const
+{
+	AtomicIncrement(&_ref_count);
+}
+
+template <class Allocator>
+void MessageBroadcaster<Allocator>::Remover::release(void) const
+{
+	unsigned int new_count = AtomicDecrement(&_ref_count);
+
+	if (!new_count) {
+		_broadcaster->_allocator.freeT(this);
+	}
+}
+
+template <class Allocator>
+unsigned int MessageBroadcaster<Allocator>::Remover::getRefCount(void) const
+{
+	return _ref_count;
 }
 
 template <class Allocator>
@@ -156,7 +178,7 @@ unsigned int MessageBroadcaster<Allocator>::Receipt::getRefCount(void) const
 //////////////////////////
 template <class Allocator>
 MessageBroadcaster<Allocator>::BroadcastTask::BroadcastTask(MessageBroadcaster<Allocator>& broadcaster, const AHashString<Allocator>& msg_type, void* msg):
-	_listeners(broadcaster._listeners[msg_type]), _broadcaster(broadcaster), _msg(msg)
+	_listeners(broadcaster._listeners[msg_type]), _broadcaster(broadcaster), _msg(msg), _ref_count(0)
 {
 }
 
@@ -170,6 +192,28 @@ void MessageBroadcaster<Allocator>::BroadcastTask::doTask(void)
 	}
 
 	_broadcaster._allocator.free(_msg);
+}
+
+template <class Allocator>
+void MessageBroadcaster<Allocator>::BroadcastTask::addRef(void) const
+{
+	AtomicIncrement(&_ref_count);
+}
+
+template <class Allocator>
+void MessageBroadcaster<Allocator>::BroadcastTask::release(void) const
+{
+	unsigned int new_count = AtomicDecrement(&_ref_count);
+
+	if (!new_count) {
+		_broadcaster._allocator.freeT(this);
+	}
+}
+
+template <class Allocator>
+unsigned int MessageBroadcaster<Allocator>::BroadcastTask::getRefCount(void) const
+{
+	return _ref_count;
 }
 
 ///////////////////////////////
@@ -257,6 +301,10 @@ void MessageBroadcaster<Allocator>::broadcast(const Message& message)
 	_message_queue.push(MakePair(Message::g_Hash, (void*)msg));
 }
 
+/*!
+	\brief Multi-threaded update. Makes a task for each message in the queue.
+	\param thread_pool The thread pool the tasks will be added to.
+*/
 template <class Allocator>
 void MessageBroadcaster<Allocator>::update(ThreadPool<Allocator>& thread_pool)
 {
@@ -281,6 +329,9 @@ void MessageBroadcaster<Allocator>::update(ThreadPool<Allocator>& thread_pool)
 	_message_queue.clear();
 }
 
+/*!
+	\brief Single-threaded update. Calls the callbacks for all listeners for each message in the queue.
+*/
 template <class Allocator>
 void MessageBroadcaster<Allocator>::update(void)
 {

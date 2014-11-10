@@ -125,7 +125,7 @@ void CreateResourceLoadersState::update(void)
 
 	// LUA LOADER
 	{
-		LuaLoader* lua_loader = _app.getAllocator().template allocT<LuaLoader>(_app.getManagerT<LuaManager>("Lua Manager"));
+		LuaLoader* lua_loader = _app.getAllocator().template allocT<LuaLoader>(_app.getManagerT<LuaManager>("Lua Manager"), *_app.getFileSystem());
 
 		if (!lua_loader) {
 			// log error

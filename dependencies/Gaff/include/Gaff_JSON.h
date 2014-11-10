@@ -20,6 +20,8 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
+/*! \file */
+
 #pragma once
 
 #if defined(_WIN32) || defined(_WIN64)
@@ -32,9 +34,21 @@ THE SOFTWARE.
 
 NS_GAFF
 
+/*!
+	\brief Class that represents a JSON object.
+*/
 class JSON
 {
 public:
+	/*!
+		\brief If this is JSON object, then iterate over each key/value pair and call \a callback.
+		\tparam
+			Callback The type used for the callback.
+			Callbacks take the signature bool CB(const char* key, const JSON& value)
+			Returning true will end the loop early.
+
+		\return Returns whether the loop was terminated early.
+	*/
 	template <class Callback>
 	bool forEachInObject(Callback&& callback) const
 	{
@@ -52,6 +66,15 @@ public:
 		return false;
 	}
 
+	/*!
+		\brief If this is JSON array, then iterate over each element and call \a callback.
+		\tparam
+			Callback The type used for the callback.
+			Callbacks take the signature bool CB(size_t index, const JSON& value)
+			Returning true will end the loop early.
+
+		\return Returns whether the loop was terminated early.
+	*/
 	template <class Callback>
 	bool forEachInArray(Callback&& callback) const
 	{

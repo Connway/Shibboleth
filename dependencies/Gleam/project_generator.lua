@@ -14,7 +14,7 @@ project "Gleam"
 
 	filter {}
 
-	defines { "GLEW_STATIC" }
+	defines { "GLEW_STATIC", "_CRT_SECURE_NO_WARNINGS" }
 
 	files { "**.h", "**.cpp" }
 

@@ -322,13 +322,13 @@ bool Window::init(const GChar* app_name, MODE window_mode,
 
 	switch (window_mode) {
 		case FULLSCREEN_WINDOWED:
-			pos_x = pos_y = 0;
+			//pos_x = pos_y = 0;
 			width = _original_width;
 			height = _original_height;
 			break;
 
 		case FULLSCREEN:
-			pos_x = pos_y = 0;
+			//pos_x = pos_y = 0;
 
 			if (!width || !height) {
 				width = _original_width;

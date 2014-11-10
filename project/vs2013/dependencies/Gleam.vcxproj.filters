@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="include">
@@ -60,16 +60,10 @@
     <ClInclude Include="..\..\..\dependencies\Gleam\include\Gleam_IRenderDevice.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\dependencies\Gleam\include\Gleam_IRenderStage.h">
-      <Filter>include</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\dependencies\Gleam\include\Gleam_IRenderState.h">
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\dependencies\Gleam\include\Gleam_IRenderTarget.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\dependencies\Gleam\include\Gleam_IRenderer.h">
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\dependencies\Gleam\include\Gleam_ISamplerState.h">
@@ -82,6 +76,9 @@
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\dependencies\Gleam\include\Gleam_ITexture.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\Gleam\include\Gleam_IWindow.h">
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\dependencies\Gleam\include\Gleam_IncludeD3D11.h">
@@ -117,6 +114,9 @@
     <ClInclude Include="..\..\..\dependencies\Gleam\include\Gleam_Mesh.h">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\Gleam\include\Gleam_MeshBase.h">
+      <Filter>include</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\dependencies\Gleam\include\Gleam_Mesh_Direct3D.h">
       <Filter>include</Filter>
     </ClInclude>
@@ -124,6 +124,9 @@
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\dependencies\Gleam\include\Gleam_Model.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\Gleam\include\Gleam_ModelBase.h">
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\dependencies\Gleam\include\Gleam_Model_Direct3D.h">
@@ -142,6 +145,9 @@
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\dependencies\Gleam\include\Gleam_Program.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\Gleam\include\Gleam_ProgramBase.h">
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\dependencies\Gleam\include\Gleam_Program_Direct3D.h">
@@ -273,30 +279,27 @@
     <ClInclude Include="..\..\..\dependencies\Gleam\include\Gleam_Window_Windows.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\dependencies\Gleam\include\Gleam_IWindow.h">
-      <Filter>include</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\dependencies\Gleam\Gleam_AABB.cpp" />
     <ClCompile Include="..\..\..\dependencies\Gleam\Gleam_Buffer_Direct3D.cpp" />
     <ClCompile Include="..\..\..\dependencies\Gleam\Gleam_Buffer_OpenGL.cpp" />
     <ClCompile Include="..\..\..\dependencies\Gleam\Gleam_Global.cpp" />
-    <ClCompile Include="..\..\..\dependencies\Gleam\Gleam_IMesh.cpp" />
-    <ClCompile Include="..\..\..\dependencies\Gleam\Gleam_IModel.cpp" />
-    <ClCompile Include="..\..\..\dependencies\Gleam\Gleam_IProgram.cpp" />
     <ClCompile Include="..\..\..\dependencies\Gleam\Gleam_InputManager.cpp" />
     <ClCompile Include="..\..\..\dependencies\Gleam\Gleam_Keyboard_MessagePump.cpp" />
     <ClCompile Include="..\..\..\dependencies\Gleam\Gleam_Layout_Direct3D.cpp" />
     <ClCompile Include="..\..\..\dependencies\Gleam\Gleam_Layout_OpenGL.cpp" />
     <ClCompile Include="..\..\..\dependencies\Gleam\Gleam_Matrix4x4_CPU.cpp" />
     <ClCompile Include="..\..\..\dependencies\Gleam\Gleam_Matrix4x4_SIMD.cpp" />
+    <ClCompile Include="..\..\..\dependencies\Gleam\Gleam_MeshBase.cpp" />
     <ClCompile Include="..\..\..\dependencies\Gleam\Gleam_Mesh_Direct3D.cpp" />
     <ClCompile Include="..\..\..\dependencies\Gleam\Gleam_Mesh_OpenGL.cpp" />
+    <ClCompile Include="..\..\..\dependencies\Gleam\Gleam_ModelBase.cpp" />
     <ClCompile Include="..\..\..\dependencies\Gleam\Gleam_Model_Direct3D.cpp" />
     <ClCompile Include="..\..\..\dependencies\Gleam\Gleam_Model_OpenGL.cpp" />
     <ClCompile Include="..\..\..\dependencies\Gleam\Gleam_Mouse_MessagePump.cpp" />
     <ClCompile Include="..\..\..\dependencies\Gleam\Gleam_OBB.cpp" />
+    <ClCompile Include="..\..\..\dependencies\Gleam\Gleam_ProgramBase.cpp" />
     <ClCompile Include="..\..\..\dependencies\Gleam\Gleam_Program_Direct3D.cpp" />
     <ClCompile Include="..\..\..\dependencies\Gleam\Gleam_Program_OpenGL.cpp" />
     <ClCompile Include="..\..\..\dependencies\Gleam\Gleam_Quaternion_CPU.cpp" />

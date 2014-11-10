@@ -23,13 +23,15 @@ THE SOFTWARE.
 #pragma once
 
 #include <Shibboleth_ReflectionDefinitions.h>
+#include "Shibboleth_ResourceDefines.h"
 #include "Shibboleth_ResourceWrapper.h"
 #include "Shibboleth_IComponent.h"
 
-
 NS_SHIBBOLETH
 
-struct ProgramData;
+class ResourceManager;
+class LoadingMessage;
+class RenderManager;
 struct ModelData;
 
 class ModelComponent : public IComponent
@@ -50,18 +52,32 @@ public:
 
 	void* rawRequestInterface(unsigned int class_id) const;
 
-	static void InitReflectionDefinition(void);
-
 	void render(void); // Temporary test function
 
 private:
-	ResourceWrapper<ProgramData> _material_res;
-	ResourceWrapper<ModelData> _model_res;
 	AString _material_filename;
 	AString _model_filename;
+	ResourceWrapper<ProgramData> _material_res;
+	ResourceWrapper<ModelData> _model_res;
+	ProgramBuffersPtr _program_buffers;
+
+	RenderManager& _render_mgr;
+	ResourceManager& _res_mgr;
 	IApp& _app;
 
+	unsigned char _flags;
+
 	void LoadCallback(const AHashString& resource, bool success);
+	void HandleLoadingMessage(const LoadingMessage& msg);
+
+	template <unsigned int bit>
+	bool GetFlag(void) const
+	{
+		return (_flags & (1 << bit)) != 0;
+	}
+
+	void SetReleaseHoldingFlag(bool value);
+	void SetLoadOnlyHoldingFlag(bool value);
 
 	REF_DEF_SHIB(ModelComponent);
 };

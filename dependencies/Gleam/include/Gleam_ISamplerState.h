@@ -22,14 +22,14 @@ THE SOFTWARE.
 
 #pragma once
 
-//#include "Gleam_IRenderState.h"
-#include "Gleam_RefCounted.h"
+#include "Gleam_Defines.h"
+#include <Gaff_IRefCounted.h>
 
 NS_GLEAM
 
 class IRenderDevice;
 
-class ISamplerState : public GleamRefCounted
+class ISamplerState : public Gaff::IRefCounted
 {
 public:
 	enum WRAP { WRAP_REPEAT = 1, WRAP_MIRROR, WRAP_CLAMP, WRAP_BORDER, /*WRAP_MIRROR_ONCE,*/ WRAP_SIZE = WRAP_BORDER/*WRAP_MIRROR_ONCE*/ };
@@ -62,6 +62,8 @@ public:
 	virtual void destroy(void) = 0;
 
 	virtual bool isD3D(void) const = 0;
+
+	GAFF_NO_COPY(ISamplerState);
 };
 
 NS_END

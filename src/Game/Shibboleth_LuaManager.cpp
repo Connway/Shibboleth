@@ -27,7 +27,9 @@ THE SOFTWARE.
 NS_SHIBBOLETH
 
 REF_IMPL_REQ(LuaManager);
-REF_IMPL_SHIB(LuaManager);
+REF_IMPL_ASSIGN_SHIB(LuaManager)
+.addBaseClassInterfaceOnly<LuaManager>()
+;
 
 LuaManager::LuaManager(IApp& app):
 	_app(app)
@@ -59,15 +61,6 @@ lua::State* LuaManager::createNewState(void)
 	}
 
 	return state;
-}
-
-void LuaManager::InitReflectionDefinition(void)
-{
-	if (!g_Ref_Def.isDefined()) {
-		g_Ref_Def.setAllocator(ProxyAllocator());
-
-		g_Ref_Def.markDefined();
-	}
 }
 
 NS_END

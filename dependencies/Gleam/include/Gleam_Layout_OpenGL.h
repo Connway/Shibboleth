@@ -22,6 +22,7 @@ THE SOFTWARE.
 
 #pragma once
 
+#include "Gleam_RefCounted.h"
 #include "Gleam_ILayout.h"
 #include "Gleam_Array.h"
 
@@ -37,7 +38,7 @@ public:
 	void destroy(void);
 
 	void setLayout(IRenderDevice&, const IMesh* mesh);
-	INLINE void unsetLayout(IRenderDevice&);
+	void unsetLayout(IRenderDevice&);
 
 private:
 	struct LayoutData
@@ -49,6 +50,8 @@ private:
 	};
 
 	GleamArray< GleamArray<LayoutData> > _layout_descs;
+
+	GLEAM_REF_COUNTED(LayoutGL);
 };
 
 NS_END

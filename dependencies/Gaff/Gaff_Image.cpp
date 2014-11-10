@@ -26,8 +26,6 @@ THE SOFTWARE.
 #include <IL/il.h>
 #include <cstdlib>
 
-#include <iostream>
-
 NS_GAFF
 
 void Image::SysInit(void)
@@ -118,6 +116,19 @@ void Image::destroy()
 		ilDeleteImage(_image);
 		_image = 0;
 	}
+}
+
+/*!
+	\brief Loads an image from memory.
+	\param image Image buffer.
+	\param image_size Size of \a image in bytes.
+	\return Whether the image was successfully loaded.
+*/
+bool Image::load(void* image, unsigned int image_size)
+{
+	assert(_image);
+	ilBindImage(_image);
+	return ilLoadL(IL_TYPE_UNKNOWN, image, image_size) != 0;
 }
 
 bool Image::load(const wchar_t* filename)

@@ -20,12 +20,17 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
+/*! \file */
+
 #pragma once
 
 #include "Gaff_DefaultAllocator.h"
 
 NS_GAFF
 
+/*!
+	\brief A simple "smart" pointer that just de-allocates when the destructor is called.
+*/
 template <class T, class Allocator = DefaultAllocator>
 class SmartPtr
 {
@@ -111,6 +116,10 @@ public:
 		return _data;
 	}
 
+	/*!
+		\brief Releases the pointer and returns ownership back to the caller.
+		\return The internal pointer.
+	*/
 	T* release(void)
 	{
 		T* data = _data;

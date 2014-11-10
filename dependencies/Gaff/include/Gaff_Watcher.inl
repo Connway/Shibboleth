@@ -1,3 +1,25 @@
+/************************************************************************************
+Copyright (C) 2014 by Nicholas LaCroix
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+************************************************************************************/
+
 ///////////////////
 //    REMOVER    //
 ///////////////////
@@ -103,6 +125,9 @@ Watcher<T, Allocator>::~Watcher(void)
 	}
 }
 
+/*!
+	\brief Initializes the watcher. This must be called before the Watcher is used.
+*/
 template <class T, class Allocator>
 bool Watcher<T, Allocator>::init(void)
 {
@@ -110,32 +135,37 @@ bool Watcher<T, Allocator>::init(void)
 	return _remover != nullptr;
 }
 
+/*!
+	\brief Does move assignment operation on the value and notifies all callbacks that the value has changed.
+*/
 template <class T, class Allocator>
 const Watcher<T, Allocator>& Watcher<T, Allocator>::operator=(T&& rhs)
 {
 	ScopedLock<SpinLock> scoped_lock(_lock);
 	_data = Move(rhs);
 
-	for (auto it = _callbacks.begin(); it != _callbacks.end(); ++it) {
-		it->second(_data);
-	}
+	notifyCallbacks();
 
 	return *this;
 }
 
+/*!
+	\brief Does normal assignment operation on the value and notifies all callbacks that the value has changed.
+*/
 template <class T, class Allocator>
 const Watcher<T, Allocator>& Watcher<T, Allocator>::operator=(const T& rhs)
 {
 	ScopedLock<SpinLock> scoped_lock(_lock);
 	_data = rhs;
 
-	for (auto it = _callbacks.begin(); it != _callbacks.end(); ++it) {
-		it->second(_data);
-	}
+	notifyCallbacks();
 
 	return *this;
 }
 
+/*!
+	\brief Adds a callback for when the value gets changed.
+*/
 template <class T, class Allocator>
 WatchReceipt Watcher<T, Allocator>::addCallback(const typename Watcher<T, Allocator>::Callback& callback)
 {
@@ -151,12 +181,29 @@ WatchReceipt Watcher<T, Allocator>::addCallback(const typename Watcher<T, Alloca
 	return WatchReceipt(receipt);
 }
 
+/*!
+	\brief Notifies all callbacks that the value has changed.
+*/
+template <class T, class Allocator>
+void Watcher<T, Allocator>::notifyCallbacks(void)
+{
+	for (auto it = _callbacks.begin(); it != _callbacks.end(); ++it) {
+		it->second(_data);
+	}
+}
+
+/*!
+	\brief Gets a pointer to the internal data.
+*/
 template <class T, class Allocator>
 const T* Watcher<T, Allocator>::getPtr(void) const
 {
 	return &_data;
 }
 
+/*!
+	\brief Gets a reference to the internal data.
+*/
 template <class T, class Allocator>
 const T& Watcher<T, Allocator>::get(void) const
 {

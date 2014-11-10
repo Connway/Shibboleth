@@ -408,6 +408,9 @@
     <ProjectReference Include="..\dependencies\glew.vcxproj">
       <Project>{7463977C-609A-980D-0987-7E10F59C140F}</Project>
     </ProjectReference>
+    <ProjectReference Include="..\Memory.vcxproj">
+      <Project>{BE94DDC2-AA36-0899-93F1-1BED7F328FE9}</Project>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

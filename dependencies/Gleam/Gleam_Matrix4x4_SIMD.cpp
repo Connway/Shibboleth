@@ -30,10 +30,10 @@ THE SOFTWARE.
 NS_GLEAM
 
 Matrix4x4SIMD Matrix4x4SIMD::Identity(
-1.0f, 0.0f, 0.0f, 0.0f,
-0.0f, 1.0f, 0.0f, 0.0f,
-0.0f, 0.0f, 1.0f, 0.0f,
-0.0f, 0.0f, 0.0f, 1.0f
+	1.0f, 0.0f, 0.0f, 0.0f,
+	0.0f, 1.0f, 0.0f, 0.0f,
+	0.0f, 0.0f, 1.0f, 0.0f,
+	0.0f, 0.0f, 0.0f, 1.0f
 );
 
 
@@ -231,11 +231,6 @@ const float* Matrix4x4SIMD::getBuffer(void) const
 	SIMDStore(_matrix.elements[3], _get_buffer_cache[3]);
 	return _get_buffer_cache[0];
 }
-
-//float* Matrix4x4SIMD::getBuffer(void)
-//{
-//	return _a;
-//}
 
 const SIMDMatrix& Matrix4x4SIMD::getSIMDType(void) const
 {
@@ -485,20 +480,18 @@ void Matrix4x4SIMD::setLookToLH(const Vector4SIMD& eye, const Vector4SIMD& dir, 
 	Vector4SIMD realDir, right, realUp;
 
 	realDir = dir;
-	realDir.normalize();
+	realDir.normalizeThis();
 
 	right = up.cross(dir);
-	right.normalize();
+	right.normalizeThis();
 
 	realUp = dir.cross(right);
-	realUp.normalize();
-
-	getBuffer(); // To update the buffer cache
+	realUp.normalizeThis();
 
 	set(
-		right[0], up[0], dir[0], 0.0f,
-		right[1], up[1], dir[1], 0.0f,
-		right[2], up[2], dir[2], 0.0f,
+		right[0], realUp[0], realDir[0], 0.0f,
+		right[1], realUp[1], realDir[1], 0.0f,
+		right[2], realUp[2], realDir[2], 0.0f,
 		-right.dot(eye), -realUp.dot(eye), -realDir.dot(eye), 1.0f
 	);
 }

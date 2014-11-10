@@ -20,6 +20,10 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
+/*! \file */
+
+#pragma once
+
 #include "Gaff_Defines.h"
 #include <assimp/mesh.h>
 
@@ -36,6 +40,11 @@ enum MeshPrimitives
 	MP_POLYGON = aiPrimitiveType_POLYGON
 };
 
+/*!
+	\brief
+		Class that wraps face data extracted from a loaded Mesh.
+		See <a href="http://assimp.sourceforge.net/lib_html/structai_face.html">aiFace Documentation</a> for more details.
+*/
 class Face
 {
 public:
@@ -65,6 +74,11 @@ private:
 	Face(const aiFace* face);
 };
 
+/*!
+	\brief
+		Class that wraps vertex weight data extracted from a loaded Bone.
+		See <a href="http://assimp.sourceforge.net/lib_html/structai_vertex_weight.html">aiVertexWeight Documentation</a> for more details.
+*/
 class VertexWeight
 {
 public:
@@ -94,6 +108,11 @@ private:
 	VertexWeight(const aiVertexWeight* weight);
 };
 
+/*!
+	\brief
+		Class that wraps bone data extracted from a loaded Mesh.
+		See <a href="http://assimp.sourceforge.net/lib_html/structai_bone.html">aiBone Documentation</a> for more details.
+*/
 class Bone
 {
 public:
@@ -133,6 +152,11 @@ private:
 	Bone(const aiBone* bone);
 };
 
+/*!
+	\brief
+		Class that wraps mesh data extracted from a loaded Scene.
+		See <a href="http://assimp.sourceforge.net/lib_html/structai_mesh.html">aiMesh Documentation</a> for more details.
+*/
 class Mesh
 {
 public:

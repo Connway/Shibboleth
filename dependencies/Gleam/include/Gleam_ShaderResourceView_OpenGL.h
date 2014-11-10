@@ -23,6 +23,7 @@ THE SOFTWARE.
 #pragma once
 
 #include "Gleam_IShaderResourceView.h"
+#include "Gleam_RefCounted.h"
 
 NS_GLEAM
 
@@ -43,6 +44,8 @@ public:
 private:
 	unsigned int _resource;
 	unsigned int _target;
+
+	GLEAM_REF_COUNTED(ShaderResourceViewGL);
 };
 
 NS_END

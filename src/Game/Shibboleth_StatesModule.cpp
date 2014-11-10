@@ -110,38 +110,36 @@ static const char* state_names[NUM_STATES] = {
 
 static Shibboleth::IApp* g_app = nullptr;
 
-DYNAMICEXPORT bool InitModule(Shibboleth::IApp& app)
+DYNAMICEXPORT_C bool InitModule(Shibboleth::IApp& app)
 {
 	Gaff::JSON::SetMemoryFunctions(&Shibboleth::ShibbolethAllocate, &Shibboleth::ShibbolethFree);
 	Gaff::JSON::SetHashSeed(app.getSeed());
-	Shibboleth::SetAllocator(&app.getAllocator());
-	Gleam::SetAllocator(&app.getAllocator());
 	g_app = &app;
 	return true;
 }
 
-DYNAMICEXPORT void ShutdownModule(void)
+DYNAMICEXPORT_C void ShutdownModule(void)
 {
 }
 
-DYNAMICEXPORT const char* GetStateName(unsigned int id)
+DYNAMICEXPORT_C const char* GetStateName(unsigned int id)
 {
 	assert(id < NUM_STATES);
 	return state_names[id];
 }
 
-DYNAMICEXPORT unsigned int GetNumStates(void)
+DYNAMICEXPORT_C unsigned int GetNumStates(void)
 {
 	return NUM_STATES;
 }
 
-DYNAMICEXPORT Shibboleth::IState* CreateState(unsigned int id)
+DYNAMICEXPORT_C Shibboleth::IState* CreateState(unsigned int id)
 {
 	assert(id < NUM_STATES);
 	return create_funcs[id](*g_app);
 }
 
-DYNAMICEXPORT void DestroyState(Shibboleth::IState* state, unsigned int)
+DYNAMICEXPORT_C void DestroyState(Shibboleth::IState* state, unsigned int)
 {
 	Shibboleth::GetAllocator()->freeT(state);
 }

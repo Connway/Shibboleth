@@ -190,8 +190,10 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\..\src\Game\include\Shibboleth_IComponent.h" />
     <ClInclude Include="..\..\..\src\Game\include\Shibboleth_LuaComponent.h" />
     <ClInclude Include="..\..\..\src\Game\include\Shibboleth_ModelComponent.h" />
+    <ClInclude Include="..\..\..\src\Game\include\Shibboleth_RenderComponent.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\src\Game\Shibboleth_LuaComponent.cpp" />

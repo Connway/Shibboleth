@@ -20,6 +20,8 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
+/*! \file */
+
 #pragma once
 
 #include "Gaff_ReadWriteSpinLock.h"
@@ -37,6 +39,15 @@ THE SOFTWARE.
 
 NS_GAFF
 
+/*!
+	Message receipts are used to manage registration for a message.
+	When a MessageReceipt goes out of scope, it will automatically
+	unregister itself from receiving that message.
+
+	\brief Message receipts are used to manage registration for a message.
+
+	\note All message classes must have a public, static AHashString variable called g_Hash.
+*/
 typedef RefPtr<IRefCounted> MessageReceipt;
 
 template <class Allocator = DefaultAllocator>
@@ -58,7 +69,6 @@ public:
 	template <class Message>
 	void broadcast(const Message& message);
 
-	// Pass in a thread pool for multithreaded, normal one is singlethreaded
 	void update(ThreadPool<Allocator>& thread_pool);
 	void update(void);
 
@@ -116,17 +126,24 @@ private:
 		FunctorT _functor;
 	};
 
-	class Remover : public RefCounted < Allocator >
+	class Remover : public IRefCounted
 	{
 	public:
 		Remover(MessageBroadcaster* broadcaster, const Allocator& allocator);
 		~Remover(void);
+
+		void addRef(void) const;
+		void release(void) const;
+
+		unsigned int getRefCount(void) const;
 
 		void removeListener(const AHashString<Allocator>& message_type, const IFunction* listener);
 
 	private:
 		MessageBroadcaster* _broadcaster;
 		SpinLock _lock;
+
+		mutable volatile unsigned int _ref_count;
 
 		void broadcasterDeleted(void);
 
@@ -167,10 +184,17 @@ private:
 
 		void doTask(void);
 
+		void addRef(void) const;
+		void release(void) const;
+
+		unsigned int getRefCount(void) const;
+
 	private:
 		Pair<ReadWriteSpinLock, ListenerList>& _listeners;
 		MessageBroadcaster<Allocator>& _broadcaster;
 		void* _msg;
+
+		mutable volatile unsigned int _ref_count;
 	};
 
 	HashMap<AHashString<Allocator>, Pair<ReadWriteSpinLock, ListenerList>, Allocator> _listeners;

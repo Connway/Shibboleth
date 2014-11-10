@@ -189,6 +189,15 @@ namespace lua {
             return executeLoadedFunction(stackTop);
         }
 
+		lua::Value doString(const char* string) const {
+			int stackTop = stack::top(_luaState);
+
+			if (luaL_loadstring(_luaState, string))
+				throw LoadError(_luaState);
+
+			return executeLoadedFunction(stackTop);
+		}
+
 #ifdef LUASTATE_DEBUG_MODE
         
         /// Flush all elements from stack and check ref counting

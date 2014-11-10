@@ -22,13 +22,14 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Gleam_RefCounted.h"
+#include "Gleam_Defines.h"
+#include <Gaff_IRefCounted.h>
 
 NS_GLEAM
 
 class IRenderDevice;
 
-class IRenderState : public GleamRefCounted
+class IRenderState : public Gaff::IRefCounted
 {
 public:
 	enum BLEND_FACTOR
@@ -148,6 +149,8 @@ public:
 	virtual void unset(IRenderDevice& rd) const = 0;
 
 	virtual bool isD3D(void) const = 0;
+
+	GAFF_NO_COPY(IRenderState);
 };
 
 NS_END

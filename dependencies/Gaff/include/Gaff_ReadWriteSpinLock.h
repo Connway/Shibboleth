@@ -20,12 +20,17 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
+/*! \file */
+
 #pragma once
 
 #include "Gaff_Defines.h"
 
 NS_GAFF
 
+/*!
+	\brief A spin lock that manages read/write access.
+*/
 class ReadWriteSpinLock
 {
 public:
@@ -46,7 +51,6 @@ private:
 	mutable volatile long _read_lock;
 
 	GAFF_NO_COPY(ReadWriteSpinLock);
-	//GAFF_NO_MOVE(ReadWriteSpinLock);
 };
 
 NS_END

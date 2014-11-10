@@ -22,8 +22,8 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Gleam_RefCounted.h"
-#include "Gleam_Array.h"
+#include "Gleam_Defines.h"
+#include <Gaff_IRefCounted.h>
 
 NS_GLEAM
 
@@ -34,34 +34,30 @@ class ILayout;
 class IShader;
 class IMesh;
 
-class IModel : public GleamRefCounted
+class IModel : public Gaff::IRefCounted
 {
 public:
-	IModel(void);
-	~IModel(void);
+	IModel(void) {}
+	~IModel(void) {}
 
-	void destroy(void);
+	virtual void destroy(void) = 0;
 
-	const ILayout* getLayout(unsigned int index) const;
-	ILayout* getLayout(unsigned int index);
-	int getIndex(const ILayout* layout) const;
+	virtual const ILayout* getLayout(unsigned int index) const = 0;
+	virtual ILayout* getLayout(unsigned int index) = 0;
+	virtual int getIndex(const ILayout* layout) const = 0;
 
 	virtual ILayout* createLayout(IRenderDevice& rd, const LayoutDescription* layout_desc, unsigned int desc_size, const IShader* shader) = 0;
-	unsigned int addLayout(ILayout* layout);
+	virtual unsigned int addLayout(ILayout* layout) = 0;
 
-	INLINE const IMesh* getMesh(unsigned int index) const;
-	INLINE IMesh* getMesh(unsigned int index);
-	INLINE unsigned int getMeshCount(void) const;
-	int getIndex(const IMesh* mesh) const;
+	virtual const IMesh* getMesh(unsigned int index) const = 0;
+	virtual IMesh* getMesh(unsigned int index) = 0;
+	virtual unsigned int getMeshCount(void) const = 0;
+	virtual int getIndex(const IMesh* mesh) const = 0;
 
 	virtual IMesh* createMesh(void) = 0;
-	unsigned int addMesh(IMesh* mesh);
+	virtual unsigned int addMesh(IMesh* mesh) = 0;
 
-	void render(IRenderDevice& rd, unsigned int index);
-
-private:
-	GleamArray<ILayout*> _layouts;
-	GleamArray<IMesh*> _meshes;
+	virtual void render(IRenderDevice& rd, unsigned int index) = 0;
 
 	GAFF_NO_COPY(IModel);
 };

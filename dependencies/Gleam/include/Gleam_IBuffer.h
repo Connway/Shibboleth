@@ -22,14 +22,14 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Gleam_RefCounted.h"
-#include <Gaff_Defines.h>
+#include "Gleam_Defines.h"
+#include <Gaff_IRefCounted.h>
 
 NS_GLEAM
 
 class IRenderDevice;
 
-class IBuffer : public GleamRefCounted
+class IBuffer : public Gaff::IRefCounted
 {
 public:
 	enum BUFFER_TYPE {

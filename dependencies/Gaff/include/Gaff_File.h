@@ -20,6 +20,8 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
+/*! \file */
+
 #pragma once
 
 #include "Gaff_IncludeAssert.h"
@@ -29,45 +31,46 @@ THE SOFTWARE.
 
 NS_GAFF
 
+/*!
+	\brief Wraps standard file operations.
+*/
 class File
 {
 public:
-	INLINE static bool checkExtension(const char* file_name, size_t file_name_size, const char* extension, size_t extension_size)
-	{
-		assert(file_name && extension && file_name_size > extension_size);
-		return strcmp(file_name + file_name_size - extension_size, extension) == 0;
-	}
 
-	INLINE static bool checkExtension(const char* file_name, const char* extension)
-	{
-		assert(file_name && extension);
-		return checkExtension(file_name, strlen(file_name), extension, strlen(extension));
-	}
+	INLINE static bool checkExtension(const char* file_name, size_t file_name_size, const char* extension, size_t extension_size);
+	INLINE static bool checkExtension(const char* file_name, const char* extension);
 
 	INLINE static bool remove(const char* file_name);
 	INLINE static bool rename(const char* old_file_name, const char* new_file_name);
 
+	/*!
+		\brief Modes in which we can open a file.
+	*/
 	enum OPEN_MODE
 	{
-		READ = 0,
-		WRITE,
-		APPEND,
-		READ_EXT,
-		WRITE_EXT,
-		APPEND_EXT,
-		READ_BINARY,
-		WRITE_BINARY,
-		APPEND_BINARY,
-		READ_EXT_BINARY,
-		WRITE_EXT_BINARY,
-		APPEND_EXT_BINARY
+		READ = 0, //!< Open a file for read-only.
+		WRITE, //!< Open a file for write-only. Deletes existing content.
+		APPEND, //!< Open a file and append to already existing content.
+		READ_EXT, //!< Open's a file for read/write. Errors if file doesn't exist.
+		WRITE_EXT, //!< Open's a file for read/write. Delete's existing content.
+		APPEND_EXT, //!< Open's a file for read/write. Appends to already existing content.
+		READ_BINARY, //!< Same as READ, but in binary mode instead of text mode.
+		WRITE_BINARY, //!< Same as WRITE, but in binary mode instead of text mode.
+		APPEND_BINARY, //!< Same as APPEND, but in binary mode instead of text mode.
+		READ_EXT_BINARY, //!< Same as READ_EXT, but in binary mode instead of text mode.
+		WRITE_EXT_BINARY, //!< Same as WRITE_EXT, but in binary mode instead of text mode.
+		APPEND_EXT_BINARY //!< Same as APPEND_EXT, but in binary mode instead of text mode.
 	};
 
+	/*!
+		\brief Positions to seek from when calling seek().
+	*/
 	enum SEEK_ORIGIN
 	{
-		BEGINNING = SEEK_SET,
-		CURRENT = SEEK_CUR,
-		END = SEEK_END
+		BEGINNING = SEEK_SET, //!< Starts seeking from the beginning of the file.
+		CURRENT = SEEK_CUR, //!< Starts seeking from the current position in the file.
+		END = SEEK_END //!< Starts seeking from the end of the file.
 	};
 
 	File(const char* file_name, OPEN_MODE mode = READ);
@@ -131,22 +134,12 @@ public:
 
 	// Unicode functions
 #ifdef _UNICODE
-	INLINE static bool checkExtension(const wchar_t* file_name, size_t file_name_size, const wchar_t* extension, size_t extension_size)
-	{
-		assert(file_name && extension && file_name_size > extension_size);
-		return wcscmp(file_name + file_name_size - extension_size, extension) == 0;
-	}
-
-	INLINE static bool checkExtension(const wchar_t* file_name, const wchar_t* extension)
-	{
-		assert(file_name && extension);
-		return checkExtension(file_name, wcslen(file_name), extension, wcslen(extension));
-	}
+	INLINE static bool checkExtension(const wchar_t* file_name, size_t file_name_size, const wchar_t* extension, size_t extension_size);
+	INLINE static bool checkExtension(const wchar_t* file_name, const wchar_t* extension);
 
 	INLINE static bool remove(const wchar_t* file_name);
 	INLINE static bool rename(const wchar_t* old_file_name, const wchar_t* new_file_name);
 
-	// File(const Gaff::WString& file_name, OPEN_MODE mode = READ);
 	File(const wchar_t* file_name, OPEN_MODE mode = READ);
 
 	bool open(const wchar_t* file_name, OPEN_MODE mode = READ);

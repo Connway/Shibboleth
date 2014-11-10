@@ -95,10 +95,10 @@ group ""
 
 		dependson
 		{
-			"Shared", "Gaff", "jansson"
+			"Shared", "Gaff", "jansson", "Memory"
 		}
 
 		links
 		{
-			"Shared", "Gaff", "jansson"
+			"Shared", "Gaff", "jansson", "Memory"
 		}

@@ -20,6 +20,8 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
+/*! \file */
+
 #pragma once
 
 #include "Gaff_Defines.h"
@@ -28,9 +30,12 @@ THE SOFTWARE.
 
 NS_GAFF
 
-#define MAX_FRAMES 128
-#define NAME_SIZE 256
+#define MAX_FRAMES 128 //!< The maximum number of stack frames we can captures.
+#define NAME_SIZE 256 //!< The maximum size a frame name can be.
 
+/*!
+	\brief Wrapper class for capturing stack traces.
+*/
 class StackTrace
 {
 public:

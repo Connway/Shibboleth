@@ -22,22 +22,22 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Gleam_Defines.h"
+#include <Shibboleth_IManager.h>
+#include "Shibboleth_Array.h"
 
-NS_GLEAM
+NS_SHIBBOLETH
 
-class IRenderDevice;
-class Scene;
-
-class IRenderer
+class CameraManager : public IManager
 {
 public:
-	IRenderer(void) {}
-	virtual ~IRenderer(void) {}
+	struct CameraData
+	{
+	};
 
-	virtual void destroy(void) = 0;
+	CameraManager(void);
+	~CameraManager(void);
 
-	virtual void render(IRenderDevice& rd, Scene& scene) = 0;
+private:
 };
 
 NS_END

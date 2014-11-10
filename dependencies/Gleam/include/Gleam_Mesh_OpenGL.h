@@ -22,11 +22,11 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Gleam_IMesh.h"
+#include "Gleam_MeshBase.h"
 
 NS_GLEAM
 
-class MeshGL : public IMesh
+class MeshGL : public MeshBase
 {
 public:
 	MeshGL(void);

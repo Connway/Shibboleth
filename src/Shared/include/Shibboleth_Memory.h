@@ -22,56 +22,20 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Gaff_Function.h"
-#include "Gaff_Array.h"
+#include "Shibboleth_Allocator.h"
 
-NS_GAFF
+#ifdef IS_MEMORY
+	#define MEMORY_TAG DYNAMICEXPORT
+#else
+	#define MEMORY_TAG DYNAMICIMPORT
+#endif
 
-template <class Allocator>
-class TimerCallbackManager
-{
-public:
-	TimerCallbackManager(const Allocator& allocator = Allocator());
-	~TimerCallbackManager(void);
+NS_SHIBBOLETH
 
-	void update(double dt);
+MEMORY_TAG void SetAllocator(Allocator* allocator);
+MEMORY_TAG Allocator* GetAllocator(void);
 
-	// Function
-	unsigned int registerForCallback(void (*function)(unsigned int), double period, bool periodic = false);
-
-	// Member Function
-	template <class T>
-	unsigned int registerForCallback(T* object, void (T::*function)(unsigned int), double period, bool periodic = false);
-
-	// Functor
-	template <class T>
-	unsigned int registerForCallback(const T& object, double period, bool periodic = false);
-
-	void removeCallback(unsigned int id);
-
-private:
-	struct CallbackData
-	{
-		FunctionBinder<void> callback;
-		double elapsed;
-		double period;
-		unsigned int id;
-		bool once;
-
-		// for binarySearch()
-		bool operator<(unsigned int rhs) const
-		{
-			return id < rhs;
-		}
-	};
-
-	Array<CallbackData, Allocator> _callbacks;
-	unsigned int _nextID;
-
-	unsigned int registerCallback(FunctionBinder<void, unsigned int>& callback, double period, bool periodic);
-};
-
-#include "Gaff_TimerCallbackManager.inl"
+MEMORY_TAG void* ShibbolethAllocate(size_t size);
+MEMORY_TAG void ShibbolethFree(void* data);
 
 NS_END
-

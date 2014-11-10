@@ -11,6 +11,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Gaff", "..\dependencies\Gaf
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Shared", "..\Shared.vcxproj", "{7C480CD1-68EA-36A7-51A5-4AFB3DE6BDF7}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Memory", "..\Memory.vcxproj", "{BE94DDC2-AA36-0899-93F1-1BED7F328FE9}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -51,6 +53,14 @@ Global
 		{7C480CD1-68EA-36A7-51A5-4AFB3DE6BDF7}.Release|Win32.Build.0 = Release|Win32
 		{7C480CD1-68EA-36A7-51A5-4AFB3DE6BDF7}.Release|x64.ActiveCfg = Release|x64
 		{7C480CD1-68EA-36A7-51A5-4AFB3DE6BDF7}.Release|x64.Build.0 = Release|x64
+		{BE94DDC2-AA36-0899-93F1-1BED7F328FE9}.Debug|Win32.ActiveCfg = Debug|Win32
+		{BE94DDC2-AA36-0899-93F1-1BED7F328FE9}.Debug|Win32.Build.0 = Debug|Win32
+		{BE94DDC2-AA36-0899-93F1-1BED7F328FE9}.Debug|x64.ActiveCfg = Debug|x64
+		{BE94DDC2-AA36-0899-93F1-1BED7F328FE9}.Debug|x64.Build.0 = Debug|x64
+		{BE94DDC2-AA36-0899-93F1-1BED7F328FE9}.Release|Win32.ActiveCfg = Release|Win32
+		{BE94DDC2-AA36-0899-93F1-1BED7F328FE9}.Release|Win32.Build.0 = Release|Win32
+		{BE94DDC2-AA36-0899-93F1-1BED7F328FE9}.Release|x64.ActiveCfg = Release|x64
+		{BE94DDC2-AA36-0899-93F1-1BED7F328FE9}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

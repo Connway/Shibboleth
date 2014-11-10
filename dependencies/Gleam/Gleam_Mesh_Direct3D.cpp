@@ -86,7 +86,7 @@ bool MeshD3D::addVertData(
 
 void MeshD3D::addBuffer(IBuffer* buffer)
 {
-	IMesh::addBuffer(buffer);
+	MeshBase::addBuffer(buffer);
 	cacheBuffers();
 }
 

@@ -20,6 +20,8 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
+/*! \file */
+
 #pragma once
 
 #include "Gaff_DefaultAllocator.h"
@@ -30,13 +32,20 @@ THE SOFTWARE.
 
 NS_GAFF
 
+/*!
+	\brief Curve implementation using linear interpolation for sampling.
+
+	\tparam PointType The type that represents our point data.
+	\tparam Allocator The allocator we will use to allocate memory.
+*/
 template <class PointType, class Allocator = DefaultAllocator>
 class LinearCurve : public ICurve<PointType>
 {
 public:
-	typedef Pair<float, PointType&> Key;
+	typedef Pair<float, PointType> Key;
 
-	LinearCurve(const Array<PointType, Allocator>& points);
+	LinearCurve(const LinearCurve<PointType, Allocator>& curve);
+	LinearCurve(LinearCurve<PointType, Allocator>&& curve);
 	LinearCurve(const Allocator& allocator = Allocator());
 	~LinearCurve(void);
 
@@ -46,10 +55,10 @@ public:
 	void removeKey(unsigned int index);
 
 	unsigned int getNumKeys(void) const;
-	Key getKey(unsigned int index);
+	const Key& getKey(unsigned int index);
 
 private:
-	Array<Pair<float, PointType>, Allocator> _points;
+	Array<Key, Allocator> _points;
 };
 
 #include "Gaff_LinearCurve.inl"

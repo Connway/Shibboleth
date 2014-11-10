@@ -96,7 +96,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level4</WarningLevel>
       <PreprocessorDefinitions>_DEBUG;DEBUG;USE_SIMD;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\..\dependencies\dirent;..\..\src\Shared\include;..\..\dependencies\jansson;..\..\dependencies\Gaff\include;..\..\dependencies\utf8-cpp;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\src\Memory\include;..\..\dependencies\dirent;..\..\src\Shared\include;..\..\dependencies\jansson;..\..\dependencies\Gaff\include;..\..\dependencies\utf8-cpp;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <ProgramDataBaseFileName>$(OutDir)Shared.pdb</ProgramDataBaseFileName>
       <Optimization>Disabled</Optimization>
@@ -107,7 +107,7 @@
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>_DEBUG;DEBUG;USE_SIMD;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\..\dependencies\dirent;..\..\src\Shared\include;..\..\dependencies\jansson;..\..\dependencies\Gaff\include;..\..\dependencies\utf8-cpp;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\src\Memory\include;..\..\dependencies\dirent;..\..\src\Shared\include;..\..\dependencies\jansson;..\..\dependencies\Gaff\include;..\..\dependencies\utf8-cpp;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -119,7 +119,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level4</WarningLevel>
       <PreprocessorDefinitions>_DEBUG;DEBUG;USE_SIMD;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\..\dependencies\dirent;..\..\src\Shared\include;..\..\dependencies\jansson;..\..\dependencies\Gaff\include;..\..\dependencies\utf8-cpp;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\src\Memory\include;..\..\dependencies\dirent;..\..\src\Shared\include;..\..\dependencies\jansson;..\..\dependencies\Gaff\include;..\..\dependencies\utf8-cpp;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <ProgramDataBaseFileName>$(OutDir)Shared.pdb</ProgramDataBaseFileName>
       <Optimization>Disabled</Optimization>
@@ -129,7 +129,7 @@
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>_DEBUG;DEBUG;USE_SIMD;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\..\dependencies\dirent;..\..\src\Shared\include;..\..\dependencies\jansson;..\..\dependencies\Gaff\include;..\..\dependencies\utf8-cpp;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\src\Memory\include;..\..\dependencies\dirent;..\..\src\Shared\include;..\..\dependencies\jansson;..\..\dependencies\Gaff\include;..\..\dependencies\utf8-cpp;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -141,7 +141,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level4</WarningLevel>
       <PreprocessorDefinitions>USE_SIMD;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\..\dependencies\dirent;..\..\src\Shared\include;..\..\dependencies\jansson;..\..\dependencies\Gaff\include;..\..\dependencies\utf8-cpp;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\src\Memory\include;..\..\dependencies\dirent;..\..\src\Shared\include;..\..\dependencies\jansson;..\..\dependencies\Gaff\include;..\..\dependencies\utf8-cpp;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
@@ -154,7 +154,7 @@
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>USE_SIMD;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\..\dependencies\dirent;..\..\src\Shared\include;..\..\dependencies\jansson;..\..\dependencies\Gaff\include;..\..\dependencies\utf8-cpp;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\src\Memory\include;..\..\dependencies\dirent;..\..\src\Shared\include;..\..\dependencies\jansson;..\..\dependencies\Gaff\include;..\..\dependencies\utf8-cpp;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -168,7 +168,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level4</WarningLevel>
       <PreprocessorDefinitions>USE_SIMD;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\..\dependencies\dirent;..\..\src\Shared\include;..\..\dependencies\jansson;..\..\dependencies\Gaff\include;..\..\dependencies\utf8-cpp;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\src\Memory\include;..\..\dependencies\dirent;..\..\src\Shared\include;..\..\dependencies\jansson;..\..\dependencies\Gaff\include;..\..\dependencies\utf8-cpp;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
@@ -180,7 +180,7 @@
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>USE_SIMD;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\..\dependencies\dirent;..\..\src\Shared\include;..\..\dependencies\jansson;..\..\dependencies\Gaff\include;..\..\dependencies\utf8-cpp;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\src\Memory\include;..\..\dependencies\dirent;..\..\src\Shared\include;..\..\dependencies\jansson;..\..\dependencies\Gaff\include;..\..\dependencies\utf8-cpp;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -209,6 +209,7 @@
     <ClInclude Include="..\..\src\Shared\include\Shibboleth_Map.h" />
     <ClInclude Include="..\..\src\Shared\include\Shibboleth_MessageBroadcaster.h" />
     <ClInclude Include="..\..\src\Shared\include\Shibboleth_ProxyAllocator.h" />
+    <ClInclude Include="..\..\src\Shared\include\Shibboleth_RefCounted.h" />
     <ClInclude Include="..\..\src\Shared\include\Shibboleth_ReflectionDefinitions.h" />
     <ClInclude Include="..\..\src\Shared\include\Shibboleth_StateMachine.h" />
     <ClInclude Include="..\..\src\Shared\include\Shibboleth_String.h" />

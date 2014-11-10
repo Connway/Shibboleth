@@ -20,12 +20,17 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
+/*! \file */
+
 #pragma once
 
 #include "Gaff_Defines.h"
 
 NS_GAFF
 
+/*!
+	\brief See <a href="http://en.wikipedia.org/wiki/Spinlock">Wikipedia</a> for definition of a spinlock.
+*/
 class SpinLock
 {
 public:

@@ -46,6 +46,9 @@ THE SOFTWARE.
 	class name : public IValueContainer \
 	{ \
 	public: \
+		typedef type (T::*Getter)(void) const; \
+		typedef void (T::*Setter)(type); \
+		name(const char* key, Getter getter, Setter setter); \
 		name(const char* key, type T::* var); \
 		void read(const Gaff::JSON& json, T* object); \
 		void write(Gaff::JSON& json, T* object) const; \
@@ -56,11 +59,38 @@ THE SOFTWARE.
 		void set(double value, T* object); \
 	private: \
 		type T::* _var; \
+		Getter _getter; \
+		Setter _setter; \
+	}
+
+#define VAR_CONTAINER_REF(name, type) \
+	class name : public IValueContainer \
+	{ \
+	public: \
+		typedef const type& (T::*Getter)(void) const; \
+		typedef void (T::*Setter)(const type&); \
+		name(const char* key, Getter getter, Setter setter); \
+		name(const char* key, type T::* var); \
+		void read(const Gaff::JSON& json, T* object); \
+		void write(Gaff::JSON& json, T* object) const; \
+		typename IValueContainer::ValueType getType(void) const; \
+		void set(const char* value, T* object); \
+		void set(unsigned int value, T* object); \
+		void set(int value, T* object); \
+		void set(double value, T* object); \
+	private: \
+		type T::* _var; \
+		Getter _getter; \
+		Setter _setter; \
 	}
 
 #define VAR_CONTAINER_CONSTRUCTOR(name, type) \
 	template <class T, class Allocator> \
-	ReflectionDefinition<T, Allocator>::name::name(const char* key, type T::* var): IValueContainer(key), _var(var) {}
+	ReflectionDefinition<T, Allocator>::name::name(const char* key, Getter getter, Setter setter): IValueContainer(key), _getter(getter), _setter(setter), _var(nullptr) {} \
+	template <class T, class Allocator> \
+	ReflectionDefinition<T, Allocator>::name::name(const char* key, type T::* var): IValueContainer(key), _getter(nullptr), _setter(nullptr), _var(var) {}
+
+#define VAR_CONTAINER_CONSTRUCTOR_GET_SET(name, type) \
 
 #define VAR_CONTAINER_READ(name) \
 	template <class T, class Allocator> \
@@ -102,7 +132,7 @@ public:
 	EnumReflectionDefinition(void);
 	~EnumReflectionDefinition(void);
 
-	EnumReflectionDefinition<T, Allocator>& addValue(const char* name, T value);
+	EnumReflectionDefinition<T, Allocator>&& addValue(const char* name, T value);
 	const char* getName(T value) const;
 	T getValue(const char* name) const;
 
@@ -163,8 +193,11 @@ public:
 		AString<Allocator> _key;
 	};
 
+	ReflectionDefinition(ReflectionDefinition<T, Allocator>&& ref_def);
 	ReflectionDefinition(void);
 	~ReflectionDefinition(void);
+
+	const ReflectionDefinition<T, Allocator>& operator=(ReflectionDefinition<T, Allocator>&& rhs);
 
 	void read(const Gaff::JSON& json, void* object);
 	void write(Gaff::JSON& json, void* object) const;
@@ -175,54 +208,68 @@ public:
 	void write(Gaff::JSON& json, T* object) const;
 
 	template <class T2>
-	ReflectionDefinition<T, Allocator>& addBaseClass(const ReflectionDefinition<T2, Allocator>& base_ref_def, unsigned int class_id);
+	ReflectionDefinition<T, Allocator>&& addBaseClass(const ReflectionDefinition<T2, Allocator>& base_ref_def, unsigned int class_id);
 
 	template <class T2>
-	ReflectionDefinition<T, Allocator>& addBaseClass(unsigned int class_id);
+	ReflectionDefinition<T, Allocator>&& addBaseClass(unsigned int class_id);
 
 	template <class T2>
-	ReflectionDefinition<T, Allocator>& addBaseClass(void);
+	ReflectionDefinition<T, Allocator>&& addBaseClass(void);
 
 	template <class T2>
-	ReflectionDefinition<T, Allocator>& addBaseClassInterfaceOnly(void);
+	ReflectionDefinition<T, Allocator>&& addBaseClassInterfaceOnly(void);
 
 	template <class T2>
-	ReflectionDefinition<T, Allocator>& addObject(const char* key, T2 T::* var, ReflectionDefinition<T2, Allocator>& var_ref_def);
+	ReflectionDefinition<T, Allocator>&& addObject(const char* key, T2 T::* var, ReflectionDefinition<T2, Allocator>& var_ref_def);
 
 	template <class T2>
-	ReflectionDefinition<T, Allocator>& addEnum(const char* key, T2 T::* var, const EnumReflectionDefinition<T2, Allocator>& ref_def);
+	ReflectionDefinition<T, Allocator>&& addEnum(const char* key, T2 T::* var, const EnumReflectionDefinition<T2, Allocator>& ref_def);
 
 	//template <class T2>
-	//ReflectionDefinition<T, Allocator>& addArray(const char* key, Array<T2> T::* var, ReflectionDefinition<T2, Allocator> T2::* elem_ref_def);
+	//ReflectionDefinition<T, Allocator>&& addArray(const char* key, Array<T2> T::* var, ReflectionDefinition<T2, Allocator> T2::* elem_ref_def);
 
-	//ReflectionDefinition<T, Allocator>& addArray(const char* key, Array<double> T::* var);
-	//ReflectionDefinition<T, Allocator>& addArray(const char* key, Array<float> T::* var);
-	//ReflectionDefinition<T, Allocator>& addArray(const char* key, Array<unsigned int> T::* var);
-	//ReflectionDefinition<T, Allocator>& addArray(const char* key, Array<int> T::* var);
-	//ReflectionDefinition<T, Allocator>& addArray(const char* key, Array<unsigned short> T::* var);
-	//ReflectionDefinition<T, Allocator>& addArray(const char* key, Array<short> T::* var);
-	//ReflectionDefinition<T, Allocator>& addArray(const char* key, Array<unsigned char> T::* var);
-	//ReflectionDefinition<T, Allocator>& addArray(const char* key, Array<char> T::* var);
-	//ReflectionDefinition<T, Allocator>& addArray(const char* key, Array<bool> T::* var);
-	//ReflectionDefinition<T, Allocator>& addArray(const char* key, Array<AString> T::* var);
+	//ReflectionDefinition<T, Allocator>&& addArray(const char* key, Array<double> T::* var);
+	//ReflectionDefinition<T, Allocator>&& addArray(const char* key, Array<float> T::* var);
+	//ReflectionDefinition<T, Allocator>&& addArray(const char* key, Array<unsigned int> T::* var);
+	//ReflectionDefinition<T, Allocator>&& addArray(const char* key, Array<int> T::* var);
+	//ReflectionDefinition<T, Allocator>&& addArray(const char* key, Array<unsigned short> T::* var);
+	//ReflectionDefinition<T, Allocator>&& addArray(const char* key, Array<short> T::* var);
+	//ReflectionDefinition<T, Allocator>&& addArray(const char* key, Array<unsigned char> T::* var);
+	//ReflectionDefinition<T, Allocator>&& addArray(const char* key, Array<char> T::* var);
+	//ReflectionDefinition<T, Allocator>&& addArray(const char* key, Array<bool> T::* var);
+	//ReflectionDefinition<T, Allocator>&& addArray(const char* key, Array<AString> T::* var);
 
-	ReflectionDefinition<T, Allocator>& addDouble(const char* key, double T::* var);
-	ReflectionDefinition<T, Allocator>& addFloat(const char* key, float T::* var);
-	ReflectionDefinition<T, Allocator>& addUInt(const char* key, unsigned int T::* var);
-	ReflectionDefinition<T, Allocator>& addInt(const char* key, int T::* var);
-	ReflectionDefinition<T, Allocator>& addUShort(const char* key, unsigned short T::* var);
-	ReflectionDefinition<T, Allocator>& addShort(const char* key, short T::* var);
-	ReflectionDefinition<T, Allocator>& addUChar(const char* key, unsigned char T::* var);
-	ReflectionDefinition<T, Allocator>& addChar(const char* key, char T::* var);
-	ReflectionDefinition<T, Allocator>& addBool(const char* key, bool T::* var);
-	ReflectionDefinition<T, Allocator>& addString(const char* key, AString<Allocator> T::* var);
+	ReflectionDefinition<T, Allocator>&& addDouble(const char* key, double T::* var);
+	ReflectionDefinition<T, Allocator>&& addFloat(const char* key, float T::* var);
+	ReflectionDefinition<T, Allocator>&& addUInt(const char* key, unsigned int T::* var);
+	ReflectionDefinition<T, Allocator>&& addInt(const char* key, int T::* var);
+	ReflectionDefinition<T, Allocator>&& addUShort(const char* key, unsigned short T::* var);
+	ReflectionDefinition<T, Allocator>&& addShort(const char* key, short T::* var);
+	ReflectionDefinition<T, Allocator>&& addUChar(const char* key, unsigned char T::* var);
+	ReflectionDefinition<T, Allocator>&& addChar(const char* key, char T::* var);
+	ReflectionDefinition<T, Allocator>&& addBool(const char* key, bool T::* var);
+	ReflectionDefinition<T, Allocator>&& addString(const char* key, AString<Allocator> T::* var);
 
-	ReflectionDefinition<T, Allocator>& addCustom(const char* key, IValueContainer* container);
+	template <class T2>
+	ReflectionDefinition<T, Allocator>&& addEnum(const char* key, const EnumReflectionDefinition<T2, Allocator>& ref_def, T2 (T::*getter)(void) const, void (T::*setter)(T2 value));
+
+	ReflectionDefinition<T, Allocator>&& addDouble(const char* key, double (T::*getter)(void) const, void (T::*Setter)(double value));
+	ReflectionDefinition<T, Allocator>&& addFloat(const char* key, float (T::*getter)(void) const, void (T::*setter)(float value));
+	ReflectionDefinition<T, Allocator>&& addUInt(const char* key, unsigned int (T::*getter)(void) const, void (T::*setter)(unsigned int value));
+	ReflectionDefinition<T, Allocator>&& addInt(const char* key, int (T::*getter)(void) const, void (T::*setter)(int value));
+	ReflectionDefinition<T, Allocator>&& addUShort(const char* key, unsigned short (T::*getter)(void) const, void (T::*setter)(unsigned short value));
+	ReflectionDefinition<T, Allocator>&& addShort(const char* key, short (T::*getter)(void) const, void (T::*setter)(short value));
+	ReflectionDefinition<T, Allocator>&& addUChar(const char* key, unsigned char (T::*getter)(void) const, void (T::*setter)(unsigned char value));
+	ReflectionDefinition<T, Allocator>&& addChar(const char* key, char (T::*getter)(void) const, void (T::*setter)(char value));
+	ReflectionDefinition<T, Allocator>&& addBool(const char* key, bool (T::*getter)(void) const, void (T::*setter)(bool value));
+	ReflectionDefinition<T, Allocator>&& addString(const char* key, const AString<Allocator>& (T::*getter)(void) const, void (T::*setter)(const AString<Allocator>& value));
+
+	ReflectionDefinition<T, Allocator>&& addCustom(const char* key, IValueContainer* container);
 
 	bool isDefined(void) const;
 	void markDefined(void);
 
-	void setAllocator(const Allocator& allocator);
+	ReflectionDefinition<T, Allocator>&& setAllocator(const Allocator& allocator);
 	void clear(void);
 
 private:
@@ -237,20 +284,28 @@ private:
 	VAR_CONTAINER(UCharContainer, unsigned char);
 	VAR_CONTAINER(CharContainer, char);
 	VAR_CONTAINER(BoolContainer, bool);
-	VAR_CONTAINER(StringContainer, AString<Allocator>);
+	VAR_CONTAINER_REF(StringContainer, AString<Allocator>);
 
 	template <class T2>
 	class ObjectContainer : public IValueContainer
 	{
 	public:
+		typedef const T2& (T::*Getter)(void) const;
+		typedef void (T::*Setter)(const T2& value);
+
+		ObjectContainer(const char* key, ReflectionDefinition<T2, Allocator>& var_ref_def, Getter getter, Setter setter);
 		ObjectContainer(const char* key, T2 T::* var, ReflectionDefinition<T2, Allocator>& var_ref_def);
 
 		void read(const Gaff::JSON& json, T* object);
 		void write(Gaff::JSON& json, T* object) const;
 
+		void set(const T2& value, T* object);
+
 		typename IValueContainer::ValueType getType(void) const;
 
 	private:
+		Getter _getter;
+		Setter _setter;
 		ReflectionDefinition<T2, Allocator>& _var_ref_def;
 		T2 T::* _var;
 	};
@@ -259,6 +314,10 @@ private:
 	class EnumContainer : public IValueContainer
 	{
 	public:
+		typedef T2 (T::*Getter)(void) const;
+		typedef void (T::*Setter)(T2 value);
+
+		EnumContainer(const char* key, const EnumReflectionDefinition<T2, Allocator>& ref_def, Getter getter, Setter setter);
 		EnumContainer(const char* key, T2 T::* var, const EnumReflectionDefinition<T2, Allocator>& var_ref_def);
 
 		void read(const Gaff::JSON& json, T* object);
@@ -272,6 +331,8 @@ private:
 		typename IValueContainer::ValueType getType(void) const;
 
 	private:
+		Getter _getter;
+		Setter _setter;
 		const EnumReflectionDefinition<T2, Allocator>& _var_ref_def;
 		T2 T::* _var;
 
@@ -312,7 +373,6 @@ private:
 	bool _defined;
 
 	GAFF_NO_COPY(ReflectionDefinition);
-	GAFF_NO_MOVE(ReflectionDefinition);
 };
 
 #define REF_DEF(ClassName, Allocator) \
@@ -323,6 +383,11 @@ public: \
 #define REF_IMPL(ClassName, Allocator) \
 unsigned int ClassName::g_Hash = Gaff::FNV1aHash32(#ClassName, strlen(#ClassName)); \
 Gaff::ReflectionDefinition<ClassName, Allocator> ClassName::g_Ref_Def
+
+#define REF_IMPL_ASSIGN(ClassName, Allocator) \
+unsigned int ClassName::g_Hash = Gaff::FNV1aHash32(#ClassName, strlen(#ClassName)); \
+Gaff::ReflectionDefinition<ClassName, Allocator> ClassName::g_Ref_Def = Gaff::RefDef<ClassName, Allocator>()
+
 
 #define REF_IMPL_REQ(ClassName) \
 void* ClassName::rawRequestInterface(unsigned int class_id) const \
@@ -351,7 +416,7 @@ void* ClassName::rawRequestInterface(unsigned int class_id) const \
 	BE CAREFUL WITH THIS! If whatever allocator you are using is not initialized or
 	available during process/DLL global init, this will crash hard!
 */
-template <class T, class Allocator>
+template <class T, class Allocator = DefaultAllocator>
 ReflectionDefinition<T, Allocator> RefDef(void)
 {
 	return ReflectionDefinition<T, Allocator>();

@@ -33,6 +33,11 @@ enum AnimationBehavior
 	AB_REPEAT = aiAnimBehaviour_REPEAT
 };
 
+/*!
+	\brief
+		Class that wraps rotation data extracted from a loaded NodeAnimation.
+		See <a href="http://assimp.sourceforge.net/lib_html/structai_quat_key.html">aiQuatKey Documentation</a> for more details.
+*/
 class RotationKey
 {
 public:
@@ -66,6 +71,11 @@ private:
 	RotationKey(const aiQuatKey* key);
 };
 
+/*!
+	\brief
+		Class that vector face data extracted from a loaded NodeAnimation.
+		See <a href="http://assimp.sourceforge.net/lib_html/structai_vector_key.html">aiVectorKey Documentation</a> for more details.
+*/
 class VectorKey
 {
 public:
@@ -99,6 +109,11 @@ private:
 	VectorKey(const aiVectorKey* key);
 };
 
+/*!
+	\brief
+		Class that wraps node animation data extracted from a loaded Animation.
+		See <a href="http://assimp.sourceforge.net/lib_html/structai_node_anim.html">aiNodeAnim Documentation</a> for more details.
+*/
 class NodeAnimation
 {
 public:

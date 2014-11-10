@@ -20,6 +20,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
+#include <Shibboleth_Memory.h>
 #include <Gleam_ShaderResourceView.h>
 #include <Gleam_RenderDevice.h>
 #include <Gleam_RenderTarget.h>
@@ -36,9 +37,9 @@ THE SOFTWARE.
 #include <Gleam_Window.h>
 #include <Shibboleth_IApp.h>
 
-Shibboleth::ProxyAllocator g_Proxy_Allocator;
+static Shibboleth::ProxyAllocator g_Proxy_Allocator;
 
-DYNAMICEXPORT bool InitGraphics(Shibboleth::IApp& app, const char* log_file_name)
+DYNAMICEXPORT_C bool InitGraphics(Shibboleth::IApp&, const char* log_file_name)
 {
 #ifdef _UNICODE
 	wchar_t buffer[256] = {0};
@@ -48,99 +49,98 @@ DYNAMICEXPORT bool InitGraphics(Shibboleth::IApp& app, const char* log_file_name
 	Gleam::SetLogFileName(log_file_name);
 #endif
 
-	Shibboleth::SetAllocator(&app.getAllocator());
 	g_Proxy_Allocator = Shibboleth::ProxyAllocator(Shibboleth::GetAllocator(), "Graphics Allocations");
 
 	Gleam::SetAllocator(&g_Proxy_Allocator);
 	return true;
 }
 
-DYNAMICEXPORT void ShutdownGraphics(void)
+DYNAMICEXPORT_C void ShutdownGraphics(void)
 {
 	Gleam::Window::clear();
 }
 
-DYNAMICEXPORT Gleam::IWindow* CreateWindowS(void)
+DYNAMICEXPORT_C Gleam::IWindow* CreateWindowS(void)
 {
 	return g_Proxy_Allocator.template allocT<Gleam::Window>();
 }
 
-DYNAMICEXPORT void DestroyWindowS(Gleam::IWindow* window)
+DYNAMICEXPORT_C void DestroyWindowS(Gleam::IWindow* window)
 {
 	g_Proxy_Allocator.freeT(window);
 }
 
-DYNAMICEXPORT void UpdateWindows(void)
+DYNAMICEXPORT_C void UpdateWindows(void)
 {
 	Gleam::Window::handleWindowMessages();
 }
 
-DYNAMICEXPORT Gleam::IShaderResourceView* CreateShaderResourceView(void)
+DYNAMICEXPORT_C Gleam::IShaderResourceView* CreateShaderResourceView(void)
 {
 	return g_Proxy_Allocator.template allocT<Gleam::ShaderResourceView>();
 }
 
-DYNAMICEXPORT Gleam::IProgramBuffers* CreateProgramBuffers(void)
+DYNAMICEXPORT_C Gleam::IProgramBuffers* CreateProgramBuffers(void)
 {
 	return g_Proxy_Allocator.template allocT<Gleam::ProgramBuffers>();
 }
 
-DYNAMICEXPORT Gleam::IRenderDevice* CreateRenderDevice(void)
+DYNAMICEXPORT_C Gleam::IRenderDevice* CreateRenderDevice(void)
 {
 	return g_Proxy_Allocator.template allocT<Gleam::RenderDevice>();
 }
 
-DYNAMICEXPORT Gleam::IRenderTarget* CreateRenderTarget(void)
+DYNAMICEXPORT_C Gleam::IRenderTarget* CreateRenderTarget(void)
 {
 	return g_Proxy_Allocator.template allocT<Gleam::RenderTarget>();
 }
 
-DYNAMICEXPORT Gleam::ISamplerState* CreateSamplerState(void)
+DYNAMICEXPORT_C Gleam::ISamplerState* CreateSamplerState(void)
 {
 	return g_Proxy_Allocator.template allocT<Gleam::SamplerState>();
 }
 
-DYNAMICEXPORT Gleam::IRenderState* CreateRenderState(void)
+DYNAMICEXPORT_C Gleam::IRenderState* CreateRenderState(void)
 {
 	return g_Proxy_Allocator.template allocT<Gleam::RenderState>();
 }
 
-DYNAMICEXPORT Gleam::ITexture* CreateTexture(void)
+DYNAMICEXPORT_C Gleam::ITexture* CreateTexture(void)
 {
 	return g_Proxy_Allocator.template allocT<Gleam::Texture>();
 }
 
-DYNAMICEXPORT Gleam::ILayout* CreateLayout(void)
+DYNAMICEXPORT_C Gleam::ILayout* CreateLayout(void)
 {
 	return g_Proxy_Allocator.template allocT<Gleam::Layout>();
 }
 
-DYNAMICEXPORT Gleam::IProgram* CreateProgram(void)
+DYNAMICEXPORT_C Gleam::IProgram* CreateProgram(void)
 {
 	return g_Proxy_Allocator.template allocT<Gleam::Program>();
 }
 
-DYNAMICEXPORT Gleam::IShader* CreateShader(void)
+DYNAMICEXPORT_C Gleam::IShader* CreateShader(void)
 {
 	return g_Proxy_Allocator.template allocT<Gleam::Shader>();
 }
 
-DYNAMICEXPORT Gleam::IBuffer* CreateBuffer(void)
+DYNAMICEXPORT_C Gleam::IBuffer* CreateBuffer(void)
 {
 	return g_Proxy_Allocator.template allocT<Gleam::Buffer>();
 }
 
-DYNAMICEXPORT Gleam::IModel* CreateModel(void)
+DYNAMICEXPORT_C Gleam::IModel* CreateModel(void)
 {
 	return g_Proxy_Allocator.template allocT<Gleam::Model>();
 }
 
-DYNAMICEXPORT Gleam::IMesh* CreateMesh(void)
+DYNAMICEXPORT_C Gleam::IMesh* CreateMesh(void)
 {
 	return g_Proxy_Allocator.template allocT<Gleam::Mesh>();
 }
 
-DYNAMICEXPORT const char* GetShaderExtension(void)
+DYNAMICEXPORT_C const char* GetShaderExtension(void)
 {
 #ifdef USE_DX
 	return ".hlsl";

@@ -20,15 +20,18 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
+/*! \file */
+
 #pragma once
 
 #include "Gaff_Defines.h"
 #include <mach/mach.h>
 
-typedef long long LONGLONG;
-
 NS_GAFF
 
+/*!
+	\brief High-performance timer class.
+*/
 class Timer
 {
 public:
@@ -38,21 +41,22 @@ public:
 	bool stop(void);
 
 	INLINE double getDeltaSec(void) const;
-	INLINE LONGLONG getDeltaMilli(void) const;
-	INLINE LONGLONG getDeltaMicro(void) const;
+	INLINE long long getDeltaMilli(void) const;
+	INLINE long long getDeltaMicro(void) const;
 
 	INLINE double getCurrSec(void) const;
-	INLINE LONGLONG getCurrMilli(void) const;
-	LONGLONG getCurrMicro(void) const;
+	INLINE long long getCurrMilli(void) const;
+	long long getCurrMicro(void) const;
 
 	INLINE double getTotalTime(void) const;
+	INLINE void resetTotalTime(void);
 
 private:
 	clock_serv_t _clock_serv;
 	mach_timespec_t _start;
 	mach_timespec_t _stop;
 
-	LONGLONG _deltaTime;
+	long long _deltaTime;
 	double _totalTime;
 };
 

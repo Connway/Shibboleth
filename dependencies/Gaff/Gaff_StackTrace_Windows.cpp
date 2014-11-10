@@ -29,6 +29,10 @@ NS_GAFF
 
 void* StackTrace::_handle = nullptr;
 
+/*!
+	\brief Global initialization of the stack trace system.
+	\note Must be called before using a StackTrace instance. And called per execution context. (eg EXE, DLL)
+*/
 bool StackTrace::Init(void)
 {
 	assert(!_handle);
@@ -36,6 +40,9 @@ bool StackTrace::Init(void)
 	return SymInitialize(_handle, nullptr, TRUE) == TRUE;
 }
 
+/*!
+	\brief Global destruction of the stack trace system.
+*/
 void StackTrace::Destroy(void)
 {
 	assert(_handle);
@@ -47,7 +54,7 @@ StackTrace::StackTrace(const StackTrace& trace):
 	_total_frames(trace._total_frames)
 {
 	SYMBOL_INFO* sym = (SYMBOL_INFO*)_symbol_info;
-	sym->SizeOfStruct = sizeof(_symbol_info);
+	sym->SizeOfStruct = sizeof(SYMBOL_INFO);
 	sym->MaxNameLen = NAME_SIZE - 1;
 
 	memcpy(_stack, trace._stack, sizeof(_stack));
@@ -68,9 +75,14 @@ StackTrace::~StackTrace(void)
 const StackTrace& StackTrace::operator=(const StackTrace& rhs)
 {
 	memcpy(_stack, rhs._stack, sizeof(_stack));
+	_total_frames = rhs._total_frames;
 	return *this;
 }
 
+/*!
+	\brief Captures the callstack \a frames_to_capture deep.
+	\return The number of callstack frames captured.
+*/
 unsigned short StackTrace::captureStack(unsigned int frames_to_capture)
 {
 	assert(frames_to_capture <= MAX_FRAMES);
@@ -78,23 +90,39 @@ unsigned short StackTrace::captureStack(unsigned int frames_to_capture)
 	return _total_frames;
 }
 
+/*!
+	\brief Returns the total number of currently captured callstack frames.
+*/
 unsigned short StackTrace::getTotalFrames(void) const
 {
 	return _total_frames;
 }
 
+/*!
+	\brief Loads the frame information for the specified callstack \a frame.
+	\param frame The callstack frame whose information to load.
+	\return Whether the callstack frame information was successfully loaded.
+*/
 bool StackTrace::loadFrameInfo(unsigned short frame)
 {
 	SYMBOL_INFO* sym = (SYMBOL_INFO*)_symbol_info;
 	return SymFromAddr(_handle, (DWORD64)_stack[frame], nullptr, sym) == TRUE;
 }
 
+/*!
+	\brief Returns the currently loaded callstack frame's name.
+	\note Must call loadFrameInfo() first.
+*/
 const char* StackTrace::getFrameName(void) const
 {
 	SYMBOL_INFO* sym = (SYMBOL_INFO*)_symbol_info;
 	return sym->Name;
 }
 
+/*!
+	\brief Gets the address of the currently loaded callstack frame.
+	\note Must call loadFrameInfo() first.
+*/
 unsigned long long StackTrace::getFrameAddress(void) const
 {
 	SYMBOL_INFO* sym = (SYMBOL_INFO*)_symbol_info;

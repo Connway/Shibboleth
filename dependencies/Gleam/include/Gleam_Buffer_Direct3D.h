@@ -22,6 +22,7 @@ THE SOFTWARE.
 
 #pragma once
 
+#include "Gleam_RefCounted.h"
 #include "Gleam_IBuffer.h"
 
 struct ID3D11Buffer;
@@ -48,6 +49,8 @@ public:
 
 private:
 	ID3D11Buffer* _buffer;
+
+	GLEAM_REF_COUNTED(BufferD3D);
 };
 
 NS_END
