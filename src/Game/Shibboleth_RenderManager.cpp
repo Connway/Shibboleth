@@ -33,6 +33,7 @@ NS_SHIBBOLETH
 REF_IMPL_REQ(RenderManager);
 REF_IMPL_ASSIGN_SHIB(RenderManager)
 .addBaseClassInterfaceOnly<RenderManager>()
+.ADD_BASE_CLASS_INTERFACE_ONLY(IUpdateQuery)
 ;
 
 RenderManager::RenderManager(IApp& app):
@@ -62,6 +63,11 @@ RenderManager::~RenderManager(void)
 const char* RenderManager::getName(void) const
 {
 	return "Render Manager";
+}
+
+void RenderManager::requestUpdateEntries(Array<UpdateEntry>& entries)
+{
+	//entries.movePush(UpdateEntry(AString("Render Manager: Render"), Gaff::Bind(this, &RenderManager::update)));
 }
 
 bool RenderManager::init(const char* cfg_file)
@@ -253,6 +259,16 @@ bool RenderManager::init(const char* cfg_file)
 	return !failed;
 }
 
+void RenderManager::update(double)
+{
+	// Multithread this at some point.
+	// Need to add support for thread render devices.
+	// Update functions will need to take in an IRenderDevice.
+	for (unsigned int i = 0; i < _render_functions.size(); ++i) {
+		_render_functions[i]();
+	}
+}
+
 Gleam::IRenderDevice& RenderManager::getRenderDevice(void)
 {
 	return *_render_device;
@@ -280,7 +296,8 @@ bool RenderManager::createWindow(
 	const wchar_t* app_name, Gleam::IWindow::MODE window_mode,
 	int x, int y, unsigned int width, unsigned int height,
 	unsigned int refresh_rate, const char* device_name,
-	unsigned int adapter_id, unsigned int display_id, bool vsync)
+	unsigned int adapter_id, unsigned int display_id, bool vsync,
+	unsigned int tag)
 {
 	assert(_render_device && _graphics_functions.create_window && _graphics_functions.destroy_window);
 
@@ -336,7 +353,7 @@ bool RenderManager::createWindow(
 
 	unsigned int device_id = (unsigned int)_render_device->getDeviceForAdapter(adapter_id);
 
-	WindowData wnd_data = { window, device_id, _render_device->getNumOutputs(device_id) };
+	WindowData wnd_data = { window, device_id, _render_device->getNumOutputs(device_id), tag };
 	_windows.push(wnd_data);
 	return true;
 }
@@ -439,6 +456,140 @@ Gleam::IMesh* RenderManager::createMesh(void)
 {
 	assert(_graphics_functions.create_mesh);
 	return _graphics_functions.create_mesh();
+}
+
+unsigned int RenderManager::getNumRenderTargets(void) const
+{
+	return _render_target_data.size();
+}
+
+RenderManager::RenderData& RenderManager::getRenderData(unsigned int rt_index)
+{
+	assert(rt_index < _render_target_data.size());
+	return _render_target_data[rt_index].render_data;
+}
+
+unsigned int RenderManager::createRT(unsigned int width, unsigned int height, unsigned int device, Gleam::ITexture::FORMAT format, const AString& name, unsigned int tag)
+{
+	// We're about to do stuff to the Render Devices, lock it so that no one can mess with it
+	Gaff::ScopedLock<Gaff::SpinLock> scoped_lock(_rd_lock);
+	//data.device_data.resize(_render_device->getNumDevices());
+
+	RenderData rd;
+
+	//for (auto it = data.device_data.begin(); it != data.device_data.end(); ++it) {
+		//_render_device->setCurrentDevice(it - data.device_data.begin());
+		_render_device->setCurrentDevice(device);
+		rd.output = createTexture();
+
+		if (!rd.output) {
+			// log error
+			return UINT_FAIL;
+		}
+
+		if (!rd.output->init2D(*_render_device, width, height, format)) {
+			// log error
+			return UINT_FAIL;
+		}
+
+		rd.output_srv = createShaderResourceView();
+
+		if (!rd.output_srv) {
+			// log error
+			return UINT_FAIL;
+		}
+
+		if (!rd.output_srv->init(*_render_device, rd.output.get())) {
+			// log error
+			return UINT_FAIL;
+		}
+
+		rd.render_target = createRenderTarget();
+
+		if (!rd.render_target) {
+			// log error
+			return UINT_FAIL;
+		}
+
+		if (!rd.render_target->addTexture(*_render_device, rd.output.get())) {
+			// log error
+			return UINT_FAIL;
+		}
+	//}
+
+	RenderTargetData data = {
+		rd, name, width,
+		height, tag
+	};
+
+	_render_target_data.push(data);
+
+	return _render_target_data.size() - 1;
+}
+
+bool RenderManager::createRTDepth(unsigned int rt_index, Gleam::ITexture::FORMAT format)
+{
+	assert(rt_index < _render_target_data.size());
+	RenderTargetData& data = _render_target_data[rt_index];
+
+	// We're about to do stuff to the Render Devices, lock it so that no one can mess with it
+	Gaff::ScopedLock<Gaff::SpinLock> scoped_lock(_rd_lock);
+
+	//for (auto it = data.device_data.begin(); it != data.device_data.end(); ++it) {
+		//_render_device->setCurrentDevice(it - data.device_data.begin());
+		_render_device->setCurrentDevice(data.device);
+		data.render_data.depth = createTexture();
+
+		if (!data.render_data.depth) {
+			// log error
+			return false;
+		}
+
+		if (!data.render_data.depth->init2D(*_render_device, data.width, data.height, format)) {
+			// log error
+			return false;
+		}
+
+		data.render_data.depth_srv = createShaderResourceView();
+
+		if (!data.render_data.depth_srv) {
+			// log error
+			return false;
+		}
+
+		if (!data.render_data.depth_srv->init(*_render_device, data.render_data.depth.get())) {
+			// log error
+			return false;
+		}
+
+		if (!data.render_data.render_target->addDepthStencilBuffer(*_render_device, data.render_data.depth.get())) {
+			// log error
+			return false;
+		}
+	//}
+
+	return true;
+}
+
+void RenderManager::deleteRenderTargets(void)
+{
+	_render_target_data.clear();
+	_render_functions.clear();
+}
+
+void RenderManager::addRenderFunction(Gaff::FunctionBinder<void> render_func, unsigned int position)
+{
+	if (position == UINT_FAIL) {
+		_render_functions.push(render_func);
+
+	} else {
+		// Presumably something else will fill the holes. If not, we will have an assert when we try and call them.
+		if (_render_functions.size() < position) {
+			_render_functions.resize(position);
+		}
+
+		_render_functions[position] = render_func;
+	}
 }
 
 int RenderManager::getDisplayModeID(unsigned int width, unsigned int height, unsigned int refresh_rate, unsigned int adapter_id, unsigned int display_id)

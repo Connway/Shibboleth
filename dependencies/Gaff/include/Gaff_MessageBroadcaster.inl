@@ -79,7 +79,7 @@ void MessageBroadcaster<Allocator>::Functor<Message, FunctorT>::call(void* messa
 ///////////////////
 template <class Allocator>
 MessageBroadcaster<Allocator>::Remover::Remover(MessageBroadcaster* broadcaster, const Allocator& allocator):
-	_broadcaster(broadcaster), _ref_count(0)
+	_broadcaster(broadcaster), _allocator(allocator), _ref_count(0)
 {
 }
 
@@ -100,7 +100,8 @@ void MessageBroadcaster<Allocator>::Remover::release(void) const
 	unsigned int new_count = AtomicDecrement(&_ref_count);
 
 	if (!new_count) {
-		_broadcaster->_allocator.freeT(this);
+		Allocator allocator(_allocator);
+		allocator.freeT(this);
 	}
 }
 

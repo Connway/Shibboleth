@@ -405,12 +405,15 @@ void Matrix4x4SIMD::setRotationX(float radians)
 
 	getBuffer(); // To update the buffer cache
 
-	set(
-		_get_buffer_cache_single[0], _get_buffer_cache_single[1], _get_buffer_cache_single[2], _get_buffer_cache_single[3],
-		_get_buffer_cache_single[4], cf, sf, _get_buffer_cache_single[7],
-		_get_buffer_cache_single[8], -sf, cf, _get_buffer_cache_single[11],
-		_get_buffer_cache_single[12], _get_buffer_cache_single[13], _get_buffer_cache_single[14], _get_buffer_cache_single[15]
-	);
+	_matrix.elements[1] = SIMDCreate(_get_buffer_cache_single[4], cf, sf, _get_buffer_cache_single[7]);
+	_matrix.elements[2] = SIMDCreate(_get_buffer_cache_single[8], -sf, cf, _get_buffer_cache_single[11]);
+
+	//set(
+	//	_get_buffer_cache_single[0], _get_buffer_cache_single[1], _get_buffer_cache_single[2], _get_buffer_cache_single[3],
+	//	_get_buffer_cache_single[4], cf, sf, _get_buffer_cache_single[7],
+	//	_get_buffer_cache_single[8], -sf, cf, _get_buffer_cache_single[11],
+	//	_get_buffer_cache_single[12], _get_buffer_cache_single[13], _get_buffer_cache_single[14], _get_buffer_cache_single[15]
+	//);
 }
 
 void Matrix4x4SIMD::setRotationY(float radians)
@@ -420,12 +423,15 @@ void Matrix4x4SIMD::setRotationY(float radians)
 
 	getBuffer(); // To update the buffer cache
 
-	set(
-		cf, _get_buffer_cache_single[1], -sf, _get_buffer_cache_single[3],
-		_get_buffer_cache_single[4], _get_buffer_cache_single[5], _get_buffer_cache_single[6], _get_buffer_cache_single[7],
-		sf, _get_buffer_cache_single[9], cf, _get_buffer_cache_single[11],
-		_get_buffer_cache_single[12], _get_buffer_cache_single[13], _get_buffer_cache_single[14], _get_buffer_cache_single[15]
-	);
+	_matrix.elements[0] = SIMDCreate(cf, _get_buffer_cache_single[1], -sf, _get_buffer_cache_single[3]);
+	_matrix.elements[2] = SIMDCreate(sf, _get_buffer_cache_single[9], cf, _get_buffer_cache_single[11]);
+
+	//set(
+	//	cf, _get_buffer_cache_single[1], -sf, _get_buffer_cache_single[3],
+	//	_get_buffer_cache_single[4], _get_buffer_cache_single[5], _get_buffer_cache_single[6], _get_buffer_cache_single[7],
+	//	sf, _get_buffer_cache_single[9], cf, _get_buffer_cache_single[11],
+	//	_get_buffer_cache_single[12], _get_buffer_cache_single[13], _get_buffer_cache_single[14], _get_buffer_cache_single[15]
+	//);
 }
 
 void Matrix4x4SIMD::setRotationZ(float radians)
@@ -435,12 +441,15 @@ void Matrix4x4SIMD::setRotationZ(float radians)
 
 	getBuffer(); // To update the buffer cache
 
-	set(
-		cf, sf, _get_buffer_cache_single[2], _get_buffer_cache_single[3],
-		-sf, cf, _get_buffer_cache_single[6], _get_buffer_cache_single[7],
-		_get_buffer_cache_single[8], _get_buffer_cache_single[9], _get_buffer_cache_single[10], _get_buffer_cache_single[11],
-		_get_buffer_cache_single[12], _get_buffer_cache_single[13], _get_buffer_cache_single[14], _get_buffer_cache_single[15]
-	);
+	_matrix.elements[0] = SIMDCreate(cf, sf, _get_buffer_cache_single[2], _get_buffer_cache_single[3]);
+	_matrix.elements[1] = SIMDCreate(-sf, cf, _get_buffer_cache_single[6], _get_buffer_cache_single[7]);
+
+	//set(
+	//	cf, sf, _get_buffer_cache_single[2], _get_buffer_cache_single[3],
+	//	-sf, cf, _get_buffer_cache_single[6], _get_buffer_cache_single[7],
+	//	_get_buffer_cache_single[8], _get_buffer_cache_single[9], _get_buffer_cache_single[10], _get_buffer_cache_single[11],
+	//	_get_buffer_cache_single[12], _get_buffer_cache_single[13], _get_buffer_cache_single[14], _get_buffer_cache_single[15]
+	//);
 }
 
 void Matrix4x4SIMD::setLookAtLH(const Vector4SIMD& eye, const Vector4SIMD& target, const Vector4SIMD& up)

@@ -23,6 +23,7 @@ THE SOFTWARE.
 #pragma once
 
 #include "Shibboleth_IUpdateQuery.h"
+#include <Shibboleth_ReflectionDefinitions.h>
 #include <Shibboleth_IManager.h>
 #include <Shibboleth_Watcher.h>
 #include <Shibboleth_Array.h>
@@ -42,6 +43,7 @@ public:
 	~SpatialManager(void);
 
 	void requestUpdateEntries(Array<UpdateEntry>& entries);
+	void* rawRequestInterface(unsigned int class_id) const;
 	const char* getName(void) const;
 
 	unsigned int addObject(Object* object);
@@ -98,7 +100,8 @@ private:
 	friend class WatchUpdater;
 
 	GAFF_NO_COPY(SpatialManager);
-	GAFF_NO_MOVE(SpatialManager);
+
+	REF_DEF_SHIB(SpatialManager);
 };
 
 NS_END

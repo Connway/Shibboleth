@@ -22,22 +22,36 @@ THE SOFTWARE.
 
 #pragma once
 
-#include <Shibboleth_IManager.h>
-#include "Shibboleth_Array.h"
+#include "Shibboleth_IComponent.h"
+#include <Shibboleth_ReflectionDefinitions.h>
+#include <Shibboleth_String.h>
 
 NS_SHIBBOLETH
 
-class CameraManager : public IManager
+class IApp;
+
+class CameraComponent : public IComponent
 {
 public:
-	struct CameraData
-	{
-	};
+	CameraComponent(IApp& app);
+	~CameraComponent(void);
 
-	CameraManager(void);
-	~CameraManager(void);
+	bool load(const Gaff::JSON& json);
+
+	void* rawRequestInterface(unsigned int class_id) const;
+
+	const AString& getRenderTargetName(void) const;
 
 private:
+	template <unsigned int bit> bool GetFlag(void) const;
+	template <unsigned int bit> void SetFlag(bool value);
+
+	AString _render_target_name;
+	char _option_flags;
+
+	IApp& _app;
+
+	REF_DEF_SHIB(CameraComponent);
 };
 
 NS_END

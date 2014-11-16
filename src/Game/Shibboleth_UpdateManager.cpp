@@ -71,9 +71,11 @@ void UpdateManager::allManagersCreated(void)
 	LogManager::FileLockPair& log = _app.getGameLogFile();
 	Array<IUpdateQuery::UpdateEntry> entries;
 
+	unsigned int update_query_hash = CLASS_HASH(IUpdateQuery);
+
 	((App&)_app).forEachManager([&](IManager& manager) -> bool
 	{
-		IUpdateQuery* update_query = manager.requestInterface<IUpdateQuery>();
+		IUpdateQuery* update_query = manager.requestInterface<IUpdateQuery>(update_query_hash);
 
 		if (update_query) {
 			update_query->requestUpdateEntries(entries);
