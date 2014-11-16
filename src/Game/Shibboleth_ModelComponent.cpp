@@ -42,7 +42,7 @@ COMP_REF_DEF_SAVE(ModelComponent, g_Ref_Def);
 REF_IMPL_REQ(ModelComponent);
 
 REF_IMPL_ASSIGN_SHIB(ModelComponent)
-.addBaseClassInterfaceOnly<ModelComponent>()
+.addBaseClass<ModelComponent>(ModelComponent::g_Hash)
 .addString("Material File", &ModelComponent::_material_filename)
 .addString("Model File", &ModelComponent::_model_filename)
 .addBool("Load Only Holding Data", &ModelComponent::GetFlag<LOAD_ONLY_HOLDING_FLAG>, &ModelComponent::SetLoadOnlyHoldingFlag)
@@ -112,6 +112,11 @@ void ModelComponent::LoadCallback(const AHashString& resource, bool success)
 
 void ModelComponent::HandleLoadingMessage(const LoadingMessage& msg)
 {
+	if (msg.state == LoadingMessage::LOADING_FINISHED) {
+		if (_flags & RELEASE_HOLDING_FLAG) {
+			_model_res->holding_data.getResourcePtr() = nullptr;
+		}
+	}
 }
 
 void ModelComponent::SetReleaseHoldingFlag(bool value)
@@ -140,10 +145,14 @@ void ModelComponent::render(void)
 		!_model_res.getResourcePtr()->isLoaded())
 		return;
 
+	//static float rot = 0.0f;
+	//rot += 0.001f;
+
 	Gleam::Matrix4x4 tocamera, projection, toworld;
 	tocamera.setLookAtLH(0.0f, 0.0f, -10.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f);
 	projection.setPerspectiveLH(90.0f, 16.0f / 9.0f, 0.1f, 5000.0f);
 	toworld.setIdentity();
+	//toworld.setRotationY(rot);
 
 	// Update camera data
 	Gleam::IBuffer* buffer = _program_buffers->getConstantBuffer(Gleam::IShader::SHADER_VERTEX, 0);

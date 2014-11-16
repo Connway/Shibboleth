@@ -190,24 +190,20 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\..\src\Game\include\Shibboleth_CameraManager.h" />
     <ClInclude Include="..\..\..\src\Game\include\Shibboleth_ComponentManager.h" />
     <ClInclude Include="..\..\..\src\Game\include\Shibboleth_LuaManager.h" />
     <ClInclude Include="..\..\..\src\Game\include\Shibboleth_ObjectManager.h" />
     <ClInclude Include="..\..\..\src\Game\include\Shibboleth_OtterUIManager.h" />
-    <ClInclude Include="..\..\..\src\Game\include\Shibboleth_RasterManager.h" />
     <ClInclude Include="..\..\..\src\Game\include\Shibboleth_RenderManager.h" />
     <ClInclude Include="..\..\..\src\Game\include\Shibboleth_ResourceManager.h" />
     <ClInclude Include="..\..\..\src\Game\include\Shibboleth_SpatialManager.h" />
     <ClInclude Include="..\..\..\src\Game\include\Shibboleth_UpdateManager.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\src\Game\Shibboleth_CameraManager.cpp" />
     <ClCompile Include="..\..\..\src\Game\Shibboleth_ComponentManager.cpp" />
     <ClCompile Include="..\..\..\src\Game\Shibboleth_LuaManager.cpp" />
     <ClCompile Include="..\..\..\src\Game\Shibboleth_ObjectManager.cpp" />
     <ClCompile Include="..\..\..\src\Game\Shibboleth_OtterUIManager.cpp" />
-    <ClCompile Include="..\..\..\src\Game\Shibboleth_RasterManager.cpp" />
     <ClCompile Include="..\..\..\src\Game\Shibboleth_RenderManager.cpp" />
     <ClCompile Include="..\..\..\src\Game\Shibboleth_ResourceManager.cpp" />
     <ClCompile Include="..\..\..\src\Game\Shibboleth_SpatialManager.cpp" />

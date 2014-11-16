@@ -26,6 +26,12 @@ THE SOFTWARE.
 
 NS_SHIBBOLETH
 
+REF_IMPL_REQ(SpatialManager);
+REF_IMPL_ASSIGN_SHIB(SpatialManager)
+.addBaseClassInterfaceOnly<SpatialManager>()
+.ADD_BASE_CLASS_INTERFACE_ONLY(IUpdateQuery)
+;
+
 SpatialManager::WatchUpdater::WatchUpdater(SpatialManager* spatial_mgr, Node* node):
 	_spatial_mgr(spatial_mgr), _node(node)
 {
@@ -80,7 +86,7 @@ SpatialManager::~SpatialManager(void)
 
 void SpatialManager::requestUpdateEntries(Array<UpdateEntry>& entries)
 {
-	entries.movePush(UpdateEntry(AString("Spatial Manager: Update"), Gaff::Bind(this, &SpatialManager::update)));
+	//entries.movePush(UpdateEntry(AString("Spatial Manager: Update"), Gaff::Bind(this, &SpatialManager::update)));
 }
 
 const char* SpatialManager::getName(void) const

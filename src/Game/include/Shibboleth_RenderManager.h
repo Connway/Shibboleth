@@ -22,9 +22,13 @@ THE SOFTWARE.
 
 #pragma once
 
+#include "Shibboleth_IUpdateQuery.h"
 #include <Shibboleth_ReflectionDefinitions.h>
 #include <Shibboleth_IManager.h>
 #include <Shibboleth_App.h>
+#include <Gleam_IShaderResourceView.h>
+#include <Gleam_IRenderTarget.h>
+#include <Gleam_ITexture.h>
 #include <Gleam_IWindow.h>
 
 namespace Gaff
@@ -34,13 +38,10 @@ namespace Gaff
 
 namespace Gleam
 {
-	class IShaderResourceView;
 	class IProgramBuffers;
 	class IRenderDevice;
-	class IRenderTarget;
 	class ISamplerState;
 	class IRenderState;
-	class ITexture;
 	class ILayout;
 	class IProgram;
 	class IShader;
@@ -51,23 +52,57 @@ namespace Gleam
 
 NS_SHIBBOLETH
 
-class RenderManager : public IManager
+enum WindowTags
+{
+	WT_MAIN_WINDOW = 1,
+	WT_EXTENSION = (1 << 2)
+};
+
+class RenderManager : public IManager, public IUpdateQuery
 {
 public:
+	typedef Gaff::RefPtr<Gleam::IRenderTarget> RenderTargetPtr;
+	typedef Gaff::RefPtr<Gleam::IShaderResourceView> SRVPtr;
+	typedef Gaff::RefPtr<Gleam::ITexture> TexturePtr;
+
 	struct WindowData
 	{
 		Gleam::IWindow* window;
 		unsigned int device;
 		unsigned int output;
+		unsigned int tag;
 	};
 
+	struct RenderData
+	{
+		RenderTargetPtr render_target;
+		TexturePtr output;
+		TexturePtr depth;
+		SRVPtr output_srv;
+		SRVPtr depth_srv;
+	};
+
+	struct RenderTargetData
+	{
+		//Array<RenderData> device_data;
+		RenderData render_data;
+		AString name;
+		unsigned int width;
+		unsigned int height;
+		unsigned int device;
+		unsigned int tag;
+	};
 
 	RenderManager(IApp& app);
 	~RenderManager(void);
 
 	const char* getName(void) const;
 
+	void requestUpdateEntries(Array<UpdateEntry>& entries);
+	void* rawRequestInterface(unsigned int class_id) const;
+
 	bool init(const char* cfg_file);
+	void update(double);
 
 	Gleam::IRenderDevice& getRenderDevice(void);
 	Gaff::SpinLock& getSpinLock(void);
@@ -79,7 +114,8 @@ public:
 		const wchar_t* app_name, Gleam::IWindow::MODE window_mode,
 		int x, int y, unsigned int width, unsigned int height,
 		unsigned int refresh_rate, const char* device_name,
-		unsigned int adapter_id, unsigned int display_id, bool vsync
+		unsigned int adapter_id, unsigned int display_id, bool vsync,
+		unsigned int tag = 0
 	);
 
 	INLINE void updateWindows(void);
@@ -102,7 +138,22 @@ public:
 	INLINE Gleam::IModel* createModel(void);
 	INLINE Gleam::IMesh* createMesh(void);
 
-	void* rawRequestInterface(unsigned int class_id) const;
+	INLINE unsigned int getNumRenderTargets(void) const;
+
+	// Don't hold on to this reference if you plan on dynamically creating cameras.
+	// Just copy the structure instead. Just make a copy.
+	INLINE RenderData& getRenderData(unsigned int rt_index);
+
+	unsigned int createRT(
+		unsigned int width, unsigned int height, unsigned int device,
+		Gleam::ITexture::FORMAT format = Gleam::ITexture::RGBA_8_UNORM,
+		const AString& name = AString(), unsigned int tag = 0
+	);
+
+	bool createRTDepth(unsigned int rt_index, Gleam::ITexture::FORMAT format = Gleam::ITexture::DEPTH_16_UNORM);
+
+	INLINE void deleteRenderTargets(void);
+	void addRenderFunction(Gaff::FunctionBinder<void> render_func, unsigned int position = UINT_FAIL);
 
 private:
 	struct GraphicsFunctions
@@ -152,6 +203,10 @@ private:
 
 	GraphicsFunctions _graphics_functions;
 	Array<WindowData> _windows;
+
+	Array< Gaff::FunctionBinder<void> > _render_functions;
+	Array<RenderTargetData> _render_target_data;
+
 	Gaff::SmartPtr<Gleam::IRenderDevice, ProxyAllocator> _render_device;
 	DynamicLoader::ModulePtr _gleam_module;
 

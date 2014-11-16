@@ -83,15 +83,18 @@ void EnumReflectionDefinition<T, Allocator>::markDefined(void)
 // Reflection Definition
 template <class T, class Allocator>
 ReflectionDefinition<T, Allocator>::ReflectionDefinition(ReflectionDefinition<T, Allocator>&& ref_def):
-_value_containers(Move(ref_def._value_containers)), _base_ids(Move(ref_def._base_ids)),
-_allocator(ref_def._allocator), _defined(ref_def._defined)
+	_value_containers(Move(ref_def._value_containers)), _base_ids(Move(ref_def._base_ids)),
+	_on_complete_callbacks(Move(ref_def._on_complete_callbacks)), _allocator(ref_def._allocator),
+	_base_classes_remaining(ref_def._base_classes_remaining)
 {
-	_defined = true;
+	if (!_base_classes_remaining) {
+		markDefined();
+	}
 }
 
 template <class T, class Allocator>
 ReflectionDefinition<T, Allocator>::ReflectionDefinition(void):
-	_defined(false)
+	_base_classes_remaining(0), _defined(false)
 {
 }
 
@@ -105,9 +108,14 @@ const ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::op
 {
 	_value_containers = Move(rhs._value_containers);
 	_base_ids = Move(rhs._base_ids);
+	_on_complete_callbacks = Move(rhs._on_complete_callbacks);
 	_allocator = rhs._allocator;
-	_defined = rhs._defined;
-	_defined = true;
+	_base_classes_remaining = rhs._base_classes_remaining;
+
+	if (!_base_classes_remaining) {
+		markDefined();
+	}
+
 	return *this;
 }
 
@@ -156,6 +164,12 @@ template <class T2>
 ReflectionDefinition<T, Allocator>&& ReflectionDefinition<T, Allocator>::addBaseClass(const ReflectionDefinition<T2, Allocator>& base_ref_def, unsigned int class_id)
 {
 	assert(this != &base_ref_def);
+
+	if (!base_ref_def.isDefined()) {
+		addOnCompleteCallback(Gaff::Bind<OnCompleteFunctor<T2>, void>(OnCompleteFunctor<T2>(*this, false)));
+		++_base_classes_remaining;
+		return Move(*this);
+	}
 
 	for (auto it = base_ref_def._value_containers.begin(); it != base_ref_def._value_containers.end(); ++it) {
 		assert(!_value_containers.hasElementWithKey(it.getKey()));
@@ -207,7 +221,15 @@ template <class T, class Allocator>
 template <class T2>
 ReflectionDefinition<T, Allocator>&& ReflectionDefinition<T, Allocator>::addBaseClassInterfaceOnly(void)
 {
-	return addBaseClass<T2>(T2::g_Hash);
+	if (&T2::g_Ref_Def == this || T2::g_Ref_Def.isDefined()) {
+		addBaseClass<T2>(T2::g_Hash);
+
+	} else {
+		addOnCompleteCallback(Gaff::Bind<OnCompleteFunctor<T2>, void>(OnCompleteFunctor<T2>(*this, true)));
+		++_base_classes_remaining;
+	}
+
+	return Move(*this);
 }
 
 template <class T, class Allocator>
@@ -438,6 +460,12 @@ template <class T, class Allocator>
 void ReflectionDefinition<T, Allocator>::markDefined(void)
 {
 	_defined = true;
+
+	for (auto it = _on_complete_callbacks.begin(); it != _on_complete_callbacks.end(); ++it) {
+		(*it)();
+	}
+
+	_on_complete_callbacks.clear();
 }
 
 template <class T, class Allocator>
@@ -453,4 +481,35 @@ template <class T, class Allocator>
 void ReflectionDefinition<T, Allocator>::clear(void)
 {
 	_value_containers.clear();
+}
+
+// On Complete Callback
+template <class T, class Allocator>
+void ReflectionDefinition<T, Allocator>::addOnCompleteCallback(const Gaff::FunctionBinder<void>& cb)
+{
+	_on_complete_callbacks.push(cb);
+}
+
+template <class T, class Allocator>
+template <class T2>
+ReflectionDefinition<T, Allocator>::OnCompleteFunctor<T2>::OnCompleteFunctor(ReflectionDefinition<T, Allocator>& my_ref_def, bool interface_only):
+	_my_ref_def(my_ref_def), _interface_only(interface_only)
+{
+}
+
+template <class T, class Allocator>
+template <class T2>
+void ReflectionDefinition<T, Allocator>::OnCompleteFunctor<T2>::operator()(void) const
+{
+	if (_interface_only) {
+		_my_ref_def.addBaseClass<T2>(T2::g_Ref_Def, T2::g_Hash);
+	} else {
+		_my_ref_def.addBaseClass<T2>(T2::g_Hash);
+	}
+
+	--_my_ref_def._base_classes_remaining;
+
+	if (!_my_ref_def._base_classes_remaining) {
+		_my_ref_def.markDefined();
+	}
 }

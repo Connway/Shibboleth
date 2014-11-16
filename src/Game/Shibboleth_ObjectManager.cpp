@@ -31,7 +31,7 @@ NS_SHIBBOLETH
 REF_IMPL_REQ(ObjectManager);
 REF_IMPL_ASSIGN_SHIB(ObjectManager)
 .addBaseClassInterfaceOnly<ObjectManager>()
-.addBaseClassInterfaceOnly<IUpdateQuery>()
+.ADD_BASE_CLASS_INTERFACE_ONLY(IUpdateQuery)
 ;
 
 ObjectManager::ObjectManager(IApp& app):

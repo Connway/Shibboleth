@@ -298,6 +298,7 @@ FunctionBinder<ReturnType, Args...>::~FunctionBinder(void)
 template <class ReturnType, class... Args>
 ReturnType FunctionBinder<ReturnType, Args...>::operator()(Args... args) const
 {
+	assert(valid());
 	const IFunc* function = (IFunc*)_function_buffer;
 	return function->call(args...);
 }
@@ -305,6 +306,7 @@ ReturnType FunctionBinder<ReturnType, Args...>::operator()(Args... args) const
 template <class ReturnType, class... Args>
 ReturnType FunctionBinder<ReturnType, Args...>::operator()(Args... args)
 {
+	assert(valid());
 	IFunc* function = (IFunc*)_function_buffer;
 	return function->call(args...);
 }
@@ -344,12 +346,14 @@ bool FunctionBinder<ReturnType, Args...>::valid(void) const
 template <class ReturnType, class... Args>
 const IFunction<ReturnType, Args...>& FunctionBinder<ReturnType, Args...>::GetInterface(void) const
 {
+	assert(valid());
 	return *((const IFunc*)_function_buffer);
 }
 
 template <class ReturnType, class... Args>
 IFunction<ReturnType, Args...>& FunctionBinder<ReturnType, Args...>::GetInterface(void)
 {
+	assert(valid());
 	return *((IFunc*)_function_buffer);
 }
 

@@ -210,6 +210,7 @@ public:
 	template <class T2>
 	ReflectionDefinition<T, Allocator>&& addBaseClass(const ReflectionDefinition<T2, Allocator>& base_ref_def, unsigned int class_id);
 
+	// This function does not check if the base class is finished being defined. This is so you can add just casts.
 	template <class T2>
 	ReflectionDefinition<T, Allocator>&& addBaseClass(unsigned int class_id);
 
@@ -360,17 +361,37 @@ private:
 	};
 
 	template <class T2>
+	class OnCompleteFunctor
+	{
+	public:
+		OnCompleteFunctor(ReflectionDefinition<T, Allocator>& my_ref_def, bool interface_only);
+
+		void operator()(void) const;
+
+	private:
+		ReflectionDefinition<T, Allocator>& _my_ref_def;
+		bool _interface_only;
+	};
+
+	template <class T2>
 	static void* BaseClassCast(const void* object)
 	{
 		// Holy balls batman. That's a lot of casts.
 		return static_cast<T2*>(reinterpret_cast<T*>(const_cast<void*>(object)));
 	}
 
+	void addOnCompleteCallback(const Gaff::FunctionBinder<void>& cb);
+
 	HashMap<AHashString<Allocator>, ValueContainerPtr, Allocator> _value_containers;
 	Array<Gaff::Pair< unsigned int, Gaff::FunctionBinder<void*, const void*> >, Allocator> _base_ids;
+	Array< Gaff::FunctionBinder<void> > _on_complete_callbacks;
 
 	Allocator _allocator;
+	unsigned int _base_classes_remaining;
 	bool _defined;
+
+	template <class T2, class Allocator> friend class ReflectionDefinition;
+	template <class T2> friend class OnCompleteFunctor;
 
 	GAFF_NO_COPY(ReflectionDefinition);
 };
@@ -380,14 +401,17 @@ public: \
 	static unsigned int g_Hash; \
 	static Gaff::ReflectionDefinition<ClassName, Allocator> g_Ref_Def
 
+#define CLASS_HASH(ClassName) Gaff::FNV1aHash32(#ClassName, strlen(#ClassName))
+
 #define REF_IMPL(ClassName, Allocator) \
-unsigned int ClassName::g_Hash = Gaff::FNV1aHash32(#ClassName, strlen(#ClassName)); \
+unsigned int ClassName::g_Hash = CLASS_HASH(ClassName); \
 Gaff::ReflectionDefinition<ClassName, Allocator> ClassName::g_Ref_Def
 
 #define REF_IMPL_ASSIGN(ClassName, Allocator) \
-unsigned int ClassName::g_Hash = Gaff::FNV1aHash32(#ClassName, strlen(#ClassName)); \
+unsigned int ClassName::g_Hash = CLASS_HASH(ClassName); \
 Gaff::ReflectionDefinition<ClassName, Allocator> ClassName::g_Ref_Def = Gaff::RefDef<ClassName, Allocator>()
 
+#define ADD_BASE_CLASS_INTERFACE_ONLY(ClassName) addBaseClass<ClassName>(CLASS_HASH(ClassName))
 
 #define REF_IMPL_REQ(ClassName) \
 void* ClassName::rawRequestInterface(unsigned int class_id) const \

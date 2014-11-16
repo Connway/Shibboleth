@@ -141,6 +141,7 @@ private:
 
 	private:
 		MessageBroadcaster* _broadcaster;
+		Allocator _allocator;
 		SpinLock _lock;
 
 		mutable volatile unsigned int _ref_count;
