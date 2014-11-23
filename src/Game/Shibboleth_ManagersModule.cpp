@@ -61,20 +61,6 @@ Shibboleth::IManager* CreateOtterUIManager(Shibboleth::IApp& app)
 	return otter_manager;
 }
 
-Shibboleth::IManager* CreateRenderManager(Shibboleth::IApp& app)
-{
-	Shibboleth::RenderManager* render_manager = app.getAllocator().template allocT<Shibboleth::RenderManager>(app);
-
-	if (render_manager) {
-		if (!render_manager->init("graphics.cfg")) {
-			app.getAllocator().freeT(render_manager);
-			render_manager = nullptr;
-		}
-	}
-
-	return render_manager;
-}
-
 enum Managers
 {
 	COMPONENT_MANAGER = 0,
@@ -94,7 +80,7 @@ static CreateMgrFunc create_funcs[] = {
 	&CreateManagerT<Shibboleth::ComponentManager>,
 	&CreateManagerT<Shibboleth::ResourceManager>,
 	&CreateOtterUIManager,
-	&CreateRenderManager,
+	&CreateManagerT<Shibboleth::RenderManager>,
 	&CreateManagerT<Shibboleth::UpdateManager>,
 	&CreateManagerT<Shibboleth::ObjectManager>,
 	&CreateManagerT<Shibboleth::LuaManager>,

@@ -56,24 +56,36 @@ Gaff::IVirtualDestructor* TextureLoader::load(const char* file_name, unsigned lo
 		return nullptr;
 	}
 
-	Gleam::ITexture::FORMAT texture_format = determineFormatAndType(image, user_data & TEX_LOADER_NORMALIZED);
+	const GraphicsUserData* usr_data = (GraphicsUserData*)&user_data;
+
+	Gleam::ITexture::FORMAT texture_format = determineFormatAndType(image, usr_data->flags & TEX_LOADER_NORMALIZED);
 
 	TextureData* texture_data = GetAllocator()->template allocT<TextureData>();
-	texture_data->normalized = (user_data & TEX_LOADER_NORMALIZED) != 0;
-	texture_data->cubemap = (user_data & TEX_LOADER_CUBEMAP) != 0;
 
 	if (!texture_data) {
 		_render_mgr.printfLoadLog("ERROR - Failed to allocate texture data structure.\n", file_name);
 		return nullptr;
 	}
 
+	texture_data->normalized = (usr_data->flags & TEX_LOADER_NORMALIZED) != 0;
+	texture_data->cubemap = (usr_data->flags & TEX_LOADER_CUBEMAP) != 0;
+
 	Gaff::ScopedLock<Gaff::SpinLock> scoped_lock(_render_mgr.getSpinLock());
 	Gleam::IRenderDevice& rd = _render_mgr.getRenderDevice();
 
+	Array<const RenderManager::WindowData*> windows = (usr_data->flags & TEX_LOADER_TAGS_ANY) ?
+		_render_mgr.getAllWindowsWithTagsAny(usr_data->display_tags) :
+		_render_mgr.getAllWindowsWithTags(usr_data->display_tags);
+
+	assert(!windows.empty());
+
+	texture_data->textures.resize(rd.getNumDevices());
+
 	// Load the texture for each device
-	for (unsigned int i = 0; i < rd.getNumDevices(); ++i) {
+	//for (unsigned int i = 0; i < rd.getNumDevices(); ++i) {
+	for (auto it = windows.begin(); it != windows.end(); ++it) {
 		TexturePtr texture(_render_mgr.createTexture());
-		rd.setCurrentDevice(i);
+		rd.setCurrentDevice((*it)->device);
 
 		if (!texture) {
 			GetAllocator()->freeT(texture_data);
@@ -91,7 +103,7 @@ Gaff::IVirtualDestructor* TextureLoader::load(const char* file_name, unsigned lo
 		unsigned int depth = image.getDepth();
 		bool success = false;
 
-		if (user_data & TEX_LOADER_CUBEMAP) {
+		if (usr_data->flags & TEX_LOADER_CUBEMAP) {
 			if (width == 1 || height == 1 || depth != 1) {
 				_render_mgr.printfLoadLog("ERROR - Image specified as cubemap, but is not a 2D image. IMAGE: %s.\n", file_name);
 				GetAllocator()->freeT(texture_data);
@@ -127,7 +139,7 @@ Gaff::IVirtualDestructor* TextureLoader::load(const char* file_name, unsigned lo
 			return nullptr;
 		}
 
-		texture_data->textures.push(texture);
+		texture_data->textures[(*it)->device] = texture;
 	}
 
 	return texture_data;

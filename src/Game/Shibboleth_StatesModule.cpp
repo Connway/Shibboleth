@@ -20,9 +20,10 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#include "Shibboleth_CreateResourceLoadersState.h"
-#include "Shibboleth_LoadComponentsState.h"
-#include "Shibboleth_SetupOtterUIState.h"
+#include <Shibboleth_CreateResourceLoadersState.h>
+#include <Shibboleth_LoadComponentsState.h>
+#include <Shibboleth_SetupGraphicsState.h>
+#include <Shibboleth_SetupOtterUIState.h>
 #include <Shibboleth_IApp.h>
 #include <Gleam_Global.h>
 #include <Gaff_JSON.h>
@@ -85,7 +86,8 @@ Shibboleth::IState* CreateStateT(Shibboleth::IApp& app)
 
 enum States
 {
-	LOAD_COMPONENT_STATE = 0,
+	SETUP_GRAPHICS_STATE = 0,
+	LOAD_COMPONENT_STATE,
 	CREATE_RESOURCE_LOADERS_STATE,
 	SETUP_OTTER_UI_STATE,
 	LOOP_FOREVER_STATE,
@@ -95,6 +97,7 @@ enum States
 typedef Shibboleth::IState* (*CreateStateFunc)(Shibboleth::IApp&);
 
 static CreateStateFunc create_funcs[] = {
+	&CreateStateT<Shibboleth::SetupGraphicsState>,
 	&CreateStateT<Shibboleth::LoadComponentsState>,
 	&CreateStateT<Shibboleth::CreateResourceLoadersState>,
 	&CreateStateT<Shibboleth::SetupOtterUIState>,
@@ -102,6 +105,7 @@ static CreateStateFunc create_funcs[] = {
 };
 
 static const char* state_names[NUM_STATES] = {
+	"SetupGraphicsState",
 	"LoadComponentState",
 	"CreateResourceLoadersState",
 	"SetupOtterUIState",

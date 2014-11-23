@@ -23,22 +23,43 @@ THE SOFTWARE.
 #pragma once
 
 #include <Shibboleth_Defines.h>
-
-namespace Gaff
-{
-	class IVirtualDestructor;
-}
+#include <Gaff_IncludeAssert.h>
 
 NS_SHIBBOLETH
 
-class IResourceLoader
+class UserDataWrapper
 {
 public:
-	IResourceLoader(void) {}
-	virtual ~IResourceLoader(void) {}
+	UserDataWrapper(unsigned long long user_data = 0):
+		_user_data(user_data)
+	{
+	}
 
-	virtual Gaff::IVirtualDestructor* load(const char* file_name, unsigned long long user_data) = 0;
-	//virtual void unload(Gaff::IVirtualDestructor* resource) = 0;
+	~UserDataWrapper(void)
+	{
+	}
+
+	template <class T>
+	const T* getUserData(void) const
+	{
+		assert(sizeof(T) <= sizeof(unsigned long long));
+		return (T*)&_user_data;
+	}
+
+	template <class T>
+	T* getUserData(void)
+	{
+		assert(sizeof(T) <= sizeof(unsigned long long));
+		return (T*)&_user_data;
+	}
+
+	unsigned long long get(void) const
+	{
+		return _user_data;
+	}
+
+private:
+	unsigned long long _user_data;
 };
 
 NS_END

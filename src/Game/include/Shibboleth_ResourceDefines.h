@@ -30,6 +30,9 @@ THE SOFTWARE.
 
 #define TEX_LOADER_NORMALIZED 1
 #define TEX_LOADER_CUBEMAP 2
+#define TEX_LOADER_TAGS_ANY 4
+
+#define MODEL_LOADER_TAGS_ANY 1
 
 namespace Gleam
 {
@@ -89,5 +92,10 @@ struct ProgramData : public Gaff::IVirtualDestructor
 	Array<ProgramPtr> programs;
 };
 
+struct GraphicsUserData
+{
+	unsigned short display_tags;
+	unsigned char flags;
+};
 
 NS_END

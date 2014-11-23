@@ -52,12 +52,6 @@ namespace Gleam
 
 NS_SHIBBOLETH
 
-enum WindowTags
-{
-	WT_MAIN_WINDOW = 1,
-	WT_EXTENSION = (1 << 2)
-};
-
 class RenderManager : public IManager, public IUpdateQuery
 {
 public:
@@ -70,7 +64,7 @@ public:
 		Gleam::IWindow* window;
 		unsigned int device;
 		unsigned int output;
-		unsigned int tag;
+		unsigned short tags;
 	};
 
 	struct RenderData
@@ -90,7 +84,7 @@ public:
 		unsigned int width;
 		unsigned int height;
 		unsigned int device;
-		unsigned int tag;
+		unsigned short tags;
 	};
 
 	RenderManager(IApp& app);
@@ -101,7 +95,7 @@ public:
 	void requestUpdateEntries(Array<UpdateEntry>& entries);
 	void* rawRequestInterface(unsigned int class_id) const;
 
-	bool init(const char* cfg_file);
+	bool init(const char* module);
 	void update(double);
 
 	Gleam::IRenderDevice& getRenderDevice(void);
@@ -115,10 +109,12 @@ public:
 		int x, int y, unsigned int width, unsigned int height,
 		unsigned int refresh_rate, const char* device_name,
 		unsigned int adapter_id, unsigned int display_id, bool vsync,
-		unsigned int tag = 0
+		unsigned short tags = 0
 	);
 
-	INLINE void updateWindows(void);
+	void updateWindows(void);
+	Array<const WindowData*> getAllWindowsWithTagsAny(unsigned short tags) const; // Gets windows with any of these tags. If tags is zero, returns all windows.
+	Array<const WindowData*> getAllWindowsWithTags(unsigned short tags) const; // Gets windows with exactly these tags. If tags is zero, returns all windows.
 
 	INLINE unsigned int getNumWindows(void) const;
 	INLINE const WindowData& getWindowData(unsigned int window) const;
@@ -147,7 +143,7 @@ public:
 	unsigned int createRT(
 		unsigned int width, unsigned int height, unsigned int device,
 		Gleam::ITexture::FORMAT format = Gleam::ITexture::RGBA_8_UNORM,
-		const AString& name = AString(), unsigned int tag = 0
+		const AString& name = AString(), unsigned int short = 0
 	);
 
 	bool createRTDepth(unsigned int rt_index, Gleam::ITexture::FORMAT format = Gleam::ITexture::DEPTH_16_UNORM);
@@ -216,8 +212,7 @@ private:
 	IApp& _app;
 
 	int getDisplayModeID(unsigned int width, unsigned int height, unsigned int refresh_rate, unsigned int adapter_id, unsigned int display_id);
-	void generateDefaultConfig(Gaff::JSON& cfg);
-	bool cacheGleamFunctions(IApp& app, const Gaff::JSON& module, const char* cfg_file);
+	bool cacheGleamFunctions(IApp& app, const char* module);
 
 	GAFF_NO_COPY(RenderManager);
 	GAFF_NO_MOVE(RenderManager);
