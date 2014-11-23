@@ -70,32 +70,16 @@ void RenderManager::requestUpdateEntries(Array<UpdateEntry>& entries)
 	//entries.movePush(UpdateEntry(AString("Render Manager: Render"), Gaff::Bind(this, &RenderManager::update)));
 }
 
-bool RenderManager::init(const char* cfg_file)
+// I should move the config file stuff out of this function.
+// Arguement should be the module to load for cacheGleamFunctions().
+bool RenderManager::init(const char* module)
 {
 	Gleam::SetAllocator(&_proxy_allocator);
 
 	LogManager::FileLockPair& log = _app.getGameLogFile();
 	log.first.writeString("Initializing Render Manager...\n");
 
-	bool file_exists = false;
-	Gaff::JSON cfg;
-
-	// Open file and see if it succeeded, scope will close file
-	{
-		Gaff::File file(cfg_file);
-		file_exists = file.isOpen();
-	}
-
-	if (file_exists) {
-		cfg.parseFile(cfg_file);
-
-	} else {
-		log.first.printf("No config file found at '%s'. Generating default config.\n", cfg_file);
-		generateDefaultConfig(cfg);
-		cfg.dumpToFile(cfg_file);
-	}
-
-	if (!cacheGleamFunctions(_app, cfg["module"], cfg_file)) {
+	if (!cacheGleamFunctions(_app, module)) {
 		log.first.writeString("ERROR - Failed to cache Gleam functions.\n");
 		return false;
 	}
@@ -107,156 +91,9 @@ bool RenderManager::init(const char* cfg_file)
 		return false;
 	}
 
-	Gaff::JSON windows = cfg["windows"];
-	
-	if (!windows.isArray()) {
-		log.first.writeString("ERROR - Malformed config file.\n");
-		return false;
-	}
-
 	_windows.reserve(8); // Reserve 8 windows to be safe. Will probably never hit this many though.
 
-	bool failed = false;
-	windows.forEachInArray([&](size_t, const Gaff::JSON& value) -> bool
-	{
-		if (!value.isObject()) {
-			log.first.writeString("ERROR - Malformed config file.\n");
-			failed = true;
-			return true;
-		}
-
-		Gaff::JSON x = value["x"];
-		Gaff::JSON y = value["y"];
-		Gaff::JSON width = value["width"];
-		Gaff::JSON height = value["height"];
-		Gaff::JSON refresh_rate = value["refresh_rate"];
-		Gaff::JSON device_name = value["device_name"];
-		Gaff::JSON window_name = value["window_name"];
-		Gaff::JSON window_mode = value["window_mode"];
-		Gaff::JSON adapter_id = value["adapter_id"];
-		Gaff::JSON display_id = value["display_id"];
-		Gaff::JSON vsync = value["vsync"];
-
-		if (!x.isInteger()) {
-			log.first.writeString("ERROR - Malformed config file.\n");
-			failed = true;
-			return true;
-		}
-
-		if (!y.isInteger()) {
-			log.first.writeString("ERROR - Malformed config file.\n");
-			failed = true;
-			return true;
-		}
-
-		if (!width.isInteger()) {
-			log.first.writeString("ERROR - Malformed config file.\n");
-			failed = true;
-			return true;
-		}
-
-		if (!height.isInteger()) {
-			log.first.writeString("ERROR - Malformed config file.\n");
-			failed = true;
-			return true;
-		}
-
-		if (!refresh_rate.isInteger()) {
-			log.first.writeString("ERROR - Malformed config file.\n");
-			failed = true;
-			return true;
-		}
-
-		if (!device_name.isString()) {
-			log.first.writeString("ERROR - Malformed config file.\n");
-			failed = true;
-			return true;
-		}
-
-		if (!window_name.isString()) {
-			log.first.writeString("ERROR - Malformed config file.\n");
-			failed = true;
-			return true;
-		}
-
-		if (!window_mode.isString()) {
-			log.first.writeString("ERROR - Malformed config file.\n");
-			failed = true;
-			return true;
-		}
-
-		if (!adapter_id.isInteger()) {
-			log.first.writeString("ERROR - Malformed config file.\n");
-			failed = true;
-			return true;
-		}
-
-		if (!display_id.isInteger()) {
-			log.first.writeString("ERROR - Malformed config file.\n");
-			failed = true;
-			return true;
-		}
-
-		if (!vsync.isBoolean()) {
-			log.first.writeString("ERROR - Malformed config file.\n");
-			failed = true;
-			return true;
-		}
-
-		const GChar* wnd_name = nullptr;
-
-#ifdef _UNICODE
-		wchar_t temp[64] = { 0 };
-		mbstowcs(temp, window_name.getString(), 64);
-		wnd_name = temp;
-#else
-		wnd_name = window_name.getString();
-#endif
-
-		Gleam::IWindow::MODE wnd_mode;
-
-		if (!strncmp(window_mode.getString(), "Fullscreen", strlen("Fullscreen"))) {
-			wnd_mode = Gleam::IWindow::FULLSCREEN;
-		} else if (!strncmp(window_mode.getString(), "Windowed", strlen("Windowed"))) {
-			wnd_mode = Gleam::IWindow::WINDOWED;
-		} else if (!strncmp(window_mode.getString(), "Fullscreen-Windowed", strlen("Fullscreen-Windowed"))) {
-			wnd_mode = Gleam::IWindow::FULLSCREEN_WINDOWED;
-		} else {
-			log.first.writeString("ERROR - Malformed config file.\n");
-			failed = true;
-			return true;
-		}
-
-		if (!createWindow(wnd_name, wnd_mode,
-			(unsigned int)x.getInteger(), (unsigned int)y.getInteger(),
-			(unsigned int)width.getInteger(), (unsigned int)height.getInteger(),
-			(unsigned int)refresh_rate.getInteger(), device_name.getString(),
-			(unsigned int)adapter_id.getInteger(), (unsigned int)display_id.getInteger(),
-			vsync.isTrue())) {
-
-			log.first.printf("ERROR - Failed to create window with values\n"
-				"X: %i\n"
-				"Y: %i\n"
-				"Width: %i\n"
-				"Height: %i\n"
-				"Refresh Rate: %i\n"
-				"Device Name: %s\n"
-				"Adapter ID: %i\n"
-				"Display ID: %i\n",
-				x.getInteger(), y.getInteger(),
-				width.getInteger(), height.getInteger(),
-				refresh_rate.getInteger(), device_name.getString(),
-				adapter_id.getInteger(), display_id.getInteger()
-			);
-
-			failed = true;
-			return true;
-		}
-
-		return false;
-	});
-
-	return !failed;
+	return true;
 }
 
 void RenderManager::update(double)
@@ -297,7 +134,7 @@ bool RenderManager::createWindow(
 	int x, int y, unsigned int width, unsigned int height,
 	unsigned int refresh_rate, const char* device_name,
 	unsigned int adapter_id, unsigned int display_id, bool vsync,
-	unsigned int tag)
+	unsigned short tags)
 {
 	assert(_render_device && _graphics_functions.create_window && _graphics_functions.destroy_window);
 
@@ -321,7 +158,6 @@ bool RenderManager::createWindow(
 			"Device Name: %s\n",
 			x, y, width, height, device_name
 		);
-
 
 		_graphics_functions.destroy_window(window);
 		return false;
@@ -353,7 +189,7 @@ bool RenderManager::createWindow(
 
 	unsigned int device_id = (unsigned int)_render_device->getDeviceForAdapter(adapter_id);
 
-	WindowData wnd_data = { window, device_id, _render_device->getNumOutputs(device_id), tag };
+	WindowData wnd_data = { window, device_id, _render_device->getNumOutputs(device_id), tags };
 	_windows.push(wnd_data);
 	return true;
 }
@@ -361,6 +197,32 @@ bool RenderManager::createWindow(
 void RenderManager::updateWindows(void)
 {
 	_graphics_functions.update_windows();
+}
+
+Array<const RenderManager::WindowData*> RenderManager::getAllWindowsWithTagsAny(unsigned short tags) const
+{
+	Array<const WindowData*> out;
+
+	for (auto it = _windows.begin(); it != _windows.end(); ++it) {
+		if (!tags || (it->tags & tags)) {
+			out.push(it);
+		}
+	}
+
+	return out;
+}
+
+Array<const RenderManager::WindowData*> RenderManager::getAllWindowsWithTags(unsigned short tags) const
+{
+	Array<const WindowData*> out;
+
+	for (auto it = _windows.begin(); it != _windows.end(); ++it) {
+		if (!tags || ((it->tags & tags) == tags)) {
+			out.push(it);
+		}
+	}
+
+	return out;
 }
 
 unsigned int RenderManager::getNumWindows(void) const
@@ -469,7 +331,7 @@ RenderManager::RenderData& RenderManager::getRenderData(unsigned int rt_index)
 	return _render_target_data[rt_index].render_data;
 }
 
-unsigned int RenderManager::createRT(unsigned int width, unsigned int height, unsigned int device, Gleam::ITexture::FORMAT format, const AString& name, unsigned int tag)
+unsigned int RenderManager::createRT(unsigned int width, unsigned int height, unsigned int device, Gleam::ITexture::FORMAT format, const AString& name, unsigned short tags)
 {
 	// We're about to do stuff to the Render Devices, lock it so that no one can mess with it
 	Gaff::ScopedLock<Gaff::SpinLock> scoped_lock(_rd_lock);
@@ -519,7 +381,7 @@ unsigned int RenderManager::createRT(unsigned int width, unsigned int height, un
 
 	RenderTargetData data = {
 		rd, name, width,
-		height, tag
+		height, tags
 	};
 
 	_render_target_data.push(data);
@@ -629,49 +491,15 @@ int RenderManager::getDisplayModeID(unsigned int width, unsigned int height, uns
 	return dm_it->id;
 }
 
-void RenderManager::generateDefaultConfig(Gaff::JSON& cfg)
-{
-	cfg = Gaff::JSON::createObject();
-#if !defined(_WIN32) && !defined(_WIN64)
-	cfg.setObject("module", Gaff::JSON::createString("Graphics_OpenGL"));
-#else
-	cfg.setObject("module", Gaff::JSON::createString("Graphics_Direct3D"));
-#endif
-
-	Gaff::JSON windows = Gaff::JSON::createArray();
-	Gaff::JSON window_entry = Gaff::JSON::createObject();
-
-	window_entry.setObject("x", Gaff::JSON::createInteger(0));
-	window_entry.setObject("y", Gaff::JSON::createInteger(0));
-	window_entry.setObject("width", Gaff::JSON::createInteger(800));
-	window_entry.setObject("height", Gaff::JSON::createInteger(600));
-	window_entry.setObject("refresh_rate", Gaff::JSON::createInteger(60));
-	window_entry.setObject("window_name", Gaff::JSON::createString("Shibboleth"));
-	window_entry.setObject("windowed_mode", Gaff::JSON::createString("Windowed"));
-	window_entry.setObject("adapter_id", Gaff::JSON::createInteger(0));
-	window_entry.setObject("display_id", Gaff::JSON::createInteger(0));
-	window_entry.setObject("vsync", Gaff::JSON::createFalse());
-
-	windows.setObject(size_t(0), window_entry);
-
-	cfg.setObject("windows", windows);
-}
-
 // Still single-threaded at this point, so ok that we're not using the spinlock
-bool RenderManager::cacheGleamFunctions(IApp& app, const Gaff::JSON& module, const char* cfg_file)
+bool RenderManager::cacheGleamFunctions(IApp& app, const char* module)
 {
 	LogManager::FileLockPair& log = _app.getGameLogFile();
 
-	// Instead of asserting, I'm going to log the errors and fail gracefully.
-	if (!module.isString()) {
-		log.first.printf("ERROR - Malformed graphics config file '%s'. 'module' field is not a string.", cfg_file);
-		return false;
-	}
-
-	AString module_path(module.getString());
+	AString module_path(module);
 	module_path += BIT_EXTENSION;
 
-	_gleam_module = app.loadModule(module_path.getBuffer(), module.getString());
+	_gleam_module = app.loadModule(module_path.getBuffer(), module);
 
 	if (!_gleam_module) {
 		log.first.printf("ERROR - Failed to find graphics module '%s'.", module_path.getBuffer());

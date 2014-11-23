@@ -193,12 +193,14 @@
     <ClInclude Include="..\..\..\src\Game\include\Shibboleth_CreateResourceLoadersState.h" />
     <ClInclude Include="..\..\..\src\Game\include\Shibboleth_LoadComponentsState.h" />
     <ClInclude Include="..\..\..\src\Game\include\Shibboleth_RegisterLuaClassesState.h" />
+    <ClInclude Include="..\..\..\src\Game\include\Shibboleth_SetupGraphicsState.h" />
     <ClInclude Include="..\..\..\src\Game\include\Shibboleth_SetupOtterUIState.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\src\Game\Shibboleth_CreateResourceLoadersState.cpp" />
     <ClCompile Include="..\..\..\src\Game\Shibboleth_LoadComponentsState.cpp" />
     <ClCompile Include="..\..\..\src\Game\Shibboleth_RegisterLuaClassesState.cpp" />
+    <ClCompile Include="..\..\..\src\Game\Shibboleth_SetupGraphicsState.cpp" />
     <ClCompile Include="..\..\..\src\Game\Shibboleth_SetupOtterUIState.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

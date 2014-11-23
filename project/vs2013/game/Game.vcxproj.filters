@@ -57,6 +57,9 @@
     <ClInclude Include="..\..\..\src\Game\include\Shibboleth_TextureLoader.h">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\src\Game\include\Shibboleth_UserDataWrapper.h">
+      <Filter>include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\src\Game\Shibboleth_HoldingLoader.cpp" />

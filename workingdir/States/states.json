@@ -1,24 +1,30 @@
 {
-	"starting_state": "LoadComponentState",
+	"starting_state": "SetupGraphicsState",
 
 	"states":
 	[
 		{
-			"name": "LoadComponentState",
+			"name": "SetupGraphicsState",
 			"module": "GameStates",
 			"transitions": [1]
 		},
 
 		{
-			"name": "CreateResourceLoadersState",
+			"name": "LoadComponentState",
 			"module": "GameStates",
 			"transitions": [2]
 		},
 
 		{
-			"name": "SetupOtterUIState",
+			"name": "CreateResourceLoadersState",
 			"module": "GameStates",
 			"transitions": [3]
+		},
+
+		{
+			"name": "SetupOtterUIState",
+			"module": "GameStates",
+			"transitions": [4]
 		},
 
 		{

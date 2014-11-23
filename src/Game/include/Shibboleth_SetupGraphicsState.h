@@ -22,23 +22,35 @@ THE SOFTWARE.
 
 #pragma once
 
-#include <Shibboleth_Defines.h>
+#include "Shibboleth_IState.h"
 
-namespace Gaff
-{
-	class IVirtualDestructor;
-}
+NS_GAFF
+	class JSON;
+NS_END
 
 NS_SHIBBOLETH
 
-class IResourceLoader
+class IApp;
+
+class SetupGraphicsState : public IState
 {
 public:
-	IResourceLoader(void) {}
-	virtual ~IResourceLoader(void) {}
+	SetupGraphicsState(IApp& app);
+	~SetupGraphicsState(void);
 
-	virtual Gaff::IVirtualDestructor* load(const char* file_name, unsigned long long user_data) = 0;
-	//virtual void unload(Gaff::IVirtualDestructor* resource) = 0;
+	bool init(unsigned int);
+
+	void enter(void);
+	void update(void);
+	void exit(void);
+
+private:
+	IApp& _app;
+
+	void generateDefaultConfig(Gaff::JSON& cfg);
+
+	GAFF_NO_COPY(SetupGraphicsState);
+	GAFF_NO_MOVE(SetupGraphicsState);
 };
 
 NS_END

@@ -47,6 +47,9 @@ protected:
 	Array<unsigned int> _transitions;
 
 	friend class App;
+
+	GAFF_NO_COPY(IState);
+	GAFF_NO_MOVE(IState);
 };
 
 NS_END

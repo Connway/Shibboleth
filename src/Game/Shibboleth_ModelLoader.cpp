@@ -73,7 +73,7 @@ ModelLoader::~ModelLoader(void)
 {
 }
 
-Gaff::IVirtualDestructor* ModelLoader::load(const char* file_name, unsigned long long)
+Gaff::IVirtualDestructor* ModelLoader::load(const char* file_name, unsigned long long user_data)
 {
 	IFile* file = _file_system.openFile(file_name);
 
@@ -158,7 +158,7 @@ Gaff::IVirtualDestructor* ModelLoader::load(const char* file_name, unsigned long
 				GetAllocator()->freeT(data);
 				data = nullptr;
 
-			} else if (!loadMeshes(data, lod_tags, json)) {
+			} else if (!loadMeshes(data, lod_tags, json, user_data)) {
 				GetAllocator()->freeT(data);
 				data = nullptr;
 			}
@@ -168,7 +168,7 @@ Gaff::IVirtualDestructor* ModelLoader::load(const char* file_name, unsigned long
 	return data;
 }
 
-bool ModelLoader::loadMeshes(ModelData* data, const Gaff::JSON& lod_tags, const Gaff::JSON& model_prefs)
+bool ModelLoader::loadMeshes(ModelData* data, const Gaff::JSON& lod_tags, const Gaff::JSON& model_prefs, unsigned long long user_data)
 {
 	Gaff::ScopedLock<Gaff::SpinLock> scoped_lock(_render_mgr.getSpinLock());
 	Gleam::IRenderDevice& rd = _render_mgr.getRenderDevice();
@@ -181,14 +181,25 @@ bool ModelLoader::loadMeshes(ModelData* data, const Gaff::JSON& lod_tags, const 
 	data->models.resize(rd.getNumDevices());
 	data->aabbs.resize(num_lods);
 
+	const GraphicsUserData* usr_data = (GraphicsUserData*)&user_data;
+	Array<const RenderManager::WindowData*> windows = (usr_data->flags & MODEL_LOADER_TAGS_ANY) ?
+		_render_mgr.getAllWindowsWithTagsAny(usr_data->display_tags) :
+		_render_mgr.getAllWindowsWithTags(usr_data->display_tags);
+
+
 	// Second dimension is number of LODs. If we don't define LOD tags in
 	// the JSON file, then we assume all meshes are of LOD 0.
-	for (auto it1 = data->models.begin(); it1 != data->models.end(); ++it1) {
-		rd.setCurrentDevice(it1 - data->models.begin());
-		it1->resize(num_lods);
+	//for (auto it1 = data->models.begin(); it1 != data->models.end(); ++it1) {
+	for (auto it1 = windows.begin(); it1 != windows.end(); ++it1) {
+		//rd.setCurrentDevice(it1 - data->models.begin());
+		//it1->resize(num_lods);
+
+		rd.setCurrentDevice((*it1)->device);
+		Array<ModelPtr>& models = data->models[(*it1)->device];
+		models.resize(num_lods);
 
 		// Pre-create all the model data structures.
-		for (auto it2 = it1->begin(); it2 != it1->end(); ++it2) {
+		for (auto it2 = models.begin(); it2 != models.end(); ++it2) {
 			ModelPtr model(_render_mgr.createModel());
 
 			if (!model) {
@@ -219,6 +230,12 @@ bool ModelLoader::loadMeshes(ModelData* data, const Gaff::JSON& lod_tags, const 
 
 	// Do this for each device
 	for (unsigned int i = 0; i < rd.getNumDevices(); ++i) {
+		// We are not loading the model on this device, but resize so that the entries are filled with empty pointers.
+		if (data->models[i].empty()) {
+			data->models[i].resize(num_lods);
+			continue;
+		}
+
 		rd.setCurrentDevice(i);
 
 		// Iterate over all the meshes
