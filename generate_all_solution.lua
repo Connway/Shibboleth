@@ -1,28 +1,8 @@
-newoption
-{
-	trigger = "debug_optimization",
-	description = "If you are generating makefiles, specifies that your gcc version supports the -Og flag."
-}
+solution "All"
+	if _ACTION then
+		location ("project/" .. _ACTION)
+	end
 
-newoption
-{
-	trigger = "console_app",
-	description = "Generates the 'App' project to be a ConsoleApp instead of a WindowApp"
-}
-
-newoption
-{
-	trigger = "simd",
-	description = "Generate solution with defines for using SIMD instructions."
-}
-
-newoption
-{
-	trigger = "simd_set_aligned",
-	description = "Generate solution with defines for using SIMDStoreAligned and SIMDLoadAligned instructions."
-}
-
-solution "Temp"
 	platforms { "x86", "x64" }
 
 	configurations { "Debug", "Release" }
@@ -31,6 +11,7 @@ solution "Temp"
 
 	nativewchar "Default"
 	floatingpoint "Fast"
+	startproject "App" -- Not working for some reason. Might not work with externals?
 
 	filter { "platforms:x86" }
 		architecture "x32"
@@ -79,21 +60,8 @@ solution "Temp"
 
 	configuration {}
 
-local project_generators = os.matchfiles("dependencies/**/project_generator.lua")
-local other_proj_generators = os.matchfiles("src/**/project_generator.lua")
+	local all_includes = os.matchfiles("src/**/all_solution_include.lua")
 
-for i = 1, table.getn(other_proj_generators) do
-	table.insert(project_generators, other_proj_generators[i])
-end
-
-for i = 1, table.getn(project_generators) do
-	dofile(project_generators[i])
-end
-
-local solution_generators = os.matchfiles("src/**/solution_generator.lua")
-
-for i = 1, table.getn(solution_generators) do
-	dofile(solution_generators[i])
-end
-
-dofile("generate_all_solution.lua")
+	for i = 1, table.getn(all_includes) do
+		dofile(all_includes[i])
+	end
