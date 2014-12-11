@@ -37,17 +37,15 @@ public:
 	~CameraComponent(void);
 
 	bool load(const Gaff::JSON& json);
+	bool save(Gaff::JSON& json);
 
 	void* rawRequestInterface(unsigned int class_id) const;
 
 	const AString& getRenderTargetName(void) const;
 
 private:
-	template <unsigned int bit> bool GetFlag(void) const;
-	template <unsigned int bit> void SetFlag(bool value);
-
 	AString _render_target_name;
-	char _option_flags;
+	unsigned short _display_tags;
 
 	IApp& _app;
 

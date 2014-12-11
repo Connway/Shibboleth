@@ -23,6 +23,7 @@ THE SOFTWARE.
 #include "Shibboleth_RenderManager.h"
 #include "Shibboleth_ResourceManager.h"
 #include "Shibboleth_TextureLoader.h"
+#include "Shibboleth_IFileSystem.h"
 #include <Gleam_Global.h>
 #include <Gaff_JSON.h>
 
@@ -35,6 +36,32 @@ REF_IMPL_ASSIGN_SHIB(RenderManager)
 .addBaseClassInterfaceOnly<RenderManager>()
 .ADD_BASE_CLASS_INTERFACE_ONLY(IUpdateQuery)
 ;
+
+// Default values
+ENUM_REF_IMPL_ASSIGN_SHIB(DisplayTags)
+.addValue("DT_ALL", DT_ALL)
+.addValue("DT_1", DT_1)
+.addValue("DT_2", DT_2)
+.addValue("DT_3", DT_3)
+.addValue("DT_4", DT_4)
+.addValue("DT_5", DT_5)
+.addValue("DT_6", DT_6)
+.addValue("DT_7", DT_7)
+.addValue("DT_8", DT_8)
+.addValue("DT_9", DT_9)
+.addValue("DT_10", DT_10)
+.addValue("DT_11", DT_11)
+.addValue("DT_12", DT_12)
+.addValue("DT_13", DT_13)
+.addValue("DT_14", DT_14)
+.addValue("DT_15", DT_15)
+.addValue("DT_16", DT_16)
+;
+
+static DisplayTags g_Display_Tags_Values[] = {
+	DT_ALL, DT_1, DT_2, DT_3, DT_4, DT_5, DT_6, DT_7, DT_8, DT_9, DT_10,
+	DT_11, DT_12, DT_13, DT_14, DT_15, DT_16
+};
 
 RenderManager::RenderManager(IApp& app):
 	_render_device(nullptr, ProxyAllocator(GetAllocator(), "Graphics Allocations")),
@@ -92,6 +119,49 @@ bool RenderManager::init(const char* module)
 	}
 
 	_windows.reserve(8); // Reserve 8 windows to be safe. Will probably never hit this many though.
+
+	IFile* file = _app.getFileSystem()->openFile("Resources/display_tags.json");
+
+	if (file) {
+		log.first.writeString("Loading names for Display Tags from 'Resources/display_tags.json'.\n");
+
+		Gaff::JSON display_tags;
+		
+		if (!display_tags.parse(file->getBuffer())) {
+			log.first.writeString("ERROR - Could not parse 'Resources/display_tags.json'.\n");
+			_app.getFileSystem()->closeFile(file);
+			return false;
+		}
+
+		_app.getFileSystem()->closeFile(file);
+
+		if (!display_tags.isArray()) {
+			log.first.writeString("ERROR - 'Resources/display_tags.json' is improperly formatted.\n");
+			return false;
+		}
+		
+		// Reset reflection definition
+		g_DisplayTags_Ref_Def = Gaff::EnumRefDef<DisplayTags, ProxyAllocator>();
+
+		bool ret = display_tags.forEachInArray([&](size_t index, const Gaff::JSON& value) -> bool
+		{
+			if (!value.isString()) {
+				log.first.printf("ERROR - Index '%i' of 'Resources/display_tags.json' is not a string.\n", index);
+				return true;
+			}
+
+			g_DisplayTags_Ref_Def.addValue(value.getString(), g_Display_Tags_Values[index]);
+
+			return false;
+		});
+
+		if (ret) {
+			return false;
+		}
+
+	} else {
+		log.first.writeString("Using default names for Display Tags.\n");
+	}
 
 	return true;
 }

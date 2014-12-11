@@ -24,11 +24,26 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Gaff_Defines.h"
+#include "Gaff_String.h"
+#include "Gaff_Pair.h"
 
 NS_GAFF
 
 class JSON;
+
+template <class Allocator>
+class IEnumReflectionDefinition
+{
+public:
+	IEnumReflectionDefinition(void) {}
+	virtual ~IEnumReflectionDefinition(void) {}
+
+	virtual const char* getNameGeneric(unsigned int value) const = 0;
+	virtual unsigned int getValueGeneric(const char* name) const = 0;
+
+	virtual Pair<AString<Allocator>, unsigned int> getEntryGeneric(unsigned int index) const = 0;
+	virtual unsigned int getNumEntries(void) const = 0;
+};
 
 class IReflectionDefinition
 {

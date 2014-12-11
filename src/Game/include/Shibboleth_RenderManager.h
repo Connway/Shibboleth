@@ -52,6 +52,29 @@ namespace Gleam
 
 NS_SHIBBOLETH
 
+enum DisplayTags
+{
+	DT_ALL = 0x0000,
+	DT_1 = 0x0001,
+	DT_2 = 0x0002,
+	DT_3 = 0x0004,
+	DT_4 = 0x0008,
+	DT_5 = 0x0010,
+	DT_6 = 0x0020,
+	DT_7 = 0x0040,
+	DT_8 = 0x0080,
+	DT_9 = 0x0100,
+	DT_10 = 0x0200,
+	DT_11 = 0x0400,
+	DT_12 = 0x0800,
+	DT_13 = 0x1000,
+	DT_14 = 0x2000,
+	DT_15 = 0x4000,
+	DT_16 = 0x8000,
+};
+
+ENUM_REF_DEF_SHIB(DisplayTags);
+
 class RenderManager : public IManager, public IUpdateQuery
 {
 public:

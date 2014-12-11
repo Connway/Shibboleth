@@ -22,6 +22,12 @@ THE SOFTWARE.
 
 // Enum Reflection Definition
 template <class T, class Allocator>
+EnumReflectionDefinition<T, Allocator>::EnumReflectionDefinition(EnumReflectionDefinition<T, Allocator>&& ref_def):
+	_values_map(Move(ref_def._values_map)), _defined(true)
+{
+}
+
+template <class T, class Allocator>
 EnumReflectionDefinition<T, Allocator>::EnumReflectionDefinition(void):
 	_defined(false)
 {
@@ -30,6 +36,14 @@ EnumReflectionDefinition<T, Allocator>::EnumReflectionDefinition(void):
 template <class T, class Allocator>
 EnumReflectionDefinition<T, Allocator>::~EnumReflectionDefinition(void)
 {
+}
+
+template <class T, class Allocator>
+const EnumReflectionDefinition<T, Allocator>& EnumReflectionDefinition<T, Allocator>::operator=(EnumReflectionDefinition<T, Allocator>&& rhs)
+{
+	_values_map = Move(rhs._values_map);
+	_defined = true;
+	return *this;
 }
 
 template <class T, class Allocator>
@@ -52,6 +66,50 @@ T EnumReflectionDefinition<T, Allocator>::getValue(const char* name) const
 {
 	assert(_values_map.hasElementWithKey(name));
 	return _values_map[name];
+}
+
+template <class T, class Allocator>
+Pair<AString<Allocator>, T> EnumReflectionDefinition<T, Allocator>::getEntry(unsigned int index) const
+{
+	assert(index < _values_map.size());
+	auto it = _values_map.begin();
+
+	for (unsigned int i = 0; i < index; ++i) {
+		++it;
+	}
+
+	return MakePair(it.getKey().getString(), it.getValue());
+}
+
+template <class T, class Allocator>
+const char* EnumReflectionDefinition<T, Allocator>::getNameGeneric(unsigned int value) const
+{
+	return getName(static_cast<T>(value));
+}
+
+template <class T, class Allocator>
+unsigned int EnumReflectionDefinition<T, Allocator>::getValueGeneric(const char* name) const
+{
+	return static_cast<unsigned int>(getValue(name));
+}
+
+template <class T, class Allocator>
+Pair<AString<Allocator>, unsigned int> EnumReflectionDefinition<T, Allocator>::getEntryGeneric(unsigned int index) const
+{
+	assert(index < _values_map.size());
+	auto ret = getEntry(index);
+
+	Pair<AString<Allocator>, unsigned int> out;
+	out.first = Move(ret.first);
+	out.second = static_cast<unsigned int>(ret.second);
+
+	return out;
+}
+
+template <class T, class Allocator>
+unsigned int EnumReflectionDefinition<T, Allocator>::getNumEntries(void) const
+{
+	return _values_map.size();
 }
 
 template <class T, class Allocator>

@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="include">
@@ -132,9 +132,6 @@
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\dependencies\Gaff\include\Gaff_IRefCounted.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\dependencies\Gaff\include\Gaff_IReflectionDefinition.h">
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\dependencies\Gaff\include\Gaff_IRequestableInterface.h">
@@ -276,6 +273,9 @@
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\dependencies\Gaff\include\Gaff_Watcher.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\Gaff\include\Gaff_IReflectionDefinitions.h">
       <Filter>include</Filter>
     </ClInclude>
   </ItemGroup>
