@@ -32,7 +32,6 @@ REF_IMPL_REQ(CameraComponent);
 REF_IMPL_ASSIGN_SHIB(CameraComponent)
 .addBaseClassInterfaceOnly<CameraComponent>()
 .addString("Render Target Name", &CameraComponent::_render_target_name)
-.addBool("Create for displays with tag?", &CameraComponent::GetFlag<RT_DISPLAY_TAG>, &CameraComponent::SetFlag<RT_DISPLAY_TAG>)
 ;
 
 CameraComponent::CameraComponent(IApp& app):
@@ -48,7 +47,7 @@ bool CameraComponent::load(const Gaff::JSON& json)
 {
 	g_Ref_Def.read(json, this);
 
-	RenderManager& render_mgr = _app.getManagerT<RenderManager>("Render Manager");
+	//RenderManager& render_mgr = _app.getManagerT<RenderManager>("Render Manager");
 
 	//unsigned int rt_index = render_mgr.createRT(800, 600, Gleam::ITexture::RGBA_8_UNORM, _render_target_name);
 
@@ -62,26 +61,30 @@ bool CameraComponent::load(const Gaff::JSON& json)
 	return true;
 }
 
+bool CameraComponent::save(Gaff::JSON& json)
+{
+	g_Ref_Def.write(json, this);
+
+	Gaff::JSON display_tags = Gaff::JSON::createArray();
+	unsigned int array_size = 0;
+
+	for (unsigned int i = 0; i < g_DisplayTags_Ref_Def.getNumEntries(); ++i) {
+		auto entry = g_DisplayTags_Ref_Def.getEntry(i);
+
+		if (entry.second & _display_tags) {
+			display_tags.setObject(array_size, Gaff::JSON::createString(entry.first.getBuffer()));
+			++array_size;
+		}
+	}
+
+	json.setObject("display_tags", display_tags);
+
+	return true;
+}
+
 const AString& CameraComponent::getRenderTargetName(void) const
 {
 	return _render_target_name;
-}
-
-template <unsigned int bit>
-bool CameraComponent::GetFlag(void) const
-{
-	return (_option_flags & (1 << bit)) != 0;
-}
-
-template <unsigned int bit>
-void CameraComponent::SetFlag(bool value)
-{
-	if (value) {
-		_option_flags |= (1 << bit);
-	}
-	else {
-		_option_flags &= ~(1 << bit);
-	}
 }
 
 NS_END

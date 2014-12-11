@@ -22,7 +22,7 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Gaff_IReflectionDefinition.h"
+#include "Gaff_IReflectionDefinitions.h"
 #include "Gaff_HashString.h"
 #include "Gaff_HashMap.h"
 #include "Gaff_String.h"
@@ -126,15 +126,27 @@ THE SOFTWARE.
 NS_GAFF
 
 template <class T, class Allocator = DefaultAllocator>
-class EnumReflectionDefinition
+class EnumReflectionDefinition : public IEnumReflectionDefinition<Allocator>
 {
 public:
+	EnumReflectionDefinition(EnumReflectionDefinition<T, Allocator>&& ref_def);
+
 	EnumReflectionDefinition(void);
 	~EnumReflectionDefinition(void);
+
+	const EnumReflectionDefinition<T, Allocator>& operator=(EnumReflectionDefinition<T, Allocator>&& rhs);
 
 	EnumReflectionDefinition<T, Allocator>&& addValue(const char* name, T value);
 	const char* getName(T value) const;
 	T getValue(const char* name) const;
+
+	Pair<AString<Allocator>, T> getEntry(unsigned int index) const;
+
+	const char* getNameGeneric(unsigned int value) const;
+	unsigned int getValueGeneric(const char* name) const;
+
+	Pair<AString<Allocator>, unsigned int> getEntryGeneric(unsigned int index) const;
+	unsigned int getNumEntries(void) const;
 
 	void setAllocator(const Allocator& allocator);
 	void clear(void);
@@ -147,7 +159,6 @@ private:
 	bool _defined;
 
 	GAFF_NO_COPY(EnumReflectionDefinition);
-	GAFF_NO_MOVE(EnumReflectionDefinition);
 };
 
 template <class T, class Allocator>
@@ -419,6 +430,10 @@ void* ClassName::rawRequestInterface(unsigned int class_id) const \
 	return g_Ref_Def.getInterface(class_id, this); \
 }
 
+#define ENUM_REF_DEF(EnumName, Allocator) extern Gaff::EnumReflectionDefinition<EnumName, Allocator> g_##EnumName##_Ref_Def
+#define ENUM_REF_IMPL(EnumName, Allocator) Gaff::EnumReflectionDefinition<EnumName, Allocator> g_##EnumName##_Ref_Def
+#define ENUM_REF_IMPL_ASSIGN(EnumName, Allocator) Gaff::EnumReflectionDefinition<EnumName, Allocator> g_##EnumName##_Ref_Def = Gaff::EnumRefDef<EnumName, Allocator>()
+
 
 /*
 	This function is useful for when you want to do something like this:
@@ -444,6 +459,12 @@ template <class T, class Allocator = DefaultAllocator>
 ReflectionDefinition<T, Allocator> RefDef(void)
 {
 	return ReflectionDefinition<T, Allocator>();
+}
+
+template <class T, class Allocator = DefaultAllocator>
+EnumReflectionDefinition<T, Allocator> EnumRefDef(void)
+{
+	return EnumReflectionDefinition<T, Allocator>();
 }
 
 #include "Gaff_ReflectionDefinitionsContainers.inl"

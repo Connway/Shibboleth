@@ -216,7 +216,7 @@
     <ClInclude Include="..\..\..\dependencies\Gaff\include\Gaff_ICurve.h" />
     <ClInclude Include="..\..\..\dependencies\Gaff\include\Gaff_INamedObject.h" />
     <ClInclude Include="..\..\..\dependencies\Gaff\include\Gaff_IRefCounted.h" />
-    <ClInclude Include="..\..\..\dependencies\Gaff\include\Gaff_IReflectionDefinition.h" />
+    <ClInclude Include="..\..\..\dependencies\Gaff\include\Gaff_IReflectionDefinitions.h" />
     <ClInclude Include="..\..\..\dependencies\Gaff\include\Gaff_IRequestableInterface.h" />
     <ClInclude Include="..\..\..\dependencies\Gaff\include\Gaff_ITask.h" />
     <ClInclude Include="..\..\..\dependencies\Gaff\include\Gaff_IVirtualDestructor.h" />
