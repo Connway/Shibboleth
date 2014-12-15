@@ -11,7 +11,7 @@ solution "App"
 	nativewchar "Default"
 	floatingpoint "Fast"
 	startproject "App"
-	debugdir "../../workingdir"
+	debugdir "../../workingdir/App"
 
 	filter { "platforms:x86" }
 		architecture "x32"

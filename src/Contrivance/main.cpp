@@ -1,11 +1,11 @@
-#include "ContrivanceWindow.h"
+#include "Contrivance_ContrivanceWindow.h"
 #include <QApplication>
 
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
     ContrivanceWindow w;
-    w.show();
+    w.showMaximized();
 
     return a.exec();
 }
