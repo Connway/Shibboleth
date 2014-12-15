@@ -13,8 +13,15 @@ TEMPLATE = app
 
 
 SOURCES += main.cpp\
-        ContrivanceWindow.cpp
+    Contrivance_ShortcutEditor.cpp \
+    Contrivance_ContrivanceWindow.cpp
 
-HEADERS  += ContrivanceWindow.h
+HEADERS  += \
+    Contrivance_Defines.h \
+    Contrivance_ShortcutEditor.h \
+    Contrivance_ContrivanceWindow.h \
+    Contrivance_Shortcut.h
 
-FORMS    += ContrivanceWindow.ui
+FORMS    += \
+    Contrivance_ShortcutEditor.ui \
+    Contrivance_ContrivanceWindow.ui
