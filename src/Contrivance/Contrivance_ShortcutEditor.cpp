@@ -1,5 +1,5 @@
 #include "Contrivance_ShortcutEditor.h"
-#include "ui_ShortcutEditor.h"
+#include "ui_Contrivance_ShortcutEditor.h"
 #include "Contrivance_ContrivanceWindow.h"
 
 ShortcutEditor::ShortcutEditor(ContrivanceWindow& window, QWidget *parent):

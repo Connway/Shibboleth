@@ -1,5 +1,5 @@
 #include "Contrivance_ContrivanceWindow.h"
-#include "ui_ContrivanceWindow.h"
+#include "ui_Contrivance_ContrivanceWindow.h"
 #include "Contrivance_ShortcutEditor.h"
 #include <QJsonDocument>
 #include <QPushButton>
