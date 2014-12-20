@@ -15,14 +15,17 @@ TEMPLATE = app
 
 SOURCES += main.cpp\
     Contrivance_ShortcutEditor.cpp \
-    Contrivance_ContrivanceWindow.cpp
+    Contrivance_ContrivanceWindow.cpp \
+    Contrivance_ShortcutKeySelector.cpp
 
 HEADERS  += \
     Contrivance_Defines.h \
     Contrivance_ShortcutEditor.h \
     Contrivance_ContrivanceWindow.h \
-    Contrivance_Shortcut.h
+    Contrivance_Shortcut.h \
+    Contrivance_ShortcutKeySelector.h
 
 FORMS    += \
     Contrivance_ShortcutEditor.ui \
-    Contrivance_ContrivanceWindow.ui
+    Contrivance_ContrivanceWindow.ui \
+    Contrivance_ShortcutKeySelector.ui
