@@ -14,7 +14,7 @@ class ShortcutEditor : public QDialog
 	Q_OBJECT
 
 public:
-	explicit ShortcutEditor(ContrivanceWindow& window, QWidget *parent = 0);
+	explicit ShortcutEditor(ContrivanceWindow& window, QWidget* parent = 0);
 	~ShortcutEditor();
 
 private:

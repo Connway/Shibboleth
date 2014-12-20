@@ -7,7 +7,7 @@
 
 #include <iostream>
 
-ContrivanceWindow::ContrivanceWindow(QWidget *parent):
+ContrivanceWindow::ContrivanceWindow(QWidget* parent):
 	QMainWindow(parent), _ui(new Ui::ContrivanceWindow),
 	_shortcutEditor(nullptr)
 {
