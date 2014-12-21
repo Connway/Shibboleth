@@ -1,8 +1,8 @@
 #ifndef CONTRIVANCE_SHORTCUT_H
 #define CONTRIVANCE_SHORTCUT_H
 
+#include <QKeySequence>
 #include <QString>
-#include <QPair>
 
 class QShortcut;
 class QWidget;
@@ -10,20 +10,18 @@ class QWidget;
 struct Shortcut
 {
 public:
-	Shortcut(QWidget* _parent, const char* _member, const QString& _action, const QString& _shortcut = QString()):
+	Shortcut(QWidget* _parent, const char* _member, const QString& _action, const QKeySequence& _shortcut = QKeySequence()):
         shortcut(_shortcut), action(_action), instance(nullptr), member(_member), parent(_parent)
 	{
 	}
 
-	QString shortcut;
+	QKeySequence shortcut;
 	QString action;
 
 	QShortcut* instance;
 	const char* member;
 	QWidget* parent;
 };
-
-typedef QPair<QString, QString> ActionKeySequence;
 
 #endif // CONTRIVANCE_SHORTCUT_H
 
