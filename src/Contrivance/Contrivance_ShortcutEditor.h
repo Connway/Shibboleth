@@ -17,6 +17,8 @@ public:
 	explicit ShortcutEditor(ContrivanceWindow& window, QWidget* parent = 0);
 	~ShortcutEditor();
 
+	void refreshShortcuts(void);
+
 private:
 	ContrivanceWindow& _window;
 	Ui::ShortcutEditor* _ui;

@@ -1,8 +1,8 @@
 #include "Contrivance_ShortcutEditor.h"
 #include "ui_Contrivance_ShortcutEditor.h"
-#include "Contrivance_ShortcutKeySelector.h"
 #include "Contrivance_ContrivanceWindow.h"
-#include <QPushButton>
+
+#include <QKeySequenceEdit>
 
 ShortcutEditor::ShortcutEditor(ContrivanceWindow& window, QWidget* parent):
 	QDialog(parent), _window(window), _ui(new Ui::ShortcutEditor)
@@ -14,7 +14,15 @@ ShortcutEditor::ShortcutEditor(ContrivanceWindow& window, QWidget* parent):
 
 	_ui->tableWidget->setHorizontalHeaderLabels(labels);
 	_ui->tableWidget->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+}
 
+ShortcutEditor::~ShortcutEditor()
+{
+	delete _ui;
+}
+
+void ShortcutEditor::refreshShortcuts(void)
+{
 	const QList<Shortcut>& shortcuts = _window.retrieveShortcuts();
 	_ui->tableWidget->setRowCount(shortcuts.size());
 
@@ -26,26 +34,19 @@ ShortcutEditor::ShortcutEditor(ContrivanceWindow& window, QWidget* parent):
 
 		_ui->tableWidget->setItem(i, 0, action);
 
-		ShortcutKeySelector* shortcut = new ShortcutKeySelector(_ui->tableWidget);
-
+		QKeySequenceEdit* shortcut = new QKeySequenceEdit(shortcuts[i].shortcut, _ui->tableWidget);
 		_ui->tableWidget->setCellWidget(i, 1, shortcut);
 	}
 }
 
-ShortcutEditor::~ShortcutEditor()
-{
-	delete _ui;
-}
-
 void ShortcutEditor::accept(void)
 {
-	QList<QString> shortcuts;
+	QList<QKeySequence> shortcuts;
+	shortcuts.reserve(_ui->tableWidget->rowCount());
 
 	for (int i = 0; i < _ui->tableWidget->rowCount(); ++i) {
-		//QTableWidgetItem* shortcut = _ui->tableWidget->item(i, 1);
-		//shortcuts.push_back(shortcut->text());
-
-		ShortcutKeySelector* selector = (ShortcutKeySelector*)_ui->tableWidget->cellWidget(i, 1);
+		QKeySequenceEdit* selector = (QKeySequenceEdit*)_ui->tableWidget->cellWidget(i, 1);
+		shortcuts.push_back(selector->keySequence());
 	}
 
 	_window.setNewShortcuts(shortcuts);
