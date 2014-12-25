@@ -17,10 +17,16 @@
    </sizepolicy>
   </property>
   <property name="windowTitle">
-   <string>ContrivanceWindow</string>
+   <string notr="true">Contrivance</string>
   </property>
   <property name="toolButtonStyle">
    <enum>Qt::ToolButtonIconOnly</enum>
+  </property>
+  <property name="documentMode">
+   <bool>true</bool>
+  </property>
+  <property name="dockOptions">
+   <set>QMainWindow::AllowNestedDocks|QMainWindow::AllowTabbedDocks|QMainWindow::AnimatedDocks|QMainWindow::VerticalTabs</set>
   </property>
   <widget class="QWidget" name="centralWidget">
    <property name="sizePolicy">
@@ -83,7 +89,7 @@
      <x>0</x>
      <y>0</y>
      <width>800</width>
-     <height>20</height>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu_File">
@@ -104,8 +110,14 @@
     </property>
     <addaction name="action_Shortcut_Editor"/>
    </widget>
+   <widget class="QMenu" name="menu_Window">
+    <property name="title">
+     <string>&amp;Window</string>
+    </property>
+   </widget>
    <addaction name="menu_File"/>
    <addaction name="menu_Edit"/>
+   <addaction name="menu_Window"/>
    <addaction name="menu_About"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>

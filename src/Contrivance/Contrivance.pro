@@ -14,15 +14,20 @@ TEMPLATE = app
 
 
 SOURCES += main.cpp\
-    Contrivance_ShortcutEditor.cpp \
-    Contrivance_ContrivanceWindow.cpp
+	Contrivance_ShortcutEditor.cpp \
+	Contrivance_ContrivanceWindow.cpp \
+    Contrivance_ExtensionSpawner.cpp
 
 HEADERS  += \
-    Contrivance_Defines.h \
-    Contrivance_ShortcutEditor.h \
-    Contrivance_ContrivanceWindow.h \
-    Contrivance_Shortcut.h
+	Contrivance_ShortcutEditor.h \
+	Contrivance_ContrivanceWindow.h \
+	Contrivance_Shortcut.h \
+    Contrivance_ExtensionSpawner.h
 
 FORMS    += \
-    Contrivance_ShortcutEditor.ui \
-    Contrivance_ContrivanceWindow.ui
+	Contrivance_ShortcutEditor.ui \
+	Contrivance_ContrivanceWindow.ui \
+    Contrivance_ExtensionSpawner.ui
+
+#TRANSLATIONS += \
+#	Contrivance_<OtherLang>.ts
