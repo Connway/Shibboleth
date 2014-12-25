@@ -23,6 +23,7 @@ ShortcutEditor::~ShortcutEditor()
 
 void ShortcutEditor::refreshShortcuts(void)
 {
+	// Populate our table view with the action/key sequence pairs.
 	const QList<Shortcut>& shortcuts = _window.retrieveShortcuts();
 	_ui->tableWidget->setRowCount(shortcuts.size());
 
@@ -41,6 +42,7 @@ void ShortcutEditor::refreshShortcuts(void)
 
 void ShortcutEditor::accept(void)
 {
+	// Tell the main application about or new shortcuts.
 	QList<QKeySequence> shortcuts;
 	shortcuts.reserve(_ui->tableWidget->rowCount());
 

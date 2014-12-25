@@ -11,7 +11,7 @@ struct Shortcut
 {
 public:
 	Shortcut(QWidget* _parent, const char* _member, const QString& _action, const QKeySequence& _shortcut = QKeySequence()):
-        shortcut(_shortcut), action(_action), instance(nullptr), member(_member), parent(_parent)
+		shortcut(_shortcut), action(_action), instance(nullptr), member(_member), parent(_parent)
 	{
 	}
 
