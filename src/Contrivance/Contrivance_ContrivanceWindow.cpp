@@ -1,6 +1,30 @@
-#include "Contrivance_ContrivanceWindow.h"
+/************************************************************************************
+Copyright (C) 2015 by Nicholas LaCroix
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+************************************************************************************/
+
 #include "ui_Contrivance_ContrivanceWindow.h"
+#include "Contrivance_ContrivanceWindow.h"
+#include "Contrivance_ExtensionSpawner.h"
 #include "Contrivance_ShortcutEditor.h"
+#include "Contrivance_Console.h"
 #include <QJsonDocument>
 #include <QTextStream>
 #include <QJsonObject>
@@ -8,8 +32,7 @@
 #include <QDockWidget>
 #include <QShortcut>
 #include <QFile>
-
-#include "Contrivance_ExtensionSpawner.h"
+#include <QDir>
 
 ContrivanceWindow::ContrivanceWindow(QWidget* parent):
 	QMainWindow(parent), _ui(new Ui::ContrivanceWindow),
@@ -35,18 +58,26 @@ ContrivanceWindow::ContrivanceWindow(QWidget* parent):
 
 	registerNewToolbarAction(QIcon("icons/tab_add.png"), this, SLOT(newTab()), "main", "group_a");
 
-	// load all editor extensions so that they can register themselves
-
-	loadShortcuts("keyboard_shortcuts.json");
-
 	setupExtensionSpawner();
+	setupConsole();
+	loadExtensions();
+	loadShortcuts("keyboard_shortcuts.json");
 
 	// if we have a saved config file with the editor's spawned extensions and layout, use that to populate the editor, otherwise, use defaults.
 	addDockWidget(Qt::RightDockWidgetArea, (QDockWidget*)_extension_spawner->parentWidget());
+	addDockWidget(Qt::BottomDockWidgetArea, (QDockWidget*)_console->parentWidget());
 }
 
 ContrivanceWindow::~ContrivanceWindow()
 {
+	for (auto it = _extension_modules.begin(); it != _extension_modules.end(); ++it) {
+		if (it->shutdown_func) {
+			it->shutdown_func();
+		}
+
+		delete it->library;
+	}
+
 	delete _ui;
 }
 
@@ -139,6 +170,16 @@ void ContrivanceWindow::registerNewToolbarAction(const QIcon& icon, const QObjec
 	it_tb->toolbar->insertAction(*it_sep, action);
 }
 
+void ContrivanceWindow::spawnExtension(const QString& extension_name)
+{
+
+}
+
+void ContrivanceWindow::printToConsole(const QString& message, ConsoleMessageType type)
+{
+	_console->print(message, type);
+}
+
 bool ContrivanceWindow::saveShortcuts(const QJsonObject& shortcuts, const QString& file)
 {
 	QFile config(file);
@@ -153,6 +194,8 @@ bool ContrivanceWindow::saveShortcuts(const QJsonObject& shortcuts, const QStrin
 
 bool ContrivanceWindow::loadShortcuts(const QString& file)
 {
+	printToConsole("Loading shortcuts from '" + file + "'");
+
 	QFile config(file);
 
 	if (config.open(QFile::ReadOnly | QFile::Text)) {
@@ -243,7 +286,7 @@ void ContrivanceWindow::setupExtensionSpawner(void)
 	dw->setFeatures(QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetMovable | QDockWidget::DockWidgetFloatable);
 	dw->setAllowedAreas(Qt::AllDockWidgetAreas);
 
-	_extension_spawner = new ExtensionSpawner(dw);
+	_extension_spawner = new ExtensionSpawner(*this, dw);
 	dw->setWidget(_extension_spawner);
 
 	// Add the window hide checkbox for the Extension Spawner to the "Window" menu.
@@ -253,6 +296,93 @@ void ContrivanceWindow::setupExtensionSpawner(void)
 	QMenu* spawned_windows = new QMenu(tr("Spawned Windows"));
 	_ui->menu_Window->addMenu(spawned_windows);
 	spawned_windows->setEnabled(false);
+}
+
+void ContrivanceWindow::setupConsole(void)
+{
+	// Create the initial dock widget with the Extension Spawner.
+	QDockWidget* dw = new QDockWidget(tr("Console"));
+	QSizePolicy sizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+	sizePolicy.setHorizontalStretch(0);
+	sizePolicy.setVerticalStretch(0);
+	dw->resize(400, 300);
+	dw->setSizePolicy(sizePolicy);
+	dw->setFeatures(QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetMovable | QDockWidget::DockWidgetFloatable);
+	dw->setAllowedAreas(Qt::AllDockWidgetAreas);
+
+	_console = new Console(*this, dw);
+	dw->setWidget(_console);
+
+	// Add the window hide checkbox for the Extension Spawner to the "Window" menu.
+	_ui->menu_Window->addActions(QList<QAction*>{dw->toggleViewAction()});
+}
+
+void ContrivanceWindow::loadExtensions(void)
+{
+	printToConsole("Loading extensions from modules found with filter 'extensions/*" SHARED_LIBRARY_SUFFIX SHARED_LIBRARY_EXTENSION "'");
+
+	QString nameFilter = "*" SHARED_LIBRARY_SUFFIX SHARED_LIBRARY_EXTENSION;
+	QDir directory("./extensions");
+	QStringList entryList = directory.entryList(QStringList{nameFilter}, QDir::Files, QDir::Name);
+
+	for (auto it_dll = entryList.begin(); it_dll != entryList.end(); ++it_dll) {
+		ExtensionData ext_data;
+		ext_data.library = new QLibrary;
+		ext_data.library->setFileName(*it_dll);
+
+		if (!ext_data.library->load()) {
+			continue;
+		}
+
+		ext_data.init_func = (ExtensionData::InitExtensionModuleFunc)ext_data.library->resolve("InitExtensionModule");
+		ext_data.shutdown_func = (ExtensionData::ShutdownExtensionModuleFunc)ext_data.library->resolve("ShutdownExtensionModule");
+		ext_data.save_func = (ExtensionData::SaveInstanceDataFunc)ext_data.library->resolve("SaveInstanceData");
+		ext_data.load_func = (ExtensionData::LoadInstanceDataFunc)ext_data.library->resolve("LoadInstanceData");
+		ext_data.create_func = (ExtensionData::CreateInstanceFunc)ext_data.library->resolve("CreateInstance");
+		ext_data.destroy_func = (ExtensionData::DestroyInstanceFunc)ext_data.library->resolve("DestroyInstance");
+		ext_data.get_exts_func = (ExtensionData::GetExtensionsFunc)ext_data.library->resolve("GetExtensions");
+
+		// If we're missing an essential function
+		if (!ext_data.save_func || !ext_data.load_func || !ext_data.create_func ||
+			!ext_data.destroy_func || !ext_data.get_exts_func) {
+
+			QString missing_func;
+
+			if (!ext_data.save_func) {
+				missing_func = "SaveInstanceData";
+			} else if (!ext_data.load_func) {
+				missing_func = "LoadInstanceData";
+			} else if (!ext_data.create_func) {
+				missing_func = "CreateInstance";
+			} else if (!ext_data.destroy_func) {
+				missing_func = "DestroyInstance";
+			} else if (!ext_data.get_exts_func) {
+				missing_func = "GetExtensions";
+			}
+
+			printToConsole("'" + *it_dll + "' is missing core function '" + missing_func + "'", CMT_ERROR);
+			continue;
+		}
+
+		// If we have an init func and it failed
+		if (ext_data.init_func && !ext_data.init_func()) {
+			printToConsole("Call to 'InitExtensionModule' failed for '" + *it_dll + "'", CMT_ERROR);
+			continue;
+		}
+
+		ext_data.get_exts_func(ext_data.extension_names);
+
+		for (auto it_ext = ext_data.extension_names.begin(); it_ext != ext_data.extension_names.end(); ++it_ext) {
+			// Maybe change this to an if and then fail to add this element and skip over it.
+			Q_ASSERT(!_extension_indices.contains(*it_ext));
+			_extension_indices[*it_ext] = _extension_modules.size();
+			_extension_spawner->addExtension(*it_ext);
+
+			printToConsole("Loaded extension with name '" + *it_ext + "' from '" + *it_dll + "'");
+		}
+
+		_extension_modules.push_back(ext_data);
+	}
 }
 
 void ContrivanceWindow::currentTabChanged(int /*index*/)
