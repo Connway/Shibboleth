@@ -62,7 +62,7 @@ void Console::print(const QString& message, ConsoleMessageType type)
 
 void Console::addOutput(const QString& message, const QColor& color, QListWidget* list)
 {
-	if (list->count() == _maximum_log_entries) {
+    if ((unsigned int)list->count() == _maximum_log_entries) {
 		delete list->item(0);
 	}
 

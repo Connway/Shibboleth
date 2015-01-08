@@ -49,7 +49,6 @@ ContrivanceWindow::ContrivanceWindow(QWidget* parent):
 	connect(_ui->actionAbout_Qt, SIGNAL(triggered()), this, SLOT(aboutQt()));
 	connect(_ui->actionE_xit, SIGNAL(triggered()), this, SLOT(exit()));
 	connect(_ui->tabWidget->tabBar(), SIGNAL(tabBarDoubleClicked(int)), this, SLOT(tabDoubleClicked(int)));
-	connect(_ui->tabWidget->tabBar(), SIGNAL(currentChanged(int)), this, SLOT(currentTabChanged(int)));
 
 	// Register the new tab keyboard shortcut and toolbar button. Also create the Shortcut Editor modal widget.
 	registerNewShortcut(this, SLOT(newTab()), tr("New Tab"), QKeySequence(Qt::CTRL + Qt::Key_N));
@@ -66,6 +65,8 @@ ContrivanceWindow::ContrivanceWindow(QWidget* parent):
 	addDockWidget(Qt::BottomDockWidgetArea, qobject_cast<QDockWidget*>(_console->parentWidget()));
 
 	newTab(); // Start with one tab by default
+
+    qApp->installEventFilter(this);
 }
 
 ContrivanceWindow::~ContrivanceWindow()
@@ -240,7 +241,7 @@ bool ContrivanceWindow::loadShortcuts(const QString& file)
 
 bool ContrivanceWindow::eventFilter(QObject* object, QEvent* event)
 {
-	if (_tab_renamer->isVisible()) {
+    if (_tab_renamer->isVisible()) {
 		if (event->type() == QEvent::KeyPress) {
 			QKeyEvent* key_event = (QKeyEvent*)event;
 
@@ -248,28 +249,12 @@ bool ContrivanceWindow::eventFilter(QObject* object, QEvent* event)
 				hideTabRenamer();
 				return true;
 			}
-		} else if (event->type() == QEvent::MouseButtonPress) {
-			hideTabRenamer();
-		}
+        } else if (event->type() == QEvent::MouseButtonPress) {
+            hideTabRenamer();
+        }
 	}
 
 	return QMainWindow::eventFilter(object, event);
-}
-
-bool ContrivanceWindow::event(QEvent* event)
-{
-	if (_tab_renamer && _tab_renamer->isVisible()) {
-		if (event->type() == QEvent::MouseButtonPress) {
-			QMouseEvent* mouse_event = (QMouseEvent*)event;
-			QWidget* widget = childAt(mouse_event->pos());
-
-			if (widget != _tab_renamer) {
-				hideTabRenamer();
-			}
-		}
-	}
-
-	return QMainWindow::event(event);
 }
 
 void ContrivanceWindow::setupTabRenamer(void)
@@ -280,11 +265,6 @@ void ContrivanceWindow::setupTabRenamer(void)
 	_tab_renamer->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 	_tab_renamer->hide();
 	_tab_renamer->setEnabled(false);
-
-	// Register event filters for disabling the tab renamer when clicking on other things
-	_ui->mainToolBar->installEventFilter(this);
-	_ui->menuBar->installEventFilter(this);
-	_tab_renamer->installEventFilter(this);
 }
 
 void ContrivanceWindow::hideTabRenamer(void)
@@ -339,22 +319,21 @@ void ContrivanceWindow::setupConsole(void)
 	_ui->menu_Window->addActions(QList<QAction*>{dw->toggleViewAction()});
 }
 
-void ContrivanceWindow::currentTabChanged(int /*index*/)
-{
-	if (_tab_renamer->isVisible()) {
-		hideTabRenamer();
-	}
-}
-
 void ContrivanceWindow::tabDoubleClicked(int index)
 {
 	// Show the tab renamer widget at the location of the tab
 	QPoint pos = _ui->centralWidget->mapToParent(QPoint(0, 0)); // Get our position in the window
+    // Add the tab widget and tab bar offsets
+    pos += _ui->tabWidget->mapToParent(QPoint(0, 0));
+    pos += _ui->tabWidget->tabBar()->mapToParent(QPoint(0, 0));
+
 	QRect rect = _ui->tabWidget->tabBar()->tabRect(index);
 	_tab_renamer->setText(_ui->tabWidget->tabText(index));
 	_tab_renamer->move(rect.topLeft() + pos); // Add relative tab position to our window position
 	_tab_renamer->resize(rect.size());
 	_tab_renamer->setEnabled(true);
+    _tab_renamer->selectAll();
+    _tab_renamer->setFocus();
 	_tab_renamer->show();
 
 	_tab_being_renamed = index;
@@ -375,6 +354,10 @@ void ContrivanceWindow::aboutQt(void)
 
 void ContrivanceWindow::newTab(void)
 {
+    if (_tab_renamer->isVisible()) {
+        hideTabRenamer();
+    }
+
 	static unsigned int tab_num = 1;
 
 	QString tab_text;
