@@ -60,7 +60,7 @@
        </sizepolicy>
       </property>
       <property name="currentIndex">
-       <number>0</number>
+       <number>-1</number>
       </property>
       <property name="elideMode">
        <enum>Qt::ElideNone</enum>
@@ -74,11 +74,6 @@
       <property name="tabBarAutoHide">
        <bool>true</bool>
       </property>
-      <widget class="QWidget" name="tab_1">
-       <attribute name="title">
-        <string>Tab 1</string>
-       </attribute>
-      </widget>
      </widget>
     </item>
    </layout>

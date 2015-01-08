@@ -20,11 +20,11 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#include "ui_Contrivance_ContrivanceWindow.h"
 #include "Contrivance_ContrivanceWindow.h"
 #include "Contrivance_ExtensionSpawner.h"
 #include "Contrivance_ShortcutEditor.h"
 #include "Contrivance_Console.h"
+#include "ui_Contrivance_ContrivanceWindow.h"
 #include <QJsonDocument>
 #include <QTextStream>
 #include <QJsonObject>
@@ -32,7 +32,6 @@ THE SOFTWARE.
 #include <QDockWidget>
 #include <QShortcut>
 #include <QFile>
-#include <QDir>
 
 ContrivanceWindow::ContrivanceWindow(QWidget* parent):
 	QMainWindow(parent), _ui(new Ui::ContrivanceWindow),
@@ -58,43 +57,38 @@ ContrivanceWindow::ContrivanceWindow(QWidget* parent):
 
 	registerNewToolbarAction(QIcon("icons/tab_add.png"), this, SLOT(newTab()), "main", "group_a");
 
-	setupExtensionSpawner();
 	setupConsole();
-	loadExtensions();
+	setupExtensionSpawner();
 	loadShortcuts("keyboard_shortcuts.json");
 
 	// if we have a saved config file with the editor's spawned extensions and layout, use that to populate the editor, otherwise, use defaults.
-	addDockWidget(Qt::RightDockWidgetArea, (QDockWidget*)_extension_spawner->parentWidget());
-	addDockWidget(Qt::BottomDockWidgetArea, (QDockWidget*)_console->parentWidget());
+	addDockWidget(Qt::RightDockWidgetArea, qobject_cast<QDockWidget*>(_extension_spawner->parentWidget()));
+	addDockWidget(Qt::BottomDockWidgetArea, qobject_cast<QDockWidget*>(_console->parentWidget()));
+
+	newTab(); // Start with one tab by default
 }
 
 ContrivanceWindow::~ContrivanceWindow()
 {
-	for (auto it = _extension_modules.begin(); it != _extension_modules.end(); ++it) {
-		if (it->shutdown_func) {
-			it->shutdown_func();
-		}
-
-		delete it->library;
-	}
-
 	delete _ui;
 }
 
 void ContrivanceWindow::registerNewShortcut(QWidget* parent, const char* member, const QString& action, const QKeySequence& shortcut)
 {
-//#ifdef QT_DEBUG
 	// Check if there is another shortuct using this key sequence.
 	for (auto it = _shortcuts.begin(); it != _shortcuts.end(); ++it) {
 		if (!it->shortcut.isEmpty() && it->shortcut == shortcut) {
-			//Q_ASSERT(it->shortcut != shortcut);
-
 			// Use empty key sequence if another shortcut is already using it.
+			printToConsole(
+				"Shortcut for action '" + action + "' with key sequence '" +
+				shortcut.toString() + "' is already in use by action '" + it->action + "'",
+				CMT_WARNING
+			);
+
 			_shortcuts.push_back(Shortcut(parent, member, action, QKeySequence()));
 			return;
 		}
 	}
-//#endif
 
 	if (shortcut.isEmpty()) {
 		_shortcuts.push_back(Shortcut(parent, member, action, shortcut));
@@ -107,13 +101,33 @@ void ContrivanceWindow::registerNewShortcut(QWidget* parent, const char* member,
 
 void ContrivanceWindow::setNewShortcuts(const QList<QKeySequence>& shortcuts)
 {
+	printToConsole("Setting new shortcuts");
+
 	QJsonObject root_obj;
 
 	// Add the new shortcuts and construct the JSON object.
 	for (int i = 0; i < shortcuts.size(); ++i) {
-		root_obj.insert(_shortcuts[i].action, QJsonValue(shortcuts[i].toString()));
-		_shortcuts[i].instance->setKey(shortcuts[i]);
-		_shortcuts[i].shortcut = shortcuts[i];
+		QKeySequence key_sequence = shortcuts[i];
+
+		// Check for duplicates
+		for (int j = 0; j < i; ++j) {
+			// Use empty key sequence if another shortcut is already using it.
+			if (!shortcuts[j].isEmpty() && shortcuts[i] == shortcuts[j]) {
+				printToConsole(
+					"Shortcut for action '" + _shortcuts[j].action + "' with key sequence '" +
+					key_sequence.toString() + "' is already in use by action '" + _shortcuts[i].action + "'",
+					CMT_WARNING
+				);
+
+				key_sequence = QKeySequence();
+				break;
+			}
+
+		}
+
+		root_obj.insert(_shortcuts[i].action, QJsonValue(key_sequence.toString()));
+		_shortcuts[i].instance->setKey(key_sequence);
+		_shortcuts[i].shortcut = key_sequence;
 	}
 
 	saveShortcuts(root_obj, "keyboard_shortcuts.json");
@@ -170,14 +184,20 @@ void ContrivanceWindow::registerNewToolbarAction(const QIcon& icon, const QObjec
 	it_tb->toolbar->insertAction(*it_sep, action);
 }
 
-void ContrivanceWindow::spawnExtension(const QString& extension_name)
-{
-
-}
-
 void ContrivanceWindow::printToConsole(const QString& message, ConsoleMessageType type)
 {
 	_console->print(message, type);
+}
+
+QMainWindow* ContrivanceWindow::getCurrentTabWindow(void)
+{
+	return qobject_cast<QMainWindow*>(_ui->tabWidget->currentWidget());
+}
+
+void ContrivanceWindow::addSpawnedWindowMenuEntry(QAction* spawn_window_action)
+{
+	_spawned_window_menu->setEnabled(true);
+	_spawned_window_menu->addActions(QList<QAction*>{spawn_window_action});
 }
 
 bool ContrivanceWindow::saveShortcuts(const QJsonObject& shortcuts, const QString& file)
@@ -293,9 +313,11 @@ void ContrivanceWindow::setupExtensionSpawner(void)
 	_ui->menu_Window->addActions(QList<QAction*>{dw->toggleViewAction()});
 
 	// Add "Spawned Windows" menu to the "Window" menu.
-	QMenu* spawned_windows = new QMenu(tr("Spawned Windows"));
-	_ui->menu_Window->addMenu(spawned_windows);
-	spawned_windows->setEnabled(false);
+	_spawned_window_menu = new QMenu(tr("Spawned Windows"));
+	_ui->menu_Window->addMenu(_spawned_window_menu);
+	_spawned_window_menu->setEnabled(false);
+
+	_extension_spawner->loadExtensions();
 }
 
 void ContrivanceWindow::setupConsole(void)
@@ -315,74 +337,6 @@ void ContrivanceWindow::setupConsole(void)
 
 	// Add the window hide checkbox for the Extension Spawner to the "Window" menu.
 	_ui->menu_Window->addActions(QList<QAction*>{dw->toggleViewAction()});
-}
-
-void ContrivanceWindow::loadExtensions(void)
-{
-	printToConsole("Loading extensions from modules found with filter 'extensions/*" SHARED_LIBRARY_SUFFIX SHARED_LIBRARY_EXTENSION "'");
-
-	QString nameFilter = "*" SHARED_LIBRARY_SUFFIX SHARED_LIBRARY_EXTENSION;
-	QDir directory("./extensions");
-	QStringList entryList = directory.entryList(QStringList{nameFilter}, QDir::Files, QDir::Name);
-
-	for (auto it_dll = entryList.begin(); it_dll != entryList.end(); ++it_dll) {
-		ExtensionData ext_data;
-		ext_data.library = new QLibrary;
-		ext_data.library->setFileName(*it_dll);
-
-		if (!ext_data.library->load()) {
-			continue;
-		}
-
-		ext_data.init_func = (ExtensionData::InitExtensionModuleFunc)ext_data.library->resolve("InitExtensionModule");
-		ext_data.shutdown_func = (ExtensionData::ShutdownExtensionModuleFunc)ext_data.library->resolve("ShutdownExtensionModule");
-		ext_data.save_func = (ExtensionData::SaveInstanceDataFunc)ext_data.library->resolve("SaveInstanceData");
-		ext_data.load_func = (ExtensionData::LoadInstanceDataFunc)ext_data.library->resolve("LoadInstanceData");
-		ext_data.create_func = (ExtensionData::CreateInstanceFunc)ext_data.library->resolve("CreateInstance");
-		ext_data.destroy_func = (ExtensionData::DestroyInstanceFunc)ext_data.library->resolve("DestroyInstance");
-		ext_data.get_exts_func = (ExtensionData::GetExtensionsFunc)ext_data.library->resolve("GetExtensions");
-
-		// If we're missing an essential function
-		if (!ext_data.save_func || !ext_data.load_func || !ext_data.create_func ||
-			!ext_data.destroy_func || !ext_data.get_exts_func) {
-
-			QString missing_func;
-
-			if (!ext_data.save_func) {
-				missing_func = "SaveInstanceData";
-			} else if (!ext_data.load_func) {
-				missing_func = "LoadInstanceData";
-			} else if (!ext_data.create_func) {
-				missing_func = "CreateInstance";
-			} else if (!ext_data.destroy_func) {
-				missing_func = "DestroyInstance";
-			} else if (!ext_data.get_exts_func) {
-				missing_func = "GetExtensions";
-			}
-
-			printToConsole("'" + *it_dll + "' is missing core function '" + missing_func + "'", CMT_ERROR);
-			continue;
-		}
-
-		// If we have an init func and it failed
-		if (ext_data.init_func && !ext_data.init_func()) {
-			printToConsole("Call to 'InitExtensionModule' failed for '" + *it_dll + "'", CMT_ERROR);
-			continue;
-		}
-
-		ext_data.get_exts_func(ext_data.extension_names);
-
-		for (auto it_ext = ext_data.extension_names.begin(); it_ext != ext_data.extension_names.end(); ++it_ext) {
-			// Maybe change this to an if and then fail to add this element and skip over it.
-			Q_ASSERT(!_extension_indices.contains(*it_ext));
-			_extension_indices[*it_ext] = _extension_modules.size();
-			_extension_spawner->addExtension(*it_ext);
-
-			printToConsole("Loaded extension with name '" + *it_ext + "' from '" + *it_dll + "'");
-		}
-
-		_extension_modules.push_back(ext_data);
-	}
 }
 
 void ContrivanceWindow::currentTabChanged(int /*index*/)
@@ -421,14 +375,20 @@ void ContrivanceWindow::aboutQt(void)
 
 void ContrivanceWindow::newTab(void)
 {
-	static unsigned int tab_num = 2;
+	static unsigned int tab_num = 1;
 
 	QString tab_text;
 	QTextStream text_stream(&tab_text);
 	text_stream << tr("Tab") << " " << tab_num;
 	++tab_num;
 
-	_ui->tabWidget->addTab(new QWidget(), tab_text);
+	QMainWindow* tab_window = new QMainWindow;
+	tab_window->setDockOptions(QMainWindow::AllowNestedDocks|QMainWindow::AllowTabbedDocks|QMainWindow::AnimatedDocks);
+	tab_window->setDockNestingEnabled(true);
+	tab_window->setDocumentMode(true);
+	tab_window->setAnimated(true);
+
+	_ui->tabWidget->addTab(tab_window, tab_text);
 }
 
 void ContrivanceWindow::exit(void)
