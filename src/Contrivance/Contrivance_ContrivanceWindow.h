@@ -83,7 +83,6 @@ private:
 	bool loadShortcuts(const QString& file);
 
 	bool eventFilter(QObject* object, QEvent* event);
-	bool event(QEvent* event);
 
 	void setupTabRenamer(void);
 	void hideTabRenamer(void);
@@ -92,7 +91,6 @@ private:
 	void setupConsole(void);
 
 private slots:
-	void currentTabChanged(int index);
 	void tabDoubleClicked(int index);
 	void shortcutEditor(void);
 	void aboutQt(void);
