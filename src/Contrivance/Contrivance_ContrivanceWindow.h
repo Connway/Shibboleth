@@ -54,9 +54,11 @@ public:
 
 	void registerNewToolbarAction(const QIcon& icon, const QObject* receiver, const char* member, const QString& toolbar_name, const QString& group_name);
 
-	void spawnExtension(const QString& extension_name);
-
 	void printToConsole(const QString& message, ConsoleMessageType type = CMT_NORMAL);
+
+	QMainWindow* getCurrentTabWindow(void);
+
+	void addSpawnedWindowMenuEntry(QAction* spawn_window_action);
 
 private:
 	struct ToolbarData
@@ -66,48 +68,16 @@ private:
 		QToolBar* toolbar;
 	};
 
-	struct ExtensionSpawnData
-	{
-		QString name;
-		QWidget* instance;
-	};
-
-	struct ExtensionData
-	{
-		// Widget identifiers are QStrings instead of IDs.
-		// I'm expecting this system to not be called very frequently.
-		typedef bool (*InitExtensionModuleFunc)(void);
-		typedef void (*ShutdownExtensionModuleFunc)(void);
-		typedef bool (*SaveInstanceDataFunc)(const QString&, QJsonObject&, QWidget*);
-		typedef bool (*LoadInstanceDataFunc)(const QString&, const QJsonObject&, QWidget*);
-		typedef QWidget* (*CreateInstanceFunc)(const QString&);
-		typedef void (*DestroyInstanceFunc)(const QString&, QWidget*);
-		typedef void (*GetExtensionsFunc)(QStringList&);
-
-		QStringList extension_names;
-		QLibrary* library;
-
-		InitExtensionModuleFunc init_func;
-		ShutdownExtensionModuleFunc shutdown_func;
-		SaveInstanceDataFunc save_func;
-		LoadInstanceDataFunc load_func;
-		CreateInstanceFunc create_func;
-		DestroyInstanceFunc destroy_func;
-		GetExtensionsFunc get_exts_func;
-	};
-
-	QHash<QString, unsigned int> _extension_indices;
-	QList<ExtensionData> _extension_modules;
+	QHash<QString, ToolbarData> _toolbars;
 	QList<Shortcut> _shortcuts;
 
 	Ui::ContrivanceWindow* _ui;
 	ExtensionSpawner* _extension_spawner;
 	ShortcutEditor* _shortcut_editor;
 	Console* _console;
+	QMenu* _spawned_window_menu;
 	QTextEdit* _tab_renamer;
 	int _tab_being_renamed;
-
-	QHash<QString, ToolbarData> _toolbars;
 
 	bool saveShortcuts(const QJsonObject& shortcuts, const QString& file);
 	bool loadShortcuts(const QString& file);
@@ -120,8 +90,6 @@ private:
 
 	void setupExtensionSpawner(void);
 	void setupConsole(void);
-
-	void loadExtensions(void);
 
 private slots:
 	void currentTabChanged(int index);

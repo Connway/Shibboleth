@@ -23,6 +23,8 @@ THE SOFTWARE.
 #ifndef CONTRIVANCE_EXTENSIONSPAWNER_H
 #define CONTRIVANCE_EXTENSIONSPAWNER_H
 
+#include <QAbstractItemModel>
+#include <QLibrary>
 #include <QWidget>
 
 namespace Ui
@@ -40,13 +42,49 @@ public:
 	explicit ExtensionSpawner(ContrivanceWindow& window, QWidget* parent = nullptr);
 	~ExtensionSpawner();
 
-	void addExtension(const QString& extension_name);
+	void loadExtensions(void);
 
-	bool eventFilter(QObject* object, QEvent* event);
+	//bool eventFilter(QObject* object, QEvent* event);
 
 private:
+	struct ExtensionSpawnData
+	{
+		QString name;
+		QWidget* instance;
+	};
+
+	struct ExtensionData
+	{
+		// Widget identifiers are QStrings instead of IDs.
+		// I'm expecting this system to not be called very frequently.
+		typedef bool (*InitExtensionModuleFunc)(void);
+		typedef void (*ShutdownExtensionModuleFunc)(void);
+		typedef bool (*SaveInstanceDataFunc)(const QString&, QJsonObject&, QWidget*);
+		typedef bool (*LoadInstanceDataFunc)(const QString&, const QJsonObject&, QWidget*);
+		typedef QWidget* (*CreateInstanceFunc)(const QString&);
+		typedef void (*DestroyInstanceFunc)(const QString&, QWidget*);
+		typedef void (*GetExtensionsFunc)(QStringList&);
+
+		QStringList extension_names;
+		QLibrary* library;
+
+		InitExtensionModuleFunc init_func;
+		ShutdownExtensionModuleFunc shutdown_func;
+		SaveInstanceDataFunc save_func;
+		LoadInstanceDataFunc load_func;
+		CreateInstanceFunc create_func;
+		DestroyInstanceFunc destroy_func;
+		GetExtensionsFunc get_exts_func;
+	};
+
 	Ui::ExtensionSpawner* _ui;
 	ContrivanceWindow& _window;
+
+	QHash<QString, unsigned int> _extension_indices;
+	QList<ExtensionData> _extension_modules;
+
+private slots:
+	void itemDoubleClicked(QModelIndex index);
 };
 
 #endif // CONTRIVANCE_EXTENSIONSPAWNER_H
