@@ -25,7 +25,8 @@ HEADERS  += \
 	Contrivance_Shortcut.h \
     Contrivance_ExtensionSpawner.h \
     Contrivance_Defines.h \
-    Contrivance_Console.h
+    Contrivance_Console.h \
+    Contrivance_IContrivanceWindow.h
 
 FORMS    += \
 	Contrivance_ShortcutEditor.ui \

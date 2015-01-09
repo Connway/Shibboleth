@@ -32,13 +32,37 @@ namespace Ui
 	class ExtensionSpawner;
 }
 
+class IContrivanceWindow;
 class ContrivanceWindow;
+class QDockWidget;
 
 class ExtensionSpawner : public QWidget
 {
 	Q_OBJECT
 
 public:
+	struct ExtensionData
+	{
+		// Widget identifiers are QStrings instead of IDs.
+		// I'm expecting this system to not be called very frequently.
+		typedef bool (*InitExtensionModuleFunc)(IContrivanceWindow&);
+		typedef void (*ShutdownExtensionModuleFunc)(void);
+		typedef bool (*SaveInstanceDataFunc)(const QString&, QJsonObject&, QWidget*);
+		typedef bool (*LoadInstanceDataFunc)(const QString&, const QJsonObject&, QWidget*);
+		typedef QWidget* (*CreateInstanceFunc)(const QString&, QDockWidget*); // Passing in QDockWindow for changing the window title
+		typedef void (*GetExtensionsFunc)(QStringList&);
+
+		QStringList extension_names;
+		QLibrary* library;
+
+		InitExtensionModuleFunc init_func;
+		ShutdownExtensionModuleFunc shutdown_func;
+		SaveInstanceDataFunc save_func;
+		LoadInstanceDataFunc load_func;
+		CreateInstanceFunc create_func;
+		GetExtensionsFunc get_exts_func;
+	};
+
 	explicit ExtensionSpawner(ContrivanceWindow& window, QWidget* parent = nullptr);
 	~ExtensionSpawner();
 
@@ -53,35 +77,14 @@ private:
 		QWidget* instance;
 	};
 
-	struct ExtensionData
-	{
-		// Widget identifiers are QStrings instead of IDs.
-		// I'm expecting this system to not be called very frequently.
-		typedef bool (*InitExtensionModuleFunc)(void);
-		typedef void (*ShutdownExtensionModuleFunc)(void);
-		typedef bool (*SaveInstanceDataFunc)(const QString&, QJsonObject&, QWidget*);
-		typedef bool (*LoadInstanceDataFunc)(const QString&, const QJsonObject&, QWidget*);
-		typedef QWidget* (*CreateInstanceFunc)(const QString&);
-		typedef void (*DestroyInstanceFunc)(const QString&, QWidget*);
-		typedef void (*GetExtensionsFunc)(QStringList&);
-
-		QStringList extension_names;
-		QLibrary* library;
-
-		InitExtensionModuleFunc init_func;
-		ShutdownExtensionModuleFunc shutdown_func;
-		SaveInstanceDataFunc save_func;
-		LoadInstanceDataFunc load_func;
-		CreateInstanceFunc create_func;
-		DestroyInstanceFunc destroy_func;
-		GetExtensionsFunc get_exts_func;
-	};
-
 	Ui::ExtensionSpawner* _ui;
 	ContrivanceWindow& _window;
 
-	QHash<QString, unsigned int> _extension_indices;
 	QList<ExtensionData> _extension_modules;
+	QHash<QString, int> _extension_indices;
+
+	const QList<ExtensionData>& claimExtensionData(void) const;
+	friend class ContrivanceWindow;
 
 private slots:
 	void itemDoubleClicked(QModelIndex index);
