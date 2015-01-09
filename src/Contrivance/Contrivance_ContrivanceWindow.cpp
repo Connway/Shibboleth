@@ -71,7 +71,21 @@ ContrivanceWindow::ContrivanceWindow(QWidget* parent):
 
 ContrivanceWindow::~ContrivanceWindow()
 {
+	// Need to claim a copy of this before _extension_spawner gets deleted.
+	QList<ExtensionSpawner::ExtensionData> extension_modules = _extension_spawner->claimExtensionData();
+
+	// Destroys all UI, including _extension_spawner.
+	// We need all the spawned extensions to get destroyed before unloading the modules.
 	delete _ui;
+
+	// Shutdown and unload all the modules
+	for (auto it = extension_modules.begin(); it != extension_modules.end(); ++it) {
+		if (it->shutdown_func) {
+			it->shutdown_func();
+		}
+
+		delete it->library;
+	}
 }
 
 void ContrivanceWindow::registerNewShortcut(QWidget* parent, const char* member, const QString& action, const QKeySequence& shortcut)

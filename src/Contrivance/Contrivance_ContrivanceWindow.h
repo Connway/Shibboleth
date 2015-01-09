@@ -23,6 +23,7 @@ THE SOFTWARE.
 #ifndef CONTRIVANCEWINDOW_H
 #define CONTRIVANCEWINDOW_H
 
+#include "contrivance_IContrivanceWindow.h"
 #include "Contrivance_Shortcut.h"
 #include "Contrivance_Defines.h"
 #include <QMainWindow>
@@ -40,7 +41,7 @@ class ShortcutEditor;
 class Console;
 class QJsonObject;
 
-class ContrivanceWindow : public QMainWindow
+class ContrivanceWindow : public QMainWindow, public IContrivanceWindow
 {
 	Q_OBJECT
 

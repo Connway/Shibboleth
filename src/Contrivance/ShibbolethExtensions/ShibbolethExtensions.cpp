@@ -20,34 +20,34 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
+#include "TestExtension.h"
+
 #include <QStringList>
 #include <QJsonObject>
 #include <QWidget>
 #include <QHash>
 
-#include "TestExtension.h"
+class IContrivanceWindow;
+class QDockWidget;
+
+#include <QDockWidget>
+
+IContrivanceWindow* gWindow = nullptr;
 
 template <class T>
 QWidget* CreateWidget(void)
 {
-	return T();
+	return new T();
 }
 
-template <class T>
-void DestroyWidget(QWidget* widget)
-{
-	T* casted_widget = (T*)widget;
-	delete casted_widget;
-}
-
-typedef QWidget* (*CreateInstanceFunc)(void);
-typedef void (*DestroyInstanceFunc)(QWidget*);
+typedef QWidget* (*CreateInstanceFunc)();
 
 QHash<QString, CreateInstanceFunc> create_funcs;
-QHash<QString, DestroyInstanceFunc> destroy_funcs;
 
-extern "C" Q_DECL_EXPORT bool InitExtensionModule(void)
+extern "C" Q_DECL_EXPORT bool InitExtensionModule(IContrivanceWindow& window)
 {
+	create_funcs["Test Extension"] = &CreateWidget<TestExtension>;
+	gWindow = &window;
 	return true;
 }
 
@@ -65,16 +65,10 @@ extern "C" Q_DECL_EXPORT bool LoadInstanceData(const QString&, const QJsonObject
 	return true;
 }
 
-extern "C" Q_DECL_EXPORT QWidget* CreateInstance(const QString& widget_name)
+extern "C" Q_DECL_EXPORT QWidget* CreateInstance(const QString& widget_name, QDockWidget* dock_window)
 {
 	Q_ASSERT(create_funcs.contains(widget_name));
 	return create_funcs[widget_name]();
-}
-
-extern "C" Q_DECL_EXPORT void DestroyInstance(const QString& widget_name, QWidget* widget)
-{
-	Q_ASSERT(destroy_funcs.contains(widget_name));
-	destroy_funcs[widget_name](widget);
 }
 
  extern "C" Q_DECL_EXPORT void GetExtensions(QStringList& extensions)
