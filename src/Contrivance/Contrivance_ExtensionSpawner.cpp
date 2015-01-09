@@ -39,15 +39,70 @@ ExtensionSpawner::ExtensionSpawner(ContrivanceWindow& window, QWidget* parent):
 
 ExtensionSpawner::~ExtensionSpawner()
 {
-	for (auto it = _extension_modules.begin(); it != _extension_modules.end(); ++it) {
-		if (it->shutdown_func) {
-			it->shutdown_func();
+	delete _ui;
+}
+
+void ExtensionSpawner::loadExtensions(void)
+{
+	_window.printToConsole("Loading extensions from modules found with filter 'extensions/*" SHARED_LIBRARY_SUFFIX SHARED_LIBRARY_EXTENSION "'");
+
+	QString nameFilter = "*" SHARED_LIBRARY_SUFFIX SHARED_LIBRARY_EXTENSION;
+	QDir directory("./extensions");
+	QStringList entryList = directory.entryList(QStringList{nameFilter}, QDir::Files, QDir::Name);
+
+	for (auto it_dll = entryList.begin(); it_dll != entryList.end(); ++it_dll) {
+		ExtensionData ext_data;
+		ext_data.library = new QLibrary;
+		ext_data.library->setFileName(*it_dll);
+
+		if (!ext_data.library->load()) {
+			continue;
 		}
 
-		delete it->library;
-	}
+		ext_data.init_func = (ExtensionData::InitExtensionModuleFunc)ext_data.library->resolve("InitExtensionModule");
+		ext_data.shutdown_func = (ExtensionData::ShutdownExtensionModuleFunc)ext_data.library->resolve("ShutdownExtensionModule");
+		ext_data.save_func = (ExtensionData::SaveInstanceDataFunc)ext_data.library->resolve("SaveInstanceData");
+		ext_data.load_func = (ExtensionData::LoadInstanceDataFunc)ext_data.library->resolve("LoadInstanceData");
+		ext_data.create_func = (ExtensionData::CreateInstanceFunc)ext_data.library->resolve("CreateInstance");
+		ext_data.get_exts_func = (ExtensionData::GetExtensionsFunc)ext_data.library->resolve("GetExtensions");
 
-	delete _ui;
+		// If we're missing an essential function
+		if (!ext_data.save_func || !ext_data.load_func || !ext_data.create_func || !ext_data.get_exts_func) {
+			QString missing_func;
+
+			if (!ext_data.save_func) {
+				missing_func = "SaveInstanceData";
+			} else if (!ext_data.load_func) {
+				missing_func = "LoadInstanceData";
+			} else if (!ext_data.create_func) {
+				missing_func = "CreateInstance";
+			} else if (!ext_data.get_exts_func) {
+				missing_func = "GetExtensions";
+			}
+
+			_window.printToConsole("'" + *it_dll + "' is missing core function '" + missing_func + "'", CMT_ERROR);
+			continue;
+		}
+
+		// If we have an init func and it failed
+		if (ext_data.init_func && !ext_data.init_func(_window)) {
+			_window.printToConsole("Call to 'InitExtensionModule' failed for '" + *it_dll + "'", CMT_ERROR);
+			continue;
+		}
+
+		ext_data.get_exts_func(ext_data.extension_names);
+
+		for (auto it_ext = ext_data.extension_names.begin(); it_ext != ext_data.extension_names.end(); ++it_ext) {
+			// Maybe change this to an if and then fail to add this element and skip over it.
+			Q_ASSERT(!_extension_indices.contains(*it_ext));
+			_extension_indices[*it_ext] = _extension_modules.size();
+			_ui->listWidget->addItem(*it_ext);
+
+			_window.printToConsole("Loaded extension with name '" + *it_ext + "' from '" + *it_dll + "'");
+		}
+
+		_extension_modules.push_back(ext_data);
+	}
 }
 
 // Until I figure out how to do the TODO mentioned at line 74, this is commented out.
@@ -79,76 +134,14 @@ ExtensionSpawner::~ExtensionSpawner()
 	return QWidget::eventFilter(object, event);
 }*/
 
-void ExtensionSpawner::loadExtensions(void)
+const QList<ExtensionSpawner::ExtensionData>& ExtensionSpawner::claimExtensionData(void) const
 {
-	_window.printToConsole("Loading extensions from modules found with filter 'extensions/*" SHARED_LIBRARY_SUFFIX SHARED_LIBRARY_EXTENSION "'");
-
-	QString nameFilter = "*" SHARED_LIBRARY_SUFFIX SHARED_LIBRARY_EXTENSION;
-	QDir directory("./extensions");
-	QStringList entryList = directory.entryList(QStringList{nameFilter}, QDir::Files, QDir::Name);
-
-	for (auto it_dll = entryList.begin(); it_dll != entryList.end(); ++it_dll) {
-		ExtensionData ext_data;
-		ext_data.library = new QLibrary;
-		ext_data.library->setFileName(*it_dll);
-
-		if (!ext_data.library->load()) {
-			continue;
-		}
-
-		ext_data.init_func = (ExtensionData::InitExtensionModuleFunc)ext_data.library->resolve("InitExtensionModule");
-		ext_data.shutdown_func = (ExtensionData::ShutdownExtensionModuleFunc)ext_data.library->resolve("ShutdownExtensionModule");
-		ext_data.save_func = (ExtensionData::SaveInstanceDataFunc)ext_data.library->resolve("SaveInstanceData");
-		ext_data.load_func = (ExtensionData::LoadInstanceDataFunc)ext_data.library->resolve("LoadInstanceData");
-		ext_data.create_func = (ExtensionData::CreateInstanceFunc)ext_data.library->resolve("CreateInstance");
-		ext_data.destroy_func = (ExtensionData::DestroyInstanceFunc)ext_data.library->resolve("DestroyInstance");
-		ext_data.get_exts_func = (ExtensionData::GetExtensionsFunc)ext_data.library->resolve("GetExtensions");
-
-		// If we're missing an essential function
-		if (!ext_data.save_func || !ext_data.load_func || !ext_data.create_func ||
-			!ext_data.destroy_func || !ext_data.get_exts_func) {
-
-			QString missing_func;
-
-			if (!ext_data.save_func) {
-				missing_func = "SaveInstanceData";
-			} else if (!ext_data.load_func) {
-				missing_func = "LoadInstanceData";
-			} else if (!ext_data.create_func) {
-				missing_func = "CreateInstance";
-			} else if (!ext_data.destroy_func) {
-				missing_func = "DestroyInstance";
-			} else if (!ext_data.get_exts_func) {
-				missing_func = "GetExtensions";
-			}
-
-			_window.printToConsole("'" + *it_dll + "' is missing core function '" + missing_func + "'", CMT_ERROR);
-			continue;
-		}
-
-		// If we have an init func and it failed
-		if (ext_data.init_func && !ext_data.init_func()) {
-			_window.printToConsole("Call to 'InitExtensionModule' failed for '" + *it_dll + "'", CMT_ERROR);
-			continue;
-		}
-
-		ext_data.get_exts_func(ext_data.extension_names);
-
-		for (auto it_ext = ext_data.extension_names.begin(); it_ext != ext_data.extension_names.end(); ++it_ext) {
-			// Maybe change this to an if and then fail to add this element and skip over it.
-			Q_ASSERT(!_extension_indices.contains(*it_ext));
-			_extension_indices[*it_ext] = _extension_modules.size();
-			_ui->listWidget->addItem(*it_ext);
-
-			_window.printToConsole("Loaded extension with name '" + *it_ext + "' from '" + *it_dll + "'");
-		}
-
-		_extension_modules.push_back(ext_data);
-	}
+	return _extension_modules;
 }
 
 void ExtensionSpawner::itemDoubleClicked(QModelIndex index)
 {
+	QString ext_name = _ui->listWidget->item(index.row())->text();
 	QMainWindow* parent_window = &_window;
 
 	// Spawn on the currently open tab.
@@ -156,9 +149,25 @@ void ExtensionSpawner::itemDoubleClicked(QModelIndex index)
 		parent_window = _window.getCurrentTabWindow();
 	}
 
-	// create extension
-	QDockWidget* dock_widget = new QDockWidget(_ui->listWidget->item(index.row())->text());
-	//dock_widget->setWidget(new ExtensionSpawner(_window));
+	auto it_ind = _extension_indices.find(ext_name);
+
+	if (it_ind == _extension_indices.end() || *it_ind >= _extension_modules.size()) {
+		_window.printToConsole("Could not find entry for extension '" + ext_name + "'", CMT_ERROR);
+		return;
+	}
+
+	QDockWidget* dock_widget = new QDockWidget(ext_name);
+
+	ExtensionData& ext_data = _extension_modules[*it_ind];
+	QWidget* widget = ext_data.create_func(ext_name, dock_widget);
+
+	if (!widget) {
+		_window.printToConsole("Failed to create extension '" + ext_name + "'", CMT_ERROR);
+		delete dock_widget;
+		return;
+	}
+
+	dock_widget->setWidget(widget);
 
 	parent_window->addDockWidget(Qt::RightDockWidgetArea, dock_widget);
 	dock_widget->setFloating(true);
