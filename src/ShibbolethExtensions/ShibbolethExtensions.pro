@@ -15,10 +15,10 @@ DEFINES += SHIBBOLETHEXTENSIONS_LIBRARY
 
 SOURCES += \
 	ShibbolethExtensions.cpp \
-	TestExtension.cpp
+	ObjectEditor.cpp \
+	ComponentList.cpp
 
-# Modify to include the path to "Contrivance_IContrivanceWindow.h"
-INCLUDEPATH += ..
+INCLUDEPATH += dependencies
 
 CONFIG(debug, debug|release) {
 	!contains(QMAKE_TARGET.arch, x86_64): TARGET = $$join(TARGET,,,32d)
@@ -36,7 +36,9 @@ unix {
 }
 
 FORMS += \
-	TestExtension.ui
+	ObjectEditor.ui \
+	ComponentList.ui
 
 HEADERS += \
-	TestExtension.h
+	ObjectEditor.h \
+	ComponentList.h
