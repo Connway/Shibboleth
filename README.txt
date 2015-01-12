@@ -1,0 +1,38 @@
+==============================
+    Shibboleth Game Engine
+==============================
+
+Shibboleth is my pet project at developing a fully featured game engine. Shibboleth comes in two parts,
+a simple application framework and the engine itself. Essentially, the game engine portion is just extensions
+of the application framework.
+
+=============
+    GOALS
+=============
+
+The primary goal is to develop a game engine and editor that is highly extensible and as data driven as possible (where it makes sense).
+
+I am always looking for feedback from code reviews! If you wish to spend your valuable time giving feedback,
+send me a message on Bitbucket!
+
+===============
+    LICENSE
+===============
+
+Shibboleth is copyrighted under The MIT License. See LICENSE.txt for the full text of the license.
+
+==========================
+    BUILD INSTRUCTIONS
+==========================
+
+Includes Visual Studio 2013 solution/project files and should compile out of the box.
+
+=============
+    NOTES
+=============
+
+====================
+    KNOWN ISSUES
+====================
+
+It's not finished yet and development isn't far enough along for some demos.

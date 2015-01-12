@@ -20,8 +20,10 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#include "TestExtension.h"
+#include "ComponentList.h"
+#include "ObjectEditor.h"
 
+#include <QDockWidget>
 #include <QStringList>
 #include <QJsonObject>
 #include <QWidget>
@@ -30,23 +32,22 @@ THE SOFTWARE.
 class IContrivanceWindow;
 class QDockWidget;
 
-#include <QDockWidget>
-
 IContrivanceWindow* gWindow = nullptr;
 
 template <class T>
-QWidget* CreateWidget(void)
+QWidget* CreateWidget(IContrivanceWindow& window)
 {
-	return new T();
+	return new T(window);
 }
 
-typedef QWidget* (*CreateInstanceFunc)();
+typedef QWidget* (*CreateInstanceFunc)(IContrivanceWindow&);
 
 QHash<QString, CreateInstanceFunc> create_funcs;
 
 extern "C" Q_DECL_EXPORT bool InitExtensionModule(IContrivanceWindow& window)
 {
-	create_funcs["Test Extension"] = &CreateWidget<TestExtension>;
+	create_funcs["Component List"] = &CreateWidget<ComponentList>;
+	create_funcs["Object Editor"] = &CreateWidget<ObjectEditor>;
 	gWindow = &window;
 	return true;
 }
@@ -68,11 +69,17 @@ extern "C" Q_DECL_EXPORT bool LoadInstanceData(const QString&, const QJsonObject
 extern "C" Q_DECL_EXPORT QWidget* CreateInstance(const QString& widget_name, QDockWidget* dock_window)
 {
 	Q_ASSERT(create_funcs.contains(widget_name));
-	return create_funcs[widget_name]();
+	return create_funcs[widget_name](*gWindow);
 }
 
  extern "C" Q_DECL_EXPORT void GetExtensions(QStringList& extensions)
 {
 	extensions.clear();
-	extensions.push_back("Test Extension");
+	extensions.push_back("Component List");
+	extensions.push_back("Object Editor");
 }
+
+ extern "C" Q_DECL_EXPORT void Foo()
+ {
+
+ }
