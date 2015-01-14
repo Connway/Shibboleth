@@ -1,7 +1,7 @@
-external "Shared"
+external "Memory"
 	if _ACTION then
 		location ("../../project/" .. _ACTION)
 	end
 
-	kind "StaticLib"
+	kind "SharedLib"
 	language "C++"

@@ -69,6 +69,7 @@ group "Dependencies"
 
 group ""
 	dofile("../Shared/include_external.lua")
+	dofile("../Memory/include_external.lua")
 
 	project "App"
 		if _ACTION then
@@ -88,6 +89,7 @@ group ""
 		includedirs
 		{
 			"../Shared/include",
+			"../Memory/include",
 			"../../dependencies/jansson",
 			"../../dependencies/Gaff/include",
 			"../../dependencies/utf8-cpp"

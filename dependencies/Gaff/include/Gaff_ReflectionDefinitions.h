@@ -26,12 +26,11 @@ THE SOFTWARE.
 #include "Gaff_HashString.h"
 #include "Gaff_HashMap.h"
 #include "Gaff_String.h"
-#include "Gaff_Array.h"
 #include "Gaff_SharedPtr.h"
 #include "Gaff_Function.h"
 #include "Gaff_JSON.h"
-#include "Gaff_Pair.h"
 #include "Gaff_Math.h"
+#include "Gaff_Map.h"
 #include <cstdlib>
 
 #if defined(_WIN32) || defined(_WIN64)
@@ -50,9 +49,9 @@ THE SOFTWARE.
 		typedef void (T::*Setter)(type); \
 		name(const char* key, Getter getter, Setter setter); \
 		name(const char* key, type T::* var); \
-		void read(const Gaff::JSON& json, T* object); \
-		void write(Gaff::JSON& json, T* object) const; \
-		typename IValueContainer::ValueType getType(void) const; \
+		void read(const JSON& json, T* object); \
+		void write(JSON& json, T* object) const; \
+		ReflectionValueType getType(void) const; \
 		void set(const char* value, T* object); \
 		void set(unsigned int value, T* object); \
 		void set(int value, T* object); \
@@ -71,9 +70,9 @@ THE SOFTWARE.
 		typedef void (T::*Setter)(const type&); \
 		name(const char* key, Getter getter, Setter setter); \
 		name(const char* key, type T::* var); \
-		void read(const Gaff::JSON& json, T* object); \
-		void write(Gaff::JSON& json, T* object) const; \
-		typename IValueContainer::ValueType getType(void) const; \
+		void read(const JSON& json, T* object); \
+		void write(JSON& json, T* object) const; \
+		ReflectionValueType getType(void) const; \
 		void set(const char* value, T* object); \
 		void set(unsigned int value, T* object); \
 		void set(int value, T* object); \
@@ -94,17 +93,17 @@ THE SOFTWARE.
 
 #define VAR_CONTAINER_READ(name) \
 	template <class T, class Allocator> \
-	void ReflectionDefinition<T, Allocator>::name::read(const Gaff::JSON& json, T* object)
+	void ReflectionDefinition<T, Allocator>::name::read(const JSON& json, T* object)
 
 #define VAR_CONTAINER_WRITE(name) \
 	template <class T, class Allocator> \
-	void ReflectionDefinition<T, Allocator>::name::write(Gaff::JSON& json, T* object) const
+	void ReflectionDefinition<T, Allocator>::name::write(JSON& json, T* object) const
 
 #define VAR_CONTAINER_VAL_TYPE(name, type) \
 	template <class T, class Allocator> \
-	typename ReflectionDefinition<T, Allocator>::IValueContainer::ValueType ReflectionDefinition<T, Allocator>::name::getType(void) const \
+	ReflectionValueType ReflectionDefinition<T, Allocator>::name::getType(void) const \
 	{ \
-		return IValueContainer::type; \
+		return type; \
 	}
 
 #define VAR_CONTAINER_SET_STRING(name) \
@@ -125,13 +124,42 @@ THE SOFTWARE.
 
 NS_GAFF
 
+class IOnCompleteFunctor
+{
+public:
+	IOnCompleteFunctor(void) {}
+	virtual ~IOnCompleteFunctor(void) {}
+
+	virtual void setRefDef(IReflectionDefinition* ref_def) = 0;
+};
+
+
+template <class Allocator = DefaultAllocator>
+class BaseCallbackHelper
+{
+public:
+	static BaseCallbackHelper<Allocator>& GetInstance(const Allocator& allocator = Allocator());
+
+	// Takes in a FunctionBinder<> pointer so we can update the reflection definition later.
+	void addBaseClassCallback(IReflectionDefinition* base_ref_def, FunctionBinder<void>* callback);
+	void triggerBaseClassCallback(IReflectionDefinition* base_ref_def);
+
+private:
+	BaseCallbackHelper(const Allocator& allocator);
+	~BaseCallbackHelper(void);
+
+	Map< IReflectionDefinition*, Array<FunctionBinder<void>*, Allocator>, Allocator > _callbacks;
+	Allocator _allocator;
+};
+
 template <class T, class Allocator = DefaultAllocator>
 class EnumReflectionDefinition : public IEnumReflectionDefinition<Allocator>
 {
 public:
 	EnumReflectionDefinition(EnumReflectionDefinition<T, Allocator>&& ref_def);
 
-	EnumReflectionDefinition(void);
+	EnumReflectionDefinition(const char* name, const Allocator& allocator = Allocator());
+	EnumReflectionDefinition(const Allocator& allocator = Allocator());
 	~EnumReflectionDefinition(void);
 
 	const EnumReflectionDefinition<T, Allocator>& operator=(EnumReflectionDefinition<T, Allocator>&& rhs);
@@ -148,17 +176,41 @@ public:
 	Pair<AString<Allocator>, unsigned int> getEntryGeneric(unsigned int index) const;
 	unsigned int getNumEntries(void) const;
 
+	const char* getEnumName(void) const;
+
 	void setAllocator(const Allocator& allocator);
 	void clear(void);
 
 	bool isDefined(void) const;
 	void markDefined(void);
 
+	EnumReflectionDefinition<T, Allocator>&& macroFix(void);
+
 private:
 	HashMap<AHashString<Allocator>, T, Allocator> _values_map;
+	AString<Allocator> _name;
 	bool _defined;
 
 	GAFF_NO_COPY(EnumReflectionDefinition);
+};
+
+enum ReflectionValueType
+{
+	VT_DOUBLE = 0,
+	VT_FLOAT,
+	VT_UINT,
+	VT_INT,
+	VT_USHORT,
+	VT_SHORT,
+	VT_UCHAR,
+	VT_CHAR,
+	VT_BOOL,
+	VT_ENUM,
+	VT_STRING,
+	VT_OBJECT,
+	VT_ARRAY,
+	VT_CUSTOM,
+	VT_SIZE
 };
 
 template <class T, class Allocator>
@@ -168,58 +220,42 @@ public:
 	class IValueContainer
 	{
 	public:
-		enum ValueType
-		{
-			VT_DOUBLE = 0,
-			VT_FLOAT,
-			VT_UINT,
-			VT_INT,
-			VT_USHORT,
-			VT_SHORT,
-			VT_UCHAR,
-			VT_CHAR,
-			VT_BOOL,
-			VT_ENUM,
-			VT_STRING,
-			VT_OBJECT,
-			VT_ARRAY,
-			VT_CUSTOM,
-			VT_SIZE
-		};
-
 		IValueContainer(const char* key) : _key(key) {}
 		virtual ~IValueContainer(void) {}
 
-		virtual void read(const Gaff::JSON& json, T* object) = 0;
-		virtual void write(Gaff::JSON& json, T* object) const = 0;
+		virtual void read(const JSON& json, T* object) = 0;
+		virtual void write(JSON& json, T* object) const = 0;
 
 		virtual void set(const char*, T*) {}
 		virtual void set(unsigned int, T*) {}
 		virtual void set(int, T*) {}
 		virtual void set(double, T*) {}
 
-		virtual ValueType getType(void) const = 0;
+		virtual ReflectionValueType getType(void) const = 0;
 
 	protected:
 		AString<Allocator> _key;
 	};
 
 	ReflectionDefinition(ReflectionDefinition<T, Allocator>&& ref_def);
-	ReflectionDefinition(void);
+	ReflectionDefinition(const char* name, const Allocator& allocator = Allocator());
+	ReflectionDefinition(const Allocator& allocator = Allocator());
 	~ReflectionDefinition(void);
 
 	const ReflectionDefinition<T, Allocator>& operator=(ReflectionDefinition<T, Allocator>&& rhs);
 
-	void read(const Gaff::JSON& json, void* object);
-	void write(Gaff::JSON& json, void* object) const;
+	void read(const JSON& json, void* object);
+	void write(JSON& json, void* object) const;
 
 	void* getInterface(unsigned int class_id, const void* object) const;
 
-	void read(const Gaff::JSON& json, T* object);
-	void write(Gaff::JSON& json, T* object) const;
+	const char* getName(void) const;
+
+	void read(const JSON& json, T* object);
+	void write(JSON& json, T* object) const;
 
 	template <class T2>
-	ReflectionDefinition<T, Allocator>&& addBaseClass(const ReflectionDefinition<T2, Allocator>& base_ref_def, unsigned int class_id);
+	ReflectionDefinition<T, Allocator>&& addBaseClass(ReflectionDefinition<T2, Allocator>& base_ref_def, unsigned int class_id);
 
 	// This function does not check if the base class is finished being defined. This is so you can add just casts.
 	template <class T2>
@@ -284,8 +320,10 @@ public:
 	ReflectionDefinition<T, Allocator>&& setAllocator(const Allocator& allocator);
 	void clear(void);
 
+	ReflectionDefinition<T, Allocator>&& macroFix(void);
+
 private:
-	typedef Gaff::SharedPtr<IValueContainer, Allocator> ValueContainerPtr;
+	typedef SharedPtr<IValueContainer, Allocator> ValueContainerPtr;
 
 	VAR_CONTAINER(DoubleContainer, double);
 	VAR_CONTAINER(FloatContainer, float);
@@ -308,12 +346,12 @@ private:
 		ObjectContainer(const char* key, ReflectionDefinition<T2, Allocator>& var_ref_def, Getter getter, Setter setter);
 		ObjectContainer(const char* key, T2 T::* var, ReflectionDefinition<T2, Allocator>& var_ref_def);
 
-		void read(const Gaff::JSON& json, T* object);
-		void write(Gaff::JSON& json, T* object) const;
+		void read(const JSON& json, T* object);
+		void write(JSON& json, T* object) const;
 
 		void set(const T2& value, T* object);
 
-		typename IValueContainer::ValueType getType(void) const;
+		ReflectionValueType getType(void) const;
 
 	private:
 		Getter _getter;
@@ -332,15 +370,15 @@ private:
 		EnumContainer(const char* key, const EnumReflectionDefinition<T2, Allocator>& ref_def, Getter getter, Setter setter);
 		EnumContainer(const char* key, T2 T::* var, const EnumReflectionDefinition<T2, Allocator>& var_ref_def);
 
-		void read(const Gaff::JSON& json, T* object);
-		void write(Gaff::JSON& json, T* object) const;
+		void read(const JSON& json, T* object);
+		void write(JSON& json, T* object) const;
 
 		void set(const char* value, T* object);
 		void set(unsigned int value, T* object);
 		void set(int value, T* object);
 		void set(double value, T* object);
 
-		typename IValueContainer::ValueType getType(void) const;
+		ReflectionValueType getType(void) const;
 
 	private:
 		Getter _getter;
@@ -357,30 +395,31 @@ private:
 	public:
 		BaseValueContainer(const char* key, const typename ReflectionDefinition<T2, Allocator>::ValueContainerPtr& value_ptr);
 
-		void read(const Gaff::JSON& json, T* object);
-		void write(Gaff::JSON& json, T* object) const;
+		void read(const JSON& json, T* object);
+		void write(JSON& json, T* object) const;
 
 		void set(const char* value, T* object);
 		void set(unsigned int value, T* object);
 		void set(int value, T* object);
 		void set(double value, T* object);
 
-		typename IValueContainer::ValueType getType(void) const;
+		ReflectionValueType getType(void) const;
 
 	private:
 		typename ReflectionDefinition<T2, Allocator>::ValueContainerPtr _value_ptr;
 	};
 
 	template <class T2>
-	class OnCompleteFunctor
+	class OnCompleteFunctor : public IOnCompleteFunctor
 	{
 	public:
-		OnCompleteFunctor(ReflectionDefinition<T, Allocator>& my_ref_def, bool interface_only);
+		OnCompleteFunctor(ReflectionDefinition<T, Allocator>* my_ref_def, bool interface_only);
 
 		void operator()(void) const;
+		void setRefDef(IReflectionDefinition* ref_def);
 
 	private:
-		ReflectionDefinition<T, Allocator>& _my_ref_def;
+		ReflectionDefinition<T, Allocator>* _my_ref_def;
 		bool _interface_only;
 	};
 
@@ -391,36 +430,47 @@ private:
 		return static_cast<T2*>(reinterpret_cast<T*>(const_cast<void*>(object)));
 	}
 
-	void addOnCompleteCallback(const Gaff::FunctionBinder<void>& cb);
-
 	HashMap<AHashString<Allocator>, ValueContainerPtr, Allocator> _value_containers;
-	Array<Gaff::Pair< unsigned int, Gaff::FunctionBinder<void*, const void*> >, Allocator> _base_ids;
-	Array< Gaff::FunctionBinder<void> > _on_complete_callbacks;
+	Array<Pair< unsigned int, FunctionBinder<void*, const void*> >, Allocator> _base_ids;
+	Array<IOnCompleteFunctor*> _callback_references;
 
+	AString<Allocator> _name;
 	Allocator _allocator;
 	unsigned int _base_classes_remaining;
 	bool _defined;
 
 	template <class T2, class Allocator> friend class ReflectionDefinition;
 	template <class T2> friend class OnCompleteFunctor;
-
-	GAFF_NO_COPY(ReflectionDefinition);
 };
 
 #define REF_DEF(ClassName, Allocator) \
 public: \
+	static Gaff::ReflectionDefinition<ClassName, Allocator>& GetReflectionDefinition(void); \
+	static unsigned int GetReflectionHash(void); \
+private: \
 	static unsigned int g_Hash; \
 	static Gaff::ReflectionDefinition<ClassName, Allocator> g_Ref_Def
 
 #define CLASS_HASH(ClassName) Gaff::FNV1aHash32(#ClassName, strlen(#ClassName))
 
 #define REF_IMPL(ClassName, Allocator) \
+unsigned int ClassName::GetReflectionHash(void) { return g_Hash; } \
+Gaff::ReflectionDefinition<ClassName, Allocator>& ClassName::GetReflectionDefinition(void) { return g_Ref_Def; } \
 unsigned int ClassName::g_Hash = CLASS_HASH(ClassName); \
 Gaff::ReflectionDefinition<ClassName, Allocator> ClassName::g_Ref_Def
 
-#define REF_IMPL_ASSIGN(ClassName, Allocator) \
+// uses default allocator
+#define REF_IMPL_ASSIGN_DEFAULT(ClassName, Allocator) \
+unsigned int ClassName::GetReflectionHash(void) { return g_Hash; } \
+Gaff::ReflectionDefinition<ClassName, Allocator>& ClassName::GetReflectionDefinition(void) { return g_Ref_Def; } \
 unsigned int ClassName::g_Hash = CLASS_HASH(ClassName); \
-Gaff::ReflectionDefinition<ClassName, Allocator> ClassName::g_Ref_Def = Gaff::RefDef<ClassName, Allocator>()
+Gaff::ReflectionDefinition<ClassName, Allocator> ClassName::g_Ref_Def = Gaff::RefDef<ClassName, Allocator>(#ClassName).macroFix()
+
+#define REF_IMPL_ASSIGN(ClassName, Allocator, allocator_instance) \
+unsigned int ClassName::GetReflectionHash(void) { return g_Hash; } \
+Gaff::ReflectionDefinition<ClassName, Allocator>& ClassName::GetReflectionDefinition(void) { return g_Ref_Def; } \
+unsigned int ClassName::g_Hash = CLASS_HASH(ClassName); \
+Gaff::ReflectionDefinition<ClassName, Allocator> ClassName::g_Ref_Def = Gaff::RefDef<ClassName, Allocator>(#ClassName, allocator_instance).macroFix()
 
 #define ADD_BASE_CLASS_INTERFACE_ONLY(ClassName) addBaseClass<ClassName>(CLASS_HASH(ClassName))
 
@@ -432,7 +482,8 @@ void* ClassName::rawRequestInterface(unsigned int class_id) const \
 
 #define ENUM_REF_DEF(EnumName, Allocator) extern Gaff::EnumReflectionDefinition<EnumName, Allocator> g_##EnumName##_Ref_Def
 #define ENUM_REF_IMPL(EnumName, Allocator) Gaff::EnumReflectionDefinition<EnumName, Allocator> g_##EnumName##_Ref_Def
-#define ENUM_REF_IMPL_ASSIGN(EnumName, Allocator) Gaff::EnumReflectionDefinition<EnumName, Allocator> g_##EnumName##_Ref_Def = Gaff::EnumRefDef<EnumName, Allocator>()
+#define ENUM_REF_IMPL_ASSIGN(EnumName, Allocator, allocator_instance) Gaff::EnumReflectionDefinition<EnumName, Allocator> g_##EnumName##_Ref_Def = Gaff::EnumRefDef<EnumName, Allocator>(#EnumName, allocator_instance).macroFix()
+#define ENUM_REF_IMPL_ASSIGN_DEFAULT(EnumName, Allocator, allocator_instance) Gaff::EnumReflectionDefinition<EnumName, Allocator> g_##EnumName##_Ref_Def = Gaff::EnumRefDef<EnumName, Allocator>(#EnumName).macroFix()
 
 
 /*
@@ -456,15 +507,21 @@ void* ClassName::rawRequestInterface(unsigned int class_id) const \
 	available during process/DLL global init, this will crash hard!
 */
 template <class T, class Allocator = DefaultAllocator>
-ReflectionDefinition<T, Allocator> RefDef(void)
+ReflectionDefinition<T, Allocator> RefDef(const char* name, const Allocator& allocator = Allocator())
 {
-	return ReflectionDefinition<T, Allocator>();
+	return ReflectionDefinition<T, Allocator>(name, allocator);
 }
 
 template <class T, class Allocator = DefaultAllocator>
-EnumReflectionDefinition<T, Allocator> EnumRefDef(void)
+ReflectionDefinition<T, Allocator> RefDef(const Allocator& allocator = Allocator())
 {
-	return EnumReflectionDefinition<T, Allocator>();
+	return ReflectionDefinition<T, Allocator>(allocator);
+}
+
+template <class T, class Allocator = DefaultAllocator>
+EnumReflectionDefinition<T, Allocator> EnumRefDef(const char* name, const Allocator& allocator = Allocator())
+{
+	return EnumReflectionDefinition<T, Allocator>(name, allocator);
 }
 
 #include "Gaff_ReflectionDefinitionsContainers.inl"

@@ -6,11 +6,11 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\src\Shared\include\Shibboleth_Memory.h">
+    <ClInclude Include="..\..\src\Memory\include\Shibboleth_Memory.h">
       <Filter>include</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\src\Shared\Shibboleth_Memory.cpp" />
+    <ClCompile Include="..\..\src\Memory\Shibboleth_Memory.cpp" />
   </ItemGroup>
 </Project>

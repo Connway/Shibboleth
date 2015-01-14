@@ -20,16 +20,72 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
+// Base Callback Helper
+template <class Allocator>
+BaseCallbackHelper<Allocator>::BaseCallbackHelper(const Allocator& allocator):
+	_callbacks(allocator), _allocator(allocator)
+{
+}
+
+template <class Allocator>
+BaseCallbackHelper<Allocator>::~BaseCallbackHelper(void)
+{
+}
+
+template <class Allocator>
+BaseCallbackHelper<Allocator>& BaseCallbackHelper<Allocator>::GetInstance(const Allocator& allocator)
+{
+	static BaseCallbackHelper helper_instance(allocator);
+	return helper_instance;
+}
+
+template <class Allocator>
+void BaseCallbackHelper<Allocator>::addBaseClassCallback(IReflectionDefinition* base_ref_def, Gaff::FunctionBinder<void>* callback)
+{
+	Array<FunctionBinder<void>*, Allocator>& callbacks = _callbacks[base_ref_def];
+
+	if (callbacks.empty()) {
+		callbacks.setAllocator(_allocator);
+	}
+
+	callbacks.push(callback);
+}
+
+template <class Allocator>
+void BaseCallbackHelper<Allocator>::triggerBaseClassCallback(IReflectionDefinition* base_ref_def)
+{
+	Array<FunctionBinder<void>*, Allocator>* callbacks = &_callbacks[base_ref_def];
+
+	for (unsigned int i = 0; i < callbacks->size(); ++i) {
+		(*(*callbacks)[i])();
+
+		// Because the array may have resized and invalidated our reference.
+		// This is not optimal, but I'm lazy and it only happens during static initialization.
+		callbacks = &_callbacks[base_ref_def];
+
+		_allocator.freeT((*callbacks)[i]);
+	}
+
+	_callbacks.erase(base_ref_def);
+}
+
+
 // Enum Reflection Definition
 template <class T, class Allocator>
 EnumReflectionDefinition<T, Allocator>::EnumReflectionDefinition(EnumReflectionDefinition<T, Allocator>&& ref_def):
-	_values_map(Move(ref_def._values_map)), _defined(true)
+	_values_map(Move(ref_def._values_map)), _name(Move(ref_def._name)), _defined(true)
 {
 }
 
 template <class T, class Allocator>
-EnumReflectionDefinition<T, Allocator>::EnumReflectionDefinition(void):
-	_defined(false)
+EnumReflectionDefinition<T, Allocator>::EnumReflectionDefinition(const char* name, const Allocator& allocator):
+	_values_map(allocator), _name(name, allocator), _defined(false)
+{
+}
+
+template <class T, class Allocator>
+EnumReflectionDefinition<T, Allocator>::EnumReflectionDefinition(const Allocator& allocator):
+	_values_map(allocator), _name(allocator), _defined(false)
 {
 }
 
@@ -42,6 +98,7 @@ template <class T, class Allocator>
 const EnumReflectionDefinition<T, Allocator>& EnumReflectionDefinition<T, Allocator>::operator=(EnumReflectionDefinition<T, Allocator>&& rhs)
 {
 	_values_map = Move(rhs._values_map);
+	_name = Move(rhs._name);
 	_defined = true;
 	return *this;
 }
@@ -113,6 +170,12 @@ unsigned int EnumReflectionDefinition<T, Allocator>::getNumEntries(void) const
 }
 
 template <class T, class Allocator>
+const char* EnumReflectionDefinition<T, Allocator>::getEnumName(void) const
+{
+	return _name.getBuffer();
+}
+
+template <class T, class Allocator>
 void EnumReflectionDefinition<T, Allocator>::setAllocator(const Allocator& allocator)
 {
 	_values_map.setAllocator(allocator);
@@ -136,23 +199,38 @@ void EnumReflectionDefinition<T, Allocator>::markDefined(void)
 	_defined = true;
 }
 
+template <class T, class Allocator>
+EnumReflectionDefinition<T, Allocator>&& EnumReflectionDefinition<T, Allocator>::macroFix(void)
+{
+	return Move(*this);
+}
 
 
 // Reflection Definition
 template <class T, class Allocator>
 ReflectionDefinition<T, Allocator>::ReflectionDefinition(ReflectionDefinition<T, Allocator>&& ref_def):
 	_value_containers(Move(ref_def._value_containers)), _base_ids(Move(ref_def._base_ids)),
-	_on_complete_callbacks(Move(ref_def._on_complete_callbacks)), _allocator(ref_def._allocator),
-	_base_classes_remaining(ref_def._base_classes_remaining)
+	_callback_references(Move(ref_def._callback_references)), _name(Move(ref_def._name)),
+	_allocator(ref_def._allocator), _base_classes_remaining(ref_def._base_classes_remaining)
 {
+	for (auto it = _callback_references.begin(); it != _callback_references.end(); ++it) {
+		(*it)->setRefDef(this);
+	}
+
 	if (!_base_classes_remaining) {
 		markDefined();
 	}
 }
 
 template <class T, class Allocator>
-ReflectionDefinition<T, Allocator>::ReflectionDefinition(void):
-	_base_classes_remaining(0), _defined(false)
+ReflectionDefinition<T, Allocator>::ReflectionDefinition(const char* name, const Allocator& allocator):
+	_name(name, allocator), _allocator(allocator), _base_classes_remaining(0), _defined(false)
+{
+}
+
+template <class T, class Allocator>
+ReflectionDefinition<T, Allocator>::ReflectionDefinition(const Allocator& allocator):
+	_name(allocator), _base_classes_remaining(0), _defined(false)
 {
 }
 
@@ -166,9 +244,14 @@ const ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::op
 {
 	_value_containers = Move(rhs._value_containers);
 	_base_ids = Move(rhs._base_ids);
-	_on_complete_callbacks = Move(rhs._on_complete_callbacks);
+	_callback_references = Move(rhs._callback_references);
 	_allocator = rhs._allocator;
 	_base_classes_remaining = rhs._base_classes_remaining;
+
+	// Update the ReflectionDefinition references
+	for (auto it = _callback_references.begin(); it != _callback_references.end(); ++it) {
+		(*it)->setRefDef(this);
+	}
 
 	if (!_base_classes_remaining) {
 		markDefined();
@@ -178,13 +261,13 @@ const ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::op
 }
 
 template <class T, class Allocator>
-void ReflectionDefinition<T, Allocator>::read(const Gaff::JSON& json, void* object)
+void ReflectionDefinition<T, Allocator>::read(const JSON& json, void* object)
 {
 	read(json, reinterpret_cast<T*>(object));
 }
 
 template <class T, class Allocator>
-void ReflectionDefinition<T, Allocator>::write(Gaff::JSON& json, void* object) const
+void ReflectionDefinition<T, Allocator>::write(JSON& json, void* object) const
 {
 	write(json, reinterpret_cast<T*>(object));
 }
@@ -193,7 +276,7 @@ template <class T, class Allocator>
 void* ReflectionDefinition<T, Allocator>::getInterface(unsigned int class_id, const void* object) const
 {
 	auto it = _base_ids.binarySearch(_base_ids.begin(), _base_ids.end(), class_id,
-		[](const Gaff::Pair< unsigned int, Gaff::FunctionBinder<void*, const void*> >& lhs, unsigned int rhs) -> bool
+		[](const Pair< unsigned int, FunctionBinder<void*, const void*> >& lhs, unsigned int rhs) -> bool
 		{
 			return lhs.first < rhs;
 		});
@@ -202,7 +285,13 @@ void* ReflectionDefinition<T, Allocator>::getInterface(unsigned int class_id, co
 }
 
 template <class T, class Allocator>
-void ReflectionDefinition<T, Allocator>::read(const Gaff::JSON& json, T* object)
+const char* ReflectionDefinition<T, Allocator>::getName(void) const
+{
+	return _name.getBuffer();
+}
+
+template <class T, class Allocator>
+void ReflectionDefinition<T, Allocator>::read(const JSON& json, T* object)
 {
 	for (auto it = _value_containers.begin(); it != _value_containers.end(); ++it) {
 		(*it)->read(json, object);
@@ -210,7 +299,7 @@ void ReflectionDefinition<T, Allocator>::read(const Gaff::JSON& json, T* object)
 }
 
 template <class T, class Allocator>
-void ReflectionDefinition<T, Allocator>::write(Gaff::JSON& json, T* object) const
+void ReflectionDefinition<T, Allocator>::write(JSON& json, T* object) const
 {
 	for (auto it = _value_containers.begin(); it != _value_containers.end(); ++it) {
 		(*it)->write(json, object);
@@ -219,12 +308,19 @@ void ReflectionDefinition<T, Allocator>::write(Gaff::JSON& json, T* object) cons
 
 template <class T, class Allocator>
 template <class T2>
-ReflectionDefinition<T, Allocator>&& ReflectionDefinition<T, Allocator>::addBaseClass(const ReflectionDefinition<T2, Allocator>& base_ref_def, unsigned int class_id)
+ReflectionDefinition<T, Allocator>&& ReflectionDefinition<T, Allocator>::addBaseClass(ReflectionDefinition<T2, Allocator>& base_ref_def, unsigned int class_id)
 {
-	assert(this != &base_ref_def);
+	assert((void*)this != (void*)&base_ref_def);
 
-	if (!base_ref_def.isDefined()) {
-		addOnCompleteCallback(Gaff::Bind<OnCompleteFunctor<T2>, void>(OnCompleteFunctor<T2>(*this, false)));
+	if (!base_ref_def._defined) {
+		Functor<OnCompleteFunctor<T2>, void> ftor(OnCompleteFunctor<T2>(this, true));
+		FunctionBinder<void>* binder = _allocator.template allocT< FunctionBinder<void> >(&ftor, sizeof(ftor));
+
+		BaseCallbackHelper<Allocator>::GetInstance(_allocator).addBaseClassCallback(&T2::GetReflectionDefinition(), binder);
+
+		OnCompleteFunctor<T2>* functor = &((Functor<OnCompleteFunctor<T2>, void>&)binder->GetInterface()).getFunctor();
+		_callback_references.push(functor);
+
 		++_base_classes_remaining;
 		return Move(*this);
 	}
@@ -237,7 +333,7 @@ ReflectionDefinition<T, Allocator>&& ReflectionDefinition<T, Allocator>::addBase
 
 	for (auto it_base = base_ref_def._base_ids.begin(); it_base != base_ref_def._base_ids.end(); ++it_base) {
 		auto it = _base_ids.binarySearch(_base_ids.begin(), _base_ids.end(), class_id,
-			[](const Gaff::Pair< unsigned int, Gaff::FunctionBinder<void*, const void*> >& lhs, unsigned int rhs) -> bool
+			[](const Pair< unsigned int, FunctionBinder<void*, const void*> >& lhs, unsigned int rhs) -> bool
 			{
 				return lhs.first < rhs;
 			});
@@ -255,14 +351,14 @@ template <class T2>
 ReflectionDefinition<T, Allocator>&& ReflectionDefinition<T, Allocator>::addBaseClass(unsigned int class_id)
 {
 	auto it = _base_ids.binarySearch(_base_ids.begin(), _base_ids.end(), class_id,
-		[](const Gaff::Pair< unsigned int, Gaff::FunctionBinder<void*, const void*> >& lhs, unsigned int rhs) -> bool
+		[](const Pair< unsigned int, FunctionBinder<void*, const void*> >& lhs, unsigned int rhs) -> bool
 		{
 			return lhs.first < rhs;
 		});
 
 	assert(it == _base_ids.end() || it->first != class_id);
 
-	Gaff::Pair<unsigned int, Gaff::FunctionBinder<void*, const void*> > data(class_id, Gaff::Bind(&BaseClassCast<T2>));
+	Pair<unsigned int, FunctionBinder<void*, const void*> > data(class_id, Bind(&BaseClassCast<T2>));
 	_base_ids.insert(data, it);
 
 	return Move(*this);
@@ -272,18 +368,27 @@ template <class T, class Allocator>
 template <class T2>
 ReflectionDefinition<T, Allocator>&& ReflectionDefinition<T, Allocator>::addBaseClass(void)
 {
-	return addBaseClass<T2>(T2::g_Ref_Def, T2::g_Hash);
+	return addBaseClass<T2>(T2::GetReflectionDefinition(), T2::GetReflectionHash());
 }
 
 template <class T, class Allocator>
 template <class T2>
 ReflectionDefinition<T, Allocator>&& ReflectionDefinition<T, Allocator>::addBaseClassInterfaceOnly(void)
 {
-	if (&T2::g_Ref_Def == this || T2::g_Ref_Def.isDefined()) {
-		addBaseClass<T2>(T2::g_Hash);
+	if ((void*)&T::GetReflectionDefinition() == (void*)&T2::GetReflectionDefinition() ||
+		(void*)&T2::GetReflectionDefinition() == (void*)this || T2::GetReflectionDefinition()._defined) {
+
+		addBaseClass<T2>(T2::GetReflectionHash());
 
 	} else {
-		addOnCompleteCallback(Gaff::Bind<OnCompleteFunctor<T2>, void>(OnCompleteFunctor<T2>(*this, true)));
+		Functor<OnCompleteFunctor<T2>, void> ftor(OnCompleteFunctor<T2>(this, true));
+		FunctionBinder<void>* binder = _allocator.template allocT< FunctionBinder<void> >(&ftor, sizeof(ftor));
+
+		BaseCallbackHelper<Allocator>::GetInstance(_allocator).addBaseClassCallback(&T2::GetReflectionDefinition(), binder);
+
+		OnCompleteFunctor<T2>* functor = &((Functor<OnCompleteFunctor<T2>, void>&)binder->GetInterface()).getFunctor();
+		_callback_references.push(functor);
+
 		++_base_classes_remaining;
 	}
 
@@ -518,12 +623,7 @@ template <class T, class Allocator>
 void ReflectionDefinition<T, Allocator>::markDefined(void)
 {
 	_defined = true;
-
-	for (auto it = _on_complete_callbacks.begin(); it != _on_complete_callbacks.end(); ++it) {
-		(*it)();
-	}
-
-	_on_complete_callbacks.clear();
+	BaseCallbackHelper<Allocator>::GetInstance(_allocator).triggerBaseClassCallback(this);
 }
 
 template <class T, class Allocator>
@@ -541,16 +641,17 @@ void ReflectionDefinition<T, Allocator>::clear(void)
 	_value_containers.clear();
 }
 
-// On Complete Callback
 template <class T, class Allocator>
-void ReflectionDefinition<T, Allocator>::addOnCompleteCallback(const Gaff::FunctionBinder<void>& cb)
+ReflectionDefinition<T, Allocator>&& ReflectionDefinition<T, Allocator>::macroFix(void)
 {
-	_on_complete_callbacks.push(cb);
+	return Move(*this);
 }
 
+
+// On Complete Functor
 template <class T, class Allocator>
 template <class T2>
-ReflectionDefinition<T, Allocator>::OnCompleteFunctor<T2>::OnCompleteFunctor(ReflectionDefinition<T, Allocator>& my_ref_def, bool interface_only):
+ReflectionDefinition<T, Allocator>::OnCompleteFunctor<T2>::OnCompleteFunctor(ReflectionDefinition<T, Allocator>* my_ref_def, bool interface_only):
 	_my_ref_def(my_ref_def), _interface_only(interface_only)
 {
 }
@@ -560,14 +661,21 @@ template <class T2>
 void ReflectionDefinition<T, Allocator>::OnCompleteFunctor<T2>::operator()(void) const
 {
 	if (_interface_only) {
-		_my_ref_def.addBaseClass<T2>(T2::g_Ref_Def, T2::g_Hash);
+		_my_ref_def->addBaseClass<T2>(T2::GetReflectionHash());
 	} else {
-		_my_ref_def.addBaseClass<T2>(T2::g_Hash);
+		_my_ref_def->addBaseClass<T2>(T2::GetReflectionDefinition(), T2::GetReflectionHash());
 	}
 
-	--_my_ref_def._base_classes_remaining;
+	--_my_ref_def->_base_classes_remaining;
 
-	if (!_my_ref_def._base_classes_remaining) {
-		_my_ref_def.markDefined();
+	if (!_my_ref_def->_base_classes_remaining) {
+		_my_ref_def->markDefined();
 	}
+}
+
+template <class T, class Allocator>
+template <class T2>
+void ReflectionDefinition<T, Allocator>::OnCompleteFunctor<T2>::setRefDef(IReflectionDefinition* ref_def)
+{
+	_my_ref_def = (ReflectionDefinition<T, Allocator>*)ref_def;
 }

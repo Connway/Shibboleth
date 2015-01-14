@@ -34,13 +34,13 @@ public:
 	template <class Interface>
 	const Interface* requestInterface(void) const
 	{
-		return reinterpret_cast<const Interface*>(rawRequestInterface(Interface::g_Hash));
+		return reinterpret_cast<const Interface*>(rawRequestInterface(Interface::GetReflectionHash()));
 	}
 
 	template <class Interface>
 	Interface* requestInterface(void)
 	{
-		return reinterpret_cast<Interface*>(rawRequestInterface(Interface::g_Hash));
+		return reinterpret_cast<Interface*>(rawRequestInterface(Interface::GetReflectionHash()));
 	}
 
 	template <class Interface>
@@ -57,5 +57,17 @@ public:
 
 	virtual void* rawRequestInterface(unsigned int class_id) const = 0;
 };
+
+template <class Interface>
+const Interface* ReflectionCast(const IRequestableInterface* object)
+{
+	return reinterpret_cast<const Interface*>(object->rawRequestInterface(Interface::GetReflectionHash()));
+}
+
+template <class Interface>
+Interface* ReflectionCast(IRequestableInterface* object)
+{
+	return reinterpret_cast<Interface*>(object->rawRequestInterface(Interface::GetReflectionHash()));
+}
 
 NS_END

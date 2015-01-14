@@ -202,9 +202,10 @@ private:
 
 	FunctionBinder(void* object, unsigned int size);
 
-	template <class T, class RT, class... Ags> friend FunctionBinder<RT, Ags...> Bind(T*, RT (T::*)(Ags...));
-	template <class RT, class... Ags> friend FunctionBinder<RT, Ags...> Bind(RT (*)(Ags...));
-	template <class T, class RT, class... Ags> friend FunctionBinder<RT, Ags...> Bind(const T&);
+	template <class T, class RT, class... Args> friend FunctionBinder<RT, Args...> Bind(T*, RT (T::*)(Args...));
+	template <class RT, class... Args> friend FunctionBinder<RT, Args...> Bind(RT (*)(Args...));
+	template <class T, class RT, class... Args> friend FunctionBinder<RT, Args...> Bind(const T&);
+	template <class T, class... Args> friend T* construct(T*, Args&&...);
 };
 
 /*!

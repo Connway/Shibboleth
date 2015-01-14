@@ -6,6 +6,7 @@ group "Dependencies"
 
 group "Common"
 	dofile("../Shared/include_external.lua")
+	dofile("../Memory/include_external.lua")
 
 group "GraphicsModule"
 	external "Graphics"

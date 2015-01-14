@@ -44,7 +44,7 @@ Shibboleth::IManager* CreateManagerTNoApp(Shibboleth::IApp& app)
 template <class Manager>
 void ClearRefDef(void)
 {
-	Manager::g_Ref_Def.clear();
+	Manager::GetReflectionDefinition().clear();
 }
 
 Shibboleth::IManager* CreateOtterUIManager(Shibboleth::IApp& app)

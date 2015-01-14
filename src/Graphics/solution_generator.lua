@@ -111,6 +111,7 @@ group "Dependencies"
 
 group ""
 	dofile("../Shared/include_external.lua")
+	dofile("../Memory/include_external.lua")
 
 	project "Graphics"
 		if _ACTION then
@@ -125,6 +126,7 @@ group ""
 		includedirs
 		{
 			"../Shared/include",
+			"../Memory/include",
 			"../../dependencies/jansson",
 			"../../dependencies/Gleam/include",
 			"../../dependencies/Gaff/include",

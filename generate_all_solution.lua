@@ -5,7 +5,14 @@ solution "All"
 
 	platforms { "x86", "x64" }
 
-	configurations { "Debug", "Release" }
+	-- configurations { "Debug", "Release" }
+
+	if os.get() == "windows" then
+		configurations { "Debug_OpenGL", "Release_OpenGL", "Debug_Direct3D", "Release_Direct3D" }
+	else
+		configurations { "Debug_OpenGL", "Release_OpenGL" }
+	end
+
 	warnings "Extra"
 	flags { "Unicode", "NoRTTI" }
 
@@ -20,29 +27,29 @@ solution "All"
 	filter { "platforms:x64" }
 		architecture "x64"
 
-	filter { "configurations:Debug", "platforms:x86" }
+	filter { "configurations:Debug*", "platforms:x86" }
 		objdir "build/intermediate"
 		targetdir "build/output/x86/Debug"
 
-	filter { "configurations:Debug", "platforms:x64" }
+	filter { "configurations:Debug*", "platforms:x64" }
 		objdir "build/intermediate"
 		targetdir "build/output/x64/Debug"
 
-	filter { "configurations:Release", "platforms:x86" }
+	filter { "configurations:Release*", "platforms:x86" }
 		objdir "build/intermediate"
 		targetdir "build/output/x86/Release"
 
-	filter { "configurations:Release", "platforms:x64" }
+	filter { "configurations:Release*", "platforms:x64" }
 		objdir "build/intermediate"
 		targetdir "build/output/x64/Release"
 
 	filter { "language:C++", "action:gmake" }
 		buildoptions { "-std=c++11", "-x c++" }
 
-	filter { "configurations:Debug", "action:gmake", "options:not debug_optimization" }
+	filter { "configurations:Debug*", "action:gmake", "options:not debug_optimization" }
 		optimize "Off"
 
-	filter { "configurations:Debug", "action:gmake", "options:debug_optimization" }
+	filter { "configurations:Debug*", "action:gmake", "options:debug_optimization" }
 		optimize "Debug"
 
 	filter {}
@@ -50,11 +57,11 @@ solution "All"
 	configuration "vs*"
 		buildoptions { "/sdl" }
 
-	configuration "Debug"
+	configuration "Debug*"
 		flags { "Symbols" }
 		defines { "_DEBUG", "DEBUG" }
 
-	configuration "Release"
+	configuration "Release*"
 		flags { "LinkTimeOptimization", "ReleaseRuntime" }
 		optimize "Speed"
 

@@ -32,13 +32,13 @@ THE SOFTWARE.
 NS_SHIBBOLETH
 
 REF_IMPL_REQ(RenderManager);
-REF_IMPL_ASSIGN_SHIB(RenderManager)
+REF_IMPL_SHIB(RenderManager)
 .addBaseClassInterfaceOnly<RenderManager>()
 .ADD_BASE_CLASS_INTERFACE_ONLY(IUpdateQuery)
 ;
 
 // Default values
-ENUM_REF_IMPL_ASSIGN_SHIB(DisplayTags)
+ENUM_REF_IMPL_SHIB(DisplayTags)
 .addValue("DT_ALL", DT_ALL)
 .addValue("DT_1", DT_1)
 .addValue("DT_2", DT_2)
@@ -141,7 +141,7 @@ bool RenderManager::init(const char* module)
 		}
 		
 		// Reset reflection definition
-		g_DisplayTags_Ref_Def = Gaff::EnumRefDef<DisplayTags, ProxyAllocator>();
+		g_DisplayTags_Ref_Def = Gaff::EnumRefDef<DisplayTags, ProxyAllocator>("DisplayTags", ProxyAllocator(GetAllocator(), "Reflection"));
 
 		bool ret = display_tags.forEachInArray([&](size_t index, const Gaff::JSON& value) -> bool
 		{
@@ -259,7 +259,7 @@ bool RenderManager::createWindow(
 
 	unsigned int device_id = (unsigned int)_render_device->getDeviceForAdapter(adapter_id);
 
-	WindowData wnd_data = { window, device_id, _render_device->getNumOutputs(device_id), tags };
+	WindowData wnd_data = { window, device_id, _render_device->getNumOutputs(device_id) - 1, tags };
 	_windows.push(wnd_data);
 	return true;
 }

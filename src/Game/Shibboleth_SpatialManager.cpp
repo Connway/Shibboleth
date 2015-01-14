@@ -27,7 +27,7 @@ THE SOFTWARE.
 NS_SHIBBOLETH
 
 REF_IMPL_REQ(SpatialManager);
-REF_IMPL_ASSIGN_SHIB(SpatialManager)
+REF_IMPL_SHIB(SpatialManager)
 .addBaseClassInterfaceOnly<SpatialManager>()
 .ADD_BASE_CLASS_INTERFACE_ONLY(IUpdateQuery)
 ;

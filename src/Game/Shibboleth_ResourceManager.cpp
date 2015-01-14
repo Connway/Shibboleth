@@ -145,7 +145,7 @@ void ResourceManager::ResourceLoadingTask::doTask(void)
 
 
 REF_IMPL_REQ(ResourceManager);
-REF_IMPL_ASSIGN_SHIB(ResourceManager)
+REF_IMPL_SHIB(ResourceManager)
 .addBaseClassInterfaceOnly<ResourceManager>()
 ;
 

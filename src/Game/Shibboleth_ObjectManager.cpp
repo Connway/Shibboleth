@@ -29,7 +29,7 @@ THE SOFTWARE.
 NS_SHIBBOLETH
 
 REF_IMPL_REQ(ObjectManager);
-REF_IMPL_ASSIGN_SHIB(ObjectManager)
+REF_IMPL_SHIB(ObjectManager)
 .addBaseClassInterfaceOnly<ObjectManager>()
 .ADD_BASE_CLASS_INTERFACE_ONLY(IUpdateQuery)
 ;
