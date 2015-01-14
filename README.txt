@@ -36,3 +36,4 @@ Includes Visual Studio 2013 solution/project files and should compile out of the
 ====================
 
 It's not finished yet and development isn't far enough along for some demos.
+GameStates DLL takes a while to link sometimes.

@@ -22,10 +22,10 @@ THE SOFTWARE.
 
 #pragma once
 
-#include <Shibboleth_ReflectionDefinitions.h>
 #include "Shibboleth_ResourceDefines.h"
 #include "Shibboleth_ResourceWrapper.h"
 #include "Shibboleth_IComponent.h"
+#include <Shibboleth_ReflectionDefinitions.h>
 
 NS_SHIBBOLETH
 

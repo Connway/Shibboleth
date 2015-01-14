@@ -44,7 +44,7 @@ Shibboleth::IComponent* CreateComponent(Shibboleth::IApp& app)
 template <class Component>
 void ClearRefDef(void)
 {
-	Component::g_Ref_Def.clear();
+	Component::GetReflectionDefinition().clear();
 }
 
 enum Components

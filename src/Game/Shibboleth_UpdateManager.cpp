@@ -28,7 +28,7 @@ THE SOFTWARE.
 NS_SHIBBOLETH
 
 REF_IMPL_REQ(UpdateManager);
-REF_IMPL_ASSIGN_SHIB(UpdateManager)
+REF_IMPL_SHIB(UpdateManager)
 .addBaseClassInterfaceOnly<UpdateManager>()
 ;
 

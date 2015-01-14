@@ -24,10 +24,9 @@ THE SOFTWARE.
 
 #include "Shibboleth_ModelComponent.h"
 #include "Shibboleth_ModelAnimResources.h"
-#include <Shibboleth_ReflectionDefinitions.h>
 #include <Shibboleth_LoadingMessage.h>
 
-#include "Shibboleth_RenderManager.h"
+#include <Shibboleth_RenderManager.h>
 #include <Gleam_IProgram.h>
 #include <Gleam_Matrix4x4.h>
 #include <Gleam_IBuffer.h>
@@ -41,7 +40,7 @@ NS_SHIBBOLETH
 COMP_REF_DEF_SAVE(ModelComponent, g_Ref_Def);
 REF_IMPL_REQ(ModelComponent);
 
-REF_IMPL_ASSIGN_SHIB(ModelComponent)
+REF_IMPL_SHIB(ModelComponent)
 .addBaseClass<ModelComponent>(ModelComponent::g_Hash)
 .addString("Material File", &ModelComponent::_material_filename)
 .addString("Model File", &ModelComponent::_model_filename)

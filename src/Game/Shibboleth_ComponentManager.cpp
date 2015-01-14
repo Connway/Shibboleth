@@ -27,7 +27,7 @@ NS_SHIBBOLETH
 
 REF_IMPL_REQ(ComponentManager);
 
-REF_IMPL_ASSIGN_SHIB(ComponentManager)
+REF_IMPL_SHIB(ComponentManager)
 .addBaseClassInterfaceOnly<ComponentManager>()
 ;
 

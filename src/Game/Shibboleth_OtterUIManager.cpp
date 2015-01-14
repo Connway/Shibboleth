@@ -28,7 +28,7 @@ THE SOFTWARE.
 NS_SHIBBOLETH
 
 REF_IMPL_REQ(OtterUIManager);
-REF_IMPL_ASSIGN_SHIB(OtterUIManager)
+REF_IMPL_SHIB(OtterUIManager)
 .addBaseClassInterfaceOnly<OtterUIManager>()
 ;
 

@@ -43,6 +43,8 @@ public:
 
 	virtual Pair<AString<Allocator>, unsigned int> getEntryGeneric(unsigned int index) const = 0;
 	virtual unsigned int getNumEntries(void) const = 0;
+
+	virtual const char* getEnumName(void) const = 0;
 };
 
 class IReflectionDefinition
@@ -72,7 +74,7 @@ public:
 	virtual void write(Gaff::JSON& json, void* object) const = 0;
 
 	/*!
-		\brief Gets the address offset of a class that this object implements or derives from.
+		\brief Gets the address offset of a type that this object implements or derives from.
 
 		\param class_id The class ID whose interface we wish to retrieve.
 		\param object The object we are performing the query on.
@@ -82,6 +84,12 @@ public:
 			otherwise nullptr if \a object does not implement\inherit that interface.
 	*/
 	virtual void* getInterface(unsigned int class_id, const void* object) const = 0;
+
+	/*!
+		\brief Gets the name of the reflected type.
+		\return The name of the reflected type.
+	*/
+	virtual const char* getName(void) const = 0;
 };
 
 NS_END

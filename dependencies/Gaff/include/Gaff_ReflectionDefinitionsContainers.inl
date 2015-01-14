@@ -725,7 +725,7 @@ void ReflectionDefinition<T, Allocator>::ObjectContainer<T2>::set(const T2& valu
 
 template <class T, class Allocator>
 template <class T2>
-typename ReflectionDefinition<T, Allocator>::IValueContainer::ValueType ReflectionDefinition<T, Allocator>::ObjectContainer<T2>::getType(void) const
+ReflectionValueType ReflectionDefinition<T, Allocator>::ObjectContainer<T2>::getType(void) const
 {
 	return IValueContainer::VT_OBJECT;
 }
@@ -779,7 +779,7 @@ void ReflectionDefinition<T, Allocator>::EnumContainer<T2>::write(Gaff::JSON& js
 
 template <class T, class Allocator>
 template <class T2>
-typename ReflectionDefinition<T, Allocator>::IValueContainer::ValueType ReflectionDefinition<T, Allocator>::EnumContainer<T2>::getType(void) const
+ReflectionValueType ReflectionDefinition<T, Allocator>::EnumContainer<T2>::getType(void) const
 {
 	return IValueContainer::VT_ENUM;
 }
@@ -859,7 +859,7 @@ void ReflectionDefinition<T, Allocator>::BaseValueContainer<T2>::write(Gaff::JSO
 
 template <class T, class Allocator>
 template <class T2>
-typename ReflectionDefinition<T, Allocator>::IValueContainer::ValueType ReflectionDefinition<T, Allocator>::BaseValueContainer<T2>::getType(void) const
+ReflectionValueType ReflectionDefinition<T, Allocator>::BaseValueContainer<T2>::getType(void) const
 {
 	return _value_ptr->getType();
 }

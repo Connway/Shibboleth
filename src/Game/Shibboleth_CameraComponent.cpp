@@ -29,7 +29,7 @@ THE SOFTWARE.
 NS_SHIBBOLETH
 
 REF_IMPL_REQ(CameraComponent);
-REF_IMPL_ASSIGN_SHIB(CameraComponent)
+REF_IMPL_SHIB(CameraComponent)
 .addBaseClassInterfaceOnly<CameraComponent>()
 .addString("Render Target Name", &CameraComponent::_render_target_name)
 ;

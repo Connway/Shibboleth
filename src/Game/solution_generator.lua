@@ -138,6 +138,7 @@ group "Dependencies"
 
 group ""
 	dofile("../Shared/include_external.lua")
+	dofile("../Memory/include_external.lua")
 
 	project "Game"
 		if _ACTION then
@@ -160,6 +161,7 @@ group ""
 		{
 			"include",
 			"../Shared/include",
+			"../Memory/include",
 			"../../dependencies/OtterUI/inc",
 			"../../dependencies/jansson",
 			"../../dependencies/Gleam/include",
@@ -192,6 +194,7 @@ group ""
 		{
 			"include",
 			"../Shared/include",
+			"../Memory/include",
 			"../../dependencies/OtterUI/inc",
 			"../../dependencies/jansson",
 			"../../dependencies/Gleam/include",
@@ -222,6 +225,7 @@ group ""
 		{
 			"include",
 			"../Shared/include",
+			"../Memory/include",
 			"../../dependencies/OtterUI/inc",
 			"../../dependencies/jansson",
 			"../../dependencies/Gleam/include",
@@ -250,6 +254,7 @@ group ""
 		{
 			"include",
 			"../Shared/include",
+			"../Memory/include",
 			"../../dependencies/Gaff/include",
 			"../../dependencies/utf8-cpp"
 		}
@@ -273,6 +278,7 @@ group ""
 		{
 			"include",
 			"../Shared/include",
+			"../Memory/include",
 			"../../dependencies/OtterUI/inc",
 			"../../dependencies/jansson",
 			"../../dependencies/Gleam/include",
@@ -304,6 +310,7 @@ group ""
 		{
 			"include",
 			"../Shared/include",
+			"../Memory/include",
 			"../../dependencies/OtterUI/inc",
 			"../../dependencies/jansson",
 			"../../dependencies/Gleam/include",
@@ -366,6 +373,7 @@ group ""
 		{
 			"include",
 			"../Shared/include",
+			"../Memory/include",
 			"../../dependencies/Gaff/include",
 			"../../dependencies/Gleam/include",
 			"../../dependencies/OtterUI/inc",
@@ -435,6 +443,7 @@ group ""
 		{
 			"include",
 			"../Shared/include",
+			"../Memory/include",
 			"../../dependencies/OtterUI/inc",
 			"../../dependencies/jansson",
 			"../../dependencies/Gleam/include",

@@ -25,17 +25,17 @@ THE SOFTWARE.
 #include "Shibboleth_Allocator.h"
 
 #ifdef IS_MEMORY
-	#define MEMORY_TAG DYNAMICEXPORT
+	#define MEMORY_API DYNAMICEXPORT
 #else
-	#define MEMORY_TAG DYNAMICIMPORT
+	#define MEMORY_API DYNAMICIMPORT
 #endif
 
 NS_SHIBBOLETH
 
-MEMORY_TAG void SetAllocator(Allocator* allocator);
-MEMORY_TAG Allocator* GetAllocator(void);
+MEMORY_API void SetAllocator(Allocator* allocator);
+MEMORY_API Allocator* GetAllocator(void);
 
-MEMORY_TAG void* ShibbolethAllocate(size_t size);
-MEMORY_TAG void ShibbolethFree(void* data);
+MEMORY_API void* ShibbolethAllocate(size_t size);
+MEMORY_API void ShibbolethFree(void* data);
 
 NS_END
