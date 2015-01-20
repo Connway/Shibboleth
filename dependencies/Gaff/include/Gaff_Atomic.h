@@ -117,7 +117,7 @@ THE SOFTWARE.
 	#define AtomicCompareExchangePointer(dest, new_val, old_val) __sync_val_compare_and_swap(dest, old_val, new_val)
 
 	// Only supports unsigned long, unsigned long long, and unsigned int
-	#define AtomicUAdd __sync_sub_and_fetch
+	#define AtomicUAdd __sync_add_and_fetch
 	#define AtomicUSub __sync_sub_and_fetch
 	#define AtomicUAddFetchOrig __sync_fetch_and_add
 	#define AtomicUSubFetchOrig __sync_fetch_and_sub

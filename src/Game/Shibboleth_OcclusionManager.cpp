@@ -20,43 +20,43 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#include "Shibboleth_SpatialManager.h"
+#include "Shibboleth_OcclusionManager.h"
 #include "Shibboleth_Object.h"
 #include <Shibboleth_IApp.h>
 
 NS_SHIBBOLETH
 
-REF_IMPL_REQ(SpatialManager);
-REF_IMPL_SHIB(SpatialManager)
-.addBaseClassInterfaceOnly<SpatialManager>()
+REF_IMPL_REQ(OcclusionManager);
+REF_IMPL_SHIB(OcclusionManager)
+.addBaseClassInterfaceOnly<OcclusionManager>()
 .ADD_BASE_CLASS_INTERFACE_ONLY(IUpdateQuery)
 ;
 
-SpatialManager::WatchUpdater::WatchUpdater(SpatialManager* spatial_mgr, Node* node):
+OcclusionManager::WatchUpdater::WatchUpdater(OcclusionManager* spatial_mgr, Node* node):
 	_spatial_mgr(spatial_mgr), _node(node)
 {
 }
 
-SpatialManager::WatchUpdater::~WatchUpdater(void)
+OcclusionManager::WatchUpdater::~WatchUpdater(void)
 {
 }
 
-void SpatialManager::WatchUpdater::operator()(const Gleam::Quaternion&) const
-{
-	addDirtyNode();
-}
-
-void SpatialManager::WatchUpdater::operator()(const Gleam::AABB&) const
+void OcclusionManager::WatchUpdater::operator()(const Gleam::Quaternion&) const
 {
 	addDirtyNode();
 }
 
-void SpatialManager::WatchUpdater::operator()(const Gleam::Vec4&) const
+void OcclusionManager::WatchUpdater::operator()(const Gleam::AABB&) const
 {
 	addDirtyNode();
 }
 
-void SpatialManager::WatchUpdater::addDirtyNode(void) const
+void OcclusionManager::WatchUpdater::operator()(const Gleam::Vec4&) const
+{
+	addDirtyNode();
+}
+
+void OcclusionManager::WatchUpdater::addDirtyNode(void) const
 {
 	if (!_node->dirty) {
 		_node->_lock.lock();
@@ -68,6 +68,9 @@ void SpatialManager::WatchUpdater::addDirtyNode(void) const
 
 			Gaff::ScopedLock<Gaff::SpinLock> scoped_lock(_spatial_mgr->_dirty_lock);
 			_spatial_mgr->_dirty_nodes.push(_node);
+
+		} else {
+			_node->_lock.unlock(); // Nothing to change, don't forget to release the lock.
 		}
 	}
 }
@@ -75,28 +78,28 @@ void SpatialManager::WatchUpdater::addDirtyNode(void) const
 
 
 
-SpatialManager::SpatialManager(IApp& app):
-	_dirty_nodes(100, (Node*)nullptr), _bvh(nullptr), _app(app), _next_id(0)
+OcclusionManager::OcclusionManager(IApp& app):
+	_dirty_nodes(100), _bvh(nullptr), _app(app), _next_id(0)
 {
 }
 
-SpatialManager::~SpatialManager(void)
+OcclusionManager::~OcclusionManager(void)
 {
 }
 
-void SpatialManager::requestUpdateEntries(Array<UpdateEntry>& entries)
+void OcclusionManager::requestUpdateEntries(Array<UpdateEntry>& entries)
 {
-	//entries.movePush(UpdateEntry(AString("Spatial Manager: Update"), Gaff::Bind(this, &SpatialManager::update)));
+	entries.movePush(UpdateEntry(AString("Occlusion Manager: Update"), Gaff::Bind(this, &OcclusionManager::update)));
 }
 
-const char* SpatialManager::getName(void) const
+const char* OcclusionManager::getName(void) const
 {
-	return "Spatial Manager";
+	return "Occlusion Manager";
 }
 
-unsigned int SpatialManager::addObject(Object* object)
+unsigned int OcclusionManager::addObject(Object* object)
 {
-	Node* node = _app.getAllocator().template allocT<Node>();
+	Node* node = GetAllocator()->template allocT<Node>();
 
 	if (!node) {
 		return 0;
@@ -109,6 +112,7 @@ unsigned int SpatialManager::addObject(Object* object)
 	node->receipts[0] = object->watchAABB(Gaff::Bind<WatchUpdater, void, const Gleam::AABB&>(updater));
 	node->receipts[1] = object->watchRotation(Gaff::Bind<WatchUpdater, void, const Gleam::Quaternion&>(updater));
 	node->receipts[2] = object->watchPosition(Gaff::Bind<WatchUpdater, void, const Gleam::Vec4&>(updater));
+	node->receipts[3] = object->watchScale(Gaff::Bind<WatchUpdater, void, const Gleam::Vec4&>(updater));
 	node->object = object;
 	node->dirty = false;
 
@@ -121,7 +125,7 @@ unsigned int SpatialManager::addObject(Object* object)
 	return node->id;
 }
 
-void SpatialManager::removeObject(unsigned int id)
+void OcclusionManager::removeObject(unsigned int id)
 {
 	Gaff::ScopedLock<Gaff::SpinLock> bvh_lock(_bvh_lock);
 
@@ -140,17 +144,25 @@ void SpatialManager::removeObject(unsigned int id)
 	}
 }
 
-void SpatialManager::update(double)
+void OcclusionManager::update(double)
 {
+	Gaff::ScopedLock<Gaff::SpinLock> dirty_lock(_dirty_lock);
+	Gaff::ScopedLock<Gaff::SpinLock> bvh_lock(_bvh_lock);
+
+	// Haven't implemented the occlusion manager yet, so just reset the dirty flags and move on.
+	for (auto it = _dirty_nodes.begin(); it != _dirty_nodes.end(); ++it) {
+		(*it)->dirty = false;
+	}
+
 	_dirty_nodes.clearNoFree();
 }
 
-void SpatialManager::removeNode(Node* node)
+void OcclusionManager::removeNode(Node* node)
 {
 	// implement me!
 }
 
-void SpatialManager::insertNode(Node* node)
+void OcclusionManager::insertNode(Node* node)
 {
 	// implement me!
 }

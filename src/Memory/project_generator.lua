@@ -16,6 +16,9 @@ project "Memory"
 		"../../dependencies/Gaff/include"
 	}
 
+	dependson { "Shared", "Gaff" }
+	links { "Shared", "Gaff" }
+
 	filter { "configurations:Debug", "platforms:x86" }
 		targetsuffix "32d"
 

@@ -302,3 +302,20 @@ void Queue<T, Allocator>::decrement(const T** element, T* array, unsigned int ar
 		*element = data - 1;
 	}
 }
+
+template <class T, class Allocator>
+void Queue<T, Allocator>::decrement(T** element, T* array, unsigned int array_size)
+{
+	if (!array) {
+		array_size = _size;
+		array = _array;
+	}
+
+	T* data = *element;
+
+	if (data == array) {
+		*element = array + array_size - 1;
+	} else {
+		*element = data - 1;
+	}
+}

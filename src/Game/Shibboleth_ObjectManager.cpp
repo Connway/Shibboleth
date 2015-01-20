@@ -46,7 +46,7 @@ ObjectManager::~ObjectManager(void)
 Object* ObjectManager::createObject(void)
 {
 	unsigned int id = AtomicUAddFetchOrig(&_next_id, 1);
-	Object* object = _app.getAllocator().template allocT<Object>(_app, id);
+	Object* object = GetAllocator()->template allocT<Object>(_app, id);
 
 	if (object) {
 		Gaff::ScopedLock<Gaff::SpinLock> scoped_lock(_objects_lock);
@@ -83,8 +83,24 @@ void ObjectManager::removeObject(unsigned int id)
 	}
 
 	if (object) {
-		_app.getAllocator().freeT(object);
+		GetAllocator()->freeT(object);
 	}
+}
+
+bool ObjectManager::doesObjectExist(const Object* object) const
+{
+	auto it = _objects.linearSearch(object);
+	return it != _objects.end() && *it == object;
+}
+
+bool ObjectManager::doesObjectExist(unsigned int id) const
+{
+	auto it = _objects.binarySearch(id, [](const Object* lhs, unsigned int rhs)
+	{
+		return lhs->getID() < rhs;
+	});
+
+	return it != _objects.end() && (*it)->getID() == id;
 }
 
 const char* ObjectManager::getName(void) const
@@ -100,35 +116,6 @@ void ObjectManager::requestUpdateEntries(Array<UpdateEntry>& entries)
 
 void ObjectManager::prePhysicsUpdate(double dt)
 {
-	// Add new objects
-	//{
-	//	Gaff::ScopedLock<Gaff::SpinLock> scoped_lock(_add_lock);
-
-	//	for (auto it = _add_queue.begin(); it != _add_queue.end(); ++it) {
-	//		auto location =_objects.binarySearch((*it)->getID(), [](const Object* lhs, unsigned int rhs)
-	//		{
-	//			return lhs->getID() < rhs;
-	//		});
-
-	//		// If we generated a duplicate ID, then something is borked
-	//		assert(location == _objects.end() || (*location)->getID() != (*it)->getID());
-
-	//		_objects.insert(*it, location);
-	//	}
-
-	//	_add_queue.clearNoFree();
-	//}
-
-	// Remove objects
-	//{
-	//	Gaff::ScopedLock<Gaff::SpinLock> scoped_lock(_remove_lock);
-
-	//	for (auto it = _remove_queue.begin(); it != _remove_queue.end(); ++it) {
-	//	}
-
-	//	_remove_queue.clearNoFree();
-	//}
-
 	// generate update jobs
 	//for (auto it = _objects.begin(); it != _objects.end(); ++it) {
 	//}

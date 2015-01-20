@@ -35,6 +35,7 @@ class IManager : public Gaff::INamedObject, public Gaff::IRequestableInterface
 {
 public:
 	IManager(void) {}
+	virtual ~IManager(void) {}
 
 	virtual void allManagersCreated(void) {}
 

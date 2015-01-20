@@ -51,7 +51,7 @@ void UpdateManager::update(double dt)
 	for (auto it_row = _table.begin(); it_row != _table.end(); ++it_row) {
 		for (auto it_entry = it_row->begin(); it_entry != it_row->end(); ++it_entry) {
 			// add update callback to job queue
-			Gaff::TaskPtr<ProxyAllocator> task(_app.getAllocator().template allocT<UpdateTask>(*it_entry, dt));
+			Gaff::TaskPtr<ProxyAllocator> task(GetAllocator()->template allocT<UpdateTask>(*it_entry, dt));
 			_tasks_cache.push(task);
 
 			_app.addTask(task);

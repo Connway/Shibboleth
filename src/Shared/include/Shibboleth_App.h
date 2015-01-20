@@ -70,7 +70,6 @@ public:
 	HashMap<AHashString, AString>& getCmdLine(void);
 
 	DynamicLoader::ModulePtr loadModule(const char* filename, const char* name);
-	Allocator& getAllocator(void);
 	void addTask(Gaff::TaskPtr<ProxyAllocator>& task);
 	LogManager::FileLockPair& getGameLogFile(void);
 	size_t getSeed(void) const;
@@ -105,8 +104,6 @@ private:
 	};
 
 	typedef HashMap<AHashString, ManagerEntry> ManagerMap;
-
-	Allocator _allocator;
 
 	MessageBroadcaster _broadcaster;
 	DynamicLoader _dynamic_loader;

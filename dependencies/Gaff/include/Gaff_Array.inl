@@ -365,6 +365,38 @@ void Array<T, Allocator>::pop(void)
 }
 
 template <class T, class Allocator>
+template <class... Args>
+void Array<T, Allocator>::emplacePush(Args&&... args)
+{
+	if (_used == _size) {
+		if (_size == 0) {
+			reserve(1);
+		} else {
+			reserve(_size * 2);
+		}
+	}
+
+	construct(_array + _used, args...);
+	++_used;
+}
+
+template <class T, class Allocator>
+template <class... Args>
+void Array<T, Allocator>::emplaceMovePush(Args&&... args)
+{
+	if (_used == _size) {
+		if (_size == 0) {
+			reserve(1);
+		} else {
+			reserve(_size * 2);
+		}
+	}
+
+	moveConstruct(_array + _used, Move(args)...);
+	++_used;
+}
+
+template <class T, class Allocator>
 typename ARRAY_ITERATOR Array<T, Allocator>::moveInsert(T&& data, const typename ARRAY_ITERATOR it)
 {
 	assert(it >= _array && it <= _array + _used);

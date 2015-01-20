@@ -70,7 +70,7 @@ void CreateResourceLoadersState::update(void)
 
 	// TEXTURE LOADER
 	{
-		TextureLoader* texture_loader = _app.getAllocator().template allocT<TextureLoader>(render_manager);
+		TextureLoader* texture_loader = GetAllocator()->template allocT<TextureLoader>(render_manager);
 
 		if (!texture_loader) {
 			// log error
@@ -95,7 +95,7 @@ void CreateResourceLoadersState::update(void)
 
 	// SHADER LOADER
 	{
-		ShaderLoader* shader_loader = _app.getAllocator().template allocT<ShaderLoader>(render_manager, *_app.getFileSystem());
+		ShaderLoader* shader_loader = GetAllocator()->template allocT<ShaderLoader>(render_manager, *_app.getFileSystem());
 
 		if (!shader_loader) {
 			// log error
@@ -110,7 +110,7 @@ void CreateResourceLoadersState::update(void)
 
 	// SHADER PROGRAM LOADER
 	{
-		ShaderProgramLoader* shader_program_loader = _app.getAllocator().template allocT<ShaderProgramLoader>(res_mgr, render_manager, *_app.getFileSystem());
+		ShaderProgramLoader* shader_program_loader = GetAllocator()->template allocT<ShaderProgramLoader>(res_mgr, render_manager, *_app.getFileSystem());
 
 		if (!shader_program_loader) {
 			// log error
@@ -125,7 +125,7 @@ void CreateResourceLoadersState::update(void)
 
 	// LUA LOADER
 	{
-		LuaLoader* lua_loader = _app.getAllocator().template allocT<LuaLoader>(_app.getManagerT<LuaManager>("Lua Manager"), *_app.getFileSystem());
+		LuaLoader* lua_loader = GetAllocator()->template allocT<LuaLoader>(_app.getManagerT<LuaManager>("Lua Manager"), *_app.getFileSystem());
 
 		if (!lua_loader) {
 			// log error
@@ -140,7 +140,7 @@ void CreateResourceLoadersState::update(void)
 
 	// HOLDING LOADER
 	{
-		HoldingLoader* holding_loader = _app.getAllocator().template allocT<HoldingLoader>();
+		HoldingLoader* holding_loader = GetAllocator()->template allocT<HoldingLoader>();
 
 		if (!holding_loader) {
 			// log error
@@ -200,7 +200,7 @@ void CreateResourceLoadersState::update(void)
 
 	// MODEL LOADER
 	{
-		ModelLoader* model_loader = _app.getAllocator().template allocT<ModelLoader>(render_manager, res_mgr, *_app.getFileSystem());
+		ModelLoader* model_loader = GetAllocator()->template allocT<ModelLoader>(render_manager, res_mgr, *_app.getFileSystem());
 
 		if (!model_loader) {
 			// log error

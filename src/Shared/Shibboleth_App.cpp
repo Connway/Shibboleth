@@ -34,17 +34,18 @@ NS_SHIBBOLETH
 
 // Have to pass in the correct ProxyAllocator, as we have not registered our allocator globally yet
 App::App(void):
-	_broadcaster(ProxyAllocator(&_allocator)), _dynamic_loader(ProxyAllocator(&_allocator)),
-	_state_machine(ProxyAllocator(&_allocator)), _manager_map(ProxyAllocator(&_allocator)),
-	_thread_pool(ProxyAllocator(&_allocator)), _logger(ProxyAllocator(&_allocator)),
-	_cmd_line_args(ProxyAllocator(&_allocator)), _log_file_pair(nullptr),
+	//_broadcaster(ProxyAllocator(&_allocator)), _dynamic_loader(ProxyAllocator(&_allocator)),
+	_state_machine(ProxyAllocator()), //_manager_map(ProxyAllocator(&_allocator)),
+	/*_thread_pool(ProxyAllocator(&_allocator)),*/ _logger(ProxyAllocator()),
+	/*_cmd_line_args(ProxyAllocator(&_allocator)),*/ _log_file_pair(nullptr),
 	_seed(0), _running(true)
 {
-	SetAllocator(&_allocator);
 }
 
 App::~App(void)
 {
+	_thread_pool.destroy();
+
 	for (ManagerMap::Iterator it = _manager_map.begin(); it != _manager_map.end(); ++it) {
 		it->destroy_func(it->manager, it->manager_id);
 	}
@@ -52,7 +53,6 @@ App::~App(void)
 	_manager_map.clear();
 	_broadcaster.destroy();
 	_state_machine.clear();
-	_thread_pool.destroy();
 	_logger.destroy();
 
 	_dynamic_loader.forEachModule([](DynamicLoader::ModulePtr module) -> bool
@@ -73,7 +73,7 @@ App::~App(void)
 		_fs.destroy_func(_fs.file_system);
 		_fs.file_system_module = nullptr;
 	} else {
-		_allocator.freeT(_fs.file_system);
+		GetAllocator()->freeT(_fs.file_system);
 	}
 }
 
@@ -170,7 +170,7 @@ bool App::loadFileSystem(void)
 
 	} else {
 		_log_file_pair->first.writeString("Could not find 'FileSystem" BIT_EXTENSION DYNAMIC_EXTENSION "' defaulting to loose file system\n");
-		_fs.file_system = _allocator.template allocT<LooseFileSystem>();
+		_fs.file_system = GetAllocator()->template allocT<LooseFileSystem>();
 
 		if (!_fs.file_system) {
 			_log_file_pair->first.writeString("ERROR - Failed to create loose file system\n");
@@ -428,6 +428,8 @@ bool App::loadStates(void)
 			}
 
 		} else {
+			DWORD err = GetLastError();
+			err = err;
 			_log_file_pair->first.printf("ERROR - Failed to load dynamic module '%s'\n", filename.getBuffer());
 		}
 	}
@@ -560,11 +562,6 @@ HashMap<AHashString, AString>& App::getCmdLine(void)
 DynamicLoader::ModulePtr App::loadModule(const char* filename, const char* name)
 {
 	return _dynamic_loader.loadModule(filename, name);
-}
-
-Allocator& App::getAllocator(void)
-{
-	return _allocator;
 }
 
 void App::addTask(Gaff::TaskPtr<ProxyAllocator>& task)

@@ -94,7 +94,7 @@ const char* RenderManager::getName(void) const
 
 void RenderManager::requestUpdateEntries(Array<UpdateEntry>& entries)
 {
-	//entries.movePush(UpdateEntry(AString("Render Manager: Render"), Gaff::Bind(this, &RenderManager::update)));
+	entries.movePush(UpdateEntry(AString("Render Manager: Render"), Gaff::Bind(this, &RenderManager::update)));
 }
 
 // I should move the config file stuff out of this function.
@@ -126,7 +126,7 @@ bool RenderManager::init(const char* module)
 		log.first.writeString("Loading names for Display Tags from 'Resources/display_tags.json'.\n");
 
 		Gaff::JSON display_tags;
-		
+
 		if (!display_tags.parse(file->getBuffer())) {
 			log.first.writeString("ERROR - Could not parse 'Resources/display_tags.json'.\n");
 			_app.getFileSystem()->closeFile(file);
@@ -139,7 +139,7 @@ bool RenderManager::init(const char* module)
 			log.first.writeString("ERROR - 'Resources/display_tags.json' is improperly formatted.\n");
 			return false;
 		}
-		
+
 		// Reset reflection definition
 		g_DisplayTags_Ref_Def = Gaff::EnumRefDef<DisplayTags, ProxyAllocator>("DisplayTags", ProxyAllocator(GetAllocator(), "Reflection"));
 
@@ -509,7 +509,7 @@ void RenderManager::deleteRenderTargets(void)
 	_render_functions.clear();
 }
 
-void RenderManager::addRenderFunction(Gaff::FunctionBinder<void> render_func, unsigned int position)
+void RenderManager::addRenderFunction(const Gaff::FunctionBinder<void>& render_func, unsigned int position)
 {
 	if (position == UINT_FAIL) {
 		_render_functions.push(render_func);

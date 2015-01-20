@@ -32,10 +32,11 @@ REF_IMPL_REQ(CameraComponent);
 REF_IMPL_SHIB(CameraComponent)
 .addBaseClassInterfaceOnly<CameraComponent>()
 .addString("Render Target Name", &CameraComponent::_render_target_name)
+.addBool("Active", &CameraComponent::_active)
 ;
 
 CameraComponent::CameraComponent(IApp& app):
-	_app(app)
+	_app(app), _display_tags(0), _active(true)
 {
 }
 
@@ -85,6 +86,11 @@ bool CameraComponent::save(Gaff::JSON& json)
 const AString& CameraComponent::getRenderTargetName(void) const
 {
 	return _render_target_name;
+}
+
+bool CameraComponent::isActive(void) const
+{
+	return _active;
 }
 
 NS_END

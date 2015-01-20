@@ -21,6 +21,7 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include <Shibboleth_ComponentManager.h>
+#include <Shibboleth_CameraComponent.h>
 #include <Shibboleth_ModelComponent.h>
 #include <Shibboleth_LuaComponent.h>
 #include <Shibboleth_IApp.h>
@@ -40,12 +41,6 @@ Shibboleth::IComponent* CreateComponent(Shibboleth::IApp& app)
 //		app.getManagerT<Shibboleth::RenderManager>("Render Manager")
 //	);
 //}
-
-template <class Component>
-void ClearRefDef(void)
-{
-	Component::GetReflectionDefinition().clear();
-}
 
 enum Components
 {
@@ -68,11 +63,6 @@ static ComponentNameFunc name_funcs[] = {
 	&Shibboleth::ModelComponent::getComponentName
 };
 
-static RefDefClearFunc ref_def_clear_funcs[] = {
-	&ClearRefDef<Shibboleth::LuaComponent>,
-	&ClearRefDef<Shibboleth::ModelComponent>
-};
-
 static Shibboleth::IApp* g_app = nullptr;
 
 
@@ -89,10 +79,6 @@ DYNAMICEXPORT_C bool InitModule(Shibboleth::IApp& app)
 
 DYNAMICEXPORT_C void ShutdownModule(void)
 {
-	// Clear all the reflection definitions
-	for (unsigned int i = 0; i < NUM_COMPONENTS; ++i) {
-		ref_def_clear_funcs[i]();
-	}
 }
 
 DYNAMICEXPORT_C const char* GetComponentName(unsigned int id)

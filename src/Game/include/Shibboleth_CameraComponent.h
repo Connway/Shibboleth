@@ -43,9 +43,12 @@ public:
 
 	const AString& getRenderTargetName(void) const;
 
+	bool isActive(void) const;
+
 private:
 	AString _render_target_name;
 	unsigned short _display_tags;
+	bool _active;
 
 	IApp& _app;
 
