@@ -32,7 +32,7 @@ THE SOFTWARE.
 
 NS_SHIBBOLETH
 
-MEMORY_API void SetAllocator(Allocator* allocator);
+//MEMORY_API void SetAllocator(Allocator* allocator);
 MEMORY_API Allocator* GetAllocator(void);
 
 MEMORY_API void* ShibbolethAllocate(size_t size);

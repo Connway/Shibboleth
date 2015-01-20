@@ -52,7 +52,7 @@ void LuaManager::addRegistrant(const Gaff::FunctionBinder<void, lua::State&>& re
 
 lua::State* LuaManager::createNewState(void)
 {
-	lua::State* state = _app.getAllocator().template allocT<lua::State>();
+	lua::State* state = GetAllocator()->template allocT<lua::State>();
 
 	if (state) {
 		for (auto it = _registrants.begin(); it != _registrants.end(); ++it) {

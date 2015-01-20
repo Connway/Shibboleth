@@ -172,7 +172,7 @@ public:
 	bool createRTDepth(unsigned int rt_index, Gleam::ITexture::FORMAT format = Gleam::ITexture::DEPTH_16_UNORM);
 
 	INLINE void deleteRenderTargets(void);
-	void addRenderFunction(Gaff::FunctionBinder<void> render_func, unsigned int position = UINT_FAIL);
+	void addRenderFunction(const Gaff::FunctionBinder<void>& render_func, unsigned int position = UINT_FAIL);
 
 private:
 	struct GraphicsFunctions

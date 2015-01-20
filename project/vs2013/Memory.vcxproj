@@ -203,6 +203,14 @@
   <ItemGroup>
     <ClCompile Include="..\..\src\Memory\Shibboleth_Memory.cpp" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="Shared.vcxproj">
+      <Project>{7C480CD1-68EA-36A7-51A5-4AFB3DE6BDF7}</Project>
+    </ProjectReference>
+    <ProjectReference Include="dependencies\Gaff.vcxproj">
+      <Project>{99A8857C-85DF-860D-2ECC-6C101AE2020F}</Project>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

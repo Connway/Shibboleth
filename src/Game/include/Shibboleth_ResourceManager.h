@@ -160,7 +160,7 @@ private:
 
 	HashMap<AHashString, ResourceLoaderPtr> _resource_loaders;
 	HashMap<AHashString, ResourcePtr> _resource_cache;
-	INLINE Array< Gaff::Function<void, ResourcePtr&> > _request_added_callbacks;
+	Array< Gaff::Function<void, ResourcePtr&> > _request_added_callbacks;
 	IApp& _app;
 
 	Gaff::SpinLock _res_cache_lock;

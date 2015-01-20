@@ -432,7 +432,7 @@ private:
 
 	HashMap<AHashString<Allocator>, ValueContainerPtr, Allocator> _value_containers;
 	Array<Pair< unsigned int, FunctionBinder<void*, const void*> >, Allocator> _base_ids;
-	Array<IOnCompleteFunctor*> _callback_references;
+	Array<IOnCompleteFunctor*, Allocator> _callback_references;
 
 	AString<Allocator> _name;
 	Allocator _allocator;

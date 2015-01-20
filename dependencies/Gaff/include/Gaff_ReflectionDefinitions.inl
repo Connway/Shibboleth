@@ -224,12 +224,14 @@ ReflectionDefinition<T, Allocator>::ReflectionDefinition(ReflectionDefinition<T,
 
 template <class T, class Allocator>
 ReflectionDefinition<T, Allocator>::ReflectionDefinition(const char* name, const Allocator& allocator):
+	_value_containers(allocator), _base_ids(allocator), _callback_references(allocator),
 	_name(name, allocator), _allocator(allocator), _base_classes_remaining(0), _defined(false)
 {
 }
 
 template <class T, class Allocator>
 ReflectionDefinition<T, Allocator>::ReflectionDefinition(const Allocator& allocator):
+	_value_containers(allocator), _base_ids(allocator), _callback_references(allocator),
 	_name(allocator), _base_classes_remaining(0), _defined(false)
 {
 }

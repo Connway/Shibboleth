@@ -116,8 +116,6 @@ public:
 
 	INLINE MessageBroadcaster& getBroadcaster(void);
 
-	// Should I move the AABB and Position into it's own component?
-	// That way we're not partially reliant on Gleam's math library?
 	INLINE Gaff::WatchReceipt watchRotation(const Watcher<Gleam::Quaternion>::Callback& callback);
 	INLINE Gaff::WatchReceipt watchPosition(const Watcher<Gleam::Vec4>::Callback& callback);
 	INLINE Gaff::WatchReceipt watchScale(const Watcher<Gleam::Vec4>::Callback& callback);

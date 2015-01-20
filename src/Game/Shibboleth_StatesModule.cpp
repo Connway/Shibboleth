@@ -28,7 +28,9 @@ THE SOFTWARE.
 #include <Gleam_Global.h>
 #include <Gaff_JSON.h>
 
+#include <Shibboleth_OcclusionManager.h>
 #include <Shibboleth_ModelComponent.h>
+#include <Shibboleth_UpdateManager.h>
 #include <Shibboleth_ObjectManager.h>
 #include <Shibboleth_RenderManager.h>
 #include <Shibboleth_Object.h>
@@ -49,17 +51,38 @@ public:
 		_object = _app.getManagerT<Shibboleth::ObjectManager>("Object Manager").createObject();
 		
 		if (_object) {
-			_object->init("Resources/Objects/test.object");
+			if (_object->init("Resources/Objects/test.object")) {
+				_app.getManagerT<Shibboleth::OcclusionManager>("Occlusion Manager").addObject(_object);
+			} else {
+				_app.quit();
+			}
+		} else {
+			_app.quit();
 		}
+
+		Shibboleth::RenderManager& rm = _app.getManagerT<Shibboleth::RenderManager>("Render Manager");
+		rm.addRenderFunction(Gaff::Bind(this, &LoopState::render));
 	}
 
 	void update(void)
 	{
 		Shibboleth::RenderManager& rm = _app.getManagerT<Shibboleth::RenderManager>("Render Manager");
-		rm.updateWindows();
+		rm.updateWindows(); // This has to happen in the main thread.
 
+		Shibboleth::UpdateManager& update_manager = _app.getManagerT<Shibboleth::UpdateManager>("Update Manager");
+		update_manager.update(0.0f);
+	}
+
+	void exit(void)
+	{
+	}
+
+	void render(void)
+	{
 		Shibboleth::ModelComponent* model = _object->getFirstComponentWithInterface<Shibboleth::ModelComponent>();
+		Shibboleth::RenderManager& rm = _app.getManagerT<Shibboleth::RenderManager>("Render Manager");
 
+		rm.getSpinLock().lock(); // Have to lock just in case other resources are trying to load and use the device
 		rm.getRenderDevice().beginFrame();
 
 		if (model) {
@@ -67,10 +90,7 @@ public:
 		}
 
 		rm.getRenderDevice().endFrame();
-	}
-
-	void exit(void)
-	{
+		rm.getSpinLock().unlock();
 	}
 
 private:
@@ -81,7 +101,7 @@ private:
 template <class State>
 Shibboleth::IState* CreateStateT(Shibboleth::IApp& app)
 {
-	return app.getAllocator().template allocT<State>(app);
+	return Shibboleth::GetAllocator()->template allocT<State>(app);
 }
 
 enum States

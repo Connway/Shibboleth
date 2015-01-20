@@ -154,17 +154,17 @@ Gaff::IVirtualDestructor* ModelLoader::load(const char* file_name, unsigned long
 			data = nullptr;
 
 		} else {
-			Gaff::JSON dev_tags = json["device_tags"];
+			Gaff::JSON display_tags = json["display_tags"];
 			GraphicsUserData gud = { 0, static_cast<unsigned char>(user_data) };
 
-			if (!dev_tags.isNull()) {
-				if (!dev_tags.isArray()) {
+			if (!display_tags.isNull()) {
+				if (!display_tags.isArray()) {
 					// log error
 					GetAllocator()->freeT(data);
 					return nullptr;
 				}
 
-				bool ret = dev_tags.forEachInArray([&](size_t, const Gaff::JSON& value) -> bool
+				bool ret = display_tags.forEachInArray([&](size_t, const Gaff::JSON& value) -> bool
 				{
 					if (!value.isString()) {
 						// log error
@@ -215,7 +215,6 @@ bool ModelLoader::loadMeshes(ModelData* data, const Gaff::JSON& lod_tags, const 
 		_render_mgr.getAllWindowsWithTagsAny(user_data.display_tags) :
 		_render_mgr.getAllWindowsWithTags(user_data.display_tags);
 
-
 	// Second dimension is number of LODs. If we don't define LOD tags in
 	// the JSON file, then we assume all meshes are of LOD 0.
 	//for (auto it1 = data->models.begin(); it1 != data->models.end(); ++it1) {
@@ -225,6 +224,12 @@ bool ModelLoader::loadMeshes(ModelData* data, const Gaff::JSON& lod_tags, const 
 
 		rd.setCurrentDevice((*it1)->device);
 		Array<ModelPtr>& models = data->models[(*it1)->device];
+
+		// We've already loaded for this device, continue on to the next window
+		if (models.size()) {
+			continue;
+		}
+
 		models.resize(num_lods);
 
 		// Pre-create all the model data structures.

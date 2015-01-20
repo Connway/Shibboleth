@@ -88,6 +88,12 @@ public:
 	void push(const T& data);
 	void pop(void);
 
+	template <class... Args>
+	void emplacePush(Args&&... args);
+
+	template <class... Args>
+	void emplaceMovePush(Args&&... args);
+
 	/*!
 		\brief Inserts \a data to the position \a it using the move constructor.
 

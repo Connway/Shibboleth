@@ -36,11 +36,11 @@ NS_SHIBBOLETH
 class Object;
 class IApp;
 
-class SpatialManager : public IManager, public IUpdateQuery
+class OcclusionManager : public IManager, public IUpdateQuery
 {
 public:
-	SpatialManager(IApp& app);
-	~SpatialManager(void);
+	OcclusionManager(IApp& app);
+	~OcclusionManager(void);
 
 	void requestUpdateEntries(Array<UpdateEntry>& entries);
 	void* rawRequestInterface(unsigned int class_id) const;
@@ -56,7 +56,7 @@ private:
 	{
 		// other data for pos, aabb, and children nodes
 
-		Gaff::WatchReceipt receipts[3];
+		Gaff::WatchReceipt receipts[4];
 		Object* object;
 		unsigned int id;
 
@@ -68,7 +68,7 @@ private:
 	class WatchUpdater
 	{
 	public:
-		WatchUpdater(SpatialManager* spatial_mgr, Node* node);
+		WatchUpdater(OcclusionManager* spatial_mgr, Node* node);
 		~WatchUpdater(void);
 
 		// Need const otherwise get funky compiler errors
@@ -77,7 +77,7 @@ private:
 		void operator()(const Gleam::Vec4&) const;
 
 	private:
-		SpatialManager* _spatial_mgr;
+		OcclusionManager* _spatial_mgr;
 		Node* _node;
 
 		void addDirtyNode(void) const;
@@ -99,9 +99,9 @@ private:
 
 	friend class WatchUpdater;
 
-	GAFF_NO_COPY(SpatialManager);
+	GAFF_NO_COPY(OcclusionManager);
 
-	REF_DEF_SHIB(SpatialManager);
+	REF_DEF_SHIB(OcclusionManager);
 };
 
 NS_END

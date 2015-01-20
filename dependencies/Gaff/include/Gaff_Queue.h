@@ -78,6 +78,7 @@ private:
 
 	void increment(T** element, T* array = nullptr, unsigned int array_size = 0) const;
 	void decrement(const T** element, T* array = nullptr, unsigned int array_size = 0) const;
+	void decrement(T** element, T* array = nullptr, unsigned int array_size = 0);
 };
 
 #include "Gaff_Queue.inl"

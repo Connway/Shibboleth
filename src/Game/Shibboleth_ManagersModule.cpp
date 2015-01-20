@@ -21,6 +21,7 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include <Shibboleth_ComponentManager.h>
+#include <Shibboleth_OcclusionManager.h>
 #include <Shibboleth_ResourceManager.h>
 #include <Shibboleth_OtterUIManager.h>
 #include <Shibboleth_RenderManager.h>
@@ -32,28 +33,22 @@ THE SOFTWARE.
 template <class Manager>
 Shibboleth::IManager* CreateManagerT(Shibboleth::IApp& app)
 {
-	return app.getAllocator().template allocT<Manager>(app);
+	return Shibboleth::GetAllocator()->template allocT<Manager>(app);
 }
 
 template <class Manager>
 Shibboleth::IManager* CreateManagerTNoApp(Shibboleth::IApp& app)
 {
-	return app.getAllocator().template allocT<Manager>();
+	return Shibboleth::GetAllocator()->template allocT<Manager>();
 }
 
-template <class Manager>
-void ClearRefDef(void)
+Shibboleth::IManager* CreateOtterUIManager(Shibboleth::IApp& /*app*/)
 {
-	Manager::GetReflectionDefinition().clear();
-}
-
-Shibboleth::IManager* CreateOtterUIManager(Shibboleth::IApp& app)
-{
-	Shibboleth::OtterUIManager* otter_manager = app.getAllocator().template allocT<Shibboleth::OtterUIManager>();
+	Shibboleth::OtterUIManager* otter_manager = Shibboleth::GetAllocator()->template allocT<Shibboleth::OtterUIManager>();
 
 	if (otter_manager) {
 		if (!otter_manager->init()) {
-			app.getAllocator().freeT(otter_manager);
+			Shibboleth::GetAllocator()->freeT(otter_manager);
 			otter_manager = nullptr;
 		}
 	}
@@ -70,11 +65,11 @@ enum Managers
 	UPDATE_MANAGER,
 	OBJECT_MANAGER,
 	LUA_MANAGER,
+	OCCLUSION_MANAGER,
 	NUM_MANAGERS
 };
 
 typedef Shibboleth::IManager* (*CreateMgrFunc)(Shibboleth::IApp&);
-typedef void (*RefDefClearFunc)(void);
 
 static CreateMgrFunc create_funcs[] = {
 	&CreateManagerT<Shibboleth::ComponentManager>,
@@ -84,16 +79,7 @@ static CreateMgrFunc create_funcs[] = {
 	&CreateManagerT<Shibboleth::UpdateManager>,
 	&CreateManagerT<Shibboleth::ObjectManager>,
 	&CreateManagerT<Shibboleth::LuaManager>,
-};
-
-static RefDefClearFunc ref_def_clear_funcs[] = {
-	&ClearRefDef<Shibboleth::ComponentManager>,
-	&ClearRefDef<Shibboleth::ResourceManager>,
-	&ClearRefDef<Shibboleth::OtterUIManager>,
-	&ClearRefDef<Shibboleth::RenderManager>,
-	&ClearRefDef<Shibboleth::UpdateManager>,
-	&ClearRefDef<Shibboleth::ObjectManager>,
-	&ClearRefDef<Shibboleth::LuaManager>
+	&CreateManagerT<Shibboleth::OcclusionManager>
 };
 
 static Shibboleth::IApp* g_app = nullptr;
@@ -109,10 +95,6 @@ DYNAMICEXPORT_C bool InitModule(Shibboleth::IApp& app)
 
 DYNAMICEXPORT_C void ShutdownModule(void)
 {
-	// Clear all the reflection definitions
-	for (unsigned int i = 0; i < NUM_MANAGERS; ++i) {
-		ref_def_clear_funcs[i]();
-	}
 }
 
 DYNAMICEXPORT_C unsigned int GetNumManagers(void)

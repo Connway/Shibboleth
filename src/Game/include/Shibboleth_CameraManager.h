@@ -22,62 +22,45 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Shibboleth_IUpdateQuery.h"
-#include "Shibboleth_IManager.h"
 #include <Shibboleth_ReflectionDefinitions.h>
-#include <Shibboleth_Array.h>
-#include <Shibboleth_Map.h>
-#include <Gaff_SpinLock.h>
+#include <Shibboleth_IUpdateQuery.h>
+#include <Shibboleth_IManager.h>
 
 NS_SHIBBOLETH
 
-class Object;
+class OcclusionManager;
+class CameraComponent;
+class RenderManager;
 class IApp;
 
-class ObjectManager : public IManager, public IUpdateQuery
+class CameraManager : public IManager, public IUpdateQuery
 {
 public:
-	template <class Callback>
-	bool forEachObject(Callback&& callback) const
-	{
-		for (auto it = _objects.begin(); it != _objects.end(); ++it) {
-			if (callback(*it)) {
-				return true;
-			}
-		}
-
-		return false;
-	}
-
-	ObjectManager(IApp& app);
-	~ObjectManager(void);
-
-	Object* createObject(void);
-	void removeObject(unsigned int id);
-	bool doesObjectExist(const Object* object) const;
-	bool doesObjectExist(unsigned int id) const;
+	CameraManager(IApp& app);
+	~CameraManager(void);
 
 	const char* getName(void) const;
+	void allManagersCreated(void);
 
-	void requestUpdateEntries(Array<UpdateEntry>& entries);
 	void* rawRequestInterface(unsigned int class_id) const;
 
-private:
-	Array<Object*> _objects;
+	void requestUpdateEntries(Array<UpdateEntry>& entries);
+	void update(double);
 
+	void registerCamera(CameraComponent* camera, unsigned int position = UINT_FAIL);
+	void unregisterCamera(CameraComponent* camera);
+
+private:
+	Array<CameraComponent*> _cameras;
+
+	OcclusionManager* _occlusion_manager;
+	RenderManager* _render_manager;
 	IApp& _app;
 
-	Gaff::SpinLock _objects_lock;
+	GAFF_NO_COPY(CameraManager);
+	GAFF_NO_MOVE(CameraManager);
 
-	volatile unsigned int _next_id;
-
-	void prePhysicsUpdate(double dt);
-	void postPhysicsUpdate(double dt);
-
-	GAFF_NO_COPY(ObjectManager);
-	GAFF_NO_MOVE(ObjectManager);
-
-	REF_DEF_SHIB(ObjectManager);
+	REF_DEF_SHIB(CameraManager);
 };
 
 NS_END
