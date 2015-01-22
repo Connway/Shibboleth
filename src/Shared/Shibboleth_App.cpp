@@ -564,9 +564,9 @@ DynamicLoader::ModulePtr App::loadModule(const char* filename, const char* name)
 	return _dynamic_loader.loadModule(filename, name);
 }
 
-void App::addTask(Gaff::TaskPtr<ProxyAllocator>& task)
+void App::addTask(Gaff::TaskPtr<ProxyAllocator>& task, unsigned int pool)
 {
-	_thread_pool.addTask(task);
+	_thread_pool.addTask(task, pool);
 }
 
 LogManager::FileLockPair& App::getGameLogFile(void)

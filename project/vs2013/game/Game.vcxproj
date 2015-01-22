@@ -205,6 +205,7 @@
     <ClInclude Include="..\..\..\src\Game\include\Shibboleth_ResourceWrapper.h" />
     <ClInclude Include="..\..\..\src\Game\include\Shibboleth_ShaderLoader.h" />
     <ClInclude Include="..\..\..\src\Game\include\Shibboleth_ShaderProgramLoader.h" />
+    <ClInclude Include="..\..\..\src\Game\include\Shibboleth_TaskPoolTags.h" />
     <ClInclude Include="..\..\..\src\Game\include\Shibboleth_TextureLoader.h" />
     <ClInclude Include="..\..\..\src\Game\include\Shibboleth_UserDataWrapper.h" />
   </ItemGroup>

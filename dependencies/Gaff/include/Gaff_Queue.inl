@@ -193,6 +193,18 @@ void Queue<T, Allocator>::reallocate(unsigned int new_size)
 }
 
 template <class T, class Allocator>
+void Queue<T, Allocator>::movePush(T&& data)
+{
+	if (_used == _size) {
+		reallocate(_size * 2);
+	}
+
+	moveConstruct(_end, Move(data));
+	increment(&_end);
+	++_used;
+}
+
+template <class T, class Allocator>
 void Queue<T, Allocator>::push(const T& data)
 {
 	if (_used == _size) {
@@ -211,6 +223,32 @@ void Queue<T, Allocator>::pop(void)
 	deconstruct(_begin);
 	increment(&_begin);
 	--_used;
+}
+
+template <class T, class Allocator>
+template <class... Args>
+void Queue<T, Allocator>::emplacePush(Args&&... args)
+{
+	if (_used == _size) {
+		reallocate(_size * 2);
+	}
+
+	construct(_end, args...);
+	increment(&_end);
+	++_used;
+}
+
+template <class T, class Allocator>
+template <class... Args>
+void Queue<T, Allocator>::emplaceMovePush(Args&&... args)
+{
+	if (_used == _size) {
+		reallocate(_size * 2);
+	}
+
+	moveConstruct(_end, Move(args)...);
+	increment(&_end);
+	++_used;
 }
 
 template <class T, class Allocator>

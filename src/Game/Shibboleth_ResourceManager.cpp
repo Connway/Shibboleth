@@ -21,6 +21,7 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Shibboleth_ResourceManager.h"
+#include <Shibboleth_IApp.h>
 #include <Gaff_IVirtualDestructor.h>
 #include <Gaff_ScopedLock.h>
 #include <Gaff_Atomic.h>
@@ -163,22 +164,22 @@ const char* ResourceManager::getName(void) const
 	return "Resource Manager";
 }
 
-void ResourceManager::registerResourceLoader(IResourceLoader* res_loader, const Array<AString>& extensions)
+void ResourceManager::registerResourceLoader(IResourceLoader* res_loader, const Array<AString>& extensions, unsigned int thread_pool)
 {
 	assert(res_loader && extensions.size());
 	ResourceLoaderPtr loader_ptr(res_loader);
 
 	for (auto it = extensions.begin(); it != extensions.end(); ++it) {
 		assert(_resource_loaders.indexOf(AHashString(*it)) == -1);
-		_resource_loaders[AHashString(*it)] = loader_ptr;
+		_resource_loaders[AHashString(*it)] = Gaff::MakePair(loader_ptr, thread_pool);
 	}
 }
 
-void ResourceManager::registerResourceLoader(IResourceLoader* res_loader, const char* extension)
+void ResourceManager::registerResourceLoader(IResourceLoader* res_loader, const char* extension, unsigned int thread_pool)
 {
 	// We've already registered a loader for this file type.
 	assert(_resource_loaders.indexOf(AHashString(extension)) == -1);
-	_resource_loaders[AHashString(extension)] = res_loader;
+	_resource_loaders[AHashString(extension)] = Gaff::MakePair(ResourceLoaderPtr(res_loader), thread_pool);
 }
 
 ResourcePtr ResourceManager::requestResource(const char* filename, unsigned long long user_data)
@@ -205,11 +206,11 @@ ResourcePtr ResourceManager::requestResource(const char* filename, unsigned long
 		}
 
 		// make load task
-		ResourceLoaderPtr& res_loader = _resource_loaders[extension];
+		LoaderData& loader_data= _resource_loaders[extension];
 
-		ResourceLoadingTask* load_task = GetAllocator()->template allocT<ResourceLoadingTask>(res_loader, res_ptr);
+		ResourceLoadingTask* load_task = GetAllocator()->template allocT<ResourceLoadingTask>(loader_data.first, res_ptr);
 		Gaff::TaskPtr<ProxyAllocator> task(load_task);
-		_app.addTask(task);
+		_app.addTask(task, loader_data.second);
 
 		return res_ptr;
 
@@ -238,9 +239,9 @@ ResourcePtr ResourceManager::loadResourceImmediately(const char* filename, unsig
 		ResourcePtr& res_ptr = _resource_cache[res_key];
 		res_ptr.set(res_cont);
 
-		ResourceLoaderPtr& res_loader = _resource_loaders[extension];
+		LoaderData& loader_data = _resource_loaders[extension];
 
-		Gaff::IVirtualDestructor* data = res_loader->load(filename, user_data);
+		Gaff::IVirtualDestructor* data = loader_data.first->load(filename, user_data);
 
 		if (data) {
 			res_ptr->setResource(data);

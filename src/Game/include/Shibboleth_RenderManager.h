@@ -24,12 +24,14 @@ THE SOFTWARE.
 
 #include "Shibboleth_IUpdateQuery.h"
 #include <Shibboleth_ReflectionDefinitions.h>
+#include <Shibboleth_DynamicLoader.h>
 #include <Shibboleth_IManager.h>
-#include <Shibboleth_App.h>
 #include <Gleam_IShaderResourceView.h>
 #include <Gleam_IRenderTarget.h>
 #include <Gleam_ITexture.h>
 #include <Gleam_IWindow.h>
+#include <Gaff_SmartPtr.h>
+#include <Gaff_SpinLock.h>
 
 namespace Gaff
 {
@@ -51,6 +53,8 @@ namespace Gleam
 }
 
 NS_SHIBBOLETH
+
+class IApp;
 
 enum DisplayTags
 {

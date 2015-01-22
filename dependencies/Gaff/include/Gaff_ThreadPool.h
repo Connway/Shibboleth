@@ -41,7 +41,7 @@ class ThreadPool
 {
 public:
 	ThreadPool(const Allocator& allocator = Allocator()):
-		_tasks(allocator), _threads(allocator),
+		_task_pools(allocator), _threads(allocator),
 		_allocator(allocator)
 	{
 	}
@@ -53,27 +53,36 @@ public:
 
 	/*!
 		\brief Creates the threads.
+
+		\param num_pools
+			The number of task pools to allocate.
+
 		\param num_threads
 			The number of threads to allocate for the ThreadPool.
 			Defaults to the number of physics cores minus one.
-		\return Whether the threads were successfully craeted.
+		
+		\return Whether the threads were successfully created.
+
+		\note
+			Task pools represent tasks that share a similar bottleneck, making parallelizing them difficult.
+			Place tasks that would be contesting each other for a lock in the same pool for optimal thread idle time.
+
+			Pool zero is a special pool. These tasks are not considered sharing data and will run any number of them in parallel.
+			Tasks that are placed in any other pool will run one at a time until the pool is empty.
 	*/
-	bool init(unsigned int num_threads = (unsigned int)GetNumberOfCores() - 1)
+	bool init(unsigned int num_pools = 7, unsigned int num_threads = (unsigned int)GetNumberOfCores() - 1)
 	{
+		_task_pools.resize(num_pools + 1);
+
 		_thread_data.thread_pool = this;
 		_thread_data.terminate = false;
-
-		_threads.reserve(num_threads);
+		_threads.resize(num_threads);
 
 		for (unsigned long i = 0; i < num_threads; ++i) {
-			Thread thread;
-
-			if (!thread.create(TaskRunner, &_thread_data)) {
+			if (!_threads[i].create(TaskRunner, &_thread_data)) {
 				destroy();
 				return false;
 			}
-
-			_threads.movePush(Move(thread));
 		}
 
 		return true;
@@ -93,11 +102,12 @@ public:
 		_threads.clear();
 	}
 
-	void addTask(const TaskPtr<Allocator>& task)
+	void addTask(const TaskPtr<Allocator>& task, unsigned int pool = 0)
 	{
-		_lock.lock();
-		_tasks.push(task);
-		_lock.unlock();
+		assert(pool < _task_pools.size());
+		_task_pools[pool].read_write_lock.lock();
+		_task_pools[pool].tasks.emplacePush(task);
+		_task_pools[pool].read_write_lock.unlock();
 	}
 
 	//unsigned int getNumActiveThreads(void) const
@@ -116,54 +126,100 @@ private:
 		bool terminate;
 	};
 
-	Queue<TaskPtr<Allocator>, Allocator> _tasks;
+	struct TaskQueue
+	{
+		Queue<TaskPtr<Allocator>, Allocator> tasks;
+		SpinLock read_write_lock;
+		SpinLock thread_lock;
+	};
+
+	Array<TaskQueue, Allocator> _task_pools;
 	Array<Thread, Allocator> _threads;
 	ThreadData _thread_data;
-	SpinLock _lock;
 
 	Allocator _allocator;
 
 	//volatile unsigned int _active_threads;
 
+	static void DoTask(TaskPtr<Allocator>& task, ThreadData* thread_data, unsigned int pool)
+	{
+		const ITask<Allocator>::DependentTaskData& dep_tasks = task->getDependentTasks();
+		task->doTask();
+		task->setFinished(true);
+
+		// Don't want to waste CPU cycles by locking when it is empty.
+		if (!dep_tasks.empty()) {
+			for (unsigned int i = 0; i < dep_tasks.size(); ++i) {
+				TaskQueue& task_queue = thread_data->thread_pool->_task_pools[(dep_tasks[i].second == UINT_FAIL) ? pool : dep_tasks[i].second];
+
+				task_queue.read_write_lock.lock();
+				task_queue.tasks.emplaceMovePush(Move(dep_tasks[i].first));
+				task_queue.read_write_lock.unlock();
+			}
+		}
+
+		task = nullptr; // Free the task
+	}
+
+	static void ProcessMainTaskQueue(TaskQueue& task_queue, ThreadData* thread_data, unsigned int pool)
+	{
+		TaskPtr<Allocator> task;
+
+		// This is probably a race condition, but if the read says that it is empty, when it isn't,
+		// then we'll just get to it on the next iteration.
+		while (!task_queue.tasks.empty()) {
+			task_queue.read_write_lock.lock();
+
+			if (!task_queue.tasks.empty()) {
+				task = Move(task_queue.tasks.first());
+				task_queue.tasks.pop();
+			}
+
+			task_queue.read_write_lock.unlock();
+
+			if (task) {
+				DoTask(task, thread_data, pool);
+			}
+		}
+	}
+
+	static void ProcessTaskQueue(TaskQueue& task_queue, ThreadData* thread_data, unsigned int pool)
+	{
+		TaskPtr<Allocator> task;
+
+		// This is probably a race condition, but if the read says that it is empty, when it isn't,
+		// then we'll just get to it on the next iteration.
+		while (!task_queue.tasks.empty()) {
+			task_queue.read_write_lock.lock();
+
+			task = Move(task_queue.tasks.first());
+			task_queue.tasks.pop();
+
+			task_queue.read_write_lock.unlock();
+
+			DoTask(task, thread_data, pool);
+		}
+	}
+
 	static Thread::ReturnType THREAD_CALLTYPE TaskRunner(void* thread_data)
 	{
 		ThreadData* td = (ThreadData*)thread_data;
-		ThreadPool<Allocator>* tp = td->thread_pool;
-
-		TaskPtr<Allocator> task;
+		ThreadPool<Allocator>* thread_pool = td->thread_pool;
 
 		while (!td->terminate) {
-			tp->_lock.lock();
-				if (!tp->_tasks.empty()) {
-					task = tp->_tasks.first();
-					tp->_tasks.pop();
+			// Start with the other pools first. Presumably they don't lead to pool zero never getting reached.
+			for (unsigned int i = 1; i < thread_pool->_task_pools.size(); ++i) {
+				TaskQueue& task_queue = thread_pool->_task_pools[i];
+
+				if (task_queue.thread_lock.tryLock()) {
+					ProcessTaskQueue(task_queue, td, i);
+					task_queue.thread_lock.unlock();
 				}
-			tp->_lock.unlock();
+			}
 
-			if (task) {
-				// Atomic increment _active_threads
-
-				const Array<TaskPtr<Allocator>, Allocator>& dep_tasks = task->getDependentTasks();
-				task->doTask();
-				task->setFinished(true);
-
-				if (!dep_tasks.empty()) {
-					tp->_lock.lock();
-						for (unsigned int i = 0; i < dep_tasks.size(); ++i) {
-							tp->_tasks.push(dep_tasks[i]);
-						}
-					tp->_lock.unlock();
-				}
-
-				task = nullptr; // Free the task
-
-				// Atomic decrement _active_threads
-			} /*else {*/
-				// Is this a better idea than yielding the thread every iteration?
-				// Only yield when we have nothing to do?
-				// No idea ...
-				YieldThread();
-			//}
+			// Conversely, hopefully the main pool doesn't constantly get new tasks pushed to it and stop the other pools from being processed.
+			TaskQueue& task_queue = thread_pool->_task_pools[0];
+			ProcessMainTaskQueue(task_queue, td, 0);
 		}
 
 		return 0;

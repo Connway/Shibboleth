@@ -21,14 +21,17 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Shibboleth_CreateResourceLoadersState.h"
-#include <Shibboleth_ShaderProgramLoader.h>
 #include <Shibboleth_ResourceManager.h>
 #include <Shibboleth_RenderManager.h>
+#include <Shibboleth_TaskPoolTags.h>
+
+#include <Shibboleth_ShaderProgramLoader.h>
 #include <Shibboleth_TextureLoader.h>
 #include <Shibboleth_HoldingLoader.h>
 #include <Shibboleth_ShaderLoader.h>
 #include <Shibboleth_ModelLoader.h>
 #include <Shibboleth_LuaLoader.h>
+
 #include <Shibboleth_String.h>
 #include <Shibboleth_IApp.h>
 
@@ -80,17 +83,17 @@ void CreateResourceLoadersState::update(void)
 		}
 
 		Array<AString> extensions;
-		extensions.movePush(AString(".png"));
-		extensions.movePush(AString(".jpeg"));
-		extensions.movePush(AString(".jpg"));
-		extensions.movePush(AString(".bmp"));
-		extensions.movePush(AString(".tiff"));
-		extensions.movePush(AString(".tif"));
-		extensions.movePush(AString(".dds"));
-		extensions.movePush(AString(".tga"));
+		extensions.emplacePush(".png");
+		extensions.emplacePush(".jpeg");
+		extensions.emplacePush(".jpg");
+		extensions.emplacePush(".bmp");
+		extensions.emplacePush(".tiff");
+		extensions.emplacePush(".tif");
+		extensions.emplacePush(".dds");
+		extensions.emplacePush(".tga");
 
 		_app.getGameLogFile().first.printf("Adding Texture Loader\n");
-		res_mgr.registerResourceLoader(texture_loader, extensions);
+		res_mgr.registerResourceLoader(texture_loader, extensions, TPT_GRAPHICS);
 	}
 
 	// SHADER LOADER
@@ -105,7 +108,7 @@ void CreateResourceLoadersState::update(void)
 		}
 
 		_app.getGameLogFile().first.printf("Adding Shader Loader\n");
-		res_mgr.registerResourceLoader(shader_loader, render_manager.getShaderExtension());
+		res_mgr.registerResourceLoader(shader_loader, render_manager.getShaderExtension(), TPT_GRAPHICS);
 	}
 
 	// SHADER PROGRAM LOADER
@@ -120,7 +123,7 @@ void CreateResourceLoadersState::update(void)
 		}
 
 		_app.getGameLogFile().first.printf("Adding Shader Program Loader\n");
-		res_mgr.registerResourceLoader(shader_program_loader, ".program");
+		res_mgr.registerResourceLoader(shader_program_loader, ".program", TPT_GRAPHICS);
 	}
 
 	// LUA LOADER
@@ -150,49 +153,49 @@ void CreateResourceLoadersState::update(void)
 		}
 
 		Array<AString> extensions;
-		extensions.movePush(AString(".b3d"));
-		extensions.movePush(AString(".dae"));
-		extensions.movePush(AString(".blend"));
-		extensions.movePush(AString(".3ds"));
-		extensions.movePush(AString(".ase"));
-		extensions.movePush(AString(".obj"));
-		extensions.movePush(AString(".ifc"));
-		extensions.movePush(AString(".xgl"));
-		extensions.movePush(AString(".zgl"));
-		extensions.movePush(AString(".ply"));
-		extensions.movePush(AString(".lwo"));
-		extensions.movePush(AString(".lws"));
-		extensions.movePush(AString(".lxo"));
-		extensions.movePush(AString(".stl"));
-		extensions.movePush(AString(".dxf"));
-		extensions.movePush(AString(".x"));
-		extensions.movePush(AString(".ac"));
-		extensions.movePush(AString(".ms3d"));
-		extensions.movePush(AString(".cob"));
-		extensions.movePush(AString(".scn"));
-		extensions.movePush(AString(".bvh"));
-		extensions.movePush(AString(".csm"));
-		extensions.movePush(AString(".irrmesh"));
-		extensions.movePush(AString(".irr"));
-		extensions.movePush(AString(".mdl"));
-		extensions.movePush(AString(".md2"));
-		extensions.movePush(AString(".md3"));
-		extensions.movePush(AString(".pk3"));
-		extensions.movePush(AString(".mdc"));
-		extensions.movePush(AString(".md5"));
-		extensions.movePush(AString(".smd"));
-		extensions.movePush(AString(".vta"));
-		extensions.movePush(AString(".m3"));
-		extensions.movePush(AString(".3d"));
-		extensions.movePush(AString(".q3d"));
-		extensions.movePush(AString(".q3s"));
-		extensions.movePush(AString(".nff"));
-		extensions.movePush(AString(".off"));
-		extensions.movePush(AString(".raw"));
-		extensions.movePush(AString(".ter"));
-		extensions.movePush(AString(".hmp"));
-		extensions.movePush(AString(".ndo"));
-		extensions.movePush(AString(".fbx"));
+		extensions.emplacePush(".b3d");
+		extensions.emplacePush(".dae");
+		extensions.emplacePush(".blend");
+		extensions.emplacePush(".3ds");
+		extensions.emplacePush(".ase");
+		extensions.emplacePush(".obj");
+		extensions.emplacePush(".ifc");
+		extensions.emplacePush(".xgl");
+		extensions.emplacePush(".zgl");
+		extensions.emplacePush(".ply");
+		extensions.emplacePush(".lwo");
+		extensions.emplacePush(".lws");
+		extensions.emplacePush(".lxo");
+		extensions.emplacePush(".stl");
+		extensions.emplacePush(".dxf");
+		extensions.emplacePush(".x");
+		extensions.emplacePush(".ac");
+		extensions.emplacePush(".ms3d");
+		extensions.emplacePush(".cob");
+		extensions.emplacePush(".scn");
+		extensions.emplacePush(".bvh");
+		extensions.emplacePush(".csm");
+		extensions.emplacePush(".irrmesh");
+		extensions.emplacePush(".irr");
+		extensions.emplacePush(".mdl");
+		extensions.emplacePush(".md2");
+		extensions.emplacePush(".md3");
+		extensions.emplacePush(".pk3");
+		extensions.emplacePush(".mdc");
+		extensions.emplacePush(".md5");
+		extensions.emplacePush(".smd");
+		extensions.emplacePush(".vta");
+		extensions.emplacePush(".m3");
+		extensions.emplacePush(".3d");
+		extensions.emplacePush(".q3d");
+		extensions.emplacePush(".q3s");
+		extensions.emplacePush(".nff");
+		extensions.emplacePush(".off");
+		extensions.emplacePush(".raw");
+		extensions.emplacePush(".ter");
+		extensions.emplacePush(".hmp");
+		extensions.emplacePush(".ndo");
+		extensions.emplacePush(".fbx");
 
 		_app.getGameLogFile().first.printf("Adding Holding Loader\n");
 		res_mgr.registerResourceLoader(holding_loader, extensions);

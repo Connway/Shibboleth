@@ -21,7 +21,7 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Shibboleth_LuaManager.h"
-#include "Shibboleth_App.h"
+#include <Shibboleth_IApp.h>
 #include <LuaState.h>
 
 NS_SHIBBOLETH

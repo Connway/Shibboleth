@@ -25,10 +25,11 @@ THE SOFTWARE.
 #include "Shibboleth_IResourceLoader.h"
 #include <Shibboleth_ReflectionDefinitions.h>
 #include <Shibboleth_RefCounted.h>
+#include <Shibboleth_HashString.h>
 #include <Shibboleth_IManager.h>
+#include <Shibboleth_HashMap.h>
 #include <Shibboleth_Array.h>
 #include <Shibboleth_ITask.h>
-#include <Shibboleth_App.h>
 #include <Gaff_SharedPtr.h>
 #include <Gaff_SpinLock.h>
 #include <Gaff_Function.h>
@@ -41,6 +42,7 @@ NS_END
 NS_SHIBBOLETH
 
 class ResourceManager;
+class IApp;
 
 class ResourceContainer : public Gaff::IRefCounted
 {
@@ -124,8 +126,8 @@ public:
 
 	const char* getName(void) const;
 
-	void registerResourceLoader(IResourceLoader* res_loader, const Array<AString>& extensions);
-	INLINE void registerResourceLoader(IResourceLoader* res_loader, const char* extension);
+	void registerResourceLoader(IResourceLoader* res_loader, const Array<AString>& extensions, unsigned int thread_pool = 0);
+	INLINE void registerResourceLoader(IResourceLoader* res_loader, const char* extension, unsigned int thread_pool = 0);
 
 	ResourcePtr requestResource(const char* filename, unsigned long long user_data = 0);
 
@@ -158,7 +160,8 @@ private:
 		SHIB_REF_COUNTED(ResourceLoadingTask);
 	};
 
-	HashMap<AHashString, ResourceLoaderPtr> _resource_loaders;
+	typedef Gaff::Pair<ResourceLoaderPtr, unsigned int> LoaderData;
+	HashMap< AHashString, LoaderData> _resource_loaders;
 	HashMap<AHashString, ResourcePtr> _resource_cache;
 	Array< Gaff::Function<void, ResourcePtr&> > _request_added_callbacks;
 	IApp& _app;

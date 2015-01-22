@@ -93,7 +93,7 @@ public:
 	virtual HashMap<AHashString, AString>& getCmdLine(void) = 0;
 
 	virtual DynamicLoader::ModulePtr loadModule(const char* filename, const char* name) = 0;
-	virtual void addTask(Gaff::TaskPtr<ProxyAllocator>& task) = 0;
+	virtual void addTask(Gaff::TaskPtr<ProxyAllocator>& task, unsigned int pool = 0) = 0;
 	virtual LogManager::FileLockPair& getGameLogFile(void) = 0;
 	virtual size_t getSeed(void) const = 0;
 	virtual void quit(void) = 0;

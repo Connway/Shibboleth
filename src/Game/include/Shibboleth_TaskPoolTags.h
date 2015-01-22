@@ -20,40 +20,6 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#include "Shibboleth_LuaComponent.h"
-#include <Shibboleth_ResourceManager.h>
-#include <Shibboleth_IApp.h>
-#include <LuaState.h>
+#pragma once
 
-NS_SHIBBOLETH
-
-COMP_REF_DEF_SAVE(LuaComponent, g_Ref_Def);
-REF_IMPL_REQ(LuaComponent);
-
-REF_IMPL_SHIB(LuaComponent)
-.addBaseClassInterfaceOnly<LuaComponent>()
-.addString("Lua Filename", &LuaComponent::_lua_file)
-;
-
-LuaComponent::LuaComponent(IApp& app):
-	_res_mgr(app.getManagerT<ResourceManager>("Resource Manager"))
-{
-}
-
-LuaComponent::~LuaComponent(void)
-{
-}
-
-bool LuaComponent::load(const Gaff::JSON& json)
-{
-	g_Ref_Def.read(json, this);
-	assert(_lua_file.size());
-	_script_res = _res_mgr.requestResource(_lua_file.getBuffer());
-	return true;
-}
-
-void LuaComponent::allComponentsLoaded(void)
-{
-}
-
-NS_END
+#define TPT_GRAPHICS 1

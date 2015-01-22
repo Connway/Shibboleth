@@ -30,6 +30,8 @@ THE SOFTWARE.
 #include <esprit_Skeleton.h>
 #include <Gleam_ILayout.h>
 #include <Gleam_IMesh.h>
+#include <Gaff_ScopedLock.h>
+#include <Gaff_SpinLock.h>
 #include <Gaff_JSON.h>
 
 NS_SHIBBOLETH

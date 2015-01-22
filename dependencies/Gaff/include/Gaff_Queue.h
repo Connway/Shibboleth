@@ -54,8 +54,15 @@ public:
 	void clear(void);
 	void reallocate(unsigned int new_size);
 
+	void movePush(T&& data);
 	void push(const T& data);
 	void pop(void);
+
+	template <class... Args>
+	void emplacePush(Args&&... args);
+
+	template <class... Args>
+	void emplaceMovePush(Args&&... args);
 
 	const T& first(void) const;
 	T& first(void);

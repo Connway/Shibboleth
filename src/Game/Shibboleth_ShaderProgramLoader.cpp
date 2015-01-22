@@ -26,6 +26,7 @@ THE SOFTWARE.
 #include <Shibboleth_IFileSystem.h>
 #include <Gleam_IRenderDevice.h>
 #include <Gleam_IProgram.h>
+#include <Gaff_ScopedLock.h>
 #include <Gaff_File.h>
 #include <Gaff_JSON.h>
 
