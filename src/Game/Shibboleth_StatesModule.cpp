@@ -39,7 +39,7 @@ THE SOFTWARE.
 class LoopState : public Shibboleth::IState
 {
 public:
-	LoopState(Shibboleth::IApp& app): _object(nullptr), _app(app) {}
+	LoopState(Shibboleth::IApp& app) : _object(nullptr), _app(app) {}
 
 	bool init(unsigned int)
 	{
@@ -49,13 +49,14 @@ public:
 	void enter(void)
 	{
 		_object = _app.getManagerT<Shibboleth::ObjectManager>("Object Manager").createObject();
-		
+
 		if (_object) {
 			if (_object->init("Resources/Objects/test.object")) {
 				_app.getManagerT<Shibboleth::OcclusionManager>("Occlusion Manager").addObject(_object);
 			} else {
 				_app.quit();
 			}
+
 		} else {
 			_app.quit();
 		}
@@ -121,7 +122,7 @@ static CreateStateFunc create_funcs[] = {
 	&CreateStateT<Shibboleth::LoadComponentsState>,
 	&CreateStateT<Shibboleth::CreateResourceLoadersState>,
 	&CreateStateT<Shibboleth::SetupOtterUIState>,
-	&CreateStateT<LoopState>
+	&CreateStateT < LoopState >
 };
 
 static const char* state_names[NUM_STATES] = {

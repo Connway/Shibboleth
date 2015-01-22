@@ -24,9 +24,12 @@ THE SOFTWARE.
 
 #include "Shibboleth_ModelComponent.h"
 #include "Shibboleth_ModelAnimResources.h"
+
 #include <Shibboleth_LoadingMessage.h>
 
 #include <Shibboleth_RenderManager.h>
+#include <Shibboleth_IApp.h>
+
 #include <Gleam_IProgram.h>
 #include <Gleam_Matrix4x4.h>
 #include <Gleam_IBuffer.h>

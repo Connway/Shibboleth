@@ -70,7 +70,7 @@ public:
 	HashMap<AHashString, AString>& getCmdLine(void);
 
 	DynamicLoader::ModulePtr loadModule(const char* filename, const char* name);
-	void addTask(Gaff::TaskPtr<ProxyAllocator>& task);
+	void addTask(Gaff::TaskPtr<ProxyAllocator>& task, unsigned int pool = 0);
 	LogManager::FileLockPair& getGameLogFile(void);
 	size_t getSeed(void) const;
 	void quit(void);

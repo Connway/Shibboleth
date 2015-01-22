@@ -28,6 +28,7 @@ THE SOFTWARE.
 #include <Shibboleth_UpdateManager.h>
 #include <Shibboleth_ObjectManager.h>
 #include <Shibboleth_LuaManager.h>
+#include <Shibboleth_IApp.h>
 #include <Gaff_JSON.h>
 
 template <class Manager>

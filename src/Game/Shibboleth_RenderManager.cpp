@@ -22,8 +22,9 @@ THE SOFTWARE.
 
 #include "Shibboleth_RenderManager.h"
 #include "Shibboleth_ResourceManager.h"
-#include "Shibboleth_TextureLoader.h"
-#include "Shibboleth_IFileSystem.h"
+#include <Shibboleth_TextureLoader.h>
+#include <Shibboleth_IFileSystem.h>
+#include <Shibboleth_IApp.h>
 #include <Gleam_Global.h>
 #include <Gaff_JSON.h>
 

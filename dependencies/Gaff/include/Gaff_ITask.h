@@ -38,6 +38,7 @@ class ITask : public IRefCounted
 {
 public:
 	typedef RefPtr< ITask<Allocator> > TaskPointer;
+	typedef Array<Gaff::Pair<TaskPointer, unsigned int>, Allocator> DependentTaskData;
 
 	ITask(const Allocator& allocator = Allocator()):
 		_dependent_tasks(allocator), _finished(false)
@@ -69,7 +70,7 @@ public:
 	}
 
 	/*!
-		\brief Block thread until the task has finished. Waiting uses a spin lock.
+		\brief Block thread until the task has finished. CPU is still spinning while waiting.
 	*/
 	void spinWait(void) const
 	{
@@ -83,19 +84,23 @@ public:
 			Dependent tasks will be added to the ThreadPool when this task finishes.
 
 		\param task The task that is dependent on this task.
+		\param pool
+			The task pool this dependent task should be added to.
+			A value of UINT_FAIL means to be added to the same pool that this task is a part of.
 	*/
-	void addDependentTask(const TaskPointer& task)
+	void addDependentTask(const TaskPointer& task, unsigned int pool = 0)
 	{
 		_dependent_tasks.push(task);
 	}
 
-	const Array<TaskPointer, Allocator>& getDependentTasks(void) const
+	const typename DependentTaskData& getDependentTasks(void) const
 	{
 		return _dependent_tasks;
 	}
 
 private:
-	Array<TaskPointer, Allocator> _dependent_tasks;
+	DependentTaskData _dependent_tasks;
+	unsigned int _pool;
 	bool _finished;
 };
 

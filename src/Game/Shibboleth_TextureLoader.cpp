@@ -24,6 +24,7 @@ THE SOFTWARE.
 #include "Shibboleth_ResourceDefines.h"
 #include "Shibboleth_RenderManager.h"
 #include <Gleam_IRenderDevice.h>
+#include <Gaff_ScopedLock.h>
 #include <Gaff_Image.h>
 
 NS_SHIBBOLETH
