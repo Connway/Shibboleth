@@ -94,7 +94,7 @@ public:
 		_dependent_tasks.emplacePush(task, pool);
 	}
 
-	const typename DependentTaskData& getDependentTasks(void) const
+	const DependentTaskData& getDependentTasks(void) const
 	{
 		return _dependent_tasks;
 	}
