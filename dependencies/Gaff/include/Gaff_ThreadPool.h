@@ -143,7 +143,7 @@ private:
 
 	static void DoTask(TaskPtr<Allocator>& task, ThreadData* thread_data, unsigned int pool)
 	{
-		const ITask<Allocator>::DependentTaskData& dep_tasks = task->getDependentTasks();
+		const typename ITask<Allocator>::DependentTaskData& dep_tasks = task->getDependentTasks();
 		task->doTask();
 		task->setFinished(true);
 
