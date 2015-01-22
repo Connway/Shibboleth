@@ -49,6 +49,7 @@ public:
 	long long getCurrMicro(void) const;
 
 	INLINE double getTotalTime(void) const;
+	INLINE void resetTotalTime(void);
 
 private:
 	timespec _start;

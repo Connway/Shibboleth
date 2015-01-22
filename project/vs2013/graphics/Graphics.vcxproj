@@ -393,7 +393,7 @@
     <ClCompile Include="..\..\..\src\Graphics\GleamDLL.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Shared.vcxproj">
+    <ProjectReference Include="..\shared\Shared.vcxproj">
       <Project>{7C480CD1-68EA-36A7-51A5-4AFB3DE6BDF7}</Project>
     </ProjectReference>
     <ProjectReference Include="..\dependencies\Gaff.vcxproj">
@@ -408,7 +408,7 @@
     <ProjectReference Include="..\dependencies\glew.vcxproj">
       <Project>{7463977C-609A-980D-0987-7E10F59C140F}</Project>
     </ProjectReference>
-    <ProjectReference Include="..\Memory.vcxproj">
+    <ProjectReference Include="..\memory\Memory.vcxproj">
       <Project>{BE94DDC2-AA36-0899-93F1-1BED7F328FE9}</Project>
     </ProjectReference>
   </ItemGroup>

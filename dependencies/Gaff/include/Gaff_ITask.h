@@ -27,6 +27,7 @@ THE SOFTWARE.
 #include "Gaff_IRefCounted.h"
 #include "Gaff_RefPtr.h"
 #include "Gaff_Array.h"
+#include "Gaff_Pair.h"
 
 NS_GAFF
 
@@ -90,7 +91,7 @@ public:
 	*/
 	void addDependentTask(const TaskPointer& task, unsigned int pool = 0)
 	{
-		_dependent_tasks.push(task);
+		_dependent_tasks.emplacePush(task, pool);
 	}
 
 	const typename DependentTaskData& getDependentTasks(void) const

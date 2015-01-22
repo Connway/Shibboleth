@@ -205,7 +205,7 @@
     <ClCompile Include="..\..\..\src\Game\Shibboleth_ComponentsModule.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Shared.vcxproj">
+    <ProjectReference Include="..\shared\Shared.vcxproj">
       <Project>{7C480CD1-68EA-36A7-51A5-4AFB3DE6BDF7}</Project>
     </ProjectReference>
     <ProjectReference Include="..\dependencies\Gaff.vcxproj">
@@ -250,7 +250,7 @@
     <ProjectReference Include="Managers.vcxproj">
       <Project>{B34CFEBD-9F19-59C9-C832-4771B45E8E57}</Project>
     </ProjectReference>
-    <ProjectReference Include="..\Memory.vcxproj">
+    <ProjectReference Include="..\memory\Memory.vcxproj">
       <Project>{BE94DDC2-AA36-0899-93F1-1BED7F328FE9}</Project>
     </ProjectReference>
   </ItemGroup>
