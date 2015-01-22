@@ -11,9 +11,9 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Gaff", "..\dependencies\Gaf
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "glew", "..\dependencies\glew.vcxproj", "{7463977C-609A-980D-0987-7E10F59C140F}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Shared", "..\Shared.vcxproj", "{7C480CD1-68EA-36A7-51A5-4AFB3DE6BDF7}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Shared", "..\shared\Shared.vcxproj", "{7C480CD1-68EA-36A7-51A5-4AFB3DE6BDF7}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Memory", "..\Memory.vcxproj", "{BE94DDC2-AA36-0899-93F1-1BED7F328FE9}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Memory", "..\memory\Memory.vcxproj", "{BE94DDC2-AA36-0899-93F1-1BED7F328FE9}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Graphics", "Graphics.vcxproj", "{1653CE33-0220-293F-2B39-17E717655ECD}"
 EndProject

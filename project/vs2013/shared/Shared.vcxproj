@@ -19,33 +19,33 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{BE94DDC2-AA36-0899-93F1-1BED7F328FE9}</ProjectGuid>
+    <ProjectGuid>{7C480CD1-68EA-36A7-51A5-4AFB3DE6BDF7}</ProjectGuid>
     <IgnoreWarnCompileDuplicatedFilename>true</IgnoreWarnCompileDuplicatedFilename>
     <Keyword>Win32Proj</Keyword>
-    <RootNamespace>Memory</RootNamespace>
+    <RootNamespace>Shared</RootNamespace>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
-    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <CharacterSet>Unicode</CharacterSet>
     <PlatformToolset>v120</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
-    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <CharacterSet>Unicode</CharacterSet>
     <PlatformToolset>v120</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
-    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <CharacterSet>Unicode</CharacterSet>
     <PlatformToolset>v120</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
-    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <CharacterSet>Unicode</CharacterSet>
     <PlatformToolset>v120</PlatformToolset>
@@ -68,41 +68,37 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <LinkIncremental>true</LinkIncremental>
-    <OutDir>..\..\build\output\x86\Debug\</OutDir>
-    <IntDir>..\..\build\intermediate\x86\Debug\Memory\</IntDir>
-    <TargetName>Memory32d</TargetName>
-    <TargetExt>.dll</TargetExt>
+    <OutDir>..\..\..\build\output\x86\Debug\</OutDir>
+    <IntDir>..\..\..\build\intermediate\x86\Debug\Shared\</IntDir>
+    <TargetName>Shared</TargetName>
+    <TargetExt>.lib</TargetExt>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <LinkIncremental>true</LinkIncremental>
-    <OutDir>..\..\build\output\x64\Debug\</OutDir>
-    <IntDir>..\..\build\intermediate\x64\Debug\Memory\</IntDir>
-    <TargetName>Memory64d</TargetName>
-    <TargetExt>.dll</TargetExt>
+    <OutDir>..\..\..\build\output\x64\Debug\</OutDir>
+    <IntDir>..\..\..\build\intermediate\x64\Debug\Shared\</IntDir>
+    <TargetName>Shared</TargetName>
+    <TargetExt>.lib</TargetExt>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <LinkIncremental>false</LinkIncremental>
-    <OutDir>..\..\build\output\x86\Release\</OutDir>
-    <IntDir>..\..\build\intermediate\x86\Release\Memory\</IntDir>
-    <TargetName>Memory32</TargetName>
-    <TargetExt>.dll</TargetExt>
+    <OutDir>..\..\..\build\output\x86\Release\</OutDir>
+    <IntDir>..\..\..\build\intermediate\x86\Release\Shared\</IntDir>
+    <TargetName>Shared</TargetName>
+    <TargetExt>.lib</TargetExt>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <LinkIncremental>false</LinkIncremental>
-    <OutDir>..\..\build\output\x64\Release\</OutDir>
-    <IntDir>..\..\build\intermediate\x64\Release\Memory\</IntDir>
-    <TargetName>Memory64</TargetName>
-    <TargetExt>.dll</TargetExt>
+    <OutDir>..\..\..\build\output\x64\Release\</OutDir>
+    <IntDir>..\..\..\build\intermediate\x64\Release\Shared\</IntDir>
+    <TargetName>Shared</TargetName>
+    <TargetExt>.lib</TargetExt>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level4</WarningLevel>
-      <PreprocessorDefinitions>_DEBUG;DEBUG;IS_MEMORY;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\..\src\Memory\include;..\..\src\Shared\include;..\..\dependencies\Gaff\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_DEBUG;DEBUG;USE_SIMD;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\..\..\dependencies\dirent;..\..\..\src\Shared\include;..\..\..\src\Memory\include;..\..\..\dependencies\jansson;..\..\..\dependencies\Gaff\include;..\..\..\dependencies\utf8-cpp;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
-      <ProgramDataBaseFileName>$(OutDir)Memory32d.pdb</ProgramDataBaseFileName>
+      <ProgramDataBaseFileName>$(OutDir)Shared.pdb</ProgramDataBaseFileName>
       <Optimization>Disabled</Optimization>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <FloatingPointModel>Fast</FloatingPointModel>
@@ -110,44 +106,42 @@
       <AdditionalOptions>/sdl %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <ResourceCompile>
-      <PreprocessorDefinitions>_DEBUG;DEBUG;IS_MEMORY;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\..\src\Memory\include;..\..\src\Shared\include;..\..\dependencies\Gaff\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_DEBUG;DEBUG;USE_SIMD;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\..\..\dependencies\dirent;..\..\..\src\Shared\include;..\..\..\src\Memory\include;..\..\..\dependencies\jansson;..\..\..\dependencies\Gaff\include;..\..\..\dependencies\utf8-cpp;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <ImportLibrary>..\..\build\output\x86\Debug\Memory32d.lib</ImportLibrary>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level4</WarningLevel>
-      <PreprocessorDefinitions>_DEBUG;DEBUG;IS_MEMORY;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\..\src\Memory\include;..\..\src\Shared\include;..\..\dependencies\Gaff\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_DEBUG;DEBUG;USE_SIMD;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\..\..\dependencies\dirent;..\..\..\src\Shared\include;..\..\..\src\Memory\include;..\..\..\dependencies\jansson;..\..\..\dependencies\Gaff\include;..\..\..\dependencies\utf8-cpp;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <ProgramDataBaseFileName>$(OutDir)Memory64d.pdb</ProgramDataBaseFileName>
+      <ProgramDataBaseFileName>$(OutDir)Shared.pdb</ProgramDataBaseFileName>
       <Optimization>Disabled</Optimization>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <FloatingPointModel>Fast</FloatingPointModel>
       <AdditionalOptions>/sdl %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <ResourceCompile>
-      <PreprocessorDefinitions>_DEBUG;DEBUG;IS_MEMORY;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\..\src\Memory\include;..\..\src\Shared\include;..\..\dependencies\Gaff\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_DEBUG;DEBUG;USE_SIMD;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\..\..\dependencies\dirent;..\..\..\src\Shared\include;..\..\..\src\Memory\include;..\..\..\dependencies\jansson;..\..\..\dependencies\Gaff\include;..\..\..\dependencies\utf8-cpp;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <ImportLibrary>..\..\build\output\x64\Debug\Memory64d.lib</ImportLibrary>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level4</WarningLevel>
-      <PreprocessorDefinitions>IS_MEMORY;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\..\src\Memory\include;..\..\src\Shared\include;..\..\dependencies\Gaff\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>USE_SIMD;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\..\..\dependencies\dirent;..\..\..\src\Shared\include;..\..\..\src\Memory\include;..\..\..\dependencies\jansson;..\..\..\dependencies\Gaff\include;..\..\..\dependencies\utf8-cpp;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
@@ -159,23 +153,22 @@
       <AdditionalOptions>/sdl %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <ResourceCompile>
-      <PreprocessorDefinitions>IS_MEMORY;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\..\src\Memory\include;..\..\src\Shared\include;..\..\dependencies\Gaff\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>USE_SIMD;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\..\..\dependencies\dirent;..\..\..\src\Shared\include;..\..\..\src\Memory\include;..\..\..\dependencies\jansson;..\..\..\dependencies\Gaff\include;..\..\..\dependencies\utf8-cpp;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>false</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <ImportLibrary>..\..\build\output\x86\Release\Memory32.lib</ImportLibrary>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level4</WarningLevel>
-      <PreprocessorDefinitions>IS_MEMORY;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\..\src\Memory\include;..\..\src\Shared\include;..\..\dependencies\Gaff\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>USE_SIMD;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\..\..\dependencies\dirent;..\..\..\src\Shared\include;..\..\..\src\Memory\include;..\..\..\dependencies\jansson;..\..\..\dependencies\Gaff\include;..\..\..\dependencies\utf8-cpp;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
@@ -186,30 +179,49 @@
       <AdditionalOptions>/sdl %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <ResourceCompile>
-      <PreprocessorDefinitions>IS_MEMORY;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\..\src\Memory\include;..\..\src\Shared\include;..\..\dependencies\Gaff\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>USE_SIMD;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\..\..\dependencies\dirent;..\..\..\src\Shared\include;..\..\..\src\Memory\include;..\..\..\dependencies\jansson;..\..\..\dependencies\Gaff\include;..\..\..\dependencies\utf8-cpp;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>false</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <ImportLibrary>..\..\build\output\x64\Release\Memory64.lib</ImportLibrary>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\src\Memory\include\Shibboleth_Memory.h" />
+    <ClInclude Include="..\..\..\src\Shared\include\Shibboleth_Allocator.h" />
+    <ClInclude Include="..\..\..\src\Shared\include\Shibboleth_App.h" />
+    <ClInclude Include="..\..\..\src\Shared\include\Shibboleth_Array.h" />
+    <ClInclude Include="..\..\..\src\Shared\include\Shibboleth_BitArray.h" />
+    <ClInclude Include="..\..\..\src\Shared\include\Shibboleth_Defines.h" />
+    <ClInclude Include="..\..\..\src\Shared\include\Shibboleth_DynamicLoader.h" />
+    <ClInclude Include="..\..\..\src\Shared\include\Shibboleth_HashMap.h" />
+    <ClInclude Include="..\..\..\src\Shared\include\Shibboleth_HashString.h" />
+    <ClInclude Include="..\..\..\src\Shared\include\Shibboleth_IApp.h" />
+    <ClInclude Include="..\..\..\src\Shared\include\Shibboleth_IFileSystem.h" />
+    <ClInclude Include="..\..\..\src\Shared\include\Shibboleth_IManager.h" />
+    <ClInclude Include="..\..\..\src\Shared\include\Shibboleth_IState.h" />
+    <ClInclude Include="..\..\..\src\Shared\include\Shibboleth_ITask.h" />
+    <ClInclude Include="..\..\..\src\Shared\include\Shibboleth_LockDefines.h" />
+    <ClInclude Include="..\..\..\src\Shared\include\Shibboleth_Logger.h" />
+    <ClInclude Include="..\..\..\src\Shared\include\Shibboleth_LooseFileSystem.h" />
+    <ClInclude Include="..\..\..\src\Shared\include\Shibboleth_Map.h" />
+    <ClInclude Include="..\..\..\src\Shared\include\Shibboleth_MessageBroadcaster.h" />
+    <ClInclude Include="..\..\..\src\Shared\include\Shibboleth_ProxyAllocator.h" />
+    <ClInclude Include="..\..\..\src\Shared\include\Shibboleth_RefCounted.h" />
+    <ClInclude Include="..\..\..\src\Shared\include\Shibboleth_ReflectionDefinitions.h" />
+    <ClInclude Include="..\..\..\src\Shared\include\Shibboleth_StateMachine.h" />
+    <ClInclude Include="..\..\..\src\Shared\include\Shibboleth_String.h" />
+    <ClInclude Include="..\..\..\src\Shared\include\Shibboleth_ThreadPool.h" />
+    <ClInclude Include="..\..\..\src\Shared\include\Shibboleth_Watcher.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\src\Memory\Shibboleth_Memory.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="Shared.vcxproj">
-      <Project>{7C480CD1-68EA-36A7-51A5-4AFB3DE6BDF7}</Project>
-    </ProjectReference>
-    <ProjectReference Include="dependencies\Gaff.vcxproj">
-      <Project>{99A8857C-85DF-860D-2ECC-6C101AE2020F}</Project>
-    </ProjectReference>
+    <ClCompile Include="..\..\..\src\Shared\Shibboleth_Allocator.cpp" />
+    <ClCompile Include="..\..\..\src\Shared\Shibboleth_App.cpp" />
+    <ClCompile Include="..\..\..\src\Shared\Shibboleth_Logger.cpp" />
+    <ClCompile Include="..\..\..\src\Shared\Shibboleth_LooseFileSystem.cpp" />
+    <ClCompile Include="..\..\..\src\Shared\Shibboleth_StateMachine.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

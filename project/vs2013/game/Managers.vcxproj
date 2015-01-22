@@ -194,10 +194,10 @@
     <ClInclude Include="..\..\..\src\Game\include\Shibboleth_ComponentManager.h" />
     <ClInclude Include="..\..\..\src\Game\include\Shibboleth_LuaManager.h" />
     <ClInclude Include="..\..\..\src\Game\include\Shibboleth_ObjectManager.h" />
+    <ClInclude Include="..\..\..\src\Game\include\Shibboleth_OcclusionManager.h" />
     <ClInclude Include="..\..\..\src\Game\include\Shibboleth_OtterUIManager.h" />
     <ClInclude Include="..\..\..\src\Game\include\Shibboleth_RenderManager.h" />
     <ClInclude Include="..\..\..\src\Game\include\Shibboleth_ResourceManager.h" />
-    <ClInclude Include="..\..\..\src\Game\include\Shibboleth_OcclusionManager.h" />
     <ClInclude Include="..\..\..\src\Game\include\Shibboleth_UpdateManager.h" />
   </ItemGroup>
   <ItemGroup>
@@ -205,10 +205,10 @@
     <ClCompile Include="..\..\..\src\Game\Shibboleth_ComponentManager.cpp" />
     <ClCompile Include="..\..\..\src\Game\Shibboleth_LuaManager.cpp" />
     <ClCompile Include="..\..\..\src\Game\Shibboleth_ObjectManager.cpp" />
+    <ClCompile Include="..\..\..\src\Game\Shibboleth_OcclusionManager.cpp" />
     <ClCompile Include="..\..\..\src\Game\Shibboleth_OtterUIManager.cpp" />
     <ClCompile Include="..\..\..\src\Game\Shibboleth_RenderManager.cpp" />
     <ClCompile Include="..\..\..\src\Game\Shibboleth_ResourceManager.cpp" />
-    <ClCompile Include="..\..\..\src\Game\Shibboleth_OcclusionManager.cpp" />
     <ClCompile Include="..\..\..\src\Game\Shibboleth_UpdateManager.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

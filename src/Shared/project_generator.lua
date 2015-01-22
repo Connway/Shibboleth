@@ -1,6 +1,6 @@
 project "Shared"
 	if _ACTION then
-		location ("../../project/" .. _ACTION)
+		location ("../../project/" .. _ACTION .. "/shared")
 	end
 
 	kind "StaticLib"
