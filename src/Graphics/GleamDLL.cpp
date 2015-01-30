@@ -37,6 +37,10 @@ THE SOFTWARE.
 #include <Gleam_Window.h>
 #include <Shibboleth_IApp.h>
 
+#ifdef USE_VLD
+	#include <vld.h>
+#endif
+
 static Shibboleth::ProxyAllocator g_Proxy_Allocator;
 
 DYNAMICEXPORT_C bool InitGraphics(Shibboleth::IApp&, const char* log_file_name)

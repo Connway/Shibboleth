@@ -147,14 +147,14 @@ void ModelComponent::render(void)
 		!_model_res.getResourcePtr()->isLoaded())
 		return;
 
-	//static float rot = 0.0f;
-	//rot += 0.001f;
+	static float rot = 0.0f;
+	rot += 0.001f;
 
 	Gleam::Matrix4x4 tocamera, projection, toworld;
 	tocamera.setLookAtLH(0.0f, 0.0f, -10.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f);
 	projection.setPerspectiveLH(90.0f, 16.0f / 9.0f, 0.1f, 5000.0f);
 	toworld.setIdentity();
-	//toworld.setRotationY(rot);
+	toworld.setRotationY(rot);
 
 	// Update camera data
 	Gleam::IBuffer* buffer = _program_buffers->getConstantBuffer(Gleam::IShader::SHADER_VERTEX, 0);

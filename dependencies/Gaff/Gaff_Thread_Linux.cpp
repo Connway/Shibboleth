@@ -28,6 +28,14 @@ THE SOFTWARE.
 
 NS_GAFF
 
+/*!
+	\brief Returns the thread ID of the callee.
+*/
+unsigned int Thread::getCurrentThreadID(void)
+{
+	return static_cast<unsigned int>(pthread_self());
+}
+
 unsigned int Thread::INF = UINT_FAIL;
 
 // to make GCC stop complaining
@@ -135,6 +143,14 @@ Thread::WaitCode Thread::wait(unsigned int ms)
 				return THREAD_FINISHED;
 		}
 	}
+}
+
+/*!
+	\brief Returns the ID of the created thread.
+*/
+unsigned int Thread::getID(void) const
+{
+	return static_cast<unsigned int>(_thread);
 }
 
 /*!

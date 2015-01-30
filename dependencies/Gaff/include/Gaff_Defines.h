@@ -72,6 +72,7 @@ THE SOFTWARE.
 
 	#define DYNAMICEXPORT __declspec(dllexport) //!< Specifies a symbol for export.
 	#define DYNAMICIMPORT __declspec(dllimport) //!< Specifies a symbol for import.
+	#define THREAD_LOCAL __declspec(thread) //!< Specifies a static variable to use thread local storage.
 
 	#ifdef _UNICODE
 		#define GaffFullMain int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR lpCmdLine, int nShowCmd)
@@ -83,6 +84,8 @@ THE SOFTWARE.
 
 	#define YieldThread() Sleep(0) //!< Yields the thread to the scheduler.
 #else
+	#define THREAD_LOCAL thread_local //!< Specifies a static variable to use thread local storage.
+
 	#define GaffFullMain int main(int argc, char** argv)
 	#define GaffMain main
 

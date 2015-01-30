@@ -35,7 +35,7 @@ REF_IMPL_SHIB(ObjectManager)
 ;
 
 ObjectManager::ObjectManager(IApp& app):
-	_app(app)
+	_app(app), _next_id(0)
 {
 }
 

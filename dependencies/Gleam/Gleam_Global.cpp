@@ -21,19 +21,20 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Gleam_Global.h"
+#include "Gleam_String.h"
+#include <Gaff_DefaultAlignedAllocator.h>
 #include <Gaff_ScopedLock.h>
 #include <Gaff_SpinLock.h>
 #include <Gaff_File.h>
 #include <iostream>
 #include <cstdarg>
 
-#include "Gaff_DefaultAlignedAllocator.h"
-
 NS_GLEAM
 
-static Gaff::IAllocator* g_allocator = new Gaff::DefaultAlignedAllocator(16);
+static Gaff::DefaultAlignedAllocator g_backup_allocator(16);
+static Gaff::IAllocator* g_allocator = &g_backup_allocator;
 
-static const GChar* g_log_file_name = GC("gleam.log");
+static GleamGString g_log_file_name(GC("Gleam.log"));
 static bool default_alloc = true;
 
 static Gaff::SpinLock g_spin_lock;
@@ -41,11 +42,6 @@ static Gaff::File g_log_file;
 
 void SetAllocator(Gaff::IAllocator* allocator)
 {
-	if (default_alloc) {
-		default_alloc = false;
-		delete g_allocator;
-	}
-
 	g_allocator = allocator;
 }
 
@@ -81,7 +77,7 @@ void SetLogFileName(const GChar* log_file_name)
 
 const GChar* GetLogFileName(void)
 {
-	return g_log_file_name;
+	return g_log_file_name.getBuffer();
 }
 
 void WriteMessageToLog(const char* msg, size_t size, LOG_MSG_TYPE type)
@@ -89,7 +85,7 @@ void WriteMessageToLog(const char* msg, size_t size, LOG_MSG_TYPE type)
 	Gaff::ScopedLock<Gaff::SpinLock> scoped_lock(g_spin_lock);
 
 	if (!g_log_file.isOpen()) {
-		g_log_file.open(g_log_file_name, Gaff::File::APPEND);
+		g_log_file.open(g_log_file_name.getBuffer(), Gaff::File::APPEND);
 	}
 
 	if (g_log_file.isOpen()) {
@@ -117,7 +113,7 @@ void PrintfToLog(const char* format_string, LOG_MSG_TYPE type, ...)
 	Gaff::ScopedLock<Gaff::SpinLock> scoped_lock(g_spin_lock);
 
 	if (!g_log_file.isOpen()) {
-		g_log_file.open(g_log_file_name, Gaff::File::APPEND);
+		g_log_file.open(g_log_file_name.getBuffer(), Gaff::File::APPEND);
 	}
 
 	if (g_log_file.isOpen()) {

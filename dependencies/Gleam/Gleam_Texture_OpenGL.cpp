@@ -219,6 +219,7 @@ bool TextureGL::init3D(IRenderDevice&, int width, int height, int depth, FORMAT 
 	}
 
 	glBindTexture(GL_TEXTURE_3D, 0);
+	glFinish();
 
 	return glGetError() == GL_NO_ERROR;
 }
@@ -267,6 +268,7 @@ bool TextureGL::init2D(IRenderDevice&, int width, int height, FORMAT format, int
 	}
 
 	glBindTexture(GL_TEXTURE_2D, 0);
+	glFinish();
 
 	return glGetError() == GL_NO_ERROR;
 }
@@ -314,6 +316,7 @@ bool TextureGL::init1D(IRenderDevice&, int width, FORMAT format, int mip_levels,
 	}
 
 	glBindTexture(GL_TEXTURE_1D, 0);
+	glFinish();
 
 	return glGetError() == GL_NO_ERROR;
 }
@@ -388,6 +391,7 @@ bool TextureGL::initCubemap(IRenderDevice&, int width, int height, FORMAT format
 	}
 
 	glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
+	glFinish();
 
 	return glGetError() == GL_NO_ERROR;
 }
@@ -426,6 +430,7 @@ bool TextureGL::initDepthStencil(IRenderDevice&, int width, int height, FORMAT f
 	glTexStorage2D(GL_TEXTURE_2D, 1, _format_map[format], width, height);
 
 	glBindTexture(GL_TEXTURE_2D, 0);
+	glFinish();
 
 	return glGetError() == GL_NO_ERROR;
 }

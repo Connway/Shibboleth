@@ -25,7 +25,9 @@ THE SOFTWARE.
 #include "Gleam_IRenderDevice.h"
 #include "Gleam_BitArray.h"
 #include "Gleam_String.h"
+#include "Gleam_Map.h"
 #include <Gaff_IncludeWindows.h>
+#include <Gaff_SpinLock.h>
 
 NS_GLEAM
 
@@ -39,6 +41,7 @@ public:
 
 	AdapterList getDisplayModes(int compat = 28);
 
+	bool initThreadData(unsigned int* thread_ids, unsigned int num_ids);
 	bool init(const IWindow& window, unsigned int adapter_id, unsigned int display_id, unsigned int display_mode_id, bool vsync = false);
 	void destroy(void);
 
@@ -106,7 +109,7 @@ private:
 		GleamArray<Viewport> viewports;
 		GleamArray<HWND> windows;
 		GleamArray<IRenderTargetPtr> rts;
-		GleamBitArray vsync; // Change to BitArray when finished
+		GleamBitArray vsync;
 
 		unsigned int adapter_id;
 	};
@@ -114,11 +117,17 @@ private:
 	GleamArray<AdapterInfo> _display_info;
 	GleamArray<Device> _devices;
 
+	// Key is thread id, value is 2D array. First index is device, second is output.
+	GleamMap< unsigned int, GleamArray<HGLRC> > _thread_contexts;
+	Gaff::SpinLock _thread_data_lock;
+
 	const Viewport* _active_viewport;
 	HDC _active_output;
 
 	unsigned int _curr_output;
 	unsigned int _curr_device;
+
+	unsigned int _creating_thread_id;
 
 	bool _glew_already_initialized;
 };

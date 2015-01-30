@@ -22,14 +22,18 @@ THE SOFTWARE.
 
 #include "Shibboleth_Memory.h"
 
+#ifdef USE_VLD
+	#include <vld.h>
+#endif
+
 NS_SHIBBOLETH
 
 static Allocator gAllocator;
 
-//void SetAllocator(Allocator* allocator)
-//{
-//	gAllocator = allocator;
-//}
+void CreateMemoryPool(const char* pool_name, unsigned int alloc_tag)
+{
+	gAllocator.createMemoryPool(pool_name, alloc_tag);
+}
 
 Allocator* GetAllocator(void)
 {
@@ -38,7 +42,7 @@ Allocator* GetAllocator(void)
 
 void* ShibbolethAllocate(size_t size)
 {
-	return gAllocator.alloc((unsigned int)size);
+	return gAllocator.alloc(static_cast<unsigned int>(size));
 }
 
 void ShibbolethFree(void* data)

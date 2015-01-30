@@ -334,7 +334,7 @@ bool ShaderGL::loadFileAndCompileShader(unsigned int shader_type, const char* fi
 
 bool ShaderGL::compileShader(const char* source, int source_size, unsigned int shader_type)
 {
-	unsigned int shader = glCreateShader(shader_type);
+	unsigned int shader = glCreateShader(gl_shader_type[shader_type]);
 
 	if (!shader) {
 		return false;
@@ -403,6 +403,7 @@ bool ShaderGL::compileShader(const char* source, int source_size, unsigned int s
 		return false;
 	}
 
+	glFinish();
 	return glGetError() == GL_NO_ERROR;
 }
 

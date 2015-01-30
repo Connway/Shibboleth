@@ -950,11 +950,23 @@ SIMDMatrix SIMDMatrixMul(const SIMDMatrix& left, const SIMDMatrix& right)
 
 SIMDMatrix SIMDMatrixTranspose(const SIMDMatrix& matrix)
 {
+	//SIMDMatrix result = {{
+	//	_mm_shuffle_ps(matrix.elements[0], matrix.elements[1], _MM_SHUFFLE(1, 0, 1, 0)),
+	//	_mm_shuffle_ps(matrix.elements[2], matrix.elements[3], _MM_SHUFFLE(1, 0, 1, 0)),
+	//	_mm_shuffle_ps(matrix.elements[0], matrix.elements[1], _MM_SHUFFLE(3, 2, 3, 2)),
+	//	_mm_shuffle_ps(matrix.elements[2], matrix.elements[3], _MM_SHUFFLE(3, 2, 3, 2))
+	//}};
+
+	SIMDType temp1 = _mm_shuffle_ps(matrix.elements[0], matrix.elements[1], _MM_SHUFFLE(1,0,1,0));
+	SIMDType temp3 = _mm_shuffle_ps(matrix.elements[0], matrix.elements[1],_MM_SHUFFLE(3,2,3,2));
+	SIMDType temp2 = _mm_shuffle_ps(matrix.elements[2], matrix.elements[3],_MM_SHUFFLE(1,0,1,0));
+	SIMDType temp4 = _mm_shuffle_ps(matrix.elements[2], matrix.elements[3],_MM_SHUFFLE(3,2,3,2));
+
 	SIMDMatrix result = {{
-		_mm_shuffle_ps(matrix.elements[0], matrix.elements[1], _MM_SHUFFLE(1, 0, 1, 0)),
-		_mm_shuffle_ps(matrix.elements[2], matrix.elements[3], _MM_SHUFFLE(1, 0, 1, 0)),
-		_mm_shuffle_ps(matrix.elements[0], matrix.elements[1], _MM_SHUFFLE(3, 2, 3, 2)),
-		_mm_shuffle_ps(matrix.elements[2], matrix.elements[3], _MM_SHUFFLE(3, 2, 3, 2))
+		_mm_shuffle_ps(temp1, temp2, _MM_SHUFFLE(2,0,2,0)),
+		_mm_shuffle_ps(temp1, temp2, _MM_SHUFFLE(3,1,3,1)),
+		_mm_shuffle_ps(temp3, temp4, _MM_SHUFFLE(2,0,2,0)),
+		_mm_shuffle_ps(temp3, temp4, _MM_SHUFFLE(3,1,3,1))
 	}};
 
 	return result;

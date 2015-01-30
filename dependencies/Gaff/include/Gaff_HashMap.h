@@ -125,7 +125,7 @@ public:
 
 	bool hasElementWithValue(const Value& value) const;
 	bool hasElementWithKey(const Key& key) const;
-	int indexOf(const Key& key) const;
+	unsigned int indexOf(const Key& key) const;
 
 	void clear(void);
 	void reserve(unsigned int new_size);
@@ -242,7 +242,7 @@ public:
 
 	bool hasElementWithValue(const Value& value) const;
 	bool hasElementWithKey(const String<T, Allocator>& key) const;
-	int indexOf(const String<T, Allocator>& key) const;
+	unsigned int indexOf(const String<T, Allocator>& key) const;
 
 	void clear(void);
 	void reserve(unsigned int new_size);
@@ -358,7 +358,7 @@ public:
 
 	bool hasElementWithValue(const Value& value) const;
 	bool hasElementWithKey(const HashString<T, Allocator>& key) const;
-	int indexOf(const HashString<T, Allocator>& key) const;
+	unsigned int indexOf(const HashString<T, Allocator>& key) const;
 
 	void clear(void);
 	void reserve(unsigned int new_size);

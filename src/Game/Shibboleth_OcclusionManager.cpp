@@ -85,6 +85,9 @@ OcclusionManager::OcclusionManager(IApp& app):
 
 OcclusionManager::~OcclusionManager(void)
 {
+	for (auto it = _node_map.begin(); it != _node_map.end(); ++it) {
+		GetAllocator()->freeT(it->second);
+	}
 }
 
 void OcclusionManager::requestUpdateEntries(Array<UpdateEntry>& entries)
@@ -131,7 +134,7 @@ void OcclusionManager::removeObject(unsigned int id)
 
 	// Split into two because VS2013 is retarded and thinks it's an uninitialized variable ...
 	Node* node = nullptr;
-	node = _node_map[node->id];
+	node = _node_map[id];
 
 	removeNode(node);
 	_node_map.erase(id);
@@ -142,6 +145,8 @@ void OcclusionManager::removeObject(unsigned int id)
 	if (it != _dirty_nodes.end()) {
 		_dirty_nodes.erase(it);
 	}
+
+	GetAllocator()->freeT(node);
 }
 
 void OcclusionManager::update(double)

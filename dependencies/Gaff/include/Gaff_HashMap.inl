@@ -730,10 +730,10 @@ bool HashMap<Key, Value, Allocator>::hasElementWithKey(const Key& key) const
 }
 
 template <class Key, class Value, class Allocator>
-int HashMap<Key, Value, Allocator>::indexOf(const Key& key) const
+unsigned int HashMap<Key, Value, Allocator>::indexOf(const Key& key) const
 {
 	if (!_size) {
-		return -1;
+		return UINT_FAIL;
 	}
 
 	unsigned int index = _hash((const char*)&key, sizeof(Key)) % _size;
@@ -745,7 +745,7 @@ int HashMap<Key, Value, Allocator>::indexOf(const Key& key) const
 	}
 
 	if (!_slots[index].occupied || i == _size) {
-		return -1;
+		return UINT_FAIL;
 	}
 
 	return index;
@@ -1223,10 +1223,10 @@ bool HashMap<String<T, Allocator>, Value, Allocator>::hasElementWithKey(const St
 }
 
 template <class Value, class Allocator, class T>
-int HashMap<String<T, Allocator>, Value, Allocator>::indexOf(const String<T, Allocator>& key) const
+unsigned int HashMap<String<T, Allocator>, Value, Allocator>::indexOf(const String<T, Allocator>& key) const
 {
 	if (!_size) {
-		return -1;
+		return UINT_FAIL;
 	}
 
 	unsigned int index = _hash((const char*)key.getBuffer(), key.size() * sizeof(T)) % _size;
@@ -1238,7 +1238,7 @@ int HashMap<String<T, Allocator>, Value, Allocator>::indexOf(const String<T, All
 	}
 
 	if (!_slots[index].occupied || i == _size) {
-		return -1;
+		return UINT_FAIL;
 	}
 
 	return index;
@@ -1715,10 +1715,10 @@ bool HashMap<HashString<T, Allocator>, Value, Allocator>::hasElementWithKey(cons
 }
 
 template <class Value, class Allocator, class T>
-int HashMap<HashString<T, Allocator>, Value, Allocator>::indexOf(const HashString<T, Allocator>& key) const
+unsigned int HashMap<HashString<T, Allocator>, Value, Allocator>::indexOf(const HashString<T, Allocator>& key) const
 {
 	if (!_size) {
-		return -1;
+		return UINT_FAIL;
 	}
 
 	unsigned int index = key.getHash() % _size;
@@ -1730,7 +1730,7 @@ int HashMap<HashString<T, Allocator>, Value, Allocator>::indexOf(const HashStrin
 	}
 
 	if (!_slots[index].occupied || i == _size) {
-		return -1;
+		return UINT_FAIL;
 	}
 
 	return index;

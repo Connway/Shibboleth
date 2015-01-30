@@ -72,7 +72,7 @@ App::~App(void)
 	if (_fs.file_system_module) {
 		_fs.destroy_func(_fs.file_system);
 		_fs.file_system_module = nullptr;
-	} else {
+	} else if (_fs.file_system) {
 		GetAllocator()->freeT(_fs.file_system);
 	}
 }
@@ -286,6 +286,7 @@ bool App::loadStates(void)
 
 	if (!states_file) {
 		_log_file_pair->first.writeString("ERROR - Could not find 'States/states.json'.\n");
+		return false;
 	}
 
 	Gaff::JSON state_data;
@@ -559,14 +560,30 @@ HashMap<AHashString, AString>& App::getCmdLine(void)
 	return _cmd_line_args;
 }
 
-DynamicLoader::ModulePtr App::loadModule(const char* filename, const char* name)
-{
-	return _dynamic_loader.loadModule(filename, name);
-}
-
 void App::addTask(Gaff::TaskPtr<ProxyAllocator>& task, unsigned int pool)
 {
 	_thread_pool.addTask(task, pool);
+}
+
+void App::getWorkerThreadIDs(Array<unsigned int>& out) const
+{
+	out.resize(_thread_pool.getNumTotalThreads());
+	_thread_pool.getThreadIDs(out.getArray());
+}
+
+void App::helpUntilNoTasks(void)
+{
+	_thread_pool.helpUntilNoTasks();
+}
+
+void App::doATask(void)
+{
+	_thread_pool.doATask();
+}
+
+DynamicLoader::ModulePtr App::loadModule(const char* filename, const char* name)
+{
+	return _dynamic_loader.loadModule(filename, name);
 }
 
 LogManager::FileLockPair& App::getGameLogFile(void)

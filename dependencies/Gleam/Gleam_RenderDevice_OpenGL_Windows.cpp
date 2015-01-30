@@ -26,6 +26,7 @@ THE SOFTWARE.
 #include "Gleam_RenderTarget_OpenGL.h"
 #include "Gleam_Window_Windows.h"
 #include <Gaff_IncludeAssert.h>
+#include <Gaff_Thread.h>
 #include <GL/glew.h>
 #include <GL/wglew.h>
 
@@ -33,7 +34,7 @@ NS_GLEAM
 
 RenderDeviceGL::RenderDeviceGL(void):
 	_active_viewport(nullptr), _active_output(nullptr),
-	_curr_output(0), _curr_device(0),
+	_curr_output(0), _curr_device(0), _creating_thread_id(0),
 	_glew_already_initialized(false)
 {
 }
@@ -53,6 +54,32 @@ bool RenderDeviceGL::CheckRequiredExtensions(void)
 		GLEW_EXT_texture_filter_anisotropic && GLEW_ARB_shading_language_420pack &&
 		GLEW_ARB_vertex_array_object
 	);
+}
+
+bool RenderDeviceGL::initThreadData(unsigned int* thread_ids, unsigned int num_ids)
+{
+	for (unsigned int i = 0; i < num_ids; ++i) {
+		GleamArray<HGLRC>& thread_data = _thread_contexts[thread_ids[i]];
+
+		thread_data.reserve(_devices.size());
+
+		for (unsigned int j = 0; j < _devices.size(); ++j) {
+			HGLRC context = wglCreateContext(_devices[j].outputs[0]);
+
+			if (!context) {
+				return false;
+			}
+
+			if (wglShareLists(_devices[j].contexts[0], context) == FALSE) {
+				wglDeleteContext(context);
+				return false;
+			}
+
+			thread_data.push(context);
+		}
+	}
+
+	return true;
 }
 
 IRenderDevice::AdapterList RenderDeviceGL::getDisplayModes(int)
@@ -174,6 +201,12 @@ bool RenderDeviceGL::init(const IWindow& window, unsigned int adapter_id, unsign
 		_display_info[adapter_id].output_info[display_id].display_mode_list.size() > display_mode_id
 	);
 
+#ifdef _DEBUG
+	if (_creating_thread_id) {
+		assert(_creating_thread_id == Gaff::Thread::getCurrentThreadID());
+	}
+#endif
+
 	const Window& wnd = (const Window&)window;
 	HWND hwnd = wnd.getHWnd();
 
@@ -282,9 +315,18 @@ bool RenderDeviceGL::init(const IWindow& window, unsigned int adapter_id, unsign
 			wglSwapIntervalEXT(vsync);
 		}
 
+		if (!_creating_thread_id) {
+			_creating_thread_id = Gaff::Thread::getCurrentThreadID();
+		}
+
 		_glew_already_initialized = true;
 		setCurrentDevice(0);
 		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+
+	} else {
+		if (!_creating_thread_id) {
+			_creating_thread_id = Gaff::Thread::getCurrentThreadID();
+		}
 	}
 
 	return true;
@@ -458,7 +500,19 @@ bool RenderDeviceGL::setCurrentDevice(unsigned int device)
 	unsigned int prev_device = _curr_device;
 	_curr_device = device;
 
-	if (!setCurrentOutput(0)) {
+	unsigned int thread_id = Gaff::Thread::getCurrentThreadID();
+
+	if (thread_id != _creating_thread_id) {
+		_curr_device = prev_device;
+
+		GleamArray<HGLRC>& contexts = _thread_contexts[thread_id];
+
+		if (wglMakeCurrent(_devices[_curr_device].outputs[0], contexts[device]) == FALSE) {
+			return false;
+		}
+
+
+	} else if (!setCurrentOutput(0)) {
 		_curr_device = prev_device;
 		setCurrentOutput(_curr_output); // attempt to set back to the old device
 		return false;
