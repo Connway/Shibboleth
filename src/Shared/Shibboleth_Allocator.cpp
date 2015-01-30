@@ -28,12 +28,17 @@ THE SOFTWARE.
 NS_SHIBBOLETH
 
 Allocator::Allocator(size_t alignment):
-	_tagged_pools(Gaff::DefaultAlignedAllocator(16)), _alignment(alignment)
+	_tagged_pools(Gaff::DefaultAlignedAllocator(16)), _alignment(alignment), _global_allocator(alignment)
 {
 	MemoryPoolInfo& mem_pool_info = _tagged_pools[0];
 	mem_pool_info.total_bytes_allocated = 0;
 	mem_pool_info.num_allocations = 0;
 	mem_pool_info.num_frees = 0;
+
+#ifdef TRACK_POINTER_ALLOCATIONS
+	mem_pool_info.pa_lock = _global_allocator.template allocT<Gaff::SpinLock>();
+	mem_pool_info.wf_lock = _global_allocator.template allocT<Gaff::SpinLock>();
+#endif
 
 	strncpy(mem_pool_info.pool_name, "Untagged Allocations", POOL_NAME_SIZE);
 }
@@ -62,6 +67,12 @@ Allocator::~Allocator(void)
 	log.printf("===========================================================\n\n");
 
 	for (auto it = _tagged_pools.begin(); it != _tagged_pools.end(); ++it) {
+#ifdef TRACK_POINTER_ALLOCATIONS
+		it->second.pointers_allocated.clear();
+		_global_allocator.freeT(it->second.pa_lock);
+		_global_allocator.freeT(it->second.wf_lock);
+#endif
+
 		log.printf("%s:\n", it->second.pool_name);
 		log.printf("\tBytes Allocated: %i\n", it->second.total_bytes_allocated);
 		log.printf("\tAllocations: %i\n", it->second.num_allocations);
@@ -71,15 +82,33 @@ Allocator::~Allocator(void)
 		total_allocs += it->second.num_allocations;
 		total_frees += it->second.num_frees;
 
+#ifdef TRACK_POINTER_ALLOCATIONS
+		if (!it->second.wrong_free.empty()) {
+			log.printf("\t===========================================================\n");
+			log.printf("\tERROR: This pool freed memory that belonged to another pool!\n");
+			log.printf("\t===========================================================\n");
+
+			for (auto it_wf = it->second.wrong_free.begin(); it_wf != it->second.wrong_free.end(); ++it_wf) {
+				log.printf("\t\t%s: %i\n", _tagged_pools[it_wf->first].pool_name, it_wf->second);
+			}
+
+			log.printf("\n");
+
+			it->second.wrong_free.clear();
+		}
+#else
+		if (it->second.num_allocations < it->second.num_frees) {
+			log.printf("\t===========================================================\n");
+			log.printf("\tWARNING: Memory was potentially allocated by another pool, but freed by this one!\n");
+			log.printf("\t===========================================================\n\n");
+		}
+#endif
+
 		if (it->second.num_allocations > it->second.num_frees) {
 			log.printf("\t===========================================================\n");
 			log.printf("\tWARNING: A memory leak was caused by this pool!\n");
 			log.printf("\t===========================================================\n\n");
 
-		} else if (it->second.num_allocations < it->second.num_frees) {
-			log.printf("\t===========================================================\n");
-			log.printf("\tWARNING: Memory was potentially allocated by another pool, but freed by this one!\n");
-			log.printf("\t===========================================================\n\n");
 		}
 	}
 
@@ -103,6 +132,11 @@ void Allocator::createMemoryPool(const char* pool_name, unsigned int alloc_tag)
 		mem_pool_info.num_frees = 0;
 
 		strncpy(mem_pool_info.pool_name, pool_name, POOL_NAME_SIZE);
+
+#ifdef TRACK_POINTER_ALLOCATIONS
+		mem_pool_info.pa_lock = _global_allocator.template allocT<Gaff::SpinLock>();
+		mem_pool_info.wf_lock = _global_allocator.template allocT<Gaff::SpinLock>();
+#endif
 	}
 }
 
@@ -116,6 +150,12 @@ void* Allocator::alloc(unsigned int size_bytes, unsigned int alloc_tag)
 	if (data) {
 		AtomicUAdd(&mem_pool_info.total_bytes_allocated, size_bytes);
 		AtomicIncrement(&mem_pool_info.num_allocations);
+
+#ifdef TRACK_POINTER_ALLOCATIONS
+		mem_pool_info.pa_lock->lock();
+		mem_pool_info.pointers_allocated.push(data);
+		mem_pool_info.pa_lock->unlock();
+#endif
 	}
 
 	return data;
@@ -130,6 +170,35 @@ void Allocator::free(void* data, unsigned int alloc_tag)
 	AtomicIncrement(&mem_pool_info.num_frees);
 
 	_aligned_free(data);
+
+#ifdef TRACK_POINTER_ALLOCATIONS
+	mem_pool_info.pa_lock->lock();
+
+	auto it_ptr = mem_pool_info.pointers_allocated.linearSearch(data);
+
+	if (it_ptr == mem_pool_info.pointers_allocated.end()) {
+		mem_pool_info.pa_lock->unlock();
+
+		for (auto it_pool = _tagged_pools.begin(); it_pool != _tagged_pools.end(); ++it_pool) {
+			it_pool->second.pa_lock->lock();
+
+			it_ptr = it_pool->second.pointers_allocated.linearSearch(data);
+
+			if (it_ptr != it_pool->second.pointers_allocated.end()) {
+				mem_pool_info.wf_lock->lock();
+				++mem_pool_info.wrong_free[it_pool->first];
+				// get stack trace
+				mem_pool_info.wf_lock->unlock();
+			}
+
+			it_pool->second.pa_lock->unlock();
+		}
+
+	} else {
+		mem_pool_info.pointers_allocated.fastErase(it_ptr);
+		mem_pool_info.pa_lock->unlock();
+	}
+#endif
 }
 
 void* Allocator::alloc(unsigned int size_bytes)

@@ -25,9 +25,12 @@ THE SOFTWARE.
 #include "Shibboleth_Defines.h"
 #include <Gaff_DefaultAlignedAllocator.h>
 #include <Gaff_IAllocator.h>
+#include <Gaff_SpinLock.h>
 #include <Gaff_Map.h>
 
 #define POOL_NAME_SIZE 32
+
+#define TRACK_POINTER_ALLOCATIONS
 
 NS_SHIBBOLETH
 
@@ -55,10 +58,21 @@ private:
 		volatile unsigned int num_allocations;
 		volatile unsigned int num_frees;
 		char pool_name[POOL_NAME_SIZE];
+
+#ifdef TRACK_POINTER_ALLOCATIONS
+		MemoryPoolInfo(void): wrong_free(Gaff::DefaultAlignedAllocator(16)), pointers_allocated(Gaff::DefaultAlignedAllocator(16)) {}
+
+		Gaff::Map<unsigned int, unsigned int, Gaff::DefaultAlignedAllocator> wrong_free;
+		Gaff::Array<void*, Gaff::DefaultAlignedAllocator> pointers_allocated;
+		Gaff::SpinLock* wf_lock;
+		Gaff::SpinLock* pa_lock;
+#endif
 	};
 
 	Gaff::Map<unsigned int, MemoryPoolInfo, Gaff::DefaultAlignedAllocator> _tagged_pools;
 	size_t _alignment;
+
+	Gaff::DefaultAlignedAllocator _global_allocator;
 
 	GAFF_NO_MOVE(Allocator);
 };

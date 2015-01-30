@@ -38,18 +38,15 @@ public:
 	ProxyAllocator(Allocator* allocator = GetAllocator(), const char* pool_tag = nullptr):
 		_allocator(allocator), _alloc_tag(0)
 	{
-		//assert(_allocator);
-
 		if (pool_tag) {
 			_alloc_tag = Gaff::FNV1Hash32(pool_tag, (unsigned int)strlen(pool_tag));
-			_allocator->createMemoryPool(pool_tag, _alloc_tag);
+			CreateMemoryPool(pool_tag, _alloc_tag);
 		}
 	}
 
 	ProxyAllocator(const ProxyAllocator& allocator):
 		_allocator(allocator._allocator), _alloc_tag(allocator._alloc_tag)
 	{
-		//assert(_allocator);
 	}
 
 	const ProxyAllocator& operator=(const ProxyAllocator& rhs)

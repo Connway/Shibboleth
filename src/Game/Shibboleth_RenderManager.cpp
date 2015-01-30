@@ -98,6 +98,17 @@ void RenderManager::requestUpdateEntries(Array<UpdateEntry>& entries)
 	entries.movePush(UpdateEntry(AString("Render Manager: Render"), Gaff::Bind(this, &RenderManager::update)));
 }
 
+bool RenderManager::initThreadData(void)
+{
+	Array<unsigned int> thread_ids;
+	_app.getWorkerThreadIDs(thread_ids);
+
+	if (!_render_device->initThreadData(thread_ids.getArray(), thread_ids.size())) {
+		_app.getGameLogFile().first.writeString("ERROR - Failed to create render device thread data.\n");
+		return false;
+	}
+}
+
 // I should move the config file stuff out of this function.
 // Arguement should be the module to load for cacheGleamFunctions().
 bool RenderManager::init(const char* module)

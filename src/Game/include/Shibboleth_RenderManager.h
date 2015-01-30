@@ -122,6 +122,7 @@ public:
 	void requestUpdateEntries(Array<UpdateEntry>& entries);
 	void* rawRequestInterface(unsigned int class_id) const;
 
+	bool initThreadData(void);
 	bool init(const char* module);
 	void update(double);
 

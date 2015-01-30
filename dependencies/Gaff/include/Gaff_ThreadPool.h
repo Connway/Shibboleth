@@ -29,6 +29,7 @@ THE SOFTWARE.
 #include "Gaff_Queue.h"
 #include "Gaff_Utils.h"
 #include "Gaff_ITask.h"
+#include "Gaff_Atomic.h"
 
 NS_GAFF
 
@@ -110,13 +111,99 @@ public:
 		_task_pools[pool].read_write_lock.unlock();
 	}
 
-	//unsigned int getNumActiveThreads(void) const
-	//{
-	//}
+	void doATask(void)
+	{
+		for (unsigned int i = 1; i < _task_pools.size(); ++i) {
+			TaskQueue& task_queue = _task_pools[i];
 
+			if (task_queue.thread_lock.tryLock()) {
+				if (!task_queue.tasks.empty()) {
+					task_queue.read_write_lock.lock();
+
+					TaskPtr<Allocator> task = Move(task_queue.tasks.first());
+					task_queue.tasks.pop();
+
+					task_queue.read_write_lock.unlock();
+
+					DoTask(task, this, i);
+
+					task_queue.thread_lock.unlock();
+					return;
+				}
+
+				task_queue.thread_lock.unlock();
+			}
+		}
+
+		TaskQueue& task_queue = _task_pools[0];
+
+		if (!task_queue.tasks.empty()) {
+			task_queue.read_write_lock.lock();
+			TaskPtr<Allocator> task;
+
+			if (!task_queue.tasks.empty()) {
+				task = Move(task_queue.tasks.first());
+				task_queue.tasks.pop();
+			}
+
+			task_queue.read_write_lock.unlock();
+
+			if (task) {
+				DoTask(task, this, 0);
+			}
+		}
+	}
+
+	/*!
+		\brief Helps finish tasks until there are no more free tasks to process.
+		\note
+			This function only makes one pass. If there is a task that adds another task earlier in the pass,
+			this function will still terminate. Use this function if you are sure that the tasks in the pool
+			will not add more tasks. Also, just because this function returns, does not mean all the tasks
+			have been finished. Other threads may have claimed them and are potentially still running.
+	*/
+	void helpUntilNoTasks(void)
+	{
+		// Start with the other pools first. Presumably they don't lead to pool zero never getting reached.
+		for (unsigned int i = 1; i < _task_pools.size(); ++i) {
+			TaskQueue& task_queue = _task_pools[i];
+
+			if (task_queue.thread_lock.tryLock()) {
+				ProcessTaskQueue(task_queue, this, i);
+				task_queue.thread_lock.unlock();
+			}
+		}
+
+		// Conversely, hopefully the main pool doesn't constantly get new tasks pushed to it and stop the other pools from being processed.
+		TaskQueue& task_queue = _task_pools[0];
+		ProcessMainTaskQueue(task_queue, this, 0);
+	}
+
+	/*!
+		\brief Returns the number of threads that aren't yielding to the scheduler.
+	*/
+	unsigned int getNumActiveThreads(void) const
+	{
+		return _active_threads;
+	}
+
+	/*!
+		\brief Returns the total number of worker threads.
+	*/
 	unsigned int getNumTotalThreads(void) const
 	{
 		return _threads.size();
+	}
+
+	/*!
+		\brief Fills \a out with the thread IDs. \a out is assumed to be the size that \a getNumTotalThreads() returns.
+		\param out The output buffer we will fill with the thread IDs.
+	*/
+	void getThreadIDs(unsigned int* out) const
+	{
+		for (unsigned int i = 0; i < _threads.size(); ++i) {
+			out[i] = _threads[i].getID();
+		}
 	}
 
 private:
@@ -139,9 +226,9 @@ private:
 
 	Allocator _allocator;
 
-	//volatile unsigned int _active_threads;
+	volatile unsigned int _active_threads;
 
-	static void DoTask(TaskPtr<Allocator>& task, ThreadData* thread_data, unsigned int pool)
+	void DoTask(TaskPtr<Allocator>& task, ThreadPool<Allocator>* thread_pool, unsigned int pool)
 	{
 		const typename ITask<Allocator>::DependentTaskData& dep_tasks = task->getDependentTasks();
 		task->doTask();
@@ -150,7 +237,7 @@ private:
 		// Don't want to waste CPU cycles by locking when it is empty.
 		if (!dep_tasks.empty()) {
 			for (unsigned int i = 0; i < dep_tasks.size(); ++i) {
-				TaskQueue& task_queue = thread_data->thread_pool->_task_pools[(dep_tasks[i].second == UINT_FAIL) ? pool : dep_tasks[i].second];
+				TaskQueue& task_queue = thread_pool->_task_pools[(dep_tasks[i].second == UINT_FAIL) ? pool : dep_tasks[i].second];
 
 				task_queue.read_write_lock.lock();
 				task_queue.tasks.emplaceMovePush(Move(dep_tasks[i].first));
@@ -161,7 +248,7 @@ private:
 		task = nullptr; // Free the task
 	}
 
-	static void ProcessMainTaskQueue(TaskQueue& task_queue, ThreadData* thread_data, unsigned int pool)
+	void ProcessMainTaskQueue(TaskQueue& task_queue, ThreadPool<Allocator>* thread_pool, unsigned int pool)
 	{
 		TaskPtr<Allocator> task;
 
@@ -178,12 +265,12 @@ private:
 			task_queue.read_write_lock.unlock();
 
 			if (task) {
-				DoTask(task, thread_data, pool);
+				DoTask(task, thread_pool, pool);
 			}
 		}
 	}
 
-	static void ProcessTaskQueue(TaskQueue& task_queue, ThreadData* thread_data, unsigned int pool)
+	void ProcessTaskQueue(TaskQueue& task_queue, ThreadPool<Allocator>* thread_pool, unsigned int pool)
 	{
 		TaskPtr<Allocator> task;
 
@@ -197,7 +284,7 @@ private:
 
 			task_queue.read_write_lock.unlock();
 
-			DoTask(task, thread_data, pool);
+			DoTask(task, thread_pool, pool);
 		}
 	}
 
@@ -207,25 +294,16 @@ private:
 		ThreadPool<Allocator>* thread_pool = td->thread_pool;
 
 		while (!td->terminate) {
-			// Start with the other pools first. Presumably they don't lead to pool zero never getting reached.
-			for (unsigned int i = 1; i < thread_pool->_task_pools.size(); ++i) {
-				TaskQueue& task_queue = thread_pool->_task_pools[i];
-
-				if (task_queue.thread_lock.tryLock()) {
-					ProcessTaskQueue(task_queue, td, i);
-					task_queue.thread_lock.unlock();
-				}
-			}
-
-			// Conversely, hopefully the main pool doesn't constantly get new tasks pushed to it and stop the other pools from being processed.
-			TaskQueue& task_queue = thread_pool->_task_pools[0];
-			ProcessMainTaskQueue(task_queue, td, 0);
+			AtomicIncrement(&thread_pool->_active_threads);
+			thread_pool->helpUntilNoTasks();
+			YieldThread(); // Probably a good idea to give some time back to the CPU for other stuff.
+			AtomicDecrement(&thread_pool->_active_threads);
 		}
 
 		return 0;
 	}
 
-	friend Thread::ReturnType THREAD_CALLTYPE TaskRunner(void*);
+	friend Thread::ReturnType THREAD_CALLTYPE TaskRunner(void* thread_data);
 
 	GAFF_NO_COPY(ThreadPool);
 	GAFF_NO_MOVE(ThreadPool);

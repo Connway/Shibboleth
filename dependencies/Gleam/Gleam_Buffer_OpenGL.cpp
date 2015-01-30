@@ -64,6 +64,8 @@ bool BufferGL::init(IRenderDevice&, const void* data, unsigned int size, BUFFER_
 	_stride = stride;
 	_size = size;
 
+	glFinish();
+
 	return glGetError() == GL_NO_ERROR;
 }
 

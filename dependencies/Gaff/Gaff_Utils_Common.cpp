@@ -26,7 +26,7 @@ NS_GAFF
 
 void GetCurrentTimeString(char* buff, size_t size, const char* format)
 {
-	time_t t = time(0);
+	time_t t = time(nullptr);
 	tm* now = localtime(&t);
 	strftime(buff, size, format, now);
 }

@@ -91,7 +91,7 @@ bool ComponentManager::addComponents(DynamicLoader::ModulePtr& module)
 	for (unsigned int i = 0; i < num_comps; ++i) {
 		AHashString name = comp_name_func(i);
 
-		if (_components.indexOf(name) != -1) {
+		if (_components.indexOf(name) != UINT_FAIL) {
 			log.first.printf("ERROR - Component with name '%s' already registered.\n", name.getBuffer());
 			return false;
 		}
@@ -113,7 +113,7 @@ bool ComponentManager::addComponents(DynamicLoader::ModulePtr& module)
 IComponent* ComponentManager::createComponent(AHashString name)
 {
 	unsigned int index = _components.indexOf(name);
-	assert(name.size() && index != -1);
+	assert(name.size() && index != UINT_FAIL);
 
 	ComponentEntry& entry = _components.valueAt(index);
 	IComponent* component = entry.create(entry.component_id);
@@ -127,23 +127,19 @@ IComponent* ComponentManager::createComponent(AHashString name)
 
 IComponent* ComponentManager::createComponent(AString name)
 {
-	assert(name.size() && _components.indexOf(name) != -1);
+	assert(name.size() && _components.indexOf(name) != UINT_FAIL);
 	return createComponent(AHashString(name));
 }
 
 IComponent* ComponentManager::createComponent(const char* name)
 {
-	assert(name && _components.indexOf(name) != -1);
+	assert(name && _components.indexOf(name) != UINT_FAIL);
 	return createComponent(AHashString(name));
 }
 
 void ComponentManager::destroyComponent(IComponent* component)
 {
-	assert(
-		component && _components.indexOf(component->getName()) != -1 &&
-		component->getIndex() == (unsigned int)_components.indexOf(component->getName())
-	);
-
+	assert(component);
 	ComponentEntry& entry = _components.valueAt(component->getIndex());
 	entry.destroy(component, entry.component_id);
 }

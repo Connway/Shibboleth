@@ -22,7 +22,7 @@ THE SOFTWARE.
 
 #include <Shibboleth_App.h>
 
-#ifdef _DEBUG
+#ifdef USE_VLD
 	#include <vld.h>
 #endif
 

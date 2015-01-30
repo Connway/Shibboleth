@@ -77,6 +77,8 @@ bool MeshGL::addVertData(
 	if (!ret) {
 		GetAllocator()->freeT(index_buffer);
 		GetAllocator()->freeT(vert_buffer);
+	} else {
+		glFinish();
 	}
 
 	return ret;

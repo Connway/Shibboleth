@@ -69,8 +69,12 @@ public:
 	const HashMap<AHashString, AString>& getCmdLine(void) const;
 	HashMap<AHashString, AString>& getCmdLine(void);
 
-	DynamicLoader::ModulePtr loadModule(const char* filename, const char* name);
 	void addTask(Gaff::TaskPtr<ProxyAllocator>& task, unsigned int pool = 0);
+	void getWorkerThreadIDs(Array<unsigned int>& out) const;
+	void helpUntilNoTasks(void);
+	void doATask(void);
+
+	DynamicLoader::ModulePtr loadModule(const char* filename, const char* name);
 	LogManager::FileLockPair& getGameLogFile(void);
 	size_t getSeed(void) const;
 	void quit(void);
@@ -92,6 +96,8 @@ private:
 
 	struct FileSystemData
 	{
+		FileSystemData(void): file_system(nullptr), destroy_func(nullptr), create_func(nullptr) {}
+
 		typedef bool (*InitFileSystemModuleFunc)(IApp&);
 		typedef IFileSystem* (*CreateFileSystemFunc)(void);
 		typedef void (*DestroyFileSystemFunc)(IFileSystem*);

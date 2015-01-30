@@ -40,6 +40,10 @@ Object::~Object(void)
 
 bool Object::init(const Gaff::JSON& json)
 {
+	if (!_aabb.init() || !_rotation.init() || !_position.init() || !_scale.init()) {
+		return false;
+	}
+
 	Gaff::JSON name = json["name"];
 
 	if (!name.isString()) {

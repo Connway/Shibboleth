@@ -36,6 +36,10 @@ THE SOFTWARE.
 #include <Shibboleth_Object.h>
 #include <Gleam_IRenderDevice.h>
 
+#ifdef USE_VLD
+	#include <vld.h>
+#endif
+
 class LoopState : public Shibboleth::IState
 {
 public:
@@ -52,26 +56,37 @@ public:
 
 		if (_object) {
 			if (_object->init("Resources/Objects/test.object")) {
-				_app.getManagerT<Shibboleth::OcclusionManager>("Occlusion Manager").addObject(_object);
+				_occlusion_id = _app.getManagerT<Shibboleth::OcclusionManager>("Occlusion Manager").addObject(_object);
 			} else {
+				_app.getManagerT<Shibboleth::ObjectManager>("Object Manager").removeObject(_object->getID());
 				_app.quit();
+				_object = nullptr;
 			}
 
 		} else {
 			_app.quit();
 		}
 
-		Shibboleth::RenderManager& rm = _app.getManagerT<Shibboleth::RenderManager>("Render Manager");
-		rm.addRenderFunction(Gaff::Bind(this, &LoopState::render));
+		//Shibboleth::RenderManager& rm = _app.getManagerT<Shibboleth::RenderManager>("Render Manager");
+		//rm.addRenderFunction(Gaff::Bind(this, &LoopState::render));
 	}
 
 	void update(void)
 	{
+		if (!_object)
+			return;
+
 		Shibboleth::RenderManager& rm = _app.getManagerT<Shibboleth::RenderManager>("Render Manager");
 		rm.updateWindows(); // This has to happen in the main thread.
 
 		Shibboleth::UpdateManager& update_manager = _app.getManagerT<Shibboleth::UpdateManager>("Update Manager");
 		update_manager.update(0.0f);
+
+		render();
+
+		//_app.getManagerT<Shibboleth::OcclusionManager>("Occlusion Manager").removeObject(_occlusion_id);
+		//_app.getManagerT<Shibboleth::ObjectManager>("Object Manager").removeObject(_object->getID());
+		//_app.quit();
 	}
 
 	void exit(void)
@@ -84,6 +99,7 @@ public:
 		Shibboleth::RenderManager& rm = _app.getManagerT<Shibboleth::RenderManager>("Render Manager");
 
 		rm.getSpinLock().lock(); // Have to lock just in case other resources are trying to load and use the device
+		rm.getRenderDevice().setCurrentDevice(0);
 		rm.getRenderDevice().beginFrame();
 
 		if (model) {
@@ -97,6 +113,7 @@ public:
 private:
 	Shibboleth::Object* _object;
 	Shibboleth::IApp& _app;
+	unsigned int _occlusion_id;
 };
 
 template <class State>

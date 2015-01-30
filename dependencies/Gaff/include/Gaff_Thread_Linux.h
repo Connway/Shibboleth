@@ -38,6 +38,7 @@ NS_GAFF
 class Thread
 {
 public:
+	static unsigned int getCurrentThreadID(void);
 	static unsigned int INF; //!< Value for infinite waiting period.
 
 	typedef void* ReturnType; //!< The return type used by thread functions.
@@ -59,6 +60,7 @@ public:
 	bool terminate(void);
 	bool close(void);
 	WaitCode wait(unsigned int ms = INF);
+	unsigned int getID(void) const;
 
 	const Thread& operator=(Thread&& thread);
 

@@ -235,6 +235,11 @@ void SetupGraphicsState::update(void)
 		return;
 	}
 
+	if (!render_manager.initThreadData()) {
+		_app.quit();
+		return;
+	}
+
 	_app.switchState(_transitions[0]);
 }
 

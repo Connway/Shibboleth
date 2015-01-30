@@ -57,6 +57,8 @@ void UpdateManager::update(double dt)
 			_app.addTask(task);
 		}
 
+		_app.helpUntilNoTasks();
+
 		// wait for the row of tasks to finish before proceeding onto the next row
 		for (auto it_task = _tasks_cache.begin(); it_task != _tasks_cache.end(); ++it_task) {
 			(*it_task)->spinWait();

@@ -26,6 +26,14 @@ THE SOFTWARE.
 
 NS_GAFF
 
+/*!
+	\brief Returns the thread ID of the callee.
+*/
+unsigned int Thread::getCurrentThreadID(void)
+{
+	return GetCurrentThreadId();
+}
+
 unsigned int Thread::INF = UINT_FAIL;
 
 /*!
@@ -101,6 +109,14 @@ Thread::WaitCode Thread::wait(unsigned int ms)
 		default:
 			return THREAD_FINISHED;
 	}
+}
+
+/*!
+	\brief Returns the ID of the created thread.
+*/
+unsigned int Thread::getID(void) const
+{
+	return GetThreadId(_thread);
 }
 
 /*!

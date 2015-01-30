@@ -152,6 +152,11 @@ IRenderDevice::AdapterList RenderDeviceD3D::getDisplayModes(int color_format)
 	return out;
 }
 
+bool RenderDeviceD3D::initThreadData(unsigned int*, unsigned int)
+{
+	return true;
+}
+
 bool RenderDeviceD3D::init(const IWindow& window, unsigned int adapter_id, unsigned int display_id, unsigned int display_mode_id, bool vsync)
 {
 	assert(	_display_info.size() > adapter_id &&
