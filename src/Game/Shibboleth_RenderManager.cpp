@@ -107,6 +107,8 @@ bool RenderManager::initThreadData(void)
 		_app.getGameLogFile().first.writeString("ERROR - Failed to create render device thread data.\n");
 		return false;
 	}
+
+	return true;
 }
 
 // I should move the config file stuff out of this function.

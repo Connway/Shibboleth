@@ -39,6 +39,11 @@ RenderTargetD3D::~RenderTargetD3D(void)
 	destroy();
 }
 
+bool RenderTargetD3D::init(void)
+{
+	return true;
+}
+
 void RenderTargetD3D::destroy(void)
 {
 	for (unsigned int i = 0; i < _render_target_views.size(); ++i) {

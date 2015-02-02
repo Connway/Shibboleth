@@ -39,6 +39,7 @@ public:
 	IRenderTarget(void) {}
 	virtual ~IRenderTarget(void) {}
 
+	virtual bool init(void) = 0;
 	virtual void destroy(void) = 0;
 
 	virtual bool addTexture(IRenderDevice& rd, const ITexture* texture, CUBE_FACE face = NONE) = 0;

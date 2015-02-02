@@ -22,6 +22,8 @@ THE SOFTWARE.
 
 #pragma once
 
+#define OPENGL_MULTITHREAD
+
 #if defined(_WIN32) || defined(_WIN64)
 	#define COMPILERALIGN16 __declspec(align(16))
 #elif defined(__linux__) || defined(__APPLE__)

@@ -25,6 +25,7 @@ THE SOFTWARE.
 #include "Gleam_IRenderTarget.h"
 #include "Gleam_RefCounted.h"
 #include "Gleam_Array.h"
+#include <Gaff_Pair.h>
 
 NS_GLEAM
 
@@ -34,6 +35,7 @@ public:
 	RenderTargetGL(void);
 	~RenderTargetGL(void);
 
+	bool init(void);
 	void destroy(void);
 
 	bool addTexture(IRenderDevice& rd, const ITexture* color_texture, CUBE_FACE face = NONE);
@@ -49,6 +51,11 @@ public:
 	bool isD3D(void) const;
 
 private:
+#ifdef OPENGL_MULTITHREAD
+	GleamArray< Gaff::Pair<const ITexture*, CUBE_FACE> > _color_textures;
+	const ITexture* _depth_stencil_texture;
+#endif
+
 	GleamArray<unsigned int> _draw_buffers;
 
 	unsigned int _frame_buffer;
@@ -56,8 +63,6 @@ private:
 
 	int _viewport_width;
 	int _viewport_height;
-
-	INLINE void createFramebuffer(void);
 
 	friend class RenderDeviceGL;
 	void setViewport(int viewport_width, int viewport_height);

@@ -38,6 +38,7 @@ public:
 	RenderTargetD3D(void);
 	~RenderTargetD3D(void);
 
+	bool init(void);
 	void destroy(void);
 
 	bool addTexture(IRenderDevice& rd, const ITexture* color_texture, CUBE_FACE face = NONE);
