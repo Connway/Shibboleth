@@ -25,6 +25,7 @@ THE SOFTWARE.
 #pragma once
 
 #include "Gaff_IncludeAssert.h"
+#include "Gaff_Tuple.h"
 #include "Gaff_Pair.h"
 #include <cstring>
 
@@ -64,6 +65,40 @@ public:
 	virtual ReturnType call(Args... args) const = 0;
 	virtual ReturnType call(Args... args) = 0;
 	virtual bool valid(void) const = 0;
+};
+
+/*!
+	\brief Same as \a Function, but takes a function pointer with the __stdcall calling convention.
+	\tparam ReturnType The function return type.
+	\tparam Args The function argument types.
+*/
+template <class ReturnType, class... Args>
+class STDCallFunction : public IFunction<ReturnType, Args...>
+{
+public:
+	typedef ReturnType (__stdcall *FunctionType)(Args...);
+	typedef STDCallFunction<ReturnType, Args...> Func;
+
+	STDCallFunction(FunctionType function = nullptr);
+	STDCallFunction(const Func& function);
+
+	const Func& operator=(const Func& rhs);
+	const Func& operator=(FunctionType rhs);
+
+	bool operator==(const Func& rhs) const;
+	bool operator!=(const Func& rhs) const;
+	bool operator==(FunctionType rhs) const;
+	bool operator!=(FunctionType rhs) const;
+
+	void set(FunctionType function);
+	FunctionType get(void) const;
+
+	ReturnType call(Args... args) const;
+	ReturnType call(Args... args);
+	bool valid(void) const;
+
+private:
+	FunctionType _function;
 };
 
 /*!
@@ -193,8 +228,8 @@ public:
 	operator bool(void) const;
 	bool valid(void) const;
 
-	const IFunc& GetInterface(void) const;
-	IFunc& GetInterface(void);
+	const IFunc& getInterface(void) const;
+	IFunc& getInterface(void);
 
 private:
 	char _function_buffer[FUNCTION_BUFFER_SIZE]; // allocate 32 bytes for the function buffer
@@ -205,6 +240,7 @@ private:
 	template <class T, class RT, class... As> friend FunctionBinder<RT, As...> Bind(T*, RT (T::*)(As...));
 	template <class RT, class... As> friend FunctionBinder<RT, As...> Bind(RT (*)(As...));
 	template <class T, class RT, class... As> friend FunctionBinder<RT, As...> Bind(const T&);
+	template <class RT, class... As> friend FunctionBinder<RT, As...> BindSTDCall(RT (__stdcall*)(As...));
 	template <class T, class... As> friend T* construct(T*, As&&...);
 };
 
@@ -220,8 +256,8 @@ private:
 
 	\return A FunctionBinder.
 */
-template <class T, class ReturnType, class... Ags>
-FunctionBinder<ReturnType, Ags...> Bind(T* object, ReturnType (T::*function)(Ags...));
+template <class T, class ReturnType, class... Args>
+FunctionBinder<ReturnType, Args...> Bind(T* object, ReturnType (T::*function)(Args...));
 
 /*!
 	\brief Binds a function pointer to a FunctionBinder.
@@ -233,8 +269,21 @@ FunctionBinder<ReturnType, Ags...> Bind(T* object, ReturnType (T::*function)(Ags
 
 	\return A FunctionBinder.
 */
-template <class ReturnType, class... Ags>
-FunctionBinder<ReturnType, Ags...> Bind(ReturnType (*function)(Ags...));
+template <class ReturnType, class... Args>
+FunctionBinder<ReturnType, Args...> Bind(ReturnType (*function)(Args...));
+
+/*!
+	\brief Binds a function pointer to a FunctionBinder with \a __stdcall calling convention.
+
+	\tparam ReturnType The function return type.
+	\tparam Args The function argument types.
+
+	\param function The function we are binding.
+
+	\return A FunctionBinder.
+*/
+template <class ReturnType, class... Args>
+FunctionBinder<ReturnType, Args...> BindSTDCall(ReturnType (__stdcall *function)(Args...));
 
 /*!
 	\brief Binds a functor to a FunctionBinder.
@@ -247,8 +296,8 @@ FunctionBinder<ReturnType, Ags...> Bind(ReturnType (*function)(Ags...));
 
 	\return A FunctionBinder.
 */
-template <class T, class ReturnType, class... Ags>
-FunctionBinder<ReturnType, Ags...> Bind(const T& functor);
+template <class T, class ReturnType, class... Args>
+FunctionBinder<ReturnType, Args...> Bind(const T& functor);
 
 #include "Gaff_Function.inl"
 

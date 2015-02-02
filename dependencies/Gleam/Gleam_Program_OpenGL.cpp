@@ -51,8 +51,12 @@ ProgramGL::~ProgramGL(void)
 
 bool ProgramGL::init(void)
 {
+#ifndef OPENGL_MULTITHREAD
 	glGenProgramPipelines(1, &_program);
 	return _program != 0;
+#else
+	return true;
+#endif
 }
 
 void ProgramGL::destroy(void)
@@ -66,19 +70,50 @@ void ProgramGL::destroy(void)
 void ProgramGL::attach(IShader* shader)
 {
 	assert(!shader->isD3D() && shader->getType() >= IShader::SHADER_VERTEX && shader->getType() < IShader::SHADER_TYPE_SIZE);
+
+#ifdef OPENGL_MULTITHREAD
+	if (_program) {
+		glUseProgramStages(_program, _stages[shader->getType()], ((const ShaderGL*)shader)->getShader());
+	}
+#else
 	glUseProgramStages(_program, _stages[shader->getType()], ((const ShaderGL*)shader)->getShader());
+#endif
+
 	_attached_shaders[shader->getType()] = shader;
 }
 
 void ProgramGL::detach(IShader::SHADER_TYPE shader)
 {
 	assert(shader >= IShader::SHADER_VERTEX && shader < IShader::SHADER_TYPE_SIZE);
+
+#ifdef OPENGL_MULTITHREAD
+	if (_program) {
+		glUseProgramStages(_program, _stages[shader], 0);
+	}
+#else
 	glUseProgramStages(_program, _stages[shader], 0);
+#endif
+
 	_attached_shaders[shader] = nullptr;
 }
 
-void ProgramGL::bind(IRenderDevice&, IProgramBuffers* program_buffers)
+void ProgramGL::bind(IRenderDevice& rd, IProgramBuffers* program_buffers)
 {
+	// If we are doing multi-threaded resource loading, then we can't create the program until we use it.
+	// We are assuming the first time we use it, we are in the main thread (or thread that is solely going to use it).
+#ifdef OPENGL_MULTITHREAD
+	if (!_program) {
+		glGenProgramPipelines(1, &_program);
+		if (_program) {
+			for (unsigned int i = IShader::SHADER_VERTEX; i < IShader::SHADER_TYPE_SIZE; ++i) {
+				if (_attached_shaders[i]) {
+					glUseProgramStages(_program, _stages[_attached_shaders[i]->getType()], ((const ShaderGL*)_attached_shaders[i].get())->getShader());
+				}
+			}
+		}
+	}
+#endif
+
 	glBindProgramPipeline(_program);
 
 	if (program_buffers) {

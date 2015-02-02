@@ -29,6 +29,9 @@ THE SOFTWARE.
 NS_GLEAM
 
 RenderTargetGL::RenderTargetGL(void):
+#ifdef OPENGL_MULTITHREAD
+	_depth_stencil_texture(nullptr),
+#endif
 	_frame_buffer(0), _attach_count(0),
 	_viewport_width(0), _viewport_height(0)
 {
@@ -37,6 +40,18 @@ RenderTargetGL::RenderTargetGL(void):
 RenderTargetGL::~RenderTargetGL(void)
 {
 	destroy();
+}
+
+bool RenderTargetGL::init(void)
+{
+	assert(!_frame_buffer);
+
+#ifndef OPENGL_MULTITHREAD
+	glGenFramebuffers(1, &_frame_buffer);
+	return _frame_buffer != 0;
+#else
+	return true;
+#endif
 }
 
 void RenderTargetGL::destroy(void)
@@ -58,10 +73,16 @@ bool RenderTargetGL::addTexture(IRenderDevice&, const ITexture* color_texture, C
 
 	assert(color_texture && !color_texture->isD3D());
 
+#ifdef OPENGL_MULTITHREAD
+	if (!_frame_buffer) {
+		_color_textures.push(Gaff::MakePair(color_texture, face));
+		return true;
+	}
+#endif
+
 	GLint fb = 0;
 	glGetIntegerv(GL_FRAMEBUFFER_BINDING, &fb);
 
-	createFramebuffer();
 	glBindFramebuffer(GL_FRAMEBUFFER, _frame_buffer);
 
 	GLuint target = GL_TEXTURE_2D;
@@ -89,6 +110,13 @@ bool RenderTargetGL::addTexture(IRenderDevice&, const ITexture* color_texture, C
 
 void RenderTargetGL::popTexture(void)
 {
+#ifdef OPENGL_MULTITHREAD
+	if (!_frame_buffer && !_color_textures.empty()) {
+		_color_textures.pop();
+		return;
+	}
+#endif
+
 	assert(_attach_count > 0);
 	_draw_buffers.pop();
 	--_attach_count;
@@ -98,10 +126,16 @@ bool RenderTargetGL::addDepthStencilBuffer(IRenderDevice&, const ITexture* depth
 {
 	assert(depth_stencil_texture && !depth_stencil_texture->isD3D());
 
+#ifdef OPENGL_MULTITHREAD
+	if (!_frame_buffer) {
+		_depth_stencil_texture = depth_stencil_texture;
+		return true;
+	}
+#endif
+
 	GLint fb = 0;
 	glGetIntegerv(GL_FRAMEBUFFER_BINDING, &fb);
 
-	createFramebuffer();
 	glBindFramebuffer(GL_FRAMEBUFFER, _frame_buffer);
 
 	GLenum attachment = 0;
@@ -128,8 +162,26 @@ bool RenderTargetGL::addDepthStencilBuffer(IRenderDevice&, const ITexture* depth
 	return glGetError() == GL_NO_ERROR;
 }
 
-void RenderTargetGL::bind(IRenderDevice&)
+void RenderTargetGL::bind(IRenderDevice& rd)
 {
+#ifdef OPENGL_MULTITHREAD
+	if (!_frame_buffer && (!_color_textures.empty() || _depth_stencil_texture)) {
+		glGenFramebuffers(1, &_frame_buffer);
+
+		if (_frame_buffer) {
+			for (auto it = _color_textures.begin(); it != _color_textures.end(); ++it) {
+				addTexture(rd, it->first, it->second);
+			}
+
+			if (_depth_stencil_texture) {
+				addDepthStencilBuffer(rd, _depth_stencil_texture);
+			}
+
+			_color_textures.clear();
+		}
+	}
+#endif
+
 	if (_frame_buffer) {
 		glBindFramebuffer(GL_FRAMEBUFFER, _frame_buffer);
 		glDrawBuffers(_draw_buffers.size(), _draw_buffers.getArray());
@@ -167,13 +219,6 @@ bool RenderTargetGL::isComplete(void) const
 bool RenderTargetGL::isD3D(void) const
 {
 	return false;
-}
-
-void RenderTargetGL::createFramebuffer(void)
-{
-	if (!_frame_buffer) {
-		glGenFramebuffers(1, &_frame_buffer);
-	}
 }
 
 void RenderTargetGL::setViewport(int viewport_width, int viewport_height)

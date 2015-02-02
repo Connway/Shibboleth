@@ -148,7 +148,7 @@ void ModelComponent::render(void)
 		return;
 
 	static float rot = 0.0f;
-	rot += 0.001f;
+	rot += 0.01f;
 
 	Gleam::Matrix4x4 tocamera, projection, toworld;
 	tocamera.setLookAtLH(0.0f, 0.0f, -10.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f);
