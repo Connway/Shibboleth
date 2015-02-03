@@ -23,7 +23,8 @@ THE SOFTWARE.
 #if defined(_WIN32) || defined(_WIN64)
 
 #include "Gleam_RenderState_Direct3D.h"
-#include "Gleam_RenderDevice_Direct3D.h"
+#include "Gleam_IRenderDevice_Direct3D.h"
+#include "Gleam_IRenderDevice.h"
 #include "Gleam_IncludeD3D11.h"
 #include <Gaff_IncludeAssert.h>
 #include <dxgi.h>
@@ -50,7 +51,8 @@ bool RenderStateD3D::init(IRenderDevice& rd, bool wireframe, bool depth_test, bo
 {
 	assert(rd.isD3D());
 
-	ID3D11Device* device = ((RenderDeviceD3D&)rd).getActiveDevice();
+	IRenderDeviceD3D& rd3d = (IRenderDeviceD3D&)*(((const char*)&rd) + sizeof(IRenderDevice));
+	ID3D11Device* device = rd3d.getActiveDevice();
 
 	D3D11_DEPTH_STENCIL_DESC depth_stencil_desc;
 	depth_stencil_desc.DepthEnable = depth_test;
@@ -127,7 +129,8 @@ bool RenderStateD3D::init(IRenderDevice& rd, bool wireframe, bool depth_test, bo
 {
 	assert(rd.isD3D());
 
-	ID3D11Device* device = ((RenderDeviceD3D&)rd).getActiveDevice();
+	IRenderDeviceD3D& rd3d = (IRenderDeviceD3D&)*(((const char*)&rd) + sizeof(IRenderDevice));
+	ID3D11Device* device = rd3d.getActiveDevice();
 
 	D3D11_DEPTH_STENCIL_DESC depth_stencil_desc;
 	depth_stencil_desc.DepthEnable = depth_test;
@@ -203,7 +206,8 @@ void RenderStateD3D::destroy(void)
 void RenderStateD3D::set(IRenderDevice& rd) const
 {
 	assert(rd.isD3D());
-	ID3D11DeviceContext* context = ((RenderDeviceD3D&)rd).getActiveDeviceContext();
+	IRenderDeviceD3D& rd3d = (IRenderDeviceD3D&)*(((const char*)&rd) + sizeof(IRenderDevice));
+	ID3D11DeviceContext* context = rd3d.getActiveDeviceContext();
 
 	context->OMSetDepthStencilState(_depth_stencil_state, _stencil_ref);
 	context->OMSetBlendState(_blend_state, NULL, 0xFFFFFFFF);

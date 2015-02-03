@@ -150,6 +150,7 @@ public:
 
 private:
 	unsigned int _image;
+	bool _initialized;
 };
 
 NS_END

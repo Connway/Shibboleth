@@ -23,8 +23,9 @@ THE SOFTWARE.
 #if defined(_WIN32) || defined(_WIN64)
 
 #include "Gleam_RenderTarget_Direct3D.h"
-#include "Gleam_RenderDevice_Direct3D.h"
+#include "Gleam_IRenderDevice_Direct3D.h"
 #include "Gleam_Texture_Direct3D.h"
+#include "Gleam_IRenderDevice.h"
 #include <Gaff_IncludeAssert.h>
 
 NS_GLEAM
@@ -76,7 +77,9 @@ bool RenderTargetD3D::addTexture(IRenderDevice& rd, const ITexture* color_textur
 		desc.Texture2DArray.FirstArraySlice = face;
 	}
 
-	HRESULT result = ((RenderDeviceD3D&)rd).getActiveDevice()->CreateRenderTargetView(((const TextureD3D*)color_texture)->getTexture2D(), &desc, &render_target_view);
+	IRenderDeviceD3D& rd3d = (IRenderDeviceD3D&)*(((const char*)&rd) + sizeof(IRenderDevice));
+
+	HRESULT result = rd3d.getActiveDevice()->CreateRenderTargetView(((const TextureD3D*)color_texture)->getTexture2D(), &desc, &render_target_view);
 	RETURNIFFAILED(result)
 
 	// This is the first one, use this texture's width/height
@@ -114,7 +117,8 @@ bool RenderTargetD3D::addDepthStencilBuffer(IRenderDevice& rd, const ITexture* d
 	desc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
 	desc.Texture2D.MipSlice = 0;
 
-	HRESULT result = ((RenderDeviceD3D&)rd).getActiveDevice()->CreateDepthStencilView(((const TextureD3D*)depth_stencil_texture)->getTexture2D(), &desc, &_depth_stencil_view);
+	IRenderDeviceD3D& rd3d = (IRenderDeviceD3D&)*(((const char*)&rd) + sizeof(IRenderDevice));
+	HRESULT result = rd3d.getActiveDevice()->CreateDepthStencilView(((const TextureD3D*)depth_stencil_texture)->getTexture2D(), &desc, &_depth_stencil_view);
 	return SUCCEEDED(result);
 }
 
@@ -122,7 +126,7 @@ void RenderTargetD3D::bind(IRenderDevice& rd)
 {
 	assert(rd.isD3D());
 
-	RenderDeviceD3D& device = ((RenderDeviceD3D&)rd);
+	IRenderDeviceD3D& device = (IRenderDeviceD3D&)*(((const char*)&rd) + sizeof(IRenderDevice));
 
 	for (unsigned int i = 0; i < _render_target_views.size(); ++i) {
 		device.getActiveDeviceContext()->ClearRenderTargetView(_render_target_views[i], device.getClearColor());
@@ -139,7 +143,8 @@ void RenderTargetD3D::bind(IRenderDevice& rd)
 void RenderTargetD3D::unbind(IRenderDevice& rd)
 {
 	assert(rd.isD3D());
-	((RenderDeviceD3D&)rd).getActiveDeviceContext()->OMSetRenderTargets(0, nullptr, nullptr);
+	IRenderDeviceD3D& rd3d = (IRenderDeviceD3D&)*(((const char*)&rd) + sizeof(IRenderDevice));
+	rd3d.getActiveDeviceContext()->OMSetRenderTargets(0, nullptr, nullptr);
 }
 
 bool RenderTargetD3D::isComplete(void) const

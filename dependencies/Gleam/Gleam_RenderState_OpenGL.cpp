@@ -27,12 +27,9 @@ THE SOFTWARE.
 
 NS_GLEAM
 
-typedef void (__stdcall *DisableEnable)(GLenum);
-typedef void (__stdcall *DisableEnablei)(GLenum, GLuint);
+RenderStateGL::DisableEnable RenderStateGL::Disable_Enable_Funcs[2] = { glDisable, glEnable };
 
-static DisableEnable _disableEnable[2] = { glDisable, glEnable };
-
-static GLenum _stencil_ops[IRenderState::STENCIL_OP_SIZE] = {
+unsigned int RenderStateGL::Stencil_Ops[IRenderState::STENCIL_OP_SIZE] = {
 	GL_KEEP,
 	GL_ZERO,
 	GL_REPLACE,
@@ -43,7 +40,7 @@ static GLenum _stencil_ops[IRenderState::STENCIL_OP_SIZE] = {
 	GL_DECR_WRAP
 };
 
-static GLenum _blend_factors[IRenderState::BLEND_FACTOR_SIZE] = {
+unsigned int RenderStateGL::Blend_Factors[IRenderState::BLEND_FACTOR_SIZE] = {
 	GL_ZERO,
 	GL_ONE,
 	GL_SRC_COLOR,
@@ -63,7 +60,7 @@ static GLenum _blend_factors[IRenderState::BLEND_FACTOR_SIZE] = {
 	GL_ONE_MINUS_SRC1_ALPHA
 };
 
-static GLenum _blend_ops[IRenderState::BLEND_OP_SIZE] = {
+unsigned int RenderStateGL::Blend_Ops[IRenderState::BLEND_OP_SIZE] = {
 	GL_FUNC_ADD,
 	GL_FUNC_SUBTRACT,
 	GL_FUNC_REVERSE_SUBTRACT,
@@ -71,7 +68,7 @@ static GLenum _blend_ops[IRenderState::BLEND_OP_SIZE] = {
 	GL_MAX
 };
 
-static GLenum _compare_funcs[IRenderState::COMPARE_SIZE] = {
+unsigned int RenderStateGL::Compare_Funcs[IRenderState::COMPARE_SIZE] = {
 	GL_NEVER,
 	GL_LESS,
 	GL_EQUAL,
@@ -151,41 +148,11 @@ void RenderStateGL::destroy(void)
 {
 }
 
-void RenderStateGL::set(IRenderDevice&) const
+void RenderStateGL::set(IRenderDevice& rd) const
 {
-	glPolygonMode(GL_FRONT_AND_BACK, (_wireframe) ? GL_LINE : GL_FILL);
-
-	_disableEnable[_depth_test](GL_DEPTH_TEST);
-	_disableEnable[_stencil_test](GL_STENCIL_TEST);
-	glDepthFunc(_compare_funcs[_depth_func - 1]);
-
-	glStencilOpSeparate(GL_FRONT, _stencil_ops[_front_face.stencil_depth_fail - 1],
-						_stencil_ops[_front_face.stencil_pass_depth_fail - 1],
-						_stencil_ops[_front_face.stencil_depth_pass - 1]);
-	glStencilOpSeparate(GL_BACK, _stencil_ops[_back_face.stencil_depth_fail - 1],
-						_stencil_ops[_back_face.stencil_pass_depth_fail - 1],
-						_stencil_ops[_back_face.stencil_depth_pass - 1]);
-	glStencilFuncSeparate(GL_FRONT, _compare_funcs[_front_face.comp_func - 1], _stencil_ref, _stencil_read_mask);
-	glStencilFuncSeparate(GL_BACK, _compare_funcs[_back_face.comp_func - 1], _stencil_ref, _stencil_read_mask);
-	glStencilMask(_stencil_write_mask);
-
-	_disableEnable[_cull_face_mode != CULL_NONE](GL_CULL_FACE);
-	glCullFace(GL_FRONT - 2 + _cull_face_mode);
-	glFrontFace((_front_face_counter_clockwise) ? GL_CCW : GL_CW);
-
-	for (unsigned int i = 0; i < 8; ++i) {
-		if (_blend_data[i].enable_alpha_blending) {
-			glEnablei(GL_BLEND, i);
-
-			glBlendFuncSeparatei(i, _blend_factors[_blend_data[i].blend_src_color - 1], _blend_factors[_blend_data[i].blend_dst_color - 1],
-								_blend_factors[_blend_data[i].blend_src_alpha - 1], _blend_factors[_blend_data[i].blend_dst_alpha - 1]);
-
-			glBlendEquationSeparatei(i, _blend_ops[_blend_data[i].blend_op_color - 1], _blend_ops[_blend_data[i].blend_op_alpha - 1]);
-
-		} else {
-			glDisablei(GL_BLEND, i);
-		}
-	}
+	assert(!rd.isD3D());
+	IRenderDeviceGL& rdgl = (IRenderDeviceGL&)*(((const char*)&rd) + sizeof(IRenderDevice));
+	rdgl.setRenderState(this);
 }
 
 void RenderStateGL::unset(IRenderDevice& rd) const
@@ -196,6 +163,66 @@ void RenderStateGL::unset(IRenderDevice& rd) const
 bool RenderStateGL::isD3D(void) const
 {
 	return false;
+}
+
+bool RenderStateGL::isWireframe(void) const
+{
+	return _wireframe;
+}
+
+bool RenderStateGL::isDepthTestEnabled(void) const
+{
+	return _depth_test;
+}
+
+bool RenderStateGL::isStencilTestEnabled(void) const
+{
+	return _stencil_test;
+}
+
+IRenderState::COMPARISON_FUNC RenderStateGL::getDepthFunc(void) const
+{
+	return _depth_func;
+}
+
+const IRenderState::StencilData& RenderStateGL::getFrontFaceStencilData(void) const
+{
+	return _front_face;
+}
+
+const IRenderState::StencilData& RenderStateGL::getBackFaceStencilData(void) const
+{
+	return _back_face;
+}
+
+unsigned int RenderStateGL::getStencilRef(void) const
+{
+	return _stencil_ref;
+}
+
+char RenderStateGL::getStencilReadMask(void) const
+{
+	return _stencil_read_mask;
+}
+
+char RenderStateGL::getStencilWriteMask(void) const
+{
+	return _stencil_write_mask;
+}
+
+IRenderState::CULL_MODE RenderStateGL::getCullFaceMode(void) const
+{
+	return _cull_face_mode;
+}
+
+bool RenderStateGL::isFrontFaceCounterClockwise(void) const
+{
+	return _front_face_counter_clockwise;
+}
+
+const IRenderState::BlendData* RenderStateGL::getBlendData(void) const
+{
+	return _blend_data;
 }
 
 NS_END

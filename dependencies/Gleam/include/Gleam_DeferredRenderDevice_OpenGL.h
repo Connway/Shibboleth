@@ -22,33 +22,41 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Gleam_MeshBase.h"
+#include "Gleam_DeferredRenderDeviceBase.h"
+#include "Gleam_IRenderDevice_OpenGL.h"
+#include "Gleam_CommandList_OpenGL.h"
 
 NS_GLEAM
 
-class MeshGL : public MeshBase
+class DeferredRenderDeviceGL: public DeferredRenderDeviceBase, public IRenderDeviceGL
 {
 public:
-	MeshGL(void);
-	~MeshGL(void);
+	~DeferredRenderDeviceGL(void);
 
-	bool addVertData(
-		IRenderDevice& rd, const void* vert_data, unsigned int vert_count, unsigned int vert_size,
-		unsigned int* indices, unsigned int index_count, TOPOLOGY_TYPE primitive_type = TRIANGLE_LIST
-	);
-
-	void setTopologyType(TOPOLOGY_TYPE topology);
-
-	void renderNonIndexed(IRenderDevice& rd, unsigned int vert_count, unsigned int start_location = 0);
-	void renderInstanced(IRenderDevice& rd, unsigned int count);
-	void render(IRenderDevice& rd);
-
+	void destroy(void);
+	bool isDeferred(void) const;
 	bool isD3D(void) const;
 
-	INLINE unsigned int getGLTopology(void) const;
+	void executeCommandList(ICommandList* command_list);
+	bool finishCommandList(ICommandList* command_list);
+
+	void setRenderState(const RenderStateGL* render_state);
+
+	void setLayout(LayoutGL* layout, const IMesh* mesh);
+	void unsetLayout(LayoutGL* layout);
+
+	void bindShader(ProgramGL* shader, ProgramBuffersGL* program_buffers);
+	void unbindShader(void);
+
+	void renderMeshNonIndexed(unsigned int topology, unsigned int vert_count, unsigned int start_location);
+	void renderMeshInstanced(MeshGL* mesh, unsigned int count);
+	void renderMesh(MeshGL* mesh);
 
 private:
-	unsigned int _gl_topology;
+	CommandListGL _command_list;
+
+	DeferredRenderDeviceGL(void);
+	friend class RenderDeviceGL;
 };
 
 NS_END

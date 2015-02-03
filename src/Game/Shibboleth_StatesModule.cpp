@@ -26,6 +26,7 @@ THE SOFTWARE.
 #include <Shibboleth_SetupOtterUIState.h>
 #include <Shibboleth_IApp.h>
 #include <Gleam_Global.h>
+#include <Gaff_Image.h>
 #include <Gaff_JSON.h>
 
 #include <Shibboleth_OcclusionManager.h>
@@ -152,16 +153,35 @@ static const char* state_names[NUM_STATES] = {
 
 static Shibboleth::IApp* g_app = nullptr;
 
+static unsigned int g_image_alloc_tag = Gaff::FNV1Hash32("Images", strlen("Images"));
+
+void* MEMCB ImageAlloc(const size_t size)
+{
+	return Shibboleth::GetAllocator()->alloc((unsigned int)size, g_image_alloc_tag);
+}
+
+void MEMCB ImageFree(const void* const data)
+{
+	Shibboleth::GetAllocator()->free((void*)data, g_image_alloc_tag);
+}
+
+
 DYNAMICEXPORT_C bool InitModule(Shibboleth::IApp& app)
 {
 	Gaff::JSON::SetMemoryFunctions(&Shibboleth::ShibbolethAllocate, &Shibboleth::ShibbolethFree);
 	Gaff::JSON::SetHashSeed(app.getSeed());
+
+	Shibboleth::CreateMemoryPool("Images", g_image_alloc_tag);
+	Gaff::Image::SysInit();
+	Gaff::Image::SetMemoryFunctions(ImageAlloc, ImageFree);
+
 	g_app = &app;
 	return true;
 }
 
 DYNAMICEXPORT_C void ShutdownModule(void)
 {
+	Gaff::Image::SysShutdown();
 }
 
 DYNAMICEXPORT_C const char* GetStateName(unsigned int id)

@@ -67,6 +67,7 @@ public:
 	virtual bool valid(void) const = 0;
 };
 
+#if defined(_WIN32) || defined(_WIN64)
 /*!
 	\brief Same as \a Function, but takes a function pointer with the __stdcall calling convention.
 	\tparam ReturnType The function return type.
@@ -100,6 +101,7 @@ public:
 private:
 	FunctionType _function;
 };
+#endif
 
 /*!
 	\brief Function pointer binding implementation.
@@ -240,8 +242,11 @@ private:
 	template <class T, class RT, class... As> friend FunctionBinder<RT, As...> Bind(T*, RT (T::*)(As...));
 	template <class RT, class... As> friend FunctionBinder<RT, As...> Bind(RT (*)(As...));
 	template <class T, class RT, class... As> friend FunctionBinder<RT, As...> Bind(const T&);
-	template <class RT, class... As> friend FunctionBinder<RT, As...> BindSTDCall(RT (__stdcall*)(As...));
 	template <class T, class... As> friend T* construct(T*, As&&...);
+
+#if defined(_WIN32) || defined(_WIN64)
+	template <class RT, class... As> friend FunctionBinder<RT, As...> BindSTDCall(RT (__stdcall*)(As...));
+#endif
 };
 
 /*!
@@ -272,6 +277,7 @@ FunctionBinder<ReturnType, Args...> Bind(T* object, ReturnType (T::*function)(Ar
 template <class ReturnType, class... Args>
 FunctionBinder<ReturnType, Args...> Bind(ReturnType (*function)(Args...));
 
+#if defined(_WIN32) || defined(_WIN64)
 /*!
 	\brief Binds a function pointer to a FunctionBinder with \a __stdcall calling convention.
 
@@ -284,6 +290,7 @@ FunctionBinder<ReturnType, Args...> Bind(ReturnType (*function)(Args...));
 */
 template <class ReturnType, class... Args>
 FunctionBinder<ReturnType, Args...> BindSTDCall(ReturnType (__stdcall *function)(Args...));
+#endif
 
 /*!
 	\brief Binds a functor to a FunctionBinder.

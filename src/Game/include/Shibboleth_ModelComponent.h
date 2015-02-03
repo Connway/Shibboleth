@@ -55,9 +55,8 @@ public:
 	void render(void); // Temporary test function
 
 private:
-	AString _material_filename;
-	AString _model_filename;
 	ResourceWrapper<ProgramData> _material_res;
+	ResourceWrapper<TextureData> _texture_res;
 	ResourceWrapper<ModelData> _model_res;
 	ProgramBuffersPtr _program_buffers;
 
@@ -67,6 +66,7 @@ private:
 
 	unsigned char _flags;
 
+	void TextureLoadedCallback(const AHashString& resource, bool success);
 	void LoadCallback(const AHashString& resource, bool success);
 	void HandleLoadingMessage(const LoadingMessage& msg);
 

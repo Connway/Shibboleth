@@ -22,33 +22,16 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Gleam_MeshBase.h"
+#ifdef USE_DX
+	#include "Gleam_DeferredRenderDevice_Direct3D.h"
 
-NS_GLEAM
+	NS_GLEAM
+		typedef DeferredRenderDeviceD3D DeferredRenderDevice;
+	NS_END
+#else
+	#include "Gleam_DeferredRenderDevice_OpenGL.h"
 
-class MeshGL : public MeshBase
-{
-public:
-	MeshGL(void);
-	~MeshGL(void);
-
-	bool addVertData(
-		IRenderDevice& rd, const void* vert_data, unsigned int vert_count, unsigned int vert_size,
-		unsigned int* indices, unsigned int index_count, TOPOLOGY_TYPE primitive_type = TRIANGLE_LIST
-	);
-
-	void setTopologyType(TOPOLOGY_TYPE topology);
-
-	void renderNonIndexed(IRenderDevice& rd, unsigned int vert_count, unsigned int start_location = 0);
-	void renderInstanced(IRenderDevice& rd, unsigned int count);
-	void render(IRenderDevice& rd);
-
-	bool isD3D(void) const;
-
-	INLINE unsigned int getGLTopology(void) const;
-
-private:
-	unsigned int _gl_topology;
-};
-
-NS_END
+	NS_GLEAM
+		typedef DeferredRenderDeviceGL DeferredRenderDevice;
+	NS_END
+#endif

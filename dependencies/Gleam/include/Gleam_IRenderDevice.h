@@ -27,6 +27,7 @@ THE SOFTWARE.
 
 NS_GLEAM
 
+class ICommandList;
 class IWindow;
 
 class IRenderDevice
@@ -80,6 +81,7 @@ public:
 
 	virtual void resetRenderState(void) = 0;
 
+	virtual bool isDeferred(void) const = 0;
 	virtual bool isD3D(void) const = 0;
 
 	virtual unsigned int getViewportWidth(unsigned int device, unsigned int output) const = 0;
@@ -100,7 +102,11 @@ public:
 	virtual bool setCurrentDevice(unsigned int device) = 0;
 	virtual unsigned int getCurrentDevice(void) const = 0;
 
-	virtual int getDeviceForAdapter(unsigned int adapter_id) const = 0;
+	virtual unsigned int getDeviceForAdapter(unsigned int adapter_id) const = 0;
+
+	virtual IRenderDevice* createDeferredRenderDevice(void) = 0;
+	virtual void executeCommandList(ICommandList* command_list) = 0;
+	virtual bool finishCommandList(ICommandList* command_list) = 0;
 
 	GAFF_NO_COPY(IRenderDevice);
 };

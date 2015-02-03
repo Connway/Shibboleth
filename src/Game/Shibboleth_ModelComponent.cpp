@@ -45,11 +45,37 @@ REF_IMPL_REQ(ModelComponent);
 
 REF_IMPL_SHIB(ModelComponent)
 .addBaseClass<ModelComponent>(ModelComponent::g_Hash)
-.addString("Material File", &ModelComponent::_material_filename)
-.addString("Model File", &ModelComponent::_model_filename)
+//.addString("Material File", &ModelComponent::_material_filename)
+//.addString("Model File", &ModelComponent::_model_filename)
 .addBool("Load Only Holding Data", &ModelComponent::GetFlag<LOAD_ONLY_HOLDING_FLAG>, &ModelComponent::SetLoadOnlyHoldingFlag)
 .addBool("Release Holding Data", &ModelComponent::GetFlag<RELEASE_HOLDING_FLAG>, &ModelComponent::SetReleaseHoldingFlag)
 ;
+
+static TextureUserData g_test_data = {
+	{ 0, TEX_LOADER_SRGBA /*TEX_LOADER_NORMALIZED*/ },
+	Gleam::ISamplerState::FILTER_ANISOTROPIC,
+	Gleam::ISamplerState::WRAP_CLAMP,
+	Gleam::ISamplerState::WRAP_CLAMP,
+	Gleam::ISamplerState::WRAP_CLAMP,
+	16,
+	0.0f, 0.0f, 0.0f,
+	0.0f, 0.0f, 0.0f, 0.0f
+
+	//GraphicsUserData gud;
+	//Gleam::ISamplerState::FILTER filter;
+	//Gleam::ISamplerState::WRAP wrap_u;
+	//Gleam::ISamplerState::WRAP wrap_v;
+	//Gleam::ISamplerState::WRAP wrap_w;
+	//unsigned int max_anisotropy;
+	//float min_lod;
+	//float max_lod;
+	//float lod_bias;
+	//float border_r;
+	//float border_g;
+	//float border_b;
+	//float border_a;
+
+};
 
 ModelComponent::ModelComponent(IApp& app):
 	_render_mgr(app.getManagerT<Shibboleth::RenderManager>("Render Manager")),
@@ -66,13 +92,16 @@ bool ModelComponent::load(const Gaff::JSON& json)
 {
 	g_Ref_Def.read(json, this);
 
-	_material_res = _res_mgr.requestResource(_material_filename.getBuffer());
-	_model_res = _res_mgr.requestResource(_model_filename.getBuffer());
+	_material_res = _res_mgr.requestResource(json["Material File"].getString());
+	_texture_res = _res_mgr.requestResource(json["Texture File"].getString(), (unsigned long long)&g_test_data);
+	_model_res = _res_mgr.requestResource(json["Model File"].getString());
 
 	auto callback_func = Gaff::Bind(this, &ModelComponent::LoadCallback);
 
 	_material_res.getResourcePtr()->addCallback(callback_func);
+	_texture_res.getResourcePtr()->addCallback(callback_func);
 	_model_res.getResourcePtr()->addCallback(callback_func);
+	_texture_res.getResourcePtr()->addCallback(Gaff::Bind(this, &ModelComponent::TextureLoadedCallback));
 
 	_program_buffers = _render_mgr.createProgramBuffers();
 
@@ -100,6 +129,14 @@ bool ModelComponent::load(const Gaff::JSON& json)
 
 void ModelComponent::allComponentsLoaded(void)
 {
+}
+
+void ModelComponent::TextureLoadedCallback(const AHashString& resource, bool success)
+{
+	if (success) {
+		_program_buffers->addResourceView(Gleam::IShader::SHADER_PIXEL, _texture_res->resource_views[0].get());
+		_program_buffers->addSamplerState(Gleam::IShader::SHADER_PIXEL, _texture_res->samplers[0].get());
+	}
 }
 
 void ModelComponent::LoadCallback(const AHashString& resource, bool success)
@@ -151,7 +188,7 @@ void ModelComponent::render(void)
 	rot += 0.01f;
 
 	Gleam::Matrix4x4 tocamera, projection, toworld;
-	tocamera.setLookAtLH(0.0f, 0.0f, -10.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f);
+	tocamera.setLookAtLH(0.0f, 5.0f, -5.0f, 0.0f, 5.0f, 0.0f, 0.0f, 1.0f, 0.0f);
 	projection.setPerspectiveLH(90.0f, 16.0f / 9.0f, 0.1f, 5000.0f);
 	toworld.setIdentity();
 	toworld.setRotationY(rot);

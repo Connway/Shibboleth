@@ -22,33 +22,26 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Gleam_MeshBase.h"
+#include "Gleam_Defines.h"
+
+struct ID3D11DeviceContext;
+struct ID3D11Device;
 
 NS_GLEAM
 
-class MeshGL : public MeshBase
+class IRenderDeviceD3D
 {
 public:
-	MeshGL(void);
-	~MeshGL(void);
+	IRenderDeviceD3D(void) {}
+	virtual ~IRenderDeviceD3D(void) {}
 
-	bool addVertData(
-		IRenderDevice& rd, const void* vert_data, unsigned int vert_count, unsigned int vert_size,
-		unsigned int* indices, unsigned int index_count, TOPOLOGY_TYPE primitive_type = TRIANGLE_LIST
-	);
+	virtual const float* getClearColor(void) const = 0;
 
-	void setTopologyType(TOPOLOGY_TYPE topology);
+	virtual ID3D11DeviceContext* getDeviceContext(unsigned int device) = 0;
+	virtual ID3D11Device* getDevice(unsigned int device) = 0;
 
-	void renderNonIndexed(IRenderDevice& rd, unsigned int vert_count, unsigned int start_location = 0);
-	void renderInstanced(IRenderDevice& rd, unsigned int count);
-	void render(IRenderDevice& rd);
-
-	bool isD3D(void) const;
-
-	INLINE unsigned int getGLTopology(void) const;
-
-private:
-	unsigned int _gl_topology;
+	virtual ID3D11DeviceContext* getActiveDeviceContext(void) = 0;
+	virtual ID3D11Device* getActiveDevice(void) = 0;
 };
 
 NS_END

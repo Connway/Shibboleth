@@ -224,7 +224,7 @@ bool RenderTargetGL::isD3D(void) const
 void RenderTargetGL::setViewport(int viewport_width, int viewport_height)
 {
 	_viewport_width = viewport_width;
-	_viewport_height =viewport_height;
+	_viewport_height = viewport_height;
 }
 
 NS_END

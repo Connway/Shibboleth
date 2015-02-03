@@ -619,18 +619,18 @@ void Matrix4x4CPU::setLookToLH(const Vector4CPU& eye, const Vector4CPU& dir, con
 	Vector4CPU realDir, right, realUp;
 
 	realDir = dir;
-	realDir.normalize();
+	realDir.normalizeThis();
 
 	right = up.cross(dir);
-	right.normalize();
+	right.normalizeThis();
 
 	realUp = dir.cross(right);
-	realUp.normalize();
+	realUp.normalizeThis();
 
 	set(
-		right[0], up[0], dir[0], 0.0f,
-		right[1], up[1], dir[1], 0.0f,
-		right[2], up[2], dir[2], 0.0f,
+		right[0], realUp[0], realDir[0], 0.0f,
+		right[1], realUp[1], realDir[1], 0.0f,
+		right[2], realUp[2], realDir[2], 0.0f,
 		-right.dot(eye), -realUp.dot(eye), -realDir.dot(eye), 1.0f
 	);
 }

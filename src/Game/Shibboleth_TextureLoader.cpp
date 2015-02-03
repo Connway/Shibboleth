@@ -57,9 +57,9 @@ Gaff::IVirtualDestructor* TextureLoader::load(const char* file_name, unsigned lo
 		return nullptr;
 	}
 
-	const GraphicsUserData* usr_data = (GraphicsUserData*)&user_data;
+	const TextureUserData* tud = (TextureUserData*)user_data;
 
-	Gleam::ITexture::FORMAT texture_format = determineFormatAndType(image, usr_data->flags & TEX_LOADER_NORMALIZED);
+	Gleam::ITexture::FORMAT texture_format = determineFormatAndType(image, !!(tud->gud.flags & TEX_LOADER_NORMALIZED), !!(tud->gud.flags & TEX_LOADER_SRGBA));
 
 	TextureData* texture_data = GetAllocator()->template allocT<TextureData>();
 
@@ -68,27 +68,42 @@ Gaff::IVirtualDestructor* TextureLoader::load(const char* file_name, unsigned lo
 		return nullptr;
 	}
 
-	texture_data->normalized = (usr_data->flags & TEX_LOADER_NORMALIZED) != 0;
-	texture_data->cubemap = (usr_data->flags & TEX_LOADER_CUBEMAP) != 0;
+	if (tud->gud.flags & TEX_LOADER_IMAGE_ONLY) {
+		texture_data->image = Gaff::Move(image);
+		texture_data->normalized = false;
+		texture_data->cubemap = false;
+		return texture_data;
+	}
+
+	texture_data->normalized = (tud->gud.flags & TEX_LOADER_NORMALIZED) != 0;
+	texture_data->cubemap = (tud->gud.flags & TEX_LOADER_CUBEMAP) != 0;
 
 	Gaff::ScopedLock<Gaff::SpinLock> scoped_lock(_render_mgr.getSpinLock());
 	Gleam::IRenderDevice& rd = _render_mgr.getRenderDevice();
 
-	Array<const RenderManager::WindowData*> windows = (usr_data->flags & TEX_LOADER_TAGS_ANY) ?
-		_render_mgr.getAllWindowsWithTagsAny(usr_data->display_tags) :
-		_render_mgr.getAllWindowsWithTags(usr_data->display_tags);
+	Array<const RenderManager::WindowData*> windows = (tud->gud.flags & TEX_LOADER_TAGS_ANY) ?
+		_render_mgr.getAllWindowsWithTagsAny(tud->gud.display_tags) :
+		_render_mgr.getAllWindowsWithTags(tud->gud.display_tags);
 
 	assert(!windows.empty());
 
 	texture_data->textures.resize(rd.getNumDevices());
 
+	if (!(tud->gud.flags & TEX_LOADER_NO_SRVS)) {
+		texture_data->resource_views.resize(rd.getNumDevices());
+	}
+
+	if (!(tud->gud.flags & TEX_LOADER_NO_SAMPLERS)) {
+		texture_data->samplers.resize(rd.getNumDevices());
+	}
+
 	// Load the texture for each device
-	//for (unsigned int i = 0; i < rd.getNumDevices(); ++i) {
 	for (auto it = windows.begin(); it != windows.end(); ++it) {
 		TexturePtr texture(_render_mgr.createTexture());
 		rd.setCurrentDevice((*it)->device);
 
 		if (!texture) {
+			_render_mgr.printfLoadLog("ERROR - Failed to allocate texture for image %s.\n", file_name);
 			GetAllocator()->freeT(texture_data);
 			return nullptr;
 		}
@@ -104,7 +119,7 @@ Gaff::IVirtualDestructor* TextureLoader::load(const char* file_name, unsigned lo
 		unsigned int depth = image.getDepth();
 		bool success = false;
 
-		if (usr_data->flags & TEX_LOADER_CUBEMAP) {
+		if (tud->gud.flags & TEX_LOADER_CUBEMAP) {
 			if (width == 1 || height == 1 || depth != 1) {
 				_render_mgr.printfLoadLog("ERROR - Image specified as cubemap, but is not a 2D image. IMAGE: %s.\n", file_name);
 				GetAllocator()->freeT(texture_data);
@@ -141,16 +156,56 @@ Gaff::IVirtualDestructor* TextureLoader::load(const char* file_name, unsigned lo
 		}
 
 		texture_data->textures[(*it)->device] = texture;
+
+		if (!(tud->gud.flags & TEX_LOADER_NO_SRVS)) {
+			ShaderResourceViewPtr srv(_render_mgr.createShaderResourceView());
+
+			if (!srv) {
+				_render_mgr.printfLoadLog("ERROR - Failed to allocate shader resource view for texture %s.\n", file_name);
+				GetAllocator()->freeT(texture_data);
+				return false;
+			}
+
+			if (!srv->init(rd, texture.get())) {
+				_render_mgr.printfLoadLog("ERROR - Failed to initialize shader resource view for texture %s.\n", file_name);
+				GetAllocator()->freeT(texture_data);
+				return false;
+			}
+
+			texture_data->resource_views[(*it)->device] = Gaff::Move(srv);
+		}
+
+		if (!(tud->gud.flags & TEX_LOADER_NO_SAMPLERS)) {
+			SamplerStatePtr sampler(_render_mgr.createSamplerState());
+
+			if (!sampler) {
+				_render_mgr.printfLoadLog("ERROR - Failed to allocate sampler state for texture %s.\n", file_name);
+				GetAllocator()->freeT(texture_data);
+				return false;
+			}
+
+			if (!sampler->init(
+					rd, tud->filter, tud->wrap_u, tud->wrap_v, tud->wrap_w,
+					tud->min_lod, tud->max_lod, tud->lod_bias, tud->max_anisotropy,
+					tud->border_r, tud->border_g, tud->border_b, tud->border_a)) {
+
+				_render_mgr.printfLoadLog("ERROR - Failed to initialize sampler state for texture %s.\n", file_name);
+				GetAllocator()->freeT(texture_data);
+				return false;
+			}
+
+			texture_data->samplers[(*it)->device] = Gaff::Move(sampler);
+		}
 	}
 
 	return texture_data;
 }
 
-Gleam::ITexture::FORMAT TextureLoader::determineFormatAndType(const Gaff::Image& image, bool normalized) const
+Gleam::ITexture::FORMAT TextureLoader::determineFormatAndType(const Gaff::Image& image, bool normalized, bool srgba) const
 {
 	switch (image.getFormat()) {
 		case Gaff::Image::FMT_RGBA:
-			return determineRGBAType(image, normalized);
+			return determineRGBAType(image, normalized, srgba);
 			break;
 
 		case Gaff::Image::FMT_RGB:
@@ -173,14 +228,14 @@ Gleam::ITexture::FORMAT TextureLoader::determineFormatAndType(const Gaff::Image&
 	return Gleam::ITexture::FORMAT_SIZE;
 }
 
-Gleam::ITexture::FORMAT TextureLoader::determineRGBAType(const Gaff::Image& image, bool normalized) const
+Gleam::ITexture::FORMAT TextureLoader::determineRGBAType(const Gaff::Image& image, bool normalized, bool srgba) const
 {
 	switch (image.getType()) {
 		case Gaff::Image::TYPE_BYTE:
 			return (normalized) ? Gleam::ITexture::RGBA_8_SNORM : Gleam::ITexture::RGBA_8_I;
 
 		case Gaff::Image::TYPE_UNSIGNED_BYTE:
-			return (normalized) ? Gleam::ITexture::RGBA_8_UNORM : Gleam::ITexture::RGBA_8_UI;
+			return (srgba) ? Gleam::ITexture::SRGBA_8_UNORM : (normalized) ? Gleam::ITexture::RGBA_8_UNORM : Gleam::ITexture::RGBA_8_UI;
 
 		case Gaff::Image::TYPE_SHORT:
 			return Gleam::ITexture::RGBA_16_I;

@@ -47,6 +47,8 @@ public:
 	unsigned int getBufferCount(void) const;
 
 	void setIndiceBuffer(IBuffer* buffer);
+	const IBuffer* getIndiceBuffer(void) const;
+	IBuffer* getIndiceBuffer(void);
 
 	//void setTopologyType(TOPOLOGY_TYPE topology);
 	TOPOLOGY_TYPE getTopologyType(void) const;

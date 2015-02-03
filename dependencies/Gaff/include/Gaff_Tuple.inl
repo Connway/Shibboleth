@@ -110,11 +110,11 @@ class TupleElement< index, Tuple<First, Rest...> > : public TupleElement< index 
 template <unsigned int index, class... Args>
 const typename TupleElement< index, Tuple<Args...> >::ValueType& TupleGet(const Tuple<Args...>& tuple)
 {
-	return ((const TupleElement< index, Tuple<Args...> >::TupleType&)tuple)._value;
+	return ((const typename TupleElement< index, Tuple<Args...> >::TupleType&)tuple)._value;
 }
 
 template <unsigned int index, class... Args>
 typename TupleElement< index, Tuple<Args...> >::ValueType& TupleGet(Tuple<Args...>& tuple)
 {
-	return ((TupleElement< index, Tuple<Args...> >::TupleType&)tuple)._value;
+	return ((typename TupleElement< index, Tuple<Args...> >::TupleType&)tuple)._value;
 }

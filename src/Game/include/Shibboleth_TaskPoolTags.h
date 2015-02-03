@@ -23,3 +23,4 @@ THE SOFTWARE.
 #pragma once
 
 #define TPT_GRAPHICS 1
+#define TPT_PRINTLOG 2

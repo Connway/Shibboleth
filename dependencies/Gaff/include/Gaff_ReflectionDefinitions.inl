@@ -320,7 +320,7 @@ ReflectionDefinition<T, Allocator>&& ReflectionDefinition<T, Allocator>::addBase
 
 		BaseCallbackHelper<Allocator>::GetInstance(_allocator).addBaseClassCallback(&T2::GetReflectionDefinition(), binder);
 
-		OnCompleteFunctor<T2>* functor = &((Functor<OnCompleteFunctor<T2>, void>&)binder->GetInterface()).getFunctor();
+		OnCompleteFunctor<T2>* functor = &((Functor<OnCompleteFunctor<T2>, void>&)binder->getInterface()).getFunctor();
 		_callback_references.push(functor);
 
 		++_base_classes_remaining;
@@ -388,7 +388,7 @@ ReflectionDefinition<T, Allocator>&& ReflectionDefinition<T, Allocator>::addBase
 
 		BaseCallbackHelper<Allocator>::GetInstance(_allocator).addBaseClassCallback(&T2::GetReflectionDefinition(), binder);
 
-		OnCompleteFunctor<T2>* functor = &((Functor<OnCompleteFunctor<T2>, void>&)binder->GetInterface()).getFunctor();
+		OnCompleteFunctor<T2>* functor = &((Functor<OnCompleteFunctor<T2>, void>&)binder->getInterface()).getFunctor();
 		_callback_references.push(functor);
 
 		++_base_classes_remaining;

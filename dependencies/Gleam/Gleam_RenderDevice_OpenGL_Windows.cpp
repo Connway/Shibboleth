@@ -24,7 +24,18 @@ THE SOFTWARE.
 
 #include "Gleam_RenderDevice_OpenGL_Windows.h"
 #include "Gleam_RenderTarget_OpenGL.h"
+#include "Gleam_CommandList_OpenGL.h"
 #include "Gleam_Window_Windows.h"
+
+#include "Gleam_ShaderResourceView_OpenGL.h"
+#include "Gleam_SamplerState_OpenGL.h"
+#include "Gleam_RenderState_OpenGL.h"
+#include "Gleam_Program_OpenGL.h"
+#include "Gleam_Layout_OpenGL.h"
+#include "Gleam_Buffer_OpenGL.h"
+#include "Gleam_Mesh_OpenGL.h"
+#include "Gleam_IMesh.h"
+
 #include <Gaff_IncludeAssert.h>
 #include <Gaff_Thread.h>
 #include <GL/glew.h>
@@ -34,7 +45,7 @@ NS_GLEAM
 
 RenderDeviceGL::RenderDeviceGL(void):
 	_active_viewport(nullptr), _active_output(nullptr),
-	_curr_output(0), _curr_device(0), _creating_thread_id(0),
+	_curr_output(UINT_FAIL), _curr_device(UINT_FAIL), _creating_thread_id(0),
 	_glew_already_initialized(false)
 {
 }
@@ -388,11 +399,14 @@ bool RenderDeviceGL::resize(const IWindow& window)
 			it->viewports[index].width = wnd.getWidth();
 			it->viewports[index].height = wnd.getHeight();
 			((RenderTargetGL*)it->rts[index].get())->setViewport(wnd.getWidth(), wnd.getHeight());
-		} else {
-			return false;
-		}
 
-		// Maybe detect and handle fullscreen changes here?
+			if (wnd.getHWnd() == _devices[_curr_device].windows[_curr_output]) {
+				glViewport(0, 0, wnd.getWidth(), wnd.getHeight());
+			}
+
+			// Maybe detect and handle fullscreen changes here?
+			break;
+		}
 	}
 
 	return true;
@@ -414,6 +428,11 @@ void RenderDeviceGL::resetRenderState(void)
 	glCullFace(GL_BACK);
 	glFrontFace(GL_CW);
 	glDisable(GL_BLEND);
+}
+
+bool RenderDeviceGL::isDeferred(void) const
+{
+	return false;
 }
 
 bool RenderDeviceGL::isD3D(void) const
@@ -472,6 +491,10 @@ bool RenderDeviceGL::setCurrentOutput(unsigned int output)
 {
 	assert(_devices[_curr_device].outputs.size() > output);
 
+	if (_curr_output == output) {
+		return true;
+	}
+
 	if (wglMakeCurrent(_devices[_curr_device].outputs[output], _devices[_curr_device].contexts[output]) == FALSE) {
 		return false;
 	}
@@ -512,7 +535,7 @@ bool RenderDeviceGL::setCurrentDevice(unsigned int device)
 		}
 
 
-	} else if (!setCurrentOutput(0)) {
+	} else if (_curr_device != prev_device && !setCurrentOutput(0)) {
 		_curr_device = prev_device;
 		setCurrentOutput(_curr_output); // attempt to set back to the old device
 		return false;
@@ -526,7 +549,7 @@ unsigned int RenderDeviceGL::getCurrentDevice(void) const
 	return _curr_device;
 }
 
-int RenderDeviceGL::getDeviceForAdapter(unsigned int adapter_id) const
+unsigned int RenderDeviceGL::getDeviceForAdapter(unsigned int adapter_id) const
 {
 	for (unsigned int i = 0; i < _devices.size(); ++i) {
 		if (_devices[i].adapter_id == adapter_id) {
@@ -534,7 +557,183 @@ int RenderDeviceGL::getDeviceForAdapter(unsigned int adapter_id) const
 		}
 	}
 
-	return -1;
+	return UINT_FAIL;
+}
+
+IRenderDevice* RenderDeviceGL::createDeferredRenderDevice(void)
+{
+	return nullptr;
+}
+
+void RenderDeviceGL::executeCommandList(ICommandList* command_list)
+{
+	assert(!command_list->isD3D());
+	resetRenderState();
+	((CommandListGL*)command_list)->execute();
+}
+
+bool RenderDeviceGL::finishCommandList(ICommandList*)
+{
+	assert(0 && "Calling a deferred render device function on an immediate render device");
+	return false;
+}
+
+void RenderDeviceGL::setRenderState(const RenderStateGL* render_state)
+{
+	glPolygonMode(GL_FRONT_AND_BACK, (render_state->isWireframe()) ? GL_LINE : GL_FILL);
+
+	RenderStateGL::Disable_Enable_Funcs[render_state->isDepthTestEnabled()](GL_DEPTH_TEST);
+	RenderStateGL::Disable_Enable_Funcs[render_state->isStencilTestEnabled()](GL_STENCIL_TEST);
+	glDepthFunc(RenderStateGL::Compare_Funcs[render_state->getDepthFunc() - 1]);
+
+	const IRenderState::StencilData& front_face = render_state->getFrontFaceStencilData();
+	const IRenderState::StencilData& back_face = render_state->getBackFaceStencilData();
+
+	glStencilOpSeparate(GL_FRONT, RenderStateGL::Stencil_Ops[front_face.stencil_depth_fail - 1],
+						RenderStateGL::Stencil_Ops[front_face.stencil_pass_depth_fail - 1],
+						RenderStateGL::Stencil_Ops[front_face.stencil_depth_pass - 1]);
+	glStencilOpSeparate(GL_BACK, RenderStateGL::Stencil_Ops[back_face.stencil_depth_fail - 1],
+						RenderStateGL::Stencil_Ops[back_face.stencil_pass_depth_fail - 1],
+						RenderStateGL::Stencil_Ops[back_face.stencil_depth_pass - 1]);
+	glStencilFuncSeparate(GL_FRONT, RenderStateGL::Compare_Funcs[front_face.comp_func - 1], render_state->getStencilRef(), render_state->getStencilReadMask());
+	glStencilFuncSeparate(GL_BACK, RenderStateGL::Compare_Funcs[back_face.comp_func - 1], render_state->getStencilRef(), render_state->getStencilWriteMask());
+	glStencilMask(render_state->getStencilWriteMask());
+
+	IRenderState::CULL_MODE cull_face_mode = render_state->getCullFaceMode();
+
+	RenderStateGL::Disable_Enable_Funcs[cull_face_mode != IRenderState::CULL_NONE](GL_CULL_FACE);
+	glCullFace(GL_FRONT - 2 + cull_face_mode);
+	glFrontFace((render_state->isFrontFaceCounterClockwise()) ? GL_CCW : GL_CW);
+
+	const IRenderState::BlendData* blend_data = render_state->getBlendData();
+
+	for (unsigned int i = 0; i < 8; ++i) {
+		if (blend_data[i].enable_alpha_blending) {
+			glEnablei(GL_BLEND, i);
+
+			glBlendFuncSeparatei(i, RenderStateGL::Blend_Factors[blend_data[i].blend_src_color - 1], RenderStateGL::Blend_Factors[blend_data[i].blend_dst_color - 1],
+								RenderStateGL::Blend_Factors[blend_data[i].blend_src_alpha - 1], RenderStateGL::Blend_Factors[blend_data[i].blend_dst_alpha - 1]);
+
+			glBlendEquationSeparatei(i, RenderStateGL::Blend_Ops[blend_data[i].blend_op_color - 1], RenderStateGL::Blend_Ops[blend_data[i].blend_op_alpha - 1]);
+
+		} else {
+			glDisablei(GL_BLEND, i);
+		}
+	}
+}
+
+void RenderDeviceGL::setLayout(LayoutGL* layout, const IMesh* mesh)
+{
+	const GleamArray< GleamArray<LayoutGL::LayoutData> >& layout_descs = layout->GetLayoutDescriptors();
+	const LayoutGL::LayoutData* layout_data = nullptr;
+	const BufferGL* buffer = nullptr;
+	unsigned int stride = 0;
+	unsigned int count = 0;
+
+	for (unsigned int i = 0; i < layout_descs.size(); ++i) {
+		const GleamArray<LayoutGL::LayoutData>& ld = layout_descs[i];
+		buffer = (const BufferGL*)mesh->getBuffer(i);
+		stride = buffer->getStride();
+
+		glBindBuffer(GL_ARRAY_BUFFER, buffer->getBuffer());
+
+		for (unsigned int j = 0; j < ld.size(); ++j) {
+			layout_data = &ld[j];
+
+			glEnableVertexAttribArray(count);
+
+#if defined(_WIN64) || defined(__LP64__)
+			glVertexAttribPointer(count, layout_data->size, layout_data->type, layout_data->normalized,
+								stride, (void*)(unsigned long long)layout_data->aligned_byte_offset);
+#else
+			glVertexAttribPointer(count, layout_data->size, layout_data->type, layout_data->normalized,
+								stride, (void*)layout_data->aligned_byte_offset);
+#endif
+
+			++count;
+		}
+	}
+
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+}
+
+void RenderDeviceGL::unsetLayout(LayoutGL* layout)
+{
+	const GleamArray< GleamArray<LayoutGL::LayoutData> >& layout_descs = layout->GetLayoutDescriptors();
+	unsigned int count = 0;
+
+	for (unsigned int i = 0; i < layout_descs.size(); ++i) {
+		for (unsigned int j = 0; j < layout_descs[i].size(); ++j) {
+			glDisableVertexAttribArray(count);
+			++count;
+		}
+	}
+}
+
+void RenderDeviceGL::bindShader(ProgramGL* shader, ProgramBuffersGL* program_buffers)
+{
+	glBindProgramPipeline(shader->getProgram());
+
+	if (program_buffers) {
+		unsigned int texture_count = 0;
+		unsigned int count = 0;
+
+		for (unsigned int i = 0; i < IShader::SHADER_TYPE_SIZE - 1; ++i) {
+			const GleamArray<IShaderResourceView*>& resource_views = program_buffers->getResourceViews((Gleam::IShader::SHADER_TYPE)i);
+			const GleamArray<ISamplerState*>& sampler_states = program_buffers->getSamplerStates((Gleam::IShader::SHADER_TYPE)i);
+			const GleamArray<IBuffer*>& const_bufs = program_buffers->getConstantBuffers((Gleam::IShader::SHADER_TYPE)i);
+
+			assert(sampler_states.size() <= resource_views.size());
+			unsigned int sampler_count = 0;
+
+			for (unsigned int j = 0; j < const_bufs.size(); ++j) {
+				glBindBufferBase(GL_UNIFORM_BUFFER, count, ((const BufferGL*)const_bufs[j])->getBuffer());
+				++count;
+			}
+
+			for (unsigned int j = 0; j < resource_views.size(); ++j) {
+				ShaderResourceViewGL* rv = (ShaderResourceViewGL*)resource_views[j];
+
+				if (resource_views[j]->getViewType() == IShaderResourceView::VIEW_TEXTURE) {
+					// should probably assert that texture_count isn't higher than the supported number of textures
+
+					SamplerStateGL* st = (SamplerStateGL*)sampler_states[sampler_count];
+
+					glActiveTexture(GL_TEXTURE0 + texture_count);
+					glBindTexture(rv->getTarget(), rv->getResourceView());
+					glBindSampler(texture_count, st->getSamplerState());
+
+					++texture_count;
+					++sampler_count;
+
+				} else {
+					assert(0 && "How is your ShaderResourceView not a texture? That's the only type we have implemented ...");
+				}
+			}
+		}
+	}
+}
+
+void RenderDeviceGL::unbindShader(void)
+{
+	glBindProgramPipeline(0);
+}
+
+void RenderDeviceGL::renderMeshNonIndexed(unsigned int topology, unsigned int vert_count, unsigned int start_location)
+{
+	glDrawArrays(topology, start_location, vert_count);
+}
+
+void RenderDeviceGL::renderMeshInstanced(MeshGL* mesh, unsigned int count)
+{
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ((BufferGL*)mesh->getIndiceBuffer())->getBuffer());
+	glDrawElementsInstanced(mesh->getGLTopology(), mesh->getIndexCount(), GL_UNSIGNED_INT, 0, count);
+}
+
+void RenderDeviceGL::renderMesh(MeshGL* mesh)
+{
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ((BufferGL*)mesh->getIndiceBuffer())->getBuffer());
+	glDrawElements(mesh->getGLTopology(), mesh->getIndexCount(), GL_UNSIGNED_INT, 0);
 }
 
 NS_END

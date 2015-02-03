@@ -23,7 +23,9 @@ THE SOFTWARE.
 #if defined(_WIN32) || defined(_WIN64)
 
 #include "Gleam_RenderDevice_Direct3D.h"
+#include "Gleam_DeferredRenderDevice_Direct3D.h"
 #include "Gleam_RenderTarget_Direct3D.h"
+#include "Gleam_CommandList_Direct3D.h"
 #include "Gleam_Window_Windows.h"
 #include "Gleam_Global.h"
 #include <Gaff_IncludeAssert.h>
@@ -481,6 +483,11 @@ void RenderDeviceD3D::resetRenderState(void)
 	_active_context->RSSetState(NULL);
 }
 
+bool RenderDeviceD3D::isDeferred(void) const
+{
+	return false;
+}
+
 bool RenderDeviceD3D::isD3D(void) const
 {
 	return true;
@@ -508,28 +515,6 @@ unsigned int RenderDeviceD3D::getActiveViewportHeight(void)
 {
 	assert(_devices.size() > _curr_device && _devices[_curr_device].viewports.size() > _curr_output);
 	return getViewportHeight(_curr_device, _curr_output);
-}
-
-ID3D11DeviceContext* RenderDeviceD3D::getDeviceContext(unsigned int device)
-{
-	assert(_devices.size() > device);
-	return _devices[device].context.get();
-}
-
-ID3D11Device* RenderDeviceD3D::getDevice(unsigned int device)
-{
-	assert(_devices.size() > device);
-	return _devices[device].device.get();
-}
-
-ID3D11DeviceContext* RenderDeviceD3D::getActiveDeviceContext(void)
-{
-	return _active_context.get();
-}
-
-ID3D11Device* RenderDeviceD3D::getActiveDevice(void)
-{
-	return _active_device.get();
 }
 
 unsigned int RenderDeviceD3D::getNumOutputs(unsigned int device) const
@@ -590,7 +575,7 @@ unsigned int RenderDeviceD3D::getCurrentDevice(void) const
 	return _curr_device;
 }
 
-int RenderDeviceD3D::getDeviceForAdapter(unsigned int adapter_id) const
+unsigned int RenderDeviceD3D::getDeviceForAdapter(unsigned int adapter_id) const
 {
 	for (unsigned int i = 0; i < _devices.size(); ++i) {
 		if (_devices[i].adapter_id == adapter_id) {
@@ -598,7 +583,58 @@ int RenderDeviceD3D::getDeviceForAdapter(unsigned int adapter_id) const
 		}
 	}
 
-	return -1;
+	return UINT_FAIL;
+}
+
+IRenderDevice* RenderDeviceD3D::createDeferredRenderDevice(void)
+{
+	ID3D11DeviceContext* deferred_context = nullptr;
+
+	if (FAILED(_active_device->CreateDeferredContext(0, &deferred_context))) {
+		return nullptr;
+	}
+
+	DeferredRenderDeviceD3D* deferred_render_device = (DeferredRenderDeviceD3D*)GetAllocator()->alloc(sizeof(DeferredRenderDeviceD3D));
+	new (deferred_render_device) DeferredRenderDeviceD3D();
+
+	deferred_render_device->_context.set(deferred_context);
+
+	return deferred_render_device;
+}
+
+void RenderDeviceD3D::executeCommandList(ICommandList* command_list)
+{
+	assert(command_list->isD3D() && _active_context);
+	CommandListD3D* cmd_list = (CommandListD3D*)command_list;
+	_active_context->ExecuteCommandList(cmd_list->getCommandList(), FALSE);
+}
+
+bool RenderDeviceD3D::finishCommandList(ICommandList*)
+{
+	assert(0 && "Calling a deferred render device function on an immediate render device");
+	return false;
+}
+
+ID3D11DeviceContext* RenderDeviceD3D::getDeviceContext(unsigned int device)
+{
+	assert(_devices.size() > device);
+	return _devices[device].context.get();
+}
+
+ID3D11Device* RenderDeviceD3D::getDevice(unsigned int device)
+{
+	assert(_devices.size() > device);
+	return _devices[device].device.get();
+}
+
+ID3D11DeviceContext* RenderDeviceD3D::getActiveDeviceContext(void)
+{
+	return _active_context.get();
+}
+
+ID3D11Device* RenderDeviceD3D::getActiveDevice(void)
+{
+	return _active_device.get();
 }
 
 NS_END

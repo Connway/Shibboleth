@@ -95,7 +95,7 @@
     <ClCompile>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level4</WarningLevel>
-      <PreprocessorDefinitions>_DEBUG;DEBUG;USE_SIMD;GLEW_STATIC;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;DEBUG;GLEW_STATIC;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>..\..\..\dependencies\Gleam\include;..\..\..\dependencies\Gaff\include;..\..\..\dependencies\glew\include;..\..\..\dependencies\utf8-cpp;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <ProgramDataBaseFileName>$(OutDir)Gleam.pdb</ProgramDataBaseFileName>
@@ -106,7 +106,7 @@
       <AdditionalOptions>/sdl %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <ResourceCompile>
-      <PreprocessorDefinitions>_DEBUG;DEBUG;USE_SIMD;GLEW_STATIC;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;DEBUG;GLEW_STATIC;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>..\..\..\dependencies\Gleam\include;..\..\..\dependencies\Gaff\include;..\..\..\dependencies\glew\include;..\..\..\dependencies\utf8-cpp;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Link>
@@ -118,7 +118,7 @@
     <ClCompile>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level4</WarningLevel>
-      <PreprocessorDefinitions>_DEBUG;DEBUG;USE_SIMD;GLEW_STATIC;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;DEBUG;GLEW_STATIC;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>..\..\..\dependencies\Gleam\include;..\..\..\dependencies\Gaff\include;..\..\..\dependencies\glew\include;..\..\..\dependencies\utf8-cpp;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <ProgramDataBaseFileName>$(OutDir)Gleam.pdb</ProgramDataBaseFileName>
@@ -128,7 +128,7 @@
       <AdditionalOptions>/sdl %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <ResourceCompile>
-      <PreprocessorDefinitions>_DEBUG;DEBUG;USE_SIMD;GLEW_STATIC;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;DEBUG;GLEW_STATIC;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>..\..\..\dependencies\Gleam\include;..\..\..\dependencies\Gaff\include;..\..\..\dependencies\glew\include;..\..\..\dependencies\utf8-cpp;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Link>
@@ -140,7 +140,7 @@
     <ClCompile>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level4</WarningLevel>
-      <PreprocessorDefinitions>USE_SIMD;GLEW_STATIC;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>GLEW_STATIC;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>..\..\..\dependencies\Gleam\include;..\..\..\dependencies\Gaff\include;..\..\..\dependencies\glew\include;..\..\..\dependencies\utf8-cpp;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -153,7 +153,7 @@
       <AdditionalOptions>/sdl %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <ResourceCompile>
-      <PreprocessorDefinitions>USE_SIMD;GLEW_STATIC;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>GLEW_STATIC;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>..\..\..\dependencies\Gleam\include;..\..\..\dependencies\Gaff\include;..\..\..\dependencies\glew\include;..\..\..\dependencies\utf8-cpp;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Link>
@@ -167,7 +167,7 @@
     <ClCompile>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level4</WarningLevel>
-      <PreprocessorDefinitions>USE_SIMD;GLEW_STATIC;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>GLEW_STATIC;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>..\..\..\dependencies\Gleam\include;..\..\..\dependencies\Gaff\include;..\..\..\dependencies\glew\include;..\..\..\dependencies\utf8-cpp;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -179,7 +179,7 @@
       <AdditionalOptions>/sdl %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <ResourceCompile>
-      <PreprocessorDefinitions>USE_SIMD;GLEW_STATIC;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>GLEW_STATIC;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>..\..\..\dependencies\Gleam\include;..\..\..\dependencies\Gaff\include;..\..\..\dependencies\glew\include;..\..\..\dependencies\utf8-cpp;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Link>
@@ -196,10 +196,18 @@
     <ClInclude Include="..\..\..\dependencies\Gleam\include\Gleam_Buffer.h" />
     <ClInclude Include="..\..\..\dependencies\Gleam\include\Gleam_Buffer_Direct3D.h" />
     <ClInclude Include="..\..\..\dependencies\Gleam\include\Gleam_Buffer_OpenGL.h" />
+    <ClInclude Include="..\..\..\dependencies\Gleam\include\Gleam_CommandList.h" />
+    <ClInclude Include="..\..\..\dependencies\Gleam\include\Gleam_CommandList_Direct3D.h" />
+    <ClInclude Include="..\..\..\dependencies\Gleam\include\Gleam_CommandList_OpenGL.h" />
+    <ClInclude Include="..\..\..\dependencies\Gleam\include\Gleam_DeferredRenderDevice.h" />
+    <ClInclude Include="..\..\..\dependencies\Gleam\include\Gleam_DeferredRenderDeviceBase.h" />
+    <ClInclude Include="..\..\..\dependencies\Gleam\include\Gleam_DeferredRenderDevice_Direct3D.h" />
+    <ClInclude Include="..\..\..\dependencies\Gleam\include\Gleam_DeferredRenderDevice_OpenGL.h" />
     <ClInclude Include="..\..\..\dependencies\Gleam\include\Gleam_Defines.h" />
     <ClInclude Include="..\..\..\dependencies\Gleam\include\Gleam_Global.h" />
     <ClInclude Include="..\..\..\dependencies\Gleam\include\Gleam_HashMap.h" />
     <ClInclude Include="..\..\..\dependencies\Gleam\include\Gleam_IBuffer.h" />
+    <ClInclude Include="..\..\..\dependencies\Gleam\include\Gleam_ICommandList.h" />
     <ClInclude Include="..\..\..\dependencies\Gleam\include\Gleam_IInputDevice.h" />
     <ClInclude Include="..\..\..\dependencies\Gleam\include\Gleam_IKeyboard.h" />
     <ClInclude Include="..\..\..\dependencies\Gleam\include\Gleam_ILayout.h" />
@@ -208,6 +216,8 @@
     <ClInclude Include="..\..\..\dependencies\Gleam\include\Gleam_IMouse.h" />
     <ClInclude Include="..\..\..\dependencies\Gleam\include\Gleam_IProgram.h" />
     <ClInclude Include="..\..\..\dependencies\Gleam\include\Gleam_IRenderDevice.h" />
+    <ClInclude Include="..\..\..\dependencies\Gleam\include\Gleam_IRenderDevice_Direct3D.h" />
+    <ClInclude Include="..\..\..\dependencies\Gleam\include\Gleam_IRenderDevice_OpenGL.h" />
     <ClInclude Include="..\..\..\dependencies\Gleam\include\Gleam_IRenderState.h" />
     <ClInclude Include="..\..\..\dependencies\Gleam\include\Gleam_IRenderTarget.h" />
     <ClInclude Include="..\..\..\dependencies\Gleam\include\Gleam_ISamplerState.h" />
@@ -287,6 +297,11 @@
     <ClCompile Include="..\..\..\dependencies\Gleam\Gleam_AABB.cpp" />
     <ClCompile Include="..\..\..\dependencies\Gleam\Gleam_Buffer_Direct3D.cpp" />
     <ClCompile Include="..\..\..\dependencies\Gleam\Gleam_Buffer_OpenGL.cpp" />
+    <ClCompile Include="..\..\..\dependencies\Gleam\Gleam_CommandList_Direct3D.cpp" />
+    <ClCompile Include="..\..\..\dependencies\Gleam\Gleam_CommandList_OpenGL.cpp" />
+    <ClCompile Include="..\..\..\dependencies\Gleam\Gleam_DeferredRenderDeviceBase.cpp" />
+    <ClCompile Include="..\..\..\dependencies\Gleam\Gleam_DeferredRenderDevice_Direct3D.cpp" />
+    <ClCompile Include="..\..\..\dependencies\Gleam\Gleam_DeferredRenderDevice_OpenGL.cpp" />
     <ClCompile Include="..\..\..\dependencies\Gleam\Gleam_Global.cpp" />
     <ClCompile Include="..\..\..\dependencies\Gleam\Gleam_InputManager.cpp" />
     <ClCompile Include="..\..\..\dependencies\Gleam\Gleam_Keyboard_MessagePump.cpp" />
