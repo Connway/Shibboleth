@@ -23,7 +23,8 @@ THE SOFTWARE.
 #if defined(_WIN32) || defined(_WIN64)
 
 #include "Gleam_SamplerState_Direct3D.h"
-#include "Gleam_RenderDevice_Direct3D.h"
+#include "Gleam_IRenderDevice_Direct3D.h"
+#include "Gleam_IRenderDevice.h"
 #include "Gleam_IncludeD3D11.h"
 #include <Gaff_IncludeAssert.h>
 
@@ -78,7 +79,8 @@ bool SamplerStateD3D::init(
 	desc.MinLOD = min_lod;
 	desc.MipLODBias = lod_bias;
 
-	HRESULT result = ((RenderDeviceD3D&)rd).getActiveDevice()->CreateSamplerState(&desc, &_sampler_state);
+	IRenderDeviceD3D& rd3d = (IRenderDeviceD3D&)*(((const char*)&rd) + sizeof(IRenderDevice));
+	HRESULT result = rd3d.getActiveDevice()->CreateSamplerState(&desc, &_sampler_state);
 	return SUCCEEDED(result);
 }
 

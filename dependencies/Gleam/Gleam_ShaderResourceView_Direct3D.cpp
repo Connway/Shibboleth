@@ -23,8 +23,9 @@ THE SOFTWARE.
 #if defined(_WIN32) || defined(_WIN64)
 
 #include "Gleam_ShaderResourceView_Direct3D.h"
-#include "Gleam_RenderDevice_Direct3D.h"
+#include "Gleam_IRenderDevice_Direct3D.h"
 #include "Gleam_Texture_Direct3D.h"
+#include "Gleam_IRenderDevice.h"
 #include "Gleam_IncludeD3D11.h"
 #include <Gaff_IncludeAssert.h>
 
@@ -52,7 +53,8 @@ ShaderResourceViewD3D::~ShaderResourceViewD3D(void)
 
 bool ShaderResourceViewD3D::init(IRenderDevice& rd, const ITexture* texture)
 {
-	ID3D11Device* device = ((RenderDeviceD3D&)rd).getActiveDevice();
+	IRenderDeviceD3D& rd3d = (IRenderDeviceD3D&)*(((const char*)&rd) + sizeof(IRenderDevice));
+	ID3D11Device* device = rd3d.getActiveDevice();
 	assert(texture);
 
 	_view_type = VIEW_TEXTURE;

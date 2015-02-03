@@ -22,33 +22,23 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Gleam_MeshBase.h"
+#include "Gleam_Defines.h"
 
 NS_GLEAM
 
-class MeshGL : public MeshBase
+class ICommandList
 {
 public:
-	MeshGL(void);
-	~MeshGL(void);
+	ICommandList(void) {}
+	virtual ~ICommandList(void) {}
 
-	bool addVertData(
-		IRenderDevice& rd, const void* vert_data, unsigned int vert_count, unsigned int vert_size,
-		unsigned int* indices, unsigned int index_count, TOPOLOGY_TYPE primitive_type = TRIANGLE_LIST
-	);
+	virtual const ICommandList& operator=(const ICommandList& rhs) = 0;
+	virtual const ICommandList& operator=(ICommandList&& rhs) = 0;
 
-	void setTopologyType(TOPOLOGY_TYPE topology);
+	virtual bool operator==(const ICommandList& rhs) const = 0;
+	virtual bool operator!=(const ICommandList& rhs) const = 0;
 
-	void renderNonIndexed(IRenderDevice& rd, unsigned int vert_count, unsigned int start_location = 0);
-	void renderInstanced(IRenderDevice& rd, unsigned int count);
-	void render(IRenderDevice& rd);
-
-	bool isD3D(void) const;
-
-	INLINE unsigned int getGLTopology(void) const;
-
-private:
-	unsigned int _gl_topology;
+	virtual bool isD3D(void) const = 0;
 };
 
 NS_END

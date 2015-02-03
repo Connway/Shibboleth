@@ -38,10 +38,10 @@ public:
 	void destroy(void);
 
 	bool update(IRenderDevice&, const void* data, unsigned int size);
-	INLINE void* map(IRenderDevice&, MAP_TYPE map_type = WRITE);
-	INLINE void unmap(IRenderDevice&);
+	void* map(IRenderDevice&, MAP_TYPE map_type = WRITE);
+	void unmap(IRenderDevice&);
 
-	INLINE bool isD3D(void) const;
+	bool isD3D(void) const;
 
 	INLINE unsigned int getBuffer(void) const;
 

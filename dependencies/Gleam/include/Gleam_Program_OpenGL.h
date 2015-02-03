@@ -52,6 +52,8 @@ public:
 
 	bool isD3D(void) const;
 
+	INLINE unsigned int getProgram(void) const;
+
 private:
 	unsigned int _program;
 

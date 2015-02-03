@@ -22,29 +22,20 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Gleam_IRenderDevice_OpenGL.h"
 #include "Gleam_IRenderDevice.h"
-#include "Gleam_BitArray.h"
-#include "Gleam_String.h"
-#include "Gleam_Map.h"
-#include <Gaff_IncludeWindows.h>
-#include <Gaff_SpinLock.h>
 
 NS_GLEAM
 
-class RenderDeviceGL : public IRenderDevice, public IRenderDeviceGL
+class DeferredRenderDeviceBase : public IRenderDevice
 {
 public:
-	RenderDeviceGL(void);
-	~RenderDeviceGL(void);
-
-	static bool CheckRequiredExtensions(void);
+	DeferredRenderDeviceBase(void);
+	~DeferredRenderDeviceBase(void);
 
 	AdapterList getDisplayModes(int compat = 28);
 
 	bool initThreadData(unsigned int* thread_ids, unsigned int num_ids);
 	bool init(const IWindow& window, unsigned int adapter_id, unsigned int display_id, unsigned int display_mode_id, bool vsync = false);
-	void destroy(void);
 
 	bool isVsync(unsigned int device, unsigned int output) const;
 	void setVsync(bool vsync, unsigned int device, unsigned int output);
@@ -55,12 +46,9 @@ public:
 	void endFrame(void);
 
 	bool resize(const IWindow& window);
-	bool handleFocusGained(const IWindow&);
+	bool handleFocusGained(const IWindow& window);
 
 	void resetRenderState(void);
-
-	bool isDeferred(void) const;
-	bool isD3D(void) const;
 
 	unsigned int getViewportWidth(unsigned int device, unsigned int output) const;
 	unsigned int getViewportHeight(unsigned int device, unsigned int output) const;
@@ -83,72 +71,6 @@ public:
 	unsigned int getDeviceForAdapter(unsigned int adapter_id) const;
 
 	IRenderDevice* createDeferredRenderDevice(void);
-	void executeCommandList(ICommandList* command_list);
-	bool finishCommandList(ICommandList* command_list);
-
-	// For supporting deferred contexts
-	void setRenderState(const RenderStateGL* render_state);
-
-	void setLayout(LayoutGL* layout, const IMesh* mesh);
-	void unsetLayout(LayoutGL* layout);
-
-	void bindShader(ProgramGL* shader, ProgramBuffersGL* program_buffers);
-	void unbindShader(void);
-
-	void renderMeshNonIndexed(unsigned int topology, unsigned int vert_count, unsigned int start_location);
-	void renderMeshInstanced(MeshGL* mesh, unsigned int count);
-	void renderMesh(MeshGL* mesh);
-
-private:
-	struct OutputInfo
-	{
-		GleamArray<DEVMODE> display_mode_list;
-		GleamGString name;
-	};
-
-	struct AdapterInfo
-	{
-		GleamArray<OutputInfo> output_info;
-		DISPLAY_DEVICE display_device;
-		GleamGString name;
-	};
-
-	struct Viewport
-	{
-		int x;
-		int y;
-		int width;
-		int height;
-	};
-
-	struct Device
-	{
-		GleamArray<HGLRC> contexts;
-		GleamArray<HDC> outputs;
-		GleamArray<Viewport> viewports;
-		GleamArray<HWND> windows;
-		GleamArray<IRenderTargetPtr> rts;
-		GleamBitArray vsync;
-
-		unsigned int adapter_id;
-	};
-
-	GleamArray<AdapterInfo> _display_info;
-	GleamArray<Device> _devices;
-
-	// Key is thread id, value is 2D array. First index is device, second is output.
-	GleamMap< unsigned int, GleamArray<HGLRC> > _thread_contexts;
-	Gaff::SpinLock _thread_data_lock;
-
-	const Viewport* _active_viewport;
-	HDC _active_output;
-
-	unsigned int _curr_output;
-	unsigned int _curr_device;
-
-	unsigned int _creating_thread_id;
-
-	bool _glew_already_initialized;
 };
 
 NS_END

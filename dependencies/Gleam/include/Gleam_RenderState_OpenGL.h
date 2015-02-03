@@ -30,6 +30,16 @@ NS_GLEAM
 class RenderStateGL : public IRenderState
 {
 public:
+	typedef void (__stdcall *DisableEnable)(unsigned int);
+	//typedef void (__stdcall *DisableEnablei)(unsigned int, unsigned int);
+
+	static DisableEnable Disable_Enable_Funcs[2];
+
+	static unsigned int Stencil_Ops[STENCIL_OP_SIZE];
+	static unsigned int Blend_Factors[BLEND_FACTOR_SIZE];
+	static unsigned int Blend_Ops[BLEND_OP_SIZE];
+	static unsigned int Compare_Funcs[COMPARE_SIZE];
+
 	RenderStateGL(void);
 	~RenderStateGL(void);
 
@@ -49,10 +59,23 @@ public:
 
 	INLINE void destroy(void);
 
-	void set(IRenderDevice&) const;
+	void set(IRenderDevice& rd) const;
 	INLINE void unset(IRenderDevice& rd) const;
 
 	INLINE bool isD3D(void) const;
+
+	INLINE bool isWireframe(void) const;
+	INLINE bool isDepthTestEnabled(void) const;
+	INLINE bool isStencilTestEnabled(void) const;
+	INLINE COMPARISON_FUNC getDepthFunc(void) const;
+	INLINE const StencilData& getFrontFaceStencilData(void) const;
+	INLINE const StencilData& getBackFaceStencilData(void) const;
+	INLINE unsigned int getStencilRef(void) const;
+	INLINE char getStencilReadMask(void) const;
+	INLINE char getStencilWriteMask(void) const;
+	INLINE CULL_MODE getCullFaceMode(void) const;
+	INLINE bool isFrontFaceCounterClockwise(void) const;
+	INLINE const BlendData* getBlendData(void) const;
 
 private:
 	bool _wireframe;

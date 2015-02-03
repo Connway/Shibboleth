@@ -22,6 +22,7 @@ THE SOFTWARE.
 
 #pragma once
 
+#include "Gleam_IRenderDevice_Direct3D.h"
 #include "Gleam_IRenderDevice.h"
 #include "Gleam_IncludeD3D11.h"
 #include "Gleam_BitArray.h"
@@ -30,7 +31,7 @@ THE SOFTWARE.
 
 NS_GLEAM
 
-class RenderDeviceD3D : public IRenderDevice
+class RenderDeviceD3D : public IRenderDevice, public IRenderDeviceD3D
 {
 public:
 	RenderDeviceD3D(void);
@@ -56,6 +57,7 @@ public:
 
 	void resetRenderState(void);
 
+	bool isDeferred(void) const;
 	bool isD3D(void) const;
 
 	unsigned int getViewportWidth(unsigned int device, unsigned int output) const;
@@ -76,13 +78,17 @@ public:
 	bool setCurrentDevice(unsigned int device);
 	unsigned int getCurrentDevice(void) const;
 
-	INLINE ID3D11DeviceContext* getDeviceContext(unsigned int device);
-	INLINE ID3D11Device* getDevice(unsigned int device);
+	unsigned int getDeviceForAdapter(unsigned int adapter_id) const;
 
-	INLINE ID3D11DeviceContext* getActiveDeviceContext(void);
-	INLINE ID3D11Device* getActiveDevice(void);
+	IRenderDevice* createDeferredRenderDevice(void);
+	void executeCommandList(ICommandList* command_list);
+	bool finishCommandList(ICommandList* command_list);
 
-	int getDeviceForAdapter(unsigned int adapter_id) const;
+	ID3D11DeviceContext* getDeviceContext(unsigned int device);
+	ID3D11Device* getDevice(unsigned int device);
+
+	ID3D11DeviceContext* getActiveDeviceContext(void);
+	ID3D11Device* getActiveDevice(void);
 
 private:
 	struct OutputInfo

@@ -28,6 +28,7 @@ THE SOFTWARE.
 ////////////////////////////
 //    STDCALL FUNCTION    //
 ////////////////////////////
+#if defined(_WIN32) || defined(_WIN64)
 template <class ReturnType, class... Args>
 STDCallFunction<ReturnType, Args...>::STDCallFunction(FunctionType function):
 	_function(function)
@@ -107,6 +108,7 @@ bool STDCallFunction<ReturnType, Args...>::valid(void) const
 {
 	return _function != nullptr;
 }
+#endif
 
 ////////////////////
 //    FUNCTION    //
@@ -119,7 +121,7 @@ Function<ReturnType, Args...>::Function(FunctionType function):
 
 template <class ReturnType, class... Args>
 Function<ReturnType, Args...>::Function(const Func& function):
-	_function(function._function),
+	_function(function._function)
 {
 }
 
@@ -458,12 +460,14 @@ FunctionBinder<ReturnType, Args...> Bind(ReturnType (*function)(Args...))
 	return FunctionBinder<ReturnType, Args...>(&func, sizeof(func));
 }
 
+#if defined(_WIN32) || defined(_WIN64)
 template <class ReturnType, class... Args>
 FunctionBinder<ReturnType, Args...> BindSTDCall(ReturnType (__stdcall *function)(Args...))
 {
 	STDCallFunction<ReturnType, Args...> func(function);
 	return FunctionBinder<ReturnType, Args...>(&func, sizeof(func));
 }
+#endif
 
 template <class T, class ReturnType, class... Args>
 FunctionBinder<ReturnType, Args...> Bind(const T& functor)
@@ -471,7 +475,7 @@ FunctionBinder<ReturnType, Args...> Bind(const T& functor)
 	Functor<T, ReturnType, Args...> ftor(functor);
 	return FunctionBinder<ReturnType, Args...>(&ftor, sizeof(ftor));
 }
-
+#
 
 ////////////////////////////////////
 //    Function-Tuple Unwrapper    //

@@ -23,6 +23,7 @@ THE SOFTWARE.
 #include "Gleam_Buffer_OpenGL.h"
 #include <Gaff_IncludeAssert.h>
 #include <GL/glew.h>
+#include <cstring>
 
 NS_GLEAM
 
@@ -77,14 +78,24 @@ void BufferGL::destroy(void)
 	}
 }
 
-bool BufferGL::update(IRenderDevice&, const void* data, unsigned int size)
+bool BufferGL::update(IRenderDevice& rd, const void* data, unsigned int size)
 {
 	assert(data && size);
 
 	GLenum buff_type = _type_map[_buffer_type];
 	glBindBuffer(buff_type, _buffer);
 
-	glBufferSubData(buff_type, 0, size, data);
+	// This isn't updating the buffer. :/
+	//glBufferSubData(buff_type, 0, size, data);
+
+	void* buffer = map(rd, READ_WRITE);
+
+	if (buffer)
+	{
+		memcpy(buffer, data, size);
+		unmap(rd);
+	}
+
 	return true;
 }
 
@@ -94,6 +105,9 @@ void* BufferGL::map(IRenderDevice&, MAP_TYPE map_type)
 	GLenum buff_type = _type_map[_buffer_type];
 	glBindBuffer(buff_type, _buffer);
 	return glMapBuffer(buff_type, _map_map[map_type - 1]);
+
+	// This is returning NULL. :/
+	//return glMapBufferRange(buff_type, 0, _size, _map_map[map_type - 1]);
 }
 
 void BufferGL::unmap(IRenderDevice&)

@@ -22,33 +22,34 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Gleam_MeshBase.h"
+#include "Gleam_Defines.h"
 
 NS_GLEAM
 
-class MeshGL : public MeshBase
+class ProgramBuffersGL;
+class RenderStateGL;
+class ProgramGL;
+class LayoutGL;
+class MeshGL;
+class IMesh;
+
+class IRenderDeviceGL
 {
 public:
-	MeshGL(void);
-	~MeshGL(void);
+	IRenderDeviceGL(void) {}
+	virtual ~IRenderDeviceGL(void) {}
 
-	bool addVertData(
-		IRenderDevice& rd, const void* vert_data, unsigned int vert_count, unsigned int vert_size,
-		unsigned int* indices, unsigned int index_count, TOPOLOGY_TYPE primitive_type = TRIANGLE_LIST
-	);
+	virtual void setRenderState(const RenderStateGL* render_state) = 0;
 
-	void setTopologyType(TOPOLOGY_TYPE topology);
+	virtual void setLayout(LayoutGL* layout, const IMesh* mesh) = 0;
+	virtual void unsetLayout(LayoutGL* layout) = 0;
 
-	void renderNonIndexed(IRenderDevice& rd, unsigned int vert_count, unsigned int start_location = 0);
-	void renderInstanced(IRenderDevice& rd, unsigned int count);
-	void render(IRenderDevice& rd);
+	virtual void bindShader(ProgramGL* shader, ProgramBuffersGL* program_buffers) = 0;
+	virtual void unbindShader(void) = 0;
 
-	bool isD3D(void) const;
-
-	INLINE unsigned int getGLTopology(void) const;
-
-private:
-	unsigned int _gl_topology;
+	virtual void renderMeshNonIndexed(unsigned int topology, unsigned int vert_count, unsigned int start_location) = 0;
+	virtual void renderMeshInstanced(MeshGL* mesh, unsigned int count) = 0;
+	virtual void renderMesh(MeshGL* mesh) = 0;
 };
 
 NS_END

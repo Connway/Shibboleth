@@ -24,6 +24,7 @@ THE SOFTWARE.
 
 #include "Gleam_RenderDevice_OpenGL_Linux.h"
 #include "Gleam_RenderTarget_OpenGL.h"
+#include "Gleam_CommandList_OpenGL.h"
 #include "Gleam_Window_Linux.h"
 #include "Gleam_Global.h"
 #include <cstdio>
@@ -126,6 +127,8 @@ IRenderDevice::AdapterList RenderDeviceGL::getDisplayModes(int)
 
 		_display_info.push(adapter);
 	}
+
+	_display_info.trim();
 
 	AdapterList out(_display_info.size());
 
@@ -278,8 +281,8 @@ void RenderDeviceGL::setClearColor(float r, float g, float b, float a)
 void RenderDeviceGL::beginFrame(void)
 {
 	assert(_devices.size() > _curr_device && _devices[_curr_device].windows.size() > _curr_output);
-	resetRenderState();
 	glViewport(_active_viewport->x, _active_viewport->y, _active_viewport->width, _active_viewport->height);	
+	resetRenderState();
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 }
 
@@ -299,13 +302,15 @@ bool RenderDeviceGL::resize(const IWindow& window)
 		if (index > -1) {
 			it->viewports[index].width = wnd.getWidth();
 			it->viewports[index].height = wnd.getHeight();
-		}
+			((RenderTargetGL*)it->rts[index].get())->setViewport(wnd.getWidth(), wnd.getHeight());
+			
+			if (&window == _active_window) {
+				glViewport(0, 0, wnd.getWidth(), wnd.getHeight());
+			}
 
-		if (&window == _active_window) {
-			glViewport(0, 0, wnd.getWidth(), wnd.getHeight());
+			// Maybe detect and handle fullscreen changes here?
+			break;
 		}
-
-		// Maybe detect and handle fullscreen changes here?
 	}
 
 	return true;
@@ -327,6 +332,11 @@ void RenderDeviceGL::resetRenderState(void)
 	glCullFace(GL_BACK);
 	glFrontFace(GL_CW);
 	glDisable(GL_BLEND);
+}
+
+bool RenderDeviceGL::isDeferred(void) const
+{
+	return false;
 }
 
 bool RenderDeviceGL::isD3D(void) const
@@ -427,7 +437,7 @@ unsigned int RenderDeviceGL::getCurrentDevice(void) const
 	return _curr_device;
 }
 
-int RenderDeviceGL::getDeviceForAdapter(unsigned int adapter_id) const
+unsigned int RenderDeviceGL::getDeviceForAdapter(unsigned int adapter_id) const
 {
 	for (unsigned int i = 0; i < _devices.size(); ++i) {
 		if (_devices[i].adapter_id == adapter_id) {
@@ -435,7 +445,24 @@ int RenderDeviceGL::getDeviceForAdapter(unsigned int adapter_id) const
 		}
 	}
 
-	return -1;
+	return UINT_FAIL;
+}
+
+IRenderDevice* RenderDeviceGL::createDeferredRenderDevice(void)
+{
+	return nullptr;
+}
+
+void RenderDeviceGL::executeCommandList(ICommandList* command_list)
+{
+	assert(!command_list->isD3D());
+	((CommandListGL*)command_list)->execute();
+}
+
+bool RenderDeviceGL::finishCommandList(ICommandList*)
+{
+	assert(0 && "Calling a deferred render device function on an immediate render device");
+	return false;
 }
 
 NS_END

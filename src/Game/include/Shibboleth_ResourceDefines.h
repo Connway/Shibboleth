@@ -25,12 +25,18 @@ THE SOFTWARE.
 #include "Shibboleth_ResourceWrapper.h"
 #include <Shibboleth_Array.h>
 #include <Gaff_IVirtualDestructor.h>
+#include <Gleam_ISamplerState.h>
 #include <Gleam_IShader.h>
 #include <Gaff_RefPtr.h>
+#include <Gaff_Image.h>
 
 #define TEX_LOADER_NORMALIZED 1
 #define TEX_LOADER_CUBEMAP 2
-#define TEX_LOADER_TAGS_ANY 4
+#define TEX_LOADER_SRGBA 4
+#define TEX_LOADER_IMAGE_ONLY 8
+#define TEX_LOADER_NO_SRVS 16
+#define TEX_LOADER_NO_SAMPLERS 32
+#define TEX_LOADER_TAGS_ANY 64
 
 #define MODEL_LOADER_TAGS_ANY 1
 
@@ -45,7 +51,7 @@ namespace Gleam
 	class ITexture;
 	class ILayout;
 	class IProgram;
-	class IShader;
+	//class IShader;
 	class IBuffer;
 	class IModel;
 	class IMesh;
@@ -75,7 +81,10 @@ struct SingleDataWrapper : public Gaff::IVirtualDestructor
 
 struct TextureData : public Gaff::IVirtualDestructor
 {
+	Array<ShaderResourceViewPtr> resource_views;
+	Array<SamplerStatePtr> samplers;
 	Array<TexturePtr> textures;
+	Gaff::Image image;
 	bool normalized;
 	bool cubemap;
 };
@@ -96,6 +105,23 @@ struct GraphicsUserData
 {
 	unsigned short display_tags;
 	unsigned char flags;
+};
+
+struct TextureUserData
+{
+	GraphicsUserData gud;
+	Gleam::ISamplerState::FILTER filter;
+	Gleam::ISamplerState::WRAP wrap_u;
+	Gleam::ISamplerState::WRAP wrap_v;
+	Gleam::ISamplerState::WRAP wrap_w;
+	unsigned int max_anisotropy;
+	float min_lod;
+	float max_lod;
+	float lod_bias;
+	float border_r;
+	float border_g;
+	float border_b;
+	float border_a;
 };
 
 NS_END

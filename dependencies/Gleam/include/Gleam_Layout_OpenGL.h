@@ -31,16 +31,6 @@ NS_GLEAM
 class LayoutGL : public ILayout
 {
 public:
-	LayoutGL(void);
-	~LayoutGL(void);
-
-	bool init(IRenderDevice&, const LayoutDescription* layout_desc, unsigned int layout_desc_size, const IShader*);
-	void destroy(void);
-
-	void setLayout(IRenderDevice&, const IMesh* mesh);
-	void unsetLayout(IRenderDevice&);
-
-private:
 	struct LayoutData
 	{
 		unsigned int aligned_byte_offset;
@@ -49,6 +39,18 @@ private:
 		bool normalized;
 	};
 
+	LayoutGL(void);
+	~LayoutGL(void);
+
+	bool init(IRenderDevice&, const LayoutDescription* layout_desc, unsigned int layout_desc_size, const IShader*);
+	void destroy(void);
+
+	void setLayout(IRenderDevice& rd, const IMesh* mesh);
+	void unsetLayout(IRenderDevice& rd);
+
+	INLINE const GleamArray< GleamArray<LayoutData> >& GetLayoutDescriptors(void) const;
+
+private:
 	GleamArray< GleamArray<LayoutData> > _layout_descs;
 
 	GLEAM_REF_COUNTED(LayoutGL);

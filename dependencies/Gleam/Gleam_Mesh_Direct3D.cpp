@@ -23,7 +23,8 @@ THE SOFTWARE.
 #if defined(_WIN32) || defined(_WIN64)
 
 #include "Gleam_Mesh_Direct3D.h"
-#include "Gleam_RenderDevice_Direct3D.h"
+#include "Gleam_IRenderDevice_Direct3D.h"
+#include "Gleam_IRenderDevice.h"
 #include "Gleam_Buffer_Direct3D.h"
 #include <Gaff_IncludeAssert.h>
 
@@ -100,7 +101,8 @@ void MeshD3D::renderNonIndexed(IRenderDevice& rd, unsigned int vert_count, unsig
 {
 	assert(rd.isD3D() && _vert_data.size() && _indices && _indices->isD3D());
 
-	ID3D11DeviceContext* context = ((RenderDeviceD3D&)rd).getActiveDeviceContext();
+	IRenderDeviceD3D& rd3d = (IRenderDeviceD3D&)*(((const char*)&rd) + sizeof(IRenderDevice));
+	ID3D11DeviceContext* context = rd3d.getActiveDeviceContext();
 	context->IASetVertexBuffers(0, _buffers.size(), _buffers.getArray(), _strides.getArray(), _offsets.getArray());
 	context->IASetPrimitiveTopology(_d3d_topology);
 	context->Draw(vert_count, start_location);
@@ -110,7 +112,8 @@ void MeshD3D::renderInstanced(IRenderDevice& rd, unsigned int count)
 {
 	assert(rd.isD3D() && _vert_data.size() && _indices && _indices->isD3D());
 
-	ID3D11DeviceContext* context = ((RenderDeviceD3D&)rd).getActiveDeviceContext();
+	IRenderDeviceD3D& rd3d = (IRenderDeviceD3D&)*(((const char*)&rd) + sizeof(IRenderDevice));
+	ID3D11DeviceContext* context = rd3d.getActiveDeviceContext();
 	context->IASetVertexBuffers(0, _buffers.size(), _buffers.getArray(), _strides.getArray(), _offsets.getArray());
 	context->IASetIndexBuffer(((BufferD3D*)_indices)->getBuffer(), DXGI_FORMAT_R32_UINT, 0);
 	context->IASetPrimitiveTopology(_d3d_topology);
@@ -121,7 +124,8 @@ void MeshD3D::render(IRenderDevice& rd)
 {
 	assert(rd.isD3D() && _vert_data.size() && _indices && _indices->isD3D());
 
-	ID3D11DeviceContext* context = ((RenderDeviceD3D&)rd).getActiveDeviceContext();
+	IRenderDeviceD3D& rd3d = (IRenderDeviceD3D&)*(((const char*)&rd) + sizeof(IRenderDevice));
+	ID3D11DeviceContext* context = rd3d.getActiveDeviceContext();
 	context->IASetVertexBuffers(0, _buffers.size(), _buffers.getArray(), _strides.getArray(), _offsets.getArray());
 	context->IASetIndexBuffer(((BufferD3D*)_indices)->getBuffer(), DXGI_FORMAT_R32_UINT, 0);
 	context->IASetPrimitiveTopology(_d3d_topology);

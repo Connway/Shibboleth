@@ -21,6 +21,8 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Gleam_Mesh_OpenGL.h"
+#include "Gleam_IRenderDevice_OpenGL.h"
+#include "Gleam_IRenderDevice.h"
 #include "Gleam_Buffer_OpenGL.h"
 #include <GL/glew.h>
 
@@ -90,29 +92,36 @@ void MeshGL::setTopologyType(TOPOLOGY_TYPE topology)
 	_topology = topology;
 }
 
-void MeshGL::renderNonIndexed(IRenderDevice&, unsigned int vert_count, unsigned int start_location)
+void MeshGL::renderNonIndexed(IRenderDevice& rd, unsigned int vert_count, unsigned int start_location)
 {
 	assert(_vert_data.size());
-	glDrawArrays(_gl_topology, start_location, vert_count);
+	IRenderDeviceGL& rdgl = (IRenderDeviceGL&)*(((const char*)&rd) + sizeof(IRenderDevice));
+	rdgl.renderMeshNonIndexed(_gl_topology, vert_count, start_location);
+
 }
 
-void MeshGL::renderInstanced(IRenderDevice&, unsigned int count)
+void MeshGL::renderInstanced(IRenderDevice& rd, unsigned int count)
 {
 	assert(_vert_data.size() && _indices && !_indices->isD3D());
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ((BufferGL*)_indices)->getBuffer());
-	glDrawElementsInstanced(_gl_topology, getIndexCount(), GL_UNSIGNED_INT, 0, count);
+	IRenderDeviceGL& rdgl = (IRenderDeviceGL&)*(((const char*)&rd) + sizeof(IRenderDevice));
+	rdgl.renderMeshInstanced(this, count);
 }
 
-void MeshGL::render(IRenderDevice&)
+void MeshGL::render(IRenderDevice& rd)
 {
-	assert(_vert_data.size() && _indices && !_indices->isD3D());
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ((BufferGL*)_indices)->getBuffer());
-	glDrawElements(_gl_topology, getIndexCount(), GL_UNSIGNED_INT, 0);
+	assert(_vert_data.size() && _indices && !_indices->isD3D() && !rd.isD3D());
+	IRenderDeviceGL& rdgl = (IRenderDeviceGL&)*(((const char*)&rd) + sizeof(IRenderDevice));
+	rdgl.renderMesh(this);
 }
 
 bool MeshGL::isD3D(void) const
 {
 	return false;
+}
+
+unsigned int MeshGL::getGLTopology(void) const
+{
+	return _gl_topology;
 }
 
 NS_END

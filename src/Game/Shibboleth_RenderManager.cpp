@@ -202,6 +202,7 @@ Gaff::SpinLock& RenderManager::getSpinLock(void)
 
 void RenderManager::printfLoadLog(const char* format, ...)
 {
+	// Change this to create a log print job
 	assert(format);
 
 	LogManager::FileLockPair& file_pair = _app.getGameLogFile();

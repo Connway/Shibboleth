@@ -148,52 +148,23 @@ void LayoutGL::destroy(void)
 	_layout_descs.clear();
 }
 
-void LayoutGL::setLayout(IRenderDevice&, const IMesh* mesh)
+void LayoutGL::setLayout(IRenderDevice& rd, const IMesh* mesh)
 {
-	assert(!mesh->isD3D());
-
-	LayoutData* layout_data = nullptr;
-	const BufferGL* buffer = nullptr;
-	unsigned int stride = 0;
-	unsigned int count = 0;
-
-	for (unsigned int i = 0; i < _layout_descs.size(); ++i) {
-		GleamArray<LayoutData>& ld = _layout_descs[i];
-		buffer = (const BufferGL*)mesh->getBuffer(i);
-		stride = buffer->getStride();
-
-		glBindBuffer(GL_ARRAY_BUFFER, buffer->getBuffer());
-
-		for (unsigned int j = 0; j < ld.size(); ++j) {
-			layout_data = &ld[j];
-
-			glEnableVertexAttribArray(count);
-
-#if defined(_WIN64) || defined(__LP64__)
-			glVertexAttribPointer(count, layout_data->size, layout_data->type, layout_data->normalized,
-								stride, (void*)(unsigned long long)layout_data->aligned_byte_offset);
-#else
-			glVertexAttribPointer(count, layout_data->size, layout_data->type, layout_data->normalized,
-								stride, (void*)layout_data->aligned_byte_offset);
-#endif
-
-			++count;
-		}
-	}
-
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	assert(!mesh->isD3D() && !rd.isD3D());
+	IRenderDeviceGL& rdgl = (IRenderDeviceGL&)*(((const char*)&rd) + sizeof(IRenderDevice));
+	rdgl.setLayout(this, mesh);
 }
 
-void LayoutGL::unsetLayout(IRenderDevice&)
+void LayoutGL::unsetLayout(IRenderDevice& rd)
 {
-	unsigned int count = 0;
+	assert(!rd.isD3D());
+	IRenderDeviceGL& rdgl = (IRenderDeviceGL&)*(((const char*)&rd) + sizeof(IRenderDevice));
+	rdgl.unsetLayout(this);
+}
 
-	for (unsigned int i = 0; i < _layout_descs.size(); ++i) {
-		for (unsigned int j = 0; j < _layout_descs[i].size(); ++j) {
-			glDisableVertexAttribArray(count);
-			++count;
-		}
-	}
+const GleamArray< GleamArray<LayoutGL::LayoutData> >& LayoutGL::GetLayoutDescriptors(void) const
+{
+	return _layout_descs;
 }
 
 NS_END

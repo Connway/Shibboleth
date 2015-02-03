@@ -23,9 +23,10 @@ THE SOFTWARE.
 #if defined(_WIN32) || defined(_WIN64)
 
 #include "Gleam_Layout_Direct3D.h"
-#include "Gleam_RenderDevice_Direct3D.h"
+#include "Gleam_IRenderDevice_Direct3D.h"
 #include "Gleam_Texture_Direct3D.h"
 #include "Gleam_Shader_Direct3D.h"
+#include "Gleam_IRenderDevice.h"
 #include "Gleam_Array.h"
 
 NS_GLEAM
@@ -68,7 +69,8 @@ bool LayoutD3D::init(IRenderDevice& rd, const LayoutDescription* layout_desc, un
 	}
 
 	ID3DBlob* shader_buffer = ((const ShaderD3D*)shader)->getByteCodeBuffer();
-	ID3D11Device* device = ((RenderDeviceD3D&)rd).getActiveDevice();
+	IRenderDeviceD3D& rd3d = (IRenderDeviceD3D&)*(((const char*)&rd) + sizeof(IRenderDevice));
+	ID3D11Device* device = rd3d.getActiveDevice();
 
 	HRESULT result = device->CreateInputLayout(input_desc.getArray(), layout_desc_size, shader_buffer->GetBufferPointer(), shader_buffer->GetBufferSize(), &_layout);
 	return SUCCEEDED(result);
@@ -82,13 +84,17 @@ void LayoutD3D::destroy(void)
 void LayoutD3D::setLayout(IRenderDevice& rd, const IMesh*)
 {
 	assert(rd.isD3D());
-	((RenderDeviceD3D&)rd).getActiveDeviceContext()->IASetInputLayout(_layout);
+	IRenderDeviceD3D& rd3d = (IRenderDeviceD3D&)*(((const char*)&rd) + sizeof(IRenderDevice));
+	ID3D11DeviceContext* context = rd3d.getActiveDeviceContext();
+	context->IASetInputLayout(_layout);
 }
 
 void LayoutD3D::unsetLayout(IRenderDevice& rd)
 {
 	assert(rd.isD3D());
-	((RenderDeviceD3D&)rd).getActiveDeviceContext()->IASetInputLayout(NULL);
+	IRenderDeviceD3D& rd3d = (IRenderDeviceD3D&)*(((const char*)&rd) + sizeof(IRenderDevice));
+	ID3D11DeviceContext* context = rd3d.getActiveDeviceContext();
+	context->IASetInputLayout(NULL);
 }
 
 NS_END

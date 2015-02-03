@@ -61,19 +61,19 @@ unsigned int Image::GetError(void)
 }
 
 Image::Image(const Image& image):
-	_image(0)
+	_image(0), _initialized(false)
 {
 	*this = image;
 }
 
 Image::Image(Image&& image):
-	_image(image._image)
+	_image(image._image), _initialized(true)
 {
 	image._image = 0;
 }
 
 Image::Image(void):
-	_image(0)
+	_image(0), _initialized(false)
 {
 }
 
@@ -85,7 +85,7 @@ Image::~Image(void)
 const Image& Image::operator=(const Image& rhs)
 {
 	// If we haven't initialized yet, do so now
-	if (!_image && !init()) {
+	if (!_initialized && !init()) {
 		return *this;
 	}
 
@@ -97,7 +97,7 @@ const Image& Image::operator=(const Image& rhs)
 
 const Image& Image::operator=(Image&& rhs)
 {
-	assert(!_image);
+	assert(!_initialized);
 	_image = rhs._image;
 	rhs._image = 0;
 	return *this;
@@ -105,14 +105,15 @@ const Image& Image::operator=(Image&& rhs)
 
 bool Image::init(void)
 {
-	assert(!_image);
+	assert(!_initialized);
 	_image = ilGenImage();
-	return _image != 0;
+	_initialized = (ilGetError() == IL_NO_ERROR);
+	return _initialized;
 }
 
 void Image::destroy()
 {
-	if (_image) {
+	if (_initialized) {
 		ilDeleteImage(_image);
 		_image = 0;
 	}
@@ -126,14 +127,14 @@ void Image::destroy()
 */
 bool Image::load(void* image, unsigned int image_size)
 {
-	assert(_image);
+	assert(_initialized);
 	ilBindImage(_image);
 	return ilLoadL(IL_TYPE_UNKNOWN, image, image_size) != 0;
 }
 
 bool Image::load(const wchar_t* filename)
 {
-	assert(_image);
+	assert(_initialized);
 	ilBindImage(_image);
 
 #ifdef _UNICODE
@@ -147,7 +148,7 @@ bool Image::load(const wchar_t* filename)
 
 bool Image::load(const char* filename)
 {
-	assert(_image);
+	assert(_initialized);
 	ilBindImage(_image);
 
 #ifdef _UNICODE
@@ -161,7 +162,7 @@ bool Image::load(const char* filename)
 
 bool Image::save(const wchar_t* filename, bool allow_overwrite)
 {
-	assert(_image);
+	assert(_initialized);
 	ilBindImage(_image);
 
 	// We are allowing overwrites, but we failed to enable
@@ -183,7 +184,7 @@ bool Image::save(const wchar_t* filename, bool allow_overwrite)
 
 bool Image::save(const char* filename, bool allow_overwrite)
 {
-	assert(_image);
+	assert(_initialized);
 	ilBindImage(_image);
 
 	// We are allowing overwrites, but we failed to enable
@@ -206,21 +207,21 @@ bool Image::save(const char* filename, bool allow_overwrite)
 bool Image::setImageProperties(unsigned int width, unsigned int height, unsigned int depth,
 								unsigned char bytes_per_pixel, Format format, Type type)
 {
-	assert(_image);
+	assert(_initialized);
 	ilBindImage(_image);
 	return ilTexImage(width, height, depth, bytes_per_pixel, format, type, nullptr) != 0;
 }
 
 const unsigned char* Image::getBuffer(void) const
 {
-	assert(_image);
+	assert(_initialized);
 	ilBindImage(_image);
 	return ilGetData();
 }
 
 bool Image::writeBuffer(void* buffer)
 {
-	assert(_image);
+	assert(_initialized);
 	ilBindImage(_image);
 	return ilSetData(buffer) != 0;
 }
@@ -229,14 +230,14 @@ bool Image::copy(const Image& src, unsigned int src_x, unsigned int src_y, unsig
 				unsigned int width, unsigned int height, unsigned int depth,
 				unsigned int dest_x, unsigned int dest_y, unsigned int dest_z)
 {
-	assert(_image && src._image);
+	assert(_initialized && src._initialized);
 	ilBindImage(_image);
 	return ilBlit(src._image, dest_x, dest_y, dest_z, src_x, src_y, src_z, width, height, depth) != 0;
 }
 
 bool Image::copy(const Image& src, unsigned int dest_x, unsigned int dest_y, unsigned int dest_z)
 {
-	assert(_image && src._image);
+	assert(_initialized && src._initialized);
 	ilBindImage(_image);
 	return ilOverlayImage(src._image, dest_x, dest_y, dest_z) != 0;
 }
@@ -249,55 +250,55 @@ bool Image::scale(unsigned int width, unsigned int height, unsigned int depth, F
 
 unsigned int Image::getWidth(void) const
 {
-	assert(_image);
+	assert(_initialized);
 	ilBindImage(_image);
 	return (unsigned int)ilGetInteger(IL_IMAGE_WIDTH);
 }
 
 unsigned int Image::getHeight(void) const
 {
-	assert(_image);
+	assert(_initialized);
 	ilBindImage(_image);
 	return (unsigned int)ilGetInteger(IL_IMAGE_HEIGHT);
 }
 unsigned int Image::getDepth(void) const
 {
-	assert(_image);
+	assert(_initialized);
 	ilBindImage(_image);
 	return (unsigned int)ilGetInteger(IL_IMAGE_DEPTH);
 }
 
 unsigned int Image::getBytesPerPixel(void) const
 {
-	assert(_image);
+	assert(_initialized);
 	ilBindImage(_image);
 	return (unsigned int)ilGetInteger(IL_IMAGE_BYTES_PER_PIXEL);
 }
 
 unsigned int Image::getBitsPerPixel(void) const
 {
-	assert(_image);
+	assert(_initialized);
 	ilBindImage(_image);
 	return (unsigned int)ilGetInteger(IL_IMAGE_BITS_PER_PIXEL);
 }
 
 unsigned int Image::getNumChannels(void) const
 {
-	assert(_image);
+	assert(_initialized);
 	ilBindImage(_image);
 	return (unsigned int)ilGetInteger(IL_IMAGE_CHANNELS);
 }
 
 Image::Format Image::getFormat(void) const
 {
-	assert(_image);
+	assert(_initialized);
 	ilBindImage(_image);
 	return (Format)ilGetInteger(IL_IMAGE_FORMAT);
 }
 
 Image::Type Image::getType(void) const
 {
-	assert(_image);
+	assert(_initialized);
 	ilBindImage(_image);
 	return (Type)ilGetInteger(IL_IMAGE_TYPE);
 }

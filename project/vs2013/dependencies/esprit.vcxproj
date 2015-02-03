@@ -95,7 +95,7 @@
     <ClCompile>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level4</WarningLevel>
-      <PreprocessorDefinitions>_DEBUG;DEBUG;USE_SIMD;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>..\..\..\dependencies\esprit\include;..\..\..\dependencies\Gaff\include;..\..\..\dependencies\Gleam\include;..\..\..\dependencies\utf8-cpp;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <ProgramDataBaseFileName>$(OutDir)esprit.pdb</ProgramDataBaseFileName>
@@ -106,7 +106,7 @@
       <AdditionalOptions>/sdl %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <ResourceCompile>
-      <PreprocessorDefinitions>_DEBUG;DEBUG;USE_SIMD;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>..\..\..\dependencies\esprit\include;..\..\..\dependencies\Gaff\include;..\..\..\dependencies\Gleam\include;..\..\..\dependencies\utf8-cpp;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Link>
@@ -118,7 +118,7 @@
     <ClCompile>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level4</WarningLevel>
-      <PreprocessorDefinitions>_DEBUG;DEBUG;USE_SIMD;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>..\..\..\dependencies\esprit\include;..\..\..\dependencies\Gaff\include;..\..\..\dependencies\Gleam\include;..\..\..\dependencies\utf8-cpp;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <ProgramDataBaseFileName>$(OutDir)esprit.pdb</ProgramDataBaseFileName>
@@ -128,7 +128,7 @@
       <AdditionalOptions>/sdl %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <ResourceCompile>
-      <PreprocessorDefinitions>_DEBUG;DEBUG;USE_SIMD;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>..\..\..\dependencies\esprit\include;..\..\..\dependencies\Gaff\include;..\..\..\dependencies\Gleam\include;..\..\..\dependencies\utf8-cpp;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Link>
@@ -140,7 +140,6 @@
     <ClCompile>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level4</WarningLevel>
-      <PreprocessorDefinitions>USE_SIMD;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>..\..\..\dependencies\esprit\include;..\..\..\dependencies\Gaff\include;..\..\..\dependencies\Gleam\include;..\..\..\dependencies\utf8-cpp;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -153,7 +152,6 @@
       <AdditionalOptions>/sdl %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <ResourceCompile>
-      <PreprocessorDefinitions>USE_SIMD;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>..\..\..\dependencies\esprit\include;..\..\..\dependencies\Gaff\include;..\..\..\dependencies\Gleam\include;..\..\..\dependencies\utf8-cpp;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Link>
@@ -167,7 +165,6 @@
     <ClCompile>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level4</WarningLevel>
-      <PreprocessorDefinitions>USE_SIMD;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>..\..\..\dependencies\esprit\include;..\..\..\dependencies\Gaff\include;..\..\..\dependencies\Gleam\include;..\..\..\dependencies\utf8-cpp;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -179,7 +176,6 @@
       <AdditionalOptions>/sdl %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <ResourceCompile>
-      <PreprocessorDefinitions>USE_SIMD;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>..\..\..\dependencies\esprit\include;..\..\..\dependencies\Gaff\include;..\..\..\dependencies\Gleam\include;..\..\..\dependencies\utf8-cpp;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Link>

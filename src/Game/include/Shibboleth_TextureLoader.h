@@ -45,8 +45,8 @@ public:
 private:
 	RenderManager& _render_mgr;
 
-	Gleam::ITexture::FORMAT determineFormatAndType(const Gaff::Image& image, bool normalized) const;
-	Gleam::ITexture::FORMAT determineRGBAType(const Gaff::Image& image, bool normalized) const;
+	Gleam::ITexture::FORMAT determineFormatAndType(const Gaff::Image& image, bool normalized, bool srgba) const;
+	Gleam::ITexture::FORMAT determineRGBAType(const Gaff::Image& image, bool normalized, bool srgba) const;
 	Gleam::ITexture::FORMAT determineRGBType(const Gaff::Image& image, bool normalized) const;
 	Gleam::ITexture::FORMAT determineBGRAType(const Gaff::Image& image, bool normalized) const;
 	Gleam::ITexture::FORMAT determineBGRType(const Gaff::Image& image, bool normalized) const;

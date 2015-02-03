@@ -25,9 +25,10 @@ THE SOFTWARE.
 #include "Gleam_Program_Direct3D.h"
 #include "Gleam_ShaderResourceView_Direct3D.h"
 #include "Gleam_SamplerState_Direct3D.h"
-#include "Gleam_RenderDevice_Direct3D.h"
+#include "Gleam_IRenderDevice_Direct3D.h"
 #include "Gleam_Shader_Direct3D.h"
 #include "Gleam_Buffer_Direct3D.h"
+#include "Gleam_IRenderDevice.h"
 #include "Gleam_IncludeD3D11.h"
 
 NS_GLEAM
@@ -267,7 +268,8 @@ void ProgramD3D::bind(IRenderDevice& rd, IProgramBuffers* program_buffers)
 {
 	assert(rd.isD3D());
 
-	ID3D11DeviceContext* context = ((RenderDeviceD3D&)rd).getActiveDeviceContext();
+	IRenderDeviceD3D& rd3d = (IRenderDeviceD3D&)*(((const char*)&rd) + sizeof(IRenderDevice));
+	ID3D11DeviceContext* context = rd3d.getActiveDeviceContext();
 
 	context->VSSetShader(_shader_vertex, NULL, 0);
 	context->PSSetShader(_shader_pixel, NULL, 0);
@@ -295,7 +297,8 @@ void ProgramD3D::bind(IRenderDevice& rd, IProgramBuffers* program_buffers)
 void ProgramD3D::unbind(IRenderDevice& rd)
 {
 	assert(rd.isD3D());
-	ID3D11DeviceContext* context = ((RenderDeviceD3D&)rd).getActiveDeviceContext();
+	IRenderDeviceD3D& rd3d = (IRenderDeviceD3D&)*(((const char*)&rd) + sizeof(IRenderDevice));
+	ID3D11DeviceContext* context = rd3d.getActiveDeviceContext();
 
 	context->VSSetShader(NULL, NULL, 0);
 	context->PSSetShader(NULL, NULL, 0);

@@ -43,7 +43,7 @@ public:
 	void* map(IRenderDevice& rd, MAP_TYPE map_type = WRITE);
 	void unmap(IRenderDevice& rd);
 
-	INLINE bool isD3D(void) const;
+	bool isD3D(void) const;
 
 	INLINE ID3D11Buffer* getBuffer(void) const;
 

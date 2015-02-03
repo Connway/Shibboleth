@@ -56,6 +56,7 @@ public:
 
 	void resetRenderState(void);
 
+	bool isDeferred(void) const;
 	bool isD3D(void) const;
 
 	unsigned int getViewportWidth(unsigned int device, unsigned int output) const;
@@ -76,7 +77,11 @@ public:
 	bool setCurrentDevice(unsigned int device);
 	unsigned int getCurrentDevice(void) const;
 
-	int getDeviceForAdapter(unsigned int adapter_id) const;
+	unsigned int getDeviceForAdapter(unsigned int adapter_id) const;
+
+	IRenderDevice* createDeferredRenderDevice(void);
+	void executeCommandList(ICommandList* command_list);
+	bool finishCommandList(ICommandList* command_list);
 
 private:
 	struct ScreenMode

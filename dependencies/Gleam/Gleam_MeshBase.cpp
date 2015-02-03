@@ -80,6 +80,16 @@ void MeshBase::setIndiceBuffer(IBuffer* buffer)
 	buffer->addRef();
 }
 
+const IBuffer* MeshBase::getIndiceBuffer(void) const
+{
+	return _indices;
+}
+
+IBuffer* MeshBase::getIndiceBuffer(void)
+{
+	return _indices;
+}
+
 MeshBase::TOPOLOGY_TYPE MeshBase::getTopologyType(void) const
 {
 	return _topology;
