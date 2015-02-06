@@ -48,7 +48,7 @@ enum SEMANTIC
 enum PerDataType
 {
 	PDT_PER_VERTEX = 0,
-	PDT_PER_INSTASNCE
+	PDT_PER_INSTANCE
 };
 
 struct LayoutDescription

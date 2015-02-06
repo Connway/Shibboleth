@@ -126,9 +126,10 @@ public:
 
 	const char* getName(void) const;
 
-	void registerResourceLoader(IResourceLoader* res_loader, const Array<AString>& extensions, unsigned int thread_pool = 0);
-	INLINE void registerResourceLoader(IResourceLoader* res_loader, const char* extension, unsigned int thread_pool = 0);
+	void registerResourceLoader(IResourceLoader* res_loader, const Array<AString>& resource_types, unsigned int thread_pool = 0);
+	INLINE void registerResourceLoader(IResourceLoader* res_loader, const char* resource_type, unsigned int thread_pool = 0);
 
+	ResourcePtr requestResource(const char* resource_type, const char* instance_name, unsigned long long user_data = 0);
 	ResourcePtr requestResource(const char* filename, unsigned long long user_data = 0);
 
 	/***********************************************************************************************************

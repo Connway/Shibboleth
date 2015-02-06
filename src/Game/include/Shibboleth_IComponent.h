@@ -58,6 +58,7 @@ public:
 	IComponent(void): _owner(nullptr), _comp_index(0) {}
 	virtual ~IComponent(void) {}
 
+	virtual bool validate(Gaff::JSON&) { return true; }
 	virtual bool load(const Gaff::JSON&) { return true; }
 	virtual bool save(Gaff::JSON&) { return true; }
 

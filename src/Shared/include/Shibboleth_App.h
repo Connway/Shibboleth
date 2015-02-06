@@ -27,7 +27,7 @@ THE SOFTWARE.
 #include "Shibboleth_StateMachine.h"
 #include "Shibboleth_ThreadPool.h"
 #include "Shibboleth_IState.h"
-#include "Shibboleth_Logger.h"
+#include "Shibboleth_LogManager.h"
 #include "Shibboleth_Array.h"
 #include "Shibboleth_IApp.h"
 

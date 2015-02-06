@@ -69,8 +69,8 @@ SamplerStateGL::~SamplerStateGL(void)
 }
 
 bool SamplerStateGL::init(
-	IRenderDevice&,
-	FILTER filter, WRAP u, WRAP v, WRAP w,
+	IRenderDevice&, FILTER filter,
+	WRAP wrap_u, WRAP wrap_v, WRAP wrap_w,
 	float min_lod, float max_lod, float lod_bias,
 	unsigned int max_anisotropy,
 	//IRenderState::COMPARISON_FUNC compare_func,
@@ -86,9 +86,9 @@ bool SamplerStateGL::init(
 	float border_color[4] = { border_r, border_g, border_b, border_a };
 
 	glGenSamplers(1, &_sampler_state);
-	glSamplerParameteri(_sampler_state, GL_TEXTURE_WRAP_R, _wrap_map[u - 1]);
-	glSamplerParameteri(_sampler_state, GL_TEXTURE_WRAP_S, _wrap_map[v - 1]);
-	glSamplerParameteri(_sampler_state, GL_TEXTURE_WRAP_T, _wrap_map[w - 1]);
+	glSamplerParameteri(_sampler_state, GL_TEXTURE_WRAP_R, _wrap_map[wrap_u - 1]);
+	glSamplerParameteri(_sampler_state, GL_TEXTURE_WRAP_S, _wrap_map[wrap_v - 1]);
+	glSamplerParameteri(_sampler_state, GL_TEXTURE_WRAP_T, _wrap_map[wrap_w - 1]);
 	glSamplerParameteri(_sampler_state, GL_TEXTURE_MIN_FILTER, _min_map[filter]);
 	glSamplerParameteri(_sampler_state, GL_TEXTURE_MAG_FILTER, _mag_map[filter]);
 	glSamplerParameterf(_sampler_state, GL_TEXTURE_MIN_LOD, min_lod);

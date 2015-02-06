@@ -22,63 +22,28 @@ THE SOFTWARE.
 
 #pragma once
 
-#include <Shibboleth_Memory.h>
-#include <Gaff_IRefCounted.h>
-#include <Gaff_Atomic.h>
-
-#define SHIB_REF_COUNTED(Class) \
-public: \
-	void addRef(void) const \
-	{ \
-		AtomicIncrement(&_count); \
-	} \
-	void release(void) const \
-	{ \
-		unsigned int new_count = AtomicDecrement(&_count); \
-		if (!new_count) { \
-			GetAllocator()->freeT(this); \
-		} \
-	} \
-	unsigned int getRefCount(void) const \
-	{ \
-		return _count; \
-	} \
-private: \
-	mutable volatile unsigned int _count = 0 // Use C++11 in-class initialization so that classes don't have to modify constructors.
+#include "Shibboleth_IResourceLoader.h"
+#include <Gleam_ISamplerState.h>
 
 NS_SHIBBOLETH
 
-class RefCounted : public Gaff::IRefCounted
+class RenderManager;
+class IFileSystem;
+
+class SamplerStateLoader : public IResourceLoader
 {
 public:
-	RefCounted(void): _count(0) {}
+	SamplerStateLoader(RenderManager& render_mgr, IFileSystem& file_system);
+	~SamplerStateLoader(void);
 
-	~RefCounted(void) {}
-
-	void addRef(void) const
-	{
-		AtomicIncrement(&_count);
-	}
-
-	void release(void) const
-	{
-		unsigned int new_count = AtomicDecrement(&_count);
-
-		if (!new_count) {
-			GetAllocator()->freeT(this);
-		}
-	}
-
-	unsigned int getRefCount(void) const
-	{
-		return _count;
-	}
+	Gaff::IVirtualDestructor* load(const char* file_name, unsigned long long);
 
 private:
-	mutable volatile unsigned int _count;
+	RenderManager& _render_mgr;
+	IFileSystem& _file_system;
 
-	GAFF_NO_COPY(RefCounted);
-	GAFF_NO_MOVE(RefCounted);
+	GAFF_NO_COPY(SamplerStateLoader);
+	GAFF_NO_MOVE(SamplerStateLoader);
 };
 
 NS_END

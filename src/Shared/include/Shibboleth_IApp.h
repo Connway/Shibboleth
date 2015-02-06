@@ -25,7 +25,7 @@ THE SOFTWARE.
 #include "Shibboleth_MessageBroadcaster.h"
 #include "Shibboleth_DynamicLoader.h"
 #include "Shibboleth_HashMap.h"
-#include "Shibboleth_Logger.h"
+#include "Shibboleth_LogManager.h"
 #include "Shibboleth_Array.h"
 
 NS_SHIBBOLETH

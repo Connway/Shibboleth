@@ -23,6 +23,7 @@ THE SOFTWARE.
 #pragma once
 
 #include <Shibboleth_Defines.h>
+#include <Gaff_Defines.h>
 
 namespace Gaff
 {
@@ -39,6 +40,9 @@ public:
 
 	virtual Gaff::IVirtualDestructor* load(const char* file_name, unsigned long long user_data) = 0;
 	//virtual void unload(Gaff::IVirtualDestructor* resource) = 0;
+
+	GAFF_NO_COPY(IResourceLoader);
+	GAFF_NO_MOVE(IResourceLoader);
 };
 
 NS_END

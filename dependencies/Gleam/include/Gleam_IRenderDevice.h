@@ -62,7 +62,7 @@ public:
 	IRenderDevice(void) {}
 	virtual ~IRenderDevice(void) {}
 
-	virtual AdapterList getDisplayModes(int compat = 28) = 0;
+	virtual AdapterList getDisplayModes(int compat = 28/*29*/) = 0;
 
 	virtual bool initThreadData(unsigned int* thread_ids, unsigned int num_ids) = 0;
 	virtual bool init(const IWindow& window, unsigned int adapter_id, unsigned int display_id, unsigned int display_mode_id, bool vsync = false) = 0;

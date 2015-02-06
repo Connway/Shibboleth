@@ -34,8 +34,8 @@ public:
 	~SamplerStateGL(void);
 
 	bool init(
-		IRenderDevice&,
-		FILTER filter, WRAP u, WRAP v, WRAP w,
+		IRenderDevice&, FILTER filter,
+		WRAP wrap_u, WRAP wrap_v, WRAP wrap_w,
 		float min_lod, float max_lod, float lod_bias,
 		unsigned int max_anisotropy,
 		//IRenderState::COMPARISON_FUNC compare_func,

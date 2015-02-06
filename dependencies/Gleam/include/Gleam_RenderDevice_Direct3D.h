@@ -37,7 +37,7 @@ public:
 	RenderDeviceD3D(void);
 	~RenderDeviceD3D(void);
 
-	AdapterList getDisplayModes(int color_format = DXGI_FORMAT_R8G8B8A8_UNORM);
+	AdapterList getDisplayModes(int color_format = DXGI_FORMAT_R8G8B8A8_UNORM/*DXGI_FORMAT_R8G8B8A8_UNORM_SRGB*/);
 
 	bool initThreadData(unsigned int*, unsigned int);
 	bool init(const IWindow& window, unsigned int adapter_id, unsigned int display_id, unsigned int display_mode_id, bool vsync = false);

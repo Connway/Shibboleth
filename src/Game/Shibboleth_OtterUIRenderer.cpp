@@ -239,7 +239,8 @@ void OtterUIRenderer::OnLoadTexture(sint32 textureID, const char* szPath)
 {
 	assert(!_resource_map.hasElementWithKey(textureID));
 
-	ResWrap<TextureData> tex_res = _resource_manager.requestResource(szPath, TEX_LOADER_NORMALIZED);
+	// Apply some fixup to the file extension. Make it read *.texture instead.
+	ResWrap<TextureData> tex_res = _resource_manager.requestResource(szPath);
 
 	while (!tex_res.getResourcePtr()->isLoaded()) {
 		// Block until loaded

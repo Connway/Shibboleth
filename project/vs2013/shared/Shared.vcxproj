@@ -200,7 +200,7 @@
     <ClInclude Include="..\..\..\src\Shared\include\Shibboleth_IState.h" />
     <ClInclude Include="..\..\..\src\Shared\include\Shibboleth_ITask.h" />
     <ClInclude Include="..\..\..\src\Shared\include\Shibboleth_LockDefines.h" />
-    <ClInclude Include="..\..\..\src\Shared\include\Shibboleth_Logger.h" />
+    <ClInclude Include="..\..\..\src\Shared\include\Shibboleth_LogManager.h" />
     <ClInclude Include="..\..\..\src\Shared\include\Shibboleth_LooseFileSystem.h" />
     <ClInclude Include="..\..\..\src\Shared\include\Shibboleth_Map.h" />
     <ClInclude Include="..\..\..\src\Shared\include\Shibboleth_MessageBroadcaster.h" />
@@ -210,14 +210,16 @@
     <ClInclude Include="..\..\..\src\Shared\include\Shibboleth_StateMachine.h" />
     <ClInclude Include="..\..\..\src\Shared\include\Shibboleth_String.h" />
     <ClInclude Include="..\..\..\src\Shared\include\Shibboleth_ThreadPool.h" />
+    <ClInclude Include="..\..\..\src\Shared\include\Shibboleth_Utilities.h" />
     <ClInclude Include="..\..\..\src\Shared\include\Shibboleth_Watcher.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\src\Shared\Shibboleth_Allocator.cpp" />
     <ClCompile Include="..\..\..\src\Shared\Shibboleth_App.cpp" />
-    <ClCompile Include="..\..\..\src\Shared\Shibboleth_Logger.cpp" />
+    <ClCompile Include="..\..\..\src\Shared\Shibboleth_LogManager.cpp" />
     <ClCompile Include="..\..\..\src\Shared\Shibboleth_LooseFileSystem.cpp" />
     <ClCompile Include="..\..\..\src\Shared\Shibboleth_StateMachine.cpp" />
+    <ClCompile Include="..\..\..\src\Shared\Shibboleth_Utilities.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

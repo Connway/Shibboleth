@@ -164,26 +164,68 @@ const char* ResourceManager::getName(void) const
 	return "Resource Manager";
 }
 
-void ResourceManager::registerResourceLoader(IResourceLoader* res_loader, const Array<AString>& extensions, unsigned int thread_pool)
+void ResourceManager::registerResourceLoader(IResourceLoader* res_loader, const Array<AString>& resource_types, unsigned int thread_pool)
 {
-	assert(res_loader && extensions.size());
+	assert(res_loader && resource_types.size());
 	ResourceLoaderPtr loader_ptr(res_loader);
 
-	for (auto it = extensions.begin(); it != extensions.end(); ++it) {
+	for (auto it = resource_types.begin(); it != resource_types.end(); ++it) {
 		assert(_resource_loaders.indexOf(AHashString(*it)) == -1);
 		_resource_loaders[AHashString(*it)] = Gaff::MakePair(loader_ptr, thread_pool);
 	}
 }
 
-void ResourceManager::registerResourceLoader(IResourceLoader* res_loader, const char* extension, unsigned int thread_pool)
+void ResourceManager::registerResourceLoader(IResourceLoader* res_loader, const char* resource_type, unsigned int thread_pool)
 {
 	// We've already registered a loader for this file type.
-	assert(_resource_loaders.indexOf(AHashString(extension)) == -1);
-	_resource_loaders[AHashString(extension)] = Gaff::MakePair(ResourceLoaderPtr(res_loader), thread_pool);
+	assert(_resource_loaders.indexOf(AHashString(resource_type)) == -1);
+	_resource_loaders[AHashString(resource_type)] = Gaff::MakePair(ResourceLoaderPtr(res_loader), thread_pool);
+}
+
+ResourcePtr ResourceManager::requestResource(const char* resource_type, const char* instance_name, unsigned long long user_data)
+{
+	assert(resource_type && strlen(resource_type) && instance_name && strlen(instance_name));
+
+	AHashString res_key(instance_name);
+
+	Gaff::ScopedLock<Gaff::SpinLock> lock(_res_cache_lock);
+	auto it = _resource_cache.findElementWithKey(res_key);
+
+	if (it == _resource_cache.end()) {
+		// We have no cache of this resource or have yet to make a request for it,
+		// so make a load request.
+		assert(_resource_loaders.indexOf(AHashString(resource_type)) != UINT_FAIL);
+
+		ResourceContainer* res_cont = reinterpret_cast<ResourceContainer*>(GetAllocator()->alloc(sizeof(ResourceContainer)));
+		new (res_cont) ResourceContainer(res_key, this, &ResourceManager::zeroRefCallback, user_data);
+
+		ResourcePtr& res_ptr = _resource_cache[res_key];
+		res_ptr.set(res_cont);
+
+		for (auto cbs = _request_added_callbacks.begin(); cbs != _request_added_callbacks.end(); ++cbs) {
+			(*cbs)(res_ptr);
+		}
+
+		// make load task
+		LoaderData& loader_data= _resource_loaders[AHashString(resource_type)];
+
+		ResourceLoadingTask* load_task = GetAllocator()->template allocT<ResourceLoadingTask>(loader_data.first, res_ptr);
+		Gaff::TaskPtr<ProxyAllocator> task(load_task);
+		_app.addTask(task, loader_data.second);
+
+		return res_ptr;
+
+	} else {
+		// We have a cache of this resource or we've already made a request to load it.
+		// Send the container/future back.
+		return it.getValue();
+	}
 }
 
 ResourcePtr ResourceManager::requestResource(const char* filename, unsigned long long user_data)
 {
+	assert(filename && strlen(filename));
+
 	AHashString res_key(filename);
 
 	Gaff::ScopedLock<Gaff::SpinLock> lock(_res_cache_lock);
@@ -193,7 +235,7 @@ ResourcePtr ResourceManager::requestResource(const char* filename, unsigned long
 		// We have no cache of this resource or have yet to make a request for it,
 		// so make a load request.
 		AString extension = res_key.getString().getExtension('.');
-		assert(extension.size() && _resource_loaders.indexOf(AHashString(extension)) != -1);
+		assert(extension.size() && _resource_loaders.indexOf(AHashString(extension)) != UINT_FAIL);
 
 		ResourceContainer* res_cont = (ResourceContainer*)GetAllocator()->alloc(sizeof(ResourceContainer));
 		new (res_cont) ResourceContainer(res_key, this, &ResourceManager::zeroRefCallback, user_data);
@@ -231,7 +273,7 @@ ResourcePtr ResourceManager::loadResourceImmediately(const char* filename, unsig
 	if (it == _resource_cache.end()) {
 		// We have no cache of this resource or have yet to make a request for it.
 		AString extension = res_key.getString().getExtension('.');
-		assert(extension.size() && _resource_loaders.indexOf(AHashString(extension)) != -1);
+		assert(extension.size() && _resource_loaders.indexOf(AHashString(extension)) != UINT_FAIL);
 
 		ResourceContainer* res_cont = (ResourceContainer*)GetAllocator()->alloc(sizeof(ResourceContainer));
 		new (res_cont)ResourceContainer(res_key, this, &ResourceManager::zeroRefCallback, user_data);

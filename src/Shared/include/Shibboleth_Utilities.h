@@ -22,63 +22,17 @@ THE SOFTWARE.
 
 #pragma once
 
-#include <Shibboleth_Memory.h>
-#include <Gaff_IRefCounted.h>
-#include <Gaff_Atomic.h>
-
-#define SHIB_REF_COUNTED(Class) \
-public: \
-	void addRef(void) const \
-	{ \
-		AtomicIncrement(&_count); \
-	} \
-	void release(void) const \
-	{ \
-		unsigned int new_count = AtomicDecrement(&_count); \
-		if (!new_count) { \
-			GetAllocator()->freeT(this); \
-		} \
-	} \
-	unsigned int getRefCount(void) const \
-	{ \
-		return _count; \
-	} \
-private: \
-	mutable volatile unsigned int _count = 0 // Use C++11 in-class initialization so that classes don't have to modify constructors.
+#include "Shibboleth_LogManager.h"
+#include <Gaff_Defines.h>
 
 NS_SHIBBOLETH
 
-class RefCounted : public Gaff::IRefCounted
-{
-public:
-	RefCounted(void): _count(0) {}
+class IApp;
 
-	~RefCounted(void) {}
+void PrintToLogTask(LogManager::FileLockPair& flp, unsigned int task_pool, const char* format, ...);
+//INLINE void PrintToLogFlushCount(unsigned int flush_count);
 
-	void addRef(void) const
-	{
-		AtomicIncrement(&_count);
-	}
-
-	void release(void) const
-	{
-		unsigned int new_count = AtomicDecrement(&_count);
-
-		if (!new_count) {
-			GetAllocator()->freeT(this);
-		}
-	}
-
-	unsigned int getRefCount(void) const
-	{
-		return _count;
-	}
-
-private:
-	mutable volatile unsigned int _count;
-
-	GAFF_NO_COPY(RefCounted);
-	GAFF_NO_MOVE(RefCounted);
-};
+INLINE void SetApp(IApp& app);
+INLINE IApp& GetApp(void);
 
 NS_END

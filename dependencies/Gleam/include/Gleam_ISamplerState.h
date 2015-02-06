@@ -47,12 +47,31 @@ public:
 		FILTER_SIZE
 	};
 
+	struct SamplerSettings
+	{
+		FILTER filter;
+		WRAP wrap_u, wrap_v, wrap_w;
+		float min_lod, max_lod;
+		float lod_bias;
+		unsigned int max_anisotropy;
+		float border_r, border_g, border_b, border_a;
+	};
+
 	ISamplerState(void) {}
 	virtual ~ISamplerState(void) {}
 
+	INLINE bool init(IRenderDevice& rd, const SamplerSettings& sampler_settings)
+	{
+		return init(
+			rd, sampler_settings.filter, sampler_settings.wrap_u, sampler_settings.wrap_v, sampler_settings.wrap_w,
+			sampler_settings.min_lod, sampler_settings.max_lod, sampler_settings.lod_bias, sampler_settings.max_anisotropy,
+			sampler_settings.border_r, sampler_settings.border_b, sampler_settings.border_b, sampler_settings.border_a
+		);
+	}
+
 	virtual bool init(
 		IRenderDevice& rd,
-		FILTER filter, WRAP u, WRAP v, WRAP w,
+		FILTER filter, WRAP wrap_u, WRAP wrap_v, WRAP wrap_w,
 		float min_lod, float max_lod, float lod_bias,
 		unsigned int max_anisotropy,
 		//IRenderState::COMPARISON_FUNC compare_func,

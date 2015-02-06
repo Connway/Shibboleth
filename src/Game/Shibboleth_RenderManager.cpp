@@ -200,20 +200,6 @@ Gaff::SpinLock& RenderManager::getSpinLock(void)
 	return _rd_lock;
 }
 
-void RenderManager::printfLoadLog(const char* format, ...)
-{
-	// Change this to create a log print job
-	assert(format);
-
-	LogManager::FileLockPair& file_pair = _app.getGameLogFile();
-	Gaff::ScopedLock<Gaff::SpinLock> scoped_lock(*file_pair.second);
-
-	va_list vl;
-	va_start(vl, format);
-	file_pair.first.printfVA(format, vl);
-	va_end(vl);
-}
-
 bool RenderManager::createWindow(
 	const wchar_t* app_name, Gleam::IWindow::MODE window_mode,
 	int x, int y, unsigned int width, unsigned int height,
@@ -600,7 +586,7 @@ bool RenderManager::cacheGleamFunctions(IApp& app, const char* module)
 	}
 
 	char log_file_name[64] = { 0 };
-	Gaff::GetCurrentTimeString(log_file_name, 64, "Logs/GleamLog %m-%d-%Y %H-%M-%S.txt");
+	Gaff::GetCurrentTimeString(log_file_name, 64, "Logs/GleamLog %Y-%m-%d %H-%M-%S.txt");
 
 	if (!Gaff::CreateDir("./Logs", 0777)) {
 		return false;

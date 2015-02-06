@@ -56,7 +56,7 @@ public:
 	ModelLoader(RenderManager& render_mgr, ResourceManager& res_mgr, IFileSystem& file_system);
 	~ModelLoader(void);
 
-	Gaff::IVirtualDestructor* load(const char* file_name, unsigned long long user_data);
+	Gaff::IVirtualDestructor* load(const char* file_name, unsigned long long);
 
 private:
 	struct VertSkeletonData
@@ -70,7 +70,7 @@ private:
 	IFileSystem& _file_system;
 	ProxyAllocator _esprit_proxy_allocator;
 
-	bool loadMeshes(ModelData* data, const Gaff::JSON& lod_tags, const Gaff::JSON& model_prefs, GraphicsUserData user_data);
+	bool loadMeshes(ModelData* data, const Gaff::JSON& lod_tags, const Gaff::JSON& model_prefs, unsigned short display_tags, bool any_display_tags);
 	bool createMeshAndLayout(Gleam::IRenderDevice& rd, const Gaff::Mesh& scene_mesh, Gleam::IModel* model, const Gaff::JSON& model_prefs, unsigned int num_bone_weights, const Array<VertSkeletonData>& vert_skeleton_data);
 	unsigned int generateLoadingFlags(const Gaff::JSON& model_prefs);
 	Gleam::IShader* generateEmptyD3D11Shader(Gleam::IRenderDevice& rd, const Gaff::JSON& model_prefs, const Gaff::Mesh& scene_mesh, unsigned int num_bone_weights) const;

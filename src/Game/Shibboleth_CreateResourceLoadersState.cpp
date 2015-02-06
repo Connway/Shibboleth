@@ -26,6 +26,7 @@ THE SOFTWARE.
 #include <Shibboleth_TaskPoolTags.h>
 
 #include <Shibboleth_ShaderProgramLoader.h>
+#include <Shibboleth_SamplerStateLoader.h>
 #include <Shibboleth_TextureLoader.h>
 #include <Shibboleth_HoldingLoader.h>
 #include <Shibboleth_ShaderLoader.h>
@@ -73,27 +74,40 @@ void CreateResourceLoadersState::update(void)
 
 	// TEXTURE LOADER
 	{
-		TextureLoader* texture_loader = GetAllocator()->template allocT<TextureLoader>(render_manager);
+		TextureLoader* texture_loader = GetAllocator()->template allocT<TextureLoader>(render_manager, *_app.getFileSystem());
 
 		if (!texture_loader) {
-			// log error
 			_app.getGameLogFile().first.printf("ERROR - Failed to create texture loader.\n");
 			_app.quit();
 			return;
 		}
 
-		Array<AString> extensions;
-		extensions.emplacePush(".png");
-		extensions.emplacePush(".jpeg");
-		extensions.emplacePush(".jpg");
-		extensions.emplacePush(".bmp");
-		extensions.emplacePush(".tiff");
-		extensions.emplacePush(".tif");
-		extensions.emplacePush(".dds");
-		extensions.emplacePush(".tga");
+		//Array<AString> extensions;
+		//extensions.emplacePush(".png");
+		//extensions.emplacePush(".jpeg");
+		//extensions.emplacePush(".jpg");
+		//extensions.emplacePush(".bmp");
+		//extensions.emplacePush(".tiff");
+		//extensions.emplacePush(".tif");
+		//extensions.emplacePush(".dds");
+		//extensions.emplacePush(".tga");
 
 		_app.getGameLogFile().first.printf("Adding Texture Loader\n");
-		res_mgr.registerResourceLoader(texture_loader, extensions, TPT_GRAPHICS);
+		res_mgr.registerResourceLoader(texture_loader, ".texture", TPT_GRAPHICS);
+	}
+
+	// SAMPLER STATE LOADER
+	{
+		SamplerStateLoader* sampler_loader = GetAllocator()->template allocT<SamplerStateLoader>(render_manager, *_app.getFileSystem());
+
+		if (!sampler_loader) {
+			_app.getGameLogFile().first.printf("ERROR - Failed to create sampler state loader.\n");
+			_app.quit();
+			return;
+		}
+
+		_app.getGameLogFile().first.printf("Adding Sampler State Loader\n");
+		res_mgr.registerResourceLoader(sampler_loader, ".sampler", TPT_GRAPHICS);
 	}
 
 	// SHADER LOADER
