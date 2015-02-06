@@ -28,6 +28,7 @@ THE SOFTWARE.
 #include <Shibboleth_UpdateManager.h>
 #include <Shibboleth_ObjectManager.h>
 #include <Shibboleth_LuaManager.h>
+#include <Shibboleth_Utilities.h>
 #include <Shibboleth_IApp.h>
 #include <Gaff_JSON.h>
 
@@ -42,7 +43,7 @@ Shibboleth::IManager* CreateManagerT(Shibboleth::IApp& app)
 }
 
 template <class Manager>
-Shibboleth::IManager* CreateManagerTNoApp(Shibboleth::IApp& app)
+Shibboleth::IManager* CreateManagerTNoApp(Shibboleth::IApp&)
 {
 	return Shibboleth::GetAllocator()->template allocT<Manager>();
 }
@@ -87,13 +88,11 @@ static CreateMgrFunc create_funcs[] = {
 	&CreateManagerT<Shibboleth::OcclusionManager>
 };
 
-static Shibboleth::IApp* g_app = nullptr;
-
 DYNAMICEXPORT_C bool InitModule(Shibboleth::IApp& app)
 {
 	Gaff::JSON::SetMemoryFunctions(&Shibboleth::ShibbolethAllocate, &Shibboleth::ShibbolethFree);
 	Gaff::JSON::SetHashSeed(app.getSeed());
-	g_app = &app;
+	Shibboleth::SetApp(app);
 
 	return true;
 }
@@ -110,7 +109,7 @@ DYNAMICEXPORT_C unsigned int GetNumManagers(void)
 DYNAMICEXPORT_C Shibboleth::IManager* CreateManager(unsigned int id)
 {
 	assert(id < NUM_MANAGERS);
-	return create_funcs[id](*g_app);
+	return create_funcs[id](Shibboleth::GetApp());
 }
 
 DYNAMICEXPORT_C void DestroyManager(Shibboleth::IManager* manager, unsigned int)

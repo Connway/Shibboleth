@@ -53,8 +53,8 @@ SamplerStateD3D::~SamplerStateD3D(void)
 }
 
 bool SamplerStateD3D::init(
-	IRenderDevice& rd,
-	FILTER filter, WRAP u, WRAP v, WRAP w,
+	IRenderDevice& rd, FILTER filter,
+	WRAP wrap_u, WRAP wrap_v, WRAP wrap_w,
 	float min_lod, float max_lod, float lod_bias,
 	unsigned int max_anisotropy,
 	//IRenderState::COMPARISON_FUNC compare_func,
@@ -64,9 +64,9 @@ bool SamplerStateD3D::init(
 	assert(rd.isD3D() && max_anisotropy <= 16);
 
 	D3D11_SAMPLER_DESC desc;
-	desc.AddressU = (D3D11_TEXTURE_ADDRESS_MODE)u;
-	desc.AddressV = (D3D11_TEXTURE_ADDRESS_MODE)v;
-	desc.AddressW = (D3D11_TEXTURE_ADDRESS_MODE)w;
+	desc.AddressU = (D3D11_TEXTURE_ADDRESS_MODE)wrap_u;
+	desc.AddressV = (D3D11_TEXTURE_ADDRESS_MODE)wrap_v;
+	desc.AddressW = (D3D11_TEXTURE_ADDRESS_MODE)wrap_w;
 	desc.BorderColor[0] = border_r;
 	desc.BorderColor[1] = border_g;
 	desc.BorderColor[2] = border_b;

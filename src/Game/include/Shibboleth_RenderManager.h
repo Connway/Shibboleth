@@ -129,8 +129,6 @@ public:
 	Gleam::IRenderDevice& getRenderDevice(void);
 	Gaff::SpinLock& getSpinLock(void);
 
-	void printfLoadLog(const char* format, ...);
-
 	// Don't call this in a thread sensitive environment
 	bool createWindow(
 		const wchar_t* app_name, Gleam::IWindow::MODE window_mode,

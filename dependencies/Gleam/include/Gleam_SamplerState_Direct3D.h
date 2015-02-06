@@ -36,8 +36,8 @@ public:
 	~SamplerStateD3D(void);
 
 	bool init(
-		IRenderDevice& rd,
-		FILTER filter, WRAP u, WRAP v, WRAP w,
+		IRenderDevice& rd, FILTER filter,
+		WRAP wrap_u, WRAP wrap_v, WRAP wrap_w,
 		float min_lod, float max_lod, float lod_bias,
 		unsigned int max_anisotropy,
 		//IRenderState::COMPARISON_FUNC compare_func,

@@ -24,6 +24,7 @@ THE SOFTWARE.
 #include <Shibboleth_CameraComponent.h>
 #include <Shibboleth_ModelComponent.h>
 #include <Shibboleth_LuaComponent.h>
+#include <Shibboleth_Utilities.h>
 #include <Shibboleth_IApp.h>
 #include <Gaff_JSON.h>
 
@@ -67,16 +68,13 @@ static ComponentNameFunc name_funcs[] = {
 	&Shibboleth::ModelComponent::getComponentName
 };
 
-static Shibboleth::IApp* g_app = nullptr;
-
-
 DYNAMICEXPORT_C bool InitModule(Shibboleth::IApp& app)
 {
 	// set lua allocation function
 
 	Gaff::JSON::SetMemoryFunctions(&Shibboleth::ShibbolethAllocate, &Shibboleth::ShibbolethFree);
 	Gaff::JSON::SetHashSeed(app.getSeed());
-	g_app = &app;
+	Shibboleth::SetApp(app);
 
 	return true;
 }
@@ -99,7 +97,7 @@ DYNAMICEXPORT_C unsigned int GetNumComponents(void)
 DYNAMICEXPORT_C Shibboleth::IComponent* CreateComponent(unsigned int id)
 {
 	assert(id < NUM_COMPONENTS);
-	return create_funcs[id](*g_app);
+	return create_funcs[id](Shibboleth::GetApp());
 }
 
 DYNAMICEXPORT_C void DestroyComponent(Shibboleth::IComponent* component, unsigned int)

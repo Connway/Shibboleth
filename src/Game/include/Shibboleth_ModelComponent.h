@@ -40,6 +40,7 @@ public:
 	ModelComponent(IApp& app);
 	~ModelComponent(void);
 
+	bool validate(Gaff::JSON& json);
 	bool load(const Gaff::JSON& json);
 	bool save(Gaff::JSON& json);
 
@@ -55,6 +56,7 @@ public:
 	void render(void); // Temporary test function
 
 private:
+	ResourceWrapper<SamplerStateData> _sampler_res;
 	ResourceWrapper<ProgramData> _material_res;
 	ResourceWrapper<TextureData> _texture_res;
 	ResourceWrapper<ModelData> _model_res;
@@ -64,9 +66,11 @@ private:
 	ResourceManager& _res_mgr;
 	IApp& _app;
 
+	unsigned int _current_lod;
 	unsigned char _flags;
 
-	void TextureLoadedCallback(const AHashString& resource, bool success);
+	void TextureLoadedCallback(const AHashString& /*resource*/, bool success);
+	void SamplerStateCallback(const AHashString& /*resource*/, bool success);
 	void LoadCallback(const AHashString& resource, bool success);
 	void HandleLoadingMessage(const LoadingMessage& msg);
 

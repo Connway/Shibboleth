@@ -27,6 +27,7 @@ THE SOFTWARE.
 
 NS_SHIBBOLETH
 
+typedef Gaff::TaskPtr<ProxyAllocator> TaskPtr;
 typedef Gaff::ITask<ProxyAllocator> ITask;
 
 NS_END

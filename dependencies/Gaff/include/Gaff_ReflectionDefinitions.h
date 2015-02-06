@@ -484,7 +484,7 @@ void* ClassName::rawRequestInterface(unsigned int class_id) const \
 #define ENUM_REF_IMPL(EnumName, Allocator) Gaff::EnumReflectionDefinition<EnumName, Allocator> g_##EnumName##_Ref_Def
 #define ENUM_REF_IMPL_ASSIGN(EnumName, Allocator, allocator_instance) Gaff::EnumReflectionDefinition<EnumName, Allocator> g_##EnumName##_Ref_Def = Gaff::EnumRefDef<EnumName, Allocator>(#EnumName, allocator_instance).macroFix()
 #define ENUM_REF_IMPL_ASSIGN_DEFAULT(EnumName, Allocator, allocator_instance) Gaff::EnumReflectionDefinition<EnumName, Allocator> g_##EnumName##_Ref_Def = Gaff::EnumRefDef<EnumName, Allocator>(#EnumName).macroFix()
-
+#define ENUM_REF_DEF_RETRIEVE(EnumName) g_##EnumName##_Ref_Def
 
 /*
 	This function is useful for when you want to do something like this:

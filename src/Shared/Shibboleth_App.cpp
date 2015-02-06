@@ -22,6 +22,7 @@ THE SOFTWARE.
 
 #include "Shibboleth_App.h"
 #include "Shibboleth_LooseFileSystem.h"
+#include "Shibboleth_Utilities.h"
 #include "Shibboleth_Allocator.h"
 #include "Shibboleth_IManager.h"
 #include "Shibboleth_String.h"
@@ -40,6 +41,7 @@ App::App(void):
 	/*_cmd_line_args(ProxyAllocator(&_allocator)),*/ _log_file_pair(nullptr),
 	_seed(0), _running(true)
 {
+	SetApp(*this);
 }
 
 App::~App(void)

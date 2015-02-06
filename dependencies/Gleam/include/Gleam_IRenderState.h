@@ -23,6 +23,7 @@ THE SOFTWARE.
 #pragma once
 
 #include "Gleam_Defines.h"
+#include <Gaff_IncludeAssert.h>
 #include <Gaff_IRefCounted.h>
 
 NS_GLEAM
@@ -126,8 +127,48 @@ public:
 		bool enable_alpha_blending;
 	};
 
+	struct RenderStateSettings
+	{
+		BlendData blend_data[8];
+		StencilData front_face, back_face;
+		unsigned int stencil_ref;
+		COMPARISON_FUNC depth_func;
+		CULL_MODE cull_face_mode;
+		char stencil_read_mask, stencil_write_mask;
+		bool wireframe, depth_test, stencil_test;
+		bool front_face_counter_clockwise;
+		unsigned char blend_data_size;
+	};
+
 	IRenderState(void) {}
 	virtual ~IRenderState(void) {}
+
+	INLINE bool init(IRenderDevice& rd, const RenderStateSettings& render_state_settings)
+	{
+		assert(render_state_settings.blend_data_size > 0 && render_state_settings.blend_data_size <= 8);
+
+		if (render_state_settings.blend_data_size == 1) {
+			return init(
+				rd, render_state_settings.wireframe, render_state_settings.depth_test,
+				render_state_settings.stencil_test, render_state_settings.depth_func,
+				render_state_settings.front_face, render_state_settings.back_face,
+				render_state_settings.stencil_ref, render_state_settings.stencil_read_mask,
+				render_state_settings.stencil_write_mask, render_state_settings.cull_face_mode,
+				render_state_settings.front_face_counter_clockwise,
+				render_state_settings.blend_data[0]
+			);
+		} else {
+			return init(
+				rd, render_state_settings.wireframe, render_state_settings.depth_test,
+				render_state_settings.stencil_test, render_state_settings.depth_func,
+				render_state_settings.front_face, render_state_settings.back_face,
+				render_state_settings.stencil_ref, render_state_settings.stencil_read_mask,
+				render_state_settings.stencil_write_mask, render_state_settings.cull_face_mode,
+				render_state_settings.front_face_counter_clockwise,
+				render_state_settings.blend_data
+			);
+		}
+	}
 
 	virtual bool init(IRenderDevice& rd, bool wireframe, bool depth_test, bool stencil_test,
 						COMPARISON_FUNC depth_func, StencilData front_face,

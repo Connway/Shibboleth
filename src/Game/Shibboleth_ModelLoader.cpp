@@ -75,7 +75,7 @@ ModelLoader::~ModelLoader(void)
 {
 }
 
-Gaff::IVirtualDestructor* ModelLoader::load(const char* file_name, unsigned long long user_data)
+Gaff::IVirtualDestructor* ModelLoader::load(const char* file_name, unsigned long long)
 {
 	IFile* file = _file_system.openFile(file_name);
 
@@ -157,7 +157,8 @@ Gaff::IVirtualDestructor* ModelLoader::load(const char* file_name, unsigned long
 
 		} else {
 			Gaff::JSON display_tags = json["display_tags"];
-			GraphicsUserData gud = { 0, static_cast<unsigned char>(user_data) };
+			unsigned short disp_tags = 0;
+			bool any_display_tags = (json["any_display_with_tags"] && json["any_display_tags"].isTrue());
 
 			if (!display_tags.isNull()) {
 				if (!display_tags.isArray()) {
@@ -166,19 +167,7 @@ Gaff::IVirtualDestructor* ModelLoader::load(const char* file_name, unsigned long
 					return nullptr;
 				}
 
-				bool ret = display_tags.forEachInArray([&](size_t, const Gaff::JSON& value) -> bool
-				{
-					if (!value.isString()) {
-						// log error
-						return true;
-					}
-
-					gud.display_tags |= g_DisplayTags_Ref_Def.getValue(value.getString());
-
-					return false;
-				});
-
-				if (ret) {
+				if (EXTRACT_DISPLAY_TAGS(display_tags, disp_tags)) {
 					GetAllocator()->freeT(data);
 					return nullptr;
 				}
@@ -189,7 +178,7 @@ Gaff::IVirtualDestructor* ModelLoader::load(const char* file_name, unsigned long
 				GetAllocator()->freeT(data);
 				data = nullptr;
 
-			} else if (!loadMeshes(data, lod_tags, json, gud)) {
+			} else if (!loadMeshes(data, lod_tags, json, disp_tags, any_display_tags)) {
 				// log error
 				GetAllocator()->freeT(data);
 				data = nullptr;
@@ -200,7 +189,7 @@ Gaff::IVirtualDestructor* ModelLoader::load(const char* file_name, unsigned long
 	return data;
 }
 
-bool ModelLoader::loadMeshes(ModelData* data, const Gaff::JSON& lod_tags, const Gaff::JSON& model_prefs, GraphicsUserData user_data)
+bool ModelLoader::loadMeshes(ModelData* data, const Gaff::JSON& lod_tags, const Gaff::JSON& model_prefs, unsigned short display_tags, bool any_display_tags)
 {
 	Gaff::ScopedLock<Gaff::SpinLock> scoped_lock(_render_mgr.getSpinLock());
 	Gleam::IRenderDevice& rd = _render_mgr.getRenderDevice();
@@ -213,9 +202,9 @@ bool ModelLoader::loadMeshes(ModelData* data, const Gaff::JSON& lod_tags, const 
 	data->models.resize(rd.getNumDevices());
 	data->aabbs.resize(num_lods);
 
-	Array<const RenderManager::WindowData*> windows = (user_data.flags & MODEL_LOADER_TAGS_ANY) ?
-		_render_mgr.getAllWindowsWithTagsAny(user_data.display_tags) :
-		_render_mgr.getAllWindowsWithTags(user_data.display_tags);
+	Array<const RenderManager::WindowData*> windows = (any_display_tags) ?
+		_render_mgr.getAllWindowsWithTagsAny(display_tags) :
+		_render_mgr.getAllWindowsWithTags(display_tags);
 
 	// Second dimension is number of LODs. If we don't define LOD tags in
 	// the JSON file, then we assume all meshes are of LOD 0.
@@ -342,6 +331,7 @@ bool ModelLoader::createMeshAndLayout(Gleam::IRenderDevice& rd, const Gaff::Mesh
 	bool normals = false;
 	bool tangents = false;
 	bool blend_data = false;
+	bool vertex_color = false;
 	unsigned int vert_size = 3; // defaults to 3 for position
 	unsigned int uv_size = 0;
 
@@ -466,6 +456,23 @@ bool ModelLoader::createMeshAndLayout(Gleam::IRenderDevice& rd, const Gaff::Mesh
 		}
 	}
 
+	if (model_prefs["vertex_color"]) {
+		vertex_color = true;
+
+		for (unsigned int i = 0; i < scene_mesh.getNumColorChannels(); ++i) {
+			Gleam::LayoutDescription desc = {
+				Gleam::SEMANTIC_COLOR,
+				i,
+				Gleam::ITexture::RGBA_32_F,
+				0,
+				APPEND_ALIGNED,
+				Gleam::PDT_PER_VERTEX
+			};
+
+			layout_desc.push(desc);
+		}
+	}
+
 	Gleam::IMesh* mesh = model->createMesh();
 
 	if (!mesh) {
@@ -522,6 +529,13 @@ bool ModelLoader::createMeshAndLayout(Gleam::IRenderDevice& rd, const Gaff::Mesh
 			}
 
 			current_vertex += 8 * num_bone_weights;
+		}
+
+		if (vertex_color) {
+			for (unsigned int j = 0; j < scene_mesh.getNumColorChannels(); ++j) {
+				memcpy(current_vertex, scene_mesh.getVertexColor(j, i), sizeof(float) * 4);
+				current_vertex += 4;
+			}
 		}
 	}
 

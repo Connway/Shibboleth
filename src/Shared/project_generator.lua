@@ -20,7 +20,6 @@ project "Shared"
 	filter {}
 
 	files { "**.h", "**.cpp", "**.inl" }
-	excludes { "include/Shibboleth_Memory.h", "Shibboleth_Memory.cpp" }
 
 	includedirs
 	{

@@ -22,15 +22,20 @@ THE SOFTWARE.
 
 #include "Shibboleth_TextureLoader.h"
 #include "Shibboleth_ResourceDefines.h"
-#include "Shibboleth_RenderManager.h"
+#include <Shibboleth_RenderManager.h>
+#include <Shibboleth_TaskPoolTags.h>
+#include <Shibboleth_IFileSystem.h>
+#include <Shibboleth_Utilities.h>
+#include <Shibboleth_IApp.h>
 #include <Gleam_IRenderDevice.h>
 #include <Gaff_ScopedLock.h>
 #include <Gaff_Image.h>
+#include <Gaff_JSON.h>
 
 NS_SHIBBOLETH
 
-TextureLoader::TextureLoader(RenderManager& render_mgr):
-	_render_mgr(render_mgr)
+TextureLoader::TextureLoader(RenderManager& render_mgr, IFileSystem& file_system):
+	_render_mgr(render_mgr), _file_system(file_system)
 {
 }
 
@@ -38,63 +43,110 @@ TextureLoader::~TextureLoader(void)
 {
 }
 
-Gaff::IVirtualDestructor* TextureLoader::load(const char* file_name, unsigned long long user_data)
+Gaff::IVirtualDestructor* TextureLoader::load(const char* file_name, unsigned long long)
 {
+	IFile* file = _file_system.openFile(file_name);
+
+	if (!file) {
+		PrintToLogTask(GetApp().getGameLogFile(), TPT_PRINTLOG, "ERROR - Failed to find or open file '%s'.\n", file_name);
+		return nullptr;
+	}
+
+	Gaff::JSON json;
+	
+	if (!json.parse(file->getBuffer())) {
+		PrintToLogTask(GetApp().getGameLogFile(), TPT_PRINTLOG, "ERROR - Failed to parse file '%s'.\n", file_name);
+		_file_system.closeFile(file);
+		return nullptr;
+	}
+
+	_file_system.closeFile(file);
+
+	if (!json.isObject()) {
+		PrintToLogTask(GetApp().getGameLogFile(), TPT_PRINTLOG, "ERROR - Texture file '%s' is malformed.\n", file_name);
+		return nullptr;
+	}
+
+	if (!json["image_file"].isString()) {
+		PrintToLogTask(GetApp().getGameLogFile(), TPT_PRINTLOG, "ERROR - Texture file '%s' is malformed. Value at 'image_file' is not a string.\n", file_name);
+		return nullptr;
+	}
+
+	Gaff::JSON display_tags = json["display_tags"];
+	unsigned short disp_tags = 0;
+
+	if (!display_tags.isNull()) {
+		if (!display_tags.isArray()) {
+			PrintToLogTask(GetApp().getGameLogFile(), TPT_PRINTLOG, "ERROR - Texture file '%s' is malformed. Value at 'display_tags' is not an array of strings.\n", file_name);
+			return nullptr;
+		}
+
+		if (EXTRACT_DISPLAY_TAGS(display_tags, disp_tags)) {
+			PrintToLogTask(GetApp().getGameLogFile(), TPT_PRINTLOG, "ERROR - Texture file '%s' is malformed. An element in 'display_tags' is not a string.\n", file_name);
+			return nullptr;
+		}
+	}
+
+	file = _file_system.openFile(json["image_file"].getString());
+
+	if (!file) {
+		PrintToLogTask(GetApp().getGameLogFile(), TPT_PRINTLOG, "ERROR - Failed to find or open file '%s' while processing '%s'.\n", json["image_file"].getString(), file_name);
+		return nullptr;
+	}
+
 	Gaff::Image image;
 
 	if (!image.init()) {
-		_render_mgr.printfLoadLog("ERROR - Failed to initialize image data structure when loading '%s.'\n", file_name);
+		PrintToLogTask(GetApp().getGameLogFile(), TPT_PRINTLOG, "ERROR - Failed to initialize image data structure when loading '%s'.\n", file_name);
+		_file_system.closeFile(file);
 		return nullptr;
 	}
 
-	if (!image.load(file_name)) {
-		_render_mgr.printfLoadLog("ERROR - Failed to image '%s.'\n", file_name);
+	if (!image.load(file->getBuffer(), file->size())) {
+		PrintToLogTask(GetApp().getGameLogFile(), TPT_PRINTLOG, "ERROR - Failed to load image '%s' while processing '%s'.\n", json["image_file"].getString(), file_name);
+		_file_system.closeFile(file);
 		return nullptr;
 	}
+
+	_file_system.closeFile(file);
 
 	if (image.getType() == Gaff::Image::TYPE_DOUBLE) {
-		_render_mgr.printfLoadLog("ERROR - Image of type double not supported. IMAGE: %s\n", file_name);
+		PrintToLogTask(GetApp().getGameLogFile(), TPT_PRINTLOG, "ERROR - Image of type double not supported. IMAGE: %s\n", json["image_file"].getString());
 		return nullptr;
 	}
 
-	const TextureUserData* tud = (TextureUserData*)user_data;
-
-	Gleam::ITexture::FORMAT texture_format = determineFormatAndType(image, !!(tud->gud.flags & TEX_LOADER_NORMALIZED), !!(tud->gud.flags & TEX_LOADER_SRGBA));
+	Gleam::ITexture::FORMAT texture_format = determineFormatAndType(image, json["normalized"].isTrue(), json["SRGBA"].isTrue());
 
 	TextureData* texture_data = GetAllocator()->template allocT<TextureData>();
 
 	if (!texture_data) {
-		_render_mgr.printfLoadLog("ERROR - Failed to allocate texture data structure.\n", file_name);
+		PrintToLogTask(GetApp().getGameLogFile(), TPT_PRINTLOG, "ERROR - Failed to allocate texture data structure.\n", file_name);
 		return nullptr;
 	}
 
-	if (tud->gud.flags & TEX_LOADER_IMAGE_ONLY) {
+	if (json["image_only"].isTrue()) {
 		texture_data->image = Gaff::Move(image);
 		texture_data->normalized = false;
 		texture_data->cubemap = false;
 		return texture_data;
 	}
 
-	texture_data->normalized = (tud->gud.flags & TEX_LOADER_NORMALIZED) != 0;
-	texture_data->cubemap = (tud->gud.flags & TEX_LOADER_CUBEMAP) != 0;
+	texture_data->normalized = json["normalized"].isTrue();
+	texture_data->cubemap = json["cubemap"].isTrue();
 
 	Gaff::ScopedLock<Gaff::SpinLock> scoped_lock(_render_mgr.getSpinLock());
 	Gleam::IRenderDevice& rd = _render_mgr.getRenderDevice();
 
-	Array<const RenderManager::WindowData*> windows = (tud->gud.flags & TEX_LOADER_TAGS_ANY) ?
-		_render_mgr.getAllWindowsWithTagsAny(tud->gud.display_tags) :
-		_render_mgr.getAllWindowsWithTags(tud->gud.display_tags);
+	Array<const RenderManager::WindowData*> windows = (json["any_display_with_tags"].isTrue()) ?
+		_render_mgr.getAllWindowsWithTagsAny(disp_tags) :
+		_render_mgr.getAllWindowsWithTags(disp_tags);
 
 	assert(!windows.empty());
 
 	texture_data->textures.resize(rd.getNumDevices());
 
-	if (!(tud->gud.flags & TEX_LOADER_NO_SRVS)) {
+	if (!json["no_shader_resource_views"].isTrue()) {
 		texture_data->resource_views.resize(rd.getNumDevices());
-	}
-
-	if (!(tud->gud.flags & TEX_LOADER_NO_SAMPLERS)) {
-		texture_data->samplers.resize(rd.getNumDevices());
 	}
 
 	// Load the texture for each device
@@ -103,13 +155,13 @@ Gaff::IVirtualDestructor* TextureLoader::load(const char* file_name, unsigned lo
 		rd.setCurrentDevice((*it)->device);
 
 		if (!texture) {
-			_render_mgr.printfLoadLog("ERROR - Failed to allocate texture for image %s.\n", file_name);
+			PrintToLogTask(GetApp().getGameLogFile(), TPT_PRINTLOG, "ERROR - Failed to allocate texture for image %s.\n", file_name);
 			GetAllocator()->freeT(texture_data);
 			return nullptr;
 		}
 
 		if (texture_format == Gleam::ITexture::FORMAT_SIZE) {
-			_render_mgr.printfLoadLog("ERROR - Could not determine the pixel format of image at %s.\n", file_name);
+			PrintToLogTask(GetApp().getGameLogFile(), TPT_PRINTLOG, "ERROR - Could not determine the pixel format of image at %s.\n", file_name);
 			GetAllocator()->freeT(texture_data);
 			return nullptr;
 		}
@@ -119,15 +171,15 @@ Gaff::IVirtualDestructor* TextureLoader::load(const char* file_name, unsigned lo
 		unsigned int depth = image.getDepth();
 		bool success = false;
 
-		if (tud->gud.flags & TEX_LOADER_CUBEMAP) {
+		if (texture_data->cubemap) {
 			if (width == 1 || height == 1 || depth != 1) {
-				_render_mgr.printfLoadLog("ERROR - Image specified as cubemap, but is not a 2D image. IMAGE: %s.\n", file_name);
+				PrintToLogTask(GetApp().getGameLogFile(), TPT_PRINTLOG, "ERROR - Image specified as cubemap, but is not a 2D image. IMAGE: %s.\n", file_name);
 				GetAllocator()->freeT(texture_data);
 				return nullptr;
 			}
 
 			if (!texture->initCubemap(rd, width, height, texture_format, 1, image.getBuffer())) {
-				_render_mgr.printfLoadLog("ERROR - Failed to initialize cubemap texture using image at %s.\n", file_name);
+				PrintToLogTask(GetApp().getGameLogFile(), TPT_PRINTLOG, "ERROR - Failed to initialize cubemap texture using image at %s.\n", file_name);
 				GetAllocator()->freeT(texture_data);
 				return nullptr;
 			}
@@ -137,64 +189,40 @@ Gaff::IVirtualDestructor* TextureLoader::load(const char* file_name, unsigned lo
 			if (width > 1 && height > 1 && depth > 1) {
 				success = texture->init3D(rd, width, height, depth, texture_format, 1, image.getBuffer());
 
-				// 2D
-			}
-			else if (width > 1 && height > 1) {
+			// 2D
+			} else if (width > 1 && height > 1) {
 				success = texture->init2D(rd, width, height, texture_format, 1, image.getBuffer());
 
-				// 1D
-			}
-			else if (image.getWidth() > 1) {
+			// 1D
+			} else if (image.getWidth() > 1) {
 				success = texture->init1D(rd, width, texture_format, 1, image.getBuffer());
 			}
 		}
 
 		if (!success) {
-			_render_mgr.printfLoadLog("ERROR - Failed to initialize texture using image at %s.\n", file_name);
+			PrintToLogTask(GetApp().getGameLogFile(), TPT_PRINTLOG, "ERROR - Failed to initialize texture using image at %s.\n", file_name);
 			GetAllocator()->freeT(texture_data);
 			return nullptr;
 		}
 
 		texture_data->textures[(*it)->device] = texture;
 
-		if (!(tud->gud.flags & TEX_LOADER_NO_SRVS)) {
+		if (!json["no_shader_resource_views"].isTrue()) {
 			ShaderResourceViewPtr srv(_render_mgr.createShaderResourceView());
 
 			if (!srv) {
-				_render_mgr.printfLoadLog("ERROR - Failed to allocate shader resource view for texture %s.\n", file_name);
+				PrintToLogTask(GetApp().getGameLogFile(), TPT_PRINTLOG, "ERROR - Failed to allocate shader resource view for texture %s.\n", file_name);
 				GetAllocator()->freeT(texture_data);
 				return false;
 			}
 
 			if (!srv->init(rd, texture.get())) {
-				_render_mgr.printfLoadLog("ERROR - Failed to initialize shader resource view for texture %s.\n", file_name);
+				PrintToLogTask(GetApp().getGameLogFile(), TPT_PRINTLOG, "ERROR - Failed to initialize shader resource view for texture %s.\n", file_name);
 				GetAllocator()->freeT(texture_data);
 				return false;
 			}
 
 			texture_data->resource_views[(*it)->device] = Gaff::Move(srv);
-		}
-
-		if (!(tud->gud.flags & TEX_LOADER_NO_SAMPLERS)) {
-			SamplerStatePtr sampler(_render_mgr.createSamplerState());
-
-			if (!sampler) {
-				_render_mgr.printfLoadLog("ERROR - Failed to allocate sampler state for texture %s.\n", file_name);
-				GetAllocator()->freeT(texture_data);
-				return false;
-			}
-
-			if (!sampler->init(
-					rd, tud->filter, tud->wrap_u, tud->wrap_v, tud->wrap_w,
-					tud->min_lod, tud->max_lod, tud->lod_bias, tud->max_anisotropy,
-					tud->border_r, tud->border_g, tud->border_b, tud->border_a)) {
-
-				_render_mgr.printfLoadLog("ERROR - Failed to initialize sampler state for texture %s.\n", file_name);
-				GetAllocator()->freeT(texture_data);
-				return false;
-			}
-
-			texture_data->samplers[(*it)->device] = Gaff::Move(sampler);
 		}
 	}
 

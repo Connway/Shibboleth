@@ -58,7 +58,9 @@ public:
 
 		json_object_foreach(_value, key, value)
 		{
-			if (callback(key, JSON(value, true))) {
+			JSON json(value, true);
+
+			if (callback(key, json)) {
 				return true;
 			}
 		}

@@ -24,6 +24,7 @@ THE SOFTWARE.
 #include <Shibboleth_LoadComponentsState.h>
 #include <Shibboleth_SetupGraphicsState.h>
 #include <Shibboleth_SetupOtterUIState.h>
+#include <Shibboleth_Utilities.h>
 #include <Shibboleth_IApp.h>
 #include <Gleam_Global.h>
 #include <Gaff_Image.h>
@@ -35,6 +36,7 @@ THE SOFTWARE.
 #include <Shibboleth_ObjectManager.h>
 #include <Shibboleth_RenderManager.h>
 #include <Shibboleth_Object.h>
+
 #include <Gleam_IRenderDevice.h>
 
 #ifdef USE_VLD
@@ -151,8 +153,6 @@ static const char* state_names[NUM_STATES] = {
 	"loopforeverstate"
 };
 
-static Shibboleth::IApp* g_app = nullptr;
-
 static unsigned int g_image_alloc_tag = Gaff::FNV1Hash32("Images", strlen("Images"));
 
 void* MEMCB ImageAlloc(const size_t size)
@@ -172,10 +172,11 @@ DYNAMICEXPORT_C bool InitModule(Shibboleth::IApp& app)
 	Gaff::JSON::SetHashSeed(app.getSeed());
 
 	Shibboleth::CreateMemoryPool("Images", g_image_alloc_tag);
+	Shibboleth::SetApp(app);
+
 	Gaff::Image::SysInit();
 	Gaff::Image::SetMemoryFunctions(ImageAlloc, ImageFree);
 
-	g_app = &app;
 	return true;
 }
 
@@ -198,7 +199,7 @@ DYNAMICEXPORT_C unsigned int GetNumStates(void)
 DYNAMICEXPORT_C Shibboleth::IState* CreateState(unsigned int id)
 {
 	assert(id < NUM_STATES);
-	return create_funcs[id](*g_app);
+	return create_funcs[id](Shibboleth::GetApp());
 }
 
 DYNAMICEXPORT_C void DestroyState(Shibboleth::IState* state, unsigned int)
