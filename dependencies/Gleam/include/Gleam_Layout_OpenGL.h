@@ -42,7 +42,7 @@ public:
 	LayoutGL(void);
 	~LayoutGL(void);
 
-	bool init(IRenderDevice&, const LayoutDescription* layout_desc, unsigned int layout_desc_size, const IShader*);
+	bool init(IRenderDevice&, const LayoutDescription* layout_desc, size_t layout_desc_size, const IShader*);
 	void destroy(void);
 
 	void setLayout(IRenderDevice& rd, const IMesh* mesh);

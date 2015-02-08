@@ -49,7 +49,7 @@ private:
 	{
 		Key key;
 		Value value;
-		unsigned int initial_index;
+		size_t initial_index;
 		bool occupied;
 	};
 
@@ -92,7 +92,8 @@ public:
 		friend class HashMap<Key, Value, Allocator>;
 	};
 
-	HashMap(HashFunc hash = FNV1Hash32, const Allocator& allocator = Allocator());
+	HashMap(HashFunc32 hash, const Allocator& allocator = Allocator());
+	HashMap(const Allocator& allocator = Allocator());
 	HashMap(const HashMap<Key, Value, Allocator>& rhs);
 	HashMap(HashMap<Key, Value, Allocator>&& rhs);
 	~HashMap(void);
@@ -110,13 +111,13 @@ public:
 
 	// dangerous functions
 	// slots are potentially unoccupied
-	const Value& valueAt(unsigned int index) const;
-	Value& valueAt(unsigned int index);
-	const Key& keyAt(unsigned int index) const;
-	bool isOccupied(unsigned int index) const;
+	const Value& valueAt(size_t index) const;
+	Value& valueAt(size_t index);
+	const Key& keyAt(size_t index) const;
+	bool isOccupied(size_t index) const;
 
 	void erase(const Iterator& it);
-	void erase(unsigned int index);
+	void erase(size_t index);
 	void erase(const Key& key);
 
 	void moveMoveInsert(Key&& key, Value&& value);
@@ -125,13 +126,13 @@ public:
 
 	bool hasElementWithValue(const Value& value) const;
 	bool hasElementWithKey(const Key& key) const;
-	unsigned int indexOf(const Key& key) const;
+	size_t indexOf(const Key& key) const;
 
 	void clear(void);
-	void reserve(unsigned int new_size);
+	void reserve(size_t new_size);
 
-	unsigned int capacity(void) const;
-	unsigned int size(void) const;
+	size_t capacity(void) const;
+	size_t size(void) const;
 	bool empty(void) const;
 
 	void setAllocator(const Allocator& allocator);
@@ -146,13 +147,13 @@ public:
 
 private:
 	Allocator _allocator;
-	unsigned int _size;
-	unsigned int _used;
+	size_t _size;
+	size_t _used;
 
-	HashFunc _hash;
+	HashFunc32 _hash;
 	Slot* _slots;
 
-	void shiftBuckets(unsigned int index);
+	void shiftBuckets(size_t index);
 };
 
 #ifndef DOXY_SKIP
@@ -165,7 +166,7 @@ private:
 	{
 		String<T, Allocator> key;
 		Value value;
-		unsigned int initial_index;
+		size_t initial_index;
 		bool occupied;
 	};
 
@@ -208,7 +209,8 @@ public:
 		friend class HashMap<String<T, Allocator>, Value, Allocator>;
 	};
 
-	HashMap(HashFunc hash = FNV1Hash32, const Allocator& allocator = Allocator());
+	HashMap(HashFunc32 hash, const Allocator& allocator = Allocator());
+	HashMap(const Allocator& allocator = Allocator());
 	HashMap(const HashMap<String<T, Allocator>, Value, Allocator>& rhs);
 	HashMap(HashMap<String<T, Allocator>, Value, Allocator>&& rhs);
 	~HashMap(void);
@@ -226,14 +228,14 @@ public:
 
 	// dangerous functions
 	// slots are potentially unoccupied
-	const Value& valueAt(unsigned int index) const;
-	Value& valueAt(unsigned int index);
-	const String<T, Allocator>& keyAt(unsigned int index) const;
+	const Value& valueAt(size_t index) const;
+	Value& valueAt(size_t index);
+	const String<T, Allocator>& keyAt(size_t index) const;
 
-	bool isOccupied(unsigned int index) const;
+	bool isOccupied(size_t index) const;
 
 	void erase(const Iterator& it);
-	void erase(unsigned int index);
+	void erase(size_t index);
 	void erase(const String<T, Allocator>& key);
 
 	void moveMoveInsert(String<T, Allocator>&& key, Value&& value);
@@ -242,13 +244,13 @@ public:
 
 	bool hasElementWithValue(const Value& value) const;
 	bool hasElementWithKey(const String<T, Allocator>& key) const;
-	unsigned int indexOf(const String<T, Allocator>& key) const;
+	size_t indexOf(const String<T, Allocator>& key) const;
 
 	void clear(void);
-	void reserve(unsigned int new_size);
+	void reserve(size_t new_size);
 
-	unsigned int capacity(void) const;
-	unsigned int size(void) const;
+	size_t capacity(void) const;
+	size_t size(void) const;
 	bool empty(void) const;
 
 	void setAllocator(const Allocator& allocator);
@@ -263,13 +265,13 @@ public:
 
 private:
 	Allocator _allocator;
-	unsigned int _size;
-	unsigned int _used;
+	size_t _size;
+	size_t _used;
 
-	HashFunc _hash;
+	HashFunc32 _hash;
 	Slot* _slots;
 
-	void shiftBuckets(unsigned int index);
+	void shiftBuckets(size_t index);
 };
 
 // HashString Specialization
@@ -281,7 +283,7 @@ private:
 	{
 		HashString<T, Allocator> key;
 		Value value;
-		unsigned int initial_index;
+		size_t initial_index;
 		bool occupied;
 	};
 
@@ -324,6 +326,7 @@ public:
 		friend class HashMap<HashString<T, Allocator>, Value, Allocator>;
 	};
 
+	HashMap(HashFunc32 hash, const Allocator& allocator = Allocator());
 	HashMap(const Allocator& allocator = Allocator());
 	HashMap(const HashMap<HashString<T, Allocator>, Value, Allocator>& rhs);
 	HashMap(HashMap<HashString<T, Allocator>, Value, Allocator>&& rhs);
@@ -342,14 +345,14 @@ public:
 
 	// dangerous functions
 	// slots are potentially unoccupied
-	const Value& valueAt(unsigned int index) const;
-	Value& valueAt(unsigned int index);
-	const HashString<T, Allocator>& keyAt(unsigned int index) const;
+	const Value& valueAt(size_t index) const;
+	Value& valueAt(size_t index);
+	const HashString<T, Allocator>& keyAt(size_t index) const;
 
-	bool isOccupied(unsigned int index) const;
+	bool isOccupied(size_t index) const;
 
 	void erase(const Iterator& it);
-	void erase(unsigned int index);
+	void erase(size_t index);
 	void erase(const HashString<T, Allocator>& key);
 
 	void moveMoveInsert(HashString<T, Allocator>&& key, Value&& value);
@@ -358,13 +361,13 @@ public:
 
 	bool hasElementWithValue(const Value& value) const;
 	bool hasElementWithKey(const HashString<T, Allocator>& key) const;
-	unsigned int indexOf(const HashString<T, Allocator>& key) const;
+	size_t indexOf(const HashString<T, Allocator>& key) const;
 
 	void clear(void);
-	void reserve(unsigned int new_size);
+	void reserve(size_t new_size);
 
-	unsigned int capacity(void) const;
-	unsigned int size(void) const;
+	size_t capacity(void) const;
+	size_t size(void) const;
 	bool empty(void) const;
 
 	void setAllocator(const Allocator& allocator);
@@ -379,13 +382,13 @@ public:
 
 private:
 	Allocator _allocator;
-	unsigned int _size;
-	unsigned int _used;
+	size_t _size;
+	size_t _used;
 
-	HashFunc _hash;
+	HashFunc32 _hash;
 	Slot* _slots;
 
-	void shiftBuckets(unsigned int index);
+	void shiftBuckets(size_t index);
 };
 #endif
 

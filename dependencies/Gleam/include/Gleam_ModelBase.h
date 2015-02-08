@@ -36,20 +36,20 @@ public:
 
 	void destroy(void);
 
-	const ILayout* getLayout(unsigned int index) const;
-	ILayout* getLayout(unsigned int index);
-	int getIndex(const ILayout* layout) const;
+	const ILayout* getLayout(size_t index) const;
+	ILayout* getLayout(size_t index);
+	size_t getIndex(const ILayout* layout) const;
 
-	unsigned int addLayout(ILayout* layout);
+	size_t addLayout(ILayout* layout);
 
-	const IMesh* getMesh(unsigned int index) const;
-	IMesh* getMesh(unsigned int index);
-	unsigned int getMeshCount(void) const;
-	int getIndex(const IMesh* mesh) const;
+	const IMesh* getMesh(size_t index) const;
+	IMesh* getMesh(size_t index);
+	size_t getMeshCount(void) const;
+	size_t getIndex(const IMesh* mesh) const;
 
-	unsigned int addMesh(IMesh* mesh);
+	size_t addMesh(IMesh* mesh);
 
-	void render(IRenderDevice& rd, unsigned int index);
+	void render(IRenderDevice& rd, size_t index);
 
 private:
 	GleamArray<ILayout*> _layouts;

@@ -191,6 +191,8 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\dependencies\Gleam\include\Gleam_AABB.h" />
+    <ClInclude Include="..\..\..\dependencies\Gleam\include\Gleam_AABB_CPU.h" />
+    <ClInclude Include="..\..\..\dependencies\Gleam\include\Gleam_AABB_SIMD.h" />
     <ClInclude Include="..\..\..\dependencies\Gleam\include\Gleam_Array.h" />
     <ClInclude Include="..\..\..\dependencies\Gleam\include\Gleam_BitArray.h" />
     <ClInclude Include="..\..\..\dependencies\Gleam\include\Gleam_Buffer.h" />
@@ -247,6 +249,8 @@
     <ClInclude Include="..\..\..\dependencies\Gleam\include\Gleam_Mouse.h" />
     <ClInclude Include="..\..\..\dependencies\Gleam\include\Gleam_Mouse_MessagePump.h" />
     <ClInclude Include="..\..\..\dependencies\Gleam\include\Gleam_OBB.h" />
+    <ClInclude Include="..\..\..\dependencies\Gleam\include\Gleam_OBB_CPU.h" />
+    <ClInclude Include="..\..\..\dependencies\Gleam\include\Gleam_OBB_SIMD.h" />
     <ClInclude Include="..\..\..\dependencies\Gleam\include\Gleam_Program.h" />
     <ClInclude Include="..\..\..\dependencies\Gleam\include\Gleam_ProgramBase.h" />
     <ClInclude Include="..\..\..\dependencies\Gleam\include\Gleam_Program_Direct3D.h" />
@@ -285,6 +289,8 @@
     <ClInclude Include="..\..\..\dependencies\Gleam\include\Gleam_Texture_Direct3D.h" />
     <ClInclude Include="..\..\..\dependencies\Gleam\include\Gleam_Texture_OpenGL.h" />
     <ClInclude Include="..\..\..\dependencies\Gleam\include\Gleam_Transform.h" />
+    <ClInclude Include="..\..\..\dependencies\Gleam\include\Gleam_Transform_CPU.h" />
+    <ClInclude Include="..\..\..\dependencies\Gleam\include\Gleam_Transform_SIMD.h" />
     <ClInclude Include="..\..\..\dependencies\Gleam\include\Gleam_Vector4.h" />
     <ClInclude Include="..\..\..\dependencies\Gleam\include\Gleam_Vector4_CPU.h" />
     <ClInclude Include="..\..\..\dependencies\Gleam\include\Gleam_Vector4_SIMD.h" />
@@ -294,7 +300,8 @@
     <ClInclude Include="..\..\..\dependencies\Gleam\include\Gleam_Window_Windows.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\dependencies\Gleam\Gleam_AABB.cpp" />
+    <ClCompile Include="..\..\..\dependencies\Gleam\Gleam_AABB_CPU.cpp" />
+    <ClCompile Include="..\..\..\dependencies\Gleam\Gleam_AABB_SIMD.cpp" />
     <ClCompile Include="..\..\..\dependencies\Gleam\Gleam_Buffer_Direct3D.cpp" />
     <ClCompile Include="..\..\..\dependencies\Gleam\Gleam_Buffer_OpenGL.cpp" />
     <ClCompile Include="..\..\..\dependencies\Gleam\Gleam_CommandList_Direct3D.cpp" />
@@ -316,7 +323,8 @@
     <ClCompile Include="..\..\..\dependencies\Gleam\Gleam_Model_Direct3D.cpp" />
     <ClCompile Include="..\..\..\dependencies\Gleam\Gleam_Model_OpenGL.cpp" />
     <ClCompile Include="..\..\..\dependencies\Gleam\Gleam_Mouse_MessagePump.cpp" />
-    <ClCompile Include="..\..\..\dependencies\Gleam\Gleam_OBB.cpp" />
+    <ClCompile Include="..\..\..\dependencies\Gleam\Gleam_OBB_CPU.cpp" />
+    <ClCompile Include="..\..\..\dependencies\Gleam\Gleam_OBB_SIMD.cpp" />
     <ClCompile Include="..\..\..\dependencies\Gleam\Gleam_ProgramBase.cpp" />
     <ClCompile Include="..\..\..\dependencies\Gleam\Gleam_Program_Direct3D.cpp" />
     <ClCompile Include="..\..\..\dependencies\Gleam\Gleam_Program_OpenGL.cpp" />
@@ -341,7 +349,8 @@
     <ClCompile Include="..\..\..\dependencies\Gleam\Gleam_Shader_OpenGL.cpp" />
     <ClCompile Include="..\..\..\dependencies\Gleam\Gleam_Texture_Direct3D.cpp" />
     <ClCompile Include="..\..\..\dependencies\Gleam\Gleam_Texture_OpenGL.cpp" />
-    <ClCompile Include="..\..\..\dependencies\Gleam\Gleam_Transform.cpp" />
+    <ClCompile Include="..\..\..\dependencies\Gleam\Gleam_Transform_CPU.cpp" />
+    <ClCompile Include="..\..\..\dependencies\Gleam\Gleam_Transform_SIMD.cpp" />
     <ClCompile Include="..\..\..\dependencies\Gleam\Gleam_Vector4_CPU.cpp" />
     <ClCompile Include="..\..\..\dependencies\Gleam\Gleam_Vector4_SIMD.cpp" />
     <ClCompile Include="..\..\..\dependencies\Gleam\Gleam_Window_Linux.cpp" />

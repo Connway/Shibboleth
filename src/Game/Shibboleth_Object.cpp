@@ -21,15 +21,16 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Shibboleth_Object.h"
-#include "Shibboleth_ComponentManager.h"
-#include "Shibboleth_IApp.h"
+#include <Shibboleth_ComponentManager.h>
+#include <Shibboleth_Utilities.h>
+#include <Shibboleth_IApp.h>
 #include <Gaff_JSON.h>
 
 NS_SHIBBOLETH
 
-Object::Object(IApp& app, unsigned int id):
-	_comp_mgr(app.getManagerT<ComponentManager>("Component Manager")),
-	_app(app), _id(id)
+Object::Object(unsigned int id):
+	_comp_mgr(GetApp().getManagerT<ComponentManager>("Component Manager")),
+	_parent(nullptr), _id(id)
 {
 }
 
@@ -40,10 +41,6 @@ Object::~Object(void)
 
 bool Object::init(const Gaff::JSON& json)
 {
-	if (!_aabb.init() || !_rotation.init() || !_position.init() || !_scale.init()) {
-		return false;
-	}
-
 	Gaff::JSON name = json["name"];
 
 	if (!name.isString()) {
@@ -51,7 +48,7 @@ bool Object::init(const Gaff::JSON& json)
 		return false;
 	}
 
-	strncpy(_name, name.getString(), MAX_OBJ_NAME_LENGTH);
+	_name = name.getString();
 
 	Gaff::JSON components = json["components"];
 
@@ -89,9 +86,11 @@ void Object::destroy(void)
 	for (auto it = _components.begin(); it != _components.end(); ++it) {
 		_comp_mgr.destroyComponent(*it);
 	}
+
+	removeChildren();
 }
 
-const char* Object::getName(void) const
+const AString& Object::getName(void) const
 {
 	return _name;
 }
@@ -127,67 +126,82 @@ MessageBroadcaster& Object::getBroadcaster(void)
 	return _broadcaster;
 }
 
-Gaff::WatchReceipt Object::watchRotation(const Watcher<Gleam::Quaternion>::Callback& callback)
+const Gleam::TransformCPU& Object::getLocalTransform(void) const
 {
-	return _rotation.addCallback(callback);
+	return _local_transform;
 }
 
-Gaff::WatchReceipt Object::watchPosition(const Watcher<Gleam::Vec4>::Callback& callback)
+const Gleam::TransformCPU& Object::getWorldTransform(void) const
 {
-	return _position.addCallback(callback);
+	return _world_transform;
 }
 
-Gaff::WatchReceipt Object::watchScale(const Watcher<Gleam::Vec4>::Callback& callback)
+void Object::setLocalTransform(const Gleam::TransformCPU& transform)
 {
-	return _scale.addCallback(callback);
+	_local_transform = transform;
 }
 
-Gaff::WatchReceipt Object::watchAABB(const Watcher<Gleam::AABB>::Callback& callback)
+const Gleam::QuaternionCPU& Object::getLocalRotation(void) const
 {
-	return _aabb.addCallback(callback);
+	return _local_transform.getRotation();
 }
 
-const Gleam::Quaternion& Object::getRotation(void) const
+const Gleam::QuaternionCPU& Object::getWorldRotation(void) const
 {
-	return _rotation.get();
+	return _world_transform.getRotation();
 }
 
-void Object::setRotation(const Gleam::Quaternion& rot)
+void Object::setLocalRotation(const Gleam::QuaternionCPU& rot)
 {
-	_rotation = rot;
+	_local_transform.setRotation(rot);
 }
 
-const Gleam::Vec4& Object::getPosition(void) const
+const Gleam::Vector4CPU& Object::getLocalPosition(void) const
 {
-	return _position.get();
+	return _local_transform.getTranslation();
 }
 
-void Object::setPosition(const Gleam::Vec4& pos)
+const Gleam::Vector4CPU& Object::getWorldPosition(void) const
 {
-	_position = pos;
+	return _world_transform.getTranslation();
 }
 
-const Gleam::Vec4& Object::getScale(void) const
+void Object::setLocalPosition(const Gleam::Vector4CPU& pos)
 {
-	return _scale.get();
+	_local_transform.setTranslation(pos);
 }
 
-void Object::setScale(const Gleam::Vec4& scale)
+const Gleam::Vector4CPU& Object::getLocalScale(void) const
 {
-	_scale = scale;
+	return _local_transform.getScale();
 }
 
-const Gleam::AABB& Object::getAABB(void) const
+const Gleam::Vector4CPU& Object::getWorldScale(void) const
 {
-	return _aabb.get();
+	return _local_transform.getScale();
 }
 
-void Object::setAABB(const Gleam::AABB& aabb)
+void Object::setLocalScale(const Gleam::Vector4CPU& scale)
 {
-	_aabb = aabb;
+	_local_transform.setScale(scale);
 }
 
-unsigned int Object::getNumComponents(void) const
+const Gleam::AABBCPU& Object::getLocalAABB(void) const
+{
+	return _local_aabb;
+}
+
+const Gleam::AABBCPU& Object::getWorldAABB(void) const
+{
+	return _world_aabb;
+}
+
+void Object::setLocalAABB(const Gleam::AABBCPU& aabb)
+{
+	_local_aabb = aabb;
+}
+
+size_t Object::getNumComponents(void) const
 {
 	return _components.size();
 }
@@ -212,6 +226,108 @@ const Array<IComponent*>& Object::getComponents(void) const
 Array<IComponent*>& Object::getComponents(void)
 {
 	return _components;
+}
+
+void Object::addChild(Object* object)
+{
+	Gaff::ScopedLock<Gaff::SpinLock> scoped_lock(_children_lock);
+	_children.push(object);
+	object->_parent = this;
+}
+
+void Object::removeFromParent(void)
+{
+	{
+		Gaff::ScopedLock<Gaff::SpinLock> scoped_lock(_parent->_children_lock);
+		auto it = _parent->_children.linearSearch(this);
+
+		if (it != _parent->_children.end()) {
+			_parent->_children.fastErase(it);
+		}
+	}
+
+	_parent = nullptr;
+}
+
+void Object::removeChildren(void)
+{
+	Gaff::ScopedLock<Gaff::SpinLock> scoped_lock(_children_lock);
+
+	 for (auto it = _children.begin(); it != _children.end(); ++it) {
+		 (*it)->_parent = nullptr;
+	 }
+
+	 _children.clear();
+}
+
+void Object::updateTransforms(void)
+{
+	if (_parent) {
+		_world_transform = _local_transform;
+		_world_transform += _parent->_world_transform;
+		_world_aabb = _local_aabb;
+		_world_aabb.transform(_parent->_world_transform);
+
+	} else {
+		_world_transform = _local_transform;
+		_world_aabb = _local_aabb;
+	}
+
+	for (auto it = _children.begin(); it != _children.end(); ++it) {
+		// Create jobs for updating children nodes.
+		// We will be assuming that most objects won't have that many children to be worth splitting into multiple updates.
+		(*it)->updateTransforms();
+	}
+}
+
+void Object::registerForLocalDirtyCallback(const DirtyCallback& callback, unsigned long long user_data)
+{
+	_local_callbacks.emplacePush(callback, user_data);
+}
+
+void Object::unregisterForLocalDirtyCallback(const DirtyCallback& callback)
+{
+	auto it = _local_callbacks.linearSearch(callback,
+	[](const Gaff::Pair<DirtyCallback, unsigned long long>& left, const DirtyCallback& right) -> bool
+	{
+		return left.first == right;
+	});
+
+	if (it != _local_callbacks.end()) {
+		_local_callbacks.fastErase(it);
+	}
+}
+
+void Object::notifyLocalDirtyCallbacks(void)
+{
+	for (auto it = _local_callbacks.begin(); it != _local_callbacks.end(); ++it) {
+		it->first(this, it->second);
+	}
+}
+
+void Object::registerForWorldDirtyCallback(const DirtyCallback& callback, unsigned long long user_data)
+{
+	_world_callbacks.emplacePush(callback, user_data);
+}
+
+void Object::unregisterForWorldDirtyCallback(const DirtyCallback& callback)
+{
+	auto it = _world_callbacks.linearSearch(callback,
+	[](const Gaff::Pair<DirtyCallback, unsigned long long>& left, const DirtyCallback& right) -> bool
+	{
+		return left.first == right;
+	});
+
+	if (it != _world_callbacks.end()) {
+		_world_callbacks.fastErase(it);
+	}
+}
+
+void Object::notifyWorldDirtyCallbacks(void)
+{
+	for (auto it = _world_callbacks.begin(); it != _world_callbacks.end(); ++it) {
+		it->first(this, it->second);
+	}
 }
 
 bool Object::createComponents(const Gaff::JSON& json)
@@ -247,7 +363,7 @@ bool Object::createComponents(const Gaff::JSON& json)
 		component->setOwner(this);
 		component->setName(key);
 
-		if (!component->validate(value) && !component->load(value)) {
+		if (!component->validate(value) || !component->load(value)) {
 			error = true;
 			return true;
 		}
@@ -258,6 +374,14 @@ bool Object::createComponents(const Gaff::JSON& json)
 	});
 
 	return !error;
+}
+
+void Object::markDirty(void)
+{
+	if (!_dirty) {
+
+		_dirty = true;
+	}
 }
 
 NS_END

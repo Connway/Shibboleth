@@ -51,7 +51,7 @@ bool RenderStateD3D::init(IRenderDevice& rd, bool wireframe, bool depth_test, bo
 {
 	assert(rd.isD3D());
 
-	IRenderDeviceD3D& rd3d = (IRenderDeviceD3D&)*(((const char*)&rd) + sizeof(IRenderDevice));
+	IRenderDeviceD3D& rd3d = reinterpret_cast<IRenderDeviceD3D&>(*(reinterpret_cast<char*>(&rd) + sizeof(IRenderDevice)));
 	ID3D11Device* device = rd3d.getActiveDevice();
 
 	D3D11_DEPTH_STENCIL_DESC depth_stencil_desc;
@@ -129,7 +129,7 @@ bool RenderStateD3D::init(IRenderDevice& rd, bool wireframe, bool depth_test, bo
 {
 	assert(rd.isD3D());
 
-	IRenderDeviceD3D& rd3d = (IRenderDeviceD3D&)*(((const char*)&rd) + sizeof(IRenderDevice));
+	IRenderDeviceD3D& rd3d = reinterpret_cast<IRenderDeviceD3D&>(*(reinterpret_cast<char*>(&rd) + sizeof(IRenderDevice)));
 	ID3D11Device* device = rd3d.getActiveDevice();
 
 	D3D11_DEPTH_STENCIL_DESC depth_stencil_desc;
@@ -206,7 +206,7 @@ void RenderStateD3D::destroy(void)
 void RenderStateD3D::set(IRenderDevice& rd) const
 {
 	assert(rd.isD3D());
-	IRenderDeviceD3D& rd3d = (IRenderDeviceD3D&)*(((const char*)&rd) + sizeof(IRenderDevice));
+	IRenderDeviceD3D& rd3d = reinterpret_cast<IRenderDeviceD3D&>(*(reinterpret_cast<char*>(&rd) + sizeof(IRenderDevice)));
 	ID3D11DeviceContext* context = rd3d.getActiveDeviceContext();
 
 	context->OMSetDepthStencilState(_depth_stencil_state, _stencil_ref);

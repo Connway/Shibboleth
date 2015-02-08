@@ -34,7 +34,7 @@ public:
 
 	AdapterList getDisplayModes(int compat = 28);
 
-	bool initThreadData(unsigned int* thread_ids, unsigned int num_ids);
+	bool initThreadData(unsigned int* thread_ids, size_t num_ids);
 	bool init(const IWindow& window, unsigned int adapter_id, unsigned int display_id, unsigned int display_mode_id, bool vsync = false);
 
 	bool isVsync(unsigned int device, unsigned int output) const;

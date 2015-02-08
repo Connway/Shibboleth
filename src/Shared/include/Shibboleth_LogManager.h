@@ -25,6 +25,8 @@ THE SOFTWARE.
 #include "Shibboleth_HashString.h"
 #include "Shibboleth_HashMap.h"
 #include "Shibboleth_String.h"
+#include "Shibboleth_Array.h"
+#include <Gaff_Function.h>
 #include <Gaff_SpinLock.h>
 #include <Gaff_File.h>
 #include <Gaff_Pair.h>
@@ -34,6 +36,14 @@ NS_SHIBBOLETH
 class LogManager
 {
 public:
+	enum LOG_TYPE
+	{
+		LOG_NORMAL = 0,
+		LOG_WARNING,
+		LOG_ERROR
+	};
+
+	typedef Gaff::FunctionBinder<void, const char*, LOG_TYPE> LogCallback;
 	typedef Gaff::Pair<Gaff::File, Gaff::SpinLock*> FileLockPair;
 
 	LogManager(const ProxyAllocator& allocator);
@@ -51,8 +61,13 @@ public:
 	INLINE FileLockPair& getLogFile(const AString& filename);
 	INLINE FileLockPair& getLogFile(const char* filename);
 
+	INLINE void addLogCallback(const LogCallback& callback);
+	INLINE void removeLogCallback(const LogCallback& callback);
+	void notifyLogCallbacks(const char* message, LOG_TYPE type);
+
 private:
 	HashMap< AHashString, Gaff::Pair<Gaff::File, Gaff::SpinLock*> > _files;
+	Array<LogCallback> _log_callbacks;
 	ProxyAllocator _allocator;
 
 	GAFF_NO_COPY(LogManager);

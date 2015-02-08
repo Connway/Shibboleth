@@ -74,11 +74,13 @@ bool Between(const T& val, const T& min_val, const T& max_val)
 	return val >= min_val && val <= max_val;
 }
 
-typedef unsigned int (*HashFunc)(const char* data, unsigned int len);
-unsigned long long FNV1aHash64(const char* key, unsigned int len);
-unsigned long long FNV1Hash64(const char* key, unsigned int len);
-unsigned int FNV1aHash32(const char* key, unsigned int len);
-unsigned int FNV1Hash32(const char* key, unsigned int len);
+typedef unsigned long long (*HashFunc64)(const char* data, size_t len);
+typedef unsigned int (*HashFunc32)(const char* data, size_t len);
+
+unsigned long long FNV1aHash64(const char* key, size_t len);
+unsigned long long FNV1Hash64(const char* key, size_t len);
+unsigned int FNV1aHash32(const char* key, size_t len);
+unsigned int FNV1Hash32(const char* key, size_t len);
 
 float BinomialCoefficient(float n, float k);
 float BernsteinPolynomial(float t, float n, float k);

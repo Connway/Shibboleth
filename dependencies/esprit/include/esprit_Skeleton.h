@@ -34,23 +34,23 @@ public:
 	Skeleton(void);
 	~Skeleton(void);
 
-	unsigned int getNumBones(void) const;
+	size_t getNumBones(void) const;
 
-	INLINE unsigned int getParentIndex(unsigned int bone_index) const;
-	INLINE const AString& getName(unsigned int bone_index) const;
-	unsigned int getBoneIndex(const char* name) const;
+	INLINE size_t getParentIndex(size_t bone_index) const;
+	INLINE const AString& getName(size_t bone_index) const;
+	size_t getBoneIndex(const char* name) const;
 
-	void setReferenceTransform(unsigned int bone_index, const Gleam::Transform& transform);
-	void addBone(unsigned int parent_index, const char* name = nullptr);
+	void setReferenceTransform(size_t bone_index, const Gleam::TransformSIMD& transform);
+	void addBone(size_t parent_index, const char* name = nullptr);
 
 	// Function assumes that parent's model-space transform has already been calculated
-	void calculateModelTransform(Pose& pose, unsigned int bone_index);
+	void calculateModelTransform(Pose& pose, size_t bone_index);
 	// Assumes that bones were pushed in order, starting with root
 	void calculateModelTransform(Pose& pose);
 
 private:
 	Pose _default_pose;
-	Array<unsigned int> _parent_indices;
+	Array<size_t> _parent_indices;
 	Array<AString> _names;
 
 	GAFF_NO_COPY(Skeleton);

@@ -34,8 +34,8 @@ REF_IMPL_SHIB(ObjectManager)
 .ADD_BASE_CLASS_INTERFACE_ONLY(IUpdateQuery)
 ;
 
-ObjectManager::ObjectManager(IApp& app):
-	_app(app), _next_id(0)
+ObjectManager::ObjectManager(void):
+	_next_id(0)
 {
 }
 
@@ -46,7 +46,7 @@ ObjectManager::~ObjectManager(void)
 Object* ObjectManager::createObject(void)
 {
 	unsigned int id = AtomicUAddFetchOrig(&_next_id, 1);
-	Object* object = GetAllocator()->template allocT<Object>(_app, id);
+	Object* object = GetAllocator()->template allocT<Object>(id);
 
 	if (object) {
 		Gaff::ScopedLock<Gaff::SpinLock> scoped_lock(_objects_lock);
@@ -65,8 +65,15 @@ Object* ObjectManager::createObject(void)
 	return object;
 }
 
+void ObjectManager::removeObject(Object* object)
+{
+	assert(object);
+	removeObject(object->getID());
+}
+
 void ObjectManager::removeObject(unsigned int id)
 {
+	assert(id < _next_id);
 	Object* object = nullptr;
 
 	{
@@ -79,6 +86,7 @@ void ObjectManager::removeObject(unsigned int id)
 
 		if (it != _objects.end() && (*it)->getID() == id) {
 			object = *it;
+			_objects.erase(it);
 		}
 	}
 
@@ -101,6 +109,12 @@ bool ObjectManager::doesObjectExist(unsigned int id) const
 	});
 
 	return it != _objects.end() && (*it)->getID() == id;
+}
+
+void ObjectManager::addDirtyObject(Object* object)
+{
+	Gaff::ScopedLock<Gaff::SpinLock> scoped_lock(_dirty_objects_lock);
+	_dirty_objects.push(object);
 }
 
 const char* ObjectManager::getName(void) const

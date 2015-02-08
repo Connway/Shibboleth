@@ -22,48 +22,16 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Gleam_Matrix4x4.h"
-#include "Gleam_Vector4.h"
-#include "Gleam_Array.h"
+#ifdef USE_SIMD
+	#include "Gleam_AABB_SIMD.h"
 
-NS_GLEAM
+	NS_GLEAM
+		typedef AABBSIMD AABB;
+	NS_END
+#else
+	#include "Gleam_AABB_CPU.h"
 
-class AABB
-{
-public:
-	AABB(const Vec4& min, const Vec4& max);
-	AABB(const AABB& aabb);
-	AABB(void);
-	~AABB(void);
-
-	INLINE const Vec4& getMin(void) const;
-	INLINE const Vec4& getMax(void) const;
-	INLINE Vec4 getCenter(void) const;
-	INLINE void setMin(const Vec4& min);
-	INLINE void setMax(const Vec4& max);
-
-	INLINE void addPoint(float x, float y, float z);
-	INLINE void addPoint(const float* point);
-	INLINE void addPoint(const Vec4& point);
-
-	void addPoints(const float* points, unsigned int num_points, unsigned int stride = 3);
-	void addPoints(const Vec4* points, unsigned int num_points);
-	void addPoints(const GleamArray<Vec4>& points);
-
-	INLINE void addAABB(const AABB& aabb);
-
-	INLINE void reset(void);
-
-	const GleamArray<Vec4>& generatePoints(GleamArray<Vec4>& out) const;
-	GleamArray<Vec4> generatePoints(void) const;
-	const Vec4* generatePoints(Vec4* out) const;
-
-	void transform(const Mtx4x4& transform);
-	INLINE bool contains(const Vec4& point) const;
-
-private:
-	Vec4 _min;
-	Vec4 _max;
-};
-
-NS_END
+	NS_GLEAM
+		typedef AABBCPU AABB;
+	NS_END
+#endif

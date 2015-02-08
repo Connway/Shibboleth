@@ -50,25 +50,25 @@ void ModelBase::destroy(void)
 	_meshes.clear();
 }
 
-const ILayout* ModelBase::getLayout(unsigned int index) const
+const ILayout* ModelBase::getLayout(size_t index) const
 {
 	assert(index < _meshes.size());
 	return _layouts[index];
 }
 
-ILayout* ModelBase::getLayout(unsigned int index)
+ILayout* ModelBase::getLayout(size_t index)
 {
 	assert(index < _meshes.size());
 	return _layouts[index];
 }
 
-int ModelBase::getIndex(const ILayout* layout) const
+size_t ModelBase::getIndex(const ILayout* layout) const
 {
 	assert(layout);
 	return _layouts.linearSearch(0, _layouts.size(), layout);
 }
 
-unsigned int ModelBase::addLayout(ILayout* layout)
+size_t ModelBase::addLayout(ILayout* layout)
 {
 	assert(layout);
 	_layouts.push(layout);
@@ -76,30 +76,30 @@ unsigned int ModelBase::addLayout(ILayout* layout)
 	return _layouts.size() - 1;
 }
 
-const IMesh* ModelBase::getMesh(unsigned int index) const
+const IMesh* ModelBase::getMesh(size_t index) const
 {
 	assert(index < _meshes.size());
 	return _meshes[index];
 }
 
-IMesh* ModelBase::getMesh(unsigned int index)
+IMesh* ModelBase::getMesh(size_t index)
 {
 	assert(index < _meshes.size());
 	return _meshes[index];
 }
 
-unsigned int ModelBase::getMeshCount(void) const
+size_t ModelBase::getMeshCount(void) const
 {
 	return _meshes.size();
 }
 
-int ModelBase::getIndex(const IMesh* mesh) const
+size_t ModelBase::getIndex(const IMesh* mesh) const
 {
 	assert(mesh);
 	return _meshes.linearSearch(0, _meshes.size(), mesh);
 }
 
-unsigned int ModelBase::addMesh(IMesh* mesh)
+size_t ModelBase::addMesh(IMesh* mesh)
 {
 	assert(mesh);
 	_meshes.push(mesh);
@@ -107,7 +107,7 @@ unsigned int ModelBase::addMesh(IMesh* mesh)
 	return _meshes.size() - 1;
 }
 
-void ModelBase::render(IRenderDevice& rd, unsigned int index)
+void ModelBase::render(IRenderDevice& rd, size_t index)
 {
 	assert(_layouts.size() == _meshes.size() && index < _meshes.size());
 	assert(_meshes[index] && _layouts[index]);

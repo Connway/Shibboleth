@@ -22,7 +22,7 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Shibboleth_Defines.h"
+#include <Shibboleth_String.h>
 #include <Gaff_IRequestableInterface.h>
 #include <Gaff_IVirtualDestructor.h>
 #include <Gaff_IncludeAssert.h>
@@ -48,8 +48,6 @@ NS_SHIBBOLETH
 		return true; \
 	}
 
-#define MAX_COMP_NAME_LENGTH 64
-
 class Object;
 
 class IComponent : public Gaff::IRequestableInterface
@@ -64,7 +62,7 @@ public:
 
 	virtual void allComponentsLoaded(void) {}
 
-	const char* getName(void) const
+	const AString& getName(void) const
 	{
 		return _name;
 	}
@@ -72,7 +70,7 @@ public:
 	void setName(const char* name)
 	{
 		assert(name && strlen(name));
-		strncpy(_name, name, MAX_COMP_NAME_LENGTH);
+		_name = name;
 	}
 
 	const Object* getOwner(void) const
@@ -90,20 +88,20 @@ public:
 		_owner = owner;
 	}
 
-	unsigned int getIndex(void) const
+	size_t getIndex(void) const
 	{
 		return _comp_index;
 	}
 
-	void setIndex(unsigned int index)
+	void setIndex(size_t index)
 	{
 		_comp_index = index;
 	}
 
 private:
-	char _name[MAX_COMP_NAME_LENGTH];
+	AString _name;
 	Object* _owner;
-	unsigned int _comp_index;
+	size_t _comp_index;
 
 	GAFF_NO_COPY(IComponent);
 	GAFF_NO_MOVE(IComponent);

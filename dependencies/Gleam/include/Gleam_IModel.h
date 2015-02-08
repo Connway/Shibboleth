@@ -42,22 +42,22 @@ public:
 
 	virtual void destroy(void) = 0;
 
-	virtual const ILayout* getLayout(unsigned int index) const = 0;
-	virtual ILayout* getLayout(unsigned int index) = 0;
-	virtual int getIndex(const ILayout* layout) const = 0;
+	virtual const ILayout* getLayout(size_t index) const = 0;
+	virtual ILayout* getLayout(size_t index) = 0;
+	virtual size_t getIndex(const ILayout* layout) const = 0;
 
 	virtual ILayout* createLayout(IRenderDevice& rd, const LayoutDescription* layout_desc, unsigned int desc_size, const IShader* shader) = 0;
-	virtual unsigned int addLayout(ILayout* layout) = 0;
+	virtual size_t addLayout(ILayout* layout) = 0;
 
-	virtual const IMesh* getMesh(unsigned int index) const = 0;
-	virtual IMesh* getMesh(unsigned int index) = 0;
-	virtual unsigned int getMeshCount(void) const = 0;
-	virtual int getIndex(const IMesh* mesh) const = 0;
+	virtual const IMesh* getMesh(size_t index) const = 0;
+	virtual IMesh* getMesh(size_t index) = 0;
+	virtual size_t getMeshCount(void) const = 0;
+	virtual size_t getIndex(const IMesh* mesh) const = 0;
 
 	virtual IMesh* createMesh(void) = 0;
-	virtual unsigned int addMesh(IMesh* mesh) = 0;
+	virtual size_t addMesh(IMesh* mesh) = 0;
 
-	virtual void render(IRenderDevice& rd, unsigned int index) = 0;
+	virtual void render(IRenderDevice& rd, size_t index) = 0;
 
 	GAFF_NO_COPY(IModel);
 };

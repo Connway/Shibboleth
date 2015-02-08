@@ -69,9 +69,9 @@ void CameraManager::update(double)
 	}
 }
 
-void CameraManager::registerCamera(CameraComponent* camera, unsigned int position)
+void CameraManager::registerCamera(CameraComponent* camera, size_t position)
 {
-	if (position == UINT_FAIL) {
+	if (position == SIZE_T_FAIL) {
 		_cameras.push(camera);
 
 	} else {

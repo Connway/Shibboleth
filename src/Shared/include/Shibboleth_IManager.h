@@ -25,18 +25,18 @@ THE SOFTWARE.
 #include "Shibboleth_String.h"
 #include "Shibboleth_Array.h"
 #include <Gaff_IRequestableInterface.h>
-#include <Gaff_INamedObject.h>
 #include <Gaff_Function.h>
 #include <Gaff_Pair.h>
 
 NS_SHIBBOLETH
 
-class IManager : public Gaff::INamedObject, public Gaff::IRequestableInterface
+class IManager : public Gaff::IRequestableInterface
 {
 public:
 	IManager(void) {}
 	virtual ~IManager(void) {}
 
+	virtual const char* getName(void) const = 0;
 	virtual void allManagersCreated(void) {}
 
 	GAFF_NO_COPY(IManager);

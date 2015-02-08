@@ -83,9 +83,9 @@ static CreateMgrFunc create_funcs[] = {
 	&CreateOtterUIManager,
 	&CreateManagerT<Shibboleth::RenderManager>,
 	&CreateManagerT<Shibboleth::UpdateManager>,
-	&CreateManagerT<Shibboleth::ObjectManager>,
+	&CreateManagerTNoApp<Shibboleth::ObjectManager>,
 	&CreateManagerT<Shibboleth::LuaManager>,
-	&CreateManagerT<Shibboleth::OcclusionManager>
+	&CreateManagerTNoApp<Shibboleth::OcclusionManager>
 };
 
 DYNAMICEXPORT_C bool InitModule(Shibboleth::IApp& app)

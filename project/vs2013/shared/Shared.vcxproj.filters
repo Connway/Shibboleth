@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="include">
@@ -48,6 +48,9 @@
     <ClInclude Include="..\..\..\src\Shared\include\Shibboleth_LockDefines.h">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\src\Shared\include\Shibboleth_LogManager.h">
+      <Filter>include</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\src\Shared\include\Shibboleth_LooseFileSystem.h">
       <Filter>include</Filter>
     </ClInclude>
@@ -75,22 +78,19 @@
     <ClInclude Include="..\..\..\src\Shared\include\Shibboleth_ThreadPool.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\src\Shared\include\Shibboleth_Watcher.h">
-      <Filter>include</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\src\Shared\include\Shibboleth_Utilities.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\src\Shared\include\Shibboleth_LogManager.h">
+    <ClInclude Include="..\..\..\src\Shared\include\Shibboleth_Watcher.h">
       <Filter>include</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\src\Shared\Shibboleth_Allocator.cpp" />
     <ClCompile Include="..\..\..\src\Shared\Shibboleth_App.cpp" />
+    <ClCompile Include="..\..\..\src\Shared\Shibboleth_LogManager.cpp" />
     <ClCompile Include="..\..\..\src\Shared\Shibboleth_LooseFileSystem.cpp" />
     <ClCompile Include="..\..\..\src\Shared\Shibboleth_StateMachine.cpp" />
     <ClCompile Include="..\..\..\src\Shared\Shibboleth_Utilities.cpp" />
-    <ClCompile Include="..\..\..\src\Shared\Shibboleth_LogManager.cpp" />
   </ItemGroup>
 </Project>

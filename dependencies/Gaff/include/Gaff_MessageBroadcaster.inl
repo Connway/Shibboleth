@@ -363,9 +363,9 @@ void MessageBroadcaster<Allocator>::removeListener(const AHashString<Allocator>&
 	ScopedWriteLock<ReadWriteSpinLock> scoped_lock(_listeners[message_type].first);
 	ListenerList& listeners = _listeners[message_type].second;
 
-	int index = listeners.linearSearch(0, listeners.size(), listener);
+	size_t index = listeners.linearSearch(0, listeners.size(), listener);
 
-	if (index > -1) {
+	if (index != SIZE_T_FAIL) {
 		listeners.erase(index);
 	}
 }

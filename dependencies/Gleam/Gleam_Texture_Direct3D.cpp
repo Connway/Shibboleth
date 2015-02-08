@@ -232,7 +232,7 @@ bool TextureD3D::init3D(IRenderDevice& rd, int width, int height, int depth, FOR
 	assert(width > 0 && height > 0 && depth > 0 && mip_levels > 0);
 	assert(rd.isD3D());
 
-	IRenderDeviceD3D& rd3d = (IRenderDeviceD3D&)*(((const char*)&rd) + sizeof(IRenderDevice));
+	IRenderDeviceD3D& rd3d = reinterpret_cast<IRenderDeviceD3D&>(*(reinterpret_cast<char*>(&rd) + sizeof(IRenderDevice)));
 	ID3D11Device* device = rd3d.getActiveDevice();
 
 	_mip_levels = (unsigned int)mip_levels;
@@ -277,7 +277,7 @@ bool TextureD3D::init2D(IRenderDevice& rd, int width, int height, FORMAT format,
 	assert(width > 0 && height > 0 && mip_levels > 0);
 	assert(rd.isD3D());
 
-	IRenderDeviceD3D& rd3d = (IRenderDeviceD3D&)*(((const char*)&rd) + sizeof(IRenderDevice));
+	IRenderDeviceD3D& rd3d = reinterpret_cast<IRenderDeviceD3D&>(*(reinterpret_cast<char*>(&rd) + sizeof(IRenderDevice)));
 	ID3D11Device* device = rd3d.getActiveDevice();
 
 	_mip_levels = (unsigned int)mip_levels;
@@ -324,7 +324,7 @@ bool TextureD3D::init1D(IRenderDevice& rd, int width, FORMAT format, int mip_lev
 	assert(width > 0 && mip_levels > 0);
 	assert(rd.isD3D());
 
-	IRenderDeviceD3D& rd3d = (IRenderDeviceD3D&)*(((const char*)&rd) + sizeof(IRenderDevice));
+	IRenderDeviceD3D& rd3d = reinterpret_cast<IRenderDeviceD3D&>(*(reinterpret_cast<char*>(&rd) + sizeof(IRenderDevice)));
 	ID3D11Device* device = rd3d.getActiveDevice();
 
 	_mip_levels = (unsigned int)mip_levels;
@@ -368,7 +368,7 @@ bool TextureD3D::initCubemap(IRenderDevice& rd, int width, int height, FORMAT fo
 	assert(width > 0 && height > 0 && mip_levels > 0);
 	assert(rd.isD3D());
 
-	IRenderDeviceD3D& rd3d = (IRenderDeviceD3D&)*(((const char*)&rd) + sizeof(IRenderDevice));
+	IRenderDeviceD3D& rd3d = reinterpret_cast<IRenderDeviceD3D&>(*(reinterpret_cast<char*>(&rd) + sizeof(IRenderDevice)));
 	ID3D11Device* device = rd3d.getActiveDevice();
 
 	_mip_levels = (unsigned int)mip_levels;
@@ -415,7 +415,7 @@ bool TextureD3D::initDepthStencil(IRenderDevice& rd, int width, int height, FORM
 	assert(width > 0 && height > 0);
 	assert(rd.isD3D());
 
-	IRenderDeviceD3D& rd3d = (IRenderDeviceD3D&)*(((const char*)&rd) + sizeof(IRenderDevice));
+	IRenderDeviceD3D& rd3d = reinterpret_cast<IRenderDeviceD3D&>(*(reinterpret_cast<char*>(&rd) + sizeof(IRenderDevice)));
 	ID3D11Device* device = rd3d.getActiveDevice();
 	DXGI_FORMAT typeless_format = DXGI_FORMAT_R24G8_TYPELESS;
 

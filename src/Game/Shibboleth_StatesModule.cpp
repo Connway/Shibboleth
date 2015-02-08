@@ -47,6 +47,13 @@ class LoopState : public Shibboleth::IState
 {
 public:
 	LoopState(Shibboleth::IApp& app) : _object(nullptr), _app(app) {}
+	~LoopState(void)
+	{
+		if (_object) {
+			Shibboleth::GetApp().getManagerT<Shibboleth::OcclusionManager>("Occlusion Manager").removeObject(_object);
+			Shibboleth::GetApp().getManagerT<Shibboleth::ObjectManager>("Object Manager").removeObject(_object->getID());
+		}
+	}
 
 	bool init(unsigned int)
 	{
@@ -59,7 +66,7 @@ public:
 
 		if (_object) {
 			if (_object->init("Resources/Objects/test.object")) {
-				_occlusion_id = _app.getManagerT<Shibboleth::OcclusionManager>("Occlusion Manager").addObject(_object);
+				_app.getManagerT<Shibboleth::OcclusionManager>("Occlusion Manager").addObject(_object, Shibboleth::OcclusionManager::OT_DYNAMIC);
 			} else {
 				_app.getManagerT<Shibboleth::ObjectManager>("Object Manager").removeObject(_object->getID());
 				_app.quit();
@@ -116,7 +123,6 @@ public:
 private:
 	Shibboleth::Object* _object;
 	Shibboleth::IApp& _app;
-	unsigned int _occlusion_id;
 };
 
 template <class State>
@@ -153,7 +159,7 @@ static const char* state_names[NUM_STATES] = {
 	"loopforeverstate"
 };
 
-static unsigned int g_image_alloc_tag = Gaff::FNV1Hash32("Images", strlen("Images"));
+static unsigned int g_image_alloc_tag = Gaff::FNV1Hash32("Images", static_cast<unsigned int>(strlen("Images")));
 
 void* MEMCB ImageAlloc(const size_t size)
 {

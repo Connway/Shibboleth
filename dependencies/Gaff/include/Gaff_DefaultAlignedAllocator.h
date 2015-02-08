@@ -41,7 +41,7 @@ public:
 	{
 	}
 
-	void* alloc(unsigned int size_bytes)
+	void* alloc(size_t size_bytes)
 	{
 		return _aligned_malloc(size_bytes, _alignment);
 	}

@@ -69,7 +69,7 @@ public:
 	virtual void addBuffer(IBuffer* buffer) = 0;
 	virtual const IBuffer* getBuffer(unsigned int index) const = 0;
 	virtual IBuffer* getBuffer(unsigned int index) = 0;
-	virtual unsigned int getBufferCount(void) const = 0;
+	virtual size_t getBufferCount(void) const = 0;
 
 	virtual void setIndiceBuffer(IBuffer* buffer) = 0;
 

@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="include">
@@ -137,9 +137,6 @@
     <ClInclude Include="..\..\..\dependencies\Gaff\include\Gaff_ICurve.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\dependencies\Gaff\include\Gaff_INamedObject.h">
-      <Filter>include</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\dependencies\Gaff\include\Gaff_IRefCounted.h">
       <Filter>include</Filter>
     </ClInclude>
@@ -206,9 +203,6 @@
     <ClInclude Include="..\..\..\dependencies\Gaff\include\Gaff_Queue.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\dependencies\Gaff\include\Gaff_QueueLockFree.h">
-      <Filter>include</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\dependencies\Gaff\include\Gaff_ReadWriteSpinLock.h">
       <Filter>include</Filter>
     </ClInclude>
@@ -240,9 +234,6 @@
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\dependencies\Gaff\include\Gaff_SpinLock.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\dependencies\Gaff\include\Gaff_StackLockFree.h">
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\dependencies\Gaff\include\Gaff_StackTrace.h">

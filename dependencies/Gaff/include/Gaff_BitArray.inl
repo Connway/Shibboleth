@@ -35,7 +35,7 @@ BitArray<Allocator>::BitArray(const Allocator& allocator):
 	\note Initializes all bits to zero.
 */
 template <class Allocator>
-BitArray<Allocator>::BitArray(unsigned int start_size, const Allocator& allocator):
+BitArray<Allocator>::BitArray(size_t start_size, const Allocator& allocator):
 	_bit_array(CalculateBytes(start_size), 0, allocator), _used(start_size),
 	_size(_bit_array.size() * BITS_PER_BYTE)
 {
@@ -50,7 +50,7 @@ BitArray<Allocator>::BitArray(unsigned int start_size, const Allocator& allocato
 	\param Allocator The allocator we will use to allocate memory.
 */
 template <class Allocator>
-BitArray<Allocator>::BitArray(unsigned int start_size, bool init_val, const Allocator& allocator):
+BitArray<Allocator>::BitArray(size_t start_size, bool init_val, const Allocator& allocator):
 	_bit_array(CalculateBytes(start_size), (init_val) ? static_cast<unsigned char>(-1) : 0, allocator),
 	_used(start_size), _size(_bit_array.size() * BITS_PER_BYTE)
 {
@@ -106,7 +106,7 @@ bool BitArray<Allocator>::operator==(const BitArray<Allocator>& rhs) const
 		return false;
 	}
 
-	for (unsigned int i = 0; i < _used; ++i) {
+	for (size_t i = 0; i < _used; ++i) {
 		if ((*this)[i] != rhs[i]) {
 			return false;
 		}
@@ -122,16 +122,16 @@ bool BitArray<Allocator>::operator!=(const BitArray<Allocator>& rhs) const
 }
 
 template <class Allocator>
-bool BitArray<Allocator>::operator[](unsigned int index) const
+bool BitArray<Allocator>::operator[](size_t index) const
 {
 	assert(index < _used);
-	unsigned int array_index, shift;
+	size_t array_index, shift;
 	CalculateIndexAndShift(index, array_index, shift);
 	return (_bit_array[array_index] & (1 << shift)) != 0;
 }
 
 template <class Allocator>
-void BitArray<Allocator>::setBit(unsigned int index, bool value)
+void BitArray<Allocator>::setBit(size_t index, bool value)
 {
 	assert(index < _used);
 
@@ -143,19 +143,19 @@ void BitArray<Allocator>::setBit(unsigned int index, bool value)
 }
 
 template <class Allocator>
-void BitArray<Allocator>::unset(unsigned int index)
+void BitArray<Allocator>::unset(size_t index)
 {
 	assert(index < _used);
-	unsigned int array_index, shift;
+	size_t array_index, shift;
 	CalculateIndexAndShift(index, array_index, shift);
 	_bit_array[array_index] &= ~(1 << shift);
 }
 
 template <class Allocator>
-void BitArray<Allocator>::set(unsigned int index)
+void BitArray<Allocator>::set(size_t index)
 {
 	assert(index < _used);
-	unsigned int array_index, shift;
+	size_t array_index, shift;
 	CalculateIndexAndShift(index, array_index, shift);
 	_bit_array[array_index] |= (1 << shift);
 }
@@ -202,13 +202,13 @@ bool BitArray<Allocator>::empty(void) const
 }
 
 template <class Allocator>
-unsigned int BitArray<Allocator>::size(void) const
+size_t BitArray<Allocator>::size(void) const
 {
 	return _used;
 }
 
 template <class Allocator>
-unsigned int BitArray<Allocator>::capacity(void) const
+size_t BitArray<Allocator>::capacity(void) const
 {
 	return _size;
 }
@@ -245,7 +245,7 @@ void BitArray<Allocator>::pop(void)
 
 // This function is probably crazy expensive for what it does
 template <class Allocator>
-void BitArray<Allocator>::insert(bool value, unsigned int index)
+void BitArray<Allocator>::insert(bool value, size_t index)
 {
 	assert(index <= _size);
 
@@ -260,7 +260,7 @@ void BitArray<Allocator>::insert(bool value, unsigned int index)
 	++_used; // Doing this here so that calls to set()/unset() won't assert
 
 	// Shift all the bits up one
-	for (unsigned int i = _used - 2; i >= index; --i) {
+	for (size_t i = _used - 2; i >= index; --i) {
 		bool temp = (*this)[i];
 
 		if (temp) {
@@ -278,12 +278,12 @@ void BitArray<Allocator>::insert(bool value, unsigned int index)
 }
 
 template <class Allocator>
-void BitArray<Allocator>::erase(unsigned int index)
+void BitArray<Allocator>::erase(size_t index)
 {
 	assert(index < _used && _used > 0);
 
 	// Shift all the bits down one
-	for (unsigned int i = index; i < _used - 1; ++i) {
+	for (size_t i = index; i < _used - 1; ++i) {
 		bool temp = (*this)[i + 1];
 
 		if (temp) {
@@ -297,7 +297,7 @@ void BitArray<Allocator>::erase(unsigned int index)
 }
 
 template <class Allocator>
-void BitArray<Allocator>::resize(unsigned int new_size)
+void BitArray<Allocator>::resize(size_t new_size)
 {
 	if (new_size == _size) {
 		return;
@@ -308,7 +308,7 @@ void BitArray<Allocator>::resize(unsigned int new_size)
 }
 
 template <class Allocator>
-void BitArray<Allocator>::reserve(unsigned int reserve_size)
+void BitArray<Allocator>::reserve(size_t reserve_size)
 {
 	if (reserve_size <= _size) {
 		return;
@@ -325,16 +325,16 @@ void BitArray<Allocator>::setAllocator(const Allocator& allocator)
 }
 
 template <class Allocator>
-void BitArray<Allocator>::CalculateIndexAndShift(unsigned int index, unsigned int& array_index, unsigned int& shift)
+void BitArray<Allocator>::CalculateIndexAndShift(size_t index, size_t& array_index, size_t& shift)
 {
 	array_index = index / BITS_PER_BYTE;
 	shift = index - array_index * BITS_PER_BYTE;
 }
 
 template <class Allocator>
-unsigned int BitArray<Allocator>::CalculateBytes(unsigned int bits)
+size_t BitArray<Allocator>::CalculateBytes(size_t bits)
 {
 	float final_bits = (float)bits / (float)BITS_PER_BYTE;
 	final_bits = ceilf(final_bits);
-	return (unsigned int)final_bits;
+	return static_cast<size_t>(final_bits);
 }

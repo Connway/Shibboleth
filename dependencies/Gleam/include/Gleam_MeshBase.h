@@ -44,7 +44,7 @@ public:
 	void addBuffer(IBuffer* buffer);
 	const IBuffer* getBuffer(unsigned int index) const;
 	IBuffer* getBuffer(unsigned int index);
-	unsigned int getBufferCount(void) const;
+	size_t getBufferCount(void) const;
 
 	void setIndiceBuffer(IBuffer* buffer);
 	const IBuffer* getIndiceBuffer(void) const;

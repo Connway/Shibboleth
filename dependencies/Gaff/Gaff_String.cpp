@@ -26,61 +26,61 @@ THE SOFTWARE.
 NS_GAFF
 
 template <>
-unsigned int length(const char* string)
+size_t length(const char* string)
 {
-	return (unsigned int)strlen(string);
+	return strlen(string);
 }
 
 template <>
-unsigned int length(const wchar_t* string)
+size_t length(const wchar_t* string)
 {
-	return (unsigned int)wcslen(string);
+	return wcslen(string);
 }
 
 template <>
-bool less(const char* s1, unsigned int, const char* s2, unsigned int)
-{
-	return strcmp(s1, s2) < 0;
-}
-
-template <>
-bool less(const wchar_t* s1, unsigned int, const wchar_t* s2, unsigned int)
-{
-	return wcscmp(s1, s2) < 0;
-}
-
-template <>
-bool less(const char* s1, unsigned int, const char* s2)
+bool less(const char* s1, size_t, const char* s2, size_t)
 {
 	return strcmp(s1, s2) < 0;
 }
 
 template <>
-bool less(const wchar_t* s1, unsigned int, const wchar_t* s2)
+bool less(const wchar_t* s1, size_t, const wchar_t* s2, size_t)
 {
 	return wcscmp(s1, s2) < 0;
 }
 
 template <>
-bool greater(const char* s1, unsigned int, const char* s2, unsigned int)
+bool less(const char* s1, size_t, const char* s2)
+{
+	return strcmp(s1, s2) < 0;
+}
+
+template <>
+bool less(const wchar_t* s1, size_t, const wchar_t* s2)
+{
+	return wcscmp(s1, s2) < 0;
+}
+
+template <>
+bool greater(const char* s1, size_t, const char* s2, size_t)
 {
 	return strcmp(s1, s2) > 0;
 }
 
 template <>
-bool greater(const wchar_t* s1, unsigned int, const wchar_t* s2, unsigned int)
+bool greater(const wchar_t* s1, size_t, const wchar_t* s2, size_t)
 {
 	return wcscmp(s1, s2) > 0;
 }
 
 template <>
-bool greater(const char* s1, unsigned int, const char* s2)
+bool greater(const char* s1, size_t, const char* s2)
 {
 	return strcmp(s1, s2) > 0;
 }
 
 template <>
-bool greater(const wchar_t* s1, unsigned int, const wchar_t* s2)
+bool greater(const wchar_t* s1, size_t, const wchar_t* s2)
 {
 	return wcscmp(s1, s2) > 0;
 }

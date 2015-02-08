@@ -36,10 +36,10 @@ template <class T, class Allocator = DefaultAllocator>
 class HashString
 {
 public:
-	HashString(const HashString<T, Allocator>& string, HashFunc hash = FNV1Hash32);
-	HashString(const String<T, Allocator>& string, HashFunc hash = FNV1Hash32);
-	HashString(const T* string, HashFunc hash = FNV1Hash32, const Allocator& allocator = Allocator());
-	HashString(HashFunc hash = FNV1Hash32, const Allocator& allocator = Allocator());
+	HashString(const HashString<T, Allocator>& string, HashFunc32 hash = FNV1Hash32);
+	HashString(const String<T, Allocator>& string, HashFunc32 hash = FNV1Hash32);
+	HashString(const T* string, HashFunc32 hash = FNV1Hash32, const Allocator& allocator = Allocator());
+	HashString(HashFunc32 hash = FNV1Hash32, const Allocator& allocator = Allocator());
 	HashString(HashString<T, Allocator>&& rhs);
 
 	const HashString<T, Allocator>& operator=(const HashString<T, Allocator>& rhs);
@@ -51,10 +51,10 @@ public:
 	bool operator==(const HashString<T, Allocator>& rhs) const;
 	bool operator!=(const HashString<T, Allocator>& rhs) const;
 
-	char operator[](unsigned int index) const;
+	char operator[](size_t index) const;
 
 	// required reference for operations like string[i] = 'a';
-	// char& operator[](unsigned int index);
+	// char& operator[](size_t index);
 
 	const HashString<T, Allocator>& operator+=(const HashString<T, Allocator>& rhs);
 	const HashString<T, Allocator>& operator+=(const String<T, Allocator>& rhs);
@@ -67,7 +67,7 @@ public:
 	// WARNING: This function takes ownership of the string instead of copying
 	void set(T* string);
 	void clear(void);
-	unsigned int size(void) const;
+	size_t size(void) const;
 
 	const String<T, Allocator>& getString(void) const;
 	const T* getBuffer(void) const;
@@ -76,7 +76,7 @@ public:
 private:
 	String<T, Allocator> _string;
 	unsigned int _hash_value;
-	HashFunc _hash_func;
+	HashFunc32 _hash_func;
 };
 
 #include "Gaff_HashString.inl"

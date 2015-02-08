@@ -23,7 +23,7 @@ THE SOFTWARE.
 #pragma once
 
 #include "esprit_Array.h"
-#include <Gleam_Transform.h>
+#include <Gleam_Transform_SIMD.h>
 
 NS_ESPRIT
 
@@ -33,17 +33,17 @@ public:
 	Pose(void);
 	~Pose(void);
 
-	void setNumBones(unsigned int num_bones);
-	unsigned int getNumBones(void) const;
+	void setNumBones(size_t num_bones);
+	size_t getNumBones(void) const;
 
-	const Array<Gleam::Transform>& getLocalTransforms(void) const;
-	Array<Gleam::Transform>& getLocalTransforms(void);
-	const Array<Gleam::Transform>& getModelTransforms(void) const;
-	Array<Gleam::Transform>& getModelTransforms(void);
+	const Array<Gleam::TransformSIMD>& getLocalTransforms(void) const;
+	Array<Gleam::TransformSIMD>& getLocalTransforms(void);
+	const Array<Gleam::TransformSIMD>& getModelTransforms(void) const;
+	Array<Gleam::TransformSIMD>& getModelTransforms(void);
 
 private:
-	Array<Gleam::Transform> _local_bone_transforms;
-	Array<Gleam::Transform> _model_bone_transforms;
+	Array<Gleam::TransformSIMD> _local_bone_transforms;
+	Array<Gleam::TransformSIMD> _model_bone_transforms;
 
 	GAFF_NO_COPY(Pose);
 	GAFF_NO_MOVE(Pose);

@@ -194,7 +194,7 @@ ResourcePtr ResourceManager::requestResource(const char* resource_type, const ch
 	if (it == _resource_cache.end()) {
 		// We have no cache of this resource or have yet to make a request for it,
 		// so make a load request.
-		assert(_resource_loaders.indexOf(AHashString(resource_type)) != UINT_FAIL);
+		assert(_resource_loaders.indexOf(AHashString(resource_type)) != SIZE_T_FAIL);
 
 		ResourceContainer* res_cont = reinterpret_cast<ResourceContainer*>(GetAllocator()->alloc(sizeof(ResourceContainer)));
 		new (res_cont) ResourceContainer(res_key, this, &ResourceManager::zeroRefCallback, user_data);
@@ -235,7 +235,7 @@ ResourcePtr ResourceManager::requestResource(const char* filename, unsigned long
 		// We have no cache of this resource or have yet to make a request for it,
 		// so make a load request.
 		AString extension = res_key.getString().getExtension('.');
-		assert(extension.size() && _resource_loaders.indexOf(AHashString(extension)) != UINT_FAIL);
+		assert(extension.size() && _resource_loaders.indexOf(AHashString(extension)) != SIZE_T_FAIL);
 
 		ResourceContainer* res_cont = (ResourceContainer*)GetAllocator()->alloc(sizeof(ResourceContainer));
 		new (res_cont) ResourceContainer(res_key, this, &ResourceManager::zeroRefCallback, user_data);
@@ -273,7 +273,7 @@ ResourcePtr ResourceManager::loadResourceImmediately(const char* filename, unsig
 	if (it == _resource_cache.end()) {
 		// We have no cache of this resource or have yet to make a request for it.
 		AString extension = res_key.getString().getExtension('.');
-		assert(extension.size() && _resource_loaders.indexOf(AHashString(extension)) != UINT_FAIL);
+		assert(extension.size() && _resource_loaders.indexOf(AHashString(extension)) != SIZE_T_FAIL);
 
 		ResourceContainer* res_cont = (ResourceContainer*)GetAllocator()->alloc(sizeof(ResourceContainer));
 		new (res_cont)ResourceContainer(res_key, this, &ResourceManager::zeroRefCallback, user_data);

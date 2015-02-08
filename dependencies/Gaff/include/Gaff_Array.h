@@ -46,9 +46,9 @@ public:
 	typedef T* Iterator;
 
 	explicit Array(const Allocator& allocator = Allocator());
-	explicit Array(unsigned int start_capacity, const Allocator& allocator = Allocator());
-	Array(unsigned int start_size, const T& init_val, const Allocator& allocator = Allocator());
-	Array(const T* data, unsigned int size, const Allocator& allocator = Allocator());
+	explicit Array(size_t start_capacity, const Allocator& allocator = Allocator());
+	Array(size_t start_size, const T& init_val, const Allocator& allocator = Allocator());
+	Array(const T* data, size_t size, const Allocator& allocator = Allocator());
 	Array(const Array<T, Allocator>& rhs);
 	Array(Array<T, Allocator>&& rhs);
 	~Array(void);
@@ -62,8 +62,8 @@ public:
 	template <class Allocator2>
 	bool operator!=(const Array<T, Allocator2>& rhs) const;
 
-	const T& operator[](unsigned int index) const;
-	T& operator[](unsigned int index);
+	const T& operator[](size_t index) const;
+	T& operator[](size_t index);
 
 	void clear(void);
 	void clearNoFree(void);
@@ -105,7 +105,7 @@ public:
 		\note This is the same as calling moveInsert(\a data, \a it - begin()).
 	*/
 	Iterator moveInsert(T&& data, const Iterator it);
-	void moveInsert(T&& data, unsigned int index);
+	void moveInsert(T&& data, size_t index);
 
 	/*!
 		\brief Inserts \a data to the position \a it using the copy constructor.
@@ -118,7 +118,7 @@ public:
 		\note This is the same as calling insert(\a data, \a it - begin()).
 	*/
 	Iterator insert(const T& data, const Iterator it);
-	void insert(const T& data, unsigned int index);
+	void insert(const T& data, size_t index);
 
 	/*!
 		Removes the element at position \a it. Shifts all elements above the removed position down one.
@@ -132,7 +132,7 @@ public:
 		\note This is the same as calling erase(\a it - begin()).
 	*/
 	Iterator erase(const Iterator it);
-	void erase(unsigned int index);
+	void erase(size_t index);
 
 	/*!
 		Removes the element at position \a it.
@@ -147,10 +147,10 @@ public:
 		\note This is the same as calling fastErase(\a it - begin()). Avoid using this function if your array must be sorted!
 	*/
 	Iterator fastErase(const Iterator it);
-	void fastErase(unsigned int index);
+	void fastErase(size_t index);
 
-	void resize(unsigned int new_size);
-	void reserve(unsigned int reserve_size);
+	void resize(size_t new_size);
+	void reserve(size_t reserve_size);
 	void trim(void);
 
 	/*!
@@ -172,7 +172,7 @@ public:
 	Iterator linearSearch(const Iterator range_begin, const Iterator range_end, const T2& data, const Pred& pred = Pred()) const;
 
 	template < class T2, class Pred = Equal<T, T2> >
-	unsigned int linearSearch(unsigned int range_begin, unsigned int range_end, const T2& data, const Pred& pred = Pred()) const;
+	size_t linearSearch(size_t range_begin, size_t range_end, const T2& data, const Pred& pred = Pred()) const;
 
 	/*!
 		\brief Linearly searches each element until the predicate is satisfied.
@@ -209,7 +209,7 @@ public:
 	Iterator binarySearch(const Iterator range_begin, const Iterator range_end, const T2& data, const Pred& pred = Pred()) const;
 
 	template < class T2, class Pred = Less<T, T2> >
-	unsigned int binarySearch(unsigned int range_begin, unsigned int range_end, const T2& data, const Pred& pred = Pred()) const;
+	size_t binarySearch(size_t range_begin, size_t range_end, const T2& data, const Pred& pred = Pred()) const;
 
 	/*!
 		\brief Does a binary search over the entire array.
@@ -227,15 +227,15 @@ public:
 	template < class T2, class Pred = Less<T, T2> >
 	Iterator binarySearch(const T2& data, const Pred& pred = Pred()) const;
 
-	unsigned int size(void) const;
-	unsigned int capacity(void) const;
+	size_t size(void) const;
+	size_t capacity(void) const;
 
 	void setAllocator(const Allocator& allocator);
 
 private:
 	Allocator _allocator;
 	T* _array;
-	unsigned int _used, _size;
+	size_t _used, _size;
 };
 
 #include "Gaff_Array.inl"

@@ -26,8 +26,8 @@ THE SOFTWARE.
 #include <Gaff_IVirtualDestructor.h>
 #include <Gaff_SceneImporter.h>
 #include <esprit_Skeleton.h>
+#include <Gleam_AABB_CPU.h>
 #include <Gleam_IModel.h>
-#include <Gleam_AABB.h>
 
 NS_SHIBBOLETH
 
@@ -52,7 +52,7 @@ struct ModelData : public Gaff::IVirtualDestructor
 	~ModelData(void) {}
 
 	Array< Array<ModelPtr> > models; // [Device][LOD]
-	Array< Array<Gleam::AABB> > aabbs; // [LOD][Mesh]
+	Array< Array<Gleam::AABBCPU> > aabbs; // [LOD][Mesh]
 
 	ResourceWrapper<HoldingData> holding_data;
 	esprit::Skeleton skeleton;

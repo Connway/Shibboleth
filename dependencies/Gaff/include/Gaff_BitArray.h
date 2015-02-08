@@ -40,8 +40,8 @@ class BitArray
 {
 public:
 	BitArray(const Allocator& allocator = Allocator());
-	explicit BitArray(unsigned int start_size, const Allocator& allocator = Allocator());
-	BitArray(unsigned int start_size, bool init_val, const Allocator& allocator = Allocator());
+	explicit BitArray(size_t start_size, const Allocator& allocator = Allocator());
+	BitArray(size_t start_size, bool init_val, const Allocator& allocator = Allocator());
 	BitArray(const BitArray<Allocator>& rhs);
 	BitArray(BitArray<Allocator>&& rhs);
 	~BitArray(void);
@@ -52,12 +52,12 @@ public:
 	bool operator==(const BitArray<Allocator>& rhs) const;
 	bool operator!=(const BitArray<Allocator>& rhs) const;
 
-	bool operator[](unsigned int index) const;
+	bool operator[](size_t index) const;
 
-	void setBit(unsigned int index, bool value);
+	void setBit(size_t index, bool value);
 
-	void unset(unsigned int index);
-	void set(unsigned int index);
+	void unset(size_t index);
+	void set(size_t index);
 
 	void clear(void);
 	void clearNoFree(void);
@@ -67,26 +67,26 @@ public:
 
 	bool empty(void) const;
 
-	unsigned int size(void) const;
-	unsigned int capacity(void) const;
+	size_t size(void) const;
+	size_t capacity(void) const;
 
 	void push(bool value);
 	void pop(void);
-	void insert(bool value, unsigned int index);
-	void erase(unsigned int index);
+	void insert(bool value, size_t index);
+	void erase(size_t index);
 
-	void resize(unsigned int new_size);
-	void reserve(unsigned int reserve_size);
+	void resize(size_t new_size);
+	void reserve(size_t reserve_size);
 
 	void setAllocator(const Allocator& allocator);
 
 private:
 	Array<unsigned char, Allocator> _bit_array;
-	unsigned int _used;
-	unsigned int _size;
+	size_t _used;
+	size_t _size;
 
-	static void CalculateIndexAndShift(unsigned int index, unsigned int& array_index, unsigned int& shift);
-	static unsigned int CalculateBytes(unsigned int bits);
+	static void CalculateIndexAndShift(size_t index, size_t& array_index, size_t& shift);
+	static size_t CalculateBytes(size_t bits);
 };
 
 #include "Gaff_BitArray.inl"

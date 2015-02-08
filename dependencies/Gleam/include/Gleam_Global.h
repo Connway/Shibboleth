@@ -40,7 +40,7 @@ enum LOG_MSG_TYPE
 
 void SetAllocator(Gaff::IAllocator* allocator);
 INLINE Gaff::IAllocator* GetAllocator(void);
-void* GleamAlloc(unsigned int size_bytes, const char* filename, unsigned int line_number);
+void* GleamAlloc(size_t size_bytes, const char* filename, unsigned int line_number);
 INLINE void GleamFree(void* data);
 
 INLINE void SetLogFileName(const GChar* log_file_name);

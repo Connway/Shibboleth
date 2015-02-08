@@ -352,7 +352,7 @@ bool Functor<T, ReturnType, Args...>::valid(void) const
 //    Function Binders    //
 ////////////////////////////
 template <class ReturnType, class... Args>
-FunctionBinder<ReturnType, Args...>::FunctionBinder(void* object, unsigned int size):
+FunctionBinder<ReturnType, Args...>::FunctionBinder(void* object, size_t size):
 	_object_size(size)
 {
 	assert(size <= FUNCTION_BUFFER_SIZE);

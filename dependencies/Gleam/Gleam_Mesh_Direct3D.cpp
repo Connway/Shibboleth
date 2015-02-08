@@ -101,9 +101,9 @@ void MeshD3D::renderNonIndexed(IRenderDevice& rd, unsigned int vert_count, unsig
 {
 	assert(rd.isD3D() && _vert_data.size() && _indices && _indices->isD3D());
 
-	IRenderDeviceD3D& rd3d = (IRenderDeviceD3D&)*(((const char*)&rd) + sizeof(IRenderDevice));
+	IRenderDeviceD3D& rd3d = reinterpret_cast<IRenderDeviceD3D&>(*(reinterpret_cast<char*>(&rd) + sizeof(IRenderDevice)));
 	ID3D11DeviceContext* context = rd3d.getActiveDeviceContext();
-	context->IASetVertexBuffers(0, _buffers.size(), _buffers.getArray(), _strides.getArray(), _offsets.getArray());
+	context->IASetVertexBuffers(0, static_cast<UINT>(_buffers.size()), _buffers.getArray(), _strides.getArray(), _offsets.getArray());
 	context->IASetPrimitiveTopology(_d3d_topology);
 	context->Draw(vert_count, start_location);
 }
@@ -112,10 +112,10 @@ void MeshD3D::renderInstanced(IRenderDevice& rd, unsigned int count)
 {
 	assert(rd.isD3D() && _vert_data.size() && _indices && _indices->isD3D());
 
-	IRenderDeviceD3D& rd3d = (IRenderDeviceD3D&)*(((const char*)&rd) + sizeof(IRenderDevice));
+	IRenderDeviceD3D& rd3d = reinterpret_cast<IRenderDeviceD3D&>(*(reinterpret_cast<char*>(&rd) + sizeof(IRenderDevice)));
 	ID3D11DeviceContext* context = rd3d.getActiveDeviceContext();
-	context->IASetVertexBuffers(0, _buffers.size(), _buffers.getArray(), _strides.getArray(), _offsets.getArray());
-	context->IASetIndexBuffer(((BufferD3D*)_indices)->getBuffer(), DXGI_FORMAT_R32_UINT, 0);
+	context->IASetVertexBuffers(0, static_cast<UINT>(_buffers.size()), _buffers.getArray(), _strides.getArray(), _offsets.getArray());
+	context->IASetIndexBuffer(reinterpret_cast<BufferD3D*>(_indices)->getBuffer(), DXGI_FORMAT_R32_UINT, 0);
 	context->IASetPrimitiveTopology(_d3d_topology);
 	context->DrawIndexedInstanced(getIndexCount(), count, 0, 0, 0);
 }
@@ -124,10 +124,10 @@ void MeshD3D::render(IRenderDevice& rd)
 {
 	assert(rd.isD3D() && _vert_data.size() && _indices && _indices->isD3D());
 
-	IRenderDeviceD3D& rd3d = (IRenderDeviceD3D&)*(((const char*)&rd) + sizeof(IRenderDevice));
+	IRenderDeviceD3D& rd3d = reinterpret_cast<IRenderDeviceD3D&>(*(reinterpret_cast<char*>(&rd) + sizeof(IRenderDevice)));
 	ID3D11DeviceContext* context = rd3d.getActiveDeviceContext();
-	context->IASetVertexBuffers(0, _buffers.size(), _buffers.getArray(), _strides.getArray(), _offsets.getArray());
-	context->IASetIndexBuffer(((BufferD3D*)_indices)->getBuffer(), DXGI_FORMAT_R32_UINT, 0);
+	context->IASetVertexBuffers(0, static_cast<UINT>(_buffers.size()), _buffers.getArray(), _strides.getArray(), _offsets.getArray());
+	context->IASetIndexBuffer(reinterpret_cast<BufferD3D*>(_indices)->getBuffer(), DXGI_FORMAT_R32_UINT, 0);
 	context->IASetPrimitiveTopology(_d3d_topology);
 	context->DrawIndexed(getIndexCount(), 0, 0);
 }
@@ -148,7 +148,7 @@ void MeshD3D::cacheBuffers(void)
 	for (unsigned int i = 0; i < _vert_data.size(); ++i) {
 		temp = _vert_data[i];
 		assert(temp && temp->isD3D());
-		_buffers.push(((BufferD3D*)temp)->getBuffer());
+		_buffers.push(reinterpret_cast<BufferD3D*>(temp)->getBuffer());
 		_strides.push(temp->getStride());
 		_offsets.push(0);
 	}

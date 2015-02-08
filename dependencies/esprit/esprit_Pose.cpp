@@ -32,33 +32,33 @@ Pose::~Pose(void)
 {
 }
 
-void Pose::setNumBones(unsigned int num_bones)
+void Pose::setNumBones(size_t num_bones)
 {
 	_local_bone_transforms.resize(num_bones);
 	_model_bone_transforms.resize(num_bones);
 }
 
-unsigned int Pose::getNumBones(void) const
+size_t Pose::getNumBones(void) const
 {
 	return _local_bone_transforms.size();
 }
 
-const Array<Gleam::Transform>& Pose::getLocalTransforms(void) const
+const Array<Gleam::TransformSIMD>& Pose::getLocalTransforms(void) const
 {
 	return _local_bone_transforms;
 }
 
-Array<Gleam::Transform>& Pose::getLocalTransforms(void)
+Array<Gleam::TransformSIMD>& Pose::getLocalTransforms(void)
 {
 	return _local_bone_transforms;
 }
 
-const Array<Gleam::Transform>& Pose::getModelTransforms(void) const
+const Array<Gleam::TransformSIMD>& Pose::getModelTransforms(void) const
 {
 	return _model_bone_transforms;
 }
 
-Array<Gleam::Transform>& Pose::getModelTransforms(void)
+Array<Gleam::TransformSIMD>& Pose::getModelTransforms(void)
 {
 	return _model_bone_transforms;
 }

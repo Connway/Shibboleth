@@ -46,18 +46,18 @@ ShaderGL::~ShaderGL(void)
 	destroy();
 }
 
-bool ShaderGL::initSource(IRenderDevice&, const char* shader_source, unsigned int source_size, SHADER_TYPE shader_type)
+bool ShaderGL::initSource(IRenderDevice&, const char* shader_source, size_t source_size, SHADER_TYPE shader_type)
 {
 	assert(shader_source && source_size && shader_type < SHADER_TYPE_SIZE);
 	_type = shader_type;
-	return compileShader(shader_source, source_size, shader_type);
+	return compileShader(shader_source, static_cast<int>(source_size), shader_type);
 }
 
 bool ShaderGL::initSource(IRenderDevice&, const char* shader_source, SHADER_TYPE shader_type)
 {
 	assert(shader_source && shader_type < SHADER_TYPE_SIZE);
 	_type = shader_type;
-	return compileShader(shader_source, strlen(shader_source), shader_type);
+	return compileShader(shader_source, static_cast<int>(strlen(shader_source)), shader_type);
 }
 
 bool ShaderGL::init(IRenderDevice&, const char* file_path, SHADER_TYPE shader_type)
@@ -160,76 +160,76 @@ bool ShaderGL::initCompute(IRenderDevice&, const wchar_t* file_path)
 }
 #endif
 
-bool ShaderGL::initVertexSource(IRenderDevice&, const char* source, unsigned int source_size)
+bool ShaderGL::initVertexSource(IRenderDevice&, const char* source, size_t source_size)
 {
 	assert(source);
 	_type = SHADER_VERTEX;
 
-	if (source_size == UINT_FAIL) {
+	if (source_size == SIZE_T_FAIL) {
 		source_size = strlen(source);
 	}
 
-	return compileShader(source, source_size, GL_VERTEX_SHADER);
+	return compileShader(source, static_cast<int>(source_size), GL_VERTEX_SHADER);
 }
 
-bool ShaderGL::initPixelSource(IRenderDevice&, const char* source, unsigned int source_size)
+bool ShaderGL::initPixelSource(IRenderDevice&, const char* source, size_t source_size)
 {
 	assert(source);
 	_type = SHADER_PIXEL;
 
-	if (source_size == UINT_FAIL) {
+	if (source_size == SIZE_T_FAIL) {
 		source_size = strlen(source);
 	}
 
-	return compileShader(source, source_size, GL_FRAGMENT_SHADER);
+	return compileShader(source, static_cast<int>(source_size), GL_FRAGMENT_SHADER);
 }
 
-bool ShaderGL::initDomainSource(IRenderDevice&, const char* source, unsigned int source_size)
+bool ShaderGL::initDomainSource(IRenderDevice&, const char* source, size_t source_size)
 {
 	assert(source);
 	_type = SHADER_DOMAIN;
 
-	if (source_size == UINT_FAIL) {
+	if (source_size == SIZE_T_FAIL) {
 		source_size = strlen(source);
 	}
 
-	return compileShader(source, source_size, GL_TESS_EVALUATION_SHADER);
+	return compileShader(source, static_cast<int>(source_size), GL_TESS_EVALUATION_SHADER);
 }
 
-bool ShaderGL::initGeometrySource(IRenderDevice&, const char* source, unsigned int source_size)
+bool ShaderGL::initGeometrySource(IRenderDevice&, const char* source, size_t source_size)
 {
 	assert(source);
 	_type = SHADER_GEOMETRY;
 
-	if (source_size == UINT_FAIL) {
+	if (source_size == SIZE_T_FAIL) {
 		source_size = strlen(source);
 	}
 
-	return compileShader(source, source_size, GL_GEOMETRY_SHADER);
+	return compileShader(source, static_cast<int>(source_size), GL_GEOMETRY_SHADER);
 }
 
-bool ShaderGL::initHullSource(IRenderDevice&, const char* source, unsigned int source_size)
+bool ShaderGL::initHullSource(IRenderDevice&, const char* source, size_t source_size)
 {
 	assert(source);
 	_type = SHADER_HULL;
 
-	if (source_size == UINT_FAIL) {
+	if (source_size == SIZE_T_FAIL) {
 		source_size = strlen(source);
 	}
 
-	return compileShader(source, source_size, GL_TESS_CONTROL_SHADER);
+	return compileShader(source, static_cast<int>(source_size), GL_TESS_CONTROL_SHADER);
 }
 
-bool ShaderGL::initComputeSource(IRenderDevice&, const char* source, unsigned int source_size)
+bool ShaderGL::initComputeSource(IRenderDevice&, const char* source, size_t source_size)
 {
 	assert(source);
 	_type = SHADER_COMPUTE;
 
-	if (source_size == UINT_FAIL) {
+	if (source_size == SIZE_T_FAIL) {
 		source_size = strlen(source);
 	}
 
-	return compileShader(source, source_size, GL_COMPUTE_SHADER);
+	return compileShader(source, static_cast<int>(source_size), GL_COMPUTE_SHADER);
 }
 
 void ShaderGL::destroy(void)

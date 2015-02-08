@@ -184,7 +184,7 @@ void RenderTargetGL::bind(IRenderDevice& rd)
 
 	if (_frame_buffer) {
 		glBindFramebuffer(GL_FRAMEBUFFER, _frame_buffer);
-		glDrawBuffers(_draw_buffers.size(), _draw_buffers.getArray());
+		glDrawBuffers(static_cast<unsigned int>(_draw_buffers.size()), _draw_buffers.getArray());
 		glViewport(0, 0, _viewport_width, _viewport_height);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT); 
 

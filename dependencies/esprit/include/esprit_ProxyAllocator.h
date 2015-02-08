@@ -29,7 +29,7 @@ NS_ESPRIT
 class ProxyAllocator : public Gaff::IAllocator
 {
 public:
-	void* alloc(unsigned int size_bytes)
+	void* alloc(size_t size_bytes)
 	{
 		return GetAllocator()->alloc(size_bytes);
 	}

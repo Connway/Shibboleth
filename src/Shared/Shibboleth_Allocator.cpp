@@ -58,7 +58,7 @@ Allocator::~Allocator(void)
 		return;
 	}
 
-	unsigned int total_bytes = 0;
+	size_t total_bytes = 0;
 	unsigned int total_allocs = 0;
 	unsigned int total_frees = 0;
 
@@ -140,7 +140,7 @@ void Allocator::createMemoryPool(const char* pool_name, unsigned int alloc_tag)
 	}
 }
 
-void* Allocator::alloc(unsigned int size_bytes, unsigned int alloc_tag)
+void* Allocator::alloc(size_t size_bytes, unsigned int alloc_tag)
 {
 	assert(_tagged_pools.hasElementWithKey(alloc_tag));
 	MemoryPoolInfo& mem_pool_info = _tagged_pools[alloc_tag];
@@ -201,7 +201,7 @@ void Allocator::free(void* data, unsigned int alloc_tag)
 #endif
 }
 
-void* Allocator::alloc(unsigned int size_bytes)
+void* Allocator::alloc(size_t size_bytes)
 {
 
 	return alloc(size_bytes, 0);
@@ -212,7 +212,7 @@ void Allocator::free(void* data)
 	free(data, 0);
 }
 
-unsigned int Allocator::getTotalBytesAllocated(unsigned int alloc_tag) const
+size_t Allocator::getTotalBytesAllocated(unsigned int alloc_tag) const
 {
 	return _tagged_pools[alloc_tag].total_bytes_allocated;
 }

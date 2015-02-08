@@ -79,7 +79,7 @@ bool SamplerStateD3D::init(
 	desc.MinLOD = min_lod;
 	desc.MipLODBias = lod_bias;
 
-	IRenderDeviceD3D& rd3d = (IRenderDeviceD3D&)*(((const char*)&rd) + sizeof(IRenderDevice));
+	IRenderDeviceD3D& rd3d = reinterpret_cast<IRenderDeviceD3D&>(*(reinterpret_cast<char*>(&rd) + sizeof(IRenderDevice)));
 	HRESULT result = rd3d.getActiveDevice()->CreateSamplerState(&desc, &_sampler_state);
 	return SUCCEEDED(result);
 }

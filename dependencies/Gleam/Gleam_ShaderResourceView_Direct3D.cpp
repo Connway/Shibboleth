@@ -53,7 +53,7 @@ ShaderResourceViewD3D::~ShaderResourceViewD3D(void)
 
 bool ShaderResourceViewD3D::init(IRenderDevice& rd, const ITexture* texture)
 {
-	IRenderDeviceD3D& rd3d = (IRenderDeviceD3D&)*(((const char*)&rd) + sizeof(IRenderDevice));
+	IRenderDeviceD3D& rd3d = reinterpret_cast<IRenderDeviceD3D&>(*(reinterpret_cast<char*>(&rd) + sizeof(IRenderDevice)));
 	ID3D11Device* device = rd3d.getActiveDevice();
 	assert(texture);
 

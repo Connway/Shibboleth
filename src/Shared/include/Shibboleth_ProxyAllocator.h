@@ -56,7 +56,7 @@ public:
 		return *this;
 	}
 
-	void* alloc(unsigned int size_bytes)
+	void* alloc(size_t size_bytes)
 	{
 		return _allocator->alloc(size_bytes, _alloc_tag);
 	}

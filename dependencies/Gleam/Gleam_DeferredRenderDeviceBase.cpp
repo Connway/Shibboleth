@@ -38,7 +38,7 @@ IRenderDevice::AdapterList DeferredRenderDeviceBase::getDisplayModes(int)
 	return IRenderDevice::AdapterList();
 }
 
-bool DeferredRenderDeviceBase::initThreadData(unsigned int*, unsigned int)
+bool DeferredRenderDeviceBase::initThreadData(unsigned int*, size_t)
 {
 	assert(0 && "Calling a immediate render device function on a deferred render device");
 	return false;

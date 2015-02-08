@@ -168,13 +168,13 @@ public:
 	const char* getName(T value) const;
 	T getValue(const char* name) const;
 
-	Pair<AString<Allocator>, T> getEntry(unsigned int index) const;
+	Pair<AString<Allocator>, T> getEntry(size_t index) const;
 
 	const char* getNameGeneric(unsigned int value) const;
 	unsigned int getValueGeneric(const char* name) const;
 
 	Pair<AString<Allocator>, unsigned int> getEntryGeneric(unsigned int index) const;
-	unsigned int getNumEntries(void) const;
+	size_t getNumEntries(void) const;
 
 	const char* getEnumName(void) const;
 
@@ -451,7 +451,7 @@ private: \
 	static unsigned int g_Hash; \
 	static Gaff::ReflectionDefinition<ClassName, Allocator> g_Ref_Def
 
-#define CLASS_HASH(ClassName) Gaff::FNV1aHash32(#ClassName, strlen(#ClassName))
+#define CLASS_HASH(ClassName) Gaff::FNV1aHash32(#ClassName, static_cast<unsigned int>((strlen(#ClassName))))
 
 #define REF_IMPL(ClassName, Allocator) \
 unsigned int ClassName::GetReflectionHash(void) { return g_Hash; } \

@@ -35,7 +35,7 @@ public:
 	LayoutD3D(void);
 	~LayoutD3D(void);
 
-	bool init(IRenderDevice& rd, const LayoutDescription* layout_desc, unsigned int layout_desc_size, const IShader* shader);
+	bool init(IRenderDevice& rd, const LayoutDescription* layout_desc, size_t layout_desc_size, const IShader* shader);
 	void destroy(void);
 
 	void setLayout(IRenderDevice& rd, const IMesh*);

@@ -27,7 +27,7 @@ String<T, Allocator>::String(const Allocator& allocator):
 }
 
 template <class T, class Allocator>
-String<T, Allocator>::String(const T* string, unsigned int size, const Allocator& allocator):
+String<T, Allocator>::String(const T* string, size_t size, const Allocator& allocator):
 	_allocator(allocator), _size(0), _string(nullptr)
 {
 	_string = (T*)_allocator.alloc(sizeof(T) * (size + 1));
@@ -35,7 +35,7 @@ String<T, Allocator>::String(const T* string, unsigned int size, const Allocator
 
 	_string[_size] = 0; // set null-terminator
 
-	for (unsigned int i = 0; i < _size; ++i) {
+	for (size_t i = 0; i < _size; ++i) {
 		_string[i] = string[i];
 	}
 }
@@ -97,7 +97,7 @@ const String<T, Allocator>& String<T, Allocator>::operator=(const String<T, Allo
 
 	_string[_size] = 0; // set null-terminator
 
-	for (unsigned int i = 0; i < _size; ++i) {
+	for (size_t i = 0; i < _size; ++i) {
 		_string[i] = rhs._string[i];
 	}
 
@@ -118,7 +118,7 @@ const String<T, Allocator>& String<T, Allocator>::operator=(const T* rhs)
 
 	_string[_size] = 0; // set null-terminator
 
-	for (unsigned int i = 0; i < _size; ++i) {
+	for (size_t i = 0; i < _size; ++i) {
 		_string[i] = rhs[i];
 	}
 
@@ -132,7 +132,7 @@ bool String<T, Allocator>::operator==(const String<T, Allocator>& rhs) const
 		return false;
 	}
 
-	for (unsigned int i = 0; i < _size; ++i) {
+	for (size_t i = 0; i < _size; ++i) {
 		if (_string[i] != rhs._string[i]) {
 			return false;
 		}
@@ -152,7 +152,7 @@ bool String<T, Allocator>::operator==(const T* rhs) const
 	//	return false;
 	//}
 
-	unsigned int i = 0;
+	size_t i = 0;
 	for (; i < _size; ++i) {
 		if (_string[i] != rhs[i]) {
 			return false;
@@ -203,14 +203,14 @@ bool String<T, Allocator>::operator>(const T* rhs) const
 }
 
 template <class T, class Allocator>
-char String<T, Allocator>::operator[](unsigned int index) const
+char String<T, Allocator>::operator[](size_t index) const
 {
 	assert(index < _size);
 	return _string[index];
 }
 
 template <class T, class Allocator>
-char& String<T, Allocator>::operator[](unsigned int index)
+char& String<T, Allocator>::operator[](size_t index)
 {
 	assert(index < _size);
 	return _string[index];
@@ -286,7 +286,7 @@ void String<T, Allocator>::clear(void)
 }
 
 template <class T, class Allocator>
-unsigned int String<T, Allocator>::size(void) const
+size_t String<T, Allocator>::size(void) const
 {
 	return _size;
 }
@@ -316,28 +316,28 @@ template <class T, class Allocator>
 String<T, Allocator> String<T, Allocator>::getExtension(T delimiting_character) const
 {
 	assert(_string && _size);
-	unsigned int index = findLastOf(delimiting_character);
-	return (index == UINT_FAIL) ? String<T, Allocator>() : substring(index);
+	size_t index = findLastOf(delimiting_character);
+	return (index == SIZE_T_FAIL) ? String<T, Allocator>() : substring(index);
 }
 
 template <class T, class Allocator>
-String<T, Allocator> String<T, Allocator>::substring(unsigned int begin, unsigned int end) const
+String<T, Allocator> String<T, Allocator>::substring(size_t begin, size_t end) const
 {
 	assert(end > begin && begin < _size && end < _size);
 	return String<T, Allocator>(_string + begin, end - begin);
 }
 
 template <class T, class Allocator>
-String<T, Allocator> String<T, Allocator>::substring(unsigned int begin) const
+String<T, Allocator> String<T, Allocator>::substring(size_t begin) const
 {
 	assert(begin < _size);
 	return String<T, Allocator>(_string + begin, _size - begin);
 }
 
 template <class T, class Allocator>
-void String<T, Allocator>::append(const T* string, unsigned int size)
+void String<T, Allocator>::append(const T* string, size_t size)
 {
-	unsigned int new_size = _size + size;
+	size_t new_size = _size + size;
 	T* new_string = (T*)_allocator.alloc(sizeof(T) * (new_size + 1));
 	new_string[new_size] = 0;
 
@@ -363,13 +363,13 @@ void String<T, Allocator>::append(const T* string)
 }
 
 template <class T, class Allocator>
-void String<T, Allocator>::resize(unsigned int new_size)
+void String<T, Allocator>::resize(size_t new_size)
 {
 	if (new_size == _size) {
 		return;
 	}
 
-	unsigned int copy_size = (new_size < _size) ? new_size : _size;
+	size_t copy_size = (new_size < _size) ? new_size : _size;
 	T* new_string = (T*)_allocator.alloc(sizeof(T) * (new_size + 1));
 
 	if (_string) {
@@ -385,7 +385,7 @@ void String<T, Allocator>::resize(unsigned int new_size)
 }
 
 template <class T, class Allocator>
-void String<T, Allocator>::erase(unsigned int begin_index, unsigned int end_index)
+void String<T, Allocator>::erase(size_t begin_index, size_t end_index)
 {
 	assert(begin_index < end_index && begin_index < _size && end_index < _size);
 	copy(_string + end_index, _string + begin_index);
@@ -393,7 +393,7 @@ void String<T, Allocator>::erase(unsigned int begin_index, unsigned int end_inde
 }
 
 template <class T, class Allocator>
-void String<T, Allocator>::erase(unsigned int index)
+void String<T, Allocator>::erase(size_t index)
 {
 	assert(index < _size);
 	erase(index, index + 1);
@@ -402,10 +402,10 @@ void String<T, Allocator>::erase(unsigned int index)
 template <class T, class Allocator>
 void String<T, Allocator>::erase(T character)
 {
-	for (unsigned int i = 0; i < _size; ++i) {
+	for (size_t i = 0; i < _size; ++i) {
 		if (_string[i] == character) {
 			// Shift all characters above the erased character down one
-			for (unsigned int j = i; j < _size; ++j) {
+			for (size_t j = i; j < _size; ++j) {
 				_string[j] = _string[j +1];
 				_string[j + 1] = 0;
 			}
@@ -416,56 +416,56 @@ void String<T, Allocator>::erase(T character)
 }
 
 template <class T, class Allocator>
-unsigned int String<T, Allocator>::findFirstOf(const T* string) const
+size_t String<T, Allocator>::findFirstOf(const T* string) const
 {
-	unsigned int len = length(string);
+	size_t len = length(string);
 
 	if (_size < len) {
-		return UINT_FAIL;
+		return SIZE_T_FAIL;
 	}
 
-	unsigned int num_iterations = _size - len + 1;
+	size_t num_iterations = _size - len + 1;
 
-	for (unsigned int i = 0; i < num_iterations; ++i) {
+	for (size_t i = 0; i < num_iterations; ++i) {
 		if (equal(_string + i, string, len)) {
 			return i;
 		}
 	}
 
-	return UINT_FAIL;
+	return SIZE_T_FAIL;
 }
 
 template <class T, class Allocator>
-unsigned int String<T, Allocator>::findLastOf(const T* string) const
+size_t String<T, Allocator>::findLastOf(const T* string) const
 {
-	unsigned int len = length(string);
+	size_t len = length(string);
 
 	if (_size < len) {
-		return UINT_FAIL;
+		return SIZE_T_FAIL;
 	}
 
 	for (int i = (int)_size - len - 2; i >= 0; --i) {
 		if (equal(_string + i, string, len)) {
-			return (unsigned int)i;
+			return (size_t)i;
 		}
 	}
 
-	return UINT_FAIL;
+	return SIZE_T_FAIL;
 }
 template <class T, class Allocator>
-unsigned int String<T, Allocator>::findFirstOf(T character) const
+size_t String<T, Allocator>::findFirstOf(T character) const
 {
-	for (unsigned int i = 0; i < _size; ++i) {
+	for (size_t i = 0; i < _size; ++i) {
 		if (_string[i] == character) {
 			return i;
 		}
 	}
 
-	return UINT_FAIL;
+	return SIZE_T_FAIL;
 }
 
 template <class T, class Allocator>
-unsigned int String<T, Allocator>::findLastOf(T character) const
+size_t String<T, Allocator>::findLastOf(T character) const
 {
 	for (int i = (int)_size - 1; i >= 0; --i) {
 		if (_string[i] == character) {
@@ -473,14 +473,14 @@ unsigned int String<T, Allocator>::findLastOf(T character) const
 		}
 	}
 
-	return UINT_FAIL;
+	return SIZE_T_FAIL;
 }
 
 /*!
 	\brief Converts a UTF-16 encoded string to UTF-8 encoding.
 */
 template <class T, class Allocator>
-void String<T, Allocator>::convertToUTF8(const wchar_t* string, unsigned int size)
+void String<T, Allocator>::convertToUTF8(const wchar_t* string, size_t size)
 {
 	resize(size * 4); // If somehow every character generates 4 octets
 	utf8::utf16to8(string, string + size, _string);
@@ -491,7 +491,7 @@ void String<T, Allocator>::convertToUTF8(const wchar_t* string, unsigned int siz
 	\brief Converts a UTF-8 encoded string to UTF-16 encoding.
 */
 template <class T, class Allocator>
-void String<T, Allocator>::convertToUTF16(const char* string, unsigned int size)
+void String<T, Allocator>::convertToUTF16(const char* string, size_t size)
 {
 	resize(size * 2); // If somehow every character generates surrogate pairs
 	utf8::utf8to16(string, string + size, _string);
@@ -503,10 +503,10 @@ void String<T, Allocator>::convertToUTF16(const char* string, unsigned int size)
 	\return The position of the first invalid UTF-8 encoded character.
 */
 template <class T, class Allocator>
-unsigned int String<T, Allocator>::findInvalidUTF8(void) const
+size_t String<T, Allocator>::findInvalidUTF8(void) const
 {
 	char* position = utf8::find_invalid(_string, _string + _size);
-	return (unsigned int)(position - _string);
+	return (size_t)(position - _string);
 }
 
 /*!
@@ -522,9 +522,9 @@ bool String<T, Allocator>::isValidUTF8(void) const
 // If my benchmarks from strlen() and wcslen() are any indicator, this is no slower than memcpy(),
 // and this gets rid of that damn compiler warning
 template <class T, class Allocator>
-void String<T, Allocator>::copy(const T* src, T* dest, unsigned int dest_size) const
+void String<T, Allocator>::copy(const T* src, T* dest, size_t dest_size) const
 {
-	unsigned int i = 0;
+	size_t i = 0;
 
 	while (src[i] != 0 && i < dest_size) {
 		dest[i] = src[i];
@@ -537,7 +537,7 @@ void String<T, Allocator>::copy(const T* src, T* dest, unsigned int dest_size) c
 template <class T, class Allocator>
 void String<T, Allocator>::copy(const T* src, T* dest) const
 {
-	unsigned int i = 0;
+	size_t i = 0;
 
 	while (src[i] != 0) {
 		dest[i] = src[i];
@@ -548,9 +548,9 @@ void String<T, Allocator>::copy(const T* src, T* dest) const
 }
 
 template <class T, class Allocator>
-void String<T, Allocator>::zeroOut(T* string, unsigned int size) const
+void String<T, Allocator>::zeroOut(T* string, size_t size) const
 {
-	for (unsigned int i = 0; i < size; ++i) {
+	for (size_t i = 0; i < size; ++i) {
 		string[i] = 0;
 	}
 }
@@ -558,7 +558,7 @@ void String<T, Allocator>::zeroOut(T* string, unsigned int size) const
 template <class T, class Allocator>
 void String<T, Allocator>::trimZeroes(void)
 {
-	for (unsigned int i = 0; i < _size; ++i) {
+	for (size_t i = 0; i < _size; ++i) {
 		if (_string[i] == 0) {
 			resize(i);
 			break;
@@ -567,9 +567,9 @@ void String<T, Allocator>::trimZeroes(void)
 }
 
 template <class T, class Allocator>
-bool String<T, Allocator>::equal(const T* str1, const T* str2, unsigned int size) const
+bool String<T, Allocator>::equal(const T* str1, const T* str2, size_t size) const
 {
-	for (unsigned int i = 0; i < size; ++i) {
+	for (size_t i = 0; i < size; ++i) {
 		if (str1[i] != str2[i]) {
 			return false;
 		}
@@ -595,8 +595,8 @@ bool operator!=(const T* lhs, const String<T, Allocator>& rhs)
 template <class T, class Allocator>
 String<T, Allocator> operator+(const T* lhs, const String<T, Allocator>& rhs)
 {
-	unsigned int lhs_length = length(lhs);
-	unsigned int new_size = rhs._size + lhs_length;
+	size_t lhs_length = length(lhs);
+	size_t new_size = rhs._size + lhs_length;
 	Allocator* allocator = const_cast<Allocator*>(&rhs._allocator); // this is to get rid of compiler error from rhs._allocator being const
 	T* new_string = (T*)allocator->alloc(sizeof(T) * (new_size + 1));
 
@@ -611,9 +611,9 @@ String<T, Allocator> operator+(const T* lhs, const String<T, Allocator>& rhs)
 }
 
 template <class T>
-unsigned int length(const T* string)
+size_t length(const T* string)
 {
-	unsigned int i = 0;
+	size_t i = 0;
 
 	while (string[i] != 0) {
 		++i;
@@ -623,11 +623,11 @@ unsigned int length(const T* string)
 }
 
 template <class T>
-bool less(const T* s1, unsigned int n1, const T* s2, unsigned int n2)
+bool less(const T* s1, size_t n1, const T* s2, size_t n2)
 {
-	unsigned int size = (n1 < n2) ? n1 : n2;
+	size_t size = (n1 < n2) ? n1 : n2;
 
-	for (unsigned int i = 0; i < size; ++i) {
+	for (size_t i = 0; i < size; ++i) {
 		if (s1[i] < s2[i]) {
 			return true;
 		} else if (s1[i] > s2[i]) {
@@ -639,17 +639,17 @@ bool less(const T* s1, unsigned int n1, const T* s2, unsigned int n2)
 }
 
 template <class T>
-bool less(const T* s1, unsigned int n1, const T* s2)
+bool less(const T* s1, size_t n1, const T* s2)
 {
 	return less(s1, n1, s2, length(s2));
 }
 
 template <class T>
-bool greater(const T* s1, unsigned int n1, const T* s2, unsigned int n2)
+bool greater(const T* s1, size_t n1, const T* s2, size_t n2)
 {
-	unsigned int size = (n1 < n2) ? n1 : n2;
+	size_t size = (n1 < n2) ? n1 : n2;
 
-	for (unsigned int i = 0; i < size; ++i) {
+	for (size_t i = 0; i < size; ++i) {
 		if (s1[i] > s2[i]) {
 			return true;
 		} else if (s1[i] < s2[i]) {
@@ -661,7 +661,7 @@ bool greater(const T* s1, unsigned int n1, const T* s2, unsigned int n2)
 }
 
 template <class T>
-bool greater(const T* s1, unsigned int n1, const T* s2)
+bool greater(const T* s1, size_t n1, const T* s2)
 {
 	return greater(s1, n1, s2, length(s2));
 }

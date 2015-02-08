@@ -21,18 +21,18 @@ project "LuaJIT"
 			"build_luajit.bat x86 release ..\\..\\build\\output\\x86\\Release"
 		}
 
-	filter { "action:vs*", "configurations:Debug", "platforms:x86_64" }
+	filter { "action:vs*", "configurations:Debug", "platforms:x64" }
 		prebuildcommands
 		{
 			"cd ../../../dependencies/LuaJIT-2.0.3",
-			"build_luajit.bat x86_64 debug ..\\..\\build\\output\\x86\\Debug"
+			"build_luajit.bat x86_64 debug ..\\..\\build\\output\\x64\\Debug"
 		}
 
-	filter { "action:vs*", "configurations:Release", "platforms:x86_64" }
+	filter { "action:vs*", "configurations:Release", "platforms:x64" }
 		prebuildcommands
 		{
 			"cd ../../../dependencies/LuaJIT-2.0.3",
-			"build_luajit.bat x86 release ..\\..\\build\\output\\x86\\Release"
+			"build_luajit.bat x86_64 release ..\\..\\build\\output\\x64\\Release"
 		}
 
 	filter {}

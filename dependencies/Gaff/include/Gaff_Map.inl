@@ -146,19 +146,19 @@ void Map<Key, Value, Allocator>::clear(void)
 }
 
 template <class Key, class Value, class Allocator>
-void Map<Key, Value, Allocator>::reserve(unsigned int new_size)
+void Map<Key, Value, Allocator>::reserve(size_t new_size)
 {
 	_array.reserve(new_size);
 }
 
 template <class Key, class Value, class Allocator>
-unsigned int Map<Key, Value, Allocator>::capacity(void) const
+size_t Map<Key, Value, Allocator>::capacity(void) const
 {
 	return _array.capacity();
 }
 
 template <class Key, class Value, class Allocator>
-unsigned int Map<Key, Value, Allocator>::size(void) const
+size_t Map<Key, Value, Allocator>::size(void) const
 {
 	return _array.size();
 }
