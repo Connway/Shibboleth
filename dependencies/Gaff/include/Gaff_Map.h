@@ -63,10 +63,10 @@ public:
 	void insert(const Key& key, const Value& value);
 
 	void clear(void);
-	void reserve(unsigned int new_size);
+	void reserve(size_t new_size);
 
-	unsigned int capacity(void) const;
-	unsigned int size(void) const;
+	size_t capacity(void) const;
+	size_t size(void) const;
 	bool empty(void) const;
 
 	bool hasElementWithValue(const Value& value) const;

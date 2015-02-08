@@ -583,14 +583,29 @@ void App::doATask(void)
 	_thread_pool.doATask();
 }
 
-DynamicLoader::ModulePtr App::loadModule(const char* filename, const char* name)
+void App::addLogCallback(const LogManager::LogCallback& callback)
 {
-	return _dynamic_loader.loadModule(filename, name);
+	_logger.addLogCallback(callback);
+}
+
+void App::removeLogCallback(const LogManager::LogCallback& callback)
+{
+	_logger.removeLogCallback(callback);
+}
+
+void App::notifyLogCallbacks(const char* message, LogManager::LOG_TYPE type)
+{
+	_logger.notifyLogCallbacks(message, type);
 }
 
 LogManager::FileLockPair& App::getGameLogFile(void)
 {
 	return *_log_file_pair;
+}
+
+DynamicLoader::ModulePtr App::loadModule(const char* filename, const char* name)
+{
+	return _dynamic_loader.loadModule(filename, name);
 }
 
 size_t App::getSeed(void) const

@@ -41,7 +41,7 @@ class String
 {
 public:
 	String(const Allocator& allocator = Allocator());
-	String(const T* string, unsigned int size, const Allocator& allocator = Allocator());
+	String(const T* string, size_t size, const Allocator& allocator = Allocator());
 	explicit String(const T* string, const Allocator& allocator = Allocator());
 	String(String<T, Allocator>&& rhs);
 	String(const String<T, Allocator>& string);
@@ -61,8 +61,8 @@ public:
 	bool operator>(const String<T, Allocator>& rhs) const;
 	bool operator>(const T* rhs) const;
 
-	char operator[](unsigned int index) const;
-	char& operator[](unsigned int index);
+	char operator[](size_t index) const;
+	char& operator[](size_t index);
 
 	const String<T, Allocator>& operator+=(const String<T, Allocator>& rhs);
 	const String<T, Allocator>& operator+=(const T* rhs);
@@ -75,45 +75,45 @@ public:
 	// WARNING: This function takes ownership of the string instead of copying
 	void set(T* string);
 	void clear(void);
-	unsigned int size(void) const;
+	size_t size(void) const;
 
 	const T* getBuffer(void) const;
 	T* getBuffer(void);
 
 	String<T, Allocator> getExtension(T delimiting_character) const;
-	String<T, Allocator> substring(unsigned int begin, unsigned int end) const;
-	String<T, Allocator> substring(unsigned int begin) const;
+	String<T, Allocator> substring(size_t begin, size_t end) const;
+	String<T, Allocator> substring(size_t begin) const;
 
-	void append(const T* string, unsigned int size);
+	void append(const T* string, size_t size);
 	void append(const T* string);
-	void resize(unsigned int new_size);
-	void erase(unsigned int begin_index, unsigned int end_index);
-	void erase(unsigned int index);
+	void resize(size_t new_size);
+	void erase(size_t begin_index, size_t end_index);
+	void erase(size_t index);
 	void erase(T character);
 
-	unsigned int findFirstOf(const T* character) const;
-	unsigned int findLastOf(const T* character) const;
-	unsigned int findFirstOf(T character) const;
-	unsigned int findLastOf(T character) const;
+	size_t findFirstOf(const T* character) const;
+	size_t findLastOf(const T* character) const;
+	size_t findFirstOf(T character) const;
+	size_t findLastOf(T character) const;
 
 	// Only valid on String with type char. Conversion functions will erase current string.
-	void convertToUTF8(const wchar_t* string, unsigned int size);
-	void convertToUTF16(const char* string, unsigned int size);
-	unsigned int findInvalidUTF8(void) const;
+	void convertToUTF8(const wchar_t* string, size_t size);
+	void convertToUTF16(const char* string, size_t size);
+	size_t findInvalidUTF8(void) const;
 	bool isValidUTF8(void) const;
 
 private:
 	Allocator _allocator;
-	unsigned int _size;
+	size_t _size;
 	T* _string;
 
 	// If my benchmarks from strlen() and wcslen() are any indicator, this is no slower than memcpy(),
 	// and this gets rid of that damn compiler warning
-	void copy(const T* src, T* dest, unsigned int dest_size) const;
+	void copy(const T* src, T* dest, size_t dest_size) const;
 	void copy(const T* src, T* dest) const;
-	void zeroOut(T* string, unsigned int size) const;
+	void zeroOut(T* string, size_t size) const;
 	void trimZeroes(void);
-	bool equal(const T* str1, const T* str2, unsigned int size) const;
+	bool equal(const T* str1, const T* str2, size_t size) const;
 
 	// allows for optimization
 	template <class T2, class Allocator2>
@@ -122,43 +122,43 @@ private:
 
 // Helper Functions
 template <class T>
-unsigned int length(const T* string);
+size_t length(const T* string);
 
 template <>
-unsigned int length(const char* string);
+size_t length(const char* string);
 
 template <>
-unsigned int length(const wchar_t* string);
+size_t length(const wchar_t* string);
 
 template <class T>
-bool less(const T* s1, unsigned int n1, const T* s2, unsigned int n2);
+bool less(const T* s1, size_t n1, const T* s2, size_t n2);
 
 template <class T>
-bool less(const T* s1, unsigned int n1, const T* s2);
+bool less(const T* s1, size_t n1, const T* s2);
 
 template <>
-bool less(const char* s1, unsigned int n1, const char* s2, unsigned int n2);
+bool less(const char* s1, size_t n1, const char* s2, size_t n2);
 
 template <>
-bool less(const wchar_t* s1, unsigned int n1, const wchar_t* s2, unsigned int n2);
+bool less(const wchar_t* s1, size_t n1, const wchar_t* s2, size_t n2);
 
 template <class T>
-bool greater(const T* s1, unsigned int n1, const T* s2, unsigned int n2);
+bool greater(const T* s1, size_t n1, const T* s2, size_t n2);
 
 template <>
-bool greater(const char* s1, unsigned int n1, const char* s2, unsigned int n2);
+bool greater(const char* s1, size_t n1, const char* s2, size_t n2);
 
 template <>
-bool greater(const wchar_t* s1, unsigned int n1, const wchar_t* s2, unsigned int n2);
+bool greater(const wchar_t* s1, size_t n1, const wchar_t* s2, size_t n2);
 
 template <class T>
-bool greater(const T* s1, unsigned int n1, const T* s2);
+bool greater(const T* s1, size_t n1, const T* s2);
 
 template <>
-bool greater(const char* s1, unsigned int n1, const char* s2);
+bool greater(const char* s1, size_t n1, const char* s2);
 
 template <>
-bool greater(const wchar_t* s1, unsigned int n1, const wchar_t* s2);
+bool greater(const wchar_t* s1, size_t n1, const wchar_t* s2);
 
 #include "Gaff_String.inl"
 

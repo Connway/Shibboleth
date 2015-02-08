@@ -67,7 +67,7 @@ bool RenderDeviceGL::CheckRequiredExtensions(void)
 	);
 }
 
-bool RenderDeviceGL::initThreadData(unsigned int* thread_ids, unsigned int num_ids)
+bool RenderDeviceGL::initThreadData(unsigned int* thread_ids, size_t num_ids)
 {
 	for (unsigned int i = 0; i < num_ids; ++i) {
 		GleamArray<HGLRC>& thread_data = _thread_contexts[thread_ids[i]];
@@ -393,9 +393,9 @@ bool RenderDeviceGL::resize(const IWindow& window)
 	const Window& wnd = (const Window&)window;
 
 	for (auto it = _devices.begin(); it != _devices.end(); ++it) {
-		int index = it->windows.linearSearch(0, it->windows.size(), wnd.getHWnd());
+		size_t index = it->windows.linearSearch(0, it->windows.size(), wnd.getHWnd());
 
-		if (index > -1) {
+		if (index != SIZE_T_FAIL) {
 			it->viewports[index].width = wnd.getWidth();
 			it->viewports[index].height = wnd.getHeight();
 			((RenderTargetGL*)it->rts[index].get())->setViewport(wnd.getWidth(), wnd.getHeight());
@@ -467,12 +467,12 @@ unsigned int RenderDeviceGL::getActiveViewportHeight(void)
 unsigned int RenderDeviceGL::getNumOutputs(unsigned int device) const
 {
 	assert(_devices.size() > device);
-	return _devices[device].outputs.size();
+	return static_cast<unsigned int>(_devices[device].outputs.size());
 }
 
 unsigned int RenderDeviceGL::getNumDevices(void) const
 {
-	return _devices.size();
+	return static_cast<unsigned int>(_devices.size());
 }
 
 IRenderTargetPtr RenderDeviceGL::getOutputRenderTarget(unsigned int device, unsigned int output)

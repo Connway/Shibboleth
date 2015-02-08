@@ -445,7 +445,7 @@ unsigned int RenderDeviceGL::getDeviceForAdapter(unsigned int adapter_id) const
 		}
 	}
 
-	return UINT_FAIL;
+	return SIZE_T_FAIL;
 }
 
 IRenderDevice* RenderDeviceGL::createDeferredRenderDevice(void)

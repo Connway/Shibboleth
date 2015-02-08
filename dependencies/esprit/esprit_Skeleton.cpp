@@ -32,41 +32,41 @@ Skeleton::~Skeleton(void)
 {
 }
 
-unsigned int Skeleton::getNumBones(void) const
+size_t Skeleton::getNumBones(void) const
 {
 	return _parent_indices.size();
 }
 
-unsigned int Skeleton::getParentIndex(unsigned int bone_index) const
+size_t Skeleton::getParentIndex(size_t bone_index) const
 {
 	assert(bone_index < _parent_indices.size());
 	return _parent_indices[bone_index];
 }
 
-const AString& Skeleton::getName(unsigned int bone_index) const
+const AString& Skeleton::getName(size_t bone_index) const
 {
 	assert(bone_index < _names.size());
 	return _names[bone_index];
 }
 
-unsigned int Skeleton::getBoneIndex(const char* name) const
+size_t Skeleton::getBoneIndex(const char* name) const
 {
-	for (unsigned int i = 0; i < _names.size(); ++i) {
+	for (size_t i = 0; i < _names.size(); ++i) {
 		if (_names[i] == name) {
 			return i;
 		}
 	}
 
-	return UINT_FAIL;
+	return SIZE_T_FAIL;
 }
 
-void Skeleton::setReferenceTransform(unsigned int bone_index, const Gleam::Transform& transform)
+void Skeleton::setReferenceTransform(size_t bone_index, const Gleam::TransformSIMD& transform)
 {
 	assert(bone_index < _parent_indices.size());
 	_default_pose.getLocalTransforms()[bone_index] = transform;
 }
 
-void Skeleton::addBone(unsigned int parent_index, const char* name)
+void Skeleton::addBone(size_t parent_index, const char* name)
 {
 	AString str_name;
 
@@ -79,14 +79,14 @@ void Skeleton::addBone(unsigned int parent_index, const char* name)
 	_default_pose.setNumBones(_parent_indices.size());
 }
 
-void Skeleton::calculateModelTransform(Pose& pose, unsigned int bone_index)
+void Skeleton::calculateModelTransform(Pose& pose, size_t bone_index)
 {
 	assert(bone_index < _parent_indices.size());
 
-	Gleam::Transform& bone_transform = pose.getModelTransforms()[bone_index];
-	unsigned int parent_index = _parent_indices[bone_index];
+	Gleam::TransformSIMD& bone_transform = pose.getModelTransforms()[bone_index];
+	size_t parent_index = _parent_indices[bone_index];
 
-	if (parent_index != UINT_FAIL) {
+	if (parent_index != SIZE_T_FAIL) {
 		bone_transform = pose.getModelTransforms()[parent_index] + pose.getLocalTransforms()[bone_index];
 	} else {
 		bone_transform = pose.getLocalTransforms()[bone_index];
@@ -95,7 +95,7 @@ void Skeleton::calculateModelTransform(Pose& pose, unsigned int bone_index)
 
 void Skeleton::calculateModelTransform(Pose& pose)
 {
-	for (unsigned int i = 0; i < _parent_indices.size(); ++i) {
+	for (size_t i = 0; i < _parent_indices.size(); ++i) {
 		calculateModelTransform(pose, i);
 	}
 }

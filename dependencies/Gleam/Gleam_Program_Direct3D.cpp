@@ -268,7 +268,7 @@ void ProgramD3D::bind(IRenderDevice& rd, IProgramBuffers* program_buffers)
 {
 	assert(rd.isD3D());
 
-	IRenderDeviceD3D& rd3d = (IRenderDeviceD3D&)*(((const char*)&rd) + sizeof(IRenderDevice));
+	IRenderDeviceD3D& rd3d = reinterpret_cast<IRenderDeviceD3D&>(*(reinterpret_cast<char*>(&rd) + sizeof(IRenderDevice)));
 	ID3D11DeviceContext* context = rd3d.getActiveDeviceContext();
 
 	context->VSSetShader(_shader_vertex, NULL, 0);
@@ -287,9 +287,9 @@ void ProgramD3D::bind(IRenderDevice& rd, IProgramBuffers* program_buffers)
 			GleamArray<ID3D11SamplerState*>& samplers = pb->_samplers[i];
 			GleamArray<ID3D11Buffer*>& buffers = pb->_buffers[i];
 
-			(context->*shader_set[i])(0, buffers.size(), buffers.getArray());
-			(context->*resource_set[i])(0, res_views.size(), res_views.getArray());
-			(context->*sampler_set[i])(0, samplers.size(), samplers.getArray());
+			(context->*shader_set[i])(0, static_cast<UINT>(buffers.size()), buffers.getArray());
+			(context->*resource_set[i])(0, static_cast<UINT>(res_views.size()), res_views.getArray());
+			(context->*sampler_set[i])(0, static_cast<UINT>(samplers.size()), samplers.getArray());
 		}
 	}
 }
@@ -297,7 +297,7 @@ void ProgramD3D::bind(IRenderDevice& rd, IProgramBuffers* program_buffers)
 void ProgramD3D::unbind(IRenderDevice& rd)
 {
 	assert(rd.isD3D());
-	IRenderDeviceD3D& rd3d = (IRenderDeviceD3D&)*(((const char*)&rd) + sizeof(IRenderDevice));
+	IRenderDeviceD3D& rd3d = reinterpret_cast<IRenderDeviceD3D&>(*(reinterpret_cast<char*>(&rd) + sizeof(IRenderDevice)));
 	ID3D11DeviceContext* context = rd3d.getActiveDeviceContext();
 
 	context->VSSetShader(NULL, NULL, 0);

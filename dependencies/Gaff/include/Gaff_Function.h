@@ -235,9 +235,9 @@ public:
 
 private:
 	char _function_buffer[FUNCTION_BUFFER_SIZE]; // allocate 32 bytes for the function buffer
-	unsigned int _object_size;
+	size_t _object_size;
 
-	FunctionBinder(void* object, unsigned int size);
+	FunctionBinder(void* object, size_t size);
 
 	template <class T, class RT, class... As> friend FunctionBinder<RT, As...> Bind(T*, RT (T::*)(As...));
 	template <class RT, class... As> friend FunctionBinder<RT, As...> Bind(RT (*)(As...));

@@ -33,7 +33,7 @@ THE SOFTWARE.
 NS_GLEAM
 
 RenderDeviceD3D::RenderDeviceD3D(void):
-	_video_memory(0), _curr_output(0), _curr_device(0)
+	_video_memory(0), _curr_output(UINT_FAIL), _curr_device(UINT_FAIL)
 {
 	_clear_color[0] = 0.0f;
 	_clear_color[1] = 0.0f;
@@ -154,7 +154,7 @@ IRenderDevice::AdapterList RenderDeviceD3D::getDisplayModes(int color_format)
 	return out;
 }
 
-bool RenderDeviceD3D::initThreadData(unsigned int*, unsigned int)
+bool RenderDeviceD3D::initThreadData(unsigned int*, size_t)
 {
 	return true;
 }
@@ -520,12 +520,12 @@ unsigned int RenderDeviceD3D::getActiveViewportHeight(void)
 unsigned int RenderDeviceD3D::getNumOutputs(unsigned int device) const
 {
 	assert(_devices.size() > device);
-	return _devices[device].render_targets.size();
+	return static_cast<unsigned int>(_devices[device].render_targets.size());
 }
 
 unsigned int RenderDeviceD3D::getNumDevices(void) const
 {
-	return _devices.size();
+	return static_cast<unsigned int>(_devices.size());
 }
 
 IRenderTargetPtr RenderDeviceD3D::getOutputRenderTarget(unsigned int device, unsigned int output)

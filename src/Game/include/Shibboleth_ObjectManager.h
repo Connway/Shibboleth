@@ -49,13 +49,16 @@ public:
 		return false;
 	}
 
-	ObjectManager(IApp& app);
+	ObjectManager(void);
 	~ObjectManager(void);
 
 	Object* createObject(void);
+	INLINE void removeObject(Object* object);
 	void removeObject(unsigned int id);
 	bool doesObjectExist(const Object* object) const;
 	bool doesObjectExist(unsigned int id) const;
+
+	void addDirtyObject(Object* object);
 
 	const char* getName(void) const;
 
@@ -64,10 +67,10 @@ public:
 
 private:
 	Array<Object*> _objects;
-
-	IApp& _app;
+	Array<Object*> _dirty_objects;
 
 	Gaff::SpinLock _objects_lock;
+	Gaff::SpinLock _dirty_objects_lock;
 
 	volatile unsigned int _next_id;
 

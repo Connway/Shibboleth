@@ -22,41 +22,16 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Gleam_Matrix4x4.h"
-#include "Gleam_Vector4.h"
-#include "Gleam_Array.h"
+#ifdef USE_SIMD
+	#include "Gleam_OBB_SIMD.h"
 
-NS_GLEAM
+	NS_GLEAM
+		typedef OBBSIMD OBB;
+	NS_END
+#else
+	#include "Gleam_OBB_CPU.h"
 
-class AABB;
-
-class OBB
-{
-public:
-	OBB(const Vec4& center, const Vec4& right, const Vec4& up, const Vec4& forward,
-		float right_length, float up_length, float dir_length);
-	OBB(const AABB& aabb, const Mtx4x4& transform);
-	OBB(const AABB& aabb);
-	OBB(const OBB& obb);
-	OBB(void);
-	~OBB(void);
-
-	INLINE void setLength(int axis, float length);
-	INLINE float getLength(int axis) const;
-
-	INLINE const Vec4& getAxis(int axis) const;
-
-	const GleamArray<Vec4>& generatePoints(GleamArray<Vec4>& out) const;
-	GleamArray<Vec4> generatePoints(void) const;
-	const Vec4* generatePoints(Vec4* out) const;
-
-	void transform(const Mtx4x4& transform);
-	bool contains(const Vec4& point) const;
-
-private:
-	Vec4 _center;
-	Vec4 _axes[3];
-	float _lengths[3];
-};
-
-NS_END
+	NS_GLEAM
+		typedef OBBCPU OBB;
+	NS_END
+#endif

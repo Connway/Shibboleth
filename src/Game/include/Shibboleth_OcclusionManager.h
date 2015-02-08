@@ -28,8 +28,8 @@ THE SOFTWARE.
 #include <Shibboleth_Watcher.h>
 #include <Shibboleth_Array.h>
 #include <Shibboleth_Map.h>
-#include <Gleam_Quaternion.h>
-#include <Gleam_AABB.h>
+#include <Gleam_AABB_CPU.h>
+#include <Gaff_ReadWriteSpinLock.h>
 
 NS_SHIBBOLETH
 
@@ -39,67 +39,93 @@ class IApp;
 class OcclusionManager : public IManager, public IUpdateQuery
 {
 public:
-	OcclusionManager(IApp& app);
+	enum OBJ_TYPE
+	{
+		OT_STATIC = 0,
+		OT_DYNAMIC,
+		OT_SIZE
+	};
+
+	struct OcclusionID
+	{
+		size_t index;
+		OBJ_TYPE object_type;
+	};
+
+	OcclusionManager(void);
 	~OcclusionManager(void);
 
 	void requestUpdateEntries(Array<UpdateEntry>& entries);
 	void* rawRequestInterface(unsigned int class_id) const;
 	const char* getName(void) const;
 
-	unsigned int addObject(Object* object);
-	void removeObject(unsigned int id);
+	OcclusionID addObject(Object* object, OBJ_TYPE object_type);
+	INLINE void removeObject(Object* object);
+	INLINE void removeObject(OcclusionID id);
+
+	INLINE void constructStaticTree(const Array<Object*>& objects, Array<OcclusionID>* id_out = nullptr);
 
 	void update(double);
 
 private:
-	struct Node
-	{
-		// other data for pos, aabb, and children nodes
-
-		Gaff::WatchReceipt receipts[4];
-		Object* object;
-		unsigned int id;
-
-		// The lock is in the node instead of the watcher because SpinLock has no copy or assignment.
-		Gaff::SpinLock _lock;
-		bool dirty;
-	};
-
-	class WatchUpdater
+	class BVHTree
 	{
 	public:
-		WatchUpdater(OcclusionManager* spatial_mgr, Node* node);
-		~WatchUpdater(void);
+		BVHTree(void);
+		~BVHTree(void);
 
-		// Need const otherwise get funky compiler errors
-		void operator()(const Gleam::Quaternion&) const;
-		void operator()(const Gleam::AABB&) const;
-		void operator()(const Gleam::Vec4&) const;
+		INLINE void setIsStatic(bool is_static);
+
+		size_t addObject(Object* object);
+		void removeObject(size_t index);
+
+		// Bottom-up construction
+		void construct(const Array<Object*>& objects, Array<OcclusionID>* id_out);
+
+		void update(void);
 
 	private:
-		OcclusionManager* _spatial_mgr;
-		Node* _node;
+		struct BVHNode
+		{
+			Gleam::AABBCPU aabb;
+			Object* object;
+			size_t index; // index in the _node_cache we live in
+			size_t parent;
+			size_t left;
+			size_t right;
 
-		void addDirtyNode(void) const;
+			bool dirty;
+		};
+
+		Array<BVHNode> _node_cache; // Avoids allocations and keeps some cache coherency
+		Array<size_t> _dirty_indices;
+		Array<size_t> _free_indices;
+
+		Array< Gaff::Pair<Object*, size_t> > _add_buffer;
+		Array<size_t> _remove_buffer;
+
+		Gaff::SpinLock _remove_lock;
+		Gaff::SpinLock _add_lock;
+		Gaff::SpinLock _fi_lock;
+		Gaff::SpinLock _nc_lock;
+
+		size_t _root;
+
+		bool _is_static;
+
+		void dirtyObjectCallback(Object* object, unsigned long long index);
+		void growArrays(void);
+
+		void addObjectHelper(Object* object, size_t index);
+		void removeObjectHelper(size_t index);
+		void updateAABBs(size_t index);
 	};
 
-	Map<unsigned int, Node*> _node_map;
-	Array<Node*> _dirty_nodes;
-	Node* _bvh;
-
-	IApp& _app;
-
-	Gaff::SpinLock _dirty_lock;
-	Gaff::SpinLock _bvh_lock;
-
-	unsigned int _next_id;
-
-	void removeNode(Node* node);
-	void insertNode(Node* node);
-
-	friend class WatchUpdater;
+	BVHTree _bvh_trees[OT_SIZE];
+	Map<Object*, OcclusionID> _node_map;
 
 	GAFF_NO_COPY(OcclusionManager);
+	GAFF_NO_MOVE(OcclusionManager);
 
 	REF_DEF_SHIB(OcclusionManager);
 };

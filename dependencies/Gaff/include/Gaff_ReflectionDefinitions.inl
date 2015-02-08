@@ -126,12 +126,12 @@ T EnumReflectionDefinition<T, Allocator>::getValue(const char* name) const
 }
 
 template <class T, class Allocator>
-Pair<AString<Allocator>, T> EnumReflectionDefinition<T, Allocator>::getEntry(unsigned int index) const
+Pair<AString<Allocator>, T> EnumReflectionDefinition<T, Allocator>::getEntry(size_t index) const
 {
 	assert(index < _values_map.size());
 	auto it = _values_map.begin();
 
-	for (unsigned int i = 0; i < index; ++i) {
+	for (size_t i = 0; i < index; ++i) {
 		++it;
 	}
 
@@ -164,7 +164,7 @@ Pair<AString<Allocator>, unsigned int> EnumReflectionDefinition<T, Allocator>::g
 }
 
 template <class T, class Allocator>
-unsigned int EnumReflectionDefinition<T, Allocator>::getNumEntries(void) const
+size_t EnumReflectionDefinition<T, Allocator>::getNumEntries(void) const
 {
 	return _values_map.size();
 }

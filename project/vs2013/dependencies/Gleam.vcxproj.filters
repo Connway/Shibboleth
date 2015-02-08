@@ -9,6 +9,12 @@
     <ClInclude Include="..\..\..\dependencies\Gleam\include\Gleam_AABB.h">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\Gleam\include\Gleam_AABB_CPU.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\Gleam\include\Gleam_AABB_SIMD.h">
+      <Filter>include</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\dependencies\Gleam\include\Gleam_Array.h">
       <Filter>include</Filter>
     </ClInclude>
@@ -177,6 +183,12 @@
     <ClInclude Include="..\..\..\dependencies\Gleam\include\Gleam_OBB.h">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\Gleam\include\Gleam_OBB_CPU.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\Gleam\include\Gleam_OBB_SIMD.h">
+      <Filter>include</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\dependencies\Gleam\include\Gleam_Program.h">
       <Filter>include</Filter>
     </ClInclude>
@@ -291,6 +303,12 @@
     <ClInclude Include="..\..\..\dependencies\Gleam\include\Gleam_Transform.h">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\Gleam\include\Gleam_Transform_CPU.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\Gleam\include\Gleam_Transform_SIMD.h">
+      <Filter>include</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\dependencies\Gleam\include\Gleam_Vector4.h">
       <Filter>include</Filter>
     </ClInclude>
@@ -314,7 +332,8 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\dependencies\Gleam\Gleam_AABB.cpp" />
+    <ClCompile Include="..\..\..\dependencies\Gleam\Gleam_AABB_CPU.cpp" />
+    <ClCompile Include="..\..\..\dependencies\Gleam\Gleam_AABB_SIMD.cpp" />
     <ClCompile Include="..\..\..\dependencies\Gleam\Gleam_Buffer_Direct3D.cpp" />
     <ClCompile Include="..\..\..\dependencies\Gleam\Gleam_Buffer_OpenGL.cpp" />
     <ClCompile Include="..\..\..\dependencies\Gleam\Gleam_CommandList_Direct3D.cpp" />
@@ -336,7 +355,8 @@
     <ClCompile Include="..\..\..\dependencies\Gleam\Gleam_Model_Direct3D.cpp" />
     <ClCompile Include="..\..\..\dependencies\Gleam\Gleam_Model_OpenGL.cpp" />
     <ClCompile Include="..\..\..\dependencies\Gleam\Gleam_Mouse_MessagePump.cpp" />
-    <ClCompile Include="..\..\..\dependencies\Gleam\Gleam_OBB.cpp" />
+    <ClCompile Include="..\..\..\dependencies\Gleam\Gleam_OBB_CPU.cpp" />
+    <ClCompile Include="..\..\..\dependencies\Gleam\Gleam_OBB_SIMD.cpp" />
     <ClCompile Include="..\..\..\dependencies\Gleam\Gleam_ProgramBase.cpp" />
     <ClCompile Include="..\..\..\dependencies\Gleam\Gleam_Program_Direct3D.cpp" />
     <ClCompile Include="..\..\..\dependencies\Gleam\Gleam_Program_OpenGL.cpp" />
@@ -361,7 +381,8 @@
     <ClCompile Include="..\..\..\dependencies\Gleam\Gleam_Shader_OpenGL.cpp" />
     <ClCompile Include="..\..\..\dependencies\Gleam\Gleam_Texture_Direct3D.cpp" />
     <ClCompile Include="..\..\..\dependencies\Gleam\Gleam_Texture_OpenGL.cpp" />
-    <ClCompile Include="..\..\..\dependencies\Gleam\Gleam_Transform.cpp" />
+    <ClCompile Include="..\..\..\dependencies\Gleam\Gleam_Transform_CPU.cpp" />
+    <ClCompile Include="..\..\..\dependencies\Gleam\Gleam_Transform_SIMD.cpp" />
     <ClCompile Include="..\..\..\dependencies\Gleam\Gleam_Vector4_CPU.cpp" />
     <ClCompile Include="..\..\..\dependencies\Gleam\Gleam_Vector4_SIMD.cpp" />
     <ClCompile Include="..\..\..\dependencies\Gleam\Gleam_Window_Linux.cpp" />

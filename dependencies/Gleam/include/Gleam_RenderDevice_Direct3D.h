@@ -39,7 +39,7 @@ public:
 
 	AdapterList getDisplayModes(int color_format = DXGI_FORMAT_R8G8B8A8_UNORM/*DXGI_FORMAT_R8G8B8A8_UNORM_SRGB*/);
 
-	bool initThreadData(unsigned int*, unsigned int);
+	bool initThreadData(unsigned int*, size_t);
 	bool init(const IWindow& window, unsigned int adapter_id, unsigned int display_id, unsigned int display_mode_id, bool vsync = false);
 	void destroy(void);
 

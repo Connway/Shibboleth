@@ -21,26 +21,26 @@ THE SOFTWARE.
 ************************************************************************************/
 
 template <class T, class Allocator>
-HashString<T, Allocator>::HashString(const HashString<T, Allocator>& string, HashFunc hash):
+HashString<T, Allocator>::HashString(const HashString<T, Allocator>& string, HashFunc32 hash):
 	_string(string._string), _hash_value(hash((const char*)string.getBuffer(), string.size() * sizeof(T))), _hash_func(hash)
 {
 }
 
 template <class T, class Allocator>
-HashString<T, Allocator>::HashString(const String<T, Allocator>& string, HashFunc hash):
+HashString<T, Allocator>::HashString(const String<T, Allocator>& string, HashFunc32 hash):
 	_string(string), _hash_value(hash((const char*)string.getBuffer(), string.size() * sizeof(T))), _hash_func(hash)
 {
 }
 
 template <class T, class Allocator>
-HashString<T, Allocator>::HashString(const T* string, HashFunc hash, const Allocator& allocator):
+HashString<T, Allocator>::HashString(const T* string, HashFunc32 hash, const Allocator& allocator):
 	_string(string, allocator), _hash_func(hash)
 {
-	_hash_value = hash((const char*)string, _string.size() * sizeof(T));
+	_hash_value = hash(reinterpret_cast<const char*>(string), _string.size() * sizeof(T));
 }
 
 template <class T, class Allocator>
-HashString<T, Allocator>::HashString(HashFunc hash, const Allocator& allocator):
+HashString<T, Allocator>::HashString(HashFunc32 hash, const Allocator& allocator):
 	_string(allocator), _hash_value(0), _hash_func(hash)
 {
 }
@@ -111,7 +111,7 @@ bool HashString<T, Allocator>::operator!=(const HashString<T, Allocator>& rhs) c
 }
 
 template <class T, class Allocator>
-char HashString<T, Allocator>::operator[](unsigned int index) const
+char HashString<T, Allocator>::operator[](size_t index) const
 {
 	assert(index < _string.size());
 	return _string[index];
@@ -119,7 +119,7 @@ char HashString<T, Allocator>::operator[](unsigned int index) const
 
 // required reference for operations like string[i] = 'a';
 //template <class T, class Allocator>
-//char& HashString<T, Allocator>::operator[](unsigned int index)
+//char& HashString<T, Allocator>::operator[](size_t index)
 //{
 //	assert(index < _size);
 //	return _string[index];
@@ -182,7 +182,7 @@ void HashString<T, Allocator>::clear(void)
 }
 
 template <class T, class Allocator>
-unsigned int HashString<T, Allocator>::size(void) const
+size_t HashString<T, Allocator>::size(void) const
 {
 	return _string.size();
 }

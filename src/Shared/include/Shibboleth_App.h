@@ -74,8 +74,12 @@ public:
 	void helpUntilNoTasks(void);
 	void doATask(void);
 
-	DynamicLoader::ModulePtr loadModule(const char* filename, const char* name);
+	void addLogCallback(const LogManager::LogCallback& callback);
+	void removeLogCallback(const LogManager::LogCallback& callback);
+	void notifyLogCallbacks(const char* message, LogManager::LOG_TYPE type);
 	LogManager::FileLockPair& getGameLogFile(void);
+
+	DynamicLoader::ModulePtr loadModule(const char* filename, const char* name);
 	size_t getSeed(void) const;
 	void quit(void);
 

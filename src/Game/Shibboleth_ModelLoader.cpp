@@ -193,7 +193,7 @@ bool ModelLoader::loadMeshes(ModelData* data, const Gaff::JSON& lod_tags, const 
 {
 	Gaff::ScopedLock<Gaff::SpinLock> scoped_lock(_render_mgr.getSpinLock());
 	Gleam::IRenderDevice& rd = _render_mgr.getRenderDevice();
-	unsigned int num_lods = (!lod_tags) ? 1 : lod_tags.size();
+	size_t num_lods = (!lod_tags) ? 1 : lod_tags.size();
 	unsigned int num_bone_weights = 0;
 
 	Array< Array<VertSkeletonData> > vert_skeleton_data;
@@ -273,7 +273,7 @@ bool ModelLoader::loadMeshes(ModelData* data, const Gaff::JSON& lod_tags, const 
 			}
 
 			// Determine the LOD level of this mesh
-			int lod = -1;
+			size_t lod = SIZE_T_FAIL;
 
 			if (!lod_tags) {
 				lod = 0;
@@ -283,7 +283,7 @@ bool ModelLoader::loadMeshes(ModelData* data, const Gaff::JSON& lod_tags, const 
 				{
 					AString mesh_name(scene_mesh.getName());
 
-					if (mesh_name.findFirstOf(value.getString()) != UINT_FAIL) {
+					if (mesh_name.findFirstOf(value.getString()) != SIZE_T_FAIL) {
 						lod = index;
 						return true;
 					}
@@ -291,7 +291,7 @@ bool ModelLoader::loadMeshes(ModelData* data, const Gaff::JSON& lod_tags, const 
 					return false;
 				});
 
-				if (lod == -1) {
+				if (lod == SIZE_T_FAIL) {
 					// log warning saying we found a mesh
 					// that was not specified with an LOD level
 					continue;
@@ -300,10 +300,10 @@ bool ModelLoader::loadMeshes(ModelData* data, const Gaff::JSON& lod_tags, const 
 
 			// Only need to do this once
 			if (i == 0) {
-				Gleam::AABB aabb;
+				Gleam::AABBCPU aabb;
 
 				for (unsigned int k = 0; k < scene_mesh.getNumVertices(); ++k) {
-					aabb.addPoint(Gleam::Vec4(scene_mesh.getVertex(k)[0], scene_mesh.getVertex(k)[1], scene_mesh.getVertex(k)[2], 1.0f));
+					aabb.addPoint(Gleam::Vector4CPU(scene_mesh.getVertex(k)[0], scene_mesh.getVertex(k)[1], scene_mesh.getVertex(k)[2], 1.0f));
 				}
 
 				data->aabbs[lod].push(aabb);
@@ -523,7 +523,7 @@ bool ModelLoader::createMeshAndLayout(Gleam::IRenderDevice& rd, const Gaff::Mesh
 
 			const VertSkeletonData& vsd = vert_skeleton_data[(current_vertex - vertices) / vert_size];
 
-			for (unsigned int j = 0; j < vsd.bone_indices.size(); ++j) {
+			for (size_t j = 0; j < vsd.bone_indices.size(); ++j) {
 				blend_indices[j] = vsd.bone_indices[j];
 				blend_weights[j] = vsd.bone_weights[j];
 			}
@@ -553,7 +553,7 @@ bool ModelLoader::createMeshAndLayout(Gleam::IRenderDevice& rd, const Gaff::Mesh
 		}
 	}
 
-	if (!mesh->addVertData(rd, vertices, scene_mesh.getNumVertices(), sizeof(float) * vert_size, indices.getArray(), indices.size())) {
+	if (!mesh->addVertData(rd, vertices, scene_mesh.getNumVertices(), sizeof(float) * vert_size, indices.getArray(), static_cast<unsigned int>(indices.size()))) {
 		return false;
 	}
 
@@ -570,7 +570,7 @@ bool ModelLoader::createMeshAndLayout(Gleam::IRenderDevice& rd, const Gaff::Mesh
 		}
 	}
 
-	if (!model->createLayout(rd, layout_desc.getArray(), layout_desc.size(), shader)) {
+	if (!model->createLayout(rd, layout_desc.getArray(), static_cast<unsigned int>(layout_desc.size()), shader)) {
 		// Log error
 		return false;
 	}
@@ -640,7 +640,7 @@ unsigned int ModelLoader::generateLoadingFlags(const Gaff::JSON& model_prefs)
 	return flags;
 }
 
-Gleam::IShader* ModelLoader::generateEmptyD3D11Shader(Gleam::IRenderDevice& rd, const Gaff::JSON& model_prefs, const Gaff::Mesh& scene_mesh, unsigned int num_bone_weights) const
+Gleam::IShader* ModelLoader::generateEmptyD3D11Shader(Gleam::IRenderDevice& rd, const Gaff::JSON& model_prefs, const Gaff::Mesh& scene_mesh, size_t num_bone_weights) const
 {
 	Gleam::IShader* shader = _render_mgr.createShader();
 
@@ -665,7 +665,7 @@ Gleam::IShader* ModelLoader::generateEmptyD3D11Shader(Gleam::IRenderDevice& rd, 
 		char temp[3] = { 0,0, 0 };
 
 		for (unsigned int i = 0; i < scene_mesh.getNumUVChannels(); ++i) {
-			_itoa(i, temp, 10); // values should be in [1, 9]
+			_itoa(static_cast<int>(i), temp, 10); // values should be in [1, 9]
 
 			switch (scene_mesh.getNumUVComponents(i)) {
 				case 1:
@@ -702,15 +702,15 @@ Gleam::IShader* ModelLoader::generateEmptyD3D11Shader(Gleam::IRenderDevice& rd, 
 
 		char temp[3] = { 0, 0, 0 }; // I imagine our bone count will always be below 100. :)
 
-		for (unsigned int i = 0; i < num_bone_weights; ++i) {
+		for (size_t i = 0; i < num_bone_weights; ++i) {
 			shader_code += d3d11_blend_indices_shader_chunk;
-			shader_code += _itoa(i, temp, 10);
+			shader_code += _itoa(static_cast<int>(i), temp, 10);
 			shader_code += ';';
 		}
 
-		for (unsigned int i = 0; i < num_bone_weights; ++i) {
+		for (size_t i = 0; i < num_bone_weights; ++i) {
 			shader_code += d3d11_blend_weights_shader_chunk;
-			shader_code += _itoa(i, temp, 10);
+			shader_code += _itoa(static_cast<int>(i), temp, 10);
 			shader_code += ';';
 		}
 	}
@@ -757,7 +757,7 @@ bool ModelLoader::loadSkeleton(ModelData* data, const Gaff::JSON& model_prefs, u
 
 		vert_skeleton_data[k].resize(num_bones.size());
 
-		for (unsigned int i = 0; i < num_bones.size(); ++i) {
+		for (size_t i = 0; i < num_bones.size(); ++i) {
 			max_vertex_bones = Gaff::Max(max_vertex_bones, num_bones[i]);
 
 			vert_skeleton_data[k][i].bone_indices.reserve(num_bones[i]);
@@ -765,7 +765,7 @@ bool ModelLoader::loadSkeleton(ModelData* data, const Gaff::JSON& model_prefs, u
 		}
 	}
 
-	num_bone_weights = (unsigned int)ceilf((float)max_vertex_bones / 4.0f);
+	num_bone_weights = static_cast<unsigned int>(ceilf((float)max_vertex_bones / 4.0f));
 
 	// Load skeleton hierarchy
 	// This should load a skeleton that is sorted by parent index. Root being bone 0.
@@ -780,7 +780,7 @@ bool ModelLoader::loadSkeleton(ModelData* data, const Gaff::JSON& model_prefs, u
 	Array<Gaff::SceneNode> nodes(1, root);
 
 	while (!nodes.empty()) {
-		for (unsigned int i = 0; i < nodes.size();) {
+		for (size_t i = 0; i < nodes.size();) {
 			if (!nodes[i]) {
 				// log error
 				return false;
@@ -797,7 +797,7 @@ bool ModelLoader::loadSkeleton(ModelData* data, const Gaff::JSON& model_prefs, u
 				}
 			}
 
-			unsigned int parent_index = UINT_FAIL;
+			size_t parent_index = SIZE_T_FAIL;
 
 			if (nodes[i].getParent()) {
 				parent_index = data->skeleton.getBoneIndex(nodes[i].getParent().getName());
@@ -806,17 +806,17 @@ bool ModelLoader::loadSkeleton(ModelData* data, const Gaff::JSON& model_prefs, u
 			data->skeleton.addBone(parent_index, nodes[i].getName());
 
 			// If we do not have a parent index, then we are the root and just use identity transform
-			if (parent_index != UINT_FAIL) {
-				unsigned int my_index = data->skeleton.getNumBones() - 1;
+			if (parent_index != SIZE_T_FAIL) {
+				size_t my_index = data->skeleton.getNumBones() - 1;
 
-				Gleam::Matrix4x4 matrix(nodes[i].getTransform());
-				Gleam::Transform transform;
+				Gleam::Matrix4x4SIMD matrix(nodes[i].getTransform());
+				Gleam::TransformSIMD transform;
 
 				// We lose scale information when we convert this to our transform class.
 				// Most likely fine. Bones probably shouldn't have scale information anyways.
 				matrix.transposeThis(); // Make assimp's matrix match our major
 				transform.setTranslation(matrix.getColumn(3));
-				transform.setRotation(Gleam::Quaternion::MakeFromMatrix(matrix));
+				transform.setRotation(Gleam::QuaternionSIMD::MakeFromMatrix(matrix));
 
 				data->skeleton.setReferenceTransform(my_index, transform);
 			}
@@ -837,8 +837,8 @@ bool ModelLoader::loadSkeleton(ModelData* data, const Gaff::JSON& model_prefs, u
 	}
 
 	// Cache some bone vert data for later
-	for (unsigned int i = 0; i < data->holding_data->scene.getNumMeshes(); ++i) {
-		Gaff::Mesh scene_mesh = data->holding_data->scene.getMesh(i);
+	for (size_t i = 0; i < data->holding_data->scene.getNumMeshes(); ++i) {
+		Gaff::Mesh scene_mesh = data->holding_data->scene.getMesh(static_cast<unsigned int>(i));
 
 		for (unsigned int j = 0; j < scene_mesh.getNumBones(); ++j) {
 			Gaff::Bone bone = scene_mesh.getBone(j);
@@ -847,8 +847,8 @@ bool ModelLoader::loadSkeleton(ModelData* data, const Gaff::JSON& model_prefs, u
 				for (unsigned int k = 0; k < bone.getNumWeights(); ++k) {
 					Gaff::VertexWeight weight = bone.getWeight(k);
 
-					if (weight && weight.getVertexIndex() == i) {
-						vert_skeleton_data[i][weight.getVertexIndex()].bone_indices.push(data->skeleton.getBoneIndex(bone.getName()));
+					if (weight && weight.getVertexIndex() == static_cast<unsigned int>(i)) {
+						vert_skeleton_data[i][weight.getVertexIndex()].bone_indices.push(static_cast<unsigned int>(data->skeleton.getBoneIndex(bone.getName())));
 						vert_skeleton_data[i][weight.getVertexIndex()].bone_weights.push(weight.getWeight());
 					}
 				}

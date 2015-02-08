@@ -445,8 +445,14 @@ HashMap<HashString<T, Allocator>, Value, Allocator>::Iterator::Iterator(Slot* sl
 
 // Normal
 template <class Key, class Value, class Allocator>
-HashMap<Key, Value, Allocator>::HashMap(HashFunc hash, const Allocator& allocator):
+HashMap<Key, Value, Allocator>::HashMap(HashFunc32 hash, const Allocator& allocator):
 	_allocator(allocator), _size(0), _used(0), _hash(hash), _slots(nullptr)
+{
+}
+
+template <class Key, class Value, class Allocator>
+HashMap<Key, Value, Allocator>::HashMap(const Allocator& allocator):
+	_allocator(allocator), _size(0), _used(0), _hash(FNV1Hash32), _slots(nullptr)
 {
 }
 
@@ -488,7 +494,7 @@ const HashMap<Key, Value, Allocator>& HashMap<Key, Value, Allocator>::operator=(
 	if (rhs._size > 0) {
 		_slots = (Slot*)_allocator.alloc(sizeof(Slot) * rhs._size);
 
-		for (unsigned int i = 0; i < _used; ++i) {
+		for (size_t i = 0; i < _used; ++i) {
 			construct(&_slots[i].key, rhs._slots[i].key);
 			construct(&_slots[i].value, rhs._slots[i].value);
 			_slots[i].initial_index = rhs._slots[i].initial_index;
@@ -526,7 +532,7 @@ bool HashMap<Key, Value, Allocator>::operator==(const HashMap<Key, Value, Alloca
 		return false;
 	}
 
-	for (unsigned int i = 0; i < _used; ++i) {
+	for (size_t i = 0; i < _used; ++i) {
 		if (_slots[i].occupied != rhs._slots[i].occupied ||
 			_slots[i].key != rhs._slots[i].key ||
 			_slots[i].value != rhs._slots[i].value) {
@@ -554,8 +560,8 @@ const Value& HashMap<Key, Value, Allocator>::operator[](const Key& key) const
 	//	return Value();
 	//}
 
-	unsigned int index = _hash((const char*)&key, sizeof(Key)) % _size;
-	unsigned int i = 0;
+	size_t index = _hash((const char*)&key, sizeof(Key)) % _size;
+	size_t i = 0;
 
 	while (_slots[index].occupied && _slots[index].key != key && i < _size) {
 		index = (index + 1) % _size;
@@ -575,9 +581,9 @@ Value& HashMap<Key, Value, Allocator>::operator[](const Key& key)
 		reserve(1);
 	}
 
-	unsigned int index = _hash((const char*)&key, sizeof(Key)) % _size;
-	unsigned int initial_index = index;
-	unsigned int i = 0;
+	size_t index = _hash((const char*)&key, sizeof(Key)) % _size;
+	size_t initial_index = index;
+	size_t i = 0;
 
 	while (_slots[index].occupied && _slots[index].key != key && i < _size) {
 		index = (index + 1) % _size;
@@ -609,9 +615,9 @@ Value& HashMap<Key, Value, Allocator>::operator[](Key&& key)
 		reserve(1);
 	}
 
-	unsigned int index = _hash((const char*)&key, sizeof(Key)) % _size;
-	unsigned int initial_index = index;
-	unsigned int i = 0;
+	size_t index = _hash((const char*)&key, sizeof(Key)) % _size;
+	size_t initial_index = index;
+	size_t i = 0;
 
 	while (_slots[index].occupied && _slots[index].key != key && i < _size) {
 		index = (index + 1) % _size;
@@ -639,28 +645,28 @@ Value& HashMap<Key, Value, Allocator>::operator[](Key&& key)
 // dangerous functions
 // slots are potentially unoccupied
 template <class Key, class Value, class Allocator>
-const Value& HashMap<Key, Value, Allocator>::valueAt(unsigned int index) const
+const Value& HashMap<Key, Value, Allocator>::valueAt(size_t index) const
 {
 	assert(index < _size);
 	return _slots[index].value;
 }
 
 template <class Key, class Value, class Allocator>
-Value& HashMap<Key, Value, Allocator>::valueAt(unsigned int index)
+Value& HashMap<Key, Value, Allocator>::valueAt(size_t index)
 {
 	assert(index < _size);
 	return _slots[index].value;
 }
 
 template <class Key, class Value, class Allocator>
-const Key& HashMap<Key, Value, Allocator>::keyAt(unsigned int index) const
+const Key& HashMap<Key, Value, Allocator>::keyAt(size_t index) const
 {
 	assert(index < _size);
 	return _slots[index].key;
 }
 
 template <class Key, class Value, class Allocator>
-bool HashMap<Key, Value, Allocator>::isOccupied(unsigned int index) const
+bool HashMap<Key, Value, Allocator>::isOccupied(size_t index) const
 {
 	assert(index < _size);
 	return _slots[index].occupied;
@@ -670,11 +676,11 @@ template <class Key, class Value, class Allocator>
 void HashMap<Key, Value, Allocator>::erase(const Iterator& it)
 {
 	assert(it._slot >= _slots && it._slot < _slots + _size);
-	erase((unsigned int)(it._slot - _slots));
+	erase(static_cast<size_t>(it._slot - _slots));
 }
 
 template <class Key, class Value, class Allocator>
-void HashMap<Key, Value, Allocator>::erase(unsigned int index)
+void HashMap<Key, Value, Allocator>::erase(size_t index)
 {
 	assert(index < _size);
 	deconstruct(&_slots[index].key);
@@ -688,8 +694,8 @@ void HashMap<Key, Value, Allocator>::erase(unsigned int index)
 template <class Key, class Value, class Allocator>
 void HashMap<Key, Value, Allocator>::erase(const Key& key)
 {
-	int index = indexOf(key);
-	assert(index > -1);
+	size_t index = indexOf(key);
+	assert(index != SIZE_T_FAIL);
 	erase(index);
 }
 
@@ -730,14 +736,14 @@ bool HashMap<Key, Value, Allocator>::hasElementWithKey(const Key& key) const
 }
 
 template <class Key, class Value, class Allocator>
-unsigned int HashMap<Key, Value, Allocator>::indexOf(const Key& key) const
+size_t HashMap<Key, Value, Allocator>::indexOf(const Key& key) const
 {
 	if (!_size) {
-		return UINT_FAIL;
+		return SIZE_T_FAIL;
 	}
 
-	unsigned int index = _hash((const char*)&key, sizeof(Key)) % _size;
-	unsigned int i = 0;
+	size_t index = _hash((const char*)&key, sizeof(Key)) % _size;
+	size_t i = 0;
 
 	while (_slots[index].occupied && _slots[index].key != key && i < _size) {
 		index = (index + 1) % _size;
@@ -745,7 +751,7 @@ unsigned int HashMap<Key, Value, Allocator>::indexOf(const Key& key) const
 	}
 
 	if (!_slots[index].occupied || i == _size) {
-		return UINT_FAIL;
+		return SIZE_T_FAIL;
 	}
 
 	return index;
@@ -755,7 +761,7 @@ template <class Key, class Value, class Allocator>
 void HashMap<Key, Value, Allocator>::clear(void)
 {
 	if (_slots) {
-		for (unsigned int i = 0; i < _size; ++i) {
+		for (size_t i = 0; i < _size; ++i) {
 			if (_slots[i].occupied) {
 				deconstruct(&_slots[i].key);
 				deconstruct(&_slots[i].value);
@@ -771,14 +777,14 @@ void HashMap<Key, Value, Allocator>::clear(void)
 }
 
 template <class Key, class Value, class Allocator>
-void HashMap<Key, Value, Allocator>::reserve(unsigned int new_size)
+void HashMap<Key, Value, Allocator>::reserve(size_t new_size)
 {
 	if (new_size <= _size) {
 		return;
 	}
 
 	Slot* old_data = _slots;
-	unsigned int old_size = _size;
+	size_t old_size = _size;
 
 	_slots = (Slot*)_allocator.alloc(sizeof(Slot) * new_size);
 	_size = new_size;
@@ -787,7 +793,7 @@ void HashMap<Key, Value, Allocator>::reserve(unsigned int new_size)
 	memset(_slots, 0, sizeof(Slot) * new_size);
 
 	if (old_data) {
-		for (unsigned int i = 0; i < old_size; ++i) {
+		for (size_t i = 0; i < old_size; ++i) {
 			if (old_data[i].occupied) {
 				moveMoveInsert(Move(old_data[i].key), Move(old_data[i].value));
 
@@ -802,13 +808,13 @@ void HashMap<Key, Value, Allocator>::reserve(unsigned int new_size)
 }
 
 template <class Key, class Value, class Allocator>
-unsigned int HashMap<Key, Value, Allocator>::capacity(void) const
+size_t HashMap<Key, Value, Allocator>::capacity(void) const
 {
 	return _size;
 }
 
 template <class Key, class Value, class Allocator>
-unsigned int HashMap<Key, Value, Allocator>::size(void) const
+size_t HashMap<Key, Value, Allocator>::size(void) const
 {
 	return _used;
 }
@@ -890,9 +896,9 @@ typename HashMap<Key, Value, Allocator>::Iterator HashMap<Key, Value, Allocator>
 }
 
 template <class Key, class Value, class Allocator>
-void HashMap<Key, Value, Allocator>::shiftBuckets(unsigned int index)
+void HashMap<Key, Value, Allocator>::shiftBuckets(size_t index)
 {
-	unsigned int prev_index = index;
+	size_t prev_index = index;
 	index = (index + 1) % _size;
 
 	// If the slot is occupied and its initial index is less than its current index,
@@ -938,8 +944,14 @@ void HashMap<Key, Value, Allocator>::shiftBuckets(unsigned int index)
 #ifndef DOXY_SKIP
 // String Specialization
 template <class Value, class Allocator, class T>
-HashMap<String<T, Allocator>, Value, Allocator>::HashMap(HashFunc hash, const Allocator& allocator):
+HashMap<String<T, Allocator>, Value, Allocator>::HashMap(HashFunc32 hash, const Allocator& allocator):
 	_allocator(allocator), _size(0), _used(0), _hash(hash), _slots(nullptr)
+{
+}
+
+template <class Value, class Allocator, class T>
+HashMap<String<T, Allocator>, Value, Allocator>::HashMap(const Allocator& allocator):
+	_allocator(allocator), _size(0), _used(0), _hash(FNV1Hash32), _slots(nullptr)
 {
 }
 
@@ -981,7 +993,7 @@ const HashMap<String<T, Allocator>, Value, Allocator>& HashMap<String<T, Allocat
 	if (rhs._size > 0) {
 		_slots = (Slot*)_allocator.alloc(sizeof(Slot) * rhs._size);
 
-		for (unsigned int i = 0; i < _used; ++i) {
+		for (size_t i = 0; i < _used; ++i) {
 			construct(&_slots[i].key, rhs._slots[i].key);
 			construct(&_slots[i].value, rhs._slots[i].value);
 			_slots[i].initial_index = rhs._slots[i].initial_index;
@@ -1019,7 +1031,7 @@ bool HashMap<String<T, Allocator>, Value, Allocator>::operator==(const HashMap<S
 		return false;
 	}
 
-	for (unsigned int i = 0; i < _used; ++i) {
+	for (size_t i = 0; i < _used; ++i) {
 		if (_slots[i].occupied != rhs._slots[i].occupied ||
 			_slots[i].key != rhs._slots[i].key ||
 			_slots[i].value != rhs._slots[i].value) {
@@ -1047,8 +1059,8 @@ const Value& HashMap<String<T, Allocator>, Value, Allocator>::operator[](const S
 	//	return Value();
 	//}
 
-	unsigned int index = _hash((const char*)key.getBuffer(), key.size() * sizeof(T)) % _size;
-	unsigned int i = 0;
+	size_t index = _hash((const char*)key.getBuffer(), key.size() * sizeof(T)) % _size;
+	size_t i = 0;
 
 	while (_slots[index].occupied && _slots[index].key != key && i < _size) {
 		index = (index + 1) % _size;
@@ -1068,9 +1080,9 @@ Value& HashMap<String<T, Allocator>, Value, Allocator>::operator[](const String<
 		reserve(1);
 	}
 
-	unsigned int index = _hash((const char*)key.getBuffer(), key.size() * sizeof(T)) % _size;
-	unsigned int initial_index = index;
-	unsigned int i = 0;
+	size_t index = _hash((const char*)key.getBuffer(), key.size() * sizeof(T)) % _size;
+	size_t initial_index = index;
+	size_t i = 0;
 
 	while (_slots[index].occupied && _slots[index].key != key && i < _size) {
 		index = (index + 1) % _size;
@@ -1102,9 +1114,9 @@ Value& HashMap<String<T, Allocator>, Value, Allocator>::operator[](String<T, All
 		reserve(1);
 	}
 
-	unsigned int index = _hash((const char*)key.getBuffer(), key.size() * sizeof(T)) % _size;
-	unsigned int initial_index = index;
-	unsigned int i = 0;
+	size_t index = _hash((const char*)key.getBuffer(), key.size() * sizeof(T)) % _size;
+	size_t initial_index = index;
+	size_t i = 0;
 
 	while (_slots[index].occupied && _slots[index].key != key && i < _size) {
 		index = (index + 1) % _size;
@@ -1132,28 +1144,28 @@ Value& HashMap<String<T, Allocator>, Value, Allocator>::operator[](String<T, All
 // dangerous functions
 // slots are potentially unoccupied
 template <class Value, class Allocator, class T>
-const Value& HashMap<String<T, Allocator>, Value, Allocator>::valueAt(unsigned int index) const
+const Value& HashMap<String<T, Allocator>, Value, Allocator>::valueAt(size_t index) const
 {
 	assert(index < _size);
 	return _slots[index].value;
 }
 
 template <class Value, class Allocator, class T>
-Value& HashMap<String<T, Allocator>, Value, Allocator>::valueAt(unsigned int index)
+Value& HashMap<String<T, Allocator>, Value, Allocator>::valueAt(size_t index)
 {
 	assert(index < _size);
 	return _slots[index].value;
 }
 
 template <class Value, class Allocator, class T>
-const String<T, Allocator>& HashMap<String<T, Allocator>, Value, Allocator>::keyAt(unsigned int index) const
+const String<T, Allocator>& HashMap<String<T, Allocator>, Value, Allocator>::keyAt(size_t index) const
 {
 	assert(index < _size);
 	return _slots[index].key;
 }
 
 template <class Value, class Allocator, class T>
-bool HashMap<String<T, Allocator>, Value, Allocator>::isOccupied(unsigned int index) const
+bool HashMap<String<T, Allocator>, Value, Allocator>::isOccupied(size_t index) const
 {
 	assert(index < _size);
 	return _slots[index].occupied;
@@ -1163,11 +1175,11 @@ template <class Value, class Allocator, class T>
 void HashMap<String<T, Allocator>, Value, Allocator>::erase(const Iterator& it)
 {
 	assert(it._slot >= _slots && it._slot < _slots + _size);
-	erase((unsigned int)(it._slot - _slots));
+	erase(static_cast<size_t>(it._slot - _slots));
 }
 
 template <class Value, class Allocator, class T>
-void HashMap<String<T, Allocator>, Value, Allocator>::erase(unsigned int index)
+void HashMap<String<T, Allocator>, Value, Allocator>::erase(size_t index)
 {
 	assert(index < _size);
 	deconstruct(&_slots[index].key);
@@ -1181,8 +1193,8 @@ void HashMap<String<T, Allocator>, Value, Allocator>::erase(unsigned int index)
 template <class Value, class Allocator, class T>
 void HashMap<String<T, Allocator>, Value, Allocator>::erase(const String<T, Allocator>& key)
 {
-	int index = indexOf(key);
-	assert(index > -1);
+	size_t index = indexOf(key);
+	assert(index > size_t);
 	erase(index);
 }
 
@@ -1223,14 +1235,14 @@ bool HashMap<String<T, Allocator>, Value, Allocator>::hasElementWithKey(const St
 }
 
 template <class Value, class Allocator, class T>
-unsigned int HashMap<String<T, Allocator>, Value, Allocator>::indexOf(const String<T, Allocator>& key) const
+size_t HashMap<String<T, Allocator>, Value, Allocator>::indexOf(const String<T, Allocator>& key) const
 {
 	if (!_size) {
-		return UINT_FAIL;
+		return SIZE_T_FAIL;
 	}
 
-	unsigned int index = _hash((const char*)key.getBuffer(), key.size() * sizeof(T)) % _size;
-	unsigned int i = 0;
+	size_t index = _hash((const char*)key.getBuffer(), key.size() * sizeof(T)) % _size;
+	size_t i = 0;
 
 	while (_slots[index].occupied && _slots[index].key != key && i < _size) {
 		index = (index + 1) % _size;
@@ -1238,7 +1250,7 @@ unsigned int HashMap<String<T, Allocator>, Value, Allocator>::indexOf(const Stri
 	}
 
 	if (!_slots[index].occupied || i == _size) {
-		return UINT_FAIL;
+		return SIZE_T_FAIL;
 	}
 
 	return index;
@@ -1248,7 +1260,7 @@ template <class Value, class Allocator, class T>
 void HashMap<String<T, Allocator>, Value, Allocator>::clear(void)
 {
 	if (_slots) {
-		for (unsigned int i = 0; i < _size; ++i) {
+		for (size_t i = 0; i < _size; ++i) {
 			if (_slots[i].occupied) {
 				deconstruct(&_slots[i].key);
 				deconstruct(&_slots[i].value);
@@ -1264,14 +1276,14 @@ void HashMap<String<T, Allocator>, Value, Allocator>::clear(void)
 }
 
 template <class Value, class Allocator, class T>
-void HashMap<String<T, Allocator>, Value, Allocator>::reserve(unsigned int new_size)
+void HashMap<String<T, Allocator>, Value, Allocator>::reserve(size_t new_size)
 {
 	if (new_size <= _size) {
 		return;
 	}
 
 	Slot* old_data = _slots;
-	unsigned int old_size = _size;
+	size_t old_size = _size;
 
 	_slots = (Slot*)_allocator.alloc(sizeof(Slot) * new_size);
 	_size = new_size;
@@ -1280,7 +1292,7 @@ void HashMap<String<T, Allocator>, Value, Allocator>::reserve(unsigned int new_s
 	memset(_slots, 0, sizeof(Slot) * new_size);
 
 	if (old_data) {
-		for (unsigned int i = 0; i < old_size; ++i) {
+		for (size_t i = 0; i < old_size; ++i) {
 			if (old_data[i].occupied) {
 				moveMoveInsert(Move(old_data[i].key), Move(old_data[i].value));
 
@@ -1295,13 +1307,13 @@ void HashMap<String<T, Allocator>, Value, Allocator>::reserve(unsigned int new_s
 }
 
 template <class Value, class Allocator, class T>
-unsigned int HashMap<String<T, Allocator>, Value, Allocator>::capacity(void) const
+size_t HashMap<String<T, Allocator>, Value, Allocator>::capacity(void) const
 {
 	return _size;
 }
 
 template <class Value, class Allocator, class T>
-unsigned int HashMap<String<T, Allocator>, Value, Allocator>::size(void) const
+size_t HashMap<String<T, Allocator>, Value, Allocator>::size(void) const
 {
 	return _used;
 }
@@ -1383,9 +1395,9 @@ typename HashMap<String<T, Allocator>, Value, Allocator>::Iterator HashMap<Strin
 }
 
 template <class Value, class Allocator, class T>
-void HashMap<String<T, Allocator>, Value, Allocator>::shiftBuckets(unsigned int index)
+void HashMap<String<T, Allocator>, Value, Allocator>::shiftBuckets(size_t index)
 {
-	unsigned int prev_index = index;
+	size_t prev_index = index;
 	index = (index + 1) % _size;
 
 	// If the slot is occupied and its initial index is less than its current index,
@@ -1430,14 +1442,20 @@ void HashMap<String<T, Allocator>, Value, Allocator>::shiftBuckets(unsigned int 
 
 // HashString Specialization
 template <class Value, class Allocator, class T>
+HashMap<HashString<T, Allocator>, Value, Allocator>::HashMap(HashFunc32 hash, const Allocator& allocator):
+	_allocator(allocator), _size(0), _used(0), _hash(hash), _slots(nullptr)
+{
+}
+
+template <class Value, class Allocator, class T>
 HashMap<HashString<T, Allocator>, Value, Allocator>::HashMap(const Allocator& allocator):
-	_allocator(allocator), _size(0), _used(0), _slots(nullptr)
+	_allocator(allocator), _size(0), _used(0), _hash(FNV1Hash32), _slots(nullptr)
 {
 }
 
 template <class Value, class Allocator, class T>
 HashMap<HashString<T, Allocator>, Value, Allocator>::HashMap(const HashMap<HashString<T, Allocator>, Value, Allocator>& rhs):
-	_allocator(rhs._allocator), _size(0), _used(0), _slots(nullptr)
+	_allocator(rhs._allocator), _size(0), _used(0), _hash(rhs._hash), _slots(nullptr)
 {
 	*this = rhs;
 }
@@ -1445,7 +1463,8 @@ HashMap<HashString<T, Allocator>, Value, Allocator>::HashMap(const HashMap<HashS
 template <class Value, class Allocator, class T>
 HashMap<HashString<T, Allocator>, Value, Allocator>::HashMap(HashMap<HashString<T, Allocator>, Value, Allocator>&& rhs):
 	_allocator(rhs._allocator), _used(rhs._used),
-	_size(rhs._size), _slots(rhs._slots)
+	_size(rhs._size), _hash(rhs._hash),
+	_slots(rhs._slots)
 {
 	rhs._used = rhs._size = 0;
 	rhs._slots = nullptr;
@@ -1473,7 +1492,7 @@ const HashMap<HashString<T, Allocator>, Value, Allocator>& HashMap<HashString<T,
 	if (rhs._size > 0) {
 		_slots = (Slot*)_allocator.alloc(sizeof(Slot)* rhs._size);
 
-		for (unsigned int i = 0; i < _used; ++i) {
+		for (size_t i = 0; i < _used; ++i) {
 			construct(&_slots[i].key, rhs._slots[i].key);
 			construct(&_slots[i].value, rhs._slots[i].value);
 			_slots[i].initial_index = rhs._slots[i].initial_index;
@@ -1511,7 +1530,7 @@ bool HashMap<HashString<T, Allocator>, Value, Allocator>::operator==(const HashM
 		return false;
 	}
 
-	for (unsigned int i = 0; i < _used; ++i) {
+	for (size_t i = 0; i < _used; ++i) {
 		if (_slots[i].occupied != rhs._slots[i].occupied ||
 			_slots[i].key != rhs._slots[i].key ||
 			_slots[i].value != rhs._slots[i].value) {
@@ -1539,8 +1558,8 @@ const Value& HashMap<HashString<T, Allocator>, Value, Allocator>::operator[](con
 	//	return Value();
 	//}
 
-	unsigned int index = key.getHash() % _size;
-	unsigned int i = 0;
+	size_t index = key.getHash() % _size;
+	size_t i = 0;
 
 	while (_slots[index].occupied && _slots[index].key != key && i < _size) {
 		index = (index + 1) % _size;
@@ -1560,9 +1579,9 @@ Value& HashMap<HashString<T, Allocator>, Value, Allocator>::operator[](const Has
 		reserve(1);
 	}
 
-	unsigned int index = key.getHash() % _size;
-	unsigned int initial_index = index;
-	unsigned int i = 0;
+	size_t index = key.getHash() % _size;
+	size_t initial_index = index;
+	size_t i = 0;
 
 	while (_slots[index].occupied && _slots[index].key != key && i < _size) {
 		index = (index + 1) % _size;
@@ -1594,9 +1613,9 @@ Value& HashMap<HashString<T, Allocator>, Value, Allocator>::operator[](HashStrin
 		reserve(1);
 	}
 
-	unsigned int index = key.getHash() % _size;
-	unsigned int initial_index = index;
-	unsigned int i = 0;
+	size_t index = key.getHash() % _size;
+	size_t initial_index = index;
+	size_t i = 0;
 
 	while (_slots[index].occupied && _slots[index].key != key && i < _size) {
 		index = (index + 1) % _size;
@@ -1624,28 +1643,28 @@ Value& HashMap<HashString<T, Allocator>, Value, Allocator>::operator[](HashStrin
 // dangerous functions
 // slots are potentially unoccupied
 template <class Value, class Allocator, class T>
-const Value& HashMap<HashString<T, Allocator>, Value, Allocator>::valueAt(unsigned int index) const
+const Value& HashMap<HashString<T, Allocator>, Value, Allocator>::valueAt(size_t index) const
 {
 	assert(index < _size);
 	return _slots[index].value;
 }
 
 template <class Value, class Allocator, class T>
-Value& HashMap<HashString<T, Allocator>, Value, Allocator>::valueAt(unsigned int index)
+Value& HashMap<HashString<T, Allocator>, Value, Allocator>::valueAt(size_t index)
 {
 	assert(index < _size);
 	return _slots[index].value;
 }
 
 template <class Value, class Allocator, class T>
-const HashString<T, Allocator>& HashMap<HashString<T, Allocator>, Value, Allocator>::keyAt(unsigned int index) const
+const HashString<T, Allocator>& HashMap<HashString<T, Allocator>, Value, Allocator>::keyAt(size_t index) const
 {
 	assert(index < _size);
 	return _slots[index].key;
 }
 
 template <class Value, class Allocator, class T>
-bool HashMap<HashString<T, Allocator>, Value, Allocator>::isOccupied(unsigned int index) const
+bool HashMap<HashString<T, Allocator>, Value, Allocator>::isOccupied(size_t index) const
 {
 	assert(index < _size);
 	return _slots[index].occupied;
@@ -1655,11 +1674,11 @@ template <class Value, class Allocator, class T>
 void HashMap<HashString<T, Allocator>, Value, Allocator>::erase(const Iterator& it)
 {
 	assert(it._slot >= _slots && it._slot < _slots + _size);
-	erase((unsigned int)(it._slot - _slots));
+	erase(static_cast<size_t>(it._slot - _slots));
 }
 
 template <class Value, class Allocator, class T>
-void HashMap<HashString<T, Allocator>, Value, Allocator>::erase(unsigned int index)
+void HashMap<HashString<T, Allocator>, Value, Allocator>::erase(size_t index)
 {
 	assert(index < _size);
 	deconstruct(&_slots[index].key);
@@ -1673,8 +1692,8 @@ void HashMap<HashString<T, Allocator>, Value, Allocator>::erase(unsigned int ind
 template <class Value, class Allocator, class T>
 void HashMap<HashString<T, Allocator>, Value, Allocator>::erase(const HashString<T, Allocator>& key)
 {
-	int index = indexOf(key);
-	assert(index > -1);
+	size_t index = indexOf(key);
+	assert(index != SIZE_T_FAIL);
 	erase(index);
 }
 
@@ -1715,14 +1734,14 @@ bool HashMap<HashString<T, Allocator>, Value, Allocator>::hasElementWithKey(cons
 }
 
 template <class Value, class Allocator, class T>
-unsigned int HashMap<HashString<T, Allocator>, Value, Allocator>::indexOf(const HashString<T, Allocator>& key) const
+size_t HashMap<HashString<T, Allocator>, Value, Allocator>::indexOf(const HashString<T, Allocator>& key) const
 {
 	if (!_size) {
-		return UINT_FAIL;
+		return SIZE_T_FAIL;
 	}
 
-	unsigned int index = key.getHash() % _size;
-	unsigned int i = 0;
+	size_t index = key.getHash() % _size;
+	size_t i = 0;
 
 	while (_slots[index].occupied && _slots[index].key != key && i < _size) {
 		index = (index + 1) % _size;
@@ -1730,7 +1749,7 @@ unsigned int HashMap<HashString<T, Allocator>, Value, Allocator>::indexOf(const 
 	}
 
 	if (!_slots[index].occupied || i == _size) {
-		return UINT_FAIL;
+		return SIZE_T_FAIL;
 	}
 
 	return index;
@@ -1740,7 +1759,7 @@ template <class Value, class Allocator, class T>
 void HashMap<HashString<T, Allocator>, Value, Allocator>::clear(void)
 {
 	if (_slots) {
-		for (unsigned int i = 0; i < _size; ++i) {
+		for (size_t i = 0; i < _size; ++i) {
 			if (_slots[i].occupied) {
 				deconstruct(&_slots[i].key);
 				deconstruct(&_slots[i].value);
@@ -1756,14 +1775,14 @@ void HashMap<HashString<T, Allocator>, Value, Allocator>::clear(void)
 }
 
 template <class Value, class Allocator, class T>
-void HashMap<HashString<T, Allocator>, Value, Allocator>::reserve(unsigned int new_size)
+void HashMap<HashString<T, Allocator>, Value, Allocator>::reserve(size_t new_size)
 {
 	if (new_size <= _size) {
 		return;
 	}
 
 	Slot* old_data = _slots;
-	unsigned int old_size = _size;
+	size_t old_size = _size;
 
 	_slots = (Slot*)_allocator.alloc(sizeof(Slot) * new_size);
 	_size = new_size;
@@ -1772,7 +1791,7 @@ void HashMap<HashString<T, Allocator>, Value, Allocator>::reserve(unsigned int n
 	memset(_slots, 0, sizeof(Slot) * new_size);
 
 	if (old_data) {
-		for (unsigned int i = 0; i < old_size; ++i) {
+		for (size_t i = 0; i < old_size; ++i) {
 			if (old_data[i].occupied) {
 				moveMoveInsert(Move(old_data[i].key), Move(old_data[i].value));
 
@@ -1787,13 +1806,13 @@ void HashMap<HashString<T, Allocator>, Value, Allocator>::reserve(unsigned int n
 }
 
 template <class Value, class Allocator, class T>
-unsigned int HashMap<HashString<T, Allocator>, Value, Allocator>::capacity(void) const
+size_t HashMap<HashString<T, Allocator>, Value, Allocator>::capacity(void) const
 {
 	return _size;
 }
 
 template <class Value, class Allocator, class T>
-unsigned int HashMap<HashString<T, Allocator>, Value, Allocator>::size(void) const
+size_t HashMap<HashString<T, Allocator>, Value, Allocator>::size(void) const
 {
 	return _used;
 }
@@ -1875,9 +1894,9 @@ typename HashMap<HashString<T, Allocator>, Value, Allocator>::Iterator HashMap<H
 }
 
 template <class Value, class Allocator, class T>
-void HashMap<HashString<T, Allocator>, Value, Allocator>::shiftBuckets(unsigned int index)
+void HashMap<HashString<T, Allocator>, Value, Allocator>::shiftBuckets(size_t index)
 {
-	unsigned int prev_index = index;
+	size_t prev_index = index;
 	index = (index + 1) % _size;
 
 	// If the slot is occupied and its initial index is less than its current index,

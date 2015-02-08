@@ -64,6 +64,8 @@ public:
 
 	const T* getPtr(void) const;
 	const T& get(void) const;
+	T* getPtr(void);
+	T& get(void);
 
 private:
 	class Remover : public RefCounted<Allocator>

@@ -36,7 +36,7 @@ StateMachine::~StateMachine(void)
 
 void StateMachine::clear(void)
 {
-	_curr_state = _next_state = (unsigned int)-1;
+	_curr_state = _next_state = UINT_FAIL;
 
 	for (auto it = _states.begin(); it != _states.end(); ++it) {
 		it->destroy_func(it->state, it->module_id);
@@ -133,7 +133,7 @@ unsigned int StateMachine::getStateID(const char* name)
 
 unsigned int StateMachine::getNumStates(void) const
 {
-	return _states.size();
+	return static_cast<unsigned int>(_states.size());
 }
 
 NS_END

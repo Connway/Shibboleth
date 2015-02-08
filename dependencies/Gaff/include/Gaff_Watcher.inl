@@ -210,6 +210,24 @@ const T& Watcher<T, Allocator>::get(void) const
 	return _data;
 }
 
+/*!
+	\brief Gets a pointer to the internal data.
+*/
+template <class T, class Allocator>
+T* Watcher<T, Allocator>::getPtr(void)
+{
+	return &_data;
+}
+
+/*!
+	\brief Gets a reference to the internal data.
+*/
+template <class T, class Allocator>
+T& Watcher<T, Allocator>::get(void)
+{
+	return _data;
+}
+
 template <class T, class Allocator>
 void Watcher<T, Allocator>::remove(unsigned int id)
 {

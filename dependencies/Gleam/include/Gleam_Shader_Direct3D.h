@@ -35,7 +35,7 @@ public:
 	ShaderD3D(void);
 	~ShaderD3D(void);
 
-	bool initSource(IRenderDevice& rd, const char* shader_source, unsigned int source_size, SHADER_TYPE shader_type);
+	bool initSource(IRenderDevice& rd, const char* shader_source, size_t source_size, SHADER_TYPE shader_type);
 	bool initSource(IRenderDevice& rd, const char* shader_source, SHADER_TYPE shader_type);
 	bool init(IRenderDevice& rd, const char* file_path, SHADER_TYPE shader_type);
 
@@ -57,12 +57,12 @@ public:
 	bool initCompute(IRenderDevice& rd, const wchar_t* file_path);
 #endif
 
-	bool initVertexSource(IRenderDevice& rd, const char* source, unsigned int source_size = UINT_FAIL);
-	bool initPixelSource(IRenderDevice& rd, const char* source, unsigned int source_size = UINT_FAIL);
-	bool initDomainSource(IRenderDevice& rd, const char* source, unsigned int source_size = UINT_FAIL);
-	bool initGeometrySource(IRenderDevice& rd, const char* source, unsigned int source_size = UINT_FAIL);
-	bool initHullSource(IRenderDevice& rd, const char* source, unsigned int source_size = UINT_FAIL);
-	bool initComputeSource(IRenderDevice& rd, const char* source, unsigned int source_size = UINT_FAIL);
+	bool initVertexSource(IRenderDevice& rd, const char* source, size_t source_size = SIZE_T_FAIL);
+	bool initPixelSource(IRenderDevice& rd, const char* source, size_t source_size = SIZE_T_FAIL);
+	bool initDomainSource(IRenderDevice& rd, const char* source, size_t source_size = SIZE_T_FAIL);
+	bool initGeometrySource(IRenderDevice& rd, const char* source, size_t source_size = SIZE_T_FAIL);
+	bool initHullSource(IRenderDevice& rd, const char* source, size_t source_size = SIZE_T_FAIL);
+	bool initComputeSource(IRenderDevice& rd, const char* source, size_t source_size = SIZE_T_FAIL);
 
 	void destroy(void);
 

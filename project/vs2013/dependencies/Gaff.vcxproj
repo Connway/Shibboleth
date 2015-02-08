@@ -215,7 +215,6 @@
     <ClInclude Include="..\..\..\dependencies\Gaff\include\Gaff_Host.h" />
     <ClInclude Include="..\..\..\dependencies\Gaff\include\Gaff_IAllocator.h" />
     <ClInclude Include="..\..\..\dependencies\Gaff\include\Gaff_ICurve.h" />
-    <ClInclude Include="..\..\..\dependencies\Gaff\include\Gaff_INamedObject.h" />
     <ClInclude Include="..\..\..\dependencies\Gaff\include\Gaff_IRefCounted.h" />
     <ClInclude Include="..\..\..\dependencies\Gaff\include\Gaff_IReflectionDefinitions.h" />
     <ClInclude Include="..\..\..\dependencies\Gaff\include\Gaff_IRequestableInterface.h" />
@@ -238,7 +237,6 @@
     <ClInclude Include="..\..\..\dependencies\Gaff\include\Gaff_Pair.h" />
     <ClInclude Include="..\..\..\dependencies\Gaff\include\Gaff_Predicates.h" />
     <ClInclude Include="..\..\..\dependencies\Gaff\include\Gaff_Queue.h" />
-    <ClInclude Include="..\..\..\dependencies\Gaff\include\Gaff_QueueLockFree.h" />
     <ClInclude Include="..\..\..\dependencies\Gaff\include\Gaff_ReadWriteSpinLock.h" />
     <ClInclude Include="..\..\..\dependencies\Gaff\include\Gaff_RefCounted.h" />
     <ClInclude Include="..\..\..\dependencies\Gaff\include\Gaff_RefPtr.h" />
@@ -250,7 +248,6 @@
     <ClInclude Include="..\..\..\dependencies\Gaff\include\Gaff_SharedPtr.h" />
     <ClInclude Include="..\..\..\dependencies\Gaff\include\Gaff_SmartPtr.h" />
     <ClInclude Include="..\..\..\dependencies\Gaff\include\Gaff_SpinLock.h" />
-    <ClInclude Include="..\..\..\dependencies\Gaff\include\Gaff_StackLockFree.h" />
     <ClInclude Include="..\..\..\dependencies\Gaff\include\Gaff_StackTrace.h" />
     <ClInclude Include="..\..\..\dependencies\Gaff\include\Gaff_StackTrace_Linux.h" />
     <ClInclude Include="..\..\..\dependencies\Gaff\include\Gaff_StackTrace_Windows.h" />

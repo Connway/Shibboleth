@@ -52,13 +52,13 @@ LayoutD3D::~LayoutD3D(void)
 	destroy();
 }
 
-bool LayoutD3D::init(IRenderDevice& rd, const LayoutDescription* layout_desc, unsigned int layout_desc_size, const IShader* shader)
+bool LayoutD3D::init(IRenderDevice& rd, const LayoutDescription* layout_desc, size_t layout_desc_size, const IShader* shader)
 {
 	assert(rd.isD3D() && shader->isD3D());
 
 	GleamArray<D3D11_INPUT_ELEMENT_DESC> input_desc(layout_desc_size, D3D11_INPUT_ELEMENT_DESC());
 
-	for (unsigned int i = 0; i < layout_desc_size; ++i) {
+	for (size_t i = 0; i < layout_desc_size; ++i) {
 		input_desc[i].SemanticName = _semantic_names[layout_desc[i].semantic];
 		input_desc[i].SemanticIndex = layout_desc[i].semantic_index;
 		input_desc[i].Format = TextureD3D::getD3DFormat(layout_desc[i].format);
@@ -69,10 +69,10 @@ bool LayoutD3D::init(IRenderDevice& rd, const LayoutDescription* layout_desc, un
 	}
 
 	ID3DBlob* shader_buffer = ((const ShaderD3D*)shader)->getByteCodeBuffer();
-	IRenderDeviceD3D& rd3d = (IRenderDeviceD3D&)*(((const char*)&rd) + sizeof(IRenderDevice));
+	IRenderDeviceD3D& rd3d = reinterpret_cast<IRenderDeviceD3D&>(*(reinterpret_cast<char*>(&rd) + sizeof(IRenderDevice)));
 	ID3D11Device* device = rd3d.getActiveDevice();
 
-	HRESULT result = device->CreateInputLayout(input_desc.getArray(), layout_desc_size, shader_buffer->GetBufferPointer(), shader_buffer->GetBufferSize(), &_layout);
+	HRESULT result = device->CreateInputLayout(input_desc.getArray(), static_cast<UINT>(layout_desc_size), shader_buffer->GetBufferPointer(), shader_buffer->GetBufferSize(), &_layout);
 	return SUCCEEDED(result);
 }
 
@@ -84,7 +84,7 @@ void LayoutD3D::destroy(void)
 void LayoutD3D::setLayout(IRenderDevice& rd, const IMesh*)
 {
 	assert(rd.isD3D());
-	IRenderDeviceD3D& rd3d = (IRenderDeviceD3D&)*(((const char*)&rd) + sizeof(IRenderDevice));
+	IRenderDeviceD3D& rd3d = reinterpret_cast<IRenderDeviceD3D&>(*(reinterpret_cast<char*>(&rd) + sizeof(IRenderDevice)));
 	ID3D11DeviceContext* context = rd3d.getActiveDeviceContext();
 	context->IASetInputLayout(_layout);
 }
@@ -92,7 +92,7 @@ void LayoutD3D::setLayout(IRenderDevice& rd, const IMesh*)
 void LayoutD3D::unsetLayout(IRenderDevice& rd)
 {
 	assert(rd.isD3D());
-	IRenderDeviceD3D& rd3d = (IRenderDeviceD3D&)*(((const char*)&rd) + sizeof(IRenderDevice));
+	IRenderDeviceD3D& rd3d = reinterpret_cast<IRenderDeviceD3D&>(*(reinterpret_cast<char*>(&rd) + sizeof(IRenderDevice)));
 	ID3D11DeviceContext* context = rd3d.getActiveDeviceContext();
 	context->IASetInputLayout(NULL);
 }

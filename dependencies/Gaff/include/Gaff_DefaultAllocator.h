@@ -35,7 +35,7 @@ NS_GAFF
 class DefaultAllocator : public IAllocator
 {
 public:
-	void* alloc(unsigned int size_bytes)
+	void* alloc(size_t size_bytes)
 	{
 		return malloc(size_bytes);
 	}

@@ -117,4 +117,25 @@ LogManager::FileLockPair& LogManager::getLogFile(const char* filename)
 	return _files[filename];
 }
 
+void LogManager::addLogCallback(const LogCallback& callback)
+{
+	_log_callbacks.emplacePush(callback);
+}
+
+void LogManager::removeLogCallback(const LogCallback& callback)
+{
+	auto it = _log_callbacks.linearSearch(callback);
+
+	if (it != _log_callbacks.end()) {
+		_log_callbacks.fastErase(it);
+	}
+}
+
+void LogManager::notifyLogCallbacks(const char* message, LOG_TYPE type)
+{
+	for (auto it = _log_callbacks.begin(); it != _log_callbacks.end(); ++it) {
+		(*it)(message, type);
+	}
+}
+
 NS_END

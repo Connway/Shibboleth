@@ -67,7 +67,7 @@ IBuffer* MeshBase::getBuffer(unsigned int index)
 	return _vert_data[index];
 }
 
-unsigned int MeshBase::getBufferCount(void) const
+size_t MeshBase::getBufferCount(void) const
 {
 	return _vert_data.size();
 }

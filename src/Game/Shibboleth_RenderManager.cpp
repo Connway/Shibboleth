@@ -296,7 +296,7 @@ Array<const RenderManager::WindowData*> RenderManager::getAllWindowsWithTags(uns
 	return out;
 }
 
-unsigned int RenderManager::getNumWindows(void) const
+size_t RenderManager::getNumWindows(void) const
 {
 	return _windows.size();
 }
@@ -391,7 +391,7 @@ Gleam::IMesh* RenderManager::createMesh(void)
 	return _graphics_functions.create_mesh();
 }
 
-unsigned int RenderManager::getNumRenderTargets(void) const
+size_t RenderManager::getNumRenderTargets(void) const
 {
 	return _render_target_data.size();
 }
@@ -457,10 +457,10 @@ unsigned int RenderManager::createRT(unsigned int width, unsigned int height, un
 
 	_render_target_data.push(data);
 
-	return _render_target_data.size() - 1;
+	return static_cast<unsigned int>(_render_target_data.size() - 1);
 }
 
-bool RenderManager::createRTDepth(unsigned int rt_index, Gleam::ITexture::FORMAT format)
+bool RenderManager::createRTDepth(size_t rt_index, Gleam::ITexture::FORMAT format)
 {
 	assert(rt_index < _render_target_data.size());
 	RenderTargetData& data = _render_target_data[rt_index];
@@ -510,7 +510,7 @@ void RenderManager::deleteRenderTargets(void)
 	_render_functions.clear();
 }
 
-void RenderManager::addRenderFunction(const Gaff::FunctionBinder<void>& render_func, unsigned int position)
+void RenderManager::addRenderFunction(const Gaff::FunctionBinder<void>& render_func, size_t position)
 {
 	if (position == UINT_FAIL) {
 		_render_functions.push(render_func);

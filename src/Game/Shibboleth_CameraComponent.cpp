@@ -52,7 +52,7 @@ bool CameraComponent::load(const Gaff::JSON& json)
 
 	//unsigned int rt_index = render_mgr.createRT(800, 600, Gleam::ITexture::RGBA_8_UNORM, _render_target_name);
 
-	//if (rt_index == UINT_FAIL) {
+	//if (rt_index == SIZE_T_FAIL) {
 	//	// log error
 	//	return false;
 	//}

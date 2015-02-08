@@ -61,7 +61,7 @@ class IAllocator
 public:
 	virtual ~IAllocator(void) {}
 
-	virtual void* alloc(unsigned int size_bytes) = 0;
+	virtual void* alloc(size_t size_bytes) = 0;
 	virtual void free(void* data) = 0;
 
 	template <class T, class... Args>

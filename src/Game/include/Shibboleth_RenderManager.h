@@ -142,7 +142,7 @@ public:
 	Array<const WindowData*> getAllWindowsWithTagsAny(unsigned short tags) const; // Gets windows with any of these tags. If tags is zero, returns all windows.
 	Array<const WindowData*> getAllWindowsWithTags(unsigned short tags) const; // Gets windows with exactly these tags. If tags is zero, returns all windows.
 
-	INLINE unsigned int getNumWindows(void) const;
+	INLINE size_t getNumWindows(void) const;
 	INLINE const WindowData& getWindowData(unsigned int window) const;
 
 	INLINE const char* getShaderExtension(void) const;
@@ -160,7 +160,7 @@ public:
 	INLINE Gleam::IModel* createModel(void);
 	INLINE Gleam::IMesh* createMesh(void);
 
-	INLINE unsigned int getNumRenderTargets(void) const;
+	INLINE size_t getNumRenderTargets(void) const;
 
 	// Don't hold on to this reference if you plan on dynamically creating cameras.
 	// Just copy the structure instead. Just make a copy.
@@ -172,10 +172,10 @@ public:
 		const AString& name = AString(), unsigned int short = 0
 	);
 
-	bool createRTDepth(unsigned int rt_index, Gleam::ITexture::FORMAT format = Gleam::ITexture::DEPTH_16_UNORM);
+	bool createRTDepth(size_t rt_index, Gleam::ITexture::FORMAT format = Gleam::ITexture::DEPTH_16_UNORM);
 
 	INLINE void deleteRenderTargets(void);
-	void addRenderFunction(const Gaff::FunctionBinder<void>& render_func, unsigned int position = UINT_FAIL);
+	void addRenderFunction(const Gaff::FunctionBinder<void>& render_func, size_t position = SIZE_T_FAIL);
 
 private:
 	struct GraphicsFunctions

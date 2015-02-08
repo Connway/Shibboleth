@@ -21,8 +21,11 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Shibboleth_OcclusionManager.h"
-#include "Shibboleth_Object.h"
+#include <Shibboleth_Object.h>
 #include <Shibboleth_IApp.h>
+#include <Gaff_ScopedLock.h>
+
+#define BVH_STARTING_CACHE 500
 
 NS_SHIBBOLETH
 
@@ -32,62 +35,256 @@ REF_IMPL_SHIB(OcclusionManager)
 .ADD_BASE_CLASS_INTERFACE_ONLY(IUpdateQuery)
 ;
 
-OcclusionManager::WatchUpdater::WatchUpdater(OcclusionManager* spatial_mgr, Node* node):
-	_spatial_mgr(spatial_mgr), _node(node)
+static float SurfaceArea(Gleam::AABBCPU& aabb)
+{
+	Gleam::Vector4CPU extent = aabb.getMax() - aabb.getMin();
+	return 2.0f * (extent[0]*extent[1] + extent[0]*extent[2] + extent[1]*extent[2]);
+}
+
+
+// BVH Tree
+OcclusionManager::BVHTree::BVHTree(void):
+	_node_cache(BVH_STARTING_CACHE, BVHNode()), _dirty_indices(BVH_STARTING_CACHE),
+	_free_indices(BVH_STARTING_CACHE), _root(SIZE_T_FAIL), _is_static(false)
+{
+	for (size_t i = BVH_STARTING_CACHE - 1; i > 0; --i) {
+		_free_indices.push(i);
+	}
+
+	_free_indices.push(0);
+}
+
+OcclusionManager::BVHTree::~BVHTree(void)
 {
 }
 
-OcclusionManager::WatchUpdater::~WatchUpdater(void)
+void OcclusionManager::BVHTree::setIsStatic(bool is_static)
 {
+	_is_static = is_static;
 }
 
-void OcclusionManager::WatchUpdater::operator()(const Gleam::Quaternion&) const
+size_t OcclusionManager::BVHTree::addObject(Object* object)
 {
-	addDirtyNode();
+	size_t index = 0;
+
+	{
+		Gaff::ScopedLock<Gaff::SpinLock> fi_lock(_fi_lock);
+
+		if (_free_indices.empty()) {
+			Gaff::ScopedLock<Gaff::SpinLock> nc_lock(_nc_lock);
+			growArrays();
+		}
+
+		index = _free_indices.last();
+		_free_indices.pop();
+	}
+
+	Gaff::ScopedLock<Gaff::SpinLock> add_lock(_add_lock);
+	_add_buffer.emplacePush(object, index);
+
+	return index;
 }
 
-void OcclusionManager::WatchUpdater::operator()(const Gleam::AABB&) const
+void OcclusionManager::BVHTree::removeObject(size_t index)
 {
-	addDirtyNode();
+	Gaff::ScopedLock<Gaff::SpinLock> scoped_lock(_remove_lock);
+	_remove_buffer.push(index);
 }
 
-void OcclusionManager::WatchUpdater::operator()(const Gleam::Vec4&) const
+void OcclusionManager::BVHTree::construct(const Array<Object*>& objects, Array<OcclusionID>* id_out)
 {
-	addDirtyNode();
-}
-
-void OcclusionManager::WatchUpdater::addDirtyNode(void) const
-{
-	if (!_node->dirty) {
-		_node->_lock.lock();
-
-		// Check again in-case another thread changed the value before we acquired the lock
-		if (!_node->dirty) {
-			_node->dirty = true;
-			_node->_lock.unlock(); // We've set the flag, unlock so that other threads don't have to wait for the rest of the function to finish.
-
-			Gaff::ScopedLock<Gaff::SpinLock> scoped_lock(_spatial_mgr->_dirty_lock);
-			_spatial_mgr->_dirty_nodes.push(_node);
-
-		} else {
-			_node->_lock.unlock(); // Nothing to change, don't forget to release the lock.
+	// bottom-up tree construction
+	// intended for static tree only
+	
+	if (id_out) {
+		if (id_out->size() < objects.size()) {
+			id_out->resize(objects.size());
 		}
 	}
 }
 
-
-
-
-OcclusionManager::OcclusionManager(IApp& app):
-	_dirty_nodes(100), _bvh(nullptr), _app(app), _next_id(0)
+void OcclusionManager::BVHTree::update(void)
 {
+	{
+		Gaff::ScopedLock<Gaff::SpinLock> scoped_lock(_remove_lock);
+
+		for (auto it = _remove_buffer.begin(); it != _remove_buffer.end(); ++it) {
+			removeObjectHelper(*it);
+			_free_indices.push(*it);
+		}
+
+		_remove_buffer.clearNoFree();
+	}
+
+	{
+		Gaff::ScopedLock<Gaff::SpinLock> scoped_lock(_add_lock);
+
+		for (auto it = _add_buffer.begin(); it != _add_buffer.end(); ++it) {
+			addObjectHelper(it->first, it->second);
+		}
+
+		_add_buffer.clearNoFree();
+	}
+
+	// maybe occasionally rebalance the tree
+}
+
+// These are going to be called in an environment where there is no thread contention
+void OcclusionManager::BVHTree::dirtyObjectCallback(Object*, unsigned long long index)
+{
+	_node_cache[static_cast<size_t>(index)].dirty = true;
+	_dirty_indices.push(static_cast<size_t>(index));
+}
+
+void OcclusionManager::BVHTree::growArrays(void)
+{
+	_node_cache.reserve(_node_cache.size() * 2);
+
+	for (size_t i = _node_cache.size(); i < _node_cache.capacity(); ++i) {
+		_free_indices.push(i);
+	}
+}
+
+void OcclusionManager::BVHTree::addObjectHelper(Object* object, size_t index)
+{
+	if (!_is_static) {
+		object->registerForLocalDirtyCallback(Gaff::Bind(this, &OcclusionManager::BVHTree::dirtyObjectCallback), index);
+	}
+
+	BVHNode& node = _node_cache[index];
+	node.aabb = object->getWorldAABB();
+	node.object = object;
+	node.index = index;
+	node.parent = node.left = node.right = SIZE_T_FAIL;
+	node.dirty = false;
+
+	// add to tree
+	if (_root == SIZE_T_FAIL) {
+		_root = index;
+		return;
+	}
+
+	BVHNode* travel_node = &_node_cache[_root];
+	Gleam::AABBCPU aabb_left, aabb_right, final_aabb;
+	float surface_left, surface_right;
+
+	// Go down the tree until we hit a leaf node.
+	// A leaf node is denoted by the Object* not being null.
+	while (!travel_node->object) {
+		aabb_left = aabb_right = node.aabb;
+
+		aabb_left.addAABB(_node_cache[travel_node->left].aabb);
+		aabb_right.addAABB(_node_cache[travel_node->right].aabb);
+
+		surface_left = SurfaceArea(aabb_left);
+		surface_right = SurfaceArea(aabb_right);
+
+		if (surface_left < surface_right) {
+			travel_node = &_node_cache[travel_node->left];
+			final_aabb = aabb_left;
+		} else {
+			travel_node = &_node_cache[travel_node->right];
+			final_aabb = aabb_right;
+		}
+	}
+
+	// Create a new node
+	if (_free_indices.empty()) {
+		growArrays();
+	}
+
+	size_t new_parent_index = _free_indices.last();
+	_free_indices.pop();
+
+	// Insert the new parent node into the tree.
+	BVHNode* new_parent = &_node_cache[new_parent_index];
+	new_parent->aabb = final_aabb;
+	new_parent->object = nullptr;
+	new_parent->index = new_parent_index;
+	new_parent->parent = travel_node->parent;
+	new_parent->left = index;
+	new_parent->right = travel_node->index;
+
+	travel_node->parent = node.parent = new_parent_index;
+
+
+	// Set root to the correct node if we are replacing root.
+	if (new_parent->parent == SIZE_T_FAIL) {
+		_root = new_parent_index;
+
+	} else {
+		BVHNode& parent = _node_cache[new_parent->parent];
+
+		if (parent.left == travel_node->index) {
+			parent.left = new_parent_index;
+		} else {
+			parent.right = new_parent_index;
+		}
+	}
+
+	// Walk back up the tree and update the AABBs.
+	updateAABBs(new_parent->parent);
+
+	// potentially balance
+}
+
+void OcclusionManager::BVHTree::removeObjectHelper(size_t index)
+{
+	if (index == _root) {
+		_root = SIZE_T_FAIL;
+		return;
+	}
+
+	BVHNode& node = _node_cache[index];
+	BVHNode& parent = _node_cache[node.parent];
+	BVHNode& sibling = _node_cache[(parent.left == index) ? parent.right : parent.left];
+
+	// If our tree only has three nodes, remove index and parent and set the remaining node as root
+	if (parent.parent == SIZE_T_FAIL) {
+		_root = sibling.index;
+		sibling.parent = SIZE_T_FAIL;
+
+	// Remove me and my parent, set my sibling as my grandparent's child
+	} else {
+		BVHNode& grand_parent = _node_cache[parent.parent];
+
+		if (grand_parent.left == parent.index) {
+			grand_parent.left = sibling.index;
+		} else {
+			grand_parent.right = sibling.index;
+		}
+
+		sibling.parent = grand_parent.index;
+
+		// Walk back up the tree and update the AABBs.
+		updateAABBs(grand_parent.index);
+
+		// potentially balance
+	}
+}
+
+void OcclusionManager::BVHTree::updateAABBs(size_t index)
+{
+	while (index != SIZE_T_FAIL) {
+		BVHNode& curr_node = _node_cache[index];
+		BVHNode& left = _node_cache[curr_node.left];
+		BVHNode& right = _node_cache[curr_node.right];
+
+		curr_node.aabb = left.aabb;
+		curr_node.aabb.addAABB(right.aabb);
+
+		index = curr_node.parent;
+	}
+}
+
+// Occlusion Manager
+OcclusionManager::OcclusionManager(void)
+{
+	_bvh_trees[OT_STATIC].setIsStatic(true);
 }
 
 OcclusionManager::~OcclusionManager(void)
 {
-	for (auto it = _node_map.begin(); it != _node_map.end(); ++it) {
-		GetAllocator()->freeT(it->second);
-	}
 }
 
 void OcclusionManager::requestUpdateEntries(Array<UpdateEntry>& entries)
@@ -100,76 +297,36 @@ const char* OcclusionManager::getName(void) const
 	return "Occlusion Manager";
 }
 
-unsigned int OcclusionManager::addObject(Object* object)
+OcclusionManager::OcclusionID OcclusionManager::addObject(Object* object, OBJ_TYPE object_type)
 {
-	Node* node = GetAllocator()->template allocT<Node>();
-
-	if (!node) {
-		return 0;
-	}
-
-	// register for position and aabb changes
-	WatchUpdater updater(this, node);
-
-	// Not watching scale because if the scale changes, so will the AABB.
-	node->receipts[0] = object->watchAABB(Gaff::Bind<WatchUpdater, void, const Gleam::AABB&>(updater));
-	node->receipts[1] = object->watchRotation(Gaff::Bind<WatchUpdater, void, const Gleam::Quaternion&>(updater));
-	node->receipts[2] = object->watchPosition(Gaff::Bind<WatchUpdater, void, const Gleam::Vec4&>(updater));
-	node->receipts[3] = object->watchScale(Gaff::Bind<WatchUpdater, void, const Gleam::Vec4&>(updater));
-	node->object = object;
-	node->dirty = false;
-
-	Gaff::ScopedLock<Gaff::SpinLock> scoped_lock(_bvh_lock);
-	node->id = _next_id;
-	_node_map[node->id] = node;
-	insertNode(node);
-	++_next_id;
-
-	return node->id;
+	assert(object && !_node_map.hasElementWithKey(object) && object_type < OT_SIZE);
+	OcclusionID id = { _bvh_trees[object_type].addObject(object), object_type };
+	_node_map[object] = id;
+	return id;
 }
 
-void OcclusionManager::removeObject(unsigned int id)
+void OcclusionManager::removeObject(Object* object)
 {
-	Gaff::ScopedLock<Gaff::SpinLock> bvh_lock(_bvh_lock);
+	assert(object && _node_map.hasElementWithKey(object));
+	removeObject(_node_map[object]);
+}
 
-	// Split into two because VS2013 is retarded and thinks it's an uninitialized variable ...
-	Node* node = nullptr;
-	node = _node_map[id];
+void OcclusionManager::removeObject(OcclusionID id)
+{
+	assert(id.object_type < OT_SIZE);
+	_bvh_trees[id.object_type].removeObject(id.index);
+}
 
-	removeNode(node);
-	_node_map.erase(id);
-
-	Gaff::ScopedLock<Gaff::SpinLock> dirty_lock(_dirty_lock);
-	auto it = _dirty_nodes.linearSearch(node);
-
-	if (it != _dirty_nodes.end()) {
-		_dirty_nodes.erase(it);
-	}
-
-	GetAllocator()->freeT(node);
+void OcclusionManager::constructStaticTree(const Array<Object*>& objects, Array<OcclusionID>* id_out)
+{
+	assert(!objects.empty());
+	_bvh_trees[OT_STATIC].construct(objects, id_out);
 }
 
 void OcclusionManager::update(double)
 {
-	Gaff::ScopedLock<Gaff::SpinLock> dirty_lock(_dirty_lock);
-	Gaff::ScopedLock<Gaff::SpinLock> bvh_lock(_bvh_lock);
-
-	// Haven't implemented the occlusion manager yet, so just reset the dirty flags and move on.
-	for (auto it = _dirty_nodes.begin(); it != _dirty_nodes.end(); ++it) {
-		(*it)->dirty = false;
-	}
-
-	_dirty_nodes.clearNoFree();
-}
-
-void OcclusionManager::removeNode(Node* node)
-{
-	// implement me!
-}
-
-void OcclusionManager::insertNode(Node* node)
-{
-	// implement me!
+	_bvh_trees[OT_STATIC].update(); // In case we are removing something from the static tree
+	_bvh_trees[OT_DYNAMIC].update();
 }
 
 NS_END

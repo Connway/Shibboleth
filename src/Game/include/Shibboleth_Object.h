@@ -24,22 +24,19 @@ THE SOFTWARE.
 
 #include "Shibboleth_IComponent.h"
 #include <Shibboleth_MessageBroadcaster.h>
-#include <Shibboleth_Watcher.h>
+#include <Shibboleth_String.h>
 #include <Shibboleth_Array.h>
-#include <Gaff_INamedObject.h>
 #include <Gaff_Function.h>
 #include <Gaff_SmartPtr.h>
-#include <Gleam_Quaternion.h>
-#include <Gleam_AABB.h>
-
-#define MAX_OBJ_NAME_LENGTH 64
+#include <Gleam_Transform_CPU.h>
+#include <Gleam_AABB_CPU.h>
 
 NS_SHIBBOLETH
 
 class ComponentManager;
 class IApp;
 
-class Object : public Gaff::INamedObject
+class Object
 {
 public:
 	template <class Interface>
@@ -94,16 +91,17 @@ public:
 		}
 	}
 
+	typedef Gaff::FunctionBinder<void, Object*, unsigned long long> DirtyCallback;
 	typedef Gaff::FunctionBinder<void, double> UpdateCallback;
 
-	Object(IApp& app, unsigned int id);
+	Object(unsigned int id);
 	~Object(void);
 
 	bool init(const Gaff::JSON& json);
 	INLINE bool init(const char* file_name);
 	void destroy(void);
 
-	const char* getName(void) const;
+	const AString& getName(void) const;
 
 	unsigned int getID(void) const;
 	void setID(unsigned int id);
@@ -116,44 +114,64 @@ public:
 
 	INLINE MessageBroadcaster& getBroadcaster(void);
 
-	INLINE Gaff::WatchReceipt watchRotation(const Watcher<Gleam::Quaternion>::Callback& callback);
-	INLINE Gaff::WatchReceipt watchPosition(const Watcher<Gleam::Vec4>::Callback& callback);
-	INLINE Gaff::WatchReceipt watchScale(const Watcher<Gleam::Vec4>::Callback& callback);
-	INLINE Gaff::WatchReceipt watchAABB(const Watcher<Gleam::AABB>::Callback& callback);
+	INLINE const Gleam::TransformCPU& getLocalTransform(void) const;
+	INLINE const Gleam::TransformCPU& getWorldTransform(void) const;
+	INLINE void setLocalTransform(const Gleam::TransformCPU& transform);
+	INLINE const Gleam::QuaternionCPU& getLocalRotation(void) const;
+	INLINE const Gleam::QuaternionCPU& getWorldRotation(void) const;
+	INLINE void setLocalRotation(const Gleam::QuaternionCPU& rot);
+	INLINE const Gleam::Vector4CPU& getLocalPosition(void) const;
+	INLINE const Gleam::Vector4CPU& getWorldPosition(void) const;
+	INLINE void setLocalPosition(const Gleam::Vector4CPU& pos);
+	INLINE const Gleam::Vector4CPU& getLocalScale(void) const;
+	INLINE const Gleam::Vector4CPU& getWorldScale(void) const;
+	INLINE void setLocalScale(const Gleam::Vector4CPU& scale);
+	INLINE const Gleam::AABBCPU& getLocalAABB(void) const;
+	INLINE const Gleam::AABBCPU& getWorldAABB(void) const;
+	INLINE void setLocalAABB(const Gleam::AABBCPU& aabb);
 
-	INLINE const Gleam::Quaternion& getRotation(void) const;
-	INLINE void setRotation(const Gleam::Quaternion& rot);
-	INLINE const Gleam::Vec4& getPosition(void) const;
-	INLINE void setPosition(const Gleam::Vec4& pos);
-	INLINE const Gleam::Vec4& getScale(void) const;
-	INLINE void setScale(const Gleam::Vec4& scale);
-	INLINE const Gleam::AABB& getAABB(void) const;
-	INLINE void setAABB(const Gleam::AABB& aabb);
-
-	INLINE unsigned int getNumComponents(void) const;
+	INLINE size_t getNumComponents(void) const;
 	INLINE const IComponent* getComponent(unsigned int index) const;
 	INLINE IComponent* getComponent(unsigned int index);
 	INLINE const Array<IComponent*>& getComponents(void) const;
 	INLINE Array<IComponent*>& getComponents(void);
 
+	void addChild(Object* object);
+	void removeFromParent(void);
+	void removeChildren(void);
+	void updateTransforms(void);
+
+	void registerForLocalDirtyCallback(const DirtyCallback& callback, unsigned long long user_data);
+	void unregisterForLocalDirtyCallback(const DirtyCallback& callback);
+	void notifyLocalDirtyCallbacks(void);
+
+	void registerForWorldDirtyCallback(const DirtyCallback& callback, unsigned long long user_data);
+	void unregisterForWorldDirtyCallback(const DirtyCallback& callback);
+	void notifyWorldDirtyCallbacks(void);
+
 private:
+	Gleam::TransformCPU _local_transform;
+	Gleam::TransformCPU _world_transform;
+	Gleam::AABBCPU _local_aabb;
+	Gleam::AABBCPU _world_aabb;
+	Array< Gaff::Pair<DirtyCallback, unsigned long long> > _local_callbacks;
+	Array< Gaff::Pair<DirtyCallback, unsigned long long> > _world_callbacks;
+
+	Array<Object*> _children;
+	Gaff::SpinLock _children_lock;
+	Object* _parent;
+
 	MessageBroadcaster _broadcaster;
-
-	char _name[MAX_OBJ_NAME_LENGTH];
-
-	Watcher<Gleam::AABB> _aabb;
-	Watcher<Gleam::Quaternion> _rotation;
-	Watcher<Gleam::Vec4> _position;
-	Watcher<Gleam::Vec4> _scale;
+	AString _name;
 
 	Array<IComponent*> _components;
-
 	ComponentManager& _comp_mgr;
-	IApp& _app;
 
 	unsigned int _id;
+	bool _dirty;
 
 	bool createComponents(const Gaff::JSON& json);
+	void markDirty(void);
 
 	GAFF_NO_COPY(Object);
 	GAFF_NO_MOVE(Object);

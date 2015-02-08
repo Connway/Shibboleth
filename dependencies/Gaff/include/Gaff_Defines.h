@@ -109,15 +109,18 @@ THE SOFTWARE.
 	#error "Unknown architecture. Cannot deduce number of bits per byte."
 #endif
 
-#define UINT_FAIL static_cast<unsigned int>(-1) //!< Returned from functions that use unsigned ints, but can potentially fail
+#define SIZE_T_FAIL static_cast<size_t>(-1) //!< Returned from functions that use size_t's, but can potentially fail
+#define UINT_FAIL static_cast<unsigned int>(-1)  //!< Returned from functions that use unsigned int's, but can potentially fail
 #define DYNAMICEXPORT_C extern "C" DYNAMICEXPORT //!< Exports a function with C-style symbol names.
 
 NS_GAFF
 
 #if defined(__LP64__) || defined(_WIN64)
 	typedef long long OffsetType; //!< Integer type that can hold a pointer on the target platform.
+	#define PLATFORM_64_BIT
 #elif defined(__LP32__) || defined(_WIN32)
 	typedef int OffsetType; //!< Integer type that can hold a pointer on the target platform.
+	#define PLATFORM_32_BIT
 #else
 	#error "Cannot deduce platform bit-age."
 #endif

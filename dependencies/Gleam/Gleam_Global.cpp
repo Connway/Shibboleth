@@ -50,7 +50,7 @@ Gaff::IAllocator* GetAllocator(void)
 	return g_allocator;
 }
 
-void* GleamAlloc(unsigned int size_bytes, const char* filename, unsigned int line_number)
+void* GleamAlloc(size_t size_bytes, const char* filename, unsigned int line_number)
 {
 	void* data = g_allocator->alloc(size_bytes);
 

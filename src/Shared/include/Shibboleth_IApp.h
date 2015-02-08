@@ -39,37 +39,37 @@ public:
 	template <class T>
 	const T& getManagerT(const AHashString& name) const
 	{
-		return *(T*)getManager(name);
+		return *reinterpret_cast<T*>(getManager(name));
 	}
 
 	template <class T>
 	T& getManagerT(const AHashString& name)
 	{
-		return *(T*)getManager(name);
+		return *reinterpret_cast<T*>(getManager(name));
 	}
 
 	template <class T>
 	const T& getManagerT(const AString& name) const
 	{
-		return *(T*)getManager(name);
+		return *reinterpret_cast<T*>(getManager(name));
 	}
 
 	template <class T>
 	T& getManagerT(const AString& name)
 	{
-		return *(T*)getManager(name);
+		return *reinterpret_cast<T*>(getManager(name));
 	}
 
 	template <class T>
 	const T& getManagerT(const char* name) const
 	{
-		return *(T*)getManager(name);
+		return *reinterpret_cast<T*>(getManager(name));
 	}
 
 	template <class T>
 	T& getManagerT(const char* name)
 	{
-		return *(T*)getManager(name);
+		return *reinterpret_cast<T*>(getManager(name));
 	}
 
 	IApp(void) {}
@@ -97,8 +97,12 @@ public:
 	virtual void helpUntilNoTasks(void) = 0;
 	virtual void doATask(void) = 0;
 
-	virtual DynamicLoader::ModulePtr loadModule(const char* filename, const char* name) = 0;
+	virtual void addLogCallback(const LogManager::LogCallback& callback) = 0;
+	virtual void removeLogCallback(const LogManager::LogCallback& callback) = 0;
+	virtual void notifyLogCallbacks(const char* message, LogManager::LOG_TYPE type) = 0;
 	virtual LogManager::FileLockPair& getGameLogFile(void) = 0;
+
+	virtual DynamicLoader::ModulePtr loadModule(const char* filename, const char* name) = 0;
 	virtual size_t getSeed(void) const = 0;
 	virtual void quit(void) = 0;
 };

@@ -182,7 +182,7 @@ public:
 	/*!
 		\brief Returns the number of threads that aren't yielding to the scheduler.
 	*/
-	unsigned int getNumActiveThreads(void) const
+	size_t getNumActiveThreads(void) const
 	{
 		return _active_threads;
 	}
@@ -190,7 +190,7 @@ public:
 	/*!
 		\brief Returns the total number of worker threads.
 	*/
-	unsigned int getNumTotalThreads(void) const
+	size_t getNumTotalThreads(void) const
 	{
 		return _threads.size();
 	}
@@ -237,7 +237,7 @@ private:
 		// Don't want to waste CPU cycles by locking when it is empty.
 		if (!dep_tasks.empty()) {
 			for (unsigned int i = 0; i < dep_tasks.size(); ++i) {
-				TaskQueue& task_queue = thread_pool->_task_pools[(dep_tasks[i].second == UINT_FAIL) ? pool : dep_tasks[i].second];
+				TaskQueue& task_queue = thread_pool->_task_pools[(dep_tasks[i].second == SIZE_T_FAIL) ? pool : dep_tasks[i].second];
 
 				task_queue.read_write_lock.lock();
 				task_queue.tasks.emplaceMovePush(Move(dep_tasks[i].first));

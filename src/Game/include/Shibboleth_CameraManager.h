@@ -47,7 +47,7 @@ public:
 	void requestUpdateEntries(Array<UpdateEntry>& entries);
 	void update(double);
 
-	void registerCamera(CameraComponent* camera, unsigned int position = UINT_FAIL);
+	void registerCamera(CameraComponent* camera, size_t position = SIZE_T_FAIL);
 	void unregisterCamera(CameraComponent* camera);
 
 private:

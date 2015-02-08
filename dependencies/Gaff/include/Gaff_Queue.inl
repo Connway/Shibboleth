@@ -28,7 +28,7 @@ Queue<T, Allocator>::Queue(const Allocator& allocator):
 }
 
 template <class T, class Allocator>
-Queue<T, Allocator>::Queue(unsigned int start_alloc, const Allocator& allocator) :
+Queue<T, Allocator>::Queue(size_t start_alloc, const Allocator& allocator) :
 	_allocator(allocator), _used(0), _size(start_alloc)
 {
 	_array = (T*)_allocator.alloc(sizeof(T) * start_alloc);
@@ -36,13 +36,13 @@ Queue<T, Allocator>::Queue(unsigned int start_alloc, const Allocator& allocator)
 }
 
 template <class T, class Allocator>
-Queue<T, Allocator>::Queue(const T* data, unsigned int size, const Allocator& allocator) :
+Queue<T, Allocator>::Queue(const T* data, size_t size, const Allocator& allocator) :
 	_allocator(allocator), _used(0), _size(size)
 {
 	_array = (T*)_allocator.alloc(sizeof(T) * size);
 	_begin = _end = _array + (size / 2);
 
-	for (unsigned int i = 0; i < size; ++i) {
+	for (size_t i = 0; i < size; ++i) {
 		push(data[i]);
 	}
 }
@@ -90,7 +90,7 @@ const Queue<T, Allocator>& Queue<T, Allocator>::operator=(const Queue<T, Allocat
 	_size = rhs._size;
 	_used = 0;
 
-	for (unsigned int i = 0; i < rhs._used; ++i) {
+	for (size_t i = 0; i < rhs._used; ++i) {
 		push(*begin);
 		rhs.increment(&begin);
 	}
@@ -123,7 +123,7 @@ bool Queue<T, Allocator>::operator==(const Queue<T, Allocator>& rhs) const
 	T* our_begin = _begin;
 	T* rhs_begin = rhs._begin;
 
-	for (unsigned int i = 0; i < _used; ++i) {
+	for (size_t i = 0; i < _used; ++i) {
 		if (*our_begin != *rhs_begin) {
 			return false;
 		}
@@ -145,7 +145,7 @@ template <class T, class Allocator>
 void Queue<T, Allocator>::clear(void)
 {
 	if (_array) {
-		for (unsigned int i = 0; i < _used; ++i) {
+		for (size_t i = 0; i < _used; ++i) {
 			deconstruct(_begin);
 			increment(&_begin);
 		}
@@ -166,14 +166,14 @@ void Queue<T, Allocator>::clear(void)
 		If \a new_size is greater than the current size, size will not change, but capacity will.
 */
 template <class T, class Allocator>
-void Queue<T, Allocator>::reallocate(unsigned int new_size)
+void Queue<T, Allocator>::reallocate(size_t new_size)
 {
 	if (new_size == 0) {
 		new_size = 1;
 	}
 
-	unsigned int old_used = _used;
-	unsigned int old_size = _size;
+	size_t old_used = _used;
+	size_t old_size = _size;
 	T* old_data = _array;
 	T* begin = _begin;
 
@@ -182,7 +182,7 @@ void Queue<T, Allocator>::reallocate(unsigned int new_size)
 	_size = new_size;
 	_used = 0;
 
-	for (unsigned int i = 0; i < old_used; ++i) {
+	for (size_t i = 0; i < old_used; ++i) {
 		push(*begin);
 		increment(&begin, old_data, old_size);
 	}
@@ -284,13 +284,13 @@ T& Queue<T, Allocator>::last(void)
 }
 
 template <class T, class Allocator>
-unsigned int Queue<T, Allocator>::size(void) const
+size_t Queue<T, Allocator>::size(void) const
 {
 	return _used;
 }
 
 template <class T, class Allocator>
-unsigned int Queue<T, Allocator>::capacity(void) const
+size_t Queue<T, Allocator>::capacity(void) const
 {
 	return _size;
 }
@@ -308,7 +308,7 @@ void Queue<T, Allocator>::setAllocator(const Allocator& allocator)
 }
 
 template <class T, class Allocator>
-void Queue<T, Allocator>::increment(T** element, T* array, unsigned int array_size) const
+void Queue<T, Allocator>::increment(T** element, T* array, size_t array_size) const
 {
 	if (!array) {
 		array_size = _size;
@@ -325,7 +325,7 @@ void Queue<T, Allocator>::increment(T** element, T* array, unsigned int array_si
 }
 
 template <class T, class Allocator>
-void Queue<T, Allocator>::decrement(const T** element, T* array, unsigned int array_size) const
+void Queue<T, Allocator>::decrement(const T** element, T* array, size_t array_size) const
 {
 	if (!array) {
 		array_size = _size;
@@ -342,7 +342,7 @@ void Queue<T, Allocator>::decrement(const T** element, T* array, unsigned int ar
 }
 
 template <class T, class Allocator>
-void Queue<T, Allocator>::decrement(T** element, T* array, unsigned int array_size)
+void Queue<T, Allocator>::decrement(T** element, T* array, size_t array_size)
 {
 	if (!array) {
 		array_size = _size;

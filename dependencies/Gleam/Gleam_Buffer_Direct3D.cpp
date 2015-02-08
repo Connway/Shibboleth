@@ -56,7 +56,7 @@ BufferD3D::~BufferD3D(void)
 bool BufferD3D::init(IRenderDevice& rd, const void* data, unsigned int size, BUFFER_TYPE buffer_type, unsigned int stride, MAP_TYPE cpu_access)
 {
 	assert(rd.isD3D() && !_buffer);
-	IRenderDeviceD3D& rd3d = (IRenderDeviceD3D&)*(((const char*)&rd) + sizeof(IRenderDevice));
+	IRenderDeviceD3D& rd3d = reinterpret_cast<IRenderDeviceD3D&>(*(reinterpret_cast<char*>(&rd) + sizeof(IRenderDevice)));
 
 	ID3D11Device* device = rd3d.getActiveDevice();
 
@@ -103,7 +103,7 @@ void BufferD3D::destroy(void)
 bool BufferD3D::update(IRenderDevice& rd, const void* data, unsigned int size)
 {
 	assert(rd.isD3D() && data);
-	IRenderDeviceD3D& rd3d = (IRenderDeviceD3D&)*(((const char*)&rd) + sizeof(IRenderDevice));
+	IRenderDeviceD3D& rd3d = reinterpret_cast<IRenderDeviceD3D&>(*(reinterpret_cast<char*>(&rd) + sizeof(IRenderDevice)));
 	ID3D11DeviceContext* context = rd3d.getActiveDeviceContext();
 	D3D11_MAPPED_SUBRESOURCE mapped_resource;
 
@@ -119,7 +119,7 @@ bool BufferD3D::update(IRenderDevice& rd, const void* data, unsigned int size)
 void* BufferD3D::map(IRenderDevice& rd, MAP_TYPE map_type)
 {
 	assert(rd.isD3D() && map_type != NONE);
-	IRenderDeviceD3D& rd3d = (IRenderDeviceD3D&)*(((const char*)&rd) + sizeof(IRenderDevice));
+	IRenderDeviceD3D& rd3d = reinterpret_cast<IRenderDeviceD3D&>(*(reinterpret_cast<char*>(&rd) + sizeof(IRenderDevice)));
 	ID3D11DeviceContext* context = rd3d.getActiveDeviceContext();
 	D3D11_MAPPED_SUBRESOURCE mapped_resource;
 
@@ -130,7 +130,7 @@ void* BufferD3D::map(IRenderDevice& rd, MAP_TYPE map_type)
 void BufferD3D::unmap(IRenderDevice& rd)
 {
 	assert(rd.isD3D());
-	IRenderDeviceD3D& rd3d = (IRenderDeviceD3D&)*(((const char*)&rd) + sizeof(IRenderDevice));
+	IRenderDeviceD3D& rd3d = reinterpret_cast<IRenderDeviceD3D&>(*(reinterpret_cast<char*>(&rd) + sizeof(IRenderDevice)));
 	ID3D11DeviceContext* context = rd3d.getActiveDeviceContext();
 	context->Unmap(_buffer, 0);
 }

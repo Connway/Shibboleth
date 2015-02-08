@@ -41,20 +41,20 @@ public:
 	~Allocator(void);
 
 	void createMemoryPool(const char* pool_name, unsigned int alloc_tag);
-	void* alloc(unsigned int size_bytes, unsigned int alloc_tag);
+	void* alloc(size_t size_bytes, unsigned int alloc_tag);
 	void free(void* data, unsigned int alloc_tag);
 
-	void* alloc(unsigned int size_bytes);
+	void* alloc(size_t size_bytes);
 	void free(void* data);
 
-	INLINE unsigned int getTotalBytesAllocated(unsigned int alloc_tag) const;
+	INLINE size_t getTotalBytesAllocated(unsigned int alloc_tag) const;
 	INLINE unsigned int getNumAllocations(unsigned int alloc_tag) const;
 	INLINE unsigned int getNumFrees(unsigned int alloc_tag) const;
 
 private:
 	struct MemoryPoolInfo
 	{
-		volatile unsigned int total_bytes_allocated;
+		volatile size_t total_bytes_allocated;
 		volatile unsigned int num_allocations;
 		volatile unsigned int num_frees;
 		char pool_name[POOL_NAME_SIZE];

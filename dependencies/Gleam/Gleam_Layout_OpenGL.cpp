@@ -112,7 +112,7 @@ LayoutGL::~LayoutGL(void)
 }
 
 // Ugh, this function is so ugly looking
-bool LayoutGL::init(IRenderDevice&, const LayoutDescription* layout_desc, unsigned int layout_desc_size, const IShader*)
+bool LayoutGL::init(IRenderDevice&, const LayoutDescription* layout_desc, size_t layout_desc_size, const IShader*)
 {
 	LayoutData layout_data;
 	unsigned int input_slot = 0;

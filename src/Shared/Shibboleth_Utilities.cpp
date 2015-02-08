@@ -36,8 +36,8 @@ static IApp* g_App = nullptr;
 class LogTask : public ITask
 {
 public:
-	LogTask(LogManager::FileLockPair& flp, const char* string/*, bool flush*/):
-		_string(string), _flp(flp)/*, _flush(flush)*/
+	LogTask(LogManager::FileLockPair& flp, const char* string, LogManager::LOG_TYPE log_type/*, bool flush*/):
+		_string(string), _flp(flp), _log_type(log_type)/*, _flush(flush)*/
 	{
 	}
 
@@ -52,17 +52,20 @@ public:
 		//if (_flush) {
 			_flp.first.flush();
 		//}
+
+		g_App->notifyLogCallbacks(_string.getBuffer(), _log_type);
 	}
 
 private:
 	AString _string;
 	LogManager::FileLockPair& _flp;
+	LogManager::LOG_TYPE _log_type;
 	//bool _flush;
 
 	SHIB_REF_COUNTED(LogTask);
 };
 
-void PrintToLogTask(LogManager::FileLockPair& flp, unsigned int task_pool, const char* format, ...)
+void LogMessage(LogManager::FileLockPair& flp, unsigned int task_pool, LogManager::LOG_TYPE log_type, const char* format, ...)
 {
 	assert(g_App && format && strlen(format));
 
@@ -74,7 +77,7 @@ void PrintToLogTask(LogManager::FileLockPair& flp, unsigned int task_pool, const
 	va_end(vl);
 
 	//unsigned int curr_flush_count = AtomicUAddFetchOrig(&g_Current_Flush_Count, 1);
-	LogTask* log_task = GetAllocator()->allocT<LogTask>(flp, temp/*, !(curr_flush_count % g_Flush_Count)*/);
+	LogTask* log_task = GetAllocator()->allocT<LogTask>(flp, temp, log_type/*, !(curr_flush_count % g_Flush_Count)*/);
 
 	if (log_task) {
 		TaskPtr task(log_task);

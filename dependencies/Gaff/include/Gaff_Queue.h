@@ -39,8 +39,8 @@ class Queue
 {
 public:
 	explicit Queue(const Allocator& allocator = Allocator());
-	explicit Queue(unsigned int start_alloc, const Allocator& allocator = Allocator());
-	Queue(const T* data, unsigned int size, const Allocator& allocator = Allocator());
+	explicit Queue(size_t start_alloc, const Allocator& allocator = Allocator());
+	Queue(const T* data, size_t size, const Allocator& allocator = Allocator());
 	Queue(const Queue<T, Allocator>& rhs);
 	Queue(Queue<T, Allocator>&& rhs);
 	~Queue(void);
@@ -52,7 +52,7 @@ public:
 	bool operator!=(const Queue<T, Allocator>& rhs) const;
 
 	void clear(void);
-	void reallocate(unsigned int new_size);
+	void reallocate(size_t new_size);
 
 	void movePush(T&& data);
 	void push(const T& data);
@@ -69,8 +69,8 @@ public:
 	const T& last(void) const;
 	T& last(void);
 
-	unsigned int size(void) const;
-	unsigned int capacity(void) const;
+	size_t size(void) const;
+	size_t capacity(void) const;
 
 	bool empty(void) const;
 
@@ -78,14 +78,14 @@ public:
 
 private:
 	Allocator _allocator;
-	unsigned int _used, _size;
+	size_t _used, _size;
 	T* _array;
 	T* _begin;
 	T* _end;
 
-	void increment(T** element, T* array = nullptr, unsigned int array_size = 0) const;
-	void decrement(const T** element, T* array = nullptr, unsigned int array_size = 0) const;
-	void decrement(T** element, T* array = nullptr, unsigned int array_size = 0);
+	void increment(T** element, T* array = nullptr, size_t array_size = 0) const;
+	void decrement(const T** element, T* array = nullptr, size_t array_size = 0) const;
+	void decrement(T** element, T* array = nullptr, size_t array_size = 0);
 };
 
 #include "Gaff_Queue.inl"

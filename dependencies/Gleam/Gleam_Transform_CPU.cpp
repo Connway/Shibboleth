@@ -20,25 +20,25 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#include "Gleam_Transform.h"
+#include "Gleam_Transform_CPU.h"
 
 NS_GLEAM
 
-Transform::Transform(const Vec4& scale, const Quaternion& rotation, const Vec4& translation):
+TransformCPU::TransformCPU(const Vector4CPU& scale, const QuaternionCPU& rotation, const Vector4CPU& translation):
 	_rotation(rotation), _translation(translation), _scale(scale)
 {
 }
 
-Transform::Transform(void):
-	_rotation(Quaternion::Identity), _translation(0.0f, 0.0f, 0.0f, 1.0f), _scale(1.0f, 1.0f, 1.0f, 1.0f)
+TransformCPU::TransformCPU(void):
+	_rotation(QuaternionCPU::Identity), _translation(0.0f, 0.0f, 0.0f, 1.0f), _scale(1.0f, 1.0f, 1.0f, 1.0f)
 {
 }
 
-Transform::~Transform(void)
+TransformCPU::~TransformCPU(void)
 {
 }
 
-const Transform& Transform::operator=(const Transform& rhs)
+const TransformCPU& TransformCPU::operator=(const TransformCPU& rhs)
 {
 	_scale = rhs._scale;
 	_rotation = rhs._rotation;
@@ -46,125 +46,131 @@ const Transform& Transform::operator=(const Transform& rhs)
 	return *this;
 }
 
-bool Transform::operator==(const Transform& rhs) const
+bool TransformCPU::operator==(const TransformCPU& rhs) const
 {
 	return _scale == rhs._scale &&
 			_rotation == rhs._rotation &&
 			_translation == rhs._translation;
 }
 
-bool Transform::operator!=(const Transform& rhs) const
+bool TransformCPU::operator!=(const TransformCPU& rhs) const
 {
 	return !(*this == rhs);
 }
 
-const Transform& Transform::operator+=(const Transform& rhs)
+const TransformCPU& TransformCPU::operator+=(const TransformCPU& rhs)
 {
-	concat(rhs);
+	concatThis(rhs);
 	return *this;
 }
 
-Transform Transform::operator+(const Transform& rhs) const
+TransformCPU TransformCPU::operator+(const TransformCPU& rhs) const
 {
-	Transform temp(_scale, _rotation, _translation);
-	temp.concat(rhs);
+	TransformCPU temp(_scale, _rotation, _translation);
+	temp.concatThis(rhs);
 	return temp;
 }
 
-const Vec4& Transform::getScale(void) const
+const Vector4CPU& TransformCPU::getScale(void) const
 {
 	return _scale;
 }
 
-void Transform::setScale(const Vec4& scale)
+void TransformCPU::setScale(const Vector4CPU& scale)
 {
 	_scale = scale;
 }
 
-const Quaternion& Transform::getRotation(void) const
+const QuaternionCPU& TransformCPU::getRotation(void) const
 {
 	return _rotation;
 }
 
-void Transform::setRotation(const Quaternion& rotation)
+void TransformCPU::setRotation(const QuaternionCPU& rotation)
 {
 	_rotation = rotation;
 }
 
-const Vec4& Transform::getTranslation(void) const
+const Vector4CPU& TransformCPU::getTranslation(void) const
 {
 	return _translation;
 }
 
-void Transform::setTranslation(const Vec4& translation)
+void TransformCPU::setTranslation(const Vector4CPU& translation)
 {
 	_translation = translation;
 }
 
-Transform Transform::concat(const Transform& rhs) const
+TransformCPU TransformCPU::concat(const TransformCPU& rhs) const
 {
-	return Transform(_scale * rhs._scale, _rotation * rhs._rotation, _translation + rhs._translation);
+	return TransformCPU(_scale * rhs._scale, _rotation * rhs._rotation, _translation + rhs._translation);
 }
 
-Transform Transform::inverse(void) const
+TransformCPU TransformCPU::inverse(void) const
 {
-	return Transform(Vec4(1.0f) / _scale, _rotation.conjugate(), -_translation);
+	return TransformCPU(Vector4CPU(1.0f) / _scale, _rotation.conjugate(), -_translation);
 }
 
-void Transform::concatThis(const Transform& rhs)
+void TransformCPU::concatThis(const TransformCPU& rhs)
 {
 	_scale *= rhs._scale;
 	_rotation *= rhs._rotation;
 	_translation += rhs._translation;
 }
 
-void Transform::inverseThis(void)
+void TransformCPU::inverseThis(void)
 {
-	_scale = Vec4(1.0f) / _scale;
+	_scale = Vector4CPU(1.0f) / _scale;
 	_rotation.conjugateThis();
 	_translation = -_translation;
 }
 
-Vec4 Transform::transform(const Vec4& rhs) const
+Vector4CPU TransformCPU::transform(const Vector4CPU& rhs) const
 {
-	Vec4 temp = rhs * _scale;
+	Vector4CPU temp = rhs * _scale;
 	temp = _rotation.transform(temp);
 	temp += _translation;
 	return temp;
 }
 
-Matrix4x4 Transform::matrix(void) const
+Matrix4x4CPU TransformCPU::matrix(void) const
 {
-	Matrix4x4 temp = _rotation.matrix();
+	Matrix4x4CPU temp = _rotation.matrix();
 	temp.setTranslate(_translation);
-	temp *= Matrix4x4::MakeScale(_scale);
+	temp *= Matrix4x4CPU::MakeScale(_scale);
 	return temp;
 }
 
-Transform Transform::lerp(const Transform& end, const Vec4& t)
+TransformCPU TransformCPU::lerp(const TransformCPU& end, const Vector4CPU& t)
 {
-	return Transform(
+	return TransformCPU(
 		_scale.lerp(end._scale, t),
 		_rotation.slerp(end._rotation, t),
 		_translation.lerp(end._translation, t)
 	);
 }
 
-void Transform::lerpThis(const Transform& end, const Vec4& t)
+void TransformCPU::lerpThis(const TransformCPU& end, const Vector4CPU& t)
 {
 	_scale.lerpThis(end._scale, t);
 	_rotation.slerpThis(end._rotation, t);
 	_translation.lerpThis(end._translation, t);
 }
 
-Transform Transform::lerp(const Transform& end, float t)
+TransformCPU TransformCPU::lerp(const TransformCPU& end, float t)
 {
-	return lerp(end, Vec4(t));
+	return TransformCPU(
+		_scale.lerp(end._scale, t),
+		_rotation.slerp(end._rotation, t),
+		_translation.lerp(end._translation, t)
+	);
 }
 
-void Transform::lerpThis(const Transform& end, float t)
+void TransformCPU::lerpThis(const TransformCPU& end, float t)
 {
-	lerpThis(end, Vec4(t));
+	_scale.lerpThis(end._scale, t);
+	_rotation.slerpThis(end._rotation, t);
+	_translation.lerpThis(end._translation, t);
 }
 
 NS_END

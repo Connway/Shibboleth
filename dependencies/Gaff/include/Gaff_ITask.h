@@ -87,7 +87,7 @@ public:
 		\param task The task that is dependent on this task.
 		\param pool
 			The task pool this dependent task should be added to.
-			A value of UINT_FAIL means to be added to the same pool that this task is a part of.
+			A value of SIZE_T_FAIL means to be added to the same pool that this task is a part of.
 	*/
 	void addDependentTask(const TaskPointer& task, unsigned int pool = 0)
 	{
