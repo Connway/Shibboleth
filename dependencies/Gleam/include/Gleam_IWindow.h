@@ -66,6 +66,8 @@ public:
 	virtual unsigned int getWidth(void) const = 0;
 	virtual unsigned int getHeight(void) const = 0;
 	virtual bool isFullScreen(void) const = 0;
+
+	virtual bool setIcon(const char* icon) = 0;
 };
 
 NS_END

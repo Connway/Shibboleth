@@ -281,6 +281,9 @@
     <ClInclude Include="..\..\..\dependencies\Gaff\include\Gaff_Watcher.h">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\Gaff\include\Gaff_ScopedExit.h">
+      <Filter>include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\dependencies\Gaff\Gaff_Animation.cpp" />

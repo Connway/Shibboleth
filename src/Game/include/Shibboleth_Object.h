@@ -34,6 +34,7 @@ THE SOFTWARE.
 NS_SHIBBOLETH
 
 class ComponentManager;
+class ObjectManager;
 class IApp;
 
 class Object
@@ -154,8 +155,11 @@ private:
 	Gleam::TransformCPU _world_transform;
 	Gleam::AABBCPU _local_aabb;
 	Gleam::AABBCPU _world_aabb;
+
 	Array< Gaff::Pair<DirtyCallback, unsigned long long> > _local_callbacks;
 	Array< Gaff::Pair<DirtyCallback, unsigned long long> > _world_callbacks;
+	Gaff::SpinLock _local_cb_lock;
+	Gaff::SpinLock _world_cb_lock;
 
 	Array<Object*> _children;
 	Gaff::SpinLock _children_lock;
@@ -166,6 +170,7 @@ private:
 
 	Array<IComponent*> _components;
 	ComponentManager& _comp_mgr;
+	ObjectManager& _obj_mgr;
 
 	unsigned int _id;
 	bool _dirty;

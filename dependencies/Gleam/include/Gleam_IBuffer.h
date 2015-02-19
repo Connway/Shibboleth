@@ -45,6 +45,7 @@ public:
 		READ,
 		WRITE,
 		READ_WRITE,
+		WRITE_NO_OVERWRITE,
 		MAP_TYPE_SIZE
 	};
 
@@ -60,14 +61,29 @@ public:
 		return update(rd, (void*)&data, sizeof(T));
 	}
 
+	struct BufferSettings
+	{
+		const void* data;
+		unsigned int size;
+		unsigned int stride;
+		BUFFER_TYPE type;
+		MAP_TYPE cpu_access;
+		bool gpu_read_only;
+	};
+
 	IBuffer(void) {}
 	virtual ~IBuffer(void) {}
 
+	INLINE bool init(IRenderDevice& rd, const BufferSettings& buffer_settings)
+	{
+		return init(rd, buffer_settings.data, buffer_settings.size, buffer_settings.type, buffer_settings.stride, buffer_settings.cpu_access, buffer_settings.gpu_read_only);
+	}
+
 	virtual bool init(IRenderDevice& rd, const void* data, unsigned int size, BUFFER_TYPE buffer_type = SHADER_DATA,
-						unsigned int stride = 0, MAP_TYPE cpu_access = NONE) = 0;
+						unsigned int stride = 0, MAP_TYPE cpu_access = NONE, bool gpu_read_only = true) = 0;
 	virtual void destroy(void) = 0;
 
-	virtual bool update(IRenderDevice& rd, const void* data, unsigned int size) = 0;
+	virtual bool update(IRenderDevice& rd, const void* data, unsigned int size, unsigned int offset = 0) = 0;
 	virtual void* map(IRenderDevice& rd, MAP_TYPE map_type = WRITE) = 0;
 	virtual void unmap(IRenderDevice& rd) = 0;
 

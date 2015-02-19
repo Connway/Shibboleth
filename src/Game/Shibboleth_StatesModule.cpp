@@ -93,10 +93,6 @@ public:
 		update_manager.update(0.0f);
 
 		render();
-
-		//_app.getManagerT<Shibboleth::OcclusionManager>("Occlusion Manager").removeObject(_occlusion_id);
-		//_app.getManagerT<Shibboleth::ObjectManager>("Object Manager").removeObject(_object->getID());
-		//_app.quit();
 	}
 
 	void exit(void)

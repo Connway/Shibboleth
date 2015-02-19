@@ -40,6 +40,7 @@ static D3D11_MAP _map_map[IBuffer::MAP_TYPE_SIZE] = {
 	D3D11_MAP_READ,
 	D3D11_MAP_READ,
 	D3D11_MAP_WRITE_DISCARD,
+	D3D11_MAP_WRITE_NO_OVERWRITE,
 	D3D11_MAP_READ_WRITE
 };
 
@@ -53,7 +54,7 @@ BufferD3D::~BufferD3D(void)
 	destroy();
 }
 
-bool BufferD3D::init(IRenderDevice& rd, const void* data, unsigned int size, BUFFER_TYPE buffer_type, unsigned int stride, MAP_TYPE cpu_access)
+bool BufferD3D::init(IRenderDevice& rd, const void* data, unsigned int size, BUFFER_TYPE buffer_type, unsigned int stride, MAP_TYPE cpu_access, bool gpu_read_only)
 {
 	assert(rd.isD3D() && !_buffer);
 	IRenderDeviceD3D& rd3d = reinterpret_cast<IRenderDeviceD3D&>(*(reinterpret_cast<char*>(&rd) + sizeof(IRenderDevice)));
@@ -68,13 +69,14 @@ bool BufferD3D::init(IRenderDevice& rd, const void* data, unsigned int size, BUF
 	desc.CPUAccessFlags = 0;
 	desc.MiscFlags = 0;
 	desc.StructureByteStride = 0;
-	desc.Usage = (cpu_access != NONE) ? D3D11_USAGE_DYNAMIC : D3D11_USAGE_DEFAULT;
+	desc.Usage = (gpu_read_only && (cpu_access == WRITE || cpu_access == WRITE_NO_OVERWRITE)) ? D3D11_USAGE_DYNAMIC : D3D11_USAGE_DEFAULT;
 
 	switch (cpu_access) {
 		case READ:
 			desc.CPUAccessFlags = D3D11_CPU_ACCESS_READ;
 			break;
 
+		case WRITE_NO_OVERWRITE:
 		case WRITE:
 			desc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
 			break;
@@ -100,17 +102,17 @@ void BufferD3D::destroy(void)
 	SAFERELEASE(_buffer)
 }
 
-bool BufferD3D::update(IRenderDevice& rd, const void* data, unsigned int size)
+bool BufferD3D::update(IRenderDevice& rd, const void* data, unsigned int size, unsigned int offset)
 {
 	assert(rd.isD3D() && data);
 	IRenderDeviceD3D& rd3d = reinterpret_cast<IRenderDeviceD3D&>(*(reinterpret_cast<char*>(&rd) + sizeof(IRenderDevice)));
 	ID3D11DeviceContext* context = rd3d.getActiveDeviceContext();
 	D3D11_MAPPED_SUBRESOURCE mapped_resource;
 
-	HRESULT result = context->Map(_buffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mapped_resource);
+	HRESULT result = context->Map(_buffer, 0, (offset) ? D3D11_MAP_WRITE_NO_OVERWRITE : D3D11_MAP_WRITE_DISCARD, 0, &mapped_resource);
 	RETURNIFFAILED(result)
 
-	memcpy(mapped_resource.pData, data, size);
+	memcpy(reinterpret_cast<char*>(mapped_resource.pData) + offset, data, size);
 	context->Unmap(_buffer, 0);
 
 	return true;

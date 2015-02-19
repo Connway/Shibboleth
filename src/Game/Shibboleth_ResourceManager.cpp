@@ -207,7 +207,7 @@ ResourcePtr ResourceManager::requestResource(const char* resource_type, const ch
 		}
 
 		// make load task
-		LoaderData& loader_data= _resource_loaders[AHashString(resource_type)];
+		LoaderData& loader_data = _resource_loaders[AHashString(resource_type)];
 
 		ResourceLoadingTask* load_task = GetAllocator()->template allocT<ResourceLoadingTask>(loader_data.first, res_ptr);
 		Gaff::TaskPtr<ProxyAllocator> task(load_task);
@@ -248,7 +248,7 @@ ResourcePtr ResourceManager::requestResource(const char* filename, unsigned long
 		}
 
 		// make load task
-		LoaderData& loader_data= _resource_loaders[extension];
+		LoaderData& loader_data = _resource_loaders[extension];
 
 		ResourceLoadingTask* load_task = GetAllocator()->template allocT<ResourceLoadingTask>(loader_data.first, res_ptr);
 		Gaff::TaskPtr<ProxyAllocator> task(load_task);

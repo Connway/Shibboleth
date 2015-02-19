@@ -26,6 +26,8 @@ THE SOFTWARE.
 	Includes cassert with NDEBUG properly defined.
 */
 
+#pragma once
+
 #ifndef _DEBUG
 	#ifndef NDEBUG
 		#define NDEBUG

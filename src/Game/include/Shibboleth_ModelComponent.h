@@ -26,6 +26,7 @@ THE SOFTWARE.
 #include "Shibboleth_ResourceWrapper.h"
 #include "Shibboleth_IComponent.h"
 #include <Shibboleth_ReflectionDefinitions.h>
+#include <Gleam_IBuffer.h>
 
 NS_SHIBBOLETH
 
@@ -55,12 +56,19 @@ public:
 
 	void render(void); // Temporary test function
 
+	const ProgramBuffersData& getProgramBuffers(void) const;
+	const ProgramData& getMaterials(void) const;
+	const ModelData& getModels(void) const;
+
 private:
+	Gleam::IBuffer::BufferSettings _buffer_settings;
+
+	ResourceWrapper<ProgramBuffersData> _program_buffers_res;
 	ResourceWrapper<SamplerStateData> _sampler_res;
 	ResourceWrapper<ProgramData> _material_res;
 	ResourceWrapper<TextureData> _texture_res;
 	ResourceWrapper<ModelData> _model_res;
-	ProgramBuffersPtr _program_buffers;
+	ResourceWrapper<BufferData> _buffer_res;
 
 	RenderManager& _render_mgr;
 	ResourceManager& _res_mgr;
@@ -69,19 +77,12 @@ private:
 	unsigned int _current_lod;
 	unsigned char _flags;
 
+	void ProgramBuffersCallback(const AHashString& /*resource*/, bool success);
 	void TextureLoadedCallback(const AHashString& /*resource*/, bool success);
 	void SamplerStateCallback(const AHashString& /*resource*/, bool success);
+	void BufferCallback(const AHashString& /*resource*/, bool success);
 	void LoadCallback(const AHashString& resource, bool success);
 	void HandleLoadingMessage(const LoadingMessage& msg);
-
-	template <unsigned int bit>
-	bool GetFlag(void) const
-	{
-		return (_flags & (1 << bit)) != 0;
-	}
-
-	void SetReleaseHoldingFlag(bool value);
-	void SetLoadOnlyHoldingFlag(bool value);
 
 	REF_DEF_SHIB(ModelComponent);
 };

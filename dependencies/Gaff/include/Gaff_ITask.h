@@ -75,7 +75,15 @@ public:
 	*/
 	void spinWait(void) const
 	{
+		unsigned int tries = 0;
+
 		while (!_finished) {
+			++tries;
+
+			if (tries == NUM_TRIES_UNTIL_YIELD) {
+				tries = 0;
+				YieldThread();
+			}
 		}
 	}
 

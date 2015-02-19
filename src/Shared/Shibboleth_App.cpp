@@ -26,6 +26,7 @@ THE SOFTWARE.
 #include "Shibboleth_Allocator.h"
 #include "Shibboleth_IManager.h"
 #include "Shibboleth_String.h"
+#include <Gaff_ScopedExit.h>
 #include <Gaff_Utils.h>
 #include <Gaff_JSON.h>
 #include <iostream>
@@ -87,6 +88,10 @@ bool App::init(int argc, char** argv)
 	}
 
 	_cmd_line_args = Gaff::ParseCommandLine<ProxyAllocator>(argc, argv);
+
+	if (!initApp()) {
+		return false;
+	}
 
 	removeExtraLogs(); // Make sure we don't have more than ten logs per log type
 
@@ -440,6 +445,20 @@ bool App::loadStates(void)
 	if (_state_machine.getNextState() == -1) {
 		_log_file_pair->first.writeString("ERROR - 'starting_state' is set to an invalid state name\n");
 		return false;
+	}
+
+	return true;
+}
+
+bool App::initApp(void)
+{
+	if (_cmd_line_args.hasElementWithKey("working_dir")) {
+		const AString& working_dir = _cmd_line_args["working_dir"];
+
+		if (!Gaff::SetWorkingDir(working_dir.getBuffer())) {
+			//_log_file_pair->first.printf("ERROR - Failed to set working directory to '%s'.\n", working_dir.getBuffer());
+			return false;
+		}
 	}
 
 	return true;

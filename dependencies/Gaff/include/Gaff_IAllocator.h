@@ -67,7 +67,7 @@ public:
 	template <class T, class... Args>
 	T* allocArrayT(unsigned int count, Args&&... args)
 	{
-		T* data = (T*)alloc(sizeof(T) * count);
+		T* data = reinterpret_cast<T*>(alloc(sizeof(T) * count));
 
 		for (unsigned int i = 0; i < count; ++i) {
 			construct(data + i, args...);
@@ -79,14 +79,14 @@ public:
 	template <class T, class... Args>
 	T* moveAllocT(Args&&... args)
 	{
-		T* data = (T*)alloc(sizeof(T));
+		T* data = reinterpret_cast<T*>(alloc(sizeof(T)));
 		return moveConstruct(data, args...);
 	}
 
 	template <class T, class... Args>
 	T* allocT(Args&&... args)
 	{
-		T* data = (T*)alloc(sizeof(T));
+		T* data = reinterpret_cast<T*>(alloc(sizeof(T)));
 		return construct(data, args...);
 	}
 

@@ -295,6 +295,7 @@
     <ClInclude Include="..\..\..\dependencies\Gleam\include\Gleam_Vector4_CPU.h" />
     <ClInclude Include="..\..\..\dependencies\Gleam\include\Gleam_Vector4_SIMD.h" />
     <ClInclude Include="..\..\..\dependencies\Gleam\include\Gleam_Window.h" />
+    <ClInclude Include="..\..\..\dependencies\Gleam\include\Gleam_WindowHelpers_Windows.h" />
     <ClInclude Include="..\..\..\dependencies\Gleam\include\Gleam_Window_Defines.h" />
     <ClInclude Include="..\..\..\dependencies\Gleam\include\Gleam_Window_Linux.h" />
     <ClInclude Include="..\..\..\dependencies\Gleam\include\Gleam_Window_Windows.h" />
@@ -353,6 +354,7 @@
     <ClCompile Include="..\..\..\dependencies\Gleam\Gleam_Transform_SIMD.cpp" />
     <ClCompile Include="..\..\..\dependencies\Gleam\Gleam_Vector4_CPU.cpp" />
     <ClCompile Include="..\..\..\dependencies\Gleam\Gleam_Vector4_SIMD.cpp" />
+    <ClCompile Include="..\..\..\dependencies\Gleam\Gleam_WindowHelpers_Windows.cpp" />
     <ClCompile Include="..\..\..\dependencies\Gleam\Gleam_Window_Linux.cpp" />
     <ClCompile Include="..\..\..\dependencies\Gleam\Gleam_Window_Windows.cpp" />
   </ItemGroup>

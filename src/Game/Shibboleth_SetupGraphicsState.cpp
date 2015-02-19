@@ -95,6 +95,13 @@ void SetupGraphicsState::update(void)
 		return;
 	}
 
+	Gaff::JSON icon = cfg["icon"];
+
+	if (icon && !icon.isString()) {
+		log.first.writeString("WARNING - Malformed config file. Value at 'icon' is not a string.\n");
+		icon = Gaff::JSON();
+	}
+
 	bool failed = windows.forEachInArray([&](size_t, const Gaff::JSON& value) -> bool
 	{
 		if (!value.isObject()) {
@@ -224,6 +231,12 @@ void SetupGraphicsState::update(void)
 			);
 
 			return true;
+		}
+
+		if (icon) {
+			if (!render_manager.getWindowData(render_manager.getNumWindows() - 1).window->setIcon(icon.getString())) {
+				log.first.printf("WARNING - Failed to set window icon to '%s'.\n", icon.getString());
+			}
 		}
 
 		return false;

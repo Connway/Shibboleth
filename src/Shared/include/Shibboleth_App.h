@@ -136,6 +136,7 @@ private:
 	bool loadFileSystem(void);
 	bool loadManagers(void);
 	bool loadStates(void);
+	bool initApp(void);
 
 	void removeExtraLogs(void);
 

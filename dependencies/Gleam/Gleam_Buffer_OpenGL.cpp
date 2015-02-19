@@ -40,8 +40,16 @@ static GLenum _map_map[IBuffer::MAP_TYPE_SIZE] = {
 	GL_READ_WRITE
 };
 
+static GLbitfield _map_bit_flags[IBuffer::MAP_TYPE_SIZE] = {
+	0,
+	GL_MAP_READ_BIT,
+	GL_MAP_WRITE_BIT,
+	GL_MAP_READ_BIT | GL_MAP_WRITE_BIT,
+	GL_MAP_WRITE_BIT | GL_MAP_UNSYNCHRONIZED_BIT
+};
+
 BufferGL::BufferGL(void):
-	_buffer(0)
+	_buffer(0), _map_flags(0)
 {
 }
 
@@ -50,17 +58,19 @@ BufferGL::~BufferGL(void)
 	destroy();
 }
 
-bool BufferGL::init(IRenderDevice&, const void* data, unsigned int size, BUFFER_TYPE buffer_type, unsigned int stride, MAP_TYPE cpu_access)
+bool BufferGL::init(IRenderDevice&, const void* data, unsigned int size, BUFFER_TYPE buffer_type, unsigned int stride, MAP_TYPE cpu_access, bool gpu_read_only)
 {
 	assert(!_buffer);
 
 	GLenum buff_type = _type_map[buffer_type];
 
 	glGenBuffers(1, &_buffer);
+
 	glBindBuffer(buff_type, _buffer);
-	glBufferData(buff_type, size, data, (cpu_access != NONE) ? GL_STREAM_DRAW : GL_STATIC_DRAW);
+	glBufferData(buff_type, size, data, (gpu_read_only && (cpu_access == WRITE || cpu_access == WRITE_NO_OVERWRITE)) ? GL_DYNAMIC_DRAW : GL_STATIC_DRAW);
 	glBindBuffer(buff_type, 0);
 
+	_map_flags = _map_bit_flags[cpu_access];
 	_buffer_type = buffer_type;
 	_stride = stride;
 	_size = size;
@@ -78,7 +88,7 @@ void BufferGL::destroy(void)
 	}
 }
 
-bool BufferGL::update(IRenderDevice& rd, const void* data, unsigned int size)
+bool BufferGL::update(IRenderDevice& rd, const void* data, unsigned int size, unsigned int offset)
 {
 	assert(data && size);
 
@@ -86,15 +96,18 @@ bool BufferGL::update(IRenderDevice& rd, const void* data, unsigned int size)
 	glBindBuffer(buff_type, _buffer);
 
 	// This isn't updating the buffer. :/
-	//glBufferSubData(buff_type, 0, size, data);
+	//glBufferSubData(buff_type, offset, size, data);
+	//return glGetError()  == GL_NO_ERROR;
 
-	void* buffer = map(rd, READ_WRITE);
+	void* buffer = map(rd, (offset) ? WRITE_NO_OVERWRITE : WRITE);
 
-	if (buffer)
+	if (!buffer)
 	{
-		memcpy(buffer, data, size);
-		unmap(rd);
+		return false;
 	}
+
+	memcpy(reinterpret_cast<char*>(buffer) + offset, data, size);
+	unmap(rd);
 
 	return true;
 }
@@ -104,10 +117,7 @@ void* BufferGL::map(IRenderDevice&, MAP_TYPE map_type)
 	assert(map_type != NONE);
 	GLenum buff_type = _type_map[_buffer_type];
 	glBindBuffer(buff_type, _buffer);
-	return glMapBuffer(buff_type, _map_map[map_type - 1]);
-
-	// This is returning NULL. :/
-	//return glMapBufferRange(buff_type, 0, _size, _map_map[map_type - 1]);
+	return glMapBufferRange(buff_type, 0, _size, _map_bit_flags[map_type]);
 }
 
 void BufferGL::unmap(IRenderDevice&)

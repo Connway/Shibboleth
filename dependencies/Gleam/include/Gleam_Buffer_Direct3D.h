@@ -36,10 +36,10 @@ public:
 	~BufferD3D(void);
 
 	bool init(IRenderDevice& rd, const void* data, unsigned int size, BUFFER_TYPE buffer_type = SHADER_DATA,
-				unsigned int stride = 0, MAP_TYPE cpu_access = NONE);
+				unsigned int stride = 0, MAP_TYPE cpu_access = NONE, bool gpu_read_only = true);
 	void destroy(void);
 
-	bool update(IRenderDevice& rd, const void* data, unsigned int size);
+	bool update(IRenderDevice& rd, const void* data, unsigned int size, unsigned int offset = 0);
 	void* map(IRenderDevice& rd, MAP_TYPE map_type = WRITE);
 	void unmap(IRenderDevice& rd);
 

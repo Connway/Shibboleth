@@ -20,8 +20,52 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#pragma once
+#include "Shibboleth_ProgramBuffersCreator.h"
+#include "Shibboleth_ResourceDefines.h"
+#include <Shibboleth_RenderManager.h>
+#include <Shibboleth_Utilities.h>
+#include <Shibboleth_IApp.h>
 
-#define TPT_GRAPHICS 1
-#define TPT_PRINTLOG 2
-#define TPT_IO 3
+#include <Gleam_IRenderDevice.h>
+#include <Gleam_IProgram.h>
+
+NS_SHIBBOLETH
+
+ProgramBuffersCreator::ProgramBuffersCreator(void):
+	_render_mgr(GetApp().getManagerT<RenderManager>("Render Manager"))
+{
+}
+
+ProgramBuffersCreator::~ProgramBuffersCreator(void)
+{
+}
+
+Gaff::IVirtualDestructor* ProgramBuffersCreator::load(const char*, unsigned long long)
+{
+	Gleam::IRenderDevice& rd = _render_mgr.getRenderDevice();
+
+	ProgramBuffersData* data = GetAllocator()->template allocT<ProgramBuffersData>();
+
+	if (!data) {
+		// log error
+		return nullptr;
+	}
+
+	data->data.reserve(rd.getNumDevices());
+
+	for (unsigned int i = 0; i < rd.getNumDevices(); ++i) {
+		ProgramBuffersPtr program_buffers(_render_mgr.createProgramBuffers());
+
+		if (!program_buffers) {
+			// log error
+			GetAllocator()->freeT(data);
+			return nullptr;
+		}
+
+		data->data.push(program_buffers);
+	}
+
+	return data;
+}
+
+NS_END

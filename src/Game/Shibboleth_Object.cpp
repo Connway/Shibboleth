@@ -22,6 +22,7 @@ THE SOFTWARE.
 
 #include "Shibboleth_Object.h"
 #include <Shibboleth_ComponentManager.h>
+#include <Shibboleth_ObjectManager.h>
 #include <Shibboleth_Utilities.h>
 #include <Shibboleth_IApp.h>
 #include <Gaff_JSON.h>
@@ -30,7 +31,8 @@ NS_SHIBBOLETH
 
 Object::Object(unsigned int id):
 	_comp_mgr(GetApp().getManagerT<ComponentManager>("Component Manager")),
-	_parent(nullptr), _id(id)
+	_obj_mgr(GetApp().getManagerT<ObjectManager>("Object Manager")),
+	_parent(nullptr), _id(id), _dirty(false)
 {
 }
 
@@ -139,6 +141,7 @@ const Gleam::TransformCPU& Object::getWorldTransform(void) const
 void Object::setLocalTransform(const Gleam::TransformCPU& transform)
 {
 	_local_transform = transform;
+	markDirty();
 }
 
 const Gleam::QuaternionCPU& Object::getLocalRotation(void) const
@@ -154,6 +157,7 @@ const Gleam::QuaternionCPU& Object::getWorldRotation(void) const
 void Object::setLocalRotation(const Gleam::QuaternionCPU& rot)
 {
 	_local_transform.setRotation(rot);
+	markDirty();
 }
 
 const Gleam::Vector4CPU& Object::getLocalPosition(void) const
@@ -169,6 +173,7 @@ const Gleam::Vector4CPU& Object::getWorldPosition(void) const
 void Object::setLocalPosition(const Gleam::Vector4CPU& pos)
 {
 	_local_transform.setTranslation(pos);
+	markDirty();
 }
 
 const Gleam::Vector4CPU& Object::getLocalScale(void) const
@@ -184,6 +189,7 @@ const Gleam::Vector4CPU& Object::getWorldScale(void) const
 void Object::setLocalScale(const Gleam::Vector4CPU& scale)
 {
 	_local_transform.setScale(scale);
+	markDirty();
 }
 
 const Gleam::AABBCPU& Object::getLocalAABB(void) const
@@ -199,6 +205,7 @@ const Gleam::AABBCPU& Object::getWorldAABB(void) const
 void Object::setLocalAABB(const Gleam::AABBCPU& aabb)
 {
 	_local_aabb = aabb;
+	markDirty();
 }
 
 size_t Object::getNumComponents(void) const
@@ -282,11 +289,14 @@ void Object::updateTransforms(void)
 
 void Object::registerForLocalDirtyCallback(const DirtyCallback& callback, unsigned long long user_data)
 {
+	Gaff::ScopedLock<Gaff::SpinLock> scoped_lock(_local_cb_lock);
 	_local_callbacks.emplacePush(callback, user_data);
 }
 
 void Object::unregisterForLocalDirtyCallback(const DirtyCallback& callback)
 {
+	Gaff::ScopedLock<Gaff::SpinLock> scoped_lock(_local_cb_lock);
+
 	auto it = _local_callbacks.linearSearch(callback,
 	[](const Gaff::Pair<DirtyCallback, unsigned long long>& left, const DirtyCallback& right) -> bool
 	{
@@ -298,20 +308,26 @@ void Object::unregisterForLocalDirtyCallback(const DirtyCallback& callback)
 	}
 }
 
+// This should occur in a non-thread contention situation.
 void Object::notifyLocalDirtyCallbacks(void)
 {
 	for (auto it = _local_callbacks.begin(); it != _local_callbacks.end(); ++it) {
 		it->first(this, it->second);
 	}
+
+	_dirty = false;
 }
 
 void Object::registerForWorldDirtyCallback(const DirtyCallback& callback, unsigned long long user_data)
 {
+	Gaff::ScopedLock<Gaff::SpinLock> scoped_lock(_world_cb_lock);
 	_world_callbacks.emplacePush(callback, user_data);
 }
 
 void Object::unregisterForWorldDirtyCallback(const DirtyCallback& callback)
 {
+	Gaff::ScopedLock<Gaff::SpinLock> scoped_lock(_world_cb_lock);
+
 	auto it = _world_callbacks.linearSearch(callback,
 	[](const Gaff::Pair<DirtyCallback, unsigned long long>& left, const DirtyCallback& right) -> bool
 	{
@@ -323,11 +339,14 @@ void Object::unregisterForWorldDirtyCallback(const DirtyCallback& callback)
 	}
 }
 
+// This should occur in a non-thread contention situation.
 void Object::notifyWorldDirtyCallbacks(void)
 {
 	for (auto it = _world_callbacks.begin(); it != _world_callbacks.end(); ++it) {
 		it->first(this, it->second);
 	}
+
+	_dirty = false;
 }
 
 bool Object::createComponents(const Gaff::JSON& json)
@@ -379,7 +398,7 @@ bool Object::createComponents(const Gaff::JSON& json)
 void Object::markDirty(void)
 {
 	if (!_dirty) {
-
+		_obj_mgr.addDirtyObject(this);
 		_dirty = true;
 	}
 }

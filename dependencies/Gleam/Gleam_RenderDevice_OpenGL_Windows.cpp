@@ -241,20 +241,18 @@ bool RenderDeviceGL::init(const IWindow& window, unsigned int adapter_id, unsign
 		return false;
 	}
 
-	PIXELFORMATDESCRIPTOR pfd;
-	int pixelformat;
-
+	PIXELFORMATDESCRIPTOR pfd = { 0 };
 	pfd.nSize = sizeof(PIXELFORMATDESCRIPTOR);
 	pfd.nVersion = 1;
 	pfd.dwFlags = PFD_DRAW_TO_WINDOW | PFD_SUPPORT_OPENGL | PFD_DOUBLEBUFFER;
 	pfd.dwLayerMask = PFD_MAIN_PLANE;
-	pfd.iPixelType = PFD_TYPE_COLORINDEX;
-	pfd.cColorBits = 8;
+	pfd.iPixelType = PFD_TYPE_RGBA;
+	pfd.cColorBits = 24;
 	pfd.cDepthBits = 0;
 	pfd.cAccumBits = 0;
 	pfd.cStencilBits = 0;
 
-	pixelformat = ChoosePixelFormat(hdc, &pfd);
+	int pixelformat = ChoosePixelFormat(hdc, &pfd);
 
 	if (!pixelformat || !SetPixelFormat(hdc, pixelformat, &pfd)) {
 		ReleaseDC(hwnd, hdc);

@@ -71,6 +71,8 @@ public:
 	unsigned int getHeight(void) const;
 	bool isFullScreen(void) const;
 
+	bool setIcon(const char* icon);
+
 	INLINE XVisualInfo* getVisualInfo(void) const;
 	INLINE Display* getDisplay(void) const;
 	INLINE ::Window getWindow(void) const;
@@ -110,7 +112,7 @@ private:
 
 	static void WindowProc(XEvent& event);
 	static GleamArray<Display*> gDisplays;
-	static GleamArray<Window*> gWindows;
+	static GleamArray<Window*> g_Windows;
 	static XEvent gEvent;
 
 	INLINE void handleMessage(AnyMessage* message);

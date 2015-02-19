@@ -64,6 +64,11 @@ void DebugPrintf(const wchar_t* format_string, ...)
 	va_end(vl);
 }
 
+bool SetWorkingDir(const char* directory)
+{
+	return !chdir(directory);
+}
+
 NS_END
 
 #endif
