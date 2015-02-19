@@ -26,6 +26,8 @@ THE SOFTWARE.
 
 //#define ATTEMPT_INLINE
 
+#define NUM_TRIES_UNTIL_YIELD 5
+
 #define NS_GAFF namespace Gaff {
 #ifndef NS_END
 	#define NS_END }
