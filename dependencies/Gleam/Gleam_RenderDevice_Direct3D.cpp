@@ -173,7 +173,7 @@ bool RenderDeviceD3D::init(const IWindow& window, unsigned int adapter_id, unsig
 
 	DXGI_SWAP_CHAIN_DESC swap_chain_desc;
 	ZeroMemory(&swap_chain_desc, sizeof(DXGI_SWAP_CHAIN_DESC));
-	swap_chain_desc.BufferCount = 1;
+	swap_chain_desc.BufferCount = 2; // Double-buffering
 	swap_chain_desc.BufferDesc = mode;
 	swap_chain_desc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
 	swap_chain_desc.OutputWindow = wnd.getHWnd();

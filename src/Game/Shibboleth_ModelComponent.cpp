@@ -35,8 +35,7 @@ THE SOFTWARE.
 #include <Gleam_IBuffer.h>
 #include <Gleam_IRenderDevice.h>
 
-#define RELEASE_HOLDING_FLAG 0
-#define LOAD_ONLY_HOLDING_FLAG 1
+#include <Gaff_ScopedExit.h>
 
 NS_SHIBBOLETH
 
@@ -45,8 +44,6 @@ REF_IMPL_REQ(ModelComponent);
 
 REF_IMPL_SHIB(ModelComponent)
 .addBaseClass<ModelComponent>(ModelComponent::g_Hash)
-.addBool("Load Only Holding Data", &ModelComponent::GetFlag<LOAD_ONLY_HOLDING_FLAG>, &ModelComponent::SetLoadOnlyHoldingFlag)
-.addBool("Release Holding Data", &ModelComponent::GetFlag<RELEASE_HOLDING_FLAG>, &ModelComponent::SetReleaseHoldingFlag)
 ;
 
 ModelComponent::ModelComponent(IApp& app):
@@ -54,6 +51,12 @@ ModelComponent::ModelComponent(IApp& app):
 	_res_mgr(app.getManagerT<Shibboleth::ResourceManager>("Resource Manager")),
 	_app(app), _current_lod(0), _flags(0)
 {
+	_buffer_settings.type = Gleam::IBuffer::SHADER_DATA;
+	_buffer_settings.cpu_access = Gleam::IBuffer::WRITE;
+	_buffer_settings.size = sizeof(float) * 16 * 3;
+	_buffer_settings.data = nullptr;
+	_buffer_settings.stride = 0;
+	_buffer_settings.gpu_read_only = true;
 }
 
 ModelComponent::~ModelComponent(void)
@@ -120,31 +123,17 @@ bool ModelComponent::load(const Gaff::JSON& json)
 		_model_res = _res_mgr.requestResource(model_file.getString());
 	}
 
-	_program_buffers = _render_mgr.createProgramBuffers();
+	_program_buffers_res = _res_mgr.requestResource("ProgramBuffers", "test1");
+	_buffer_res = _res_mgr.requestResource("Buffer", "test2", reinterpret_cast<unsigned long long>(&_buffer_settings));
 
-	if (!_program_buffers) {
-		return false;
-	}
-
-	BufferPtr buffer(_render_mgr.createBuffer());
-
-	if (!buffer->init(
-		_render_mgr.getRenderDevice(), nullptr, sizeof(float) * 16 * 3,
-		Gleam::IBuffer::SHADER_DATA, 0, Gleam::IBuffer::WRITE)) {
-
-		return false;
-	}
-
-	_program_buffers->addConstantBuffer(Gleam::IShader::SHADER_VERTEX, buffer.get());
-
-	if (GetFlag<RELEASE_HOLDING_FLAG>()) {
-		_app.getBroadcaster().listen<LoadingMessage>(this, &ModelComponent::HandleLoadingMessage);
-	}
+	_app.getBroadcaster().listen<LoadingMessage>(this, &ModelComponent::HandleLoadingMessage);
 
 	auto callback_func = Gaff::Bind(this, &ModelComponent::LoadCallback);
 
+	_program_buffers_res.getResourcePtr()->addCallback(Gaff::Bind(this, &ModelComponent::ProgramBuffersCallback));
 	_texture_res.getResourcePtr()->addCallback(Gaff::Bind(this, &ModelComponent::TextureLoadedCallback));
 	_sampler_res.getResourcePtr()->addCallback(Gaff::Bind(this, &ModelComponent::SamplerStateCallback));
+	_buffer_res.getResourcePtr()->addCallback(Gaff::Bind(this, &ModelComponent::BufferCallback));
 	_material_res.getResourcePtr()->addCallback(callback_func);
 	_texture_res.getResourcePtr()->addCallback(callback_func);
 	_model_res.getResourcePtr()->addCallback(callback_func);
@@ -156,17 +145,41 @@ void ModelComponent::allComponentsLoaded(void)
 {
 }
 
-void ModelComponent::TextureLoadedCallback(const AHashString& /*resource*/, bool success)
+void ModelComponent::ProgramBuffersCallback(const AHashString& /*resource*/, bool success)
 {
 	if (success) {
-		_program_buffers->addResourceView(Gleam::IShader::SHADER_PIXEL, _texture_res->resource_views[0].get());
+		if (_texture_res.getResourcePtr()->isLoaded()) {
+			_program_buffers_res->data[0]->addResourceView(Gleam::IShader::SHADER_PIXEL, _texture_res->resource_views[0].get());
+		}
+
+		if (_sampler_res.getResourcePtr()->isLoaded()) {
+			_program_buffers_res->data[0]->addSamplerState(Gleam::IShader::SHADER_PIXEL, _sampler_res->data[0].get());
+		}
+
+		if (_buffer_res.getResourcePtr()->isLoaded()) {
+			_program_buffers_res->data[0]->addConstantBuffer(Gleam::IShader::SHADER_VERTEX, _buffer_res->data[0].get());
+		}
+	}
+}
+
+void ModelComponent::TextureLoadedCallback(const AHashString& /*resource*/, bool success)
+{
+	if (success && _program_buffers_res.getResourcePtr()->isLoaded()) {
+		_program_buffers_res->data[0]->addResourceView(Gleam::IShader::SHADER_PIXEL, _texture_res->resource_views[0].get());
 	}
 }
 
 void ModelComponent::SamplerStateCallback(const AHashString& /*resource*/, bool success)
 {
-	if (success) {
-		_program_buffers->addSamplerState(Gleam::IShader::SHADER_PIXEL, _sampler_res->data[0].get());
+	if (success && _program_buffers_res.getResourcePtr()->isLoaded()) {
+		_program_buffers_res->data[0]->addSamplerState(Gleam::IShader::SHADER_PIXEL, _sampler_res->data[0].get());
+	}
+}
+
+void ModelComponent::BufferCallback(const AHashString& /*resource*/, bool success)
+{
+	if (success && _program_buffers_res.getResourcePtr()->isLoaded()) {
+		_program_buffers_res->data[0]->addConstantBuffer(Gleam::IShader::SHADER_VERTEX, _buffer_res->data[0].get());
 	}
 }
 
@@ -185,39 +198,19 @@ void ModelComponent::LoadCallback(const AHashString& /*resource*/, bool success)
 void ModelComponent::HandleLoadingMessage(const LoadingMessage& msg)
 {
 	if (msg.state == LoadingMessage::LOADING_FINISHED) {
-		if (_flags & RELEASE_HOLDING_FLAG) {
-			_model_res->holding_data.getResourcePtr() = nullptr;
-		}
-	}
-}
-
-void ModelComponent::SetReleaseHoldingFlag(bool value)
-{
-	if (value) {
-		_flags |= (1 << RELEASE_HOLDING_FLAG);
-		_flags &= ~(1 << LOAD_ONLY_HOLDING_FLAG); // If we are releasing holding data, then we can't only load holding data
-	} else {
-		_flags &= ~(1 << RELEASE_HOLDING_FLAG);
-	}
-}
-
-void ModelComponent::SetLoadOnlyHoldingFlag(bool value)
-{
-	if (value) {
-		_flags |= (1 << LOAD_ONLY_HOLDING_FLAG);
-		_flags &= ~(1 << RELEASE_HOLDING_FLAG); // If we are loading only the holding data, then we can't release it
-	} else {
-		_flags &= ~(1 << LOAD_ONLY_HOLDING_FLAG);
+		_model_res->holding_data.getResourcePtr() = nullptr;
 	}
 }
 
 void ModelComponent::render(void)
 {
-	if (!_material_res || !_model_res || !_texture_res || !_sampler_res ||
+	if (!_material_res || !_model_res || !_texture_res || !_sampler_res || !_program_buffers_res || !_buffer_res ||
 		!_material_res.getResourcePtr()->isLoaded() ||
 		!_model_res.getResourcePtr()->isLoaded() ||
 		!_texture_res.getResourcePtr()->isLoaded() ||
-		!_sampler_res.getResourcePtr()->isLoaded()) {
+		!_sampler_res.getResourcePtr()->isLoaded() ||
+		!_program_buffers_res.getResourcePtr()->isLoaded() ||
+		!_buffer_res.getResourcePtr()->isLoaded()) {
 
 		return;
 	}
@@ -231,11 +224,12 @@ void ModelComponent::render(void)
 	toworld.setIdentity();
 	toworld.setRotationY(rot);
 
-	// Update camera data
-	Gleam::IBuffer* buffer = _program_buffers->getConstantBuffer(Gleam::IShader::SHADER_VERTEX, 0);
-
 	Gleam::IRenderDevice& rd = _render_mgr.getRenderDevice();
+	unsigned int current_device = rd.getCurrentDevice();
 	rd.getActiveOutputRenderTarget()->bind(rd);
+
+	// Update camera data
+	Gleam::IBuffer* buffer = _program_buffers_res->data[current_device]->getConstantBuffer(Gleam::IShader::SHADER_VERTEX, 0);
 
 	float* matrix_data = (float*)buffer->map(rd);
 		memcpy(matrix_data, toworld.getBuffer(), sizeof(float) * 16);
@@ -243,10 +237,9 @@ void ModelComponent::render(void)
 		memcpy(matrix_data + 32, projection.getBuffer(), sizeof(float) * 16);
 	buffer->unmap(_render_mgr.getRenderDevice());
 
-	unsigned int current_device = rd.getCurrentDevice();
 	ModelPtr& model = _model_res->models[current_device][_current_lod];
 
-	_material_res->programs[current_device]->bind(rd, _program_buffers.get());
+	_material_res->programs[current_device]->bind(rd, _program_buffers_res->data[current_device].get());
 
 	for (unsigned int i = 0; i < model->getMeshCount(); ++i) {
 		model->render(rd, i);

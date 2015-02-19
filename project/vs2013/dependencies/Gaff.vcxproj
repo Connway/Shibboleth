@@ -244,6 +244,7 @@
     <ClInclude Include="..\..\..\dependencies\Gaff\include\Gaff_Scene.h" />
     <ClInclude Include="..\..\..\dependencies\Gaff\include\Gaff_SceneImporter.h" />
     <ClInclude Include="..\..\..\dependencies\Gaff\include\Gaff_SceneNode.h" />
+    <ClInclude Include="..\..\..\dependencies\Gaff\include\Gaff_ScopedExit.h" />
     <ClInclude Include="..\..\..\dependencies\Gaff\include\Gaff_ScopedLock.h" />
     <ClInclude Include="..\..\..\dependencies\Gaff\include\Gaff_SharedPtr.h" />
     <ClInclude Include="..\..\..\dependencies\Gaff\include\Gaff_SmartPtr.h" />

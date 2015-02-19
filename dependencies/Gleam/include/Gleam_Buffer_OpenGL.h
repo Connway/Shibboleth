@@ -34,10 +34,10 @@ public:
 	~BufferGL(void);
 
 	bool init(IRenderDevice&, const void* data, unsigned int size, BUFFER_TYPE buffer_type = SHADER_DATA,
-				unsigned int stride = 0, MAP_TYPE cpu_access = NONE);
+				unsigned int stride = 0, MAP_TYPE cpu_access = NONE, bool gpu_read_only = true);
 	void destroy(void);
 
-	bool update(IRenderDevice&, const void* data, unsigned int size);
+	bool update(IRenderDevice&, const void* data, unsigned int size, unsigned int offset = 0);
 	void* map(IRenderDevice&, MAP_TYPE map_type = WRITE);
 	void unmap(IRenderDevice&);
 
@@ -47,6 +47,7 @@ public:
 
 private:
 	unsigned int _buffer;
+	unsigned int _map_flags;
 
 	GLEAM_REF_COUNTED(BufferGL);
 };

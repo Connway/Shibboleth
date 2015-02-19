@@ -20,8 +20,36 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
+/*! \file */
+
 #pragma once
 
-#define TPT_GRAPHICS 1
-#define TPT_PRINTLOG 2
-#define TPT_IO 3
+#include "Gaff_Defines.h"
+
+#define GAFF_SCOPE_LINE_CAT2(name, line) name##_line_##line
+#define GAFF_SCOPE_LINE_CAT(name, line) GAFF_SCOPE_LINE_CAT2(name, line)
+#define GAFF_SCOPE_EXIT(exit_func) auto GAFF_SCOPE_LINE_CAT(exit, __LINE__)(Gaff::CreateExitScope(exit_func))
+
+NS_GAFF
+
+template <class T>
+class ScopeExit
+{
+public:
+	explicit ScopeExit(T&& exit_func): _exit_func(exit_func) {}
+	ScopeExit(ScopeExit<T>&& scoped_exit): _exit_func(scoped_exit._exit_func) {}
+
+	// This should only be executed once when using the GAFF_SCOPE_EXIT macro.
+	~ScopeExit(void) { _exit_func(); }
+
+private:
+	T _exit_func;
+};
+
+template <class T>
+ScopeExit<T> CreateExitScope(T&& exit_func)
+{
+	return ScopeExit<T>(Gaff::Move(exit_func));
+}
+
+NS_END

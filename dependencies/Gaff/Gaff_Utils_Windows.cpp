@@ -70,11 +70,21 @@ void DebugPrintf(const wchar_t* format_string, ...)
 	va_end(vl);
 }
 
+bool SetWorkingDir(const char* directory)
+{
+	return SetCurrentDirectoryA(directory) != 0;
+}
+
 #ifdef _UNICODE
 bool CreateDir(const wchar_t* dirname, unsigned short)
 {
 	assert(dirname);
 	return !_wmkdir(dirname) || errno == EEXIST;
+}
+
+bool SetWorkingDir(const wchar_t* directory)
+{
+	return SetCurrentDirectoryW(directory) != 0;
 }
 #endif
 

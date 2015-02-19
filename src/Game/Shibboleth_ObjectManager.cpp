@@ -137,6 +137,15 @@ void ObjectManager::prePhysicsUpdate(double dt)
 
 void ObjectManager::postPhysicsUpdate(double dt)
 {
+	// generate update jobs
+	// wait for update jobs to finish
+
+	for (auto it = _dirty_objects.begin(); it != _dirty_objects.end(); ++it) {
+		(*it)->notifyWorldDirtyCallbacks();
+		(*it)->notifyLocalDirtyCallbacks();
+	}
+
+	_dirty_objects.clearNoFree();
 }
 
 NS_END

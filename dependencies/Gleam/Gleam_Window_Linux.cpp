@@ -45,7 +45,7 @@ typedef struct
 } Hints;
 
 GleamArray<Display*> Window::gDisplays;
-GleamArray<Window*> Window::gWindows;
+GleamArray<Window*> Window::g_Windows;
 XEvent Window::gEvent;
 
 void Window::handleWindowMessages(void)
@@ -61,7 +61,7 @@ void Window::handleWindowMessages(void)
 void Window::clear(void)
 {
 	gDisplays.clear();
-	gWindows.clear();
+	g_Windows.clear();
 }
 
 void Window::WindowProc(XEvent& event)
@@ -70,14 +70,14 @@ void Window::WindowProc(XEvent& event)
 	char secondary_buffer[sizeof(AnyMessage)];
 
 	if (event.xcookie.type == GenericEvent && event.xcookie.extension == gOpCode) {		
-		for (unsigned int i = 0; i < gWindows.size(); ++i) {
-			if (gWindows[i]->getDisplay() == event.xcookie.display) {
-				if (!XGetEventData(gWindows[i]->getDisplay(), &event.xcookie)) {
+		for (unsigned int i = 0; i < g_Windows.size(); ++i) {
+			if (g_Windows[i]->getDisplay() == event.xcookie.display) {
+				if (!XGetEventData(g_Windows[i]->getDisplay(), &event.xcookie)) {
 					break;
 				}
 
 				AnyMessage* message = nullptr;
-				Window* window = gWindows[i];
+				Window* window = g_Windows[i];
 
 				switch (event.xcookie.evtype) {
 					case XI_ButtonPress: {
@@ -211,11 +211,11 @@ void Window::WindowProc(XEvent& event)
 	}
 
 	// if we make more than one window in our application
-	for (unsigned int i = 0; i < gWindows.size(); ++i) {
-		if (gWindows[i]->getWindow() == event.xany.window) {
+	for (unsigned int i = 0; i < g_Windows.size(); ++i) {
+		if (g_Windows[i]->getWindow() == event.xany.window) {
 			AnyMessage* message = nullptr;
 			AnyMessage* secondary_message = nullptr;
-			Window* window = gWindows[i];
+			Window* window = g_Windows[i];
 
 			switch (event.type) {
 				case ClientMessage:
@@ -472,7 +472,7 @@ bool Window::init(const GChar* app_name, MODE window_mode,
 	XMapRaised(_display, _window);
 
 	XRRFreeScreenConfigInfo(config);
-	gWindows.push(this);
+	g_Windows.push(this);
 
 	if (gDisplays.linearSearch(_display) == gDisplays.end()) {
 		gDisplays.push(_display);
@@ -495,9 +495,9 @@ void Window::destroy(void)
 		_display = nullptr;
 	}
 
-	for (unsigned int i = 0; i < gWindows.size(); ++i) {
-		if (gWindows[i] == this) {
-			gWindows.fastErase(i);
+	for (unsigned int i = 0; i < g_Windows.size(); ++i) {
+		if (g_Windows[i] == this) {
+			g_Windows.fastErase(i);
 			break;
 		}
 	}
@@ -765,6 +765,11 @@ unsigned int Window::getHeight(void) const
 bool Window::isFullScreen(void) const
 {
 	return _window_mode == FULLSCREEN;
+}
+
+bool Window::setIcon(const char*)
+{
+	return true;
 }
 
 XVisualInfo* Window::getVisualInfo(void) const

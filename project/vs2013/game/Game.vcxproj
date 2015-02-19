@@ -186,6 +186,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\..\src\Game\include\Shibboleth_BufferCreator.h" />
     <ClInclude Include="..\..\..\src\Game\include\Shibboleth_HoldingLoader.h" />
     <ClInclude Include="..\..\..\src\Game\include\Shibboleth_IResourceLoader.h" />
     <ClInclude Include="..\..\..\src\Game\include\Shibboleth_IUpdateQuery.h" />
@@ -197,6 +198,7 @@
     <ClInclude Include="..\..\..\src\Game\include\Shibboleth_OtterUIFileSystem.h" />
     <ClInclude Include="..\..\..\src\Game\include\Shibboleth_OtterUIRenderer.h" />
     <ClInclude Include="..\..\..\src\Game\include\Shibboleth_PackFileSystem.h" />
+    <ClInclude Include="..\..\..\src\Game\include\Shibboleth_ProgramBuffersCreator.h" />
     <ClInclude Include="..\..\..\src\Game\include\Shibboleth_ResourceDefines.h" />
     <ClInclude Include="..\..\..\src\Game\include\Shibboleth_ResourceWrapper.h" />
     <ClInclude Include="..\..\..\src\Game\include\Shibboleth_SamplerStateLoader.h" />
@@ -207,6 +209,7 @@
     <ClInclude Include="..\..\..\src\Game\include\Shibboleth_UserDataWrapper.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\..\src\Game\Shibboleth_BufferCreator.cpp" />
     <ClCompile Include="..\..\..\src\Game\Shibboleth_HoldingLoader.cpp" />
     <ClCompile Include="..\..\..\src\Game\Shibboleth_LoadingMessage.cpp" />
     <ClCompile Include="..\..\..\src\Game\Shibboleth_LuaLoader.cpp" />
@@ -215,6 +218,7 @@
     <ClCompile Include="..\..\..\src\Game\Shibboleth_OtterUIFileSystem.cpp" />
     <ClCompile Include="..\..\..\src\Game\Shibboleth_OtterUIRenderer.cpp" />
     <ClCompile Include="..\..\..\src\Game\Shibboleth_PackFileSystem.cpp" />
+    <ClCompile Include="..\..\..\src\Game\Shibboleth_ProgramBuffersCreator.cpp" />
     <ClCompile Include="..\..\..\src\Game\Shibboleth_SamplerStateLoader.cpp" />
     <ClCompile Include="..\..\..\src\Game\Shibboleth_ShaderLoader.cpp" />
     <ClCompile Include="..\..\..\src\Game\Shibboleth_ShaderProgramLoader.cpp" />

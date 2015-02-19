@@ -20,45 +20,61 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#include "Gaff_SpinLock.h"
-#include "Gaff_Atomic.h"
+#include "Shibboleth_BufferCreator.h"
+#include "Shibboleth_ResourceDefines.h"
+#include <Shibboleth_RenderManager.h>
+#include <Shibboleth_Utilities.h>
+#include <Shibboleth_IApp.h>
 
-NS_GAFF
+#include <Gleam_IRenderDevice.h>
+#include <Gleam_IBuffer.h>
 
-SpinLock::SpinLock(void):
-	_lock(0)
+NS_SHIBBOLETH
+
+BufferCreator::BufferCreator(void):
+	_render_mgr(GetApp().getManagerT<RenderManager>("Render Manager"))
 {
 }
 
-SpinLock::~SpinLock(void)
+BufferCreator::~BufferCreator(void)
 {
 }
 
-void SpinLock::lock(void) const
+Gaff::IVirtualDestructor* BufferCreator::load(const char*, unsigned long long buffer_settings)
 {
-	unsigned int tries = 0;
+	Gleam::IBuffer::BufferSettings* bs = reinterpret_cast<Gleam::IBuffer::BufferSettings*>(buffer_settings);
+	Gleam::IRenderDevice& rd = _render_mgr.getRenderDevice();
 
-	while (AtomicAcquire(&_lock)) {
-		++tries;
+	BufferData* data = GetAllocator()->template allocT<BufferData>();
 
-		if (tries == NUM_TRIES_UNTIL_YIELD) {
-			tries = 0;
-			YieldThread();
+	if (!data) {
+		// log error
+		return nullptr;
+	}
+
+	Gaff::ScopedLock<Gaff::SpinLock> scoped_lock(_render_mgr.getSpinLock());
+	data->data.reserve(rd.getNumDevices());
+
+	for (unsigned int i = 0; i < rd.getNumDevices(); ++i) {
+		BufferPtr buffer(_render_mgr.createBuffer());
+		rd.setCurrentDevice(i);
+
+		if (!buffer) {
+			// log error
+			GetAllocator()->freeT(data);
+			return nullptr;
 		}
 
-		//while (_lock) {
-		//}
+		if (!buffer->init(rd, *bs)) {
+			// log error
+			GetAllocator()->freeT(data);
+			return nullptr;
+		}
+
+		data->data.push(buffer);
 	}
-}
 
-bool SpinLock::tryLock(void)
-{
-	return !AtomicAcquire(&_lock);
-}
-
-void SpinLock::unlock(void) const
-{
-	AtomicRelease(&_lock);
+	return data;
 }
 
 NS_END

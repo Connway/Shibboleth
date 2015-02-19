@@ -23,23 +23,49 @@ THE SOFTWARE.
 #if defined(_WIN32) || defined(_WIN64)
 
 #include "Gleam_Window_Windows.h"
-#include "Gaff_IncludeAssert.h"
+#include "Gleam_WindowHelpers_Windows.h"
+#include <Gaff_IncludeAssert.h>
 
 NS_GLEAM
 
-GleamHashMap<unsigned short, KeyCode> Window::g_Left_Keys;
-GleamHashMap<unsigned short, KeyCode> Window::g_Right_Keys;
+GleamMap<unsigned short, KeyCode> Window::g_Left_Keys;
+GleamMap<unsigned short, KeyCode> Window::g_Right_Keys;
 bool Window::g_First_Init = true;
-MSG Window::gMsg;
+static MSG g_Msg;
 
-GleamArray<Window*> Window::gWindows;
+GleamArray<Window*> Window::g_Windows;
+
+typedef void (*WindowProcHelper)(AnyMessage*, Window*, WPARAM, LPARAM);
+static GleamMap<unsigned int, WindowProcHelper> g_Window_Helpers;
+
+static void InitWindowProcHelpers(void)
+{
+	g_Window_Helpers.insert(WM_CLOSE, WindowClosed);
+	g_Window_Helpers.insert(WM_DESTROY, WindowDestroyed);
+	g_Window_Helpers.insert(WM_MOVE, WindowClosed);
+	g_Window_Helpers.insert(WM_SIZE, WindowClosed);
+	g_Window_Helpers.insert(WM_CHAR, WindowClosed);
+	g_Window_Helpers.insert(WM_INPUT, WindowClosed);
+	g_Window_Helpers.insert(WM_LBUTTONDOWN, WindowLeftButtonDown);
+	g_Window_Helpers.insert(WM_RBUTTONDOWN, WindowRightButtonDown);
+	g_Window_Helpers.insert(WM_MBUTTONDOWN, WindowMiddleButtonDown);
+	g_Window_Helpers.insert(WM_XBUTTONDOWN, WindowXButtonDown);
+	g_Window_Helpers.insert(WM_LBUTTONUP, WindowLeftButtonUp);
+	g_Window_Helpers.insert(WM_RBUTTONUP, WindowRightButtonUp);
+	g_Window_Helpers.insert(WM_MBUTTONUP, WindowMiddleButtonUp);
+	g_Window_Helpers.insert(WM_XBUTTONUP, WindowXButtonUp);
+	g_Window_Helpers.insert(WM_MOUSEWHEEL, WindowMouseWheel);
+	g_Window_Helpers.insert(WM_SETFOCUS, WindowSetFocus);
+	g_Window_Helpers.insert(WM_KILLFOCUS, WindowKillFocus);
+}
+
 
 void Window::handleWindowMessages(void)
 {
 	// Handle the windows messages.
-	while (PeekMessage(&gMsg, NULL, 0, 0, PM_REMOVE)) {
-		TranslateMessage(&gMsg);
-		DispatchMessage(&gMsg);
+	while (PeekMessage(&g_Msg, NULL, 0, 0, PM_REMOVE)) {
+		TranslateMessage(&g_Msg);
+		DispatchMessage(&g_Msg);
 	}
 }
 
@@ -48,8 +74,8 @@ void Window::clear(void)
 	g_Left_Keys.clear();
 	g_Right_Keys.clear();
 
-	assert(gWindows.empty());
-	gWindows.clear();
+	assert(g_Windows.empty());
+	g_Windows.clear();
 }
 
 
@@ -57,204 +83,37 @@ LRESULT CALLBACK Window::WindowProc(HWND hwnd, UINT msg, WPARAM w, LPARAM l)
 {
 	bool handled = false;
 	char buffer[sizeof(AnyMessage)];
-	LRESULT ret = 0;
 
 	// if we make more than one window in our application
-	for (unsigned int i = 0; i < gWindows.size(); ++i) {
-		if (gWindows[i]->getHWnd() == hwnd) {
-			AnyMessage* message = nullptr;
-			Window* window = gWindows[i];
+	for (unsigned int i = 0; i < g_Windows.size(); ++i) {
+		if (g_Windows[i]->getHWnd() == hwnd) {
+			Window* window = g_Windows[i];
 
-			switch (msg) {
-				case WM_CLOSE:
-					message = (AnyMessage*)buffer;
-					message->base.type = WND_CLOSED;
-					break;
-
-				case WM_DESTROY:
-					message = (AnyMessage*)buffer;
-					message->base.type = WND_DESTROYED;
-					break;
-
-				case WM_MOVE:
-					window->_pos_x = (int)(short)LOWORD(l);
-					window->_pos_y = (int)(short)HIWORD(l);
-
-					message = (AnyMessage*)buffer;
-					message->base.type = WND_MOVED;
-					break;
-
-				case WM_SIZE:
-					window->_width = LOWORD(l);
-					window->_height = HIWORD(l);
-
-					message = (AnyMessage*)buffer;
-					message->base.type = WND_RESIZED;
-					break;
-
-				case WM_CHAR:
-					message = (AnyMessage*)buffer;
-					message->base.type = IN_CHARACTER;
-					message->key_char.character = (unsigned int)w;
-					break;
-
-				case WM_INPUT: {
-					UINT dwSize = 64;
-					BYTE lpb[64];
-
-#ifdef _DEBUG
-					GetRawInputData((HRAWINPUT)l, RID_INPUT, nullptr, &dwSize, sizeof(RAWINPUTHEADER));
-					assert(dwSize <= 64);
-#endif
-
-					GetRawInputData((HRAWINPUT)l, RID_INPUT, lpb, &dwSize, sizeof(RAWINPUTHEADER));
-					RAWINPUT* raw = (RAWINPUT*)lpb;
-
-					if (raw->header.dwType == RIM_TYPEMOUSE && raw->data.mouse.usFlags == MOUSE_MOVE_RELATIVE) {
-						message = (AnyMessage*)buffer;
-						message->base.type = IN_MOUSEMOVE;
-
-						POINT pos;
-						if (GetCursorPos(&pos)) {
-							message->mouse_move.x = pos.x;
-							message->mouse_move.y = pos.y;
-						} else {
-							message->mouse_move.x += raw->data.mouse.lLastX;
-							message->mouse_move.y += raw->data.mouse.lLastY;
-						}
-
-						message->mouse_move.dx = raw->data.mouse.lLastX;
-						message->mouse_move.dy = raw->data.mouse.lLastY;
-
-					} else if (raw->header.dwType == RIM_TYPEKEYBOARD) {
-						message = (AnyMessage*)buffer;
-						message->base.type = (raw->data.keyboard.Flags & RI_KEY_BREAK) ? IN_KEYUP : IN_KEYDOWN;
-
-						switch (raw->data.keyboard.VKey) {
-							case VK_CONTROL:
-							case VK_SHIFT:
-								// For some reason, right shift isn't getting the RI_KEY_E0 flag set.
-								// Special case it so that we send the correct key.
-								if (raw->data.keyboard.MakeCode == 54) {
-									message->key_char.key = KEY_RIGHTSHIFT;
-									break;
-								}
-
-							case VK_MENU:
-								if (raw->data.keyboard.Flags & RI_KEY_E0) {
-									message->key_char.key = g_Right_Keys[raw->data.keyboard.VKey];
-								} else {
-									message->key_char.key = g_Left_Keys[raw->data.keyboard.VKey];
-								}
-								break;
-
-							default:
-								message->key_char.key = (KeyCode)raw->data.keyboard.VKey;
-								break;
-						}
-					}
-				} break;
-
-				case WM_LBUTTONDOWN:
-					message = (AnyMessage*)buffer;
-					message->base.type = IN_MOUSEDOWN;
-					message->mouse_state.button = MOUSE_LEFT;
-					break;
-				case WM_RBUTTONDOWN:
-					message = (AnyMessage*)buffer;
-					message->base.type = IN_MOUSEDOWN;
-					message->mouse_state.button = MOUSE_RIGHT;
-					break;
-				case WM_MBUTTONDOWN:
-					message = (AnyMessage*)buffer;
-					message->base.type = IN_MOUSEDOWN;
-					message->mouse_state.button = MOUSE_MIDDLE;
-					break;
-				case WM_XBUTTONDOWN:
-					message = (AnyMessage*)buffer;
-					message->base.type = IN_MOUSEDOWN;
-					message->mouse_state.button = (HIWORD(w) == XBUTTON1) ? MOUSE_BACK : MOUSE_FORWARD;
-					break;
-
-				case WM_LBUTTONUP:
-					message = (AnyMessage*)buffer;
-					message->base.type = IN_MOUSEUP;
-					message->mouse_state.button = MOUSE_LEFT;
-					break;
-				case WM_RBUTTONUP:
-					message = (AnyMessage*)buffer;
-					message->base.type = IN_MOUSEUP;
-					message->mouse_state.button = MOUSE_RIGHT;
-					break;
-				case WM_MBUTTONUP:
-					message = (AnyMessage*)buffer;
-					message->base.type = IN_MOUSEUP;
-					message->mouse_state.button = MOUSE_MIDDLE;
-					break;
-				case WM_XBUTTONUP:
-					message = (AnyMessage*)buffer;
-					message->base.type = IN_MOUSEUP;
-					message->mouse_state.button = (HIWORD(w) == XBUTTON1) ? MOUSE_BACK : MOUSE_FORWARD;
-					break;
-
-				case WM_MOUSEWHEEL:
-					message = (AnyMessage*)buffer;
-					message->base.type = IN_MOUSEWHEEL;
-					message->mouse_state.wheel = (short)HIWORD(w) / WHEEL_DELTA;
-					break;
-
-				case WM_SETFOCUS:
-					if (window->_window_mode == FULLSCREEN) {
-						// If full screen set the screen to maximum size of the users desktop and 32-bit.
-						DEVMODE dm_screen_settings;
-						memset(&dm_screen_settings, 0, sizeof(dm_screen_settings));
-						dm_screen_settings.dmSize = sizeof(dm_screen_settings);
-						dm_screen_settings.dmPelsWidth  = window->_width;
-						dm_screen_settings.dmPelsHeight = window->_height;
-						dm_screen_settings.dmBitsPerPel = 32;
-						dm_screen_settings.dmFields = DM_BITSPERPEL | DM_PELSWIDTH | DM_PELSHEIGHT;
-
-						ChangeDisplaySettings(&dm_screen_settings, CDS_FULLSCREEN);
-					}
-
-					message = (AnyMessage*)buffer;
-					message->base.type = WND_GAINEDFOCUS;
-					break;
-
-				case WM_KILLFOCUS:
-					if (window->_window_mode == FULLSCREEN) {
-						DEVMODE dm_screen_settings;
-						memset(&dm_screen_settings, 0, sizeof(dm_screen_settings));
-						dm_screen_settings.dmSize = sizeof(dm_screen_settings);
-						dm_screen_settings.dmPelsWidth  = window->_original_width;
-						dm_screen_settings.dmPelsHeight = window->_original_height;
-						dm_screen_settings.dmBitsPerPel = 32;
-						dm_screen_settings.dmFields = DM_BITSPERPEL | DM_PELSWIDTH | DM_PELSHEIGHT;
-
-						ChangeDisplaySettings(&dm_screen_settings, CDS_FULLSCREEN);
-					}
-
-					message = (AnyMessage*)buffer;
-					message->base.type = WND_LOSTFOCUS;
-					break;
+			if (window->_window_callbacks.empty()) {
+				break;
 			}
 
-			if (message) {
-				message->base.window = window;
+			// We are assuming doing a map lookup is faster than the huge switch statement we had before.
+			WindowProcHelper helper_func = g_Window_Helpers[msg];
+
+			if (helper_func) {
+				helper_func(reinterpret_cast<AnyMessage*>(buffer), window, w, l);
+				reinterpret_cast<AnyMessage*>(buffer)->base.window = window;
 
 				for (unsigned int j = 0; j < window->_window_callbacks.size(); ++j) {
-					handled = handled || window->_window_callbacks[j](*message);
+					handled = handled || window->_window_callbacks[j](*reinterpret_cast<AnyMessage*>(buffer));
+				}
+
+				if (handled) {
+					return 0;
 				}
 			}
+
 			break;
 		}
 	}
 
-	if (!handled) {
-		return DefWindowProc(hwnd, msg, w, l);
-	}
-
-	return ret;
+	return DefWindowProc(hwnd, msg, w, l);
 }
 
 Window::Window(void):
@@ -283,6 +142,8 @@ bool Window::init(const GChar* app_name, MODE window_mode,
 		g_Right_Keys[VK_CONTROL] = KEY_RIGHTCONTROL;
 		g_Right_Keys[VK_MENU] = KEY_RIGHTALT;
 		g_Right_Keys[VK_SHIFT] = KEY_RIGHTSHIFT;
+
+		InitWindowProcHelpers();
 
 		g_First_Init = false;
 	}
@@ -397,9 +258,9 @@ bool Window::init(const GChar* app_name, MODE window_mode,
 	SetForegroundWindow(_hwnd);
 	SetFocus(_hwnd);
 
-	ZeroMemory(&gMsg, sizeof(MSG));
+	ZeroMemory(&g_Msg, sizeof(MSG));
 
-	gWindows.push(this);
+	g_Windows.push(this);
 
 	return true;
 }
@@ -424,9 +285,9 @@ void Window::destroy(void)
 		_hinstance = nullptr;
 	}
 
-	for (unsigned int i = 0; i < gWindows.size(); ++i) {
-		if (gWindows[i] == this) {
-			gWindows.fastErase(i);
+	for (unsigned int i = 0; i < g_Windows.size(); ++i) {
+		if (g_Windows[i] == this) {
+			g_Windows.fastErase(i);
 			break;
 		}
 	}
@@ -595,6 +456,18 @@ unsigned int Window::getHeight(void) const
 bool Window::isFullScreen(void) const
 {
 	return _window_mode == FULLSCREEN;
+}
+
+bool Window::setIcon(const char* icon)
+{
+	HANDLE hIcon = LoadImageA(_hinstance, icon, IMAGE_ICON, 64, 64, LR_LOADFROMFILE);
+
+	if (!hIcon) {
+		return false;
+	}
+
+	SendMessage(_hwnd, WM_SETICON, ICON_SMALL, reinterpret_cast<LPARAM>(hIcon));
+	return true;
 }
 
 HINSTANCE Window::getHInstance(void) const

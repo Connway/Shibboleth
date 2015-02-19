@@ -25,8 +25,10 @@ THE SOFTWARE.
 #include <Shibboleth_RenderManager.h>
 #include <Shibboleth_TaskPoolTags.h>
 
+#include <Shibboleth_ProgramBuffersCreator.h>
 #include <Shibboleth_ShaderProgramLoader.h>
 #include <Shibboleth_SamplerStateLoader.h>
+#include <Shibboleth_BufferCreator.h>
 #include <Shibboleth_TextureLoader.h>
 #include <Shibboleth_HoldingLoader.h>
 #include <Shibboleth_ShaderLoader.h>
@@ -72,6 +74,34 @@ void CreateResourceLoadersState::update(void)
 	RenderManager& render_manager = _app.getManagerT<RenderManager>("Render Manager");
 	ResourceManager& res_mgr = _app.getManagerT<ResourceManager>("Resource Manager");
 
+	// PROGRAM BUFFERS CREATOR
+	{
+		ProgramBuffersCreator* program_buffers_creator = GetAllocator()->template allocT<ProgramBuffersCreator>();
+
+		if (!program_buffers_creator) {
+			_app.getGameLogFile().first.printf("ERROR - Failed to create program buffers creator.\n");
+			_app.quit();
+			return;
+		}
+
+		_app.getGameLogFile().first.printf("Adding Program Buffers Creator\n");
+		res_mgr.registerResourceLoader(program_buffers_creator, "ProgramBuffers");
+	}
+
+	// BUFFER CREATOR
+	{
+		BufferCreator* buffer_creator = GetAllocator()->template allocT<BufferCreator>();
+
+		if (!buffer_creator) {
+			_app.getGameLogFile().first.printf("ERROR - Failed to create buffer creator.\n");
+			_app.quit();
+			return;
+		}
+
+		_app.getGameLogFile().first.printf("Adding Buffer Creator\n");
+		res_mgr.registerResourceLoader(buffer_creator, "Buffer", TPT_GRAPHICS);
+	}
+
 	// TEXTURE LOADER
 	{
 		TextureLoader* texture_loader = GetAllocator()->template allocT<TextureLoader>(render_manager, *_app.getFileSystem());
@@ -93,7 +123,7 @@ void CreateResourceLoadersState::update(void)
 		//extensions.emplacePush(".tga");
 
 		_app.getGameLogFile().first.printf("Adding Texture Loader\n");
-		res_mgr.registerResourceLoader(texture_loader, ".texture", TPT_GRAPHICS);
+		res_mgr.registerResourceLoader(texture_loader, ".texture", TPT_IO);
 	}
 
 	// SAMPLER STATE LOADER
@@ -107,7 +137,7 @@ void CreateResourceLoadersState::update(void)
 		}
 
 		_app.getGameLogFile().first.printf("Adding Sampler State Loader\n");
-		res_mgr.registerResourceLoader(sampler_loader, ".sampler", TPT_GRAPHICS);
+		res_mgr.registerResourceLoader(sampler_loader, ".sampler", TPT_IO);
 	}
 
 	// SHADER LOADER
@@ -122,7 +152,7 @@ void CreateResourceLoadersState::update(void)
 		}
 
 		_app.getGameLogFile().first.printf("Adding Shader Loader\n");
-		res_mgr.registerResourceLoader(shader_loader, render_manager.getShaderExtension(), TPT_GRAPHICS);
+		res_mgr.registerResourceLoader(shader_loader, render_manager.getShaderExtension(), TPT_IO);
 	}
 
 	// SHADER PROGRAM LOADER
@@ -137,7 +167,7 @@ void CreateResourceLoadersState::update(void)
 		}
 
 		_app.getGameLogFile().first.printf("Adding Shader Program Loader\n");
-		res_mgr.registerResourceLoader(shader_program_loader, ".program", TPT_GRAPHICS);
+		res_mgr.registerResourceLoader(shader_program_loader, ".program", TPT_IO);
 	}
 
 	// LUA LOADER
@@ -152,7 +182,7 @@ void CreateResourceLoadersState::update(void)
 		}
 
 		_app.getGameLogFile().first.printf("Adding Lua Loader\n");
-		res_mgr.registerResourceLoader(lua_loader, ".lua");
+		res_mgr.registerResourceLoader(lua_loader, ".lua", TPT_IO);
 	}
 
 	// HOLDING LOADER
@@ -212,7 +242,7 @@ void CreateResourceLoadersState::update(void)
 		extensions.emplacePush(".fbx");
 
 		_app.getGameLogFile().first.printf("Adding Holding Loader\n");
-		res_mgr.registerResourceLoader(holding_loader, extensions);
+		res_mgr.registerResourceLoader(holding_loader, extensions, TPT_IO);
 	}
 
 	// MODEL LOADER
@@ -227,7 +257,7 @@ void CreateResourceLoadersState::update(void)
 		}
 
 		_app.getGameLogFile().first.printf("Adding Model Loader\n");
-		res_mgr.registerResourceLoader(model_loader, ".model");
+		res_mgr.registerResourceLoader(model_loader, ".model", TPT_IO);
 	}
 
 	_app.getGameLogFile().first.printf("Finished Creating Resource Loaders\n\n");

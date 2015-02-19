@@ -105,6 +105,8 @@ struct ProgramData : public Gaff::IVirtualDestructor
 	Array<ProgramPtr> programs;
 };
 
+typedef SingleDataWrapper< Array<ProgramBuffersPtr> > ProgramBuffersData;
 typedef SingleDataWrapper< Array<SamplerStatePtr> > SamplerStateData;
+typedef SingleDataWrapper< Array<BufferPtr> > BufferData;
 
 NS_END

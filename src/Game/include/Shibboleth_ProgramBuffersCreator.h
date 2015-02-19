@@ -22,6 +22,26 @@ THE SOFTWARE.
 
 #pragma once
 
-#define TPT_GRAPHICS 1
-#define TPT_PRINTLOG 2
-#define TPT_IO 3
+#include "Shibboleth_IResourceLoader.h"
+#include <Gaff_Defines.h>
+
+NS_SHIBBOLETH
+
+class RenderManager;
+
+class ProgramBuffersCreator : public IResourceLoader
+{
+public:
+	ProgramBuffersCreator(void);
+	~ProgramBuffersCreator(void);
+
+	Gaff::IVirtualDestructor* load(const char*, unsigned long long);
+
+private:
+	RenderManager& _render_mgr;
+
+	GAFF_NO_COPY(ProgramBuffersCreator);
+	GAFF_NO_MOVE(ProgramBuffersCreator);
+};
+
+NS_END

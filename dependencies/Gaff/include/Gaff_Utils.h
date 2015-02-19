@@ -44,6 +44,7 @@ INLINE void GetCurrentTimeString(char* buff, size_t count, const char* format); 
 INLINE bool CreateDir(const char* dirname, unsigned short mode); //<! Creates directory \a dirname with the given access \a mode.
 void DebugPrintf(const char* format_string, ...); //!< Does a printf() to debug output on supported platforms. Unsupported platforms just call normal printf().
 void DebugPrintf(const wchar_t* format_string, ...); //!< Does a printf() to debug output on supported platforms. Unsupported platforms just call normal printf().
+INLINE bool SetWorkingDir(const char* directory);
 
 //! Used to determine what type an entry in the filesystem is.
 enum FileDataType
@@ -77,6 +78,7 @@ template <FileDataType type, class Callback>
 bool ForEachTypeInDirectory(const wchar_t* directory, Callback&& callback);
 
 INLINE bool CreateDir(const wchar_t* dirname, unsigned short mode); //!< wchar_t version of CreateDir().
+INLINE bool SetWorkingDir(const wchar_t* directory);
 #endif
 
 template <class Allocator>

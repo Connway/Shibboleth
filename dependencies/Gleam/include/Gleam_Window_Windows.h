@@ -24,8 +24,8 @@ THE SOFTWARE.
 
 #include "Gleam_Window_Defines.h"
 #include "Gleam_IWindow.h"
-#include "Gleam_HashMap.h"
 #include "Gleam_Array.h"
+#include "Gleam_Map.h"
 #include <Gaff_IncludeWindows.h>
 #include <Gaff_Function.h>
 
@@ -42,8 +42,7 @@ public:
 
 	bool init(const GChar* app_name, MODE window_mode = FULLSCREEN,
 				unsigned int width = 0, unsigned int height = 0,
-				int pos_x = 0, int pos_y = 0,
-				const char* compat = nullptr);
+				int pos_x = 0, int pos_y = 0, const char* compat = nullptr);
 	void destroy(void);
 
 	void addWindowMessageHandler(Gaff::FunctionBinder<bool, const AnyMessage&>& callback);
@@ -69,6 +68,8 @@ public:
 	unsigned int getHeight(void) const;
 	bool isFullScreen(void) const;
 
+	bool setIcon(const char* icon);
+
 	INLINE HINSTANCE getHInstance(void) const;
 	INLINE HWND getHWnd(void) const;
 
@@ -89,12 +90,17 @@ private:
 	GleamArray< Gaff::FunctionBinder<bool, const AnyMessage&> > _window_callbacks;
 
 	static LRESULT CALLBACK WindowProc(HWND hwnd, UINT msg, WPARAM w, LPARAM l);
-	static GleamArray<Window*> gWindows;
-	static MSG gMsg;
+	static GleamArray<Window*> g_Windows;
 
-	static GleamHashMap<unsigned short, KeyCode> g_Left_Keys;
-	static GleamHashMap<unsigned short, KeyCode> g_Right_Keys;
+	static GleamMap<unsigned short, KeyCode> g_Left_Keys;
+	static GleamMap<unsigned short, KeyCode> g_Right_Keys;
 	static bool g_First_Init;
+
+	friend void WindowMoved(AnyMessage*, Window*, WPARAM, LPARAM);
+	friend void WindowResized(AnyMessage*, Window*, WPARAM, LPARAM);
+	friend void WindowInput(AnyMessage*, Window*, WPARAM, LPARAM);
+	friend void WindowSetFocus(AnyMessage*, Window*, WPARAM, LPARAM);
+	friend void WindowKillFocus(AnyMessage*, Window*, WPARAM, LPARAM);
 
 	GAFF_NO_COPY(Window);
 	GAFF_NO_MOVE(Window);
