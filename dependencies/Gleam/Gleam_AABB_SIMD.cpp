@@ -54,6 +54,11 @@ const Vector4SIMD& AABBSIMD::getMax(void) const
 	return _max;
 }
 
+Vector4SIMD AABBSIMD::getExtent(void) const
+{
+	return (_max - _min) * 0.5f;
+}
+
 Vector4SIMD AABBSIMD::getCenter(void) const
 {
 	return _min + (_max - _min) * 0.5f;

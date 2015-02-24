@@ -54,6 +54,11 @@ const Vector4CPU& AABBCPU::getMax(void) const
 	return _max;
 }
 
+Vector4CPU AABBCPU::getExtent(void) const
+{
+	return (_max - _min) * 0.5f;
+}
+
 Vector4CPU AABBCPU::getCenter(void) const
 {
 	return _min + (_max - _min) * 0.5f;

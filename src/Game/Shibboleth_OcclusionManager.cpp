@@ -23,6 +23,7 @@ THE SOFTWARE.
 #include "Shibboleth_OcclusionManager.h"
 #include <Shibboleth_Object.h>
 #include <Shibboleth_IApp.h>
+#include <Gleam_Frustum_CPU.h>
 #include <Gaff_ScopedLock.h>
 
 #define BVH_STARTING_CACHE 500
@@ -63,7 +64,7 @@ void OcclusionManager::BVHTree::setIsStatic(bool is_static)
 	_is_static = is_static;
 }
 
-size_t OcclusionManager::BVHTree::addObject(Object* object)
+size_t OcclusionManager::BVHTree::addObject(Object* object, const UserData& user_data)
 {
 	size_t index = 0;
 
@@ -79,8 +80,14 @@ size_t OcclusionManager::BVHTree::addObject(Object* object)
 		_free_indices.pop();
 	}
 
+	AddBufferData buffer_data = {
+		user_data,
+		object,
+		index
+	};
+
 	Gaff::ScopedLock<Gaff::SpinLock> add_lock(_add_lock);
-	_add_buffer.emplacePush(object, index);
+	_add_buffer.emplacePush(buffer_data);
 
 	return index;
 }
@@ -120,7 +127,7 @@ void OcclusionManager::BVHTree::update(void)
 		Gaff::ScopedLock<Gaff::SpinLock> scoped_lock(_add_lock);
 
 		for (auto it = _add_buffer.begin(); it != _add_buffer.end(); ++it) {
-			addObjectHelper(it->first, it->second);
+			addObjectHelper(*it);
 		}
 
 		_add_buffer.clearNoFree();
@@ -145,22 +152,23 @@ void OcclusionManager::BVHTree::growArrays(void)
 	}
 }
 
-void OcclusionManager::BVHTree::addObjectHelper(Object* object, size_t index)
+void OcclusionManager::BVHTree::addObjectHelper(const AddBufferData& data)
 {
 	if (!_is_static) {
-		object->registerForLocalDirtyCallback(Gaff::Bind(this, &OcclusionManager::BVHTree::dirtyObjectCallback), index);
+		data.object->registerForLocalDirtyCallback(Gaff::Bind(this, &OcclusionManager::BVHTree::dirtyObjectCallback), data.index);
 	}
 
-	BVHNode& node = _node_cache[index];
-	node.aabb = object->getWorldAABB();
-	node.object = object;
-	node.index = index;
+	BVHNode& node = _node_cache[data.index];
+	node.aabb = data.object->getWorldAABB();
+	node.user_data = data.user_data;
+	node.object = data.object;
+	node.index = data.index;
 	node.parent = node.left = node.right = SIZE_T_FAIL;
 	node.dirty = false;
 
 	// add to tree
 	if (_root == SIZE_T_FAIL) {
-		_root = index;
+		_root = data.index;
 		return;
 	}
 
@@ -202,7 +210,7 @@ void OcclusionManager::BVHTree::addObjectHelper(Object* object, size_t index)
 	new_parent->object = nullptr;
 	new_parent->index = new_parent_index;
 	new_parent->parent = travel_node->parent;
-	new_parent->left = index;
+	new_parent->left = data.index;
 	new_parent->right = travel_node->index;
 
 	travel_node->parent = node.parent = new_parent_index;
@@ -297,10 +305,10 @@ const char* OcclusionManager::getName(void) const
 	return "Occlusion Manager";
 }
 
-OcclusionManager::OcclusionID OcclusionManager::addObject(Object* object, OBJ_TYPE object_type)
+OcclusionManager::OcclusionID OcclusionManager::addObject(Object* object, OBJ_TYPE object_type, const UserData& user_data)
 {
 	assert(object && !_node_map.hasElementWithKey(object) && object_type < OT_SIZE);
-	OcclusionID id = { _bvh_trees[object_type].addObject(object), object_type };
+	OcclusionID id = { _bvh_trees[object_type].addObject(object, user_data), object_type };
 	_node_map[object] = id;
 	return id;
 }
@@ -327,6 +335,18 @@ void OcclusionManager::update(double)
 {
 	_bvh_trees[OT_STATIC].update(); // In case we are removing something from the static tree
 	_bvh_trees[OT_DYNAMIC].update();
+}
+
+void OcclusionManager::findObjectsInFrustum(const Gleam::FrustumCPU& frustum, Array<QueryData>& out) const
+{
+
+}
+
+Array<OcclusionManager::QueryData> OcclusionManager::findObjectsInFrustum(const Gleam::FrustumCPU& frustum) const
+{
+	Array<QueryData> out;
+	findObjectsInFrustum(frustum, out);
+	return out;
 }
 
 NS_END

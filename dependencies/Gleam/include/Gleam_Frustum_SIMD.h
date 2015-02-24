@@ -22,43 +22,35 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Gleam_Vector4_SIMD.h"
-#include "Gleam_Array.h"
+#include "Gleam_Plane_SIMD.h"
 
 NS_GLEAM
 
-class TransformSIMD;
-class Matrix4x4SIMD;
+//class Matrix4x4SIMD;
 class AABBSIMD;
+class OBBSIMD;
 
-class OBBSIMD
+class FrustumSIMD
 {
 public:
-	OBBSIMD(const Vector4SIMD& center, const Vector4SIMD& right, const Vector4SIMD& up, const Vector4SIMD& forward);
-	OBBSIMD(const AABBSIMD& aabb, const Matrix4x4SIMD& transform);
-	OBBSIMD(const AABBSIMD& aabb);
-	OBBSIMD(const OBBSIMD& obb);
-	OBBSIMD(void);
-	~OBBSIMD(void);
+	FrustumSIMD(float fov, float aspect_ratio, float z_near, float z_far);
+	//FrustumSIMD(const Matrix4x4SIMD& matrix);
+	FrustumSIMD(const FrustumSIMD& frustum);
+	FrustumSIMD(void);
+	~FrustumSIMD(void);
 
-	INLINE const Vector4SIMD& getCenter(void) const;
-	INLINE Vector4SIMD getExtent(void) const;
+	const FrustumSIMD& operator=(const FrustumSIMD& rhs);
+	const PlaneSIMD& getPlane(unsigned int index) const;
+	const PlaneSIMD* getPlanes(void) const;
 
-	INLINE void setAxis(int axis, const Vector4SIMD& vec);
-	INLINE const Vector4SIMD& getAxis(int axis) const;
-	INLINE const Vector4SIMD* getAxes(void) const;
+	void construct(float fov, float aspect_ratio, float z_near, float z_far);
+	//void construct(const Matrix4x4SIMD& matrix);
 
-	INLINE const GleamArray<Vector4SIMD>& generatePoints(GleamArray<Vector4SIMD>& out) const;
-	INLINE GleamArray<Vector4SIMD> generatePoints(void) const;
-	const Vector4SIMD* generatePoints(Vector4SIMD* out) const;
-
-	INLINE void transform(const TransformSIMD& transform);
-	INLINE void transform(const Matrix4x4SIMD& transform);
-	bool contains(const Vector4SIMD& point) const;
+	bool contains(const AABBSIMD& aabb) const;
+	bool contains(const OBBSIMD& obb) const;
 
 private:
-	Vector4SIMD _center;
-	Vector4SIMD _axes[3];
+	PlaneSIMD _planes[6];
 };
 
 NS_END

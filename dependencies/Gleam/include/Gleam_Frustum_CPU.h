@@ -22,53 +22,39 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Gleam_Vector4_CPU.h"
-#include "Gleam_Array.h"
+#include "Gleam_Plane_CPU.h"
 
 NS_GLEAM
 
 class TransformCPU;
 class Matrix4x4CPU;
+class AABBCPU;
+class OBBCPU;
 
-class AABBCPU
+class FrustumCPU
 {
 public:
-	AABBCPU(const Vector4CPU& min, const Vector4CPU& max);
-	AABBCPU(const AABBCPU& aabb);
-	AABBCPU(void);
-	~AABBCPU(void);
+	FrustumCPU(float fov, float aspect_ratio, float z_near, float z_far);
+	//FrustumCPU(const Matrix4x4CPU& matrix);
+	FrustumCPU(const FrustumCPU& frustum);
+	FrustumCPU(void);
+	~FrustumCPU(void);
 
-	INLINE const Vector4CPU& getMin(void) const;
-	INLINE const Vector4CPU& getMax(void) const;
-	INLINE Vector4CPU getExtent(void) const;
-	INLINE Vector4CPU getCenter(void) const;
-	INLINE void setMin(const Vector4CPU& min);
-	INLINE void setMax(const Vector4CPU& max);
+	const FrustumCPU& operator=(const FrustumCPU& rhs);
+	const PlaneCPU& getPlane(unsigned int index) const;
+	const PlaneCPU* getPlanes(void) const;
 
-	INLINE void addPoint(float x, float y, float z);
-	INLINE void addPoint(const float* point);
-	INLINE void addPoint(const Vector4CPU& point);
+	void construct(float fov, float aspect_ratio, float z_near, float z_far);
+	//void construct(const Matrix4x4CPU& matrix);
 
-	void addPoints(const float* points, unsigned int num_points, unsigned int stride = 3);
-	void addPoints(const Vector4CPU* points, unsigned int num_points);
-	void addPoints(const GleamArray<Vector4CPU>& points);
-
-	INLINE void addAABB(const AABBCPU& aabb);
-
-	INLINE void reset(void);
-
-	const GleamArray<Vector4CPU>& generatePoints(GleamArray<Vector4CPU>& out) const;
-	GleamArray<Vector4CPU> generatePoints(void) const;
-	const Vector4CPU* generatePoints(Vector4CPU* out) const;
+	bool contains(const AABBCPU& aabb) const;
+	bool contains(const OBBCPU& obb) const;
 
 	void transform(const TransformCPU& transform);
-	void transform(const Matrix4x4CPU& transform);
-	INLINE bool contains(const Vector4CPU& point) const;
+	void transform(const Matrix4x4CPU& matrix);
 
 private:
-	Vector4CPU _min;
-	Vector4CPU _max;
-	Vector4CPU _transform_cache[8];
+	PlaneCPU _planes[6];
 };
 
 NS_END

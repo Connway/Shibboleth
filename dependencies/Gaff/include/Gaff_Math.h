@@ -27,6 +27,8 @@ THE SOFTWARE.
 NS_GAFF
 
 const float Pi = 3.141592654f;
+const float DegToRad = Pi / 180.0f;
+const float RadToDeg = 180.0f / Pi;
 
 /*!
 	\brief Returns the minimum of \a v1 and \a v2

@@ -206,6 +206,9 @@
     <ClInclude Include="..\..\..\dependencies\Gleam\include\Gleam_DeferredRenderDevice_Direct3D.h" />
     <ClInclude Include="..\..\..\dependencies\Gleam\include\Gleam_DeferredRenderDevice_OpenGL.h" />
     <ClInclude Include="..\..\..\dependencies\Gleam\include\Gleam_Defines.h" />
+    <ClInclude Include="..\..\..\dependencies\Gleam\include\Gleam_Frustum.h" />
+    <ClInclude Include="..\..\..\dependencies\Gleam\include\Gleam_Frustum_CPU.h" />
+    <ClInclude Include="..\..\..\dependencies\Gleam\include\Gleam_Frustum_SIMD.h" />
     <ClInclude Include="..\..\..\dependencies\Gleam\include\Gleam_Global.h" />
     <ClInclude Include="..\..\..\dependencies\Gleam\include\Gleam_HashMap.h" />
     <ClInclude Include="..\..\..\dependencies\Gleam\include\Gleam_IBuffer.h" />
@@ -251,6 +254,9 @@
     <ClInclude Include="..\..\..\dependencies\Gleam\include\Gleam_OBB.h" />
     <ClInclude Include="..\..\..\dependencies\Gleam\include\Gleam_OBB_CPU.h" />
     <ClInclude Include="..\..\..\dependencies\Gleam\include\Gleam_OBB_SIMD.h" />
+    <ClInclude Include="..\..\..\dependencies\Gleam\include\Gleam_Plane.h" />
+    <ClInclude Include="..\..\..\dependencies\Gleam\include\Gleam_Plane_CPU.h" />
+    <ClInclude Include="..\..\..\dependencies\Gleam\include\Gleam_Plane_SIMD.h" />
     <ClInclude Include="..\..\..\dependencies\Gleam\include\Gleam_Program.h" />
     <ClInclude Include="..\..\..\dependencies\Gleam\include\Gleam_ProgramBase.h" />
     <ClInclude Include="..\..\..\dependencies\Gleam\include\Gleam_Program_Direct3D.h" />
@@ -310,6 +316,8 @@
     <ClCompile Include="..\..\..\dependencies\Gleam\Gleam_DeferredRenderDeviceBase.cpp" />
     <ClCompile Include="..\..\..\dependencies\Gleam\Gleam_DeferredRenderDevice_Direct3D.cpp" />
     <ClCompile Include="..\..\..\dependencies\Gleam\Gleam_DeferredRenderDevice_OpenGL.cpp" />
+    <ClCompile Include="..\..\..\dependencies\Gleam\Gleam_Frustum_CPU.cpp" />
+    <ClCompile Include="..\..\..\dependencies\Gleam\Gleam_Frustum_SIMD.cpp" />
     <ClCompile Include="..\..\..\dependencies\Gleam\Gleam_Global.cpp" />
     <ClCompile Include="..\..\..\dependencies\Gleam\Gleam_InputManager.cpp" />
     <ClCompile Include="..\..\..\dependencies\Gleam\Gleam_Keyboard_MessagePump.cpp" />
@@ -326,6 +334,8 @@
     <ClCompile Include="..\..\..\dependencies\Gleam\Gleam_Mouse_MessagePump.cpp" />
     <ClCompile Include="..\..\..\dependencies\Gleam\Gleam_OBB_CPU.cpp" />
     <ClCompile Include="..\..\..\dependencies\Gleam\Gleam_OBB_SIMD.cpp" />
+    <ClCompile Include="..\..\..\dependencies\Gleam\Gleam_Plane_CPU.cpp" />
+    <ClCompile Include="..\..\..\dependencies\Gleam\Gleam_Plane_SIMD.cpp" />
     <ClCompile Include="..\..\..\dependencies\Gleam\Gleam_ProgramBase.cpp" />
     <ClCompile Include="..\..\..\dependencies\Gleam\Gleam_Program_Direct3D.cpp" />
     <ClCompile Include="..\..\..\dependencies\Gleam\Gleam_Program_OpenGL.cpp" />
