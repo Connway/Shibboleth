@@ -31,6 +31,10 @@ THE SOFTWARE.
 #include <Gleam_AABB_CPU.h>
 #include <Gaff_ReadWriteSpinLock.h>
 
+NS_GLEAM
+	class FrustumCPU;
+NS_END
+
 NS_SHIBBOLETH
 
 class Object;
@@ -52,6 +56,9 @@ public:
 		OBJ_TYPE object_type;
 	};
 
+	typedef Gaff::Pair<unsigned long long, unsigned long long> UserData;
+	typedef Gaff::Pair<Object*, const UserData&> QueryData;
+
 	OcclusionManager(void);
 	~OcclusionManager(void);
 
@@ -59,13 +66,16 @@ public:
 	void* rawRequestInterface(unsigned int class_id) const;
 	const char* getName(void) const;
 
-	OcclusionID addObject(Object* object, OBJ_TYPE object_type);
+	OcclusionID addObject(Object* object, OBJ_TYPE object_type, const UserData& user_data = UserData(0, 0));
 	INLINE void removeObject(Object* object);
 	INLINE void removeObject(OcclusionID id);
 
 	INLINE void constructStaticTree(const Array<Object*>& objects, Array<OcclusionID>* id_out = nullptr);
 
 	void update(double);
+
+	void findObjectsInFrustum(const Gleam::FrustumCPU& frustum, Array<QueryData>& out) const;
+	INLINE Array<QueryData> findObjectsInFrustum(const Gleam::FrustumCPU& frustum) const;
 
 private:
 	class BVHTree
@@ -76,7 +86,7 @@ private:
 
 		INLINE void setIsStatic(bool is_static);
 
-		size_t addObject(Object* object);
+		size_t addObject(Object* object, const UserData& user_data);
 		void removeObject(size_t index);
 
 		// Bottom-up construction
@@ -88,6 +98,7 @@ private:
 		struct BVHNode
 		{
 			Gleam::AABBCPU aabb;
+			UserData user_data;
 			Object* object;
 			size_t index; // index in the _node_cache we live in
 			size_t parent;
@@ -97,11 +108,18 @@ private:
 			bool dirty;
 		};
 
+		struct AddBufferData
+		{
+			UserData user_data;
+			Object* object;
+			size_t index;
+		};
+
 		Array<BVHNode> _node_cache; // Avoids allocations and keeps some cache coherency
 		Array<size_t> _dirty_indices;
 		Array<size_t> _free_indices;
 
-		Array< Gaff::Pair<Object*, size_t> > _add_buffer;
+		Array<AddBufferData> _add_buffer;
 		Array<size_t> _remove_buffer;
 
 		Gaff::SpinLock _remove_lock;
@@ -116,7 +134,7 @@ private:
 		void dirtyObjectCallback(Object* object, unsigned long long index);
 		void growArrays(void);
 
-		void addObjectHelper(Object* object, size_t index);
+		void addObjectHelper(const AddBufferData& data);
 		void removeObjectHelper(size_t index);
 		void updateAABBs(size_t index);
 	};

@@ -127,28 +127,6 @@ Vector4SIMD Vector4SIMD::operator+(void) const
 	return Vector4SIMD(SIMDAnd(gSignMask, _vec));
 }
 
-void Vector4SIMD::set(float x, float y, float z, float w)
-{
-	_vec = SIMDCreate(x, y, z, w);
-}
-
-void Vector4SIMD::set(const float* elements)
-{
-	assert(elements);
-
-#ifdef SIMD_SET_ALIGNED
-	_vec = SIMDLoadAligned(elements);
-#else
-	_vec = SIMDLoad(elements);
-#endif
-}
-
-void Vector4SIMD::set(float value, unsigned int index)
-{
-	assert(index >= 0 && index < 4);
-	SIMDSet(_vec, value, index);
-}
-
 const Vector4SIMD& Vector4SIMD::operator*=(const Vector4SIMD& rhs)
 {
 	_vec = SIMDMul(_vec, rhs._vec);
@@ -191,6 +169,87 @@ const Vector4SIMD& Vector4SIMD::operator/=(float rhs)
 Vector4SIMD Vector4SIMD::operator/(float rhs) const
 {
 	return Vector4SIMD(SIMDDiv(_vec, SIMDCreate(rhs)));
+}
+
+const Vector4SIMD& Vector4SIMD::operator&=(const Vector4SIMD& rhs)
+{
+	_vec = SIMDAnd(_vec, rhs._vec);
+	return *this;
+}
+
+Vector4SIMD Vector4SIMD::operator&(const Vector4SIMD& rhs) const
+{
+	return Vector4SIMD(SIMDAnd(_vec, rhs._vec));
+}
+
+const Vector4SIMD& Vector4SIMD::operator|=(const Vector4SIMD& rhs)
+{
+	_vec = SIMDOr(_vec, rhs._vec);
+	return *this;
+}
+
+Vector4SIMD Vector4SIMD::operator|(const Vector4SIMD& rhs) const
+{
+	return Vector4SIMD(SIMDOr(_vec, rhs._vec));
+}
+
+const Vector4SIMD& Vector4SIMD::operator^=(const Vector4SIMD& rhs)
+{
+	_vec = SIMDXOr(_vec, rhs._vec);
+	return *this;
+}
+
+Vector4SIMD Vector4SIMD::operator^(const Vector4SIMD& rhs) const
+{
+	return Vector4SIMD(SIMDXOr(_vec, rhs._vec));
+}
+
+bool Vector4SIMD::operator<=(const Vector4SIMD& rhs) const
+{
+	return SIMDLessThanOrEqual(_vec, rhs._vec);
+}
+
+bool Vector4SIMD::operator<(const Vector4SIMD& rhs) const
+{
+	return SIMDLessThan(_vec, rhs._vec);
+}
+
+bool Vector4SIMD::operator>=(const Vector4SIMD& rhs) const
+{
+	return SIMDGreaterThanOrEqual(_vec, rhs._vec);
+}
+
+bool Vector4SIMD::operator>(const Vector4SIMD& rhs) const
+{
+	return SIMDGreaterThan(_vec, rhs._vec);
+}
+
+void Vector4SIMD::set(float x, float y, float z, float w)
+{
+	_vec = SIMDCreate(x, y, z, w);
+}
+
+void Vector4SIMD::set(const float* elements)
+{
+	assert(elements);
+
+#ifdef SIMD_SET_ALIGNED
+	_vec = SIMDLoadAligned(elements);
+#else
+	_vec = SIMDLoad(elements);
+#endif
+}
+
+void Vector4SIMD::set(float value, unsigned int index)
+{
+	assert(index >= 0 && index < 4);
+	SIMDSet(_vec, value, index);
+}
+
+Vector4SIMD Vector4SIMD::get(unsigned int index) const
+{
+	assert(index >= 0 && index < 4);
+	return Vector4SIMD(SIMDShuffle<3, 3, 3, 3>(_vec, _vec));
 }
 
 const float* Vector4SIMD::getBuffer(void) const

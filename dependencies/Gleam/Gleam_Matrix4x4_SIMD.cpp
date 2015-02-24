@@ -579,14 +579,12 @@ void Matrix4x4SIMD::setOrthographicRH(float width, float height, float z_near, f
 void Matrix4x4SIMD::setPerspectiveLH(float fov, float aspect_ratio, float z_near, float z_far)
 {
 	fov *= 0.5f;
-	float cos_fov = cosf(fov);
-	float sin_fov = sinf(fov);
-	float height = cos_fov / sin_fov;
-	float width = height / aspect_ratio;
+	float tan_fov = tanf(fov);
+	float width = tan_fov / aspect_ratio;
 	float range = z_far / (z_far - z_near);
 
 	_matrix.elements[0] = SIMDCreate(width, 0.0f, 0.0f, 0.0f);
-	_matrix.elements[1] = SIMDCreate(0.0f, height, 0.0f, 0.0f);
+	_matrix.elements[1] = SIMDCreate(0.0f, tan_fov, 0.0f, 0.0f);
 	_matrix.elements[2] = SIMDCreate(0.0f, 0.0f, range, 1.0f);
 	_matrix.elements[3] = SIMDCreate(0.0f, 0.0f, z_near * -range, 0.0f);
 }
@@ -594,14 +592,12 @@ void Matrix4x4SIMD::setPerspectiveLH(float fov, float aspect_ratio, float z_near
 void Matrix4x4SIMD::setPerspectiveRH(float fov, float aspect_ratio, float z_near, float z_far)
 {
 	fov *= 0.5f;
-	float cos_fov = cosf(fov);
-	float sin_fov = sinf(fov);
-	float height = cos_fov / sin_fov;
-	float width = height / aspect_ratio;
+	float tan_fov = tanf(fov);
+	float width = tan_fov / aspect_ratio;
 	float range = z_far / (z_near - z_far);
 
 	_matrix.elements[0] = SIMDCreate(width, 0.0f, 0.0f, 0.0f);
-	_matrix.elements[1] = SIMDCreate(0.0f, height, 0.0f, 0.0f);
+	_matrix.elements[1] = SIMDCreate(0.0f, tan_fov, 0.0f, 0.0f);
 	_matrix.elements[2] = SIMDCreate(0.0f, 0.0f, range, -1.0f);
 	_matrix.elements[3] = SIMDCreate(0.0f, 0.0f, z_near * range, 0.0f);
 }

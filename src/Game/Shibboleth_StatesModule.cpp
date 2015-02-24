@@ -66,7 +66,9 @@ public:
 
 		if (_object) {
 			if (_object->init("Resources/Objects/test.object")) {
-				_app.getManagerT<Shibboleth::OcclusionManager>("Occlusion Manager").addObject(_object, Shibboleth::OcclusionManager::OT_DYNAMIC);
+				Shibboleth::ModelComponent* model = _object->getFirstComponentWithInterface<Shibboleth::ModelComponent>();
+				Shibboleth::OcclusionManager::UserData user_data(reinterpret_cast<unsigned long long>(model), 0);
+				_app.getManagerT<Shibboleth::OcclusionManager>("Occlusion Manager").addObject(_object, Shibboleth::OcclusionManager::OT_DYNAMIC, user_data);
 			} else {
 				_app.getManagerT<Shibboleth::ObjectManager>("Object Manager").removeObject(_object->getID());
 				_app.quit();
@@ -102,7 +104,10 @@ public:
 	void render(void)
 	{
 		Shibboleth::ModelComponent* model = _object->getFirstComponentWithInterface<Shibboleth::ModelComponent>();
+		//Shibboleth::OcclusionManager& om = _app.getManagerT<Shibboleth::OcclusionManager>("Occlusion Manager");
 		Shibboleth::RenderManager& rm = _app.getManagerT<Shibboleth::RenderManager>("Render Manager");
+
+		// query occlusion manager
 
 		rm.getSpinLock().lock(); // Have to lock just in case other resources are trying to load and use the device
 		rm.getRenderDevice().setCurrentDevice(0);

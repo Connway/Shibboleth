@@ -41,7 +41,6 @@ public:
 	INLINE const Vector4CPU& operator=(const Vector4CPU& rhs);
 
 	INLINE float operator[](int index) const;
-	//INLINE float& operator[](int index);
 
 	const Vector4CPU& operator-=(const Vector4CPU& rhs);
 	Vector4CPU operator-(const Vector4CPU& rhs) const;
@@ -61,12 +60,27 @@ public:
 	const Vector4CPU& operator/=(float rhs);
 	Vector4CPU operator/(float rhs) const;
 
+	const Vector4CPU& operator&=(const Vector4CPU& rhs);
+	Vector4CPU operator&(const Vector4CPU& rhs) const;
+
+	const Vector4CPU& operator|=(const Vector4CPU& rhs);
+	Vector4CPU operator|(const Vector4CPU& rhs) const;
+
+	const Vector4CPU& operator^=(const Vector4CPU& rhs);
+	Vector4CPU operator^(const Vector4CPU& rhs) const;
+
+	bool operator<=(const Vector4CPU& rhs) const;
+	bool operator<(const Vector4CPU& rhs) const;
+	bool operator>=(const Vector4CPU& rhs) const;
+	bool operator>(const Vector4CPU& rhs) const;
+
 	void set(float x, float y, float z, float w);
 	void set(const float* elements);
-	void set(float value, unsigned int index);
+	INLINE void set(float value, unsigned int index);
+
+	INLINE Vector4CPU get(unsigned int index) const;
 
 	INLINE const float* getBuffer(void) const;
-	//INLINE float* getBuffer(void);
 
 	float lengthSquared(void) const;
 	float length(void) const;

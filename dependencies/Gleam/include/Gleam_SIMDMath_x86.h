@@ -138,6 +138,11 @@ inline float SIMDGet<0>(const SIMDType& vec)
 INLINE SIMDType SIMDNegate(const SIMDType& vec);
 INLINE bool SIMDEqual(const SIMDType& left, const SIMDType& right);
 bool SIMDRoughlyEqual(const SIMDType& left, const SIMDType& right, const SIMDType& epsilon);
+INLINE bool SIMDLessThanOrEqual(const SIMDType& left, const SIMDType& right);
+INLINE bool SIMDLessThan(const SIMDType& left, const SIMDType& right);
+INLINE bool SIMDGreaterThanOrEqual(const SIMDType& left, const SIMDType& right);
+INLINE bool SIMDGreaterThan(const SIMDType& left, const SIMDType& right);
+
 SIMDType SIMDPermute(const SIMDType& left, const SIMDType& right, unsigned int x, unsigned int y, unsigned int z, unsigned int w);
 SIMDType SIMDRound(const SIMDType& vec);
 SIMDType SIMDACos(const SIMDType& vec);

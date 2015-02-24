@@ -42,7 +42,6 @@ public:
 	INLINE const Vector4SIMD& operator=(const Vector4SIMD& rhs);
 
 	INLINE float operator[](int index) const;
-	//INLINE float& operator[](int index);
 
 	INLINE const Vector4SIMD& operator-=(const Vector4SIMD& rhs);
 	INLINE Vector4SIMD operator-(const Vector4SIMD& rhs) const;
@@ -62,12 +61,27 @@ public:
 	INLINE const Vector4SIMD& operator/=(float rhs);
 	INLINE Vector4SIMD operator/(float rhs) const;
 
+	INLINE const Vector4SIMD& operator&=(const Vector4SIMD& rhs);
+	INLINE Vector4SIMD operator&(const Vector4SIMD& rhs) const;
+
+	INLINE const Vector4SIMD& operator|=(const Vector4SIMD& rhs);
+	INLINE Vector4SIMD operator|(const Vector4SIMD& rhs) const;
+
+	INLINE const Vector4SIMD& operator^=(const Vector4SIMD& rhs);
+	INLINE Vector4SIMD operator^(const Vector4SIMD& rhs) const;
+
+	INLINE bool operator<=(const Vector4SIMD& rhs) const;
+	INLINE bool operator<(const Vector4SIMD& rhs) const;
+	INLINE bool operator>=(const Vector4SIMD& rhs) const;
+	INLINE bool operator>(const Vector4SIMD& rhs) const;
+
 	INLINE void set(float x, float y, float z, float w);
 	INLINE void set(const float* elements);
 	INLINE void set(float value, unsigned int index);
 
+	INLINE Vector4SIMD get(unsigned int index) const;
+
 	INLINE const float* getBuffer(void) const;
-	//INLINE float* getBuffer(void);
 	INLINE const SIMDType& getSIMDType(void) const;
 
 	INLINE float lengthSquared(void) const;

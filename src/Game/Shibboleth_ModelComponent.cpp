@@ -220,7 +220,7 @@ void ModelComponent::render(void)
 
 	Gleam::Matrix4x4 tocamera, projection, toworld;
 	tocamera.setLookAtLH(0.0f, 5.0f, -5.0f, 0.0f, 5.0f, 0.0f, 0.0f, 1.0f, 0.0f);
-	projection.setPerspectiveLH(90.0f, 16.0f / 9.0f, 0.1f, 5000.0f);
+	projection.setPerspectiveLH(90.0f * Gaff::DegToRad, 16.0f / 9.0f, 0.1f, 5000.0f);
 	toworld.setIdentity();
 	toworld.setRotationY(rot);
 

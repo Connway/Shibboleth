@@ -757,10 +757,8 @@ void Matrix4x4CPU::setOrthographicRH(float width, float height, float z_near, fl
 void Matrix4x4CPU::setPerspectiveLH(float fov, float aspect_ratio, float z_near, float z_far)
 {
 	fov *= 0.5f;
-	float cos_fov = cosf(fov);
-	float sin_fov = sinf(fov);
-	float height = cos_fov / sin_fov;
-	float width = height / aspect_ratio;
+	float tan_fov = tanf(fov);
+	float width = tan_fov / aspect_ratio;
 	float range = z_far / (z_far - z_near);
 
 	_a[0] = width;
@@ -768,7 +766,7 @@ void Matrix4x4CPU::setPerspectiveLH(float fov, float aspect_ratio, float z_near,
 	_a[2] = 0.0f;
 	_a[3] = 0.0f;
 	_a[4] = 0.0f;
-	_a[5] = height;
+	_a[5] = tan_fov;
 	_a[6] = 0.0f;
 	_a[7] = 0.0f;
 	_a[8] = 0.0f;
@@ -784,10 +782,8 @@ void Matrix4x4CPU::setPerspectiveLH(float fov, float aspect_ratio, float z_near,
 void Matrix4x4CPU::setPerspectiveRH(float fov, float aspect_ratio, float z_near, float z_far)
 {
 	fov *= 0.5f;
-	float cos_fov = cosf(fov);
-	float sin_fov = sinf(fov);
-	float height = cos_fov / sin_fov;
-	float width = height / aspect_ratio;
+	float tan_fov = tanf(fov);
+	float width = tan_fov / aspect_ratio;
 	float range = z_far / (z_near - z_far);
 
 	_a[0] = width;
@@ -795,7 +791,7 @@ void Matrix4x4CPU::setPerspectiveRH(float fov, float aspect_ratio, float z_near,
 	_a[2] = 0.0f;
 	_a[3] = 0.0f;
 	_a[4] = 0.0f;
-	_a[5] = height;
+	_a[5] = tan_fov;
 	_a[6] = 0.0f;
 	_a[7] = 0.0f;
 	_a[8] = 0.0f;

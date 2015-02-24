@@ -80,6 +80,16 @@ OBBCPU::~OBBCPU(void)
 {
 }
 
+const Vector4CPU& OBBCPU::getCenter(void) const
+{
+	return _center;
+}
+
+Vector4CPU OBBCPU::getExtent(void) const
+{
+	return _axes[0] + _axes[1] + _axes[2];
+}
+
 const Vector4CPU& OBBCPU::getAxis(int axis) const
 {
 	assert(axis > -1 && axis < 3);
@@ -90,6 +100,11 @@ void OBBCPU::setAxis(int axis, const Vector4CPU& vec)
 {
 	assert(axis > -1 && axis < 3);
 	_axes[axis] = vec;
+}
+
+const Vector4CPU* OBBCPU::getAxes(void) const
+{
+	return _axes;
 }
 
 const GleamArray<Vector4CPU>& OBBCPU::generatePoints(GleamArray<Vector4CPU>& out) const

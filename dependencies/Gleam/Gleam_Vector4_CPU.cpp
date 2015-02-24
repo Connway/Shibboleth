@@ -83,12 +83,6 @@ float Vector4CPU::operator[](int index) const
 	return _vec[index];
 }
 
-//float& Vector4CPU::operator[](int index)
-//{
-//	assert(index > -1 && index < 4);
-//	return _vec[index];
-//}
-
 const Vector4CPU& Vector4CPU::operator-=(const Vector4CPU& rhs)
 {
 	_x -= rhs._x;
@@ -124,30 +118,7 @@ Vector4CPU Vector4CPU::operator+(const Vector4CPU& rhs) const
 
 Vector4CPU Vector4CPU::operator+(void) const
 {
-	return Vector4CPU(+_x, +_y, +_z, +_w);
-}
-
-void Vector4CPU::set(float x, float y, float z, float w)
-{
-	_x = x;
-	_y = y;
-	_z = z;
-	_w = w;
-}
-
-void Vector4CPU::set(const float* elements)
-{
-	assert(elements);
-	_vec[0] = elements[0];
-	_vec[1] = elements[1];
-	_vec[2] = elements[2];
-	_vec[3] = elements[3];
-}
-
-void Vector4CPU::set(float value, unsigned int index)
-{
-	assert(index >= 0 && index < 4);
-	_vec[index] = value;
+	return Vector4CPU(fabsf(_x), fabsf(_y), fabsf(_z), fabsf(_w));
 }
 
 const Vector4CPU& Vector4CPU::operator*=(const Vector4CPU& rhs)
@@ -206,15 +177,99 @@ Vector4CPU Vector4CPU::operator/(float rhs) const
 	return Vector4CPU(_x / rhs, _y / rhs, _z / rhs, _w / rhs);
 }
 
+const Vector4CPU& Vector4CPU::operator&=(const Vector4CPU& rhs)
+{
+	unsigned int* l = reinterpret_cast<unsigned int*>(_vec);
+	const unsigned int* r = reinterpret_cast<const unsigned int*>(rhs._vec);
+
+	l[0] &= r[0];
+	l[1] &= r[1];
+	l[2] &= r[2];
+	l[3] &= r[3];
+
+	return *this;
+}
+
+Vector4CPU Vector4CPU::operator&(const Vector4CPU& rhs) const
+{
+	Vector4CPU out = *this;
+	out &= rhs;
+	return out;
+}
+
+const Vector4CPU& Vector4CPU::operator|=(const Vector4CPU& rhs)
+{
+	unsigned int* l = reinterpret_cast<unsigned int*>(_vec);
+	const unsigned int* r = reinterpret_cast<const unsigned int*>(rhs._vec);
+
+	l[0] |= r[0];
+	l[1] |= r[1];
+	l[2] |= r[2];
+	l[3] |= r[3];
+
+	return *this;
+}
+
+Vector4CPU Vector4CPU::operator|(const Vector4CPU& rhs) const
+{
+	Vector4CPU out = *this;
+	out |= rhs;
+	return out;
+}
+
+const Vector4CPU& Vector4CPU::operator^=(const Vector4CPU& rhs)
+{
+	unsigned int* l = reinterpret_cast<unsigned int*>(_vec);
+	const unsigned int* r = reinterpret_cast<const unsigned int*>(rhs._vec);
+
+	l[0] ^= r[0];
+	l[1] ^= r[1];
+	l[2] ^= r[2];
+	l[3] ^= r[3];
+
+	return *this;
+}
+
+Vector4CPU Vector4CPU::operator^(const Vector4CPU& rhs) const
+{
+	Vector4CPU out = *this;
+	out ^= rhs;
+	return out;
+}
+
+void Vector4CPU::set(float x, float y, float z, float w)
+{
+	_x = x;
+	_y = y;
+	_z = z;
+	_w = w;
+}
+
+void Vector4CPU::set(const float* elements)
+{
+	assert(elements);
+	_vec[0] = elements[0];
+	_vec[1] = elements[1];
+	_vec[2] = elements[2];
+	_vec[3] = elements[3];
+}
+
+void Vector4CPU::set(float value, unsigned int index)
+{
+	assert(index >= 0 && index < 4);
+	_vec[index] = value;
+}
+
+Vector4CPU Vector4CPU::get(unsigned int index) const
+{
+	assert(index >= 0 && index < 4);
+	return Vector4CPU(_vec[index]);
+}
+
 const float* Vector4CPU::getBuffer(void) const
 {
 	return _vec;
 }
-
-//float* Vector4CPU::getBuffer(void)
-//{
-//	return _vec;
-//}
 
 float Vector4CPU::lengthSquared(void) const
 {

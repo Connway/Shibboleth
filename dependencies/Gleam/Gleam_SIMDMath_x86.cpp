@@ -117,7 +117,31 @@ bool SIMDRoughlyEqual(const SIMDType& left, const SIMDType& right, const SIMDTyp
 	temp = _mm_max_ps(temp, delta);
 	temp = _mm_cmple_ps(temp, epsilon);
 
-	return (_mm_movemask_ps(temp) == 0xf) != 0;
+	return (_mm_movemask_ps(temp) == 0x0f) != 0;
+}
+
+bool SIMDLessThanOrEqual(const SIMDType& left, const SIMDType& right)
+{
+	SIMDType temp = _mm_cmple_ps(left, right);
+	return (_mm_movemask_ps(temp) == 0x0f) != 0;
+}
+
+bool SIMDLessThan(const SIMDType& left, const SIMDType& right)
+{
+	SIMDType temp = _mm_cmplt_ps(left, right);
+	return (_mm_movemask_ps(temp) == 0x0f) != 0;
+}
+
+bool SIMDGreaterThanOrEqual(const SIMDType& left, const SIMDType& right)
+{
+	SIMDType temp = _mm_cmpge_ps(left, right);
+	return (_mm_movemask_ps(temp) == 0x0f) != 0;
+}
+
+bool SIMDGreaterThan(const SIMDType& left, const SIMDType& right)
+{
+	SIMDType temp = _mm_cmpgt_ps(left, right);
+	return (_mm_movemask_ps(temp) == 0x0f) != 0;
 }
 
 SIMDType SIMDPermute(const SIMDType& left, const SIMDType& right, unsigned int x, unsigned int y, unsigned int z, unsigned int w)

@@ -333,6 +333,24 @@
     <ClInclude Include="..\..\..\dependencies\Gleam\include\Gleam_WindowHelpers_Windows.h">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\Gleam\include\Gleam_Plane_CPU.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\Gleam\include\Gleam_Plane_SIMD.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\Gleam\include\Gleam_Plane.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\Gleam\include\Gleam_Frustum_CPU.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\Gleam\include\Gleam_Frustum_SIMD.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\Gleam\include\Gleam_Frustum.h">
+      <Filter>include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\dependencies\Gleam\Gleam_AABB_CPU.cpp" />
@@ -391,5 +409,9 @@
     <ClCompile Include="..\..\..\dependencies\Gleam\Gleam_Window_Linux.cpp" />
     <ClCompile Include="..\..\..\dependencies\Gleam\Gleam_Window_Windows.cpp" />
     <ClCompile Include="..\..\..\dependencies\Gleam\Gleam_WindowHelpers_Windows.cpp" />
+    <ClCompile Include="..\..\..\dependencies\Gleam\Gleam_Plane_CPU.cpp" />
+    <ClCompile Include="..\..\..\dependencies\Gleam\Gleam_Plane_SIMD.cpp" />
+    <ClCompile Include="..\..\..\dependencies\Gleam\Gleam_Frustum_CPU.cpp" />
+    <ClCompile Include="..\..\..\dependencies\Gleam\Gleam_Frustum_SIMD.cpp" />
   </ItemGroup>
 </Project>

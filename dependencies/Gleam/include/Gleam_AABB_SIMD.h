@@ -40,6 +40,7 @@ public:
 
 	INLINE const Vector4SIMD& getMin(void) const;
 	INLINE const Vector4SIMD& getMax(void) const;
+	INLINE Vector4SIMD getExtent(void) const;
 	INLINE Vector4SIMD getCenter(void) const;
 	INLINE void setMin(const Vector4SIMD& min);
 	INLINE void setMax(const Vector4SIMD& max);

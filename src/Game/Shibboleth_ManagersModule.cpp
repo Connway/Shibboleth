@@ -32,6 +32,10 @@ THE SOFTWARE.
 #include <Shibboleth_IApp.h>
 #include <Gaff_JSON.h>
 
+#include <Gleam_Matrix4x4_CPU.h>
+#include <Gleam_Frustum_CPU.h>
+#include <Gleam_AABB_CPU.h>
+
 #ifdef USE_VLD
 	#include <vld.h>
 #endif
@@ -93,6 +97,11 @@ DYNAMICEXPORT_C bool InitModule(Shibboleth::IApp& app)
 	Gaff::JSON::SetMemoryFunctions(&Shibboleth::ShibbolethAllocate, &Shibboleth::ShibbolethFree);
 	Gaff::JSON::SetHashSeed(app.getSeed());
 	Shibboleth::SetApp(app);
+
+	//Gleam::FrustumCPU frustum(75.0f * Gaff::DegToRad, 16.0f / 9.0f, 0.1f, 100.0f);
+	//Gleam::AABBCPU aabb(Gleam::Vector4CPU(-2.5f, -2.5f, 2.5f, 1.0f), Gleam::Vector4CPU(2.5f, 2.5f, 5.0f, 1.0f));
+
+	//bool inside = frustum.contains(aabb);
 
 	return true;
 }

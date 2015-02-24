@@ -41,8 +41,12 @@ public:
 	OBBCPU(void);
 	~OBBCPU(void);
 
+	INLINE const Vector4CPU& getCenter(void) const;
+	INLINE Vector4CPU getExtent(void) const;
+
 	INLINE void setAxis(int axis, const Vector4CPU& vec);
 	INLINE const Vector4CPU& getAxis(int axis) const;
+	INLINE const Vector4CPU* getAxes(void) const;
 
 	INLINE const GleamArray<Vector4CPU>& generatePoints(GleamArray<Vector4CPU>& out) const;
 	INLINE GleamArray<Vector4CPU> generatePoints(void) const;

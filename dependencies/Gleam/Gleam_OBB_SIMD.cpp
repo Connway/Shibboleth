@@ -80,10 +80,25 @@ OBBSIMD::~OBBSIMD(void)
 {
 }
 
+const Vector4SIMD& OBBSIMD::getCenter(void) const
+{
+	return _center;
+}
+
+Vector4SIMD OBBSIMD::getExtent(void) const
+{
+	return _axes[0] + _axes[1] + _axes[2];
+}
+
 const Vector4SIMD& OBBSIMD::getAxis(int axis) const
 {
 	assert(axis > -1 && axis < 3);
 	return _axes[axis];
+}
+
+const Vector4SIMD* OBBSIMD::getAxes(void) const
+{
+	return _axes;
 }
 
 void OBBSIMD::setAxis(int axis, const Vector4SIMD& vec)
