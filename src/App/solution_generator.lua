@@ -6,12 +6,22 @@ solution "App"
 	platforms { "x86", "x64" }
 	configurations { "Debug", "Release" }
 	warnings "Extra"
-	flags { "Unicode", "NoRTTI" }
+	flags { "Unicode", "NoRTTI", "SEH" } -- unfortunately need exceptions for crash handlers :(
 
 	nativewchar "Default"
 	floatingpoint "Fast"
 	startproject "App"
 	debugdir "../../workingdir/App"
+
+	filter { "options:symbols" }
+		flags { "Symbols" }
+		defines { "SYMBOL_BUILD" }
+
+	filter { "system:windows", "options:symbols" }
+		links { "Dbghelp" }
+
+	filter { "options:ltcg" }
+		flags { "LinkTimeOptimization", "NoIncrementalLink" }
 
 	filter { "platforms:x86" }
 		architecture "x32"

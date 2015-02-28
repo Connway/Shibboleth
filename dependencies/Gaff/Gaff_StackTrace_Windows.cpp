@@ -27,17 +27,23 @@ THE SOFTWARE.
 
 NS_GAFF
 
-void* StackTrace::_handle = nullptr;
+void* StackTrace::_handle = GetCurrentProcess();
 
 /*!
 	\brief Global initialization of the stack trace system.
 	\note Must be called before using a StackTrace instance. And called per execution context. (eg EXE, DLL)
 */
-bool StackTrace::Init(void)
+bool StackTrace::Init(bool module_refresh)
 {
-	assert(!_handle);
-	_handle = GetCurrentProcess();
-	return SymInitialize(_handle, nullptr, TRUE) == TRUE;
+	bool ret = false;
+
+	if (module_refresh) {
+		ret = SymRefreshModuleList(_handle) == TRUE;
+	} else {
+		ret = SymInitialize(_handle, nullptr, TRUE) == TRUE;
+	}
+
+	return ret;
 }
 
 /*!
@@ -53,17 +59,13 @@ void StackTrace::Destroy(void)
 StackTrace::StackTrace(const StackTrace& trace):
 	_total_frames(trace._total_frames)
 {
-	SYMBOL_INFO* sym = (SYMBOL_INFO*)_symbol_info;
-	sym->SizeOfStruct = sizeof(SYMBOL_INFO);
-	sym->MaxNameLen = NAME_SIZE - 1;
-
-	memcpy(_stack, trace._stack, sizeof(_stack));
+	*this = trace;
 }
 
 StackTrace::StackTrace(void):
 	_total_frames(0)
 {
-	SYMBOL_INFO* sym = (SYMBOL_INFO*)_symbol_info;
+	SYMBOL_INFO* sym = reinterpret_cast<SYMBOL_INFO*>(_symbol_info);
 	sym->SizeOfStruct = sizeof(SYMBOL_INFO);
 	sym->MaxNameLen = NAME_SIZE - 1;
 }
@@ -74,6 +76,7 @@ StackTrace::~StackTrace(void)
 
 const StackTrace& StackTrace::operator=(const StackTrace& rhs)
 {
+	memcpy(_symbol_info, rhs._symbol_info, sizeof(SYMBOL_INFO) + NAME_SIZE - 1);
 	memcpy(_stack, rhs._stack, sizeof(_stack));
 	_total_frames = rhs._total_frames;
 	return *this;
@@ -105,7 +108,7 @@ unsigned short StackTrace::getTotalFrames(void) const
 */
 bool StackTrace::loadFrameInfo(unsigned short frame)
 {
-	SYMBOL_INFO* sym = (SYMBOL_INFO*)_symbol_info;
+	SYMBOL_INFO* sym = reinterpret_cast<SYMBOL_INFO*>(_symbol_info);
 	return SymFromAddr(_handle, (DWORD64)_stack[frame], nullptr, sym) == TRUE;
 }
 
@@ -115,7 +118,7 @@ bool StackTrace::loadFrameInfo(unsigned short frame)
 */
 const char* StackTrace::getFrameName(void) const
 {
-	SYMBOL_INFO* sym = (SYMBOL_INFO*)_symbol_info;
+	const SYMBOL_INFO* sym = reinterpret_cast<const SYMBOL_INFO*>(_symbol_info);
 	return sym->Name;
 }
 
@@ -125,7 +128,7 @@ const char* StackTrace::getFrameName(void) const
 */
 unsigned long long StackTrace::getFrameAddress(void) const
 {
-	SYMBOL_INFO* sym = (SYMBOL_INFO*)_symbol_info;
+	const SYMBOL_INFO* sym = reinterpret_cast<const SYMBOL_INFO*>(_symbol_info);
 	return sym->Address;
 }
 

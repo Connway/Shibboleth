@@ -164,12 +164,12 @@ static unsigned int g_image_alloc_tag = Gaff::FNV1Hash32("Images", static_cast<u
 
 void* MEMCB ImageAlloc(const size_t size)
 {
-	return Shibboleth::GetAllocator()->alloc((unsigned int)size, g_image_alloc_tag);
+	return Shibboleth::ShibbolethAllocate(size, g_image_alloc_tag);
 }
 
 void MEMCB ImageFree(const void* const data)
 {
-	Shibboleth::GetAllocator()->free((void*)data, g_image_alloc_tag);
+	Shibboleth::ShibbolethFree((void*)data, g_image_alloc_tag);
 }
 
 

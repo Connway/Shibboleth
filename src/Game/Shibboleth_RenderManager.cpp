@@ -65,8 +65,8 @@ static DisplayTags g_Display_Tags_Values[] = {
 };
 
 RenderManager::RenderManager(IApp& app):
-	_render_device(nullptr, ProxyAllocator(GetAllocator(), "Graphics Allocations")),
-	_proxy_allocator(GetAllocator(), "Graphics Allocations"), _app(app)
+	_render_device(nullptr, ProxyAllocator("Graphics")),
+	_proxy_allocator("Graphics"), _app(app)
 {
 	memset(&_graphics_functions, 0, sizeof(GraphicsFunctions));
 }
@@ -155,7 +155,7 @@ bool RenderManager::init(const char* module)
 		}
 
 		// Reset reflection definition
-		g_DisplayTags_Ref_Def = Gaff::EnumRefDef<DisplayTags, ProxyAllocator>("DisplayTags", ProxyAllocator(GetAllocator(), "Reflection"));
+		g_DisplayTags_Ref_Def = Gaff::EnumRefDef<DisplayTags, ProxyAllocator>("DisplayTags", ProxyAllocator("Reflection"));
 
 		bool ret = display_tags.forEachInArray([&](size_t index, const Gaff::JSON& value) -> bool
 		{

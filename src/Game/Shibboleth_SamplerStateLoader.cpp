@@ -37,7 +37,7 @@ THE SOFTWARE.
 NS_SHIBBOLETH
 
 static EnumReflectionDefinition<Gleam::ISamplerState::FILTER> g_filter_ref_def =
-Gaff::EnumRefDef<Gleam::ISamplerState::FILTER>("Gleam::ISamplerState::FILTER", ProxyAllocator(GetAllocator(), "Reflection")).macroFix()
+Gaff::EnumRefDef<Gleam::ISamplerState::FILTER>("Gleam::ISamplerState::FILTER", ProxyAllocator("Reflection")).macroFix()
 .addValue("NEAREST NEAREST NEAREST", Gleam::ISamplerState::FILTER_NEAREST_NEAREST_NEAREST)
 .addValue("NEAREST LINEAR NEAREST", Gleam::ISamplerState::FILTER_NEAREST_LINEAR_NEAREST)
 .addValue("NEAREST LINEAR Linear", Gleam::ISamplerState::FILTER_NEAREST_LINEAR_LINEAR)
@@ -49,7 +49,7 @@ Gaff::EnumRefDef<Gleam::ISamplerState::FILTER>("Gleam::ISamplerState::FILTER", P
 ;
 
 static EnumReflectionDefinition<Gleam::ISamplerState::WRAP> g_wrap_ref_def =
-Gaff::EnumRefDef<Gleam::ISamplerState::WRAP>("Gleam::ISamplerState::FILTER", ProxyAllocator(GetAllocator(), "Reflection")).macroFix()
+Gaff::EnumRefDef<Gleam::ISamplerState::WRAP>("Gleam::ISamplerState::FILTER", ProxyAllocator("Reflection")).macroFix()
 .addValue("REPEAT", Gleam::ISamplerState::WRAP_REPEAT)
 .addValue("MIRROR", Gleam::ISamplerState::WRAP_MIRROR)
 .addValue("CLAMP", Gleam::ISamplerState::WRAP_CLAMP)

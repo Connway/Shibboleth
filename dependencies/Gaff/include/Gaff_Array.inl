@@ -448,7 +448,7 @@ void Array<T, Allocator>::insert(const T& data, size_t index)
 {
 	assert(index <= _size);
 
-	if (_used + 1 > _size) {
+	if (_used == _size) {
 		reserve((_size == 0) ? 1 : _size * 2);
 	}
 

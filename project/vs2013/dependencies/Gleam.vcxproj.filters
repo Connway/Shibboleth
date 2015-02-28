@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="include">
@@ -52,6 +52,15 @@
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\dependencies\Gleam\include\Gleam_Defines.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\Gleam\include\Gleam_Frustum.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\Gleam\include\Gleam_Frustum_CPU.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\Gleam\include\Gleam_Frustum_SIMD.h">
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\dependencies\Gleam\include\Gleam_Global.h">
@@ -189,6 +198,15 @@
     <ClInclude Include="..\..\..\dependencies\Gleam\include\Gleam_OBB_SIMD.h">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\Gleam\include\Gleam_Plane.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\Gleam\include\Gleam_Plane_CPU.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\Gleam\include\Gleam_Plane_SIMD.h">
+      <Filter>include</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\dependencies\Gleam\include\Gleam_Program.h">
       <Filter>include</Filter>
     </ClInclude>
@@ -321,6 +339,9 @@
     <ClInclude Include="..\..\..\dependencies\Gleam\include\Gleam_Window.h">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\Gleam\include\Gleam_WindowHelpers_Windows.h">
+      <Filter>include</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\dependencies\Gleam\include\Gleam_Window_Defines.h">
       <Filter>include</Filter>
     </ClInclude>
@@ -328,27 +349,6 @@
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\dependencies\Gleam\include\Gleam_Window_Windows.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\dependencies\Gleam\include\Gleam_WindowHelpers_Windows.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\dependencies\Gleam\include\Gleam_Plane_CPU.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\dependencies\Gleam\include\Gleam_Plane_SIMD.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\dependencies\Gleam\include\Gleam_Plane.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\dependencies\Gleam\include\Gleam_Frustum_CPU.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\dependencies\Gleam\include\Gleam_Frustum_SIMD.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\dependencies\Gleam\include\Gleam_Frustum.h">
       <Filter>include</Filter>
     </ClInclude>
   </ItemGroup>
@@ -362,6 +362,8 @@
     <ClCompile Include="..\..\..\dependencies\Gleam\Gleam_DeferredRenderDeviceBase.cpp" />
     <ClCompile Include="..\..\..\dependencies\Gleam\Gleam_DeferredRenderDevice_Direct3D.cpp" />
     <ClCompile Include="..\..\..\dependencies\Gleam\Gleam_DeferredRenderDevice_OpenGL.cpp" />
+    <ClCompile Include="..\..\..\dependencies\Gleam\Gleam_Frustum_CPU.cpp" />
+    <ClCompile Include="..\..\..\dependencies\Gleam\Gleam_Frustum_SIMD.cpp" />
     <ClCompile Include="..\..\..\dependencies\Gleam\Gleam_Global.cpp" />
     <ClCompile Include="..\..\..\dependencies\Gleam\Gleam_InputManager.cpp" />
     <ClCompile Include="..\..\..\dependencies\Gleam\Gleam_Keyboard_MessagePump.cpp" />
@@ -378,6 +380,8 @@
     <ClCompile Include="..\..\..\dependencies\Gleam\Gleam_Mouse_MessagePump.cpp" />
     <ClCompile Include="..\..\..\dependencies\Gleam\Gleam_OBB_CPU.cpp" />
     <ClCompile Include="..\..\..\dependencies\Gleam\Gleam_OBB_SIMD.cpp" />
+    <ClCompile Include="..\..\..\dependencies\Gleam\Gleam_Plane_CPU.cpp" />
+    <ClCompile Include="..\..\..\dependencies\Gleam\Gleam_Plane_SIMD.cpp" />
     <ClCompile Include="..\..\..\dependencies\Gleam\Gleam_ProgramBase.cpp" />
     <ClCompile Include="..\..\..\dependencies\Gleam\Gleam_Program_Direct3D.cpp" />
     <ClCompile Include="..\..\..\dependencies\Gleam\Gleam_Program_OpenGL.cpp" />
@@ -406,12 +410,8 @@
     <ClCompile Include="..\..\..\dependencies\Gleam\Gleam_Transform_SIMD.cpp" />
     <ClCompile Include="..\..\..\dependencies\Gleam\Gleam_Vector4_CPU.cpp" />
     <ClCompile Include="..\..\..\dependencies\Gleam\Gleam_Vector4_SIMD.cpp" />
+    <ClCompile Include="..\..\..\dependencies\Gleam\Gleam_WindowHelpers_Windows.cpp" />
     <ClCompile Include="..\..\..\dependencies\Gleam\Gleam_Window_Linux.cpp" />
     <ClCompile Include="..\..\..\dependencies\Gleam\Gleam_Window_Windows.cpp" />
-    <ClCompile Include="..\..\..\dependencies\Gleam\Gleam_WindowHelpers_Windows.cpp" />
-    <ClCompile Include="..\..\..\dependencies\Gleam\Gleam_Plane_CPU.cpp" />
-    <ClCompile Include="..\..\..\dependencies\Gleam\Gleam_Plane_SIMD.cpp" />
-    <ClCompile Include="..\..\..\dependencies\Gleam\Gleam_Frustum_CPU.cpp" />
-    <ClCompile Include="..\..\..\dependencies\Gleam\Gleam_Frustum_SIMD.cpp" />
   </ItemGroup>
 </Project>

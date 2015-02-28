@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="include">
@@ -9,6 +9,9 @@
     <None Include="..\..\..\src\Game\solution_generator.lua" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\..\src\Game\include\Shibboleth_BufferCreator.h">
+      <Filter>include</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\src\Game\include\Shibboleth_HoldingLoader.h">
       <Filter>include</Filter>
     </ClInclude>
@@ -42,6 +45,9 @@
     <ClInclude Include="..\..\..\src\Game\include\Shibboleth_PackFileSystem.h">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\src\Game\include\Shibboleth_ProgramBuffersCreator.h">
+      <Filter>include</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\src\Game\include\Shibboleth_ResourceDefines.h">
       <Filter>include</Filter>
     </ClInclude>
@@ -66,14 +72,9 @@
     <ClInclude Include="..\..\..\src\Game\include\Shibboleth_UserDataWrapper.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\src\Game\include\Shibboleth_ProgramBuffersCreator.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\src\Game\include\Shibboleth_BufferCreator.h">
-      <Filter>include</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\..\src\Game\Shibboleth_BufferCreator.cpp" />
     <ClCompile Include="..\..\..\src\Game\Shibboleth_HoldingLoader.cpp" />
     <ClCompile Include="..\..\..\src\Game\Shibboleth_LoadingMessage.cpp" />
     <ClCompile Include="..\..\..\src\Game\Shibboleth_LuaLoader.cpp" />
@@ -82,11 +83,10 @@
     <ClCompile Include="..\..\..\src\Game\Shibboleth_OtterUIFileSystem.cpp" />
     <ClCompile Include="..\..\..\src\Game\Shibboleth_OtterUIRenderer.cpp" />
     <ClCompile Include="..\..\..\src\Game\Shibboleth_PackFileSystem.cpp" />
+    <ClCompile Include="..\..\..\src\Game\Shibboleth_ProgramBuffersCreator.cpp" />
     <ClCompile Include="..\..\..\src\Game\Shibboleth_SamplerStateLoader.cpp" />
     <ClCompile Include="..\..\..\src\Game\Shibboleth_ShaderLoader.cpp" />
     <ClCompile Include="..\..\..\src\Game\Shibboleth_ShaderProgramLoader.cpp" />
     <ClCompile Include="..\..\..\src\Game\Shibboleth_TextureLoader.cpp" />
-    <ClCompile Include="..\..\..\src\Game\Shibboleth_ProgramBuffersCreator.cpp" />
-    <ClCompile Include="..\..\..\src\Game\Shibboleth_BufferCreator.cpp" />
   </ItemGroup>
 </Project>

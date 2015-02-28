@@ -30,7 +30,7 @@ THE SOFTWARE.
 
 NS_GAFF
 
-#define MAX_FRAMES 128 //!< The maximum number of stack frames we can captures.
+#define MAX_FRAMES 32 //!< The maximum number of stack frames we can captures.
 #define NAME_SIZE 256 //!< The maximum size a frame name can be.
 
 /*!
@@ -39,8 +39,8 @@ NS_GAFF
 class StackTrace
 {
 public:
-	static bool Init(void);
-	static void Destroy(void);
+	INLINE static bool Init(bool module_refresh = false);
+	INLINE static void Destroy(void);
 
 	StackTrace(const StackTrace& trace);
 	StackTrace(void);
@@ -48,7 +48,7 @@ public:
 
 	const StackTrace& operator=(const StackTrace& rhs);
 
-	INLINE unsigned short captureStack(unsigned int frames_to_capture = 64);
+	INLINE unsigned short captureStack(unsigned int frames_to_capture = MAX_FRAMES);
 	INLINE unsigned short getTotalFrames(void) const;
 
 	bool loadFrameInfo(unsigned short frame);

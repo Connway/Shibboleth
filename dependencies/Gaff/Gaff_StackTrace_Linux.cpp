@@ -34,7 +34,7 @@ NS_GAFF
 	\brief Global initialization of the stack trace system.
 	\note Must be called before using a StackTrace instance. And called per execution context. (eg EXE, DLL)
 */
-bool StackTrace::Init(void)
+bool StackTrace::Init(bool)
 {
 	return true;
 }
@@ -129,7 +129,7 @@ const char* StackTrace::getFrameName(void) const
 unsigned long long StackTrace::getFrameAddress(void) const
 {
 	// No idea if this is correct, but close enough I guess :/
-	return (unsigned long long)_frame;
+	return static_cast<unsigned long long>(_frame);
 }
 
 NS_END

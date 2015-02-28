@@ -34,14 +34,14 @@ THE SOFTWARE.
 
 NS_SHIBBOLETH
 
-// Have to pass in the correct ProxyAllocator, as we have not registered our allocator globally yet
 App::App(void):
-	//_broadcaster(ProxyAllocator(&_allocator)), _dynamic_loader(ProxyAllocator(&_allocator)),
-	_state_machine(ProxyAllocator()), //_manager_map(ProxyAllocator(&_allocator)),
-	/*_thread_pool(ProxyAllocator(&_allocator)),*/ _logger(ProxyAllocator()),
-	/*_cmd_line_args(ProxyAllocator(&_allocator)),*/ _log_file_pair(nullptr),
-	_seed(0), _running(true)
+	_state_machine(ProxyAllocator()), _logger(ProxyAllocator()),
+	_log_file_pair(nullptr), _seed(0), _running(true)
 {
+#ifdef SYMBOL_BUILD
+	assert(Gaff::StackTrace::Init());
+#endif
+
 	SetApp(*this);
 }
 
@@ -78,6 +78,10 @@ App::~App(void)
 	} else if (_fs.file_system) {
 		GetAllocator()->freeT(_fs.file_system);
 	}
+
+#ifdef SYMBOL_BUILD
+	Gaff::StackTrace::Destroy();
+#endif
 }
 
 // Still single-threaded at this point, so ok that we're not using the spinlock

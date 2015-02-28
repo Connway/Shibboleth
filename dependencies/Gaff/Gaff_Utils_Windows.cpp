@@ -75,6 +75,16 @@ bool SetWorkingDir(const char* directory)
 	return SetCurrentDirectoryA(directory) != 0;
 }
 
+void* AlignedMalloc(size_t size, size_t alignment)
+{
+	return _aligned_malloc(size, alignment);
+}
+
+void AlignedFree(void* data)
+{
+	_aligned_free(data);
+}
+
 #ifdef _UNICODE
 bool CreateDir(const wchar_t* dirname, unsigned short)
 {
