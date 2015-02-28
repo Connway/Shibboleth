@@ -6,10 +6,10 @@ project "Shared"
 	kind "StaticLib"
 	language "C++"
 
-	configuration "windows"
-		includedirs { "../../dependencies/dirent" }
-
 	configuration {}
+
+	filter { "system:windows" }
+		includedirs { "../../dependencies/dirent" }
 
 	filter { "options:simd" }
 		defines { "USE_SIMD" }

@@ -7,17 +7,22 @@ project "Memory"
 	language "C++"
 	defines { "IS_MEMORY" }
 
-	files { "include/Shibboleth_Memory.h", "Shibboleth_Memory.cpp" }
+	files { "**.h", "**.cpp" }
 
 	includedirs
 	{
 		"include",
 		"../Shared/include",
-		"../../dependencies/Gaff/include"
+		"../../dependencies/Gaff/include",
+		"../../dependencies/utf8-cpp",
+		"../../dependencies/dirent"
 	}
 
 	dependson { "Shared", "Gaff" }
 	links { "Shared", "Gaff" }
+
+	filter { "system:windows", "options:symbols" }
+		links { "Dbghelp" }
 
 	filter { "configurations:Debug", "platforms:x86" }
 		targetsuffix "32d"

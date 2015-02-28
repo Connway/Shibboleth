@@ -21,6 +21,8 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Shibboleth_Memory.h"
+#include "Shibboleth_Allocator.h"
+#include <Shibboleth_ProxyAllocator.h>
 
 #ifdef USE_VLD
 	#include <vld.h>
@@ -35,19 +37,29 @@ void CreateMemoryPool(const char* pool_name, unsigned int alloc_tag)
 	gAllocator.createMemoryPool(pool_name, alloc_tag);
 }
 
-Allocator* GetAllocator(void)
+IAllocator* GetAllocator(void)
 {
 	return &gAllocator;
 }
 
+void* ShibbolethAllocate(size_t size, unsigned int alloc_tag)
+{
+	return gAllocator.alloc(size, alloc_tag);
+}
+
 void* ShibbolethAllocate(size_t size)
 {
-	return gAllocator.alloc(static_cast<unsigned int>(size));
+	return ShibbolethAllocate(size, 0);
+}
+
+void ShibbolethFree(void* data, unsigned int alloc_tag)
+{
+	gAllocator.free(data, alloc_tag);
 }
 
 void ShibbolethFree(void* data)
 {
-	gAllocator.free(data);
+	ShibbolethFree(data, 0);
 }
 
 NS_END

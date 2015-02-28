@@ -22,15 +22,34 @@ newoption
 	description = "Generate solution with defines for using SIMDStoreAligned and SIMDLoadAligned instructions."
 }
 
+newoption
+{
+	trigger = "ltcg",
+	description = "Enables Link-Time Code Generation."
+}
+
+newoption
+{
+	trigger = "symbols",
+	description = "Builds symbol information into binaries."
+}
+
 solution "Temp"
 	platforms { "x86", "x64" }
 
 	configurations { "Debug", "Release" }
 	warnings "Extra"
-	flags { "Unicode", "NoRTTI", "LinkTimeOptimization" }
+	flags { "Unicode", "NoRTTI", "SEH" } -- unfortunately need exceptions for crash handlers :(
 
 	nativewchar "Default"
 	floatingpoint "Fast"
+
+	filter { "options:symbols" }
+		flags { "Symbols" }
+		defines { "SYMBOL_BUILD" }
+
+	filter { "options:ltcg" }
+		flags { "LinkTimeOptimization", "NoIncrementalLink" }
 
 	filter { "platforms:x86" }
 		architecture "x32"

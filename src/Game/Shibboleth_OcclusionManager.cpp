@@ -339,7 +339,8 @@ void OcclusionManager::update(double)
 
 void OcclusionManager::findObjectsInFrustum(const Gleam::FrustumCPU& frustum, Array<QueryData>& out) const
 {
-
+	//BVHTree::FrustumQueryTasks static_tasks = _bvh_trees[OT_STATIC].findObjectsInFrustum(frustum);
+	//BVHTree::FrustumQueryTasks dynamic_tasks = _bvh_trees[OT_DYNAMIC].findObjectsInFrustum(frustum);
 }
 
 Array<OcclusionManager::QueryData> OcclusionManager::findObjectsInFrustum(const Gleam::FrustumCPU& frustum) const

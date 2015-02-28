@@ -22,7 +22,7 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Shibboleth_Defines.h"
+#include "Shibboleth_IAllocator.h"
 #include <Gaff_DefaultAlignedAllocator.h>
 #include <Gaff_IAllocator.h>
 #include <Gaff_SpinLock.h>
@@ -31,10 +31,15 @@ THE SOFTWARE.
 #define POOL_NAME_SIZE 32
 
 #define TRACK_POINTER_ALLOCATIONS
+//#define GATHER_ALLOCATION_STACKTRACE
+
+#if defined(SYMBOL_BUILD) && defined(GATHER_ALLOCATION_STACKTRACE)
+	#include <Gaff_StackTrace.h>
+#endif
 
 NS_SHIBBOLETH
 
-class Allocator : public Gaff::IAllocator
+class Allocator : public IAllocator
 {
 public:
 	Allocator(size_t alignment = 16);
@@ -60,12 +65,14 @@ private:
 		char pool_name[POOL_NAME_SIZE];
 
 #ifdef TRACK_POINTER_ALLOCATIONS
-		MemoryPoolInfo(void): wrong_free(Gaff::DefaultAlignedAllocator(16)), pointers_allocated(Gaff::DefaultAlignedAllocator(16)) {}
-
-		Gaff::Map<unsigned int, unsigned int, Gaff::DefaultAlignedAllocator> wrong_free;
-		Gaff::Array<void*, Gaff::DefaultAlignedAllocator> pointers_allocated;
+		Gaff::Map<unsigned int, unsigned int, Gaff::DefaultAlignedAllocator> wrong_free = Gaff::Map<unsigned int, unsigned int, Gaff::DefaultAlignedAllocator>(Gaff::DefaultAlignedAllocator(16));
+		Gaff::Array<void*, Gaff::DefaultAlignedAllocator> pointers_allocated = Gaff::Array<void*, Gaff::DefaultAlignedAllocator>(Gaff::DefaultAlignedAllocator(16));
 		Gaff::SpinLock* wf_lock;
 		Gaff::SpinLock* pa_lock;
+#endif
+#if defined(SYMBOL_BUILD) && defined(GATHER_ALLOCATION_STACKTRACE)
+		Gaff::Map<void*, Gaff::StackTrace, Gaff::DefaultAlignedAllocator> stack_traces = Gaff::Map<void*, Gaff::StackTrace, Gaff::DefaultAlignedAllocator>(Gaff::DefaultAlignedAllocator(16));
+		Gaff::SpinLock* st_lock;
 #endif
 	};
 

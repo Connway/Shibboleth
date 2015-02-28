@@ -25,22 +25,17 @@ THE SOFTWARE.
 #include "Shibboleth_Memory.h"
 #include <Gaff_Math.h>
 
-// Disable warning for no assignment operator generated
-//#if defined(_WIN32) || defined(_WIN64)
-//	#pragma warning(disable : 4512)
-//#endif
-
 NS_SHIBBOLETH
 
 class ProxyAllocator : public Gaff::IAllocator
 {
 public:
-	ProxyAllocator(Allocator* allocator = GetAllocator(), const char* pool_tag = nullptr):
+	ProxyAllocator(const char* pool_tag = nullptr, Shibboleth::IAllocator* allocator = GetAllocator()):
 		_allocator(allocator), _alloc_tag(0)
 	{
 		if (pool_tag) {
-			_alloc_tag = Gaff::FNV1Hash32(pool_tag, (unsigned int)strlen(pool_tag));
-			CreateMemoryPool(pool_tag, _alloc_tag);
+			_alloc_tag = Gaff::FNV1Hash32(pool_tag, strlen(pool_tag));
+			_allocator->createMemoryPool(pool_tag, _alloc_tag);
 		}
 	}
 
@@ -63,17 +58,12 @@ public:
 
 	void free(void* data)
 	{
-		return _allocator->free(data, _alloc_tag);
+		_allocator->free(data, _alloc_tag);
 	}
 
 private:
-	Allocator* _allocator;
+	Shibboleth::IAllocator* _allocator;
 	unsigned int _alloc_tag;
 };
 
 NS_END
-
-// Disable warning for no assignment operator generated
-//#if defined(_WIN32) || defined(_WIN64)
-//	#pragma warning(default : 4512)
-//#endif

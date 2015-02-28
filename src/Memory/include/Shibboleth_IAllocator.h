@@ -22,18 +22,25 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Shibboleth_ProxyAllocator.h"
-#include <Gaff_ReflectionDefinitions.h>
+#include <Shibboleth_Defines.h>
+#include <Gaff_IAllocator.h>
 
 NS_SHIBBOLETH
 
-template <class T> using EnumReflectionDefinition = Gaff::EnumReflectionDefinition<T, ProxyAllocator>;
-template <class T> using ReflectionDefinition = Gaff::ReflectionDefinition<T, ProxyAllocator>;
-typedef Gaff::IEnumReflectionDefinition<ProxyAllocator> IEnumReflectionDefinition;
+class IAllocator : public Gaff::IAllocator
+{
+public:
+	IAllocator(void) {}
+	virtual ~IAllocator(void) {}
 
-#define REF_IMPL_SHIB(ClassName) REF_IMPL_ASSIGN(ClassName, ProxyAllocator, ProxyAllocator("Reflection"))
-#define REF_DEF_SHIB(ClassName) REF_DEF(ClassName, ProxyAllocator)
-#define ENUM_REF_DEF_SHIB(EnumName) ENUM_REF_DEF(EnumName, ProxyAllocator)
-#define ENUM_REF_IMPL_SHIB(EnumName) ENUM_REF_IMPL_ASSIGN(EnumName, ProxyAllocator, ProxyAllocator("Reflection"))
+	virtual void createMemoryPool(const char* pool_name, unsigned int alloc_tag) = 0;
+	virtual void* alloc(size_t size_bytes, unsigned int alloc_tag) = 0;
+	virtual void free(void* data, unsigned int alloc_tag) = 0;
+	virtual void* alloc(size_t size_bytes) = 0;
+	virtual void free(void* data) = 0;
+
+	GAFF_NO_COPY(IAllocator);
+	GAFF_NO_MOVE(IAllocator);
+};
 
 NS_END

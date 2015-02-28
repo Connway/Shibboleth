@@ -66,7 +66,7 @@ static const char* d3d11_end_shader_chunk =
 
 ModelLoader::ModelLoader(RenderManager& render_mgr, ResourceManager& res_mgr, IFileSystem& file_system):
 	_render_mgr(render_mgr), _res_mgr(res_mgr), _file_system(file_system),
-	_esprit_proxy_allocator(GetAllocator(), "esprit Allocations")
+	_esprit_proxy_allocator("esprit")
 {
 	esprit::SetAllocator(&_esprit_proxy_allocator);
 }

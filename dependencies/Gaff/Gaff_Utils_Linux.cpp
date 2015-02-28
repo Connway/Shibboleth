@@ -69,6 +69,18 @@ bool SetWorkingDir(const char* directory)
 	return !chdir(directory);
 }
 
+void* AlignedMalloc(size_t size, size_t alignment)
+{
+	void* data;
+	posix_memalign(&data, alignment, size);
+	return data;
+}
+
+void AlignedFree(void* data)
+{
+	free(data);
+}
+
 NS_END
 
 #endif

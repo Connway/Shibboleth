@@ -234,7 +234,7 @@ void SetupGraphicsState::update(void)
 		}
 
 		if (icon) {
-			if (!render_manager.getWindowData(render_manager.getNumWindows() - 1).window->setIcon(icon.getString())) {
+			if (!render_manager.getWindowData(static_cast<unsigned int>(render_manager.getNumWindows() - 1)).window->setIcon(icon.getString())) {
 				log.first.printf("WARNING - Failed to set window icon to '%s'.\n", icon.getString());
 			}
 		}

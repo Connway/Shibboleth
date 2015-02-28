@@ -27,6 +27,7 @@ THE SOFTWARE.
 #include <Shibboleth_IManager.h>
 #include <Shibboleth_Watcher.h>
 #include <Shibboleth_Array.h>
+#include <Shibboleth_ITask.h>
 #include <Shibboleth_Map.h>
 #include <Gleam_AABB_CPU.h>
 #include <Gaff_ReadWriteSpinLock.h>
@@ -81,6 +82,23 @@ private:
 	class BVHTree
 	{
 	public:
+		class FrustumTask : public ITask
+		{
+		public:
+			FrustumTask();
+			~FrustumTask(void);
+
+			void doTask(void);
+
+			const Array<QueryData>& getResult(void) const;
+			Array<QueryData>& getResult(void);
+
+		private:
+			Array<QueryData> _result;
+		};
+
+		typedef Gaff::Pair<FrustumTask, FrustumTask> FrustumQueryTasks;
+
 		BVHTree(void);
 		~BVHTree(void);
 

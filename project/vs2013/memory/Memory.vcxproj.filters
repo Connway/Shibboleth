@@ -6,11 +6,18 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\..\src\Memory\include\Shibboleth_Allocator.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\Memory\include\Shibboleth_IAllocator.h">
+      <Filter>include</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\src\Memory\include\Shibboleth_Memory.h">
       <Filter>include</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\..\src\Memory\Shibboleth_Allocator.cpp" />
     <ClCompile Include="..\..\..\src\Memory\Shibboleth_Memory.cpp" />
   </ItemGroup>
 </Project>

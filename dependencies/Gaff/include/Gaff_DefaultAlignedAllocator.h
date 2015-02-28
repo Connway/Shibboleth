@@ -25,6 +25,7 @@ THE SOFTWARE.
 #pragma once
 
 #include "Gaff_IAllocator.h"
+#include "Gaff_Utils.h"
 #include <stdlib.h>
 
 NS_GAFF
@@ -43,12 +44,12 @@ public:
 
 	void* alloc(size_t size_bytes)
 	{
-		return _aligned_malloc(size_bytes, _alignment);
+		return AlignedMalloc(size_bytes, _alignment);
 	}
 
 	void free(void* data)
 	{
-		_aligned_free(data);
+		AlignedFree(data);
 	}
 
 private:

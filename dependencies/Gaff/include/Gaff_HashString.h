@@ -41,6 +41,7 @@ public:
 	HashString(const T* string, HashFunc32 hash = FNV1Hash32, const Allocator& allocator = Allocator());
 	HashString(HashFunc32 hash = FNV1Hash32, const Allocator& allocator = Allocator());
 	HashString(HashString<T, Allocator>&& rhs);
+	~HashString(void);
 
 	const HashString<T, Allocator>& operator=(const HashString<T, Allocator>& rhs);
 	const HashString<T, Allocator>& operator=(const String<T, Allocator>& rhs);

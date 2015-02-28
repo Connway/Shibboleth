@@ -20,10 +20,17 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
+//////////////////////////////////////////////////////////////////////////
+// This file probably should get cleaned up to remove all the #ifdef's.	//
+// Potentially add some sort of system to add modules instead?			//
+//////////////////////////////////////////////////////////////////////////
+
 #include "Shibboleth_Allocator.h"
+#include <Gaff_IncludeAssert.h>
 #include <Gaff_Atomic.h>
 #include <Gaff_Utils.h>
 #include <Gaff_File.h>
+#include <cstdlib>
 
 NS_SHIBBOLETH
 
@@ -34,13 +41,15 @@ Allocator::Allocator(size_t alignment):
 	mem_pool_info.total_bytes_allocated = 0;
 	mem_pool_info.num_allocations = 0;
 	mem_pool_info.num_frees = 0;
+	strncpy(mem_pool_info.pool_name, "Untagged", POOL_NAME_SIZE);
 
 #ifdef TRACK_POINTER_ALLOCATIONS
 	mem_pool_info.pa_lock = _global_allocator.template allocT<Gaff::SpinLock>();
 	mem_pool_info.wf_lock = _global_allocator.template allocT<Gaff::SpinLock>();
 #endif
-
-	strncpy(mem_pool_info.pool_name, "Untagged Allocations", POOL_NAME_SIZE);
+#if defined(SYMBOL_BUILD) && defined(GATHER_ALLOCATION_STACKTRACE)
+	mem_pool_info.st_lock = _global_allocator.template allocT<Gaff::SpinLock>();
+#endif
 }
 
 Allocator::~Allocator(void)
@@ -57,6 +66,12 @@ Allocator::~Allocator(void)
 	if (!log.open(log_file_name, Gaff::File::WRITE)) {
 		return;
 	}
+
+#if defined(SYMBOL_BUILD) && defined(GATHER_ALLOCATION_STACKTRACE)
+	Gaff::GetCurrentTimeString(log_file_name, 64, "Logs/CallstackLog %Y-%m-%d %H-%M-%S.txt");
+	Gaff::File callstack_log;
+	log.open(log_file_name, Gaff::File::WRITE);
+#endif
 
 	size_t total_bytes = 0;
 	unsigned int total_allocs = 0;
@@ -108,8 +123,15 @@ Allocator::~Allocator(void)
 			log.printf("\t===========================================================\n");
 			log.printf("\tWARNING: A memory leak was caused by this pool!\n");
 			log.printf("\t===========================================================\n\n");
-
 		}
+
+#if defined(SYMBOL_BUILD) && defined(GATHER_ALLOCATION_STACKTRACE)
+		if (callstack_log.isOpen()) {
+			for (auto it_st = it->second.stack_traces.begin(); it_st != it->second.stack_traces.end(); ++it_st) {
+				// Write stack trace contents to callstack_log
+			}
+		}
+#endif
 	}
 
 	log.printf("Total Bytes Allocated: %i\n", total_bytes);
@@ -119,6 +141,13 @@ Allocator::~Allocator(void)
 	if (total_allocs != total_frees) {
 		log.printf("\n===========================================================\n");
 		log.printf("WARNING: Application has a memory leak(s)!\n");
+
+#if defined(SYMBOL_BUILD) && defined(GATHER_ALLOCATION_STACKTRACE)
+		if (callstack_log.isOpen()) {
+			log.printf("         See '%s' for allocation callstacks.\n", log_file_name);
+		}
+#endif
+
 		log.printf("===========================================================\n");
 	}
 }
@@ -137,6 +166,9 @@ void Allocator::createMemoryPool(const char* pool_name, unsigned int alloc_tag)
 		mem_pool_info.pa_lock = _global_allocator.template allocT<Gaff::SpinLock>();
 		mem_pool_info.wf_lock = _global_allocator.template allocT<Gaff::SpinLock>();
 #endif
+#if defined(SYMBOL_BUILD) && defined(GATHER_ALLOCATION_STACKTRACE)
+		mem_pool_info.st_lock = _global_allocator.template allocT<Gaff::SpinLock>();
+#endif
 	}
 }
 
@@ -145,7 +177,7 @@ void* Allocator::alloc(size_t size_bytes, unsigned int alloc_tag)
 	assert(_tagged_pools.hasElementWithKey(alloc_tag));
 	MemoryPoolInfo& mem_pool_info = _tagged_pools[alloc_tag];
 
-	void* data = _aligned_malloc(size_bytes, _alignment);
+	void* data = Gaff::AlignedMalloc(size_bytes, _alignment);
 
 	if (data) {
 		AtomicUAdd(&mem_pool_info.total_bytes_allocated, size_bytes);
@@ -153,8 +185,22 @@ void* Allocator::alloc(size_t size_bytes, unsigned int alloc_tag)
 
 #ifdef TRACK_POINTER_ALLOCATIONS
 		mem_pool_info.pa_lock->lock();
+
+		for (auto it = _tagged_pools.begin(); it != _tagged_pools.end(); ++it) {
+			assert(it->second.pointers_allocated.linearSearch(data) == it->second.pointers_allocated.end());
+		}
+
 		mem_pool_info.pointers_allocated.push(data);
 		mem_pool_info.pa_lock->unlock();
+#endif
+#if defined(SYMBOL_BUILD) && defined(GATHER_ALLOCATION_STACKTRACE)
+		mem_pool_info.st_lock->lock();
+
+		Gaff::StackTrace stack_trace;
+		stack_trace.captureStack();
+		mem_pool_info.stack_traces.moveMoveInsert(Gaff::Move(data), Gaff::Move(stack_trace));
+
+		mem_pool_info.st_lock->unlock();
 #endif
 	}
 
@@ -168,8 +214,6 @@ void Allocator::free(void* data, unsigned int alloc_tag)
 
 	MemoryPoolInfo& mem_pool_info = _tagged_pools[alloc_tag];
 	AtomicIncrement(&mem_pool_info.num_frees);
-
-	_aligned_free(data);
 
 #ifdef TRACK_POINTER_ALLOCATIONS
 	mem_pool_info.pa_lock->lock();
@@ -187,7 +231,6 @@ void Allocator::free(void* data, unsigned int alloc_tag)
 			if (it_ptr != it_pool->second.pointers_allocated.end()) {
 				mem_pool_info.wf_lock->lock();
 				++mem_pool_info.wrong_free[it_pool->first];
-				// get stack trace
 				mem_pool_info.wf_lock->unlock();
 			}
 
@@ -199,11 +242,37 @@ void Allocator::free(void* data, unsigned int alloc_tag)
 		mem_pool_info.pa_lock->unlock();
 	}
 #endif
+#if defined(SYMBOL_BUILD) && defined(GATHER_ALLOCATION_STACKTRACE)
+	mem_pool_info.st_lock->lock();
+
+	auto it_st = mem_pool_info.stack_traces.findElementWithKey(data);
+
+	if (it_st == mem_pool_info.stack_traces.end()) {
+		mem_pool_info.st_lock->unlock();
+
+		for (auto it_pool = _tagged_pools.begin(); it_pool != _tagged_pools.end(); ++it_pool) {
+			it_pool->second.st_lock->lock();
+
+			it_st = it_pool->second.stack_traces.findElementWithKey(data);
+			
+			if (it_st != it_pool->second.stack_traces.end()) {
+				it_pool->second.stack_traces.erase(data);
+			}
+
+			it_pool->second.st_lock->unlock();
+		}
+
+	} else {
+		mem_pool_info.stack_traces.erase(it_st);
+		mem_pool_info.st_lock->unlock();
+	}
+#endif
+
+	Gaff::AlignedFree(data);
 }
 
 void* Allocator::alloc(size_t size_bytes)
 {
-
 	return alloc(size_bytes, 0);
 }
 

@@ -6,9 +6,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\..\src\Shared\include\Shibboleth_Allocator.h">
-      <Filter>include</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\src\Shared\include\Shibboleth_App.h">
       <Filter>include</Filter>
     </ClInclude>
@@ -86,7 +83,6 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\src\Shared\Shibboleth_Allocator.cpp" />
     <ClCompile Include="..\..\..\src\Shared\Shibboleth_App.cpp" />
     <ClCompile Include="..\..\..\src\Shared\Shibboleth_LogManager.cpp" />
     <ClCompile Include="..\..\..\src\Shared\Shibboleth_LooseFileSystem.cpp" />

@@ -22,7 +22,7 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Shibboleth_Allocator.h"
+#include "Shibboleth_IAllocator.h"
 
 #ifdef IS_MEMORY
 	#define MEMORY_API DYNAMICEXPORT
@@ -32,10 +32,13 @@ THE SOFTWARE.
 
 NS_SHIBBOLETH
 
+// CreateMemoryPool() is not thread-safe. Applications need to ensure they've created all their pools before threading.
 MEMORY_API void CreateMemoryPool(const char* pool_name, unsigned int alloc_tag);
-MEMORY_API Allocator* GetAllocator(void);
+MEMORY_API IAllocator* GetAllocator(void);
 
+MEMORY_API void* ShibbolethAllocate(size_t size, unsigned int alloc_tag);
 MEMORY_API void* ShibbolethAllocate(size_t size);
+MEMORY_API void ShibbolethFree(void* data, unsigned int alloc_tag);
 MEMORY_API void ShibbolethFree(void* data);
 
 NS_END

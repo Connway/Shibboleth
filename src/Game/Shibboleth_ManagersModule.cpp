@@ -30,6 +30,7 @@ THE SOFTWARE.
 #include <Shibboleth_LuaManager.h>
 #include <Shibboleth_Utilities.h>
 #include <Shibboleth_IApp.h>
+#include <Gaff_StackTrace.h>
 #include <Gaff_JSON.h>
 
 #include <Gleam_Matrix4x4_CPU.h>

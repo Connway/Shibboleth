@@ -46,6 +46,9 @@ void DebugPrintf(const char* format_string, ...); //!< Does a printf() to debug 
 void DebugPrintf(const wchar_t* format_string, ...); //!< Does a printf() to debug output on supported platforms. Unsupported platforms just call normal printf().
 INLINE bool SetWorkingDir(const char* directory);
 
+INLINE void* AlignedMalloc(size_t size, size_t alignment);
+INLINE void AlignedFree(void* data);
+
 //! Used to determine what type an entry in the filesystem is.
 enum FileDataType
 {
