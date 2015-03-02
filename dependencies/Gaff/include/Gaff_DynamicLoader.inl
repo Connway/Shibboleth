@@ -59,7 +59,7 @@ typename DynamicLoader<Allocator>::ModulePtr DynamicLoader<Allocator>::loadModul
 {
 	assert(filename && name && strlen(filename) && strlen(name));
 
-	if (_modules.indexOf(name) != -1) {
+	if (_modules.indexOf(name) != SIZE_T_FAIL) {
 		return getModule(name);
 	}
 
@@ -130,7 +130,7 @@ typename DynamicLoader<Allocator>::ModulePtr DynamicLoader<Allocator>::loadModul
 {
 	assert(filename && name && wcslen(filename) && strlen(name));
 
-	if (_modules.indexOf(name) != -1) {
+	if (_modules.indexOf(name) != SIZE_T_FAIL) {
 		return getModule(name);
 	}
 

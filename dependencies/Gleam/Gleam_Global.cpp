@@ -29,12 +29,14 @@ THE SOFTWARE.
 #include <iostream>
 #include <cstdarg>
 
+#define LOG_NAME_SIZE 128
+
 NS_GLEAM
 
 static Gaff::DefaultAlignedAllocator g_backup_allocator(16);
 static Gaff::IAllocator* g_allocator = &g_backup_allocator;
 
-static GleamGString g_log_file_name(GC("Gleam.log"));
+static char g_log_file_name[LOG_NAME_SIZE] = { 0 };
 static bool default_alloc = true;
 
 static Gaff::SpinLock g_spin_lock;
@@ -70,14 +72,14 @@ void GleamFree(void* data)
 	g_allocator->free(data);
 }
 
-void SetLogFileName(const GChar* log_file_name)
+void SetLogFileName(const char* log_file_name)
 {
-	g_log_file_name = log_file_name;
+	strncpy(g_log_file_name, log_file_name, LOG_NAME_SIZE);
 }
 
-const GChar* GetLogFileName(void)
+const char* GetLogFileName(void)
 {
-	return g_log_file_name.getBuffer();
+	return g_log_file_name;
 }
 
 void WriteMessageToLog(const char* msg, size_t size, LOG_MSG_TYPE type)
@@ -85,7 +87,7 @@ void WriteMessageToLog(const char* msg, size_t size, LOG_MSG_TYPE type)
 	Gaff::ScopedLock<Gaff::SpinLock> scoped_lock(g_spin_lock);
 
 	if (!g_log_file.isOpen()) {
-		g_log_file.open(g_log_file_name.getBuffer(), Gaff::File::APPEND);
+		g_log_file.open(g_log_file_name, Gaff::File::APPEND);
 	}
 
 	if (g_log_file.isOpen()) {
@@ -113,7 +115,7 @@ void PrintfToLog(const char* format_string, LOG_MSG_TYPE type, ...)
 	Gaff::ScopedLock<Gaff::SpinLock> scoped_lock(g_spin_lock);
 
 	if (!g_log_file.isOpen()) {
-		g_log_file.open(g_log_file_name.getBuffer(), Gaff::File::APPEND);
+		g_log_file.open(g_log_file_name, Gaff::File::APPEND);
 	}
 
 	if (g_log_file.isOpen()) {

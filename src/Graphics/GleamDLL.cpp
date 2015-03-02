@@ -45,13 +45,7 @@ static Shibboleth::ProxyAllocator gProxyAllocator;
 
 DYNAMICEXPORT_C bool InitGraphics(Shibboleth::IApp&, const char* log_file_name)
 {
-#ifdef _UNICODE
-	wchar_t buffer[256] = {0};
-	mbstowcs(buffer, log_file_name, 256);
-	Gleam::SetLogFileName(buffer);
-#else
 	Gleam::SetLogFileName(log_file_name);
-#endif
 
 	gProxyAllocator = Shibboleth::ProxyAllocator("Graphics");
 

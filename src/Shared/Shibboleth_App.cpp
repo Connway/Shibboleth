@@ -38,24 +38,20 @@ App::App(void):
 	_state_machine(ProxyAllocator()), _logger(ProxyAllocator()),
 	_log_file_pair(nullptr), _seed(0), _running(true)
 {
-#ifdef SYMBOL_BUILD
-	assert(Gaff::StackTrace::Init());
-#endif
-
 	SetApp(*this);
 }
 
 App::~App(void)
 {
 	_thread_pool.destroy();
+	_broadcaster.destroy();
+	_state_machine.clear();
 
 	for (ManagerMap::Iterator it = _manager_map.begin(); it != _manager_map.end(); ++it) {
 		it->destroy_func(it->manager, it->manager_id);
 	}
 
 	_manager_map.clear();
-	_broadcaster.destroy();
-	_state_machine.clear();
 	_logger.destroy();
 
 	_dynamic_loader.forEachModule([](DynamicLoader::ModulePtr module) -> bool
@@ -78,10 +74,6 @@ App::~App(void)
 	} else if (_fs.file_system) {
 		GetAllocator()->freeT(_fs.file_system);
 	}
-
-#ifdef SYMBOL_BUILD
-	Gaff::StackTrace::Destroy();
-#endif
 }
 
 // Still single-threaded at this point, so ok that we're not using the spinlock
@@ -446,7 +438,7 @@ bool App::loadStates(void)
 		}
 	}
 
-	if (_state_machine.getNextState() == -1) {
+	if (_state_machine.getNextState() == UINT_FAIL) {
 		_log_file_pair->first.writeString("ERROR - 'starting_state' is set to an invalid state name\n");
 		return false;
 	}
@@ -470,6 +462,7 @@ bool App::initApp(void)
 
 void App::removeExtraLogs(void)
 {
+	unsigned int callstack_log_count = 0;
 	unsigned int alloc_log_count = 0;
 	unsigned int game_log_count = 0;
 
@@ -479,14 +472,17 @@ void App::removeExtraLogs(void)
 			++game_log_count;
 		} else if (std::regex_match(name, std::regex("AllocationLog.+\.txt"))) {
 			++alloc_log_count;
+		} else if (std::regex_match(name, std::regex("CallstackLog.+\.txt"))) {
+			++callstack_log_count;
 		}
 
 		return false;
 	});
 
+	unsigned int callstack_logs_delete = (callstack_log_count > 10) ? callstack_log_count - 10 : 0;
 	unsigned int alloc_logs_delete = (alloc_log_count > 10) ? alloc_log_count - 10 : 0;
 	unsigned int game_logs_delete = (game_log_count > 10) ? game_log_count - 10 : 0;
-	alloc_log_count = game_log_count = 0;
+	callstack_log_count = alloc_log_count = game_log_count = 0;
 	AString temp;
 
 	Gaff::ForEachTypeInDirectory<Gaff::FDT_RegularFile>("./Logs", [&](const char* name, size_t) -> bool
@@ -500,6 +496,11 @@ void App::removeExtraLogs(void)
 			temp = AString("./Logs/") + name;
 			std::remove(temp.getBuffer());
 			++alloc_log_count;
+
+		} else if (std::regex_match(name, std::regex("CallstackLog.+\.txt")) && callstack_log_count < callstack_logs_delete) {
+			temp = AString("./Logs/") + name;
+			std::remove(temp.getBuffer());
+			++callstack_log_count;
 		}
 
 		return false;
@@ -516,37 +517,37 @@ void App::run(void)
 
 const IManager* App::getManager(const AHashString& name) const
 {
-	assert(name.size() && _manager_map.indexOf(name) != -1);
+	assert(name.size() && _manager_map.indexOf(name) != SIZE_T_FAIL);
 	return _manager_map[name].manager;
 }
 
 const IManager* App::getManager(const AString& name) const
 {
-	assert(name.size() && _manager_map.indexOf(name) != -1);
+	assert(name.size() && _manager_map.indexOf(name) != SIZE_T_FAIL);
 	return _manager_map[name].manager;
 }
 
 const IManager* App::getManager(const char* name) const
 {
-	assert(name && _manager_map.indexOf(name) != -1);
+	assert(name && _manager_map.indexOf(name) != SIZE_T_FAIL);
 	return _manager_map[name].manager;
 }
 
 IManager* App::getManager(const AHashString& name)
 {
-	assert(name.size() && _manager_map.indexOf(name) != -1);
+	assert(name.size() && _manager_map.indexOf(name) != SIZE_T_FAIL);
 	return _manager_map[name].manager;
 }
 
 IManager* App::getManager(const AString& name)
 {
-	assert(name.size() && _manager_map.indexOf(name) != -1);
+	assert(name.size() && _manager_map.indexOf(name) != SIZE_T_FAIL);
 	return _manager_map[name].manager;
 }
 
 IManager* App::getManager(const char* name)
 {
-	assert(name && _manager_map.indexOf(name) != -1);
+	assert(name && _manager_map.indexOf(name) != SIZE_T_FAIL);
 	return _manager_map[name].manager;
 }
 

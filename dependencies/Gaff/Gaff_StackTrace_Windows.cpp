@@ -29,21 +29,26 @@ NS_GAFF
 
 void* StackTrace::_handle = GetCurrentProcess();
 
+bool StackTrace::RefreshModuleList(void)
+{
+	if (!_handle) {
+		_handle = GetCurrentProcess();
+	}
+
+	return SymRefreshModuleList(_handle) != FALSE;
+}
+
 /*!
 	\brief Global initialization of the stack trace system.
 	\note Must be called before using a StackTrace instance. And called per execution context. (eg EXE, DLL)
 */
-bool StackTrace::Init(bool module_refresh)
+bool StackTrace::Init(void)
 {
-	bool ret = false;
-
-	if (module_refresh) {
-		ret = SymRefreshModuleList(_handle) == TRUE;
-	} else {
-		ret = SymInitialize(_handle, nullptr, TRUE) == TRUE;
+	if (!_handle) {
+		_handle = GetCurrentProcess();
 	}
 
-	return ret;
+	return SymInitialize(_handle, nullptr, TRUE) == TRUE;;
 }
 
 /*!
@@ -57,17 +62,16 @@ void StackTrace::Destroy(void)
 }
 
 StackTrace::StackTrace(const StackTrace& trace):
-	_total_frames(trace._total_frames)
+	_frames(trace._frames)
 {
+	_handle = GetCurrentProcess();
 	*this = trace;
 }
 
 StackTrace::StackTrace(void):
-	_total_frames(0)
+	_frames(0)
 {
-	SYMBOL_INFO* sym = reinterpret_cast<SYMBOL_INFO*>(_symbol_info);
-	sym->SizeOfStruct = sizeof(SYMBOL_INFO);
-	sym->MaxNameLen = NAME_SIZE - 1;
+	_handle = GetCurrentProcess();
 }
 
 StackTrace::~StackTrace(void)
@@ -76,9 +80,9 @@ StackTrace::~StackTrace(void)
 
 const StackTrace& StackTrace::operator=(const StackTrace& rhs)
 {
-	memcpy(_symbol_info, rhs._symbol_info, sizeof(SYMBOL_INFO) + NAME_SIZE - 1);
+	memcpy(_symbol_info, rhs._symbol_info, sizeof(_symbol_info));
 	memcpy(_stack, rhs._stack, sizeof(_stack));
-	_total_frames = rhs._total_frames;
+	_frames = rhs._frames;
 	return *this;
 }
 
@@ -89,47 +93,59 @@ const StackTrace& StackTrace::operator=(const StackTrace& rhs)
 unsigned short StackTrace::captureStack(unsigned int frames_to_capture)
 {
 	assert(frames_to_capture <= MAX_FRAMES);
-	_total_frames = CaptureStackBackTrace(0, frames_to_capture, _stack, nullptr);
-	return _total_frames;
+	_frames = CaptureStackBackTrace(0, frames_to_capture, _stack, nullptr);
+
+	char data[sizeof(SYMBOL_INFO) + NAME_SIZE - 1];
+	SYMBOL_INFO* sym = reinterpret_cast<SYMBOL_INFO*>(data);
+	sym->SizeOfStruct = sizeof(SYMBOL_INFO);
+	sym->MaxNameLen = NAME_SIZE - 1;
+
+	IMAGEHLP_LINE64 image_help = { sizeof(IMAGEHLP_LINE) };
+	DWORD displacement = 0;
+
+	for (unsigned short i = 0; i < _frames; ++i) {
+		_symbol_info[i].symbol_name[0] = 0;
+		_symbol_info[i].file_name[0] = 0;
+		_symbol_info[i].line_number = 0;
+		_symbol_info[i].address = 0;
+
+		if (SymFromAddr(_handle, (DWORD64)_stack[i], nullptr, sym)) {
+			strncpy(_symbol_info[i].symbol_name, sym->Name, NAME_SIZE);
+			_symbol_info[i].address = sym->Address;
+		}
+		
+		if (SymGetLineFromAddr(_handle, (DWORD64)_stack[i], &displacement, &image_help)) {
+			strncpy(_symbol_info[i].file_name, image_help.FileName, NAME_SIZE);
+			_symbol_info[i].line_number = image_help.LineNumber;
+		}
+	}
+
+	return _frames;
 }
 
-/*!
-	\brief Returns the total number of currently captured callstack frames.
-*/
-unsigned short StackTrace::getTotalFrames(void) const
+unsigned short StackTrace::getNumCapturedFrames(void) const
 {
-	return _total_frames;
+	return _frames;
 }
 
-/*!
-	\brief Loads the frame information for the specified callstack \a frame.
-	\param frame The callstack frame whose information to load.
-	\return Whether the callstack frame information was successfully loaded.
-*/
-bool StackTrace::loadFrameInfo(unsigned short frame)
+unsigned long long StackTrace::getAddress(unsigned short frame) const
 {
-	SYMBOL_INFO* sym = reinterpret_cast<SYMBOL_INFO*>(_symbol_info);
-	return SymFromAddr(_handle, (DWORD64)_stack[frame], nullptr, sym) == TRUE;
+	return _symbol_info[frame].address;
 }
 
-/*!
-	\brief Returns the currently loaded callstack frame's name.
-	\note Must call loadFrameInfo() first.
-*/
-const char* StackTrace::getFrameName(void) const
+unsigned int StackTrace::getLineNumber(unsigned short frame) const
 {
-	const SYMBOL_INFO* sym = reinterpret_cast<const SYMBOL_INFO*>(_symbol_info);
-	return sym->Name;
+	return _symbol_info[frame].line_number;
 }
 
-/*!
-	\brief Gets the address of the currently loaded callstack frame.
-	\note Must call loadFrameInfo() first.
-*/
-unsigned long long StackTrace::getFrameAddress(void) const
+const char* StackTrace::getSymbolName(unsigned short frame) const
 {
-	const SYMBOL_INFO* sym = reinterpret_cast<const SYMBOL_INFO*>(_symbol_info);
-	return sym->Address;
+	return _symbol_info[frame].symbol_name;
+}
+
+const char* StackTrace::getFileName(unsigned short frame) const
+{
+	return _symbol_info[frame].file_name;
 }
 
 NS_END

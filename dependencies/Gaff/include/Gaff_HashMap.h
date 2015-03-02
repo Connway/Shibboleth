@@ -49,7 +49,6 @@ private:
 	{
 		Key key;
 		Value value;
-		size_t initial_index;
 		bool occupied;
 	};
 
@@ -153,7 +152,7 @@ private:
 	HashFunc32 _hash;
 	Slot* _slots;
 
-	void shiftBuckets(size_t index);
+	void rebuildMap(void);
 };
 
 #ifndef DOXY_SKIP
@@ -271,7 +270,7 @@ private:
 	HashFunc32 _hash;
 	Slot* _slots;
 
-	void shiftBuckets(size_t index);
+	void rebuildMap(void);
 };
 
 // HashString Specialization
@@ -388,7 +387,7 @@ private:
 	HashFunc32 _hash;
 	Slot* _slots;
 
-	void shiftBuckets(size_t index);
+	void rebuildMap(void);
 };
 #endif
 

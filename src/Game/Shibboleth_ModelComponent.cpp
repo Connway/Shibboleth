@@ -61,6 +61,14 @@ ModelComponent::ModelComponent(IApp& app):
 
 ModelComponent::~ModelComponent(void)
 {
+	auto callback_func = Gaff::Bind(this, &ModelComponent::LoadCallback);
+
+	//_program_buffers_res.getResourcePtr()->removeCallback(Gaff::Bind(this, &ModelComponent::ProgramBuffersCallback));
+	//_texture_res.getResourcePtr()->removeCallback(Gaff::Bind(this, &ModelComponent::TextureLoadedCallback));
+	_sampler_res.getResourcePtr()->removeCallback(Gaff::Bind(this, &ModelComponent::SamplerStateCallback));
+	//_buffer_res.getResourcePtr()->removeCallback(Gaff::Bind(this, &ModelComponent::BufferCallback));
+	_material_res.getResourcePtr()->removeCallback(callback_func);
+	_model_res.getResourcePtr()->removeCallback(callback_func);
 }
 
 bool ModelComponent::validate(Gaff::JSON& json)
@@ -111,9 +119,9 @@ bool ModelComponent::load(const Gaff::JSON& json)
 		_material_res = _res_mgr.requestResource(material_file.getString());
 	}
 
-	if (texture_file.isString()) {
-		_texture_res = _res_mgr.requestResource(texture_file.getString());
-	}
+	//if (texture_file.isString()) {
+	//	_texture_res = _res_mgr.requestResource(texture_file.getString());
+	//}
 
 	if (sampler_file.isString()) {
 		_sampler_res = _res_mgr.requestResource(sampler_file.getString());
@@ -123,19 +131,18 @@ bool ModelComponent::load(const Gaff::JSON& json)
 		_model_res = _res_mgr.requestResource(model_file.getString());
 	}
 
-	_program_buffers_res = _res_mgr.requestResource("ProgramBuffers", "test1");
-	_buffer_res = _res_mgr.requestResource("Buffer", "test2", reinterpret_cast<unsigned long long>(&_buffer_settings));
+	//_program_buffers_res = _res_mgr.requestResource("ProgramBuffers", "test1");
+	//_buffer_res = _res_mgr.requestResource("Buffer", "test2", reinterpret_cast<unsigned long long>(&_buffer_settings));
 
 	_app.getBroadcaster().listen<LoadingMessage>(this, &ModelComponent::HandleLoadingMessage);
 
 	auto callback_func = Gaff::Bind(this, &ModelComponent::LoadCallback);
 
-	_program_buffers_res.getResourcePtr()->addCallback(Gaff::Bind(this, &ModelComponent::ProgramBuffersCallback));
-	_texture_res.getResourcePtr()->addCallback(Gaff::Bind(this, &ModelComponent::TextureLoadedCallback));
+	//_program_buffers_res.getResourcePtr()->addCallback(Gaff::Bind(this, &ModelComponent::ProgramBuffersCallback));
+	//_texture_res.getResourcePtr()->addCallback(Gaff::Bind(this, &ModelComponent::TextureLoadedCallback));
 	_sampler_res.getResourcePtr()->addCallback(Gaff::Bind(this, &ModelComponent::SamplerStateCallback));
-	_buffer_res.getResourcePtr()->addCallback(Gaff::Bind(this, &ModelComponent::BufferCallback));
+	//_buffer_res.getResourcePtr()->addCallback(Gaff::Bind(this, &ModelComponent::BufferCallback));
 	_material_res.getResourcePtr()->addCallback(callback_func);
-	_texture_res.getResourcePtr()->addCallback(callback_func);
 	_model_res.getResourcePtr()->addCallback(callback_func);
 
 	return true;
@@ -147,40 +154,40 @@ void ModelComponent::allComponentsLoaded(void)
 
 void ModelComponent::ProgramBuffersCallback(const AHashString& /*resource*/, bool success)
 {
-	if (success) {
-		if (_texture_res.getResourcePtr()->isLoaded()) {
-			_program_buffers_res->data[0]->addResourceView(Gleam::IShader::SHADER_PIXEL, _texture_res->resource_views[0].get());
-		}
+	//if (success) {
+	//	if (_texture_res.getResourcePtr()->isLoaded()) {
+	//		_program_buffers_res->data[0]->addResourceView(Gleam::IShader::SHADER_PIXEL, _texture_res->resource_views[0].get());
+	//	}
 
-		if (_sampler_res.getResourcePtr()->isLoaded()) {
-			_program_buffers_res->data[0]->addSamplerState(Gleam::IShader::SHADER_PIXEL, _sampler_res->data[0].get());
-		}
+	//	if (_sampler_res.getResourcePtr()->isLoaded()) {
+	//		_program_buffers_res->data[0]->addSamplerState(Gleam::IShader::SHADER_PIXEL, _sampler_res->data[0].get());
+	//	}
 
-		if (_buffer_res.getResourcePtr()->isLoaded()) {
-			_program_buffers_res->data[0]->addConstantBuffer(Gleam::IShader::SHADER_VERTEX, _buffer_res->data[0].get());
-		}
-	}
+	//	if (_buffer_res.getResourcePtr()->isLoaded()) {
+	//		_program_buffers_res->data[0]->addConstantBuffer(Gleam::IShader::SHADER_VERTEX, _buffer_res->data[0].get());
+	//	}
+	//}
 }
 
 void ModelComponent::TextureLoadedCallback(const AHashString& /*resource*/, bool success)
 {
-	if (success && _program_buffers_res.getResourcePtr()->isLoaded()) {
-		_program_buffers_res->data[0]->addResourceView(Gleam::IShader::SHADER_PIXEL, _texture_res->resource_views[0].get());
-	}
+	//if (success && _program_buffers_res.getResourcePtr()->isLoaded()) {
+	//	_program_buffers_res->data[0]->addResourceView(Gleam::IShader::SHADER_PIXEL, _texture_res->resource_views[0].get());
+	//}
 }
 
 void ModelComponent::SamplerStateCallback(const AHashString& /*resource*/, bool success)
 {
-	if (success && _program_buffers_res.getResourcePtr()->isLoaded()) {
-		_program_buffers_res->data[0]->addSamplerState(Gleam::IShader::SHADER_PIXEL, _sampler_res->data[0].get());
-	}
+	//if (success && _program_buffers_res.getResourcePtr()->isLoaded()) {
+	//	_program_buffers_res->data[0]->addSamplerState(Gleam::IShader::SHADER_PIXEL, _sampler_res->data[0].get());
+	//}
 }
 
 void ModelComponent::BufferCallback(const AHashString& /*resource*/, bool success)
 {
-	if (success && _program_buffers_res.getResourcePtr()->isLoaded()) {
-		_program_buffers_res->data[0]->addConstantBuffer(Gleam::IShader::SHADER_VERTEX, _buffer_res->data[0].get());
-	}
+	//if (success && _program_buffers_res.getResourcePtr()->isLoaded()) {
+	//	_program_buffers_res->data[0]->addConstantBuffer(Gleam::IShader::SHADER_VERTEX, _buffer_res->data[0].get());
+	//}
 }
 
 void ModelComponent::LoadCallback(const AHashString& /*resource*/, bool success)
@@ -204,46 +211,46 @@ void ModelComponent::HandleLoadingMessage(const LoadingMessage& msg)
 
 void ModelComponent::render(void)
 {
-	if (!_material_res || !_model_res || !_texture_res || !_sampler_res || !_program_buffers_res || !_buffer_res ||
-		!_material_res.getResourcePtr()->isLoaded() ||
-		!_model_res.getResourcePtr()->isLoaded() ||
-		!_texture_res.getResourcePtr()->isLoaded() ||
-		!_sampler_res.getResourcePtr()->isLoaded() ||
-		!_program_buffers_res.getResourcePtr()->isLoaded() ||
-		!_buffer_res.getResourcePtr()->isLoaded()) {
+	//if (!_material_res || !_model_res || !_texture_res || !_sampler_res || !_program_buffers_res || !_buffer_res ||
+	//	!_material_res.getResourcePtr()->isLoaded() ||
+	//	!_model_res.getResourcePtr()->isLoaded() ||
+	//	!_texture_res.getResourcePtr()->isLoaded() ||
+	//	!_sampler_res.getResourcePtr()->isLoaded() ||
+	//	!_program_buffers_res.getResourcePtr()->isLoaded() ||
+	//	!_buffer_res.getResourcePtr()->isLoaded()) {
 
-		return;
-	}
+	//	return;
+	//}
 
-	static float rot = 0.0f;
-	rot += 0.01f;
+	//static float rot = 0.0f;
+	//rot += 0.01f;
 
-	Gleam::Matrix4x4 tocamera, projection, toworld;
-	tocamera.setLookAtLH(0.0f, 5.0f, -5.0f, 0.0f, 5.0f, 0.0f, 0.0f, 1.0f, 0.0f);
-	projection.setPerspectiveLH(90.0f * Gaff::DegToRad, 16.0f / 9.0f, 0.1f, 5000.0f);
-	toworld.setIdentity();
-	toworld.setRotationY(rot);
+	//Gleam::Matrix4x4 tocamera, projection, toworld;
+	//tocamera.setLookAtLH(0.0f, 5.0f, -5.0f, 0.0f, 5.0f, 0.0f, 0.0f, 1.0f, 0.0f);
+	//projection.setPerspectiveLH(90.0f * Gaff::DegToRad, 16.0f / 9.0f, 0.1f, 5000.0f);
+	//toworld.setIdentity();
+	//toworld.setRotationY(rot);
 
-	Gleam::IRenderDevice& rd = _render_mgr.getRenderDevice();
-	unsigned int current_device = rd.getCurrentDevice();
-	rd.getActiveOutputRenderTarget()->bind(rd);
+	//Gleam::IRenderDevice& rd = _render_mgr.getRenderDevice();
+	//unsigned int current_device = rd.getCurrentDevice();
+	//rd.getActiveOutputRenderTarget()->bind(rd);
 
-	// Update camera data
-	Gleam::IBuffer* buffer = _program_buffers_res->data[current_device]->getConstantBuffer(Gleam::IShader::SHADER_VERTEX, 0);
+	//// Update camera data
+	//Gleam::IBuffer* buffer = _program_buffers_res->data[current_device]->getConstantBuffer(Gleam::IShader::SHADER_VERTEX, 0);
 
-	float* matrix_data = (float*)buffer->map(rd);
-		memcpy(matrix_data, toworld.getBuffer(), sizeof(float) * 16);
-		memcpy(matrix_data + 16, tocamera.getBuffer(), sizeof(float) * 16);
-		memcpy(matrix_data + 32, projection.getBuffer(), sizeof(float) * 16);
-	buffer->unmap(_render_mgr.getRenderDevice());
+	//float* matrix_data = (float*)buffer->map(rd);
+	//	memcpy(matrix_data, toworld.getBuffer(), sizeof(float) * 16);
+	//	memcpy(matrix_data + 16, tocamera.getBuffer(), sizeof(float) * 16);
+	//	memcpy(matrix_data + 32, projection.getBuffer(), sizeof(float) * 16);
+	//buffer->unmap(_render_mgr.getRenderDevice());
 
-	ModelPtr& model = _model_res->models[current_device][_current_lod];
+	//ModelPtr& model = _model_res->models[current_device][_current_lod];
 
-	_material_res->programs[current_device]->bind(rd, _program_buffers_res->data[current_device].get());
+	//_material_res->programs[current_device]->bind(rd, _program_buffers_res->data[current_device].get());
 
-	for (unsigned int i = 0; i < model->getMeshCount(); ++i) {
-		model->render(rd, i);
-	}
+	//for (unsigned int i = 0; i < model->getMeshCount(); ++i) {
+	//	model->render(rd, i);
+	//}
 }
 
 NS_END

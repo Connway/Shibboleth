@@ -30,14 +30,12 @@
     <UseDebugLibraries>true</UseDebugLibraries>
     <CharacterSet>Unicode</CharacterSet>
     <PlatformToolset>v120</PlatformToolset>
-    <WholeProgramOptimization>true</WholeProgramOptimization>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <CharacterSet>Unicode</CharacterSet>
     <PlatformToolset>v120</PlatformToolset>
-    <WholeProgramOptimization>true</WholeProgramOptimization>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
@@ -97,7 +95,7 @@
     <ClCompile>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level4</WarningLevel>
-      <PreprocessorDefinitions>SYMBOL_BUILD;_DEBUG;DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>..\..\..\dependencies\dirent;..\..\..\src\Game\include;..\..\..\src\Shared\include;..\..\..\src\Memory\include;..\..\..\dependencies\OtterUI\inc;..\..\..\dependencies\jansson;..\..\..\dependencies\Gleam\include;..\..\..\dependencies\Gaff\include;..\..\..\dependencies\LuaState;..\..\..\dependencies\LuaJIT-2.0.3\src;..\..\..\dependencies\utf8-cpp;..\..\..\dependencies\assimp\include;..\..\..\dependencies\esprit\include;..\..\..\dependencies\minizip;..\..\..\dependencies\zlib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <ProgramDataBaseFileName>$(OutDir)Game.pdb</ProgramDataBaseFileName>
@@ -109,7 +107,7 @@
       <AdditionalOptions>/sdl %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <ResourceCompile>
-      <PreprocessorDefinitions>SYMBOL_BUILD;_DEBUG;DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>..\..\..\dependencies\dirent;..\..\..\src\Game\include;..\..\..\src\Shared\include;..\..\..\src\Memory\include;..\..\..\dependencies\OtterUI\inc;..\..\..\dependencies\jansson;..\..\..\dependencies\Gleam\include;..\..\..\dependencies\Gaff\include;..\..\..\dependencies\LuaState;..\..\..\dependencies\LuaJIT-2.0.3\src;..\..\..\dependencies\utf8-cpp;..\..\..\dependencies\assimp\include;..\..\..\dependencies\esprit\include;..\..\..\dependencies\minizip;..\..\..\dependencies\zlib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Link>
@@ -121,7 +119,7 @@
     <ClCompile>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level4</WarningLevel>
-      <PreprocessorDefinitions>SYMBOL_BUILD;_DEBUG;DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>..\..\..\dependencies\dirent;..\..\..\src\Game\include;..\..\..\src\Shared\include;..\..\..\src\Memory\include;..\..\..\dependencies\OtterUI\inc;..\..\..\dependencies\jansson;..\..\..\dependencies\Gleam\include;..\..\..\dependencies\Gaff\include;..\..\..\dependencies\LuaState;..\..\..\dependencies\LuaJIT-2.0.3\src;..\..\..\dependencies\utf8-cpp;..\..\..\dependencies\assimp\include;..\..\..\dependencies\esprit\include;..\..\..\dependencies\minizip;..\..\..\dependencies\zlib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <ProgramDataBaseFileName>$(OutDir)Game.pdb</ProgramDataBaseFileName>
@@ -132,7 +130,7 @@
       <AdditionalOptions>/sdl %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <ResourceCompile>
-      <PreprocessorDefinitions>SYMBOL_BUILD;_DEBUG;DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>..\..\..\dependencies\dirent;..\..\..\src\Game\include;..\..\..\src\Shared\include;..\..\..\src\Memory\include;..\..\..\dependencies\OtterUI\inc;..\..\..\dependencies\jansson;..\..\..\dependencies\Gleam\include;..\..\..\dependencies\Gaff\include;..\..\..\dependencies\LuaState;..\..\..\dependencies\LuaJIT-2.0.3\src;..\..\..\dependencies\utf8-cpp;..\..\..\dependencies\assimp\include;..\..\..\dependencies\esprit\include;..\..\..\dependencies\minizip;..\..\..\dependencies\zlib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Link>
@@ -144,7 +142,6 @@
     <ClCompile>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level4</WarningLevel>
-      <PreprocessorDefinitions>SYMBOL_BUILD;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>..\..\..\dependencies\dirent;..\..\..\src\Game\include;..\..\..\src\Shared\include;..\..\..\src\Memory\include;..\..\..\dependencies\OtterUI\inc;..\..\..\dependencies\jansson;..\..\..\dependencies\Gleam\include;..\..\..\dependencies\Gaff\include;..\..\..\dependencies\LuaState;..\..\..\dependencies\LuaJIT-2.0.3\src;..\..\..\dependencies\utf8-cpp;..\..\..\dependencies\assimp\include;..\..\..\dependencies\esprit\include;..\..\..\dependencies\minizip;..\..\..\dependencies\zlib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <ProgramDataBaseFileName>$(OutDir)Game.pdb</ProgramDataBaseFileName>
@@ -160,7 +157,6 @@
       <AdditionalOptions>/sdl %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <ResourceCompile>
-      <PreprocessorDefinitions>SYMBOL_BUILD;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>..\..\..\dependencies\dirent;..\..\..\src\Game\include;..\..\..\src\Shared\include;..\..\..\src\Memory\include;..\..\..\dependencies\OtterUI\inc;..\..\..\dependencies\jansson;..\..\..\dependencies\Gleam\include;..\..\..\dependencies\Gaff\include;..\..\..\dependencies\LuaState;..\..\..\dependencies\LuaJIT-2.0.3\src;..\..\..\dependencies\utf8-cpp;..\..\..\dependencies\assimp\include;..\..\..\dependencies\esprit\include;..\..\..\dependencies\minizip;..\..\..\dependencies\zlib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Link>
@@ -174,7 +170,6 @@
     <ClCompile>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level4</WarningLevel>
-      <PreprocessorDefinitions>SYMBOL_BUILD;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>..\..\..\dependencies\dirent;..\..\..\src\Game\include;..\..\..\src\Shared\include;..\..\..\src\Memory\include;..\..\..\dependencies\OtterUI\inc;..\..\..\dependencies\jansson;..\..\..\dependencies\Gleam\include;..\..\..\dependencies\Gaff\include;..\..\..\dependencies\LuaState;..\..\..\dependencies\LuaJIT-2.0.3\src;..\..\..\dependencies\utf8-cpp;..\..\..\dependencies\assimp\include;..\..\..\dependencies\esprit\include;..\..\..\dependencies\minizip;..\..\..\dependencies\zlib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <ProgramDataBaseFileName>$(OutDir)Game.pdb</ProgramDataBaseFileName>
@@ -189,7 +184,6 @@
       <AdditionalOptions>/sdl %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <ResourceCompile>
-      <PreprocessorDefinitions>SYMBOL_BUILD;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>..\..\..\dependencies\dirent;..\..\..\src\Game\include;..\..\..\src\Shared\include;..\..\..\src\Memory\include;..\..\..\dependencies\OtterUI\inc;..\..\..\dependencies\jansson;..\..\..\dependencies\Gleam\include;..\..\..\dependencies\Gaff\include;..\..\..\dependencies\LuaState;..\..\..\dependencies\LuaJIT-2.0.3\src;..\..\..\dependencies\utf8-cpp;..\..\..\dependencies\assimp\include;..\..\..\dependencies\esprit\include;..\..\..\dependencies\minizip;..\..\..\dependencies\zlib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Link>

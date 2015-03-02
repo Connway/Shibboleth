@@ -71,8 +71,8 @@ public:
 				_app.getManagerT<Shibboleth::OcclusionManager>("Occlusion Manager").addObject(_object, Shibboleth::OcclusionManager::OT_DYNAMIC, user_data);
 			} else {
 				_app.getManagerT<Shibboleth::ObjectManager>("Object Manager").removeObject(_object->getID());
-				_app.quit();
 				_object = nullptr;
+				_app.quit();
 			}
 
 		} else {
@@ -95,6 +95,8 @@ public:
 		update_manager.update(0.0f);
 
 		render();
+
+		_app.quit();
 	}
 
 	void exit(void)
@@ -181,8 +183,8 @@ DYNAMICEXPORT_C bool InitModule(Shibboleth::IApp& app)
 	Shibboleth::CreateMemoryPool("Images", g_image_alloc_tag);
 	Shibboleth::SetApp(app);
 
-	Gaff::Image::SysInit();
 	Gaff::Image::SetMemoryFunctions(ImageAlloc, ImageFree);
+	Gaff::Image::SysInit();
 
 	return true;
 }

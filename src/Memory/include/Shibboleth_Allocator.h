@@ -53,15 +53,15 @@ public:
 	void free(void* data);
 
 	INLINE size_t getTotalBytesAllocated(unsigned int alloc_tag) const;
-	INLINE unsigned int getNumAllocations(unsigned int alloc_tag) const;
-	INLINE unsigned int getNumFrees(unsigned int alloc_tag) const;
+	INLINE size_t getNumAllocations(unsigned int alloc_tag) const;
+	INLINE size_t getNumFrees(unsigned int alloc_tag) const;
 
 private:
 	struct MemoryPoolInfo
 	{
 		volatile size_t total_bytes_allocated;
-		volatile unsigned int num_allocations;
-		volatile unsigned int num_frees;
+		volatile size_t num_allocations;
+		volatile size_t num_frees;
 		char pool_name[POOL_NAME_SIZE];
 
 #ifdef TRACK_POINTER_ALLOCATIONS

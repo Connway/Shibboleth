@@ -89,7 +89,7 @@ void ResourceContainer::failed(void)
 	_failed = true;
 }
 
-void ResourceContainer::addCallback(const Gaff::FunctionBinder<void, const AHashString&, bool> callback)
+void ResourceContainer::addCallback(const Gaff::FunctionBinder<void, const AHashString&, bool>& callback)
 {
 	// We're already loaded!
 	if (_resource != nullptr) {
@@ -99,6 +99,16 @@ void ResourceContainer::addCallback(const Gaff::FunctionBinder<void, const AHash
 
 	Gaff::ScopedLock<Gaff::SpinLock> lock(_callback_lock);
 	_callbacks.push(callback);
+}
+
+void ResourceContainer::removeCallback(const Gaff::FunctionBinder<void, const AHashString&, bool>& callback)
+{
+	Gaff::ScopedLock<Gaff::SpinLock> lock(_callback_lock);
+	auto it = _callbacks.linearSearch(callback);
+
+	if (it != _callbacks.end()) {
+		_callbacks.fastErase(it);
+	}
 }
 
 void ResourceContainer::setResource(Gaff::IVirtualDestructor* resource)
@@ -157,6 +167,12 @@ ResourceManager::ResourceManager(IApp& app):
 
 ResourceManager::~ResourceManager(void)
 {
+	for (auto it = _resource_cache.begin(); it != _resource_cache.end(); ++it) {
+		//assert(!it.getValue()->getRefCount());
+		it.getValue().set(nullptr);
+	}
+
+	_resource_cache.clear();
 }
 
 const char* ResourceManager::getName(void) const
@@ -170,7 +186,7 @@ void ResourceManager::registerResourceLoader(IResourceLoader* res_loader, const 
 	ResourceLoaderPtr loader_ptr(res_loader);
 
 	for (auto it = resource_types.begin(); it != resource_types.end(); ++it) {
-		assert(_resource_loaders.indexOf(AHashString(*it)) == -1);
+		assert(_resource_loaders.indexOf(AHashString(*it)) == SIZE_T_FAIL);
 		_resource_loaders[AHashString(*it)] = Gaff::MakePair(loader_ptr, thread_pool);
 	}
 }
@@ -178,7 +194,7 @@ void ResourceManager::registerResourceLoader(IResourceLoader* res_loader, const 
 void ResourceManager::registerResourceLoader(IResourceLoader* res_loader, const char* resource_type, unsigned int thread_pool)
 {
 	// We've already registered a loader for this file type.
-	assert(_resource_loaders.indexOf(AHashString(resource_type)) == -1);
+	assert(_resource_loaders.indexOf(AHashString(resource_type)) == SIZE_T_FAIL);
 	_resource_loaders[AHashString(resource_type)] = Gaff::MakePair(ResourceLoaderPtr(res_loader), thread_pool);
 }
 
@@ -307,8 +323,8 @@ void ResourceManager::addRequestAddedCallback(const Gaff::Function<void, Resourc
 
 void ResourceManager::zeroRefCallback(const AHashString& res_key)
 {
-	assert(_resource_cache.indexOf(res_key) != -1);
 	Gaff::ScopedLock<Gaff::SpinLock> lock(_res_cache_lock);
+	assert(_resource_cache.indexOf(res_key) != SIZE_T_FAIL);
 	_resource_cache[res_key].set(nullptr);
 	_resource_cache.erase(res_key);
 }

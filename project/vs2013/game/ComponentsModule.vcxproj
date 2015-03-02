@@ -30,14 +30,12 @@
     <UseDebugLibraries>true</UseDebugLibraries>
     <CharacterSet>Unicode</CharacterSet>
     <PlatformToolset>v120</PlatformToolset>
-    <WholeProgramOptimization>true</WholeProgramOptimization>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <CharacterSet>Unicode</CharacterSet>
     <PlatformToolset>v120</PlatformToolset>
-    <WholeProgramOptimization>true</WholeProgramOptimization>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
@@ -70,14 +68,14 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <LinkIncremental>false</LinkIncremental>
+    <LinkIncremental>true</LinkIncremental>
     <OutDir>..\..\..\build\output\x86\Debug\</OutDir>
     <IntDir>..\..\..\build\intermediate\x86\Debug\ComponentsModule\</IntDir>
     <TargetName>GameComponents32d</TargetName>
     <TargetExt>.dll</TargetExt>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <LinkIncremental>false</LinkIncremental>
+    <LinkIncremental>true</LinkIncremental>
     <OutDir>..\..\..\build\output\x64\Debug\</OutDir>
     <IntDir>..\..\..\build\intermediate\x64\Debug\ComponentsModule\</IntDir>
     <TargetName>GameComponents64d</TargetName>
@@ -101,7 +99,7 @@
     <ClCompile>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level4</WarningLevel>
-      <PreprocessorDefinitions>SYMBOL_BUILD;_DEBUG;DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>..\..\..\dependencies\dirent;..\..\..\src\Game\include;..\..\..\src\Shared\include;..\..\..\src\Memory\include;..\..\..\dependencies\OtterUI\inc;..\..\..\dependencies\jansson;..\..\..\dependencies\Gleam\include;..\..\..\dependencies\Gaff\include;..\..\..\dependencies\LuaState;..\..\..\dependencies\LuaJIT-2.0.3\src;..\..\..\dependencies\utf8-cpp;..\..\..\dependencies\assimp\include;..\..\..\dependencies\esprit\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <ProgramDataBaseFileName>$(OutDir)GameComponents32d.pdb</ProgramDataBaseFileName>
@@ -113,13 +111,13 @@
       <AdditionalOptions>/sdl %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <ResourceCompile>
-      <PreprocessorDefinitions>SYMBOL_BUILD;_DEBUG;DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>..\..\..\dependencies\dirent;..\..\..\src\Game\include;..\..\..\src\Shared\include;..\..\..\src\Memory\include;..\..\..\dependencies\OtterUI\inc;..\..\..\dependencies\jansson;..\..\..\dependencies\Gleam\include;..\..\..\dependencies\Gaff\include;..\..\..\dependencies\LuaState;..\..\..\dependencies\LuaJIT-2.0.3\src;..\..\..\dependencies\utf8-cpp;..\..\..\dependencies\assimp\include;..\..\..\dependencies\esprit\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>Dbghelp.lib;..\..\..\build\output\x86\Debug\lua51.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>..\..\..\build\output\x86\Debug\lua51.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ImportLibrary>..\..\..\build\output\x86\Debug\GameComponents32d.lib</ImportLibrary>
     </Link>
   </ItemDefinitionGroup>
@@ -127,7 +125,7 @@
     <ClCompile>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level4</WarningLevel>
-      <PreprocessorDefinitions>SYMBOL_BUILD;_DEBUG;DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>..\..\..\dependencies\dirent;..\..\..\src\Game\include;..\..\..\src\Shared\include;..\..\..\src\Memory\include;..\..\..\dependencies\OtterUI\inc;..\..\..\dependencies\jansson;..\..\..\dependencies\Gleam\include;..\..\..\dependencies\Gaff\include;..\..\..\dependencies\LuaState;..\..\..\dependencies\LuaJIT-2.0.3\src;..\..\..\dependencies\utf8-cpp;..\..\..\dependencies\assimp\include;..\..\..\dependencies\esprit\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <ProgramDataBaseFileName>$(OutDir)GameComponents64d.pdb</ProgramDataBaseFileName>
@@ -138,13 +136,13 @@
       <AdditionalOptions>/sdl %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <ResourceCompile>
-      <PreprocessorDefinitions>SYMBOL_BUILD;_DEBUG;DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>..\..\..\dependencies\dirent;..\..\..\src\Game\include;..\..\..\src\Shared\include;..\..\..\src\Memory\include;..\..\..\dependencies\OtterUI\inc;..\..\..\dependencies\jansson;..\..\..\dependencies\Gleam\include;..\..\..\dependencies\Gaff\include;..\..\..\dependencies\LuaState;..\..\..\dependencies\LuaJIT-2.0.3\src;..\..\..\dependencies\utf8-cpp;..\..\..\dependencies\assimp\include;..\..\..\dependencies\esprit\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>Dbghelp.lib;..\..\..\build\output\x64\Debug\lua51.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>..\..\..\build\output\x64\Debug\lua51.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ImportLibrary>..\..\..\build\output\x64\Debug\GameComponents64d.lib</ImportLibrary>
     </Link>
   </ItemDefinitionGroup>
@@ -152,7 +150,6 @@
     <ClCompile>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level4</WarningLevel>
-      <PreprocessorDefinitions>SYMBOL_BUILD;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>..\..\..\dependencies\dirent;..\..\..\src\Game\include;..\..\..\src\Shared\include;..\..\..\src\Memory\include;..\..\..\dependencies\OtterUI\inc;..\..\..\dependencies\jansson;..\..\..\dependencies\Gleam\include;..\..\..\dependencies\Gaff\include;..\..\..\dependencies\LuaState;..\..\..\dependencies\LuaJIT-2.0.3\src;..\..\..\dependencies\utf8-cpp;..\..\..\dependencies\assimp\include;..\..\..\dependencies\esprit\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <ProgramDataBaseFileName>$(OutDir)GameComponents32.pdb</ProgramDataBaseFileName>
@@ -168,7 +165,6 @@
       <AdditionalOptions>/sdl %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <ResourceCompile>
-      <PreprocessorDefinitions>SYMBOL_BUILD;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>..\..\..\dependencies\dirent;..\..\..\src\Game\include;..\..\..\src\Shared\include;..\..\..\src\Memory\include;..\..\..\dependencies\OtterUI\inc;..\..\..\dependencies\jansson;..\..\..\dependencies\Gleam\include;..\..\..\dependencies\Gaff\include;..\..\..\dependencies\LuaState;..\..\..\dependencies\LuaJIT-2.0.3\src;..\..\..\dependencies\utf8-cpp;..\..\..\dependencies\assimp\include;..\..\..\dependencies\esprit\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Link>
@@ -176,7 +172,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>Dbghelp.lib;..\..\..\build\output\x86\Release\lua51.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>..\..\..\build\output\x86\Release\lua51.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ImportLibrary>..\..\..\build\output\x86\Release\GameComponents32.lib</ImportLibrary>
     </Link>
   </ItemDefinitionGroup>
@@ -184,7 +180,6 @@
     <ClCompile>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level4</WarningLevel>
-      <PreprocessorDefinitions>SYMBOL_BUILD;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>..\..\..\dependencies\dirent;..\..\..\src\Game\include;..\..\..\src\Shared\include;..\..\..\src\Memory\include;..\..\..\dependencies\OtterUI\inc;..\..\..\dependencies\jansson;..\..\..\dependencies\Gleam\include;..\..\..\dependencies\Gaff\include;..\..\..\dependencies\LuaState;..\..\..\dependencies\LuaJIT-2.0.3\src;..\..\..\dependencies\utf8-cpp;..\..\..\dependencies\assimp\include;..\..\..\dependencies\esprit\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <ProgramDataBaseFileName>$(OutDir)GameComponents64.pdb</ProgramDataBaseFileName>
@@ -199,7 +194,6 @@
       <AdditionalOptions>/sdl %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <ResourceCompile>
-      <PreprocessorDefinitions>SYMBOL_BUILD;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>..\..\..\dependencies\dirent;..\..\..\src\Game\include;..\..\..\src\Shared\include;..\..\..\src\Memory\include;..\..\..\dependencies\OtterUI\inc;..\..\..\dependencies\jansson;..\..\..\dependencies\Gleam\include;..\..\..\dependencies\Gaff\include;..\..\..\dependencies\LuaState;..\..\..\dependencies\LuaJIT-2.0.3\src;..\..\..\dependencies\utf8-cpp;..\..\..\dependencies\assimp\include;..\..\..\dependencies\esprit\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Link>
@@ -207,7 +201,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>Dbghelp.lib;..\..\..\build\output\x64\Release\lua51.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>..\..\..\build\output\x64\Release\lua51.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ImportLibrary>..\..\..\build\output\x64\Release\GameComponents64.lib</ImportLibrary>
     </Link>
   </ItemDefinitionGroup>
