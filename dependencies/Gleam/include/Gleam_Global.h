@@ -43,8 +43,8 @@ INLINE Gaff::IAllocator* GetAllocator(void);
 void* GleamAlloc(size_t size_bytes, const char* filename, unsigned int line_number);
 INLINE void GleamFree(void* data);
 
-INLINE void SetLogFileName(const GChar* log_file_name);
-INLINE const GChar* GetLogFileName(void);
+INLINE void SetLogFileName(const char* log_file_name);
+INLINE const char* GetLogFileName(void);
 void WriteMessageToLog(const char* msg, size_t size, LOG_MSG_TYPE type = LOG_NORMAL);
 void PrintfToLog(const char* format_string, LOG_MSG_TYPE type, ...);
 

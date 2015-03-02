@@ -85,7 +85,8 @@ public:
 	INLINE bool hasFailed(void) const;
 	INLINE void failed(void);
 
-	void addCallback(const Gaff::FunctionBinder<void, const AHashString&, bool> callback);
+	void addCallback(const Gaff::FunctionBinder<void, const AHashString&, bool>& callback);
+	void removeCallback(const Gaff::FunctionBinder<void, const AHashString&, bool>& callback);
 
 private:
 	typedef void (ResourceManager::*ZRC)(const AHashString&);

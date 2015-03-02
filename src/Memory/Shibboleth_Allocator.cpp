@@ -27,6 +27,8 @@ THE SOFTWARE.
 
 #include "Shibboleth_Allocator.h"
 #include <Gaff_IncludeAssert.h>
+#include <Gaff_ScopedExit.h>
+#include <Gaff_StackTrace.h>
 #include <Gaff_Atomic.h>
 #include <Gaff_Utils.h>
 #include <Gaff_File.h>
@@ -50,10 +52,33 @@ Allocator::Allocator(size_t alignment):
 #if defined(SYMBOL_BUILD) && defined(GATHER_ALLOCATION_STACKTRACE)
 	mem_pool_info.st_lock = _global_allocator.template allocT<Gaff::SpinLock>();
 #endif
+
+#ifdef SYMBOL_BUILD
+	assert(Gaff::StackTrace::Init());
+#endif
 }
 
 Allocator::~Allocator(void)
 {
+	auto exit_func = [&](void)
+	{
+		for (auto it = _tagged_pools.begin(); it != _tagged_pools.end(); ++it) {
+#ifdef TRACK_POINTER_ALLOCATIONS
+			_global_allocator.freeT(it->second.pa_lock);
+			_global_allocator.freeT(it->second.wf_lock);
+#endif
+#if defined(SYMBOL_BUILD) && defined(GATHER_ALLOCATION_STACKTRACE)
+			_global_allocator.freeT(it->second.st_lock);
+#endif
+		}
+
+#ifdef SYMBOL_BUILD
+		Gaff::StackTrace::Destroy();
+#endif
+	};
+
+	GAFF_SCOPE_EXIT(Gaff::Move(exit_func));
+
 	char log_file_name[64] = { 0 };
 	Gaff::GetCurrentTimeString(log_file_name, 64, "Logs/AllocationLog %Y-%m-%d %H-%M-%S.txt");
 
@@ -70,24 +95,23 @@ Allocator::~Allocator(void)
 #if defined(SYMBOL_BUILD) && defined(GATHER_ALLOCATION_STACKTRACE)
 	Gaff::GetCurrentTimeString(log_file_name, 64, "Logs/CallstackLog %Y-%m-%d %H-%M-%S.txt");
 	Gaff::File callstack_log;
-	log.open(log_file_name, Gaff::File::WRITE);
+
+	if (callstack_log.open(log_file_name, Gaff::File::WRITE)) {
+		callstack_log.printf("===================================\n");
+		callstack_log.printf("    Leaked Memory Callstack Log\n");
+		callstack_log.printf("===================================\n\n");
+	}
 #endif
 
 	size_t total_bytes = 0;
-	unsigned int total_allocs = 0;
-	unsigned int total_frees = 0;
+	size_t total_allocs = 0;
+	size_t total_frees = 0;
 
 	log.printf("===========================================================\n");
 	log.printf("Tagged Memory Allocations Log\n");
 	log.printf("===========================================================\n\n");
 
 	for (auto it = _tagged_pools.begin(); it != _tagged_pools.end(); ++it) {
-#ifdef TRACK_POINTER_ALLOCATIONS
-		it->second.pointers_allocated.clear();
-		_global_allocator.freeT(it->second.pa_lock);
-		_global_allocator.freeT(it->second.wf_lock);
-#endif
-
 		log.printf("%s:\n", it->second.pool_name);
 		log.printf("\tBytes Allocated: %i\n", it->second.total_bytes_allocated);
 		log.printf("\tAllocations: %i\n", it->second.num_allocations);
@@ -98,6 +122,8 @@ Allocator::~Allocator(void)
 		total_frees += it->second.num_frees;
 
 #ifdef TRACK_POINTER_ALLOCATIONS
+		it->second.pointers_allocated.clear();
+
 		if (!it->second.wrong_free.empty()) {
 			log.printf("\t===========================================================\n");
 			log.printf("\tERROR: This pool freed memory that belonged to another pool!\n");
@@ -128,7 +154,17 @@ Allocator::~Allocator(void)
 #if defined(SYMBOL_BUILD) && defined(GATHER_ALLOCATION_STACKTRACE)
 		if (callstack_log.isOpen()) {
 			for (auto it_st = it->second.stack_traces.begin(); it_st != it->second.stack_traces.end(); ++it_st) {
-				// Write stack trace contents to callstack_log
+				callstack_log.printf("Address 0x%x:\n", it_st->first);
+
+				for (unsigned short i = 0; i < it_st->second.getNumCapturedFrames(); ++i) {
+					callstack_log.printf(
+						"\t(0x%x) [%s:(%i)] %s\n", it_st->second.getAddress(i),
+						it_st->second.getFileName(i), it_st->second.getLineNumber(i),
+						it_st->second.getSymbolName(i)
+					);
+				}
+
+				callstack_log.printf("\n");
 			}
 		}
 #endif
@@ -185,20 +221,16 @@ void* Allocator::alloc(size_t size_bytes, unsigned int alloc_tag)
 
 #ifdef TRACK_POINTER_ALLOCATIONS
 		mem_pool_info.pa_lock->lock();
-
-		for (auto it = _tagged_pools.begin(); it != _tagged_pools.end(); ++it) {
-			assert(it->second.pointers_allocated.linearSearch(data) == it->second.pointers_allocated.end());
-		}
-
 		mem_pool_info.pointers_allocated.push(data);
 		mem_pool_info.pa_lock->unlock();
 #endif
 #if defined(SYMBOL_BUILD) && defined(GATHER_ALLOCATION_STACKTRACE)
 		mem_pool_info.st_lock->lock();
 
+		Gaff::StackTrace::RefreshModuleList(); // Will fix symbols from DLLs not resolving.
 		Gaff::StackTrace stack_trace;
 		stack_trace.captureStack();
-		mem_pool_info.stack_traces.moveMoveInsert(Gaff::Move(data), Gaff::Move(stack_trace));
+		mem_pool_info.stack_traces.insert(data, stack_trace);
 
 		mem_pool_info.st_lock->unlock();
 #endif
@@ -254,7 +286,7 @@ void Allocator::free(void* data, unsigned int alloc_tag)
 			it_pool->second.st_lock->lock();
 
 			it_st = it_pool->second.stack_traces.findElementWithKey(data);
-			
+
 			if (it_st != it_pool->second.stack_traces.end()) {
 				it_pool->second.stack_traces.erase(data);
 			}
@@ -286,12 +318,12 @@ size_t Allocator::getTotalBytesAllocated(unsigned int alloc_tag) const
 	return _tagged_pools[alloc_tag].total_bytes_allocated;
 }
 
-unsigned int Allocator::getNumAllocations(unsigned int alloc_tag) const
+size_t Allocator::getNumAllocations(unsigned int alloc_tag) const
 {
 	return _tagged_pools[alloc_tag].num_allocations;
 }
 
-unsigned int Allocator::getNumFrees(unsigned int alloc_tag) const
+size_t Allocator::getNumFrees(unsigned int alloc_tag) const
 {
 	return _tagged_pools[alloc_tag].num_frees;
 }

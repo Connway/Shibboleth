@@ -47,34 +47,33 @@ void StackTrace::Destroy(void)
 }
 
 StackTrace::StackTrace(const StackTrace& trace):
-	_strings(nullptr)
+	_strings(nullptr), _total_frames(0),
 {
 	*this = trace;
 }
 
 StackTrace::StackTrace(void):
-	_total_frames(0), _strings(nullptr),
-	_frame(nullptr)
+	_strings(nullptr), _total_frames(0),
 {
 }
 
 StackTrace::~StackTrace(void)
 {
 	if (_strings) {
-		::free(_strings);
+		free(_strings);
 	}
 }
 
 const StackTrace& StackTrace::operator=(const StackTrace& rhs)
 {
+	memcpy(_stack, rhs._stack, sizeof(_stack));
+	_total_frames = rhs._total_frames;
+
 	if (_strings) {
-		::free(_strings);
+		free(_strings);
 	}
 
-	memcpy(_stack, rhs._stack, sizeof(_stack));
-	_frame = rhs._frame;
-
-	_strings = backtrace_symbols(&_frame, 1);
+	_strings = backtrace_symbols(_stack, _total_frames);
 
 	return *this;
 }
@@ -85,51 +84,66 @@ const StackTrace& StackTrace::operator=(const StackTrace& rhs)
 */
 unsigned short StackTrace::captureStack(unsigned int frames_to_capture)
 {
-	return (unsigned short)backtrace(_stack, frames_to_capture);
+	_total_frames = backtrace(_stack, frames_to_capture);
+
+	if (_strings) {
+		free(_strings);
+	}
+
+	_strings = backtrace_symbols(_stack, _total_frames);
 }
 
-/*!
-	\brief Returns the total number of currently captured callstack frames.
-*/
-unsigned short StackTrace::getTotalFrames(void) const
+unsigned short StackTrace::getNumCapturedFrames(unsigned short frame) const
 {
 	return _total_frames;
 }
 
-/*!
-	\brief Loads the frame information for the specified callstack \a frame.
-	\param frame The callstack frame whose information to load.
-	\return Whether the callstack frame information was successfully loaded.
-*/
-bool StackTrace::loadFrameInfo(unsigned short frame)
+unsigned long long StackTrace::getAddress(unsigned short frame) const
 {
-	if (_strings) {
-		::free(_strings);
-	}
-
-	_strings = backtrace_symbols(_stack + frame, 1);
-	_frame = _stack[frame];
-
-	return _strings && _frame;
+	return static_cast<unsigned long long>(_stack[frame]);
 }
 
-/*!
-	\brief Returns the currently loaded callstack frame's name.
-	\note Must call loadFrameInfo() first.
-*/
-const char* StackTrace::getFrameName(void) const
+unsigned int getLineNumber(unsigned short frame) const
 {
-	return *_strings;
+	char command[64] = { 0 };
+	sprintf(command, "addr2line %p -e App", _stack[frame]); // Make a generic way to solve for not hard-coding the "App" part.
+
+	FILE* stream = popen(command, "r");
+
+	if (!stream)
+		return 0;
+
+	char output[NAME_SIZE] = { 0 };
+	fgets(output, NAME_SIZE, stream);
+	pclose(stream);
+
+	// parse output
+
+	return line_number;
 }
 
-/*!
-	\brief Gets the address of the currently loaded callstack frame.
-	\note Must call loadFrameInfo() first.
-*/
-unsigned long long StackTrace::getFrameAddress(void) const
+const char* StackTrace::getSymbolName(unsigned short frame) const
 {
-	// No idea if this is correct, but close enough I guess :/
-	return static_cast<unsigned long long>(_frame);
+	return _strings[frame];
+}
+
+const char* getFileName(unsigned short frame) const
+{
+	char command[64] = { 0 };
+	sprintf(command, "addr2line %p -e App", _stack[frame]); // Make a generic way to solve for not hard-coding the "App" part.
+
+	FILE* stream = popen(command, "r");
+
+	if (!stream)
+		return nullptr;
+
+	char output[NAME_SIZE] = { 0 };
+	fgets(output, NAME_SIZE, stream);
+	pclose(stream);
+
+	// parse output
+
+	return file_name;
 }
 
 NS_END

@@ -492,12 +492,11 @@ const HashMap<Key, Value, Allocator>& HashMap<Key, Value, Allocator>::operator=(
 	}
 
 	if (rhs._size > 0) {
-		_slots = (Slot*)_allocator.alloc(sizeof(Slot) * rhs._size);
+		_slots = reinterpret_cast<Slot*>(_allocator.alloc(sizeof(Slot) * rhs._size));
 
 		for (size_t i = 0; i < _used; ++i) {
 			construct(&_slots[i].key, rhs._slots[i].key);
 			construct(&_slots[i].value, rhs._slots[i].value);
-			_slots[i].initial_index = rhs._slots[i].initial_index;
 			_slots[i].occupied, rhs._slots[i].occupied;
 		}
 	}
@@ -582,7 +581,6 @@ Value& HashMap<Key, Value, Allocator>::operator[](const Key& key)
 	}
 
 	size_t index = _hash((const char*)&key, sizeof(Key)) % _size;
-	size_t initial_index = index;
 	size_t i = 0;
 
 	while (_slots[index].occupied && _slots[index].key != key && i < _size) {
@@ -593,7 +591,6 @@ Value& HashMap<Key, Value, Allocator>::operator[](const Key& key)
 	if (!_slots[index].occupied) {
 		construct(&_slots[index].key, key);
 		construct(&_slots[index].value);
-		_slots[index].initial_index = initial_index;
 		_slots[index].occupied = true;
 		++_used;
 	}
@@ -616,7 +613,6 @@ Value& HashMap<Key, Value, Allocator>::operator[](Key&& key)
 	}
 
 	size_t index = _hash((const char*)&key, sizeof(Key)) % _size;
-	size_t initial_index = index;
 	size_t i = 0;
 
 	while (_slots[index].occupied && _slots[index].key != key && i < _size) {
@@ -627,7 +623,6 @@ Value& HashMap<Key, Value, Allocator>::operator[](Key&& key)
 	if (!_slots[index].occupied) {
 		moveConstruct(&_slots[index].key, Move(key));
 		construct(&_slots[index].value);
-		_slots[index].initial_index = initial_index;
 		_slots[index].occupied = true;
 		++_used;
 	}
@@ -688,7 +683,7 @@ void HashMap<Key, Value, Allocator>::erase(size_t index)
 	_slots[index].occupied = false;
 	--_used;
 
-	shiftBuckets(index);
+	rebuildMap();
 }
 
 template <class Key, class Value, class Allocator>
@@ -732,7 +727,7 @@ bool HashMap<Key, Value, Allocator>::hasElementWithValue(const Value& value) con
 template <class Key, class Value, class Allocator>
 bool HashMap<Key, Value, Allocator>::hasElementWithKey(const Key& key) const
 {
-	return indexOf(key) != -1;
+	return indexOf(key) != SIZE_T_FAIL;
 }
 
 template <class Key, class Value, class Allocator>
@@ -896,48 +891,20 @@ typename HashMap<Key, Value, Allocator>::Iterator HashMap<Key, Value, Allocator>
 }
 
 template <class Key, class Value, class Allocator>
-void HashMap<Key, Value, Allocator>::shiftBuckets(size_t index)
+void HashMap<Key, Value, Allocator>::rebuildMap(void)
 {
-	size_t prev_index = index;
-	index = (index + 1) % _size;
+	HashMap<Key, Value, Allocator> new_map(_allocator);
 
-	// If the slot is occupied and its initial index is less than its current index,
-	// then shift it down one.
-	while (_slots[index].occupied && _slots[index].initial_index < index) {
-		moveConstruct(&_slots[prev_index].key, Gaff::Move(_slots[index].key));
-		moveConstruct(&_slots[prev_index].value, Gaff::Move(_slots[index].value));
-		deconstruct(&_slots[index].key);
-		deconstruct(&_slots[index].value);
-
-		_slots[prev_index].initial_index = _slots[index].initial_index;
-		_slots[prev_index].occupied = true;
-		_slots[index].occupied = false;
-
-		prev_index = index;
-		index = (index + 1) % _size;
-	}
-	
-	// We have looped to the beginning of the array
-	if (index == 0) {
-		// If the slot is occupied and its initial index is greater than its current index,
-		// then it was looped around because it had to insert past the end of the array.
-		// If the slot's initial index is less than it's current index, then the overflow,
-		// caused a collision with something who should be farther down in the array.
-		// Shift it down one.
-		while (_slots[index].occupied && _slots[index].initial_index != index) {
-			moveConstruct(&_slots[prev_index].key, Gaff::Move(_slots[index].key));
-			moveConstruct(&_slots[prev_index].value, Gaff::Move(_slots[index].value));
-			deconstruct(&_slots[index].key);
-			deconstruct(&_slots[index].value);
-
-			_slots[prev_index].initial_index = _slots[index].initial_index;
-			_slots[prev_index].occupied = true;
-			_slots[index].occupied = false;
-
-			prev_index = index;
-			index = (index + 1) % _size;
+	for (size_t i = 0; i < _size; ++i) {
+		if (_slots[i].occupied) {
+			new_map.moveMoveInsert(Gaff::Move(_slots[i].key), Gaff::Move(_slots[i].value));
+			deconstruct(&_slots[i].key);
+			deconstruct(&_slots[i].value);
+			_slots[i].occupied = false;
 		}
 	}
+
+	*this = Gaff::Move(new_map);
 }
 
 
@@ -991,12 +958,11 @@ const HashMap<String<T, Allocator>, Value, Allocator>& HashMap<String<T, Allocat
 	}
 
 	if (rhs._size > 0) {
-		_slots = (Slot*)_allocator.alloc(sizeof(Slot) * rhs._size);
+		_slots = reinterpret_cast<Slot*>(_allocator.alloc(sizeof(Slot) * rhs._size));
 
 		for (size_t i = 0; i < _used; ++i) {
 			construct(&_slots[i].key, rhs._slots[i].key);
 			construct(&_slots[i].value, rhs._slots[i].value);
-			_slots[i].initial_index = rhs._slots[i].initial_index;
 			_slots[i].occupied, rhs._slots[i].occupied;
 		}
 	}
@@ -1081,7 +1047,6 @@ Value& HashMap<String<T, Allocator>, Value, Allocator>::operator[](const String<
 	}
 
 	size_t index = _hash((const char*)key.getBuffer(), key.size() * sizeof(T)) % _size;
-	size_t initial_index = index;
 	size_t i = 0;
 
 	while (_slots[index].occupied && _slots[index].key != key && i < _size) {
@@ -1092,7 +1057,6 @@ Value& HashMap<String<T, Allocator>, Value, Allocator>::operator[](const String<
 	if (!_slots[index].occupied) {
 		construct(&_slots[index].key, key);
 		construct(&_slots[index].value);
-		_slots[index].initial_index = initial_index;
 		_slots[index].occupied = true;
 		++_used;
 	}
@@ -1115,7 +1079,6 @@ Value& HashMap<String<T, Allocator>, Value, Allocator>::operator[](String<T, All
 	}
 
 	size_t index = _hash((const char*)key.getBuffer(), key.size() * sizeof(T)) % _size;
-	size_t initial_index = index;
 	size_t i = 0;
 
 	while (_slots[index].occupied && _slots[index].key != key && i < _size) {
@@ -1126,7 +1089,6 @@ Value& HashMap<String<T, Allocator>, Value, Allocator>::operator[](String<T, All
 	if (!_slots[index].occupied) {
 		moveConstruct(&_slots[index].key, Move(key));
 		construct(&_slots[index].value);
-		_slots[index].initial_index = initial_index;
 		_slots[index].occupied = true;
 		++_used;
 	}
@@ -1187,7 +1149,7 @@ void HashMap<String<T, Allocator>, Value, Allocator>::erase(size_t index)
 	_slots[index].occupied = false;
 	--_used;
 
-	shiftBuckets(index);
+	rebuildMap();
 }
 
 template <class Value, class Allocator, class T>
@@ -1231,7 +1193,7 @@ bool HashMap<String<T, Allocator>, Value, Allocator>::hasElementWithValue(const 
 template <class Value, class Allocator, class T>
 bool HashMap<String<T, Allocator>, Value, Allocator>::hasElementWithKey(const String<T, Allocator>& key) const
 {
-	return indexOf(key) != -1;
+	return indexOf(key) != SIZE_T_FAIL;
 }
 
 template <class Value, class Allocator, class T>
@@ -1395,48 +1357,20 @@ typename HashMap<String<T, Allocator>, Value, Allocator>::Iterator HashMap<Strin
 }
 
 template <class Value, class Allocator, class T>
-void HashMap<String<T, Allocator>, Value, Allocator>::shiftBuckets(size_t index)
+void HashMap<String<T, Allocator>, Value, Allocator>::rebuildMap(void)
 {
-	size_t prev_index = index;
-	index = (index + 1) % _size;
+	HashMap<String<T, Allocator>, Value, Allocator> new_map(_allocator);
 
-	// If the slot is occupied and its initial index is less than its current index,
-	// then shift it down one.
-	while (_slots[index].occupied && _slots[index].initial_index < index) {
-		moveConstruct(&_slots[prev_index].key, Gaff::Move(_slots[index].key));
-		moveConstruct(&_slots[prev_index].value, Gaff::Move(_slots[index].value));
-		deconstruct(&_slots[index].key);
-		deconstruct(&_slots[index].value);
-
-		_slots[prev_index].initial_index = _slots[index].initial_index;
-		_slots[prev_index].occupied = true;
-		_slots[index].occupied = false;
-
-		prev_index = index;
-		index = (index + 1) % _size;
-	}
-
-	// We have looped to the beginning of the array
-	if (index == 0) {
-		// If the slot is occupied and its initial index is greater than its current index,
-		// then it was looped around because it had to insert past the end of the array.
-		// If the slot's initial index is less than it's current index, then the overflow,
-		// caused a collision with something who should be farther down in the array.
-		// Shift it down one.
-		while (_slots[index].occupied && _slots[index].initial_index != index) {
-			moveConstruct(&_slots[prev_index].key, Gaff::Move(_slots[index].key));
-			moveConstruct(&_slots[prev_index].value, Gaff::Move(_slots[index].value));
-			deconstruct(&_slots[index].key);
-			deconstruct(&_slots[index].value);
-
-			_slots[prev_index].initial_index = _slots[index].initial_index;
-			_slots[prev_index].occupied = true;
-			_slots[index].occupied = false;
-
-			prev_index = index;
-			index = (index + 1) % _size;
+	for (size_t i = 0; i < _size; ++i) {
+		if (_slots[i].occupied) {
+			new_map.moveMoveInsert(Gaff::Move(_slots[i].key), Gaff::Move(_slots[i].value));
+			deconstruct(&_slots[i].key);
+			deconstruct(&_slots[i].value);
+			_slots[i].occupied = false;
 		}
 	}
+
+	*this = Gaff::Move(new_map);
 }
 
 
@@ -1490,12 +1424,11 @@ const HashMap<HashString<T, Allocator>, Value, Allocator>& HashMap<HashString<T,
 	}
 
 	if (rhs._size > 0) {
-		_slots = (Slot*)_allocator.alloc(sizeof(Slot)* rhs._size);
+		_slots = reinterpret_cast<Slot*>(_allocator.alloc(sizeof(Slot) * rhs._size));
 
 		for (size_t i = 0; i < _used; ++i) {
 			construct(&_slots[i].key, rhs._slots[i].key);
 			construct(&_slots[i].value, rhs._slots[i].value);
-			_slots[i].initial_index = rhs._slots[i].initial_index;
 			_slots[i].occupied, rhs._slots[i].occupied;
 		}
 	}
@@ -1580,7 +1513,6 @@ Value& HashMap<HashString<T, Allocator>, Value, Allocator>::operator[](const Has
 	}
 
 	size_t index = key.getHash() % _size;
-	size_t initial_index = index;
 	size_t i = 0;
 
 	while (_slots[index].occupied && _slots[index].key != key && i < _size) {
@@ -1591,7 +1523,6 @@ Value& HashMap<HashString<T, Allocator>, Value, Allocator>::operator[](const Has
 	if (!_slots[index].occupied) {
 		construct(&_slots[index].key, key);
 		construct(&_slots[index].value);
-		_slots[index].initial_index = initial_index;
 		_slots[index].occupied = true;
 		++_used;
 	}
@@ -1614,7 +1545,6 @@ Value& HashMap<HashString<T, Allocator>, Value, Allocator>::operator[](HashStrin
 	}
 
 	size_t index = key.getHash() % _size;
-	size_t initial_index = index;
 	size_t i = 0;
 
 	while (_slots[index].occupied && _slots[index].key != key && i < _size) {
@@ -1625,7 +1555,6 @@ Value& HashMap<HashString<T, Allocator>, Value, Allocator>::operator[](HashStrin
 	if (!_slots[index].occupied) {
 		moveConstruct(&_slots[index].key, Move(key));
 		construct(&_slots[index].value);
-		_slots[index].initial_index = initial_index;
 		_slots[index].occupied = true;
 		++_used;
 	}
@@ -1686,7 +1615,7 @@ void HashMap<HashString<T, Allocator>, Value, Allocator>::erase(size_t index)
 	_slots[index].occupied = false;
 	--_used;
 
-	shiftBuckets(index);
+	rebuildMap();
 }
 
 template <class Value, class Allocator, class T>
@@ -1730,7 +1659,7 @@ bool HashMap<HashString<T, Allocator>, Value, Allocator>::hasElementWithValue(co
 template <class Value, class Allocator, class T>
 bool HashMap<HashString<T, Allocator>, Value, Allocator>::hasElementWithKey(const HashString<T, Allocator>& key) const
 {
-	return indexOf(key) != -1;
+	return indexOf(key) != SIZE_T_FAIL;
 }
 
 template <class Value, class Allocator, class T>
@@ -1894,47 +1823,19 @@ typename HashMap<HashString<T, Allocator>, Value, Allocator>::Iterator HashMap<H
 }
 
 template <class Value, class Allocator, class T>
-void HashMap<HashString<T, Allocator>, Value, Allocator>::shiftBuckets(size_t index)
+void HashMap<HashString<T, Allocator>, Value, Allocator>::rebuildMap(void)
 {
-	size_t prev_index = index;
-	index = (index + 1) % _size;
+	HashMap<HashString<T, Allocator>, Value, Allocator> new_map(_allocator);
 
-	// If the slot is occupied and its initial index is less than its current index,
-	// then shift it down one.
-	while (_slots[index].occupied && _slots[index].initial_index < index) {
-		moveConstruct(&_slots[prev_index].key, Gaff::Move(_slots[index].key));
-		moveConstruct(&_slots[prev_index].value, Gaff::Move(_slots[index].value));
-		deconstruct(&_slots[index].key);
-		deconstruct(&_slots[index].value);
-
-		_slots[prev_index].initial_index = _slots[index].initial_index;
-		_slots[prev_index].occupied = true;
-		_slots[index].occupied = false;
-
-		prev_index = index;
-		index = (index + 1) % _size;
-	}
-
-	// We have looped to the beginning of the array
-	if (index == 0) {
-		// If the slot is occupied and its initial index is greater than its current index,
-		// then it was looped around because it had to insert past the end of the array.
-		// If the slot's initial index is less than it's current index, then the overflow,
-		// caused a collision with something who should be farther down in the array.
-		// Shift it down one.
-		while (_slots[index].occupied && _slots[index].initial_index != index) {
-			moveConstruct(&_slots[prev_index].key, Gaff::Move(_slots[index].key));
-			moveConstruct(&_slots[prev_index].value, Gaff::Move(_slots[index].value));
-			deconstruct(&_slots[index].key);
-			deconstruct(&_slots[index].value);
-
-			_slots[prev_index].initial_index = _slots[index].initial_index;
-			_slots[prev_index].occupied = true;
-			_slots[index].occupied = false;
-
-			prev_index = index;
-			index = (index + 1) % _size;
+	for (size_t i = 0; i < _size; ++i) {
+		if (_slots[i].occupied) {
+			new_map.moveMoveInsert(Gaff::Move(_slots[i].key), Gaff::Move(_slots[i].value));
+			deconstruct(&_slots[i].key);
+			deconstruct(&_slots[i].value);
+			_slots[i].occupied = false;
 		}
 	}
+
+	*this = Gaff::Move(new_map);
 }
 #endif
