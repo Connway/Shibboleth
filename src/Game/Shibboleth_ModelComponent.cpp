@@ -63,10 +63,10 @@ ModelComponent::~ModelComponent(void)
 {
 	auto callback_func = Gaff::Bind(this, &ModelComponent::LoadCallback);
 
-	//_program_buffers_res.getResourcePtr()->removeCallback(Gaff::Bind(this, &ModelComponent::ProgramBuffersCallback));
-	//_texture_res.getResourcePtr()->removeCallback(Gaff::Bind(this, &ModelComponent::TextureLoadedCallback));
+	_program_buffers_res.getResourcePtr()->removeCallback(Gaff::Bind(this, &ModelComponent::ProgramBuffersCallback));
+	_texture_res.getResourcePtr()->removeCallback(Gaff::Bind(this, &ModelComponent::TextureLoadedCallback));
 	_sampler_res.getResourcePtr()->removeCallback(Gaff::Bind(this, &ModelComponent::SamplerStateCallback));
-	//_buffer_res.getResourcePtr()->removeCallback(Gaff::Bind(this, &ModelComponent::BufferCallback));
+	_buffer_res.getResourcePtr()->removeCallback(Gaff::Bind(this, &ModelComponent::BufferCallback));
 	_material_res.getResourcePtr()->removeCallback(callback_func);
 	_model_res.getResourcePtr()->removeCallback(callback_func);
 }
@@ -119,9 +119,9 @@ bool ModelComponent::load(const Gaff::JSON& json)
 		_material_res = _res_mgr.requestResource(material_file.getString());
 	}
 
-	//if (texture_file.isString()) {
-	//	_texture_res = _res_mgr.requestResource(texture_file.getString());
-	//}
+	if (texture_file.isString()) {
+		_texture_res = _res_mgr.requestResource(texture_file.getString());
+	}
 
 	if (sampler_file.isString()) {
 		_sampler_res = _res_mgr.requestResource(sampler_file.getString());
@@ -131,17 +131,17 @@ bool ModelComponent::load(const Gaff::JSON& json)
 		_model_res = _res_mgr.requestResource(model_file.getString());
 	}
 
-	//_program_buffers_res = _res_mgr.requestResource("ProgramBuffers", "test1");
-	//_buffer_res = _res_mgr.requestResource("Buffer", "test2", reinterpret_cast<unsigned long long>(&_buffer_settings));
+	_program_buffers_res = _res_mgr.requestResource("ProgramBuffers", "test1");
+	_buffer_res = _res_mgr.requestResource("Buffer", "test2", reinterpret_cast<unsigned long long>(&_buffer_settings));
 
 	_app.getBroadcaster().listen<LoadingMessage>(this, &ModelComponent::HandleLoadingMessage);
 
 	auto callback_func = Gaff::Bind(this, &ModelComponent::LoadCallback);
 
-	//_program_buffers_res.getResourcePtr()->addCallback(Gaff::Bind(this, &ModelComponent::ProgramBuffersCallback));
-	//_texture_res.getResourcePtr()->addCallback(Gaff::Bind(this, &ModelComponent::TextureLoadedCallback));
+	_program_buffers_res.getResourcePtr()->addCallback(Gaff::Bind(this, &ModelComponent::ProgramBuffersCallback));
+	_texture_res.getResourcePtr()->addCallback(Gaff::Bind(this, &ModelComponent::TextureLoadedCallback));
 	_sampler_res.getResourcePtr()->addCallback(Gaff::Bind(this, &ModelComponent::SamplerStateCallback));
-	//_buffer_res.getResourcePtr()->addCallback(Gaff::Bind(this, &ModelComponent::BufferCallback));
+	_buffer_res.getResourcePtr()->addCallback(Gaff::Bind(this, &ModelComponent::BufferCallback));
 	_material_res.getResourcePtr()->addCallback(callback_func);
 	_model_res.getResourcePtr()->addCallback(callback_func);
 
@@ -154,40 +154,40 @@ void ModelComponent::allComponentsLoaded(void)
 
 void ModelComponent::ProgramBuffersCallback(const AHashString& /*resource*/, bool success)
 {
-	//if (success) {
-	//	if (_texture_res.getResourcePtr()->isLoaded()) {
-	//		_program_buffers_res->data[0]->addResourceView(Gleam::IShader::SHADER_PIXEL, _texture_res->resource_views[0].get());
-	//	}
+	if (success) {
+		if (_texture_res.getResourcePtr()->isLoaded()) {
+			_program_buffers_res->data[0]->addResourceView(Gleam::IShader::SHADER_PIXEL, _texture_res->resource_views[0].get());
+		}
 
-	//	if (_sampler_res.getResourcePtr()->isLoaded()) {
-	//		_program_buffers_res->data[0]->addSamplerState(Gleam::IShader::SHADER_PIXEL, _sampler_res->data[0].get());
-	//	}
+		if (_sampler_res.getResourcePtr()->isLoaded()) {
+			_program_buffers_res->data[0]->addSamplerState(Gleam::IShader::SHADER_PIXEL, _sampler_res->data[0].get());
+		}
 
-	//	if (_buffer_res.getResourcePtr()->isLoaded()) {
-	//		_program_buffers_res->data[0]->addConstantBuffer(Gleam::IShader::SHADER_VERTEX, _buffer_res->data[0].get());
-	//	}
-	//}
+		if (_buffer_res.getResourcePtr()->isLoaded()) {
+			_program_buffers_res->data[0]->addConstantBuffer(Gleam::IShader::SHADER_VERTEX, _buffer_res->data[0].get());
+		}
+	}
 }
 
 void ModelComponent::TextureLoadedCallback(const AHashString& /*resource*/, bool success)
 {
-	//if (success && _program_buffers_res.getResourcePtr()->isLoaded()) {
-	//	_program_buffers_res->data[0]->addResourceView(Gleam::IShader::SHADER_PIXEL, _texture_res->resource_views[0].get());
-	//}
+	if (success && _program_buffers_res.getResourcePtr()->isLoaded()) {
+		_program_buffers_res->data[0]->addResourceView(Gleam::IShader::SHADER_PIXEL, _texture_res->resource_views[0].get());
+	}
 }
 
 void ModelComponent::SamplerStateCallback(const AHashString& /*resource*/, bool success)
 {
-	//if (success && _program_buffers_res.getResourcePtr()->isLoaded()) {
-	//	_program_buffers_res->data[0]->addSamplerState(Gleam::IShader::SHADER_PIXEL, _sampler_res->data[0].get());
-	//}
+	if (success && _program_buffers_res.getResourcePtr()->isLoaded()) {
+		_program_buffers_res->data[0]->addSamplerState(Gleam::IShader::SHADER_PIXEL, _sampler_res->data[0].get());
+	}
 }
 
 void ModelComponent::BufferCallback(const AHashString& /*resource*/, bool success)
 {
-	//if (success && _program_buffers_res.getResourcePtr()->isLoaded()) {
-	//	_program_buffers_res->data[0]->addConstantBuffer(Gleam::IShader::SHADER_VERTEX, _buffer_res->data[0].get());
-	//}
+	if (success && _program_buffers_res.getResourcePtr()->isLoaded()) {
+		_program_buffers_res->data[0]->addConstantBuffer(Gleam::IShader::SHADER_VERTEX, _buffer_res->data[0].get());
+	}
 }
 
 void ModelComponent::LoadCallback(const AHashString& /*resource*/, bool success)

@@ -533,7 +533,7 @@ void Array<T, Allocator>::resize(size_t new_size)
 
 	T* old_data = _array;
 
-	_array = (T*)_allocator.alloc(sizeof(T) * new_size);
+	_array = reinterpret_cast<T*>(_allocator.alloc(sizeof(T) * new_size));
 
 	for (size_t i = _used; i < new_size; ++i) {
 		construct(_array + i);

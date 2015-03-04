@@ -92,6 +92,7 @@ public:
 	virtual const HashMap<AHashString, AString>& getCmdLine(void) const = 0;
 	virtual HashMap<AHashString, AString>& getCmdLine(void) = 0;
 
+	virtual void addTask(Gaff::ITask<ProxyAllocator>* task, unsigned int pool = 0) = 0;
 	virtual void addTask(Gaff::TaskPtr<ProxyAllocator>& task, unsigned int pool = 0) = 0;
 	virtual void getWorkerThreadIDs(Array<unsigned int>& out) const = 0;
 	virtual void helpUntilNoTasks(void) = 0;

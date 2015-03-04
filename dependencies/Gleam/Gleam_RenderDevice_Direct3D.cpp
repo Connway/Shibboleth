@@ -69,7 +69,7 @@ IRenderDevice::AdapterList RenderDeviceD3D::getDisplayModes(int color_format)
 			continue;
 		}
 
-		info.memory = (UINT)(adapter_desc.DedicatedVideoMemory / 1024) / 1024;
+		info.memory = static_cast<UINT>(adapter_desc.DedicatedVideoMemory / 1024) / 1024;
 		wcsncpy_s(info.adapter_name, 128, adapter_desc.Description, 128);
 
 		for (unsigned int j = 0; adapter->EnumOutputs(j, &adapter_output) != DXGI_ERROR_NOT_FOUND; ++j) {
@@ -78,14 +78,14 @@ IRenderDevice::AdapterList RenderDeviceD3D::getDisplayModes(int color_format)
 
 			unsigned int num_modes;
 
-			result = adapter_output->GetDisplayModeList((DXGI_FORMAT)color_format, 0UL, &num_modes, nullptr);
+			result = adapter_output->GetDisplayModeList(static_cast<DXGI_FORMAT>(color_format), 0UL, &num_modes, nullptr);
 
 			if (FAILED(result)) {
 				continue;
 			}
 
 			out_info.display_mode_list.resize(num_modes);
-			adapter_output->GetDisplayModeList((DXGI_FORMAT)color_format, 0UL, &num_modes, out_info.display_mode_list.getArray());
+			adapter_output->GetDisplayModeList(static_cast<DXGI_FORMAT>(color_format), 0UL, &num_modes, out_info.display_mode_list.getArray());
 
 			// Remove duplicate entries. We don't care about the scaling or scanline order
 			for (unsigned int k = 1; k < out_info.display_mode_list.size();) {
