@@ -177,13 +177,13 @@ void Queue<T, Allocator>::reallocate(size_t new_size)
 	T* old_data = _array;
 	T* begin = _begin;
 
-	_array = (T*)_allocator.alloc(sizeof(T) * new_size);
+	_array = reinterpret_cast<T*>(_allocator.alloc(sizeof(T) * new_size));
 	_begin = _end = _array + (new_size / 2);
 	_size = new_size;
 	_used = 0;
 
 	for (size_t i = 0; i < old_used; ++i) {
-		push(*begin);
+		movePush(Move(*begin));
 		increment(&begin, old_data, old_size);
 	}
 

@@ -385,7 +385,7 @@ template <class ReturnType, class... Args>
 ReturnType FunctionBinder<ReturnType, Args...>::operator()(Args... args) const
 {
 	assert(valid());
-	const IFunc* function = (IFunc*)_function_buffer;
+	const IFunc* function = reinterpret_cast<const IFunc*>(_function_buffer);
 	return function->call(args...);
 }
 
@@ -393,7 +393,7 @@ template <class ReturnType, class... Args>
 ReturnType FunctionBinder<ReturnType, Args...>::operator()(Args... args)
 {
 	assert(valid());
-	IFunc* function = (IFunc*)_function_buffer;
+	IFunc* function = reinterpret_cast<IFunc*>(_function_buffer);
 	return function->call(args...);
 }
 

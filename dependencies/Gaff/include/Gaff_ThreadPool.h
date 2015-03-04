@@ -103,6 +103,11 @@ public:
 		_threads.clear();
 	}
 
+	void addTask(ITask<Allocator>* task, unsigned int pool = 0)
+	{
+		addTask(TaskPtr<Allocator>(task), pool);
+	}
+
 	void addTask(const TaskPtr<Allocator>& task, unsigned int pool = 0)
 	{
 		assert(pool < _task_pools.size());

@@ -586,6 +586,11 @@ HashMap<AHashString, AString>& App::getCmdLine(void)
 	return _cmd_line_args;
 }
 
+void App::addTask(Gaff::ITask<ProxyAllocator>* task, unsigned int pool)
+{
+	_thread_pool.addTask(task, pool);
+}
+
 void App::addTask(Gaff::TaskPtr<ProxyAllocator>& task, unsigned int pool)
 {
 	_thread_pool.addTask(task, pool);

@@ -69,6 +69,7 @@ public:
 	const HashMap<AHashString, AString>& getCmdLine(void) const;
 	HashMap<AHashString, AString>& getCmdLine(void);
 
+	void addTask(Gaff::ITask<ProxyAllocator>* task, unsigned int pool = 0);
 	void addTask(Gaff::TaskPtr<ProxyAllocator>& task, unsigned int pool = 0);
 	void getWorkerThreadIDs(Array<unsigned int>& out) const;
 	void helpUntilNoTasks(void);
