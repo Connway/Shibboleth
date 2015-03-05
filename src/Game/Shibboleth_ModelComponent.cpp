@@ -211,46 +211,46 @@ void ModelComponent::HandleLoadingMessage(const LoadingMessage& msg)
 
 void ModelComponent::render(void)
 {
-	//if (!_material_res || !_model_res || !_texture_res || !_sampler_res || !_program_buffers_res || !_buffer_res ||
-	//	!_material_res.getResourcePtr()->isLoaded() ||
-	//	!_model_res.getResourcePtr()->isLoaded() ||
-	//	!_texture_res.getResourcePtr()->isLoaded() ||
-	//	!_sampler_res.getResourcePtr()->isLoaded() ||
-	//	!_program_buffers_res.getResourcePtr()->isLoaded() ||
-	//	!_buffer_res.getResourcePtr()->isLoaded()) {
+	if (!_material_res || !_model_res || !_texture_res || !_sampler_res || !_program_buffers_res || !_buffer_res ||
+		!_material_res.getResourcePtr()->isLoaded() ||
+		!_model_res.getResourcePtr()->isLoaded() ||
+		!_texture_res.getResourcePtr()->isLoaded() ||
+		!_sampler_res.getResourcePtr()->isLoaded() ||
+		!_program_buffers_res.getResourcePtr()->isLoaded() ||
+		!_buffer_res.getResourcePtr()->isLoaded()) {
 
-	//	return;
-	//}
+		return;
+	}
 
-	//static float rot = 0.0f;
-	//rot += 0.01f;
+	static float rot = 0.0f;
+	rot += 0.01f;
 
-	//Gleam::Matrix4x4 tocamera, projection, toworld;
-	//tocamera.setLookAtLH(0.0f, 5.0f, -5.0f, 0.0f, 5.0f, 0.0f, 0.0f, 1.0f, 0.0f);
-	//projection.setPerspectiveLH(90.0f * Gaff::DegToRad, 16.0f / 9.0f, 0.1f, 5000.0f);
-	//toworld.setIdentity();
-	//toworld.setRotationY(rot);
+	Gleam::Matrix4x4 tocamera, projection, toworld;
+	tocamera.setLookAtLH(0.0f, 5.0f, -5.0f, 0.0f, 5.0f, 0.0f, 0.0f, 1.0f, 0.0f);
+	projection.setPerspectiveLH(90.0f * Gaff::DegToRad, 16.0f / 9.0f, 0.1f, 5000.0f);
+	toworld.setIdentity();
+	toworld.setRotationY(rot);
 
-	//Gleam::IRenderDevice& rd = _render_mgr.getRenderDevice();
-	//unsigned int current_device = rd.getCurrentDevice();
-	//rd.getActiveOutputRenderTarget()->bind(rd);
+	Gleam::IRenderDevice& rd = _render_mgr.getRenderDevice();
+	unsigned int current_device = rd.getCurrentDevice();
+	rd.getActiveOutputRenderTarget()->bind(rd);
 
-	//// Update camera data
-	//Gleam::IBuffer* buffer = _program_buffers_res->data[current_device]->getConstantBuffer(Gleam::IShader::SHADER_VERTEX, 0);
+	// Update camera data
+	Gleam::IBuffer* buffer = _program_buffers_res->data[current_device]->getConstantBuffer(Gleam::IShader::SHADER_VERTEX, 0);
 
-	//float* matrix_data = (float*)buffer->map(rd);
-	//	memcpy(matrix_data, toworld.getBuffer(), sizeof(float) * 16);
-	//	memcpy(matrix_data + 16, tocamera.getBuffer(), sizeof(float) * 16);
-	//	memcpy(matrix_data + 32, projection.getBuffer(), sizeof(float) * 16);
-	//buffer->unmap(_render_mgr.getRenderDevice());
+	float* matrix_data = (float*)buffer->map(rd);
+		memcpy(matrix_data, toworld.getBuffer(), sizeof(float) * 16);
+		memcpy(matrix_data + 16, tocamera.getBuffer(), sizeof(float) * 16);
+		memcpy(matrix_data + 32, projection.getBuffer(), sizeof(float) * 16);
+	buffer->unmap(_render_mgr.getRenderDevice());
 
-	//ModelPtr& model = _model_res->models[current_device][_current_lod];
+	ModelPtr& model = _model_res->models[current_device][_current_lod];
 
-	//_material_res->programs[current_device]->bind(rd, _program_buffers_res->data[current_device].get());
+	_material_res->programs[current_device]->bind(rd, _program_buffers_res->data[current_device].get());
 
-	//for (unsigned int i = 0; i < model->getMeshCount(); ++i) {
-	//	model->render(rd, i);
-	//}
+	for (unsigned int i = 0; i < model->getMeshCount(); ++i) {
+		model->render(rd, i);
+	}
 }
 
 NS_END

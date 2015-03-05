@@ -166,7 +166,7 @@ bool RenderDeviceD3D::init(const IWindow& window, unsigned int adapter_id, unsig
 			_display_info[adapter_id].output_info[display_id].display_mode_list.size() > display_id
 	);
 
-	Window& wnd = (Window&)window;
+	const Window& wnd = reinterpret_cast<const Window&>(window);
 
 	AdapterInfo& adapter =_display_info[adapter_id];
 	const DXGI_MODE_DESC& mode = adapter.output_info[display_id].display_mode_list[display_mode_id];
@@ -323,8 +323,8 @@ bool RenderDeviceD3D::init(const IWindow& window, unsigned int adapter_id, unsig
 		it->vsync.push(vsync);
 
 		D3D11_VIEWPORT viewport;
-		viewport.Width = (float)wnd.getWidth();
-		viewport.Height = (float)wnd.getHeight();
+		viewport.Width = static_cast<float>(wnd.getWidth());
+		viewport.Height = static_cast<float>(wnd.getHeight());
 		viewport.MinDepth = 0.0f;
 		viewport.MaxDepth = 1.0f;
 		viewport.TopLeftX = 0.0f;
@@ -347,8 +347,13 @@ bool RenderDeviceD3D::init(const IWindow& window, unsigned int adapter_id, unsig
 
 void RenderDeviceD3D::destroy(void)
 {
-	_display_info.clear();
+	_active_render_target = nullptr;
+	_active_context = nullptr;
+	_active_swap_chain = nullptr;
+	_active_device = nullptr;
+
 	_devices.clear();
+	_display_info.clear();
 }
 
 bool RenderDeviceD3D::isVsync(unsigned int device, unsigned int output) const
@@ -390,7 +395,7 @@ void RenderDeviceD3D::endFrame(void)
 
 bool RenderDeviceD3D::resize(const IWindow& window)
 {
-	Window& wnd = (Window&)window;
+	const Window& wnd = reinterpret_cast<const Window&>(window);
 
 	for (unsigned int i = 0; i < _devices.size(); ++i) {
 		Device& device = _devices[i];
@@ -429,7 +434,7 @@ bool RenderDeviceD3D::resize(const IWindow& window)
 					viewport.Width = (float)wnd.getWidth();
 					viewport.Height = (float)wnd.getHeight();
 					rtv.set(render_target_view);
-					((RenderTargetD3D*)rt.get())->setRTV(render_target_view, viewport);
+					reinterpret_cast<RenderTargetD3D*>(rt.get())->setRTV(render_target_view, viewport);
 
 					if (wnd.getWindowMode() == IWindow::FULLSCREEN) {
 						result = sc->SetFullscreenState(TRUE, _display_info[i].output_info[j].output.get());

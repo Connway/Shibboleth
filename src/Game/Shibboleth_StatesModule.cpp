@@ -95,8 +95,6 @@ public:
 		update_manager.update(0.0f);
 
 		render();
-
-		_app.quit();
 	}
 
 	void exit(void)
