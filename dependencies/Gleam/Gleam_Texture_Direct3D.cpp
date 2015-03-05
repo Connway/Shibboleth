@@ -200,6 +200,7 @@ TextureD3D::TextureD3D(void):
 
 TextureD3D::~TextureD3D(void)
 {
+	destroy();
 }
 
 void TextureD3D::destroy(void)

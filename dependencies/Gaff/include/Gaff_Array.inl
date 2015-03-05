@@ -563,7 +563,7 @@ void Array<T, Allocator>::reserve(size_t reserve_size)
 
 	T* old_data = _array;
 
-	_array = (T*)_allocator.alloc(sizeof(T) * reserve_size);
+	_array = reinterpret_cast<T*>(_allocator.alloc(sizeof(T) * reserve_size));
 	_size = reserve_size;
 
 	if (old_data) {

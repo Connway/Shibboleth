@@ -206,11 +206,11 @@ void SetupGraphicsState::update(void)
 		}
 
 		if (!render_manager.createWindow(wnd_name, wnd_mode,
-			(unsigned int)x.getInteger(), (unsigned int)y.getInteger(),
-			(unsigned int)width.getInteger(), (unsigned int)height.getInteger(),
-			(unsigned int)refresh_rate.getInteger(), device_name.getString(),
-			(unsigned int)adapter_id.getInteger(), (unsigned int)display_id.getInteger(),
-			vsync.isTrue(), (unsigned short)tags.getInteger())) {
+			static_cast<unsigned int>(x.getInteger()), static_cast<unsigned int>(y.getInteger()),
+			static_cast<unsigned int>(width.getInteger()), static_cast<unsigned int>(height.getInteger()),
+			static_cast<unsigned int>(refresh_rate.getInteger()), device_name.getString(),
+			static_cast<unsigned int>(adapter_id.getInteger()), static_cast<unsigned int>(display_id.getInteger()),
+			vsync.isTrue(), static_cast<unsigned short>(tags.getInteger()))) {
 
 			log.first.printf("ERROR - Failed to create window with values\n"
 				"X: %i\n"

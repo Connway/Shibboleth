@@ -258,7 +258,7 @@ bool RenderManager::createWindow(
 		return false;
 	}
 
-	unsigned int device_id = (unsigned int)_render_device->getDeviceForAdapter(adapter_id);
+	unsigned int device_id = static_cast<unsigned int>(_render_device->getDeviceForAdapter(adapter_id));
 
 	WindowData wnd_data = { window, device_id, _render_device->getNumOutputs(device_id) - 1, tags };
 	_windows.push(wnd_data);
