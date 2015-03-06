@@ -21,6 +21,7 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Shibboleth_OcclusionManager.h"
+#include <Shibboleth_Utilities.h>
 #include <Shibboleth_Object.h>
 #include <Shibboleth_IApp.h>
 #include <Gleam_Frustum_CPU.h>
@@ -40,6 +41,47 @@ static float SurfaceArea(Gleam::AABBCPU& aabb)
 {
 	Gleam::Vector4CPU extent = aabb.getMax() - aabb.getMin();
 	return 2.0f * (extent[0]*extent[1] + extent[0]*extent[2] + extent[1]*extent[2]);
+}
+
+
+// Frustum Task
+OcclusionManager::BVHTree::FrustumTask::FrustumTask(const Gleam::FrustumCPU& frustum, size_t branch_root, const BVHTree& tree):
+	_frustum(frustum), _tree(tree), _branch_root(branch_root)
+{
+}
+
+OcclusionManager::BVHTree::FrustumTask::~FrustumTask(void)
+{
+}
+
+void OcclusionManager::BVHTree::FrustumTask::doTask(void)
+{
+	processBranch(_branch_root);
+}
+
+const Array<OcclusionManager::QueryResult>& OcclusionManager::BVHTree::FrustumTask::getResult(void) const
+{
+	return _result;
+}
+
+Array<OcclusionManager::QueryResult>& OcclusionManager::BVHTree::FrustumTask::getResult(void)
+{
+	return _result;
+}
+
+void OcclusionManager::BVHTree::FrustumTask::processBranch(size_t node_index)
+{
+	const BVHNode& node = _tree._node_cache[node_index];
+
+	if (_frustum.contains(node.aabb)) {
+		if (node.object) {
+			_result.emplacePush(node.object, node.user_data);
+
+		} else {
+			processBranch(node.left);
+			processBranch(node.right);
+		}
+	}
 }
 
 
@@ -96,6 +138,21 @@ void OcclusionManager::BVHTree::removeObject(size_t index)
 {
 	Gaff::ScopedLock<Gaff::SpinLock> scoped_lock(_remove_lock);
 	_remove_buffer.push(index);
+}
+
+OcclusionManager::BVHTree::FrustumQueryTasks OcclusionManager::BVHTree::findObjectsInFrustum(const Gleam::FrustumCPU& frustum) const
+{
+	FrustumQueryTasks tasks;
+
+	if (_root != SIZE_T_FAIL && frustum.contains(_node_cache[_root].aabb)) {
+		tasks.first = GetAllocator()->template allocT<FrustumTask>(frustum, _node_cache[_root].left, *this);
+		tasks.second = GetAllocator()->template allocT<FrustumTask>(frustum, _node_cache[_root].left, *this);
+
+		GetApp().addTask(tasks.first.get());
+		GetApp().addTask(tasks.second.get());
+	}
+
+	return tasks;
 }
 
 void OcclusionManager::BVHTree::construct(const Array<Object*>& objects, Array<OcclusionID>* id_out)
@@ -333,19 +390,35 @@ void OcclusionManager::constructStaticTree(const Array<Object*>& objects, Array<
 
 void OcclusionManager::update(double)
 {
-	_bvh_trees[OT_STATIC].update(); // In case we are removing something from the static tree
-	_bvh_trees[OT_DYNAMIC].update();
+	for (unsigned int i = 0; i < OT_SIZE; ++i) {
+		_bvh_trees[i].update();
+	}
 }
 
-void OcclusionManager::findObjectsInFrustum(const Gleam::FrustumCPU& frustum, Array<QueryData>& out) const
+void OcclusionManager::findObjectsInFrustum(const Gleam::FrustumCPU& frustum, QueryData& out) const
 {
-	//BVHTree::FrustumQueryTasks static_tasks = _bvh_trees[OT_STATIC].findObjectsInFrustum(frustum);
-	//BVHTree::FrustumQueryTasks dynamic_tasks = _bvh_trees[OT_DYNAMIC].findObjectsInFrustum(frustum);
+	BVHTree::FrustumQueryTasks tasks[OT_SIZE];
+	
+	for (unsigned int i = 0; i < OT_SIZE; ++i) {
+		tasks[i] = _bvh_trees[i].findObjectsInFrustum(frustum);
+	}
+
+	for (unsigned int i = 0; i < OT_SIZE; ++i) {
+		if (tasks[i].first) {
+			tasks[i].first->spinWait();
+			out.results[i] = Gaff::Move(tasks[i].first->getResult());
+		}
+
+		if (tasks[i].second) {
+			tasks[i].second->spinWait();
+			out.results[i].moveAppend(Gaff::Move(tasks[i].second->getResult()));
+		}
+	}
 }
 
-Array<OcclusionManager::QueryData> OcclusionManager::findObjectsInFrustum(const Gleam::FrustumCPU& frustum) const
+OcclusionManager::QueryData OcclusionManager::findObjectsInFrustum(const Gleam::FrustumCPU& frustum) const
 {
-	Array<QueryData> out;
+	QueryData out;
 	findObjectsInFrustum(frustum, out);
 	return out;
 }

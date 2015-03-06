@@ -78,9 +78,6 @@ public:
 		} else {
 			_app.quit();
 		}
-
-		//Shibboleth::RenderManager& rm = _app.getManagerT<Shibboleth::RenderManager>("Render Manager");
-		//rm.addRenderFunction(Gaff::Bind(this, &LoopState::render));
 	}
 
 	void update(void)
@@ -108,6 +105,7 @@ public:
 		Shibboleth::RenderManager& rm = _app.getManagerT<Shibboleth::RenderManager>("Render Manager");
 
 		// query occlusion manager
+		//Shibboleth::OcclusionManager::QueryData objects = om.findObjectsInFrustum();
 
 		rm.getSpinLock().lock(); // Have to lock just in case other resources are trying to load and use the device
 		rm.getRenderDevice().setCurrentDevice(0);

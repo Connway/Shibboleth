@@ -318,6 +318,38 @@ bool Array<T, Allocator>::empty(void) const
 }
 
 /*!
+	\brief Appends the elements of \a array to the end of the array.
+*/
+template <class T, class Allocator>
+void Array<T, Allocator>::append(const Array<T, Allocator>& array)
+{
+	reserve(_used + array.size());
+
+	for (unsigned int i = 0; i < array.size(); ++i) {
+		construct(_array + _used + i, array[i]);
+	}
+
+	_used += array.size();
+}
+
+/*!
+	\brief Same as \a append(), but calls the move constructor on each element.
+	\note \a array will have \a clear() called.
+*/
+template <class T, class Allocator>
+void Array<T, Allocator>::moveAppend(Array<T, Allocator>&& array)
+{
+	reserve(_used + array.size());
+
+	for (unsigned int i = 0; i < array.size(); ++i) {
+		moveConstruct(_array + _used + i, Gaff::Move(array[i]));
+	}
+
+	_used += array.size();
+	array.clear();
+}
+
+/*!
 	\brief Pushes the data to the end of the array using the move constructor.
 */
 template <class T, class Allocator>

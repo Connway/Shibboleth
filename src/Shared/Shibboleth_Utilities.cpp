@@ -31,7 +31,7 @@ NS_SHIBBOLETH
 
 //static volatile unsigned int g_Current_Flush_Count = 0;
 //static unsigned int g_Flush_Count = 10;
-static IApp* g_App = nullptr;
+static IApp* gApp = nullptr;
 
 class LogTask : public ITask
 {
@@ -53,7 +53,7 @@ public:
 			_flp.first.flush();
 		//}
 
-		g_App->notifyLogCallbacks(_string.getBuffer(), _log_type);
+		gApp->notifyLogCallbacks(_string.getBuffer(), _log_type);
 	}
 
 private:
@@ -67,7 +67,7 @@ private:
 
 void LogMessage(LogManager::FileLockPair& flp, unsigned int task_pool, LogManager::LOG_TYPE log_type, const char* format, ...)
 {
-	assert(g_App && format && strlen(format));
+	assert(gApp && format && strlen(format));
 
 	char temp[512] = { 0 };
 
@@ -81,7 +81,7 @@ void LogMessage(LogManager::FileLockPair& flp, unsigned int task_pool, LogManage
 
 	if (log_task) {
 		TaskPtr task(log_task);
-		g_App->addTask(task, task_pool);
+		gApp->addTask(task, task_pool);
 	}
 }
 
@@ -92,13 +92,13 @@ void LogMessage(LogManager::FileLockPair& flp, unsigned int task_pool, LogManage
 
 void SetApp(IApp& app)
 {
-	g_App = &app;
+	gApp = &app;
 }
 
 IApp& GetApp(void)
 {
-	assert(g_App);
-	return *g_App;
+	assert(gApp);
+	return *gApp;
 }
 
 NS_END
