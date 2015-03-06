@@ -84,6 +84,9 @@ public:
 
 	bool empty(void) const;
 
+	void append(const Array<T, Allocator>& array);
+	void moveAppend(Array<T, Allocator>&& array);
+
 	void movePush(T&& data);
 	void push(const T& data);
 	void pop(void);
