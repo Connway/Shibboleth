@@ -36,8 +36,7 @@ NS_GLEAM
 class Window : public IWindow
 {
 public:
-	static void handleWindowMessages(void);
-	static void clear(void);
+	static void HandleWindowMessages(void);
 
 	Window(void);
 	~Window(void);
@@ -112,7 +111,7 @@ private:
 
 	static void WindowProc(XEvent& event);
 	static GleamArray<Display*> gDisplays;
-	static GleamArray<Window*> g_Windows;
+	static GleamArray<Window*> gWindows;
 	static XEvent gEvent;
 
 	INLINE void handleMessage(AnyMessage* message);

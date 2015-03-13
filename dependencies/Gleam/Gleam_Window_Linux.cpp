@@ -45,10 +45,10 @@ typedef struct
 } Hints;
 
 GleamArray<Display*> Window::gDisplays;
-GleamArray<Window*> Window::g_Windows;
+GleamArray<Window*> Window::gWindows;
 XEvent Window::gEvent;
 
-void Window::handleWindowMessages(void)
+void Window::HandleWindowMessages(void)
 {
 	for (auto it = gDisplays.begin(); it != gDisplays.end(); ++it) {
 		while (XPending(*it)) {
@@ -58,26 +58,20 @@ void Window::handleWindowMessages(void)
 	}
 }
 
-void Window::clear(void)
-{
-	gDisplays.clear();
-	g_Windows.clear();
-}
-
 void Window::WindowProc(XEvent& event)
 {
 	char buffer[sizeof(AnyMessage)];
 	char secondary_buffer[sizeof(AnyMessage)];
 
-	if (event.xcookie.type == GenericEvent && event.xcookie.extension == gOpCode) {		
-		for (unsigned int i = 0; i < g_Windows.size(); ++i) {
-			if (g_Windows[i]->getDisplay() == event.xcookie.display) {
-				if (!XGetEventData(g_Windows[i]->getDisplay(), &event.xcookie)) {
+	if (event.xcookie.type == GenericEvent && event.xcookie.extension == gOpCode) {
+		for (unsigned int i = 0; i < gWindows.size(); ++i) {
+			if (gWindows[i]->getDisplay() == event.xcookie.display) {
+				if (!XGetEventData(gWindows[i]->getDisplay(), &event.xcookie)) {
 					break;
 				}
 
 				AnyMessage* message = nullptr;
-				Window* window = g_Windows[i];
+				Window* window = gWindows[i];
 
 				switch (event.xcookie.evtype) {
 					case XI_ButtonPress: {
@@ -211,11 +205,11 @@ void Window::WindowProc(XEvent& event)
 	}
 
 	// if we make more than one window in our application
-	for (unsigned int i = 0; i < g_Windows.size(); ++i) {
-		if (g_Windows[i]->getWindow() == event.xany.window) {
+	for (unsigned int i = 0; i < gWindows.size(); ++i) {
+		if (gWindows[i]->getWindow() == event.xany.window) {
 			AnyMessage* message = nullptr;
 			AnyMessage* secondary_message = nullptr;
-			Window* window = g_Windows[i];
+			Window* window = gWindows[i];
 
 			switch (event.type) {
 				case ClientMessage:
@@ -245,7 +239,7 @@ void Window::WindowProc(XEvent& event)
 
 					if (event.xconfigure.x != window->_pos_x ||
 						event.xconfigure.y != window->_pos_x) {
-						
+
 						AnyMessage* msg = nullptr;
 
 						window->_pos_x = event.xconfigure.x;
@@ -378,7 +372,7 @@ bool Window::init(const GChar* app_name, MODE window_mode,
 			}
 
 			final_rate = chooseClosestRate(rates, num_rates, refresh_rate);
-			
+
 			if (final_rate < 0) {
 				XRRFreeScreenConfigInfo(config);
 				return false;
@@ -472,7 +466,7 @@ bool Window::init(const GChar* app_name, MODE window_mode,
 	XMapRaised(_display, _window);
 
 	XRRFreeScreenConfigInfo(config);
-	g_Windows.push(this);
+	gWindows.push(this);
 
 	if (gDisplays.linearSearch(_display) == gDisplays.end()) {
 		gDisplays.push(_display);
@@ -495,9 +489,9 @@ void Window::destroy(void)
 		_display = nullptr;
 	}
 
-	for (unsigned int i = 0; i < g_Windows.size(); ++i) {
-		if (g_Windows[i] == this) {
-			g_Windows.fastErase(i);
+	for (unsigned int i = 0; i < gWindows.size(); ++i) {
+		if (gWindows[i] == this) {
+			gWindows.fastErase(i);
 			break;
 		}
 	}
@@ -587,7 +581,7 @@ bool Window::setWindowMode(MODE window_mode, int width, int height, short refres
 		case FULLSCREEN: {
 			// If not defined, just use the desktop resolution
 			if (!width || !height) {
-				width = _width; 
+				width = _width;
 				height = _height;
 			}
 
@@ -621,7 +615,7 @@ bool Window::setWindowMode(MODE window_mode, int width, int height, short refres
 			}
 
 			int final_rate = chooseClosestRate(rates, num_rates, refresh_rate);
-			
+
 			if (final_rate < 0) {
 				XRRFreeScreenConfigInfo(config);
 				return false;
@@ -792,7 +786,7 @@ XRRScreenSize* Window::getResolutions(int& num_sizes, int screen) const
 	if (screen < 0) {
 		screen = DefaultScreen(_display);
 	}
-	
+
 	XRRScreenSize* sizes = XRRSizes(_display, screen, &num_sizes);
 	if (!sizes || num_sizes < 0) {
 		return nullptr;
@@ -809,18 +803,18 @@ short* Window::getRefreshRates(int& num_rates, int screen) const
 
 	int ns;
 	XRRScreenSize* sizes = getResolutions(ns, screen);
-	
+
 	if (!sizes || ns < 0) {
 		return nullptr;
 	}
-	
+
 	short* rates = XRRRates(_display, screen, 0, &num_rates);
-	
+
 	if (!rates || num_rates < 0) {
 		return nullptr;
 	}
 
-	return rates;	
+	return rates;
 }
 
 short* Window::getRefreshRates(const XRRScreenSize& resolution, int& num_rates, int screen) const
@@ -831,31 +825,31 @@ short* Window::getRefreshRates(const XRRScreenSize& resolution, int& num_rates, 
 
 	int ns;
 	XRRScreenSize* sizes = getResolutions(ns, screen);
-	
+
 	if (!sizes || ns < 0) {
 		return nullptr;
 	}
-	
+
 	int i = 0;
 	for (; i < ns; ++i) {
 		if (sizes[i].width == resolution.width &&
 			sizes[i].height == resolution.height) {
-				
+
 			break;
 		}
 	}
-	
+
 	if (i == ns) {
 		return nullptr;
 	}
-	
+
 	short* rates = XRRRates(_display, screen, i, &num_rates);
-	
+
 	if (!rates || num_rates < 0) {
 		return nullptr;
 	}
 
-	return rates;	
+	return rates;
 }
 
 int Window::chooseClosestResolution(XRRScreenSize* sizes, int num_sizes,
@@ -870,7 +864,7 @@ int Window::chooseClosestResolution(XRRScreenSize* sizes, int num_sizes,
 
 		int x = fabsf(sizes[i].width - width);
 		int y = fabsf(sizes[i].height - height);
-		
+
 		if (x*x + y*y < offset_x*offset_x + offset_y*offset_y) {
 			offset_x = x;
 			offset_y = y;
@@ -916,7 +910,7 @@ void Window::setToOriginalResolutionRate(void)
 	::Window root = DefaultRootWindow(_display);
 	XRRScreenConfiguration* config = XRRGetScreenInfo(_display, root);
 	XRRScreenSize* sizes = XRRConfigSizes(config, &num_sizes);
-	
+
 	if (!sizes || num_sizes < 1) {
 		return;
 	}
@@ -924,12 +918,12 @@ void Window::setToOriginalResolutionRate(void)
 	for (int i = 0; i < num_sizes; ++i) {
 		if (sizes[i].width == _original_size.width &&
 			sizes[i].height == _original_size.height) {
-				
+
 			size_index = i;
 			break;
 		}
 	}
-	
+
 	if (size_index < 0) {
 		return;
 	}

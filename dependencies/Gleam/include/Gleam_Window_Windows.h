@@ -34,8 +34,7 @@ NS_GLEAM
 class Window : public IWindow
 {
 public:
-	static void handleWindowMessages(void);
-	static void clear(void);
+	static void HandleWindowMessages(void);
 
 	Window(void);
 	~Window(void);
@@ -90,11 +89,6 @@ private:
 	GleamArray< Gaff::FunctionBinder<bool, const AnyMessage&> > _window_callbacks;
 
 	static LRESULT CALLBACK WindowProc(HWND hwnd, UINT msg, WPARAM w, LPARAM l);
-	static GleamArray<Window*> g_Windows;
-
-	static GleamMap<unsigned short, KeyCode> g_Left_Keys;
-	static GleamMap<unsigned short, KeyCode> g_Right_Keys;
-	static bool g_First_Init;
 
 	friend void WindowMoved(AnyMessage*, Window*, WPARAM, LPARAM);
 	friend void WindowResized(AnyMessage*, Window*, WPARAM, LPARAM);
