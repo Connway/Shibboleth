@@ -28,18 +28,20 @@ THE SOFTWARE.
 #include <Gleam_RenderState.h>
 #include <Gleam_Texture.h>
 #include <Gleam_Program.h>
+#include <Gleam_Window.h>
 #include <Gleam_Layout.h>
 #include <Gleam_Shader.h>
 #include <Gleam_Buffer.h>
 #include <Gleam_Model.h>
 #include <Gleam_Mesh.h>
 
-#include <Gleam_Window.h>
-#include <Shibboleth_IApp.h>
-
 #ifdef USE_VLD
 	#include <vld.h>
 #endif
+
+NS_SHIBBOLETH
+	class IApp;
+NS_END
 
 static Shibboleth::ProxyAllocator gProxyAllocator;
 
@@ -55,7 +57,6 @@ DYNAMICEXPORT_C bool InitGraphics(Shibboleth::IApp&, const char* log_file_name)
 
 DYNAMICEXPORT_C void ShutdownGraphics(void)
 {
-	Gleam::Window::clear();
 }
 
 DYNAMICEXPORT_C Gleam::IWindow* CreateWindowS(void)
@@ -70,7 +71,7 @@ DYNAMICEXPORT_C void DestroyWindowS(Gleam::IWindow* window)
 
 DYNAMICEXPORT_C void UpdateWindows(void)
 {
-	Gleam::Window::handleWindowMessages();
+	Gleam::Window::HandleWindowMessages();
 }
 
 DYNAMICEXPORT_C Gleam::IShaderResourceView* CreateShaderResourceView(void)

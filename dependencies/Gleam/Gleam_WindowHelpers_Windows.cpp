@@ -72,7 +72,7 @@ void WindowInput(AnyMessage* message, Window*, WPARAM, LPARAM l)
 	RAWINPUT* raw = (RAWINPUT*)lpb;
 
 	if (raw->header.dwType == RIM_TYPEMOUSE && raw->data.mouse.usFlags == MOUSE_MOVE_RELATIVE) {
-	
+
 		message->base.type = IN_MOUSEMOVE;
 
 		POINT pos;
@@ -88,7 +88,7 @@ void WindowInput(AnyMessage* message, Window*, WPARAM, LPARAM l)
 		message->mouse_move.dy = raw->data.mouse.lLastY;
 
 	} else if (raw->header.dwType == RIM_TYPEKEYBOARD) {
-	
+
 		message->base.type = (raw->data.keyboard.Flags & RI_KEY_BREAK) ? IN_KEYUP : IN_KEYDOWN;
 
 		switch (raw->data.keyboard.VKey) {
@@ -103,9 +103,9 @@ void WindowInput(AnyMessage* message, Window*, WPARAM, LPARAM l)
 
 			case VK_MENU:
 				if (raw->data.keyboard.Flags & RI_KEY_E0) {
-					message->key_char.key = Window::g_Right_Keys[raw->data.keyboard.VKey];
+					message->key_char.key = Window::gRightKeys[raw->data.keyboard.VKey];
 				} else {
-					message->key_char.key = Window::g_Left_Keys[raw->data.keyboard.VKey];
+					message->key_char.key = Window::gLeftKeys[raw->data.keyboard.VKey];
 				}
 				break;
 
