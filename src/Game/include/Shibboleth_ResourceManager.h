@@ -122,13 +122,20 @@ typedef Gaff::RefPtr<ResourceContainer> ResourcePtr;
 class ResourceManager : public IManager
 {
 public:
+	struct JSONModifiers
+	{
+		AString json_element;
+		AString append_to_filename;
+		bool optional;
+	};
+
 	ResourceManager(IApp& app);
 	~ResourceManager(void);
 
 	const char* getName(void) const;
 
-	void registerResourceLoader(IResourceLoader* res_loader, const Array<AString>& resource_types, unsigned int thread_pool = 0);
-	INLINE void registerResourceLoader(IResourceLoader* res_loader, const char* resource_type, unsigned int thread_pool = 0);
+	void registerResourceLoader(IResourceLoader* res_loader, const Array<AString>& resource_types, unsigned int thread_pool = 0, const Array<JSONModifiers>& json_elements = Array<JSONModifiers>());
+	INLINE void registerResourceLoader(IResourceLoader* res_loader, const char* resource_type, unsigned int thread_pool = 0, const Array<JSONModifiers>& json_elements = Array<JSONModifiers>());
 
 	ResourcePtr requestResource(const char* resource_type, const char* instance_name, unsigned long long user_data = 0);
 	ResourcePtr requestResource(const char* filename, unsigned long long user_data = 0);
@@ -140,30 +147,54 @@ public:
 		WARNING: DO NOT MIX requestResource() AND loadResourceImmediately() CALLS! USE ONE OR THE OTHER, NOT BOTH!
 		MIXING CALLS CAN POTENTIALLY CAUSE DEADLOCK!
 	***********************************************************************************************************/
-	ResourcePtr loadResourceImmediately(const char* filename, unsigned long long user_data = 0);
+	ResourcePtr loadResourceImmediately(const char* filename, unsigned long long user_data, HashMap<AString, IFile*>& file_map);
 
 	void addRequestAddedCallback(const Gaff::Function<void, ResourcePtr&>& callback);
 
 	void* rawRequestInterface(unsigned int class_id) const;
 
 private:
+	class ResourceReadingTask : public ITask
+	{
+	public:
+		ResourceReadingTask(ResourceLoaderPtr& res_loader, ResourcePtr& res_ptr, const Array<JSONModifiers>& json_elements, unsigned int thread_pool);
+		~ResourceReadingTask(void);
+
+		void doTask(void);
+
+	private:
+		const Array<JSONModifiers>& _json_elements; // Lists JSON elements that specify files to read.
+		ResourceLoaderPtr _res_loader;
+		ResourcePtr _res_ptr;
+		unsigned int _thread_pool;
+
+		SHIB_REF_COUNTED(ResourceReadingTask);
+	};
+
 	class ResourceLoadingTask : public ITask
 	{
 	public:
-		ResourceLoadingTask(ResourceLoaderPtr& res_loader, ResourcePtr& res_ptr);
+		ResourceLoadingTask(ResourceLoaderPtr& res_loader, ResourcePtr& res_ptr, HashMap<AString, IFile*>& file_map);
 		~ResourceLoadingTask(void);
 
 		void doTask(void);
 
 	private:
+		HashMap<AString, IFile*> _file_map;
 		ResourceLoaderPtr _res_loader;
 		ResourcePtr _res_ptr;
 
 		SHIB_REF_COUNTED(ResourceLoadingTask);
 	};
 
-	typedef Gaff::Pair<ResourceLoaderPtr, unsigned int> LoaderData;
-	HashMap< AHashString, LoaderData> _resource_loaders;
+	struct LoaderData
+	{
+		Gaff::SharedPtr<Array<JSONModifiers>, ProxyAllocator> json_elements;
+		ResourceLoaderPtr res_loader;
+		unsigned int thread_pool;
+	};
+
+	HashMap<AHashString, LoaderData> _resource_loaders;
 	HashMap<AHashString, ResourcePtr> _resource_cache;
 	Array< Gaff::Function<void, ResourcePtr&> > _request_added_callbacks;
 	IApp& _app;

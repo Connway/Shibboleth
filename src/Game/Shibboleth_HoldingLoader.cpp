@@ -22,6 +22,11 @@ THE SOFTWARE.
 
 #include "Shibboleth_HoldingLoader.h"
 #include "Shibboleth_ModelAnimResources.h"
+#include <Shibboleth_IFileSystem.h>
+#include <Shibboleth_Utilities.h>
+#include <Shibboleth_IApp.h>
+#include <Gaff_ScopedExit.h>
+#include <Gaff_File.h>
 
 NS_SHIBBOLETH
 
@@ -33,15 +38,29 @@ HoldingLoader::~HoldingLoader(void)
 {
 }
 
-Gaff::IVirtualDestructor* HoldingLoader::load(const char* file_name, unsigned long long user_data)
+Gaff::IVirtualDestructor* HoldingLoader::load(const char* file_name, unsigned long long user_data, HashMap<AString, IFile*>& file_map)
 {
+	AString fname(file_name);
+	assert(file_map.hasElementWithKey(fname));
+
+	IFile* file = file_map[fname];
+
+	GAFF_SCOPE_EXIT([&]()
+	{
+		GetApp().getFileSystem()->closeFile(file);
+		file_map[fname] = nullptr;
+	});
+
 	HoldingData* data = GetAllocator()->template allocT<HoldingData>();
 
 	if (!data) {
 		return nullptr;
 	}
 
-	data->scene = data->importer.loadFile(file_name, (unsigned int)user_data);
+	size_t ext_index = fname.findLastOf('.');
+	ext_index = (ext_index == SIZE_T_FAIL) ? 0 : ext_index;
+
+	data->scene = data->importer.parseMemory(file->getBuffer(), file->size(), static_cast<unsigned int>(user_data), fname.getBuffer() + ext_index);
 
 	if (!data->scene) {
 		GetAllocator()->freeT(data);

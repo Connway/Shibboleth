@@ -254,6 +254,7 @@ void Allocator::free(void* data, unsigned int alloc_tag)
 
 	if (it_ptr == mem_pool_info.pointers_allocated.end()) {
 		mem_pool_info.pa_lock->unlock();
+		bool found = false;
 
 		for (auto it_pool = _tagged_pools.begin(); it_pool != _tagged_pools.end(); ++it_pool) {
 			it_pool->second.pa_lock->lock();
@@ -264,10 +265,14 @@ void Allocator::free(void* data, unsigned int alloc_tag)
 				mem_pool_info.wf_lock->lock();
 				++mem_pool_info.wrong_free[it_pool->first];
 				mem_pool_info.wf_lock->unlock();
+				found = true;
+				break;
 			}
 
 			it_pool->second.pa_lock->unlock();
 		}
+
+		assert(found);
 
 	} else {
 		mem_pool_info.pointers_allocated.fastErase(it_ptr);

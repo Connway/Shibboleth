@@ -35,7 +35,7 @@ public:
 	BufferCreator(void);
 	~BufferCreator(void);
 
-	Gaff::IVirtualDestructor* load(const char*, unsigned long long buffer_settings);
+	Gaff::IVirtualDestructor* load(const char* file_name, unsigned long long user_data, HashMap<AString, IFile*>& file_map);
 
 private:
 	RenderManager& _render_mgr;

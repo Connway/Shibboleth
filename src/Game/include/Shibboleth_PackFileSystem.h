@@ -36,14 +36,14 @@ public:
 	PackFile(void);
 	~PackFile(void);
 
-	unsigned int size(void) const;
+	size_t size(void) const;
 
 	const char* getBuffer(void) const;
 	char* getBuffer(void);
 
 private:
 	char* _file_buffer;
-	unsigned int _file_size;
+	size_t _file_size;
 
 	friend class PackFileSystem;
 };
@@ -63,7 +63,7 @@ private:
 	struct FileData
 	{
 		FileData(void) {}
-		FileData(FileData&& file_data) :
+		FileData(FileData&& file_data):
 			name(Gaff::Move(file_data.name)),
 			file(file_data.file),
 			count(file_data.count)

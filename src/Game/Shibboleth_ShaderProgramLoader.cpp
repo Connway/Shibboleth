@@ -24,16 +24,19 @@ THE SOFTWARE.
 #include "Shibboleth_ResourceManager.h"
 #include "Shibboleth_RenderManager.h"
 #include <Shibboleth_IFileSystem.h>
+#include <Shibboleth_Utilities.h>
+#include <Shibboleth_IApp.h>
 #include <Gleam_IRenderDevice.h>
 #include <Gleam_IProgram.h>
+#include <Gaff_ScopedExit.h>
 #include <Gaff_ScopedLock.h>
 #include <Gaff_File.h>
 #include <Gaff_JSON.h>
 
 NS_SHIBBOLETH
 
-ShaderProgramLoader::ShaderProgramLoader(ResourceManager& res_mgr, RenderManager& render_mgr, IFileSystem& file_system):
-	_res_mgr(res_mgr), _render_mgr(render_mgr), _file_system(file_system)
+ShaderProgramLoader::ShaderProgramLoader(ResourceManager& res_mgr, RenderManager& render_mgr):
+	_res_mgr(res_mgr), _render_mgr(render_mgr)
 {
 }
 
@@ -41,30 +44,33 @@ ShaderProgramLoader::~ShaderProgramLoader(void)
 {
 }
 
-Gaff::IVirtualDestructor* ShaderProgramLoader::load(const char* file_name, unsigned long long)
+Gaff::IVirtualDestructor* ShaderProgramLoader::load(const char* file_name, unsigned long long, HashMap<AString, IFile*>& file_map)
 {
+	assert(file_map.hasElementWithKey(AString(file_name)));
+
+	GAFF_SCOPE_EXIT([&]()
+	{
+		for (auto it = file_map.begin(); it != file_map.end(); ++it) {
+			if (*it) {
+				GetApp().getFileSystem()->closeFile(*it);
+			}
+		}
+	});
+
 	ProgramData* program_data = GetAllocator()->template allocT<ProgramData>();
 
 	if (!program_data) {
 		return nullptr;
 	}
 
-	IFile* file = _file_system.openFile(file_name);
-
-	if (!file) {
-		GetAllocator()->freeT(program_data);
-		return nullptr;
-	}
+	IFile* file = file_map[AString(file_name)];
 
 	Gaff::JSON json;
 
 	if (!json.parse(file->getBuffer())) {
 		GetAllocator()->freeT(program_data);
-		_file_system.closeFile(file);
 		return nullptr;
 	}
-
-	_file_system.closeFile(file);
 
 	Gaff::JSON vertex = json["vertex"];
 	Gaff::JSON pixel = json["pixel"];
@@ -75,31 +81,31 @@ Gaff::IVirtualDestructor* ShaderProgramLoader::load(const char* file_name, unsig
 	assert(!vertex.isNull() || !pixel.isNull() || !hull.isNull() ||
 			!geometry.isNull() || !domain.isNull());
 
-	if (vertex.isString() && !loadShader(program_data, vertex.getString(), Gleam::IShader::SHADER_VERTEX)) {
+	if (vertex.isString() && !loadShader(program_data, vertex.getString(), Gleam::IShader::SHADER_VERTEX, file_map)) {
 		// log error
 		GetAllocator()->freeT(program_data);
 		return nullptr;
 	}
 
-	if (pixel.isString() && !loadShader(program_data, pixel.getString(), Gleam::IShader::SHADER_PIXEL)) {
+	if (pixel.isString() && !loadShader(program_data, pixel.getString(), Gleam::IShader::SHADER_PIXEL, file_map)) {
 		// log error
 		GetAllocator()->freeT(program_data);
 		return nullptr;
 	}
 
-	if (hull.isString() && !loadShader(program_data, hull.getString(), Gleam::IShader::SHADER_HULL)) {
+	if (hull.isString() && !loadShader(program_data, hull.getString(), Gleam::IShader::SHADER_HULL, file_map)) {
 		// log error
 		GetAllocator()->freeT(program_data);
 		return nullptr;
 	}
 
-	if (geometry.isString() && !loadShader(program_data, geometry.getString(), Gleam::IShader::SHADER_GEOMETRY)) {
+	if (geometry.isString() && !loadShader(program_data, geometry.getString(), Gleam::IShader::SHADER_GEOMETRY, file_map)) {
 		// log error
 		GetAllocator()->freeT(program_data);
 		return nullptr;
 	}
 
-	if (domain.isString() && !loadShader(program_data, domain.getString(), Gleam::IShader::SHADER_DOMAIN)) {
+	if (domain.isString() && !loadShader(program_data, domain.getString(), Gleam::IShader::SHADER_DOMAIN, file_map)) {
 		// log error
 		GetAllocator()->freeT(program_data);
 		return nullptr;
@@ -114,10 +120,10 @@ Gaff::IVirtualDestructor* ShaderProgramLoader::load(const char* file_name, unsig
 }
 
 
-bool ShaderProgramLoader::loadShader(ProgramData* data, const char* file_name, Gleam::IShader::SHADER_TYPE shader_type)
+bool ShaderProgramLoader::loadShader(ProgramData* data, const char* file_name, Gleam::IShader::SHADER_TYPE shader_type, HashMap<AString, IFile*>& file_map)
 {
 	AString fname = AString(file_name) + _render_mgr.getShaderExtension();
-	data->shaders[shader_type] = _res_mgr.loadResourceImmediately(fname.getBuffer(), shader_type);
+	data->shaders[shader_type] = _res_mgr.loadResourceImmediately(fname.getBuffer(), shader_type, file_map);
 
 	// Loop until loaded
 	while (!data->shaders[shader_type].getResourcePtr()->isLoaded() &&

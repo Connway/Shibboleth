@@ -426,6 +426,8 @@ void RenderDeviceGL::resetRenderState(void)
 	glCullFace(GL_BACK);
 	glFrontFace(GL_CW);
 	glDisable(GL_BLEND);
+	glClearDepth(1.0f);
+	glClearStencil(0);
 }
 
 bool RenderDeviceGL::isDeferred(void) const

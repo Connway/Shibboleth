@@ -31,11 +31,12 @@ NS_GLEAM
 typedef void (*WindowProcHelper)(AnyMessage*, Window*, WPARAM, LPARAM);
 
 static GleamMap<unsigned int, WindowProcHelper> gWindowHelpers;
-static GleamMap<unsigned short, KeyCode> gRightKeys;
-static GleamMap<unsigned short, KeyCode> gLeftKeys;
 static GleamArray<Window*> gWindows;
 static bool gFirstInit = true;
 static MSG gMsg;
+
+GleamMap<unsigned short, KeyCode> Window::gRightKeys;
+GleamMap<unsigned short, KeyCode> Window::gLeftKeys;
 
 static void InitWindowProcHelpers(void)
 {
@@ -72,29 +73,30 @@ LRESULT CALLBACK Window::WindowProc(HWND hwnd, UINT msg, WPARAM w, LPARAM l)
 	bool handled = false;
 	char buffer[sizeof(AnyMessage)];
 
-	auto it = gWindows.binarySearch(hwnd);
+	auto it = gWindows.linearSearch(hwnd, [](const Window* lhs, const HWND rhs) -> bool
+	{
+		return lhs->getHWnd() == rhs;
+	});
 
-	if (it != gWindows.end() && (*it)->getHWnd() == hwnd)
+	if (it != gWindows.end())
 	{
 		Window* window = *it;
 
-		if (window->_window_callbacks.empty()) {
-			break;
-		}
+		if (!window->_window_callbacks.empty()) {
+			// We are assuming doing a map lookup is as fast as the huge switch statement we had before.
+			WindowProcHelper helper_func = gWindowHelpers[msg];
 
-		// We are assuming doing a map lookup is as fast as the huge switch statement we had before.
-		WindowProcHelper helper_func = gWindowHelpers[msg];
+			if (helper_func) {
+				helper_func(reinterpret_cast<AnyMessage*>(buffer), window, w, l);
+				reinterpret_cast<AnyMessage*>(buffer)->base.window = window;
 
-		if (helper_func) {
-			helper_func(reinterpret_cast<AnyMessage*>(buffer), window, w, l);
-			reinterpret_cast<AnyMessage*>(buffer)->base.window = window;
+				for (unsigned int j = 0; j < window->_window_callbacks.size(); ++j) {
+					handled = handled || window->_window_callbacks[j](*reinterpret_cast<AnyMessage*>(buffer));
+				}
 
-			for (unsigned int j = 0; j < window->_window_callbacks.size(); ++j) {
-				handled = handled || window->_window_callbacks[j](*reinterpret_cast<AnyMessage*>(buffer));
-			}
-
-			if (handled) {
-				return 0;
+				if (handled) {
+					return 0;
+				}
 			}
 		}
 	}
@@ -245,11 +247,7 @@ bool Window::init(const GChar* app_name, MODE window_mode,
 	SetFocus(_hwnd);
 
 	ZeroMemory(&gMsg, sizeof(MSG));
-
-	auto it = gWindows.binarySearch(this);
-	assert(it == gWindows.end() || *it != this);
-
-	gWindows.insert(this, it);
+	gWindows.push(this);
 
 	return true;
 }
@@ -274,9 +272,9 @@ void Window::destroy(void)
 		_hinstance = nullptr;
 	}
 
-	auto it = gWindows.binarySearch(this);
-	assert(it != gWindows.end() && *it == this);
-	gWindows.erase(it);
+	auto it = gWindows.linearSearch(this);
+	assert(it != gWindows.end());
+	gWindows.fastErase(it);
 }
 
 void Window::addWindowMessageHandler(Gaff::FunctionBinder<bool, const AnyMessage&>& callback)

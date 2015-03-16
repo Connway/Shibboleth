@@ -35,14 +35,14 @@ public:
 	LooseFile(void);
 	~LooseFile(void);
 
-	unsigned int size(void) const;
+	size_t size(void) const;
 
 	const char* getBuffer(void) const;
 	char* getBuffer(void);
 
 private:
 	char* _file_buffer;
-	unsigned int _file_size;
+	size_t _file_size;
 
 	friend class LooseFileSystem;
 };

@@ -104,7 +104,7 @@ void CreateResourceLoadersState::update(void)
 
 	// TEXTURE LOADER
 	{
-		TextureLoader* texture_loader = GetAllocator()->template allocT<TextureLoader>(render_manager, *_app.getFileSystem());
+		TextureLoader* texture_loader = GetAllocator()->template allocT<TextureLoader>(render_manager);
 
 		if (!texture_loader) {
 			_app.getGameLogFile().first.printf("ERROR - Failed to create texture loader.\n");
@@ -122,13 +122,17 @@ void CreateResourceLoadersState::update(void)
 		//extensions.emplacePush(".dds");
 		//extensions.emplacePush(".tga");
 
+		Array<ResourceManager::JSONModifiers> json_elements;
+		ResourceManager::JSONModifiers modifiers = { AString("image_file"), AString(), false };
+		json_elements.emplacePush(modifiers);
+
 		_app.getGameLogFile().first.printf("Adding Texture Loader\n");
-		res_mgr.registerResourceLoader(texture_loader, ".texture", TPT_IO);
+		res_mgr.registerResourceLoader(texture_loader, ".texture", TPT_GRAPHICS, json_elements);
 	}
 
 	// SAMPLER STATE LOADER
 	{
-		SamplerStateLoader* sampler_loader = GetAllocator()->template allocT<SamplerStateLoader>(render_manager, *_app.getFileSystem());
+		SamplerStateLoader* sampler_loader = GetAllocator()->template allocT<SamplerStateLoader>(render_manager);
 
 		if (!sampler_loader) {
 			_app.getGameLogFile().first.printf("ERROR - Failed to create sampler state loader.\n");
@@ -137,12 +141,12 @@ void CreateResourceLoadersState::update(void)
 		}
 
 		_app.getGameLogFile().first.printf("Adding Sampler State Loader\n");
-		res_mgr.registerResourceLoader(sampler_loader, ".sampler", TPT_IO);
+		res_mgr.registerResourceLoader(sampler_loader, ".sampler", TPT_GRAPHICS);
 	}
 
 	// SHADER LOADER
 	{
-		ShaderLoader* shader_loader = GetAllocator()->template allocT<ShaderLoader>(render_manager, *_app.getFileSystem());
+		ShaderLoader* shader_loader = GetAllocator()->template allocT<ShaderLoader>(render_manager);
 
 		if (!shader_loader) {
 			// log error
@@ -152,12 +156,12 @@ void CreateResourceLoadersState::update(void)
 		}
 
 		_app.getGameLogFile().first.printf("Adding Shader Loader\n");
-		res_mgr.registerResourceLoader(shader_loader, render_manager.getShaderExtension(), TPT_IO);
+		res_mgr.registerResourceLoader(shader_loader, render_manager.getShaderExtension(), TPT_GRAPHICS);
 	}
 
 	// SHADER PROGRAM LOADER
 	{
-		ShaderProgramLoader* shader_program_loader = GetAllocator()->template allocT<ShaderProgramLoader>(res_mgr, render_manager, *_app.getFileSystem());
+		ShaderProgramLoader* shader_program_loader = GetAllocator()->template allocT<ShaderProgramLoader>(res_mgr, render_manager);
 
 		if (!shader_program_loader) {
 			// log error
@@ -166,13 +170,29 @@ void CreateResourceLoadersState::update(void)
 			return;
 		}
 
+		Array<ResourceManager::JSONModifiers> json_elements;
+		ResourceManager::JSONModifiers modifiers = { AString("vertex"), AString(render_manager.getShaderExtension()), true };
+		json_elements.emplacePush(modifiers);
+
+		modifiers.json_element = "pixel";
+		json_elements.emplacePush(modifiers);
+
+		modifiers.json_element = "hull";
+		json_elements.emplacePush(modifiers);
+
+		modifiers.json_element = "geometry";
+		json_elements.emplacePush(modifiers);
+
+		modifiers.json_element = "domain";
+		json_elements.emplacePush(modifiers);
+
 		_app.getGameLogFile().first.printf("Adding Shader Program Loader\n");
-		res_mgr.registerResourceLoader(shader_program_loader, ".program", TPT_IO);
+		res_mgr.registerResourceLoader(shader_program_loader, ".program", TPT_GRAPHICS, json_elements);
 	}
 
 	// LUA LOADER
 	{
-		LuaLoader* lua_loader = GetAllocator()->template allocT<LuaLoader>(_app.getManagerT<LuaManager>("Lua Manager"), *_app.getFileSystem());
+		LuaLoader* lua_loader = GetAllocator()->template allocT<LuaLoader>(_app.getManagerT<LuaManager>("Lua Manager"));
 
 		if (!lua_loader) {
 			// log error
@@ -182,7 +202,7 @@ void CreateResourceLoadersState::update(void)
 		}
 
 		_app.getGameLogFile().first.printf("Adding Lua Loader\n");
-		res_mgr.registerResourceLoader(lua_loader, ".lua", TPT_IO);
+		res_mgr.registerResourceLoader(lua_loader, ".lua");
 	}
 
 	// HOLDING LOADER
@@ -242,7 +262,7 @@ void CreateResourceLoadersState::update(void)
 		extensions.emplacePush(".fbx");
 
 		_app.getGameLogFile().first.printf("Adding Holding Loader\n");
-		res_mgr.registerResourceLoader(holding_loader, extensions, TPT_IO);
+		res_mgr.registerResourceLoader(holding_loader, extensions);
 	}
 
 	// MODEL LOADER
@@ -256,8 +276,12 @@ void CreateResourceLoadersState::update(void)
 			return;
 		}
 
+		Array<ResourceManager::JSONModifiers> json_elements;
+		ResourceManager::JSONModifiers modifiers = { AString("mesh_file"), AString(), true };
+		json_elements.emplacePush(modifiers);
+
 		_app.getGameLogFile().first.printf("Adding Model Loader\n");
-		res_mgr.registerResourceLoader(model_loader, ".model", TPT_IO);
+		res_mgr.registerResourceLoader(model_loader, ".model", TPT_GRAPHICS, json_elements);
 	}
 
 	_app.getGameLogFile().first.printf("Finished Creating Resource Loaders\n\n");

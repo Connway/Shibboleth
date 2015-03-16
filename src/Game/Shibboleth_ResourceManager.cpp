@@ -21,13 +21,19 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Shibboleth_ResourceManager.h"
+#include <Shibboleth_TaskPoolTags.h>
+#include <Shibboleth_IFileSystem.h>
+#include <Shibboleth_Utilities.h>
 #include <Shibboleth_IApp.h>
 #include <Gaff_IVirtualDestructor.h>
+#include <Gaff_ScopedExit.h>
 #include <Gaff_ScopedLock.h>
+#include <Gaff_SharedPtr.h>
 #include <Gaff_Atomic.h>
 
 NS_SHIBBOLETH
 
+// Resource Container
 ResourceContainer::ResourceContainer(const AHashString& res_key, ResourceManager* res_manager, ZRC zero_ref_callback, unsigned long long user_data):
 	_res_manager(res_manager), _zero_ref_callback(zero_ref_callback), _res_key(res_key),
 	_resource(nullptr), _user_data(user_data), _ref_count(0), _failed(false)
@@ -129,9 +135,82 @@ void ResourceContainer::callCallbacks(bool succeeded)
 }
 
 
+// Resource Reading Task
+ResourceManager::ResourceReadingTask::ResourceReadingTask(ResourceLoaderPtr& res_loader, ResourcePtr& res_ptr, const Array<JSONModifiers>& json_elements, unsigned int thread_pool):
+	_json_elements(json_elements), _res_loader(res_loader), _res_ptr(res_ptr), _thread_pool(thread_pool)
+{
+}
 
-ResourceManager::ResourceLoadingTask::ResourceLoadingTask(ResourceLoaderPtr& res_loader, ResourcePtr& res_ptr):
-	_res_loader(res_loader), _res_ptr(res_ptr)
+ResourceManager::ResourceReadingTask::~ResourceReadingTask(void)
+{
+}
+
+void ResourceManager::ResourceReadingTask::doTask(void)
+{
+	IFileSystem* fs = GetApp().getFileSystem();
+	IFile* file = fs->openFile(_res_ptr->getResourceKey().getString().getBuffer());
+	HashMap<AString, IFile*> file_map;
+	bool failed = false;
+
+	GAFF_SCOPE_EXIT([&](void)
+	{
+		if (failed) {
+			for (auto it = file_map.begin(); it != file_map.end(); ++it) {
+				GetApp().getFileSystem()->closeFile(*it);
+			}
+
+			_res_ptr->failed();
+			_res_ptr->callCallbacks(false);
+		}
+	});
+
+	if (file) {
+		file_map[_res_ptr->getResourceKey().getString()] = file;
+
+		// If we have specified JSON elements that reference file names, then the file we just loaded
+		// is a JSON file. Parse it and load the other files referenced in it.
+		if (!_json_elements.empty()) {
+			Gaff::JSON json;
+
+			if (!json.parse(file->getBuffer())) {
+				failed = true;
+				return;
+			}
+
+			for (auto it = _json_elements.begin(); it != _json_elements.end(); ++it) {
+				Gaff::JSON file_name = json[it->json_element];
+
+				assert(file_name.isString() || it->optional);
+
+				if (!file_name.isString()) {
+					continue;
+				}
+
+				AString final_name = AString(file_name.getString()) + it->append_to_filename;
+
+				file = fs->openFile(final_name.getBuffer());
+
+				if (!file) {
+					LogMessage(GetApp().getGameLogFile(), TPT_PRINTLOG, LogManager::LOG_ERROR, "ERROR - Failed to find or open file '%s'.\n", final_name.getBuffer());
+					failed = true;
+					return;
+				}
+
+				file_map[final_name] = file;
+			}
+		}
+
+		// Create ResourceLoadingTask
+		ResourceLoadingTask* load_task = GetAllocator()->template allocT<ResourceLoadingTask>(_res_loader, _res_ptr, file_map);
+		GetApp().addTask(load_task, _thread_pool);
+	}
+}
+
+
+
+// Resource Loading Task
+ResourceManager::ResourceLoadingTask::ResourceLoadingTask(ResourceLoaderPtr& res_loader, ResourcePtr& res_ptr, HashMap<AString, IFile*>& file_map):
+	_file_map(Gaff::Move(file_map)), _res_loader(res_loader), _res_ptr(res_ptr)
 {
 }
 
@@ -141,7 +220,7 @@ ResourceManager::ResourceLoadingTask::~ResourceLoadingTask(void)
 
 void ResourceManager::ResourceLoadingTask::doTask(void)
 {
-	Gaff::IVirtualDestructor* data = _res_loader->load(_res_ptr->getResourceKey().getString().getBuffer(), _res_ptr->getUserData());
+	Gaff::IVirtualDestructor* data = _res_loader->load(_res_ptr->getResourceKey().getString().getBuffer(), _res_ptr->getUserData(), _file_map);
 
 	if (data) {
 		_res_ptr->setResource(data);
@@ -155,6 +234,7 @@ void ResourceManager::ResourceLoadingTask::doTask(void)
 
 
 
+// Resource Manager
 REF_IMPL_REQ(ResourceManager);
 REF_IMPL_SHIB(ResourceManager)
 .addBaseClassInterfaceOnly<ResourceManager>()
@@ -180,22 +260,26 @@ const char* ResourceManager::getName(void) const
 	return "Resource Manager";
 }
 
-void ResourceManager::registerResourceLoader(IResourceLoader* res_loader, const Array<AString>& resource_types, unsigned int thread_pool)
+void ResourceManager::registerResourceLoader(IResourceLoader* res_loader, const Array<AString>& resource_types, unsigned int thread_pool, const Array<JSONModifiers>& json_elements)
 {
 	assert(res_loader && resource_types.size());
-	ResourceLoaderPtr loader_ptr(res_loader);
+
+	Gaff::SharedPtr<Array<JSONModifiers>, ProxyAllocator> je(GetAllocator()->template allocT< Array<JSONModifiers> >(json_elements));
+	LoaderData loader_data = { je, ResourceLoaderPtr(res_loader), thread_pool };
 
 	for (auto it = resource_types.begin(); it != resource_types.end(); ++it) {
 		assert(_resource_loaders.indexOf(AHashString(*it)) == SIZE_T_FAIL);
-		_resource_loaders[AHashString(*it)] = Gaff::MakePair(loader_ptr, thread_pool);
+		_resource_loaders[AHashString(*it)] = loader_data;
 	}
 }
 
-void ResourceManager::registerResourceLoader(IResourceLoader* res_loader, const char* resource_type, unsigned int thread_pool)
+void ResourceManager::registerResourceLoader(IResourceLoader* res_loader, const char* resource_type, unsigned int thread_pool, const Array<JSONModifiers>& json_elements)
 {
 	// We've already registered a loader for this file type.
 	assert(_resource_loaders.indexOf(AHashString(resource_type)) == SIZE_T_FAIL);
-	_resource_loaders[AHashString(resource_type)] = Gaff::MakePair(ResourceLoaderPtr(res_loader), thread_pool);
+	Gaff::SharedPtr<Array<JSONModifiers>, ProxyAllocator> je(GetAllocator()->template allocT< Array<JSONModifiers> >(json_elements));
+	LoaderData loader_data = { je, ResourceLoaderPtr(res_loader), thread_pool };
+	_resource_loaders[AHashString(resource_type)] = loader_data;
 }
 
 ResourcePtr ResourceManager::requestResource(const char* resource_type, const char* instance_name, unsigned long long user_data)
@@ -225,8 +309,8 @@ ResourcePtr ResourceManager::requestResource(const char* resource_type, const ch
 		// make load task
 		LoaderData& loader_data = _resource_loaders[AHashString(resource_type)];
 
-		ResourceLoadingTask* load_task = GetAllocator()->template allocT<ResourceLoadingTask>(loader_data.first, res_ptr);
-		_app.addTask(load_task, loader_data.second);
+		ResourceLoadingTask* load_task = GetAllocator()->template allocT<ResourceLoadingTask>(loader_data.res_loader, res_ptr, HashMap<AString, IFile*>());
+		_app.addTask(load_task, loader_data.thread_pool);
 
 		return res_ptr;
 
@@ -252,7 +336,7 @@ ResourcePtr ResourceManager::requestResource(const char* filename, unsigned long
 		AString extension = res_key.getString().getExtension('.');
 		assert(extension.size() && _resource_loaders.indexOf(AHashString(extension)) != SIZE_T_FAIL);
 
-		ResourceContainer* res_cont = (ResourceContainer*)GetAllocator()->alloc(sizeof(ResourceContainer));
+		ResourceContainer* res_cont = reinterpret_cast<ResourceContainer*>(GetAllocator()->alloc(sizeof(ResourceContainer)));
 		new (res_cont) ResourceContainer(res_key, this, &ResourceManager::zeroRefCallback, user_data);
 
 		ResourcePtr& res_ptr = _resource_cache[res_key];
@@ -265,8 +349,8 @@ ResourcePtr ResourceManager::requestResource(const char* filename, unsigned long
 		// make load task
 		LoaderData& loader_data = _resource_loaders[extension];
 
-		ResourceLoadingTask* load_task = GetAllocator()->template allocT<ResourceLoadingTask>(loader_data.first, res_ptr);
-		_app.addTask(load_task, loader_data.second);
+		ResourceReadingTask* load_task = GetAllocator()->template allocT<ResourceReadingTask>(loader_data.res_loader, res_ptr, *loader_data.json_elements, loader_data.thread_pool);
+		_app.addTask(load_task, TPT_IO);
 
 		return res_ptr;
 
@@ -277,7 +361,7 @@ ResourcePtr ResourceManager::requestResource(const char* filename, unsigned long
 	}
 }
 
-ResourcePtr ResourceManager::loadResourceImmediately(const char* filename, unsigned long long user_data)
+ResourcePtr ResourceManager::loadResourceImmediately(const char* filename, unsigned long long user_data, HashMap<AString, IFile*>& file_map)
 {
 	AHashString res_key(filename);
 
@@ -289,7 +373,7 @@ ResourcePtr ResourceManager::loadResourceImmediately(const char* filename, unsig
 		AString extension = res_key.getString().getExtension('.');
 		assert(extension.size() && _resource_loaders.indexOf(AHashString(extension)) != SIZE_T_FAIL);
 
-		ResourceContainer* res_cont = (ResourceContainer*)GetAllocator()->alloc(sizeof(ResourceContainer));
+		ResourceContainer* res_cont = reinterpret_cast<ResourceContainer*>(GetAllocator()->alloc(sizeof(ResourceContainer)));
 		new (res_cont)ResourceContainer(res_key, this, &ResourceManager::zeroRefCallback, user_data);
 
 		ResourcePtr& res_ptr = _resource_cache[res_key];
@@ -297,7 +381,7 @@ ResourcePtr ResourceManager::loadResourceImmediately(const char* filename, unsig
 
 		LoaderData& loader_data = _resource_loaders[extension];
 
-		Gaff::IVirtualDestructor* data = loader_data.first->load(filename, user_data);
+		Gaff::IVirtualDestructor* data = loader_data.res_loader->load(filename, user_data, file_map);
 
 		if (data) {
 			res_ptr->setResource(data);

@@ -28,14 +28,15 @@ THE SOFTWARE.
 #include <Shibboleth_Utilities.h>
 #include <Shibboleth_IApp.h>
 #include <Gleam_IRenderDevice.h>
+#include <Gaff_ScopedExit.h>
 #include <Gaff_ScopedLock.h>
 #include <Gaff_Image.h>
 #include <Gaff_JSON.h>
 
 NS_SHIBBOLETH
 
-TextureLoader::TextureLoader(RenderManager& render_mgr, IFileSystem& file_system):
-	_render_mgr(render_mgr), _file_system(file_system)
+TextureLoader::TextureLoader(RenderManager& render_mgr):
+	_render_mgr(render_mgr)
 {
 }
 
@@ -43,24 +44,28 @@ TextureLoader::~TextureLoader(void)
 {
 }
 
-Gaff::IVirtualDestructor* TextureLoader::load(const char* file_name, unsigned long long)
+Gaff::IVirtualDestructor* TextureLoader::load(const char* file_name, unsigned long long, HashMap<AString, IFile*>& file_map)
 {
-	IFile* file = _file_system.openFile(file_name);
+	assert(file_map.hasElementWithKey(AString(file_name)));
 
-	if (!file) {
-		LogMessage(GetApp().getGameLogFile(), TPT_PRINTLOG, LogManager::LOG_ERROR, "ERROR - Failed to find or open file '%s'.\n", file_name);
-		return nullptr;
-	}
+	GAFF_SCOPE_EXIT([&]()
+	{
+		for (auto it = file_map.begin(); it != file_map.end(); ++it) {
+			if (*it) {
+				GetApp().getFileSystem()->closeFile(*it);
+				*it = nullptr;
+			}
+		}
+	});
+
+	IFile* file = file_map[AString(file_name)];
 
 	Gaff::JSON json;
 	
 	if (!json.parse(file->getBuffer())) {
 		LogMessage(GetApp().getGameLogFile(), TPT_PRINTLOG, LogManager::LOG_ERROR, "ERROR - Failed to parse file '%s'.\n", file_name);
-		_file_system.closeFile(file);
 		return nullptr;
 	}
-
-	_file_system.closeFile(file);
 
 	if (!json.isObject()) {
 		LogMessage(GetApp().getGameLogFile(), TPT_PRINTLOG, LogManager::LOG_ERROR, "ERROR - Texture file '%s' is malformed.\n", file_name);
@@ -87,28 +92,20 @@ Gaff::IVirtualDestructor* TextureLoader::load(const char* file_name, unsigned lo
 		}
 	}
 
-	file = _file_system.openFile(json["image_file"].getString());
-
-	if (!file) {
-		LogMessage(GetApp().getGameLogFile(), TPT_PRINTLOG, LogManager::LOG_ERROR, "ERROR - Failed to find or open file '%s' while processing '%s'.\n", json["image_file"].getString(), file_name);
-		return nullptr;
-	}
+	assert(file_map.hasElementWithKey(AString(json["image_file"].getString())));
+	file = file_map[AString(json["image_file"].getString())];
 
 	Gaff::Image image;
 
 	if (!image.init()) {
 		LogMessage(GetApp().getGameLogFile(), TPT_PRINTLOG, LogManager::LOG_ERROR, "ERROR - Failed to initialize image data structure when loading '%s'.\n", file_name);
-		_file_system.closeFile(file);
 		return nullptr;
 	}
 
-	if (!image.load(file->getBuffer(), file->size())) {
+	if (!image.load(file->getBuffer(), static_cast<unsigned int>(file->size()))) {
 		LogMessage(GetApp().getGameLogFile(), TPT_PRINTLOG, LogManager::LOG_ERROR, "ERROR - Failed to load image '%s' while processing '%s'.\n", json["image_file"].getString(), file_name);
-		_file_system.closeFile(file);
 		return nullptr;
 	}
-
-	_file_system.closeFile(file);
 
 	if (image.getType() == Gaff::Image::TYPE_DOUBLE) {
 		LogMessage(GetApp().getGameLogFile(), TPT_PRINTLOG, LogManager::LOG_ERROR, "ERROR - Image of type double not supported. IMAGE: %s\n", json["image_file"].getString());

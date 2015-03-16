@@ -66,7 +66,7 @@ uint32 OtterUIFileSystem::Read(void* pHandle, uint8* data, uint32 count)
 {
 	assert(_files.linearSearch(pHandle) != _files.end());
 	IFile* file = (IFile*)pHandle;
-	unsigned int size = Gaff::Min(file->size(), count);
+	unsigned int size = Gaff::Min(static_cast<uint32>(file->size()), count);
 
 	memcpy(data, file->getBuffer(), size);
 	return size;
@@ -86,7 +86,7 @@ void OtterUIFileSystem::Seek(void* pHandle, uint32 /*offset*/, Otter::SeekFlag /
 uint32 OtterUIFileSystem::Size(void* pHandle)
 {
 	assert(_files.linearSearch(pHandle) != _files.end());
-	return ((IFile*)pHandle)->size();
+	return static_cast<uint32>(reinterpret_cast<IFile*>(pHandle)->size());
 }
 
 NS_END

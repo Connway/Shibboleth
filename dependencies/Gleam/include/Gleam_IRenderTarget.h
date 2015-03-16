@@ -34,6 +34,13 @@ class ITexture;
 class IRenderTarget : public Gaff::IRefCounted
 {
 public:
+	enum CLEAR_FLAGS
+	{
+		CLEAR_DEPTH = 1,
+		CLEAR_STENCIL,
+		CLEAR_COLOR
+	};
+
 	enum CUBE_FACE { POS_X = 0, NEG_X, POS_Y, NEG_Y, POS_Z, NEG_Z, NONE };
 
 	IRenderTarget(void) {}
@@ -49,6 +56,8 @@ public:
 
 	virtual void bind(IRenderDevice& rd) = 0;
 	virtual void unbind(IRenderDevice& rd) = 0;
+
+	virtual void clear(IRenderDevice& rd, unsigned int clear_flags = CLEAR_DEPTH | CLEAR_STENCIL, float clear_depth = 1.0f, unsigned char clear_stencil = 0) = 0;
 
 	virtual bool isComplete(void) const = 0;
 

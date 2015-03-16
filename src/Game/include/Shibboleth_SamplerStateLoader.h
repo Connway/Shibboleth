@@ -33,14 +33,13 @@ class IFileSystem;
 class SamplerStateLoader : public IResourceLoader
 {
 public:
-	SamplerStateLoader(RenderManager& render_mgr, IFileSystem& file_system);
+	SamplerStateLoader(RenderManager& render_mgr);
 	~SamplerStateLoader(void);
 
-	Gaff::IVirtualDestructor* load(const char* file_name, unsigned long long);
+	Gaff::IVirtualDestructor* load(const char* file_name, unsigned long long, HashMap<AString, IFile*>& file_map);
 
 private:
 	RenderManager& _render_mgr;
-	IFileSystem& _file_system;
 
 	GAFF_NO_COPY(SamplerStateLoader);
 	GAFF_NO_MOVE(SamplerStateLoader);

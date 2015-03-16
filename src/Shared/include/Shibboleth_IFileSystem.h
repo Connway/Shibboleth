@@ -33,7 +33,7 @@ public:
 	virtual ~IFile(void) {}
 
 	// Only used for files opened for read
-	virtual unsigned int size(void) const = 0;
+	virtual size_t size(void) const = 0;
 
 	virtual const char* getBuffer(void) const = 0;
 	virtual char* getBuffer(void) = 0;

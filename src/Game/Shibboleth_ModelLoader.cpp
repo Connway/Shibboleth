@@ -30,6 +30,7 @@ THE SOFTWARE.
 #include <esprit_Skeleton.h>
 #include <Gleam_ILayout.h>
 #include <Gleam_IMesh.h>
+#include <Gaff_ScopedExit.h>
 #include <Gaff_ScopedLock.h>
 #include <Gaff_SpinLock.h>
 #include <Gaff_JSON.h>
@@ -75,23 +76,28 @@ ModelLoader::~ModelLoader(void)
 {
 }
 
-Gaff::IVirtualDestructor* ModelLoader::load(const char* file_name, unsigned long long)
+Gaff::IVirtualDestructor* ModelLoader::load(const char* file_name, unsigned long long, HashMap<AString, IFile*>& file_map)
 {
-	IFile* file = _file_system.openFile(file_name);
+	assert(file_map.hasElementWithKey(AString(file_name)));
 
-	if (!file) {
-		return nullptr;
-	}
+	GAFF_SCOPE_EXIT([&]()
+	{
+		for (auto it = file_map.begin(); it != file_map.end(); ++it) {
+			if (*it) {
+				_file_system.closeFile(*it);
+				*it = nullptr;
+			}
+		}
+	});
+
+	IFile* file = file_map[AString(file_name)];
 
 	Gaff::JSON json;
 	
 	if (!json.parse(file->getBuffer())) {
 		// log error
-		_file_system.closeFile(file);
 		return nullptr;
 	}
-
-	_file_system.closeFile(file);
 
 	if (!json.isObject()) {
 		// log error
@@ -134,7 +140,7 @@ Gaff::IVirtualDestructor* ModelLoader::load(const char* file_name, unsigned long
 	ModelData* data = GetAllocator()->template allocT<ModelData>();
 
 	if (data) {
-		data->holding_data = _res_mgr.loadResourceImmediately(mesh_file.getString(), generateLoadingFlags(json));
+		data->holding_data = _res_mgr.loadResourceImmediately(mesh_file.getString(), generateLoadingFlags(json), file_map);
 
 		// Loop until loaded. Just in case we got a resource reference requested from somewhere else.
 		while (!data->holding_data.getResourcePtr()->isLoaded() && !data->holding_data.getResourcePtr()->hasFailed()) {

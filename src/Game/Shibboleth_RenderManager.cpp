@@ -35,7 +35,6 @@ NS_SHIBBOLETH
 REF_IMPL_REQ(RenderManager);
 REF_IMPL_SHIB(RenderManager)
 .addBaseClassInterfaceOnly<RenderManager>()
-.ADD_BASE_CLASS_INTERFACE_ONLY(IUpdateQuery)
 ;
 
 // Default values
@@ -91,11 +90,6 @@ RenderManager::~RenderManager(void)
 const char* RenderManager::getName(void) const
 {
 	return "Render Manager";
-}
-
-void RenderManager::requestUpdateEntries(Array<UpdateEntry>& entries)
-{
-	entries.movePush(UpdateEntry(AString("Render Manager: Render"), Gaff::Bind(this, &RenderManager::update)));
 }
 
 bool RenderManager::initThreadData(void)
@@ -178,16 +172,6 @@ bool RenderManager::init(const char* module)
 	}
 
 	return true;
-}
-
-void RenderManager::update(double)
-{
-	// Multithread this at some point.
-	// Need to add support for thread render devices.
-	// Update functions will need to take in an IRenderDevice.
-	for (unsigned int i = 0; i < _render_functions.size(); ++i) {
-		_render_functions[i]();
-	}
 }
 
 Gleam::IRenderDevice& RenderManager::getRenderDevice(void)
@@ -507,22 +491,6 @@ bool RenderManager::createRTDepth(size_t rt_index, Gleam::ITexture::FORMAT forma
 void RenderManager::deleteRenderTargets(void)
 {
 	_render_target_data.clear();
-	_render_functions.clear();
-}
-
-void RenderManager::addRenderFunction(const Gaff::FunctionBinder<void>& render_func, size_t position)
-{
-	if (position == UINT_FAIL) {
-		_render_functions.push(render_func);
-
-	} else {
-		// Presumably something else will fill the holes. If not, we will have an assert when we try and call them.
-		if (_render_functions.size() < position) {
-			_render_functions.resize(position);
-		}
-
-		_render_functions[position] = render_func;
-	}
 }
 
 int RenderManager::getDisplayModeID(unsigned int width, unsigned int height, unsigned int refresh_rate, unsigned int adapter_id, unsigned int display_id)

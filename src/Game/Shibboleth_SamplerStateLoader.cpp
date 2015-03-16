@@ -31,6 +31,7 @@ THE SOFTWARE.
 
 #include <Gleam_ISamplerState.h>
 #include <Gleam_IRenderDevice.h>
+#include <Gaff_ScopedExit.h>
 #include <Gaff_ScopedLock.h>
 #include <Gaff_SpinLock.h>
 
@@ -56,8 +57,8 @@ Gaff::EnumRefDef<Gleam::ISamplerState::WRAP>("Gleam::ISamplerState::FILTER", Pro
 .addValue("BORDER", Gleam::ISamplerState::WRAP_BORDER)
 ;
 
-SamplerStateLoader::SamplerStateLoader(RenderManager& render_mgr, IFileSystem& file_system):
-	_render_mgr(render_mgr), _file_system(file_system)
+SamplerStateLoader::SamplerStateLoader(RenderManager& render_mgr):
+	_render_mgr(render_mgr)
 {
 }
 
@@ -65,24 +66,24 @@ SamplerStateLoader::~SamplerStateLoader(void)
 {
 }
 
-Gaff::IVirtualDestructor* SamplerStateLoader::load(const char* file_name, unsigned long long)
+Gaff::IVirtualDestructor* SamplerStateLoader::load(const char* file_name, unsigned long long, HashMap<AString, IFile*>& file_map)
 {
-	IFile* file = _file_system.openFile(file_name);
+	assert(file_map.hasElementWithKey(AString(file_name)));
 
-	if (!file) {
-		LogMessage(GetApp().getGameLogFile(), TPT_PRINTLOG, LogManager::LOG_ERROR, "ERROR - Failed to find or open file '%s'.\n", file_name);
-		return nullptr;
-	}
+	IFile* file = file_map[AString(file_name)];
+
+	GAFF_SCOPE_EXIT([&]()
+	{
+		GetApp().getFileSystem()->closeFile(file);
+		file_map[AString(file_name)] = nullptr;
+	});
 
 	Gaff::JSON json;
 	
 	if (!json.parse(file->getBuffer())) {
 		LogMessage(GetApp().getGameLogFile(), TPT_PRINTLOG, LogManager::LOG_ERROR, "ERROR - Failed to parse file '%s'.\n", file_name);
-		_file_system.closeFile(file);
 		return nullptr;
 	}
-
-	_file_system.closeFile(file);
 
 	if (!json.isObject()) {
 		LogMessage(GetApp().getGameLogFile(), TPT_PRINTLOG, LogManager::LOG_ERROR, "ERROR - Sampler State file '%s' is malformed.\n", file_name);
