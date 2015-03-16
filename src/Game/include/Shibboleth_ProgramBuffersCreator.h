@@ -35,7 +35,7 @@ public:
 	ProgramBuffersCreator(void);
 	~ProgramBuffersCreator(void);
 
-	Gaff::IVirtualDestructor* load(const char*, unsigned long long);
+	Gaff::IVirtualDestructor* load(const char*, unsigned long long, HashMap<AString, IFile*>&);
 
 private:
 	RenderManager& _render_mgr;

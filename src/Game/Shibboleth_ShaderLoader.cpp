@@ -24,15 +24,18 @@ THE SOFTWARE.
 #include "Shibboleth_ResourceDefines.h"
 #include "Shibboleth_RenderManager.h"
 #include <Shibboleth_IFileSystem.h>
+#include <Shibboleth_Utilities.h>
+#include <Shibboleth_IApp.h>
 #include <Gleam_IRenderDevice.h>
 #include <Gleam_IShader.h>
+#include <Gaff_ScopedExit.h>
 #include <Gaff_ScopedLock.h>
 #include <Gaff_File.h>
 
 NS_SHIBBOLETH
 
-ShaderLoader::ShaderLoader(RenderManager& render_mgr, IFileSystem& file_system):
-	_render_mgr(render_mgr), _file_system(file_system)
+ShaderLoader::ShaderLoader(RenderManager& render_mgr):
+	_render_mgr(render_mgr)
 {
 }
 
@@ -40,21 +43,22 @@ ShaderLoader::~ShaderLoader(void)
 {
 }
 
-Gaff::IVirtualDestructor* ShaderLoader::load(const char* file_name, unsigned long long user_data)
+Gaff::IVirtualDestructor* ShaderLoader::load(const char* file_name, unsigned long long user_data, HashMap<AString, IFile*>& file_map)
 {
-	assert(Gaff::File::checkExtension(file_name, _render_mgr.getShaderExtension()));
+	assert(Gaff::File::checkExtension(file_name, _render_mgr.getShaderExtension()) && file_map.hasElementWithKey(AString(file_name)));
 	assert(user_data < Gleam::IShader::SHADER_TYPE_SIZE);
 
-	IFile* file = _file_system.openFile(file_name);
+	IFile* file = file_map[AString(file_name)];
 
-	if (!file) {
-		return nullptr;
-	}
+	GAFF_SCOPE_EXIT([&]()
+	{
+		GetApp().getFileSystem()->closeFile(file);
+		file_map[AString(file_name)] = nullptr;
+	});
 
 	ShaderData* shader_data = GetAllocator()->template allocT<ShaderData>();
 
 	if (!shader_data) {
-		_file_system.closeFile(file);
 		return nullptr;
 	}
 
@@ -69,20 +73,17 @@ Gaff::IVirtualDestructor* ShaderLoader::load(const char* file_name, unsigned lon
 
 		if (!shader) {
 			GetAllocator()->freeT(shader_data);
-			_file_system.closeFile(file);
 			return nullptr;
 		}
 
 		if (!shader->initSource(rd, file->getBuffer(), file->size(), shader_data->shader_type)) {
 			GetAllocator()->freeT(shader_data);
-			_file_system.closeFile(file);
 			return nullptr;
 		}
 
 		shader_data->shaders.push(shader);
 	}
 
-	_file_system.closeFile(file);
 	return shader_data;
 }
 

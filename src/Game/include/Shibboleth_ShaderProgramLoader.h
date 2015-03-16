@@ -36,17 +36,16 @@ class IFileSystem;
 class ShaderProgramLoader : public IResourceLoader
 {
 public:
-	ShaderProgramLoader(ResourceManager& res_mgr, RenderManager& render_mgr, IFileSystem& file_system);
+	ShaderProgramLoader(ResourceManager& res_mgr, RenderManager& render_mgr);
 	~ShaderProgramLoader(void);
 
-	Gaff::IVirtualDestructor* load(const char* file_name, unsigned long long);
+	Gaff::IVirtualDestructor* load(const char* file_name, unsigned long long, HashMap<AString, IFile*>& file_map);
 
 private:
 	ResourceManager& _res_mgr;
 	RenderManager& _render_mgr;
-	IFileSystem& _file_system;
 
-	bool loadShader(ProgramData* data, const char* file_name, Gleam::IShader::SHADER_TYPE shader_type);
+	bool loadShader(ProgramData* data, const char* file_name, Gleam::IShader::SHADER_TYPE shader_type, HashMap<AString, IFile*>& file_map);
 	bool createPrograms(ProgramData* data);
 
 	GAFF_NO_COPY(ShaderProgramLoader);

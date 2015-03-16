@@ -128,13 +128,13 @@ void RenderTargetD3D::bind(IRenderDevice& rd)
 
 	IRenderDeviceD3D& rd3d = reinterpret_cast<IRenderDeviceD3D&>(*(reinterpret_cast<char*>(&rd) + sizeof(IRenderDevice)));
 
-	for (size_t i = 0; i < _render_target_views.size(); ++i) {
-		rd3d.getActiveDeviceContext()->ClearRenderTargetView(_render_target_views[i], rd3d.getClearColor());
-	}
+	//for (size_t i = 0; i < _render_target_views.size(); ++i) {
+	//	rd3d.getActiveDeviceContext()->ClearRenderTargetView(_render_target_views[i], rd3d.getClearColor());
+	//}
 
-	if (_depth_stencil_view) {
+	//if (_depth_stencil_view) {
 		rd3d.getActiveDeviceContext()->ClearDepthStencilView(_depth_stencil_view, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
-	}
+	//}
 
 	rd3d.getActiveDeviceContext()->OMSetRenderTargets(static_cast<UINT>(_render_target_views.size()), _render_target_views.getArray(), _depth_stencil_view);
 	rd3d.getActiveDeviceContext()->RSSetViewports(1, &_viewport);
@@ -145,6 +145,23 @@ void RenderTargetD3D::unbind(IRenderDevice& rd)
 	assert(rd.isD3D());
 	IRenderDeviceD3D& rd3d = reinterpret_cast<IRenderDeviceD3D&>(*(reinterpret_cast<char*>(&rd) + sizeof(IRenderDevice)));
 	rd3d.getActiveDeviceContext()->OMSetRenderTargets(0, nullptr, nullptr);
+}
+
+void RenderTargetD3D::clear(IRenderDevice& rd, unsigned int clear_flags, float clear_depth, unsigned char clear_stencil)
+{
+	assert(rd.isD3D());
+	IRenderDeviceD3D& rd3d = reinterpret_cast<IRenderDeviceD3D&>(*(reinterpret_cast<char*>(&rd) + sizeof(IRenderDevice)));
+
+	if (clear_flags | CLEAR_COLOR) {
+		for (size_t i = 0; i < _render_target_views.size(); ++i) {
+			rd3d.getActiveDeviceContext()->ClearRenderTargetView(_render_target_views[i], rd3d.getClearColor());
+		}
+	}
+
+	if (_depth_stencil_view) {
+		// Make sure that the CLEAR_COLOR flag doesn't screw anything up. :/
+		rd3d.getActiveDeviceContext()->ClearDepthStencilView(_depth_stencil_view, clear_flags, clear_depth, clear_stencil);
+	}
 }
 
 bool RenderTargetD3D::isComplete(void) const

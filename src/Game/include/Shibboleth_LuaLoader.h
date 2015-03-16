@@ -33,13 +33,12 @@ class LuaManager;
 class LuaLoader : public IResourceLoader
 {
 public:
-	LuaLoader(LuaManager& lua_manager, IFileSystem& file_system);
+	LuaLoader(LuaManager& lua_manager);
 	~LuaLoader(void);
 
-	Gaff::IVirtualDestructor* load(const char* file_name, unsigned long long user_data);
+	Gaff::IVirtualDestructor* load(const char* file_name, unsigned long long, HashMap<AString, IFile*>& file_map);
 
 private:
-	IFileSystem& _file_system;
 	LuaManager& _lua_manager;
 
 	GAFF_NO_COPY(LuaLoader);

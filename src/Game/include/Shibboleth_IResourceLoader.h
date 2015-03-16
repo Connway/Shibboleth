@@ -22,7 +22,8 @@ THE SOFTWARE.
 
 #pragma once
 
-#include <Shibboleth_Defines.h>
+#include <Shibboleth_HashMap.h>
+#include <Shibboleth_String.h>
 #include <Gaff_Defines.h>
 
 namespace Gaff
@@ -32,14 +33,15 @@ namespace Gaff
 
 NS_SHIBBOLETH
 
+class IFile;
+
 class IResourceLoader
 {
 public:
 	IResourceLoader(void) {}
 	virtual ~IResourceLoader(void) {}
 
-	virtual Gaff::IVirtualDestructor* load(const char* file_name, unsigned long long user_data) = 0;
-	//virtual void unload(Gaff::IVirtualDestructor* resource) = 0;
+	virtual Gaff::IVirtualDestructor* load(const char* file_name, unsigned long long user_data, HashMap<AString, IFile*>& file_map) = 0;
 
 	GAFF_NO_COPY(IResourceLoader);
 	GAFF_NO_MOVE(IResourceLoader);

@@ -42,12 +42,14 @@ public:
 	void destroy(void);
 
 	bool addTexture(IRenderDevice& rd, const ITexture* color_texture, CUBE_FACE face = NONE);
-	INLINE void popTexture(void);
+	void popTexture(void);
 
 	bool addDepthStencilBuffer(IRenderDevice& rd, const ITexture* depth_stencil_texture);
 
-	INLINE void bind(IRenderDevice& rd);
-	INLINE void unbind(IRenderDevice& rd);
+	void bind(IRenderDevice& rd);
+	void unbind(IRenderDevice& rd);
+
+	void clear(IRenderDevice& rd, unsigned int clear_flags = CLEAR_DEPTH | CLEAR_STENCIL | CLEAR_COLOR, float clear_depth = 1.0f, unsigned char clear_stencil = 0);
 
 	bool isComplete(void) const;
 

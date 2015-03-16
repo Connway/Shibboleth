@@ -79,7 +79,7 @@ enum DisplayTags
 
 ENUM_REF_DEF_SHIB(DisplayTags);
 
-class RenderManager : public IManager, public IUpdateQuery
+class RenderManager : public IManager
 {
 public:
 	typedef Gaff::RefPtr<Gleam::IRenderTarget> RenderTargetPtr;
@@ -119,12 +119,10 @@ public:
 
 	const char* getName(void) const;
 
-	void requestUpdateEntries(Array<UpdateEntry>& entries);
 	void* rawRequestInterface(unsigned int class_id) const;
 
 	bool initThreadData(void);
 	bool init(const char* module);
-	void update(double);
 
 	Gleam::IRenderDevice& getRenderDevice(void);
 	Gaff::SpinLock& getSpinLock(void);
@@ -169,13 +167,12 @@ public:
 	unsigned int createRT(
 		unsigned int width, unsigned int height, unsigned int device,
 		Gleam::ITexture::FORMAT format = Gleam::ITexture::RGBA_8_UNORM,
-		const AString& name = AString(), unsigned int short = 0
+		const AString& name = AString(), unsigned short tags = 0
 	);
 
 	bool createRTDepth(size_t rt_index, Gleam::ITexture::FORMAT format = Gleam::ITexture::DEPTH_16_UNORM);
 
 	INLINE void deleteRenderTargets(void);
-	void addRenderFunction(const Gaff::FunctionBinder<void>& render_func, size_t position = SIZE_T_FAIL);
 
 private:
 	struct GraphicsFunctions
@@ -226,7 +223,6 @@ private:
 	GraphicsFunctions _graphics_functions;
 	Array<WindowData> _windows;
 
-	Array< Gaff::FunctionBinder<void> > _render_functions;
 	Array<RenderTargetData> _render_target_data;
 
 	Gaff::SmartPtr<Gleam::IRenderDevice, ProxyAllocator> _render_device;

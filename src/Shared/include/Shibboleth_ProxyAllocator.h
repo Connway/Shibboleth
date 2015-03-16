@@ -30,7 +30,7 @@ NS_SHIBBOLETH
 class ProxyAllocator : public Gaff::IAllocator
 {
 public:
-	ProxyAllocator(const char* pool_tag = nullptr, Shibboleth::IAllocator* allocator = GetAllocator()):
+	explicit ProxyAllocator(const char* pool_tag = nullptr, Shibboleth::IAllocator* allocator = GetAllocator()):
 		_allocator(allocator), _alloc_tag(0)
 	{
 		if (pool_tag) {

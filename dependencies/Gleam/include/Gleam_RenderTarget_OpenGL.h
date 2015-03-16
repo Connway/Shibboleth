@@ -46,6 +46,8 @@ public:
 	void bind(IRenderDevice& rd);
 	void unbind(IRenderDevice& rd);
 
+	void clear(IRenderDevice& rd, unsigned int clear_flags = CLEAR_DEPTH | CLEAR_STENCIL | CLEAR_COLOR, float clear_depth = 1.0f, unsigned char clear_stencil = 0);
+
 	bool isComplete(void) const;
 
 	bool isD3D(void) const;

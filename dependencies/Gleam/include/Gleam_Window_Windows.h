@@ -88,6 +88,9 @@ private:
 
 	GleamArray< Gaff::FunctionBinder<bool, const AnyMessage&> > _window_callbacks;
 
+	static GleamMap<unsigned short, KeyCode> gRightKeys;
+	static GleamMap<unsigned short, KeyCode> gLeftKeys;
+
 	static LRESULT CALLBACK WindowProc(HWND hwnd, UINT msg, WPARAM w, LPARAM l);
 
 	friend void WindowMoved(AnyMessage*, Window*, WPARAM, LPARAM);

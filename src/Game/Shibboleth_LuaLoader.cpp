@@ -24,12 +24,14 @@ THE SOFTWARE.
 #include "Shibboleth_ResourceDefines.h"
 #include "Shibboleth_LuaManager.h"
 #include <Shibboleth_IFileSystem.h>
+#include <Shibboleth_Utilities.h>
+#include <Shibboleth_IApp.h>
 #include <LuaState.h>
 
 NS_SHIBBOLETH
 
-LuaLoader::LuaLoader(LuaManager& lua_manager, IFileSystem& file_system):
-	_file_system(file_system), _lua_manager(lua_manager)
+LuaLoader::LuaLoader(LuaManager& lua_manager):
+	_lua_manager(lua_manager)
 {
 }
 
@@ -37,13 +39,10 @@ LuaLoader::~LuaLoader(void)
 {
 }
 
-Gaff::IVirtualDestructor* LuaLoader::load(const char* file_name, unsigned long long)
+Gaff::IVirtualDestructor* LuaLoader::load(const char* file_name, unsigned long long, HashMap<AString, IFile*>& file_map)
 {
-	IFile* file = _file_system.openFile(file_name);
-
-	if (!file) {
-		return nullptr;
-	}
+	assert(file_map.hasElementWithKey(AString(file_name)));
+	IFile*& file = file_map[AString(file_name)];
 
 	SingleDataWrapper<lua::State*>* lua_data = GetAllocator()->template allocT< SingleDataWrapper<lua::State*> >();
 
@@ -55,7 +54,8 @@ Gaff::IVirtualDestructor* LuaLoader::load(const char* file_name, unsigned long l
 		}
 	}
 
-	_file_system.closeFile(file);
+	GetApp().getFileSystem()->closeFile(file);
+	file = nullptr;
 
 	return lua_data;
 }

@@ -80,7 +80,7 @@ public:
 	T* moveAllocT(Args&&... args)
 	{
 		T* data = reinterpret_cast<T*>(alloc(sizeof(T)));
-		return moveConstruct(data, args...);
+		return moveConstruct(data, Gaff::Move(args)...);
 	}
 
 	template <class T, class... Args>

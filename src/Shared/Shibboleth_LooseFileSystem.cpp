@@ -39,7 +39,7 @@ LooseFile::~LooseFile(void)
 	}
 }
 
-unsigned int LooseFile::size(void) const
+size_t LooseFile::size(void) const
 {
 	return _file_size;
 }
@@ -92,7 +92,7 @@ IFile* LooseFileSystem::openFile(const char* file_name)
 		}
 
 		file->_file_size= loose_file.getFileSize();
-		file->_file_buffer = (char*)GetAllocator()->alloc(file->_file_size);
+		file->_file_buffer = reinterpret_cast<char*>(GetAllocator()->alloc(file->_file_size));
 
 		if (!file->_file_buffer) {
 			GetAllocator()->freeT(file);

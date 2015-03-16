@@ -38,7 +38,7 @@ PackFile::~PackFile(void)
 	}
 }
 
-unsigned int PackFile::size(void) const
+size_t PackFile::size(void) const
 {
 	return _file_size;
 }

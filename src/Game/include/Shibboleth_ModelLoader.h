@@ -56,7 +56,7 @@ public:
 	ModelLoader(RenderManager& render_mgr, ResourceManager& res_mgr, IFileSystem& file_system);
 	~ModelLoader(void);
 
-	Gaff::IVirtualDestructor* load(const char* file_name, unsigned long long);
+	Gaff::IVirtualDestructor* load(const char* file_name, unsigned long long, HashMap<AString, IFile*>& file_map);
 
 private:
 	struct VertSkeletonData

@@ -20,7 +20,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#include <Shibboleth_Memory.h>
+#include <Shibboleth_ProxyAllocator.h>
 #include <Gleam_ShaderResourceView.h>
 #include <Gleam_RenderDevice.h>
 #include <Gleam_RenderTarget.h>

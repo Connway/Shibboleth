@@ -38,14 +38,13 @@ class IFileSystem;
 class TextureLoader : public IResourceLoader
 {
 public:
-	TextureLoader(RenderManager& render_mgr, IFileSystem& file_system);
+	TextureLoader(RenderManager& render_mgr);
 	~TextureLoader(void);
 
-	Gaff::IVirtualDestructor* load(const char* file_name, unsigned long long);
+	Gaff::IVirtualDestructor* load(const char* file_name, unsigned long long, HashMap<AString, IFile*>& file_map);
 
 private:
 	RenderManager& _render_mgr;
-	IFileSystem& _file_system;
 
 	Gleam::ITexture::FORMAT determineFormatAndType(const Gaff::Image& image, bool normalized, bool srgba) const;
 	Gleam::ITexture::FORMAT determineRGBAType(const Gaff::Image& image, bool normalized, bool srgba) const;

@@ -1,6 +1,5 @@
 [
 	["Object Manager: Pre-Physics Update"],
 	["Object Manager: Post-Physics Update"],
-	["Occlusion Manager: Update"],
-	["Render Manager: Render"]
+	["Occlusion Manager: Update"]
 ]
