@@ -42,122 +42,91 @@ VAR_CONTAINER_VAL_TYPE(CharContainer, VT_CHAR);
 VAR_CONTAINER_VAL_TYPE(BoolContainer, VT_BOOL);
 VAR_CONTAINER_VAL_TYPE(StringContainer, VT_STRING);
 
+ARRAY_CONTAINER_CONSTRUCTOR(ArrayDoubleContainer, double);
+
+ARRAY_CONTAINER_VAL_TYPE(ArrayDoubleContainer, VT_DOUBLE);
+
 VAR_CONTAINER_READ(DoubleContainer)
 {
-	assert(json[(const char*)IValueContainer::_key.getBuffer()].isReal());
+	assert(json[reinterpret_cast<const char*>(ValueContainerBase::_key.getBuffer())].isReal());
 
 	if (_var) {
-		object->*_var = json[(const char*)IValueContainer::_key.getBuffer()].getReal();
+		object->*_var = json[reinterpret_cast<const char*>(ValueContainerBase::_key.getBuffer())].getReal();
 	} else if (_setter) {
-		(object->*_setter)(json[(const char*)IValueContainer::_key.getBuffer()].getReal());
+		(object->*_setter)(json[reinterpret_cast<const char*>(ValueContainerBase::_key.getBuffer())].getReal());
 	}
 }
 
 VAR_CONTAINER_WRITE(DoubleContainer)
 {
-	assert(!json[IValueContainer::_key.getBuffer()]);
+	assert(!json[ValueContainerBase::_key.getBuffer()]);
 
 	if (_var) {
-		json.setObject(IValueContainer::_key.getBuffer(), Gaff::JSON::createReal(object->*_var));
+		json.setObject(ValueContainerBase::_key.getBuffer(), JSON::createReal(object->*_var));
 	} else if (_getter) {
-		json.setObject(IValueContainer::_key.getBuffer(), Gaff::JSON::createReal((object->*_getter)()));
+		json.setObject(ValueContainerBase::_key.getBuffer(), JSON::createReal((object->*_getter)()));
 	}
 }
 
-VAR_CONTAINER_SET_STRING(DoubleContainer)
+VAR_CONTAINER_GET(DoubleContainer)
 {
 	if (_var) {
-		object->*_var = atof(value);
-	} else if (_setter) {
-		(object->*_setter)(atof(value));
+		*reinterpret_cast<double*>(out) = (object->*_var);
+	} else if (_getter) {
+		*reinterpret_cast<double*>(out) = (object->*_getter)();
 	}
 }
 
-VAR_CONTAINER_SET_UINT(DoubleContainer)
+VAR_CONTAINER_SET(DoubleContainer)
 {
 	if (_var) {
-		object->*_var = (double)value;
+		object->*_var = *reinterpret_cast<const double*>(value);
 	} else if (_setter) {
-		(object->*_setter)((double)value);
+		(object->*_setter)(*reinterpret_cast<const double*>(value));
 	}
 }
 
-VAR_CONTAINER_SET_INT(DoubleContainer)
-{
-	if (_var) {
-		object->*_var = (double)value;
-	} else if (_setter) {
-		(object->*_setter)((double)value);
-	}
-}
-
-VAR_CONTAINER_SET_DOUBLE(DoubleContainer)
-{
-	if (_var) {
-		object->*_var = value;
-	} else if (_setter) {
-		(object->*_setter)(value);
-	}
-}
 
 
 
 
 VAR_CONTAINER_READ(FloatContainer)
 {
-	assert(json[(const char*)IValueContainer::_key.getBuffer()].isReal());
+	assert(json[reinterpret_cast<const char*>(ValueContainerBase::_key.getBuffer())].isReal());
 
 	if (_var) {
-		object->*_var = (float)json[(const char*)IValueContainer::_key.getBuffer()].getReal();
+		object->*_var = static_cast<float>(json[reinterpret_cast<const char*>(ValueContainerBase::_key.getBuffer())].getReal());
 	} else if (_setter) {
-		(object->*_setter)((float)json[(const char*)IValueContainer::_key.getBuffer()].getReal());
+		(object->*_setter)(static_cast<float>(json[reinterpret_cast<const char*>(ValueContainerBase::_key.getBuffer())].getReal()));
 	}
 }
 
 VAR_CONTAINER_WRITE(FloatContainer)
 {
-	assert(!json[IValueContainer::_key.getBuffer()]);
+	assert(!json[ValueContainerBase::_key.getBuffer()]);
 
 	if (_var) {
-		json.setObject(IValueContainer::_key.getBuffer(), Gaff::JSON::createReal(object->*_var));
+		json.setObject(ValueContainerBase::_key.getBuffer(), JSON::createReal(object->*_var));
 	} else if (_getter) {
-		json.setObject(IValueContainer::_key.getBuffer(), Gaff::JSON::createReal((object->*_getter)()));
+		json.setObject(ValueContainerBase::_key.getBuffer(), JSON::createReal((object->*_getter)()));
 	}
 }
 
-VAR_CONTAINER_SET_STRING(FloatContainer)
+VAR_CONTAINER_GET(FloatContainer)
 {
 	if (_var) {
-		object->*_var = (float)atof(value);
-	} else if (_setter) {
-		(object->*_setter)((float)atof(value));
+		*reinterpret_cast<float*>(out) = (object->*_var);
+	} else if (_getter) {
+		*reinterpret_cast<float*>(out) = (object->*_getter)();
 	}
 }
 
-VAR_CONTAINER_SET_UINT(FloatContainer)
+VAR_CONTAINER_SET(FloatContainer)
 {
 	if (_var) {
-		object->*_var = (float)value;
+		object->*_var = *reinterpret_cast<const float*>(value);
 	} else if (_setter) {
-		(object->*_setter)((float)value);
-	}
-}
-
-VAR_CONTAINER_SET_INT(FloatContainer)
-{
-	if (_var) {
-		object->*_var = (float)value;
-	} else if (_setter) {
-		(object->*_setter)((float)value);
-	}
-}
-
-VAR_CONTAINER_SET_DOUBLE(FloatContainer)
-{
-	if (_var) {
-		object->*_var = (float)value;
-	} else if (_setter) {
-		(object->*_setter)((float)value);
+		(object->*_setter)(*reinterpret_cast<const float*>(value));
 	}
 }
 
@@ -166,59 +135,41 @@ VAR_CONTAINER_SET_DOUBLE(FloatContainer)
 
 VAR_CONTAINER_READ(UIntContainer)
 {
-	assert(json[(const char*)IValueContainer::_key.getBuffer()].isReal());
+	assert(json[reinterpret_cast<const char*>(ValueContainerBase::_key.getBuffer())].isReal());
 
 	if (_var) {
-		object->*_var = (unsigned int)json[(const char*)IValueContainer::_key.getBuffer()].getReal();
-	} else if (setter) {
-		(object->*_setter)((unsigned int)json[(const char*)IValueContainer::_key.getBuffer()].getReal());
+		object->*_var = static_cast<unsigned int>(json[reinterpret_cast<const char*>(ValueContainerBase::_key.getBuffer())].getReal());
+	} else if (_setter) {
+		(object->*_setter)(static_cast<unsigned int>(json[reinterpret_cast<const char*>(ValueContainerBase::_key.getBuffer())].getReal()));
 	}
 }
 
 VAR_CONTAINER_WRITE(UIntContainer)
 {
-	assert(!json[IValueContainer::_key.getBuffer()]);
+	assert(!json[ValueContainerBase::_key.getBuffer()]);
 
 	if (_var) {
-		json.setObject(IValueContainer::_key.getBuffer(), Gaff::JSON::createReal(object->*_var));
+		json.setObject(ValueContainerBase::_key.getBuffer(), JSON::createReal(object->*_var));
 	} else if (_getter) {
-		json.setObject(IValueContainer::_key.getBuffer(), Gaff::JSON::createReal((object->*_getter)()));
+		json.setObject(ValueContainerBase::_key.getBuffer(), JSON::createReal((object->*_getter)()));
 	}
 }
 
-VAR_CONTAINER_SET_STRING(UIntContainer)
+VAR_CONTAINER_GET(UIntContainer)
 {
 	if (_var) {
-		object->*_var = strtoul(value, nullptr, 10);
-	} else if (_setter) {
-		(object->*_setter)(strtoul(value, nullptr, 10));
+		*reinterpret_cast<unsigned int*>(out) = (object->*_var);
+	} else if (_getter) {
+		*reinterpret_cast<unsigned int*>(out) = (object->*_getter)();
 	}
 }
 
-VAR_CONTAINER_SET_UINT(UIntContainer)
+VAR_CONTAINER_SET(UIntContainer)
 {
 	if (_var) {
-		object->*_var = value;
+		object->*_var = *reinterpret_cast<const unsigned int*>(value);
 	} else if (_setter) {
-		(object->*_setter)(value);
-	}
-}
-
-VAR_CONTAINER_SET_INT(UIntContainer)
-{
-	if (_var) {
-		object->*_var = (unsigned int)value;
-	} else if (_setter) {
-		(object->*_setter)((unsigned int)value);
-	}
-}
-
-VAR_CONTAINER_SET_DOUBLE(UIntContainer)
-{
-	if (_var) {
-		object->*_var = (unsigned int)value;
-	} else if (_setter) {
-		(object->*_setter)((unsigned int)value);
+		(object->*_setter)(*reinterpret_cast<const unsigned int*>(value));
 	}
 }
 
@@ -227,59 +178,41 @@ VAR_CONTAINER_SET_DOUBLE(UIntContainer)
 
 VAR_CONTAINER_READ(IntContainer)
 {
-	assert(json[(const char*)IValueContainer::_key.getBuffer()].isInteger());
+	assert(json[reinterpret_cast<const char*>(ValueContainerBase::_key.getBuffer())].isInteger());
 
 	if (_var) {
-		object->*_var = json[(const char*)IValueContainer::_key.getBuffer()].getInteger();
+		object->*_var = json[reinterpret_cast<const char*>(ValueContainerBase::_key.getBuffer())].getInteger();
 	} else if (_setter) {
-		(object->*_setter)(json[(const char*)IValueContainer::_key.getBuffer()].getInteger());
+		(object->*_setter)(json[reinterpret_cast<const char*>(ValueContainerBase::_key.getBuffer())].getInteger());
 	}
 }
 
 VAR_CONTAINER_WRITE(IntContainer)
 {
-	assert(!json[IValueContainer::_key.getBuffer()]);
+	assert(!json[ValueContainerBase::_key.getBuffer()]);
 
 	if (_var) {
-		json.setObject(IValueContainer::_key.getBuffer(), Gaff::JSON::createInteger(object->*_var));
+		json.setObject(ValueContainerBase::_key.getBuffer(), JSON::createInteger(object->*_var));
 	} else if (_getter) {
-		json.setObject(IValueContainer::_key.getBuffer(), Gaff::JSON::createInteger((object->*_getter)()));
+		json.setObject(ValueContainerBase::_key.getBuffer(), JSON::createInteger((object->*_getter)()));
 	}
 }
 
-VAR_CONTAINER_SET_STRING(IntContainer)
+VAR_CONTAINER_GET(IntContainer)
 {
 	if (_var) {
-		object->*_var = atoi(value);
-	} else if (_setter) {
-		(object->*_setter)(atoi(value));
+		*reinterpret_cast<int*>(out) = (object->*_var);
+	} else if (_getter) {
+		*reinterpret_cast<int*>(out) = (object->*_getter)();
 	}
 }
 
-VAR_CONTAINER_SET_UINT(IntContainer)
+VAR_CONTAINER_SET(IntContainer)
 {
 	if (_var) {
-		object->*_var = (int)value;
+		object->*_var = *reinterpret_cast<const int*>(value);
 	} else if (_setter) {
-		(object->*_setter)((int)value);
-	}
-}
-
-VAR_CONTAINER_SET_INT(IntContainer)
-{
-	if (_var) {
-		object->*_var = value;
-	} else if (_setter) {
-		(object->*_setter)(value);
-	}
-}
-
-VAR_CONTAINER_SET_DOUBLE(IntContainer)
-{
-	if (_var) {
-		object->*_var = (int)value;
-	} else if (_setter) {
-		(object->*_setter)((int)value);
+		(object->*_setter)(*reinterpret_cast<const int*>(value));
 	}
 }
 
@@ -288,59 +221,41 @@ VAR_CONTAINER_SET_DOUBLE(IntContainer)
 
 VAR_CONTAINER_READ(UShortContainer)
 {
-	assert(json[(const char*)IValueContainer::_key.getBuffer()].isInteger());
+	assert(json[reinterpret_cast<const char*>(ValueContainerBase::_key.getBuffer())].isInteger());
 
 	if (_var) {
-		object->*_var = (unsigned short)json[(const char*)IValueContainer::_key.getBuffer()].getInteger();
+		object->*_var = static_cast<unsigned short>(json[reinterpret_cast<const char*>(ValueContainerBase::_key.getBuffer())].getInteger());
 	} else if (_setter) {
-		(object->*_setter)((unsigned short)json[(const char*)IValueContainer::_key.getBuffer()].getInteger());
+		(object->*_setter)(static_cast<unsigned short>(json[reinterpret_cast<const char*>(ValueContainerBase::_key.getBuffer())].getInteger()));
 	}
 }
 
 VAR_CONTAINER_WRITE(UShortContainer)
 {
-	assert(!json[IValueContainer::_key.getBuffer()]);
+	assert(!json[ValueContainerBase::_key.getBuffer()]);
 
 	if (_var) {
-		json.setObject(IValueContainer::_key.getBuffer(), Gaff::JSON::createInteger((json_int_t)(object->*_var)));
+		json.setObject(ValueContainerBase::_key.getBuffer(), JSON::createInteger(static_cast<json_int_t>(object->*_var)));
 	} else if (_getter) {
-		json.setObject(IValueContainer::_key.getBuffer(), Gaff::JSON::createInteger((json_int_t)((object->*_getter)())));
+		json.setObject(ValueContainerBase::_key.getBuffer(), JSON::createInteger(static_cast<json_int_t>((object->*_getter)())));
 	}
 }
 
-VAR_CONTAINER_SET_STRING(UShortContainer)
+VAR_CONTAINER_GET(UShortContainer)
 {
 	if (_var) {
-		object->*_var = (unsigned short)atoi(value);
-	} else if (_setter) {
-		(object->*_setter)((unsigned short)atoi(value));
+		*reinterpret_cast<unsigned short*>(out) = (object->*_var);
+	} else if (_getter) {
+		*reinterpret_cast<unsigned short*>(out) = (object->*_getter)();
 	}
 }
 
-VAR_CONTAINER_SET_UINT(UShortContainer)
+VAR_CONTAINER_SET(UShortContainer)
 {
 	if (_var) {
-		object->*_var = (unsigned short)value;
+		object->*_var = *reinterpret_cast<const unsigned short*>(value);
 	} else if (_setter) {
-		(object->*_setter)((unsigned short)value);
-	}
-}
-
-VAR_CONTAINER_SET_INT(UShortContainer)
-{
-	if (_var) {
-		object->*_var = (unsigned short)value;
-	} else if (_setter) {
-		(object->*_setter)((unsigned short)value);
-	}
-}
-
-VAR_CONTAINER_SET_DOUBLE(UShortContainer)
-{
-	if (_var) {
-		object->*_var = (unsigned short)value;
-	} else if (_setter) {
-		(object->*_setter)((unsigned short)value);
+		(object->*_setter)(*reinterpret_cast<const unsigned short*>(value));
 	}
 }
 
@@ -349,59 +264,41 @@ VAR_CONTAINER_SET_DOUBLE(UShortContainer)
 
 VAR_CONTAINER_READ(ShortContainer)
 {
-	assert(json[(const char*)IValueContainer::_key.getBuffer()].isInteger());
+	assert(json[reinterpret_cast<const char*>(ValueContainerBase::_key.getBuffer())].isInteger());
 
 	if (_var) {
-		object->*_var = (short)json[(const char*)IValueContainer::_key.getBuffer()].getInteger();
+		object->*_var = static_cast<short>(json[reinterpret_cast<const char*>(ValueContainerBase::_key.getBuffer())].getInteger());
 	} else if (_setter) {
-		(object->*_setter)((short)json[(const char*)IValueContainer::_key.getBuffer()].getInteger());
+		(object->*_setter)(static_cast<short>(json[reinterpret_cast<const char*>(ValueContainerBase::_key.getBuffer())].getInteger()));
 	}
 }
 
 VAR_CONTAINER_WRITE(ShortContainer)
 {
-	assert(!json[IValueContainer::_key.getBuffer()]);
+	assert(!json[ValueContainerBase::_key.getBuffer()]);
 
 	if (_var) {
-		json.setObject(IValueContainer::_key.getBuffer(), Gaff::JSON::createInteger((json_int_t)(object->*_var)));
+		json.setObject(ValueContainerBase::_key.getBuffer(), JSON::createInteger(static_cast<json_int_t>(object->*_var)));
 	} else if (_getter) {
-		json.setObject(IValueContainer::_key.getBuffer(), Gaff::JSON::createInteger((json_int_t)((object->*_getter)())));
+		json.setObject(ValueContainerBase::_key.getBuffer(), JSON::createInteger(static_cast<json_int_t>((object->*_getter)())));
 	}
 }
 
-VAR_CONTAINER_SET_STRING(ShortContainer)
+VAR_CONTAINER_GET(ShortContainer)
 {
 	if (_var) {
-		object->*_var = (short)atoi(value);
-	} else if (_setter) {
-		(object->*_setter)((short)atoi(value));
+		*reinterpret_cast<short*>(out) = (object->*_var);
+	} else if (_getter) {
+		*reinterpret_cast<short*>(out) = (object->*_getter)();
 	}
 }
 
-VAR_CONTAINER_SET_UINT(ShortContainer)
+VAR_CONTAINER_SET(ShortContainer)
 {
 	if (_var) {
-		object->*_var = (short)value;
+		object->*_var = *reinterpret_cast<const short*>(value);
 	} else if (_setter) {
-		(object->*_setter)((short)value);
-	}
-}
-
-VAR_CONTAINER_SET_INT(ShortContainer)
-{
-	if (_var) {
-		object->*_var = (short)value;
-	} else if (_setter) {
-		(object->*_setter)((short)value);
-	}
-}
-
-VAR_CONTAINER_SET_DOUBLE(ShortContainer)
-{
-	if (_var) {
-		object->*_var = (short)value;
-	} else if (_setter) {
-		(object->*_setter)((short)value);
+		(object->*_setter)(*reinterpret_cast<const short*>(value));
 	}
 }
 
@@ -410,59 +307,41 @@ VAR_CONTAINER_SET_DOUBLE(ShortContainer)
 
 VAR_CONTAINER_READ(UCharContainer)
 {
-	assert(json[(const char*)IValueContainer::_key.getBuffer()].isInteger());
+	assert(json[reinterpret_cast<const char*>(ValueContainerBase::_key.getBuffer())].isInteger());
 
 	if (_var) {
-		object->*_var = (unsigned char)json[(const char*)IValueContainer::_key.getBuffer()].getInteger();
+		object->*_var = static_cast<unsigned char>(json[reinterpret_cast<const char*>(ValueContainerBase::_key.getBuffer())].getInteger());
 	} else if (_setter) {
-		(object->*_setter)((unsigned char)json[(const char*)IValueContainer::_key.getBuffer()].getInteger());
+		(object->*_setter)(static_cast<unsigned char>(json[reinterpret_cast<const char*>(ValueContainerBase::_key.getBuffer())].getInteger()));
 	}
 }
 
 VAR_CONTAINER_WRITE(UCharContainer)
 {
-	assert(!json[IValueContainer::_key.getBuffer()]);
+	assert(!json[ValueContainerBase::_key.getBuffer()]);
 
 	if (_var) {
-		json.setObject(IValueContainer::_key.getBuffer(), Gaff::JSON::createInteger((json_int_t)(object->*_var)));
+		json.setObject(ValueContainerBase::_key.getBuffer(), JSON::createInteger(static_cast<json_int_t>(object->*_var)));
 	} else if (_getter) {
-		json.setObject(IValueContainer::_key.getBuffer(), Gaff::JSON::createInteger((json_int_t)((object->*_getter)())));
+		json.setObject(ValueContainerBase::_key.getBuffer(), JSON::createInteger(static_cast<json_int_t>((object->*_getter)())));
 	}
 }
 
-VAR_CONTAINER_SET_STRING(UCharContainer)
+VAR_CONTAINER_GET(UCharContainer)
 {
 	if (_var) {
-		object->*_var = (unsigned char)atoi(value);
-	} else if (_setter) {
-		(object->*_setter)((unsigned char)atoi(value));
+		*reinterpret_cast<unsigned char*>(out) = (object->*_var);
+	} else if (_getter) {
+		*reinterpret_cast<unsigned char*>(out) = (object->*_getter)();
 	}
 }
 
-VAR_CONTAINER_SET_UINT(UCharContainer)
+VAR_CONTAINER_SET(UCharContainer)
 {
 	if (_var) {
-		object->*_var = (unsigned char)value;
+		object->*_var = *reinterpret_cast<const unsigned char*>(value);
 	} else if (_setter) {
-		(object->*_setter)((unsigned char)value);
-	}
-}
-
-VAR_CONTAINER_SET_INT(UCharContainer)
-{
-	if (_var) {
-		object->*_var = (unsigned char)value;
-	} else if (_setter) {
-		(object->*_setter)((unsigned char)value);
-	}
-}
-
-VAR_CONTAINER_SET_DOUBLE(UCharContainer)
-{
-	if (_var) {
-		object->*_var = (unsigned char)value;
-	} else if (_setter) {
-		(object->*_setter)((unsigned char)value);
+		(object->*_setter)(*reinterpret_cast<const unsigned char*>(value));
 	}
 }
 
@@ -471,61 +350,41 @@ VAR_CONTAINER_SET_DOUBLE(UCharContainer)
 
 VAR_CONTAINER_READ(CharContainer)
 {
-	assert(json[(const char*)IValueContainer::_key.getBuffer()].isInteger());
+	assert(json[reinterpret_cast<const char*>(ValueContainerBase::_key.getBuffer())].isInteger());
 
 	if (_var) {
-		object->*_var = (char)json[(const char*)IValueContainer::_key.getBuffer()].getInteger();
+		object->*_var = static_cast<char>(json[reinterpret_cast<const char*>(ValueContainerBase::_key.getBuffer())].getInteger());
 	} else if (_setter) {
-		(object->*_setter)((char)json[(const char*)IValueContainer::_key.getBuffer()].getInteger());
+		(object->*_setter)(static_cast<char>(json[reinterpret_cast<const char*>(ValueContainerBase::_key.getBuffer())].getInteger()));
 	}
 }
 
 VAR_CONTAINER_WRITE(CharContainer)
 {
-	assert(!json[IValueContainer::_key.getBuffer()]);
+	assert(!json[ValueContainerBase::_key.getBuffer()]);
 
 	if (_var) {
-		json.setObject(IValueContainer::_key.getBuffer(), Gaff::JSON::createInteger((json_int_t)(object->*_var)));
+		json.setObject(ValueContainerBase::_key.getBuffer(), JSON::createInteger(static_cast<json_int_t>(object->*_var)));
 	} else if (_getter) {
-		json.setObject(IValueContainer::_key.getBuffer(), Gaff::JSON::createInteger((json_int_t)((object->*_getter)())));
+		json.setObject(ValueContainerBase::_key.getBuffer(), JSON::createInteger(static_cast<json_int_t>((object->*_getter)())));
 	}
 }
 
-VAR_CONTAINER_SET_STRING(CharContainer)
+VAR_CONTAINER_GET(CharContainer)
 {
-	object->*_var = (char)atoi(value);
-
 	if (_var) {
-		object->*_var = (char)atoi(value);
-	} else if (_setter) {
-		(object->*_setter)((char)atoi(value));
+		*reinterpret_cast<char*>(out) = (object->*_var);
+	} else if (_getter) {
+		*reinterpret_cast<char*>(out) = (object->*_getter)();
 	}
 }
 
-VAR_CONTAINER_SET_UINT(CharContainer)
+VAR_CONTAINER_SET(CharContainer)
 {
 	if (_var) {
-		object->*_var = (char)value;
+		object->*_var = *reinterpret_cast<const char*>(value);
 	} else if (_setter) {
-		(object->*_setter)((char)value);
-	}
-}
-
-VAR_CONTAINER_SET_INT(CharContainer)
-{
-	if (_var) {
-		object->*_var = (char)value;
-	} else if (_setter) {
-		(object->*_setter)((char)value);
-	}
-}
-
-VAR_CONTAINER_SET_DOUBLE(CharContainer)
-{
-	if (_var) {
-		object->*_var = (char)value;
-	} else if (_setter) {
-		(object->*_setter)((char)value);
+		(object->*_setter)(*reinterpret_cast<const char*>(value));
 	}
 }
 
@@ -534,59 +393,41 @@ VAR_CONTAINER_SET_DOUBLE(CharContainer)
 
 VAR_CONTAINER_READ(BoolContainer)
 {
-	assert(json[(const char*)IValueContainer::_key.getBuffer()].isBoolean());
+	assert(json[reinterpret_cast<const char*>(ValueContainerBase::_key.getBuffer())].isBoolean());
 
 	if (_var) {
-		object->*_var = json[(const char*)IValueContainer::_key.getBuffer()].isTrue();
+		object->*_var = json[reinterpret_cast<const char*>(ValueContainerBase::_key.getBuffer())].isTrue();
 	} else if (_setter) {
-		(object->*_setter)(json[(const char*)IValueContainer::_key.getBuffer()].isTrue());
+		(object->*_setter)(json[reinterpret_cast<const char*>(ValueContainerBase::_key.getBuffer())].isTrue());
 	}
 }
 
 VAR_CONTAINER_WRITE(BoolContainer)
 {
-	assert(!json[IValueContainer::_key.getBuffer()]);
+	assert(!json[ValueContainerBase::_key.getBuffer()]);
 
 	if (_var) {
-		json.setObject(IValueContainer::_key.getBuffer(), Gaff::JSON::createBoolean(object->*_var));
+		json.setObject(ValueContainerBase::_key.getBuffer(), JSON::createBoolean(object->*_var));
 	} else if (_getter) {
-		json.setObject(IValueContainer::_key.getBuffer(), Gaff::JSON::createBoolean((object->*_getter)()));
+		json.setObject(ValueContainerBase::_key.getBuffer(), JSON::createBoolean((object->*_getter)()));
 	}
 }
 
-VAR_CONTAINER_SET_STRING(BoolContainer)
+VAR_CONTAINER_GET(BoolContainer)
 {
 	if (_var) {
-		object->*_var = atoi(value) != 0;
-	} else if (_setter) {
-		(object->*_setter)(atoi(value) != 0);
+		*reinterpret_cast<bool*>(out) = (object->*_var);
+	} else if (_getter) {
+		*reinterpret_cast<bool*>(out) = (object->*_getter)();
 	}
 }
 
-VAR_CONTAINER_SET_UINT(BoolContainer)
+VAR_CONTAINER_SET(BoolContainer)
 {
 	if (_var) {
-		object->*_var = value != 0;
+		object->*_var = *reinterpret_cast<const bool*>(value);
 	} else if (_setter) {
-		(object->*_setter)(value != 0);
-	}
-}
-
-VAR_CONTAINER_SET_INT(BoolContainer)
-{
-	if (_var) {
-		object->*_var = value != 0;
-	} else if (_setter) {
-		(object->*_setter)(value != 0);
-	}
-}
-
-VAR_CONTAINER_SET_DOUBLE(BoolContainer)
-{
-	if (_var) {
-		object->*_var = value != 0.0;
-	} else if (_setter) {
-		(object->*_setter)(value != 0.0);
+		(object->*_setter)(*reinterpret_cast<const bool*>(value));
 	}
 }
 
@@ -595,68 +436,113 @@ VAR_CONTAINER_SET_DOUBLE(BoolContainer)
 
 VAR_CONTAINER_READ(StringContainer)
 {
-	assert(json[(const char*)IValueContainer::_key.getBuffer()].isString());
+	assert(json[reinterpret_cast<const char*>(ValueContainerBase::_key.getBuffer())].isString());
 
 	if (_var) {
-		object->*_var = json[(const char*)IValueContainer::_key.getBuffer()].getString();
+		object->*_var = json[reinterpret_cast<const char*>(ValueContainerBase::_key.getBuffer())].getString();
 	} else if (_setter) {
-		(object->*_setter)(AString<Allocator>(json[(const char*)IValueContainer::_key.getBuffer()].getString()));
+		(object->*_setter)(AString<Allocator>(json[reinterpret_cast<const char*>(ValueContainerBase::_key.getBuffer())].getString()));
 	}
 }
 
 VAR_CONTAINER_WRITE(StringContainer)
 {
-	assert(!json[IValueContainer::_key.getBuffer()]);
+	assert(!json[ValueContainerBase::_key.getBuffer()]);
 
 	if (_var) {
-		json.setObject(IValueContainer::_key.getBuffer(), Gaff::JSON::createString((object->*_var).getBuffer()));
+		json.setObject(ValueContainerBase::_key.getBuffer(), JSON::createString((object->*_var).getBuffer()));
 	} else if (_getter) {
-		json.setObject(IValueContainer::_key.getBuffer(), Gaff::JSON::createString((object->*_getter)().getBuffer()));
+		json.setObject(ValueContainerBase::_key.getBuffer(), JSON::createString((object->*_getter)().getBuffer()));
 	}
 }
 
-VAR_CONTAINER_SET_STRING(StringContainer)
+VAR_CONTAINER_GET(StringContainer)
 {
 	if (_var) {
-		object->*_var = value;
-	} else if (_setter) {
-		(object->*_setter)(AString<Allocator>(value));
+		*reinterpret_cast<AString<Allocator>*>(out) = (object->*_var);
+	} else if (_getter) {
+		*reinterpret_cast<AString<Allocator>*>(out) = (object->*_getter)();
 	}
 }
 
-VAR_CONTAINER_SET_UINT(StringContainer)
+VAR_CONTAINER_SET(StringContainer)
 {
-	char temp[64] = { 0 };
-	snprintf(temp, 64, "%u", value);
-
 	if (_var) {
-		object->*_var = temp;
+		object->*_var = *reinterpret_cast<const AString<Allocator>*>(value);
 	} else if (_setter) {
-		(object->*_setter)(AString<Allocator>(temp));
+		(object->*_setter)(*reinterpret_cast<const AString<Allocator>*>(value));
 	}
 }
 
-VAR_CONTAINER_SET_INT(StringContainer)
+
+
+
+ARRAY_CONTAINER_READ(ArrayDoubleContainer)
 {
-	char temp[64] = { 0 };
-	snprintf(temp, 64, "%i", value);
+	JSON array = json[reinterpret_cast<const char*>(ValueContainerBase::_key.getBuffer())];
+	assert(array.isArray());
 
 	if (_var) {
-		object->*_var = temp;
+		(object->*_var).resize(array.size());
+
+		array.forEachInArray([&](size_t index, const JSON& value) -> bool
+		{
+			assert(value.isReal());
+			(object->*_var)[index] = value.getReal();
+			return false;
+		});
+
 	} else if (_setter) {
-		(object->*_setter)(AString<Allocator>(temp));
+		Array<double, Allocator> temp(array.size(), 0, _allocator);
+
+		array.forEachInArray([&](size_t index, const JSON& value) -> bool
+		{
+			assert(value.isReal());
+			temp[index] = value.getReal();
+			return false;
+		});
+
+		(object->*_setter)(temp);
 	}
 }
 
-VAR_CONTAINER_SET_DOUBLE(StringContainer)
+ARRAY_CONTAINER_WRITE(ArrayDoubleContainer)
 {
-	char temp[64] = { 0 };
-	snprintf(temp, 64, "%f", value);
+	assert(!json[ValueContainerBase::_key.getBuffer()]);
+
+	JSON array = JSON::createArray();
 
 	if (_var) {
-		object->*_var = temp;
+		for (size_t i = 0; i < (object->*_var).size(); ++i) {
+			array.setObject(i, JSON::createReal((object->*_var)[i]));
+		}
+
+	} else if (_getter) {
+		const Array<double, Allocator>& value = (object->*_getter)();
+
+		for (size_t i = 0; i < (object->*_var).size(); ++i) {
+			array.setObject(i, JSON::createReal(value[i]));
+		}
+	}
+
+	json.setObject(ValueContainerBase::_key.getBuffer(), array);
+}
+
+ARRAY_CONTAINER_GET(ArrayDoubleContainer)
+{
+	if (_var) {
+		*reinterpret_cast<Array<double, Allocator>*>(out) = (object->*_var);
+	} else if (_getter) {
+		*reinterpret_cast<Array<double, Allocator>*>(out) = (object->*_getter)();
+	}
+}
+
+ARRAY_CONTAINER_SET(ArrayDoubleContainer)
+{
+	if (_var) {
+		object->*_var = *reinterpret_cast<Array<double, Allocator>*>(value);
 	} else if (_setter) {
-		(object->*_setter)(AString<Allocator>(temp));
+		(object->*_setter)(*reinterpret_cast<Array<double, Allocator>*>(value));
 	}
 }
 
@@ -666,68 +552,107 @@ VAR_CONTAINER_SET_DOUBLE(StringContainer)
 // Object
 template <class T, class Allocator>
 template <class T2>
-ReflectionDefinition<T, Allocator>::ObjectContainer<T2>::ObjectContainer(const char* key, ReflectionDefinition<T2, Allocator>& var_ref_def, Getter getter, Setter setter):
-	IValueContainer(key), _getter(getter), _setter(setter), _var_ref_def(var_ref_def), _var(nullptr)
+ReflectionDefinition<T, Allocator>::ObjectContainer<T2>::ObjectContainer(const char* key, ReflectionDefinition<T2, Allocator>& var_ref_def, Getter getter, Setter setter, const Allocator& allocator):
+	ValueContainerBase(key, allocator), _getter(getter), _setter(setter), _var_ref_def(var_ref_def), _var(nullptr)
 {
 }
 
 template <class T, class Allocator>
 template <class T2>
-ReflectionDefinition<T, Allocator>::ObjectContainer<T2>::ObjectContainer(const char* key, T2 T::* var, ReflectionDefinition<T2, Allocator>& var_ref_def) :
-	IValueContainer(key), _getter(nullptr), _setter(nullptr), _var_ref_def(var_ref_def), _var(var)
+ReflectionDefinition<T, Allocator>::ObjectContainer<T2>::ObjectContainer(const char* key, T2 T::* var, ReflectionDefinition<T2, Allocator>& var_ref_def, const Allocator& allocator) :
+	ValueContainerBase(key, allocator), _getter(nullptr), _setter(nullptr), _var_ref_def(var_ref_def), _var(var)
 {
 }
 
 template <class T, class Allocator>
 template <class T2>
-void ReflectionDefinition<T, Allocator>::ObjectContainer<T2>::read(const Gaff::JSON& json, T* object)
+void ReflectionDefinition<T, Allocator>::ObjectContainer<T2>::read(const JSON& json, T* object)
 {
-	assert(json[(const char*)IValueContainer::_key.getBuffer()].isObject());
+	assert(json[reinterpret_cast<const char*>(ValueContainerBase::_key.getBuffer())].isObject());
 
 	if (_var) {
-		_var_ref_def.read(json[(const char*)IValueContainer::_key.getBuffer()], &(object->*_var));
+		_var_ref_def.read(json[reinterpret_cast<const char*>(ValueContainerBase::_key.getBuffer())], &(object->*_var));
 	} else if (_setter) {
 		T2 value;
-		_var_ref_def.read(json[(const char*)IValueContainer::_key.getBuffer()], &value);
+		_var_ref_def.read(json[reinterpret_cast<const char*>(ValueContainerBase::_key.getBuffer())], &value);
 		(object->*_setter)(value);
 	}
 }
 
 template <class T, class Allocator>
 template <class T2>
-void ReflectionDefinition<T, Allocator>::ObjectContainer<T2>::write(Gaff::JSON& json, T* object) const
+void ReflectionDefinition<T, Allocator>::ObjectContainer<T2>::write(JSON& json, T* object) const
 {
-	assert(!json[IValueContainer::_key.getBuffer()]);
+	assert(!json[ValueContainerBase::_key.getBuffer()]);
 
 	if (_var) {
-		Gaff::JSON obj = Gaff::JSON::createObject();
+		JSON obj = JSON::createObject();
 		_var_ref_def.write(obj, &(object->*_var));
-		json.setObject(IValueContainer::_key.getBuffer(), obj);
+		json.setObject(ValueContainerBase::_key.getBuffer(), obj);
 	} else if (_getter) {
 		T2* value = &const_cast<T2&>((object->*_getter)());
 
-		Gaff::JSON obj = Gaff::JSON::createObject();
+		JSON obj = JSON::createObject();
 		_var_ref_def.write(obj, value);
-		json.setObject(IValueContainer::_key.getBuffer(), obj);
+		json.setObject(ValueContainerBase::_key.getBuffer(), obj);
 	}
 }
 
 template <class T, class Allocator>
 template <class T2>
-void ReflectionDefinition<T, Allocator>::ObjectContainer<T2>::set(const T2& value, T* object)
+void ReflectionDefinition<T, Allocator>::ObjectContainer<T2>::get(void* out, const void* object) const
+{
+	get(out, reinterpret_cast<const T*>(object));
+}
+
+template <class T, class Allocator>
+template <class T2>
+void ReflectionDefinition<T, Allocator>::ObjectContainer<T2>::get(void* out, const T* object) const
 {
 	if (_var) {
-		object->*_var = value;
-	} else if (_setter) {
-		(object->*_setter)(value);
+		*reinterpret_cast<T2*>(value) = (object->*_var);
+	} else if (_getter) {
+		*reinterpret_cast<T2*>(value) = (object->*_getter)();
 	}
+}
+
+template <class T, class Allocator>
+template <class T2>
+void ReflectionDefinition<T, Allocator>::ObjectContainer<T2>::set(const void* value, void* object)
+{
+	set(value, reinterpret_cast<T*>(object));
+}
+
+template <class T, class Allocator>
+template <class T2>
+void ReflectionDefinition<T, Allocator>::ObjectContainer<T2>::set(const void* value, T* object)
+{
+	if (_var) {
+		object->*_var = *reinterpret_cast<const T2*>(value);
+	} else if (_setter) {
+		(object->*_setter)(*reinterpret_cast<const T2*>(value));
+	}
+}
+
+template <class T, class Allocator>
+template <class T2>
+bool ReflectionDefinition<T, Allocator>::ObjectContainer<T2>::isFixedArray(void) const
+{
+	return false;
+}
+
+template <class T, class Allocator>
+template <class T2>
+bool ReflectionDefinition<T, Allocator>::ObjectContainer<T2>::isArray(void) const
+{
+	return false;
 }
 
 template <class T, class Allocator>
 template <class T2>
 ReflectionValueType ReflectionDefinition<T, Allocator>::ObjectContainer<T2>::getType(void) const
 {
-	return IValueContainer::VT_OBJECT;
+	return VT_OBJECT;
 }
 
 
@@ -736,101 +661,104 @@ ReflectionValueType ReflectionDefinition<T, Allocator>::ObjectContainer<T2>::get
 // Enum
 template <class T, class Allocator>
 template <class T2>
-ReflectionDefinition<T, Allocator>::EnumContainer<T2>::EnumContainer(const char* key, const EnumReflectionDefinition<T2, Allocator>& var_ref_def, Getter getter, Setter setter):
-	IValueContainer(key), _getter(getter), _setter(setter), _var_ref_def(var_ref_def), _var(nullptr)
+ReflectionDefinition<T, Allocator>::EnumContainer<T2>::EnumContainer(const char* key, const EnumReflectionDefinition<T2, Allocator>& var_ref_def, Getter getter, Setter setter, const Allocator& allocator):
+	ValueContainerBase(key, allocator), _getter(getter), _setter(setter), _var_ref_def(var_ref_def), _var(nullptr)
 {
 }
 
 template <class T, class Allocator>
 template <class T2>
-ReflectionDefinition<T, Allocator>::EnumContainer<T2>::EnumContainer(const char* key, T2 T::* var, const EnumReflectionDefinition<T2, Allocator>& var_ref_def):
-	IValueContainer(key), _getter(nullptr), _setter(nullptr), _var_ref_def(var_ref_def), _var(var)
+ReflectionDefinition<T, Allocator>::EnumContainer<T2>::EnumContainer(const char* key, T2 T::* var, const EnumReflectionDefinition<T2, Allocator>& var_ref_def, const Allocator& allocator):
+	ValueContainerBase(key, allocator), _getter(nullptr), _setter(nullptr), _var_ref_def(var_ref_def), _var(var)
 {
 }
 
 template <class T, class Allocator>
 template <class T2>
-void ReflectionDefinition<T, Allocator>::EnumContainer<T2>::read(const Gaff::JSON& json, T* object)
+void ReflectionDefinition<T, Allocator>::EnumContainer<T2>::read(const JSON& json, T* object)
 {
-	assert(json[(const char*)IValueContainer::_key.getBuffer()].isString());
+	assert(json[reinterpret_cast<const char*>(ValueContainerBase::_key.getBuffer())].isString());
 
 	if (_var) {
-		object->*_var = _var_ref_def.getValue(json[(const char*)IValueContainer::_key.getBuffer()].getString());
+		object->*_var = _var_ref_def.getValue(json[reinterpret_cast<const char*>(ValueContainerBase::_key.getBuffer())].getString());
 	} else if (_setter) {
-		T2 value = _var_ref_def.getValue(json[(const char*)IValueContainer::_key.getBuffer()].getString());
+		T2 value = _var_ref_def.getValue(json[reinterpret_cast<const char*>(ValueContainerBase::_key.getBuffer())].getString());
 		(object->*_setter)(value);
 	}
 }
 
 template <class T, class Allocator>
 template <class T2>
-void ReflectionDefinition<T, Allocator>::EnumContainer<T2>::write(Gaff::JSON& json, T* object) const
+void ReflectionDefinition<T, Allocator>::EnumContainer<T2>::write(JSON& json, T* object) const
 {
-	assert(!json[IValueContainer::_key.getBuffer()]);
+	assert(!json[ValueContainerBase::_key.getBuffer()]);
 
 	if (_var) {
-		Gaff::JSON val = Gaff::JSON::createString(_var_ref_def.getName(object->*_var));
-		json.setObject(IValueContainer::_key.getBuffer(), val);
+		JSON val = JSON::createString(_var_ref_def.getName(object->*_var));
+		json.setObject(ValueContainerBase::_key.getBuffer(), val);
 	} else if (_getter) {
-		Gaff::JSON val = Gaff::JSON::createString(_var_ref_def.getName((object->*_getter)()));
-		json.setObject(IValueContainer::_key.getBuffer(), val);
+		JSON val = JSON::createString(_var_ref_def.getName((object->*_getter)()));
+		json.setObject(ValueContainerBase::_key.getBuffer(), val);
 	}
+}
+
+template <class T, class Allocator>
+template <class T2>
+bool ReflectionDefinition<T, Allocator>::EnumContainer<T2>::isFixedArray(void) const
+{
+	return false;
+}
+
+template <class T, class Allocator>
+template <class T2>
+bool ReflectionDefinition<T, Allocator>::EnumContainer<T2>::isArray(void) const
+{
+	return false;
 }
 
 template <class T, class Allocator>
 template <class T2>
 ReflectionValueType ReflectionDefinition<T, Allocator>::EnumContainer<T2>::getType(void) const
 {
-	return IValueContainer::VT_ENUM;
+	return VT_ENUM;
 }
 
 template <class T, class Allocator>
 template <class T2>
-void ReflectionDefinition<T, Allocator>::EnumContainer<T2>::set(const char* value, T* object)
+void ReflectionDefinition<T, Allocator>::EnumContainer<T2>::get(void* out, const void* object) const
+{
+	get(out, reinterpret_cast<const T*>(object));
+}
+
+template <class T, class Allocator>
+template <class T2>
+void ReflectionDefinition<T, Allocator>::EnumContainer<T2>::get(void* out, const T* object) const
 {
 	if (_var) {
-		object->*_var = _var_ref_def.getValue(value);
+		*reinterpret_cast<T2*>(value) = (object->*_var);
+	} else if (_getter) {
+		*reinterpret_cast<T2*>(value) = (object->*_getter)();
+	}
+}
+
+template <class T, class Allocator>
+template <class T2>
+void ReflectionDefinition<T, Allocator>::EnumContainer<T2>::set(const void* value, void* object)
+{
+	set(value, reinterpret_cast<T*>(object));
+}
+
+template <class T, class Allocator>
+template <class T2>
+void ReflectionDefinition<T, Allocator>::EnumContainer<T2>::set(const void* value, T* object)
+{
+	if (_var) {
+		object->*_var = *reinterpret_cast<const T2*>(value);
 	} else if (_setter) {
-		(object->*_setter)(_var_ref_def.getValue(value));
+		(object->*_setter)(*reinterpret_cast<const T2*>(value));
 	}
 }
 
-template <class T, class Allocator>
-template <class T2>
-void ReflectionDefinition<T, Allocator>::EnumContainer<T2>::set(unsigned int value, T* object)
-{
-	if (_var) {
-		object->*_var = (T2)value;
-	} else if (_setter) {
-		(object->*_setter)((T2)value);
-	}
-}
-
-template <class T, class Allocator>
-template <class T2>
-void ReflectionDefinition<T, Allocator>::EnumContainer<T2>::set(int value, T* object)
-{
-	if (_var) {
-		object->*_var = (T2)value;
-	}
-	else if (_setter) {
-		(object->*_setter)((T2)value);
-	}
-}
-
-template <class T, class Allocator>
-template <class T2>
-void ReflectionDefinition<T, Allocator>::EnumContainer<T2>::set(double value, T* object)
-{
-	// To circumvent compiler error saying it can't convert from
-	// double to an enum of type T2.
-	if (_var) {
-		object->*_var = (T2)((int)value);
-	}
-	else if (_setter) {
-		(object->*_setter)((T2)((int)value));
-	}
-}
 
 
 
@@ -838,23 +766,37 @@ void ReflectionDefinition<T, Allocator>::EnumContainer<T2>::set(double value, T*
 // Base
 template <class T, class Allocator>
 template <class T2>
-ReflectionDefinition<T, Allocator>::BaseValueContainer<T2>::BaseValueContainer(const char* key, const typename ReflectionDefinition<T2, Allocator>::ValueContainerPtr& value_ptr):
-	IValueContainer(key), _value_ptr(value_ptr)
+ReflectionDefinition<T, Allocator>::BaseValueContainer<T2>::BaseValueContainer(const char* key, const typename ReflectionDefinition<T2, Allocator>::ValueContainerPtr& value_ptr, const Allocator& allocator):
+	ValueContainerBase(key, allocator), _value_ptr(value_ptr)
 {
 }
 
 template <class T, class Allocator>
 template <class T2>
-void ReflectionDefinition<T, Allocator>::BaseValueContainer<T2>::read(const Gaff::JSON& json, T* object)
+void ReflectionDefinition<T, Allocator>::BaseValueContainer<T2>::read(const JSON& json, T* object)
 {
 	_value_ptr->read(json, object);
 }
 
 template <class T, class Allocator>
 template <class T2>
-void ReflectionDefinition<T, Allocator>::BaseValueContainer<T2>::write(Gaff::JSON& json, T* object) const
+void ReflectionDefinition<T, Allocator>::BaseValueContainer<T2>::write(JSON& json, T* object) const
 {
 	_value_ptr->write(json, object);
+}
+
+template <class T, class Allocator>
+template <class T2>
+bool ReflectionDefinition<T, Allocator>::BaseValueContainer<T2>::isFixedArray(void) const
+{
+	return false;
+}
+
+template <class T, class Allocator>
+template <class T2>
+bool ReflectionDefinition<T, Allocator>::BaseValueContainer<T2>::isArray(void) const
+{
+	return false;
 }
 
 template <class T, class Allocator>
@@ -866,28 +808,28 @@ ReflectionValueType ReflectionDefinition<T, Allocator>::BaseValueContainer<T2>::
 
 template <class T, class Allocator>
 template <class T2>
-void ReflectionDefinition<T, Allocator>::BaseValueContainer<T2>::set(const char* value, T* object)
+void ReflectionDefinition<T, Allocator>::BaseValueContainer<T2>::get(void* out, const void* object) const
 {
-	_value_ptr->set(value, object);
+	get(out, reinterpret_cast<const T*>(object));
 }
 
 template <class T, class Allocator>
 template <class T2>
-void ReflectionDefinition<T, Allocator>::BaseValueContainer<T2>::set(unsigned int value, T* object)
+void ReflectionDefinition<T, Allocator>::BaseValueContainer<T2>::get(void* out, const T* object) const
 {
-	_value_ptr->set(value, object);
+	_value_ptr->get(out, static_cast<const T2*>(object));
 }
 
 template <class T, class Allocator>
 template <class T2>
-void ReflectionDefinition<T, Allocator>::BaseValueContainer<T2>::set(int value, T* object)
+void ReflectionDefinition<T, Allocator>::BaseValueContainer<T2>::set(const void* value, void* object)
 {
-	_value_ptr->set(value, object);
+	set(value, reinterpret_cast<T*>(object));
 }
 
 template <class T, class Allocator>
 template <class T2>
-void ReflectionDefinition<T, Allocator>::BaseValueContainer<T2>::set(double value, T* object)
+void ReflectionDefinition<T, Allocator>::BaseValueContainer<T2>::set(const void* value, T* object)
 {
-	_value_ptr->set(value, object);
+	_value_ptr->set(value, static_cast<T2*>(object));
 }

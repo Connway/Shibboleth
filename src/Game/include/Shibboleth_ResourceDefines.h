@@ -30,23 +30,6 @@ THE SOFTWARE.
 #include <Gaff_RefPtr.h>
 #include <Gaff_Image.h>
 
-//#define TEX_LOADER_NORMALIZED 1
-//#define TEX_LOADER_CUBEMAP 2
-//#define TEX_LOADER_SRGBA 4
-//#define TEX_LOADER_IMAGE_ONLY 8
-//#define TEX_LOADER_NO_SRVS 16
-//#define TEX_LOADER_NO_SAMPLERS 32
-
-#define EXTRACT_DISPLAY_TAGS(display_tags, out_tags) \
-	display_tags.forEachInArray([&](size_t, const Gaff::JSON& value) -> bool \
-	{ \
-		if (!value.isString()) { \
-			return true; \
-		} \
-		out_tags |= g_DisplayTags_Ref_Def.getValue(value.getString()); \
-		return false; \
-	})
-
 namespace Gleam
 {
 	class IShaderResourceView;
@@ -103,6 +86,20 @@ struct ProgramData : public Gaff::IVirtualDestructor
 {
 	ResourceWrapper<ShaderData> shaders[Gleam::IShader::SHADER_TYPE_SIZE];
 	Array<ProgramPtr> programs;
+};
+
+struct RenderTargetData : public Gaff::IVirtualDestructor
+{
+	Array<RenderTargetPtr> render_targets;
+	Array<TexturePtr> textures;
+	Array<TexturePtr> depths;
+	Array<ShaderResourceViewPtr> texture_srvs;
+	Array<ShaderResourceViewPtr> depth_srvs;
+
+	unsigned int width;
+	unsigned int height;
+	unsigned int device;
+	unsigned short tags;
 };
 
 typedef SingleDataWrapper< Array<ProgramBuffersPtr> > ProgramBuffersData;

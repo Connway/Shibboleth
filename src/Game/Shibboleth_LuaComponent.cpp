@@ -27,7 +27,7 @@ THE SOFTWARE.
 
 NS_SHIBBOLETH
 
-COMP_REF_DEF_SAVE(LuaComponent, g_Ref_Def);
+COMP_REF_DEF_SAVE(LuaComponent, gRefDef);
 REF_IMPL_REQ(LuaComponent);
 
 REF_IMPL_SHIB(LuaComponent)
@@ -46,7 +46,7 @@ LuaComponent::~LuaComponent(void)
 
 bool LuaComponent::load(const Gaff::JSON& json)
 {
-	g_Ref_Def.read(json, this);
+	gRefDef.read(json, this);
 	assert(_lua_file.size());
 	_script_res = _res_mgr.requestResource(_lua_file.getBuffer());
 	return true;

@@ -115,13 +115,20 @@ THE SOFTWARE.
 #define UINT_FAIL static_cast<unsigned int>(-1)  //!< Returned from functions that use unsigned int's, but can potentially fail
 #define DYNAMICEXPORT_C extern "C" DYNAMICEXPORT //!< Exports a function with C-style symbol names.
 
+#define GAFF_STR_HELPER(x) #x
+#define GAFF_STR(x) GAFF_STR_HELPER(x)
+
+#if defined(_WIN32) || defined(_WIN64)
+	#define WARNING(msg) __pragma(message(__FILE__":(" GAFF_STR(__LINE__)") WARNING - " msg))
+#else
+	#define WARNING(msg) _Pragma(message(__FILE__":(" GAFF_STR(__LINE__)") WARNING - " msg))
+#endif
+
 NS_GAFF
 
 #if defined(__LP64__) || defined(_WIN64)
-	typedef long long OffsetType; //!< Integer type that can hold a pointer on the target platform.
 	#define PLATFORM_64_BIT
 #elif defined(__LP32__) || defined(_WIN32)
-	typedef int OffsetType; //!< Integer type that can hold a pointer on the target platform.
 	#define PLATFORM_32_BIT
 #else
 	#error "Cannot deduce platform bit-age."

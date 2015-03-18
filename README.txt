@@ -31,9 +31,10 @@ Includes Visual Studio 2013 solution/project files and should compile out of the
     NOTES
 =============
 
-====================
-    KNOWN ISSUES
-====================
+============================
+    KNOWN ISSUES / TODOS
+============================
 
-It's not finished yet and development isn't far enough along for some demos.
+A lot of data structures' member variables are organized for memory instead of hotness. This could have performance implications if cache misses are frequent.
+
 GameStates DLL takes a while to link sometimes.

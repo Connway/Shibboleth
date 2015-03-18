@@ -58,7 +58,7 @@ ENUM_REF_IMPL_SHIB(DisplayTags)
 .addValue("DT_16", DT_16)
 ;
 
-static DisplayTags g_Display_Tags_Values[] = {
+static DisplayTags gDisplayTagsValues[] = {
 	DT_ALL, DT_1, DT_2, DT_3, DT_4, DT_5, DT_6, DT_7, DT_8, DT_9, DT_10,
 	DT_11, DT_12, DT_13, DT_14, DT_15, DT_16
 };
@@ -149,7 +149,7 @@ bool RenderManager::init(const char* module)
 		}
 
 		// Reset reflection definition
-		g_DisplayTags_Ref_Def = Gaff::EnumRefDef<DisplayTags, ProxyAllocator>("DisplayTags", ProxyAllocator("Reflection"));
+		ENUM_REF_DEF_RETRIEVE(DisplayTags) = Gaff::EnumRefDef<DisplayTags, ProxyAllocator>("DisplayTags", ProxyAllocator("Reflection"));
 
 		bool ret = display_tags.forEachInArray([&](size_t index, const Gaff::JSON& value) -> bool
 		{
@@ -158,7 +158,7 @@ bool RenderManager::init(const char* module)
 				return true;
 			}
 
-			g_DisplayTags_Ref_Def.addValue(value.getString(), g_Display_Tags_Values[index]);
+			ENUM_REF_DEF_RETRIEVE(DisplayTags).addValue(value.getString(), gDisplayTagsValues[index]);
 
 			return false;
 		});
@@ -375,123 +375,107 @@ Gleam::IMesh* RenderManager::createMesh(void)
 	return _graphics_functions.create_mesh();
 }
 
-size_t RenderManager::getNumRenderTargets(void) const
-{
-	return _render_target_data.size();
-}
+//unsigned int RenderManager::createRT(unsigned int width, unsigned int height, unsigned int device, Gleam::ITexture::FORMAT format, const AString& name, unsigned short tags)
+//{
+//	// We're about to do stuff to the Render Devices, lock it so that no one can mess with it
+//	Gaff::ScopedLock<Gaff::SpinLock> scoped_lock(_rd_lock);
+//	//data.device_data.resize(_render_device->getNumDevices());
+//
+//	RenderData rd;
+//
+//	//for (auto it = data.device_data.begin(); it != data.device_data.end(); ++it) {
+//		//_render_device->setCurrentDevice(it - data.device_data.begin());
+//		_render_device->setCurrentDevice(device);
+//		rd.output = createTexture();
+//
+//		if (!rd.output) {
+//			// log error
+//			return UINT_FAIL;
+//		}
+//
+//		if (!rd.output->init2D(*_render_device, width, height, format)) {
+//			// log error
+//			return UINT_FAIL;
+//		}
+//
+//		rd.output_srv = createShaderResourceView();
+//
+//		if (!rd.output_srv) {
+//			// log error
+//			return UINT_FAIL;
+//		}
+//
+//		if (!rd.output_srv->init(*_render_device, rd.output.get())) {
+//			// log error
+//			return UINT_FAIL;
+//		}
+//
+//		rd.render_target = createRenderTarget();
+//
+//		if (!rd.render_target) {
+//			// log error
+//			return UINT_FAIL;
+//		}
+//
+//		if (!rd.render_target->addTexture(*_render_device, rd.output.get())) {
+//			// log error
+//			return UINT_FAIL;
+//		}
+//	//}
+//
+//	RenderTargetData data = {
+//		rd, name, width,
+//		height, tags
+//	};
+//
+//	_render_target_data.push(data);
+//
+//	return static_cast<unsigned int>(_render_target_data.size() - 1);
+//}
 
-RenderManager::RenderData& RenderManager::getRenderData(unsigned int rt_index)
-{
-	assert(rt_index < _render_target_data.size());
-	return _render_target_data[rt_index].render_data;
-}
-
-unsigned int RenderManager::createRT(unsigned int width, unsigned int height, unsigned int device, Gleam::ITexture::FORMAT format, const AString& name, unsigned short tags)
-{
-	// We're about to do stuff to the Render Devices, lock it so that no one can mess with it
-	Gaff::ScopedLock<Gaff::SpinLock> scoped_lock(_rd_lock);
-	//data.device_data.resize(_render_device->getNumDevices());
-
-	RenderData rd;
-
-	//for (auto it = data.device_data.begin(); it != data.device_data.end(); ++it) {
-		//_render_device->setCurrentDevice(it - data.device_data.begin());
-		_render_device->setCurrentDevice(device);
-		rd.output = createTexture();
-
-		if (!rd.output) {
-			// log error
-			return UINT_FAIL;
-		}
-
-		if (!rd.output->init2D(*_render_device, width, height, format)) {
-			// log error
-			return UINT_FAIL;
-		}
-
-		rd.output_srv = createShaderResourceView();
-
-		if (!rd.output_srv) {
-			// log error
-			return UINT_FAIL;
-		}
-
-		if (!rd.output_srv->init(*_render_device, rd.output.get())) {
-			// log error
-			return UINT_FAIL;
-		}
-
-		rd.render_target = createRenderTarget();
-
-		if (!rd.render_target) {
-			// log error
-			return UINT_FAIL;
-		}
-
-		if (!rd.render_target->addTexture(*_render_device, rd.output.get())) {
-			// log error
-			return UINT_FAIL;
-		}
-	//}
-
-	RenderTargetData data = {
-		rd, name, width,
-		height, tags
-	};
-
-	_render_target_data.push(data);
-
-	return static_cast<unsigned int>(_render_target_data.size() - 1);
-}
-
-bool RenderManager::createRTDepth(size_t rt_index, Gleam::ITexture::FORMAT format)
-{
-	assert(rt_index < _render_target_data.size());
-	RenderTargetData& data = _render_target_data[rt_index];
-
-	// We're about to do stuff to the Render Devices, lock it so that no one can mess with it
-	Gaff::ScopedLock<Gaff::SpinLock> scoped_lock(_rd_lock);
-
-	//for (auto it = data.device_data.begin(); it != data.device_data.end(); ++it) {
-		//_render_device->setCurrentDevice(it - data.device_data.begin());
-		_render_device->setCurrentDevice(data.device);
-		data.render_data.depth = createTexture();
-
-		if (!data.render_data.depth) {
-			// log error
-			return false;
-		}
-
-		if (!data.render_data.depth->init2D(*_render_device, data.width, data.height, format)) {
-			// log error
-			return false;
-		}
-
-		data.render_data.depth_srv = createShaderResourceView();
-
-		if (!data.render_data.depth_srv) {
-			// log error
-			return false;
-		}
-
-		if (!data.render_data.depth_srv->init(*_render_device, data.render_data.depth.get())) {
-			// log error
-			return false;
-		}
-
-		if (!data.render_data.render_target->addDepthStencilBuffer(*_render_device, data.render_data.depth.get())) {
-			// log error
-			return false;
-		}
-	//}
-
-	return true;
-}
-
-void RenderManager::deleteRenderTargets(void)
-{
-	_render_target_data.clear();
-}
+//bool RenderManager::createRTDepth(size_t rt_index, Gleam::ITexture::FORMAT format)
+//{
+//	assert(rt_index < _render_target_data.size());
+//	RenderTargetData& data = _render_target_data[rt_index];
+//
+//	// We're about to do stuff to the Render Devices, lock it so that no one can mess with it
+//	Gaff::ScopedLock<Gaff::SpinLock> scoped_lock(_rd_lock);
+//
+//	//for (auto it = data.device_data.begin(); it != data.device_data.end(); ++it) {
+//		//_render_device->setCurrentDevice(it - data.device_data.begin());
+//		_render_device->setCurrentDevice(data.device);
+//		data.render_data.depth = createTexture();
+//
+//		if (!data.render_data.depth) {
+//			// log error
+//			return false;
+//		}
+//
+//		if (!data.render_data.depth->init2D(*_render_device, data.width, data.height, format)) {
+//			// log error
+//			return false;
+//		}
+//
+//		data.render_data.depth_srv = createShaderResourceView();
+//
+//		if (!data.render_data.depth_srv) {
+//			// log error
+//			return false;
+//		}
+//
+//		if (!data.render_data.depth_srv->init(*_render_device, data.render_data.depth.get())) {
+//			// log error
+//			return false;
+//		}
+//
+//		if (!data.render_data.render_target->addDepthStencilBuffer(*_render_device, data.render_data.depth.get())) {
+//			// log error
+//			return false;
+//		}
+//	//}
+//
+//	return true;
+//}
 
 int RenderManager::getDisplayModeID(unsigned int width, unsigned int height, unsigned int refresh_rate, unsigned int adapter_id, unsigned int display_id)
 {

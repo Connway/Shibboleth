@@ -24,6 +24,8 @@ THE SOFTWARE.
 
 #include "Gleam_Plane_SIMD.h"
 
+WARNING("SIMD data structures are potentially going to be deprecated.")
+
 NS_GLEAM
 
 //class Matrix4x4SIMD;

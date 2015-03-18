@@ -28,16 +28,35 @@ THE SOFTWARE.
 
 NS_SHIBBOLETH
 
+//REF_IMPL_SHIB(CameraComponent::Viewport)
+//.addFloat("X", &CameraComponent::Viewport::x)
+//.addFloat("Y", &CameraComponent::Viewport::y)
+//.addFloat("Width", &CameraComponent::Viewport::width)
+//.addFloat("Height", &CameraComponent::Viewport::height)
+//;
+
 REF_IMPL_REQ(CameraComponent);
 REF_IMPL_SHIB(CameraComponent)
 .addBaseClassInterfaceOnly<CameraComponent>()
-.addString("Render Target Name", &CameraComponent::_render_target_name)
+//.addArray("Viewport", &CameraComponent::_viewport)
+//.addArray("Clear Color", &CameraComponent::_clear_color)
+.addUInt("Render Order", &CameraComponent::_render_order)
+.addFloat("Field of View", &CameraComponent::_fov)
 .addBool("Active", &CameraComponent::_active)
 ;
 
-CameraComponent::CameraComponent(IApp& app):
-	_app(app), _display_tags(0), _active(true)
+CameraComponent::CameraComponent(void):
+	_fov(Gaff::DegToRad * 90.0f), _active(true)
 {
+	_clear_color[0] = 0.0f;
+	_clear_color[1] = 0.0f;
+	_clear_color[2] = 0.0f;
+	_clear_color[3] = 1.0f;
+
+	_viewport[0] = 0.0f;
+	_viewport[1] = 0.0f;
+	_viewport[2] = 1.0f;
+	_viewport[3] = 1.0f;
 }
 
 CameraComponent::~CameraComponent(void)
@@ -46,51 +65,38 @@ CameraComponent::~CameraComponent(void)
 
 bool CameraComponent::load(const Gaff::JSON& json)
 {
-	g_Ref_Def.read(json, this);
-
-	//RenderManager& render_mgr = _app.getManagerT<RenderManager>("Render Manager");
-
-	//unsigned int rt_index = render_mgr.createRT(800, 600, Gleam::ITexture::RGBA_8_UNORM, _render_target_name);
-
-	//if (rt_index == SIZE_T_FAIL) {
-	//	// log error
-	//	return false;
-	//}
-
-	// cache render target
+	gRefDef.read(json, this);
+	// request render target resource
 
 	return true;
 }
 
 bool CameraComponent::save(Gaff::JSON& json)
 {
-	g_Ref_Def.write(json, this);
+	gRefDef.write(json, this);
 
-	Gaff::JSON display_tags = Gaff::JSON::createArray();
-	unsigned int array_size = 0;
+	Gaff::JSON viewport = Gaff::JSON::createArray();
+	json.setObject("Viewport", viewport);
 
-	for (unsigned int i = 0; i < g_DisplayTags_Ref_Def.getNumEntries(); ++i) {
-		auto entry = g_DisplayTags_Ref_Def.getEntry(i);
-
-		if (entry.second & _display_tags) {
-			display_tags.setObject(array_size, Gaff::JSON::createString(entry.first.getBuffer()));
-			++array_size;
-		}
-	}
-
-	json.setObject("display_tags", display_tags);
+	Gaff::JSON clear_color = Gaff::JSON::createArray();
+	json.setObject("Clear Color", clear_color);
 
 	return true;
 }
 
-const AString& CameraComponent::getRenderTargetName(void) const
+const float* CameraComponent::getViewport(void) const
 {
-	return _render_target_name;
+	return _viewport;
 }
 
 bool CameraComponent::isActive(void) const
 {
 	return _active;
+}
+
+float CameraComponent::getFOV(void) const
+{
+	return _fov;
 }
 
 NS_END

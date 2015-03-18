@@ -46,7 +46,7 @@ NS_GAFF
 
 	\brief Message receipts are used to manage registration for a message.
 
-	\note All message classes must have a public, static AHashString variable called g_Hash.
+	\note All message classes must have a public, static AHashString variable called gHash.
 */
 typedef RefPtr<IRefCounted> MessageReceipt;
 
