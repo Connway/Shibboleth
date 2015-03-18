@@ -147,14 +147,14 @@ void RenderTargetD3D::unbind(IRenderDevice& rd)
 	rd3d.getActiveDeviceContext()->OMSetRenderTargets(0, nullptr, nullptr);
 }
 
-void RenderTargetD3D::clear(IRenderDevice& rd, unsigned int clear_flags, float clear_depth, unsigned char clear_stencil)
+void RenderTargetD3D::clear(IRenderDevice& rd, unsigned int clear_flags, float clear_depth, unsigned char clear_stencil, float* clear_color)
 {
 	assert(rd.isD3D());
 	IRenderDeviceD3D& rd3d = reinterpret_cast<IRenderDeviceD3D&>(*(reinterpret_cast<char*>(&rd) + sizeof(IRenderDevice)));
 
 	if (clear_flags | CLEAR_COLOR) {
 		for (size_t i = 0; i < _render_target_views.size(); ++i) {
-			rd3d.getActiveDeviceContext()->ClearRenderTargetView(_render_target_views[i], rd3d.getClearColor());
+			rd3d.getActiveDeviceContext()->ClearRenderTargetView(_render_target_views[i], (clear_color) ? clear_color : rd3d.getClearColor());
 		}
 	}
 

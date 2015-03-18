@@ -242,13 +242,13 @@ MessageReceipt MessageBroadcaster<Allocator>::listen(Object* object, void (Objec
 	IFuncPtr ptr(function_binder);
 
 	_listener_lock.lock();
-	ScopedWriteLock<ReadWriteSpinLock> scoped_lock(_listeners[Message::g_Hash].first);
+	ScopedWriteLock<ReadWriteSpinLock> scoped_lock(_listeners[Message::gHash].first);
 	_listener_lock.unlock();
 
-	ListenerList& listeners = _listeners[Message::g_Hash].second;
+	ListenerList& listeners = _listeners[Message::gHash].second;
 	listeners.push(ptr);
 
-	Receipt* temp = _allocator.template allocT<Receipt>(_remover, &Message::g_Hash, function_binder, _allocator);
+	Receipt* temp = _allocator.template allocT<Receipt>(_remover, &Message::gHash, function_binder, _allocator);
 	return MessageReceipt(temp);
 }
 
@@ -262,13 +262,13 @@ MessageReceipt MessageBroadcaster<Allocator>::listen(void (*function)(const Mess
 	IFuncPtr ptr(function_binder);
 
 	_listener_lock.lock();
-	ScopedWriteLock<ReadWriteSpinLock> scoped_lock(_listeners[Message::g_Hash].first);
+	ScopedWriteLock<ReadWriteSpinLock> scoped_lock(_listeners[Message::gHash].first);
 	_listener_lock.unlock();
 
-	ListenerList& listeners = _listeners[Message::g_Hash].second;
+	ListenerList& listeners = _listeners[Message::gHash].second;
 	listeners.push(ptr);
 
-	Receipt* temp = _allocator.template allocT<Receipt>(_remover, &Message::g_Hash, function_binder, _allocator);
+	Receipt* temp = _allocator.template allocT<Receipt>(_remover, &Message::gHash, function_binder, _allocator);
 	return MessageReceipt(temp);
 }
 
@@ -282,13 +282,13 @@ MessageReceipt MessageBroadcaster<Allocator>::listen(const FunctorT& functor)
 	IFuncPtr ptr(function_binder);
 
 	_listener_lock.lock();
-	ScopedWriteLock<ReadWriteSpinLock> scoped_lock(_listeners[Message::g_Hash].first);
+	ScopedWriteLock<ReadWriteSpinLock> scoped_lock(_listeners[Message::gHash].first);
 	_listener_lock.unlock();
 
-	ListenerList& listeners = _listeners[Message::g_Hash].second;
+	ListenerList& listeners = _listeners[Message::gHash].second;
 	listeners.push(ptr);
 
-	Receipt* temp = _allocator.template allocT<Receipt>(_remover, &Message::g_Hash, function_binder, _allocator);
+	Receipt* temp = _allocator.template allocT<Receipt>(_remover, &Message::gHash, function_binder, _allocator);
 	return MessageReceipt(temp);
 }
 
@@ -299,7 +299,7 @@ void MessageBroadcaster<Allocator>::broadcast(const Message& message)
 	Message* msg = _allocator.template allocT<Message>(message);
 
 	ScopedLock<SpinLock> scoped_lock(_message_lock);
-	_message_queue.push(MakePair(Message::g_Hash, (void*)msg));
+	_message_queue.push(MakePair(Message::gHash, (void*)msg));
 }
 
 /*!

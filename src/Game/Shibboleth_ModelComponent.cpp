@@ -39,11 +39,11 @@ THE SOFTWARE.
 
 NS_SHIBBOLETH
 
-COMP_REF_DEF_SAVE(ModelComponent, g_Ref_Def);
+COMP_REF_DEF_SAVE(ModelComponent, gRefDef);
 REF_IMPL_REQ(ModelComponent);
 
 REF_IMPL_SHIB(ModelComponent)
-.addBaseClass<ModelComponent>(ModelComponent::g_Hash)
+.addBaseClass<ModelComponent>(ModelComponent::gHash)
 ;
 
 ModelComponent::ModelComponent(IApp& app):
@@ -113,7 +113,7 @@ bool ModelComponent::load(const Gaff::JSON& json)
 	Gaff::JSON sampler_file = json["Sampler File"];
 	Gaff::JSON model_file = json["Model File"];
 
-	g_Ref_Def.read(json, this);
+	gRefDef.read(json, this);
 
 	if (material_file.isString()) {
 		_material_res = _res_mgr.requestResource(material_file.getString());

@@ -33,6 +33,16 @@ THE SOFTWARE.
 #include <Gaff_SmartPtr.h>
 #include <Gaff_SpinLock.h>
 
+#define EXTRACT_DISPLAY_TAGS(display_tags, out_tags) \
+	display_tags.forEachInArray([&](size_t, const Gaff::JSON& value) -> bool \
+	{ \
+		if (!value.isString()) { \
+			return true; \
+		} \
+		out_tags |= ENUM_REF_DEF_RETRIEVE(DisplayTags).getValue(value.getString()); \
+		return false; \
+	})
+
 namespace Gaff
 {
 	class JSON;
@@ -94,26 +104,6 @@ public:
 		unsigned short tags;
 	};
 
-	struct RenderData
-	{
-		RenderTargetPtr render_target;
-		TexturePtr output;
-		TexturePtr depth;
-		SRVPtr output_srv;
-		SRVPtr depth_srv;
-	};
-
-	struct RenderTargetData
-	{
-		//Array<RenderData> device_data;
-		RenderData render_data;
-		AString name;
-		unsigned int width;
-		unsigned int height;
-		unsigned int device;
-		unsigned short tags;
-	};
-
 	RenderManager(IApp& app);
 	~RenderManager(void);
 
@@ -157,22 +147,6 @@ public:
 	INLINE Gleam::IBuffer* createBuffer(void);
 	INLINE Gleam::IModel* createModel(void);
 	INLINE Gleam::IMesh* createMesh(void);
-
-	INLINE size_t getNumRenderTargets(void) const;
-
-	// Don't hold on to this reference if you plan on dynamically creating cameras.
-	// Just copy the structure instead. Just make a copy.
-	INLINE RenderData& getRenderData(unsigned int rt_index);
-
-	unsigned int createRT(
-		unsigned int width, unsigned int height, unsigned int device,
-		Gleam::ITexture::FORMAT format = Gleam::ITexture::RGBA_8_UNORM,
-		const AString& name = AString(), unsigned short tags = 0
-	);
-
-	bool createRTDepth(size_t rt_index, Gleam::ITexture::FORMAT format = Gleam::ITexture::DEPTH_16_UNORM);
-
-	INLINE void deleteRenderTargets(void);
 
 private:
 	struct GraphicsFunctions
@@ -222,8 +196,6 @@ private:
 
 	GraphicsFunctions _graphics_functions;
 	Array<WindowData> _windows;
-
-	Array<RenderTargetData> _render_target_data;
 
 	Gaff::SmartPtr<Gleam::IRenderDevice, ProxyAllocator> _render_device;
 	DynamicLoader::ModulePtr _gleam_module;

@@ -26,7 +26,7 @@ THE SOFTWARE.
 
 NS_SHIBBOLETH
 
-AHashString LoadingMessage::g_Hash("LoadingMessage");
+AHashString LoadingMessage::gHash("LoadingMessage");
 
 LoadingMessage::LoadingMessage(LoadingState _state, float _progress):
 	progress(_progress), state(_state)

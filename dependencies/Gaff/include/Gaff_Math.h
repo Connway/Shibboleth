@@ -27,8 +27,8 @@ THE SOFTWARE.
 NS_GAFF
 
 const float Pi = 3.141592654f;
-const float DegToRad = Pi / 180.0f;
-const float RadToDeg = 180.0f / Pi;
+const float DegToRad = Pi / 180.0f; //!< Scalar for converting an angle from Degrees to Radians.
+const float RadToDeg = 180.0f / Pi; //!< Scalar for converting an angle from Radians to Degrees;
 
 /*!
 	\brief Returns the minimum of \a v1 and \a v2

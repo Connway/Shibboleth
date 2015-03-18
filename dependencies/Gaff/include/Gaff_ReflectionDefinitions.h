@@ -42,20 +42,22 @@ THE SOFTWARE.
 #endif
 
 #define VAR_CONTAINER(name, type) \
-	class name : public IValueContainer \
+	class name : public ValueContainerBase \
 	{ \
 	public: \
 		typedef type (T::*Getter)(void) const; \
 		typedef void (T::*Setter)(type); \
-		name(const char* key, Getter getter, Setter setter); \
-		name(const char* key, type T::* var); \
+		name(const char* key, Getter getter, Setter setter, const Allocator& allocator); \
+		name(const char* key, type T::* var, const Allocator& allocator); \
 		void read(const JSON& json, T* object); \
 		void write(JSON& json, T* object) const; \
 		ReflectionValueType getType(void) const; \
-		void set(const char* value, T* object); \
-		void set(unsigned int value, T* object); \
-		void set(int value, T* object); \
-		void set(double value, T* object); \
+		void get(void* out, const void* object) const; \
+		void get(void* out, const T* object) const; \
+		void set(const void* value, void* object); \
+		void set(const void* value, T* object); \
+		bool isFixedArray(void) const { return false; } \
+		bool isArray(void) const { return false; } \
 	private: \
 		type T::* _var; \
 		Getter _getter; \
@@ -63,20 +65,22 @@ THE SOFTWARE.
 	}
 
 #define VAR_CONTAINER_REF(name, type) \
-	class name : public IValueContainer \
+	class name : public ValueContainerBase \
 	{ \
 	public: \
 		typedef const type& (T::*Getter)(void) const; \
 		typedef void (T::*Setter)(const type&); \
-		name(const char* key, Getter getter, Setter setter); \
-		name(const char* key, type T::* var); \
+		name(const char* key, Getter getter, Setter setter, const Allocator& allocator); \
+		name(const char* key, type T::* var, const Allocator& allocator); \
 		void read(const JSON& json, T* object); \
 		void write(JSON& json, T* object) const; \
 		ReflectionValueType getType(void) const; \
-		void set(const char* value, T* object); \
-		void set(unsigned int value, T* object); \
-		void set(int value, T* object); \
-		void set(double value, T* object); \
+		void get(void* out, const void* object) const; \
+		void get(void* out, const T* object) const; \
+		void set(const void* value, void* object); \
+		void set(const void* value, T* object); \
+		bool isFixedArray(void) const { return false; } \
+		bool isArray(void) const { return false; } \
 	private: \
 		type T::* _var; \
 		Getter _getter; \
@@ -85,11 +89,9 @@ THE SOFTWARE.
 
 #define VAR_CONTAINER_CONSTRUCTOR(name, type) \
 	template <class T, class Allocator> \
-	ReflectionDefinition<T, Allocator>::name::name(const char* key, Getter getter, Setter setter): IValueContainer(key), _getter(getter), _setter(setter), _var(nullptr) {} \
+	ReflectionDefinition<T, Allocator>::name::name(const char* key, Getter getter, Setter setter, const Allocator& allocator): ValueContainerBase(key, allocator), _var(nullptr), _getter(getter), _setter(setter) {} \
 	template <class T, class Allocator> \
-	ReflectionDefinition<T, Allocator>::name::name(const char* key, type T::* var): IValueContainer(key), _getter(nullptr), _setter(nullptr), _var(var) {}
-
-#define VAR_CONTAINER_CONSTRUCTOR_GET_SET(name, type) \
+	ReflectionDefinition<T, Allocator>::name::name(const char* key, type T::* var, const Allocator& allocator): ValueContainerBase(key, allocator), _var(var), _getter(nullptr), _setter(nullptr) {}
 
 #define VAR_CONTAINER_READ(name) \
 	template <class T, class Allocator> \
@@ -106,21 +108,141 @@ THE SOFTWARE.
 		return type; \
 	}
 
-#define VAR_CONTAINER_SET_STRING(name) \
+#define VAR_CONTAINER_SET(name) \
 	template <class T, class Allocator> \
-	void ReflectionDefinition<T, Allocator>::name::set(const char* value, T* object)
+	void ReflectionDefinition<T, Allocator>::name::set(const void* value, void* object) { set(value, reinterpret_cast<T*>(object)); }\
+	template <class T, class Allocator> \
+	void ReflectionDefinition<T, Allocator>::name::set(const void* value, T* object)
 
-#define VAR_CONTAINER_SET_UINT(name) \
+#define VAR_CONTAINER_GET(name) \
 	template <class T, class Allocator> \
-	void ReflectionDefinition<T, Allocator>::name::set(unsigned int value, T* object)
+	void ReflectionDefinition<T, Allocator>::name::get(void* out, const void* object) const { get(out, reinterpret_cast<const T*>(object)); }\
+	template <class T, class Allocator> \
+	void ReflectionDefinition<T, Allocator>::name::get(void* out, const T* object) const 
 
-#define VAR_CONTAINER_SET_INT(name) \
-	template <class T, class Allocator> \
-	void ReflectionDefinition<T, Allocator>::name::set(int value, T* object)
 
-#define VAR_CONTAINER_SET_DOUBLE(name) \
+#define ARRAY_CONTAINER(name, type) \
+	class name : public ValueContainerBase \
+	{ \
+	public: \
+		typedef const Array<type, Allocator>& (T::*Getter)(void) const; \
+		typedef void (T::*Setter)(const Array<type, Allocator>&); \
+		name(const char* key, Getter getter, Setter setter, const Allocator& allocator); \
+		name(const char* key, Array<type, Allocator> T::* var, const Allocator& allocator); \
+		void read(const JSON& json, T* object); \
+		void write(JSON& json, T* object) const; \
+		ReflectionValueType getType(void) const; \
+		void get(void* out, size_t index, const void* object); \
+		void get(void* out, size_t index, const T* object); \
+		void get(void* out, const void* object) const; \
+		void get(void* out, const T* object) const; \
+		void set(const void* value, size_t index, void* object); \
+		void set(const void* value, size_t index, T* object); \
+		void set(const void* value, void* object); \
+		void set(const void* value, T* object); \
+		size_t size(const void* object) const; \
+		size_t size(const T* object) const; \
+		void resize(size_t new_size, void* object); \
+		void resize(size_t new_size, T* object); \
+		void swap(size_t index_1, size_t index_2, void* object); \
+		void swap(size_t index_1, size_t index_2, T* object); \
+		bool isFixedArray(void) const { return false; } \
+		bool isArray(void) const { return true; } \
+	private: \
+		Array<type, Allocator> T::* _var; \
+		Getter _getter; \
+		Setter _setter; \
+		Allocator _allocator; \
+	}
+
+#define ARRAY_CONTAINER_FIXED(name, type) \
+	template <size_t array_size> \
+	class name : public ValueContainerBase \
+	{ \
+	public: \
+		typedef const type* (T::*Getter)(void) const; \
+		typedef void (T::*Setter)(const type*); \
+		name(const char* key, Getter getter, Setter setter, const Allocator& allocator); \
+		name(const char* key, type (T::*var)[array_size], const Allocator& allocator); \
+		void read(const JSON& json, T* object); \
+		void write(JSON& json, T* object) const; \
+		ReflectionValueType getType(void) const; \
+		void get(void* out, size_t index, const void* object); \
+		void get(void* out, size_t index, const T* object); \
+		void get(void* out, const void* object) const; \
+		void get(void* out, const T* object) const; \
+		void set(const void* value, size_t index, void* object); \
+		void set(const void* value, size_t index, T* object); \
+		void set(const void* value, void* object); \
+		void set(const void* value, T* object); \
+		size_t size(const void* object) const; \
+		size_t size(const T* object) const; \
+		void swap(size_t index_1, size_t index_2, void* object); \
+		void swap(size_t index_1, size_t index_2, T* object); \
+		bool isFixedArray(void) const { return true; } \
+		bool isArray(void) const { return true; } \
+	private: \
+		type (T::*_var)[array_size]; \
+		Getter _getter; \
+		Setter _setter; \
+	}
+
+#define ARRAY_CONTAINER_CONSTRUCTOR(name, type) \
 	template <class T, class Allocator> \
-	void ReflectionDefinition<T, Allocator>::name::set(double value, T* object)
+	ReflectionDefinition<T, Allocator>::name::name(const char* key, Getter getter, Setter setter, const Allocator& allocator): ValueContainerBase(key, allocator), _var(nullptr), _getter(getter), _setter(setter), _allocator(allocator) {} \
+	template <class T, class Allocator> \
+	ReflectionDefinition<T, Allocator>::name::name(const char* key, Array<type, Allocator> T::* var, const Allocator& allocator): ValueContainerBase(key, allocator), _var(var), _getter(nullptr), _setter(nullptr), _allocator(allocator) {}
+
+#define ARRAY_CONTAINER_READ VAR_CONTAINER_READ
+#define ARRAY_CONTAINER_WRITE VAR_CONTAINER_WRITE
+#define ARRAY_CONTAINER_VAL_TYPE VAR_CONTAINER_VAL_TYPE
+#define ARRAY_CONTAINER_SET VAR_CONTAINER_SET
+#define ARRAY_CONTAINER_GET VAR_CONTAINER_GET
+
+
+#define ARRAY_CONTAINER_FIXED_CONSTRUCTOR(name, type) \
+	template <class T, class Allocator> \
+	template <size_t array_size> \
+	ReflectionDefinition<T, Allocator>::name::name(const char* key, Getter getter, Setter setter, const Allocator& allocator): ValueContainerBase(key, allocator), _var(nullptr), _getter(getter), _setter(setter) {} \
+	template <class T, class Allocator> \
+	template <size_t array_size> \
+	ReflectionDefinition<T, Allocator>::name::name(const char* key, type (T::*var)[array_size, const Allocator& allocator): ValueContainerBase(key, allocator), _var(var), _getter(nullptr), _setter(nullptr) {}
+
+#define ARRAY_CONTAINER_FIXED_READ \
+	template <class T, class Allocator> \
+	template <size_t array_size> \
+	void ReflectionDefinition<T, Allocator>::name::read(const JSON& json, T* object)
+
+#define ARRAY_CONTAINER_FIXED_WRITE \
+	template <class T, class Allocator> \
+	template <size_t array_size> \
+	void ReflectionDefinition<T, Allocator>::name::write(JSON& json, T* object) const
+
+#define ARRAY_CONTAINER_FIXED_VAL_TYPE(name, type) \
+	template <class T, class Allocator> \
+	template <size_t array_size> \
+	ReflectionValueType ReflectionDefinition<T, Allocator>::name::getType(void) const \
+	{ \
+		return type; \
+	}
+
+#define ARRAY_CONTAINER_FIXED_SET(name) \
+	template <class T, class Allocator> \
+	template <size_t array_size> \
+	void ReflectionDefinition<T, Allocator>::name::set(const void* value, void* object) { set(value, reinterpret_cast<T*>(object)); }\
+	template <class T, class Allocator> \
+	template <size_t array_size> \
+	void ReflectionDefinition<T, Allocator>::name::set(const void* value, T* object)
+
+#define ARRAY_CONTAINER_FIXED_GET(name) \
+	template <class T, class Allocator> \
+	template <size_t array_size> \
+	void ReflectionDefinition<T, Allocator>::name::get(void* out, const void* object) const { get(out, reinterpret_cast<const T*>(object)); }\
+	template <class T, class Allocator> \
+	template <size_t array_size> \
+	void ReflectionDefinition<T, Allocator>::name::get(void* out, const T* object) const
+
+
 
 NS_GAFF
 
@@ -178,7 +300,7 @@ public:
 
 	const char* getEnumName(void) const;
 
-	void setAllocator(const Allocator& allocator);
+	EnumReflectionDefinition<T, Allocator>&& setAllocator(const Allocator& allocator);
 	void clear(void);
 
 	bool isDefined(void) const;
@@ -194,44 +316,18 @@ private:
 	GAFF_NO_COPY(EnumReflectionDefinition);
 };
 
-enum ReflectionValueType
-{
-	VT_DOUBLE = 0,
-	VT_FLOAT,
-	VT_UINT,
-	VT_INT,
-	VT_USHORT,
-	VT_SHORT,
-	VT_UCHAR,
-	VT_CHAR,
-	VT_BOOL,
-	VT_ENUM,
-	VT_STRING,
-	VT_OBJECT,
-	VT_ARRAY,
-	VT_CUSTOM,
-	VT_SIZE
-};
-
 template <class T, class Allocator>
 class ReflectionDefinition : public IReflectionDefinition
 {
 public:
-	class IValueContainer
+	class ValueContainerBase : public IReflectionDefinition::IValueContainer
 	{
 	public:
-		IValueContainer(const char* key) : _key(key) {}
-		virtual ~IValueContainer(void) {}
+		ValueContainerBase(const char* key, const Allocator& allocator) : _key(key, allocator) {}
+		virtual ~ValueContainerBase(void) {}
 
 		virtual void read(const JSON& json, T* object) = 0;
 		virtual void write(JSON& json, T* object) const = 0;
-
-		virtual void set(const char*, T*) {}
-		virtual void set(unsigned int, T*) {}
-		virtual void set(int, T*) {}
-		virtual void set(double, T*) {}
-
-		virtual ReflectionValueType getType(void) const = 0;
 
 	protected:
 		AString<Allocator> _key;
@@ -276,7 +372,7 @@ public:
 	//template <class T2>
 	//ReflectionDefinition<T, Allocator>&& addArray(const char* key, Array<T2> T::* var, ReflectionDefinition<T2, Allocator> T2::* elem_ref_def);
 
-	//ReflectionDefinition<T, Allocator>&& addArray(const char* key, Array<double> T::* var);
+	ReflectionDefinition<T, Allocator>&& addArray(const char* key, Array<double> T::* var);
 	//ReflectionDefinition<T, Allocator>&& addArray(const char* key, Array<float> T::* var);
 	//ReflectionDefinition<T, Allocator>&& addArray(const char* key, Array<unsigned int> T::* var);
 	//ReflectionDefinition<T, Allocator>&& addArray(const char* key, Array<int> T::* var);
@@ -286,6 +382,14 @@ public:
 	//ReflectionDefinition<T, Allocator>&& addArray(const char* key, Array<char> T::* var);
 	//ReflectionDefinition<T, Allocator>&& addArray(const char* key, Array<bool> T::* var);
 	//ReflectionDefinition<T, Allocator>&& addArray(const char* key, Array<AString> T::* var);
+
+	//ReflectionDefinition<T, Allocator>&& addArray(const char* key, double* T::* var);
+
+	//template <unsigned int array_size>
+	//ReflectionDefinition<T, Allocator>&& addArray(const char* key, double (T::*var)[array_size]);
+
+	//template <unsigned int array_size>
+	//ReflectionDefinition<T, Allocator>&& addArray(const char* key, float (T::*var)[array_size]);
 
 	ReflectionDefinition<T, Allocator>&& addDouble(const char* key, double T::* var);
 	ReflectionDefinition<T, Allocator>&& addFloat(const char* key, float T::* var);
@@ -312,7 +416,7 @@ public:
 	ReflectionDefinition<T, Allocator>&& addBool(const char* key, bool (T::*getter)(void) const, void (T::*setter)(bool value));
 	ReflectionDefinition<T, Allocator>&& addString(const char* key, const AString<Allocator>& (T::*getter)(void) const, void (T::*setter)(const AString<Allocator>& value));
 
-	ReflectionDefinition<T, Allocator>&& addCustom(const char* key, IValueContainer* container);
+	ReflectionDefinition<T, Allocator>&& addCustom(const char* key, ValueContainerBase* container);
 
 	bool isDefined(void) const;
 	void markDefined(void);
@@ -323,7 +427,7 @@ public:
 	ReflectionDefinition<T, Allocator>&& macroFix(void);
 
 private:
-	typedef SharedPtr<IValueContainer, Allocator> ValueContainerPtr;
+	typedef SharedPtr<ValueContainerBase, Allocator> ValueContainerPtr;
 
 	VAR_CONTAINER(DoubleContainer, double);
 	VAR_CONTAINER(FloatContainer, float);
@@ -336,20 +440,29 @@ private:
 	VAR_CONTAINER(BoolContainer, bool);
 	VAR_CONTAINER_REF(StringContainer, AString<Allocator>);
 
+	ARRAY_CONTAINER(ArrayDoubleContainer, double);
+
 	template <class T2>
-	class ObjectContainer : public IValueContainer
+	class ObjectContainer : public ValueContainerBase
 	{
 	public:
 		typedef const T2& (T::*Getter)(void) const;
 		typedef void (T::*Setter)(const T2& value);
 
-		ObjectContainer(const char* key, ReflectionDefinition<T2, Allocator>& var_ref_def, Getter getter, Setter setter);
-		ObjectContainer(const char* key, T2 T::* var, ReflectionDefinition<T2, Allocator>& var_ref_def);
+		ObjectContainer(const char* key, ReflectionDefinition<T2, Allocator>& var_ref_def, Getter getter, Setter setter, const Allocator& allocator);
+		ObjectContainer(const char* key, T2 T::* var, ReflectionDefinition<T2, Allocator>& var_ref_def, const Allocator& allocator);
 
 		void read(const JSON& json, T* object);
 		void write(JSON& json, T* object) const;
 
-		void set(const T2& value, T* object);
+		void get(void* out, const void* object) const;
+		void get(void* out, const T* object) const;
+
+		void set(const void* value, void* object);
+		void set(const void* value, T* object);
+
+		bool isFixedArray(void) const;
+		bool isArray(void) const;
 
 		ReflectionValueType getType(void) const;
 
@@ -361,22 +474,26 @@ private:
 	};
 
 	template <class T2>
-	class EnumContainer : public IValueContainer
+	class EnumContainer : public ValueContainerBase
 	{
 	public:
 		typedef T2 (T::*Getter)(void) const;
 		typedef void (T::*Setter)(T2 value);
 
-		EnumContainer(const char* key, const EnumReflectionDefinition<T2, Allocator>& ref_def, Getter getter, Setter setter);
-		EnumContainer(const char* key, T2 T::* var, const EnumReflectionDefinition<T2, Allocator>& var_ref_def);
+		EnumContainer(const char* key, const EnumReflectionDefinition<T2, Allocator>& ref_def, Getter getter, Setter setter, const Allocator& allocator);
+		EnumContainer(const char* key, T2 T::* var, const EnumReflectionDefinition<T2, Allocator>& var_ref_def, const Allocator& allocator);
 
 		void read(const JSON& json, T* object);
 		void write(JSON& json, T* object) const;
 
-		void set(const char* value, T* object);
-		void set(unsigned int value, T* object);
-		void set(int value, T* object);
-		void set(double value, T* object);
+		void get(void* out, const void* object) const;
+		void get(void* out, const T* object) const;
+
+		void set(const void* value, void* object);
+		void set(const void* value, T* object);
+
+		bool isFixedArray(void) const;
+		bool isArray(void) const;
 
 		ReflectionValueType getType(void) const;
 
@@ -390,18 +507,22 @@ private:
 	};
 
 	template <class T2>
-	class BaseValueContainer : public IValueContainer
+	class BaseValueContainer : public ValueContainerBase
 	{
 	public:
-		BaseValueContainer(const char* key, const typename ReflectionDefinition<T2, Allocator>::ValueContainerPtr& value_ptr);
+		BaseValueContainer(const char* key, const typename ReflectionDefinition<T2, Allocator>::ValueContainerPtr& value_ptr, const Allocator& allocator);
 
 		void read(const JSON& json, T* object);
 		void write(JSON& json, T* object) const;
 
-		void set(const char* value, T* object);
-		void set(unsigned int value, T* object);
-		void set(int value, T* object);
-		void set(double value, T* object);
+		void get(void* out, const void* object) const;
+		void get(void* out, const T* object) const;
+
+		void set(const void* value, void* object);
+		void set(const void* value, T* object);
+
+		bool isFixedArray(void) const;
+		bool isArray(void) const;
 
 		ReflectionValueType getType(void) const;
 
@@ -448,43 +569,43 @@ public: \
 	static Gaff::ReflectionDefinition<ClassName, Allocator>& GetReflectionDefinition(void); \
 	static unsigned int GetReflectionHash(void); \
 private: \
-	static unsigned int g_Hash; \
-	static Gaff::ReflectionDefinition<ClassName, Allocator> g_Ref_Def
+	static unsigned int gHash; \
+	static Gaff::ReflectionDefinition<ClassName, Allocator> gRefDef
 
 #define CLASS_HASH(ClassName) Gaff::FNV1aHash32(#ClassName, static_cast<unsigned int>((strlen(#ClassName))))
 
 #define REF_IMPL(ClassName, Allocator) \
-unsigned int ClassName::GetReflectionHash(void) { return g_Hash; } \
-Gaff::ReflectionDefinition<ClassName, Allocator>& ClassName::GetReflectionDefinition(void) { return g_Ref_Def; } \
-unsigned int ClassName::g_Hash = CLASS_HASH(ClassName); \
-Gaff::ReflectionDefinition<ClassName, Allocator> ClassName::g_Ref_Def
+unsigned int ClassName::GetReflectionHash(void) { return gHash; } \
+Gaff::ReflectionDefinition<ClassName, Allocator>& ClassName::GetReflectionDefinition(void) { return gRefDef; } \
+unsigned int ClassName::gHash = CLASS_HASH(ClassName); \
+Gaff::ReflectionDefinition<ClassName, Allocator> ClassName::gRefDef
 
 // uses default allocator
 #define REF_IMPL_ASSIGN_DEFAULT(ClassName, Allocator) \
-unsigned int ClassName::GetReflectionHash(void) { return g_Hash; } \
-Gaff::ReflectionDefinition<ClassName, Allocator>& ClassName::GetReflectionDefinition(void) { return g_Ref_Def; } \
-unsigned int ClassName::g_Hash = CLASS_HASH(ClassName); \
-Gaff::ReflectionDefinition<ClassName, Allocator> ClassName::g_Ref_Def = Gaff::RefDef<ClassName, Allocator>(#ClassName).macroFix()
+unsigned int ClassName::GetReflectionHash(void) { return gHash; } \
+Gaff::ReflectionDefinition<ClassName, Allocator>& ClassName::GetReflectionDefinition(void) { return gRefDef; } \
+unsigned int ClassName::gHash = CLASS_HASH(ClassName); \
+Gaff::ReflectionDefinition<ClassName, Allocator> ClassName::gRefDef = Gaff::RefDef<ClassName, Allocator>(#ClassName).macroFix()
 
 #define REF_IMPL_ASSIGN(ClassName, Allocator, allocator_instance) \
-unsigned int ClassName::GetReflectionHash(void) { return g_Hash; } \
-Gaff::ReflectionDefinition<ClassName, Allocator>& ClassName::GetReflectionDefinition(void) { return g_Ref_Def; } \
-unsigned int ClassName::g_Hash = CLASS_HASH(ClassName); \
-Gaff::ReflectionDefinition<ClassName, Allocator> ClassName::g_Ref_Def = Gaff::RefDef<ClassName, Allocator>(#ClassName, allocator_instance).macroFix()
+unsigned int ClassName::GetReflectionHash(void) { return gHash; } \
+Gaff::ReflectionDefinition<ClassName, Allocator>& ClassName::GetReflectionDefinition(void) { return gRefDef; } \
+unsigned int ClassName::gHash = CLASS_HASH(ClassName); \
+Gaff::ReflectionDefinition<ClassName, Allocator> ClassName::gRefDef = Gaff::RefDef<ClassName, Allocator>(#ClassName, allocator_instance).macroFix()
 
 #define ADD_BASE_CLASS_INTERFACE_ONLY(ClassName) addBaseClass<ClassName>(CLASS_HASH(ClassName))
 
 #define REF_IMPL_REQ(ClassName) \
 void* ClassName::rawRequestInterface(unsigned int class_id) const \
 { \
-	return g_Ref_Def.getInterface(class_id, this); \
+	return gRefDef.getInterface(class_id, this); \
 }
 
-#define ENUM_REF_DEF(EnumName, Allocator) extern Gaff::EnumReflectionDefinition<EnumName, Allocator> g_##EnumName##_Ref_Def
-#define ENUM_REF_IMPL(EnumName, Allocator) Gaff::EnumReflectionDefinition<EnumName, Allocator> g_##EnumName##_Ref_Def
-#define ENUM_REF_IMPL_ASSIGN(EnumName, Allocator, allocator_instance) Gaff::EnumReflectionDefinition<EnumName, Allocator> g_##EnumName##_Ref_Def = Gaff::EnumRefDef<EnumName, Allocator>(#EnumName, allocator_instance).macroFix()
-#define ENUM_REF_IMPL_ASSIGN_DEFAULT(EnumName, Allocator, allocator_instance) Gaff::EnumReflectionDefinition<EnumName, Allocator> g_##EnumName##_Ref_Def = Gaff::EnumRefDef<EnumName, Allocator>(#EnumName).macroFix()
-#define ENUM_REF_DEF_RETRIEVE(EnumName) g_##EnumName##_Ref_Def
+#define ENUM_REF_DEF(EnumName, Allocator) extern Gaff::EnumReflectionDefinition<EnumName, Allocator> g##EnumName##RefDef
+#define ENUM_REF_IMPL(EnumName, Allocator) Gaff::EnumReflectionDefinition<EnumName, Allocator> g##EnumName##RefDef
+#define ENUM_REF_IMPL_ASSIGN(EnumName, Allocator, allocator_instance) Gaff::EnumReflectionDefinition<EnumName, Allocator> g##EnumName##RefDef = Gaff::EnumRefDef<EnumName, Allocator>(#EnumName, allocator_instance).macroFix()
+#define ENUM_REF_IMPL_ASSIGN_DEFAULT(EnumName, Allocator, allocator_instance) Gaff::EnumReflectionDefinition<EnumName, Allocator> g##EnumName##RefDef = Gaff::EnumRefDef<EnumName, Allocator>(#EnumName).macroFix()
+#define ENUM_REF_DEF_RETRIEVE(EnumName) g##EnumName##RefDef
 
 /*
 	This function is useful for when you want to do something like this:
@@ -522,6 +643,12 @@ template <class T, class Allocator = DefaultAllocator>
 EnumReflectionDefinition<T, Allocator> EnumRefDef(const char* name, const Allocator& allocator = Allocator())
 {
 	return EnumReflectionDefinition<T, Allocator>(name, allocator);
+}
+
+template <class T, class Allocator = DefaultAllocator>
+EnumReflectionDefinition<T, Allocator> EnumRefDef(const Allocator& allocator = Allocator())
+{
+	return EnumReflectionDefinition<T, Allocator>(allocator);
 }
 
 #include "Gaff_ReflectionDefinitionsContainers.inl"

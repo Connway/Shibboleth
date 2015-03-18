@@ -41,7 +41,7 @@ public:
 	float progress;
 	LoadingState state;
 
-	static AHashString g_Hash;
+	static AHashString gHash;
 };
 
 NS_END

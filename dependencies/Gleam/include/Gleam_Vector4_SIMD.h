@@ -23,6 +23,9 @@ THE SOFTWARE.
 #pragma once
 
 #include "Gleam_SIMDMath.h"
+#include <Gaff_Defines.h>
+
+WARNING("SIMD data structures are potentially going to be deprecated.")
 
 NS_GLEAM
 

@@ -31,6 +31,25 @@ NS_GAFF
 
 class JSON;
 
+enum ReflectionValueType
+{
+	VT_DOUBLE = 0,
+	VT_FLOAT,
+	VT_UINT,
+	VT_INT,
+	VT_USHORT,
+	VT_SHORT,
+	VT_UCHAR,
+	VT_CHAR,
+	VT_BOOL,
+	VT_ENUM,
+	VT_STRING,
+	VT_OBJECT,
+	VT_CUSTOM,
+	VT_SIZE
+};
+
+
 template <class Allocator>
 class IEnumReflectionDefinition
 {
@@ -50,10 +69,33 @@ public:
 class IReflectionDefinition
 {
 public:
+	class IValueContainer
+	{
+	public:
+		IValueContainer(void) {}
+		virtual ~IValueContainer(void) {}
+
+		virtual void get(void* /*out*/, const void* /*object*/) const { assert(0 && "GET: Value container is not a value/string/object!"); }
+		virtual void get(void* /*out*/, size_t /*index*/, const void* /*object*/) const { assert(0 && "GET: Value container it not an array!"); }
+		virtual void set(const void* /*value*/, void* /*object*/) { assert(0 && "SET: Value container is not a value/string/object!"); } // Set object
+		virtual void set(const void* /*value*/, size_t /*index*/, void* /*object*/) { assert(0 && "SET: Value container it not an array!"); } // Set array element
+
+		// Array specific functionality
+		virtual size_t size(const void* /*object*/) const { assert(0 && "SIZE: Value container it not an array!"); return 0; }
+		virtual void resize(size_t /*new_size*/, void* /*object*/) { assert(0 && "RESIZE: Value container it not an array or is a static array!"); }
+		virtual void swap(size_t /*index_1*/, size_t /*index_2*/, void* /*object*/) { assert(0 && "SWAP: Value container it not an array!"); }
+
+		virtual bool isFixedArray(void) const = 0;
+		virtual bool isArray(void) const = 0;
+
+		virtual ReflectionValueType getType(void) const = 0;
+	};
+
+
 	template <class T>
 	T* getInterface(void* object) const
 	{
-		return reinterpret_cast<T*>(getInterface(T::g_Hash));
+		return reinterpret_cast<T*>(getInterface(T::gHash));
 	}
 
 	IReflectionDefinition(void) {}

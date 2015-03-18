@@ -25,6 +25,8 @@ THE SOFTWARE.
 #include "Gleam_Vector4_SIMD.h"
 #include "Gleam_Array.h"
 
+WARNING("SIMD data structures are potentially going to be deprecated.")
+
 NS_GLEAM
 
 class TransformSIMD;

@@ -33,7 +33,7 @@ class IApp;
 class CameraComponent : public IComponent
 {
 public:
-	CameraComponent(IApp& app);
+	CameraComponent(void);
 	~CameraComponent(void);
 
 	bool load(const Gaff::JSON& json);
@@ -41,16 +41,16 @@ public:
 
 	void* rawRequestInterface(unsigned int class_id) const;
 
-	const AString& getRenderTargetName(void) const;
-
+	const float* getViewport(void) const;
 	bool isActive(void) const;
+	float getFOV(void) const;
 
 private:
-	AString _render_target_name;
-	unsigned short _display_tags;
+	float _clear_color[4];
+	float _viewport[4];
+	unsigned int _render_order;
+	float _fov;
 	bool _active;
-
-	IApp& _app;
 
 	REF_DEF_SHIB(CameraComponent);
 };

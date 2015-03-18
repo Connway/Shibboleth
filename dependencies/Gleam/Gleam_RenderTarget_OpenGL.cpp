@@ -198,7 +198,7 @@ void RenderTargetGL::unbind(IRenderDevice&)
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
-void RenderTargetGL::clear(IRenderDevice& rd, unsigned int clear_flags, float clear_depth, unsigned char clear_stencil)
+void RenderTargetGL::clear(IRenderDevice& rd, unsigned int clear_flags, float clear_depth, unsigned char clear_stencil, float* clear_color)
 {
 	assert(!rd.isD3D());
 
@@ -218,7 +218,11 @@ void RenderTargetGL::clear(IRenderDevice& rd, unsigned int clear_flags, float cl
 		glClearStencil(clear_stencil);
 	}
 
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT); 
+	if (clear_color) {
+		glClearColor(clear_color[0], clear_color[1], clear_color[2], clear_color[3]);
+	}
+
+	glClear(clear_bits); 
 }
 
 bool RenderTargetGL::isComplete(void) const
