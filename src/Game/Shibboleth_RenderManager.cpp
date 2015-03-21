@@ -149,7 +149,8 @@ bool RenderManager::init(const char* module)
 		}
 
 		// Reset reflection definition
-		ENUM_REF_DEF_RETRIEVE(DisplayTags) = Gaff::EnumRefDef<DisplayTags, ProxyAllocator>("DisplayTags", ProxyAllocator("Reflection"));
+		EnumReflectionDefinition<DisplayTags>& dp_ref_def = const_cast<EnumReflectionDefinition<DisplayTags>&>(GetEnumRefDef<DisplayTags>());
+		dp_ref_def = Gaff::EnumRefDef<DisplayTags, ProxyAllocator>("DisplayTags", ProxyAllocator("Reflection"));
 
 		bool ret = display_tags.forEachInArray([&](size_t index, const Gaff::JSON& value) -> bool
 		{
@@ -158,7 +159,7 @@ bool RenderManager::init(const char* module)
 				return true;
 			}
 
-			ENUM_REF_DEF_RETRIEVE(DisplayTags).addValue(value.getString(), gDisplayTagsValues[index]);
+			dp_ref_def.addValue(value.getString(), gDisplayTagsValues[index]);
 
 			return false;
 		});

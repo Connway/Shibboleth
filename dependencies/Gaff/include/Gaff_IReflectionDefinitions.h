@@ -83,7 +83,7 @@ public:
 		// Array specific functionality
 		virtual size_t size(const void* /*object*/) const { assert(0 && "SIZE: Value container it not an array!"); return 0; }
 		virtual void resize(size_t /*new_size*/, void* /*object*/) { assert(0 && "RESIZE: Value container it not an array or is a static array!"); }
-		virtual void swap(size_t /*index_1*/, size_t /*index_2*/, void* /*object*/) { assert(0 && "SWAP: Value container it not an array!"); }
+		virtual void move(size_t /*src_index*/, size_t /*dest_index*/, void* /*object*/) { assert(0 && "MOVE: Value container it not an array!"); }
 
 		virtual bool isFixedArray(void) const = 0;
 		virtual bool isArray(void) const = 0;

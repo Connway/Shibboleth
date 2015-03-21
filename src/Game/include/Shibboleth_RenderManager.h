@@ -39,7 +39,7 @@ THE SOFTWARE.
 		if (!value.isString()) { \
 			return true; \
 		} \
-		out_tags |= ENUM_REF_DEF_RETRIEVE(DisplayTags).getValue(value.getString()); \
+		out_tags |= GetEnumRefDef<DisplayTags>().getValue(value.getString()); \
 		return false; \
 	})
 
