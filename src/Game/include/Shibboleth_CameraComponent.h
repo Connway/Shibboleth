@@ -24,7 +24,6 @@ THE SOFTWARE.
 
 #include "Shibboleth_IComponent.h"
 #include <Shibboleth_ReflectionDefinitions.h>
-#include <Shibboleth_String.h>
 
 NS_SHIBBOLETH
 

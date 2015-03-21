@@ -29,11 +29,25 @@ NS_SHIBBOLETH
 
 template <class T> using EnumReflectionDefinition = Gaff::EnumReflectionDefinition<T, ProxyAllocator>;
 template <class T> using ReflectionDefinition = Gaff::ReflectionDefinition<T, ProxyAllocator>;
-typedef Gaff::IEnumReflectionDefinition<ProxyAllocator> IEnumReflectionDefinition;
+using IEnumReflectionDefinition = Gaff::IEnumReflectionDefinition<ProxyAllocator>;
 
-#define REF_IMPL_SHIB(ClassName) REF_IMPL_ASSIGN(ClassName, ProxyAllocator, ProxyAllocator("Reflection"))
+template <class T>
+EnumReflectionDefinition<T>& GetEnumRefDef(void)
+{
+	assert(0 && "GetEnumRefDef() for type not overloaded.");
+	static EnumReflectionDefinition<T> never_used;
+	return never_used;
+}
+
 #define REF_DEF_SHIB(ClassName) REF_DEF(ClassName, ProxyAllocator)
-#define ENUM_REF_DEF_SHIB(EnumName) ENUM_REF_DEF(EnumName, ProxyAllocator)
-#define ENUM_REF_IMPL_SHIB(EnumName) ENUM_REF_IMPL_ASSIGN(EnumName, ProxyAllocator, ProxyAllocator("Reflection"))
+#define REF_IMPL_SHIB(ClassName) REF_IMPL_ASSIGN(ClassName, ProxyAllocator, ProxyAllocator("Reflection"))
+
+#define ENUM_REF_DEF_SHIB(EnumName) \
+	template<> EnumReflectionDefinition<EnumName>& GetEnumRefDef<EnumName>(void); \
+	ENUM_REF_DEF(EnumName, ProxyAllocator)
+
+#define ENUM_REF_IMPL_SHIB(EnumName) \
+	template<> EnumReflectionDefinition<EnumName>& GetEnumRefDef<EnumName>(void) { return g##EnumName##RefDef; } \
+	ENUM_REF_IMPL_ASSIGN(EnumName, ProxyAllocator, ProxyAllocator("Reflection"))
 
 NS_END

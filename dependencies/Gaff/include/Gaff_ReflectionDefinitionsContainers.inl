@@ -20,16 +20,16 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-VAR_CONTAINER_CONSTRUCTOR(DoubleContainer, double);
-VAR_CONTAINER_CONSTRUCTOR(FloatContainer, float);
-VAR_CONTAINER_CONSTRUCTOR(UIntContainer, unsigned int);
-VAR_CONTAINER_CONSTRUCTOR(IntContainer, int);
-VAR_CONTAINER_CONSTRUCTOR(UShortContainer, unsigned short);
-VAR_CONTAINER_CONSTRUCTOR(ShortContainer, short);
-VAR_CONTAINER_CONSTRUCTOR(UCharContainer, unsigned char);
-VAR_CONTAINER_CONSTRUCTOR(CharContainer, char);
-VAR_CONTAINER_CONSTRUCTOR(BoolContainer, bool);
-VAR_CONTAINER_CONSTRUCTOR(StringContainer, AString<Allocator>);
+VAR_CONTAINER_CONSTRUCTOR(DoubleContainer);
+VAR_CONTAINER_CONSTRUCTOR(FloatContainer);
+VAR_CONTAINER_CONSTRUCTOR(UIntContainer);
+VAR_CONTAINER_CONSTRUCTOR(IntContainer);
+VAR_CONTAINER_CONSTRUCTOR(UShortContainer);
+VAR_CONTAINER_CONSTRUCTOR(ShortContainer);
+VAR_CONTAINER_CONSTRUCTOR(UCharContainer);
+VAR_CONTAINER_CONSTRUCTOR(CharContainer);
+VAR_CONTAINER_CONSTRUCTOR(BoolContainer);
+VAR_CONTAINER_CONSTRUCTOR(StringContainer);
 
 VAR_CONTAINER_VAL_TYPE(DoubleContainer, VT_DOUBLE);
 VAR_CONTAINER_VAL_TYPE(FloatContainer, VT_FLOAT);
@@ -42,9 +42,27 @@ VAR_CONTAINER_VAL_TYPE(CharContainer, VT_CHAR);
 VAR_CONTAINER_VAL_TYPE(BoolContainer, VT_BOOL);
 VAR_CONTAINER_VAL_TYPE(StringContainer, VT_STRING);
 
-ARRAY_CONTAINER_CONSTRUCTOR(ArrayDoubleContainer, double);
+VAR_CONTAINER_SET(DoubleContainer);
+VAR_CONTAINER_SET(FloatContainer);
+VAR_CONTAINER_SET(UIntContainer);
+VAR_CONTAINER_SET(IntContainer);
+VAR_CONTAINER_SET(UShortContainer);
+VAR_CONTAINER_SET(ShortContainer);
+VAR_CONTAINER_SET(UCharContainer);
+VAR_CONTAINER_SET(CharContainer);
+VAR_CONTAINER_SET(BoolContainer);
+VAR_CONTAINER_SET(StringContainer);
 
-ARRAY_CONTAINER_VAL_TYPE(ArrayDoubleContainer, VT_DOUBLE);
+VAR_CONTAINER_GET(DoubleContainer);
+VAR_CONTAINER_GET(FloatContainer);
+VAR_CONTAINER_GET(UIntContainer);
+VAR_CONTAINER_GET(IntContainer);
+VAR_CONTAINER_GET(UShortContainer);
+VAR_CONTAINER_GET(ShortContainer);
+VAR_CONTAINER_GET(UCharContainer);
+VAR_CONTAINER_GET(CharContainer);
+VAR_CONTAINER_GET(BoolContainer);
+VAR_CONTAINER_GET(StringContainer);
 
 VAR_CONTAINER_READ(DoubleContainer)
 {
@@ -68,25 +86,6 @@ VAR_CONTAINER_WRITE(DoubleContainer)
 	}
 }
 
-VAR_CONTAINER_GET(DoubleContainer)
-{
-	if (_var) {
-		*reinterpret_cast<double*>(out) = (object->*_var);
-	} else if (_getter) {
-		*reinterpret_cast<double*>(out) = (object->*_getter)();
-	}
-}
-
-VAR_CONTAINER_SET(DoubleContainer)
-{
-	if (_var) {
-		object->*_var = *reinterpret_cast<const double*>(value);
-	} else if (_setter) {
-		(object->*_setter)(*reinterpret_cast<const double*>(value));
-	}
-}
-
-
 
 
 
@@ -109,24 +108,6 @@ VAR_CONTAINER_WRITE(FloatContainer)
 		json.setObject(ValueContainerBase::_key.getBuffer(), JSON::createReal(object->*_var));
 	} else if (_getter) {
 		json.setObject(ValueContainerBase::_key.getBuffer(), JSON::createReal((object->*_getter)()));
-	}
-}
-
-VAR_CONTAINER_GET(FloatContainer)
-{
-	if (_var) {
-		*reinterpret_cast<float*>(out) = (object->*_var);
-	} else if (_getter) {
-		*reinterpret_cast<float*>(out) = (object->*_getter)();
-	}
-}
-
-VAR_CONTAINER_SET(FloatContainer)
-{
-	if (_var) {
-		object->*_var = *reinterpret_cast<const float*>(value);
-	} else if (_setter) {
-		(object->*_setter)(*reinterpret_cast<const float*>(value));
 	}
 }
 
@@ -155,24 +136,6 @@ VAR_CONTAINER_WRITE(UIntContainer)
 	}
 }
 
-VAR_CONTAINER_GET(UIntContainer)
-{
-	if (_var) {
-		*reinterpret_cast<unsigned int*>(out) = (object->*_var);
-	} else if (_getter) {
-		*reinterpret_cast<unsigned int*>(out) = (object->*_getter)();
-	}
-}
-
-VAR_CONTAINER_SET(UIntContainer)
-{
-	if (_var) {
-		object->*_var = *reinterpret_cast<const unsigned int*>(value);
-	} else if (_setter) {
-		(object->*_setter)(*reinterpret_cast<const unsigned int*>(value));
-	}
-}
-
 
 
 
@@ -195,24 +158,6 @@ VAR_CONTAINER_WRITE(IntContainer)
 		json.setObject(ValueContainerBase::_key.getBuffer(), JSON::createInteger(object->*_var));
 	} else if (_getter) {
 		json.setObject(ValueContainerBase::_key.getBuffer(), JSON::createInteger((object->*_getter)()));
-	}
-}
-
-VAR_CONTAINER_GET(IntContainer)
-{
-	if (_var) {
-		*reinterpret_cast<int*>(out) = (object->*_var);
-	} else if (_getter) {
-		*reinterpret_cast<int*>(out) = (object->*_getter)();
-	}
-}
-
-VAR_CONTAINER_SET(IntContainer)
-{
-	if (_var) {
-		object->*_var = *reinterpret_cast<const int*>(value);
-	} else if (_setter) {
-		(object->*_setter)(*reinterpret_cast<const int*>(value));
 	}
 }
 
@@ -241,24 +186,6 @@ VAR_CONTAINER_WRITE(UShortContainer)
 	}
 }
 
-VAR_CONTAINER_GET(UShortContainer)
-{
-	if (_var) {
-		*reinterpret_cast<unsigned short*>(out) = (object->*_var);
-	} else if (_getter) {
-		*reinterpret_cast<unsigned short*>(out) = (object->*_getter)();
-	}
-}
-
-VAR_CONTAINER_SET(UShortContainer)
-{
-	if (_var) {
-		object->*_var = *reinterpret_cast<const unsigned short*>(value);
-	} else if (_setter) {
-		(object->*_setter)(*reinterpret_cast<const unsigned short*>(value));
-	}
-}
-
 
 
 
@@ -281,24 +208,6 @@ VAR_CONTAINER_WRITE(ShortContainer)
 		json.setObject(ValueContainerBase::_key.getBuffer(), JSON::createInteger(static_cast<json_int_t>(object->*_var)));
 	} else if (_getter) {
 		json.setObject(ValueContainerBase::_key.getBuffer(), JSON::createInteger(static_cast<json_int_t>((object->*_getter)())));
-	}
-}
-
-VAR_CONTAINER_GET(ShortContainer)
-{
-	if (_var) {
-		*reinterpret_cast<short*>(out) = (object->*_var);
-	} else if (_getter) {
-		*reinterpret_cast<short*>(out) = (object->*_getter)();
-	}
-}
-
-VAR_CONTAINER_SET(ShortContainer)
-{
-	if (_var) {
-		object->*_var = *reinterpret_cast<const short*>(value);
-	} else if (_setter) {
-		(object->*_setter)(*reinterpret_cast<const short*>(value));
 	}
 }
 
@@ -327,24 +236,6 @@ VAR_CONTAINER_WRITE(UCharContainer)
 	}
 }
 
-VAR_CONTAINER_GET(UCharContainer)
-{
-	if (_var) {
-		*reinterpret_cast<unsigned char*>(out) = (object->*_var);
-	} else if (_getter) {
-		*reinterpret_cast<unsigned char*>(out) = (object->*_getter)();
-	}
-}
-
-VAR_CONTAINER_SET(UCharContainer)
-{
-	if (_var) {
-		object->*_var = *reinterpret_cast<const unsigned char*>(value);
-	} else if (_setter) {
-		(object->*_setter)(*reinterpret_cast<const unsigned char*>(value));
-	}
-}
-
 
 
 
@@ -367,24 +258,6 @@ VAR_CONTAINER_WRITE(CharContainer)
 		json.setObject(ValueContainerBase::_key.getBuffer(), JSON::createInteger(static_cast<json_int_t>(object->*_var)));
 	} else if (_getter) {
 		json.setObject(ValueContainerBase::_key.getBuffer(), JSON::createInteger(static_cast<json_int_t>((object->*_getter)())));
-	}
-}
-
-VAR_CONTAINER_GET(CharContainer)
-{
-	if (_var) {
-		*reinterpret_cast<char*>(out) = (object->*_var);
-	} else if (_getter) {
-		*reinterpret_cast<char*>(out) = (object->*_getter)();
-	}
-}
-
-VAR_CONTAINER_SET(CharContainer)
-{
-	if (_var) {
-		object->*_var = *reinterpret_cast<const char*>(value);
-	} else if (_setter) {
-		(object->*_setter)(*reinterpret_cast<const char*>(value));
 	}
 }
 
@@ -413,24 +286,6 @@ VAR_CONTAINER_WRITE(BoolContainer)
 	}
 }
 
-VAR_CONTAINER_GET(BoolContainer)
-{
-	if (_var) {
-		*reinterpret_cast<bool*>(out) = (object->*_var);
-	} else if (_getter) {
-		*reinterpret_cast<bool*>(out) = (object->*_getter)();
-	}
-}
-
-VAR_CONTAINER_SET(BoolContainer)
-{
-	if (_var) {
-		object->*_var = *reinterpret_cast<const bool*>(value);
-	} else if (_setter) {
-		(object->*_setter)(*reinterpret_cast<const bool*>(value));
-	}
-}
-
 
 
 
@@ -456,26 +311,98 @@ VAR_CONTAINER_WRITE(StringContainer)
 	}
 }
 
-VAR_CONTAINER_GET(StringContainer)
-{
-	if (_var) {
-		*reinterpret_cast<AString<Allocator>*>(out) = (object->*_var);
-	} else if (_getter) {
-		*reinterpret_cast<AString<Allocator>*>(out) = (object->*_getter)();
-	}
-}
-
-VAR_CONTAINER_SET(StringContainer)
-{
-	if (_var) {
-		object->*_var = *reinterpret_cast<const AString<Allocator>*>(value);
-	} else if (_setter) {
-		(object->*_setter)(*reinterpret_cast<const AString<Allocator>*>(value));
-	}
-}
 
 
 
+ARRAY_CONTAINER_CONSTRUCTOR(ArrayDoubleContainer);
+ARRAY_CONTAINER_CONSTRUCTOR(ArrayFloatContainer);
+ARRAY_CONTAINER_CONSTRUCTOR(ArrayUIntContainer);
+ARRAY_CONTAINER_CONSTRUCTOR(ArrayIntContainer);
+ARRAY_CONTAINER_CONSTRUCTOR(ArrayUShortContainer);
+ARRAY_CONTAINER_CONSTRUCTOR(ArrayShortContainer);
+ARRAY_CONTAINER_CONSTRUCTOR(ArrayUCharContainer);
+ARRAY_CONTAINER_CONSTRUCTOR(ArrayCharContainer);
+ARRAY_CONTAINER_CONSTRUCTOR(ArrayStringContainer);
+
+ARRAY_CONTAINER_VAL_TYPE(ArrayDoubleContainer, VT_DOUBLE);
+ARRAY_CONTAINER_VAL_TYPE(ArrayFloatContainer, VT_FLOAT);
+ARRAY_CONTAINER_VAL_TYPE(ArrayUIntContainer, VT_UINT);
+ARRAY_CONTAINER_VAL_TYPE(ArrayIntContainer, VT_INT);
+ARRAY_CONTAINER_VAL_TYPE(ArrayUShortContainer, VT_USHORT);
+ARRAY_CONTAINER_VAL_TYPE(ArrayShortContainer, VT_SHORT);
+ARRAY_CONTAINER_VAL_TYPE(ArrayUCharContainer, VT_UCHAR);
+ARRAY_CONTAINER_VAL_TYPE(ArrayCharContainer, VT_CHAR);
+ARRAY_CONTAINER_VAL_TYPE(ArrayStringContainer, VT_STRING);
+
+ARRAY_CONTAINER_SET(ArrayDoubleContainer);
+ARRAY_CONTAINER_SET(ArrayFloatContainer);
+ARRAY_CONTAINER_SET(ArrayUIntContainer);
+ARRAY_CONTAINER_SET(ArrayIntContainer);
+ARRAY_CONTAINER_SET(ArrayUShortContainer);
+ARRAY_CONTAINER_SET(ArrayShortContainer);
+ARRAY_CONTAINER_SET(ArrayUCharContainer);
+ARRAY_CONTAINER_SET(ArrayCharContainer);
+ARRAY_CONTAINER_SET(ArrayStringContainer);
+
+ARRAY_CONTAINER_GET(ArrayDoubleContainer);
+ARRAY_CONTAINER_GET(ArrayFloatContainer);
+ARRAY_CONTAINER_GET(ArrayUIntContainer);
+ARRAY_CONTAINER_GET(ArrayIntContainer);
+ARRAY_CONTAINER_GET(ArrayUShortContainer);
+ARRAY_CONTAINER_GET(ArrayShortContainer);
+ARRAY_CONTAINER_GET(ArrayUCharContainer);
+ARRAY_CONTAINER_GET(ArrayCharContainer);
+ARRAY_CONTAINER_GET(ArrayStringContainer);
+
+ARRAY_CONTAINER_SET_INDEX(ArrayDoubleContainer);
+ARRAY_CONTAINER_SET_INDEX(ArrayFloatContainer);
+ARRAY_CONTAINER_SET_INDEX(ArrayUIntContainer);
+ARRAY_CONTAINER_SET_INDEX(ArrayIntContainer);
+ARRAY_CONTAINER_SET_INDEX(ArrayUShortContainer);
+ARRAY_CONTAINER_SET_INDEX(ArrayShortContainer);
+ARRAY_CONTAINER_SET_INDEX(ArrayUCharContainer);
+ARRAY_CONTAINER_SET_INDEX(ArrayCharContainer);
+ARRAY_CONTAINER_SET_INDEX(ArrayStringContainer);
+
+ARRAY_CONTAINER_GET_INDEX(ArrayDoubleContainer);
+ARRAY_CONTAINER_GET_INDEX(ArrayFloatContainer);
+ARRAY_CONTAINER_GET_INDEX(ArrayUIntContainer);
+ARRAY_CONTAINER_GET_INDEX(ArrayIntContainer);
+ARRAY_CONTAINER_GET_INDEX(ArrayUShortContainer);
+ARRAY_CONTAINER_GET_INDEX(ArrayShortContainer);
+ARRAY_CONTAINER_GET_INDEX(ArrayUCharContainer);
+ARRAY_CONTAINER_GET_INDEX(ArrayCharContainer);
+ARRAY_CONTAINER_GET_INDEX(ArrayStringContainer);
+
+ARRAY_CONTAINER_RESIZE(ArrayDoubleContainer);
+ARRAY_CONTAINER_RESIZE(ArrayFloatContainer);
+ARRAY_CONTAINER_RESIZE(ArrayUIntContainer);
+ARRAY_CONTAINER_RESIZE(ArrayIntContainer);
+ARRAY_CONTAINER_RESIZE(ArrayUShortContainer);
+ARRAY_CONTAINER_RESIZE(ArrayShortContainer);
+ARRAY_CONTAINER_RESIZE(ArrayUCharContainer);
+ARRAY_CONTAINER_RESIZE(ArrayCharContainer);
+ARRAY_CONTAINER_RESIZE(ArrayStringContainer);
+
+ARRAY_CONTAINER_MOVE(ArrayDoubleContainer);
+ARRAY_CONTAINER_MOVE(ArrayFloatContainer);
+ARRAY_CONTAINER_MOVE(ArrayUIntContainer);
+ARRAY_CONTAINER_MOVE(ArrayIntContainer);
+ARRAY_CONTAINER_MOVE(ArrayUShortContainer);
+ARRAY_CONTAINER_MOVE(ArrayShortContainer);
+ARRAY_CONTAINER_MOVE(ArrayUCharContainer);
+ARRAY_CONTAINER_MOVE(ArrayCharContainer);
+ARRAY_CONTAINER_MOVE(ArrayStringContainer);
+
+ARRAY_CONTAINER_SIZE(ArrayDoubleContainer);
+ARRAY_CONTAINER_SIZE(ArrayFloatContainer);
+ARRAY_CONTAINER_SIZE(ArrayUIntContainer);
+ARRAY_CONTAINER_SIZE(ArrayIntContainer);
+ARRAY_CONTAINER_SIZE(ArrayUShortContainer);
+ARRAY_CONTAINER_SIZE(ArrayShortContainer);
+ARRAY_CONTAINER_SIZE(ArrayUCharContainer);
+ARRAY_CONTAINER_SIZE(ArrayCharContainer);
+ARRAY_CONTAINER_SIZE(ArrayStringContainer);
 
 ARRAY_CONTAINER_READ(ArrayDoubleContainer)
 {
@@ -492,17 +419,16 @@ ARRAY_CONTAINER_READ(ArrayDoubleContainer)
 			return false;
 		});
 
-	} else if (_setter) {
-		Array<double, Allocator> temp(array.size(), 0, _allocator);
+	} else if (_getter) {
+		Array<double, Allocator>& arr = const_cast<Array<double, Allocator>&>((object->*_getter)());
+		arr.resize(array.size());
 
 		array.forEachInArray([&](size_t index, const JSON& value) -> bool
 		{
 			assert(value.isReal());
-			temp[index] = value.getReal();
+			arr[index] = value.getReal();
 			return false;
 		});
-
-		(object->*_setter)(temp);
 	}
 }
 
@@ -528,24 +454,903 @@ ARRAY_CONTAINER_WRITE(ArrayDoubleContainer)
 	json.setObject(ValueContainerBase::_key.getBuffer(), array);
 }
 
-ARRAY_CONTAINER_GET(ArrayDoubleContainer)
+
+
+
+ARRAY_CONTAINER_READ(ArrayFloatContainer)
 {
+	JSON array = json[reinterpret_cast<const char*>(ValueContainerBase::_key.getBuffer())];
+	assert(array.isArray());
+
 	if (_var) {
-		*reinterpret_cast<Array<double, Allocator>*>(out) = (object->*_var);
+		(object->*_var).resize(array.size());
+
+		array.forEachInArray([&](size_t index, const JSON& value) -> bool
+		{
+			assert(value.isReal());
+			(object->*_var)[index] = static_cast<float>(value.getReal());
+			return false;
+		});
+
 	} else if (_getter) {
-		*reinterpret_cast<Array<double, Allocator>*>(out) = (object->*_getter)();
+		Array<float, Allocator>& arr = const_cast<Array<float, Allocator>&>((object->*_getter)());
+		arr.resize(array.size());
+
+		array.forEachInArray([&](size_t index, const JSON& value) -> bool
+		{
+			assert(value.isReal());
+			arr[index] = static_cast<float>(value.getReal());
+			return false;
+		});
 	}
 }
 
-ARRAY_CONTAINER_SET(ArrayDoubleContainer)
+ARRAY_CONTAINER_WRITE(ArrayFloatContainer)
+{
+	assert(!json[ValueContainerBase::_key.getBuffer()]);
+
+	JSON array = JSON::createArray();
+
+	if (_var) {
+		for (size_t i = 0; i < (object->*_var).size(); ++i) {
+			array.setObject(i, JSON::createReal((object->*_var)[i]));
+		}
+
+	} else if (_getter) {
+		const Array<float, Allocator>& value = (object->*_getter)();
+
+		for (size_t i = 0; i < (object->*_var).size(); ++i) {
+			array.setObject(i, JSON::createReal(value[i]));
+		}
+	}
+
+	json.setObject(ValueContainerBase::_key.getBuffer(), array);
+}
+
+
+
+
+ARRAY_CONTAINER_READ(ArrayUIntContainer)
+{
+	JSON array = json[reinterpret_cast<const char*>(ValueContainerBase::_key.getBuffer())];
+	assert(array.isArray());
+
+	if (_var) {
+		(object->*_var).resize(array.size());
+
+		array.forEachInArray([&](size_t index, const JSON& value) -> bool
+		{
+			assert(value.isInteger());
+			(object->*_var)[index] = static_cast<unsigned int>(value.getInteger());
+			return false;
+		});
+
+	} else if (_getter) {
+		Array<unsigned int, Allocator>& arr = const_cast<Array<unsigned int, Allocator>&>((object->*_getter)());
+		arr.resize(array.size());
+
+		array.forEachInArray([&](size_t index, const JSON& value) -> bool
+		{
+			assert(value.isInteger());
+			arr[index] = static_cast<unsigned int>(value.getInteger());
+			return false;
+		});
+	}
+}
+
+ARRAY_CONTAINER_WRITE(ArrayUIntContainer)
+{
+	assert(!json[ValueContainerBase::_key.getBuffer()]);
+
+	JSON array = JSON::createArray();
+
+	if (_var) {
+		for (size_t i = 0; i < (object->*_var).size(); ++i) {
+			array.setObject(i, JSON::createInteger((object->*_var)[i]));
+		}
+
+	} else if (_getter) {
+		const Array<unsigned int, Allocator>& value = (object->*_getter)();
+
+		for (size_t i = 0; i < (object->*_var).size(); ++i) {
+			array.setObject(i, JSON::createInteger(value[i]));
+		}
+	}
+
+	json.setObject(ValueContainerBase::_key.getBuffer(), array);
+}
+
+
+
+
+ARRAY_CONTAINER_READ(ArrayIntContainer)
+{
+	JSON array = json[reinterpret_cast<const char*>(ValueContainerBase::_key.getBuffer())];
+	assert(array.isArray());
+
+	if (_var) {
+		(object->*_var).resize(array.size());
+
+		array.forEachInArray([&](size_t index, const JSON& value) -> bool
+		{
+			assert(value.isInteger());
+			(object->*_var)[index] = static_cast<int>(value.getInteger());
+			return false;
+		});
+
+	} else if (_getter) {
+		Array<int, Allocator>& arr = const_cast<Array<int, Allocator>&>((object->*_getter)());
+		arr.resize(array.size());
+
+		array.forEachInArray([&](size_t index, const JSON& value) -> bool
+		{
+			assert(value.isInteger());
+			arr[index] = static_cast<int>(value.getInteger());
+			return false;
+		});
+	}
+}
+
+ARRAY_CONTAINER_WRITE(ArrayIntContainer)
+{
+	assert(!json[ValueContainerBase::_key.getBuffer()]);
+
+	JSON array = JSON::createArray();
+
+	if (_var) {
+		for (size_t i = 0; i < (object->*_var).size(); ++i) {
+			array.setObject(i, JSON::createInteger((object->*_var)[i]));
+		}
+
+	} else if (_getter) {
+		const Array<int, Allocator>& value = (object->*_getter)();
+
+		for (size_t i = 0; i < (object->*_var).size(); ++i) {
+			array.setObject(i, JSON::createInteger(value[i]));
+		}
+	}
+
+	json.setObject(ValueContainerBase::_key.getBuffer(), array);
+}
+
+
+
+
+ARRAY_CONTAINER_READ(ArrayUShortContainer)
+{
+	JSON array = json[reinterpret_cast<const char*>(ValueContainerBase::_key.getBuffer())];
+	assert(array.isArray());
+
+	if (_var) {
+		(object->*_var).resize(array.size());
+
+		array.forEachInArray([&](size_t index, const JSON& value) -> bool
+		{
+			assert(value.isInteger());
+			(object->*_var)[index] = static_cast<unsigned short>(value.getInteger());
+			return false;
+		});
+
+	} else if (_getter) {
+		Array<unsigned short, Allocator>& arr = const_cast<Array<unsigned short, Allocator>&>((object->*_getter)());
+		arr.resize(array.size());
+
+		array.forEachInArray([&](size_t index, const JSON& value) -> bool
+		{
+			assert(value.isInteger());
+			arr[index] = static_cast<unsigned short>(value.getInteger());
+			return false;
+		});
+	}
+}
+
+ARRAY_CONTAINER_WRITE(ArrayUShortContainer)
+{
+	assert(!json[ValueContainerBase::_key.getBuffer()]);
+
+	JSON array = JSON::createArray();
+
+	if (_var) {
+		for (size_t i = 0; i < (object->*_var).size(); ++i) {
+			array.setObject(i, JSON::createInteger((object->*_var)[i]));
+		}
+
+	} else if (_getter) {
+		const Array<unsigned short, Allocator>& value = (object->*_getter)();
+
+		for (size_t i = 0; i < (object->*_var).size(); ++i) {
+			array.setObject(i, JSON::createInteger(value[i]));
+		}
+	}
+
+	json.setObject(ValueContainerBase::_key.getBuffer(), array);
+}
+
+
+
+
+ARRAY_CONTAINER_READ(ArrayShortContainer)
+{
+	JSON array = json[reinterpret_cast<const char*>(ValueContainerBase::_key.getBuffer())];
+	assert(array.isArray());
+
+	if (_var) {
+		(object->*_var).resize(array.size());
+
+		array.forEachInArray([&](size_t index, const JSON& value) -> bool
+		{
+			assert(value.isInteger());
+			(object->*_var)[index] = static_cast<short>(value.getInteger());
+			return false;
+		});
+
+	} else if (_getter) {
+		Array<short, Allocator>& arr = const_cast<Array<short, Allocator>&>((object->*_getter)());
+		arr.resize(array.size());
+
+		array.forEachInArray([&](size_t index, const JSON& value) -> bool
+		{
+			assert(value.isInteger());
+			arr[index] = static_cast<short>(value.getInteger());
+			return false;
+		});
+	}
+}
+
+ARRAY_CONTAINER_WRITE(ArrayShortContainer)
+{
+	assert(!json[ValueContainerBase::_key.getBuffer()]);
+
+	JSON array = JSON::createArray();
+
+	if (_var) {
+		for (size_t i = 0; i < (object->*_var).size(); ++i) {
+			array.setObject(i, JSON::createInteger((object->*_var)[i]));
+		}
+
+	} else if (_getter) {
+		const Array<short, Allocator>& value = (object->*_getter)();
+
+		for (size_t i = 0; i < (object->*_var).size(); ++i) {
+			array.setObject(i, JSON::createInteger(value[i]));
+		}
+	}
+
+	json.setObject(ValueContainerBase::_key.getBuffer(), array);
+}
+
+
+
+
+ARRAY_CONTAINER_READ(ArrayUCharContainer)
+{
+	JSON array = json[reinterpret_cast<const char*>(ValueContainerBase::_key.getBuffer())];
+	assert(array.isArray());
+
+	if (_var) {
+		(object->*_var).resize(array.size());
+
+		array.forEachInArray([&](size_t index, const JSON& value) -> bool
+		{
+			assert(value.isInteger());
+			(object->*_var)[index] = static_cast<unsigned char>(value.getInteger());
+			return false;
+		});
+
+	} else if (_getter) {
+		Array<unsigned char, Allocator>& arr = const_cast<Array<unsigned char, Allocator>&>((object->*_getter)());
+		arr.resize(array.size());
+
+		array.forEachInArray([&](size_t index, const JSON& value) -> bool
+		{
+			assert(value.isInteger());
+			arr[index] = static_cast<unsigned char>(value.getInteger());
+			return false;
+		});
+	}
+}
+
+ARRAY_CONTAINER_WRITE(ArrayUCharContainer)
+{
+	assert(!json[ValueContainerBase::_key.getBuffer()]);
+
+	JSON array = JSON::createArray();
+
+	if (_var) {
+		for (size_t i = 0; i < (object->*_var).size(); ++i) {
+			array.setObject(i, JSON::createInteger((object->*_var)[i]));
+		}
+
+	} else if (_getter) {
+		const Array<unsigned char, Allocator>& value = (object->*_getter)();
+
+		for (size_t i = 0; i < (object->*_var).size(); ++i) {
+			array.setObject(i, JSON::createInteger(value[i]));
+		}
+	}
+
+	json.setObject(ValueContainerBase::_key.getBuffer(), array);
+}
+
+
+
+
+ARRAY_CONTAINER_READ(ArrayCharContainer)
+{
+	JSON array = json[reinterpret_cast<const char*>(ValueContainerBase::_key.getBuffer())];
+	assert(array.isArray());
+
+	if (_var) {
+		(object->*_var).resize(array.size());
+
+		array.forEachInArray([&](size_t index, const JSON& value) -> bool
+		{
+			assert(value.isInteger());
+			(object->*_var)[index] = static_cast<char>(value.getInteger());
+			return false;
+		});
+
+	} else if (_getter) {
+		Array<char, Allocator>& arr = const_cast<Array<char, Allocator>&>((object->*_getter)());
+		arr.resize(array.size());
+
+		array.forEachInArray([&](size_t index, const JSON& value) -> bool
+		{
+			assert(value.isInteger());
+			arr[index] = static_cast<char>(value.getInteger());
+			return false;
+		});
+	}
+}
+
+ARRAY_CONTAINER_WRITE(ArrayCharContainer)
+{
+	assert(!json[ValueContainerBase::_key.getBuffer()]);
+
+	JSON array = JSON::createArray();
+
+	if (_var) {
+		for (size_t i = 0; i < (object->*_var).size(); ++i) {
+			array.setObject(i, JSON::createInteger((object->*_var)[i]));
+		}
+
+	} else if (_getter) {
+		const Array<char, Allocator>& value = (object->*_getter)();
+
+		for (size_t i = 0; i < (object->*_var).size(); ++i) {
+			array.setObject(i, JSON::createInteger(value[i]));
+		}
+	}
+
+	json.setObject(ValueContainerBase::_key.getBuffer(), array);
+}
+
+
+
+
+ARRAY_CONTAINER_READ(ArrayStringContainer)
+{
+	JSON array = json[reinterpret_cast<const char*>(ValueContainerBase::_key.getBuffer())];
+	assert(array.isArray());
+
+	if (_var) {
+		(object->*_var).resize(array.size());
+
+		array.forEachInArray([&](size_t index, const JSON& value) -> bool
+		{
+			assert(value.isString());
+			(object->*_var)[index] = value.getString();
+			return false;
+		});
+
+	} else if (_setter) {
+		Array<AString<Allocator>, Allocator>& arr = const_cast<Array<AString<Allocator>, Allocator>&>((object->*_getter)());
+		arr.resize(array.size());
+
+		array.forEachInArray([&](size_t index, const JSON& value) -> bool
+		{
+			assert(value.isString());
+			arr[index] = value.getString();
+			return false;
+		});
+	}
+}
+
+ARRAY_CONTAINER_WRITE(ArrayStringContainer)
+{
+	assert(!json[ValueContainerBase::_key.getBuffer()]);
+
+	JSON array = JSON::createArray();
+
+	if (_var) {
+		for (size_t i = 0; i < (object->*_var).size(); ++i) {
+			array.setObject(i, JSON::createString((object->*_var)[i].getBuffer()));
+		}
+
+	} else if (_getter) {
+		const Array<AString<Allocator>, Allocator>& value = (object->*_getter)();
+
+		for (size_t i = 0; i < (object->*_var).size(); ++i) {
+			array.setObject(i, JSON::createString(value[i].getBuffer()));
+		}
+	}
+
+	json.setObject(ValueContainerBase::_key.getBuffer(), array);
+}
+
+
+
+
+// Array Object
+template <class T, class Allocator>
+template <class T2>
+ReflectionDefinition<T, Allocator>::ArrayObjectContainer<T2>::ArrayObjectContainer(const char* key, ReflectionDefinition<T2, Allocator>& obj_ref_def, Getter getter, Setter setter, const Allocator& allocator):
+	ValueContainerBase(key, allocator), _obj_ref_def(obj_ref_def), _getter(getter), _setter(setter), _var(nullptr)
+{
+}
+
+template <class T, class Allocator>
+template <class T2>
+ReflectionDefinition<T, Allocator>::ArrayObjectContainer<T2>::ArrayObjectContainer(const char* key, Array<T2, Allocator> T::* var, ReflectionDefinition<T2, Allocator>& obj_ref_def, const Allocator& allocator):
+	ValueContainerBase(key, allocator), _obj_ref_def(obj_ref_def), _getter(nullptr), _setter(nullptr), _var(var)
+{
+}
+
+template <class T, class Allocator>
+template <class T2>
+void ReflectionDefinition<T, Allocator>::ArrayObjectContainer<T2>::read(const JSON& json, T* object)
+{
+	JSON array = json[reinterpret_cast<const char*>(ValueContainerBase::_key.getBuffer())];
+	assert(array.isArray());
+
+	if (_var) {
+		(object->*_var).resize(array.size());
+
+		array.forEachInArray([&](size_t index, const JSON& value) -> bool
+		{
+			assert(value.isObject());
+			_obj_ref_def.read(value, &(object->*_var)[index]);
+			return false;
+		});
+
+	} else if (_getter) {
+		Array<T2, Allocator>& arr = const_cast<Array<T2, Allocator>&>((object->*_getter)());
+		arr.resize(array.size());
+
+		array.forEachInArray([&](size_t index, const JSON& value) -> bool
+		{
+			assert(value.isObject());
+			_obj_ref_def.read(value, &arr[index]);
+			return false;
+		});
+	}
+}
+
+template <class T, class Allocator>
+template <class T2>
+void ReflectionDefinition<T, Allocator>::ArrayObjectContainer<T2>::write(JSON& json, T* object) const
+{
+	assert(!json[ValueContainerBase::_key.getBuffer()]);
+
+	JSON array = JSON::createArray();
+
+	if (_var) {
+		for (size_t i = 0; i < (object->*_var).size(); ++i) {
+			JSON obj = JSON::createObject();
+			_obj_ref_def.write(obj, &(object->*_var)[i]);
+			array.setObject(i, obj);
+		}
+
+	} else if (_getter) {
+		const Array<T2, Allocator>& value = (object->*_getter)();
+
+		for (size_t i = 0; i < (object->*_var).size(); ++i) {
+			JSON obj = JSON::createObject();
+			_obj_ref_def.write(obj, const_cast<T2*>(&value[i]));
+			array.setObject(i, obj);
+		}
+	}
+
+	json.setObject(ValueContainerBase::_key.getBuffer(), array);
+}
+
+template <class T, class Allocator>
+template <class T2>
+void ReflectionDefinition<T, Allocator>::ArrayObjectContainer<T2>::get(void* out, const void* object) const
+{
+	get(out, reinterpret_cast<const T*>(object));
+}
+
+template <class T, class Allocator>
+template <class T2>
+void ReflectionDefinition<T, Allocator>::ArrayObjectContainer<T2>::get(void* out, const T* object) const
 {
 	if (_var) {
-		object->*_var = *reinterpret_cast<Array<double, Allocator>*>(value);
-	} else if (_setter) {
-		(object->*_setter)(*reinterpret_cast<Array<double, Allocator>*>(value));
+		*reinterpret_cast<Array<T2, Allocator>*>(out) = (object->*_var);
+	} else if (_getter) {
+		*reinterpret_cast<Array<T2, Allocator>*>(out) = (object->*_getter)();
 	}
 }
 
+template <class T, class Allocator>
+template <class T2>
+void ReflectionDefinition<T, Allocator>::ArrayObjectContainer<T2>::get(void* out, size_t index, const void* object) const
+{
+	get(out, index, reinterpret_cast<const T*>(object));
+}
+
+template <class T, class Allocator>
+template <class T2>
+void ReflectionDefinition<T, Allocator>::ArrayObjectContainer<T2>::get(void* out, size_t index, const T* object) const
+{
+	if (_var) {
+		assert(index < (object->*_var).size());
+		*reinterpret_cast<T2*>(out) = (object->*_var)[index];
+	} else if (_getter) {
+		const Array<T2, Allocator>& array = (object->*_getter)();
+		assert(index < array.size());
+		*reinterpret_cast<T2*>(out) = array[index];
+	}
+}
+
+template <class T, class Allocator>
+template <class T2>
+void ReflectionDefinition<T, Allocator>::ArrayObjectContainer<T2>::set(const void* value, void* object)
+{
+	set(value, reinterpret_cast<T*>(object));
+}
+
+template <class T, class Allocator>
+template <class T2>
+void ReflectionDefinition<T, Allocator>::ArrayObjectContainer<T2>::set(const void* value, T* object)
+{
+	if (_var) {
+		(object->*_var) = *reinterpret_cast<const Array<T2, Allocator>*>(value);
+	} else if (_setter) {
+		(object->*_setter)(*reinterpret_cast<const Array<T2, Allocator>*>(value));
+	}
+}
+
+template <class T, class Allocator>
+template <class T2>
+void ReflectionDefinition<T, Allocator>::ArrayObjectContainer<T2>::set(const void* value, size_t index, void* object)
+{
+	set(value, index, reinterpret_cast<T*>(object));
+}
+
+template <class T, class Allocator>
+template <class T2>
+void ReflectionDefinition<T, Allocator>::ArrayObjectContainer<T2>::set(const void* value, size_t index, T* object)
+{
+	if (_var) {
+		assert(index < (object->*_var).size());
+		(object->*_var)[index] = *reinterpret_cast<const T2*>(value);
+	} else if (_getter) {
+		Array<T2, Allocator>& array = const_cast<Array<T2, Allocator>&>((object->*_getter)());
+		assert(index < array.size());
+		array[index] = *reinterpret_cast<const T2*>(value);
+	}
+}
+
+template <class T, class Allocator>
+template <class T2>
+size_t ReflectionDefinition<T, Allocator>::ArrayObjectContainer<T2>::size(const void* object) const
+{
+	return size(reinterpret_cast<const T*>(object));
+}
+
+template <class T, class Allocator>
+template <class T2>
+size_t ReflectionDefinition<T, Allocator>::ArrayObjectContainer<T2>::size(const T* object) const
+{
+	if (_var) {
+		return (object->*_var).size();
+	} else if (_getter) {
+		return (object->*_getter)().size();
+	} else {
+		return 0;
+	}
+}
+
+template <class T, class Allocator>
+template <class T2>
+void ReflectionDefinition<T, Allocator>::ArrayObjectContainer<T2>::resize(size_t new_size, void* object)
+{
+	resize(new_size, reinterpret_cast<T*>(object));
+}
+
+template <class T, class Allocator>
+template <class T2>
+void ReflectionDefinition<T, Allocator>::ArrayObjectContainer<T2>::resize(size_t new_size, T* object)
+{
+	if (_var) {
+		return (object->*_var).resize(new_size);
+	} else if (_getter) {
+		return const_cast<Array<T2, Allocator>&>((object->*_getter)()).resize(new_size);
+	}
+}
+
+template <class T, class Allocator>
+template <class T2>
+void ReflectionDefinition<T, Allocator>::ArrayObjectContainer<T2>::move(size_t src_index, size_t dest_index, void* object)
+{
+	move(src_index, dest_index, reinterpret_cast<T*>(object));
+}
+
+template <class T, class Allocator>
+template <class T2>
+void ReflectionDefinition<T, Allocator>::ArrayObjectContainer<T2>::move(size_t src_index, size_t dest_index, T* object)
+{
+	if (_var) {
+		assert(src_index < (object->*_var).size() && dest_index <= (object->*_var).size());
+		T2 temp = Move((object->*_var)[src_index]);
+		(object->*_var).erase(src_index);
+		dest_index = (dest_index > src_index) ? dest_index - 1 : dest_index; /* If the dest index was above the source index, shift it down by one.*/
+		(object->*_var).moveInsert(Move(temp), dest_index);
+	} else if (_getter) {
+		Array<T2, Allocator>& array = const_cast<Array<T2, Allocator>&>((object->*_getter)());
+		T2 temp = Move((object->*_var)[src_index]);
+		array.erase(src_index);
+		dest_index = (dest_index > src_index) ? dest_index - 1 : dest_index; /* If the dest index was above the source index, shift it down by one.*/
+		array.moveInsert(Move(temp), dest_index);
+	}
+}
+
+template <class T, class Allocator>
+template <class T2>
+bool ReflectionDefinition<T, Allocator>::ArrayObjectContainer<T2>::isFixedArray(void) const
+{
+	return false;
+}
+
+template <class T, class Allocator>
+template <class T2>
+bool ReflectionDefinition<T, Allocator>::ArrayObjectContainer<T2>::isArray(void) const
+{
+	return true;
+}
+
+template <class T, class Allocator>
+template <class T2>
+ReflectionValueType ReflectionDefinition<T, Allocator>::ArrayObjectContainer<T2>::getType(void) const
+{
+	return VT_OBJECT;
+}
+
+
+
+
+// Array Enum
+template <class T, class Allocator>
+template <class T2>
+ReflectionDefinition<T, Allocator>::ArrayEnumContainer<T2>::ArrayEnumContainer(const char* key, EnumReflectionDefinition<T2, Allocator>& enum_ref_def, Getter getter, Setter setter, const Allocator& allocator):
+	ValueContainerBase(key, allocator), _enum_ref_def(enum_ref_def), _getter(getter), _setter(setter), _var(nullptr)
+{
+}
+
+template <class T, class Allocator>
+template <class T2>
+ReflectionDefinition<T, Allocator>::ArrayEnumContainer<T2>::ArrayEnumContainer(const char* key, Array<T2, Allocator> T::* var, EnumReflectionDefinition<T2, Allocator>& enum_ref_def, const Allocator& allocator):
+	ValueContainerBase(key, allocator), _enum_ref_def(enum_ref_def), _getter(nullptr), _setter(nullptr), _var(var)
+{
+}
+
+template <class T, class Allocator>
+template <class T2>
+void ReflectionDefinition<T, Allocator>::ArrayEnumContainer<T2>::read(const JSON& json, T* object)
+{
+	JSON array = json[reinterpret_cast<const char*>(ValueContainerBase::_key.getBuffer())];
+	assert(array.isArray());
+
+	if (_var) {
+		(object->*_var).resize(array.size());
+
+		array.forEachInArray([&](size_t index, const JSON& value) -> bool
+		{
+			assert(value.isString());
+			(object->*_var)[index] = _enum_ref_def.getValue(value.getString());
+			return false;
+		});
+
+	} else if (_getter) {
+		Array<T2, Allocator>& arr = const_cast<Array<T2, Allocator>&>((object->*_getter)());
+		arr.resize(array.size());
+
+		array.forEachInArray([&](size_t index, const JSON& value) -> bool
+		{
+			assert(value.isString());
+			arr[index] = _enum_ref_def.getValue(value.getString());
+			return false;
+		});
+	}
+}
+
+template <class T, class Allocator>
+template <class T2>
+void ReflectionDefinition<T, Allocator>::ArrayEnumContainer<T2>::write(JSON& json, T* object) const
+{
+	assert(!json[ValueContainerBase::_key.getBuffer()]);
+
+	JSON array = JSON::createArray();
+
+	if (_var) {
+		for (size_t i = 0; i < (object->*_var).size(); ++i) {
+			array.setObject(i, JSON::createString(_enum_ref_def.getName((object->*_var)[i])));
+		}
+
+	} else if (_getter) {
+		const Array<T2, Allocator>& value = (object->*_getter)();
+
+		for (size_t i = 0; i < (object->*_var).size(); ++i) {
+			array.setObject(i, JSON::createString(_enum_ref_def.getName(value[i])));
+		}
+	}
+
+	json.setObject(ValueContainerBase::_key.getBuffer(), array);
+}
+
+template <class T, class Allocator>
+template <class T2>
+void ReflectionDefinition<T, Allocator>::ArrayEnumContainer<T2>::get(void* out, const void* object) const
+{
+	get(out, reinterpret_cast<const T*>(object));
+}
+
+template <class T, class Allocator>
+template <class T2>
+void ReflectionDefinition<T, Allocator>::ArrayEnumContainer<T2>::get(void* out, const T* object) const
+{
+	if (_var) {
+		*reinterpret_cast<Array<T2, Allocator>*>(out) = (object->*_var);
+	} else if (_getter) {
+		*reinterpret_cast<Array<T2, Allocator>*>(out) = (object->*_getter)();
+	}
+}
+
+template <class T, class Allocator>
+template <class T2>
+void ReflectionDefinition<T, Allocator>::ArrayEnumContainer<T2>::get(void* out, size_t index, const void* object) const
+{
+	get(out, index, reinterpret_cast<const T*>(object));
+}
+
+template <class T, class Allocator>
+template <class T2>
+void ReflectionDefinition<T, Allocator>::ArrayEnumContainer<T2>::get(void* out, size_t index, const T* object) const
+{
+	if (_var) {
+		assert(index < (object->*_var).size());
+		*reinterpret_cast<T2*>(out) = (object->*_var)[index];
+	} else if (_getter) {
+		const Array<T2, Allocator>& array = (object->*_getter)();
+		assert(index < array.size());
+		*reinterpret_cast<T2*>(out) = array[index];
+	}
+}
+
+template <class T, class Allocator>
+template <class T2>
+void ReflectionDefinition<T, Allocator>::ArrayEnumContainer<T2>::set(const void* value, void* object)
+{
+	set(value, reinterpret_cast<T*>(object));
+}
+
+template <class T, class Allocator>
+template <class T2>
+void ReflectionDefinition<T, Allocator>::ArrayEnumContainer<T2>::set(const void* value, T* object)
+{
+	if (_var) {
+		(object->*_var) = *reinterpret_cast<const Array<T2, Allocator>*>(value);
+	} else if (_setter) {
+		(object->*_setter)(*reinterpret_cast<const Array<T2, Allocator>*>(value));
+	}
+}
+
+template <class T, class Allocator>
+template <class T2>
+void ReflectionDefinition<T, Allocator>::ArrayEnumContainer<T2>::set(const void* value, size_t index, void* object)
+{
+	set(value, index, reinterpret_cast<T*>(object));
+}
+
+template <class T, class Allocator>
+template <class T2>
+void ReflectionDefinition<T, Allocator>::ArrayEnumContainer<T2>::set(const void* value, size_t index, T* object)
+{
+	if (_var) {
+		assert(index < (object->*_var).size());
+		(object->*_var)[index] = *reinterpret_cast<const T2*>(value);
+	} else if (_getter) {
+		Array<T2, Allocator>& array = const_cast<Array<T2, Allocator>&>((object->*_getter)());
+		assert(index < array.size());
+		array[index] = *reinterpret_cast<const T2*>(value);
+	}
+}
+
+template <class T, class Allocator>
+template <class T2>
+size_t ReflectionDefinition<T, Allocator>::ArrayEnumContainer<T2>::size(const void* object) const
+{
+	return size(reinterpret_cast<const T*>(object));
+}
+
+template <class T, class Allocator>
+template <class T2>
+size_t ReflectionDefinition<T, Allocator>::ArrayEnumContainer<T2>::size(const T* object) const
+{
+	if (_var) {
+		return (object->*_var).size();
+	} else if (_getter) {
+		return (object->*_getter)().size();
+	} else {
+		return 0;
+	}
+}
+
+template <class T, class Allocator>
+template <class T2>
+void ReflectionDefinition<T, Allocator>::ArrayEnumContainer<T2>::resize(size_t new_size, void* object)
+{
+	resize(new_size, reinterpret_cast<T*>(object));
+}
+
+template <class T, class Allocator>
+template <class T2>
+void ReflectionDefinition<T, Allocator>::ArrayEnumContainer<T2>::resize(size_t new_size, T* object)
+{
+	if (_var) {
+		return (object->*_var).resize(new_size);
+	} else if (_getter) {
+		return const_cast<Array<T2, Allocator>&>((object->*_getter)()).resize(new_size);
+	}
+}
+
+template <class T, class Allocator>
+template <class T2>
+void ReflectionDefinition<T, Allocator>::ArrayEnumContainer<T2>::move(size_t src_index, size_t dest_index, void* object)
+{
+	move(src_index, dest_index, reinterpret_cast<T*>(object));
+}
+
+template <class T, class Allocator>
+template <class T2>
+void ReflectionDefinition<T, Allocator>::ArrayEnumContainer<T2>::move(size_t src_index, size_t dest_index, T* object)
+{
+	if (_var) {
+		assert(src_index < (object->*_var).size() && dest_index <= (object->*_var).size());
+		T2 temp = Move((object->*_var)[src_index]);
+		(object->*_var).erase(src_index);
+		dest_index = (dest_index > src_index) ? dest_index - 1 : dest_index; /* If the dest index was above the source index, shift it down by one.*/
+		(object->*_var).moveInsert(Move(temp), dest_index);
+	} else if (_getter) {
+		Array<T2, Allocator>& array = const_cast<Array<T2, Allocator>&>((object->*_getter)());
+		T2 temp = Move((object->*_var)[src_index]);
+		array.erase(src_index);
+		dest_index = (dest_index > src_index) ? dest_index - 1 : dest_index; /* If the dest index was above the source index, shift it down by one.*/
+		array.moveInsert(Move(temp), dest_index);
+	}
+}
+
+template <class T, class Allocator>
+template <class T2>
+bool ReflectionDefinition<T, Allocator>::ArrayEnumContainer<T2>::isFixedArray(void) const
+{
+	return false;
+}
+
+template <class T, class Allocator>
+template <class T2>
+bool ReflectionDefinition<T, Allocator>::ArrayEnumContainer<T2>::isArray(void) const
+{
+	return true;
+}
+
+template <class T, class Allocator>
+template <class T2>
+ReflectionValueType ReflectionDefinition<T, Allocator>::ArrayEnumContainer<T2>::getType(void) const
+{
+	return VT_ENUM;
+}
 
 
 

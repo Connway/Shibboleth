@@ -24,16 +24,7 @@ THE SOFTWARE.
 #include "Shibboleth_RenderManager.h"
 #include <Shibboleth_IApp.h>
 
-#define RT_DISPLAY_TAG 1
-
 NS_SHIBBOLETH
-
-//REF_IMPL_SHIB(CameraComponent::Viewport)
-//.addFloat("X", &CameraComponent::Viewport::x)
-//.addFloat("Y", &CameraComponent::Viewport::y)
-//.addFloat("Width", &CameraComponent::Viewport::width)
-//.addFloat("Height", &CameraComponent::Viewport::height)
-//;
 
 REF_IMPL_REQ(CameraComponent);
 REF_IMPL_SHIB(CameraComponent)
