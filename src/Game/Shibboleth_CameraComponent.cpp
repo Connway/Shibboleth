@@ -29,8 +29,8 @@ NS_SHIBBOLETH
 REF_IMPL_REQ(CameraComponent);
 REF_IMPL_SHIB(CameraComponent)
 .addBaseClassInterfaceOnly<CameraComponent>()
-//.addArray("Viewport", &CameraComponent::_viewport)
-//.addArray("Clear Color", &CameraComponent::_clear_color)
+.addArray("Viewport", &CameraComponent::_viewport)
+.addArray("Clear Color", &CameraComponent::_clear_color)
 .addUInt("Render Order", &CameraComponent::_render_order)
 .addFloat("Field of View", &CameraComponent::_fov)
 .addBool("Active", &CameraComponent::_active)
