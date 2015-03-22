@@ -92,13 +92,12 @@ struct RenderTargetData : public Gaff::IVirtualDestructor
 {
 	Array<RenderTargetPtr> render_targets;
 	Array<TexturePtr> textures;
-	Array<TexturePtr> depths;
+	Array<TexturePtr> depth_stencils;
 	Array<ShaderResourceViewPtr> texture_srvs;
-	Array<ShaderResourceViewPtr> depth_srvs;
+	Array<ShaderResourceViewPtr> depth_stencil_srvs;
 
 	unsigned int width;
 	unsigned int height;
-	unsigned int device;
 	unsigned short tags;
 };
 

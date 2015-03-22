@@ -143,21 +143,6 @@ Gaff::IVirtualDestructor* SamplerStateLoader::load(const char* file_name, unsign
 		ss.border_a = static_cast<float>(json["border_a"].getReal());
 	}
 
-	Gaff::JSON display_tags = json["display_tags"];
-	unsigned short disp_tags = 0;
-
-	if (!display_tags.isNull()) {
-		if (!display_tags.isArray()) {
-			LogMessage(GetApp().getGameLogFile(), TPT_PRINTLOG, LogManager::LOG_ERROR, "ERROR - Sampler State file '%s' is malformed. Value at 'display_tags' is not an array of strings.\n", file_name);
-			return nullptr;
-		}
-
-		if (EXTRACT_DISPLAY_TAGS(display_tags, disp_tags)) {
-			LogMessage(GetApp().getGameLogFile(), TPT_PRINTLOG, LogManager::LOG_ERROR, "ERROR - Sampler State file '%s' is malformed. An element in 'display_tags' is not a string.\n", file_name);
-			return nullptr;
-		}
-	}
-
 	SamplerStateData* sampler_data = GetAllocator()->template allocT<SamplerStateData>();
 
 	if (!sampler_data) {
@@ -167,18 +152,12 @@ Gaff::IVirtualDestructor* SamplerStateLoader::load(const char* file_name, unsign
 
 	Gaff::ScopedLock<Gaff::SpinLock> scoped_lock(_render_mgr.getSpinLock());
 	Gleam::IRenderDevice& rd = _render_mgr.getRenderDevice();
-
-	Array<const RenderManager::WindowData*> windows = (json["any_display_with_tags"].isTrue()) ?
-		_render_mgr.getAllWindowsWithTagsAny(disp_tags) :
-		_render_mgr.getAllWindowsWithTags(disp_tags);
-
-	assert(!windows.empty());
-
+	
 	sampler_data->data.resize(rd.getNumDevices());
 
-	for (auto it = windows.begin(); it != windows.end(); ++it) {
+	for (unsigned int i = 0; i < rd.getNumDevices(); ++i) {
 		SamplerStatePtr sampler(_render_mgr.createSamplerState());
-		rd.setCurrentDevice((*it)->device);
+		rd.setCurrentDevice(i);
 
 		if (!sampler) {
 			LogMessage(GetApp().getGameLogFile(), TPT_PRINTLOG, LogManager::LOG_ERROR, "ERROR - Failed to allocate Sampler State for sampler '%s'.\n", file_name);
@@ -192,7 +171,7 @@ Gaff::IVirtualDestructor* SamplerStateLoader::load(const char* file_name, unsign
 			return nullptr;
 		}
 
-		sampler_data->data[(*it)->device] = Gaff::Move(sampler);
+		sampler_data->data[i] = Gaff::Move(sampler);
 	}
 
 	return sampler_data;

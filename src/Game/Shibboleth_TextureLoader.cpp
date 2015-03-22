@@ -148,6 +148,10 @@ Gaff::IVirtualDestructor* TextureLoader::load(const char* file_name, unsigned lo
 
 	// Load the texture for each device
 	for (auto it = windows.begin(); it != windows.end(); ++it) {
+		if (texture_data->textures[(*it)->device]) {
+			continue;
+		}
+
 		TexturePtr texture(_render_mgr.createTexture());
 		rd.setCurrentDevice((*it)->device);
 

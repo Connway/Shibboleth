@@ -1124,6 +1124,11 @@ void* ClassName::rawRequestInterface(unsigned int class_id) const \
 	return gRefDef.getInterface(class_id, this); \
 }
 
+#define ENUM_REF_DEF_EMBEDDED(EnumName, Type, Allocator) extern Gaff::EnumReflectionDefinition<Type, Allocator> g##EnumName##RefDef
+#define ENUM_REF_IMPL_EMBEDDED(EnumName, Type, Allocator) Gaff::EnumReflectionDefinition<Type, Allocator> g##EnumName##RefDef
+#define ENUM_REFL_IMPL_ASSIGN_EMBEDDED(EnumName, Type, Allocator, allocator_instance) ENUM_REF_IMPL_EMBEDDED(EnumName, Type, Allocator) = Gaff::EnumRefDef<Type, Allocator>(#Type, allocator_instance).macroFix()
+#define ENUM_REFL_IMPL_ASSIGN_DEFAULT_EMBEDDED(EnumName, Type, Allocator, allocator_instance) ENUM_REF_IMPL_EMBEDDED(EnumName, Type, Allocator) = Gaff::EnumRefDef<Type, Allocator>(#Type).macroFix()
+
 #define ENUM_REF_DEF(EnumName, Allocator) extern Gaff::EnumReflectionDefinition<EnumName, Allocator> g##EnumName##RefDef
 #define ENUM_REF_IMPL(EnumName, Allocator) Gaff::EnumReflectionDefinition<EnumName, Allocator> g##EnumName##RefDef
 #define ENUM_REF_IMPL_ASSIGN(EnumName, Allocator, allocator_instance) ENUM_REF_IMPL(EnumName, Allocator) = Gaff::EnumRefDef<EnumName, Allocator>(#EnumName, allocator_instance).macroFix()

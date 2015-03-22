@@ -26,19 +26,16 @@ THE SOFTWARE.
 
 NS_SHIBBOLETH
 
-class IFileSystem;
-class LuaManager;
-
-class LuaLoader : public IResourceLoader
+class RenderTargetLoader : public IResourceLoader
 {
 public:
-	LuaLoader(void);
-	~LuaLoader(void);
+	RenderTargetLoader(void);
+	~RenderTargetLoader(void);
 
 	Gaff::IVirtualDestructor* load(const char* file_name, unsigned long long, HashMap<AString, IFile*>& file_map);
 
-	GAFF_NO_COPY(LuaLoader);
-	GAFF_NO_MOVE(LuaLoader);
+	GAFF_NO_COPY(RenderTargetLoader);
+	GAFF_NO_MOVE(RenderTargetLoader);
 };
 
 NS_END

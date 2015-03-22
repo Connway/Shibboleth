@@ -62,7 +62,7 @@ Gaff::IVirtualDestructor* ShaderLoader::load(const char* file_name, unsigned lon
 		return nullptr;
 	}
 
-	shader_data->shader_type = (Gleam::IShader::SHADER_TYPE)user_data;
+	shader_data->shader_type = static_cast<Gleam::IShader::SHADER_TYPE>(user_data);
 
 	Gaff::ScopedLock<Gaff::SpinLock> scoped_lock(_render_mgr.getSpinLock());
 	Gleam::IRenderDevice& rd = _render_mgr.getRenderDevice();
