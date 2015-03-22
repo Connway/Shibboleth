@@ -270,9 +270,9 @@ void ReflectionDefinition<T, Allocator>::read(const JSON& json, void* object)
 }
 
 template <class T, class Allocator>
-void ReflectionDefinition<T, Allocator>::write(JSON& json, void* object) const
+void ReflectionDefinition<T, Allocator>::write(JSON& json, const void* object) const
 {
-	write(json, reinterpret_cast<T*>(object));
+	write(json, reinterpret_cast<const T*>(object));
 }
 
 template <class T, class Allocator>
@@ -302,7 +302,7 @@ void ReflectionDefinition<T, Allocator>::read(const JSON& json, T* object)
 }
 
 template <class T, class Allocator>
-void ReflectionDefinition<T, Allocator>::write(JSON& json, T* object) const
+void ReflectionDefinition<T, Allocator>::write(JSON& json, const T* object) const
 {
 	for (auto it = _value_containers.begin(); it != _value_containers.end(); ++it) {
 		(*it)->write(json, object);
@@ -434,7 +434,8 @@ template <class T, class Allocator>
 template <class T2>
 ReflectionDefinition<T, Allocator>&& ReflectionDefinition<T, Allocator>::addArray(const char* key, const Array<T2, Allocator>& (T::*getter)(void) const, void (T::*setter)(const Array<T2, Allocator>&))
 {
-	return Move(addArray(key, getter, setter, T2::GetReflectionDefinition()));
+	addArray(key, getter, setter, T2::GetReflectionDefinition());
+	return Move(*this);
 }
 
 template <class T, class Allocator>
@@ -451,12 +452,13 @@ template <class T, class Allocator>
 template <class T2>
 ReflectionDefinition<T, Allocator>&& ReflectionDefinition<T, Allocator>::addArray(const char* key, Array<T2, Allocator> T::* var)
 {
-	return Move(addArray(key, var, T2::GetReflectionDefinition()));
+	addArray(key, var, T2::GetReflectionDefinition());
+	return Move(*this);
 }
 
 template <class T, class Allocator>
 template <class T2>
-ReflectionDefinition<T, Allocator>&& ReflectionDefinition<T, Allocator>::addArray(const char* key, const Array<T2, Allocator>& (T::*getter)(void) const, void (T::*setter)(const Array<T2, Allocator>&), EnumReflectionDefinition<T2, Allocator>& enum_ref_def)
+ReflectionDefinition<T, Allocator>&& ReflectionDefinition<T, Allocator>::addArray(const char* key, const Array<T2, Allocator>& (T::*getter)(void) const, void (T::*setter)(const Array<T2, Allocator>&), const EnumReflectionDefinition<T2, Allocator>& enum_ref_def)
 {
 	assert(key && strlen(key) && !_value_containers.hasElementWithKey(key));
 	ArrayEnumContainer<T2>* container = _allocator.template allocT< ArrayEnumContainer<T2> >(key, enum_ref_def, getter, setter, _allocator);
@@ -466,7 +468,7 @@ ReflectionDefinition<T, Allocator>&& ReflectionDefinition<T, Allocator>::addArra
 
 template <class T, class Allocator>
 template <class T2>
-ReflectionDefinition<T, Allocator>&& ReflectionDefinition<T, Allocator>::addArray(const char* key, Array<T2, Allocator> T::* var, EnumReflectionDefinition<T2, Allocator>& enum_ref_def)
+ReflectionDefinition<T, Allocator>&& ReflectionDefinition<T, Allocator>::addArray(const char* key, Array<T2, Allocator> T::* var, const EnumReflectionDefinition<T2, Allocator>& enum_ref_def)
 {
 	assert(key && strlen(key) && !_value_containers.hasElementWithKey(key));
 	ArrayEnumContainer<T2>* container = _allocator.template allocT< ArrayEnumContainer<T2> >(key, var, enum_ref_def, _allocator);
@@ -636,21 +638,241 @@ ReflectionDefinition<T, Allocator>&& ReflectionDefinition<T, Allocator>::addArra
 	return Move(*this);
 }
 
-//template <class T, class Allocator>
-//template <unsigned int array_size>
-//ReflectionDefinition<T, Allocator>&& ReflectionDefinition<T, Allocator>::addArray(const char* key, double (T::*var)[array_size])
-//{
-//	assert(key && strlen(key) && !_value_containers.hasElementWithKey(key));
-//	return Move(*this);
-//}
-//
-//template <class T, class Allocator>
-//template <unsigned int array_size>
-//ReflectionDefinition<T, Allocator>&& ReflectionDefinition<T, Allocator>::addArray(const char* key, float (T::*var)[array_size])
-//{
-//	assert(key && strlen(key) && !_value_containers.hasElementWithKey(key));
-//	return Move(*this);
-//}
+template <class T, class Allocator>
+template <unsigned int array_size, class T2>
+ReflectionDefinition<T, Allocator>&& ReflectionDefinition<T, Allocator>::addArray(const char* key, const T2* (T::*getter)(void) const, void (T::*setter)(const T2*), const EnumReflectionDefinition<T2, Allocator>& enum_ref_def)
+{
+	assert(key && strlen(key) && !_value_containers.hasElementWithKey(key));
+	ArrayFixedEnumContainer<array_size, T2>* container = _allocator.template allocT< ArrayFixedEnumContainer<array_size, T2> >(key, enum_ref_def, getter, setter, _allocator);
+	_value_containers.insert(key, ValueContainerPtr(container));
+	return Move(*this);
+}
+
+template <class T, class Allocator>
+template <unsigned int array_size, class T2>
+ReflectionDefinition<T, Allocator>&& ReflectionDefinition<T, Allocator>::addArray(const char* key, const T2* (T::*getter)(void) const, void (T::*setter)(const T2*), ReflectionDefinition<T2, Allocator>& obj_ref_def)
+{
+	assert(key && strlen(key) && !_value_containers.hasElementWithKey(key));
+	ArrayFixedObjectContainer<array_size, T2>* container = _allocator.template allocT< ArrayFixedObjectContainer<array_size, T2> >(key, obj_ref_def, getter, setter, _allocator);
+	_value_containers.insert(key, ValueContainerPtr(container));
+	return Move(*this);
+}
+
+template <class T, class Allocator>
+template <unsigned int array_size, class T2>
+ReflectionDefinition<T, Allocator>&& ReflectionDefinition<T, Allocator>::addArray(const char* key, const T2* (T::*getter)(void) const, void (T::*setter)(const T2*))
+{
+	addArray<array_size>(key, getter, setter, T2::GetReflectionDefinition());
+	return Move(*this);
+}
+
+template <class T, class Allocator>
+template <unsigned int array_size>
+ReflectionDefinition<T, Allocator>&& ReflectionDefinition<T, Allocator>::addArray(const char* key, const double* (T::*getter)(void) const, void (T::*setter)(const double*))
+{
+	assert(key && strlen(key) && !_value_containers.hasElementWithKey(key));
+	ArrayFixedDoubleContainer<array_size>* container = _allocator.template allocT< ArrayFixedDoubleContainer<array_size> >(key, getter, setter, _allocator);
+	_value_containers.insert(key, ValueContainerPtr(container));
+	return Move(*this);
+}
+
+template <class T, class Allocator>
+template <unsigned int array_size>
+ReflectionDefinition<T, Allocator>&& ReflectionDefinition<T, Allocator>::addArray(const char* key, const float* (T::*getter)(void) const, void (T::*setter)(const float*))
+{
+	assert(key && strlen(key) && !_value_containers.hasElementWithKey(key));
+	ArrayFixedFloatContainer<array_size>* container = _allocator.template allocT< ArrayFixedFloatContainer<array_size> >(key, getter, setter, _allocator);
+	_value_containers.insert(key, ValueContainerPtr(container));
+	return Move(*this);
+}
+
+template <class T, class Allocator>
+template <unsigned int array_size>
+ReflectionDefinition<T, Allocator>&& ReflectionDefinition<T, Allocator>::addArray(const char* key, const unsigned int* (T::*getter)(void) const, void (T::*setter)(const unsigned int*))
+{
+	assert(key && strlen(key) && !_value_containers.hasElementWithKey(key));
+	ArrayFixedUIntContainer<array_size>* container = _allocator.template allocT< ArrayFixedUIntContainer<array_size> >(key, getter, setter, _allocator);
+	_value_containers.insert(key, ValueContainerPtr(container));
+	return Move(*this);
+}
+
+template <class T, class Allocator>
+template <unsigned int array_size>
+ReflectionDefinition<T, Allocator>&& ReflectionDefinition<T, Allocator>::addArray(const char* key, const int* (T::*getter)(void) const, void (T::*setter)(const int*))
+{
+	assert(key && strlen(key) && !_value_containers.hasElementWithKey(key));
+	ArrayFixedIntContainer<array_size>* container = _allocator.template allocT< ArrayFixedIntContainer<array_size> >(key, getter, setter, _allocator);
+	_value_containers.insert(key, ValueContainerPtr(container));
+	return Move(*this);
+}
+
+template <class T, class Allocator>
+template <unsigned int array_size>
+ReflectionDefinition<T, Allocator>&& ReflectionDefinition<T, Allocator>::addArray(const char* key, const unsigned short* (T::*getter)(void) const, void (T::*setter)(const unsigned short*))
+{
+	assert(key && strlen(key) && !_value_containers.hasElementWithKey(key));
+	ArrayFixedUShortContainer<array_size>* container = _allocator.template allocT< ArrayFixedUShortContainer<array_size> >(key, getter, setter, _allocator);
+	_value_containers.insert(key, ValueContainerPtr(container));
+	return Move(*this);
+}
+
+template <class T, class Allocator>
+template <unsigned int array_size>
+ReflectionDefinition<T, Allocator>&& ReflectionDefinition<T, Allocator>::addArray(const char* key, const short* (T::*getter)(void) const, void (T::*setter)(const short*))
+{
+	assert(key && strlen(key) && !_value_containers.hasElementWithKey(key));
+	ArrayFixedShortContainer<array_size>* container = _allocator.template allocT< ArrayFixedShortContainer<array_size> >(key, getter, setter, _allocator);
+	_value_containers.insert(key, ValueContainerPtr(container));
+	return Move(*this);
+}
+
+template <class T, class Allocator>
+template <unsigned int array_size>
+ReflectionDefinition<T, Allocator>&& ReflectionDefinition<T, Allocator>::addArray(const char* key, const unsigned char* (T::*getter)(void) const, void (T::*setter)(const unsigned char*))
+{
+	assert(key && strlen(key) && !_value_containers.hasElementWithKey(key));
+	ArrayFixedUCharContainer<array_size>* container = _allocator.template allocT< ArrayFixedUCharContainer<array_size> >(key, getter, setter, _allocator);
+	_value_containers.insert(key, ValueContainerPtr(container));
+	return Move(*this);
+}
+
+template <class T, class Allocator>
+template <unsigned int array_size>
+ReflectionDefinition<T, Allocator>&& ReflectionDefinition<T, Allocator>::addArray(const char* key, const char* (T::*getter)(void) const, void (T::*setter)(const char*))
+{
+	assert(key && strlen(key) && !_value_containers.hasElementWithKey(key));
+	ArrayFixedCharContainer<array_size>* container = _allocator.template allocT< ArrayFixedCharContainer<array_size> >(key, getter, setter, _allocator);
+	_value_containers.insert(key, ValueContainerPtr(container));
+	return Move(*this);
+}
+
+template <class T, class Allocator>
+template <unsigned int array_size>
+ReflectionDefinition<T, Allocator>&& ReflectionDefinition<T, Allocator>::addArray(const char* key, const AString<Allocator>* (T::*getter)(void) const, void (T::*setter)(const AString<Allocator>*))
+{
+	assert(key && strlen(key) && !_value_containers.hasElementWithKey(key));
+	ArrayFixedStringContainer<array_size>* container = _allocator.template allocT< ArrayFixedStringContainer<array_size> >(key, getter, setter, _allocator);
+	_value_containers.insert(key, ValueContainerPtr(container));
+	return Move(*this);
+}
+
+template <class T, class Allocator>
+template <unsigned int array_size, class T2>
+ReflectionDefinition<T, Allocator>&& ReflectionDefinition<T, Allocator>::addArray(const char* key, T2 (T::*var)[array_size], const EnumReflectionDefinition<T2, Allocator>& enum_ref_def)
+{
+	assert(key && strlen(key) && !_value_containers.hasElementWithKey(key));
+	ArrayFixedEnumContainer<array_size, T2>* container = _allocator.template allocT< ArrayFixedEnumContainer<array_size, T2> >(key, var, enum_ref_def, _allocator);
+	_value_containers.insert(key, ValueContainerPtr(container));
+	return Move(*this);
+}
+
+template <class T, class Allocator>
+template <unsigned int array_size, class T2>
+ReflectionDefinition<T, Allocator>&& ReflectionDefinition<T, Allocator>::addArray(const char* key, T2 (T::*var)[array_size], ReflectionDefinition<T2, Allocator>& obj_ref_def)
+{
+	assert(key && strlen(key) && !_value_containers.hasElementWithKey(key));
+	ArrayFixedObjectContainer<array_size, T2>* container = _allocator.template allocT< ArrayFixedObjectContainer<array_size, T2> >(key, var, obj_ref_def, _allocator);
+	_value_containers.insert(key, ValueContainerPtr(container));
+	return Move(*this);
+}
+
+template <class T, class Allocator>
+template <unsigned int array_size, class T2>
+ReflectionDefinition<T, Allocator>&& ReflectionDefinition<T, Allocator>::addArray(const char* key, T2 (T::*var)[array_size])
+{
+	addArray(key, var, T2::GetReflectionDefinition());
+	return Move(*this);
+}
+
+template <class T, class Allocator>
+template <unsigned int array_size>
+ReflectionDefinition<T, Allocator>&& ReflectionDefinition<T, Allocator>::addArray(const char* key, double (T::*var)[array_size])
+{
+	assert(key && strlen(key) && !_value_containers.hasElementWithKey(key));
+	ArrayFixedDoubleContainer<array_size>* container = _allocator.template allocT< ArrayFixedDoubleContainer<array_size> >(key, var, _allocator);
+	_value_containers.insert(key, ValueContainerPtr(container));
+	return Move(*this);
+}
+
+template <class T, class Allocator>
+template <unsigned int array_size>
+ReflectionDefinition<T, Allocator>&& ReflectionDefinition<T, Allocator>::addArray(const char* key, float (T::*var)[array_size])
+{
+	assert(key && strlen(key) && !_value_containers.hasElementWithKey(key));
+	ArrayFixedFloatContainer<array_size>* container = _allocator.template allocT< ArrayFixedFloatContainer<array_size> >(key, var, _allocator);
+	_value_containers.insert(key, ValueContainerPtr(container));
+	return Move(*this);
+}
+
+template <class T, class Allocator>
+template <unsigned int array_size>
+ReflectionDefinition<T, Allocator>&& ReflectionDefinition<T, Allocator>::addArray(const char* key, unsigned int (T::*var)[array_size])
+{
+	assert(key && strlen(key) && !_value_containers.hasElementWithKey(key));
+	ArrayFixedUIntContainer<array_size>* container = _allocator.template allocT< ArrayFixedUIntContainer<array_size> >(key, var, _allocator);
+	_value_containers.insert(key, ValueContainerPtr(container));
+	return Move(*this);
+}
+
+template <class T, class Allocator>
+template <unsigned int array_size>
+ReflectionDefinition<T, Allocator>&& ReflectionDefinition<T, Allocator>::addArray(const char* key, int (T::*var)[array_size])
+{
+	assert(key && strlen(key) && !_value_containers.hasElementWithKey(key));
+	ArrayFixedIntContainer<array_size>* container = _allocator.template allocT< ArrayFixedIntContainer<array_size> >(key, var, _allocator);
+	_value_containers.insert(key, ValueContainerPtr(container));
+	return Move(*this);
+}
+
+template <class T, class Allocator>
+template <unsigned int array_size>
+ReflectionDefinition<T, Allocator>&& ReflectionDefinition<T, Allocator>::addArray(const char* key, unsigned short (T::*var)[array_size])
+{
+	assert(key && strlen(key) && !_value_containers.hasElementWithKey(key));
+	ArrayFixedUShortContainer<array_size>* container = _allocator.template allocT< ArrayFixedUShortContainer<array_size> >(key, var, _allocator);
+	_value_containers.insert(key, ValueContainerPtr(container));
+	return Move(*this);
+}
+
+template <class T, class Allocator>
+template <unsigned int array_size>
+ReflectionDefinition<T, Allocator>&& ReflectionDefinition<T, Allocator>::addArray(const char* key, short (T::*var)[array_size])
+{
+	assert(key && strlen(key) && !_value_containers.hasElementWithKey(key));
+	ArrayFixedShortContainer<array_size>* container = _allocator.template allocT< ArrayFixedShortContainer<array_size> >(key, var, _allocator);
+	_value_containers.insert(key, ValueContainerPtr(container));
+	return Move(*this);
+}
+
+template <class T, class Allocator>
+template <unsigned int array_size>
+ReflectionDefinition<T, Allocator>&& ReflectionDefinition<T, Allocator>::addArray(const char* key, unsigned char (T::*var)[array_size])
+{
+	assert(key && strlen(key) && !_value_containers.hasElementWithKey(key));
+	ArrayFixedUCharContainer<array_size>* container = _allocator.template allocT< ArrayFixedUCharContainer<array_size> >(key, var, _allocator);
+	_value_containers.insert(key, ValueContainerPtr(container));
+	return Move(*this);
+}
+
+template <class T, class Allocator>
+template <unsigned int array_size>
+ReflectionDefinition<T, Allocator>&& ReflectionDefinition<T, Allocator>::addArray(const char* key, char (T::*var)[array_size])
+{
+	assert(key && strlen(key) && !_value_containers.hasElementWithKey(key));
+	ArrayFixedCharContainer<array_size>* container = _allocator.template allocT< ArrayFixedCharContainer<array_size> >(key, var, _allocator);
+	_value_containers.insert(key, ValueContainerPtr(container));
+	return Move(*this);
+}
+
+template <class T, class Allocator>
+template <unsigned int array_size>
+ReflectionDefinition<T, Allocator>&& ReflectionDefinition<T, Allocator>::addArray(const char* key, AString<Allocator> (T::*var)[array_size])
+{
+	assert(key && strlen(key) && !_value_containers.hasElementWithKey(key));
+	ArrayFixedStringContainer<array_size>* container = _allocator.template allocT< ArrayFixedStringContainer<array_size> >(key, var, _allocator);
+	_value_containers.insert(key, ValueContainerPtr(container));
+	return Move(*this);
+}
 
 template <class T, class Allocator>
 ReflectionDefinition<T, Allocator>&& ReflectionDefinition<T, Allocator>::addDouble(const char* key, double T::* var)

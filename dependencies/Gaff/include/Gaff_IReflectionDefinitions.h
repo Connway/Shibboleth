@@ -113,7 +113,7 @@ public:
 		\param json The JSON object to write to.
 		\param object The object to read from.
 	*/
-	virtual void write(Gaff::JSON& json, void* object) const = 0;
+	virtual void write(Gaff::JSON& json, const void* object) const = 0;
 
 	/*!
 		\brief Gets the address offset of a type that this object implements or derives from.
