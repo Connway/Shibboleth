@@ -63,6 +63,58 @@ static DisplayTags gDisplayTagsValues[] = {
 	DT_11, DT_12, DT_13, DT_14, DT_15, DT_16
 };
 
+ENUM_REF_IMPL_EMBEDDED_SHIB(Gleam_ITexture_Format, Gleam::ITexture::FORMAT)
+.addValue("R_8_UNORM", Gleam::ITexture::R_8_UNORM)
+.addValue("R_16_UNORM", Gleam::ITexture::R_16_UNORM)
+.addValue("RG_8_UNORM", Gleam::ITexture::RG_8_UNORM)
+.addValue("RG_16_UNORM", Gleam::ITexture::RG_16_UNORM)
+.addValue("RGBA_8_UNORM", Gleam::ITexture::RGBA_8_UNORM)
+.addValue("RGBA_16_UNORM", Gleam::ITexture::RGBA_16_UNORM)
+.addValue("R_8_SNORM", Gleam::ITexture::R_8_UNORM)
+.addValue("R_16_SNORM", Gleam::ITexture::R_16_SNORM)
+.addValue("RG_8_SNORM", Gleam::ITexture::RG_8_SNORM)
+.addValue("RG_16_SNORM", Gleam::ITexture::RG_16_SNORM)
+.addValue("RGBA_8_SNORM", Gleam::ITexture::RGBA_8_SNORM)
+.addValue("R_8_I", Gleam::ITexture::R_8_I)
+.addValue("R_16_I", Gleam::ITexture::R_16_I)
+.addValue("R_32_I", Gleam::ITexture::R_32_I)
+.addValue("RG_8_I", Gleam::ITexture::RG_8_I)
+.addValue("RG_16_I", Gleam::ITexture::RG_16_I)
+.addValue("RG_32_I", Gleam::ITexture::RG_32_I)
+.addValue("RGB_32_I", Gleam::ITexture::RGB_32_I)
+.addValue("RGBA_8_I", Gleam::ITexture::RGBA_8_I)
+.addValue("RGBA_16_I", Gleam::ITexture::RGBA_16_I)
+.addValue("RGBA_32_I", Gleam::ITexture::RGBA_32_I)
+.addValue("R_8_UI", Gleam::ITexture::R_8_UI)
+.addValue("R_16_UI", Gleam::ITexture::R_16_UI)
+.addValue("R_32_UI", Gleam::ITexture::R_32_UI)
+.addValue("RG_8_UI", Gleam::ITexture::RG_8_UI)
+.addValue("RG_16_UI", Gleam::ITexture::RG_16_UI)
+.addValue("RG_32_UI", Gleam::ITexture::RG_32_UI)
+.addValue("RGB_32_UI", Gleam::ITexture::RGB_32_UI)
+.addValue("RGBA_8_UI", Gleam::ITexture::RGBA_8_UI)
+.addValue("RGBA_16_UI", Gleam::ITexture::RGBA_16_UI)
+.addValue("RGBA_32_UI", Gleam::ITexture::RGBA_32_UI)
+.addValue("R_16_F", Gleam::ITexture::R_16_F)
+.addValue("R_32_F", Gleam::ITexture::R_32_F)
+.addValue("RG_16_F", Gleam::ITexture::RG_16_F)
+.addValue("RG_32_F", Gleam::ITexture::RG_32_F)
+.addValue("RGB_16_F", Gleam::ITexture::RGB_16_F)
+.addValue("RGB_32_F", Gleam::ITexture::RGB_32_F)
+.addValue("RGBA_16_F", Gleam::ITexture::RGBA_16_F)
+.addValue("RGBA_32_F", Gleam::ITexture::RGBA_32_F)
+.addValue("RGB_11_11_10_F", Gleam::ITexture::RGB_11_11_10_F)
+.addValue("RGBE_9_9_9_5", Gleam::ITexture::RGBE_9_9_9_5)
+.addValue("RGBA_10_10_10_2_UNORM", Gleam::ITexture::RGBA_10_10_10_2_UNORM)
+.addValue("RGBA_10_10_10_2_UI", Gleam::ITexture::RGBA_10_10_10_2_UI)
+.addValue("SRGBA_8_UNORM", Gleam::ITexture::SRGBA_8_UNORM)
+.addValue("DEPTH_16_UNORM", Gleam::ITexture::DEPTH_16_UNORM)
+.addValue("DEPTH_32_F", Gleam::ITexture::DEPTH_32_F)
+.addValue("DEPTH_STENCIL_24_8_UNORM_UI", Gleam::ITexture::DEPTH_STENCIL_24_8_UNORM_UI)
+.addValue("DEPTH_STENCIL_32_8_F", Gleam::ITexture::DEPTH_STENCIL_32_8_F)
+;
+
+
 RenderManager::RenderManager(IApp& app):
 	_render_device(nullptr, ProxyAllocator("Graphics")),
 	_proxy_allocator("Graphics"), _app(app)
@@ -105,8 +157,6 @@ bool RenderManager::initThreadData(void)
 	return true;
 }
 
-// I should move the config file stuff out of this function.
-// Arguement should be the module to load for cacheGleamFunctions().
 bool RenderManager::init(const char* module)
 {
 	Gleam::SetAllocator(&_proxy_allocator);

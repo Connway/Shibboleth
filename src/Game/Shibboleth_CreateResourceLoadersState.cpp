@@ -28,6 +28,7 @@ THE SOFTWARE.
 #include <Shibboleth_ProgramBuffersCreator.h>
 #include <Shibboleth_ShaderProgramLoader.h>
 #include <Shibboleth_SamplerStateLoader.h>
+#include <Shibboleth_RenderTargetLoader.h>
 #include <Shibboleth_BufferCreator.h>
 #include <Shibboleth_TextureLoader.h>
 #include <Shibboleth_HoldingLoader.h>
@@ -149,7 +150,6 @@ void CreateResourceLoadersState::update(void)
 		ShaderLoader* shader_loader = GetAllocator()->template allocT<ShaderLoader>(render_manager);
 
 		if (!shader_loader) {
-			// log error
 			_app.getGameLogFile().first.printf("ERROR - Failed to create shader loader.\n");
 			_app.quit();
 			return;
@@ -164,7 +164,6 @@ void CreateResourceLoadersState::update(void)
 		ShaderProgramLoader* shader_program_loader = GetAllocator()->template allocT<ShaderProgramLoader>(res_mgr, render_manager);
 
 		if (!shader_program_loader) {
-			// log error
 			_app.getGameLogFile().first.printf("ERROR - Failed to create shader program loader.\n");
 			_app.quit();
 			return;
@@ -192,10 +191,9 @@ void CreateResourceLoadersState::update(void)
 
 	// LUA LOADER
 	{
-		LuaLoader* lua_loader = GetAllocator()->template allocT<LuaLoader>(_app.getManagerT<LuaManager>("Lua Manager"));
+		LuaLoader* lua_loader = GetAllocator()->template allocT<LuaLoader>();
 
 		if (!lua_loader) {
-			// log error
 			_app.getGameLogFile().first.printf("ERROR - Failed to create Lua loader.\n");
 			_app.quit();
 			return;
@@ -210,7 +208,6 @@ void CreateResourceLoadersState::update(void)
 		HoldingLoader* holding_loader = GetAllocator()->template allocT<HoldingLoader>();
 
 		if (!holding_loader) {
-			// log error
 			_app.getGameLogFile().first.printf("ERROR - Failed to create Holding loader.\n");
 			_app.quit();
 			return;
@@ -270,7 +267,6 @@ void CreateResourceLoadersState::update(void)
 		ModelLoader* model_loader = GetAllocator()->template allocT<ModelLoader>(render_manager, res_mgr, *_app.getFileSystem());
 
 		if (!model_loader) {
-			// log error
 			_app.getGameLogFile().first.printf("ERROR - Failed to create Model loader.\n");
 			_app.quit();
 			return;
@@ -282,6 +278,20 @@ void CreateResourceLoadersState::update(void)
 
 		_app.getGameLogFile().first.printf("Adding Model Loader\n");
 		res_mgr.registerResourceLoader(model_loader, ".model", TPT_GRAPHICS, json_elements);
+	}
+
+	// RENDER TARGET LOADER
+	{
+		RenderTargetLoader* render_target_loader = GetAllocator()->template allocT<RenderTargetLoader>();
+
+		if (!render_target_loader) {
+			_app.getGameLogFile().first.printf("ERROR - Failed to create Render Target loader.\n");
+			_app.quit();
+			return;
+		}
+
+		_app.getGameLogFile().first.printf("Adding Render Target Loader\n");
+		res_mgr.registerResourceLoader(render_target_loader, ".rendertarget", TPT_GRAPHICS);
 	}
 
 	_app.getGameLogFile().first.printf("Finished Creating Resource Loaders\n\n");

@@ -22,16 +22,17 @@ THE SOFTWARE.
 
 #include "Shibboleth_LuaLoader.h"
 #include "Shibboleth_ResourceDefines.h"
+#include "Shibboleth_TaskPoolTags.h"
 #include "Shibboleth_LuaManager.h"
 #include <Shibboleth_IFileSystem.h>
 #include <Shibboleth_Utilities.h>
 #include <Shibboleth_IApp.h>
+#include <Gaff_ScopedExit.h>
 #include <LuaState.h>
 
 NS_SHIBBOLETH
 
-LuaLoader::LuaLoader(LuaManager& lua_manager):
-	_lua_manager(lua_manager)
+LuaLoader::LuaLoader(void)
 {
 }
 
@@ -44,18 +45,28 @@ Gaff::IVirtualDestructor* LuaLoader::load(const char* file_name, unsigned long l
 	assert(file_map.hasElementWithKey(AString(file_name)));
 	IFile*& file = file_map[AString(file_name)];
 
+	GAFF_SCOPE_EXIT([&]()
+	{
+		GetApp().getFileSystem()->closeFile(file);
+		file = nullptr;
+	});
+
 	SingleDataWrapper<lua::State*>* lua_data = GetAllocator()->template allocT< SingleDataWrapper<lua::State*> >();
 
-	if (lua_data) {
-		lua_data->data = _lua_manager.createNewState();
-
-		if (lua_data->data) {
-			lua_data->data->doString(file->getBuffer());
-		}
+	if (!lua_data) {
+		LogMessage(GetApp().getGameLogFile(), TPT_PRINTLOG, LogManager::LOG_ERROR, "ERROR - Failed to allocate memory for Lua data.\n");
+		return nullptr;
 	}
 
-	GetApp().getFileSystem()->closeFile(file);
-	file = nullptr;
+	lua_data->data = GetApp().getManagerT<LuaManager>("Lua Manager").createNewState();
+
+	if (!lua_data->data) {
+		LogMessage(GetApp().getGameLogFile(), TPT_PRINTLOG, LogManager::LOG_ERROR, "ERROR - Failed to create a Lua state for file '%s'.\n", file_name);
+		GetAllocator()->freeT(lua_data);
+		return nullptr;
+	}
+
+	lua_data->data->doString(file->getBuffer());
 
 	return lua_data;
 }

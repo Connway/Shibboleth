@@ -251,8 +251,8 @@ bool RenderDeviceD3D::init(const IWindow& window, unsigned int adapter_id, unsig
 		RETURNIFFAILED(result)
 
 		D3D11_VIEWPORT viewport;
-		viewport.Width = (float)wnd.getWidth();
-		viewport.Height = (float)wnd.getHeight();
+		viewport.Width = static_cast<float>(wnd.getWidth());
+		viewport.Height = static_cast<float>(wnd.getHeight());
 		viewport.MinDepth = 0.0f;
 		viewport.MaxDepth = 1.0f;
 		viewport.TopLeftX = 0.0f;

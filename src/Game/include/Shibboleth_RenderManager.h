@@ -89,6 +89,8 @@ enum DisplayTags
 
 ENUM_REF_DEF_SHIB(DisplayTags);
 
+ENUM_REF_DEF_EMBEDDED_SHIB(Gleam_ITexture_Format, Gleam::ITexture::FORMAT);
+
 class RenderManager : public IManager
 {
 public:
