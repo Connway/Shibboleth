@@ -23,9 +23,9 @@ THE SOFTWARE.
 #pragma once
 
 #include "Shibboleth_IComponent.h"
-#include <Shibboleth_MessageBroadcaster.h>
 #include <Shibboleth_String.h>
 #include <Shibboleth_Array.h>
+#include <Gaff_SpinLock.h>
 #include <Gaff_Function.h>
 #include <Gaff_SmartPtr.h>
 #include <Gleam_Transform_CPU.h>
@@ -113,8 +113,6 @@ public:
 	void prePhysicsUpdate(double dt);
 	void postPhysicsUpdate(double dt);
 
-	INLINE MessageBroadcaster& getBroadcaster(void);
-
 	INLINE const Gleam::TransformCPU& getLocalTransform(void) const;
 	INLINE const Gleam::TransformCPU& getWorldTransform(void) const;
 	INLINE void setLocalTransform(const Gleam::TransformCPU& transform);
@@ -165,7 +163,6 @@ private:
 	Gaff::SpinLock _children_lock;
 	Object* _parent;
 
-	MessageBroadcaster _broadcaster;
 	AString _name;
 
 	Array<IComponent*> _components;

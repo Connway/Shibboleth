@@ -25,6 +25,7 @@ THE SOFTWARE.
 #include <Shibboleth_String.h>
 #include <Shibboleth_ITask.h>
 #include <Shibboleth_IApp.h>
+#include <Gaff_ScopedLock.h>
 #include <Gaff_Atomic.h>
 
 NS_SHIBBOLETH

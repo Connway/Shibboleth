@@ -32,6 +32,7 @@ THE SOFTWARE.
 #include <Gleam_ILayout.h>
 #include <Gleam_IBuffer.h>
 #include <Gleam_IMesh.h>
+#include <Gaff_ScopedLock.h>
 
 #define MAX_VERTICES 9000
 

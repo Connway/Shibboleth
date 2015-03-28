@@ -266,7 +266,8 @@ group ""
 			"../Shared/include",
 			"../Memory/include",
 			"../../dependencies/Gaff/include",
-			"../../dependencies/utf8-cpp"
+			"../../dependencies/utf8-cpp",
+			"../../dependencies/jansson"
 		}
 
 		filter { "configurations:Debug or Release", "platforms:x86 or x64" }

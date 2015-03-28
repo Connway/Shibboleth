@@ -20,39 +20,35 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#pragma once
-
-#include "Shibboleth_IComponent.h"
-#include <Shibboleth_ReflectionDefinitions.h>
+#include "Shibboleth_CameraManager.h"
+#include "Shibboleth_CameraComponent.h"
 
 NS_SHIBBOLETH
 
-class IApp;
-
-class CameraComponent : public IComponent
+CameraManager::CameraManager(void)
 {
-public:
-	CameraComponent(void);
-	~CameraComponent(void);
+}
 
-	bool load(const Gaff::JSON& json);
-	bool save(Gaff::JSON& json);
+CameraManager::~CameraManager(void)
+{
+}
 
-	void* rawRequestInterface(unsigned int class_id) const;
+const char* CameraManager::getName(void) const
+{
+	return "Camera Manager";
+}
 
-	unsigned int getRenderOrder(void) const;
-	const float* getViewport(void) const;
-	bool isActive(void) const;
-	float getFOV(void) const;
+void CameraManager::registerCamera(unsigned int window_id, CameraComponent* camera)
+{
+}
 
-private:
-	float _clear_color[4];
-	float _viewport[4];
-	unsigned int _render_order;
-	float _fov;
-	bool _active;
+void CameraManager::removeCamera(unsigned int window_id, CameraComponent* camera)
+{
+}
 
-	REF_DEF_SHIB(CameraComponent);
-};
+void CameraManager::removeCamera(CameraComponent* camera)
+{
+}
+
 
 NS_END

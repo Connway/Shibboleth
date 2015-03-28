@@ -22,37 +22,28 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Shibboleth_IComponent.h"
-#include <Shibboleth_ReflectionDefinitions.h>
+#include <Shibboleth_IManager.h>
+#include <Shibboleth_Array.h>
 
 NS_SHIBBOLETH
 
-class IApp;
+class CameraComponent;
 
-class CameraComponent : public IComponent
+class CameraManager : public IManager
 {
 public:
-	CameraComponent(void);
-	~CameraComponent(void);
+	CameraManager(void);
+	~CameraManager(void);
 
-	bool load(const Gaff::JSON& json);
-	bool save(Gaff::JSON& json);
+	const char* getName(void) const;
 
-	void* rawRequestInterface(unsigned int class_id) const;
-
-	unsigned int getRenderOrder(void) const;
-	const float* getViewport(void) const;
-	bool isActive(void) const;
-	float getFOV(void) const;
+	void registerCamera(unsigned int window_id, CameraComponent* camera);
+	void removeCamera(unsigned int window_id, CameraComponent* camera);
+	void removeCamera(CameraComponent* camera);
 
 private:
-	float _clear_color[4];
-	float _viewport[4];
-	unsigned int _render_order;
-	float _fov;
-	bool _active;
-
-	REF_DEF_SHIB(CameraComponent);
+	Array< Array<Gaff::Pair<unsigned int, CameraComponent*> > > _window_cameras;
+	Array< Array<CameraComponent*> > _device_cameras;
 };
 
 NS_END

@@ -194,6 +194,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\..\src\Game\include\Shibboleth_CameraManager.h" />
     <ClInclude Include="..\..\..\src\Game\include\Shibboleth_ComponentManager.h" />
     <ClInclude Include="..\..\..\src\Game\include\Shibboleth_LuaManager.h" />
     <ClInclude Include="..\..\..\src\Game\include\Shibboleth_ObjectManager.h" />
@@ -204,6 +205,7 @@
     <ClInclude Include="..\..\..\src\Game\include\Shibboleth_UpdateManager.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\..\src\Game\Shibboleth_CameraManager.cpp" />
     <ClCompile Include="..\..\..\src\Game\Shibboleth_ComponentManager.cpp" />
     <ClCompile Include="..\..\..\src\Game\Shibboleth_LuaManager.cpp" />
     <ClCompile Include="..\..\..\src\Game\Shibboleth_ObjectManager.cpp" />

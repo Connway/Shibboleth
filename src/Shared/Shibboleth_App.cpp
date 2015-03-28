@@ -44,7 +44,6 @@ App::App(void):
 App::~App(void)
 {
 	_thread_pool.destroy();
-	_broadcaster.destroy();
 	_state_machine.clear();
 
 	for (ManagerMap::Iterator it = _manager_map.begin(); it != _manager_map.end(); ++it) {
@@ -109,11 +108,6 @@ bool App::init(int argc, char** argv)
 
 	if (!_thread_pool.init()) {
 		_log_file_pair->first.writeString("ERROR - Failed to initialize thread pool\n");
-		return false;
-	}
-
-	if (!_broadcaster.init()) {
-		_log_file_pair->first.writeString("ERROR - Failed to initialize message broadcaster\n");
 		return false;
 	}
 
@@ -510,7 +504,7 @@ void App::removeExtraLogs(void)
 void App::run(void)
 {
 	while (_running) {
-		_broadcaster.update(_thread_pool);
+		_broadcaster.update();
 		_state_machine.update();
 	}
 }

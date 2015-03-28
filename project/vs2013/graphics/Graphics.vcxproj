@@ -234,8 +234,6 @@
       <WarningLevel>Level4</WarningLevel>
       <PreprocessorDefinitions>GLEW_STATIC;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>..\..\..\dependencies\dirent;..\..\..\src\Shared\include;..\..\..\src\Memory\include;..\..\..\dependencies\jansson;..\..\..\dependencies\Gleam\include;..\..\..\dependencies\Gaff\include;..\..\..\dependencies\utf8-cpp;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <ProgramDataBaseFileName>$(OutDir)Graphics_OpenGL32.pdb</ProgramDataBaseFileName>
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
@@ -253,7 +251,7 @@
     </ResourceCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
-      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <GenerateDebugInformation>false</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalDependencies>OpenGL32.lib;%(AdditionalDependencies)</AdditionalDependencies>
@@ -266,8 +264,6 @@
       <WarningLevel>Level4</WarningLevel>
       <PreprocessorDefinitions>GLEW_STATIC;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>..\..\..\dependencies\dirent;..\..\..\src\Shared\include;..\..\..\src\Memory\include;..\..\..\dependencies\jansson;..\..\..\dependencies\Gleam\include;..\..\..\dependencies\Gaff\include;..\..\..\dependencies\utf8-cpp;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <ProgramDataBaseFileName>$(OutDir)Graphics_OpenGL64.pdb</ProgramDataBaseFileName>
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
@@ -284,7 +280,7 @@
     </ResourceCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
-      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <GenerateDebugInformation>false</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalDependencies>OpenGL32.lib;%(AdditionalDependencies)</AdditionalDependencies>
@@ -348,8 +344,6 @@
       <WarningLevel>Level4</WarningLevel>
       <PreprocessorDefinitions>USE_DX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>..\..\..\dependencies\dirent;..\..\..\src\Shared\include;..\..\..\src\Memory\include;..\..\..\dependencies\jansson;..\..\..\dependencies\Gleam\include;..\..\..\dependencies\Gaff\include;..\..\..\dependencies\utf8-cpp;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <ProgramDataBaseFileName>$(OutDir)Graphics_Direct3D32.pdb</ProgramDataBaseFileName>
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
@@ -367,7 +361,7 @@
     </ResourceCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
-      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <GenerateDebugInformation>false</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalDependencies>d3d11.lib;D3dcompiler.lib;dxgi.lib;%(AdditionalDependencies)</AdditionalDependencies>
@@ -380,8 +374,6 @@
       <WarningLevel>Level4</WarningLevel>
       <PreprocessorDefinitions>USE_DX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>..\..\..\dependencies\dirent;..\..\..\src\Shared\include;..\..\..\src\Memory\include;..\..\..\dependencies\jansson;..\..\..\dependencies\Gleam\include;..\..\..\dependencies\Gaff\include;..\..\..\dependencies\utf8-cpp;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <ProgramDataBaseFileName>$(OutDir)Graphics_Direct3D64.pdb</ProgramDataBaseFileName>
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
@@ -398,7 +390,7 @@
     </ResourceCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
-      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <GenerateDebugInformation>false</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalDependencies>d3d11.lib;D3dcompiler.lib;dxgi.lib;%(AdditionalDependencies)</AdditionalDependencies>

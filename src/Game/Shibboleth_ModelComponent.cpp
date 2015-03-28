@@ -134,7 +134,7 @@ bool ModelComponent::load(const Gaff::JSON& json)
 	_program_buffers_res = _res_mgr.requestResource("ProgramBuffers", "test1");
 	_buffer_res = _res_mgr.requestResource("Buffer", "test2", reinterpret_cast<unsigned long long>(&_buffer_settings));
 
-	_app.getBroadcaster().listen<LoadingMessage>(this, &ModelComponent::HandleLoadingMessage);
+	_app.getBroadcaster().listen<LoadingMessage>(Gaff::Bind(this, &ModelComponent::HandleLoadingMessage));
 
 	auto callback_func = Gaff::Bind(this, &ModelComponent::LoadCallback);
 

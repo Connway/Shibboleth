@@ -75,6 +75,11 @@ bool CameraComponent::save(Gaff::JSON& json)
 	return true;
 }
 
+unsigned int CameraComponent::getRenderOrder(void) const
+{
+	return _render_order;
+}
+
 const float* CameraComponent::getViewport(void) const
 {
 	return _viewport;
