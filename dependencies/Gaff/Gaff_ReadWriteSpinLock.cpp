@@ -26,12 +26,10 @@ THE SOFTWARE.
 
 NS_GAFF
 
-/*!
-	\brief I think I added this as a hack for something, cause it doesn't do anything.
-*/
-ReadWriteSpinLock::ReadWriteSpinLock(ReadWriteSpinLock&&):
+ReadWriteSpinLock::ReadWriteSpinLock(const ReadWriteSpinLock& lock):
 	_write_lock(0), _read_lock(0)
 {
+	assert(!lock._write_lock && !lock._read_lock);
 }
 
 ReadWriteSpinLock::ReadWriteSpinLock(void):
@@ -46,8 +44,9 @@ ReadWriteSpinLock::~ReadWriteSpinLock(void)
 /*!
 	\brief I think I added this as a hack for something, cause it doesn't do anything.
 */
-const ReadWriteSpinLock& ReadWriteSpinLock::operator=(ReadWriteSpinLock&&)
+const ReadWriteSpinLock& ReadWriteSpinLock::operator=(const ReadWriteSpinLock& rhs)
 {
+	assert(!rhs._write_lock && !rhs._read_lock);
 	return *this;
 }
 

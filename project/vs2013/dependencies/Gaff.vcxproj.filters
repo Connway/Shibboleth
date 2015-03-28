@@ -36,9 +36,6 @@
     <None Include="..\..\..\dependencies\Gaff\include\Gaff_Map.inl">
       <Filter>include</Filter>
     </None>
-    <None Include="..\..\..\dependencies\Gaff\include\Gaff_MessageBroadcaster.inl">
-      <Filter>include</Filter>
-    </None>
     <None Include="..\..\..\dependencies\Gaff\include\Gaff_Queue.inl">
       <Filter>include</Filter>
     </None>
@@ -180,9 +177,6 @@
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\dependencies\Gaff\include\Gaff_MeshAnimation.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\dependencies\Gaff\include\Gaff_MessageBroadcaster.h">
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\dependencies\Gaff\include\Gaff_MetaData.h">

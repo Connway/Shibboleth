@@ -22,7 +22,7 @@ THE SOFTWARE.
 
 #pragma once
 
-#include <Shibboleth_HashString.h>
+#include <Shibboleth_ReflectionDefinitions.h>
 
 NS_SHIBBOLETH
 
@@ -41,7 +41,7 @@ public:
 	float progress;
 	LoadingState state;
 
-	static AHashString gHash;
+	REF_DEF_SHIB(LoadingMessage);
 };
 
 NS_END

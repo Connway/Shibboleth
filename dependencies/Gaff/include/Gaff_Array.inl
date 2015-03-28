@@ -20,7 +20,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#define ARRAY_ITERATOR Array<T, Allocator>::Iterator
+#define ARRAY_ITERATOR typename Array<T, Allocator>::Iterator
 
 template <class T, class Allocator>
 Array<T, Allocator>::Array(const Allocator& allocator):
@@ -277,7 +277,7 @@ T* Array<T, Allocator>::getArray(void)
 	\brief Returns an iterator to the first element.
 */
 template <class T, class Allocator>
-typename ARRAY_ITERATOR Array<T, Allocator>::begin(void) const
+ARRAY_ITERATOR Array<T, Allocator>::begin(void) const
 {
 	return Iterator(_array);
 }
@@ -286,7 +286,7 @@ typename ARRAY_ITERATOR Array<T, Allocator>::begin(void) const
 	\brief Returns an iterator to one past the last element.
 */
 template <class T, class Allocator>
-typename ARRAY_ITERATOR Array<T, Allocator>::end(void) const
+ARRAY_ITERATOR Array<T, Allocator>::end(void) const
 {
 	return Iterator(_array + _used);
 }
@@ -296,7 +296,7 @@ typename ARRAY_ITERATOR Array<T, Allocator>::end(void) const
 	\note Since iterator is just a typdef for T*, reverse iterators must be traversed using operator--.
 */
 template <class T, class Allocator>
-typename ARRAY_ITERATOR Array<T, Allocator>::rbegin(void) const
+ARRAY_ITERATOR Array<T, Allocator>::rbegin(void) const
 {
 	return Iterator(_array + _used - 1);
 }
@@ -306,7 +306,7 @@ typename ARRAY_ITERATOR Array<T, Allocator>::rbegin(void) const
 	\note Since iterator is just a typdef for T*, reverse iterators must be traversed using operator--.
 */
 template <class T, class Allocator>
-typename ARRAY_ITERATOR Array<T, Allocator>::rend(void) const
+ARRAY_ITERATOR Array<T, Allocator>::rend(void) const
 {
 	return Iterator(_array - 1);
 }
@@ -398,6 +398,62 @@ void Array<T, Allocator>::pop(void)
 
 template <class T, class Allocator>
 template <class... Args>
+ARRAY_ITERATOR Array<T, Allocator>::emplaceInsert(const ARRAY_ITERATOR it, Args&&... args)
+{
+	assert(it >= _array && it <= _array + _used);
+	size_t index = static_cast<size_t>(it - _array);
+	emplaceInsert(index, Move(args)...);
+	return Iterator(_array + index);
+}
+
+template <class T, class Allocator>
+template <class... Args>
+void Array<T, Allocator>::emplaceInsert(size_t index, Args&&... args)
+{
+	assert(index <= _size);
+
+	if (_used + 1 > _size) {
+		reserve((_size == 0) ? 1 : _size * 2);
+	}
+
+	for (size_t i = _used; i > index; --i) {
+		memcpy(_array + i, _array + i - 1, sizeof(T));
+	}
+
+	construct(_array + index, args...);
+	++_used;
+}
+
+template <class T, class Allocator>
+template <class... Args>
+ARRAY_ITERATOR Array<T, Allocator>::emplaceMoveInsert(const ARRAY_ITERATOR it, Args&&... args)
+{
+	assert(it >= _array && it <= _array + _used);
+	size_t index = static_cast<size_t>(it - _array);
+	emplaceMoveInsert(index, Move(args)...);
+	return Iterator(_array + index);
+}
+
+template <class T, class Allocator>
+template <class... Args>
+void Array<T, Allocator>::emplaceMoveInsert(size_t index, Args&&... args)
+{
+	assert(index <= _size);
+
+	if (_used + 1 > _size) {
+		reserve((_size == 0) ? 1 : _size * 2);
+	}
+
+	for (size_t i = _used; i > index; --i) {
+		memcpy(_array + i, _array + i - 1, sizeof(T));
+	}
+
+	moveConstruct(_array + index, Move(args)...);
+	++_used;
+}
+
+template <class T, class Allocator>
+template <class... Args>
 void Array<T, Allocator>::emplacePush(Args&&... args)
 {
 	if (_used == _size) {
@@ -429,7 +485,7 @@ void Array<T, Allocator>::emplaceMovePush(Args&&... args)
 }
 
 template <class T, class Allocator>
-typename ARRAY_ITERATOR Array<T, Allocator>::moveInsert(T&& data, const typename ARRAY_ITERATOR it)
+ARRAY_ITERATOR Array<T, Allocator>::moveInsert(T&& data, const ARRAY_ITERATOR it)
 {
 	assert(it >= _array && it <= _array + _used);
 	size_t index = static_cast<size_t>(it - _array);
@@ -456,12 +512,12 @@ void Array<T, Allocator>::moveInsert(T&& data, size_t index)
 		memcpy(_array + i, _array + i - 1, sizeof(T));
 	}
 
-	moveConstruct(_array + index, data);
+	moveConstruct(_array + index, Move(data));
 	++_used;
 }
 
 template <class T, class Allocator>
-typename ARRAY_ITERATOR Array<T, Allocator>::insert(const T& data, const typename ARRAY_ITERATOR it)
+ARRAY_ITERATOR Array<T, Allocator>::insert(const T& data, const ARRAY_ITERATOR it)
 {
 	assert(it >= _array && it <= _array + _used);
 	size_t index = static_cast<size_t>(it - _array);
@@ -493,7 +549,7 @@ void Array<T, Allocator>::insert(const T& data, size_t index)
 }
 
 template <class T, class Allocator>
-typename ARRAY_ITERATOR Array<T, Allocator>::erase(const typename ARRAY_ITERATOR it)
+ARRAY_ITERATOR Array<T, Allocator>::erase(const ARRAY_ITERATOR it)
 {
 	assert(it >= _array && it < _array + _used);
 
@@ -525,7 +581,7 @@ void Array<T, Allocator>::erase(size_t index)
 }
 
 template <class T, class Allocator>
-typename ARRAY_ITERATOR Array<T, Allocator>::fastErase(const typename ARRAY_ITERATOR it)
+ARRAY_ITERATOR Array<T, Allocator>::fastErase(const ARRAY_ITERATOR it)
 {
 	assert(it >= _array && it < _array + _used);
 
@@ -619,7 +675,7 @@ void Array<T, Allocator>::trim(void)
 #ifndef DOXY_SKIP
 template <class T, class Allocator>
 template <class T2, class Pred>
-typename ARRAY_ITERATOR Array<T, Allocator>::linearSearch(const typename ARRAY_ITERATOR range_begin, const typename ARRAY_ITERATOR range_end, const T2& data, const Pred& pred) const
+ARRAY_ITERATOR Array<T, Allocator>::linearSearch(const ARRAY_ITERATOR range_begin, const ARRAY_ITERATOR range_end, const T2& data, const Pred& pred) const
 {
 	assert(range_begin >= _array && range_begin <= _array + _used);
 	assert(range_end >= _array && range_end <= _array + _used);
@@ -666,7 +722,7 @@ size_t Array<T, Allocator>::linearSearch(size_t range_begin, size_t range_end, c
 #ifndef DOXY_SKIP
 template <class T, class Allocator>
 template <class T2, class Pred>
-typename ARRAY_ITERATOR Array<T, Allocator>::linearSearch(const T2& data, const Pred& pred) const
+ARRAY_ITERATOR Array<T, Allocator>::linearSearch(const T2& data, const Pred& pred) const
 {
 	return linearSearch(begin(), end(), data, pred);
 }
@@ -675,9 +731,9 @@ typename ARRAY_ITERATOR Array<T, Allocator>::linearSearch(const T2& data, const 
 #ifndef DOXY_SKIP
 template <class T, class Allocator>
 template <class T2, class Pred>
-typename ARRAY_ITERATOR Array<T, Allocator>::binarySearch(
-	const typename ARRAY_ITERATOR range_begin,
-	const typename ARRAY_ITERATOR range_end,
+ARRAY_ITERATOR Array<T, Allocator>::binarySearch(
+	const ARRAY_ITERATOR range_begin,
+	const ARRAY_ITERATOR range_end,
 	const T2& data,
 	const Pred& pred) const
 {
@@ -736,7 +792,7 @@ size_t Array<T, Allocator>::binarySearch(
 #ifndef DOXY_SKIP
 template <class T, class Allocator>
 template <class T2, class Pred>
-typename ARRAY_ITERATOR Array<T, Allocator>::binarySearch(const T2& data, const Pred& pred) const
+ARRAY_ITERATOR Array<T, Allocator>::binarySearch(const T2& data, const Pred& pred) const
 {
 	return binarySearch(begin(), end(), data, pred);
 }

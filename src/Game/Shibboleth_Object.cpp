@@ -25,6 +25,7 @@ THE SOFTWARE.
 #include <Shibboleth_ObjectManager.h>
 #include <Shibboleth_Utilities.h>
 #include <Shibboleth_IApp.h>
+#include <Gaff_ScopedLock.h>
 #include <Gaff_JSON.h>
 
 NS_SHIBBOLETH
@@ -121,11 +122,6 @@ void Object::prePhysicsUpdate(double dt)
 
 void Object::postPhysicsUpdate(double dt)
 {
-}
-
-MessageBroadcaster& Object::getBroadcaster(void)
-{
-	return _broadcaster;
 }
 
 const Gleam::TransformCPU& Object::getLocalTransform(void) const

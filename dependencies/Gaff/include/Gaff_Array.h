@@ -92,6 +92,18 @@ public:
 	void pop(void);
 
 	template <class... Args>
+	Iterator emplaceInsert(const Iterator it, Args&&... args);
+
+	template <class... Args>
+	void emplaceInsert(size_t index, Args&&... args);
+
+	template <class... Args>
+	Iterator emplaceMoveInsert(const Iterator it, Args&&... args);
+
+	template <class... Args>
+	void emplaceMoveInsert(size_t index, Args&&... args);
+
+	template <class... Args>
 	void emplacePush(Args&&... args);
 
 	template <class... Args>

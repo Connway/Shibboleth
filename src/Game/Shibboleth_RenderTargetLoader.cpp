@@ -29,6 +29,7 @@ THE SOFTWARE.
 #include <Shibboleth_IApp.h>
 #include <Gleam_IRenderDevice.h>
 #include <Gleam_ITexture.h>
+#include <Gaff_ScopedLock.h>
 
 NS_SHIBBOLETH
 

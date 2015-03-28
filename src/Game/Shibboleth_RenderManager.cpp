@@ -25,10 +25,11 @@ THE SOFTWARE.
 #include <Shibboleth_TextureLoader.h>
 #include <Shibboleth_IFileSystem.h>
 #include <Shibboleth_IApp.h>
-#include <Gleam_Global.h>
-#include <Gaff_JSON.h>
-
 #include <Gleam_IRenderDevice.h>
+#include <Gleam_Global.h>
+#include <Gaff_ScopedLock.h>
+#include <Gaff_JSON.h>
+#include <Gaff_Utils.h>
 
 NS_SHIBBOLETH
 

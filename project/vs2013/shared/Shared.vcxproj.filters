@@ -1,9 +1,14 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="include">
       <UniqueIdentifier>{89AF369E-F58E-B539-FEA6-40106A051C9B}</UniqueIdentifier>
     </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\..\src\Shared\include\Shibboleth_MessageBroadcaster.inl">
+      <Filter>include</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\src\Shared\include\Shibboleth_App.h">
@@ -86,6 +91,7 @@
     <ClCompile Include="..\..\..\src\Shared\Shibboleth_App.cpp" />
     <ClCompile Include="..\..\..\src\Shared\Shibboleth_LogManager.cpp" />
     <ClCompile Include="..\..\..\src\Shared\Shibboleth_LooseFileSystem.cpp" />
+    <ClCompile Include="..\..\..\src\Shared\Shibboleth_MessageBroadcaster.cpp" />
     <ClCompile Include="..\..\..\src\Shared\Shibboleth_StateMachine.cpp" />
     <ClCompile Include="..\..\..\src\Shared\Shibboleth_Utilities.cpp" />
   </ItemGroup>

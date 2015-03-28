@@ -34,11 +34,12 @@ NS_GAFF
 class ReadWriteSpinLock
 {
 public:
-	ReadWriteSpinLock(ReadWriteSpinLock&&);
+	// Assignment is not to be used on actively used locks.
+	ReadWriteSpinLock(const ReadWriteSpinLock& lock);
 	ReadWriteSpinLock(void);
 	~ReadWriteSpinLock(void);
 
-	const ReadWriteSpinLock& operator=(ReadWriteSpinLock&&);
+	const ReadWriteSpinLock& operator=(const ReadWriteSpinLock& rhs);
 
 	void readLock(void) const;
 	void readUnlock(void) const;
@@ -49,8 +50,6 @@ public:
 private:
 	mutable volatile long _write_lock;
 	mutable volatile long _read_lock;
-
-	GAFF_NO_COPY(ReadWriteSpinLock);
 };
 
 NS_END

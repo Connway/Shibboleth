@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="include">
@@ -48,6 +48,9 @@
     <ClInclude Include="..\..\..\src\Game\include\Shibboleth_ProgramBuffersCreator.h">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\src\Game\include\Shibboleth_RenderTargetLoader.h">
+      <Filter>include</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\src\Game\include\Shibboleth_ResourceDefines.h">
       <Filter>include</Filter>
     </ClInclude>
@@ -72,9 +75,6 @@
     <ClInclude Include="..\..\..\src\Game\include\Shibboleth_UserDataWrapper.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\src\Game\include\Shibboleth_RenderTargetLoader.h">
-      <Filter>include</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\src\Game\Shibboleth_BufferCreator.cpp" />
@@ -87,10 +87,10 @@
     <ClCompile Include="..\..\..\src\Game\Shibboleth_OtterUIRenderer.cpp" />
     <ClCompile Include="..\..\..\src\Game\Shibboleth_PackFileSystem.cpp" />
     <ClCompile Include="..\..\..\src\Game\Shibboleth_ProgramBuffersCreator.cpp" />
+    <ClCompile Include="..\..\..\src\Game\Shibboleth_RenderTargetLoader.cpp" />
     <ClCompile Include="..\..\..\src\Game\Shibboleth_SamplerStateLoader.cpp" />
     <ClCompile Include="..\..\..\src\Game\Shibboleth_ShaderLoader.cpp" />
     <ClCompile Include="..\..\..\src\Game\Shibboleth_ShaderProgramLoader.cpp" />
     <ClCompile Include="..\..\..\src\Game\Shibboleth_TextureLoader.cpp" />
-    <ClCompile Include="..\..\..\src\Game\Shibboleth_RenderTargetLoader.cpp" />
   </ItemGroup>
 </Project>
