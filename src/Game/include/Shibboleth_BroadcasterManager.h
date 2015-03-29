@@ -23,38 +23,34 @@ THE SOFTWARE.
 #pragma once
 
 #include <Shibboleth_ReflectionDefinitions.h>
+#include <Shibboleth_MessageBroadcaster.h>
+#include <Shibboleth_IUpdateQuery.h>
 #include <Shibboleth_IManager.h>
-#include <Shibboleth_Array.h>
-#include <Gaff_Function.h>
-
-namespace lua
-{
-	class State;
-}
+#include <Shibboleth_Map.h>
 
 NS_SHIBBOLETH
 
-class LuaManager : public IManager
+class BroadcasterManager : public IManager, public IUpdateQuery
 {
 public:
-	LuaManager(void);
-	~LuaManager(void);
+	BroadcasterManager(void);
+	~BroadcasterManager(void);
 
 	const char* getName(void) const;
 
-	void addRegistrant(const Gaff::FunctionBinder<void, lua::State&>& registrant);
-
-	lua::State* createNewState(void);
-
+	void requestUpdateEntries(Array<IUpdateQuery::UpdateEntry>& entries);
 	void* rawRequestInterface(unsigned int class_id) const;
 
+	void update(double);
+
+	MessageBroadcaster* getBroadcaster(unsigned int object_id, bool create_if_doesnt_exist);
+	void clear(void);
+
 private:
-	Array< Gaff::FunctionBinder<void, lua::State&> > _registrants;
+	Map<unsigned int, MessageBroadcaster*> _object_broadcasters;
+	Gaff::ReadWriteSpinLock _broadcaster_lock;
 
-	GAFF_NO_COPY(LuaManager);
-	GAFF_NO_MOVE(LuaManager);
-
-	REF_DEF_SHIB(LuaManager);
+	REF_DEF_SHIB(BroadcasterManager);
 };
 
 NS_END

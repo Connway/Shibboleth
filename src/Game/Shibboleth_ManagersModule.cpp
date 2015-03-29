@@ -20,6 +20,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
+#include <Shibboleth_BroadcasterManager.h>
 #include <Shibboleth_ComponentManager.h>
 #include <Shibboleth_OcclusionManager.h>
 #include <Shibboleth_ResourceManager.h>
@@ -32,10 +33,6 @@ THE SOFTWARE.
 #include <Shibboleth_IApp.h>
 #include <Gaff_StackTrace.h>
 #include <Gaff_JSON.h>
-
-#include <Gleam_Matrix4x4_CPU.h>
-#include <Gleam_Frustum_CPU.h>
-#include <Gleam_AABB_CPU.h>
 
 #ifdef USE_VLD
 	#include <vld.h>
@@ -77,6 +74,7 @@ enum Managers
 	OBJECT_MANAGER,
 	LUA_MANAGER,
 	OCCLUSION_MANAGER,
+	BROADCASTER_MANAGER,
 	NUM_MANAGERS
 };
 
@@ -89,8 +87,9 @@ static CreateMgrFunc create_funcs[] = {
 	&CreateManagerT<Shibboleth::RenderManager>,
 	&CreateManagerT<Shibboleth::UpdateManager>,
 	&CreateManagerTNoApp<Shibboleth::ObjectManager>,
-	&CreateManagerT<Shibboleth::LuaManager>,
-	&CreateManagerTNoApp<Shibboleth::OcclusionManager>
+	&CreateManagerTNoApp<Shibboleth::LuaManager>,
+	&CreateManagerTNoApp<Shibboleth::OcclusionManager>,
+	&CreateManagerTNoApp<Shibboleth::BroadcasterManager>
 };
 
 DYNAMICEXPORT_C bool InitModule(Shibboleth::IApp& app)
@@ -98,11 +97,6 @@ DYNAMICEXPORT_C bool InitModule(Shibboleth::IApp& app)
 	Gaff::JSON::SetMemoryFunctions(&Shibboleth::ShibbolethAllocate, &Shibboleth::ShibbolethFree);
 	Gaff::JSON::SetHashSeed(app.getSeed());
 	Shibboleth::SetApp(app);
-
-	//Gleam::FrustumCPU frustum(75.0f * Gaff::DegToRad, 16.0f / 9.0f, 0.1f, 100.0f);
-	//Gleam::AABBCPU aabb(Gleam::Vector4CPU(-2.5f, -2.5f, 2.5f, 1.0f), Gleam::Vector4CPU(2.5f, 2.5f, 5.0f, 1.0f));
-
-	//bool inside = frustum.contains(aabb);
 
 	return true;
 }

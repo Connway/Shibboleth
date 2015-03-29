@@ -31,8 +31,7 @@ REF_IMPL_SHIB(LuaManager)
 .addBaseClassInterfaceOnly<LuaManager>()
 ;
 
-LuaManager::LuaManager(IApp& app):
-	_app(app)
+LuaManager::LuaManager(void)
 {
 }
 
