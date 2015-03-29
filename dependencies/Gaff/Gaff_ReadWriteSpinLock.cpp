@@ -55,6 +55,8 @@ const ReadWriteSpinLock& ReadWriteSpinLock::operator=(const ReadWriteSpinLock& r
 */
 void ReadWriteSpinLock::readLock(void) const
 {
+	unsigned int tries = 0;
+
 	/*
 		We wait for the write lock to be released first
 		to avoid situations where someone requests to write,
@@ -63,9 +65,27 @@ void ReadWriteSpinLock::readLock(void) const
 		become frozen indefinitely.
 	*/
 	while (_write_lock) {
+		++tries;
+
+		if (tries == NUM_TRIES_UNTIL_YIELD) {
+			tries = 0;
+			YieldThread();
+		}
 	}
 
 	AtomicIncrement(&_read_lock);
+
+	tries = 0;
+
+	// Double check just in case.
+	while (_write_lock) {
+		++tries;
+
+		if (tries == NUM_TRIES_UNTIL_YIELD) {
+			tries = 0;
+			YieldThread();
+		}
+	}
 }
 
 /*!
@@ -82,12 +102,29 @@ void ReadWriteSpinLock::readUnlock(void) const
 */
 void ReadWriteSpinLock::writeLock(void) const
 {
+	unsigned int tries = 0;
+
 	while (AtomicAcquire(&_write_lock)) {
-		while (_write_lock) {
+		++tries;
+
+		if (tries == NUM_TRIES_UNTIL_YIELD) {
+			tries = 0;
+			YieldThread();
 		}
+
+		//while (_write_lock) {
+		//}
 	}
 
+	tries = 0;
+
 	while (_read_lock) {
+		++tries;
+
+		if (tries == NUM_TRIES_UNTIL_YIELD) {
+			tries = 0;
+			YieldThread();
+		}
 	}
 }
 

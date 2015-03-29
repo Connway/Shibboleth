@@ -1,5 +1,5 @@
 [
-	["Object Manager: Pre-Physics Update"],
+	["Broadcaster Manager: Update", "Object Manager: Pre-Physics Update"],
 	["Object Manager: Post-Physics Update"],
 	["Occlusion Manager: Update"]
 ]
