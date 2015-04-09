@@ -140,11 +140,11 @@ public:
 	void removeChildren(void);
 	void updateTransforms(void);
 
-	void registerForLocalDirtyCallback(const DirtyCallback& callback, unsigned long long user_data);
+	void registerForLocalDirtyCallback(const DirtyCallback& callback, unsigned long long user_data = 0);
 	void unregisterForLocalDirtyCallback(const DirtyCallback& callback);
 	void notifyLocalDirtyCallbacks(void);
 
-	void registerForWorldDirtyCallback(const DirtyCallback& callback, unsigned long long user_data);
+	void registerForWorldDirtyCallback(const DirtyCallback& callback, unsigned long long user_data = 0);
 	void unregisterForWorldDirtyCallback(const DirtyCallback& callback);
 	void notifyWorldDirtyCallbacks(void);
 

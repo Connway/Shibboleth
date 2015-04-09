@@ -40,7 +40,6 @@ REF_IMPL_SHIB(RenderManager)
 
 // Default values
 ENUM_REF_IMPL_SHIB(DisplayTags)
-.addValue("DT_ALL", DT_ALL)
 .addValue("DT_1", DT_1)
 .addValue("DT_2", DT_2)
 .addValue("DT_3", DT_3)
@@ -60,7 +59,7 @@ ENUM_REF_IMPL_SHIB(DisplayTags)
 ;
 
 static DisplayTags gDisplayTagsValues[] = {
-	DT_ALL, DT_1, DT_2, DT_3, DT_4, DT_5, DT_6, DT_7, DT_8, DT_9, DT_10,
+	DT_1, DT_2, DT_3, DT_4, DT_5, DT_6, DT_7, DT_8, DT_9, DT_10,
 	DT_11, DT_12, DT_13, DT_14, DT_15, DT_16
 };
 
@@ -306,12 +305,12 @@ void RenderManager::updateWindows(void)
 	_graphics_functions.update_windows();
 }
 
-Array<const RenderManager::WindowData*> RenderManager::getAllWindowsWithTagsAny(unsigned short tags) const
+Array<const RenderManager::WindowData*> RenderManager::getWindowsWithTagsAny(unsigned short tags) const
 {
 	Array<const WindowData*> out;
 
 	for (auto it = _windows.begin(); it != _windows.end(); ++it) {
-		if (!tags || (it->tags & tags)) {
+		if (it->tags & tags) {
 			out.push(it);
 		}
 	}
@@ -319,17 +318,45 @@ Array<const RenderManager::WindowData*> RenderManager::getAllWindowsWithTagsAny(
 	return out;
 }
 
-Array<const RenderManager::WindowData*> RenderManager::getAllWindowsWithTags(unsigned short tags) const
+Array<const RenderManager::WindowData*> RenderManager::getWindowsWithTags(unsigned short tags) const
 {
 	Array<const WindowData*> out;
 
 	for (auto it = _windows.begin(); it != _windows.end(); ++it) {
-		if (!tags || ((it->tags & tags) == tags)) {
+		if ((it->tags & tags) == tags) {
 			out.push(it);
 		}
 	}
 
 	return out;
+}
+
+Array<unsigned int> RenderManager::getDevicesWithTagsAny(unsigned short tags) const
+{
+	Array<const WindowData*> windows = getWindowsWithTagsAny(tags);
+	Array<unsigned int> devices;
+
+	for (auto it = windows.begin(); it != windows.end(); ++it) {
+		if (devices.linearSearch((*it)->device) == devices.end()) {
+			devices.emplacePush((*it)->device);
+		}
+	}
+
+	return devices;
+}
+
+Array<unsigned int> RenderManager::getDevicesWithTags(unsigned short tags) const
+{
+	Array<const WindowData*> windows = getWindowsWithTags(tags);
+	Array<unsigned int> devices;
+
+	for (auto it = windows.begin(); it != windows.end(); ++it) {
+		if (devices.linearSearch((*it)->device) == devices.end()) {
+			devices.emplacePush((*it)->device);
+		}
+	}
+
+	return devices;
 }
 
 size_t RenderManager::getNumWindows(void) const

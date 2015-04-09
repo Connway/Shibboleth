@@ -68,7 +68,7 @@ class IApp;
 
 enum DisplayTags
 {
-	DT_ALL = 0x0000,
+	DT_ALL = 0xFFFF,
 	DT_1 = 0x0001,
 	DT_2 = 0x0002,
 	DT_3 = 0x0004,
@@ -128,8 +128,11 @@ public:
 	);
 
 	void updateWindows(void);
-	Array<const WindowData*> getAllWindowsWithTagsAny(unsigned short tags) const; // Gets windows with any of these tags. If tags is zero, returns all windows.
-	Array<const WindowData*> getAllWindowsWithTags(unsigned short tags) const; // Gets windows with exactly these tags. If tags is zero, returns all windows.
+	Array<const WindowData*> getWindowsWithTagsAny(unsigned short tags) const; // Gets windows with any of these tags. If tags is zero, returns all windows.
+	Array<const WindowData*> getWindowsWithTags(unsigned short tags) const; // Gets windows with exactly these tags. If tags is zero, returns all windows.
+
+	Array<unsigned int> getDevicesWithTagsAny(unsigned short tags) const; // Gets all devices with windows with any of these tags.
+	Array<unsigned int> getDevicesWithTags(unsigned short tags) const; // Gets all devices with windows with exactly these tags.
 
 	INLINE size_t getNumWindows(void) const;
 	INLINE const WindowData& getWindowData(unsigned int window) const;

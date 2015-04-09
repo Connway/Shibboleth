@@ -21,11 +21,23 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Shibboleth_CameraManager.h"
-#include "Shibboleth_CameraComponent.h"
+#include "Shibboleth_OcclusionManager.h"
+#include <Shibboleth_CameraComponent.h>
+#include <Shibboleth_Utilities.h>
+#include <Shibboleth_Object.h>
+#include <Shibboleth_IApp.h>
 
 NS_SHIBBOLETH
 
-CameraManager::CameraManager(void)
+REF_IMPL_REQ(CameraManager);
+REF_IMPL_SHIB(CameraManager)
+.addBaseClassInterfaceOnly<CameraManager>()
+.ADD_BASE_CLASS_INTERFACE_ONLY(IUpdateQuery)
+;
+
+
+CameraManager::CameraManager(void):
+	_occlusion_mgr(nullptr)
 {
 }
 
@@ -38,17 +50,46 @@ const char* CameraManager::getName(void) const
 	return "Camera Manager";
 }
 
-void CameraManager::registerCamera(unsigned int window_id, CameraComponent* camera)
+void CameraManager::allManagersCreated(void)
 {
+	_occlusion_mgr = &GetApp().getManagerT<OcclusionManager>("Occlusion Manager");
 }
 
-void CameraManager::removeCamera(unsigned int window_id, CameraComponent* camera)
+void CameraManager::requestUpdateEntries(Array<UpdateEntry>& entries)
 {
+	entries.movePush(UpdateEntry(AString("Camera Manager: Update"), Gaff::Bind(this, &CameraManager::update)));
+}
+
+void CameraManager::update(double)
+{
+	for (size_t i = 0; i < _cameras.size(); ++i) {
+		if (_cameras[i]->isActive()) {
+			_occlusion_mgr->findObjectsInFrustum(_cameras[i]->getFrustum(), _objects[i]);
+		}
+	}
+}
+
+void CameraManager::registerCamera(CameraComponent* camera)
+{
+	auto it = _cameras.binarySearch(camera, [](const CameraComponent* lhs, const CameraComponent* rhs) -> bool
+	{
+		return lhs->getRenderOrder() < rhs->getRenderOrder();
+	});
+
+	_cameras.emplaceInsert(it, camera);
+	_objects.emplacePush(OcclusionManager::QueryData());
 }
 
 void CameraManager::removeCamera(CameraComponent* camera)
 {
-}
+	auto it = _cameras.binarySearch(camera, [](const CameraComponent* lhs, const CameraComponent* rhs) -> bool
+	{
+		return lhs->getRenderOrder() < rhs->getRenderOrder();
+	});
 
+	assert(it != _cameras.end() && *it == camera);
+	_cameras.erase(it);
+	_objects.pop();
+}
 
 NS_END

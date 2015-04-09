@@ -22,8 +22,12 @@ THE SOFTWARE.
 
 #pragma once
 
+#include "Shibboleth_ResourceDefines.h"
+#include "Shibboleth_ResourceWrapper.h"
 #include "Shibboleth_IComponent.h"
 #include <Shibboleth_ReflectionDefinitions.h>
+#include <Shibboleth_Array.h>
+#include <Gleam_Frustum_CPU.h>
 
 NS_SHIBBOLETH
 
@@ -35,22 +39,41 @@ public:
 	CameraComponent(void);
 	~CameraComponent(void);
 
+	bool validate(Gaff::JSON& json);
 	bool load(const Gaff::JSON& json);
 	bool save(Gaff::JSON& json);
 
 	void* rawRequestInterface(unsigned int class_id) const;
 
-	unsigned int getRenderOrder(void) const;
+	void updateFrustum(Object* object, unsigned long long);
+
+	const Array<unsigned int>& getDevices(void) const;
+	const Gleam::FrustumCPU& getFrustum(void) const;
+	unsigned short getWindowTags(void) const;
+	unsigned char getRenderOrder(void) const;
 	const float* getViewport(void) const;
+	void setActive(bool active);
 	bool isActive(void) const;
 	float getFOV(void) const;
 
 private:
+	Gleam::FrustumCPU _unstransformed_frustum;
+	Gleam::FrustumCPU _frustum;
+
+	Array<unsigned int> _devices;
+
+	ResourceWrapper<RenderTargetData> _render_target;
+
 	float _clear_color[4];
 	float _viewport[4];
-	unsigned int _render_order;
 	float _fov;
+	float _z_near;
+	float _z_far;
+	unsigned short _window_tags;
+	unsigned char _render_order;
 	bool _active;
+
+	void RenderTargetCallback(const AHashString& /*resource*/, bool success);
 
 	REF_DEF_SHIB(CameraComponent);
 };

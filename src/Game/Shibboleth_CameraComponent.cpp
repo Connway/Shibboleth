@@ -21,7 +21,11 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Shibboleth_CameraComponent.h"
-#include "Shibboleth_RenderManager.h"
+#include <Shibboleth_ResourceManager.h>
+#include <Shibboleth_RenderManager.h>
+#include <Shibboleth_CameraManager.h>
+#include <Shibboleth_Utilities.h>
+#include <Shibboleth_Object.h>
 #include <Shibboleth_IApp.h>
 
 NS_SHIBBOLETH
@@ -31,8 +35,10 @@ REF_IMPL_SHIB(CameraComponent)
 .addBaseClassInterfaceOnly<CameraComponent>()
 .addArray("Viewport", &CameraComponent::_viewport)
 .addArray("Clear Color", &CameraComponent::_clear_color)
-.addUInt("Render Order", &CameraComponent::_render_order)
 .addFloat("Field of View", &CameraComponent::_fov)
+.addFloat("Z Near", &CameraComponent::_z_near)
+.addFloat("Z Far", &CameraComponent::_z_far)
+.addUChar("Render Order", &CameraComponent::_render_order)
 .addBool("Active", &CameraComponent::_active)
 ;
 
@@ -52,12 +58,29 @@ CameraComponent::CameraComponent(void):
 
 CameraComponent::~CameraComponent(void)
 {
+	setActive(false);
+}
+
+bool CameraComponent::validate(Gaff::JSON& json)
+{
+	// IMPLEMENT ME
+
+	return true;
 }
 
 bool CameraComponent::load(const Gaff::JSON& json)
 {
 	gRefDef.read(json, this);
 	// request render target resource
+
+	_render_target = GetApp().getManagerT<ResourceManager>("Resource Manager").requestResource(json["Render Target File"].getString());
+
+	if (_active) {
+		getOwner()->registerForWorldDirtyCallback(Gaff::Bind(this, &CameraComponent::updateFrustum));
+	}
+
+	_devices = GetApp().getManagerT<RenderManager>("Render Manager").getDevicesWithTagsAny(_window_tags);
+	GetApp().getManagerT<CameraManager>("Camera Manager").registerCamera(this);
 
 	return true;
 }
@@ -75,7 +98,28 @@ bool CameraComponent::save(Gaff::JSON& json)
 	return true;
 }
 
-unsigned int CameraComponent::getRenderOrder(void) const
+void CameraComponent::updateFrustum(Object* object, unsigned long long)
+{
+	_frustum = _unstransformed_frustum;
+	_frustum.transform(object->getWorldTransform());
+}
+
+const Array<unsigned int>& CameraComponent::getDevices(void) const
+{
+	return _devices;
+}
+
+const Gleam::FrustumCPU& CameraComponent::getFrustum(void) const
+{
+	return _frustum;
+}
+
+unsigned short CameraComponent::getWindowTags(void) const
+{
+	return _window_tags;
+}
+
+unsigned char CameraComponent::getRenderOrder(void) const
 {
 	return _render_order;
 }
@@ -83,6 +127,17 @@ unsigned int CameraComponent::getRenderOrder(void) const
 const float* CameraComponent::getViewport(void) const
 {
 	return _viewport;
+}
+
+void CameraComponent::setActive(bool active)
+{
+	if (active && !_active) {
+		getOwner()->registerForWorldDirtyCallback(Gaff::Bind(this, &CameraComponent::updateFrustum));
+	} else if (!active && _active) {
+		getOwner()->unregisterForWorldDirtyCallback(Gaff::Bind(this, &CameraComponent::updateFrustum));
+	}
+
+	_active = active;
 }
 
 bool CameraComponent::isActive(void) const
@@ -93,6 +148,20 @@ bool CameraComponent::isActive(void) const
 float CameraComponent::getFOV(void) const
 {
 	return _fov;
+}
+
+void CameraComponent::RenderTargetCallback(const AHashString& /*resource*/, bool success)
+{
+	if (!success) {
+		// log error
+		GetApp().quit();
+		return;
+	}
+
+	float aspect_ratio = static_cast<float>(_render_target->width) / static_cast<float>(_render_target->height);
+	_unstransformed_frustum.construct(_fov, aspect_ratio, _z_near, _z_far);
+
+	updateFrustum(getOwner(), 0);
 }
 
 NS_END

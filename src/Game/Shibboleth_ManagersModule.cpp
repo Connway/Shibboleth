@@ -25,12 +25,15 @@ THE SOFTWARE.
 #include <Shibboleth_OcclusionManager.h>
 #include <Shibboleth_ResourceManager.h>
 #include <Shibboleth_OtterUIManager.h>
+#include <Shibboleth_CameraManager.h>
 #include <Shibboleth_RenderManager.h>
 #include <Shibboleth_UpdateManager.h>
 #include <Shibboleth_ObjectManager.h>
 #include <Shibboleth_LuaManager.h>
+
 #include <Shibboleth_Utilities.h>
 #include <Shibboleth_IApp.h>
+
 #include <Gaff_StackTrace.h>
 #include <Gaff_JSON.h>
 
@@ -75,6 +78,7 @@ enum Managers
 	LUA_MANAGER,
 	OCCLUSION_MANAGER,
 	BROADCASTER_MANAGER,
+	CAMERA_MANAGER,
 	NUM_MANAGERS
 };
 
@@ -89,7 +93,8 @@ static CreateMgrFunc create_funcs[] = {
 	&CreateManagerTNoApp<Shibboleth::ObjectManager>,
 	&CreateManagerTNoApp<Shibboleth::LuaManager>,
 	&CreateManagerTNoApp<Shibboleth::OcclusionManager>,
-	&CreateManagerTNoApp<Shibboleth::BroadcasterManager>
+	&CreateManagerTNoApp<Shibboleth::BroadcasterManager>,
+	&CreateManagerTNoApp<Shibboleth::CameraManager>
 };
 
 DYNAMICEXPORT_C bool InitModule(Shibboleth::IApp& app)

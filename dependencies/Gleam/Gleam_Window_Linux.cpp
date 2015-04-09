@@ -335,7 +335,7 @@ bool Window::init(const GChar* app_name, MODE window_mode,
 
 	switch (window_mode) {
 		case FULLSCREEN_WINDOWED:
-			//pos_x = pos_y = 0;
+			pos_x = pos_y = 0;
 
 			XWindowAttributes attributes;
 			XGetWindowAttributes(_display, root, &attributes);
@@ -345,7 +345,7 @@ bool Window::init(const GChar* app_name, MODE window_mode,
 			break;
 
 		case FULLSCREEN: {
-			//pos_x = pos_y = 0;
+			pos_x = pos_y = 0;
 
 			if (!width || !height) {
 				XWindowAttributes attributes;
