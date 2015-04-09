@@ -103,13 +103,15 @@ Gaff::IVirtualDestructor* RenderTargetLoader::load(const char* file_name, unsign
 	}
 
 	Gaff::JSON display_tags = rt_settings["display_tags"];
-	unsigned short disp_tags = 0;
+	unsigned short disp_tags = DT_ALL;
 
 	if (!display_tags.isNull()) {
 		if (!display_tags.isArray()) {
 			LogMessage(GetApp().getGameLogFile(), TPT_PRINTLOG, LogManager::LOG_ERROR, "ERROR - Render Target file '%s' is malformed. Value at 'display_tags' is not an array of strings.\n", file_name);
 			return nullptr;
 		}
+
+		disp_tags = 0;
 
 		if (EXTRACT_DISPLAY_TAGS(display_tags, disp_tags)) {
 			LogMessage(GetApp().getGameLogFile(), TPT_PRINTLOG, LogManager::LOG_ERROR, "ERROR - Render Target file '%s' is malformed. An element in 'display_tags' is not a string.\n", file_name);
@@ -143,10 +145,21 @@ Gaff::IVirtualDestructor* RenderTargetLoader::load(const char* file_name, unsign
 	}
 
 	Array<const RenderManager::WindowData*> windows = (rt_settings["any_display_with_tags"].isTrue()) ?
-		rm.getAllWindowsWithTagsAny(disp_tags) :
-		rm.getAllWindowsWithTags(disp_tags);
+		rm.getWindowsWithTagsAny(disp_tags) :
+		rm.getWindowsWithTags(disp_tags);
 
 	assert(!windows.empty());
+
+	if (width == -1 || height == -1) {
+		if (windows.size() != 1) {
+			LogMessage(GetApp().getGameLogFile(), TPT_PRINTLOG, LogManager::LOG_ERROR, "ERROR - Width/Height set to window size, but window tags returned more than one window for render target '%s'.\n", file_name);
+			GetAllocator()->freeT(data);
+			return nullptr;
+		}
+
+		width = static_cast<int>(windows[0]->window->getWidth());
+		height = static_cast<int>(windows[0]->window->getHeight());
+	}
 
 	for (auto it = windows.begin(); it != windows.end(); ++it) {
 		if (data->render_targets[(*it)->device]) {

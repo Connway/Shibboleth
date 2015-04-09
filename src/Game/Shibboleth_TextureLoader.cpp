@@ -135,8 +135,8 @@ Gaff::IVirtualDestructor* TextureLoader::load(const char* file_name, unsigned lo
 	Gleam::IRenderDevice& rd = _render_mgr.getRenderDevice();
 
 	Array<const RenderManager::WindowData*> windows = (json["any_display_with_tags"].isTrue()) ?
-		_render_mgr.getAllWindowsWithTagsAny(disp_tags) :
-		_render_mgr.getAllWindowsWithTags(disp_tags);
+		_render_mgr.getWindowsWithTagsAny(disp_tags) :
+		_render_mgr.getWindowsWithTags(disp_tags);
 
 	assert(!windows.empty());
 

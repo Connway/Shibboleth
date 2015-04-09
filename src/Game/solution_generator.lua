@@ -335,7 +335,7 @@ group ""
 		{
 			"Shared", "Gaff", "jansson",
 			"OtterUI", "Game", "Gleam",
-			"Managers", "Memory"
+			"Managers", "Memory", "Components"
 
 			--[[
 				Adding LuaJIT as a dependency for some reason makes VS2013
@@ -351,7 +351,7 @@ group ""
 		{
 			"Shared", "Gaff", "jansson",
 			"OtterUI", "Game", "Gleam",
-			"Managers", "Memory"
+			"Managers", "Memory", "Components"
 		}
 
 		filter { "configurations:Debug", "platforms:x86" }

@@ -128,14 +128,6 @@ void RenderTargetD3D::bind(IRenderDevice& rd)
 
 	IRenderDeviceD3D& rd3d = reinterpret_cast<IRenderDeviceD3D&>(*(reinterpret_cast<char*>(&rd) + sizeof(IRenderDevice)));
 
-	//for (size_t i = 0; i < _render_target_views.size(); ++i) {
-	//	rd3d.getActiveDeviceContext()->ClearRenderTargetView(_render_target_views[i], rd3d.getClearColor());
-	//}
-
-	//if (_depth_stencil_view) {
-		rd3d.getActiveDeviceContext()->ClearDepthStencilView(_depth_stencil_view, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
-	//}
-
 	rd3d.getActiveDeviceContext()->OMSetRenderTargets(static_cast<UINT>(_render_target_views.size()), _render_target_views.getArray(), _depth_stencil_view);
 	rd3d.getActiveDeviceContext()->RSSetViewports(1, &_viewport);
 }

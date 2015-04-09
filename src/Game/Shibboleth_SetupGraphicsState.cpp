@@ -25,6 +25,7 @@ THE SOFTWARE.
 #include "Shibboleth_SetupGraphicsState.h"
 #include <Shibboleth_RenderManager.h>
 #include <Shibboleth_IApp.h>
+#include <Gleam_IRenderDevice.h>
 #include <Gaff_JSON.h>
 
 #define GRAPHICS_CFG "graphics.cfg"
@@ -177,9 +178,21 @@ void SetupGraphicsState::update(void)
 			return true;
 		}
 
-		if (!tags.isInteger()) {
+		if (!tags.isArray()) {
 			log.first.writeString("ERROR - Malformed config file.\n");
 			return true;
+		}
+
+		unsigned short disp_tags = 0;
+
+		if (EXTRACT_DISPLAY_TAGS(tags, disp_tags)) {
+			log.first.writeString("ERROR - Malformed config file.\n");
+			return nullptr;
+		}
+
+		if (!disp_tags) {
+			log.first.writeString("ERROR - Malformed config file.\n");
+			return nullptr;
 		}
 
 		const GChar* wnd_name = nullptr;
@@ -210,7 +223,7 @@ void SetupGraphicsState::update(void)
 			static_cast<unsigned int>(width.getInteger()), static_cast<unsigned int>(height.getInteger()),
 			static_cast<unsigned int>(refresh_rate.getInteger()), device_name.getString(),
 			static_cast<unsigned int>(adapter_id.getInteger()), static_cast<unsigned int>(display_id.getInteger()),
-			vsync.isTrue(), static_cast<unsigned short>(tags.getInteger()))) {
+			vsync.isTrue(), disp_tags)) {
 
 			log.first.printf("ERROR - Failed to create window with values\n"
 				"X: %i\n"
@@ -227,7 +240,7 @@ void SetupGraphicsState::update(void)
 				width.getInteger(), height.getInteger(),
 				refresh_rate.getInteger(), (vsync.isTrue()) ? "true" : "false",
 				device_name.getString(), adapter_id.getInteger(),
-				display_id.getInteger(), tags.getInteger()
+				display_id.getInteger(), disp_tags
 			);
 
 			return true;
@@ -269,8 +282,14 @@ void SetupGraphicsState::generateDefaultConfig(Gaff::JSON& cfg)
 	cfg.setObject("module", Gaff::JSON::createString("Graphics_Direct3D"));
 #endif
 
+	RenderManager& render_manager = _app.getManagerT<RenderManager>("Render Manager");
+	Gleam::IRenderDevice::AdapterList adapters = render_manager.getRenderDevice().getDisplayModes();
+	assert(!adapters.empty());
+
 	Gaff::JSON windows = Gaff::JSON::createArray();
 	Gaff::JSON window_entry = Gaff::JSON::createObject();
+	Gaff::JSON tags = Gaff::JSON::createArray();
+	tags.setObject(size_t(0), Gaff::JSON::createString(GetEnumRefDef<DisplayTags>().getName(DT_1)));
 
 	window_entry.setObject("x", Gaff::JSON::createInteger(0));
 	window_entry.setObject("y", Gaff::JSON::createInteger(0));
@@ -282,6 +301,8 @@ void SetupGraphicsState::generateDefaultConfig(Gaff::JSON& cfg)
 	window_entry.setObject("adapter_id", Gaff::JSON::createInteger(0));
 	window_entry.setObject("display_id", Gaff::JSON::createInteger(0));
 	window_entry.setObject("vsync", Gaff::JSON::createFalse());
+	window_entry.setObject("device_name", Gaff::JSON::createString(adapters[0].adapter_name));
+	window_entry.setObject("tags", tags);
 
 	windows.setObject(size_t(0), window_entry);
 

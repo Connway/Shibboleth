@@ -22,28 +22,36 @@ THE SOFTWARE.
 
 #pragma once
 
-#include <Shibboleth_IManager.h>
-#include <Shibboleth_Array.h>
+#include "Shibboleth_OcclusionManager.h"
 
 NS_SHIBBOLETH
 
+class OcclusionManager;
 class CameraComponent;
+class Object;
 
-class CameraManager : public IManager
+class CameraManager : public IManager, public IUpdateQuery
 {
 public:
 	CameraManager(void);
 	~CameraManager(void);
 
+	void* rawRequestInterface(unsigned int class_id) const;
 	const char* getName(void) const;
+	void allManagersCreated(void);
 
-	void registerCamera(unsigned int window_id, CameraComponent* camera);
-	void removeCamera(unsigned int window_id, CameraComponent* camera);
+	void requestUpdateEntries(Array<UpdateEntry>& entries);
+	void update(double);
+
+	void registerCamera(CameraComponent* camera);
 	void removeCamera(CameraComponent* camera);
 
 private:
-	Array< Array<Gaff::Pair<unsigned int, CameraComponent*> > > _window_cameras;
-	Array< Array<CameraComponent*> > _device_cameras;
+	Array<CameraComponent*> _cameras;
+	Array<OcclusionManager::QueryData> _objects;
+	OcclusionManager* _occlusion_mgr;
+
+	REF_DEF_SHIB(CameraManager);
 };
 
 NS_END
