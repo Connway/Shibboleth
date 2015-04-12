@@ -30,7 +30,7 @@ NS_SHIBBOLETH
 COMP_REF_DEF_SAVE(LuaComponent, gRefDef);
 REF_IMPL_REQ(LuaComponent);
 
-REF_IMPL_SHIB(LuaComponent)
+SHIB_REF_IMPL(LuaComponent)
 .addBaseClassInterfaceOnly<LuaComponent>()
 .addString("Lua Filename", &LuaComponent::_lua_file)
 ;

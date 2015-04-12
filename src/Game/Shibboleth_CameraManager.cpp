@@ -30,7 +30,7 @@ THE SOFTWARE.
 NS_SHIBBOLETH
 
 REF_IMPL_REQ(CameraManager);
-REF_IMPL_SHIB(CameraManager)
+SHIB_REF_IMPL(CameraManager)
 .addBaseClassInterfaceOnly<CameraManager>()
 .ADD_BASE_CLASS_INTERFACE_ONLY(IUpdateQuery)
 ;

@@ -31,7 +31,7 @@ THE SOFTWARE.
 NS_SHIBBOLETH
 
 REF_IMPL_REQ(CameraComponent);
-REF_IMPL_SHIB(CameraComponent)
+SHIB_REF_IMPL(CameraComponent)
 .addBaseClassInterfaceOnly<CameraComponent>()
 .addArray("Viewport", &CameraComponent::_viewport)
 .addArray("Clear Color", &CameraComponent::_clear_color)
@@ -71,7 +71,6 @@ bool CameraComponent::validate(Gaff::JSON& json)
 bool CameraComponent::load(const Gaff::JSON& json)
 {
 	gRefDef.read(json, this);
-	// request render target resource
 
 	_render_target = GetApp().getManagerT<ResourceManager>("Resource Manager").requestResource(json["Render Target File"].getString());
 

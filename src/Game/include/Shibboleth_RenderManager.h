@@ -22,7 +22,6 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Shibboleth_IUpdateQuery.h"
 #include <Shibboleth_ReflectionDefinitions.h>
 #include <Shibboleth_DynamicLoader.h>
 #include <Shibboleth_IManager.h>
@@ -87,8 +86,8 @@ enum DisplayTags
 	DT_16 = 0x8000,
 };
 
-ENUM_REF_DEF_SHIB(DisplayTags);
-ENUM_REF_DEF_EMBEDDED_SHIB(Gleam_ITexture_Format, Gleam::ITexture::FORMAT);
+SHIB_ENUM_REF_DEF(DisplayTags);
+SHIB_ENUM_REF_DEF_EMBEDDED(Gleam_ITexture_Format, Gleam::ITexture::FORMAT);
 
 class RenderManager : public IManager
 {
@@ -215,7 +214,7 @@ private:
 	GAFF_NO_COPY(RenderManager);
 	GAFF_NO_MOVE(RenderManager);
 
-	REF_DEF_SHIB(RenderManager);
+	SHIB_REF_DEF(RenderManager);
 };
 
 NS_END

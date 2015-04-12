@@ -75,7 +75,7 @@ private:
 
 	void RenderTargetCallback(const AHashString& /*resource*/, bool success);
 
-	REF_DEF_SHIB(CameraComponent);
+	SHIB_REF_DEF(CameraComponent);
 };
 
 NS_END

@@ -32,7 +32,7 @@ THE SOFTWARE.
 NS_SHIBBOLETH
 
 REF_IMPL_REQ(OcclusionManager);
-REF_IMPL_SHIB(OcclusionManager)
+SHIB_REF_IMPL(OcclusionManager)
 .addBaseClassInterfaceOnly<OcclusionManager>()
 .ADD_BASE_CLASS_INTERFACE_ONLY(IUpdateQuery)
 ;

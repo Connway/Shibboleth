@@ -42,7 +42,7 @@ NS_SHIBBOLETH
 COMP_REF_DEF_SAVE(ModelComponent, gRefDef);
 REF_IMPL_REQ(ModelComponent);
 
-REF_IMPL_SHIB(ModelComponent)
+SHIB_REF_IMPL(ModelComponent)
 .addBaseClass<ModelComponent>(ModelComponent::gHash)
 ;
 
@@ -115,10 +115,12 @@ bool ModelComponent::load(const Gaff::JSON& json)
 
 	gRefDef.read(json, this);
 
+	// FIX ME
 	if (material_file.isString()) {
 		_material_res = _res_mgr.requestResource(material_file.getString());
 	}
 
+	// Turn these into arrays BEGIN
 	if (texture_file.isString()) {
 		_texture_res = _res_mgr.requestResource(texture_file.getString());
 	}
@@ -126,6 +128,7 @@ bool ModelComponent::load(const Gaff::JSON& json)
 	if (sampler_file.isString()) {
 		_sampler_res = _res_mgr.requestResource(sampler_file.getString());
 	}
+	// Turn these into arrays END
 
 	if (model_file.isString()) {
 		_model_res = _res_mgr.requestResource(model_file.getString());
@@ -154,6 +157,7 @@ void ModelComponent::allComponentsLoaded(void)
 
 void ModelComponent::ProgramBuffersCallback(const AHashString& /*resource*/, bool success)
 {
+	// FIX ME
 	if (success) {
 		if (_texture_res.getResourcePtr()->isLoaded()) {
 			_program_buffers_res->data[0]->addResourceView(Gleam::IShader::SHADER_PIXEL, _texture_res->resource_views[0].get());
@@ -171,6 +175,7 @@ void ModelComponent::ProgramBuffersCallback(const AHashString& /*resource*/, boo
 
 void ModelComponent::TextureLoadedCallback(const AHashString& /*resource*/, bool success)
 {
+	// FIX ME
 	if (success && _program_buffers_res.getResourcePtr()->isLoaded()) {
 		_program_buffers_res->data[0]->addResourceView(Gleam::IShader::SHADER_PIXEL, _texture_res->resource_views[0].get());
 	}
@@ -178,6 +183,7 @@ void ModelComponent::TextureLoadedCallback(const AHashString& /*resource*/, bool
 
 void ModelComponent::SamplerStateCallback(const AHashString& /*resource*/, bool success)
 {
+	// FIX ME
 	if (success && _program_buffers_res.getResourcePtr()->isLoaded()) {
 		_program_buffers_res->data[0]->addSamplerState(Gleam::IShader::SHADER_PIXEL, _sampler_res->data[0].get());
 	}
@@ -185,6 +191,7 @@ void ModelComponent::SamplerStateCallback(const AHashString& /*resource*/, bool 
 
 void ModelComponent::BufferCallback(const AHashString& /*resource*/, bool success)
 {
+	// FIX ME
 	if (success && _program_buffers_res.getResourcePtr()->isLoaded()) {
 		_program_buffers_res->data[0]->addConstantBuffer(Gleam::IShader::SHADER_VERTEX, _buffer_res->data[0].get());
 	}
@@ -193,13 +200,8 @@ void ModelComponent::BufferCallback(const AHashString& /*resource*/, bool succes
 void ModelComponent::LoadCallback(const AHashString& /*resource*/, bool success)
 {
 	if (!success) {
-		int i = 5;
-		i = i;
 		// complain about something
-		return;
 	}
-
-	// process loaded data
 }
 
 void ModelComponent::HandleLoadingMessage(const LoadingMessage& msg)
@@ -209,6 +211,7 @@ void ModelComponent::HandleLoadingMessage(const LoadingMessage& msg)
 	}
 }
 
+// HACK: Should be removed
 void ModelComponent::render(void)
 {
 	if (!_material_res || !_model_res || !_texture_res || !_sampler_res || !_program_buffers_res || !_buffer_res ||

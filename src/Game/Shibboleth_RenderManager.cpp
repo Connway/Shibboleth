@@ -34,12 +34,12 @@ THE SOFTWARE.
 NS_SHIBBOLETH
 
 REF_IMPL_REQ(RenderManager);
-REF_IMPL_SHIB(RenderManager)
+SHIB_REF_IMPL(RenderManager)
 .addBaseClassInterfaceOnly<RenderManager>()
 ;
 
 // Default values
-ENUM_REF_IMPL_SHIB(DisplayTags)
+SHIB_ENUM_REF_IMPL(DisplayTags)
 .addValue("DT_1", DT_1)
 .addValue("DT_2", DT_2)
 .addValue("DT_3", DT_3)
@@ -63,7 +63,7 @@ static DisplayTags gDisplayTagsValues[] = {
 	DT_11, DT_12, DT_13, DT_14, DT_15, DT_16
 };
 
-ENUM_REF_IMPL_EMBEDDED_SHIB(Gleam_ITexture_Format, Gleam::ITexture::FORMAT)
+SHIB_ENUM_REF_IMPL_EMBEDDED(Gleam_ITexture_Format, Gleam::ITexture::FORMAT)
 .addValue("R_8_UNORM", Gleam::ITexture::R_8_UNORM)
 .addValue("R_16_UNORM", Gleam::ITexture::R_16_UNORM)
 .addValue("RG_8_UNORM", Gleam::ITexture::RG_8_UNORM)

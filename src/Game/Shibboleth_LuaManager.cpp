@@ -27,7 +27,7 @@ THE SOFTWARE.
 NS_SHIBBOLETH
 
 REF_IMPL_REQ(LuaManager);
-REF_IMPL_SHIB(LuaManager)
+SHIB_REF_IMPL(LuaManager)
 .addBaseClassInterfaceOnly<LuaManager>()
 ;
 

@@ -25,7 +25,7 @@ THE SOFTWARE.
 NS_SHIBBOLETH
 
 REF_IMPL_REQ(BroadcasterManager);
-REF_IMPL_SHIB(BroadcasterManager)
+SHIB_REF_IMPL(BroadcasterManager)
 .addBaseClassInterfaceOnly<BroadcasterManager>()
 .ADD_BASE_CLASS_INTERFACE_ONLY(IUpdateQuery)
 ;

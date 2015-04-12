@@ -39,23 +39,23 @@ EnumReflectionDefinition<T>& GetEnumRefDef(void)
 	return never_used;
 }
 
-#define REF_DEF_SHIB(ClassName) REF_DEF(ClassName, ProxyAllocator)
-#define REF_IMPL_SHIB(ClassName) REF_IMPL_ASSIGN(ClassName, ProxyAllocator, ProxyAllocator("Reflection"))
+#define SHIB_REF_DEF(ClassName) REF_DEF(ClassName, ProxyAllocator)
+#define SHIB_REF_IMPL(ClassName) REF_IMPL_ASSIGN(ClassName, ProxyAllocator, ProxyAllocator("Reflection"))
 
-#define ENUM_REF_DEF_EMBEDDED_SHIB(EnumName, Type) \
+#define SHIB_ENUM_REF_DEF_EMBEDDED(EnumName, Type) \
 	template<> EnumReflectionDefinition<Type>& GetEnumRefDef<Type>(void); \
 	ENUM_REF_DEF_EMBEDDED(EnumName, Type, ProxyAllocator)
 
-#define ENUM_REF_IMPL_EMBEDDED_SHIB(EnumName, Type) \
+#define SHIB_ENUM_REF_IMPL_EMBEDDED(EnumName, Type) \
 	template<> EnumReflectionDefinition<Type>& GetEnumRefDef<Type>(void) { return g##EnumName##RefDef; } \
 	ENUM_REFL_IMPL_ASSIGN_EMBEDDED(EnumName, Type, ProxyAllocator, ProxyAllocator("Reflection"))
 
 
-#define ENUM_REF_DEF_SHIB(EnumName) \
+#define SHIB_ENUM_REF_DEF(EnumName) \
 	template<> EnumReflectionDefinition<EnumName>& GetEnumRefDef<EnumName>(void); \
 	ENUM_REF_DEF(EnumName, ProxyAllocator)
 
-#define ENUM_REF_IMPL_SHIB(EnumName) \
+#define SHIB_ENUM_REF_IMPL(EnumName) \
 	template<> EnumReflectionDefinition<EnumName>& GetEnumRefDef<EnumName>(void) { return g##EnumName##RefDef; } \
 	ENUM_REF_IMPL_ASSIGN(EnumName, ProxyAllocator, ProxyAllocator("Reflection"))
 
