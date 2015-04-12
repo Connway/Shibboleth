@@ -50,7 +50,7 @@ private:
 	Map<unsigned int, MessageBroadcaster*> _object_broadcasters;
 	Gaff::ReadWriteSpinLock _broadcaster_lock;
 
-	REF_DEF_SHIB(BroadcasterManager);
+	SHIB_REF_DEF(BroadcasterManager);
 };
 
 NS_END

@@ -20,41 +20,31 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#pragma once
-
-#include <Shibboleth_ReflectionDefinitions.h>
-#include <Shibboleth_IManager.h>
-#include <Shibboleth_Array.h>
-#include <Gaff_Function.h>
-
-namespace lua
-{
-	class State;
-}
+#include "Shibboleth_RenderPipelineManager.h"
 
 NS_SHIBBOLETH
 
-class LuaManager : public IManager
+REF_IMPL_REQ(RenderPipelineManager);
+SHIB_REF_IMPL(RenderPipelineManager)
+.addBaseClassInterfaceOnly<RenderPipelineManager>()
+.ADD_BASE_CLASS_INTERFACE_ONLY(IUpdateQuery)
+;
+
+RenderPipelineManager::RenderPipelineManager(void)
 {
-public:
-	LuaManager(void);
-	~LuaManager(void);
+}
 
-	const char* getName(void) const;
+RenderPipelineManager::~RenderPipelineManager(void)
+{
+}
 
-	void addRegistrant(const Gaff::FunctionBinder<void, lua::State&>& registrant);
+const char* RenderPipelineManager::getName(void) const
+{
+	return "Render Pipeline Manager";
+}
 
-	lua::State* createNewState(void);
-
-	void* rawRequestInterface(unsigned int class_id) const;
-
-private:
-	Array< Gaff::FunctionBinder<void, lua::State&> > _registrants;
-
-	GAFF_NO_COPY(LuaManager);
-	GAFF_NO_MOVE(LuaManager);
-
-	SHIB_REF_DEF(LuaManager);
-};
+void RenderPipelineManager::requestUpdateEntries(Array<UpdateEntry>& entries)
+{
+}
 
 NS_END

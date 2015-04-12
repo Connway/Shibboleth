@@ -22,39 +22,24 @@ THE SOFTWARE.
 
 #pragma once
 
+#include "Shibboleth_IUpdateQuery.h"
 #include <Shibboleth_ReflectionDefinitions.h>
 #include <Shibboleth_IManager.h>
-#include <Shibboleth_Array.h>
-#include <Gaff_Function.h>
-
-namespace lua
-{
-	class State;
-}
 
 NS_SHIBBOLETH
 
-class LuaManager : public IManager
+class RenderPipelineManager : public IManager, public IUpdateQuery
 {
 public:
-	LuaManager(void);
-	~LuaManager(void);
+	RenderPipelineManager(void);
+	~RenderPipelineManager(void);
 
 	const char* getName(void) const;
 
-	void addRegistrant(const Gaff::FunctionBinder<void, lua::State&>& registrant);
-
-	lua::State* createNewState(void);
-
 	void* rawRequestInterface(unsigned int class_id) const;
+	void requestUpdateEntries(Array<UpdateEntry>& entries);
 
-private:
-	Array< Gaff::FunctionBinder<void, lua::State&> > _registrants;
-
-	GAFF_NO_COPY(LuaManager);
-	GAFF_NO_MOVE(LuaManager);
-
-	SHIB_REF_DEF(LuaManager);
+	SHIB_REF_DEF(RenderPipelineManager);
 };
 
 NS_END

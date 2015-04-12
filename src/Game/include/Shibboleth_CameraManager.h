@@ -51,7 +51,7 @@ private:
 	Array<OcclusionManager::QueryData> _objects;
 	OcclusionManager* _occlusion_mgr;
 
-	REF_DEF_SHIB(CameraManager);
+	SHIB_REF_DEF(CameraManager);
 };
 
 NS_END

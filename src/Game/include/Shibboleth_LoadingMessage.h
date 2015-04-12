@@ -41,7 +41,7 @@ public:
 	float progress;
 	LoadingState state;
 
-	REF_DEF_SHIB(LoadingMessage);
+	SHIB_REF_DEF(LoadingMessage);
 };
 
 NS_END

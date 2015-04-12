@@ -26,7 +26,7 @@ THE SOFTWARE.
 
 NS_SHIBBOLETH
 
-REF_IMPL_SHIB(LoadingMessage);
+SHIB_REF_IMPL(LoadingMessage);
 
 LoadingMessage::LoadingMessage(LoadingState _state, float _progress):
 	progress(_progress), state(_state)

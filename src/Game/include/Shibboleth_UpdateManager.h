@@ -77,7 +77,7 @@ private:
 	GAFF_NO_COPY(UpdateManager);
 	GAFF_NO_MOVE(UpdateManager);
 
-	REF_DEF_SHIB(UpdateManager);
+	SHIB_REF_DEF(UpdateManager);
 };
 
 NS_END

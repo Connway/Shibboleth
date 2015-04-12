@@ -182,7 +182,7 @@ private:
 	GAFF_NO_COPY(OcclusionManager);
 	GAFF_NO_MOVE(OcclusionManager);
 
-	REF_DEF_SHIB(OcclusionManager);
+	SHIB_REF_DEF(OcclusionManager);
 };
 
 NS_END

@@ -84,7 +84,7 @@ private:
 	void LoadCallback(const AHashString& resource, bool success);
 	void HandleLoadingMessage(const LoadingMessage& msg);
 
-	REF_DEF_SHIB(ModelComponent);
+	SHIB_REF_DEF(ModelComponent);
 };
 
 NS_END
