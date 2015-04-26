@@ -22,21 +22,24 @@ THE SOFTWARE.
 
 #pragma once
 
-#include <Shibboleth_String.h>
-#include <Shibboleth_Array.h>
-#include <Gaff_Function.h>
-#include <Gaff_Pair.h>
+#include "Shibboleth_IRenderStageQuery.h"
+#include <Gaff_JSON.h>
 
 NS_SHIBBOLETH
 
-class IUpdateQuery
+class RenderPipeline
 {
 public:
-	typedef Gaff::Pair< AString, Gaff::FunctionBinder<void, double> > UpdateEntry;
+	RenderPipeline(void);
+	~RenderPipeline(void);
 
-	virtual ~IUpdateQuery(void) {}
+	bool init(const Gaff::JSON& json, const Array<IRenderStageQuery::RenderStageEntry>& entries);
+	const char* getName(void) const;
+	void run(void);
 
-	virtual void getUpdateEntries(Array<UpdateEntry>& entries) = 0;
+private:
+	Array< Gaff::FunctionBinder<void> > _stages;
+	AString _name;
 };
 
 NS_END

@@ -2,6 +2,8 @@ local manager_files =
 {
 	"include/Shibboleth_*Manager.h",
 	"Shibboleth_*Manager.cpp",
+	"include/Shibboleth_RenderPipeline.h",
+	"Shibboleth_RenderPipeline.cpp"
 };
 
 local manager_module_files =
@@ -12,7 +14,7 @@ local manager_module_files =
 local state_files =
 {
 	"include/Shibboleth_*State.h",
-	"Shibboleth_*State.cpp",
+	"Shibboleth_*State.cpp"
 };
 
 local state_module_files =

@@ -40,7 +40,7 @@ public:
 	const char* getName(void) const;
 	void allManagersCreated(void);
 
-	void requestUpdateEntries(Array<UpdateEntry>& entries);
+	void getUpdateEntries(Array<UpdateEntry>& entries);
 	void update(double);
 
 	void registerCamera(CameraComponent* camera);

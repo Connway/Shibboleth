@@ -75,12 +75,12 @@ void UpdateManager::allManagersCreated(void)
 
 	unsigned int update_query_hash = CLASS_HASH(IUpdateQuery);
 
-	((App&)_app).forEachManager([&](IManager& manager) -> bool
+	reinterpret_cast<App&>(_app).forEachManager([&](IManager& manager) -> bool
 	{
 		IUpdateQuery* update_query = manager.requestInterface<IUpdateQuery>(update_query_hash);
 
 		if (update_query) {
-			update_query->requestUpdateEntries(entries);
+			update_query->getUpdateEntries(entries);
 		}
 
 		return false;

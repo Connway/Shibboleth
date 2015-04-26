@@ -39,6 +39,12 @@
     <ClInclude Include="..\..\..\src\Game\include\Shibboleth_RenderPipelineManager.h">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\src\Game\include\Shibboleth_IRenderStageQuery.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\Game\include\Shibboleth_RenderPipeline.h">
+      <Filter>include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\src\Game\Shibboleth_BroadcasterManager.cpp" />
@@ -52,5 +58,6 @@
     <ClCompile Include="..\..\..\src\Game\Shibboleth_ResourceManager.cpp" />
     <ClCompile Include="..\..\..\src\Game\Shibboleth_UpdateManager.cpp" />
     <ClCompile Include="..\..\..\src\Game\Shibboleth_RenderPipelineManager.cpp" />
+    <ClCompile Include="..\..\..\src\Game\Shibboleth_RenderPipeline.cpp" />
   </ItemGroup>
 </Project>

@@ -22,22 +22,51 @@ THE SOFTWARE.
 
 #pragma once
 
+#include "Shibboleth_IRenderStageQuery.h"
 #include "Shibboleth_IUpdateQuery.h"
 #include <Shibboleth_ReflectionDefinitions.h>
 #include <Shibboleth_IManager.h>
 
 NS_SHIBBOLETH
 
-class RenderPipelineManager : public IManager, public IUpdateQuery
+class CameraComponent;
+class RenderPipeline;
+
+class RenderPipelineManager : public IManager, public IUpdateQuery, public IRenderStageQuery
 {
 public:
 	RenderPipelineManager(void);
 	~RenderPipelineManager(void);
 
 	const char* getName(void) const;
+	void allManagersCreated(void);
 
 	void* rawRequestInterface(unsigned int class_id) const;
-	void requestUpdateEntries(Array<UpdateEntry>& entries);
+	void getUpdateEntries(Array<UpdateEntry>& entries);
+
+	void getRenderStageEntries(Array<RenderStageEntry>& entries);
+
+	INLINE void setOutputCamera(unsigned int monitor, CameraComponent* camera);
+	INLINE CameraComponent* getOutputCamera(unsigned int monitor) const;
+	INLINE void setNumMonitors(unsigned int num_monitors);
+
+	INLINE size_t getActivePipeline(void) const;
+	INLINE void setActivePipeline(size_t pipeline);
+
+	size_t getPipelineIndex(const char* name) const;
+
+	void update(double);
+
+private:
+	Array<CameraComponent*> _output_cameras; // Array size == num of monitors. Element is camera that is being outputted to monitor.
+	Array<RenderPipeline> _pipelines;
+	Array<IRenderStageQuery::RenderStageEntry> _stages;
+	size_t _active_pipeline;
+
+	void renderOpaque(void);
+	void composeImage(void);
+	void renderTransparent(void);
+	void renderToScreen(void);
 
 	SHIB_REF_DEF(RenderPipelineManager);
 };

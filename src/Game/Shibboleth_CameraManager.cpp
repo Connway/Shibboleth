@@ -55,7 +55,7 @@ void CameraManager::allManagersCreated(void)
 	_occlusion_mgr = &GetApp().getManagerT<OcclusionManager>("Occlusion Manager");
 }
 
-void CameraManager::requestUpdateEntries(Array<UpdateEntry>& entries)
+void CameraManager::getUpdateEntries(Array<UpdateEntry>& entries)
 {
 	entries.movePush(UpdateEntry(AString("Camera Manager: Update"), Gaff::Bind(this, &CameraManager::update)));
 }
