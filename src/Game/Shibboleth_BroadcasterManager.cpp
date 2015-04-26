@@ -44,7 +44,7 @@ const char* BroadcasterManager::getName(void) const
 	return "Broadcaster Manager";
 }
 
-void BroadcasterManager::requestUpdateEntries(Array<IUpdateQuery::UpdateEntry>& entries)
+void BroadcasterManager::getUpdateEntries(Array<IUpdateQuery::UpdateEntry>& entries)
 {
 	entries.emplacePush(AString("Broadcaster Manager: Update"), Gaff::Bind(this, &BroadcasterManager::update));
 }

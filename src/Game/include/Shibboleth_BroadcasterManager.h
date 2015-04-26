@@ -38,7 +38,7 @@ public:
 
 	const char* getName(void) const;
 
-	void requestUpdateEntries(Array<IUpdateQuery::UpdateEntry>& entries);
+	void getUpdateEntries(Array<IUpdateQuery::UpdateEntry>& entries);
 	void* rawRequestInterface(unsigned int class_id) const;
 
 	void update(double);

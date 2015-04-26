@@ -70,7 +70,7 @@ public:
 	OcclusionManager(void);
 	~OcclusionManager(void);
 
-	void requestUpdateEntries(Array<UpdateEntry>& entries);
+	void getUpdateEntries(Array<UpdateEntry>& entries);
 	void* rawRequestInterface(unsigned int class_id) const;
 	const char* getName(void) const;
 

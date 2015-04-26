@@ -122,7 +122,7 @@ const char* ObjectManager::getName(void) const
 	return "Object Manager";
 }
 
-void ObjectManager::requestUpdateEntries(Array<UpdateEntry>& entries)
+void ObjectManager::getUpdateEntries(Array<UpdateEntry>& entries)
 {
 	entries.movePush(UpdateEntry(AString("Object Manager: Pre-Physics Update"), Gaff::Bind(this, &ObjectManager::prePhysicsUpdate)));
 	entries.movePush(UpdateEntry(AString("Object Manager: Post-Physics Update"), Gaff::Bind(this, &ObjectManager::prePhysicsUpdate)));

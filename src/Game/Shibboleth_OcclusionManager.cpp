@@ -352,7 +352,7 @@ OcclusionManager::~OcclusionManager(void)
 {
 }
 
-void OcclusionManager::requestUpdateEntries(Array<UpdateEntry>& entries)
+void OcclusionManager::getUpdateEntries(Array<UpdateEntry>& entries)
 {
 	entries.movePush(UpdateEntry(AString("Occlusion Manager: Update"), Gaff::Bind(this, &OcclusionManager::update)));
 }

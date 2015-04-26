@@ -29,14 +29,14 @@ THE SOFTWARE.
 
 NS_SHIBBOLETH
 
-class IUpdateQuery
+class IRenderStageQuery
 {
 public:
-	typedef Gaff::Pair< AString, Gaff::FunctionBinder<void, double> > UpdateEntry;
+	typedef Gaff::Pair< AString, Gaff::FunctionBinder<void> > RenderStageEntry;
 
-	virtual ~IUpdateQuery(void) {}
+	virtual ~IRenderStageQuery(void) {}
 
-	virtual void getUpdateEntries(Array<UpdateEntry>& entries) = 0;
+	virtual void getRenderStageEntries(Array<RenderStageEntry>& entries) = 0;
 };
 
 NS_END

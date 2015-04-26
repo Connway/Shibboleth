@@ -62,7 +62,7 @@ public:
 
 	const char* getName(void) const;
 
-	void requestUpdateEntries(Array<UpdateEntry>& entries);
+	void getUpdateEntries(Array<UpdateEntry>& entries);
 	void* rawRequestInterface(unsigned int class_id) const;
 
 private:
