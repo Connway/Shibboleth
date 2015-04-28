@@ -23,9 +23,10 @@ THE SOFTWARE.
 #pragma once
 
 #include "Shibboleth_IRenderStageQuery.h"
+#include "Shibboleth_RenderManager.h"
 #include "Shibboleth_IUpdateQuery.h"
 #include <Shibboleth_ReflectionDefinitions.h>
-#include <Shibboleth_IManager.h>
+#include <Shibboleth_ResourceDefines.h>
 
 NS_SHIBBOLETH
 
@@ -62,6 +63,8 @@ private:
 	Array<RenderPipeline> _pipelines;
 	Array<IRenderStageQuery::RenderStageEntry> _stages;
 	size_t _active_pipeline;
+
+	RenderManager::WindowRenderTargets _render_targets;
 
 	void renderOpaque(void);
 	void composeImage(void);

@@ -85,7 +85,6 @@ void RenderPipeline::run(void)
 {
 	for (auto it = _stages.begin(); it != _stages.end(); ++it) {
 		(*it)();
-		GetApp().helpUntilNoTasks();
 	}
 }
 

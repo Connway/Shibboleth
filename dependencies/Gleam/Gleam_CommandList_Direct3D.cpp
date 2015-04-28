@@ -76,6 +76,7 @@ bool CommandListD3D::isD3D(void) const
 
 void CommandListD3D::setCommandList(ID3D11CommandList* command_list)
 {
+	SAFERELEASE(_command_list);
 	_command_list = command_list;
 }
 
