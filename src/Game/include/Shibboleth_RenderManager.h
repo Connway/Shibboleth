@@ -104,6 +104,23 @@ public:
 		unsigned short tags;
 	};
 
+	struct WindowRenderTargets
+	{
+		Array<RenderTargetPtr> rts;
+
+		Array<TexturePtr> diffuse;
+		Array<TexturePtr> specular;
+		Array<TexturePtr> normal;
+		Array<TexturePtr> position;
+		Array<TexturePtr> depth;
+
+		Array<SRVPtr> diffuse_srvs;
+		Array<SRVPtr> specular_srvs;
+		Array<SRVPtr> normal_srvs;
+		Array<SRVPtr> position_srvs;
+		Array<SRVPtr> depth_srvs;
+	};
+
 	RenderManager(IApp& app);
 	~RenderManager(void);
 
@@ -150,6 +167,8 @@ public:
 	INLINE Gleam::IBuffer* createBuffer(void);
 	INLINE Gleam::IModel* createModel(void);
 	INLINE Gleam::IMesh* createMesh(void);
+
+	WindowRenderTargets createRenderTargetsForEachWindow(void);
 
 private:
 	struct GraphicsFunctions
@@ -210,6 +229,7 @@ private:
 
 	int getDisplayModeID(unsigned int width, unsigned int height, unsigned int refresh_rate, unsigned int adapter_id, unsigned int display_id);
 	bool cacheGleamFunctions(IApp& app, const char* module);
+	bool createWindowRenderable(int width, int height, Gleam::ITexture::FORMAT format, TexturePtr& tex_out, SRVPtr& srv_out);
 
 	GAFF_NO_COPY(RenderManager);
 	GAFF_NO_MOVE(RenderManager);

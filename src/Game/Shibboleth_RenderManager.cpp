@@ -454,107 +454,80 @@ Gleam::IMesh* RenderManager::createMesh(void)
 	return _graphics_functions.create_mesh();
 }
 
-//unsigned int RenderManager::createRT(unsigned int width, unsigned int height, unsigned int device, Gleam::ITexture::FORMAT format, const AString& name, unsigned short tags)
-//{
-//	// We're about to do stuff to the Render Devices, lock it so that no one can mess with it
-//	Gaff::ScopedLock<Gaff::SpinLock> scoped_lock(_rd_lock);
-//	//data.device_data.resize(_render_device->getNumDevices());
-//
-//	RenderData rd;
-//
-//	//for (auto it = data.device_data.begin(); it != data.device_data.end(); ++it) {
-//		//_render_device->setCurrentDevice(it - data.device_data.begin());
-//		_render_device->setCurrentDevice(device);
-//		rd.output = createTexture();
-//
-//		if (!rd.output) {
-//			// log error
-//			return UINT_FAIL;
-//		}
-//
-//		if (!rd.output->init2D(*_render_device, width, height, format)) {
-//			// log error
-//			return UINT_FAIL;
-//		}
-//
-//		rd.output_srv = createShaderResourceView();
-//
-//		if (!rd.output_srv) {
-//			// log error
-//			return UINT_FAIL;
-//		}
-//
-//		if (!rd.output_srv->init(*_render_device, rd.output.get())) {
-//			// log error
-//			return UINT_FAIL;
-//		}
-//
-//		rd.render_target = createRenderTarget();
-//
-//		if (!rd.render_target) {
-//			// log error
-//			return UINT_FAIL;
-//		}
-//
-//		if (!rd.render_target->addTexture(*_render_device, rd.output.get())) {
-//			// log error
-//			return UINT_FAIL;
-//		}
-//	//}
-//
-//	RenderTargetData data = {
-//		rd, name, width,
-//		height, tags
-//	};
-//
-//	_render_target_data.push(data);
-//
-//	return static_cast<unsigned int>(_render_target_data.size() - 1);
-//}
+RenderManager::WindowRenderTargets RenderManager::createRenderTargetsForEachWindow(void)
+{
+	WindowRenderTargets wrt;
 
-//bool RenderManager::createRTDepth(size_t rt_index, Gleam::ITexture::FORMAT format)
-//{
-//	assert(rt_index < _render_target_data.size());
-//	RenderTargetData& data = _render_target_data[rt_index];
-//
-//	// We're about to do stuff to the Render Devices, lock it so that no one can mess with it
-//	Gaff::ScopedLock<Gaff::SpinLock> scoped_lock(_rd_lock);
-//
-//	//for (auto it = data.device_data.begin(); it != data.device_data.end(); ++it) {
-//		//_render_device->setCurrentDevice(it - data.device_data.begin());
-//		_render_device->setCurrentDevice(data.device);
-//		data.render_data.depth = createTexture();
-//
-//		if (!data.render_data.depth) {
-//			// log error
-//			return false;
-//		}
-//
-//		if (!data.render_data.depth->init2D(*_render_device, data.width, data.height, format)) {
-//			// log error
-//			return false;
-//		}
-//
-//		data.render_data.depth_srv = createShaderResourceView();
-//
-//		if (!data.render_data.depth_srv) {
-//			// log error
-//			return false;
-//		}
-//
-//		if (!data.render_data.depth_srv->init(*_render_device, data.render_data.depth.get())) {
-//			// log error
-//			return false;
-//		}
-//
-//		if (!data.render_data.render_target->addDepthStencilBuffer(*_render_device, data.render_data.depth.get())) {
-//			// log error
-//			return false;
-//		}
-//	//}
-//
-//	return true;
-//}
+	wrt.rts.reserve(_windows.size());
+
+	wrt.diffuse.reserve(_windows.size());
+	wrt.specular.reserve(_windows.size());
+	wrt.normal.reserve(_windows.size());
+	wrt.position.reserve(_windows.size());
+	wrt.depth.reserve(_windows.size());
+
+	wrt.diffuse_srvs.reserve(_windows.size());
+	wrt.specular_srvs.reserve(_windows.size());
+	wrt.normal_srvs.reserve(_windows.size());
+	wrt.position_srvs.reserve(_windows.size());
+	wrt.depth_srvs.reserve(_windows.size());
+
+	Gaff::ScopedLock<Gaff::SpinLock> lock(_rd_lock);
+
+	for (auto it = _windows.begin(); it != _windows.end(); ++it) {
+		_render_device->setCurrentDevice(it->device);
+
+		RenderTargetPtr rt(_graphics_functions.create_rendertarget());
+		TexturePtr tex[4];
+		SRVPtr srv[4];
+
+		TexturePtr depth;
+		SRVPtr depth_srv;
+
+		if (!rt) {
+			// log error
+			return WindowRenderTargets();
+		}
+
+		// Create each of the g-buffers
+		for (size_t i = 0; i < sizeof(tex) / sizeof(TexturePtr); ++i) {
+			if (!createWindowRenderable(it->window->getWidth(), it->window->getHeight(), Gleam::ITexture::RGBA_8_UNORM, tex[i], srv[i])) {
+				// log error
+				return WindowRenderTargets();
+			}
+
+			if (!rt->addTexture(*_render_device, tex[i].get())) {
+				// log error
+				return WindowRenderTargets();
+			}
+		}
+
+		if (!createWindowRenderable(it->window->getWidth(), it->window->getHeight(), Gleam::ITexture::DEPTH_STENCIL_24_8_UNORM_UI, depth, depth_srv)) {
+			// log error
+			return WindowRenderTargets();
+		}
+
+		if (!rt->addDepthStencilBuffer(*_render_device, depth.get())) {
+			// log error
+			return WindowRenderTargets();
+		}
+
+		wrt.rts.emplaceMovePush(Gaff::Move(rt));
+		wrt.diffuse.emplacePush(Gaff::Move(tex[0]));
+		wrt.specular.emplacePush(Gaff::Move(tex[1]));
+		wrt.normal.emplacePush(Gaff::Move(tex[2]));
+		wrt.position.emplacePush(Gaff::Move(tex[3]));
+		wrt.depth.emplaceMovePush(Gaff::Move(depth));
+
+		wrt.diffuse_srvs.emplacePush(Gaff::Move(srv[0]));
+		wrt.specular_srvs.emplacePush(Gaff::Move(srv[1]));
+		wrt.normal_srvs.emplacePush(Gaff::Move(srv[2]));
+		wrt.position_srvs.emplacePush(Gaff::Move(srv[3]));
+		wrt.depth_srvs.emplaceMovePush(Gaff::Move(depth_srv));
+	}
+
+	return wrt;
+}
 
 int RenderManager::getDisplayModeID(unsigned int width, unsigned int height, unsigned int refresh_rate, unsigned int adapter_id, unsigned int display_id)
 {
@@ -735,6 +708,34 @@ bool RenderManager::cacheGleamFunctions(IApp& app, const char* module)
 
 	if (!_graphics_functions.create_mesh) {
 		log.first.printf("ERROR - Failed to find function 'CreateMesh' in graphics module '%s'.", module_path.getBuffer());
+		return false;
+	}
+
+	return true;
+}
+
+bool RenderManager::createWindowRenderable(int width, int height, Gleam::ITexture::FORMAT format, TexturePtr& tex_out, SRVPtr& srv_out)
+{
+	srv_out = _graphics_functions.create_shaderresourceview();
+	tex_out = _graphics_functions.create_texture();
+
+	if (!tex_out) {
+		// log error
+		return false;
+	}
+
+	if (!srv_out) {
+		// log error
+		return false;
+	}
+
+	if (!tex_out->init2D(*_render_device, width, height, format)) {
+		// log error
+		return false;
+	}
+
+	if (!srv_out->init(*_render_device, tex_out.get())) {
+		// log error
 		return false;
 	}
 

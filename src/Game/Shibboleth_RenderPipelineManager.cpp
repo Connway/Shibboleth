@@ -26,6 +26,9 @@ THE SOFTWARE.
 #include <Shibboleth_IFileSystem.h>
 #include <Shibboleth_Utilities.h>
 #include <Shibboleth_App.h>
+
+#include <Gleam_ICommandList.h>
+#include <Gleam_ITexture.h>
 #include <Gaff_Utils.h>
 
 NS_SHIBBOLETH
@@ -174,6 +177,13 @@ void RenderPipelineManager::allManagersCreated(void)
 		GetApp().quit();
 		return;
 	}
+
+	_render_targets = GetApp().getManagerT<RenderManager>("Render Manager").createRenderTargetsForEachWindow();
+
+	if (_render_targets.rts.empty()) {
+		// Log error
+		GetApp().quit();
+	}
 }
 
 void RenderPipelineManager::getUpdateEntries(Array<UpdateEntry>& entries)
@@ -227,6 +237,7 @@ size_t RenderPipelineManager::getPipelineIndex(const char* name) const
 void RenderPipelineManager::update(double)
 {
 	_pipelines[_active_pipeline].run();
+	GetApp().helpUntilNoTasks();
 }
 
 NS_END

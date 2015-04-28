@@ -37,6 +37,7 @@ namespace Gleam
 	class IRenderDevice;
 	class IRenderTarget;
 	class IRenderState;
+	class ICommandList;
 	class ITexture;
 	class ILayout;
 	class IProgram;
@@ -53,6 +54,7 @@ typedef Gaff::RefPtr<Gleam::IRenderDevice> RenderDevicePtr;
 typedef Gaff::RefPtr<Gleam::IRenderTarget> RenderTargetPtr;
 typedef Gaff::RefPtr<Gleam::ISamplerState> SamplerStatePtr;
 typedef Gaff::RefPtr<Gleam::IRenderState> RenderStatePtr;
+//typedef Gaff::RefPtr<Gleam::ICommandList> CommandListPtr;
 typedef Gaff::RefPtr<Gleam::ITexture> TexturePtr;
 typedef Gaff::RefPtr<Gleam::ILayout> LayoutPtr;
 typedef Gaff::RefPtr<Gleam::IProgram> ProgramPtr;
