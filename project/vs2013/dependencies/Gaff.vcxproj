@@ -227,6 +227,7 @@
     <ClInclude Include="..\..\..\dependencies\Gaff\include\Gaff_Image.h" />
     <ClInclude Include="..\..\..\dependencies\Gaff\include\Gaff_IncludeAssert.h" />
     <ClInclude Include="..\..\..\dependencies\Gaff\include\Gaff_IncludeWindows.h" />
+    <ClInclude Include="..\..\..\dependencies\Gaff\include\Gaff_JobPool.h" />
     <ClInclude Include="..\..\..\dependencies\Gaff\include\Gaff_JSON.h" />
     <ClInclude Include="..\..\..\dependencies\Gaff\include\Gaff_Light.h" />
     <ClInclude Include="..\..\..\dependencies\Gaff\include\Gaff_LinearCurve.h" />
@@ -312,6 +313,7 @@
     <None Include="..\..\..\dependencies\Gaff\include\Gaff_Function.inl" />
     <None Include="..\..\..\dependencies\Gaff\include\Gaff_HashMap.inl" />
     <None Include="..\..\..\dependencies\Gaff\include\Gaff_HashString.inl" />
+    <None Include="..\..\..\dependencies\Gaff\include\Gaff_JobPool.inl" />
     <None Include="..\..\..\dependencies\Gaff\include\Gaff_LinearCurve.inl" />
     <None Include="..\..\..\dependencies\Gaff\include\Gaff_Map.inl" />
     <None Include="..\..\..\dependencies\Gaff\include\Gaff_Queue.inl" />

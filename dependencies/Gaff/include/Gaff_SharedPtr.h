@@ -25,6 +25,7 @@ THE SOFTWARE.
 #pragma once
 
 #include "Gaff_DefaultAllocator.h"
+#include "Gaff_Atomic.h"
 
 NS_GAFF
 
@@ -73,7 +74,7 @@ public:
 		_data = rhs._data;
 
 		if (_count) {
-			++(*_count);
+			AtomicIncrement(_count);
 		}
 
 		return *this;
@@ -100,7 +101,7 @@ public:
 		_data = rhs;
 
 		if (rhs) {
-			_count = (unsigned int*)_allocator.alloc(sizeof(unsigned int));
+			_count = reinterpret_cast<volatile unsigned int*>(_allocator.alloc(sizeof(volatile unsigned int)));
 			*_count = 1;
 		}
 
@@ -160,10 +161,10 @@ public:
 	void clear(void)
 	{
 		if (_count) {
-			--(*_count);
+			unsigned int new_count = AtomicDecrement(_count);
 
-			if (*_count == 0) {
-				_allocator.free(_count);
+			if (!new_count) {
+				_allocator.free((void*)_count);
 
 				if (_data) {
 					_allocator.freeT(_data);
@@ -192,7 +193,7 @@ public:
 
 private:
 	Allocator _allocator;
-	unsigned int* _count;
+	volatile unsigned int* _count;
 	T* _data;
 };
 

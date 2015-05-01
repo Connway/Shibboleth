@@ -201,7 +201,7 @@ void Array<T, Allocator>::clear(void)
 			deconstruct(_array + i);
 		}
 
-		_allocator.free(_array);
+		_allocator.free((void*)_array);
 		_used = _size = 0;
 		_array = nullptr;
 	}
