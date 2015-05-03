@@ -111,9 +111,6 @@ void ReadWriteSpinLock::writeLock(void) const
 			tries = 0;
 			YieldThread();
 		}
-
-		//while (_write_lock) {
-		//}
 	}
 
 	tries = 0;

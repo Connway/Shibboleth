@@ -237,7 +237,7 @@ size_t RenderPipelineManager::getPipelineIndex(const char* name) const
 void RenderPipelineManager::update(double)
 {
 	_pipelines[_active_pipeline].run();
-	GetApp().helpUntilNoTasks();
+	GetApp().getJobPool().helpUntilNoJobs();
 }
 
 NS_END

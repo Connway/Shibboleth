@@ -52,7 +52,7 @@ public:
 	bool operator!=(const Queue<T, Allocator>& rhs) const;
 
 	void clear(void);
-	void reallocate(size_t new_size);
+	void reserve(size_t new_size);
 
 	void movePush(T&& data);
 	void push(const T& data);

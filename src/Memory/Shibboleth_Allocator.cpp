@@ -266,6 +266,7 @@ void Allocator::free(void* data, unsigned int alloc_tag)
 				++mem_pool_info.wrong_free[it_pool->first];
 				mem_pool_info.wf_lock->unlock();
 				found = true;
+				it_pool->second.pa_lock->unlock();
 				break;
 			}
 

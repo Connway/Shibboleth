@@ -23,10 +23,10 @@ THE SOFTWARE.
 #pragma once
 
 #include "Shibboleth_ProxyAllocator.h"
-#include <Gaff_ThreadPool.h>
+#include <Gaff_JobPool.h>
 
 NS_SHIBBOLETH
 
-typedef Gaff::ThreadPool<ProxyAllocator> ThreadPool;
+using JobPool = Gaff::JobPool<ProxyAllocator>;
 
 NS_END

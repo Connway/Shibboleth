@@ -28,10 +28,13 @@ THE SOFTWARE.
 #include <Shibboleth_IManager.h>
 #include <Shibboleth_Watcher.h>
 #include <Shibboleth_Array.h>
-#include <Shibboleth_ITask.h>
 #include <Shibboleth_Map.h>
 #include <Gleam_AABB_CPU.h>
 #include <Gaff_ReadWriteSpinLock.h>
+
+NS_GAFF
+	struct Counter;
+NS_END
 
 NS_GLEAM
 	class FrustumCPU;
@@ -45,8 +48,8 @@ class IApp;
 class OcclusionManager : public IManager, public IUpdateQuery
 {
 public:
-	typedef Gaff::Pair<unsigned long long, unsigned long long> UserData;
-	typedef Gaff::Pair<Object*, const UserData&> QueryResult;
+	using UserData = Gaff::Pair<unsigned long long, unsigned long long>;
+	using QueryResult = Gaff::Pair<Object*, const UserData&>;
 
 	enum OBJ_TYPE
 	{
@@ -82,37 +85,25 @@ public:
 
 	void update(double);
 
+	void findObjectsInFrustum(const Gleam::FrustumCPU& frustum, OBJ_TYPE object_type, Array<QueryResult>& out) const;
 	void findObjectsInFrustum(const Gleam::FrustumCPU& frustum, QueryData& out) const;
+	INLINE Array<QueryResult> findObjectsInFrustum(const Gleam::FrustumCPU& frustum, OBJ_TYPE object_type) const;
 	INLINE QueryData findObjectsInFrustum(const Gleam::FrustumCPU& frustum) const;
 
 private:
 	class BVHTree
 	{
 	public:
-		class FrustumTask : public ITask
+		struct FrustumData
 		{
-		public:
-			FrustumTask(const Gleam::FrustumCPU& frustum, size_t branch_root, const BVHTree& tree);
-			~FrustumTask(void);
-
-			void doTask(void);
-
-			const Array<QueryResult>& getResult(void) const;
-			Array<QueryResult>& getResult(void);
-
-		private:
-			Array<QueryResult> _result;
-			const Gleam::FrustumCPU& _frustum;
-			const BVHTree& _tree;
-			size_t _branch_root;
-
-			void processBranch(size_t node_index);
-
-			SHIB_REF_COUNTED(FrustumTask);
+			Array<QueryResult> result;
+			const Gleam::FrustumCPU* frustum;
+			const BVHTree* tree;
+			size_t branch_root;
+			Gaff::Counter* counter;
 		};
 
-		typedef Gaff::RefPtr<FrustumTask> FrustumTaskPtr;
-		typedef Gaff::Pair<FrustumTaskPtr, FrustumTaskPtr> FrustumQueryTasks;
+		using FrustumQueryData = Gaff::Pair<FrustumData, FrustumData>;
 
 		BVHTree(void);
 		~BVHTree(void);
@@ -122,7 +113,7 @@ private:
 		size_t addObject(Object* object, const UserData& user_data);
 		void removeObject(size_t index);
 
-		FrustumQueryTasks findObjectsInFrustum(const Gleam::FrustumCPU& frustum) const;
+		FrustumQueryData findObjectsInFrustum(const Gleam::FrustumCPU& frustum) const;
 
 		// Bottom-up construction
 		void construct(const Array<Object*>& objects, Array<OcclusionID>* id_out);
@@ -173,7 +164,8 @@ private:
 		void removeObjectHelper(size_t index);
 		void updateAABBs(size_t index);
 
-		friend class FrustumTask;
+		static void ProcessBranch(FrustumData* frustum_data, size_t node_index);
+		static void FrustumJob(void* data);
 	};
 
 	BVHTree _bvh_trees[OT_SIZE];

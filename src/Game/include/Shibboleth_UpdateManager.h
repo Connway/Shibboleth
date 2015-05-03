@@ -30,16 +30,37 @@ THE SOFTWARE.
 #include <Gaff_Function.h>
 #include <Gaff_SpinLock.h>
 
+NS_GAFF
+	struct JobData;
+	struct Counter;
+NS_END
+
 NS_SHIBBOLETH
 
-class IApp;
+using UpdateCallback = Gaff::FunctionBinder<void, double>;
+
+struct UpdateData
+{
+	UpdateData(UpdateCallback& cb, double t):
+		callback(cb), dt(t)
+	{
+	}
+
+	const UpdateData& operator=(const UpdateData& rhs)
+	{
+		callback = rhs.callback;
+		dt = rhs.dt;
+		return *this;
+	}
+
+	UpdateCallback& callback;
+	double dt;
+};
 
 class UpdateManager : public IManager
 {
 public:
-	typedef Gaff::FunctionBinder<void, double> UpdateCallback;
-
-	UpdateManager(IApp& app);
+	UpdateManager(void);
 	~UpdateManager(void);
 
 	const char* getName(void) const;
@@ -50,29 +71,11 @@ public:
 	void* rawRequestInterface(unsigned int class_id) const;
 
 private:
-	class UpdateTask : public ITask
-	{
-	public:
-		UpdateTask(UpdateCallback& callback, double dt):
-			_callback(callback), _dt(dt)
-		{
-		}
-
-		void doTask(void)
-		{
-			_callback(_dt);
-		}
-
-	private:
-		UpdateCallback& _callback;
-		double _dt;
-
-		SHIB_REF_COUNTED(UpdateTask);
-	};
-
-	Array< Gaff::TaskPtr<ProxyAllocator> > _tasks_cache;
 	Array< Array<UpdateCallback> > _table;
-	IApp& _app;
+	Array<Gaff::JobData> _job_data;
+	Array<UpdateData> _update_data;
+
+	Gaff::Counter* _counter;
 
 	GAFF_NO_COPY(UpdateManager);
 	GAFF_NO_MOVE(UpdateManager);

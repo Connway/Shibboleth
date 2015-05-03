@@ -54,7 +54,7 @@ public:
 
 	void* rawRequestInterface(unsigned int class_id) const;
 
-	void render(void); // Temporary test function
+	void render(double dt); // Temporary test function
 
 	const ProgramBuffersData& getProgramBuffers(void) const;
 	const ProgramData& getMaterials(void) const;

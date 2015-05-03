@@ -26,6 +26,7 @@ THE SOFTWARE.
 
 #include "Gaff_IRefCounted.h"
 #include "Gaff_RefPtr.h"
+#include "Gaff_Atomic.h"
 #include "Gaff_Array.h"
 #include "Gaff_Pair.h"
 
@@ -42,7 +43,7 @@ public:
 	typedef Array<Gaff::Pair<TaskPointer, unsigned int>, Allocator> DependentTaskData;
 
 	ITask(const Allocator& allocator = Allocator()):
-		_dependent_tasks(allocator), _finished(false)
+		_dependent_tasks(allocator), _count(nullptr), _finished(false)
 	{
 	}
 
@@ -50,9 +51,25 @@ public:
 
 	virtual void doTask(void) = 0;
 
-	void setFinished(bool finished)
+	void setCount(volatile unsigned int* count)
 	{
-		_finished = finished;
+		_count = count;
+	}
+
+	void reset(void)
+	{
+		_finished = false;
+		_count = nullptr;
+	}
+
+	void finished(void)
+	{
+		if (_count) {
+			assert(_count && *_count);
+			AtomicDecrement(_count);
+		}
+
+		_finished = true;
 	}
 
 	bool isFinished(void) const
@@ -109,7 +126,7 @@ public:
 
 private:
 	DependentTaskData _dependent_tasks;
-	unsigned int _pool;
+	volatile unsigned int* _count;
 	bool _finished;
 };
 

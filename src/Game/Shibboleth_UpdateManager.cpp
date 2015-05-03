@@ -22,23 +22,34 @@ THE SOFTWARE.
 
 #include "Shibboleth_UpdateManager.h"
 #include "Shibboleth_IUpdateQuery.h"
+#include <Shibboleth_Utilities.h>
+#include <Shibboleth_JobPool.h>
 #include <Shibboleth_App.h>
 #include <Gaff_JSON.h>
 
 NS_SHIBBOLETH
+
+static void UpdateJob(void* data)
+{
+	UpdateData* update_data = reinterpret_cast<UpdateData*>(data);
+	update_data->callback(update_data->dt);
+}
 
 REF_IMPL_REQ(UpdateManager);
 SHIB_REF_IMPL(UpdateManager)
 .addBaseClassInterfaceOnly<UpdateManager>()
 ;
 
-UpdateManager::UpdateManager(IApp& app):
-	_app(app)
+UpdateManager::UpdateManager(void):
+	_counter(nullptr)
 {
 }
 
 UpdateManager::~UpdateManager(void)
 {
+	if (_counter) {
+		GetApp().getJobPool().waitForAndFreeCounter(_counter);
+	}
 }
 
 const char* UpdateManager::getName(void) const
@@ -49,33 +60,31 @@ const char* UpdateManager::getName(void) const
 void UpdateManager::update(double dt)
 {
 	for (auto it_row = _table.begin(); it_row != _table.end(); ++it_row) {
+		_job_data.clearNoFree();
+		_update_data.clearNoFree();
+		_job_data.reserve(it_row->size());
+		_update_data.reserve(it_row->size());
+
 		for (auto it_entry = it_row->begin(); it_entry != it_row->end(); ++it_entry) {
 			// add update callback to job queue
-			Gaff::TaskPtr<ProxyAllocator> task(GetAllocator()->template allocT<UpdateTask>(*it_entry, dt));
-			_tasks_cache.push(task);
+			_update_data.emplacePush(*it_entry, dt);
+			_job_data.emplacePush(&UpdateJob, &_update_data.last());
 
-			_app.addTask(task);
 		}
 
-		_app.helpUntilNoTasks();
-
-		// wait for the row of tasks to finish before proceeding onto the next row
-		for (auto it_task = _tasks_cache.begin(); it_task != _tasks_cache.end(); ++it_task) {
-			(*it_task)->spinWait();
-		}
-
-		_tasks_cache.clearNoFree(); // To avoid a ton of allocations/deallocations
+		GetApp().getJobPool().addJobs(_job_data.getArray(), _job_data.size(), &_counter);
+		GetApp().getJobPool().waitForCounter(_counter);
 	}
 }
 
 void UpdateManager::allManagersCreated(void)
 {
-	LogManager::FileLockPair& log = _app.getGameLogFile();
+	LogManager::FileLockPair& log = GetApp().getGameLogFile();
 	Array<IUpdateQuery::UpdateEntry> entries;
 
 	unsigned int update_query_hash = CLASS_HASH(IUpdateQuery);
 
-	reinterpret_cast<App&>(_app).forEachManager([&](IManager& manager) -> bool
+	reinterpret_cast<App&>(GetApp()).forEachManager([&](IManager& manager) -> bool
 	{
 		IUpdateQuery* update_query = manager.requestInterface<IUpdateQuery>(update_query_hash);
 
@@ -91,7 +100,7 @@ void UpdateManager::allManagersCreated(void)
 	if (table.parseFile("./update_entries.json")) {
 		if (!table.isArray()) {
 			log.first.writeString("ERROR - Root of \"update_entries.json\" is not an array.\n");
-			_app.quit();
+			GetApp().quit();
 			return;
 		}
 
@@ -99,7 +108,7 @@ void UpdateManager::allManagersCreated(void)
 		{
 			if (!row.isArray()) {
 				log.first.writeString("ERROR - A row in \"update_entries.json\" is not an array.\n");
-				_app.quit();
+				GetApp().quit();
 				return false;
 			}
 
@@ -109,7 +118,7 @@ void UpdateManager::allManagersCreated(void)
 			{
 				if (!entry.isString()) {
 					log.first.writeString("ERROR - An entry in \"update_entries.json\" is not a string.\n");
-					_app.quit();
+					GetApp().quit();
 					return true;
 				}
 
@@ -120,7 +129,7 @@ void UpdateManager::allManagersCreated(void)
 
 				if (it == entries.end()) {
 					log.first.printf("ERROR - UpdateEntry for '%s' in \"update_entries.json\" was not found.\n", entry.getString());
-					_app.quit();
+					GetApp().quit();
 					return true;
 				}
 
@@ -134,7 +143,7 @@ void UpdateManager::allManagersCreated(void)
 
 	} else {
 		log.first.writeString("ERROR - Failed to find/parse file \"update_entries.json\".\n");
-		_app.quit();
+		GetApp().quit();
 	}
 }
 

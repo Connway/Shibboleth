@@ -21,6 +21,7 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Gaff_SpinLock.h"
+#include "Gaff_IncludeAssert.h"
 #include "Gaff_Atomic.h"
 
 NS_GAFF
@@ -45,9 +46,6 @@ void SpinLock::lock(void) const
 			tries = 0;
 			YieldThread();
 		}
-
-		//while (_lock) {
-		//}
 	}
 }
 
@@ -58,6 +56,7 @@ bool SpinLock::tryLock(void)
 
 void SpinLock::unlock(void) const
 {
+	assert(_lock);
 	AtomicRelease(&_lock);
 }
 

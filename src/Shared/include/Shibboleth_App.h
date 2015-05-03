@@ -25,9 +25,9 @@ THE SOFTWARE.
 #include "Shibboleth_MessageBroadcaster.h"
 #include "Shibboleth_DynamicLoader.h"
 #include "Shibboleth_StateMachine.h"
-#include "Shibboleth_ThreadPool.h"
-#include "Shibboleth_IState.h"
 #include "Shibboleth_LogManager.h"
+#include "Shibboleth_JobPool.h"
+#include "Shibboleth_IState.h"
 #include "Shibboleth_Array.h"
 #include "Shibboleth_IApp.h"
 
@@ -69,11 +69,11 @@ public:
 	const HashMap<AHashString, AString>& getCmdLine(void) const;
 	HashMap<AHashString, AString>& getCmdLine(void);
 
-	void addTask(Gaff::ITask<ProxyAllocator>* task, unsigned int pool = 0);
-	void addTask(Gaff::TaskPtr<ProxyAllocator>& task, unsigned int pool = 0);
+	JobPool& getJobPool(void);
+
 	void getWorkerThreadIDs(Array<unsigned int>& out) const;
-	void helpUntilNoTasks(void);
-	void doATask(void);
+	void helpUntilNoJobs(void);
+	void doAJob(void);
 
 	void addLogCallback(const LogManager::LogCallback& callback);
 	void removeLogCallback(const LogManager::LogCallback& callback);
@@ -120,7 +120,7 @@ private:
 	DynamicLoader _dynamic_loader;
 	StateMachine _state_machine;
 	ManagerMap _manager_map;
-	ThreadPool _thread_pool;
+	JobPool _job_pool;
 
 	LogManager _logger;
 
