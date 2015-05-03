@@ -43,7 +43,7 @@ App::App(void):
 
 App::~App(void)
 {
-	_thread_pool.destroy();
+	_job_pool.destroy();
 	_state_machine.clear();
 
 	for (ManagerMap::Iterator it = _manager_map.begin(); it != _manager_map.end(); ++it) {
@@ -106,7 +106,7 @@ bool App::init(int argc, char** argv)
 	Gaff::JSON::SetMemoryFunctions(&ShibbolethAllocate, &ShibbolethFree);
 	Gaff::JSON::SetHashSeed(_seed);
 
-	if (!_thread_pool.init()) {
+	if (!_job_pool.init()) {
 		_log_file_pair->first.writeString("ERROR - Failed to initialize thread pool\n");
 		return false;
 	}
@@ -580,30 +580,25 @@ HashMap<AHashString, AString>& App::getCmdLine(void)
 	return _cmd_line_args;
 }
 
-void App::addTask(Gaff::ITask<ProxyAllocator>* task, unsigned int pool)
+JobPool& App::getJobPool(void)
 {
-	_thread_pool.addTask(task, pool);
-}
-
-void App::addTask(Gaff::TaskPtr<ProxyAllocator>& task, unsigned int pool)
-{
-	_thread_pool.addTask(task, pool);
+	return _job_pool;
 }
 
 void App::getWorkerThreadIDs(Array<unsigned int>& out) const
 {
-	out.resize(_thread_pool.getNumTotalThreads());
-	_thread_pool.getThreadIDs(out.getArray());
+	out.resize(_job_pool.getNumTotalThreads());
+	_job_pool.getThreadIDs(out.getArray());
 }
 
-void App::helpUntilNoTasks(void)
+void App::helpUntilNoJobs(void)
 {
-	_thread_pool.helpUntilNoTasks();
+	_job_pool.helpUntilNoJobs();
 }
 
-void App::doATask(void)
+void App::doAJob(void)
 {
-	_thread_pool.doATask();
+	_job_pool.doAJob();
 }
 
 void App::addLogCallback(const LogManager::LogCallback& callback)

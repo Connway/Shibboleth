@@ -22,10 +22,30 @@ THE SOFTWARE.
 
 #include "Shibboleth_MessageBroadcaster.h"
 #include "Shibboleth_Utilities.h"
+#include "Shibboleth_JobPool.h"
 #include "Shibboleth_IApp.h"
 #include <Gaff_ScopedLock.h>
 
 NS_SHIBBOLETH
+
+void BroadcastJob(void* data)
+{
+	MessageBroadcaster* broadcaster = reinterpret_cast<MessageBroadcaster*>(data);
+
+	size_t index = AtomicIncrement(&broadcaster->_next_id) - 1;
+	Gaff::Pair<unsigned int, IMessage*>& msg_data = broadcaster->_message_queue[index];
+
+	Gaff::ScopedReadLock<Gaff::ReadWriteSpinLock> listener_lock(broadcaster->_listener_lock);
+
+	MessageBroadcaster::ListenerData& listener_data = broadcaster->_listeners[msg_data.first];
+	Gaff::ScopedReadLock<Gaff::ReadWriteSpinLock> ld_lock(listener_data.lock);
+
+	for (auto it = listener_data.listeners.begin(); it != listener_data.listeners.end(); ++it) {
+		it->second->call(*msg_data.second);
+	}
+
+	GetAllocator()->freeT(msg_data.second);
+}
 
 MessageBroadcaster::MessageBroadcaster(void)
 {
@@ -42,29 +62,35 @@ MessageBroadcaster::~MessageBroadcaster(void)
 			GetAllocator()->freeT(it2->second);
 		}
 	}
+
+	if (_counter) {
+		GetApp().getJobPool().freeCounter(_counter);
+	}
 }
 
 void MessageBroadcaster::remove(BroadcastID id)
 {
-	Gaff::ScopedLock<Gaff::SpinLock> lock(_remove_lock);
-	_remove_queue.emplacePush(id);
+	Gaff::ScopedLock<Gaff::SpinLock> lock(_listener_remove_lock);
+	_listener_remove_queue.emplacePush(id);
 }
 
 void MessageBroadcaster::update(bool wait)
 {
+	waitForCounter();
 	addListeners();
 	removeListeners();
+	addMessagesToQueue();
 	spawnBroadcastTasks(wait);
 }
 
 void MessageBroadcaster::addListeners(void)
 {
-	Gaff::ScopedLock<Gaff::SpinLock> lock(_add_lock);
+	Gaff::ScopedLock<Gaff::SpinLock> lock(_listener_add_lock);
 
-	if (!_add_queue.empty()) {
+	if (!_listener_add_queue.empty()) {
 		_listener_lock.readLock();
 
-		for (auto it_add = _add_queue.begin(); it_add != _add_queue.end(); ++it_add) {
+		for (auto it_add = _listener_add_queue.begin(); it_add != _listener_add_queue.end(); ++it_add) {
 			auto it_listeners = _listeners.findElementWithKey(it_add->first.first);
 			ListenerData* listeners = nullptr;
 
@@ -95,18 +121,18 @@ void MessageBroadcaster::addListeners(void)
 		}
 
 		_listener_lock.readUnlock();
-		_add_queue.clear();
+		_listener_add_queue.clear();
 	}
 }
 
 void MessageBroadcaster::removeListeners(void)
 {
-	Gaff::ScopedLock<Gaff::SpinLock> lock(_remove_lock);
+	Gaff::ScopedLock<Gaff::SpinLock> lock(_listener_remove_lock);
 
-	if (!_remove_queue.empty()) {
+	if (!_listener_remove_queue.empty()) {
 		Gaff::ScopedReadLock<Gaff::ReadWriteSpinLock> read_lock(_listener_lock);
 
-		for (auto it_rem = _remove_queue.begin(); it_rem != _remove_queue.end(); ++it_rem) {
+		for (auto it_rem = _listener_remove_queue.begin(); it_rem != _listener_remove_queue.end(); ++it_rem) {
 			assert(_listeners.hasElementWithKey(it_rem->first));
 			ListenerData& listeners = _listeners[it_rem->first];
 
@@ -122,68 +148,60 @@ void MessageBroadcaster::removeListeners(void)
 	}
 }
 
-void MessageBroadcaster::spawnBroadcastTasks(bool wait)
+void MessageBroadcaster::addMessagesToQueue(void)
 {
-	Gaff::ScopedReadLock<Gaff::ReadWriteSpinLock> listener_lock(_listener_lock);
-	Gaff::ScopedWriteLock<Gaff::ReadWriteSpinLock> msg_lock(_message_lock);
+	_message_queue.clearNoFree();
 
-	Array<BroadcastTask*> tasks;
+	Gaff::ScopedLock<Gaff::SpinLock> lock(_message_add_lock);
 
-	if (wait) {
-		tasks.reserve(_message_queue.size());
-	}
-
-	for (auto it_msg = _message_queue.begin(); it_msg != _message_queue.end(); ++it_msg) {
-		// Only broadcast the message if there are people actually listening for it.
-		if (_listeners.findElementWithKey(it_msg->first) != _listeners.end()) {
-			BroadcastTask* task = GetAllocator()->allocT<BroadcastTask>(*it_msg, *this);
-
-			if (wait) {
-				task->addRef();
-				tasks.push(task);
-			}
-
-			GetApp().addTask(task);
-		}
+	for (auto it = _message_add_queue.begin(); it != _message_add_queue.end(); ++it) {
+		_message_queue.emplacePush(*it);
 	}
 
 	_message_queue.clearNoFree();
+}
 
-	if (wait) {
-		for (auto it = tasks.begin(); it != tasks.end(); ++it) {
-			(*it)->spinWait();
-			(*it)->release();
+void MessageBroadcaster::spawnBroadcastTasks(bool wait)
+{
+	if (_message_queue.empty()) {
+		return;
+	}
+
+	// Might want to cache this array so we're not allocating all the time.
+	Array<Gaff::JobData> jobs_data(_message_queue.size());
+
+	_listener_lock.readLock();
+
+	for (auto it_msg = _message_queue.begin(); it_msg != _message_queue.end(); ++it_msg) {
+
+		// Only broadcast the message if there are people actually listening for it.
+		if (_listeners.findElementWithKey(it_msg->first) != _listeners.end()) {
+			jobs_data.emplacePush(&BroadcastJob, this);
 		}
 	}
+
+	_listener_lock.readUnlock();
+
+	GetApp().getJobPool().addJobs(jobs_data.getArray(), jobs_data.size(), &_counter);
+
+	if (wait) {
+		waitForCounter();
+	}
 }
 
-
-MessageBroadcaster::BroadcastTask::BroadcastTask(Gaff::Pair<unsigned int, IMessage*> message_data, MessageBroadcaster& broadcaster):
-	_message_data(message_data), _broadcaster(broadcaster)
+void MessageBroadcaster::waitForCounter(void)
 {
-}
-
-MessageBroadcaster::BroadcastTask::~BroadcastTask(void)
-{
-}
-
-void MessageBroadcaster::BroadcastTask::doTask(void)
-{
-	Gaff::ScopedReadLock<Gaff::ReadWriteSpinLock> listener_lock(_broadcaster._listener_lock);
-
-	MessageBroadcaster::ListenerData& listener_data = _broadcaster._listeners[_message_data.first];
-
-	Gaff::ScopedReadLock<Gaff::ReadWriteSpinLock> ld_lock(listener_data.lock);
-
-	for (auto it = listener_data.listeners.begin(); it != listener_data.listeners.end(); ++it) {
-		it->second->call(*_message_data.second);
+	if (_counter) {
+		while (_counter->count) {
+			YieldThread();
+		}
 	}
 
-	GetAllocator()->freeT(_message_data.second);
+	_next_id = 0;
 }
 
 
-BroadcastRemover::BroadcastRemover(MessageBroadcaster::BroadcastID id, MessageBroadcaster& broadcaster):
+BroadcastRemover::BroadcastRemover(BroadcastID id, MessageBroadcaster& broadcaster):
 	_id(id), _broadcaster(&broadcaster), _valid(true)
 {
 }

@@ -34,18 +34,22 @@ THE SOFTWARE.
 #include <Gaff_SpinLock.h>
 #include <Gaff_Atomic.h>
 
+NS_GAFF
+	struct Counter;
+NS_END
+
 NS_SHIBBOLETH
 
 // Do not use messages for triggering things that need to happen this frame.
 
 using IMessage = Gaff::IVirtualDestructor;
 
+// Message Hash and Listener ID
+using BroadcastID = Gaff::Pair<unsigned int, size_t>;
+
 class MessageBroadcaster
 {
 public:
-	// Message Hash and Listener ID
-	using BroadcastID = Gaff::Pair<unsigned int, size_t>;
-
 	MessageBroadcaster(void);
 	~MessageBroadcaster(void);
 
@@ -63,21 +67,6 @@ public:
 	void update(bool wait = false);
 
 private:
-	class BroadcastTask : public ITask
-	{
-	public:
-		BroadcastTask(Gaff::Pair<unsigned int, IMessage*> message_data, MessageBroadcaster& broadcaster);
-		~BroadcastTask(void);
-
-		void doTask(void);
-
-	private:
-		Gaff::Pair<unsigned int, IMessage*> _message_data;
-		MessageBroadcaster& _broadcaster;
-
-		SHIB_REF_COUNTED(BroadcastTask);
-	};
-
 	class IMessageFunctor
 	{
 	public:
@@ -111,30 +100,37 @@ private:
 	};
 
 	Array< Gaff::Pair<unsigned int, IMessage*> > _message_queue;
-	Gaff::ReadWriteSpinLock _message_lock;
+
+	Array< Gaff::Pair<unsigned int, IMessage*> > _message_add_queue;
+	Gaff::SpinLock _message_add_lock;
 
 	Map<unsigned int, ListenerData> _listeners;
 	Gaff::ReadWriteSpinLock _listener_lock;
 
-	Array< Gaff::Pair<BroadcastID, IMessageFunctor*> > _add_queue;
-	Gaff::SpinLock _add_lock;
+	Array< Gaff::Pair<BroadcastID, IMessageFunctor*> > _listener_add_queue;
+	Gaff::SpinLock _listener_add_lock;
 
-	Array<BroadcastID> _remove_queue;
-	Gaff::SpinLock _remove_lock;
+	Array<BroadcastID> _listener_remove_queue;
+	Gaff::SpinLock _listener_remove_lock;
+
+	Gaff::Counter* _counter;
+	volatile size_t _next_message;
 
 	volatile size_t _next_id;
 
 	void addListeners(void);
 	void removeListeners(void);
+	void addMessagesToQueue(void);
 	void spawnBroadcastTasks(bool wait);
+	void waitForCounter(void);
 
-	friend class BroadcastTask;
+	friend void BroadcastJob(void*);
 };
 
 class BroadcastRemover
 {
 public:
-	BroadcastRemover(MessageBroadcaster::BroadcastID id, MessageBroadcaster& broadcaster);
+	BroadcastRemover(BroadcastID id, MessageBroadcaster& broadcaster);
 	BroadcastRemover(void);
 	~BroadcastRemover(void);
 
@@ -147,7 +143,7 @@ public:
 	void remove(void);
 
 private:
-	MessageBroadcaster::BroadcastID _id;
+	BroadcastID _id;
 	MessageBroadcaster* _broadcaster;
 	bool _valid;
 };

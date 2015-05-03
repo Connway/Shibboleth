@@ -24,6 +24,7 @@ THE SOFTWARE.
 
 #pragma once
 
+#include "Gaff_SharedPtr.h"
 #include "Gaff_SpinLock.h"
 #include "Gaff_Thread.h"
 #include "Gaff_Queue.h"
@@ -71,7 +72,7 @@ public:
 			Pool zero is a special pool. These tasks are not considered sharing data and will run any number of them in parallel.
 			Tasks that are placed in any other pool will run one at a time until the pool is empty.
 	*/
-	bool init(unsigned int num_pools = 7, unsigned int num_threads = (unsigned int)GetNumberOfCores() - 1)
+	bool init(unsigned int num_pools = 7, unsigned int num_threads = static_cast<unsigned int>(GetNumberOfCores()) - 1)
 	{
 		_task_pools.resize(num_pools + 1);
 
@@ -102,6 +103,11 @@ public:
 
 		_threads.clear();
 	}
+
+	//volatile unsigned int* addTasks(const Array< TaskPtr<Allocator> >& tasks, unsigned int pool = 0)
+	//{
+	//	return nullptr;
+	//}
 
 	void addTask(ITask<Allocator>* task, unsigned int pool = 0)
 	{
@@ -187,7 +193,7 @@ public:
 	/*!
 		\brief Returns the number of threads that aren't yielding to the scheduler.
 	*/
-	size_t getNumActiveThreads(void) const
+	unsigned int getNumActiveThreads(void) const
 	{
 		return _active_threads;
 	}
@@ -237,7 +243,7 @@ private:
 	{
 		const typename ITask<Allocator>::DependentTaskData& dep_tasks = task->getDependentTasks();
 		task->doTask();
-		task->setFinished(true);
+		task->finished();
 
 		// Don't want to waste CPU cycles by locking when it is empty.
 		if (!dep_tasks.empty()) {
@@ -295,7 +301,7 @@ private:
 
 	static Thread::ReturnType THREAD_CALLTYPE TaskRunner(void* thread_data)
 	{
-		ThreadData* td = (ThreadData*)thread_data;
+		ThreadData* td = reinterpret_cast<ThreadData*>(thread_data);
 		ThreadPool<Allocator>* thread_pool = td->thread_pool;
 
 		while (!td->terminate) {

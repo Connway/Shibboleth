@@ -212,7 +212,7 @@ void ModelComponent::HandleLoadingMessage(const LoadingMessage& msg)
 }
 
 // HACK: Should be removed
-void ModelComponent::render(void)
+void ModelComponent::render(double dt)
 {
 	if (!_material_res || !_model_res || !_texture_res || !_sampler_res || !_program_buffers_res || !_buffer_res ||
 		!_material_res.getResourcePtr()->isLoaded() ||
@@ -226,7 +226,7 @@ void ModelComponent::render(void)
 	}
 
 	static float rot = 0.0f;
-	rot += 0.01f;
+	rot += static_cast<float>(Gaff::Pi * dt);
 
 	Gleam::Matrix4x4 tocamera, projection, toworld;
 	tocamera.setLookAtLH(0.0f, 5.0f, -5.0f, 0.0f, 5.0f, 0.0f, 0.0f, 1.0f, 0.0f);

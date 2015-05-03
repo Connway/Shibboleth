@@ -22,8 +22,8 @@ THE SOFTWARE.
 
 #include "Shibboleth_Utilities.h"
 #include <Shibboleth_RefCounted.h>
+#include <Shibboleth_JobPool.h>
 #include <Shibboleth_String.h>
-#include <Shibboleth_ITask.h>
 #include <Shibboleth_IApp.h>
 #include <Gaff_ScopedLock.h>
 #include <Gaff_Atomic.h>
@@ -34,39 +34,32 @@ NS_SHIBBOLETH
 //static unsigned int g_Flush_Count = 10;
 static IApp* gApp = nullptr;
 
-class LogTask : public ITask
+struct LogData
 {
-public:
-	LogTask(LogManager::FileLockPair& flp, const char* string, LogManager::LOG_TYPE log_type/*, bool flush*/):
-		_string(string), _flp(flp), _log_type(log_type)/*, _flush(flush)*/
-	{
-	}
-
-	~LogTask(void) {}
-
-	void doTask(void)
-	{
-		Gaff::ScopedLock<Gaff::SpinLock> scoped_lock(*_flp.second);
-
-		_flp.first.writeString(_string.getBuffer());
-
-		//if (_flush) {
-			_flp.first.flush();
-		//}
-
-		gApp->notifyLogCallbacks(_string.getBuffer(), _log_type);
-	}
-
-private:
-	AString _string;
-	LogManager::FileLockPair& _flp;
-	LogManager::LOG_TYPE _log_type;
-	//bool _flush;
-
-	SHIB_REF_COUNTED(LogTask);
+	AString string;
+	LogManager::FileLockPair* flp;
+	LogManager::LOG_TYPE log_type;
+	//bool flush;
 };
 
-void LogMessage(LogManager::FileLockPair& flp, unsigned int task_pool, LogManager::LOG_TYPE log_type, const char* format, ...)
+static void LogJob(void* data)
+{
+	LogData* log_data = reinterpret_cast<LogData*>(data);
+
+	Gaff::ScopedLock<Gaff::SpinLock> scoped_lock(*log_data->flp->second);
+
+	log_data->flp->first.writeString(log_data->string.getBuffer());
+
+	//if (flush) {
+		log_data->flp->first.flush();
+	//}
+
+	gApp->notifyLogCallbacks(log_data->string.getBuffer(), log_data->log_type);
+
+	GetAllocator()->freeT(log_data);
+}
+
+void LogMessage(LogManager::FileLockPair& flp, unsigned int job_pool, LogManager::LOG_TYPE log_type, const char* format, ...)
 {
 	assert(gApp && format && strlen(format));
 
@@ -78,11 +71,16 @@ void LogMessage(LogManager::FileLockPair& flp, unsigned int task_pool, LogManage
 	va_end(vl);
 
 	//unsigned int curr_flush_count = AtomicUAddFetchOrig(&g_Current_Flush_Count, 1);
-	LogTask* log_task = GetAllocator()->allocT<LogTask>(flp, temp, log_type/*, !(curr_flush_count % g_Flush_Count)*/);
+	LogData* log_data = GetAllocator()->template allocT<LogData>();
 
-	if (log_task) {
-		TaskPtr task(log_task);
-		gApp->addTask(task, task_pool);
+	if (log_data) {
+		log_data->string = temp;
+		log_data->flp = &flp;
+		log_data->log_type = log_type;
+		//log_data->flush = !(curr_flush_count % g_Flush_Count);
+
+		Gaff::JobData job_data(&LogJob, log_data);
+		gApp->getJobPool().addJobs(&job_data, 1, nullptr, job_pool);
 	}
 }
 

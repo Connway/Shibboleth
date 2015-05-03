@@ -35,6 +35,7 @@ Timer::Timer(void):
 	_deltaTime(0), _totalTime(0.0)
 {
 	QueryPerformanceFrequency(&_frequency);
+	start();
 }
 
 bool Timer::start(void)
@@ -62,7 +63,7 @@ bool Timer::stop(void)
 */
 double Timer::getDeltaSec(void) const
 {
-	return (double)getDeltaMicro() * 0.000001;
+	return static_cast<double>(getDeltaMicro()) * 0.000001;
 }
 
 /*!
@@ -88,7 +89,7 @@ long long Timer::getDeltaMicro(void) const
 */
 double Timer::getCurrSec(void) const
 {
-	return (double)getCurrMicro() * 0.000001;
+	return static_cast<double>(getCurrMicro()) * 0.000001;
 }
 
 /*!

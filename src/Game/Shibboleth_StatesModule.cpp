@@ -39,6 +39,8 @@ THE SOFTWARE.
 
 #include <Gleam_IRenderDevice.h>
 
+#include <Gaff_Timer.h>
+
 #ifdef USE_VLD
 	#include <vld.h>
 #endif
@@ -82,6 +84,10 @@ public:
 
 	void update(void)
 	{
+		static Gaff::Timer timer;
+		timer.stop();
+		timer.start();
+
 		if (!_object)
 			return;
 
@@ -89,16 +95,16 @@ public:
 		rm.updateWindows(); // This has to happen in the main thread.
 
 		Shibboleth::UpdateManager& update_manager = _app.getManagerT<Shibboleth::UpdateManager>("Update Manager");
-		update_manager.update(0.0f);
+		update_manager.update(timer.getDeltaSec());
 
-		render();
+		render(timer.getDeltaSec());
 	}
 
 	void exit(void)
 	{
 	}
 
-	void render(void)
+	void render(double dt)
 	{
 		Shibboleth::ModelComponent* model = _object->getFirstComponentWithInterface<Shibboleth::ModelComponent>();
 		//Shibboleth::OcclusionManager& om = _app.getManagerT<Shibboleth::OcclusionManager>("Occlusion Manager");
@@ -112,7 +118,7 @@ public:
 		rm.getRenderDevice().beginFrame();
 
 		if (model) {
-			model->render();
+			model->render(dt);
 		}
 
 		rm.getRenderDevice().endFrame();

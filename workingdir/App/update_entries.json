@@ -2,6 +2,5 @@
 	["Broadcaster Manager: Update", "Object Manager: Pre-Physics Update"],
 	["Object Manager: Post-Physics Update"],
 	["Occlusion Manager: Update"],
-	["Camera Manager: Update"],
-	["Render Pipeline Manager: Update"]
+	["Camera Manager: Update"]
 ]

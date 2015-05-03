@@ -40,14 +40,14 @@ void MessageBroadcaster::MessageFunctor<Message>::call(const IMessage& message)
 
 
 template <class Message>
-MessageBroadcaster::BroadcastID MessageBroadcaster::listen(const Gaff::FunctionBinder<void, const Message&>& callback)
+BroadcastID MessageBroadcaster::listen(const Gaff::FunctionBinder<void, const Message&>& callback)
 {
 	BroadcastID id(Message::GetReflectionHash(), AtomicIncrement(&_next_id));
 	IMessageFunctor* cb = GetAllocator()->allocT< MessageFunctor<Message> >(callback);
 
-	_add_lock.lock();
-	_add_queue.emplacePush(id, cb);
-	_add_lock.unlock();
+	_listener_add_lock.lock();
+	_listener_add_queue.emplacePush(id, cb);
+	_listener_add_lock.unlock();
 
 	return id;
 }
@@ -79,7 +79,7 @@ void MessageBroadcaster::broadcast(const Message& message)
 {
 	Message* message = GetAllocator()->allocT<Message>(message);
 
-	_message_lock.writeLock();
-	_message_queue.emplacePush(Message::GetReflectionHash(), message);
-	_message_lock.writeUnlock();
+	_message_add_lock.lock();
+	_message_add_queue.emplacePush(Message::GetReflectionHash(), message);
+	_message_add_lock.unlock();
 }

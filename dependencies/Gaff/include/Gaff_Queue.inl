@@ -166,7 +166,7 @@ void Queue<T, Allocator>::clear(void)
 		If \a new_size is greater than the current size, size will not change, but capacity will.
 */
 template <class T, class Allocator>
-void Queue<T, Allocator>::reallocate(size_t new_size)
+void Queue<T, Allocator>::reserve(size_t new_size)
 {
 	if (new_size == 0) {
 		new_size = 1;
@@ -196,7 +196,7 @@ template <class T, class Allocator>
 void Queue<T, Allocator>::movePush(T&& data)
 {
 	if (_used == _size) {
-		reallocate(_size * 2);
+		reserve(_size * 2);
 	}
 
 	moveConstruct(_end, Move(data));
@@ -208,7 +208,7 @@ template <class T, class Allocator>
 void Queue<T, Allocator>::push(const T& data)
 {
 	if (_used == _size) {
-		reallocate(_size * 2);
+		reserve(_size * 2);
 	}
 
 	construct(_end, data);
@@ -230,7 +230,7 @@ template <class... Args>
 void Queue<T, Allocator>::emplacePush(Args&&... args)
 {
 	if (_used == _size) {
-		reallocate(_size * 2);
+		reserve(_size * 2);
 	}
 
 	construct(_end, args...);
@@ -243,7 +243,7 @@ template <class... Args>
 void Queue<T, Allocator>::emplaceMovePush(Args&&... args)
 {
 	if (_used == _size) {
-		reallocate(_size * 2);
+		reserve(_size * 2);
 	}
 
 	moveConstruct(_end, Move(args)...);

@@ -58,7 +58,12 @@ struct JobData
 	void* job_data;
 };
 
-using JobPair = Pair<JobData, volatile unsigned int*>;
+struct Counter
+{
+	volatile unsigned int count;
+};
+
+using JobPair = Pair<JobData, Counter*>;
 
 template <class Allocator = DefaultAllocator>
 class JobPool
@@ -70,13 +75,18 @@ public:
 	bool init(unsigned int num_pools = 7, unsigned int num_threads = static_cast<unsigned int>(GetNumberOfCores()));
 	void destroy(void);
 
-	void addJobs(JobData* jobs, unsigned int num_jobs = 1, volatile unsigned int** counter = nullptr, unsigned int pool = 0);
+	void addJobs(JobData* jobs, size_t num_jobs = 1, Counter** counter = nullptr, unsigned int pool = 0);
+	void waitForAndFreeCounter(Counter* counter);
+	void waitForCounter(Counter* counter);
+	void freeCounter(Counter* counter);
 
 	void helpUntilNoJobs(void);
 	void doAJob(void);
 
 	unsigned int getNumActiveThreads(void) const;
 	size_t getNumTotalThreads(void) const;
+
+	void getThreadIDs(unsigned int* out) const;
 
 private:
 	struct JobQueue
@@ -100,9 +110,9 @@ private:
 
 	volatile unsigned int _active_threads;
 
-	static void ProcessMainJobQueue(JobQueue& job_queue, JobPool<Allocator>* job_pool);
-	static void ProcessJobQueue(JobQueue& job_queue, JobPool<Allocator>* job_pool);
-	static void DoJob(JobPair& job, JobPool<Allocator>* job_pool);
+	static void ProcessMainJobQueue(JobQueue& job_queue);
+	static void ProcessJobQueue(JobQueue& job_queue);
+	static void DoJob(JobPair& job);
 
 	static Thread::ReturnType THREAD_CALLTYPE JobThread(void* thread_data);
 

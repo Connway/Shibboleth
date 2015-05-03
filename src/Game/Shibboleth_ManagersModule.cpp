@@ -89,7 +89,7 @@ static CreateMgrFunc create_funcs[] = {
 	&CreateManagerT<Shibboleth::ResourceManager>,
 	&CreateOtterUIManager,
 	&CreateManagerT<Shibboleth::RenderManager>,
-	&CreateManagerT<Shibboleth::UpdateManager>,
+	&CreateManagerTNoApp<Shibboleth::UpdateManager>,
 	&CreateManagerTNoApp<Shibboleth::ObjectManager>,
 	&CreateManagerTNoApp<Shibboleth::LuaManager>,
 	&CreateManagerTNoApp<Shibboleth::OcclusionManager>,

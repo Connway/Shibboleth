@@ -41,7 +41,7 @@ THE SOFTWARE.
 	#define AtomicCompareExchange InterlockedCompareExchange
 	#define AtomicIncrement InterlockedIncrement
 	#define AtomicDecrement InterlockedDecrement
-	#define AtomicAcquire InterlockedIncrementAcquire
+	#define AtomicAcquire(ptr) InterlockedExchangeAcquire(ptr, 1)
 	#define AtomicRelease InterlockedDecrementRelease
 
 	// Only supports long
@@ -118,7 +118,7 @@ THE SOFTWARE.
 	// Supports any pointer type (except probably member function pointers)
 	#define AtomicCompareExchangePointer(dest, new_val, old_val) __sync_val_compare_and_swap(dest, old_val, new_val)
 
-	#define AtomicExchange(dest, new_val) __sync_lock_test_and_set(dest, new_val); __sync_synchronize()
+	#define AtomicExchange(dest, new_val) __sync_lock_test_and_set(dest, new_val), __sync_synchronize(), new_val
 
 	// Only supports unsigned long, unsigned long long, and unsigned int
 	#define AtomicUAdd __sync_add_and_fetch

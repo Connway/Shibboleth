@@ -111,6 +111,8 @@ private:
 	void setResource(Gaff::IVirtualDestructor* resource);
 	void callCallbacks(bool succeeded);
 
+	friend void ResourceReadingJob(void*);
+	friend void ResourceLoadingJob(void*);
 	friend class ResourceManager;
 };
 
@@ -154,44 +156,11 @@ public:
 	void* rawRequestInterface(unsigned int class_id) const;
 
 private:
-	class ResourceReadingTask : public ITask
-	{
-	public:
-		ResourceReadingTask(ResourceLoaderPtr& res_loader, ResourcePtr& res_ptr, const Array<JSONModifiers>& json_elements, unsigned int thread_pool);
-		~ResourceReadingTask(void);
-
-		void doTask(void);
-
-	private:
-		const Array<JSONModifiers>& _json_elements; // Lists JSON elements that specify files to read.
-		ResourceLoaderPtr _res_loader;
-		ResourcePtr _res_ptr;
-		unsigned int _thread_pool;
-
-		SHIB_REF_COUNTED(ResourceReadingTask);
-	};
-
-	class ResourceLoadingTask : public ITask
-	{
-	public:
-		ResourceLoadingTask(ResourceLoaderPtr& res_loader, ResourcePtr& res_ptr, HashMap<AString, IFile*>& file_map);
-		~ResourceLoadingTask(void);
-
-		void doTask(void);
-
-	private:
-		HashMap<AString, IFile*> _file_map;
-		ResourceLoaderPtr _res_loader;
-		ResourcePtr _res_ptr;
-
-		SHIB_REF_COUNTED(ResourceLoadingTask);
-	};
-
 	struct LoaderData
 	{
 		Gaff::SharedPtr<Array<JSONModifiers>, ProxyAllocator> json_elements;
 		ResourceLoaderPtr res_loader;
-		unsigned int thread_pool;
+		unsigned int job_pool;
 	};
 
 	HashMap<AHashString, LoaderData> _resource_loaders;
