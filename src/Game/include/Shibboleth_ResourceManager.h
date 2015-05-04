@@ -29,7 +29,6 @@ THE SOFTWARE.
 #include <Shibboleth_IManager.h>
 #include <Shibboleth_HashMap.h>
 #include <Shibboleth_Array.h>
-#include <Shibboleth_ITask.h>
 #include <Gaff_SharedPtr.h>
 #include <Gaff_SpinLock.h>
 #include <Gaff_Function.h>

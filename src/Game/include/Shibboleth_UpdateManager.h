@@ -26,9 +26,9 @@ THE SOFTWARE.
 #include <Shibboleth_RefCounted.h>
 #include <Shibboleth_IManager.h>
 #include <Shibboleth_Array.h>
-#include <Shibboleth_ITask.h>
 #include <Gaff_Function.h>
 #include <Gaff_SpinLock.h>
+#include <Gaff_Timer.h>
 
 NS_GAFF
 	struct JobData;
@@ -39,24 +39,6 @@ NS_SHIBBOLETH
 
 using UpdateCallback = Gaff::FunctionBinder<void, double>;
 
-struct UpdateData
-{
-	UpdateData(UpdateCallback& cb, double t):
-		callback(cb), dt(t)
-	{
-	}
-
-	const UpdateData& operator=(const UpdateData& rhs)
-	{
-		callback = rhs.callback;
-		dt = rhs.dt;
-		return *this;
-	}
-
-	UpdateCallback& callback;
-	double dt;
-};
-
 class UpdateManager : public IManager
 {
 public:
@@ -66,16 +48,45 @@ public:
 	const char* getName(void) const;
 	void allManagersCreated(void);
 
-	void update(double dt);
+	void update(void);
 
 	void* rawRequestInterface(unsigned int class_id) const;
 
 private:
-	Array< Array<UpdateCallback> > _table;
-	Array<Gaff::JobData> _job_data;
-	Array<UpdateData> _update_data;
+	class UpdatePhase
+	{
+	public:
+		UpdatePhase(void);
+		~UpdatePhase(void);
 
-	Gaff::Counter* _counter;
+		const char* getName(void) const;
+		void setName(const char* name);
+
+		void addUpdate(size_t row, const UpdateCallback& callback);
+		void setNumRows(size_t num_rows);
+
+		bool isDone(void) const;
+		void run(void);
+
+	private:
+		struct UpdateData
+		{
+			UpdateCallback* callback;
+			double delta_time;
+		};
+
+		Array< Array<UpdateCallback> > _callbacks;
+		Array<UpdateData> _data_cache;
+		Array<Gaff::JobData> _jobs;
+		Gaff::Timer _timer;
+		AString _name;
+		Gaff::Counter* _counter;
+
+		static void UpdatePhaseJob(void* data);
+		static void UpdateJob(void* data);
+	};
+
+	Array<UpdatePhase> _phases;
 
 	GAFF_NO_COPY(UpdateManager);
 	GAFF_NO_MOVE(UpdateManager);

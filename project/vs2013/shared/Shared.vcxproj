@@ -201,7 +201,6 @@
     <ClInclude Include="..\..\..\src\Shared\include\Shibboleth_IFileSystem.h" />
     <ClInclude Include="..\..\..\src\Shared\include\Shibboleth_IManager.h" />
     <ClInclude Include="..\..\..\src\Shared\include\Shibboleth_IState.h" />
-    <ClInclude Include="..\..\..\src\Shared\include\Shibboleth_ITask.h" />
     <ClInclude Include="..\..\..\src\Shared\include\Shibboleth_JobPool.h" />
     <ClInclude Include="..\..\..\src\Shared\include\Shibboleth_LockDefines.h" />
     <ClInclude Include="..\..\..\src\Shared\include\Shibboleth_LogManager.h" />

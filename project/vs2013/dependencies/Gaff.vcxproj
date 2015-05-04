@@ -222,7 +222,6 @@
     <ClInclude Include="..\..\..\dependencies\Gaff\include\Gaff_IRefCounted.h" />
     <ClInclude Include="..\..\..\dependencies\Gaff\include\Gaff_IReflectionDefinitions.h" />
     <ClInclude Include="..\..\..\dependencies\Gaff\include\Gaff_IRequestableInterface.h" />
-    <ClInclude Include="..\..\..\dependencies\Gaff\include\Gaff_ITask.h" />
     <ClInclude Include="..\..\..\dependencies\Gaff\include\Gaff_IVirtualDestructor.h" />
     <ClInclude Include="..\..\..\dependencies\Gaff\include\Gaff_Image.h" />
     <ClInclude Include="..\..\..\dependencies\Gaff\include\Gaff_IncludeAssert.h" />
@@ -258,7 +257,6 @@
     <ClInclude Include="..\..\..\dependencies\Gaff\include\Gaff_StackTrace_Windows.h" />
     <ClInclude Include="..\..\..\dependencies\Gaff\include\Gaff_String.h" />
     <ClInclude Include="..\..\..\dependencies\Gaff\include\Gaff_Thread.h" />
-    <ClInclude Include="..\..\..\dependencies\Gaff\include\Gaff_ThreadPool.h" />
     <ClInclude Include="..\..\..\dependencies\Gaff\include\Gaff_Thread_Linux.h" />
     <ClInclude Include="..\..\..\dependencies\Gaff\include\Gaff_Thread_Windows.h" />
     <ClInclude Include="..\..\..\dependencies\Gaff\include\Gaff_Timer.h" />

@@ -24,7 +24,6 @@ THE SOFTWARE.
 
 #include "Shibboleth_ProxyAllocator.h"
 #include "Shibboleth_RefCounted.h"
-#include "Shibboleth_ITask.h"
 #include "Shibboleth_Array.h"
 #include "Shibboleth_Map.h"
 #include <Shibboleth_Memory.h>

@@ -123,6 +123,16 @@ void JobPool<Allocator>::freeCounter(Counter* counter)
 }
 
 template <class Allocator>
+void JobPool<Allocator>::helpWhileWaiting(Counter* counter)
+{
+	assert(counter);
+
+	while (counter->count) {
+		doAJob();
+	}
+}
+
+template <class Allocator>
 void JobPool<Allocator>::helpUntilNoJobs(void)
 {
 	// Start with the other pools first. Presumably they don't lead to pool zero never getting reached.
