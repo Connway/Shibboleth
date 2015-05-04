@@ -95,7 +95,7 @@ public:
 		rm.updateWindows(); // This has to happen in the main thread.
 
 		Shibboleth::UpdateManager& update_manager = _app.getManagerT<Shibboleth::UpdateManager>("Update Manager");
-		update_manager.update(timer.getDeltaSec());
+		update_manager.update();
 
 		render(timer.getDeltaSec());
 	}

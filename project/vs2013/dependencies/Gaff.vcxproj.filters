@@ -146,9 +146,6 @@
     <ClInclude Include="..\..\..\dependencies\Gaff\include\Gaff_IRequestableInterface.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\dependencies\Gaff\include\Gaff_ITask.h">
-      <Filter>include</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\dependencies\Gaff\include\Gaff_IVirtualDestructor.h">
       <Filter>include</Filter>
     </ClInclude>
@@ -249,9 +246,6 @@
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\dependencies\Gaff\include\Gaff_Thread.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\dependencies\Gaff\include\Gaff_ThreadPool.h">
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\dependencies\Gaff\include\Gaff_Thread_Linux.h">

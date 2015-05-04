@@ -22,6 +22,7 @@ THE SOFTWARE.
 
 #include "Shibboleth_UpdateManager.h"
 #include "Shibboleth_IUpdateQuery.h"
+#include <Shibboleth_IFileSystem.h>
 #include <Shibboleth_Utilities.h>
 #include <Shibboleth_JobPool.h>
 #include <Shibboleth_App.h>
@@ -29,27 +30,103 @@ THE SOFTWARE.
 
 NS_SHIBBOLETH
 
-static void UpdateJob(void* data)
-{
-	UpdateData* update_data = reinterpret_cast<UpdateData*>(data);
-	update_data->callback(update_data->dt);
-}
+//static void UpdateJob(void* data)
+//{
+//	UpdateData* update_data = reinterpret_cast<UpdateData*>(data);
+//	update_data->callback(update_data->dt);
+//}
 
 REF_IMPL_REQ(UpdateManager);
 SHIB_REF_IMPL(UpdateManager)
 .addBaseClassInterfaceOnly<UpdateManager>()
 ;
 
-UpdateManager::UpdateManager(void):
-	_counter(nullptr)
+UpdateManager::UpdatePhase::UpdatePhase(void)
+{
+}
+
+UpdateManager::UpdatePhase::~UpdatePhase(void)
+{
+	if (_counter) {
+		GetApp().getJobPool().freeCounter(_counter);
+	}
+}
+
+const char* UpdateManager::UpdatePhase::getName(void) const
+{
+	return _name.getBuffer();
+}
+
+void UpdateManager::UpdatePhase::setName(const char* name)
+{
+	_name = name;
+}
+
+void UpdateManager::UpdatePhase::addUpdate(size_t row, const UpdateCallback& callback)
+{
+	_callbacks[row].emplacePush(callback);
+}
+
+void UpdateManager::UpdatePhase::setNumRows(size_t num_rows)
+{
+	_callbacks.resize(num_rows);
+}
+
+bool UpdateManager::UpdatePhase::isDone(void) const
+{
+	return !_counter || !_counter->count;
+}
+
+void UpdateManager::UpdatePhase::run(void)
+{
+	Gaff::JobData job(&UpdatePhase::UpdatePhaseJob, this);
+	GetApp().getJobPool().addJobs(&job);
+}
+
+void UpdateManager::UpdatePhase::UpdatePhaseJob(void* data)
+{
+	UpdatePhase* phase = reinterpret_cast<UpdatePhase*>(data);
+
+	phase->_timer.stop();
+	phase->_timer.start();
+
+	JobPool& job_pool = GetApp().getJobPool();
+	double dt = phase->_timer.getDeltaSec();
+
+	// Go through each row of the phase and add their updates
+	for (size_t i = 0; i < phase->_callbacks.size(); ++i) {
+		phase->_data_cache.clearNoFree();
+		phase->_jobs.clearNoFree();
+
+		for (size_t j = 0; j < phase->_callbacks[i].size(); ++j) {
+			phase->_data_cache.emplacePush();
+			phase->_data_cache[j].callback = &phase->_callbacks[i][j];
+			phase->_data_cache[j].delta_time = dt;
+
+			phase->_jobs.emplacePush(&UpdateJob, &phase->_data_cache[j]);
+		}
+
+		job_pool.addJobs(phase->_jobs.getArray(), phase->_jobs.size(), &phase->_counter);
+
+		// We want to help while waiting, since we don't just want to consume a potential job thread with just waiting.
+		job_pool.helpWhileWaiting(phase->_counter);
+	}
+}
+
+void UpdateManager::UpdatePhase::UpdateJob(void* data)
+{
+	UpdateData* update_data = reinterpret_cast<UpdateData*>(data);
+	(*update_data->callback)(update_data->delta_time);
+}
+
+
+
+UpdateManager::UpdateManager(void)
 {
 }
 
 UpdateManager::~UpdateManager(void)
 {
-	if (_counter) {
-		GetApp().getJobPool().waitForAndFreeCounter(_counter);
-	}
 }
 
 const char* UpdateManager::getName(void) const
@@ -57,23 +134,12 @@ const char* UpdateManager::getName(void) const
 	return "Update Manager";
 }
 
-void UpdateManager::update(double dt)
+void UpdateManager::update(void)
 {
-	for (auto it_row = _table.begin(); it_row != _table.end(); ++it_row) {
-		_job_data.clearNoFree();
-		_update_data.clearNoFree();
-		_job_data.reserve(it_row->size());
-		_update_data.reserve(it_row->size());
-
-		for (auto it_entry = it_row->begin(); it_entry != it_row->end(); ++it_entry) {
-			// add update callback to job queue
-			_update_data.emplacePush(*it_entry, dt);
-			_job_data.emplacePush(&UpdateJob, &_update_data.last());
-
+	for (auto it = _phases.begin(); it != _phases.end(); ++it) {
+		if (it->isDone()) {
+			it->run();
 		}
-
-		GetApp().getJobPool().addJobs(_job_data.getArray(), _job_data.size(), &_counter);
-		GetApp().getJobPool().waitForCounter(_counter);
 	}
 }
 
@@ -95,54 +161,98 @@ void UpdateManager::allManagersCreated(void)
 		return false;
 	});
 
-	Gaff::JSON table;
+	IFile* updates_file = GetApp().getFileSystem()->openFile("update_entries.json");
 
-	if (table.parseFile("./update_entries.json")) {
-		if (!table.isArray()) {
+	if (!updates_file) {
+		log.first.writeString("ERROR - Could not open file \"update_entries.json\".\n");
+		GetApp().quit();
+		return;
+	}
+
+	Gaff::JSON phases;
+	bool success = phases.parse(updates_file->getBuffer());
+
+	GetApp().getFileSystem()->closeFile(updates_file);
+
+	if (success) {
+		if (!phases.isArray()) {
 			log.first.writeString("ERROR - Root of \"update_entries.json\" is not an array.\n");
 			GetApp().quit();
 			return;
 		}
 
-		table.forEachInArray([&](size_t index, const Gaff::JSON& row) -> bool
+		_phases.resize(phases.size());
+
+		// Process each phase
+		phases.forEachInArray([&](size_t index_phase, const Gaff::JSON& phase) -> bool
 		{
-			if (!row.isArray()) {
-				log.first.writeString("ERROR - A row in \"update_entries.json\" is not an array.\n");
+			if (!phase.isObject()) {
+				log.first.writeString("ERROR - A phase in \"update_entries.json\" is not an object.\n");
 				GetApp().quit();
-				return false;
+				return true;
 			}
 
-			_table.push(Array<UpdateCallback>());
+			Gaff::JSON phase_name = phase["name"];
+			Gaff::JSON phase_entries = phase["entries"];
 
-			row.forEachInArray([&](size_t, const Gaff::JSON& entry) -> bool
+			if (!phase_name.isString()) {
+				unsigned int i = static_cast<unsigned int>(index_phase); // For 64-bit builds where size_t is not 32-bits.
+				log.first.printf("ERROR - The phase in \"update_entries.json\" at index %d does not have a name or name is not a string.\n", i);
+				GetApp().quit();
+				return true;
+			}
+
+			if (!phase_entries.isArray()) {
+				log.first.printf("ERROR - The 'entries' element in phase '%s' in \"update_entries.json\" is not an array.\n", phase_name.getString());
+				GetApp().quit();
+				return true;
+			}
+
+			_phases[index_phase].setName(phase_name.getString());
+			_phases[index_phase].setNumRows(phase_entries.size());
+
+			// Process each phase's entries
+			success = !phase_name.forEachInArray([&](size_t index_entries, const Gaff::JSON& row) -> bool
 			{
-				if (!entry.isString()) {
-					log.first.writeString("ERROR - An entry in \"update_entries.json\" is not a string.\n");
+				if (!row.isArray()) {
+					log.first.printf("ERROR - A row in phase '%s' in \"update_entries.json\" is not an array.\n", phase_name.getString());
 					GetApp().quit();
 					return true;
 				}
 
-				auto it = entries.linearSearch(entry.getString(), [&](const IUpdateQuery::UpdateEntry& lhs, const char* rhs) -> bool
+				// Process each row
+				success = !row.forEachInArray([&](size_t, const Gaff::JSON& entry) -> bool
 				{
-					return lhs.first == rhs;
+					if (!entry.isString()) {
+						unsigned int i = static_cast<unsigned int>(index_entries); // For 64-bit builds where size_t is not 32-bits.
+						log.first.printf("ERROR - An entry in row %d in phase '%s' in \"update_entries.json\" is not a string.\n", i, phase_name.getString());
+						GetApp().quit();
+						return true;
+					}
+
+					auto it = entries.linearSearch(entry.getString(), [&](const IUpdateQuery::UpdateEntry& lhs, const char* rhs) -> bool
+					{
+						return lhs.first == rhs;
+					});
+
+					if (it == entries.end()) {
+						log.first.printf("ERROR - UpdateEntry for '%s' in \"update_entries.json\" was not found.\n", entry.getString());
+						GetApp().quit();
+						return true;
+					}
+
+					_phases[index_phase].addUpdate(index_entries, it->second);
+					return false;
 				});
 
-				if (it == entries.end()) {
-					log.first.printf("ERROR - UpdateEntry for '%s' in \"update_entries.json\" was not found.\n", entry.getString());
-					GetApp().quit();
-					return true;
-				}
-
-				_table[index].push(it->second);
-
-				return false;
+				return !success;
 			});
 
-			return false;
+			return !success;
 		});
 
 	} else {
-		log.first.writeString("ERROR - Failed to find/parse file \"update_entries.json\".\n");
+		log.first.writeString("ERROR - Failed to parse file \"update_entries.json\".\n");
 		GetApp().quit();
 	}
 }

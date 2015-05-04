@@ -79,6 +79,7 @@ public:
 	void waitForAndFreeCounter(Counter* counter);
 	void waitForCounter(Counter* counter);
 	void freeCounter(Counter* counter);
+	void helpWhileWaiting(Counter* counter);
 
 	void helpUntilNoJobs(void);
 	void doAJob(void);
