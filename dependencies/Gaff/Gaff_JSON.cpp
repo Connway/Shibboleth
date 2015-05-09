@@ -21,7 +21,6 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Gaff_JSON.h"
-#include "Gaff_IncludeAssert.h"
 #include <cstring>
 
 NS_GAFF
