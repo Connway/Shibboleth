@@ -29,7 +29,8 @@ THE SOFTWARE.
 	#pragma warning(disable : 4706)
 #endif
 
-#include "Gaff_String.h"
+#include "Gaff_Defines.h"
+#include "Gaff_IncludeAssert.h"
 #include <jansson.h>
 
 NS_GAFF
@@ -92,24 +93,6 @@ public:
 		}
 
 		return false;
-	}
-
-	template <class Allocator>
-	JSON getObject(const AString<Allocator> key)
-	{
-		return getObject(key.getBuffer());
-	}
-
-	template <class Allocator>
-	JSON operator[](const AString<Allocator> key)
-	{
-		return getObject(key.getBuffer());
-	}
-
-	template <class Allocator>
-	bool parse(const AString<Allocator> input)
-	{
-		return parse(input.getBuffer());
 	}
 
 	static INLINE void SetMemoryFunctions(json_malloc_t alloc_func, json_free_t free_func);
