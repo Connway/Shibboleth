@@ -25,7 +25,7 @@ THE SOFTWARE.
 #pragma once
 
 #include "Gaff_IncludeWindows.h"
-#include "Gaff_String.h"
+#include "Gaff_Defines.h"
 
 NS_GAFF
 
@@ -38,36 +38,6 @@ class DynamicModule
 public:
 	DynamicModule(void);
 	~DynamicModule(void);
-
-	/*!
-		\brief Retrieves a function from the dynamic module.
-
-		\tparam Func The function pointer type the address will be cast to.
-		\tparam Allocator The allocator the string uses.
-		\param name The name of the symbol to retrieve from the dynamic module.
-
-		\return The function with the symbol \a name, otherwise nullptr.
-	*/
-	template <class Func, class Allocator>
-	Func GetFunc(const AString<Allocator>& name) const
-	{
-		return (Func)GetAddress(name.getBuffer());
-	}
-
-	/*!
-		\brief Retrieves a variable from the dynamic module.
-
-		\tparam Func The type the address will be cast to.
-		\tparam Allocator The allocator the string uses.
-		\param name The name of the symbol to retrieve from the dynamic module.
-
-		\return The variable with the symbol \a name, otherwise nullptr.
-	*/
-	template <class T, class Allocator>
-	T* GetVariable(const AString<Allocator>& name) const
-	{
-		return (T*)GetAddress(name.getBuffer());
-	}
 
 	/*!
 		\brief Retrieves a function from the dynamic module.
@@ -95,20 +65,6 @@ public:
 	T* GetVariable(const char* name) const
 	{
 		return (T*)GetAddress(name);
-	}
-
-	/*!
-		\brief Retrieves the address of the requested symbol \a name.
-
-		\tparam Allocator The allocator the string uses.
-		\param name The name of the symbol to retrieve from the dynamic module.
-
-		\return The address of the symbol \a name, otherwise nullptr.
-	*/
-	template <class Allocator>
-	void* GetAddress(const AString<Allocator>& name) const
-	{
-		return GetAddress(name.getBuffer());
 	}
 
 	INLINE bool load(const wchar_t* filename);

@@ -613,6 +613,36 @@ void Array<T, Allocator>::fastErase(size_t index)
 }
 
 template <class T, class Allocator>
+void Array<T, Allocator>::resize(size_t new_size, const T& init_val)
+{
+	if (new_size == _size) {
+		return;
+	}
+
+	T* old_data = _array;
+
+	_array = reinterpret_cast<T*>(_allocator.alloc(sizeof(T) * new_size));
+
+	for (size_t i = _used; i < new_size; ++i) {
+		construct(_array + i, init_val);
+	}
+
+	if (old_data) {
+		if (new_size < _used) {
+			for (size_t i = new_size; i < _used; ++i) {
+				deconstruct(old_data + i);
+			}
+		}
+
+		memcpy(_array, old_data, sizeof(T) * _used);
+		_allocator.free(old_data);
+	}
+
+	_size = new_size;
+	_used = new_size;
+}
+
+template <class T, class Allocator>
 void Array<T, Allocator>::resize(size_t new_size)
 {
 	if (new_size == _size) {

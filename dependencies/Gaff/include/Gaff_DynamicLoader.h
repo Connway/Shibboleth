@@ -61,32 +61,17 @@ public:
 
 	typedef SharedPtr<DynamicModule, Allocator> ModulePtr;
 
-	template <class Allocator2>
-	ModulePtr loadModule(const AString<Allocator2>& filename, const AString<Allocator2>& name);
-
-	template <class Allocator2>
-	ModulePtr loadModule(const AString<Allocator2>& filename, const char* name);
-
 	DynamicLoader(const Allocator& allocator = Allocator());
 	~DynamicLoader(void);
 
 	void clear(void);
 
 	ModulePtr loadModule(const char* filename, const char* name);
-
-	ModulePtr getModule(const AHashString<Allocator> name);
-	ModulePtr getModule(const AString<Allocator>& name);
 	ModulePtr getModule(const char* name);
 
 	void removeModule(const char* name);
 
 #ifdef _UNICODE
-	template <class Allocator2>
-	ModulePtr loadModule(const WString<Allocator2>& filename, const AString<Allocator2>& name);
-
-	template <class Allocator2>
-	ModulePtr loadModule(const WString<Allocator2>& filename, const char* name);
-
 	ModulePtr loadModule(const wchar_t* filename, const char* name);
 #endif
 

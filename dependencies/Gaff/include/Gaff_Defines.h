@@ -151,3 +151,8 @@ void Swap(T& lhs, T& rhs)
 }
 
 NS_END
+
+#if defined(__linux__) || defined(__APPLE__)
+	#include <cstdlib> // For size_t
+#endif
+

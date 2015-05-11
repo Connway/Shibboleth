@@ -164,6 +164,7 @@ public:
 	Iterator fastErase(const Iterator it);
 	void fastErase(size_t index);
 
+	void resize(size_t new_size, const T& init_val);
 	void resize(size_t new_size);
 	void reserve(size_t reserve_size);
 	void trim(void);

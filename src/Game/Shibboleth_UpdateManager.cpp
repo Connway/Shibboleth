@@ -30,12 +30,6 @@ THE SOFTWARE.
 
 NS_SHIBBOLETH
 
-//static void UpdateJob(void* data)
-//{
-//	UpdateData* update_data = reinterpret_cast<UpdateData*>(data);
-//	update_data->callback(update_data->dt);
-//}
-
 REF_IMPL_REQ(UpdateManager);
 SHIB_REF_IMPL(UpdateManager)
 .addBaseClassInterfaceOnly<UpdateManager>()
@@ -72,6 +66,16 @@ void UpdateManager::UpdatePhase::setNumRows(size_t num_rows)
 	_callbacks.resize(num_rows);
 }
 
+size_t UpdateManager::UpdatePhase::getID(void) const
+{
+	return _id;
+}
+
+void UpdateManager::UpdatePhase::setID(size_t id)
+{
+	_id = id;
+}
+
 bool UpdateManager::UpdatePhase::isDone(void) const
 {
 	return !_counter || !_counter->count;
@@ -79,6 +83,7 @@ bool UpdateManager::UpdatePhase::isDone(void) const
 
 void UpdateManager::UpdatePhase::run(void)
 {
+	assert(isDone()); // We shouldn't be calling run() if we are already updating.
 	Gaff::JobData job(&UpdatePhase::UpdatePhaseJob, this);
 	GetApp().getJobPool().addJobs(&job);
 }
@@ -102,6 +107,7 @@ void UpdateManager::UpdatePhase::UpdatePhaseJob(void* data)
 			phase->_data_cache.emplacePush();
 			phase->_data_cache[j].callback = &phase->_callbacks[i][j];
 			phase->_data_cache[j].delta_time = dt;
+			phase->_data_cache[j].phase_id = phase->_id;
 
 			phase->_jobs.emplacePush(&UpdateJob, &phase->_data_cache[j]);
 		}
