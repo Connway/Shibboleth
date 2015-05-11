@@ -23,7 +23,6 @@ THE SOFTWARE.
 #pragma once
 
 #include <Shibboleth_ReflectionDefinitions.h>
-#include <Shibboleth_RefCounted.h>
 #include <Shibboleth_IManager.h>
 #include <Shibboleth_Array.h>
 #include <Gaff_Function.h>
@@ -37,7 +36,9 @@ NS_END
 
 NS_SHIBBOLETH
 
-using UpdateCallback = Gaff::FunctionBinder<void, double>;
+class FrameManager;
+
+using UpdateCallback = Gaff::FunctionBinder<void, double, void*>;
 
 class UpdateManager : public IManager
 {
@@ -75,6 +76,7 @@ private:
 		struct UpdateData
 		{
 			UpdateCallback* callback;
+			void* frame_data;
 			double delta_time;
 			size_t phase_id;
 		};
@@ -85,6 +87,8 @@ private:
 		Gaff::Timer _timer;
 		AString _name;
 		Gaff::Counter* _counter;
+
+		FrameManager& _frame_mgr;
 
 		size_t _id;
 

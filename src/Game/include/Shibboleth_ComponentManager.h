@@ -37,7 +37,7 @@ class IApp;
 class ComponentManager : public IManager
 {
 public:
-	ComponentManager(IApp& app);
+	ComponentManager(void);
 	~ComponentManager(void);
 
 	const char* getName(void) const;

@@ -130,7 +130,7 @@ public:
 		bool optional;
 	};
 
-	ResourceManager(IApp& app);
+	ResourceManager(void);
 	~ResourceManager(void);
 
 	const char* getName(void) const;

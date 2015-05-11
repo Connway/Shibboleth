@@ -236,8 +236,8 @@ SHIB_REF_IMPL(ResourceManager)
 .addBaseClassInterfaceOnly<ResourceManager>()
 ;
 
-ResourceManager::ResourceManager(IApp& app):
-	_app(app)
+ResourceManager::ResourceManager(void):
+	_app(GetApp())
 {
 }
 

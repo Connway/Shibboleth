@@ -121,7 +121,7 @@ public:
 		Array<SRVPtr> depth_srvs;
 	};
 
-	RenderManager(IApp& app);
+	RenderManager(void);
 	~RenderManager(void);
 
 	const char* getName(void) const;

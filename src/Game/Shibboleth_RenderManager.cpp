@@ -24,12 +24,15 @@ THE SOFTWARE.
 #include "Shibboleth_ResourceManager.h"
 #include <Shibboleth_TextureLoader.h>
 #include <Shibboleth_IFileSystem.h>
+#include <Shibboleth_Utilities.h>
 #include <Shibboleth_IApp.h>
+
 #include <Gleam_IRenderDevice.h>
 #include <Gleam_Global.h>
+
 #include <Gaff_ScopedLock.h>
-#include <Gaff_JSON.h>
 #include <Gaff_Utils.h>
+#include <Gaff_JSON.h>
 
 NS_SHIBBOLETH
 
@@ -115,9 +118,9 @@ SHIB_ENUM_REF_IMPL_EMBEDDED(Gleam_ITexture_Format, Gleam::ITexture::FORMAT)
 ;
 
 
-RenderManager::RenderManager(IApp& app):
+RenderManager::RenderManager(void):
 	_render_device(nullptr, ProxyAllocator("Graphics")),
-	_proxy_allocator("Graphics"), _app(app)
+	_proxy_allocator("Graphics"), _app(GetApp())
 {
 	memset(&_graphics_functions, 0, sizeof(GraphicsFunctions));
 }
@@ -625,7 +628,7 @@ bool RenderManager::cacheGleamFunctions(IApp& app, const char* module)
 	_graphics_functions.create_buffer = _gleam_module->GetFunc<GraphicsFunctions::CreateBuffer>("CreateBuffer");
 	_graphics_functions.create_model = _gleam_module->GetFunc<GraphicsFunctions::CreateModel>("CreateModel");
 	_graphics_functions.create_mesh = _gleam_module->GetFunc<GraphicsFunctions::CreateMesh>("CreateMesh");
-	
+
 	if (!_graphics_functions.create_window) {
 		log.first.printf("ERROR - Failed to find function 'CreateWindowS' in graphics module '%s'.", module_path.getBuffer());
 		return false;

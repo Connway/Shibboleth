@@ -21,6 +21,7 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Shibboleth_UpdateManager.h"
+#include "Shibboleth_FrameManager.h"
 #include "Shibboleth_IUpdateQuery.h"
 #include <Shibboleth_IFileSystem.h>
 #include <Shibboleth_Utilities.h>
@@ -35,7 +36,8 @@ SHIB_REF_IMPL(UpdateManager)
 .addBaseClassInterfaceOnly<UpdateManager>()
 ;
 
-UpdateManager::UpdatePhase::UpdatePhase(void)
+UpdateManager::UpdatePhase::UpdatePhase(void):
+	_frame_mgr(GetApp().getManagerT<FrameManager>("Frame Manager"))
 {
 }
 
@@ -109,6 +111,16 @@ void UpdateManager::UpdatePhase::UpdatePhaseJob(void* data)
 			phase->_data_cache[j].delta_time = dt;
 			phase->_data_cache[j].phase_id = phase->_id;
 
+			void* frame_data = phase->_frame_mgr.getNextFrameData(phase->_id);
+
+			// If there are no frames free, help out until there are.
+			while (!frame_data) {
+				job_pool.doAJob();
+				frame_data = phase->_frame_mgr.getNextFrameData(phase->_id);
+			}
+
+			phase->_data_cache[j].frame_data = frame_data;
+
 			phase->_jobs.emplacePush(&UpdateJob, &phase->_data_cache[j]);
 		}
 
@@ -117,12 +129,14 @@ void UpdateManager::UpdatePhase::UpdatePhaseJob(void* data)
 		// We want to help while waiting, since we don't just want to consume a potential job thread with just waiting.
 		job_pool.helpWhileWaiting(phase->_counter);
 	}
+
+	phase->_frame_mgr.finishFrame(phase->_id);
 }
 
 void UpdateManager::UpdatePhase::UpdateJob(void* data)
 {
 	UpdateData* update_data = reinterpret_cast<UpdateData*>(data);
-	(*update_data->callback)(update_data->delta_time);
+	(*update_data->callback)(update_data->delta_time, update_data->frame_data);
 }
 
 
@@ -187,6 +201,7 @@ void UpdateManager::allManagersCreated(void)
 			return;
 		}
 
+		GetApp().getManagerT<FrameManager>("Frame Manager").setNumPhases(phases.size());
 		_phases.resize(phases.size());
 
 		// Process each phase
