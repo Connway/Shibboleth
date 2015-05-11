@@ -21,7 +21,8 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Shibboleth_ComponentManager.h"
-#include "Shibboleth_IApp.h"
+#include <Shibboleth_Utilities.h>
+#include <Shibboleth_IApp.h>
 
 NS_SHIBBOLETH
 
@@ -31,8 +32,8 @@ SHIB_REF_IMPL(ComponentManager)
 .addBaseClassInterfaceOnly<ComponentManager>()
 ;
 
-ComponentManager::ComponentManager(IApp& app):
-	_app(app)
+ComponentManager::ComponentManager(void):
+	_app(GetApp())
 {
 }
 

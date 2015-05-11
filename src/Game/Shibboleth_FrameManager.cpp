@@ -21,18 +21,50 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Shibboleth_FrameManager.h"
+#include <Gaff_Atomic.h>
 
 NS_SHIBBOLETH
 
+// Default frame data structures and functions
+struct FrameData
+{
+};
+
+static void* DefaultFrameDataAlloc(size_t num_frames, size_t& frame_data_size)
+{
+	frame_data_size = sizeof(FrameData);
+	return GetAllocator()->template allocArrayT<FrameData>(num_frames);
+}
+
+static void DefaultFrameDataFree(void* frame_data, size_t num_frames)
+{
+	FrameData* fd = reinterpret_cast<FrameData*>(frame_data);
+	GetAllocator->freeArrayT(fd, num_frames);
+}
+
+
+REF_IMPL_REQ(FrameManager);
+SHIB_REF_IMPL(FrameManager)
+.addBaseClassInterfaceOnly<FrameManager>()
+;
+
 FrameManager::FrameManager(void):
-	_frame_data(nullptr), _frame_data_alloc(&FrameManager::DefaultFrameDataAlloc),
-	_frame_data_free(&FrameManager::DefaultFrameDataFree), _frame_data_size(0),
-	_starting_frame_check(0)
+	_frame_data(nullptr), _frame_data_alloc(&DefaultFrameDataAlloc),
+	_frame_data_free(&DefaultFrameDataFree), _frame_data_size(0),
+	_num_frames(0)
 {
 }
 
 FrameManager::~FrameManager(void)
 {
+	if (_frame_data) {
+		_frame_data_free(_frame_data, _num_frames);
+	}
+}
+
+const char* FrameManager::getName(void) const
+{
+	return "Frame Manager";
 }
 
 void FrameManager::setFrameDataProvider(FrameDataAllocFunc alloc_func, FrameDataFreeFunc free_func)
@@ -46,6 +78,8 @@ bool FrameManager::init(size_t num_frames)
 	assert(_frame_data_alloc && _frame_data_free);
 	_frame_data = _frame_data_alloc(num_frames, _frame_data_size);
 	_frame_trackers.resize(num_frames, 0);
+	_num_frames = num_frames;
+
 	return _frame_data != nullptr;
 }
 
@@ -54,16 +88,38 @@ void FrameManager::setNumPhases(size_t num_phases)
 	_phase_trackers.resize(num_phases, 0);
 }
 
-void* FrameManager::DefaultFrameDataAlloc(size_t num_frames, size_t& frame_data_size)
+void* FrameManager::getNextFrameData(size_t phase_id)
 {
-	frame_data_size = sizeof(FrameData);
-	return GetAllocator()->template allocArrayT<FrameData>(num_frames);
+	assert(phase_id < _phase_trackers.size());
+
+	unsigned int frame_id = _phase_trackers[phase_id];
+	assert(frame_id < _frame_trackers.size());
+
+	// If the frame tracker count is not the same as our phase ID,
+	// then we have used up all the frames. Wait until a frame opens up.
+	if (_frame_trackers[frame_id] != phase_id) {
+		return nullptr;
+	}
+
+	return reinterpret_cast<char*>(_frame_data) + (_frame_data_size * frame_id);
 }
 
-void FrameManager::DefaultFrameDataFree(void* frame_data, size_t num_frames)
+void FrameManager::finishFrame(size_t phase_id)
 {
-	FrameData* fd = reinterpret_cast<FrameData*>(frame_data);
-	GetAllocator->freeArrayT(fd, num_frames);
+	assert(phase_id < _phase_trackers.size());
+
+	unsigned int& frame_id = _phase_trackers[phase_id];
+	assert(frame_id < _frame_trackers.size());
+
+	unsigned int new_val = AtomicIncrement(&_frame_trackers[frame_id]);
+
+	// If every phase has processed this frame, then open it up for use.
+	if (new_val == _phase_trackers.size()) {
+		AtomicExchange(&_frame_trackers[frame_id], 0);
+	}
+
+	// Set the frame ID for the phase to the next frame.
+	frame_id = (frame_id + 1) % _num_frames;
 }
 
 NS_END

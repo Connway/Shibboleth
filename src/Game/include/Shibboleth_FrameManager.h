@@ -22,6 +22,7 @@ THE SOFTWARE.
 
 #pragma once
 
+#include <Shibboleth_ReflectionDefinitions.h>
 #include <Shibboleth_IManager.h>
 
 NS_SHIBBOLETH
@@ -29,34 +30,42 @@ NS_SHIBBOLETH
 class FrameManager : public IManager
 {
 public:
-	struct FrameData
-	{
-	};
-
 	using FrameDataAllocFunc = void* (*)(size_t, size_t&);
 	using FrameDataFreeFunc = void (*)(void*, size_t);
+
+	template <class T>
+	INLINE T* getNextFrameDataT(size_t phase_id)
+	{
+		return reinterpret_cast<T*>(getNextFrameData(phase_id));
+	}
 
 	FrameManager(void);
 	~FrameManager(void);
 
+	const char* getName(void) const;
+
 	void setFrameDataFuncs(FrameDataAllocFunc alloc_func, FrameDataFreeFunc free_func);
 
-	bool init(size_t num_frames);
+	bool init(size_t num_frames = 16);
 	void setNumPhases(size_t num_phases);
 
+	void* getNextFrameData(size_t phase_id);
+	void finishFrame(size_t phase_id);
+
 private:
-	Array<volatile unsigned int> _phase_trackers;
+	Array<unsigned int> _phase_trackers;
 	Array<volatile unsigned int> _frame_trackers;
 
 	void* _frame_data;
 	FrameDataAllocFunc _frame_data_alloc;
 	FrameDataFreeFunc _frame_data_free;
 	size_t _frame_data_size;
+	size_t _num_frames;
 
-	volatile unsigned int _starting_frame_check;
+	GAFF_NO_COPY(FrameManager);
+	GAFF_NO_MOVE(FrameManager);
 
-	static void* DefaultFrameDataAlloc(size_t num_frames, size_t& frame_data_size);
-	static void DefaultFrameDataFree(void* frame_data, size_t num_frames);
+	SHIB_REF_DEF(FrameManager);
 };
 
 NS_END
