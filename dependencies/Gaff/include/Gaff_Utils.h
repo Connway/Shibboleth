@@ -37,6 +37,11 @@ THE SOFTWARE.
 #include <cstring>
 #include <ctime>
 
+#ifdef __APPLE__
+	/* Return the exact length of d_namlen without zero terminator */
+	#define _D_EXACT_NAMLEN(p) ((p)->d_namlen)
+#endif
+
 NS_GAFF
 
 INLINE unsigned long GetNumberOfCores(void); //!< Returns the number of physical cores on the machine.

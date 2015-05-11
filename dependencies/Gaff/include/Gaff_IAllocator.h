@@ -65,11 +65,23 @@ public:
 	virtual void free(void* data) = 0;
 
 	template <class T, class... Args>
-	T* allocArrayT(unsigned int count, Args&&... args)
+	T* moveAllocArrayT(size_t count, Args&&... args)
 	{
 		T* data = reinterpret_cast<T*>(alloc(sizeof(T) * count));
 
-		for (unsigned int i = 0; i < count; ++i) {
+		for (size_t i = 0; i < count; ++i) {
+			moveConstruct(data + i, Gaff::Move(args)...);
+		}
+
+		return data;
+	}
+
+	template <class T, class... Args>
+	T* allocArrayT(size_t count, Args&&... args)
+	{
+		T* data = reinterpret_cast<T*>(alloc(sizeof(T) * count));
+
+		for (size_t i = 0; i < count; ++i) {
 			construct(data + i, args...);
 		}
 
@@ -91,13 +103,13 @@ public:
 	}
 
 	template <class T>
-	void freeArrayT(T* data, unsigned int count)
+	void freeArrayT(T* data, size_t count)
 	{
-		for (unsigned int i = 0; i < count; ++i) {
+		for (size_t i = 0; i < count; ++i) {
 			(data + i)->~T();
 		}
 
-		free(data);
+		free((void*)data);
 	}
 
 	template <class T>

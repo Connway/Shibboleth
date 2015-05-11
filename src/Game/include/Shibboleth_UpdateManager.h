@@ -65,6 +65,9 @@ private:
 		void addUpdate(size_t row, const UpdateCallback& callback);
 		void setNumRows(size_t num_rows);
 
+		size_t getID(void) const;
+		void setID(size_t id);
+
 		bool isDone(void) const;
 		void run(void);
 
@@ -73,6 +76,7 @@ private:
 		{
 			UpdateCallback* callback;
 			double delta_time;
+			size_t phase_id;
 		};
 
 		Array< Array<UpdateCallback> > _callbacks;
@@ -81,6 +85,8 @@ private:
 		Gaff::Timer _timer;
 		AString _name;
 		Gaff::Counter* _counter;
+
+		size_t _id;
 
 		static void UpdatePhaseJob(void* data);
 		static void UpdateJob(void* data);

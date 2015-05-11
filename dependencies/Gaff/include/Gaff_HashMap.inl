@@ -1156,7 +1156,7 @@ template <class Value, class Allocator, class T>
 void HashMap<String<T, Allocator>, Value, Allocator>::erase(const String<T, Allocator>& key)
 {
 	size_t index = indexOf(key);
-	assert(index > size_t);
+	assert(index != SIZE_T_FAIL);
 	erase(index);
 }
 

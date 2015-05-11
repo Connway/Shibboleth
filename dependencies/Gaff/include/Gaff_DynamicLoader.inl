@@ -39,22 +39,6 @@ void DynamicLoader<Allocator>::clear(void)
 }
 
 template <class Allocator>
-template <class Allocator2>
-typename DynamicLoader<Allocator>::ModulePtr DynamicLoader<Allocator>::loadModule(const AString<Allocator2>& filename, const AString<Allocator2>& name)
-{
-	assert(filename.size() && name.size());
-	return loadModule(filename.getBuffer(), name.getBuffer());
-}
-
-template <class Allocator>
-template <class Allocator2>
-typename DynamicLoader<Allocator>::ModulePtr DynamicLoader<Allocator>::loadModule(const AString<Allocator2>& filename, const char* name)
-{
-	assert(filename.size() && name && strlen(name));
-	return loadModule(filename.getBuffer(), name);
-}
-
-template <class Allocator>
 typename DynamicLoader<Allocator>::ModulePtr DynamicLoader<Allocator>::loadModule(const char* filename, const char* name)
 {
 	assert(filename && name && strlen(filename) && strlen(name));
@@ -77,21 +61,6 @@ typename DynamicLoader<Allocator>::ModulePtr DynamicLoader<Allocator>::loadModul
 }
 
 template <class Allocator>
-typename DynamicLoader<Allocator>::ModulePtr DynamicLoader<Allocator>::getModule(const AHashString<Allocator> name)
-{
-	assert(name.size());
-	return _modules[name];
-}
-
-template <class Allocator>
-typename DynamicLoader<Allocator>::ModulePtr DynamicLoader<Allocator>::getModule(const AString<Allocator>& name)
-{
-	assert(name.size());
-	HString str(name, FNV1Hash32, _allocator);
-	return _modules[name];
-}
-
-template <class Allocator>
 typename DynamicLoader<Allocator>::ModulePtr DynamicLoader<Allocator>::getModule(const char* name)
 {
 	assert(name && strlen(name));
@@ -108,23 +77,6 @@ void DynamicLoader<Allocator>::removeModule(const char* name)
 }
 
 #ifdef _UNICODE
-
-template <class Allocator>
-template <class Allocator2>
-typename DynamicLoader<Allocator>::ModulePtr DynamicLoader<Allocator>::loadModule(const WString<Allocator2>& filename, const AString<Allocator2>& name)
-{
-	assert(filename.size() && name.size());
-	return loadModule(filename.getBuffer(), name.getBuffer());
-}
-
-template <class Allocator>
-template <class Allocator2>
-typename DynamicLoader<Allocator>::ModulePtr DynamicLoader<Allocator>::loadModule(const WString<Allocator2>& filename, const char* name)
-{
-	assert(filename.size() && name && strlen(name));
-	return loadModule(filename.getBuffer(), name);
-}
-
 template <class Allocator>
 typename DynamicLoader<Allocator>::ModulePtr DynamicLoader<Allocator>::loadModule(const wchar_t* filename, const char* name)
 {
@@ -146,5 +98,4 @@ typename DynamicLoader<Allocator>::ModulePtr DynamicLoader<Allocator>::loadModul
 
 	return ModulePtr();
 }
-
 #endif
