@@ -37,7 +37,7 @@ SHIB_REF_IMPL(UpdateManager)
 ;
 
 UpdateManager::UpdatePhase::UpdatePhase(void):
-	_frame_mgr(GetApp().getManagerT<FrameManager>("Frame Manager"))
+	_counter(nullptr), _frame_mgr(GetApp().getManagerT<FrameManager>("Frame Manager"))
 {
 }
 
@@ -104,6 +104,8 @@ void UpdateManager::UpdatePhase::UpdatePhaseJob(void* data)
 	for (size_t i = 0; i < phase->_callbacks.size(); ++i) {
 		phase->_data_cache.clearNoFree();
 		phase->_jobs.clearNoFree();
+		phase->_data_cache.reserve(phase->_callbacks[i].size());
+		phase->_jobs.reserve(phase->_callbacks[i].size());
 
 		for (size_t j = 0; j < phase->_callbacks[i].size(); ++j) {
 			phase->_data_cache.emplacePush();
@@ -231,9 +233,10 @@ void UpdateManager::allManagersCreated(void)
 
 			_phases[index_phase].setName(phase_name.getString());
 			_phases[index_phase].setNumRows(phase_entries.size());
+			_phases[index_phase].setID(index_phase);
 
 			// Process each phase's entries
-			success = !phase_name.forEachInArray([&](size_t index_entries, const Gaff::JSON& row) -> bool
+			success = !phase_entries.forEachInArray([&](size_t index_entries, const Gaff::JSON& row) -> bool
 			{
 				if (!row.isArray()) {
 					log.first.printf("ERROR - A row in phase '%s' in \"update_entries.json\" is not an array.\n", phase_name.getString());

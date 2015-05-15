@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
       <Configuration>Debug</Configuration>
@@ -98,7 +98,6 @@
       <PreprocessorDefinitions>_DEBUG;DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>..\..\..\dependencies\dirent;..\..\..\src\Shared\include;..\..\..\src\Memory\include;..\..\..\dependencies\jansson;..\..\..\dependencies\Gaff\include;..\..\..\dependencies\utf8-cpp;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
-      <ProgramDataBaseFileName>$(OutDir)Shared.pdb</ProgramDataBaseFileName>
       <Optimization>Disabled</Optimization>
       <ExceptionHandling>Async</ExceptionHandling>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
@@ -106,10 +105,6 @@
       <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
       <AdditionalOptions>/sdl %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
-    <ResourceCompile>
-      <PreprocessorDefinitions>_DEBUG;DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\..\..\dependencies\dirent;..\..\..\src\Shared\include;..\..\..\src\Memory\include;..\..\..\dependencies\jansson;..\..\..\dependencies\Gaff\include;..\..\..\dependencies\utf8-cpp;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-    </ResourceCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -122,17 +117,12 @@
       <PreprocessorDefinitions>_DEBUG;DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>..\..\..\dependencies\dirent;..\..\..\src\Shared\include;..\..\..\src\Memory\include;..\..\..\dependencies\jansson;..\..\..\dependencies\Gaff\include;..\..\..\dependencies\utf8-cpp;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <ProgramDataBaseFileName>$(OutDir)Shared.pdb</ProgramDataBaseFileName>
       <Optimization>Disabled</Optimization>
       <ExceptionHandling>Async</ExceptionHandling>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <FloatingPointModel>Fast</FloatingPointModel>
       <AdditionalOptions>/sdl %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
-    <ResourceCompile>
-      <PreprocessorDefinitions>_DEBUG;DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\..\..\dependencies\dirent;..\..\..\src\Shared\include;..\..\..\src\Memory\include;..\..\..\dependencies\jansson;..\..\..\dependencies\Gaff\include;..\..\..\dependencies\utf8-cpp;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-    </ResourceCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -154,9 +144,6 @@
       <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
       <AdditionalOptions>/sdl %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
-    <ResourceCompile>
-      <AdditionalIncludeDirectories>..\..\..\dependencies\dirent;..\..\..\src\Shared\include;..\..\..\src\Memory\include;..\..\..\dependencies\jansson;..\..\..\dependencies\Gaff\include;..\..\..\dependencies\utf8-cpp;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-    </ResourceCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>false</GenerateDebugInformation>
@@ -179,9 +166,6 @@
       <FloatingPointModel>Fast</FloatingPointModel>
       <AdditionalOptions>/sdl %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
-    <ResourceCompile>
-      <AdditionalIncludeDirectories>..\..\..\dependencies\dirent;..\..\..\src\Shared\include;..\..\..\src\Memory\include;..\..\..\dependencies\jansson;..\..\..\dependencies\Gaff\include;..\..\..\dependencies\utf8-cpp;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-    </ResourceCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>false</GenerateDebugInformation>

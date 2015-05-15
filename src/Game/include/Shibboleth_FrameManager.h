@@ -43,6 +43,7 @@ public:
 	~FrameManager(void);
 
 	const char* getName(void) const;
+	void* rawRequestInterface(unsigned int class_id) const;
 
 	void setFrameDataFuncs(FrameDataAllocFunc alloc_func, FrameDataFreeFunc free_func);
 
@@ -53,8 +54,13 @@ public:
 	void finishFrame(size_t phase_id);
 
 private:
+	struct CounterHack
+	{
+		volatile unsigned int count = 0;
+	};
+
 	Array<unsigned int> _phase_trackers;
-	Array<volatile unsigned int> _frame_trackers;
+	Array<CounterHack> _frame_trackers;
 
 	void* _frame_data;
 	FrameDataAllocFunc _frame_data_alloc;

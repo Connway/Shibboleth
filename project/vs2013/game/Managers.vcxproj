@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
       <Configuration>Debug</Configuration>
@@ -98,7 +98,6 @@
       <PreprocessorDefinitions>_DEBUG;DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>..\..\..\dependencies\dirent;..\..\..\src\Game\include;..\..\..\src\Shared\include;..\..\..\src\Memory\include;..\..\..\dependencies\OtterUI\inc;..\..\..\dependencies\jansson;..\..\..\dependencies\Gleam\include;..\..\..\dependencies\Gaff\include;..\..\..\dependencies\LuaState;..\..\..\dependencies\LuaJIT-2.0.3\src;..\..\..\dependencies\utf8-cpp;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
-      <ProgramDataBaseFileName>$(OutDir)Managers.pdb</ProgramDataBaseFileName>
       <Optimization>Disabled</Optimization>
       <ExceptionHandling>Async</ExceptionHandling>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
@@ -106,10 +105,6 @@
       <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
       <AdditionalOptions>/sdl %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
-    <ResourceCompile>
-      <PreprocessorDefinitions>_DEBUG;DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\..\..\dependencies\dirent;..\..\..\src\Game\include;..\..\..\src\Shared\include;..\..\..\src\Memory\include;..\..\..\dependencies\OtterUI\inc;..\..\..\dependencies\jansson;..\..\..\dependencies\Gleam\include;..\..\..\dependencies\Gaff\include;..\..\..\dependencies\LuaState;..\..\..\dependencies\LuaJIT-2.0.3\src;..\..\..\dependencies\utf8-cpp;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-    </ResourceCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -122,17 +117,12 @@
       <PreprocessorDefinitions>_DEBUG;DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>..\..\..\dependencies\dirent;..\..\..\src\Game\include;..\..\..\src\Shared\include;..\..\..\src\Memory\include;..\..\..\dependencies\OtterUI\inc;..\..\..\dependencies\jansson;..\..\..\dependencies\Gleam\include;..\..\..\dependencies\Gaff\include;..\..\..\dependencies\LuaState;..\..\..\dependencies\LuaJIT-2.0.3\src;..\..\..\dependencies\utf8-cpp;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <ProgramDataBaseFileName>$(OutDir)Managers.pdb</ProgramDataBaseFileName>
       <Optimization>Disabled</Optimization>
       <ExceptionHandling>Async</ExceptionHandling>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <FloatingPointModel>Fast</FloatingPointModel>
       <AdditionalOptions>/sdl %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
-    <ResourceCompile>
-      <PreprocessorDefinitions>_DEBUG;DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\..\..\dependencies\dirent;..\..\..\src\Game\include;..\..\..\src\Shared\include;..\..\..\src\Memory\include;..\..\..\dependencies\OtterUI\inc;..\..\..\dependencies\jansson;..\..\..\dependencies\Gleam\include;..\..\..\dependencies\Gaff\include;..\..\..\dependencies\LuaState;..\..\..\dependencies\LuaJIT-2.0.3\src;..\..\..\dependencies\utf8-cpp;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-    </ResourceCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -144,7 +134,6 @@
       <WarningLevel>Level4</WarningLevel>
       <AdditionalIncludeDirectories>..\..\..\dependencies\dirent;..\..\..\src\Game\include;..\..\..\src\Shared\include;..\..\..\src\Memory\include;..\..\..\dependencies\OtterUI\inc;..\..\..\dependencies\jansson;..\..\..\dependencies\Gleam\include;..\..\..\dependencies\Gaff\include;..\..\..\dependencies\LuaState;..\..\..\dependencies\LuaJIT-2.0.3\src;..\..\..\dependencies\utf8-cpp;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <ProgramDataBaseFileName>$(OutDir)Managers.pdb</ProgramDataBaseFileName>
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
@@ -156,9 +145,6 @@
       <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
       <AdditionalOptions>/sdl %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
-    <ResourceCompile>
-      <AdditionalIncludeDirectories>..\..\..\dependencies\dirent;..\..\..\src\Game\include;..\..\..\src\Shared\include;..\..\..\src\Memory\include;..\..\..\dependencies\OtterUI\inc;..\..\..\dependencies\jansson;..\..\..\dependencies\Gleam\include;..\..\..\dependencies\Gaff\include;..\..\..\dependencies\LuaState;..\..\..\dependencies\LuaJIT-2.0.3\src;..\..\..\dependencies\utf8-cpp;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-    </ResourceCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -172,7 +158,6 @@
       <WarningLevel>Level4</WarningLevel>
       <AdditionalIncludeDirectories>..\..\..\dependencies\dirent;..\..\..\src\Game\include;..\..\..\src\Shared\include;..\..\..\src\Memory\include;..\..\..\dependencies\OtterUI\inc;..\..\..\dependencies\jansson;..\..\..\dependencies\Gleam\include;..\..\..\dependencies\Gaff\include;..\..\..\dependencies\LuaState;..\..\..\dependencies\LuaJIT-2.0.3\src;..\..\..\dependencies\utf8-cpp;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <ProgramDataBaseFileName>$(OutDir)Managers.pdb</ProgramDataBaseFileName>
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
@@ -183,9 +168,6 @@
       <FloatingPointModel>Fast</FloatingPointModel>
       <AdditionalOptions>/sdl %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
-    <ResourceCompile>
-      <AdditionalIncludeDirectories>..\..\..\dependencies\dirent;..\..\..\src\Game\include;..\..\..\src\Shared\include;..\..\..\src\Memory\include;..\..\..\dependencies\OtterUI\inc;..\..\..\dependencies\jansson;..\..\..\dependencies\Gleam\include;..\..\..\dependencies\Gaff\include;..\..\..\dependencies\LuaState;..\..\..\dependencies\LuaJIT-2.0.3\src;..\..\..\dependencies\utf8-cpp;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-    </ResourceCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -197,7 +179,7 @@
     <ClInclude Include="..\..\..\src\Game\include\Shibboleth_BroadcasterManager.h" />
     <ClInclude Include="..\..\..\src\Game\include\Shibboleth_CameraManager.h" />
     <ClInclude Include="..\..\..\src\Game\include\Shibboleth_ComponentManager.h" />
-    <ClInclude Include="..\..\..\src\Game\include\Shibboleth_IRenderStageQuery.h" />
+    <ClInclude Include="..\..\..\src\Game\include\Shibboleth_FrameManager.h" />
     <ClInclude Include="..\..\..\src\Game\include\Shibboleth_LuaManager.h" />
     <ClInclude Include="..\..\..\src\Game\include\Shibboleth_ObjectManager.h" />
     <ClInclude Include="..\..\..\src\Game\include\Shibboleth_OcclusionManager.h" />
@@ -212,6 +194,7 @@
     <ClCompile Include="..\..\..\src\Game\Shibboleth_BroadcasterManager.cpp" />
     <ClCompile Include="..\..\..\src\Game\Shibboleth_CameraManager.cpp" />
     <ClCompile Include="..\..\..\src\Game\Shibboleth_ComponentManager.cpp" />
+    <ClCompile Include="..\..\..\src\Game\Shibboleth_FrameManager.cpp" />
     <ClCompile Include="..\..\..\src\Game\Shibboleth_LuaManager.cpp" />
     <ClCompile Include="..\..\..\src\Game\Shibboleth_ObjectManager.cpp" />
     <ClCompile Include="..\..\..\src\Game\Shibboleth_OcclusionManager.cpp" />

@@ -56,7 +56,7 @@ public:
 
 	size_t getPipelineIndex(const char* name) const;
 
-	void update(double);
+	void update(double, void* frame_data);
 
 private:
 	Array<CameraComponent*> _output_cameras; // Array size == num of monitors. Element is camera that is being outputted to monitor.

@@ -39,7 +39,7 @@ static void* DefaultFrameDataAlloc(size_t num_frames, size_t& frame_data_size)
 static void DefaultFrameDataFree(void* frame_data, size_t num_frames)
 {
 	FrameData* fd = reinterpret_cast<FrameData*>(frame_data);
-	GetAllocator->freeArrayT(fd, num_frames);
+	GetAllocator()->freeArrayT(fd, num_frames);
 }
 
 
@@ -67,7 +67,7 @@ const char* FrameManager::getName(void) const
 	return "Frame Manager";
 }
 
-void FrameManager::setFrameDataProvider(FrameDataAllocFunc alloc_func, FrameDataFreeFunc free_func)
+void FrameManager::setFrameDataFuncs(FrameDataAllocFunc alloc_func, FrameDataFreeFunc free_func)
 {
 	_frame_data_alloc = alloc_func;
 	_frame_data_free = free_func;
@@ -77,7 +77,7 @@ bool FrameManager::init(size_t num_frames)
 {
 	assert(_frame_data_alloc && _frame_data_free);
 	_frame_data = _frame_data_alloc(num_frames, _frame_data_size);
-	_frame_trackers.resize(num_frames, 0);
+	_frame_trackers.resize(num_frames);
 	_num_frames = num_frames;
 
 	return _frame_data != nullptr;
@@ -97,7 +97,7 @@ void* FrameManager::getNextFrameData(size_t phase_id)
 
 	// If the frame tracker count is not the same as our phase ID,
 	// then we have used up all the frames. Wait until a frame opens up.
-	if (_frame_trackers[frame_id] != phase_id) {
+	if (_frame_trackers[frame_id].count != phase_id) {
 		return nullptr;
 	}
 
@@ -111,11 +111,11 @@ void FrameManager::finishFrame(size_t phase_id)
 	unsigned int& frame_id = _phase_trackers[phase_id];
 	assert(frame_id < _frame_trackers.size());
 
-	unsigned int new_val = AtomicIncrement(&_frame_trackers[frame_id]);
+	unsigned int new_val = AtomicIncrement(&_frame_trackers[frame_id].count);
 
 	// If every phase has processed this frame, then open it up for use.
 	if (new_val == _phase_trackers.size()) {
-		AtomicExchange(&_frame_trackers[frame_id], 0);
+		AtomicExchange(&_frame_trackers[frame_id].count, 0);
 	}
 
 	// Set the frame ID for the phase to the next frame.

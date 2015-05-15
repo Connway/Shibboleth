@@ -234,7 +234,7 @@ size_t RenderPipelineManager::getPipelineIndex(const char* name) const
 	return SIZE_T_FAIL;
 }
 
-void RenderPipelineManager::update(double)
+void RenderPipelineManager::update(double, void* frame_data)
 {
 	_pipelines[_active_pipeline].run();
 	GetApp().getJobPool().helpUntilNoJobs();

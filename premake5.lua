@@ -43,6 +43,7 @@ solution "Temp"
 
 	nativewchar "Default"
 	floatingpoint "Fast"
+	startproject "App" -- Not working for some reason. Might not work with externals?
 
 	filter { "options:symbols" }
 		flags { "Symbols" }
@@ -58,29 +59,29 @@ solution "Temp"
 	filter { "platforms:x64" }
 		architecture "x64"
 
-	filter { "configurations:Debug", "platforms:x86" }
+	filter { "configurations:Debug*", "platforms:x86" }
 		objdir "build/intermediate"
 		targetdir "build/output/x86/Debug"
 
-	filter { "configurations:Debug", "platforms:x64" }
+	filter { "configurations:Debug*", "platforms:x64" }
 		objdir "build/intermediate"
 		targetdir "build/output/x64/Debug"
 
-	filter { "configurations:Release", "platforms:x86" }
+	filter { "configurations:Release*", "platforms:x86" }
 		objdir "build/intermediate"
 		targetdir "build/output/x86/Release"
 
-	filter { "configurations:Release", "platforms:x64" }
+	filter { "configurations:Release*", "platforms:x64" }
 		objdir "build/intermediate"
 		targetdir "build/output/x64/Release"
 
 	filter { "language:C++", "action:gmake" }
 		buildoptions { "-std=c++11", "-x c++" }
 
-	filter { "configurations:Debug", "action:gmake", "options:not debug_optimization" }
+	filter { "configurations:Debug*", "action:gmake", "options:not debug_optimization" }
 		optimize "Off"
 
-	filter { "configurations:Debug", "action:gmake", "options:debug_optimization" }
+	filter { "configurations:Debug*", "action:gmake", "options:debug_optimization" }
 		optimize "Debug"
 
 	filter {}

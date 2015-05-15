@@ -41,7 +41,7 @@ public:
 	void getUpdateEntries(Array<IUpdateQuery::UpdateEntry>& entries);
 	void* rawRequestInterface(unsigned int class_id) const;
 
-	void update(double);
+	void update(double, void*);
 
 	MessageBroadcaster* getBroadcaster(unsigned int object_id, bool create_if_doesnt_exist);
 	void clear(void);
