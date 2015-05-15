@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="include">
@@ -13,6 +13,9 @@
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\src\Game\include\Shibboleth_ComponentManager.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\Game\include\Shibboleth_FrameManager.h">
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\src\Game\include\Shibboleth_LuaManager.h">
@@ -30,19 +33,16 @@
     <ClInclude Include="..\..\..\src\Game\include\Shibboleth_RenderManager.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\src\Game\include\Shibboleth_ResourceManager.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\src\Game\include\Shibboleth_UpdateManager.h">
+    <ClInclude Include="..\..\..\src\Game\include\Shibboleth_RenderPipeline.h">
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\src\Game\include\Shibboleth_RenderPipelineManager.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\src\Game\include\Shibboleth_IRenderStageQuery.h">
+    <ClInclude Include="..\..\..\src\Game\include\Shibboleth_ResourceManager.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\src\Game\include\Shibboleth_RenderPipeline.h">
+    <ClInclude Include="..\..\..\src\Game\include\Shibboleth_UpdateManager.h">
       <Filter>include</Filter>
     </ClInclude>
   </ItemGroup>
@@ -50,14 +50,15 @@
     <ClCompile Include="..\..\..\src\Game\Shibboleth_BroadcasterManager.cpp" />
     <ClCompile Include="..\..\..\src\Game\Shibboleth_CameraManager.cpp" />
     <ClCompile Include="..\..\..\src\Game\Shibboleth_ComponentManager.cpp" />
+    <ClCompile Include="..\..\..\src\Game\Shibboleth_FrameManager.cpp" />
     <ClCompile Include="..\..\..\src\Game\Shibboleth_LuaManager.cpp" />
     <ClCompile Include="..\..\..\src\Game\Shibboleth_ObjectManager.cpp" />
     <ClCompile Include="..\..\..\src\Game\Shibboleth_OcclusionManager.cpp" />
     <ClCompile Include="..\..\..\src\Game\Shibboleth_OtterUIManager.cpp" />
     <ClCompile Include="..\..\..\src\Game\Shibboleth_RenderManager.cpp" />
+    <ClCompile Include="..\..\..\src\Game\Shibboleth_RenderPipeline.cpp" />
+    <ClCompile Include="..\..\..\src\Game\Shibboleth_RenderPipelineManager.cpp" />
     <ClCompile Include="..\..\..\src\Game\Shibboleth_ResourceManager.cpp" />
     <ClCompile Include="..\..\..\src\Game\Shibboleth_UpdateManager.cpp" />
-    <ClCompile Include="..\..\..\src\Game\Shibboleth_RenderPipelineManager.cpp" />
-    <ClCompile Include="..\..\..\src\Game\Shibboleth_RenderPipeline.cpp" />
   </ItemGroup>
 </Project>

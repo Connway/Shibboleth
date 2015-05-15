@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
       <Configuration>Debug</Configuration>
@@ -98,7 +98,6 @@
       <PreprocessorDefinitions>_DEBUG;DEBUG;ENET_DEBUG;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>..\..\..\dependencies\dirent;..\..\..\dependencies\Gaff\include;..\..\..\dependencies\jansson;..\..\..\dependencies\enet\include;..\..\..\dependencies\ResIL\IL\include;..\..\..\dependencies\ResIL\include;..\..\..\dependencies\assimp\include;..\..\..\dependencies\utf8-cpp;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
-      <ProgramDataBaseFileName>$(OutDir)Gaff.pdb</ProgramDataBaseFileName>
       <Optimization>Disabled</Optimization>
       <ExceptionHandling>Async</ExceptionHandling>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
@@ -106,10 +105,6 @@
       <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
       <AdditionalOptions>/sdl %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
-    <ResourceCompile>
-      <PreprocessorDefinitions>_DEBUG;DEBUG;ENET_DEBUG;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\..\..\dependencies\dirent;..\..\..\dependencies\Gaff\include;..\..\..\dependencies\jansson;..\..\..\dependencies\enet\include;..\..\..\dependencies\ResIL\IL\include;..\..\..\dependencies\ResIL\include;..\..\..\dependencies\assimp\include;..\..\..\dependencies\utf8-cpp;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-    </ResourceCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -122,17 +117,12 @@
       <PreprocessorDefinitions>_DEBUG;DEBUG;ENET_DEBUG;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>..\..\..\dependencies\dirent;..\..\..\dependencies\Gaff\include;..\..\..\dependencies\jansson;..\..\..\dependencies\enet\include;..\..\..\dependencies\ResIL\IL\include;..\..\..\dependencies\ResIL\include;..\..\..\dependencies\assimp\include;..\..\..\dependencies\utf8-cpp;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <ProgramDataBaseFileName>$(OutDir)Gaff.pdb</ProgramDataBaseFileName>
       <Optimization>Disabled</Optimization>
       <ExceptionHandling>Async</ExceptionHandling>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <FloatingPointModel>Fast</FloatingPointModel>
       <AdditionalOptions>/sdl %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
-    <ResourceCompile>
-      <PreprocessorDefinitions>_DEBUG;DEBUG;ENET_DEBUG;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\..\..\dependencies\dirent;..\..\..\dependencies\Gaff\include;..\..\..\dependencies\jansson;..\..\..\dependencies\enet\include;..\..\..\dependencies\ResIL\IL\include;..\..\..\dependencies\ResIL\include;..\..\..\dependencies\assimp\include;..\..\..\dependencies\utf8-cpp;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-    </ResourceCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -155,10 +145,6 @@
       <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
       <AdditionalOptions>/sdl %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
-    <ResourceCompile>
-      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\..\..\dependencies\dirent;..\..\..\dependencies\Gaff\include;..\..\..\dependencies\jansson;..\..\..\dependencies\enet\include;..\..\..\dependencies\ResIL\IL\include;..\..\..\dependencies\ResIL\include;..\..\..\dependencies\assimp\include;..\..\..\dependencies\utf8-cpp;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-    </ResourceCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>false</GenerateDebugInformation>
@@ -182,10 +168,6 @@
       <FloatingPointModel>Fast</FloatingPointModel>
       <AdditionalOptions>/sdl %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
-    <ResourceCompile>
-      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\..\..\dependencies\dirent;..\..\..\dependencies\Gaff\include;..\..\..\dependencies\jansson;..\..\..\dependencies\enet\include;..\..\..\dependencies\ResIL\IL\include;..\..\..\dependencies\ResIL\include;..\..\..\dependencies\assimp\include;..\..\..\dependencies\utf8-cpp;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-    </ResourceCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>false</GenerateDebugInformation>
@@ -226,8 +208,8 @@
     <ClInclude Include="..\..\..\dependencies\Gaff\include\Gaff_Image.h" />
     <ClInclude Include="..\..\..\dependencies\Gaff\include\Gaff_IncludeAssert.h" />
     <ClInclude Include="..\..\..\dependencies\Gaff\include\Gaff_IncludeWindows.h" />
-    <ClInclude Include="..\..\..\dependencies\Gaff\include\Gaff_JobPool.h" />
     <ClInclude Include="..\..\..\dependencies\Gaff\include\Gaff_JSON.h" />
+    <ClInclude Include="..\..\..\dependencies\Gaff\include\Gaff_JobPool.h" />
     <ClInclude Include="..\..\..\dependencies\Gaff\include\Gaff_Light.h" />
     <ClInclude Include="..\..\..\dependencies\Gaff\include\Gaff_LinearCurve.h" />
     <ClInclude Include="..\..\..\dependencies\Gaff\include\Gaff_Map.h" />

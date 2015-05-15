@@ -346,7 +346,7 @@ bool App::loadStates(void)
 		filename += module_name.getString();
 		filename += BIT_EXTENSION DYNAMIC_EXTENSION;
 
-		DynamicLoader::ModulePtr module = _dynamic_loader.loadModule(filename, module_name.getString());
+		DynamicLoader::ModulePtr module = _dynamic_loader.loadModule(filename.getBuffer(), module_name.getString());
 
 		if (module) {
 			StateMachine::StateEntry::InitStateModuleFunc init_func = module->GetFunc<StateMachine::StateEntry::InitStateModuleFunc>("InitModule");

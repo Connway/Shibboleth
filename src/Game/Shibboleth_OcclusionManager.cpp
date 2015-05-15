@@ -374,7 +374,7 @@ void OcclusionManager::constructStaticTree(const Array<Object*>& objects, Array<
 	_bvh_trees[OT_STATIC].construct(objects, id_out);
 }
 
-void OcclusionManager::update(double)
+void OcclusionManager::update(double, void*)
 {
 	for (unsigned int i = 0; i < OT_SIZE; ++i) {
 		_bvh_trees[i].update();

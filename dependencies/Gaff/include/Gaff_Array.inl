@@ -634,8 +634,8 @@ void Array<T, Allocator>::resize(size_t new_size, const T& init_val)
 			}
 		}
 
-		memcpy(_array, old_data, sizeof(T) * _used);
-		_allocator.free(old_data);
+		memcpy((void*)_array, (void*)old_data, sizeof(T) * _used);
+		_allocator.free((void*)old_data);
 	}
 
 	_size = new_size;
@@ -664,8 +664,8 @@ void Array<T, Allocator>::resize(size_t new_size)
 			}
 		}
 
-		memcpy(_array, old_data, sizeof(T) * _used);
-		_allocator.free(old_data);
+		memcpy((void*)_array, (void*)old_data, sizeof(T) * _used);
+		_allocator.free((void*)old_data);
 	}
 
 	_size = new_size;

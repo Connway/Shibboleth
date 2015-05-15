@@ -98,9 +98,7 @@ private:
 		Gaff::ReadWriteSpinLock lock;
 	};
 
-	Array< Gaff::Pair<unsigned int, IMessage*> > _message_queue;
-
-	Array< Gaff::Pair<unsigned int, IMessage*> > _message_add_queue;
+	Array< Gaff::Pair<unsigned int, IMessage*> > _message_queues[2];
 	Gaff::SpinLock _message_add_lock;
 
 	Map<unsigned int, ListenerData> _listeners;
@@ -113,13 +111,14 @@ private:
 	Gaff::SpinLock _listener_remove_lock;
 
 	Gaff::Counter* _counter;
-	volatile size_t _next_message;
 
+	volatile size_t _next_message;
 	volatile size_t _next_id;
+	size_t _curr_queue;
 
 	void addListeners(void);
 	void removeListeners(void);
-	void addMessagesToQueue(void);
+	void swapMessageQueues(void);
 	void spawnBroadcastTasks(bool wait);
 	void waitForCounter(void);
 

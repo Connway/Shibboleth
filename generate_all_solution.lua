@@ -14,11 +14,18 @@ solution "All"
 	end
 
 	warnings "Extra"
-	flags { "Unicode", "NoRTTI" }
+	flags { "Unicode", "NoRTTI", "SEH" } -- unfortunately need exceptions for crash handlers :(
 
 	nativewchar "Default"
 	floatingpoint "Fast"
 	startproject "App" -- Not working for some reason. Might not work with externals?
+
+	filter { "options:symbols" }
+		flags { "Symbols" }
+		defines { "SYMBOL_BUILD" }
+
+	filter { "options:ltcg" }
+		flags { "LinkTimeOptimization", "NoIncrementalLink" }
 
 	filter { "platforms:x86" }
 		architecture "x32"

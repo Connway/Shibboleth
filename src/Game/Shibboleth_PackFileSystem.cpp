@@ -136,7 +136,7 @@ IFile* PackFileSystem::openFile(const char* file_name)
 			return nullptr;
 		}
 
-		if (unzReadCurrentFile(*it_pack, file->_file_buffer, file->_file_size) < 0) {
+		if (unzReadCurrentFile(*it_pack, file->_file_buffer, static_cast<unsigned int>(file->_file_size)) < 0) {
 			// Log error
 			GetAllocator()->freeT(file);
 			return nullptr;

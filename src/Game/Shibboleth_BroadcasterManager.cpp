@@ -49,7 +49,7 @@ void BroadcasterManager::getUpdateEntries(Array<IUpdateQuery::UpdateEntry>& entr
 	entries.emplacePush(AString("Broadcaster Manager: Update"), Gaff::Bind(this, &BroadcasterManager::update));
 }
 
-void BroadcasterManager::update(double)
+void BroadcasterManager::update(double, void*)
 {
 	_broadcaster_lock.readLock();
 

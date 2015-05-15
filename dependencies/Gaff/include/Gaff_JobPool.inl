@@ -159,39 +159,37 @@ void JobPool<Allocator>::doAJob(void)
 		typename JobPool<Allocator>::JobQueue& job_queue = _job_pools[i];
 
 		if (job_queue.thread_lock.tryLock()) {
-			if (!job_queue.jobs.empty()) {
-				job_queue.read_write_lock.lock();
+			job_queue.read_write_lock.lock();
 
+			if (!job_queue.jobs.empty()) {
 				job = job_queue.jobs.first();
 				job_queue.jobs.pop();
 
 				job_queue.read_write_lock.unlock();
-
 				DoJob(job);
 
 				job_queue.thread_lock.unlock();
 				return;
-			}
 
-			job_queue.thread_lock.unlock();
+			} else {
+				job_queue.thread_lock.unlock();
+			}
 		}
 	}
 
 	typename JobPool<Allocator>::JobQueue& job_queue = _job_pools[0];
 
-	if (!job_queue.jobs.empty()) {
-		job_queue.read_write_lock.lock();
+	job_queue.read_write_lock.lock();
 
-		if (!job_queue.jobs.empty()) {
-			job = job_queue.jobs.first();
-			job_queue.jobs.pop();
-		}
+	if (!job_queue.jobs.empty()) {
+		job = job_queue.jobs.first();
+		job_queue.jobs.pop();
 
 		job_queue.read_write_lock.unlock();
+		DoJob(job);
 
-		if (job.first.job_func) {
-			DoJob(job);
-		}
+	} else {
+		job_queue.read_write_lock.unlock();
 	}
 }
 

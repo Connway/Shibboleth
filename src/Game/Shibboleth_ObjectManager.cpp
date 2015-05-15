@@ -128,14 +128,14 @@ void ObjectManager::getUpdateEntries(Array<UpdateEntry>& entries)
 	entries.movePush(UpdateEntry(AString("Object Manager: Post-Physics Update"), Gaff::Bind(this, &ObjectManager::prePhysicsUpdate)));
 }
 
-void ObjectManager::prePhysicsUpdate(double dt)
+void ObjectManager::prePhysicsUpdate(double dt, void*)
 {
 	// generate update jobs
 	//for (auto it = _objects.begin(); it != _objects.end(); ++it) {
 	//}
 }
 
-void ObjectManager::postPhysicsUpdate(double dt)
+void ObjectManager::postPhysicsUpdate(double dt, void*)
 {
 	// generate update jobs
 	// wait for update jobs to finish

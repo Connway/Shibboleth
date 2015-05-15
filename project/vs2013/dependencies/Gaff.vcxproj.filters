@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="include">
@@ -30,6 +30,9 @@
     <None Include="..\..\..\dependencies\Gaff\include\Gaff_HashString.inl">
       <Filter>include</Filter>
     </None>
+    <None Include="..\..\..\dependencies\Gaff\include\Gaff_JobPool.inl">
+      <Filter>include</Filter>
+    </None>
     <None Include="..\..\..\dependencies\Gaff\include\Gaff_LinearCurve.inl">
       <Filter>include</Filter>
     </None>
@@ -55,9 +58,6 @@
       <Filter>include</Filter>
     </None>
     <None Include="..\..\..\dependencies\Gaff\include\Gaff_Watcher.inl">
-      <Filter>include</Filter>
-    </None>
-    <None Include="..\..\..\dependencies\Gaff\include\Gaff_JobPool.inl">
       <Filter>include</Filter>
     </None>
   </ItemGroup>
@@ -159,6 +159,9 @@
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\dependencies\Gaff\include\Gaff_JSON.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\Gaff\include\Gaff_JobPool.h">
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\dependencies\Gaff\include\Gaff_Light.h">
@@ -273,9 +276,6 @@
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\dependencies\Gaff\include\Gaff_Watcher.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\dependencies\Gaff\include\Gaff_JobPool.h">
       <Filter>include</Filter>
     </ClInclude>
   </ItemGroup>

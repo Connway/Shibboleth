@@ -33,7 +33,7 @@ void BroadcastJob(void* data)
 	MessageBroadcaster* broadcaster = reinterpret_cast<MessageBroadcaster*>(data);
 
 	size_t index = AtomicIncrement(&broadcaster->_next_id) - 1;
-	Gaff::Pair<unsigned int, IMessage*>& msg_data = broadcaster->_message_queue[index];
+	Gaff::Pair<unsigned int, IMessage*>& msg_data = broadcaster->_message_queues[broadcaster->_curr_queue][index];
 
 	Gaff::ScopedReadLock<Gaff::ReadWriteSpinLock> listener_lock(broadcaster->_listener_lock);
 
@@ -53,8 +53,10 @@ MessageBroadcaster::MessageBroadcaster(void)
 
 MessageBroadcaster::~MessageBroadcaster(void)
 {
-	for (auto it = _message_queue.begin(); it != _message_queue.end(); ++it) {
-		GetAllocator()->freeT(it->second);
+	for (unsigned int i = 0; i < 2; ++i) {
+		for (auto it = _message_queues[i].begin(); it != _message_queues[i].end(); ++it) {
+			GetAllocator()->freeT(it->second);
+		}
 	}
 
 	for (auto it1 = _listeners.begin(); it1 != _listeners.end(); ++it1) {
@@ -79,7 +81,7 @@ void MessageBroadcaster::update(bool wait)
 	waitForCounter();
 	addListeners();
 	removeListeners();
-	addMessagesToQueue();
+	swapMessageQueues();
 	spawnBroadcastTasks(wait);
 }
 
@@ -148,31 +150,25 @@ void MessageBroadcaster::removeListeners(void)
 	}
 }
 
-void MessageBroadcaster::addMessagesToQueue(void)
+void MessageBroadcaster::swapMessageQueues(void)
 {
-	_message_queue.clearNoFree();
-
 	Gaff::ScopedLock<Gaff::SpinLock> lock(_message_add_lock);
-
-	for (auto it = _message_add_queue.begin(); it != _message_add_queue.end(); ++it) {
-		_message_queue.emplacePush(*it);
-	}
-
-	_message_queue.clearNoFree();
+	_message_queues[_curr_queue].clearNoFree();
+	_curr_queue = 1 - _curr_queue;
 }
 
 void MessageBroadcaster::spawnBroadcastTasks(bool wait)
 {
-	if (_message_queue.empty()) {
+	if (_message_queues[_curr_queue].empty()) {
 		return;
 	}
 
 	// Might want to cache this array so we're not allocating all the time.
-	Array<Gaff::JobData> jobs_data(_message_queue.size());
+	Array<Gaff::JobData> jobs_data(_message_queues[_curr_queue].size());
 
 	_listener_lock.readLock();
 
-	for (auto it_msg = _message_queue.begin(); it_msg != _message_queue.end(); ++it_msg) {
+	for (auto it_msg = _message_queues[_curr_queue].begin(); it_msg != _message_queues[_curr_queue].end(); ++it_msg) {
 
 		// Only broadcast the message if there are people actually listening for it.
 		if (_listeners.findElementWithKey(it_msg->first) != _listeners.end()) {

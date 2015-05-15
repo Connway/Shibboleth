@@ -41,7 +41,7 @@ public:
 	void allManagersCreated(void);
 
 	void getUpdateEntries(Array<UpdateEntry>& entries);
-	void update(double);
+	void update(double, void* frame_data);
 
 	void registerCamera(CameraComponent* camera);
 	void removeCamera(CameraComponent* camera);

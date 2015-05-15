@@ -94,6 +94,9 @@ private:
 
 		static void UpdatePhaseJob(void* data);
 		static void UpdateJob(void* data);
+
+		GAFF_NO_COPY(UpdatePhase);
+		GAFF_NO_MOVE(UpdatePhase);
 	};
 
 	Array<UpdatePhase> _phases;

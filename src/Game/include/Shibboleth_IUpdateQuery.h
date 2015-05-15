@@ -32,7 +32,7 @@ NS_SHIBBOLETH
 class IUpdateQuery
 {
 public:
-	typedef Gaff::Pair< AString, Gaff::FunctionBinder<void, double> > UpdateEntry;
+	using UpdateEntry = Gaff::Pair< AString, Gaff::FunctionBinder<void, double, void*> >;
 
 	virtual ~IUpdateQuery(void) {}
 

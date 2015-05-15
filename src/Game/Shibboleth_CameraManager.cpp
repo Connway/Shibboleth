@@ -60,13 +60,15 @@ void CameraManager::getUpdateEntries(Array<UpdateEntry>& entries)
 	entries.movePush(UpdateEntry(AString("Camera Manager: Update"), Gaff::Bind(this, &CameraManager::update)));
 }
 
-void CameraManager::update(double)
+void CameraManager::update(double, void* frame_data)
 {
 	for (size_t i = 0; i < _cameras.size(); ++i) {
 		if (_cameras[i]->isActive()) {
 			_occlusion_mgr->findObjectsInFrustum(_cameras[i]->getFrustum(), _objects[i]);
 		}
 	}
+
+	// add frustum query results to frame data
 }
 
 void CameraManager::registerCamera(CameraComponent* camera)

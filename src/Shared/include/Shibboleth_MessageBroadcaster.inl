@@ -80,6 +80,6 @@ void MessageBroadcaster::broadcast(const Message& message)
 	Message* message = GetAllocator()->allocT<Message>(message);
 
 	_message_add_lock.lock();
-	_message_add_queue.emplacePush(Message::GetReflectionHash(), message);
+	_message_queues[1 - _curr_queue].emplacePush(Message::GetReflectionHash(), message);
 	_message_add_lock.unlock();
 }

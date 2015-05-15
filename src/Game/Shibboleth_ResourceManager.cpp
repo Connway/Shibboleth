@@ -82,7 +82,7 @@ void ResourceReadingJob(void* data)
 			}
 
 			for (auto it = read_data->json_elements->begin(); it != read_data->json_elements->end(); ++it) {
-				Gaff::JSON file_name = json[it->json_element];
+				Gaff::JSON file_name = json.getObject(it->json_element.getBuffer());
 
 				assert(file_name.isString() || it->optional);
 
