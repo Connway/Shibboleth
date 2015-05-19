@@ -22,6 +22,7 @@ THE SOFTWARE.
 
 #include "Shibboleth_CameraManager.h"
 #include "Shibboleth_OcclusionManager.h"
+#include "Shibboleth_FrameManager.h"
 #include <Shibboleth_CameraComponent.h>
 #include <Shibboleth_Utilities.h>
 #include <Shibboleth_Object.h>
@@ -62,13 +63,27 @@ void CameraManager::getUpdateEntries(Array<UpdateEntry>& entries)
 
 void CameraManager::update(double, void* frame_data)
 {
+	FrameData* fd = reinterpret_cast<FrameData*>(frame_data);
+	fd->object_data.clearNoFree();
+
 	for (size_t i = 0; i < _cameras.size(); ++i) {
 		if (_cameras[i]->isActive()) {
-			_occlusion_mgr->findObjectsInFrustum(_cameras[i]->getFrustum(), _objects[i]);
+			fd->object_data.emplacePush();
+
+			FrameData::ObjectData& od = fd->object_data.last();
+			od.camera = _cameras[i];
+
+			_occlusion_mgr->findObjectsInFrustum(_cameras[i]->getFrustum(), od.objects);
+
+			// Skip over static objects. Assuming static objects will never actually move.
+			for (int i = OcclusionManager::OT_DYNAMIC; i < OcclusionManager::OT_SIZE; ++i) {
+				// Copy all the transforms.
+				for (auto it = od.objects.results[i].begin(); it != od.objects.results[i].end(); ++it) {
+					od.transforms[i - 1].emplacePush(it->first->getWorldTransform());
+				}
+			}
 		}
 	}
-
-	// add frustum query results to frame data
 }
 
 void CameraManager::registerCamera(CameraComponent* camera)
@@ -79,7 +94,6 @@ void CameraManager::registerCamera(CameraComponent* camera)
 	});
 
 	_cameras.emplaceInsert(it, camera);
-	_objects.emplacePush(OcclusionManager::QueryData());
 }
 
 void CameraManager::removeCamera(CameraComponent* camera)
@@ -91,7 +105,6 @@ void CameraManager::removeCamera(CameraComponent* camera)
 
 	assert(it != _cameras.end() && *it == camera);
 	_cameras.erase(it);
-	_objects.pop();
 }
 
 NS_END

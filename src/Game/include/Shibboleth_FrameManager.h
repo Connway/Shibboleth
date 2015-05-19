@@ -22,10 +22,30 @@ THE SOFTWARE.
 
 #pragma once
 
+#include "Shibboleth_OcclusionManager.h"
 #include <Shibboleth_ReflectionDefinitions.h>
 #include <Shibboleth_IManager.h>
+#include <Shibboleth_Map.h>
+#include <Gleam_Transform_CPU.h>
 
 NS_SHIBBOLETH
+
+class CameraComponent;
+
+struct FrameData
+{
+	struct ObjectData
+	{
+		// Transforms are in world space. Using OT_SIZE - 1 because we don't need to copy transform data for static objects.
+		Array<Gleam::TransformCPU> transforms[OcclusionManager::OT_SIZE - 1];
+		OcclusionManager::QueryData objects;
+		CameraComponent* camera;
+	};
+
+	Array<ObjectData> object_data;
+
+	// animation transforms
+};
 
 class FrameManager : public IManager
 {

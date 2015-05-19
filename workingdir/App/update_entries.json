@@ -7,5 +7,15 @@
 			["Occlusion Manager: Update"],
 			["Camera Manager: Update"]
 		]
+	},
+	{
+		"name": "Command Buffer Generation Phase",
+		"entries": [
+		]
+	},
+	{
+		"name": "Command Buffer Submission Phase",
+		"entries": [
+		]
 	}
 ]

@@ -25,11 +25,7 @@ THE SOFTWARE.
 
 NS_SHIBBOLETH
 
-// Default frame data structures and functions
-struct FrameData
-{
-};
-
+// Default frame data functions
 static void* DefaultFrameDataAlloc(size_t num_frames, size_t& frame_data_size)
 {
 	frame_data_size = sizeof(FrameData);
