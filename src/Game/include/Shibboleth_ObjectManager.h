@@ -55,8 +55,10 @@ public:
 	Object* createObject(void);
 	INLINE void removeObject(Object* object);
 	void removeObject(unsigned int id);
-	bool doesObjectExist(const Object* object) const;
-	bool doesObjectExist(unsigned int id) const;
+	const Object* getObject(unsigned int id) const;
+	Object* getObject(unsigned int id);
+	INLINE bool doesObjectExist(const Object* object) const;
+	INLINE bool doesObjectExist(unsigned int id) const;
 
 	void addDirtyObject(Object* object);
 

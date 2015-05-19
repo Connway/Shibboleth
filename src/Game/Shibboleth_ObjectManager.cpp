@@ -95,6 +95,26 @@ void ObjectManager::removeObject(unsigned int id)
 	}
 }
 
+const Object* ObjectManager::getObject(unsigned int id) const
+{
+	auto it = _objects.binarySearch(id, [](const Object* lhs, unsigned int rhs)
+	{
+		return lhs->getID() < rhs;
+	});
+
+	return (it != _objects.end() && (*it)->getID() == id) ? *it : nullptr;
+}
+
+Object* ObjectManager::getObject(unsigned int id)
+{
+	auto it = _objects.binarySearch(id, [](const Object* lhs, unsigned int rhs)
+	{
+		return lhs->getID() < rhs;
+	});
+
+	return (it != _objects.end() && (*it)->getID() == id) ? *it : nullptr;
+}
+
 bool ObjectManager::doesObjectExist(const Object* object) const
 {
 	auto it = _objects.linearSearch(object);
@@ -103,12 +123,7 @@ bool ObjectManager::doesObjectExist(const Object* object) const
 
 bool ObjectManager::doesObjectExist(unsigned int id) const
 {
-	auto it = _objects.binarySearch(id, [](const Object* lhs, unsigned int rhs)
-	{
-		return lhs->getID() < rhs;
-	});
-
-	return it != _objects.end() && (*it)->getID() == id;
+	return getObject(id) != nullptr;
 }
 
 void ObjectManager::addDirtyObject(Object* object)

@@ -48,7 +48,6 @@ public:
 
 private:
 	Array<CameraComponent*> _cameras;
-	Array<OcclusionManager::QueryData> _objects;
 	OcclusionManager* _occlusion_mgr;
 
 	SHIB_REF_DEF(CameraManager);
