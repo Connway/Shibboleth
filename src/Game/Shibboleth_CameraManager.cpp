@@ -58,7 +58,7 @@ void CameraManager::allManagersCreated(void)
 
 void CameraManager::getUpdateEntries(Array<UpdateEntry>& entries)
 {
-	entries.movePush(UpdateEntry(AString("Camera Manager: Update"), Gaff::Bind(this, &CameraManager::update)));
+	entries.emplacePush(AString("Camera Manager: Update"), Gaff::Bind(this, &CameraManager::update));
 }
 
 void CameraManager::update(double, void* frame_data)

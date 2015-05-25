@@ -49,7 +49,7 @@ void SpinLock::lock(void) const
 	}
 }
 
-bool SpinLock::tryLock(void)
+bool SpinLock::tryLock(void) const
 {
 	return !AtomicAcquire(&_lock);
 }

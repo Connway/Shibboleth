@@ -599,7 +599,7 @@ IRenderDevice* RenderDeviceD3D::createDeferredRenderDevice(void)
 		return nullptr;
 	}
 
-	DeferredRenderDeviceD3D* deferred_render_device = (DeferredRenderDeviceD3D*)GetAllocator()->alloc(sizeof(DeferredRenderDeviceD3D));
+	DeferredRenderDeviceD3D* deferred_render_device = reinterpret_cast<DeferredRenderDeviceD3D*>(GetAllocator()->alloc(sizeof(DeferredRenderDeviceD3D)));
 	new (deferred_render_device) DeferredRenderDeviceD3D();
 
 	deferred_render_device->_context.set(deferred_context);
@@ -610,7 +610,7 @@ IRenderDevice* RenderDeviceD3D::createDeferredRenderDevice(void)
 void RenderDeviceD3D::executeCommandList(ICommandList* command_list)
 {
 	assert(command_list->isD3D() && _active_context);
-	CommandListD3D* cmd_list = (CommandListD3D*)command_list;
+	CommandListD3D* cmd_list = reinterpret_cast<CommandListD3D*>(command_list);
 	_active_context->ExecuteCommandList(cmd_list->getCommandList(), FALSE);
 }
 

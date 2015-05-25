@@ -22,6 +22,7 @@ THE SOFTWARE.
 
 #include "Shibboleth_RenderManager.h"
 #include "Shibboleth_ResourceManager.h"
+#include "Shibboleth_FrameManager.h"
 #include <Shibboleth_TextureLoader.h>
 #include <Shibboleth_IFileSystem.h>
 #include <Shibboleth_Utilities.h>
@@ -39,6 +40,7 @@ NS_SHIBBOLETH
 REF_IMPL_REQ(RenderManager);
 SHIB_REF_IMPL(RenderManager)
 .addBaseClassInterfaceOnly<RenderManager>()
+.ADD_BASE_CLASS_INTERFACE_ONLY(IUpdateQuery)
 ;
 
 // Default values
@@ -59,6 +61,28 @@ SHIB_ENUM_REF_IMPL(DisplayTags)
 .addValue("DT_14", DT_14)
 .addValue("DT_15", DT_15)
 .addValue("DT_16", DT_16)
+;
+
+SHIB_ENUM_REF_IMPL(RenderModes)
+.addValue("None", RM_NONE)
+.addValue("Opaque", RM_OPAQUE)
+.addValue("Transparent", RM_TRANSPARENT)
+.addValue("User1", RM_USER1)
+.addValue("User2", RM_USER2)
+.addValue("User3", RM_USER3)
+.addValue("User4", RM_USER4)
+.addValue("User5", RM_USER5)
+.addValue("User6", RM_USER6)
+.addValue("User7", RM_USER7)
+.addValue("User8", RM_USER8)
+.addValue("User9", RM_USER9)
+.addValue("User10", RM_USER10)
+.addValue("User11", RM_USER11)
+.addValue("User12", RM_USER12)
+.addValue("User13", RM_USER13)
+.addValue("User14", RM_USER14)
+.addValue("User15", RM_USER15)
+.addValue("User16", RM_USER16)
 ;
 
 static DisplayTags gDisplayTagsValues[] = {
@@ -127,6 +151,8 @@ RenderManager::RenderManager(void):
 
 RenderManager::~RenderManager(void)
 {
+	_deferred_devices.clear();
+
 	_render_device = nullptr;
 
 	if (_graphics_functions.destroy_window) {
@@ -147,6 +173,11 @@ const char* RenderManager::getName(void) const
 	return "Render Manager";
 }
 
+void RenderManager::getUpdateEntries(Array<UpdateEntry>& entries)
+{
+	entries.emplacePush(AString("Render Manager: Generate Command Lists"), Gaff::Bind(&RenderManager::GenerateCommandLists));
+}
+
 bool RenderManager::initThreadData(void)
 {
 	Array<unsigned int> thread_ids;
@@ -155,6 +186,12 @@ bool RenderManager::initThreadData(void)
 	if (!_render_device->initThreadData(thread_ids.getArray(), thread_ids.size())) {
 		_app.getGameLogFile().first.writeString("ERROR - Failed to create render device thread data.\n");
 		return false;
+	}
+
+	_deferred_devices.reserve(thread_ids.size());
+
+	for (size_t i = 0; i < thread_ids.size(); ++i) {
+		_deferred_devices.emplaceInsert(thread_ids[i], _render_device->createDeferredRenderDevice(), _proxy_allocator);
 	}
 
 	return true;
@@ -181,49 +218,8 @@ bool RenderManager::init(const char* module)
 
 	_windows.reserve(8); // Reserve 8 windows to be safe. Will probably never hit this many though.
 
-	IFile* file = _app.getFileSystem()->openFile("Resources/display_tags.json");
-
-	if (file) {
-		log.first.writeString("Loading names for Display Tags from 'Resources/display_tags.json'.\n");
-
-		Gaff::JSON display_tags;
-
-		if (!display_tags.parse(file->getBuffer())) {
-			log.first.writeString("ERROR - Could not parse 'Resources/display_tags.json'.\n");
-			_app.getFileSystem()->closeFile(file);
-			return false;
-		}
-
-		_app.getFileSystem()->closeFile(file);
-
-		if (!display_tags.isArray()) {
-			log.first.writeString("ERROR - 'Resources/display_tags.json' is improperly formatted.\n");
-			return false;
-		}
-
-		// Reset reflection definition
-		EnumReflectionDefinition<DisplayTags>& dp_ref_def = const_cast<EnumReflectionDefinition<DisplayTags>&>(GetEnumRefDef<DisplayTags>());
-		dp_ref_def = Gaff::EnumRefDef<DisplayTags, ProxyAllocator>("DisplayTags", ProxyAllocator("Reflection"));
-
-		bool ret = display_tags.forEachInArray([&](size_t index, const Gaff::JSON& value) -> bool
-		{
-			if (!value.isString()) {
-				log.first.printf("ERROR - Index '%i' of 'Resources/display_tags.json' is not a string.\n", index);
-				return true;
-			}
-
-			dp_ref_def.addValue(value.getString(), gDisplayTagsValues[index]);
-
-			return false;
-		});
-
-		if (ret) {
-			return false;
-		}
-
-	} else {
-		log.first.writeString("Using default names for Display Tags.\n");
-	}
+	getDisplayTags();
+	getRenderModes();
 
 	return true;
 }
@@ -413,6 +409,12 @@ Gleam::IRenderState* RenderManager::createRenderState(void)
 {
 	assert(_graphics_functions.create_renderstate);
 	return _graphics_functions.create_renderstate();
+}
+
+Gleam::ICommandList* RenderManager::createCommandList(void)
+{
+	assert(_graphics_functions.create_commandlist);
+	return _graphics_functions.create_commandlist();
 }
 
 Gleam::ITexture* RenderManager::createTexture(void)
@@ -621,6 +623,7 @@ bool RenderManager::cacheGleamFunctions(IApp& app, const char* module)
 	_graphics_functions.create_rendertarget = _gleam_module->GetFunc<GraphicsFunctions::CreateRenderTarget>("CreateRenderTarget");
 	_graphics_functions.create_samplerstate = _gleam_module->GetFunc<GraphicsFunctions::CreateSamplerState>("CreateSamplerState");
 	_graphics_functions.create_renderstate = _gleam_module->GetFunc<GraphicsFunctions::CreateRenderState>("CreateRenderState");
+	_graphics_functions.create_commandlist = _gleam_module->GetFunc<GraphicsFunctions::CreateCommandList>("CreateCommandList");
 	_graphics_functions.create_texture = _gleam_module->GetFunc<GraphicsFunctions::CreateTexture>("CreateTexture");
 	_graphics_functions.create_layout = _gleam_module->GetFunc<GraphicsFunctions::CreateLayout>("CreateLayout");
 	_graphics_functions.create_program = _gleam_module->GetFunc<GraphicsFunctions::CreateProgram>("CreateProgram");
@@ -743,6 +746,113 @@ bool RenderManager::createWindowRenderable(int width, int height, Gleam::ITextur
 	}
 
 	return true;
+}
+
+bool RenderManager::getDisplayTags(void)
+{
+	IFile* file = _app.getFileSystem()->openFile("Resources/display_tags.json");
+	LogManager::FileLockPair& log = _app.getGameLogFile();
+
+	if (file) {
+		log.first.writeString("Loading names for Display Tags from 'Resources/display_tags.json'.\n");
+
+		Gaff::JSON display_tags;
+
+		if (!display_tags.parse(file->getBuffer())) {
+			log.first.writeString("ERROR - Could not parse 'Resources/display_tags.json'.\n");
+			_app.getFileSystem()->closeFile(file);
+			return false;
+		}
+
+		_app.getFileSystem()->closeFile(file);
+
+		if (!display_tags.isArray()) {
+			log.first.writeString("ERROR - 'Resources/display_tags.json' is improperly formatted. Root object is not an array.\n");
+			return false;
+		}
+
+		// Reset reflection definition
+		EnumReflectionDefinition<DisplayTags>& dp_ref_def = const_cast<EnumReflectionDefinition<DisplayTags>&>(GetEnumRefDef<DisplayTags>());
+		dp_ref_def = Gaff::EnumRefDef<DisplayTags, ProxyAllocator>("DisplayTags", ProxyAllocator("Reflection"));
+
+		bool ret = display_tags.forEachInArray([&](size_t index, const Gaff::JSON& value) -> bool
+		{
+			if (!value.isString()) {
+				log.first.printf("ERROR - Index '%i' of 'Resources/display_tags.json' is not a string.\n", index);
+				return true;
+			}
+
+			dp_ref_def.addValue(value.getString(), gDisplayTagsValues[index]);
+
+			return false;
+		});
+
+		if (ret) {
+			return false;
+		}
+
+	} else {
+		log.first.writeString("Using default names for Display Tags.\n");
+	}
+
+	return true;
+}
+
+bool RenderManager::getRenderModes(void)
+{
+	IFile* file = _app.getFileSystem()->openFile("Resources/render_modes.json");
+	LogManager::FileLockPair& log = _app.getGameLogFile();
+
+	if (file) {
+		log.first.writeString("Loading Render Modes from 'Resources/render_modes.json'.\n");
+
+		Gaff::JSON render_modes;
+
+		if (!render_modes.parse(file->getBuffer())) {
+			log.first.writeString("ERROR - Could not parse 'Resources/render_modes.json'.\n");
+			_app.getFileSystem()->closeFile(file);
+			return false;
+		}
+
+		_app.getFileSystem()->closeFile(file);
+
+		if (!render_modes.isArray()) {
+			log.first.writeString("ERROR - 'Resources/render_modes.json' is improperly formatted. Root object is not an array.\n");
+			return false;
+		}
+
+		// Reset reflection definition
+		EnumReflectionDefinition<RenderModes>& rm_ref_def = const_cast<EnumReflectionDefinition<RenderModes>&>(GetEnumRefDef<RenderModes>());
+		rm_ref_def = Gaff::EnumRefDef<RenderModes, ProxyAllocator>("RenderModes", ProxyAllocator("Reflection"));
+
+		rm_ref_def.addValue("None", RM_NONE);
+
+		bool ret = render_modes.forEachInArray([&](size_t index, const Gaff::JSON& value) -> bool
+		{
+			if (!value.isString()) {
+				log.first.printf("ERROR - Index '%i' of 'Resources/render_modes.json' is not a string.\n", index);
+				return true;
+			}
+
+			rm_ref_def.addValue(value.getString(), static_cast<RenderModes>(index));
+
+			return false;
+		});
+
+		if (ret) {
+			return false;
+		}
+
+	} else {
+		log.first.writeString("Using default Render Modes.\n");
+	}
+
+	return true;
+}
+
+void RenderManager::GenerateCommandLists(double, void* frame_data)
+{
+	FrameData* fd = reinterpret_cast<FrameData*>(frame_data);
 }
 
 NS_END

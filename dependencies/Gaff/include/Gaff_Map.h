@@ -58,6 +58,15 @@ public:
 	void erase(const Iterator& it);
 	void erase(const Key& key);
 
+	template <class... Args>
+	void emplaceInsert(const Key& key, Args&&... args);
+
+	template <class... Args>
+	void emplaceMoveInsert(const Key& key, Args&&... args);
+
+	template <class... Args>
+	void emplaceMoveMoveInsert(Key&& key, Args&&... args);
+
 	void moveMoveInsert(Key&& key, Value&& value);
 	void moveInsert(const Key& key, Value&& value);
 	void insert(const Key& key, const Value& value);

@@ -70,6 +70,7 @@ private:
 		void setID(size_t id);
 
 		bool isDone(void) const;
+		bool grab(void);
 		void run(void);
 
 	private:
@@ -91,6 +92,8 @@ private:
 		FrameManager& _frame_mgr;
 
 		size_t _id;
+
+		Gaff::SpinLock _grab_lock;
 
 		static void UpdatePhaseJob(void* data);
 		static void UpdateJob(void* data);

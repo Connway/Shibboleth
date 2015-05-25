@@ -35,12 +35,11 @@ namespace lua
 NS_SHIBBOLETH
 
 class ResourceManager;
-class IApp;
 
 class LuaComponent : public IComponent
 {
 public:
-	LuaComponent(IApp& app);
+	LuaComponent(void);
 	~LuaComponent(void);
 
 	bool load(const Gaff::JSON& json);
@@ -57,8 +56,6 @@ public:
 
 private:
 	ResourceWrapper< SingleDataWrapper<lua::State*> > _script_res;
-
-	ResourceManager& _res_mgr;
 	AString _lua_file;
 
 	GAFF_NO_COPY(LuaComponent);

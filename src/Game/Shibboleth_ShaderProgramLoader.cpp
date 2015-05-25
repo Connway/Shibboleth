@@ -72,14 +72,19 @@ Gaff::IVirtualDestructor* ShaderProgramLoader::load(const char* file_name, unsig
 		return nullptr;
 	}
 
-	Gaff::JSON vertex = json["vertex"];
-	Gaff::JSON pixel = json["pixel"];
-	Gaff::JSON hull = json["hull"];
-	Gaff::JSON geometry = json["geometry"];
-	Gaff::JSON domain = json["domain"];
+	Gaff::JSON vertex = json["Vertex"];
+	Gaff::JSON pixel = json["Pixel"];
+	Gaff::JSON hull = json["Hull"];
+	Gaff::JSON geometry = json["Geometry"];
+	Gaff::JSON domain = json["Domain"];
+	Gaff::JSON render_mode = json["Render Mode"];
 
-	assert(!vertex.isNull() || !pixel.isNull() || !hull.isNull() ||
-			!geometry.isNull() || !domain.isNull());
+	assert(vertex.isString() || pixel.isString() || hull.isString() ||
+			geometry.isString() || domain.isString());
+
+	assert(render_mode.isString());
+	
+	program_data->render_mode = GetEnumRefDef<RenderModes>().getValue(render_mode.getString());
 
 	if (vertex.isString() && !loadShader(program_data, vertex.getString(), Gleam::IShader::SHADER_VERTEX, file_map)) {
 		// log error

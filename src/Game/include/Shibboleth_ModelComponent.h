@@ -26,19 +26,18 @@ THE SOFTWARE.
 #include "Shibboleth_ResourceWrapper.h"
 #include "Shibboleth_IComponent.h"
 #include <Shibboleth_ReflectionDefinitions.h>
+#include <Shibboleth_RenderManager.h>
 #include <Gleam_IBuffer.h>
 
 NS_SHIBBOLETH
 
-class ResourceManager;
 class LoadingMessage;
-class RenderManager;
 struct ModelData;
 
 class ModelComponent : public IComponent
 {
 public:
-	ModelComponent(IApp& app);
+	ModelComponent(void);
 	~ModelComponent(void);
 
 	bool validate(Gaff::JSON& json);
@@ -71,11 +70,10 @@ private:
 	ResourceWrapper<BufferData> _buffer_res;
 
 	RenderManager& _render_mgr;
-	ResourceManager& _res_mgr;
-	IApp& _app;
+
+	RenderModes _render_mode_override;
 
 	unsigned int _current_lod;
-	unsigned char _flags;
 
 	void ProgramBuffersCallback(const AHashString& /*resource*/, bool success);
 	void TextureLoadedCallback(const AHashString& /*resource*/, bool success);

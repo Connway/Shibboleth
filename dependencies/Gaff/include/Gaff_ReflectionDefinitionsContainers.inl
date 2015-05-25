@@ -2473,9 +2473,9 @@ template <class T2>
 void ReflectionDefinition<T, Allocator>::EnumContainer<T2>::get(void* out, const T* object) const
 {
 	if (_var) {
-		*reinterpret_cast<T2*>(value) = (object->*_var);
+		*reinterpret_cast<T2*>(out) = (object->*_var);
 	} else if (_getter) {
-		*reinterpret_cast<T2*>(value) = (object->*_getter)();
+		*reinterpret_cast<T2*>(out) = (object->*_getter)();
 	}
 }
 

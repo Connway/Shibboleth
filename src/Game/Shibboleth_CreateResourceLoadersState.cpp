@@ -170,23 +170,23 @@ void CreateResourceLoadersState::update(void)
 		}
 
 		Array<ResourceManager::JSONModifiers> json_elements;
-		ResourceManager::JSONModifiers modifiers = { AString("vertex"), AString(render_manager.getShaderExtension()), true };
+		ResourceManager::JSONModifiers modifiers = { AString("Vertex"), AString(render_manager.getShaderExtension()), true };
 		json_elements.emplacePush(modifiers);
 
-		modifiers.json_element = "pixel";
+		modifiers.json_element = "Pixel";
 		json_elements.emplacePush(modifiers);
 
-		modifiers.json_element = "hull";
+		modifiers.json_element = "Hull";
 		json_elements.emplacePush(modifiers);
 
-		modifiers.json_element = "geometry";
+		modifiers.json_element = "Geometry";
 		json_elements.emplacePush(modifiers);
 
-		modifiers.json_element = "domain";
+		modifiers.json_element = "Domain";
 		json_elements.emplacePush(modifiers);
 
 		_app.getGameLogFile().first.printf("Adding Shader Program Loader\n");
-		res_mgr.registerResourceLoader(shader_program_loader, ".program", TPT_GRAPHICS, json_elements);
+		res_mgr.registerResourceLoader(shader_program_loader, ".material", TPT_GRAPHICS, json_elements);
 	}
 
 	// LUA LOADER

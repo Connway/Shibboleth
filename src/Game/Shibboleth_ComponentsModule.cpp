@@ -33,19 +33,10 @@ THE SOFTWARE.
 #endif
 
 template <class Component>
-Shibboleth::IComponent* CreateComponent(Shibboleth::IApp& app)
+Shibboleth::IComponent* CreateComponent(void)
 {
-	return Shibboleth::GetAllocator()->template allocT<Component>(app);
+	return Shibboleth::GetAllocator()->template allocT<Component>();
 }
-
-//template <>
-//Shibboleth::IComponent* CreateComponent<Shibboleth::ModelComponent>(Shibboleth::IApp& app)
-//{
-//	return Shibboleth::GetAllocator()->template allocT<Shibboleth::ModelComponent>(
-//		app.getManagerT<Shibboleth::ResourceManager>("Resource Manager"),
-//		app.getManagerT<Shibboleth::RenderManager>("Render Manager")
-//	);
-//}
 
 enum Components
 {
@@ -54,7 +45,7 @@ enum Components
 	NUM_COMPONENTS
 };
 
-typedef Shibboleth::IComponent* (*CreateComponentFunc)(Shibboleth::IApp&);
+typedef Shibboleth::IComponent* (*CreateComponentFunc)(void);
 typedef const char* (*ComponentNameFunc)(void);
 typedef void (*RefDefClearFunc)(void);
 
@@ -97,7 +88,7 @@ DYNAMICEXPORT_C unsigned int GetNumComponents(void)
 DYNAMICEXPORT_C Shibboleth::IComponent* CreateComponent(unsigned int id)
 {
 	assert(id < NUM_COMPONENTS);
-	return create_funcs[id](Shibboleth::GetApp());
+	return create_funcs[id]();
 }
 
 DYNAMICEXPORT_C void DestroyComponent(Shibboleth::IComponent* component, unsigned int)

@@ -362,7 +362,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\src\Graphics\GleamDLL.cpp" />
+    <ClCompile Include="..\..\..\src\Graphics\GleamModule.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\shared\Shared.vcxproj">

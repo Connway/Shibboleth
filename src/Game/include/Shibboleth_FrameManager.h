@@ -27,6 +27,8 @@ THE SOFTWARE.
 #include <Shibboleth_IManager.h>
 #include <Shibboleth_Map.h>
 #include <Gleam_Transform_CPU.h>
+#include <Gleam_ICommandList.h>
+#include <Gaff_SmartPtr.h>
 
 NS_SHIBBOLETH
 
@@ -42,9 +44,17 @@ struct FrameData
 		CameraComponent* camera;
 	};
 
+	struct CommandListData
+	{
+		using CommandListPtr = Gaff::SmartPtr<Gleam::ICommandList, ProxyAllocator>;
+		Array<CommandListPtr> command_lists;
+	};
+
 	Array<ObjectData> object_data;
 
 	// animation transforms
+
+	//Array<Gleam::ICommandList*> command_lists;
 };
 
 class FrameManager : public IManager

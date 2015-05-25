@@ -26,6 +26,7 @@ THE SOFTWARE.
 #include <Gleam_RenderTarget.h>
 #include <Gleam_SamplerState.h>
 #include <Gleam_RenderState.h>
+#include <Gleam_CommandList.h>
 #include <Gleam_Texture.h>
 #include <Gleam_Program.h>
 #include <Gleam_Window.h>
@@ -102,6 +103,11 @@ DYNAMICEXPORT_C Gleam::ISamplerState* CreateSamplerState(void)
 DYNAMICEXPORT_C Gleam::IRenderState* CreateRenderState(void)
 {
 	return gProxyAllocator.template allocT<Gleam::RenderState>();
+}
+
+DYNAMICEXPORT_C Gleam::ICommandList* CreateCommandList(void)
+{
+	return gProxyAllocator.template allocT<Gleam::CommandList>();
 }
 
 DYNAMICEXPORT_C Gleam::ITexture* CreateTexture(void)
