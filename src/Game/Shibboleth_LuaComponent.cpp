@@ -22,6 +22,7 @@ THE SOFTWARE.
 
 #include "Shibboleth_LuaComponent.h"
 #include <Shibboleth_ResourceManager.h>
+#include <Shibboleth_Utilities.h>
 #include <Shibboleth_IApp.h>
 #include <LuaState.h>
 
@@ -35,8 +36,7 @@ SHIB_REF_IMPL(LuaComponent)
 .addString("Lua Filename", &LuaComponent::_lua_file)
 ;
 
-LuaComponent::LuaComponent(IApp& app):
-	_res_mgr(app.getManagerT<ResourceManager>("Resource Manager"))
+LuaComponent::LuaComponent(void)
 {
 }
 
@@ -48,7 +48,10 @@ bool LuaComponent::load(const Gaff::JSON& json)
 {
 	gRefDef.read(json, this);
 	assert(_lua_file.size());
-	_script_res = _res_mgr.requestResource(_lua_file.getBuffer());
+
+	ResourceManager& res_mgr = Shibboleth::GetApp().getManagerT<ResourceManager>("Resource Manager");
+
+	_script_res = res_mgr.requestResource(_lua_file.getBuffer());
 	return true;
 }
 

@@ -27,7 +27,7 @@ THE SOFTWARE.
 
 #include <Shibboleth_LoadingMessage.h>
 
-#include <Shibboleth_RenderManager.h>
+#include <Shibboleth_Utilities.h>
 #include <Shibboleth_IApp.h>
 
 #include <Gleam_IProgram.h>
@@ -43,13 +43,13 @@ COMP_REF_DEF_SAVE(ModelComponent, gRefDef);
 REF_IMPL_REQ(ModelComponent);
 
 SHIB_REF_IMPL(ModelComponent)
-.addBaseClass<ModelComponent>(ModelComponent::gHash)
+.addBaseClassInterfaceOnly<ModelComponent>()
+.addEnum("Render Mode Override", &ModelComponent::_render_mode_override, GetEnumRefDef<RenderModes>())
 ;
 
-ModelComponent::ModelComponent(IApp& app):
-	_render_mgr(app.getManagerT<Shibboleth::RenderManager>("Render Manager")),
-	_res_mgr(app.getManagerT<Shibboleth::ResourceManager>("Resource Manager")),
-	_app(app), _current_lod(0), _flags(0)
+ModelComponent::ModelComponent(void):
+	_render_mgr(Shibboleth::GetApp().getManagerT<Shibboleth::RenderManager>("Render Manager")),
+	_render_mode_override(RM_NONE), _current_lod(0)
 {
 	_buffer_settings.type = Gleam::IBuffer::SHADER_DATA;
 	_buffer_settings.cpu_access = Gleam::IBuffer::WRITE;
@@ -115,29 +115,31 @@ bool ModelComponent::load(const Gaff::JSON& json)
 
 	gRefDef.read(json, this);
 
+	ResourceManager& res_mgr = Shibboleth::GetApp().getManagerT<Shibboleth::ResourceManager>("Resource Manager");
+
 	// FIX ME
 	if (material_file.isString()) {
-		_material_res = _res_mgr.requestResource(material_file.getString());
+		_material_res = res_mgr.requestResource(material_file.getString());
 	}
 
 	// Turn these into arrays BEGIN
 	if (texture_file.isString()) {
-		_texture_res = _res_mgr.requestResource(texture_file.getString());
+		_texture_res = res_mgr.requestResource(texture_file.getString());
 	}
 
 	if (sampler_file.isString()) {
-		_sampler_res = _res_mgr.requestResource(sampler_file.getString());
+		_sampler_res = res_mgr.requestResource(sampler_file.getString());
 	}
 	// Turn these into arrays END
 
 	if (model_file.isString()) {
-		_model_res = _res_mgr.requestResource(model_file.getString());
+		_model_res = res_mgr.requestResource(model_file.getString());
 	}
 
-	_program_buffers_res = _res_mgr.requestResource("ProgramBuffers", "test1");
-	_buffer_res = _res_mgr.requestResource("Buffer", "test2", reinterpret_cast<unsigned long long>(&_buffer_settings));
+	_program_buffers_res = res_mgr.requestResource("ProgramBuffers", "test1");
+	_buffer_res = res_mgr.requestResource("Buffer", "test2", reinterpret_cast<unsigned long long>(&_buffer_settings));
 
-	_app.getBroadcaster().listen<LoadingMessage>(Gaff::Bind(this, &ModelComponent::HandleLoadingMessage));
+	Shibboleth::GetApp().getBroadcaster().listen<LoadingMessage>(Gaff::Bind(this, &ModelComponent::HandleLoadingMessage));
 
 	auto callback_func = Gaff::Bind(this, &ModelComponent::LoadCallback);
 

@@ -38,7 +38,7 @@ public:
 	~SpinLock(void);
 
 	INLINE void lock(void) const;
-	INLINE bool tryLock(void);
+	INLINE bool tryLock(void) const;
 	INLINE void unlock(void) const;
 
 private:

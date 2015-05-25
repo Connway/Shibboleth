@@ -107,6 +107,35 @@ void Map<Key, Value, Allocator>::erase(const Key& key)
 }
 
 template <class Key, class Value, class Allocator>
+template <class... Args>
+void Map<Key, Value, Allocator>::emplaceInsert(const Key& key, Args&&... args)
+{
+	Iterator it = _array.binarySearch(_array.begin(), _array.end(), key, KeySearchPredicate());
+	assert(it == _array.end() || it->first != key);
+	_array.emplaceMoveInsert(it, key, Value(args...));
+}
+
+template <class Key, class Value, class Allocator>
+template <class... Args>
+void Map<Key, Value, Allocator>::emplaceMoveInsert(const Key& key, Args&&... args)
+{
+	Iterator it = _array.binarySearch(_array.begin(), _array.end(), key, KeySearchPredicate());
+	assert(it == _array.end() || it->first != key);
+	Value temp(Move(args)...);
+	_array.emplaceMoveInsert(it, key, Move(temp));
+}
+
+template <class Key, class Value, class Allocator>
+template <class... Args>
+void Map<Key, Value, Allocator>::emplaceMoveMoveInsert(Key&& key, Args&&... args)
+{
+	Iterator it = _array.binarySearch(_array.begin(), _array.end(), key, KeySearchPredicate());
+	assert(it == _array.end() || it->first != key);
+	Value temp(Move(args)...);
+	_array.emplaceMoveInsert(it, Move(key), temp);
+}
+
+template <class Key, class Value, class Allocator>
 void Map<Key, Value, Allocator>::moveMoveInsert(Key&& key, Value&& value)
 {
 	Iterator it = _array.binarySearch(_array.begin(), _array.end(), key, KeySearchPredicate());

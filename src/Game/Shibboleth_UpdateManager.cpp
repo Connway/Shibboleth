@@ -83,6 +83,11 @@ bool UpdateManager::UpdatePhase::isDone(void) const
 	return !_counter || !_counter->count;
 }
 
+bool UpdateManager::UpdatePhase::grab(void)
+{
+	return _grab_lock.tryLock();
+}
+
 void UpdateManager::UpdatePhase::run(void)
 {
 	assert(isDone()); // We shouldn't be calling run() if we are already updating.
@@ -129,10 +134,12 @@ void UpdateManager::UpdatePhase::UpdatePhaseJob(void* data)
 		job_pool.addJobs(phase->_jobs.getArray(), phase->_jobs.size(), &phase->_counter);
 
 		// We want to help while waiting, since we don't just want to consume a potential job thread with just waiting.
-		job_pool.helpWhileWaiting(phase->_counter);
+		if (phase->_counter->count)
+			job_pool.helpWhileWaiting(phase->_counter);
 	}
 
 	phase->_frame_mgr.finishFrame(phase->_id);
+	phase->_grab_lock.unlock();
 }
 
 void UpdateManager::UpdatePhase::UpdateJob(void* data)
@@ -159,7 +166,7 @@ const char* UpdateManager::getName(void) const
 void UpdateManager::update(void)
 {
 	for (auto it = _phases.begin(); it != _phases.end(); ++it) {
-		if (it->isDone()) {
+		if (it->isDone() && it->grab()) {
 			it->run();
 		}
 	}

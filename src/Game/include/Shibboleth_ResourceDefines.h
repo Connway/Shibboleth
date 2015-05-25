@@ -23,6 +23,7 @@ THE SOFTWARE.
 #pragma once
 
 #include "Shibboleth_ResourceWrapper.h"
+#include "Shibboleth_RenderManager.h"
 #include <Shibboleth_Array.h>
 #include <Gaff_IVirtualDestructor.h>
 #include <Gleam_ISamplerState.h>
@@ -48,20 +49,19 @@ namespace Gleam
 
 NS_SHIBBOLETH
 
-typedef Gaff::RefPtr<Gleam::IShaderResourceView> ShaderResourceViewPtr;
-typedef Gaff::RefPtr<Gleam::IProgramBuffers> ProgramBuffersPtr;
-typedef Gaff::RefPtr<Gleam::IRenderDevice> RenderDevicePtr;
-typedef Gaff::RefPtr<Gleam::IRenderTarget> RenderTargetPtr;
-typedef Gaff::RefPtr<Gleam::ISamplerState> SamplerStatePtr;
-typedef Gaff::RefPtr<Gleam::IRenderState> RenderStatePtr;
-//typedef Gaff::RefPtr<Gleam::ICommandList> CommandListPtr;
-typedef Gaff::RefPtr<Gleam::ITexture> TexturePtr;
-typedef Gaff::RefPtr<Gleam::ILayout> LayoutPtr;
-typedef Gaff::RefPtr<Gleam::IProgram> ProgramPtr;
-typedef Gaff::RefPtr<Gleam::IShader> ShaderPtr;
-typedef Gaff::RefPtr<Gleam::IBuffer> BufferPtr;
-typedef Gaff::RefPtr<Gleam::IModel> ModelPtr;
-typedef Gaff::RefPtr<Gleam::IMesh> MeshPtr;
+using ShaderResourceViewPtr = Gaff::RefPtr<Gleam::IShaderResourceView>;
+using ProgramBuffersPtr = Gaff::RefPtr<Gleam::IProgramBuffers>;
+using RenderTargetPtr = Gaff::RefPtr<Gleam::IRenderTarget>;
+using SamplerStatePtr = Gaff::RefPtr<Gleam::ISamplerState>;
+using RenderStatePtr = Gaff::RefPtr<Gleam::IRenderState>;
+//using CommandListPtr = Gaff::RefPtr<Gleam::ICommandList>;
+using TexturePtr = Gaff::RefPtr<Gleam::ITexture>;
+using LayoutPtr = Gaff::RefPtr<Gleam::ILayout>;
+using ProgramPtr = Gaff::RefPtr<Gleam::IProgram>;
+using ShaderPtr = Gaff::RefPtr<Gleam::IShader>;
+using BufferPtr = Gaff::RefPtr<Gleam::IBuffer>;
+using ModelPtr = Gaff::RefPtr<Gleam::IModel>;
+using MeshPtr = Gaff::RefPtr<Gleam::IMesh>;
 
 template <class T>
 struct SingleDataWrapper : public Gaff::IVirtualDestructor
@@ -88,6 +88,7 @@ struct ProgramData : public Gaff::IVirtualDestructor
 {
 	ResourceWrapper<ShaderData> shaders[Gleam::IShader::SHADER_TYPE_SIZE];
 	Array<ProgramPtr> programs;
+	RenderModes render_mode;
 };
 
 struct RenderTargetData : public Gaff::IVirtualDestructor
@@ -103,8 +104,8 @@ struct RenderTargetData : public Gaff::IVirtualDestructor
 	unsigned short tags;
 };
 
-typedef SingleDataWrapper< Array<ProgramBuffersPtr> > ProgramBuffersData;
-typedef SingleDataWrapper< Array<SamplerStatePtr> > SamplerStateData;
-typedef SingleDataWrapper< Array<BufferPtr> > BufferData;
+using ProgramBuffersData = SingleDataWrapper< Array<ProgramBuffersPtr> >;
+using SamplerStateData = SingleDataWrapper< Array<SamplerStatePtr> >;
+using BufferData = SingleDataWrapper< Array<BufferPtr> >;
 
 NS_END

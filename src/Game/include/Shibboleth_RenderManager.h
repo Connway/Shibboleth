@@ -24,7 +24,9 @@ THE SOFTWARE.
 
 #include <Shibboleth_ReflectionDefinitions.h>
 #include <Shibboleth_DynamicLoader.h>
+#include <Shibboleth_IUpdateQuery.h>
 #include <Shibboleth_IManager.h>
+#include <Shibboleth_Map.h>
 #include <Gleam_IShaderResourceView.h>
 #include <Gleam_IRenderTarget.h>
 #include <Gleam_ITexture.h>
@@ -53,6 +55,7 @@ namespace Gleam
 	class IRenderDevice;
 	class ISamplerState;
 	class IRenderState;
+	class ICommandList;
 	class ILayout;
 	class IProgram;
 	class IShader;
@@ -86,10 +89,34 @@ enum DisplayTags
 	DT_16 = 0x8000,
 };
 
+enum RenderModes
+{
+	RM_NONE = -1,
+	RM_OPAQUE = 0,
+	RM_TRANSPARENT,
+	RM_USER1,
+	RM_USER2,
+	RM_USER3,
+	RM_USER4,
+	RM_USER5,
+	RM_USER6,
+	RM_USER7,
+	RM_USER8,
+	RM_USER9,
+	RM_USER10,
+	RM_USER11,
+	RM_USER12,
+	RM_USER13,
+	RM_USER14,
+	RM_USER15,
+	RM_USER16
+};
+
 SHIB_ENUM_REF_DEF(DisplayTags);
+SHIB_ENUM_REF_DEF(RenderModes);
 SHIB_ENUM_REF_DEF_EMBEDDED(Gleam_ITexture_Format, Gleam::ITexture::FORMAT);
 
-class RenderManager : public IManager
+class RenderManager : public IManager, public IUpdateQuery
 {
 public:
 	typedef Gaff::RefPtr<Gleam::IRenderTarget> RenderTargetPtr;
@@ -127,6 +154,7 @@ public:
 	const char* getName(void) const;
 
 	void* rawRequestInterface(unsigned int class_id) const;
+	void getUpdateEntries(Array<UpdateEntry>& entries);
 
 	bool initThreadData(void);
 	bool init(const char* module);
@@ -160,6 +188,7 @@ public:
 	INLINE Gleam::IRenderTarget* createRenderTarget(void);
 	INLINE Gleam::ISamplerState* createSamplerState(void);
 	INLINE Gleam::IRenderState* createRenderState(void);
+	INLINE Gleam::ICommandList* createCommandList(void);
 	INLINE Gleam::ITexture* createTexture(void);
 	INLINE Gleam::ILayout* createLayout(void);
 	INLINE Gleam::IProgram* createProgram(void);
@@ -186,6 +215,7 @@ private:
 		typedef Gleam::IRenderTarget* (*CreateRenderTarget)(void);
 		typedef Gleam::ISamplerState* (*CreateSamplerState)(void);
 		typedef Gleam::IRenderState* (*CreateRenderState)(void);
+		typedef Gleam::ICommandList* (*CreateCommandList)(void);
 		typedef Gleam::ITexture* (*CreateTexture)(void);
 		typedef Gleam::ILayout* (*CreateLayout)(void);
 		typedef Gleam::IProgram* (*CreateProgram)(void);
@@ -207,6 +237,7 @@ private:
 		CreateRenderTarget create_rendertarget;
 		CreateSamplerState create_samplerstate;
 		CreateRenderState create_renderstate;
+		CreateCommandList create_commandlist;
 		CreateTexture create_texture;
 		CreateLayout create_layout;
 		CreateProgram create_program;
@@ -216,10 +247,14 @@ private:
 		CreateMesh create_mesh;
 	};
 
+	using RenderDevicePtr = Gaff::SmartPtr<Gleam::IRenderDevice, ProxyAllocator>;
+
 	GraphicsFunctions _graphics_functions;
 	Array<WindowData> _windows;
 
-	Gaff::SmartPtr<Gleam::IRenderDevice, ProxyAllocator> _render_device;
+	Map<unsigned int, RenderDevicePtr> _deferred_devices;
+
+	RenderDevicePtr _render_device;
 	DynamicLoader::ModulePtr _gleam_module;
 
 	Gaff::SpinLock _rd_lock;
@@ -230,6 +265,11 @@ private:
 	int getDisplayModeID(unsigned int width, unsigned int height, unsigned int refresh_rate, unsigned int adapter_id, unsigned int display_id);
 	bool cacheGleamFunctions(IApp& app, const char* module);
 	bool createWindowRenderable(int width, int height, Gleam::ITexture::FORMAT format, TexturePtr& tex_out, SRVPtr& srv_out);
+
+	bool getDisplayTags(void);
+	bool getRenderModes(void);
+
+	static void GenerateCommandLists(double, void* frame_data);
 
 	GAFF_NO_COPY(RenderManager);
 	GAFF_NO_MOVE(RenderManager);

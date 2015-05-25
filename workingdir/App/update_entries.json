@@ -9,12 +9,13 @@
 		]
 	},
 	{
-		"name": "Command Buffer Generation Phase",
+		"name": "Command List Generation Phase",
 		"entries": [
+			["Render Manager: Generate Command Lists"]
 		]
 	},
 	{
-		"name": "Command Buffer Submission Phase",
+		"name": "Command List Submission Phase",
 		"entries": [
 		]
 	}

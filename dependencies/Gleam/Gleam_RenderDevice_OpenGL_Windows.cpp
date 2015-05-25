@@ -214,7 +214,7 @@ bool RenderDeviceGL::init(const IWindow& window, unsigned int adapter_id, unsign
 
 #ifdef _DEBUG
 	if (_creating_thread_id) {
-		assert(_creating_thread_id == Gaff::Thread::getCurrentThreadID());
+		assert(_creating_thread_id == Gaff::Thread::GetCurrentThreadID());
 	}
 #endif
 
@@ -325,7 +325,7 @@ bool RenderDeviceGL::init(const IWindow& window, unsigned int adapter_id, unsign
 		}
 
 		if (!_creating_thread_id) {
-			_creating_thread_id = Gaff::Thread::getCurrentThreadID();
+			_creating_thread_id = Gaff::Thread::GetCurrentThreadID();
 		}
 
 		_glew_already_initialized = true;
@@ -334,7 +334,7 @@ bool RenderDeviceGL::init(const IWindow& window, unsigned int adapter_id, unsign
 
 	} else {
 		if (!_creating_thread_id) {
-			_creating_thread_id = Gaff::Thread::getCurrentThreadID();
+			_creating_thread_id = Gaff::Thread::GetCurrentThreadID();
 		}
 	}
 
@@ -523,7 +523,7 @@ bool RenderDeviceGL::setCurrentDevice(unsigned int device)
 	unsigned int prev_device = _curr_device;
 	_curr_device = device;
 
-	unsigned int thread_id = Gaff::Thread::getCurrentThreadID();
+	unsigned int thread_id = Gaff::Thread::GetCurrentThreadID();
 
 	if (thread_id != _creating_thread_id) {
 		_curr_device = prev_device;

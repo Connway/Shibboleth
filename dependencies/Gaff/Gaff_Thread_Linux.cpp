@@ -31,7 +31,7 @@ NS_GAFF
 /*!
 	\brief Returns the thread ID of the callee.
 */
-unsigned int Thread::getCurrentThreadID(void)
+unsigned int Thread::GetCurrentThreadID(void)
 {
 	return static_cast<unsigned int>(pthread_self());
 }
