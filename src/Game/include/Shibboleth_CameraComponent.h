@@ -27,6 +27,7 @@ THE SOFTWARE.
 #include "Shibboleth_IComponent.h"
 #include <Shibboleth_ReflectionDefinitions.h>
 #include <Shibboleth_Array.h>
+#include <Gleam_Matrix4x4_CPU.h>
 #include <Gleam_Frustum_CPU.h>
 
 NS_SHIBBOLETH
@@ -47,16 +48,26 @@ public:
 
 	void updateFrustum(Object* object, unsigned long long);
 
-	const Array<unsigned int>& getDevices(void) const;
+	const Gleam::Matrix4x4CPU& getProjectionMatrix(void) const;
 	const Gleam::FrustumCPU& getFrustum(void) const;
+	const float* getViewport(void) const;
+	float getAspectRatio(void) const;
+	float getFOV(void) const;
+	void setFOV(float fov);
+	float getZNear(void) const;
+	void setZNear(float z_near);
+	float getZFar(void) const;
+	void setZFar(float z_far);
+
+	const Array<unsigned int>& getDevices(void) const;
 	unsigned short getWindowTags(void) const;
 	unsigned char getRenderOrder(void) const;
-	const float* getViewport(void) const;
+
 	void setActive(bool active);
 	bool isActive(void) const;
-	float getFOV(void) const;
 
 private:
+	Gleam::Matrix4x4CPU _projection_matrix;
 	Gleam::FrustumCPU _unstransformed_frustum;
 	Gleam::FrustumCPU _frustum;
 
@@ -66,6 +77,7 @@ private:
 
 	float _clear_color[4];
 	float _viewport[4];
+	float _aspect_ratio;
 	float _fov;
 	float _z_near;
 	float _z_far;
@@ -74,6 +86,7 @@ private:
 	bool _active;
 
 	void RenderTargetCallback(const AHashString& /*resource*/, bool success);
+	void constructProjectionMatrixAndFrustum(void);
 
 	SHIB_REF_DEF(CameraComponent);
 };

@@ -71,6 +71,7 @@ void CameraManager::update(double, void* frame_data)
 			fd->object_data.emplacePush();
 
 			FrameData::ObjectData& od = fd->object_data.last();
+			od.camera_transform = _cameras[i]->getOwner()->getWorldTransform();
 			od.camera = _cameras[i];
 
 			_occlusion_mgr->findObjectsInFrustum(_cameras[i]->getFrustum(), od.objects);
