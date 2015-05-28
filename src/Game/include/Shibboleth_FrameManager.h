@@ -40,8 +40,11 @@ struct FrameData
 	{
 		// Transforms are in world space. Using OT_SIZE - 1 because we don't need to copy transform data for static objects.
 		Array<Gleam::TransformCPU> transforms[OcclusionManager::OT_SIZE - 1];
+		Gleam::TransformCPU camera_transform;
 		OcclusionManager::QueryData objects;
 		CameraComponent* camera;
+
+		volatile unsigned int next_index[OcclusionManager::OT_SIZE];
 	};
 
 	struct CommandListData
@@ -51,6 +54,7 @@ struct FrameData
 	};
 
 	Array<ObjectData> object_data;
+	Array<CommandListData> render_commands;
 
 	// animation transforms
 

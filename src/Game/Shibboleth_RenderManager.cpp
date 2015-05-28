@@ -23,9 +23,12 @@ THE SOFTWARE.
 #include "Shibboleth_RenderManager.h"
 #include "Shibboleth_ResourceManager.h"
 #include "Shibboleth_FrameManager.h"
+#include <Shibboleth_CameraComponent.h>
+#include <Shibboleth_ModelComponent.h>
 #include <Shibboleth_TextureLoader.h>
 #include <Shibboleth_IFileSystem.h>
 #include <Shibboleth_Utilities.h>
+#include <Shibboleth_Object.h>
 #include <Shibboleth_IApp.h>
 
 #include <Gleam_IRenderDevice.h>
@@ -175,7 +178,7 @@ const char* RenderManager::getName(void) const
 
 void RenderManager::getUpdateEntries(Array<UpdateEntry>& entries)
 {
-	entries.emplacePush(AString("Render Manager: Generate Command Lists"), Gaff::Bind(&RenderManager::GenerateCommandLists));
+	entries.emplacePush(AString("Render Manager: Generate Command Lists"), Gaff::Bind(this, &RenderManager::generateCommandLists));
 }
 
 bool RenderManager::initThreadData(void)
@@ -189,10 +192,19 @@ bool RenderManager::initThreadData(void)
 	}
 
 	_deferred_devices.reserve(thread_ids.size());
+	_rd_lock.lock();
 
-	for (size_t i = 0; i < thread_ids.size(); ++i) {
-		_deferred_devices.emplaceInsert(thread_ids[i], _render_device->createDeferredRenderDevice(), _proxy_allocator);
+	for (size_t j = 0; j < thread_ids.size(); ++j) {
+		auto& drds = _deferred_devices[thread_ids[j]];
+		drds.reserve(_render_device->getNumDevices());
+
+		for (unsigned int i = 0; i < _render_device->getNumDevices(); ++i) {
+			_render_device->setCurrentDevice(i);
+			drds.emplacePush(_render_device->createDeferredRenderDevice(), _proxy_allocator);
+		}
 	}
+
+	_rd_lock.unlock();
 
 	return true;
 }
@@ -222,6 +234,12 @@ bool RenderManager::init(const char* module)
 	getRenderModes();
 
 	return true;
+}
+
+Array<RenderManager::RenderDevicePtr>& RenderManager::getDeferredRenderDevices(unsigned int thread_id)
+{
+	assert(_deferred_devices.hasElementWithKey(thread_id));
+	return _deferred_devices[thread_id];
 }
 
 Gleam::IRenderDevice& RenderManager::getRenderDevice(void)
@@ -850,9 +868,78 @@ bool RenderManager::getRenderModes(void)
 	return true;
 }
 
-void RenderManager::GenerateCommandLists(double, void* frame_data)
+void RenderManager::generateCommandLists(double, void* frame_data)
 {
 	FrameData* fd = reinterpret_cast<FrameData*>(frame_data);
+
+	// First time using this frame data. Size the render commands appropriately.
+	if (fd->render_commands.empty()) {
+		fd->render_commands.resize(GetEnumRefDef<RenderModes>().getNumEntries());
+	}
+
+	// Clear the old command lists
+	for (size_t i = 0; i < fd->render_commands.size(); ++i) {
+		fd->render_commands[i].command_lists.clearNoFree();
+	}
+
+	for (size_t i = 0; i < fd->object_data.size(); ++i) {
+		for (size_t j = 0; j < OcclusionManager::OT_SIZE; ++j) {
+			fd->object_data[i].next_index[j] = 0;
+		}
+	}
+
+	// Maybe pre-allocate the destination arrays so that we don't have to lock in helper threads?
+
+	size_t num_threads = GetApp().getJobPool().getNumTotalThreads();
+
+	Array<Gaff::JobData> jobs(num_threads);
+	Gaff::Counter* counter = nullptr;
+
+	Gaff::Pair<RenderManager*, FrameData*> job_data(this, fd);
+
+	for (size_t i = 0; i < num_threads; ++i) {
+		jobs.emplacePush(&RenderManager::GenerateCommandListsHelper, &job_data);
+	}
+
+	GetApp().getJobPool().addJobs(jobs.getArray(), jobs.size(), &counter);
+	GetApp().getJobPool().helpWhileWaiting(counter);
+}
+
+void RenderManager::GenerateCommandListsHelper(void* job_data)
+{
+	Gaff::Pair<RenderManager*, FrameData*>* jd = reinterpret_cast<Gaff::Pair<RenderManager*, FrameData*>*>(job_data);
+	Array<RenderDevicePtr>& rds = jd->first->getDeferredRenderDevices(Gaff::Thread::GetCurrentThreadID());
+	FrameData* fd = jd->second;
+
+	for (auto it = fd->object_data.begin(); it != fd->object_data.end(); ++it) {
+		for (size_t i = 0; i < OcclusionManager::OT_SIZE; ++i) {
+			// Get the next object to be processed in the list.
+			unsigned int index = AtomicIncrement(&it->next_index[i]) - 1;
+
+			// If the next index is larger than the number of objects in the list, move on to the next list.
+			if (index >= it->objects.results[i].size()) {
+				continue;
+			}
+
+			const OcclusionManager::QueryResult& result = it->objects.results[i][index];
+			Gleam::TransformCPU final_transform;
+
+			// If we're a static object, just grab the transform from the object.
+			if (i == 0) {
+				final_transform = it->camera_transform.inverse() + result.first->getWorldTransform();
+
+			// Otherwise, grab it from the copies we made.
+			} else {
+				final_transform = it->camera_transform.inverse() + it->transforms[i - 1][index];
+			}
+
+			// Pre-computing the world-to-camera-to-projection matrix.
+			Gleam::Matrix4x4CPU final_matrix = it->camera->getProjectionMatrix() * final_transform.matrix();
+
+			assert(result.second.first);
+			ModelComponent* model_comp = reinterpret_cast<ModelComponent*>(result.second.first);
+		}
+	}
 }
 
 NS_END

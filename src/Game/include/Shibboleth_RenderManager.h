@@ -119,9 +119,10 @@ SHIB_ENUM_REF_DEF_EMBEDDED(Gleam_ITexture_Format, Gleam::ITexture::FORMAT);
 class RenderManager : public IManager, public IUpdateQuery
 {
 public:
-	typedef Gaff::RefPtr<Gleam::IRenderTarget> RenderTargetPtr;
-	typedef Gaff::RefPtr<Gleam::IShaderResourceView> SRVPtr;
-	typedef Gaff::RefPtr<Gleam::ITexture> TexturePtr;
+	using RenderDevicePtr = Gaff::SmartPtr<Gleam::IRenderDevice, ProxyAllocator>;
+	using RenderTargetPtr = Gaff::RefPtr<Gleam::IRenderTarget>;
+	using SRVPtr = Gaff::RefPtr<Gleam::IShaderResourceView>;
+	using TexturePtr = Gaff::RefPtr<Gleam::ITexture>;
 
 	struct WindowData
 	{
@@ -159,8 +160,10 @@ public:
 	bool initThreadData(void);
 	bool init(const char* module);
 
-	Gleam::IRenderDevice& getRenderDevice(void);
-	Gaff::SpinLock& getSpinLock(void);
+	INLINE Array<RenderDevicePtr>& getDeferredRenderDevices(unsigned int thread_id);
+
+	INLINE Gleam::IRenderDevice& getRenderDevice(void);
+	INLINE Gaff::SpinLock& getSpinLock(void);
 
 	// Don't call this in a thread sensitive environment
 	bool createWindow(
@@ -247,12 +250,10 @@ private:
 		CreateMesh create_mesh;
 	};
 
-	using RenderDevicePtr = Gaff::SmartPtr<Gleam::IRenderDevice, ProxyAllocator>;
-
 	GraphicsFunctions _graphics_functions;
 	Array<WindowData> _windows;
 
-	Map<unsigned int, RenderDevicePtr> _deferred_devices;
+	Map<unsigned int, Array<RenderDevicePtr> > _deferred_devices; // Index is device ID.
 
 	RenderDevicePtr _render_device;
 	DynamicLoader::ModulePtr _gleam_module;
@@ -269,7 +270,8 @@ private:
 	bool getDisplayTags(void);
 	bool getRenderModes(void);
 
-	static void GenerateCommandLists(double, void* frame_data);
+	void generateCommandLists(double, void* frame_data);
+	static void GenerateCommandListsHelper(void* frame_data);
 
 	GAFF_NO_COPY(RenderManager);
 	GAFF_NO_MOVE(RenderManager);

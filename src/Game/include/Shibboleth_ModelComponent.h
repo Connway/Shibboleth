@@ -66,8 +66,8 @@ private:
 	ResourceWrapper<SamplerStateData> _sampler_res;
 	ResourceWrapper<ProgramData> _material_res;
 	ResourceWrapper<TextureData> _texture_res;
-	ResourceWrapper<ModelData> _model_res;
 	ResourceWrapper<BufferData> _buffer_res;
+	ResourceWrapper<ModelData> _model_res;
 
 	RenderManager& _render_mgr;
 
