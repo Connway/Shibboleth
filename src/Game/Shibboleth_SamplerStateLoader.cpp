@@ -32,8 +32,6 @@ THE SOFTWARE.
 #include <Gleam_ISamplerState.h>
 #include <Gleam_IRenderDevice.h>
 #include <Gaff_ScopedExit.h>
-#include <Gaff_ScopedLock.h>
-#include <Gaff_SpinLock.h>
 
 NS_SHIBBOLETH
 
@@ -150,7 +148,6 @@ Gaff::IVirtualDestructor* SamplerStateLoader::load(const char* file_name, unsign
 		return nullptr;
 	}
 
-	Gaff::ScopedLock<Gaff::SpinLock> scoped_lock(_render_mgr.getSpinLock());
 	Gleam::IRenderDevice& rd = _render_mgr.getRenderDevice();
 	
 	sampler_data->data.resize(rd.getNumDevices());

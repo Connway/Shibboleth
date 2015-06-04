@@ -29,7 +29,6 @@ THE SOFTWARE.
 #include <Gleam_IRenderDevice.h>
 #include <Gleam_IProgram.h>
 #include <Gaff_ScopedExit.h>
-#include <Gaff_ScopedLock.h>
 #include <Gaff_File.h>
 #include <Gaff_JSON.h>
 
@@ -140,7 +139,6 @@ bool ShaderProgramLoader::loadShader(ProgramData* data, const char* file_name, G
 
 bool ShaderProgramLoader::createPrograms(ProgramData* data)
 {
-	Gaff::ScopedLock<Gaff::SpinLock> scoped_lock(_render_mgr.getSpinLock());
 	Gleam::IRenderDevice& rd = _render_mgr.getRenderDevice();
 
 	for (unsigned int i = 0; i < rd.getNumDevices(); ++i) {

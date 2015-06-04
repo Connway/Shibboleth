@@ -163,7 +163,7 @@ public:
 	INLINE Array<RenderDevicePtr>& getDeferredRenderDevices(unsigned int thread_id);
 
 	INLINE Gleam::IRenderDevice& getRenderDevice(void);
-	INLINE Gaff::SpinLock& getSpinLock(void);
+	INLINE Array<Gaff::SpinLock>& getContextLocks(void);
 
 	// Don't call this in a thread sensitive environment
 	bool createWindow(
@@ -254,12 +254,10 @@ private:
 	Array<WindowData> _windows;
 
 	Map<unsigned int, Array<RenderDevicePtr> > _deferred_devices; // Index is device ID.
+	Array<Gaff::SpinLock> _context_locks; // Index is device ID
 
 	RenderDevicePtr _render_device;
 	DynamicLoader::ModulePtr _gleam_module;
-
-	Gaff::SpinLock _rd_lock;
-	//Array<Gaff::SpinLock> _rd_locks;
 
 	ProxyAllocator _proxy_allocator;
 	IApp& _app;

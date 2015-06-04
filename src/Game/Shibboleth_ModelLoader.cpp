@@ -31,8 +31,6 @@ THE SOFTWARE.
 #include <Gleam_ILayout.h>
 #include <Gleam_IMesh.h>
 #include <Gaff_ScopedExit.h>
-#include <Gaff_ScopedLock.h>
-#include <Gaff_SpinLock.h>
 #include <Gaff_JSON.h>
 
 NS_SHIBBOLETH
@@ -199,7 +197,6 @@ Gaff::IVirtualDestructor* ModelLoader::load(const char* file_name, unsigned long
 
 bool ModelLoader::loadMeshes(ModelData* data, const Gaff::JSON& lod_tags, const Gaff::JSON& model_prefs, unsigned short display_tags, bool any_display_tags)
 {
-	Gaff::ScopedLock<Gaff::SpinLock> scoped_lock(_render_mgr.getSpinLock());
 	Gleam::IRenderDevice& rd = _render_mgr.getRenderDevice();
 	size_t num_lods = (!lod_tags) ? 1 : lod_tags.size();
 	unsigned int num_bone_weights = 0;

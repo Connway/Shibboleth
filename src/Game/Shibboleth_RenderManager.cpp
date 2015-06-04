@@ -192,9 +192,7 @@ bool RenderManager::initThreadData(void)
 	}
 
 	_deferred_devices.reserve(thread_ids.size());
-	//_rd_locks.resize(_render_device->getNumDevices());
-
-	_rd_lock.lock();
+	_context_locks.resize(_render_device->getNumDevices());
 
 	for (size_t j = 0; j < thread_ids.size(); ++j) {
 		auto& drds = _deferred_devices[thread_ids[j]];
@@ -205,8 +203,6 @@ bool RenderManager::initThreadData(void)
 			drds.emplacePush(_render_device->createDeferredRenderDevice(), _proxy_allocator);
 		}
 	}
-
-	_rd_lock.unlock();
 
 	return true;
 }
@@ -249,9 +245,9 @@ Gleam::IRenderDevice& RenderManager::getRenderDevice(void)
 	return *_render_device;
 }
 
-Gaff::SpinLock& RenderManager::getSpinLock(void)
+Array<Gaff::SpinLock>& RenderManager::getContextLocks(void)
 {
-	return _rd_lock;
+	return _context_locks;
 }
 
 bool RenderManager::createWindow(
@@ -496,8 +492,6 @@ RenderManager::WindowRenderTargets RenderManager::createRenderTargetsForEachWind
 	wrt.normal_srvs.reserve(_windows.size());
 	wrt.position_srvs.reserve(_windows.size());
 	wrt.depth_srvs.reserve(_windows.size());
-
-	Gaff::ScopedLock<Gaff::SpinLock> lock(_rd_lock);
 
 	for (auto it = _windows.begin(); it != _windows.end(); ++it) {
 		_render_device->setCurrentDevice(it->device);
