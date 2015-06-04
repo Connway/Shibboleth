@@ -25,6 +25,7 @@ THE SOFTWARE.
 #include "Gleam_Shader_Direct3D.h"
 #include "Gleam_IRenderDevice_Direct3D.h"
 #include "Gleam_IRenderDevice.h"
+#include "Gleam_String.h"
 #include <d3dcompiler.h>
 #include <Gaff_File.h>
 
@@ -36,8 +37,8 @@ THE SOFTWARE.
 
 NS_GLEAM
 
-typedef bool (ShaderD3D::*ShaderInitFuncMB)(IRenderDevice&, const char*);
-static ShaderInitFuncMB mb_init_funcs[IShader::SHADER_TYPE_SIZE] = {
+typedef bool (ShaderD3D::*ShaderInitFunc)(IRenderDevice&, const char*);
+static ShaderInitFunc init_funcs[IShader::SHADER_TYPE_SIZE] = {
 	&ShaderD3D::initVertex,
 	&ShaderD3D::initPixel,
 	&ShaderD3D::initDomain,
@@ -55,18 +56,6 @@ static ShaderInitSourceFunc source_init_funcs[IShader::SHADER_TYPE_SIZE] = {
 	&ShaderD3D::initHullSource,
 	&ShaderD3D::initComputeSource
 };
-
-#ifdef _UNICODE
-typedef bool (ShaderD3D::*ShaderInitFuncW)(IRenderDevice&, const wchar_t*);
-static ShaderInitFuncW w_init_funcs[IShader::SHADER_TYPE_SIZE] = {
-	&ShaderD3D::initVertex,
-	&ShaderD3D::initPixel,
-	&ShaderD3D::initDomain,
-	&ShaderD3D::initGeometry,
-	&ShaderD3D::initHull,
-	&ShaderD3D::initCompute
-};
-#endif
 
 ShaderD3D::ShaderD3D(void):
 	_shader(nullptr), _shader_buffer(nullptr)
@@ -93,7 +82,7 @@ bool ShaderD3D::initSource(IRenderDevice& rd, const char* shader_source, SHADER_
 bool ShaderD3D::init(IRenderDevice& rd, const char* file_path, SHADER_TYPE shader_type)
 {
 	assert(shader_type < SHADER_TYPE_SIZE);
-	return (this->*mb_init_funcs[shader_type])(rd, file_path);
+	return (this->*init_funcs[shader_type])(rd, file_path);
 }
 
 bool ShaderD3D::initVertex(IRenderDevice& rd, const char* file_path)
@@ -268,187 +257,6 @@ bool ShaderD3D::initCompute(IRenderDevice& rd, const char* file_path)
 
 	return SUCCEEDED(result);
 }
-
-#ifdef _UNICODE
-bool ShaderD3D::init(IRenderDevice& rd, const wchar_t* file_path, SHADER_TYPE shader_type)
-{
-	assert(shader_type < SHADER_TYPE_SIZE);
-	return (this->*w_init_funcs[shader_type])(rd, file_path);
-}
-
-bool ShaderD3D::initVertex(IRenderDevice& rd, const wchar_t* file_path)
-{
-	assert(rd.isD3D() && file_path);
-
-	char* shader_src = nullptr;
-	SIZE_T shader_size = 0;
-
-	if (!loadFile(file_path, shader_src, shader_size)) {
-		return false;
-	}
-
-	_shader_buffer = compileShader(shader_src, shader_size, "VertexMain", "vs_5_0");
-
-	GleamFree(shader_src);
-
-	if (!_shader_buffer) {
-		return false;
-	}
-
-	IRenderDeviceD3D& rd3d = reinterpret_cast<IRenderDeviceD3D&>(*(reinterpret_cast<char*>(&rd) + sizeof(IRenderDevice)));
-
-	ID3D11Device* device = rd3d.getActiveDevice();
-	HRESULT result = device->CreateVertexShader(_shader_buffer->GetBufferPointer(), _shader_buffer->GetBufferSize(), NULL, &_shader_vertex);
-
-	_type = SHADER_VERTEX;
-
-	return SUCCEEDED(result);
-}
-
-bool ShaderD3D::initPixel(IRenderDevice& rd, const wchar_t* file_path)
-{
-	assert(rd.isD3D() && file_path);
-
-	char* shader_src = nullptr;
-	SIZE_T shader_size = 0;
-
-	if (!loadFile(file_path, shader_src, shader_size)) {
-		return false;
-	}
-
-	_shader_buffer = compileShader(shader_src, shader_size, "PixelMain", "ps_5_0");
-
-	GleamFree(shader_src);
-
-	if (!_shader_buffer) {
-		return false;
-	}
-
-	IRenderDeviceD3D& rd3d = reinterpret_cast<IRenderDeviceD3D&>(*(reinterpret_cast<char*>(&rd) + sizeof(IRenderDevice)));
-
-	ID3D11Device* device = rd3d.getActiveDevice();
-	HRESULT result = device->CreatePixelShader(_shader_buffer->GetBufferPointer(), _shader_buffer->GetBufferSize(), NULL, &_shader_pixel);
-
-	_type = SHADER_PIXEL;
-
-	return SUCCEEDED(result);
-}
-
-bool ShaderD3D::initDomain(IRenderDevice& rd, const wchar_t* file_path)
-{
-	assert(rd.isD3D() && file_path);
-
-	char* shader_src = nullptr;
-	SIZE_T shader_size = 0;
-
-	if (!loadFile(file_path, shader_src, shader_size)) {
-		return false;
-	}
-
-	_shader_buffer = compileShader(shader_src, shader_size, "DomainMain", "ds_5_0");
-
-	GleamFree(shader_src);
-
-	if (!_shader_buffer) {
-		return false;
-	}
-
-	IRenderDeviceD3D& rd3d = reinterpret_cast<IRenderDeviceD3D&>(*(reinterpret_cast<char*>(&rd) + sizeof(IRenderDevice)));
-
-	ID3D11Device* device = rd3d.getActiveDevice();
-	HRESULT result = device->CreateDomainShader(_shader_buffer->GetBufferPointer(), _shader_buffer->GetBufferSize(), NULL, &_shader_domain);
-
-	_type = SHADER_DOMAIN;
-
-	return SUCCEEDED(result);
-}
-
-bool ShaderD3D::initGeometry(IRenderDevice& rd, const wchar_t* file_path)
-{
-	assert(rd.isD3D() && file_path);
-
-	char* shader_src = nullptr;
-	SIZE_T shader_size = 0;
-
-	if (!loadFile(file_path, shader_src, shader_size)) {
-		return false;
-	}
-
-	_shader_buffer = compileShader(shader_src, shader_size, "GeometryMain", "gs_5_0");
-
-	GleamFree(shader_src);
-
-	if (!_shader_buffer) {
-		return false;
-	}
-
-	IRenderDeviceD3D& rd3d = reinterpret_cast<IRenderDeviceD3D&>(*(reinterpret_cast<char*>(&rd) + sizeof(IRenderDevice)));
-
-	ID3D11Device* device = rd3d.getActiveDevice();
-	HRESULT result = device->CreateGeometryShader(_shader_buffer->GetBufferPointer(), _shader_buffer->GetBufferSize(), NULL, &_shader_geometry);
-
-	_type = SHADER_GEOMETRY;
-
-	return SUCCEEDED(result);
-}
-
-bool ShaderD3D::initHull(IRenderDevice& rd, const wchar_t* file_path)
-{
-	assert(rd.isD3D() && file_path);
-
-	char* shader_src = nullptr;
-	SIZE_T shader_size = 0;
-
-	if (!loadFile(file_path, shader_src, shader_size)) {
-		return false;
-	}
-
-	_shader_buffer = compileShader(shader_src, shader_size, "HullMain", "hs_5_0");
-
-	GleamFree(shader_src);
-
-	if (!_shader_buffer) {
-		return false;
-	}
-
-	IRenderDeviceD3D& rd3d = reinterpret_cast<IRenderDeviceD3D&>(*(reinterpret_cast<char*>(&rd) + sizeof(IRenderDevice)));
-
-	ID3D11Device* device = rd3d.getActiveDevice();
-	HRESULT result = device->CreateHullShader(_shader_buffer->GetBufferPointer(), _shader_buffer->GetBufferSize(), NULL, &_shader_hull);
-
-	_type = SHADER_HULL;
-
-	return SUCCEEDED(result);
-}
-
-bool ShaderD3D::initCompute(IRenderDevice& rd, const wchar_t* file_path)
-{
-	assert(rd.isD3D() && file_path);
-
-	char* shader_src = nullptr;
-	SIZE_T shader_size = 0;
-
-	if (!loadFile(file_path, shader_src, shader_size)) {
-		return false;
-	}
-
-	_shader_buffer = compileShader(shader_src, shader_size, "ComputeMain", "cs_5_0");
-	GleamFree(shader_src);
-
-	if (!_shader_buffer) {
-		return false;
-	}
-
-	IRenderDeviceD3D& rd3d = reinterpret_cast<IRenderDeviceD3D&>(*(reinterpret_cast<char*>(&rd) + sizeof(IRenderDevice)));
-
-	ID3D11Device* device = rd3d.getActiveDevice();
-	HRESULT result = device->CreateComputeShader(_shader_buffer->GetBufferPointer(), _shader_buffer->GetBufferSize(), NULL, &_shader_compute);
-
-	_type = SHADER_COMPUTE;
-
-	return SUCCEEDED(result);
-}
-#endif
 
 bool ShaderD3D::initVertexSource(IRenderDevice& rd, const char* source, size_t source_size)
 {
@@ -650,54 +458,6 @@ ID3DBlob* ShaderD3D::getByteCodeBuffer(void) const
 	return _shader_buffer;
 }
 
-#ifdef _UNICODE
-bool ShaderD3D::loadFile(const wchar_t* file_path, char*& shader_src, SIZE_T& shader_size) const
-{
-	assert(file_path);
-
-	Gaff::File shader(file_path, Gaff::File::READ_BINARY);
-
-	if (!shader.isOpen()) {
-		GleamAString msg("Failed to open shader file: ");
-
-		// convert file_path to ASCII
-		char dest[256] = { 0 };
-		wcstombs(dest, file_path, wcsnlen(file_path, 256));
-		msg += dest;
-
-		WriteMessageToLog(msg.getBuffer(), msg.size(), LOG_ERROR);
-		return false;
-	}
-
-	long size = shader.getFileSize();
-
-	shader_size = size;
-	shader_src = (char*)GleamAllocate(sizeof(char) * shader_size);
-
-	if (!shader_src || size == -1) {
-		return false;
-	}
-
-	if (!shader.readEntireFile(shader_src)) {
-		GleamFree(shader_src);
-		shader_src = nullptr;
-		shader_size = 0;
-
-		GleamAString msg("Failed to read shader file: ");
-
-		// convert file_path to ASCII
-		char dest[256] = { 0 };
-		wcstombs(dest, file_path, wcsnlen(file_path, 256));
-		msg += dest;
-
-		WriteMessageToLog(msg.getBuffer(), msg.size(), LOG_ERROR);
-		return false;
-	}
-
-	return true;
-}
-#endif
-
 bool ShaderD3D::loadFile(const char* file_path, char*& shader_src, SIZE_T& shader_size) const
 {
 	assert(file_path);
@@ -752,7 +512,7 @@ ID3DBlob* ShaderD3D::compileShader(const char* shader_src, SIZE_T shader_size, /
 
 	if (FAILED(result)) {
 		if (error_buffer) {
-			const char* error_msg = (const char*)error_buffer->GetBufferPointer();
+			const char* error_msg = reinterpret_cast<const char*>(error_buffer->GetBufferPointer());
 			SIZE_T error_size = error_buffer->GetBufferSize();
 
 			WriteMessageToLog(error_msg, error_size, LOG_ERROR);

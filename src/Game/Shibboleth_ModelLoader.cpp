@@ -479,7 +479,7 @@ bool ModelLoader::createMeshAndLayout(Gleam::IRenderDevice& rd, const Gaff::Mesh
 		return false;
 	}
 
-	float* vertices = (float*)GetAllocator()->alloc(sizeof(float) * scene_mesh.getNumVertices() * vert_size);
+	float* vertices = reinterpret_cast<float*>(GetAllocator()->alloc(sizeof(float) * scene_mesh.getNumVertices() * vert_size));
 
 	if (!vertices) {
 		// Log error

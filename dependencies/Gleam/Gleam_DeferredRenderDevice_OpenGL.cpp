@@ -75,7 +75,7 @@ bool DeferredRenderDeviceGL::isD3D(void) const
 void DeferredRenderDeviceGL::executeCommandList(ICommandList* command_list)
 {
 	assert(!command_list->isD3D());
-	_command_list.append((CommandListGL&)(*command_list));
+	_command_list.append(reinterpret_cast<CommandListGL&>(*command_list));
 }
 
 bool DeferredRenderDeviceGL::finishCommandList(ICommandList* command_list)

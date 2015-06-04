@@ -192,6 +192,8 @@ bool RenderManager::initThreadData(void)
 	}
 
 	_deferred_devices.reserve(thread_ids.size());
+	//_rd_locks.resize(_render_device->getNumDevices());
+
 	_rd_lock.lock();
 
 	for (size_t j = 0; j < thread_ids.size(); ++j) {

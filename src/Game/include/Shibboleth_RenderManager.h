@@ -259,6 +259,7 @@ private:
 	DynamicLoader::ModulePtr _gleam_module;
 
 	Gaff::SpinLock _rd_lock;
+	//Array<Gaff::SpinLock> _rd_locks;
 
 	ProxyAllocator _proxy_allocator;
 	IApp& _app;

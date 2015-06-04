@@ -137,16 +137,15 @@ private:
 	GleamArray<Device> _devices;
 
 	// Key is thread id, value is 2D array. First index is device, second is output.
-	GleamMap< unsigned int, GleamArray<HGLRC> > _thread_contexts;
+	GleamMap< unsigned int, GleamArray< GleamArray<HGLRC> > > _thread_contexts;
 	Gaff::SpinLock _thread_data_lock;
 
-	const Viewport* _active_viewport;
-	HDC _active_output;
+	// Fix this
+	static THREAD_LOCAL const Viewport* _active_viewport;
+	static THREAD_LOCAL HDC _active_output;
 
-	unsigned int _curr_output;
-	unsigned int _curr_device;
-
-	unsigned int _creating_thread_id;
+	static THREAD_LOCAL unsigned int _curr_output;
+	static THREAD_LOCAL unsigned int _curr_device;
 
 	bool _glew_already_initialized;
 };

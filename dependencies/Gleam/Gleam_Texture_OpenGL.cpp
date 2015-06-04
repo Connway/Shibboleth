@@ -178,7 +178,7 @@ bool TextureGL::init3D(IRenderDevice&, int width, int height, int depth, FORMAT 
 {
 	assert(width > 0 && height > 0 && depth > 0 && mip_levels > 0);
 
-	_mip_levels = (unsigned int)mip_levels;
+	_mip_levels = static_cast<unsigned int>(mip_levels);
 	_format = format;
 	_type = THREED;
 	_width = width;
@@ -204,7 +204,7 @@ bool TextureGL::init3D(IRenderDevice&, int width, int height, int depth, FORMAT 
 
 		for (int i = 0; i < mip_levels; ++i) {
 			glTexImage3D(GL_TEXTURE_3D, i, gl_format, width, height, depth, 0, gl_channels, gl_type, buffer);
-			buffer = ((unsigned char*)buffer) + width * height * depth * byte_size;
+			buffer = reinterpret_cast<const unsigned char*>(buffer) + width * height * depth * byte_size;
 			width = Gaff::Max(1, width / 2);
 			height = Gaff::Max(1, height / 2);
 			depth = Gaff::Max(1, depth / 2);
@@ -228,7 +228,7 @@ bool TextureGL::init2D(IRenderDevice&, int width, int height, FORMAT format, int
 {
 	assert(width > 0 && height > 0 && mip_levels > 0);
 
-	_mip_levels = (unsigned int)mip_levels;
+	_mip_levels = static_cast<unsigned int>(mip_levels);
 	_format = format;
 	_type = TWOD;
 	_width = width;
@@ -254,7 +254,7 @@ bool TextureGL::init2D(IRenderDevice&, int width, int height, FORMAT format, int
 
 		for (int i = 0; i < mip_levels; ++i) {
 			glTexImage2D(GL_TEXTURE_2D, i, gl_format, width, height, 0, gl_channels, gl_type, buffer);
-			buffer = ((unsigned char*)buffer) + width * height * byte_size;
+			buffer = reinterpret_cast<const unsigned char*>(buffer) + width * height * byte_size;
 			width = Gaff::Max(1, width / 2);
 			height = Gaff::Max(1, height / 2);
 		}
@@ -277,7 +277,7 @@ bool TextureGL::init1D(IRenderDevice&, int width, FORMAT format, int mip_levels,
 {
 	assert(width > 0 && mip_levels > 0);
 
-	_mip_levels = (unsigned int)mip_levels;
+	_mip_levels = static_cast<unsigned int>(mip_levels);
 	_format = format;
 	_type = ONED;
 	_width = width;
@@ -303,7 +303,7 @@ bool TextureGL::init1D(IRenderDevice&, int width, FORMAT format, int mip_levels,
 
 		for (int i = 0; i < mip_levels; ++i) {
 			glTexImage1D(GL_TEXTURE_1D, i, gl_format, width, 0, gl_channels, gl_type, buffer);
-			buffer = ((unsigned char*)buffer) + width * byte_size;
+			buffer = reinterpret_cast<const unsigned char*>(buffer) + width * byte_size;
 			width = Gaff::Max(1, width / 2);
 		}
 
@@ -325,7 +325,7 @@ bool TextureGL::initCubemap(IRenderDevice&, int width, int height, FORMAT format
 {
 	assert(width > 0 && height > 0 && mip_levels > 0);
 
-	_mip_levels = (unsigned int)mip_levels;
+	_mip_levels = static_cast<unsigned int>(mip_levels);
 	_format = format;
 	_type = CUBE;
 	_width = width;
@@ -360,7 +360,7 @@ bool TextureGL::initCubemap(IRenderDevice&, int width, int height, FORMAT format
 
 		unsigned int byte_size = _format_size[format];
 		unsigned int buf_size = width * height * byte_size;
-		const char* buf = (const char*)buffer;
+		const char* buf = reinterpret_cast<const char*>(buffer);
 
 		for (int i = 0; i < mip_levels; ++i) {
 			glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X, 0, gl_format, width, height, 0, gl_channels, gl_type, buf);

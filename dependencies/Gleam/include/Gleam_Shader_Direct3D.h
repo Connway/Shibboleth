@@ -46,17 +46,6 @@ public:
 	bool initHull(IRenderDevice& rd, const char* file_path);
 	bool initCompute(IRenderDevice& rd, const char* file_path);
 
-#ifdef _UNICODE
-	bool init(IRenderDevice& rd, const wchar_t* file_path, SHADER_TYPE shader_type);
-
-	bool initVertex(IRenderDevice& rd, const wchar_t* file_path);
-	bool initPixel(IRenderDevice& rd, const wchar_t* file_path);
-	bool initDomain(IRenderDevice& rd, const wchar_t* file_path);
-	bool initGeometry(IRenderDevice& rd, const wchar_t* file_path);
-	bool initHull(IRenderDevice& rd, const wchar_t* file_path);
-	bool initCompute(IRenderDevice& rd, const wchar_t* file_path);
-#endif
-
 	bool initVertexSource(IRenderDevice& rd, const char* source, size_t source_size = SIZE_T_FAIL);
 	bool initPixelSource(IRenderDevice& rd, const char* source, size_t source_size = SIZE_T_FAIL);
 	bool initDomainSource(IRenderDevice& rd, const char* source, size_t source_size = SIZE_T_FAIL);
@@ -91,10 +80,6 @@ private:
 	};
 
 	ID3DBlob* _shader_buffer;
-
-#ifdef _UNICODE
-	bool loadFile(const wchar_t* file_path, char*& shader_src, SIZE_T& shader_size) const;
-#endif
 
 	bool loadFile(const char* file_path, char*& shader_src, SIZE_T& shader_size) const;
 	ID3DBlob* compileShader(const char* shader, SIZE_T shader_size, /*macro, include,*/ LPCSTR entry_point, LPCSTR target);

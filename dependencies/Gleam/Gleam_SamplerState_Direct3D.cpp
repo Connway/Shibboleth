@@ -64,9 +64,9 @@ bool SamplerStateD3D::init(
 	assert(rd.isD3D() && max_anisotropy <= 16);
 
 	D3D11_SAMPLER_DESC desc;
-	desc.AddressU = (D3D11_TEXTURE_ADDRESS_MODE)wrap_u;
-	desc.AddressV = (D3D11_TEXTURE_ADDRESS_MODE)wrap_v;
-	desc.AddressW = (D3D11_TEXTURE_ADDRESS_MODE)wrap_w;
+	desc.AddressU = static_cast<D3D11_TEXTURE_ADDRESS_MODE>(wrap_u);
+	desc.AddressV = static_cast<D3D11_TEXTURE_ADDRESS_MODE>(wrap_v);
+	desc.AddressW = static_cast<D3D11_TEXTURE_ADDRESS_MODE>(wrap_w);
 	desc.BorderColor[0] = border_r;
 	desc.BorderColor[1] = border_g;
 	desc.BorderColor[2] = border_b;

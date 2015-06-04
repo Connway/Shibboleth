@@ -103,7 +103,7 @@ void ProgramBuffersD3D::cacheResViews(void)
 		res_views.clear();
 
 		for (unsigned int j = 0; j < resource_views.size(); ++j) {
-			res_views.push(((const ShaderResourceViewD3D*)resource_views[j])->getResourceView());
+			res_views.push(reinterpret_cast<const ShaderResourceViewD3D*>(resource_views[j])->getResourceView());
 		}
 	}
 }
@@ -116,7 +116,7 @@ void ProgramBuffersD3D::cacheSamplers(void)
 		samplers.clear();
 
 		for (unsigned int j = 0; j < sampler_states.size(); ++j) {
-			samplers.push(((const SamplerStateD3D*)sampler_states[j])->getSamplerState());
+			samplers.push(reinterpret_cast<const SamplerStateD3D*>(sampler_states[j])->getSamplerState());
 		}
 	}
 }
@@ -129,7 +129,7 @@ void ProgramBuffersD3D::cacheBuffers(void)
 		buffers.clear();
 
 		for (unsigned int j = 0; j < const_bufs.size(); ++j) {
-			buffers.push(((BufferD3D*)const_bufs[j])->getBuffer());
+			buffers.push(reinterpret_cast<BufferD3D*>(const_bufs[j])->getBuffer());
 		}
 	}
 }
@@ -197,32 +197,32 @@ void ProgramD3D::attach(IShader* shader)
 	switch (shader->getType()) {
 		case IShader::SHADER_VERTEX:
 			SAFERELEASE(_shader_vertex)
-			_shader_vertex = ((const ShaderD3D*)shader)->getVertexShader();
+			_shader_vertex = reinterpret_cast<const ShaderD3D*>(shader)->getVertexShader();
 			break;
 
 		case IShader::SHADER_PIXEL:
 			SAFERELEASE(_shader_pixel)
-			_shader_pixel = ((const ShaderD3D*)shader)->getPixelShader();
+			_shader_pixel = reinterpret_cast<const ShaderD3D*>(shader)->getPixelShader();
 			break;
 
 		case IShader::SHADER_DOMAIN:
 			SAFERELEASE(_shader_domain)
-			_shader_domain = ((const ShaderD3D*)shader)->getDomainShader();
+			_shader_domain = reinterpret_cast<const ShaderD3D*>(shader)->getDomainShader();
 			break;
 
 		case IShader::SHADER_GEOMETRY:
 			SAFERELEASE(_shader_geometry)
-			_shader_geometry = ((const ShaderD3D*)shader)->getGeometryShader();
+			_shader_geometry = reinterpret_cast<const ShaderD3D*>(shader)->getGeometryShader();
 			break;
 
 		case IShader::SHADER_HULL:
 			SAFERELEASE(_shader_hull)
-			_shader_hull = ((const ShaderD3D*)shader)->getHullShader();
+			_shader_hull = reinterpret_cast<const ShaderD3D*>(shader)->getHullShader();
 			break;
 
 		case IShader::SHADER_COMPUTE:
 			SAFERELEASE(_shader_compute)
-			_shader_compute = ((const ShaderD3D&)shader).getComputeShader();
+			_shader_compute = reinterpret_cast<const ShaderD3D*>(shader)->getComputeShader();
 			break;
 	}
 }

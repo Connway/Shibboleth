@@ -57,21 +57,21 @@ bool RenderStateD3D::init(IRenderDevice& rd, bool wireframe, bool depth_test, bo
 	D3D11_DEPTH_STENCIL_DESC depth_stencil_desc;
 	depth_stencil_desc.DepthEnable = depth_test;
 	depth_stencil_desc.StencilEnable = stencil_test;
-	depth_stencil_desc.DepthFunc = (D3D11_COMPARISON_FUNC)depth_func;
+	depth_stencil_desc.DepthFunc = static_cast<D3D11_COMPARISON_FUNC>(depth_func);
 	depth_stencil_desc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
 
 	depth_stencil_desc.StencilReadMask = stencil_read_mask;
 	depth_stencil_desc.StencilWriteMask = stencil_write_mask;
 
-	depth_stencil_desc.FrontFace.StencilFunc = (D3D11_COMPARISON_FUNC)front_face.comp_func;
-	depth_stencil_desc.FrontFace.StencilPassOp = (D3D11_STENCIL_OP)front_face.stencil_depth_pass;
-	depth_stencil_desc.FrontFace.StencilFailOp = (D3D11_STENCIL_OP)front_face.stencil_depth_fail;
-	depth_stencil_desc.FrontFace.StencilDepthFailOp = (D3D11_STENCIL_OP)front_face.stencil_pass_depth_fail;
+	depth_stencil_desc.FrontFace.StencilFunc = static_cast<D3D11_COMPARISON_FUNC>(front_face.comp_func);
+	depth_stencil_desc.FrontFace.StencilPassOp = static_cast<D3D11_STENCIL_OP>(front_face.stencil_depth_pass);
+	depth_stencil_desc.FrontFace.StencilFailOp = static_cast<D3D11_STENCIL_OP>(front_face.stencil_depth_fail);
+	depth_stencil_desc.FrontFace.StencilDepthFailOp = static_cast<D3D11_STENCIL_OP>(front_face.stencil_pass_depth_fail);
 
-	depth_stencil_desc.BackFace.StencilFunc = (D3D11_COMPARISON_FUNC)back_face.comp_func;
-	depth_stencil_desc.BackFace.StencilPassOp = (D3D11_STENCIL_OP)back_face.stencil_depth_pass;
-	depth_stencil_desc.BackFace.StencilFailOp = (D3D11_STENCIL_OP)back_face.stencil_depth_fail;
-	depth_stencil_desc.BackFace.StencilDepthFailOp = (D3D11_STENCIL_OP)back_face.stencil_pass_depth_fail;
+	depth_stencil_desc.BackFace.StencilFunc = static_cast<D3D11_COMPARISON_FUNC>(back_face.comp_func);
+	depth_stencil_desc.BackFace.StencilPassOp = static_cast<D3D11_STENCIL_OP>(back_face.stencil_depth_pass);
+	depth_stencil_desc.BackFace.StencilFailOp = static_cast<D3D11_STENCIL_OP>(back_face.stencil_depth_fail);
+	depth_stencil_desc.BackFace.StencilDepthFailOp = static_cast<D3D11_STENCIL_OP>(back_face.stencil_pass_depth_fail);
 
 	_stencil_ref = stencil_ref;
 
@@ -102,13 +102,13 @@ bool RenderStateD3D::init(IRenderDevice& rd, bool wireframe, bool depth_test, bo
 
 	for (unsigned int i = 0; i < 8; ++i) {
 		blend_desc.RenderTarget[i].BlendEnable = blend_data[i].enable_alpha_blending;
-		blend_desc.RenderTarget[i].BlendOp = (D3D11_BLEND_OP)blend_data[i].blend_op_color;
-		blend_desc.RenderTarget[i].BlendOpAlpha = (D3D11_BLEND_OP)blend_data[i].blend_op_alpha;
-		blend_desc.RenderTarget[i].DestBlend = (D3D11_BLEND)blend_data[i].blend_dst_color;
-		blend_desc.RenderTarget[i].DestBlendAlpha = (D3D11_BLEND)blend_data[i].blend_dst_alpha;
+		blend_desc.RenderTarget[i].BlendOp = static_cast<D3D11_BLEND_OP>(blend_data[i].blend_op_color);
+		blend_desc.RenderTarget[i].BlendOpAlpha = static_cast<D3D11_BLEND_OP>(blend_data[i].blend_op_alpha);
+		blend_desc.RenderTarget[i].DestBlend = static_cast<D3D11_BLEND>(blend_data[i].blend_dst_color);
+		blend_desc.RenderTarget[i].DestBlendAlpha = static_cast<D3D11_BLEND>(blend_data[i].blend_dst_alpha);
 		blend_desc.RenderTarget[i].RenderTargetWriteMask = blend_data[i].color_write_mask;
-		blend_desc.RenderTarget[i].SrcBlend = (D3D11_BLEND)blend_data[i].blend_src_color;
-		blend_desc.RenderTarget[i].SrcBlendAlpha = (D3D11_BLEND)blend_data[i].blend_src_alpha;
+		blend_desc.RenderTarget[i].SrcBlend = static_cast<D3D11_BLEND>(blend_data[i].blend_src_color);
+		blend_desc.RenderTarget[i].SrcBlendAlpha = static_cast<D3D11_BLEND>(blend_data[i].blend_src_alpha);
 	}
 
 	result = device->CreateBlendState(&blend_desc, &_blend_state);
@@ -135,21 +135,21 @@ bool RenderStateD3D::init(IRenderDevice& rd, bool wireframe, bool depth_test, bo
 	D3D11_DEPTH_STENCIL_DESC depth_stencil_desc;
 	depth_stencil_desc.DepthEnable = depth_test;
 	depth_stencil_desc.StencilEnable = stencil_test;
-	depth_stencil_desc.DepthFunc = (D3D11_COMPARISON_FUNC)depth_func;
+	depth_stencil_desc.DepthFunc = static_cast<D3D11_COMPARISON_FUNC>(depth_func);
 	depth_stencil_desc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
 
 	depth_stencil_desc.StencilReadMask = stencil_read_mask;
 	depth_stencil_desc.StencilWriteMask = stencil_write_mask;
 
-	depth_stencil_desc.FrontFace.StencilFunc = (D3D11_COMPARISON_FUNC)front_face.comp_func;
-	depth_stencil_desc.FrontFace.StencilPassOp = (D3D11_STENCIL_OP)front_face.stencil_depth_pass;
-	depth_stencil_desc.FrontFace.StencilFailOp = (D3D11_STENCIL_OP)front_face.stencil_depth_fail;
-	depth_stencil_desc.FrontFace.StencilDepthFailOp = (D3D11_STENCIL_OP)front_face.stencil_pass_depth_fail;
+	depth_stencil_desc.FrontFace.StencilFunc = static_cast<D3D11_COMPARISON_FUNC>(front_face.comp_func);
+	depth_stencil_desc.FrontFace.StencilPassOp = static_cast<D3D11_STENCIL_OP>(front_face.stencil_depth_pass);
+	depth_stencil_desc.FrontFace.StencilFailOp = static_cast<D3D11_STENCIL_OP>(front_face.stencil_depth_fail);
+	depth_stencil_desc.FrontFace.StencilDepthFailOp = static_cast<D3D11_STENCIL_OP>(front_face.stencil_pass_depth_fail);
 
-	depth_stencil_desc.BackFace.StencilFunc = (D3D11_COMPARISON_FUNC)back_face.comp_func;
-	depth_stencil_desc.BackFace.StencilPassOp = (D3D11_STENCIL_OP)back_face.stencil_depth_pass;
-	depth_stencil_desc.BackFace.StencilFailOp = (D3D11_STENCIL_OP)back_face.stencil_depth_fail;
-	depth_stencil_desc.BackFace.StencilDepthFailOp = (D3D11_STENCIL_OP)back_face.stencil_pass_depth_fail;
+	depth_stencil_desc.BackFace.StencilFunc = static_cast<D3D11_COMPARISON_FUNC>(back_face.comp_func);
+	depth_stencil_desc.BackFace.StencilPassOp = static_cast<D3D11_STENCIL_OP>(back_face.stencil_depth_pass);
+	depth_stencil_desc.BackFace.StencilFailOp = static_cast<D3D11_STENCIL_OP>(back_face.stencil_depth_fail);
+	depth_stencil_desc.BackFace.StencilDepthFailOp = static_cast<D3D11_STENCIL_OP>(back_face.stencil_pass_depth_fail);
 
 	_stencil_ref = stencil_ref;
 
@@ -179,13 +179,13 @@ bool RenderStateD3D::init(IRenderDevice& rd, bool wireframe, bool depth_test, bo
 	blend_desc.IndependentBlendEnable = false;
 
 	blend_desc.RenderTarget[0].BlendEnable = blend_data.enable_alpha_blending;
-	blend_desc.RenderTarget[0].BlendOp = (D3D11_BLEND_OP)blend_data.blend_op_color;
-	blend_desc.RenderTarget[0].BlendOpAlpha = (D3D11_BLEND_OP)blend_data.blend_op_alpha;
-	blend_desc.RenderTarget[0].DestBlend = (D3D11_BLEND)blend_data.blend_dst_color;
-	blend_desc.RenderTarget[0].DestBlendAlpha = (D3D11_BLEND)blend_data.blend_dst_alpha;
+	blend_desc.RenderTarget[0].BlendOp = static_cast<D3D11_BLEND_OP>(blend_data.blend_op_color);
+	blend_desc.RenderTarget[0].BlendOpAlpha = static_cast<D3D11_BLEND_OP>(blend_data.blend_op_alpha);
+	blend_desc.RenderTarget[0].DestBlend = static_cast<D3D11_BLEND>(blend_data.blend_dst_color);
+	blend_desc.RenderTarget[0].DestBlendAlpha = static_cast<D3D11_BLEND>(blend_data.blend_dst_alpha);
 	blend_desc.RenderTarget[0].RenderTargetWriteMask = blend_data.color_write_mask;
-	blend_desc.RenderTarget[0].SrcBlend = (D3D11_BLEND)blend_data.blend_src_color;
-	blend_desc.RenderTarget[0].SrcBlendAlpha = (D3D11_BLEND)blend_data.blend_src_alpha;
+	blend_desc.RenderTarget[0].SrcBlend = static_cast<D3D11_BLEND>(blend_data.blend_src_color);
+	blend_desc.RenderTarget[0].SrcBlendAlpha = static_cast<D3D11_BLEND>(blend_data.blend_src_alpha);
 
 	result = device->CreateBlendState(&blend_desc, &_blend_state);
 	if (FAILED(result)) {

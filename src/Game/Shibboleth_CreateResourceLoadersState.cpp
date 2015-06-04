@@ -100,7 +100,7 @@ void CreateResourceLoadersState::update(void)
 		}
 
 		_app.getGameLogFile().first.printf("Adding Buffer Creator\n");
-		res_mgr.registerResourceLoader(buffer_creator, "Buffer", TPT_GRAPHICS);
+		res_mgr.registerResourceLoader(buffer_creator, "Buffer");
 	}
 
 	// TEXTURE LOADER
@@ -128,7 +128,7 @@ void CreateResourceLoadersState::update(void)
 		json_elements.emplacePush(modifiers);
 
 		_app.getGameLogFile().first.printf("Adding Texture Loader\n");
-		res_mgr.registerResourceLoader(texture_loader, ".texture", TPT_GRAPHICS, json_elements);
+		res_mgr.registerResourceLoader(texture_loader, ".texture", 0, json_elements);
 	}
 
 	// SAMPLER STATE LOADER
@@ -142,7 +142,7 @@ void CreateResourceLoadersState::update(void)
 		}
 
 		_app.getGameLogFile().first.printf("Adding Sampler State Loader\n");
-		res_mgr.registerResourceLoader(sampler_loader, ".sampler", TPT_GRAPHICS);
+		res_mgr.registerResourceLoader(sampler_loader, ".sampler");
 	}
 
 	// SHADER LOADER
@@ -156,7 +156,7 @@ void CreateResourceLoadersState::update(void)
 		}
 
 		_app.getGameLogFile().first.printf("Adding Shader Loader\n");
-		res_mgr.registerResourceLoader(shader_loader, render_manager.getShaderExtension(), TPT_GRAPHICS);
+		res_mgr.registerResourceLoader(shader_loader, render_manager.getShaderExtension());
 	}
 
 	// SHADER PROGRAM LOADER
@@ -186,7 +186,7 @@ void CreateResourceLoadersState::update(void)
 		json_elements.emplacePush(modifiers);
 
 		_app.getGameLogFile().first.printf("Adding Shader Program Loader\n");
-		res_mgr.registerResourceLoader(shader_program_loader, ".material", TPT_GRAPHICS, json_elements);
+		res_mgr.registerResourceLoader(shader_program_loader, ".material", 0, json_elements);
 	}
 
 	// LUA LOADER
@@ -277,7 +277,7 @@ void CreateResourceLoadersState::update(void)
 		json_elements.emplacePush(modifiers);
 
 		_app.getGameLogFile().first.printf("Adding Model Loader\n");
-		res_mgr.registerResourceLoader(model_loader, ".model", TPT_GRAPHICS, json_elements);
+		res_mgr.registerResourceLoader(model_loader, ".model", 0, json_elements);
 	}
 
 	// RENDER TARGET LOADER
@@ -291,7 +291,7 @@ void CreateResourceLoadersState::update(void)
 		}
 
 		_app.getGameLogFile().first.printf("Adding Render Target Loader\n");
-		res_mgr.registerResourceLoader(render_target_loader, ".rendertarget", TPT_GRAPHICS);
+		res_mgr.registerResourceLoader(render_target_loader, ".rendertarget");
 	}
 
 	_app.getGameLogFile().first.printf("Finished Creating Resource Loaders\n\n");
