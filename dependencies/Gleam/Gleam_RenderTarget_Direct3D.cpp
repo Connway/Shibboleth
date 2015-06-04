@@ -86,8 +86,8 @@ bool RenderTargetD3D::addTexture(IRenderDevice& rd, const ITexture* color_textur
 	if (_render_target_views.empty()) {
 		_viewport.TopLeftX = 0.0f;
 		_viewport.TopLeftY = 0.0f;
-		_viewport.Width = (float)color_texture->getWidth();
-		_viewport.Height = (float)color_texture->getHeight();
+		_viewport.Width = static_cast<float>(color_texture->getWidth());
+		_viewport.Height = static_cast<float>(color_texture->getHeight());
 		_viewport.MinDepth = 0.0f;
 		_viewport.MaxDepth = 1.0f;
 	}

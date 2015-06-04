@@ -151,7 +151,7 @@ void RenderStateGL::destroy(void)
 void RenderStateGL::set(IRenderDevice& rd) const
 {
 	assert(!rd.isD3D());
-	IRenderDeviceGL& rdgl = (IRenderDeviceGL&)*(((const char*)&rd) + sizeof(IRenderDevice));
+	IRenderDeviceGL& rdgl = reinterpret_cast<IRenderDeviceGL&>(*(reinterpret_cast<char*>(&rd) + sizeof(IRenderDevice)));
 	rdgl.setRenderState(this);
 }
 

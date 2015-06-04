@@ -68,7 +68,7 @@ bool LayoutD3D::init(IRenderDevice& rd, const LayoutDescription* layout_desc, si
 		input_desc[i].InstanceDataStepRate = 0;
 	}
 
-	ID3DBlob* shader_buffer = ((const ShaderD3D*)shader)->getByteCodeBuffer();
+	ID3DBlob* shader_buffer = reinterpret_cast<const ShaderD3D*>(shader)->getByteCodeBuffer();
 	IRenderDeviceD3D& rd3d = reinterpret_cast<IRenderDeviceD3D&>(*(reinterpret_cast<char*>(&rd) + sizeof(IRenderDevice)));
 	ID3D11Device* device = rd3d.getActiveDevice();
 

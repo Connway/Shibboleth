@@ -32,8 +32,16 @@ THE SOFTWARE.
 
 NS_GLEAM
 
-RenderDeviceD3D::RenderDeviceD3D(void):
-	_video_memory(0), _curr_output(UINT_FAIL), _curr_device(UINT_FAIL)
+ID3D11RenderTargetView* RenderDeviceD3D::_active_render_target = nullptr;
+ID3D11DeviceContext* RenderDeviceD3D::_active_context = nullptr;
+IDXGISwapChain* RenderDeviceD3D::_active_swap_chain = nullptr;
+ID3D11Device* RenderDeviceD3D::_active_device = nullptr;
+D3D11_VIEWPORT RenderDeviceD3D::_active_viewport = { 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f };
+bool RenderDeviceD3D::_active_vsync = false;
+unsigned int RenderDeviceD3D::_curr_device = UINT_FAIL;
+unsigned int RenderDeviceD3D::_curr_output = UINT_FAIL;
+
+RenderDeviceD3D::RenderDeviceD3D(void)
 {
 	_clear_color[0] = 0.0f;
 	_clear_color[1] = 0.0f;
@@ -347,11 +355,6 @@ bool RenderDeviceD3D::init(const IWindow& window, unsigned int adapter_id, unsig
 
 void RenderDeviceD3D::destroy(void)
 {
-	_active_render_target = nullptr;
-	_active_context = nullptr;
-	_active_swap_chain = nullptr;
-	_active_device = nullptr;
-
 	_devices.clear();
 	_display_info.clear();
 }
@@ -385,7 +388,7 @@ void RenderDeviceD3D::beginFrame(void)
 {
 	resetRenderState();
 	_active_context->RSSetViewports(1, &_active_viewport);
-	_active_context->ClearRenderTargetView(_active_render_target.get(), _clear_color);
+	_active_context->ClearRenderTargetView(_active_render_target, _clear_color);
 }
 
 void RenderDeviceD3D::endFrame(void)
@@ -409,13 +412,6 @@ bool RenderDeviceD3D::resize(const IWindow& window)
 
 			if (SUCCEEDED(sc->GetDesc(&sc_desc))) {
 				if (sc_desc.OutputWindow == wnd.getHWnd()) {
-					bool resizing_active_output = false;
-
-					if (rtv == _active_render_target) {
-						resizing_active_output = true;
-						_active_render_target = nullptr;
-						_active_swap_chain = nullptr;
-					}
 
 					rtv = nullptr;
 					rt->destroy();
@@ -440,10 +436,6 @@ bool RenderDeviceD3D::resize(const IWindow& window)
 						result = sc->SetFullscreenState(TRUE, _display_info[i].output_info[j].output.get());
 					} else {
 						result = sc->SetFullscreenState(FALSE, nullptr);
-					}
-
-					if (resizing_active_output) {
-						setCurrentOutput(getCurrentOutput());
 					}
 
 					return SUCCEEDED(result);
@@ -549,12 +541,18 @@ bool RenderDeviceD3D::setCurrentOutput(unsigned int output)
 {
 	assert(_devices[_curr_device].swap_chains.size() > output);
 
-	_active_render_target = _devices[_curr_device].render_targets[output];
-	_active_swap_chain = _devices[_curr_device].swap_chains[output];
+	SAFERELEASE(_active_render_target);
+	SAFERELEASE(_active_swap_chain);
+
+	_active_render_target = _devices[_curr_device].render_targets[output].get();
+	_active_swap_chain = _devices[_curr_device].swap_chains[output].get();
 	_active_viewport = _devices[_curr_device].viewports[output];
 	_active_vsync = _devices[_curr_device].vsync[output];
 
 	_curr_output = output;
+
+	_active_render_target->AddRef();
+	_active_swap_chain->AddRef();
 
 	return true;
 }
@@ -568,9 +566,16 @@ bool RenderDeviceD3D::setCurrentDevice(unsigned int device)
 {
 	assert(_devices.size() > device);
 
-	_active_context = _devices[device].context;
-	_active_device = _devices[device].device;
+	SAFERELEASE(_active_context);
+	SAFERELEASE(_active_device);
+
+	_active_context = _devices[device].context.get();
+	_active_device = _devices[device].device.get();
+
 	_curr_device = device;
+	
+	_active_context->AddRef();
+	_active_device->AddRef();
 
 	return setCurrentOutput(0);
 }
@@ -634,12 +639,12 @@ ID3D11Device* RenderDeviceD3D::getDevice(unsigned int device)
 
 ID3D11DeviceContext* RenderDeviceD3D::getActiveDeviceContext(void)
 {
-	return _active_context.get();
+	return _active_context;
 }
 
 ID3D11Device* RenderDeviceD3D::getActiveDevice(void)
 {
-	return _active_device.get();
+	return _active_device;
 }
 
 NS_END

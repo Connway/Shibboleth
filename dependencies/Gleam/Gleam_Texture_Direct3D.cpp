@@ -236,7 +236,7 @@ bool TextureD3D::init3D(IRenderDevice& rd, int width, int height, int depth, FOR
 	IRenderDeviceD3D& rd3d = reinterpret_cast<IRenderDeviceD3D&>(*(reinterpret_cast<char*>(&rd) + sizeof(IRenderDevice)));
 	ID3D11Device* device = rd3d.getActiveDevice();
 
-	_mip_levels = (unsigned int)mip_levels;
+	_mip_levels = static_cast<unsigned int>(mip_levels);
 	_format = format;
 	_type = THREED;
 	_width = width;
@@ -281,7 +281,7 @@ bool TextureD3D::init2D(IRenderDevice& rd, int width, int height, FORMAT format,
 	IRenderDeviceD3D& rd3d = reinterpret_cast<IRenderDeviceD3D&>(*(reinterpret_cast<char*>(&rd) + sizeof(IRenderDevice)));
 	ID3D11Device* device = rd3d.getActiveDevice();
 
-	_mip_levels = (unsigned int)mip_levels;
+	_mip_levels = static_cast<unsigned int>(mip_levels);
 	_format = format;
 	_type = TWOD;
 	_width = width;
@@ -328,7 +328,7 @@ bool TextureD3D::init1D(IRenderDevice& rd, int width, FORMAT format, int mip_lev
 	IRenderDeviceD3D& rd3d = reinterpret_cast<IRenderDeviceD3D&>(*(reinterpret_cast<char*>(&rd) + sizeof(IRenderDevice)));
 	ID3D11Device* device = rd3d.getActiveDevice();
 
-	_mip_levels = (unsigned int)mip_levels;
+	_mip_levels = static_cast<unsigned int>(mip_levels);
 	_format = format;
 	_type = ONED;
 	_width = width;
@@ -372,7 +372,7 @@ bool TextureD3D::initCubemap(IRenderDevice& rd, int width, int height, FORMAT fo
 	IRenderDeviceD3D& rd3d = reinterpret_cast<IRenderDeviceD3D&>(*(reinterpret_cast<char*>(&rd) + sizeof(IRenderDevice)));
 	ID3D11Device* device = rd3d.getActiveDevice();
 
-	_mip_levels = (unsigned int)mip_levels;
+	_mip_levels = static_cast<unsigned int>(mip_levels);
 	_format = format;
 	_type = CUBE;
 	_width = width;

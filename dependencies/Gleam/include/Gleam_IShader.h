@@ -22,7 +22,7 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Gleam_String.h"
+#include "Gleam_Defines.h"
 #include <Gaff_IRefCounted.h>
 
 NS_GLEAM
@@ -44,122 +44,6 @@ public:
 	};
 
 	virtual ~IShader(void) {}
-
-	INLINE bool initSource(IRenderDevice& rd, GleamAString& shader_source, SHADER_TYPE shader_type)
-	{
-		return initSource(rd, shader_source.getBuffer(), shader_source.size(), shader_type);
-	}
-
-	INLINE bool init(IRenderDevice& rd, const GleamAString& file_path, SHADER_TYPE shader_type)
-	{
-		return init(rd, file_path.getBuffer(), shader_type);
-	}
-
-	INLINE bool initVertex(IRenderDevice& rd, const GleamAString& file_path)
-	{
-		return initVertex(rd, file_path.getBuffer());
-	}
-
-	INLINE bool initPixel(IRenderDevice& rd, const GleamAString& file_path)
-	{
-		return initPixel(rd, file_path.getBuffer());
-	}
-
-	INLINE bool initDomain(IRenderDevice& rd, const GleamAString& file_path)
-	{
-		return initDomain(rd, file_path.getBuffer());
-	}
-
-	INLINE bool initGeometry(IRenderDevice& rd, const GleamAString& file_path)
-	{
-		return initGeometry(rd, file_path.getBuffer());
-	}
-
-	INLINE bool initHull(IRenderDevice& rd, const GleamAString& file_path)
-	{
-		return initHull(rd, file_path.getBuffer());
-	}
-
-	INLINE bool initCompute(IRenderDevice& rd, const GleamAString& file_path)
-	{
-		return initCompute(rd, file_path.getBuffer());
-	}
-
-	INLINE bool initVertexSource(IRenderDevice& rd, const GleamAString& source)
-	{
-		return initVertexSource(rd, source.getBuffer());
-	}
-
-	INLINE bool initPixelSource(IRenderDevice& rd, const GleamAString& source)
-	{
-		return initPixelSource(rd, source.getBuffer());
-	}
-
-	INLINE bool initDomainSource(IRenderDevice& rd, const GleamAString& source)
-	{
-		return initDomainSource(rd, source.getBuffer());
-	}
-
-	INLINE bool initGeometrySource(IRenderDevice& rd, const GleamAString& source)
-	{
-		return initGeometrySource(rd, source.getBuffer());
-	}
-
-	INLINE bool initHullSource(IRenderDevice& rd, const GleamAString& source)
-	{
-		return initHullSource(rd, source.getBuffer());
-	}
-
-	INLINE bool initComputeSource(IRenderDevice& rd, const GleamAString& source)
-	{
-		return initComputeSource(rd, source.getBuffer());
-	}
-
-#ifdef _UNICODE
-	INLINE bool init(IRenderDevice& rd, const GleamWString& file_path, SHADER_TYPE shader_type)
-	{
-		return init(rd, file_path.getBuffer(), shader_type);
-	}
-
-	INLINE bool initVertex(IRenderDevice& rd, const GleamWString& file_path)
-	{
-		return initVertex(rd, file_path.getBuffer());
-	}
-
-	INLINE bool initPixel(IRenderDevice& rd, const GleamWString& file_path)
-	{
-		return initPixel(rd, file_path.getBuffer());
-	}
-
-	INLINE bool initDomain(IRenderDevice& rd, const GleamWString& file_path)
-	{
-		return initDomain(rd, file_path.getBuffer());
-	}
-
-	INLINE bool initGeometry(IRenderDevice& rd, const GleamWString& file_path)
-	{
-		return initGeometry(rd, file_path.getBuffer());
-	}
-
-	INLINE bool initHull(IRenderDevice& rd, const GleamWString& file_path)
-	{
-		return initHull(rd, file_path.getBuffer());
-	}
-
-	INLINE bool initCompute(IRenderDevice& rd, const GleamWString& file_path)
-	{
-		return initCompute(rd, file_path.getBuffer());
-	}
-
-	virtual bool init(IRenderDevice& rd, const wchar_t* file_path, SHADER_TYPE shader_type) = 0;
-
-	virtual bool initVertex(IRenderDevice&, const wchar_t* file_path) = 0;
-	virtual bool initPixel(IRenderDevice&, const wchar_t* file_path) = 0;
-	virtual bool initDomain(IRenderDevice&, const wchar_t* file_path) = 0;
-	virtual bool initGeometry(IRenderDevice&, const wchar_t* file_path) = 0;
-	virtual bool initHull(IRenderDevice&, const wchar_t* file_path) = 0;
-	virtual bool initCompute(IRenderDevice&, const wchar_t* file_path) = 0;
-#endif
 
 	virtual bool initSource(IRenderDevice& rd, const char* shader_source, size_t source_size, SHADER_TYPE shader_type) = 0;
 	virtual bool initSource(IRenderDevice& rd, const char* shader_source, SHADER_TYPE shader_type) = 0;

@@ -122,20 +122,17 @@ private:
 	GleamArray<AdapterInfo> _display_info;
 	GleamArray<Device> _devices;
 
-	wchar_t _video_card_name[128];
 	float _clear_color[4];
 
-	Gaff::COMRefPtr<ID3D11RenderTargetView> _active_render_target;
-	Gaff::COMRefPtr<ID3D11DeviceContext> _active_context;
-	Gaff::COMRefPtr<IDXGISwapChain> _active_swap_chain;
-	Gaff::COMRefPtr<ID3D11Device> _active_device;
-	D3D11_VIEWPORT _active_viewport;
-	bool _active_vsync;
+	static THREAD_LOCAL ID3D11RenderTargetView* _active_render_target;
+	static THREAD_LOCAL ID3D11DeviceContext* _active_context;
+	static THREAD_LOCAL IDXGISwapChain* _active_swap_chain;
+	static THREAD_LOCAL ID3D11Device* _active_device;
+	static THREAD_LOCAL D3D11_VIEWPORT _active_viewport;
+	static THREAD_LOCAL bool _active_vsync;
 
-	unsigned int _video_memory;
-
-	unsigned int _curr_output;
-	unsigned int _curr_device;
+	static THREAD_LOCAL unsigned int _curr_device;
+	static THREAD_LOCAL unsigned int _curr_output;
 };
 
 NS_END

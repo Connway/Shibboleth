@@ -29,7 +29,6 @@ THE SOFTWARE.
 #include <Shibboleth_IApp.h>
 #include <Gleam_IRenderDevice.h>
 #include <Gaff_ScopedExit.h>
-#include <Gaff_ScopedLock.h>
 #include <Gaff_Image.h>
 #include <Gaff_JSON.h>
 
@@ -131,7 +130,6 @@ Gaff::IVirtualDestructor* TextureLoader::load(const char* file_name, unsigned lo
 	texture_data->normalized = json["normalized"].isTrue();
 	texture_data->cubemap = json["cubemap"].isTrue();
 
-	Gaff::ScopedLock<Gaff::SpinLock> scoped_lock(_render_mgr.getSpinLock());
 	Gleam::IRenderDevice& rd = _render_mgr.getRenderDevice();
 
 	Array<const RenderManager::WindowData*> windows = (json["any_display_with_tags"].isTrue()) ?
