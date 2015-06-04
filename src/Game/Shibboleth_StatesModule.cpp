@@ -113,7 +113,6 @@ public:
 		// query occlusion manager
 		//Shibboleth::OcclusionManager::QueryData objects = om.findObjectsInFrustum();
 
-		rm.getSpinLock().lock(); // Have to lock just in case other resources are trying to load and use the device
 		rm.getRenderDevice().setCurrentDevice(0);
 		rm.getRenderDevice().beginFrame();
 
@@ -122,7 +121,6 @@ public:
 		}
 
 		rm.getRenderDevice().endFrame();
-		rm.getSpinLock().unlock();
 	}
 
 private:

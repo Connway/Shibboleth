@@ -29,7 +29,6 @@ THE SOFTWARE.
 #include <Gleam_IRenderDevice.h>
 #include <Gleam_IShader.h>
 #include <Gaff_ScopedExit.h>
-#include <Gaff_ScopedLock.h>
 #include <Gaff_File.h>
 
 NS_SHIBBOLETH
@@ -64,7 +63,6 @@ Gaff::IVirtualDestructor* ShaderLoader::load(const char* file_name, unsigned lon
 
 	shader_data->shader_type = static_cast<Gleam::IShader::SHADER_TYPE>(user_data);
 
-	Gaff::ScopedLock<Gaff::SpinLock> scoped_lock(_render_mgr.getSpinLock());
 	Gleam::IRenderDevice& rd = _render_mgr.getRenderDevice();
 
 	for (unsigned int i = 0; i < rd.getNumDevices(); ++i) {

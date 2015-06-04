@@ -27,7 +27,6 @@ THE SOFTWARE.
 #include <Shibboleth_IApp.h>
 #include <Gleam_IRenderDevice.h>
 #include <Gleam_IBuffer.h>
-#include <Gaff_ScopedLock.h>
 
 NS_SHIBBOLETH
 
@@ -52,7 +51,6 @@ Gaff::IVirtualDestructor* BufferCreator::load(const char*, unsigned long long bu
 		return nullptr;
 	}
 
-	Gaff::ScopedLock<Gaff::SpinLock> scoped_lock(_render_mgr.getSpinLock());
 	data->data.reserve(rd.getNumDevices());
 
 	for (unsigned int i = 0; i < rd.getNumDevices(); ++i) {

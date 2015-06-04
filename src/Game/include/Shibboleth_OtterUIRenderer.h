@@ -91,7 +91,6 @@ private:
 	IApp& _app;
 
 	Gleam::IRenderDevice& _render_device;
-	Gaff::SpinLock& _rd_spinlock;
 
 	ResWrap<ProgramData> _programs;
 

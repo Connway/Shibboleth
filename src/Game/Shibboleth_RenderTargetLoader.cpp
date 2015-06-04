@@ -29,7 +29,6 @@ THE SOFTWARE.
 #include <Shibboleth_IApp.h>
 #include <Gleam_IRenderDevice.h>
 #include <Gleam_ITexture.h>
-#include <Gaff_ScopedLock.h>
 
 NS_SHIBBOLETH
 
@@ -129,7 +128,6 @@ Gaff::IVirtualDestructor* RenderTargetLoader::load(const char* file_name, unsign
 	data->tags = disp_tags;
 
 	RenderManager& rm = GetApp().getManagerT<RenderManager>("Render Manager");
-	Gaff::ScopedLock<Gaff::SpinLock> scoped_lock(rm.getSpinLock());
 	Gleam::IRenderDevice& rd = rm.getRenderDevice();
 
 	data->render_targets.resize(rd.getNumDevices());

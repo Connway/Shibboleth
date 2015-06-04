@@ -32,7 +32,6 @@ THE SOFTWARE.
 #include <Gleam_ILayout.h>
 #include <Gleam_IBuffer.h>
 #include <Gleam_IMesh.h>
-#include <Gaff_ScopedLock.h>
 
 #define MAX_VERTICES 9000
 
@@ -47,8 +46,7 @@ static Gleam::IMesh::TOPOLOGY_TYPE otter_topology_map[3] = {
 OtterUIRenderer::OtterUIRenderer(IApp& app):
 	_resource_manager(app.getManagerT<ResourceManager>("Resource Manager")),
 	_render_manager(app.getManagerT<RenderManager>("Render Manager")),
-	_app(app), _render_device(app.getManagerT<RenderManager>("Render Manager").getRenderDevice()),
-	_rd_spinlock(app.getManagerT<RenderManager>("Render Manager").getSpinLock())
+	_app(app), _render_device(app.getManagerT<RenderManager>("Render Manager").getRenderDevice())
 {
 }
 
@@ -66,8 +64,6 @@ bool OtterUIRenderer::init(const char* default_shader)
 	while (!_programs.getResourcePtr()->isLoaded()) {
 		// Block until loaded
 	}
-
-	Gaff::ScopedLock<Gaff::SpinLock> scoped_lock(_rd_spinlock);
 
 	_program_buffers.resize(_render_device.getNumDevices());
 	_device_data.resize(_render_device.getNumDevices());
@@ -250,7 +246,6 @@ void OtterUIRenderer::OnLoadTexture(sint32 textureID, const char* szPath)
 	//ResourceData res_data = { Array<ShaderResourceViewPtr>(), resource };
 	ResourceData res_data = { Array<ShaderResourceViewPtr>(), tex_res };
 
-	Gaff::ScopedLock<Gaff::SpinLock> scoped_lock(_rd_spinlock);
 	res_data.resource_views.resize(_render_device.getNumDevices());
 
 	for (unsigned int i = 0; i < _render_device.getNumDevices(); ++i) {
@@ -281,16 +276,12 @@ void OtterUIRenderer::OnDrawBegin()
 {
 	// Calls prior to this will set up the device and output
 
-	// Make sure no one tries to use the render device while we're drawing
-	_rd_spinlock.lock();
-
 	// set up shader, buffers, etc.
 	//DeviceData& device_data = _device_data[_render_device.getCurrentDevice()];
 }
 
 void OtterUIRenderer::OnDrawEnd()
 {
-	_rd_spinlock.unlock();
 }
 
 void OtterUIRenderer::OnCommitVertexBuffer(const Otter::GUIVertex* pVertices, uint32 numVertices)
