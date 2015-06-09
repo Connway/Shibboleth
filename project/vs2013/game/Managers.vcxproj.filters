@@ -18,6 +18,9 @@
     <ClInclude Include="..\..\..\src\Game\include\Shibboleth_FrameManager.h">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\src\Game\include\Shibboleth_IRenderPipeline.h">
+      <Filter>include</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\src\Game\include\Shibboleth_LuaManager.h">
       <Filter>include</Filter>
     </ClInclude>
@@ -31,9 +34,6 @@
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\src\Game\include\Shibboleth_RenderManager.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\src\Game\include\Shibboleth_RenderPipeline.h">
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\src\Game\include\Shibboleth_RenderPipelineManager.h">
@@ -56,7 +56,6 @@
     <ClCompile Include="..\..\..\src\Game\Shibboleth_OcclusionManager.cpp" />
     <ClCompile Include="..\..\..\src\Game\Shibboleth_OtterUIManager.cpp" />
     <ClCompile Include="..\..\..\src\Game\Shibboleth_RenderManager.cpp" />
-    <ClCompile Include="..\..\..\src\Game\Shibboleth_RenderPipeline.cpp" />
     <ClCompile Include="..\..\..\src\Game\Shibboleth_RenderPipelineManager.cpp" />
     <ClCompile Include="..\..\..\src\Game\Shibboleth_ResourceManager.cpp" />
     <ClCompile Include="..\..\..\src\Game\Shibboleth_UpdateManager.cpp" />

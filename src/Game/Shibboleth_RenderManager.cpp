@@ -919,14 +919,15 @@ void RenderManager::GenerateCommandListsHelper(void* job_data)
 
 			const OcclusionManager::QueryResult& result = it->objects.results[i][index];
 			Gleam::TransformCPU final_transform;
+			Gleam::TransformCPU inverse_camera = it->camera_transform.inverse();
 
 			// If we're a static object, just grab the transform from the object.
-			if (i == 0) {
-				final_transform = it->camera_transform.inverse() + result.first->getWorldTransform();
+			if (i == OcclusionManager::OT_STATIC) {
+				final_transform = inverse_camera + result.first->getWorldTransform();
 
 			// Otherwise, grab it from the copies we made.
 			} else {
-				final_transform = it->camera_transform.inverse() + it->transforms[i - 1][index];
+				final_transform = inverse_camera + it->transforms[i - 1][index];
 			}
 
 			// Pre-computing the world-to-camera-to-projection matrix.
@@ -934,6 +935,8 @@ void RenderManager::GenerateCommandListsHelper(void* job_data)
 
 			assert(result.second.first);
 			ModelComponent* model_comp = reinterpret_cast<ModelComponent*>(result.second.first);
+
+			// Send object through render pipeline
 		}
 	}
 }

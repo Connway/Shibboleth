@@ -21,7 +21,6 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include <Shibboleth_CreateResourceLoadersState.h>
-#include <Shibboleth_LoadComponentsState.h>
 #include <Shibboleth_SetupGraphicsState.h>
 #include <Shibboleth_SetupOtterUIState.h>
 #include <Shibboleth_Utilities.h>
@@ -38,7 +37,6 @@ THE SOFTWARE.
 #include <Shibboleth_Object.h>
 
 #include <Gleam_IRenderDevice.h>
-
 #include <Gaff_Timer.h>
 
 #ifdef USE_VLD
@@ -137,7 +135,6 @@ Shibboleth::IState* CreateStateT(Shibboleth::IApp& app)
 enum States
 {
 	SETUP_GRAPHICS_STATE = 0,
-	LOAD_COMPONENT_STATE,
 	CREATE_RESOURCE_LOADERS_STATE,
 	SETUP_OTTER_UI_STATE,
 	LOOP_FOREVER_STATE,
@@ -148,7 +145,6 @@ typedef Shibboleth::IState* (*CreateStateFunc)(Shibboleth::IApp&);
 
 static CreateStateFunc create_funcs[] = {
 	&CreateStateT<Shibboleth::SetupGraphicsState>,
-	&CreateStateT<Shibboleth::LoadComponentsState>,
 	&CreateStateT<Shibboleth::CreateResourceLoadersState>,
 	&CreateStateT<Shibboleth::SetupOtterUIState>,
 	&CreateStateT < LoopState >
@@ -156,7 +152,6 @@ static CreateStateFunc create_funcs[] = {
 
 static const char* state_names[NUM_STATES] = {
 	"SetupGraphicsState",
-	"LoadComponentState",
 	"CreateResourceLoadersState",
 	"SetupOtterUIState",
 	"loopforeverstate"

@@ -133,7 +133,6 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level4</WarningLevel>
       <AdditionalIncludeDirectories>..\..\..\dependencies\dirent;..\..\..\src\Game\include;..\..\..\src\Shared\include;..\..\..\src\Memory\include;..\..\..\dependencies\OtterUI\inc;..\..\..\dependencies\jansson;..\..\..\dependencies\Gleam\include;..\..\..\dependencies\Gaff\include;..\..\..\dependencies\LuaState;..\..\..\dependencies\LuaJIT-2.0.3\src;..\..\..\dependencies\utf8-cpp;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
@@ -147,7 +146,7 @@
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
-      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <GenerateDebugInformation>false</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
@@ -157,7 +156,6 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level4</WarningLevel>
       <AdditionalIncludeDirectories>..\..\..\dependencies\dirent;..\..\..\src\Game\include;..\..\..\src\Shared\include;..\..\..\src\Memory\include;..\..\..\dependencies\OtterUI\inc;..\..\..\dependencies\jansson;..\..\..\dependencies\Gleam\include;..\..\..\dependencies\Gaff\include;..\..\..\dependencies\LuaState;..\..\..\dependencies\LuaJIT-2.0.3\src;..\..\..\dependencies\utf8-cpp;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
@@ -170,7 +168,7 @@
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
-      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <GenerateDebugInformation>false</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
@@ -180,12 +178,12 @@
     <ClInclude Include="..\..\..\src\Game\include\Shibboleth_CameraManager.h" />
     <ClInclude Include="..\..\..\src\Game\include\Shibboleth_ComponentManager.h" />
     <ClInclude Include="..\..\..\src\Game\include\Shibboleth_FrameManager.h" />
+    <ClInclude Include="..\..\..\src\Game\include\Shibboleth_IRenderPipeline.h" />
     <ClInclude Include="..\..\..\src\Game\include\Shibboleth_LuaManager.h" />
     <ClInclude Include="..\..\..\src\Game\include\Shibboleth_ObjectManager.h" />
     <ClInclude Include="..\..\..\src\Game\include\Shibboleth_OcclusionManager.h" />
     <ClInclude Include="..\..\..\src\Game\include\Shibboleth_OtterUIManager.h" />
     <ClInclude Include="..\..\..\src\Game\include\Shibboleth_RenderManager.h" />
-    <ClInclude Include="..\..\..\src\Game\include\Shibboleth_RenderPipeline.h" />
     <ClInclude Include="..\..\..\src\Game\include\Shibboleth_RenderPipelineManager.h" />
     <ClInclude Include="..\..\..\src\Game\include\Shibboleth_ResourceManager.h" />
     <ClInclude Include="..\..\..\src\Game\include\Shibboleth_UpdateManager.h" />
@@ -200,7 +198,6 @@
     <ClCompile Include="..\..\..\src\Game\Shibboleth_OcclusionManager.cpp" />
     <ClCompile Include="..\..\..\src\Game\Shibboleth_OtterUIManager.cpp" />
     <ClCompile Include="..\..\..\src\Game\Shibboleth_RenderManager.cpp" />
-    <ClCompile Include="..\..\..\src\Game\Shibboleth_RenderPipeline.cpp" />
     <ClCompile Include="..\..\..\src\Game\Shibboleth_RenderPipelineManager.cpp" />
     <ClCompile Include="..\..\..\src\Game\Shibboleth_ResourceManager.cpp" />
     <ClCompile Include="..\..\..\src\Game\Shibboleth_UpdateManager.cpp" />

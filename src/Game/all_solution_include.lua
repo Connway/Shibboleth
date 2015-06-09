@@ -17,7 +17,7 @@ group "Common"
 	dofile("../Shared/include_external.lua")
 	dofile("../Memory/include_external.lua")
 
-group "GameModules"
+group "Game Modules"
 	external "Game"
 		if _ACTION then
 			location ("../../project/" .. _ACTION .. "/game")

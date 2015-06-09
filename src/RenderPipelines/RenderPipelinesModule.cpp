@@ -20,32 +20,40 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#pragma once
+#include "Shibboleth_InGameRenderPipeline.h"
+#include <Shibboleth_RenderPipelineManager.h>
+#include <Shibboleth_IRenderPipeline.h>
+#include <Shibboleth_Utilities.h>
+#include <Shibboleth_IApp.h>
+#include <Gaff_JSON.h>
 
-#include "Shibboleth_IState.h"
-
-NS_SHIBBOLETH
-
-class IApp;
-
-class LoadComponentsState : public IState
+DYNAMICEXPORT_C bool InitModule(Shibboleth::IApp& app)
 {
-public:
-	LoadComponentsState(IApp& app);
-	~LoadComponentsState(void);
+	Gaff::JSON::SetMemoryFunctions(&Shibboleth::ShibbolethAllocate, &Shibboleth::ShibbolethFree);
+	Gaff::JSON::SetHashSeed(app.getSeed());
 
-	bool init(unsigned int /*state_id*/);
+	Shibboleth::SetApp(app);
 
-	void enter(void);
-	void update(void);
-	void exit(void);
+	return true;
+}
 
-private:
-	IApp& _app;
-	//unsigned int _state_id;
+DYNAMICEXPORT_C void ShutdownModule(void)
+{
+}
 
-	GAFF_NO_COPY(LoadComponentsState);
-	GAFF_NO_MOVE(LoadComponentsState);
-};
+DYNAMICEXPORT_C bool CreateAndRegisterRenderPipelines(Shibboleth::RenderPipelineManager& rp_mgr)
+{
+	Shibboleth::IRenderPipeline* pipeline = Shibboleth::GetAllocator()->allocT<Shibboleth::InGameRenderPipeline>();
 
-NS_END
+	if (!pipeline) {
+		return false;
+	}
+
+	rp_mgr.registerRenderPipeline(pipeline);
+
+	return true;
+}
+
+DYNAMICEXPORT_C void DestroyRenderpipeline(Shibboleth::IRenderPipeline* render_pipeline)
+{
+}
