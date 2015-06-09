@@ -1,13 +1,10 @@
-solution "App"
+solution "RenderPipelines"
 	if _ACTION then
-		location ("../../project/" .. _ACTION .. "/app")
+		location ("../../project/" .. _ACTION .. "/renderpipelinesmodule")
 	end
 
 	configurations { "Debug", "Release" }
 	dofile("../../solution_settings.lua")
-
-	startproject "App"
-	debugdir "../../workingdir/App"
 
 	configuration "windows"
 		includedirs { "../../dependencies/dirent" }
@@ -16,23 +13,28 @@ solution "App"
 
 group "Dependencies"
 	dofile("../../dependencies/jansson/include_external.lua")
+	dofile("../../dependencies/Gleam/include_external.lua")
 	dofile("../../dependencies/Gaff/include_external.lua")
+	dofile("../../dependencies/glew/include_external.lua")
 
 group ""
 	dofile("../Shared/include_external.lua")
 	dofile("../Memory/include_external.lua")
 
-	project "App"
+	external "Managers"
 		if _ACTION then
-			location ("../../project/" .. _ACTION .. "/app")
+			location ("../../project/" .. _ACTION .. "/game")
 		end
 
-		if _OPTIONS["console_app"] then
-			kind "ConsoleApp"
-		else
-			kind "WindowedApp"
+		kind "StaticLib"
+		language "C++"
+
+	project "RenderPipelinesModule"
+		if _ACTION then
+			location ("../../project/" .. _ACTION .. "/renderpipelinesmodule")
 		end
 
+		kind "SharedLib"
 		language "C++"
 
 		files { "**.h", "**.cpp", "**.inl" }
@@ -41,17 +43,23 @@ group ""
 		{
 			"../Shared/include",
 			"../Memory/include",
+			"../Game/include",
 			"../../dependencies/jansson",
+			"../../dependencies/Gleam/include",
 			"../../dependencies/Gaff/include",
 			"../../dependencies/utf8-cpp"
 		}
 
 		dependson
 		{
-			"Shared", "Gaff", "jansson", "Memory"
+			"Shared", "Gaff", "jansson",
+			"Gleam", "Memory", "Managers"
 		}
 
 		links
 		{
-			"Shared", "Gaff", "jansson", "Memory"
+			"Shared", "Gaff", "jansson",
+			"Gleam", "Memory", "Managers"
 		}
+
+		filter {}

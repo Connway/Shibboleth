@@ -22,7 +22,6 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Shibboleth_IRenderStageQuery.h"
 #include "Shibboleth_RenderManager.h"
 #include "Shibboleth_IUpdateQuery.h"
 #include <Shibboleth_ReflectionDefinitions.h>
@@ -31,9 +30,9 @@ THE SOFTWARE.
 NS_SHIBBOLETH
 
 class CameraComponent;
-class RenderPipeline;
+class IRenderPipeline;
 
-class RenderPipelineManager : public IManager, public IUpdateQuery, public IRenderStageQuery
+class RenderPipelineManager : public IManager, public IUpdateQuery
 {
 public:
 	RenderPipelineManager(void);
@@ -45,8 +44,6 @@ public:
 	void* rawRequestInterface(unsigned int class_id) const;
 	void getUpdateEntries(Array<UpdateEntry>& entries);
 
-	void getRenderStageEntries(Array<RenderStageEntry>& entries);
-
 	INLINE void setOutputCamera(unsigned int monitor, CameraComponent* camera);
 	INLINE CameraComponent* getOutputCamera(unsigned int monitor) const;
 	INLINE void setNumMonitors(unsigned int num_monitors);
@@ -56,15 +53,17 @@ public:
 
 	size_t getPipelineIndex(const char* name) const;
 
-	void update(double, void* frame_data);
+	INLINE void registerRenderPipeline(IRenderPipeline* pipeline);
 
 private:
 	Array<CameraComponent*> _output_cameras; // Array size == num of monitors. Element is camera that is being outputted to monitor.
-	Array<RenderPipeline> _pipelines;
-	Array<IRenderStageQuery::RenderStageEntry> _stages;
+	Array<IRenderPipeline*> _pipelines;
 	size_t _active_pipeline;
 
 	RenderManager::WindowRenderTargets _render_targets;
+
+	bool addRenderPipeline(DynamicLoader::ModulePtr& module);
+	void generateCommandLists(double dt, void* frame_data);
 
 	void renderOpaque(void);
 	void composeImage(void);

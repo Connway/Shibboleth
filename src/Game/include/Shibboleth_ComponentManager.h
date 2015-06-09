@@ -42,10 +42,9 @@ public:
 
 	const char* getName(void) const;
 
-	bool addComponents(DynamicLoader::ModulePtr& module);
+	void allManagersCreated(void);
 
 	INLINE IComponent* createComponent(AHashString name);
-	INLINE IComponent* createComponent(AString name);
 	INLINE IComponent* createComponent(const char* name);
 	INLINE void destroyComponent(IComponent* component);
 
@@ -67,7 +66,8 @@ private:
 	};
 
 	HashMap<AHashString, ComponentEntry> _components;
-	IApp& _app;
+
+	bool addComponents(DynamicLoader::ModulePtr& module);
 
 	GAFF_NO_COPY(ComponentManager);
 	GAFF_NO_MOVE(ComponentManager);

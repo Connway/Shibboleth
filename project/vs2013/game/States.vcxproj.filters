@@ -9,9 +9,6 @@
     <ClInclude Include="..\..\..\src\Game\include\Shibboleth_CreateResourceLoadersState.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\src\Game\include\Shibboleth_LoadComponentsState.h">
-      <Filter>include</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\src\Game\include\Shibboleth_RegisterLuaClassesState.h">
       <Filter>include</Filter>
     </ClInclude>
@@ -24,7 +21,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\src\Game\Shibboleth_CreateResourceLoadersState.cpp" />
-    <ClCompile Include="..\..\..\src\Game\Shibboleth_LoadComponentsState.cpp" />
     <ClCompile Include="..\..\..\src\Game\Shibboleth_RegisterLuaClassesState.cpp" />
     <ClCompile Include="..\..\..\src\Game\Shibboleth_SetupGraphicsState.cpp" />
     <ClCompile Include="..\..\..\src\Game\Shibboleth_SetupOtterUIState.cpp" />

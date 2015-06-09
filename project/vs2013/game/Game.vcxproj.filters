@@ -15,9 +15,6 @@
     <ClInclude Include="..\..\..\src\Game\include\Shibboleth_HoldingLoader.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\src\Game\include\Shibboleth_IRenderStageQuery.h">
-      <Filter>include</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\src\Game\include\Shibboleth_IResourceLoader.h">
       <Filter>include</Filter>
     </ClInclude>

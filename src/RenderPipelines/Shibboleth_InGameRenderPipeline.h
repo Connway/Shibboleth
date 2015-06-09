@@ -20,26 +20,20 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#pragma once
-
-#include "Shibboleth_IRenderStageQuery.h"
-#include <Gaff_JSON.h>
+#include <Shibboleth_IRenderPipeline.h>
 
 NS_SHIBBOLETH
 
-class RenderPipeline
+class InGameRenderPipeline : public IRenderPipeline
 {
 public:
-	RenderPipeline(void);
-	~RenderPipeline(void);
+	InGameRenderPipeline(void);
+	~InGameRenderPipeline(void);
 
-	bool init(const Gaff::JSON& json, const Array<IRenderStageQuery::RenderStageEntry>& entries);
 	const char* getName(void) const;
-	void run(void);
+	void run(double dt, void* frame_data);
 
 private:
-	Array< Gaff::FunctionBinder<void> > _stages;
-	AString _name;
 };
 
 NS_END

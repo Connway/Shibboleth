@@ -9,9 +9,9 @@ group "Common"
 	dofile("../Memory/include_external.lua")
 
 group "Graphics Modules"
-	external "Graphics"
+	external "RenderPipelinesModule"
 		if _ACTION then
-			location ("../../project/" .. _ACTION .. "/graphics")
+			location ("../../project/" .. _ACTION .. "/renderpipelinesmodule")
 		end
 
 		kind "SharedLib"

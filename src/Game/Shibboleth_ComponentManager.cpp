@@ -32,8 +32,7 @@ SHIB_REF_IMPL(ComponentManager)
 .addBaseClassInterfaceOnly<ComponentManager>()
 ;
 
-ComponentManager::ComponentManager(void):
-	_app(GetApp())
+ComponentManager::ComponentManager(void)
 {
 }
 
@@ -46,9 +45,85 @@ const char* ComponentManager::getName(void) const
 	return "Component Manager";
 }
 
+void ComponentManager::allManagersCreated(void)
+{
+	LogManager::FileLockPair& log = GetApp().getGameLogFile();
+	//bool error = false;
+
+	log.first.writeString("==================================================\n");
+	log.first.writeString("==================================================\n");
+	log.first.writeString("Loading Components...\n");
+
+	Gaff::ForEachTypeInDirectory<Gaff::FDT_RegularFile>("./Components", [&](const char* name, size_t) -> bool
+	{
+		AString rel_path = AString("./Components/") + name;
+
+		// Error out if it's not a dynamic module
+		if (!Gaff::File::checkExtension(name, DYNAMIC_EXTENSION)) {
+			log.first.printf("ERROR - '%s' is not a dynamic module.\n", rel_path.getBuffer());
+			//error = true;
+			GetApp().quit();
+			return true;
+
+		// It is a dynamic module, but not compiled for our architecture.
+		// Or not compiled in our build mode. Just skip over it.
+		} else if (!Gaff::File::checkExtension(name, BIT_EXTENSION DYNAMIC_EXTENSION)) {
+			return false;
+		}
+
+		DynamicLoader::ModulePtr module = GetApp().loadModule(rel_path.getBuffer(), name);
+
+		if (!module.valid()) {
+			log.first.printf("ERROR - Could not load dynamic module '%s'.\n", rel_path.getBuffer());
+			//error = true;
+			GetApp().quit();
+			return true;
+		}
+
+		if (!addComponents(module)) {
+			log.first.printf("ERROR - Could not load components in dynamic module '%s'.\n", rel_path.getBuffer());
+			//error = true;
+			GetApp().quit();
+			return true;
+		}
+
+		return false;
+	});
+
+	log.first.writeString("Finished Loading Components\n\n");
+}
+
+IComponent* ComponentManager::createComponent(AHashString name)
+{
+	size_t index = _components.indexOf(name);
+	assert(name.size() && index != SIZE_T_FAIL);
+
+	ComponentEntry& entry = _components.valueAt(index);
+	IComponent* component = entry.create(entry.component_id);
+
+	if (component) {
+		component->setIndex(index);
+	}
+
+	return component;
+}
+
+IComponent* ComponentManager::createComponent(const char* name)
+{
+	assert(name && _components.indexOf(name) != SIZE_T_FAIL);
+	return createComponent(AHashString(name));
+}
+
+void ComponentManager::destroyComponent(IComponent* component)
+{
+	assert(component);
+	ComponentEntry& entry = _components.valueAt(component->getIndex());
+	entry.destroy(component, entry.component_id);
+}
+
 bool ComponentManager::addComponents(DynamicLoader::ModulePtr& module)
 {
-	LogManager::FileLockPair& log = _app.getGameLogFile();
+	LogManager::FileLockPair& log = GetApp().getGameLogFile();
 
 	assert(module.valid());
 	GetNumComponentsFunc num_comp_func = module->GetFunc<GetNumComponentsFunc>("GetNumComponents");
@@ -82,7 +157,7 @@ bool ComponentManager::addComponents(DynamicLoader::ModulePtr& module)
 		return false;
 	}
 
-	if (!init_func(_app)) {
+	if (!init_func(GetApp())) {
 		log.first.writeString("ERROR - Failed to initialize component module.\n");
 		return false;
 	}
@@ -109,40 +184,6 @@ bool ComponentManager::addComponents(DynamicLoader::ModulePtr& module)
 	}
 
 	return true;
-}
-
-IComponent* ComponentManager::createComponent(AHashString name)
-{
-	size_t index = _components.indexOf(name);
-	assert(name.size() && index != SIZE_T_FAIL);
-
-	ComponentEntry& entry = _components.valueAt(index);
-	IComponent* component = entry.create(entry.component_id);
-
-	if (component) {
-		component->setIndex(index);
-	}
-
-	return component;
-}
-
-IComponent* ComponentManager::createComponent(AString name)
-{
-	assert(name.size() && _components.indexOf(name) != SIZE_T_FAIL);
-	return createComponent(AHashString(name));
-}
-
-IComponent* ComponentManager::createComponent(const char* name)
-{
-	assert(name && _components.indexOf(name) != SIZE_T_FAIL);
-	return createComponent(AHashString(name));
-}
-
-void ComponentManager::destroyComponent(IComponent* component)
-{
-	assert(component);
-	ComponentEntry& entry = _components.valueAt(component->getIndex());
-	entry.destroy(component, entry.component_id);
 }
 
 NS_END

@@ -21,14 +21,11 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Shibboleth_RenderPipelineManager.h"
-#include "Shibboleth_RenderPipeline.h"
-#include <Shibboleth_TaskPoolTags.h>
+#include "Shibboleth_IRenderPipeline.h"
 #include <Shibboleth_IFileSystem.h>
 #include <Shibboleth_Utilities.h>
-#include <Shibboleth_App.h>
+#include <Shibboleth_IApp.h>
 
-#include <Gleam_ICommandList.h>
-#include <Gleam_ITexture.h>
 #include <Gaff_Utils.h>
 
 NS_SHIBBOLETH
@@ -37,11 +34,10 @@ REF_IMPL_REQ(RenderPipelineManager);
 SHIB_REF_IMPL(RenderPipelineManager)
 .addBaseClassInterfaceOnly<RenderPipelineManager>()
 .ADD_BASE_CLASS_INTERFACE_ONLY(IUpdateQuery)
-.ADD_BASE_CLASS_INTERFACE_ONLY(IRenderStageQuery)
 ;
 
 RenderPipelineManager::RenderPipelineManager(void):
-	_active_pipeline(0)
+	_active_pipeline(SIZE_T_FAIL)
 {
 }
 
@@ -56,116 +52,38 @@ const char* RenderPipelineManager::getName(void) const
 
 void RenderPipelineManager::allManagersCreated(void)
 {
-	unsigned int render_hash = CLASS_HASH(IRenderStageQuery);
-	Array<IRenderStageQuery::RenderStageEntry> entries;
+	LogManager::FileLockPair& log = GetApp().getGameLogFile();
 
-	reinterpret_cast<App&>(GetApp()).forEachManager([&](IManager& manager) -> bool
+	log.first.writeString("==================================================\n");
+	log.first.writeString("==================================================\n");
+	log.first.writeString("Loading Render Pipelines...\n");
+
+	bool early_out = Gaff::ForEachTypeInDirectory<Gaff::FDT_RegularFile>("./Render Pipelines", [&](const char* name, size_t) -> bool
 	{
-		IRenderStageQuery* render_query = manager.requestInterface<IRenderStageQuery>(render_hash);
+		AString rel_path = AString("./Render Pipelines/") + name;
 
-		if (render_query) {
-			render_query->getRenderStageEntries(entries);
+		// Error out if it's not a dynamic module
+		if (!Gaff::File::checkExtension(name, DYNAMIC_EXTENSION)) {
+			log.first.printf("ERROR - '%s' is not a dynamic module.\n", rel_path.getBuffer());
+			GetApp().quit();
+			return true;
+
+		// It is a dynamic module, but not compiled for our architecture.
+		// Or not compiled in our build mode. Just skip over it.
+		} else if (!Gaff::File::checkExtension(name, BIT_EXTENSION DYNAMIC_EXTENSION)) {
+			return false;
 		}
 
-		return false;
-	});
+		DynamicLoader::ModulePtr module = GetApp().loadModule(rel_path.getBuffer(), name);
 
-	// Loop through all assets in Render Pipelines and read them.
-	IFile* file = GetApp().getFileSystem()->openFile("Resources/Render Pipelines/Pipelines.json");
-
-	if (!file) {
-		LogMessage(GetApp().getGameLogFile(), TPT_PRINTLOG, LogManager::LOG_ERROR, "ERROR - Failed to open file 'Resources/Render Pipelines/Pipelines.json'.\n");
-		GetApp().quit();
-		return;
-	}
-
-	Gaff::JSON pipelines;
-
-	if (!pipelines.parse(file->getBuffer())) {
-		LogMessage(GetApp().getGameLogFile(), TPT_PRINTLOG, LogManager::LOG_ERROR, "ERROR - Failed to parse file 'Resources/Render Pipelines/Pipelines.json'.\n");
-		GetApp().quit();
-		return;
-	}
-
-	GetApp().getFileSystem()->closeFile(file);
-
-	if (!pipelines.isArray()) {
-		LogMessage(GetApp().getGameLogFile(), TPT_PRINTLOG, LogManager::LOG_ERROR, "ERROR - Root element in 'Resources/Render Pipelines/Pipelines.json' is not an array.\n");
-		GetApp().quit();
-		return;
-	}
-
-	bool failed = pipelines.forEachInArray([&](size_t, const Gaff::JSON& pline_file) -> bool
-	{
-		if (!pline_file.isString()) {
-			LogMessage(GetApp().getGameLogFile(), TPT_PRINTLOG, LogManager::LOG_ERROR, "ERROR - Element in 'Resources/Render Pipelines/Pipelines.json' is not a string.\n");
+		if (!module.valid()) {
+			log.first.printf("ERROR - Could not load dynamic module '%s'.\n", rel_path.getBuffer());
+			GetApp().quit();
 			return true;
 		}
 
-		file = GetApp().getFileSystem()->openFile(pline_file.getString());
-
-		if (!file) {
-			LogMessage(GetApp().getGameLogFile(), TPT_PRINTLOG, LogManager::LOG_ERROR, "ERROR - Failed to open file '%s'.\n", pline_file.getString());
-			return true;
-		}
-
-		Gaff::JSON stages;
-		
-		if (!stages.parse(file->getBuffer())) {
-			LogMessage(GetApp().getGameLogFile(), TPT_PRINTLOG, LogManager::LOG_ERROR, "ERROR - Failed to parse file '%s'.\n", pline_file.getString());
-			GetApp().getFileSystem()->closeFile(file);
-			return true;
-		}
-
-		GetApp().getFileSystem()->closeFile(file);
-
-		if (!stages.isArray()) {
-			LogMessage(GetApp().getGameLogFile(), TPT_PRINTLOG, LogManager::LOG_ERROR, "ERROR - Root element in '%s' is not an array.\n", pline_file.getString());
-			return true;
-		}
-
-		_pipelines.resize(stages.size());
-		size_t index = 0;
-
-		bool early_out = stages.forEachInArray([&](size_t, Gaff::JSON pline) -> bool
-		{
-			if (!pline.isString()) {
-				LogMessage(GetApp().getGameLogFile(), TPT_PRINTLOG, LogManager::LOG_ERROR, "ERROR - Element in '%s' is not a string.\n", pline.getString());
-				return true;
-			}
-
-			file = GetApp().getFileSystem()->openFile(pline.getString());
-
-			if (!file) {
-				LogMessage(GetApp().getGameLogFile(), TPT_PRINTLOG, LogManager::LOG_ERROR, "ERROR - Failed to open file '%s'.\n", pline.getString());
-				return true;
-			}
-
-			Gaff::JSON pipeline;
-			
-			if (!pipeline.parse(file->getBuffer())) {
-				LogMessage(GetApp().getGameLogFile(), TPT_PRINTLOG, LogManager::LOG_ERROR, "ERROR - Failed to parse file '%s'.\n", pline_file.getString());
-				GetApp().getFileSystem()->closeFile(file);
-				return true;
-			}
-
-			GetApp().getFileSystem()->closeFile(file);
-
-			if (!pipeline.isObject()) {
-				LogMessage(GetApp().getGameLogFile(), TPT_PRINTLOG, LogManager::LOG_ERROR, "ERROR - Root element in '%s' is not an object.\n", pipeline.getString());
-				return true;
-			}
-
-			LogMessage(GetApp().getGameLogFile(), TPT_PRINTLOG, LogManager::LOG_ERROR, "Parsing render pipeline '%s'.\n", pipeline.getString());
-
-			if (!_pipelines[index].init(pipeline, _stages)) {
-				return true;
-			}
-
-			return true;
-		});
-
-		if (early_out) {
+		if (!addRenderPipeline(module)) {
+			log.first.printf("ERROR - Could not load render pipelines in dynamic module '%s'.\n", rel_path.getBuffer());
 			GetApp().quit();
 			return true;
 		}
@@ -173,26 +91,60 @@ void RenderPipelineManager::allManagersCreated(void)
 		return false;
 	});
 
-	if (failed) {
+	if (early_out) {
+		return;
+	}
+
+	IFileSystem* fs = GetApp().getFileSystem();
+	IFile* file = fs->openFile("/graphics.cfg");
+
+	if (!file) {
+		log.first.printf("ERROR - Could not open file 'graphics.cfg'.\n");
 		GetApp().quit();
 		return;
 	}
 
-	_render_targets = GetApp().getManagerT<RenderManager>("Render Manager").createRenderTargetsForEachWindow();
+	Gaff::JSON config;
 
-	if (_render_targets.rts.empty()) {
-		// Log error
+	if (!config.parse(file->getBuffer())) {
+		log.first.printf("ERROR - 'graphics.cfg' is malformed. Could not parse file.\n");
+		fs->closeFile(file);
+		GetApp().quit();
+		return;
+	}
+
+	fs->closeFile(file);
+
+	if (!config.isObject()) {
+		log.first.printf("ERROR - 'graphics.cfg' is malformed. Root element is not an object.\n");
+		GetApp().quit();
+		return;
+	}
+
+	Gaff::JSON initial_pipeline = config["initial_pipeline"];
+
+	if (!initial_pipeline.isString()) {
+		log.first.printf("ERROR - 'graphics.cfg' is malformed. Element at 'initial_pipeline' is not a string.\n");
+		GetApp().quit();
+		return;
+	}
+
+	for (size_t i = 0; i < _pipelines.size(); ++i) {
+		if (!strcmp(_pipelines[i]->getName(), initial_pipeline.getString())) {
+			_active_pipeline = i;
+			break;
+		}
+	}
+
+	if (_active_pipeline == SIZE_T_FAIL) {
+		log.first.printf("ERROR - Could not find initial render pipeline '%s'.\n", initial_pipeline.getString());
 		GetApp().quit();
 	}
 }
 
 void RenderPipelineManager::getUpdateEntries(Array<UpdateEntry>& entries)
 {
-	entries.emplacePush(AString("Render Pipeline Manager: Update"), Gaff::Bind(this, &RenderPipelineManager::update));
-}
-
-void RenderPipelineManager::getRenderStageEntries(Array<RenderStageEntry>& entries)
-{
+	entries.emplacePush(AString("Render Pipeline Manager: Generate Command Lists"), Gaff::Bind(this, &RenderPipelineManager::generateCommandLists));
 }
 
 void RenderPipelineManager::setOutputCamera(unsigned int monitor, CameraComponent* camera)
@@ -226,7 +178,7 @@ void RenderPipelineManager::setActivePipeline(size_t pipeline)
 size_t RenderPipelineManager::getPipelineIndex(const char* name) const
 {
 	for (size_t i = 0; i < _pipelines.size(); ++i) {
-		if (_pipelines[i].getName() == name) {
+		if (_pipelines[i]->getName() == name) {
 			return i;
 		}
 	}
@@ -234,10 +186,19 @@ size_t RenderPipelineManager::getPipelineIndex(const char* name) const
 	return SIZE_T_FAIL;
 }
 
-void RenderPipelineManager::update(double, void* frame_data)
+void RenderPipelineManager::registerRenderPipeline(IRenderPipeline* pipeline)
 {
-	_pipelines[_active_pipeline].run();
-	GetApp().getJobPool().helpUntilNoJobs();
+	_pipelines.push(pipeline);
+}
+
+bool RenderPipelineManager::addRenderPipeline(DynamicLoader::ModulePtr& module)
+{
+	return true;
+}
+
+void RenderPipelineManager::generateCommandLists(double dt, void* frame_data)
+{
+	_pipelines[_active_pipeline]->run(dt, frame_data);
 }
 
 NS_END
