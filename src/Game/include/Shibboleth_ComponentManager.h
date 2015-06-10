@@ -51,11 +51,11 @@ public:
 	void* rawRequestInterface(unsigned int class_id) const;
 
 private:
-	typedef bool (*InitFunc)(IApp&);
-	typedef IComponent* (*CreateComponentFunc)(unsigned int);
-	typedef void (*DestroyComponentFunc)(IComponent*, unsigned int);
-	typedef unsigned int (*GetNumComponentsFunc)(void);
-	typedef const char* (*GetComponentNameFunc)(unsigned int);
+	using InitFunc = bool (*)(IApp&);
+	using CreateComponentFunc = IComponent* (*)(unsigned int);
+	using DestroyComponentFunc = void (*)(IComponent*, unsigned int);
+	using GetNumComponentsFunc = unsigned int (*)(void);
+	using GetComponentNameFunc = const char* (*)(unsigned int);
 
 	struct ComponentEntry
 	{

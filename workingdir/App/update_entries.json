@@ -11,7 +11,7 @@
 	{
 		"name": "Command List Generation Phase",
 		"entries": [
-			["Render Manager: Generate Command Lists"]
+			["Render Pipeline Manager: Generate Command Lists"]
 		]
 	},
 	{

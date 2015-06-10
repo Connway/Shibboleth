@@ -50,7 +50,7 @@ void ComponentManager::allManagersCreated(void)
 	LogManager::FileLockPair& log = GetApp().getGameLogFile();
 	//bool error = false;
 
-	log.first.writeString("==================================================\n");
+	log.first.writeString("\n==================================================\n");
 	log.first.writeString("==================================================\n");
 	log.first.writeString("Loading Components...\n");
 
@@ -79,6 +79,8 @@ void ComponentManager::allManagersCreated(void)
 			GetApp().quit();
 			return true;
 		}
+
+		log.first.printf("Loading components from module '%s'\n", rel_path.getBuffer());
 
 		if (!addComponents(module)) {
 			log.first.printf("ERROR - Could not load components in dynamic module '%s'.\n", rel_path.getBuffer());
@@ -180,7 +182,7 @@ bool ComponentManager::addComponents(DynamicLoader::ModulePtr& module)
 		};
 
 		_components.insert(name, entry);
-		log.first.printf("'%s' loaded\n", name.getBuffer());
+		log.first.printf("Loaded component '%s'\n", name.getBuffer());
 	}
 
 	return true;

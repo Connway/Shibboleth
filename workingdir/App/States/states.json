@@ -10,21 +10,15 @@
 		},
 
 		{
-			"name": "LoadComponentState",
+			"name": "CreateResourceLoadersState",
 			"module": "GameStates",
 			"transitions": [2]
 		},
 
 		{
-			"name": "CreateResourceLoadersState",
-			"module": "GameStates",
-			"transitions": [3]
-		},
-
-		{
 			"name": "SetupOtterUIState",
 			"module": "GameStates",
-			"transitions": [4]
+			"transitions": [3]
 		},
 
 		{
