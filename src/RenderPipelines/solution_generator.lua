@@ -37,6 +37,8 @@ group ""
 		kind "SharedLib"
 		language "C++"
 
+		targetname "RenderPipelines"
+
 		files { "**.h", "**.cpp", "**.inl" }
 
 		includedirs
@@ -62,4 +64,4 @@ group ""
 			"Gleam", "Memory", "Managers"
 		}
 
-		filter {}
+		dofile("../../module_suffix.lua")

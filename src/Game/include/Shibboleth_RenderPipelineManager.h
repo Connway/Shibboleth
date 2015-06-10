@@ -53,16 +53,20 @@ public:
 
 	size_t getPipelineIndex(const char* name) const;
 
-	INLINE void registerRenderPipeline(IRenderPipeline* pipeline);
-
 private:
+	using InitFunc = bool (*)(IApp&);
+	using CreateRenderPipelineFunc = IRenderPipeline* (*)(size_t);
+	using DestroyRenderPipelineFunc = void (*)(IRenderPipeline*);
+	using GetNumRenderPipelinesFunc = size_t (*)(void);
+
 	Array<CameraComponent*> _output_cameras; // Array size == num of monitors. Element is camera that is being outputted to monitor.
 	Array<IRenderPipeline*> _pipelines;
+	HashMap<AHashString, DestroyRenderPipelineFunc> _pipeline_map;
 	size_t _active_pipeline;
 
 	RenderManager::WindowRenderTargets _render_targets;
 
-	bool addRenderPipeline(DynamicLoader::ModulePtr& module);
+	bool addRenderPipelines(DynamicLoader::ModulePtr& module);
 	void generateCommandLists(double dt, void* frame_data);
 
 	void renderOpaque(void);

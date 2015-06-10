@@ -244,10 +244,10 @@ bool TextureD3D::init3D(IRenderDevice& rd, int width, int height, int depth, FOR
 	_depth = depth;
 
 	D3D11_TEXTURE3D_DESC desc;
-	desc.Width = (UINT)width;
-	desc.Height = (UINT)height;
-	desc.Depth = (UINT)depth;
-	desc.MipLevels = (UINT)mip_levels;
+	desc.Width = static_cast<UINT>(width);
+	desc.Height = static_cast<UINT>(height);
+	desc.Depth = static_cast<UINT>(depth);
+	desc.MipLevels = static_cast<UINT>(mip_levels);
 	desc.Format = _format_map[format];
 	desc.Usage = D3D11_USAGE_DEFAULT;
 	desc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
@@ -289,9 +289,9 @@ bool TextureD3D::init2D(IRenderDevice& rd, int width, int height, FORMAT format,
 	_depth = 0;
 
 	D3D11_TEXTURE2D_DESC desc;
-	desc.Width = (UINT)width;
-	desc.Height = (UINT)height;
-	desc.MipLevels = (UINT)mip_levels;
+	desc.Width = static_cast<UINT>(width);
+	desc.Height = static_cast<UINT>(height);
+	desc.MipLevels = static_cast<UINT>(mip_levels);
 	desc.ArraySize = 1;
 	desc.Format = _format_map[format];
 	desc.SampleDesc.Count = 1;
@@ -336,8 +336,8 @@ bool TextureD3D::init1D(IRenderDevice& rd, int width, FORMAT format, int mip_lev
 	_depth = 0;
 
 	D3D11_TEXTURE1D_DESC desc;
-	desc.Width = (UINT)width;
-	desc.MipLevels = (UINT)mip_levels;
+	desc.Width = static_cast<UINT>(width);
+	desc.MipLevels = static_cast<UINT>(mip_levels);
 	desc.ArraySize = 1;
 	desc.Format = _format_map[format];
 	desc.Usage = D3D11_USAGE_DEFAULT;
@@ -380,9 +380,9 @@ bool TextureD3D::initCubemap(IRenderDevice& rd, int width, int height, FORMAT fo
 	_depth = 0;
 
 	D3D11_TEXTURE2D_DESC desc;
-	desc.Width = (UINT)width;
-	desc.Height = (UINT)height;
-	desc.MipLevels = (UINT)mip_levels;
+	desc.Width = static_cast<UINT>(width);
+	desc.Height = static_cast<UINT>(height);
+	desc.MipLevels = static_cast<UINT>(mip_levels);
 	desc.ArraySize = 6;
 	desc.Format = _format_map[format];
 	desc.SampleDesc.Count = 1;
@@ -455,8 +455,8 @@ bool TextureD3D::initDepthStencil(IRenderDevice& rd, int width, int height, FORM
 	assert(_type != TYPE_SIZE);
 
 	D3D11_TEXTURE2D_DESC depth_stencil_desc;
-	depth_stencil_desc.Width = (UINT)width;
-	depth_stencil_desc.Height = (UINT)height;
+	depth_stencil_desc.Width = static_cast<UINT>(width);
+	depth_stencil_desc.Height = static_cast<UINT>(height);
 	depth_stencil_desc.MipLevels = 1;
 	depth_stencil_desc.ArraySize = 1;
 	depth_stencil_desc.Format = typeless_format;

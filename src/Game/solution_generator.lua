@@ -290,6 +290,8 @@ group ""
 
 		filter {}
 
+		dofile("../../module_suffix.lua")
+
 	project "StatesModule"
 		if _ACTION then
 			location ("../../project/" .. _ACTION .. "/game")
@@ -359,6 +361,8 @@ group ""
 			links { "../../build/output/x64/Release/lua51" }
 
 		filter {}
+
+		dofile("../../module_suffix.lua")
 
 	project "ComponentsModule"
 		if _ACTION then
@@ -434,3 +438,5 @@ group ""
 			dependson { "LuaJIT" }
 
 		filter {}
+
+		dofile("../../module_suffix.lua")

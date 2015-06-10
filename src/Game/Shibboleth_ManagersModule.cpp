@@ -21,6 +21,7 @@ THE SOFTWARE.
 ************************************************************************************/
 
 // Managers
+#include <Shibboleth_RenderPipelineManager.h>
 #include <Shibboleth_BroadcasterManager.h>
 #include <Shibboleth_ComponentManager.h>
 #include <Shibboleth_OcclusionManager.h>
@@ -47,48 +48,19 @@ Shibboleth::IManager* CreateManagerT(void)
 	return Shibboleth::GetAllocator()->template allocT<Manager>();
 }
 
-// // No idea if this even works ...
-// template <class Manager, class... init_args>
-// Shibboleth::IManager* CreateManagerWithInit(void)
-// {
-// 	Manager* manager = Shibboleth::GetAllocator()->template allocT<Manager>();
-
-// 	if (manager) {
-// 		if (!manager->init(init_args...)) {
-// 			Shibboleth::GetAllocator()->freeT(manager);
-// 			manager = nullptr;
-// 		}
-// 	}
-
-// 	return manager;
-// }
-
-Shibboleth::IManager* CreateOtterUIManager(void)
+template <class Manager>
+Shibboleth::IManager* CreateManagerWithInitT(void)
 {
-	Shibboleth::OtterUIManager* otter_manager = Shibboleth::GetAllocator()->template allocT<Shibboleth::OtterUIManager>();
+	Manager* manager = Shibboleth::GetAllocator()->template allocT<Manager>();
 
-	if (otter_manager) {
-		if (!otter_manager->init()) {
-			Shibboleth::GetAllocator()->freeT(otter_manager);
-			otter_manager = nullptr;
+	if (manager) {
+		if (!manager->init()) {
+			Shibboleth::GetAllocator()->freeT(manager);
+			manager = nullptr;
 		}
 	}
 
-	return otter_manager;
-}
-
-Shibboleth::IManager* CreateFrameManager(void)
-{
-	Shibboleth::FrameManager* frame_manager = Shibboleth::GetAllocator()->template allocT<Shibboleth::FrameManager>();
-
-	if (frame_manager) {
-		if (!frame_manager->init()) {
-			Shibboleth::GetAllocator()->freeT(frame_manager);
-			frame_manager = nullptr;
-		}
-	}
-
-	return frame_manager;
+	return manager;
 }
 
 enum Managers
@@ -104,15 +76,16 @@ enum Managers
 	BROADCASTER_MANAGER,
 	CAMERA_MANAGER,
 	FRAME_MANAGER,
+	RP_MANAGER,
 	NUM_MANAGERS
 };
 
-using CreateMgrFunc = Shibboleth::IManager* (*)();
+using CreateMgrFunc = Shibboleth::IManager* (*)(void);
 
 static CreateMgrFunc create_funcs[] = {
 	&CreateManagerT<Shibboleth::ComponentManager>,
 	&CreateManagerT<Shibboleth::ResourceManager>,
-	&CreateOtterUIManager,
+	&CreateManagerWithInitT<Shibboleth::OtterUIManager>,
 	&CreateManagerT<Shibboleth::RenderManager>,
 	&CreateManagerT<Shibboleth::UpdateManager>,
 	&CreateManagerT<Shibboleth::ObjectManager>,
@@ -120,7 +93,8 @@ static CreateMgrFunc create_funcs[] = {
 	&CreateManagerT<Shibboleth::OcclusionManager>,
 	&CreateManagerT<Shibboleth::BroadcasterManager>,
 	&CreateManagerT<Shibboleth::CameraManager>,
-	&CreateFrameManager
+	&CreateManagerWithInitT<Shibboleth::FrameManager>,
+	&CreateManagerT<Shibboleth::RenderPipelineManager>,
 };
 
 DYNAMICEXPORT_C bool InitModule(Shibboleth::IApp& app)

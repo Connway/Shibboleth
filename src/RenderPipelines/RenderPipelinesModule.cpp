@@ -27,6 +27,24 @@ THE SOFTWARE.
 #include <Shibboleth_IApp.h>
 #include <Gaff_JSON.h>
 
+template <class T>
+Shibboleth::IRenderPipeline* CreateRenderPipelineT(void)
+{
+	return Shibboleth::GetAllocator()->allocT<T>();
+}
+
+enum RenderPipelines
+{
+	IN_GAME_RP = 0,
+	NUM_RPS
+};
+
+using RPFunc = Shibboleth::IRenderPipeline* (*)(void);
+
+RPFunc rp_funcs[] = {
+	&CreateRenderPipelineT<Shibboleth::InGameRenderPipeline>
+};
+
 DYNAMICEXPORT_C bool InitModule(Shibboleth::IApp& app)
 {
 	Gaff::JSON::SetMemoryFunctions(&Shibboleth::ShibbolethAllocate, &Shibboleth::ShibbolethFree);
@@ -41,19 +59,18 @@ DYNAMICEXPORT_C void ShutdownModule(void)
 {
 }
 
-DYNAMICEXPORT_C bool CreateAndRegisterRenderPipelines(Shibboleth::RenderPipelineManager& rp_mgr)
+DYNAMICEXPORT_C size_t GetNumRenderPipelines(void)
 {
-	Shibboleth::IRenderPipeline* pipeline = Shibboleth::GetAllocator()->allocT<Shibboleth::InGameRenderPipeline>();
-
-	if (!pipeline) {
-		return false;
-	}
-
-	rp_mgr.registerRenderPipeline(pipeline);
-
-	return true;
+	return NUM_RPS;
 }
 
-DYNAMICEXPORT_C void DestroyRenderpipeline(Shibboleth::IRenderPipeline* render_pipeline)
+DYNAMICEXPORT_C Shibboleth::IRenderPipeline* CreateRenderPipeline(size_t id)
 {
+	assert(id < NUM_RPS);
+	return rp_funcs[id]();
+}
+
+DYNAMICEXPORT_C void DestroyRenderPipeline(Shibboleth::IRenderPipeline* render_pipeline)
+{
+	Shibboleth::GetAllocator()->freeT(render_pipeline);
 }

@@ -43,6 +43,9 @@ RenderPipelineManager::RenderPipelineManager(void):
 
 RenderPipelineManager::~RenderPipelineManager(void)
 {
+	for (auto it = _pipelines.begin(); it != _pipelines.end(); ++it) {
+		_pipeline_map[(*it)->getName()](*it);
+	}
 }
 
 const char* RenderPipelineManager::getName(void) const
@@ -54,7 +57,7 @@ void RenderPipelineManager::allManagersCreated(void)
 {
 	LogManager::FileLockPair& log = GetApp().getGameLogFile();
 
-	log.first.writeString("==================================================\n");
+	log.first.writeString("\n==================================================\n");
 	log.first.writeString("==================================================\n");
 	log.first.writeString("Loading Render Pipelines...\n");
 
@@ -82,7 +85,9 @@ void RenderPipelineManager::allManagersCreated(void)
 			return true;
 		}
 
-		if (!addRenderPipeline(module)) {
+		log.first.printf("Loading render pipelines from module '%s'\n", rel_path.getBuffer());
+
+		if (!addRenderPipelines(module)) {
 			log.first.printf("ERROR - Could not load render pipelines in dynamic module '%s'.\n", rel_path.getBuffer());
 			GetApp().quit();
 			return true;
@@ -186,13 +191,51 @@ size_t RenderPipelineManager::getPipelineIndex(const char* name) const
 	return SIZE_T_FAIL;
 }
 
-void RenderPipelineManager::registerRenderPipeline(IRenderPipeline* pipeline)
+bool RenderPipelineManager::addRenderPipelines(DynamicLoader::ModulePtr& module)
 {
-	_pipelines.push(pipeline);
-}
+	LogManager::FileLockPair& log = GetApp().getGameLogFile();
 
-bool RenderPipelineManager::addRenderPipeline(DynamicLoader::ModulePtr& module)
-{
+	assert(module.valid());
+	CreateRenderPipelineFunc create_pipeline = module->GetFunc<CreateRenderPipelineFunc>("CreateRenderPipeline");
+	DestroyRenderPipelineFunc destroy_pipeline = module->GetFunc<DestroyRenderPipelineFunc>("DestroyRenderPipeline");
+	GetNumRenderPipelinesFunc num_pipelines = module->GetFunc<GetNumRenderPipelinesFunc>("GetNumRenderPipelines");
+
+	InitFunc init_func = module->GetFunc<InitFunc>("InitModule");
+
+	if (!init_func) {
+		log.first.writeString("ERROR - Could not find function named 'InitModule'.\n");
+		return false;
+	}
+
+	if (!create_pipeline) {
+		log.first.writeString("ERROR - Could not find function named 'CreateRenderPipeline'.\n");
+		return false;
+	}
+
+	if (!destroy_pipeline) {
+		log.first.writeString("ERROR - Could not find function named 'DestroyRenderPipeline'.\n");
+		return false;
+	}
+
+	if (!num_pipelines) {
+		log.first.writeString("ERROR - Could not find function named 'GetNumRenderPipelines'.\n");
+		return false;
+	}
+
+	for (size_t i = 0; i < num_pipelines(); ++i) {
+		IRenderPipeline* pipeline = create_pipeline(i);
+
+		if (!pipeline) {
+			log.first.printf("ERROR - Failed to create pipeline with ID '%i'", i);
+			return false;
+		}
+
+		_pipeline_map[pipeline->getName()] = destroy_pipeline;
+		_pipelines.push(pipeline);
+
+		log.first.printf("Loaded render pipeline '%s'\n", pipeline->getName());
+	}
+
 	return true;
 }
 
