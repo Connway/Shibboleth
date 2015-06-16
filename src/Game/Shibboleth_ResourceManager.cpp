@@ -62,7 +62,7 @@ void ResourceReadingJob(void* data)
 			}
 
 			read_data->res_ptr->failed();
-			read_data->res_ptr->callCallbacks(false);
+			read_data->res_ptr->callCallbacks();
 
 			GetAllocator()->freeT(read_data);
 		}
@@ -123,7 +123,7 @@ void ResourceLoadingJob(void* data)
 		load_data->res_ptr->failed();
 	}
 
-	load_data->res_ptr->callCallbacks(res_data != nullptr);
+	load_data->res_ptr->callCallbacks();
 	GetAllocator()->freeT(load_data);
 }
 
@@ -190,11 +190,11 @@ void ResourceContainer::failed(void)
 	_failed = true;
 }
 
-void ResourceContainer::addCallback(const Gaff::FunctionBinder<void, const AHashString&, bool>& callback)
+void ResourceContainer::addCallback(const Gaff::FunctionBinder<void, ResourceContainer*>& callback)
 {
 	// We're already loaded!
 	if (_resource != nullptr) {
-		callback(_res_key, true);
+		callback(this);
 		return;
 	}
 
@@ -202,7 +202,7 @@ void ResourceContainer::addCallback(const Gaff::FunctionBinder<void, const AHash
 	_callbacks.push(callback);
 }
 
-void ResourceContainer::removeCallback(const Gaff::FunctionBinder<void, const AHashString&, bool>& callback)
+void ResourceContainer::removeCallback(const Gaff::FunctionBinder<void, ResourceContainer*>& callback)
 {
 	Gaff::ScopedLock<Gaff::SpinLock> lock(_callback_lock);
 	auto it = _callbacks.linearSearch(callback);
@@ -218,12 +218,12 @@ void ResourceContainer::setResource(Gaff::IVirtualDestructor* resource)
 	AtomicCompareExchangePointer((volatile PVOID*)&_resource, resource, nullptr);
 }
 
-void ResourceContainer::callCallbacks(bool succeeded)
+void ResourceContainer::callCallbacks(void)
 {
 	Gaff::ScopedLock<Gaff::SpinLock> lock(_callback_lock);
 
 	for (unsigned int i = 0; i < _callbacks.size(); ++i) {
-		_callbacks[i](_res_key, succeeded);
+		_callbacks[i](this);
 	}
 
 	_callbacks.clear();

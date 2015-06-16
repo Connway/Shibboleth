@@ -43,7 +43,6 @@ NS_SHIBBOLETH
 REF_IMPL_REQ(RenderManager);
 SHIB_REF_IMPL(RenderManager)
 .addBaseClassInterfaceOnly<RenderManager>()
-.ADD_BASE_CLASS_INTERFACE_ONLY(IUpdateQuery)
 ;
 
 // Default values
@@ -144,6 +143,14 @@ SHIB_ENUM_REF_IMPL_EMBEDDED(Gleam_ITexture_Format, Gleam::ITexture::FORMAT)
 .addValue("DEPTH_STENCIL_32_8_F", Gleam::ITexture::DEPTH_STENCIL_32_8_F)
 ;
 
+SHIB_ENUM_REF_IMPL_EMBEDDED(Gleam_IShader_Type, Gleam::IShader::SHADER_TYPE)
+.addValue("Vertex", Gleam::IShader::SHADER_VERTEX)
+.addValue("Pixel", Gleam::IShader::SHADER_PIXEL)
+.addValue("Domain", Gleam::IShader::SHADER_DOMAIN)
+.addValue("Geometry", Gleam::IShader::SHADER_GEOMETRY)
+.addValue("Hull", Gleam::IShader::SHADER_HULL)
+;
+
 
 RenderManager::RenderManager(void):
 	_render_device(nullptr, ProxyAllocator("Graphics")),
@@ -174,11 +181,6 @@ RenderManager::~RenderManager(void)
 const char* RenderManager::getName(void) const
 {
 	return "Render Manager";
-}
-
-void RenderManager::getUpdateEntries(Array<UpdateEntry>& entries)
-{
-	entries.emplacePush(AString("Render Manager: Generate Command Lists"), Gaff::Bind(this, &RenderManager::generateCommandLists));
 }
 
 bool RenderManager::initThreadData(void)
@@ -251,7 +253,7 @@ Array<Gaff::SpinLock>& RenderManager::getContextLocks(void)
 }
 
 bool RenderManager::createWindow(
-	const wchar_t* app_name, Gleam::IWindow::MODE window_mode,
+	const char* app_name, Gleam::IWindow::MODE window_mode,
 	int x, int y, unsigned int width, unsigned int height,
 	unsigned int refresh_rate, const char* device_name,
 	unsigned int adapter_id, unsigned int display_id, bool vsync,
@@ -862,83 +864,6 @@ bool RenderManager::getRenderModes(void)
 	}
 
 	return true;
-}
-
-void RenderManager::generateCommandLists(double, void* frame_data)
-{
-	FrameData* fd = reinterpret_cast<FrameData*>(frame_data);
-
-	// First time using this frame data. Size the render commands appropriately.
-	if (fd->render_commands.empty()) {
-		fd->render_commands.resize(GetEnumRefDef<RenderModes>().getNumEntries());
-	}
-
-	// Clear the old command lists
-	for (size_t i = 0; i < fd->render_commands.size(); ++i) {
-		fd->render_commands[i].command_lists.clearNoFree();
-	}
-
-	for (size_t i = 0; i < fd->object_data.size(); ++i) {
-		for (size_t j = 0; j < OcclusionManager::OT_SIZE; ++j) {
-			fd->object_data[i].next_index[j] = 0;
-		}
-	}
-
-	// Maybe pre-allocate the destination arrays so that we don't have to lock in helper threads?
-
-	size_t num_threads = GetApp().getJobPool().getNumTotalThreads();
-
-	Array<Gaff::JobData> jobs(num_threads);
-	Gaff::Counter* counter = nullptr;
-
-	Gaff::Pair<RenderManager*, FrameData*> job_data(this, fd);
-
-	for (size_t i = 0; i < num_threads; ++i) {
-		jobs.emplacePush(&RenderManager::GenerateCommandListsHelper, &job_data);
-	}
-
-	GetApp().getJobPool().addJobs(jobs.getArray(), jobs.size(), &counter);
-	GetApp().getJobPool().helpWhileWaiting(counter);
-}
-
-void RenderManager::GenerateCommandListsHelper(void* job_data)
-{
-	Gaff::Pair<RenderManager*, FrameData*>* jd = reinterpret_cast<Gaff::Pair<RenderManager*, FrameData*>*>(job_data);
-	Array<RenderDevicePtr>& rds = jd->first->getDeferredRenderDevices(Gaff::Thread::GetCurrentThreadID());
-	FrameData* fd = jd->second;
-
-	for (auto it = fd->object_data.begin(); it != fd->object_data.end(); ++it) {
-		for (size_t i = 0; i < OcclusionManager::OT_SIZE; ++i) {
-			// Get the next object to be processed in the list.
-			unsigned int index = AtomicIncrement(&it->next_index[i]) - 1;
-
-			// If the next index is larger than the number of objects in the list, move on to the next list.
-			if (index >= it->objects.results[i].size()) {
-				continue;
-			}
-
-			const OcclusionManager::QueryResult& result = it->objects.results[i][index];
-			Gleam::TransformCPU final_transform;
-			Gleam::TransformCPU inverse_camera = it->camera_transform.inverse();
-
-			// If we're a static object, just grab the transform from the object.
-			if (i == OcclusionManager::OT_STATIC) {
-				final_transform = inverse_camera + result.first->getWorldTransform();
-
-			// Otherwise, grab it from the copies we made.
-			} else {
-				final_transform = inverse_camera + it->transforms[i - 1][index];
-			}
-
-			// Pre-computing the world-to-camera-to-projection matrix.
-			Gleam::Matrix4x4CPU final_matrix = it->camera->getProjectionMatrix() * final_transform.matrix();
-
-			assert(result.second.first);
-			ModelComponent* model_comp = reinterpret_cast<ModelComponent*>(result.second.first);
-
-			// Send object through render pipeline
-		}
-	}
 }
 
 NS_END

@@ -35,17 +35,6 @@ HRESULT __stdcall ShaderInclude::Open(D3D_INCLUDE_TYPE IncludeType, LPCSTR pFile
 {
 	assert(IncludeType == D3D_INCLUDE_LOCAL || IncludeType == D3D_INCLUDE_SYSTEM);
 
-#ifdef _UNICODE
-	wchar_t conv_string[256] = {0};
-	if (mbstowcs(conv_string, pFileName, 256) == -1) {
-		return E_FAIL;
-	}
-#else
-	char* conv_string = pFilename;
-#endif
-
-	GleamGString final_path = _working_dir + GC("\\") + conv_string;
-
 	return S_OK;
 }
 
@@ -55,12 +44,12 @@ HRESULT __stdcall ShaderInclude::Close(LPCVOID pData)
 	return S_OK;
 }
 
-const GleamGString& ShaderInclude::getWorkingDir(void) const
+const GleamAString& ShaderInclude::getWorkingDir(void) const
 {
 	return _working_dir;
 }
 
-void ShaderInclude::setWorkingDir(const GChar* dir)
+void ShaderInclude::setWorkingDir(const char* dir)
 {
 	_working_dir = dir;
 }

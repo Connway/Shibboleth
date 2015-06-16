@@ -24,12 +24,12 @@ THE SOFTWARE.
 
 #include <Shibboleth_ReflectionDefinitions.h>
 #include <Shibboleth_DynamicLoader.h>
-#include <Shibboleth_IUpdateQuery.h>
 #include <Shibboleth_IManager.h>
 #include <Shibboleth_Map.h>
 #include <Gleam_IShaderResourceView.h>
 #include <Gleam_IRenderTarget.h>
 #include <Gleam_ITexture.h>
+#include <Gleam_IShader.h>
 #include <Gleam_IWindow.h>
 #include <Gaff_SmartPtr.h>
 #include <Gaff_SpinLock.h>
@@ -115,8 +115,9 @@ enum RenderModes
 SHIB_ENUM_REF_DEF(DisplayTags);
 SHIB_ENUM_REF_DEF(RenderModes);
 SHIB_ENUM_REF_DEF_EMBEDDED(Gleam_ITexture_Format, Gleam::ITexture::FORMAT);
+SHIB_ENUM_REF_DEF_EMBEDDED(Gleam_IShader_Type, Gleam::IShader::SHADER_TYPE);
 
-class RenderManager : public IManager, public IUpdateQuery
+class RenderManager : public IManager
 {
 public:
 	using RenderDevicePtr = Gaff::SmartPtr<Gleam::IRenderDevice, ProxyAllocator>;
@@ -155,7 +156,6 @@ public:
 	const char* getName(void) const;
 
 	void* rawRequestInterface(unsigned int class_id) const;
-	void getUpdateEntries(Array<UpdateEntry>& entries);
 
 	bool initThreadData(void);
 	bool init(const char* module);
@@ -167,7 +167,7 @@ public:
 
 	// Don't call this in a thread sensitive environment
 	bool createWindow(
-		const wchar_t* app_name, Gleam::IWindow::MODE window_mode,
+		const char* app_name, Gleam::IWindow::MODE window_mode,
 		int x, int y, unsigned int width, unsigned int height,
 		unsigned int refresh_rate, const char* device_name,
 		unsigned int adapter_id, unsigned int display_id, bool vsync,
@@ -268,9 +268,6 @@ private:
 
 	bool getDisplayTags(void);
 	bool getRenderModes(void);
-
-	void generateCommandLists(double, void* frame_data);
-	static void GenerateCommandListsHelper(void* frame_data);
 
 	GAFF_NO_COPY(RenderManager);
 	GAFF_NO_MOVE(RenderManager);

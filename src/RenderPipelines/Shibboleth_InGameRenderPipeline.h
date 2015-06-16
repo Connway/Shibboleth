@@ -21,8 +21,11 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include <Shibboleth_IRenderPipeline.h>
+#include <Gaff_Defines.h>
 
 NS_SHIBBOLETH
+
+class RenderManager;
 
 class InGameRenderPipeline : public IRenderPipeline
 {
@@ -34,6 +37,12 @@ public:
 	void run(double dt, void* frame_data);
 
 private:
+	static void GenerateCommandLists(void* job_data);
+
+	RenderManager& _render_mgr;
+
+	GAFF_NO_COPY(InGameRenderPipeline);
+	GAFF_NO_MOVE(InGameRenderPipeline);
 };
 
 NS_END

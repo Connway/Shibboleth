@@ -28,16 +28,34 @@ THE SOFTWARE.
 #include <Shibboleth_LoadingMessage.h>
 
 #include <Shibboleth_Utilities.h>
+#include <Shibboleth_Object.h>
 #include <Shibboleth_IApp.h>
 
-#include <Gleam_IProgram.h>
-#include <Gleam_Matrix4x4.h>
-#include <Gleam_IBuffer.h>
 #include <Gleam_IRenderDevice.h>
+#include <Gleam_Matrix4x4.h>
+#include <Gleam_IProgram.h>
+#include <Gleam_IBuffer.h>
 
 #include <Gaff_ScopedExit.h>
 
 NS_SHIBBOLETH
+
+// Defining enum reflection for Gleam::IBuffer here because I don't think we will ever need it outside of this file.
+SHIB_ENUM_REF_DEF_EMBEDDED(BUFFER_TYPE, Gleam::IBuffer::BUFFER_TYPE);
+SHIB_ENUM_REF_IMPL_EMBEDDED(BUFFER_TYPE, Gleam::IBuffer::BUFFER_TYPE)
+.addValue("Shader Data", Gleam::IBuffer::SHADER_DATA)
+.addValue("Structured Data", Gleam::IBuffer::STRUCTURED_DATA)
+;
+
+SHIB_ENUM_REF_DEF_EMBEDDED(MAP_TYPE, Gleam::IBuffer::MAP_TYPE);
+SHIB_ENUM_REF_IMPL_EMBEDDED(MAP_TYPE, Gleam::IBuffer::MAP_TYPE)
+.addValue("None", Gleam::IBuffer::NONE)
+.addValue("Read", Gleam::IBuffer::READ)
+.addValue("Write", Gleam::IBuffer::WRITE)
+.addValue("Read/Write", Gleam::IBuffer::READ_WRITE)
+.addValue("Write No Overwrite", Gleam::IBuffer::WRITE_NO_OVERWRITE)
+;
+
 
 COMP_REF_DEF_SAVE(ModelComponent, gRefDef);
 REF_IMPL_REQ(ModelComponent);
@@ -47,60 +65,187 @@ SHIB_REF_IMPL(ModelComponent)
 .addEnum("Render Mode Override", &ModelComponent::_render_mode_override, GetEnumRefDef<RenderModes>())
 ;
 
+const char* gComponentSchema = "";
+
 ModelComponent::ModelComponent(void):
 	_render_mgr(Shibboleth::GetApp().getManagerT<Shibboleth::RenderManager>("Render Manager")),
-	_render_mode_override(RM_NONE), _current_lod(0)
+	_requests_finished(0), _total_requests(0), _render_mode_override(RM_NONE), _init(false)
 {
-	_buffer_settings.type = Gleam::IBuffer::SHADER_DATA;
-	_buffer_settings.cpu_access = Gleam::IBuffer::WRITE;
-	_buffer_settings.size = sizeof(float) * 16 * 3;
-	_buffer_settings.data = nullptr;
-	_buffer_settings.stride = 0;
-	_buffer_settings.gpu_read_only = true;
 }
 
 ModelComponent::~ModelComponent(void)
 {
-	auto callback_func = Gaff::Bind(this, &ModelComponent::LoadCallback);
+	auto callback = Gaff::Bind(this, &ModelComponent::ResourceLoadedCallback);
 
-	_program_buffers_res.getResourcePtr()->removeCallback(Gaff::Bind(this, &ModelComponent::ProgramBuffersCallback));
-	_texture_res.getResourcePtr()->removeCallback(Gaff::Bind(this, &ModelComponent::TextureLoadedCallback));
-	_sampler_res.getResourcePtr()->removeCallback(Gaff::Bind(this, &ModelComponent::SamplerStateCallback));
-	_buffer_res.getResourcePtr()->removeCallback(Gaff::Bind(this, &ModelComponent::BufferCallback));
-	_material_res.getResourcePtr()->removeCallback(callback_func);
-	_model_res.getResourcePtr()->removeCallback(callback_func);
+	for (auto it = _program_buffers.begin(); it != _program_buffers.end(); ++it) {
+		it->getResourcePtr()->removeCallback(callback);
+	}
+
+	for (auto it = _textures.begin(); it != _textures.end(); ++it) {
+		it->getResourcePtr()->removeCallback(callback);
+	}
+
+	for (auto it = _materials.begin(); it != _materials.end(); ++it) {
+		it->getResourcePtr()->removeCallback(callback);
+	}
+
+	for (auto it = _samplers.begin(); it != _samplers.end(); ++it) {
+		it->getResourcePtr()->removeCallback(callback);
+	}
+
+	for (auto it = _buffers.begin(); it != _buffers.end(); ++it) {
+		it->getResourcePtr()->removeCallback(callback);
+	}
+
+	_model.getResourcePtr()->removeCallback(callback);
 }
 
 bool ModelComponent::validate(Gaff::JSON& json)
 {
-	Gaff::JSON material_file = json["Material File"];
-	Gaff::JSON texture_file = json["Texture File"];
-	Gaff::JSON sampler_file = json["Sampler File"];
+	Gaff::JSON material_files = json["Material Files"];
+	Gaff::JSON texture_files = json["Texture Files"];
+	Gaff::JSON sampler_files = json["Sampler Files"];
+	Gaff::JSON buffer_map = json["Buffer Map"];
+	Gaff::JSON buffers = json["Buffers"];
 	Gaff::JSON model_file = json["Model File"];
 	bool valid = true;
 
-	if (material_file && !material_file.isString()) {
-		// log error
-		json.setObject("Material File", Gaff::JSON::createNull());
-		valid = false;
+	if (material_files) {
+		if (!material_files.isArray()) {
+			// log error
+			valid = false;
+
+		} else {
+			// Multiply by two to account for the ProgramBuffers requests.
+			_total_requests += material_files.size() * 2;
+
+			material_files.forEachInArray([&](size_t, const Gaff::JSON& value) -> bool
+			{
+				if (!value.isString()) {
+					// log error
+					valid = false;
+				}
+
+				return false;
+			});
+		}
 	}
 
-	if (texture_file && !texture_file.isString()) {
-		// log error
-		json.setObject("Texture File", Gaff::JSON::createNull());
-		valid = false;
+	if (texture_files) {
+		if (!texture_files.isArray()) {
+			// log error
+			valid = false;
+
+		} else {
+			_total_requests += texture_files.size();
+
+			texture_files.forEachInArray([&](size_t, const Gaff::JSON& value) -> bool
+			{
+				if (!value.isObject()) {
+					// log error
+					valid = false;
+					return false;
+				}
+
+				Gaff::JSON file = value["File"];
+				Gaff::JSON material_index = value["Material Index"];
+				Gaff::JSON shader = value["Shader"];
+
+				if (!file.isString()) {
+					// log error
+					valid = false;
+				}
+
+				return false;
+			});
+		}
 	}
 
-	if (sampler_file && !sampler_file.isString()) {
-		// log error
-		json.setObject("Sampler File", Gaff::JSON::createNull());
-		valid = false;
+	if (sampler_files) {
+		if (!sampler_files.isArray()) {
+			// log error
+			valid = false;
+
+		} else {
+			_total_requests += sampler_files.size();
+
+			sampler_files.forEachInArray([&](size_t, const Gaff::JSON& value) -> bool
+			{
+				if (!value.isObject()) {
+					// log error
+					valid = false;
+					return false;
+				}
+
+				Gaff::JSON file = value["File"];
+				Gaff::JSON material_index = value["Material Index"];
+				Gaff::JSON shader = value["Shader"];
+
+				if (!file.isString()) {
+					// log error
+					valid = false;
+				}
+
+				return false;
+			});
+		}
 	}
 
 	if (model_file && !model_file.isString()) {
 		// log error
-		json.setObject("Model File", Gaff::JSON::createNull());
 		valid = false;
+	}
+
+	_total_requests += 1;
+
+	if (buffers) {
+		if (!buffers.isArray()) {
+			// log error
+			valid = false;
+
+		} else {
+			_total_requests += buffers.size();
+
+			bool error = buffers.forEachInArray([](size_t, const Gaff::JSON& value) -> bool
+			{
+				Gaff::JSON type = value["Type"];
+				Gaff::JSON cpu_access = value["CPU Access"];
+				Gaff::JSON size = value["Size"];
+				Gaff::JSON stride = value["Stride"];
+				Gaff::JSON gpu_read_only = value["GPU Read Only"];
+
+				if (!type.isString()) {
+					// log error
+					return true;
+				}
+
+				if (!cpu_access.isString()) {
+					// log error
+					return true;
+				}
+
+				if (!size.isInteger()) {
+					// log error
+					return true;
+				}
+
+				if (!stride.isInteger()) {
+					// log error
+					return true;
+				}
+
+				if (!gpu_read_only.isBoolean()) {
+					// log error
+					return true;
+				}
+
+				return false;
+			});
+
+			if (error) {
+				valid = false;
+			}
+		}
 	}
 
 	return valid;
@@ -108,47 +253,22 @@ bool ModelComponent::validate(Gaff::JSON& json)
 
 bool ModelComponent::load(const Gaff::JSON& json)
 {
-	Gaff::JSON material_file = json["Material File"];
-	Gaff::JSON texture_file = json["Texture File"];
-	Gaff::JSON sampler_file = json["Sampler File"];
 	Gaff::JSON model_file = json["Model File"];
-
 	gRefDef.read(json, this);
 
 	ResourceManager& res_mgr = Shibboleth::GetApp().getManagerT<Shibboleth::ResourceManager>("Resource Manager");
 
-	// FIX ME
-	if (material_file.isString()) {
-		_material_res = res_mgr.requestResource(material_file.getString());
-	}
-
-	// Turn these into arrays BEGIN
-	if (texture_file.isString()) {
-		_texture_res = res_mgr.requestResource(texture_file.getString());
-	}
-
-	if (sampler_file.isString()) {
-		_sampler_res = res_mgr.requestResource(sampler_file.getString());
-	}
-	// Turn these into arrays END
-
 	if (model_file.isString()) {
-		_model_res = res_mgr.requestResource(model_file.getString());
+		_model = res_mgr.requestResource(model_file.getString());
+		_model.getResourcePtr()->addCallback(Gaff::Bind(this, &ModelComponent::ResourceLoadedCallback));
 	}
 
-	_program_buffers_res = res_mgr.requestResource("ProgramBuffers", "test1");
-	_buffer_res = res_mgr.requestResource("Buffer", "test2", reinterpret_cast<unsigned long long>(&_buffer_settings));
+	requestMaterials(json, res_mgr);
+	requestTextures(json, res_mgr);
+	requestSamplers(json, res_mgr);
+	requestBuffers(json, res_mgr);
 
 	Shibboleth::GetApp().getBroadcaster().listen<LoadingMessage>(Gaff::Bind(this, &ModelComponent::HandleLoadingMessage));
-
-	auto callback_func = Gaff::Bind(this, &ModelComponent::LoadCallback);
-
-	_program_buffers_res.getResourcePtr()->addCallback(Gaff::Bind(this, &ModelComponent::ProgramBuffersCallback));
-	_texture_res.getResourcePtr()->addCallback(Gaff::Bind(this, &ModelComponent::TextureLoadedCallback));
-	_sampler_res.getResourcePtr()->addCallback(Gaff::Bind(this, &ModelComponent::SamplerStateCallback));
-	_buffer_res.getResourcePtr()->addCallback(Gaff::Bind(this, &ModelComponent::BufferCallback));
-	_material_res.getResourcePtr()->addCallback(callback_func);
-	_model_res.getResourcePtr()->addCallback(callback_func);
 
 	return true;
 }
@@ -157,73 +277,306 @@ void ModelComponent::allComponentsLoaded(void)
 {
 }
 
-void ModelComponent::ProgramBuffersCallback(const AHashString& /*resource*/, bool success)
+size_t ModelComponent::determineLOD(const Gleam::Vector4CPU& pos)
 {
-	// FIX ME
-	if (success) {
-		if (_texture_res.getResourcePtr()->isLoaded()) {
-			_program_buffers_res->data[0]->addResourceView(Gleam::IShader::SHADER_PIXEL, _texture_res->resource_views[0].get());
+	// IMPLEMENT ME!
+	return 0;
+}
+
+const Array< ResourceWrapper<ProgramBuffersData> >& ModelComponent::getProgramBuffers(void) const
+{
+	return _program_buffers;
+}
+
+Array< ResourceWrapper<ProgramBuffersData> >& ModelComponent::getProgramBuffers(void)
+{
+	return _program_buffers;
+}
+
+const Array< ResourceWrapper<ProgramData> >& ModelComponent::getMaterials(void) const
+{
+	return _materials;
+}
+
+Array< ResourceWrapper<ProgramData> >& ModelComponent::getMaterials(void)
+{
+	return _materials;
+}
+
+const ModelData& ModelComponent::getModel(void) const
+{
+	return *_model;
+}
+
+ModelData& ModelComponent::getModel(void)
+{
+	return *_model;
+}
+
+void ModelComponent::ResourceLoadedCallback(ResourceContainer* resource)
+{
+	if (resource->isLoaded()) {
+		size_t new_val = AtomicIncrement(&_requests_finished);
+
+		if (new_val == _total_requests) {
+			setupResources();
 		}
 
-		if (_sampler_res.getResourcePtr()->isLoaded()) {
-			_program_buffers_res->data[0]->addSamplerState(Gleam::IShader::SHADER_PIXEL, _sampler_res->data[0].get());
-		}
-
-		if (_buffer_res.getResourcePtr()->isLoaded()) {
-			_program_buffers_res->data[0]->addConstantBuffer(Gleam::IShader::SHADER_VERTEX, _buffer_res->data[0].get());
-		}
-	}
-}
-
-void ModelComponent::TextureLoadedCallback(const AHashString& /*resource*/, bool success)
-{
-	// FIX ME
-	if (success && _program_buffers_res.getResourcePtr()->isLoaded()) {
-		_program_buffers_res->data[0]->addResourceView(Gleam::IShader::SHADER_PIXEL, _texture_res->resource_views[0].get());
-	}
-}
-
-void ModelComponent::SamplerStateCallback(const AHashString& /*resource*/, bool success)
-{
-	// FIX ME
-	if (success && _program_buffers_res.getResourcePtr()->isLoaded()) {
-		_program_buffers_res->data[0]->addSamplerState(Gleam::IShader::SHADER_PIXEL, _sampler_res->data[0].get());
-	}
-}
-
-void ModelComponent::BufferCallback(const AHashString& /*resource*/, bool success)
-{
-	// FIX ME
-	if (success && _program_buffers_res.getResourcePtr()->isLoaded()) {
-		_program_buffers_res->data[0]->addConstantBuffer(Gleam::IShader::SHADER_VERTEX, _buffer_res->data[0].get());
-	}
-}
-
-void ModelComponent::LoadCallback(const AHashString& /*resource*/, bool success)
-{
-	if (!success) {
-		// complain about something
+	} else {
+		// handle failure
+		int i = 0;
+		i +=5;
+		i = i;
 	}
 }
 
 void ModelComponent::HandleLoadingMessage(const LoadingMessage& msg)
 {
 	if (msg.state == LoadingMessage::LOADING_FINISHED) {
-		_model_res->holding_data.getResourcePtr() = nullptr;
+		_model->holding_data.getResourcePtr() = nullptr;
 	}
+}
+
+void ModelComponent::requestMaterials(const Gaff::JSON& json, ResourceManager& res_mgr)
+{
+	auto callback = Gaff::Bind(this, &ModelComponent::ResourceLoadedCallback);
+	Gaff::JSON material_files = json["Material Files"];
+
+	if (material_files.isArray()) {
+		char temp[256] = { 0 };
+
+		_program_buffers.resize(material_files.size());
+		_materials.resize(material_files.size());
+
+		material_files.forEachInArray([&](size_t index, const Gaff::JSON& value) -> bool
+		{
+			ResourceWrapper<ProgramData> material = res_mgr.requestResource(value.getString());
+			material.getResourcePtr()->addCallback(callback);
+			_materials[index] = material;
+
+			// Make a unique name for this resource
+			sprintf(temp, "ProgramBuffers#%s#%s#%i%z", getOwner()->getName().getBuffer(), getName().getBuffer(), getOwner()->getID(), index);
+			ResourceWrapper<ProgramBuffersData> program_buffers = res_mgr.requestResource("ProgramBuffers", temp);
+			program_buffers.getResourcePtr()->addCallback(callback);
+			_program_buffers[index] = program_buffers;
+
+			return false;
+		});
+	}
+}
+
+void ModelComponent::requestTextures(const Gaff::JSON& json, ResourceManager& res_mgr)
+{
+	auto callback = Gaff::Bind(this, &ModelComponent::ResourceLoadedCallback);
+	Gaff::JSON texture_files = json["Texture Files"];
+
+	if (texture_files.isArray()) {
+		_texture_mappings.resize(texture_files.size());
+		_textures.resize(texture_files.size());
+
+		texture_files.forEachInArray([&](size_t index, const Gaff::JSON& value) -> bool
+		{
+			Gaff::JSON file = value["File"];
+			Gaff::JSON material_map = value["Material Map"];
+
+			ResourceWrapper<TextureData> texture = res_mgr.requestResource(file.getString());
+			texture.getResourcePtr()->addCallback(callback);
+			_textures[index] = texture;
+
+			_texture_mappings[index].resize(material_map.size());
+
+			material_map.forEachInArray([&](size_t index2, const Gaff::JSON& value2) -> bool
+			{
+				Gaff::JSON material_index = value2["Material Index"];
+				Gaff::JSON shader = value2["Shader"];
+
+				MaterialMapping mapping;
+				mapping.first = static_cast<size_t>(material_index.getInteger());
+				mapping.second = GetEnumRefDef<Gleam::IShader::SHADER_TYPE>().getValue(shader.getString());
+
+				_texture_mappings[index][index2] = mapping;
+
+				return false;
+			});
+
+			return false;
+		});
+	}
+}
+
+void ModelComponent::requestSamplers(const Gaff::JSON& json, ResourceManager& res_mgr)
+{
+	auto callback = Gaff::Bind(this, &ModelComponent::ResourceLoadedCallback);
+	Gaff::JSON sampler_files = json["Sampler Files"];
+
+	if (sampler_files.isArray()) {
+		_sampler_mappings.resize(sampler_files.size());
+		_samplers.resize(sampler_files.size());
+
+		sampler_files.forEachInArray([&](size_t index, const Gaff::JSON& value) -> bool
+		{
+			Gaff::JSON file = value["File"];
+			Gaff::JSON material_map = value["Material Map"];
+
+			ResourceWrapper<SamplerStateData> sampler = res_mgr.requestResource(file.getString());
+			sampler.getResourcePtr()->addCallback(callback);
+			_samplers[index] = sampler;
+
+			_sampler_mappings[index].resize(material_map.size());
+
+			material_map.forEachInArray([&](size_t index2, const Gaff::JSON& value2) -> bool
+			{
+				Gaff::JSON material_index = value2["Material Index"];
+				Gaff::JSON shader = value2["Shader"];
+
+				MaterialMapping mapping;
+				mapping.first = static_cast<size_t>(material_index.getInteger());
+				mapping.second = GetEnumRefDef<Gleam::IShader::SHADER_TYPE>().getValue(shader.getString());
+
+				_sampler_mappings[index][index2] = mapping;
+
+				return false;
+			});
+
+			return false;
+		});
+	}
+}
+
+void ModelComponent::requestBuffers(const Gaff::JSON& json, ResourceManager& res_mgr)
+{
+	auto callback = Gaff::Bind(this, &ModelComponent::ResourceLoadedCallback);
+	Gaff::JSON buffers = json["Buffers"];
+
+	if (buffers.isArray()) {
+		_buffer_mappings.resize(buffers.size());
+		_buffer_settings.resize(buffers.size());
+		_buffers.resize(buffers.size());
+
+		const auto& shader_type = GetEnumRefDef<Gleam::IShader::SHADER_TYPE>();
+		const auto& buffer_type = GetEnumRefDef<Gleam::IBuffer::BUFFER_TYPE>();
+		const auto& map_type = GetEnumRefDef<Gleam::IBuffer::MAP_TYPE>();
+
+		buffers.forEachInArray([&](size_t index, const Gaff::JSON& value) -> bool
+		{
+			Gaff::JSON type = value["Type"];
+			Gaff::JSON cpu_access = value["CPU Access"];
+			Gaff::JSON size = value["Size"];
+			Gaff::JSON stride = value["Stride"];
+			Gaff::JSON gpu_read_only = value["GPU Read Only"];
+			Gaff::JSON material_map = value["Material Map"];
+
+			Gleam::IBuffer::BufferSettings buffer_settings = {
+				nullptr,
+				static_cast<unsigned int>(size.getInteger()),
+				static_cast<unsigned int>(stride.getInteger()),
+				buffer_type.getValue(type.getString()),
+				map_type.getValue(cpu_access.getString()),
+				gpu_read_only.isTrue()
+			};
+
+			_buffer_settings[index] = buffer_settings;
+
+			// Make a unique name for this resource
+			char temp[256] = { 0 };
+			sprintf(temp, "Buffer#%s#%s#%i%z", getOwner()->getName().getBuffer(), getName().getBuffer(), getOwner()->getID(), index);
+			ResourceWrapper<BufferData> buffer = res_mgr.requestResource("Buffer", temp, reinterpret_cast<unsigned long long>(&_buffer_settings[index]));
+			buffer.getResourcePtr()->addCallback(callback);
+			_buffers[index] = buffer;
+
+			_buffer_mappings[index].resize(material_map.size());
+
+			material_map.forEachInArray([&](size_t index2, const Gaff::JSON& value2) -> bool
+			{
+				Gaff::JSON material_index = value2["Material Index"];
+				Gaff::JSON shader = value2["Shader"];
+
+				MaterialMapping mapping;
+				mapping.first = static_cast<size_t>(material_index.getInteger());
+				mapping.second = GetEnumRefDef<Gleam::IShader::SHADER_TYPE>().getValue(shader.getString());
+
+				_buffer_mappings[index][index2] = mapping;
+
+				return false;
+			});
+
+			return false;
+		});
+	}
+}
+
+void ModelComponent::setupResources(void)
+{
+	unsigned int num_devices = Shibboleth::GetApp().getManagerT<Shibboleth::RenderManager>("Render Manager").getRenderDevice().getNumDevices();
+
+	for (unsigned int device = 0; device < num_devices; ++device) {
+		// for each texture
+		//		add to program buffers via mapping
+		for (size_t i = 0; i < _textures.size(); ++i) {
+			Array<MaterialMapping>& texture_mappings = _texture_mappings[i];
+
+			for (size_t j = 0; j < texture_mappings.size(); ++j) {
+				MaterialMapping& mat_map = texture_mappings[j];
+
+				ProgramBuffersPtr& program_buffers = _program_buffers[mat_map.first]->data[device];
+				ShaderResourceViewPtr& res_view = _textures[i]->resource_views[device];
+
+				if (program_buffers && res_view) {
+					program_buffers->addResourceView(mat_map.second, res_view.get());
+				}
+			}
+		}
+
+		// for each sampler
+		//		add to program buffers via mapping
+		for (size_t i = 0; i < _samplers.size(); ++i) {
+			Array<MaterialMapping>& sampler_mappings = _sampler_mappings[i];
+
+			for (size_t j = 0; j < sampler_mappings.size(); ++j) {
+				MaterialMapping& mat_map = sampler_mappings[j];
+
+				ProgramBuffersPtr& program_buffers = _program_buffers[mat_map.first]->data[device];
+				SamplerStatePtr& sampler = _samplers[i]->data[device];
+
+				if (program_buffers && sampler) {
+					program_buffers->addSamplerState(mat_map.second, sampler.get());
+				}
+			}
+		}
+
+		// for each buffer
+		//		add to program buffers
+		for (size_t i = 0; i < _buffers.size(); ++i) {
+			BufferPtr& buffer = _buffers[i]->data[device];
+
+			if (buffer) {
+				Array<MaterialMapping>& buffer_mappings = _buffer_mappings[i];
+
+				for (size_t j = 0; j < buffer_mappings.size(); ++j) {
+					MaterialMapping mat_map = buffer_mappings[j];
+					ProgramBuffersPtr& program_buffers = _program_buffers[mat_map.first]->data[device];
+
+					if (program_buffers) {
+						program_buffers->addConstantBuffer(mat_map.second, buffer.get());
+					}
+				}
+			}
+		}
+	}
+
+	// Clear the mappings, we don't need them anymore.
+	_buffer_settings.clear();
+	_buffer_mappings.clear();
+	_texture_mappings.clear();
+	_sampler_mappings.clear();
+
+	_init = true;
 }
 
 // HACK: Should be removed
 void ModelComponent::render(double dt)
 {
-	if (!_material_res || !_model_res || !_texture_res || !_sampler_res || !_program_buffers_res || !_buffer_res ||
-		!_material_res.getResourcePtr()->isLoaded() ||
-		!_model_res.getResourcePtr()->isLoaded() ||
-		!_texture_res.getResourcePtr()->isLoaded() ||
-		!_sampler_res.getResourcePtr()->isLoaded() ||
-		!_program_buffers_res.getResourcePtr()->isLoaded() ||
-		!_buffer_res.getResourcePtr()->isLoaded()) {
-
+	if (!_init) {
 		return;
 	}
 
@@ -240,20 +593,20 @@ void ModelComponent::render(double dt)
 	unsigned int current_device = rd.getCurrentDevice();
 	rd.getActiveOutputRenderTarget()->bind(rd);
 
-	// Update camera data
-	Gleam::IBuffer* buffer = _program_buffers_res->data[current_device]->getConstantBuffer(Gleam::IShader::SHADER_VERTEX, 0);
-
-	float* matrix_data = (float*)buffer->map(rd);
-		memcpy(matrix_data, toworld.getBuffer(), sizeof(float) * 16);
-		memcpy(matrix_data + 16, tocamera.getBuffer(), sizeof(float) * 16);
-		memcpy(matrix_data + 32, projection.getBuffer(), sizeof(float) * 16);
-	buffer->unmap(_render_mgr.getRenderDevice());
-
-	ModelPtr& model = _model_res->models[current_device][_current_lod];
-
-	_material_res->programs[current_device]->bind(rd, _program_buffers_res->data[current_device].get());
+	ModelPtr& model = _model->models[current_device][0];
 
 	for (unsigned int i = 0; i < model->getMeshCount(); ++i) {
+		// Update camera data
+		Gleam::IBuffer* buffer = _buffers[0]->data[current_device].get();
+
+		float* matrix_data = reinterpret_cast<float*>(buffer->map(rd));
+			memcpy(matrix_data, toworld.getBuffer(), sizeof(float) * 16);
+			memcpy(matrix_data + 16, tocamera.getBuffer(), sizeof(float) * 16);
+			memcpy(matrix_data + 32, projection.getBuffer(), sizeof(float) * 16);
+		buffer->unmap(_render_mgr.getRenderDevice());
+
+		_materials[i]->programs[current_device]->bind(rd, _program_buffers[i]->data[current_device].get());
+
 		model->render(rd, i);
 	}
 }

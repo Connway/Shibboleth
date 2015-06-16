@@ -33,14 +33,6 @@ THE SOFTWARE.
 #include "Gaff_Map.h"
 #include <cstdlib>
 
-#if defined(_WIN32) || defined(_WIN64)
-	#ifndef snprintf
-		#define snprintf
-	#endif
-#else
-	#include <cstdio>
-#endif
-
 #define VAR_CONTAINER(name, type) \
 	class name : public ValueContainerBase \
 	{ \

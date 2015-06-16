@@ -45,14 +45,6 @@ THE SOFTWARE.
 	x(x&&); \
 	const x& operator=(x&&)
 
-#ifdef _UNICODE
-	#define GC(x) L##x
-	typedef wchar_t GChar;
-#else
-	#define GC(x) x
-	typedef char GChar;
-#endif
-
 #ifdef ATTEMPT_INLINE
 	#define INLINE inline
 #else

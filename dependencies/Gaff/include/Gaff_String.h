@@ -164,6 +164,5 @@ bool greater(const wchar_t* s1, size_t n1, const wchar_t* s2);
 
 template <class Allocator = DefaultAllocator> using AString = String<char, Allocator>;
 template <class Allocator = DefaultAllocator> using WString = String<wchar_t, Allocator>;
-template <class Allocator = DefaultAllocator> using GString = String<GChar, Allocator>;
 
 NS_END

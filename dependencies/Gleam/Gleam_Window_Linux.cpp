@@ -275,9 +275,9 @@ void Window::WindowProc(XEvent& event)
 
 
 Window::Window(void):
-	_application_name(nullptr), _window_mode(FULLSCREEN),
-	_cursor_visible(true), _no_repeats(false), _contain(false),
-	_display(nullptr), _visual_info(nullptr), _window(0),
+	_window_mode(FULLSCREEN), _cursor_visible(true),
+	_no_repeats(false), _contain(false), _display(nullptr),
+	_visual_info(nullptr), _window(0),
 	_delete_window(None), _protocols(None)
 {
 }
@@ -287,7 +287,7 @@ Window::~Window(void)
 	destroy();
 }
 
-bool Window::init(const GChar* app_name, MODE window_mode,
+bool Window::init(const char* app_name, MODE window_mode,
 					unsigned int width, unsigned int height,
 					short refresh_rate, int pos_x, int pos_y,
 					const char* display_name)
@@ -471,6 +471,8 @@ bool Window::init(const GChar* app_name, MODE window_mode,
 	if (gDisplays.linearSearch(_display) == gDisplays.end()) {
 		gDisplays.push(_display);
 	}
+
+	_application_name = app_name;
 
 	return true;
 }

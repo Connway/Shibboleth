@@ -26,8 +26,6 @@ THE SOFTWARE.
 
 NS_GLEAM
 
-class Vector4CPU;
-
 // Matrix4x4CPU elements are [column][row]
 //
 // | 00 10 20 30 |

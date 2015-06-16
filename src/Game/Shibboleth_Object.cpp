@@ -369,7 +369,7 @@ bool Object::createComponents(const Gaff::JSON& json)
 			return true;
 		}
 
-		Gaff::JSON type = value["type"];
+		Gaff::JSON type = value["Type"];
 
 		if (!type.isString()) {
 			// log error

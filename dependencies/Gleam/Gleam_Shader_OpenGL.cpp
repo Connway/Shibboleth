@@ -109,57 +109,6 @@ bool ShaderGL::initCompute(IRenderDevice&, const char* file_path)
 	return loadFileAndCompileShader(GL_COMPUTE_SHADER, file_path);
 }
 
-#ifdef _UNICODE
-bool ShaderGL::init(IRenderDevice&, const wchar_t* file_path, SHADER_TYPE shader_type)
-{
-	assert(file_path && shader_type < SHADER_TYPE_SIZE);
-	_type = shader_type;
-	return loadFileAndCompileShader(gl_shader_type[shader_type], file_path);
-}
-
-bool ShaderGL::initVertex(IRenderDevice&, const wchar_t* file_path)
-{
-	assert(file_path);
-	_type = SHADER_VERTEX;
-	return loadFileAndCompileShader(GL_VERTEX_SHADER, file_path);
-}
-
-bool ShaderGL::initPixel(IRenderDevice&, const wchar_t* file_path)
-{
-	assert(file_path);
-	_type = SHADER_PIXEL;
-	return loadFileAndCompileShader(GL_FRAGMENT_SHADER, file_path);
-}
-
-bool ShaderGL::initDomain(IRenderDevice&, const wchar_t* file_path)
-{
-	assert(file_path);
-	_type = SHADER_DOMAIN;
-	return loadFileAndCompileShader(GL_TESS_EVALUATION_SHADER, file_path);
-}
-
-bool ShaderGL::initGeometry(IRenderDevice&, const wchar_t* file_path)
-{
-	assert(file_path);
-	_type = SHADER_GEOMETRY;
-	return loadFileAndCompileShader(GL_GEOMETRY_SHADER, file_path);
-}
-
-bool ShaderGL::initHull(IRenderDevice&, const wchar_t* file_path)
-{
-	assert(file_path);
-	_type = SHADER_HULL;
-	return loadFileAndCompileShader(GL_TESS_CONTROL_SHADER, file_path);
-}
-
-bool ShaderGL::initCompute(IRenderDevice&, const wchar_t* file_path)
-{
-	assert(file_path);
-	_type = SHADER_COMPUTE;
-	return loadFileAndCompileShader(GL_COMPUTE_SHADER, file_path);
-}
-#endif
-
 bool ShaderGL::initVertexSource(IRenderDevice&, const char* source, size_t source_size)
 {
 	assert(source);
@@ -249,52 +198,6 @@ GLuint ShaderGL::getShader(void) const
 {
 	return _shader;
 }
-
-#ifdef _UNICODE
-bool ShaderGL::loadFileAndCompileShader(unsigned int shader_type, const wchar_t* file_path)
-{
-	assert(file_path);
-
-	Gaff::File shader(file_path, Gaff::File::READ_BINARY);
-
-	if (!shader.isOpen()) {
-		GleamAString msg("Failed to open shader file: ");
-
-		// convert file_path to ASCII
-		char dest[256] = { 0 };
-		wcstombs(dest, file_path, wcsnlen(file_path, 256));
-		msg += dest;
-
-		WriteMessageToLog(msg.getBuffer(), msg.size(), LOG_ERROR);
-		return false;
-	}
-
-	int shader_size = shader.getFileSize();
-	char* shader_src = (char*)GleamAllocate(sizeof(char) * shader_size);
-
-	if (!shader_src || shader_size == -1) {
-		return false;
-	}
-
-	if (!shader.readEntireFile(shader_src)) {
-		GleamFree(shader_src);
-
-		GleamAString msg("Failed to read shader file: ");
-
-		// convert file_path to ASCII
-		char dest[256] = { 0 };
-		wcstombs(dest, file_path, wcsnlen(file_path, 256));
-		msg += dest;
-
-		WriteMessageToLog(msg.getBuffer(), msg.size(), LOG_ERROR);
-		return false;
-	}
-
-	bool ret = compileShader(shader_src, shader_size, shader_type);
-	GleamFree(shader_src);
-	return ret;
-}
-#endif
 
 bool ShaderGL::loadFileAndCompileShader(unsigned int shader_type, const char* file_path)
 {

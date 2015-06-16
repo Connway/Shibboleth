@@ -84,8 +84,8 @@ public:
 	INLINE bool hasFailed(void) const;
 	INLINE void failed(void);
 
-	void addCallback(const Gaff::FunctionBinder<void, const AHashString&, bool>& callback);
-	void removeCallback(const Gaff::FunctionBinder<void, const AHashString&, bool>& callback);
+	void addCallback(const Gaff::FunctionBinder<void, ResourceContainer*>& callback);
+	void removeCallback(const Gaff::FunctionBinder<void, ResourceContainer*>& callback);
 
 private:
 	typedef void (ResourceManager::*ZRC)(const AHashString&);
@@ -94,7 +94,7 @@ private:
 
 	AHashString _res_key;
 
-	Array< Gaff::FunctionBinder<void, const AHashString&, bool> > _callbacks;
+	Array< Gaff::FunctionBinder<void, ResourceContainer*> > _callbacks;
 
 	volatile Gaff::IVirtualDestructor* _resource;
 
@@ -108,7 +108,7 @@ private:
 
 	ResourceContainer(const AHashString& res_key, ResourceManager* res_manager, ZRC zero_ref_callback, unsigned long long user_data);
 	void setResource(Gaff::IVirtualDestructor* resource);
-	void callCallbacks(bool succeeded);
+	void callCallbacks(void);
 
 	friend void ResourceReadingJob(void*);
 	friend void ResourceLoadingJob(void*);

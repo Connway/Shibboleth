@@ -380,7 +380,10 @@ void String<T, Allocator>::resize(size_t new_size)
 
 	_size = new_size;
 
-	_allocator.free(_string);
+	if (_string) {
+		_allocator.free(_string);
+	}
+
 	_string = new_string;
 }
 

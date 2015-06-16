@@ -103,14 +103,14 @@ private:
 	struct OutputInfo
 	{
 		GleamArray<DEVMODE> display_mode_list;
-		GleamGString name;
+		GleamAString name;
 	};
 
 	struct AdapterInfo
 	{
 		GleamArray<OutputInfo> output_info;
 		DISPLAY_DEVICE display_device;
-		GleamGString name;
+		GleamAString name;
 	};
 
 	struct Viewport

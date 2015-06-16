@@ -195,15 +195,8 @@ void SetupGraphicsState::update(void)
 			return nullptr;
 		}
 
-		const GChar* wnd_name = nullptr;
-
-#ifdef _UNICODE
-		wchar_t temp[64] = { 0 };
-		mbstowcs(temp, window_name.getString(), 64);
-		wnd_name = temp;
-#else
+		const char* wnd_name = nullptr;
 		wnd_name = window_name.getString();
-#endif
 
 		Gleam::IWindow::MODE wnd_mode;
 

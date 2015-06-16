@@ -36,7 +36,7 @@ public:
 	virtual ~IWindow(void) {}
 
 	virtual bool init(
-		const GChar* app_name, MODE window_mode = FULLSCREEN,
+		const char* app_name, MODE window_mode = FULLSCREEN,
 		unsigned int width = 0, unsigned int height = 0,
 		int pos_x = 0, int pos_y = 0,
 		const char* compat = nullptr

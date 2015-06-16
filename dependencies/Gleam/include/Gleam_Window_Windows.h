@@ -24,6 +24,7 @@ THE SOFTWARE.
 
 #include "Gleam_Window_Defines.h"
 #include "Gleam_IWindow.h"
+#include "Gleam_String.h"
 #include "Gleam_Array.h"
 #include "Gleam_Map.h"
 #include <Gaff_IncludeWindows.h>
@@ -39,7 +40,7 @@ public:
 	Window(void);
 	~Window(void);
 
-	bool init(const GChar* app_name, MODE window_mode = FULLSCREEN,
+	bool init(const char* app_name, MODE window_mode = FULLSCREEN,
 				unsigned int width = 0, unsigned int height = 0,
 				int pos_x = 0, int pos_y = 0, const char* compat = nullptr);
 	void destroy(void);
@@ -75,7 +76,7 @@ public:
 private:
 	int _pos_x, _pos_y;
 	unsigned int _width, _height;
-	const GChar* _application_name;
+	GleamAString _application_name;
 	HINSTANCE _hinstance;
 	HWND _hwnd;
 

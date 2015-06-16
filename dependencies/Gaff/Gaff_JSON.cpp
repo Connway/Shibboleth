@@ -21,14 +21,53 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Gaff_JSON.h"
+#include "Gaff_File.h"
 #include <cstring>
+#include <cstdio>
+
+#ifdef _WIN32
+	#define snprintf _snprintf
+#endif
+
 
 NS_GAFF
+
+class JSON::JSONAllocator
+{
+public:
+	void* alloc(size_t size_bytes)
+	{
+		return JSON::_alloc(size_bytes);
+	}
+
+	void free(void* data)
+	{
+		JSON::_free(data);
+	}
+};
+
+struct JSON::ElementInfo
+{
+	const char* type = nullptr;
+	bool optional = false;
+	const char* element_type = nullptr;
+	JSON schema;
+	const char* schema_name = nullptr;
+	const char* key = nullptr;
+	size_t depth = 0;
+};
+
+
+
+json_malloc_t JSON::_alloc = malloc;
+json_free_t JSON::_free = free;
 
 void JSON::SetMemoryFunctions(json_malloc_t alloc_func, json_free_t free_func)
 {
 	assert(alloc_func && free_func);
 	json_set_alloc_funcs(alloc_func, free_func);
+	_alloc = alloc_func;
+	_free = free_func;
 }
 
 /*!
@@ -110,6 +149,70 @@ JSON::JSON(void):
 JSON::~JSON(void)
 {
 	destroy();
+}
+
+bool JSON::validateFile(const char* schema_file) const
+{
+	Gaff::File file;
+
+	if (!file.open(schema_file)) {
+		return false;
+	}
+
+	char* input = reinterpret_cast<char*>(_alloc(sizeof(char) * file.getFileSize()));
+	bool ret_val = false;
+	
+	if (input) {
+		memcpy(_error.source, schema_file, Min(static_cast<size_t>(JSON_ERROR_SOURCE_LENGTH), strlen(schema_file) + 1));
+		ret_val = validate(input);
+		_free(input);
+	}
+
+	return ret_val;
+}
+
+bool JSON::validate(const char* input) const
+{
+	JSON schema_object;
+
+	if (!schema_object.parse(input)) {
+		_error = schema_object._error;
+		return false;
+	}
+
+	SchemaMap schema_map;
+	JSON schema = schema_object;
+
+	if (schema_object.isArray()) {
+		bool error = schema_object.forEachInArray([&](size_t index, const JSON& value) -> bool
+		{
+			if (index != schema.size() - 1) {
+				if (!value.isObject()) {
+					snprintf(_error.text, JSON_ERROR_TEXT_LENGTH, "Value at index '%z' is not an object.", index);
+					return true;
+				}
+
+				JSON name = value["Name"];
+
+				if (!name) {
+					snprintf(_error.text, JSON_ERROR_TEXT_LENGTH, "Value at index '%z' is not an object.", index);
+					return true;
+				}
+
+				schema_map[name.getString()] = value;
+			}
+
+			return false;
+		});
+
+		if (error) {
+			return false;
+		}
+
+		schema = schema_object[schema_object.size() - 1];
+	}
+
+	return validateSchema(schema, schema_map);
 }
 
 bool JSON::parseFile(const char* filename)
@@ -288,6 +391,31 @@ JSON JSON::deepCopy(void) const
 	return JSON(json_deep_copy(_value), false);
 }
 
+int JSON::getErrorLine(void) const
+{
+	return _error.line;
+}
+
+int JSON::getErrorColumn(void) const
+{
+	return _error.column;
+}
+
+int JSON::getErrorPosition(void) const
+{
+	return _error.position;
+}
+
+const char* JSON::getErrorSource(void) const
+{
+	return _error.source;
+}
+
+const char* JSON::getErrorText(void) const
+{
+	return _error.text;
+}
+
 const JSON& JSON::operator=(const JSON& rhs)
 {
 	destroy();
@@ -341,6 +469,250 @@ JSON JSON::operator[](const char* key) const
 JSON JSON::operator[](size_t index) const
 {
 	return getObject(index);
+}
+
+JSON::ElementInfo JSON::ExtractElementInfo(const JSON& element, const SchemaMap& schema_map)
+{
+	assert(element.isString() || element.isObject());
+	JSON::ElementInfo info;
+
+	if (element.isObject()) {
+		assert(element["Type"].isString());
+		assert(element["Optional"].isBoolean());
+
+		bool is_object = !strcmp(element["Type"].getString(), "Object");
+		bool is_array = !strcmp(element["Type"].getString(), "Array");
+
+		info.type = element["Type"].getString();
+		info.optional = element["Optional"].isTrue();
+
+		if (is_array) {
+			assert(element["Element Type"].isString());
+			info.element_type = element["Element Type"].getString();
+
+			if (!strcmp(info.element_type, "Object")) {
+				assert(element["Schema"].isObject() || element["Schema"].isString());
+				info.schema = element["Schema"];
+
+				if (info.schema.isString()) {
+					assert(schema_map.hasElementWithKey(info.schema.getString()));
+					info.schema = schema_map[info.schema.getString()];
+				}
+			}
+
+		} else if (is_object) {
+			assert(element["Schema"].isObject() || element["Schema"].isString());
+			info.schema = element["Schema"];
+
+			if (info.schema.isString()) {
+				assert(schema_map.hasElementWithKey(info.schema.getString()));
+				info.schema = schema_map[info.schema.getString()];
+			}
+		}
+
+	} else {
+		info.schema_name = element.getString();
+	}
+
+	return info;
+}
+
+bool JSON::validateSchema(const JSON& schema, const SchemaMap& schema_map) const
+{
+	static ElementParseMap parse_funcs;
+
+	if (parse_funcs.empty()) {
+		parse_funcs["Object"] = &JSON::isObjectSchema;
+		parse_funcs["Array"] = &JSON::isArraySchema;
+		parse_funcs["String"] = &JSON::isStringSchema;
+		parse_funcs["Number"] = &JSON::isNumberSchema;
+		parse_funcs["Integer"] = &JSON::isIntegerSchema;
+		parse_funcs["Real"] = &JSON::isRealSchema;
+		parse_funcs["Boolean"] = &JSON::isBooleanSchema;
+	}
+
+	return !schema.forEachInObject([&](const char* key, const JSON& value) -> bool
+	{
+		ElementInfo info = ExtractElementInfo(value, schema_map);
+		JSON element = getObject(key);
+		info.key = key;
+
+		if (info.schema_name && !element.validateSchema(schema_map[info.schema_name], schema_map)) {
+			_error = element._error;
+			return true;
+
+		} else {
+			if (!(this->*parse_funcs[info.type])(element, info, schema_map)) {
+				return true;
+			}
+		}
+
+		return false;
+	});
+}
+
+bool JSON::isObjectSchema(const JSON& element, const ElementInfo& info, const SchemaMap& schema_map) const
+{
+	if (!element && info.optional) {
+		return true;
+	} else if (!element && !info.optional) {
+		snprintf(_error.text, JSON_ERROR_TEXT_LENGTH, "Element '%s' is non-optional.", info.key);
+		return false;
+	}
+
+	if (!element.isObject()) {
+		snprintf(_error.text, JSON_ERROR_TEXT_LENGTH, "Element '%s' is not an object.", info.key);
+		return false;
+	}
+
+	if (!element.validateSchema(info.schema, schema_map)) {
+		_error = element._error;
+		return false;
+	}
+
+	return true;
+}
+
+bool JSON::isArraySchema(const JSON& element, const ElementInfo& info, const SchemaMap& schema_map) const
+{
+	if (!element && info.optional) {
+		return true;
+	} else if (!element && !info.optional) {
+		snprintf(_error.text, JSON_ERROR_TEXT_LENGTH, "Element '%s' is non-optional.", info.key);
+		return false;
+	}
+
+	if (!element.isArray()) {
+		snprintf(_error.text, JSON_ERROR_TEXT_LENGTH, "Element '%s' is not an array.", info.key);
+		return false;
+	}
+
+	return !element.forEachInArray([&](size_t index, const JSON& value) -> bool
+	{
+		if (!strcmp(info.element_type, "String") && !value.isString()) {
+			snprintf(_error.text, JSON_ERROR_TEXT_LENGTH, "Element '%s' index '%z' depth '%z' is not a string.", info.key, index);
+			return true;
+		} else if (!strcmp(info.element_type, "Number") && !value.isNumber()) {
+			snprintf(_error.text, JSON_ERROR_TEXT_LENGTH, "Element '%s' index '%z' depth '%z' is not a number.", info.key, index);
+			return true;
+		} else if (!strcmp(info.element_type, "Integer") && !value.isInteger()) {
+			snprintf(_error.text, JSON_ERROR_TEXT_LENGTH, "Element '%s' index '%z' depth '%z' is not an integer.", info.key, index);
+			return true;
+		} else if (!strcmp(info.element_type, "Real") && !value.isReal()) {
+			snprintf(_error.text, JSON_ERROR_TEXT_LENGTH, "Element '%s' index '%z' depth '%z' is not a real.", info.key, index);
+			return true;
+		} else if (!strcmp(info.element_type, "Boolean") && !value.isBoolean()) {
+			snprintf(_error.text, JSON_ERROR_TEXT_LENGTH, "Element '%s' index '%z' depth '%z' is not a boolean.", info.key, index);
+			return true;
+
+		} else if (!strcmp(info.element_type, "Object")) {
+			if (!value.isObject()) {
+				snprintf(_error.text, JSON_ERROR_TEXT_LENGTH, "Element '%s' index '%z' depth '%z' is not an object.", info.key, index);
+				return true;
+			}
+
+			if (!value.validateSchema(info.schema, schema_map)) {
+				_error = value._error;
+				return true;
+			}
+
+		} else if (!strcmp(info.element_type, "Array")) {
+			if (!value.isArray()) {
+				snprintf(_error.text, JSON_ERROR_TEXT_LENGTH, "Element '%s' index '%z' depth '%z' is not an array.", info.key, index);
+				return true;
+			}
+
+			const_cast<ElementInfo&>(info).depth += 1;
+			return !isArraySchema(value, info, schema_map);
+		}
+
+		return false;
+	});
+}
+
+bool JSON::isStringSchema(const JSON& element, const ElementInfo& info, const SchemaMap&) const
+{
+	if (!element && info.optional) {
+		return true;
+	} else if (!element && !info.optional) {
+		snprintf(_error.text, JSON_ERROR_TEXT_LENGTH, "Element '%s' is non-optional.", info.key);
+		return false;
+	}
+
+	if (!element.isString()) {
+		snprintf(_error.text, JSON_ERROR_TEXT_LENGTH, "Element '%s' is not a string.", info.key);
+		return false;
+	}
+
+	return true;
+}
+
+bool JSON::isNumberSchema(const JSON& element, const ElementInfo& info, const SchemaMap&) const
+{
+	if (!element && info.optional) {
+		return true;
+	} else if (!element && !info.optional) {
+		snprintf(_error.text, JSON_ERROR_TEXT_LENGTH, "Element '%s' is non-optional.", info.key);
+		return false;
+	}
+
+	if (!element.isNumber()) {
+		snprintf(_error.text, JSON_ERROR_TEXT_LENGTH, "Element '%s' is not a number.", info.key);
+		return false;
+	}
+
+	return true;
+}
+
+bool JSON::isIntegerSchema(const JSON& element, const ElementInfo& info, const SchemaMap&) const
+{
+	if (!element && info.optional) {
+		return true;
+	} else if (!element && !info.optional) {
+		snprintf(_error.text, JSON_ERROR_TEXT_LENGTH, "Element '%s' is non-optional.", info.key);
+		return false;
+	}
+
+	if (!element.isInteger()) {
+		snprintf(_error.text, JSON_ERROR_TEXT_LENGTH, "Element '%s' is not an integer.", info.key);
+		return false;
+	}
+
+	return true;
+}
+
+bool JSON::isRealSchema(const JSON& element, const ElementInfo& info, const SchemaMap&) const
+{
+	if (!element && info.optional) {
+		return true;
+	} else if (!element && !info.optional) {
+		snprintf(_error.text, JSON_ERROR_TEXT_LENGTH, "Element '%s' is non-optional.", info.key);
+		return false;
+	}
+
+	if (!element.isReal()) {
+		snprintf(_error.text, JSON_ERROR_TEXT_LENGTH, "Element '%s' is not a real.", info.key);
+		return false;
+	}
+
+	return true;
+}
+
+bool JSON::isBooleanSchema(const JSON& element, const ElementInfo& info, const SchemaMap&) const
+{
+	if (!element && info.optional) {
+		return true;
+	} else if (!element && !info.optional) {
+		snprintf(_error.text, JSON_ERROR_TEXT_LENGTH, "Element '%s' is non-optional.", info.key);
+		return false;
+	}
+
+	if (!element.isBoolean()) {
+		snprintf(_error.text, JSON_ERROR_TEXT_LENGTH, "Element '%s' is not a boolean.", info.key);
+		return false;
+	}
+
+	return true;
 }
 
 NS_END

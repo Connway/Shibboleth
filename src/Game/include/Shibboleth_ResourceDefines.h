@@ -63,6 +63,8 @@ using BufferPtr = Gaff::RefPtr<Gleam::IBuffer>;
 using ModelPtr = Gaff::RefPtr<Gleam::IModel>;
 using MeshPtr = Gaff::RefPtr<Gleam::IMesh>;
 
+using MaterialMapping = Gaff::Pair<size_t, Gleam::IShader::SHADER_TYPE>;
+
 template <class T>
 struct SingleDataWrapper : public Gaff::IVirtualDestructor
 {

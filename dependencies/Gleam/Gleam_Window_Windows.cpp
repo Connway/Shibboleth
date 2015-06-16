@@ -24,6 +24,7 @@ THE SOFTWARE.
 
 #include "Gleam_Window_Windows.h"
 #include "Gleam_WindowHelpers_Windows.h"
+#include "Gleam_String.h"
 #include <Gaff_IncludeAssert.h>
 
 NS_GLEAM
@@ -105,9 +106,8 @@ LRESULT CALLBACK Window::WindowProc(HWND hwnd, UINT msg, WPARAM w, LPARAM l)
 }
 
 Window::Window(void):
-	_application_name(nullptr), _hinstance(nullptr), _hwnd(nullptr),
-	_window_mode(FULLSCREEN), _cursor_visible(true), _no_repeats(false),
-	_contain(false)
+	_hinstance(nullptr), _hwnd(nullptr), _window_mode(FULLSCREEN),
+	_cursor_visible(true), _no_repeats(false), _contain(false)
 {
 }
 
@@ -116,7 +116,7 @@ Window::~Window(void)
 	destroy();
 }
 
-bool Window::init(const GChar* app_name, MODE window_mode,
+bool Window::init(const char* app_name, MODE window_mode,
 					unsigned int width, unsigned int height,
 					int pos_x, int pos_y, const char*)
 {
@@ -147,6 +147,11 @@ bool Window::init(const GChar* app_name, MODE window_mode,
 	_application_name = app_name;
 	_window_mode = window_mode;
 
+#ifdef _UNICODE
+	GleamWString an;
+	an.convertToUTF16(app_name, strlen(app_name));
+#endif
+
 	wc.style = CS_HREDRAW | CS_VREDRAW | CS_OWNDC;
 	wc.lpfnWndProc = WindowProc;
 	wc.cbClsExtra = 0;
@@ -157,7 +162,11 @@ bool Window::init(const GChar* app_name, MODE window_mode,
 	wc.hCursor = LoadCursor(NULL, IDC_ARROW);
 	wc.hbrBackground = (HBRUSH)GetStockObject(BLACK_BRUSH);
 	wc.lpszMenuName = NULL;
-	wc.lpszClassName = _application_name;
+#ifdef _UNICODE
+	wc.lpszClassName = an.getBuffer();
+#else
+	wc.lpszClassName = _application_name.getBuffer();
+#endif
 	wc.cbSize = sizeof(WNDCLASSEX);
 
 	if (!RegisterClassEx(&wc)) {
@@ -231,7 +240,11 @@ bool Window::init(const GChar* app_name, MODE window_mode,
 	}
 
 	_hwnd = CreateWindowEx(
-		WS_EX_APPWINDOW, _application_name, _application_name,
+#ifdef _UNICODE
+		WS_EX_APPWINDOW, an.getBuffer(), an.getBuffer(),
+#else
+		WS_EX_APPWINDOW, _application_name.getBuffer(), _application_name.getBuffer(),
+#endif
 		WS_CLIPSIBLINGS | WS_CLIPCHILDREN | flags,
 		window_rect.left, window_rect.top, window_rect.right - window_rect.left, window_rect.bottom - window_rect.top,
 		NULL, NULL, _hinstance, NULL
@@ -267,8 +280,15 @@ void Window::destroy(void)
 	}
 
 	if (_hinstance) {
+#ifdef _UNICODE
+		GleamWString an;
+		an.convertToUTF16(_application_name.getBuffer(), _application_name.size());
+
+		UnregisterClass(an.getBuffer(), _hinstance);
+#else
 		UnregisterClass(_application_name, _hinstance);
-		_application_name = nullptr;
+#endif
+		_application_name.clear();
 		_hinstance = nullptr;
 	}
 
