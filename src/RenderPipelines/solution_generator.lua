@@ -15,13 +15,31 @@ group "Dependencies"
 	dofile("../../dependencies/jansson/include_external.lua")
 	dofile("../../dependencies/Gleam/include_external.lua")
 	dofile("../../dependencies/Gaff/include_external.lua")
+	dofile("../../dependencies/esprit/include_external.lua")
 	dofile("../../dependencies/glew/include_external.lua")
+	dofile("../../dependencies/assimp/include_external.lua")
 
 group ""
 	dofile("../Shared/include_external.lua")
 	dofile("../Memory/include_external.lua")
 
 	external "Managers"
+		if _ACTION then
+			location ("../../project/" .. _ACTION .. "/game")
+		end
+
+		kind "StaticLib"
+		language "C++"
+
+	external "Components"
+		if _ACTION then
+			location ("../../project/" .. _ACTION .. "/game")
+		end
+
+		kind "StaticLib"
+		language "C++"
+
+	external "Game"
 		if _ACTION then
 			location ("../../project/" .. _ACTION .. "/game")
 		end
@@ -49,19 +67,25 @@ group ""
 			"../../dependencies/jansson",
 			"../../dependencies/Gleam/include",
 			"../../dependencies/Gaff/include",
-			"../../dependencies/utf8-cpp"
+			"../../dependencies/esprit/include",
+			"../../dependencies/utf8-cpp",
+			"../../dependencies/assimp/include"
 		}
 
 		dependson
 		{
 			"Shared", "Gaff", "jansson",
-			"Gleam", "Memory", "Managers"
+			"Gleam", "Memory", "Managers",
+			"Components", "Game", "assimp",
+			"esprit"
 		}
 
 		links
 		{
 			"Shared", "Gaff", "jansson",
-			"Gleam", "Memory", "Managers"
+			"Gleam", "Memory", "Managers",
+			"Components", "Game", "assimp",
+			"esprit"
 		}
 
 		dofile("../../module_suffix.lua")

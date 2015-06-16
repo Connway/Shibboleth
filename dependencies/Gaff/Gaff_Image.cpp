@@ -44,11 +44,6 @@ void Image::SetMemoryFunctions(AllocFunc af, FreeFunc ff)
 	ilSetMemory(af, ff);
 }
 
-const GChar* Image::GetErrorString(unsigned int error)
-{
-	return iluErrorString(error);
-}
-
 void Image::SetErrorLanguage(ErrorLanguage language)
 {
 	assert(language >= ERR_LANG_ENGLISH && language <= ERR_LANG_FRENCH);
@@ -58,6 +53,15 @@ void Image::SetErrorLanguage(ErrorLanguage language)
 unsigned int Image::GetError(void)
 {
 	return ilGetError();
+}
+
+#ifdef _UNICODE
+const wchar_t* Image::GetErrorString(unsigned int error)
+#else
+const wchar_t* Image::GetErrorString(unsigned int error)
+#endif
+{
+	return iluErrorString(error);
 }
 
 Image::Image(const Image& image):

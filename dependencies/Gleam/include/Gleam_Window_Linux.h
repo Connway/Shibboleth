@@ -41,7 +41,7 @@ public:
 	Window(void);
 	~Window(void);
 
-	bool init(const GChar* app_name, MODE window_mode = FULLSCREEN,
+	bool init(const char* app_name, MODE window_mode = FULLSCREEN,
 				unsigned int width = 0, unsigned int height = 0,
 				short refresh_rate = 60, int pos_x = 0, int pos_y = 0,
 				const char* device_name = nullptr);
@@ -83,7 +83,7 @@ public:
 private:
 	int _pos_x, _pos_y;
 	unsigned int _width, _height;
-	const GChar* _application_name;
+	GleamAString _application_name;
 	short _refresh_rate;
 
 	MODE _window_mode;

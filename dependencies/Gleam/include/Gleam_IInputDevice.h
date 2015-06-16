@@ -83,8 +83,8 @@ public:
 
 	virtual void update(void) = 0;
 
-	virtual const GChar* getDeviceName(void) const = 0;
-	virtual const GChar* getPlatformImplementationString(void) const = 0;
+	virtual const char* getDeviceName(void) const = 0;
+	virtual const char* getPlatformImplementationString(void) const = 0;
 
 	virtual const IWindow* getAssociatedWindow(void) const = 0;
 

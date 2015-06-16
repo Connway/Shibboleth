@@ -84,6 +84,5 @@ private:
 
 template <class Allocator = DefaultAllocator> using AHashString = HashString<char, Allocator>;
 template <class Allocator = DefaultAllocator> using WHashString = HashString<wchar_t, Allocator>;
-template <class Allocator = DefaultAllocator> using GHashString = HashString<GChar, Allocator>;
 
 NS_END

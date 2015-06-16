@@ -132,31 +132,6 @@ public:
 	long getFileSize(void);
 	bool readEntireFile(char* buffer);
 
-	// Unicode functions
-#ifdef _UNICODE
-	INLINE static bool checkExtension(const wchar_t* file_name, size_t file_name_size, const wchar_t* extension, size_t extension_size);
-	INLINE static bool checkExtension(const wchar_t* file_name, const wchar_t* extension);
-
-	INLINE static bool remove(const wchar_t* file_name);
-	INLINE static bool rename(const wchar_t* old_file_name, const wchar_t* new_file_name);
-
-	File(const wchar_t* file_name, OPEN_MODE mode = READ);
-
-	bool open(const wchar_t* file_name, OPEN_MODE mode = READ);
-
-	INLINE bool redirect(FILE* file, const wchar_t* file_name, OPEN_MODE mode = WRITE);
-	INLINE bool redirect(const wchar_t* file_name, OPEN_MODE mode = WRITE);
-
-	INLINE void printfVA(const wchar_t* format_string, va_list vl);
-	void printf(const wchar_t* format_string, ...);
-
-	INLINE bool writeChar(wchar_t c);
-	INLINE unsigned short readWChar(void);
-
-	INLINE bool writeString(const wchar_t* s);
-	INLINE bool readString(wchar_t* buffer, int max_count);
-#endif
-
 private:
 	FILE* _file;
 	OPEN_MODE _mode;

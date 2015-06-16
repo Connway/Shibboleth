@@ -152,14 +152,14 @@ short MouseMP::getWheelDelta(void) const
 	return _wheel;
 }
 
-const GChar* MouseMP::getDeviceName(void) const
+const char* MouseMP::getDeviceName(void) const
 {
-	return GC("Gleam:Mouse");
+	return "Gleam:Mouse";
 }
 
-const GChar* MouseMP::getPlatformImplementationString(void) const
+const char* MouseMP::getPlatformImplementationString(void) const
 {
-	return GC("Agnostic:MessagePump");
+	return "Agnostic:MessagePump";
 };
 
 const IWindow* MouseMP::getAssociatedWindow(void) const

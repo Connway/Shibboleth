@@ -44,17 +44,6 @@ public:
 	bool initHull(IRenderDevice&, const char* file_path);
 	bool initCompute(IRenderDevice&, const char* file_path);
 
-#ifdef _UNICODE
-	bool init(IRenderDevice&, const wchar_t* file_path, SHADER_TYPE shader_type);
-
-	bool initVertex(IRenderDevice&, const wchar_t* file_path);
-	bool initPixel(IRenderDevice&, const wchar_t* file_path);
-	bool initDomain(IRenderDevice&, const wchar_t* file_path);
-	bool initGeometry(IRenderDevice&, const wchar_t* file_path);
-	bool initHull(IRenderDevice&, const wchar_t* file_path);
-	bool initCompute(IRenderDevice&, const wchar_t* file_path);
-#endif
-
 	bool initVertexSource(IRenderDevice&, const char* source, size_t source_size = SIZE_T_FAIL);
 	bool initPixelSource(IRenderDevice&, const char* source, size_t source_size = SIZE_T_FAIL);
 	bool initDomainSource(IRenderDevice&, const char* source, size_t source_size = SIZE_T_FAIL);
@@ -70,10 +59,6 @@ public:
 
 private:
 	unsigned int _shader;
-
-#ifdef _UNICODE
-	bool loadFileAndCompileShader(unsigned int shader_type, const wchar_t* file_path);
-#endif
 
 	bool loadFileAndCompileShader(unsigned int shader_type, const char* file_path);
 	bool compileShader(const char* source, int source_size, unsigned int shader_type);

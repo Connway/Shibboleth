@@ -222,6 +222,10 @@ bool RenderPipelineManager::addRenderPipelines(DynamicLoader::ModulePtr& module)
 		return false;
 	}
 
+	if (!init_func(Shibboleth::GetApp())) {
+		log.first.writeString("ERROR - Failed to initialize render pipeline module.\n");
+	}
+
 	for (size_t i = 0; i < num_pipelines(); ++i) {
 		IRenderPipeline* pipeline = create_pipeline(i);
 
@@ -241,7 +245,7 @@ bool RenderPipelineManager::addRenderPipelines(DynamicLoader::ModulePtr& module)
 
 void RenderPipelineManager::generateCommandLists(double dt, void* frame_data)
 {
-	_pipelines[_active_pipeline]->run(dt, frame_data);
+	//_pipelines[_active_pipeline]->run(dt, frame_data);
 }
 
 NS_END

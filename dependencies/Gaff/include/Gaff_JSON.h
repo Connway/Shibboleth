@@ -29,8 +29,7 @@ THE SOFTWARE.
 	#pragma warning(disable : 4706)
 #endif
 
-#include "Gaff_Defines.h"
-#include "Gaff_IncludeAssert.h"
+#include "Gaff_HashMap.h"
 #include <jansson.h>
 
 NS_GAFF
@@ -111,6 +110,9 @@ public:
 	JSON(void);
 	~JSON(void);
 
+	INLINE bool validateFile(const char* schema_file) const;
+	INLINE bool validate(const char* input) const;
+
 	INLINE bool parseFile(const char* filename);
 	INLINE bool parse(const char* input);
 	INLINE bool dumpToFile(const char* filename);
@@ -145,6 +147,12 @@ public:
 	INLINE JSON shallowCopy(void) const;
 	INLINE JSON deepCopy(void) const;
 
+	INLINE int getErrorLine(void) const;
+	INLINE int getErrorColumn(void) const;
+	INLINE int getErrorPosition(void) const;
+	INLINE const char* getErrorSource(void) const;
+	INLINE const char* getErrorText(void) const;
+
 	const JSON& operator=(const JSON& rhs);
 
 	const JSON& operator=(const char* value);
@@ -159,10 +167,33 @@ public:
 	INLINE operator bool(void) const { return valid(); }
 
 private:
-	json_error_t _error;
+	mutable json_error_t _error;
 	json_t* _value;
 
+	class JSONAllocator;
+	struct ElementInfo;
+
+	using SchemaString = AHashString<JSONAllocator>;
+	using SchemaMap = HashMap<SchemaString, JSON, JSONAllocator>;
+	using ParseElementFunc = bool (JSON::*)(const JSON&, const ElementInfo&, const SchemaMap&) const;
+	using ElementParseMap = HashMap<SchemaString, ParseElementFunc, JSONAllocator>;
+
+	static json_malloc_t _alloc;
+	static json_free_t _free;
+
+	static ElementInfo ExtractElementInfo(const JSON& element, const SchemaMap& schema_map);
+
 	explicit JSON(json_t* json, bool increment_ref_count);
+
+	bool validateSchema(const JSON& schema, const SchemaMap& schema_map) const;
+
+	bool isObjectSchema(const JSON& element, const ElementInfo& info, const SchemaMap& schema_map) const;
+	bool isArraySchema(const JSON& element, const ElementInfo& info, const SchemaMap& schema_map) const;
+	bool isStringSchema(const JSON& element, const ElementInfo& info, const SchemaMap&) const;
+	bool isNumberSchema(const JSON& element, const ElementInfo& info, const SchemaMap&) const;
+	bool isIntegerSchema(const JSON& element, const ElementInfo& info, const SchemaMap&) const;
+	bool isRealSchema(const JSON& element, const ElementInfo& info, const SchemaMap&) const;
+	bool isBooleanSchema(const JSON& element, const ElementInfo& info, const SchemaMap&) const;
 };
 
 NS_END

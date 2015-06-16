@@ -32,7 +32,7 @@ THE SOFTWARE.
 
 NS_GAFF
 
-static const char* _open_modes_a[12] = {
+static const char* gOpenModes[12] = {
 		"r", "w", "a", "r+", "w+", "a+",
 		"rb", "wb", "ab", "rb+", "wb+", "ab+"
 };
@@ -81,26 +81,6 @@ bool File::rename(const char* old_file_name, const char* new_file_name)
 	assert(old_file_name && new_file_name);
 	return !::rename(old_file_name, new_file_name);
 }
-
-#ifdef _UNICODE
-static const wchar_t* _open_modes_u[12] = {
-	L"r", L"w", L"a", L"r+", L"w+", L"a+",
-	L"rb", L"wb", L"ab", L"rb+", L"wb+", L"ab+"
-};
-
-bool File::remove(const wchar_t* file_name)
-{
-	assert(file_name);
-	return !::_wremove(file_name);
-}
-
-bool File::rename(const wchar_t* old_file_name, const wchar_t* new_file_name)
-{
-	assert(old_file_name && new_file_name);
-	return !::_wrename(old_file_name, new_file_name);
-}
-
-#endif
 
 File::File(const char* file_name, OPEN_MODE mode):
 	_file(nullptr)
@@ -160,7 +140,7 @@ bool File::open(const char* file_name, OPEN_MODE mode)
 	}
 
 	_mode = mode;
-	_file = fopen(file_name, _open_modes_a[mode]);
+	_file = fopen(file_name, gOpenModes[mode]);
 	return _file != NULL;
 }
 
@@ -176,7 +156,7 @@ bool File::open(const char* file_name, OPEN_MODE mode)
 bool File::redirect(FILE* file, const char* file_name, OPEN_MODE mode)
 {
 	assert(!_file && file_name);
-	_file = freopen(file_name, _open_modes_a[mode], file);
+	_file = freopen(file_name, gOpenModes[mode], file);
 	return _file && _file == file;
 }
 
@@ -191,7 +171,7 @@ bool File::redirect(FILE* file, const char* file_name, OPEN_MODE mode)
 bool File::redirect(const char* file_name, OPEN_MODE mode)
 {
 	assert(_file && file_name);
-	FILE* out = freopen(file_name, _open_modes_a[mode], _file);
+	FILE* out = freopen(file_name, gOpenModes[mode], _file);
 	return out && out == _file;
 }
 
@@ -372,95 +352,5 @@ bool File::readEntireFile(char* buffer)
 
 	return true;
 }
-
-// Unicode functions
-#ifdef _UNICODE
-bool File::checkExtension(const wchar_t* file_name, size_t file_name_size, const wchar_t* extension, size_t extension_size)
-{
-	assert(file_name && extension && file_name_size > extension_size);
-	return wcscmp(file_name + file_name_size - extension_size, extension) == 0;
-}
-
-bool File::checkExtension(const wchar_t* file_name, const wchar_t* extension)
-{
-	assert(file_name && extension);
-	return checkExtension(file_name, wcslen(file_name), extension, wcslen(extension));
-}
-
-File::File(const wchar_t* file_name, OPEN_MODE mode):
-	_file(nullptr)
-{
-	assert(file_name);
-	open(file_name, mode);
-}
-
-bool File::open(const wchar_t* file_name, OPEN_MODE mode)
-{
-	assert(file_name);
-
-	if (_file) {
-		return false;
-	}
-
-	_mode = mode;
-	_file = _wfopen(file_name, _open_modes_u[mode]);
-	return _file != NULL;
-}
-
-bool File::redirect(FILE* file, const wchar_t* file_name, OPEN_MODE mode)
-{
-	assert(!_file && file_name);
-	_file = _wfreopen(file_name, _open_modes_u[mode], file);
-	return _file && _file == file;
-}
-
-bool File::redirect(const wchar_t* file_name, OPEN_MODE mode)
-{
-	assert(_file && file_name);
-	FILE* out = _wfreopen(file_name, _open_modes_u[mode], _file);
-	return out && out == _file;
-}
-
-void File::printfVA(const wchar_t* format_string, va_list vl)
-{
-	assert(_file && format_string && vl);
-	vfwprintf(_file, format_string, vl);
-}
-
-void File::printf(const wchar_t* format_string, ...)
-{
-	assert(_file && format_string);
-
-	va_list vl;
-	va_start(vl, format_string);
-	vfwprintf(_file, format_string, vl);
-	va_end(vl);
-}
-
-bool File::writeChar(wchar_t c)
-{
-	assert(_file);
-	return fputwc(c, _file) != WEOF;
-}
-
-unsigned short File::readWChar(void)
-{
-	assert(_file);
-	return fgetwc(_file);
-}
-
-bool File::writeString(const wchar_t* s)
-{
-	assert(_file && s);
-	return fputws(s, _file) != WEOF;
-}
-
-bool File::readString(wchar_t* buffer, int max_count)
-{
-	assert(_file && buffer && max_count > -1);
-	wchar_t* tmp = fgetws(buffer, max_count, _file);
-	return tmp != NULL && tmp != nullptr;
-}
-#endif
 
 NS_END

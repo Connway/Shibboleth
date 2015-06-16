@@ -103,9 +103,14 @@ public:
 	static void SysInit(void);
 	static void SysShutdown(void);
 	static void SetMemoryFunctions(AllocFunc af, FreeFunc ff);
-	static const GChar* GetErrorString(unsigned int error);
 	static void SetErrorLanguage(ErrorLanguage language);
 	static unsigned int GetError(void);
+
+#ifdef _UNICODE
+	static const wchar_t* GetErrorString(unsigned int error);
+#else
+	static const char* GetErrorString(unsigned int error);
+#endif
 
 	Image(const Image& image);
 	Image(Image&& image);

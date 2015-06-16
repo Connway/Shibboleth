@@ -127,8 +127,14 @@ IRenderDevice::AdapterList RenderDeviceGL::getDisplayModes(int)
 			continue;
 		}
 
+#ifdef _UNICODE
+		GleamAString dev_string, dev_name;
+		dev_string.convertToUTF8(disp_device.DeviceString, wcslen(disp_device.DeviceString));
+		dev_name.convertToUTF8(disp_device.DeviceName, wcslen(disp_device.DeviceName));
+#endif
+
 		// Find an entry that already exists. We might be a different display on the same device.
-		GleamArray<AdapterInfo>::Iterator it_disp = _display_info.linearSearch(disp_device.DeviceString, [](const AdapterInfo& lhs, const GChar* rhs) -> bool
+		GleamArray<AdapterInfo>::Iterator it_disp = _display_info.linearSearch(dev_string.getBuffer(), [](const AdapterInfo& lhs, const char* rhs) -> bool
 		{
 			return lhs.name == rhs;
 		});
@@ -136,19 +142,28 @@ IRenderDevice::AdapterList RenderDeviceGL::getDisplayModes(int)
 		if (it_disp == _display_info.end()) {
 			AdapterInfo adapter;
 			adapter.display_device = disp_device;
+#ifdef _UNICODE
+			adapter.name = dev_string;
+#else
 			adapter.name = adapter.display_device.DeviceString;
+#endif
 
 			it_disp = _display_info.insert(adapter, it_disp);
 		}
 
-		GleamArray<OutputInfo>::Iterator it_out = it_disp->output_info.linearSearch(disp_device.DeviceName, [](const OutputInfo& lhs, const GChar* rhs) -> bool
+		GleamArray<OutputInfo>::Iterator it_out = it_disp->output_info.linearSearch(dev_name.getBuffer(), [](const OutputInfo& lhs, const char* rhs) -> bool
 		{
 			return lhs.name == rhs;
 		});
 
 		if (it_out == it_disp->output_info.end()) {
 			OutputInfo display;
+
+#ifdef _UNICODE
+			display.name = dev_name;
+#else
 			display.name = disp_device.DeviceName;
+#endif
 
 			it_out = it_disp->output_info.insert(display, it_out);
 		}
@@ -190,11 +205,7 @@ IRenderDevice::AdapterList RenderDeviceGL::getDisplayModes(int)
 		adpt.memory = 0;
 		adpt.id = i;
 
-#ifdef _UNICODE
-		wcstombs(adpt.adapter_name, adpt_info.name.getBuffer(), 128);
-#else
 		strncpy(adpt.adapter_name, adpt_info.name.getBuffer(), 128);
-#endif
 
 		for (unsigned int j = 0; j < adpt_info.output_info.size(); ++j) {
 			const OutputInfo& out_info = adpt_info.output_info[j];

@@ -31,6 +31,5 @@ template <class T> using GleamString = Gaff::String<T, Gleam::ProxyAllocator>;
 
 typedef Gaff::String<char, ProxyAllocator> GleamAString;
 typedef Gaff::String<wchar_t, ProxyAllocator> GleamWString;
-typedef Gaff::String<GChar, ProxyAllocator> GleamGString;
 
 NS_END

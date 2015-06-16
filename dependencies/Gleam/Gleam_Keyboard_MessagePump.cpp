@@ -107,14 +107,14 @@ const unsigned char* KeyboardMP::getKeyboardData(void) const
 	return _curr_state;
 }
 
-const GChar* KeyboardMP::getDeviceName(void) const
+const char* KeyboardMP::getDeviceName(void) const
 {
-	return GC("Gleam:Keyboard");
+	return "Gleam:Keyboard";
 }
 
-const GChar* KeyboardMP::getPlatformImplementationString(void) const
+const char* KeyboardMP::getPlatformImplementationString(void) const
 {
-	return GC("Agnostic:MessagePump");
+	return "Agnostic:MessagePump";
 };
 
 const IWindow* KeyboardMP::getAssociatedWindow(void) const
