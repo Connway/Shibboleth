@@ -335,16 +335,16 @@ long File::getFileSize(void)
 bool File::readEntireFile(char* buffer)
 {
 	assert(buffer && _file);
-	long size = getFileSize();
+	size_t size = static_cast<size_t>(getFileSize());
 	size_t bytes_read = 0;
 
-	while (bytes_read < (size_t)size && !feof(_file)) {
+	while (bytes_read < size && !feof(_file)) {
 		size_t this_read = fread(buffer, sizeof(char), size, _file);
 		bytes_read += this_read;
 
 		// something went wrong
-		if ((this_read == 0 && bytes_read < (size_t)size) ||
-			(bytes_read < (size_t)size && feof(_file))) {
+		if ((this_read == 0 && bytes_read < size) ||
+			(bytes_read < size && feof(_file))) {
 
 				return false;
 		}

@@ -186,6 +186,7 @@
     <ClInclude Include="..\..\..\src\Game\include\Shibboleth_RenderManager.h" />
     <ClInclude Include="..\..\..\src\Game\include\Shibboleth_RenderPipelineManager.h" />
     <ClInclude Include="..\..\..\src\Game\include\Shibboleth_ResourceManager.h" />
+    <ClInclude Include="..\..\..\src\Game\include\Shibboleth_SchemaManager.h" />
     <ClInclude Include="..\..\..\src\Game\include\Shibboleth_UpdateManager.h" />
   </ItemGroup>
   <ItemGroup>
@@ -200,6 +201,7 @@
     <ClCompile Include="..\..\..\src\Game\Shibboleth_RenderManager.cpp" />
     <ClCompile Include="..\..\..\src\Game\Shibboleth_RenderPipelineManager.cpp" />
     <ClCompile Include="..\..\..\src\Game\Shibboleth_ResourceManager.cpp" />
+    <ClCompile Include="..\..\..\src\Game\Shibboleth_SchemaManager.cpp" />
     <ClCompile Include="..\..\..\src\Game\Shibboleth_UpdateManager.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

@@ -65,8 +65,6 @@ SHIB_REF_IMPL(ModelComponent)
 .addEnum("Render Mode Override", &ModelComponent::_render_mode_override, GetEnumRefDef<RenderModes>())
 ;
 
-const char* gComponentSchema = "";
-
 ModelComponent::ModelComponent(void):
 	_render_mgr(Shibboleth::GetApp().getManagerT<Shibboleth::RenderManager>("Render Manager")),
 	_requests_finished(0), _total_requests(0), _render_mode_override(RM_NONE), _init(false)
@@ -102,153 +100,39 @@ ModelComponent::~ModelComponent(void)
 
 bool ModelComponent::validate(Gaff::JSON& json)
 {
+	// Replace this with final solution
+	if (!json.validateFile("Resources/Schemas/model_component.schema")) {
+		return false;
+	}
+
 	Gaff::JSON material_files = json["Material Files"];
 	Gaff::JSON texture_files = json["Texture Files"];
 	Gaff::JSON sampler_files = json["Sampler Files"];
 	Gaff::JSON buffer_map = json["Buffer Map"];
 	Gaff::JSON buffers = json["Buffers"];
 	Gaff::JSON model_file = json["Model File"];
-	bool valid = true;
 
 	if (material_files) {
-		if (!material_files.isArray()) {
-			// log error
-			valid = false;
-
-		} else {
-			// Multiply by two to account for the ProgramBuffers requests.
-			_total_requests += material_files.size() * 2;
-
-			material_files.forEachInArray([&](size_t, const Gaff::JSON& value) -> bool
-			{
-				if (!value.isString()) {
-					// log error
-					valid = false;
-				}
-
-				return false;
-			});
-		}
+		_total_requests += material_files.size() * 2;
 	}
 
 	if (texture_files) {
-		if (!texture_files.isArray()) {
-			// log error
-			valid = false;
-
-		} else {
-			_total_requests += texture_files.size();
-
-			texture_files.forEachInArray([&](size_t, const Gaff::JSON& value) -> bool
-			{
-				if (!value.isObject()) {
-					// log error
-					valid = false;
-					return false;
-				}
-
-				Gaff::JSON file = value["File"];
-				Gaff::JSON material_index = value["Material Index"];
-				Gaff::JSON shader = value["Shader"];
-
-				if (!file.isString()) {
-					// log error
-					valid = false;
-				}
-
-				return false;
-			});
-		}
+		_total_requests += texture_files.size();
 	}
 
 	if (sampler_files) {
-		if (!sampler_files.isArray()) {
-			// log error
-			valid = false;
-
-		} else {
-			_total_requests += sampler_files.size();
-
-			sampler_files.forEachInArray([&](size_t, const Gaff::JSON& value) -> bool
-			{
-				if (!value.isObject()) {
-					// log error
-					valid = false;
-					return false;
-				}
-
-				Gaff::JSON file = value["File"];
-				Gaff::JSON material_index = value["Material Index"];
-				Gaff::JSON shader = value["Shader"];
-
-				if (!file.isString()) {
-					// log error
-					valid = false;
-				}
-
-				return false;
-			});
-		}
+		_total_requests += sampler_files.size();
 	}
 
-	if (model_file && !model_file.isString()) {
-		// log error
-		valid = false;
+	if (model_file) {
+		_total_requests += 1;
 	}
-
-	_total_requests += 1;
 
 	if (buffers) {
-		if (!buffers.isArray()) {
-			// log error
-			valid = false;
-
-		} else {
-			_total_requests += buffers.size();
-
-			bool error = buffers.forEachInArray([](size_t, const Gaff::JSON& value) -> bool
-			{
-				Gaff::JSON type = value["Type"];
-				Gaff::JSON cpu_access = value["CPU Access"];
-				Gaff::JSON size = value["Size"];
-				Gaff::JSON stride = value["Stride"];
-				Gaff::JSON gpu_read_only = value["GPU Read Only"];
-
-				if (!type.isString()) {
-					// log error
-					return true;
-				}
-
-				if (!cpu_access.isString()) {
-					// log error
-					return true;
-				}
-
-				if (!size.isInteger()) {
-					// log error
-					return true;
-				}
-
-				if (!stride.isInteger()) {
-					// log error
-					return true;
-				}
-
-				if (!gpu_read_only.isBoolean()) {
-					// log error
-					return true;
-				}
-
-				return false;
-			});
-
-			if (error) {
-				valid = false;
-			}
-		}
+		_total_requests += buffers.size();
 	}
 
-	return valid;
+	return true;
 }
 
 bool ModelComponent::load(const Gaff::JSON& json)

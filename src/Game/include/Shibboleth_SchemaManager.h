@@ -22,60 +22,34 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Shibboleth_IFileSystem.h"
-#include "Shibboleth_String.h"
-#include "Shibboleth_Array.h"
-#include <Gaff_SpinLock.h>
+#include <Shibboleth_ReflectionDefinitions.h>
+#include <Shibboleth_HashString.h>
+#include <Shibboleth_HashMap.h>
+#include <Shibboleth_IManager.h>
+#include <Gaff_JSON.h>
 
 NS_SHIBBOLETH
 
-class LooseFile : public IFile
+class IFile;
+
+class SchemaManager : public IManager
 {
 public:
-	LooseFile(void);
-	~LooseFile(void);
+	SchemaManager(void);
+	~SchemaManager(void);
 
-	size_t size(void) const;
+	void* rawRequestInterface(unsigned int class_id) const;
+	const char* getName(void) const;
+	void allManagersCreated(void);
 
-	const char* getBuffer(void) const;
-	char* getBuffer(void);
-
-private:
-	char* _file_buffer;
-	size_t _file_size;
-
-	friend class LooseFileSystem;
-};
-
-class LooseFileSystem : public IFileSystem
-{
-public:
-	LooseFileSystem(void);
-	~LooseFileSystem(void);
-
-	IFile* openFile(const char* file_name);
-	void closeFile(IFile* file);
-
-	void forEachFile(const char* directory, const Gaff::FunctionBinder<void, const char*, IFile*>& callback);
+	INLINE const Gaff::JSON& getSchema(const char* schema_file) const;
 
 private:
-	struct FileData
-	{
-		FileData(void) {}
-		FileData(FileData&& file_data):
-			name(Gaff::Move(file_data.name)),
-			file(file_data.file),
-			count(file_data.count)
-		{
-		}
+	HashMap<AHashString, Gaff::JSON> _schema_map;
 
-		AString name;
-		IFile* file;
-		volatile unsigned int count;
-	};
+	void addSchema(const char* file_name, IFile* file);
 
-	Array<FileData> _files;
-	Gaff::SpinLock _file_lock;
+	SHIB_REF_DEF(SchemaManager);
 };
 
 NS_END
