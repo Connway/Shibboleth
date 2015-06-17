@@ -138,4 +138,9 @@ void LooseFileSystem::closeFile(IFile* file)
 	}
 }
 
+void LooseFileSystem::forEachFile(const char* directory, const Gaff::FunctionBinder<void, const char*, IFile*>& callback)
+{
+	// IMPLEMENT ME
+}
+
 NS_END

@@ -181,7 +181,7 @@ private:
 	static json_malloc_t _alloc;
 	static json_free_t _free;
 
-	static ElementInfo ExtractElementInfo(const JSON& element, const SchemaMap& schema_map);
+	static ElementInfo ExtractElementInfo(JSON element, const SchemaMap& schema_map);
 
 	explicit JSON(json_t* json, bool increment_ref_count);
 

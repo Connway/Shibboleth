@@ -23,6 +23,7 @@ THE SOFTWARE.
 #pragma once
 
 #include "Shibboleth_Defines.h"
+#include <Gaff_Function.h>
 
 NS_SHIBBOLETH
 
@@ -51,6 +52,8 @@ public:
 
 	virtual IFile* openFile(const char* file_name/*, OpenMode mode*/) = 0;
 	virtual void closeFile(IFile* file) = 0;
+
+	virtual void forEachFile(const char* directory, const Gaff::FunctionBinder<void, const char*, IFile*>& callback) = 0;
 };
 
 NS_END

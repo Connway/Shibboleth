@@ -20,62 +20,48 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#pragma once
-
-#include "Shibboleth_IFileSystem.h"
-#include "Shibboleth_String.h"
-#include "Shibboleth_Array.h"
-#include <Gaff_SpinLock.h>
+#include "Shibboleth_SchemaManager.h"
+#include <Shibboleth_IFileSystem.h>
+#include <Shibboleth_Utilities.h>
+#include <Shibboleth_IApp.h>
 
 NS_SHIBBOLETH
 
-class LooseFile : public IFile
+REF_IMPL_REQ(SchemaManager);
+SHIB_REF_IMPL(SchemaManager)
+.addBaseClassInterfaceOnly<SchemaManager>()
+;
+
+SchemaManager::SchemaManager(void)
 {
-public:
-	LooseFile(void);
-	~LooseFile(void);
+}
 
-	size_t size(void) const;
-
-	const char* getBuffer(void) const;
-	char* getBuffer(void);
-
-private:
-	char* _file_buffer;
-	size_t _file_size;
-
-	friend class LooseFileSystem;
-};
-
-class LooseFileSystem : public IFileSystem
+SchemaManager::~SchemaManager(void)
 {
-public:
-	LooseFileSystem(void);
-	~LooseFileSystem(void);
+}
 
-	IFile* openFile(const char* file_name);
-	void closeFile(IFile* file);
+const char* SchemaManager::getName(void) const
+{
+	return "Schema Manager";
+}
 
-	void forEachFile(const char* directory, const Gaff::FunctionBinder<void, const char*, IFile*>& callback);
+void SchemaManager::allManagersCreated(void)
+{
+	auto callback = Gaff::Bind(this, &SchemaManager::addSchema);
+	GetApp().getFileSystem()->forEachFile("Resources/Schemas", callback);
+}
 
-private:
-	struct FileData
-	{
-		FileData(void) {}
-		FileData(FileData&& file_data):
-			name(Gaff::Move(file_data.name)),
-			file(file_data.file),
-			count(file_data.count)
-		{
-		}
+const Gaff::JSON& SchemaManager::getSchema(const char* schema_file) const
+{
+	return _schema_map[schema_file];
+}
 
-		AString name;
-		IFile* file;
-		volatile unsigned int count;
-	};
-
-	Array<FileData> _files;
-	Gaff::SpinLock _file_lock;
-};
+void SchemaManager::addSchema(const char* file_name, IFile* file)
+{
+	if (!_schema_map[file_name].parse(file->getBuffer())) {
+		// log error
+		GetApp().quit();
+	}
+}
 
 NS_END

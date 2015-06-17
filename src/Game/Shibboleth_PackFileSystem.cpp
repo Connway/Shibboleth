@@ -178,4 +178,9 @@ void PackFileSystem::closeFile(IFile* file)
 	}
 }
 
+void PackFileSystem::forEachFile(const char* directory, const Gaff::FunctionBinder<void, const char*, IFile*>& callback)
+{
+	// IMPLEMENT ME
+}
+
 NS_END

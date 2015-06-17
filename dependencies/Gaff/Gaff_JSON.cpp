@@ -52,7 +52,6 @@ struct JSON::ElementInfo
 	bool optional = false;
 	const char* element_type = nullptr;
 	JSON schema;
-	const char* schema_name = nullptr;
 	const char* key = nullptr;
 	size_t depth = 0;
 };
@@ -153,9 +152,9 @@ JSON::~JSON(void)
 
 bool JSON::validateFile(const char* schema_file) const
 {
-	Gaff::File file;
+	File file;
 
-	if (!file.open(schema_file)) {
+	if (!file.open(schema_file, File::READ_BINARY)) {
 		return false;
 	}
 
@@ -163,8 +162,11 @@ bool JSON::validateFile(const char* schema_file) const
 	bool ret_val = false;
 	
 	if (input) {
-		memcpy(_error.source, schema_file, Min(static_cast<size_t>(JSON_ERROR_SOURCE_LENGTH), strlen(schema_file) + 1));
-		ret_val = validate(input);
+		if (file.readEntireFile(input)) {
+			memcpy(_error.source, schema_file, Min(static_cast<size_t>(JSON_ERROR_SOURCE_LENGTH), strlen(schema_file) + 1));
+			ret_val = validate(input);
+		}
+
 		_free(input);
 	}
 
@@ -184,6 +186,8 @@ bool JSON::validate(const char* input) const
 	JSON schema = schema_object;
 
 	if (schema_object.isArray()) {
+		schema_map.reserve(schema_object.size() - 1);
+
 		bool error = schema_object.forEachInArray([&](size_t index, const JSON& value) -> bool
 		{
 			if (index != schema.size() - 1) {
@@ -199,7 +203,7 @@ bool JSON::validate(const char* input) const
 					return true;
 				}
 
-				schema_map[name.getString()] = value;
+				schema_map[name.getString()] = value["Schema"];
 			}
 
 			return false;
@@ -471,36 +475,29 @@ JSON JSON::operator[](size_t index) const
 	return getObject(index);
 }
 
-JSON::ElementInfo JSON::ExtractElementInfo(const JSON& element, const SchemaMap& schema_map)
+JSON::ElementInfo JSON::ExtractElementInfo(JSON element, const SchemaMap& schema_map)
 {
 	assert(element.isString() || element.isObject());
 	JSON::ElementInfo info;
 
-	if (element.isObject()) {
-		assert(element["Type"].isString());
-		assert(element["Optional"].isBoolean());
+	if (element.isString()) {
+		element = schema_map[element.getString()];
+	}
 
-		bool is_object = !strcmp(element["Type"].getString(), "Object");
-		bool is_array = !strcmp(element["Type"].getString(), "Array");
+	assert(element["Type"].isString());
+	assert(element["Optional"].isBoolean());
 
-		info.type = element["Type"].getString();
-		info.optional = element["Optional"].isTrue();
+	bool is_object = !strcmp(element["Type"].getString(), "Object");
+	bool is_array = !strcmp(element["Type"].getString(), "Array");
 
-		if (is_array) {
-			assert(element["Element Type"].isString());
-			info.element_type = element["Element Type"].getString();
+	info.type = element["Type"].getString();
+	info.optional = element["Optional"].isTrue();
 
-			if (!strcmp(info.element_type, "Object")) {
-				assert(element["Schema"].isObject() || element["Schema"].isString());
-				info.schema = element["Schema"];
+	if (is_array) {
+		assert(element["Element Type"].isString());
+		info.element_type = element["Element Type"].getString();
 
-				if (info.schema.isString()) {
-					assert(schema_map.hasElementWithKey(info.schema.getString()));
-					info.schema = schema_map[info.schema.getString()];
-				}
-			}
-
-		} else if (is_object) {
+		if (!strcmp(info.element_type, "Object")) {
 			assert(element["Schema"].isObject() || element["Schema"].isString());
 			info.schema = element["Schema"];
 
@@ -510,8 +507,14 @@ JSON::ElementInfo JSON::ExtractElementInfo(const JSON& element, const SchemaMap&
 			}
 		}
 
-	} else {
-		info.schema_name = element.getString();
+	} else if (is_object) {
+		assert(element["Schema"].isObject() || element["Schema"].isString());
+		info.schema = element["Schema"];
+
+		if (info.schema.isString()) {
+			assert(schema_map.hasElementWithKey(info.schema.getString()));
+			info.schema = schema_map[info.schema.getString()];
+		}
 	}
 
 	return info;
@@ -537,14 +540,8 @@ bool JSON::validateSchema(const JSON& schema, const SchemaMap& schema_map) const
 		JSON element = getObject(key);
 		info.key = key;
 
-		if (info.schema_name && !element.validateSchema(schema_map[info.schema_name], schema_map)) {
-			_error = element._error;
+		if (!(this->*parse_funcs[info.type])(element, info, schema_map)) {
 			return true;
-
-		} else {
-			if (!(this->*parse_funcs[info.type])(element, info, schema_map)) {
-				return true;
-			}
 		}
 
 		return false;
