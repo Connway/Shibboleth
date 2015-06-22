@@ -127,7 +127,7 @@ IFile* PackFileSystem::openFile(const char* file_name)
 			return nullptr;
 		}
 
-		file->_file_buffer = (char*)GetAllocator()->alloc(file_info.uncompressed_size);
+		file->_file_buffer = reinterpret_cast<char*>(GetAllocator()->alloc(file_info.uncompressed_size));
 		file->_file_size = file_info.uncompressed_size;
 
 		if (!file->_file_buffer) {
@@ -178,9 +178,71 @@ void PackFileSystem::closeFile(IFile* file)
 	}
 }
 
-void PackFileSystem::forEachFile(const char* directory, const Gaff::FunctionBinder<void, const char*, IFile*>& callback)
+bool PackFileSystem::forEachFile(const char* directory, const Gaff::FunctionBinder<bool, const char*, IFile*>& callback)
 {
-	// IMPLEMENT ME
+	size_t dir_len = strlen(directory);
+	unz_file_info file_info;
+	bool early_out = false;
+	char temp[256] = { 0 };
+
+	for (auto it = _pack_files.begin(); it != _pack_files.end(); ++it) {
+		if (unzGoToFirstFile(*it) != UNZ_OK) {
+				// Log error
+			continue;
+		}
+
+		while (!unzeof(*it)) {
+			if (unzOpenCurrentFile(*it) != UNZ_OK) {
+				// Log error
+				break;
+			}
+
+			if (unzGetCurrentFileInfo(*it, &file_info, temp, sizeof(temp), nullptr, 0, nullptr, 0) != UNZ_OK) {
+				// Log error
+				break;
+			}
+
+			if (!strncmp(temp, directory, dir_len)) {
+				PackFile* file = GetAllocator()->template allocT<PackFile>();
+
+				if (!file) {
+					// Log error
+					break;
+				}
+
+				file->_file_buffer = reinterpret_cast<char*>(GetAllocator()->alloc(file_info.uncompressed_size));
+				file->_file_size = file_info.uncompressed_size;
+
+				if (!file->_file_buffer) {
+					// Log error
+					GetAllocator()->freeT(file);
+					return nullptr;
+				}
+
+				if (unzReadCurrentFile(*it, file->_file_buffer, static_cast<unsigned int>(file->_file_size)) < 0) {
+					// Log error
+					GetAllocator()->freeT(file);
+					break;
+				}
+
+				unzCloseCurrentFile(*it);
+
+				early_out = callback(temp, file);
+
+				if (early_out) {
+					break;
+				}
+			}
+
+			if (early_out) {
+				break;
+			}
+
+			unzGoToNextFile(*it);
+		}
+	}
+
+	return early_out;
 }
 
 NS_END

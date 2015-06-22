@@ -5,25 +5,25 @@
 	[
 		{
 			"name": "SetupGraphicsState",
-			"module": "GameStates",
+			"module": "ShibbolethStates",
 			"transitions": [1]
 		},
 
 		{
 			"name": "CreateResourceLoadersState",
-			"module": "GameStates",
+			"module": "ShibbolethStates",
 			"transitions": [2]
 		},
 
 		{
 			"name": "SetupOtterUIState",
-			"module": "GameStates",
+			"module": "ShibbolethStates",
 			"transitions": [3]
 		},
 
 		{
 			"name": "loopforeverstate",
-			"module": "GameStates",
+			"module": "ShibbolethStates",
 			"transitions": []
 		}
 	]

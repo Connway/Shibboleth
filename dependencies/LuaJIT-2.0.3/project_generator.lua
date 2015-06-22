@@ -3,7 +3,10 @@ project "LuaJIT"
 		location ("../../project/" .. _ACTION .. "/dependencies")
 	end
 
-	kind "SharedLib"
+	configurations { "Debug", "Release" }
+	dofile("../../config_map.lua")
+
+	kind "Utility"
 	language "C"
 	warnings "Default"
 

@@ -1,7 +1,12 @@
+group "Common"
+
 project "Memory"
 	if _ACTION then
 		location ("../../project/" .. _ACTION .. "/memory")
 	end
+
+	configurations { "Debug", "Release" }
+	dofile("../../config_map.lua")
 
 	kind "SharedLib"
 	language "C++"

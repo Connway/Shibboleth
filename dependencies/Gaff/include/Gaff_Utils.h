@@ -78,17 +78,6 @@ bool ForEachInDirectory(const char* directory, Callback&& callback);
 template <FileDataType type, class Callback>
 bool ForEachTypeInDirectory(const char* directory, Callback&& callback);
 
-#ifdef _UNICODE
-template <class Callback>
-bool ForEachInDirectory(const wchar_t* directory, Callback&& callback);
-
-template <FileDataType type, class Callback>
-bool ForEachTypeInDirectory(const wchar_t* directory, Callback&& callback);
-
-INLINE bool CreateDir(const wchar_t* dirname, unsigned short mode); //!< wchar_t version of CreateDir().
-INLINE bool SetWorkingDir(const wchar_t* directory);
-#endif
-
 template <class Allocator>
 HashMap<AHashString<Allocator>, AString<Allocator>, Allocator> ParseCommandLine(int argc, char** argv);
 
