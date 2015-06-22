@@ -56,7 +56,7 @@ public:
 	IFile* openFile(const char* file_name);
 	void closeFile(IFile* file);
 
-	void forEachFile(const char* directory, const Gaff::FunctionBinder<void, const char*, IFile*>& callback);
+	bool forEachFile(const char* directory, const Gaff::FunctionBinder<bool, const char*, IFile*>& callback);
 
 private:
 	struct FileData

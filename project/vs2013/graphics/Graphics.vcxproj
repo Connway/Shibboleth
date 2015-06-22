@@ -124,56 +124,56 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug_OpenGL|Win32'">
     <LinkIncremental>true</LinkIncremental>
     <OutDir>..\..\..\build\output\x86\Debug\</OutDir>
-    <IntDir>..\..\..\build\intermediate\x86\Debug_OpenGL\Graphics\</IntDir>
+    <IntDir>..\..\..\build\intermediate\x86\Debug_OpenGL\</IntDir>
     <TargetName>Graphics_OpenGL32d</TargetName>
     <TargetExt>.dll</TargetExt>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug_OpenGL|x64'">
     <LinkIncremental>true</LinkIncremental>
     <OutDir>..\..\..\build\output\x64\Debug\</OutDir>
-    <IntDir>..\..\..\build\intermediate\x64\Debug_OpenGL\Graphics\</IntDir>
+    <IntDir>..\..\..\build\intermediate\x64\Debug_OpenGL\</IntDir>
     <TargetName>Graphics_OpenGL64d</TargetName>
     <TargetExt>.dll</TargetExt>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_OpenGL|Win32'">
     <LinkIncremental>false</LinkIncremental>
     <OutDir>..\..\..\build\output\x86\Release\</OutDir>
-    <IntDir>..\..\..\build\intermediate\x86\Release_OpenGL\Graphics\</IntDir>
+    <IntDir>..\..\..\build\intermediate\x86\Release_OpenGL\</IntDir>
     <TargetName>Graphics_OpenGL32</TargetName>
     <TargetExt>.dll</TargetExt>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_OpenGL|x64'">
     <LinkIncremental>false</LinkIncremental>
     <OutDir>..\..\..\build\output\x64\Release\</OutDir>
-    <IntDir>..\..\..\build\intermediate\x64\Release_OpenGL\Graphics\</IntDir>
+    <IntDir>..\..\..\build\intermediate\x64\Release_OpenGL\</IntDir>
     <TargetName>Graphics_OpenGL64</TargetName>
     <TargetExt>.dll</TargetExt>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug_Direct3D|Win32'">
     <LinkIncremental>true</LinkIncremental>
     <OutDir>..\..\..\build\output\x86\Debug\</OutDir>
-    <IntDir>..\..\..\build\intermediate\x86\Debug_Direct3D\Graphics\</IntDir>
+    <IntDir>..\..\..\build\intermediate\x86\Debug_Direct3D\</IntDir>
     <TargetName>Graphics_Direct3D32d</TargetName>
     <TargetExt>.dll</TargetExt>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug_Direct3D|x64'">
     <LinkIncremental>true</LinkIncremental>
     <OutDir>..\..\..\build\output\x64\Debug\</OutDir>
-    <IntDir>..\..\..\build\intermediate\x64\Debug_Direct3D\Graphics\</IntDir>
+    <IntDir>..\..\..\build\intermediate\x64\Debug_Direct3D\</IntDir>
     <TargetName>Graphics_Direct3D64d</TargetName>
     <TargetExt>.dll</TargetExt>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_Direct3D|Win32'">
     <LinkIncremental>false</LinkIncremental>
     <OutDir>..\..\..\build\output\x86\Release\</OutDir>
-    <IntDir>..\..\..\build\intermediate\x86\Release_Direct3D\Graphics\</IntDir>
+    <IntDir>..\..\..\build\intermediate\x86\Release_Direct3D\</IntDir>
     <TargetName>Graphics_Direct3D32</TargetName>
     <TargetExt>.dll</TargetExt>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_Direct3D|x64'">
     <LinkIncremental>false</LinkIncremental>
     <OutDir>..\..\..\build\output\x64\Release\</OutDir>
-    <IntDir>..\..\..\build\intermediate\x64\Release_Direct3D\Graphics\</IntDir>
+    <IntDir>..\..\..\build\intermediate\x64\Release_Direct3D\</IntDir>
     <TargetName>Graphics_Direct3D64</TargetName>
     <TargetExt>.dll</TargetExt>
   </PropertyGroup>
@@ -362,7 +362,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\src\Graphics\GleamModule.cpp" />
+    <ClCompile Include="..\..\..\src\Graphics\Shibboleth_GraphicsModule.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\shared\Shared.vcxproj">

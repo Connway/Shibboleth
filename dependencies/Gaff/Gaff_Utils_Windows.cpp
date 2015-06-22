@@ -85,19 +85,6 @@ void AlignedFree(void* data)
 	_aligned_free(data);
 }
 
-#ifdef _UNICODE
-bool CreateDir(const wchar_t* dirname, unsigned short)
-{
-	assert(dirname);
-	return !_wmkdir(dirname) || errno == EEXIST;
-}
-
-bool SetWorkingDir(const wchar_t* directory)
-{
-	return SetCurrentDirectoryW(directory) != 0;
-}
-#endif
-
 NS_END
 
 #endif

@@ -24,6 +24,7 @@ THE SOFTWARE.
 #include "Shibboleth_String.h"
 #include <Gaff_ScopedLock.h>
 #include <Gaff_Atomic.h>
+#include <Gaff_Utils.h>
 #include <Gaff_File.h>
 
 NS_SHIBBOLETH
@@ -138,9 +139,18 @@ void LooseFileSystem::closeFile(IFile* file)
 	}
 }
 
-void LooseFileSystem::forEachFile(const char* directory, const Gaff::FunctionBinder<void, const char*, IFile*>& callback)
+bool LooseFileSystem::forEachFile(const char* directory, const Gaff::FunctionBinder<bool, const char*, IFile*>& callback)
 {
-	// IMPLEMENT ME
+	return Gaff::ForEachTypeInDirectory<Gaff::FDT_RegularFile>(directory, [&](const char* file_name, size_t) -> bool
+	{
+		IFile* file = openFile(file_name);
+
+		//if (!file) {
+		//	// handle failure
+		//}
+
+		return callback(file_name, file);
+	});
 }
 
 NS_END

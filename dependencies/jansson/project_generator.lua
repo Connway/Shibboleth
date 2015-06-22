@@ -3,6 +3,9 @@ project "jansson"
 		location ("../../project/" .. _ACTION .. "/dependencies")
 	end
 
+	configurations { "Debug", "Release" }
+	dofile("../../config_map.lua")
+
 	kind "StaticLib"
 	language "C"
 	defines { "HAVE_STDINT_H" }

@@ -5,6 +5,8 @@ flags { "Unicode", "NoRTTI", "SEH" } -- unfortunately need exceptions for crash 
 
 nativewchar "Default"
 floatingpoint "Fast"
+startproject "App"
+debugdir "workingdir/App"
 
 filter { "options:symbols" }
 	flags { "Symbols" }

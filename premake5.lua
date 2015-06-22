@@ -34,25 +34,27 @@ newoption
 	description = "Builds symbol information into binaries."
 }
 
-solution "Temp"
-	configurations { "Debug", "Release" }
+solution "Shibboleth"
+	if _ACTION then
+		location ("project/" .. _ACTION)
+	end
+
+	if os.get() == "windows" then
+		configurations { "Debug_OpenGL", "Release_OpenGL", "Debug_Direct3D", "Release_Direct3D" }
+	else
+		configurations { "Debug_OpenGL", "Release_OpenGL" }
+	end
+
 	dofile("solution_settings.lua")
 
-local project_generators = os.matchfiles("dependencies/**/project_generator.lua")
-local other_proj_generators = os.matchfiles("src/**/project_generator.lua")
+	local dependency_generators = os.matchfiles("dependencies/**/project_generator.lua")
+	local project_generators = os.matchfiles("src/**/project_generator.lua")
 
-for i = 1, table.getn(other_proj_generators) do
-	table.insert(project_generators, other_proj_generators[i])
-end
+	group "Dependencies"
+	for i = 1, table.getn(dependency_generators) do
+		dofile(dependency_generators[i])
+	end
 
-for i = 1, table.getn(project_generators) do
-	dofile(project_generators[i])
-end
-
-local solution_generators = os.matchfiles("src/**/solution_generator.lua")
-
-for i = 1, table.getn(solution_generators) do
-	dofile(solution_generators[i])
-end
-
-dofile("generate_all_solution.lua")
+	for i = 1, table.getn(project_generators) do
+		dofile(project_generators[i])
+	end

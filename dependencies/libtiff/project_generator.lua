@@ -3,6 +3,9 @@ project "libtiff"
 		location ("../../project/" .. _ACTION .. "/dependencies")
 	end
 
+	configurations { "Debug", "Release" }
+	dofile("../../config_map.lua")
+
 	kind "StaticLib"
 	language "C"
 	warnings "Default"

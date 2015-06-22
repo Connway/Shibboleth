@@ -3,6 +3,9 @@ project "ResIL"
 		location ("../../project/" .. _ACTION .. "/dependencies")
 	end
 
+	configurations { "Debug", "Release" }
+	dofile("../../config_map.lua")
+
 	kind "SharedLib"
 	language "C"
 	warnings "Default"
@@ -47,6 +50,9 @@ project "ResILU"
 	if _ACTION then
 		location ("../../project/" .. _ACTION .. "/dependencies")
 	end
+
+	configurations { "Debug", "Release" }
+	dofile("../../config_map.lua")
 
 	kind "SharedLib"
 	language "C"

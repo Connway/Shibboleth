@@ -3,6 +3,9 @@ project "zlib"
 		location ("../../project/" .. _ACTION .. "/dependencies")
 	end
 
+	configurations { "Debug", "Release" }
+	dofile("../../config_map.lua")
+
 	kind "StaticLib"
 	language "C"
 	warnings "Default"
@@ -12,7 +15,7 @@ project "zlib"
 	configuration "vs*"
 		defines { "_CRT_SECURE_NO_WARNINGS" }
 
-		configuration {}
+	configuration {}
 
 	filter { "action:gmake" }
 		buildoptions { "-fPIC" }

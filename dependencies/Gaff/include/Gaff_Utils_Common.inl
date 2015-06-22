@@ -93,62 +93,6 @@ bool ForEachTypeInDirectory(const char* directory, Callback&& callback)
 	return early_out;
 }
 
-#ifdef _UNICODE
-//! wchar_t version of ForEachInDirectory().
-template <class Callback>
-bool ForEachInDirectory(const wchar_t* directory, Callback&& callback)
-{
-	WDIR* dir = wopendir(directory);
-
-	if (!dir) {
-		return true;
-	}
-
-	wdirent* entry = wreaddir(dir);
-	bool early_out = false;
-
-	while (entry) {
-		if (callback(entry->d_name, _D_EXACT_NAMLEN(entry), (FileDataType)entry->d_type)) {
-			early_out = true;
-			break;
-		}
-
-		entry = wreaddir(dir);
-	}
-
-	wclosedir(dir);
-	return early_out;
-}
-
-//! whcar_t version of ForEachTypeInDirectory.
-template <FileDataType type, class Callback>
-bool ForEachTypeInDirectory(const wchar_t* directory, Callback&& callback)
-{
-	WDIR* dir = wopendir(directory);
-
-	if (!dir) {
-		return true;
-	}
-
-	wdirent* entry = wreaddir(dir);
-	bool early_out = false;
-
-	while (entry) {
-		if (entry->d_type == type) {
-			if (callback(entry->d_name, _D_EXACT_NAMLEN(entry))) {
-				early_out = true;
-				break;
-			}
-		}
-
-		entry = wreaddir(dir);
-	}
-
-	wclosedir(dir);
-	return early_out;
-}
-#endif
-
 /*!
 	\brief Parses the command line into option/value(s) pairs using a hashmap.
 	\return A HashMap of option/value strings.

@@ -3,6 +3,9 @@ project "OtterUI"
 		location ("../../project/" .. _ACTION .. "/dependencies")
 	end
 
+	configurations { "Debug", "Release" }
+	dofile("../../config_map.lua")
+
 	configuration "windows"
 		defines { "_CRT_SECURE_NO_WARNINGS" }
 
