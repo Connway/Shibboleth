@@ -216,7 +216,7 @@ IRenderDevice::AdapterList RenderDeviceGL::getDisplayModes(int)
 			for (unsigned int k = 0; k < out_info.display_mode_list.size(); ++k) {
 				const DEVMODE& mode_desc = out_info.display_mode_list[k];
 
-				DisplayMode mode = {
+				DisplayMode disp_mode = {
 					mode_desc.dmDisplayFrequency,
 					mode_desc.dmPelsWidth,
 					mode_desc.dmPelsHeight,
@@ -225,7 +225,7 @@ IRenderDevice::AdapterList RenderDeviceGL::getDisplayModes(int)
 					mode_desc.dmPosition.y
 				};
 
-				display.display_modes.push(mode);
+				display.display_modes.push(disp_mode);
 			}
 
 			adpt.displays.push(display);

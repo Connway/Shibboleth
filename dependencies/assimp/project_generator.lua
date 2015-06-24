@@ -31,6 +31,11 @@ project "assimp"
 
 	filter { "system:windows" }
 		defines { "_CRT_SECURE_NO_WARNINGS", "_SCL_SECURE_NO_WARNINGS" }
-		removeflags { "NoRTTI" }
+		removeflags { "NoRTTI" }		
 
 	filter {}
+
+	configuration "vs2015"
+		buildoptions { "/bigobj" }
+
+	configuration {}

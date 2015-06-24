@@ -24,6 +24,7 @@ THE SOFTWARE.
 
 #include "Shibboleth_Memory.h"
 #include <Gaff_Math.h>
+#include <cstring>
 
 NS_SHIBBOLETH
 

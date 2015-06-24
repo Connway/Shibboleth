@@ -26,7 +26,11 @@ THE SOFTWARE.
 #include <cstdio>
 
 #ifdef _WIN32
-	#define snprintf _snprintf
+	#if _MSC_VER < 1900
+		#ifndef snprintf
+			#define snprintf _snprintf
+		#endif
+	#endif
 #endif
 
 
@@ -192,14 +196,14 @@ bool JSON::validate(const char* input) const
 		{
 			if (index != schema.size() - 1) {
 				if (!value.isObject()) {
-					snprintf(_error.text, JSON_ERROR_TEXT_LENGTH, "Value at index '%z' is not an object.", index);
+					snprintf(_error.text, JSON_ERROR_TEXT_LENGTH, "Value at index '%uz' is not an object.", index);
 					return true;
 				}
 
 				JSON name = value["Name"];
 
 				if (!name) {
-					snprintf(_error.text, JSON_ERROR_TEXT_LENGTH, "Value at index '%z' is not an object.", index);
+					snprintf(_error.text, JSON_ERROR_TEXT_LENGTH, "Value at index '%uz' is not an object.", index);
 					return true;
 				}
 
@@ -587,24 +591,24 @@ bool JSON::isArraySchema(const JSON& element, const ElementInfo& info, const Sch
 	return !element.forEachInArray([&](size_t index, const JSON& value) -> bool
 	{
 		if (!strcmp(info.element_type, "String") && !value.isString()) {
-			snprintf(_error.text, JSON_ERROR_TEXT_LENGTH, "Element '%s' index '%z' depth '%z' is not a string.", info.key, index);
+			snprintf(_error.text, JSON_ERROR_TEXT_LENGTH, "Element '%s' index '%uz' depth '%uz' is not a string.", info.key, index, info.depth);
 			return true;
 		} else if (!strcmp(info.element_type, "Number") && !value.isNumber()) {
-			snprintf(_error.text, JSON_ERROR_TEXT_LENGTH, "Element '%s' index '%z' depth '%z' is not a number.", info.key, index);
+			snprintf(_error.text, JSON_ERROR_TEXT_LENGTH, "Element '%s' index '%uz' depth '%uz' is not a number.", info.key, index, info.depth);
 			return true;
 		} else if (!strcmp(info.element_type, "Integer") && !value.isInteger()) {
-			snprintf(_error.text, JSON_ERROR_TEXT_LENGTH, "Element '%s' index '%z' depth '%z' is not an integer.", info.key, index);
+			snprintf(_error.text, JSON_ERROR_TEXT_LENGTH, "Element '%s' index '%uz' depth '%uz' is not an integer.", info.key, index, info.depth);
 			return true;
 		} else if (!strcmp(info.element_type, "Real") && !value.isReal()) {
-			snprintf(_error.text, JSON_ERROR_TEXT_LENGTH, "Element '%s' index '%z' depth '%z' is not a real.", info.key, index);
+			snprintf(_error.text, JSON_ERROR_TEXT_LENGTH, "Element '%s' index '%uz' depth '%uz' is not a real.", info.key, index, info.depth);
 			return true;
 		} else if (!strcmp(info.element_type, "Boolean") && !value.isBoolean()) {
-			snprintf(_error.text, JSON_ERROR_TEXT_LENGTH, "Element '%s' index '%z' depth '%z' is not a boolean.", info.key, index);
+			snprintf(_error.text, JSON_ERROR_TEXT_LENGTH, "Element '%s' index '%uz' depth '%uz' is not a boolean.", info.key, index, info.depth);
 			return true;
 
 		} else if (!strcmp(info.element_type, "Object")) {
 			if (!value.isObject()) {
-				snprintf(_error.text, JSON_ERROR_TEXT_LENGTH, "Element '%s' index '%z' depth '%z' is not an object.", info.key, index);
+				snprintf(_error.text, JSON_ERROR_TEXT_LENGTH, "Element '%s' index '%uz' depth '%uz' is not an object.", info.key, index, info.depth);
 				return true;
 			}
 
@@ -615,7 +619,7 @@ bool JSON::isArraySchema(const JSON& element, const ElementInfo& info, const Sch
 
 		} else if (!strcmp(info.element_type, "Array")) {
 			if (!value.isArray()) {
-				snprintf(_error.text, JSON_ERROR_TEXT_LENGTH, "Element '%s' index '%z' depth '%z' is not an array.", info.key, index);
+				snprintf(_error.text, JSON_ERROR_TEXT_LENGTH, "Element '%s' index '%uz' depth '%uz' is not an array.", info.key, index, info.depth);
 				return true;
 			}
 
