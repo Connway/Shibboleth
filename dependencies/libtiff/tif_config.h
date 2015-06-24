@@ -81,8 +81,15 @@ If your big endian system isn't being detected, add an OS specific check
 #endif // BYTE_ORDER
 
 #ifdef _WIN32
-#define snprintf _snprintf
-#define lfind _lfind
+	#if _MSC_VER < 1900
+		#ifndef snprintf
+			#define snprintf _snprintf
+		#endif
+
+		#ifndef lfind
+			#define lfind _lfind
+		#endif
+	#endif
 #endif // _WIN32
 
 /* Define to `__inline__' or `__inline' if that's what the C compiler

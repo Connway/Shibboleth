@@ -139,9 +139,9 @@ void InGameRenderPipeline::GenerateCommandLists(void* job_data)
 
 				ModelPtr& m = model.models[*it_dev][lod];
 
-				for (size_t i = 0; i < m->getMeshCount(); ++i) {
-					materials[i]->programs[*it_dev]->bind(*rds[*it_dev]);
-					m->render(*rds[*it_dev], i);
+				for (size_t j = 0; j < m->getMeshCount(); ++j) {
+					materials[j]->programs[*it_dev]->bind(*rds[*it_dev]);
+					m->render(*rds[*it_dev], j);
 				}
 
 				// generate command list

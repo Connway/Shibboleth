@@ -225,7 +225,7 @@ bool Window::init(const char* app_name, MODE window_mode,
 	}
 
 	// Adjust window to make the drawable area to be the desired resolution.
-	RECT window_rect = { _pos_x, pos_y, _pos_x + _width, _pos_y + _height };
+	RECT window_rect = { _pos_x, pos_y, _pos_x + static_cast<int>(_width), _pos_y + static_cast<int>(_height) };
 
 	if (window_mode == WINDOWED) {
 		AdjustWindowRectEx(&window_rect, flags, FALSE, WS_EX_APPWINDOW);

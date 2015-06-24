@@ -239,7 +239,7 @@ void ModelComponent::requestMaterials(const Gaff::JSON& json, ResourceManager& r
 			_materials[index] = material;
 
 			// Make a unique name for this resource
-			sprintf(temp, "ProgramBuffers#%s#%s#%i%z", getOwner()->getName().getBuffer(), getName().getBuffer(), getOwner()->getID(), index);
+			sprintf(temp, "ProgramBuffers#%s#%s#%i%uz", getOwner()->getName().getBuffer(), getName().getBuffer(), getOwner()->getID(), index);
 			ResourceWrapper<ProgramBuffersData> program_buffers = res_mgr.requestResource("ProgramBuffers", temp);
 			program_buffers.getResourcePtr()->addCallback(callback);
 			_program_buffers[index] = program_buffers;
@@ -363,7 +363,7 @@ void ModelComponent::requestBuffers(const Gaff::JSON& json, ResourceManager& res
 
 			// Make a unique name for this resource
 			char temp[256] = { 0 };
-			sprintf(temp, "Buffer#%s#%s#%i%z", getOwner()->getName().getBuffer(), getName().getBuffer(), getOwner()->getID(), index);
+			sprintf(temp, "Buffer#%s#%s#%i%uz", getOwner()->getName().getBuffer(), getName().getBuffer(), getOwner()->getID(), index);
 			ResourceWrapper<BufferData> buffer = res_mgr.requestResource("Buffer", temp, reinterpret_cast<unsigned long long>(&_buffer_settings[index]));
 			buffer.getResourcePtr()->addCallback(callback);
 			_buffers[index] = buffer;

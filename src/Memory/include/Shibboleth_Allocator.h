@@ -59,19 +59,34 @@ public:
 private:
 	struct MemoryPoolInfo
 	{
+		MemoryPoolInfo(void):
+			total_bytes_allocated(0), num_allocations(0),
+			num_frees(0)
+#ifdef TRACK_POINTER_ALLOCATIONS
+			, wrong_free(Gaff::DefaultAlignedAllocator(16)),
+			pointers_allocated(Gaff::DefaultAlignedAllocator(16)),
+			wf_lock(nullptr), pa_lock(nullptr)
+#endif
+#if defined(SYMBOL_BUILD) && defined(GATHER_ALLOCATION_STACKTRACE)
+			, stack_traces(Gaff::DefaultAlignedAllocator(16)),
+			st_lock(nullptr)
+#endif
+		{
+		}
+
 		volatile size_t total_bytes_allocated;
 		volatile size_t num_allocations;
 		volatile size_t num_frees;
 		char pool_name[POOL_NAME_SIZE];
 
 #ifdef TRACK_POINTER_ALLOCATIONS
-		Gaff::Map<unsigned int, unsigned int, Gaff::DefaultAlignedAllocator> wrong_free = Gaff::Map<unsigned int, unsigned int, Gaff::DefaultAlignedAllocator>(Gaff::DefaultAlignedAllocator(16));
-		Gaff::Array<void*, Gaff::DefaultAlignedAllocator> pointers_allocated = Gaff::Array<void*, Gaff::DefaultAlignedAllocator>(Gaff::DefaultAlignedAllocator(16));
+		Gaff::Map<unsigned int, unsigned int, Gaff::DefaultAlignedAllocator> wrong_free;
+		Gaff::Array<void*, Gaff::DefaultAlignedAllocator> pointers_allocated;
 		Gaff::SpinLock* wf_lock;
 		Gaff::SpinLock* pa_lock;
 #endif
 #if defined(SYMBOL_BUILD) && defined(GATHER_ALLOCATION_STACKTRACE)
-		Gaff::Map<void*, Gaff::StackTrace, Gaff::DefaultAlignedAllocator> stack_traces = Gaff::Map<void*, Gaff::StackTrace, Gaff::DefaultAlignedAllocator>(Gaff::DefaultAlignedAllocator(16));
+		Gaff::Map<void*, Gaff::StackTrace, Gaff::DefaultAlignedAllocator> stack_traces;
 		Gaff::SpinLock* st_lock;
 #endif
 	};
