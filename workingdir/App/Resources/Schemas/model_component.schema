@@ -1,0 +1,54 @@
+[
+	{
+		"Name": "Material Map",
+		"Schema": {
+			"Type": "Array",
+			"Optional": false,
+			"Element Type": "Object",
+			"Schema": {
+				"Material Index": { "Type": "Integer", "Optional": false },
+				"Shader": { "Type": "String", "Optional": false }
+			}
+		}
+	},
+
+	{
+		"Name": "Asset Array",
+		"Schema": {
+			"Type": "Array",
+			"Optional": true,
+			"Element Type": "Object",
+			"Schema": {
+				"File": { "Type": "String", "Optional": false },
+				"Material Map": "Material Map"
+			}
+		}
+	},
+
+	{
+
+		"Type": { "Type": "String", "Optional": false },
+
+		"Model File": { "Type": "String", "Optional": true },
+		"Render Mode Override": { "Type": "String", "Optional": true },
+
+		"Material Files": { "Type": "Array", "Optional": true, "Element Type": "String" },
+
+		"Texture Files": "Asset Array",
+		"Sampler Files": "Asset Array",
+
+		"Buffers": {
+			"Type": "Array",
+			"Optional": true,
+			"Element Type": "Object",
+			"Schema": {
+				"Type": { "Type": "String", "Optional": false },
+				"CPU Access": { "Type": "String", "Optional": false },
+				"Size": { "Type": "Integer", "Optional": false },
+				"Stride": { "Type": "Integer", "Optional": false },
+				"GPU Read Only": { "Type": "Boolean", "Optional": false },
+				"Material Map": "Material Map"
+			}
+		}
+	}
+]
