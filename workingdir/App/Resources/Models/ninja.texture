@@ -1,0 +1,12 @@
+{
+	"image_file": "Resources/Models/nskinwh_test.png",
+
+	"normalized": true,
+	"cubemap": false,
+	"SRGBA": true,
+	"no_shader_resource_views": false,
+	"image_only": false,
+
+	"display_tags": ["DISPLAY_GAMEPLAY"],
+	"any_display_with_tags": false
+}

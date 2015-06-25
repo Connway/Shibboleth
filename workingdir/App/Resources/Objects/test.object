@@ -1,0 +1,72 @@
+{
+	"name": "Test Object",
+
+	"components":
+	{
+		"Test1":
+		{
+			"Type": "Model Component",
+
+			"Model File": "Resources/Models/ninja.model",
+			"Render Mode Override": "None",
+
+			"Material Files": [
+				"Resources/Materials/test.material",
+				"Resources/Materials/test.material"
+			],
+
+			"Texture Files": [
+				{
+					"File": "Resources/Models/ninja.texture",
+					"Material Map": [
+						{
+							"Material Index": 0,
+							"Shader": "Pixel"
+						},
+						{
+							"Material Index": 1,
+							"Shader": "Pixel"
+						}
+					]
+				}
+			],
+
+			"Sampler Files": [
+				{
+					"File": "Resources/Models/ninja.sampler",
+					"Material Map": [
+						{
+							"Material Index": 0,
+							"Shader": "Pixel"
+						},
+						{
+							"Material Index": 1,
+							"Shader": "Pixel"
+						}
+					]
+				}
+			],
+
+			"Buffers": [
+				{
+					"Type": "Shader Data",
+					"CPU Access": "Write",
+					"Size": 192,
+					"Stride": 0,
+					"GPU Read Only": true,
+
+					"Material Map": [
+						{
+							"Shader": "Vertex",
+							"Material Index": 0
+						},
+						{
+							"Shader": "Vertex",
+							"Material Index": 1
+						}
+					]
+				}
+			]
+		}
+	}
+}
