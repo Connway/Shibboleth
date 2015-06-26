@@ -328,17 +328,17 @@ bool App::loadStates(void)
 		Gaff::JSON state_name = state["name"];
 
 		if (!transitions.isArray()) {
-			_log_file_pair->first.printf("ERROR - 'States/states.json' is malformed. Transitions for state entry %i is not an array.\n", i);
+			_log_file_pair->first.printf("ERROR - 'States/states.json' is malformed. Transitions for state entry %zu is not an array.\n", i);
 			return false;
 		}
 
 		if (!module_name.isString()) {
-			_log_file_pair->first.printf("ERROR - 'States/states.json' is malformed. Module name for state entry %i is not a string.\n", i);
+			_log_file_pair->first.printf("ERROR - 'States/states.json' is malformed. Module name for state entry %zu is not a string.\n", i);
 			return false;
 		}
 
 		if (!state_name.isString()) {
-			_log_file_pair->first.printf("ERROR - 'States/states.json' is malformed. Name for state entry %i is not a string.\n", i);
+			_log_file_pair->first.printf("ERROR - 'States/states.json' is malformed. Name for state entry %zu is not a string.\n", i);
 			return false;
 		}
 
@@ -390,17 +390,17 @@ bool App::loadStates(void)
 				++state_id;
 
 				if (entry.state) {
-					entry.state->_transitions.reserve((unsigned int)transitions.size());
+					entry.state->_transitions.reserve(static_cast<unsigned int>(transitions.size()));
 
 					for (size_t k = 0; k < transitions.size(); ++k) {
 						Gaff::JSON val = transitions[k];
 
 						if (!val.isInteger()) {
-							_log_file_pair->first.printf("ERROR - 'States/states.json' is malformed. Name for state entry %i is not a string.\n", i);
+							_log_file_pair->first.printf("ERROR - 'States/states.json' is malformed. Name for state entry %zu is not a string.\n", i);
 							return false;
 						}
 
-						entry.state->_transitions.push((unsigned int)val.getInteger());
+						entry.state->_transitions.push(static_cast<unsigned int>(val.getInteger()));
 					}
 
 					if (!entry.state->init(_state_machine.getNumStates())) {
@@ -412,7 +412,7 @@ bool App::loadStates(void)
 					_log_file_pair->first.printf("Loaded state '%s'\n", state_name.getString());
 
 					if (entry.name == starting_state.getString()) {
-						_state_machine.switchState((unsigned int)i);
+						_state_machine.switchState(static_cast<unsigned int>(i));
 					}
 
 				} else {

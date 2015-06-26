@@ -292,10 +292,10 @@ bool RenderManager::createWindow(
 		Gaff::ScopedLock<Gaff::SpinLock> scoped_lock(*log.second);
 		log.first.printf(
 			"ERROR - Failed to find display mode with settings\n"
-			"Width: %i\n"
-			"Height: %i\n"
-			"Adapter ID: %i\n"
-			"Display ID: %i\n",
+			"Width: %u\n"
+			"Height: %u\n"
+			"Adapter ID: %u\n"
+			"Display ID: %u\n",
 			width, height, adapter_id, display_id
 		);
 
@@ -794,7 +794,7 @@ bool RenderManager::getDisplayTags(void)
 		bool ret = display_tags.forEachInArray([&](size_t index, const Gaff::JSON& value) -> bool
 		{
 			if (!value.isString()) {
-				log.first.printf("ERROR - Index '%i' of 'Resources/display_tags.json' is not a string.\n", index);
+				log.first.printf("ERROR - Index '%zu' of 'Resources/display_tags.json' is not a string.\n", index);
 				return true;
 			}
 
@@ -846,7 +846,7 @@ bool RenderManager::getRenderModes(void)
 		bool ret = render_modes.forEachInArray([&](size_t index, const Gaff::JSON& value) -> bool
 		{
 			if (!value.isString()) {
-				log.first.printf("ERROR - Index '%i' of 'Resources/render_modes.json' is not a string.\n", index);
+				log.first.printf("ERROR - Index '%zu' of 'Resources/render_modes.json' is not a string.\n", index);
 				return true;
 			}
 

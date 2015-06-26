@@ -219,16 +219,16 @@ void SetupGraphicsState::update(void)
 			vsync.isTrue(), disp_tags)) {
 
 			log.first.printf("ERROR - Failed to create window with values\n"
-				"X: %i\n"
-				"Y: %i\n"
-				"Width: %i\n"
-				"Height: %i\n"
-				"Refresh Rate: %i\n"
+				"X: %lli\n"
+				"Y: %lli\n"
+				"Width: %lli\n"
+				"Height: %lli\n"
+				"Refresh Rate: %lli\n"
 				"Vsync: %s\n"
 				"Device Name: %s\n"
-				"Adapter ID: %i\n"
-				"Display ID: %i\n"
-				"Tags: %i\n",
+				"Adapter ID: %lli\n"
+				"Display ID: %lli\n"
+				"Tags: %uh\n",
 				x.getInteger(), y.getInteger(),
 				width.getInteger(), height.getInteger(),
 				refresh_rate.getInteger(), (vsync.isTrue()) ? "true" : "false",
