@@ -113,9 +113,9 @@ Allocator::~Allocator(void)
 
 	for (auto it = _tagged_pools.begin(); it != _tagged_pools.end(); ++it) {
 		log.printf("%s:\n", it->second.pool_name);
-		log.printf("\tBytes Allocated: %i\n", it->second.total_bytes_allocated);
-		log.printf("\tAllocations: %i\n", it->second.num_allocations);
-		log.printf("\tFrees: %i\n\n", it->second.num_frees);
+		log.printf("\tBytes Allocated: %zu\n", it->second.total_bytes_allocated);
+		log.printf("\tAllocations: %zu\n", it->second.num_allocations);
+		log.printf("\tFrees: %zu\n\n", it->second.num_frees);
 
 		total_bytes += it->second.total_bytes_allocated;
 		total_allocs += it->second.num_allocations;
@@ -130,7 +130,7 @@ Allocator::~Allocator(void)
 			log.printf("\t===========================================================\n");
 
 			for (auto it_wf = it->second.wrong_free.begin(); it_wf != it->second.wrong_free.end(); ++it_wf) {
-				log.printf("\t\t%s: %i\n", _tagged_pools[it_wf->first].pool_name, it_wf->second);
+				log.printf("\t\t%s: %u\n", _tagged_pools[it_wf->first].pool_name, it_wf->second);
 			}
 
 			log.printf("\n");
@@ -158,7 +158,7 @@ Allocator::~Allocator(void)
 
 				for (unsigned short i = 0; i < it_st->second.getNumCapturedFrames(); ++i) {
 					callstack_log.printf(
-						"\t(0x%x) [%s:(%i)] %s\n", it_st->second.getAddress(i),
+						"\t(0x%llX) [%s:(%u)] %s\n", it_st->second.getAddress(i),
 						it_st->second.getFileName(i), it_st->second.getLineNumber(i),
 						it_st->second.getSymbolName(i)
 					);
@@ -170,9 +170,9 @@ Allocator::~Allocator(void)
 #endif
 	}
 
-	log.printf("Total Bytes Allocated: %i\n", total_bytes);
-	log.printf("Total Allocations: %i\n", total_allocs);
-	log.printf("Total Frees: %i\n", total_frees);
+	log.printf("Total Bytes Allocated: %zu\n", total_bytes);
+	log.printf("Total Allocations: %zu\n", total_allocs);
+	log.printf("Total Frees: %zu\n", total_frees);
 
 	if (total_allocs != total_frees) {
 		log.printf("\n===========================================================\n");

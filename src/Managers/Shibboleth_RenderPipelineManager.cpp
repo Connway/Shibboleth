@@ -230,7 +230,7 @@ bool RenderPipelineManager::addRenderPipelines(DynamicLoader::ModulePtr& module)
 		IRenderPipeline* pipeline = create_pipeline(i);
 
 		if (!pipeline) {
-			log.first.printf("ERROR - Failed to create pipeline with ID '%i'", i);
+			log.first.printf("ERROR - Failed to create pipeline with ID '%zu'", i);
 			return false;
 		}
 

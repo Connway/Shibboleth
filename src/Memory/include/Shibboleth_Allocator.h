@@ -24,7 +24,6 @@ THE SOFTWARE.
 
 #include "Shibboleth_IAllocator.h"
 #include <Gaff_DefaultAlignedAllocator.h>
-#include <Gaff_IAllocator.h>
 #include <Gaff_SpinLock.h>
 #include <Gaff_Map.h>
 
@@ -42,7 +41,7 @@ NS_SHIBBOLETH
 class Allocator : public IAllocator
 {
 public:
-	Allocator(size_t alignment = 16);
+	explicit Allocator(size_t alignment = 16);
 	~Allocator(void);
 
 	void createMemoryPool(const char* pool_name, unsigned int alloc_tag);
