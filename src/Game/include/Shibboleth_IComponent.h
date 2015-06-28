@@ -24,7 +24,6 @@ THE SOFTWARE.
 
 #include <Shibboleth_String.h>
 #include <Gaff_IRequestableInterface.h>
-#include <Gaff_IVirtualDestructor.h>
 #include <Gaff_IncludeAssert.h>
 #include <Gaff_JSON.h>
 #include <cstring>
@@ -53,8 +52,18 @@ public:
 	IComponent(void): _owner(nullptr), _comp_index(0) {}
 	virtual ~IComponent(void) {}
 
-	virtual const char* getSchema(void) const { return nullptr; }
-	virtual bool validate(Gaff::JSON& json) { return json.validate(getSchema()); }
+	virtual const Gaff::JSON& getSchema(void) const
+	{
+		static Gaff::JSON empty_schema;
+		return empty_schema;
+	}
+
+	virtual bool validate(const Gaff::JSON& json)
+	{
+		const Gaff::JSON& schema = getSchema();
+		return (schema) ? json.validate(schema) : true;
+	}
+
 	virtual bool load(const Gaff::JSON&) { return true; }
 	virtual bool save(Gaff::JSON&) { return true; }
 

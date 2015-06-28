@@ -27,6 +27,7 @@ THE SOFTWARE.
 
 //#include <Shibboleth_LoadingMessage.h>
 
+#include <Shibboleth_SchemaManager.h>
 #include <Shibboleth_Utilities.h>
 #include <Shibboleth_Object.h>
 #include <Shibboleth_IApp.h>
@@ -35,8 +36,6 @@ THE SOFTWARE.
 #include <Gleam_Matrix4x4.h>
 #include <Gleam_IProgram.h>
 #include <Gleam_IBuffer.h>
-
-#include <Gaff_ScopedExit.h>
 
 NS_SHIBBOLETH
 
@@ -98,10 +97,16 @@ ModelComponent::~ModelComponent(void)
 	_model.getResourcePtr()->removeCallback(callback);
 }
 
-bool ModelComponent::validate(Gaff::JSON& json)
+const Gaff::JSON& ModelComponent::getSchema(void) const
 {
-	// Replace this with final solution
-	if (!json.validateFile("Resources/Schemas/model_component.schema")) {
+	static const Gaff::JSON& schema = GetApp().getManagerT<SchemaManager>("Schema Manager").getSchema("ModelComponent.schema");
+	return schema;
+}
+
+bool ModelComponent::validate(const Gaff::JSON& json)
+{
+	if (!IComponent::validate(json)) {
+		// log error
 		return false;
 	}
 
@@ -334,7 +339,6 @@ void ModelComponent::requestBuffers(const Gaff::JSON& json, ResourceManager& res
 		_buffer_settings.resize(buffers.size());
 		_buffers.resize(buffers.size());
 
-		const auto& shader_type = GetEnumRefDef<Gleam::IShader::SHADER_TYPE>();
 		const auto& buffer_type = GetEnumRefDef<Gleam::IBuffer::BUFFER_TYPE>();
 		const auto& map_type = GetEnumRefDef<Gleam::IBuffer::MAP_TYPE>();
 

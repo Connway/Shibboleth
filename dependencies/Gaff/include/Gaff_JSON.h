@@ -110,8 +110,9 @@ public:
 	JSON(void);
 	~JSON(void);
 
-	INLINE bool validateFile(const char* schema_file) const;
-	INLINE bool validate(const char* input) const;
+	bool validateFile(const char* schema_file) const;
+	bool validate(const JSON& schema_object) const;
+	bool validate(const char* input) const;
 
 	INLINE bool parseFile(const char* filename);
 	INLINE bool parse(const char* input);

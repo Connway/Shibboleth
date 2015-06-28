@@ -46,7 +46,8 @@ public:
 	ModelComponent(void);
 	~ModelComponent(void);
 
-	bool validate(Gaff::JSON& json);
+	const Gaff::JSON& getSchema(void) const;
+	bool validate(const Gaff::JSON& json);
 	bool load(const Gaff::JSON& json);
 	bool save(Gaff::JSON& json);
 
