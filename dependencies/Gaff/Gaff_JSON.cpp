@@ -177,15 +177,8 @@ bool JSON::validateFile(const char* schema_file) const
 	return ret_val;
 }
 
-bool JSON::validate(const char* input) const
+bool JSON::validate(const JSON& schema_object) const
 {
-	JSON schema_object;
-
-	if (!schema_object.parse(input)) {
-		_error = schema_object._error;
-		return false;
-	}
-
 	SchemaMap schema_map;
 	JSON schema = schema_object;
 
@@ -221,6 +214,18 @@ bool JSON::validate(const char* input) const
 	}
 
 	return validateSchema(schema, schema_map);
+}
+
+bool JSON::validate(const char* input) const
+{
+	JSON schema_object;
+
+	if (!schema_object.parse(input)) {
+		_error = schema_object._error;
+		return false;
+	}
+
+	return validate(schema_object);
 }
 
 bool JSON::parseFile(const char* filename)

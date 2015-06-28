@@ -143,7 +143,15 @@ bool LooseFileSystem::forEachFile(const char* directory, const Gaff::FunctionBin
 {
 	return Gaff::ForEachTypeInDirectory<Gaff::FDT_RegularFile>(directory, [&](const char* file_name, size_t) -> bool
 	{
-		IFile* file = openFile(file_name);
+		AString full_path(directory);
+
+		if (full_path[full_path.size() - 1] != '/') {
+			full_path += '/';
+		}
+
+		full_path += file_name;
+
+		IFile* file = openFile(full_path.getBuffer());
 
 		//if (!file) {
 		//	// handle failure

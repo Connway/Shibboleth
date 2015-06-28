@@ -28,6 +28,7 @@ THE SOFTWARE.
 #include <Shibboleth_ResourceManager.h>
 #include <Shibboleth_OtterUIManager.h>
 #include <Shibboleth_CameraManager.h>
+#include <Shibboleth_SchemaManager.h>
 #include <Shibboleth_RenderManager.h>
 #include <Shibboleth_UpdateManager.h>
 #include <Shibboleth_ObjectManager.h>
@@ -77,6 +78,7 @@ enum Managers
 	CAMERA_MANAGER,
 	FRAME_MANAGER,
 	RP_MANAGER,
+	SCHEMA_MANAGER,
 	NUM_MANAGERS
 };
 
@@ -95,6 +97,7 @@ static CreateMgrFunc create_funcs[] = {
 	&CreateManagerT<Shibboleth::CameraManager>,
 	&CreateManagerWithInitT<Shibboleth::FrameManager>,
 	&CreateManagerT<Shibboleth::RenderPipelineManager>,
+	&CreateManagerT<Shibboleth::SchemaManager>
 };
 
 DYNAMICEXPORT_C bool InitModule(Shibboleth::IApp& app)
