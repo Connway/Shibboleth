@@ -33,7 +33,7 @@ NS_SHIBBOLETH
 Object::Object(unsigned int id):
 	_comp_mgr(GetApp().getManagerT<ComponentManager>("Component Manager")),
 	_obj_mgr(GetApp().getManagerT<ObjectManager>("Object Manager")),
-	_layer(0), _parent(nullptr), _id(id), _dirty(false)
+	_layer(0), _parent(nullptr), _id(id), _dirty(true)
 {
 }
 
@@ -67,6 +67,8 @@ bool Object::init(const Gaff::JSON& json)
 	for (unsigned int i = 0; i < _components.size(); ++i) {
 		_components[i]->allComponentsLoaded();
 	}
+
+	_obj_mgr.addDirtyObject(this); // Start off object as dirty
 
 	return true;
 }
@@ -352,6 +354,16 @@ void Object::notifyWorldDirtyCallbacks(void)
 		it->first(this, it->second);
 	}
 
+	_dirty = false;
+}
+
+bool Object::isDirty(void) const
+{
+	return _dirty;
+}
+
+void Object::clearDirty(void)
+{
 	_dirty = false;
 }
 

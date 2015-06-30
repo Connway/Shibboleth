@@ -192,6 +192,16 @@ Array< ResourceWrapper<ProgramData> >& ModelComponent::getMaterials(void)
 	return _materials;
 }
 
+const Array< ResourceWrapper<BufferData> >& ModelComponent::getBuffers(void) const
+{
+	return _buffers;
+}
+
+Array< ResourceWrapper<BufferData> >& ModelComponent::getBuffers(void)
+{
+	return _buffers;
+}
+
 const ModelData& ModelComponent::getModel(void) const
 {
 	return *_model;
@@ -479,7 +489,7 @@ void ModelComponent::setupResources(void)
 	_init = true;
 }
 
-// HACK: Should be removed
+// HACK: Should be removed. For testing purposes only.
 void ModelComponent::render(double dt)
 {
 	if (!_init) {
@@ -489,11 +499,13 @@ void ModelComponent::render(double dt)
 	static float rot = 0.0f;
 	rot += static_cast<float>(Gaff::Pi * dt);
 
-	Gleam::Matrix4x4 tocamera, projection, toworld;
+	Gleam::Matrix4x4 tocamera, projection, toworld, final_transform;
 	tocamera.setLookAtLH(0.0f, 5.0f, -5.0f, 0.0f, 5.0f, 0.0f, 0.0f, 1.0f, 0.0f);
 	projection.setPerspectiveLH(90.0f * Gaff::DegToRad, 16.0f / 9.0f, 0.1f, 5000.0f);
 	toworld.setIdentity();
 	toworld.setRotationY(rot);
+
+	final_transform = projection * tocamera * toworld;
 
 	Gleam::IRenderDevice& rd = _render_mgr.getRenderDevice();
 	unsigned int current_device = rd.getCurrentDevice();
@@ -501,16 +513,13 @@ void ModelComponent::render(double dt)
 
 	ModelPtr& model = _model->models[current_device][0];
 
+	Gleam::IBuffer* buffer = _buffers[0]->data[current_device].get();
+
+	float* matrix_data = reinterpret_cast<float*>(buffer->map(rd));
+		memcpy(matrix_data, final_transform.getBuffer(), sizeof(float) * 16);
+	buffer->unmap(_render_mgr.getRenderDevice());
+
 	for (unsigned int i = 0; i < model->getMeshCount(); ++i) {
-		// Update camera data
-		Gleam::IBuffer* buffer = _buffers[0]->data[current_device].get();
-
-		float* matrix_data = reinterpret_cast<float*>(buffer->map(rd));
-			memcpy(matrix_data, toworld.getBuffer(), sizeof(float) * 16);
-			memcpy(matrix_data + 16, tocamera.getBuffer(), sizeof(float) * 16);
-			memcpy(matrix_data + 32, projection.getBuffer(), sizeof(float) * 16);
-		buffer->unmap(_render_mgr.getRenderDevice());
-
 		_materials[i]->programs[current_device]->bind(rd, _program_buffers[i]->data[current_device].get());
 
 		model->render(rd, i);
