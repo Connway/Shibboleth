@@ -61,12 +61,12 @@ REF_IMPL_REQ(ModelComponent);
 
 SHIB_REF_IMPL(ModelComponent)
 .addBaseClassInterfaceOnly<ModelComponent>()
-.addEnum("Render Mode Override", &ModelComponent::_render_mode_override, GetEnumRefDef<RenderModes>())
+.addArray("Render Mode Overrides", &ModelComponent::_render_mode_overrides, GetEnumRefDef<RenderModes>())
 ;
 
 ModelComponent::ModelComponent(void):
 	_render_mgr(Shibboleth::GetApp().getManagerT<Shibboleth::RenderManager>("Render Manager")),
-	_requests_finished(0), _total_requests(0), _render_mode_override(RM_NONE), _init(false)
+	_requests_finished(0), _total_requests(0), _init(false)
 {
 }
 
@@ -200,6 +200,11 @@ const ModelData& ModelComponent::getModel(void) const
 ModelData& ModelComponent::getModel(void)
 {
 	return *_model;
+}
+
+const Array<size_t>* ModelComponent::getRenderModes(void) const
+{
+	return _material_modes;
 }
 
 void ModelComponent::ResourceLoadedCallback(ResourceContainer* resource)
@@ -392,6 +397,22 @@ void ModelComponent::requestBuffers(const Gaff::JSON& json, ResourceManager& res
 
 void ModelComponent::setupResources(void)
 {
+	assert(_model->models[0][0]->getMeshCount() == _materials.size());
+
+	for (size_t i = 0; i < _model->models[0][0]->getMeshCount(); ++i) {
+		if (i < _render_mode_overrides.size()) {
+			_render_mode_overrides[i] = (_render_mode_overrides[i] == RM_NONE) ? _materials[i]->render_mode : _render_mode_overrides[i];
+		} else {
+			_render_mode_overrides.emplacePush(_materials[i]->render_mode);
+		}
+
+		_material_modes[_render_mode_overrides[i]].emplacePush(i);
+	}
+
+	for (size_t i = 0; i < RM_COUNT; ++i) {
+		_material_modes[i].trim();
+	}
+
 	unsigned int num_devices = Shibboleth::GetApp().getManagerT<Shibboleth::RenderManager>("Render Manager").getRenderDevice().getNumDevices();
 
 	for (unsigned int device = 0; device < num_devices; ++device) {

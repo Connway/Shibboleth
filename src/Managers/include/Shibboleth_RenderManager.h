@@ -109,7 +109,8 @@ enum RenderModes
 	RM_USER13,
 	RM_USER14,
 	RM_USER15,
-	RM_USER16
+	RM_USER16,
+	RM_COUNT
 };
 
 SHIB_ENUM_REF_DEF(DisplayTags);

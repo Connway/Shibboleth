@@ -36,6 +36,10 @@ class CameraComponent;
 
 struct FrameData
 {
+	using CommandListPtr = Gaff::SmartPtr<Gleam::ICommandList, ProxyAllocator>;
+	using CommandListData = Array< Array< Array<CommandListPtr> > >; // [Device][RenderMode][CommandList]
+	using CommandListMap = Gaff::Map<CameraComponent*, CommandListData>;
+
 	struct ObjectData
 	{
 		// Transforms are in world space. Using OT_SIZE - 1 because we don't need to copy transform data for static objects.
@@ -47,18 +51,10 @@ struct FrameData
 		volatile unsigned int next_index[OcclusionManager::OT_SIZE];
 	};
 
-	struct CommandListData
-	{
-		using CommandListPtr = Gaff::SmartPtr<Gleam::ICommandList, ProxyAllocator>;
-		Array<CommandListPtr> command_lists;
-	};
-
 	Array<ObjectData> object_data;
-	Array<CommandListData> render_commands;
+	CommandListMap command_lists;
 
 	// animation transforms
-
-	//Array<Gleam::ICommandList*> command_lists;
 };
 
 class FrameManager : public IManager

@@ -158,6 +158,11 @@ void CameraComponent::setZFar(float z_far)
 	constructProjectionMatrixAndFrustum();
 }
 
+ResourceWrapper<RenderTargetData>& CameraComponent::getRenderTarget(void)
+{
+	return _render_target;
+}
+
 const Array<unsigned int>& CameraComponent::getDevices(void) const
 {
 	return _devices;
