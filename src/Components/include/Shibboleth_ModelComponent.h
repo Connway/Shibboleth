@@ -70,6 +70,9 @@ public:
 	INLINE const Array< ResourceWrapper<ProgramData> >& getMaterials(void) const;
 	INLINE Array< ResourceWrapper<ProgramData> >& getMaterials(void);
 
+	INLINE const Array< ResourceWrapper<BufferData> >& getBuffers(void) const;
+	INLINE Array< ResourceWrapper<BufferData> >& getBuffers(void);
+
 	INLINE const ModelData& getModel(void) const;
 	INLINE ModelData& getModel(void);
 

@@ -139,6 +139,7 @@ void InGameRenderPipeline::GenerateCommandLists(void* job_data)
 			size_t lod = model_comp->determineLOD(it->camera_transform.getTranslation());
 			auto& program_buffers = model_comp->getProgramBuffers();
 			auto& materials = model_comp->getMaterials();
+			auto& buffers = model_comp->getBuffers();
 			ModelData& model = model_comp->getModel();
 
 			const Array<unsigned int>& camera_devices = it->camera->getDevices();
@@ -158,6 +159,17 @@ void InGameRenderPipeline::GenerateCommandLists(void* job_data)
 				auto& rd = rds[*it_dev];
 
 				// update program buffers with transform information
+				if (result.first->isDirty()) {
+					BufferPtr& buffer = buffers[0]->data[*it_dev];
+					float* transforms = reinterpret_cast<float*>(buffer->map(*rd));
+
+					if (!transforms) {
+						// log error
+						continue;
+					}
+
+					buffer->unmap(*rd);
+				}
 
 				ModelPtr& m = model.models[*it_dev][lod];
 

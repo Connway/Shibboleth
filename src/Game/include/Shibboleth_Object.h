@@ -151,6 +151,9 @@ public:
 	void unregisterForWorldDirtyCallback(const DirtyCallback& callback);
 	void notifyWorldDirtyCallbacks(void);
 
+	INLINE bool isDirty(void) const;
+	INLINE void clearDirty(void);
+
 private:
 	Gleam::TransformCPU _local_transform;
 	Gleam::TransformCPU _world_transform;

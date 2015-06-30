@@ -2,7 +2,7 @@
 
 in vec2 tex_coord;
 //in vec3 nrm;
-in vec3 pos;
+// in vec3 pos;
 
 layout(location = 0) out vec4 diffuse;
 // layout(location = 1) out vec4 specular;

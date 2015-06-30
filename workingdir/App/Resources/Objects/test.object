@@ -51,7 +51,7 @@
 				{
 					"Type": "Shader Data",
 					"CPU Access": "Write",
-					"Size": 192,
+					"Size": 64,
 					"Stride": 0,
 					"GPU Read Only": true,
 
