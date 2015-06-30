@@ -33,6 +33,7 @@ THE SOFTWARE.
 #include <Shibboleth_Object.h>
 #include <Shibboleth_IApp.h>
 
+#include <Gleam_IRenderDevice.h>
 #include <Gleam_IProgram.h>
 #include <Gleam_IModel.h>
 
@@ -58,14 +59,22 @@ void InGameRenderPipeline::run(double dt, void* frame_data)
 {
 	FrameData* fd = reinterpret_cast<FrameData*>(frame_data);
 
-	// First time using this frame data. Size the render commands appropriately.
-	if (fd->render_commands.empty()) {
-		fd->render_commands.resize(GetEnumRefDef<RenderModes>().getNumEntries());
-	}
+	//// First time using this frame data. Size the render commands appropriately.
+	//if (fd->command_lists.empty()) {
+	//	fd->command_lists.resize(_render_mgr.getRenderDevice().getNumDevices());
+
+	//	for (size_t i = 0; i < fd->command_lists.size(); ++i) {
+	//		fd->command_lists[i].resize(GetEnumRefDef<RenderModes>().getNumEntries());
+	//	}
+	//}
 
 	// Clear the old command lists
-	for (size_t i = 0; i < fd->render_commands.size(); ++i) {
-		fd->render_commands[i].command_lists.clearNoFree();
+	for (auto it = fd->command_lists.begin(); it != fd->command_lists.end(); ++it) {
+		for (size_t i = 0; i < it->second.size(); ++i) {
+			for (size_t j = 0; j < it->second[i].size(); ++j) {
+				it->second[i][j].clearNoFree();
+			}
+		}
 	}
 
 	for (size_t i = 0; i < fd->object_data.size(); ++i) {
@@ -133,19 +142,49 @@ void InGameRenderPipeline::GenerateCommandLists(void* job_data)
 			ModelData& model = model_comp->getModel();
 
 			const Array<unsigned int>& camera_devices = it->camera->getDevices();
+			const Array<size_t>* render_modes = model_comp->getRenderModes();
+			auto& command_lists = fd->command_lists[it->camera];
+
+			// First time using this frame data. Size the render commands appropriately.
+			if (command_lists.empty()) {
+				command_lists.resize(jd->first->_render_mgr.getRenderDevice().getNumDevices());
+
+				for (size_t i = 0; i < fd->command_lists.size(); ++i) {
+					command_lists[i].resize(GetEnumRefDef<RenderModes>().getNumEntries());
+				}
+			}
 
 			for (auto it_dev = camera_devices.begin(); it_dev != camera_devices.end(); ++it_dev) {
+				auto& rd = rds[*it_dev];
+
 				// update program buffers with transform information
 
 				ModelPtr& m = model.models[*it_dev][lod];
 
-				for (size_t j = 0; j < m->getMeshCount(); ++j) {
-					materials[j]->programs[*it_dev]->bind(*rds[*it_dev]);
-					m->render(*rds[*it_dev], j);
-				}
+				for (size_t j = 0; j < GetEnumRefDef<RenderModes>().getNumEntries(); ++j) {
+					Gleam::ICommandList* cmd_list = jd->first->_render_mgr.createCommandList();
 
-				// generate command list
-				// add it to command list list
+					if (!cmd_list) {
+						// log error
+						continue;
+					}
+
+					for (size_t k = 0; k < render_modes[j].size(); ++k) {
+						size_t index = render_modes[j][k];
+
+						materials[index]->programs[*it_dev]->bind(*rd, program_buffers[index]->data[*it_dev].get());
+						m->render(*rd, index);
+					}
+
+					// generate command list
+					if (!rd->finishCommandList(cmd_list)) {
+						// log error
+						continue;
+					}
+
+					// add it to command list list
+					command_lists[*it_dev][j].emplacePush(cmd_list);
+				}
 			}
 		}
 	}

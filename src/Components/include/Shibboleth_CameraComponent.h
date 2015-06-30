@@ -59,6 +59,7 @@ public:
 	float getZFar(void) const;
 	void setZFar(float z_far);
 
+	ResourceWrapper<RenderTargetData>& getRenderTarget(void);
 	const Array<unsigned int>& getDevices(void) const;
 	unsigned short getWindowTags(void) const;
 	unsigned char getRenderOrder(void) const;

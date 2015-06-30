@@ -73,6 +73,8 @@ public:
 	INLINE const ModelData& getModel(void) const;
 	INLINE ModelData& getModel(void);
 
+	INLINE const Array<size_t>* getRenderModes(void) const;
+
 private:
 	Array< ResourceWrapper<ProgramBuffersData> > _program_buffers;
 	Array< ResourceWrapper<SamplerStateData> > _samplers;
@@ -86,7 +88,8 @@ private:
 	Array< Array<MaterialMapping> > _sampler_mappings;
 	Array< Array<MaterialMapping> > _texture_mappings;
 
-	RenderModes _render_mode_override;
+	Array<RenderModes> _render_mode_overrides;
+	Array<size_t> _material_modes[RM_COUNT]; // Indices of materials that use each render mode.
 
 	volatile size_t _requests_finished;
 	volatile size_t _total_requests;

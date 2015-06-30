@@ -8,7 +8,7 @@
 			"Type": "Model Component",
 
 			"Model File": "Resources/Models/ninja.model",
-			"Render Mode Override": "None",
+			"Render Mode Overrides": ["None", "None"],
 
 			"Material Files": [
 				"Resources/Materials/test.material",
