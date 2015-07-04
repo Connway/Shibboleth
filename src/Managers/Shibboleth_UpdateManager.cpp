@@ -37,7 +37,7 @@ SHIB_REF_IMPL(UpdateManager)
 ;
 
 UpdateManager::UpdatePhase::UpdatePhase(void):
-	_curr_counter(0), _frame_mgr(GetApp().getManagerT<FrameManager>("Frame Manager"))
+	_counter(0), _frame_mgr(GetApp().getManagerT<FrameManager>("Frame Manager"))
 {
 }
 
@@ -83,7 +83,7 @@ bool UpdateManager::UpdatePhase::isDone(void) const
 void UpdateManager::UpdatePhase::run(void)
 {
 	// We shouldn't be calling run() if we are already updating.
-	assert(isDone());
+	assert(!_counter);
 
 	void* frame_data = _frame_mgr.getNextFrameData(_id);
 
@@ -118,8 +118,8 @@ void UpdateManager::UpdatePhase::ProcessRow(UpdatePhase* phase, size_t row, void
 		phase->_jobs.emplacePush(&UpdateJob, &phase->_data_cache[i]);
 	}
 
-	phase->_counter[phase->_curr_counter] = static_cast<unsigned int>(cbs.size());
-	job_pool.addJobs(phase->_jobs.getArray(), phase->_jobs.size()/*, &phase->_job_counter[phase->_curr_counter]*/);
+	phase->_counter = static_cast<unsigned int>(cbs.size());
+	job_pool.addJobs(phase->_jobs.getArray(), phase->_jobs.size());
 }
 
 void UpdateManager::UpdatePhase::UpdateJob(void* data)
@@ -130,12 +130,11 @@ void UpdateManager::UpdatePhase::UpdateJob(void* data)
 
 	phase->_callbacks[row][update_data->cb_index](phase->_timer.getDeltaSec(), update_data->frame_data);
 
-	unsigned int new_val = AtomicDecrement(&phase->_counter[phase->_curr_counter]);
+	unsigned int new_val = AtomicDecrement(&phase->_counter);
 	assert(new_val < phase->_callbacks[row].size()); // Double check we don't underflow.
 
 	if (!new_val) {
 		++row;
-		phase->_curr_counter = (phase->_curr_counter + 1) % 2;
 
 		if (row < phase->_callbacks.size()) {
 			ProcessRow(phase, row, update_data->frame_data);

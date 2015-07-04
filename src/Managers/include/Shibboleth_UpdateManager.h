@@ -87,12 +87,10 @@ private:
 		Gaff::Timer _timer;
 		AString _name;
 
-		volatile unsigned int _counter[2];
-		size_t _curr_counter;
-
 		FrameManager& _frame_mgr;
 
 		size_t _id;
+		volatile unsigned int _counter;
 
 		Gaff::SpinLock _done_lock;
 
