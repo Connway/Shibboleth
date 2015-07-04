@@ -212,7 +212,7 @@ bool RenderDeviceD3D::init(const IWindow& window, unsigned int adapter_id, unsig
 
 // Apparently trying to make the device as debug/debuggable causes it to fail. :/
 //#ifdef _DEBUG
-//		unsigned int flags = /*D3D11_CREATE_DEVICE_DEBUG | D3D11_CREATE_DEVICE_DEBUGGABLE*/ 0;
+//		unsigned int flags = D3D11_CREATE_DEVICE_DEBUG | D3D11_CREATE_DEVICE_DEBUGGABLE;
 //#else
 		unsigned int flags = 0;
 //#endif
@@ -224,7 +224,7 @@ bool RenderDeviceD3D::init(const IWindow& window, unsigned int adapter_id, unsig
 		RETURNIFFAILED(result)
 
 		ID3D11Texture2D* back_buffer_ptr = nullptr;
-		result = swap_chain->GetBuffer(0, __uuidof(ID3D11Texture2D), (LPVOID*)&back_buffer_ptr);
+		result = swap_chain->GetBuffer(0, __uuidof(ID3D11Texture2D), reinterpret_cast<LPVOID*>(&back_buffer_ptr));
 
 		if (FAILED(result)) {
 			swap_chain->Release();
