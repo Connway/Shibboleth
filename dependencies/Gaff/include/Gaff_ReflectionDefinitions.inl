@@ -276,10 +276,10 @@ void ReflectionDefinition<T, Allocator>::write(JSON& json, const void* object) c
 }
 
 template <class T, class Allocator>
-void* ReflectionDefinition<T, Allocator>::getInterface(unsigned int class_id, const void* object) const
+void* ReflectionDefinition<T, Allocator>::getInterface(ReflectionHash class_id, const void* object) const
 {
 	auto it = _base_ids.binarySearch(_base_ids.begin(), _base_ids.end(), class_id,
-		[](const Pair< unsigned int, FunctionBinder<void*, const void*> >& lhs, unsigned int rhs) -> bool
+		[](const Pair< ReflectionHash, FunctionBinder<void*, const void*> >& lhs, ReflectionHash rhs) -> bool
 		{
 			return lhs.first < rhs;
 		});
@@ -311,7 +311,7 @@ void ReflectionDefinition<T, Allocator>::write(JSON& json, const T* object) cons
 
 template <class T, class Allocator>
 template <class T2>
-ReflectionDefinition<T, Allocator>&& ReflectionDefinition<T, Allocator>::addBaseClass(ReflectionDefinition<T2, Allocator>& base_ref_def, unsigned int class_id)
+ReflectionDefinition<T, Allocator>&& ReflectionDefinition<T, Allocator>::addBaseClass(ReflectionDefinition<T2, Allocator>& base_ref_def, ReflectionHash class_id)
 {
 	assert(reinterpret_cast<void*>(this) != reinterpret_cast<void*>(&base_ref_def));
 
@@ -336,7 +336,7 @@ ReflectionDefinition<T, Allocator>&& ReflectionDefinition<T, Allocator>::addBase
 
 	for (auto it_base = base_ref_def._base_ids.begin(); it_base != base_ref_def._base_ids.end(); ++it_base) {
 		auto it = _base_ids.binarySearch(_base_ids.begin(), _base_ids.end(), class_id,
-			[](const Pair< unsigned int, FunctionBinder<void*, const void*> >& lhs, unsigned int rhs) -> bool
+			[](const Pair< ReflectionHash, FunctionBinder<void*, const void*> >& lhs, ReflectionHash rhs) -> bool
 			{
 				return lhs.first < rhs;
 			});
@@ -351,17 +351,17 @@ ReflectionDefinition<T, Allocator>&& ReflectionDefinition<T, Allocator>::addBase
 
 template <class T, class Allocator>
 template <class T2>
-ReflectionDefinition<T, Allocator>&& ReflectionDefinition<T, Allocator>::addBaseClass(unsigned int class_id)
+ReflectionDefinition<T, Allocator>&& ReflectionDefinition<T, Allocator>::addBaseClass(ReflectionHash class_id)
 {
 	auto it = _base_ids.binarySearch(_base_ids.begin(), _base_ids.end(), class_id,
-		[](const Pair< unsigned int, FunctionBinder<void*, const void*> >& lhs, unsigned int rhs) -> bool
+		[](const Pair< ReflectionHash, FunctionBinder<void*, const void*> >& lhs, ReflectionHash rhs) -> bool
 		{
 			return lhs.first < rhs;
 		});
 
 	assert(it == _base_ids.end() || it->first != class_id);
 
-	Pair<unsigned int, FunctionBinder<void*, const void*> > data(class_id, Bind(&BaseClassCast<T2>));
+	Pair<ReflectionHash, FunctionBinder<void*, const void*> > data(class_id, Bind(&BaseClassCast<T2>));
 	_base_ids.insert(data, it);
 
 	return Move(*this);

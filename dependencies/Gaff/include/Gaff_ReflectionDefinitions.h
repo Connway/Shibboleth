@@ -575,7 +575,7 @@ public:
 	void read(const JSON& json, void* object);
 	void write(JSON& json, const void* object) const;
 
-	void* getInterface(unsigned int class_id, const void* object) const;
+	void* getInterface(ReflectionHash class_id, const void* object) const;
 
 	const char* getName(void) const;
 
@@ -583,11 +583,11 @@ public:
 	void write(JSON& json, const T* object) const;
 
 	template <class T2>
-	ReflectionDefinition<T, Allocator>&& addBaseClass(ReflectionDefinition<T2, Allocator>& base_ref_def, unsigned int class_id);
+	ReflectionDefinition<T, Allocator>&& addBaseClass(ReflectionDefinition<T2, Allocator>& base_ref_def, ReflectionHash class_id);
 
 	// This function does not check if the base class is finished being defined. This is so you can add just casts.
 	template <class T2>
-	ReflectionDefinition<T, Allocator>&& addBaseClass(unsigned int class_id);
+	ReflectionDefinition<T, Allocator>&& addBaseClass(ReflectionHash class_id);
 
 	template <class T2>
 	ReflectionDefinition<T, Allocator>&& addBaseClass(void);
@@ -1067,7 +1067,7 @@ private:
 	}
 
 	HashMap<AHashString<Allocator>, ValueContainerPtr, Allocator> _value_containers;
-	Array<Pair< unsigned int, FunctionBinder<void*, const void*> >, Allocator> _base_ids;
+	Array<Pair< ReflectionHash, FunctionBinder<void*, const void*> >, Allocator> _base_ids;
 	Array<IOnCompleteFunctor*, Allocator> _callback_references;
 
 	AString<Allocator> _name;
@@ -1082,36 +1082,36 @@ private:
 #define REF_DEF(ClassName, Allocator) \
 public: \
 	static Gaff::ReflectionDefinition<ClassName, Allocator>& GetReflectionDefinition(void); \
-	static unsigned int GetReflectionHash(void); \
+	static Gaff::ReflectionHash GetReflectionHash(void); \
 private: \
-	static unsigned int gHash; \
+	static Gaff::ReflectionHash gHash; \
 	static Gaff::ReflectionDefinition<ClassName, Allocator> gRefDef
 
-#define CLASS_HASH(ClassName) Gaff::FNV1aHash32(#ClassName, static_cast<unsigned int>((strlen(#ClassName))))
+#define CLASS_HASH(ClassName) Gaff::FNV1aHash32(#ClassName, static_cast<Gaff::ReflectionHash>((strlen(#ClassName))))
 
 #define REF_IMPL(ClassName, Allocator) \
-unsigned int ClassName::GetReflectionHash(void) { return gHash; } \
-Gaff::ReflectionDefinition<ClassName, Allocator>& ClassName::GetReflectionDefinition(void) { return gRefDef; } \
-unsigned int ClassName::gHash = CLASS_HASH(ClassName); \
-Gaff::ReflectionDefinition<ClassName, Allocator> ClassName::gRefDef
+	Gaff::ReflectionHash ClassName::GetReflectionHash(void) { return gHash; } \
+	Gaff::ReflectionDefinition<ClassName, Allocator>& ClassName::GetReflectionDefinition(void) { return gRefDef; } \
+	Gaff::ReflectionHash ClassName::gHash = CLASS_HASH(ClassName); \
+	Gaff::ReflectionDefinition<ClassName, Allocator> ClassName::gRefDef
 
 // uses default allocator
 #define REF_IMPL_ASSIGN_DEFAULT(ClassName, Allocator) \
-unsigned int ClassName::GetReflectionHash(void) { return gHash; } \
-Gaff::ReflectionDefinition<ClassName, Allocator>& ClassName::GetReflectionDefinition(void) { return gRefDef; } \
-unsigned int ClassName::gHash = CLASS_HASH(ClassName); \
-Gaff::ReflectionDefinition<ClassName, Allocator> ClassName::gRefDef = Gaff::RefDef<ClassName, Allocator>(#ClassName).macroFix()
+	Gaff::ReflectionHash ClassName::GetReflectionHash(void) { return gHash; } \
+	Gaff::ReflectionDefinition<ClassName, Allocator>& ClassName::GetReflectionDefinition(void) { return gRefDef; } \
+	Gaff::ReflectionHash ClassName::gHash = CLASS_HASH(ClassName); \
+	Gaff::ReflectionDefinition<ClassName, Allocator> ClassName::gRefDef = Gaff::RefDef<ClassName, Allocator>(#ClassName).macroFix()
 
 #define REF_IMPL_ASSIGN(ClassName, Allocator, allocator_instance) \
-unsigned int ClassName::GetReflectionHash(void) { return gHash; } \
-Gaff::ReflectionDefinition<ClassName, Allocator>& ClassName::GetReflectionDefinition(void) { return gRefDef; } \
-unsigned int ClassName::gHash = CLASS_HASH(ClassName); \
-Gaff::ReflectionDefinition<ClassName, Allocator> ClassName::gRefDef = Gaff::RefDef<ClassName, Allocator>(#ClassName, allocator_instance).macroFix()
+	Gaff::ReflectionHash ClassName::GetReflectionHash(void) { return gHash; } \
+	Gaff::ReflectionDefinition<ClassName, Allocator>& ClassName::GetReflectionDefinition(void) { return gRefDef; } \
+	Gaff::ReflectionHash ClassName::gHash = CLASS_HASH(ClassName); \
+	Gaff::ReflectionDefinition<ClassName, Allocator> ClassName::gRefDef = Gaff::RefDef<ClassName, Allocator>(#ClassName, allocator_instance).macroFix()
 
 #define ADD_BASE_CLASS_INTERFACE_ONLY(ClassName) addBaseClass<ClassName>(CLASS_HASH(ClassName))
 
 #define REF_IMPL_REQ(ClassName) \
-void* ClassName::rawRequestInterface(unsigned int class_id) const \
+void* ClassName::rawRequestInterface(Gaff::ReflectionHash class_id) const \
 { \
 	return gRefDef.getInterface(class_id, this); \
 }

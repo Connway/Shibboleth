@@ -42,6 +42,7 @@ static void DefaultFrameDataFree(void* frame_data, size_t num_frames)
 REF_IMPL_REQ(FrameManager);
 SHIB_REF_IMPL(FrameManager)
 .addBaseClassInterfaceOnly<FrameManager>()
+.ADD_BASE_CLASS_INTERFACE_ONLY(IUpdateQuery)
 ;
 
 FrameManager::FrameManager(void):
@@ -61,6 +62,11 @@ FrameManager::~FrameManager(void)
 const char* FrameManager::getName(void) const
 {
 	return "Frame Manager";
+}
+
+void FrameManager::getUpdateEntries(Array<UpdateEntry>& entries)
+{
+	entries.emplacePush(AString("Frame Manager: Submit Command Lists"), Gaff::Bind(this, &FrameManager::submitCommandLists));
 }
 
 void FrameManager::setFrameDataFuncs(FrameDataAllocFunc alloc_func, FrameDataFreeFunc free_func)
@@ -116,6 +122,14 @@ void FrameManager::finishFrame(size_t phase_id)
 
 	// Set the frame ID for the phase to the next frame.
 	frame_id = (frame_id + 1) % _num_frames;
+}
+
+void FrameManager::submitCommandLists(double, void* frame_data)
+{
+	FrameData* fd = reinterpret_cast<FrameData*>(frame_data);
+
+	for (auto it = fd->command_lists.begin(); it != fd->command_lists.end(); ++it) {
+	}
 }
 
 NS_END

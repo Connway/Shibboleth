@@ -142,6 +142,8 @@ void Swap(T& lhs, T& rhs)
 	rhs = Move(temp);
 }
 
+using ReflectionHash = unsigned int;
+
 NS_END
 
 #if defined(__linux__) || defined(__APPLE__)
