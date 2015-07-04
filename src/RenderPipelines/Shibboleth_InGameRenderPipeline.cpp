@@ -59,20 +59,23 @@ void InGameRenderPipeline::run(double dt, void* frame_data)
 {
 	FrameData* fd = reinterpret_cast<FrameData*>(frame_data);
 
-	//// First time using this frame data. Size the render commands appropriately.
-	//if (fd->command_lists.empty()) {
-	//	fd->command_lists.resize(_render_mgr.getRenderDevice().getNumDevices());
+	if (fd->command_lists.empty()) {
+		Array<unsigned int> thread_ids(GetApp().getJobPool().getNumTotalThreads(), 0);
+		GetApp().getJobPool().getThreadIDs(thread_ids.getArray());
+		fd->command_lists.reserve(thread_ids.size());
 
-	//	for (size_t i = 0; i < fd->command_lists.size(); ++i) {
-	//		fd->command_lists[i].resize(GetEnumRefDef<RenderModes>().getNumEntries());
-	//	}
-	//}
+		for (auto it = thread_ids.begin(); it != thread_ids.end(); ++it) {
+			fd->command_lists[*it] = FrameData::CommandListMap();
+		}
+	}
 
 	// Clear the old command lists
-	for (auto it = fd->command_lists.begin(); it != fd->command_lists.end(); ++it) {
-		for (size_t i = 0; i < it->second.size(); ++i) {
-			for (size_t j = 0; j < it->second[i].size(); ++j) {
-				it->second[i][j].clearNoFree();
+	for (auto it_thread = fd->command_lists.begin(); it_thread != fd->command_lists.end(); ++it_thread) {
+		for (auto it = it_thread->second.begin(); it != it_thread->second.end(); ++it) {
+			for (size_t i = 0; i < it->second.size(); ++i) {
+				for (size_t j = 0; j < it->second[i].size(); ++j) {
+					it->second[i][j].clearNoFree();
+				}
 			}
 		}
 	}
@@ -105,6 +108,7 @@ void InGameRenderPipeline::GenerateCommandLists(void* job_data)
 	JobData* jd = reinterpret_cast<JobData*>(job_data);
 	Array<RenderManager::RenderDevicePtr>& rds = jd->first->_render_mgr.getDeferredRenderDevices(Gaff::Thread::GetCurrentThreadID());
 	FrameData* fd = jd->second;
+	auto& cl = fd->command_lists[Gaff::Thread::GetCurrentThreadID()];
 
 	for (auto it = fd->object_data.begin(); it != fd->object_data.end(); ++it) {
 		for (size_t i = 0; i < OcclusionManager::OT_SIZE; ++i) {
@@ -144,13 +148,13 @@ void InGameRenderPipeline::GenerateCommandLists(void* job_data)
 
 			const Array<unsigned int>& camera_devices = it->camera->getDevices();
 			const Array<size_t>* render_modes = model_comp->getRenderModes();
-			auto& command_lists = fd->command_lists[it->camera];
+			auto& command_lists = cl[it->camera];
 
 			// First time using this frame data. Size the render commands appropriately.
 			if (command_lists.empty()) {
 				command_lists.resize(jd->first->_render_mgr.getRenderDevice().getNumDevices());
 
-				for (size_t i = 0; i < fd->command_lists.size(); ++i) {
+				for (size_t i = 0; i < cl.size(); ++i) {
 					command_lists[i].resize(GetEnumRefDef<RenderModes>().getNumEntries());
 				}
 			}
@@ -182,10 +186,10 @@ void InGameRenderPipeline::GenerateCommandLists(void* job_data)
 					}
 
 					for (size_t k = 0; k < render_modes[j].size(); ++k) {
-						size_t index = render_modes[j][k];
+						size_t rm = render_modes[j][k];
 
-						materials[index]->programs[*it_dev]->bind(*rd, program_buffers[index]->data[*it_dev].get());
-						m->render(*rd, index);
+						materials[rm]->programs[*it_dev]->bind(*rd, program_buffers[rm]->data[*it_dev].get());
+						m->render(*rd, rm);
 					}
 
 					// generate command list

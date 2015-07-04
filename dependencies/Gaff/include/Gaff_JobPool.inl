@@ -159,13 +159,9 @@ void JobPool<Allocator>::doAJob(void)
 		typename JobPool<Allocator>::JobQueue& job_queue = _job_pools[i];
 
 		if (job_queue.thread_lock.tryLock()) {
-			job_queue.read_write_lock.lock();
-
 			if (!job_queue.jobs.empty()) {
 				job = job_queue.jobs.first();
 				job_queue.jobs.pop();
-
-				job_queue.read_write_lock.unlock();
 				DoJob(job);
 
 				job_queue.thread_lock.unlock();
@@ -218,12 +214,9 @@ void JobPool<Allocator>::ProcessMainJobQueue(typename JobPool<Allocator>::JobQue
 {
 	JobPair job;
 
-	// This is probably a race condition, but if the read says that it is empty, when it isn't,
-	// then we'll just get to it on the next iteration.
 	for (;;) {
 		job_queue.read_write_lock.lock();
 
-		// this may be getting a stale value
 		if (!job_queue.jobs.empty()) {
 			job = job_queue.jobs.first();
 			job_queue.jobs.pop();
@@ -243,16 +236,9 @@ void JobPool<Allocator>::ProcessJobQueue(typename JobPool<Allocator>::JobQueue& 
 {
 	JobPair job;
 
-	// This is probably a race condition, but if the read says that it is empty, when it isn't,
-	// then we'll just get to it on the next iteration.
 	while (!job_queue.jobs.empty()) {
-		job_queue.read_write_lock.lock();
-
 		job = job_queue.jobs.first();
 		job_queue.jobs.pop();
-
-		job_queue.read_write_lock.unlock();
-
 		DoJob(job);
 	}
 }
@@ -263,7 +249,7 @@ void JobPool<Allocator>::DoJob(JobPair& job)
 	job.first.job_func(job.first.job_data);
 
 	if (job.second) {
-		//Gaff::DebugPrintf("FUNC: %p\n", job.first);
+		Gaff::DebugPrintf("FUNC: %p\n", job.first);
 
 		//if (!job.second->count) {
 		//	Gaff::DebugPrintf("JOB FAIL(%d) - %p:(%d)\n", Gaff::Thread::GetCurrentThreadID(), job.second, job.second->count);

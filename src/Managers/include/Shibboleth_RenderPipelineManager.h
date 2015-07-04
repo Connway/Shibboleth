@@ -69,11 +69,6 @@ private:
 	bool addRenderPipelines(DynamicLoader::ModulePtr& module);
 	void generateCommandLists(double dt, void* frame_data);
 
-	void renderOpaque(void);
-	void composeImage(void);
-	void renderTransparent(void);
-	void renderToScreen(void);
-
 	SHIB_REF_DEF(RenderPipelineManager);
 };
 

@@ -245,7 +245,7 @@ bool RenderPipelineManager::addRenderPipelines(DynamicLoader::ModulePtr& module)
 
 void RenderPipelineManager::generateCommandLists(double dt, void* frame_data)
 {
-	//_pipelines[_active_pipeline]->run(dt, frame_data);
+	_pipelines[_active_pipeline]->run(dt, frame_data);
 }
 
 NS_END

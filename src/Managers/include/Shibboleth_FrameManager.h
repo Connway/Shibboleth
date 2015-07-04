@@ -25,7 +25,6 @@ THE SOFTWARE.
 #include "Shibboleth_OcclusionManager.h"
 #include <Shibboleth_ReflectionDefinitions.h>
 #include <Shibboleth_IManager.h>
-#include <Shibboleth_Map.h>
 #include <Gleam_Transform_CPU.h>
 #include <Gleam_ICommandList.h>
 #include <Gaff_SmartPtr.h>
@@ -38,7 +37,7 @@ struct FrameData
 {
 	using CommandListPtr = Gaff::SmartPtr<Gleam::ICommandList, ProxyAllocator>;
 	using CommandListData = Array< Array< Array<CommandListPtr> > >; // [Device][RenderMode][CommandList]
-	using CommandListMap = Gaff::Map<CameraComponent*, CommandListData>;
+	using CommandListMap = Map<CameraComponent*, CommandListData>;
 
 	struct ObjectData
 	{
@@ -52,12 +51,12 @@ struct FrameData
 	};
 
 	Array<ObjectData> object_data;
-	CommandListMap command_lists;
+	Map<unsigned int, CommandListMap> command_lists; // Key is thread ID
 
 	// animation transforms
 };
 
-class FrameManager : public IManager
+class FrameManager : public IManager, public IUpdateQuery
 {
 public:
 	using FrameDataAllocFunc = void* (*)(size_t, size_t&);
@@ -74,6 +73,7 @@ public:
 
 	const char* getName(void) const;
 	void* rawRequestInterface(unsigned int class_id) const;
+	void getUpdateEntries(Array<UpdateEntry>& entries);
 
 	void setFrameDataFuncs(FrameDataAllocFunc alloc_func, FrameDataFreeFunc free_func);
 
@@ -97,6 +97,8 @@ private:
 	FrameDataFreeFunc _frame_data_free;
 	size_t _frame_data_size;
 	size_t _num_frames;
+
+	void submitCommandLists(double, void* frame_data);
 
 	GAFF_NO_COPY(FrameManager);
 	GAFF_NO_MOVE(FrameManager);

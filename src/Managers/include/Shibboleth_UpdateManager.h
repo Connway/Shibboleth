@@ -60,26 +60,25 @@ private:
 		UpdatePhase(void);
 		~UpdatePhase(void);
 
-		const char* getName(void) const;
-		void setName(const char* name);
+		INLINE const char* getName(void) const;
+		INLINE void setName(const char* name);
 
-		void addUpdate(size_t row, const UpdateCallback& callback);
-		void setNumRows(size_t num_rows);
+		INLINE void addUpdate(size_t row, const UpdateCallback& callback);
+		INLINE void setNumRows(size_t num_rows);
 
-		size_t getID(void) const;
-		void setID(size_t id);
+		INLINE size_t getID(void) const;
+		INLINE void setID(size_t id);
 
-		bool isDone(void) const;
-		bool grab(void);
+		INLINE bool isDone(void) const;
 		void run(void);
 
 	private:
 		struct UpdateData
 		{
-			UpdateCallback* callback;
+			UpdatePhase* phase;
 			void* frame_data;
-			double delta_time;
-			size_t phase_id;
+			size_t row;
+			size_t cb_index;
 		};
 
 		Array< Array<UpdateCallback> > _callbacks;
@@ -87,15 +86,17 @@ private:
 		Array<Gaff::JobData> _jobs;
 		Gaff::Timer _timer;
 		AString _name;
-		Gaff::Counter* _counter;
+
+		volatile unsigned int _counter[2];
+		size_t _curr_counter;
 
 		FrameManager& _frame_mgr;
 
 		size_t _id;
 
-		Gaff::SpinLock _grab_lock;
+		Gaff::SpinLock _done_lock;
 
-		static void UpdatePhaseJob(void* data);
+		static void ProcessRow(UpdatePhase* phase, size_t row, void* frame_data);
 		static void UpdateJob(void* data);
 
 		GAFF_NO_COPY(UpdatePhase);

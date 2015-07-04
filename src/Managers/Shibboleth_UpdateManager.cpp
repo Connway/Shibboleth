@@ -37,15 +37,12 @@ SHIB_REF_IMPL(UpdateManager)
 ;
 
 UpdateManager::UpdatePhase::UpdatePhase(void):
-	_counter(nullptr), _frame_mgr(GetApp().getManagerT<FrameManager>("Frame Manager"))
+	_curr_counter(0), _frame_mgr(GetApp().getManagerT<FrameManager>("Frame Manager"))
 {
 }
 
 UpdateManager::UpdatePhase::~UpdatePhase(void)
 {
-	if (_counter) {
-		GetApp().getJobPool().freeCounter(_counter);
-	}
 }
 
 const char* UpdateManager::UpdatePhase::getName(void) const
@@ -80,72 +77,74 @@ void UpdateManager::UpdatePhase::setID(size_t id)
 
 bool UpdateManager::UpdatePhase::isDone(void) const
 {
-	return !_counter || !_counter->count;
-}
-
-bool UpdateManager::UpdatePhase::grab(void)
-{
-	return _grab_lock.tryLock();
+	return _done_lock.tryLock();
 }
 
 void UpdateManager::UpdatePhase::run(void)
 {
-	assert(isDone()); // We shouldn't be calling run() if we are already updating.
-	Gaff::JobData job(&UpdatePhase::UpdatePhaseJob, this);
-	GetApp().getJobPool().addJobs(&job);
-}
+	// We shouldn't be calling run() if we are already updating.
+	assert(isDone());
 
-void UpdateManager::UpdatePhase::UpdatePhaseJob(void* data)
-{
-	UpdatePhase* phase = reinterpret_cast<UpdatePhase*>(data);
+	void* frame_data = _frame_mgr.getNextFrameData(_id);
 
-	phase->_timer.stop();
-	phase->_timer.start();
-
-	JobPool& job_pool = GetApp().getJobPool();
-	double dt = phase->_timer.getDeltaSec();
-
-	// Go through each row of the phase and add their updates
-	for (size_t i = 0; i < phase->_callbacks.size(); ++i) {
-		phase->_data_cache.clearNoFree();
-		phase->_jobs.clearNoFree();
-		phase->_data_cache.reserve(phase->_callbacks[i].size());
-		phase->_jobs.reserve(phase->_callbacks[i].size());
-
-		for (size_t j = 0; j < phase->_callbacks[i].size(); ++j) {
-			phase->_data_cache.emplacePush();
-			phase->_data_cache[j].callback = &phase->_callbacks[i][j];
-			phase->_data_cache[j].delta_time = dt;
-			phase->_data_cache[j].phase_id = phase->_id;
-
-			void* frame_data = phase->_frame_mgr.getNextFrameData(phase->_id);
-
-			// If there are no frames free, help out until there are.
-			while (!frame_data) {
-				job_pool.doAJob();
-				frame_data = phase->_frame_mgr.getNextFrameData(phase->_id);
-			}
-
-			phase->_data_cache[j].frame_data = frame_data;
-
-			phase->_jobs.emplacePush(&UpdateJob, &phase->_data_cache[j]);
-		}
-
-		job_pool.addJobs(phase->_jobs.getArray(), phase->_jobs.size(), &phase->_counter);
-
-		// We want to help while waiting, since we don't just want to consume a potential job thread with just waiting.
-		if (phase->_counter->count)
-			job_pool.helpWhileWaiting(phase->_counter);
+	if (!frame_data) {
+		_done_lock.unlock();
+		return;
 	}
 
-	phase->_frame_mgr.finishFrame(phase->_id);
-	phase->_grab_lock.unlock();
+	_timer.stop();
+	_timer.start();
+
+	ProcessRow(this, 0, frame_data);
+}
+
+void UpdateManager::UpdatePhase::ProcessRow(UpdatePhase* phase, size_t row, void* frame_data)
+{
+	JobPool& job_pool = GetApp().getJobPool();
+	auto& cbs = phase->_callbacks[row];
+	phase->_data_cache.clearNoFree();
+	phase->_jobs.clearNoFree();
+	
+	phase->_data_cache.reserve(cbs.size());
+	phase->_jobs.reserve(cbs.size());
+
+	for (size_t i = 0; i < cbs.size(); ++i) {
+		phase->_data_cache.emplacePush();
+		phase->_data_cache[i].phase = phase;
+		phase->_data_cache[i].frame_data = frame_data;
+		phase->_data_cache[i].row = row;
+		phase->_data_cache[i].cb_index = i;
+
+		phase->_jobs.emplacePush(&UpdateJob, &phase->_data_cache[i]);
+	}
+
+	phase->_counter[phase->_curr_counter] = static_cast<unsigned int>(cbs.size());
+	job_pool.addJobs(phase->_jobs.getArray(), phase->_jobs.size()/*, &phase->_job_counter[phase->_curr_counter]*/);
 }
 
 void UpdateManager::UpdatePhase::UpdateJob(void* data)
 {
 	UpdateData* update_data = reinterpret_cast<UpdateData*>(data);
-	(*update_data->callback)(update_data->delta_time, update_data->frame_data);
+	UpdatePhase* phase = update_data->phase;
+	size_t row = update_data->row;
+
+	phase->_callbacks[row][update_data->cb_index](phase->_timer.getDeltaSec(), update_data->frame_data);
+
+	unsigned int new_val = AtomicDecrement(&phase->_counter[phase->_curr_counter]);
+	assert(new_val < phase->_callbacks[row].size()); // Double check we don't underflow.
+
+	if (!new_val) {
+		++row;
+		phase->_curr_counter = (phase->_curr_counter + 1) % 2;
+
+		if (row < phase->_callbacks.size()) {
+			ProcessRow(phase, row, update_data->frame_data);
+
+		} else {
+			phase->_frame_mgr.finishFrame(update_data->phase->_id);
+			phase->_done_lock.unlock();
+		}
+	}
 }
 
 
@@ -166,7 +165,7 @@ const char* UpdateManager::getName(void) const
 void UpdateManager::update(void)
 {
 	for (auto it = _phases.begin(); it != _phases.end(); ++it) {
-		if (it->isDone() && it->grab()) {
+		if (it->isDone()) {
 			it->run();
 		}
 	}
