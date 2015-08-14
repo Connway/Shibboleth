@@ -78,6 +78,7 @@ public:
 	unsigned int getCurrentDevice(void) const;
 
 	unsigned int getDeviceForAdapter(unsigned int adapter_id) const;
+	unsigned int getDeviceForMonitor(unsigned int monitor) const;
 
 	IRenderDevice* createDeferredRenderDevice(void);
 	void executeCommandList(ICommandList* command_list);
@@ -94,7 +95,7 @@ private:
 	struct OutputInfo
 	{
 		GleamArray<ScreenMode> display_mode_list; // figure out xrandr data structure
-		GleamGString name;
+		GleamAString name;
 	};
 
 	struct AdapterInfo

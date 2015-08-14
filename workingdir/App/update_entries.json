@@ -17,7 +17,8 @@
 	{
 		"name": "Command List Submission Phase",
 		"entries": [
-			["Frame Manager: Submit Command Lists"]
+			["Frame Manager: Submit Command Lists"],
+			["Render Pipeline Manager: Render To Screen"]
 		]
 	}
 ]

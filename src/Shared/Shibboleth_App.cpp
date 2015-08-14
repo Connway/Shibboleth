@@ -212,6 +212,7 @@ bool App::loadManagers(void)
 				_log_file_pair->first.printf("ERROR - Failed to find function 'InitModule' in dynamic module '%s'\n", rel_path.getBuffer());
 				error = true;
 				return true;
+
 			} else if (!init_func(*this)) {
 				//_dynamic_loader.removeModule(name);
 				_log_file_pair->first.printf("ERROR - Failed to initialize '%s'\n", rel_path.getBuffer());

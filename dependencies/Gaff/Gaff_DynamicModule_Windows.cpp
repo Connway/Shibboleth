@@ -23,6 +23,7 @@ THE SOFTWARE.
 #if defined(_WIN32) || defined(_WIN64)
 
 #include "Gaff_DynamicModule_Windows.h"
+#include <cstdlib>
 
 NS_GAFF
 
@@ -36,15 +37,16 @@ DynamicModule::~DynamicModule(void)
 	destroy();
 }
 
-bool DynamicModule::load(const wchar_t* filename)
-{
-	_module = LoadLibraryW(filename);
-	return _module != nullptr;
-}
-
 bool DynamicModule::load(const char* filename)
 {
+#ifdef _UNICODE
+	wchar_t buffer[256];
+	mbstowcs(buffer, filename, 256);
+	_module = LoadLibraryW(buffer);
+#else
 	_module = LoadLibraryA(filename);
+#endif
+
 	return _module != nullptr;
 }
 

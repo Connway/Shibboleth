@@ -103,6 +103,7 @@ public:
 	virtual unsigned int getCurrentDevice(void) const = 0;
 
 	virtual unsigned int getDeviceForAdapter(unsigned int adapter_id) const = 0;
+	virtual unsigned int getDeviceForMonitor(unsigned int monitor) const = 0;
 
 	virtual IRenderDevice* createDeferredRenderDevice(void) = 0;
 	virtual void executeCommandList(ICommandList* command_list) = 0;

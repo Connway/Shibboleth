@@ -26,9 +26,14 @@ THE SOFTWARE.
 #include <Shibboleth_Utilities.h>
 #include <Shibboleth_IApp.h>
 
+#include <Gleam_IRenderDevice.h>
 #include <Gaff_Utils.h>
 
 NS_SHIBBOLETH
+
+const char* gRenderToScreenVertexShader = "";
+const char* gRenderToScreenPixelShader = "";
+
 
 REF_IMPL_REQ(RenderPipelineManager);
 SHIB_REF_IMPL(RenderPipelineManager)
@@ -37,7 +42,7 @@ SHIB_REF_IMPL(RenderPipelineManager)
 ;
 
 RenderPipelineManager::RenderPipelineManager(void):
-	_active_pipeline(SIZE_T_FAIL)
+	_active_pipeline(SIZE_T_FAIL), _render_mgr(nullptr)
 {
 }
 
@@ -145,28 +150,35 @@ void RenderPipelineManager::allManagersCreated(void)
 		log.first.printf("ERROR - Could not find initial render pipeline '%s'.\n", initial_pipeline.getString());
 		GetApp().quit();
 	}
+
+	_render_mgr = &GetApp().getManagerT<RenderManager>("Render Manager");
 }
 
 void RenderPipelineManager::getUpdateEntries(Array<UpdateEntry>& entries)
 {
 	entries.emplacePush(AString("Render Pipeline Manager: Generate Command Lists"), Gaff::Bind(this, &RenderPipelineManager::generateCommandLists));
+	entries.emplacePush(AString("Render Pipeline Manager: Render To Screen"), Gaff::Bind(this, &RenderPipelineManager::renderToScreen));
 }
 
 void RenderPipelineManager::setOutputCamera(unsigned int monitor, CameraComponent* camera)
 {
 	assert(monitor < _output_cameras.size());
-	_output_cameras[monitor] = camera;
+	_output_cameras[monitor].first = camera;
 }
 
 CameraComponent* RenderPipelineManager::getOutputCamera(unsigned int monitor) const
 {
 	assert(monitor < _output_cameras.size());
-	return _output_cameras[monitor];
+	return _output_cameras[monitor].first;
 }
 
 void RenderPipelineManager::setNumMonitors(unsigned int num_monitors)
 {
 	_output_cameras.resize(num_monitors);
+
+	for (unsigned int i = 0; i < _output_cameras.size(); ++i) {
+		_output_cameras[i].second = _render_mgr->getRenderDevice().getDeviceForMonitor(i);
+	}
 }
 
 size_t RenderPipelineManager::getActivePipeline(void) const
@@ -246,6 +258,16 @@ bool RenderPipelineManager::addRenderPipelines(DynamicLoader::ModulePtr& module)
 void RenderPipelineManager::generateCommandLists(double dt, void* frame_data)
 {
 	_pipelines[_active_pipeline]->run(dt, frame_data);
+}
+
+void RenderPipelineManager::renderToScreen(double dt, void* frame_data)
+{
+	for (size_t i = 0; i < _output_cameras.size(); ++i) {
+		auto& camera_pair = _output_cameras[i];
+
+		// get device for monitor
+		// render camera's texture to screen
+	}
 }
 
 NS_END

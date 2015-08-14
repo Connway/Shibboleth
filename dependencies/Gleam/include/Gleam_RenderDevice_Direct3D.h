@@ -79,6 +79,7 @@ public:
 	unsigned int getCurrentDevice(void) const;
 
 	unsigned int getDeviceForAdapter(unsigned int adapter_id) const;
+	unsigned int getDeviceForMonitor(unsigned int monitor) const;
 
 	IRenderDevice* createDeferredRenderDevice(void);
 	void executeCommandList(ICommandList* command_list);

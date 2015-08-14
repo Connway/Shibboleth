@@ -154,15 +154,16 @@ void InGameRenderPipeline::GenerateCommandLists(void* job_data)
 			if (command_lists.empty()) {
 				command_lists.resize(jd->first->_render_mgr.getRenderDevice().getNumDevices());
 
-				for (size_t i = 0; i < cl.size(); ++i) {
-					command_lists[i].resize(GetEnumRefDef<RenderModes>().getNumEntries());
+				for (size_t j = 0; j < cl.size(); ++j) {
+					command_lists[j].resize(GetEnumRefDef<RenderModes>().getNumEntries());
 				}
 			}
 
 			for (auto it_dev = camera_devices.begin(); it_dev != camera_devices.end(); ++it_dev) {
 				auto& rd = rds[*it_dev];
 
-				// update program buffers with transform information
+				// Update program buffers with transform information
+				// Buffer zero is always assumed to be the transform buffer
 				if (result.first->isDirty()) {
 					BufferPtr& buffer = buffers[0]->data[*it_dev];
 					float* transforms = reinterpret_cast<float*>(buffer->map(*rd));
@@ -171,6 +172,8 @@ void InGameRenderPipeline::GenerateCommandLists(void* job_data)
 						// log error
 						continue;
 					}
+
+					memcpy(transforms, final_matrix.getBuffer(), sizeof(float) * 16);
 
 					buffer->unmap(*rd);
 				}
