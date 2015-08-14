@@ -67,8 +67,6 @@ public:
 		return (T*)GetAddress(name);
 	}
 
-	INLINE bool load(const wchar_t* filename);
-
 	/*!
 		\brief Loads the dynamic module found at \a filename from the disk.
 		\param filename The name of the file to load off the disk.

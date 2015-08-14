@@ -448,6 +448,21 @@ unsigned int RenderDeviceGL::getDeviceForAdapter(unsigned int adapter_id) const
 	return SIZE_T_FAIL;
 }
 
+unsigned int RenderDeviceGL::getDeviceForMonitor(unsigned int monitor) const
+{
+	unsigned int num_outputs = 0;
+
+	for (unsigned int i = 0; i < _devices.size(); ++i) {
+		num_outputs += getNumOutputs(i);
+
+		if (num_outputs >= monitor) {
+			return i;
+		}
+	}
+
+	return UINT_FAIL;
+}
+
 IRenderDevice* RenderDeviceGL::createDeferredRenderDevice(void)
 {
 	return nullptr;

@@ -171,6 +171,12 @@ unsigned int DeferredRenderDeviceBase::getDeviceForAdapter(unsigned int) const
 	return UINT_FAIL;
 }
 
+unsigned int DeferredRenderDeviceBase::getDeviceForMonitor(unsigned int) const
+{
+	assert(0 && "Calling a immediate render device function on a deferred render device");
+	return UINT_FAIL;
+}
+
 IRenderDevice* DeferredRenderDeviceBase::createDeferredRenderDevice(void)
 {
 	assert(0 && "Calling a immediate render device function on a deferred render device");

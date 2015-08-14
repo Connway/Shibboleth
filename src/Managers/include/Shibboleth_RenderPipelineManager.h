@@ -59,15 +59,17 @@ private:
 	using DestroyRenderPipelineFunc = void (*)(IRenderPipeline*);
 	using GetNumRenderPipelinesFunc = size_t (*)(void);
 
-	Array<CameraComponent*> _output_cameras; // Array size == num of monitors. Element is camera that is being outputted to monitor.
+	Array< Gaff::Pair<CameraComponent*, unsigned int> > _output_cameras; // Array size == num of monitors. Element is camera that is being outputted to monitor and device id.
 	Array<IRenderPipeline*> _pipelines;
 	HashMap<AHashString, DestroyRenderPipelineFunc> _pipeline_map;
 	size_t _active_pipeline;
 
 	RenderManager::WindowRenderTargets _render_targets;
+	RenderManager* _render_mgr;
 
 	bool addRenderPipelines(DynamicLoader::ModulePtr& module);
 	void generateCommandLists(double dt, void* frame_data);
+	void renderToScreen(double dt, void* frame_data);
 
 	SHIB_REF_DEF(RenderPipelineManager);
 };

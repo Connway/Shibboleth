@@ -72,7 +72,13 @@ void DebugPrintf(const wchar_t* format_string, ...)
 
 bool SetWorkingDir(const char* directory)
 {
-	return SetCurrentDirectoryA(directory) != 0;
+#ifdef _UNICODE
+	wchar_t buffer[256];
+	mbstowcs(buffer, directory, 256);
+	return SetCurrentDirectoryW(buffer) != 0;
+#else
+	return SetCurrentDirectoryW(directory) != 0;
+#endif
 }
 
 void* AlignedMalloc(size_t size, size_t alignment)

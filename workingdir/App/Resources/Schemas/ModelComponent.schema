@@ -42,6 +42,7 @@
 			"Optional": true,
 			"Element Type": "Object",
 			"Schema": {
+				"Share Name": { "Type": "String", "Optional": true },
 				"Type": { "Type": "String", "Optional": false },
 				"CPU Access": { "Type": "String", "Optional": false },
 				"Size": { "Type": "Integer", "Optional": false },

@@ -596,6 +596,21 @@ unsigned int RenderDeviceD3D::getDeviceForAdapter(unsigned int adapter_id) const
 	return UINT_FAIL;
 }
 
+unsigned int RenderDeviceD3D::getDeviceForMonitor(unsigned int monitor) const
+{
+	unsigned int num_outputs = 0;
+
+	for (unsigned int i = 0; i < _devices.size(); ++i) {
+		num_outputs += getNumOutputs(i);
+
+		if (num_outputs >= monitor) {
+			return i;
+		}
+	}
+
+	return UINT_FAIL;
+}
+
 IRenderDevice* RenderDeviceD3D::createDeferredRenderDevice(void)
 {
 	ID3D11DeviceContext* deferred_context = nullptr;
