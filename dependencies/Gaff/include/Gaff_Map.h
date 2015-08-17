@@ -71,6 +71,7 @@ public:
 	void moveInsert(const Key& key, Value&& value);
 	void insert(const Key& key, const Value& value);
 
+	void clearNoFree(void);
 	void clear(void);
 	void reserve(size_t new_size);
 

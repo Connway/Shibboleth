@@ -42,6 +42,7 @@ enum Components
 {
 	LUA_COMPONENT = 0,
 	MODEL_COMPONENT,
+	CAMERA_COMPONENT,
 	NUM_COMPONENTS
 };
 
@@ -51,12 +52,14 @@ typedef void (*RefDefClearFunc)(void);
 
 static CreateComponentFunc create_funcs[] = {
 	&CreateComponent<Shibboleth::LuaComponent>,
-	&CreateComponent<Shibboleth::ModelComponent>
+	&CreateComponent<Shibboleth::ModelComponent>,
+	&CreateComponent<Shibboleth::CameraComponent>
 };
 
 static ComponentNameFunc name_funcs[] = {
 	&Shibboleth::LuaComponent::getComponentName,
-	&Shibboleth::ModelComponent::getComponentName
+	&Shibboleth::ModelComponent::getComponentName,
+	&Shibboleth::CameraComponent::getComponentName
 };
 
 DYNAMICEXPORT_C bool InitModule(Shibboleth::IApp& app)

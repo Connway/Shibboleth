@@ -212,14 +212,14 @@ Gaff::IVirtualDestructor* RenderTargetLoader::load(const char* file_name, unsign
 			TexturePtr texture(rm.createTexture());
 
 			if (texture) {
-				if (!texture->init2D(rd, width, height, ds_fmt)) {
+				if (!texture->initDepthStencil(rd, width, height, ds_fmt)) {
 					LogMessage(GetApp().getGameLogFile(), TPT_PRINTLOG, LogManager::LOG_ERROR, "ERROR - Failed to initialize depth-stencil texture data for Render Target '%s'.\n", file_name);
 					GetAllocator()->freeT(data);
 					return nullptr;
 				}
 			}
 
-			if (!texture || !rt->addTexture(rd, texture.get())) {
+			if (!texture || !rt->addDepthStencilBuffer(rd, texture.get())) {
 				LogMessage(GetApp().getGameLogFile(), TPT_PRINTLOG, LogManager::LOG_ERROR, "ERROR - Failed to allocate depth-stencil texture data for Render Target '%s'.\n", file_name);
 				GetAllocator()->freeT(data);
 				return nullptr;

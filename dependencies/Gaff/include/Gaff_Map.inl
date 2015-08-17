@@ -164,6 +164,12 @@ void Map<Key, Value, Allocator>::insert(const Key& key, const Value& value)
 }
 
 template <class Key, class Value, class Allocator>
+void Map<Key, Value, Allocator>::clearNoFree(void)
+{
+	_array.clearNoFree();
+}
+
+template <class Key, class Value, class Allocator>
 void Map<Key, Value, Allocator>::clear(void)
 {
 	_array.clear();

@@ -37,14 +37,21 @@ class IApp;
 class CameraComponent : public IComponent
 {
 public:
+	INLINE static const char* getComponentName(void)
+	{
+		return "Camera Component";
+	}
+
 	CameraComponent(void);
 	~CameraComponent(void);
 
-	bool validate(Gaff::JSON& json);
-	bool load(const Gaff::JSON& json);
-	bool save(Gaff::JSON& json);
+	const Gaff::JSON& getSchema(void) const override;
 
-	void* rawRequestInterface(unsigned int class_id) const;
+	bool validate(const Gaff::JSON& json) override;
+	bool load(const Gaff::JSON& json) override;
+	bool save(Gaff::JSON& json) override;
+
+	void* rawRequestInterface(unsigned int class_id) const override;
 
 	void updateFrustum(Object* object, unsigned long long);
 

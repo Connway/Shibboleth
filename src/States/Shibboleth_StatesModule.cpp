@@ -30,6 +30,7 @@ THE SOFTWARE.
 #include <Gaff_JSON.h>
 
 #include <Shibboleth_OcclusionManager.h>
+#include <Shibboleth_CameraComponent.h>
 #include <Shibboleth_ModelComponent.h>
 #include <Shibboleth_UpdateManager.h>
 #include <Shibboleth_ObjectManager.h>
@@ -78,10 +79,32 @@ public:
 		} else {
 			_app.quit();
 		}
+
+		_camera = _app.getManagerT<Shibboleth::ObjectManager>("Object Manager").createObject();
+
+		if (_camera) {
+			if (_object->init("Resources/Objects/test_camera.object")) {
+				//Shibboleth::ModelComponent* model = _object->getFirstComponentWithInterface<Shibboleth::ModelComponent>();
+				//Shibboleth::OcclusionManager::UserData user_data(reinterpret_cast<unsigned long long>(model), 0);
+				//_app.getManagerT<Shibboleth::OcclusionManager>("Occlusion Manager").addObject(_object, Shibboleth::OcclusionManager::OT_DYNAMIC, user_data);
+				_camera->setLocalPosition(Gleam::Vector4CPU(0.0f, 5.0f, -5.0f, 1.0f));
+
+			} else {
+				_app.getManagerT<Shibboleth::ObjectManager>("Object Manager").removeObject(_camera->getID());
+				_camera = nullptr;
+				_app.quit();
+			}
+
+		} else {
+			_app.quit();
+		}
 	}
 
 	void update(void)
 	{
+		if (!_object || !_camera)
+			return;
+
 		static Gaff::Timer timer;
 		timer.stop();
 		timer.start();
@@ -111,18 +134,19 @@ public:
 		// query occlusion manager
 		//Shibboleth::OcclusionManager::QueryData objects = om.findObjectsInFrustum();
 
-		rm.getRenderDevice().setCurrentDevice(0);
-		rm.getRenderDevice().beginFrame();
+		if (model && model->isReadyToRender()) {
+			rm.getRenderDevice().setCurrentDevice(0);
+			rm.getRenderDevice().beginFrame();
 
-		if (model) {
 			model->render(dt);
-		}
 
-		rm.getRenderDevice().endFrame();
+			rm.getRenderDevice().endFrame();
+		}
 	}
 
 private:
 	Shibboleth::Object* _object;
+	Shibboleth::Object* _camera;
 	Shibboleth::IApp& _app;
 };
 
