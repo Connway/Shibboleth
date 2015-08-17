@@ -43,6 +43,11 @@ struct ModelData;
 class ModelComponent : public IComponent
 {
 public:
+	INLINE static const char* getComponentName(void)
+	{
+		return "Model Component";
+	}
+
 	ModelComponent(void);
 	~ModelComponent(void);
 
@@ -53,14 +58,10 @@ public:
 
 	void allComponentsLoaded(void);
 
-	INLINE static const char* getComponentName(void)
-	{
-		return "Model Component";
-	}
-
 	void* rawRequestInterface(unsigned int class_id) const;
 
 	void render(double dt); // Temporary test function
+	bool isReadyToRender(void) const; // Temporary test function
 
 	size_t determineLOD(const Gleam::Vector4CPU& pos);
 

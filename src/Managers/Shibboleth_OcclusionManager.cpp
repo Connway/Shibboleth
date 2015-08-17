@@ -126,10 +126,20 @@ OcclusionManager::BVHTree::FrustumQueryData OcclusionManager::BVHTree::findObjec
 	FrustumQueryData data;
 	data.first.frustum = data.second.frustum = &frustum;
 	data.first.tree = data.second.tree = this;
-	data.first.branch_root = _node_cache[_root].left;
-	data.second.branch_root = _node_cache[_root].right;
+	data.first.counter = nullptr;
+	data.first.branch_root = SIZE_T_FAIL;
+	data.second.branch_root = SIZE_T_FAIL;
 
 	if (_root != SIZE_T_FAIL && frustum.contains(_node_cache[_root].aabb)) {
+		data.first.branch_root = _node_cache[_root].left;
+		data.second.branch_root = _node_cache[_root].right;
+
+		// We only have one object in the tree, just return.
+		if (_node_cache[_root].object) {
+			data.first.result.emplacePush(_node_cache[_root].object, _node_cache[_root].user_data);
+			return data;
+		}
+
 		Gaff::JobData job_data[2] = {
 			Gaff::JobData(&FrustumJob, &data.first),
 			Gaff::JobData(&FrustumJob, &data.second)
@@ -386,22 +396,22 @@ void OcclusionManager::findObjectsInFrustum(const Gleam::FrustumCPU& frustum, OB
 	BVHTree::FrustumQueryData data;
 	
 	data = _bvh_trees[object_type].findObjectsInFrustum(frustum);
-	GetApp().getJobPool().waitForAndFreeCounter(data.first.counter);
 
-	out = Gaff::Move(data.first.result);
-	out.moveAppend(Gaff::Move(data.second.result));
+	if (data.first.counter) {
+		GetApp().getJobPool().waitForAndFreeCounter(data.first.counter);
+
+		out = Gaff::Move(data.first.result);
+		out.moveAppend(Gaff::Move(data.second.result));
+
+	} else if (!data.first.result.empty()) {
+		out = Gaff::Move(data.first.result);
+	}
 }
 
 void OcclusionManager::findObjectsInFrustum(const Gleam::FrustumCPU& frustum, QueryData& out) const
 {
-	BVHTree::FrustumQueryData data[OT_SIZE];
-	
 	for (unsigned int i = 0; i < OT_SIZE; ++i) {
-		data[i] = _bvh_trees[i].findObjectsInFrustum(frustum);
-		GetApp().getJobPool().waitForAndFreeCounter(data[i].first.counter);
-
-		out.results[i] = Gaff::Move(data[i].first.result);
-		out.results[i].moveAppend(Gaff::Move(data[i].second.result));
+		findObjectsInFrustum(frustum, static_cast<OBJ_TYPE>(i), out.results[i]);
 	}
 }
 

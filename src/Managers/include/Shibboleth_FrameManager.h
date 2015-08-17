@@ -32,6 +32,7 @@ THE SOFTWARE.
 NS_SHIBBOLETH
 
 class CameraComponent;
+class RenderManager;
 
 struct FrameData
 {
@@ -71,7 +72,9 @@ public:
 	FrameManager(void);
 	~FrameManager(void);
 
-	const char* getName(void) const;
+	const char* getName(void) const override;
+	void allManagersCreated(void) override;
+
 	void* rawRequestInterface(unsigned int class_id) const;
 	void getUpdateEntries(Array<UpdateEntry>& entries);
 
@@ -89,9 +92,12 @@ private:
 		volatile unsigned int count = 0;
 	};
 
+	FrameData::CommandListMap _cl_cache;
+
 	Array<unsigned int> _phase_trackers;
 	Array<CounterHack> _frame_trackers;
 
+	RenderManager* _render_mgr;
 	void* _frame_data;
 	FrameDataAllocFunc _frame_data_alloc;
 	FrameDataFreeFunc _frame_data_free;

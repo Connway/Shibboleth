@@ -334,7 +334,8 @@ void Window::containCursor(bool contain)
 	if (contain) {
 		RECT rect = {
 			_pos_x, _pos_y,
-			_pos_x + _width, _pos_y + _height
+			_pos_x + static_cast<int>(_width),
+			_pos_y + static_cast<int>(_height)
 		};
 
 		ClipCursor(&rect);

@@ -21,6 +21,11 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Shibboleth_FrameManager.h"
+#include "Shibboleth_RenderManager.h"
+#include <Shibboleth_CameraComponent.h>
+#include <Shibboleth_Utilities.h>
+#include <Shibboleth_IApp.h>
+#include <Gleam_IRenderDevice.h>
 #include <Gaff_Atomic.h>
 
 NS_SHIBBOLETH
@@ -46,7 +51,8 @@ SHIB_REF_IMPL(FrameManager)
 ;
 
 FrameManager::FrameManager(void):
-	_frame_data(nullptr), _frame_data_alloc(&DefaultFrameDataAlloc),
+	_render_mgr(nullptr), _frame_data(nullptr),
+	_frame_data_alloc(&DefaultFrameDataAlloc),
 	_frame_data_free(&DefaultFrameDataFree), _frame_data_size(0),
 	_num_frames(0)
 {
@@ -62,6 +68,11 @@ FrameManager::~FrameManager(void)
 const char* FrameManager::getName(void) const
 {
 	return "Frame Manager";
+}
+
+void FrameManager::allManagersCreated(void)
+{
+	_render_mgr = &GetApp().getManagerT<RenderManager>("Render Manager");
 }
 
 void FrameManager::getUpdateEntries(Array<UpdateEntry>& entries)
@@ -128,7 +139,56 @@ void FrameManager::submitCommandLists(double, void* frame_data)
 {
 	FrameData* fd = reinterpret_cast<FrameData*>(frame_data);
 
+	_cl_cache.clearNoFree();
+
+	// First step: Accumlate all the data into a single CommandListMap for easier iteration
+	// For each thread data
 	for (auto it = fd->command_lists.begin(); it != fd->command_lists.end(); ++it) {
+		// For each camera in thread data
+		for (auto it_cam = it->second.begin(); it_cam != it->second.end(); ++it_cam) {
+			auto& data = _cl_cache[it_cam->first];
+
+			// Size should be the same across all thread data. [Devices][Render Mode][CommandList]
+			if (data.empty()) {
+				data.resize(it_cam->second.size());
+			}
+
+			// For each device
+			for (size_t i = 0; i < it_cam->second.size(); ++i) {
+				if (data[i].empty()) {
+					data[i].resize(it_cam->second[i].size());
+				}
+
+				// For each Render Mode
+				for (size_t j = 0; j < it_cam->second[i].size(); ++j) {
+					data[i][j].append(it_cam->second[i][j]);
+				}
+			}
+		}
+	}
+
+	auto& rd = _render_mgr->getRenderDevice();
+
+	// Second step: Submit the command lists for each camera in Render Mode order
+	// For each camera
+	for (auto it = _cl_cache.begin(); it != _cl_cache.end(); ++it) {
+		// Bind camera's render target
+		const auto& devices = it->first->getDevices();
+		auto& rt_data = it->first->getRenderTarget();
+
+		for (auto it_dev = devices.begin(); it_dev != devices.end(); ++it_dev) {
+			rt_data->render_targets[*it_dev]->bind(rd);
+			rt_data->render_targets[*it_dev]->clear(rd);
+
+			// For each render stage (must do in order)
+			for (size_t i = 0; i < RM_COUNT; ++i) {
+				auto& cls = it->second[*it_dev][i];
+
+				for (auto it_cl = cls.begin(); it_cl != cls.end(); ++it_cl) {
+					rd.executeCommandList((*it_cl).get());
+				}
+			}
+		}
 	}
 }
 

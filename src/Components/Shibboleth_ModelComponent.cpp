@@ -503,6 +503,7 @@ void ModelComponent::render(double dt)
 	tocamera.setLookAtLH(0.0f, 5.0f, -5.0f, 0.0f, 5.0f, 0.0f, 0.0f, 1.0f, 0.0f);
 	projection.setPerspectiveLH(90.0f * Gaff::DegToRad, 16.0f / 9.0f, 0.1f, 5000.0f);
 	toworld.setIdentity();
+	toworld.setTranslate(getOwner()->getWorldPosition());
 	toworld.setRotationY(rot);
 
 	final_transform = projection * tocamera * toworld;
@@ -524,6 +525,11 @@ void ModelComponent::render(double dt)
 
 		model->render(rd, i);
 	}
+}
+
+bool ModelComponent::isReadyToRender(void) const
+{
+	return _init;
 }
 
 NS_END

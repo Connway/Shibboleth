@@ -86,7 +86,7 @@ public:
 	void update(double, void*);
 
 	void findObjectsInFrustum(const Gleam::FrustumCPU& frustum, OBJ_TYPE object_type, Array<QueryResult>& out) const;
-	void findObjectsInFrustum(const Gleam::FrustumCPU& frustum, QueryData& out) const;
+	INLINE void findObjectsInFrustum(const Gleam::FrustumCPU& frustum, QueryData& out) const;
 	INLINE Array<QueryResult> findObjectsInFrustum(const Gleam::FrustumCPU& frustum, OBJ_TYPE object_type) const;
 	INLINE QueryData findObjectsInFrustum(const Gleam::FrustumCPU& frustum) const;
 

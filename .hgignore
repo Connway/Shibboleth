@@ -5,4 +5,4 @@ build/*
 *.ncb
 *.sdf
 *.opensdf
-workingdir/Logs/*
+workingdir/App/Logs/*

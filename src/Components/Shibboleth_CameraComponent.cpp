@@ -22,6 +22,7 @@ THE SOFTWARE.
 
 #include "Shibboleth_CameraComponent.h"
 #include <Shibboleth_ResourceManager.h>
+#include <Shibboleth_SchemaManager.h>
 #include <Shibboleth_RenderManager.h>
 #include <Shibboleth_CameraManager.h>
 #include <Shibboleth_Utilities.h>
@@ -63,10 +64,15 @@ CameraComponent::~CameraComponent(void)
 	setActive(false);
 }
 
-bool CameraComponent::validate(Gaff::JSON& json)
+const Gaff::JSON& CameraComponent::getSchema(void) const
 {
-	// IMPLEMENT ME
+	static const Gaff::JSON& schema = GetApp().getManagerT<SchemaManager>("Schema Manager").getSchema("CameraComponent.schema");
+	return schema;
+}
 
+bool CameraComponent::validate(const Gaff::JSON& json)
+{
+	IComponent::validate(json);
 	return true;
 }
 

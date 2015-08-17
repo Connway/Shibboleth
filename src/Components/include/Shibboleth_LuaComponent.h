@@ -39,6 +39,11 @@ class ResourceManager;
 class LuaComponent : public IComponent
 {
 public:
+	INLINE static const char* getComponentName(void)
+	{
+		return "Lua Component";
+	}
+
 	LuaComponent(void);
 	~LuaComponent(void);
 
@@ -48,11 +53,6 @@ public:
 	void allComponentsLoaded(void);
 
 	void* rawRequestInterface(unsigned int class_id) const;
-
-	static const char* getComponentName(void)
-	{
-		return "Lua Component";
-	}
 
 private:
 	ResourceWrapper< SingleDataWrapper<lua::State*> > _script_res;
