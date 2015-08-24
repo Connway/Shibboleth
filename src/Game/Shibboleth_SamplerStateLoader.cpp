@@ -35,26 +35,6 @@ THE SOFTWARE.
 
 NS_SHIBBOLETH
 
-static EnumReflectionDefinition<Gleam::ISamplerState::FILTER> g_filter_ref_def =
-Gaff::EnumRefDef<Gleam::ISamplerState::FILTER>("Gleam::ISamplerState::FILTER", ProxyAllocator("Reflection")).macroFix()
-.addValue("NEAREST NEAREST NEAREST", Gleam::ISamplerState::FILTER_NEAREST_NEAREST_NEAREST)
-.addValue("NEAREST LINEAR NEAREST", Gleam::ISamplerState::FILTER_NEAREST_LINEAR_NEAREST)
-.addValue("NEAREST LINEAR Linear", Gleam::ISamplerState::FILTER_NEAREST_LINEAR_LINEAR)
-.addValue("LINEAR NEAREST NEAREST", Gleam::ISamplerState::FILTER_LINEAR_NEAREST_NEAREST)
-.addValue("LINEAR NEAREST Linear", Gleam::ISamplerState::FILTER_LINEAR_NEAREST_LINEAR)
-.addValue("LINEAR LINEAR NEAREST", Gleam::ISamplerState::FILTER_LINEAR_LINEAR_NEAREST)
-.addValue("LINEAR LINEAR LINEAR", Gleam::ISamplerState::FILTER_LINEAR_LINEAR_LINEAR)
-.addValue("ANISOTROPIC", Gleam::ISamplerState::FILTER_ANISOTROPIC)
-;
-
-static EnumReflectionDefinition<Gleam::ISamplerState::WRAP> g_wrap_ref_def =
-Gaff::EnumRefDef<Gleam::ISamplerState::WRAP>("Gleam::ISamplerState::FILTER", ProxyAllocator("Reflection")).macroFix()
-.addValue("REPEAT", Gleam::ISamplerState::WRAP_REPEAT)
-.addValue("MIRROR", Gleam::ISamplerState::WRAP_MIRROR)
-.addValue("CLAMP", Gleam::ISamplerState::WRAP_CLAMP)
-.addValue("BORDER", Gleam::ISamplerState::WRAP_BORDER)
-;
-
 SamplerStateLoader::SamplerStateLoader(RenderManager& render_mgr):
 	_render_mgr(render_mgr)
 {
@@ -104,10 +84,10 @@ Gaff::IVirtualDestructor* SamplerStateLoader::load(const char* file_name, unsign
 	}
 
 	Gleam::ISamplerState::SamplerSettings ss = {
-		g_filter_ref_def.getValue(json["filter"].getString()),
-		g_wrap_ref_def.getValue(json["wrap_u"].getString()),
-		g_wrap_ref_def.getValue(json["wrap_v"].getString()),
-		g_wrap_ref_def.getValue(json["wrap_w"].getString()),
+		GetEnumRefDef<Gleam::ISamplerState::FILTER>().getValue(json["filter"].getString()),
+		GetEnumRefDef<Gleam::ISamplerState::WRAP>().getValue(json["wrap_u"].getString()),
+		GetEnumRefDef<Gleam::ISamplerState::WRAP>().getValue(json["wrap_v"].getString()),
+		GetEnumRefDef<Gleam::ISamplerState::WRAP>().getValue(json["wrap_w"].getString()),
 		static_cast<float>(json["min_lod"].getReal()),
 		static_cast<float>(json["max_lod"].getReal()),
 		static_cast<float>(json["lod_bias"].getReal()),

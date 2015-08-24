@@ -25,18 +25,18 @@ THE SOFTWARE.
 #include "Shibboleth_IState.h"
 
 NS_GAFF
-	class JSON;
+class JSON;
 NS_END
 
 NS_SHIBBOLETH
 
 class IApp;
 
-class SetupGraphicsState : public IState
+class LoadGraphicsModuleState : public IState
 {
 public:
-	SetupGraphicsState(IApp& app);
-	~SetupGraphicsState(void);
+	LoadGraphicsModuleState(IApp& app);
+	~LoadGraphicsModuleState(void);
 
 	bool init(unsigned int);
 
@@ -47,8 +47,10 @@ public:
 private:
 	IApp& _app;
 
-	GAFF_NO_COPY(SetupGraphicsState);
-	GAFF_NO_MOVE(SetupGraphicsState);
+	void generateDefaultConfig(Gaff::JSON& cfg);
+
+	GAFF_NO_COPY(LoadGraphicsModuleState);
+	GAFF_NO_MOVE(LoadGraphicsModuleState);
 };
 
 NS_END

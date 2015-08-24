@@ -24,13 +24,11 @@ THE SOFTWARE.
 
 #include "Shibboleth_IUpdateQuery.h"
 #include <Shibboleth_ReflectionDefinitions.h>
-#include <Shibboleth_RefCounted.h>
 #include <Shibboleth_IManager.h>
 #include <Shibboleth_Watcher.h>
 #include <Shibboleth_Array.h>
 #include <Shibboleth_Map.h>
 #include <Gleam_AABB_CPU.h>
-#include <Gaff_ReadWriteSpinLock.h>
 
 NS_GAFF
 	struct Counter;

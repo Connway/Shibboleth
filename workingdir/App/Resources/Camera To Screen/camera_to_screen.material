@@ -1,0 +1,5 @@
+{
+	"Vertex": "Resources/Camera To Screen/camera_to_screen_vertex",
+	"Pixel": "Resources/Camera To Screen/camera_to_screen_pixel",
+	"Render Mode": "Opaque"
+}

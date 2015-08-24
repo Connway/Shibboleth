@@ -73,8 +73,8 @@ void DebugPrintf(const wchar_t* format_string, ...)
 bool SetWorkingDir(const char* directory)
 {
 #ifdef _UNICODE
-	wchar_t buffer[256];
-	mbstowcs(buffer, directory, 256);
+	wchar_t buffer[256] = { 0 };
+	ConvertToUTF16(buffer, directory, strlen(directory));
 	return SetCurrentDirectoryW(buffer) != 0;
 #else
 	return SetCurrentDirectoryW(directory) != 0;

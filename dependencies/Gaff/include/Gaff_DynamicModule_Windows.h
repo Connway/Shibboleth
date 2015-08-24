@@ -25,7 +25,7 @@ THE SOFTWARE.
 #pragma once
 
 #include "Gaff_IncludeWindows.h"
-#include "Gaff_Defines.h"
+#include  "Gaff_Defines.h"
 
 NS_GAFF
 
@@ -48,9 +48,9 @@ public:
 		\return The function with the symbol \a name, otherwise nullptr.
 	*/
 	template <class Func>
-	Func GetFunc(const char* name) const
+	Func getFunc(const char* name) const
 	{
-		return (Func)GetAddress(name);
+		return reinterpret_cast<Func>(getAddress(name));
 	}
 
 	/*!
@@ -62,9 +62,9 @@ public:
 		\return The variable with the symbol \a name, otherwise nullptr.
 	*/
 	template <class T>
-	T* GetVariable(const char* name) const
+	T* getVariable(const char* name) const
 	{
-		return (T*)GetAddress(name);
+		return reinterpret_cast<T*>(getAddress(name));
 	}
 
 	/*!
@@ -81,7 +81,9 @@ public:
 		\param name The name of the symbol to retrieve from the dynamic module.
 		\return The address of the symbol \a name, otherwise nullptr.
 	*/
-	INLINE void* GetAddress(const char* name) const;
+	INLINE void* getAddress(const char* name) const;
+
+	INLINE static const char* GetErrorString(void);
 
 private:
 	HMODULE _module;

@@ -160,6 +160,43 @@ void RenderPipelineManager::getUpdateEntries(Array<UpdateEntry>& entries)
 	entries.emplacePush(AString("Render Pipeline Manager: Render To Screen"), Gaff::Bind(this, &RenderPipelineManager::renderToScreen));
 }
 
+bool RenderPipelineManager::init(void)
+{
+	_camera_to_screen_program_buffers = GetApp().getManagerT<ResourceManager>("Resource Manager").requestResource("ProgramBuffers", "render_pipeline_manager_program_buffers");
+	_camera_to_screen_sampler = GetApp().getManagerT<ResourceManager>("Resource Manager").requestResource("Resources/Samplers/anisotropic_16x.sampler");
+	_camera_to_screen_shader = GetApp().getManagerT<ResourceManager>("Resource Manager").requestResource("Resources/Camera To Screen/camera_to_screen.material");
+
+	// Wait for resources to finish loading
+	while (!_camera_to_screen_program_buffers.getResourcePtr()->isLoaded() &&
+			!_camera_to_screen_program_buffers.getResourcePtr()->hasFailed()) {
+	}
+
+	while (!_camera_to_screen_sampler.getResourcePtr()->isLoaded() &&
+			!_camera_to_screen_sampler.getResourcePtr()->hasFailed()) {
+	}
+
+	while (!_camera_to_screen_shader.getResourcePtr()->isLoaded() &&
+			!_camera_to_screen_shader.getResourcePtr()->hasFailed()) {
+	}
+
+	if (_camera_to_screen_program_buffers.getResourcePtr()->hasFailed()) {
+		GetApp().getGameLogFile().first.writeString("ERROR - Render Pipeline Manager failed to create 'ProgramBuffers'.\n");
+		return false;
+	}
+
+	if (_camera_to_screen_sampler.getResourcePtr()->hasFailed()) {
+		GetApp().getGameLogFile().first.writeString("ERROR - Render Pipeline Manager failed to load resource 'Resources/Samplers/anisotropic_16x.sampler'.\n");
+		return false;
+	}
+
+	if (_camera_to_screen_shader.getResourcePtr()->hasFailed()) {
+		GetApp().getGameLogFile().first.writeString("ERROR - Render Pipeline Manager failed to load resource 'Resources/Camera To Screen/camera_to_screen.material'.\n");
+		return false;
+	}
+
+	return true;
+}
+
 void RenderPipelineManager::setOutputCamera(unsigned int monitor, CameraComponent* camera)
 {
 	assert(monitor < _output_cameras.size());
@@ -208,11 +245,11 @@ bool RenderPipelineManager::addRenderPipelines(DynamicLoader::ModulePtr& module)
 	LogManager::FileLockPair& log = GetApp().getGameLogFile();
 
 	assert(module.valid());
-	CreateRenderPipelineFunc create_pipeline = module->GetFunc<CreateRenderPipelineFunc>("CreateRenderPipeline");
-	DestroyRenderPipelineFunc destroy_pipeline = module->GetFunc<DestroyRenderPipelineFunc>("DestroyRenderPipeline");
-	GetNumRenderPipelinesFunc num_pipelines = module->GetFunc<GetNumRenderPipelinesFunc>("GetNumRenderPipelines");
+	CreateRenderPipelineFunc create_pipeline = module->getFunc<CreateRenderPipelineFunc>("CreateRenderPipeline");
+	DestroyRenderPipelineFunc destroy_pipeline = module->getFunc<DestroyRenderPipelineFunc>("DestroyRenderPipeline");
+	GetNumRenderPipelinesFunc num_pipelines = module->getFunc<GetNumRenderPipelinesFunc>("GetNumRenderPipelines");
 
-	InitFunc init_func = module->GetFunc<InitFunc>("InitModule");
+	InitFunc init_func = module->getFunc<InitFunc>("InitModule");
 
 	if (!init_func) {
 		log.first.writeString("ERROR - Could not find function named 'InitModule'.\n");

@@ -85,4 +85,25 @@ bool greater(const wchar_t* s1, size_t, const wchar_t* s2)
 	return wcscmp(s1, s2) > 0;
 }
 
+void ConvertToUTF8(char* output, const wchar_t* input, size_t size)
+{
+	utf8::utf16to8(input, input + size, output);
+}
+
+void ConvertToUTF16(wchar_t* output, const char* input, size_t size)
+{
+	utf8::utf8to16(input, input + size, output);
+}
+
+size_t FindInvalidUTF8(const char* string, size_t size)
+{
+	const char* position = utf8::find_invalid(string, string + size);
+	return static_cast<size_t>(position - string);
+}
+
+bool IsValidUTF8(const char* string, size_t size)
+{
+	return utf8::is_valid(string, string + size);
+}
+
 NS_END

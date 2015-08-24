@@ -156,8 +156,8 @@ bool Image::load(const char* filename)
 	ilBindImage(_image);
 
 #ifdef _UNICODE
-	wchar_t buffer[256];
-	mbstowcs(buffer, filename, 256);
+	wchar_t buffer[256] = { 0 };
+	ConvertToUTF16(buffer, filename, strlen(filename));
 	return ilLoadImage(buffer) != 0;
 #else
 	return ilLoadImage(filename) != 0;
@@ -197,8 +197,8 @@ bool Image::save(const char* filename, bool allow_overwrite)
 	}
 
 #ifdef _UNICODE
-	wchar_t buffer[256];
-	mbstowcs(buffer, filename, 256);
+	wchar_t buffer[256] = { 0 };
+	ConvertToUTF16(buffer, filename, strlen(filename));
 	bool ret = ilSaveImage(buffer) != 0;
 #else
 	bool ret = ilSaveImage(filename) != 0;

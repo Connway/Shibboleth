@@ -92,6 +92,24 @@ static DisplayTags gDisplayTagsValues[] = {
 	DT_11, DT_12, DT_13, DT_14, DT_15, DT_16
 };
 
+SHIB_ENUM_REF_IMPL_EMBEDDED(Gleam_ISamplerState_Filter, Gleam::ISamplerState::FILTER)
+.addValue("NEAREST NEAREST NEAREST", Gleam::ISamplerState::FILTER_NEAREST_NEAREST_NEAREST)
+.addValue("NEAREST LINEAR NEAREST", Gleam::ISamplerState::FILTER_NEAREST_LINEAR_NEAREST)
+.addValue("NEAREST LINEAR LINEAR", Gleam::ISamplerState::FILTER_NEAREST_LINEAR_LINEAR)
+.addValue("LINEAR NEAREST NEAREST", Gleam::ISamplerState::FILTER_LINEAR_NEAREST_NEAREST)
+.addValue("LINEAR NEAREST LINEAR", Gleam::ISamplerState::FILTER_LINEAR_NEAREST_LINEAR)
+.addValue("LINEAR LINEAR NEAREST", Gleam::ISamplerState::FILTER_LINEAR_LINEAR_NEAREST)
+.addValue("LINEAR LINEAR LINEAR", Gleam::ISamplerState::FILTER_LINEAR_LINEAR_LINEAR)
+.addValue("ANISOTROPIC", Gleam::ISamplerState::FILTER_ANISOTROPIC)
+;
+
+SHIB_ENUM_REF_IMPL_EMBEDDED(Gleam_ISamplerState_Wrap, Gleam::ISamplerState::WRAP)
+.addValue("REPEAT", Gleam::ISamplerState::WRAP_REPEAT)
+.addValue("MIRROR", Gleam::ISamplerState::WRAP_MIRROR)
+.addValue("CLAMP", Gleam::ISamplerState::WRAP_CLAMP)
+.addValue("BORDER", Gleam::ISamplerState::WRAP_BORDER)
+;
+
 SHIB_ENUM_REF_IMPL_EMBEDDED(Gleam_ITexture_Format, Gleam::ITexture::FORMAT)
 .addValue("R_8_UNORM", Gleam::ITexture::R_8_UNORM)
 .addValue("R_16_UNORM", Gleam::ITexture::R_16_UNORM)
@@ -603,7 +621,7 @@ bool RenderManager::cacheGleamFunctions(IApp& app, const char* module)
 	}
 
 	// cache graphics function pointers
-	GraphicsFunctions::InitGraphics init_graphics = _gleam_module->GetFunc<GraphicsFunctions::InitGraphics>("InitGraphics");
+	GraphicsFunctions::InitGraphics init_graphics = _gleam_module->getFunc<GraphicsFunctions::InitGraphics>("InitGraphics");
 
 	if (!init_graphics) {
 		log.first.printf("ERROR - Failed to find function 'InitGraphics' in graphics module '%s'.", module_path.getBuffer());
@@ -622,31 +640,31 @@ bool RenderManager::cacheGleamFunctions(IApp& app, const char* module)
 		return false;
 	}
 
-	_graphics_functions.shutdown = _gleam_module->GetFunc<GraphicsFunctions::ShutdownGraphics>("ShutdownGraphics");
+	_graphics_functions.shutdown = _gleam_module->getFunc<GraphicsFunctions::ShutdownGraphics>("ShutdownGraphics");
 
 	if (!_graphics_functions.shutdown) {
 		log.first.printf("ERROR - Failed to find function 'ShutdownGraphics' in graphics module '%s'.", module_path.getBuffer());
 		return false;
 	}
 
-	_graphics_functions.create_window = _gleam_module->GetFunc<GraphicsFunctions::CreateWindow>("CreateWindowS");
-	_graphics_functions.destroy_window = _gleam_module->GetFunc<GraphicsFunctions::DestroyWindow>("DestroyWindowS");
-	_graphics_functions.update_windows = _gleam_module->GetFunc<GraphicsFunctions::UpdateWindows>("UpdateWindows");
-	_graphics_functions.get_shader_extension = _gleam_module->GetFunc<GraphicsFunctions::GetShaderExtension>("GetShaderExtension");
-	_graphics_functions.create_shaderresourceview = _gleam_module->GetFunc<GraphicsFunctions::CreateShaderResourceView>("CreateShaderResourceView");
-	_graphics_functions.create_programbuffers = _gleam_module->GetFunc<GraphicsFunctions::CreateProgramBuffers>("CreateProgramBuffers");
-	_graphics_functions.create_renderdevice = _gleam_module->GetFunc<GraphicsFunctions::CreateRenderDevice>("CreateRenderDevice");
-	_graphics_functions.create_rendertarget = _gleam_module->GetFunc<GraphicsFunctions::CreateRenderTarget>("CreateRenderTarget");
-	_graphics_functions.create_samplerstate = _gleam_module->GetFunc<GraphicsFunctions::CreateSamplerState>("CreateSamplerState");
-	_graphics_functions.create_renderstate = _gleam_module->GetFunc<GraphicsFunctions::CreateRenderState>("CreateRenderState");
-	_graphics_functions.create_commandlist = _gleam_module->GetFunc<GraphicsFunctions::CreateCommandList>("CreateCommandList");
-	_graphics_functions.create_texture = _gleam_module->GetFunc<GraphicsFunctions::CreateTexture>("CreateTexture");
-	_graphics_functions.create_layout = _gleam_module->GetFunc<GraphicsFunctions::CreateLayout>("CreateLayout");
-	_graphics_functions.create_program = _gleam_module->GetFunc<GraphicsFunctions::CreateProgram>("CreateProgram");
-	_graphics_functions.create_shader = _gleam_module->GetFunc<GraphicsFunctions::CreateShader>("CreateShader");
-	_graphics_functions.create_buffer = _gleam_module->GetFunc<GraphicsFunctions::CreateBuffer>("CreateBuffer");
-	_graphics_functions.create_model = _gleam_module->GetFunc<GraphicsFunctions::CreateModel>("CreateModel");
-	_graphics_functions.create_mesh = _gleam_module->GetFunc<GraphicsFunctions::CreateMesh>("CreateMesh");
+	_graphics_functions.create_window = _gleam_module->getFunc<GraphicsFunctions::CreateWindow>("CreateWindowS");
+	_graphics_functions.destroy_window = _gleam_module->getFunc<GraphicsFunctions::DestroyWindow>("DestroyWindowS");
+	_graphics_functions.update_windows = _gleam_module->getFunc<GraphicsFunctions::UpdateWindows>("UpdateWindows");
+	_graphics_functions.get_shader_extension = _gleam_module->getFunc<GraphicsFunctions::GetShaderExtension>("GetShaderExtension");
+	_graphics_functions.create_shaderresourceview = _gleam_module->getFunc<GraphicsFunctions::CreateShaderResourceView>("CreateShaderResourceView");
+	_graphics_functions.create_programbuffers = _gleam_module->getFunc<GraphicsFunctions::CreateProgramBuffers>("CreateProgramBuffers");
+	_graphics_functions.create_renderdevice = _gleam_module->getFunc<GraphicsFunctions::CreateRenderDevice>("CreateRenderDevice");
+	_graphics_functions.create_rendertarget = _gleam_module->getFunc<GraphicsFunctions::CreateRenderTarget>("CreateRenderTarget");
+	_graphics_functions.create_samplerstate = _gleam_module->getFunc<GraphicsFunctions::CreateSamplerState>("CreateSamplerState");
+	_graphics_functions.create_renderstate = _gleam_module->getFunc<GraphicsFunctions::CreateRenderState>("CreateRenderState");
+	_graphics_functions.create_commandlist = _gleam_module->getFunc<GraphicsFunctions::CreateCommandList>("CreateCommandList");
+	_graphics_functions.create_texture = _gleam_module->getFunc<GraphicsFunctions::CreateTexture>("CreateTexture");
+	_graphics_functions.create_layout = _gleam_module->getFunc<GraphicsFunctions::CreateLayout>("CreateLayout");
+	_graphics_functions.create_program = _gleam_module->getFunc<GraphicsFunctions::CreateProgram>("CreateProgram");
+	_graphics_functions.create_shader = _gleam_module->getFunc<GraphicsFunctions::CreateShader>("CreateShader");
+	_graphics_functions.create_buffer = _gleam_module->getFunc<GraphicsFunctions::CreateBuffer>("CreateBuffer");
+	_graphics_functions.create_model = _gleam_module->getFunc<GraphicsFunctions::CreateModel>("CreateModel");
+	_graphics_functions.create_mesh = _gleam_module->getFunc<GraphicsFunctions::CreateMesh>("CreateMesh");
 
 	if (!_graphics_functions.create_window) {
 		log.first.printf("ERROR - Failed to find function 'CreateWindowS' in graphics module '%s'.", module_path.getBuffer());

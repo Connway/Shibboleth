@@ -160,6 +160,11 @@ bool greater(const char* s1, size_t n1, const char* s2);
 template <>
 bool greater(const wchar_t* s1, size_t n1, const wchar_t* s2);
 
+INLINE void ConvertToUTF8(char* output, const wchar_t* input, size_t size);
+INLINE void ConvertToUTF16(wchar_t* output, const char* input, size_t size);
+INLINE size_t FindInvalidUTF8(const char* string, size_t size);
+INLINE bool IsValidUTF8(const char* string, size_t size);
+
 #include "Gaff_String.inl"
 
 template <class Allocator = DefaultAllocator> using AString = String<char, Allocator>;

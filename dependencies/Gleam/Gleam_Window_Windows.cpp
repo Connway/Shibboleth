@@ -466,8 +466,8 @@ bool Window::isFullScreen(void) const
 bool Window::setIcon(const char* icon)
 {
 #ifdef _UNICODE
-	wchar_t buffer[256];
-	mbstowcs(buffer, icon, 256);
+	wchar_t buffer[256] = { 0 };
+	Gaff::ConvertToUTF16(buffer, icon, strlen(icon));
 	HANDLE hIcon = LoadImageW(_hinstance, buffer, IMAGE_ICON, 64, 64, LR_LOADFROMFILE);
 #else
 	HANDLE hIcon = LoadImageA(_hinstance, icon, IMAGE_ICON, 64, 64, LR_LOADFROMFILE);

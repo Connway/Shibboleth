@@ -71,28 +71,28 @@
     <LinkIncremental>true</LinkIncremental>
     <OutDir>..\..\..\build\output\x86\Debug\</OutDir>
     <IntDir>..\..\..\build\intermediate\x86\Debug\App\</IntDir>
-    <TargetName>App</TargetName>
+    <TargetName>App32d</TargetName>
     <TargetExt>.exe</TargetExt>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
     <OutDir>..\..\..\build\output\x64\Debug\</OutDir>
     <IntDir>..\..\..\build\intermediate\x64\Debug\App\</IntDir>
-    <TargetName>App</TargetName>
+    <TargetName>App64d</TargetName>
     <TargetExt>.exe</TargetExt>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
     <OutDir>..\..\..\build\output\x86\Release\</OutDir>
     <IntDir>..\..\..\build\intermediate\x86\Release\App\</IntDir>
-    <TargetName>App</TargetName>
+    <TargetName>App32</TargetName>
     <TargetExt>.exe</TargetExt>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
     <OutDir>..\..\..\build\output\x64\Release\</OutDir>
     <IntDir>..\..\..\build\intermediate\x64\Release\App\</IntDir>
-    <TargetName>App</TargetName>
+    <TargetName>App64</TargetName>
     <TargetExt>.exe</TargetExt>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">

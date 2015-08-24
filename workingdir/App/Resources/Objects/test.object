@@ -33,7 +33,7 @@
 
 			"Sampler Files": [
 				{
-					"File": "Resources/Models/ninja.sampler",
+					"File": "Resources/Samplers/anisotropic_16x.sampler",
 					"Material Map": [
 						{
 							"Material Index": 0,

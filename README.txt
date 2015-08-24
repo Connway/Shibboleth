@@ -26,8 +26,7 @@ Shibboleth is copyrighted under The MIT License. See LICENSE.txt for the full te
 ==========================
 
 Includes Visual Studio 2015 solution/project files and should compile out of the box.
-Once done building, run workingdir/App/copy_dlls.bat before running. Otherwise the engine
-won't be able to find the DLLs it needs in order to run.
+Once done building, run workingdir/App/copy_dlls_and_exe.bat and "workingdir/App/copy_lua_dll.bat [debug/release] [32/64]" before running. Otherwise the engine won't be able to find the DLLs it needs in order to run.
 
 =============
     NOTES

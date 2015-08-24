@@ -23,7 +23,6 @@ THE SOFTWARE.
 #include "Shibboleth_CreateResourceLoadersState.h"
 #include <Shibboleth_ResourceManager.h>
 #include <Shibboleth_RenderManager.h>
-#include <Shibboleth_TaskPoolTags.h>
 
 #include <Shibboleth_ProgramBuffersCreator.h>
 #include <Shibboleth_ShaderProgramLoader.h>
@@ -112,16 +111,6 @@ void CreateResourceLoadersState::update(void)
 			_app.quit();
 			return;
 		}
-
-		//Array<AString> extensions;
-		//extensions.emplacePush(".png");
-		//extensions.emplacePush(".jpeg");
-		//extensions.emplacePush(".jpg");
-		//extensions.emplacePush(".bmp");
-		//extensions.emplacePush(".tiff");
-		//extensions.emplacePush(".tif");
-		//extensions.emplacePush(".dds");
-		//extensions.emplacePush(".tga");
 
 		Array<ResourceManager::JSONModifiers> json_elements;
 		ResourceManager::JSONModifiers modifiers = { AString("image_file"), AString(), false };
