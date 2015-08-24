@@ -28,6 +28,7 @@ THE SOFTWARE.
 #include <Shibboleth_Map.h>
 #include <Gleam_IShaderResourceView.h>
 #include <Gleam_IRenderTarget.h>
+#include <Gleam_ISamplerstate.h>
 #include <Gleam_ITexture.h>
 #include <Gleam_IShader.h>
 #include <Gleam_IWindow.h>
@@ -115,6 +116,8 @@ enum RenderModes
 
 SHIB_ENUM_REF_DEF(DisplayTags);
 SHIB_ENUM_REF_DEF(RenderModes);
+SHIB_ENUM_REF_DEF_EMBEDDED(Gleam_ISamplerState_Filter, Gleam::ISamplerState::FILTER);
+SHIB_ENUM_REF_DEF_EMBEDDED(Gleam_ISamplerState_Wrap, Gleam::ISamplerState::WRAP);
 SHIB_ENUM_REF_DEF_EMBEDDED(Gleam_ITexture_Format, Gleam::ITexture::FORMAT);
 SHIB_ENUM_REF_DEF_EMBEDDED(Gleam_IShader_Type, Gleam::IShader::SHADER_TYPE);
 

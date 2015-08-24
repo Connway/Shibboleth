@@ -52,12 +52,12 @@ bool DynamicModule::destroy(void)
 	return false;
 }
 
-void* DynamicModule::GetAddress(const char* name) const
+void* DynamicModule::getAddress(const char* name) const
 {
 	return dlsym(_module, name);
 }
 
-char* DynamicModule::GetErrorString(void) const
+const char* DynamicModule::GetErrorString(void)
 {
 	return dlerror();
 }

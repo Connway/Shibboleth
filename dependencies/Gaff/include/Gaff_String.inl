@@ -486,7 +486,7 @@ template <class T, class Allocator>
 void String<T, Allocator>::convertToUTF8(const wchar_t* string, size_t size)
 {
 	resize(size * 4); // If somehow every character generates 4 octets
-	utf8::utf16to8(string, string + size, _string);
+	ConvertToUTF8(_string, string, size);
 	trimZeroes(); // Make string exact size
 }
 
@@ -497,7 +497,7 @@ template <class T, class Allocator>
 void String<T, Allocator>::convertToUTF16(const char* string, size_t size)
 {
 	resize(size * 2); // If somehow every character generates surrogate pairs
-	utf8::utf8to16(string, string + size, _string);
+	ConvertToUTF16(_string, string, size);
 	trimZeroes(); // Make string exact size
 }
 
@@ -508,8 +508,7 @@ void String<T, Allocator>::convertToUTF16(const char* string, size_t size)
 template <class T, class Allocator>
 size_t String<T, Allocator>::findInvalidUTF8(void) const
 {
-	char* position = utf8::find_invalid(_string, _string + _size);
-	return (size_t)(position - _string);
+	return FindInvalidUTF8(_string, _size);
 }
 
 /*!
@@ -518,7 +517,7 @@ size_t String<T, Allocator>::findInvalidUTF8(void) const
 template <class T, class Allocator>
 bool String<T, Allocator>::isValidUTF8(void) const
 {
-	return utf8::is_valid(_string, _string + _size);
+	return IsValidUTF8(_string, _size);
 }
 
 

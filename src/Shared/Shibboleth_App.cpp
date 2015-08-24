@@ -23,13 +23,10 @@ THE SOFTWARE.
 #include "Shibboleth_App.h"
 #include "Shibboleth_LooseFileSystem.h"
 #include "Shibboleth_Utilities.h"
-#include "Shibboleth_Allocator.h"
 #include "Shibboleth_IManager.h"
 #include "Shibboleth_String.h"
-#include <Gaff_ScopedExit.h>
 #include <Gaff_Utils.h>
 #include <Gaff_JSON.h>
-#include <iostream>
 #include <regex>
 
 NS_SHIBBOLETH
@@ -55,7 +52,7 @@ App::~App(void)
 
 	_dynamic_loader.forEachModule([](DynamicLoader::ModulePtr module) -> bool
 	{
-		void (*shutdown_func)(void) = module->GetFunc<void (*)(void)>("ShutdownModule");
+		void (*shutdown_func)(void) = module->getFunc<void (*)(void)>("ShutdownModule");
 
 		if (shutdown_func) {
 			shutdown_func();
@@ -132,21 +129,21 @@ bool App::init(int argc, char** argv)
 bool App::loadFileSystem(void)
 {
 	if (!_cmd_line_args.hasElementWithKey("lfs") && !_cmd_line_args.hasElementWithKey("loose_file_system")) {
-		_fs.file_system_module = _dynamic_loader.loadModule("./FileSystem" DYNAMIC_EXTENSION, "File System");
+		_fs.file_system_module = _dynamic_loader.loadModule("./FileSystem" BIT_EXTENSION DYNAMIC_EXTENSION, "File System");
 	}
 
 	if (_fs.file_system_module) {
 		_log_file_pair->first.writeString("Found 'FileSystem" BIT_EXTENSION DYNAMIC_EXTENSION "'. Creating file system\n");
 
-		FileSystemData::InitFileSystemModuleFunc init_func = _fs.file_system_module->GetFunc<FileSystemData::InitFileSystemModuleFunc>("InitModule");
+		FileSystemData::InitFileSystemModuleFunc init_func = _fs.file_system_module->getFunc<FileSystemData::InitFileSystemModuleFunc>("InitModule");
 
 		if (init_func && !init_func(*this)) {
 			_log_file_pair->first.writeString("ERROR - Failed to init file system module\n");
 			return false;
 		}
 
-		_fs.destroy_func = _fs.file_system_module->GetFunc<FileSystemData::DestroyFileSystemFunc>("DestroyFileSystem");
-		_fs.create_func = _fs.file_system_module->GetFunc<FileSystemData::CreateFileSystemFunc>("CreateFileSystem");
+		_fs.destroy_func = _fs.file_system_module->getFunc<FileSystemData::DestroyFileSystemFunc>("DestroyFileSystem");
+		_fs.create_func = _fs.file_system_module->getFunc<FileSystemData::CreateFileSystemFunc>("CreateFileSystem");
 
 		if (!_fs.create_func) {
 			_log_file_pair->first.writeString("ERROR - Failed to find 'CreateFileSystem' in 'FileSystem" BIT_EXTENSION DYNAMIC_EXTENSION "'\n");
@@ -190,11 +187,9 @@ bool App::loadManagers(void)
 	{
 		AString rel_path = AString("./Managers/") + name;
 
-		// Error out if it's not a dynamic module
+		// If it's not a dynamic module, just skip over it.
 		if (!Gaff::File::checkExtension(name, DYNAMIC_EXTENSION)) {
-			_log_file_pair->first.printf("ERROR - '%s' is not a dynamic module\n", rel_path.getBuffer());
-			error = true;
-			return true;
+			return false;
 
 		// It is a dynamic module, but not compiled for our architecture.
 		// Or not compiled in our build mode. Just skip over it.
@@ -205,22 +200,20 @@ bool App::loadManagers(void)
 		DynamicLoader::ModulePtr module = _dynamic_loader.loadModule(rel_path.getBuffer(), name);
 
 		if (module) {
-			ManagerEntry::InitManagerModuleFunc init_func = module->GetFunc<ManagerEntry::InitManagerModuleFunc>("InitModule");
+			ManagerEntry::InitManagerModuleFunc init_func = module->getFunc<ManagerEntry::InitManagerModuleFunc>("InitModule");
 
 			if (!init_func) {
-				//_dynamic_loader.removeModule(name);
 				_log_file_pair->first.printf("ERROR - Failed to find function 'InitModule' in dynamic module '%s'\n", rel_path.getBuffer());
 				error = true;
 				return true;
 
 			} else if (!init_func(*this)) {
-				//_dynamic_loader.removeModule(name);
 				_log_file_pair->first.printf("ERROR - Failed to initialize '%s'\n", rel_path.getBuffer());
 				error = true;
 				return true;
 			}
 
-			ManagerEntry::GetNumManagersFunc num_mgrs_func = module->GetFunc<ManagerEntry::GetNumManagersFunc>("GetNumManagers");
+			ManagerEntry::GetNumManagersFunc num_mgrs_func = module->getFunc<ManagerEntry::GetNumManagersFunc>("GetNumManagers");
 
 			if (!num_mgrs_func) {
 				_dynamic_loader.removeModule(name);
@@ -233,8 +226,8 @@ bool App::loadManagers(void)
 
 			for (unsigned int i = 0; i < num_managers; ++i) {
 				ManagerEntry entry = { module, nullptr, nullptr, nullptr, i };
-				entry.create_func = module->GetFunc<ManagerEntry::CreateManagerFunc>("CreateManager");
-				entry.destroy_func = module->GetFunc<ManagerEntry::DestroyManagerFunc>("DestroyManager");
+				entry.create_func = module->getFunc<ManagerEntry::CreateManagerFunc>("CreateManager");
+				entry.destroy_func = module->getFunc<ManagerEntry::DestroyManagerFunc>("DestroyManager");
 
 				if (entry.create_func && entry.destroy_func) {
 					entry.manager = entry.create_func(i);
@@ -249,6 +242,7 @@ bool App::loadManagers(void)
 						error = true;
 						return true;
 					}
+
 				} else {
 					_dynamic_loader.removeModule(name);
 					_log_file_pair->first.printf("ERROR - Failed to find functions 'CreateManager' and/or 'DestroyManager' in dynamic module '%s'\n", rel_path.getBuffer());
@@ -258,7 +252,7 @@ bool App::loadManagers(void)
 			}
 
 		} else {
-			_log_file_pair->first.printf("ERROR - Failed to load dynamic module '%s'\n", rel_path.getBuffer());
+			_log_file_pair->first.printf("ERROR - Failed to load dynamic module '%s' for reason '%s'\n", rel_path.getBuffer(), Gaff::DynamicModule::GetErrorString());
 			error = true;
 			return true;
 		}
@@ -350,7 +344,7 @@ bool App::loadStates(void)
 		DynamicLoader::ModulePtr module = _dynamic_loader.loadModule(filename.getBuffer(), module_name.getString());
 
 		if (module) {
-			StateMachine::StateEntry::InitStateModuleFunc init_func = module->GetFunc<StateMachine::StateEntry::InitStateModuleFunc>("InitModule");
+			StateMachine::StateEntry::InitStateModuleFunc init_func = module->getFunc<StateMachine::StateEntry::InitStateModuleFunc>("InitModule");
 
 			if (!init_func) {
 				_log_file_pair->first.printf("ERROR - Failed to find function 'InitModule' in dynamic module '%s'\n", filename.getBuffer());
@@ -360,8 +354,8 @@ bool App::loadStates(void)
 				return true;
 			}
 
-			StateMachine::StateEntry::GetNumStatesFunc num_states_func = module->GetFunc<StateMachine::StateEntry::GetNumStatesFunc>("GetNumStates");
-			StateMachine::StateEntry::GetStateNameFunc get_state_name_func = module->GetFunc<StateMachine::StateEntry::GetStateNameFunc>("GetStateName");
+			StateMachine::StateEntry::GetNumStatesFunc num_states_func = module->getFunc<StateMachine::StateEntry::GetNumStatesFunc>("GetNumStates");
+			StateMachine::StateEntry::GetStateNameFunc get_state_name_func = module->getFunc<StateMachine::StateEntry::GetStateNameFunc>("GetStateName");
 
 			if (!num_states_func || !get_state_name_func) {
 				_log_file_pair->first.printf("ERROR - Failed to find functions 'GetNumStates' and/or 'GetStateName' in dynamic module '%s'\n", filename.getBuffer());
@@ -383,8 +377,8 @@ bool App::loadStates(void)
 			}
 
 			StateMachine::StateEntry entry = { AString(state_name.getString()), nullptr, nullptr, nullptr, state_id, j };
-			entry.create_func = module->GetFunc<StateMachine::StateEntry::CreateStateFunc>("CreateState");
-			entry.destroy_func = module->GetFunc<StateMachine::StateEntry::DestroyStateFunc>("DestroyState");
+			entry.create_func = module->getFunc<StateMachine::StateEntry::CreateStateFunc>("CreateState");
+			entry.destroy_func = module->getFunc<StateMachine::StateEntry::DestroyStateFunc>("DestroyState");
 
 			if (entry.create_func && entry.destroy_func) {
 				entry.state = entry.create_func(j);
@@ -427,9 +421,7 @@ bool App::loadStates(void)
 			}
 
 		} else {
-			DWORD err = GetLastError();
-			err = err;
-			_log_file_pair->first.printf("ERROR - Failed to load dynamic module '%s'\n", filename.getBuffer());
+			_log_file_pair->first.printf("ERROR - Failed to load dynamic module '%s' for reason '%s'\n", filename.getBuffer(), Gaff::DynamicModule::GetErrorString());
 		}
 	}
 

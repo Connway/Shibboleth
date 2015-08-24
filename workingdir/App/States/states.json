@@ -1,14 +1,13 @@
 {
-	"starting_state": "SetupGraphicsState",
+	"starting_state": "LoadGraphicsModuleState",
 
 	"states":
 	[
 		{
-			"name": "SetupGraphicsState",
+			"name": "LoadGraphicsModuleState",
 			"module": "ShibbolethStates",
 			"transitions": [1]
 		},
-
 		{
 			"name": "CreateResourceLoadersState",
 			"module": "ShibbolethStates",
@@ -16,9 +15,15 @@
 		},
 
 		{
-			"name": "SetupOtterUIState",
+			"name": "SetupGraphicsState",
 			"module": "ShibbolethStates",
 			"transitions": [3]
+		},
+
+		{
+			"name": "SetupOtterUIState",
+			"module": "ShibbolethStates",
+			"transitions": [4]
 		},
 
 		{

@@ -44,6 +44,8 @@ public:
 	void* rawRequestInterface(unsigned int class_id) const;
 	void getUpdateEntries(Array<UpdateEntry>& entries);
 
+	bool init(void);
+
 	INLINE void setOutputCamera(unsigned int monitor, CameraComponent* camera);
 	INLINE CameraComponent* getOutputCamera(unsigned int monitor) const;
 	INLINE void setNumMonitors(unsigned int num_monitors);
@@ -63,6 +65,10 @@ private:
 	Array<IRenderPipeline*> _pipelines;
 	HashMap<AHashString, DestroyRenderPipelineFunc> _pipeline_map;
 	size_t _active_pipeline;
+
+	ResourceWrapper<ProgramBuffersData> _camera_to_screen_program_buffers;
+	ResourceWrapper<SamplerStateData> _camera_to_screen_sampler;
+	ResourceWrapper<ProgramData> _camera_to_screen_shader;
 
 	RenderManager::WindowRenderTargets _render_targets;
 	RenderManager* _render_mgr;

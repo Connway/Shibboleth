@@ -23,7 +23,11 @@ THE SOFTWARE.
 #if defined(_WIN32) || defined(_WIN64)
 
 #include "Gaff_DynamicModule_Windows.h"
+#include "Gaff_String.h"
 #include <cstdlib>
+#include <cstring>
+
+#define MAX_ERR_LEN 1024
 
 NS_GAFF
 
@@ -40,11 +44,11 @@ DynamicModule::~DynamicModule(void)
 bool DynamicModule::load(const char* filename)
 {
 #ifdef _UNICODE
-	wchar_t buffer[256];
-	mbstowcs(buffer, filename, 256);
-	_module = LoadLibraryW(buffer);
+	wchar_t buffer[256] = { 0 };
+	ConvertToUTF16(buffer, filename, strlen(filename));
+	_module = LoadLibraryEx(buffer, NULL, 0);
 #else
-	_module = LoadLibraryA(filename);
+	_module = LoadLibraryEx(filename, NULL, 0);
 #endif
 
 	return _module != nullptr;
@@ -59,10 +63,47 @@ bool DynamicModule::destroy(void)
 	return false;
 }
 
-void* DynamicModule::GetAddress(const char* name) const
+void* DynamicModule::getAddress(const char* name) const
 {
-	return (void*)GetProcAddress(_module, name);
+	return reinterpret_cast<void*>(GetProcAddress(_module, name));
 }
+
+const char* DynamicModule::GetErrorString(void)
+{
+	static char error[MAX_ERR_LEN] = { 0 };
+
+	LPTSTR msg = nullptr;
+
+	FormatMessage(
+		FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM |
+		FORMAT_MESSAGE_IGNORE_INSERTS,
+		NULL,
+		GetLastError(),
+		MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
+		reinterpret_cast<LPTSTR>(&msg),
+		0,
+		NULL
+	);
+
+#ifdef _UNICODE
+	ConvertToUTF8(error, msg, wcslen(msg));
+#else
+	memcpy(_error, msg, strlen(msg));
+#endif
+
+	LocalFree(msg);
+
+	// Strip out the \r\n at the end of the string.
+	for (size_t i = 0; i < MAX_ERR_LEN; ++i) {
+		if (error[i] == '\r') {
+			error[i] = 0;
+			break;
+		}
+	}
+
+	return error;
+}
+
 
 NS_END
 

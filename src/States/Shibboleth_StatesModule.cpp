@@ -21,16 +21,15 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include <Shibboleth_CreateResourceLoadersState.h>
+#include <Shibboleth_LoadGraphicsModuleState.h>
 #include <Shibboleth_SetupGraphicsState.h>
 #include <Shibboleth_SetupOtterUIState.h>
 #include <Shibboleth_Utilities.h>
 #include <Shibboleth_IApp.h>
-#include <Gleam_Global.h>
 #include <Gaff_Image.h>
 #include <Gaff_JSON.h>
 
 #include <Shibboleth_OcclusionManager.h>
-#include <Shibboleth_CameraComponent.h>
 #include <Shibboleth_ModelComponent.h>
 #include <Shibboleth_UpdateManager.h>
 #include <Shibboleth_ObjectManager.h>
@@ -161,6 +160,7 @@ enum States
 	SETUP_GRAPHICS_STATE = 0,
 	CREATE_RESOURCE_LOADERS_STATE,
 	SETUP_OTTER_UI_STATE,
+	LOAD_GRAPHICS_MODULE_STATE,
 	LOOP_FOREVER_STATE,
 	NUM_STATES
 };
@@ -171,13 +171,15 @@ static CreateStateFunc create_funcs[] = {
 	&CreateStateT<Shibboleth::SetupGraphicsState>,
 	&CreateStateT<Shibboleth::CreateResourceLoadersState>,
 	&CreateStateT<Shibboleth::SetupOtterUIState>,
-	&CreateStateT < LoopState >
+	&CreateStateT<Shibboleth::LoadGraphicsModuleState>,
+	&CreateStateT<LoopState>
 };
 
 static const char* state_names[NUM_STATES] = {
 	"SetupGraphicsState",
 	"CreateResourceLoadersState",
 	"SetupOtterUIState",
+	"LoadGraphicsModuleState",
 	"loopforeverstate"
 };
 
@@ -190,7 +192,7 @@ void* MEMCB ImageAlloc(const size_t size)
 
 void MEMCB ImageFree(const void* const data)
 {
-	Shibboleth::ShibbolethFree((void*)data, g_image_alloc_tag);
+	Shibboleth::ShibbolethFree(const_cast<void*>(data), g_image_alloc_tag);
 }
 
 

@@ -8,6 +8,8 @@ project "App"
 	configurations { "Debug", "Release" }
 	dofile("../../config_map.lua")
 
+	dofile("../../module_suffix.lua")
+
 	if _OPTIONS["console_app"] then
 		kind "ConsoleApp"
 	else

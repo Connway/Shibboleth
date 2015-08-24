@@ -128,11 +128,11 @@ bool ComponentManager::addComponents(DynamicLoader::ModulePtr& module)
 	LogManager::FileLockPair& log = GetApp().getGameLogFile();
 
 	assert(module.valid());
-	GetNumComponentsFunc num_comp_func = module->GetFunc<GetNumComponentsFunc>("GetNumComponents");
-	GetComponentNameFunc comp_name_func = module->GetFunc<GetComponentNameFunc>("GetComponentName");
-	CreateComponentFunc create_comp_func = module->GetFunc<CreateComponentFunc>("CreateComponent");
-	DestroyComponentFunc destroy_comp_func = module->GetFunc<DestroyComponentFunc>("DestroyComponent");
-	InitFunc init_func = module->GetFunc<InitFunc>("InitModule");
+	GetNumComponentsFunc num_comp_func = module->getFunc<GetNumComponentsFunc>("GetNumComponents");
+	GetComponentNameFunc comp_name_func = module->getFunc<GetComponentNameFunc>("GetComponentName");
+	CreateComponentFunc create_comp_func = module->getFunc<CreateComponentFunc>("CreateComponent");
+	DestroyComponentFunc destroy_comp_func = module->getFunc<DestroyComponentFunc>("DestroyComponent");
+	InitFunc init_func = module->getFunc<InitFunc>("InitModule");
 
 	if (!init_func) {
 		log.first.writeString("ERROR - Could not find function named 'InitModule'.\n");

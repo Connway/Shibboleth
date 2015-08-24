@@ -34,6 +34,20 @@ newoption
 	description = "Builds symbol information into binaries."
 }
 
+newoption
+{
+	trigger = "vld_path",
+	value = "path",
+	description = "The path to your Visual Leak Detector installation (Windows Only). Use only if VLD is not already in your global VC++ Directories."
+}
+
+newoption
+{
+	trigger = "fmod_path",
+	value = "path",
+	description = "The path to your FMOD installation. Use only if FMOD is not already in your global VC++ Directories (Windows Only)."
+}
+
 solution "Shibboleth"
 	if _ACTION then
 		location ("project/" .. _ACTION)

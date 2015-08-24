@@ -23,6 +23,7 @@ THE SOFTWARE.
 #pragma once
 
 #include "Shibboleth_SetupGraphicsState.h"
+#include <Shibboleth_RenderPipelineManager.h>
 #include <Shibboleth_RenderManager.h>
 #include <Shibboleth_IApp.h>
 #include <Gleam_IRenderDevice.h>
@@ -58,32 +59,8 @@ void SetupGraphicsState::update(void)
 	bool file_exists = false;
 	Gaff::JSON cfg;
 
-	// Open file and see if it succeeded, scope will close file
-	{
-		Gaff::File file(GRAPHICS_CFG);
-		file_exists = file.isOpen();
-	}
-
-	if (file_exists) {
-		cfg.parseFile(GRAPHICS_CFG);
-
-	} else {
-		log.first.printf("No config file found at '%s'. Generating default config.\n", GRAPHICS_CFG);
-		generateDefaultConfig(cfg);
-		cfg.dumpToFile(GRAPHICS_CFG);
-	}
-
-	Gaff::JSON module = cfg["module"];
-
-	// Instead of asserting, I'm going to log the errors and fail gracefully.
-	if (!module.isString()) {
-		log.first.printf("ERROR - Malformed graphics config file '%s'. 'module' field is not a string.\n", GRAPHICS_CFG);
-		_app.quit();
-		return;
-	}
-
-	if (!render_manager.init(module.getString())) {
-		log.first.printf("ERROR - Failed to initialize the Render Manager using module '%s'.\n", module.getString());
+	if (!cfg.parseFile(GRAPHICS_CFG)) {
+		log.first.printf("ERROR - Failed to parse '%s'.\n", GRAPHICS_CFG);
 		_app.quit();
 		return;
 	}
@@ -255,6 +232,15 @@ void SetupGraphicsState::update(void)
 	}
 
 	if (!render_manager.initThreadData()) {
+		log.first.writeString("ERROR - Failed to create thread data for Render Manager.\n");
+		_app.quit();
+		return;
+	}
+
+	RenderPipelineManager& rp_mgr = _app.getManagerT<RenderPipelineManager>("Render Pipeline Manager");
+
+	if (!rp_mgr.init()) {
+		log.first.writeString("ERROR - Failed to initialize Render Pipeline Manager.\n");
 		_app.quit();
 		return;
 	}
@@ -264,42 +250,6 @@ void SetupGraphicsState::update(void)
 
 void SetupGraphicsState::exit(void)
 {
-}
-
-void SetupGraphicsState::generateDefaultConfig(Gaff::JSON& cfg)
-{
-	cfg = Gaff::JSON::createObject();
-#if !defined(_WIN32) && !defined(_WIN64)
-	cfg.setObject("module", Gaff::JSON::createString("Graphics_OpenGL"));
-#else
-	cfg.setObject("module", Gaff::JSON::createString("Graphics_Direct3D"));
-#endif
-
-	RenderManager& render_manager = _app.getManagerT<RenderManager>("Render Manager");
-	Gleam::IRenderDevice::AdapterList adapters = render_manager.getRenderDevice().getDisplayModes();
-	assert(!adapters.empty());
-
-	Gaff::JSON windows = Gaff::JSON::createArray();
-	Gaff::JSON window_entry = Gaff::JSON::createObject();
-	Gaff::JSON tags = Gaff::JSON::createArray();
-	tags.setObject(size_t(0), Gaff::JSON::createString(GetEnumRefDef<DisplayTags>().getName(DT_1)));
-
-	window_entry.setObject("x", Gaff::JSON::createInteger(0));
-	window_entry.setObject("y", Gaff::JSON::createInteger(0));
-	window_entry.setObject("width", Gaff::JSON::createInteger(800));
-	window_entry.setObject("height", Gaff::JSON::createInteger(600));
-	window_entry.setObject("refresh_rate", Gaff::JSON::createInteger(60));
-	window_entry.setObject("window_name", Gaff::JSON::createString("Shibboleth"));
-	window_entry.setObject("windowed_mode", Gaff::JSON::createString("Windowed"));
-	window_entry.setObject("adapter_id", Gaff::JSON::createInteger(0));
-	window_entry.setObject("display_id", Gaff::JSON::createInteger(0));
-	window_entry.setObject("vsync", Gaff::JSON::createFalse());
-	window_entry.setObject("device_name", Gaff::JSON::createString(adapters[0].adapter_name));
-	window_entry.setObject("tags", tags);
-
-	windows.setObject(size_t(0), window_entry);
-
-	cfg.setObject("windows", windows);
 }
 
 NS_END
