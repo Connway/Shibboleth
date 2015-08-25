@@ -58,6 +58,7 @@ struct JSON::ElementInfo
 	JSON schema;
 	const char* key = nullptr;
 	size_t depth = 0;
+	JSON requires;
 };
 
 
@@ -487,7 +488,7 @@ JSON JSON::operator[](size_t index) const
 JSON::ElementInfo JSON::ExtractElementInfo(JSON element, const SchemaMap& schema_map)
 {
 	assert(element.isString() || element.isObject());
-	JSON::ElementInfo info;
+	ElementInfo info;
 
 	if (element.isString()) {
 		element = schema_map[element.getString()];
@@ -495,12 +496,14 @@ JSON::ElementInfo JSON::ExtractElementInfo(JSON element, const SchemaMap& schema
 
 	assert(element["Type"].isString());
 	assert(element["Optional"].isBoolean());
+	assert(!element["Requires"] || element["Requires"].isArray());
 
 	bool is_object = !strcmp(element["Type"].getString(), "Object");
 	bool is_array = !strcmp(element["Type"].getString(), "Array");
 
 	info.type = element["Type"].getString();
 	info.optional = element["Optional"].isTrue();
+	info.requires = element["Requires"];
 
 	if (is_array) {
 		assert(element["Element Type"].isString());
@@ -549,7 +552,30 @@ bool JSON::validateSchema(const JSON& schema, const SchemaMap& schema_map) const
 		JSON element = getObject(key);
 		info.key = key;
 
+		if (!checkRequirements(info)) {
+			return false;
+		}
+
 		if (!(this->*parse_funcs[info.type])(element, info, schema_map)) {
+			return true;
+		}
+
+		return false;
+	});
+}
+
+bool JSON::checkRequirements(const ElementInfo& info) const
+{
+	if (!info.requires) {
+		return true;
+	}
+
+	return !info.requires.forEachInArray([&](size_t, const JSON& value) ->bool
+	{
+		assert(value.isString());
+
+		if (getObject(value.getString()).isNull()) {
+			snprintf(_error.text, JSON_ERROR_TEXT_LENGTH, "Element '%s' requires element '%s'.", info.key, value.getString());
 			return true;
 		}
 

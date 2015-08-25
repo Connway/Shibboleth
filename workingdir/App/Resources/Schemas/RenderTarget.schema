@@ -12,7 +12,11 @@
 
 	"Depth-Stencil Width": { "Type": "Integer", "Optional": true },
 	"Depth-Stencil Height": { "Type": "Integer", "Optional": true },
-	"Depth-Stencil Format": { "Type": "String", "Optional": true },
+	"Depth-Stencil Format": {
+		"Type": "String", "Optional": true,
+		"Requires": ["Depth-Stencil Width", "Depth-Stencil Height"]
+	},
+
 	"Display Tags": { "Type": "Array", "Optional": false, "Element Type": "String" },
 	"Any Display With Tags": { "Type": "Boolean", "Optional": true }
 }

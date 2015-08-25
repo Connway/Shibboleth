@@ -188,6 +188,8 @@ private:
 
 	bool validateSchema(const JSON& schema, const SchemaMap& schema_map) const;
 
+	bool checkRequirements(const ElementInfo& info) const;
+
 	bool isObjectSchema(const JSON& element, const ElementInfo& info, const SchemaMap& schema_map) const;
 	bool isArraySchema(const JSON& element, const ElementInfo& info, const SchemaMap& schema_map) const;
 	bool isStringSchema(const JSON& element, const ElementInfo& info, const SchemaMap&) const;
