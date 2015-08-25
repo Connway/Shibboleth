@@ -45,7 +45,7 @@ SHIB_REF_IMPL(CameraComponent)
 
 CameraComponent::CameraComponent(void):
 	_aspect_ratio(1.0f), _fov(Gaff::DegToRad * 90.0f),
-	_z_near(0.0001f), _z_far(5000.0f), _window_tags(0),
+	_z_near(0.0001f), _z_far(5000.0f),
 	_render_order(0), _active(true)
 {
 	_clear_color[0] = 0.0f;
@@ -86,7 +86,6 @@ bool CameraComponent::load(const Gaff::JSON& json)
 		getOwner()->registerForWorldDirtyCallback(Gaff::Bind(this, &CameraComponent::updateFrustum));
 	}
 
-	_devices = GetApp().getManagerT<RenderManager>("Render Manager").getDevicesWithTagsAny(_window_tags);
 	GetApp().getManagerT<CameraManager>("Camera Manager").registerCamera(this);
 
 	return true;
@@ -171,12 +170,13 @@ ResourceWrapper<RenderTargetData>& CameraComponent::getRenderTarget(void)
 
 const Array<unsigned int>& CameraComponent::getDevices(void) const
 {
-	return _devices;
-}
+	if (_devices.empty() && _render_target.getResourcePtr()->isLoaded()) {
+		_devices = (_render_target->any_display_with_tags) ?
+			GetApp().getManagerT<RenderManager>("Render Manager").getDevicesWithTagsAny(_render_target->tags) :
+			GetApp().getManagerT<RenderManager>("Render Manager").getDevicesWithTags(_render_target->tags);
+	}
 
-unsigned short CameraComponent::getWindowTags(void) const
-{
-	return _window_tags;
+	return _devices;
 }
 
 unsigned char CameraComponent::getRenderOrder(void) const

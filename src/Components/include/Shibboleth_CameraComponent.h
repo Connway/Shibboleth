@@ -68,7 +68,6 @@ public:
 
 	ResourceWrapper<RenderTargetData>& getRenderTarget(void);
 	const Array<unsigned int>& getDevices(void) const;
-	unsigned short getWindowTags(void) const;
 	unsigned char getRenderOrder(void) const;
 
 	void setActive(bool active);
@@ -79,7 +78,7 @@ private:
 	Gleam::FrustumCPU _unstransformed_frustum;
 	Gleam::FrustumCPU _frustum;
 
-	Array<unsigned int> _devices;
+	mutable Array<unsigned int> _devices;
 
 	ResourceWrapper<RenderTargetData> _render_target;
 
@@ -89,7 +88,6 @@ private:
 	float _fov;
 	float _z_near;
 	float _z_far;
-	unsigned short _window_tags;
 	unsigned char _render_order;
 	bool _active;
 

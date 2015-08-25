@@ -101,9 +101,12 @@ struct RenderTargetData : public Gaff::IVirtualDestructor
 	Array< Array<ShaderResourceViewPtr> > texture_srvs;
 	Array<ShaderResourceViewPtr> depth_stencil_srvs;
 
+	// Used for calculating aspect ratio.
 	unsigned int width;
 	unsigned int height;
+
 	unsigned short tags;
+	bool any_display_with_tags;
 };
 
 using ProgramBuffersData = SingleDataWrapper< Array<ProgramBuffersPtr> >;

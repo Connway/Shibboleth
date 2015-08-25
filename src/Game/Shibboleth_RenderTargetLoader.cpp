@@ -20,6 +20,10 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
+/*
+	NOTE: data->width/height calculations are going to be wrong for data with mixed sizes. (eg: -1/-1 and actual with/height values mixing)
+*/
+
 #include "Shibboleth_RenderTargetLoader.h"
 #include "Shibboleth_ResourceDefines.h"
 #include "Shibboleth_TaskPoolTags.h"
@@ -53,6 +57,13 @@ static bool addOutput(Gleam::IRenderDevice& rd, RenderManager& rm, Gleam::IRende
 
 		width = window_width;
 		height = window_height;
+
+		data->width = static_cast<unsigned int>(window_width);
+		data->height = static_cast<unsigned int>(window_height);
+
+	} else {
+		data->width = Gaff::Max(static_cast<unsigned int>(width), data->width);
+		data->height = Gaff::Max(static_cast<unsigned int>(height), data->height);
 	}
 
 	TexturePtr texture(rm.createTexture());
@@ -125,6 +136,15 @@ static bool addDepthStencil(Gleam::IRenderDevice& rd, RenderManager& rm, Gleam::
 
 		width = window_width;
 		height = window_height;
+
+		// Use the largest texture in the group for width/height.
+		data->width = static_cast<unsigned int>(window_width);
+		data->height = static_cast<unsigned int>(window_height);
+
+	} else {
+		// Just take the largest texture size as the width/height value for this render target.
+		data->width = Gaff::Max(static_cast<unsigned int>(width), data->width);
+		data->height = Gaff::Max(static_cast<unsigned int>(height), data->height);
 	}
 
 	TexturePtr texture(rm.createTexture());
@@ -226,6 +246,7 @@ Gaff::IVirtualDestructor* RenderTargetLoader::load(const char* file_name, unsign
 
 	data->render_targets.resize(rd.getNumDevices());
 	data->tags = disp_tags;
+	data->any_display_with_tags = rt_settings["Any Display With Tags"].isTrue();
 
 	const Gaff::JSON& outputs = rt_settings["Outputs"];
 
@@ -235,7 +256,7 @@ Gaff::IVirtualDestructor* RenderTargetLoader::load(const char* file_name, unsign
 	}
 
 	// Get windows with these tags
-	Array<const RenderManager::WindowData*> windows = (rt_settings["Any Display With Tags"].isTrue()) ?
+	Array<const RenderManager::WindowData*> windows = (data->any_display_with_tags) ?
 		rm.getWindowsWithTagsAny(disp_tags) :
 		rm.getWindowsWithTags(disp_tags);
 

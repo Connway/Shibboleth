@@ -56,7 +56,6 @@ void SetupGraphicsState::update(void)
 	RenderManager& render_manager = _app.getManagerT<RenderManager>("Render Manager");
 	LogManager::FileLockPair& log = _app.getGameLogFile();
 
-	bool file_exists = false;
 	Gaff::JSON cfg;
 
 	if (!cfg.parseFile(GRAPHICS_CFG)) {
