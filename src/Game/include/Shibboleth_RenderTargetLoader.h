@@ -24,17 +24,6 @@ THE SOFTWARE.
 
 #include "Shibboleth_IResourceLoader.h"
 
-namespace Gaff
-{
-	class JSON;
-}
-
-namespace Gleam
-{
-	class IRenderTarget;
-	class IRenderDevice;
-}
-
 NS_SHIBBOLETH
 
 class RenderTargetLoader : public IResourceLoader
@@ -47,10 +36,6 @@ public:
 
 	GAFF_NO_COPY(RenderTargetLoader);
 	GAFF_NO_MOVE(RenderTargetLoader);
-
-private:
-	bool addOutput(Gleam::IRenderDevice& rd, Gleam::IRenderTarget* rt, const Gaff::JSON& settings);
-	bool addDepthStencil(Gleam::IRenderDevice& rd, Gleam::IRenderTarget* rt, const Gaff::JSON& settings);
 };
 
 NS_END
