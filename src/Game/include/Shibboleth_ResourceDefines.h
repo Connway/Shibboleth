@@ -96,7 +96,7 @@ struct ProgramData : public Gaff::IVirtualDestructor
 struct RenderTargetData : public Gaff::IVirtualDestructor
 {
 	Array<RenderTargetPtr> render_targets;
-	Array<TexturePtr> textures;
+	Array< Array<TexturePtr> > textures;
 	Array<TexturePtr> depth_stencils;
 	Array<ShaderResourceViewPtr> texture_srvs;
 	Array<ShaderResourceViewPtr> depth_stencil_srvs;

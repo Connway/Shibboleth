@@ -1,9 +1,31 @@
 {
-	"Width": -1,
-	"Height": -1,
-	"Format": "RGBA_8_UNORM",
+	"Outputs": [
+		{
+			"Width": -1,
+			"Height": -1,
+			"Format": "RGBA_8_UNORM",
+		},
+		{
+			"Width": -1,
+			"Height": -1,
+			"Format": "RGBA_8_UNORM",
+		},
+		{
+			"Width": -1,
+			"Height": -1,
+			"Format": "RGBA_8_UNORM",
+		},
+		{
+			"Width": -1,
+			"Height": -1,
+			"Format": "RGBA_8_UNORM",
+		}
+	],
+
+	"Depth-Stencil Width": -1,
+	"Depth-Stencil Height": -1,
 	"Depth-Stencil Format": "DEPTH_STENCIL_24_8_UNORM_UI",
 
-	"display_tags": ["DISPLAY_MONITOR_1"],
-	"any_display_with_tags": false
+	"Display Tags": ["DISPLAY_MONITOR_1"],
+	"Any Display With Tags": false
 }
