@@ -33,6 +33,136 @@ THE SOFTWARE.
 
 NS_SHIBBOLETH
 
+static bool addOutput(Gleam::IRenderDevice& rd, RenderManager& rm, Gleam::IRenderTarget* rt, RenderTargetData* data, int window_width, int window_height, const Gaff::JSON& settings, const char* file_name)
+{
+	Gleam::ITexture::FORMAT t_fmt = GetEnumRefDef<Gleam::ITexture::FORMAT>().getValue(settings["Format"].getString());
+	int width = static_cast<int>(settings["Width"].getInteger());
+	int height = static_cast<int>(settings["Height"].getInteger());
+
+	if (width == -1 || height == -1) {
+		// If window_width and window_height are also -1, then we are using a bad tag.
+		if (window_width == -1 || window_height == -1) {
+			LogMessage(
+				GetApp().getGameLogFile(), TPT_PRINTLOG, LogManager::LOG_ERROR,
+				"ERROR - Depth-Stencil buffer for Render Target '%s' was marked to use window dimensions, but window tag has more than one window associated with it.\n",
+				file_name
+				);
+
+			return false;
+		}
+
+		width = window_width;
+		height = window_height;
+	}
+
+	TexturePtr texture(rm.createTexture());
+
+	if (!texture) {
+		LogMessage(GetApp().getGameLogFile(), TPT_PRINTLOG, LogManager::LOG_ERROR, "ERROR - Failed to allocate texture for Render Target '%s'.\n", file_name);
+		return false;
+	}
+
+	if (!texture->init2D(rd, width, height, t_fmt)) {
+		LogMessage(GetApp().getGameLogFile(), TPT_PRINTLOG, LogManager::LOG_ERROR, "ERROR - Failed to initialize texture data for Render Target '%s'.\n", file_name);
+		return false;
+	}
+
+	if (!rt->addTexture(rd, texture.get())) {
+		LogMessage(GetApp().getGameLogFile(), TPT_PRINTLOG, LogManager::LOG_ERROR, "ERROR - Failed to allocate texture data for Render Target '%s'.\n", file_name);
+		return false;
+	}
+
+	ShaderResourceViewPtr srv(rm.createShaderResourceView());
+
+	if (!srv) {
+		LogMessage(GetApp().getGameLogFile(), TPT_PRINTLOG, LogManager::LOG_ERROR, "ERROR - Failed to allocate shader resource view for Render Target '%s'.\n", file_name);
+		return false;
+	}
+
+	if (!srv->init(rd, texture.get())) {
+		LogMessage(GetApp().getGameLogFile(), TPT_PRINTLOG, LogManager::LOG_ERROR, "ERROR - Failed to initialize shader resource view for Render Target '%s'.\n", file_name);
+		return false;
+	}
+
+	data->texture_srvs[rd.getCurrentDevice()].emplaceMovePush(Gaff::Move(srv));
+	data->textures[rd.getCurrentDevice()].emplaceMovePush(Gaff::Move(texture));
+
+	return true;
+}
+
+static bool addDepthStencil(Gleam::IRenderDevice& rd, RenderManager& rm, Gleam::IRenderTarget* rt, RenderTargetData* data, int window_width, int window_height, const Gaff::JSON& settings, const char* file_name)
+{
+	// We're not adding Depth-Stencil to this Render Target.
+	if (!settings["Depth-Stencil Format"].isString()) {
+		return true;
+	}
+
+	AString depth_stencil_format(settings["Depth-Stencil Format"].getString());
+	data->depth_stencils.resize(rd.getNumDevices());
+	data->depth_stencil_srvs.resize(rd.getNumDevices());
+
+	Gleam::ITexture::FORMAT ds_fmt = GetEnumRefDef<Gleam::ITexture::FORMAT>().getValue(depth_stencil_format.getBuffer());
+
+	if (ds_fmt < Gleam::ITexture::DEPTH_16_UNORM) {
+		LogMessage(GetApp().getGameLogFile(), TPT_PRINTLOG, LogManager::LOG_ERROR, "ERROR - Render Target file '%s' is malformed. Value at 'Depth-Stencil Format' is not a depth-stencil format.\n", file_name);
+		return false;
+	}
+
+	int width = static_cast<int>(settings["Depth-Stencil Width"].getInteger());
+	int height = static_cast<int>(settings["Depth-Stencil Height"].getInteger());
+
+	if (width == -1 || height == -1) {
+		// If window_width and window_height are also -1, then we are using a bad tag.
+		if (window_width == -1 || window_height == -1) {
+			LogMessage(
+				GetApp().getGameLogFile(), TPT_PRINTLOG, LogManager::LOG_ERROR,
+				"ERROR - Depth-Stencil buffer for Render Target '%s' was marked to use window dimensions, but window tag has more than one window associated with it.\n",
+				file_name
+				);
+
+			return false;
+		}
+
+		width = window_width;
+		height = window_height;
+	}
+
+	TexturePtr texture(rm.createTexture());
+
+	if (!texture) {
+		LogMessage(GetApp().getGameLogFile(), TPT_PRINTLOG, LogManager::LOG_ERROR, "ERROR - Failed to allocate depth-stencil texture for Render Target '%s'.\n", file_name);
+		return false;
+	}
+
+	if (!texture->initDepthStencil(rd, width, height, ds_fmt)) {
+		LogMessage(GetApp().getGameLogFile(), TPT_PRINTLOG, LogManager::LOG_ERROR, "ERROR - Failed to initialize depth-stencil texture data for Render Target '%s'.\n", file_name);
+		return false;
+	}
+
+	if (!rt->addDepthStencilBuffer(rd, texture.get())) {
+		LogMessage(GetApp().getGameLogFile(), TPT_PRINTLOG, LogManager::LOG_ERROR, "ERROR - Failed to allocate depth-stencil texture data for Render Target '%s'.\n", file_name);
+		return false;
+	}
+
+	ShaderResourceViewPtr srv(rm.createShaderResourceView());
+
+	if (!srv) {
+		LogMessage(GetApp().getGameLogFile(), TPT_PRINTLOG, LogManager::LOG_ERROR, "ERROR - Failed to allocate depth-stencil shader resource view for Render Target '%s'.\n", file_name);
+		return false;
+	}
+
+	if (!srv->init(rd, texture.get())) {
+		LogMessage(GetApp().getGameLogFile(), TPT_PRINTLOG, LogManager::LOG_ERROR, "ERROR - Failed to initialize depth-stencil shader resource view for Render Target '%s'.\n", file_name);
+		return false;
+	}
+
+	data->depth_stencil_srvs[rd.getCurrentDevice()] = srv;
+	data->depth_stencils[rd.getCurrentDevice()] = texture;
+
+	return true;
+}
+
+
 RenderTargetLoader::RenderTargetLoader(void)
 {
 }
@@ -75,77 +205,53 @@ Gaff::IVirtualDestructor* RenderTargetLoader::load(const char* file_name, unsign
 	unsigned short disp_tags = DT_ALL;
 
 	if (!display_tags.isNull()) {
-		if (!display_tags.isArray()) {
-			LogMessage(GetApp().getGameLogFile(), TPT_PRINTLOG, LogManager::LOG_ERROR, "ERROR - Render Target file '%s' is malformed. Value at 'display_tags' is not an array of strings.\n", file_name);
-			return nullptr;
-		}
-
 		disp_tags = 0;
 
 		if (EXTRACT_DISPLAY_TAGS(display_tags, disp_tags)) {
+			// This should never get hit. Schema check would have failed.
 			LogMessage(GetApp().getGameLogFile(), TPT_PRINTLOG, LogManager::LOG_ERROR, "ERROR - Render Target file '%s' is malformed. An element in 'display_tags' is not a string.\n", file_name);
 			return nullptr;
 		}
 	}
 
-	AString depth_stencil_format;
-
-	if (rt_settings["Depth-Stencil Format"].isString()) {
-		depth_stencil_format = rt_settings["Depth-Stencil Format"].getString();
-	}
-
-	Gleam::ITexture::FORMAT ds_fmt = Gleam::ITexture::R_8_UNORM;
-
-	if (depth_stencil_format.size()) {
-		ds_fmt = GetEnumRefDef<Gleam::ITexture::FORMAT>().getValue(depth_stencil_format.getBuffer());
-
-		if (ds_fmt < Gleam::ITexture::DEPTH_16_UNORM) {
-			LogMessage(GetApp().getGameLogFile(), TPT_PRINTLOG, LogManager::LOG_ERROR, "ERROR - Render Target file '%s' is malformed. Value at 'Depth-Stencil Format' is not a depth-stencil format.\n", file_name);
-			return nullptr;
-		}
-	}
-
+	// RenderTargetData setup
 	RenderTargetData* data = GetAllocator()->template allocT<RenderTargetData>();
+	RenderManager& rm = GetApp().getManagerT<RenderManager>("Render Manager");
+	Gleam::IRenderDevice& rd = rm.getRenderDevice();
 
 	if (!data) {
 		LogMessage(GetApp().getGameLogFile(), TPT_PRINTLOG, LogManager::LOG_ERROR, "ERROR - Failed to allocate data for Render Target for '%s'.\n", file_name);
 		return nullptr;
 	}
 
+	data->render_targets.resize(rd.getNumDevices());
 	data->tags = disp_tags;
 
-	RenderManager& rm = GetApp().getManagerT<RenderManager>("Render Manager");
-	Gleam::IRenderDevice& rd = rm.getRenderDevice();
+	const Gaff::JSON& outputs = rt_settings["Outputs"];
 
-	data->render_targets.resize(rd.getNumDevices());
-
-
-	if (depth_stencil_format.size()) {
-		data->depth_stencils.resize(rd.getNumDevices());
-		data->depth_stencil_srvs.resize(rd.getNumDevices());
+	if (outputs.isArray()) {
+		data->textures.resize(rd.getNumDevices());
+		data->texture_srvs.resize(rd.getNumDevices());
 	}
 
+	// Get windows with these tags
 	Array<const RenderManager::WindowData*> windows = (rt_settings["Any Display With Tags"].isTrue()) ?
 		rm.getWindowsWithTagsAny(disp_tags) :
 		rm.getWindowsWithTags(disp_tags);
 
 	assert(!windows.empty());
 
-	int ds_width = static_cast<int>(rt_settings["Depth-Stencil Width"].getInteger());
-	int ds_height = static_cast<int>(rt_settings["Depth-Stencil Height"].getInteger());
+	// Cache the window width/height if there is only one window with this tag
+	int window_width = -1;
+	int window_height = -1;
 
-	if (ds_width == -1 || ds_height == -1) {
-		if (windows.size() != 1) {
-			LogMessage(GetApp().getGameLogFile(), TPT_PRINTLOG, LogManager::LOG_ERROR, "ERROR - Width/Height set to window size, but window tags returned more than one window for render target '%s'.\n", file_name);
-			GetAllocator()->freeT(data);
-			return nullptr;
-		}
-
-		ds_width = static_cast<int>(windows[0]->window->getWidth());
-		ds_height = static_cast<int>(windows[0]->window->getHeight());
+	if (windows.size() == 1) {
+		window_width = static_cast<int>(windows[0]->window->getWidth());
+		window_height = static_cast<int>(windows[0]->window->getHeight());
 	}
 
 	for (auto it = windows.begin(); it != windows.end(); ++it) {
+		// Skip if we have already made a render target for this device
 		if (data->render_targets[(*it)->device]) {
 			continue;
 		}
@@ -154,23 +260,24 @@ Gaff::IVirtualDestructor* RenderTargetLoader::load(const char* file_name, unsign
 		rd.setCurrentDevice((*it)->device);
 
 		if (!rt) {
-			LogMessage(GetApp().getGameLogFile(), TPT_PRINTLOG, LogManager::LOG_ERROR, "ERROR - Failed to allocate render target '%s'.\n", file_name);
+			LogMessage(GetApp().getGameLogFile(), TPT_PRINTLOG, LogManager::LOG_ERROR, "ERROR - Failed to allocate Render Target '%s'.\n", file_name);
 			GetAllocator()->freeT(data);
 			return nullptr;
 		}
 
 		if (!rt->init()) {
-			LogMessage(GetApp().getGameLogFile(), TPT_PRINTLOG, LogManager::LOG_ERROR, "ERROR - Failed to initialize render target for '%s'.\n", file_name);
+			LogMessage(GetApp().getGameLogFile(), TPT_PRINTLOG, LogManager::LOG_ERROR, "ERROR - Failed to initialize Render Target for '%s'.\n", file_name);
 			GetAllocator()->freeT(data);
 			return nullptr;
 		}
 
-		const Gaff::JSON& outputs = rt_settings["Outputs"];
-
 		if (outputs.isArray()) {
+			data->textures.resize(rd.getNumDevices());
+			data->texture_srvs.resize(rd.getNumDevices());
+
 			bool failed = outputs.forEachInArray([&](size_t, const Gaff::JSON& value) -> bool
 			{
-				if (!addOutput(rd, rt.get(), value)) {
+				if (!addOutput(rd, rm, rt.get(), data, window_width, window_height, value, file_name)) {
 					return true;
 				}
 
@@ -178,97 +285,20 @@ Gaff::IVirtualDestructor* RenderTargetLoader::load(const char* file_name, unsign
 			});
 
 			if (failed) {
+				GetAllocator()->freeT(data);
 				return nullptr;
 			}
 		}
 
-		if (depth_stencil_format.size()) {
-			TexturePtr texture(rm.createTexture());
-
-			if (texture) {
-				if (!texture->initDepthStencil(rd, ds_width, ds_height, ds_fmt)) {
-					LogMessage(GetApp().getGameLogFile(), TPT_PRINTLOG, LogManager::LOG_ERROR, "ERROR - Failed to initialize depth-stencil texture data for Render Target '%s'.\n", file_name);
-					GetAllocator()->freeT(data);
-					return nullptr;
-				}
-			}
-
-			if (!texture || !rt->addDepthStencilBuffer(rd, texture.get())) {
-				LogMessage(GetApp().getGameLogFile(), TPT_PRINTLOG, LogManager::LOG_ERROR, "ERROR - Failed to allocate depth-stencil texture data for Render Target '%s'.\n", file_name);
-				GetAllocator()->freeT(data);
-				return nullptr;
-			}
-
-			ShaderResourceViewPtr srv(rm.createShaderResourceView());
-
-			if (!srv || !srv->init(rd, texture.get())) {
-				LogMessage(GetApp().getGameLogFile(), TPT_PRINTLOG, LogManager::LOG_ERROR, "ERROR - Failed to create shader resource view for Render Target '%s'.\n", file_name);
-				GetAllocator()->freeT(data);
-				return nullptr;
-			}
-
-			data->depth_stencil_srvs[(*it)->device] = srv;
-			data->depth_stencils[(*it)->device] = texture;
+		if (!addDepthStencil(rd, rm, rt.get(), data, window_width, window_height, rt_settings, file_name)) {
+			GetAllocator()->freeT(data);
+			return nullptr;
 		}
 
 		data->render_targets[(*it)->device] = rt;
 	}
 
 	return data;
-}
-
-bool RenderTargetLoader::addOutput(Gleam::IRenderDevice& rd, Gleam::IRenderTarget* rt, const Gaff::JSON& settings)
-{
-	int width = static_cast<int>(settings["Width"].getInteger());
-	int height = static_cast<int>(settings["Height"].getInteger());
-	AString texture_format(settings["Format"].getString());
-
-	Gleam::ITexture::FORMAT t_fmt = Gleam::ITexture::R_8_UNORM;
-
-	if (texture_format.size()) {
-		t_fmt = GetEnumRefDef<Gleam::ITexture::FORMAT>().getValue(texture_format.getBuffer());
-	}
-
-	if (texture_format.size()) {
-		data->textures.resize(rd.getNumDevices());
-		data->texture_srvs.resize(rd.getNumDevices());
-	}
-
-	if (texture_format.size()) {
-		TexturePtr texture(rm.createTexture());
-
-		if (texture) {
-			if (!texture->init2D(rd, width, height, t_fmt)) {
-				LogMessage(GetApp().getGameLogFile(), TPT_PRINTLOG, LogManager::LOG_ERROR, "ERROR - Failed to initialize texture data for Render Target '%s'.\n", file_name);
-				GetAllocator()->freeT(data);
-				return nullptr;
-			}
-		}
-
-		if (!texture || !rt->addTexture(rd, texture.get())) {
-			LogMessage(GetApp().getGameLogFile(), TPT_PRINTLOG, LogManager::LOG_ERROR, "ERROR - Failed to allocate texture data for Render Target '%s'.\n", file_name);
-			GetAllocator()->freeT(data);
-			return nullptr;
-		}
-
-		ShaderResourceViewPtr srv(rm.createShaderResourceView());
-
-		if (!srv || !srv->init(rd, texture.get())) {
-			LogMessage(GetApp().getGameLogFile(), TPT_PRINTLOG, LogManager::LOG_ERROR, "ERROR - Failed to create shader resource view for Render Target '%s'.\n", file_name);
-			GetAllocator()->freeT(data);
-			return nullptr;
-		}
-
-		data->texture_srvs[(*it)->device] = srv;
-		data->textures[(*it)->device] = texture;
-	}
-
-	return true;
-}
-
-bool RenderTargetLoader::addDepthStencil(Gleam::IRenderDevice& rd, Gleam::IRenderTarget* rt, const Gaff::JSON& settings)
-{
-	return true;
 }
 
 NS_END
