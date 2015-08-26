@@ -124,15 +124,7 @@ void InGameRenderPipeline::GenerateCommandLists(void* job_data)
 				Gleam::TransformCPU final_transform;
 				Gleam::TransformCPU inverse_camera = it->camera_transform.inverse();
 
-				// If we're a static object, just grab the transform from the object.
-				// Maybe just copy the transforms for static objects anyways for cache coherency?
-				if (i == OcclusionManager::OT_STATIC) {
-					final_transform = inverse_camera + result.first->getWorldTransform();
-
-				// Otherwise, grab it from the copies we made.
-				} else {
-					final_transform = inverse_camera + it->transforms[i - 1][index];
-				}
+				final_transform = inverse_camera + it->transforms[i][index];
 
 				// Pre-computing the world-to-camera-to-projection matrix.
 				Gleam::Matrix4x4CPU final_matrix = it->camera->getProjectionMatrix() * final_transform.matrix();

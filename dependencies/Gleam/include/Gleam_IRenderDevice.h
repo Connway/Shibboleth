@@ -109,6 +109,8 @@ public:
 	virtual void executeCommandList(ICommandList* command_list) = 0;
 	virtual bool finishCommandList(ICommandList* command_list) = 0;
 
+	virtual void renderNoVertexInput(unsigned int vert_count) = 0;
+
 	GAFF_NO_COPY(IRenderDevice);
 };
 

@@ -84,6 +84,8 @@ public:
 	void executeCommandList(ICommandList* command_list);
 	bool finishCommandList(ICommandList* command_list);
 
+	void renderNoVertexInput(unsigned int vert_count);
+
 private:
 	struct ScreenMode
 	{

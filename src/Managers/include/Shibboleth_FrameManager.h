@@ -23,7 +23,7 @@ THE SOFTWARE.
 #pragma once
 
 #include "Shibboleth_OcclusionManager.h"
-#include <Shibboleth_ReflectionDefinitions.h>
+#include <Shibboleth_CameraComponent.h>
 #include <Shibboleth_IManager.h>
 #include <Gleam_Transform_CPU.h>
 #include <Gleam_ICommandList.h>
@@ -42,8 +42,7 @@ struct FrameData
 
 	struct ObjectData
 	{
-		// Transforms are in world space. Using OT_SIZE - 1 because we don't need to copy transform data for static objects.
-		Array<Gleam::TransformCPU> transforms[OcclusionManager::OT_SIZE - 1];
+		Array<Gleam::TransformCPU> transforms[OcclusionManager::OT_SIZE];
 		Gleam::TransformCPU camera_transform;
 		OcclusionManager::QueryData objects;
 		CameraComponent* camera;
@@ -87,12 +86,22 @@ public:
 	void finishFrame(size_t phase_id);
 
 private:
+	class CameraPredicate
+	{
+	public:
+		bool operator()(const Gaff::Pair<CameraComponent*, FrameData::CommandListData>& lhs, const CameraComponent* rhs) const
+		{
+			return lhs.first->getRenderOrder() < rhs->getRenderOrder();
+		}
+	};
+
 	struct CounterHack
 	{
 		volatile unsigned int count = 0;
 	};
 
-	FrameData::CommandListMap _cl_cache;
+	// Sort Map by camera render order.
+	Map<CameraComponent*, FrameData::CommandListData, CameraPredicate> _cl_cache;
 
 	Array<unsigned int> _phase_trackers;
 	Array<CounterHack> _frame_trackers;

@@ -87,6 +87,8 @@ public:
 	void executeCommandList(ICommandList* command_list);
 	bool finishCommandList(ICommandList* command_list);
 
+	void renderNoVertexInput(unsigned int vert_count);
+
 	// For supporting deferred contexts
 	void setRenderState(const RenderStateGL* render_state);
 

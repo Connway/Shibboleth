@@ -40,6 +40,8 @@ public:
 	void executeCommandList(ICommandList* command_list);
 	bool finishCommandList(ICommandList* command_list);
 
+	void renderNoVertexInput(unsigned int vert_count);
+
 	void setRenderState(const RenderStateGL* render_state);
 
 	void setLayout(LayoutGL* layout, const IMesh* mesh);

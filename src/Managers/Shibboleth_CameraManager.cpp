@@ -76,11 +76,10 @@ void CameraManager::update(double, void* frame_data)
 
 			_occlusion_mgr->findObjectsInFrustum(_cameras[i]->getFrustum(), od.objects);
 
-			// Skip over static objects. Assuming static objects will never actually move.
-			for (int j = OcclusionManager::OT_DYNAMIC; j < OcclusionManager::OT_SIZE; ++j) {
+			for (int j = OcclusionManager::OT_STATIC; j < OcclusionManager::OT_SIZE; ++j) {
 				// Copy all the transforms.
 				for (auto it = od.objects.results[j].begin(); it != od.objects.results[j].end(); ++it) {
-					od.transforms[j - 1].emplacePush(it->first->getWorldTransform());
+					od.transforms[j].emplacePush(it->first->getWorldTransform());
 				}
 			}
 		}

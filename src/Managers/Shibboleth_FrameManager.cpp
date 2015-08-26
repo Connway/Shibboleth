@@ -22,7 +22,6 @@ THE SOFTWARE.
 
 #include "Shibboleth_FrameManager.h"
 #include "Shibboleth_RenderManager.h"
-#include <Shibboleth_CameraComponent.h>
 #include <Shibboleth_Utilities.h>
 #include <Shibboleth_IApp.h>
 #include <Gleam_IRenderDevice.h>

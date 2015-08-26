@@ -25,4 +25,4 @@ THE SOFTWARE.
 #include "Gleam_ProxyAllocator.h"
 #include <Gaff_Map.h>
 
-template <class Key, class Value> using GleamMap = Gaff::Map<Key, Value, Gleam::ProxyAllocator>;
+template < class Key, class Value, class Predicate = Gaff::KeySearchPredicate<Key, Value> > using GleamMap = Gaff::Map<Key, Value, Gleam::ProxyAllocator, Predicate>;

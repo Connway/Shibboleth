@@ -85,6 +85,8 @@ public:
 	void executeCommandList(ICommandList* command_list);
 	bool finishCommandList(ICommandList* command_list);
 
+	void renderNoVertexInput(unsigned int vert_count);
+
 	ID3D11DeviceContext* getDeviceContext(unsigned int device);
 	ID3D11Device* getDevice(unsigned int device);
 

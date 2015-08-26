@@ -21,12 +21,14 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Shibboleth_RenderPipelineManager.h"
+#include <Shibboleth_CameraComponent.h>
 #include <Shibboleth_IRenderPipeline.h>
 #include <Shibboleth_IFileSystem.h>
 #include <Shibboleth_Utilities.h>
 #include <Shibboleth_IApp.h>
 
 #include <Gleam_IRenderDevice.h>
+#include <Gleam_IProgram.h>
 #include <Gaff_Utils.h>
 
 NS_SHIBBOLETH
@@ -194,6 +196,11 @@ bool RenderPipelineManager::init(void)
 		return false;
 	}
 
+	// Add the sampler to the program buffers
+	for (size_t i = 0; i < _camera_to_screen_program_buffers->data.size(); ++i) {
+		_camera_to_screen_program_buffers->data[i]->addSamplerState(Gleam::IShader::SHADER_PIXEL, _camera_to_screen_sampler->data[i].get());
+	}
+
 	return true;
 }
 
@@ -297,13 +304,44 @@ void RenderPipelineManager::generateCommandLists(double dt, void* frame_data)
 	_pipelines[_active_pipeline]->run(dt, frame_data);
 }
 
-void RenderPipelineManager::renderToScreen(double dt, void* frame_data)
+void RenderPipelineManager::renderToScreen(double, void*)
 {
+	Gleam::IRenderDevice& rd = _render_mgr->getRenderDevice();
+
 	for (size_t i = 0; i < _output_cameras.size(); ++i) {
 		auto& camera_pair = _output_cameras[i];
+		unsigned int device = camera_pair.first->getDevices()[0];
 
-		// get device for monitor
-		// render camera's texture to screen
+		auto& program_buffers = _camera_to_screen_program_buffers->data[device];
+		auto& render_target = camera_pair.first->getRenderTarget();
+		auto& texture_srvs = render_target->texture_srvs[device];
+
+		// Add the g-buffers
+		for (size_t j = 0; i < texture_srvs.size(); ++j) {
+			program_buffers->addResourceView(Gleam::IShader::SHADER_PIXEL, texture_srvs[j].get());
+		}
+
+		if (render_target->depth_stencil_srvs[device]) {
+			program_buffers->addResourceView(Gleam::IShader::SHADER_PIXEL, render_target->depth_stencil_srvs[device].get());
+		}
+
+		// Render the result to the screen
+		rd.setCurrentDevice(device);
+		rd.setCurrentOutput(static_cast<unsigned int>(i));
+
+		_camera_to_screen_shader->programs[device]->bind(rd, program_buffers.get());
+		rd.getActiveOutputRenderTarget()->bind(rd);
+
+		rd.renderNoVertexInput(6); // Render fullscreen quad
+
+		// Pop the g-buffers
+		if (render_target->depth_stencil_srvs[device]) {
+			program_buffers->popResourceView(Gleam::IShader::SHADER_PIXEL);
+		}
+
+		for (size_t j = 0; i < texture_srvs.size(); ++j) {
+			program_buffers->popResourceView(Gleam::IShader::SHADER_PIXEL);
+		}
 	}
 }
 
