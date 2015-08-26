@@ -76,6 +76,11 @@ bool DeferredRenderDeviceD3D::finishCommandList(ICommandList* command_list)
 	return true;
 }
 
+void DeferredRenderDeviceD3D::renderNoVertexInput(unsigned int vert_count)
+{
+	// TODO: IMPLEMENT ME!
+}
+
 ID3D11DeviceContext* DeferredRenderDeviceD3D::getDeviceContext(unsigned int)
 {
 	assert(0 && "Calling a immediate render device function on a deferred render device");

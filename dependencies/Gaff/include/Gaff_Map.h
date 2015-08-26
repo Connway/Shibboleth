@@ -29,12 +29,22 @@ THE SOFTWARE.
 
 NS_GAFF
 
+template <class Key, class Value>
+class KeySearchPredicate
+{
+public:
+	bool operator()(const Pair<Key, Value>& lhs, const Key& rhs) const
+	{
+		return lhs.first < rhs;
+	}
+};
+
 /*!
 	\brief
 		A normal, key/value pair map. Essentially an Array< Pair<Key, Value> >
 		that is managed using binary searches.
 */
-template <class Key, class Value, class Allocator = DefaultAllocator>
+template < class Key, class Value, class Allocator = DefaultAllocator, class Predicate = KeySearchPredicate<Key, Value> >
 class Map
 {
 public:
@@ -93,15 +103,6 @@ public:
 	Iterator findElementWithKey(const Key& key) const;
 
 private:
-	class KeySearchPredicate
-	{
-	public:
-		bool operator()(const Pair<Key, Value>& lhs, const Key& rhs) const
-		{
-			return lhs.first < rhs;
-		}
-	};
-
 	class ValueSearchPredicate
 	{
 	public:

@@ -640,6 +640,15 @@ bool RenderDeviceD3D::finishCommandList(ICommandList*)
 	return false;
 }
 
+void RenderDeviceD3D::renderNoVertexInput(unsigned int vert_count)
+{
+	_active_context->IASetInputLayout(NULL);
+	_active_context->IASetVertexBuffers(0, 0, NULL, NULL, NULL);
+	_active_context->IASetIndexBuffer(NULL, DXGI_FORMAT_R32_UINT, 0);
+	_active_context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	_active_context->Draw(vert_count, 0);
+}
+
 ID3D11DeviceContext* RenderDeviceD3D::getDeviceContext(unsigned int device)
 {
 	assert(_devices.size() > device);

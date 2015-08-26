@@ -6,15 +6,23 @@ struct PixelInputType
 
 struct PixelOutputType
 {
-	float4 diffuse : SV_TARGET0;
+	float4 final_pixel : SV_TARGET0;
 };
 
 SamplerState sample;
-Texture2D tex;
+
+Texture2D diffuse;
+Texture2D specular;
+Texture2D normal;
+Texture2D position;
+Texture2D depth;
 
 PixelOutputType PixelMain(PixelInputType input)
 {
 	PixelOutputType output;
-	output.diffuse = tex.Sample(sample, input.uv);
+
+	// output.final_pixel = diffuse.Sample(sample, input.uv);
+	output.final_pixel = float4(1.0, 0.0, 0.0, 1.0);
+
 	return output;
 }

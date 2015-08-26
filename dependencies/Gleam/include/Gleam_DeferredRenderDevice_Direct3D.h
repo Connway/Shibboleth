@@ -43,6 +43,8 @@ public:
 	void executeCommandList(ICommandList* command_list);
 	bool finishCommandList(ICommandList* command_list);
 
+	void renderNoVertexInput(unsigned int vert_count);
+
 	ID3D11DeviceContext* DeferredRenderDeviceD3D::getDeviceContext(unsigned int);
 	ID3D11Device* DeferredRenderDeviceD3D::getDevice(unsigned int);
 	ID3D11DeviceContext* DeferredRenderDeviceD3D::getActiveDeviceContext(void);

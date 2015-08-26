@@ -27,6 +27,6 @@ THE SOFTWARE.
 
 NS_SHIBBOLETH
 
-template <class Key, class Value> using Map = Gaff::Map<Key, Value, ProxyAllocator>;
+template < class Key, class Value, class Predicate = Gaff::KeySearchPredicate<Key, Value> > using Map = Gaff::Map<Key, Value, ProxyAllocator, Predicate>;
 
 NS_END

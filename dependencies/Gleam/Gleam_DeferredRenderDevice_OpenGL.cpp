@@ -85,6 +85,11 @@ bool DeferredRenderDeviceGL::finishCommandList(ICommandList* command_list)
 	return true;
 }
 
+void DeferredRenderDeviceGL::renderNoVertexInput(unsigned int vert_count)
+{
+	// TODO: IMPLEMENT ME!
+}
+
 void DeferredRenderDeviceGL::setRenderState(const RenderStateGL* render_state)
 {
 	static Gaff::FunctionBinder<void, GLenum> disable_enable_funcs[2] = { Gaff::BindSTDCall(glDisable), Gaff::BindSTDCall(glEnable) };

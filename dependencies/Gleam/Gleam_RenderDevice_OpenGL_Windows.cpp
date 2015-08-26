@@ -607,6 +607,11 @@ bool RenderDeviceGL::finishCommandList(ICommandList*)
 	return false;
 }
 
+void RenderDeviceGL::renderNoVertexInput(unsigned int vert_count)
+{
+	// TODO: IMPLEMENT ME!
+}
+
 void RenderDeviceGL::setRenderState(const RenderStateGL* render_state)
 {
 	glPolygonMode(GL_FRONT_AND_BACK, (render_state->isWireframe()) ? GL_LINE : GL_FILL);

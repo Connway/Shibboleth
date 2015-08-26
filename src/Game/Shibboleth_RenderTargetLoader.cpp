@@ -50,7 +50,7 @@ static bool addOutput(Gleam::IRenderDevice& rd, RenderManager& rm, Gleam::IRende
 				GetApp().getGameLogFile(), TPT_PRINTLOG, LogManager::LOG_ERROR,
 				"ERROR - Depth-Stencil buffer for Render Target '%s' was marked to use window dimensions, but window tag has more than one window associated with it.\n",
 				file_name
-				);
+			);
 
 			return false;
 		}
@@ -109,8 +109,6 @@ static bool addDepthStencil(Gleam::IRenderDevice& rd, RenderManager& rm, Gleam::
 	}
 
 	AString depth_stencil_format(settings["Depth-Stencil Format"].getString());
-	data->depth_stencils.resize(rd.getNumDevices());
-	data->depth_stencil_srvs.resize(rd.getNumDevices());
 
 	Gleam::ITexture::FORMAT ds_fmt = GetEnumRefDef<Gleam::ITexture::FORMAT>().getValue(depth_stencil_format.getBuffer());
 
@@ -129,7 +127,7 @@ static bool addDepthStencil(Gleam::IRenderDevice& rd, RenderManager& rm, Gleam::
 				GetApp().getGameLogFile(), TPT_PRINTLOG, LogManager::LOG_ERROR,
 				"ERROR - Depth-Stencil buffer for Render Target '%s' was marked to use window dimensions, but window tag has more than one window associated with it.\n",
 				file_name
-				);
+			);
 
 			return false;
 		}
@@ -245,15 +243,15 @@ Gaff::IVirtualDestructor* RenderTargetLoader::load(const char* file_name, unsign
 	}
 
 	data->render_targets.resize(rd.getNumDevices());
+	data->textures.resize(rd.getNumDevices());
+	data->texture_srvs.resize(rd.getNumDevices());
+	data->depth_stencils.resize(rd.getNumDevices());
+	data->depth_stencil_srvs.resize(rd.getNumDevices());
+
 	data->tags = disp_tags;
 	data->any_display_with_tags = rt_settings["Any Display With Tags"].isTrue();
 
 	const Gaff::JSON& outputs = rt_settings["Outputs"];
-
-	if (outputs.isArray()) {
-		data->textures.resize(rd.getNumDevices());
-		data->texture_srvs.resize(rd.getNumDevices());
-	}
 
 	// Get windows with these tags
 	Array<const RenderManager::WindowData*> windows = (data->any_display_with_tags) ?
@@ -293,9 +291,6 @@ Gaff::IVirtualDestructor* RenderTargetLoader::load(const char* file_name, unsign
 		}
 
 		if (outputs.isArray()) {
-			data->textures.resize(rd.getNumDevices());
-			data->texture_srvs.resize(rd.getNumDevices());
-
 			bool failed = outputs.forEachInArray([&](size_t, const Gaff::JSON& value) -> bool
 			{
 				if (!addOutput(rd, rm, rt.get(), data, window_width, window_height, value, file_name)) {

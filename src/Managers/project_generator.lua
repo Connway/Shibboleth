@@ -63,6 +63,7 @@ project "ManagersModule"
 		"../Shared/include",
 		"../Memory/include",
 		"../Game/include",
+		"../Components/include",
 		"../../dependencies/OtterUI/inc",
 		"../../dependencies/jansson",
 		"../../dependencies/Gleam/include",

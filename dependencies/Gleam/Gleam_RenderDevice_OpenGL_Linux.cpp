@@ -480,6 +480,11 @@ bool RenderDeviceGL::finishCommandList(ICommandList*)
 	return false;
 }
 
+void RenderDeviceGL::renderNoVertexInput(unsigned int vert_count)
+{
+	// TODO: IMPLEMENT ME!
+}
+
 NS_END
 
 #endif
