@@ -24,7 +24,7 @@ THE SOFTWARE.
 
 #include "Shibboleth_ResourceDefines.h"
 #include "Shibboleth_ResourceWrapper.h"
-#include "Shibboleth_IComponent.h"
+#include "Shibboleth_Component.h"
 #include <Shibboleth_ReflectionDefinitions.h>
 #include <Shibboleth_Array.h>
 #include <Gleam_Matrix4x4_CPU.h>
@@ -34,7 +34,7 @@ NS_SHIBBOLETH
 
 class IApp;
 
-class CameraComponent : public IComponent
+class CameraComponent : public Component
 {
 public:
 	INLINE static const char* getComponentName(void)
@@ -71,7 +71,6 @@ public:
 	unsigned char getRenderOrder(void) const;
 
 	void setActive(bool active);
-	bool isActive(void) const;
 
 private:
 	Gleam::Matrix4x4CPU _projection_matrix;

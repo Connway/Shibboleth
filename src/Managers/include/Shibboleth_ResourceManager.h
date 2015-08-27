@@ -150,7 +150,8 @@ public:
 	***********************************************************************************************************/
 	ResourcePtr loadResourceImmediately(const char* filename, unsigned long long user_data, HashMap<AString, IFile*>& file_map);
 
-	void addRequestAddedCallback(const Gaff::Function<void, ResourcePtr&>& callback);
+	void addRequestAddedCallback(const Gaff::FunctionBinder<void, ResourcePtr&>& callback);
+	void removeRequestAddedCallback(const Gaff::FunctionBinder<void, ResourcePtr&>& callback);
 
 	void* rawRequestInterface(unsigned int class_id) const;
 
@@ -164,7 +165,7 @@ private:
 
 	HashMap<AHashString, LoaderData> _resource_loaders;
 	HashMap<AHashString, ResourcePtr> _resource_cache;
-	Array< Gaff::Function<void, ResourcePtr&> > _request_added_callbacks;
+	Array< Gaff::FunctionBinder<void, ResourcePtr&> > _request_added_callbacks;
 	IApp& _app;
 
 	Gaff::SpinLock _res_cache_lock;

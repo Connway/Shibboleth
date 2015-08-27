@@ -23,6 +23,7 @@ THE SOFTWARE.
 #pragma once
 
 #include <Shibboleth_String.h>
+#include <Shibboleth_Array.h>
 #include <Gaff_IRequestableInterface.h>
 #include <Gaff_IncludeAssert.h>
 #include <Gaff_JSON.h>
@@ -46,72 +47,42 @@ NS_SHIBBOLETH
 
 class Object;
 
-class IComponent : public Gaff::IRequestableInterface
+class Component : public Gaff::IRequestableInterface
 {
 public:
-	IComponent(void): _owner(nullptr), _comp_index(0) {}
-	virtual ~IComponent(void) {}
+	Component(void);
+	virtual ~Component(void);
 
-	virtual const Gaff::JSON& getSchema(void) const
-	{
-		static Gaff::JSON empty_schema;
-		return empty_schema;
-	}
+	virtual const Gaff::JSON& getSchema(void) const;
 
-	virtual bool validate(const Gaff::JSON& json)
-	{
-		const Gaff::JSON& schema = getSchema();
-		return (schema) ? json.validate(schema) : true;
-	}
+	virtual bool validate(const Gaff::JSON& json);
 
-	virtual bool load(const Gaff::JSON&) { return true; }
-	virtual bool save(Gaff::JSON&) { return true; }
+	virtual bool load(const Gaff::JSON&);
+	virtual bool save(Gaff::JSON&);
 
-	virtual void allComponentsLoaded(void) {}
+	virtual void allComponentsLoaded(void);
 
-	const AString& getName(void) const
-	{
-		return _name;
-	}
+	virtual void setActive(bool active);
+	virtual bool isActive(void) const;
 
-	void setName(const char* name)
-	{
-		assert(name && strlen(name));
-		_name = name;
-	}
+	const AString& getName(void) const;
+	void setName(const char* name);
 
-	const Object* getOwner(void) const
-	{
-		return _owner;
-	}
+	const Object* getOwner(void) const;
+	Object* getOwner(void);
+	void setOwner(Object* owner);
 
-	Object* getOwner(void)
-	{
-		return _owner;
-	}
-
-	void setOwner(Object* owner)
-	{
-		_owner = owner;
-	}
-
-	size_t getIndex(void) const
-	{
-		return _comp_index;
-	}
-
-	void setIndex(size_t index)
-	{
-		_comp_index = index;
-	}
+	size_t getIndex(void) const;
+	void setIndex(size_t index);
 
 private:
 	AString _name;
 	Object* _owner;
 	size_t _comp_index;
+	bool _active;
 
-	GAFF_NO_COPY(IComponent);
-	GAFF_NO_MOVE(IComponent);
+	GAFF_NO_COPY(Component);
+	GAFF_NO_MOVE(Component);
 };
 
 NS_END

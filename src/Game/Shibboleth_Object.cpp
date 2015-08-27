@@ -76,6 +76,7 @@ bool Object::init(const Gaff::JSON& json)
 bool Object::init(const char* file_name)
 {
 	assert(file_name && strlen(file_name));
+	assert(!_name.size());
 
 	Gaff::JSON object_json;
 
@@ -221,24 +222,24 @@ size_t Object::getNumComponents(void) const
 	return _components.size();
 }
 
-const IComponent* Object::getComponent(unsigned int index) const
+const Component* Object::getComponent(unsigned int index) const
 {
 	assert(index < _components.size());
 	return _components[index];
 }
 
-IComponent* Object::getComponent(unsigned int index)
+Component* Object::getComponent(unsigned int index)
 {
 	assert(index < _components.size());
 	return _components[index];
 }
 
-const Array<IComponent*>& Object::getComponents(void) const
+const Array<Component*>& Object::getComponents(void) const
 {
 	return _components;
 }
 
-Array<IComponent*>& Object::getComponents(void)
+Array<Component*>& Object::getComponents(void)
 {
 	return _components;
 }
@@ -389,7 +390,7 @@ bool Object::createComponents(const Gaff::JSON& json)
 			return true;
 		}
 
-		IComponent* component = _comp_mgr.createComponent(type.getString());
+		Component* component = _comp_mgr.createComponent(type.getString());
 
 		if (!component) {
 			// log error

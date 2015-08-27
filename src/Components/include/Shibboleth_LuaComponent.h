@@ -25,7 +25,7 @@ THE SOFTWARE.
 #include <Shibboleth_ReflectionDefinitions.h>
 #include <Shibboleth_ResourceDefines.h>
 #include <Shibboleth_ResourceWrapper.h>
-#include <Shibboleth_IComponent.h>
+#include <Shibboleth_Component.h>
 
 namespace lua
 {
@@ -36,7 +36,7 @@ NS_SHIBBOLETH
 
 class ResourceManager;
 
-class LuaComponent : public IComponent
+class LuaComponent : public Component
 {
 public:
 	INLINE static const char* getComponentName(void)

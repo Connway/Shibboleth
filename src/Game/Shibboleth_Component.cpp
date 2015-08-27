@@ -20,59 +20,90 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#pragma once
-
 #include "Shibboleth_Component.h"
-#include <Shibboleth_ReflectionDefinitions.h>
-#include <Shibboleth_DynamicLoader.h>
-#include <Shibboleth_HashString.h>
-#include <Shibboleth_IManager.h>
-#include <Shibboleth_HashMap.h>
-#include <Shibboleth_String.h>
 
 NS_SHIBBOLETH
 
-class IApp;
-
-class ComponentManager : public IManager
+Component::Component(void):
+	_owner(nullptr), _comp_index(0),
+	_active(true)
 {
-public:
-	ComponentManager(void);
-	~ComponentManager(void);
+}
 
-	const char* getName(void) const;
+Component::~Component(void)
+{
+}
 
-	void allManagersCreated(void);
+const Gaff::JSON& Component::getSchema(void) const
+{
+	static Gaff::JSON empty_schema;
+	return empty_schema;
+}
 
-	INLINE Component* createComponent(AHashString name);
-	INLINE Component* createComponent(const char* name);
-	INLINE void destroyComponent(Component* component);
+bool Component::validate(const Gaff::JSON& json)
+{
+	const Gaff::JSON& schema = getSchema();
+	return (schema) ? json.validate(schema) : true;
+}
 
-	void* rawRequestInterface(unsigned int class_id) const;
+bool Component::load(const Gaff::JSON&)
+{
+	return true;
+}
 
-private:
-	using InitFunc = bool (*)(IApp&);
-	using CreateComponentFunc = Component* (*)(unsigned int);
-	using DestroyComponentFunc = void (*)(Component*, unsigned int);
-	using GetNumComponentsFunc = unsigned int (*)(void);
-	using GetComponentNameFunc = const char* (*)(unsigned int);
+bool Component::save(Gaff::JSON&)
+{
+	return true;
+}
 
-	struct ComponentEntry
-	{
-		DynamicLoader::ModulePtr module;
-		CreateComponentFunc create;
-		DestroyComponentFunc destroy;
-		unsigned int component_id;
-	};
+void Component::allComponentsLoaded(void)
+{
+}
 
-	HashMap<AHashString, ComponentEntry> _components;
+void Component::setActive(bool active)
+{
+	_active = active;
+}
 
-	bool addComponents(DynamicLoader::ModulePtr& module);
+bool Component::isActive(void) const
+{
+	return _active;
+}
 
-	GAFF_NO_COPY(ComponentManager);
-	GAFF_NO_MOVE(ComponentManager);
+const AString& Component::getName(void) const
+{
+	return _name;
+}
 
-	SHIB_REF_DEF(ComponentManager);
-};
+void Component::setName(const char* name)
+{
+	assert(name && strlen(name));
+	_name = name;
+}
+
+const Object* Component::getOwner(void) const
+{
+	return _owner;
+}
+
+Object* Component::getOwner(void)
+{
+	return _owner;
+}
+
+void Component::setOwner(Object* owner)
+{
+	_owner = owner;
+}
+
+size_t Component::getIndex(void) const
+{
+	return _comp_index;
+}
+
+void Component::setIndex(size_t index)
+{
+	_comp_index = index;
+}
 
 NS_END

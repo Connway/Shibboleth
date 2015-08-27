@@ -46,6 +46,23 @@ struct ResourceData
 	HashMap<AString, IFile*> file_map;
 };
 
+void ResourceLoadingJob(void* data)
+{
+	ResourceData* load_data = reinterpret_cast<ResourceData*>(data);
+
+	Gaff::IVirtualDestructor* res_data = load_data->res_loader->load(load_data->res_ptr->getResourceKey().getString().getBuffer(), load_data->res_ptr->getUserData(), load_data->file_map);
+
+	if (res_data) {
+		load_data->res_ptr->setResource(res_data);
+	} else {
+		// Log error
+		load_data->res_ptr->failed();
+	}
+
+	load_data->res_ptr->callCallbacks();
+	GetAllocator()->freeT(load_data);
+}
+
 void ResourceReadingJob(void* data)
 {
 	ResourceData* read_data = reinterpret_cast<ResourceData*>(data);
@@ -109,24 +126,6 @@ void ResourceReadingJob(void* data)
 		GetApp().getJobPool().addJobs(&job_data);
 	}
 }
-
-void ResourceLoadingJob(void* data)
-{
-	ResourceData* load_data = reinterpret_cast<ResourceData*>(data);
-
-	Gaff::IVirtualDestructor* res_data = load_data->res_loader->load(load_data->res_ptr->getResourceKey().getString().getBuffer(), load_data->res_ptr->getUserData(), load_data->file_map);
-
-	if (res_data) {
-		load_data->res_ptr->setResource(res_data);
-	} else {
-		// Log error
-		load_data->res_ptr->failed();
-	}
-
-	load_data->res_ptr->callCallbacks();
-	GetAllocator()->freeT(load_data);
-}
-
 
 // Resource Container
 ResourceContainer::ResourceContainer(const AHashString& res_key, ResourceManager* res_manager, ZRC zero_ref_callback, unsigned long long user_data):
@@ -406,9 +405,18 @@ ResourcePtr ResourceManager::loadResourceImmediately(const char* filename, unsig
 	}
 }
 
-void ResourceManager::addRequestAddedCallback(const Gaff::Function<void, ResourcePtr&>& callback)
+void ResourceManager::addRequestAddedCallback(const Gaff::FunctionBinder<void, ResourcePtr&>& callback)
 {
-	_request_added_callbacks.push(callback);
+	_request_added_callbacks.emplacePush(callback);
+}
+
+void ResourceManager::removeRequestAddedCallback(const Gaff::FunctionBinder<void, ResourcePtr&>& callback)
+{
+	auto it = _request_added_callbacks.linearSearch(callback);
+
+	if (it != _request_added_callbacks.end()) {
+		_request_added_callbacks.fastErase(it);
+	}
 }
 
 void ResourceManager::zeroRefCallback(const AHashString& res_key)

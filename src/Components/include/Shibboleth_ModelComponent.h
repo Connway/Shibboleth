@@ -24,7 +24,7 @@ THE SOFTWARE.
 
 #include "Shibboleth_ResourceDefines.h"
 #include "Shibboleth_ResourceWrapper.h"
-#include "Shibboleth_IComponent.h"
+#include "Shibboleth_Component.h"
 #include <Shibboleth_ReflectionDefinitions.h>
 #include <Shibboleth_RenderManager.h>
 #include <Gleam_IBuffer.h>
@@ -40,7 +40,7 @@ class RenderManager;
 //class LoadingMessage;
 struct ModelData;
 
-class ModelComponent : public IComponent
+class ModelComponent : public Component
 {
 public:
 	INLINE static const char* getComponentName(void)

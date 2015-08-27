@@ -29,7 +29,9 @@ THE SOFTWARE.
 #include <Gaff_Image.h>
 #include <Gaff_JSON.h>
 
+#include <Shibboleth_RenderPipelineManager.h>
 #include <Shibboleth_OcclusionManager.h>
+#include <Shibboleth_CameraComponent.h>
 #include <Shibboleth_ModelComponent.h>
 #include <Shibboleth_UpdateManager.h>
 #include <Shibboleth_ObjectManager.h>
@@ -46,13 +48,23 @@ THE SOFTWARE.
 class LoopState : public Shibboleth::IState
 {
 public:
-	LoopState(Shibboleth::IApp& app) : _object(nullptr), _app(app) {}
+	LoopState(Shibboleth::IApp& app):
+		_object(nullptr), _camera(nullptr),
+		_app(app)
+	{
+	}
+
 	~LoopState(void)
 	{
 		if (_object) {
 			Shibboleth::GetApp().getManagerT<Shibboleth::OcclusionManager>("Occlusion Manager").removeObject(_object);
 			Shibboleth::GetApp().getManagerT<Shibboleth::ObjectManager>("Object Manager").removeObject(_object->getID());
 		}
+	}
+
+	void ResReq(Shibboleth::ResourcePtr& res)
+	{
+		
 	}
 
 	bool init(unsigned int)
@@ -62,6 +74,8 @@ public:
 
 	void enter(void)
 	{
+		_app.getManagerT<Shibboleth::ResourceManager>("Resource Manager").addRequestAddedCallback(Gaff::Bind(this, &LoopState::ResReq));
+
 		_object = _app.getManagerT<Shibboleth::ObjectManager>("Object Manager").createObject();
 
 		if (_object) {
@@ -82,12 +96,12 @@ public:
 		_camera = _app.getManagerT<Shibboleth::ObjectManager>("Object Manager").createObject();
 
 		if (_camera) {
-			if (_object->init("Resources/Objects/test_camera.object")) {
+			if (_camera->init("Resources/Objects/test_camera.object")) {
 				//Shibboleth::ModelComponent* model = _object->getFirstComponentWithInterface<Shibboleth::ModelComponent>();
 				//Shibboleth::OcclusionManager::UserData user_data(reinterpret_cast<unsigned long long>(model), 0);
 				//_app.getManagerT<Shibboleth::OcclusionManager>("Occlusion Manager").addObject(_object, Shibboleth::OcclusionManager::OT_DYNAMIC, user_data);
 				_camera->setLocalPosition(Gleam::Vector4CPU(0.0f, 5.0f, -5.0f, 1.0f));
-
+				
 			} else {
 				_app.getManagerT<Shibboleth::ObjectManager>("Object Manager").removeObject(_camera->getID());
 				_camera = nullptr;
@@ -103,6 +117,14 @@ public:
 	{
 		if (!_object || !_camera)
 			return;
+
+		static Shibboleth::CameraComponent* camera = _camera->getFirstComponentWithInterface<Shibboleth::CameraComponent>();
+		static bool added = false;
+
+		if (camera && camera->getRenderTarget().getResourcePtr()->isLoaded() && !added) {
+			_app.getManagerT<Shibboleth::RenderPipelineManager>("Render Pipeline Manager").setOutputCamera(camera);
+			added = true;
+		}
 
 		static Gaff::Timer timer;
 		timer.stop();
@@ -122,6 +144,7 @@ public:
 
 	void exit(void)
 	{
+		_app.getManagerT<Shibboleth::ResourceManager>("Resource Manager").removeRequestAddedCallback(Gaff::Bind(this, &LoopState::ResReq));
 	}
 
 	void render(double dt)

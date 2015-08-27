@@ -33,7 +33,7 @@ THE SOFTWARE.
 #endif
 
 template <class Component>
-Shibboleth::IComponent* CreateComponent(void)
+Shibboleth::Component* CreateComponent(void)
 {
 	return Shibboleth::GetAllocator()->template allocT<Component>();
 }
@@ -46,7 +46,7 @@ enum Components
 	NUM_COMPONENTS
 };
 
-typedef Shibboleth::IComponent* (*CreateComponentFunc)(void);
+typedef Shibboleth::Component* (*CreateComponentFunc)(void);
 typedef const char* (*ComponentNameFunc)(void);
 typedef void (*RefDefClearFunc)(void);
 
@@ -88,13 +88,13 @@ DYNAMICEXPORT_C unsigned int GetNumComponents(void)
 	return NUM_COMPONENTS;
 }
 
-DYNAMICEXPORT_C Shibboleth::IComponent* CreateComponent(unsigned int id)
+DYNAMICEXPORT_C Shibboleth::Component* CreateComponent(unsigned int id)
 {
 	assert(id < NUM_COMPONENTS);
 	return create_funcs[id]();
 }
 
-DYNAMICEXPORT_C void DestroyComponent(Shibboleth::IComponent* component, unsigned int)
+DYNAMICEXPORT_C void DestroyComponent(Shibboleth::Component* component, unsigned int)
 {
 	Shibboleth::GetAllocator()->freeT(component);
 }

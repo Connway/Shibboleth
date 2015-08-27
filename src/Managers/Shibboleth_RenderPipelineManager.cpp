@@ -108,7 +108,7 @@ void RenderPipelineManager::allManagersCreated(void)
 	}
 
 	IFileSystem* fs = GetApp().getFileSystem();
-	IFile* file = fs->openFile("/graphics.cfg");
+	IFile* file = fs->openFile("graphics.cfg");
 
 	if (!file) {
 		log.first.printf("ERROR - Could not open file 'graphics.cfg'.\n");
@@ -201,27 +201,44 @@ bool RenderPipelineManager::init(void)
 		_camera_to_screen_program_buffers->data[i]->addSamplerState(Gleam::IShader::SHADER_PIXEL, _camera_to_screen_sampler->data[i].get());
 	}
 
+	refreshMonitors();
+
 	return true;
 }
 
-void RenderPipelineManager::setOutputCamera(unsigned int monitor, CameraComponent* camera)
+void RenderPipelineManager::setOutputCamera(CameraComponent* camera)
 {
-	assert(monitor < _output_cameras.size());
-	_output_cameras[monitor].first = camera;
+	assert(!_output_cameras.empty());
+
+	// Use the data from the render target information to find the display we belong to.
+	auto windows = (camera->getRenderTarget()->any_display_with_tags) ?
+		_render_mgr->getWindowsWithTagsAny(camera->getRenderTarget()->tags) :
+		_render_mgr->getWindowsWithTags(camera->getRenderTarget()->tags);
+
+	assert(windows.size() == 1);
+
+	for (auto it = _output_cameras.begin(); it != _output_cameras.end(); ++it) {
+		if (it->device == windows[0]->device && it->output == windows[0]->output) {
+			it->camera = camera;
+			break;
+		}
+	}
 }
 
 CameraComponent* RenderPipelineManager::getOutputCamera(unsigned int monitor) const
 {
 	assert(monitor < _output_cameras.size());
-	return _output_cameras[monitor].first;
+	return _output_cameras[monitor].camera;
 }
 
-void RenderPipelineManager::setNumMonitors(unsigned int num_monitors)
+void RenderPipelineManager::refreshMonitors(void)
 {
-	_output_cameras.resize(num_monitors);
+	const auto& windows = _render_mgr->getWindowData();
+	_output_cameras.resize(windows.size());
 
-	for (unsigned int i = 0; i < _output_cameras.size(); ++i) {
-		_output_cameras[i].second = _render_mgr->getRenderDevice().getDeviceForMonitor(i);
+	for (unsigned int i = 0; i < windows.size(); ++i) {
+		_output_cameras[i].device = windows[i].device;
+		_output_cameras[i].output = windows[i].output;
 	}
 }
 
@@ -309,33 +326,36 @@ void RenderPipelineManager::renderToScreen(double, void*)
 	Gleam::IRenderDevice& rd = _render_mgr->getRenderDevice();
 
 	for (size_t i = 0; i < _output_cameras.size(); ++i) {
-		auto& camera_pair = _output_cameras[i];
-		unsigned int device = camera_pair.first->getDevices()[0];
+		CameraData& camera_data = _output_cameras[i];
 
-		auto& program_buffers = _camera_to_screen_program_buffers->data[device];
-		auto& render_target = camera_pair.first->getRenderTarget();
-		auto& texture_srvs = render_target->texture_srvs[device];
+		if (!camera_data.camera) {
+			continue;
+		}
+
+		auto& program_buffers = _camera_to_screen_program_buffers->data[camera_data.device];
+		auto& render_target = camera_data.camera->getRenderTarget();
+		auto& texture_srvs = render_target->texture_srvs[camera_data.device];
 
 		// Add the g-buffers
 		for (size_t j = 0; i < texture_srvs.size(); ++j) {
 			program_buffers->addResourceView(Gleam::IShader::SHADER_PIXEL, texture_srvs[j].get());
 		}
 
-		if (render_target->depth_stencil_srvs[device]) {
-			program_buffers->addResourceView(Gleam::IShader::SHADER_PIXEL, render_target->depth_stencil_srvs[device].get());
+		if (render_target->depth_stencil_srvs[camera_data.device]) {
+			program_buffers->addResourceView(Gleam::IShader::SHADER_PIXEL, render_target->depth_stencil_srvs[camera_data.device].get());
 		}
 
 		// Render the result to the screen
-		rd.setCurrentDevice(device);
-		rd.setCurrentOutput(static_cast<unsigned int>(i));
+		rd.setCurrentDevice(camera_data.device);
+		rd.setCurrentOutput(camera_data.output);
 
-		_camera_to_screen_shader->programs[device]->bind(rd, program_buffers.get());
+		_camera_to_screen_shader->programs[camera_data.device]->bind(rd, program_buffers.get());
 		rd.getActiveOutputRenderTarget()->bind(rd);
 
 		rd.renderNoVertexInput(6); // Render fullscreen quad
 
 		// Pop the g-buffers
-		if (render_target->depth_stencil_srvs[device]) {
+		if (render_target->depth_stencil_srvs[camera_data.device]) {
 			program_buffers->popResourceView(Gleam::IShader::SHADER_PIXEL);
 		}
 

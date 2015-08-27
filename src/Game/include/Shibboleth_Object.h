@@ -22,7 +22,7 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Shibboleth_IComponent.h"
+#include "Shibboleth_Component.h"
 #include <Shibboleth_String.h>
 #include <Shibboleth_Array.h>
 #include <Gaff_SpinLock.h>
@@ -133,10 +133,10 @@ public:
 	INLINE void setLocalAABB(const Gleam::AABBCPU& aabb);
 
 	INLINE size_t getNumComponents(void) const;
-	INLINE const IComponent* getComponent(unsigned int index) const;
-	INLINE IComponent* getComponent(unsigned int index);
-	INLINE const Array<IComponent*>& getComponents(void) const;
-	INLINE Array<IComponent*>& getComponents(void);
+	INLINE const Component* getComponent(unsigned int index) const;
+	INLINE Component* getComponent(unsigned int index);
+	INLINE const Array<Component*>& getComponents(void) const;
+	INLINE Array<Component*>& getComponents(void);
 
 	void addChild(Object* object);
 	void removeFromParent(void);
@@ -171,7 +171,7 @@ private:
 
 	AString _name;
 
-	Array<IComponent*> _components;
+	Array<Component*> _components;
 	ComponentManager& _comp_mgr;
 	ObjectManager& _obj_mgr;
 

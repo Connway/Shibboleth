@@ -105,7 +105,7 @@ const Gaff::JSON& ModelComponent::getSchema(void) const
 
 bool ModelComponent::validate(const Gaff::JSON& json)
 {
-	if (!IComponent::validate(json)) {
+	if (!Component::validate(json)) {
 		// log error
 		return false;
 	}
