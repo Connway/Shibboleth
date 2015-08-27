@@ -40,13 +40,13 @@ SHIB_REF_IMPL(CameraComponent)
 .addFloat("Z Near", &CameraComponent::_z_near)
 .addFloat("Z Far", &CameraComponent::_z_far)
 .addUChar("Render Order", &CameraComponent::_render_order)
-.addBool("Active", &CameraComponent::_active)
+.addBool("Active", &CameraComponent::isActive, &CameraComponent::setActive)
 ;
 
 CameraComponent::CameraComponent(void):
 	_aspect_ratio(1.0f), _fov(Gaff::DegToRad * 90.0f),
 	_z_near(0.0001f), _z_far(5000.0f),
-	_render_order(0), _active(true)
+	_render_order(0)
 {
 	_clear_color[0] = 0.0f;
 	_clear_color[1] = 0.0f;
@@ -72,7 +72,7 @@ const Gaff::JSON& CameraComponent::getSchema(void) const
 
 bool CameraComponent::validate(const Gaff::JSON& json)
 {
-	IComponent::validate(json);
+	Component::validate(json);
 	return true;
 }
 
@@ -94,13 +94,6 @@ bool CameraComponent::load(const Gaff::JSON& json)
 bool CameraComponent::save(Gaff::JSON& json)
 {
 	gRefDef.write(json, this);
-
-	Gaff::JSON viewport = Gaff::JSON::createArray();
-	json.setObject("Viewport", viewport);
-
-	Gaff::JSON clear_color = Gaff::JSON::createArray();
-	json.setObject("Clear Color", clear_color);
-
 	return true;
 }
 
@@ -186,18 +179,13 @@ unsigned char CameraComponent::getRenderOrder(void) const
 
 void CameraComponent::setActive(bool active)
 {
+	Component::setActive(active);
+
 	if (active && !_active) {
 		getOwner()->registerForWorldDirtyCallback(Gaff::Bind(this, &CameraComponent::updateFrustum));
 	} else if (!active && _active) {
 		getOwner()->unregisterForWorldDirtyCallback(Gaff::Bind(this, &CameraComponent::updateFrustum));
 	}
-
-	_active = active;
-}
-
-bool CameraComponent::isActive(void) const
-{
-	return _active;
 }
 
 void CameraComponent::RenderTargetCallback(const AHashString& /*resource*/, bool success)

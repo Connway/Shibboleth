@@ -3,22 +3,22 @@
 		{
 			"Width": -1,
 			"Height": -1,
-			"Format": "RGBA_8_UNORM",
+			"Format": "RGBA_8_UNORM"
 		},
 		{
 			"Width": -1,
 			"Height": -1,
-			"Format": "RGBA_8_UNORM",
+			"Format": "RGBA_8_UNORM"
 		},
 		{
 			"Width": -1,
 			"Height": -1,
-			"Format": "RGBA_8_UNORM",
+			"Format": "RGBA_8_UNORM"
 		},
 		{
 			"Width": -1,
 			"Height": -1,
-			"Format": "RGBA_8_UNORM",
+			"Format": "RGBA_8_UNORM"
 		}
 	],
 

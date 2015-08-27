@@ -176,7 +176,7 @@
   <ItemGroup>
     <ClInclude Include="..\..\..\src\Game\include\Shibboleth_BufferCreator.h" />
     <ClInclude Include="..\..\..\src\Game\include\Shibboleth_HoldingLoader.h" />
-    <ClInclude Include="..\..\..\src\Game\include\Shibboleth_IComponent.h" />
+    <ClInclude Include="..\..\..\src\Game\include\Shibboleth_Component.h" />
     <ClInclude Include="..\..\..\src\Game\include\Shibboleth_IRenderPipeline.h" />
     <ClInclude Include="..\..\..\src\Game\include\Shibboleth_IResourceLoader.h" />
     <ClInclude Include="..\..\..\src\Game\include\Shibboleth_IUpdateQuery.h" />
@@ -200,6 +200,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\src\Game\Shibboleth_BufferCreator.cpp" />
+    <ClCompile Include="..\..\..\src\Game\Shibboleth_Component.cpp" />
     <ClCompile Include="..\..\..\src\Game\Shibboleth_HoldingLoader.cpp" />
     <ClCompile Include="..\..\..\src\Game\Shibboleth_LuaLoader.cpp" />
     <ClCompile Include="..\..\..\src\Game\Shibboleth_ModelLoader.cpp" />

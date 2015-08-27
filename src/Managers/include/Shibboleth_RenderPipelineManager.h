@@ -46,9 +46,9 @@ public:
 
 	bool init(void);
 
-	INLINE void setOutputCamera(unsigned int monitor, CameraComponent* camera);
+	INLINE void setOutputCamera(CameraComponent* camera);
 	INLINE CameraComponent* getOutputCamera(unsigned int monitor) const;
-	INLINE void setNumMonitors(unsigned int num_monitors);
+	INLINE void refreshMonitors(void);
 
 	INLINE size_t getActivePipeline(void) const;
 	INLINE void setActivePipeline(size_t pipeline);
@@ -56,12 +56,19 @@ public:
 	size_t getPipelineIndex(const char* name) const;
 
 private:
+	struct CameraData
+	{
+		CameraComponent* camera;
+		unsigned int device;
+		unsigned int output;
+	};
+
 	using InitFunc = bool (*)(IApp&);
 	using CreateRenderPipelineFunc = IRenderPipeline* (*)(size_t);
 	using DestroyRenderPipelineFunc = void (*)(IRenderPipeline*);
 	using GetNumRenderPipelinesFunc = size_t (*)(void);
 
-	Array< Gaff::Pair<CameraComponent*, unsigned int> > _output_cameras; // Array size == num of monitors. Element is camera that is being outputted to monitor and device id.
+	Array<CameraData> _output_cameras; // Array size == num of monitors. Element is camera that is being outputted to monitor.
 	Array<IRenderPipeline*> _pipelines;
 	HashMap<AHashString, DestroyRenderPipelineFunc> _pipeline_map;
 	size_t _active_pipeline;

@@ -95,13 +95,13 @@ void ComponentManager::allManagersCreated(void)
 	log.first.writeString("Finished Loading Components\n\n");
 }
 
-IComponent* ComponentManager::createComponent(AHashString name)
+Component* ComponentManager::createComponent(AHashString name)
 {
 	size_t index = _components.indexOf(name);
 	assert(name.size() && index != SIZE_T_FAIL);
 
 	ComponentEntry& entry = _components.valueAt(index);
-	IComponent* component = entry.create(entry.component_id);
+	Component* component = entry.create(entry.component_id);
 
 	if (component) {
 		component->setIndex(index);
@@ -110,13 +110,13 @@ IComponent* ComponentManager::createComponent(AHashString name)
 	return component;
 }
 
-IComponent* ComponentManager::createComponent(const char* name)
+Component* ComponentManager::createComponent(const char* name)
 {
 	assert(name && _components.indexOf(name) != SIZE_T_FAIL);
 	return createComponent(AHashString(name));
 }
 
-void ComponentManager::destroyComponent(IComponent* component)
+void ComponentManager::destroyComponent(Component* component)
 {
 	assert(component);
 	ComponentEntry& entry = _components.valueAt(component->getIndex());

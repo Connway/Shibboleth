@@ -405,6 +405,11 @@ const RenderManager::WindowData& RenderManager::getWindowData(unsigned int windo
 	return _windows[window];
 }
 
+const Array<RenderManager::WindowData>& RenderManager::getWindowData(void) const
+{
+	return _windows;
+}
+
 const char* RenderManager::getShaderExtension(void) const
 {
 	assert(_graphics_functions.get_shader_extension);

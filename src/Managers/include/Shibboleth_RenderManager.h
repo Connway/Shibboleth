@@ -187,6 +187,7 @@ public:
 
 	INLINE size_t getNumWindows(void) const;
 	INLINE const WindowData& getWindowData(unsigned int window) const;
+	INLINE const Array<WindowData>& getWindowData(void) const;
 
 	INLINE const char* getShaderExtension(void) const;
 	INLINE Gleam::IShaderResourceView* createShaderResourceView(void);
