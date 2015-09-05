@@ -164,27 +164,36 @@ void FrameManager::submitCommandLists(double, void* frame_data)
 				}
 			}
 		}
+
+		it->second.clearNoFree();
 	}
 
 	auto& rd = _render_mgr->getRenderDevice();
 
-	// Second step: Submit the command lists for each camera in Render Mode order
-	// For each camera
+	// Second step: Submit the command lists for each camera
 	for (auto it = _cl_cache.begin(); it != _cl_cache.end(); ++it) {
-		// Bind camera's render target
 		const auto& devices = it->first->getDevices();
 		auto& rt_data = it->first->getRenderTarget();
 
 		for (auto it_dev = devices.begin(); it_dev != devices.end(); ++it_dev) {
+			rd.setCurrentDevice(*it_dev);
+			//rd.setCurrentOutput(0); // Not sure if not setting an output will break OpenGL
+
+			float g[4] = { 0.0f, 1.0f, 0.0f, 1.0f };
 			rt_data->render_targets[*it_dev]->bind(rd);
-			rt_data->render_targets[*it_dev]->clear(rd);
+			
+			rt_data->render_targets[*it_dev]->clear(
+				rd,
+				Gleam::IRenderTarget::CLEAR_COLOR | Gleam::IRenderTarget::CLEAR_DEPTH | Gleam::IRenderTarget::CLEAR_STENCIL,
+				0.0f, 0, g
+			);
 
 			// For each render stage (must do in order)
 			for (size_t i = 0; i < RM_COUNT; ++i) {
 				auto& cls = it->second[*it_dev][i];
 
 				for (auto it_cl = cls.begin(); it_cl != cls.end(); ++it_cl) {
-					rd.executeCommandList((*it_cl).get());
+					//rd.executeCommandList(it_cl->get());
 				}
 			}
 		}

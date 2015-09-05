@@ -107,6 +107,8 @@ void InGameRenderPipeline::run(double dt, void* frame_data)
 
 void InGameRenderPipeline::GenerateCommandLists(void* job_data)
 {
+	static ProxyAllocator graphics_allocator("Graphics");
+
 	JobData* jd = reinterpret_cast<JobData*>(job_data);
 	Array<RenderManager::RenderDevicePtr>& rds = jd->first->_render_mgr.getDeferredRenderDevices(Gaff::Thread::GetCurrentThreadID());
 	FrameData* fd = jd->second;
@@ -147,7 +149,7 @@ void InGameRenderPipeline::GenerateCommandLists(void* job_data)
 					command_lists.resize(jd->first->_render_mgr.getRenderDevice().getNumDevices());
 
 					for (size_t j = 0; j < cl.size(); ++j) {
-						command_lists[j].resize(GetEnumRefDef<RenderModes>().getNumEntries());
+						command_lists[j].resize(GetEnumRefDef<RenderModes>().getNumEntries() - 1);
 					}
 				}
 
@@ -166,15 +168,15 @@ void InGameRenderPipeline::GenerateCommandLists(void* job_data)
 
 					memcpy(transforms, final_matrix.getBuffer(), sizeof(float) * 16);
 
-					// Update other transform data
-					if (result.first->isDirty()) {
-					}
-
 					buffer->unmap(*rd);
 
 					ModelPtr& m = model.models[*it_dev][lod];
 
-					for (size_t j = 0; j < GetEnumRefDef<RenderModes>().getNumEntries(); ++j) {
+					for (size_t j = 0; j < GetEnumRefDef<RenderModes>().getNumEntries() - 1; ++j) {
+						if (render_modes[j].empty()) {
+							continue;
+						}
+
 						Gleam::ICommandList* cmd_list = jd->first->_render_mgr.createCommandList();
 
 						if (!cmd_list) {
@@ -192,11 +194,12 @@ void InGameRenderPipeline::GenerateCommandLists(void* job_data)
 						// generate command list
 						if (!rd->finishCommandList(cmd_list)) {
 							// log error
+							graphics_allocator.freeT(cmd_list);
 							continue;
 						}
 
 						// add it to command list list
-						command_lists[*it_dev][j].emplacePush(cmd_list);
+						command_lists[*it_dev][j].emplacePush(cmd_list, graphics_allocator);
 					}
 				}
 

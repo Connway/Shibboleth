@@ -73,14 +73,14 @@ void RenderPipelineManager::allManagersCreated(void)
 		AString rel_path = AString("./Render Pipelines/") + name;
 
 		// Error out if it's not a dynamic module
-		if (!Gaff::File::checkExtension(name, DYNAMIC_EXTENSION)) {
+		if (!Gaff::File::CheckExtension(name, DYNAMIC_EXTENSION)) {
 			log.first.printf("ERROR - '%s' is not a dynamic module.\n", rel_path.getBuffer());
 			GetApp().quit();
 			return true;
 
 		// It is a dynamic module, but not compiled for our architecture.
 		// Or not compiled in our build mode. Just skip over it.
-		} else if (!Gaff::File::checkExtension(name, BIT_EXTENSION DYNAMIC_EXTENSION)) {
+		} else if (!Gaff::File::CheckExtension(name, BIT_EXTENSION DYNAMIC_EXTENSION)) {
 			return false;
 		}
 
@@ -337,7 +337,7 @@ void RenderPipelineManager::renderToScreen(double, void*)
 		auto& texture_srvs = render_target->texture_srvs[camera_data.device];
 
 		// Add the g-buffers
-		for (size_t j = 0; i < texture_srvs.size(); ++j) {
+		for (size_t j = 0; j < texture_srvs.size(); ++j) {
 			program_buffers->addResourceView(Gleam::IShader::SHADER_PIXEL, texture_srvs[j].get());
 		}
 
@@ -349,17 +349,21 @@ void RenderPipelineManager::renderToScreen(double, void*)
 		rd.setCurrentDevice(camera_data.device);
 		rd.setCurrentOutput(camera_data.output);
 
+		rd.beginFrame();
+
 		_camera_to_screen_shader->programs[camera_data.device]->bind(rd, program_buffers.get());
 		rd.getActiveOutputRenderTarget()->bind(rd);
 
-		rd.renderNoVertexInput(6); // Render fullscreen quad
+		rd.renderNoVertexInput(3); // Render fullscreen quad
+
+		rd.endFrame();
 
 		// Pop the g-buffers
 		if (render_target->depth_stencil_srvs[camera_data.device]) {
 			program_buffers->popResourceView(Gleam::IShader::SHADER_PIXEL);
 		}
 
-		for (size_t j = 0; i < texture_srvs.size(); ++j) {
+		for (size_t j = 0; j < texture_srvs.size(); ++j) {
 			program_buffers->popResourceView(Gleam::IShader::SHADER_PIXEL);
 		}
 	}

@@ -21,7 +21,10 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Gaff_File.h"
-#include <cstdarg>
+
+#ifdef _UNICODE
+	#include "Gaff_String.h"
+#endif
 
 #if defined(_WIN32) || defined(_WIN64)
 	#include <io.h>
@@ -29,6 +32,7 @@ THE SOFTWARE.
 	#include <sys/io.h>
 #endif
 
+#include <cstdarg>
 
 NS_GAFF
 
@@ -37,17 +41,24 @@ static const char* gOpenModes[12] = {
 		"rb", "wb", "ab", "rb+", "wb+", "ab+"
 };
 
+#ifdef _UNICODE
+	static const wchar_t* gOpenModesW[12] = {
+		L"r", L"w", L"a", L"r+", L"w+", L"a+",
+		L"rb", L"wb", L"ab", L"rb+", L"wb+", L"ab+"
+	};
+#endif
+
 /*!
 	\brief Checks of the \a file_name ends with \a extension. This version takes string sizes to avoid calls to strlen().
 
 	\param file_name The name of the file we are checking the extension of.
-	\param file_name_size The length of \a file_name.
+	\param file_name_size The length of \a file_name (in bytes).
 	\param extension The extension we are checking for.
-	\param extension_size The length of \a extension.
+	\param extension_size The length of \a extension (in bytes).
 
 	\return Whether \a file_name has \a extension.
 */
-bool File::checkExtension(const char* file_name, size_t file_name_size, const char* extension, size_t extension_size)
+bool File::CheckExtension(const char* file_name, size_t file_name_size, const char* extension, size_t extension_size)
 {
 	assert(file_name && extension && file_name_size > extension_size);
 	return strcmp(file_name + file_name_size - extension_size, extension) == 0;
@@ -63,23 +74,36 @@ bool File::checkExtension(const char* file_name, size_t file_name_size, const ch
 
 	\note This function makes calls to strlen().
 */
-bool File::checkExtension(const char* file_name, const char* extension)
+bool File::CheckExtension(const char* file_name, const char* extension)
 {
-	assert(file_name && extension);
-	return checkExtension(file_name, strlen(file_name), extension, strlen(extension));
+	assert(file_name && extension && strlen(file_name) && strlen(extension));
+	return CheckExtension(file_name, strlen(file_name), extension, strlen(extension));
 }
 
 
-bool File::remove(const char* file_name)
+bool File::Remove(const char* file_name)
 {
-	assert(file_name);
-	return !::remove(file_name);
+	assert(file_name && strlen(file_name));
+
+#ifdef _UNICODE
+	CONVERT_TO_UTF16(temp, file_name);
+	return !_wremove(temp);
+#else
+	return !remove(file_name);
+#endif
 }
 
-bool File::rename(const char* old_file_name, const char* new_file_name)
+bool File::Rename(const char* old_file_name, const char* new_file_name)
 {
-	assert(old_file_name && new_file_name);
-	return !::rename(old_file_name, new_file_name);
+	assert(old_file_name && new_file_name && strlen(old_file_name) && strlen(new_file_name));
+	
+#ifdef _UNICODE
+	CONVERT_TO_UTF16(temp1, old_file_name);
+	CONVERT_TO_UTF16(temp2, new_file_name);
+	return !_wrename(temp1, temp2);
+#else
+	return !rename(old_file_name, new_file_name);
+#endif
 }
 
 File::File(const char* file_name, OPEN_MODE mode):
@@ -133,14 +157,21 @@ File::OPEN_MODE File::getMode(void) const
 
 bool File::open(const char* file_name, OPEN_MODE mode)
 {
-	assert(file_name);
+	assert(file_name && strlen(file_name));
 
 	if (_file) {
 		return false;
 	}
 
 	_mode = mode;
+
+#ifdef _UNICODE
+	CONVERT_TO_UTF16(temp, file_name);
+	_wfopen_s(&_file, temp, gOpenModesW[mode]);
+#else
 	_file = fopen(file_name, gOpenModes[mode]);
+#endif
+
 	return _file != NULL;
 }
 
@@ -156,7 +187,14 @@ bool File::open(const char* file_name, OPEN_MODE mode)
 bool File::redirect(FILE* file, const char* file_name, OPEN_MODE mode)
 {
 	assert(!_file && file_name);
+
+#ifdef _UNICODE
+	CONVERT_TO_UTF16(temp, file_name);
+	_wfreopen_s(&_file, temp, gOpenModesW[mode], file);
+#else
 	_file = freopen(file_name, gOpenModes[mode], file);
+#endif
+
 	return _file && _file == file;
 }
 
@@ -171,7 +209,15 @@ bool File::redirect(FILE* file, const char* file_name, OPEN_MODE mode)
 bool File::redirect(const char* file_name, OPEN_MODE mode)
 {
 	assert(_file && file_name);
+
+#ifdef _UNICODE
+	CONVERT_TO_UTF16(temp, file_name);
+	FILE* out = nullptr;
+	_wfreopen_s(&out, temp, gOpenModesW[mode], _file);
+#else
 	FILE* out = freopen(file_name, gOpenModes[mode], _file);
+#endif
+
 	return out && out == _file;
 }
 
@@ -277,11 +323,11 @@ bool File::writeString(const char* s)
 	return fputs(s, _file) != EOF;
 }
 
-bool File::readString(char* buffer, int max_count)
+bool File::readString(char* buffer, int max_byte_count)
 {
-	assert(_file && buffer && max_count > -1);
-	char* tmp = fgets(buffer, max_count, _file);
-	return tmp != NULL && tmp != nullptr;
+	assert(_file && buffer && max_byte_count > -1);
+	char* tmp = fgets(buffer, max_byte_count, _file);
+	return tmp != nullptr;
 }
 
 /*!

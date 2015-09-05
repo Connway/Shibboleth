@@ -59,7 +59,7 @@ void ComponentManager::allManagersCreated(void)
 		AString rel_path = AString("./Components/") + name;
 
 		// Error out if it's not a dynamic module
-		if (!Gaff::File::checkExtension(name, DYNAMIC_EXTENSION)) {
+		if (!Gaff::File::CheckExtension(name, DYNAMIC_EXTENSION)) {
 			log.first.printf("ERROR - '%s' is not a dynamic module.\n", rel_path.getBuffer());
 			//error = true;
 			GetApp().quit();
@@ -67,7 +67,7 @@ void ComponentManager::allManagersCreated(void)
 
 		// It is a dynamic module, but not compiled for our architecture.
 		// Or not compiled in our build mode. Just skip over it.
-		} else if (!Gaff::File::checkExtension(name, BIT_EXTENSION DYNAMIC_EXTENSION)) {
+		} else if (!Gaff::File::CheckExtension(name, BIT_EXTENSION DYNAMIC_EXTENSION)) {
 			return false;
 		}
 

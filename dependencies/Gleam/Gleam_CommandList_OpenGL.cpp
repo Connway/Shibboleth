@@ -44,28 +44,28 @@ CommandListGL::~CommandListGL(void)
 
 const ICommandList& CommandListGL::operator=(const ICommandList& rhs)
 {
-	assert(rhs.isD3D());
-	_commands = ((const CommandListGL&)rhs)._commands;
+	assert(!rhs.isD3D());
+	_commands = reinterpret_cast<const CommandListGL&>(rhs)._commands;
 	return *this;
 }
 
 const ICommandList& CommandListGL::operator=(ICommandList&& rhs)
 {
-	assert(rhs.isD3D());
-	_commands = Gaff::Move(((const CommandListGL&)rhs)._commands);
+	assert(!rhs.isD3D());
+	_commands = Gaff::Move(reinterpret_cast<const CommandListGL&>(rhs)._commands);
 	return *this;
 }
 
 bool CommandListGL::operator==(const ICommandList& rhs) const
 {
-	assert(rhs.isD3D());
-	return _commands == ((const CommandListGL&)rhs)._commands;
+	assert(!rhs.isD3D());
+	return _commands == reinterpret_cast<const CommandListGL&>(rhs)._commands;
 }
 
 bool CommandListGL::operator!=(const ICommandList& rhs) const
 {
-	assert(rhs.isD3D());
-	return _commands != ((const CommandListGL&)rhs)._commands;
+	assert(!rhs.isD3D());
+	return _commands != reinterpret_cast<const CommandListGL&>(rhs)._commands;
 }
 
 bool CommandListGL::isD3D(void) const

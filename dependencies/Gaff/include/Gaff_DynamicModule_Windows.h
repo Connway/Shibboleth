@@ -29,7 +29,6 @@ THE SOFTWARE.
 
 NS_GAFF
 
-// wchar_t functions not portable
 /*!
 	\brief A class that represents a dynamically loaded module. (*.so, *.dll, *.dylib)
 */

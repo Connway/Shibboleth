@@ -106,11 +106,8 @@ public:
 	static void SetErrorLanguage(ErrorLanguage language);
 	static unsigned int GetError(void);
 
-#ifdef _UNICODE
-	static const wchar_t* GetErrorString(unsigned int error);
-#else
+	// Do not save this string for later! Subsequent calls to this function will overwrite the error string!
 	static const char* GetErrorString(unsigned int error);
-#endif
 
 	Image(const Image& image);
 	Image(Image&& image);
@@ -124,10 +121,8 @@ public:
 	void destroy();
 
 	bool load(void* image, unsigned int image_size);
-	bool load(const wchar_t* filename);
 	bool load(const char* filename);
 
-	bool save(const wchar_t* filename, bool allow_overwrite = false);
 	bool save(const char* filename, bool allow_overwrite = false);
 
 	bool setImageProperties(unsigned int width, unsigned int height, unsigned int depth,

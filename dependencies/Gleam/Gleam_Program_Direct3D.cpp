@@ -280,7 +280,7 @@ void ProgramD3D::bind(IRenderDevice& rd, IProgramBuffers* program_buffers)
 
 	if (program_buffers) {
 		assert(program_buffers->isD3D());
-		ProgramBuffersD3D* pb = (ProgramBuffersD3D*)program_buffers;
+		ProgramBuffersD3D* pb = reinterpret_cast<ProgramBuffersD3D*>(program_buffers);
 
 		for (unsigned int i = 0; i < IShader::SHADER_TYPE_SIZE; ++i) {
 			GleamArray<ID3D11ShaderResourceView*>& res_views = pb->_res_views[i];

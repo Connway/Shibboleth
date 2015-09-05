@@ -161,9 +161,22 @@ template <>
 bool greater(const wchar_t* s1, size_t n1, const wchar_t* s2);
 
 INLINE void ConvertToUTF8(char* output, const wchar_t* input, size_t size);
-INLINE void ConvertToUTF16(wchar_t* output, const char* input, size_t size);
+INLINE void ConvertToUTF16(wchar_t* output, const char* input, size_t size); // size is in bytes, not character count
 INLINE size_t FindInvalidUTF8(const char* string, size_t size);
 INLINE bool IsValidUTF8(const char* string, size_t size);
+
+#define STRING_CONVERSION_BUFFER_SIZE 256
+#define UTF8_STRLEN(string) mbstowcs(NULL, string, 0)
+#define UTF8_BYTELEN(string) strlen(string)
+
+#define CONVERT_TO_UTF8(TempBufferName, string) \
+	char TempBufferName[STRING_CONVERSION_BUFFER_SIZE] = { 0 }; \
+	Gaff::ConvertToUTF16(TempBufferName, string, wcslen(string))
+
+#define CONVERT_TO_UTF16(TempBufferName, string) \
+	wchar_t TempBufferName[STRING_CONVERSION_BUFFER_SIZE] = { 0 }; \
+	Gaff::ConvertToUTF16(TempBufferName, string, strlen(string))
+
 
 #include "Gaff_String.inl"
 

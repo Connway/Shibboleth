@@ -75,27 +75,3 @@ void DynamicLoader<Allocator>::removeModule(const char* name)
 	HString str(name, FNV1Hash32, _allocator);
 	_modules.erase(str);
 }
-
-#ifdef _UNICODE
-template <class Allocator>
-typename DynamicLoader<Allocator>::ModulePtr DynamicLoader<Allocator>::loadModule(const wchar_t* filename, const char* name)
-{
-	assert(filename && name && wcslen(filename) && strlen(name));
-
-	if (_modules.indexOf(name) != SIZE_T_FAIL) {
-		return getModule(name);
-	}
-
-	ModulePtr module(_allocator.template allocT<DynamicModule>(), _allocator);
-
-	if (module.valid()) {
-		if (module->load(filename)) {
-			HString str(name, FNV1Hash32, _allocator);
-			_modules.insert(str, module);
-			return module;
-		}
-	}
-
-	return ModulePtr();
-}
-#endif

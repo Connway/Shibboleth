@@ -43,7 +43,7 @@ public:
 	SmartPtr(const SmartPtr<T, Allocator>& data):
 		_allocator(data._allocator), _data(data._data)
 	{
-		((SmartPtr<T, Allocator>&)data)._data = nullptr;
+		const_cast<SmartPtr<T, Allocator>&>(data)._data = nullptr;
 	}
 
 	~SmartPtr(void)
@@ -75,7 +75,7 @@ public:
 	{
 		destroy();
 		_data = rhs._data;
-		((SmartPtr<T, Allocator>&)rhs)._data = nullptr;
+		const_cast<SmartPtr<T, Allocator>&>(data)._data = nullptr;
 		return *this;
 	}
 
