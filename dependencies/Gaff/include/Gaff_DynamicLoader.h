@@ -71,10 +71,6 @@ public:
 
 	void removeModule(const char* name);
 
-#ifdef _UNICODE
-	ModulePtr loadModule(const wchar_t* filename, const char* name);
-#endif
-
 private:
 	typedef AHashString<Allocator> HString;
 	typedef HashMap<HString, ModulePtr, Allocator> HMap;

@@ -54,16 +54,6 @@ void DebugPrintf(const char* format_string, ...)
 	va_end(vl);
 }
 
-void DebugPrintf(const wchar_t* format_string, ...)
-{
-	assert(format_string);
-
-	va_list vl;
-	va_start(vl, format_string);
-	vwprintf(format_string, vl);
-	va_end(vl);
-}
-
 bool SetWorkingDir(const char* directory)
 {
 	return !chdir(directory);

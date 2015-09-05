@@ -37,12 +37,11 @@ NS_GAFF
 class File
 {
 public:
+	INLINE static bool CheckExtension(const char* file_name, size_t file_name_size, const char* extension, size_t extension_size);
+	INLINE static bool CheckExtension(const char* file_name, const char* extension);
 
-	INLINE static bool checkExtension(const char* file_name, size_t file_name_size, const char* extension, size_t extension_size);
-	INLINE static bool checkExtension(const char* file_name, const char* extension);
-
-	INLINE static bool remove(const char* file_name);
-	INLINE static bool rename(const char* old_file_name, const char* new_file_name);
+	INLINE static bool Remove(const char* file_name);
+	INLINE static bool Rename(const char* old_file_name, const char* new_file_name);
 
 	/*!
 		\brief Modes in which we can open a file.
@@ -120,7 +119,7 @@ public:
 	INLINE int readChar(void);
 
 	INLINE bool writeString(const char* s);
-	INLINE bool readString(char* buffer, int max_count);
+	INLINE bool readString(char* buffer, int max_byte_count);
 
 	INLINE long getFilePos(void) const;
 	INLINE bool seek(long offset, SEEK_ORIGIN origin = BEGINNING);

@@ -188,12 +188,12 @@ bool App::loadManagers(void)
 		AString rel_path = AString("./Managers/") + name;
 
 		// If it's not a dynamic module, just skip over it.
-		if (!Gaff::File::checkExtension(name, DYNAMIC_EXTENSION)) {
+		if (!Gaff::File::CheckExtension(name, DYNAMIC_EXTENSION)) {
 			return false;
 
 		// It is a dynamic module, but not compiled for our architecture.
 		// Or not compiled in our build mode. Just skip over it.
-		} else if (!Gaff::File::checkExtension(name, BIT_EXTENSION DYNAMIC_EXTENSION)) {
+		} else if (!Gaff::File::CheckExtension(name, BIT_EXTENSION DYNAMIC_EXTENSION)) {
 			return false;
 		}
 

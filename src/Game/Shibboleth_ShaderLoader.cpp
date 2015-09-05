@@ -44,7 +44,7 @@ ShaderLoader::~ShaderLoader(void)
 
 Gaff::IVirtualDestructor* ShaderLoader::load(const char* file_name, unsigned long long user_data, HashMap<AString, IFile*>& file_map)
 {
-	assert(Gaff::File::checkExtension(file_name, _render_mgr.getShaderExtension()) && file_map.hasElementWithKey(AString(file_name)));
+	assert(Gaff::File::CheckExtension(file_name, _render_mgr.getShaderExtension()) && file_map.hasElementWithKey(AString(file_name)));
 	assert(user_data < Gleam::IShader::SHADER_TYPE_SIZE);
 
 	IFile* file = file_map[AString(file_name)];

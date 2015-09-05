@@ -64,7 +64,7 @@ public:
 
 	void ResReq(Shibboleth::ResourcePtr& res)
 	{
-		
+		_resources.emplacePush(res);
 	}
 
 	bool init(unsigned int)
@@ -111,6 +111,16 @@ public:
 		} else {
 			_app.quit();
 		}
+
+		bool all_loaded = true;
+
+		do {
+			all_loaded = true;
+
+			for (size_t i = 0; i < _resources.size(); ++i) {
+				all_loaded &= _resources[i]->isLoaded();
+			}
+		} while (!all_loaded);
 	}
 
 	void update(void)
@@ -139,12 +149,13 @@ public:
 		Shibboleth::UpdateManager& update_manager = _app.getManagerT<Shibboleth::UpdateManager>("Update Manager");
 		update_manager.update();
 
-		render(timer.getDeltaSec());
+		//render(timer.getDeltaSec());
 	}
 
 	void exit(void)
 	{
 		_app.getManagerT<Shibboleth::ResourceManager>("Resource Manager").removeRequestAddedCallback(Gaff::Bind(this, &LoopState::ResReq));
+		_resources.clear();
 	}
 
 	void render(double dt)
@@ -170,6 +181,7 @@ private:
 	Shibboleth::Object* _object;
 	Shibboleth::Object* _camera;
 	Shibboleth::IApp& _app;
+	Shibboleth::Array<Shibboleth::ResourcePtr> _resources;
 };
 
 template <class State>

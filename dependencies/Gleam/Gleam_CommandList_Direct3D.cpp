@@ -31,7 +31,7 @@ CommandListD3D::CommandListD3D(const CommandListD3D& command_list):
 }
 
 CommandListD3D::CommandListD3D(CommandListD3D&& command_list):
-	_command_list(Move(command_list._command_list))
+	_command_list(Gaff::Move(command_list._command_list))
 {
 }
 
@@ -46,27 +46,27 @@ CommandListD3D::~CommandListD3D(void)
 const ICommandList& CommandListD3D::operator=(const ICommandList& rhs)
 {
 	assert(rhs.isD3D());
-	_command_list = ((const CommandListD3D&)rhs)._command_list;
+	_command_list = reinterpret_cast<const CommandListD3D&>(rhs)._command_list;
 	return *this;
 }
 
 const ICommandList& CommandListD3D::operator=(ICommandList&& rhs)
 {
 	assert(rhs.isD3D());
-	_command_list = Move(((CommandListD3D&)rhs)._command_list);
+	_command_list = Gaff::Move(reinterpret_cast<CommandListD3D&>(rhs)._command_list);
 	return *this;
 }
 
 bool CommandListD3D::operator==(const ICommandList& rhs) const
 {
 	assert(rhs.isD3D());
-	return _command_list == ((const CommandListD3D&)rhs)._command_list;
+	return _command_list == reinterpret_cast<const CommandListD3D&>(rhs)._command_list;
 }
 
 bool CommandListD3D::operator!=(const ICommandList& rhs) const
 {
 	assert(rhs.isD3D());
-	return _command_list != ((const CommandListD3D&)rhs)._command_list;
+	return _command_list != reinterpret_cast<const CommandListD3D&>(rhs)._command_list;
 }
 
 bool CommandListD3D::isD3D(void) const
@@ -76,8 +76,8 @@ bool CommandListD3D::isD3D(void) const
 
 void CommandListD3D::setCommandList(ID3D11CommandList* command_list)
 {
-	SAFERELEASE(_command_list);
 	_command_list = command_list;
+	SAFERELEASE(_command_list);
 }
 
 ID3D11CommandList* CommandListD3D::getCommandList(void)

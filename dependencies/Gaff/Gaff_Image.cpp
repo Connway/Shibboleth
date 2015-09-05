@@ -24,7 +24,6 @@ THE SOFTWARE.
 #include "Gaff_IncludeAssert.h"
 #include <IL/ilu.h>
 #include <IL/il.h>
-#include <cstdlib>
 
 NS_GAFF
 
@@ -55,13 +54,16 @@ unsigned int Image::GetError(void)
 	return ilGetError();
 }
 
-#ifdef _UNICODE
-const wchar_t* Image::GetErrorString(unsigned int error)
-#else
-const wchar_t* Image::GetErrorString(unsigned int error)
-#endif
+const char* Image::GetErrorString(unsigned int error)
 {
+#ifdef _UNICODE
+	static char temp[STRING_CONVERSION_BUFFER_SIZE] = { 0 };
+	const wchar_t* str = iluErrorString(error);
+	ConvertToUTF8(temp, str, wcslen(str));
+	return temp;
+#else
 	return iluErrorString(error);
+#endif
 }
 
 Image::Image(const Image& image):
@@ -136,54 +138,17 @@ bool Image::load(void* image, unsigned int image_size)
 	return ilLoadL(IL_TYPE_UNKNOWN, image, image_size) != 0;
 }
 
-bool Image::load(const wchar_t* filename)
-{
-	assert(_initialized);
-	ilBindImage(_image);
-
-#ifdef _UNICODE
-	return ilLoadImage(filename) != 0;
-#else
-	char buffer[256];
-	wcstombs(buffer, filename, 256);
-	return ilLoadImage(buffer) != 0;
-#endif
-}
-
 bool Image::load(const char* filename)
 {
 	assert(_initialized);
 	ilBindImage(_image);
 
 #ifdef _UNICODE
-	wchar_t buffer[256] = { 0 };
-	ConvertToUTF16(buffer, filename, strlen(filename));
-	return ilLoadImage(buffer) != 0;
+	CONVERT_TO_UTF16(temp, filename);
+	return ilLoadImage(temp) != 0;
 #else
 	return ilLoadImage(filename) != 0;
 #endif
-}
-
-bool Image::save(const wchar_t* filename, bool allow_overwrite)
-{
-	assert(_initialized);
-	ilBindImage(_image);
-
-	// We are allowing overwrites, but we failed to enable
-	if (allow_overwrite && ilEnable(IL_FILE_OVERWRITE)) {
-		return false;
-	}
-
-#ifdef _UNICODE
-	bool ret = ilSaveImage(filename) != 0;
-#else
-	char buffer[256];
-	wcstombs(buffer, filename, 256);
-	bool ret = ilSaveImage(buffer) != 0;
-#endif
-
-	ilDisable(IL_FILE_OVERWRITE);
-	return ret;
 }
 
 bool Image::save(const char* filename, bool allow_overwrite)
@@ -197,9 +162,8 @@ bool Image::save(const char* filename, bool allow_overwrite)
 	}
 
 #ifdef _UNICODE
-	wchar_t buffer[256] = { 0 };
-	ConvertToUTF16(buffer, filename, strlen(filename));
-	bool ret = ilSaveImage(buffer) != 0;
+	CONVERT_TO_UTF16(temp, filename);
+	bool ret = ilSaveImage(temp) != 0;
 #else
 	bool ret = ilSaveImage(filename) != 0;
 #endif
@@ -256,55 +220,55 @@ unsigned int Image::getWidth(void) const
 {
 	assert(_initialized);
 	ilBindImage(_image);
-	return (unsigned int)ilGetInteger(IL_IMAGE_WIDTH);
+	return static_cast<unsigned int>(ilGetInteger(IL_IMAGE_WIDTH));
 }
 
 unsigned int Image::getHeight(void) const
 {
 	assert(_initialized);
 	ilBindImage(_image);
-	return (unsigned int)ilGetInteger(IL_IMAGE_HEIGHT);
+	return static_cast<unsigned int>(ilGetInteger(IL_IMAGE_HEIGHT));
 }
 unsigned int Image::getDepth(void) const
 {
 	assert(_initialized);
 	ilBindImage(_image);
-	return (unsigned int)ilGetInteger(IL_IMAGE_DEPTH);
+	return static_cast<unsigned int>(ilGetInteger(IL_IMAGE_DEPTH));
 }
 
 unsigned int Image::getBytesPerPixel(void) const
 {
 	assert(_initialized);
 	ilBindImage(_image);
-	return (unsigned int)ilGetInteger(IL_IMAGE_BYTES_PER_PIXEL);
+	return static_cast<unsigned int>(ilGetInteger(IL_IMAGE_BYTES_PER_PIXEL));
 }
 
 unsigned int Image::getBitsPerPixel(void) const
 {
 	assert(_initialized);
 	ilBindImage(_image);
-	return (unsigned int)ilGetInteger(IL_IMAGE_BITS_PER_PIXEL);
+	return static_cast<unsigned int>(ilGetInteger(IL_IMAGE_BITS_PER_PIXEL));
 }
 
 unsigned int Image::getNumChannels(void) const
 {
 	assert(_initialized);
 	ilBindImage(_image);
-	return (unsigned int)ilGetInteger(IL_IMAGE_CHANNELS);
+	return static_cast<unsigned int>(ilGetInteger(IL_IMAGE_CHANNELS));
 }
 
 Image::Format Image::getFormat(void) const
 {
 	assert(_initialized);
 	ilBindImage(_image);
-	return (Format)ilGetInteger(IL_IMAGE_FORMAT);
+	return static_cast<Format>(ilGetInteger(IL_IMAGE_FORMAT));
 }
 
 Image::Type Image::getType(void) const
 {
 	assert(_initialized);
 	ilBindImage(_image);
-	return (Type)ilGetInteger(IL_IMAGE_TYPE);
+	return static_cast<Type>(ilGetInteger(IL_IMAGE_TYPE));
 }
 
 NS_END

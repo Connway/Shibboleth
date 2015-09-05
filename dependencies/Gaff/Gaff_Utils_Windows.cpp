@@ -49,23 +49,16 @@ void DebugPrintf(const char* format_string, ...)
 	va_list vl;
 	va_start(vl, format_string);
 
+#ifdef _UNICODE
+	CONVERT_TO_UTF16(temp, format_string);
+	wchar_t buf[256] = { 0 };
+	_vsnwprintf(buf, 256, temp, vl);
+	OutputDebugStringW(buf);
+#else
 	char buf[256] = { 0 };
 	vsnprintf(buf, 256, format_string, vl);
 	OutputDebugStringA(buf);
-
-	va_end(vl);
-}
-
-void DebugPrintf(const wchar_t* format_string, ...)
-{
-	assert(format_string);
-
-	va_list vl;
-	va_start(vl, format_string);
-
-	wchar_t buf[256] = { 0 };
-	_vsnwprintf(buf, 256, format_string, vl);
-	OutputDebugStringW(buf);
+#endif
 
 	va_end(vl);
 }
@@ -73,9 +66,8 @@ void DebugPrintf(const wchar_t* format_string, ...)
 bool SetWorkingDir(const char* directory)
 {
 #ifdef _UNICODE
-	wchar_t buffer[256] = { 0 };
-	ConvertToUTF16(buffer, directory, strlen(directory));
-	return SetCurrentDirectoryW(buffer) != 0;
+	CONVERT_TO_UTF16(temp, directory);
+	return SetCurrentDirectoryW(temp) != 0;
 #else
 	return SetCurrentDirectoryW(directory) != 0;
 #endif

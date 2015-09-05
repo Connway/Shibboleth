@@ -419,7 +419,7 @@ bool RenderDeviceD3D::resize(const IWindow& window)
 					RETURNIFFAILED(result)
 
 					ID3D11Texture2D* back_buffer_ptr;
-					result = sc->GetBuffer(0, __uuidof(ID3D11Texture2D), (LPVOID*)&back_buffer_ptr);
+					result = sc->GetBuffer(0, __uuidof(ID3D11Texture2D), reinterpret_cast<LPVOID*>(&back_buffer_ptr));
 					RETURNIFFAILED(result)
 
 					ID3D11RenderTargetView* render_target_view = nullptr;
@@ -449,7 +449,7 @@ bool RenderDeviceD3D::resize(const IWindow& window)
 
 bool RenderDeviceD3D::handleFocusGained(const IWindow& window)
 {
-	const Window& wnd = (const Window&)window;
+	const Window& wnd = reinterpret_cast<const Window&>(window);
 
 	for (unsigned int i = 0; i < _devices.size(); ++i) {
 		Device& device = _devices[i];
@@ -493,13 +493,13 @@ bool RenderDeviceD3D::isD3D(void) const
 unsigned int RenderDeviceD3D::getViewportWidth(unsigned int device, unsigned int output) const
 {
 	assert(_devices.size() > device && _devices[device].viewports.size() > output);
-	return (unsigned int)_devices[device].viewports[output].Width;
+	return static_cast<unsigned int>(_devices[device].viewports[output].Width);
 }
 
 unsigned int RenderDeviceD3D::getViewportHeight(unsigned int device, unsigned int output) const
 {
 	assert(_devices.size() > device && _devices[device].viewports.size() > output);
-	return (unsigned int)_devices[device].viewports[output].Height;
+	return static_cast<unsigned int>(_devices[device].viewports[output].Height);
 }
 
 unsigned int RenderDeviceD3D::getActiveViewportWidth(void)

@@ -67,10 +67,7 @@ enum FileDataType
 };
 
 typedef bool (*FileDirTraversalFunc)(const char* name, size_t name_len, FileDataType type);
-typedef bool (*FileDirTraversalFuncUnicode)(const wchar_t* name, size_t name_len, FileDataType type);
-
 typedef bool (*FileDirTraversalFuncSpecific)(const char* name, size_t name_len);
-typedef bool (*FileDirTraversalFuncSpecificUnicode)(const wchar_t* name, size_t name_len);
 
 template <class Callback>
 bool ForEachInDirectory(const char* directory, Callback&& callback);

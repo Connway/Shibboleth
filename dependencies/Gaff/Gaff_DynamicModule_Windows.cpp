@@ -24,8 +24,6 @@ THE SOFTWARE.
 
 #include "Gaff_DynamicModule_Windows.h"
 #include "Gaff_String.h"
-#include <cstdlib>
-#include <cstring>
 
 #define MAX_ERR_LEN 1024
 
@@ -44,9 +42,8 @@ DynamicModule::~DynamicModule(void)
 bool DynamicModule::load(const char* filename)
 {
 #ifdef _UNICODE
-	wchar_t buffer[256] = { 0 };
-	ConvertToUTF16(buffer, filename, strlen(filename));
-	_module = LoadLibraryEx(buffer, NULL, 0);
+	CONVERT_TO_UTF16(temp, filename);
+	_module = LoadLibraryEx(temp, NULL, 0);
 #else
 	_module = LoadLibraryEx(filename, NULL, 0);
 #endif

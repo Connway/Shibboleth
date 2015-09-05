@@ -79,7 +79,7 @@ bool RenderTargetD3D::addTexture(IRenderDevice& rd, const ITexture* color_textur
 
 	IRenderDeviceD3D& rd3d = reinterpret_cast<IRenderDeviceD3D&>(*(reinterpret_cast<char*>(&rd) + sizeof(IRenderDevice)));
 
-	HRESULT result = rd3d.getActiveDevice()->CreateRenderTargetView(((const TextureD3D*)color_texture)->getTexture2D(), &desc, &render_target_view);
+	HRESULT result = rd3d.getActiveDevice()->CreateRenderTargetView(reinterpret_cast<const TextureD3D*>(color_texture)->getTexture2D(), &desc, &render_target_view);
 	RETURNIFFAILED(result)
 
 	// This is the first one, use this texture's width/height
@@ -118,7 +118,7 @@ bool RenderTargetD3D::addDepthStencilBuffer(IRenderDevice& rd, const ITexture* d
 	desc.Texture2D.MipSlice = 0;
 
 	IRenderDeviceD3D& rd3d = reinterpret_cast<IRenderDeviceD3D&>(*(reinterpret_cast<char*>(&rd) + sizeof(IRenderDevice)));
-	HRESULT result = rd3d.getActiveDevice()->CreateDepthStencilView(((const TextureD3D*)depth_stencil_texture)->getTexture2D(), &desc, &_depth_stencil_view);
+	HRESULT result = rd3d.getActiveDevice()->CreateDepthStencilView(reinterpret_cast<const TextureD3D*>(depth_stencil_texture)->getTexture2D(), &desc, &_depth_stencil_view);
 	return SUCCEEDED(result);
 }
 
@@ -151,7 +151,6 @@ void RenderTargetD3D::clear(IRenderDevice& rd, unsigned int clear_flags, float c
 	}
 
 	if (_depth_stencil_view) {
-		// Make sure that the CLEAR_COLOR flag doesn't screw anything up. :/
 		rd3d.getActiveDeviceContext()->ClearDepthStencilView(_depth_stencil_view, clear_flags, clear_depth, clear_stencil);
 	}
 }
