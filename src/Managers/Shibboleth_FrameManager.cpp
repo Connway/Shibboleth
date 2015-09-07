@@ -176,13 +176,14 @@ void FrameManager::submitCommandLists(double, void* frame_data)
 		auto& rt_data = it->first->getRenderTarget();
 
 		for (auto it_dev = devices.begin(); it_dev != devices.end(); ++it_dev) {
+			auto& rt = rt_data->render_targets[*it_dev];
 			rd.setCurrentDevice(*it_dev);
 			//rd.setCurrentOutput(0); // Not sure if not setting an output will break OpenGL
 
 			float g[4] = { 0.0f, 1.0f, 0.0f, 1.0f };
-			rt_data->render_targets[*it_dev]->bind(rd);
-			
-			rt_data->render_targets[*it_dev]->clear(
+			rt->bind(rd);
+
+			rt->clear(
 				rd,
 				Gleam::IRenderTarget::CLEAR_COLOR | Gleam::IRenderTarget::CLEAR_DEPTH | Gleam::IRenderTarget::CLEAR_STENCIL,
 				0.0f, 0, g

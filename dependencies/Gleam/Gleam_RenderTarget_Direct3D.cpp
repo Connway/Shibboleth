@@ -64,7 +64,7 @@ bool RenderTargetD3D::addTexture(IRenderDevice& rd, const ITexture* color_textur
 	ID3D11RenderTargetView* render_target_view = nullptr;
 
 	D3D11_RENDER_TARGET_VIEW_DESC desc;
-	desc.Format = TextureD3D::getD3DFormat(color_texture->getFormat());
+	desc.Format = TextureD3D::GetD3DFormat(color_texture->getFormat());
 
 	if (face == NONE) {
 		desc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
@@ -113,7 +113,7 @@ bool RenderTargetD3D::addDepthStencilBuffer(IRenderDevice& rd, const ITexture* d
 
 	D3D11_DEPTH_STENCIL_VIEW_DESC desc;
 	desc.Flags = 0;
-	desc.Format = TextureD3D::getD3DFormat(depth_stencil_texture->getFormat());
+	desc.Format = TextureD3D::GetD3DFormat(depth_stencil_texture->getFormat());
 	desc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
 	desc.Texture2D.MipSlice = 0;
 

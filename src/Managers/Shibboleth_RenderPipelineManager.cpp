@@ -335,14 +335,15 @@ void RenderPipelineManager::renderToScreen(double, void*)
 		auto& program_buffers = _camera_to_screen_program_buffers->data[camera_data.device];
 		auto& render_target = camera_data.camera->getRenderTarget();
 		auto& texture_srvs = render_target->texture_srvs[camera_data.device];
+		auto& depth_stencil_srv = render_target->depth_stencil_srvs[camera_data.device];
 
 		// Add the g-buffers
 		for (size_t j = 0; j < texture_srvs.size(); ++j) {
 			program_buffers->addResourceView(Gleam::IShader::SHADER_PIXEL, texture_srvs[j].get());
 		}
 
-		if (render_target->depth_stencil_srvs[camera_data.device]) {
-			program_buffers->addResourceView(Gleam::IShader::SHADER_PIXEL, render_target->depth_stencil_srvs[camera_data.device].get());
+		if (depth_stencil_srv) {
+			program_buffers->addResourceView(Gleam::IShader::SHADER_PIXEL, depth_stencil_srv.get());
 		}
 
 		// Render the result to the screen
@@ -359,12 +360,12 @@ void RenderPipelineManager::renderToScreen(double, void*)
 		rd.endFrame();
 
 		// Pop the g-buffers
-		if (render_target->depth_stencil_srvs[camera_data.device]) {
+		if (depth_stencil_srv) {
 			program_buffers->popResourceView(Gleam::IShader::SHADER_PIXEL);
 		}
 
-		for (size_t j = 0; j < texture_srvs.size(); ++j) {
-			program_buffers->popResourceView(Gleam::IShader::SHADER_PIXEL);
+		if (!texture_srvs.empty()) {
+			program_buffers->popResourceView(Gleam::IShader::SHADER_PIXEL, texture_srvs.size());
 		}
 	}
 }

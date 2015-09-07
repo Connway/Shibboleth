@@ -317,19 +317,22 @@ bool Array<T, Allocator>::empty(void) const
 	return _used == 0;
 }
 
-/*!
-	\brief Appends the elements of \a array to the end of the array.
-*/
 template <class T, class Allocator>
-void Array<T, Allocator>::append(const Array<T, Allocator>& array)
+void Array<T, Allocator>::append(const T* array, size_t count)
 {
-	reserve(_used + array.size());
+	reserve(_used + count);
 
-	for (unsigned int i = 0; i < array.size(); ++i) {
+	for (size_t i = 0; i < count; ++i) {
 		construct(_array + _used + i, array[i]);
 	}
 
-	_used += array.size();
+	_used += count;
+}
+
+template <class T, class Allocator>
+void Array<T, Allocator>::append(const Array<T, Allocator>& array)
+{
+	append(array.getArray(), array.size());
 }
 
 /*!
@@ -341,7 +344,7 @@ void Array<T, Allocator>::moveAppend(Array<T, Allocator>&& array)
 {
 	reserve(_used + array.size());
 
-	for (unsigned int i = 0; i < array.size(); ++i) {
+	for (size_t i = 0; i < array.size(); ++i) {
 		moveConstruct(_array + _used + i, Gaff::Move(array[i]));
 	}
 
