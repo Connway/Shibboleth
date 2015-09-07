@@ -44,16 +44,16 @@ public:
 	~ProgramBuffersD3D(void);
 
 	void addConstantBuffer(IShader::SHADER_TYPE type, IBuffer* const_buffer);
-	void removeConstantBuffer(IShader::SHADER_TYPE type, unsigned int index);
-	void popConstantBuffer(IShader::SHADER_TYPE type);
+	void removeConstantBuffer(IShader::SHADER_TYPE type, size_t index);
+	void popConstantBuffer(IShader::SHADER_TYPE type, size_t count = 1);
 
 	void addResourceView(IShader::SHADER_TYPE type, IShaderResourceView* resource_view);
-	void removeResourceView(IShader::SHADER_TYPE type, unsigned int index);
-	void popResourceView(IShader::SHADER_TYPE type);
+	void removeResourceView(IShader::SHADER_TYPE type, size_t index);
+	void popResourceView(IShader::SHADER_TYPE type, size_t count = 1);
 
 	void addSamplerState(IShader::SHADER_TYPE type, ISamplerState* sampler);
-	void removeSamplerState(IShader::SHADER_TYPE type, unsigned int index);
-	void popSamplerState(IShader::SHADER_TYPE type);
+	void removeSamplerState(IShader::SHADER_TYPE type, size_t index);
+	void popSamplerState(IShader::SHADER_TYPE type, size_t count = 1);
 
 	bool isD3D(void) const;
 
@@ -62,9 +62,9 @@ private:
 	GleamArray<ID3D11SamplerState*> _samplers[IShader::SHADER_TYPE_SIZE];
 	GleamArray<ID3D11Buffer*> _buffers[IShader::SHADER_TYPE_SIZE];
 
-	void cacheResViews(void);
-	void cacheSamplers(void);
-	void cacheBuffers(void);
+	void cacheResViews(IShader::SHADER_TYPE type);
+	void cacheSamplers(IShader::SHADER_TYPE type);
+	void cacheBuffers(IShader::SHADER_TYPE type);
 
 	friend class ProgramD3D;
 };

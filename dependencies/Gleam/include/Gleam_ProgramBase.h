@@ -24,6 +24,7 @@ THE SOFTWARE.
 
 #include "Gleam_IProgram.h"
 #include "Gleam_RefCounted.h"
+#include <Gaff_RefPtr.h>
 
 NS_GLEAM
 
@@ -40,7 +41,7 @@ public:
 	IBuffer* getConstantBuffer(IShader::SHADER_TYPE type, size_t index);
 	void addConstantBuffer(IShader::SHADER_TYPE type, IBuffer* const_buffer);
 	void removeConstantBuffer(IShader::SHADER_TYPE type, size_t index);
-	void popConstantBuffer(IShader::SHADER_TYPE type);
+	void popConstantBuffer(IShader::SHADER_TYPE type, size_t count = 1);
 
 	size_t getConstantBufferCount(IShader::SHADER_TYPE type) const;
 	size_t getConstantBufferCount(void) const;
@@ -50,7 +51,7 @@ public:
 	IShaderResourceView* getResourceView(IShader::SHADER_TYPE type, size_t index);
 	void addResourceView(IShader::SHADER_TYPE type, IShaderResourceView* resource_view);
 	void removeResourceView(IShader::SHADER_TYPE type, size_t index);
-	void popResourceView(IShader::SHADER_TYPE type);
+	void popResourceView(IShader::SHADER_TYPE type, size_t count = 1);
 
 	size_t getResourceViewCount(IShader::SHADER_TYPE type) const;
 	size_t getResourceViewCount(void) const;
@@ -60,7 +61,7 @@ public:
 	ISamplerState* getSamplerState(IShader::SHADER_TYPE type, size_t index);
 	void addSamplerState(IShader::SHADER_TYPE type, ISamplerState* sampler);
 	void removeSamplerState(IShader::SHADER_TYPE type, size_t index);
-	void popSamplerState(IShader::SHADER_TYPE type);
+	void popSamplerState(IShader::SHADER_TYPE type, size_t count = 1);
 
 	size_t getSamplerCount(IShader::SHADER_TYPE type) const;
 	size_t getSamplerCount(void) const;

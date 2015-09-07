@@ -44,93 +44,87 @@ ProgramBuffersD3D::~ProgramBuffersD3D(void)
 void ProgramBuffersD3D::addConstantBuffer(IShader::SHADER_TYPE type, IBuffer* const_buffer)
 {
 	ProgramBuffersBase::addConstantBuffer(type, const_buffer);
-	cacheBuffers();
+	cacheBuffers(type);
 }
 
-void ProgramBuffersD3D::removeConstantBuffer(IShader::SHADER_TYPE type, unsigned int index)
+void ProgramBuffersD3D::removeConstantBuffer(IShader::SHADER_TYPE type, size_t index)
 {
 	ProgramBuffersBase::removeConstantBuffer(type, index);
-	cacheBuffers();
+	cacheBuffers(type);
 }
 
-void ProgramBuffersD3D::popConstantBuffer(IShader::SHADER_TYPE type)
+void ProgramBuffersD3D::popConstantBuffer(IShader::SHADER_TYPE type, size_t count)
 {
-	ProgramBuffersBase::popConstantBuffer(type);
-	cacheBuffers();
+	ProgramBuffersBase::popConstantBuffer(type, count);
+	cacheBuffers(type);
 }
 
 void ProgramBuffersD3D::addResourceView(IShader::SHADER_TYPE type, IShaderResourceView* resource_view)
 {
 	ProgramBuffersBase::addResourceView(type, resource_view);
-	cacheResViews();
+	cacheResViews(type);
 }
 
-void ProgramBuffersD3D::removeResourceView(IShader::SHADER_TYPE type, unsigned int index)
+void ProgramBuffersD3D::removeResourceView(IShader::SHADER_TYPE type, size_t index)
 {
 	ProgramBuffersBase::removeResourceView(type, index);
-	cacheResViews();
+	cacheResViews(type);
 }
 
-void ProgramBuffersD3D::popResourceView(IShader::SHADER_TYPE type)
+void ProgramBuffersD3D::popResourceView(IShader::SHADER_TYPE type, size_t count)
 {
-	ProgramBuffersBase::popResourceView(type);
-	cacheResViews();
+	ProgramBuffersBase::popResourceView(type, count);
+	cacheResViews(type);
 }
 
 void ProgramBuffersD3D::addSamplerState(IShader::SHADER_TYPE type, ISamplerState* sampler)
 {
 	ProgramBuffersBase::addSamplerState(type, sampler);
-	cacheSamplers();
+	cacheSamplers(type);
 }
 
-void ProgramBuffersD3D::removeSamplerState(IShader::SHADER_TYPE type, unsigned int index)
+void ProgramBuffersD3D::removeSamplerState(IShader::SHADER_TYPE type, size_t index)
 {
 	ProgramBuffersBase::removeSamplerState(type, index);
-	cacheSamplers();
+	cacheSamplers(type);
 }
 
-void ProgramBuffersD3D::popSamplerState(IShader::SHADER_TYPE type)
+void ProgramBuffersD3D::popSamplerState(IShader::SHADER_TYPE type, size_t count)
 {
-	ProgramBuffersBase::popSamplerState(type);
-	cacheSamplers();
+	ProgramBuffersBase::popSamplerState(type, count);
+	cacheSamplers(type);
 }
 
-void ProgramBuffersD3D::cacheResViews(void)
+void ProgramBuffersD3D::cacheResViews(IShader::SHADER_TYPE type)
 {
-	for (unsigned int i = 0; i < IShader::SHADER_TYPE_SIZE; ++i) {
-		GleamArray<IShaderResourceView*>& resource_views = _resource_views[i];
-		GleamArray<ID3D11ShaderResourceView*>& res_views = _res_views[i];
-		res_views.clear();
+	GleamArray<IShaderResourceView*>& resource_views = _resource_views[type];
+	GleamArray<ID3D11ShaderResourceView*>& res_views = _res_views[type];
+	res_views.clearNoFree();
 
-		for (unsigned int j = 0; j < resource_views.size(); ++j) {
-			res_views.push(reinterpret_cast<const ShaderResourceViewD3D*>(resource_views[j])->getResourceView());
-		}
+	for (size_t i = 0; i < resource_views.size(); ++i) {
+		res_views.push(reinterpret_cast<const ShaderResourceViewD3D*>(resource_views[i])->getResourceView());
 	}
 }
 
-void ProgramBuffersD3D::cacheSamplers(void)
+void ProgramBuffersD3D::cacheSamplers(IShader::SHADER_TYPE type)
 {
-	for (unsigned int i = 0; i < IShader::SHADER_TYPE_SIZE; ++i) {
-		GleamArray<ISamplerState*>& sampler_states = _sampler_states[i];
-		GleamArray<ID3D11SamplerState*>& samplers = _samplers[i];
-		samplers.clear();
+	GleamArray<ISamplerState*>& sampler_states = _sampler_states[type];
+	GleamArray<ID3D11SamplerState*>& samplers = _samplers[type];
+	samplers.clearNoFree();
 
-		for (unsigned int j = 0; j < sampler_states.size(); ++j) {
-			samplers.push(reinterpret_cast<const SamplerStateD3D*>(sampler_states[j])->getSamplerState());
-		}
+	for (size_t i = 0; i < sampler_states.size(); ++i) {
+		samplers.push(reinterpret_cast<const SamplerStateD3D*>(sampler_states[i])->getSamplerState());
 	}
 }
 
-void ProgramBuffersD3D::cacheBuffers(void)
+void ProgramBuffersD3D::cacheBuffers(IShader::SHADER_TYPE type)
 {
-	for (unsigned int i = 0; i < IShader::SHADER_TYPE_SIZE; ++i) {
-		GleamArray<IBuffer*>& const_bufs = _constant_buffers[i];
-		GleamArray<ID3D11Buffer*>& buffers = _buffers[i];
-		buffers.clear();
+	GleamArray<IBuffer*>& const_bufs = _constant_buffers[type];
+	GleamArray<ID3D11Buffer*>& buffers = _buffers[type];
+	buffers.clearNoFree();
 
-		for (unsigned int j = 0; j < const_bufs.size(); ++j) {
-			buffers.push(reinterpret_cast<BufferD3D*>(const_bufs[j])->getBuffer());
-		}
+	for (size_t i = 0; i < const_bufs.size(); ++i) {
+		buffers.push(reinterpret_cast<BufferD3D*>(const_bufs[i])->getBuffer());
 	}
 }
 

@@ -84,6 +84,7 @@ public:
 
 	bool empty(void) const;
 
+	void append(const T* array, size_t count);
 	void append(const Array<T, Allocator>& array);
 	void moveAppend(Array<T, Allocator>&& array);
 

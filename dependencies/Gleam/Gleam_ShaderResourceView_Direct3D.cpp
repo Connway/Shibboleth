@@ -60,7 +60,7 @@ bool ShaderResourceViewD3D::init(IRenderDevice& rd, const ITexture* texture)
 	_view_type = VIEW_TEXTURE;
 
 	D3D11_SHADER_RESOURCE_VIEW_DESC shader_desc;
-	shader_desc.Format = TextureD3D::getTypedFormat(texture->getFormat());
+	shader_desc.Format = TextureD3D::GetTypedFormat(texture->getFormat());
 	shader_desc.ViewDimension = _dimension_map[texture->getType()];
 	// the union will set this for all texture types
 	shader_desc.Texture2D.MostDetailedMip = 0;

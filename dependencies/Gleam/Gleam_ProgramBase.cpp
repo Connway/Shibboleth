@@ -94,11 +94,16 @@ void ProgramBuffersBase::removeConstantBuffer(IShader::SHADER_TYPE type, size_t 
 	_constant_buffers[type].erase(index);
 }
 
-void ProgramBuffersBase::popConstantBuffer(IShader::SHADER_TYPE type)
+void ProgramBuffersBase::popConstantBuffer(IShader::SHADER_TYPE type, size_t count)
 {
 	assert(type < IShader::SHADER_TYPE_SIZE && _constant_buffers[type].size());
-	_constant_buffers[type].last()->release();
-	_constant_buffers[type].pop();
+	assert(count <= _constant_buffers[type].size());
+
+	while (count) {
+		_constant_buffers[type].last()->release();
+		_constant_buffers[type].pop();
+		--count;
+	}
 }
 
 size_t ProgramBuffersBase::getConstantBufferCount(IShader::SHADER_TYPE type) const
@@ -149,11 +154,16 @@ void ProgramBuffersBase::removeResourceView(IShader::SHADER_TYPE type, size_t in
 	_resource_views[type].erase(index);
 }
 
-void ProgramBuffersBase::popResourceView(IShader::SHADER_TYPE type)
+void ProgramBuffersBase::popResourceView(IShader::SHADER_TYPE type, size_t count)
 {
 	assert(type < IShader::SHADER_TYPE_SIZE && _resource_views[type].size());
-	_resource_views[type].last()->release();
-	_resource_views[type].pop();
+	assert(count <= _resource_views[type].size());
+
+	while (count) {
+		_resource_views[type].last()->release();
+		_resource_views[type].pop();
+		--count;
+	}
 }
 
 size_t ProgramBuffersBase::getResourceViewCount(IShader::SHADER_TYPE type) const
@@ -205,11 +215,16 @@ void ProgramBuffersBase::removeSamplerState(IShader::SHADER_TYPE type, size_t in
 	_sampler_states[type].erase(index);
 }
 
-void ProgramBuffersBase::popSamplerState(IShader::SHADER_TYPE type)
+void ProgramBuffersBase::popSamplerState(IShader::SHADER_TYPE type, size_t count)
 {
 	assert(type < IShader::SHADER_TYPE_SIZE && _sampler_states[type].size());
-	_sampler_states[type].last()->release();
-	_sampler_states[type].pop();
+	assert(count <= _sampler_states[type].size());
+
+	while (count) {
+		_sampler_states[type].last()->release();
+		_sampler_states[type].pop();
+		--count;
+	}
 }
 
 size_t ProgramBuffersBase::getSamplerCount(IShader::SHADER_TYPE type) const

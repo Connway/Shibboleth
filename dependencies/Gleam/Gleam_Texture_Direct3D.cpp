@@ -158,12 +158,12 @@ static unsigned int _format_size[ITexture::FORMAT_SIZE] = {
 	8
 };
 
-DXGI_FORMAT TextureD3D::getD3DFormat(FORMAT format)
+DXGI_FORMAT TextureD3D::GetD3DFormat(FORMAT format)
 {
 	return _format_map[format];
 }
 
-DXGI_FORMAT TextureD3D::getTypedFormat(FORMAT format)
+DXGI_FORMAT TextureD3D::GetTypedFormat(FORMAT format)
 {
 	DXGI_FORMAT typed_format;
 

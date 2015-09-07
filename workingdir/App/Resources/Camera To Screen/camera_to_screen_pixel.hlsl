@@ -22,7 +22,7 @@ PixelOutputType PixelMain(PixelInputType input)
 	PixelOutputType output;
 
 	output.final_pixel = diffuse.Sample(sample, input.uv);
-	// output.final_pixel = float4(1.0, 0.0, 0.0, 1.0);
+	// output.final_pixel = float4(1.0, 1.0, 0.0, 1.0);
 
 	return output;
 }

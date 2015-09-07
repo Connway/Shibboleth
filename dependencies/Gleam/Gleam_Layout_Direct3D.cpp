@@ -61,7 +61,7 @@ bool LayoutD3D::init(IRenderDevice& rd, const LayoutDescription* layout_desc, si
 	for (size_t i = 0; i < layout_desc_size; ++i) {
 		input_desc[i].SemanticName = _semantic_names[layout_desc[i].semantic];
 		input_desc[i].SemanticIndex = layout_desc[i].semantic_index;
-		input_desc[i].Format = TextureD3D::getD3DFormat(layout_desc[i].format);
+		input_desc[i].Format = TextureD3D::GetD3DFormat(layout_desc[i].format);
 		input_desc[i].InputSlot = layout_desc[i].input_slot;
 		input_desc[i].AlignedByteOffset = layout_desc[i].aligned_byte_offset;
 		input_desc[i].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;

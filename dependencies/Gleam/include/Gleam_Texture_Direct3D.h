@@ -51,8 +51,8 @@ public:
 	INLINE ID3D11Texture2D* getTexture2D(void) const;
 	INLINE ID3D11Texture3D* getTexture3D(void) const;
 
-	INLINE static DXGI_FORMAT getD3DFormat(FORMAT format);
-	INLINE static DXGI_FORMAT getTypedFormat(FORMAT format);
+	INLINE static DXGI_FORMAT GetD3DFormat(FORMAT format);
+	INLINE static DXGI_FORMAT GetTypedFormat(FORMAT format);
 
 private:
 	ID3D11DepthStencilView* _depth_stencil_view;
