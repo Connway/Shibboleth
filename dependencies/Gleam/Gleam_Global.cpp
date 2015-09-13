@@ -57,9 +57,6 @@ void* GleamAlloc(size_t size_bytes, const char* filename, unsigned int line_numb
 	void* data = g_allocator->alloc(size_bytes);
 
 	if (!data) {
-		// log error or something
-
-		// attempt to write a log about what happened
 		PrintfToLog("Failed to allocate %i bytes in \'%s\':%i", LOG_ERROR, filename, line_number);
 		return nullptr;
 	}
@@ -107,6 +104,7 @@ void WriteMessageToLog(const char* msg, size_t size, LOG_MSG_TYPE type)
 
 		g_log_file.write((void*)msg, sizeof(char), size);
 		g_log_file.writeChar('\n');
+		g_log_file.flush();
 	}
 }
 
@@ -140,6 +138,8 @@ void PrintfToLog(const char* format_string, LOG_MSG_TYPE type, ...)
 		g_log_file.writeChar('\n');
 
 		va_end(vl);
+
+		g_log_file.flush();
 	}
 }
 

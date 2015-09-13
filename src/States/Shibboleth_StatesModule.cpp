@@ -227,7 +227,7 @@ void* MEMCB ImageAlloc(const size_t size)
 
 void MEMCB ImageFree(const void* const data)
 {
-	Shibboleth::ShibbolethFree(const_cast<void*>(data), g_image_alloc_tag);
+	Shibboleth::ShibbolethFree(const_cast<void*>(data));
 }
 
 

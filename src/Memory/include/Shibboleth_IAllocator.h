@@ -35,7 +35,6 @@ public:
 
 	virtual void createMemoryPool(const char* pool_name, unsigned int alloc_tag) = 0;
 	virtual void* alloc(size_t size_bytes, unsigned int alloc_tag) = 0;
-	virtual void free(void* data, unsigned int alloc_tag) = 0;
 	virtual void* alloc(size_t size_bytes) = 0;
 	virtual void free(void* data) = 0;
 

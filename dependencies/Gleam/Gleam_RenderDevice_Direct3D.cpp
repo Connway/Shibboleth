@@ -541,18 +541,12 @@ bool RenderDeviceD3D::setCurrentOutput(unsigned int output)
 {
 	assert(_devices[_curr_device].swap_chains.size() > output);
 
-	SAFERELEASE(_active_render_target);
-	SAFERELEASE(_active_swap_chain);
-
 	_active_render_target = _devices[_curr_device].render_targets[output].get();
 	_active_swap_chain = _devices[_curr_device].swap_chains[output].get();
 	_active_viewport = _devices[_curr_device].viewports[output];
 	_active_vsync = _devices[_curr_device].vsync[output];
 
 	_curr_output = output;
-
-	_active_render_target->AddRef();
-	_active_swap_chain->AddRef();
 
 	return true;
 }
@@ -566,17 +560,11 @@ bool RenderDeviceD3D::setCurrentDevice(unsigned int device)
 {
 	assert(_devices.size() > device);
 
-	SAFERELEASE(_active_context);
-	SAFERELEASE(_active_device);
-
 	_active_context = _devices[device].context.get();
 	_active_device = _devices[device].device.get();
 
 	_curr_device = device;
 	
-	_active_context->AddRef();
-	_active_device->AddRef();
-
 	return setCurrentOutput(0);
 }
 

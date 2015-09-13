@@ -28,13 +28,17 @@ THE SOFTWARE.
 #include "Shibboleth_Allocator.h"
 #include <Gaff_IncludeAssert.h>
 #include <Gaff_ScopedExit.h>
-#include <Gaff_StackTrace.h>
 #include <Gaff_Atomic.h>
 #include <Gaff_Utils.h>
 #include <Gaff_File.h>
 #include <cstdlib>
 
 NS_SHIBBOLETH
+
+struct AllocationHeader
+{
+	unsigned int tag;
+};
 
 Allocator::Allocator(size_t alignment):
 	_tagged_pools(Gaff::DefaultAlignedAllocator(16)), _alignment(alignment), _global_allocator(alignment)
@@ -45,10 +49,6 @@ Allocator::Allocator(size_t alignment):
 	mem_pool_info.num_frees = 0;
 	strncpy(mem_pool_info.pool_name, "Untagged", POOL_NAME_SIZE);
 
-#ifdef TRACK_POINTER_ALLOCATIONS
-	mem_pool_info.pa_lock = _global_allocator.template allocT<Gaff::SpinLock>();
-	mem_pool_info.wf_lock = _global_allocator.template allocT<Gaff::SpinLock>();
-#endif
 #if defined(SYMBOL_BUILD) && defined(GATHER_ALLOCATION_STACKTRACE)
 	mem_pool_info.st_lock = _global_allocator.template allocT<Gaff::SpinLock>();
 #endif
@@ -63,10 +63,6 @@ Allocator::~Allocator(void)
 	auto exit_func = [&](void)
 	{
 		for (auto it = _tagged_pools.begin(); it != _tagged_pools.end(); ++it) {
-#ifdef TRACK_POINTER_ALLOCATIONS
-			_global_allocator.freeT(it->second.pa_lock);
-			_global_allocator.freeT(it->second.wf_lock);
-#endif
 #if defined(SYMBOL_BUILD) && defined(GATHER_ALLOCATION_STACKTRACE)
 			_global_allocator.freeT(it->second.st_lock);
 #endif
@@ -121,29 +117,11 @@ Allocator::~Allocator(void)
 		total_allocs += it->second.num_allocations;
 		total_frees += it->second.num_frees;
 
-#ifdef TRACK_POINTER_ALLOCATIONS
-		it->second.pointers_allocated.clear();
-
-		if (!it->second.wrong_free.empty()) {
-			log.printf("\t===========================================================\n");
-			log.printf("\tERROR: This pool freed memory that belonged to another pool!\n");
-			log.printf("\t===========================================================\n");
-
-			for (auto it_wf = it->second.wrong_free.begin(); it_wf != it->second.wrong_free.end(); ++it_wf) {
-				log.printf("\t\t%s: %u\n", _tagged_pools[it_wf->first].pool_name, it_wf->second);
-			}
-
-			log.printf("\n");
-
-			it->second.wrong_free.clear();
-		}
-#else
 		if (it->second.num_allocations < it->second.num_frees) {
 			log.printf("\t===========================================================\n");
 			log.printf("\tWARNING: Memory was potentially allocated by another pool, but freed by this one!\n");
 			log.printf("\t===========================================================\n\n");
 		}
-#endif
 
 		if (it->second.num_allocations > it->second.num_frees) {
 			log.printf("\t===========================================================\n");
@@ -198,10 +176,6 @@ void Allocator::createMemoryPool(const char* pool_name, unsigned int alloc_tag)
 
 		strncpy(mem_pool_info.pool_name, pool_name, POOL_NAME_SIZE);
 
-#ifdef TRACK_POINTER_ALLOCATIONS
-		mem_pool_info.pa_lock = _global_allocator.template allocT<Gaff::SpinLock>();
-		mem_pool_info.wf_lock = _global_allocator.template allocT<Gaff::SpinLock>();
-#endif
 #if defined(SYMBOL_BUILD) && defined(GATHER_ALLOCATION_STACKTRACE)
 		mem_pool_info.st_lock = _global_allocator.template allocT<Gaff::SpinLock>();
 #endif
@@ -213,17 +187,14 @@ void* Allocator::alloc(size_t size_bytes, unsigned int alloc_tag)
 	assert(_tagged_pools.hasElementWithKey(alloc_tag));
 	MemoryPoolInfo& mem_pool_info = _tagged_pools[alloc_tag];
 
-	void* data = Gaff::AlignedMalloc(size_bytes, _alignment);
+	void* data = Gaff::AlignedMalloc(size_bytes + sizeof(AllocationHeader), _alignment);
 
 	if (data) {
 		AtomicUAdd(&mem_pool_info.total_bytes_allocated, size_bytes);
 		AtomicIncrement(&mem_pool_info.num_allocations);
 
-#ifdef TRACK_POINTER_ALLOCATIONS
-		mem_pool_info.pa_lock->lock();
-		mem_pool_info.pointers_allocated.push(data);
-		mem_pool_info.pa_lock->unlock();
-#endif
+		reinterpret_cast<AllocationHeader*>(data)->tag = alloc_tag;
+
 #if defined(SYMBOL_BUILD) && defined(GATHER_ALLOCATION_STACKTRACE)
 		mem_pool_info.st_lock->lock();
 
@@ -236,50 +207,25 @@ void* Allocator::alloc(size_t size_bytes, unsigned int alloc_tag)
 #endif
 	}
 
-	return data;
+	return reinterpret_cast<char*>(data) + sizeof(AllocationHeader);
 }
 
-void Allocator::free(void* data, unsigned int alloc_tag)
+void* Allocator::alloc(size_t size_bytes)
 {
-	assert(_tagged_pools.hasElementWithKey(alloc_tag));
+	return alloc(size_bytes, 0);
+}
+
+void Allocator::free(void* data)
+{
 	assert(data);
 
-	MemoryPoolInfo& mem_pool_info = _tagged_pools[alloc_tag];
+	AllocationHeader* header = reinterpret_cast<AllocationHeader*>(reinterpret_cast<char*>(data) - sizeof(AllocationHeader));
+
+	assert(_tagged_pools.hasElementWithKey(header->tag));
+
+	MemoryPoolInfo& mem_pool_info = _tagged_pools[header->tag];
 	AtomicIncrement(&mem_pool_info.num_frees);
 
-#ifdef TRACK_POINTER_ALLOCATIONS
-	mem_pool_info.pa_lock->lock();
-
-	auto it_ptr = mem_pool_info.pointers_allocated.linearSearch(data);
-
-	if (it_ptr == mem_pool_info.pointers_allocated.end()) {
-		mem_pool_info.pa_lock->unlock();
-		bool found = false;
-
-		for (auto it_pool = _tagged_pools.begin(); it_pool != _tagged_pools.end(); ++it_pool) {
-			it_pool->second.pa_lock->lock();
-
-			it_ptr = it_pool->second.pointers_allocated.linearSearch(data);
-
-			if (it_ptr != it_pool->second.pointers_allocated.end()) {
-				mem_pool_info.wf_lock->lock();
-				++mem_pool_info.wrong_free[it_pool->first];
-				mem_pool_info.wf_lock->unlock();
-				found = true;
-				it_pool->second.pa_lock->unlock();
-				break;
-			}
-
-			it_pool->second.pa_lock->unlock();
-		}
-
-		assert(found);
-
-	} else {
-		mem_pool_info.pointers_allocated.fastErase(it_ptr);
-		mem_pool_info.pa_lock->unlock();
-	}
-#endif
 #if defined(SYMBOL_BUILD) && defined(GATHER_ALLOCATION_STACKTRACE)
 	mem_pool_info.st_lock->lock();
 
@@ -306,17 +252,7 @@ void Allocator::free(void* data, unsigned int alloc_tag)
 	}
 #endif
 
-	Gaff::AlignedFree(data);
-}
-
-void* Allocator::alloc(size_t size_bytes)
-{
-	return alloc(size_bytes, 0);
-}
-
-void Allocator::free(void* data)
-{
-	free(data, 0);
+	Gaff::AlignedFree(header);
 }
 
 size_t Allocator::getTotalBytesAllocated(unsigned int alloc_tag) const
