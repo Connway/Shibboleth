@@ -214,8 +214,7 @@ private:
 		typedef void (*ShutdownGraphics)(void);
 		typedef const char* (*GetShaderExtension)(void);
 		typedef void (*UpdateWindows)(void);
-		typedef Gleam::IWindow* (*CreateWindow)(void);
-		typedef void (*DestroyWindow)(Gleam::IWindow*);
+		typedef Gleam::IWindow* (*CreateWindowS)(void);
 
 		typedef Gleam::IShaderResourceView* (*CreateShaderResourceView)(void);
 		typedef Gleam::IProgramBuffers* (*CreateProgramBuffers)(void);
@@ -235,8 +234,7 @@ private:
 		ShutdownGraphics shutdown;
 
 		UpdateWindows update_windows;
-		CreateWindow create_window;
-		DestroyWindow destroy_window;
+		CreateWindowS create_window;
 
 		GetShaderExtension get_shader_extension;
 		CreateShaderResourceView create_shaderresourceview;

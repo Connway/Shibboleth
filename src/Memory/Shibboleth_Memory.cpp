@@ -49,17 +49,12 @@ void* ShibbolethAllocate(size_t size, unsigned int alloc_tag)
 
 void* ShibbolethAllocate(size_t size)
 {
-	return ShibbolethAllocate(size, 0);
-}
-
-void ShibbolethFree(void* data, unsigned int alloc_tag)
-{
-	gAllocator.free(data, alloc_tag);
+	return gAllocator.alloc(size, 0);
 }
 
 void ShibbolethFree(void* data)
 {
-	ShibbolethFree(data, 0);
+	gAllocator.free(data);
 }
 
 NS_END

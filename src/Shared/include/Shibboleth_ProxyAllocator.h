@@ -59,7 +59,7 @@ public:
 
 	void free(void* data)
 	{
-		_allocator->free(data, _alloc_tag);
+		_allocator->free(data);
 	}
 
 private:

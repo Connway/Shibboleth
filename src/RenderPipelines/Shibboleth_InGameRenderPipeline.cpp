@@ -107,8 +107,6 @@ void InGameRenderPipeline::run(double dt, void* frame_data)
 
 void InGameRenderPipeline::GenerateCommandLists(void* job_data)
 {
-	static ProxyAllocator graphics_allocator("Graphics");
-
 	JobData* jd = reinterpret_cast<JobData*>(job_data);
 	Array<RenderManager::RenderDevicePtr>& rds = jd->first->_render_mgr.getDeferredRenderDevices(Gaff::Thread::GetCurrentThreadID());
 	FrameData* fd = jd->second;
@@ -194,12 +192,12 @@ void InGameRenderPipeline::GenerateCommandLists(void* job_data)
 						// generate command list
 						if (!rd->finishCommandList(cmd_list)) {
 							// log error
-							graphics_allocator.freeT(cmd_list);
+							GetAllocator()->freeT(cmd_list);
 							continue;
 						}
 
 						// add it to command list list
-						command_lists[*it_dev][j].emplacePush(cmd_list, graphics_allocator);
+						command_lists[*it_dev][j].emplacePush(cmd_list);
 					}
 				}
 

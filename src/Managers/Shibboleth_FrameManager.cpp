@@ -190,11 +190,11 @@ void FrameManager::submitCommandLists(double, void* frame_data)
 			);
 
 			// For each render stage (must do in order)
-			for (size_t i = 0; i < RM_COUNT; ++i) {
+			for (size_t i = 0; i < GetEnumRefDef<RenderModes>().getNumEntries() - 1; ++i) {
 				auto& cls = it->second[*it_dev][i];
 
 				for (auto it_cl = cls.begin(); it_cl != cls.end(); ++it_cl) {
-					//rd.executeCommandList(it_cl->get());
+					rd.executeCommandList(it_cl->get());
 				}
 			}
 		}

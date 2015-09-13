@@ -183,10 +183,8 @@ RenderManager::~RenderManager(void)
 
 	_render_device = nullptr;
 
-	if (_graphics_functions.destroy_window) {
-		for (auto it = _windows.begin(); it != _windows.end(); ++it) {
-			_graphics_functions.destroy_window(it->window);
-		}
+	for (auto it = _windows.begin(); it != _windows.end(); ++it) {
+		_proxy_allocator.freeT(it->window);
 	}
 
 	_windows.clear();
@@ -277,7 +275,7 @@ bool RenderManager::createWindow(
 	unsigned int adapter_id, unsigned int display_id, bool vsync,
 	unsigned short tags)
 {
-	assert(_render_device && _graphics_functions.create_window && _graphics_functions.destroy_window);
+	assert(_render_device && _graphics_functions.create_window);
 
 	Gleam::IWindow* window = _graphics_functions.create_window();
 	LogManager::FileLockPair& log = _app.getGameLogFile();
@@ -300,7 +298,7 @@ bool RenderManager::createWindow(
 			x, y, width, height, device_name
 		);
 
-		_graphics_functions.destroy_window(window);
+		_proxy_allocator.freeT(window);
 		return false;
 	}
 
@@ -317,14 +315,14 @@ bool RenderManager::createWindow(
 			width, height, adapter_id, display_id
 		);
 
-		_graphics_functions.destroy_window(window);
+		_proxy_allocator.freeT(window);
 		return false;
 	}
 
 	if (!_render_device->init(*window, adapter_id, display_id, (unsigned int)display_mode_id, vsync)) {
 		Gaff::ScopedLock<Gaff::SpinLock> scoped_lock(*log.second);
 		log.first.writeString("ERROR - Failed to initialize render device with window!\n");
-		_graphics_functions.destroy_window(window);
+		_proxy_allocator.freeT(window);
 		return false;
 	}
 
@@ -652,8 +650,7 @@ bool RenderManager::cacheGleamFunctions(IApp& app, const char* module)
 		return false;
 	}
 
-	_graphics_functions.create_window = _gleam_module->getFunc<GraphicsFunctions::CreateWindow>("CreateWindowS");
-	_graphics_functions.destroy_window = _gleam_module->getFunc<GraphicsFunctions::DestroyWindow>("DestroyWindowS");
+	_graphics_functions.create_window = _gleam_module->getFunc<GraphicsFunctions::CreateWindowS>("CreateWindowS");
 	_graphics_functions.update_windows = _gleam_module->getFunc<GraphicsFunctions::UpdateWindows>("UpdateWindows");
 	_graphics_functions.get_shader_extension = _gleam_module->getFunc<GraphicsFunctions::GetShaderExtension>("GetShaderExtension");
 	_graphics_functions.create_shaderresourceview = _gleam_module->getFunc<GraphicsFunctions::CreateShaderResourceView>("CreateShaderResourceView");
@@ -673,11 +670,6 @@ bool RenderManager::cacheGleamFunctions(IApp& app, const char* module)
 
 	if (!_graphics_functions.create_window) {
 		log.first.printf("ERROR - Failed to find function 'CreateWindowS' in graphics module '%s'.", module_path.getBuffer());
-		return false;
-	}
-
-	if (!_graphics_functions.destroy_window) {
-		log.first.printf("ERROR - Failed to find function 'DestroyWindowS' in graphics module '%s'.", module_path.getBuffer());
 		return false;
 	}
 

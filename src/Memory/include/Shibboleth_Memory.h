@@ -38,7 +38,6 @@ MEMORY_API IAllocator* GetAllocator(void);
 
 MEMORY_API void* ShibbolethAllocate(size_t size, unsigned int alloc_tag);
 MEMORY_API void* ShibbolethAllocate(size_t size);
-MEMORY_API void ShibbolethFree(void* data, unsigned int alloc_tag);
 MEMORY_API void ShibbolethFree(void* data);
 
 NS_END

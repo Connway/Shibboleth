@@ -41,6 +41,7 @@ CommandListD3D::CommandListD3D(void)
 
 CommandListD3D::~CommandListD3D(void)
 {
+	SAFERELEASE(_command_list);
 }
 
 const ICommandList& CommandListD3D::operator=(const ICommandList& rhs)
@@ -76,8 +77,8 @@ bool CommandListD3D::isD3D(void) const
 
 void CommandListD3D::setCommandList(ID3D11CommandList* command_list)
 {
-	_command_list = command_list;
 	SAFERELEASE(_command_list);
+	_command_list = command_list;
 }
 
 ID3D11CommandList* CommandListD3D::getCommandList(void)

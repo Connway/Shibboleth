@@ -44,14 +44,11 @@ NS_SHIBBOLETH
 	class IApp;
 NS_END
 
-static Shibboleth::ProxyAllocator gProxyAllocator;
+static Shibboleth::ProxyAllocator gProxyAllocator("Graphics");
 
 DYNAMICEXPORT_C bool InitGraphics(Shibboleth::IApp&, const char* log_file_name)
 {
 	Gleam::SetLogFileName(log_file_name);
-
-	gProxyAllocator = Shibboleth::ProxyAllocator("Graphics");
-
 	Gleam::SetAllocator(&gProxyAllocator);
 	return true;
 }
@@ -63,11 +60,6 @@ DYNAMICEXPORT_C void ShutdownGraphics(void)
 DYNAMICEXPORT_C Gleam::IWindow* CreateWindowS(void)
 {
 	return gProxyAllocator.template allocT<Gleam::Window>();
-}
-
-DYNAMICEXPORT_C void DestroyWindowS(Gleam::IWindow* window)
-{
-	gProxyAllocator.freeT(window);
 }
 
 DYNAMICEXPORT_C void UpdateWindows(void)
