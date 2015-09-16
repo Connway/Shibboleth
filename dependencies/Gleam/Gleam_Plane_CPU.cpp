@@ -166,8 +166,8 @@ void PlaneCPU::transform(const TransformCPU& transform)
 	Vector4CPU normal = getNormal();
 	Vector4CPU point = getPoint();
 
-	normal = transform.transform(normal);
-	point = transform.transform(point);
+	normal = transform.transformVector(normal);
+	point = transform.transformPoint(point);
 
 	normal.normalizeThis();
 

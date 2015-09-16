@@ -139,25 +139,34 @@ const char* ObjectManager::getName(void) const
 
 void ObjectManager::getUpdateEntries(Array<UpdateEntry>& entries)
 {
-	entries.movePush(UpdateEntry(AString("Object Manager: Pre-Physics Update"), Gaff::Bind(this, &ObjectManager::prePhysicsUpdate)));
-	entries.movePush(UpdateEntry(AString("Object Manager: Post-Physics Update"), Gaff::Bind(this, &ObjectManager::prePhysicsUpdate)));
+	//entries.movePush(UpdateEntry(AString("Object Manager: Pre-Physics Update"), Gaff::Bind(this, &ObjectManager::prePhysicsUpdate)));
+	//entries.movePush(UpdateEntry(AString("Object Manager: Post-Physics Update"), Gaff::Bind(this, &ObjectManager::prePhysicsUpdate)));
+	entries.movePush(UpdateEntry(AString("Object Manager: Update Dirty Objects"), Gaff::Bind(this, &ObjectManager::updateDirtyObjects)));
 }
 
-void ObjectManager::prePhysicsUpdate(double dt, void*)
-{
-	// generate update jobs
-	//for (auto it = _objects.begin(); it != _objects.end(); ++it) {
-	//}
-}
+//void ObjectManager::prePhysicsUpdate(double dt, void*)
+//{
+//	// generate update jobs
+//	//for (auto it = _objects.begin(); it != _objects.end(); ++it) {
+//	//}
+//}
 
-void ObjectManager::postPhysicsUpdate(double dt, void*)
+//void ObjectManager::postPhysicsUpdate(double dt, void*)
+//{
+//}
+
+void ObjectManager::updateDirtyObjects(double, void*)
 {
 	// generate update jobs
 	// wait for update jobs to finish
 
 	for (auto it = _dirty_objects.begin(); it != _dirty_objects.end(); ++it) {
+		(*it)->updateTransforms();
+
 		(*it)->notifyWorldDirtyCallbacks();
 		(*it)->notifyLocalDirtyCallbacks();
+
+		(*it)->clearDirty();
 	}
 
 	_dirty_objects.clearNoFree();

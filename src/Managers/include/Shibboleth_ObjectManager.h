@@ -26,7 +26,6 @@ THE SOFTWARE.
 #include "Shibboleth_IManager.h"
 #include <Shibboleth_ReflectionDefinitions.h>
 #include <Shibboleth_Array.h>
-#include <Shibboleth_Map.h>
 #include <Gaff_SpinLock.h>
 
 NS_SHIBBOLETH
@@ -76,8 +75,10 @@ private:
 
 	volatile unsigned int _next_id;
 
-	void prePhysicsUpdate(double dt, void*);
-	void postPhysicsUpdate(double dt, void*);
+	//void prePhysicsUpdate(double dt, void*);
+	//void postPhysicsUpdate(double dt, void*);
+
+	void updateDirtyObjects(double, void*);
 
 	GAFF_NO_COPY(ObjectManager);
 	GAFF_NO_MOVE(ObjectManager);

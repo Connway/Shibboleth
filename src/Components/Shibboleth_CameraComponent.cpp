@@ -45,7 +45,7 @@ SHIB_REF_IMPL(CameraComponent)
 
 CameraComponent::CameraComponent(void):
 	_aspect_ratio(1.0f), _fov(Gaff::DegToRad * 90.0f),
-	_z_near(0.0001f), _z_far(5000.0f),
+	_z_near(0.1f), _z_far(5000.0f),
 	_render_order(0)
 {
 	_clear_color[0] = 0.0f;
@@ -81,8 +81,9 @@ bool CameraComponent::load(const Gaff::JSON& json)
 	gRefDef.read(json, this);
 
 	_render_target = GetApp().getManagerT<ResourceManager>("Resource Manager").requestResource(json["Render Target File"].getString());
+	_render_target.getResourcePtr()->addCallback(Gaff::Bind(this, &CameraComponent::RenderTargetCallback));
 
-	if (_active) {
+	if (isActive()) {
 		getOwner()->registerForWorldDirtyCallback(Gaff::Bind(this, &CameraComponent::updateFrustum));
 	}
 
@@ -181,16 +182,16 @@ void CameraComponent::setActive(bool active)
 {
 	Component::setActive(active);
 
-	if (active && !_active) {
+	if (active && !isActive()) {
 		getOwner()->registerForWorldDirtyCallback(Gaff::Bind(this, &CameraComponent::updateFrustum));
-	} else if (!active && _active) {
+	} else if (!active && isActive()) {
 		getOwner()->unregisterForWorldDirtyCallback(Gaff::Bind(this, &CameraComponent::updateFrustum));
 	}
 }
 
-void CameraComponent::RenderTargetCallback(const AHashString& /*resource*/, bool success)
+void CameraComponent::RenderTargetCallback(ResourceContainer*)
 {
-	if (!success) {
+	if (_render_target.getResourcePtr()->hasFailed()) {
 		// log error
 		GetApp().quit();
 		return;
@@ -202,7 +203,7 @@ void CameraComponent::RenderTargetCallback(const AHashString& /*resource*/, bool
 
 void CameraComponent::constructProjectionMatrixAndFrustum(void)
 {
-	_projection_matrix.setPerspectiveLH(_fov, _aspect_ratio, _z_near, _z_far);
+	_projection_matrix.setPerspectiveLH(_fov * Gaff::DegToRad, _aspect_ratio, _z_near, _z_far);
 	_unstransformed_frustum.construct(_fov, _aspect_ratio, _z_near, _z_far);
 	updateFrustum(getOwner(), 0);
 }

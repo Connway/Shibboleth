@@ -156,10 +156,10 @@ const Vector4CPU* OBBCPU::generatePoints(Vector4CPU* out) const
 
 void OBBCPU::transform(const TransformCPU& transform)
 {
-	_axes[0] = transform.transform(_axes[0]);
-	_axes[1] = transform.transform(_axes[1]);
-	_axes[2] = transform.transform(_axes[2]);
-	_center = transform.transform(_center);
+	_axes[0] = transform.transformVector(_axes[0]);
+	_axes[1] = transform.transformVector(_axes[1]);
+	_axes[2] = transform.transformVector(_axes[2]);
+	_center = transform.transformPoint(_center);
 }
 
 void OBBCPU::transform(const Matrix4x4CPU& transform)

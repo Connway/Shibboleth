@@ -2,8 +2,8 @@
 	{
 		"name": "Game Logic Phase",
 		"entries": [
-			["Broadcaster Manager: Update", "Object Manager: Pre-Physics Update"],
-			["Object Manager: Post-Physics Update"],
+			["Broadcaster Manager: Update"],
+			["Object Manager: Update Dirty Objects"],
 			["Occlusion Manager: Update"],
 			["Camera Manager: Update"]
 		]

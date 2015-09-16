@@ -121,13 +121,11 @@ void InGameRenderPipeline::GenerateCommandLists(void* job_data)
 			// If the next index is larger than the number of objects in the list, move on to the next list.
 			while (index < it->objects.results[i].size()) {
 				const OcclusionManager::QueryResult& result = it->objects.results[i][index];
-				Gleam::TransformCPU final_transform;
 				Gleam::TransformCPU inverse_camera = it->camera_transform.inverse();
-
-				final_transform = inverse_camera + it->transforms[i][index];
+				Gleam::TransformCPU final_transform = inverse_camera + it->transforms[i][index];
 
 				// Pre-computing the world-to-camera-to-projection matrix.
-				Gleam::Matrix4x4CPU final_matrix = it->camera->getProjectionMatrix() * final_transform.matrix();
+				Gleam::Matrix4x4CPU final_matrix = it->camera_projection_matrix * final_transform.matrix();
 
 				assert(result.second.first);
 				ModelComponent* model_comp = reinterpret_cast<ModelComponent*>(result.second.first);

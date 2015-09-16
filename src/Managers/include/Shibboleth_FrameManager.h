@@ -43,6 +43,7 @@ struct FrameData
 	struct ObjectData
 	{
 		Array<Gleam::TransformCPU> transforms[OcclusionManager::OT_SIZE];
+		Gleam::Matrix4x4CPU camera_projection_matrix;
 		Gleam::TransformCPU camera_transform;
 		OcclusionManager::QueryData objects;
 		CameraComponent* camera;

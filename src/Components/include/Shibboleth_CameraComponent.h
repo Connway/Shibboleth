@@ -88,9 +88,8 @@ private:
 	float _z_near;
 	float _z_far;
 	unsigned char _render_order;
-	bool _active;
 
-	void RenderTargetCallback(const AHashString& /*resource*/, bool success);
+	void RenderTargetCallback(ResourceContainer*);
 	void constructProjectionMatrixAndFrustum(void);
 
 	SHIB_REF_DEF(CameraComponent);

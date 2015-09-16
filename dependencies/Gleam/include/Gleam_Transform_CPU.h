@@ -54,7 +54,8 @@ public:
 	void concatThis(const TransformCPU& rhs);
 	void inverseThis(void);
 
-	Vector4CPU transform(const Vector4CPU& rhs) const;
+	Vector4CPU transformVector(const Vector4CPU& rhs) const;
+	Vector4CPU transformPoint(const Vector4CPU& rhs) const;
 	Matrix4x4CPU matrix(void) const;
 
 	TransformCPU lerp(const TransformCPU& end, const Vector4CPU& t);
