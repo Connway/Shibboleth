@@ -161,11 +161,7 @@ public:
 	void render(double dt)
 	{
 		Shibboleth::ModelComponent* model = _object->getFirstComponentWithInterface<Shibboleth::ModelComponent>();
-		//Shibboleth::OcclusionManager& om = _app.getManagerT<Shibboleth::OcclusionManager>("Occlusion Manager");
 		Shibboleth::RenderManager& rm = _app.getManagerT<Shibboleth::RenderManager>("Render Manager");
-
-		// query occlusion manager
-		//Shibboleth::OcclusionManager::QueryData objects = om.findObjectsInFrustum();
 
 		if (model && model->isReadyToRender()) {
 			rm.getRenderDevice().setCurrentDevice(0);

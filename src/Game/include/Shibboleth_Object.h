@@ -27,7 +27,7 @@ THE SOFTWARE.
 #include <Shibboleth_Array.h>
 #include <Gaff_SpinLock.h>
 #include <Gaff_Function.h>
-#include <Gaff_SmartPtr.h>
+//#include <Gaff_SmartPtr.h>
 #include <Gleam_Transform_CPU.h>
 #include <Gleam_AABB_CPU.h>
 
@@ -113,8 +113,8 @@ public:
 	void registerForPrePhysicsUpdate(const UpdateCallback& callback);
 	void registerForPostPhysicsUpdate(const UpdateCallback& callback);
 
-	void prePhysicsUpdate(double dt);
-	void postPhysicsUpdate(double dt);
+	//void prePhysicsUpdate(double dt);
+	//void postPhysicsUpdate(double dt);
 
 	INLINE const Gleam::TransformCPU& getLocalTransform(void) const;
 	INLINE const Gleam::TransformCPU& getWorldTransform(void) const;

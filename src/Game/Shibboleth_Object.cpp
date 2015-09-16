@@ -129,13 +129,13 @@ void Object::registerForPostPhysicsUpdate(const UpdateCallback& callback)
 {
 }
 
-void Object::prePhysicsUpdate(double dt)
-{
-}
-
-void Object::postPhysicsUpdate(double dt)
-{
-}
+//void Object::prePhysicsUpdate(double dt)
+//{
+//}
+//
+//void Object::postPhysicsUpdate(double dt)
+//{
+//}
 
 const Gleam::TransformCPU& Object::getLocalTransform(void) const
 {
@@ -290,8 +290,6 @@ void Object::updateTransforms(void)
 	}
 
 	for (auto it = _children.begin(); it != _children.end(); ++it) {
-		// Create jobs for updating children nodes.
-		// We will be assuming that most objects won't have that many children to be worth splitting into multiple updates.
 		(*it)->updateTransforms();
 	}
 }

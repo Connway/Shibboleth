@@ -125,7 +125,14 @@ void TransformCPU::inverseThis(void)
 	_translation = -_translation;
 }
 
-Vector4CPU TransformCPU::transform(const Vector4CPU& rhs) const
+Vector4CPU TransformCPU::transformVector(const Vector4CPU& rhs) const
+{
+	Vector4CPU temp = rhs * _scale;
+	temp = _rotation.transform(temp);
+	return temp;
+}
+
+Vector4CPU TransformCPU::transformPoint(const Vector4CPU& rhs) const
 {
 	Vector4CPU temp = rhs * _scale;
 	temp = _rotation.transform(temp);

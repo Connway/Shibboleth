@@ -187,14 +187,14 @@ void AABBCPU::transform(const TransformCPU& transform)
 	setMin(Vector4CPU::Zero);
 	setMax(Vector4CPU::Zero);
 
-	_transform_cache[0] = transform.transform(_transform_cache[0]);
-	_transform_cache[1] = transform.transform(_transform_cache[1]);
-	_transform_cache[2] = transform.transform(_transform_cache[2]);
-	_transform_cache[3] = transform.transform(_transform_cache[3]);
-	_transform_cache[4] = transform.transform(_transform_cache[4]);
-	_transform_cache[5] = transform.transform(_transform_cache[5]);
-	_transform_cache[6] = transform.transform(_transform_cache[6]);
-	_transform_cache[7] = transform.transform(_transform_cache[7]);
+	_transform_cache[0] = transform.transformPoint(_transform_cache[0]);
+	_transform_cache[1] = transform.transformPoint(_transform_cache[1]);
+	_transform_cache[2] = transform.transformPoint(_transform_cache[2]);
+	_transform_cache[3] = transform.transformPoint(_transform_cache[3]);
+	_transform_cache[4] = transform.transformPoint(_transform_cache[4]);
+	_transform_cache[5] = transform.transformPoint(_transform_cache[5]);
+	_transform_cache[6] = transform.transformPoint(_transform_cache[6]);
+	_transform_cache[7] = transform.transformPoint(_transform_cache[7]);
 
 	addPoints(_transform_cache, 8);
 }
