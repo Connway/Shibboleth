@@ -60,7 +60,7 @@ public:
 
 	void* rawRequestInterface(unsigned int class_id) const;
 
-	void render(double dt); // Temporary test function
+	void render(double dt, Gleam::IRenderDevice& rd, unsigned int device); // Temporary test function
 	bool isReadyToRender(void) const; // Temporary test function
 
 	size_t determineLOD(const Gleam::Vector4CPU& pos);

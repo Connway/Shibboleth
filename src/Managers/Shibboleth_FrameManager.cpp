@@ -181,12 +181,13 @@ void FrameManager::submitCommandLists(double, void* frame_data)
 			//rd.setCurrentOutput(0); // Not sure if not setting an output will break OpenGL
 
 			float g[4] = { 0.0f, 1.0f, 0.0f, 1.0f };
+
 			rt->bind(rd);
 
 			rt->clear(
 				rd,
 				Gleam::IRenderTarget::CLEAR_COLOR | Gleam::IRenderTarget::CLEAR_DEPTH | Gleam::IRenderTarget::CLEAR_STENCIL,
-				0.0f, 0, g
+				1.0f, 0, g
 			);
 
 			// For each render stage (must do in order)

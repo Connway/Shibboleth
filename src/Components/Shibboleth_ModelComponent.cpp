@@ -490,7 +490,7 @@ void ModelComponent::setupResources(void)
 }
 
 // HACK: Should be removed. For testing purposes only.
-void ModelComponent::render(double dt)
+void ModelComponent::render(double dt, Gleam::IRenderDevice& rd, unsigned int device)
 {
 	if (!_init) {
 		return;
@@ -508,20 +508,20 @@ void ModelComponent::render(double dt)
 
 	final_transform = projection * tocamera * toworld;
 
-	Gleam::IRenderDevice& rd = _render_mgr.getRenderDevice();
-	unsigned int current_device = rd.getCurrentDevice();
-	rd.getActiveOutputRenderTarget()->bind(rd);
+	//Gleam::IRenderDevice& rd = _render_mgr.getRenderDevice();
+	//unsigned int current_device = rd.getCurrentDevice();
+	//rd.getActiveOutputRenderTarget()->bind(rd);
 
-	ModelPtr& model = _model->models[current_device][0];
+	ModelPtr& model = _model->models[device][0];
 
-	Gleam::IBuffer* buffer = _buffers[0]->data[current_device].get();
+	Gleam::IBuffer* buffer = _buffers[0]->data[device].get();
 
 	float* matrix_data = reinterpret_cast<float*>(buffer->map(rd));
 		memcpy(matrix_data, final_transform.getBuffer(), sizeof(float) * 16);
-	buffer->unmap(_render_mgr.getRenderDevice());
+	buffer->unmap(rd);
 
 	for (unsigned int i = 0; i < model->getMeshCount(); ++i) {
-		_materials[i]->programs[current_device]->bind(rd, _program_buffers[i]->data[current_device].get());
+		_materials[i]->programs[device]->bind(rd, _program_buffers[i]->data[device].get());
 
 		model->render(rd, i);
 	}

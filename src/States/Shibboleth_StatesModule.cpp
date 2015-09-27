@@ -167,7 +167,8 @@ public:
 			rm.getRenderDevice().setCurrentDevice(0);
 			rm.getRenderDevice().beginFrame();
 
-			model->render(dt);
+			rm.getRenderDevice().getActiveOutputRenderTarget()->bind(rm.getRenderDevice());
+			model->render(dt, rm.getRenderDevice(), rm.getRenderDevice().getCurrentDevice());
 
 			rm.getRenderDevice().endFrame();
 		}
