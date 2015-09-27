@@ -58,6 +58,9 @@ THE SOFTWARE.
 #define SAFEGAFFADDREF(x) if (x) { x->addRef(); } //!< Safely adds a reference to pointers that implement IRefCounted.
 
 #if defined(_WIN32) || defined(_WIN64)
+	// Disable nameless struct/union warning
+	// Disable assignment operator could not be generated warning
+	// Disable unrecognized character escape sequence warning
 	#pragma warning(disable : 4201 4512 4129)
 
 	#ifndef _CRT_SECURE_NO_WARNINGS
@@ -148,5 +151,6 @@ NS_END
 
 #if defined(__linux__) || defined(__APPLE__)
 	#include <cstdlib> // For size_t
+	#include <sched.h> // For sched_yield
 #endif
 

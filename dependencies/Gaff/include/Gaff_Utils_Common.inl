@@ -43,7 +43,7 @@ bool ForEachInDirectory(const char* directory, Callback&& callback)
 	bool early_out = false;
 
 	while (entry) {
-		if (callback(entry->d_name, _D_EXACT_NAMLEN(entry), static_casat<FileDataType>(entry->d_type))) {
+		if (callback(entry->d_name, _D_EXACT_NAMLEN(entry), static_cast<FileDataType>(entry->d_type))) {
 			early_out = true;
 			break;
 		}

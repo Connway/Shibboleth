@@ -1,7 +1,9 @@
 platforms { "x86", "x64" }
 
 warnings "Extra"
-flags { "Unicode", "NoRTTI", "SEH" } -- unfortunately need exceptions for crash handlers :(
+flags { "Unicode" }
+exceptionhandling "SEH" -- unfortunately need exceptions for crash handlers :(
+rtti "Off"
 
 nativewchar "Default"
 floatingpoint "Fast"
