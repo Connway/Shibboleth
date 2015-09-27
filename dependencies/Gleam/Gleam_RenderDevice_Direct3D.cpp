@@ -388,7 +388,6 @@ void RenderDeviceD3D::beginFrame(void)
 {
 	resetRenderState();
 	_active_context->RSSetViewports(1, &_active_viewport);
-	_active_context->ClearRenderTargetView(_active_render_target, _clear_color);
 }
 
 void RenderDeviceD3D::endFrame(void)
@@ -619,6 +618,7 @@ void RenderDeviceD3D::executeCommandList(ICommandList* command_list)
 {
 	assert(command_list->isD3D() && _active_context);
 	CommandListD3D* cmd_list = reinterpret_cast<CommandListD3D*>(command_list);
+	assert(cmd_list->getCommandList());
 	_active_context->ExecuteCommandList(cmd_list->getCommandList(), FALSE);
 }
 

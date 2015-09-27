@@ -58,6 +58,7 @@ void DeferredRenderDeviceD3D::executeCommandList(ICommandList* command_list)
 {
 	assert(command_list->isD3D() && _context);
 	CommandListD3D* cmd_list = reinterpret_cast<CommandListD3D*>(command_list);
+	assert(cmd_list->getCommandList());
 	_context->ExecuteCommandList(cmd_list->getCommandList(), FALSE);
 }
 
