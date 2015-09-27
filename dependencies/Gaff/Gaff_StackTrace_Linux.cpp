@@ -34,7 +34,7 @@ NS_GAFF
 	\brief Global initialization of the stack trace system.
 	\note Must be called before using a StackTrace instance. And called per execution context. (eg EXE, DLL)
 */
-bool StackTrace::Init(bool)
+bool StackTrace::Init(void)
 {
 	return true;
 }
@@ -47,14 +47,15 @@ void StackTrace::Destroy(void)
 }
 
 StackTrace::StackTrace(const StackTrace& trace):
-	_strings(nullptr), _total_frames(0),
+	_strings(nullptr), _file_name_size(-1), _total_frames(0)
 {
 	*this = trace;
 }
 
 StackTrace::StackTrace(void):
-	_strings(nullptr), _total_frames(0),
+	_strings(nullptr), _file_name_size(-1), _total_frames(0)
 {
+	memset(_file_name_cache, 0, sizeof(char) * NAME_SIZE);
 }
 
 StackTrace::~StackTrace(void)
@@ -66,7 +67,9 @@ StackTrace::~StackTrace(void)
 
 const StackTrace& StackTrace::operator=(const StackTrace& rhs)
 {
+	memcpy(_file_name_cache, rhs._file_name_cache, sizeof(char) * NAME_SIZE);
 	memcpy(_stack, rhs._stack, sizeof(_stack));
+	_file_name_size = rhs._file_name_size;
 	_total_frames = rhs._total_frames;
 
 	if (_strings) {
@@ -91,35 +94,29 @@ unsigned short StackTrace::captureStack(unsigned int frames_to_capture)
 	}
 
 	_strings = backtrace_symbols(_stack, _total_frames);
+	return _total_frames;
 }
 
-unsigned short StackTrace::getNumCapturedFrames(unsigned short frame) const
+unsigned short StackTrace::getNumCapturedFrames(void) const
 {
 	return _total_frames;
 }
 
 unsigned long long StackTrace::getAddress(unsigned short frame) const
 {
-	return static_cast<unsigned long long>(_stack[frame]);
+	//return static_cast<unsigned long long>(_stack[frame]);
+	return (unsigned long long)_stack[frame];
 }
 
-unsigned int getLineNumber(unsigned short frame) const
+unsigned int StackTrace::getLineNumber(unsigned short frame) const
 {
-	char command[64] = { 0 };
-	sprintf(command, "addr2line %p -e App", _stack[frame]); // Make a generic way to solve for not hard-coding the "App" part.
+	getFileName(frame);
 
-	FILE* stream = popen(command, "r");
-
-	if (!stream)
+	if (_file_name_size < 0) {
 		return 0;
+	}
 
-	char output[NAME_SIZE] = { 0 };
-	fgets(output, NAME_SIZE, stream);
-	pclose(stream);
-
-	// parse output
-
-	return line_number;
+	return static_cast<unsigned int>(atoi(&_file_name_cache[_file_name_size + 1]));
 }
 
 const char* StackTrace::getSymbolName(unsigned short frame) const
@@ -127,23 +124,29 @@ const char* StackTrace::getSymbolName(unsigned short frame) const
 	return _strings[frame];
 }
 
-const char* getFileName(unsigned short frame) const
+const char* StackTrace::getFileName(unsigned short frame) const
 {
 	char command[64] = { 0 };
 	sprintf(command, "addr2line %p -e App", _stack[frame]); // Make a generic way to solve for not hard-coding the "App" part.
 
 	FILE* stream = popen(command, "r");
 
-	if (!stream)
+	if (!stream) {
 		return nullptr;
+	}
 
-	char output[NAME_SIZE] = { 0 };
-	fgets(output, NAME_SIZE, stream);
+	fgets(_file_name_cache, NAME_SIZE, stream);
 	pclose(stream);
+	_file_name_cache[NAME_SIZE - 1] = 0;
 
-	// parse output
+	for (int i = NAME_SIZE - 2; i > -1; --i) {
+		if (_file_name_cache[i] == ':') {
+			_file_name_cache[i] = 0;
+			break;
+		}
+	}
 
-	return file_name;
+	return _file_name_cache;
 }
 
 NS_END

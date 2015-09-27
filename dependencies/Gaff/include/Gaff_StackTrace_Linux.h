@@ -56,9 +56,11 @@ public:
 	INLINE const char* getFileName(unsigned short frame) const;
 
 private:
+	mutable char _file_name_cache[NAME_SIZE];
 	void* _stack[MAX_FRAMES];
 	char** _strings;
 
+	mutable int _file_name_size;
 	unsigned short _total_frames;
 
 	bool loadFrameInfo(unsigned short frame);

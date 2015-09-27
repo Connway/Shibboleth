@@ -75,7 +75,7 @@ public:
 	{
 		destroy();
 		_data = rhs._data;
-		const_cast<SmartPtr<T, Allocator>&>(data)._data = nullptr;
+		const_cast<SmartPtr<T, Allocator>&>(rhs)._data = nullptr;
 		return *this;
 	}
 
