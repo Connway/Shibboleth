@@ -20,79 +20,27 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#if defined(_WIN32) || defined(_WIN64)
+#ifdef __APPLE__
 
 #include "Gaff_Utils.h"
-#include "Gaff_IncludeAssert.h"
-#include <direct.h>
-#include <errno.h>
-
-NS_GAFF
-
-unsigned long GetNumberOfCores(void)
-{
-	SYSTEM_INFO info;
-	GetSystemInfo(&info);
-	return info.dwNumberOfProcessors;
-}
-
-bool CreateDir(const char* dirname, unsigned short)
-{
-	assert(dirname);
-	return !_mkdir(dirname) || errno == EEXIST;
-}
-
-void DebugPrintf(const char* format_string, ...)
-{
-	assert(format_string);
-
-	va_list vl;
-	va_start(vl, format_string);
-
-#ifdef _UNICODE
-	CONVERT_TO_UTF16(temp, format_string);
-	wchar_t buf[256] = { 0 };
-	_vsnwprintf(buf, 256, temp, vl);
-	OutputDebugStringW(buf);
-#else
-	char buf[256] = { 0 };
-	vsnprintf(buf, 256, format_string, vl);
-	OutputDebugStringA(buf);
-#endif
-
-	va_end(vl);
-}
-
-bool SetWorkingDir(const char* directory)
-{
-#ifdef _UNICODE
-	CONVERT_TO_UTF16(temp, directory);
-	return SetCurrentDirectoryW(temp) != 0;
-#else
-	return SetCurrentDirectoryW(directory) != 0;
-#endif
-}
-
-void* AlignedMalloc(size_t size, size_t alignment)
-{
-	return _aligned_malloc(size, alignment);
-}
-
-void AlignedFree(void* data)
-{
-	_aligned_free(data);
-}
+#include <sys/sysctl.h>
+#include <unistd.h>
 
 bool IsDebuggerAttached(void)
 {
-	return IsDebuggerPresent() != 0;
-}
+	int items[4];
+	struct kinfo_proc info;
+	size_t size = sizeof(info);
 
-void DebugBreak(void)
-{
-	__debugbreak();
-}
+	info.kp_proc.p_flag = 0;
+	items[0] = CTL_KERN;
+	items[1] = KERN_PROC;
+	items[2] = KERN_PROC_PID;
+	items[3] = getpid();
 
-NS_END
+	sysctl(items, sizeof(items) / sizeof(*items), &info, &size, nullptr, 0);
+
+	return (info.kp_proc.p_flag & P_TRACED) != 0;
+}
 
 #endif

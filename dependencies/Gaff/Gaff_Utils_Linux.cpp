@@ -28,8 +28,8 @@ THE SOFTWARE.
 #include <unistd.h>
 #include <errno.h>
 #include <cstdarg>
+#include <csignal>
 #include <cstdio>
-#include <cwchar>
 
 NS_GAFF
 
@@ -69,6 +69,43 @@ void* AlignedMalloc(size_t size, size_t alignment)
 void AlignedFree(void* data)
 {
 	free(data);
+}
+
+void DebugBreak(void)
+{
+	raise(SIGTRAP);
+}
+
+NS_END
+
+#endif
+
+#ifdef __linux__
+
+NS_BEGIN
+
+bool IsDebuggerAttached(void)
+{
+	FILE* file = fopen("/proc/self/status", "r");
+
+	if (!file) {
+		return false;
+	}
+
+	// Skip the first 5 lines.
+	char buffer[1024] = { 0 };
+	for (unsigned int i = 0; i < 5; ++i) {
+		if (!fgets(buffer, 1024, file)) {
+			return false;
+		}
+	}
+
+	int pid = 0;
+	fscanf(file, "TracerPid: %d", &pid);
+
+	fclose(file);
+
+	return pid != 0;
 }
 
 NS_END

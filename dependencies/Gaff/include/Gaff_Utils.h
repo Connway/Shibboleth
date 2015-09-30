@@ -54,6 +54,9 @@ INLINE bool SetWorkingDir(const char* directory);
 INLINE void* AlignedMalloc(size_t size, size_t alignment);
 INLINE void AlignedFree(void* data);
 
+bool IsDebuggerAttached(void);
+void DebugBreak(void);
+
 //! Used to determine what type an entry in the filesystem is.
 enum FileDataType
 {
