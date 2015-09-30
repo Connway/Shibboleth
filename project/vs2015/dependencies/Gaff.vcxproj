@@ -284,6 +284,7 @@
     <ClCompile Include="..\..\..\dependencies\Gaff\Gaff_Timer_Windows.cpp" />
     <ClCompile Include="..\..\..\dependencies\Gaff\Gaff_Utils_Common.cpp" />
     <ClCompile Include="..\..\..\dependencies\Gaff\Gaff_Utils_Linux.cpp" />
+    <ClCompile Include="..\..\..\dependencies\Gaff\Gaff_Utils_Mac.cpp" />
     <ClCompile Include="..\..\..\dependencies\Gaff\Gaff_Utils_Windows.cpp" />
   </ItemGroup>
   <ItemGroup>
