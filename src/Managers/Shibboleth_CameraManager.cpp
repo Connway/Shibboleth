@@ -94,7 +94,7 @@ void CameraManager::registerCamera(CameraComponent* camera)
 		return lhs->getRenderOrder() < rhs->getRenderOrder();
 	});
 
-	_cameras.emplaceInsert(it, camera);
+	_cameras.emplace(it, camera);
 }
 
 void CameraManager::removeCamera(CameraComponent* camera)

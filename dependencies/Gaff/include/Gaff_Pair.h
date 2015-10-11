@@ -31,15 +31,25 @@ NS_GAFF
 template <class T1, class T2>
 struct Pair
 {
-	//Pair(T1&& f, T2&& s):
-	//	first(Move(f)), second(Move(s))
-	//{
-	//}
-
 	Pair(const T1& f, const T2& s):
 		first(f), second(s)
 	{
 	}
+
+	//Pair(const T1& f, T2&& s):
+	//	first(f), second(std::move(s))
+	//{
+	//}
+
+	//Pair(T1&& f, const T2& s):
+	//	first(std::move(f)), second(s)
+	//{
+	//}
+
+	//Pair(T1&& f, T2&& s):
+	//	first(std::move(f)), second(std::move(s))
+	//{
+	//}
 
 	Pair(const Pair& pair):
 		first(pair.first), second(pair.second)
@@ -47,7 +57,7 @@ struct Pair
 	}
 
 	Pair(Pair&& pair):
-		first(Move(pair.first)), second(Move(pair.second))
+		first(std::move(pair.first)), second(std::move(pair.second))
 	{
 	}
 
@@ -64,8 +74,8 @@ struct Pair
 
 	const Pair& operator=(Pair&& rhs)
 	{
-		first = Move(rhs.first);
-		second = Move(rhs.second);
+		first = std::move(rhs.first);
+		second = std::move(rhs.second);
 		return *this;
 	}
 
@@ -73,16 +83,28 @@ struct Pair
 	T2 second;
 };
 
-//template <class T1, class T2>
-//Pair<T1, T2> MakePair(T1&& first, T2&& second)
-//{
-//	return Pair<T1, T2>(Move(first), Move(second));
-//}
-
 template <class T1, class T2>
 Pair<T1, T2> MakePair(const T1& first, const T2& second)
 {
 	return Pair<T1, T2>(first, second);
 }
+
+//template <class T1, class T2>
+//Pair<T1, T2> MakePair(const T1& first, T2&& second)
+//{
+//	return Pair<T1, T2>(first, std::move(second));
+//}
+//
+//template <class T1, class T2>
+//Pair<T1, T2> MakePair(T1&& first, const T2& second)
+//{
+//	return Pair<T1, T2>(std::move(first), second);
+//}
+
+//template <class T1, class T2>
+//Pair<T1, T2> MakePair(T1&& first, T2&& second)
+//{
+//	return Pair<T1, T2>(std::move(first), std::move(second));
+//}
 
 NS_END

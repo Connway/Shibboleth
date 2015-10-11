@@ -148,7 +148,7 @@ Gaff::IVirtualDestructor* SamplerStateLoader::load(const char* file_name, unsign
 			return nullptr;
 		}
 
-		sampler_data->data[i] = Gaff::Move(sampler);
+		sampler_data->data[i] = std::move(sampler);
 	}
 
 	return sampler_data;

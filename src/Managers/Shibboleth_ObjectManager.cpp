@@ -59,7 +59,7 @@ Object* ObjectManager::createObject(void)
 		// If we generated a duplicate ID, then something is borked
 		assert(it == _objects.end() || (*it)->getID() != id);
 
-		_objects.insert(object, it);
+		_objects.insert(it, object);
 	}
 
 	return object;
@@ -139,9 +139,9 @@ const char* ObjectManager::getName(void) const
 
 void ObjectManager::getUpdateEntries(Array<UpdateEntry>& entries)
 {
-	//entries.movePush(UpdateEntry(AString("Object Manager: Pre-Physics Update"), Gaff::Bind(this, &ObjectManager::prePhysicsUpdate)));
-	//entries.movePush(UpdateEntry(AString("Object Manager: Post-Physics Update"), Gaff::Bind(this, &ObjectManager::prePhysicsUpdate)));
-	entries.movePush(UpdateEntry(AString("Object Manager: Update Dirty Objects"), Gaff::Bind(this, &ObjectManager::updateDirtyObjects)));
+	//entries.push(UpdateEntry(AString("Object Manager: Pre-Physics Update"), Gaff::Bind(this, &ObjectManager::prePhysicsUpdate)));
+	//entries.push(UpdateEntry(AString("Object Manager: Post-Physics Update"), Gaff::Bind(this, &ObjectManager::prePhysicsUpdate)));
+	entries.push(UpdateEntry(AString("Object Manager: Update Dirty Objects"), Gaff::Bind(this, &ObjectManager::updateDirtyObjects)));
 }
 
 //void ObjectManager::prePhysicsUpdate(double dt, void*)

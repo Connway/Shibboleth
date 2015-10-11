@@ -148,7 +148,7 @@ IRenderDevice::AdapterList RenderDeviceGL::getDisplayModes(int)
 			adapter.name = adapter.display_device.DeviceString;
 #endif
 
-			it_disp = _display_info.insert(adapter, it_disp);
+			it_disp = _display_info.insert(it_disp, adapter);
 		}
 
 		GleamArray<OutputInfo>::Iterator it_out = it_disp->output_info.linearSearch(dev_name.getBuffer(), [](const OutputInfo& lhs, const char* rhs) -> bool
@@ -165,7 +165,7 @@ IRenderDevice::AdapterList RenderDeviceGL::getDisplayModes(int)
 			display.name = disp_device.DeviceName;
 #endif
 
-			it_out = it_disp->output_info.insert(display, it_out);
+			it_out = it_disp->output_info.insert(it_out, display);
 		}
 
 		for (unsigned int j = 0; EnumDisplaySettings(disp_device.DeviceName, j, &mode); ++j) {

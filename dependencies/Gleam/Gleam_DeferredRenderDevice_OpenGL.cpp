@@ -38,7 +38,7 @@ class GLFuncWrapper : public Gaff::IFunction<void>
 {
 public:
 	GLFuncWrapper(const Gaff::CachedFunction<ReturnType, Args...>& function): _function(function) {}
-	GLFuncWrapper(Gaff::CachedFunction<ReturnType, Args...>&& function): _function(Gaff::Move(function)) {}
+	GLFuncWrapper(Gaff::CachedFunction<ReturnType, Args...>&& function): _function(std::move(function)) {}
 	~GLFuncWrapper(void);
 
 	void call(void) const { _function(); }
@@ -81,7 +81,7 @@ void DeferredRenderDeviceGL::executeCommandList(ICommandList* command_list)
 bool DeferredRenderDeviceGL::finishCommandList(ICommandList* command_list)
 {
 	assert(!command_list->isD3D());
-	*command_list = Gaff::Move(_command_list);
+	*command_list = std::move(_command_list);
 	return true;
 }
 

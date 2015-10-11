@@ -95,8 +95,8 @@ static bool addOutput(Gleam::IRenderDevice& rd, RenderManager& rm, Gleam::IRende
 		return false;
 	}
 
-	data->texture_srvs[rd.getCurrentDevice()].emplaceMovePush(Gaff::Move(srv));
-	data->textures[rd.getCurrentDevice()].emplaceMovePush(Gaff::Move(texture));
+	data->texture_srvs[rd.getCurrentDevice()].emplacePush(std::move(srv));
+	data->textures[rd.getCurrentDevice()].emplacePush(std::move(texture));
 
 	return true;
 }

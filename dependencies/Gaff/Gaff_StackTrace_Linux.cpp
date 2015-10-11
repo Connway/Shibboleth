@@ -25,8 +25,13 @@ THE SOFTWARE.
 #include "Gaff_StackTrace_Linux.h"
 #include "Gaff_IncludeAssert.h"
 #include <execinfo.h>
-#include <malloc.h>
 #include <cstring>
+
+#ifdef __APPLE__
+	#include <sys/malloc.h>
+#else
+	#include <malloc.h>
+#endif
 
 NS_GAFF
 

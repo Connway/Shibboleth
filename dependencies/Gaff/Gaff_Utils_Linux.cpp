@@ -82,7 +82,7 @@ NS_END
 
 #ifdef __linux__
 
-NS_BEGIN
+NS_GAFF
 
 bool IsDebuggerAttached(void)
 {

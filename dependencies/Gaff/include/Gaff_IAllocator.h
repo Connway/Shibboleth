@@ -32,13 +32,7 @@ NS_GAFF
 template <class T, class... Args>
 T* construct(T* data, Args&&... args)
 {
-	return new (data) T(args...);
-}
-
-template <class T, class... Args>
-T* moveConstruct(T* data, Args&&... args)
-{
-	return new (data) T(Move(args)...);
+	return new (data) T(std::forward<Args>(args)...);
 }
 
 // This is giving a warning saying data is unreferenced ... what?
@@ -65,41 +59,22 @@ public:
 	virtual void free(void* data) = 0;
 
 	template <class T, class... Args>
-	T* moveAllocArrayT(size_t count, Args&&... args)
-	{
-		T* data = reinterpret_cast<T*>(alloc(sizeof(T) * count));
-
-		for (size_t i = 0; i < count; ++i) {
-			moveConstruct(data + i, Gaff::Move(args)...);
-		}
-
-		return data;
-	}
-
-	template <class T, class... Args>
 	T* allocArrayT(size_t count, Args&&... args)
 	{
 		T* data = reinterpret_cast<T*>(alloc(sizeof(T) * count));
 
 		for (size_t i = 0; i < count; ++i) {
-			construct(data + i, args...);
+			construct(data + i, std::forward<Args>(args)...);
 		}
 
 		return data;
-	}
-
-	template <class T, class... Args>
-	T* moveAllocT(Args&&... args)
-	{
-		T* data = reinterpret_cast<T*>(alloc(sizeof(T)));
-		return moveConstruct(data, Gaff::Move(args)...);
 	}
 
 	template <class T, class... Args>
 	T* allocT(Args&&... args)
 	{
 		T* data = reinterpret_cast<T*>(alloc(sizeof(T)));
-		return construct(data, args...);
+		return construct(data, std::forward<Args>(args)...);
 	}
 
 	template <class T>

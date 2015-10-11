@@ -1535,7 +1535,7 @@ void ReflectionDefinition<T, Allocator>::ArrayFixedEnumContainer<array_size, T2>
 	}
 
 	if (array) {
-		T2 temp = Move((object->*_var)[src_index]);
+		T2 temp = std::move((object->*_var)[src_index]);
 		deconstruct(array + src_index);
 
 		for (size_t i = src_index; i  < array_size - 1; ++i) {
@@ -1549,7 +1549,7 @@ void ReflectionDefinition<T, Allocator>::ArrayFixedEnumContainer<array_size, T2>
 			memcpy(array + i, array + i - 1, sizeof(T2));
 		}
 
-		moveConstruct(array + dest_index, Move(temp));
+		construct(array + dest_index, std::move(temp));
 	}
 }
 
@@ -1773,7 +1773,7 @@ void ReflectionDefinition<T, Allocator>::ArrayFixedObjectContainer<array_size, T
 	}
 
 	if (array) {
-		T2 temp = Move((object->*_var)[src_index]);
+		T2 temp = std::move((object->*_var)[src_index]);
 		deconstruct(array + src_index);
 
 		for (size_t i = src_index; i  < array_size - 1; ++i) {
@@ -1787,7 +1787,7 @@ void ReflectionDefinition<T, Allocator>::ArrayFixedObjectContainer<array_size, T
 			memcpy(array + i, array + i - 1, sizeof(T2));
 		}
 
-		moveConstruct(array + dest_index, Move(temp));
+		moveConstruct(array + dest_index, std::move(temp));
 	}
 }
 
@@ -2016,16 +2016,16 @@ void ReflectionDefinition<T, Allocator>::ArrayObjectContainer<T2>::move(size_t s
 {
 	if (_var) {
 		assert(src_index < (object->*_var).size() && dest_index <= (object->*_var).size());
-		T2 temp = Move((object->*_var)[src_index]);
+		T2 temp = std::move((object->*_var)[src_index]);
 		(object->*_var).erase(src_index);
 		dest_index = (dest_index > src_index) ? dest_index - 1 : dest_index; /* If the dest index was above the source index, shift it down by one.*/
-		(object->*_var).moveInsert(Move(temp), dest_index);
+		(object->*_var).moveInsert(std::move(temp), dest_index);
 	} else if (_getter) {
 		Array<T2, Allocator>& array = const_cast<Array<T2, Allocator>&>((object->*_getter)());
-		T2 temp = Move((object->*_var)[src_index]);
+		T2 temp = std::move((object->*_var)[src_index]);
 		array.erase(src_index);
 		dest_index = (dest_index > src_index) ? dest_index - 1 : dest_index; /* If the dest index was above the source index, shift it down by one.*/
-		array.moveInsert(Move(temp), dest_index);
+		array.moveInsert(std::move(temp), dest_index);
 	}
 }
 
@@ -2251,16 +2251,16 @@ void ReflectionDefinition<T, Allocator>::ArrayEnumContainer<T2>::move(size_t src
 {
 	if (_var) {
 		assert(src_index < (object->*_var).size() && dest_index <= (object->*_var).size());
-		T2 temp = Move((object->*_var)[src_index]);
+		T2 temp = std::move((object->*_var)[src_index]);
 		(object->*_var).erase(src_index);
 		dest_index = (dest_index > src_index) ? dest_index - 1 : dest_index; /* If the dest index was above the source index, shift it down by one.*/
-		(object->*_var).moveInsert(Move(temp), dest_index);
+		(object->*_var).emplace(dest_index, std::move(temp));
 	} else if (_getter) {
 		Array<T2, Allocator>& array = const_cast<Array<T2, Allocator>&>((object->*_getter)());
-		T2 temp = Move((object->*_var)[src_index]);
+		T2 temp = std::move((object->*_var)[src_index]);
 		array.erase(src_index);
 		dest_index = (dest_index > src_index) ? dest_index - 1 : dest_index; /* If the dest index was above the source index, shift it down by one.*/
-		array.moveInsert(Move(temp), dest_index);
+		array.emplace(dest_index, std::move(temp));
 	}
 }
 

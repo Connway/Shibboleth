@@ -30,7 +30,7 @@ CommandListGL::CommandListGL(const CommandListGL& command_list):
 }
 
 CommandListGL::CommandListGL(CommandListGL&& command_list):
-	_commands(Gaff::Move(command_list._commands))
+	_commands(std::move(command_list._commands))
 {
 }
 
@@ -52,7 +52,7 @@ const ICommandList& CommandListGL::operator=(const ICommandList& rhs)
 const ICommandList& CommandListGL::operator=(ICommandList&& rhs)
 {
 	assert(!rhs.isD3D());
-	_commands = Gaff::Move(reinterpret_cast<const CommandListGL&>(rhs)._commands);
+	_commands = std::move(reinterpret_cast<const CommandListGL&>(rhs)._commands);
 	return *this;
 }
 

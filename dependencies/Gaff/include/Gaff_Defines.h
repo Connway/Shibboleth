@@ -129,22 +129,6 @@ NS_GAFF
 	#error "Cannot deduce platform bit-age."
 #endif
 
-//! Used to specify data should be moved instead of copied. Similar to std::move.
-template <class T>
-T&& Move(T& data)
-{
-	return (T&&)data;
-}
-
-//! Swaps two variables using move semantics.
-template <class T>
-void Swap(T& lhs, T& rhs)
-{
-	T temp = Move(lhs);
-	lhs = Move(rhs);
-	rhs = Move(temp);
-}
-
 using ReflectionHash = unsigned int;
 
 NS_END

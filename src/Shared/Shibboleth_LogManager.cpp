@@ -61,10 +61,10 @@ bool LogManager::openLogFile(const AHashString& filename)
 	}
 
 	FileLockPair flp;
-	flp.first = Move(file);
+	flp.first = std::move(file);
 	flp.second = spin_lock;
 
-	_files[filename] = Move(flp);
+	_files[filename] = std::move(flp);
 
 	return true;
 }

@@ -298,17 +298,17 @@ THE SOFTWARE.
 	{ \
 		if (_var) { \
 			assert(src_index < (object->*_var).size() && dest_index <= (object->*_var).size()); \
-			ElementType temp = Move((object->*_var)[src_index]); \
+			ElementType temp = std::move((object->*_var)[src_index]); \
 			(object->*_var).erase(src_index); \
 			dest_index = (dest_index > src_index) ? dest_index - 1 : dest_index; /* If the dest index was above the source index, shift it down by one.*/ \
-			(object->*_var).moveInsert(Move(temp), dest_index); \
+			(object->*_var).emplace(dest_index, std::move(temp)); \
 		} else if (_getter) { \
 			VarType& array = const_cast<VarType&>((object->*_getter)()); \
 			assert(src_index < array.size() && dest_index <= array.size()); \
-			ElementType temp = Move(array[src_index]); \
+			ElementType temp = std::move(array[src_index]); \
 			array.erase(src_index); \
 			dest_index = (dest_index > src_index) ? dest_index - 1 : dest_index; /* If the dest index was above the source index, shift it down by one.*/ \
-			array.moveInsert(Move(temp), dest_index); \
+			array.emplace(dest_index, std::move(temp)); \
 		} \
 	}
 
@@ -462,7 +462,7 @@ THE SOFTWARE.
 			array = const_cast<VarType*>((object->*_getter)()); \
 		} \
 		if (array) { \
-			VarType temp = Move((object->*_var)[src_index]); \
+			VarType temp = std::move((object->*_var)[src_index]); \
 			deconstruct(array + src_index); \
 			for (size_t i = src_index; i  < array_size - 1; ++i) { \
 				memcpy(array + i, array + i + 1, sizeof(VarType)); \
@@ -471,7 +471,7 @@ THE SOFTWARE.
 			for (size_t i = array_size - 1; i > dest_index; --i) { \
 				memcpy(array + i, array + i - 1, sizeof(VarType)); \
 			} \
-			moveConstruct(array + dest_index, Move(temp)); \
+			construct(array + dest_index, std::move(temp)); \
 		} \
 	}
 

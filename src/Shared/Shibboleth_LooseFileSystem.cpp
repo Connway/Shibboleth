@@ -110,7 +110,7 @@ IFile* LooseFileSystem::openFile(const char* file_name)
 		file_data.file = file;
 		file_data.count = 1;
 
-		_files.movePush(Gaff::Move(file_data));
+		_files.push(std::move(file_data));
 		return file;
 
 	} else {

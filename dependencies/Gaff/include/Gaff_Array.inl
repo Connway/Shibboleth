@@ -28,50 +28,29 @@ Array<T, Allocator>::Array(const Allocator& allocator):
 {
 }
 
-/*!
-	\brief Initializes the array to capacity \a start_capacity.
-
-	\param start_capacity The starting capacity of the array.
-
-	\note
-		This constructor only affects the capacity of the array.
-		The size will still be zero.
-*/
 template <class T, class Allocator>
 Array<T, Allocator>::Array(size_t start_capacity, const Allocator& allocator):
 	_allocator(allocator), _array(nullptr), _used(0), _size(start_capacity)
 {
-	_array = (T*)_allocator.alloc(sizeof(T) * start_capacity);
+	_array = reinterpret_cast<T*>(_allocator.alloc(sizeof(T) * start_capacity));
 }
 
-/*!
-	\brief Initializes the array to size \a start_size with each element's value set to \a init_val.
-
-	\param start_size The starting size of the array.
-	\param init_val The value each element will be initialized with.
-*/
 template <class T, class Allocator>
 Array<T, Allocator>::Array(size_t start_size, const T& init_val, const Allocator& allocator):
 	_allocator(allocator), _array(nullptr), _used(start_size), _size(start_size)
 {
-	_array = (T*)_allocator.alloc(sizeof(T) * start_size);
+	_array = reinterpret_cast<T*>(_allocator.alloc(sizeof(T) * start_size));
 
 	for (size_t i = 0; i < start_size; ++i) {
 		construct(_array + i, init_val);
 	}
 }
 
-/*!
-	\brief Initializes the array to \a size using the values in \a data.
-
-	\param data The array of data we are initializing ourselves to.
-	\param size The size of \a data.
-*/
 template <class T, class Allocator>
 Array<T, Allocator>::Array(const T* data, size_t size, const Allocator& allocator):
 	_allocator(allocator), _array(nullptr), _used(size), _size(size)
 {
-	_array = (T*)_allocator.alloc(sizeof(T) * size);
+	_array = reinterpret_cast<T*>(_allocator.alloc(sizeof(T) * size));
 
 	for (size_t i = 0; i < size; ++i) {
 		construct(_array + i, data[i]);
@@ -113,7 +92,7 @@ const Array<T, Allocator>& Array<T, Allocator>::operator=(const Array<T, Allocat
 
 	} else if (_size != rhs._size) {
 		clear();
-		_array = (T*)_allocator.alloc(sizeof(T) * rhs._size);
+		_array = reinterpret_cast<T*>(_allocator.alloc(sizeof(T) * rhs._size));
 	}
 
 	for (size_t i = 0; i < rhs._used; ++i) {
@@ -187,12 +166,6 @@ T& Array<T, Allocator>::operator[](size_t index)
 	return _array[index];
 }
 
-/*!
-	Will call the destructor on all active elements and deallocates used memory.
-	Size and capacity will be zero.
-
-	\brief Removes all values in the array and frees all used memory.
-*/
 template <class T, class Allocator>
 void Array<T, Allocator>::clear(void)
 {
@@ -201,18 +174,12 @@ void Array<T, Allocator>::clear(void)
 			deconstruct(_array + i);
 		}
 
-		_allocator.free((void*)_array);
+		_allocator.free(static_cast<void*>(_array));
 		_used = _size = 0;
 		_array = nullptr;
 	}
 }
 
-/*!
-	Will call the destructor on all active elements, but will hold onto its memory.
-	Size will be zero, but capacity will remain the same.
-
-	\brief Removes all values in the array, but keeps its memory.
-*/
 template <class T, class Allocator>
 void Array<T, Allocator>::clearNoFree(void)
 {
@@ -253,58 +220,36 @@ T& Array<T, Allocator>::last(void)
 	return _array[_used - 1];
 }
 
-/*!
-	\brief Returns a raw pointer to the internal array.
-	\note Array still owns the memory, do not delete!
-*/
 template <class T, class Allocator>
 const T* Array<T, Allocator>::getArray(void) const
 {
 	return _array;
 }
 
-/*!
-	\brief Returns a raw pointer to the internal array.
-	\note Array still owns the memory, do not delete!
-*/
 template <class T, class Allocator>
 T* Array<T, Allocator>::getArray(void)
 {
 	return _array;
 }
 
-/*!
-	\brief Returns an iterator to the first element.
-*/
 template <class T, class Allocator>
 ARRAY_ITERATOR Array<T, Allocator>::begin(void) const
 {
 	return Iterator(_array);
 }
 
-/*!
-	\brief Returns an iterator to one past the last element.
-*/
 template <class T, class Allocator>
 ARRAY_ITERATOR Array<T, Allocator>::end(void) const
 {
 	return Iterator(_array + _used);
 }
 
-/*!
-	\brief Returns an iterator to the the last element.
-	\note Since iterator is just a typdef for T*, reverse iterators must be traversed using operator--.
-*/
 template <class T, class Allocator>
 ARRAY_ITERATOR Array<T, Allocator>::rbegin(void) const
 {
 	return Iterator(_array + _used - 1);
 }
 
-/*!
-	\brief Returns an iterator to one before the first element.
-	\note Since iterator is just a typdef for T*, reverse iterators must be traversed using operator--.
-*/
 template <class T, class Allocator>
 ARRAY_ITERATOR Array<T, Allocator>::rend(void) const
 {
@@ -335,28 +280,21 @@ void Array<T, Allocator>::append(const Array<T, Allocator>& array)
 	append(array.getArray(), array.size());
 }
 
-/*!
-	\brief Same as \a append(), but calls the move constructor on each element.
-	\note \a array will have \a clear() called.
-*/
 template <class T, class Allocator>
-void Array<T, Allocator>::moveAppend(Array<T, Allocator>&& array)
+void Array<T, Allocator>::append(Array<T, Allocator>&& array)
 {
 	reserve(_used + array.size());
 
 	for (size_t i = 0; i < array.size(); ++i) {
-		moveConstruct(_array + _used + i, Gaff::Move(array[i]));
+		construct(_array + _used + i, std::move(array[i]));
 	}
 
 	_used += array.size();
 	array.clear();
 }
 
-/*!
-	\brief Pushes the data to the end of the array using the move constructor.
-*/
 template <class T, class Allocator>
-void Array<T, Allocator>::movePush(T&& data)
+void Array<T, Allocator>::push(T&& data)
 {
 	if (_used == _size) {
 		if (_size == 0) {
@@ -366,13 +304,10 @@ void Array<T, Allocator>::movePush(T&& data)
 		}
 	}
 
-	moveConstruct(_array + _used, Move(data));
+	construct(_array + _used, std::move(data));
 	++_used;
 }
 
-/*!
-	\brief Pushes the data to the end of the array using the copy constructor.
-*/
 template <class T, class Allocator>
 void Array<T, Allocator>::push(const T& data)
 {
@@ -388,9 +323,6 @@ void Array<T, Allocator>::push(const T& data)
 	++_used;
 }
 
-/*!
-	\brief Removes the last element of the array.
-*/
 template <class T, class Allocator>
 void Array<T, Allocator>::pop(void)
 {
@@ -401,17 +333,17 @@ void Array<T, Allocator>::pop(void)
 
 template <class T, class Allocator>
 template <class... Args>
-ARRAY_ITERATOR Array<T, Allocator>::emplaceInsert(const ARRAY_ITERATOR it, Args&&... args)
+ARRAY_ITERATOR Array<T, Allocator>::emplace(const ARRAY_ITERATOR it, Args&&... args)
 {
 	assert(it >= _array && it <= _array + _used);
 	size_t index = static_cast<size_t>(it - _array);
-	emplaceInsert(index, Move(args)...);
+	emplace(index, std::forward<Args>(args)...);
 	return Iterator(_array + index);
 }
 
 template <class T, class Allocator>
 template <class... Args>
-void Array<T, Allocator>::emplaceInsert(size_t index, Args&&... args)
+void Array<T, Allocator>::emplace(size_t index, Args&&... args)
 {
 	assert(index <= _size);
 
@@ -423,35 +355,7 @@ void Array<T, Allocator>::emplaceInsert(size_t index, Args&&... args)
 		memcpy(_array + i, _array + i - 1, sizeof(T));
 	}
 
-	construct(_array + index, args...);
-	++_used;
-}
-
-template <class T, class Allocator>
-template <class... Args>
-ARRAY_ITERATOR Array<T, Allocator>::emplaceMoveInsert(const ARRAY_ITERATOR it, Args&&... args)
-{
-	assert(it >= _array && it <= _array + _used);
-	size_t index = static_cast<size_t>(it - _array);
-	emplaceMoveInsert(index, Move(args)...);
-	return Iterator(_array + index);
-}
-
-template <class T, class Allocator>
-template <class... Args>
-void Array<T, Allocator>::emplaceMoveInsert(size_t index, Args&&... args)
-{
-	assert(index <= _size);
-
-	if (_used + 1 > _size) {
-		reserve((_size == 0) ? 1 : _size * 2);
-	}
-
-	for (size_t i = _used; i > index; --i) {
-		memcpy(_array + i, _array + i - 1, sizeof(T));
-	}
-
-	moveConstruct(_array + index, Move(args)...);
+	construct(_array + index, std::forward<Args>(args)...);
 	++_used;
 }
 
@@ -467,75 +371,30 @@ void Array<T, Allocator>::emplacePush(Args&&... args)
 		}
 	}
 
-	construct(_array + _used, args...);
+	construct(_array + _used, std::forward<Args>(args)...);
 	++_used;
 }
 
 template <class T, class Allocator>
-template <class... Args>
-void Array<T, Allocator>::emplaceMovePush(Args&&... args)
-{
-	if (_used == _size) {
-		if (_size == 0) {
-			reserve(1);
-		} else {
-			reserve(_size * 2);
-		}
-	}
-
-	moveConstruct(_array + _used, Move(args)...);
-	++_used;
-}
-
-template <class T, class Allocator>
-ARRAY_ITERATOR Array<T, Allocator>::moveInsert(T&& data, const ARRAY_ITERATOR it)
+ARRAY_ITERATOR Array<T, Allocator>::insert(const ARRAY_ITERATOR it, const T& data)
 {
 	assert(it >= _array && it <= _array + _used);
 	size_t index = static_cast<size_t>(it - _array);
-	moveInsert(Move(data), index);
+	insert(index, data);
 	return Iterator(_array + index);
 }
 
-/*!
-	\brief Inserts \a data to the position \a index using the move constructor.
-
-	\param data The data we are moving into the array.
-	\param index The position we are inserting \a data into.
-*/
 template <class T, class Allocator>
-void Array<T, Allocator>::moveInsert(T&& data, size_t index)
-{
-	assert(index <= _size);
-
-	if (_used + 1 > _size) {
-		reserve((_size == 0) ? 1 : _size * 2);
-	}
-
-	for (size_t i = _used; i > index; --i) {
-		memcpy(_array + i, _array + i - 1, sizeof(T));
-	}
-
-	moveConstruct(_array + index, Move(data));
-	++_used;
-}
-
-template <class T, class Allocator>
-ARRAY_ITERATOR Array<T, Allocator>::insert(const T& data, const ARRAY_ITERATOR it)
+ARRAY_ITERATOR Array<T, Allocator>::insert(const ARRAY_ITERATOR it, T&& data)
 {
 	assert(it >= _array && it <= _array + _used);
 	size_t index = static_cast<size_t>(it - _array);
-	insert(data, index);
+	insert(index, std::move(data));
 	return Iterator(_array + index);
 }
 
-/*!
-	\brief Inserts \a data to the position \a index using the copy constructor.
-
-	\param data The data we are moving into the array.
-	\param index The position we are inserting \a data into.
-*/
 template <class T, class Allocator>
-void Array<T, Allocator>::insert(const T& data, size_t index)
+void Array<T, Allocator>::insert(size_t index, const T& data)
 {
 	assert(index <= _size);
 
@@ -552,6 +411,23 @@ void Array<T, Allocator>::insert(const T& data, size_t index)
 }
 
 template <class T, class Allocator>
+void Array<T, Allocator>::insert(size_t index, T&& data)
+{
+	assert(index <= _size);
+
+	if (_used + 1 > _size) {
+		reserve((_size == 0) ? 1 : _size * 2);
+	}
+
+	for (size_t i = _used; i > index; --i) {
+		memcpy(_array + i, _array + i - 1, sizeof(T));
+	}
+
+	construct(_array + index, std::move(data));
+	++_used;
+}
+
+template <class T, class Allocator>
 ARRAY_ITERATOR Array<T, Allocator>::erase(const ARRAY_ITERATOR it)
 {
 	assert(it >= _array && it < _array + _used);
@@ -562,13 +438,6 @@ ARRAY_ITERATOR Array<T, Allocator>::erase(const ARRAY_ITERATOR it)
 	return Iterator(_array + index);
 }
 
-/*!
-	Removes the element at position \a index. Shifts all elements above the removed position down one.
-
-	\brief Removes the element at position \a index.
-
-	\param index The position to remove.
-*/
 template <class T, class Allocator>
 void Array<T, Allocator>::erase(size_t index)
 {
@@ -594,16 +463,6 @@ ARRAY_ITERATOR Array<T, Allocator>::fastErase(const ARRAY_ITERATOR it)
 	return Iterator(_array + index);
 }
 
-/*!
-	Removes the element at position \a index.
-	It avoids shifting by copying the last element into the erased position.
-
-	\brief Removes the element at position \a index without shifting.
-
-	\param index The position to remove.
-
-	\note Avoid using this function if your array must be sorted!
-*/
 template <class T, class Allocator>
 void Array<T, Allocator>::fastErase(size_t index)
 {
@@ -703,10 +562,6 @@ void Array<T, Allocator>::reserve(size_t reserve_size)
 	}
 }
 
-/*!
-	\brief Resizes array to the exact number of active elements. Makes capacity equal to size.
-	\note This is the same as calling resize(size()).
-*/
 template <class T, class Allocator>
 void Array<T, Allocator>::trim(void)
 {
@@ -715,7 +570,6 @@ void Array<T, Allocator>::trim(void)
 	}
 }
 
-#ifndef DOXY_SKIP
 template <class T, class Allocator>
 template <class T2, class Pred>
 ARRAY_ITERATOR Array<T, Allocator>::linearSearch(const ARRAY_ITERATOR range_begin, const ARRAY_ITERATOR range_end, const T2& data, const Pred& pred) const
@@ -730,23 +584,7 @@ ARRAY_ITERATOR Array<T, Allocator>::linearSearch(const ARRAY_ITERATOR range_begi
 	size_t result = linearSearch(index1, index2, data, pred);
 	return (result != SIZE_T_FAIL) ? Iterator(_array + result) : end();
 }
-#endif
 
-/*!
-	\brief Linearly searches each element in the range until the predicate is satisfied.
-
-	\param range_begin The start of the range to search.
-	\param range_end The end of the range to search.
-	\param data The data we are searching for.
-	\param pred The predicate we must satisfy in order to complete the search.
-
-	\tparam T2 The type of the data we are searching for.
-	\tparam Pred The type of the predicate we are using to satisfy our search. Must overload operator()!
-
-	\return Returns the index of the element that satisfied the predicate, otherwise returns SIZE_T_FAIL.
-
-	\note \a Pred defaults to Less if no predicate is given. Search range is [range_begin, range_end), non-inclusive.
-*/
 template <class T, class Allocator>
 template <class T2, class Pred>
 size_t Array<T, Allocator>::linearSearch(size_t range_begin, size_t range_end, const T2& data, const Pred& pred) const
@@ -762,16 +600,13 @@ size_t Array<T, Allocator>::linearSearch(size_t range_begin, size_t range_end, c
 	return SIZE_T_FAIL;
 }
 
-#ifndef DOXY_SKIP
 template <class T, class Allocator>
 template <class T2, class Pred>
 ARRAY_ITERATOR Array<T, Allocator>::linearSearch(const T2& data, const Pred& pred) const
 {
 	return linearSearch(begin(), end(), data, pred);
 }
-#endif
 
-#ifndef DOXY_SKIP
 template <class T, class Allocator>
 template <class T2, class Pred>
 ARRAY_ITERATOR Array<T, Allocator>::binarySearch(
@@ -790,23 +625,7 @@ ARRAY_ITERATOR Array<T, Allocator>::binarySearch(
 	size_t result = binarySearch(index1, index2, data, pred);
 	return (result != SIZE_T_FAIL) ? Iterator(_array + result) : end();
 }
-#endif
 
-/*!
-	\brief Does a binary search over the range.
-
-	\param range_begin The start of the range to search.
-	\param range_end The end of the range to search.
-	\param data The data we are searching for.
-	\param pred The predicate used by the binary search to determine which direction it should move in.
-
-	\tparam T2 The type of the data we are searching for.
-	\tparam Pred The type of the predicate we are using to satisfy our search. Must overload operator() if a functor!
-
-	\return An index to the found element. If the element is not found, the index is where \a data should be inserted.
-
-	\note The array must be sorted with the predicate used to search. Search range is [range_begin, range_end), non-inclusive.
-*/
 template <class T, class Allocator>
 template <class T2, class Pred>
 size_t Array<T, Allocator>::binarySearch(
@@ -832,14 +651,12 @@ size_t Array<T, Allocator>::binarySearch(
 	return range_begin;
 }
 
-#ifndef DOXY_SKIP
 template <class T, class Allocator>
 template <class T2, class Pred>
 ARRAY_ITERATOR Array<T, Allocator>::binarySearch(const T2& data, const Pred& pred) const
 {
 	return binarySearch(begin(), end(), data, pred);
 }
-#endif
 
 template <class T, class Allocator>
 size_t Array<T, Allocator>::size(void) const

@@ -63,7 +63,7 @@ private:
 	{
 		FileData(void) {}
 		FileData(FileData&& file_data):
-			name(Gaff::Move(file_data.name)),
+			name(std::move(file_data.name)),
 			file(file_data.file),
 			count(file_data.count)
 		{

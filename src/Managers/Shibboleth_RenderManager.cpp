@@ -554,18 +554,18 @@ RenderManager::WindowRenderTargets RenderManager::createRenderTargetsForEachWind
 			return WindowRenderTargets();
 		}
 
-		wrt.rts.emplaceMovePush(Gaff::Move(rt));
-		wrt.diffuse.emplacePush(Gaff::Move(tex[0]));
-		wrt.specular.emplacePush(Gaff::Move(tex[1]));
-		wrt.normal.emplacePush(Gaff::Move(tex[2]));
-		wrt.position.emplacePush(Gaff::Move(tex[3]));
-		wrt.depth.emplaceMovePush(Gaff::Move(depth));
+		wrt.rts.emplacePush(std::move(rt));
+		wrt.diffuse.emplacePush(std::move(tex[0]));
+		wrt.specular.emplacePush(std::move(tex[1]));
+		wrt.normal.emplacePush(std::move(tex[2]));
+		wrt.position.emplacePush(std::move(tex[3]));
+		wrt.depth.emplacePush(std::move(depth));
 
-		wrt.diffuse_srvs.emplacePush(Gaff::Move(srv[0]));
-		wrt.specular_srvs.emplacePush(Gaff::Move(srv[1]));
-		wrt.normal_srvs.emplacePush(Gaff::Move(srv[2]));
-		wrt.position_srvs.emplacePush(Gaff::Move(srv[3]));
-		wrt.depth_srvs.emplaceMovePush(Gaff::Move(depth_srv));
+		wrt.diffuse_srvs.emplacePush(std::move(srv[0]));
+		wrt.specular_srvs.emplacePush(std::move(srv[1]));
+		wrt.normal_srvs.emplacePush(std::move(srv[2]));
+		wrt.position_srvs.emplacePush(std::move(srv[3]));
+		wrt.depth_srvs.emplacePush(std::move(depth_srv));
 	}
 
 	return wrt;

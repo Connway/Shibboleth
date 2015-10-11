@@ -40,7 +40,7 @@ CachedFunction<ReturnType, Args...>::CachedFunction(const CachedFunction<ReturnT
 
 template <class ReturnType, class... Args>
 CachedFunction<ReturnType, Args...>::CachedFunction(CachedFunction<ReturnType, Args...>&& function):
-	_arguments(Move(function._arguments)), _function(Move(function._function))
+	_arguments(std::move(function._arguments)), _function(std::move(function._function))
 {
 }
 
@@ -79,7 +79,7 @@ void CachedFunction<ReturnType, Args...>::setFunction(const FunctionBinder<Retur
 template <class ReturnType, class... Args>
 void CachedFunction<ReturnType, Args...>::moveSetArguments(Args&&... args)
 {
-	_arguments.moveSet(Move(args)...);
+	_arguments.moveSet(std::move(args)...);
 }
 
 template <class ReturnType, class... Args>
@@ -113,7 +113,7 @@ template <class ReturnType, class... Args>
 template <unsigned int index>
 void CachedFunction<ReturnType, Args...>::moveSetArg(typename TupleElement< index, Tuple<Args...> >::ValueType&& argument)
 {
-	TupleGet<index>() = Move(argument);
+	TupleGet<index>() = std::move(argument);
 }
 
 template <class ReturnType, class... Args>
@@ -138,11 +138,11 @@ bool CachedFunction<ReturnType, Args...>::valid(void) const
 template <class ReturnType, class... Args>
 CachedFunction<ReturnType, Args...> BindCached(const FunctionBinder<ReturnType, Args...>& function, const Args&... args)
 {
-	return CachedFunction<ReturnType, Args...>(function, Args...);
+	return CachedFunction<ReturnType, Args...>(function, args...);
 }
 
 template <class ReturnType, class... Args>
 CachedFunction<ReturnType, Args...> BindCached(const FunctionBinder<ReturnType, Args...>& function, Args&&... args)
 {
-	return CachedFunction<ReturnType, Args...>(function, Move(Args)...);
+	return CachedFunction<ReturnType, Args...>(function, std::move(args)...);
 }
