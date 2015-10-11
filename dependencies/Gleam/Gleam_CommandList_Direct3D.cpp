@@ -22,6 +22,7 @@ THE SOFTWARE.
 
 #include "Gleam_CommandList_Direct3D.h"
 #include <Gaff_IncludeAssert.h>
+#include <type_traits>
 
 NS_GLEAM
 
@@ -31,7 +32,7 @@ CommandListD3D::CommandListD3D(const CommandListD3D& command_list):
 }
 
 CommandListD3D::CommandListD3D(CommandListD3D&& command_list):
-	_command_list(Gaff::Move(command_list._command_list))
+	_command_list(std::move(command_list._command_list))
 {
 }
 
@@ -54,7 +55,7 @@ const ICommandList& CommandListD3D::operator=(const ICommandList& rhs)
 const ICommandList& CommandListD3D::operator=(ICommandList&& rhs)
 {
 	assert(rhs.isD3D());
-	_command_list = Gaff::Move(reinterpret_cast<CommandListD3D&>(rhs)._command_list);
+	_command_list = std::move(reinterpret_cast<CommandListD3D&>(rhs)._command_list);
 	return *this;
 }
 

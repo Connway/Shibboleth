@@ -829,7 +829,7 @@ bool ModelLoader::loadSkeleton(ModelData* data, const Gaff::JSON& model_prefs, u
 			}
 		}
 
-		nodes = Gaff::Move(new_nodes);
+		nodes = std::move(new_nodes);
 	}
 
 	// Cache some bone vert data for later

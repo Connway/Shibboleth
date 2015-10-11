@@ -183,7 +183,7 @@ void Queue<T, Allocator>::reserve(size_t new_size)
 	_used = 0;
 
 	for (size_t i = 0; i < old_used; ++i) {
-		movePush(Move(*begin));
+		movePush(std::move(*begin));
 		increment(&begin, old_data, old_size);
 	}
 
@@ -199,7 +199,7 @@ void Queue<T, Allocator>::movePush(T&& data)
 		reserve(_size * 2);
 	}
 
-	moveConstruct(_end, Move(data));
+	construct(_end, std::move(data));
 	increment(&_end);
 	++_used;
 }

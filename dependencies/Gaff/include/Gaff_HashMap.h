@@ -20,8 +20,6 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-/* \file */
-
 // A hash map implementation using open addressing.
 // Defaults to Fowler/Noll/Vo Hash
 
@@ -34,13 +32,6 @@ THE SOFTWARE.
 NS_GAFF
 
 // Normal
-/*!
-	\brief Open addressed, contiguous hash map. Has specialized implementations for String and HashString.
-
-	\tparam Key The type used as the key.
-	\tparam Value The type used as the value.
-	\tparam Allocator The allocator used to allocate memory.
-*/
 template <class Key, class Value, class Allocator = DefaultAllocator>
 class HashMap
 {
@@ -119,8 +110,8 @@ public:
 	void erase(size_t index);
 	void erase(const Key& key);
 
-	void moveMoveInsert(Key&& key, Value&& value);
-	void moveInsert(const Key& key, Value&& value);
+	void insert(Key&& key, Value&& value);
+	void insert(const Key& key, Value&& value);
 	void insert(const Key& key, const Value& value);
 
 	bool hasElementWithValue(const Value& value) const;
@@ -155,7 +146,6 @@ private:
 	void rebuildMap(void);
 };
 
-#ifndef DOXY_SKIP
 // String Specialization
 template <class Value, class Allocator, class T>
 class HashMap<String<T, Allocator>, Value, Allocator>
@@ -237,8 +227,8 @@ public:
 	void erase(size_t index);
 	void erase(const String<T, Allocator>& key);
 
-	void moveMoveInsert(String<T, Allocator>&& key, Value&& value);
-	void moveInsert(const String<T, Allocator>& key, Value&& value);
+	void insert(String<T, Allocator>&& key, Value&& value);
+	void insert(const String<T, Allocator>& key, Value&& value);
 	void insert(const String<T, Allocator>& key, const Value& value);
 
 	bool hasElementWithValue(const Value& value) const;
@@ -354,8 +344,8 @@ public:
 	void erase(size_t index);
 	void erase(const HashString<T, Allocator>& key);
 
-	void moveMoveInsert(HashString<T, Allocator>&& key, Value&& value);
-	void moveInsert(const HashString<T, Allocator>& key, Value&& value);
+	void insert(HashString<T, Allocator>&& key, Value&& value);
+	void insert(const HashString<T, Allocator>& key, Value&& value);
 	void insert(const HashString<T, Allocator>& key, const Value& value);
 
 	bool hasElementWithValue(const Value& value) const;
@@ -389,7 +379,6 @@ private:
 
 	void rebuildMap(void);
 };
-#endif
 
 #include "Gaff_HashMap.inl"
 

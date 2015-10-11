@@ -53,7 +53,7 @@ public:
 	void addCommand(const Gaff::CachedFunction<ReturnType, Args...>& function)
 	{
 		Gaff::SharedPtr< Gaff::IFunction<void> > cmd_ptr(GetAllocator()->template allocT< GLFuncWrapper<ReturnType, Args...> >(function));
-		_commands.emplaceMovePush(Gaff::Move(cmd_ptr));
+		_commands.emplacePush(std::move(cmd_ptr));
 	}
 
 private:

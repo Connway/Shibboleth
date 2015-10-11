@@ -26,6 +26,8 @@ THE SOFTWARE.
 #include <sys/sysctl.h>
 #include <unistd.h>
 
+NS_GAFF
+
 bool IsDebuggerAttached(void)
 {
 	int items[4];
@@ -42,5 +44,7 @@ bool IsDebuggerAttached(void)
 
 	return (info.kp_proc.p_flag & P_TRACED) != 0;
 }
+
+NS_END
 
 #endif

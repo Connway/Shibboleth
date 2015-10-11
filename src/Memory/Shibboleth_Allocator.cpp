@@ -73,7 +73,7 @@ Allocator::~Allocator(void)
 #endif
 	};
 
-	GAFF_SCOPE_EXIT(Gaff::Move(exit_func));
+	GAFF_SCOPE_EXIT(std::move(exit_func));
 
 	char log_file_name[64] = { 0 };
 	Gaff::GetCurrentTimeString(log_file_name, 64, "Logs/AllocationLog %Y-%m-%d %H-%M-%S.txt");

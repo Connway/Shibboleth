@@ -52,7 +52,7 @@ HashString<T, Allocator>::HashString(HashFunc32 hash, const Allocator& allocator
 
 template <class T, class Allocator>
 HashString<T, Allocator>::HashString(HashString<T, Allocator>&& rhs):
-	_string(Move(rhs._string)), _hash_value(rhs._hash_value), _hash_func(rhs._hash_func)
+	_string(std::move(rhs._string)), _hash_value(rhs._hash_value), _hash_func(rhs._hash_func)
 {
 }
 

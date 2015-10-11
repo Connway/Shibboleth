@@ -121,7 +121,7 @@ Gaff::IVirtualDestructor* TextureLoader::load(const char* file_name, unsigned lo
 	}
 
 	if (json["image_only"].isTrue()) {
-		texture_data->image = Gaff::Move(image);
+		texture_data->image = std::move(image);
 		texture_data->normalized = false;
 		texture_data->cubemap = false;
 		return texture_data;
@@ -221,7 +221,7 @@ Gaff::IVirtualDestructor* TextureLoader::load(const char* file_name, unsigned lo
 				return false;
 			}
 
-			texture_data->resource_views[(*it)->device] = Gaff::Move(srv);
+			texture_data->resource_views[(*it)->device] = std::move(srv);
 		}
 	}
 

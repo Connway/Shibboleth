@@ -49,7 +49,7 @@ private:
 template <class T>
 ScopeExit<T> CreateExitScope(T&& exit_func)
 {
-	return ScopeExit<T>(Gaff::Move(exit_func));
+	return ScopeExit<T>(std::move(exit_func));
 }
 
 NS_END

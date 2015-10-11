@@ -249,7 +249,7 @@ void JobPool<Allocator>::DoJob(JobPair& job)
 	job.first.job_func(job.first.job_data);
 
 	if (job.second) {
-		Gaff::DebugPrintf("FUNC: %p\n", job.first);
+		//Gaff::DebugPrintf("FUNC: %p\n", job.first);
 
 		//if (!job.second->count) {
 		//	Gaff::DebugPrintf("JOB FAIL(%d) - %p:(%d)\n", Gaff::Thread::GetCurrentThreadID(), job.second, job.second->count);

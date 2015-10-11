@@ -612,7 +612,7 @@ Value& HashMap<Key, Value, Allocator>::operator[](Key&& key)
 		reserve(1);
 	}
 
-	size_t index = _hash((const char*)&key, sizeof(Key)) % _size;
+	size_t index = _hash(reinterpret_cast<const char*>(&key), sizeof(Key)) % _size;
 	size_t i = 0;
 
 	while (_slots[index].occupied && _slots[index].key != key && i < _size) {
@@ -621,7 +621,7 @@ Value& HashMap<Key, Value, Allocator>::operator[](Key&& key)
 	}
 
 	if (!_slots[index].occupied) {
-		moveConstruct(&_slots[index].key, Move(key));
+		construct(&_slots[index].key, std::move(key));
 		construct(&_slots[index].value);
 		_slots[index].occupied = true;
 		++_used;
@@ -631,7 +631,7 @@ Value& HashMap<Key, Value, Allocator>::operator[](Key&& key)
 		reserve(_size * 2);
 
 		// try again
-		return operator[](Move(key));
+		return operator[](std::move(key));
 	}
 
 	return _slots[index].value;
@@ -695,15 +695,15 @@ void HashMap<Key, Value, Allocator>::erase(const Key& key)
 }
 
 template <class Key, class Value, class Allocator>
-void HashMap<Key, Value, Allocator>::moveMoveInsert(Key&& key, Value&& value)
+void HashMap<Key, Value, Allocator>::insert(Key&& key, Value&& value)
 {
-	operator[](Move(key)) = Move(value);
+	operator[](std::move(key)) = std::move(value);
 }
 
 template <class Key, class Value, class Allocator>
-void HashMap<Key, Value, Allocator>::moveInsert(const Key& key, Value&& value)
+void HashMap<Key, Value, Allocator>::insert(const Key& key, Value&& value)
 {
-	operator[](key) = Move(value);
+	operator[](key) = std::move(value);
 }
 
 template <class Key, class Value, class Allocator>
@@ -790,9 +790,9 @@ void HashMap<Key, Value, Allocator>::reserve(size_t new_size)
 	if (old_data) {
 		for (size_t i = 0; i < old_size; ++i) {
 			if (old_data[i].occupied) {
-				moveMoveInsert(Move(old_data[i].key), Move(old_data[i].value));
+				insert(std::move(old_data[i].key), std::move(old_data[i].value));
 
-				// If Move semantics are not supported, then we still need to call destructor
+				// If move semantics are not supported, then we still need to call destructor
 				deconstruct(&old_data[i].key);
 				deconstruct(&old_data[i].value);
 			}
@@ -897,18 +897,17 @@ void HashMap<Key, Value, Allocator>::rebuildMap(void)
 
 	for (size_t i = 0; i < _size; ++i) {
 		if (_slots[i].occupied) {
-			new_map.moveMoveInsert(Gaff::Move(_slots[i].key), Gaff::Move(_slots[i].value));
+			new_map.insert(std::move(_slots[i].key), std::move(_slots[i].value));
 			deconstruct(&_slots[i].key);
 			deconstruct(&_slots[i].value);
 			_slots[i].occupied = false;
 		}
 	}
 
-	*this = Gaff::Move(new_map);
+	*this = std::move(new_map);
 }
 
 
-#ifndef DOXY_SKIP
 // String Specialization
 template <class Value, class Allocator, class T>
 HashMap<String<T, Allocator>, Value, Allocator>::HashMap(HashFunc32 hash, const Allocator& allocator):
@@ -1078,7 +1077,7 @@ Value& HashMap<String<T, Allocator>, Value, Allocator>::operator[](String<T, All
 		reserve(1);
 	}
 
-	size_t index = _hash((const char*)key.getBuffer(), key.size() * sizeof(T)) % _size;
+	size_t index = _hash(reinterpret_cast<const char*>(key.getBuffer()), key.size() * sizeof(T)) % _size;
 	size_t i = 0;
 
 	while (_slots[index].occupied && _slots[index].key != key && i < _size) {
@@ -1087,7 +1086,7 @@ Value& HashMap<String<T, Allocator>, Value, Allocator>::operator[](String<T, All
 	}
 
 	if (!_slots[index].occupied) {
-		moveConstruct(&_slots[index].key, Move(key));
+		construct(&_slots[index].key, std::move(key));
 		construct(&_slots[index].value);
 		_slots[index].occupied = true;
 		++_used;
@@ -1097,7 +1096,7 @@ Value& HashMap<String<T, Allocator>, Value, Allocator>::operator[](String<T, All
 		reserve(_size * 2);
 
 		// try again
-		return operator[](Move(key));
+		return operator[](std::move(key));
 	}
 
 	return _slots[index].value;
@@ -1161,15 +1160,15 @@ void HashMap<String<T, Allocator>, Value, Allocator>::erase(const String<T, Allo
 }
 
 template <class Value, class Allocator, class T>
-void HashMap<String<T, Allocator>, Value, Allocator>::moveMoveInsert(String<T, Allocator>&& key, Value&& value)
+void HashMap<String<T, Allocator>, Value, Allocator>::insert(String<T, Allocator>&& key, Value&& value)
 {
-	operator[](Move(key)) = Move(value);
+	operator[](std::move(key)) = std::move(value);
 }
 
 template <class Value, class Allocator, class T>
-void HashMap<String<T, Allocator>, Value, Allocator>::moveInsert(const String<T, Allocator>& key, Value&& value)
+void HashMap<String<T, Allocator>, Value, Allocator>::insert(const String<T, Allocator>& key, Value&& value)
 {
-	operator[](key) = Move(value);
+	operator[](key) = std::move(value);
 }
 
 template <class Value, class Allocator, class T>
@@ -1247,7 +1246,7 @@ void HashMap<String<T, Allocator>, Value, Allocator>::reserve(size_t new_size)
 	Slot* old_data = _slots;
 	size_t old_size = _size;
 
-	_slots = (Slot*)_allocator.alloc(sizeof(Slot) * new_size);
+	_slots = reinterpret_cast<Slot*>(_allocator.alloc(sizeof(Slot) * new_size));
 	_size = new_size;
 	_used = 0;
 
@@ -1256,9 +1255,9 @@ void HashMap<String<T, Allocator>, Value, Allocator>::reserve(size_t new_size)
 	if (old_data) {
 		for (size_t i = 0; i < old_size; ++i) {
 			if (old_data[i].occupied) {
-				moveMoveInsert(Move(old_data[i].key), Move(old_data[i].value));
+				insert(std::move(old_data[i].key), std::move(old_data[i].value));
 
-				// If Move semantics are not supported, then we still need to call destructor
+				// If move semantics are not supported, then we still need to call destructor
 				deconstruct(&old_data[i].key);
 				deconstruct(&old_data[i].value);
 			}
@@ -1363,14 +1362,14 @@ void HashMap<String<T, Allocator>, Value, Allocator>::rebuildMap(void)
 
 	for (size_t i = 0; i < _size; ++i) {
 		if (_slots[i].occupied) {
-			new_map.moveMoveInsert(Gaff::Move(_slots[i].key), Gaff::Move(_slots[i].value));
+			new_map.insert(std::move(_slots[i].key), std::move(_slots[i].value));
 			deconstruct(&_slots[i].key);
 			deconstruct(&_slots[i].value);
 			_slots[i].occupied = false;
 		}
 	}
 
-	*this = Gaff::Move(new_map);
+	*this = std::move(new_map);
 }
 
 
@@ -1553,7 +1552,7 @@ Value& HashMap<HashString<T, Allocator>, Value, Allocator>::operator[](HashStrin
 	}
 
 	if (!_slots[index].occupied) {
-		moveConstruct(&_slots[index].key, Move(key));
+		construct(&_slots[index].key, std::move(key));
 		construct(&_slots[index].value);
 		_slots[index].occupied = true;
 		++_used;
@@ -1563,7 +1562,7 @@ Value& HashMap<HashString<T, Allocator>, Value, Allocator>::operator[](HashStrin
 		reserve(_size * 2);
 
 		// try again
-		return operator[](Move(key));
+		return operator[](std::move(key));
 	}
 
 	return _slots[index].value;
@@ -1627,15 +1626,15 @@ void HashMap<HashString<T, Allocator>, Value, Allocator>::erase(const HashString
 }
 
 template <class Value, class Allocator, class T>
-void HashMap<HashString<T, Allocator>, Value, Allocator>::moveMoveInsert(HashString<T, Allocator>&& key, Value&& value)
+void HashMap<HashString<T, Allocator>, Value, Allocator>::insert(HashString<T, Allocator>&& key, Value&& value)
 {
-	operator[](Move(key)) = Move(value);
+	operator[](std::move(key)) = std::move(value);
 }
 
 template <class Value, class Allocator, class T>
-void HashMap<HashString<T, Allocator>, Value, Allocator>::moveInsert(const HashString<T, Allocator>& key, Value&& value)
+void HashMap<HashString<T, Allocator>, Value, Allocator>::insert(const HashString<T, Allocator>& key, Value&& value)
 {
-	operator[](key) = Move(value);
+	operator[](key) = std::move(value);
 }
 
 template <class Value, class Allocator, class T>
@@ -1713,7 +1712,7 @@ void HashMap<HashString<T, Allocator>, Value, Allocator>::reserve(size_t new_siz
 	Slot* old_data = _slots;
 	size_t old_size = _size;
 
-	_slots = (Slot*)_allocator.alloc(sizeof(Slot) * new_size);
+	_slots = reinterpret_cast<Slot*>(_allocator.alloc(sizeof(Slot) * new_size));
 	_size = new_size;
 	_used = 0;
 
@@ -1722,9 +1721,9 @@ void HashMap<HashString<T, Allocator>, Value, Allocator>::reserve(size_t new_siz
 	if (old_data) {
 		for (size_t i = 0; i < old_size; ++i) {
 			if (old_data[i].occupied) {
-				moveMoveInsert(Move(old_data[i].key), Move(old_data[i].value));
+				insert(std::move(old_data[i].key), std::move(old_data[i].value));
 
-				// If Move semantics are not supported, then we still need to call destructor
+				// If move semantics are not supported, then we still need to call destructor
 				deconstruct(&old_data[i].key);
 				deconstruct(&old_data[i].value);
 			}
@@ -1829,13 +1828,12 @@ void HashMap<HashString<T, Allocator>, Value, Allocator>::rebuildMap(void)
 
 	for (size_t i = 0; i < _size; ++i) {
 		if (_slots[i].occupied) {
-			new_map.moveMoveInsert(Gaff::Move(_slots[i].key), Gaff::Move(_slots[i].value));
+			new_map.insert(std::move(_slots[i].key), std::move(_slots[i].value));
 			deconstruct(&_slots[i].key);
 			deconstruct(&_slots[i].value);
 			_slots[i].occupied = false;
 		}
 	}
 
-	*this = Gaff::Move(new_map);
+	*this = std::move(new_map);
 }
-#endif

@@ -28,6 +28,8 @@ THE SOFTWARE.
 
 #if defined(_WIN32) || defined(_WIN64)
 	#include <io.h>
+#elif defined(__APPLE__)
+	#include <sys/uio.h>
 #else
 	#include <sys/io.h>
 #endif

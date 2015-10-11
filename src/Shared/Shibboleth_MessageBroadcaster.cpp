@@ -118,7 +118,7 @@ void MessageBroadcaster::addListeners(void)
 				return lhs.first < rhs;
 			});
 
-			listeners->listeners.emplaceInsert(it, it_add->first.second, it_add->second);
+			listeners->listeners.emplace(it, it_add->first.second, it_add->second);
 			listeners->lock.writeUnlock();
 		}
 

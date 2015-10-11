@@ -20,8 +20,6 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-/*! \file */
-
 #pragma once
 
 #include "Gaff_Array.h"
@@ -39,11 +37,6 @@ public:
 	}
 };
 
-/*!
-	\brief
-		A normal, key/value pair map. Essentially an Array< Pair<Key, Value> >
-		that is managed using binary searches.
-*/
 template < class Key, class Value, class Allocator = DefaultAllocator, class Predicate = KeySearchPredicate<Key, Value> >
 class Map
 {
@@ -69,17 +62,14 @@ public:
 	void erase(const Key& key);
 
 	template <class... Args>
-	void emplaceInsert(const Key& key, Args&&... args);
+	void emplace(const Key& key, Args&&... args);
 
 	template <class... Args>
-	void emplaceMoveInsert(const Key& key, Args&&... args);
+	void emplace(Key&& key, Args&&... args);
 
-	template <class... Args>
-	void emplaceMoveMoveInsert(Key&& key, Args&&... args);
-
-	void moveMoveInsert(Key&& key, Value&& value);
-	void moveInsert(const Key& key, Value&& value);
 	void insert(const Key& key, const Value& value);
+	void insert(const Key& key, Value&& value);
+	void insert(Key&& key, Value&& value);
 
 	void clearNoFree(void);
 	void clear(void);

@@ -350,7 +350,7 @@ OcclusionManager::~OcclusionManager(void)
 
 void OcclusionManager::getUpdateEntries(Array<UpdateEntry>& entries)
 {
-	entries.movePush(UpdateEntry(AString("Occlusion Manager: Update"), Gaff::Bind(this, &OcclusionManager::update)));
+	entries.push(UpdateEntry(AString("Occlusion Manager: Update"), Gaff::Bind(this, &OcclusionManager::update)));
 }
 
 const char* OcclusionManager::getName(void) const
@@ -400,11 +400,11 @@ void OcclusionManager::findObjectsInFrustum(const Gleam::FrustumCPU& frustum, OB
 	if (data.first.counter) {
 		GetApp().getJobPool().waitForAndFreeCounter(data.first.counter);
 
-		out = Gaff::Move(data.first.result);
-		out.moveAppend(Gaff::Move(data.second.result));
+		out = std::move(data.first.result);
+		out.append(std::move(data.second.result));
 
 	} else if (!data.first.result.empty()) {
-		out = Gaff::Move(data.first.result);
+		out = std::move(data.first.result);
 	}
 }
 
