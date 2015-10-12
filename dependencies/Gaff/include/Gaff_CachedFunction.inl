@@ -28,7 +28,7 @@ CachedFunction<ReturnType, Args...>::CachedFunction(const FunctionBinder<ReturnT
 
 template <class ReturnType, class... Args>
 CachedFunction<ReturnType, Args...>::CachedFunction(const FunctionBinder<ReturnType, Args...>& function, Args&&... args):
-	_arguments(args...), _function(function)
+	_arguments(std::forward<Args>(args)...), _function(function)
 {
 }
 
@@ -65,8 +65,8 @@ const CachedFunction<ReturnType, Args...>& CachedFunction<ReturnType, Args...>::
 template <class ReturnType, class... Args>
 const CachedFunction<ReturnType, Args...>& CachedFunction<ReturnType, Args...>::operator=(CachedFunction<ReturnType, Args...>&& rhs)
 {
-	_arguments = Move(rhs._arguments);
-	_function = Move(rhs._function);
+	_arguments = std::move(rhs._arguments);
+	_function = std::move(rhs._function);
 	return *this;
 }
 
@@ -90,42 +90,42 @@ void CachedFunction<ReturnType, Args...>::setArguments(Args&&... args)
 
 template <class ReturnType, class... Args>
 template <unsigned int index>
-const typename TupleElement< index, Tuple<Args...> >::ValueType& CachedFunction<ReturnType, Args...>::getArgument(void) const
+const typename std::tuple_element< index, std::tuple<Args...> >::type& CachedFunction<ReturnType, Args...>::getArgument(void) const
 {
-	return TupleGet<index>(_arguments);
+	return std::get<index>(_arguments);
 }
 
 template <class ReturnType, class... Args>
 template <unsigned int index>
-typename TupleElement< index, Tuple<Args...> >::ValueType& CachedFunction<ReturnType, Args...>::getArgument(void)
+typename std::tuple_element< index, std::tuple<Args...> >::type& CachedFunction<ReturnType, Args...>::getArgument(void)
 {
-	return TupleGet<index>(_arguments);
+	return std::get<index>(_arguments);
 }
 
 template <class ReturnType, class... Args>
 template <unsigned int index>
-void CachedFunction<ReturnType, Args...>::setArg(const typename TupleElement< index, Tuple<Args...> >::ValueType& argument)
+void CachedFunction<ReturnType, Args...>::setArg(const typename std::tuple_element< index, std::tuple<Args...> >::type& argument)
 {
-	TupleGet<index>() = argument;
+	std::get<index>(_arguments) = argument;
 }
 
 template <class ReturnType, class... Args>
 template <unsigned int index>
-void CachedFunction<ReturnType, Args...>::moveSetArg(typename TupleElement< index, Tuple<Args...> >::ValueType&& argument)
+void CachedFunction<ReturnType, Args...>::setArg(typename std::tuple_element< index, std::tuple<Args...> >::type&& argument)
 {
-	TupleGet<index>() = std::move(argument);
+	std::get<index>(_arguments) = std::move(argument);
 }
 
 template <class ReturnType, class... Args>
 ReturnType CachedFunction<ReturnType, Args...>::call(void) const
 {
-	return FunctionTupleUnwrapper< Tuple<Args...>::Size >::Call(_function.getInterface(), _arguments);
+	return FunctionTupleUnwrapper<std::tuple<Args...>::_Mysize>::Call(_function.getInterface(), _arguments);
 }
 
 template <class ReturnType, class... Args>
 ReturnType CachedFunction<ReturnType, Args...>::call(void)
 {
-	return FunctionTupleUnwrapper< Tuple<Args...>::Size >::Call(_function.getInterface(), _arguments);
+	return FunctionTupleUnwrapper<std::tuple<Args...>::_Mysize>::Call(_function.getInterface(), _arguments);
 }
 
 template <class ReturnType, class... Args>

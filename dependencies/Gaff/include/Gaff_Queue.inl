@@ -156,15 +156,6 @@ void Queue<T, Allocator>::clear(void)
 	}
 }
 
-/*!
-	\brief Similar to Array::resize(), but does not initialize extra elements to a default value.
-
-	\param new_size The new size of the queue.
-
-	\note
-		If \a new_size is less than current size, it will erase data.
-		If \a new_size is greater than the current size, size will not change, but capacity will.
-*/
 template <class T, class Allocator>
 void Queue<T, Allocator>::reserve(size_t new_size)
 {
@@ -183,25 +174,13 @@ void Queue<T, Allocator>::reserve(size_t new_size)
 	_used = 0;
 
 	for (size_t i = 0; i < old_used; ++i) {
-		movePush(std::move(*begin));
+		push(std::move(*begin));
 		increment(&begin, old_data, old_size);
 	}
 
 	if (old_data) {
 		_allocator.free(old_data);
 	}
-}
-
-template <class T, class Allocator>
-void Queue<T, Allocator>::movePush(T&& data)
-{
-	if (_used == _size) {
-		reserve(_size * 2);
-	}
-
-	construct(_end, std::move(data));
-	increment(&_end);
-	++_used;
 }
 
 template <class T, class Allocator>
@@ -212,6 +191,18 @@ void Queue<T, Allocator>::push(const T& data)
 	}
 
 	construct(_end, data);
+	increment(&_end);
+	++_used;
+}
+
+template <class T, class Allocator>
+void Queue<T, Allocator>::push(T&& data)
+{
+	if (_used == _size) {
+		reserve(_size * 2);
+	}
+
+	construct(_end, std::move(data));
 	increment(&_end);
 	++_used;
 }
@@ -233,20 +224,7 @@ void Queue<T, Allocator>::emplacePush(Args&&... args)
 		reserve(_size * 2);
 	}
 
-	construct(_end, args...);
-	increment(&_end);
-	++_used;
-}
-
-template <class T, class Allocator>
-template <class... Args>
-void Queue<T, Allocator>::emplaceMovePush(Args&&... args)
-{
-	if (_used == _size) {
-		reserve(_size * 2);
-	}
-
-	moveConstruct(_end, Move(args)...);
+	construct(_end, std::forward<Args>(args)...);
 	increment(&_end);
 	++_used;
 }

@@ -20,8 +20,6 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-/*! \file */
-
 #pragma once
 
 //#define ATTEMPT_INLINE
@@ -33,13 +31,13 @@ THE SOFTWARE.
 	#define NS_END }
 #endif
 
-//! Declares copy constructor and assignment operator as private.
+// Declares copy constructor and assignment operator as private.
 #define GAFF_NO_COPY(x) \
 	private: \
 		x(const x&); \
 		const x& operator=(const x&)
 
-//! Declares move constructor and assignment operator as private.
+// Declares move constructor and assignment operator as private.
 #define GAFF_NO_MOVE(x) \
 	private: \
 	x(x&&); \
@@ -51,11 +49,11 @@ THE SOFTWARE.
 	#define INLINE
 #endif
 
-#define SAFERELEASE(x) if (x) { x->Release(); x = nullptr; } //!< Safely releases Microsoft COM pointers.
-#define SAFEADDREF(x) if (x) { x->AddRef(); } //!< Safely adds a reference to Microsoft COM pointers.
+#define SAFERELEASE(x) if (x) { x->Release(); x = nullptr; } // Safely releases Microsoft COM pointers.
+#define SAFEADDREF(x) if (x) { x->AddRef(); } // Safely adds a reference to Microsoft COM pointers.
 
-#define SAFEGAFFRELEASE(x) if (x) { x->release(); x = nullptr; } //!< Safely releases pointers that implement IRefCounted.
-#define SAFEGAFFADDREF(x) if (x) { x->addRef(); } //!< Safely adds a reference to pointers that implement IRefCounted.
+#define SAFEGAFFRELEASE(x) if (x) { x->release(); x = nullptr; } // Safely releases pointers that implement IRefCounted.
+#define SAFEGAFFADDREF(x) if (x) { x->addRef(); } // Safely adds a reference to pointers that implement IRefCounted.
 
 #if defined(_WIN32) || defined(_WIN64)
 	// Disable nameless struct/union warning
@@ -67,9 +65,9 @@ THE SOFTWARE.
 		#define _CRT_SECURE_NO_WARNINGS
 	#endif
 
-	#define DYNAMICEXPORT __declspec(dllexport) //!< Specifies a symbol for export.
-	#define DYNAMICIMPORT __declspec(dllimport) //!< Specifies a symbol for import.
-	#define THREAD_LOCAL __declspec(thread) //!< Specifies a static variable to use thread local storage.
+	#define DYNAMICEXPORT __declspec(dllexport) // Specifies a symbol for export.
+	#define DYNAMICIMPORT __declspec(dllimport) // Specifies a symbol for import.
+	#define THREAD_LOCAL __declspec(thread) // Specifies a static variable to use thread local storage.
 
 	#ifdef _UNICODE
 		#define GaffFullMain int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR lpCmdLine, int nShowCmd)
@@ -79,36 +77,36 @@ THE SOFTWARE.
 		#define GaffMain WINAPI WinMain
 	#endif
 
-	#define YieldThread() Sleep(0) //!< Yields the thread to the scheduler.
+	#define YieldThread() Sleep(0) // Yields the thread to the scheduler.
 #else
-	#define THREAD_LOCAL thread_local //!< Specifies a static variable to use thread local storage.
+	#define THREAD_LOCAL thread_local // Specifies a static variable to use thread local storage.
 
 	#define GaffFullMain int main(int argc, char** argv)
 	#define GaffMain main
 
-	#define YieldThread sched_yield //!< Yields the thread to the scheduler.
+	#define YieldThread sched_yield // Yields the thread to the scheduler.
 #endif
 
 #if defined(__linux__)
-	#define DYNAMICEXPORT __attribute__((visibility("default"))) //!< Specifies a symbol for export.
-	#define DYNAMICIMPORT //!< Specifies a symbol for import.
+	#define DYNAMICEXPORT __attribute__((visibility("default"))) // Specifies a symbol for export.
+	#define DYNAMICIMPORT // Specifies a symbol for import.
 #elif defined(__APPLE__)
-	#define DYNAMICEXPORT //!< Specifies a symbol for export.
-	#define DYNAMICIMPORT //!< Specifies a symbol for import.
+	#define DYNAMICEXPORT // Specifies a symbol for export.
+	#define DYNAMICIMPORT // Specifies a symbol for import.
 #endif
 
 #if defined(__amd64__) || defined(__x86_64__) || defined(_M_X64) || defined(_M_AMD64) || \
 	defined(__i686__) || defined(_M_IX86) || defined(_X86_)
 
-	#define BITS_PER_BYTE 8 //!< Specifies the number of bits in a byte on the target platform.
+	#define BITS_PER_BYTE 8 // Specifies the number of bits in a byte on the target platform.
 
 #else
 	#error "Unknown architecture. Cannot deduce number of bits per byte."
 #endif
 
-#define SIZE_T_FAIL static_cast<size_t>(-1) //!< Returned from functions that use size_t's, but can potentially fail
-#define UINT_FAIL static_cast<unsigned int>(-1)  //!< Returned from functions that use unsigned int's, but can potentially fail
-#define DYNAMICEXPORT_C extern "C" DYNAMICEXPORT //!< Exports a function with C-style symbol names.
+#define SIZE_T_FAIL static_cast<size_t>(-1) // Returned from functions that use size_t's, but can potentially fail
+#define UINT_FAIL static_cast<unsigned int>(-1)  // Returned from functions that use unsigned int's, but can potentially fail
+#define DYNAMICEXPORT_C extern "C" DYNAMICEXPORT // Exports a function with C-style symbol names.
 
 #define GAFF_STR_HELPER(x) #x
 #define GAFF_STR(x) GAFF_STR_HELPER(x)
@@ -138,3 +136,4 @@ NS_END
 	#include <sched.h> // For sched_yield
 #endif
 
+#include <utility> // For std::move() and std::forward()

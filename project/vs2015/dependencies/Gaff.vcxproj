@@ -247,7 +247,6 @@
     <ClInclude Include="..\..\..\dependencies\Gaff\include\Gaff_Timer_Linux.h" />
     <ClInclude Include="..\..\..\dependencies\Gaff\include\Gaff_Timer_Mac.h" />
     <ClInclude Include="..\..\..\dependencies\Gaff\include\Gaff_Timer_Windows.h" />
-    <ClInclude Include="..\..\..\dependencies\Gaff\include\Gaff_Tuple.h" />
     <ClInclude Include="..\..\..\dependencies\Gaff\include\Gaff_Utils.h" />
     <ClInclude Include="..\..\..\dependencies\Gaff\include\Gaff_Watcher.h" />
   </ItemGroup>
@@ -303,7 +302,6 @@
     <None Include="..\..\..\dependencies\Gaff\include\Gaff_ReflectionDefinitions.inl" />
     <None Include="..\..\..\dependencies\Gaff\include\Gaff_ReflectionDefinitionsContainers.inl" />
     <None Include="..\..\..\dependencies\Gaff\include\Gaff_String.inl" />
-    <None Include="..\..\..\dependencies\Gaff\include\Gaff_Tuple.inl" />
     <None Include="..\..\..\dependencies\Gaff\include\Gaff_Utils_Common.inl" />
     <None Include="..\..\..\dependencies\Gaff\include\Gaff_Watcher.inl" />
   </ItemGroup>

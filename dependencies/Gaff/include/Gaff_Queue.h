@@ -20,8 +20,6 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-/*! \file */
-
 #pragma once
 
 #include "Gaff_DefaultAllocator.h"
@@ -29,11 +27,6 @@ THE SOFTWARE.
 
 NS_GAFF
 
-/*!
-	\brief A FIFO quque implemented with a circular buffer.
-	\tparam T The data type we are storing.
-	\tparam Allocator The memory allocator we will use.
-*/
 template <class T, class Allocator = DefaultAllocator>
 class Queue
 {
@@ -54,15 +47,12 @@ public:
 	void clear(void);
 	void reserve(size_t new_size);
 
-	void movePush(T&& data);
 	void push(const T& data);
+	void push(T&& data);
 	void pop(void);
 
 	template <class... Args>
 	void emplacePush(Args&&... args);
-
-	template <class... Args>
-	void emplaceMovePush(Args&&... args);
 
 	const T& first(void) const;
 	T& first(void);

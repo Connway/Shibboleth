@@ -488,45 +488,31 @@ class FunctionTupleUnwrapper<0>
 {
 public:
 	template <class ReturnType, class... FunctionArgs, class... CurrentArgs>
-	static ReturnType Call(const IFunction<ReturnType, FunctionArgs...>& function, const Tuple<FunctionArgs...>&, CurrentArgs&&... args)
+	static ReturnType Call(const IFunction<ReturnType, FunctionArgs...>& function, const std::tuple<FunctionArgs...>&, CurrentArgs&&... args)
 	{
 		return function(args...);
 	}
 
 	template <class ReturnType, class... FunctionArgs, class... CurrentArgs>
-	static ReturnType Call(IFunction<ReturnType, FunctionArgs...>& function, Tuple<FunctionArgs...>&, CurrentArgs&&... args)
+	static ReturnType Call(IFunction<ReturnType, FunctionArgs...>& function, std::tuple<FunctionArgs...>&, CurrentArgs&&... args)
 	{
 		return function(args...);
 	}
 };
 
-/*!
-	\brief Class holder for a static function. Unwraps a \a Tuple's contents and passes them to a function.
-
-	\tparam index Used in the function \a Call. When using this class, this value should be the size of the \a Tuple.
-*/
 template <unsigned int index>
 class FunctionTupleUnwrapper
 {
 public:
 	template <class ReturnType, class... FunctionArgs, class... CurrentArgs>
-	static ReturnType Call(const IFunction<ReturnType, FunctionArgs...>& function, const Tuple<FunctionArgs...>& tuple, CurrentArgs&&... args)
+	static ReturnType Call(const IFunction<ReturnType, FunctionArgs...>& function, const std::tuple<FunctionArgs...>& tuple, CurrentArgs&&... args)
 	{
-		return FunctionTupleUnwrapper<index - 1>::Call(function, tuple, TupleGet<index - 1>(tuple), args...);
+		return FunctionTupleUnwrapper<index - 1>::Call(function, tuple, std::get<index - 1>(tuple), args...);
 	}
 
-	/*!
-		\brief Does the work of unwrapping \a tuple's contents and passing them to \a function.
-
-		\tparam The function return type.
-		\tparam FunctionArgs The arguments the function takes.
-		\tparam CurrentArgs The current arguments we have unwrapped.
-
-		\return The value returned by \a function.
-	*/
 	template <class ReturnType, class... FunctionArgs, class... CurrentArgs>
-	static ReturnType Call(IFunction<ReturnType, FunctionArgs...>& function, Tuple<FunctionArgs...>& tuple, CurrentArgs&&... args)
+	static ReturnType Call(IFunction<ReturnType, FunctionArgs...>& function, std::tuple<FunctionArgs...>& tuple, CurrentArgs&&... args)
 	{
-		return FunctionTupleUnwrapper<index - 1>::Call(function, tuple, TupleGet<index - 1>(tuple), args...);
+		return FunctionTupleUnwrapper<index - 1>::Call(function, tuple, std::get<index - 1>(tuple), args...);
 	}
 };

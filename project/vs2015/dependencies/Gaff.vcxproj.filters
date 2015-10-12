@@ -51,9 +51,6 @@
     <None Include="..\..\..\dependencies\Gaff\include\Gaff_String.inl">
       <Filter>include</Filter>
     </None>
-    <None Include="..\..\..\dependencies\Gaff\include\Gaff_Tuple.inl">
-      <Filter>include</Filter>
-    </None>
     <None Include="..\..\..\dependencies\Gaff\include\Gaff_Utils_Common.inl">
       <Filter>include</Filter>
     </None>
@@ -267,9 +264,6 @@
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\dependencies\Gaff\include\Gaff_Timer_Windows.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\dependencies\Gaff\include\Gaff_Tuple.h">
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\dependencies\Gaff\include\Gaff_Utils.h">

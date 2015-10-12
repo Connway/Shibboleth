@@ -116,7 +116,6 @@ void DeferredRenderDeviceGL::setRenderState(const RenderStateGL* render_state)
 	Gaff::CachedFunction<void, GLenum> df_cache(df_func, RenderStateGL::Compare_Funcs[render_state->getDepthFunc() - 1]);
 	_command_list.addCommand(df_cache);
 
-
 	const IRenderState::StencilData& front_face = render_state->getFrontFaceStencilData();
 	const IRenderState::StencilData& back_face = render_state->getBackFaceStencilData();
 

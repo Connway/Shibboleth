@@ -22,7 +22,6 @@ THE SOFTWARE.
 
 #include "Gleam_CommandList_Direct3D.h"
 #include <Gaff_IncludeAssert.h>
-#include <type_traits>
 
 NS_GLEAM
 
