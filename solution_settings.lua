@@ -1,4 +1,8 @@
-platforms { "x86", "x64" }
+if os.get() == "windows" then
+	platforms { "x86", "x64" }
+else
+	platforms { "x64" }
+end
 
 warnings "Extra"
 flags { "Unicode" }
