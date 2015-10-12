@@ -20,29 +20,15 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-/*! \file */
-
 #pragma once
 
-#include "Gaff_RefCounted.h"
 #include "Gaff_ScopedLock.h"
 #include "Gaff_SpinLock.h"
 #include "Gaff_Function.h"
-#include "Gaff_RefPtr.h"
-#include "Gaff_Map.h"
+#include "Gaff_Array.h"
 
 NS_GAFF
 
-/*!
-	\brief
-		A receipt used to signify that you are watching for the Watcher value to change.
-		If this receipt is released, you will be removed from the watch list.
-*/
-typedef RefPtr<IRefCounted> WatchReceipt;
-
-/*!
-	\brief A class that wraps the assignment operator and calls a list of callbacks when the value changes.
-*/
 template <class T, class Allocator = DefaultAllocator>
 class Watcher
 {
@@ -54,12 +40,11 @@ public:
 	Watcher(const Allocator& allocator = Allocator());
 	~Watcher(void);
 
-	bool init(void);
-
 	const Watcher& operator=(T&& rhs);
 	const Watcher& operator=(const T& rhs);
 
-	WatchReceipt addCallback(const Callback& callback);
+	void addCallback(const Callback& callback);
+	void removeCallback(const Callback& callback);
 	void notifyCallbacks(void);
 
 	const T* getPtr(void) const;
@@ -68,57 +53,15 @@ public:
 	T& get(void);
 
 private:
-	class Remover : public RefCounted<Allocator>
-	{
-	public:
-		Remover(Watcher* watcher, const Allocator& allocator);
-		~Remover(void);
-
-		void removeCallback(unsigned int id);
-
-	private:
-		Watcher* _watcher;
-		SpinLock _lock;
-
-		void watcherDeleted(void);
-
-		friend class Watcher;
-	};
-
-	class Receipt : public IRefCounted
-	{
-	public:
-		Receipt(unsigned int id, const RefPtr<Remover>& remover, const Allocator& allocator);
-		~Receipt(void);
-
-		void addRef(void) const;
-		void release(void) const;
-
-		unsigned int getRefCount(void) const;
-
-	private:
-		mutable Allocator _allocator;
-		mutable RefPtr<Remover> _remover;
-		mutable volatile unsigned int _ref_count;
-		unsigned int _id;
-	};
-
-	Map<unsigned int, Callback, Allocator> _callbacks;
+	Array<Callback, Allocator> _callbacks;
 	T _data;
 
 	Allocator _allocator;
 
-	RefPtr<Remover> _remover;
 	SpinLock _lock;
-
-	unsigned int _next_id;
-
-	void remove(unsigned int id);
 
 	GAFF_NO_COPY(Watcher);
 	GAFF_NO_MOVE(Watcher);
-
-	friend class Remover;
 };
 
 #include "Gaff_Watcher.inl"

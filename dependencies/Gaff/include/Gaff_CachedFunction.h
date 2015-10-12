@@ -25,7 +25,7 @@ THE SOFTWARE.
 #pragma once
 
 #include "Gaff_Function.h"
-#include "Gaff_Tuple.h"
+#include <tuple>
 
 NS_GAFF
 
@@ -33,7 +33,7 @@ template <class ReturnType, class... Args>
 class CachedFunction : public IFunction<ReturnType>
 {
 public:
-	static_assert(Tuple<Args...>::Size > 0, "CachedFunction requires at least one function argument!");
+	static_assert(sizeof...(Args) > 0, "CachedFunction requires at least one function argument!");
 
 	CachedFunction(const FunctionBinder<ReturnType, Args...>& function, const Args&... args);
 	CachedFunction(const FunctionBinder<ReturnType, Args...>& function, Args&&... args);
@@ -50,23 +50,23 @@ public:
 	void setArguments(Args&&... args);
 
 	template <unsigned int index>
-	const typename TupleElement< index, Tuple<Args...> >::ValueType& getArgument(void) const;
+	const typename std::tuple_element< index, std::tuple<Args...> >::type& getArgument(void) const;
 
 	template <unsigned int index>
-	typename TupleElement< index, Tuple<Args...> >::ValueType& getArgument(void);
+	typename std::tuple_element< index, std::tuple<Args...> >::type& getArgument(void);
 
 	template <unsigned int index>
-	void setArg(const typename TupleElement< index, Tuple<Args...> >::ValueType& argument);
+	void setArg(const typename std::tuple_element< index, std::tuple<Args...> >::type& argument);
 
 	template <unsigned int index>
-	void moveSetArg(typename TupleElement< index, Tuple<Args...> >::ValueType&& argument);
+	void setArg(typename std::tuple_element< index, std::tuple<Args...> >::type&& argument);
 
 	ReturnType call(void) const;
 	ReturnType call(void);
 	bool valid(void) const;
 
 private:
-	Tuple<Args...> _arguments;
+	std::tuple<Args...> _arguments;
 	FunctionBinder<ReturnType, Args...> _function;
 };
 

@@ -28,7 +28,7 @@ LinearCurve<PointType, Allocator>::LinearCurve(const LinearCurve<PointType, Allo
 
 template <class PointType, class Allocator>
 LinearCurve<PointType, Allocator>::LinearCurve(BezierCurve<PointType, Allocator>&& curve):
-	_points(Move(curve._points))
+	_points(std::move(curve._points))
 {
 }
 

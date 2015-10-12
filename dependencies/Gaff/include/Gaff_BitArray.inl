@@ -26,14 +26,6 @@ BitArray<Allocator>::BitArray(const Allocator& allocator):
 {
 }
 
-/*!
-	\brief Initializes the array to the nearest number of bytes that will contain the number of bits we wish to store.
-
-	\param start_size The number of bits we wish to store.
-	\param Allocator The allocator we will use to allocate memory.
-
-	\note Initializes all bits to zero.
-*/
 template <class Allocator>
 BitArray<Allocator>::BitArray(size_t start_size, const Allocator& allocator):
 	_bit_array(CalculateBytes(start_size), 0, allocator), _used(start_size),
@@ -41,14 +33,6 @@ BitArray<Allocator>::BitArray(size_t start_size, const Allocator& allocator):
 {
 }
 
-/*!
-	\brief
-		Initializes the array to the nearest number of bytes that will contain the number of bits
-		we wish to store with each bit being set to \a init_val.
-
-	\param start_size The number of bits we wish to store.
-	\param Allocator The allocator we will use to allocate memory.
-*/
 template <class Allocator>
 BitArray<Allocator>::BitArray(size_t start_size, bool init_val, const Allocator& allocator):
 	_bit_array(CalculateBytes(start_size), (init_val) ? static_cast<unsigned char>(-1) : 0, allocator),
@@ -64,7 +48,7 @@ BitArray<Allocator>::BitArray(const BitArray<Allocator>& rhs):
 
 template <class Allocator>
 BitArray<Allocator>::BitArray(BitArray<Allocator>&& rhs):
-	_bit_array(Move(rhs._bit_array)), _used(rhs._used), _size(rhs._size)
+	_bit_array(std::move(rhs._bit_array)), _used(rhs._used), _size(rhs._size)
 {
 }
 
@@ -85,7 +69,7 @@ const BitArray<Allocator>& BitArray<Allocator>::operator=(const BitArray<Allocat
 template <class Allocator>
 const BitArray<Allocator>& BitArray<Allocator>::operator=(BitArray<Allocator>&& rhs)
 {
-	_bit_array = Move(rhs);
+	_bit_array = std::move(rhs);
 	_used = rhs._used;
 	_size = rhs._size;
 
@@ -160,9 +144,6 @@ void BitArray<Allocator>::set(size_t index)
 	_bit_array[array_index] |= (1 << shift);
 }
 
-/*!
-	\brief Removes all values in the array and frees all used memory.
-*/
 template <class Allocator>
 void BitArray<Allocator>::clear(void)
 {
@@ -171,9 +152,6 @@ void BitArray<Allocator>::clear(void)
 	_size = 0;
 }
 
-/*!
-	\brief Removes all values in the array, but keeps its memory.
-*/
 template <class Allocator>
 void BitArray<Allocator>::clearNoFree(void)
 {
