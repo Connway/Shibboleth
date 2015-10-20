@@ -98,7 +98,6 @@
       <PreprocessorDefinitions>_DEBUG;DEBUG;ASSIMP_BUILD_BOOST_WORKAROUND;ASSIMP_BUILD_NO_OWN_ZLIB;_CRT_SECURE_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>..\..\..\dependencies\assimp\code\BoostWorkaround;..\..\..\dependencies\minizip;..\..\..\dependencies\zlib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
-      <ProgramDataBaseFileName>$(OutDir)$(TargetName).pdb</ProgramDataBaseFileName>
       <Optimization>Disabled</Optimization>
       <ExceptionHandling>Async</ExceptionHandling>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
@@ -118,7 +117,6 @@
       <PreprocessorDefinitions>_DEBUG;DEBUG;ASSIMP_BUILD_BOOST_WORKAROUND;ASSIMP_BUILD_NO_OWN_ZLIB;_CRT_SECURE_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>..\..\..\dependencies\assimp\code\BoostWorkaround;..\..\..\dependencies\minizip;..\..\..\dependencies\zlib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <ProgramDataBaseFileName>$(OutDir)$(TargetName).pdb</ProgramDataBaseFileName>
       <Optimization>Disabled</Optimization>
       <ExceptionHandling>Async</ExceptionHandling>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>

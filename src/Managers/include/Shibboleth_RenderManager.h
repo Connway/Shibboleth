@@ -154,12 +154,14 @@ public:
 		Array<SRVPtr> depth_srvs;
 	};
 
+	static const char* GetName(void);
+
 	RenderManager(void);
 	~RenderManager(void);
 
-	const char* getName(void) const;
+	const char* getName(void) const override;
 
-	void* rawRequestInterface(unsigned int class_id) const;
+	void* rawRequestInterface(unsigned int class_id) const override;
 
 	bool initThreadData(void);
 	bool init(const char* module);

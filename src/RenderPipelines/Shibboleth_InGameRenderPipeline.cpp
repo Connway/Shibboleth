@@ -22,7 +22,7 @@ THE SOFTWARE.
 
 #include "Shibboleth_InGameRenderPipeline.h"
 #include <Shibboleth_OcclusionManager.h>
-#include <Shibboleth_RenderManager.h>
+#include <Shibboleth_ResourceManager.h>
 #include <Shibboleth_FrameManager.h>
 
 #include <Shibboleth_CameraComponent.h>
@@ -30,11 +30,12 @@ THE SOFTWARE.
 
 #include <Shibboleth_ModelAnimResources.h>
 #include <Shibboleth_Utilities.h>
-#include <Shibboleth_Object.h>
 #include <Shibboleth_IApp.h>
 
 #include <Gleam_IRenderDevice.h>
+#include <Gleam_Transform.h>
 #include <Gleam_IProgram.h>
+#include <Gleam_IBuffer.h>
 #include <Gleam_IModel.h>
 
 NS_SHIBBOLETH
@@ -42,8 +43,12 @@ NS_SHIBBOLETH
 using JobData = Gaff::Pair<InGameRenderPipeline*, FrameData*>;
 
 InGameRenderPipeline::InGameRenderPipeline(void):
-	_render_mgr(GetApp().getManagerT<RenderManager>("Render Manager"))
+	_render_mgr(GetApp().getManagerT<RenderManager>())
 {
+	ResourceManager& res_mgr = GetApp().getManagerT<ResourceManager>();
+
+	for (size_t i = 0; i < GetEnumRefDef<RenderModes>().getNumEntries() - 1; ++i) {
+	}
 }
 
 InGameRenderPipeline::~InGameRenderPipeline(void)
@@ -59,33 +64,17 @@ void InGameRenderPipeline::run(double dt, void* frame_data)
 {
 	FrameData* fd = reinterpret_cast<FrameData*>(frame_data);
 
-	// If we are on the first run, allocate the command lists for each thread
-	if (fd->command_lists.empty()) {
-		Array<unsigned int> thread_ids(GetApp().getJobPool().getNumTotalThreads(), 0);
-		GetApp().getJobPool().getThreadIDs(thread_ids.getArray());
-		fd->command_lists.reserve(thread_ids.size());
+	for (auto it = fd->object_data.begin(); it != fd->object_data.end(); ++it) {
+		if (it->second.command_lists.empty()) {
+			it->second.command_lists.resize(_render_mgr.getRenderDevice().getNumDevices());
 
-		for (auto it = thread_ids.begin(); it != thread_ids.end(); ++it) {
-			fd->command_lists[*it] = FrameData::CommandListMap();
-		}
-	}
-
-	// Clear the old command lists
-	for (auto it_thread = fd->command_lists.begin(); it_thread != fd->command_lists.end(); ++it_thread) {
-		for (auto it = it_thread->second.begin(); it != it_thread->second.end(); ++it) {
-			for (size_t i = 0; i < it->second.size(); ++i) {
-				for (size_t j = 0; j < it->second[i].size(); ++j) {
-					it->second[i][j].clearNoFree();
-				}
+			for (size_t i = 0; i < it->second.command_lists.size(); ++i) {
+				it->second.command_lists[i] = _render_mgr.createCommandList();
+				assert(it->second.command_lists[i]);
 			}
 		}
-	}
 
-	// Clear the object indexes
-	for (size_t i = 0; i < fd->object_data.size(); ++i) {
-		for (size_t j = 0; j < OcclusionManager::OT_SIZE; ++j) {
-			fd->object_data[i].next_index[j] = 0;
-		}
+		it->second.curr_device = 0;
 	}
 
 	// Maybe pre-allocate the destination arrays so that we don't have to lock in helper threads?
@@ -110,51 +99,52 @@ void InGameRenderPipeline::GenerateCommandLists(void* job_data)
 	JobData* jd = reinterpret_cast<JobData*>(job_data);
 	Array<RenderManager::RenderDevicePtr>& rds = jd->first->_render_mgr.getDeferredRenderDevices(Gaff::Thread::GetCurrentThreadID());
 	FrameData* fd = jd->second;
-	auto& cl = fd->command_lists[Gaff::Thread::GetCurrentThreadID()];
 
 	for (auto it = fd->object_data.begin(); it != fd->object_data.end(); ++it) {
-		for (size_t i = 0; i < OcclusionManager::OT_SIZE; ++i) {
-			// Get the next object to be processed in the list.
-			unsigned int index = AtomicIncrement(&it->next_index[i]) - 1;
+		if (!it->second.active) {
+			continue;
+		}
 
-			// Process objects until we run out, then move on to the next list.
-			// If the next index is larger than the number of objects in the list, move on to the next list.
-			while (index < it->objects.results[i].size()) {
-				const OcclusionManager::QueryResult& result = it->objects.results[i][index];
-				Gleam::TransformCPU inverse_camera = it->camera_transform.inverse();
-				Gleam::TransformCPU final_transform = inverse_camera + it->transforms[i][index];
+		unsigned int device_index = AtomicIncrement(&it->second.curr_device) - 1;
 
-				// Pre-computing the world-to-camera-to-projection matrix.
-				Gleam::Matrix4x4CPU final_matrix = it->camera_projection_matrix * final_transform.matrix();
+		// Create command list for each device
+		while (device_index < it->first->getDevices().size()) {
+			unsigned int device = it->first->getDevices()[device_index];
+			auto& rd = rds[device];
 
-				assert(result.second.first);
-				ModelComponent* model_comp = reinterpret_cast<ModelComponent*>(result.second.first);
+			// Change to pre-allocate command lists and re-use them instead of destroying and re-creating them.
+			Gleam::ICommandList* cmd_list = jd->first->_render_mgr.createCommandList();
 
-				size_t lod = model_comp->determineLOD(it->camera_transform.getTranslation());
-				auto& program_buffers = model_comp->getProgramBuffers();
-				auto& materials = model_comp->getMaterials();
-				auto& buffers = model_comp->getBuffers();
-				ModelData& model = model_comp->getModel();
+			if (!cmd_list) {
+				// log error
+				continue;
+			}
 
-				const Array<unsigned int>& camera_devices = it->camera->getDevices();
-				const Array<size_t>* render_modes = model_comp->getRenderModes();
-				auto& command_lists = cl[it->camera];
+			// For each object type
+			for (size_t i = 0; i < OcclusionManager::OT_SIZE; ++i) {
+				// Set render state
 
-				// First time using this frame data. Size the render commands appropriately.
-				if (command_lists.empty()) {
-					command_lists.resize(jd->first->_render_mgr.getRenderDevice().getNumDevices());
+				// For each object
+				for (size_t j = 0; j < it->second.objects.results[i].size(); ++j) {
+					const OcclusionManager::QueryResult& result = it->second.objects.results[i][j];
+					Gleam::TransformCPU inverse_camera = it->second.camera_transform.inverse();
+					Gleam::TransformCPU final_transform = inverse_camera + it->second.transforms[i][j];
+					Gleam::Matrix4x4CPU final_matrix = it->second.camera_projection_matrix * final_transform.matrix();
 
-					for (size_t j = 0; j < cl.size(); ++j) {
-						command_lists[j].resize(GetEnumRefDef<RenderModes>().getNumEntries() - 1);
-					}
-				}
+					assert(result.second.first);
+					ModelComponent* model_comp = reinterpret_cast<ModelComponent*>(result.second.first);
 
-				for (auto it_dev = camera_devices.begin(); it_dev != camera_devices.end(); ++it_dev) {
-					auto& rd = rds[*it_dev];
+					size_t lod = model_comp->determineLOD(it->second.camera_transform.getTranslation());
+					auto& program_buffers = model_comp->getProgramBuffers();
+					auto& materials = model_comp->getMaterials();	
+					auto& buffers = model_comp->getBuffers();
+					ModelData& model = model_comp->getModel();
+
+					const Array<size_t>* render_modes = model_comp->getRenderModes();
 
 					// Update program buffers with transform information
 					// Buffer zero is always assumed to be the transform buffer
-					BufferPtr& buffer = buffers[0]->data[*it_dev];
+					BufferPtr& buffer = buffers[0]->data[device];
 					float* transforms = reinterpret_cast<float*>(buffer->map(*rd));
 
 					if (!transforms) {
@@ -166,42 +156,31 @@ void InGameRenderPipeline::GenerateCommandLists(void* job_data)
 
 					buffer->unmap(*rd);
 
-					ModelPtr& m = model.models[*it_dev][lod];
+					ModelPtr& m = model.models[device][lod];
 
-					for (size_t j = 0; j < GetEnumRefDef<RenderModes>().getNumEntries() - 1; ++j) {
-						if (render_modes[j].empty()) {
+					for (size_t k = 0; k < GetEnumRefDef<RenderModes>().getNumEntries() - 1; ++k) {
+						if (render_modes[k].empty()) {
 							continue;
 						}
 
-						Gleam::ICommandList* cmd_list = jd->first->_render_mgr.createCommandList();
+						for (size_t l = 0; l < render_modes[k].size(); ++l) {
+							size_t rm = render_modes[k][l];
 
-						if (!cmd_list) {
-							// log error
-							continue;
-						}
-
-						for (size_t k = 0; k < render_modes[j].size(); ++k) {
-							size_t rm = render_modes[j][k];
-
-							materials[rm]->programs[*it_dev]->bind(*rd, program_buffers[rm]->data[*it_dev].get());
+							materials[rm]->programs[device]->bind(*rd, program_buffers[rm]->data[device].get());
 							m->render(*rd, rm);
 						}
-
-						// generate command list
-						if (!rd->finishCommandList(cmd_list)) {
-							// log error
-							GetAllocator()->freeT(cmd_list);
-							continue;
-						}
-
-						// add it to command list list
-						command_lists[*it_dev][j].emplacePush(cmd_list);
 					}
-				}
 
-				// Get the next object to be processed in the list.
-				index = AtomicIncrement(&it->next_index[i]) - 1;
+				}
 			}
+
+			// generate command list
+			if (!rd->finishCommandList(cmd_list)) {
+				// log error
+			}
+
+			it->second.command_lists[device] = cmd_list;
+			device = AtomicIncrement(&it->second.curr_device) - 1;
 		}
 	}
 }

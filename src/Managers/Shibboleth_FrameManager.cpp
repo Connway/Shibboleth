@@ -138,67 +138,8 @@ void FrameManager::submitCommandLists(double, void* frame_data)
 {
 	FrameData* fd = reinterpret_cast<FrameData*>(frame_data);
 
-	_cl_cache.clearNoFree();
-
-	// First step: Accumlate all the data into a single CommandListMap for easier iteration
-	// For each thread data
-	for (auto it = fd->command_lists.begin(); it != fd->command_lists.end(); ++it) {
-		// For each camera in thread data
-		for (auto it_cam = it->second.begin(); it_cam != it->second.end(); ++it_cam) {
-			auto& data = _cl_cache[it_cam->first];
-
-			// Size should be the same across all thread data. [Devices][Render Mode][CommandList]
-			if (data.empty()) {
-				data.resize(it_cam->second.size());
-			}
-
-			// For each device
-			for (size_t i = 0; i < it_cam->second.size(); ++i) {
-				if (data[i].empty()) {
-					data[i].resize(it_cam->second[i].size());
-				}
-
-				// For each Render Mode
-				for (size_t j = 0; j < it_cam->second[i].size(); ++j) {
-					data[i][j].append(it_cam->second[i][j]);
-				}
-			}
-		}
-
-		it->second.clearNoFree();
-	}
-
-	auto& rd = _render_mgr->getRenderDevice();
-
-	// Second step: Submit the command lists for each camera
-	for (auto it = _cl_cache.begin(); it != _cl_cache.end(); ++it) {
-		const auto& devices = it->first->getDevices();
-		auto& rt_data = it->first->getRenderTarget();
-
-		for (auto it_dev = devices.begin(); it_dev != devices.end(); ++it_dev) {
-			auto& rt = rt_data->render_targets[*it_dev];
-			rd.setCurrentDevice(*it_dev);
-			//rd.setCurrentOutput(0); // Not sure if not setting an output will break OpenGL
-
-			float g[4] = { 0.0f, 1.0f, 0.0f, 1.0f };
-
-			rt->bind(rd);
-
-			rt->clear(
-				rd,
-				Gleam::IRenderTarget::CLEAR_COLOR | Gleam::IRenderTarget::CLEAR_DEPTH | Gleam::IRenderTarget::CLEAR_STENCIL,
-				1.0f, 0, g
-			);
-
-			// For each render stage (must do in order)
-			for (size_t i = 0; i < GetEnumRefDef<RenderModes>().getNumEntries() - 1; ++i) {
-				auto& cls = it->second[*it_dev][i];
-
-				for (auto it_cl = cls.begin(); it_cl != cls.end(); ++it_cl) {
-					rd.executeCommandList(it_cl->get());
-				}
-			}
-		}
+	for (auto it = fd->object_data.begin(); it != fd->object_data.end(); ++it) {
+		
 	}
 }
 

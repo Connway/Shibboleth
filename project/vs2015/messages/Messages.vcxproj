@@ -98,7 +98,6 @@
       <PreprocessorDefinitions>_DEBUG;DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>..\..\..\src\Messages\include;..\..\..\src\Shared\include;..\..\..\src\Memory\include;..\..\..\dependencies\Gaff\include;..\..\..\dependencies\jansson;..\..\..\dependencies\utf8-cpp;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
-      <ProgramDataBaseFileName>$(OutDir)$(TargetName).pdb</ProgramDataBaseFileName>
       <Optimization>Disabled</Optimization>
       <ExceptionHandling>Async</ExceptionHandling>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
@@ -118,7 +117,6 @@
       <PreprocessorDefinitions>_DEBUG;DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>..\..\..\src\Messages\include;..\..\..\src\Shared\include;..\..\..\src\Memory\include;..\..\..\dependencies\Gaff\include;..\..\..\dependencies\jansson;..\..\..\dependencies\utf8-cpp;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <ProgramDataBaseFileName>$(OutDir)$(TargetName).pdb</ProgramDataBaseFileName>
       <Optimization>Disabled</Optimization>
       <ExceptionHandling>Async</ExceptionHandling>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>

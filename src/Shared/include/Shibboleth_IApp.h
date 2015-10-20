@@ -73,6 +73,18 @@ public:
 		return *reinterpret_cast<T*>(getManager(name));
 	}
 
+	template <class T>
+	const T& getManagerT(void) const
+	{
+		return *reinterpret_cast<T*>(getManager(T::GetName()));
+	}
+
+	template <class T>
+	T& getManagerT(void)
+	{
+		return *reinterpret_cast<T*>(getManager(T::GetName()));
+	}
+
 	IApp(void) {}
 	virtual ~IApp(void) {}
 

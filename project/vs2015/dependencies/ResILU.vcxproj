@@ -102,7 +102,6 @@
       <PreprocessorDefinitions>_DEBUG;DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>..\..\..\dependencies\ResIL\ILU\include;..\..\..\dependencies\ResIL\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
-      <ProgramDataBaseFileName>$(OutDir)$(TargetName).pdb</ProgramDataBaseFileName>
       <Optimization>Disabled</Optimization>
       <ExceptionHandling>Async</ExceptionHandling>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
@@ -124,7 +123,6 @@
       <PreprocessorDefinitions>_DEBUG;DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>..\..\..\dependencies\ResIL\ILU\include;..\..\..\dependencies\ResIL\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <ProgramDataBaseFileName>$(OutDir)$(TargetName).pdb</ProgramDataBaseFileName>
       <Optimization>Disabled</Optimization>
       <ExceptionHandling>Async</ExceptionHandling>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
