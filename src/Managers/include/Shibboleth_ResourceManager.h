@@ -130,10 +130,12 @@ public:
 		bool optional;
 	};
 
+	static const char* GetName(void);
+
 	ResourceManager(void);
 	~ResourceManager(void);
 
-	const char* getName(void) const;
+	const char* getName(void) const override;
 
 	void registerResourceLoader(IResourceLoader* res_loader, const Array<AString>& resource_types, unsigned int thread_pool = 0, const Array<JSONModifiers>& json_elements = Array<JSONModifiers>());
 	INLINE void registerResourceLoader(IResourceLoader* res_loader, const char* resource_type, unsigned int thread_pool = 0, const Array<JSONModifiers>& json_elements = Array<JSONModifiers>());
@@ -153,7 +155,7 @@ public:
 	void addRequestAddedCallback(const Gaff::FunctionBinder<void, ResourcePtr&>& callback);
 	void removeRequestAddedCallback(const Gaff::FunctionBinder<void, ResourcePtr&>& callback);
 
-	void* rawRequestInterface(unsigned int class_id) const;
+	void* rawRequestInterface(unsigned int class_id) const override;
 
 private:
 	struct LoaderData

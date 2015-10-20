@@ -37,8 +37,6 @@ class RenderManager;
 struct FrameData
 {
 	using CommandListPtr = Gaff::SmartPtr<Gleam::ICommandList, ProxyAllocator>;
-	using CommandListData = Array< Array< Array<CommandListPtr> > >; // [Device][RenderMode][CommandList]
-	using CommandListMap = Map<CameraComponent*, CommandListData>;
 
 	struct ObjectData
 	{
@@ -46,15 +44,13 @@ struct FrameData
 		Gleam::Matrix4x4CPU camera_projection_matrix;
 		Gleam::TransformCPU camera_transform;
 		OcclusionManager::QueryData objects;
-		CameraComponent* camera;
 
-		volatile unsigned int next_index[OcclusionManager::OT_SIZE];
+		Array<CommandListPtr> command_lists; // [Device]
+		volatile unsigned int curr_device;
+		bool active;
 	};
 
-	Array<ObjectData> object_data;
-	Map<unsigned int, CommandListMap> command_lists; // Key is thread ID
-
-	// animation transforms
+	Map<CameraComponent*, ObjectData> object_data;
 };
 
 class FrameManager : public IManager, public IUpdateQuery
@@ -87,22 +83,10 @@ public:
 	void finishFrame(size_t phase_id);
 
 private:
-	class CameraPredicate
-	{
-	public:
-		bool operator()(const Gaff::Pair<CameraComponent*, FrameData::CommandListData>& lhs, const CameraComponent* rhs) const
-		{
-			return lhs.first->getRenderOrder() < rhs->getRenderOrder();
-		}
-	};
-
 	struct CounterHack
 	{
 		volatile unsigned int count = 0;
 	};
-
-	// Sort Map by camera render order.
-	Map<CameraComponent*, FrameData::CommandListData, CameraPredicate> _cl_cache;
 
 	Array<unsigned int> _phase_trackers;
 	Array<CounterHack> _frame_trackers;

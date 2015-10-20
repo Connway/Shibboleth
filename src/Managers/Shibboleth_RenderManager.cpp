@@ -169,6 +169,10 @@ SHIB_ENUM_REF_IMPL_EMBEDDED(Gleam_IShader_Type, Gleam::IShader::SHADER_TYPE)
 .addValue("Hull", Gleam::IShader::SHADER_HULL)
 ;
 
+const char* RenderManager::GetName(void)
+{
+	return "Render Manager";
+}
 
 RenderManager::RenderManager(void):
 	_render_device(nullptr, ProxyAllocator("Graphics")),
@@ -196,7 +200,7 @@ RenderManager::~RenderManager(void)
 
 const char* RenderManager::getName(void) const
 {
-	return "Render Manager";
+	return GetName();
 }
 
 bool RenderManager::initThreadData(void)

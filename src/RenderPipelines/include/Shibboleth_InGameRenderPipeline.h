@@ -21,7 +21,10 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include <Shibboleth_IRenderPipeline.h>
-#include <Gaff_Defines.h>
+#include <Shibboleth_RenderManager.h>
+#include <Shibboleth_Array.h>
+#include <Gleam_IRenderState.h>
+#include <Gaff_SmartPtr.h>
 
 NS_SHIBBOLETH
 
@@ -37,7 +40,12 @@ public:
 	void run(double dt, void* frame_data);
 
 private:
+	using IRenderStatePtr = Gaff::SmartPtr<Gleam::IRenderState, ProxyAllocator>;
+
 	static void GenerateCommandLists(void* job_data);
+
+	//Array<IRenderStatePtr> _render_states[RM_COUNT]; // Array size is number of devices
+	// RenderStateResource _render_states[RM_COUNT];
 
 	RenderManager& _render_mgr;
 

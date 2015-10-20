@@ -66,21 +66,21 @@ void CameraManager::update(double, void* frame_data)
 	FrameData* fd = reinterpret_cast<FrameData*>(frame_data);
 	fd->object_data.clearNoFree();
 
-	for (size_t i = 0; i < _cameras.size(); ++i) {
-		if (_cameras[i]->isActive()) {
-			fd->object_data.emplacePush();
+	for (auto it = _cameras.begin(); it != _cameras.end(); ++it) {
+		FrameData::ObjectData& od = fd->object_data[*it];
 
-			FrameData::ObjectData& od = fd->object_data.last();
-			od.camera_projection_matrix = _cameras[i]->getProjectionMatrix();
-			od.camera_transform = _cameras[i]->getOwner()->getWorldTransform();
-			od.camera = _cameras[i];
+		od.active = (*it)->isActive();
 
-			_occlusion_mgr->findObjectsInFrustum(_cameras[i]->getFrustum(), od.objects);
+		if (od.active) {
+			od.camera_projection_matrix = (*it)->getProjectionMatrix();
+			od.camera_transform = (*it)->getOwner()->getWorldTransform();
 
-			for (int j = OcclusionManager::OT_STATIC; j < OcclusionManager::OT_SIZE; ++j) {
+			_occlusion_mgr->findObjectsInFrustum((*it)->getFrustum(), od.objects);
+
+			for (int i = OcclusionManager::OT_STATIC; i < OcclusionManager::OT_SIZE; ++i) {
 				// Copy all the transforms.
-				for (auto it = od.objects.results[j].begin(); it != od.objects.results[j].end(); ++it) {
-					od.transforms[j].emplacePush(it->first->getWorldTransform());
+				for (auto it_obj = od.objects.results[i].begin(); it_obj != od.objects.results[i].end(); ++it_obj) {
+					od.transforms[i].emplacePush(it_obj->first->getWorldTransform());
 				}
 			}
 		}
