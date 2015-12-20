@@ -1,5 +1,5 @@
 {
 	"Vertex": "Resources/Materials/vertex",
 	"Pixel": "Resources/Materials/pixel",
-	"Render Mode": "Opaque"
+	"Render Pass": "Opaque"
 }

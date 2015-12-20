@@ -22,8 +22,10 @@ THE SOFTWARE.
 
 #include "Gleam_DeferredRenderDevice_OpenGL.h"
 #include "Gleam_ShaderResourceView_OpenGL.h"
+#include "Gleam_DepthStencilState_OpenGL.h"
 #include "Gleam_SamplerState_OpenGL.h"
-#include "Gleam_RenderState_OpenGL.h"
+#include "Gleam_RasterState_OpenGL.h"
+#include "Gleam_BlendState_OpenGL.h"
 #include "Gleam_Program_OpenGL.h"
 #include "Gleam_Layout_OpenGL.h"
 #include "Gleam_Buffer_OpenGL.h"
@@ -32,22 +34,7 @@ THE SOFTWARE.
 
 NS_GLEAM
 
-// For internal Gleam use only.
-template <class ReturnType, class... Args>
-class GLFuncWrapper : public Gaff::IFunction<void>
-{
-public:
-	GLFuncWrapper(const Gaff::CachedFunction<ReturnType, Args...>& function): _function(function) {}
-	GLFuncWrapper(Gaff::CachedFunction<ReturnType, Args...>&& function): _function(std::move(function)) {}
-	~GLFuncWrapper(void);
-
-	void call(void) const { _function(); }
-	void call(void) { _function(); }
-	bool valid(void) const { return _function.valid(); }
-
-private:
-	Gaff::CachedFunction<ReturnType, Args...> _function;
-};
+static Gaff::FunctionBinder<void, GLenum> gDisable_Enable_Funcs[2] = { Gaff::BindSTDCall(glDisable), Gaff::BindSTDCall(glEnable) };
 
 DeferredRenderDeviceGL::DeferredRenderDeviceGL(void)
 {
@@ -90,102 +77,148 @@ void DeferredRenderDeviceGL::renderNoVertexInput(unsigned int vert_count)
 	// TODO: IMPLEMENT ME!
 }
 
-void DeferredRenderDeviceGL::setRenderState(const RenderStateGL* render_state)
+void DeferredRenderDeviceGL::setDepthStencilState(const DepthStencilStateGL* ds_state)
 {
-	static Gaff::FunctionBinder<void, GLenum> disable_enable_funcs[2] = { Gaff::BindSTDCall(glDisable), Gaff::BindSTDCall(glEnable) };
-	static auto bes_func = Gaff::BindSTDCall(glBlendEquationSeparatei);
-	static auto sfs_func = Gaff::BindSTDCall(glStencilFuncSeparate);
-	static auto bfs_func = Gaff::BindSTDCall(glBlendFuncSeparatei);
-	static auto sos_func = Gaff::BindSTDCall(glStencilOpSeparate);
+	if (ds_state) {
+		static auto sfs_func = Gaff::BindSTDCall(glStencilFuncSeparate);
+		static auto sos_func = Gaff::BindSTDCall(glStencilOpSeparate);
+		static auto sm_func = Gaff::BindSTDCall(glStencilMask);
+		static auto df_func = Gaff::BindSTDCall(glDepthFunc);
+
+		const IDepthStencilState::DepthStencilStateSettings& ds_settings = ds_state->getDepthStencilSettings();
+
+		_command_list.addCommand(Gaff::CachedFunction<void, GLenum>(gDisable_Enable_Funcs[ds_settings.depth_test], GL_DEPTH_TEST));
+		_command_list.addCommand(Gaff::CachedFunction<void, GLenum>(gDisable_Enable_Funcs[ds_settings.stencil_test], GL_STENCIL_TEST));
+
+		_command_list.addCommand(Gaff::CachedFunction<void, GLenum>(df_func, DepthStencilStateGL::Compare_Funcs[ds_settings.depth_func - 1]));
+
+		Gaff::CachedFunction<void, GLenum, GLenum, GLint, GLuint> sfsf_cache(
+			sfs_func, GL_FRONT,
+			DepthStencilStateGL::Compare_Funcs[ds_settings.front_face.comp_func - 1],
+			ds_settings.stencil_ref, ds_settings.stencil_write_mask
+		);
+
+		Gaff::CachedFunction<void, GLenum, GLenum, GLint, GLuint> sfsb_cache(
+			sfs_func, GL_BACK,
+			DepthStencilStateGL::Compare_Funcs[ds_settings.back_face.comp_func - 1],
+			ds_settings.stencil_ref, ds_settings.stencil_write_mask
+		);
+
+		Gaff::CachedFunction<void, GLenum, GLenum, GLenum, GLenum> sosf_cache(
+			sos_func, GL_FRONT,
+			DepthStencilStateGL::Stencil_Ops[ds_settings.front_face.stencil_depth_fail - 1],
+			DepthStencilStateGL::Stencil_Ops[ds_settings.front_face.stencil_pass_depth_fail - 1],
+			DepthStencilStateGL::Stencil_Ops[ds_settings.front_face.stencil_depth_pass - 1]
+		);
+
+		Gaff::CachedFunction<void, GLenum, GLenum, GLenum, GLenum> sosb_cache(
+			sos_func, GL_BACK,
+			DepthStencilStateGL::Stencil_Ops[ds_settings.back_face.stencil_depth_fail - 1],
+			DepthStencilStateGL::Stencil_Ops[ds_settings.back_face.stencil_pass_depth_fail - 1],
+			DepthStencilStateGL::Stencil_Ops[ds_settings.back_face.stencil_depth_pass - 1]
+		);
+
+		Gaff::CachedFunction<void, GLenum> sm_cache(sm_func, ds_settings.stencil_write_mask);
+
+		_command_list.addCommand(sosf_cache);
+		_command_list.addCommand(sosb_cache);
+		_command_list.addCommand(sfsf_cache);
+		_command_list.addCommand(sfsb_cache);
+		_command_list.addCommand(sm_cache);
+
+	} else {
+		_command_list.addCommand(Gaff::CachedFunction<void, GLenum>(gDisable_Enable_Funcs[0], GL_DEPTH_TEST));
+		_command_list.addCommand(Gaff::CachedFunction<void, GLenum>(gDisable_Enable_Funcs[0], GL_STENCIL_TEST));
+	}
+}
+
+void DeferredRenderDeviceGL::setRasterState(const RasterStateGL* raster_state)
+{
+	static auto poc_func = Gaff::BindSTDCall(glPolygonOffsetClampEXT);
 	static auto pm_func = Gaff::BindSTDCall(glPolygonMode);
-	static auto sm_func = Gaff::BindSTDCall(glStencilMask);
-	static auto df_func = Gaff::BindSTDCall(glDepthFunc);
 	static auto ff_func = Gaff::BindSTDCall(glFrontFace);
 	static auto cf_func = Gaff::BindSTDCall(glCullFace);
+
+	if (raster_state) {
+		const IRasterState::RasterStateSettings& raster_settings = raster_state->getRasterSettings();
+
+		_command_list.addCommand(Gaff::CachedFunction<void, GLenum>(gDisable_Enable_Funcs[1], GL_POLYGON_OFFSET_FILL));
+
+		Gaff::CachedFunction<void, GLfloat, GLfloat, GLfloat> poc_cache(
+			poc_func,
+			raster_settings.depth_bias,
+			raster_settings.slope_scale_depth_bias, raster_settings.depth_bias_clamp
+		);
+
+		_command_list.addCommand(poc_cache);
+
+		Gaff::CachedFunction<void, GLenum, GLenum> pm_cache(pm_func, GL_FRONT_AND_BACK, (raster_settings.wireframe) ? GL_LINE : GL_FILL);
+		_command_list.addCommand(pm_cache);
+
+		_command_list.addCommand(Gaff::CachedFunction<void, GLenum>(gDisable_Enable_Funcs[!raster_settings.two_sided], GL_CULL_FACE));
+		_command_list.addCommand(Gaff::CachedFunction<void, GLenum>(cf_func, GL_BACK));
+		_command_list.addCommand(Gaff::CachedFunction<void, GLenum>(ff_func, (raster_settings.front_face_counter_clockwise) ? GL_CCW : GL_CW));
+
+		_command_list.addCommand(Gaff::CachedFunction<void, GLenum>(gDisable_Enable_Funcs[raster_settings.scissor_enabled], GL_SCISSOR_TEST));
+
+	} else {
+		_command_list.addCommand(Gaff::CachedFunction<void, GLenum>(gDisable_Enable_Funcs[0], GL_POLYGON_OFFSET_FILL));
+
+		Gaff::CachedFunction<void, GLenum, GLenum> pm_cache(pm_func, GL_FRONT_AND_BACK, GL_FILL);
+		_command_list.addCommand(pm_cache);
+
+		_command_list.addCommand(Gaff::CachedFunction<void, GLenum>(gDisable_Enable_Funcs[1], GL_CULL_FACE));
+		_command_list.addCommand(Gaff::CachedFunction<void, GLenum>(cf_func, GL_BACK));
+		_command_list.addCommand(Gaff::CachedFunction<void, GLenum>(ff_func, GL_CCW));
+
+		_command_list.addCommand(Gaff::CachedFunction<void, GLenum>(gDisable_Enable_Funcs[0], GL_SCISSOR_TEST));
+	}
+}
+
+void DeferredRenderDeviceGL::setBlendState(const BlendStateGL* blend_state)
+{
+	static auto bes_func = Gaff::BindSTDCall(glBlendEquationSeparatei);
+	static auto bfs_func = Gaff::BindSTDCall(glBlendFuncSeparatei);
 	static auto di_func = Gaff::BindSTDCall(glDisablei);
 	static auto ei_func = Gaff::BindSTDCall(glEnablei);
+	static auto cmi_func = Gaff::BindSTDCall(glColorMaski);
 
-	Gaff::CachedFunction<void, GLenum, GLenum> pm_cache(pm_func, GL_FRONT_AND_BACK, (render_state->isWireframe()) ? GL_LINE : GL_FILL);
-	_command_list.addCommand(pm_cache);
-
-	Gaff::CachedFunction<void, GLenum> dte_cache(disable_enable_funcs[render_state->isDepthTestEnabled()], GL_DEPTH_TEST);
-	Gaff::CachedFunction<void, GLenum> ste_cache(disable_enable_funcs[render_state->isStencilTestEnabled()], GL_STENCIL_TEST);
-	_command_list.addCommand(dte_cache);
-	_command_list.addCommand(ste_cache);
-
-	Gaff::CachedFunction<void, GLenum> df_cache(df_func, RenderStateGL::Compare_Funcs[render_state->getDepthFunc() - 1]);
-	_command_list.addCommand(df_cache);
-
-	const IRenderState::StencilData& front_face = render_state->getFrontFaceStencilData();
-	const IRenderState::StencilData& back_face = render_state->getBackFaceStencilData();
-
-	Gaff::CachedFunction<void, GLenum, GLenum, GLenum, GLenum> sosf_cache(
-		sos_func, GL_FRONT, RenderStateGL::Stencil_Ops[front_face.stencil_depth_fail - 1],
-		RenderStateGL::Stencil_Ops[front_face.stencil_pass_depth_fail - 1],
-		RenderStateGL::Stencil_Ops[front_face.stencil_depth_pass - 1]
-	);
-
-	Gaff::CachedFunction<void, GLenum, GLenum, GLenum, GLenum> sosb_cache(
-		sos_func, GL_BACK, RenderStateGL::Stencil_Ops[back_face.stencil_depth_fail - 1],
-		RenderStateGL::Stencil_Ops[back_face.stencil_pass_depth_fail - 1],
-		RenderStateGL::Stencil_Ops[back_face.stencil_depth_pass - 1]
-	);
-
-	Gaff::CachedFunction<void, GLenum, GLenum, GLint, GLuint> sfsf_cache(
-		sfs_func, GL_FRONT,
-		RenderStateGL::Compare_Funcs[front_face.comp_func - 1], render_state->getStencilRef(),
-		render_state->getStencilReadMask()
-	);
-
-	Gaff::CachedFunction<void, GLenum, GLenum, GLint, GLuint> sfsb_cache(
-		sfs_func, GL_FRONT,
-		RenderStateGL::Compare_Funcs[back_face.comp_func - 1], render_state->getStencilRef(),
-		render_state->getStencilReadMask()
-	);
-
-	Gaff::CachedFunction<void, GLenum> sm_cache(sm_func, render_state->getStencilWriteMask());
-
-	_command_list.addCommand(sosf_cache);
-	_command_list.addCommand(sosb_cache);
-	_command_list.addCommand(sfsf_cache);
-	_command_list.addCommand(sfsb_cache);
-	_command_list.addCommand(sm_cache);
-
-
-	IRenderState::CULL_MODE cull_face_mode = render_state->getCullFaceMode();
-
-	Gaff::CachedFunction<void, GLenum> cfed_cache(disable_enable_funcs[cull_face_mode != IRenderState::CULL_NONE], GL_CULL_FACE);
-	Gaff::CachedFunction<void, GLenum> cf_cache(cf_func, GL_FRONT - 2 + cull_face_mode);
-	Gaff::CachedFunction<void, GLenum> ff_cache(ff_func, (render_state->isFrontFaceCounterClockwise()) ? GL_CCW : GL_CW);
-	_command_list.addCommand(cfed_cache);
-	_command_list.addCommand(cf_cache);
-	_command_list.addCommand(ff_cache);
-
-	const IRenderState::BlendData* blend_data = render_state->getBlendData();
+	const IBlendState::BlendStateSettings* blend_settings = (blend_state) ? blend_state->getBlendSettings() : nullptr;
 
 	for (unsigned int i = 0; i < 8; ++i) {
-		if (blend_data[i].enable_alpha_blending) {
+		if (blend_settings && blend_settings[i].enable_alpha_blending) {
+			_command_list.addCommand(Gaff::CachedFunction<void, GLenum, GLuint>(ei_func, GL_BLEND, i));
+
 			Gaff::CachedFunction<void, GLenum, GLuint> ei_cache(ei_func, GL_BLEND, i);
 
 			Gaff::CachedFunction<void, GLuint, GLenum, GLenum, GLenum, GLenum> bfs_cache(
-				bfs_func, i, RenderStateGL::Blend_Factors[blend_data[i].blend_src_color - 1],
-				RenderStateGL::Blend_Factors[blend_data[i].blend_dst_color - 1],
-				RenderStateGL::Blend_Factors[blend_data[i].blend_src_alpha - 1],
-				RenderStateGL::Blend_Factors[blend_data[i].blend_dst_alpha - 1]
+				bfs_func, i, BlendStateGL::Blend_Factors[blend_settings[i].blend_src_color - 1],
+				BlendStateGL::Blend_Factors[blend_settings[i].blend_dst_color - 1],
+				BlendStateGL::Blend_Factors[blend_settings[i].blend_src_alpha - 1],
+				BlendStateGL::Blend_Factors[blend_settings[i].blend_dst_alpha - 1]
 			);
 
 			Gaff::CachedFunction<void, GLuint, GLenum, GLenum> bes_cache(
-				bes_func, i, RenderStateGL::Blend_Ops[blend_data[i].blend_op_color - 1],
-				RenderStateGL::Blend_Ops[blend_data[i].blend_op_alpha - 1]
+				bes_func, i, BlendStateGL::Blend_Ops[blend_settings[i].blend_op_color - 1],
+				BlendStateGL::Blend_Ops[blend_settings[i].blend_op_alpha - 1]
+			);
+
+			Gaff::CachedFunction<void, GLuint, GLboolean, GLboolean, GLboolean, GLboolean> cmi_cache(
+				cmi_func, i,
+				(blend_settings[i].color_write_mask & IBlendState::COLOR_RED) > 0,
+				(blend_settings[i].color_write_mask & IBlendState::COLOR_GREEN) > 0,
+				(blend_settings[i].color_write_mask & IBlendState::COLOR_BLUE) > 0,
+				(blend_settings[i].color_write_mask & IBlendState::COLOR_ALPHA) > 0
 			);
 
 			_command_list.addCommand(ei_cache);
 			_command_list.addCommand(bfs_cache);
 			_command_list.addCommand(bes_cache);
+			_command_list.addCommand(cmi_cache);
 
 		} else {
-			Gaff::CachedFunction<void, GLenum, GLuint> di_cache(di_func, GL_BLEND, i);
-			_command_list.addCommand(di_cache);
+			_command_list.addCommand(Gaff::CachedFunction<void, GLuint, GLboolean, GLboolean, GLboolean, GLboolean>(cmi_func, i, GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE));
+			_command_list.addCommand(Gaff::CachedFunction<void, GLenum, GLuint>(di_func, GL_BLEND, i));
 		}
 	}
 }
@@ -204,7 +237,7 @@ void DeferredRenderDeviceGL::setLayout(LayoutGL* layout, const IMesh* mesh)
 
 	for (unsigned int i = 0; i < layout_descs.size(); ++i) {
 		const GleamArray<LayoutGL::LayoutData>& ld = layout_descs[i];
-		buffer = (const BufferGL*)mesh->getBuffer(i);
+		buffer = reinterpret_cast<const BufferGL*>(mesh->getBuffer(i));
 		stride = buffer->getStride();
 
 		Gaff::CachedFunction<void, GLenum, GLuint> bb_cache(bb_func, GL_ARRAY_BUFFER, buffer->getBuffer());
@@ -269,27 +302,27 @@ void DeferredRenderDeviceGL::bindShader(ProgramGL* shader, ProgramBuffersGL* pro
 		unsigned int count = 0;
 
 		for (unsigned int i = 0; i < IShader::SHADER_TYPE_SIZE - 1; ++i) {
-			const GleamArray<IShaderResourceView*>& resource_views = program_buffers->getResourceViews((Gleam::IShader::SHADER_TYPE)i);
-			const GleamArray<ISamplerState*>& sampler_states = program_buffers->getSamplerStates((Gleam::IShader::SHADER_TYPE)i);
-			const GleamArray<IBuffer*>& const_bufs = program_buffers->getConstantBuffers((Gleam::IShader::SHADER_TYPE)i);
+			const GleamArray<IShaderResourceView*>& resource_views = program_buffers->getResourceViews(static_cast<Gleam::IShader::SHADER_TYPE>(i));
+			const GleamArray<ISamplerState*>& sampler_states = program_buffers->getSamplerStates(static_cast<Gleam::IShader::SHADER_TYPE>(i));
+			const GleamArray<IBuffer*>& const_bufs = program_buffers->getConstantBuffers(static_cast<Gleam::IShader::SHADER_TYPE>(i));
 
 			assert(sampler_states.size() <= resource_views.size());
 			unsigned int sampler_count = 0;
 
 			for (unsigned int j = 0; j < const_bufs.size(); ++j) {
-				Gaff::CachedFunction<void, GLuint, GLenum, GLenum> bbb_cache(bbb_func, GL_UNIFORM_BUFFER, count, ((const BufferGL*)const_bufs[j])->getBuffer());
+				Gaff::CachedFunction<void, GLuint, GLenum, GLenum> bbb_cache(bbb_func, GL_UNIFORM_BUFFER, count, reinterpret_cast<const BufferGL*>(const_bufs[j])->getBuffer());
 				_command_list.addCommand(bbb_cache);
 
 				++count;
 			}
 
 			for (unsigned int j = 0; j < resource_views.size(); ++j) {
-				ShaderResourceViewGL* rv = (ShaderResourceViewGL*)resource_views[j];
+				ShaderResourceViewGL* rv = reinterpret_cast<ShaderResourceViewGL*>(resource_views[j]);
 
 				if (resource_views[j]->getViewType() == IShaderResourceView::VIEW_TEXTURE) {
 					// should probably assert that texture_count isn't higher than the supported number of textures
 
-					SamplerStateGL* st = (SamplerStateGL*)sampler_states[sampler_count];
+					SamplerStateGL* st = reinterpret_cast<SamplerStateGL*>(sampler_states[sampler_count]);
 
 					Gaff::CachedFunction<void, GLenum> at_cache(at_func, GL_TEXTURE0 + texture_count);
 					Gaff::CachedFunction<void, GLenum, GLuint> bt_cache(bt_func, rv->getTarget(), rv->getResourceView());
@@ -326,7 +359,7 @@ void DeferredRenderDeviceGL::renderMeshNonIndexed(unsigned int topology, unsigne
 void DeferredRenderDeviceGL::renderMeshInstanced(MeshGL* mesh, unsigned int count)
 {
 	static auto bb_func = Gaff::BindSTDCall(glBindBuffer);
-	Gaff::CachedFunction<void, GLenum, GLuint> bb_cache(bb_func, GL_ELEMENT_ARRAY_BUFFER, ((BufferGL*)mesh->getIndiceBuffer())->getBuffer());
+	Gaff::CachedFunction<void, GLenum, GLuint> bb_cache(bb_func, GL_ELEMENT_ARRAY_BUFFER, reinterpret_cast<BufferGL*>(mesh->getIndiceBuffer())->getBuffer());
 
 	static auto dei_func = Gaff::BindSTDCall(glDrawElementsInstanced);
 	Gaff::CachedFunction<void, GLenum, GLsizei, GLenum, const GLvoid*, GLsizei> dei_cache(dei_func, mesh->getGLTopology(), mesh->getIndexCount(), GL_UNSIGNED_INT, 0, count);
@@ -338,7 +371,7 @@ void DeferredRenderDeviceGL::renderMeshInstanced(MeshGL* mesh, unsigned int coun
 void DeferredRenderDeviceGL::renderMesh(MeshGL* mesh)
 {
 	static auto bb_func = Gaff::BindSTDCall(glBindBuffer);
-	Gaff::CachedFunction<void, GLenum, GLuint> bb_cache(bb_func, GL_ELEMENT_ARRAY_BUFFER, ((BufferGL*)mesh->getIndiceBuffer())->getBuffer());
+	Gaff::CachedFunction<void, GLenum, GLuint> bb_cache(bb_func, GL_ELEMENT_ARRAY_BUFFER, reinterpret_cast<BufferGL*>(mesh->getIndiceBuffer())->getBuffer());
 
 	static auto de_func = Gaff::BindSTDCall(glDrawElements);
 	Gaff::CachedFunction<void, GLenum, GLsizei, GLenum, const GLvoid*> de_cache(de_func, mesh->getGLTopology(), mesh->getIndexCount(), GL_UNSIGNED_INT, 0);

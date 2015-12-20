@@ -22,38 +22,32 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Gleam_Defines.h"
+#include "Gleam_IDepthStencilState.h"
+#include "Gleam_RefCounted.h"
+
+struct ID3D11DepthStencilState;
 
 NS_GLEAM
 
-class DepthStencilStateGL;
-class ProgramBuffersGL;
-class RasterStateGL;
-class BlendStateGL;
-class ProgramGL;
-class LayoutGL;
-class MeshGL;
-class IMesh;
-
-class IRenderDeviceGL
+class DepthStencilStateD3D : public IDepthStencilState
 {
 public:
-	IRenderDeviceGL(void) {}
-	virtual ~IRenderDeviceGL(void) {}
+	DepthStencilStateD3D(void);
+	~DepthStencilStateD3D(void);
 
-	virtual void setDepthStencilState(const DepthStencilStateGL* ds_state) = 0;
-	virtual void setRasterState(const RasterStateGL* raster_state) = 0;
-	virtual void setBlendState(const BlendStateGL* blend_state) = 0;
+	bool init(IRenderDevice& rd, const DepthStencilStateSettings& settings) override;
+	void destroy(void) override;
 
-	virtual void setLayout(LayoutGL* layout, const IMesh* mesh) = 0;
-	virtual void unsetLayout(LayoutGL* layout) = 0;
+	void set(IRenderDevice& rd) const override;
+	void unset(IRenderDevice& rd) const override;
 
-	virtual void bindShader(ProgramGL* shader, ProgramBuffersGL* program_buffers) = 0;
-	virtual void unbindShader(void) = 0;
+	bool isD3D(void) const override;
 
-	virtual void renderMeshNonIndexed(unsigned int topology, unsigned int vert_count, unsigned int start_location) = 0;
-	virtual void renderMeshInstanced(MeshGL* mesh, unsigned int count) = 0;
-	virtual void renderMesh(MeshGL* mesh) = 0;
+private:
+	ID3D11DepthStencilState* _depth_stencil_state;
+	unsigned int _stencil_ref;
+
+	GLEAM_REF_COUNTED(DepthStencilStateD3D);
 };
 
 NS_END

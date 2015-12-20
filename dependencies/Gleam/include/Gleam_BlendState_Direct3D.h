@@ -22,16 +22,32 @@ THE SOFTWARE.
 
 #pragma once
 
-#ifdef USE_DX
-	#include "Gleam_RenderState_Direct3D.h"
+#include "Gleam_IBlendState.h"
+#include "Gleam_RefCounted.h"
 
-	NS_GLEAM
-		typedef RenderStateD3D RenderState;
-	NS_END
-#else
-	#include "Gleam_RenderState_OpenGL.h"
+struct ID3D11BlendState;
 
-	NS_GLEAM
-		typedef RenderStateGL RenderState;
-	NS_END
-#endif
+NS_GLEAM
+
+class BlendStateD3D : public IBlendState
+{
+public:
+	BlendStateD3D(void);
+	~BlendStateD3D(void);
+
+	bool init(IRenderDevice& rd, const BlendStateSettings& settings) override;
+	bool init(IRenderDevice& rd, const BlendStateSettings* settings) override;
+	void destroy(void) override;
+
+	void set(IRenderDevice& rd) const override;
+	void unset(IRenderDevice& rd) const override;
+
+	bool isD3D(void) const override;
+
+private:
+	ID3D11BlendState* _blend_state;
+
+	GLEAM_REF_COUNTED(BlendStateD3D);
+};
+
+NS_END

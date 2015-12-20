@@ -65,26 +65,9 @@ SHIB_ENUM_REF_IMPL(DisplayTags)
 .addValue("DT_16", DT_16)
 ;
 
-SHIB_ENUM_REF_IMPL(RenderModes)
-.addValue("None", RM_NONE)
-.addValue("Opaque", RM_OPAQUE)
-.addValue("Transparent", RM_TRANSPARENT)
-.addValue("User1", RM_USER1)
-.addValue("User2", RM_USER2)
-.addValue("User3", RM_USER3)
-.addValue("User4", RM_USER4)
-.addValue("User5", RM_USER5)
-.addValue("User6", RM_USER6)
-.addValue("User7", RM_USER7)
-.addValue("User8", RM_USER8)
-.addValue("User9", RM_USER9)
-.addValue("User10", RM_USER10)
-.addValue("User11", RM_USER11)
-.addValue("User12", RM_USER12)
-.addValue("User13", RM_USER13)
-.addValue("User14", RM_USER14)
-.addValue("User15", RM_USER15)
-.addValue("User16", RM_USER16)
+SHIB_ENUM_REF_IMPL(RenderPasses)
+.addValue("Opaque", RP_OPAQUE)
+.addValue("Transparent", RP_TRANSPARENT)
 ;
 
 static DisplayTags gDisplayTagsValues[] = {
@@ -169,6 +152,14 @@ SHIB_ENUM_REF_IMPL_EMBEDDED(Gleam_IShader_Type, Gleam::IShader::SHADER_TYPE)
 .addValue("Hull", Gleam::IShader::SHADER_HULL)
 ;
 
+#define GRAPHICS_FUNCTION_IMPL(Class, Func) \
+	Gleam::I##Class* RenderManager::create##Class(void) \
+	{ \
+		assert(_graphics_functions.Func); \
+		return _graphics_functions.Func(); \
+	}
+
+
 const char* RenderManager::GetName(void)
 {
 	return "Render Manager";
@@ -251,7 +242,6 @@ bool RenderManager::init(const char* module)
 	_windows.reserve(8); // Reserve 8 windows to be safe. Will probably never hit this many though.
 
 	getDisplayTags();
-	getRenderModes();
 
 	return true;
 }
@@ -418,89 +408,22 @@ const char* RenderManager::getShaderExtension(void) const
 	return _graphics_functions.get_shader_extension();
 }
 
-Gleam::IShaderResourceView* RenderManager::createShaderResourceView(void)
-{
-	assert(_graphics_functions.create_shaderresourceview);
-	return _graphics_functions.create_shaderresourceview();
-}
-
-Gleam::IProgramBuffers* RenderManager::createProgramBuffers(void)
-{
-	assert(_graphics_functions.create_programbuffers);
-	return _graphics_functions.create_programbuffers();
-}
-
-Gleam::IRenderDevice* RenderManager::createRenderDevice(void)
-{
-	assert(_graphics_functions.create_renderdevice);
-	return _graphics_functions.create_renderdevice();
-}
-
-Gleam::IRenderTarget* RenderManager::createRenderTarget(void)
-{
-	assert(_graphics_functions.create_rendertarget);
-	return _graphics_functions.create_rendertarget();
-}
-
-Gleam::ISamplerState* RenderManager::createSamplerState(void)
-{
-	assert(_graphics_functions.create_samplerstate);
-	return _graphics_functions.create_samplerstate();
-}
-
-Gleam::IRenderState* RenderManager::createRenderState(void)
-{
-	assert(_graphics_functions.create_renderstate);
-	return _graphics_functions.create_renderstate();
-}
-
-Gleam::ICommandList* RenderManager::createCommandList(void)
-{
-	assert(_graphics_functions.create_commandlist);
-	return _graphics_functions.create_commandlist();
-}
-
-Gleam::ITexture* RenderManager::createTexture(void)
-{
-	assert(_graphics_functions.create_texture);
-	return _graphics_functions.create_texture();
-}
-
-Gleam::ILayout* RenderManager::createLayout(void)
-{
-	assert(_graphics_functions.create_layout);
-	return _graphics_functions.create_layout();
-}
-
-Gleam::IProgram* RenderManager::createProgram(void)
-{
-	assert(_graphics_functions.create_program);
-	return _graphics_functions.create_program();
-}
-
-Gleam::IShader* RenderManager::createShader(void)
-{
-	assert(_graphics_functions.create_shader);
-	return _graphics_functions.create_shader();
-}
-
-Gleam::IBuffer* RenderManager::createBuffer(void)
-{
-	assert(_graphics_functions.create_buffer);
-	return _graphics_functions.create_buffer();
-}
-
-Gleam::IModel* RenderManager::createModel(void)
-{
-	assert(_graphics_functions.create_model);
-	return _graphics_functions.create_model();
-}
-
-Gleam::IMesh* RenderManager::createMesh(void)
-{
-	assert(_graphics_functions.create_mesh);
-	return _graphics_functions.create_mesh();
-}
+GRAPHICS_FUNCTION_IMPL(ShaderResourceView, create_shaderresourceview);
+GRAPHICS_FUNCTION_IMPL(DepthStencilState, create_depthstencilstate);
+GRAPHICS_FUNCTION_IMPL(ProgramBuffers, create_programbuffers);
+GRAPHICS_FUNCTION_IMPL(RenderDevice, create_renderdevice);
+GRAPHICS_FUNCTION_IMPL(RenderTarget, create_rendertarget);
+GRAPHICS_FUNCTION_IMPL(SamplerState, create_samplerstate);
+GRAPHICS_FUNCTION_IMPL(RasterState, create_rasterstate);
+GRAPHICS_FUNCTION_IMPL(CommandList, create_commandlist);
+GRAPHICS_FUNCTION_IMPL(BlendState, create_blendstate);
+GRAPHICS_FUNCTION_IMPL(Texture, create_texture);
+GRAPHICS_FUNCTION_IMPL(Layout, create_layout);
+GRAPHICS_FUNCTION_IMPL(Program, create_program);
+GRAPHICS_FUNCTION_IMPL(Shader, create_shader);
+GRAPHICS_FUNCTION_IMPL(Buffer, create_buffer);
+GRAPHICS_FUNCTION_IMPL(Model, create_model);
+GRAPHICS_FUNCTION_IMPL(Mesh, create_mesh);
 
 RenderManager::WindowRenderTargets RenderManager::createRenderTargetsForEachWindow(void)
 {
@@ -647,23 +570,21 @@ bool RenderManager::cacheGleamFunctions(IApp& app, const char* module)
 		return false;
 	}
 
+	bool ret = true;
+
 	_graphics_functions.shutdown = _gleam_module->getFunc<GraphicsFunctions::ShutdownGraphics>("ShutdownGraphics");
-
-	if (!_graphics_functions.shutdown) {
-		log.first.printf("ERROR - Failed to find function 'ShutdownGraphics' in graphics module '%s'.", module_path.getBuffer());
-		return false;
-	}
-
 	_graphics_functions.create_window = _gleam_module->getFunc<GraphicsFunctions::CreateWindowS>("CreateWindowS");
 	_graphics_functions.update_windows = _gleam_module->getFunc<GraphicsFunctions::UpdateWindows>("UpdateWindows");
 	_graphics_functions.get_shader_extension = _gleam_module->getFunc<GraphicsFunctions::GetShaderExtension>("GetShaderExtension");
 	_graphics_functions.create_shaderresourceview = _gleam_module->getFunc<GraphicsFunctions::CreateShaderResourceView>("CreateShaderResourceView");
+	_graphics_functions.create_depthstencilstate = _gleam_module->getFunc<GraphicsFunctions::CreateDepthStencilState>("CreateDepthStencilState");
 	_graphics_functions.create_programbuffers = _gleam_module->getFunc<GraphicsFunctions::CreateProgramBuffers>("CreateProgramBuffers");
 	_graphics_functions.create_renderdevice = _gleam_module->getFunc<GraphicsFunctions::CreateRenderDevice>("CreateRenderDevice");
 	_graphics_functions.create_rendertarget = _gleam_module->getFunc<GraphicsFunctions::CreateRenderTarget>("CreateRenderTarget");
 	_graphics_functions.create_samplerstate = _gleam_module->getFunc<GraphicsFunctions::CreateSamplerState>("CreateSamplerState");
-	_graphics_functions.create_renderstate = _gleam_module->getFunc<GraphicsFunctions::CreateRenderState>("CreateRenderState");
+	_graphics_functions.create_rasterstate = _gleam_module->getFunc<GraphicsFunctions::CreateRasterState>("CreateRasterState");
 	_graphics_functions.create_commandlist = _gleam_module->getFunc<GraphicsFunctions::CreateCommandList>("CreateCommandList");
+	_graphics_functions.create_blendstate = _gleam_module->getFunc<GraphicsFunctions::CreateBlendState>("CreateBlendState");
 	_graphics_functions.create_texture = _gleam_module->getFunc<GraphicsFunctions::CreateTexture>("CreateTexture");
 	_graphics_functions.create_layout = _gleam_module->getFunc<GraphicsFunctions::CreateLayout>("CreateLayout");
 	_graphics_functions.create_program = _gleam_module->getFunc<GraphicsFunctions::CreateProgram>("CreateProgram");
@@ -672,87 +593,107 @@ bool RenderManager::cacheGleamFunctions(IApp& app, const char* module)
 	_graphics_functions.create_model = _gleam_module->getFunc<GraphicsFunctions::CreateModel>("CreateModel");
 	_graphics_functions.create_mesh = _gleam_module->getFunc<GraphicsFunctions::CreateMesh>("CreateMesh");
 
+	if (!_graphics_functions.shutdown) {
+		log.first.printf("ERROR - Failed to find function 'ShutdownGraphics' in graphics module '%s'.", module_path.getBuffer());
+		ret = false;
+	}
+
 	if (!_graphics_functions.create_window) {
 		log.first.printf("ERROR - Failed to find function 'CreateWindowS' in graphics module '%s'.", module_path.getBuffer());
-		return false;
+		ret = false;
 	}
 
 	if (!_graphics_functions.update_windows) {
 		log.first.printf("ERROR - Failed to find function 'UpdateWindows' in graphics module '%s'.", module_path.getBuffer());
-		return false;
+		ret = false;
 	}
 
 	if (!_graphics_functions.get_shader_extension) {
 		log.first.printf("ERROR - Failed to find function 'GetShaderExtension' in graphics module '%s'.", module_path.getBuffer());
-		return false;
+		ret = false;
 	}
 
 	if (!_graphics_functions.create_shaderresourceview) {
 		log.first.printf("ERROR - Failed to find function 'CreateShaderResourceView' in graphics module '%s'.", module_path.getBuffer());
-		return false;
+		ret = false;
+	}
+
+	if (!_graphics_functions.create_depthstencilstate) {
+		log.first.printf("ERROR - Failed to find function 'CreateDepthStencilState' in graphics module '%s'.", module_path.getBuffer());
+		ret = false;
 	}
 
 	if (!_graphics_functions.create_programbuffers) {
 		log.first.printf("ERROR - Failed to find function 'CreateProgramBuffers' in graphics module '%s'.", module_path.getBuffer());
-		return false;
+		ret = false;
 	}
 
 	if (!_graphics_functions.create_renderdevice) {
 		log.first.printf("ERROR - Failed to find function 'CreateRenderDevice' in graphics module '%s'.", module_path.getBuffer());
-		return false;
+		ret = false;
 	}
 
 	if (!_graphics_functions.create_rendertarget) {
 		log.first.printf("ERROR - Failed to find function 'CreateRenderTarget' in graphics module '%s'.", module_path.getBuffer());
-		return false;
+		ret = false;
 	}
 
 	if (!_graphics_functions.create_samplerstate) {
 		log.first.printf("ERROR - Failed to find function 'CreateSamplerState' in graphics module '%s'.", module_path.getBuffer());
-		return false;
+		ret = false;
 	}
 
-	if (!_graphics_functions.create_renderstate) {
-		log.first.printf("ERROR - Failed to find function 'CreateRenderState' in graphics module '%s'.", module_path.getBuffer());
-		return false;
+	if (!_graphics_functions.create_rasterstate) {
+		log.first.printf("ERROR - Failed to find function 'CreateRasterState' in graphics module '%s'.", module_path.getBuffer());
+		ret = false;
+	}
+
+	if (!_graphics_functions.create_commandlist) {
+		log.first.printf("ERROR - Failed to find function 'CreateCommandList' in graphics module '%s'.", module_path.getBuffer());
+		ret = false;
+	}
+
+	if (!_graphics_functions.create_blendstate) {
+		log.first.printf("ERROR - Failed to find function 'CreateBlendState' in graphics module '%s'.", module_path.getBuffer());
+		ret = false;
 	}
 
 	if (!_graphics_functions.create_texture) {
 		log.first.printf("ERROR - Failed to find function 'CreateTexture' in graphics module '%s'.", module_path.getBuffer());
-		return false;
+		ret = false;
 	}
 
 	if (!_graphics_functions.create_layout) {
 		log.first.printf("ERROR - Failed to find function 'CreateLayout' in graphics module '%s'.", module_path.getBuffer());
-		return false;
+		ret = false;
 	}
 
 	if (!_graphics_functions.create_program) {
 		log.first.printf("ERROR - Failed to find function 'CreateProgram' in graphics module '%s'.", module_path.getBuffer());
-		return false;
+		ret = false;
 	}
 
 	if (!_graphics_functions.create_shader) {
 		log.first.printf("ERROR - Failed to find function 'CreateShader' in graphics module '%s'.", module_path.getBuffer());
-		return false;
+		ret = false;
 	}
 
 	if (!_graphics_functions.create_buffer) {
 		log.first.printf("ERROR - Failed to find function 'CreateBuffer' in graphics module '%s'.", module_path.getBuffer());
-		return false;
+		ret = false;
 	}
 
 	if (!_graphics_functions.create_model) {
 		log.first.printf("ERROR - Failed to find function 'CreateModel' in graphics module '%s'.", module_path.getBuffer());
-		return false;
+		ret = false;
 	}
 
 	if (!_graphics_functions.create_mesh) {
 		log.first.printf("ERROR - Failed to find function 'CreateMesh' in graphics module '%s'.", module_path.getBuffer());
-		return false;
+		ret = false;
 	}
 
-	return true;
+	return ret;
 }
 
 bool RenderManager::createWindowRenderable(int width, int height, Gleam::ITexture::FORMAT format, TexturePtr& tex_out, SRVPtr& srv_out)
@@ -828,58 +769,6 @@ bool RenderManager::getDisplayTags(void)
 
 	} else {
 		log.first.writeString("Using default names for Display Tags.\n");
-	}
-
-	return true;
-}
-
-bool RenderManager::getRenderModes(void)
-{
-	IFile* file = _app.getFileSystem()->openFile("Resources/render_modes.json");
-	LogManager::FileLockPair& log = _app.getGameLogFile();
-
-	if (file) {
-		log.first.writeString("Loading Render Modes from 'Resources/render_modes.json'.\n");
-
-		Gaff::JSON render_modes;
-
-		if (!render_modes.parse(file->getBuffer())) {
-			log.first.writeString("ERROR - Could not parse 'Resources/render_modes.json'.\n");
-			_app.getFileSystem()->closeFile(file);
-			return false;
-		}
-
-		_app.getFileSystem()->closeFile(file);
-
-		if (!render_modes.isArray()) {
-			log.first.writeString("ERROR - 'Resources/render_modes.json' is improperly formatted. Root object is not an array.\n");
-			return false;
-		}
-
-		// Reset reflection definition
-		EnumReflectionDefinition<RenderModes>& rm_ref_def = const_cast<EnumReflectionDefinition<RenderModes>&>(GetEnumRefDef<RenderModes>());
-		rm_ref_def = Gaff::EnumRefDef<RenderModes, ProxyAllocator>("RenderModes", ProxyAllocator("Reflection"));
-
-		rm_ref_def.addValue("None", RM_NONE);
-
-		bool ret = render_modes.forEachInArray([&](size_t index, const Gaff::JSON& value) -> bool
-		{
-			if (!value.isString()) {
-				log.first.printf("ERROR - Index '%zu' of 'Resources/render_modes.json' is not a string.\n", index);
-				return true;
-			}
-
-			rm_ref_def.addValue(value.getString(), static_cast<RenderModes>(index));
-
-			return false;
-		});
-
-		if (ret) {
-			return false;
-		}
-
-	} else {
-		log.first.writeString("Using default Render Modes.\n");
 	}
 
 	return true;

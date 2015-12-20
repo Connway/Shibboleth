@@ -71,9 +71,6 @@ private:
 };
 
 template <class ReturnType, class... Args>
-CachedFunction<ReturnType, Args...> BindCached(const FunctionBinder<ReturnType, Args...>& function, const Args&... args);
-
-template <class ReturnType, class... Args>
 CachedFunction<ReturnType, Args...> BindCached(const FunctionBinder<ReturnType, Args...>& function, Args&&... args);
 
 #include "Gaff_CachedFunction.inl"

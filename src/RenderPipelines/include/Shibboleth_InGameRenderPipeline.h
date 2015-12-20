@@ -22,8 +22,10 @@ THE SOFTWARE.
 
 #include <Shibboleth_IRenderPipeline.h>
 #include <Shibboleth_RenderManager.h>
+#include <Shibboleth_JobPool.h>
 #include <Shibboleth_Array.h>
-#include <Gleam_IRenderState.h>
+#include <Gleam_IDepthStencilState.h>
+#include <Gleam_IBlendState.h>
 #include <Gaff_SmartPtr.h>
 
 NS_SHIBBOLETH
@@ -36,16 +38,23 @@ public:
 	InGameRenderPipeline(void);
 	~InGameRenderPipeline(void);
 
-	const char* getName(void) const;
-	void run(double dt, void* frame_data);
+	bool init(void);
+
+	const char* getName(void) const override;
+	void run(double dt, void* frame_data) override;
 
 private:
-	using IRenderStatePtr = Gaff::SmartPtr<Gleam::IRenderState, ProxyAllocator>;
+	using IDepthStencilStatePtr = Gaff::SmartPtr<Gleam::IDepthStencilState, ProxyAllocator>;
+	using IBlendStatePtr = Gaff::SmartPtr<Gleam::IBlendState, ProxyAllocator>;
 
 	static void GenerateCommandLists(void* job_data);
 
-	//Array<IRenderStatePtr> _render_states[RM_COUNT]; // Array size is number of devices
-	// RenderStateResource _render_states[RM_COUNT];
+	// Array size is number of devices
+	Array<IDepthStencilStatePtr> _ds_states[RP_COUNT];
+	Array<IBlendStatePtr> _blend_states[2]; // On and off
+
+	Array<Gaff::JobData> _job_cache;
+	Gaff::Counter* _counter;
 
 	RenderManager& _render_mgr;
 

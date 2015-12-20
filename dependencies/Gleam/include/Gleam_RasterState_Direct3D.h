@@ -22,38 +22,31 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Gleam_Defines.h"
+#include "Gleam_IRasterState.h"
+#include "Gleam_RefCounted.h"
+
+struct ID3D11RasterizerState;
 
 NS_GLEAM
 
-class DepthStencilStateGL;
-class ProgramBuffersGL;
-class RasterStateGL;
-class BlendStateGL;
-class ProgramGL;
-class LayoutGL;
-class MeshGL;
-class IMesh;
-
-class IRenderDeviceGL
+class RasterStateD3D : public IRasterState
 {
 public:
-	IRenderDeviceGL(void) {}
-	virtual ~IRenderDeviceGL(void) {}
+	RasterStateD3D(void);
+	~RasterStateD3D(void);
 
-	virtual void setDepthStencilState(const DepthStencilStateGL* ds_state) = 0;
-	virtual void setRasterState(const RasterStateGL* raster_state) = 0;
-	virtual void setBlendState(const BlendStateGL* blend_state) = 0;
+	bool init(IRenderDevice& rd, const RasterStateSettings& settings) override;
+	void destroy(void) override;
 
-	virtual void setLayout(LayoutGL* layout, const IMesh* mesh) = 0;
-	virtual void unsetLayout(LayoutGL* layout) = 0;
+	void set(IRenderDevice& rd) const override;
+	void unset(IRenderDevice& rd) const override;
 
-	virtual void bindShader(ProgramGL* shader, ProgramBuffersGL* program_buffers) = 0;
-	virtual void unbindShader(void) = 0;
+	bool isD3D(void) const override;
 
-	virtual void renderMeshNonIndexed(unsigned int topology, unsigned int vert_count, unsigned int start_location) = 0;
-	virtual void renderMeshInstanced(MeshGL* mesh, unsigned int count) = 0;
-	virtual void renderMesh(MeshGL* mesh) = 0;
+private:
+	ID3D11RasterizerState* _raster_state;
+
+	GLEAM_REF_COUNTED(RasterStateD3D);
 };
 
 NS_END

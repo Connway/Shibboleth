@@ -30,10 +30,7 @@
 		"Type": { "Type": "String", "Optional": false },
 
 		"Model File": { "Type": "String", "Optional": true },
-		"Render Mode Overrides": { "Type": "Array", "Optional": true, "Element Type": "String" },
-
 		"Material Files": { "Type": "Array", "Optional": true, "Element Type": "String" },
-
 		"Texture Files": "Asset Array",
 		"Sampler Files": "Asset Array",
 

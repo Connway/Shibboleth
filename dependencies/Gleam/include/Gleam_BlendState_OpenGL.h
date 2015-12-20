@@ -22,38 +22,35 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Gleam_Defines.h"
+#include "Gleam_IBlendState.h"
+#include "Gleam_RefCounted.h"
 
 NS_GLEAM
 
-class DepthStencilStateGL;
-class ProgramBuffersGL;
-class RasterStateGL;
-class BlendStateGL;
-class ProgramGL;
-class LayoutGL;
-class MeshGL;
-class IMesh;
-
-class IRenderDeviceGL
+class BlendStateGL : public IBlendState
 {
 public:
-	IRenderDeviceGL(void) {}
-	virtual ~IRenderDeviceGL(void) {}
+	static unsigned int Blend_Factors[BLEND_FACTOR_SIZE];
+	static unsigned int Blend_Ops[BLEND_OP_SIZE];
 
-	virtual void setDepthStencilState(const DepthStencilStateGL* ds_state) = 0;
-	virtual void setRasterState(const RasterStateGL* raster_state) = 0;
-	virtual void setBlendState(const BlendStateGL* blend_state) = 0;
+	BlendStateGL(void);
+	~BlendStateGL(void);
 
-	virtual void setLayout(LayoutGL* layout, const IMesh* mesh) = 0;
-	virtual void unsetLayout(LayoutGL* layout) = 0;
+	bool init(IRenderDevice& rd, const BlendStateSettings& settings) override;
+	bool init(IRenderDevice& rd, const BlendStateSettings* settings) override;
+	void destroy(void) override;
 
-	virtual void bindShader(ProgramGL* shader, ProgramBuffersGL* program_buffers) = 0;
-	virtual void unbindShader(void) = 0;
+	void set(IRenderDevice& rd) const override;
+	void unset(IRenderDevice& rd) const override;
 
-	virtual void renderMeshNonIndexed(unsigned int topology, unsigned int vert_count, unsigned int start_location) = 0;
-	virtual void renderMeshInstanced(MeshGL* mesh, unsigned int count) = 0;
-	virtual void renderMesh(MeshGL* mesh) = 0;
+	bool isD3D(void) const override;
+
+	const BlendStateSettings* getBlendSettings(void) const;
+
+private:
+	BlendStateSettings _blend_settings[8];
+
+	GLEAM_REF_COUNTED(BlendStateGL);
 };
 
 NS_END

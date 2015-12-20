@@ -23,37 +23,36 @@ THE SOFTWARE.
 #pragma once
 
 #include "Gleam_Defines.h"
+#include <Gaff_IRefCounted.h>
 
 NS_GLEAM
 
-class DepthStencilStateGL;
-class ProgramBuffersGL;
-class RasterStateGL;
-class BlendStateGL;
-class ProgramGL;
-class LayoutGL;
-class MeshGL;
-class IMesh;
+class IRenderDevice;
 
-class IRenderDeviceGL
+class IRasterState : public Gaff::IRefCounted
 {
 public:
-	IRenderDeviceGL(void) {}
-	virtual ~IRenderDeviceGL(void) {}
+	struct RasterStateSettings
+	{
+		float slope_scale_depth_bias = 0.0f;
+		float depth_bias_clamp = 0.0f;
+		int depth_bias = 0;
+		bool front_face_counter_clockwise = false;
+		bool scissor_enabled = false;
+		bool two_sided = false;
+		bool wireframe = false;
+	};
 
-	virtual void setDepthStencilState(const DepthStencilStateGL* ds_state) = 0;
-	virtual void setRasterState(const RasterStateGL* raster_state) = 0;
-	virtual void setBlendState(const BlendStateGL* blend_state) = 0;
+	IRasterState(void) {}
+	virtual ~IRasterState(void) {}
 
-	virtual void setLayout(LayoutGL* layout, const IMesh* mesh) = 0;
-	virtual void unsetLayout(LayoutGL* layout) = 0;
+	virtual bool init(IRenderDevice& rd, const RasterStateSettings& settings) = 0;
+	virtual void destroy(void) = 0;
 
-	virtual void bindShader(ProgramGL* shader, ProgramBuffersGL* program_buffers) = 0;
-	virtual void unbindShader(void) = 0;
+	virtual void set(IRenderDevice& rd) const = 0;
+	virtual void unset(IRenderDevice& rd) const = 0;
 
-	virtual void renderMeshNonIndexed(unsigned int topology, unsigned int vert_count, unsigned int start_location) = 0;
-	virtual void renderMeshInstanced(MeshGL* mesh, unsigned int count) = 0;
-	virtual void renderMesh(MeshGL* mesh) = 0;
+	virtual bool isD3D(void) const = 0;
 };
 
 NS_END

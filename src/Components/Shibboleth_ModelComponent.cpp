@@ -25,8 +25,6 @@ THE SOFTWARE.
 #include "Shibboleth_ModelComponent.h"
 #include "Shibboleth_ModelAnimResources.h"
 
-//#include <Shibboleth_LoadingMessage.h>
-
 #include <Shibboleth_SchemaManager.h>
 #include <Shibboleth_Utilities.h>
 #include <Shibboleth_Object.h>
@@ -61,11 +59,10 @@ REF_IMPL_REQ(ModelComponent);
 
 SHIB_REF_IMPL(ModelComponent)
 .addBaseClassInterfaceOnly<ModelComponent>()
-.addArray("Render Mode Overrides", &ModelComponent::_render_mode_overrides, GetEnumRefDef<RenderModes>())
 ;
 
 ModelComponent::ModelComponent(void):
-	_render_mgr(Shibboleth::GetApp().getManagerT<Shibboleth::RenderManager>("Render Manager")),
+	_render_mgr(GetApp().getManagerT<RenderManager>("Render Manager")),
 	_requests_finished(0), _total_requests(0), _init(false)
 {
 }
@@ -212,11 +209,6 @@ ModelData& ModelComponent::getModel(void)
 	return *_model;
 }
 
-const Array<size_t>* ModelComponent::getRenderModes(void) const
-{
-	return _material_modes;
-}
-
 void ModelComponent::ResourceLoadedCallback(ResourceContainer* resource)
 {
 	if (resource->isLoaded()) {
@@ -230,13 +222,6 @@ void ModelComponent::ResourceLoadedCallback(ResourceContainer* resource)
 		// handle failure
 	}
 }
-
-//void ModelComponent::HandleLoadingMessage(const LoadingMessage& msg)
-//{
-//	if (msg.state == LoadingMessage::LOADING_FINISHED) {
-//		_model->holding_data.getResourcePtr() = nullptr;
-//	}
-//}
 
 void ModelComponent::requestMaterials(const Gaff::JSON& json, ResourceManager& res_mgr)
 {
@@ -408,20 +393,6 @@ void ModelComponent::requestBuffers(const Gaff::JSON& json, ResourceManager& res
 void ModelComponent::setupResources(void)
 {
 	assert(_model->models[0][0]->getMeshCount() == _materials.size());
-
-	for (size_t i = 0; i < _model->models[0][0]->getMeshCount(); ++i) {
-		if (i < _render_mode_overrides.size()) {
-			_render_mode_overrides[i] = (_render_mode_overrides[i] == RM_NONE) ? _materials[i]->render_mode : _render_mode_overrides[i];
-		} else {
-			_render_mode_overrides.emplacePush(_materials[i]->render_mode);
-		}
-
-		_material_modes[_render_mode_overrides[i]].emplacePush(i);
-	}
-
-	for (size_t i = 0; i < RM_COUNT; ++i) {
-		_material_modes[i].trim();
-	}
 
 	unsigned int num_devices = Shibboleth::GetApp().getManagerT<Shibboleth::RenderManager>("Render Manager").getRenderDevice().getNumDevices();
 
