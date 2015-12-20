@@ -26,9 +26,9 @@ THE SOFTWARE.
 #include <Gleam_IShaderResourceView.h>
 #include <Gleam_ISamplerState.h>
 #include <Gleam_IRenderDevice.h>
-#include <Gleam_IRenderState.h>
+//#include <Gleam_IRenderState.h>
 #include <Gleam_IProgram.h>
-#include <Gleam_ITexture.h>
+//#include <Gleam_ITexture.h>
 #include <Gleam_ILayout.h>
 #include <Gleam_IBuffer.h>
 #include <Gleam_IMesh.h>
@@ -74,9 +74,9 @@ bool OtterUIRenderer::init(const char* default_shader)
 
 		_program_buffers[i] = ProgramBuffersPtr(_render_manager.createProgramBuffers());
 
-		_device_data[i].render_state[0] = RenderStatePtr(_render_manager.createRenderState());
-		_device_data[i].render_state[1] = RenderStatePtr(_render_manager.createRenderState());
-		_device_data[i].render_state[2] = RenderStatePtr(_render_manager.createRenderState());
+		//_device_data[i].render_state[0] = RenderStatePtr(_render_manager.createRenderState());
+		//_device_data[i].render_state[1] = RenderStatePtr(_render_manager.createRenderState());
+		//_device_data[i].render_state[2] = RenderStatePtr(_render_manager.createRenderState());
 		_device_data[i].sampler = SamplerStatePtr(_render_manager.createSamplerState());
 		_device_data[i].constant_buffer = BufferPtr(_render_manager.createBuffer());
 		_device_data[i].vertex_buffer = BufferPtr(_render_manager.createBuffer());
@@ -88,10 +88,10 @@ bool OtterUIRenderer::init(const char* default_shader)
 			return false;
 		}
 
-		if (!_device_data[i].render_state[0] || !_device_data[i].render_state[1] || !_device_data[i].render_state[2]) {
-			// log error
-			return false;
-		}
+		//if (!_device_data[i].render_state[0] || !_device_data[i].render_state[1] || !_device_data[i].render_state[2]) {
+		//	// log error
+		//	return false;
+		//}
 
 		if (!_device_data[i].sampler) {
 			// log error
@@ -113,81 +113,81 @@ bool OtterUIRenderer::init(const char* default_shader)
 			return false;
 		}
 
-		//DRAW_TO_STENCIL
-		Gleam::IRenderState::StencilData front, back;
-		front.comp_func = Gleam::IRenderState::COMPARE_ALWAYS;
-		front.stencil_depth_fail = Gleam::IRenderState::STENCIL_KEEP;
-		front.stencil_depth_pass = Gleam::IRenderState::STENCIL_REPLACE;
-		front.stencil_pass_depth_fail = Gleam::IRenderState::STENCIL_KEEP;
-		back = front;
+		////DRAW_TO_STENCIL
+		//Gleam::IRenderState::StencilData front, back;
+		//front.comp_func = Gleam::IRenderState::COMPARE_ALWAYS;
+		//front.stencil_depth_fail = Gleam::IRenderState::STENCIL_KEEP;
+		//front.stencil_depth_pass = Gleam::IRenderState::STENCIL_REPLACE;
+		//front.stencil_pass_depth_fail = Gleam::IRenderState::STENCIL_KEEP;
+		//back = front;
 
-		// add alpha blending
-		Gleam::IRenderState::BlendData bd;
-		bd.enable_alpha_blending = false;
-		bd.blend_dst_alpha = Gleam::IRenderState::BLEND_FACTOR_DEST_ALPHA;
-		bd.blend_dst_color = Gleam::IRenderState::BLEND_FACTOR_DEST_COLOR;
-		bd.blend_op_alpha = Gleam::IRenderState::BLEND_OP_ADD;
-		bd.blend_src_alpha = Gleam::IRenderState::BLEND_FACTOR_SRC_ALPHA;
-		bd.blend_src_color = Gleam::IRenderState::BLEND_FACTOR_SRC_COLOR;
-		bd.color_write_mask = 0;
+		//// add alpha blending
+		//Gleam::IRenderState::BlendData bd;
+		//bd.enable_alpha_blending = false;
+		//bd.blend_dst_alpha = Gleam::IRenderState::BLEND_FACTOR_DEST_ALPHA;
+		//bd.blend_dst_color = Gleam::IRenderState::BLEND_FACTOR_DEST_COLOR;
+		//bd.blend_op_alpha = Gleam::IRenderState::BLEND_OP_ADD;
+		//bd.blend_src_alpha = Gleam::IRenderState::BLEND_FACTOR_SRC_ALPHA;
+		//bd.blend_src_color = Gleam::IRenderState::BLEND_FACTOR_SRC_COLOR;
+		//bd.color_write_mask = 0;
 
-		if (!_device_data[i].render_state[DRAW_TO_STENCIL]->init(
-				_render_device, false, false, true, Gleam::IRenderState::COMPARE_ALWAYS,
-				front, back, 1, 0xFF, 0xFF, Gleam::IRenderState::CULL_BACK, false, bd
-			)) {
+		//if (!_device_data[i].render_state[DRAW_TO_STENCIL]->init(
+		//		_render_device, false, false, true, Gleam::IRenderState::COMPARE_ALWAYS,
+		//		front, back, 1, 0xFF, 0xFF, Gleam::IRenderState::CULL_BACK, false, bd
+		//	)) {
 
-			// log error
-			return false;
-		}
+		//	// log error
+		//	return false;
+		//}
 
-		//DRAW_USING_STENCIL
-		front.comp_func = Gleam::IRenderState::COMPARE_NOT_EQUAL;
-		front.stencil_depth_fail = Gleam::IRenderState::STENCIL_KEEP;
-		front.stencil_depth_pass = Gleam::IRenderState::STENCIL_KEEP;
-		front.stencil_pass_depth_fail = Gleam::IRenderState::STENCIL_KEEP;
-		back = front;
+		////DRAW_USING_STENCIL
+		//front.comp_func = Gleam::IRenderState::COMPARE_NOT_EQUAL;
+		//front.stencil_depth_fail = Gleam::IRenderState::STENCIL_KEEP;
+		//front.stencil_depth_pass = Gleam::IRenderState::STENCIL_KEEP;
+		//front.stencil_pass_depth_fail = Gleam::IRenderState::STENCIL_KEEP;
+		//back = front;
 
-		bd.enable_alpha_blending = false;
-		bd.blend_dst_alpha = Gleam::IRenderState::BLEND_FACTOR_DEST_ALPHA;
-		bd.blend_dst_color = Gleam::IRenderState::BLEND_FACTOR_DEST_COLOR;
-		bd.blend_op_alpha = Gleam::IRenderState::BLEND_OP_ADD;
-		bd.blend_src_alpha = Gleam::IRenderState::BLEND_FACTOR_SRC_ALPHA;
-		bd.blend_src_color = Gleam::IRenderState::BLEND_FACTOR_SRC_COLOR;
-		bd.color_write_mask = Gleam::IRenderState::COLOR_ALL;
+		//bd.enable_alpha_blending = false;
+		//bd.blend_dst_alpha = Gleam::IRenderState::BLEND_FACTOR_DEST_ALPHA;
+		//bd.blend_dst_color = Gleam::IRenderState::BLEND_FACTOR_DEST_COLOR;
+		//bd.blend_op_alpha = Gleam::IRenderState::BLEND_OP_ADD;
+		//bd.blend_src_alpha = Gleam::IRenderState::BLEND_FACTOR_SRC_ALPHA;
+		//bd.blend_src_color = Gleam::IRenderState::BLEND_FACTOR_SRC_COLOR;
+		//bd.color_write_mask = Gleam::IRenderState::COLOR_ALL;
 
-		if (!_device_data[i].render_state[DRAW_USING_STENCIL]->init(
-			_render_device, false, false, true, Gleam::IRenderState::COMPARE_ALWAYS,
-			front, back, 0, 0, 0, Gleam::IRenderState::CULL_BACK, false, bd
-			)) {
+		//if (!_device_data[i].render_state[DRAW_USING_STENCIL]->init(
+		//	_render_device, false, false, true, Gleam::IRenderState::COMPARE_ALWAYS,
+		//	front, back, 0, 0, 0, Gleam::IRenderState::CULL_BACK, false, bd
+		//	)) {
 
-			// log error
-			return false;
-		}
+		//	// log error
+		//	return false;
+		//}
 
-		//DISABLE_STENCIL
-		front.comp_func = Gleam::IRenderState::COMPARE_NEVER;
-		front.stencil_depth_fail = Gleam::IRenderState::STENCIL_KEEP;
-		front.stencil_depth_pass = Gleam::IRenderState::STENCIL_KEEP;
-		front.stencil_pass_depth_fail = Gleam::IRenderState::STENCIL_KEEP;
-		back = front;
+		////DISABLE_STENCIL
+		//front.comp_func = Gleam::IRenderState::COMPARE_NEVER;
+		//front.stencil_depth_fail = Gleam::IRenderState::STENCIL_KEEP;
+		//front.stencil_depth_pass = Gleam::IRenderState::STENCIL_KEEP;
+		//front.stencil_pass_depth_fail = Gleam::IRenderState::STENCIL_KEEP;
+		//back = front;
 
-		// add alpha blending
-		bd.enable_alpha_blending = false;
-		bd.blend_dst_alpha = Gleam::IRenderState::BLEND_FACTOR_DEST_ALPHA;
-		bd.blend_dst_color = Gleam::IRenderState::BLEND_FACTOR_DEST_COLOR;
-		bd.blend_op_alpha = Gleam::IRenderState::BLEND_OP_ADD;
-		bd.blend_src_alpha = Gleam::IRenderState::BLEND_FACTOR_SRC_ALPHA;
-		bd.blend_src_color = Gleam::IRenderState::BLEND_FACTOR_SRC_COLOR;
-		bd.color_write_mask = Gleam::IRenderState::COLOR_ALL;
+		//// add alpha blending
+		//bd.enable_alpha_blending = false;
+		//bd.blend_dst_alpha = Gleam::IRenderState::BLEND_FACTOR_DEST_ALPHA;
+		//bd.blend_dst_color = Gleam::IRenderState::BLEND_FACTOR_DEST_COLOR;
+		//bd.blend_op_alpha = Gleam::IRenderState::BLEND_OP_ADD;
+		//bd.blend_src_alpha = Gleam::IRenderState::BLEND_FACTOR_SRC_ALPHA;
+		//bd.blend_src_color = Gleam::IRenderState::BLEND_FACTOR_SRC_COLOR;
+		//bd.color_write_mask = Gleam::IRenderState::COLOR_ALL;
 
-		if (!_device_data[i].render_state[DISABLE_STENCIL]->init(
-			_render_device, false, false, false, Gleam::IRenderState::COMPARE_ALWAYS,
-			front, back, 0, 0, 0, Gleam::IRenderState::CULL_BACK, false, bd
-			)) {
+		//if (!_device_data[i].render_state[DISABLE_STENCIL]->init(
+		//	_render_device, false, false, false, Gleam::IRenderState::COMPARE_ALWAYS,
+		//	front, back, 0, 0, 0, Gleam::IRenderState::CULL_BACK, false, bd
+		//	)) {
 
-			// log error
-			return false;
-		}
+		//	// log error
+		//	return false;
+		//}
 
 		if (!_device_data[i].vertex_buffer->init(_render_device, nullptr, sizeof(Otter::GUIVertex) * MAX_VERTICES, Gleam::IBuffer::VERTEX_DATA, 0, Gleam::IBuffer::WRITE)) {
 			// log error

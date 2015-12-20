@@ -37,22 +37,22 @@ public:
 	CommandListGL(void);
 	~CommandListGL(void);
 
-	const ICommandList& operator=(const ICommandList& rhs);
-	const ICommandList& operator=(ICommandList&& rhs);
+	const ICommandList& operator=(const ICommandList& rhs) override;
+	const ICommandList& operator=(ICommandList&& rhs) override;
 
-	bool operator==(const ICommandList& rhs) const;
-	bool operator!=(const ICommandList& rhs) const;
+	bool operator==(const ICommandList& rhs) const override;
+	bool operator!=(const ICommandList& rhs) const override;
 
-	bool isD3D(void) const;
+	bool isD3D(void) const override;
 
 	void append(const CommandListGL& command_list);
 	void execute(void);
 	INLINE void clear(void);
 
 	template <class ReturnType, class... Args>
-	void addCommand(const Gaff::CachedFunction<ReturnType, Args...>& function)
+	INLINE void addCommand(const Gaff::CachedFunction<ReturnType, Args...>& function)
 	{
-		Gaff::SharedPtr< Gaff::IFunction<void> > cmd_ptr(GetAllocator()->template allocT< GLFuncWrapper<ReturnType, Args...> >(function));
+		Gaff::SharedPtr< Gaff::IFunction<void> > cmd_ptr(GetAllocator()->template allocT< Gaff::CachedFunction<ReturnType, Args...> >(function));
 		_commands.emplacePush(std::move(cmd_ptr));
 	}
 

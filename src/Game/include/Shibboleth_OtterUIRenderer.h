@@ -68,7 +68,7 @@ private:
 	struct DeviceData
 	{
 		Array<OutputData> output_data;
-		RenderStatePtr render_state[3];
+		//RenderStatePtr render_state[3];
 		SamplerStatePtr sampler;
 		BufferPtr constant_buffer;
 		BufferPtr vertex_buffer;

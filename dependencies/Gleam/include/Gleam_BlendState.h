@@ -22,38 +22,16 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Gleam_Defines.h"
+#ifdef USE_DX
+	#include "Gleam_BlendState_Direct3D.h"
 
-NS_GLEAM
+	NS_GLEAM
+		using BlendState = BlendStateD3D;
+	NS_END
+#else
+	#include "Gleam_BlendState_OpenGL.h"
 
-class DepthStencilStateGL;
-class ProgramBuffersGL;
-class RasterStateGL;
-class BlendStateGL;
-class ProgramGL;
-class LayoutGL;
-class MeshGL;
-class IMesh;
-
-class IRenderDeviceGL
-{
-public:
-	IRenderDeviceGL(void) {}
-	virtual ~IRenderDeviceGL(void) {}
-
-	virtual void setDepthStencilState(const DepthStencilStateGL* ds_state) = 0;
-	virtual void setRasterState(const RasterStateGL* raster_state) = 0;
-	virtual void setBlendState(const BlendStateGL* blend_state) = 0;
-
-	virtual void setLayout(LayoutGL* layout, const IMesh* mesh) = 0;
-	virtual void unsetLayout(LayoutGL* layout) = 0;
-
-	virtual void bindShader(ProgramGL* shader, ProgramBuffersGL* program_buffers) = 0;
-	virtual void unbindShader(void) = 0;
-
-	virtual void renderMeshNonIndexed(unsigned int topology, unsigned int vert_count, unsigned int start_location) = 0;
-	virtual void renderMeshInstanced(MeshGL* mesh, unsigned int count) = 0;
-	virtual void renderMesh(MeshGL* mesh) = 0;
-};
-
-NS_END
+	NS_GLEAM
+		using BlendState = DepthStencilStateGL;
+	NS_END
+#endif

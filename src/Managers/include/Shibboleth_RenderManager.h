@@ -52,13 +52,15 @@ namespace Gaff
 
 namespace Gleam
 {
+	class IDepthStencilState;
 	class IProgramBuffers;
 	class IRenderDevice;
 	class ISamplerState;
-	class IRenderState;
+	class IRasterState;
 	class ICommandList;
-	class ILayout;
+	class IBlendState;
 	class IProgram;
+	class ILayout;
 	class IShader;
 	class IBuffer;
 	class IModel;
@@ -90,32 +92,15 @@ enum DisplayTags
 	DT_16 = 0x8000,
 };
 
-enum RenderModes
+enum RenderPasses
 {
-	RM_NONE = -1,
-	RM_OPAQUE = 0,
-	RM_TRANSPARENT,
-	RM_USER1,
-	RM_USER2,
-	RM_USER3,
-	RM_USER4,
-	RM_USER5,
-	RM_USER6,
-	RM_USER7,
-	RM_USER8,
-	RM_USER9,
-	RM_USER10,
-	RM_USER11,
-	RM_USER12,
-	RM_USER13,
-	RM_USER14,
-	RM_USER15,
-	RM_USER16,
-	RM_COUNT
+	RP_OPAQUE = 0,
+	RP_TRANSPARENT,
+	RP_COUNT
 };
 
 SHIB_ENUM_REF_DEF(DisplayTags);
-SHIB_ENUM_REF_DEF(RenderModes);
+SHIB_ENUM_REF_DEF(RenderPasses);
 SHIB_ENUM_REF_DEF_EMBEDDED(Gleam_ISamplerState_Filter, Gleam::ISamplerState::FILTER);
 SHIB_ENUM_REF_DEF_EMBEDDED(Gleam_ISamplerState_Wrap, Gleam::ISamplerState::WRAP);
 SHIB_ENUM_REF_DEF_EMBEDDED(Gleam_ITexture_Format, Gleam::ITexture::FORMAT);
@@ -193,15 +178,17 @@ public:
 
 	INLINE const char* getShaderExtension(void) const;
 	INLINE Gleam::IShaderResourceView* createShaderResourceView(void);
+	INLINE Gleam::IDepthStencilState* createDepthStencilState(void);
 	INLINE Gleam::IProgramBuffers* createProgramBuffers(void);
 	INLINE Gleam::IRenderDevice* createRenderDevice(void);
 	INLINE Gleam::IRenderTarget* createRenderTarget(void);
 	INLINE Gleam::ISamplerState* createSamplerState(void);
-	INLINE Gleam::IRenderState* createRenderState(void);
+	INLINE Gleam::IRasterState* createRasterState(void);
 	INLINE Gleam::ICommandList* createCommandList(void);
+	INLINE Gleam::IBlendState* createBlendState(void);
 	INLINE Gleam::ITexture* createTexture(void);
-	INLINE Gleam::ILayout* createLayout(void);
 	INLINE Gleam::IProgram* createProgram(void);
+	INLINE Gleam::ILayout* createLayout(void);
 	INLINE Gleam::IShader* createShader(void);
 	INLINE Gleam::IBuffer* createBuffer(void);
 	INLINE Gleam::IModel* createModel(void);
@@ -218,16 +205,18 @@ private:
 		typedef void (*UpdateWindows)(void);
 		typedef Gleam::IWindow* (*CreateWindowS)(void);
 
+		typedef Gleam::IDepthStencilState* (*CreateDepthStencilState)(void);
 		typedef Gleam::IShaderResourceView* (*CreateShaderResourceView)(void);
 		typedef Gleam::IProgramBuffers* (*CreateProgramBuffers)(void);
 		typedef Gleam::IRenderDevice* (*CreateRenderDevice)(void);
 		typedef Gleam::IRenderTarget* (*CreateRenderTarget)(void);
 		typedef Gleam::ISamplerState* (*CreateSamplerState)(void);
-		typedef Gleam::IRenderState* (*CreateRenderState)(void);
+		typedef Gleam::IRasterState* (*CreateRasterState)(void);
 		typedef Gleam::ICommandList* (*CreateCommandList)(void);
+		typedef Gleam::IBlendState* (*CreateBlendState)(void);
 		typedef Gleam::ITexture* (*CreateTexture)(void);
-		typedef Gleam::ILayout* (*CreateLayout)(void);
 		typedef Gleam::IProgram* (*CreateProgram)(void);
+		typedef Gleam::ILayout* (*CreateLayout)(void);
 		typedef Gleam::IShader* (*CreateShader)(void);
 		typedef Gleam::IBuffer* (*CreateBuffer)(void);
 		typedef Gleam::IModel* (*CreateModel)(void);
@@ -239,13 +228,15 @@ private:
 		CreateWindowS create_window;
 
 		GetShaderExtension get_shader_extension;
+		CreateDepthStencilState create_depthstencilstate;
 		CreateShaderResourceView create_shaderresourceview;
 		CreateProgramBuffers create_programbuffers;
 		CreateRenderDevice create_renderdevice;
 		CreateRenderTarget create_rendertarget;
 		CreateSamplerState create_samplerstate;
-		CreateRenderState create_renderstate;
+		CreateRasterState create_rasterstate;
 		CreateCommandList create_commandlist;
+		CreateBlendState create_blendstate;
 		CreateTexture create_texture;
 		CreateLayout create_layout;
 		CreateProgram create_program;
@@ -272,7 +263,6 @@ private:
 	bool createWindowRenderable(int width, int height, Gleam::ITexture::FORMAT format, TexturePtr& tex_out, SRVPtr& srv_out);
 
 	bool getDisplayTags(void);
-	bool getRenderModes(void);
 
 	GAFF_NO_COPY(RenderManager);
 	GAFF_NO_MOVE(RenderManager);

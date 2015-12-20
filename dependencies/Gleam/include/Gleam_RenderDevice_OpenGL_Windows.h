@@ -22,8 +22,7 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Gleam_IRenderDevice_OpenGL.h"
-#include "Gleam_IRenderDevice.h"
+#include "Gleam_RenderDevice_OpenGL_Base.h"
 #include "Gleam_BitArray.h"
 #include "Gleam_String.h"
 #include "Gleam_Map.h"
@@ -32,7 +31,7 @@ THE SOFTWARE.
 
 NS_GLEAM
 
-class RenderDeviceGL : public IRenderDevice, public IRenderDeviceGL
+class RenderDeviceGL : public RenderDeviceGLBase
 {
 public:
 	RenderDeviceGL(void);
@@ -40,67 +39,41 @@ public:
 
 	static bool CheckRequiredExtensions(void);
 
-	AdapterList getDisplayModes(int compat = 28/*29*/);
+	AdapterList getDisplayModes(int compat = 28/*29*/) override;
 
-	bool initThreadData(unsigned int* thread_ids, size_t num_ids);
-	bool init(const IWindow& window, unsigned int adapter_id, unsigned int display_id, unsigned int display_mode_id, bool vsync = false);
-	void destroy(void);
+	bool initThreadData(unsigned int* thread_ids, size_t num_ids) override;
+	bool init(const IWindow& window, unsigned int adapter_id, unsigned int display_id, unsigned int display_mode_id, bool vsync = false) override;
+	void destroy(void) override;
 
-	bool isVsync(unsigned int device, unsigned int output) const;
-	void setVsync(bool vsync, unsigned int device, unsigned int output);
+	bool isVsync(unsigned int device, unsigned int output) const override;
+	void setVsync(bool vsync, unsigned int device, unsigned int output) override;
 
-	void setClearColor(float r, float g, float b, float a);
+	void beginFrame(void) override;
+	void endFrame(void) override;
 
-	void beginFrame(void);
-	void endFrame(void);
+	bool resize(const IWindow& window) override;
+	bool handleFocusGained(const IWindow&) override;
 
-	bool resize(const IWindow& window);
-	bool handleFocusGained(const IWindow&);
+	unsigned int getViewportWidth(unsigned int device, unsigned int output) const override;
+	unsigned int getViewportHeight(unsigned int device, unsigned int output) const override;
 
-	void resetRenderState(void);
+	unsigned int getActiveViewportWidth(void) override;
+	unsigned int getActiveViewportHeight(void) override;
 
-	bool isDeferred(void) const;
-	bool isD3D(void) const;
+	unsigned int getNumOutputs(unsigned int device) const override;
+	unsigned int getNumDevices(void) const override;
 
-	unsigned int getViewportWidth(unsigned int device, unsigned int output) const;
-	unsigned int getViewportHeight(unsigned int device, unsigned int output) const;
+	IRenderTargetPtr getOutputRenderTarget(unsigned int device, unsigned int output) override;
+	IRenderTargetPtr getActiveOutputRenderTarget(void) override;
 
-	unsigned int getActiveViewportWidth(void);
-	unsigned int getActiveViewportHeight(void);
+	bool setCurrentOutput(unsigned int output) override;
+	unsigned int getCurrentOutput(void) const override;
 
-	unsigned int getNumOutputs(unsigned int device) const;
-	unsigned int getNumDevices(void) const;
+	bool setCurrentDevice(unsigned int device) override;
+	unsigned int getCurrentDevice(void) const override;
 
-	IRenderTargetPtr getOutputRenderTarget(unsigned int device, unsigned int output);
-	IRenderTargetPtr getActiveOutputRenderTarget(void);
-
-	bool setCurrentOutput(unsigned int output);
-	unsigned int getCurrentOutput(void) const;
-
-	bool setCurrentDevice(unsigned int device);
-	unsigned int getCurrentDevice(void) const;
-
-	unsigned int getDeviceForAdapter(unsigned int adapter_id) const;
-	unsigned int getDeviceForMonitor(unsigned int monitor) const;
-
-	IRenderDevice* createDeferredRenderDevice(void);
-	void executeCommandList(ICommandList* command_list);
-	bool finishCommandList(ICommandList* command_list);
-
-	void renderNoVertexInput(unsigned int vert_count);
-
-	// For supporting deferred contexts
-	void setRenderState(const RenderStateGL* render_state);
-
-	void setLayout(LayoutGL* layout, const IMesh* mesh);
-	void unsetLayout(LayoutGL* layout);
-
-	void bindShader(ProgramGL* shader, ProgramBuffersGL* program_buffers);
-	void unbindShader(void);
-
-	void renderMeshNonIndexed(unsigned int topology, unsigned int vert_count, unsigned int start_location);
-	void renderMeshInstanced(MeshGL* mesh, unsigned int count);
-	void renderMesh(MeshGL* mesh);
+	unsigned int getDeviceForAdapter(unsigned int adapter_id) const override;
+	unsigned int getDeviceForMonitor(unsigned int monitor) const override;
 
 private:
 	struct OutputInfo

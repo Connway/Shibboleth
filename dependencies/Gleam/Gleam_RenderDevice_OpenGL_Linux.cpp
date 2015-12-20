@@ -48,18 +48,6 @@ RenderDeviceGL::~RenderDeviceGL(void)
 	destroy();
 }
 
-bool RenderDeviceGL::CheckRequiredExtensions(void)
-{
-	return GLEW_VERSION_4_3 ||
-	(
-		GLEW_ARB_compute_shader && GLEW_ARB_geometry_shader4 &&
-		GLEW_ARB_tessellation_shader && GLEW_ARB_explicit_uniform_location &&
-		GLEW_ARB_sampler_objects && GLEW_ARB_separate_shader_objects &&
-		GLEW_EXT_texture_filter_anisotropic && GLEW_ARB_shading_language_420pack &&
-		GLEW_ARB_vertex_array_object
-	);
-}
-
 IRenderDevice::AdapterList RenderDeviceGL::getDisplayModes(int)
 {
 	// Since, to my knowledge, there's no way of querying how many X Servers
@@ -273,11 +261,6 @@ void RenderDeviceGL::setVsync(bool vsync, unsigned int device, unsigned int outp
 	_devices[device].vsync.setBit(output, vsync);
 }
 
-void RenderDeviceGL::setClearColor(float r, float g, float b, float a)
-{
-	glClearColor(r, g, b, a);
-}
-
 void RenderDeviceGL::beginFrame(void)
 {
 	assert(_devices.size() > _curr_device && _devices[_curr_device].windows.size() > _curr_output);
@@ -319,29 +302,6 @@ bool RenderDeviceGL::resize(const IWindow& window)
 bool RenderDeviceGL::handleFocusGained(const IWindow&)
 {
 	return true;
-}
-
-void RenderDeviceGL::resetRenderState(void)
-{
-	assert(_devices.size() > _curr_device && _devices[_curr_device].viewports.size() > _curr_output);
-
-	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-	glDisable(GL_DEPTH_TEST);
-	glDisable(GL_STENCIL_TEST);
-	glEnable(GL_CULL_FACE);
-	glCullFace(GL_BACK);
-	glFrontFace(GL_CW);
-	glDisable(GL_BLEND);
-}
-
-bool RenderDeviceGL::isDeferred(void) const
-{
-	return false;
-}
-
-bool RenderDeviceGL::isD3D(void) const
-{
-	return false;
 }
 
 unsigned int RenderDeviceGL::getViewportWidth(unsigned int device, unsigned int output) const
@@ -461,28 +421,6 @@ unsigned int RenderDeviceGL::getDeviceForMonitor(unsigned int monitor) const
 	}
 
 	return UINT_FAIL;
-}
-
-IRenderDevice* RenderDeviceGL::createDeferredRenderDevice(void)
-{
-	return nullptr;
-}
-
-void RenderDeviceGL::executeCommandList(ICommandList* command_list)
-{
-	assert(!command_list->isD3D());
-	((CommandListGL*)command_list)->execute();
-}
-
-bool RenderDeviceGL::finishCommandList(ICommandList*)
-{
-	assert(0 && "Calling a deferred render device function on an immediate render device");
-	return false;
-}
-
-void RenderDeviceGL::renderNoVertexInput(unsigned int vert_count)
-{
-	// TODO: IMPLEMENT ME!
 }
 
 NS_END

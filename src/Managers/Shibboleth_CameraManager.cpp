@@ -64,16 +64,16 @@ void CameraManager::getUpdateEntries(Array<UpdateEntry>& entries)
 void CameraManager::update(double, void* frame_data)
 {
 	FrameData* fd = reinterpret_cast<FrameData*>(frame_data);
-	fd->object_data.clearNoFree();
+	fd->camera_object_data.clearNoFree();
 
 	for (auto it = _cameras.begin(); it != _cameras.end(); ++it) {
-		FrameData::ObjectData& od = fd->object_data[*it];
+		FrameData::ObjectData& od = fd->camera_object_data[*it];
 
 		od.active = (*it)->isActive();
 
 		if (od.active) {
-			od.camera_projection_matrix = (*it)->getProjectionMatrix();
-			od.camera_transform = (*it)->getOwner()->getWorldTransform();
+			od.projection_matrix = (*it)->getProjectionMatrix();
+			od.eye_transform = (*it)->getOwner()->getWorldTransform();
 
 			_occlusion_mgr->findObjectsInFrustum((*it)->getFrustum(), od.objects);
 

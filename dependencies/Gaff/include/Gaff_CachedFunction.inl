@@ -134,15 +134,9 @@ bool CachedFunction<ReturnType, Args...>::valid(void) const
 	return _function.valid();
 }
 
-// Cached Function Binders
-template <class ReturnType, class... Args>
-CachedFunction<ReturnType, Args...> BindCached(const FunctionBinder<ReturnType, Args...>& function, const Args&... args)
-{
-	return CachedFunction<ReturnType, Args...>(function, args...);
-}
-
+// Cached Function Binder
 template <class ReturnType, class... Args>
 CachedFunction<ReturnType, Args...> BindCached(const FunctionBinder<ReturnType, Args...>& function, Args&&... args)
 {
-	return CachedFunction<ReturnType, Args...>(function, std::move(args)...);
+	return CachedFunction<ReturnType, Args...>(function, std::forward(args)...);
 }

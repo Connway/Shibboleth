@@ -22,11 +22,13 @@ THE SOFTWARE.
 
 #include <Shibboleth_ProxyAllocator.h>
 #include <Gleam_ShaderResourceView.h>
+#include <Gleam_DepthStencilState.h>
 #include <Gleam_RenderDevice.h>
 #include <Gleam_RenderTarget.h>
 #include <Gleam_SamplerState.h>
-#include <Gleam_RenderState.h>
+#include <Gleam_RasterState.h>
 #include <Gleam_CommandList.h>
+#include <Gleam_BlendState.h>
 #include <Gleam_Texture.h>
 #include <Gleam_Program.h>
 #include <Gleam_Window.h>
@@ -72,6 +74,11 @@ DYNAMICEXPORT_C Gleam::IShaderResourceView* CreateShaderResourceView(void)
 	return gProxyAllocator.template allocT<Gleam::ShaderResourceView>();
 }
 
+DYNAMICEXPORT_C Gleam::IDepthStencilState* CreateDepthStencilState(void)
+{
+	return gProxyAllocator.template allocT<Gleam::DepthStencilState>();
+}
+
 DYNAMICEXPORT_C Gleam::IProgramBuffers* CreateProgramBuffers(void)
 {
 	return gProxyAllocator.template allocT<Gleam::ProgramBuffers>();
@@ -92,9 +99,9 @@ DYNAMICEXPORT_C Gleam::ISamplerState* CreateSamplerState(void)
 	return gProxyAllocator.template allocT<Gleam::SamplerState>();
 }
 
-DYNAMICEXPORT_C Gleam::IRenderState* CreateRenderState(void)
+DYNAMICEXPORT_C Gleam::IRasterState* CreateRasterState(void)
 {
-	return gProxyAllocator.template allocT<Gleam::RenderState>();
+	return gProxyAllocator.template allocT<Gleam::RasterState>();
 }
 
 DYNAMICEXPORT_C Gleam::ICommandList* CreateCommandList(void)
@@ -102,19 +109,24 @@ DYNAMICEXPORT_C Gleam::ICommandList* CreateCommandList(void)
 	return gProxyAllocator.template allocT<Gleam::CommandList>();
 }
 
+DYNAMICEXPORT_C Gleam::IBlendState* CreateBlendState(void)
+{
+	return gProxyAllocator.template allocT<Gleam::BlendState>();
+}
+
 DYNAMICEXPORT_C Gleam::ITexture* CreateTexture(void)
 {
 	return gProxyAllocator.template allocT<Gleam::Texture>();
 }
 
-DYNAMICEXPORT_C Gleam::ILayout* CreateLayout(void)
-{
-	return gProxyAllocator.template allocT<Gleam::Layout>();
-}
-
 DYNAMICEXPORT_C Gleam::IProgram* CreateProgram(void)
 {
 	return gProxyAllocator.template allocT<Gleam::Program>();
+}
+
+DYNAMICEXPORT_C Gleam::ILayout* CreateLayout(void)
+{
+	return gProxyAllocator.template allocT<Gleam::Layout>();
 }
 
 DYNAMICEXPORT_C Gleam::IShader* CreateShader(void)

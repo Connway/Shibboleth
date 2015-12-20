@@ -138,7 +138,7 @@ void FrameManager::submitCommandLists(double, void* frame_data)
 {
 	FrameData* fd = reinterpret_cast<FrameData*>(frame_data);
 
-	for (auto it = fd->object_data.begin(); it != fd->object_data.end(); ++it) {
+	for (auto it = fd->camera_object_data.begin(); it != fd->camera_object_data.end(); ++it) {
 		
 	}
 }

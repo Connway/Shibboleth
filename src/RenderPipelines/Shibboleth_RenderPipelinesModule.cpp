@@ -34,7 +34,23 @@ THE SOFTWARE.
 template <class T>
 Shibboleth::IRenderPipeline* CreateRenderPipelineT(void)
 {
-	return Shibboleth::GetAllocator()->allocT<T>();
+	return Shibboleth::GetAllocator()->template allocT<T>();
+}
+
+template <>
+Shibboleth::IRenderPipeline* CreateRenderPipelineT<Shibboleth::InGameRenderPipeline>(void)
+{
+	Shibboleth::InGameRenderPipeline* rp = Shibboleth::GetAllocator()->template allocT<Shibboleth::InGameRenderPipeline>();
+
+	if (rp) {
+		if (rp->init()) {
+			return rp;
+		} else {
+			Shibboleth::GetAllocator()->freeT(rp);
+		}
+	}
+
+	return nullptr;
 }
 
 enum RenderPipelines

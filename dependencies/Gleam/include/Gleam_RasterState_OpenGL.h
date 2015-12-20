@@ -22,50 +22,31 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Gleam_IRenderState.h"
+#include "Gleam_IRasterState.h"
 #include "Gleam_RefCounted.h"
-
-struct ID3D11DepthStencilState;
-struct ID3D11RasterizerState;
-struct ID3D11BlendState;
 
 NS_GLEAM
 
-class RenderStateD3D : public IRenderState
+class RasterStateGL : public IRasterState
 {
 public:
-	RenderStateD3D(void);
-	~RenderStateD3D(void);
+	RasterStateGL(void);
+	~RasterStateGL(void);
 
-	bool init(IRenderDevice& rd, bool wireframe, bool depth_test, bool stencil_test, 
-				COMPARISON_FUNC depth_func, StencilData front_face,
-				StencilData back_face, unsigned int stencil_ref,
-				char stencil_read_mask, char stencil_write_mask,
-				CULL_MODE cull_face_mode, bool front_face_counter_clockwise,
-				const BlendData* blend_data);
+	bool init(IRenderDevice& rd, const RasterStateSettings& settings) override;
+	void destroy(void) override;
 
-	bool init(IRenderDevice& rd, bool wireframe, bool depth_test, bool stencil_test,
-				COMPARISON_FUNC depth_func, StencilData front_face,
-				StencilData back_face, unsigned int stencil_ref,
-				char stencil_read_mask, char stencil_write_mask,
-				CULL_MODE cull_face_mode, bool front_face_counter_clockwise,
-				BlendData blend_data);
+	void set(IRenderDevice& rd) const override;
+	void unset(IRenderDevice& rd) const override;
 
-	void destroy(void);
+	bool isD3D(void) const override;
 
-	void set(IRenderDevice& rd) const;
-	INLINE void unset(IRenderDevice& rd) const;
-
-	INLINE bool isD3D(void) const;
+	const RasterStateSettings& getRasterSettings(void) const;
 
 private:
-	ID3D11DepthStencilState* _depth_stencil_state;
-	ID3D11RasterizerState* _raster_state;
-	ID3D11BlendState* _blend_state;
+	RasterStateSettings _raster_settings;
 
-	unsigned int _stencil_ref;
-
-	GLEAM_REF_COUNTED(RenderStateD3D);
+	GLEAM_REF_COUNTED(RasterStateGL);
 };
 
 NS_END

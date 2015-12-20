@@ -50,11 +50,13 @@ namespace Gleam
 NS_SHIBBOLETH
 
 using ShaderResourceViewPtr = Gaff::RefPtr<Gleam::IShaderResourceView>;
+using DepthStencilStatePtr = Gaff::RefPtr<Gleam::IDepthStencilState>;
 using ProgramBuffersPtr = Gaff::RefPtr<Gleam::IProgramBuffers>;
 using RenderTargetPtr = Gaff::RefPtr<Gleam::IRenderTarget>;
 using SamplerStatePtr = Gaff::RefPtr<Gleam::ISamplerState>;
-using RenderStatePtr = Gaff::RefPtr<Gleam::IRenderState>;
+using RasterStatePtr = Gaff::RefPtr<Gleam::IRasterState>;
 //using CommandListPtr = Gaff::RefPtr<Gleam::ICommandList>;
+using BlendStatetr = Gaff::RefPtr<Gleam::IBlendState>;
 using TexturePtr = Gaff::RefPtr<Gleam::ITexture>;
 using LayoutPtr = Gaff::RefPtr<Gleam::ILayout>;
 using ProgramPtr = Gaff::RefPtr<Gleam::IProgram>;
@@ -90,7 +92,7 @@ struct ProgramData : public Gaff::IVirtualDestructor
 {
 	ResourceWrapper<ShaderData> shaders[Gleam::IShader::SHADER_TYPE_SIZE];
 	Array<ProgramPtr> programs;
-	RenderModes render_mode;
+	RenderPasses render_pass;
 };
 
 struct RenderTargetData : public Gaff::IVirtualDestructor

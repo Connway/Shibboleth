@@ -41,8 +41,8 @@ struct FrameData
 	struct ObjectData
 	{
 		Array<Gleam::TransformCPU> transforms[OcclusionManager::OT_SIZE];
-		Gleam::Matrix4x4CPU camera_projection_matrix;
-		Gleam::TransformCPU camera_transform;
+		Gleam::Matrix4x4CPU projection_matrix;
+		Gleam::TransformCPU eye_transform;
 		OcclusionManager::QueryData objects;
 
 		Array<CommandListPtr> command_lists; // [Device]
@@ -50,7 +50,8 @@ struct FrameData
 		bool active;
 	};
 
-	Map<CameraComponent*, ObjectData> object_data;
+	Map<CameraComponent*, ObjectData> camera_object_data;
+	//Map<LightComponent*, ObjectData> shadow_object_data;
 };
 
 class FrameManager : public IManager, public IUpdateQuery

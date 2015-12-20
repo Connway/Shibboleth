@@ -22,26 +22,33 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Gleam_DeferredRenderDeviceBase.h"
 #include "Gleam_IRenderDevice_OpenGL.h"
-#include "Gleam_CommandList_OpenGL.h"
+#include "Gleam_IRenderDevice.h"
 
 NS_GLEAM
 
-class DeferredRenderDeviceGL: public DeferredRenderDeviceBase, public IRenderDeviceGL
+class RenderDeviceGLBase : public IRenderDevice, public IRenderDeviceGL
 {
 public:
-	~DeferredRenderDeviceGL(void);
+	static bool CheckRequiredExtensions(void);
 
-	void destroy(void) override;
+	RenderDeviceGLBase(void);
+	virtual ~RenderDeviceGLBase(void);
+
+	void setClearColor(float r, float g, float b, float a) override;
+
+	void resetRenderState(void) override;
+
 	bool isDeferred(void) const override;
 	bool isD3D(void) const override;
 
+	IRenderDevice* createDeferredRenderDevice(void) override;
 	void executeCommandList(ICommandList* command_list) override;
 	bool finishCommandList(ICommandList* command_list) override;
 
 	void renderNoVertexInput(unsigned int vert_count) override;
 
+	// For supporting deferred contexts
 	void setDepthStencilState(const DepthStencilStateGL* ds_state) override;
 	void setRasterState(const RasterStateGL* raster_state) override;
 	void setBlendState(const BlendStateGL* blend_state) override;
@@ -55,12 +62,6 @@ public:
 	void renderMeshNonIndexed(unsigned int topology, unsigned int vert_count, unsigned int start_location) override;
 	void renderMeshInstanced(MeshGL* mesh, unsigned int count) override;
 	void renderMesh(MeshGL* mesh) override;
-
-private:
-	CommandListGL _command_list;
-
-	DeferredRenderDeviceGL(void);
-	friend class RenderDeviceGL;
 };
 
 NS_END

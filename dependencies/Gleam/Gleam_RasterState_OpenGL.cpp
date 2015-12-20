@@ -20,40 +20,53 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#pragma once
-
-#include "Gleam_Defines.h"
+#include "Gleam_RasterState_OpenGL.h"
+#include "Gleam_RenderDevice_OpenGL.h"
+#include <Gaff_IncludeAssert.h>
 
 NS_GLEAM
 
-class DepthStencilStateGL;
-class ProgramBuffersGL;
-class RasterStateGL;
-class BlendStateGL;
-class ProgramGL;
-class LayoutGL;
-class MeshGL;
-class IMesh;
-
-class IRenderDeviceGL
+RasterStateGL::RasterStateGL(void)
 {
-public:
-	IRenderDeviceGL(void) {}
-	virtual ~IRenderDeviceGL(void) {}
+}
 
-	virtual void setDepthStencilState(const DepthStencilStateGL* ds_state) = 0;
-	virtual void setRasterState(const RasterStateGL* raster_state) = 0;
-	virtual void setBlendState(const BlendStateGL* blend_state) = 0;
+RasterStateGL::~RasterStateGL(void)
+{
+}
 
-	virtual void setLayout(LayoutGL* layout, const IMesh* mesh) = 0;
-	virtual void unsetLayout(LayoutGL* layout) = 0;
+bool RasterStateGL::init(IRenderDevice& rd, const RasterStateSettings& settings)
+{
+	assert(!rd.isD3D());
+	_raster_settings = settings;
+	return true;
+}
 
-	virtual void bindShader(ProgramGL* shader, ProgramBuffersGL* program_buffers) = 0;
-	virtual void unbindShader(void) = 0;
+void RasterStateGL::destroy(void)
+{
+}
 
-	virtual void renderMeshNonIndexed(unsigned int topology, unsigned int vert_count, unsigned int start_location) = 0;
-	virtual void renderMeshInstanced(MeshGL* mesh, unsigned int count) = 0;
-	virtual void renderMesh(MeshGL* mesh) = 0;
-};
+void RasterStateGL::set(IRenderDevice& rd) const
+{
+	assert(!rd.isD3D());
+	IRenderDeviceGL& rdgl = reinterpret_cast<IRenderDeviceGL&>(*(reinterpret_cast<char*>(&rd) + sizeof(IRenderDevice)));
+	rdgl.setRasterState(this);
+}
+
+void RasterStateGL::unset(IRenderDevice& rd) const
+{
+	assert(!rd.isD3D());
+	IRenderDeviceGL& rdgl = reinterpret_cast<IRenderDeviceGL&>(*(reinterpret_cast<char*>(&rd) + sizeof(IRenderDevice)));
+	rdgl.setRasterState(nullptr);
+}
+
+bool RasterStateGL::isD3D(void) const
+{
+	return false;
+}
+
+const IRasterState::RasterStateSettings& RasterStateGL::getRasterSettings(void) const
+{
+	return _raster_settings;
+}
 
 NS_END
