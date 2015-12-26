@@ -201,3 +201,27 @@ void ParseCommandLine(int argc, char** argv, HashMap<AHashString<Allocator>, ASt
 		out.insert(option, values);
 	}
 }
+
+template <class T>
+void SetBits(T& value, T bits)
+{
+	value |= bits;
+}
+
+template <class T>
+void ClearBits(T& value, T bits)
+{
+	value &= ~bits;
+}
+
+template <class T>
+bool IsAnyBitSet(const T& value, T bits)
+{
+	return (value & bits) != 0;
+}
+
+template <class T>
+bool AreAllBitsSet(const T& value, T bits)
+{
+	return (value & bits) == bits;
+}

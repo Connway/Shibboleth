@@ -322,6 +322,13 @@ void Object::notifyLocalDirtyCallbacks(void)
 		it->first(this, it->second);
 	}
 
+	// If we are marked as not-dirty, then we are a child of another object that has been updated.
+	if (_dirty) {
+		for (auto it = _children.begin(); it != _children.end(); ++it) {
+			(*it)->notifyWorldDirtyCallbacks();
+		}
+	}
+
 	_dirty = false;
 }
 

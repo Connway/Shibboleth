@@ -59,8 +59,8 @@ public:
 
 	struct OcclusionID
 	{
-		size_t index;
-		OBJ_TYPE object_type;
+		size_t index = SIZE_T_FAIL;
+		OBJ_TYPE object_type = OT_SIZE;
 	};
 
 	struct QueryData

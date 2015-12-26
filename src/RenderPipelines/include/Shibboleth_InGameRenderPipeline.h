@@ -31,6 +31,7 @@ THE SOFTWARE.
 NS_SHIBBOLETH
 
 class RenderManager;
+class FrameData;
 
 class InGameRenderPipeline : public IRenderPipeline
 {
@@ -46,8 +47,16 @@ public:
 private:
 	using IDepthStencilStatePtr = Gaff::SmartPtr<Gleam::IDepthStencilState, ProxyAllocator>;
 	using IBlendStatePtr = Gaff::SmartPtr<Gleam::IBlendState, ProxyAllocator>;
+	using GenerateJobData = Gaff::Pair<InGameRenderPipeline*, FrameData*>;
+
+	using IndexPair = Gaff::Pair<size_t, size_t>;
+	using InstanceMap = Map< unsigned int, Array<IndexPair> >;
 
 	static void GenerateCommandLists(void* job_data);
+	static void GenerateCameraCommandLists(Array<RenderManager::RenderDevicePtr>& rds, GenerateJobData* jd);
+	static void GenerateLightCommandLists(Array<RenderManager::RenderDevicePtr>& rds, GenerateJobData* jd);
+
+	InstanceMap _obj_inst_cache[RP_COUNT];
 
 	// Array size is number of devices
 	Array<IDepthStencilStatePtr> _ds_states[RP_COUNT];

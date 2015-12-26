@@ -62,6 +62,10 @@ public:
 
 	virtual void allComponentsLoaded(void);
 
+	virtual bool isInWorld(void) const;
+	virtual void addToWorld(void);
+	virtual void removeFromWorld(void);
+
 	virtual void setActive(bool active);
 	virtual bool isActive(void) const;
 
@@ -79,7 +83,7 @@ private:
 	AString _name;
 	Object* _owner;
 	size_t _comp_index;
-	bool _active;
+	char _flags;
 
 	GAFF_NO_COPY(Component);
 	GAFF_NO_MOVE(Component);

@@ -44,7 +44,7 @@ static float SurfaceArea(Gleam::AABBCPU& aabb)
 	return 2.0f * (extent[0]*extent[1] + extent[0]*extent[2] + extent[1]*extent[2]);
 }
 
-void OcclusionManager::BVHTree::ProcessBranch(OcclusionManager::BVHTree::FrustumData* frustum_data, size_t node_index)
+void OcclusionManager::BVHTree::ProcessBranch(FrustumData* frustum_data, size_t node_index)
 {
 	const BVHNode& node = frustum_data->tree->_node_cache[node_index];
 
@@ -61,7 +61,7 @@ void OcclusionManager::BVHTree::ProcessBranch(OcclusionManager::BVHTree::Frustum
 
 void OcclusionManager::BVHTree::FrustumJob(void* data)
 {
-	FrustumData* frustum_data = reinterpret_cast<OcclusionManager::BVHTree::FrustumData*>(data);
+	FrustumData* frustum_data = reinterpret_cast<FrustumData*>(data);
 	ProcessBranch(frustum_data, frustum_data->branch_root);
 }
 
@@ -208,7 +208,7 @@ void OcclusionManager::BVHTree::growArrays(void)
 void OcclusionManager::BVHTree::addObjectHelper(const AddBufferData& data)
 {
 	if (!_is_static) {
-		data.object->registerForLocalDirtyCallback(Gaff::Bind(this, &OcclusionManager::BVHTree::dirtyObjectCallback), data.index);
+		data.object->registerForLocalDirtyCallback(Gaff::Bind(this, &BVHTree::dirtyObjectCallback), data.index);
 	}
 
 	BVHNode& node = _node_cache[data.index];
@@ -361,8 +361,13 @@ const char* OcclusionManager::getName(void) const
 OcclusionManager::OcclusionID OcclusionManager::addObject(Object* object, OBJ_TYPE object_type, const UserData& user_data)
 {
 	assert(object && !_node_map.hasElementWithKey(object) && object_type < OT_SIZE);
-	OcclusionID id = { _bvh_trees[object_type].addObject(object, user_data), object_type };
+
+	OcclusionID id;
+	id.index = _bvh_trees[object_type].addObject(object, user_data);
+	id.object_type = object_type;;
+
 	_node_map[object] = id;
+
 	return id;
 }
 
@@ -374,7 +379,7 @@ void OcclusionManager::removeObject(Object* object)
 
 void OcclusionManager::removeObject(OcclusionID id)
 {
-	assert(id.object_type < OT_SIZE);
+	assert(id.index != SIZE_T_FAIL && id.object_type < OT_SIZE);
 	_bvh_trees[id.object_type].removeObject(id.index);
 }
 

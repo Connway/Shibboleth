@@ -184,6 +184,7 @@
     <ClInclude Include="..\..\..\src\Game\include\Shibboleth_ModelAnimResources.h" />
     <ClInclude Include="..\..\..\src\Game\include\Shibboleth_ModelLoader.h" />
     <ClInclude Include="..\..\..\src\Game\include\Shibboleth_Object.h" />
+    <ClInclude Include="..\..\..\src\Game\include\Shibboleth_OcclusionUserDataTags.h" />
     <ClInclude Include="..\..\..\src\Game\include\Shibboleth_OtterUIFileSystem.h" />
     <ClInclude Include="..\..\..\src\Game\include\Shibboleth_OtterUIRenderer.h" />
     <ClInclude Include="..\..\..\src\Game\include\Shibboleth_PackFileSystem.h" />
