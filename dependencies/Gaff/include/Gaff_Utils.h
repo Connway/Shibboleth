@@ -84,6 +84,18 @@ HashMap<AHashString<Allocator>, AString<Allocator>, Allocator> ParseCommandLine(
 template <class Allocator>
 void ParseCommandLine(int argc, char** argv, HashMap<AHashString<Allocator>, AString<Allocator>, Allocator>& out);
 
+template <class T>
+inline void SetBits(T& value, T bits);
+
+template <class T>
+inline void ClearBits(T& value, T bits);
+
+template <class T>
+inline bool IsAnyBitSet(const T& value, T bits);
+
+template <class T>
+inline bool AreAllBitsSet(const T& value, T bits);
+
 #include "Gaff_Utils_Common.inl"
 
 NS_END

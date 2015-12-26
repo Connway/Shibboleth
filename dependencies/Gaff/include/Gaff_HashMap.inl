@@ -452,7 +452,7 @@ HashMap<Key, Value, Allocator>::HashMap(HashFunc32 hash, const Allocator& alloca
 
 template <class Key, class Value, class Allocator>
 HashMap<Key, Value, Allocator>::HashMap(const Allocator& allocator):
-	_allocator(allocator), _size(0), _used(0), _hash(FNV1Hash32), _slots(nullptr)
+	_allocator(allocator), _size(0), _used(0), _hash(FNV1Hash32Wrapper), _slots(nullptr)
 {
 }
 
@@ -917,7 +917,7 @@ HashMap<String<T, Allocator>, Value, Allocator>::HashMap(HashFunc32 hash, const 
 
 template <class Value, class Allocator, class T>
 HashMap<String<T, Allocator>, Value, Allocator>::HashMap(const Allocator& allocator):
-	_allocator(allocator), _size(0), _used(0), _hash(FNV1Hash32), _slots(nullptr)
+	_allocator(allocator), _size(0), _used(0), _hash(FNV1Hash32Wrapper), _slots(nullptr)
 {
 }
 
@@ -1382,7 +1382,7 @@ HashMap<HashString<T, Allocator>, Value, Allocator>::HashMap(HashFunc32 hash, co
 
 template <class Value, class Allocator, class T>
 HashMap<HashString<T, Allocator>, Value, Allocator>::HashMap(const Allocator& allocator):
-	_allocator(allocator), _size(0), _used(0), _hash(FNV1Hash32), _slots(nullptr)
+	_allocator(allocator), _size(0), _used(0), _hash(FNV1Hash32Wrapper), _slots(nullptr)
 {
 }
 

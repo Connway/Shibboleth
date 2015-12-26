@@ -80,9 +80,9 @@ public:
 
 		if (_object) {
 			if (_object->init("Resources/Objects/test.object")) {
-				Shibboleth::ModelComponent* model = _object->getFirstComponentWithInterface<Shibboleth::ModelComponent>();
-				Shibboleth::OcclusionManager::UserData user_data(reinterpret_cast<unsigned long long>(model), 0);
-				_app.getManagerT<Shibboleth::OcclusionManager>("Occlusion Manager").addObject(_object, Shibboleth::OcclusionManager::OT_DYNAMIC, user_data);
+				//Shibboleth::ModelComponent* model = _object->getFirstComponentWithInterface<Shibboleth::ModelComponent>();
+				//Shibboleth::OcclusionManager::UserData user_data(reinterpret_cast<unsigned long long>(model), 0);
+				//_app.getManagerT<Shibboleth::OcclusionManager>("Occlusion Manager").addObject(_object, Shibboleth::OcclusionManager::OT_DYNAMIC, user_data);
 			} else {
 				_app.getManagerT<Shibboleth::ObjectManager>("Object Manager").removeObject(_object->getID());
 				_object = nullptr;
@@ -97,9 +97,6 @@ public:
 
 		if (_camera) {
 			if (_camera->init("Resources/Objects/test_camera.object")) {
-				//Shibboleth::ModelComponent* model = _object->getFirstComponentWithInterface<Shibboleth::ModelComponent>();
-				//Shibboleth::OcclusionManager::UserData user_data(reinterpret_cast<unsigned long long>(model), 0);
-				//_app.getManagerT<Shibboleth::OcclusionManager>("Occlusion Manager").addObject(_object, Shibboleth::OcclusionManager::OT_DYNAMIC, user_data);
 				_camera->setLocalPosition(Gleam::Vector4CPU(0.0f, 5.0f, -5.0f, 1.0f));
 				
 			} else {
@@ -158,21 +155,21 @@ public:
 		_resources.clear();
 	}
 
-	void render(double dt)
-	{
-		Shibboleth::ModelComponent* model = _object->getFirstComponentWithInterface<Shibboleth::ModelComponent>();
-		Shibboleth::RenderManager& rm = _app.getManagerT<Shibboleth::RenderManager>("Render Manager");
+	//void render(double dt)
+	//{
+	//	Shibboleth::ModelComponent* model = _object->getFirstComponentWithInterface<Shibboleth::ModelComponent>();
+	//	Shibboleth::RenderManager& rm = _app.getManagerT<Shibboleth::RenderManager>("Render Manager");
 
-		if (model && model->isReadyToRender()) {
-			rm.getRenderDevice().setCurrentDevice(0);
-			rm.getRenderDevice().beginFrame();
+	//	if (model && model->isReadyToRender()) {
+	//		rm.getRenderDevice().setCurrentDevice(0);
+	//		rm.getRenderDevice().beginFrame();
 
-			rm.getRenderDevice().getActiveOutputRenderTarget()->bind(rm.getRenderDevice());
-			model->render(dt, rm.getRenderDevice(), rm.getRenderDevice().getCurrentDevice());
+	//		rm.getRenderDevice().getActiveOutputRenderTarget()->bind(rm.getRenderDevice());
+	//		model->render(dt, rm.getRenderDevice(), rm.getRenderDevice().getCurrentDevice());
 
-			rm.getRenderDevice().endFrame();
-		}
-	}
+	//		rm.getRenderDevice().endFrame();
+	//	}
+	//}
 
 private:
 	Shibboleth::Object* _object;

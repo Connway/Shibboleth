@@ -25,15 +25,21 @@ THE SOFTWARE.
 #include "Shibboleth_ModelComponent.h"
 #include "Shibboleth_ModelAnimResources.h"
 
+#include <Shibboleth_OcclusionUserDataTags.h>
 #include <Shibboleth_SchemaManager.h>
 #include <Shibboleth_Utilities.h>
 #include <Shibboleth_Object.h>
 #include <Shibboleth_IApp.h>
 
 #include <Gleam_IRenderDevice.h>
-#include <Gleam_Matrix4x4.h>
+//#include <Gleam_Matrix4x4.h>
 #include <Gleam_IProgram.h>
 #include <Gleam_IBuffer.h>
+
+#define MC_IN_OM 0x01 // In Occlusion Manager
+#define MC_STATIC 0x02
+
+//#define MC_INIT 0x04
 
 NS_SHIBBOLETH
 
@@ -62,8 +68,8 @@ SHIB_REF_IMPL(ModelComponent)
 ;
 
 ModelComponent::ModelComponent(void):
-	_render_mgr(GetApp().getManagerT<RenderManager>("Render Manager")),
-	_requests_finished(0), _total_requests(0), _init(false)
+	_occlusion_mgr(GetApp().getManagerT<OcclusionManager>("Occlusion Manager")),
+	_requests_finished(0), _total_requests(0), _flags(0)
 {
 }
 
@@ -161,6 +167,60 @@ bool ModelComponent::load(const Gaff::JSON& json)
 
 void ModelComponent::allComponentsLoaded(void)
 {
+	Component::allComponentsLoaded();
+}
+
+void ModelComponent::addToWorld(void)
+{
+	Component::addToWorld();
+
+	if (isActive()) {
+		addToOcclusionManager();
+	}
+}
+
+void ModelComponent::removeFromWorld(void)
+{
+	Component::removeFromWorld();
+
+	if (Gaff::IsAnyBitSet<char>(_flags, MC_IN_OM)) {
+		removeFromOcclusionManager();
+	}
+}
+
+void ModelComponent::setActive(bool active)
+{
+	Component::setActive(active);
+
+	if (isInWorld() && active != Gaff::IsAnyBitSet<char>(_flags, MC_IN_OM)) {
+		if (active) {
+			addToOcclusionManager();
+		} else {
+			removeFromOcclusionManager();
+		}
+	}
+}
+
+void ModelComponent::setStatic(bool is_static)
+{
+	if (is_static != isStatic()) {
+		if (Gaff::IsAnyBitSet<char>(_flags, MC_IN_OM)) {
+			removeFromOcclusionManager();
+
+			if (is_static) {
+				Gaff::SetBits<char>(_flags, MC_STATIC);
+			} else {
+				Gaff::ClearBits<char>(_flags, MC_STATIC);
+			}
+
+			addToOcclusionManager();
+		}
+	}
+}
+
+bool ModelComponent::isStatic(void) const
+{
+	return Gaff::IsAnyBitSet<char>(_flags, MC_STATIC);
 }
 
 size_t ModelComponent::determineLOD(const Gleam::Vector4CPU& pos)
@@ -168,6 +228,74 @@ size_t ModelComponent::determineLOD(const Gleam::Vector4CPU& pos)
 	// IMPLEMENT ME!
 	return 0;
 }
+
+//unsigned int ModelComponent::getMeshInstanceHash(size_t index) const
+//{
+//	assert(_model);
+//	unsigned int hash = INIT_HASH32;
+//
+//	// Find first device with a model in it
+//	for (size_t i = 0; i < _model->models.size(); ++i) {
+//		// Use LOD 0
+//		if (!_model->models[i].empty()) {
+//			// Add mesh and shader pointer to hash
+//			const Gleam::IMesh* mesh = _model->models[i][0]->getMesh(index);
+//			const Gleam::IProgram* program = _materials[index]->programs[i].get();
+//
+//			hash = Gaff::FNV1Hash32T(&mesh, hash);
+//			hash = Gaff::FNV1Hash32T(&program, hash);
+//
+//			// Add all textures used by shader to hash
+//			//for (size_t j = 0; j < _texture_mappings.size(); ++j) {
+//			//	for (size_t k = 0; k < _texture_mappings[i].size(); ++k) {
+//			//		if (_texture_mappings[j][k].first == index) {
+//			//			const Gleam::ITexture* texture = _textures[j]->textures[i].get();
+//			//			hash = Gaff::FNV1Hash32T(&texture, hash);
+//			//		}
+//			//	}
+//			//}
+//
+//			// Add all samplers used by shader to hash
+//			//for (size_t j = 0; j < _sampler_mappings.size(); ++j) {
+//			//	for (size_t k = 0; k < _sampler_mappings[i].size(); ++k) {
+//			//		if (_sampler_mappings[j][k].first == index) {
+//			//			const Gleam::ISamplerState* sampler = _samplers[j]->data[i].get();
+//			//			hash = Gaff::FNV1Hash32T(&sampler, hash);
+//			//		}
+//			//	}
+//			//}
+//
+//			// Add all buffers used by shader to hash (this pretty much makes this instance unique and will never be instanced)
+//			//for (size_t j = 0; j < _buffer_mappings.size(); ++j) {
+//			//	for (size_t k = 0; k < _buffer_mappings[i].size(); ++k) {
+//			//		if (_buffer_mappings[j][k].first == index) {
+//			//			const Gleam::IBuffer* buffer = _buffers[j]->data[i].get();
+//			//			hash = Gaff::FNV1Hash32T(&buffer, hash);
+//			//		}
+//			//	}
+//			//}
+//
+//			break;
+//		}
+//	}
+//
+//	return hash;
+//}
+
+//size_t ModelComponent::getNumMeshes(void) const
+//{
+//	assert(_model);
+//
+//	// Find first device with a model in it
+//	for (size_t i = 0; i < _model->models.size(); ++i) {
+//		// Use LOD 0
+//		if (!_model->models[i].empty()) {
+//			return _model->models[i][0]->getMeshCount();
+//		}
+//	}
+//
+//	return 0;
+//}
 
 const Array< ResourceWrapper<ProgramBuffersData> >& ModelComponent::getProgramBuffers(void) const
 {
@@ -394,7 +522,7 @@ void ModelComponent::setupResources(void)
 {
 	assert(_model->models[0][0]->getMeshCount() == _materials.size());
 
-	unsigned int num_devices = Shibboleth::GetApp().getManagerT<Shibboleth::RenderManager>("Render Manager").getRenderDevice().getNumDevices();
+	unsigned int num_devices = GetApp().getManagerT<RenderManager>("Render Manager").getRenderDevice().getNumDevices();
 
 	for (unsigned int device = 0; device < num_devices; ++device) {
 		// for each texture
@@ -457,50 +585,66 @@ void ModelComponent::setupResources(void)
 	_texture_mappings.clear();
 	_sampler_mappings.clear();
 
-	_init = true;
+	//Gaff::SetBits<char>(_flags, MC_INIT);
+}
+
+void ModelComponent::addToOcclusionManager(void)
+{
+	assert(!Gaff::IsAnyBitSet<char>(_flags, MC_IN_OM));
+
+	_occlusion_id = _occlusion_mgr.addObject(
+		getOwner(), (isStatic()) ? OcclusionManager::OT_STATIC : OcclusionManager::OT_DYNAMIC,
+		OcclusionManager::UserData(reinterpret_cast<unsigned long long>(this), OMT_MODEL_COMP)
+	);
+
+	Gaff::SetBits<char>(_flags, MC_IN_OM);
+}
+
+void ModelComponent::removeFromOcclusionManager(void)
+{
+	assert(Gaff::IsAnyBitSet<char>(_flags, MC_IN_OM));
+	_occlusion_mgr.removeObject(_occlusion_id);
+	_occlusion_id = OcclusionManager::OcclusionID();
+	Gaff::ClearBits<char>(_flags, MC_IN_OM);
 }
 
 // HACK: Should be removed. For testing purposes only.
-void ModelComponent::render(double dt, Gleam::IRenderDevice& rd, unsigned int device)
-{
-	if (!_init) {
-		return;
-	}
-
-	static float rot = 0.0f;
-	rot += static_cast<float>(Gaff::Pi * dt);
-
-	Gleam::Matrix4x4 tocamera, projection, toworld, final_transform;
-	tocamera.setLookAtLH(0.0f, 5.0f, -5.0f, 0.0f, 5.0f, 0.0f, 0.0f, 1.0f, 0.0f);
-	projection.setPerspectiveLH(90.0f * Gaff::DegToRad, 4.0f / 3.0f, 0.1f, 5000.0f);
-	toworld.setIdentity();
-	toworld.setTranslate(getOwner()->getWorldPosition());
-	toworld.setRotationY(rot);
-
-	final_transform = projection * tocamera * toworld;
-
-	//Gleam::IRenderDevice& rd = _render_mgr.getRenderDevice();
-	//unsigned int current_device = rd.getCurrentDevice();
-	//rd.getActiveOutputRenderTarget()->bind(rd);
-
-	ModelPtr& model = _model->models[device][0];
-
-	Gleam::IBuffer* buffer = _buffers[0]->data[device].get();
-
-	float* matrix_data = reinterpret_cast<float*>(buffer->map(rd));
-		memcpy(matrix_data, final_transform.getBuffer(), sizeof(float) * 16);
-	buffer->unmap(rd);
-
-	for (unsigned int i = 0; i < model->getMeshCount(); ++i) {
-		_materials[i]->programs[device]->bind(rd, _program_buffers[i]->data[device].get());
-
-		model->render(rd, i);
-	}
-}
-
-bool ModelComponent::isReadyToRender(void) const
-{
-	return _init;
-}
+//void ModelComponent::render(double dt, Gleam::IRenderDevice& rd, unsigned int device)
+//{
+//	if (!Gaff::IsAnyBitSet<char>(_flags, MC_INIT)) {
+//		return;
+//	}
+//
+//	static float rot = 0.0f;
+//	rot += static_cast<float>(Gaff::Pi * dt);
+//
+//	Gleam::Matrix4x4 tocamera, projection, toworld, final_transform;
+//	tocamera.setLookAtLH(0.0f, 5.0f, -5.0f, 0.0f, 5.0f, 0.0f, 0.0f, 1.0f, 0.0f);
+//	projection.setPerspectiveLH(90.0f * Gaff::DegToRad, 4.0f / 3.0f, 0.1f, 5000.0f);
+//	toworld.setIdentity();
+//	toworld.setTranslate(getOwner()->getWorldPosition());
+//	toworld.setRotationY(rot);
+//
+//	final_transform = projection * tocamera * toworld;
+//
+//	ModelPtr& model = _model->models[device][0];
+//
+//	Gleam::IBuffer* buffer = _buffers[0]->data[device].get();
+//
+//	float* matrix_data = reinterpret_cast<float*>(buffer->map(rd));
+//		memcpy(matrix_data, final_transform.getBuffer(), sizeof(float) * 16);
+//	buffer->unmap(rd);
+//
+//	for (unsigned int i = 0; i < model->getMeshCount(); ++i) {
+//		_materials[i]->programs[device]->bind(rd, _program_buffers[i]->data[device].get());
+//
+//		model->render(rd, i);
+//	}
+//}
+//
+//bool ModelComponent::isReadyToRender(void) const
+//{
+//	return Gaff::IsAnyBitSet<char>(_flags, MC_INIT);
+//}
 
 NS_END

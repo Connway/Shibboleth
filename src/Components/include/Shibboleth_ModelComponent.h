@@ -26,7 +26,7 @@ THE SOFTWARE.
 #include "Shibboleth_ResourceWrapper.h"
 #include "Shibboleth_Component.h"
 #include <Shibboleth_ReflectionDefinitions.h>
-#include <Shibboleth_RenderManager.h>
+#include <Shibboleth_OcclusionManager.h>
 #include <Gleam_IBuffer.h>
 
 namespace Gleam {
@@ -43,7 +43,7 @@ struct ModelData;
 class ModelComponent : public Component
 {
 public:
-	INLINE static const char* getComponentName(void)
+	static const char* getComponentName(void)
 	{
 		return "Model Component";
 	}
@@ -51,19 +51,30 @@ public:
 	ModelComponent(void);
 	~ModelComponent(void);
 
-	const Gaff::JSON& getSchema(void) const;
-	bool validate(const Gaff::JSON& json);
-	bool load(const Gaff::JSON& json);
-	bool save(Gaff::JSON& json);
+	const Gaff::JSON& getSchema(void) const override;
+	bool validate(const Gaff::JSON& json) override;
+	bool load(const Gaff::JSON& json) override;
+	bool save(Gaff::JSON& json) override;
 
-	void allComponentsLoaded(void);
+	void allComponentsLoaded(void) override;
+	void addToWorld(void) override;
+	void removeFromWorld(void) override;
 
-	void* rawRequestInterface(unsigned int class_id) const;
+	void setActive(bool active) override;
 
-	void render(double dt, Gleam::IRenderDevice& rd, unsigned int device); // Temporary test function
-	bool isReadyToRender(void) const; // Temporary test function
+	void* rawRequestInterface(unsigned int class_id) const override;
+
+	void setStatic(bool is_static);
+	bool isStatic(void) const;
 
 	size_t determineLOD(const Gleam::Vector4CPU& pos);
+
+	// DELETE THESE
+	//void render(double dt, Gleam::IRenderDevice& rd, unsigned int device); // Temporary test function
+	//bool isReadyToRender(void) const; // Temporary test function
+
+	//unsigned int getMeshInstanceHash(size_t mesh) const;
+	//size_t getNumMeshes(void) const;
 
 	INLINE const Array< ResourceWrapper<ProgramBuffersData> >& getProgramBuffers(void) const;
 	INLINE Array< ResourceWrapper<ProgramBuffersData> >& getProgramBuffers(void);
@@ -78,12 +89,14 @@ public:
 	INLINE ModelData& getModel(void);
 
 private:
-	Array< ResourceWrapper<ProgramBuffersData> > _program_buffers;
+	Array< ResourceWrapper<ProgramBuffersData> > _program_buffers; // Per mesh in model
 	Array< ResourceWrapper<SamplerStateData> > _samplers;
 	Array< ResourceWrapper<ProgramData> > _materials;
 	Array< ResourceWrapper<TextureData> > _textures;
-	Array< ResourceWrapper<BufferData> >  _buffers;
+	Array< ResourceWrapper<BufferData> > _buffers;
 	ResourceWrapper<ModelData> _model;
+
+	OcclusionManager::OcclusionID _occlusion_id;
 
 	Array<Gleam::IBuffer::BufferSettings> _buffer_settings;
 	Array< Array<MaterialMapping> > _buffer_mappings;
@@ -93,7 +106,9 @@ private:
 	volatile size_t _requests_finished;
 	volatile size_t _total_requests;
 
-	RenderManager& _render_mgr;
+	OcclusionManager& _occlusion_mgr;
+
+	char _flags;
 
 	void ResourceLoadedCallback(ResourceContainer* resource);
 	//void HandleLoadingMessage(const LoadingMessage& msg);
@@ -104,7 +119,8 @@ private:
 	void requestBuffers(const Gaff::JSON& json, ResourceManager& res_mgr);
 	void setupResources(void);
 
-	bool _init;
+	void addToOcclusionManager(void);
+	void removeFromOcclusionManager(void);
 
 	SHIB_REF_DEF(ModelComponent);
 };

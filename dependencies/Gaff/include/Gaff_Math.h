@@ -76,13 +76,46 @@ bool Between(const T& val, const T& min_val, const T& max_val)
 	return val >= min_val && val <= max_val;
 }
 
+#define INIT_HASH64 14695981039346656037ULL
+#define INIT_HASH32 2166136261U
+
+template <class T>
+inline unsigned long long FNV1aHash64T(const T* value, unsigned long long init = INIT_HASH64)
+{
+	return FNV1aHash64(reinterpret_cast<const char*>(value), sizeof(T), init);
+}
+
+template <class T>
+inline unsigned long long FNV1Hash64T(const T* value, unsigned long long init = INIT_HASH64)
+{
+	return FNV1Hash64(reinterpret_cast<const char*>(value), sizeof(T), init);
+}
+
+template <class T>
+inline unsigned int FNV1aHash32T(const T* value, unsigned int init = INIT_HASH32)
+{
+	return FNV1aHash32(reinterpret_cast<const char*>(value), sizeof(T), init);
+}
+
+template <class T>
+inline unsigned int FNV1Hash32T(const T* value, unsigned int init = INIT_HASH32)
+{
+	return FNV1Hash32(reinterpret_cast<const char*>(value), sizeof(T), init);
+}
+
 typedef unsigned long long (*HashFunc64)(const char* data, size_t len);
 typedef unsigned int (*HashFunc32)(const char* data, size_t len);
 
-unsigned long long FNV1aHash64(const char* key, size_t len);
-unsigned long long FNV1Hash64(const char* key, size_t len);
-unsigned int FNV1aHash32(const char* key, size_t len);
-unsigned int FNV1Hash32(const char* key, size_t len);
+unsigned long long FNV1aHash64(const char* key, size_t len, unsigned long long init = INIT_HASH64);
+unsigned long long FNV1Hash64(const char* key, size_t len, unsigned long long init = INIT_HASH64);
+unsigned int FNV1aHash32(const char* key, size_t len, unsigned int init = INIT_HASH32);
+unsigned int FNV1Hash32(const char* key, size_t len, unsigned int init = INIT_HASH32);
+
+// These functions assume just call the above functiosn with INIT_HASH64/32
+INLINE unsigned long long FNV1aHash64Wrapper(const char* key, size_t len);
+INLINE unsigned long long FNV1Hash64Wrapper(const char* key, size_t len);
+INLINE unsigned int FNV1aHash32Wrapper(const char* key, size_t len);
+INLINE unsigned int FNV1Hash32Wrapper(const char* key, size_t len);
 
 float BinomialCoefficient(float n, float k);
 float BernsteinPolynomial(float t, float n, float k);

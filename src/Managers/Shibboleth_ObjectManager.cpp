@@ -161,12 +161,14 @@ void ObjectManager::updateDirtyObjects(double, void*)
 	// wait for update jobs to finish
 
 	for (auto it = _dirty_objects.begin(); it != _dirty_objects.end(); ++it) {
-		(*it)->updateTransforms();
+		if ((*it)->isDirty()) {
+			(*it)->updateTransforms();
+			(*it)->notifyLocalDirtyCallbacks();
+			(*it)->notifyWorldDirtyCallbacks();
 
-		(*it)->notifyWorldDirtyCallbacks();
-		(*it)->notifyLocalDirtyCallbacks();
-
-		(*it)->clearDirty();
+		} else {
+			(*it)->notifyLocalDirtyCallbacks();
+		}
 	}
 
 	_dirty_objects.clearNoFree();
