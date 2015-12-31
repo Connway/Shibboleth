@@ -23,10 +23,15 @@ THE SOFTWARE.
 #include "Shibboleth_CameraManager.h"
 #include "Shibboleth_OcclusionManager.h"
 #include "Shibboleth_FrameManager.h"
+#include <Shibboleth_OcclusionUserDataTags.h>
+#include <Shibboleth_ModelAnimResources.h>
 #include <Shibboleth_CameraComponent.h>
+#include <Shibboleth_ModelComponent.h>
 #include <Shibboleth_Utilities.h>
 #include <Shibboleth_Object.h>
 #include <Shibboleth_IApp.h>
+#include <Gleam_IProgram.h>
+#include <Gleam_IModel.h>
 
 NS_SHIBBOLETH
 
@@ -66,8 +71,10 @@ void CameraManager::update(double, void* frame_data)
 	FrameData* fd = reinterpret_cast<FrameData*>(frame_data);
 	fd->camera_object_data.clearNoFree();
 
+	OcclusionManager::QueryData query_result;
+
 	for (auto it = _cameras.begin(); it != _cameras.end(); ++it) {
-		FrameData::ObjectData& od = fd->camera_object_data[*it];
+		ObjectData& od = fd->camera_object_data[*it];
 
 		od.active = (*it)->isActive();
 
@@ -75,12 +82,24 @@ void CameraManager::update(double, void* frame_data)
 			od.projection_matrix = (*it)->getProjectionMatrix();
 			od.eye_transform = (*it)->getOwner()->getWorldTransform();
 
-			_occlusion_mgr->findObjectsInFrustum((*it)->getFrustum(), od.objects);
+			//_occlusion_mgr->findObjectsInFrustum((*it)->getFrustum(), od.objects);
+			_occlusion_mgr->findObjectsInFrustum((*it)->getFrustum(), query_result);
 
 			for (int i = OcclusionManager::OT_STATIC; i < OcclusionManager::OT_SIZE; ++i) {
 				// Copy all the transforms.
-				for (auto it_obj = od.objects.results[i].begin(); it_obj != od.objects.results[i].end(); ++it_obj) {
-					od.transforms[i].emplacePush(it_obj->first->getWorldTransform());
+				for (auto it_obj = query_result.results[i].begin(); it_obj != query_result.results[i].end(); ++it_obj) {
+					//od.transforms[i].emplacePush(it_obj->first->getWorldTransform());
+					od.transforms.emplacePush(it_obj->first->getWorldTransform());
+
+					switch (it_obj->second.second) {
+						case OMT_MODEL_COMP:
+							addModelComponent(od, reinterpret_cast<ModelComponent*>(it_obj->second.first), it_obj->first->getWorldTransform().getTranslation());
+							break;
+
+						case OMT_INST_COMP:
+							//addInstancedModelComponent(od, reinterpret_cast<InstancedModelComponent*>(it_obj->second.first));
+							break;
+					}
 				}
 			}
 		}
@@ -106,6 +125,47 @@ void CameraManager::removeCamera(CameraComponent* camera)
 
 	assert(it != _cameras.end() && *it == camera);
 	_cameras.erase(it);
+}
+
+void CameraManager::addModelComponent(ObjectData& od, ModelComponent* mc, const Gleam::Vector4CPU& eye_pos)
+{
+	ModelData& model_data = mc->getModel();
+
+	size_t lod = mc->determineLOD(eye_pos);
+
+	Array<ModelPtr> lod_models(model_data.models.size(), ModelPtr());
+
+	// For each device, gather all the LOD models for each device
+	for (size_t i = 0; i < model_data.models.size(); ++i) {
+		Array<ModelPtr>& models = model_data.models[i];
+
+		if (!models.empty() && models[lod]) {
+			lod_models[i] = models[lod];
+		}
+	}
+
+	od.models.emplacePush(std::move(lod_models));
+
+	// Assumes every LOD has the same number of meshes per model
+	auto& program_buffers = mc->getProgramBuffers();
+	auto& programs = mc->getMaterials();
+
+	assert(program_buffers.size() == programs.size());
+
+	// For each material per mesh, add the shader data
+	for (size_t i = 0; i < program_buffers.size(); ++i) {
+		// TODO: Copy and clone all program buffer data in case a buffer gets modified mid render or between frames.
+		// Clone the program buffers in case any data gets changed.
+		//Array<ProgramBuffersPtr> pbs(program_buffers[i]->data.size());
+
+		//for (size_t j = 0; j < pbs.size(); ++j) {
+		//	pbs[j] = program_buffers[i]->data[j]->clone();
+		//}
+
+		//od.program_buffers.emplacePush(std::move(pbs));
+		od.program_buffers.emplacePush(program_buffers[i]);
+		od.programs.emplacePush(programs[i]);
+	}
 }
 
 NS_END

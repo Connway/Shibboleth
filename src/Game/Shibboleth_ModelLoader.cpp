@@ -25,10 +25,10 @@ THE SOFTWARE.
 #include "Shibboleth_ResourceManager.h"
 #include "Shibboleth_RenderManager.h"
 #include <Shibboleth_IFileSystem.h>
-#include <Shibboleth_Allocator.h>
 #include <Gleam_IRenderDevice.h>
 #include <esprit_Skeleton.h>
 #include <Gleam_ILayout.h>
+#include <Gleam_IModel.h>
 #include <Gleam_IMesh.h>
 #include <Gaff_ScopedExit.h>
 #include <Gaff_JSON.h>

@@ -28,7 +28,10 @@ NS_SHIBBOLETH
 
 class OcclusionManager;
 class CameraComponent;
+class ModelComponent;
 class Object;
+
+struct ObjectData;
 
 class CameraManager : public IManager, public IUpdateQuery
 {
@@ -36,11 +39,11 @@ public:
 	CameraManager(void);
 	~CameraManager(void);
 
-	void* rawRequestInterface(unsigned int class_id) const;
-	const char* getName(void) const;
-	void allManagersCreated(void);
+	void* rawRequestInterface(unsigned int class_id) const override;
+	const char* getName(void) const override;
+	void allManagersCreated(void) override;
 
-	void getUpdateEntries(Array<UpdateEntry>& entries);
+	void getUpdateEntries(Array<UpdateEntry>& entries) override;
 	void update(double, void* frame_data);
 
 	void registerCamera(CameraComponent* camera);
@@ -49,6 +52,8 @@ public:
 private:
 	Array<CameraComponent*> _cameras;
 	OcclusionManager* _occlusion_mgr;
+
+	void addModelComponent(ObjectData& od, ModelComponent* mc, const Gleam::Vector4CPU& eye_pos);
 
 	SHIB_REF_DEF(CameraManager);
 };

@@ -164,12 +164,6 @@ ResourceWrapper<RenderTargetData>& CameraComponent::getRenderTarget(void)
 
 const Array<unsigned int>& CameraComponent::getDevices(void) const
 {
-	if (_devices.empty() && _render_target.getResourcePtr()->isLoaded()) {
-		_devices = (_render_target->any_display_with_tags) ?
-			GetApp().getManagerT<RenderManager>("Render Manager").getDevicesWithTagsAny(_render_target->tags) :
-			GetApp().getManagerT<RenderManager>("Render Manager").getDevicesWithTags(_render_target->tags);
-	}
-
 	return _devices;
 }
 
@@ -199,6 +193,12 @@ void CameraComponent::RenderTargetCallback(ResourceContainer*)
 
 	_aspect_ratio = static_cast<float>(_render_target->width) / static_cast<float>(_render_target->height);
 	constructProjectionMatrixAndFrustum();
+
+	RenderManager& render_mgr = GetApp().getManagerT<RenderManager>("Render Manager");
+
+	_devices = (_render_target->any_display_with_tags) ?
+		render_mgr.getDevicesWithTagsAny(_render_target->tags) :
+		render_mgr.getDevicesWithTags(_render_target->tags);
 }
 
 void CameraComponent::constructProjectionMatrixAndFrustum(void)

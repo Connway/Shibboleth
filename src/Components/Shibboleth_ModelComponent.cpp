@@ -35,6 +35,7 @@ THE SOFTWARE.
 //#include <Gleam_Matrix4x4.h>
 #include <Gleam_IProgram.h>
 #include <Gleam_IBuffer.h>
+#include <Gleam_IModel.h>
 
 #define MC_IN_OM 0x01 // In Occlusion Manager
 #define MC_STATIC 0x02

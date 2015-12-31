@@ -27,7 +27,6 @@ THE SOFTWARE.
 #include <Gaff_SceneImporter.h>
 #include <esprit_Skeleton.h>
 #include <Gleam_AABB_CPU.h>
-#include <Gleam_IModel.h>
 
 NS_SHIBBOLETH
 

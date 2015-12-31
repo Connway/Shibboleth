@@ -26,10 +26,12 @@ project "Managers"
 		"../Memory/include",
 		"../Game/include",
 		"../Components/include",
+		"../../dependencies/assimp/include",
 		"../../dependencies/OtterUI/inc",
 		"../../dependencies/jansson",
 		"../../dependencies/Gleam/include",
 		"../../dependencies/Gaff/include",
+		"../../dependencies/esprit/include",
 		"../../dependencies/LuaState",
 		"../../dependencies/LuaJIT-2.0.3/src",
 		"../../dependencies/utf8-cpp"

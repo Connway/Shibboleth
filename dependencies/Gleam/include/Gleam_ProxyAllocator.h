@@ -42,7 +42,7 @@ public:
 
 	void free(void* data)
 	{
-		GleamFree(data);
+		GetAllocator()->free(data);
 	}
 };
 

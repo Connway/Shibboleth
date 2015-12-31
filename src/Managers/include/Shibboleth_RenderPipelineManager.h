@@ -38,11 +38,11 @@ public:
 	RenderPipelineManager(void);
 	~RenderPipelineManager(void);
 
-	const char* getName(void) const;
-	void allManagersCreated(void);
+	const char* getName(void) const override;
+	void allManagersCreated(void) override;
 
-	void* rawRequestInterface(unsigned int class_id) const;
-	void getUpdateEntries(Array<UpdateEntry>& entries);
+	void* rawRequestInterface(unsigned int class_id) const override;
+	void getUpdateEntries(Array<UpdateEntry>& entries) override;
 
 	bool init(void);
 

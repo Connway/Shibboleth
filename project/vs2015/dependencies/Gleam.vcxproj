@@ -270,7 +270,6 @@
     <ClInclude Include="..\..\..\dependencies\Gleam\include\Gleam_RenderDevice_OpenGL_Base.h" />
     <ClInclude Include="..\..\..\dependencies\Gleam\include\Gleam_RenderDevice_OpenGL_Linux.h" />
     <ClInclude Include="..\..\..\dependencies\Gleam\include\Gleam_RenderDevice_OpenGL_Windows.h" />
-    <ClInclude Include="..\..\..\dependencies\Gleam\include\Gleam_RenderState.h" />
     <ClInclude Include="..\..\..\dependencies\Gleam\include\Gleam_RenderTarget.h" />
     <ClInclude Include="..\..\..\dependencies\Gleam\include\Gleam_RenderTarget_Direct3D.h" />
     <ClInclude Include="..\..\..\dependencies\Gleam\include\Gleam_RenderTarget_OpenGL.h" />
