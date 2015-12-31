@@ -37,7 +37,25 @@ THE SOFTWARE.
 #include <Gleam_IBuffer.h>
 #include <Gleam_IModel.h>
 
+//#include <Gaff_StaticArray.h>
+
 NS_SHIBBOLETH
+
+struct RenderInfo
+{
+	RenderInfo(ProgramBuffersPtr pbs, ProgramPtr p, ModelPtr mo, size_t me):
+		program_buffers(pbs), program(p), model(mo), mesh(me)
+	{
+	}
+
+	ProgramBuffersPtr program_buffers;
+	ProgramPtr program;
+	ModelPtr model;
+	size_t mesh;
+};
+
+static THREAD_LOCAL Array<RenderInfo> gRender_pass_info[RP_COUNT];
+static THREAD_LOCAL bool gInit = false;
 
 InGameRenderPipeline::InGameRenderPipeline(void):
 	_job_cache(GetApp().getJobPool().getNumTotalThreads()),
@@ -190,6 +208,12 @@ void InGameRenderPipeline::GenerateCommandLists(void* job_data)
 
 void InGameRenderPipeline::GenerateCameraCommandLists(Array<RenderManager::RenderDevicePtr>& rds, GenerateJobData* jd)
 {
+	if (!gInit) {
+		Gaff::construct(gRender_pass_info + RP_OPAQUE);
+		Gaff::construct(gRender_pass_info + RP_TRANSPARENT);
+		gInit = true;
+	}
+
 	FrameData* fd = jd->second;
 
 	// For each camera
@@ -200,11 +224,13 @@ void InGameRenderPipeline::GenerateCameraCommandLists(Array<RenderManager::Rende
 
 		// Grab an available camera
 		unsigned int device_index = AtomicIncrement(&it->second.curr_device) - 1;
+		auto& devices = it->first->getDevices();
 
 		// Create command list for each device
-		while (device_index < it->first->getDevices().size()) {
-			unsigned int device = it->first->getDevices()[device_index];
+		while (device_index < devices.size()) {
+			unsigned int device = devices[device_index];
 			auto& rd = rds[device];
+			auto& od = it->second;
 
 			// Change to pre-allocate command lists and re-use them instead of destroying and re-creating them.
 			Gleam::ICommandList* cmd_list = jd->first->_render_mgr.createCommandList();
@@ -214,6 +240,8 @@ void InGameRenderPipeline::GenerateCameraCommandLists(Array<RenderManager::Rende
 				continue;
 			}
 
+			SortIntoRenderPasses(od, device);
+			RunCommands(rd.get(), jd, device);
 
 			// For each object type (minus lights)
 			//for (size_t i = 0; i < OcclusionManager::OT_SIZE - 1; ++i) {
@@ -276,6 +304,9 @@ void InGameRenderPipeline::GenerateCameraCommandLists(Array<RenderManager::Rende
 
 			it->second.command_lists[device] = cmd_list;
 			device_index = AtomicIncrement(&it->second.curr_device) - 1;
+
+			gRender_pass_info[RP_OPAQUE].clearNoFree();
+			gRender_pass_info[RP_TRANSPARENT].clearNoFree();
 		}
 	}
 }
@@ -283,6 +314,37 @@ void InGameRenderPipeline::GenerateCameraCommandLists(Array<RenderManager::Rende
 void InGameRenderPipeline::GenerateLightCommandLists(Array<RenderManager::RenderDevicePtr>& rds, GenerateJobData* jd)
 {
 	
+}
+
+void InGameRenderPipeline::SortIntoRenderPasses(ObjectData& od, unsigned int device)
+{
+	for (size_t obj = 0, mesh = 0; obj < od.transforms.size(); ++obj) {
+		auto& model = od.models[obj];
+
+		if (model[device]) {
+			for (size_t i = 0; i < model[device]->getMeshCount(); ++i, ++mesh) {
+				auto& pbs = od.program_buffers[mesh];
+				auto& programs = od.programs[mesh];
+
+				assert(pbs[device] && programs[device]);
+
+				gRender_pass_info[od.render_pass[mesh]].emplacePush(pbs[device], programs[device], model[device], i);
+			}
+		}
+	}
+}
+
+void InGameRenderPipeline::RunCommands(Gleam::IRenderDevice* rd, GenerateJobData* jd, unsigned int device)
+{
+	for (int i = 0; i < RP_COUNT; ++i) {
+		jd->first->_ds_states[i][device]->set(*rd);
+		jd->first->_blend_states[i == RP_TRANSPARENT][device]->set(*rd);
+
+		for (auto it = gRender_pass_info[i].begin(); it != gRender_pass_info[i].end(); ++it) {
+			it->program->bind(*rd, it->program_buffers.get());
+			it->model->render(*rd, it->mesh);
+		}
+	}
 }
 
 NS_END

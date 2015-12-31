@@ -33,7 +33,7 @@ template <class T, class Allocator = DefaultAllocator>
 class Array
 {
 public:
-	typedef T* Iterator;
+	using Iterator = T*;
 
 	explicit Array(const Allocator& allocator = Allocator());
 	explicit Array(size_t start_capacity, const Allocator& allocator = Allocator());
