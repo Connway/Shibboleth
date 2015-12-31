@@ -34,37 +34,37 @@ public:
 	ProgramBuffersBase(void);
 	~ProgramBuffersBase(void);
 
-	void clear(void);
+	void clear(void) override;
 
-	const GleamArray<IBuffer*>& getConstantBuffers(IShader::SHADER_TYPE type) const;
-	const IBuffer* getConstantBuffer(IShader::SHADER_TYPE type, size_t index) const;
-	IBuffer* getConstantBuffer(IShader::SHADER_TYPE type, size_t index);
-	void addConstantBuffer(IShader::SHADER_TYPE type, IBuffer* const_buffer);
-	void removeConstantBuffer(IShader::SHADER_TYPE type, size_t index);
-	void popConstantBuffer(IShader::SHADER_TYPE type, size_t count = 1);
+	const GleamArray<IBuffer*>& getConstantBuffers(IShader::SHADER_TYPE type) const override;
+	const IBuffer* getConstantBuffer(IShader::SHADER_TYPE type, size_t index) const override;
+	IBuffer* getConstantBuffer(IShader::SHADER_TYPE type, size_t index) override;
+	void addConstantBuffer(IShader::SHADER_TYPE type, IBuffer* const_buffer) override;
+	void removeConstantBuffer(IShader::SHADER_TYPE type, size_t index) override;
+	void popConstantBuffer(IShader::SHADER_TYPE type, size_t count = 1) override;
 
-	size_t getConstantBufferCount(IShader::SHADER_TYPE type) const;
-	size_t getConstantBufferCount(void) const;
+	size_t getConstantBufferCount(IShader::SHADER_TYPE type) const override;
+	size_t getConstantBufferCount(void) const override;
 
-	const GleamArray<IShaderResourceView*>& getResourceViews(IShader::SHADER_TYPE type) const;
-	const IShaderResourceView* getResourceView(IShader::SHADER_TYPE type, size_t index) const;
-	IShaderResourceView* getResourceView(IShader::SHADER_TYPE type, size_t index);
-	void addResourceView(IShader::SHADER_TYPE type, IShaderResourceView* resource_view);
-	void removeResourceView(IShader::SHADER_TYPE type, size_t index);
-	void popResourceView(IShader::SHADER_TYPE type, size_t count = 1);
+	const GleamArray<IShaderResourceView*>& getResourceViews(IShader::SHADER_TYPE type) const override;
+	const IShaderResourceView* getResourceView(IShader::SHADER_TYPE type, size_t index) const override;
+	IShaderResourceView* getResourceView(IShader::SHADER_TYPE type, size_t index) override;
+	void addResourceView(IShader::SHADER_TYPE type, IShaderResourceView* resource_view) override;
+	void removeResourceView(IShader::SHADER_TYPE type, size_t index) override;
+	void popResourceView(IShader::SHADER_TYPE type, unsigned long long count = 1) override;
 
-	size_t getResourceViewCount(IShader::SHADER_TYPE type) const;
-	size_t getResourceViewCount(void) const;
+	size_t getResourceViewCount(IShader::SHADER_TYPE type) const override;
+	size_t getResourceViewCount(void) const override;
 
-	const GleamArray<ISamplerState*>& getSamplerStates(IShader::SHADER_TYPE type) const;
-	const ISamplerState* getSamplerState(IShader::SHADER_TYPE type, size_t index) const;
-	ISamplerState* getSamplerState(IShader::SHADER_TYPE type, size_t index);
-	void addSamplerState(IShader::SHADER_TYPE type, ISamplerState* sampler);
-	void removeSamplerState(IShader::SHADER_TYPE type, size_t index);
-	void popSamplerState(IShader::SHADER_TYPE type, size_t count = 1);
+	const GleamArray<ISamplerState*>& getSamplerStates(IShader::SHADER_TYPE type) const override;
+	const ISamplerState* getSamplerState(IShader::SHADER_TYPE type, size_t index) const override;
+	ISamplerState* getSamplerState(IShader::SHADER_TYPE type, size_t index) override;
+	void addSamplerState(IShader::SHADER_TYPE type, ISamplerState* sampler) override;
+	void removeSamplerState(IShader::SHADER_TYPE type, size_t index) override;
+	void popSamplerState(IShader::SHADER_TYPE type, size_t count = 1) override;
 
-	size_t getSamplerCount(IShader::SHADER_TYPE type) const;
-	size_t getSamplerCount(void) const;
+	size_t getSamplerCount(IShader::SHADER_TYPE type) const override;
+	size_t getSamplerCount(void) const override;
 
 protected:
 	GleamArray<IShaderResourceView*> _resource_views[IShader::SHADER_TYPE_SIZE];
@@ -80,10 +80,10 @@ public:
 	ProgramBase(void);
 	~ProgramBase(void);
 
-	void destroy(void);
+	void destroy(void) override;
 
-	const IShader* getAttachedShader(IShader::SHADER_TYPE type) const;
-	IShader* getAttachedShader(IShader::SHADER_TYPE type);
+	const IShader* getAttachedShader(IShader::SHADER_TYPE type) const override;
+	IShader* getAttachedShader(IShader::SHADER_TYPE type) override;
 
 protected:
 	Gaff::RefPtr<IShader> _attached_shaders[IShader::SHADER_TYPE_SIZE];

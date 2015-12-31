@@ -95,6 +95,48 @@ void ProgramBuffersD3D::popSamplerState(IShader::SHADER_TYPE type, size_t count)
 	cacheSamplers(type);
 }
 
+IProgramBuffers* ProgramBuffersD3D::clone(void) const
+{
+	ProgramBuffersD3D* pb = GetAllocator()->allocT<ProgramBuffersD3D>();
+
+	if (!pb) {
+		PrintfToLog("Failed to clone ProgramBuffersD3D.", LOG_ERROR);
+		return nullptr;
+	}
+
+	for (unsigned int i = 0; i < IShader::SHADER_TYPE_SIZE - 1; ++i) {
+		pb->_resource_views[i].resize(_resource_views[i].size());
+		pb->_sampler_states[i].resize(_sampler_states[i].size());
+		pb->_constant_buffers[i].resize(_constant_buffers[i].size());
+
+		for (size_t j = 0; j < _resource_views[i].size(); ++j) {
+			pb->_resource_views[i][j] = _resource_views[i][j];
+			pb->_resource_views[i][j]->addRef();
+		}
+
+		for (size_t j = 0; j < _sampler_states[i].size(); ++j) {
+			pb->_sampler_states[i][j] = _sampler_states[i][j];
+			pb->_sampler_states[i][j]->addRef();
+		}
+
+		for (size_t j = 0; j < _constant_buffers[i].size(); ++j) {
+			pb->_constant_buffers[i][j] = _constant_buffers[i][j];
+			pb->_constant_buffers[i][j]->addRef();
+		}
+
+		pb->cacheResViews(static_cast<IShader::SHADER_TYPE>(i));
+		pb->cacheSamplers(static_cast<IShader::SHADER_TYPE>(i));
+		pb->cacheBuffers(static_cast<IShader::SHADER_TYPE>(i));
+	}
+
+	return pb;
+}
+
+bool ProgramBuffersD3D::isD3D(void) const
+{
+	return true;
+}
+
 void ProgramBuffersD3D::cacheResViews(IShader::SHADER_TYPE type)
 {
 	GleamArray<IShaderResourceView*>& resource_views = _resource_views[type];
@@ -126,11 +168,6 @@ void ProgramBuffersD3D::cacheBuffers(IShader::SHADER_TYPE type)
 	for (size_t i = 0; i < const_bufs.size(); ++i) {
 		buffers.push(reinterpret_cast<BufferD3D*>(const_bufs[i])->getBuffer());
 	}
-}
-
-bool ProgramBuffersD3D::isD3D(void) const
-{
-	return true;
 }
 
 

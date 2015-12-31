@@ -25,8 +25,8 @@ THE SOFTWARE.
 #include <Shibboleth_IFileSystem.h>
 #include <Shibboleth_Utilities.h>
 #include <Shibboleth_IApp.h>
+#include <Gleam_IModel.h>
 #include <Gaff_ScopedExit.h>
-#include <Gaff_File.h>
 
 NS_SHIBBOLETH
 

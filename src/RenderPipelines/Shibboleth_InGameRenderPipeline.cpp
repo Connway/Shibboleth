@@ -87,6 +87,11 @@ bool InGameRenderPipeline::init(void)
 	dss.depth_func = Gleam::IDepthStencilState::COMPARE_LESS;
 	dss.depth_test = true;
 
+	_ds_states[RP_OPAQUE].resize(rd.getNumDevices());
+	_ds_states[RP_TRANSPARENT].resize(rd.getNumDevices());
+	_blend_states[RP_OPAQUE].resize(rd.getNumDevices());
+	_blend_states[RP_TRANSPARENT].resize(rd.getNumDevices());
+
 	for (unsigned int i = 0; i < rd.getNumDevices(); ++i) {
 		Gleam::IDepthStencilState* ds = _render_mgr.createDepthStencilState();
 		rd.setCurrentDevice(i);
@@ -143,7 +148,7 @@ const char* InGameRenderPipeline::getName(void) const
 	return "In-Game Render Pipeline";
 }
 
-void InGameRenderPipeline::run(double dt, void* frame_data)
+void InGameRenderPipeline::run(double, void* frame_data)
 {
 	FrameData* fd = reinterpret_cast<FrameData*>(frame_data);
 
@@ -211,58 +216,58 @@ void InGameRenderPipeline::GenerateCameraCommandLists(Array<RenderManager::Rende
 
 
 			// For each object type (minus lights)
-			for (size_t i = 0; i < OcclusionManager::OT_SIZE - 1; ++i) {
-				// Group together into instance buffer
+			//for (size_t i = 0; i < OcclusionManager::OT_SIZE - 1; ++i) {
+			//	// Group together into instance buffer
 
-				//// Set render state
+			//	//// Set render state
 
-				// For each object
-				for (size_t j = 0; j < it->second.objects.results[i].size(); ++j) {
-					const OcclusionManager::QueryResult& result = it->second.objects.results[i][j];
-					//Gleam::TransformCPU inverse_camera = it->second.eye_transform.inverse();
-					//Gleam::TransformCPU final_transform = inverse_camera + it->second.transforms[i][j];
-					//Gleam::Matrix4x4CPU final_matrix = it->second.projection_matrix * final_transform.matrix();
+			//	// For each object
+			//	for (size_t j = 0; j < it->second.objects.results[i].size(); ++j) {
+			//		const OcclusionManager::QueryResult& result = it->second.objects.results[i][j];
+			//		//Gleam::TransformCPU inverse_camera = it->second.eye_transform.inverse();
+			//		//Gleam::TransformCPU final_transform = inverse_camera + it->second.transforms[i][j];
+			//		//Gleam::Matrix4x4CPU final_matrix = it->second.projection_matrix * final_transform.matrix();
 
-					assert(result.second.first);
-					ModelComponent* model_comp = reinterpret_cast<ModelComponent*>(result.second.first);
+			//		assert(result.second.first);
+			//		ModelComponent* model_comp = reinterpret_cast<ModelComponent*>(result.second.first);
 
 
-					//size_t lod = model_comp->determineLOD(it->second.eye_transform.getTranslation());
-					//auto& program_buffers = model_comp->getProgramBuffers();
-					//auto& materials = model_comp->getMaterials();
-					//auto& buffers = model_comp->getBuffers();
-					//ModelData& model = model_comp->getModel();
+			//		//size_t lod = model_comp->determineLOD(it->second.eye_transform.getTranslation());
+			//		//auto& program_buffers = model_comp->getProgramBuffers();
+			//		//auto& materials = model_comp->getMaterials();
+			//		//auto& buffers = model_comp->getBuffers();
+			//		//ModelData& model = model_comp->getModel();
 
-					//// Update program buffers with transform information
-					//// Buffer zero is always assumed to be the transform buffer
-					//BufferPtr& buffer = buffers[0]->data[device];
-					//float* transforms = reinterpret_cast<float*>(buffer->map(*rd));
+			//		//// Update program buffers with transform information
+			//		//// Buffer zero is always assumed to be the transform buffer
+			//		//BufferPtr& buffer = buffers[0]->data[device];
+			//		//float* transforms = reinterpret_cast<float*>(buffer->map(*rd));
 
-					//if (!transforms) {
-					//	// log error
-					//	continue;
-					//}
+			//		//if (!transforms) {
+			//		//	// log error
+			//		//	continue;
+			//		//}
 
-					//memcpy(transforms, final_matrix.getBuffer(), sizeof(float) * 16);
+			//		//memcpy(transforms, final_matrix.getBuffer(), sizeof(float) * 16);
 
-					//buffer->unmap(*rd);
+			//		//buffer->unmap(*rd);
 
-					//ModelPtr& m = model.models[device][lod];
+			//		//ModelPtr& m = model.models[device][lod];
 
-					////for (size_t k = 0; k < RP_COUNT; ++k) {
-					////	if (render_modes[k].empty()) {
-					////		continue;
-					////	}
+			//		////for (size_t k = 0; k < RP_COUNT; ++k) {
+			//		////	if (render_modes[k].empty()) {
+			//		////		continue;
+			//		////	}
 
-					////	for (size_t l = 0; l < render_modes[k].size(); ++l) {
-					////		size_t rm = render_modes[k][l];
+			//		////	for (size_t l = 0; l < render_modes[k].size(); ++l) {
+			//		////		size_t rm = render_modes[k][l];
 
-					////		materials[rm]->programs[device]->bind(*rd, program_buffers[rm]->data[device].get());
-					////		m->render(*rd, rm);
-					////	}
-					////}
-				}
-			}
+			//		////		materials[rm]->programs[device]->bind(*rd, program_buffers[rm]->data[device].get());
+			//		////		m->render(*rd, rm);
+			//		////	}
+			//		////}
+			//	}
+			//}
 
 			// generate command list
 			if (!rd->finishCommandList(cmd_list)) {
@@ -270,7 +275,7 @@ void InGameRenderPipeline::GenerateCameraCommandLists(Array<RenderManager::Rende
 			}
 
 			it->second.command_lists[device] = cmd_list;
-			device = AtomicIncrement(&it->second.curr_device) - 1;
+			device_index = AtomicIncrement(&it->second.curr_device) - 1;
 		}
 	}
 }

@@ -62,6 +62,20 @@ const char* RenderPipelineManager::getName(void) const
 
 void RenderPipelineManager::allManagersCreated(void)
 {
+}
+
+void RenderPipelineManager::getUpdateEntries(Array<UpdateEntry>& entries)
+{
+	entries.emplacePush(AString("Render Pipeline Manager: Generate Command Lists"), Gaff::Bind(this, &RenderPipelineManager::generateCommandLists));
+	entries.emplacePush(AString("Render Pipeline Manager: Render To Screen"), Gaff::Bind(this, &RenderPipelineManager::renderToScreen));
+}
+
+bool RenderPipelineManager::init(void)
+{
+	_camera_to_screen_program_buffers = GetApp().getManagerT<ResourceManager>("Resource Manager").requestResource("ProgramBuffers", "render_pipeline_manager_program_buffers");
+	_camera_to_screen_sampler = GetApp().getManagerT<ResourceManager>("Resource Manager").requestResource("Resources/Samplers/anisotropic_16x.sampler");
+	_camera_to_screen_shader = GetApp().getManagerT<ResourceManager>("Resource Manager").requestResource("Resources/Camera To Screen/camera_to_screen.material");
+
 	LogManager::FileLockPair& log = GetApp().getGameLogFile();
 
 	log.first.writeString("\n==================================================\n");
@@ -78,8 +92,8 @@ void RenderPipelineManager::allManagersCreated(void)
 			GetApp().quit();
 			return true;
 
-		// It is a dynamic module, but not compiled for our architecture.
-		// Or not compiled in our build mode. Just skip over it.
+			// It is a dynamic module, but not compiled for our architecture.
+			// Or not compiled in our build mode. Just skip over it.
 		} else if (!Gaff::File::CheckExtension(name, BIT_EXTENSION DYNAMIC_EXTENSION)) {
 			return false;
 		}
@@ -104,7 +118,7 @@ void RenderPipelineManager::allManagersCreated(void)
 	});
 
 	if (early_out) {
-		return;
+		return false;
 	}
 
 	IFileSystem* fs = GetApp().getFileSystem();
@@ -113,7 +127,7 @@ void RenderPipelineManager::allManagersCreated(void)
 	if (!file) {
 		log.first.printf("ERROR - Could not open file 'graphics.cfg'.\n");
 		GetApp().quit();
-		return;
+		return false;
 	}
 
 	Gaff::JSON config;
@@ -122,7 +136,7 @@ void RenderPipelineManager::allManagersCreated(void)
 		log.first.printf("ERROR - 'graphics.cfg' is malformed. Could not parse file.\n");
 		fs->closeFile(file);
 		GetApp().quit();
-		return;
+		return false;
 	}
 
 	fs->closeFile(file);
@@ -130,7 +144,7 @@ void RenderPipelineManager::allManagersCreated(void)
 	if (!config.isObject()) {
 		log.first.printf("ERROR - 'graphics.cfg' is malformed. Root element is not an object.\n");
 		GetApp().quit();
-		return;
+		return false;
 	}
 
 	Gaff::JSON initial_pipeline = config["initial_pipeline"];
@@ -138,7 +152,7 @@ void RenderPipelineManager::allManagersCreated(void)
 	if (!initial_pipeline.isString()) {
 		log.first.printf("ERROR - 'graphics.cfg' is malformed. Element at 'initial_pipeline' is not a string.\n");
 		GetApp().quit();
-		return;
+		return false;
 	}
 
 	for (size_t i = 0; i < _pipelines.size(); ++i) {
@@ -154,19 +168,6 @@ void RenderPipelineManager::allManagersCreated(void)
 	}
 
 	_render_mgr = &GetApp().getManagerT<RenderManager>("Render Manager");
-}
-
-void RenderPipelineManager::getUpdateEntries(Array<UpdateEntry>& entries)
-{
-	entries.emplacePush(AString("Render Pipeline Manager: Generate Command Lists"), Gaff::Bind(this, &RenderPipelineManager::generateCommandLists));
-	entries.emplacePush(AString("Render Pipeline Manager: Render To Screen"), Gaff::Bind(this, &RenderPipelineManager::renderToScreen));
-}
-
-bool RenderPipelineManager::init(void)
-{
-	_camera_to_screen_program_buffers = GetApp().getManagerT<ResourceManager>("Resource Manager").requestResource("ProgramBuffers", "render_pipeline_manager_program_buffers");
-	_camera_to_screen_sampler = GetApp().getManagerT<ResourceManager>("Resource Manager").requestResource("Resources/Samplers/anisotropic_16x.sampler");
-	_camera_to_screen_shader = GetApp().getManagerT<ResourceManager>("Resource Manager").requestResource("Resources/Camera To Screen/camera_to_screen.material");
 
 	// Wait for resources to finish loading
 	while (!_camera_to_screen_program_buffers.getResourcePtr()->isLoaded() &&

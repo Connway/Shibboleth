@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="include">
@@ -21,7 +21,13 @@
     <ClInclude Include="..\..\..\dependencies\Gleam\include\Gleam_BitArray.h">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\Gleam\include\Gleam_BlendState.h">
+      <Filter>include</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\dependencies\Gleam\include\Gleam_BlendState_Direct3D.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\Gleam\include\Gleam_BlendState_OpenGL.h">
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\dependencies\Gleam\include\Gleam_Buffer.h">
@@ -57,7 +63,13 @@
     <ClInclude Include="..\..\..\dependencies\Gleam\include\Gleam_Defines.h">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\Gleam\include\Gleam_DepthStencilState.h">
+      <Filter>include</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\dependencies\Gleam\include\Gleam_DepthStencilState_Direct3D.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\Gleam\include\Gleam_DepthStencilState_OpenGL.h">
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\dependencies\Gleam\include\Gleam_Frustum.h">
@@ -243,7 +255,13 @@
     <ClInclude Include="..\..\..\dependencies\Gleam\include\Gleam_Quaternion_SIMD.h">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\Gleam\include\Gleam_RasterState.h">
+      <Filter>include</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\dependencies\Gleam\include\Gleam_RasterState_Direct3D.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\Gleam\include\Gleam_RasterState_OpenGL.h">
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\dependencies\Gleam\include\Gleam_RawInputRegisterFunction.h">
@@ -261,13 +279,13 @@
     <ClInclude Include="..\..\..\dependencies\Gleam\include\Gleam_RenderDevice_OpenGL.h">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\Gleam\include\Gleam_RenderDevice_OpenGL_Base.h">
+      <Filter>include</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\dependencies\Gleam\include\Gleam_RenderDevice_OpenGL_Linux.h">
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\dependencies\Gleam\include\Gleam_RenderDevice_OpenGL_Windows.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\dependencies\Gleam\include\Gleam_RenderState.h">
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\dependencies\Gleam\include\Gleam_RenderTarget.h">
@@ -360,26 +378,12 @@
     <ClInclude Include="..\..\..\dependencies\Gleam\include\Gleam_Window_Windows.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\dependencies\Gleam\include\Gleam_DepthStencilState.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\dependencies\Gleam\include\Gleam_BlendState.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\dependencies\Gleam\include\Gleam_RasterState.h" />
-    <ClInclude Include="..\..\..\dependencies\Gleam\include\Gleam_BlendState_OpenGL.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\dependencies\Gleam\include\Gleam_RasterState_OpenGL.h" />
-    <ClInclude Include="..\..\..\dependencies\Gleam\include\Gleam_DepthStencilState_OpenGL.h" />
-    <ClInclude Include="..\..\..\dependencies\Gleam\include\Gleam_RenderDevice_OpenGL_Base.h">
-      <Filter>include</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\dependencies\Gleam\Gleam_AABB_CPU.cpp" />
     <ClCompile Include="..\..\..\dependencies\Gleam\Gleam_AABB_SIMD.cpp" />
     <ClCompile Include="..\..\..\dependencies\Gleam\Gleam_BlendState_Direct3D.cpp" />
+    <ClCompile Include="..\..\..\dependencies\Gleam\Gleam_BlendState_OpenGL.cpp" />
     <ClCompile Include="..\..\..\dependencies\Gleam\Gleam_Buffer_Direct3D.cpp" />
     <ClCompile Include="..\..\..\dependencies\Gleam\Gleam_Buffer_OpenGL.cpp" />
     <ClCompile Include="..\..\..\dependencies\Gleam\Gleam_CommandList_Direct3D.cpp" />
@@ -388,6 +392,7 @@
     <ClCompile Include="..\..\..\dependencies\Gleam\Gleam_DeferredRenderDevice_Direct3D.cpp" />
     <ClCompile Include="..\..\..\dependencies\Gleam\Gleam_DeferredRenderDevice_OpenGL.cpp" />
     <ClCompile Include="..\..\..\dependencies\Gleam\Gleam_DepthStencilState_Direct3D.cpp" />
+    <ClCompile Include="..\..\..\dependencies\Gleam\Gleam_DepthStencilState_OpenGL.cpp" />
     <ClCompile Include="..\..\..\dependencies\Gleam\Gleam_Frustum_CPU.cpp" />
     <ClCompile Include="..\..\..\dependencies\Gleam\Gleam_Frustum_SIMD.cpp" />
     <ClCompile Include="..\..\..\dependencies\Gleam\Gleam_Global.cpp" />
@@ -414,9 +419,11 @@
     <ClCompile Include="..\..\..\dependencies\Gleam\Gleam_Quaternion_CPU.cpp" />
     <ClCompile Include="..\..\..\dependencies\Gleam\Gleam_Quaternion_SIMD.cpp" />
     <ClCompile Include="..\..\..\dependencies\Gleam\Gleam_RasterState_Direct3D.cpp" />
+    <ClCompile Include="..\..\..\dependencies\Gleam\Gleam_RasterState_OpenGL.cpp" />
     <ClCompile Include="..\..\..\dependencies\Gleam\Gleam_RawInputRegisterFunction_Linux.cpp" />
     <ClCompile Include="..\..\..\dependencies\Gleam\Gleam_RawInputRegisterFunction_Windows.cpp" />
     <ClCompile Include="..\..\..\dependencies\Gleam\Gleam_RenderDevice_Direct3D.cpp" />
+    <ClCompile Include="..\..\..\dependencies\Gleam\Gleam_RenderDevice_OpenGL_Base.cpp" />
     <ClCompile Include="..\..\..\dependencies\Gleam\Gleam_RenderDevice_OpenGL_Linux.cpp" />
     <ClCompile Include="..\..\..\dependencies\Gleam\Gleam_RenderDevice_OpenGL_Windows.cpp" />
     <ClCompile Include="..\..\..\dependencies\Gleam\Gleam_RenderTarget_Direct3D.cpp" />
@@ -438,9 +445,5 @@
     <ClCompile Include="..\..\..\dependencies\Gleam\Gleam_WindowHelpers_Windows.cpp" />
     <ClCompile Include="..\..\..\dependencies\Gleam\Gleam_Window_Linux.cpp" />
     <ClCompile Include="..\..\..\dependencies\Gleam\Gleam_Window_Windows.cpp" />
-    <ClCompile Include="..\..\..\dependencies\Gleam\Gleam_BlendState_OpenGL.cpp" />
-    <ClCompile Include="..\..\..\dependencies\Gleam\Gleam_RasterState_OpenGL.cpp" />
-    <ClCompile Include="..\..\..\dependencies\Gleam\Gleam_DepthStencilState_OpenGL.cpp" />
-    <ClCompile Include="..\..\..\dependencies\Gleam\Gleam_RenderDevice_OpenGL_Base.cpp" />
   </ItemGroup>
 </Project>

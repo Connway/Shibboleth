@@ -80,7 +80,8 @@ public:
 
 		if (_object) {
 			if (_object->init("Resources/Objects/test.object")) {
-				//Shibboleth::ModelComponent* model = _object->getFirstComponentWithInterface<Shibboleth::ModelComponent>();
+				Shibboleth::ModelComponent* model = _object->getFirstComponentWithInterface<Shibboleth::ModelComponent>();
+				model->addToWorld();
 				//Shibboleth::OcclusionManager::UserData user_data(reinterpret_cast<unsigned long long>(model), 0);
 				//_app.getManagerT<Shibboleth::OcclusionManager>("Occlusion Manager").addObject(_object, Shibboleth::OcclusionManager::OT_DYNAMIC, user_data);
 			} else {

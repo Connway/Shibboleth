@@ -31,7 +31,7 @@ THE SOFTWARE.
 NS_SHIBBOLETH
 
 class RenderManager;
-class FrameData;
+struct FrameData;
 
 class InGameRenderPipeline : public IRenderPipeline
 {

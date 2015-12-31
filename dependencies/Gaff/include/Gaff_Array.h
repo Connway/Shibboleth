@@ -102,6 +102,8 @@ public:
 	Iterator fastErase(const Iterator it);
 	void fastErase(size_t index);
 
+	void resizeFast(size_t new_size, const T& init_val);
+	void resizeFast(size_t new_size);
 	void resize(size_t new_size, const T& init_val);
 	void resize(size_t new_size);
 	void reserve(size_t reserve_size);
@@ -134,6 +136,9 @@ private:
 	Allocator _allocator;
 	T* _array;
 	size_t _used, _size;
+
+	void resizeHelper(size_t new_size, const T& init_val);
+	void resizeHelper(size_t new_size);
 };
 
 #include "Gaff_Array.inl"

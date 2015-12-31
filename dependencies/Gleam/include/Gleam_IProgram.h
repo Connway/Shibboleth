@@ -70,6 +70,8 @@ public:
 	virtual size_t getSamplerCount(IShader::SHADER_TYPE type) const = 0;
 	virtual size_t getSamplerCount(void) const = 0;
 
+	virtual IProgramBuffers* clone(void) const = 0;
+
 	virtual bool isD3D(void) const = 0;
 };
 

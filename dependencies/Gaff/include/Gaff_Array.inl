@@ -475,33 +475,49 @@ void Array<T, Allocator>::fastErase(size_t index)
 }
 
 template <class T, class Allocator>
+void Array<T, Allocator>::resizeFast(size_t new_size, const T& init_val)
+{
+	if (new_size == _size) {
+		return;
+
+	} else if (new_size < _size) {
+		for (size_t i = new_size; i < _used; ++i) {
+			deconstruct(_array + i);
+		}
+
+		_used = new_size;
+		return;
+	}
+
+	resizeHelper(new_size, init_val);
+}
+
+template <class T, class Allocator>
+void Array<T, Allocator>::resizeFast(size_t new_size)
+{
+	if (new_size == _size) {
+		return;
+
+	} else if (new_size < _size) {
+		for (size_t i = new_size; i < _used; ++i) {
+			deconstruct(_array + i);
+		}
+
+		_used = new_size;
+		return;
+	}
+
+	resizeHelper(new_size);
+}
+
+template <class T, class Allocator>
 void Array<T, Allocator>::resize(size_t new_size, const T& init_val)
 {
 	if (new_size == _size) {
 		return;
 	}
 
-	T* old_data = _array;
-
-	_array = reinterpret_cast<T*>(_allocator.alloc(sizeof(T) * new_size));
-
-	for (size_t i = _used; i < new_size; ++i) {
-		construct(_array + i, init_val);
-	}
-
-	if (old_data) {
-		if (new_size < _used) {
-			for (size_t i = new_size; i < _used; ++i) {
-				deconstruct(old_data + i);
-			}
-		}
-
-		memcpy((void*)_array, (void*)old_data, sizeof(T) * _used);
-		_allocator.free((void*)old_data);
-	}
-
-	_size = new_size;
-	_used = new_size;
+	resizeHelper(new_size, init_val);
 }
 
 template <class T, class Allocator>
@@ -511,32 +527,7 @@ void Array<T, Allocator>::resize(size_t new_size)
 		return;
 	}
 
-	T* old_data = _array;
-
-	_array = reinterpret_cast<T*>(_allocator.alloc(sizeof(T) * new_size));
-
-	for (size_t i = _used; i < new_size; ++i) {
-		construct(_array + i);
-	}
-
-	if (old_data) {
-		if (new_size < _used) {
-			for (size_t i = new_size; i < _used; ++i) {
-				deconstruct(old_data + i);
-			}
-		}
-
-		memcpy(
-			reinterpret_cast<void*>(_array),
-			reinterpret_cast<void*>(old_data),
-			sizeof(T) * _used
-		);
-
-		_allocator.free(reinterpret_cast<void*>(old_data));
-	}
-
-	_size = new_size;
-	_used = new_size;
+	resizeHelper(new_size);
 }
 
 template <class T, class Allocator>
@@ -674,4 +665,66 @@ template <class T, class Allocator>
 void Array<T, Allocator>::setAllocator(const Allocator& allocator)
 {
 	_allocator = allocator;
+}
+
+template <class T, class Allocator>
+void Array<T, Allocator>::resizeHelper(size_t new_size, const T& init_val)
+{
+	T* old_data = _array;
+
+	_array = reinterpret_cast<T*>(_allocator.alloc(sizeof(T) * new_size));
+
+	for (size_t i = _used; i < new_size; ++i) {
+		construct(_array + i, init_val);
+	}
+
+	if (old_data) {
+		if (new_size < _used) {
+			for (size_t i = new_size; i < _used; ++i) {
+				deconstruct(old_data + i);
+			}
+		}
+
+		memcpy(
+			reinterpret_cast<void*>(_array),
+			reinterpret_cast<void*>(old_data),
+			sizeof(T) * _used
+			);
+
+		_allocator.free(reinterpret_cast<void*>(old_data));
+	}
+
+	_size = new_size;
+	_used = new_size;
+}
+
+template <class T, class Allocator>
+void Array<T, Allocator>::resizeHelper(size_t new_size)
+{
+	T* old_data = _array;
+
+	_array = reinterpret_cast<T*>(_allocator.alloc(sizeof(T) * new_size));
+
+	for (size_t i = _used; i < new_size; ++i) {
+		construct(_array + i);
+	}
+
+	if (old_data) {
+		if (new_size < _used) {
+			for (size_t i = new_size; i < _used; ++i) {
+				deconstruct(old_data + i);
+			}
+		}
+
+		memcpy(
+			reinterpret_cast<void*>(_array),
+			reinterpret_cast<void*>(old_data),
+			sizeof(T) * _used
+			);
+
+		_allocator.free(reinterpret_cast<void*>(old_data));
+	}
+
+	_size = new_size;
+	_used = new_size;
 }

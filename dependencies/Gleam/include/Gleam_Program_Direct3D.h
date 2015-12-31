@@ -43,19 +43,21 @@ public:
 	ProgramBuffersD3D(void);
 	~ProgramBuffersD3D(void);
 
-	void addConstantBuffer(IShader::SHADER_TYPE type, IBuffer* const_buffer);
-	void removeConstantBuffer(IShader::SHADER_TYPE type, size_t index);
-	void popConstantBuffer(IShader::SHADER_TYPE type, size_t count = 1);
+	void addConstantBuffer(IShader::SHADER_TYPE type, IBuffer* const_buffer) override;
+	void removeConstantBuffer(IShader::SHADER_TYPE type, size_t index) override;
+	void popConstantBuffer(IShader::SHADER_TYPE type, size_t count = 1) override;
 
-	void addResourceView(IShader::SHADER_TYPE type, IShaderResourceView* resource_view);
-	void removeResourceView(IShader::SHADER_TYPE type, size_t index);
-	void popResourceView(IShader::SHADER_TYPE type, size_t count = 1);
+	void addResourceView(IShader::SHADER_TYPE type, IShaderResourceView* resource_view) override;
+	void removeResourceView(IShader::SHADER_TYPE type, size_t index) override;
+	void popResourceView(IShader::SHADER_TYPE type, size_t count = 1) override;
 
-	void addSamplerState(IShader::SHADER_TYPE type, ISamplerState* sampler);
-	void removeSamplerState(IShader::SHADER_TYPE type, size_t index);
-	void popSamplerState(IShader::SHADER_TYPE type, size_t count = 1);
+	void addSamplerState(IShader::SHADER_TYPE type, ISamplerState* sampler) override;
+	void removeSamplerState(IShader::SHADER_TYPE type, size_t index) override;
+	void popSamplerState(IShader::SHADER_TYPE type, size_t count = 1) override;
 
-	bool isD3D(void) const;
+	IProgramBuffers* clone(void) const override;
+
+	bool isD3D(void) const override;
 
 private:
 	GleamArray<ID3D11ShaderResourceView*> _res_views[IShader::SHADER_TYPE_SIZE];

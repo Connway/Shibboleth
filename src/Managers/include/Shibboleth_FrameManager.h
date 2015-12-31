@@ -34,22 +34,35 @@ NS_SHIBBOLETH
 class CameraComponent;
 class RenderManager;
 
-struct FrameData
+struct ObjectData
 {
+	//struct Test
+	//{
+	//	Array<ProgramBuffersPtr> program_buffers; // [Mesh]
+	//	Array<ProgramPtr> programs; // [Mesh]
+	//	ModelPtr model;
+	//	Gleam::TransformCPU transform;
+	//};
+
 	using CommandListPtr = Gaff::SmartPtr<Gleam::ICommandList, ProxyAllocator>;
 
-	struct ObjectData
-	{
-		Array<Gleam::TransformCPU> transforms[OcclusionManager::OT_SIZE];
-		Gleam::Matrix4x4CPU projection_matrix;
-		Gleam::TransformCPU eye_transform;
-		OcclusionManager::QueryData objects;
+	bool active;
+	volatile unsigned int curr_device;
 
-		Array<CommandListPtr> command_lists; // [Device]
-		volatile unsigned int curr_device;
-		bool active;
-	};
+	Array< Array<ProgramBuffersPtr> > program_buffers; // [Mesh][Device]
+	Array< Array<ProgramPtr> > programs; // [Mesh][Device]
+	Array< Array<ModelPtr> > models; // [Object][Device]
+	Array<Gleam::TransformCPU> transforms; // [Object]
 
+	//Array<Gleam::TransformCPU> transforms[OcclusionManager::OT_SIZE];
+	Gleam::Matrix4x4CPU projection_matrix;
+	Gleam::TransformCPU eye_transform;
+
+	Array<CommandListPtr> command_lists; // [Device]
+};
+
+struct FrameData
+{
 	Map<CameraComponent*, ObjectData> camera_object_data;
 	//Map<LightComponent*, ObjectData> shadow_object_data;
 };
