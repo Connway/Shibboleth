@@ -51,6 +51,7 @@ struct ObjectData
 
 	Array< Array<ProgramBuffersPtr> > program_buffers; // [Mesh][Device]
 	Array< Array<ProgramPtr> > programs; // [Mesh][Device]
+	Array<RenderPasses> render_pass; // [Mesh]
 	Array< Array<ModelPtr> > models; // [Object][Device]
 	Array<Gleam::TransformCPU> transforms; // [Object]
 
@@ -74,7 +75,7 @@ public:
 	using FrameDataFreeFunc = void (*)(void*, size_t);
 
 	template <class T>
-	INLINE T* getNextFrameDataT(size_t phase_id)
+	T* getNextFrameDataT(size_t phase_id)
 	{
 		return reinterpret_cast<T*>(getNextFrameData(phase_id));
 	}
@@ -85,8 +86,8 @@ public:
 	const char* getName(void) const override;
 	void allManagersCreated(void) override;
 
-	void* rawRequestInterface(unsigned int class_id) const;
-	void getUpdateEntries(Array<UpdateEntry>& entries);
+	void* rawRequestInterface(unsigned int class_id) const override;
+	void getUpdateEntries(Array<UpdateEntry>& entries) override;
 
 	void setFrameDataFuncs(FrameDataAllocFunc alloc_func, FrameDataFreeFunc free_func);
 

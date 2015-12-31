@@ -22,49 +22,53 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Shibboleth_Memory.h"
-#include <Gaff_Math.h>
-#include <cstring>
+#include "Gaff_Defines.h"
+#include "Gaff_IncludeAssert.h"
 
-NS_SHIBBOLETH
+NS_GAFF
 
-class ProxyAllocator : public Gaff::IAllocator
+template <class T, size_t array_size>
+class StaticArray
 {
 public:
-	explicit ProxyAllocator(const char* pool_tag = nullptr, Shibboleth::IAllocator* allocator = GetAllocator()):
-		_allocator(allocator), _alloc_tag(0)
-	{
-		if (pool_tag) {
-			_alloc_tag = Gaff::FNV1Hash32(pool_tag, strlen(pool_tag));
-			_allocator->createMemoryPool(pool_tag, _alloc_tag);
-		}
-	}
+	static_assert(array_size > 0, "StaticArray size must be larger than zero.");
+	using Iterator = T*;
 
-	ProxyAllocator(const ProxyAllocator& allocator):
-		_allocator(allocator._allocator), _alloc_tag(allocator._alloc_tag)
-	{
-	}
+	StaticArray(const T& init_val);
+	StaticArray(const StaticArray<T, array_size>& rhs);
+	StaticArray(StaticArray<T, array_size>&& rhs);
+	StaticArray(void);
+	~StaticArray(void);
 
-	const ProxyAllocator& operator=(const ProxyAllocator& rhs)
-	{
-		_allocator = rhs._allocator;
-		_alloc_tag = rhs._alloc_tag;
-		return *this;
-	}
+	const StaticArray<T, array_size>& operator=(const StaticArray<T, array_size>& rhs);
+	const StaticArray<T, array_size>& operator=(StaticArray<T, array_size>&& rhs);
 
-	void* alloc(size_t size_bytes) override
-	{
-		return _allocator->alloc(size_bytes, _alloc_tag);
-	}
+	bool operator==(const StaticArray<T, array_size>& rhs) const;
+	bool operator!=(const StaticArray<T, array_size>& rhs) const;
 
-	void free(void* data) override
-	{
-		_allocator->free(data);
-	}
+	const T& operator[](size_t index) const;
+	T& operator[](size_t index);
+
+	const T& first(void) const;
+	T& first(void);
+
+	const T& last(void) const;
+	T& last(void);
+
+	const T* getArray(void) const;
+	T* getArray(void);
+
+	Iterator begin(void) const;
+	Iterator end(void) const;
+	Iterator rbegin(void) const;
+	Iterator rend(void) const;
+
+	size_t size(void) const;
 
 private:
-	Shibboleth::IAllocator* _allocator;
-	unsigned int _alloc_tag;
+	T _array[array_size];
 };
+
+#include "Gaff_StaticArray.inl"
 
 NS_END

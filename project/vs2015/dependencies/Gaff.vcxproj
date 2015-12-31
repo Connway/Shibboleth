@@ -237,6 +237,7 @@
     <ClInclude Include="..\..\..\dependencies\Gaff\include\Gaff_StackTrace.h" />
     <ClInclude Include="..\..\..\dependencies\Gaff\include\Gaff_StackTrace_Linux.h" />
     <ClInclude Include="..\..\..\dependencies\Gaff\include\Gaff_StackTrace_Windows.h" />
+    <ClInclude Include="..\..\..\dependencies\Gaff\include\Gaff_StaticArray.h" />
     <ClInclude Include="..\..\..\dependencies\Gaff\include\Gaff_String.h" />
     <ClInclude Include="..\..\..\dependencies\Gaff\include\Gaff_Thread.h" />
     <ClInclude Include="..\..\..\dependencies\Gaff\include\Gaff_Thread_Linux.h" />
@@ -299,6 +300,7 @@
     <None Include="..\..\..\dependencies\Gaff\include\Gaff_Queue.inl" />
     <None Include="..\..\..\dependencies\Gaff\include\Gaff_ReflectionDefinitions.inl" />
     <None Include="..\..\..\dependencies\Gaff\include\Gaff_ReflectionDefinitionsContainers.inl" />
+    <None Include="..\..\..\dependencies\Gaff\include\Gaff_StaticArray.inl" />
     <None Include="..\..\..\dependencies\Gaff\include\Gaff_String.inl" />
     <None Include="..\..\..\dependencies\Gaff\include\Gaff_Utils_Common.inl" />
     <None Include="..\..\..\dependencies\Gaff\include\Gaff_Watcher.inl" />
