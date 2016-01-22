@@ -1,0 +1,17 @@
+{
+	"Vertex": { "Type": "String", "Optional": true },
+	"Pixel": { "Type": "String", "Optional": true },
+	"Hull": { "Type": "String", "Optional": true },
+	"Geometry": { "Type": "String", "Optional": true },
+	"Domain": { "Type": "String", "Optional": true },
+
+	"Render Pass": { "Type":"String", "Optional": false },
+
+	"Slope Scale Depth Bias": { "Type": "Real", "Optional": true },
+	"Depth Bias Clamp": { "Type": "Real", "Optional": true },
+	"Depth Bias": { "Type": "Integer", "Optional": true },
+	"Front Face Counter Clockwise": { "Type": "Boolean", "Optional": true },
+	"Scissor Enabled": { "Type": "Boolean", "Optional": true },
+	"Two Sided": { "Type": "Boolean", "Optional": true },
+	"Wireframe": { "Type": "Boolean", "Optional": true }
+}

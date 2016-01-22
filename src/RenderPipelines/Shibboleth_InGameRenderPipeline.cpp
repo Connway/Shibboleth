@@ -209,7 +209,6 @@ void InGameRenderPipeline::GenerateCameraCommandLists(Array<RenderManager::Rende
 				continue;
 			}
 
-
 			// For each object type (minus lights)
 			for (size_t i = 0; i < OcclusionManager::OT_SIZE - 1; ++i) {
 				// Group together into instance buffer

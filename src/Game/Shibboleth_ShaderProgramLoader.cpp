@@ -24,19 +24,20 @@ THE SOFTWARE.
 #include "Shibboleth_ResourceManager.h"
 #include "Shibboleth_RenderManager.h"
 #include <Shibboleth_ReflectionDefinitions.h>
+#include <Shibboleth_SchemaManager.h>
 #include <Shibboleth_IFileSystem.h>
 #include <Shibboleth_Utilities.h>
 #include <Shibboleth_IApp.h>
 #include <Gleam_IRenderDevice.h>
+#include <Gleam_IRasterState.h>
 #include <Gleam_IProgram.h>
 #include <Gaff_ScopedExit.h>
-#include <Gaff_File.h>
 #include <Gaff_JSON.h>
 
 NS_SHIBBOLETH
 
-ShaderProgramLoader::ShaderProgramLoader(ResourceManager& res_mgr, RenderManager& render_mgr):
-	_res_mgr(res_mgr), _render_mgr(render_mgr)
+ShaderProgramLoader::ShaderProgramLoader(ResourceManager& res_mgr, SchemaManager& schema_mgr, RenderManager& render_mgr):
+	_res_mgr(res_mgr), _schema_mgr(schema_mgr), _render_mgr(render_mgr)
 {
 }
 
@@ -57,18 +58,15 @@ Gaff::IVirtualDestructor* ShaderProgramLoader::load(const char* file_name, unsig
 		}
 	});
 
-	ProgramData* program_data = GetAllocator()->template allocT<ProgramData>();
-
-	if (!program_data) {
-		return nullptr;
-	}
-
 	IFile* file = file_map[AString(file_name)];
 
 	Gaff::JSON json;
 
 	if (!json.parse(file->getBuffer())) {
-		GetAllocator()->freeT(program_data);
+		return nullptr;
+	}
+
+	if (!json.validate(_schema_mgr.getSchema("Material.schema"))) {
 		return nullptr;
 	}
 
@@ -84,6 +82,12 @@ Gaff::IVirtualDestructor* ShaderProgramLoader::load(const char* file_name, unsig
 
 	assert(render_pass.isString());
 	
+	ProgramData* program_data = GetAllocator()->template allocT<ProgramData>();
+
+	if (!program_data) {
+		return nullptr;
+	}
+
 	program_data->render_pass = GetEnumRefDef<RenderPasses>().getValue(render_pass.getString());
 
 	if (vertex.isString() && !loadShader(program_data, vertex.getString(), Gleam::IShader::SHADER_VERTEX, file_map)) {
@@ -121,9 +125,13 @@ Gaff::IVirtualDestructor* ShaderProgramLoader::load(const char* file_name, unsig
 		return nullptr;
 	}
 
+	if (!createRasterStates(program_data, json)) {
+		GetAllocator()->freeT(program_data);
+		return nullptr;
+	}
+
 	return program_data;
 }
-
 
 bool ShaderProgramLoader::loadShader(ProgramData* data, const char* file_name, Gleam::IShader::SHADER_TYPE shader_type, HashMap<AString, IFile*>& file_map)
 {
@@ -141,6 +149,7 @@ bool ShaderProgramLoader::loadShader(ProgramData* data, const char* file_name, G
 bool ShaderProgramLoader::createPrograms(ProgramData* data)
 {
 	Gleam::IRenderDevice& rd = _render_mgr.getRenderDevice();
+	data->programs.reserve(rd.getNumDevices());
 
 	for (unsigned int i = 0; i < rd.getNumDevices(); ++i) {
 		ProgramPtr program(_render_mgr.createProgram());
@@ -181,9 +190,32 @@ bool ShaderProgramLoader::createPrograms(ProgramData* data)
 			program->attach(domain_shaders->shaders[i].get());
 		}
 
-		data->programs.push(program);
+		data->programs.emplacePush(program);
 	}
 
+	return true;
+}
+
+bool ShaderProgramLoader::createRasterStates(ProgramData* data, const Gaff::JSON& json)
+{
+	Gaff::JSON ss_depth_bias = json["Slope Scale Depth Bias"];
+	Gaff::JSON depth_bias_clamp = json["Depth Bias Clamp"];
+	Gaff::JSON depth_bias = json["Depth Bias"];
+	Gaff::JSON ffcc = json["Front Face Counter Clockwise"];
+	Gaff::JSON scissor = json["Scissor Enabled"];
+	Gaff::JSON two_sided = json["Two Sided"];
+	Gaff::JSON wireframe = json["Wireframe"];
+
+	Gleam::IRasterState::RasterStateSettings settings;
+	settings.slope_scale_depth_bias = static_cast<float>(ss_depth_bias.getReal(0.0f));
+	settings.depth_bias_clamp = static_cast<float>(depth_bias_clamp.getReal(0.0f));
+	settings.depth_bias = static_cast<int>(depth_bias.getInteger(0));
+	settings.front_face_counter_clockwise = ffcc.isTrue();
+	settings.scissor_enabled = scissor.isTrue();
+	settings.two_sided = two_sided.isTrue();
+	settings.wireframe = wireframe.isTrue();
+
+	data->raster_states = _render_mgr.getOrCreateRasterStates(Gaff::FNV1Hash32T(&settings), settings);
 	return true;
 }
 

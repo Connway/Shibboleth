@@ -71,7 +71,7 @@ void CreateResourceLoadersState::update(void)
 	_app.getGameLogFile().first.writeString("==================================================\n");
 	_app.getGameLogFile().first.printf("Creating Resource Loaders...\n");
 
-	RenderManager& render_manager = _app.getManagerT<RenderManager>("Render Manager");
+	RenderManager& render_mgr = _app.getManagerT<RenderManager>("Render Manager");
 	ResourceManager& res_mgr = _app.getManagerT<ResourceManager>("Resource Manager");
 
 	// PROGRAM BUFFERS CREATOR
@@ -104,7 +104,7 @@ void CreateResourceLoadersState::update(void)
 
 	// TEXTURE LOADER
 	{
-		TextureLoader* texture_loader = GetAllocator()->template allocT<TextureLoader>(render_manager);
+		TextureLoader* texture_loader = GetAllocator()->template allocT<TextureLoader>(render_mgr);
 
 		if (!texture_loader) {
 			_app.getGameLogFile().first.printf("ERROR - Failed to create texture loader.\n");
@@ -122,7 +122,7 @@ void CreateResourceLoadersState::update(void)
 
 	// SAMPLER STATE LOADER
 	{
-		SamplerStateLoader* sampler_loader = GetAllocator()->template allocT<SamplerStateLoader>(render_manager);
+		SamplerStateLoader* sampler_loader = GetAllocator()->template allocT<SamplerStateLoader>(render_mgr);
 
 		if (!sampler_loader) {
 			_app.getGameLogFile().first.printf("ERROR - Failed to create sampler state loader.\n");
@@ -136,7 +136,7 @@ void CreateResourceLoadersState::update(void)
 
 	// SHADER LOADER
 	{
-		ShaderLoader* shader_loader = GetAllocator()->template allocT<ShaderLoader>(render_manager);
+		ShaderLoader* shader_loader = GetAllocator()->template allocT<ShaderLoader>(render_mgr);
 
 		if (!shader_loader) {
 			_app.getGameLogFile().first.printf("ERROR - Failed to create shader loader.\n");
@@ -145,12 +145,14 @@ void CreateResourceLoadersState::update(void)
 		}
 
 		_app.getGameLogFile().first.printf("Adding Shader Loader\n");
-		res_mgr.registerResourceLoader(shader_loader, render_manager.getShaderExtension());
+		res_mgr.registerResourceLoader(shader_loader, render_mgr.getShaderExtension());
 	}
 
 	// SHADER PROGRAM LOADER
 	{
-		ShaderProgramLoader* shader_program_loader = GetAllocator()->template allocT<ShaderProgramLoader>(res_mgr, render_manager);
+		SchemaManager& schema_mgr = _app.getManagerT<SchemaManager>("Schema Manager");
+
+		ShaderProgramLoader* shader_program_loader = GetAllocator()->template allocT<ShaderProgramLoader>(res_mgr, schema_mgr, render_mgr);
 
 		if (!shader_program_loader) {
 			_app.getGameLogFile().first.printf("ERROR - Failed to create shader program loader.\n");
@@ -159,7 +161,7 @@ void CreateResourceLoadersState::update(void)
 		}
 
 		Array<ResourceManager::JSONModifiers> json_elements;
-		ResourceManager::JSONModifiers modifiers = { AString("Vertex"), AString(render_manager.getShaderExtension()), true };
+		ResourceManager::JSONModifiers modifiers = { AString("Vertex"), AString(render_mgr.getShaderExtension()), true };
 		json_elements.emplacePush(modifiers);
 
 		modifiers.json_element = "Pixel";
@@ -253,7 +255,7 @@ void CreateResourceLoadersState::update(void)
 
 	// MODEL LOADER
 	{
-		ModelLoader* model_loader = GetAllocator()->template allocT<ModelLoader>(render_manager, res_mgr, *_app.getFileSystem());
+		ModelLoader* model_loader = GetAllocator()->template allocT<ModelLoader>(render_mgr, res_mgr, *_app.getFileSystem());
 
 		if (!model_loader) {
 			_app.getGameLogFile().first.printf("ERROR - Failed to create Model loader.\n");
