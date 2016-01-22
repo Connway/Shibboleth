@@ -296,7 +296,7 @@ bool RenderPipelineManager::addRenderPipelines(DynamicLoader::ModulePtr& module)
 		return false;
 	}
 
-	if (!init_func(Shibboleth::GetApp())) {
+	if (!init_func(GetApp())) {
 		log.first.writeString("ERROR - Failed to initialize render pipeline module.\n");
 	}
 

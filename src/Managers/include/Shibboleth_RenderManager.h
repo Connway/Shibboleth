@@ -29,11 +29,14 @@ THE SOFTWARE.
 #include <Gleam_IShaderResourceView.h>
 #include <Gleam_IRenderTarget.h>
 #include <Gleam_ISamplerstate.h>
+#include <Gleam_IRasterState.h>
 #include <Gleam_ITexture.h>
 #include <Gleam_IShader.h>
 #include <Gleam_IWindow.h>
 #include <Gaff_SmartPtr.h>
 #include <Gaff_SpinLock.h>
+
+using RasterStatePtr = Gaff::RefPtr<Gleam::IRasterState>;
 
 #define EXTRACT_DISPLAY_TAGS(display_tags, out_tags) \
 	display_tags.forEachInArray([&](size_t, const Gaff::JSON& value) -> bool \
@@ -56,7 +59,6 @@ namespace Gleam
 	class IProgramBuffers;
 	class IRenderDevice;
 	class ISamplerState;
-	class IRasterState;
 	class ICommandList;
 	class IBlendState;
 	class IProgram;
@@ -195,6 +197,7 @@ public:
 	INLINE Gleam::IMesh* createMesh(void);
 
 	WindowRenderTargets createRenderTargetsForEachWindow(void);
+	Array<RasterStatePtr>& getOrCreateRasterStates(unsigned int hash, const Gleam::IRasterState::RasterStateSettings& settings);
 
 private:
 	struct GraphicsFunctions
@@ -246,13 +249,17 @@ private:
 		CreateMesh create_mesh;
 	};
 
+	RenderDevicePtr _render_device;
+
 	GraphicsFunctions _graphics_functions;
 	Array<WindowData> _windows;
+
+	Map< unsigned int, Array<RasterStatePtr> > _raster_states;
+	Gaff::SpinLock _rs_lock;
 
 	Map<unsigned int, Array<RenderDevicePtr> > _deferred_devices; // Index is device ID.
 	Array<Gaff::SpinLock> _context_locks; // Index is device ID
 
-	RenderDevicePtr _render_device;
 	DynamicLoader::ModulePtr _gleam_module;
 
 	ProxyAllocator _proxy_allocator;
