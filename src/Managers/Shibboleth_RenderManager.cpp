@@ -498,6 +498,32 @@ RenderManager::WindowRenderTargets RenderManager::createRenderTargetsForEachWind
 	return wrt;
 }
 
+Array<RasterStatePtr>& RenderManager::getOrCreateRasterStates(unsigned int hash, const Gleam::IRasterState::RasterStateSettings& settings)
+{
+	_rs_lock.lock();
+
+	Array<RasterStatePtr>& raster_states = _raster_states[hash];
+	raster_states.reserve(_render_device->getNumDevices());
+
+	if (raster_states.empty()) {
+		for (unsigned int i = 0; i < _render_device->getNumDevices(); ++i) {
+			_render_device->setCurrentDevice(i);
+			Gleam::IRasterState* rs = _graphics_functions.create_rasterstate();
+
+			if (!rs || !rs->init(*_render_device, settings)) {
+				raster_states.clear();
+				return raster_states;
+			}
+
+			raster_states.emplacePush(rs);
+		}
+	}
+
+	_rs_lock.unlock();
+
+	return raster_states;
+}
+
 int RenderManager::getDisplayModeID(unsigned int width, unsigned int height, unsigned int refresh_rate, unsigned int adapter_id, unsigned int display_id)
 {
 	Gleam::IRenderDevice::AdapterList adpt_list = _render_device->getDisplayModes();

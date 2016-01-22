@@ -24,29 +24,31 @@ THE SOFTWARE.
 
 #include "Shibboleth_IResourceLoader.h"
 #include "Shibboleth_ResourceDefines.h"
-#include "Shibboleth_Array.h"
 #include <Gleam_IShader.h>
 
 NS_SHIBBOLETH
 
 class ResourceManager;
+class SchemaManager;
 class RenderManager;
 class IFileSystem;
 
 class ShaderProgramLoader : public IResourceLoader
 {
 public:
-	ShaderProgramLoader(ResourceManager& res_mgr, RenderManager& render_mgr);
+	ShaderProgramLoader(ResourceManager& res_mgr, SchemaManager& schema_mgr, RenderManager& render_mgr);
 	~ShaderProgramLoader(void);
 
 	Gaff::IVirtualDestructor* load(const char* file_name, unsigned long long, HashMap<AString, IFile*>& file_map);
 
 private:
 	ResourceManager& _res_mgr;
+	SchemaManager& _schema_mgr;
 	RenderManager& _render_mgr;
 
 	bool loadShader(ProgramData* data, const char* file_name, Gleam::IShader::SHADER_TYPE shader_type, HashMap<AString, IFile*>& file_map);
 	bool createPrograms(ProgramData* data);
+	bool createRasterStates(ProgramData* data, const Gaff::JSON& json);
 
 	GAFF_NO_COPY(ShaderProgramLoader);
 	GAFF_NO_MOVE(ShaderProgramLoader);

@@ -1,5 +1,13 @@
 {
 	"Vertex": "Resources/Materials/vertex",
 	"Pixel": "Resources/Materials/pixel",
-	"Render Pass": "Opaque"
+	"Render Pass": "Opaque",
+
+	"Slope Scale Depth Bias": 0.0,
+	"Depth Bias Clamp": 0.0,
+	"Depth Bias": 0,
+	"Front Face Counter Clockwise": false,
+	"Scissor Enabled": false,
+	"Two Sided": false,
+	"Wireframe": false
 }

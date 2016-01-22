@@ -135,6 +135,12 @@ public:
 
 	INLINE JSON getObject(const char* key) const;
 	INLINE JSON getObject(size_t index) const;
+
+	INLINE const char* getString(const char* default_value) const;
+	INLINE json_int_t getInteger(json_int_t default_value) const;
+	INLINE double getReal(double default_value) const;
+	INLINE double getNumber(double default_value) const;
+
 	INLINE const char* getString(void) const;
 	INLINE json_int_t getInteger(void) const;
 	INLINE double getReal(void) const;

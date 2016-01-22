@@ -26,7 +26,6 @@
 	},
 
 	{
-
 		"Type": { "Type": "String", "Optional": false },
 
 		"Model File": { "Type": "String", "Optional": true },

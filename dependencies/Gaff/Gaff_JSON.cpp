@@ -340,6 +340,26 @@ JSON JSON::getObject(size_t index) const
 	return JSON(json_array_get(_value, index), true);
 }
 
+const char* JSON::getString(const char* default_value) const
+{
+	return (_value) ? json_string_value(_value) : default_value;
+}
+
+json_int_t JSON::getInteger(json_int_t default_value) const
+{
+	return (_value) ? json_integer_value(_value) : default_value;
+}
+
+double JSON::getReal(double default_value) const
+{
+	return (_value) ? json_real_value(_value) : default_value;
+}
+
+double JSON::getNumber(double default_value) const
+{
+	return (_value) ? json_number_value(_value) : default_value;
+}
+
 const char* JSON::getString(void) const
 {
 	return json_string_value(_value);
