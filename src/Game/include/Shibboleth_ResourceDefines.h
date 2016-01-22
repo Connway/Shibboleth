@@ -91,6 +91,7 @@ struct ShaderData : public Gaff::IVirtualDestructor
 struct ProgramData : public Gaff::IVirtualDestructor
 {
 	ResourceWrapper<ShaderData> shaders[Gleam::IShader::SHADER_TYPE_SIZE];
+	Array<RasterStatePtr> raster_states;
 	Array<ProgramPtr> programs;
 	RenderPasses render_pass;
 };
