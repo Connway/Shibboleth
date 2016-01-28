@@ -213,7 +213,7 @@ static const char* state_names[NUM_STATES] = {
 	"loopforeverstate"
 };
 
-static unsigned int g_image_alloc_tag = Gaff::FNV1Hash32("Images", static_cast<unsigned int>(strlen("Images")));
+static unsigned int g_image_alloc_tag = Gaff::FNV1aHash32("Images", static_cast<unsigned int>(strlen("Images")));
 
 void* MEMCB ImageAlloc(const size_t size)
 {

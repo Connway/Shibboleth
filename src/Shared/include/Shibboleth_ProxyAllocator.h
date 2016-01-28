@@ -35,7 +35,7 @@ public:
 		_allocator(allocator), _alloc_tag(0)
 	{
 		if (pool_tag) {
-			_alloc_tag = Gaff::FNV1Hash32(pool_tag, strlen(pool_tag));
+			_alloc_tag = Gaff::FNV1aHash32(pool_tag, strlen(pool_tag));
 			_allocator->createMemoryPool(pool_tag, _alloc_tag);
 		}
 	}

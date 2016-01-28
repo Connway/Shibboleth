@@ -49,6 +49,7 @@ struct ObjectData
 	bool active;
 	volatile unsigned int curr_device;
 
+	Array< Array<RasterStatePtr> > raster_states; // [Mesh][Device]
 	Array< Array<ProgramBuffersPtr> > program_buffers; // [Mesh][Device]
 	Array< Array<ProgramPtr> > programs; // [Mesh][Device]
 	Array<RenderPasses> render_pass; // [Mesh]
@@ -59,12 +60,22 @@ struct ObjectData
 	Gleam::Matrix4x4CPU projection_matrix;
 	Gleam::TransformCPU eye_transform;
 
-	Array<CommandListPtr> command_lists; // [Device]
+	Array< Array<CommandListPtr> > command_lists; // [Device][CmdList]
+	Array<Gaff::SpinLock> cmd_lists_locks; // [Device]
+};
+
+class FramePredicate
+{
+public:
+	bool operator()(const Gaff::Pair<CameraComponent*, ObjectData>& lhs, const CameraComponent* rhs) const
+	{
+		return lhs.first->getRenderOrder() < rhs->getRenderOrder();
+	}
 };
 
 struct FrameData
 {
-	Map<CameraComponent*, ObjectData> camera_object_data;
+	Map<CameraComponent*, ObjectData, FramePredicate> camera_object_data;
 	//Map<LightComponent*, ObjectData> shadow_object_data;
 };
 

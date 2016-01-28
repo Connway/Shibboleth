@@ -243,15 +243,15 @@ size_t ModelComponent::determineLOD(const Gleam::Vector4CPU& pos)
 //			const Gleam::IMesh* mesh = _model->models[i][0]->getMesh(index);
 //			const Gleam::IProgram* program = _materials[index]->programs[i].get();
 //
-//			hash = Gaff::FNV1Hash32T(&mesh, hash);
-//			hash = Gaff::FNV1Hash32T(&program, hash);
+//			hash = Gaff::FNV1aHash32T(&mesh, hash);
+//			hash = Gaff::FNV1aHash32T(&program, hash);
 //
 //			// Add all textures used by shader to hash
 //			//for (size_t j = 0; j < _texture_mappings.size(); ++j) {
 //			//	for (size_t k = 0; k < _texture_mappings[i].size(); ++k) {
 //			//		if (_texture_mappings[j][k].first == index) {
 //			//			const Gleam::ITexture* texture = _textures[j]->textures[i].get();
-//			//			hash = Gaff::FNV1Hash32T(&texture, hash);
+//			//			hash = Gaff::FNV1aHash32T(&texture, hash);
 //			//		}
 //			//	}
 //			//}
@@ -261,7 +261,7 @@ size_t ModelComponent::determineLOD(const Gleam::Vector4CPU& pos)
 //			//	for (size_t k = 0; k < _sampler_mappings[i].size(); ++k) {
 //			//		if (_sampler_mappings[j][k].first == index) {
 //			//			const Gleam::ISamplerState* sampler = _samplers[j]->data[i].get();
-//			//			hash = Gaff::FNV1Hash32T(&sampler, hash);
+//			//			hash = Gaff::FNV1aHash32T(&sampler, hash);
 //			//		}
 //			//	}
 //			//}
@@ -271,7 +271,7 @@ size_t ModelComponent::determineLOD(const Gleam::Vector4CPU& pos)
 //			//	for (size_t k = 0; k < _buffer_mappings[i].size(); ++k) {
 //			//		if (_buffer_mappings[j][k].first == index) {
 //			//			const Gleam::IBuffer* buffer = _buffers[j]->data[i].get();
-//			//			hash = Gaff::FNV1Hash32T(&buffer, hash);
+//			//			hash = Gaff::FNV1aHash32T(&buffer, hash);
 //			//		}
 //			//	}
 //			//}
