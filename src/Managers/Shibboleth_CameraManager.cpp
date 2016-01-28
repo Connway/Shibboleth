@@ -163,6 +163,8 @@ void CameraManager::addModelComponent(ObjectData& od, ModelComponent* mc, const 
 		//}
 
 		//od.program_buffers.emplacePush(std::move(pbs));
+
+		od.raster_states.emplacePush(programs[i]->raster_states);
 		od.program_buffers.emplacePush(program_buffers[i]->data);
 		od.programs.emplacePush(programs[i]->programs);
 		od.render_pass.emplacePush(programs[i]->render_pass);

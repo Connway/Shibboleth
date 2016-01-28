@@ -215,7 +215,7 @@ bool ShaderProgramLoader::createRasterStates(ProgramData* data, const Gaff::JSON
 	settings.two_sided = two_sided.isTrue();
 	settings.wireframe = wireframe.isTrue();
 
-	data->raster_states = _render_mgr.getOrCreateRasterStates(Gaff::FNV1Hash32T(&settings), settings);
+	data->raster_states = _render_mgr.getOrCreateRasterStates(Gaff::FNV1aHash32T(&settings), settings);
 	return true;
 }
 

@@ -24,6 +24,7 @@ THE SOFTWARE.
 #include "Shibboleth_RenderManager.h"
 #include <Shibboleth_Utilities.h>
 #include <Shibboleth_IApp.h>
+#include <Gleam_IRenderDevice.h>
 #include <Gleam_IProgram.h>
 #include <Gleam_IModel.h>
 #include <Gaff_Atomic.h>
@@ -138,9 +139,17 @@ void FrameManager::finishFrame(size_t phase_id)
 void FrameManager::submitCommandLists(double, void* frame_data)
 {
 	FrameData* fd = reinterpret_cast<FrameData*>(frame_data);
+	Gleam::IRenderDevice& rd = _render_mgr->getRenderDevice();
 
-	for (auto it = fd->camera_object_data.begin(); it != fd->camera_object_data.end(); ++it) {
-		
+	for (auto it_cam = fd->camera_object_data.begin(); it_cam != fd->camera_object_data.end(); ++it_cam) {
+		for (size_t i = 0; i < it_cam->second.command_lists.size(); ++i) {
+			rd.setCurrentDevice(static_cast<unsigned int>(i));
+			const auto& cmds = it_cam->second.command_lists[i];
+
+			for (auto it_cmd = cmds.begin(); it_cmd != cmds.end(); ++it_cmd) {
+				rd.executeCommandList(it_cmd->get());
+			}
+		}
 	}
 }
 

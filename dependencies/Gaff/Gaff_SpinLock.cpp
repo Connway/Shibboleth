@@ -26,6 +26,12 @@ THE SOFTWARE.
 
 NS_GAFF
 
+SpinLock::SpinLock(const SpinLock& lock):
+	_lock(0)
+{
+	assert(!lock._lock);
+}
+
 SpinLock::SpinLock(void):
 	_lock(0)
 {
