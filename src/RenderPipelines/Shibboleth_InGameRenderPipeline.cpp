@@ -242,6 +242,9 @@ void InGameRenderPipeline::GenerateCameraCommandLists(Array<RenderManager::Rende
 			}
 
 			SortIntoRenderPasses(od, device);
+
+			it->first->getRenderTarget()->render_targets[device]->bind(*rd);
+
 			RunCommands(rd.get(), jd, device);
 
 			// generate command list
