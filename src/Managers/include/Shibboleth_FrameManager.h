@@ -59,6 +59,7 @@ struct ObjectData
 	//Array<Gleam::TransformCPU> transforms[OcclusionManager::OT_SIZE];
 	Gleam::Matrix4x4CPU projection_matrix;
 	Gleam::TransformCPU eye_transform;
+	Gleam::TransformCPU inv_eye_transform;
 
 	Array< Array<CommandListPtr> > command_lists; // [Device][CmdList]
 	Array<Gaff::SpinLock> cmd_lists_locks; // [Device]
