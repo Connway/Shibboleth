@@ -55,7 +55,7 @@ private:
 	static void GenerateLightCommandLists(Array<RenderManager::RenderDevicePtr>& rds, GenerateJobData* jd);
 
 	static void SortIntoRenderPasses(ObjectData& od, unsigned int device);
-	static void RunCommands(Gleam::IRenderDevice* rd, GenerateJobData* jd, unsigned int device);
+	static void RunCommands(Gleam::IRenderDevice* rd, GenerateJobData* jd, unsigned int device, const ObjectData& od);
 
 	// Array size is number of devices
 	Array<IDepthStencilStatePtr> _ds_states[RP_COUNT];

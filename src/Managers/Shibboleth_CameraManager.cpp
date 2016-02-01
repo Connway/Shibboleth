@@ -81,6 +81,7 @@ void CameraManager::update(double, void* frame_data)
 		if (od.active) {
 			od.projection_matrix = (*it)->getProjectionMatrix();
 			od.eye_transform = (*it)->getOwner()->getWorldTransform();
+			od.inv_eye_transform = od.eye_transform.inverse();
 
 			//_occlusion_mgr->findObjectsInFrustum((*it)->getFrustum(), od.objects);
 			_occlusion_mgr->findObjectsInFrustum((*it)->getFrustum(), query_result);

@@ -41,10 +41,17 @@ NS_SHIBBOLETH
 
 struct RenderInfo
 {
-	RenderInfo(RasterStatePtr rs, ProgramBuffersPtr pbs, ProgramPtr p, ModelPtr mo, size_t me):
-		raster_state(rs), program_buffers(pbs), program(p), model(mo), mesh(me)
+	RenderInfo(
+		const Gleam::TransformCPU& ot, RasterStatePtr rs, ProgramBuffersPtr pbs,
+		ProgramPtr p, ModelPtr mo, size_t me
+	):
+		object_transform(ot), raster_state(rs),
+		program_buffers(pbs), program(p), model(mo),
+		mesh(me)
 	{
 	}
+
+	const Gleam::TransformCPU& object_transform;
 
 	RasterStatePtr raster_state;
 	ProgramBuffersPtr program_buffers;
@@ -174,11 +181,6 @@ void InGameRenderPipeline::run(double, void* frame_data)
 			unsigned int size = _render_mgr.getRenderDevice().getNumDevices();
 			it->second.command_lists.resize(size);
 			it->second.cmd_lists_locks.resize(size);
-
-			//for (size_t i = 0; i < it->second.command_lists.size(); ++i) {
-			//	it->second.command_lists[i] = _render_mgr.createCommandList();
-			//	assert(it->second.command_lists[i]);
-			//}
 		}
 
 		it->second.curr_device = 0;
@@ -243,9 +245,12 @@ void InGameRenderPipeline::GenerateCameraCommandLists(Array<RenderManager::Rende
 
 			SortIntoRenderPasses(od, device);
 
-			it->first->getRenderTarget()->render_targets[device]->bind(*rd);
+			float clear_color[] = {0.0f, 0.0f, 0.0f, 1.0f};
 
-			RunCommands(rd.get(), jd, device);
+			it->first->getRenderTarget()->render_targets[device]->bind(*rd);
+			it->first->getRenderTarget()->render_targets[device]->clear(*rd, Gleam::IRenderTarget::CLEAR_ALL, 0.0f, 0, clear_color);
+
+			RunCommands(rd.get(), jd, device, od);
 
 			// generate command list
 			if (!rd->finishCommandList(cmd_list)) {
@@ -336,19 +341,39 @@ void InGameRenderPipeline::SortIntoRenderPasses(ObjectData& od, unsigned int dev
 
 				assert(pbs[device] && programs[device]);
 
-				gRender_pass_info[od.render_pass[mesh]].emplacePush(rss[device], pbs[device], programs[device], model[device], i);
+				gRender_pass_info[od.render_pass[mesh]].emplacePush(
+					od.transforms[obj], rss[device], pbs[device],
+					programs[device], model[device], i
+				);
 			}
 		}
 	}
 }
 
-void InGameRenderPipeline::RunCommands(Gleam::IRenderDevice* rd, GenerateJobData* jd, unsigned int device)
+void InGameRenderPipeline::RunCommands(Gleam::IRenderDevice* rd, GenerateJobData* jd, unsigned int device, const ObjectData& od)
 {
 	for (int i = 0; i < RP_COUNT; ++i) {
 		jd->first->_ds_states[i][device]->set(*rd);
 		jd->first->_blend_states[i == RP_TRANSPARENT][device]->set(*rd);
 
 		for (auto it = gRender_pass_info[i].begin(); it != gRender_pass_info[i].end(); ++it) {
+			if (it->program_buffers->getConstantBufferCount()) {
+				Gleam::IBuffer* buffer = it->program_buffers->getConstantBuffer(Gleam::IShader::SHADER_VERTEX, 0);
+
+				float* transforms = reinterpret_cast<float*>(buffer->map(*rd));
+
+				if (!transforms) {
+					// log error
+					continue;
+				}
+
+				Gleam::TransformCPU final_transform = od.inv_eye_transform + it->object_transform;
+				Gleam::Matrix4x4CPU final_matrix = od.projection_matrix * final_transform.matrix();
+
+				memcpy(transforms, final_matrix.getBuffer(), sizeof(float) * 16);
+				buffer->unmap(*rd);
+			}
+
 			it->raster_state->set(*rd);
 			it->program->bind(*rd, it->program_buffers.get());
 			it->model->render(*rd, it->mesh);
