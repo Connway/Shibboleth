@@ -271,6 +271,8 @@ private:
 
 	bool getDisplayTags(void);
 
+	bool windowMessageHandler(const Gleam::AnyMessage& msg);
+
 	GAFF_NO_COPY(RenderManager);
 	GAFF_NO_MOVE(RenderManager);
 

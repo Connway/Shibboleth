@@ -8,6 +8,7 @@
 			"Type": "Camera Component",
 
 			"Render Target File": "Resources/CameraTest.rendertarget",
+			"Clear Mode": "Color",
 			"Viewport": [ 0.0, 0.0, 1.0, 1.0 ],
 			"Clear Color": [ 0.0, 0.0, 0.0, 1.0 ],
 			"Field of View": 90.0,

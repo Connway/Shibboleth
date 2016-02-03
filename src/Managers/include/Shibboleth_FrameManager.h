@@ -60,6 +60,8 @@ struct ObjectData
 	Gleam::Matrix4x4CPU projection_matrix;
 	Gleam::TransformCPU eye_transform;
 	Gleam::TransformCPU inv_eye_transform;
+	float clear_color[4];
+	int clear_mode;
 
 	Array< Array<CommandListPtr> > command_lists; // [Device][CmdList]
 	Array<Gaff::SpinLock> cmd_lists_locks; // [Device]

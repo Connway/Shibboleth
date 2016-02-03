@@ -31,9 +31,18 @@ THE SOFTWARE.
 
 NS_SHIBBOLETH
 
+SHIB_ENUM_REF_IMPL_EMBEDDED(ClearMode, CameraComponent::ClearMode)
+.addValue("Skybox", CameraComponent::CM_SKYBOX)
+.addValue("Color", CameraComponent::CM_COLOR)
+.addValue("Depth-Stencil", CameraComponent::CM_DEPTH_STENCIL)
+.addValue("Stencil", CameraComponent::CM_STENCIL)
+.addValue("Nothing", CameraComponent::CM_NOTHING)
+;
+
 REF_IMPL_REQ(CameraComponent);
 SHIB_REF_IMPL(CameraComponent)
 .addBaseClassInterfaceOnly<CameraComponent>()
+.addEnum("Clear Mode", &CameraComponent::_clear_mode, GetEnumRefDef<CameraComponent::ClearMode>())
 .addArray("Viewport", &CameraComponent::_viewport)
 .addArray("Clear Color", &CameraComponent::_clear_color)
 .addFloat("Field of View", &CameraComponent::getFOV, &CameraComponent::setFOV)
@@ -44,9 +53,9 @@ SHIB_REF_IMPL(CameraComponent)
 ;
 
 CameraComponent::CameraComponent(void):
-	_aspect_ratio(1.0f), _fov(Gaff::DegToRad * 90.0f),
-	_z_near(0.1f), _z_far(5000.0f),
-	_render_order(0)
+	_clear_mode(CM_COLOR), _aspect_ratio(1.0f),
+	_fov(Gaff::DegToRad * 90.0f), _z_near(0.1f),
+	_z_far(5000.0f), _render_order(0)
 {
 	_clear_color[0] = 0.0f;
 	_clear_color[1] = 0.0f;
@@ -155,6 +164,34 @@ void CameraComponent::setZFar(float z_far)
 {
 	_z_far = z_far;
 	constructProjectionMatrixAndFrustum();
+}
+
+const float* CameraComponent::getClearColor(void) const
+{
+	return _clear_color;
+}
+
+void CameraComponent::setClearColor(float r, float g, float b, float a)
+{
+	_clear_color[0] = r;
+	_clear_color[1] = g;
+	_clear_color[2] = b;
+	_clear_color[3] = a;
+}
+
+void CameraComponent::setClearColor(const float* color)
+{
+	memcpy(_clear_color, color, sizeof(float) * 4);
+}
+
+CameraComponent::ClearMode CameraComponent::getClearMode(void) const
+{
+	return _clear_mode;
+}
+
+void CameraComponent::setClearMode(ClearMode cm)
+{
+	_clear_mode = cm;
 }
 
 ResourceWrapper<RenderTargetData>& CameraComponent::getRenderTarget(void)

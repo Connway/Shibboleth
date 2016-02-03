@@ -46,8 +46,8 @@ public:
 	void run(double dt, void* frame_data) override;
 
 private:
-	using IDepthStencilStatePtr = Gaff::SmartPtr<Gleam::IDepthStencilState, ProxyAllocator>;
-	using IBlendStatePtr = Gaff::SmartPtr<Gleam::IBlendState, ProxyAllocator>;
+	using IDepthStencilStatePtr = Gaff::RefPtr<Gleam::IDepthStencilState>;
+	using IBlendStatePtr = Gaff::RefPtr<Gleam::IBlendState>;
 	using GenerateJobData = Gaff::Pair<InGameRenderPipeline*, FrameData*>;
 
 	static void GenerateCommandLists(void* job_data);
@@ -56,6 +56,7 @@ private:
 
 	static void SortIntoRenderPasses(ObjectData& od, unsigned int device);
 	static void RunCommands(Gleam::IRenderDevice* rd, GenerateJobData* jd, unsigned int device, const ObjectData& od);
+	static void ClearCamera(Gleam::IRenderDevice* rd, ObjectData& od, Gleam::IRenderTargetPtr& rt);
 
 	// Array size is number of devices
 	Array<IDepthStencilStatePtr> _ds_states[RP_COUNT];
