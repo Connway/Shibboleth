@@ -49,8 +49,8 @@ class LoopState : public Shibboleth::IState
 {
 public:
 	LoopState(Shibboleth::IApp& app):
-		_object(nullptr), _camera(nullptr),
-		_app(app)
+		_object(nullptr), _object2(nullptr),
+		_camera(nullptr), _app(app)
 	{
 	}
 
@@ -80,13 +80,29 @@ public:
 
 		if (_object) {
 			if (_object->init("Resources/Objects/test.object")) {
-				Shibboleth::ModelComponent* model = _object->getFirstComponentWithInterface<Shibboleth::ModelComponent>();
-				model->addToWorld();
+				_object->setLocalPosition(Gleam::Vector4CPU(-2.5f, 0.0f, 0.0f, 1.0f));
 				//Shibboleth::OcclusionManager::UserData user_data(reinterpret_cast<unsigned long long>(model), 0);
 				//_app.getManagerT<Shibboleth::OcclusionManager>("Occlusion Manager").addObject(_object, Shibboleth::OcclusionManager::OT_DYNAMIC, user_data);
 			} else {
 				_app.getManagerT<Shibboleth::ObjectManager>("Object Manager").removeObject(_object->getID());
 				_object = nullptr;
+				_app.quit();
+			}
+
+		} else {
+			_app.quit();
+		}
+
+		_object2 = _app.getManagerT<Shibboleth::ObjectManager>("Object Manager").createObject();
+
+		if (_object2) {
+			if (_object2->init("Resources/Objects/test.object")) {
+				_object2->setLocalPosition(Gleam::Vector4CPU(2.5f, 0.0f, 0.0f, 1.0f));
+				//Shibboleth::OcclusionManager::UserData user_data(reinterpret_cast<unsigned long long>(model), 0);
+				//_app.getManagerT<Shibboleth::OcclusionManager>("Occlusion Manager").addObject(_object, Shibboleth::OcclusionManager::OT_DYNAMIC, user_data);
+			} else {
+				_app.getManagerT<Shibboleth::ObjectManager>("Object Manager").removeObject(_object2->getID());
+				_object2 = nullptr;
 				_app.quit();
 			}
 
@@ -117,13 +133,25 @@ public:
 
 			for (size_t i = 0; i < _resources.size(); ++i) {
 				all_loaded &= _resources[i]->isLoaded();
+
+				if (_resources[i]->hasFailed()) {
+					all_loaded = true;
+					_app.quit();
+					break;
+				}
 			}
 		} while (!all_loaded);
+
+		Shibboleth::ModelComponent* model = _object->getFirstComponentWithInterface<Shibboleth::ModelComponent>();
+		model->addToWorld();
+
+		model = _object2->getFirstComponentWithInterface<Shibboleth::ModelComponent>();
+		model->addToWorld();
 	}
 
 	void update(void)
 	{
-		if (!_object || !_camera)
+		if (!_object || !_object2 || !_camera || _app.isQuitting())
 			return;
 
 		static Shibboleth::CameraComponent* camera = _camera->getFirstComponentWithInterface<Shibboleth::CameraComponent>();
@@ -137,9 +165,6 @@ public:
 		static Gaff::Timer timer;
 		timer.stop();
 		timer.start();
-
-		if (!_object)
-			return;
 
 		Shibboleth::RenderManager& rm = _app.getManagerT<Shibboleth::RenderManager>("Render Manager");
 		rm.updateWindows(); // This has to happen in the main thread.
@@ -174,6 +199,7 @@ public:
 
 private:
 	Shibboleth::Object* _object;
+	Shibboleth::Object* _object2;
 	Shibboleth::Object* _camera;
 	Shibboleth::IApp& _app;
 	Shibboleth::Array<Shibboleth::ResourcePtr> _resources;

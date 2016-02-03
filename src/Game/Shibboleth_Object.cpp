@@ -289,6 +289,8 @@ void Object::updateTransforms(void)
 		_world_aabb = _local_aabb;
 	}
 
+	_world_aabb.transform(_world_transform);
+
 	for (auto it = _children.begin(); it != _children.end(); ++it) {
 		(*it)->updateTransforms();
 	}

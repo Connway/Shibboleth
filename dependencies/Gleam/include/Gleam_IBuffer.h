@@ -69,6 +69,7 @@ public:
 		BUFFER_TYPE type;
 		MAP_TYPE cpu_access;
 		bool gpu_read_only;
+		unsigned int structure_byte_stride;
 	};
 
 	IBuffer(void) {}
@@ -76,11 +77,18 @@ public:
 
 	INLINE bool init(IRenderDevice& rd, const BufferSettings& buffer_settings)
 	{
-		return init(rd, buffer_settings.data, buffer_settings.size, buffer_settings.type, buffer_settings.stride, buffer_settings.cpu_access, buffer_settings.gpu_read_only);
+		return init(
+			rd, buffer_settings.data, buffer_settings.size, buffer_settings.type,
+			buffer_settings.stride, buffer_settings.cpu_access,
+			buffer_settings.gpu_read_only, buffer_settings.structure_byte_stride
+		);
 	}
 
-	virtual bool init(IRenderDevice& rd, const void* data, unsigned int size, BUFFER_TYPE buffer_type = SHADER_DATA,
-						unsigned int stride = 0, MAP_TYPE cpu_access = NONE, bool gpu_read_only = true) = 0;
+	virtual bool init(
+		IRenderDevice& rd, const void* data, unsigned int size, BUFFER_TYPE buffer_type = SHADER_DATA,
+		unsigned int stride = 0, MAP_TYPE cpu_access = NONE, bool gpu_read_only = true,
+		unsigned int structure_byte_stride = 0
+	) = 0;
 	virtual void destroy(void) = 0;
 
 	virtual bool update(IRenderDevice& rd, const void* data, unsigned int size, unsigned int offset = 0) = 0;
@@ -90,11 +98,13 @@ public:
 	virtual bool isD3D(void) const = 0;
 
 	INLINE BUFFER_TYPE getBufferType(void) const { return _buffer_type; }
+	INLINE unsigned int getStructuredByteStride(void) const { return _structure_stride; }
 	INLINE unsigned int getStride(void) const { return _stride; }
 	INLINE unsigned int getSize(void) const { return _size; }
 
 protected:
 	BUFFER_TYPE _buffer_type;
+	unsigned int _structure_stride;
 	unsigned int _stride;
 	unsigned int _size;
 

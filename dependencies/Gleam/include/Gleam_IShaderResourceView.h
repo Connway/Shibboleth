@@ -22,21 +22,25 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Gleam_ITexture.h"
+#include "Gleam_Defines.h"
+#include <Gaff_RefCounted.h>
 
 NS_GLEAM
 
 class IRenderDevice;
+class ITexture;
+class IBuffer;
 
 class IShaderResourceView : public Gaff::IRefCounted
 {
 public:
-	enum RES_VIEW_TYPE { VIEW_TEXTURE = 0 };
+	enum RES_VIEW_TYPE { VIEW_TEXTURE = 0, VIEW_BUFFER };
 
 	IShaderResourceView(void) {}
 	virtual ~IShaderResourceView(void) {}
 
 	virtual bool init(IRenderDevice& rd, const ITexture* texture) = 0;
+	virtual bool init(IRenderDevice& rd, const IBuffer* buffer) = 0;
 	virtual void destroy(void) = 0;
 
 	INLINE RES_VIEW_TYPE getViewType(void) const { return _view_type; }

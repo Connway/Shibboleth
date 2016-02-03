@@ -49,6 +49,7 @@ public:
 
 	size_t addMesh(IMesh* mesh);
 
+	void renderInstanced(IRenderDevice& rd, size_t index, unsigned int count);
 	void render(IRenderDevice& rd, size_t index);
 
 private:

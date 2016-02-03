@@ -33,7 +33,8 @@ NS_GLEAM
 static D3D11_BIND_FLAG _type_map[IBuffer::BUFFER_TYPE_SIZE] = {
 	D3D11_BIND_VERTEX_BUFFER,
 	D3D11_BIND_INDEX_BUFFER,
-	D3D11_BIND_CONSTANT_BUFFER
+	D3D11_BIND_CONSTANT_BUFFER,
+	D3D11_BIND_SHADER_RESOURCE
 };
 
 static D3D11_MAP _map_map[IBuffer::MAP_TYPE_SIZE] = {
@@ -54,7 +55,9 @@ BufferD3D::~BufferD3D(void)
 	destroy();
 }
 
-bool BufferD3D::init(IRenderDevice& rd, const void* data, unsigned int size, BUFFER_TYPE buffer_type, unsigned int stride, MAP_TYPE cpu_access, bool gpu_read_only)
+bool BufferD3D::init(
+	IRenderDevice& rd, const void* data, unsigned int size, BUFFER_TYPE buffer_type,
+	unsigned int stride, MAP_TYPE cpu_access, bool gpu_read_only, unsigned int structure_byte_stride)
 {
 	assert(rd.isD3D() && !_buffer);
 	IRenderDeviceD3D& rd3d = reinterpret_cast<IRenderDeviceD3D&>(*(reinterpret_cast<char*>(&rd) + sizeof(IRenderDevice)));
@@ -67,8 +70,8 @@ bool BufferD3D::init(IRenderDevice& rd, const void* data, unsigned int size, BUF
 	desc.BindFlags = _type_map[buffer_type];
 	desc.ByteWidth = size;
 	desc.CPUAccessFlags = 0;
-	desc.MiscFlags = 0;
-	desc.StructureByteStride = 0;
+	desc.MiscFlags = (buffer_type == STRUCTURED_DATA) ? D3D11_RESOURCE_MISC_BUFFER_STRUCTURED : 0;
+	desc.StructureByteStride = structure_byte_stride;
 	desc.Usage = (gpu_read_only && (cpu_access == WRITE || cpu_access == WRITE_NO_OVERWRITE)) ? D3D11_USAGE_DYNAMIC : D3D11_USAGE_DEFAULT;
 
 	switch (cpu_access) {
@@ -91,6 +94,7 @@ bool BufferD3D::init(IRenderDevice& rd, const void* data, unsigned int size, BUF
 	subres_data.SysMemSlicePitch = 0;
 
 	_buffer_type = buffer_type;
+	_structure_stride = structure_byte_stride;
 	_stride = stride;
 	_size = size;
 

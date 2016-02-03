@@ -108,42 +108,54 @@ void Map<Key, Value, Allocator, Predicate>::erase(const Key& key)
 
 template <class Key, class Value, class Allocator, class Predicate>
 template <class... Args>
-void Map<Key, Value, Allocator, Predicate>::emplace(const Key& key, Args&&... args)
+typename Map<Key, Value, Allocator, Predicate>::Iterator Map<Key, Value, Allocator, Predicate>::emplace(const Key& key, Args&&... args)
 {
 	Value temp(std::forward<Args>(args)...);
-	insert(key, std::move(temp));
+	return insert(key, std::move(temp));
 }
 
 template <class Key, class Value, class Allocator, class Predicate>
 template <class... Args>
-void Map<Key, Value, Allocator, Predicate>::emplace(Key&& key, Args&&... args)
+typename Map<Key, Value, Allocator, Predicate>::Iterator Map<Key, Value, Allocator, Predicate>::emplace(Key&& key, Args&&... args)
 {
 	Value temp(std::forward<Args>(args)...);
-	insert(std::move(key), std::move(temp));
+	return insert(std::move(key), std::move(temp));
 }
 
 template <class Key, class Value, class Allocator, class Predicate>
-void Map<Key, Value, Allocator, Predicate>::insert(const Key& key, const Value& value)
+typename Map<Key, Value, Allocator, Predicate>::Iterator Map<Key, Value, Allocator, Predicate>::insert(const Key& key, const Value& value)
 {
 	Iterator it = _array.binarySearch(_array.begin(), _array.end(), key, Predicate());
 	assert(it == _array.end() || it->first != key);
+
+	size_t index = it - _array.begin();
 	_array.emplace(it, key, value);
+
+	return _array.begin() + index;
 }
 
 template <class Key, class Value, class Allocator, class Predicate>
-void Map<Key, Value, Allocator, Predicate>::insert(const Key& key, Value&& value)
+typename Map<Key, Value, Allocator, Predicate>::Iterator Map<Key, Value, Allocator, Predicate>::insert(const Key& key, Value&& value)
 {
 	Iterator it = _array.binarySearch(_array.begin(), _array.end(), key, Predicate());
 	assert(it == _array.end() || it->first != key);
+
+	size_t index = it - _array.begin();
 	_array.emplace(it, key, std::move(value));
+
+	return _array.begin() + index;
 }
 
 template <class Key, class Value, class Allocator, class Predicate>
-void Map<Key, Value, Allocator, Predicate>::insert(Key&& key, Value&& value)
+typename Map<Key, Value, Allocator, Predicate>::Iterator Map<Key, Value, Allocator, Predicate>::insert(Key&& key, Value&& value)
 {
 	Iterator it = _array.binarySearch(_array.begin(), _array.end(), key, Predicate());
 	assert(it == _array.end() || it->first != key);
+
+	size_t index = it - _array.begin();
 	_array.emplace(it, std::move(key), std::move(value));
+
+	return _array.begin() + index;
 }
 
 template <class Key, class Value, class Allocator, class Predicate>

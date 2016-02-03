@@ -79,7 +79,11 @@ bool DeferredRenderDeviceD3D::finishCommandList(ICommandList* command_list)
 
 void DeferredRenderDeviceD3D::renderNoVertexInput(unsigned int vert_count)
 {
-	// TODO: IMPLEMENT ME!
+	_context->IASetInputLayout(NULL);
+	_context->IASetVertexBuffers(0, 0, NULL, NULL, NULL);
+	_context->IASetIndexBuffer(NULL, DXGI_FORMAT_R32_UINT, 0);
+	_context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	_context->Draw(vert_count, 0);
 }
 
 ID3D11DeviceContext* DeferredRenderDeviceD3D::getDeviceContext(unsigned int)

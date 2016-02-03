@@ -107,6 +107,16 @@ size_t ModelBase::addMesh(IMesh* mesh)
 	return _meshes.size() - 1;
 }
 
+void ModelBase::renderInstanced(IRenderDevice& rd, size_t index, unsigned int count)
+{
+	assert(_layouts.size() == _meshes.size() && index < _meshes.size());
+	assert(_meshes[index] && _layouts[index]);
+
+	IMesh* mesh = _meshes[index];
+	_layouts[index]->setLayout(rd, mesh);
+	mesh->renderInstanced(rd, count);
+}
+
 void ModelBase::render(IRenderDevice& rd, size_t index)
 {
 	assert(_layouts.size() == _meshes.size() && index < _meshes.size());

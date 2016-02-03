@@ -175,11 +175,12 @@ RenderManager::RenderManager(void):
 RenderManager::~RenderManager(void)
 {
 	_deferred_devices.clear();
-
 	_render_device = nullptr;
 
 	for (auto it = _windows.begin(); it != _windows.end(); ++it) {
-		_proxy_allocator.freeT(it->window);
+		Gleam::IWindow* window = it->window;
+		it->window = nullptr;
+		_proxy_allocator.freeT(window);
 	}
 
 	_windows.clear();
@@ -333,6 +334,18 @@ bool RenderManager::createWindow(
 void RenderManager::updateWindows(void)
 {
 	_graphics_functions.update_windows();
+
+	for (auto it = _remove_windows.begin(); it != _remove_windows.end(); ++it) {
+		Gleam::IWindow* window = _windows[*it].window;
+		_windows.fastErase(*it);
+		_proxy_allocator.freeT(window);
+	}
+
+	_remove_windows.clearNoFree();
+
+	if (_windows.empty()) {
+		_app.quit();
+	}
 }
 
 Array<const RenderManager::WindowData*> RenderManager::getWindowsWithTagsAny(unsigned short tags) const
@@ -806,19 +819,15 @@ bool RenderManager::getDisplayTags(void)
 bool RenderManager::windowMessageHandler(const Gleam::AnyMessage& msg)
 {
 	switch (msg.base.type) {
-		case Gleam::WND_CLOSED:
 		case Gleam::WND_DESTROYED:
-			for (auto it = _windows.begin(); it != _windows.end(); ++it) {
-				if (it->window == msg.base.window) {
-					_windows.fastErase(it);
+			for (size_t i = 0; i < _windows.size(); ++i) {
+				if (_windows[i].window == msg.base.window) {
+					_remove_windows.emplacePush(i);
 					break;
 				}
 			}
 
-			if (_windows.empty()) {
-				_app.quit();
-			}
-			break;
+			return true;
 
 		default:
 			break;

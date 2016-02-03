@@ -36,7 +36,8 @@ public:
 	~BufferD3D(void);
 
 	bool init(IRenderDevice& rd, const void* data, unsigned int size, BUFFER_TYPE buffer_type = SHADER_DATA,
-				unsigned int stride = 0, MAP_TYPE cpu_access = NONE, bool gpu_read_only = true);
+				unsigned int stride = 0, MAP_TYPE cpu_access = NONE, bool gpu_read_only = true,
+				unsigned int structure_byte_stride = 0);
 	void destroy(void);
 
 	bool update(IRenderDevice& rd, const void* data, unsigned int size, unsigned int offset = 0);

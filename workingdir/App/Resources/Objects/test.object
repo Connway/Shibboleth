@@ -47,24 +47,6 @@
 			],
 
 			"Buffers": [
-				{
-					"Type": "Shader Data",
-					"CPU Access": "Write",
-					"Size": 64,
-					"Stride": 0,
-					"GPU Read Only": true,
-
-					"Material Map": [
-						{
-							"Shader": "Vertex",
-							"Material Index": 0
-						},
-						{
-							"Shader": "Vertex",
-							"Material Index": 1
-						}
-					]
-				}
 			]
 		}
 	}

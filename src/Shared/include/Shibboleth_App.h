@@ -82,6 +82,8 @@ public:
 
 	DynamicLoader::ModulePtr loadModule(const char* filename, const char* name);
 	size_t getSeed(void) const;
+
+	bool isQuitting(void) const;
 	void quit(void);
 
 private:

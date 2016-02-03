@@ -43,6 +43,7 @@
 				"Size": { "Type": "Integer", "Optional": false },
 				"Stride": { "Type": "Integer", "Optional": false },
 				"GPU Read Only": { "Type": "Boolean", "Optional": false },
+				"Structured Byte Stride": { "Type": "Integer", "Optional": true },
 				"Material Map": "Material Map"
 			}
 		}

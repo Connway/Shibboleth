@@ -1,8 +1,17 @@
-cbuffer MatrixBuffer
+// cbuffer InstanceBuffer
+// {
+// 	matrix model_to_proj_matrix;
+// };
+
+//cbuffer CameraBuffer
+//{
+//	//matrix view_matrix;
+//	//matrix proj_matrix;
+//};
+
+struct InstanceData
 {
 	matrix model_to_proj_matrix;
-	//matrix view_matrix;
-	//matrix proj_matrix;
 };
 
 struct VertexInputType
@@ -14,6 +23,7 @@ struct VertexInputType
 	float2 uv : TEXCOORD0;
 	uint4 blend_indices : BLENDINCIES0;
 	float4 blend_weights : BLENDWEIGHTS0;
+	uint instance_id : SV_InstanceID;
 };
 
 struct PixelInputType
@@ -25,11 +35,13 @@ struct PixelInputType
 	float2 uv : TEXCOORD0;
 };
 
+StructuredBuffer<InstanceData> instance_data;
+
 PixelInputType VertexMain(VertexInputType input)
 {
 	PixelInputType output;
 
-	output.position = mul(model_to_proj_matrix, float4(input.position, 1.0));
+	output.position = mul(instance_data[input.instance_id].model_to_proj_matrix, float4(input.position, 1.0));
 	//output.position = mul(view_matrix, output.position);
 	//output.position = mul(proj_matrix, output.position);
 	output.normal = float4(input.normal, 0.0);

@@ -83,7 +83,7 @@ IBuffer* ProgramBuffersBase::getConstantBuffer(IShader::SHADER_TYPE type, size_t
 void ProgramBuffersBase::addConstantBuffer(IShader::SHADER_TYPE type, IBuffer* const_buffer)
 {
 	assert(type < IShader::SHADER_TYPE_SIZE - 1 && const_buffer && const_buffer->isD3D() == isD3D());
-	_constant_buffers[type].push(const_buffer);
+	_constant_buffers[type].emplacePush(const_buffer);
 	const_buffer->addRef();
 }
 
@@ -143,7 +143,7 @@ IShaderResourceView* ProgramBuffersBase::getResourceView(IShader::SHADER_TYPE ty
 void ProgramBuffersBase::addResourceView(IShader::SHADER_TYPE type, IShaderResourceView* resource_view)
 {
 	assert(type < IShader::SHADER_TYPE_SIZE && resource_view && resource_view->isD3D() == isD3D());
-	_resource_views[type].push(resource_view);
+	_resource_views[type].emplacePush(resource_view);
 	resource_view->addRef();
 }
 
@@ -204,7 +204,7 @@ ISamplerState* ProgramBuffersBase::getSamplerState(IShader::SHADER_TYPE type, si
 void ProgramBuffersBase::addSamplerState(IShader::SHADER_TYPE type, ISamplerState* sampler)
 {
 	assert(type < IShader::SHADER_TYPE_SIZE && sampler && sampler->isD3D() == isD3D());
-	_sampler_states[type].push(sampler);
+	_sampler_states[type].emplacePush(sampler);
 	sampler->addRef();
 }
 

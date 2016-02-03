@@ -91,8 +91,8 @@ LRESULT CALLBACK Window::WindowProc(HWND hwnd, UINT msg, WPARAM w, LPARAM l)
 				helper_func(reinterpret_cast<AnyMessage*>(buffer), window, w, l);
 				reinterpret_cast<AnyMessage*>(buffer)->base.window = window;
 
-				for (unsigned int j = 0; j < window->_window_callbacks.size(); ++j) {
-					handled = handled || window->_window_callbacks[j](*reinterpret_cast<AnyMessage*>(buffer));
+				for (unsigned int i = 0; i < window->_window_callbacks.size(); ++i) {
+					handled = handled || window->_window_callbacks[i](*reinterpret_cast<AnyMessage*>(buffer));
 				}
 
 				if (handled) {
@@ -267,6 +267,10 @@ bool Window::init(const char* app_name, MODE window_mode,
 
 void Window::destroy(void)
 {
+	auto it = gWindows.linearSearch(this);
+	assert(it != gWindows.end());
+	gWindows.fastErase(it);
+
 	containCursor(false);
 	showCursor(true);
 
@@ -291,10 +295,6 @@ void Window::destroy(void)
 		_application_name.clear();
 		_hinstance = nullptr;
 	}
-
-	auto it = gWindows.linearSearch(this);
-	assert(it != gWindows.end());
-	gWindows.fastErase(it);
 }
 
 void Window::addWindowMessageHandler(Gaff::FunctionBinder<bool, const AnyMessage&>& callback)

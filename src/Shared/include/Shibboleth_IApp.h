@@ -118,6 +118,8 @@ public:
 
 	virtual DynamicLoader::ModulePtr loadModule(const char* filename, const char* name) = 0;
 	virtual size_t getSeed(void) const = 0;
+
+	virtual bool isQuitting(void) const = 0;
 	virtual void quit(void) = 0;
 };
 

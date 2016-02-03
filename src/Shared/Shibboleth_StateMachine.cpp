@@ -128,7 +128,7 @@ unsigned int StateMachine::getStateID(const char* name)
 	assert(name);
 	auto it = _states.linearSearch(name);
 	assert(it != _states.end());
-	return (unsigned int)(it - _states.begin());
+	return static_cast<unsigned int>(it - _states.begin());
 }
 
 unsigned int StateMachine::getNumStates(void) const

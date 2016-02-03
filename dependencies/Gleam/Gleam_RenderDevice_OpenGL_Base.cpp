@@ -235,7 +235,7 @@ void RenderDeviceGLBase::setLayout(LayoutGL* layout, const IMesh* mesh)
 
 #if defined(_WIN64) || defined(__LP64__)
 			glVertexAttribPointer(count, layout_data->size, layout_data->type, layout_data->normalized,
-				stride, (void*)(unsigned long long)layout_data->aligned_byte_offset);
+				stride, reinterpret_cast<void*>(static_cast<unsigned long long>(layout_data->aligned_byte_offset)));
 #else
 			glVertexAttribPointer(count, layout_data->size, layout_data->type, layout_data->normalized,
 				stride, (void*)layout_data->aligned_byte_offset);

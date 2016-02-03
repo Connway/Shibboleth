@@ -22,6 +22,7 @@ THE SOFTWARE.
 
 #include "Gleam_AABB_CPU.h"
 #include "Gleam_Transform_CPU.h"
+#include <cfloat>
 
 NS_GLEAM
 
@@ -120,8 +121,8 @@ void AABBCPU::addAABB(const AABBCPU& aabb)
 
 void AABBCPU::reset(void)
 {
-	_min.set(0.0f, 0.0f, 0.0f, 1.0f);
-	_max.set(0.0f, 0.0f, 0.0f, 1.0f);
+	_min.set(FLT_MAX, FLT_MAX, FLT_MAX, 1.0f);
+	_max.set(FLT_MIN, FLT_MIN, FLT_MIN, 1.0f);
 }
 
 const GleamArray<Vector4CPU>& AABBCPU::generatePoints(GleamArray<Vector4CPU>& out) const
@@ -184,8 +185,8 @@ const Vector4CPU* AABBCPU::generatePoints(Vector4CPU* out) const
 void AABBCPU::transform(const TransformCPU& transform)
 {
 	generatePoints(_transform_cache);
-	setMin(Vector4CPU::Zero);
-	setMax(Vector4CPU::Zero);
+	_min.set(FLT_MAX, FLT_MAX, FLT_MAX, 1.0f);
+	_max.set(FLT_MIN, FLT_MIN, FLT_MIN, 1.0f);
 
 	_transform_cache[0] = transform.transformPoint(_transform_cache[0]);
 	_transform_cache[1] = transform.transformPoint(_transform_cache[1]);
@@ -202,8 +203,8 @@ void AABBCPU::transform(const TransformCPU& transform)
 void AABBCPU::transform(const Matrix4x4CPU& transform)
 {
 	generatePoints(_transform_cache);
-	setMin(Vector4CPU::Zero);
-	setMax(Vector4CPU::Zero);
+	_min.set(FLT_MAX, FLT_MAX, FLT_MAX, 1.0f);
+	_max.set(FLT_MIN, FLT_MIN, FLT_MIN, 1.0f);
 
 	_transform_cache[0] = transform * _transform_cache[0];
 	_transform_cache[1] = transform * _transform_cache[1];

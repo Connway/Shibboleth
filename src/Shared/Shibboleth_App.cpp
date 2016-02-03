@@ -624,6 +624,11 @@ size_t App::getSeed(void) const
 	return _seed;
 }
 
+bool App::isQuitting(void) const
+{
+	return !_running;
+}
+
 void App::quit(void)
 {
 	_running = false;
