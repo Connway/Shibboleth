@@ -47,8 +47,10 @@ NS_SHIBBOLETH
 // Defining enum reflection for Gleam::IBuffer here because I don't think we will ever need it outside of this file.
 SHIB_ENUM_REF_DEF_EMBEDDED(BUFFER_TYPE, Gleam::IBuffer::BUFFER_TYPE);
 SHIB_ENUM_REF_IMPL_EMBEDDED(BUFFER_TYPE, Gleam::IBuffer::BUFFER_TYPE)
+.addValue("Vertex Data", Gleam::IBuffer::VERTEX_DATA)
+.addValue("Index Data", Gleam::IBuffer::INDEX_DATA)
 .addValue("Shader Data", Gleam::IBuffer::SHADER_DATA)
-.addValue("Structured Data", Gleam::IBuffer::STRUCTURED_DATA)
+//.addValue("Structured Data", Gleam::IBuffer::STRUCTURED_DATA)
 ;
 
 SHIB_ENUM_REF_DEF_EMBEDDED(MAP_TYPE, Gleam::IBuffer::MAP_TYPE);
@@ -283,21 +285,6 @@ size_t ModelComponent::determineLOD(const Gleam::Vector4CPU& pos)
 //	return hash;
 //}
 
-//size_t ModelComponent::getNumMeshes(void) const
-//{
-//	assert(_model);
-//
-//	// Find first device with a model in it
-//	for (size_t i = 0; i < _model->models.size(); ++i) {
-//		// Use LOD 0
-//		if (!_model->models[i].empty()) {
-//			return _model->models[i][0]->getMeshCount();
-//		}
-//	}
-//
-//	return 0;
-//}
-
 const Array< ResourceWrapper<ProgramBuffersData> >& ModelComponent::getProgramBuffers(void) const
 {
 	return _program_buffers;
@@ -357,7 +344,7 @@ void ModelComponent::requestMaterials(const Gaff::JSON& json, ResourceManager& r
 	auto callback = Gaff::Bind(this, &ModelComponent::ResourceLoadedCallback);
 	Gaff::JSON material_files = json["Material Files"];
 
-	if (material_files.isArray()) {
+	if (material_files.isArray() && material_files.size()) {
 		char temp[256] = { 0 };
 
 		_program_buffers.resize(material_files.size());
@@ -385,7 +372,7 @@ void ModelComponent::requestTextures(const Gaff::JSON& json, ResourceManager& re
 	auto callback = Gaff::Bind(this, &ModelComponent::ResourceLoadedCallback);
 	Gaff::JSON texture_files = json["Texture Files"];
 
-	if (texture_files.isArray()) {
+	if (texture_files.isArray() && texture_files.size()) {
 		_texture_mappings.resize(texture_files.size());
 		_textures.resize(texture_files.size());
 
@@ -424,7 +411,7 @@ void ModelComponent::requestSamplers(const Gaff::JSON& json, ResourceManager& re
 	auto callback = Gaff::Bind(this, &ModelComponent::ResourceLoadedCallback);
 	Gaff::JSON sampler_files = json["Sampler Files"];
 
-	if (sampler_files.isArray()) {
+	if (sampler_files.isArray() && sampler_files.size()) {
 		_sampler_mappings.resize(sampler_files.size());
 		_samplers.resize(sampler_files.size());
 
@@ -463,7 +450,7 @@ void ModelComponent::requestBuffers(const Gaff::JSON& json, ResourceManager& res
 	auto callback = Gaff::Bind(this, &ModelComponent::ResourceLoadedCallback);
 	Gaff::JSON buffers = json["Buffers"];
 
-	if (buffers.isArray()) {
+	if (buffers.isArray() && buffers.size()) {
 		_buffer_mappings.resize(buffers.size());
 		_buffer_settings.resize(buffers.size());
 		_buffers.resize(buffers.size());
@@ -478,6 +465,7 @@ void ModelComponent::requestBuffers(const Gaff::JSON& json, ResourceManager& res
 			Gaff::JSON size = value["Size"];
 			Gaff::JSON stride = value["Stride"];
 			Gaff::JSON gpu_read_only = value["GPU Read Only"];
+			Gaff::JSON structure_byte_stride = value["Structured Byte Stride"];
 			Gaff::JSON material_map = value["Material Map"];
 
 			Gleam::IBuffer::BufferSettings buffer_settings = {
@@ -486,7 +474,8 @@ void ModelComponent::requestBuffers(const Gaff::JSON& json, ResourceManager& res
 				static_cast<unsigned int>(stride.getInteger()),
 				buffer_type.getValue(type.getString()),
 				map_type.getValue(cpu_access.getString()),
-				gpu_read_only.isTrue()
+				gpu_read_only.isTrue(),
+				static_cast<unsigned int>(structure_byte_stride.getInteger(0))
 			};
 
 			_buffer_settings[index] = buffer_settings;
@@ -586,7 +575,7 @@ void ModelComponent::setupResources(void)
 	_texture_mappings.clear();
 	_sampler_mappings.clear();
 
-	//Gaff::SetBits<char>(_flags, MC_INIT);
+	getOwner()->setLocalAABB(_model->combined_aabb);
 }
 
 void ModelComponent::addToOcclusionManager(void)
@@ -608,44 +597,5 @@ void ModelComponent::removeFromOcclusionManager(void)
 	_occlusion_id = OcclusionManager::OcclusionID();
 	Gaff::ClearBits<char>(_flags, MC_IN_OM);
 }
-
-// HACK: Should be removed. For testing purposes only.
-//void ModelComponent::render(double dt, Gleam::IRenderDevice& rd, unsigned int device)
-//{
-//	if (!Gaff::IsAnyBitSet<char>(_flags, MC_INIT)) {
-//		return;
-//	}
-//
-//	static float rot = 0.0f;
-//	rot += static_cast<float>(Gaff::Pi * dt);
-//
-//	Gleam::Matrix4x4 tocamera, projection, toworld, final_transform;
-//	tocamera.setLookAtLH(0.0f, 5.0f, -5.0f, 0.0f, 5.0f, 0.0f, 0.0f, 1.0f, 0.0f);
-//	projection.setPerspectiveLH(90.0f * Gaff::DegToRad, 4.0f / 3.0f, 0.1f, 5000.0f);
-//	toworld.setIdentity();
-//	toworld.setTranslate(getOwner()->getWorldPosition());
-//	toworld.setRotationY(rot);
-//
-//	final_transform = projection * tocamera * toworld;
-//
-//	ModelPtr& model = _model->models[device][0];
-//
-//	Gleam::IBuffer* buffer = _buffers[0]->data[device].get();
-//
-//	float* matrix_data = reinterpret_cast<float*>(buffer->map(rd));
-//		memcpy(matrix_data, final_transform.getBuffer(), sizeof(float) * 16);
-//	buffer->unmap(rd);
-//
-//	for (unsigned int i = 0; i < model->getMeshCount(); ++i) {
-//		_materials[i]->programs[device]->bind(rd, _program_buffers[i]->data[device].get());
-//
-//		model->render(rd, i);
-//	}
-//}
-//
-//bool ModelComponent::isReadyToRender(void) const
-//{
-//	return Gaff::IsAnyBitSet<char>(_flags, MC_INIT);
-//}
 
 NS_END

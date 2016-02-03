@@ -26,7 +26,6 @@ THE SOFTWARE.
 #include <Shibboleth_Array.h>
 #include <Gleam_IDepthStencilState.h>
 #include <Gleam_IBlendState.h>
-#include <Gaff_SmartPtr.h>
 
 NS_SHIBBOLETH
 
@@ -54,9 +53,12 @@ private:
 	static void GenerateCameraCommandLists(Array<RenderManager::RenderDevicePtr>& rds, GenerateJobData* jd);
 	static void GenerateLightCommandLists(Array<RenderManager::RenderDevicePtr>& rds, GenerateJobData* jd);
 
-	static void SortIntoRenderPasses(ObjectData& od, unsigned int device);
+	static void SortIntoRenderPasses(Gleam::IRenderDevice* rd, ObjectData& od, unsigned int device);
 	static void RunCommands(Gleam::IRenderDevice* rd, GenerateJobData* jd, unsigned int device, const ObjectData& od);
 	static void ClearCamera(Gleam::IRenderDevice* rd, ObjectData& od, Gleam::IRenderTargetPtr& rt);
+	static unsigned int GenerateInstanceHash(ObjectData& od, size_t mesh_index, unsigned int device, unsigned int hash_init);
+	static Gleam::IBuffer* CreateInstanceBuffer(RenderManager& render_mgr, unsigned int device, unsigned int num_elements);
+	static Gleam::IShaderResourceView* CreateInstanceResourceView(RenderManager& render_mgr, Gleam::IBuffer* buffer);
 
 	// Array size is number of devices
 	Array<IDepthStencilStatePtr> _ds_states[RP_COUNT];

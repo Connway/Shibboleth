@@ -25,6 +25,7 @@ THE SOFTWARE.
 #include "Gleam_ShaderResourceView_Direct3D.h"
 #include "Gleam_IRenderDevice_Direct3D.h"
 #include "Gleam_Texture_Direct3D.h"
+#include "Gleam_Buffer_Direct3D.h"
 #include "Gleam_IRenderDevice.h"
 #include "Gleam_IncludeD3D11.h"
 #include <Gaff_IncludeAssert.h>
@@ -66,7 +67,28 @@ bool ShaderResourceViewD3D::init(IRenderDevice& rd, const ITexture* texture)
 	shader_desc.Texture2D.MostDetailedMip = 0;
 	shader_desc.Texture2D.MipLevels = texture->getMipLevels();
 
-	ID3D11Resource* resource = (ID3D11Resource*)((const TextureD3D*)texture)->getTexture();
+	ID3D11Resource* resource = reinterpret_cast<ID3D11Resource*>(reinterpret_cast<const TextureD3D*>(texture)->getTexture());
+
+	HRESULT result = device->CreateShaderResourceView(resource, &shader_desc, &_resource_view);
+	return SUCCEEDED(result);
+}
+
+bool ShaderResourceViewD3D::init(IRenderDevice& rd, const IBuffer* buffer)
+{
+	IRenderDeviceD3D& rd3d = reinterpret_cast<IRenderDeviceD3D&>(*(reinterpret_cast<char*>(&rd) + sizeof(IRenderDevice)));
+	ID3D11Device* device = rd3d.getActiveDevice();
+	assert(buffer);
+
+	_view_type = VIEW_TEXTURE;
+
+	D3D11_SHADER_RESOURCE_VIEW_DESC shader_desc;
+	shader_desc.Format = DXGI_FORMAT_UNKNOWN;
+	shader_desc.ViewDimension = D3D11_SRV_DIMENSION_BUFFER;
+	// the union will set this for all texture types
+	shader_desc.Buffer.NumElements = buffer->getSize() / buffer->getStructuredByteStride();
+	shader_desc.Buffer.FirstElement = 0;
+
+	ID3D11Resource* resource = reinterpret_cast<const BufferD3D*>(buffer)->getBuffer();
 
 	HRESULT result = device->CreateShaderResourceView(resource, &shader_desc, &_resource_view);
 	return SUCCEEDED(result);

@@ -318,6 +318,11 @@ bool ModelLoader::loadMeshes(ModelData* data, const Gaff::JSON& lod_tags, const 
 		it->trim();
 	}
 
+	// Calculate the total AABB
+	for (auto it = data->aabbs[0].begin(); it != data->aabbs[0].end(); ++it) {
+		data->combined_aabb.addAABB(*it);
+	}
+
 	return true;
 }
 

@@ -253,6 +253,7 @@ private:
 
 	GraphicsFunctions _graphics_functions;
 	Array<WindowData> _windows;
+	Array<size_t> _remove_windows;
 
 	Map< unsigned int, Array<RasterStatePtr> > _raster_states;
 	Gaff::SpinLock _rs_lock;

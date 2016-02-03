@@ -69,12 +69,7 @@ public:
 
 	size_t determineLOD(const Gleam::Vector4CPU& pos);
 
-	// DELETE THESE
-	//void render(double dt, Gleam::IRenderDevice& rd, unsigned int device); // Temporary test function
-	//bool isReadyToRender(void) const; // Temporary test function
-
 	//unsigned int getMeshInstanceHash(size_t mesh) const;
-	//size_t getNumMeshes(void) const;
 
 	INLINE const Array< ResourceWrapper<ProgramBuffersData> >& getProgramBuffers(void) const;
 	INLINE Array< ResourceWrapper<ProgramBuffersData> >& getProgramBuffers(void);

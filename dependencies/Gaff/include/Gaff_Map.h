@@ -62,14 +62,14 @@ public:
 	void erase(const Key& key);
 
 	template <class... Args>
-	void emplace(const Key& key, Args&&... args);
+	Iterator emplace(const Key& key, Args&&... args);
 
 	template <class... Args>
-	void emplace(Key&& key, Args&&... args);
+	Iterator emplace(Key&& key, Args&&... args);
 
-	void insert(const Key& key, const Value& value);
-	void insert(const Key& key, Value&& value);
-	void insert(Key&& key, Value&& value);
+	Iterator insert(const Key& key, const Value& value);
+	Iterator insert(const Key& key, Value&& value);
+	Iterator insert(Key&& key, Value&& value);
 
 	void clearNoFree(void);
 	void clear(void);

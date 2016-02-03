@@ -58,7 +58,9 @@ BufferGL::~BufferGL(void)
 	destroy();
 }
 
-bool BufferGL::init(IRenderDevice&, const void* data, unsigned int size, BUFFER_TYPE buffer_type, unsigned int stride, MAP_TYPE cpu_access, bool gpu_read_only)
+bool BufferGL::init(
+	IRenderDevice&, const void* data, unsigned int size, BUFFER_TYPE buffer_type,
+	unsigned int stride, MAP_TYPE cpu_access, bool gpu_read_only, unsigned int structure_byte_stride)
 {
 	assert(!_buffer);
 
@@ -72,6 +74,7 @@ bool BufferGL::init(IRenderDevice&, const void* data, unsigned int size, BUFFER_
 
 	_map_flags = _map_bit_flags[cpu_access];
 	_buffer_type = buffer_type;
+	_structure_stride = structure_byte_stride;
 	_stride = stride;
 	_size = size;
 

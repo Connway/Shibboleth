@@ -121,34 +121,31 @@ void OcclusionManager::BVHTree::removeObject(size_t index)
 	_remove_buffer.push(index);
 }
 
-OcclusionManager::BVHTree::FrustumQueryData OcclusionManager::BVHTree::findObjectsInFrustum(const Gleam::FrustumCPU& frustum) const
+void OcclusionManager::BVHTree::findObjectsInFrustum(const Gleam::FrustumCPU& frustum, FrustumQueryData& out) const
 {
-	FrustumQueryData data;
-	data.first.frustum = data.second.frustum = &frustum;
-	data.first.tree = data.second.tree = this;
-	data.first.counter = nullptr;
-	data.first.branch_root = SIZE_T_FAIL;
-	data.second.branch_root = SIZE_T_FAIL;
+	out.first.frustum = out.second.frustum = &frustum;
+	out.first.tree = out.second.tree = this;
+	out.first.counter = out.second.counter = nullptr;
+	out.first.branch_root = SIZE_T_FAIL;
+	out.second.branch_root = SIZE_T_FAIL;
 
 	if (_root != SIZE_T_FAIL && frustum.contains(_node_cache[_root].aabb)) {
-		data.first.branch_root = _node_cache[_root].left;
-		data.second.branch_root = _node_cache[_root].right;
+		out.first.branch_root = _node_cache[_root].left;
+		out.second.branch_root = _node_cache[_root].right;
 
 		// We only have one object in the tree, just return.
 		if (_node_cache[_root].object) {
-			data.first.result.emplacePush(_node_cache[_root].object, _node_cache[_root].user_data);
-			return data;
+			out.first.result.emplacePush(_node_cache[_root].object, _node_cache[_root].user_data);
+			return;
 		}
 
 		Gaff::JobData job_data[2] = {
-			Gaff::JobData(&FrustumJob, &data.first),
-			Gaff::JobData(&FrustumJob, &data.second)
+			Gaff::JobData(&FrustumJob, &out.first),
+			Gaff::JobData(&FrustumJob, &out.second)
 		};
 
-		GetApp().getJobPool().addJobs(job_data, 2, &data.first.counter);
+		GetApp().getJobPool().addJobs(job_data, 2, &out.first.counter);
 	}
-
-	return data;
 }
 
 void OcclusionManager::BVHTree::construct(const Array<Object*>& objects, Array<OcclusionID>* id_out)
@@ -219,14 +216,22 @@ void OcclusionManager::BVHTree::addObjectHelper(const AddBufferData& data)
 	node.parent = node.left = node.right = SIZE_T_FAIL;
 	node.dirty = false;
 
-	// add to tree
+	// Tree is empty
 	if (_root == SIZE_T_FAIL) {
 		_root = data.index;
 		return;
 	}
 
 	BVHNode* travel_node = &_node_cache[_root];
-	Gleam::AABBCPU aabb_left, aabb_right, final_aabb;
+	Gleam::AABBCPU final_aabb;
+
+	// Tree only has one node, set final_aabb for when we add the new parent node
+	if (travel_node->left == SIZE_T_FAIL && travel_node->right == SIZE_T_FAIL) {
+		final_aabb = travel_node->aabb;
+		final_aabb.addAABB(node.aabb);
+	}
+
+	Gleam::AABBCPU aabb_left, aabb_right;
 	float surface_left, surface_right;
 
 	// Go down the tree until we hit a leaf node.
@@ -398,9 +403,8 @@ void OcclusionManager::update(double, void*)
 
 void OcclusionManager::findObjectsInFrustum(const Gleam::FrustumCPU& frustum, OBJ_TYPE object_type, Array<QueryResult>& out) const
 {
-	BVHTree::FrustumQueryData data;
-	
-	data = _bvh_trees[object_type].findObjectsInFrustum(frustum);
+	BVHTree::FrustumQueryData data;	
+	_bvh_trees[object_type].findObjectsInFrustum(frustum, data);
 
 	if (data.first.counter) {
 		GetApp().getJobPool().waitForAndFreeCounter(data.first.counter);

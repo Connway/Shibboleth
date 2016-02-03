@@ -689,7 +689,7 @@ void Array<T, Allocator>::resizeHelper(size_t new_size, const T& init_val)
 			reinterpret_cast<void*>(_array),
 			reinterpret_cast<void*>(old_data),
 			sizeof(T) * _used
-			);
+		);
 
 		_allocator.free(reinterpret_cast<void*>(old_data));
 	}
@@ -720,7 +720,7 @@ void Array<T, Allocator>::resizeHelper(size_t new_size)
 			reinterpret_cast<void*>(_array),
 			reinterpret_cast<void*>(old_data),
 			sizeof(T) * _used
-			);
+		);
 
 		_allocator.free(reinterpret_cast<void*>(old_data));
 	}

@@ -34,6 +34,7 @@ public:
 	~ShaderResourceViewGL(void);
 
 	bool init(IRenderDevice&, const ITexture* texture);
+	bool init(IRenderDevice&, const IBuffer* buffer);
 	void destroy(void);
 
 	INLINE bool isD3D(void) const;

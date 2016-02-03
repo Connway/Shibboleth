@@ -57,6 +57,7 @@ public:
 	virtual IMesh* createMesh(void) = 0;
 	virtual size_t addMesh(IMesh* mesh) = 0;
 
+	virtual void renderInstanced(IRenderDevice& rd, size_t index, unsigned int count) = 0;
 	virtual void render(IRenderDevice& rd, size_t index) = 0;
 
 	GAFF_NO_COPY(IModel);

@@ -111,7 +111,7 @@ private:
 		size_t addObject(Object* object, const UserData& user_data);
 		void removeObject(size_t index);
 
-		FrustumQueryData findObjectsInFrustum(const Gleam::FrustumCPU& frustum) const;
+		void findObjectsInFrustum(const Gleam::FrustumCPU& frustum, FrustumQueryData& out) const;
 
 		// Bottom-up construction
 		void construct(const Array<Object*>& objects, Array<OcclusionID>* id_out);

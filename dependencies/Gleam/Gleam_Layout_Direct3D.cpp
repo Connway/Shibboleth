@@ -64,7 +64,7 @@ bool LayoutD3D::init(IRenderDevice& rd, const LayoutDescription* layout_desc, si
 		input_desc[i].Format = TextureD3D::GetD3DFormat(layout_desc[i].format);
 		input_desc[i].InputSlot = layout_desc[i].input_slot;
 		input_desc[i].AlignedByteOffset = layout_desc[i].aligned_byte_offset;
-		input_desc[i].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
+		input_desc[i].InputSlotClass = (layout_desc->per_data_type == PDT_PER_VERTEX) ? D3D11_INPUT_PER_VERTEX_DATA : D3D11_INPUT_PER_INSTANCE_DATA;
 		input_desc[i].InstanceDataStepRate = 0;
 	}
 

@@ -52,6 +52,7 @@ struct ModelData : public Gaff::IVirtualDestructor
 
 	Array< Array<ModelPtr> > models; // [Device][LOD]
 	Array< Array<Gleam::AABBCPU> > aabbs; // [LOD][Mesh]
+	Gleam::AABBCPU combined_aabb;
 
 	ResourceWrapper<HoldingData> holding_data;
 	esprit::Skeleton skeleton;
