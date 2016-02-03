@@ -37,6 +37,15 @@ class IApp;
 class CameraComponent : public Component
 {
 public:
+	enum ClearMode
+	{
+		CM_SKYBOX = 0,
+		CM_COLOR,
+		CM_DEPTH_STENCIL,
+		CM_STENCIL,
+		CM_NOTHING
+	};
+
 	INLINE static const char* getComponentName(void)
 	{
 		return "Camera Component";
@@ -55,22 +64,29 @@ public:
 
 	void updateFrustum(Object* object, unsigned long long);
 
-	const Gleam::Matrix4x4CPU& getProjectionMatrix(void) const;
-	const Gleam::FrustumCPU& getFrustum(void) const;
-	const float* getViewport(void) const;
-	float getAspectRatio(void) const;
-	float getFOV(void) const;
-	void setFOV(float fov);
-	float getZNear(void) const;
-	void setZNear(float z_near);
-	float getZFar(void) const;
-	void setZFar(float z_far);
+	INLINE const Gleam::Matrix4x4CPU& getProjectionMatrix(void) const;
+	INLINE const Gleam::FrustumCPU& getFrustum(void) const;
+	INLINE const float* getViewport(void) const;
+	INLINE float getAspectRatio(void) const;
+	INLINE float getFOV(void) const;
+	INLINE void setFOV(float fov);
+	INLINE float getZNear(void) const;
+	INLINE void setZNear(float z_near);
+	INLINE float getZFar(void) const;
+	INLINE void setZFar(float z_far);
 
-	ResourceWrapper<RenderTargetData>& getRenderTarget(void);
-	const Array<unsigned int>& getDevices(void) const;
-	unsigned char getRenderOrder(void) const;
+	INLINE const float* getClearColor(void) const;
+	INLINE void setClearColor(float r, float g, float b, float a);
+	INLINE void setClearColor(const float* color);
 
-	void setActive(bool active);
+	INLINE ClearMode getClearMode(void) const;
+	INLINE void setClearMode(ClearMode cm);
+
+	INLINE ResourceWrapper<RenderTargetData>& getRenderTarget(void);
+	INLINE const Array<unsigned int>& getDevices(void) const;
+	INLINE unsigned char getRenderOrder(void) const;
+
+	void setActive(bool active) override;
 
 private:
 	Gleam::Matrix4x4CPU _projection_matrix;
@@ -81,6 +97,7 @@ private:
 
 	ResourceWrapper<RenderTargetData> _render_target;
 
+	ClearMode _clear_mode;
 	float _clear_color[4];
 	float _viewport[4];
 	float _aspect_ratio;
@@ -94,5 +111,7 @@ private:
 
 	SHIB_REF_DEF(CameraComponent);
 };
+
+SHIB_ENUM_REF_DEF_EMBEDDED(ClearMode, CameraComponent::ClearMode);
 
 NS_END

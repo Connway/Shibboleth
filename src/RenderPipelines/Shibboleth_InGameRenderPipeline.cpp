@@ -245,11 +245,10 @@ void InGameRenderPipeline::GenerateCameraCommandLists(Array<RenderManager::Rende
 
 			SortIntoRenderPasses(od, device);
 
-			float clear_color[] = {0.0f, 0.0f, 0.0f, 1.0f};
+			Gleam::IRenderTargetPtr& rt = it->first->getRenderTarget()->render_targets[device];
+			rt->bind(*rd);
 
-			it->first->getRenderTarget()->render_targets[device]->bind(*rd);
-			it->first->getRenderTarget()->render_targets[device]->clear(*rd, Gleam::IRenderTarget::CLEAR_ALL, 0.0f, 0, clear_color);
-
+			ClearCamera(rd.get(), it->second, rt);
 			RunCommands(rd.get(), jd, device, od);
 
 			// generate command list
@@ -267,60 +266,6 @@ void InGameRenderPipeline::GenerateCameraCommandLists(Array<RenderManager::Rende
 			gRender_pass_info[RP_TRANSPARENT].clearNoFree();
 		}
 	}
-
-	// For each object type (minus lights)
-	//for (size_t i = 0; i < OcclusionManager::OT_SIZE - 1; ++i) {
-	//	// Group together into instance buffer
-
-	//	//// Set render state
-
-	//	// For each object
-	//	for (size_t j = 0; j < it->second.objects.results[i].size(); ++j) {
-	//		const OcclusionManager::QueryResult& result = it->second.objects.results[i][j];
-	//		//Gleam::TransformCPU inverse_camera = it->second.eye_transform.inverse();
-	//		//Gleam::TransformCPU final_transform = inverse_camera + it->second.transforms[i][j];
-	//		//Gleam::Matrix4x4CPU final_matrix = it->second.projection_matrix * final_transform.matrix();
-
-	//		assert(result.second.first);
-	//		ModelComponent* model_comp = reinterpret_cast<ModelComponent*>(result.second.first);
-
-
-	//		//size_t lod = model_comp->determineLOD(it->second.eye_transform.getTranslation());
-	//		//auto& program_buffers = model_comp->getProgramBuffers();
-	//		//auto& materials = model_comp->getMaterials();
-	//		//auto& buffers = model_comp->getBuffers();
-	//		//ModelData& model = model_comp->getModel();
-
-	//		//// Update program buffers with transform information
-	//		//// Buffer zero is always assumed to be the transform buffer
-	//		//BufferPtr& buffer = buffers[0]->data[device];
-	//		//float* transforms = reinterpret_cast<float*>(buffer->map(*rd));
-
-	//		//if (!transforms) {
-	//		//	// log error
-	//		//	continue;
-	//		//}
-
-	//		//memcpy(transforms, final_matrix.getBuffer(), sizeof(float) * 16);
-
-	//		//buffer->unmap(*rd);
-
-	//		//ModelPtr& m = model.models[device][lod];
-
-	//		////for (size_t k = 0; k < RP_COUNT; ++k) {
-	//		////	if (render_modes[k].empty()) {
-	//		////		continue;
-	//		////	}
-
-	//		////	for (size_t l = 0; l < render_modes[k].size(); ++l) {
-	//		////		size_t rm = render_modes[k][l];
-
-	//		////		materials[rm]->programs[device]->bind(*rd, program_buffers[rm]->data[device].get());
-	//		////		m->render(*rd, rm);
-	//		////	}
-	//		////}
-	//	}
-	//}
 }
 
 void InGameRenderPipeline::GenerateLightCommandLists(Array<RenderManager::RenderDevicePtr>& rds, GenerateJobData* jd)
@@ -330,6 +275,7 @@ void InGameRenderPipeline::GenerateLightCommandLists(Array<RenderManager::Render
 
 void InGameRenderPipeline::SortIntoRenderPasses(ObjectData& od, unsigned int device)
 {
+	// TODO: Batch by matching raster state and shaders.
 	for (size_t obj = 0, mesh = 0; obj < od.transforms.size(); ++obj) {
 		auto& model = od.models[obj];
 
@@ -357,6 +303,8 @@ void InGameRenderPipeline::RunCommands(Gleam::IRenderDevice* rd, GenerateJobData
 		jd->first->_blend_states[i == RP_TRANSPARENT][device]->set(*rd);
 
 		for (auto it = gRender_pass_info[i].begin(); it != gRender_pass_info[i].end(); ++it) {
+			// Copy transform matrices over. Always assume the first constant buffer in the
+			// vertex shader is the transform buffer and that it is sized appropriately.
 			if (it->program_buffers->getConstantBufferCount()) {
 				Gleam::IBuffer* buffer = it->program_buffers->getConstantBuffer(Gleam::IShader::SHADER_VERTEX, 0);
 
@@ -378,6 +326,30 @@ void InGameRenderPipeline::RunCommands(Gleam::IRenderDevice* rd, GenerateJobData
 			it->program->bind(*rd, it->program_buffers.get());
 			it->model->render(*rd, it->mesh);
 		}
+	}
+}
+
+void InGameRenderPipeline::ClearCamera(Gleam::IRenderDevice* rd, ObjectData& od, Gleam::IRenderTargetPtr& rt)
+{
+	switch (od.clear_mode) {
+		case CameraComponent::CM_SKYBOX:
+			// Currently unsupported
+			break;
+
+		case CameraComponent::CM_COLOR:
+			rt->clear(*rd, Gleam::IRenderTarget::CLEAR_ALL, 1.0f, 0, od.clear_color);
+			break;
+
+		case CameraComponent::CM_DEPTH_STENCIL:
+			rt->clear(*rd, Gleam::IRenderTarget::CLEAR_DEPTH | Gleam::IRenderTarget::CLEAR_STENCIL);
+			break;
+
+		case CameraComponent::CM_STENCIL:
+			rt->clear(*rd, Gleam::IRenderTarget::CLEAR_STENCIL);
+			break;
+
+		case CameraComponent::CM_NOTHING:
+			break;
 	}
 }
 

@@ -82,6 +82,11 @@ void CameraManager::update(double, void* frame_data)
 			od.projection_matrix = (*it)->getProjectionMatrix();
 			od.eye_transform = (*it)->getOwner()->getWorldTransform();
 			od.inv_eye_transform = od.eye_transform.inverse();
+			od.clear_mode = (*it)->getClearMode();
+
+			if (od.clear_mode == CameraComponent::CM_COLOR) {
+				memcpy(od.clear_color, (*it)->getClearColor(), sizeof(float) * 4);
+			}
 
 			//_occlusion_mgr->findObjectsInFrustum((*it)->getFrustum(), od.objects);
 			_occlusion_mgr->findObjectsInFrustum((*it)->getFrustum(), query_result);

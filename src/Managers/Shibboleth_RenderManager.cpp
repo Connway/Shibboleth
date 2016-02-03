@@ -313,12 +313,15 @@ bool RenderManager::createWindow(
 		return false;
 	}
 
-	if (!_render_device->init(*window, adapter_id, display_id, (unsigned int)display_mode_id, vsync)) {
+	if (!_render_device->init(*window, adapter_id, display_id, static_cast<unsigned int>(display_mode_id), vsync)) {
 		Gaff::ScopedLock<Gaff::SpinLock> scoped_lock(*log.second);
 		log.first.writeString("ERROR - Failed to initialize render device with window!\n");
 		_proxy_allocator.freeT(window);
 		return false;
 	}
+
+	auto wmh_func = Gaff::Bind(this, &RenderManager::windowMessageHandler);
+	window->addWindowMessageHandler(wmh_func);
 
 	unsigned int device_id = static_cast<unsigned int>(_render_device->getDeviceForAdapter(adapter_id));
 
@@ -798,6 +801,30 @@ bool RenderManager::getDisplayTags(void)
 	}
 
 	return true;
+}
+
+bool RenderManager::windowMessageHandler(const Gleam::AnyMessage& msg)
+{
+	switch (msg.base.type) {
+		case Gleam::WND_CLOSED:
+		case Gleam::WND_DESTROYED:
+			for (auto it = _windows.begin(); it != _windows.end(); ++it) {
+				if (it->window == msg.base.window) {
+					_windows.fastErase(it);
+					break;
+				}
+			}
+
+			if (_windows.empty()) {
+				_app.quit();
+			}
+			break;
+
+		default:
+			break;
+	}
+
+	return false;
 }
 
 NS_END

@@ -107,8 +107,9 @@ private:
 	size_t _size;
 	T* _string;
 
-	// If my benchmarks from strlen() and wcslen() are any indicator, this is no slower than memcpy(),
-	// and this gets rid of that damn compiler warning
+	// If my benchmarks from strlen() and wcslen() are any indicator,
+	// this is not much slower than memcpy(), and this gets rid of
+	// that damn compiler warning
 	void copy(const T* src, T* dest, size_t dest_size) const;
 	void copy(const T* src, T* dest) const;
 	void zeroOut(T* string, size_t size) const;

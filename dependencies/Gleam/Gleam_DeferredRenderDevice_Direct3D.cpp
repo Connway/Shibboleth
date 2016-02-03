@@ -65,8 +65,8 @@ void DeferredRenderDeviceD3D::executeCommandList(ICommandList* command_list)
 bool DeferredRenderDeviceD3D::finishCommandList(ICommandList* command_list)
 {
 	assert(command_list->isD3D() && _context);
-	CommandListD3D* cmd_list = reinterpret_cast<CommandListD3D*>(command_list);
 
+	CommandListD3D* cmd_list = reinterpret_cast<CommandListD3D*>(command_list);
 	ID3D11CommandList* cl = nullptr;
 	
 	if (FAILED(_context->FinishCommandList(FALSE, &cl))) {

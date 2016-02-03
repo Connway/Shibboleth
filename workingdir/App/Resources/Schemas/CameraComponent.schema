@@ -3,6 +3,7 @@
 
 	"Render Target File": { "Type": "String", "Optional": false },
 
+	"Clear Mode": { "Type": "String", "Optional": false },
 	"Viewport": { "Type": "Array", "Optional": false, "Element Type": "Real" },
 	"Clear Color": { "Type": "Array", "Optional": false, "Element Type": "Real" },
 	"Field of View": { "Type": "Real", "Optional": false },
