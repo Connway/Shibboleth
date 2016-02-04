@@ -1,5 +1,5 @@
 /************************************************************************************
-Copyright (C) 2015 by Nicholas LaCroix
+Copyright (C) 2016 by Nicholas LaCroix
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -65,14 +65,14 @@ BlendStateGL::~BlendStateGL(void)
 
 bool BlendStateGL::init(IRenderDevice& rd, const BlendStateSettings& settings)
 {
-	assert(!rd.isD3D());
+	assert(rd.getRendererType() == RENDERER_OPENGL);
 	_blend_settings[0] = settings;
 	return true;
 }
 
 bool BlendStateGL::init(IRenderDevice& rd, const BlendStateSettings* settings)
 {
-	assert(!rd.isD3D());
+	assert(rd.getRendererType() == RENDERER_OPENGL);
 	memcpy(_blend_settings, settings, sizeof(BlendStateSettings) * 8);
 	return true;
 }
@@ -83,21 +83,21 @@ void BlendStateGL::destroy(void)
 
 void BlendStateGL::set(IRenderDevice& rd) const
 {
-	assert(!rd.isD3D());
+	assert(rd.getRendererType() == RENDERER_OPENGL);
 	IRenderDeviceGL& rdgl = reinterpret_cast<IRenderDeviceGL&>(*(reinterpret_cast<char*>(&rd) + sizeof(IRenderDevice)));
 	rdgl.setBlendState(this);
 }
 
 void BlendStateGL::unset(IRenderDevice& rd) const
 {
-	assert(!rd.isD3D());
+	assert(rd.getRendererType() == RENDERER_OPENGL);
 	IRenderDeviceGL& rdgl = reinterpret_cast<IRenderDeviceGL&>(*(reinterpret_cast<char*>(&rd) + sizeof(IRenderDevice)));
 	rdgl.setBlendState(nullptr);
 }
 
-bool BlendStateGL::isD3D(void) const
+RendererType BlendStateGL::getRendererType() const
 {
-	return false;
+	return RENDERER_OPENGL;
 }
 
 const IBlendState::BlendStateSettings* BlendStateGL::getBlendSettings(void) const

@@ -1,5 +1,5 @@
 /************************************************************************************
-Copyright (C) 2015 by Nicholas LaCroix
+Copyright (C) 2016 by Nicholas LaCroix
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -188,9 +188,8 @@ void MessageBroadcaster::spawnBroadcastTasks(bool wait)
 void MessageBroadcaster::waitForCounter(void)
 {
 	if (_counter) {
-		while (_counter->count) {
-			YieldThread();
-		}
+		auto& jp = GetApp().getJobPool();
+		jp.helpWhileWaiting(_counter);
 	}
 
 	_next_id = 0;

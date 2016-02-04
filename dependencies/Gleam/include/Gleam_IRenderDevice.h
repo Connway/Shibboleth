@@ -1,5 +1,5 @@
 /************************************************************************************
-Copyright (C) 2015 by Nicholas LaCroix
+Copyright (C) 2016 by Nicholas LaCroix
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -82,7 +82,7 @@ public:
 	virtual void resetRenderState(void) = 0;
 
 	virtual bool isDeferred(void) const = 0;
-	virtual bool isD3D(void) const = 0;
+	virtual RendererType getRendererType(void) const = 0;
 
 	virtual unsigned int getViewportWidth(unsigned int device, unsigned int output) const = 0;
 	virtual unsigned int getViewportHeight(unsigned int device, unsigned int output) const = 0;

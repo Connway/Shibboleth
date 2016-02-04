@@ -35,6 +35,7 @@ struct PixelInputType
 	float2 uv : TEXCOORD0;
 };
 
+// This always comes last
 StructuredBuffer<InstanceData> instance_data;
 
 PixelInputType VertexMain(VertexInputType input)
@@ -42,8 +43,6 @@ PixelInputType VertexMain(VertexInputType input)
 	PixelInputType output;
 
 	output.position = mul(instance_data[input.instance_id].model_to_proj_matrix, float4(input.position, 1.0));
-	//output.position = mul(view_matrix, output.position);
-	//output.position = mul(proj_matrix, output.position);
 	output.normal = float4(input.normal, 0.0);
 	output.uv = input.uv;
 

@@ -1,5 +1,5 @@
 /************************************************************************************
-Copyright (C) 2015 by Nicholas LaCroix
+Copyright (C) 2016 by Nicholas LaCroix
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -87,7 +87,7 @@ bool ShaderD3D::init(IRenderDevice& rd, const char* file_path, SHADER_TYPE shade
 
 bool ShaderD3D::initVertex(IRenderDevice& rd, const char* file_path)
 {
-	assert(rd.isD3D() && file_path);
+	assert(rd.getRendererType() == RENDERER_DIRECT3D && file_path);
 
 	char* shader_src = nullptr;
 	SIZE_T shader_size = 0;
@@ -116,7 +116,7 @@ bool ShaderD3D::initVertex(IRenderDevice& rd, const char* file_path)
 
 bool ShaderD3D::initPixel(IRenderDevice& rd, const char* file_path)
 {
-	assert(rd.isD3D() && file_path);
+	assert(rd.getRendererType() == RENDERER_DIRECT3D && file_path);
 
 	char* shader_src = nullptr;
 	SIZE_T shader_size = 0;
@@ -145,7 +145,7 @@ bool ShaderD3D::initPixel(IRenderDevice& rd, const char* file_path)
 
 bool ShaderD3D::initDomain(IRenderDevice& rd, const char* file_path)
 {
-	assert(rd.isD3D() && file_path);
+	assert(rd.getRendererType() == RENDERER_DIRECT3D && file_path);
 
 	char* shader_src = nullptr;
 	SIZE_T shader_size = 0;
@@ -174,7 +174,7 @@ bool ShaderD3D::initDomain(IRenderDevice& rd, const char* file_path)
 
 bool ShaderD3D::initGeometry(IRenderDevice& rd, const char* file_path)
 {
-	assert(rd.isD3D() && file_path);
+	assert(rd.getRendererType() == RENDERER_DIRECT3D && file_path);
 
 	char* shader_src = nullptr;
 	SIZE_T shader_size = 0;
@@ -203,7 +203,7 @@ bool ShaderD3D::initGeometry(IRenderDevice& rd, const char* file_path)
 
 bool ShaderD3D::initHull(IRenderDevice& rd, const char* file_path)
 {
-	assert(rd.isD3D() && file_path);
+	assert(rd.getRendererType() == RENDERER_DIRECT3D && file_path);
 
 	char* shader_src = nullptr;
 	SIZE_T shader_size = 0;
@@ -232,7 +232,7 @@ bool ShaderD3D::initHull(IRenderDevice& rd, const char* file_path)
 
 bool ShaderD3D::initCompute(IRenderDevice& rd, const char* file_path)
 {
-	assert(rd.isD3D() && file_path);
+	assert(rd.getRendererType() == RENDERER_DIRECT3D && file_path);
 
 	char* shader_src = nullptr;
 	SIZE_T shader_size = 0;
@@ -260,7 +260,7 @@ bool ShaderD3D::initCompute(IRenderDevice& rd, const char* file_path)
 
 bool ShaderD3D::initVertexSource(IRenderDevice& rd, const char* source, size_t source_size)
 {
-	assert(rd.isD3D() && source);
+	assert(rd.getRendererType() == RENDERER_DIRECT3D && source);
 
 	_shader_buffer = compileShader(source, source_size, "VertexMain", "vs_5_0");
 
@@ -280,7 +280,7 @@ bool ShaderD3D::initVertexSource(IRenderDevice& rd, const char* source, size_t s
 
 bool ShaderD3D::initPixelSource(IRenderDevice& rd, const char* source, size_t source_size)
 {
-	assert(rd.isD3D() && source);
+	assert(rd.getRendererType() == RENDERER_DIRECT3D && source);
 
 	_shader_buffer = compileShader(source, source_size, "PixelMain", "ps_5_0");
 
@@ -300,7 +300,7 @@ bool ShaderD3D::initPixelSource(IRenderDevice& rd, const char* source, size_t so
 
 bool ShaderD3D::initDomainSource(IRenderDevice& rd, const char* source, size_t source_size)
 {
-	assert(rd.isD3D() && source);
+	assert(rd.getRendererType() == RENDERER_DIRECT3D && source);
 
 	_shader_buffer = compileShader(source, source_size, "DomainMain", "ds_5_0");
 
@@ -320,7 +320,7 @@ bool ShaderD3D::initDomainSource(IRenderDevice& rd, const char* source, size_t s
 
 bool ShaderD3D::initGeometrySource(IRenderDevice& rd, const char* source, size_t source_size)
 {
-	assert(rd.isD3D() && source);
+	assert(rd.getRendererType() == RENDERER_DIRECT3D && source);
 
 	_shader_buffer = compileShader(source, source_size, "GeometryMain", "gs_5_0");
 
@@ -340,7 +340,7 @@ bool ShaderD3D::initGeometrySource(IRenderDevice& rd, const char* source, size_t
 
 bool ShaderD3D::initHullSource(IRenderDevice& rd, const char* source, size_t source_size)
 {
-	assert(rd.isD3D() && source);
+	assert(rd.getRendererType() == RENDERER_DIRECT3D && source);
 
 	_shader_buffer = compileShader(source, source_size, "HullMain", "hs_5_0");
 
@@ -360,7 +360,7 @@ bool ShaderD3D::initHullSource(IRenderDevice& rd, const char* source, size_t sou
 
 bool ShaderD3D::initComputeSource(IRenderDevice& rd, const char* source, size_t source_size)
 {
-	assert(rd.isD3D() && source);
+	assert(rd.getRendererType() == RENDERER_DIRECT3D && source);
 
 	_shader_buffer = compileShader(source, source_size, "ComputeMain", "cs_5_0");
 
@@ -413,9 +413,9 @@ void ShaderD3D::destroy(void)
 	SAFERELEASE(_shader_buffer)
 }
 
-bool ShaderD3D::isD3D(void) const
+RendererType ShaderD3D::getRendererType(void) const
 {
-	return true;
+	return RENDERER_DIRECT3D;
 }
 
 void* ShaderD3D::getShader(void) const

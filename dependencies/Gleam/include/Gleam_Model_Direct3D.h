@@ -1,5 +1,5 @@
 /************************************************************************************
-Copyright (C) 2015 by Nicholas LaCroix
+Copyright (C) 2016 by Nicholas LaCroix
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -32,8 +32,10 @@ public:
 	ModelD3D(void);
 	~ModelD3D(void);
 
-	ILayout* createLayout(IRenderDevice& rd, const LayoutDescription* layout_desc, unsigned int desc_size, const IShader* shader);
-	IMesh* createMesh(void);
+	ILayout* createLayout(IRenderDevice& rd, const LayoutDescription* layout_desc, unsigned int desc_size, const IShader* shader) override;
+	IMesh* createMesh(void) override;
+
+	RendererType getRendererType(void) const override;
 };
 
 NS_END

@@ -1,5 +1,5 @@
 /************************************************************************************
-Copyright (C) 2015 by Nicholas LaCroix
+Copyright (C) 2016 by Nicholas LaCroix
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -99,9 +99,9 @@ void ShaderResourceViewD3D::destroy(void)
 	SAFERELEASE(_resource_view)
 }
 
-bool ShaderResourceViewD3D::isD3D(void) const
+RendererType ShaderResourceViewD3D::getRendererType(void) const
 {
-	return true;
+	return RENDERER_DIRECT3D;
 }
 
 ID3D11ShaderResourceView* ShaderResourceViewD3D::getResourceView(void) const

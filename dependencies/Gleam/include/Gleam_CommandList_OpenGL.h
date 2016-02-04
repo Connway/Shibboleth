@@ -1,5 +1,5 @@
 /************************************************************************************
-Copyright (C) 2015 by Nicholas LaCroix
+Copyright (C) 2016 by Nicholas LaCroix
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -43,7 +43,7 @@ public:
 	bool operator==(const ICommandList& rhs) const override;
 	bool operator!=(const ICommandList& rhs) const override;
 
-	bool isD3D(void) const override;
+	RendererType getRendererType(void) const override;
 
 	void append(const CommandListGL& command_list);
 	void execute(void);

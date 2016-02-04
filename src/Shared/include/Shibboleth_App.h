@@ -1,5 +1,5 @@
 /************************************************************************************
-Copyright (C) 2015 by Nicholas LaCroix
+Copyright (C) 2016 by Nicholas LaCroix
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -27,7 +27,6 @@ THE SOFTWARE.
 #include "Shibboleth_StateMachine.h"
 #include "Shibboleth_LogManager.h"
 #include "Shibboleth_JobPool.h"
-#include "Shibboleth_IState.h"
 #include "Shibboleth_Array.h"
 #include "Shibboleth_IApp.h"
 
@@ -51,6 +50,7 @@ public:
 
 	bool init(int argc, char** argv);
 	void run(void);
+	void destroy(void);
 
 	const IManager* getManager(const AHashString& name) const;
 	const IManager* getManager(const AString& name) const;

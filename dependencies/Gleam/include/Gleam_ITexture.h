@@ -1,5 +1,5 @@
 /************************************************************************************
-Copyright (C) 2015 by Nicholas LaCroix
+Copyright (C) 2016 by Nicholas LaCroix
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -121,7 +121,7 @@ public:
 	virtual bool initCubemap(IRenderDevice& rd, int width, int height, FORMAT format, int mip_levels = 1, const void* buffer = nullptr) = 0;
 	virtual bool initDepthStencil(IRenderDevice& rd, int width, int height, FORMAT format) = 0;
 
-	virtual bool isD3D(void) const = 0;
+	virtual RendererType getRendererType(void) const = 0;
 
 protected:
 	unsigned int _mip_levels;

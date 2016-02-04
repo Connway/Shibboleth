@@ -1,5 +1,5 @@
 /************************************************************************************
-Copyright (C) 2015 by Nicholas LaCroix
+Copyright (C) 2016 by Nicholas LaCroix
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -72,6 +72,8 @@ public:
 
 	virtual void setLayout(IRenderDevice& rd, const IMesh* mesh) = 0;
 	virtual void unsetLayout(IRenderDevice& rd) = 0;
+
+	virtual RendererType getRendererType(void) const = 0;
 };
 
 NS_END

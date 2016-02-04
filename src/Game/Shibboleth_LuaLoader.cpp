@@ -1,5 +1,5 @@
 /************************************************************************************
-Copyright (C) 2015 by Nicholas LaCroix
+Copyright (C) 2016 by Nicholas LaCroix
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -66,7 +66,9 @@ Gaff::IVirtualDestructor* LuaLoader::load(const char* file_name, unsigned long l
 		return nullptr;
 	}
 
-	lua_data->data->doString(file->getBuffer());
+	// Need to copy to temp to add null-terminator
+	AString temp(file->getBuffer(), file->size());
+	lua_data->data->doString(temp.getBuffer());
 
 	return lua_data;
 }

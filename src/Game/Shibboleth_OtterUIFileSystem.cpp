@@ -1,5 +1,5 @@
 /************************************************************************************
-Copyright (C) 2015 by Nicholas LaCroix
+Copyright (C) 2016 by Nicholas LaCroix
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -65,7 +65,7 @@ void OtterUIFileSystem::Close(void* pHandle)
 uint32 OtterUIFileSystem::Read(void* pHandle, uint8* data, uint32 count)
 {
 	assert(_files.linearSearch(pHandle) != _files.end());
-	IFile* file = (IFile*)pHandle;
+	IFile* file = reinterpret_cast<IFile*>(pHandle);
 	unsigned int size = Gaff::Min(static_cast<uint32>(file->size()), count);
 
 	memcpy(data, file->getBuffer(), size);

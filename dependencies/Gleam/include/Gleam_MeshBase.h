@@ -1,5 +1,5 @@
 /************************************************************************************
-Copyright (C) 2015 by Nicholas LaCroix
+Copyright (C) 2016 by Nicholas LaCroix
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -36,11 +36,6 @@ public:
 
 	void destroy(void);
 
-	//bool addVertData(
-	//	IRenderDevice& rd, const void* vert_data, unsigned int vert_count, unsigned int vert_size,
-	//	unsigned int* indices, unsigned int index_count, TOPOLOGY_TYPE primitive_type = TRIANGLE_LIST
-	//);
-
 	void addBuffer(IBuffer* buffer);
 	const IBuffer* getBuffer(unsigned int index) const;
 	IBuffer* getBuffer(unsigned int index);
@@ -50,17 +45,10 @@ public:
 	const IBuffer* getIndiceBuffer(void) const;
 	IBuffer* getIndiceBuffer(void);
 
-	//void setTopologyType(TOPOLOGY_TYPE topology);
 	TOPOLOGY_TYPE getTopologyType(void) const;
 
 	void setIndexCount(unsigned int count);
 	unsigned int getIndexCount(void) const;
-
-	//void renderNonIndexed(IRenderDevice& rd, unsigned int vert_count, unsigned int start_location);
-	//void renderInstanced(IRenderDevice& rd, unsigned int count);
-	//void render(IRenderDevice& rd);
-
-	//bool isD3D(void) const;
 
 protected:
 	GleamArray<IBuffer*> _vert_data;

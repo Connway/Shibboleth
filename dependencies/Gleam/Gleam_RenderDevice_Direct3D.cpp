@@ -1,5 +1,5 @@
 /************************************************************************************
-Copyright (C) 2015 by Nicholas LaCroix
+Copyright (C) 2016 by Nicholas LaCroix
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -484,9 +484,9 @@ bool RenderDeviceD3D::isDeferred(void) const
 	return false;
 }
 
-bool RenderDeviceD3D::isD3D(void) const
+RendererType RenderDeviceD3D::getRendererType(void) const
 {
-	return true;
+	return RENDERER_DIRECT3D;
 }
 
 unsigned int RenderDeviceD3D::getViewportWidth(unsigned int device, unsigned int output) const
@@ -616,7 +616,7 @@ IRenderDevice* RenderDeviceD3D::createDeferredRenderDevice(void)
 
 void RenderDeviceD3D::executeCommandList(ICommandList* command_list)
 {
-	assert(command_list->isD3D() && _active_context);
+	assert(command_list->getRendererType() == RENDERER_DIRECT3D && _active_context);
 	CommandListD3D* cmd_list = reinterpret_cast<CommandListD3D*>(command_list);
 	assert(cmd_list->getCommandList());
 	_active_context->ExecuteCommandList(cmd_list->getCommandList(), FALSE);

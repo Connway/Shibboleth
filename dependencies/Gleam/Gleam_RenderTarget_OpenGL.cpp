@@ -1,5 +1,5 @@
 /************************************************************************************
-Copyright (C) 2015 by Nicholas LaCroix
+Copyright (C) 2016 by Nicholas LaCroix
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -71,7 +71,7 @@ bool RenderTargetGL::addTexture(IRenderDevice&, const ITexture* color_texture, C
 	}
 #endif
 
-	assert(color_texture && !color_texture->isD3D());
+	assert(color_texture && color_texture->getRendererType() == RENDERER_OPENGL);
 
 #ifdef OPENGL_MULTITHREAD
 	if (!_frame_buffer) {
@@ -91,8 +91,8 @@ bool RenderTargetGL::addTexture(IRenderDevice&, const ITexture* color_texture, C
 		target = face + GL_TEXTURE_CUBE_MAP_POSITIVE_X;
 	}
 
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + _attach_count, target, ((const TextureGL*)color_texture)->getTexture(), 0);
-	glBindFramebuffer(GL_FRAMEBUFFER, (GLuint)fb);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + _attach_count, target, static_cast<const TextureGL*>(color_texture)->getTexture(), 0);
+	glBindFramebuffer(GL_FRAMEBUFFER, static_cast<GLuint>(fb));
 
 	if (!_attach_count) {
 		_viewport_width = color_texture->getWidth();
@@ -124,7 +124,7 @@ void RenderTargetGL::popTexture(void)
 
 bool RenderTargetGL::addDepthStencilBuffer(IRenderDevice&, const ITexture* depth_stencil_texture)
 {
-	assert(depth_stencil_texture && !depth_stencil_texture->isD3D());
+	assert(depth_stencil_texture && depth_stencil_texture->getRendererType() == RENDERER_OPENGL);
 
 #ifdef OPENGL_MULTITHREAD
 	if (!_frame_buffer) {
@@ -156,8 +156,8 @@ bool RenderTargetGL::addDepthStencilBuffer(IRenderDevice&, const ITexture* depth
 
 	assert(attachment != 0);
 
-	glFramebufferTexture2D(GL_FRAMEBUFFER, attachment, GL_TEXTURE_2D, ((const TextureGL*)depth_stencil_texture)->getTexture(), 0);
-	glBindFramebuffer(GL_FRAMEBUFFER, (GLuint)fb);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, attachment, GL_TEXTURE_2D, static_cast<const TextureGL*>(depth_stencil_texture)->getTexture(), 0);
+	glBindFramebuffer(GL_FRAMEBUFFER, static_cast<GLuint>(fb));
 
 	return glGetError() == GL_NO_ERROR;
 }
@@ -200,7 +200,7 @@ void RenderTargetGL::unbind(IRenderDevice&)
 
 void RenderTargetGL::clear(IRenderDevice& rd, unsigned int clear_flags, float clear_depth, unsigned char clear_stencil, float* clear_color)
 {
-	assert(!rd.isD3D());
+	assert(rd.getRendererType() == RENDERER_OPENGL);
 
 	GLbitfield clear_bits = 0;
 
@@ -237,14 +237,14 @@ bool RenderTargetGL::isComplete(void) const
 
 	bool complete = glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE;
 
-	glBindFramebuffer(GL_FRAMEBUFFER, (GLuint)fb);
+	glBindFramebuffer(GL_FRAMEBUFFER, static_cast<GLuint>(fb));
 
 	return complete;
 }
 
-bool RenderTargetGL::isD3D(void) const
+RendererType RenderTargetGL::getRendererType(void) const
 {
-	return false;
+	return RENDERER_OPENGL;
 }
 
 void RenderTargetGL::setViewport(int viewport_width, int viewport_height)

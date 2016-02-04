@@ -1,5 +1,5 @@
 /************************************************************************************
-Copyright (C) 2015 by Nicholas LaCroix
+Copyright (C) 2016 by Nicholas LaCroix
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -83,7 +83,7 @@ public:
 	virtual void renderInstanced(IRenderDevice& rd, unsigned int count) = 0;
 	virtual void render(IRenderDevice& rd) = 0;
 
-	virtual bool isD3D(void) const = 0;
+	virtual RendererType getRendererType(void) const = 0;
 
 	GAFF_NO_COPY(IMesh);
 };

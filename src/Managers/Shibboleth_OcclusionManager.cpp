@@ -1,5 +1,5 @@
 /************************************************************************************
-Copyright (C) 2015 by Nicholas LaCroix
+Copyright (C) 2016 by Nicholas LaCroix
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -407,7 +407,7 @@ void OcclusionManager::findObjectsInFrustum(const Gleam::FrustumCPU& frustum, OB
 	_bvh_trees[object_type].findObjectsInFrustum(frustum, data);
 
 	if (data.first.counter) {
-		GetApp().getJobPool().waitForAndFreeCounter(data.first.counter);
+		GetApp().getJobPool().helpAndFreeCounter(data.first.counter);
 
 		out = std::move(data.first.result);
 		out.append(std::move(data.second.result));

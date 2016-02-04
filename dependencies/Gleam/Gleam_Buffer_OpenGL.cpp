@@ -1,5 +1,5 @@
 /************************************************************************************
-Copyright (C) 2015 by Nicholas LaCroix
+Copyright (C) 2016 by Nicholas LaCroix
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -128,9 +128,9 @@ void BufferGL::unmap(IRenderDevice&)
 	glUnmapBuffer(_type_map[_buffer_type]);
 }
 
-bool BufferGL::isD3D(void) const
+RendererType BufferGL::getRendererType(void) const
 {
-	return false;
+	return RENDERER_OPENGL;
 }
 
 unsigned int BufferGL::getBuffer(void) const

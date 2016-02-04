@@ -1,5 +1,5 @@
 /************************************************************************************
-Copyright (C) 2015 by Nicholas LaCroix
+Copyright (C) 2016 by Nicholas LaCroix
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -54,7 +54,7 @@ LayoutD3D::~LayoutD3D(void)
 
 bool LayoutD3D::init(IRenderDevice& rd, const LayoutDescription* layout_desc, size_t layout_desc_size, const IShader* shader)
 {
-	assert(rd.isD3D() && shader->isD3D());
+	assert(rd.getRendererType() == RENDERER_DIRECT3D && shader->getRendererType() == RENDERER_DIRECT3D);
 
 	GleamArray<D3D11_INPUT_ELEMENT_DESC> input_desc(layout_desc_size, D3D11_INPUT_ELEMENT_DESC());
 
@@ -83,7 +83,7 @@ void LayoutD3D::destroy(void)
 
 void LayoutD3D::setLayout(IRenderDevice& rd, const IMesh*)
 {
-	assert(rd.isD3D());
+	assert(rd.getRendererType() == RENDERER_DIRECT3D);
 	IRenderDeviceD3D& rd3d = reinterpret_cast<IRenderDeviceD3D&>(*(reinterpret_cast<char*>(&rd) + sizeof(IRenderDevice)));
 	ID3D11DeviceContext* context = rd3d.getActiveDeviceContext();
 	context->IASetInputLayout(_layout);
@@ -91,10 +91,15 @@ void LayoutD3D::setLayout(IRenderDevice& rd, const IMesh*)
 
 void LayoutD3D::unsetLayout(IRenderDevice& rd)
 {
-	assert(rd.isD3D());
+	assert(rd.getRendererType() == RENDERER_DIRECT3D);
 	IRenderDeviceD3D& rd3d = reinterpret_cast<IRenderDeviceD3D&>(*(reinterpret_cast<char*>(&rd) + sizeof(IRenderDevice)));
 	ID3D11DeviceContext* context = rd3d.getActiveDeviceContext();
 	context->IASetInputLayout(NULL);
+}
+
+RendererType LayoutD3D::getRendererType(void) const
+{
+	return RENDERER_DIRECT3D;
 }
 
 NS_END

@@ -1,5 +1,5 @@
 /************************************************************************************
-Copyright (C) 2015 by Nicholas LaCroix
+Copyright (C) 2016 by Nicholas LaCroix
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -231,7 +231,7 @@ void TextureD3D::destroy(void)
 bool TextureD3D::init3D(IRenderDevice& rd, int width, int height, int depth, FORMAT format, int mip_levels, const void* buffer)
 {
 	assert(width > 0 && height > 0 && depth > 0 && mip_levels > 0);
-	assert(rd.isD3D());
+	assert(rd.getRendererType() == RENDERER_DIRECT3D);
 
 	IRenderDeviceD3D& rd3d = reinterpret_cast<IRenderDeviceD3D&>(*(reinterpret_cast<char*>(&rd) + sizeof(IRenderDevice)));
 	ID3D11Device* device = rd3d.getActiveDevice();
@@ -276,7 +276,7 @@ bool TextureD3D::init3D(IRenderDevice& rd, int width, int height, int depth, FOR
 bool TextureD3D::init2D(IRenderDevice& rd, int width, int height, FORMAT format, int mip_levels, const void* buffer)
 {
 	assert(width > 0 && height > 0 && mip_levels > 0);
-	assert(rd.isD3D());
+	assert(rd.getRendererType() == RENDERER_DIRECT3D);
 
 	IRenderDeviceD3D& rd3d = reinterpret_cast<IRenderDeviceD3D&>(*(reinterpret_cast<char*>(&rd) + sizeof(IRenderDevice)));
 	ID3D11Device* device = rd3d.getActiveDevice();
@@ -323,7 +323,7 @@ bool TextureD3D::init2D(IRenderDevice& rd, int width, int height, FORMAT format,
 bool TextureD3D::init1D(IRenderDevice& rd, int width, FORMAT format, int mip_levels, const void* buffer)
 {
 	assert(width > 0 && mip_levels > 0);
-	assert(rd.isD3D());
+	assert(rd.getRendererType() == RENDERER_DIRECT3D);
 
 	IRenderDeviceD3D& rd3d = reinterpret_cast<IRenderDeviceD3D&>(*(reinterpret_cast<char*>(&rd) + sizeof(IRenderDevice)));
 	ID3D11Device* device = rd3d.getActiveDevice();
@@ -367,7 +367,7 @@ bool TextureD3D::init1D(IRenderDevice& rd, int width, FORMAT format, int mip_lev
 bool TextureD3D::initCubemap(IRenderDevice& rd, int width, int height, FORMAT format, int mip_levels, const void* buffer)
 {
 	assert(width > 0 && height > 0 && mip_levels > 0);
-	assert(rd.isD3D());
+	assert(rd.getRendererType() == RENDERER_DIRECT3D);
 
 	IRenderDeviceD3D& rd3d = reinterpret_cast<IRenderDeviceD3D&>(*(reinterpret_cast<char*>(&rd) + sizeof(IRenderDevice)));
 	ID3D11Device* device = rd3d.getActiveDevice();
@@ -414,7 +414,7 @@ bool TextureD3D::initCubemap(IRenderDevice& rd, int width, int height, FORMAT fo
 bool TextureD3D::initDepthStencil(IRenderDevice& rd, int width, int height, FORMAT format)
 {
 	assert(width > 0 && height > 0);
-	assert(rd.isD3D());
+	assert(rd.getRendererType() == RENDERER_DIRECT3D);
 
 	IRenderDeviceD3D& rd3d = reinterpret_cast<IRenderDeviceD3D&>(*(reinterpret_cast<char*>(&rd) + sizeof(IRenderDevice)));
 	ID3D11Device* device = rd3d.getActiveDevice();
@@ -485,9 +485,9 @@ bool TextureD3D::initDepthStencil(IRenderDevice& rd, int width, int height, FORM
 	return true;
 }
 
-bool TextureD3D::isD3D(void) const
+RendererType TextureD3D::getRendererType(void) const
 {
-	return true;
+	return RENDERER_DIRECT3D;
 }
 
 ID3D11DepthStencilView* TextureD3D::getDepthStencilView(void) const

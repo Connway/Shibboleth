@@ -1,5 +1,5 @@
 /************************************************************************************
-Copyright (C) 2015 by Nicholas LaCroix
+Copyright (C) 2016 by Nicholas LaCroix
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -48,8 +48,10 @@ public:
 	virtual void setLayout(LayoutGL* layout, const IMesh* mesh) = 0;
 	virtual void unsetLayout(LayoutGL* layout) = 0;
 
-	virtual void bindShader(ProgramGL* shader, ProgramBuffersGL* program_buffers) = 0;
+	virtual void bindShader(ProgramGL* shader) = 0;
 	virtual void unbindShader(void) = 0;
+
+	virtual void bindProgramBuffers(ProgramBuffersGL* program_buffers) = 0;
 
 	virtual void renderMeshNonIndexed(unsigned int topology, unsigned int vert_count, unsigned int start_location) = 0;
 	virtual void renderMeshInstanced(MeshGL* mesh, unsigned int count) = 0;

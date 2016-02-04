@@ -1,5 +1,5 @@
 /************************************************************************************
-Copyright (C) 2015 by Nicholas LaCroix
+Copyright (C) 2016 by Nicholas LaCroix
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -40,36 +40,6 @@ App::App(void):
 
 App::~App(void)
 {
-	_job_pool.destroy();
-	_state_machine.clear();
-
-	for (ManagerMap::Iterator it = _manager_map.begin(); it != _manager_map.end(); ++it) {
-		it->destroy_func(it->manager, it->manager_id);
-	}
-
-	_manager_map.clear();
-	_logger.destroy();
-
-	_dynamic_loader.forEachModule([](DynamicLoader::ModulePtr module) -> bool
-	{
-		void (*shutdown_func)(void) = module->getFunc<void (*)(void)>("ShutdownModule");
-
-		if (shutdown_func) {
-			shutdown_func();
-		}
-
-		return false;
-	});
-
-	_dynamic_loader.clear();
-
-	// Destroy the file system
-	if (_fs.file_system_module) {
-		_fs.destroy_func(_fs.file_system);
-		_fs.file_system_module = nullptr;
-	} else if (_fs.file_system) {
-		GetAllocator()->freeT(_fs.file_system);
-	}
 }
 
 // Still single-threaded at this point, so ok that we're not using the spinlock
@@ -499,6 +469,40 @@ void App::run(void)
 	while (_running) {
 		_broadcaster.update();
 		_state_machine.update();
+	}
+}
+
+void App::destroy(void)
+{
+	_job_pool.destroy();
+	_state_machine.clear();
+
+	for (ManagerMap::Iterator it = _manager_map.begin(); it != _manager_map.end(); ++it) {
+		it->destroy_func(it->manager, it->manager_id);
+	}
+
+	_manager_map.clear();
+	_logger.destroy();
+
+	_dynamic_loader.forEachModule([](DynamicLoader::ModulePtr module) -> bool
+	{
+		void(*shutdown_func)(void) = module->getFunc<void(*)(void)>("ShutdownModule");
+
+		if (shutdown_func) {
+			shutdown_func();
+		}
+
+		return false;
+	});
+
+	_dynamic_loader.clear();
+
+	// Destroy the file system
+	if (_fs.file_system_module) {
+		_fs.destroy_func(_fs.file_system);
+		_fs.file_system_module = nullptr;
+	} else if (_fs.file_system) {
+		GetAllocator()->freeT(_fs.file_system);
 	}
 }
 

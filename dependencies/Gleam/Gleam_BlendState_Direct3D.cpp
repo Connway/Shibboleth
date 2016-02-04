@@ -1,5 +1,5 @@
 /************************************************************************************
-Copyright (C) 2015 by Nicholas LaCroix
+Copyright (C) 2016 by Nicholas LaCroix
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -40,7 +40,7 @@ BlendStateD3D::~BlendStateD3D(void)
 
 bool BlendStateD3D::init(IRenderDevice& rd, const BlendStateSettings& settings)
 {
-	assert(rd.isD3D());
+	assert(rd.getRendererType() == RENDERER_DIRECT3D);
 
 	IRenderDeviceD3D& rd3d = reinterpret_cast<IRenderDeviceD3D&>(*(reinterpret_cast<char*>(&rd) + sizeof(IRenderDevice)));
 	ID3D11Device* device = rd3d.getActiveDevice();
@@ -64,7 +64,7 @@ bool BlendStateD3D::init(IRenderDevice& rd, const BlendStateSettings& settings)
 
 bool BlendStateD3D::init(IRenderDevice& rd, const BlendStateSettings* settings)
 {
-	assert(rd.isD3D());
+	assert(rd.getRendererType() == RENDERER_DIRECT3D);
 
 	IRenderDeviceD3D& rd3d = reinterpret_cast<IRenderDeviceD3D&>(*(reinterpret_cast<char*>(&rd) + sizeof(IRenderDevice)));
 	ID3D11Device* device = rd3d.getActiveDevice();
@@ -95,7 +95,7 @@ void BlendStateD3D::destroy(void)
 
 void BlendStateD3D::set(IRenderDevice& rd) const
 {
-	assert(rd.isD3D());
+	assert(rd.getRendererType() == RENDERER_DIRECT3D);
 	IRenderDeviceD3D& rd3d = reinterpret_cast<IRenderDeviceD3D&>(*(reinterpret_cast<char*>(&rd) + sizeof(IRenderDevice)));
 	ID3D11DeviceContext* context = rd3d.getActiveDeviceContext();
 
@@ -104,16 +104,16 @@ void BlendStateD3D::set(IRenderDevice& rd) const
 
 void BlendStateD3D::unset(IRenderDevice& rd) const
 {
-	assert(rd.isD3D());
+	assert(rd.getRendererType() == RENDERER_DIRECT3D);
 	IRenderDeviceD3D& rd3d = reinterpret_cast<IRenderDeviceD3D&>(*(reinterpret_cast<char*>(&rd) + sizeof(IRenderDevice)));
 	ID3D11DeviceContext* context = rd3d.getActiveDeviceContext();
 
 	context->OMSetBlendState(NULL, NULL, 0xFFFFFFFF);
 }
 
-bool BlendStateD3D::isD3D(void) const
+RendererType BlendStateD3D::getRendererType(void) const
 {
-	return true;
+	return RENDERER_DIRECT3D;
 }
 
 NS_END

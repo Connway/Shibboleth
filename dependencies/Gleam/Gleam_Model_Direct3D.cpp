@@ -1,5 +1,5 @@
 /************************************************************************************
-Copyright (C) 2015 by Nicholas LaCroix
+Copyright (C) 2016 by Nicholas LaCroix
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -68,6 +68,11 @@ IMesh* ModelD3D::createMesh(void)
 	addMesh(mesh);
 
 	return mesh;
+}
+
+RendererType ModelD3D::getRendererType(void) const
+{
+	return RENDERER_DIRECT3D;
 }
 
 NS_END

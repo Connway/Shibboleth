@@ -1,5 +1,5 @@
 /************************************************************************************
-Copyright (C) 2015 by Nicholas LaCroix
+Copyright (C) 2016 by Nicholas LaCroix
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -59,3 +59,14 @@ THE SOFTWARE.
 #else
 	#define __stdcall
 #endif
+
+
+NS_GLEAM
+
+enum RendererType
+{
+	RENDERER_DIRECT3D = 0,
+	RENDERER_OPENGL
+};
+
+NS_END

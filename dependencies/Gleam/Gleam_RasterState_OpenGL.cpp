@@ -1,5 +1,5 @@
 /************************************************************************************
-Copyright (C) 2015 by Nicholas LaCroix
+Copyright (C) 2016 by Nicholas LaCroix
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -36,7 +36,7 @@ RasterStateGL::~RasterStateGL(void)
 
 bool RasterStateGL::init(IRenderDevice& rd, const RasterStateSettings& settings)
 {
-	assert(!rd.isD3D());
+	assert(rd.getRendererType() == RENDERER_OPENGL);
 	_raster_settings = settings;
 	return true;
 }
@@ -47,21 +47,21 @@ void RasterStateGL::destroy(void)
 
 void RasterStateGL::set(IRenderDevice& rd) const
 {
-	assert(!rd.isD3D());
+	assert(rd.getRendererType() == RENDERER_OPENGL);
 	IRenderDeviceGL& rdgl = reinterpret_cast<IRenderDeviceGL&>(*(reinterpret_cast<char*>(&rd) + sizeof(IRenderDevice)));
 	rdgl.setRasterState(this);
 }
 
 void RasterStateGL::unset(IRenderDevice& rd) const
 {
-	assert(!rd.isD3D());
+	assert(rd.getRendererType() == RENDERER_OPENGL);
 	IRenderDeviceGL& rdgl = reinterpret_cast<IRenderDeviceGL&>(*(reinterpret_cast<char*>(&rd) + sizeof(IRenderDevice)));
 	rdgl.setRasterState(nullptr);
 }
 
-bool RasterStateGL::isD3D(void) const
+RendererType RasterStateGL::getRendererType(void) const
 {
-	return false;
+	return RENDERER_OPENGL;
 }
 
 const IRasterState::RasterStateSettings& RasterStateGL::getRasterSettings(void) const

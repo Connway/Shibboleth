@@ -31,7 +31,7 @@ project "Components"
 		"../../dependencies/Gleam/include",
 		"../../dependencies/Gaff/include",
 		"../../dependencies/LuaState",
-		"../../dependencies/LuaJIT-2.0.3/src",
+		"../../dependencies/LuaJIT-2.0.4/src",
 		"../../dependencies/utf8-cpp",
 		"../../dependencies/assimp/include",
 		"../../dependencies/esprit/include"
@@ -71,7 +71,7 @@ project "ComponentsModule"
 		"../../dependencies/Gleam/include",
 		"../../dependencies/Gaff/include",
 		"../../dependencies/LuaState",
-		"../../dependencies/LuaJIT-2.0.3/src",
+		"../../dependencies/LuaJIT-2.0.4/src",
 		"../../dependencies/utf8-cpp",
 		"../../dependencies/assimp/include",
 		"../../dependencies/esprit/include"

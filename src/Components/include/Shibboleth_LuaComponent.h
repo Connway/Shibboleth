@@ -1,5 +1,5 @@
 /************************************************************************************
-Copyright (C) 2015 by Nicholas LaCroix
+Copyright (C) 2016 by Nicholas LaCroix
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -47,6 +47,8 @@ public:
 	LuaComponent(void);
 	~LuaComponent(void);
 
+	const Gaff::JSON& getSchema(void) const;
+
 	bool load(const Gaff::JSON& json);
 	bool save(Gaff::JSON& json);
 
@@ -56,7 +58,9 @@ public:
 
 private:
 	ResourceWrapper< SingleDataWrapper<lua::State*> > _script_res;
-	AString _lua_file;
+
+	void scriptLoaded(ResourceContainer*);
+	void cacheFunctions(void);
 
 	GAFF_NO_COPY(LuaComponent);
 	GAFF_NO_MOVE(LuaComponent);
