@@ -16,6 +16,11 @@
 			"Z Far": 5000.0,
 			"Render Order": 0,
 			"Active": true
+		},
+		"Test2":
+		{
+			"Type": "Lua Component",
+			"Script File": "Resources/Scripts/TestScript.lua"
 		}
 	}
 }

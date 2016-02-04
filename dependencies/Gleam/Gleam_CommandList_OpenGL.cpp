@@ -1,5 +1,5 @@
 /************************************************************************************
-Copyright (C) 2015 by Nicholas LaCroix
+Copyright (C) 2016 by Nicholas LaCroix
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -44,33 +44,33 @@ CommandListGL::~CommandListGL(void)
 
 const ICommandList& CommandListGL::operator=(const ICommandList& rhs)
 {
-	assert(!rhs.isD3D());
+	assert(rhs.getRendererType() == RENDERER_OPENGL);
 	_commands = reinterpret_cast<const CommandListGL&>(rhs)._commands;
 	return *this;
 }
 
 const ICommandList& CommandListGL::operator=(ICommandList&& rhs)
 {
-	assert(!rhs.isD3D());
+	assert(rhs.getRendererType() == RENDERER_OPENGL);
 	_commands = std::move(reinterpret_cast<const CommandListGL&>(rhs)._commands);
 	return *this;
 }
 
 bool CommandListGL::operator==(const ICommandList& rhs) const
 {
-	assert(!rhs.isD3D());
+	assert(rhs.getRendererType() == RENDERER_OPENGL);
 	return _commands == reinterpret_cast<const CommandListGL&>(rhs)._commands;
 }
 
 bool CommandListGL::operator!=(const ICommandList& rhs) const
 {
-	assert(!rhs.isD3D());
+	assert(rhs.getRendererType() == RENDERER_OPENGL);
 	return _commands != reinterpret_cast<const CommandListGL&>(rhs)._commands;
 }
 
-bool CommandListGL::isD3D(void) const
+RendererType CommandListGL::getRendererType(void) const
 {
-	return false;
+	return RENDERER_OPENGL;
 }
 
 void CommandListGL::append(const CommandListGL& command_list)

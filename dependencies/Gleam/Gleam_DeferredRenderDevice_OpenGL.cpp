@@ -1,5 +1,5 @@
 /************************************************************************************
-Copyright (C) 2015 by Nicholas LaCroix
+Copyright (C) 2016 by Nicholas LaCroix
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -54,20 +54,20 @@ bool DeferredRenderDeviceGL::isDeferred(void) const
 	return true;
 }
 
-bool DeferredRenderDeviceGL::isD3D(void) const
+RendererType DeferredRenderDeviceGL::getRendererType(void) const
 {
-	return false;
+	return RENDERER_OPENGL;
 }
 
 void DeferredRenderDeviceGL::executeCommandList(ICommandList* command_list)
 {
-	assert(!command_list->isD3D());
+	assert(command_list->getRendererType() == RENDERER_OPENGL);
 	_command_list.append(reinterpret_cast<CommandListGL&>(*command_list));
 }
 
 bool DeferredRenderDeviceGL::finishCommandList(ICommandList* command_list)
 {
-	assert(!command_list->isD3D());
+	assert(command_list->getRendererType() == RENDERER_OPENGL);
 	*command_list = std::move(_command_list);
 	return true;
 }
@@ -286,57 +286,59 @@ void DeferredRenderDeviceGL::unsetLayout(LayoutGL* layout)
 	}
 }
 
-void DeferredRenderDeviceGL::bindShader(ProgramGL* shader, ProgramBuffersGL* program_buffers)
+void DeferredRenderDeviceGL::bindShader(ProgramGL* shader)
 {
 	static auto bpp_func = Gaff::BindSTDCall(glBindProgramPipeline);
+
+	Gaff::CachedFunction<void, GLuint> bpp_cache(bpp_func, shader->getProgram());
+	_command_list.addCommand(bpp_cache);
+}
+
+void DeferredRenderDeviceGL::bindProgramBuffers(ProgramBuffersGL* program_buffers)
+{
 	static auto bbb_func = Gaff::BindSTDCall(glBindBufferBase);
 	static auto at_func = Gaff::BindSTDCall(glActiveTexture);
 	static auto bt_func = Gaff::BindSTDCall(glBindTexture);
 	static auto bs_func = Gaff::BindSTDCall(glBindSampler);
 
-	Gaff::CachedFunction<void, GLuint> bpp_cache(bpp_func, shader->getProgram());
-	_command_list.addCommand(bpp_cache);
+	unsigned int texture_count = 0;
+	unsigned int count = 0;
 
-	if (program_buffers) {
-		unsigned int texture_count = 0;
-		unsigned int count = 0;
+	for (unsigned int i = 0; i < IShader::SHADER_TYPE_SIZE - 1; ++i) {
+		const GleamArray<IShaderResourceView*>& resource_views = program_buffers->getResourceViews(static_cast<Gleam::IShader::SHADER_TYPE>(i));
+		const GleamArray<ISamplerState*>& sampler_states = program_buffers->getSamplerStates(static_cast<Gleam::IShader::SHADER_TYPE>(i));
+		const GleamArray<IBuffer*>& const_bufs = program_buffers->getConstantBuffers(static_cast<Gleam::IShader::SHADER_TYPE>(i));
 
-		for (unsigned int i = 0; i < IShader::SHADER_TYPE_SIZE - 1; ++i) {
-			const GleamArray<IShaderResourceView*>& resource_views = program_buffers->getResourceViews(static_cast<Gleam::IShader::SHADER_TYPE>(i));
-			const GleamArray<ISamplerState*>& sampler_states = program_buffers->getSamplerStates(static_cast<Gleam::IShader::SHADER_TYPE>(i));
-			const GleamArray<IBuffer*>& const_bufs = program_buffers->getConstantBuffers(static_cast<Gleam::IShader::SHADER_TYPE>(i));
+		assert(sampler_states.size() <= resource_views.size());
+		unsigned int sampler_count = 0;
 
-			assert(sampler_states.size() <= resource_views.size());
-			unsigned int sampler_count = 0;
+		for (unsigned int j = 0; j < const_bufs.size(); ++j) {
+			Gaff::CachedFunction<void, GLuint, GLenum, GLenum> bbb_cache(bbb_func, GL_UNIFORM_BUFFER, count, reinterpret_cast<const BufferGL*>(const_bufs[j])->getBuffer());
+			_command_list.addCommand(bbb_cache);
 
-			for (unsigned int j = 0; j < const_bufs.size(); ++j) {
-				Gaff::CachedFunction<void, GLuint, GLenum, GLenum> bbb_cache(bbb_func, GL_UNIFORM_BUFFER, count, reinterpret_cast<const BufferGL*>(const_bufs[j])->getBuffer());
-				_command_list.addCommand(bbb_cache);
+			++count;
+		}
 
-				++count;
-			}
+		for (unsigned int j = 0; j < resource_views.size(); ++j) {
+			ShaderResourceViewGL* rv = reinterpret_cast<ShaderResourceViewGL*>(resource_views[j]);
 
-			for (unsigned int j = 0; j < resource_views.size(); ++j) {
-				ShaderResourceViewGL* rv = reinterpret_cast<ShaderResourceViewGL*>(resource_views[j]);
+			if (resource_views[j]->getViewType() == IShaderResourceView::VIEW_TEXTURE) {
+				// should probably assert that texture_count isn't higher than the supported number of textures
 
-				if (resource_views[j]->getViewType() == IShaderResourceView::VIEW_TEXTURE) {
-					// should probably assert that texture_count isn't higher than the supported number of textures
+				SamplerStateGL* st = reinterpret_cast<SamplerStateGL*>(sampler_states[sampler_count]);
 
-					SamplerStateGL* st = reinterpret_cast<SamplerStateGL*>(sampler_states[sampler_count]);
+				Gaff::CachedFunction<void, GLenum> at_cache(at_func, GL_TEXTURE0 + texture_count);
+				Gaff::CachedFunction<void, GLenum, GLuint> bt_cache(bt_func, rv->getTarget(), rv->getResourceView());
+				Gaff::CachedFunction<void, GLenum, GLenum> bs_cache(bs_func, texture_count, st->getSamplerState());
+				_command_list.addCommand(at_cache);
+				_command_list.addCommand(bt_cache);
+				_command_list.addCommand(bs_cache);
 
-					Gaff::CachedFunction<void, GLenum> at_cache(at_func, GL_TEXTURE0 + texture_count);
-					Gaff::CachedFunction<void, GLenum, GLuint> bt_cache(bt_func, rv->getTarget(), rv->getResourceView());
-					Gaff::CachedFunction<void, GLenum, GLenum> bs_cache(bs_func, texture_count, st->getSamplerState());
-					_command_list.addCommand(at_cache);
-					_command_list.addCommand(bt_cache);
-					_command_list.addCommand(bs_cache);
+				++texture_count;
+				++sampler_count;
 
-					++texture_count;
-					++sampler_count;
-
-				} else {
-					assert(0 && "How is your ShaderResourceView not a texture? That's the only type we have implemented ...");
-				}
+			} else {
+				assert(0 && "How is your ShaderResourceView not a texture? That's the only type we have implemented ...");
 			}
 		}
 	}

@@ -1,5 +1,5 @@
 /************************************************************************************
-Copyright (C) 2015 by Nicholas LaCroix
+Copyright (C) 2016 by Nicholas LaCroix
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -59,6 +59,8 @@ public:
 
 	virtual void renderInstanced(IRenderDevice& rd, size_t index, unsigned int count) = 0;
 	virtual void render(IRenderDevice& rd, size_t index) = 0;
+
+	virtual RendererType getRendererType(void) const = 0;
 
 	GAFF_NO_COPY(IModel);
 };

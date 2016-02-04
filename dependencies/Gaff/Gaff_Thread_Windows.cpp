@@ -1,5 +1,5 @@
 /************************************************************************************
-Copyright (C) 2015 by Nicholas LaCroix
+Copyright (C) 2016 by Nicholas LaCroix
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -124,10 +124,6 @@ unsigned int Thread::getID(void) const
 */
 const Thread& Thread::operator=(Thread&& rhs)
 {
-	if (_thread) {
-		close();
-	}
-
 	_thread = rhs._thread;
 	rhs._thread = nullptr;
 

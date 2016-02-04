@@ -1,5 +1,5 @@
 /************************************************************************************
-Copyright (C) 2015 by Nicholas LaCroix
+Copyright (C) 2016 by Nicholas LaCroix
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -316,7 +316,8 @@ void OtterUIRenderer::OnDrawBatch(const Otter::DrawBatch& batch)
 
 	// add appropriate textures
 	program_buffers->addResourceView(Gleam::IShader::SHADER_PIXEL, res_data.resource_views[curr_device].get());
-	program->bind(_render_device, program_buffers.get());
+	program->bind(_render_device);
+	program_buffers->bind(_render_device);
 
 	// bind layout
 	device_data.layout->setLayout(_render_device, device_data.mesh.get());

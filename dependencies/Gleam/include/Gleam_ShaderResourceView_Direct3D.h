@@ -1,5 +1,5 @@
 /************************************************************************************
-Copyright (C) 2015 by Nicholas LaCroix
+Copyright (C) 2016 by Nicholas LaCroix
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -39,7 +39,7 @@ public:
 	bool init(IRenderDevice& rd, const IBuffer* buffer);
 	void destroy(void);
 
-	INLINE bool isD3D(void) const;
+	RendererType getRendererType(void) const;
 
 	INLINE ID3D11ShaderResourceView* getResourceView(void) const;
 

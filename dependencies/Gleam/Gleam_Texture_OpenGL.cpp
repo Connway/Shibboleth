@@ -1,5 +1,5 @@
 /************************************************************************************
-Copyright (C) 2015 by Nicholas LaCroix
+Copyright (C) 2016 by Nicholas LaCroix
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -435,9 +435,9 @@ bool TextureGL::initDepthStencil(IRenderDevice&, int width, int height, FORMAT f
 	return glGetError() == GL_NO_ERROR;
 }
 
-bool TextureGL::isD3D(void) const
+RendererType TextureGL::getRendererType(void) const
 {
-	return false;
+	return RENDERER_OPENGL;
 }
 
 unsigned int TextureGL::getTexture(void) const

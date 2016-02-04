@@ -1,5 +1,5 @@
 /************************************************************************************
-Copyright (C) 2015 by Nicholas LaCroix
+Copyright (C) 2016 by Nicholas LaCroix
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -40,10 +40,11 @@ public:
 		unsigned int max_anisotropy,
 		//IRenderState::COMPARISON_FUNC compare_func,
 		float border_r, float border_g, float border_b, float border_a
-		);
+	);
+	
 	void destroy(void);
 
-	INLINE bool isD3D(void) const;
+	RendererType getRendererType(void) const;
 
 	INLINE unsigned int getSamplerState(void) const;
 

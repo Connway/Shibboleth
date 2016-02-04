@@ -1,5 +1,5 @@
 /************************************************************************************
-Copyright (C) 2015 by Nicholas LaCroix
+Copyright (C) 2016 by Nicholas LaCroix
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -32,7 +32,9 @@ public:
 	ProgramBuffersGL(void) {}
 	~ProgramBuffersGL(void) {}
 
-	bool isD3D(void) const { return false; }
+	void bind(IRenderDevice& rd) override;
+
+	RendererType getRendererType(void) const override { return RENDERER_OPENGL; }
 };
 
 class ProgramGL : public ProgramBase
@@ -47,10 +49,10 @@ public:
 	void attach(IShader* shader);
 	void detach(IShader::SHADER_TYPE shader);
 
-	void bind(IRenderDevice& rd, IProgramBuffers* program_buffers = nullptr);
+	void bind(IRenderDevice& rd);
 	void unbind(IRenderDevice& rd);
 
-	bool isD3D(void) const;
+	RendererType getRendererType(void) const;
 
 	INLINE unsigned int getProgram(void) const;
 

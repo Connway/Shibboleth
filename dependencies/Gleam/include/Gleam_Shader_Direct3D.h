@@ -1,5 +1,5 @@
 /************************************************************************************
-Copyright (C) 2015 by Nicholas LaCroix
+Copyright (C) 2016 by Nicholas LaCroix
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -55,7 +55,7 @@ public:
 
 	void destroy(void);
 
-	bool isD3D(void) const;
+	RendererType getRendererType(void) const;
 
 	INLINE void* getShader(void) const;
 	INLINE ID3D11VertexShader* getVertexShader(void) const;

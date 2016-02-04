@@ -1,5 +1,5 @@
 /************************************************************************************
-Copyright (C) 2015 by Nicholas LaCroix
+Copyright (C) 2016 by Nicholas LaCroix
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -357,7 +357,8 @@ void RenderPipelineManager::renderToScreen(double, void*)
 		rd.beginFrame();
 
 		rd.getActiveOutputRenderTarget()->bind(rd);
-		_camera_to_screen_shader->programs[camera_data.device]->bind(rd, program_buffers.get());
+		_camera_to_screen_shader->programs[camera_data.device]->bind(rd);
+		program_buffers->bind(rd);
 
 		rd.renderNoVertexInput(3); // Render fullscreen quad
 

@@ -1,5 +1,5 @@
 /************************************************************************************
-Copyright (C) 2015 by Nicholas LaCroix
+Copyright (C) 2016 by Nicholas LaCroix
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -59,7 +59,7 @@ bool BufferD3D::init(
 	IRenderDevice& rd, const void* data, unsigned int size, BUFFER_TYPE buffer_type,
 	unsigned int stride, MAP_TYPE cpu_access, bool gpu_read_only, unsigned int structure_byte_stride)
 {
-	assert(rd.isD3D() && !_buffer);
+	assert(rd.getRendererType() == RENDERER_DIRECT3D && !_buffer);
 	IRenderDeviceD3D& rd3d = reinterpret_cast<IRenderDeviceD3D&>(*(reinterpret_cast<char*>(&rd) + sizeof(IRenderDevice)));
 
 	ID3D11Device* device = rd3d.getActiveDevice();
@@ -108,7 +108,7 @@ void BufferD3D::destroy(void)
 
 bool BufferD3D::update(IRenderDevice& rd, const void* data, unsigned int size, unsigned int offset)
 {
-	assert(rd.isD3D() && data);
+	assert(rd.getRendererType() == RENDERER_DIRECT3D && data);
 	IRenderDeviceD3D& rd3d = reinterpret_cast<IRenderDeviceD3D&>(*(reinterpret_cast<char*>(&rd) + sizeof(IRenderDevice)));
 	ID3D11DeviceContext* context = rd3d.getActiveDeviceContext();
 	D3D11_MAPPED_SUBRESOURCE mapped_resource;
@@ -124,7 +124,7 @@ bool BufferD3D::update(IRenderDevice& rd, const void* data, unsigned int size, u
 
 void* BufferD3D::map(IRenderDevice& rd, MAP_TYPE map_type)
 {
-	assert(rd.isD3D() && map_type != NONE);
+	assert(rd.getRendererType() == RENDERER_DIRECT3D && map_type != NONE);
 	IRenderDeviceD3D& rd3d = reinterpret_cast<IRenderDeviceD3D&>(*(reinterpret_cast<char*>(&rd) + sizeof(IRenderDevice)));
 	ID3D11DeviceContext* context = rd3d.getActiveDeviceContext();
 	D3D11_MAPPED_SUBRESOURCE mapped_resource;
@@ -135,15 +135,15 @@ void* BufferD3D::map(IRenderDevice& rd, MAP_TYPE map_type)
 
 void BufferD3D::unmap(IRenderDevice& rd)
 {
-	assert(rd.isD3D());
+	assert(rd.getRendererType() == RENDERER_DIRECT3D);
 	IRenderDeviceD3D& rd3d = reinterpret_cast<IRenderDeviceD3D&>(*(reinterpret_cast<char*>(&rd) + sizeof(IRenderDevice)));
 	ID3D11DeviceContext* context = rd3d.getActiveDeviceContext();
 	context->Unmap(_buffer, 0);
 }
 
-bool BufferD3D::isD3D(void) const
+RendererType BufferD3D::getRendererType(void) const
 {
-	return true;
+	return RENDERER_DIRECT3D;
 }
 
 ID3D11Buffer* BufferD3D::getBuffer(void) const

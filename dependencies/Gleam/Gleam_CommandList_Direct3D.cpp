@@ -1,5 +1,5 @@
 /************************************************************************************
-Copyright (C) 2015 by Nicholas LaCroix
+Copyright (C) 2016 by Nicholas LaCroix
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -46,33 +46,33 @@ CommandListD3D::~CommandListD3D(void)
 
 const ICommandList& CommandListD3D::operator=(const ICommandList& rhs)
 {
-	assert(rhs.isD3D());
+	assert(rhs.getRendererType() == RENDERER_DIRECT3D);
 	_command_list = reinterpret_cast<const CommandListD3D&>(rhs)._command_list;
 	return *this;
 }
 
 const ICommandList& CommandListD3D::operator=(ICommandList&& rhs)
 {
-	assert(rhs.isD3D());
+	assert(rhs.getRendererType() == RENDERER_DIRECT3D);
 	_command_list = std::move(reinterpret_cast<CommandListD3D&>(rhs)._command_list);
 	return *this;
 }
 
 bool CommandListD3D::operator==(const ICommandList& rhs) const
 {
-	assert(rhs.isD3D());
+	assert(rhs.getRendererType() == RENDERER_DIRECT3D);
 	return _command_list == reinterpret_cast<const CommandListD3D&>(rhs)._command_list;
 }
 
 bool CommandListD3D::operator!=(const ICommandList& rhs) const
 {
-	assert(rhs.isD3D());
+	assert(rhs.getRendererType() == RENDERER_DIRECT3D);
 	return _command_list != reinterpret_cast<const CommandListD3D&>(rhs)._command_list;
 }
 
-bool CommandListD3D::isD3D(void) const
+RendererType CommandListD3D::getRendererType(void) const
 {
-	return true;
+	return RENDERER_DIRECT3D;
 }
 
 void CommandListD3D::setCommandList(ID3D11CommandList* command_list)

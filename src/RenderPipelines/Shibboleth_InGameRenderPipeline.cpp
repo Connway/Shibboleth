@@ -1,5 +1,5 @@
 /************************************************************************************
-Copyright (C) 2015 by Nicholas LaCroix
+Copyright (C) 2016 by Nicholas LaCroix
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -23,7 +23,6 @@ THE SOFTWARE.
 // TODO: Listen for level change messages or region unload messages to clear the render pass info.
 
 #include "Shibboleth_InGameRenderPipeline.h"
-//#include <Shibboleth_OcclusionManager.h>
 #include <Shibboleth_FrameManager.h>
 
 #include <Shibboleth_CameraComponent.h>
@@ -42,32 +41,37 @@ NS_SHIBBOLETH
 
 struct RenderInfo
 {
-	RenderInfo(
-		RasterStatePtr rs, ProgramBuffersPtr pbs,
-		ProgramPtr p, ModelPtr mo, size_t me
-	):
-		raster_state(rs),
-		program_buffers(pbs), program(p), model(mo),
-		mesh(me)
+	RenderInfo(ProgramBuffersPtr pbs, ModelPtr mo, size_t me):
+		program_buffers(pbs), model(mo), mesh(me)
 	{
 	}
 
 	Array<const Gleam::TransformCPU*> object_transforms;
-	BufferPtr instance_buffer;
 
-	RasterStatePtr raster_state;
 	ProgramBuffersPtr program_buffers;
-	ProgramPtr program;
 	ModelPtr model;
 	size_t mesh;
 };
 
-static THREAD_LOCAL Array< Gaff::Pair<BufferPtr, ShaderResourceViewPtr> > gInstance_buffer_pool; // [Device]
+struct RasterInfo
+{
+	RasterInfo(RasterStatePtr rs, ProgramPtr p):
+		raster_state(rs), program(p), obj_count(0)
+	{
+	}
 
-// Will want to further sort this into objects with the same material/renderstate pairs
-// Will also want to add support for instancing
-static THREAD_LOCAL Map<unsigned int, RenderInfo> gRender_pass_info[RP_COUNT];
-//static THREAD_LOCAL Array<RenderInfo> gRender_pass_info[RP_COUNT];
+	RasterStatePtr raster_state;
+	ProgramPtr program;
+
+	size_t obj_count;
+
+	Map<unsigned int, RenderInfo> render_info; // Key is hash of ProgramBuffersPtr, ModelPtr, and mesh index
+};
+
+using RenderPassInfo = Map<unsigned int, RasterInfo>; // Key is hash of RasterStatePtr and ProgramPtr.
+
+static THREAD_LOCAL Array< Gaff::Pair<BufferPtr, ShaderResourceViewPtr> > gInstance_buffer_pool; // [Device]
+static THREAD_LOCAL RenderPassInfo gRender_pass_info[RP_COUNT];
 static THREAD_LOCAL bool gInit = false;
 
 InGameRenderPipeline::InGameRenderPipeline(void):
@@ -199,8 +203,9 @@ void InGameRenderPipeline::run(double, void* frame_data)
 		_job_cache.emplacePush(&InGameRenderPipeline::GenerateCommandLists, &job_data);
 	}
 
-	GetApp().getJobPool().addJobs(_job_cache.getArray(), _job_cache.size(), &_counter);
-	GetApp().getJobPool().helpWhileWaiting(_counter);
+	auto& jp = GetApp().getJobPool();
+	jp.addJobs(_job_cache.getArray(), _job_cache.size(), &_counter);
+	jp.helpWhileWaiting(_counter);
 
 	_job_cache.clearNoFree();
 }
@@ -218,7 +223,6 @@ void InGameRenderPipeline::GenerateCameraCommandLists(Array<RenderManager::Rende
 {
 	if (!gInit) {
 		Gaff::construct(&gInstance_buffer_pool, jd->first->_render_mgr.getRenderDevice().getNumDevices(), Gaff::Pair<BufferPtr, ShaderResourceViewPtr>());
-
 		Gaff::construct(gRender_pass_info + RP_OPAQUE);
 		Gaff::construct(gRender_pass_info + RP_TRANSPARENT);
 		gInit = true;
@@ -293,20 +297,24 @@ void InGameRenderPipeline::SortIntoRenderPasses(Gleam::IRenderDevice* rd, Object
 
 				assert(rss[device] && pbs[device] && programs[device]);
 
-				unsigned int hash = GenerateInstanceHash(od, mesh, device, model_hash);
-				hash = Gaff::FNV1aHash32T(&i, hash);
+				unsigned int first_hash = GenerateFirstInstanceHash(od, mesh, device);
+				unsigned int second_hash = GenerateSecondInstanceHash(od, mesh, device, i, model_hash);
 
 				auto& rpi = gRender_pass_info[od.render_pass[mesh]];
-				auto it = rpi.findElementWithKey(hash);
+				auto it1 = rpi.findElementWithKey(first_hash);
 
-				if (it == rpi.end()) {
-					it = rpi.emplace(
-						hash, rss[device], pbs[device],
-						programs[device], model[device], i
-					);
+				if (it1 == rpi.end()) {
+					it1 = rpi.emplace(first_hash, rss[device], programs[device]);
 				}
 
-				it->second.object_transforms.emplacePush(&od.transforms[obj]);
+				auto it2 = it1->second.render_info.findElementWithKey(second_hash);
+
+				if (it2 == it1->second.render_info.end()) {
+					it2 = it1->second.render_info.emplace(second_hash, pbs[device], model[device], i);
+				}
+
+				it2->second.object_transforms.emplacePush(&od.transforms[obj]);
+				++it1->second.obj_count;
 			}
 		}
 	}
@@ -318,43 +326,53 @@ void InGameRenderPipeline::RunCommands(Gleam::IRenderDevice* rd, GenerateJobData
 		jd->first->_ds_states[i][device]->set(*rd);
 		jd->first->_blend_states[i == RP_TRANSPARENT][device]->set(*rd);
 
-		for (auto it = gRender_pass_info[i].begin(); it != gRender_pass_info[i].end(); ++it) {
-			auto& buffer = gInstance_buffer_pool[device].first;
-			auto& srv = gInstance_buffer_pool[device].second;
-			size_t num_instances = it->second.object_transforms.size();
+		for (auto it1 = gRender_pass_info[i].begin(); it1 != gRender_pass_info[i].end(); ++it1) {
+			// Don't process unless we actually have objects
+			if (it1->second.obj_count) {
+				// Bind the shared raster state and shaders.
+				it1->second.raster_state->set(*rd);
+				it1->second.program->bind(*rd);
 
-			if (!buffer || (buffer->getSize() / (sizeof(float) * INSTANCE_BUFFER_ELEMENT_SIZE)) < it->second.object_transforms.size()) {
-				buffer = CreateInstanceBuffer(jd->first->_render_mgr, device, static_cast<unsigned int>(num_instances));
-				srv = CreateInstanceResourceView(jd->first->_render_mgr, buffer.get());
+				// Render each object
+				for (auto it2 = it1->second.render_info.begin(); it2 != it1->second.render_info.end(); ++it2) {
+					// Don't process unless we actually have objects
+					if (!it2->second.object_transforms.empty()) {
+						auto& buffer = gInstance_buffer_pool[device].first;
+						auto& srv = gInstance_buffer_pool[device].second;
+						size_t num_instances = it2->second.object_transforms.size();
+
+						if (!buffer || (buffer->getSize() / (sizeof(float) * INSTANCE_BUFFER_ELEMENT_SIZE)) < it2->second.object_transforms.size()) {
+							buffer = CreateInstanceBuffer(jd->first->_render_mgr, device, static_cast<unsigned int>(num_instances));
+							srv = CreateInstanceResourceView(jd->first->_render_mgr, buffer.get());
+						}
+
+						float* inst_buffer = reinterpret_cast<float*>(buffer->map(*rd));
+
+						if (!inst_buffer) {
+							// log error
+							continue;
+						}
+
+						for (size_t j = 0; j < num_instances; ++j) {
+							Gleam::TransformCPU final_transform = od.inv_eye_transform + *it2->second.object_transforms[j];
+							Gleam::Matrix4x4CPU final_matrix = od.projection_matrix * final_transform.matrix();
+
+							memcpy(inst_buffer + j * INSTANCE_BUFFER_ELEMENT_SIZE, final_matrix.getBuffer(), sizeof(float) * 16);
+						}
+
+						buffer->unmap(*rd);
+
+						it2->second.program_buffers->addResourceView(Gleam::IShader::SHADER_VERTEX, srv.get());
+						it2->second.program_buffers->bind(*rd);
+						it2->second.model->renderInstanced(*rd, it2->second.mesh, static_cast<unsigned int>(num_instances));
+						it2->second.program_buffers->popResourceView(Gleam::IShader::SHADER_VERTEX);
+
+						it2->second.object_transforms.clearNoFree();
+					}
+				}
+
+				it1->second.obj_count = 0;
 			}
-
-			float* inst_buffer = reinterpret_cast<float*>(buffer->map(*rd));
-
-			if (!inst_buffer) {
-				// log error
-				continue;
-			}
-
-			for (size_t j = 0; j < num_instances; ++j) {
-				Gleam::TransformCPU final_transform = od.inv_eye_transform + *it->second.object_transforms[j];
-				Gleam::Matrix4x4CPU final_matrix = od.projection_matrix * final_transform.matrix();
-
-				memcpy(inst_buffer + j * INSTANCE_BUFFER_ELEMENT_SIZE, final_matrix.getBuffer(), sizeof(float) * 16);
-			}
-
-			buffer->unmap(*rd);
-
-			//it->second.program_buffers->addConstantBuffer(Gleam::IShader::SHADER_VERTEX, buffer.get());
-			it->second.program_buffers->addResourceView(Gleam::IShader::SHADER_VERTEX, srv.get());
-
-			it->second.raster_state->set(*rd);
-			it->second.program->bind(*rd, it->second.program_buffers.get());
-			it->second.model->renderInstanced(*rd, it->second.mesh, static_cast<unsigned int>(num_instances));
-
-			//it->second.program_buffers->popConstantBuffer(Gleam::IShader::SHADER_VERTEX);
-			it->second.program_buffers->popResourceView(Gleam::IShader::SHADER_VERTEX);
-
-			it->second.object_transforms.clearNoFree();
 		}
 	}
 }
@@ -383,18 +401,24 @@ void InGameRenderPipeline::ClearCamera(Gleam::IRenderDevice* rd, ObjectData& od,
 	}
 }
 
-unsigned int InGameRenderPipeline::GenerateInstanceHash(ObjectData& od, size_t mesh_index, unsigned int device, unsigned int hash_init)
+unsigned int InGameRenderPipeline::GenerateFirstInstanceHash(ObjectData& od, size_t mesh_index, unsigned int device)
 {
 	auto& rss = od.raster_states[mesh_index];
-	auto& pbs = od.program_buffers[mesh_index];
 	auto& programs = od.programs[mesh_index];
 
 	const auto* raster_state = rss[device].get();
-	const auto* prog_bufs = pbs[device].get();
 	const auto* prog = programs[device].get();
 
-	unsigned int hash = Gaff::FNV1aHash32T(&raster_state, hash_init);
-	hash = Gaff::FNV1aHash32T(&prog, hash);
+	unsigned int hash = Gaff::FNV1aHash32T(&raster_state);
+	return Gaff::FNV1aHash32T(&prog, hash);
+}
+
+unsigned int InGameRenderPipeline::GenerateSecondInstanceHash(ObjectData& od, size_t mesh_index, unsigned int device, size_t submesh_index, unsigned int hash_init)
+{
+	unsigned int hash = hash_init;
+
+	auto& pbs = od.program_buffers[mesh_index];
+	const auto* prog_bufs = pbs[device].get();
 
 	for (int i = 0; i < Gleam::IShader::SHADER_COMPUTE; ++i) {
 		Gleam::IShader::SHADER_TYPE st = static_cast<Gleam::IShader::SHADER_TYPE>(i);
@@ -407,7 +431,7 @@ unsigned int InGameRenderPipeline::GenerateInstanceHash(ObjectData& od, size_t m
 		hash = Gaff::FNV1aHash32(samp_buffer, sizeof(void*) * prog_bufs->getSamplerCount(st), hash);
 	}
 
-	return hash;
+	return Gaff::FNV1aHash32T(&submesh_index, hash);
 }
 
 Gleam::IBuffer* InGameRenderPipeline::CreateInstanceBuffer(RenderManager& render_mgr, unsigned int device, unsigned int num_elements)

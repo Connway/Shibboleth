@@ -1,5 +1,5 @@
 /************************************************************************************
-Copyright (C) 2015 by Nicholas LaCroix
+Copyright (C) 2016 by Nicholas LaCroix
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -62,9 +62,9 @@ void ShaderResourceViewGL::destroy(void)
 	_target = 0;
 }
 
-bool ShaderResourceViewGL::isD3D(void) const
+RendererType ShaderResourceViewGL::getRendererType(void) const
 {
-	return false;
+	return RENDERER_OPENGL;
 }
 
 unsigned int ShaderResourceViewGL::getResourceView(void) const

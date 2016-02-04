@@ -1,5 +1,5 @@
 /************************************************************************************
-Copyright (C) 2015 by Nicholas LaCroix
+Copyright (C) 2016 by Nicholas LaCroix
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -40,7 +40,7 @@ public:
 	void resetRenderState(void) override;
 
 	bool isDeferred(void) const override;
-	bool isD3D(void) const override;
+	RendererType getRendererType(void) const override;
 
 	IRenderDevice* createDeferredRenderDevice(void) override;
 	void executeCommandList(ICommandList* command_list) override;
@@ -56,8 +56,10 @@ public:
 	void setLayout(LayoutGL* layout, const IMesh* mesh) override;
 	void unsetLayout(LayoutGL* layout) override;
 
-	void bindShader(ProgramGL* shader, ProgramBuffersGL* program_buffers) override;
+	void bindShader(ProgramGL* shader) override;
 	void unbindShader(void) override;
+
+	void bindProgramBuffers(ProgramBuffersGL* program_buffers) override;
 
 	void renderMeshNonIndexed(unsigned int topology, unsigned int vert_count, unsigned int start_location) override;
 	void renderMeshInstanced(MeshGL* mesh, unsigned int count) override;

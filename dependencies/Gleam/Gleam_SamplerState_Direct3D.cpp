@@ -1,5 +1,5 @@
 /************************************************************************************
-Copyright (C) 2015 by Nicholas LaCroix
+Copyright (C) 2016 by Nicholas LaCroix
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -61,7 +61,7 @@ bool SamplerStateD3D::init(
 	float border_r, float border_g, float border_b, float border_a
 	)
 {
-	assert(rd.isD3D() && max_anisotropy <= 16);
+	assert(rd.getRendererType() == RENDERER_DIRECT3D && max_anisotropy <= 16);
 
 	D3D11_SAMPLER_DESC desc;
 	desc.AddressU = static_cast<D3D11_TEXTURE_ADDRESS_MODE>(wrap_u);
@@ -89,9 +89,9 @@ void SamplerStateD3D::destroy(void)
 	SAFERELEASE(_sampler_state)
 }
 
-bool SamplerStateD3D::isD3D(void) const
+RendererType SamplerStateD3D::getRendererType(void) const
 {
-	return true;
+	return RENDERER_DIRECT3D;
 }
 
 ID3D11SamplerState* SamplerStateD3D::getSamplerState(void) const

@@ -1,5 +1,5 @@
 /************************************************************************************
-Copyright (C) 2015 by Nicholas LaCroix
+Copyright (C) 2016 by Nicholas LaCroix
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -56,7 +56,8 @@ private:
 	static void SortIntoRenderPasses(Gleam::IRenderDevice* rd, ObjectData& od, unsigned int device);
 	static void RunCommands(Gleam::IRenderDevice* rd, GenerateJobData* jd, unsigned int device, const ObjectData& od);
 	static void ClearCamera(Gleam::IRenderDevice* rd, ObjectData& od, Gleam::IRenderTargetPtr& rt);
-	static unsigned int GenerateInstanceHash(ObjectData& od, size_t mesh_index, unsigned int device, unsigned int hash_init);
+	static unsigned int GenerateFirstInstanceHash(ObjectData& od, size_t mesh_index, unsigned int device);
+	static unsigned int GenerateSecondInstanceHash(ObjectData& od, size_t mesh_index, unsigned int device, size_t submesh_index, unsigned int hash_init);
 	static Gleam::IBuffer* CreateInstanceBuffer(RenderManager& render_mgr, unsigned int device, unsigned int num_elements);
 	static Gleam::IShaderResourceView* CreateInstanceResourceView(RenderManager& render_mgr, Gleam::IBuffer* buffer);
 

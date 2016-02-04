@@ -1,5 +1,5 @@
 /************************************************************************************
-Copyright (C) 2015 by Nicholas LaCroix
+Copyright (C) 2016 by Nicholas LaCroix
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -58,8 +58,8 @@ void RenderTargetD3D::destroy(void)
 
 bool RenderTargetD3D::addTexture(IRenderDevice& rd, const ITexture* color_texture, CUBE_FACE face)
 {
-	assert(color_texture && color_texture->isD3D());
-	assert(rd.isD3D());
+	assert(color_texture && color_texture->getRendererType() == RENDERER_DIRECT3D);
+	assert(rd.getRendererType() == RENDERER_DIRECT3D);
 
 	ID3D11RenderTargetView* render_target_view = nullptr;
 
@@ -104,8 +104,8 @@ void RenderTargetD3D::popTexture(void)
 
 bool RenderTargetD3D::addDepthStencilBuffer(IRenderDevice& rd, const ITexture* depth_stencil_texture)
 {
-	assert(depth_stencil_texture && depth_stencil_texture->isD3D());
-	assert(rd.isD3D());
+	assert(depth_stencil_texture && depth_stencil_texture->getRendererType() == RENDERER_DIRECT3D);
+	assert(rd.getRendererType() == RENDERER_DIRECT3D);
 
 	if (_depth_stencil_view) {
 		_depth_stencil_view->Release();
@@ -124,7 +124,7 @@ bool RenderTargetD3D::addDepthStencilBuffer(IRenderDevice& rd, const ITexture* d
 
 void RenderTargetD3D::bind(IRenderDevice& rd)
 {
-	assert(rd.isD3D());
+	assert(rd.getRendererType() == RENDERER_DIRECT3D);
 
 	IRenderDeviceD3D& rd3d = reinterpret_cast<IRenderDeviceD3D&>(*(reinterpret_cast<char*>(&rd) + sizeof(IRenderDevice)));
 
@@ -134,14 +134,14 @@ void RenderTargetD3D::bind(IRenderDevice& rd)
 
 void RenderTargetD3D::unbind(IRenderDevice& rd)
 {
-	assert(rd.isD3D());
+	assert(rd.getRendererType() == RENDERER_DIRECT3D);
 	IRenderDeviceD3D& rd3d = reinterpret_cast<IRenderDeviceD3D&>(*(reinterpret_cast<char*>(&rd) + sizeof(IRenderDevice)));
 	rd3d.getActiveDeviceContext()->OMSetRenderTargets(0, nullptr, nullptr);
 }
 
 void RenderTargetD3D::clear(IRenderDevice& rd, unsigned int clear_flags, float clear_depth, unsigned char clear_stencil, float* clear_color)
 {
-	assert(rd.isD3D());
+	assert(rd.getRendererType() == RENDERER_DIRECT3D);
 	IRenderDeviceD3D& rd3d = reinterpret_cast<IRenderDeviceD3D&>(*(reinterpret_cast<char*>(&rd) + sizeof(IRenderDevice)));
 
 	if (clear_flags | CLEAR_COLOR) {
@@ -160,9 +160,9 @@ bool RenderTargetD3D::isComplete(void) const
 	return _render_target_views.size() > 0;
 }
 
-bool RenderTargetD3D::isD3D(void) const
+RendererType RenderTargetD3D::getRendererType(void) const
 {
-	return true;
+	return RENDERER_DIRECT3D;
 }
 
 void RenderTargetD3D::setRTV(ID3D11RenderTargetView* rt, const D3D11_VIEWPORT& viewport)

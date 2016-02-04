@@ -1,5 +1,5 @@
 /************************************************************************************
-Copyright (C) 2015 by Nicholas LaCroix
+Copyright (C) 2016 by Nicholas LaCroix
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -563,7 +563,7 @@ bool ModelLoader::createMeshAndLayout(Gleam::IRenderDevice& rd, const Gaff::Mesh
 	Gleam::IShader* shader = nullptr;
 
 	// Generate bogus shader for use with model->createLayout()
-	if (rd.isD3D()) {
+	if (rd.getRendererType() == Gleam::RENDERER_DIRECT3D) {
 		shader = generateEmptyD3D11Shader(rd, model_prefs, scene_mesh, num_bone_weights);
 
 		if (!shader) {

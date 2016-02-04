@@ -1,5 +1,5 @@
 /************************************************************************************
-Copyright (C) 2015 by Nicholas LaCroix
+Copyright (C) 2016 by Nicholas LaCroix
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -45,7 +45,7 @@ public:
 	void renderInstanced(IRenderDevice& rd, unsigned int count);
 	void render(IRenderDevice& rd);
 
-	bool isD3D(void) const;
+	RendererType getRendererType(void) const;
 
 private:
 	D3D11_PRIMITIVE_TOPOLOGY _d3d_topology;

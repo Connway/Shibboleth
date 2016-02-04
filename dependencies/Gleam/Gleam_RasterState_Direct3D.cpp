@@ -1,5 +1,5 @@
 /************************************************************************************
-Copyright (C) 2015 by Nicholas LaCroix
+Copyright (C) 2016 by Nicholas LaCroix
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -40,7 +40,7 @@ RasterStateD3D::~RasterStateD3D(void)
 
 bool RasterStateD3D::init(IRenderDevice& rd, const RasterStateSettings& settings)
 {
-	assert(rd.isD3D());
+	assert(rd.getRendererType() == RENDERER_DIRECT3D);
 
 	IRenderDeviceD3D& rd3d = reinterpret_cast<IRenderDeviceD3D&>(*(reinterpret_cast<char*>(&rd) + sizeof(IRenderDevice)));
 	ID3D11Device* device = rd3d.getActiveDevice();
@@ -68,7 +68,7 @@ void RasterStateD3D::destroy(void)
 
 void RasterStateD3D::set(IRenderDevice& rd) const
 {
-	assert(rd.isD3D());
+	assert(rd.getRendererType() == RENDERER_DIRECT3D);
 	IRenderDeviceD3D& rd3d = reinterpret_cast<IRenderDeviceD3D&>(*(reinterpret_cast<char*>(&rd) + sizeof(IRenderDevice)));
 	ID3D11DeviceContext* context = rd3d.getActiveDeviceContext();
 
@@ -77,16 +77,16 @@ void RasterStateD3D::set(IRenderDevice& rd) const
 
 void RasterStateD3D::unset(IRenderDevice& rd) const
 {
-	assert(rd.isD3D());
+	assert(rd.getRendererType() == RENDERER_DIRECT3D);
 	IRenderDeviceD3D& rd3d = reinterpret_cast<IRenderDeviceD3D&>(*(reinterpret_cast<char*>(&rd) + sizeof(IRenderDevice)));
 	ID3D11DeviceContext* context = rd3d.getActiveDeviceContext();
 
 	context->RSSetState(NULL);
 }
 
-bool RasterStateD3D::isD3D(void) const
+RendererType RasterStateD3D::getRendererType(void) const
 {
-	return true;
+	return RENDERER_DIRECT3D;
 }
 
 NS_END

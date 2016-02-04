@@ -1,5 +1,5 @@
 /************************************************************************************
-Copyright (C) 2015 by Nicholas LaCroix
+Copyright (C) 2016 by Nicholas LaCroix
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -99,7 +99,7 @@ void MeshD3D::setTopologyType(TOPOLOGY_TYPE topology)
 
 void MeshD3D::renderNonIndexed(IRenderDevice& rd, unsigned int vert_count, unsigned int start_location)
 {
-	assert(rd.isD3D() && _vert_data.size() && _indices && _indices->isD3D());
+	assert(rd.getRendererType() == RENDERER_DIRECT3D && _vert_data.size() && _indices && _indices->getRendererType() == RENDERER_DIRECT3D);
 
 	IRenderDeviceD3D& rd3d = reinterpret_cast<IRenderDeviceD3D&>(*(reinterpret_cast<char*>(&rd) + sizeof(IRenderDevice)));
 	ID3D11DeviceContext* context = rd3d.getActiveDeviceContext();
@@ -110,7 +110,7 @@ void MeshD3D::renderNonIndexed(IRenderDevice& rd, unsigned int vert_count, unsig
 
 void MeshD3D::renderInstanced(IRenderDevice& rd, unsigned int count)
 {
-	assert(rd.isD3D() && _vert_data.size() && _indices && _indices->isD3D());
+	assert(rd.getRendererType() == RENDERER_DIRECT3D && _vert_data.size() && _indices && _indices->getRendererType() == RENDERER_DIRECT3D);
 
 	IRenderDeviceD3D& rd3d = reinterpret_cast<IRenderDeviceD3D&>(*(reinterpret_cast<char*>(&rd) + sizeof(IRenderDevice)));
 	ID3D11DeviceContext* context = rd3d.getActiveDeviceContext();
@@ -122,7 +122,7 @@ void MeshD3D::renderInstanced(IRenderDevice& rd, unsigned int count)
 
 void MeshD3D::render(IRenderDevice& rd)
 {
-	assert(rd.isD3D() && _vert_data.size() && _indices && _indices->isD3D());
+	assert(rd.getRendererType() == RENDERER_DIRECT3D && _vert_data.size() && _indices && _indices->getRendererType() == RENDERER_DIRECT3D);
 
 	IRenderDeviceD3D& rd3d = reinterpret_cast<IRenderDeviceD3D&>(*(reinterpret_cast<char*>(&rd) + sizeof(IRenderDevice)));
 	ID3D11DeviceContext* context = rd3d.getActiveDeviceContext();
@@ -132,9 +132,9 @@ void MeshD3D::render(IRenderDevice& rd)
 	context->DrawIndexed(getIndexCount(), 0, 0);
 }
 
-bool MeshD3D::isD3D(void) const
+RendererType MeshD3D::getRendererType(void) const
 {
-	return true;
+	return RENDERER_DIRECT3D;
 }
 
 void MeshD3D::cacheBuffers(void)
@@ -147,7 +147,7 @@ void MeshD3D::cacheBuffers(void)
 
 	for (unsigned int i = 0; i < _vert_data.size(); ++i) {
 		temp = _vert_data[i];
-		assert(temp && temp->isD3D());
+		assert(temp && temp->getRendererType() == RENDERER_DIRECT3D);
 		_buffers.push(reinterpret_cast<BufferD3D*>(temp)->getBuffer());
 		_strides.push(temp->getStride());
 		_offsets.push(0);

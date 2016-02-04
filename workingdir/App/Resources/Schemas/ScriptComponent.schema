@@ -1,0 +1,4 @@
+{
+	"Type": { "Type": "String", "Optional": false },
+	"Script File": { "Type": "String", "Optional": false }
+}

@@ -1,5 +1,5 @@
 /************************************************************************************
-Copyright (C) 2015 by Nicholas LaCroix
+Copyright (C) 2016 by Nicholas LaCroix
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -58,15 +58,6 @@ public:
 		STENCIL_OP_SIZE = STENCIL_DECREMENT_WRAP
 	};
 
-	//enum ColorMask
-	//{
-	//	COLOR_RED = 1,
-	//	COLOR_GREEN = 2,
-	//	COLOR_BLUE = 4,
-	//	COLOR_ALPHA = 8,
-	//	COLOR_ALL = COLOR_RED | COLOR_GREEN | COLOR_BLUE | COLOR_ALPHA
-	//};
-
 	struct StencilData
 	{
 		StencilOp stencil_depth_fail = STENCIL_KEEP;
@@ -95,7 +86,7 @@ public:
 	virtual void set(IRenderDevice& rd) const = 0;
 	virtual void unset(IRenderDevice& rd) const = 0;
 
-	virtual bool isD3D(void) const = 0;
+	virtual RendererType getRendererType(void) const = 0;
 };
 
 NS_END

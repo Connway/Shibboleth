@@ -1,5 +1,5 @@
 /************************************************************************************
-Copyright (C) 2015 by Nicholas LaCroix
+Copyright (C) 2016 by Nicholas LaCroix
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -72,7 +72,9 @@ public:
 
 	virtual IProgramBuffers* clone(void) const = 0;
 
-	virtual bool isD3D(void) const = 0;
+	virtual void bind(IRenderDevice& rd) = 0;
+
+	virtual RendererType getRendererType(void) const = 0;
 };
 
 class IProgram : public Gaff::IRefCounted
@@ -87,10 +89,10 @@ public:
 	virtual void attach(IShader* shader) = 0;
 	virtual void detach(IShader::SHADER_TYPE shader) = 0;
 
-	virtual void bind(IRenderDevice& rd, IProgramBuffers* program_buffers = nullptr) = 0;
+	virtual void bind(IRenderDevice& rd) = 0;
 	virtual void unbind(IRenderDevice& rd) = 0;
 
-	virtual bool isD3D(void) const = 0;
+	virtual RendererType getRendererType(void) const = 0;
 
 	virtual const IShader* getAttachedShader(IShader::SHADER_TYPE type) const = 0;
 	virtual IShader* getAttachedShader(IShader::SHADER_TYPE type) = 0;

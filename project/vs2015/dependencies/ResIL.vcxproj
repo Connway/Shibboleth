@@ -312,17 +312,17 @@
     <ClCompile Include="..\..\..\dependencies\ResIL\IL\src\il_xpm.c" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="zlib.vcxproj">
-      <Project>{16CFA17C-0206-A30D-ABF2-881097081F0F}</Project>
+    <ProjectReference Include="libtiff.vcxproj">
+      <Project>{65B26D79-D191-EC14-DAA9-77EB46085376}</Project>
     </ProjectReference>
     <ProjectReference Include="libjpeg.vcxproj">
       <Project>{42546879-AE33-E714-B74B-72EB23AA4D76}</Project>
     </ProjectReference>
-    <ProjectReference Include="libtiff.vcxproj">
-      <Project>{65B26D79-D191-EC14-DAA9-77EB46085376}</Project>
-    </ProjectReference>
     <ProjectReference Include="libpng.vcxproj">
       <Project>{C1DD6F0B-AD7F-9AE1-963A-AE35827B2132}</Project>
+    </ProjectReference>
+    <ProjectReference Include="zlib.vcxproj">
+      <Project>{16CFA17C-0206-A30D-ABF2-881097081F0F}</Project>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

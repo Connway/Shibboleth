@@ -1,6 +1,6 @@
 #pragma once
 /************************************************************************************
-Copyright (C) 2015 by Nicholas LaCroix
+Copyright (C) 2016 by Nicholas LaCroix
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -60,7 +60,7 @@ DepthStencilStateGL::~DepthStencilStateGL(void)
 
 bool DepthStencilStateGL::init(IRenderDevice& rd, const DepthStencilStateSettings& settings)
 {
-	assert(!rd.isD3D());
+	assert(rd.getRendererType() == RENDERER_OPENGL);
 	_depth_stencil_settings = settings;
 	return true;
 }
@@ -71,21 +71,21 @@ void DepthStencilStateGL::destroy(void)
 
 void DepthStencilStateGL::set(IRenderDevice& rd) const
 {
-	assert(!rd.isD3D());
+	assert(rd.getRendererType() == RENDERER_OPENGL);
 	IRenderDeviceGL& rdgl = reinterpret_cast<IRenderDeviceGL&>(*(reinterpret_cast<char*>(&rd) + sizeof(IRenderDevice)));
 	rdgl.setDepthStencilState(this);
 }
 
 void DepthStencilStateGL::unset(IRenderDevice& rd) const
 {
-	assert(!rd.isD3D());
+	assert(rd.getRendererType() == RENDERER_OPENGL);
 	IRenderDeviceGL& rdgl = reinterpret_cast<IRenderDeviceGL&>(*(reinterpret_cast<char*>(&rd) + sizeof(IRenderDevice)));
 	rdgl.setDepthStencilState(nullptr);
 }
 
-bool DepthStencilStateGL::isD3D(void) const
+RendererType DepthStencilStateGL::getRendererType(void) const
 {
-	return false;
+	return RENDERER_OPENGL;
 }
 
 const IDepthStencilState::DepthStencilStateSettings& DepthStencilStateGL::getDepthStencilSettings(void) const

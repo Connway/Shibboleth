@@ -1,5 +1,5 @@
 /************************************************************************************
-Copyright (C) 2015 by Nicholas LaCroix
+Copyright (C) 2016 by Nicholas LaCroix
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -21,14 +21,11 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Shibboleth_RenderManager.h"
-#include "Shibboleth_ResourceManager.h"
 #include "Shibboleth_FrameManager.h"
 #include <Shibboleth_CameraComponent.h>
 #include <Shibboleth_ModelComponent.h>
-#include <Shibboleth_TextureLoader.h>
 #include <Shibboleth_IFileSystem.h>
 #include <Shibboleth_Utilities.h>
-#include <Shibboleth_Object.h>
 #include <Shibboleth_IApp.h>
 
 #include <Gleam_IRenderDevice.h>

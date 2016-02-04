@@ -1,5 +1,5 @@
 /************************************************************************************
-Copyright (C) 2015 by Nicholas LaCroix
+Copyright (C) 2016 by Nicholas LaCroix
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -22,9 +22,7 @@ THE SOFTWARE.
 
 #include "Gleam_Layout_OpenGL.h"
 #include "Gleam_RenderDevice_OpenGL.h"
-#include "Gleam_Texture_OpenGL.h"
 #include "Gleam_Shader_OpenGL.h"
-#include "Gleam_Buffer_OpenGL.h"
 #include "Gleam_IMesh.h"
 #include <GL/glew.h>
 
@@ -150,16 +148,21 @@ void LayoutGL::destroy(void)
 
 void LayoutGL::setLayout(IRenderDevice& rd, const IMesh* mesh)
 {
-	assert(!mesh->isD3D() && !rd.isD3D());
-	IRenderDeviceGL& rdgl = (IRenderDeviceGL&)*(((const char*)&rd) + sizeof(IRenderDevice));
+	assert(mesh->getRendererType() == RENDERER_OPENGL && rd.getRendererType() == RENDERER_OPENGL);
+	IRenderDeviceGL& rdgl = *reinterpret_cast<IRenderDeviceGL*>((reinterpret_cast<char*>(&rd) + sizeof(IRenderDevice)));
 	rdgl.setLayout(this, mesh);
 }
 
 void LayoutGL::unsetLayout(IRenderDevice& rd)
 {
-	assert(!rd.isD3D());
-	IRenderDeviceGL& rdgl = (IRenderDeviceGL&)*(((const char*)&rd) + sizeof(IRenderDevice));
+	assert(rd.getRendererType() == RENDERER_OPENGL);
+	IRenderDeviceGL& rdgl = *reinterpret_cast<IRenderDeviceGL*>((reinterpret_cast<char*>(&rd) + sizeof(IRenderDevice)));
 	rdgl.unsetLayout(this);
+}
+
+RendererType LayoutGL::getRendererType(void) const
+{
+	return RENDERER_OPENGL;
 }
 
 const GleamArray< GleamArray<LayoutGL::LayoutData> >& LayoutGL::GetLayoutDescriptors(void) const

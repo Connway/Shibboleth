@@ -1,5 +1,5 @@
 /************************************************************************************
-Copyright (C) 2015 by Nicholas LaCroix
+Copyright (C) 2016 by Nicholas LaCroix
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -110,7 +110,7 @@ void JobPool<Allocator>::waitForCounter(Counter* counter)
 {
 	assert(counter);
 
-	while (counter->count) {
+	while (counter->count && !_thread_data.terminate) {
 		YieldThread();
 	}
 }
@@ -130,6 +130,13 @@ void JobPool<Allocator>::helpWhileWaiting(Counter* counter)
 	while (counter->count) {
 		doAJob();
 	}
+}
+
+template <class Allocator>
+void JobPool<Allocator>::helpAndFreeCounter(Counter* counter)
+{
+	helpWhileWaiting(counter);
+	freeCounter(counter);
 }
 
 template <class Allocator>

@@ -1,5 +1,5 @@
 /************************************************************************************
-Copyright (C) 2015 by Nicholas LaCroix
+Copyright (C) 2016 by Nicholas LaCroix
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -22,6 +22,7 @@ THE SOFTWARE.
 
 #include "Shibboleth_LuaComponent.h"
 #include <Shibboleth_ResourceManager.h>
+#include <Shibboleth_SchemaManager.h>
 #include <Shibboleth_Utilities.h>
 #include <Shibboleth_IApp.h>
 #include <LuaState.h>
@@ -33,7 +34,6 @@ REF_IMPL_REQ(LuaComponent);
 
 SHIB_REF_IMPL(LuaComponent)
 .addBaseClassInterfaceOnly<LuaComponent>()
-.addString("Lua Filename", &LuaComponent::_lua_file)
 ;
 
 LuaComponent::LuaComponent(void)
@@ -44,19 +44,41 @@ LuaComponent::~LuaComponent(void)
 {
 }
 
+const Gaff::JSON& LuaComponent::getSchema(void) const
+{
+	static const Gaff::JSON& schema = GetApp().getManagerT<SchemaManager>("Schema Manager").getSchema("ScriptComponent.schema");
+	return schema;
+}
+
 bool LuaComponent::load(const Gaff::JSON& json)
 {
 	gRefDef.read(json, this);
-	assert(_lua_file.size());
 
 	ResourceManager& res_mgr = Shibboleth::GetApp().getManagerT<ResourceManager>("Resource Manager");
 
-	_script_res = res_mgr.requestResource(_lua_file.getBuffer());
+	Gaff::JSON script_file = json["Script File"];
+
+	_script_res = res_mgr.requestResource(script_file.getString());
+	_script_res.getResourcePtr()->addCallback(Gaff::Bind(this, &LuaComponent::scriptLoaded));
+
 	return true;
 }
 
 void LuaComponent::allComponentsLoaded(void)
 {
+}
+
+void LuaComponent::scriptLoaded(ResourceContainer*)
+{
+	if (_script_res.getResourcePtr()->isLoaded()) {
+		cacheFunctions();
+		// populate any global script data if necessary
+	}
+}
+
+void LuaComponent::cacheFunctions(void)
+{
+	// cache script callback functions here
 }
 
 NS_END
