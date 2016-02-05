@@ -110,7 +110,7 @@ void WindowInput(AnyMessage* message, Window*, WPARAM, LPARAM l)
 				break;
 
 			default:
-				message->key_char.key = (KeyCode)raw->data.keyboard.VKey;
+				message->key_char.key = static_cast<KeyCode>(raw->data.keyboard.VKey);
 				break;
 		}
 	}

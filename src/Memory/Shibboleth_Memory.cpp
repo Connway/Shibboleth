@@ -32,9 +32,9 @@ NS_SHIBBOLETH
 
 static Allocator gAllocator;
 
-void CreateMemoryPool(const char* pool_name, unsigned int alloc_tag)
+size_t GetPoolIndex(const char* pool_name, unsigned int alloc_tag)
 {
-	gAllocator.createMemoryPool(pool_name, alloc_tag);
+	return gAllocator.getPoolIndex(pool_name, alloc_tag);
 }
 
 IAllocator* GetAllocator(void)

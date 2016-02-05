@@ -176,3 +176,91 @@ size_t StaticArray<T, array_size>::size(void) const
 	return array_size;
 	
 }
+
+template <class T, size_t array_size>
+template <class T2, class Pred>
+STATIC_ARRAY_ITERATOR StaticArray<T, array_size>::linearSearch(
+	const STATIC_ARRAY_ITERATOR range_begin,
+	const STATIC_ARRAY_ITERATOR range_end,
+	const T2& data,
+	const Pred& pred) const
+{
+	assert(range_begin >= _array && range_begin <= _array + array_size);
+	assert(range_end >= _array && range_end <= _array + array_size);
+	assert(range_begin <= range_end);
+
+	size_t index1 = static_cast<size_t>(range_begin - _array);
+	size_t index2 = static_cast<size_t>(range_end - _array);
+
+	size_t result = linearSearch(index1, index2, data, pred);
+	return (result != SIZE_T_FAIL) ? Iterator(_array + result) : end();
+}
+
+template <class T, size_t array_size>
+template <class T2, class Pred>
+size_t StaticArray<T, array_size>::linearSearch(size_t range_begin, size_t range_end, const T2& data, const Pred& pred) const
+{
+	assert(range_begin <= range_end && range_end <= array_size);
+
+	for (size_t i = range_begin; i < range_end; ++i) {
+		if (pred(_array[i], data)) {
+			return i;
+		}
+	}
+
+	return SIZE_T_FAIL;
+}
+
+template <class T, size_t array_size>
+template <class T2, class Pred>
+STATIC_ARRAY_ITERATOR StaticArray<T, array_size>::linearSearch(const T2& data, const Pred& pred) const
+{
+	return linearSearch(begin(), end(), data, pred);
+}
+
+template <class T, size_t array_size>
+template <class T2, class Pred>
+STATIC_ARRAY_ITERATOR StaticArray<T, array_size>::binarySearch(
+	const STATIC_ARRAY_ITERATOR range_begin,
+	const STATIC_ARRAY_ITERATOR range_end,
+	const T2& data,
+	const Pred& pred) const
+{
+	assert(range_begin >= _array && range_begin <= _array + array_size);
+	assert(range_end >= _array && range_end <= _array + array_size);
+	assert(range_begin <= range_end);
+
+	size_t index1 = static_cast<size_t>(range_begin - _array);
+	size_t index2 = static_cast<size_t>(range_end - _array);
+
+	size_t result = binarySearch(index1, index2, data, pred);
+	return (result != SIZE_T_FAIL) ? Iterator(_array + result) : end();
+}
+
+template <class T, size_t array_size>
+template <class T2, class Pred>
+size_t StaticArray<T, array_size>::binarySearch(size_t range_begin, size_t range_end, const T2& data, const Pred& pred) const
+{
+	assert(range_end <= array_size && range_begin <= range_end);
+
+	size_t mid = 0;
+
+	while (range_begin != range_end) {
+		mid = range_begin + (range_end - range_begin) / 2;
+
+		if (pred(_array[mid], data)) {
+			range_begin = mid + 1;
+		} else {
+			range_end = mid;
+		}
+	}
+
+	return range_begin;
+}
+
+template <class T, size_t array_size>
+template <class T2, class Pred>
+STATIC_ARRAY_ITERATOR StaticArray<T, array_size>::binarySearch(const T2& data, const Pred& pred) const
+{
+	return binarySearch(begin(), end(), data, pred);
+}

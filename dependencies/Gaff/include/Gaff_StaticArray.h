@@ -22,8 +22,8 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Gaff_Defines.h"
 #include "Gaff_IncludeAssert.h"
+#include "Gaff_Predicates.h"
 
 NS_GAFF
 
@@ -64,6 +64,24 @@ public:
 	Iterator rend(void) const;
 
 	size_t size(void) const;
+
+	template < class T2, class Pred = Equal<T, T2> >
+	Iterator linearSearch(const Iterator range_begin, const Iterator range_end, const T2& data, const Pred& pred = Pred()) const;
+
+	template < class T2, class Pred = Equal<T, T2> >
+	size_t linearSearch(size_t range_begin, size_t range_end, const T2& data, const Pred& pred = Pred()) const;
+
+	template < class T2, class Pred = Equal<T, T2> >
+	Iterator linearSearch(const T2& data, const Pred& pred = Pred()) const;
+
+	template < class T2, class Pred = Less<T, T2> >
+	Iterator binarySearch(const Iterator range_begin, const Iterator range_end, const T2& data, const Pred& pred = Pred()) const;
+
+	template < class T2, class Pred = Less<T, T2> >
+	size_t binarySearch(size_t range_begin, size_t range_end, const T2& data, const Pred& pred = Pred()) const;
+
+	template < class T2, class Pred = Less<T, T2> >
+	Iterator binarySearch(const T2& data, const Pred& pred = Pred()) const;
 
 private:
 	T _array[array_size];
