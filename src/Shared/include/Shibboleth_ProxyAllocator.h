@@ -32,29 +32,29 @@ class ProxyAllocator : public Gaff::IAllocator
 {
 public:
 	explicit ProxyAllocator(const char* pool_tag = nullptr, Shibboleth::IAllocator* allocator = GetAllocator()):
-		_allocator(allocator), _alloc_tag(0)
+		_allocator(allocator), _pool_index(0)
 	{
 		if (pool_tag) {
-			_alloc_tag = Gaff::FNV1aHash32(pool_tag, strlen(pool_tag));
-			_allocator->createMemoryPool(pool_tag, _alloc_tag);
+			unsigned int alloc_tag = Gaff::FNV1aHash32(pool_tag, strlen(pool_tag));
+			_pool_index = _allocator->getPoolIndex(pool_tag, alloc_tag);
 		}
 	}
 
 	ProxyAllocator(const ProxyAllocator& allocator):
-		_allocator(allocator._allocator), _alloc_tag(allocator._alloc_tag)
+		_allocator(allocator._allocator), _pool_index(allocator._pool_index)
 	{
 	}
 
 	const ProxyAllocator& operator=(const ProxyAllocator& rhs)
 	{
 		_allocator = rhs._allocator;
-		_alloc_tag = rhs._alloc_tag;
+		_pool_index = rhs._pool_index;
 		return *this;
 	}
 
 	void* alloc(size_t size_bytes) override
 	{
-		return _allocator->alloc(size_bytes, _alloc_tag);
+		return _allocator->alloc(size_bytes, _pool_index);
 	}
 
 	void free(void* data) override
@@ -64,7 +64,7 @@ public:
 
 private:
 	Shibboleth::IAllocator* _allocator;
-	unsigned int _alloc_tag;
+	size_t _pool_index;
 };
 
 NS_END

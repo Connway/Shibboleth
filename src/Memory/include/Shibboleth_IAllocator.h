@@ -33,8 +33,8 @@ public:
 	IAllocator(void) {}
 	virtual ~IAllocator(void) {}
 
-	virtual void createMemoryPool(const char* pool_name, unsigned int alloc_tag) = 0;
-	virtual void* alloc(size_t size_bytes, unsigned int alloc_tag) = 0;
+	virtual size_t getPoolIndex(const char* pool_name, unsigned int alloc_tag) = 0;
+	virtual void* alloc(size_t size_bytes, size_t pool_index) = 0;
 	virtual void* alloc(size_t size_bytes) = 0;
 	virtual void free(void* data) = 0;
 

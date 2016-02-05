@@ -42,7 +42,7 @@ bool MouseMP::init(const IWindow& window)
 	memset(&_prev_data, 0, sizeof(MouseData));
 
 	auto cb = Gaff::Bind(this, &MouseMP::handleMessage);
-	_window = (IWindow*)&window;
+	_window = const_cast<IWindow*>(&window);
 	_window->addWindowMessageHandler(cb);
 
 	return RegisterForRawInput(RAW_INPUT_MOUSE, window);
@@ -61,13 +61,13 @@ void MouseMP::update(void)
 {
 	if (_window->areRepeatsAllowed()) {
 		for (unsigned int j = 0; j < _input_handlers.size(); ++j) {
-			_input_handlers[j](this, MOUSE_DELTA_X, (float)_curr_data.dx);
-			_input_handlers[j](this, MOUSE_DELTA_Y, (float)_curr_data.dy);
-			_input_handlers[j](this, MOUSE_POS_X, (float)_curr_data.x);
-			_input_handlers[j](this, MOUSE_POS_Y, (float)_curr_data.y);
+			_input_handlers[j](this, MOUSE_DELTA_X, static_cast<float>(_curr_data.dx));
+			_input_handlers[j](this, MOUSE_DELTA_Y, static_cast<float>(_curr_data.dy));
+			_input_handlers[j](this, MOUSE_POS_X, static_cast<float>(_curr_data.x));
+			_input_handlers[j](this, MOUSE_POS_Y, static_cast<float>(_curr_data.y));
 
 			for (int i = 0; i < MOUSE_BUTTON_COUNT; ++i) {
-				_input_handlers[j](this, i, (float)_curr_data.buttons[i]);
+				_input_handlers[j](this, i, static_cast<float>(_curr_data.buttons[i]));
 			}
 		}
 
@@ -81,28 +81,28 @@ void MouseMP::update(void)
 	} else {
 		for (unsigned int j = 0; j < _input_handlers.size(); ++j) {
 			if (_curr_data.x != _prev_data.x) {
-				_input_handlers[j](this, MOUSE_POS_X, (float)_curr_data.x);
+				_input_handlers[j](this, MOUSE_POS_X, static_cast<float>(_curr_data.x));
 			}
 
 			if (_curr_data.y != _prev_data.y) {
-				_input_handlers[j](this, MOUSE_POS_Y, (float)_curr_data.y);
+				_input_handlers[j](this, MOUSE_POS_Y, static_cast<float>(_curr_data.y));
 			}
 
 			if (_curr_data.dx) {
-				_input_handlers[j](this, MOUSE_DELTA_X, (float)_curr_data.dx);
+				_input_handlers[j](this, MOUSE_DELTA_X, static_cast<float>(_curr_data.dx));
 			}
 
 			if (_curr_data.dy) {
-				_input_handlers[j](this, MOUSE_DELTA_Y, (float)_curr_data.dy);
+				_input_handlers[j](this, MOUSE_DELTA_Y, static_cast<float>(_curr_data.dy));
 			}
 
 			if (_curr_data.wheel) {
-				_input_handlers[j](this, MOUSE_WHEEL, (float)_curr_data.wheel);
+				_input_handlers[j](this, MOUSE_WHEEL, static_cast<float>(_curr_data.wheel));
 			}
 
 			for (int i = 0; i < MOUSE_BUTTON_COUNT; ++i) {
 				if (_curr_data.buttons[i] != _prev_data.buttons[i]) {
-					_input_handlers[j](this, i, (float)_curr_data.buttons[i]);
+					_input_handlers[j](this, i, static_cast<float>(_curr_data.buttons[i]));
 				}
 			}
 		}
@@ -137,14 +137,14 @@ void MouseMP::getDeltas(int& dx, int& dy) const
 
 void MouseMP::getNormalizedPosition(float& nx, float& ny) const
 {
-	nx = (float)_curr_data.x / (float)_window->getWidth();
-	ny = (float)_curr_data.y / (float)_window->getHeight();
+	nx = static_cast<float>(_curr_data.x) / static_cast<float>(_window->getWidth());
+	ny = static_cast<float>(_curr_data.y) / static_cast<float>(_window->getHeight());
 }
 
 void MouseMP::getNormalizedDeltas(float& ndx, float& ndy) const
 {
-	ndx = (float)_curr_data.dx / (float)_window->getWidth();
-	ndy = (float)_curr_data.dy / (float)_window->getHeight();
+	ndx = static_cast<float>(_curr_data.dx) / static_cast<float>(_window->getWidth());
+	ndy = static_cast<float>(_curr_data.dy) / static_cast<float>(_window->getHeight());
 }
 
 short MouseMP::getWheelDelta(void) const

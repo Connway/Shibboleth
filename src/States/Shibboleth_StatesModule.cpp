@@ -38,7 +38,6 @@ THE SOFTWARE.
 #include <Shibboleth_RenderManager.h>
 #include <Shibboleth_Object.h>
 
-#include <Gleam_IRenderDevice.h>
 #include <Gaff_Timer.h>
 
 #ifdef USE_VLD
@@ -239,11 +238,11 @@ static const char* state_names[NUM_STATES] = {
 	"loopforeverstate"
 };
 
-static unsigned int g_image_alloc_tag = Gaff::FNV1aHash32("Images", static_cast<unsigned int>(strlen("Images")));
+static size_t g_pool_index = 0;
 
 void* MEMCB ImageAlloc(const size_t size)
 {
-	return Shibboleth::ShibbolethAllocate(size, g_image_alloc_tag);
+	return Shibboleth::ShibbolethAllocate(size, g_pool_index);
 }
 
 void MEMCB ImageFree(const void* const data)
@@ -257,7 +256,7 @@ DYNAMICEXPORT_C bool InitModule(Shibboleth::IApp& app)
 	Gaff::JSON::SetMemoryFunctions(&Shibboleth::ShibbolethAllocate, &Shibboleth::ShibbolethFree);
 	Gaff::JSON::SetHashSeed(app.getSeed());
 
-	Shibboleth::CreateMemoryPool("Images", g_image_alloc_tag);
+	g_pool_index = Shibboleth::GetPoolIndex("Images", Gaff::FNV1aHash32("Images", strlen("Images")));;
 	Shibboleth::SetApp(app);
 
 	Gaff::Image::SetMemoryFunctions(ImageAlloc, ImageFree);

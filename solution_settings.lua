@@ -63,7 +63,7 @@ configuration "vs*"
 
 configuration "Debug*"
 	flags { "Symbols" }
-	defines { "_DEBUG", "DEBUG" }
+	defines { "_DEBUG", "DEBUG", "SYMBOL_BUILD" }
 
 configuration "Release*"
 	flags { "LinkTimeOptimization", "ReleaseRuntime" }

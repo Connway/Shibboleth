@@ -22,43 +22,47 @@ THE SOFTWARE.
 
 template <class T, class Allocator>
 String<T, Allocator>::String(const Allocator& allocator):
-	_allocator(allocator), _size(0), _string(nullptr)
+	_string_ptr(nullptr), _size(0), _capacity(SMALL_STRING_SIZE), _allocator(allocator)
 {
 }
 
 template <class T, class Allocator>
 String<T, Allocator>::String(const T* string, size_t size, const Allocator& allocator):
-	_allocator(allocator), _size(0), _string(nullptr)
+	_string_ptr(nullptr), _size(0), _capacity(SMALL_STRING_SIZE), _allocator(allocator)
 {
-	_string = (T*)_allocator.alloc(sizeof(T) * (size + 1));
-	_size = size;
+	if (size <= SMALL_STRING_SIZE) {
+		memcpy(_string_buf, string, sizeof(T) * size);
+		_string_buf[size] = 0; // set null-terminator
 
-	_string[_size] = 0; // set null-terminator
+	} else {
+		_string_ptr = reinterpret_cast<T*>(_allocator.alloc(sizeof(T) * (size + 1)));
 
-	for (size_t i = 0; i < _size; ++i) {
-		_string[i] = string[i];
+		memcpy(_string_ptr, string, sizeof(T) * size);
+		_string_ptr[size] = 0; // set null-terminator
+
+		_capacity = size;
 	}
+
+	_size = size;
 }
 
 template <class T, class Allocator>
 String<T, Allocator>::String(const T* string, const Allocator& allocator):
-	_allocator(allocator), _size(0), _string(nullptr)
+	_string_ptr(nullptr), _size(0), _capacity(0), _allocator(allocator)
 {
 	*this = string;
 }
 
 template <class T, class Allocator>
 String<T, Allocator>::String(String<T, Allocator>&& rhs):
-	_allocator(rhs._allocator), _size(rhs._size),
-	_string(rhs._string)
+	_string_ptr(nullptr), _size(0), _capacity(SMALL_STRING_SIZE), _allocator(rhs._allocator)
 {
-	rhs._string = nullptr;
-	rhs._size = 0;
+	*this = std::move(rhs);
 }
 
 template <class T, class Allocator>
 String<T, Allocator>::String(const String<T, Allocator>& string):
-	_allocator(string._allocator), _size(0), _string(nullptr)
+	_string_ptr(nullptr), _size(0), _capacity(SMALL_STRING_SIZE), _allocator(string._allocator)
 {
 	*this = string;
 }
@@ -74,11 +78,25 @@ const String<T, Allocator>& String<T, Allocator>::operator=(String<T, Allocator>
 {
 	clear();
 
-	_string = rhs._string;
 	_size = rhs._size;
+	_capacity = rhs._capacity;
 
-	rhs._string = nullptr;
+	if (_size <= SMALL_STRING_SIZE) {
+		memcpy(_string_buf, rhs.getBuffer(), sizeof(T) * (_size + 1));
+
+		if (_capacity > SMALL_STRING_SIZE) {
+			_allocator.free(rhs._string_ptr);
+		}
+
+		_capacity = SMALL_STRING_SIZE;
+
+	} else {
+		_string_ptr = rhs._string_ptr;
+	}
+
+	rhs._string_ptr = nullptr;
 	rhs._size = 0;
+	rhs._capacity = SMALL_STRING_SIZE;
 
 	return *this;
 }
@@ -86,19 +104,21 @@ const String<T, Allocator>& String<T, Allocator>::operator=(String<T, Allocator>
 template <class T, class Allocator>
 const String<T, Allocator>& String<T, Allocator>::operator=(const String<T, Allocator>& rhs)
 {
-	//if (this == &rhs) {
-	//	return *this;
-	//}
+	if (this == &rhs) {
+		return *this;
+	}
 
 	clear();
 
 	_size = rhs._size;
-	_string = (T*)_allocator.alloc(sizeof(T) * (_size + 1));
+	_capacity = rhs._capacity;
 
-	_string[_size] = 0; // set null-terminator
+	if (_size <= SMALL_STRING_SIZE) {
+		memcpy(_string_buf, rhs.getBuffer(), sizeof(T) * (_size + 1));
 
-	for (size_t i = 0; i < _size; ++i) {
-		_string[i] = rhs._string[i];
+	} else {
+		_string_ptr = reinterpret_cast<T*>(_allocator.alloc(sizeof(T) * (_size + 1)));
+		memcpy(_string_ptr, rhs._string_ptr, sizeof(T) * (_size + 1));
 	}
 
 	return *this;
@@ -107,19 +127,17 @@ const String<T, Allocator>& String<T, Allocator>::operator=(const String<T, Allo
 template <class T, class Allocator>
 const String<T, Allocator>& String<T, Allocator>::operator=(const T* rhs)
 {
-	//if (_string == rhs) {
-	//	return *this;
-	//}
-
 	clear();
 
 	_size = length(rhs);
-	_string = (T*)_allocator.alloc(sizeof(T) * (_size + 1));
 
-	_string[_size] = 0; // set null-terminator
+	if (_size <= SMALL_STRING_SIZE) {
+		memcpy(_string_buf, rhs, sizeof(T) * (_size + 1));
 
-	for (size_t i = 0; i < _size; ++i) {
-		_string[i] = rhs[i];
+	} else {
+		_string_ptr = reinterpret_cast<T*>(_allocator.alloc(sizeof(T) * (_size + 1)));
+		memcpy(_string_ptr, rhs, sizeof(T) * (_size + 1));
+		_capacity = _size;
 	}
 
 	return *this;
@@ -132,29 +150,21 @@ bool String<T, Allocator>::operator==(const String<T, Allocator>& rhs) const
 		return false;
 	}
 
-	for (size_t i = 0; i < _size; ++i) {
-		if (_string[i] != rhs._string[i]) {
-			return false;
-		}
-	}
-
-	return true;
+	return !memcmp(getBuffer(), rhs.getBuffer(), _size);
 }
 
 template <class T, class Allocator>
 bool String<T, Allocator>::operator==(const T* rhs) const
 {
-	if (_string == rhs) {
-		return true;
-	}
-
 	//if (_size != length(rhs)) {
 	//	return false;
 	//}
 
+	const T* buffer = getBuffer();
 	size_t i = 0;
+
 	for (; i < _size; ++i) {
-		if (_string[i] != rhs[i]) {
+		if (buffer[i] != rhs[i]) {
 			return false;
 		}
 	}
@@ -181,39 +191,39 @@ bool String<T, Allocator>::operator!=(const T* rhs) const
 template <class T, class Allocator>
 bool String<T, Allocator>::operator<(const String& rhs) const
 {
-	return less(_string, _size, rhs._string, rhs._size);
+	return less(getBuffer(), _size, rhs.getBuffer(), rhs._size);
 }
 
 template <class T, class Allocator>
 bool String<T, Allocator>::operator<(const T* rhs) const
 {
-	return less(_string, _size, rhs);
+	return less(getBuffer(), _size, rhs);
 }
 
 template <class T, class Allocator>
 bool String<T, Allocator>::operator>(const String& rhs) const
 {
-	return greater(_string, _size, rhs._string, rhs._size);
+	return greater(getBuffer(), _size, rhs.getBuffer(), rhs._size);
 }
 
 template <class T, class Allocator>
 bool String<T, Allocator>::operator>(const T* rhs) const
 {
-	return greater(_string, _size, rhs);
+	return greater(getBuffer(), _size, rhs);
 }
 
 template <class T, class Allocator>
-char String<T, Allocator>::operator[](size_t index) const
+const T& String<T, Allocator>::operator[](size_t index) const
 {
 	assert(index < _size);
-	return _string[index];
+	return getBuffer()[index];
 }
 
 template <class T, class Allocator>
-char& String<T, Allocator>::operator[](size_t index)
+T& String<T, Allocator>::operator[](size_t index)
 {
 	assert(index < _size);
-	return _string[index];
+	return getBuffer()[index];
 }
 
 template <class T, class Allocator>
@@ -240,25 +250,30 @@ const String<T, Allocator>& String<T, Allocator>::operator+=(T rhs)
 template <class T, class Allocator>
 String<T, Allocator> String<T, Allocator>::operator+(const String<T, Allocator>& rhs) const
 {
-	String<T, Allocator> str(*this);
-	str += rhs;
-	return str;
+	return *this + rhs.getBuffer();
 }
 
 template <class T, class Allocator>
 String<T, Allocator> String<T, Allocator>::operator+(const T* rhs) const
 {
-	String<T, Allocator> str(*this);
-	str += rhs;
-	return str;
+	String<T, Allocator> string(_allocator);
+	size_t rhs_length = length(rhs);
+	size_t new_size = _size + rhs_length;
+
+	string.resize(new_size);
+	T* buffer = string.getBuffer();
+
+	memcpy(buffer, getBuffer(), sizeof(T) * _size);
+	memcpy(buffer + _size, rhs, sizeof(T) * (rhs_length + 1));
+
+	return string;
 }
 
 template <class T, class Allocator>
 String<T, Allocator> String<T, Allocator>::operator+(T rhs) const
 {
-	String<T, Allocator> str(*this);
-	str += rhs;
-	return str;
+	T temp[2] = { rhs, 0 };
+	return *this + temp;
 }
 
 // WARNING: This function takes ownership of the string instead of copying
@@ -271,18 +286,30 @@ template <class T, class Allocator>
 void String<T, Allocator>::set(T* string)
 {
 	clear();
+
 	_size = length(string);
-	_string = string;
+
+	if (_size <= SMALL_STRING_SIZE) {
+		memcpy(_string_buf, string, sizeof(T) * (_size + 1));
+		_allocator.free(string);
+
+	} else {
+		_string_ptr = string;
+		_capacity = _size;
+	}
 }
 
 template <class T, class Allocator>
 void String<T, Allocator>::clear(void)
 {
-	if (_string) {
-		_allocator.free(_string);
-		_string = nullptr;
-		_size = 0;
+	if (_capacity > SMALL_STRING_SIZE && _string_ptr) {
+		_allocator.free(_string_ptr);
+		_string_ptr = nullptr;
 	}
+
+	_string_buf[0] = 0;
+	_size = 0;
+	_capacity = SMALL_STRING_SIZE;
 }
 
 template <class T, class Allocator>
@@ -292,15 +319,21 @@ size_t String<T, Allocator>::size(void) const
 }
 
 template <class T, class Allocator>
+size_t String<T, Allocator>::capacity(void) const
+{
+	return _capacity;
+}
+
+template <class T, class Allocator>
 const T* String<T, Allocator>::getBuffer(void) const
 {
-	return _string;
+	return (_capacity > SMALL_STRING_SIZE) ? _string_ptr : _string_buf;
 }
 
 template <class T, class Allocator>
 T* String<T, Allocator>::getBuffer(void)
 {
-	return _string;
+	return (_capacity > SMALL_STRING_SIZE) ? _string_ptr : _string_buf;
 }
 
 /*!
@@ -315,7 +348,6 @@ T* String<T, Allocator>::getBuffer(void)
 template <class T, class Allocator>
 String<T, Allocator> String<T, Allocator>::getExtension(T delimiting_character) const
 {
-	assert(_string && _size);
 	size_t index = findLastOf(delimiting_character);
 	return (index == SIZE_T_FAIL) ? String<T, Allocator>() : substring(index);
 }
@@ -324,36 +356,44 @@ template <class T, class Allocator>
 String<T, Allocator> String<T, Allocator>::substring(size_t begin, size_t end) const
 {
 	assert(end > begin && begin < _size && end < _size);
-	return String<T, Allocator>(_string + begin, end - begin);
+	return String<T, Allocator>(getBuffer() + begin, end - begin);
 }
 
 template <class T, class Allocator>
 String<T, Allocator> String<T, Allocator>::substring(size_t begin) const
 {
 	assert(begin < _size);
-	return String<T, Allocator>(_string + begin, _size - begin);
+	return String<T, Allocator>(getBuffer() + begin, _size - begin);
 }
 
 template <class T, class Allocator>
 void String<T, Allocator>::append(const T* string, size_t size)
 {
 	size_t new_size = _size + size;
-	T* new_string = (T*)_allocator.alloc(sizeof(T) * (new_size + 1));
-	new_string[new_size] = 0;
 
-	if (_string) {
-		copy(_string, new_string);
+	if (new_size <= SMALL_STRING_SIZE) {
+		memcpy(_string_buf + _size, string, sizeof(T) * size);
+		_string_buf[new_size] = 0;
+
+	} else {
+		T* new_string = reinterpret_cast<T*>(_allocator.alloc(sizeof(T) * (new_size + 1)));
+		new_string[new_size] = 0;
+
+		if (_size) {
+			memcpy(new_string, getBuffer(), sizeof(T) * _size);
+		}
+
+		memcpy(new_string + _size, string, sizeof(T) * size);
+
+		if (_size > SMALL_STRING_SIZE) {
+			_allocator.free(_string_ptr);
+		}
+
+		_string_ptr = new_string;
+		_capacity = new_size;
 	}
-
-	copy(string, new_string + _size, size);
 
 	_size = new_size;
-
-	if (_string) {
-		_allocator.free(_string);
-	}
-
-	_string = new_string;
 }
 
 template <class T, class Allocator>
@@ -370,51 +410,116 @@ void String<T, Allocator>::resize(size_t new_size)
 	}
 
 	size_t copy_size = (new_size < _size) ? new_size : _size;
-	T* new_string = (T*)_allocator.alloc(sizeof(T) * (new_size + 1));
+	T* old_string = _string_ptr;
 
-	if (_string) {
-		copy(_string, new_string, copy_size);
+	if (new_size <= SMALL_STRING_SIZE) {
+		if (_capacity > SMALL_STRING_SIZE) {
+			memcpy(_string_buf, old_string, sizeof(T) * copy_size);
+			_allocator.free(old_string);
+		}
+
+		_string_buf[new_size] = 0;
+		_capacity = SMALL_STRING_SIZE;
+
+	} else {
+		T* new_string = old_string;
+
+		if (_capacity < new_size) {
+			new_string = reinterpret_cast<T*>(_allocator.alloc(sizeof(T) * (new_size + 1)));
+			memcpy(new_string, getBuffer(), sizeof(T) * _size);
+
+			if (_capacity > SMALL_STRING_SIZE) {
+				_allocator.free(old_string);
+			}
+
+			_capacity = new_size;
+		}
+
+		new_string[new_size] = 0;
+		_string_ptr = new_string;
 	}
-
-	zeroOut(new_string + copy_size, new_size + 1 - copy_size);
 
 	_size = new_size;
-
-	if (_string) {
-		_allocator.free(_string);
-	}
-
-	_string = new_string;
 }
 
 template <class T, class Allocator>
 void String<T, Allocator>::erase(size_t begin_index, size_t end_index)
 {
-	assert(begin_index < end_index && begin_index < _size && end_index < _size);
-	copy(_string + end_index, _string + begin_index);
-	_size -= end_index - begin_index;
+	fastErase(begin_index, end_index);
+	trim();
 }
 
 template <class T, class Allocator>
 void String<T, Allocator>::erase(size_t index)
 {
 	assert(index < _size);
-	erase(index, index + 1);
+	fastErase(index, index + 1);
+	trim();
 }
 
 template <class T, class Allocator>
 void String<T, Allocator>::erase(T character)
 {
-	for (size_t i = 0; i < _size; ++i) {
-		if (_string[i] == character) {
-			// Shift all characters above the erased character down one
-			for (size_t j = i; j < _size; ++j) {
-				_string[j] = _string[j +1];
-				_string[j + 1] = 0;
-			}
+	fastErase(character);
+	trim();
+}
 
-			--_size;
+template <class T, class Allocator>
+void String<T, Allocator>::fastErase(size_t begin_index, size_t end_index)
+{
+	assert(begin_index < end_index && begin_index < _size && end_index < _size);
+
+	size_t new_size = _size - (end_index - begin_index);
+	T* old_string = _string_ptr;
+
+	if (new_size <= SMALL_STRING_SIZE) {
+		if (_capacity <= SMALL_STRING_SIZE) {
+			memcpy(_string_buf + begin_index, _string_buf + end_index, sizeof(T) * (_size - end_index));
+
+		} else {
+			memcpy(_string_buf, old_string, sizeof(T) * begin_index);
+			memcpy(_string_buf + begin_index, old_string + end_index, sizeof(T) * (_size - end_index));
+			_allocator.free(old_string);
 		}
+
+		_string_buf[new_size] = 0;
+		_capacity = SMALL_STRING_SIZE;
+
+	} else {
+		memcpy(_string_ptr + begin_index, _string_ptr + end_index, sizeof(T) * (_size - end_index));
+		_string_ptr[new_size] = 0;
+	}
+
+	_size = new_size;
+}
+
+template <class T, class Allocator>
+void String<T, Allocator>::fastErase(size_t index)
+{
+	fastErase(index, index + 1);
+}
+
+template <class T, class Allocator>
+void String<T, Allocator>::fastErase(T character)
+{
+	size_t index = findFirstOf(character);
+
+	while (index != SIZE_T_FAIL) {
+		fastErase(index);
+		index = findFirstOf(character);
+	}
+}
+
+template <class T, class Allocator>
+void String<T, Allocator>::trim(void)
+{
+	if (_capacity > SMALL_STRING_SIZE && _size != _capacity) {
+		T* old_string = _string_ptr;
+
+		_string_ptr = reinterpret_cast<T*>(_allocator.alloc(sizeof(T) * (_size + 1)));
+		memcpy(_string_ptr, old_string, sizeof(T) * (_size + 1));
+
+		_allocator.free(old_string);
 	}
 }
 
@@ -428,9 +533,10 @@ size_t String<T, Allocator>::findFirstOf(const T* string) const
 	}
 
 	size_t num_iterations = _size - len + 1;
+	const T* buffer = getBuffer();
 
 	for (size_t i = 0; i < num_iterations; ++i) {
-		if (equal(_string + i, string, len)) {
+		if (!memcmp(buffer + i, string, sizeof(T) * len)) {
 			return i;
 		}
 	}
@@ -447,19 +553,24 @@ size_t String<T, Allocator>::findLastOf(const T* string) const
 		return SIZE_T_FAIL;
 	}
 
-	for (int i = (int)_size - len - 2; i >= 0; --i) {
-		if (equal(_string + i, string, len)) {
-			return (size_t)i;
+	const T* buffer = getBuffer();
+
+	for (int i = static_cast<int>(_size) - static_cast<int>(len) - 2; i >= 0; --i) {
+		if (!memcmp(buffer + i, string, sizeof(T) * len)) {
+			return static_cast<size_t>(i);
 		}
 	}
 
 	return SIZE_T_FAIL;
 }
+
 template <class T, class Allocator>
 size_t String<T, Allocator>::findFirstOf(T character) const
 {
+	const T* buffer = getBuffer();
+
 	for (size_t i = 0; i < _size; ++i) {
-		if (_string[i] == character) {
+		if (buffer[i] == character) {
 			return i;
 		}
 	}
@@ -470,8 +581,10 @@ size_t String<T, Allocator>::findFirstOf(T character) const
 template <class T, class Allocator>
 size_t String<T, Allocator>::findLastOf(T character) const
 {
-	for (int i = (int)_size - 1; i >= 0; --i) {
-		if (_string[i] == character) {
+	const T* buffer = getBuffer();
+
+	for (int i = static_cast<int>(_size) - 1; i >= 0; --i) {
+		if (buffer[i] == character) {
 			return i;
 		}
 	}
@@ -486,8 +599,13 @@ template <class T, class Allocator>
 void String<T, Allocator>::convertToUTF8(const wchar_t* string, size_t size)
 {
 	resize(size * 4); // If somehow every character generates 4 octets
-	ConvertToUTF8(_string, string, size);
-	trimZeroes(); // Make string exact size
+	T* buffer = getBuffer();
+
+	memset(buffer, 0, sizeof(T) * _size);
+	ConvertToUTF8(buffer, string, size);
+
+	size_t new_size = findFirstOf(static_cast<T>(0));
+	_size = (new_size != SIZE_T_FAIL) ? new_size : _size;
 }
 
 /*!
@@ -497,8 +615,13 @@ template <class T, class Allocator>
 void String<T, Allocator>::convertToUTF16(const char* string, size_t size)
 {
 	resize(size * 2); // If somehow every character generates surrogate pairs
-	ConvertToUTF16(_string, string, size);
-	trimZeroes(); // Make string exact size
+	T* buffer = getBuffer();
+
+	memset(buffer, 0, sizeof(T) * _size);
+	ConvertToUTF16(buffer, string, size);
+
+	size_t new_size = findFirstOf(static_cast<T>(0));
+	_size = (new_size != SIZE_T_FAIL) ? new_size : _size;
 }
 
 /*!
@@ -508,7 +631,7 @@ void String<T, Allocator>::convertToUTF16(const char* string, size_t size)
 template <class T, class Allocator>
 size_t String<T, Allocator>::findInvalidUTF8(void) const
 {
-	return FindInvalidUTF8(_string, _size);
+	return FindInvalidUTF8(getBuffer(), _size);
 }
 
 /*!
@@ -517,67 +640,7 @@ size_t String<T, Allocator>::findInvalidUTF8(void) const
 template <class T, class Allocator>
 bool String<T, Allocator>::isValidUTF8(void) const
 {
-	return IsValidUTF8(_string, _size);
-}
-
-
-// If my benchmarks from strlen() and wcslen() are any indicator, this is no slower than memcpy(),
-// and this gets rid of that damn compiler warning
-template <class T, class Allocator>
-void String<T, Allocator>::copy(const T* src, T* dest, size_t dest_size) const
-{
-	size_t i = 0;
-
-	while (src[i] != 0 && i < dest_size) {
-		dest[i] = src[i];
-		++i;
-	}
-
-	dest[i] = 0;
-}
-
-template <class T, class Allocator>
-void String<T, Allocator>::copy(const T* src, T* dest) const
-{
-	size_t i = 0;
-
-	while (src[i] != 0) {
-		dest[i] = src[i];
-		++i;
-	}
-
-	dest[i] = 0;
-}
-
-template <class T, class Allocator>
-void String<T, Allocator>::zeroOut(T* string, size_t size) const
-{
-	for (size_t i = 0; i < size; ++i) {
-		string[i] = 0;
-	}
-}
-
-template <class T, class Allocator>
-void String<T, Allocator>::trimZeroes(void)
-{
-	for (size_t i = 0; i < _size; ++i) {
-		if (_string[i] == 0) {
-			resize(i);
-			break;
-		}
-	}
-}
-
-template <class T, class Allocator>
-bool String<T, Allocator>::equal(const T* str1, const T* str2, size_t size) const
-{
-	for (size_t i = 0; i < size; ++i) {
-		if (str1[i] != str2[i]) {
-			return false;
-		}
-	}
-
-	return true;
+	return IsValidUTF8(getBuffer(), _size);
 }
 
 
@@ -593,21 +656,18 @@ bool operator!=(const T* lhs, const String<T, Allocator>& rhs)
 	return rhs != lhs;
 }
 
-// This long and fancy version of operator+ avoids an allocation and copy
 template <class T, class Allocator>
 String<T, Allocator> operator+(const T* lhs, const String<T, Allocator>& rhs)
 {
+	String<T, Allocator> string(rhs._allocator);
 	size_t lhs_length = length(lhs);
 	size_t new_size = rhs._size + lhs_length;
-	Allocator* allocator = const_cast<Allocator*>(&rhs._allocator); // this is to get rid of compiler error from rhs._allocator being const
-	T* new_string = (T*)allocator->alloc(sizeof(T) * (new_size + 1));
 
-	rhs.copy(lhs, new_string);
-	rhs.copy(rhs._string, new_string + lhs_length);
+	string.resize(new_size);
+	T* buffer = string.getBuffer();
 
-	String<T, Allocator> string(rhs._allocator);
-	string._string = new_string;
-	string._size = new_size;
+	memcpy(buffer, lhs, sizeof(T) * lhs_length);
+	memcpy(buffer + lhs_length, rhs.getBuffer(), sizeof(T) * (rhs.size() + 1));
 
 	return string;
 }

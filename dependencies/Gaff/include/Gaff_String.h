@@ -28,6 +28,8 @@ THE SOFTWARE.
 #include "Gaff_IncludeAssert.h"
 #include <utf8.h>
 
+#define SMALL_STRING_SIZE 15
+
 NS_GAFF
 
 /*!
@@ -61,8 +63,8 @@ public:
 	bool operator>(const String<T, Allocator>& rhs) const;
 	bool operator>(const T* rhs) const;
 
-	char operator[](size_t index) const;
-	char& operator[](size_t index);
+	const T& operator[](size_t index) const;
+	T& operator[](size_t index);
 
 	const String<T, Allocator>& operator+=(const String<T, Allocator>& rhs);
 	const String<T, Allocator>& operator+=(const T* rhs);
@@ -76,6 +78,7 @@ public:
 	void set(T* string);
 	void clear(void);
 	size_t size(void) const;
+	size_t capacity(void) const;
 
 	const T* getBuffer(void) const;
 	T* getBuffer(void);
@@ -87,9 +90,16 @@ public:
 	void append(const T* string, size_t size);
 	void append(const T* string);
 	void resize(size_t new_size);
+
 	void erase(size_t begin_index, size_t end_index);
 	void erase(size_t index);
 	void erase(T character);
+
+	void fastErase(size_t begin_index, size_t end_index);
+	void fastErase(size_t index);
+	void fastErase(T character);
+
+	void trim(void);
 
 	size_t findFirstOf(const T* character) const;
 	size_t findLastOf(const T* character) const;
@@ -103,18 +113,15 @@ public:
 	bool isValidUTF8(void) const;
 
 private:
-	Allocator _allocator;
-	size_t _size;
-	T* _string;
+	union
+	{
+		T* _string_ptr;
+		T _string_buf[SMALL_STRING_SIZE + 1];
+	};
 
-	// If my benchmarks from strlen() and wcslen() are any indicator,
-	// this is not much slower than memcpy(), and this gets rid of
-	// that damn compiler warning
-	void copy(const T* src, T* dest, size_t dest_size) const;
-	void copy(const T* src, T* dest) const;
-	void zeroOut(T* string, size_t size) const;
-	void trimZeroes(void);
-	bool equal(const T* str1, const T* str2, size_t size) const;
+	size_t _size;
+	size_t _capacity;
+	Allocator _allocator;
 
 	// allows for optimization
 	template <class T2, class Allocator2>

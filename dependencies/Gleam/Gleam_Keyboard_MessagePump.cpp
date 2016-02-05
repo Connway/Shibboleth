@@ -50,7 +50,7 @@ bool KeyboardMP::init(const IWindow& window, bool no_windows_key)
 bool KeyboardMP::init(const IWindow& window)
 {
 	auto cb = Gaff::Bind(this, &KeyboardMP::handleMessage);
-	_window = (IWindow*)&window;
+	_window = const_cast<IWindow*>(&window);
 	_window->addWindowMessageHandler(cb);
 
 	return RegisterForRawInput(RAW_INPUT_KEYBOARD, window);
@@ -72,7 +72,7 @@ void KeyboardMP::update(void)
 			unsigned char curr = _curr_state[i];
 
 			for (unsigned int j = 0; j < _input_handlers.size(); ++j) {
-				_input_handlers[j](this, i, (float)curr);
+				_input_handlers[j](this, i, static_cast<float>(curr));
 			}
 		}
 
@@ -83,7 +83,7 @@ void KeyboardMP::update(void)
 
 			if (curr != prev) {
 				for (unsigned int j = 0; j < _input_handlers.size(); ++j) {
-					_input_handlers[j](this, i, (float)curr);
+					_input_handlers[j](this, i, static_cast<float>(curr));
 				}
 			}
 		}

@@ -20,12 +20,6 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-/*!
-	\file
-
-	Includes cassert with NDEBUG properly defined.
-*/
-
 #pragma once
 
 #ifndef _DEBUG
