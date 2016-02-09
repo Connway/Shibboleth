@@ -22,7 +22,6 @@ THE SOFTWARE.
 
 #include "Shibboleth_Memory.h"
 #include "Shibboleth_Allocator.h"
-#include <Shibboleth_ProxyAllocator.h>
 
 #ifdef USE_VLD
 	#include <vld.h>

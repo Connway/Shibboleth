@@ -37,7 +37,7 @@ NS_GAFF
 class DefaultAlignedAllocator : public IAllocator
 {
 public:
-	DefaultAlignedAllocator(size_t alignment):
+	DefaultAlignedAllocator(size_t alignment = 16):
 		_alignment(alignment)
 	{
 	}

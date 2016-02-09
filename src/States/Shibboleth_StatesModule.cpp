@@ -59,6 +59,15 @@ public:
 			Shibboleth::GetApp().getManagerT<Shibboleth::OcclusionManager>("Occlusion Manager").removeObject(_object);
 			Shibboleth::GetApp().getManagerT<Shibboleth::ObjectManager>("Object Manager").removeObject(_object->getID());
 		}
+
+		if (_object2) {
+			Shibboleth::GetApp().getManagerT<Shibboleth::OcclusionManager>("Occlusion Manager").removeObject(_object2);
+			Shibboleth::GetApp().getManagerT<Shibboleth::ObjectManager>("Object Manager").removeObject(_object2->getID());
+		}
+
+		if (_camera) {
+			Shibboleth::GetApp().getManagerT<Shibboleth::ObjectManager>("Object Manager").removeObject(_camera->getID());
+		}
 	}
 
 	void ResReq(Shibboleth::ResourcePtr& res)
