@@ -25,6 +25,7 @@ THE SOFTWARE.
 #include "Shibboleth_Utilities.h"
 #include "Shibboleth_IManager.h"
 #include "Shibboleth_String.h"
+#include <Gaff_StackTrace.h>
 #include <Gaff_Utils.h>
 #include <Gaff_JSON.h>
 #include <regex>
@@ -45,8 +46,12 @@ App::~App(void)
 // Still single-threaded at this point, so ok that we're not using the spinlock
 bool App::init(int argc, char** argv)
 {
+#ifdef SYMBOL_BUILD
+	assert(Gaff::StackTrace::Init());
+#endif
+
 	while (!_seed) {
-		_seed = (size_t)time(NULL);
+		_seed = static_cast<size_t>(time(NULL));
 	}
 
 	_cmd_line_args = Gaff::ParseCommandLine<ProxyAllocator>(argc, argv);
@@ -82,13 +87,25 @@ bool App::init(int argc, char** argv)
 		return false;
 	}
 
+#ifdef SYMBOL_BUILD
+	Gaff::StackTrace::RefreshModuleList(); // Will fix symbols from DLLs not resolving.
+#endif
+
 	if (!loadManagers()) {
 		return false;
 	}
 
+#ifdef SYMBOL_BUILD
+	Gaff::StackTrace::RefreshModuleList(); // Will fix symbols from DLLs not resolving.
+#endif
+
 	if (!loadStates()) {
 		return false;
 	}
+
+#ifdef SYMBOL_BUILD
+	Gaff::StackTrace::RefreshModuleList(); // Will fix symbols from DLLs not resolving.
+#endif
 
 	_log_file_pair->first.writeString("Game Successfully Initialized\n\n");
 	_log_file_pair->first.flush();
@@ -504,6 +521,10 @@ void App::destroy(void)
 	} else if (_fs.file_system) {
 		GetAllocator()->freeT(_fs.file_system);
 	}
+
+#ifdef SYMBOL_BUILD
+	Gaff::StackTrace::Destroy();
+#endif
 }
 
 const IManager* App::getManager(const AHashString& name) const

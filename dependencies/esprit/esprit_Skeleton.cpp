@@ -75,7 +75,7 @@ void Skeleton::addBone(size_t parent_index, const char* name)
 	}
 
 	_parent_indices.push(parent_index);
-	_names.push(str_name);
+	_names.push(std::move(str_name));
 	_default_pose.setNumBones(_parent_indices.size());
 }
 

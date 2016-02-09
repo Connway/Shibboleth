@@ -22,7 +22,6 @@ THE SOFTWARE.
 
 #include "Shibboleth_ObjectManager.h"
 #include "Shibboleth_Object.h"
-#include <Shibboleth_IApp.h>
 #include <Gaff_ScopedLock.h>
 #include <Gaff_Atomic.h>
 
@@ -41,6 +40,11 @@ ObjectManager::ObjectManager(void):
 
 ObjectManager::~ObjectManager(void)
 {
+	for (auto it = _objects.begin(); it != _objects.end(); ++it) {
+		GetAllocator()->freeT(*it);
+	}
+
+	_objects.clear();
 }
 
 Object* ObjectManager::createObject(void)

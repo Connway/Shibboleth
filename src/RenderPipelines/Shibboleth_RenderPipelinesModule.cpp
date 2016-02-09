@@ -21,7 +21,6 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Shibboleth_InGameRenderPipeline.h"
-#include <Shibboleth_RenderPipelineManager.h>
 #include <Shibboleth_IRenderPipeline.h>
 #include <Shibboleth_Utilities.h>
 #include <Shibboleth_IApp.h>
