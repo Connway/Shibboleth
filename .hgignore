@@ -6,3 +6,4 @@ build/*
 *.sdf
 *.opensdf
 workingdir/App/Logs/*
+*.exp
