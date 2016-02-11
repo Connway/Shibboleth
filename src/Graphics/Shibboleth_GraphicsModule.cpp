@@ -38,10 +38,6 @@ THE SOFTWARE.
 #include <Gleam_Model.h>
 #include <Gleam_Mesh.h>
 
-#ifdef USE_VLD
-	#include <vld.h>
-#endif
-
 NS_SHIBBOLETH
 	class IApp;
 NS_END

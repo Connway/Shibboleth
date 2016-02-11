@@ -36,13 +36,6 @@ newoption
 
 newoption
 {
-	trigger = "vld_path",
-	value = "path",
-	description = "The path to your Visual Leak Detector installation (Windows Only). Use only if VLD is not already in your global VC++ Directories."
-}
-
-newoption
-{
 	trigger = "fmod_path",
 	value = "path",
 	description = "The path to your FMOD installation. Use only if FMOD is not already in your global VC++ Directories (Windows Only)."

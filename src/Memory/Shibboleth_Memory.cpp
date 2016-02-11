@@ -23,10 +23,6 @@ THE SOFTWARE.
 #include "Shibboleth_Memory.h"
 #include "Shibboleth_Allocator.h"
 
-#ifdef USE_VLD
-	#include <vld.h>
-#endif
-
 NS_SHIBBOLETH
 
 static Allocator gAllocator;

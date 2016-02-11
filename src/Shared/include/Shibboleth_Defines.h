@@ -46,5 +46,3 @@ THE SOFTWARE.
 #else
 	#error "Cannot deduce platform bit-age."
 #endif
-
-#define USE_VLD

@@ -25,6 +25,11 @@ project "App"
 
 	configuration {}
 
+	filter { "system:windows", "options:symbols" }
+		links { "Dbghelp" }
+
+	filter {}
+
 	includedirs
 	{
 		"../Shared/include",

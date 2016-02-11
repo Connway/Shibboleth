@@ -38,12 +38,6 @@ THE SOFTWARE.
 #include <Shibboleth_RenderManager.h>
 #include <Shibboleth_Object.h>
 
-#include <Gaff_Timer.h>
-
-#ifdef USE_VLD
-	#include <vld.h>
-#endif
-
 class LoopState : public Shibboleth::IState
 {
 public:
@@ -89,8 +83,7 @@ public:
 		if (_object) {
 			if (_object->init("Resources/Objects/test.object")) {
 				_object->setLocalPosition(Gleam::Vector4CPU(-2.5f, 0.0f, 0.0f, 1.0f));
-				//Shibboleth::OcclusionManager::UserData user_data(reinterpret_cast<unsigned long long>(model), 0);
-				//_app.getManagerT<Shibboleth::OcclusionManager>("Occlusion Manager").addObject(_object, Shibboleth::OcclusionManager::OT_DYNAMIC, user_data);
+
 			} else {
 				_app.getManagerT<Shibboleth::ObjectManager>("Object Manager").removeObject(_object->getID());
 				_object = nullptr;
@@ -106,8 +99,7 @@ public:
 		if (_object2) {
 			if (_object2->init("Resources/Objects/test.object")) {
 				_object2->setLocalPosition(Gleam::Vector4CPU(2.5f, 0.0f, 0.0f, 1.0f));
-				//Shibboleth::OcclusionManager::UserData user_data(reinterpret_cast<unsigned long long>(model), 0);
-				//_app.getManagerT<Shibboleth::OcclusionManager>("Occlusion Manager").addObject(_object, Shibboleth::OcclusionManager::OT_DYNAMIC, user_data);
+
 			} else {
 				_app.getManagerT<Shibboleth::ObjectManager>("Object Manager").removeObject(_object2->getID());
 				_object2 = nullptr;
@@ -170,17 +162,11 @@ public:
 			added = true;
 		}
 
-		static Gaff::Timer timer;
-		timer.stop();
-		timer.start();
-
 		Shibboleth::RenderManager& rm = _app.getManagerT<Shibboleth::RenderManager>("Render Manager");
 		rm.updateWindows(); // This has to happen in the main thread.
 
 		Shibboleth::UpdateManager& update_manager = _app.getManagerT<Shibboleth::UpdateManager>("Update Manager");
 		update_manager.update();
-
-		//render(timer.getDeltaSec());
 	}
 
 	void exit(void)
@@ -188,22 +174,6 @@ public:
 		_app.getManagerT<Shibboleth::ResourceManager>("Resource Manager").removeRequestAddedCallback(Gaff::Bind(this, &LoopState::ResReq));
 		_resources.clear();
 	}
-
-	//void render(double dt)
-	//{
-	//	Shibboleth::ModelComponent* model = _object->getFirstComponentWithInterface<Shibboleth::ModelComponent>();
-	//	Shibboleth::RenderManager& rm = _app.getManagerT<Shibboleth::RenderManager>("Render Manager");
-
-	//	if (model && model->isReadyToRender()) {
-	//		rm.getRenderDevice().setCurrentDevice(0);
-	//		rm.getRenderDevice().beginFrame();
-
-	//		rm.getRenderDevice().getActiveOutputRenderTarget()->bind(rm.getRenderDevice());
-	//		model->render(dt, rm.getRenderDevice(), rm.getRenderDevice().getCurrentDevice());
-
-	//		rm.getRenderDevice().endFrame();
-	//	}
-	//}
 
 private:
 	Shibboleth::Object* _object;
