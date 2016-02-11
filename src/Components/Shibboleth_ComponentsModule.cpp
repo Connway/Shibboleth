@@ -28,10 +28,6 @@ THE SOFTWARE.
 #include <Shibboleth_IApp.h>
 #include <Gaff_JSON.h>
 
-#ifdef USE_VLD
-	#include <vld.h>
-#endif
-
 template <class Component>
 Shibboleth::Component* CreateComponent(void)
 {

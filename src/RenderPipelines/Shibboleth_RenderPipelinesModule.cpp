@@ -26,10 +26,6 @@ THE SOFTWARE.
 #include <Shibboleth_IApp.h>
 #include <Gaff_JSON.h>
 
-#ifdef USE_VLD
-	#include <vld.h>
-#endif
-
 template <class T>
 Shibboleth::IRenderPipeline* CreateRenderPipelineT(void)
 {

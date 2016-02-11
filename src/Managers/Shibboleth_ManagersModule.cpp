@@ -39,10 +39,6 @@ THE SOFTWARE.
 #include <Shibboleth_Utilities.h>
 #include <Shibboleth_IApp.h>
 
-#ifdef USE_VLD
-	#include <vld.h>
-#endif
-
 template <class Manager>
 Shibboleth::IManager* CreateManagerT(void)
 {
