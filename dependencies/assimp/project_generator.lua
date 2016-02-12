@@ -23,11 +23,13 @@ project "assimp"
 	includedirs
 	{
 		"code/BoostWorkaround",
+		"contrib/openddlparser/include",
+		"include",
 		"../minizip",
 		"../zlib"
 	}
 
-	defines { "ASSIMP_BUILD_BOOST_WORKAROUND", "ASSIMP_BUILD_NO_OWN_ZLIB" }
+	defines { "ASSIMP_BUILD_BOOST_WORKAROUND", "ASSIMP_BUILD_NO_OWN_ZLIB", "ASSIMP_BUILD_NO_C4D_IMPORTER" }
 	rtti "On"
 
 	filter { "system:windows" }

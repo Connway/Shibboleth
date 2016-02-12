@@ -75,25 +75,25 @@
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <PreBuildEvent>
-      <Command>cd ../../../dependencies/LuaJIT-2.0.4
+      <Command>cd ../../../dependencies/LuaJIT
 build_luajit.bat x86 debug ..\..\build\output\x86\Debug</Command>
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <PreBuildEvent>
-      <Command>cd ../../../dependencies/LuaJIT-2.0.4
+      <Command>cd ../../../dependencies/LuaJIT
 build_luajit.bat x86_64 debug ..\..\build\output\x64\Debug</Command>
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <PreBuildEvent>
-      <Command>cd ../../../dependencies/LuaJIT-2.0.4
+      <Command>cd ../../../dependencies/LuaJIT
 build_luajit.bat x86 release ..\..\build\output\x86\Release</Command>
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <PreBuildEvent>
-      <Command>cd ../../../dependencies/LuaJIT-2.0.4
+      <Command>cd ../../../dependencies/LuaJIT
 build_luajit.bat x86_64 release ..\..\build\output\x64\Release</Command>
     </PreBuildEvent>
   </ItemDefinitionGroup>

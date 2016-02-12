@@ -33,7 +33,7 @@ project "Managers"
 		"../../dependencies/Gaff/include",
 		"../../dependencies/esprit/include",
 		"../../dependencies/LuaState",
-		"../../dependencies/LuaJIT-2.0.4/src",
+		"../../dependencies/LuaJIT/src",
 		"../../dependencies/utf8-cpp"
 	}
 
@@ -71,7 +71,7 @@ project "ManagersModule"
 		"../../dependencies/Gleam/include",
 		"../../dependencies/Gaff/include",
 		"../../dependencies/LuaState",
-		"../../dependencies/LuaJIT-2.0.4/src",
+		"../../dependencies/LuaJIT/src",
 		"../../dependencies/utf8-cpp"
 	}
 

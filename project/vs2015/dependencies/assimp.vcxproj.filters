@@ -31,6 +31,18 @@
     <Filter Include="contrib\irrXML">
       <UniqueIdentifier>{03DA25FB-EFA7-1901-D83B-8A27C4A8F565}</UniqueIdentifier>
     </Filter>
+    <Filter Include="contrib\openddlparser">
+      <UniqueIdentifier>{38226264-A48E-1D5F-6D82-B5BCD9AD3FC7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="contrib\openddlparser\code">
+      <UniqueIdentifier>{E2F33247-CE03-DF17-37BD-433623ECCDB0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="contrib\openddlparser\include">
+      <UniqueIdentifier>{AB012AA3-171A-11CD-E0C6-A0664C9EA566}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="contrib\openddlparser\include\openddlparser">
+      <UniqueIdentifier>{8DF4A69C-F959-3A23-8232-DCFBEE962F92}</UniqueIdentifier>
+    </Filter>
     <Filter Include="contrib\poly2tri">
       <UniqueIdentifier>{8AA22ADF-769B-4931-9FCD-2EB68B25293D}</UniqueIdentifier>
     </Filter>
@@ -83,6 +95,9 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\..\dependencies\assimp\code\3DSExporter.h">
+      <Filter>code</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\dependencies\assimp\code\3DSHelper.h">
       <Filter>code</Filter>
     </ClInclude>
@@ -98,7 +113,13 @@
     <ClInclude Include="..\..\..\dependencies\assimp\code\ASEParser.h">
       <Filter>code</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\dependencies\assimp\code\AssimpPCH.h">
+    <ClInclude Include="..\..\..\dependencies\assimp\code\AssbinExporter.h">
+      <Filter>code</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\assimp\code\AssbinLoader.h">
+      <Filter>code</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\assimp\code\AssxmlExporter.h">
       <Filter>code</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\dependencies\assimp\code\B3DImporter.h">
@@ -185,7 +206,10 @@
     <ClInclude Include="..\..\..\dependencies\assimp\code\BoostWorkaround\boost\tuple\tuple.hpp">
       <Filter>code\BoostWorkaround\boost\tuple</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\dependencies\assimp\code\ByteSwap.h">
+    <ClInclude Include="..\..\..\dependencies\assimp\code\ByteSwapper.h">
+      <Filter>code</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\assimp\code\C4DImporter.h">
       <Filter>code</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\dependencies\assimp\code\CInterfaceIOWrapper.h">
@@ -237,6 +261,9 @@
       <Filter>code</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\dependencies\assimp\code\DefaultProgressHandler.h">
+      <Filter>code</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\assimp\code\Defines.h">
       <Filter>code</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\dependencies\assimp\code\Exceptional.h">
@@ -407,6 +434,9 @@
     <ClInclude Include="..\..\..\dependencies\assimp\code\MS3DLoader.h">
       <Filter>code</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\assimp\code\Macros.h">
+      <Filter>code</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\dependencies\assimp\code\MakeVerboseFormat.h">
       <Filter>code</Filter>
     </ClInclude>
@@ -449,19 +479,22 @@
     <ClInclude Include="..\..\..\dependencies\assimp\code\OgreImporter.h">
       <Filter>code</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\dependencies\assimp\code\OgreImporter.hpp">
-      <Filter>code</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\dependencies\assimp\code\OgreParsingUtils.h">
       <Filter>code</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\dependencies\assimp\code\OgreStructs.h">
       <Filter>code</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\dependencies\assimp\code\OgreXmlHelper.hpp">
+    <ClInclude Include="..\..\..\dependencies\assimp\code\OgreXmlSerializer.h">
       <Filter>code</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\dependencies\assimp\code\OgreXmlSerializer.h">
+    <ClInclude Include="..\..\..\dependencies\assimp\code\OpenGEXExporter.h">
+      <Filter>code</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\assimp\code\OpenGEXImporter.h">
+      <Filter>code</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\assimp\code\OpenGEXStructs.h">
       <Filter>code</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\dependencies\assimp\code\OptimizeGraph.h">
@@ -575,7 +608,13 @@
     <ClInclude Include="..\..\..\dependencies\assimp\code\StdOStreamLogStream.h">
       <Filter>code</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\assimp\code\StepExporter.h">
+      <Filter>code</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\dependencies\assimp\code\StreamReader.h">
+      <Filter>code</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\assimp\code\StreamWriter.h">
       <Filter>code</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\dependencies\assimp\code\StringComparison.h">
@@ -605,6 +644,9 @@
     <ClInclude Include="..\..\..\dependencies\assimp\code\ValidateDataStructure.h">
       <Filter>code</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\assimp\code\Version.h">
+      <Filter>code</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\dependencies\assimp\code\Vertex.h">
       <Filter>code</Filter>
     </ClInclude>
@@ -612,6 +654,9 @@
       <Filter>code</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\dependencies\assimp\code\Win32DebugLogStream.h">
+      <Filter>code</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\assimp\code\XFileExporter.h">
       <Filter>code</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\dependencies\assimp\code\XFileHelper.h">
@@ -626,6 +671,9 @@
     <ClInclude Include="..\..\..\dependencies\assimp\code\XGLLoader.h">
       <Filter>code</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\assimp\code\XMLTools.h">
+      <Filter>code</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\dependencies\assimp\code\assbin_chunks.h">
       <Filter>code</Filter>
     </ClInclude>
@@ -633,9 +681,6 @@
       <Filter>code</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\dependencies\assimp\code\irrXMLWrapper.h">
-      <Filter>code</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\dependencies\assimp\code\pstdint.h">
       <Filter>code</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\dependencies\assimp\code\qnan.h">
@@ -670,6 +715,24 @@
     </ClInclude>
     <ClInclude Include="..\..\..\dependencies\assimp\contrib\irrXML\irrXML.h">
       <Filter>contrib\irrXML</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\assimp\contrib\openddlparser\include\openddlparser\DDLNode.h">
+      <Filter>contrib\openddlparser\include\openddlparser</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\assimp\contrib\openddlparser\include\openddlparser\OpenDDLCommon.h">
+      <Filter>contrib\openddlparser\include\openddlparser</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\assimp\contrib\openddlparser\include\openddlparser\OpenDDLExport.h">
+      <Filter>contrib\openddlparser\include\openddlparser</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\assimp\contrib\openddlparser\include\openddlparser\OpenDDLParser.h">
+      <Filter>contrib\openddlparser\include\openddlparser</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\assimp\contrib\openddlparser\include\openddlparser\OpenDDLParserUtils.h">
+      <Filter>contrib\openddlparser\include\openddlparser</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\assimp\contrib\openddlparser\include\openddlparser\Value.h">
+      <Filter>contrib\openddlparser\include\openddlparser</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\dependencies\assimp\contrib\poly2tri\poly2tri\common\shapes.h">
       <Filter>contrib\poly2tri\poly2tri\common</Filter>
@@ -805,6 +868,9 @@
     <ClCompile Include="..\..\..\dependencies\assimp\code\3DSConverter.cpp">
       <Filter>code</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\dependencies\assimp\code\3DSExporter.cpp">
+      <Filter>code</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\..\dependencies\assimp\code\3DSLoader.cpp">
       <Filter>code</Filter>
     </ClCompile>
@@ -817,13 +883,19 @@
     <ClCompile Include="..\..\..\dependencies\assimp\code\ASEParser.cpp">
       <Filter>code</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\dependencies\assimp\code\AssbinExporter.cpp">
+      <Filter>code</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\dependencies\assimp\code\AssbinLoader.cpp">
+      <Filter>code</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\..\dependencies\assimp\code\Assimp.cpp">
       <Filter>code</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\dependencies\assimp\code\AssimpCExport.cpp">
       <Filter>code</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\dependencies\assimp\code\AssimpPCH.cpp">
+    <ClCompile Include="..\..\..\dependencies\assimp\code\AssxmlExporter.cpp">
       <Filter>code</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\dependencies\assimp\code\B3DImporter.cpp">
@@ -857,6 +929,9 @@
       <Filter>code</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\dependencies\assimp\code\BlenderTessellator.cpp">
+      <Filter>code</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\dependencies\assimp\code\C4DImporter.cpp">
       <Filter>code</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\dependencies\assimp\code\COBLoader.cpp">
@@ -1093,16 +1168,16 @@
     <ClCompile Include="..\..\..\dependencies\assimp\code\OgreMaterial.cpp">
       <Filter>code</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\dependencies\assimp\code\OgreMesh.cpp">
-      <Filter>code</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\dependencies\assimp\code\OgreSkeleton.cpp">
-      <Filter>code</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\dependencies\assimp\code\OgreStructs.cpp">
       <Filter>code</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\dependencies\assimp\code\OgreXmlSerializer.cpp">
+      <Filter>code</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\dependencies\assimp\code\OpenGEXExporter.cpp">
+      <Filter>code</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\dependencies\assimp\code\OpenGEXImporter.cpp">
       <Filter>code</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\dependencies\assimp\code\OptimizeGraph.cpp">
@@ -1195,6 +1270,9 @@
     <ClCompile Include="..\..\..\dependencies\assimp\code\StandardShapes.cpp">
       <Filter>code</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\dependencies\assimp\code\StepExporter.cpp">
+      <Filter>code</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\..\dependencies\assimp\code\Subdivision.cpp">
       <Filter>code</Filter>
     </ClCompile>
@@ -1216,7 +1294,13 @@
     <ClCompile Include="..\..\..\dependencies\assimp\code\ValidateDataStructure.cpp">
       <Filter>code</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\dependencies\assimp\code\Version.cpp">
+      <Filter>code</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\..\dependencies\assimp\code\VertexTriangleAdjacency.cpp">
+      <Filter>code</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\dependencies\assimp\code\XFileExporter.cpp">
       <Filter>code</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\dependencies\assimp\code\XFileImporter.cpp">
@@ -1236,6 +1320,21 @@
     </ClCompile>
     <ClCompile Include="..\..\..\dependencies\assimp\contrib\irrXML\irrXML.cpp">
       <Filter>contrib\irrXML</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\dependencies\assimp\contrib\openddlparser\code\DDLNode.cpp">
+      <Filter>contrib\openddlparser\code</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\dependencies\assimp\contrib\openddlparser\code\OpenDDLCommon.cpp">
+      <Filter>contrib\openddlparser\code</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\dependencies\assimp\contrib\openddlparser\code\OpenDDLExport.cpp">
+      <Filter>contrib\openddlparser\code</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\dependencies\assimp\contrib\openddlparser\code\OpenDDLParser.cpp">
+      <Filter>contrib\openddlparser\code</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\dependencies\assimp\contrib\openddlparser\code\Value.cpp">
+      <Filter>contrib\openddlparser\code</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\dependencies\assimp\contrib\poly2tri\poly2tri\common\shapes.cc">
       <Filter>contrib\poly2tri\poly2tri\common</Filter>

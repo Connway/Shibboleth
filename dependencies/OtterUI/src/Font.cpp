@@ -5,11 +5,6 @@
 #include "Data/OtterData.h"
 #include "Memory/Memory.h"
 
-#if defined(_WIN32) || defined(_WIN64)
-	#pragma warning(push)
-	#pragma warning(disable : 4127)
-#endif
-
 namespace Otter
 {
 	/* Retrieves the character length of the first word
@@ -606,7 +601,3 @@ namespace Otter
 		}
 	}
 }
-
-#if defined(_WIN32) || defined(_WIN64)
-	#pragma warning(pop)
-#endif
