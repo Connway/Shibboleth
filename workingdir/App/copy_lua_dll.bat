@@ -19,4 +19,4 @@
 	@exit /b %errorlevel%
 )
 
-copy ..\..\dependencies\LuaJIT-2.0.4\lib\%cfg%\%arch%\lua51.dll lua51.dll /Y
+copy ..\..\dependencies\LuaJIT\lib\%cfg%\%arch%\lua51.dll lua51.dll /Y

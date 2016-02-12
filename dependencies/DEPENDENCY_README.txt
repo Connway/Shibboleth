@@ -17,5 +17,23 @@ Libraries Affected:
 	minizip (commented out a block that says #define _CRT_SECURE_NO_WARNINGS, as I have it defined at the project level)
 	ResIL
 	LuaState (added const char* version of doFile and doString)
-	OtterUI (got rid of a lot of warnings in VS2013 and fixed a couple inconsistencies and crash bugs)
-	dirent (got rid of warnings in VS2013)
+	OtterUI (got rid of a lot of warnings in Visual Studio and fixed a couple inconsistencies and crash bugs)
+	dirent (got rid of warnings in Visual Studio)
+
+
+Dependencies versions:
+Assimp - 3.2
+Brofiler - 1.1.1
+dirent - 1.21
+enet - 1.3.13
+glew - 1.13.0
+jansson - 2.7
+libjpeg - 9b
+libpng - 1.6.21
+libtiff - 4.0.6
+LuaBridge - 2.0
+LuaJIT - 2.0.4
+LuaState - 2.0
+OtterUI - 1.3.6.3 commit a2c5243
+utf8-cpp - 2.3.4
+zlib - 1.2.8
