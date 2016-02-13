@@ -36,3 +36,5 @@ project "Game"
 		"../../dependencies/minizip",
 		"../../dependencies/zlib"
 	}
+
+	dofile("../../os_conditionals.lua")

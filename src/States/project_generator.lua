@@ -40,6 +40,8 @@ project "States"
 		"../../dependencies/zlib"
 	}
 
+	dofile("../../os_conditionals.lua")
+
 project "StatesModule"
 	if _ACTION then
 		location ("../../project/" .. _ACTION .. "/states")
@@ -122,3 +124,5 @@ project "StatesModule"
 		links { "../../build/output/x64/Release/lua51" }
 
 	filter {}
+
+	dofile("../../os_conditionals.lua")

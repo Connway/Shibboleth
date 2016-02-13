@@ -34,3 +34,5 @@ project "Shared"
 		"../../dependencies/Gaff/include",
 		"../../dependencies/utf8-cpp"
 	}
+
+	dofile("../../os_conditionals.lua")

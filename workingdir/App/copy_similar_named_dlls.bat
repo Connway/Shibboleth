@@ -1,10 +1,13 @@
 @set arch=
 @set cfg=
+@set cfg2=
 
 @IF [%1] == [debug] (
 	@set cfg=debug
+	@set cfg2=Debug
 ) ELSE IF [%1] == [release] (
 	@set cfg=release
+	@set cfg2=Rebug
 ) ELSE (
 	@echo Did not specify configuration or we don't know what %1 is!
 	@exit /b %errorlevel%
@@ -20,3 +23,5 @@
 )
 
 copy ..\..\dependencies\LuaJIT\lib\%cfg%\%arch%\lua51.dll lua51.dll /Y
+copy ..\..\dependencies\prebuilt\EasyHook\%cfg2%\EasyHook32.dll EasyHook32.dll
+copy ..\..\dependencies\prebuilt\EasyHook\%cfg2%\EasyHook32.dll EasyHook64.dll

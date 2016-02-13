@@ -37,6 +37,8 @@ project "Components"
 		"../../dependencies/esprit/include"
 	}
 
+	dofile("../../os_conditionals.lua")
+
 project "ComponentsModule"
 	if _ACTION then
 		location ("../../project/" .. _ACTION .. "/components")
@@ -119,3 +121,5 @@ project "ComponentsModule"
 		links { "../../build/output/x64/Release/lua51" }
 
 	filter {}
+
+	dofile("../../os_conditionals.lua")

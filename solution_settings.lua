@@ -18,9 +18,6 @@ filter { "options:symbols" }
 	flags { "Symbols" }
 	defines { "SYMBOL_BUILD" }
 
-filter { "options:ltcg" }
-	flags { "LinkTimeOptimization", "NoIncrementalLink" }
-
 filter { "platforms:x86" }
 	architecture "x32"
 	vectorextensions "SSE2"

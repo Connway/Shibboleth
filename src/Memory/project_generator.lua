@@ -42,3 +42,5 @@ project "Memory"
 		targetsuffix "64"
 
 	filter {}
+
+	dofile("../../os_conditionals.lua")
