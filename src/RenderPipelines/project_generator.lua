@@ -53,3 +53,5 @@ project "RenderPipelines"
 		"Components", "Game", "assimp",
 		"esprit"
 	}
+
+	dofile("../../os_conditionals.lua")

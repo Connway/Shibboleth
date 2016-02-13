@@ -48,3 +48,5 @@ project "App"
 	{
 		"Shared", "Gaff", "jansson", "Memory"
 	}
+
+	dofile("../../os_conditionals.lua")

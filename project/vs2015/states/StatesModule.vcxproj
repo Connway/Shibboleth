@@ -100,7 +100,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level4</WarningLevel>
       <PreprocessorDefinitions>_DEBUG;DEBUG;SYMBOL_BUILD;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\..\..\dependencies\dirent;..\..\..\src\States\include;..\..\..\src\Shared\include;..\..\..\src\Memory\include;..\..\..\src\Game\include;..\..\..\src\Managers\include;..\..\..\src\Components\include;..\..\..\dependencies\Gaff\include;..\..\..\dependencies\Gleam\include;..\..\..\dependencies\OtterUI\inc;..\..\..\dependencies\utf8-cpp;..\..\..\dependencies\jansson;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\dependencies\dirent;..\..\..\src\States\include;..\..\..\src\Shared\include;..\..\..\src\Memory\include;..\..\..\src\Game\include;..\..\..\src\Managers\include;..\..\..\src\Components\include;..\..\..\dependencies\Gaff\include;..\..\..\dependencies\Gleam\include;..\..\..\dependencies\OtterUI\inc;..\..\..\dependencies\utf8-cpp;..\..\..\dependencies\jansson;F:\dependencies\brofiler\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
       <ExceptionHandling>Async</ExceptionHandling>
@@ -121,7 +121,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level4</WarningLevel>
       <PreprocessorDefinitions>_DEBUG;DEBUG;SYMBOL_BUILD;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\..\..\dependencies\dirent;..\..\..\src\States\include;..\..\..\src\Shared\include;..\..\..\src\Memory\include;..\..\..\src\Game\include;..\..\..\src\Managers\include;..\..\..\src\Components\include;..\..\..\dependencies\Gaff\include;..\..\..\dependencies\Gleam\include;..\..\..\dependencies\OtterUI\inc;..\..\..\dependencies\utf8-cpp;..\..\..\dependencies\jansson;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\dependencies\dirent;..\..\..\src\States\include;..\..\..\src\Shared\include;..\..\..\src\Memory\include;..\..\..\src\Game\include;..\..\..\src\Managers\include;..\..\..\src\Components\include;..\..\..\dependencies\Gaff\include;..\..\..\dependencies\Gleam\include;..\..\..\dependencies\OtterUI\inc;..\..\..\dependencies\utf8-cpp;..\..\..\dependencies\jansson;F:\dependencies\brofiler\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
       <ExceptionHandling>Async</ExceptionHandling>
@@ -141,7 +141,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level4</WarningLevel>
       <PreprocessorDefinitions>SYMBOL_BUILD;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\..\..\dependencies\dirent;..\..\..\src\States\include;..\..\..\src\Shared\include;..\..\..\src\Memory\include;..\..\..\src\Game\include;..\..\..\src\Managers\include;..\..\..\src\Components\include;..\..\..\dependencies\Gaff\include;..\..\..\dependencies\Gleam\include;..\..\..\dependencies\OtterUI\inc;..\..\..\dependencies\utf8-cpp;..\..\..\dependencies\jansson;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\dependencies\dirent;..\..\..\src\States\include;..\..\..\src\Shared\include;..\..\..\src\Memory\include;..\..\..\src\Game\include;..\..\..\src\Managers\include;..\..\..\src\Components\include;..\..\..\dependencies\Gaff\include;..\..\..\dependencies\Gleam\include;..\..\..\dependencies\OtterUI\inc;..\..\..\dependencies\utf8-cpp;..\..\..\dependencies\jansson;F:\dependencies\brofiler\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -168,7 +168,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level4</WarningLevel>
       <PreprocessorDefinitions>SYMBOL_BUILD;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\..\..\dependencies\dirent;..\..\..\src\States\include;..\..\..\src\Shared\include;..\..\..\src\Memory\include;..\..\..\src\Game\include;..\..\..\src\Managers\include;..\..\..\src\Components\include;..\..\..\dependencies\Gaff\include;..\..\..\dependencies\Gleam\include;..\..\..\dependencies\OtterUI\inc;..\..\..\dependencies\utf8-cpp;..\..\..\dependencies\jansson;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\dependencies\dirent;..\..\..\src\States\include;..\..\..\src\Shared\include;..\..\..\src\Memory\include;..\..\..\src\Game\include;..\..\..\src\Managers\include;..\..\..\src\Components\include;..\..\..\dependencies\Gaff\include;..\..\..\dependencies\Gleam\include;..\..\..\dependencies\OtterUI\inc;..\..\..\dependencies\utf8-cpp;..\..\..\dependencies\jansson;F:\dependencies\brofiler\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -249,6 +249,9 @@
     </ProjectReference>
     <ProjectReference Include="..\memory\Memory.vcxproj">
       <Project>{BE94DDC2-AA36-0899-93F1-1BED7F328FE9}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\dependencies\brofiler.vcxproj">
+      <Project>{FAA3B33E-E670-0E4A-0F8A-FCF1FBB543D8}</Project>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

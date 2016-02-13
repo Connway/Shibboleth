@@ -24,12 +24,6 @@ newoption
 
 newoption
 {
-	trigger = "ltcg",
-	description = "Enables Link-Time Code Generation."
-}
-
-newoption
-{
 	trigger = "symbols",
 	description = "Builds symbol information into binaries."
 }
@@ -38,7 +32,13 @@ newoption
 {
 	trigger = "fmod_path",
 	value = "path",
-	description = "The path to your FMOD installation. Use only if FMOD is not already in your global VC++ Directories (Windows Only)."
+	description = "The path to your FMOD installation. Use only if FMOD is not already in your global VC++ Directories. (Windows Only)"
+}
+
+newoption
+{
+	trigger = "brofiler",
+	description = "Specify to compile and use the Brofiler intrusive profiler. (Windows Only)"
 }
 
 solution "Shibboleth"

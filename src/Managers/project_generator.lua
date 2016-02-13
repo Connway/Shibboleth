@@ -37,6 +37,8 @@ project "Managers"
 		"../../dependencies/utf8-cpp"
 	}
 
+	dofile("../../os_conditionals.lua")
+
 project "ManagersModule"
 	if _ACTION then
 		location ("../../project/" .. _ACTION .. "/managers")
@@ -111,3 +113,5 @@ project "ManagersModule"
 		links { "../../build/output/x64/Release/lua51" }
 
 	filter {}
+
+	dofile("../../os_conditionals.lua")
