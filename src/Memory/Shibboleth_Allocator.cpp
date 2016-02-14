@@ -31,6 +31,8 @@ THE SOFTWARE.
 #include <Gaff_Utils.h>
 #include <Gaff_File.h>
 
+//#define GATHER_ALLOCATION_STACKTRACE
+
 #if defined(SYMBOL_BUILD) && defined(GATHER_ALLOCATION_STACKTRACE)
 	#include <Gaff_DefaultAlignedAllocator.h>
 	#include <Gaff_ScopedExit.h>

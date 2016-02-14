@@ -1,8 +1,10 @@
-filter { "options:brofiler", "system:windows", "kind:StaticLib" }
-	includedirs { "../../dependencies/brofiler/include" }
+includedirs { "dependencies/brofiler/include" }
 
-filter { "options:brofiler", "system:windows", "kind:SharedLib or ConsoleApp or WindowedApp" }
-	includedirs { "../../dependencies/brofiler/include" }
+filter { "options:brofiler", "system:windows", "kind:StaticLib" }
+	defines { "USE_PROFILER" }
+
+filter { "options:brofiler", "system:windows", "kind:not StaticLib" }
+	defines { "USE_PROFILER" }
 	dependson { "brofiler" }
 	links { "brofiler" }
 

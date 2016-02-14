@@ -46,3 +46,5 @@ THE SOFTWARE.
 #else
 	#error "Cannot deduce platform bit-age."
 #endif
+
+//#define INIT_STACKTRACE_SYSTEM

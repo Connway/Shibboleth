@@ -37,9 +37,9 @@ IAllocator* GetAllocator(void)
 	return &gAllocator;
 }
 
-void* ShibbolethAllocate(size_t size, unsigned int alloc_tag)
+void* ShibbolethAllocate(size_t size, size_t pool_index)
 {
-	return gAllocator.alloc(size, alloc_tag);
+	return gAllocator.alloc(size, pool_index);
 }
 
 void* ShibbolethAllocate(size_t size)
