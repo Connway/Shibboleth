@@ -49,14 +49,16 @@ struct ResourceData
 void ResourceLoadingJob(void* data)
 {
 	ResourceData* load_data = reinterpret_cast<ResourceData*>(data);
+	load_data->res_ptr->_res_state = ResourceContainer::RS_PENDING;
 
 	Gaff::IVirtualDestructor* res_data = load_data->res_loader->load(load_data->res_ptr->getResourceKey().getString().getBuffer(), load_data->res_ptr->getUserData(), load_data->file_map);
 
 	if (res_data) {
 		load_data->res_ptr->setResource(res_data);
+		load_data->res_ptr->_res_state = ResourceContainer::RS_LOADED;
 	} else {
 		// Log error
-		load_data->res_ptr->failed();
+		load_data->res_ptr->_res_state = ResourceContainer::RS_FAILED;
 	}
 
 	load_data->res_ptr->callCallbacks();
@@ -78,7 +80,7 @@ void ResourceReadingJob(void* data)
 				GetApp().getFileSystem()->closeFile(*it);
 			}
 
-			read_data->res_ptr->failed();
+			read_data->res_ptr->_res_state = ResourceContainer::RS_FAILED;
 			read_data->res_ptr->callCallbacks();
 
 			GetAllocator()->freeT(read_data);
@@ -124,13 +126,16 @@ void ResourceReadingJob(void* data)
 		// Create ResourceLoadingJob
 		Gaff::JobData job_data(&ResourceLoadingJob, data);
 		GetApp().getJobPool().addJobs(&job_data);
+
+	} else {
+		failed = true;
 	}
 }
 
 // Resource Container
 ResourceContainer::ResourceContainer(const AHashString& res_key, ResourceManager* res_manager, ZRC zero_ref_callback, unsigned long long user_data):
 	_res_manager(res_manager), _zero_ref_callback(zero_ref_callback), _res_key(res_key),
-	_resource(nullptr), _user_data(user_data), _ref_count(0), _failed(false)
+	_resource(nullptr), _user_data(user_data), _ref_count(0), _res_state(RS_NONE)
 {
 }
 
@@ -174,19 +179,24 @@ const AHashString& ResourceContainer::getResourceKey(void) const
 	return _res_key;
 }
 
+ResourceContainer::ResourceState ResourceContainer::getResourceState(void) const
+{
+	return _res_state;
+}
+
 bool ResourceContainer::isLoaded(void) const
 {
-	return _resource != nullptr;
+	return _res_state == RS_LOADED;
+}
+
+bool ResourceContainer::isPending(void) const
+{
+	return _res_state == RS_PENDING;
 }
 
 bool ResourceContainer::hasFailed(void) const
 {
-	return _failed;
-}
-
-void ResourceContainer::failed(void)
-{
-	_failed = true;
+	return _res_state == RS_FAILED;
 }
 
 void ResourceContainer::addCallback(const Gaff::FunctionBinder<void, ResourceContainer*>& callback)
@@ -397,9 +407,11 @@ ResourcePtr ResourceManager::loadResourceImmediately(const char* filename, unsig
 
 		if (data) {
 			res_ptr->setResource(data);
+			res_ptr->_res_state = ResourceContainer::RS_LOADED;
+
 		} else {
 			// Log error
-			res_ptr->failed();
+			res_ptr->_res_state = ResourceContainer::RS_FAILED;
 		}
 
 		return res_ptr;

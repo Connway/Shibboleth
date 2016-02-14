@@ -46,6 +46,14 @@ class IApp;
 class ResourceContainer : public Gaff::IRefCounted
 {
 public:
+	enum ResourceState
+	{
+		RS_NONE,
+		RS_PENDING,
+		RS_FAILED,
+		RS_LOADED
+	};
+
 	template <class T>
 	const T* getResourcePtr(void) const
 	{
@@ -79,10 +87,12 @@ public:
 	INLINE unsigned long long getUserData(void) const;
 
 	INLINE const AHashString& getResourceKey(void) const;
-	INLINE bool isLoaded(void) const;
 
+	INLINE ResourceState getResourceState(void) const;
+
+	INLINE bool isLoaded(void) const;
+	INLINE bool isPending(void) const;
 	INLINE bool hasFailed(void) const;
-	INLINE void failed(void);
 
 	void addCallback(const Gaff::FunctionBinder<void, ResourceContainer*>& callback);
 	void removeCallback(const Gaff::FunctionBinder<void, ResourceContainer*>& callback);
@@ -104,7 +114,7 @@ private:
 
 	Gaff::SpinLock _callback_lock;
 
-	bool _failed;
+	ResourceState _res_state;
 
 	ResourceContainer(const AHashString& res_key, ResourceManager* res_manager, ZRC zero_ref_callback, unsigned long long user_data);
 	void setResource(Gaff::IVirtualDestructor* resource);

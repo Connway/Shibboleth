@@ -278,7 +278,6 @@ void InGameRenderPipeline::GenerateCameraCommandLists(Array<RenderManager::Rende
 
 void InGameRenderPipeline::GenerateLightCommandLists(Array<RenderManager::RenderDevicePtr>& rds, GenerateJobData* jd)
 {
-	
 }
 
 void InGameRenderPipeline::SortIntoRenderPasses(Gleam::IRenderDevice* rd, ObjectData& od, unsigned int device)

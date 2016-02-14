@@ -1,8 +1,8 @@
 #pragma once
 
-#if !defined(USE_PROFILER) && (!defined(_FINALRELEASE) || defined(EMULATE_DEVELOPER_FINAL_RELEASE))
-	#define USE_PROFILER 1
-#endif
+//#if !defined(USE_PROFILER) && (!defined(_FINALRELEASE) || defined(EMULATE_DEVELOPER_FINAL_RELEASE))
+//	#define USE_PROFILER 1
+//#endif
 
 #if USE_PROFILER
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

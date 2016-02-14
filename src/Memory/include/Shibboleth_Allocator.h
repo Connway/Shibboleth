@@ -28,8 +28,6 @@ THE SOFTWARE.
 #define NUM_TAG_POOLS 16
 #define POOL_NAME_SIZE 32
 
-#define GATHER_ALLOCATION_STACKTRACE
-
 NS_SHIBBOLETH
 
 class Allocator : public IAllocator

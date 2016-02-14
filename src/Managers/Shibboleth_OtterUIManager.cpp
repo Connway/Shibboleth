@@ -44,7 +44,7 @@ OtterUIManager::~OtterUIManager(void)
 
 bool OtterUIManager::init(unsigned int memory_size_bytes, bool enable_pre_transformed_verts)
 {
-	_memory_buffer = (unsigned char*)GetAllocator()->alloc(memory_size_bytes);
+	_memory_buffer = reinterpret_cast<unsigned char*>(GetAllocator()->alloc(memory_size_bytes));
 
 	if (!_memory_buffer) {
 		return false;

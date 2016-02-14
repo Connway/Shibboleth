@@ -16,15 +16,17 @@ namespace Otter
 	 */
 	System::System(int memorySize)
 	{
-		mScreenWidth = 0;
-		mScreenHeight = 0;
-		mMemoryBuffer = NULL;
-
 		if(memorySize > 0)
 		{
 			mMemoryBuffer = (uint8*)malloc(memorySize);
 			MemoryManager::initializeMemoryManager(mMemoryBuffer, memorySize);
 		}
+
+		InitLog(this);
+
+		mScreenWidth = 0;
+		mScreenHeight = 0;
+		mMemoryBuffer = NULL;
 
 		mFileSystem = NULL;
 		mSoundSystem = NULL;
@@ -41,12 +43,13 @@ namespace Otter
 
 		InitLog(this);
 
-		mFileSystem = NULL;
-		mGraphics = NULL;
-
 		mScreenWidth = 0;
 		mScreenHeight = 0;
-		mMemoryBuffer = NULL;		
+		mMemoryBuffer = NULL;
+
+		mFileSystem = NULL;
+		mSoundSystem = NULL;
+		mGraphics = OTTER_NEW(Graphics, ());
 
 		SetResolution(1024, 768);
 	}

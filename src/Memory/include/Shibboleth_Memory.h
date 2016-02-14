@@ -36,7 +36,7 @@ NS_SHIBBOLETH
 MEMORY_API size_t GetPoolIndex(const char* pool_name, unsigned int alloc_tag);
 MEMORY_API IAllocator* GetAllocator(void);
 
-MEMORY_API void* ShibbolethAllocate(size_t size, unsigned int alloc_tag);
+MEMORY_API void* ShibbolethAllocate(size_t size, size_t pool_index);
 MEMORY_API void* ShibbolethAllocate(size_t size);
 MEMORY_API void ShibbolethFree(void* data);
 
