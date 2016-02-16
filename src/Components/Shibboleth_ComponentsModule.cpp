@@ -28,6 +28,14 @@ THE SOFTWARE.
 #include <Shibboleth_IApp.h>
 #include <Gaff_JSON.h>
 
+#ifndef USE_PHYSX
+	#include <Shibboleth_BulletPhysicsManager.h>
+#else
+	#include <Shibboleth_PhysXPhysicsManager.h>
+#endif
+
+#include <Shibboleth_TestPhysicsComponent.h>
+
 template <class Component>
 Shibboleth::Component* CreateComponent(void)
 {
@@ -39,6 +47,7 @@ enum Components
 	LUA_COMPONENT = 0,
 	MODEL_COMPONENT,
 	CAMERA_COMPONENT,
+	TESTPHYSICS_COMPONENT,
 	NUM_COMPONENTS
 };
 
@@ -49,13 +58,15 @@ typedef void (*RefDefClearFunc)(void);
 static CreateComponentFunc create_funcs[] = {
 	&CreateComponent<Shibboleth::LuaComponent>,
 	&CreateComponent<Shibboleth::ModelComponent>,
-	&CreateComponent<Shibboleth::CameraComponent>
+	&CreateComponent<Shibboleth::CameraComponent>,
+	&CreateComponent<Shibboleth::TestPhysicsComponent>
 };
 
 static ComponentNameFunc name_funcs[] = {
 	&Shibboleth::LuaComponent::getComponentName,
 	&Shibboleth::ModelComponent::getComponentName,
-	&Shibboleth::CameraComponent::getComponentName
+	&Shibboleth::CameraComponent::getComponentName,
+	&Shibboleth::TestPhysicsComponent::getComponentName,
 };
 
 DYNAMICEXPORT_C bool InitModule(Shibboleth::IApp& app)
@@ -65,6 +76,11 @@ DYNAMICEXPORT_C bool InitModule(Shibboleth::IApp& app)
 	Gaff::JSON::SetMemoryFunctions(&Shibboleth::ShibbolethAllocate, &Shibboleth::ShibbolethFree);
 	Gaff::JSON::SetHashSeed(app.getSeed());
 	Shibboleth::SetApp(app);
+
+#ifndef USE_PHYSX
+	Shibboleth::BulletPhysicsManager::SetMemoryFunctions();
+#else
+#endif
 
 	return true;
 }

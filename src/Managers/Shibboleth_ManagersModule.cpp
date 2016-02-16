@@ -35,6 +35,12 @@ THE SOFTWARE.
 #include <Shibboleth_FrameManager.h>
 #include <Shibboleth_LuaManager.h>
 
+#ifndef USE_PHYSX
+	#include <Shibboleth_BulletPhysicsManager.h>
+#else
+	#include <Shibboleth_PhysXPhysicsManager.h>
+#endif
+
 // Other Dependencies
 #include <Shibboleth_Utilities.h>
 #include <Shibboleth_IApp.h>
@@ -75,6 +81,7 @@ enum Managers
 	FRAME_MANAGER,
 	RP_MANAGER,
 	SCHEMA_MANAGER,
+	PHYSICS_MANAGER,
 	NUM_MANAGERS
 };
 
@@ -93,7 +100,12 @@ static CreateMgrFunc create_funcs[] = {
 	&CreateManagerT<Shibboleth::CameraManager>,
 	&CreateManagerWithInitT<Shibboleth::FrameManager>,
 	&CreateManagerT<Shibboleth::RenderPipelineManager>,
-	&CreateManagerT<Shibboleth::SchemaManager>
+	&CreateManagerT<Shibboleth::SchemaManager>,
+#ifndef USE_PHYSX
+	&CreateManagerT<Shibboleth::BulletPhysicsManager>
+#else
+	&CreateManagerT<Shibboleth::PhysXPhysicsManager>
+#endif
 };
 
 DYNAMICEXPORT_C bool InitModule(Shibboleth::IApp& app)
@@ -101,6 +113,11 @@ DYNAMICEXPORT_C bool InitModule(Shibboleth::IApp& app)
 	Gaff::JSON::SetMemoryFunctions(&Shibboleth::ShibbolethAllocate, &Shibboleth::ShibbolethFree);
 	Gaff::JSON::SetHashSeed(app.getSeed());
 	Shibboleth::SetApp(app);
+
+#ifndef USE_PHYSX
+	Shibboleth::BulletPhysicsManager::SetMemoryFunctions();
+#else
+#endif
 
 	return true;
 }

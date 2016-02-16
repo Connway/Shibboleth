@@ -77,13 +77,16 @@ THE SOFTWARE.
 		#define GaffMain WINAPI WinMain
 	#endif
 
+	#define WARNING(msg) __pragma(message(__FILE__":(" GAFF_STR(__LINE__)") WARNING - " msg))
 	#define YieldThread() Sleep(0) // Yields the thread to the scheduler.
+
 #else
 	#define THREAD_LOCAL thread_local // Specifies a static variable to use thread local storage.
 
 	#define GaffFullMain int main(int argc, char** argv)
 	#define GaffMain main
 
+	#define WARNING(msg) _Pragma(message(__FILE__":(" GAFF_STR(__LINE__)") WARNING - " msg))
 	#define YieldThread sched_yield // Yields the thread to the scheduler.
 #endif
 
@@ -104,18 +107,22 @@ THE SOFTWARE.
 	#error "Unknown architecture. Cannot deduce number of bits per byte."
 #endif
 
+#ifndef COMPILERALIGN16
+	#if defined(_WIN32) || defined(_WIN64)
+		#define COMPILERALIGN16 __declspec(align(16))
+	#elif defined(__linux__) || defined(__APPLE__)
+		#define COMPILERALIGN16 __attribute__((aligned(16)))
+	#else
+		#error Platform not supported
+	#endif
+#endif
+
 #define SIZE_T_FAIL static_cast<size_t>(-1) // Returned from functions that use size_t's, but can potentially fail
 #define UINT_FAIL static_cast<unsigned int>(-1)  // Returned from functions that use unsigned int's, but can potentially fail
 #define DYNAMICEXPORT_C extern "C" DYNAMICEXPORT // Exports a function with C-style symbol names.
 
 #define GAFF_STR_HELPER(x) #x
 #define GAFF_STR(x) GAFF_STR_HELPER(x)
-
-#if defined(_WIN32) || defined(_WIN64)
-	#define WARNING(msg) __pragma(message(__FILE__":(" GAFF_STR(__LINE__)") WARNING - " msg))
-#else
-	#define WARNING(msg) _Pragma(message(__FILE__":(" GAFF_STR(__LINE__)") WARNING - " msg))
-#endif
 
 NS_GAFF
 

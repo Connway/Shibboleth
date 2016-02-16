@@ -237,6 +237,15 @@
     <ProjectReference Include="..\memory\Memory.vcxproj">
       <Project>{BE94DDC2-AA36-0899-93F1-1BED7F328FE9}</Project>
     </ProjectReference>
+    <ProjectReference Include="..\dependencies\BulletCollision.vcxproj">
+      <Project>{B91153C5-259D-C089-2EAE-437E9AB81C8A}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\dependencies\BulletDynamics.vcxproj">
+      <Project>{45122E0F-31E0-2115-1A74-923B06E1FD79}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\dependencies\LinearMath.vcxproj">
+      <Project>{EAF25DFD-D6AA-9F4A-3FB2-78A62B893A3B}</Project>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

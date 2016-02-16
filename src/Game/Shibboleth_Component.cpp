@@ -21,19 +21,12 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Shibboleth_Component.h"
-#include <Gaff_Utils.h>
-
-#define CMP_ACTIVE 1
-#define CMP_IN_WORLD 2
 
 NS_SHIBBOLETH
 
-using ClearSetBitFunc = void (*)(char&, char);
-ClearSetBitFunc gClear_set_funcs[] = { &Gaff::ClearBits<char>, &Gaff::SetBits<char> };
-
 Component::Component(void):
 	_owner(nullptr), _comp_index(0),
-	_flags(CMP_ACTIVE)
+	_active(true)
 {
 }
 
@@ -67,29 +60,22 @@ void Component::allComponentsLoaded(void)
 {
 }
 
-bool Component::isInWorld(void) const
-{
-	return Gaff::IsAnyBitSet<char>(_flags, CMP_IN_WORLD);
-}
-
 void Component::addToWorld(void)
 {
-	Gaff::SetBits<char>(_flags, CMP_IN_WORLD);
 }
 
 void Component::removeFromWorld(void)
 {
-	Gaff::ClearBits<char>(_flags, CMP_IN_WORLD);
 }
 
 void Component::setActive(bool active)
 {
-	gClear_set_funcs[active](_flags, CMP_ACTIVE);
+	_active = active;
 }
 
 bool Component::isActive(void) const
 {
-	return Gaff::IsAnyBitSet<char>(_flags, CMP_ACTIVE);
+	return _active;
 }
 
 const AString& Component::getName(void) const

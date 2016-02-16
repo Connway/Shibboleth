@@ -36,7 +36,7 @@ public:
 	explicit Allocator(size_t alignment = 16);
 	~Allocator(void);
 
-	size_t getPoolIndex(const char* pool_name, unsigned int alloc_tag) override;
+	size_t getPoolIndex(const char* pool_name) override;
 	void* alloc(size_t size_bytes, size_t pool_index) override;
 	void* alloc(size_t size_bytes) override;
 	void free(void* data) override;

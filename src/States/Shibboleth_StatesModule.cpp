@@ -32,7 +32,6 @@ THE SOFTWARE.
 #include <Shibboleth_RenderPipelineManager.h>
 #include <Shibboleth_OcclusionManager.h>
 #include <Shibboleth_CameraComponent.h>
-#include <Shibboleth_ModelComponent.h>
 #include <Shibboleth_UpdateManager.h>
 #include <Shibboleth_ObjectManager.h>
 #include <Shibboleth_RenderManager.h>
@@ -82,7 +81,7 @@ public:
 
 		if (_object) {
 			if (_object->init("Resources/Objects/test.object")) {
-				_object->setLocalPosition(Gleam::Vector4CPU(-2.5f, 0.0f, 0.0f, 1.0f));
+				_object->setWorldPosition(Gleam::Vector4CPU(-2.5f, 0.0f, 0.0f, 1.0f));
 
 			} else {
 				_app.getManagerT<Shibboleth::ObjectManager>("Object Manager").removeObject(_object->getID());
@@ -98,7 +97,7 @@ public:
 
 		if (_object2) {
 			if (_object2->init("Resources/Objects/test.object")) {
-				_object2->setLocalPosition(Gleam::Vector4CPU(2.5f, 0.0f, 0.0f, 1.0f));
+				_object2->setWorldPosition(Gleam::Vector4CPU(2.5f, 0.0f, 0.0f, 1.0f));
 
 			} else {
 				_app.getManagerT<Shibboleth::ObjectManager>("Object Manager").removeObject(_object2->getID());
@@ -114,7 +113,7 @@ public:
 
 		if (_camera) {
 			if (_camera->init("Resources/Objects/test_camera.object")) {
-				_camera->setLocalPosition(Gleam::Vector4CPU(0.0f, 5.0f, -5.0f, 1.0f));
+				_camera->setWorldPosition(Gleam::Vector4CPU(0.0f, 5.0f, -50.0f, 1.0f));
 				
 			} else {
 				_app.getManagerT<Shibboleth::ObjectManager>("Object Manager").removeObject(_camera->getID());
@@ -142,11 +141,9 @@ public:
 			}
 		} while (!all_loaded);
 
-		Shibboleth::ModelComponent* model = _object->getFirstComponentWithInterface<Shibboleth::ModelComponent>();
-		model->addToWorld();
-
-		model = _object2->getFirstComponentWithInterface<Shibboleth::ModelComponent>();
-		model->addToWorld();
+		_object->addToWorld();
+		_object2->addToWorld();
+		_camera->addToWorld();
 	}
 
 	void update(void)
@@ -162,11 +159,13 @@ public:
 			added = true;
 		}
 
-		Shibboleth::RenderManager& rm = _app.getManagerT<Shibboleth::RenderManager>("Render Manager");
+		static Shibboleth::RenderManager& rm = _app.getManagerT<Shibboleth::RenderManager>("Render Manager");
 		rm.updateWindows(); // This has to happen in the main thread.
 
-		Shibboleth::UpdateManager& update_manager = _app.getManagerT<Shibboleth::UpdateManager>("Update Manager");
+		static Shibboleth::UpdateManager& update_manager = _app.getManagerT<Shibboleth::UpdateManager>("Update Manager");
 		update_manager.update();
+
+		YieldThread();
 	}
 
 	void exit(void)
@@ -235,7 +234,7 @@ DYNAMICEXPORT_C bool InitModule(Shibboleth::IApp& app)
 	Gaff::JSON::SetMemoryFunctions(&Shibboleth::ShibbolethAllocate, &Shibboleth::ShibbolethFree);
 	Gaff::JSON::SetHashSeed(app.getSeed());
 
-	g_pool_index = Shibboleth::GetPoolIndex("Images", Gaff::FNV1aHash32("Images", strlen("Images")));;
+	g_pool_index = Shibboleth::GetPoolIndex("Images");
 	Shibboleth::SetApp(app);
 
 	Gaff::Image::SetMemoryFunctions(ImageAlloc, ImageFree);

@@ -86,16 +86,8 @@ project "ComponentsModule"
 		"OtterUI", "ResIL", "ResILU",
 		"zlib", "Gleam", "Game",
 		"esprit", "Components",
-		"Managers", "Memory"
-
-		--[[
-			Adding LuaJIT as a dependency for some reason makes VS2013
-			not link in referenced project outputs. This means users
-			will have to make sure that they run the LuaJIT project
-			before the ComponentsModule project has had a chance to
-			link.
-		--]]
-		-- "LuaJIT"
+		"Managers", "Memory",
+		"LuaJIT"
 	}
 
 	links
@@ -105,7 +97,9 @@ project "ComponentsModule"
 		"OtterUI", "ResIL", "ResILU",
 		"zlib", "Gleam", "Game",
 		"esprit", "Components",
-		"Managers", "Memory"
+		"Managers", "Memory",
+		"BulletCollision", "BulletDynamics",
+		"LinearMath"
 	}
 
 	filter { "configurations:Debug", "platforms:x86" }

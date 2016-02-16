@@ -28,12 +28,15 @@ THE SOFTWARE.
 #include <Gaff_ScopedLock.h>
 #include <Gaff_JSON.h>
 
+#define OBJ_DIRTY 1
+#define OBJ_IN_WORLD 2
+
 NS_SHIBBOLETH
 
 Object::Object(unsigned int id):
 	_comp_mgr(GetApp().getManagerT<ComponentManager>("Component Manager")),
 	_obj_mgr(GetApp().getManagerT<ObjectManager>("Object Manager")),
-	_layer(0), _parent(nullptr), _id(id), _dirty(true)
+	_layer(0), _parent(nullptr), _id(id), _flags(0)
 {
 }
 
@@ -121,22 +124,6 @@ void Object::setID(unsigned int id)
 	_id = id;
 }
 
-void Object::registerForPrePhysicsUpdate(const UpdateCallback& callback)
-{
-}
-
-void Object::registerForPostPhysicsUpdate(const UpdateCallback& callback)
-{
-}
-
-//void Object::prePhysicsUpdate(double dt)
-//{
-//}
-//
-//void Object::postPhysicsUpdate(double dt)
-//{
-//}
-
 const Gleam::TransformCPU& Object::getLocalTransform(void) const
 {
 	return _local_transform;
@@ -150,6 +137,20 @@ const Gleam::TransformCPU& Object::getWorldTransform(void) const
 void Object::setLocalTransform(const Gleam::TransformCPU& transform)
 {
 	_local_transform = transform;
+	markDirty();
+}
+
+void Object::setWorldTransform(const Gleam::TransformCPU& transform)
+{
+	if (_parent) {
+		Gleam::TransformCPU parent_world_transform = _parent->getWorldTransform().inverse();
+		_local_transform = transform + parent_world_transform;
+
+	} else {
+		_local_transform = transform;
+	}
+
+	_world_transform = transform;
 	markDirty();
 }
 
@@ -169,6 +170,20 @@ void Object::setLocalRotation(const Gleam::QuaternionCPU& rot)
 	markDirty();
 }
 
+void Object::setWorldRotation(const Gleam::QuaternionCPU& rot)
+{
+	if (_parent) {
+		Gleam::QuaternionCPU inv_rot = _parent->getWorldRotation().inverse();
+		_local_transform.setRotation(rot * inv_rot);
+
+	} else {
+		_local_transform.setRotation(rot);
+	}
+
+	_world_transform.setRotation(rot);
+	markDirty();
+}
+
 const Gleam::Vector4CPU& Object::getLocalPosition(void) const
 {
 	return _local_transform.getTranslation();
@@ -185,6 +200,18 @@ void Object::setLocalPosition(const Gleam::Vector4CPU& pos)
 	markDirty();
 }
 
+void Object::setWorldPosition(const Gleam::Vector4CPU& pos)
+{
+	if (_parent) {
+		_local_transform.setTranslation(pos - _parent->getWorldPosition());
+	} else {
+		_local_transform.setTranslation(pos);
+	}
+
+	_world_transform.setTranslation(pos);
+	markDirty();
+}
+
 const Gleam::Vector4CPU& Object::getLocalScale(void) const
 {
 	return _local_transform.getScale();
@@ -198,6 +225,21 @@ const Gleam::Vector4CPU& Object::getWorldScale(void) const
 void Object::setLocalScale(const Gleam::Vector4CPU& scale)
 {
 	_local_transform.setScale(scale);
+	markDirty();
+}
+
+void Object::setWorldScale(const Gleam::Vector4CPU& scale)
+{
+	if (_parent) {
+		Gleam::Vector4CPU inv_scale = _parent->getWorldScale();
+		inv_scale.set(1.0f / inv_scale[0], 1.0f / inv_scale[1], 1.0f / inv_scale[2], 1.0f);
+		_local_transform.setScale(scale * inv_scale);
+
+	} else {
+		_local_transform.setScale(scale);
+	}
+
+	_world_transform.setScale(scale);
 	markDirty();
 }
 
@@ -282,7 +324,6 @@ void Object::updateTransforms(void)
 		_world_transform = _local_transform;
 		_world_transform += _parent->_world_transform;
 		_world_aabb = _local_aabb;
-		_world_aabb.transform(_parent->_world_transform);
 
 	} else {
 		_world_transform = _local_transform;
@@ -325,13 +366,13 @@ void Object::notifyLocalDirtyCallbacks(void)
 	}
 
 	// If we are marked as not-dirty, then we are a child of another object that has been updated.
-	if (_dirty) {
+	if (isDirty()) {
 		for (auto it = _children.begin(); it != _children.end(); ++it) {
 			(*it)->notifyWorldDirtyCallbacks();
 		}
 	}
 
-	_dirty = false;
+	clearDirty();
 }
 
 void Object::registerForWorldDirtyCallback(const DirtyCallback& callback, unsigned long long user_data)
@@ -362,17 +403,40 @@ void Object::notifyWorldDirtyCallbacks(void)
 		it->first(this, it->second);
 	}
 
-	_dirty = false;
+	clearDirty();
 }
 
 bool Object::isDirty(void) const
 {
-	return _dirty;
+	return Gaff::IsAnyBitSet<char>(_flags, OBJ_DIRTY);
 }
 
 void Object::clearDirty(void)
 {
-	_dirty = false;
+	Gaff::ClearBits<char>(_flags, OBJ_DIRTY);
+}
+
+bool Object::isInWorld(void) const
+{
+	return Gaff::IsAnyBitSet<char>(_flags, OBJ_IN_WORLD);
+}
+
+void Object::addToWorld(void)
+{
+	for (auto it = _components.begin(); it != _components.end(); ++it) {
+		(*it)->addToWorld();
+	}
+
+	Gaff::SetBits<char>(_flags, OBJ_IN_WORLD);
+}
+
+void Object::removeFromWorld(void)
+{
+	for (auto it = _components.begin(); it != _components.end(); ++it) {
+		(*it)->removeFromWorld();
+	}
+
+	Gaff::ClearBits<char>(_flags, OBJ_IN_WORLD);
 }
 
 bool Object::createComponents(const Gaff::JSON& json)
@@ -423,9 +487,9 @@ bool Object::createComponents(const Gaff::JSON& json)
 
 void Object::markDirty(void)
 {
-	if (!_dirty) {
+	if (!isDirty()) {
 		_obj_mgr.addDirtyObject(this);
-		_dirty = true;
+		Gaff::SetBits<char>(_flags, OBJ_DIRTY);
 	}
 }
 

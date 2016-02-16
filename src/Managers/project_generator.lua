@@ -34,7 +34,8 @@ project "Managers"
 		"../../dependencies/esprit/include",
 		"../../dependencies/LuaState",
 		"../../dependencies/LuaJIT/src",
-		"../../dependencies/utf8-cpp"
+		"../../dependencies/utf8-cpp",
+		"../../dependencies/bullet"
 	}
 
 	dofile("../../utils/os_conditionals.lua")
@@ -74,30 +75,26 @@ project "ManagersModule"
 		"../../dependencies/Gaff/include",
 		"../../dependencies/LuaState",
 		"../../dependencies/LuaJIT/src",
-		"../../dependencies/utf8-cpp"
+		"../../dependencies/utf8-cpp",
+		"../../dependencies/bullet"
 	}
 
 	dependson
 	{
 		"Shared", "Gaff", "jansson",
 		"OtterUI", "Game", "Gleam",
-		"Managers", "Memory", "Components"
-
-		--[[
-			Adding LuaJIT as a dependency for some reason makes VS2013
-			not link in referenced project outputs. This means users
-			will have to make sure that they run the LuaJIT project
-			before the ComponentsModule project has had a chance to
-			link.
-		--]]
-		-- "LuaJIT"
+		"Managers", "Memory", "Components",
+		"LuaJIT", "BulletCollision",
+		"BulletDynamics",
 	}
 
 	links
 	{
 		"Shared", "Gaff", "jansson",
 		"OtterUI", "Game", "Gleam",
-		"Managers", "Memory", "Components"
+		"Managers", "Memory", "Components",
+		"BulletCollision", "BulletDynamics",
+		"LinearMath"
 	}
 
 	filter { "configurations:Debug", "platforms:x86" }

@@ -27,9 +27,9 @@ NS_SHIBBOLETH
 
 static Allocator gAllocator;
 
-size_t GetPoolIndex(const char* pool_name, unsigned int alloc_tag)
+size_t GetPoolIndex(const char* pool_name)
 {
-	return gAllocator.getPoolIndex(pool_name, alloc_tag);
+	return gAllocator.getPoolIndex(pool_name);
 }
 
 IAllocator* GetAllocator(void)

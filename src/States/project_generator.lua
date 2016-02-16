@@ -87,16 +87,7 @@ project "StatesModule"
 		"zlib", "Gleam", "Game",
 		"esprit", "Managers",
 		"Components", "States",
-		"Memory"
-
-		--[[
-			Adding LuaJIT as a dependency for some reason makes VS2013
-			not link in referenced project outputs. This means users
-			will have to make sure that they run the LuaJIT project
-			before the ComponentsModule project has had a chance to
-			link.
-		--]]
-		-- "LuaJIT"
+		"Memory", "LuaJIT"
 	}
 
 	links

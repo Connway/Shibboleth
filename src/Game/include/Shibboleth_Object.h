@@ -110,24 +110,22 @@ public:
 	unsigned int getID(void) const;
 	void setID(unsigned int id);
 
-	void registerForPrePhysicsUpdate(const UpdateCallback& callback);
-	void registerForPostPhysicsUpdate(const UpdateCallback& callback);
-
-	//void prePhysicsUpdate(double dt);
-	//void postPhysicsUpdate(double dt);
-
 	INLINE const Gleam::TransformCPU& getLocalTransform(void) const;
 	INLINE const Gleam::TransformCPU& getWorldTransform(void) const;
 	INLINE void setLocalTransform(const Gleam::TransformCPU& transform);
+	void setWorldTransform(const Gleam::TransformCPU& transform);
 	INLINE const Gleam::QuaternionCPU& getLocalRotation(void) const;
 	INLINE const Gleam::QuaternionCPU& getWorldRotation(void) const;
 	INLINE void setLocalRotation(const Gleam::QuaternionCPU& rot);
+	void setWorldRotation(const Gleam::QuaternionCPU& rot);
 	INLINE const Gleam::Vector4CPU& getLocalPosition(void) const;
 	INLINE const Gleam::Vector4CPU& getWorldPosition(void) const;
 	INLINE void setLocalPosition(const Gleam::Vector4CPU& pos);
+	void setWorldPosition(const Gleam::Vector4CPU& pos);
 	INLINE const Gleam::Vector4CPU& getLocalScale(void) const;
 	INLINE const Gleam::Vector4CPU& getWorldScale(void) const;
 	INLINE void setLocalScale(const Gleam::Vector4CPU& scale);
+	void setWorldScale(const Gleam::Vector4CPU& scale);
 	INLINE const Gleam::AABBCPU& getLocalAABB(void) const;
 	INLINE const Gleam::AABBCPU& getWorldAABB(void) const;
 	INLINE void setLocalAABB(const Gleam::AABBCPU& aabb);
@@ -154,6 +152,10 @@ public:
 	INLINE bool isDirty(void) const;
 	INLINE void clearDirty(void);
 
+	INLINE bool isInWorld(void) const;
+	void addToWorld(void);
+	void removeFromWorld(void);
+
 private:
 	Gleam::TransformCPU _local_transform;
 	Gleam::TransformCPU _world_transform;
@@ -176,9 +178,9 @@ private:
 	ObjectManager& _obj_mgr;
 
 	unsigned char _layer;
+	unsigned int _id;;
 
-	unsigned int _id;
-	bool _dirty;
+	char _flags;
 
 	bool createComponents(const Gaff::JSON& json);
 	void markDirty(void);

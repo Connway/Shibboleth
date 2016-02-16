@@ -16,6 +16,7 @@ project "App"
 		kind "WindowedApp"
 	end
 
+	debugdir "../../workingdir/App"
 	language "C++"
 
 	files { "**.h", "**.cpp", "**.inl" }
