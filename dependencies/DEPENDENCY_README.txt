@@ -24,6 +24,7 @@ Libraries Affected:
 Dependencies versions:
 Assimp - 3.2
 Brofiler - 1.1.1
+bullet - 2.83.7
 dirent - 1.21
 enet - 1.3.13
 glew - 1.13.0

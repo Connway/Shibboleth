@@ -48,6 +48,10 @@
 
 			"Buffers": [
 			]
+		},
+		"Test2":
+		{
+			"Type": "Test Physics Component"
 		}
 	}
 }

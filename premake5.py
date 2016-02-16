@@ -25,7 +25,7 @@ for a in args:
 for a in args:
 	if a == "--brofiler":
 		using_brofiler = True
-	elif == "--physx":
+	elif a == "--physx":
 		using_physx = True
 	elif a.lower() == "vs2013":
 		vs2013 = True

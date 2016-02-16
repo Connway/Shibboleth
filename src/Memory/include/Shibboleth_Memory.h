@@ -33,7 +33,7 @@ THE SOFTWARE.
 NS_SHIBBOLETH
 
 // GetPoolIndex() is not thread-safe. Applications need to ensure they've created all their pools before threading.
-MEMORY_API size_t GetPoolIndex(const char* pool_name, unsigned int alloc_tag);
+MEMORY_API size_t GetPoolIndex(const char* pool_name);
 MEMORY_API IAllocator* GetAllocator(void);
 
 MEMORY_API void* ShibbolethAllocate(size_t size, size_t pool_index);

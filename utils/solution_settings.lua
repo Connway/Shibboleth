@@ -12,11 +12,13 @@ rtti "Off"
 nativewchar "Default"
 floatingpoint "Fast"
 startproject "App"
-debugdir "workingdir/App"
 
 filter { "options:symbols" }
 	flags { "Symbols" }
 	defines { "SYMBOL_BUILD" }
+
+filter { "options:physx" }
+	defines { "USE_PHYSX" }
 
 filter { "platforms:x86" }
 	architecture "x32"

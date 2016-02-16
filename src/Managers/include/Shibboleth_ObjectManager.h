@@ -75,9 +75,6 @@ private:
 
 	volatile unsigned int _next_id;
 
-	//void prePhysicsUpdate(double dt, void*);
-	//void postPhysicsUpdate(double dt, void*);
-
 	void updateDirtyObjects(double, void*);
 
 	GAFF_NO_COPY(ObjectManager);

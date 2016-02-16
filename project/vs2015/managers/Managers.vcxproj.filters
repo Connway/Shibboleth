@@ -9,6 +9,9 @@
     <ClInclude Include="..\..\..\src\Managers\include\Shibboleth_BroadcasterManager.h">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\src\Managers\include\Shibboleth_BulletPhysicsManager.h">
+      <Filter>include</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\src\Managers\include\Shibboleth_CameraManager.h">
       <Filter>include</Filter>
     </ClInclude>
@@ -48,6 +51,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\src\Managers\Shibboleth_BroadcasterManager.cpp" />
+    <ClCompile Include="..\..\..\src\Managers\Shibboleth_BulletPhysicsManager.cpp" />
     <ClCompile Include="..\..\..\src\Managers\Shibboleth_CameraManager.cpp" />
     <ClCompile Include="..\..\..\src\Managers\Shibboleth_ComponentManager.cpp" />
     <ClCompile Include="..\..\..\src\Managers\Shibboleth_FrameManager.cpp" />

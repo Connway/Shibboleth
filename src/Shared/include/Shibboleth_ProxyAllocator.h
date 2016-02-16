@@ -35,8 +35,7 @@ public:
 		_allocator(allocator), _pool_index(0)
 	{
 		if (pool_tag) {
-			unsigned int alloc_tag = Gaff::FNV1aHash32(pool_tag, strlen(pool_tag));
-			_pool_index = _allocator->getPoolIndex(pool_tag, alloc_tag);
+			_pool_index = _allocator->getPoolIndex(pool_tag);
 		}
 	}
 

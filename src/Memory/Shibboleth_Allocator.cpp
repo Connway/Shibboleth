@@ -43,7 +43,8 @@ THE SOFTWARE.
 
 NS_SHIBBOLETH
 
-struct AllocationHeader
+// Enforce the header being 16-byte aligned so that data falls on 16-byte boundary.
+struct COMPILERALIGN16 AllocationHeader
 {
 	size_t pool_index;
 
@@ -176,8 +177,9 @@ Allocator::~Allocator(void)
 	}
 }
 
-size_t Allocator::getPoolIndex(const char* pool_name, unsigned int alloc_tag)
+size_t Allocator::getPoolIndex(const char* pool_name)
 {
+	unsigned int alloc_tag = Gaff::FNV1aHash32(pool_name, strlen(pool_name));
 	size_t index = _tag_ids.linearSearch(0, _tag_ids.size(), alloc_tag);
 
 	// This is going to fail if we get multiple calls to this with the same alloc_tag at the same time.

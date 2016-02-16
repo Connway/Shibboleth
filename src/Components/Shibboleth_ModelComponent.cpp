@@ -195,7 +195,7 @@ void ModelComponent::setActive(bool active)
 {
 	Component::setActive(active);
 
-	if (isInWorld() && active != Gaff::IsAnyBitSet<char>(_flags, MC_IN_OM)) {
+	if (getOwner()->isInWorld() && active != Gaff::IsAnyBitSet<char>(_flags, MC_IN_OM)) {
 		if (active) {
 			addToOcclusionManager();
 		} else {

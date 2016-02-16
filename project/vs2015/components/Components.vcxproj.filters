@@ -15,10 +15,14 @@
     <ClInclude Include="..\..\..\src\Components\include\Shibboleth_ModelComponent.h">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\src\Components\include\Shibboleth_TestPhysicsComponent.h">
+      <Filter>include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\src\Components\Shibboleth_CameraComponent.cpp" />
     <ClCompile Include="..\..\..\src\Components\Shibboleth_LuaComponent.cpp" />
     <ClCompile Include="..\..\..\src\Components\Shibboleth_ModelComponent.cpp" />
+    <ClCompile Include="..\..\..\src\Components\Shibboleth_TestPhysicsComponent.cpp" />
   </ItemGroup>
 </Project>

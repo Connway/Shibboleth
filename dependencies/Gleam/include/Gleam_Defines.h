@@ -24,12 +24,14 @@ THE SOFTWARE.
 
 #define OPENGL_MULTITHREAD
 
-#if defined(_WIN32) || defined(_WIN64)
-	#define COMPILERALIGN16 __declspec(align(16))
-#elif defined(__linux__) || defined(__APPLE__)
-	#define COMPILERALIGN16 __attribute__((aligned(16)))
-#else
-	#error Platform not supported
+#ifndef COMPILERALIGN16
+	#if defined(_WIN32) || defined(_WIN64)
+		#define COMPILERALIGN16 __declspec(align(16))
+	#elif defined(__linux__) || defined(__APPLE__)
+		#define COMPILERALIGN16 __attribute__((aligned(16)))
+	#else
+		#error Platform not supported
+	#endif
 #endif
 
 #define NS_GLEAM namespace Gleam {

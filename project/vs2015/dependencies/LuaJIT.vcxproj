@@ -21,25 +21,34 @@
   <PropertyGroup Label="Globals">
     <ProjectGuid>{CEBCA2C1-BA5E-CD97-A319-E1EB8F5A54E8}</ProjectGuid>
     <IgnoreWarnCompileDuplicatedFilename>true</IgnoreWarnCompileDuplicatedFilename>
-    <Keyword>Win32Proj</Keyword>
-    <RootNamespace>LuaJIT</RootNamespace>
+    <Keyword>MakeFileProj</Keyword>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
-    <ConfigurationType>Utility</ConfigurationType>
-    <PlatformToolset>v140</PlatformToolset>
+    <ConfigurationType>Makefile</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <OutDir>..\..\..\build\output\x86\Debug\</OutDir>
+    <IntDir>..\..\..\build\intermediate\x86\Debug\LuaJIT\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
-    <ConfigurationType>Utility</ConfigurationType>
-    <PlatformToolset>v140</PlatformToolset>
+    <ConfigurationType>Makefile</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <OutDir>..\..\..\build\output\x64\Debug\</OutDir>
+    <IntDir>..\..\..\build\intermediate\x64\Debug\LuaJIT\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
-    <ConfigurationType>Utility</ConfigurationType>
-    <PlatformToolset>v140</PlatformToolset>
+    <ConfigurationType>Makefile</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <OutDir>..\..\..\build\output\x86\Release\</OutDir>
+    <IntDir>..\..\..\build\intermediate\x86\Release\LuaJIT\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
-    <ConfigurationType>Utility</ConfigurationType>
-    <PlatformToolset>v140</PlatformToolset>
+    <ConfigurationType>Makefile</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <OutDir>..\..\..\build\output\x64\Release\</OutDir>
+    <IntDir>..\..\..\build\intermediate\x64\Release\LuaJIT\</IntDir>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
@@ -58,44 +67,54 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <OutDir>..\..\..\build\output\x86\Debug\</OutDir>
-    <IntDir>..\..\..\build\intermediate\x86\Debug\LuaJIT\</IntDir>
+    <NMakeOutput>$(OutDir)LuaJIT</NMakeOutput>
+    <NMakeBuildCommandLine>cd ../../../dependencies/LuaJIT
+build_luajit.bat x86 debug ..\..\build\output\x86\Debug</NMakeBuildCommandLine>
+    <NMakeReBuildCommandLine>cd ../../../dependencies/LuaJIT
+del lib\debug\x86\lua51.*
+del ..\..\build\output\x86\Debug\lua51.*
+build_luajit.bat x86 debug ..\..\build\output\x86\Debug</NMakeReBuildCommandLine>
+    <NMakeCleanCommandLine>cd ../../../dependencies/LuaJIT
+del lib\debug\x86\lua51.*
+del ..\..\build\output\x86\Debug\lua51.*</NMakeCleanCommandLine>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <OutDir>..\..\..\build\output\x64\Debug\</OutDir>
-    <IntDir>..\..\..\build\intermediate\x64\Debug\LuaJIT\</IntDir>
+    <NMakeOutput>$(OutDir)LuaJIT</NMakeOutput>
+    <NMakeBuildCommandLine>cd ../../../dependencies/LuaJIT
+build_luajit.bat x86_64 debug ..\..\build\output\x64\Debug</NMakeBuildCommandLine>
+    <NMakeReBuildCommandLine>cd ../../../dependencies/LuaJIT
+del lib\debug\x86_64\lua51.*
+del ..\..\build\output\x64\Debug\lua51.*
+build_luajit.bat x86_64 debug ..\..\build\output\x64\Debug</NMakeReBuildCommandLine>
+    <NMakeCleanCommandLine>cd ../../../dependencies/LuaJIT
+del lib\debug\x86_64\lua51.*
+del ..\..\build\output\x64\Debug\lua51.*</NMakeCleanCommandLine>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <OutDir>..\..\..\build\output\x86\Release\</OutDir>
-    <IntDir>..\..\..\build\intermediate\x86\Release\LuaJIT\</IntDir>
+    <NMakeOutput>$(OutDir)LuaJIT</NMakeOutput>
+    <NMakeBuildCommandLine>cd ../../../dependencies/LuaJIT
+build_luajit.bat x86 release ..\..\build\output\x86\Release</NMakeBuildCommandLine>
+    <NMakeReBuildCommandLine>cd ../../../dependencies/LuaJIT
+del lib\release\x86\lua51.*
+del ..\..\build\output\x86\Release\lua51.*
+build_luajit.bat x86 release ..\..\build\output\x86\Release</NMakeReBuildCommandLine>
+    <NMakeCleanCommandLine>cd ../../../dependencies/LuaJIT
+del lib\release\x86\lua51.*
+del ..\..\build\output\x86\Release\lua51.*</NMakeCleanCommandLine>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <OutDir>..\..\..\build\output\x64\Release\</OutDir>
-    <IntDir>..\..\..\build\intermediate\x64\Release\LuaJIT\</IntDir>
+    <NMakeOutput>$(OutDir)LuaJIT</NMakeOutput>
+    <NMakeBuildCommandLine>cd ../../../dependencies/LuaJIT
+build_luajit.bat x86_64 release ..\..\build\output\x64\Release</NMakeBuildCommandLine>
+    <NMakeReBuildCommandLine>cd ../../../dependencies/LuaJIT
+del lib\release\x86_64\lua51.*
+del ..\..\build\output\x64\Release\lua51.*
+build_luajit.bat x86_64 release ..\..\build\output\x64\Release</NMakeReBuildCommandLine>
+    <NMakeCleanCommandLine>cd ../../../dependencies/LuaJIT
+del lib\release\x86_64\lua51.*
+del ..\..\build\output\x64\Release\lua51.*</NMakeCleanCommandLine>
   </PropertyGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <PreBuildEvent>
-      <Command>cd ../../../dependencies/LuaJIT
-build_luajit.bat x86 debug ..\..\build\output\x86\Debug</Command>
-    </PreBuildEvent>
-  </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <PreBuildEvent>
-      <Command>cd ../../../dependencies/LuaJIT
-build_luajit.bat x86_64 debug ..\..\build\output\x64\Debug</Command>
-    </PreBuildEvent>
-  </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <PreBuildEvent>
-      <Command>cd ../../../dependencies/LuaJIT
-build_luajit.bat x86 release ..\..\build\output\x86\Release</Command>
-    </PreBuildEvent>
-  </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <PreBuildEvent>
-      <Command>cd ../../../dependencies/LuaJIT
-build_luajit.bat x86_64 release ..\..\build\output\x64\Release</Command>
-    </PreBuildEvent>
+  <ItemDefinitionGroup>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

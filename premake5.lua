@@ -41,6 +41,12 @@ newoption
 	description = "Specify to compile and use the Brofiler intrusive profiler. (Windows Only)"
 }
 
+newoption
+{
+	trigger = "physx",
+	description = "Specify to generate the PhysX build project."
+}
+
 solution "Shibboleth"
 	if _ACTION then
 		location ("project/" .. _ACTION)

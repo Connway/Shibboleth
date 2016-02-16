@@ -46,5 +46,6 @@
 )
 
 @IF NOT [%3] == [] (
+	@echo Copying to %3
 	copy /D lib\%cfg%\%arch% %3
 )
