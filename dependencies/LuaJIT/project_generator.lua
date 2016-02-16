@@ -4,7 +4,7 @@ project "LuaJIT"
 	end
 
 	configurations { "Debug", "Release" }
-	dofile("../../config_map.lua")
+	dofile("../../utils/config_map.lua")
 
 	kind "Utility"
 	language "C"

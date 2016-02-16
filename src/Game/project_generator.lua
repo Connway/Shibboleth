@@ -6,7 +6,7 @@ project "Game"
 	end
 
 	configurations { "Debug", "Release" }
-	dofile("../../config_map.lua")
+	dofile("../../utils/config_map.lua")
 
 	kind "StaticLib"
 	language "C++"
@@ -37,4 +37,4 @@ project "Game"
 		"../../dependencies/zlib"
 	}
 
-	dofile("../../os_conditionals.lua")
+	dofile("../../utils/os_conditionals.lua")

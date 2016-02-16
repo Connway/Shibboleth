@@ -26,20 +26,20 @@ filter { "platforms:x64" }
 	architecture "x64"
 
 filter { "configurations:Debug*", "platforms:x86" }
-	objdir "build/intermediate"
-	targetdir "build/output/x86/Debug"
+	objdir "../build/intermediate"
+	targetdir "../build/output/x86/Debug"
 
 filter { "configurations:Debug*", "platforms:x64" }
-	objdir "build/intermediate"
-	targetdir "build/output/x64/Debug"
+	objdir "../build/intermediate"
+	targetdir "../build/output/x64/Debug"
 
 filter { "configurations:Release*", "platforms:x86" }
-	objdir "build/intermediate"
-	targetdir "build/output/x86/Release"
+	objdir "../build/intermediate"
+	targetdir "../build/output/x86/Release"
 
 filter { "configurations:Release*", "platforms:x64" }
-	objdir "build/intermediate"
-	targetdir "build/output/x64/Release"
+	objdir "../build/intermediate"
+	targetdir "../build/output/x64/Release"
 
 filter { "language:C++", "action:gmake" }
 	buildoptions { "-std=c++11", "-x c++" }

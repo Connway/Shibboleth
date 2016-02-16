@@ -6,7 +6,7 @@ project "Components"
 	end
 
 	configurations { "Debug", "Release" }
-	dofile("../../config_map.lua")
+	dofile("../../utils/config_map.lua")
 
 	kind "StaticLib"
 	language "C++"
@@ -37,7 +37,7 @@ project "Components"
 		"../../dependencies/esprit/include"
 	}
 
-	dofile("../../os_conditionals.lua")
+	dofile("../../utils/os_conditionals.lua")
 
 project "ComponentsModule"
 	if _ACTION then
@@ -45,9 +45,9 @@ project "ComponentsModule"
 	end
 
 	configurations { "Debug", "Release" }
-	dofile("../../config_map.lua")
+	dofile("../../utils/config_map.lua")
 
-	dofile("../../module_suffix.lua")
+	dofile("../../utils/module_suffix.lua")
 
 	kind "SharedLib"
 	language "C++"
@@ -122,4 +122,4 @@ project "ComponentsModule"
 
 	filter {}
 
-	dofile("../../os_conditionals.lua")
+	dofile("../../utils/os_conditionals.lua")

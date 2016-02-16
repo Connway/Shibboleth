@@ -6,7 +6,7 @@ project "Shared"
 	end
 
 	configurations { "Debug", "Release" }
-	dofile("../../config_map.lua")
+	dofile("../../utils/config_map.lua")
 
 	kind "StaticLib"
 	language "C++"
@@ -35,4 +35,4 @@ project "Shared"
 		"../../dependencies/utf8-cpp"
 	}
 
-	dofile("../../os_conditionals.lua")
+	dofile("../../utils/os_conditionals.lua")

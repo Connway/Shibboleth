@@ -6,7 +6,7 @@ project "Managers"
 	end
 
 	configurations { "Debug", "Release" }
-	dofile("../../config_map.lua")
+	dofile("../../utils/config_map.lua")
 
 	kind "StaticLib"
 	language "C++"
@@ -37,7 +37,7 @@ project "Managers"
 		"../../dependencies/utf8-cpp"
 	}
 
-	dofile("../../os_conditionals.lua")
+	dofile("../../utils/os_conditionals.lua")
 
 project "ManagersModule"
 	if _ACTION then
@@ -45,9 +45,9 @@ project "ManagersModule"
 	end
 
 	configurations { "Debug", "Release" }
-	dofile("../../config_map.lua")
+	dofile("../../utils/config_map.lua")
 
-	dofile("../../module_suffix.lua")
+	dofile("../../utils/module_suffix.lua")
 
 	kind "SharedLib"
 	language "C++"
@@ -114,4 +114,4 @@ project "ManagersModule"
 
 	filter {}
 
-	dofile("../../os_conditionals.lua")
+	dofile("../../utils/os_conditionals.lua")

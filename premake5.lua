@@ -52,7 +52,7 @@ solution "Shibboleth"
 		configurations { "Debug_OpenGL", "Release_OpenGL" }
 	end
 
-	dofile("solution_settings.lua")
+	dofile("utils/solution_settings.lua")
 
 	local dependency_generators = os.matchfiles("dependencies/**/project_generator.lua")
 	local project_generators = os.matchfiles("src/**/project_generator.lua")

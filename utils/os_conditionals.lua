@@ -1,4 +1,4 @@
-includedirs { "dependencies/brofiler/include" }
+includedirs { "../dependencies/brofiler/include" }
 
 filter { "options:brofiler", "system:windows", "kind:StaticLib" }
 	defines { "USE_PROFILER" }

@@ -4,7 +4,7 @@ project "OtterUI"
 	end
 
 	configurations { "Debug", "Release" }
-	dofile("../../config_map.lua")
+	dofile("../../utils/config_map.lua")
 
 	configuration "windows"
 		defines { "_CRT_SECURE_NO_WARNINGS" }

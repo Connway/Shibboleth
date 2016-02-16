@@ -6,7 +6,7 @@ project "Memory"
 	end
 
 	configurations { "Debug", "Release" }
-	dofile("../../config_map.lua")
+	dofile("../../utils/config_map.lua")
 
 	kind "SharedLib"
 	language "C++"
@@ -43,4 +43,4 @@ project "Memory"
 
 	filter {}
 
-	dofile("../../os_conditionals.lua")
+	dofile("../../utils/os_conditionals.lua")
