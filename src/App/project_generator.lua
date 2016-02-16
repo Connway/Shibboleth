@@ -6,9 +6,9 @@ project "App"
 	end
 
 	configurations { "Debug", "Release" }
-	dofile("../../config_map.lua")
+	dofile("../../utils/config_map.lua")
 
-	dofile("../../module_suffix.lua")
+	dofile("../../utils/module_suffix.lua")
 
 	if _OPTIONS["console_app"] then
 		kind "ConsoleApp"
@@ -49,4 +49,4 @@ project "App"
 		"Shared", "Gaff", "jansson", "Memory"
 	}
 
-	dofile("../../os_conditionals.lua")
+	dofile("../../utils/os_conditionals.lua")

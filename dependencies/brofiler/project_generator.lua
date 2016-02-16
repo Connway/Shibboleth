@@ -6,7 +6,7 @@ if _OPTIONS["brofiler"] and _OS == "windows" then
 		end
 
 		configurations { "Debug", "Release" }
-		dofile("../../config_map.lua")
+		dofile("../../utils/config_map.lua")
 
 		kind "SharedLib"
 		language "C++"

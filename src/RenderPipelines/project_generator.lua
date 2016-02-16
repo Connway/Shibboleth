@@ -6,9 +6,9 @@ project "RenderPipelines"
 	end
 
 	configurations { "Debug", "Release" }
-	dofile("../../config_map.lua")
+	dofile("../../utils/config_map.lua")
 
-	dofile("../../module_suffix.lua")
+	dofile("../../utils/module_suffix.lua")
 
 	kind "SharedLib"
 	language "C++"
@@ -54,4 +54,4 @@ project "RenderPipelines"
 		"esprit"
 	}
 
-	dofile("../../os_conditionals.lua")
+	dofile("../../utils/os_conditionals.lua")

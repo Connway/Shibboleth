@@ -13,3 +13,4 @@ dependencies/LuaJIT/src/luajit.pdb
 dependencies/LuaJIT/src/lua51.ilk
 dependencies/LuaJIT/src/luajit.exe
 dependencies/LuaJIT/src/luajit.ilk
+*.pyc

@@ -6,7 +6,7 @@ project "States"
 	end
 
 	configurations { "Debug", "Release" }
-	dofile("../../config_map.lua")
+	dofile("../../utils/config_map.lua")
 
 	kind "StaticLib"
 	language "C++"
@@ -40,7 +40,7 @@ project "States"
 		"../../dependencies/zlib"
 	}
 
-	dofile("../../os_conditionals.lua")
+	dofile("../../utils/os_conditionals.lua")
 
 project "StatesModule"
 	if _ACTION then
@@ -48,9 +48,9 @@ project "StatesModule"
 	end
 
 	configurations { "Debug", "Release" }
-	dofile("../../config_map.lua")
+	dofile("../../utils/config_map.lua")
 
-	dofile("../../module_suffix.lua")
+	dofile("../../utils/module_suffix.lua")
 
 	kind "SharedLib"
 	language "C++"
@@ -125,4 +125,4 @@ project "StatesModule"
 
 	filter {}
 
-	dofile("../../os_conditionals.lua")
+	dofile("../../utils/os_conditionals.lua")

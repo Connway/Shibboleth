@@ -4,7 +4,7 @@ project "ResIL"
 	end
 
 	configurations { "Debug", "Release" }
-	dofile("../../config_map.lua")
+	dofile("../../utils/config_map.lua")
 
 	kind "SharedLib"
 	language "C"
@@ -52,7 +52,7 @@ project "ResILU"
 	end
 
 	configurations { "Debug", "Release" }
-	dofile("../../config_map.lua")
+	dofile("../../utils/config_map.lua")
 
 	kind "SharedLib"
 	language "C"

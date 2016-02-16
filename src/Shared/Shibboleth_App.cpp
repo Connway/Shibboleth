@@ -25,10 +25,13 @@ THE SOFTWARE.
 #include "Shibboleth_Utilities.h"
 #include "Shibboleth_IManager.h"
 #include "Shibboleth_String.h"
-#include <Gaff_StackTrace.h>
 #include <Gaff_Utils.h>
 #include <Gaff_JSON.h>
 #include <regex>
+
+#if defined(SYMBOL_BUILD) && defined(INIT_STACKTRACE_SYSTEM)
+	#include <Gaff_StackTrace.h>
+#endif
 
 NS_SHIBBOLETH
 
