@@ -10,6 +10,7 @@ import re
 
 # Main Application
 using_brofiler = False
+using_physx = False
 vs2013 = False
 vs2015 = False
 
@@ -23,7 +24,9 @@ for a in args:
 
 for a in args:
 	if a == "--brofiler":
-		using_brofiler = True;
+		using_brofiler = True
+	elif == "--physx":
+		using_physx = True
 	elif a.lower() == "vs2013":
 		vs2013 = True
 	elif a.lower() == "vs2015":
@@ -33,6 +36,11 @@ for a in args:
 # out_string = proc_result.stdout.decode("utf-8")
 
 subprocess.run(args) # run premake and generate project files
+print("")
+
+#Fix VS2015 compiler warnings/errors
+if using_physx:
+	utils.GenUtils.FixPhysXProjects()
 
 # Modify the *.vcxproj file for assembly files
 if using_brofiler:
@@ -43,7 +51,7 @@ if using_brofiler:
 	elif vs2015:
 		brofiler_project_path = "project/vs2015/dependencies/brofiler.vcxproj"
 
-	print("\nModifying 'brofiler' project file...")
+	print("Modifying 'brofiler' project file...")
 	utils.GenUtils.FixBrofilerProject(brofiler_project_path)
 
 	print("Modifying 'brofiler' project filters file...")

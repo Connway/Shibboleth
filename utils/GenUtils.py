@@ -1,21 +1,27 @@
 import sys
 import re
+import os
+
+def ReadCacheOpenForWrite(file):
+	f = open(file, "r")
+
+	if not f:
+		print("Failed to open '" + file + "' for READ.")
+		exit()
+
+	cache = f.read().split("\n")
+	f.close()
+
+	f = open(file, "w")
+
+	if not f:
+		print("Failed to open '" + file + "' for WRITE.")
+		exit()
+
+	return f, cache
 
 def FixBrofilerProject(proj):
-	brofiler_project = open(proj, "r")
-
-	if not brofiler_project:
-		print("Failed to open '" + proj + "' for READ.")
-		exit()
-
-	vcxproj_cache = brofiler_project.read().split("\n")
-	brofiler_project.close()
-
-	brofiler_project = open(proj, "w")
-
-	if not brofiler_project:
-		print("Failed to open '" + proj + "' for WRITE.")
-		exit()
+	brofiler_project, vcxproj_cache = ReadCacheOpenForWrite(proj)
 
 	for line in vcxproj_cache:
 		if re.match(".*HookFunction32.asm", line):
@@ -44,20 +50,7 @@ def FixBrofilerProject(proj):
 	brofiler_project.close()
 
 def FixBrofilerFilters(proj):
-	filter_file = open(proj + ".filters", "r")
-
-	if not filter_file:
-		print("Failed to open '" + proj + ".filters" + "' for READ.")
-		exit()
-
-	filter_cache = filter_file.read().split("\n")
-	filter_file.close()
-
-	filter_file = open(proj + ".filters", "w")
-
-	if not filter_file:
-		print("Failed to open '" + proj + ".filters" + "' for WRITE.")
-		exit()
+	filter_file, filter_cache = ReadCacheOpenForWrite(proj + ".filters")
 
 	for line in filter_cache:
 		if re.match(".*HookFunction32.asm", line):
@@ -70,3 +63,32 @@ def FixBrofilerFilters(proj):
 			filter_file.write(line + "\n")
 
 	filter_file.close()
+
+def FixPhysXProjectsHelper(dir, is_vs2015):
+	for file in os.listdir(dir):
+		if file.endswith(".vcxproj"):
+			proj_file, proj_cache = ReadCacheOpenForWrite(dir + "/" + file)
+
+			for line in proj_cache:
+				index = line.find("/Fd$(TargetDir)\\$(TargetName).pdb")
+
+				if index > -1:
+					beg = line[:index]
+					mid = "/Fd\"$(TargetDir)\\$(TargetName).pdb\""
+					end = line[index + 33:]
+
+					proj_file.write(beg + mid + end + "\n")
+
+				elif is_vs2015 and line == "			<AdditionalOptions>/GR- /GF /MP /Wall /wd4514 /wd4820 /wd4127 /wd4710 /wd4711 /wd4577 /wd4774 /Zi /d2Zi+</AdditionalOptions>":
+					proj_file.write("			<AdditionalOptions>/GR- /GF /MP /Wall /wd4514 /wd4820 /wd4127 /wd4710 /wd4711 /wd4577 /wd4774 /Zi /d2Zi+ /wd4464</AdditionalOptions>\n")
+				elif is_vs2015 and line == "			<AdditionalOptions>/GR- /GF /MP /Wall /wd4514 /wd4820 /wd4127 /wd4710 /wd4711 /wd4577 /wd4774 /d2Zi+</AdditionalOptions>":
+					proj_file.write("			<AdditionalOptions>/GR- /GF /MP /Wall /wd4514 /wd4820 /wd4127 /wd4710 /wd4711 /wd4577 /wd4774 /d2Zi+ /wd4464</AdditionalOptions>\n")
+				else:
+					proj_file.write(line + "\n")
+
+def FixPhysXProjects():
+	print("Fixing VS2013/VS2015 PhysX project files...")
+	FixPhysXProjectsHelper("dependencies/PhysX/PhysXSDK/Source/compiler/vc12win32", False)
+	FixPhysXProjectsHelper("dependencies/PhysX/PhysXSDK/Source/compiler/vc12win64", False)
+	FixPhysXProjectsHelper("dependencies/PhysX/PhysXSDK/Source/compiler/vc14win32", True)
+	FixPhysXProjectsHelper("dependencies/PhysX/PhysXSDK/Source/compiler/vc14win64", True)
