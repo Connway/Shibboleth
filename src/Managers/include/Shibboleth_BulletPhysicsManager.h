@@ -67,8 +67,6 @@ private:
 	btDispatcher* _dispatcher;
 	btDynamicsWorld* _main_world;
 
-	Map<Object*, btRigidBody*> _body_map; // temp
-
 	ProxyAllocator _physics_allocator;
 
 	SHIB_REF_DEF(BulletPhysicsManager);

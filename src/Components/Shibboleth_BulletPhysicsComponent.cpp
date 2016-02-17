@@ -20,30 +20,55 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#include "Shibboleth_TestPhysicsComponent.h"
+#include "Shibboleth_BulletPhysicsComponent.h"
 #include <Shibboleth_BulletPhysicsManager.h>
 #include <Shibboleth_Utilities.h>
 #include <Shibboleth_IApp.h>
 
 NS_SHIBBOLETH
 
-REF_IMPL_REQ(TestPhysicsComponent);
-SHIB_REF_IMPL(TestPhysicsComponent)
-.addBaseClassInterfaceOnly<TestPhysicsComponent>()
+REF_IMPL_REQ(BulletPhysicsComponent);
+SHIB_REF_IMPL(BulletPhysicsComponent)
+.addBaseClassInterfaceOnly<BulletPhysicsComponent>()
 ;
 
-TestPhysicsComponent::TestPhysicsComponent(void)
+BulletPhysicsComponent::BulletPhysicsComponent(void)
 {
 }
 
-TestPhysicsComponent::~TestPhysicsComponent(void)
+BulletPhysicsComponent::~BulletPhysicsComponent(void)
 {
 }
 
-void TestPhysicsComponent::addToWorld(void)
+const Gaff::JSON& BulletPhysicsComponent::getSchema(void) const
+{
+	return Component::getSchema();
+}
+
+bool BulletPhysicsComponent::load(const Gaff::JSON& json)
+{
+	return Component::load(json);
+}
+
+bool BulletPhysicsComponent::save(Gaff::JSON& json)
+{
+	return Component::save(json);
+}
+
+void BulletPhysicsComponent::addToWorld(void)
 {
 	auto& phys_mgr = GetApp().getManagerT<BulletPhysicsManager>();
 	phys_mgr.addTestCapsule(getOwner());
+}
+
+void BulletPhysicsComponent::removeFromWorld(void)
+{
+	
+}
+
+void BulletPhysicsComponent::setActive(bool active)
+{
+	Component::setActive(active);
 }
 
 NS_END

@@ -177,13 +177,13 @@
     <ClInclude Include="..\..\..\src\Components\include\Shibboleth_CameraComponent.h" />
     <ClInclude Include="..\..\..\src\Components\include\Shibboleth_LuaComponent.h" />
     <ClInclude Include="..\..\..\src\Components\include\Shibboleth_ModelComponent.h" />
-    <ClInclude Include="..\..\..\src\Components\include\Shibboleth_TestPhysicsComponent.h" />
+    <ClInclude Include="..\..\..\src\Components\include\Shibboleth_BulletPhysicsComponent.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\src\Components\Shibboleth_CameraComponent.cpp" />
     <ClCompile Include="..\..\..\src\Components\Shibboleth_LuaComponent.cpp" />
     <ClCompile Include="..\..\..\src\Components\Shibboleth_ModelComponent.cpp" />
-    <ClCompile Include="..\..\..\src\Components\Shibboleth_TestPhysicsComponent.cpp" />
+    <ClCompile Include="..\..\..\src\Components\Shibboleth_BulletPhysicsComponent.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

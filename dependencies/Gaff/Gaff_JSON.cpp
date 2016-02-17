@@ -52,13 +52,14 @@ public:
 
 struct JSON::ElementInfo
 {
-	const char* type = nullptr;
-	bool optional = false;
-	const char* element_type = nullptr;
-	JSON schema;
+	const char* type[16] = { nullptr };
+	size_t num_types = 0;
+	JSON schema[16];
+	size_t num_schemas = 0;
 	const char* key = nullptr;
-	size_t depth = 0;
+	bool optional = false;
 	JSON requires;
+	size_t depth = 0;
 };
 
 
@@ -178,6 +179,8 @@ bool JSON::validateFile(const char* schema_file) const
 	return ret_val;
 }
 
+// Does not support either-or types for Arrays. Unless a use-case comes up,
+// I have no plans to support it.
 bool JSON::validate(const JSON& schema_object) const
 {
 	SchemaMap schema_map;
@@ -505,6 +508,27 @@ JSON JSON::operator[](size_t index) const
 	return getObject(index);
 }
 
+void JSON::ExtractElementInfoHelper(
+	ElementInfo& info, size_t type_index, size_t& schema_index,
+	const JSON& type, const JSON& schema, const SchemaMap& schema_map,
+	bool is_object, bool is_array)
+{
+	info.type[type_index] = type.getString();
+
+	if (is_array || is_object) {
+		assert((schema.isArray() && schema_index < schema.size()) || schema_index == 0);
+		JSON s = (schema.isArray()) ? schema[schema_index] : schema;
+
+		if (s.isString()) {
+			assert(schema_map.hasElementWithKey(s.getString()));
+			s = schema_map[s.getString()];
+		}
+
+		info.schema[schema_index] = s;
+		++schema_index;
+	}
+}
+
 JSON::ElementInfo JSON::ExtractElementInfo(JSON element, const SchemaMap& schema_map)
 {
 	assert(element.isString() || element.isObject());
@@ -514,39 +538,42 @@ JSON::ElementInfo JSON::ExtractElementInfo(JSON element, const SchemaMap& schema
 		element = schema_map[element.getString()];
 	}
 
-	assert(element["Type"].isString());
+	JSON type = element["Type"];
+	JSON schema = element["Schema"];
+
+	const char* t = type.getString();
+
+	assert(type.isString() || type.isArray());
+	assert(!schema || schema.isString() || schema.isArray() || schema.isObject());
 	assert(element["Optional"].isBoolean());
-	assert(!element["Requires"] || element["Requires"].isArray());
+	assert(!element["Requires"] || element["Requires"].isString() || element["Requires"].isArray());
 
-	bool is_object = !strcmp(element["Type"].getString(), "Object");
-	bool is_array = !strcmp(element["Type"].getString(), "Array");
+	bool is_object = !strcmp(type.getString(), "Object");
+	bool is_array = !strcmp(type.getString(), "Array");
 
-	info.type = element["Type"].getString();
+	assert(!(is_array || is_object) || schema);
+
 	info.optional = element["Optional"].isTrue();
 	info.requires = element["Requires"];
 
-	if (is_array) {
-		assert(element["Element Type"].isString());
-		info.element_type = element["Element Type"].getString();
+	if (type.isArray()) {
+		size_t j = 0;
 
-		if (!strcmp(info.element_type, "Object")) {
-			assert(element["Schema"].isObject() || element["Schema"].isString());
-			info.schema = element["Schema"];
+		info.num_types = type.size();
 
-			if (info.schema.isString()) {
-				assert(schema_map.hasElementWithKey(info.schema.getString()));
-				info.schema = schema_map[info.schema.getString()];
-			}
+		for (size_t i = 0; i < info.num_types; ++i) {
+			ExtractElementInfoHelper(info, i, j, type, schema, schema_map, is_object, is_array);
 		}
 
-	} else if (is_object) {
-		assert(element["Schema"].isObject() || element["Schema"].isString());
-		info.schema = element["Schema"];
+		info.num_schemas = j;
 
-		if (info.schema.isString()) {
-			assert(schema_map.hasElementWithKey(info.schema.getString()));
-			info.schema = schema_map[info.schema.getString()];
-		}
+	} else {
+		size_t i = 0;
+
+		ExtractElementInfoHelper(info, 0, i, type, schema, schema_map, is_object, is_array);
+
+		info.num_types = 1;
+		info.num_schemas = i;
 	}
 
 	return info;
@@ -557,6 +584,7 @@ bool JSON::validateSchema(const JSON& schema, const SchemaMap& schema_map) const
 	static ElementParseMap parse_funcs;
 
 	if (parse_funcs.empty()) {
+		parse_funcs.reserve(7);
 		parse_funcs["Object"] = &JSON::isObjectSchema;
 		parse_funcs["Array"] = &JSON::isArraySchema;
 		parse_funcs["String"] = &JSON::isStringSchema;
@@ -576,11 +604,13 @@ bool JSON::validateSchema(const JSON& schema, const SchemaMap& schema_map) const
 			return false;
 		}
 
-		if (!(this->*parse_funcs[info.type])(element, info, schema_map)) {
-			return true;
+		for (size_t i = 0, j = 0; i < info.num_types; ++i) {
+			if ((this->*parse_funcs[info.type[i]])(element, info, schema_map, j)) {
+				return false;
+			}
 		}
 
-		return false;
+		return true;
 	});
 }
 
@@ -590,7 +620,7 @@ bool JSON::checkRequirements(const ElementInfo& info) const
 		return true;
 	}
 
-	return !info.requires.forEachInArray([&](size_t, const JSON& value) ->bool
+	auto check_lambda = [&](size_t, const JSON& value) -> bool
 	{
 		assert(value.isString());
 
@@ -600,10 +630,16 @@ bool JSON::checkRequirements(const ElementInfo& info) const
 		}
 
 		return false;
-	});
+	};
+
+	if (info.requires.isString()) {
+		return !check_lambda(0, info.requires);
+	}
+
+	return !info.requires.forEachInArray(check_lambda);
 }
 
-bool JSON::isObjectSchema(const JSON& element, const ElementInfo& info, const SchemaMap& schema_map) const
+bool JSON::isObjectSchema(const JSON& element, const ElementInfo& info, const SchemaMap& schema_map, size_t& s_index) const
 {
 	if (!element && info.optional) {
 		return true;
@@ -617,7 +653,10 @@ bool JSON::isObjectSchema(const JSON& element, const ElementInfo& info, const Sc
 		return false;
 	}
 
-	if (!element.validateSchema(info.schema, schema_map)) {
+	size_t index = s_index;
+	++s_index;
+
+	if (!element.validateSchema(info.schema[index], schema_map)) {
 		_error = element._error;
 		return false;
 	}
@@ -625,7 +664,7 @@ bool JSON::isObjectSchema(const JSON& element, const ElementInfo& info, const Sc
 	return true;
 }
 
-bool JSON::isArraySchema(const JSON& element, const ElementInfo& info, const SchemaMap& schema_map) const
+bool JSON::isArraySchema(const JSON& element, const ElementInfo& info, const SchemaMap& schema_map, size_t& s_index) const
 {
 	if (!element && info.optional) {
 		return true;
@@ -639,50 +678,78 @@ bool JSON::isArraySchema(const JSON& element, const ElementInfo& info, const Sch
 		return false;
 	}
 
+	JSON schema = info.schema[s_index];
+	++s_index;
+
+	JSON s = schema["Schema"];
+
+	assert(!s || s.isString() || s.isObject());
+	assert(schema["Type"].isString());
+
+	const char* type = schema["Type"].getString();
+
+	if (s.isString()) {
+		assert(schema_map.hasElementWithKey(s.getString()));
+		s = schema_map[s.getString()];
+	}
+
+	bool is_string = !strcmp(type, "String");
+	bool is_number = !strcmp(type, "Number");
+	bool is_integer = !strcmp(type, "Integer");
+	bool is_real = !strcmp(type, "Real");
+	bool is_boolean = !strcmp(type, "Boolean");
+	bool is_object = !strcmp(type, "Object");
+	bool is_array = !strcmp(type, "Array");
+
+	assert(!(is_object || is_array) || s);
+
 	return !element.forEachInArray([&](size_t index, const JSON& value) -> bool
 	{
-		if (!strcmp(info.element_type, "String") && !value.isString()) {
+		if (is_string && !value.isString()) {
 			snprintf(_error.text, JSON_ERROR_TEXT_LENGTH, "Element '%s' index '%zu' depth '%zu' is not a string.", info.key, index, info.depth);
 			return true;
-		} else if (!strcmp(info.element_type, "Number") && !value.isNumber()) {
+		} else if (is_number && !value.isNumber()) {
 			snprintf(_error.text, JSON_ERROR_TEXT_LENGTH, "Element '%s' index '%zu' depth '%zu' is not a number.", info.key, index, info.depth);
 			return true;
-		} else if (!strcmp(info.element_type, "Integer") && !value.isInteger()) {
+		} else if (is_integer && !value.isInteger()) {
 			snprintf(_error.text, JSON_ERROR_TEXT_LENGTH, "Element '%s' index '%zu' depth '%zu' is not an integer.", info.key, index, info.depth);
 			return true;
-		} else if (!strcmp(info.element_type, "Real") && !value.isReal()) {
+		} else if (is_real && !value.isReal()) {
 			snprintf(_error.text, JSON_ERROR_TEXT_LENGTH, "Element '%s' index '%zu' depth '%zu' is not a real.", info.key, index, info.depth);
 			return true;
-		} else if (!strcmp(info.element_type, "Boolean") && !value.isBoolean()) {
+		} else if (is_boolean && !value.isBoolean()) {
 			snprintf(_error.text, JSON_ERROR_TEXT_LENGTH, "Element '%s' index '%zu' depth '%zu' is not a boolean.", info.key, index, info.depth);
 			return true;
 
-		} else if (!strcmp(info.element_type, "Object")) {
+		} else if (is_object) {
 			if (!value.isObject()) {
 				snprintf(_error.text, JSON_ERROR_TEXT_LENGTH, "Element '%s' index '%zu' depth '%zu' is not an object.", info.key, index, info.depth);
 				return true;
 			}
 
-			if (!value.validateSchema(info.schema, schema_map)) {
+			if (!value.validateSchema(s, schema_map)) {
 				_error = value._error;
 				return true;
 			}
 
-		} else if (!strcmp(info.element_type, "Array")) {
+		} else if (is_array) {
 			if (!value.isArray()) {
 				snprintf(_error.text, JSON_ERROR_TEXT_LENGTH, "Element '%s' index '%zu' depth '%zu' is not an array.", info.key, index, info.depth);
 				return true;
 			}
 
-			const_cast<ElementInfo&>(info).depth += 1;
-			return !isArraySchema(value, info, schema_map);
+			ElementInfo arr_info = ExtractElementInfo(s, schema_map);
+			arr_info.depth = info.depth + 1;
+			size_t temp = 0;
+
+			return !isArraySchema(value, arr_info, schema_map, temp);
 		}
 
 		return false;
 	});
 }
 
-bool JSON::isStringSchema(const JSON& element, const ElementInfo& info, const SchemaMap&) const
+bool JSON::isStringSchema(const JSON& element, const ElementInfo& info, const SchemaMap&, size_t&) const
 {
 	if (!element && info.optional) {
 		return true;
@@ -699,7 +766,7 @@ bool JSON::isStringSchema(const JSON& element, const ElementInfo& info, const Sc
 	return true;
 }
 
-bool JSON::isNumberSchema(const JSON& element, const ElementInfo& info, const SchemaMap&) const
+bool JSON::isNumberSchema(const JSON& element, const ElementInfo& info, const SchemaMap&, size_t&) const
 {
 	if (!element && info.optional) {
 		return true;
@@ -716,7 +783,7 @@ bool JSON::isNumberSchema(const JSON& element, const ElementInfo& info, const Sc
 	return true;
 }
 
-bool JSON::isIntegerSchema(const JSON& element, const ElementInfo& info, const SchemaMap&) const
+bool JSON::isIntegerSchema(const JSON& element, const ElementInfo& info, const SchemaMap&, size_t&) const
 {
 	if (!element && info.optional) {
 		return true;
@@ -733,7 +800,7 @@ bool JSON::isIntegerSchema(const JSON& element, const ElementInfo& info, const S
 	return true;
 }
 
-bool JSON::isRealSchema(const JSON& element, const ElementInfo& info, const SchemaMap&) const
+bool JSON::isRealSchema(const JSON& element, const ElementInfo& info, const SchemaMap&, size_t&) const
 {
 	if (!element && info.optional) {
 		return true;
@@ -750,7 +817,7 @@ bool JSON::isRealSchema(const JSON& element, const ElementInfo& info, const Sche
 	return true;
 }
 
-bool JSON::isBooleanSchema(const JSON& element, const ElementInfo& info, const SchemaMap&) const
+bool JSON::isBooleanSchema(const JSON& element, const ElementInfo& info, const SchemaMap&, size_t&) const
 {
 	if (!element && info.optional) {
 		return true;

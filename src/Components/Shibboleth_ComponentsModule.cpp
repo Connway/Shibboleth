@@ -29,12 +29,13 @@ THE SOFTWARE.
 #include <Gaff_JSON.h>
 
 #ifndef USE_PHYSX
+	#include <Shibboleth_BulletPhysicsComponent.h>
 	#include <Shibboleth_BulletPhysicsManager.h>
 #else
+	#include <Shibboleth_PhysXPhysicsComponent.h>
 	#include <Shibboleth_PhysXPhysicsManager.h>
 #endif
 
-#include <Shibboleth_TestPhysicsComponent.h>
 
 template <class Component>
 Shibboleth::Component* CreateComponent(void)
@@ -47,7 +48,7 @@ enum Components
 	LUA_COMPONENT = 0,
 	MODEL_COMPONENT,
 	CAMERA_COMPONENT,
-	TESTPHYSICS_COMPONENT,
+	PHYSICS_COMPONENT,
 	NUM_COMPONENTS
 };
 
@@ -59,14 +60,22 @@ static CreateComponentFunc create_funcs[] = {
 	&CreateComponent<Shibboleth::LuaComponent>,
 	&CreateComponent<Shibboleth::ModelComponent>,
 	&CreateComponent<Shibboleth::CameraComponent>,
-	&CreateComponent<Shibboleth::TestPhysicsComponent>
+#ifndef USE_PHYSX
+	&CreateComponent<Shibboleth::BulletPhysicsComponent>
+#else
+	&CreateComponent<Shibboleth::PhysXPhysicsComponent>
+#endif
 };
 
 static ComponentNameFunc name_funcs[] = {
 	&Shibboleth::LuaComponent::getComponentName,
 	&Shibboleth::ModelComponent::getComponentName,
 	&Shibboleth::CameraComponent::getComponentName,
-	&Shibboleth::TestPhysicsComponent::getComponentName,
+#ifndef USE_PHYSX
+	&Shibboleth::BulletPhysicsComponent::getComponentName,
+#else
+	&Shibboleth::PhysXPhysicsComponent::getComponentName,
+#endif
 };
 
 DYNAMICEXPORT_C bool InitModule(Shibboleth::IApp& app)
