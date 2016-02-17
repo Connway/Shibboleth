@@ -51,7 +51,7 @@
 		},
 		"Test2":
 		{
-			"Type": "Test Physics Component"
+			"Type": "Bullet Physics Component"
 		}
 	}
 }

@@ -27,22 +27,30 @@ THE SOFTWARE.
 
 NS_SHIBBOLETH
 
-class TestPhysicsComponent : public Component
+class BulletPhysicsComponent : public Component
 {
 public:
 	INLINE static const char* getComponentName(void)
 	{
-		return "Test Physics Component";
+		return "Bullet Physics Component";
 	}
 
-	TestPhysicsComponent(void);
-	~TestPhysicsComponent(void);
+	BulletPhysicsComponent(void);
+	~BulletPhysicsComponent(void);
 
 	void* rawRequestInterface(Gaff::ReflectionHash class_id) const override;
 
-	void addToWorld(void) override;
+	const Gaff::JSON& getSchema(void) const override;
 
-	SHIB_REF_DEF(TestPhysicsComponent);
+	bool load(const Gaff::JSON&) override;
+	bool save(Gaff::JSON&) override;
+
+	void addToWorld(void) override;
+	void removeFromWorld(void) override;
+
+	void setActive(bool active) override;
+
+	SHIB_REF_DEF(BulletPhysicsComponent);
 };
 
 NS_END

@@ -182,12 +182,17 @@ private:
 
 	using SchemaString = AHashString<JSONAllocator>;
 	using SchemaMap = HashMap<SchemaString, JSON, JSONAllocator>;
-	using ParseElementFunc = bool (JSON::*)(const JSON&, const ElementInfo&, const SchemaMap&) const;
+	using ParseElementFunc = bool (JSON::*)(const JSON&, const ElementInfo&, const SchemaMap&, size_t&) const;
 	using ElementParseMap = HashMap<SchemaString, ParseElementFunc, JSONAllocator>;
 
 	static json_malloc_t _alloc;
 	static json_free_t _free;
 
+	static void ExtractElementInfoHelper(
+		ElementInfo& info, size_t type_index, size_t& schema_index,
+		const JSON& type, const JSON& schema, const SchemaMap& schema_map,
+		bool is_object, bool is_array
+	);
 	static ElementInfo ExtractElementInfo(JSON element, const SchemaMap& schema_map);
 
 	explicit JSON(json_t* json, bool increment_ref_count);
@@ -196,13 +201,13 @@ private:
 
 	bool checkRequirements(const ElementInfo& info) const;
 
-	bool isObjectSchema(const JSON& element, const ElementInfo& info, const SchemaMap& schema_map) const;
-	bool isArraySchema(const JSON& element, const ElementInfo& info, const SchemaMap& schema_map) const;
-	bool isStringSchema(const JSON& element, const ElementInfo& info, const SchemaMap&) const;
-	bool isNumberSchema(const JSON& element, const ElementInfo& info, const SchemaMap&) const;
-	bool isIntegerSchema(const JSON& element, const ElementInfo& info, const SchemaMap&) const;
-	bool isRealSchema(const JSON& element, const ElementInfo& info, const SchemaMap&) const;
-	bool isBooleanSchema(const JSON& element, const ElementInfo& info, const SchemaMap&) const;
+	bool isObjectSchema(const JSON& element, const ElementInfo& info, const SchemaMap& schema_map, size_t& s_index) const;
+	bool isArraySchema(const JSON& element, const ElementInfo& info, const SchemaMap& schema_map, size_t& s_index) const;
+	bool isStringSchema(const JSON& element, const ElementInfo& info, const SchemaMap&, size_t&) const;
+	bool isNumberSchema(const JSON& element, const ElementInfo& info, const SchemaMap&, size_t&) const;
+	bool isIntegerSchema(const JSON& element, const ElementInfo& info, const SchemaMap&, size_t&) const;
+	bool isRealSchema(const JSON& element, const ElementInfo& info, const SchemaMap&, size_t&) const;
+	bool isBooleanSchema(const JSON& element, const ElementInfo& info, const SchemaMap&, size_t&) const;
 };
 
 NS_END

@@ -4,8 +4,8 @@
 	"Render Target File": { "Type": "String", "Optional": false },
 
 	"Clear Mode": { "Type": "String", "Optional": false },
-	"Viewport": { "Type": "Array", "Optional": false, "Element Type": "Real" },
-	"Clear Color": { "Type": "Array", "Optional": false, "Element Type": "Real" },
+	"Viewport": { "Type": "Array", "Optional": false, "Schema": { "Type": "Real" } },
+	"Clear Color": { "Type": "Array", "Optional": false, "Schema": { "Type": "Real" } },
 	"Field of View": { "Type": "Real", "Optional": false },
 	"Z Near": { "Type": "Real", "Optional": false },
 	"Z Far": { "Type": "Real", "Optional": false },

@@ -29,9 +29,9 @@ THE SOFTWARE.
 #include <Shibboleth_OcclusionManager.h>
 #include <Gleam_IBuffer.h>
 
-namespace Gleam {
+NS_GLEAM
 	class Vector4CPU;
-}
+NS_END
 
 NS_SHIBBOLETH
 

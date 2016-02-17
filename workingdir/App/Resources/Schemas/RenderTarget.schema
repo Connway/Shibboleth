@@ -2,11 +2,13 @@
 	"Outputs": {
 		"Type": "Array",
 		"Optional": true,
-		"Element Type": "Object",
 		"Schema": {
-			"Width": { "Type": "Integer", "Optional": false },
-			"Height": { "Type": "Integer", "Optional": false },
-			"Format": { "Type": "String", "Optional": false }
+			"Type": "Object",
+			"Schema": {
+				"Width": { "Type": "Integer", "Optional": false },
+				"Height": { "Type": "Integer", "Optional": false },
+				"Format": { "Type": "String", "Optional": false }
+			}
 		}
 	},
 
@@ -17,6 +19,6 @@
 		"Requires": ["Depth-Stencil Width", "Depth-Stencil Height"]
 	},
 
-	"Display Tags": { "Type": "Array", "Optional": false, "Element Type": "String" },
+	"Display Tags": { "Type": "Array", "Optional": false, "Schema": { "Type": "String" } },
 	"Any Display With Tags": { "Type": "Boolean", "Optional": true }
 }

@@ -28,6 +28,42 @@ THE SOFTWARE.
 
 NS_SHIBBOLETH
 
+class MotionState : public btMotionState
+{
+public:
+	MotionState(Object* object):
+		_object(object)
+	{
+	}
+
+	void getWorldTransform(btTransform& worldTrans) const override
+	{
+		const auto& tform = _object->getWorldTransform();
+		const auto& t = tform.getTranslation();
+		const auto& r = tform.getRotation();
+
+		worldTrans.setOrigin(btVector3(t[0], t[1], t[2]));
+		worldTrans.setRotation(btQuaternion(r[0], r[1], r[2], r[3]));
+	}
+
+	//Bullet only calls the update of worldtransform for active objects
+	void setWorldTransform(const btTransform& worldTrans) override
+	{
+		Gleam::TransformCPU conv_tform;
+
+		const auto& rot = worldTrans.getRotation();
+		const auto& pos = worldTrans.getOrigin();
+
+		conv_tform.setTranslation(Gleam::Vector4CPU(pos.x(), pos.y(), pos.z(), 1.0f));
+		conv_tform.setRotation(Gleam::QuaternionCPU(rot.x(), rot.y(), rot.z(), rot.w()));
+
+		_object->setWorldTransform(conv_tform);
+	}
+
+private:
+	Object* _object;
+};
+
 REF_IMPL_REQ(BulletPhysicsManager);
 SHIB_REF_IMPL(BulletPhysicsManager)
 .addBaseClassInterfaceOnly<BulletPhysicsManager>()
@@ -114,21 +150,6 @@ void BulletPhysicsManager::getUpdateEntries(Array<UpdateEntry>& entries)
 void BulletPhysicsManager::update(double dt, void*)
 {
 	_main_world->stepSimulation(dt);
-
-	// update dynamic objects
-	// remove when custom motion state is implemented.
-	for (auto it = _body_map.begin(); it != _body_map.end(); ++it) {
-		const btTransform& tform = it->second->getWorldTransform();
-		Gleam::TransformCPU conv_tform;
-		
-		const auto& rot = tform.getRotation();
-		const auto& pos = tform.getOrigin();
-
-		conv_tform.setTranslation(Gleam::Vector4CPU(pos.x(), pos.y(), pos.z(), 1.0f));
-		conv_tform.setRotation(Gleam::QuaternionCPU(rot.x(), rot.y(), rot.z(), rot.w()));
-
-		it->first->setWorldTransform(conv_tform);
-	}
 }
 
 void BulletPhysicsManager::addTestCapsule(Object* object)
@@ -150,14 +171,12 @@ void BulletPhysicsManager::addTestCapsule(Object* object)
 
 	// using motionstate is optional, it provides interpolation capabilities, and only synchronizes 'active' objects
 	// TODO: make custom motion state for updating graphics.
-	btDefaultMotionState* myMotionState = _physics_allocator.template allocT<btDefaultMotionState>(transform);
+	MotionState* myMotionState = _physics_allocator.template allocT<MotionState>(object);
 	btRigidBody::btRigidBodyConstructionInfo rbInfo(mass, myMotionState, capsuleShape, localInertia);
 	btRigidBody* body = _physics_allocator.template allocT<btRigidBody>(rbInfo);
 
 	//add the body to the dynamics world
 	_main_world->addRigidBody(body);
-
-	_body_map.emplace(object, body);
 }
 
 NS_END
