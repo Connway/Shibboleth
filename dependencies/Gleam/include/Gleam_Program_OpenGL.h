@@ -52,6 +52,8 @@ public:
 	void bind(IRenderDevice& rd);
 	void unbind(IRenderDevice& rd);
 
+	ProgramReflection getReflectionData(void) const;
+	
 	RendererType getRendererType(void) const;
 
 	INLINE unsigned int getProgram(void) const;

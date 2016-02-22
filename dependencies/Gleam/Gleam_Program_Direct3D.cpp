@@ -30,6 +30,7 @@ THE SOFTWARE.
 #include "Gleam_Buffer_Direct3D.h"
 #include "Gleam_IRenderDevice.h"
 #include "Gleam_IncludeD3D11.h"
+#include <d3dcompiler.h>
 
 NS_GLEAM
 
@@ -343,9 +344,63 @@ void ProgramD3D::unbind(IRenderDevice& rd)
 	context->CSSetShader(NULL, NULL, 0);
 }
 
+ProgramReflection ProgramD3D::getReflectionData(void) const
+{
+	ProgramReflection reflection;
+
+	for (size_t i = 0; i < IShader::SHADER_TYPE_SIZE - 1; ++i) {
+		reflection.shader_reflection[i] = getShaderReflectionData(_attached_shaders[i].get());
+	}
+
+	return reflection;
+}
+
 RendererType ProgramD3D::getRendererType(void) const
 {
 	return RENDERER_DIRECT3D;
+}
+
+ShaderReflection ProgramD3D::getShaderReflectionData(const IShader* shader) const
+{
+	// TODO: Add reflection for samplers and srvs (textures/structured buffers).
+
+	ShaderReflection reflection;
+
+	ID3DBlob* blob = reinterpret_cast<const ShaderD3D*>(shader)->getByteCodeBuffer();
+
+	ID3D11ShaderReflection* refl = nullptr;
+	HRESULT result = D3DReflect(
+		blob->GetBufferPointer(), blob->GetBufferSize(),
+		IID_ID3D11ShaderReflection, reinterpret_cast<void**>(&refl)
+	);
+
+	if (FAILED(result)) {
+		return reflection;
+	}
+
+	D3D11_SHADER_DESC shader_desc;
+	result = refl->GetDesc(&shader_desc);
+
+	if (FAILED(result)) {
+		refl->Release();
+		return reflection;
+	}
+
+	reflection.num_cbs = shader_desc.ConstantBuffers;
+
+	for (unsigned int i = 0; i < shader_desc.ConstantBuffers; ++i) {
+		 ID3D11ShaderReflectionConstantBuffer* cb_refl = refl->GetConstantBufferByIndex(i);
+		 D3D11_SHADER_BUFFER_DESC cb_desc;
+		 cb_refl->GetDesc(&cb_desc);
+
+		 strncpy(reflection.const_buff_reflection[i].name, cb_desc.Name, 256);
+		 reflection.const_buff_reflection[i].name[255] = 0;
+
+		 reflection.const_buff_reflection[i].size_bytes = cb_desc.Size;
+	}
+
+	refl->Release();
+	return reflection;
 }
 
 NS_END

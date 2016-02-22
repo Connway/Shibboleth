@@ -28,7 +28,6 @@ THE SOFTWARE.
 
 NS_GLEAM
 
-// Need to research class linkage
 class ShaderD3D : public IShader
 {
 public:

@@ -74,6 +74,6 @@ project "Graphics"
 		links { "gl" }
 
 	filter { "configurations:*Direct3D", "system:windows" }
-		links { "d3d11", "D3dcompiler", "dxgi" }
+		links { "d3d11", "D3dcompiler", "dxgi", "dxguid" }
 
 	filter {}
