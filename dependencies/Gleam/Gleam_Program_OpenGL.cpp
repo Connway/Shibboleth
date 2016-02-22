@@ -135,6 +135,15 @@ void ProgramGL::unbind(IRenderDevice& rd)
 	rdgl.unbindShader();
 }
 
+ProgramReflection ProgramGL::getReflectionData(void) const
+{
+	ProgramReflection reflection;
+
+	// TODO: IMPLEMENT ME!
+
+	return reflection;
+}
+
 RendererType ProgramGL::getRendererType() const
 {
 	return RENDERER_OPENGL;

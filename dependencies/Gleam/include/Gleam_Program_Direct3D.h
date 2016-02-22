@@ -88,6 +88,8 @@ public:
 	void bind(IRenderDevice& rd);
 	void unbind(IRenderDevice& rd);
 
+	ProgramReflection getReflectionData(void) const;
+
 	RendererType getRendererType(void) const;
 
 private:
@@ -97,6 +99,8 @@ private:
 	ID3D11GeometryShader* _shader_geometry;
 	ID3D11HullShader* _shader_hull;
 	ID3D11ComputeShader* _shader_compute;
+
+	ShaderReflection getShaderReflectionData(const IShader* shader) const;
 };
 
 NS_END

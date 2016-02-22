@@ -25,6 +25,9 @@ THE SOFTWARE.
 #include "Gleam_IShader.h"
 #include "Gleam_Array.h"
 
+#define MAX_SHADER_VAR 16
+#define MAX_SHADER_VAR_NAME 256
+
 NS_GLEAM
 
 class IShaderResourceView;
@@ -77,6 +80,28 @@ public:
 	virtual RendererType getRendererType(void) const = 0;
 };
 
+struct ConstBufferReflection
+{
+	char name[MAX_SHADER_VAR_NAME];
+	size_t size_bytes;
+};
+
+struct ShaderReflection
+{
+	ConstBufferReflection const_buff_reflection[MAX_SHADER_VAR];
+	char samplers[MAX_SHADER_VAR][MAX_SHADER_VAR_NAME];
+	char srvs[MAX_SHADER_VAR][MAX_SHADER_VAR_NAME];
+
+	size_t num_cbs;
+	size_t num_samplers;
+	size_t num_srvs;
+};
+
+struct ProgramReflection
+{
+	ShaderReflection shader_reflection[IShader::SHADER_TYPE_SIZE - 1];
+};
+
 class IProgram : public Gaff::IRefCounted
 {
 public:
@@ -91,6 +116,8 @@ public:
 
 	virtual void bind(IRenderDevice& rd) = 0;
 	virtual void unbind(IRenderDevice& rd) = 0;
+
+	virtual ProgramReflection getReflectionData(void) const = 0;
 
 	virtual RendererType getRendererType(void) const = 0;
 
