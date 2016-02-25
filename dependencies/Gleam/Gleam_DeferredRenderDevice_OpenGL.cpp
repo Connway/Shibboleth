@@ -249,17 +249,10 @@ void DeferredRenderDeviceGL::setLayout(LayoutGL* layout, const IMesh* mesh)
 			Gaff::CachedFunction<void, GLuint> evaa_cache(evaa_func, count);
 			_command_list.addCommand(evaa_cache);
 
-#if defined(_WIN64) || defined(__LP64__)
 			Gaff::CachedFunction<void, GLuint, GLint, GLenum, GLboolean, GLsizei, const GLvoid*> vap_cache(
 				vap_func, count, layout_data->size, layout_data->type, layout_data->normalized,
-				stride, reinterpret_cast<void*>(static_cast<unsigned long long>(layout_data->aligned_byte_offset))
+				stride, reinterpret_cast<void*>(static_cast<uintptr_t>(layout_data->aligned_byte_offset))
 			);
-#else
-			Gaff::CachedFunction<void, GLuint, GLint, GLenum, GLboolean, GLsizei, const GLvoid*> vap_cache(
-				vap_func, count, layout_data->size, layout_data->type, layout_data->normalized,
-				stride, (void*)layout_data->aligned_byte_offset
-			);
-#endif
 
 			_command_list.addCommand(vap_cache);
 			++count;

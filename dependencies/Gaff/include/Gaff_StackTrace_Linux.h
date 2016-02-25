@@ -20,8 +20,6 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-/*! \file */
-
 #pragma once
 
 #include "Gaff_Defines.h"
@@ -50,7 +48,7 @@ public:
 	INLINE unsigned short captureStack(unsigned int frames_to_capture = MAX_FRAMES);
 	INLINE unsigned short getNumCapturedFrames(void) const;
 
-	INLINE unsigned long long getAddress(unsigned short frame) const;
+	INLINE uint64_t getAddress(unsigned short frame) const;
 	INLINE unsigned int getLineNumber(unsigned short frame) const;
 	INLINE const char* getSymbolName(unsigned short frame) const;
 	INLINE const char* getFileName(unsigned short frame) const;

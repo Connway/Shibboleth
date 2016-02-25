@@ -60,43 +60,43 @@ const char* MetaData::getKey(unsigned int index) const
 MetaData::ValueType MetaData::getValueType(unsigned int index) const
 {
 	assert(_meta_data && index < _meta_data->mNumProperties);
-	return (ValueType)_meta_data->mValues[index].mType;
+	return static_cast<ValueType>(_meta_data->mValues[index].mType);
 }
 
 bool MetaData::getBool(unsigned int index) const
 {
 	assert(_meta_data && index < _meta_data->mNumProperties && _meta_data->mValues[index].mType == AI_BOOL);
-	return *((bool*)_meta_data->mValues[index].mData);
+	return *static_cast<bool*>(_meta_data->mValues[index].mData);
 }
 
 int MetaData::getInt(unsigned int index) const
 {
 	assert(_meta_data && index < _meta_data->mNumProperties && _meta_data->mValues[index].mType == AI_INT);
-	return *((int*)_meta_data->mValues[index].mData);
+	return *static_cast<int*>(_meta_data->mValues[index].mData);
 }
 
-unsigned long long MetaData::getUInt64(unsigned int index) const
+uint64_t MetaData::getUInt64(unsigned int index) const
 {
 	assert(_meta_data && index < _meta_data->mNumProperties && _meta_data->mValues[index].mType == AI_UINT64);
-	return *((unsigned long long*)_meta_data->mValues[index].mData);
+	return *static_cast<uint64_t*>(_meta_data->mValues[index].mData);
 }
 
 float MetaData::getFloat(unsigned int index) const
 {
 	assert(_meta_data && index < _meta_data->mNumProperties && _meta_data->mValues[index].mType == AI_FLOAT);
-	return *((float*)_meta_data->mValues[index].mData);
+	return *static_cast<float*>(_meta_data->mValues[index].mData);
 }
 
 const char* MetaData::getString(unsigned int index) const
 {
 	assert(_meta_data && index < _meta_data->mNumProperties && _meta_data->mValues[index].mType == AI_AISTRING);
-	return ((aiString*)_meta_data->mValues[index].mData)->C_Str();
+	return static_cast<aiString*>(_meta_data->mValues[index].mData)->C_Str();
 }
 
 const float* MetaData::getVec3(unsigned int index) const
 {
 	assert(_meta_data && index < _meta_data->mNumProperties && _meta_data->mValues[index].mType == AI_AIVECTOR3D);
-	return &((aiVector3D*)_meta_data->mValues[index].mData)->x;
+	return &static_cast<aiVector3D*>(_meta_data->mValues[index].mData)->x;
 }
 
 bool MetaData::valid(void) const

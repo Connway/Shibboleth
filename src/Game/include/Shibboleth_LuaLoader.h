@@ -35,7 +35,7 @@ public:
 	LuaLoader(void);
 	~LuaLoader(void);
 
-	Gaff::IVirtualDestructor* load(const char* file_name, unsigned long long, HashMap<AString, IFile*>& file_map);
+	Gaff::IVirtualDestructor* load(const char* file_name, uint64_t, HashMap<AString, IFile*>& file_map);
 
 	GAFF_NO_COPY(LuaLoader);
 	GAFF_NO_MOVE(LuaLoader);

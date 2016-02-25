@@ -57,7 +57,7 @@ public:
 
 	INLINE bool getBool(unsigned int index) const;
 	INLINE int getInt(unsigned int index) const;
-	INLINE unsigned long long getUInt64(unsigned int index) const;
+	INLINE uint64_t getUInt64(unsigned int index) const;
 	INLINE float getFloat(unsigned int index) const;
 	INLINE const char* getString(unsigned int index) const;
 	INLINE const float* getVec3(unsigned int index) const;

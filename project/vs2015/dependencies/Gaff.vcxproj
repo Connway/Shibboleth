@@ -178,6 +178,7 @@
   <ItemGroup>
     <ClInclude Include="..\..\..\dependencies\Gaff\include\Gaff_Animation.h" />
     <ClInclude Include="..\..\..\dependencies\Gaff\include\Gaff_Array.h" />
+    <ClInclude Include="..\..\..\dependencies\Gaff\include\Gaff_Assert.h" />
     <ClInclude Include="..\..\..\dependencies\Gaff\include\Gaff_Atomic.h" />
     <ClInclude Include="..\..\..\dependencies\Gaff\include\Gaff_BezierCurve.h" />
     <ClInclude Include="..\..\..\dependencies\Gaff\include\Gaff_BitArray.h" />
@@ -251,6 +252,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\dependencies\Gaff\Gaff_Animation.cpp" />
+    <ClCompile Include="..\..\..\dependencies\Gaff\Gaff_Assert.cpp" />
     <ClCompile Include="..\..\..\dependencies\Gaff\Gaff_Camera.cpp" />
     <ClCompile Include="..\..\..\dependencies\Gaff\Gaff_Connection.cpp" />
     <ClCompile Include="..\..\..\dependencies\Gaff\Gaff_CriticalSection_Linux.cpp" />

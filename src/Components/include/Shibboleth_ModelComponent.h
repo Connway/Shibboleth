@@ -62,7 +62,7 @@ public:
 
 	void setActive(bool active) override;
 
-	void* rawRequestInterface(unsigned int class_id) const override;
+	void* rawRequestInterface(Gaff::ReflectionHash class_id) const override;
 
 	void setStatic(bool is_static);
 	bool isStatic(void) const;

@@ -483,7 +483,7 @@ void ModelComponent::requestBuffers(const Gaff::JSON& json, ResourceManager& res
 			// Make a unique name for this resource
 			char temp[256] = { 0 };
 			sprintf(temp, "Buffer#%s#%s#%u%zu", getOwner()->getName().getBuffer(), getName().getBuffer(), getOwner()->getID(), index);
-			ResourceWrapper<BufferData> buffer = res_mgr.requestResource("Buffer", temp, reinterpret_cast<unsigned long long>(&_buffer_settings[index]));
+			ResourceWrapper<BufferData> buffer = res_mgr.requestResource("Buffer", temp, uint64_t(&_buffer_settings[index]));
 			buffer.getResourcePtr()->addCallback(callback);
 			_buffers[index] = buffer;
 
@@ -584,7 +584,7 @@ void ModelComponent::addToOcclusionManager(void)
 
 	_occlusion_id = _occlusion_mgr.addObject(
 		getOwner(), (isStatic()) ? OcclusionManager::OT_STATIC : OcclusionManager::OT_DYNAMIC,
-		OcclusionManager::UserData(reinterpret_cast<unsigned long long>(this), OMT_MODEL_COMP)
+		OcclusionManager::UserData(uint64_t(this), OMT_MODEL_COMP)
 	);
 
 	Gaff::SetBits<char>(_flags, MC_IN_OM);

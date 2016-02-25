@@ -38,8 +38,8 @@ public:
 
 	const char* getName(void) const;
 
-	void getUpdateEntries(Array<IUpdateQuery::UpdateEntry>& entries);
-	void* rawRequestInterface(unsigned int class_id) const;
+	void getUpdateEntries(Array<UpdateEntry>& entries);
+	void* rawRequestInterface(Gaff::ReflectionHash class_id) const;
 
 	void update(double, void*);
 

@@ -107,10 +107,9 @@ unsigned short StackTrace::getNumCapturedFrames(void) const
 	return _total_frames;
 }
 
-unsigned long long StackTrace::getAddress(unsigned short frame) const
+uint64_t StackTrace::getAddress(unsigned short frame) const
 {
-	//return static_cast<unsigned long long>(_stack[frame]);
-	return (unsigned long long)_stack[frame];
+	return reinterpret_cast<unsigned long long>(_stack[frame]);
 }
 
 unsigned int StackTrace::getLineNumber(unsigned short frame) const

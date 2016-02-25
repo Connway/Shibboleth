@@ -20,28 +20,39 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#pragma once
+#include "Gaff_Assert.h"
+#include <cassert>
+#include <cstdarg>
 
-#include "Shibboleth_IResourceLoader.h"
-#include <Gaff_Defines.h>
+NS_GAFF
 
-NS_SHIBBOLETH
-
-class RenderManager;
-
-class BufferCreator : public IResourceLoader
+void DefaultAssertHandler(const char*, const char*, const char*, int)
 {
-public:
-	BufferCreator(void);
-	~BufferCreator(void);
+	assert(false);
+}
 
-	Gaff::IVirtualDestructor* load(const char* file_name, uint64_t user_data, HashMap<AString, IFile*>& file_map);
+static AssertHandler g_assert_handler = DefaultAssertHandler;
 
-private:
-	RenderManager& _render_mgr;
+void SetAssertHandler(AssertHandler handler)
+{
+	g_assert_handler = (handler) ? handler : DefaultAssertHandler;
+}
 
-	GAFF_NO_COPY(BufferCreator);
-	GAFF_NO_MOVE(BufferCreator);
-};
+void Assert(const char* msg, const char* expr, const char* file, int line, ...)
+{
+	if (msg) {
+		char temp[256] = { 0 };
+
+		va_list vl;
+		va_start(vl, line);
+		vsnprintf(temp, 256, msg, vl);
+		va_end(vl);
+
+		g_assert_handler(temp, expr, file, line);
+
+	} else {
+		g_assert_handler(msg, expr, file, line);
+	}
+}
 
 NS_END

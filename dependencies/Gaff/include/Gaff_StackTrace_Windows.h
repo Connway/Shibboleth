@@ -52,7 +52,7 @@ public:
 	INLINE unsigned short captureStack(unsigned int frames_to_capture = MAX_FRAMES);
 	INLINE unsigned short getNumCapturedFrames(void) const;
 
-	INLINE unsigned long long getAddress(unsigned short frame) const;
+	INLINE uint64_t getAddress(unsigned short frame) const;
 	INLINE unsigned int getLineNumber(unsigned short frame) const;
 	INLINE const char* getSymbolName(unsigned short frame) const;
 	INLINE const char* getFileName(unsigned short frame) const;
@@ -64,7 +64,7 @@ private:
 	{
 		char file_name[NAME_SIZE];
 		char symbol_name[NAME_SIZE];
-		unsigned long long address;
+		uint64_t address;
 		unsigned int line_number;
 	};
 

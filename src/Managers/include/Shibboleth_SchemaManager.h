@@ -38,7 +38,7 @@ public:
 	SchemaManager(void);
 	~SchemaManager(void);
 
-	void* rawRequestInterface(unsigned int class_id) const;
+	void* rawRequestInterface(Gaff::ReflectionHash class_id) const;
 	const char* getName(void) const;
 	void allManagersCreated(void);
 

@@ -46,7 +46,7 @@ class IApp;
 class OcclusionManager : public IManager, public IUpdateQuery
 {
 public:
-	using UserData = Gaff::Pair<unsigned long long, unsigned long long>;
+	using UserData = Gaff::Pair<uint64_t, uint64_t>;
 	using QueryResult = Gaff::Pair<Object*, const UserData&>;
 
 	enum OBJ_TYPE
@@ -72,7 +72,7 @@ public:
 	~OcclusionManager(void);
 
 	void getUpdateEntries(Array<UpdateEntry>& entries);
-	void* rawRequestInterface(unsigned int class_id) const;
+	void* rawRequestInterface(Gaff::ReflectionHash class_id) const;
 	const char* getName(void) const;
 
 	OcclusionID addObject(Object* object, OBJ_TYPE object_type, const UserData& user_data = UserData(0, 0));
@@ -155,7 +155,7 @@ private:
 
 		bool _is_static;
 
-		void dirtyObjectCallback(Object* object, unsigned long long index);
+		void dirtyObjectCallback(Object* object, uint64_t index);
 		void growArrays(void);
 
 		void addObjectHelper(const AddBufferData& data);

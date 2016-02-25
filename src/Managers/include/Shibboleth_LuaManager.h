@@ -46,7 +46,7 @@ public:
 
 	lua::State* createNewState(void);
 
-	void* rawRequestInterface(unsigned int class_id) const;
+	void* rawRequestInterface(Gaff::ReflectionHash class_id) const;
 
 private:
 	Array< Gaff::FunctionBinder<void, lua::State&> > _registrants;

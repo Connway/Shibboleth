@@ -60,9 +60,9 @@ public:
 	bool load(const Gaff::JSON& json) override;
 	bool save(Gaff::JSON& json) override;
 
-	void* rawRequestInterface(unsigned int class_id) const override;
+	void* rawRequestInterface(Gaff::ReflectionHash class_id) const override;
 
-	void updateFrustum(Object* object, unsigned long long);
+	void updateFrustum(Object* object, uint64_t);
 
 	INLINE const Gleam::Matrix4x4CPU& getProjectionMatrix(void) const;
 	INLINE const Gleam::FrustumCPU& getFrustum(void) const;

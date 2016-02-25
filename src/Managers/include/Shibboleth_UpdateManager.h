@@ -51,7 +51,7 @@ public:
 
 	void update(void);
 
-	void* rawRequestInterface(unsigned int class_id) const;
+	void* rawRequestInterface(Gaff::ReflectionHash class_id) const;
 
 private:
 	class UpdatePhase

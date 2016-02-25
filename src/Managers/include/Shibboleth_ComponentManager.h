@@ -48,7 +48,7 @@ public:
 	INLINE Component* createComponent(const char* name);
 	INLINE void destroyComponent(Component* component);
 
-	void* rawRequestInterface(unsigned int class_id) const;
+	void* rawRequestInterface(Gaff::ReflectionHash class_id) const;
 
 private:
 	using InitFunc = bool (*)(IApp&);

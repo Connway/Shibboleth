@@ -20,8 +20,6 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-/*! \file */
-
 #pragma once
 
 #include "Gaff_String.h"
@@ -48,7 +46,6 @@ enum ReflectionValueType
 	VT_CUSTOM,
 	VT_SIZE
 };
-
 
 template <class Allocator>
 class IEnumReflectionDefinition
@@ -125,7 +122,7 @@ public:
 			The address where the interface of \a class_id begins at,
 			otherwise nullptr if \a object does not implement\inherit that interface.
 	*/
-	virtual void* getInterface(unsigned int class_id, const void* object) const = 0;
+	virtual void* getInterface(ReflectionHash class_id, const void* object) const = 0;
 
 	/*!
 		\brief Gets the name of the reflected type.

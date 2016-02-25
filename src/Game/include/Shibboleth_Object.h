@@ -27,7 +27,6 @@ THE SOFTWARE.
 #include <Shibboleth_Array.h>
 #include <Gaff_SpinLock.h>
 #include <Gaff_Function.h>
-//#include <Gaff_SmartPtr.h>
 #include <Gleam_Transform_CPU.h>
 #include <Gleam_AABB_CPU.h>
 
@@ -92,7 +91,7 @@ public:
 		}
 	}
 
-	typedef Gaff::FunctionBinder<void, Object*, unsigned long long> DirtyCallback;
+	typedef Gaff::FunctionBinder<void, Object*, uint64_t> DirtyCallback;
 	typedef Gaff::FunctionBinder<void, double> UpdateCallback;
 
 	Object(unsigned int id);
@@ -141,11 +140,11 @@ public:
 	void removeChildren(void);
 	void updateTransforms(void);
 
-	void registerForLocalDirtyCallback(const DirtyCallback& callback, unsigned long long user_data = 0);
+	void registerForLocalDirtyCallback(const DirtyCallback& callback, uint64_t user_data = 0);
 	void unregisterForLocalDirtyCallback(const DirtyCallback& callback);
 	void notifyLocalDirtyCallbacks(void);
 
-	void registerForWorldDirtyCallback(const DirtyCallback& callback, unsigned long long user_data = 0);
+	void registerForWorldDirtyCallback(const DirtyCallback& callback, uint64_t user_data = 0);
 	void unregisterForWorldDirtyCallback(const DirtyCallback& callback);
 	void notifyWorldDirtyCallbacks(void);
 
@@ -162,8 +161,8 @@ private:
 	Gleam::AABBCPU _local_aabb;
 	Gleam::AABBCPU _world_aabb;
 
-	Array< Gaff::Pair<DirtyCallback, unsigned long long> > _local_callbacks;
-	Array< Gaff::Pair<DirtyCallback, unsigned long long> > _world_callbacks;
+	Array< Gaff::Pair<DirtyCallback, uint64_t> > _local_callbacks;
+	Array< Gaff::Pair<DirtyCallback, uint64_t> > _world_callbacks;
 	Gaff::SpinLock _local_cb_lock;
 	Gaff::SpinLock _world_cb_lock;
 
