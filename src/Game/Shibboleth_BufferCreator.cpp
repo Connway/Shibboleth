@@ -39,7 +39,7 @@ BufferCreator::~BufferCreator(void)
 {
 }
 
-Gaff::IVirtualDestructor* BufferCreator::load(const char*, unsigned long long buffer_settings, HashMap<AString, IFile*>&)
+Gaff::IVirtualDestructor* BufferCreator::load(const char*, uint64_t buffer_settings, HashMap<AString, IFile*>&)
 {
 	Gleam::IBuffer::BufferSettings* bs = reinterpret_cast<Gleam::IBuffer::BufferSettings*>(buffer_settings);
 	Gleam::IRenderDevice& rd = _render_mgr.getRenderDevice();

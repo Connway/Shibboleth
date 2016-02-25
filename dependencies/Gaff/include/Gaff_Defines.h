@@ -117,14 +117,16 @@ THE SOFTWARE.
 	#endif
 #endif
 
+#ifdef _DEBUG
+	#define GAFF_ASSERT_ENABLED
+#endif
+
 #define SIZE_T_FAIL static_cast<size_t>(-1) // Returned from functions that use size_t's, but can potentially fail
 #define UINT_FAIL static_cast<unsigned int>(-1)  // Returned from functions that use unsigned int's, but can potentially fail
 #define DYNAMICEXPORT_C extern "C" DYNAMICEXPORT // Exports a function with C-style symbol names.
 
 #define GAFF_STR_HELPER(x) #x
 #define GAFF_STR(x) GAFF_STR_HELPER(x)
-
-NS_GAFF
 
 #if defined(__LP64__) || defined(_WIN64)
 	#define PLATFORM_64_BIT
@@ -134,13 +136,20 @@ NS_GAFF
 	#error "Cannot deduce platform bit-age."
 #endif
 
-using ReflectionHash = unsigned int;
-
-NS_END
-
 #if defined(__linux__) || defined(__APPLE__)
 	#include <cstdlib> // For size_t
 	#include <sched.h> // For sched_yield
 #endif
 
 #include <utility> // For std::move() and std::forward()
+#include <stdint.h>
+
+#define REFLECTION_HASH Gaff::FNV1aHash32
+//#define REFLECTION_HASH Gaff::FNV1aHash64
+
+NS_GAFF
+
+using ReflectionHash = uint32_t;
+//using ReflectionHash = uint64_t;
+
+NS_END

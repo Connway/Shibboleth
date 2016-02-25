@@ -133,7 +133,7 @@ void ResourceReadingJob(void* data)
 }
 
 // Resource Container
-ResourceContainer::ResourceContainer(const AHashString& res_key, ResourceManager* res_manager, ZRC zero_ref_callback, unsigned long long user_data):
+ResourceContainer::ResourceContainer(const AHashString& res_key, ResourceManager* res_manager, ZRC zero_ref_callback, uint64_t user_data):
 	_res_manager(res_manager), _zero_ref_callback(zero_ref_callback), _res_key(res_key),
 	_resource(nullptr), _user_data(user_data), _ref_count(0), _res_state(RS_NONE)
 {
@@ -169,7 +169,7 @@ unsigned int ResourceContainer::getRefCount(void) const
 	return _ref_count;
 }
 
-unsigned long long ResourceContainer::getUserData(void) const
+uint64_t ResourceContainer::getUserData(void) const
 {
 	return _user_data;
 }
@@ -292,7 +292,7 @@ void ResourceManager::registerResourceLoader(IResourceLoader* res_loader, const 
 	_resource_loaders[AHashString(resource_type)] = loader_data;
 }
 
-ResourcePtr ResourceManager::requestResource(const char* resource_type, const char* instance_name, unsigned long long user_data)
+ResourcePtr ResourceManager::requestResource(const char* resource_type, const char* instance_name, uint64_t user_data)
 {
 	assert(resource_type && strlen(resource_type) && instance_name && strlen(instance_name));
 
@@ -337,7 +337,7 @@ ResourcePtr ResourceManager::requestResource(const char* resource_type, const ch
 	}
 }
 
-ResourcePtr ResourceManager::requestResource(const char* filename, unsigned long long user_data)
+ResourcePtr ResourceManager::requestResource(const char* filename, uint64_t user_data)
 {
 	assert(filename && strlen(filename));
 
@@ -383,7 +383,7 @@ ResourcePtr ResourceManager::requestResource(const char* filename, unsigned long
 	}
 }
 
-ResourcePtr ResourceManager::loadResourceImmediately(const char* filename, unsigned long long user_data, HashMap<AString, IFile*>& file_map)
+ResourcePtr ResourceManager::loadResourceImmediately(const char* filename, uint64_t user_data, HashMap<AString, IFile*>& file_map)
 {
 	AHashString res_key(filename);
 

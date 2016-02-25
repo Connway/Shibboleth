@@ -54,7 +54,7 @@ public:
 
 	void allComponentsLoaded(void);
 
-	void* rawRequestInterface(unsigned int class_id) const;
+	void* rawRequestInterface(Gaff::ReflectionHash class_id) const;
 
 private:
 	ResourceWrapper< SingleDataWrapper<lua::State*> > _script_res;

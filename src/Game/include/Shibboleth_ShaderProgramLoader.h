@@ -39,7 +39,7 @@ public:
 	ShaderProgramLoader(ResourceManager& res_mgr, SchemaManager& schema_mgr, RenderManager& render_mgr);
 	~ShaderProgramLoader(void);
 
-	Gaff::IVirtualDestructor* load(const char* file_name, unsigned long long, HashMap<AString, IFile*>& file_map);
+	Gaff::IVirtualDestructor* load(const char* file_name, uint64_t, HashMap<AString, IFile*>& file_map);
 
 private:
 	ResourceManager& _res_mgr;

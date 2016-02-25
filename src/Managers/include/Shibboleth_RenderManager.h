@@ -148,7 +148,7 @@ public:
 
 	const char* getName(void) const override;
 
-	void* rawRequestInterface(unsigned int class_id) const override;
+	void* rawRequestInterface(Gaff::ReflectionHash class_id) const override;
 
 	bool initThreadData(void);
 	bool init(const char* module);

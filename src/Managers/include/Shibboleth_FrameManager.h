@@ -100,7 +100,7 @@ public:
 	const char* getName(void) const override;
 	void allManagersCreated(void) override;
 
-	void* rawRequestInterface(unsigned int class_id) const override;
+	void* rawRequestInterface(Gaff::ReflectionHash class_id) const override;
 	void getUpdateEntries(Array<UpdateEntry>& entries) override;
 
 	void setFrameDataFuncs(FrameDataAllocFunc alloc_func, FrameDataFreeFunc free_func);

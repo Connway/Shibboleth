@@ -80,54 +80,54 @@ bool Between(const T& val, const T& min_val, const T& max_val)
 #define INIT_HASH32 2166136261U
 
 template <class T>
-inline unsigned long long FNV1aHash64T(const T* value, unsigned long long init = INIT_HASH64)
+inline uint64_t FNV1aHash64T(const T* value, uint64_t init = INIT_HASH64)
 {
 	return FNV1aHash64(reinterpret_cast<const char*>(value), sizeof(T), init);
 }
 
 template <class T>
-inline unsigned long long FNV1Hash64T(const T* value, unsigned long long init = INIT_HASH64)
+inline uint64_t FNV1Hash64T(const T* value, uint64_t init = INIT_HASH64)
 {
 	return FNV1Hash64(reinterpret_cast<const char*>(value), sizeof(T), init);
 }
 
 template <class T>
-inline unsigned int FNV1aHash32T(const T* value, unsigned int init = INIT_HASH32)
+inline uint32_t FNV1aHash32T(const T* value, uint32_t init = INIT_HASH32)
 {
 	return FNV1aHash32(reinterpret_cast<const char*>(value), sizeof(T), init);
 }
 
 template <class T>
-inline unsigned int FNV1Hash32T(const T* value, unsigned int init = INIT_HASH32)
+inline uint32_t FNV1Hash32T(const T* value, uint32_t init = INIT_HASH32)
 {
 	return FNV1Hash32(reinterpret_cast<const char*>(value), sizeof(T), init);
 }
 
-typedef unsigned long long (*HashFunc64)(const char* data, size_t len);
-typedef unsigned int (*HashFunc32)(const char* data, size_t len);
+using HashFunc64 = uint64_t (*)(const char*, size_t);
+using HashFunc32 = uint32_t (*)(const char*, size_t);
 
-unsigned long long FNV1aHash64(const char* key, size_t len, unsigned long long init = INIT_HASH64);
-unsigned long long FNV1Hash64(const char* key, size_t len, unsigned long long init = INIT_HASH64);
-unsigned int FNV1aHash32(const char* key, size_t len, unsigned int init = INIT_HASH32);
-unsigned int FNV1Hash32(const char* key, size_t len, unsigned int init = INIT_HASH32);
+uint64_t FNV1aHash64(const char* key, size_t len, uint64_t init);
+uint64_t FNV1Hash64(const char* key, size_t len, uint64_t init);
+uint32_t FNV1aHash32(const char* key, size_t len, uint32_t init);
+uint32_t FNV1Hash32(const char* key, size_t len, uint32_t init);
 
-// These functions assume just call the above functiosn with INIT_HASH64/32
-INLINE unsigned long long FNV1aHash64Wrapper(const char* key, size_t len);
-INLINE unsigned long long FNV1Hash64Wrapper(const char* key, size_t len);
-INLINE unsigned int FNV1aHash32Wrapper(const char* key, size_t len);
-INLINE unsigned int FNV1Hash32Wrapper(const char* key, size_t len);
+// These functions just call the above functiosn with INIT_HASH64/32
+INLINE uint64_t FNV1aHash64(const char* key, size_t len);
+INLINE uint64_t FNV1Hash64(const char* key, size_t len);
+INLINE uint32_t FNV1aHash32(const char* key, size_t len);
+INLINE uint32_t FNV1Hash32(const char* key, size_t len);
 
 float BinomialCoefficient(float n, float k);
 float BernsteinPolynomial(float t, float n, float k);
 
-//static constexpr unsigned long long FNVBasis64 = 14695981039346656037ULL;
-//static constexpr unsigned long long FNVPrime64 = 1099511628211ULL;
-//static constexpr unsigned int FNVBasis32 = 2166136261U;
-//static constexpr unsigned int FNVPrime32 = 16777619U;
+//static constexpr uint64_t FNVBasis64 = 14695981039346656037ULL;
+//static constexpr uint64_t FNVPrime64 = 1099511628211ULL;
+//static constexpr uint32_t FNVBasis32 = 2166136261U;
+//static constexpr uint32_t FNVPrime32 = 16777619U;
 
-//constexpr unsigned long long FNV1aHash64Const(const char* key, unsigned long long value = FNVBasis64)
+//constexpr uint64_t FNV1aHash64Const(const char* key, uint64_t value = FNVBasis64)
 //{
-//	return (*key) ? FNV1aHash64Const(key + 1, (value ^ (unsigned long long)*key) * FNVPrime64) : value;
+//	return (*key) ? FNV1aHash64Const(key + 1, (value ^ (uint64_t)*key) * FNVPrime64) : value;
 //}
 
 NS_END

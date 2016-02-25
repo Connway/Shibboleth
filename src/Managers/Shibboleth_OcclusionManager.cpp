@@ -187,7 +187,7 @@ void OcclusionManager::BVHTree::update(void)
 }
 
 // These are going to be called in an environment where there is no thread contention
-void OcclusionManager::BVHTree::dirtyObjectCallback(Object*, unsigned long long index)
+void OcclusionManager::BVHTree::dirtyObjectCallback(Object*, uint64_t index)
 {
 	_node_cache[static_cast<size_t>(index)].dirty = true;
 	_dirty_indices.push(static_cast<size_t>(index));

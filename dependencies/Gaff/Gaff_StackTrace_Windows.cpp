@@ -109,12 +109,12 @@ unsigned short StackTrace::captureStack(unsigned int frames_to_capture)
 		_symbol_info[i].line_number = 0;
 		_symbol_info[i].address = 0;
 
-		if (SymFromAddr(_handle, (DWORD64)_stack[i], nullptr, sym)) {
+		if (SymFromAddr(_handle, reinterpret_cast<DWORD64>(_stack[i]), nullptr, sym)) {
 			strncpy(_symbol_info[i].symbol_name, sym->Name, NAME_SIZE);
 			_symbol_info[i].address = sym->Address;
 		}
 
-		if (SymGetLineFromAddr64(_handle, (DWORD64)_stack[i], &displacement, &image_help)) {
+		if (SymGetLineFromAddr64(_handle, reinterpret_cast<DWORD64>(_stack[i]), &displacement, &image_help)) {
 			strncpy(_symbol_info[i].file_name, image_help.FileName, NAME_SIZE);
 			_symbol_info[i].line_number = image_help.LineNumber;
 		}
@@ -128,7 +128,7 @@ unsigned short StackTrace::getNumCapturedFrames(void) const
 	return _frames;
 }
 
-unsigned long long StackTrace::getAddress(unsigned short frame) const
+uint64_t StackTrace::getAddress(unsigned short frame) const
 {
 	return _symbol_info[frame].address;
 }

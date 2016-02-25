@@ -44,7 +44,7 @@ SamplerStateLoader::~SamplerStateLoader(void)
 {
 }
 
-Gaff::IVirtualDestructor* SamplerStateLoader::load(const char* file_name, unsigned long long, HashMap<AString, IFile*>& file_map)
+Gaff::IVirtualDestructor* SamplerStateLoader::load(const char* file_name, uint64_t, HashMap<AString, IFile*>& file_map)
 {
 	assert(file_map.hasElementWithKey(AString(file_name)));
 

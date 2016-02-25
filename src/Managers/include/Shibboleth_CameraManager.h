@@ -39,7 +39,7 @@ public:
 	CameraManager(void);
 	~CameraManager(void);
 
-	void* rawRequestInterface(unsigned int class_id) const override;
+	void* rawRequestInterface(Gaff::ReflectionHash class_id) const override;
 	const char* getName(void) const override;
 	void allManagersCreated(void) override;
 

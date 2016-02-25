@@ -84,7 +84,7 @@ public:
 	void release(void) const;
 
 	INLINE unsigned int getRefCount(void) const;
-	INLINE unsigned long long getUserData(void) const;
+	INLINE uint64_t getUserData(void) const;
 
 	INLINE const AHashString& getResourceKey(void) const;
 
@@ -108,7 +108,7 @@ private:
 
 	volatile Gaff::IVirtualDestructor* _resource;
 
-	unsigned long long _user_data;
+	uint64_t _user_data;
 
 	mutable volatile unsigned int _ref_count;
 
@@ -116,7 +116,7 @@ private:
 
 	ResourceState _res_state;
 
-	ResourceContainer(const AHashString& res_key, ResourceManager* res_manager, ZRC zero_ref_callback, unsigned long long user_data);
+	ResourceContainer(const AHashString& res_key, ResourceManager* res_manager, ZRC zero_ref_callback, uint64_t user_data);
 	void setResource(Gaff::IVirtualDestructor* resource);
 	void callCallbacks(void);
 
@@ -150,8 +150,8 @@ public:
 	void registerResourceLoader(IResourceLoader* res_loader, const Array<AString>& resource_types, unsigned int thread_pool = 0, const Array<JSONModifiers>& json_elements = Array<JSONModifiers>());
 	INLINE void registerResourceLoader(IResourceLoader* res_loader, const char* resource_type, unsigned int thread_pool = 0, const Array<JSONModifiers>& json_elements = Array<JSONModifiers>());
 
-	ResourcePtr requestResource(const char* resource_type, const char* instance_name, unsigned long long user_data = 0);
-	ResourcePtr requestResource(const char* filename, unsigned long long user_data = 0);
+	ResourcePtr requestResource(const char* resource_type, const char* instance_name, uint64_t user_data = 0);
+	ResourcePtr requestResource(const char* filename, uint64_t user_data = 0);
 
 	/***********************************************************************************************************
 		Blocks calling thread. Calls the loader immediately. On return, resource should be valid if succeeded.
@@ -160,12 +160,12 @@ public:
 		WARNING: DO NOT MIX requestResource() AND loadResourceImmediately() CALLS! USE ONE OR THE OTHER, NOT BOTH!
 		MIXING CALLS CAN POTENTIALLY CAUSE DEADLOCK!
 	***********************************************************************************************************/
-	ResourcePtr loadResourceImmediately(const char* filename, unsigned long long user_data, HashMap<AString, IFile*>& file_map);
+	ResourcePtr loadResourceImmediately(const char* filename, uint64_t user_data, HashMap<AString, IFile*>& file_map);
 
 	void addRequestAddedCallback(const Gaff::FunctionBinder<void, ResourcePtr&>& callback);
 	void removeRequestAddedCallback(const Gaff::FunctionBinder<void, ResourcePtr&>& callback);
 
-	void* rawRequestInterface(unsigned int class_id) const override;
+	void* rawRequestInterface(Gaff::ReflectionHash class_id) const override;
 
 private:
 	struct LoaderData

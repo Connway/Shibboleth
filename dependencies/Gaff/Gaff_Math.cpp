@@ -31,10 +31,10 @@ NS_GAFF
 	\param len The length of the buffer in bytes.
 	\return The calculated hash.
 */
-unsigned long long FNV1aHash64(const char* key, size_t len, unsigned long long init)
+uint64_t FNV1aHash64(const char* key, size_t len, uint64_t init)
 {
 	for (size_t i = 0; i < len; ++i) {
-		init = (init ^ static_cast<unsigned long long>(key[i])) * 1099511628211ULL;
+		init = (init ^ static_cast<uint64_t>(key[i])) * 1099511628211ULL;
 	}
 
 	return init;
@@ -46,10 +46,10 @@ unsigned long long FNV1aHash64(const char* key, size_t len, unsigned long long i
 	\param len The length of the buffer in bytes.
 	\return The calculated hash.
 */
-unsigned long long FNV1Hash64(const char* key, size_t len, unsigned long long init)
+uint64_t FNV1Hash64(const char* key, size_t len, uint64_t init)
 {
 	for (size_t i = 0; i < len; ++i) {
-		init = (init ^ 1099511628211ULL) * static_cast<unsigned long long>(key[i]);
+		init = (init ^ 1099511628211ULL) * static_cast<uint64_t>(key[i]);
 	}
 
 	return init;
@@ -61,10 +61,10 @@ unsigned long long FNV1Hash64(const char* key, size_t len, unsigned long long in
 	\param len The length of the buffer in bytes.
 	\return The calculated hash.
 */
-unsigned int FNV1aHash32(const char* key, size_t len, unsigned int init)
+uint32_t FNV1aHash32(const char* key, size_t len, uint32_t init)
 {
 	for (size_t i = 0; i < len; ++i) {
-		init = (init ^ static_cast<unsigned int>(key[i])) * 16777619U;
+		init = (init ^ static_cast<uint32_t>(key[i])) * 16777619U;
 	}
 
 	return init;
@@ -76,33 +76,33 @@ unsigned int FNV1aHash32(const char* key, size_t len, unsigned int init)
 	\param len The length of the buffer in bytes.
 	\return The calculated hash.
 */
-unsigned int FNV1Hash32(const char* key, size_t len, unsigned int init)
+uint32_t FNV1Hash32(const char* key, size_t len, uint32_t init)
 {
 	for (size_t i = 0; i < len; ++i) {
-		init = (init * 16777619U) ^ static_cast<unsigned int>(key[i]);
+		init = (init * 16777619U) ^ static_cast<uint32_t>(key[i]);
 	}
 
 	return init;
 }
 
-unsigned long long FNV1aHash64Wrapper(const char* key, size_t len)
+uint64_t FNV1aHash64(const char* key, size_t len)
 {
-	return FNV1aHash64(key, len);
+	return FNV1aHash64(key, len, INIT_HASH64);
 }
 
-unsigned long long FNV1Hash64Wrapper(const char* key, size_t len)
+uint64_t FNV1Hash64(const char* key, size_t len)
 {
-	return FNV1Hash64(key, len);
+	return FNV1Hash64(key, len, INIT_HASH64);
 }
 
-unsigned int FNV1aHash32Wrapper(const char* key, size_t len)
+uint32_t FNV1aHash32(const char* key, size_t len)
 {
-	return FNV1aHash32(key, len);
+	return FNV1aHash32(key, len, INIT_HASH32);
 }
 
-unsigned int FNV1Hash32Wrapper(const char* key, size_t len)
+uint32_t FNV1Hash32(const char* key, size_t len)
 {
-	return FNV1Hash32(key, len);
+	return FNV1Hash32(key, len, INIT_HASH32);
 }
 
 /*!

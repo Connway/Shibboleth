@@ -40,7 +40,7 @@ ProgramBuffersCreator::~ProgramBuffersCreator(void)
 {
 }
 
-Gaff::IVirtualDestructor* ProgramBuffersCreator::load(const char*, unsigned long long, HashMap<AString, IFile*>&)
+Gaff::IVirtualDestructor* ProgramBuffersCreator::load(const char*, uint64_t, HashMap<AString, IFile*>&)
 {
 	Gleam::IRenderDevice& rd = _render_mgr.getRenderDevice();
 

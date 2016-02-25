@@ -23,14 +23,15 @@ THE SOFTWARE.
 #pragma once
 
 #include <Shibboleth_Defines.h>
-#include <Gaff_IncludeAssert.h>
+#include <stdint.h>
 
 NS_SHIBBOLETH
 
 class UserDataWrapper
 {
 public:
-	UserDataWrapper(unsigned long long user_data = 0):
+
+	UserDataWrapper(uint64_t user_data = 0):
 		_user_data(user_data)
 	{
 	}
@@ -40,26 +41,26 @@ public:
 	}
 
 	template <class T>
-	const T* getUserData(void) const
+	const T& getUserData(void) const
 	{
-		assert(sizeof(T) <= sizeof(unsigned long long));
-		return (T*)&_user_data;
+		static_assert(sizeof(T) <= sizeof(uint64_t), "UserDataWrapper: sizeof(T) is greater than 64-bits!");
+		return reinterpret_cast<T>(_user_data);
 	}
 
 	template <class T>
-	T* getUserData(void)
+	T& getUserData(void)
 	{
-		assert(sizeof(T) <= sizeof(unsigned long long));
-		return (T*)&_user_data;
+		static_assert(sizeof(T) <= sizeof(uint64_t), "UserDataWrapper: sizeof(T) is greater than 64-bits!");
+		return reinterpret_cast<T>(_user_data);
 	}
 
-	unsigned long long get(void) const
+	uint64_t get(void) const
 	{
 		return _user_data;
 	}
 
 private:
-	unsigned long long _user_data;
+	uint64_t _user_data;
 };
 
 NS_END

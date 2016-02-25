@@ -41,7 +41,7 @@ public:
 	IResourceLoader(void) {}
 	virtual ~IResourceLoader(void) {}
 
-	virtual Gaff::IVirtualDestructor* load(const char* file_name, unsigned long long user_data, HashMap<AString, IFile*>& file_map) = 0;
+	virtual Gaff::IVirtualDestructor* load(const char* file_name, uint64_t user_data, HashMap<AString, IFile*>& file_map) = 0;
 
 	GAFF_NO_COPY(IResourceLoader);
 	GAFF_NO_MOVE(IResourceLoader);

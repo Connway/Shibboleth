@@ -107,7 +107,7 @@ bool CameraComponent::save(Gaff::JSON& json)
 	return true;
 }
 
-void CameraComponent::updateFrustum(Object* object, unsigned long long)
+void CameraComponent::updateFrustum(Object* object, uint64_t)
 {
 	_frustum = _unstransformed_frustum;
 	_frustum.transform(object->getWorldTransform());

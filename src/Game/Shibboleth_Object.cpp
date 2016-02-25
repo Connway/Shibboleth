@@ -337,7 +337,7 @@ void Object::updateTransforms(void)
 	}
 }
 
-void Object::registerForLocalDirtyCallback(const DirtyCallback& callback, unsigned long long user_data)
+void Object::registerForLocalDirtyCallback(const DirtyCallback& callback, uint64_t user_data)
 {
 	Gaff::ScopedLock<Gaff::SpinLock> scoped_lock(_local_cb_lock);
 	_local_callbacks.emplacePush(callback, user_data);
@@ -348,7 +348,7 @@ void Object::unregisterForLocalDirtyCallback(const DirtyCallback& callback)
 	Gaff::ScopedLock<Gaff::SpinLock> scoped_lock(_local_cb_lock);
 
 	auto it = _local_callbacks.linearSearch(callback,
-	[](const Gaff::Pair<DirtyCallback, unsigned long long>& left, const DirtyCallback& right) -> bool
+	[](const Gaff::Pair<DirtyCallback, uint64_t>& left, const DirtyCallback& right) -> bool
 	{
 		return left.first == right;
 	});
@@ -375,7 +375,7 @@ void Object::notifyLocalDirtyCallbacks(void)
 	clearDirty();
 }
 
-void Object::registerForWorldDirtyCallback(const DirtyCallback& callback, unsigned long long user_data)
+void Object::registerForWorldDirtyCallback(const DirtyCallback& callback, uint64_t user_data)
 {
 	Gaff::ScopedLock<Gaff::SpinLock> scoped_lock(_world_cb_lock);
 	_world_callbacks.emplacePush(callback, user_data);
@@ -386,7 +386,7 @@ void Object::unregisterForWorldDirtyCallback(const DirtyCallback& callback)
 	Gaff::ScopedLock<Gaff::SpinLock> scoped_lock(_world_cb_lock);
 
 	auto it = _world_callbacks.linearSearch(callback,
-	[](const Gaff::Pair<DirtyCallback, unsigned long long>& left, const DirtyCallback& right) -> bool
+	[](const Gaff::Pair<DirtyCallback, uint64_t>& left, const DirtyCallback& right) -> bool
 	{
 		return left.first == right;
 	});

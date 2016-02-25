@@ -22,26 +22,21 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Shibboleth_IResourceLoader.h"
-#include <Gaff_Defines.h>
+#include "Gaff_Defines.h"
 
-NS_SHIBBOLETH
+NS_GAFF
 
-class RenderManager;
+#ifdef GAFF_ASSERT_ENABLED
+	#define GAFF_ASSERT(expr) GAFF_ASSERT_MSG(expr, nullptr)
+	#define GAFF_ASSERT_MSG(expr, msg, ...) (void)((expr) || (Gaff::Assert(msg, #expr, __FILE__, __LINE__, __VA_ARGS__), 0))
+#else
+	#define GAFF_ASSERT(expr)
+	#define GAFF_ASSERT_MSG(expr, msg)
+#endif
 
-class BufferCreator : public IResourceLoader
-{
-public:
-	BufferCreator(void);
-	~BufferCreator(void);
+using AssertHandler = void (*)(const char* msg, const char* expr, const char* file, int line);
 
-	Gaff::IVirtualDestructor* load(const char* file_name, uint64_t user_data, HashMap<AString, IFile*>& file_map);
-
-private:
-	RenderManager& _render_mgr;
-
-	GAFF_NO_COPY(BufferCreator);
-	GAFF_NO_MOVE(BufferCreator);
-};
+void SetAssertHandler(AssertHandler handler);
+void Assert(const char* msg, const char* expr, const char* file, int line, ...);
 
 NS_END

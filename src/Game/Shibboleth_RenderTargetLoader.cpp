@@ -189,7 +189,7 @@ RenderTargetLoader::~RenderTargetLoader(void)
 {
 }
 
-Gaff::IVirtualDestructor* RenderTargetLoader::load(const char* file_name, unsigned long long, HashMap<AString, IFile*>& file_map)
+Gaff::IVirtualDestructor* RenderTargetLoader::load(const char* file_name, uint64_t, HashMap<AString, IFile*>& file_map)
 {
 	assert(file_map.hasElementWithKey(AString(file_name)));
 	IFile*& file = file_map[AString(file_name)];
