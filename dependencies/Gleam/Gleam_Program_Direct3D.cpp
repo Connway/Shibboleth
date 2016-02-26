@@ -349,7 +349,9 @@ ProgramReflection ProgramD3D::getReflectionData(void) const
 	ProgramReflection reflection;
 
 	for (size_t i = 0; i < IShader::SHADER_TYPE_SIZE - 1; ++i) {
-		reflection.shader_reflection[i] = getShaderReflectionData(_attached_shaders[i].get());
+		if (_attached_shaders[i]) {
+			reflection.shader_reflection[i] = getShaderReflectionData(_attached_shaders[i].get(), reflection);
+		}
 	}
 
 	return reflection;
@@ -360,10 +362,8 @@ RendererType ProgramD3D::getRendererType(void) const
 	return RENDERER_DIRECT3D;
 }
 
-ShaderReflection ProgramD3D::getShaderReflectionData(const IShader* shader) const
+ShaderReflection ProgramD3D::getShaderReflectionData(const IShader* shader, ProgramReflection& prog_refl) const
 {
-	// TODO: Add reflection for samplers and srvs (textures/structured buffers).
-
 	ShaderReflection reflection;
 
 	ID3DBlob* blob = reinterpret_cast<const ShaderD3D*>(shader)->getByteCodeBuffer();
@@ -386,20 +386,59 @@ ShaderReflection ProgramD3D::getShaderReflectionData(const IShader* shader) cons
 		return reflection;
 	}
 
-	reflection.num_cbs = shader_desc.ConstantBuffers;
+	reflection.num_constant_buffers = shader_desc.ConstantBuffers;
 
 	for (unsigned int i = 0; i < shader_desc.ConstantBuffers; ++i) {
-		 ID3D11ShaderReflectionConstantBuffer* cb_refl = refl->GetConstantBufferByIndex(i);
-		 D3D11_SHADER_BUFFER_DESC cb_desc;
-		 cb_refl->GetDesc(&cb_desc);
+		ID3D11ShaderReflectionConstantBuffer* cb_refl = refl->GetConstantBufferByIndex(i);
 
-		 strncpy(reflection.const_buff_reflection[i].name, cb_desc.Name, 256);
-		 reflection.const_buff_reflection[i].name[255] = 0;
+		D3D11_SHADER_BUFFER_DESC cb_desc;
+		result = cb_refl->GetDesc(&cb_desc);
 
-		 reflection.const_buff_reflection[i].size_bytes = cb_desc.Size;
+		if (FAILED(result)) {
+			refl->Release();
+			return reflection;
+		}
+
+		strncpy(reflection.const_buff_reflection[i].name, cb_desc.Name, MAX_SHADER_VAR_NAME);
+		reflection.const_buff_reflection[i].name[255] = 0;
+
+		reflection.const_buff_reflection[i].size_bytes = cb_desc.Size;
+	}
+
+	for (unsigned int i = 0; i < shader_desc.BoundResources; ++i) {
+		D3D11_SHADER_INPUT_BIND_DESC res_desc;
+		result = refl->GetResourceBindingDesc(i, &res_desc);
+
+		if (FAILED(result)) {
+			refl->Release();
+			return reflection;
+		}
+
+		switch (res_desc.Type) {
+			case D3D_SIT_TEXTURE:
+				strncpy(reflection.textures[reflection.num_textures], res_desc.Name, MAX_SHADER_VAR_NAME);
+				++reflection.num_textures;
+				break;
+
+			case D3D_SIT_SAMPLER:
+				strncpy(reflection.samplers[reflection.num_samplers], res_desc.Name, MAX_SHADER_VAR_NAME);
+				++reflection.num_samplers;
+				break;
+
+			case D3D_SIT_STRUCTURED:
+				strncpy(reflection.structured_buffers[reflection.num_structured_buffers], res_desc.Name, MAX_SHADER_VAR_NAME);
+				++reflection.num_structured_buffers;
+				break;
+		}
 	}
 
 	refl->Release();
+
+	prog_refl.total_structured_buffers += reflection.num_structured_buffers;
+	prog_refl.total_textures += reflection.num_textures;
+	prog_refl.total_samplers += reflection.num_samplers;
+	prog_refl.total_structured_buffers += reflection.num_structured_buffers;
+
 	return reflection;
 }
 

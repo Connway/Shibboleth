@@ -62,6 +62,21 @@ SHIB_ENUM_REF_IMPL_EMBEDDED(MAP_TYPE, Gleam::IBuffer::MAP_TYPE)
 .addValue("Write No Overwrite", Gleam::IBuffer::WRITE_NO_OVERWRITE)
 ;
 
+// Helper function for making resource requests.
+template <class T>
+static void RequestResourceArray(Array<T>& res_array, ResourceManager& res_mgr, const Gaff::JSON& json, const Gaff::FunctionBinder<void, ResourceContainer*>& callback)
+{
+	if (json) {
+		res_array.resize(json.size());
+
+		json.forEachInArray([&](size_t index, const Gaff::JSON& res) -> bool
+		{
+			res_array[index] = res_mgr.requestResource(res.getString());
+			res_array[index].getResourcePtr()->addCallback(callback);
+			return false;
+		});
+	}
+}
 
 COMP_REF_DEF_SAVE(ModelComponent, gRefDef);
 REF_IMPL_REQ(ModelComponent);
@@ -80,24 +95,17 @@ ModelComponent::~ModelComponent(void)
 {
 	auto callback = Gaff::Bind(this, &ModelComponent::ResourceLoadedCallback);
 
-	for (auto it = _program_buffers.begin(); it != _program_buffers.end(); ++it) {
-		it->getResourcePtr()->removeCallback(callback);
-	}
+	for (auto it_md = _mesh_data.begin(); it_md != _mesh_data.end(); ++it_md) {
+		it_md->program_buffers.getResourcePtr()->removeCallback(callback);
+		it_md->material.getResourcePtr()->removeCallback(callback);
 
-	for (auto it = _textures.begin(); it != _textures.end(); ++it) {
-		it->getResourcePtr()->removeCallback(callback);
-	}
+		for (auto it_tex = it_md->textures.begin(); it_tex != it_md->textures.end(); ++it_tex) {
+			it_tex->getResourcePtr()->removeCallback(callback);
+		}
 
-	for (auto it = _materials.begin(); it != _materials.end(); ++it) {
-		it->getResourcePtr()->removeCallback(callback);
-	}
-
-	for (auto it = _samplers.begin(); it != _samplers.end(); ++it) {
-		it->getResourcePtr()->removeCallback(callback);
-	}
-
-	for (auto it = _buffers.begin(); it != _buffers.end(); ++it) {
-		it->getResourcePtr()->removeCallback(callback);
+		for (auto it_samp = it_md->samplers.begin(); it_samp != it_md->samplers.end(); ++it_samp) {
+			it_samp->getResourcePtr()->removeCallback(callback);
+		}
 	}
 
 	_model.getResourcePtr()->removeCallback(callback);
@@ -109,47 +117,31 @@ const Gaff::JSON& ModelComponent::getSchema(void) const
 	return schema;
 }
 
-bool ModelComponent::validate(const Gaff::JSON& json)
+bool ModelComponent::load(const Gaff::JSON& json)
 {
-	if (!Component::validate(json)) {
-		// log error
-		return false;
-	}
+	gRefDef.read(json, this);
 
-	Gaff::JSON material_files = json["Material Files"];
-	Gaff::JSON texture_files = json["Texture Files"];
-	Gaff::JSON sampler_files = json["Sampler Files"];
-	Gaff::JSON buffer_map = json["Buffer Map"];
-	Gaff::JSON buffers = json["Buffers"];
 	Gaff::JSON model_file = json["Model File"];
+	Gaff::JSON materials = json["Materials"];
 
-	if (material_files) {
-		_total_requests += material_files.size() * 2;
-	}
+	_mesh_data.resize(materials.size());
 
-	if (texture_files) {
-		_total_requests += texture_files.size();
-	}
+	materials.forEachInArray([&](size_t, const Gaff::JSON& value) -> bool
+	{
+		Gaff::JSON material = value["Material"];
+		Gaff::JSON textures = value["Textures"];
+		Gaff::JSON samplers = value["Samplers"];
 
-	if (sampler_files) {
-		_total_requests += sampler_files.size();
-	}
+		_total_requests += (material) ? 2 : 0; // One for material, one for program buffers
+		_total_requests += (textures) ? textures.size() : 0;
+		_total_requests += (samplers) ? samplers.size() : 0;
+
+		return false;
+	});
 
 	if (model_file) {
 		_total_requests += 1;
 	}
-
-	if (buffers) {
-		_total_requests += buffers.size();
-	}
-
-	return true;
-}
-
-bool ModelComponent::load(const Gaff::JSON& json)
-{
-	Gaff::JSON model_file = json["Model File"];
-	gRefDef.read(json, this);
 
 	ResourceManager& res_mgr = Shibboleth::GetApp().getManagerT<Shibboleth::ResourceManager>("Resource Manager");
 
@@ -158,13 +150,7 @@ bool ModelComponent::load(const Gaff::JSON& json)
 		_model.getResourcePtr()->addCallback(Gaff::Bind(this, &ModelComponent::ResourceLoadedCallback));
 	}
 
-	requestMaterials(json, res_mgr);
-	requestTextures(json, res_mgr);
-	requestSamplers(json, res_mgr);
-	requestBuffers(json, res_mgr);
-
-	//Shibboleth::GetApp().getBroadcaster().listen<LoadingMessage>(Gaff::Bind(this, &ModelComponent::HandleLoadingMessage));
-
+	requestResources(materials, res_mgr);
 	return true;
 }
 
@@ -285,34 +271,14 @@ size_t ModelComponent::determineLOD(const Gleam::Vector4CPU& pos)
 //	return hash;
 //}
 
-const Array< ResourceWrapper<ProgramBuffersData> >& ModelComponent::getProgramBuffers(void) const
+const Array<ModelComponent::MeshData>& ModelComponent::getMeshData(void) const
 {
-	return _program_buffers;
+	return _mesh_data;
 }
 
-Array< ResourceWrapper<ProgramBuffersData> >& ModelComponent::getProgramBuffers(void)
+Array<ModelComponent::MeshData>& ModelComponent::getMeshData(void)
 {
-	return _program_buffers;
-}
-
-const Array< ResourceWrapper<ProgramData> >& ModelComponent::getMaterials(void) const
-{
-	return _materials;
-}
-
-Array< ResourceWrapper<ProgramData> >& ModelComponent::getMaterials(void)
-{
-	return _materials;
-}
-
-const Array< ResourceWrapper<BufferData> >& ModelComponent::getBuffers(void) const
-{
-	return _buffers;
-}
-
-Array< ResourceWrapper<BufferData> >& ModelComponent::getBuffers(void)
-{
-	return _buffers;
+	return _mesh_data;
 }
 
 const ModelData& ModelComponent::getModel(void) const
@@ -339,241 +305,115 @@ void ModelComponent::ResourceLoadedCallback(ResourceContainer* resource)
 	}
 }
 
-void ModelComponent::requestMaterials(const Gaff::JSON& json, ResourceManager& res_mgr)
+void ModelComponent::requestResources(const Gaff::JSON& materials, ResourceManager& res_mgr)
 {
 	auto callback = Gaff::Bind(this, &ModelComponent::ResourceLoadedCallback);
-	Gaff::JSON material_files = json["Material Files"];
+	char temp[256] = { 0 };
 
-	if (material_files.isArray() && material_files.size()) {
-		char temp[256] = { 0 };
+	materials.forEachInArray([&](size_t index, const Gaff::JSON& value) -> bool
+	{
+		MeshData& mesh_data = _mesh_data[index];
+		Gaff::JSON material = value["Material"];
+		Gaff::JSON textures = value["Textures"];
+		Gaff::JSON samplers = value["Samplers"];
 
-		_program_buffers.resize(material_files.size());
-		_materials.resize(material_files.size());
-
-		material_files.forEachInArray([&](size_t index, const Gaff::JSON& value) -> bool
-		{
-			ResourceWrapper<ProgramData> material = res_mgr.requestResource(value.getString());
-			material.getResourcePtr()->addCallback(callback);
-			_materials[index] = material;
-
+		if (material) {
 			// Make a unique name for this resource
-			sprintf(temp, "ProgramBuffers#%s#%s#%u%zu", getOwner()->getName().getBuffer(), getName().getBuffer(), getOwner()->getID(), index);
-			ResourceWrapper<ProgramBuffersData> program_buffers = res_mgr.requestResource("ProgramBuffers", temp);
-			program_buffers.getResourcePtr()->addCallback(callback);
-			_program_buffers[index] = program_buffers;
+			snprintf(temp, 256, "ProgramBuffers#%s#%s#%u%zu", getOwner()->getName().getBuffer(), getName().getBuffer(), getOwner()->getID(), index);
 
-			return false;
-		});
-	}
-}
+			mesh_data.program_buffers = res_mgr.requestResource("ProgramBuffers", temp);
+			mesh_data.material = res_mgr.requestResource(material.getString());
 
-void ModelComponent::requestTextures(const Gaff::JSON& json, ResourceManager& res_mgr)
-{
-	auto callback = Gaff::Bind(this, &ModelComponent::ResourceLoadedCallback);
-	Gaff::JSON texture_files = json["Texture Files"];
+			mesh_data.program_buffers.getResourcePtr()->addCallback(callback);
+			mesh_data.material.getResourcePtr()->addCallback(callback);
+		}
 
-	if (texture_files.isArray() && texture_files.size()) {
-		_texture_mappings.resize(texture_files.size());
-		_textures.resize(texture_files.size());
+		RequestResourceArray(mesh_data.textures, res_mgr, textures, callback);
+		RequestResourceArray(mesh_data.samplers, res_mgr, samplers, callback);
 
-		texture_files.forEachInArray([&](size_t index, const Gaff::JSON& value) -> bool
-		{
-			Gaff::JSON file = value["File"];
-			Gaff::JSON material_map = value["Material Map"];
-
-			ResourceWrapper<TextureData> texture = res_mgr.requestResource(file.getString());
-			texture.getResourcePtr()->addCallback(callback);
-			_textures[index] = texture;
-
-			_texture_mappings[index].resize(material_map.size());
-
-			material_map.forEachInArray([&](size_t index2, const Gaff::JSON& value2) -> bool
-			{
-				Gaff::JSON material_index = value2["Material Index"];
-				Gaff::JSON shader = value2["Shader"];
-
-				MaterialMapping mapping;
-				mapping.first = static_cast<size_t>(material_index.getInteger());
-				mapping.second = GetEnumRefDef<Gleam::IShader::SHADER_TYPE>().getValue(shader.getString());
-
-				_texture_mappings[index][index2] = mapping;
-
-				return false;
-			});
-
-			return false;
-		});
-	}
-}
-
-void ModelComponent::requestSamplers(const Gaff::JSON& json, ResourceManager& res_mgr)
-{
-	auto callback = Gaff::Bind(this, &ModelComponent::ResourceLoadedCallback);
-	Gaff::JSON sampler_files = json["Sampler Files"];
-
-	if (sampler_files.isArray() && sampler_files.size()) {
-		_sampler_mappings.resize(sampler_files.size());
-		_samplers.resize(sampler_files.size());
-
-		sampler_files.forEachInArray([&](size_t index, const Gaff::JSON& value) -> bool
-		{
-			Gaff::JSON file = value["File"];
-			Gaff::JSON material_map = value["Material Map"];
-
-			ResourceWrapper<SamplerStateData> sampler = res_mgr.requestResource(file.getString());
-			sampler.getResourcePtr()->addCallback(callback);
-			_samplers[index] = sampler;
-
-			_sampler_mappings[index].resize(material_map.size());
-
-			material_map.forEachInArray([&](size_t index2, const Gaff::JSON& value2) -> bool
-			{
-				Gaff::JSON material_index = value2["Material Index"];
-				Gaff::JSON shader = value2["Shader"];
-
-				MaterialMapping mapping;
-				mapping.first = static_cast<size_t>(material_index.getInteger());
-				mapping.second = GetEnumRefDef<Gleam::IShader::SHADER_TYPE>().getValue(shader.getString());
-
-				_sampler_mappings[index][index2] = mapping;
-
-				return false;
-			});
-
-			return false;
-		});
-	}
-}
-
-void ModelComponent::requestBuffers(const Gaff::JSON& json, ResourceManager& res_mgr)
-{
-	auto callback = Gaff::Bind(this, &ModelComponent::ResourceLoadedCallback);
-	Gaff::JSON buffers = json["Buffers"];
-
-	if (buffers.isArray() && buffers.size()) {
-		_buffer_mappings.resize(buffers.size());
-		_buffer_settings.resize(buffers.size());
-		_buffers.resize(buffers.size());
-
-		const auto& buffer_type = GetEnumRefDef<Gleam::IBuffer::BUFFER_TYPE>();
-		const auto& map_type = GetEnumRefDef<Gleam::IBuffer::MAP_TYPE>();
-
-		buffers.forEachInArray([&](size_t index, const Gaff::JSON& value) -> bool
-		{
-			Gaff::JSON type = value["Type"];
-			Gaff::JSON cpu_access = value["CPU Access"];
-			Gaff::JSON size = value["Size"];
-			Gaff::JSON stride = value["Stride"];
-			Gaff::JSON gpu_read_only = value["GPU Read Only"];
-			Gaff::JSON structure_byte_stride = value["Structured Byte Stride"];
-			Gaff::JSON material_map = value["Material Map"];
-
-			Gleam::IBuffer::BufferSettings buffer_settings = {
-				nullptr,
-				static_cast<unsigned int>(size.getInteger()),
-				static_cast<unsigned int>(stride.getInteger()),
-				buffer_type.getValue(type.getString()),
-				map_type.getValue(cpu_access.getString()),
-				gpu_read_only.isTrue(),
-				static_cast<unsigned int>(structure_byte_stride.getInteger(0))
-			};
-
-			_buffer_settings[index] = buffer_settings;
-
-			// Make a unique name for this resource
-			char temp[256] = { 0 };
-			sprintf(temp, "Buffer#%s#%s#%u%zu", getOwner()->getName().getBuffer(), getName().getBuffer(), getOwner()->getID(), index);
-			ResourceWrapper<BufferData> buffer = res_mgr.requestResource("Buffer", temp, uint64_t(&_buffer_settings[index]));
-			buffer.getResourcePtr()->addCallback(callback);
-			_buffers[index] = buffer;
-
-			_buffer_mappings[index].resize(material_map.size());
-
-			material_map.forEachInArray([&](size_t index2, const Gaff::JSON& value2) -> bool
-			{
-				Gaff::JSON material_index = value2["Material Index"];
-				Gaff::JSON shader = value2["Shader"];
-
-				MaterialMapping mapping;
-				mapping.first = static_cast<size_t>(material_index.getInteger());
-				mapping.second = GetEnumRefDef<Gleam::IShader::SHADER_TYPE>().getValue(shader.getString());
-
-				_buffer_mappings[index][index2] = mapping;
-
-				return false;
-			});
-
-			return false;
-		});
-	}
+		return false;
+	});
 }
 
 void ModelComponent::setupResources(void)
 {
-	assert(_model->models[0][0]->getMeshCount() == _materials.size());
+	assert(_model->models[0][0]->getMeshCount() == _mesh_data.size());
 
 	unsigned int num_devices = GetApp().getManagerT<RenderManager>("Render Manager").getRenderDevice().getNumDevices();
 
-	for (unsigned int device = 0; device < num_devices; ++device) {
-		// for each texture
-		//		add to program buffers via mapping
-		for (size_t i = 0; i < _textures.size(); ++i) {
-			Array<MaterialMapping>& texture_mappings = _texture_mappings[i];
+	for (auto it_md = _mesh_data.begin(); it_md != _mesh_data.end(); ++it_md) {
+		for (unsigned int device = 0; device < num_devices; ++device) {
+			Gleam::ProgramReflection prog_refl = it_md->material->programs[device]->getReflectionData();
+			ProgramBuffersPtr& program_buffers = it_md->program_buffers->data[device];
 
-			for (size_t j = 0; j < texture_mappings.size(); ++j) {
-				MaterialMapping& mat_map = texture_mappings[j];
+			assert(it_md->textures.size() == prog_refl.total_textures);
+			assert(it_md->samplers.size() == prog_refl.total_samplers);
 
-				ProgramBuffersPtr& program_buffers = _program_buffers[mat_map.first]->data[device];
-				ShaderResourceViewPtr& res_view = _textures[i]->resource_views[device];
+			// Map textures
+			if (!it_md->textures.empty()) {
+				size_t curr_shader_type = 0;
+				size_t curr_tex_count = 0;
 
-				if (program_buffers && res_view) {
-					program_buffers->addResourceView(mat_map.second, res_view.get());
+				// Find first shader with textures
+				while (curr_shader_type < Gleam::IShader::SHADER_TYPE_SIZE - 1 &&
+					!prog_refl.shader_reflection[curr_shader_type].num_textures) {
+
+					++curr_shader_type;
+				}
+
+				// Map all the textures to the program buffer
+				for (auto it_tex = it_md->textures.begin(); it_tex != it_md->textures.end(); ++it_tex) {
+					ShaderResourceViewPtr& res_view = (*it_tex)->resource_views[device];
+					program_buffers->addResourceView(static_cast<Gleam::IShader::SHADER_TYPE>(curr_shader_type), res_view.get());
+
+					++curr_tex_count;
+
+					// If this shader has all its textures mapped, find the next shader that needs textures.
+					if (curr_tex_count >= prog_refl.shader_reflection[curr_shader_type].num_textures) {
+						++curr_shader_type;
+
+						while (curr_shader_type < Gleam::IShader::SHADER_TYPE_SIZE - 1 &&
+							!prog_refl.shader_reflection[curr_shader_type].num_textures) {
+
+							++curr_shader_type;
+						}
+					}
 				}
 			}
-		}
 
-		// for each sampler
-		//		add to program buffers via mapping
-		for (size_t i = 0; i < _samplers.size(); ++i) {
-			Array<MaterialMapping>& sampler_mappings = _sampler_mappings[i];
+			// Map shaders
+			if (!it_md->samplers.empty()) {
+				size_t curr_shader_type = 0;
+				size_t curr_sampler_count = 0;
 
-			for (size_t j = 0; j < sampler_mappings.size(); ++j) {
-				MaterialMapping& mat_map = sampler_mappings[j];
+				// Find first shader with samplers
+				while (curr_shader_type < Gleam::IShader::SHADER_TYPE_SIZE - 1 &&
+					!prog_refl.shader_reflection[curr_shader_type].num_samplers) {
 
-				ProgramBuffersPtr& program_buffers = _program_buffers[mat_map.first]->data[device];
-				SamplerStatePtr& sampler = _samplers[i]->data[device];
-
-				if (program_buffers && sampler) {
-					program_buffers->addSamplerState(mat_map.second, sampler.get());
+					++curr_shader_type;
 				}
-			}
-		}
 
-		// for each buffer
-		//		add to program buffers
-		for (size_t i = 0; i < _buffers.size(); ++i) {
-			BufferPtr& buffer = _buffers[i]->data[device];
+				// Map all the samplers to the program buffer
+				for (auto it_samp = it_md->samplers.begin(); it_samp != it_md->samplers.end(); ++it_samp) {
+					SamplerStatePtr& sampler = (*it_samp)->data[device];
+					program_buffers->addSamplerState(static_cast<Gleam::IShader::SHADER_TYPE>(curr_shader_type), sampler.get());
 
-			if (buffer) {
-				Array<MaterialMapping>& buffer_mappings = _buffer_mappings[i];
+					++curr_sampler_count;
 
-				for (size_t j = 0; j < buffer_mappings.size(); ++j) {
-					MaterialMapping mat_map = buffer_mappings[j];
-					ProgramBuffersPtr& program_buffers = _program_buffers[mat_map.first]->data[device];
+					// If this shader has all its samplers mapped, find the next shader that needs samplers.
+					if (curr_sampler_count >= prog_refl.shader_reflection[curr_shader_type].num_samplers) {
+						++curr_shader_type;
 
-					if (program_buffers) {
-						program_buffers->addConstantBuffer(mat_map.second, buffer.get());
+						while (curr_shader_type < Gleam::IShader::SHADER_TYPE_SIZE - 1 &&
+							!prog_refl.shader_reflection[curr_shader_type].num_samplers) {
+							
+							++curr_shader_type;
+						}
 					}
 				}
 			}
 		}
 	}
-
-	// Clear the mappings, we don't need them anymore.
-	_buffer_settings.clear();
-	_buffer_mappings.clear();
-	_texture_mappings.clear();
-	_sampler_mappings.clear();
 
 	getOwner()->setLocalAABB(_model->combined_aabb);
 }

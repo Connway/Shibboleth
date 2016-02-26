@@ -84,6 +84,7 @@ bool Object::init(const char* file_name)
 	Gaff::JSON object_json;
 
 	if (!object_json.parseFile(file_name)) {
+		// log error
 		return false;
 	}
 

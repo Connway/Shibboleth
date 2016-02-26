@@ -43,6 +43,16 @@ struct ModelData;
 class ModelComponent : public Component
 {
 public:
+	struct MeshData
+	{
+		ResourceWrapper<ProgramBuffersData> program_buffers;
+		ResourceWrapper<ProgramData> material;
+
+		Array< ResourceWrapper<TextureData> > textures;
+		Array< ResourceWrapper<SamplerStateData> > samplers;
+		//Array< ResourceWrapper<BufferData> > _buffers;
+	};
+
 	static const char* getComponentName(void)
 	{
 		return "Model Component";
@@ -52,7 +62,6 @@ public:
 	~ModelComponent(void);
 
 	const Gaff::JSON& getSchema(void) const override;
-	bool validate(const Gaff::JSON& json) override;
 	bool load(const Gaff::JSON& json) override;
 	bool save(Gaff::JSON& json) override;
 
@@ -71,32 +80,17 @@ public:
 
 	//unsigned int getMeshInstanceHash(size_t mesh) const;
 
-	INLINE const Array< ResourceWrapper<ProgramBuffersData> >& getProgramBuffers(void) const;
-	INLINE Array< ResourceWrapper<ProgramBuffersData> >& getProgramBuffers(void);
-
-	INLINE const Array< ResourceWrapper<ProgramData> >& getMaterials(void) const;
-	INLINE Array< ResourceWrapper<ProgramData> >& getMaterials(void);
-
-	INLINE const Array< ResourceWrapper<BufferData> >& getBuffers(void) const;
-	INLINE Array< ResourceWrapper<BufferData> >& getBuffers(void);
-
+	INLINE const Array<MeshData>& getMeshData(void) const;
+	INLINE Array<MeshData>& getMeshData(void);
+	
 	INLINE const ModelData& getModel(void) const;
 	INLINE ModelData& getModel(void);
 
 private:
-	Array< ResourceWrapper<ProgramBuffersData> > _program_buffers; // Per mesh in model
-	Array< ResourceWrapper<SamplerStateData> > _samplers;
-	Array< ResourceWrapper<ProgramData> > _materials;
-	Array< ResourceWrapper<TextureData> > _textures;
-	Array< ResourceWrapper<BufferData> > _buffers;
 	ResourceWrapper<ModelData> _model;
+	Array<MeshData> _mesh_data;
 
 	OcclusionManager::OcclusionID _occlusion_id;
-
-	Array<Gleam::IBuffer::BufferSettings> _buffer_settings;
-	Array< Array<MaterialMapping> > _buffer_mappings;
-	Array< Array<MaterialMapping> > _sampler_mappings;
-	Array< Array<MaterialMapping> > _texture_mappings;
 
 	volatile size_t _requests_finished;
 	volatile size_t _total_requests;
@@ -106,12 +100,8 @@ private:
 	char _flags;
 
 	void ResourceLoadedCallback(ResourceContainer* resource);
-	//void HandleLoadingMessage(const LoadingMessage& msg);
 
-	void requestMaterials(const Gaff::JSON& json, ResourceManager& res_mgr);
-	void requestTextures(const Gaff::JSON& json, ResourceManager& res_mgr);
-	void requestSamplers(const Gaff::JSON& json, ResourceManager& res_mgr);
-	void requestBuffers(const Gaff::JSON& json, ResourceManager& res_mgr);
+	void requestResources(const Gaff::JSON& materials, ResourceManager& res_mgr);
 	void setupResources(void);
 
 	void addToOcclusionManager(void);
