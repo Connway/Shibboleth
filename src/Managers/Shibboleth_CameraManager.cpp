@@ -152,29 +152,38 @@ void CameraManager::addModelComponent(ObjectData& od, ModelComponent* mc, const 
 
 	od.models.emplacePush(std::move(lod_models));
 
-	// Assumes every LOD has the same number of meshes per model
-	auto& program_buffers = mc->getProgramBuffers();
-	auto& programs = mc->getMaterials();
+	auto& mesh_data = mc->getMeshData();
 
-	assert(program_buffers.size() == programs.size());
-
-	// For each material per mesh, add the shader data
-	for (size_t i = 0; i < program_buffers.size(); ++i) {
-		// TODO: Copy and clone all program buffer data in case a buffer gets modified mid render or between frames.
-		// Clone the program buffers in case any data gets changed.
-		//Array<ProgramBuffersPtr> pbs(program_buffers[i]->data.size());
-
-		//for (size_t j = 0; j < pbs.size(); ++j) {
-		//	pbs[j] = program_buffers[i]->data[j]->clone();
-		//}
-
-		//od.program_buffers.emplacePush(std::move(pbs));
-
-		od.raster_states.emplacePush(programs[i]->raster_states);
-		od.program_buffers.emplacePush(program_buffers[i]->data);
-		od.programs.emplacePush(programs[i]->programs);
-		od.render_pass.emplacePush(programs[i]->render_pass);
+	for (auto it = mesh_data.begin(); it != mesh_data.end(); ++it) {
+		od.raster_states.emplacePush(it->material->raster_states);
+		od.program_buffers.emplacePush(it->program_buffers->data);
+		od.programs.emplacePush(it->material->programs);
+		od.render_pass.emplacePush(it->material->render_pass);
 	}
+
+	//// Assumes every LOD has the same number of meshes per model
+	//auto& program_buffers = mc->getProgramBuffers();
+	//auto& programs = mc->getMaterials();
+
+	//assert(program_buffers.size() == programs.size());
+
+	//// For each material per mesh, add the shader data
+	//for (size_t i = 0; i < program_buffers.size(); ++i) {
+	//	// TODO: Copy and clone all program buffer data in case a buffer gets modified mid render or between frames.
+	//	// Clone the program buffers in case any data gets changed.
+	//	//Array<ProgramBuffersPtr> pbs(program_buffers[i]->data.size());
+
+	//	//for (size_t j = 0; j < pbs.size(); ++j) {
+	//	//	pbs[j] = program_buffers[i]->data[j]->clone();
+	//	//}
+
+	//	//od.program_buffers.emplacePush(std::move(pbs));
+
+	//	od.raster_states.emplacePush(programs[i]->raster_states);
+	//	od.program_buffers.emplacePush(program_buffers[i]->data);
+	//	od.programs.emplacePush(programs[i]->programs);
+	//	od.render_pass.emplacePush(programs[i]->render_pass);
+	//}
 }
 
 NS_END

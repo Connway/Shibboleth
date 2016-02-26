@@ -100,7 +100,7 @@ private:
 	ID3D11HullShader* _shader_hull;
 	ID3D11ComputeShader* _shader_compute;
 
-	ShaderReflection getShaderReflectionData(const IShader* shader) const;
+	ShaderReflection getShaderReflectionData(const IShader* shader, ProgramReflection& prog_refl) const;
 };
 
 NS_END

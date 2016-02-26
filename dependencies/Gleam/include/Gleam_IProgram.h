@@ -82,24 +82,30 @@ public:
 
 struct ConstBufferReflection
 {
-	char name[MAX_SHADER_VAR_NAME];
-	size_t size_bytes;
+	char name[MAX_SHADER_VAR_NAME] = { 0 };
+	size_t size_bytes = 0;
 };
 
 struct ShaderReflection
 {
 	ConstBufferReflection const_buff_reflection[MAX_SHADER_VAR];
+	char textures[MAX_SHADER_VAR][MAX_SHADER_VAR_NAME];
 	char samplers[MAX_SHADER_VAR][MAX_SHADER_VAR_NAME];
-	char srvs[MAX_SHADER_VAR][MAX_SHADER_VAR_NAME];
+	char structured_buffers[MAX_SHADER_VAR][MAX_SHADER_VAR_NAME];
 
-	size_t num_cbs;
-	size_t num_samplers;
-	size_t num_srvs;
+	size_t num_constant_buffers = 0;
+	size_t num_textures = 0;
+	size_t num_samplers = 0;
+	size_t num_structured_buffers = 0;
 };
 
 struct ProgramReflection
 {
 	ShaderReflection shader_reflection[IShader::SHADER_TYPE_SIZE - 1];
+	size_t total_constant_buffers = 0;
+	size_t total_textures = 0;
+	size_t total_samplers = 0;
+	size_t total_structured_buffers = 0;
 };
 
 class IProgram : public Gaff::IRefCounted

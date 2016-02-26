@@ -8,45 +8,17 @@
 			"Type": "Model Component",
 
 			"Model File": "Resources/Models/ninja.model",
-
-			"Material Files": [
-				"Resources/Materials/test.material",
-				"Resources/Materials/test.material"
-			],
-
-			"Texture Files": [
+			"Materials": [
 				{
-					"File": "Resources/Models/ninja.texture",
-					"Material Map": [
-						{
-							"Material Index": 0,
-							"Shader": "Pixel"
-						},
-						{
-							"Material Index": 1,
-							"Shader": "Pixel"
-						}
-					]
-				}
-			],
-
-			"Sampler Files": [
+					"Material": "Resources/Materials/test.material",
+					"Textures": ["Resources/Models/ninja.texture"],
+					"Samplers": ["Resources/Samplers/anisotropic_16x.sampler"]
+				},
 				{
-					"File": "Resources/Samplers/anisotropic_16x.sampler",
-					"Material Map": [
-						{
-							"Material Index": 0,
-							"Shader": "Pixel"
-						},
-						{
-							"Material Index": 1,
-							"Shader": "Pixel"
-						}
-					]
+					"Material": "Resources/Materials/test.material",
+					"Textures": ["Resources/Models/ninja.texture"],
+					"Samplers": ["Resources/Samplers/anisotropic_16x.sampler"]
 				}
-			],
-
-			"Buffers": [
 			]
 		},
 		"Test2":

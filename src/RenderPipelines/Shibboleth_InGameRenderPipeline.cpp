@@ -287,7 +287,7 @@ void InGameRenderPipeline::SortIntoRenderPasses(Gleam::IRenderDevice* rd, Object
 
 		if (model[device]) {
 			const Gleam::IModel* m = model[device].get();
-			unsigned int model_hash = Gaff::FNV1aHash32T(&m);
+			uint32_t model_hash = Gaff::FNV1aHash32T(&m);
 
 			for (size_t i = 0; i < model[device]->getMeshCount(); ++i, ++mesh) {
 				auto& rss = od.raster_states[mesh];
