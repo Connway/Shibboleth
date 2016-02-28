@@ -563,58 +563,74 @@ void Array<T, Allocator>::trim(void)
 
 template <class T, class Allocator>
 template <class T2, class Pred>
-ARRAY_ITERATOR Array<T, Allocator>::linearSearch(const ARRAY_ITERATOR range_begin, const ARRAY_ITERATOR range_end, const T2& data, const Pred& pred) const
+const ARRAY_ITERATOR Array<T, Allocator>::linearSearch(const ARRAY_ITERATOR range_begin, const ARRAY_ITERATOR range_end, const T2& value, const Pred& pred) const
 {
 	assert(range_begin >= _array && range_begin <= _array + _used);
 	assert(range_end >= _array && range_end <= _array + _used);
-	assert(range_begin <= range_end);
 
-	size_t index1 = static_cast<size_t>(range_begin - _array);
-	size_t index2 = static_cast<size_t>(range_end - _array);
-
-	size_t result = linearSearch(index1, index2, data, pred);
-	return (result != SIZE_T_FAIL) ? Iterator(_array + result) : end();
+	const Iterator it = LinearSearch(range_begin, range_end, value, pred);
+	return (it) ? it : end();
 }
 
 template <class T, class Allocator>
 template <class T2, class Pred>
-size_t Array<T, Allocator>::linearSearch(size_t range_begin, size_t range_end, const T2& data, const Pred& pred) const
+ARRAY_ITERATOR Array<T, Allocator>::linearSearch(ARRAY_ITERATOR range_begin, ARRAY_ITERATOR range_end, const T2& value, const Pred& pred)
 {
-	assert(range_begin <= range_end && range_end <= _used);
+	assert(range_begin >= _array && range_begin <= _array + _used);
+	assert(range_end >= _array && range_end <= _array + _used);
 
-	for (size_t i = range_begin; i < range_end; ++i) {
-		if (pred(_array[i], data)) {
-			return i;
-		}
-	}
-
-	return SIZE_T_FAIL;
+	const Iterator it = LinearSearch(range_begin, range_end, value, pred);
+	return (it) ? it : end();
 }
 
 template <class T, class Allocator>
 template <class T2, class Pred>
-ARRAY_ITERATOR Array<T, Allocator>::linearSearch(const T2& data, const Pred& pred) const
+size_t Array<T, Allocator>::linearSearch(size_t range_begin, size_t range_end, const T2& value, const Pred& pred) const
 {
-	return linearSearch(begin(), end(), data, pred);
+	assert(range_end <= _used);
+	return LinearSearch(_array, range_begin, range_end, value, pred);
+}
+
+template <class T, class Allocator>
+template <class T2, class Pred>
+const ARRAY_ITERATOR Array<T, Allocator>::linearSearch(const T2& value, const Pred& pred) const
+{
+	return linearSearch(begin(), end(), value, pred);
+}
+
+template <class T, class Allocator>
+template <class T2, class Pred>
+ARRAY_ITERATOR Array<T, Allocator>::linearSearch(const T2& value, const Pred& pred)
+{
+	return linearSearch(begin(), end(), value, pred);
+}
+
+template <class T, class Allocator>
+template <class T2, class Pred>
+const ARRAY_ITERATOR Array<T, Allocator>::binarySearch(
+	const ARRAY_ITERATOR range_begin,
+	const ARRAY_ITERATOR range_end,
+	const T2& value,
+	const Pred& pred) const
+{
+	assert(range_begin >= _array && range_begin <= _array + _used);
+	assert(range_end >= _array && range_end <= _array + _used);
+
+	return BinarySearch(range_begin, range_end, value, pred);
 }
 
 template <class T, class Allocator>
 template <class T2, class Pred>
 ARRAY_ITERATOR Array<T, Allocator>::binarySearch(
-	const ARRAY_ITERATOR range_begin,
-	const ARRAY_ITERATOR range_end,
-	const T2& data,
-	const Pred& pred) const
+	ARRAY_ITERATOR range_begin,
+	ARRAY_ITERATOR range_end,
+	const T2& value,
+	const Pred& pred)
 {
 	assert(range_begin >= _array && range_begin <= _array + _used);
 	assert(range_end >= _array && range_end <= _array + _used);
-	assert(range_begin <= range_end);
 
-	size_t index1 = static_cast<size_t>(range_begin - _array);
-	size_t index2 = static_cast<size_t>(range_end - _array);
-
-	size_t result = binarySearch(index1, index2, data, pred);
-	return (result != SIZE_T_FAIL) ? Iterator(_array + result) : end();
+	return BinarySearch(range_begin, range_end, value, pred);
 }
 
 template <class T, class Allocator>
@@ -622,31 +638,25 @@ template <class T2, class Pred>
 size_t Array<T, Allocator>::binarySearch(
 	size_t range_begin,
 	size_t range_end,
-	const T2& data,
+	const T2& value,
 	const Pred& pred) const
 {
-	assert(range_end <= _used && range_begin <= range_end);
-
-	size_t mid = 0;
-
-	while (range_begin != range_end) {
-		mid = range_begin + (range_end - range_begin) / 2;
-
-		if (pred(_array[mid], data)) {
-			range_begin = mid + 1;
-		} else {
-			range_end = mid;
-		}
-	}
-
-	return range_begin;
+	assert(range_end <= _used);
+	return BinarySearch(_array, range_begin, range_end, value, pred);
 }
 
 template <class T, class Allocator>
 template <class T2, class Pred>
-ARRAY_ITERATOR Array<T, Allocator>::binarySearch(const T2& data, const Pred& pred) const
+const ARRAY_ITERATOR Array<T, Allocator>::binarySearch(const T2& value, const Pred& pred) const
 {
-	return binarySearch(begin(), end(), data, pred);
+	return BinarySearch(begin(), end(), value, pred);
+}
+
+template <class T, class Allocator>
+template <class T2, class Pred>
+ARRAY_ITERATOR Array<T, Allocator>::binarySearch(const T2& value, const Pred& pred)
+{
+	return BinarySearch(begin(), end(), value, pred);
 }
 
 template <class T, class Allocator>
@@ -727,4 +737,101 @@ void Array<T, Allocator>::resizeHelper(size_t new_size)
 
 	_size = new_size;
 	_used = new_size;
+}
+
+// Helper functions
+template <class T, class T2, class Pred>
+const T* LinearSearch(const T* range_begin, const T* range_end, const T2& value, const Pred& pred)
+{
+	assert(range_begin <= range_end);
+
+	for (; range_begin < range_end; ++range_begin) {
+		if (pred(*range_begin, value)) {
+			return range_begin;
+		}
+	}
+
+	return nullptr;
+}
+
+template <class T, class T2, class Pred>
+T* LinearSearch(T* range_begin, T* range_end, const T2& value, const Pred& pred)
+{
+	assert(range_begin <= range_end);
+
+	for (; range_begin < range_end; ++range_begin) {
+		if (pred(*range_begin, value)) {
+			return range_begin;
+		}
+	}
+
+	return nullptr;
+}
+
+template <class T, class T2, class Pred>
+size_t LinearSearch(const T* data, size_t range_begin, size_t range_end, const T2& value, const Pred& pred)
+{
+	assert(range_begin <= range_end);
+
+	for (size_t i = range_begin; i < range_end; ++i) {
+		if (pred(data[i], value)) {
+			return i;
+		}
+	}
+
+	return SIZE_T_FAIL;
+}
+
+template <class T, class T2, class Pred>
+const T* BinarySearch(const T* range_begin, const T* range_end, const T2& value, const Pred& pred)
+{
+	assert(range_begin <= range_end);
+
+	while (range_begin != range_end) {
+		T* mid = range_begin + static_cast<size_t>(range_end - range_begin) / 2;
+
+		if (pred(*mid, value)) {
+			range_begin = mid + 1;
+		} else {
+			range_end = mid;
+		}
+	}
+
+	return range_begin;
+}
+
+template <class T, class T2, class Pred>
+T* BinarySearch(T* range_begin, T* range_end, const T2& value, const Pred& pred)
+{
+	assert(range_begin <= range_end);
+
+	while (range_begin != range_end) {
+		T* mid = range_begin + static_cast<size_t>(range_end - range_begin) / 2;
+
+		if (pred(*mid, value)) {
+			range_begin = mid + 1;
+		} else {
+			range_end = mid;
+		}
+	}
+
+	return range_begin;
+}
+
+template <class T, class T2, class Pred>
+size_t BinarySearch(const T* data, size_t range_begin, size_t range_end, const T2& value, const Pred& pred)
+{
+	assert(range_begin <= range_end);
+
+	while (range_begin != range_end) {
+		size_t mid = range_begin + (range_end - range_begin) / 2;
+
+		if (pred(data[mid], value)) {
+			range_begin = mid + 1;
+		} else {
+			range_end = mid;
+		}
+	}
+
+	return range_begin;
 }

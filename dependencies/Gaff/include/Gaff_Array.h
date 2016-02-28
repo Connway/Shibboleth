@@ -110,22 +110,34 @@ public:
 	void trim(void);
 
 	template < class T2, class Pred = Equal<T, T2> >
-	Iterator linearSearch(const Iterator range_begin, const Iterator range_end, const T2& data, const Pred& pred = Pred()) const;
+	const Iterator linearSearch(const Iterator range_begin, const Iterator range_end, const T2& value, const Pred& pred = Pred()) const;
 
 	template < class T2, class Pred = Equal<T, T2> >
-	size_t linearSearch(size_t range_begin, size_t range_end, const T2& data, const Pred& pred = Pred()) const;
+	Iterator linearSearch(Iterator range_begin, Iterator range_end, const T2& value, const Pred& pred = Pred());
 
 	template < class T2, class Pred = Equal<T, T2> >
-	Iterator linearSearch(const T2& data, const Pred& pred = Pred()) const;
+	size_t linearSearch(size_t range_begin, size_t range_end, const T2& value, const Pred& pred = Pred()) const;
+
+	template < class T2, class Pred = Equal<T, T2> >
+	const Iterator linearSearch(const T2& value, const Pred& pred = Pred()) const;
+
+	template < class T2, class Pred = Equal<T, T2> >
+	Iterator linearSearch(const T2& value, const Pred& pred = Pred());
 
 	template < class T2, class Pred = Less<T, T2> >
-	Iterator binarySearch(const Iterator range_begin, const Iterator range_end, const T2& data, const Pred& pred = Pred()) const;
+	const Iterator binarySearch(const Iterator range_begin, const Iterator range_end, const T2& value, const Pred& pred = Pred()) const;
 
 	template < class T2, class Pred = Less<T, T2> >
-	size_t binarySearch(size_t range_begin, size_t range_end, const T2& data, const Pred& pred = Pred()) const;
+	Iterator binarySearch(Iterator range_begin, Iterator range_end, const T2& value, const Pred& pred = Pred());
 
 	template < class T2, class Pred = Less<T, T2> >
-	Iterator binarySearch(const T2& data, const Pred& pred = Pred()) const;
+	size_t binarySearch(size_t range_begin, size_t range_end, const T2& value, const Pred& pred = Pred()) const;
+
+	template < class T2, class Pred = Less<T, T2> >
+	const Iterator binarySearch(const T2& value, const Pred& pred = Pred()) const;
+
+	template < class T2, class Pred = Less<T, T2> >
+	Iterator binarySearch(const T2& value, const Pred& pred = Pred());
 
 	size_t size(void) const;
 	size_t capacity(void) const;
@@ -140,6 +152,24 @@ private:
 	void resizeHelper(size_t new_size, const T& init_val);
 	void resizeHelper(size_t new_size);
 };
+
+template < class T, class T2, class Pred = Equal<T, T2> >
+const T* LinearSearch(const T* range_begin, const T* range_end, const T2& value, const Pred& pred = Pred());
+
+template < class T, class T2, class Pred = Equal<T, T2> >
+T* LinearSearch(T* range_begin, T* range_end, const T2& value, const Pred& pred = Pred());
+
+template < class T, class T2, class Pred = Equal<T, T2> >
+size_t LinearSearch(const T* data, size_t range_begin, size_t range_end, const T2& value, const Pred& pred = Pred());
+
+template < class T, class T2, class Pred = Less<T, T2> >
+const T* BinarySearch(const T* range_begin, const T* range_end, const T2& value, const Pred& pred = Pred());
+
+template < class T, class T2, class Pred = Less<T, T2> >
+T* BinarySearch(T* range_begin, T* range_end, const T2& value, const Pred& pred = Pred());
+
+template < class T, class T2, class Pred = Less<T, T2> >
+size_t BinarySearch(const T* data, size_t range_begin, size_t range_end, const T2& value, const Pred& pred = Pred());
 
 #include "Gaff_Array.inl"
 

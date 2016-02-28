@@ -20,8 +20,6 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-/*! \file */
-
 #pragma once
 
 #include "Gaff_Defines.h"
@@ -41,15 +39,12 @@ void deconstruct(T* data)
 {
 	// To get rid of the stupid unreferenced parameter warning in VS.
 #if defined(_WIN32) || defined(_WIN64)
-	(data);
+	(void)(data);
 #endif
 
 	data->~T();
 }
 
-/*!
-	\brief Interface that all allocators inherit from.
-*/
 class IAllocator
 {
 public:
@@ -81,17 +76,17 @@ public:
 	void freeArrayT(T* data, size_t count)
 	{
 		for (size_t i = 0; i < count; ++i) {
-			(data + i)->~T();
+			deconstruct(data + i);
 		}
 
-		free((void*)data);
+		free((void*)(data));
 	}
 
 	template <class T>
 	void freeT(T* data)
 	{
-		data->~T();
-		free((void*)data);
+		deconstruct(data);
+		free((void*)(data));
 	}
 };
 
