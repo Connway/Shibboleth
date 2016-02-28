@@ -60,6 +60,9 @@
     <None Include="..\..\..\dependencies\Gaff\include\Gaff_Watcher.inl">
       <Filter>include</Filter>
     </None>
+    <None Include="..\..\..\dependencies\Gaff\include\Gaff_Array2D.inl">
+      <Filter>include</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\dependencies\Gaff\include\Gaff_Animation.h">
@@ -279,6 +282,9 @@
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\dependencies\Gaff\include\Gaff_Assert.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\Gaff\include\Gaff_Array2D.h">
       <Filter>include</Filter>
     </ClInclude>
   </ItemGroup>

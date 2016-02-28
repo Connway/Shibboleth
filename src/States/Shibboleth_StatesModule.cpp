@@ -154,7 +154,7 @@ public:
 		static Shibboleth::CameraComponent* camera = _camera->getFirstComponentWithInterface<Shibboleth::CameraComponent>();
 		static bool added = false;
 
-		if (camera && camera->getRenderTarget().getResourcePtr()->isLoaded() && !added) {
+		if (!added && camera && camera->getRenderTarget().getResourcePtr()->isLoaded()) {
 			_app.getManagerT<Shibboleth::RenderPipelineManager>("Render Pipeline Manager").setOutputCamera(camera);
 			added = true;
 		}

@@ -178,6 +178,7 @@
   <ItemGroup>
     <ClInclude Include="..\..\..\dependencies\Gaff\include\Gaff_Animation.h" />
     <ClInclude Include="..\..\..\dependencies\Gaff\include\Gaff_Array.h" />
+    <ClInclude Include="..\..\..\dependencies\Gaff\include\Gaff_Array2D.h" />
     <ClInclude Include="..\..\..\dependencies\Gaff\include\Gaff_Assert.h" />
     <ClInclude Include="..\..\..\dependencies\Gaff\include\Gaff_Atomic.h" />
     <ClInclude Include="..\..\..\dependencies\Gaff\include\Gaff_BezierCurve.h" />
@@ -289,6 +290,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\..\dependencies\Gaff\include\Gaff_Array.inl" />
+    <None Include="..\..\..\dependencies\Gaff\include\Gaff_Array2D.inl" />
     <None Include="..\..\..\dependencies\Gaff\include\Gaff_BezierCurve.inl" />
     <None Include="..\..\..\dependencies\Gaff\include\Gaff_BitArray.inl" />
     <None Include="..\..\..\dependencies\Gaff\include\Gaff_CachedFunction.inl" />
