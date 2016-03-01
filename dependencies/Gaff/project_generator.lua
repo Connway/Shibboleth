@@ -9,6 +9,8 @@ project "Gaff"
 	kind "StaticLib"
 	language "C++"
 
+	flags { "FatalWarnings" }
+
 	configuration "Debug"
 		defines { "ENET_DEBUG" }
 
@@ -28,5 +30,6 @@ project "Gaff"
 		"../ResIL/IL/include",
 		"../ResIL/include",
 		"../assimp/include",
-		"../utf8-cpp"
+		"../utf8-cpp",
+		"../boxer/include"
 	}

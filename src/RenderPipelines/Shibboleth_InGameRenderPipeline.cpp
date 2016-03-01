@@ -37,6 +37,11 @@ THE SOFTWARE.
 #define INSTANCE_ALLOC_CHUNK 256
 #define INSTANCE_BUFFER_ELEMENT_SIZE 16 * 1 // sizeof(matrix) * num_matrices
 
+#if defined(_WIN32) || defined(_WIN64)
+	#pragma warning(push)
+	#pragma warning(disable: 4309)
+#endif
+
 NS_SHIBBOLETH
 
 struct RenderInfo
@@ -254,7 +259,7 @@ void InGameRenderPipeline::GenerateCameraCommandLists(Array<RenderManager::Rende
 				continue;
 			}
 
-			SortIntoRenderPasses(rd.get(), od, device);
+			SortIntoRenderPasses(od, device);
 
 			Gleam::IRenderTargetPtr& rt = it->first->getRenderTarget()->render_targets[device];
 			rt->bind(*rd);
@@ -276,11 +281,11 @@ void InGameRenderPipeline::GenerateCameraCommandLists(Array<RenderManager::Rende
 	}
 }
 
-void InGameRenderPipeline::GenerateLightCommandLists(Array<RenderManager::RenderDevicePtr>& rds, GenerateJobData* jd)
+void InGameRenderPipeline::GenerateLightCommandLists(Array<RenderManager::RenderDevicePtr>& /*rds*/, GenerateJobData* /*jd*/)
 {
 }
 
-void InGameRenderPipeline::SortIntoRenderPasses(Gleam::IRenderDevice* rd, ObjectData& od, unsigned int device)
+void InGameRenderPipeline::SortIntoRenderPasses(ObjectData& od, unsigned int device)
 {
 	for (size_t obj = 0, mesh = 0; obj < od.transforms.size(); ++obj) {
 		auto& model = od.models[obj];
@@ -486,3 +491,7 @@ Gleam::IShaderResourceView* InGameRenderPipeline::CreateInstanceResourceView(Ren
 }
 
 NS_END
+
+#if defined(_WIN32) || defined(_WIN64)
+	#pragma warning(pop)
+#endif

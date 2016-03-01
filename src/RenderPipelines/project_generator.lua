@@ -13,6 +13,8 @@ project "RenderPipelines"
 	kind "SharedLib"
 	language "C++"
 
+	flags { "FatalWarnings" }
+
 	targetname "ShibbolethRenderPipelines"
 
 	files { "**.h", "**.cpp", "**.inl" }

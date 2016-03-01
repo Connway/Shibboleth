@@ -11,6 +11,8 @@ project "States"
 	kind "StaticLib"
 	language "C++"
 
+	flags { "FatalWarnings" }
+
 	files { "**.h", "**.cpp", "**.inl" }
 	excludes { "Shibboleth_StatesModule.cpp" }
 
@@ -54,6 +56,8 @@ project "StatesModule"
 
 	kind "SharedLib"
 	language "C++"
+
+	flags { "FatalWarnings" }
 
 	targetname "ShibbolethStates"
 

@@ -35,6 +35,7 @@ NS_GAFF
 #endif
 
 using AssertHandler = void (*)(const char* msg, const char* expr, const char* file, int line);
+void DefaultAssertHandler(const char* msg, const char* expr, const char* file, int line);
 
 void SetAssertHandler(AssertHandler handler);
 void Assert(const char* msg, const char* expr, const char* file, int line, ...);

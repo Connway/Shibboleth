@@ -20,6 +20,6 @@ if _OPTIONS["brofiler"] and _OS == "windows" then
 		}
 
 		defines { "PROFILER_EXPORTS" }
-		removeflags { "Unicode" }
+		characterset "MBCS"
 
 end

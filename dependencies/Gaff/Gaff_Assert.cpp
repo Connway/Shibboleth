@@ -21,17 +21,55 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Gaff_Assert.h"
-#include <cassert>
+#include "Gaff_Utils.h"
+#include <boxer/boxer.h>
 #include <cstdarg>
+
+#define FINAL_ASSERT_MSG_LEN 2048
 
 NS_GAFF
 
-void DefaultAssertHandler(const char*, const char*, const char*, int)
-{
-	assert(false);
-}
-
 static AssertHandler g_assert_handler = DefaultAssertHandler;
+
+void DefaultAssertHandler(const char* msg, const char* expr, const char* file, int line)
+{
+	char final_msg[FINAL_ASSERT_MSG_LEN] = { 0 };
+
+	if (msg) {
+		snprintf(
+			final_msg, FINAL_ASSERT_MSG_LEN,
+			"Assertion failed!\n\nFile: %s\nLine: %i\n\nExpression: %s\nMessage: %s\n\n(Press Retry to debug the application)",
+			file, line, expr, msg
+		);
+	} else {
+		snprintf(
+			final_msg, FINAL_ASSERT_MSG_LEN,
+			"Assertion failed!\n\nFile: %s\nLine: %i\n\nExpression: %s\n\n(Press Retry to debug the application)",
+			file, line, expr
+		);
+	}
+
+	boxer::Selection selection = boxer::show(final_msg, "Assert Triggered!", boxer::Style::Error, boxer::Buttons::AbortRetryIgnore);
+
+	switch (selection) {
+		// Terminate the application.
+		case boxer::Selection::Abort:
+			exit(-1);
+			break;
+
+		// Break into debugger if one is present.
+		case boxer::Selection::Retry:
+			if (IsDebuggerAttached()) {
+				DebugBreak();
+			}
+			break;
+
+		// Try to continue on.
+		case boxer::Selection::Ignore:
+		default:
+			break;
+	}
+}
 
 void SetAssertHandler(AssertHandler handler)
 {
@@ -41,11 +79,11 @@ void SetAssertHandler(AssertHandler handler)
 void Assert(const char* msg, const char* expr, const char* file, int line, ...)
 {
 	if (msg) {
-		char temp[256] = { 0 };
+		char temp[FINAL_ASSERT_MSG_LEN / 2] = { 0 };
 
 		va_list vl;
 		va_start(vl, line);
-		vsnprintf(temp, 256, msg, vl);
+		vsnprintf(temp, FINAL_ASSERT_MSG_LEN / 2, msg, vl);
 		va_end(vl);
 
 		g_assert_handler(temp, expr, file, line);

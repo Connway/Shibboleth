@@ -212,7 +212,7 @@ bool ModelComponent::isStatic(void) const
 	return Gaff::IsAnyBitSet<char>(_flags, MC_STATIC);
 }
 
-size_t ModelComponent::determineLOD(const Gleam::Vector4CPU& pos)
+size_t ModelComponent::determineLOD(const Gleam::Vector4CPU& /*pos*/)
 {
 	// IMPLEMENT ME!
 	return 0;

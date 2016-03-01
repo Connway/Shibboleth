@@ -11,6 +11,8 @@ project "Messages"
 	kind "StaticLib"
 	language "C++"
 
+	flags { "FatalWarnings" }
+
 	files { "**.h", "**.cpp", "**.inl" }
 
 	includedirs

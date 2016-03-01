@@ -11,6 +11,8 @@ project "Components"
 	kind "StaticLib"
 	language "C++"
 
+	flags { "FatalWarnings" }
+
 	files { "**.h", "**.cpp", "**.inl" }
 	excludes { "Shibboleth_ComponentsModule.cpp" }
 
@@ -53,6 +55,7 @@ project "ComponentsModule"
 	language "C++"
 
 	targetname "ShibbolethComponents"
+	flags { "FatalWarnings" }
 
 	files { "Shibboleth_ComponentsModule.cpp" }
 

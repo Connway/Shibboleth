@@ -13,6 +13,8 @@ project "Graphics"
 	kind "SharedLib"
 	language "C++"
 
+	flags { "FatalWarnings" }
+
 	files { "**.h", "**.cpp", "**.inl" }
 
 	includedirs

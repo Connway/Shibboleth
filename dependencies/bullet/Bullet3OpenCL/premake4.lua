@@ -24,7 +24,7 @@ function createProject(vendor)
 				"**.h"
 			}
 
-			removeflags { "Unicode" }
+			characterset "MBCS"
 	end
 end
 

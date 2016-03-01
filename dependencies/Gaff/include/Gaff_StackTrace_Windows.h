@@ -20,13 +20,16 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-/*! \file */
-
 #pragma once
 
 #include "Gaff_Defines.h"
 #include "Gaff_IncludeWindows.h"
+
+// Silence MS warnings
+#pragma warning(push)
+#pragma warning(disable: 4091)
 #include <DbgHelp.h>
+#pragma warning(pop)
 
 NS_GAFF
 

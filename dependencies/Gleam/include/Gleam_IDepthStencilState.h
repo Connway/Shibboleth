@@ -25,6 +25,11 @@ THE SOFTWARE.
 #include "Gleam_Defines.h"
 #include <Gaff_IRefCounted.h>
 
+#if defined(_WIN32) || defined(_WIN64)
+	#pragma warning(push)
+	#pragma warning(disable: 4309)
+#endif
+
 NS_GLEAM
 
 class IRenderDevice;
@@ -90,3 +95,7 @@ public:
 };
 
 NS_END
+
+#if defined(_WIN32) || defined(_WIN64)
+	#pragma warning(pop)
+#endif

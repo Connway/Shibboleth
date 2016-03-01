@@ -31,6 +31,12 @@ THE SOFTWARE.
 #include <Gaff_Utils.h>
 #include <Gaff_File.h>
 
+#if defined(_WIN32) || defined(_WIN64)
+	// Disable "structure was padded due to alignment specifier" warning
+	#pragma warning(push)
+	#pragma warning(disable: 4324)
+#endif
+
 //#define GATHER_ALLOCATION_STACKTRACE
 
 #if defined(SYMBOL_BUILD) && defined(GATHER_ALLOCATION_STACKTRACE)
@@ -272,3 +278,7 @@ INLINE const char* Allocator::getPoolName(size_t pool_index) const
 }
 
 NS_END
+
+#if defined(_WIN32) || defined(_WIN64)
+	#pragma warning(pop)
+#endif
