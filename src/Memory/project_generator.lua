@@ -12,6 +12,8 @@ project "Memory"
 	language "C++"
 	defines { "IS_MEMORY" }
 
+	flags { "FatalWarnings" }
+
 	files { "**.h", "**.cpp" }
 
 	includedirs

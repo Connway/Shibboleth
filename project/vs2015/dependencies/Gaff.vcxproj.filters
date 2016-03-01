@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="include">
@@ -7,6 +7,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\..\dependencies\Gaff\include\Gaff_Array.inl">
+      <Filter>include</Filter>
+    </None>
+    <None Include="..\..\..\dependencies\Gaff\include\Gaff_Array2D.inl">
       <Filter>include</Filter>
     </None>
     <None Include="..\..\..\dependencies\Gaff\include\Gaff_BezierCurve.inl">
@@ -60,15 +63,18 @@
     <None Include="..\..\..\dependencies\Gaff\include\Gaff_Watcher.inl">
       <Filter>include</Filter>
     </None>
-    <None Include="..\..\..\dependencies\Gaff\include\Gaff_Array2D.inl">
-      <Filter>include</Filter>
-    </None>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\dependencies\Gaff\include\Gaff_Animation.h">
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\dependencies\Gaff\include\Gaff_Array.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\Gaff\include\Gaff_Array2D.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\Gaff\include\Gaff_Assert.h">
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\dependencies\Gaff\include\Gaff_Atomic.h">
@@ -281,15 +287,10 @@
     <ClInclude Include="..\..\..\dependencies\Gaff\include\Gaff_Watcher.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\dependencies\Gaff\include\Gaff_Assert.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\dependencies\Gaff\include\Gaff_Array2D.h">
-      <Filter>include</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\dependencies\Gaff\Gaff_Animation.cpp" />
+    <ClCompile Include="..\..\..\dependencies\Gaff\Gaff_Assert.cpp" />
     <ClCompile Include="..\..\..\dependencies\Gaff\Gaff_Camera.cpp" />
     <ClCompile Include="..\..\..\dependencies\Gaff\Gaff_Connection.cpp" />
     <ClCompile Include="..\..\..\dependencies\Gaff\Gaff_CriticalSection_Linux.cpp" />
@@ -323,6 +324,5 @@
     <ClCompile Include="..\..\..\dependencies\Gaff\Gaff_Utils_Linux.cpp" />
     <ClCompile Include="..\..\..\dependencies\Gaff\Gaff_Utils_Mac.cpp" />
     <ClCompile Include="..\..\..\dependencies\Gaff\Gaff_Utils_Windows.cpp" />
-    <ClCompile Include="..\..\..\dependencies\Gaff\Gaff_Assert.cpp" />
   </ItemGroup>
 </Project>

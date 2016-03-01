@@ -19,10 +19,12 @@ Libraries Affected:
 	LuaState (added const char* version of doFile and doString)
 	OtterUI (got rid of a lot of warnings in Visual Studio and fixed a couple inconsistencies and crash bugs)
 	dirent (got rid of warnings in Visual Studio)
+	Boxer (added support for Abort/Retry/Ignore and Cancel/Try/Continue button configurations)
 
 
 Dependencies versions:
 Assimp - 3.2
+Boxer - commit 339c30d
 Brofiler - 1.1.1
 bullet - 2.83.7
 dirent - 1.21

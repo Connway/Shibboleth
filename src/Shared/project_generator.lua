@@ -11,7 +11,7 @@ project "Shared"
 	kind "StaticLib"
 	language "C++"
 
-	configuration {}
+	flags { "FatalWarnings" }
 
 	filter { "system:windows" }
 		includedirs { "../../dependencies/dirent" }

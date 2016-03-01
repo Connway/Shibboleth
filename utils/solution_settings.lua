@@ -5,7 +5,7 @@ else
 end
 
 warnings "Extra"
-flags { "Unicode" }
+characterset "Unicode"
 exceptionhandling "SEH" -- unfortunately need exceptions for crash handlers :(
 rtti "Off"
 

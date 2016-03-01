@@ -24,7 +24,17 @@ THE SOFTWARE.
 
 #include "Shibboleth_BulletPhysicsManager.h"
 #include <Shibboleth_Object.h>
+
+#if defined(_WIN32) || defined(_WIN64)
+	#pragma warning(push)
+	#pragma warning(disable: 4127)
+#endif
+
 #include <btBulletDynamicsCommon.h>
+
+#if defined(_WIN32) || defined(_WIN64)
+	#pragma warning(pop)
+#endif
 
 NS_SHIBBOLETH
 
@@ -149,7 +159,7 @@ void BulletPhysicsManager::getUpdateEntries(Array<UpdateEntry>& entries)
 
 void BulletPhysicsManager::update(double dt, void*)
 {
-	_main_world->stepSimulation(dt);
+	_main_world->stepSimulation(static_cast<btScalar>(dt));
 }
 
 void BulletPhysicsManager::addTestCapsule(Object* object)

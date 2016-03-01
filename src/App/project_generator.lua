@@ -19,6 +19,8 @@ project "App"
 	debugdir "../../workingdir/App"
 	language "C++"
 
+	flags { "FatalWarnings" }
+
 	files { "**.h", "**.cpp", "**.inl" }
 
 	configuration "windows"

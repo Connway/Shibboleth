@@ -11,6 +11,8 @@ project "Managers"
 	kind "StaticLib"
 	language "C++"
 
+	flags { "FatalWarnings" }
+
 	files { "**.h", "**.cpp", "**.inl" }
 	excludes { "Shibboleth_ManagersModule.cpp" }
 
@@ -52,6 +54,8 @@ project "ManagersModule"
 
 	kind "SharedLib"
 	language "C++"
+
+	flags { "FatalWarnings" }
 
 	targetname "ShibbolethManagers"
 

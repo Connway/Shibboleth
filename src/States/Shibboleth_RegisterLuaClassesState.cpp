@@ -24,14 +24,21 @@ THE SOFTWARE.
 #include <Shibboleth_LuaManager.h>
 #include <Shibboleth_IApp.h>
 
-//#include <Shibboleth_String.h>
+#if defined (_WIN32) || defined(_WIN64)
+	#pragma warning(push)
+	#pragma warning(disable: 4100 4244 4267 4800)
+#endif
 
 #include <LuaState.h>
 #include <LuaBridge.h>
 
+#if defined (_WIN32) || defined(_WIN64)
+	#pragma warning(pop)
+#endif
+
 NS_SHIBBOLETH
 
-static void RegisterBaseClassesWithLua(lua::State& state)
+static void RegisterBaseClassesWithLua(lua::State& /*state*/)
 {
 
 }

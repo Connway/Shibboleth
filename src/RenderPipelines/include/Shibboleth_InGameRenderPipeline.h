@@ -53,7 +53,7 @@ private:
 	static void GenerateCameraCommandLists(Array<RenderManager::RenderDevicePtr>& rds, GenerateJobData* jd);
 	static void GenerateLightCommandLists(Array<RenderManager::RenderDevicePtr>& rds, GenerateJobData* jd);
 
-	static void SortIntoRenderPasses(Gleam::IRenderDevice* rd, ObjectData& od, unsigned int device);
+	static void SortIntoRenderPasses(ObjectData& od, unsigned int device);
 	static void RunCommands(Gleam::IRenderDevice* rd, GenerateJobData* jd, unsigned int device, const ObjectData& od);
 	static void ClearCamera(Gleam::IRenderDevice* rd, ObjectData& od, Gleam::IRenderTargetPtr& rt);
 	static unsigned int GenerateFirstInstanceHash(ObjectData& od, size_t mesh_index, unsigned int device);

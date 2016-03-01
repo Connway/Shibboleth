@@ -541,8 +541,6 @@ JSON::ElementInfo JSON::ExtractElementInfo(JSON element, const SchemaMap& schema
 	JSON type = element["Type"];
 	JSON schema = element["Schema"];
 
-	const char* t = type.getString();
-
 	assert(type.isString() || type.isArray());
 	assert(!schema || schema.isString() || schema.isArray() || schema.isObject());
 	assert(element["Optional"].isBoolean());

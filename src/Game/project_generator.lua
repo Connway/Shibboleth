@@ -11,6 +11,8 @@ project "Game"
 	kind "StaticLib"
 	language "C++"
 
+	flags { "FatalWarnings" }
+
 	files { "**.h", "**.cpp", "**.inl" }
 
 	configuration "windows"
