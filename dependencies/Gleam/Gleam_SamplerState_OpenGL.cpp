@@ -21,7 +21,7 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Gleam_SamplerState_OpenGL.h"
-#include <Gaff_IncludeAssert.h>
+#include <Gaff_Assert.h>
 #include <GL/glew.h>
 
 NS_GLEAM
@@ -80,7 +80,7 @@ bool SamplerStateGL::init(
 #ifdef _DEBUG
 	GLint ma;
 	glGetIntegerv(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, &ma);
-	assert(max_anisotropy <= (unsigned int)ma);
+	GAFF_ASSERT(max_anisotropy <= static_cast<unsigned int>(ma));
 #endif
 
 	float border_color[4] = { border_r, border_g, border_b, border_a };

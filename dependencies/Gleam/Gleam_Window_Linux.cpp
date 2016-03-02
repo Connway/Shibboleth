@@ -24,7 +24,6 @@ THE SOFTWARE.
 
 #include "Gleam_Window_Linux.h"
 #include "Gleam_RawInputRegisterFunction.h"
-#include <Gaff_IncludeAssert.h>
 #include <X11/extensions/XInput2.h>
 #include <X11/cursorfont.h>
 #include <cmath>
@@ -524,7 +523,7 @@ void Window::showCursor(bool show)
 		XUndefineCursor(_display, _window);
 
 	} else {
-		assert(_display);
+		GAFF_ASSERT(_display);
 
 		char bm_no_data[] = { 0 };
 		XColor black, dummy;

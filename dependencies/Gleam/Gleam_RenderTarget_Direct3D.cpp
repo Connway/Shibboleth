@@ -26,7 +26,6 @@ THE SOFTWARE.
 #include "Gleam_IRenderDevice_Direct3D.h"
 #include "Gleam_Texture_Direct3D.h"
 #include "Gleam_IRenderDevice.h"
-#include <Gaff_IncludeAssert.h>
 
 NS_GLEAM
 
@@ -58,8 +57,8 @@ void RenderTargetD3D::destroy(void)
 
 bool RenderTargetD3D::addTexture(IRenderDevice& rd, const ITexture* color_texture, CUBE_FACE face)
 {
-	assert(color_texture && color_texture->getRendererType() == RENDERER_DIRECT3D);
-	assert(rd.getRendererType() == RENDERER_DIRECT3D);
+	GAFF_ASSERT(color_texture && color_texture->getRendererType() == RENDERER_DIRECT3D);
+	GAFF_ASSERT(rd.getRendererType() == RENDERER_DIRECT3D);
 
 	ID3D11RenderTargetView* render_target_view = nullptr;
 
@@ -104,8 +103,8 @@ void RenderTargetD3D::popTexture(void)
 
 bool RenderTargetD3D::addDepthStencilBuffer(IRenderDevice& rd, const ITexture* depth_stencil_texture)
 {
-	assert(depth_stencil_texture && depth_stencil_texture->getRendererType() == RENDERER_DIRECT3D);
-	assert(rd.getRendererType() == RENDERER_DIRECT3D);
+	GAFF_ASSERT(depth_stencil_texture && depth_stencil_texture->getRendererType() == RENDERER_DIRECT3D);
+	GAFF_ASSERT(rd.getRendererType() == RENDERER_DIRECT3D);
 
 	if (_depth_stencil_view) {
 		_depth_stencil_view->Release();
@@ -124,7 +123,7 @@ bool RenderTargetD3D::addDepthStencilBuffer(IRenderDevice& rd, const ITexture* d
 
 void RenderTargetD3D::bind(IRenderDevice& rd)
 {
-	assert(rd.getRendererType() == RENDERER_DIRECT3D);
+	GAFF_ASSERT(rd.getRendererType() == RENDERER_DIRECT3D);
 
 	IRenderDeviceD3D& rd3d = reinterpret_cast<IRenderDeviceD3D&>(*(reinterpret_cast<char*>(&rd) + sizeof(IRenderDevice)));
 
@@ -134,14 +133,14 @@ void RenderTargetD3D::bind(IRenderDevice& rd)
 
 void RenderTargetD3D::unbind(IRenderDevice& rd)
 {
-	assert(rd.getRendererType() == RENDERER_DIRECT3D);
+	GAFF_ASSERT(rd.getRendererType() == RENDERER_DIRECT3D);
 	IRenderDeviceD3D& rd3d = reinterpret_cast<IRenderDeviceD3D&>(*(reinterpret_cast<char*>(&rd) + sizeof(IRenderDevice)));
 	rd3d.getActiveDeviceContext()->OMSetRenderTargets(0, nullptr, nullptr);
 }
 
 void RenderTargetD3D::clear(IRenderDevice& rd, unsigned int clear_flags, float clear_depth, unsigned char clear_stencil, float* clear_color)
 {
-	assert(rd.getRendererType() == RENDERER_DIRECT3D);
+	GAFF_ASSERT(rd.getRendererType() == RENDERER_DIRECT3D);
 	IRenderDeviceD3D& rd3d = reinterpret_cast<IRenderDeviceD3D&>(*(reinterpret_cast<char*>(&rd) + sizeof(IRenderDevice)));
 
 	if (clear_flags | CLEAR_COLOR) {
@@ -167,7 +166,7 @@ RendererType RenderTargetD3D::getRendererType(void) const
 
 void RenderTargetD3D::setRTV(ID3D11RenderTargetView* rt, const D3D11_VIEWPORT& viewport)
 {
-	assert(rt);
+	GAFF_ASSERT(rt);
 	_render_target_views.push(rt);
 	_viewport = viewport;
 	rt->AddRef();

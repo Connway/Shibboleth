@@ -81,7 +81,7 @@ DYNAMICEXPORT_C size_t GetNumRenderPipelines(void)
 
 DYNAMICEXPORT_C Shibboleth::IRenderPipeline* CreateRenderPipeline(size_t id)
 {
-	assert(id < NUM_RPS);
+	GAFF_ASSERT(id < NUM_RPS);
 	return rp_funcs[id]();
 }
 

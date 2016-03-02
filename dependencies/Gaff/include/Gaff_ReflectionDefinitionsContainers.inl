@@ -66,7 +66,7 @@ VAR_CONTAINER_GET(StringContainer);
 
 VAR_CONTAINER_READ(DoubleContainer)
 {
-	assert(json[reinterpret_cast<const char*>(ValueContainerBase::_key.getBuffer())].isReal());
+	GAFF_ASSERT(json[reinterpret_cast<const char*>(ValueContainerBase::_key.getBuffer())].isReal());
 
 	if (_var) {
 		object->*_var = json[reinterpret_cast<const char*>(ValueContainerBase::_key.getBuffer())].getReal();
@@ -77,7 +77,7 @@ VAR_CONTAINER_READ(DoubleContainer)
 
 VAR_CONTAINER_WRITE(DoubleContainer)
 {
-	assert(!json[ValueContainerBase::_key.getBuffer()]);
+	GAFF_ASSERT(!json[ValueContainerBase::_key.getBuffer()]);
 
 	if (_var) {
 		json.setObject(ValueContainerBase::_key.getBuffer(), JSON::createReal(object->*_var));
@@ -91,7 +91,7 @@ VAR_CONTAINER_WRITE(DoubleContainer)
 
 VAR_CONTAINER_READ(FloatContainer)
 {
-	assert(json[reinterpret_cast<const char*>(ValueContainerBase::_key.getBuffer())].isReal());
+	GAFF_ASSERT(json[reinterpret_cast<const char*>(ValueContainerBase::_key.getBuffer())].isReal());
 
 	if (_var) {
 		object->*_var = static_cast<float>(json[reinterpret_cast<const char*>(ValueContainerBase::_key.getBuffer())].getReal());
@@ -102,7 +102,7 @@ VAR_CONTAINER_READ(FloatContainer)
 
 VAR_CONTAINER_WRITE(FloatContainer)
 {
-	assert(!json[ValueContainerBase::_key.getBuffer()]);
+	GAFF_ASSERT(!json[ValueContainerBase::_key.getBuffer()]);
 
 	if (_var) {
 		json.setObject(ValueContainerBase::_key.getBuffer(), JSON::createReal(object->*_var));
@@ -116,7 +116,7 @@ VAR_CONTAINER_WRITE(FloatContainer)
 
 VAR_CONTAINER_READ(UIntContainer)
 {
-	assert(json[reinterpret_cast<const char*>(ValueContainerBase::_key.getBuffer())].isInteger());
+	GAFF_ASSERT(json[reinterpret_cast<const char*>(ValueContainerBase::_key.getBuffer())].isInteger());
 
 	if (_var) {
 		object->*_var = static_cast<unsigned int>(json[reinterpret_cast<const char*>(ValueContainerBase::_key.getBuffer())].getInteger());
@@ -127,7 +127,7 @@ VAR_CONTAINER_READ(UIntContainer)
 
 VAR_CONTAINER_WRITE(UIntContainer)
 {
-	assert(!json[ValueContainerBase::_key.getBuffer()]);
+	GAFF_ASSERT(!json[ValueContainerBase::_key.getBuffer()]);
 
 	if (_var) {
 		json.setObject(ValueContainerBase::_key.getBuffer(), JSON::createInteger(static_cast<json_int_t>(object->*_var)));
@@ -141,7 +141,7 @@ VAR_CONTAINER_WRITE(UIntContainer)
 
 VAR_CONTAINER_READ(IntContainer)
 {
-	assert(json[reinterpret_cast<const char*>(ValueContainerBase::_key.getBuffer())].isInteger());
+	GAFF_ASSERT(json[reinterpret_cast<const char*>(ValueContainerBase::_key.getBuffer())].isInteger());
 
 	if (_var) {
 		object->*_var = static_cast<int>(json[reinterpret_cast<const char*>(ValueContainerBase::_key.getBuffer())].getInteger());
@@ -152,7 +152,7 @@ VAR_CONTAINER_READ(IntContainer)
 
 VAR_CONTAINER_WRITE(IntContainer)
 {
-	assert(!json[ValueContainerBase::_key.getBuffer()]);
+	GAFF_ASSERT(!json[ValueContainerBase::_key.getBuffer()]);
 
 	if (_var) {
 		json.setObject(ValueContainerBase::_key.getBuffer(), JSON::createInteger(static_cast<json_int_t>(object->*_var)));
@@ -166,7 +166,7 @@ VAR_CONTAINER_WRITE(IntContainer)
 
 VAR_CONTAINER_READ(UShortContainer)
 {
-	assert(json[reinterpret_cast<const char*>(ValueContainerBase::_key.getBuffer())].isInteger());
+	GAFF_ASSERT(json[reinterpret_cast<const char*>(ValueContainerBase::_key.getBuffer())].isInteger());
 
 	if (_var) {
 		object->*_var = static_cast<unsigned short>(json[reinterpret_cast<const char*>(ValueContainerBase::_key.getBuffer())].getInteger());
@@ -177,7 +177,7 @@ VAR_CONTAINER_READ(UShortContainer)
 
 VAR_CONTAINER_WRITE(UShortContainer)
 {
-	assert(!json[ValueContainerBase::_key.getBuffer()]);
+	GAFF_ASSERT(!json[ValueContainerBase::_key.getBuffer()]);
 
 	if (_var) {
 		json.setObject(ValueContainerBase::_key.getBuffer(), JSON::createInteger(static_cast<json_int_t>(object->*_var)));
@@ -191,7 +191,7 @@ VAR_CONTAINER_WRITE(UShortContainer)
 
 VAR_CONTAINER_READ(ShortContainer)
 {
-	assert(json[reinterpret_cast<const char*>(ValueContainerBase::_key.getBuffer())].isInteger());
+	GAFF_ASSERT(json[reinterpret_cast<const char*>(ValueContainerBase::_key.getBuffer())].isInteger());
 
 	if (_var) {
 		object->*_var = static_cast<short>(json[reinterpret_cast<const char*>(ValueContainerBase::_key.getBuffer())].getInteger());
@@ -202,7 +202,7 @@ VAR_CONTAINER_READ(ShortContainer)
 
 VAR_CONTAINER_WRITE(ShortContainer)
 {
-	assert(!json[ValueContainerBase::_key.getBuffer()]);
+	GAFF_ASSERT(!json[ValueContainerBase::_key.getBuffer()]);
 
 	if (_var) {
 		json.setObject(ValueContainerBase::_key.getBuffer(), JSON::createInteger(static_cast<json_int_t>(object->*_var)));
@@ -216,7 +216,7 @@ VAR_CONTAINER_WRITE(ShortContainer)
 
 VAR_CONTAINER_READ(UCharContainer)
 {
-	assert(json[reinterpret_cast<const char*>(ValueContainerBase::_key.getBuffer())].isInteger());
+	GAFF_ASSERT(json[reinterpret_cast<const char*>(ValueContainerBase::_key.getBuffer())].isInteger());
 
 	if (_var) {
 		object->*_var = static_cast<unsigned char>(json[reinterpret_cast<const char*>(ValueContainerBase::_key.getBuffer())].getInteger());
@@ -227,7 +227,7 @@ VAR_CONTAINER_READ(UCharContainer)
 
 VAR_CONTAINER_WRITE(UCharContainer)
 {
-	assert(!json[ValueContainerBase::_key.getBuffer()]);
+	GAFF_ASSERT(!json[ValueContainerBase::_key.getBuffer()]);
 
 	if (_var) {
 		json.setObject(ValueContainerBase::_key.getBuffer(), JSON::createInteger(static_cast<json_int_t>(object->*_var)));
@@ -241,7 +241,7 @@ VAR_CONTAINER_WRITE(UCharContainer)
 
 VAR_CONTAINER_READ(CharContainer)
 {
-	assert(json[reinterpret_cast<const char*>(ValueContainerBase::_key.getBuffer())].isInteger());
+	GAFF_ASSERT(json[reinterpret_cast<const char*>(ValueContainerBase::_key.getBuffer())].isInteger());
 
 	if (_var) {
 		object->*_var = static_cast<char>(json[reinterpret_cast<const char*>(ValueContainerBase::_key.getBuffer())].getInteger());
@@ -252,7 +252,7 @@ VAR_CONTAINER_READ(CharContainer)
 
 VAR_CONTAINER_WRITE(CharContainer)
 {
-	assert(!json[ValueContainerBase::_key.getBuffer()]);
+	GAFF_ASSERT(!json[ValueContainerBase::_key.getBuffer()]);
 
 	if (_var) {
 		json.setObject(ValueContainerBase::_key.getBuffer(), JSON::createInteger(static_cast<json_int_t>(object->*_var)));
@@ -266,7 +266,7 @@ VAR_CONTAINER_WRITE(CharContainer)
 
 VAR_CONTAINER_READ(BoolContainer)
 {
-	assert(json[reinterpret_cast<const char*>(ValueContainerBase::_key.getBuffer())].isBoolean());
+	GAFF_ASSERT(json[reinterpret_cast<const char*>(ValueContainerBase::_key.getBuffer())].isBoolean());
 
 	if (_var) {
 		object->*_var = json[reinterpret_cast<const char*>(ValueContainerBase::_key.getBuffer())].isTrue();
@@ -277,7 +277,7 @@ VAR_CONTAINER_READ(BoolContainer)
 
 VAR_CONTAINER_WRITE(BoolContainer)
 {
-	assert(!json[ValueContainerBase::_key.getBuffer()]);
+	GAFF_ASSERT(!json[ValueContainerBase::_key.getBuffer()]);
 
 	if (_var) {
 		json.setObject(ValueContainerBase::_key.getBuffer(), JSON::createBoolean(object->*_var));
@@ -291,7 +291,7 @@ VAR_CONTAINER_WRITE(BoolContainer)
 
 VAR_CONTAINER_READ(StringContainer)
 {
-	assert(json[reinterpret_cast<const char*>(ValueContainerBase::_key.getBuffer())].isString());
+	GAFF_ASSERT(json[reinterpret_cast<const char*>(ValueContainerBase::_key.getBuffer())].isString());
 
 	if (_var) {
 		object->*_var = json[reinterpret_cast<const char*>(ValueContainerBase::_key.getBuffer())].getString();
@@ -302,7 +302,7 @@ VAR_CONTAINER_READ(StringContainer)
 
 VAR_CONTAINER_WRITE(StringContainer)
 {
-	assert(!json[ValueContainerBase::_key.getBuffer()]);
+	GAFF_ASSERT(!json[ValueContainerBase::_key.getBuffer()]);
 
 	if (_var) {
 		json.setObject(ValueContainerBase::_key.getBuffer(), JSON::createString((object->*_var).getBuffer()));
@@ -407,14 +407,14 @@ ARRAY_CONTAINER_SIZE(ArrayStringContainer);
 ARRAY_CONTAINER_READ(ArrayDoubleContainer)
 {
 	JSON array = json[reinterpret_cast<const char*>(ValueContainerBase::_key.getBuffer())];
-	assert(array.isArray());
+	GAFF_ASSERT(array.isArray());
 
 	if (_var) {
 		(object->*_var).resize(array.size());
 
 		array.forEachInArray([&](size_t index, const JSON& value) -> bool
 		{
-			assert(value.isReal());
+			GAFF_ASSERT(value.isReal());
 			(object->*_var)[index] = value.getReal();
 			return false;
 		});
@@ -425,7 +425,7 @@ ARRAY_CONTAINER_READ(ArrayDoubleContainer)
 
 		array.forEachInArray([&](size_t index, const JSON& value) -> bool
 		{
-			assert(value.isReal());
+			GAFF_ASSERT(value.isReal());
 			arr[index] = value.getReal();
 			return false;
 		});
@@ -434,7 +434,7 @@ ARRAY_CONTAINER_READ(ArrayDoubleContainer)
 
 ARRAY_CONTAINER_WRITE(ArrayDoubleContainer)
 {
-	assert(!json[ValueContainerBase::_key.getBuffer()]);
+	GAFF_ASSERT(!json[ValueContainerBase::_key.getBuffer()]);
 
 	JSON array = JSON::createArray();
 
@@ -460,14 +460,14 @@ ARRAY_CONTAINER_WRITE(ArrayDoubleContainer)
 ARRAY_CONTAINER_READ(ArrayFloatContainer)
 {
 	JSON array = json[reinterpret_cast<const char*>(ValueContainerBase::_key.getBuffer())];
-	assert(array.isArray());
+	GAFF_ASSERT(array.isArray());
 
 	if (_var) {
 		(object->*_var).resize(array.size());
 
 		array.forEachInArray([&](size_t index, const JSON& value) -> bool
 		{
-			assert(value.isReal());
+			GAFF_ASSERT(value.isReal());
 			(object->*_var)[index] = static_cast<float>(value.getReal());
 			return false;
 		});
@@ -478,7 +478,7 @@ ARRAY_CONTAINER_READ(ArrayFloatContainer)
 
 		array.forEachInArray([&](size_t index, const JSON& value) -> bool
 		{
-			assert(value.isReal());
+			GAFF_ASSERT(value.isReal());
 			arr[index] = static_cast<float>(value.getReal());
 			return false;
 		});
@@ -487,7 +487,7 @@ ARRAY_CONTAINER_READ(ArrayFloatContainer)
 
 ARRAY_CONTAINER_WRITE(ArrayFloatContainer)
 {
-	assert(!json[ValueContainerBase::_key.getBuffer()]);
+	GAFF_ASSERT(!json[ValueContainerBase::_key.getBuffer()]);
 
 	JSON array = JSON::createArray();
 
@@ -513,14 +513,14 @@ ARRAY_CONTAINER_WRITE(ArrayFloatContainer)
 ARRAY_CONTAINER_READ(ArrayUIntContainer)
 {
 	JSON array = json[reinterpret_cast<const char*>(ValueContainerBase::_key.getBuffer())];
-	assert(array.isArray());
+	GAFF_ASSERT(array.isArray());
 
 	if (_var) {
 		(object->*_var).resize(array.size());
 
 		array.forEachInArray([&](size_t index, const JSON& value) -> bool
 		{
-			assert(value.isInteger());
+			GAFF_ASSERT(value.isInteger());
 			(object->*_var)[index] = static_cast<unsigned int>(value.getInteger());
 			return false;
 		});
@@ -531,7 +531,7 @@ ARRAY_CONTAINER_READ(ArrayUIntContainer)
 
 		array.forEachInArray([&](size_t index, const JSON& value) -> bool
 		{
-			assert(value.isInteger());
+			GAFF_ASSERT(value.isInteger());
 			arr[index] = static_cast<unsigned int>(value.getInteger());
 			return false;
 		});
@@ -540,7 +540,7 @@ ARRAY_CONTAINER_READ(ArrayUIntContainer)
 
 ARRAY_CONTAINER_WRITE(ArrayUIntContainer)
 {
-	assert(!json[ValueContainerBase::_key.getBuffer()]);
+	GAFF_ASSERT(!json[ValueContainerBase::_key.getBuffer()]);
 
 	JSON array = JSON::createArray();
 
@@ -566,14 +566,14 @@ ARRAY_CONTAINER_WRITE(ArrayUIntContainer)
 ARRAY_CONTAINER_READ(ArrayIntContainer)
 {
 	JSON array = json[reinterpret_cast<const char*>(ValueContainerBase::_key.getBuffer())];
-	assert(array.isArray());
+	GAFF_ASSERT(array.isArray());
 
 	if (_var) {
 		(object->*_var).resize(array.size());
 
 		array.forEachInArray([&](size_t index, const JSON& value) -> bool
 		{
-			assert(value.isInteger());
+			GAFF_ASSERT(value.isInteger());
 			(object->*_var)[index] = static_cast<int>(value.getInteger());
 			return false;
 		});
@@ -584,7 +584,7 @@ ARRAY_CONTAINER_READ(ArrayIntContainer)
 
 		array.forEachInArray([&](size_t index, const JSON& value) -> bool
 		{
-			assert(value.isInteger());
+			GAFF_ASSERT(value.isInteger());
 			arr[index] = static_cast<int>(value.getInteger());
 			return false;
 		});
@@ -593,7 +593,7 @@ ARRAY_CONTAINER_READ(ArrayIntContainer)
 
 ARRAY_CONTAINER_WRITE(ArrayIntContainer)
 {
-	assert(!json[ValueContainerBase::_key.getBuffer()]);
+	GAFF_ASSERT(!json[ValueContainerBase::_key.getBuffer()]);
 
 	JSON array = JSON::createArray();
 
@@ -619,14 +619,14 @@ ARRAY_CONTAINER_WRITE(ArrayIntContainer)
 ARRAY_CONTAINER_READ(ArrayUShortContainer)
 {
 	JSON array = json[reinterpret_cast<const char*>(ValueContainerBase::_key.getBuffer())];
-	assert(array.isArray());
+	GAFF_ASSERT(array.isArray());
 
 	if (_var) {
 		(object->*_var).resize(array.size());
 
 		array.forEachInArray([&](size_t index, const JSON& value) -> bool
 		{
-			assert(value.isInteger());
+			GAFF_ASSERT(value.isInteger());
 			(object->*_var)[index] = static_cast<unsigned short>(value.getInteger());
 			return false;
 		});
@@ -637,7 +637,7 @@ ARRAY_CONTAINER_READ(ArrayUShortContainer)
 
 		array.forEachInArray([&](size_t index, const JSON& value) -> bool
 		{
-			assert(value.isInteger());
+			GAFF_ASSERT(value.isInteger());
 			arr[index] = static_cast<unsigned short>(value.getInteger());
 			return false;
 		});
@@ -646,7 +646,7 @@ ARRAY_CONTAINER_READ(ArrayUShortContainer)
 
 ARRAY_CONTAINER_WRITE(ArrayUShortContainer)
 {
-	assert(!json[ValueContainerBase::_key.getBuffer()]);
+	GAFF_ASSERT(!json[ValueContainerBase::_key.getBuffer()]);
 
 	JSON array = JSON::createArray();
 
@@ -672,14 +672,14 @@ ARRAY_CONTAINER_WRITE(ArrayUShortContainer)
 ARRAY_CONTAINER_READ(ArrayShortContainer)
 {
 	JSON array = json[reinterpret_cast<const char*>(ValueContainerBase::_key.getBuffer())];
-	assert(array.isArray());
+	GAFF_ASSERT(array.isArray());
 
 	if (_var) {
 		(object->*_var).resize(array.size());
 
 		array.forEachInArray([&](size_t index, const JSON& value) -> bool
 		{
-			assert(value.isInteger());
+			GAFF_ASSERT(value.isInteger());
 			(object->*_var)[index] = static_cast<short>(value.getInteger());
 			return false;
 		});
@@ -690,7 +690,7 @@ ARRAY_CONTAINER_READ(ArrayShortContainer)
 
 		array.forEachInArray([&](size_t index, const JSON& value) -> bool
 		{
-			assert(value.isInteger());
+			GAFF_ASSERT(value.isInteger());
 			arr[index] = static_cast<short>(value.getInteger());
 			return false;
 		});
@@ -699,7 +699,7 @@ ARRAY_CONTAINER_READ(ArrayShortContainer)
 
 ARRAY_CONTAINER_WRITE(ArrayShortContainer)
 {
-	assert(!json[ValueContainerBase::_key.getBuffer()]);
+	GAFF_ASSERT(!json[ValueContainerBase::_key.getBuffer()]);
 
 	JSON array = JSON::createArray();
 
@@ -725,14 +725,14 @@ ARRAY_CONTAINER_WRITE(ArrayShortContainer)
 ARRAY_CONTAINER_READ(ArrayUCharContainer)
 {
 	JSON array = json[reinterpret_cast<const char*>(ValueContainerBase::_key.getBuffer())];
-	assert(array.isArray());
+	GAFF_ASSERT(array.isArray());
 
 	if (_var) {
 		(object->*_var).resize(array.size());
 
 		array.forEachInArray([&](size_t index, const JSON& value) -> bool
 		{
-			assert(value.isInteger());
+			GAFF_ASSERT(value.isInteger());
 			(object->*_var)[index] = static_cast<unsigned char>(value.getInteger());
 			return false;
 		});
@@ -743,7 +743,7 @@ ARRAY_CONTAINER_READ(ArrayUCharContainer)
 
 		array.forEachInArray([&](size_t index, const JSON& value) -> bool
 		{
-			assert(value.isInteger());
+			GAFF_ASSERT(value.isInteger());
 			arr[index] = static_cast<unsigned char>(value.getInteger());
 			return false;
 		});
@@ -752,7 +752,7 @@ ARRAY_CONTAINER_READ(ArrayUCharContainer)
 
 ARRAY_CONTAINER_WRITE(ArrayUCharContainer)
 {
-	assert(!json[ValueContainerBase::_key.getBuffer()]);
+	GAFF_ASSERT(!json[ValueContainerBase::_key.getBuffer()]);
 
 	JSON array = JSON::createArray();
 
@@ -778,14 +778,14 @@ ARRAY_CONTAINER_WRITE(ArrayUCharContainer)
 ARRAY_CONTAINER_READ(ArrayCharContainer)
 {
 	JSON array = json[reinterpret_cast<const char*>(ValueContainerBase::_key.getBuffer())];
-	assert(array.isArray());
+	GAFF_ASSERT(array.isArray());
 
 	if (_var) {
 		(object->*_var).resize(array.size());
 
 		array.forEachInArray([&](size_t index, const JSON& value) -> bool
 		{
-			assert(value.isInteger());
+			GAFF_ASSERT(value.isInteger());
 			(object->*_var)[index] = static_cast<char>(value.getInteger());
 			return false;
 		});
@@ -796,7 +796,7 @@ ARRAY_CONTAINER_READ(ArrayCharContainer)
 
 		array.forEachInArray([&](size_t index, const JSON& value) -> bool
 		{
-			assert(value.isInteger());
+			GAFF_ASSERT(value.isInteger());
 			arr[index] = static_cast<char>(value.getInteger());
 			return false;
 		});
@@ -805,7 +805,7 @@ ARRAY_CONTAINER_READ(ArrayCharContainer)
 
 ARRAY_CONTAINER_WRITE(ArrayCharContainer)
 {
-	assert(!json[ValueContainerBase::_key.getBuffer()]);
+	GAFF_ASSERT(!json[ValueContainerBase::_key.getBuffer()]);
 
 	JSON array = JSON::createArray();
 
@@ -831,14 +831,14 @@ ARRAY_CONTAINER_WRITE(ArrayCharContainer)
 ARRAY_CONTAINER_READ(ArrayStringContainer)
 {
 	JSON array = json[reinterpret_cast<const char*>(ValueContainerBase::_key.getBuffer())];
-	assert(array.isArray());
+	GAFF_ASSERT(array.isArray());
 
 	if (_var) {
 		(object->*_var).resize(array.size());
 
 		array.forEachInArray([&](size_t index, const JSON& value) -> bool
 		{
-			assert(value.isString());
+			GAFF_ASSERT(value.isString());
 			(object->*_var)[index] = value.getString();
 			return false;
 		});
@@ -849,7 +849,7 @@ ARRAY_CONTAINER_READ(ArrayStringContainer)
 
 		array.forEachInArray([&](size_t index, const JSON& value) -> bool
 		{
-			assert(value.isString());
+			GAFF_ASSERT(value.isString());
 			arr[index] = value.getString();
 			return false;
 		});
@@ -858,7 +858,7 @@ ARRAY_CONTAINER_READ(ArrayStringContainer)
 
 ARRAY_CONTAINER_WRITE(ArrayStringContainer)
 {
-	assert(!json[ValueContainerBase::_key.getBuffer()]);
+	GAFF_ASSERT(!json[ValueContainerBase::_key.getBuffer()]);
 
 	JSON array = JSON::createArray();
 
@@ -965,7 +965,7 @@ ARRAY_CONTAINER_FIXED_READ(ArrayFixedDoubleContainer)
 {
 	JSON array = json[reinterpret_cast<const char*>(ValueContainerBase::_key.getBuffer())];
 	VarType* arr = nullptr;
-	assert(array.isArray());
+	GAFF_ASSERT(array.isArray());
 
 	if (_var) {
 		arr = (object->*_var);
@@ -976,7 +976,7 @@ ARRAY_CONTAINER_FIXED_READ(ArrayFixedDoubleContainer)
 	if (arr) {
 		array.forEachInArray([&](size_t index, const JSON& value) -> bool
 		{
-			assert(value.isReal());
+			GAFF_ASSERT(value.isReal());
 			arr[index] = value.getReal();
 			return false;
 		});
@@ -1007,7 +1007,7 @@ ARRAY_CONTAINER_FIXED_READ(ArrayFixedFloatContainer)
 {
 	JSON array = json[reinterpret_cast<const char*>(ValueContainerBase::_key.getBuffer())];
 	VarType* arr = nullptr;
-	assert(array.isArray());
+	GAFF_ASSERT(array.isArray());
 
 	if (_var) {
 		arr = (object->*_var);
@@ -1018,7 +1018,7 @@ ARRAY_CONTAINER_FIXED_READ(ArrayFixedFloatContainer)
 	if (arr) {
 		array.forEachInArray([&](size_t index, const JSON& value) -> bool
 		{
-			assert(value.isReal());
+			GAFF_ASSERT(value.isReal());
 			arr[index] = static_cast<VarType>(value.getReal());
 			return false;
 		});
@@ -1049,7 +1049,7 @@ ARRAY_CONTAINER_FIXED_READ(ArrayFixedUIntContainer)
 {
 	JSON array = json[reinterpret_cast<const char*>(ValueContainerBase::_key.getBuffer())];
 	VarType* arr = nullptr;
-	assert(array.isArray());
+	GAFF_ASSERT(array.isArray());
 
 	if (_var) {
 		arr = (object->*_var);
@@ -1060,7 +1060,7 @@ ARRAY_CONTAINER_FIXED_READ(ArrayFixedUIntContainer)
 	if (arr) {
 		array.forEachInArray([&](size_t index, const JSON& value) -> bool
 		{
-			assert(value.isInteger());
+			GAFF_ASSERT(value.isInteger());
 			arr[index] = static_cast<VarType>(value.getInteger());
 			return false;
 		});
@@ -1091,7 +1091,7 @@ ARRAY_CONTAINER_FIXED_READ(ArrayFixedIntContainer)
 {
 	JSON array = json[reinterpret_cast<const char*>(ValueContainerBase::_key.getBuffer())];
 	VarType* arr = nullptr;
-	assert(array.isArray());
+	GAFF_ASSERT(array.isArray());
 
 	if (_var) {
 		arr = (object->*_var);
@@ -1102,7 +1102,7 @@ ARRAY_CONTAINER_FIXED_READ(ArrayFixedIntContainer)
 	if (arr) {
 		array.forEachInArray([&](size_t index, const JSON& value) -> bool
 		{
-			assert(value.isInteger());
+			GAFF_ASSERT(value.isInteger());
 			arr[index] = static_cast<VarType>(value.getInteger());
 			return false;
 		});
@@ -1133,7 +1133,7 @@ ARRAY_CONTAINER_FIXED_READ(ArrayFixedUShortContainer)
 {
 	JSON array = json[reinterpret_cast<const char*>(ValueContainerBase::_key.getBuffer())];
 	VarType* arr = nullptr;
-	assert(array.isArray());
+	GAFF_ASSERT(array.isArray());
 
 	if (_var) {
 		arr = (object->*_var);
@@ -1144,7 +1144,7 @@ ARRAY_CONTAINER_FIXED_READ(ArrayFixedUShortContainer)
 	if (arr) {
 		array.forEachInArray([&](size_t index, const JSON& value) -> bool
 		{
-			assert(value.isInteger());
+			GAFF_ASSERT(value.isInteger());
 			arr[index] = static_cast<VarType>(value.getInteger());
 			return false;
 		});
@@ -1175,7 +1175,7 @@ ARRAY_CONTAINER_FIXED_READ(ArrayFixedShortContainer)
 {
 	JSON array = json[reinterpret_cast<const char*>(ValueContainerBase::_key.getBuffer())];
 	VarType* arr = nullptr;
-	assert(array.isArray());
+	GAFF_ASSERT(array.isArray());
 
 	if (_var) {
 		arr = (object->*_var);
@@ -1186,7 +1186,7 @@ ARRAY_CONTAINER_FIXED_READ(ArrayFixedShortContainer)
 	if (arr) {
 		array.forEachInArray([&](size_t index, const JSON& value) -> bool
 		{
-			assert(value.isInteger());
+			GAFF_ASSERT(value.isInteger());
 			arr[index] = static_cast<VarType>(value.getInteger());
 			return false;
 		});
@@ -1217,7 +1217,7 @@ ARRAY_CONTAINER_FIXED_READ(ArrayFixedUCharContainer)
 {
 	JSON array = json[reinterpret_cast<const char*>(ValueContainerBase::_key.getBuffer())];
 	VarType* arr = nullptr;
-	assert(array.isArray());
+	GAFF_ASSERT(array.isArray());
 
 	if (_var) {
 		arr = (object->*_var);
@@ -1228,7 +1228,7 @@ ARRAY_CONTAINER_FIXED_READ(ArrayFixedUCharContainer)
 	if (arr) {
 		array.forEachInArray([&](size_t index, const JSON& value) -> bool
 		{
-			assert(value.isInteger());
+			GAFF_ASSERT(value.isInteger());
 			arr[index] = static_cast<VarType>(value.getInteger());
 			return false;
 		});
@@ -1259,7 +1259,7 @@ ARRAY_CONTAINER_FIXED_READ(ArrayFixedCharContainer)
 {
 	JSON array = json[reinterpret_cast<const char*>(ValueContainerBase::_key.getBuffer())];
 	VarType* arr = nullptr;
-	assert(array.isArray());
+	GAFF_ASSERT(array.isArray());
 
 	if (_var) {
 		arr = (object->*_var);
@@ -1270,7 +1270,7 @@ ARRAY_CONTAINER_FIXED_READ(ArrayFixedCharContainer)
 	if (arr) {
 		array.forEachInArray([&](size_t index, const JSON& value) -> bool
 		{
-			assert(value.isInteger());
+			GAFF_ASSERT(value.isInteger());
 			arr[index] = static_cast<VarType>(value.getInteger());
 			return false;
 		});
@@ -1301,7 +1301,7 @@ ARRAY_CONTAINER_FIXED_READ(ArrayFixedStringContainer)
 {
 	JSON array = json[reinterpret_cast<const char*>(ValueContainerBase::_key.getBuffer())];
 	VarType* arr = nullptr;
-	assert(array.isArray());
+	GAFF_ASSERT(array.isArray());
 
 	if (_var) {
 		arr = (object->*_var);
@@ -1312,7 +1312,7 @@ ARRAY_CONTAINER_FIXED_READ(ArrayFixedStringContainer)
 	if (arr) {
 		array.forEachInArray([&](size_t index, const JSON& value) -> bool
 		{
-			assert(value.isString());
+			GAFF_ASSERT(value.isString());
 			arr[index] = value.getString();
 			return false;
 		});
@@ -1362,7 +1362,7 @@ void ReflectionDefinition<T, Allocator>::ArrayFixedEnumContainer<array_size, T2>
 {
 	JSON array = json[reinterpret_cast<const char*>(ValueContainerBase::_key.getBuffer())];
 	T2* arr = nullptr;
-	assert(array.isArray() && array.size() < array_size);
+	GAFF_ASSERT(array.isArray() && array.size() < array_size);
 
 	if (_var) {
 		arr = (object->*_var);
@@ -1373,7 +1373,7 @@ void ReflectionDefinition<T, Allocator>::ArrayFixedEnumContainer<array_size, T2>
 	if (arr) {
 		array.forEachInArray([&](size_t index, const JSON& value) -> bool
 		{
-			assert(value.isString());
+			GAFF_ASSERT(value.isString());
 			arr[index] = _enum_ref_def.getValue(value.getString());
 			return false;
 		});
@@ -1384,7 +1384,7 @@ template <class T, class Allocator>
 template <size_t array_size, class T2>
 void ReflectionDefinition<T, Allocator>::ArrayFixedEnumContainer<array_size, T2>::write(JSON& json, const T* object) const
 {
-	assert(!json[ValueContainerBase::_key.getBuffer()]);
+	GAFF_ASSERT(!json[ValueContainerBase::_key.getBuffer()]);
 	JSON array = JSON::createArray();
 	const T2* arr = nullptr;
 
@@ -1441,7 +1441,7 @@ template <class T, class Allocator>
 template <size_t array_size, class T2>
 void ReflectionDefinition<T, Allocator>::ArrayFixedEnumContainer<array_size, T2>::get(void* out, size_t index, const T* object) const
 {
-	assert(index < array_size);
+	GAFF_ASSERT(index < array_size);
 	const T2* array = nullptr;
 
 	if (_var) {
@@ -1493,7 +1493,7 @@ template <class T, class Allocator>
 template <size_t array_size, class T2>
 void ReflectionDefinition<T, Allocator>::ArrayFixedEnumContainer<array_size, T2>::set(const void* value, size_t index, T* object)
 {
-	assert(index < array_size);
+	GAFF_ASSERT(index < array_size);
 	T2* array = nullptr;
 
 	if (_var) {
@@ -1525,7 +1525,7 @@ template <class T, class Allocator>
 template <size_t array_size, class T2>
 void ReflectionDefinition<T, Allocator>::ArrayFixedEnumContainer<array_size, T2>::move(size_t src_index, size_t dest_index, T* object)
 {
-	assert(src_index < array_size && dest_index <= array_size);
+	GAFF_ASSERT(src_index < array_size && dest_index <= array_size);
 	T2* array = nullptr;
 
 	if (_var) {
@@ -1598,7 +1598,7 @@ void ReflectionDefinition<T, Allocator>::ArrayFixedObjectContainer<array_size, T
 {
 	JSON array = json[reinterpret_cast<const char*>(ValueContainerBase::_key.getBuffer())];
 	T2* arr = nullptr;
-	assert(array.isArray() && array.size() < array_size);
+	GAFF_ASSERT(array.isArray() && array.size() < array_size);
 
 	if (_var) {
 		arr = (object->*_var);
@@ -1609,7 +1609,7 @@ void ReflectionDefinition<T, Allocator>::ArrayFixedObjectContainer<array_size, T
 	if (arr) {
 		array.forEachInArray([&](size_t index, const JSON& value) -> bool
 		{
-			assert(value.isObject());
+			GAFF_ASSERT(value.isObject());
 			_obj_ref_def.read(value, arr + index);
 			return false;
 		});
@@ -1620,7 +1620,7 @@ template <class T, class Allocator>
 template <size_t array_size, class T2>
 void ReflectionDefinition<T, Allocator>::ArrayFixedObjectContainer<array_size, T2>::write(JSON& json, const T* object) const
 {
-	assert(!json[ValueContainerBase::_key.getBuffer()]);
+	GAFF_ASSERT(!json[ValueContainerBase::_key.getBuffer()]);
 	JSON array = JSON::createArray();
 	const T2* arr = nullptr;
 
@@ -1679,7 +1679,7 @@ template <class T, class Allocator>
 template <size_t array_size, class T2>
 void ReflectionDefinition<T, Allocator>::ArrayFixedObjectContainer<array_size, T2>::get(void* out, size_t index, const T* object) const
 {
-	assert(index < array_size);
+	GAFF_ASSERT(index < array_size);
 	const T2* array = nullptr;
 
 	if (_var) {
@@ -1731,7 +1731,7 @@ template <class T, class Allocator>
 template <size_t array_size, class T2>
 void ReflectionDefinition<T, Allocator>::ArrayFixedObjectContainer<array_size, T2>::set(const void* value, size_t index, T* object)
 {
-	assert(index < array_size);
+	GAFF_ASSERT(index < array_size);
 	T2* array = nullptr;
 
 	if (_var) {
@@ -1763,7 +1763,7 @@ template <class T, class Allocator>
 template <size_t array_size, class T2>
 void ReflectionDefinition<T, Allocator>::ArrayFixedObjectContainer<array_size, T2>::move(size_t src_index, size_t dest_index, T* object)
 {
-	assert(src_index < array_size && dest_index <= array_size);
+	GAFF_ASSERT(src_index < array_size && dest_index <= array_size);
 	T2* array = nullptr;
 
 	if (_var) {
@@ -1835,14 +1835,14 @@ template <class T2>
 void ReflectionDefinition<T, Allocator>::ArrayObjectContainer<T2>::read(const JSON& json, T* object)
 {
 	JSON array = json[reinterpret_cast<const char*>(ValueContainerBase::_key.getBuffer())];
-	assert(array.isArray());
+	GAFF_ASSERT(array.isArray());
 
 	if (_var) {
 		(object->*_var).resize(array.size());
 
 		array.forEachInArray([&](size_t index, const JSON& value) -> bool
 		{
-			assert(value.isObject());
+			GAFF_ASSERT(value.isObject());
 			_obj_ref_def.read(value, &(object->*_var)[index]);
 			return false;
 		});
@@ -1853,7 +1853,7 @@ void ReflectionDefinition<T, Allocator>::ArrayObjectContainer<T2>::read(const JS
 
 		array.forEachInArray([&](size_t index, const JSON& value) -> bool
 		{
-			assert(value.isObject());
+			GAFF_ASSERT(value.isObject());
 			_obj_ref_def.read(value, &arr[index]);
 			return false;
 		});
@@ -1864,7 +1864,7 @@ template <class T, class Allocator>
 template <class T2>
 void ReflectionDefinition<T, Allocator>::ArrayObjectContainer<T2>::write(JSON& json, const T* object) const
 {
-	assert(!json[ValueContainerBase::_key.getBuffer()]);
+	GAFF_ASSERT(!json[ValueContainerBase::_key.getBuffer()]);
 	JSON array = JSON::createArray();
 
 	if (_var) {
@@ -1917,11 +1917,11 @@ template <class T2>
 void ReflectionDefinition<T, Allocator>::ArrayObjectContainer<T2>::get(void* out, size_t index, const T* object) const
 {
 	if (_var) {
-		assert(index < (object->*_var).size());
+		GAFF_ASSERT(index < (object->*_var).size());
 		*reinterpret_cast<T2*>(out) = (object->*_var)[index];
 	} else if (_getter) {
 		const Array<T2, Allocator>& array = (object->*_getter)();
-		assert(index < array.size());
+		GAFF_ASSERT(index < array.size());
 		*reinterpret_cast<T2*>(out) = array[index];
 	}
 }
@@ -1956,11 +1956,11 @@ template <class T2>
 void ReflectionDefinition<T, Allocator>::ArrayObjectContainer<T2>::set(const void* value, size_t index, T* object)
 {
 	if (_var) {
-		assert(index < (object->*_var).size());
+		GAFF_ASSERT(index < (object->*_var).size());
 		(object->*_var)[index] = *reinterpret_cast<const T2*>(value);
 	} else if (_getter) {
 		Array<T2, Allocator>& array = const_cast<Array<T2, Allocator>&>((object->*_getter)());
-		assert(index < array.size());
+		GAFF_ASSERT(index < array.size());
 		array[index] = *reinterpret_cast<const T2*>(value);
 	}
 }
@@ -2015,7 +2015,7 @@ template <class T2>
 void ReflectionDefinition<T, Allocator>::ArrayObjectContainer<T2>::move(size_t src_index, size_t dest_index, T* object)
 {
 	if (_var) {
-		assert(src_index < (object->*_var).size() && dest_index <= (object->*_var).size());
+		GAFF_ASSERT(src_index < (object->*_var).size() && dest_index <= (object->*_var).size());
 		T2 temp = std::move((object->*_var)[src_index]);
 		(object->*_var).erase(src_index);
 		dest_index = (dest_index > src_index) ? dest_index - 1 : dest_index; /* If the dest index was above the source index, shift it down by one.*/
@@ -2073,14 +2073,14 @@ template <class T2>
 void ReflectionDefinition<T, Allocator>::ArrayEnumContainer<T2>::read(const JSON& json, T* object)
 {
 	JSON array = json[reinterpret_cast<const char*>(ValueContainerBase::_key.getBuffer())];
-	assert(array.isArray());
+	GAFF_ASSERT(array.isArray());
 
 	if (_var) {
 		(object->*_var).resize(array.size());
 
 		array.forEachInArray([&](size_t index, const JSON& value) -> bool
 		{
-			assert(value.isString());
+			GAFF_ASSERT(value.isString());
 			(object->*_var)[index] = _enum_ref_def.getValue(value.getString());
 			return false;
 		});
@@ -2091,7 +2091,7 @@ void ReflectionDefinition<T, Allocator>::ArrayEnumContainer<T2>::read(const JSON
 
 		array.forEachInArray([&](size_t index, const JSON& value) -> bool
 		{
-			assert(value.isString());
+			GAFF_ASSERT(value.isString());
 			arr[index] = _enum_ref_def.getValue(value.getString());
 			return false;
 		});
@@ -2102,7 +2102,7 @@ template <class T, class Allocator>
 template <class T2>
 void ReflectionDefinition<T, Allocator>::ArrayEnumContainer<T2>::write(JSON& json, const T* object) const
 {
-	assert(!json[ValueContainerBase::_key.getBuffer()]);
+	GAFF_ASSERT(!json[ValueContainerBase::_key.getBuffer()]);
 
 	JSON array = JSON::createArray();
 
@@ -2152,11 +2152,11 @@ template <class T2>
 void ReflectionDefinition<T, Allocator>::ArrayEnumContainer<T2>::get(void* out, size_t index, const T* object) const
 {
 	if (_var) {
-		assert(index < (object->*_var).size());
+		GAFF_ASSERT(index < (object->*_var).size());
 		*reinterpret_cast<T2*>(out) = (object->*_var)[index];
 	} else if (_getter) {
 		const Array<T2, Allocator>& array = (object->*_getter)();
-		assert(index < array.size());
+		GAFF_ASSERT(index < array.size());
 		*reinterpret_cast<T2*>(out) = array[index];
 	}
 }
@@ -2191,11 +2191,11 @@ template <class T2>
 void ReflectionDefinition<T, Allocator>::ArrayEnumContainer<T2>::set(const void* value, size_t index, T* object)
 {
 	if (_var) {
-		assert(index < (object->*_var).size());
+		GAFF_ASSERT(index < (object->*_var).size());
 		(object->*_var)[index] = *reinterpret_cast<const T2*>(value);
 	} else if (_getter) {
 		Array<T2, Allocator>& array = const_cast<Array<T2, Allocator>&>((object->*_getter)());
-		assert(index < array.size());
+		GAFF_ASSERT(index < array.size());
 		array[index] = *reinterpret_cast<const T2*>(value);
 	}
 }
@@ -2250,7 +2250,7 @@ template <class T2>
 void ReflectionDefinition<T, Allocator>::ArrayEnumContainer<T2>::move(size_t src_index, size_t dest_index, T* object)
 {
 	if (_var) {
-		assert(src_index < (object->*_var).size() && dest_index <= (object->*_var).size());
+		GAFF_ASSERT(src_index < (object->*_var).size() && dest_index <= (object->*_var).size());
 		T2 temp = std::move((object->*_var)[src_index]);
 		(object->*_var).erase(src_index);
 		dest_index = (dest_index > src_index) ? dest_index - 1 : dest_index; /* If the dest index was above the source index, shift it down by one.*/
@@ -2306,7 +2306,7 @@ template <class T, class Allocator>
 template <class T2>
 void ReflectionDefinition<T, Allocator>::ObjectContainer<T2>::read(const JSON& json, T* object)
 {
-	assert(json[reinterpret_cast<const char*>(ValueContainerBase::_key.getBuffer())].isObject());
+	GAFF_ASSERT(json[reinterpret_cast<const char*>(ValueContainerBase::_key.getBuffer())].isObject());
 
 	if (_var) {
 		_var_ref_def.read(json[reinterpret_cast<const char*>(ValueContainerBase::_key.getBuffer())], &(object->*_var));
@@ -2321,7 +2321,7 @@ template <class T, class Allocator>
 template <class T2>
 void ReflectionDefinition<T, Allocator>::ObjectContainer<T2>::write(JSON& json, const T* object) const
 {
-	assert(!json[ValueContainerBase::_key.getBuffer()]);
+	GAFF_ASSERT(!json[ValueContainerBase::_key.getBuffer()]);
 
 	if (_var) {
 		JSON obj = JSON::createObject();
@@ -2415,7 +2415,7 @@ template <class T, class Allocator>
 template <class T2>
 void ReflectionDefinition<T, Allocator>::EnumContainer<T2>::read(const JSON& json, T* object)
 {
-	assert(json[reinterpret_cast<const char*>(ValueContainerBase::_key.getBuffer())].isString());
+	GAFF_ASSERT(json[reinterpret_cast<const char*>(ValueContainerBase::_key.getBuffer())].isString());
 
 	if (_var) {
 		object->*_var = _var_ref_def.getValue(json[reinterpret_cast<const char*>(ValueContainerBase::_key.getBuffer())].getString());
@@ -2429,7 +2429,7 @@ template <class T, class Allocator>
 template <class T2>
 void ReflectionDefinition<T, Allocator>::EnumContainer<T2>::write(JSON& json, const T* object) const
 {
-	assert(!json[ValueContainerBase::_key.getBuffer()]);
+	GAFF_ASSERT(!json[ValueContainerBase::_key.getBuffer()]);
 
 	if (_var) {
 		JSON val = JSON::createString(_var_ref_def.getName(object->*_var));

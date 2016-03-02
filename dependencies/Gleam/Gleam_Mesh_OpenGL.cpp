@@ -94,21 +94,21 @@ void MeshGL::setTopologyType(TOPOLOGY_TYPE topology)
 
 void MeshGL::renderNonIndexed(IRenderDevice& rd, unsigned int vert_count, unsigned int start_location)
 {
-	assert(_vert_data.size());
+	GAFF_ASSERT(_vert_data.size());
 	IRenderDeviceGL& rdgl = *reinterpret_cast<IRenderDeviceGL*>((reinterpret_cast<char*>(&rd) + sizeof(IRenderDevice)));
 	rdgl.renderMeshNonIndexed(_gl_topology, vert_count, start_location);
 }
 
 void MeshGL::renderInstanced(IRenderDevice& rd, unsigned int count)
 {
-	assert(_vert_data.size() && _indices && _indices->getRendererType() == RENDERER_OPENGL && rd.getRendererType() == RENDERER_OPENGL);
+	GAFF_ASSERT(_vert_data.size() && _indices && _indices->getRendererType() == RENDERER_OPENGL && rd.getRendererType() == RENDERER_OPENGL);
 	IRenderDeviceGL& rdgl = *reinterpret_cast<IRenderDeviceGL*>((reinterpret_cast<char*>(&rd) + sizeof(IRenderDevice)));
 	rdgl.renderMeshInstanced(this, count);
 }
 
 void MeshGL::render(IRenderDevice& rd)
 {
-	assert(_vert_data.size() && _indices && _indices->getRendererType() == RENDERER_OPENGL && rd.getRendererType() == RENDERER_OPENGL);
+	GAFF_ASSERT(_vert_data.size() && _indices && _indices->getRendererType() == RENDERER_OPENGL && rd.getRendererType() == RENDERER_OPENGL);
 	IRenderDeviceGL& rdgl = *reinterpret_cast<IRenderDeviceGL*>((reinterpret_cast<char*>(&rd) + sizeof(IRenderDevice)));
 	rdgl.renderMesh(this);
 }

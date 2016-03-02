@@ -365,7 +365,7 @@ const char* OcclusionManager::getName(void) const
 
 OcclusionManager::OcclusionID OcclusionManager::addObject(Object* object, OBJ_TYPE object_type, const UserData& user_data)
 {
-	assert(object && !_node_map.hasElementWithKey(object) && object_type < OT_SIZE);
+	GAFF_ASSERT(object && !_node_map.hasElementWithKey(object) && object_type < OT_SIZE);
 
 	OcclusionID id;
 	id.index = _bvh_trees[object_type].addObject(object, user_data);
@@ -378,19 +378,19 @@ OcclusionManager::OcclusionID OcclusionManager::addObject(Object* object, OBJ_TY
 
 void OcclusionManager::removeObject(Object* object)
 {
-	assert(object && _node_map.hasElementWithKey(object));
+	GAFF_ASSERT(object && _node_map.hasElementWithKey(object));
 	removeObject(_node_map[object]);
 }
 
 void OcclusionManager::removeObject(OcclusionID id)
 {
-	assert(id.index != SIZE_T_FAIL && id.object_type < OT_SIZE);
+	GAFF_ASSERT(id.index != SIZE_T_FAIL && id.object_type < OT_SIZE);
 	_bvh_trees[id.object_type].removeObject(id.index);
 }
 
 void OcclusionManager::constructStaticTree(const Array<Object*>& objects, Array<OcclusionID>* id_out)
 {
-	assert(!objects.empty());
+	GAFF_ASSERT(!objects.empty());
 	_bvh_trees[OT_STATIC].construct(objects, id_out);
 }
 

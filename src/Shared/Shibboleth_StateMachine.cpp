@@ -77,7 +77,7 @@ void StateMachine::addState(const StateEntry& state)
 
 void StateMachine::switchState(unsigned int state_id)
 {
-	assert(state_id < _states.size());
+	GAFF_ASSERT(state_id < _states.size());
 	_next_state = state_id;
 
 	if (_next_state == _curr_state) {
@@ -87,7 +87,7 @@ void StateMachine::switchState(unsigned int state_id)
 
 void StateMachine::switchState(const AString& name)
 {
-	assert(name.size());
+	GAFF_ASSERT(name.size());
 	_next_state = getStateID(name.getBuffer());
 
 	if (_next_state == _curr_state) {
@@ -97,7 +97,7 @@ void StateMachine::switchState(const AString& name)
 
 void StateMachine::switchState(const char* name)
 {
-	assert(name);
+	GAFF_ASSERT(name);
 	_next_state = getStateID(name);
 
 	if (_next_state == _curr_state) {
@@ -107,27 +107,27 @@ void StateMachine::switchState(const char* name)
 
 const Array<unsigned int>& StateMachine::getTransitions(unsigned int state_id)
 {
-	assert(state_id < _states.size());
+	GAFF_ASSERT(state_id < _states.size());
 	return _states[state_id].state->getTransitions();
 }
 
 const AString& StateMachine::getName(unsigned int state)
 {
-	assert(state < _states.size());
+	GAFF_ASSERT(state < _states.size());
 	return _states[state].name;
 }
 
 unsigned int StateMachine::getStateID(const AString& name)
 {
-	assert(name.size());
+	GAFF_ASSERT(name.size());
 	return getStateID(name.getBuffer());
 }
 
 unsigned int StateMachine::getStateID(const char* name)
 {
-	assert(name);
+	GAFF_ASSERT(name);
 	auto it = _states.linearSearch(name);
-	assert(it != _states.end());
+	GAFF_ASSERT(it != _states.end());
 	return static_cast<unsigned int>(it - _states.begin());
 }
 

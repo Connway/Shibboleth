@@ -47,7 +47,7 @@ ShaderProgramLoader::~ShaderProgramLoader(void)
 
 Gaff::IVirtualDestructor* ShaderProgramLoader::load(const char* file_name, uint64_t, HashMap<AString, IFile*>& file_map)
 {
-	assert(file_map.hasElementWithKey(AString(file_name)));
+	GAFF_ASSERT(file_map.hasElementWithKey(AString(file_name)));
 
 	GAFF_SCOPE_EXIT([&]()
 	{
@@ -77,10 +77,10 @@ Gaff::IVirtualDestructor* ShaderProgramLoader::load(const char* file_name, uint6
 	Gaff::JSON domain = json["Domain"];
 	Gaff::JSON render_pass = json["Render Pass"];
 
-	assert(vertex.isString() || pixel.isString() || hull.isString() ||
+	GAFF_ASSERT(vertex.isString() || pixel.isString() || hull.isString() ||
 			geometry.isString() || domain.isString());
 
-	assert(render_pass.isString());
+	GAFF_ASSERT(render_pass.isString());
 	
 	ProgramData* program_data = GetAllocator()->template allocT<ProgramData>();
 

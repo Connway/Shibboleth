@@ -21,7 +21,7 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Gleam_Quaternion_SIMD.h"
-#include <Gaff_IncludeAssert.h>
+#include <Gaff_Assert.h>
 #include <cmath>
 
 NS_GLEAM
@@ -79,13 +79,13 @@ const QuaternionSIMD& QuaternionSIMD::operator=(const QuaternionSIMD& rhs)
 
 float QuaternionSIMD::operator[](int index) const
 {
-	assert(index > -1 && index < 4);
+	GAFF_ASSERT(index > -1 && index < 4);
 	return SIMDGet(_quat, index);
 }
 
 //float& QuaternionSIMD::operator[](int index)
 //{
-//	assert(index > -1 && index < 4);
+//	GAFF_ASSERT(index > -1 && index < 4);
 //	return _quat[index];
 //}
 
@@ -110,7 +110,7 @@ void QuaternionSIMD::set(const Vector4SIMD& vec)
 
 void QuaternionSIMD::set(float value, unsigned int index)
 {
-	assert(index >= 0 && index < 4);
+	GAFF_ASSERT(index >= 0 && index < 4);
 	SIMDSet(_quat, value, index);
 }
 

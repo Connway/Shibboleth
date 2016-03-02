@@ -24,7 +24,7 @@ THE SOFTWARE.
 #include "Gleam_IRenderDevice_Direct3D.h"
 #include "Gleam_IRenderDevice.h"
 #include "Gleam_IncludeD3D11.h"
-#include <Gaff_IncludeAssert.h>
+#include <Gaff_Assert.h>
 
 NS_GLEAM
 
@@ -40,7 +40,7 @@ BlendStateD3D::~BlendStateD3D(void)
 
 bool BlendStateD3D::init(IRenderDevice& rd, const BlendStateSettings& settings)
 {
-	assert(rd.getRendererType() == RENDERER_DIRECT3D);
+	GAFF_ASSERT(rd.getRendererType() == RENDERER_DIRECT3D);
 
 	IRenderDeviceD3D& rd3d = reinterpret_cast<IRenderDeviceD3D&>(*(reinterpret_cast<char*>(&rd) + sizeof(IRenderDevice)));
 	ID3D11Device* device = rd3d.getActiveDevice();
@@ -64,7 +64,7 @@ bool BlendStateD3D::init(IRenderDevice& rd, const BlendStateSettings& settings)
 
 bool BlendStateD3D::init(IRenderDevice& rd, const BlendStateSettings* settings)
 {
-	assert(rd.getRendererType() == RENDERER_DIRECT3D);
+	GAFF_ASSERT(rd.getRendererType() == RENDERER_DIRECT3D);
 
 	IRenderDeviceD3D& rd3d = reinterpret_cast<IRenderDeviceD3D&>(*(reinterpret_cast<char*>(&rd) + sizeof(IRenderDevice)));
 	ID3D11Device* device = rd3d.getActiveDevice();
@@ -95,7 +95,7 @@ void BlendStateD3D::destroy(void)
 
 void BlendStateD3D::set(IRenderDevice& rd) const
 {
-	assert(rd.getRendererType() == RENDERER_DIRECT3D);
+	GAFF_ASSERT(rd.getRendererType() == RENDERER_DIRECT3D);
 	IRenderDeviceD3D& rd3d = reinterpret_cast<IRenderDeviceD3D&>(*(reinterpret_cast<char*>(&rd) + sizeof(IRenderDevice)));
 	ID3D11DeviceContext* context = rd3d.getActiveDeviceContext();
 
@@ -104,7 +104,7 @@ void BlendStateD3D::set(IRenderDevice& rd) const
 
 void BlendStateD3D::unset(IRenderDevice& rd) const
 {
-	assert(rd.getRendererType() == RENDERER_DIRECT3D);
+	GAFF_ASSERT(rd.getRendererType() == RENDERER_DIRECT3D);
 	IRenderDeviceD3D& rd3d = reinterpret_cast<IRenderDeviceD3D&>(*(reinterpret_cast<char*>(&rd) + sizeof(IRenderDevice)));
 	ID3D11DeviceContext* context = rd3d.getActiveDeviceContext();
 

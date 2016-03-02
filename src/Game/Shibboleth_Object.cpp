@@ -78,8 +78,8 @@ bool Object::init(const Gaff::JSON& json)
 
 bool Object::init(const char* file_name)
 {
-	assert(file_name && strlen(file_name));
-	assert(!_name.size());
+	GAFF_ASSERT(file_name && strlen(file_name));
+	GAFF_ASSERT(!_name.size());
 
 	Gaff::JSON object_json;
 
@@ -267,13 +267,13 @@ size_t Object::getNumComponents(void) const
 
 const Component* Object::getComponent(unsigned int index) const
 {
-	assert(index < _components.size());
+	GAFF_ASSERT(index < _components.size());
 	return _components[index];
 }
 
 Component* Object::getComponent(unsigned int index)
 {
-	assert(index < _components.size());
+	GAFF_ASSERT(index < _components.size());
 	return _components[index];
 }
 

@@ -22,7 +22,7 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Gaff_IncludeAssert.h"
+#include "Gaff_Assert.h"
 #include "Gaff_Pair.h"
 #include <cstring>
 #include <tuple>

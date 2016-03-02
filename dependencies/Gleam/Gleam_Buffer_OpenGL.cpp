@@ -21,7 +21,7 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Gleam_Buffer_OpenGL.h"
-#include <Gaff_IncludeAssert.h>
+#include <Gaff_Assert.h>
 #include <GL/glew.h>
 #include <cstring>
 
@@ -62,7 +62,7 @@ bool BufferGL::init(
 	IRenderDevice&, const void* data, unsigned int size, BUFFER_TYPE buffer_type,
 	unsigned int stride, MAP_TYPE cpu_access, bool gpu_read_only, unsigned int structure_byte_stride)
 {
-	assert(!_buffer);
+	GAFF_ASSERT(!_buffer);
 
 	GLenum buff_type = _type_map[buffer_type];
 
@@ -93,7 +93,7 @@ void BufferGL::destroy(void)
 
 bool BufferGL::update(IRenderDevice& rd, const void* data, unsigned int size, unsigned int offset)
 {
-	assert(data && size);
+	GAFF_ASSERT(data && size);
 
 	GLenum buff_type = _type_map[_buffer_type];
 	glBindBuffer(buff_type, _buffer);
@@ -117,7 +117,7 @@ bool BufferGL::update(IRenderDevice& rd, const void* data, unsigned int size, un
 
 void* BufferGL::map(IRenderDevice&, MAP_TYPE map_type)
 {
-	assert(map_type != NONE);
+	GAFF_ASSERT(map_type != NONE);
 	GLenum buff_type = _type_map[_buffer_type];
 	glBindBuffer(buff_type, _buffer);
 	return glMapBufferRange(buff_type, 0, _size, _map_bit_flags[map_type]);

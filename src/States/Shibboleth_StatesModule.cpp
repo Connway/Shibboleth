@@ -250,7 +250,7 @@ DYNAMICEXPORT_C void ShutdownModule(void)
 
 DYNAMICEXPORT_C const char* GetStateName(unsigned int id)
 {
-	assert(id < NUM_STATES);
+	GAFF_ASSERT(id < NUM_STATES);
 	return state_names[id];
 }
 
@@ -261,7 +261,7 @@ DYNAMICEXPORT_C unsigned int GetNumStates(void)
 
 DYNAMICEXPORT_C Shibboleth::IState* CreateState(unsigned int id)
 {
-	assert(id < NUM_STATES);
+	GAFF_ASSERT(id < NUM_STATES);
 	return create_funcs[id](Shibboleth::GetApp());
 }
 

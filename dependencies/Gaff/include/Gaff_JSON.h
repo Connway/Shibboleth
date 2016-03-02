@@ -50,7 +50,7 @@ public:
 	template <class Callback>
 	bool forEachInObject(Callback&& callback) const
 	{
-		assert(_value && isObject());
+		GAFF_ASSERT(_value && isObject());
 		const char* key = nullptr;
 		json_t* value = nullptr;
 
@@ -78,7 +78,7 @@ public:
 	template <class Callback>
 	bool forEachInArray(Callback&& callback) const
 	{
-		assert(_value && isArray());
+		GAFF_ASSERT(_value && isArray());
 		json_t* value = nullptr;
 		size_t index = 0;
 

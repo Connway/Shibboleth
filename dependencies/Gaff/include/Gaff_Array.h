@@ -23,7 +23,7 @@ THE SOFTWARE.
 #pragma once
 
 #include "Gaff_DefaultAllocator.h"
-#include "Gaff_IncludeAssert.h"
+#include "Gaff_Assert.h"
 #include "Gaff_Predicates.h"
 #include <cstring>
 

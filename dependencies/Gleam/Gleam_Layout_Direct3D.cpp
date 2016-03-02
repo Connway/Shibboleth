@@ -54,7 +54,7 @@ LayoutD3D::~LayoutD3D(void)
 
 bool LayoutD3D::init(IRenderDevice& rd, const LayoutDescription* layout_desc, size_t layout_desc_size, const IShader* shader)
 {
-	assert(rd.getRendererType() == RENDERER_DIRECT3D && shader->getRendererType() == RENDERER_DIRECT3D);
+	GAFF_ASSERT(rd.getRendererType() == RENDERER_DIRECT3D && shader->getRendererType() == RENDERER_DIRECT3D);
 
 	GleamArray<D3D11_INPUT_ELEMENT_DESC> input_desc(layout_desc_size, D3D11_INPUT_ELEMENT_DESC());
 
@@ -83,7 +83,7 @@ void LayoutD3D::destroy(void)
 
 void LayoutD3D::setLayout(IRenderDevice& rd, const IMesh*)
 {
-	assert(rd.getRendererType() == RENDERER_DIRECT3D);
+	GAFF_ASSERT(rd.getRendererType() == RENDERER_DIRECT3D);
 	IRenderDeviceD3D& rd3d = reinterpret_cast<IRenderDeviceD3D&>(*(reinterpret_cast<char*>(&rd) + sizeof(IRenderDevice)));
 	ID3D11DeviceContext* context = rd3d.getActiveDeviceContext();
 	context->IASetInputLayout(_layout);
@@ -91,7 +91,7 @@ void LayoutD3D::setLayout(IRenderDevice& rd, const IMesh*)
 
 void LayoutD3D::unsetLayout(IRenderDevice& rd)
 {
-	assert(rd.getRendererType() == RENDERER_DIRECT3D);
+	GAFF_ASSERT(rd.getRendererType() == RENDERER_DIRECT3D);
 	IRenderDeviceD3D& rd3d = reinterpret_cast<IRenderDeviceD3D&>(*(reinterpret_cast<char*>(&rd) + sizeof(IRenderDevice)));
 	ID3D11DeviceContext* context = rd3d.getActiveDeviceContext();
 	context->IASetInputLayout(NULL);

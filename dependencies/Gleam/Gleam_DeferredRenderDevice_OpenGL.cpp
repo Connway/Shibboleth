@@ -61,13 +61,13 @@ RendererType DeferredRenderDeviceGL::getRendererType(void) const
 
 void DeferredRenderDeviceGL::executeCommandList(ICommandList* command_list)
 {
-	assert(command_list->getRendererType() == RENDERER_OPENGL);
+	GAFF_ASSERT(command_list->getRendererType() == RENDERER_OPENGL);
 	_command_list.append(reinterpret_cast<CommandListGL&>(*command_list));
 }
 
 bool DeferredRenderDeviceGL::finishCommandList(ICommandList* command_list)
 {
-	assert(command_list->getRendererType() == RENDERER_OPENGL);
+	GAFF_ASSERT(command_list->getRendererType() == RENDERER_OPENGL);
 	*command_list = std::move(_command_list);
 	return true;
 }
@@ -303,7 +303,7 @@ void DeferredRenderDeviceGL::bindProgramBuffers(ProgramBuffersGL* program_buffer
 		const GleamArray<ISamplerState*>& sampler_states = program_buffers->getSamplerStates(static_cast<Gleam::IShader::SHADER_TYPE>(i));
 		const GleamArray<IBuffer*>& const_bufs = program_buffers->getConstantBuffers(static_cast<Gleam::IShader::SHADER_TYPE>(i));
 
-		assert(sampler_states.size() <= resource_views.size());
+		GAFF_ASSERT(sampler_states.size() <= resource_views.size());
 		unsigned int sampler_count = 0;
 
 		for (unsigned int j = 0; j < const_bufs.size(); ++j) {
@@ -332,7 +332,7 @@ void DeferredRenderDeviceGL::bindProgramBuffers(ProgramBuffersGL* program_buffer
 				++sampler_count;
 
 			} else {
-				assert(0 && "How is your ShaderResourceView not a texture? That's the only type we have implemented ...");
+				GAFF_ASSERT_MSG(false, "How is your ShaderResourceView not a texture? That's the only type we have implemented ...");
 			}
 		}
 	}

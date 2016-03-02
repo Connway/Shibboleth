@@ -21,7 +21,7 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Gleam_Texture_OpenGL.h"
-#include <Gaff_IncludeAssert.h>
+#include <Gaff_Assert.h>
 #include <Gaff_Math.h>
 #include <GL/glew.h>
 #include <cmath>
@@ -176,7 +176,7 @@ void TextureGL::destroy(void)
 
 bool TextureGL::init3D(IRenderDevice&, int width, int height, int depth, FORMAT format, int mip_levels, const void* buffer)
 {
-	assert(width > 0 && height > 0 && depth > 0 && mip_levels > 0);
+	GAFF_ASSERT(width > 0 && height > 0 && depth > 0 && mip_levels > 0);
 
 	_mip_levels = static_cast<unsigned int>(mip_levels);
 	_format = format;
@@ -195,7 +195,7 @@ bool TextureGL::init3D(IRenderDevice&, int width, int height, int depth, FORMAT 
 		GLenum gl_type = determineType(format);
 
 		// if this is zero, something seriously went wrong
-		assert(gl_channels != 0 && gl_type != 0);
+		GAFF_ASSERT(gl_channels != 0 && gl_type != 0);
 
 		//glTexSubImage3D(GL_TEXTURE_3D, 0, 0, 0, 0, width, height, depth, gl_channels, gl_type, buffer);
 		//glTexImage3D(GL_TEXTURE_3D, 0, gl_format, width, height, depth, 0, gl_channels, gl_type, buffer);
@@ -226,7 +226,7 @@ bool TextureGL::init3D(IRenderDevice&, int width, int height, int depth, FORMAT 
 
 bool TextureGL::init2D(IRenderDevice&, int width, int height, FORMAT format, int mip_levels, const void* buffer)
 {
-	assert(width > 0 && height > 0 && mip_levels > 0);
+	GAFF_ASSERT(width > 0 && height > 0 && mip_levels > 0);
 
 	_mip_levels = static_cast<unsigned int>(mip_levels);
 	_format = format;
@@ -245,7 +245,7 @@ bool TextureGL::init2D(IRenderDevice&, int width, int height, FORMAT format, int
 		GLenum gl_type = determineType(format);
 
 		// if this is zero, something seriously went wrong
-		assert(gl_channels != 0 && gl_type != 0);
+		GAFF_ASSERT(gl_channels != 0 && gl_type != 0);
 
 		//glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, width, height, gl_channels, gl_type, buffer);
 		//glTexImage2D(GL_TEXTURE_2D, 0, gl_format, width, height, 0, gl_channels, gl_type, buffer);
@@ -275,7 +275,7 @@ bool TextureGL::init2D(IRenderDevice&, int width, int height, FORMAT format, int
 
 bool TextureGL::init1D(IRenderDevice&, int width, FORMAT format, int mip_levels, const void* buffer)
 {
-	assert(width > 0 && mip_levels > 0);
+	GAFF_ASSERT(width > 0 && mip_levels > 0);
 
 	_mip_levels = static_cast<unsigned int>(mip_levels);
 	_format = format;
@@ -294,7 +294,7 @@ bool TextureGL::init1D(IRenderDevice&, int width, FORMAT format, int mip_levels,
 		GLenum gl_type = determineType(format);
 
 		// if this is zero, something seriously went wrong
-		assert(gl_channels != 0 && gl_type != 0);
+		GAFF_ASSERT(gl_channels != 0 && gl_type != 0);
 
 		//glTexSubImage1D(GL_TEXTURE_1D, 0, 0, width, gl_channels, gl_type, buffer);
 		//glTexImage1D(GL_TEXTURE_1D, 0, gl_format, width, 0, gl_channels, gl_type, buffer);
@@ -323,7 +323,7 @@ bool TextureGL::init1D(IRenderDevice&, int width, FORMAT format, int mip_levels,
 
 bool TextureGL::initCubemap(IRenderDevice&, int width, int height, FORMAT format, int mip_levels, const void* buffer)
 {
-	assert(width > 0 && height > 0 && mip_levels > 0);
+	GAFF_ASSERT(width > 0 && height > 0 && mip_levels > 0);
 
 	_mip_levels = static_cast<unsigned int>(mip_levels);
 	_format = format;
@@ -342,7 +342,7 @@ bool TextureGL::initCubemap(IRenderDevice&, int width, int height, FORMAT format
 		GLenum gl_type = determineType(format);
 
 		// if this is zero, something seriously went wrong
-		assert(gl_channels != 0 && gl_type != 0);
+		GAFF_ASSERT(gl_channels != 0 && gl_type != 0);
 
 		//glTexSubImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X, 0, 0, 0, width, height, gl_channels, gl_type, buf);
 		//glTexSubImage2D(GL_TEXTURE_CUBE_MAP_NEGATIVE_X, 0, 0, 0, width, height, gl_channels, gl_type, buf + buf_size);
@@ -398,7 +398,7 @@ bool TextureGL::initCubemap(IRenderDevice&, int width, int height, FORMAT format
 
 bool TextureGL::initDepthStencil(IRenderDevice&, int width, int height, FORMAT format)
 {
-	assert(width > 0 && height > 0);
+	GAFF_ASSERT(width > 0 && height > 0);
 
 	_format = format;
 	_mip_levels = 1;
@@ -422,7 +422,7 @@ bool TextureGL::initDepthStencil(IRenderDevice&, int width, int height, FORMAT f
 			break;
 	}
 
-	assert(_type < TYPE_SIZE);
+	GAFF_ASSERT(_type < TYPE_SIZE);
 
 	glGenTextures(1, &_texture);
 	glBindTexture(GL_TEXTURE_2D, _texture);

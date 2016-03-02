@@ -21,7 +21,7 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Gaff_Animation.h"
-#include "Gaff_IncludeAssert.h"
+#include "Gaff_Assert.h"
 
 NS_GAFF
 
@@ -46,43 +46,43 @@ Animation::~Animation(void)
 
 const char* Animation::getName(void) const
 {
-	assert(_animation);
+	GAFF_ASSERT(_animation);
 	return _animation->mName.C_Str();
 }
 
 double Animation::getDuration(void) const
 {
-	assert(_animation);
+	GAFF_ASSERT(_animation);
 	return _animation->mDuration;
 }
 
 double Animation::getFramesPerSecond(void) const
 {
-	assert(_animation);
+	GAFF_ASSERT(_animation);
 	return _animation->mTicksPerSecond;
 }
 
 unsigned int Animation::getNumNodeChannels(void) const
 {
-	assert(_animation);
+	GAFF_ASSERT(_animation);
 	return _animation->mNumChannels;
 }
 
 unsigned int Animation::getNumMeshChannels(void) const
 {
-	assert(_animation);
+	GAFF_ASSERT(_animation);
 	return _animation->mNumMeshChannels;
 }
 
 NodeAnimation Animation::getNodeAnimation(unsigned int channel) const
 {
-	assert(_animation && channel < _animation->mNumChannels);
+	GAFF_ASSERT(_animation && channel < _animation->mNumChannels);
 	return NodeAnimation(_animation->mChannels[channel]);
 }
 
 MeshAnimation Animation::getMeshAnimation(unsigned int channel) const
 {
-	assert(_animation && channel < _animation->mNumMeshChannels);
+	GAFF_ASSERT(_animation && channel < _animation->mNumMeshChannels);
 	return MeshAnimation(_animation->mMeshChannels[channel]);
 }
 

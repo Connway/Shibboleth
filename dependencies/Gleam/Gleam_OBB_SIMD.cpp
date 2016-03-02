@@ -92,7 +92,7 @@ Vector4SIMD OBBSIMD::getExtent(void) const
 
 const Vector4SIMD& OBBSIMD::getAxis(int axis) const
 {
-	assert(axis > -1 && axis < 3);
+	GAFF_ASSERT(axis > -1 && axis < 3);
 	return _axes[axis];
 }
 
@@ -103,7 +103,7 @@ const Vector4SIMD* OBBSIMD::getAxes(void) const
 
 void OBBSIMD::setAxis(int axis, const Vector4SIMD& vec)
 {
-	assert(axis > -1 && axis < 3);
+	GAFF_ASSERT(axis > -1 && axis < 3);
 	_axes[axis] = vec;
 }
 

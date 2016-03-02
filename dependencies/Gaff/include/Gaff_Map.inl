@@ -73,7 +73,7 @@ bool Map<Key, Value, Allocator, Predicate>::operator!=(const Map<Key, Value, All
 template <class Key, class Value, class Allocator, class Predicate>
 const Value& Map<Key, Value, Allocator, Predicate>::operator[](const Key& key) const
 {
-	assert(hasElementWithKey(key));
+	GAFF_ASSERT(hasElementWithKey(key));
 	Iterator it = _array.binarySearch(_array.begin(), _array.end(), key, Predicate());
 
 	return it->second;
@@ -94,7 +94,7 @@ Value& Map<Key, Value, Allocator, Predicate>::operator[](const Key& key)
 template <class Key, class Value, class Allocator, class Predicate>
 void Map<Key, Value, Allocator, Predicate>::erase(const Iterator& it)
 {
-	assert(it != _array.end());
+	GAFF_ASSERT(it != _array.end());
 	_array.erase(it);
 }
 
@@ -102,7 +102,7 @@ template <class Key, class Value, class Allocator, class Predicate>
 void Map<Key, Value, Allocator, Predicate>::erase(const Key& key)
 {
 	Iterator it = _array.binarySearch(_array.begin(), _array.end(), key, Predicate());
-	assert(it != _array.end() && it->first == key);
+	GAFF_ASSERT(it != _array.end() && it->first == key);
 	_array.erase(it);
 }
 
@@ -126,7 +126,7 @@ template <class Key, class Value, class Allocator, class Predicate>
 typename Map<Key, Value, Allocator, Predicate>::Iterator Map<Key, Value, Allocator, Predicate>::insert(const Key& key, const Value& value)
 {
 	Iterator it = _array.binarySearch(_array.begin(), _array.end(), key, Predicate());
-	assert(it == _array.end() || it->first != key);
+	GAFF_ASSERT(it == _array.end() || it->first != key);
 
 	size_t index = it - _array.begin();
 	_array.emplace(it, key, value);
@@ -138,7 +138,7 @@ template <class Key, class Value, class Allocator, class Predicate>
 typename Map<Key, Value, Allocator, Predicate>::Iterator Map<Key, Value, Allocator, Predicate>::insert(const Key& key, Value&& value)
 {
 	Iterator it = _array.binarySearch(_array.begin(), _array.end(), key, Predicate());
-	assert(it == _array.end() || it->first != key);
+	GAFF_ASSERT(it == _array.end() || it->first != key);
 
 	size_t index = it - _array.begin();
 	_array.emplace(it, key, std::move(value));
@@ -150,7 +150,7 @@ template <class Key, class Value, class Allocator, class Predicate>
 typename Map<Key, Value, Allocator, Predicate>::Iterator Map<Key, Value, Allocator, Predicate>::insert(Key&& key, Value&& value)
 {
 	Iterator it = _array.binarySearch(_array.begin(), _array.end(), key, Predicate());
-	assert(it == _array.end() || it->first != key);
+	GAFF_ASSERT(it == _array.end() || it->first != key);
 
 	size_t index = it - _array.begin();
 	_array.emplace(it, std::move(key), std::move(value));

@@ -26,7 +26,6 @@ THE SOFTWARE.
 #include "Gleam_IRenderDevice_Direct3D.h"
 #include "Gleam_IRenderDevice.h"
 #include "Gleam_IncludeD3D11.h"
-#include <Gaff_IncludeAssert.h>
 
 NS_GLEAM
 
@@ -59,7 +58,7 @@ bool BufferD3D::init(
 	IRenderDevice& rd, const void* data, unsigned int size, BUFFER_TYPE buffer_type,
 	unsigned int stride, MAP_TYPE cpu_access, bool gpu_read_only, unsigned int structure_byte_stride)
 {
-	assert(rd.getRendererType() == RENDERER_DIRECT3D && !_buffer);
+	GAFF_ASSERT(rd.getRendererType() == RENDERER_DIRECT3D && !_buffer);
 	IRenderDeviceD3D& rd3d = reinterpret_cast<IRenderDeviceD3D&>(*(reinterpret_cast<char*>(&rd) + sizeof(IRenderDevice)));
 
 	ID3D11Device* device = rd3d.getActiveDevice();
@@ -108,7 +107,7 @@ void BufferD3D::destroy(void)
 
 bool BufferD3D::update(IRenderDevice& rd, const void* data, unsigned int size, unsigned int offset)
 {
-	assert(rd.getRendererType() == RENDERER_DIRECT3D && data);
+	GAFF_ASSERT(rd.getRendererType() == RENDERER_DIRECT3D && data);
 	IRenderDeviceD3D& rd3d = reinterpret_cast<IRenderDeviceD3D&>(*(reinterpret_cast<char*>(&rd) + sizeof(IRenderDevice)));
 	ID3D11DeviceContext* context = rd3d.getActiveDeviceContext();
 	D3D11_MAPPED_SUBRESOURCE mapped_resource;
@@ -124,7 +123,7 @@ bool BufferD3D::update(IRenderDevice& rd, const void* data, unsigned int size, u
 
 void* BufferD3D::map(IRenderDevice& rd, MAP_TYPE map_type)
 {
-	assert(rd.getRendererType() == RENDERER_DIRECT3D && map_type != NONE);
+	GAFF_ASSERT(rd.getRendererType() == RENDERER_DIRECT3D && map_type != NONE);
 	IRenderDeviceD3D& rd3d = reinterpret_cast<IRenderDeviceD3D&>(*(reinterpret_cast<char*>(&rd) + sizeof(IRenderDevice)));
 	ID3D11DeviceContext* context = rd3d.getActiveDeviceContext();
 	D3D11_MAPPED_SUBRESOURCE mapped_resource;
@@ -135,7 +134,7 @@ void* BufferD3D::map(IRenderDevice& rd, MAP_TYPE map_type)
 
 void BufferD3D::unmap(IRenderDevice& rd)
 {
-	assert(rd.getRendererType() == RENDERER_DIRECT3D);
+	GAFF_ASSERT(rd.getRendererType() == RENDERER_DIRECT3D);
 	IRenderDeviceD3D& rd3d = reinterpret_cast<IRenderDeviceD3D&>(*(reinterpret_cast<char*>(&rd) + sizeof(IRenderDevice)));
 	ID3D11DeviceContext* context = rd3d.getActiveDeviceContext();
 	context->Unmap(_buffer, 0);

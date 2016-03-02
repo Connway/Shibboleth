@@ -46,7 +46,7 @@ SamplerStateLoader::~SamplerStateLoader(void)
 
 Gaff::IVirtualDestructor* SamplerStateLoader::load(const char* file_name, uint64_t, HashMap<AString, IFile*>& file_map)
 {
-	assert(file_map.hasElementWithKey(AString(file_name)));
+	GAFF_ASSERT(file_map.hasElementWithKey(AString(file_name)));
 
 	IFile* file = file_map[AString(file_name)];
 

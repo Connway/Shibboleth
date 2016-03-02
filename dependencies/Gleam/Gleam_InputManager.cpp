@@ -25,7 +25,6 @@ THE SOFTWARE.
 #include "Gleam_Mouse_MessagePump.h"
 #include "Gleam_IWindow.h"
 #include "Gleam_Global.h"
-#include "Gaff_IncludeAssert.h"
 
 NS_GLEAM
 
@@ -68,7 +67,7 @@ void InputManager::addInputDevice(IInputDevice* device)
 
 bool InputManager::removeInputDevice(const IInputDevice* device)
 {
-	assert(device);
+	GAFF_ASSERT(device);
 	GleamArray<IInputDevice*>::Iterator it = _input_devices.linearSearch(device);
 
 	if (it != _input_devices.end()) {
@@ -81,13 +80,13 @@ bool InputManager::removeInputDevice(const IInputDevice* device)
 
 IInputDevice* InputManager::getInputDevice(unsigned int i) const
 {
-	assert(i < _input_devices.size());
+	GAFF_ASSERT(i < _input_devices.size());
 	return _input_devices[i];
 }
 
 IInputDevice* InputManager::createKeyboard(bool no_windows_key)
 {
-	assert(_window);
+	GAFF_ASSERT(_window);
 
 	IKeyboard* keyboard = GleamAllocateT(KeyboardMP);
 
@@ -101,7 +100,7 @@ IInputDevice* InputManager::createKeyboard(bool no_windows_key)
 
 IInputDevice* InputManager::createMouse(void)
 {
-	assert(_window);
+	GAFF_ASSERT(_window);
 
 	IMouse* mouse = GleamAllocateT(MouseMP);
 

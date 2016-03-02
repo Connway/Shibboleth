@@ -91,7 +91,7 @@ const AString& Component::getName(void) const
 
 void Component::setName(const char* name)
 {
-	assert(name && strlen(name));
+	GAFF_ASSERT(name && strlen(name));
 	_name = name;
 }
 

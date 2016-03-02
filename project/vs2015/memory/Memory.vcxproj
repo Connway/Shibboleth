@@ -207,6 +207,9 @@
     <ProjectReference Include="..\dependencies\Gaff.vcxproj">
       <Project>{99A8857C-85DF-860D-2ECC-6C101AE2020F}</Project>
     </ProjectReference>
+    <ProjectReference Include="..\dependencies\Boxer.vcxproj">
+      <Project>{653BE80C-D14F-10BE-9AD1-B31D06A50CEF}</Project>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

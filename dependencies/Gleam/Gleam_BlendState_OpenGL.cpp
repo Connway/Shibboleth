@@ -22,7 +22,6 @@ THE SOFTWARE.
 
 #include "Gleam_BlendState_OpenGL.h"
 #include "Gleam_RenderDevice_OpenGL.h"
-#include <Gaff_IncludeAssert.h>
 #include <GL/glew.h>
 
 NS_GLEAM
@@ -65,14 +64,14 @@ BlendStateGL::~BlendStateGL(void)
 
 bool BlendStateGL::init(IRenderDevice& rd, const BlendStateSettings& settings)
 {
-	assert(rd.getRendererType() == RENDERER_OPENGL);
+	GAFF_ASSERT(rd.getRendererType() == RENDERER_OPENGL);
 	_blend_settings[0] = settings;
 	return true;
 }
 
 bool BlendStateGL::init(IRenderDevice& rd, const BlendStateSettings* settings)
 {
-	assert(rd.getRendererType() == RENDERER_OPENGL);
+	GAFF_ASSERT(rd.getRendererType() == RENDERER_OPENGL);
 	memcpy(_blend_settings, settings, sizeof(BlendStateSettings) * 8);
 	return true;
 }
@@ -83,14 +82,14 @@ void BlendStateGL::destroy(void)
 
 void BlendStateGL::set(IRenderDevice& rd) const
 {
-	assert(rd.getRendererType() == RENDERER_OPENGL);
+	GAFF_ASSERT(rd.getRendererType() == RENDERER_OPENGL);
 	IRenderDeviceGL& rdgl = reinterpret_cast<IRenderDeviceGL&>(*(reinterpret_cast<char*>(&rd) + sizeof(IRenderDevice)));
 	rdgl.setBlendState(this);
 }
 
 void BlendStateGL::unset(IRenderDevice& rd) const
 {
-	assert(rd.getRendererType() == RENDERER_OPENGL);
+	GAFF_ASSERT(rd.getRendererType() == RENDERER_OPENGL);
 	IRenderDeviceGL& rdgl = reinterpret_cast<IRenderDeviceGL&>(*(reinterpret_cast<char*>(&rd) + sizeof(IRenderDevice)));
 	rdgl.setBlendState(nullptr);
 }

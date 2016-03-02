@@ -21,7 +21,7 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Gaff_ReadWriteSpinLock.h"
-#include "Gaff_IncludeAssert.h"
+#include "Gaff_Assert.h"
 #include "Gaff_Atomic.h"
 
 NS_GAFF
@@ -29,7 +29,7 @@ NS_GAFF
 ReadWriteSpinLock::ReadWriteSpinLock(const ReadWriteSpinLock& lock):
 	_write_lock(0), _read_lock(0)
 {
-	assert(!lock._write_lock && !lock._read_lock);
+	GAFF_ASSERT(!lock._write_lock && !lock._read_lock);
 }
 
 ReadWriteSpinLock::ReadWriteSpinLock(void):
@@ -46,7 +46,7 @@ ReadWriteSpinLock::~ReadWriteSpinLock(void)
 */
 const ReadWriteSpinLock& ReadWriteSpinLock::operator=(const ReadWriteSpinLock& rhs)
 {
-	assert(!rhs._write_lock && !rhs._read_lock);
+	GAFF_ASSERT(!rhs._write_lock && !rhs._read_lock);
 	return *this;
 }
 
@@ -93,7 +93,7 @@ void ReadWriteSpinLock::readLock(void) const
 */
 void ReadWriteSpinLock::readUnlock(void) const
 {
-	assert(_read_lock);
+	GAFF_ASSERT(_read_lock);
 	AtomicDecrement(&_read_lock);
 }
 
@@ -130,7 +130,7 @@ void ReadWriteSpinLock::writeLock(void) const
 */
 void ReadWriteSpinLock::writeUnlock(void) const
 {
-	assert(_write_lock);
+	GAFF_ASSERT(_write_lock);
 	AtomicRelease(&_write_lock);
 }
 

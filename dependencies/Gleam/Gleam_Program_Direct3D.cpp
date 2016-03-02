@@ -168,7 +168,7 @@ IProgramBuffers* ProgramBuffersD3D::clone(void) const
 
 void ProgramBuffersD3D::bind(IRenderDevice& rd)
 {
-	assert(rd.getRendererType() == RENDERER_DIRECT3D);
+	GAFF_ASSERT(rd.getRendererType() == RENDERER_DIRECT3D);
 	IRenderDeviceD3D& rd3d = reinterpret_cast<IRenderDeviceD3D&>(*(reinterpret_cast<char*>(&rd) + sizeof(IRenderDevice)));
 	ID3D11DeviceContext* context = rd3d.getActiveDeviceContext();
 
@@ -242,7 +242,7 @@ bool ProgramD3D::init(void)
 
 void ProgramD3D::attach(IShader* shader)
 {
-	assert(shader->getRendererType() == RENDERER_DIRECT3D);
+	GAFF_ASSERT(shader->getRendererType() == RENDERER_DIRECT3D);
 
 	_attached_shaders[shader->getType()] = shader;
 
@@ -318,7 +318,7 @@ void ProgramD3D::detach(IShader::SHADER_TYPE shader)
 
 void ProgramD3D::bind(IRenderDevice& rd)
 {
-	assert(rd.getRendererType() == RENDERER_DIRECT3D);
+	GAFF_ASSERT(rd.getRendererType() == RENDERER_DIRECT3D);
 	IRenderDeviceD3D& rd3d = reinterpret_cast<IRenderDeviceD3D&>(*(reinterpret_cast<char*>(&rd) + sizeof(IRenderDevice)));
 	ID3D11DeviceContext* context = rd3d.getActiveDeviceContext();
 
@@ -332,7 +332,7 @@ void ProgramD3D::bind(IRenderDevice& rd)
 
 void ProgramD3D::unbind(IRenderDevice& rd)
 {
-	assert(rd.getRendererType() == RENDERER_DIRECT3D);
+	GAFF_ASSERT(rd.getRendererType() == RENDERER_DIRECT3D);
 	IRenderDeviceD3D& rd3d = reinterpret_cast<IRenderDeviceD3D&>(*(reinterpret_cast<char*>(&rd) + sizeof(IRenderDevice)));
 	ID3D11DeviceContext* context = rd3d.getActiveDeviceContext();
 

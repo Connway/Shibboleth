@@ -53,7 +53,7 @@ public:
 	template <class T>
 	bool sendT(unsigned char channel, T* data, unsigned int packet_flags = PACKET_RELIABLE)
 	{
-		assert(_peer);
+		GAFF_ASSERT(_peer);
 		return send(channel, data, sizeof(T), packet_flags);
 	}
 

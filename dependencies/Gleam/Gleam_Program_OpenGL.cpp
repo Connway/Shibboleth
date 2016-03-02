@@ -30,7 +30,7 @@ NS_GLEAM
 
 void ProgramBuffersGL::bind(IRenderDevice& rd)
 {
-	assert(rd.getRendererType() == RENDERER_OPENGL);
+	GAFF_ASSERT(rd.getRendererType() == RENDERER_OPENGL);
 	IRenderDeviceGL& rdgl = *reinterpret_cast<IRenderDeviceGL*>((reinterpret_cast<char*>(&rd) + sizeof(IRenderDevice)));
 	rdgl.bindProgramBuffers(this);
 }
@@ -77,7 +77,7 @@ void ProgramGL::destroy(void)
 
 void ProgramGL::attach(IShader* shader)
 {
-	assert(shader->getRendererType() == RENDERER_OPENGL && shader->getType() >= IShader::SHADER_VERTEX && shader->getType() < IShader::SHADER_TYPE_SIZE);
+	GAFF_ASSERT(shader->getRendererType() == RENDERER_OPENGL && shader->getType() >= IShader::SHADER_VERTEX && shader->getType() < IShader::SHADER_TYPE_SIZE);
 
 #ifdef OPENGL_MULTITHREAD
 	if (_program) {
@@ -92,7 +92,7 @@ void ProgramGL::attach(IShader* shader)
 
 void ProgramGL::detach(IShader::SHADER_TYPE shader)
 {
-	assert(shader >= IShader::SHADER_VERTEX && shader < IShader::SHADER_TYPE_SIZE);
+	GAFF_ASSERT(shader >= IShader::SHADER_VERTEX && shader < IShader::SHADER_TYPE_SIZE);
 
 #ifdef OPENGL_MULTITHREAD
 	if (_program) {
@@ -123,14 +123,14 @@ void ProgramGL::bind(IRenderDevice& rd)
 	}
 #endif
 
-	assert(rd.getRendererType() == RENDERER_OPENGL);
+	GAFF_ASSERT(rd.getRendererType() == RENDERER_OPENGL);
 	IRenderDeviceGL& rdgl = *reinterpret_cast<IRenderDeviceGL*>((reinterpret_cast<char*>(&rd) + sizeof(IRenderDevice)));
 	rdgl.bindShader(this);
 }
 
 void ProgramGL::unbind(IRenderDevice& rd)
 {
-	assert(rd.getRendererType() == RENDERER_OPENGL);
+	GAFF_ASSERT(rd.getRendererType() == RENDERER_OPENGL);
 	IRenderDeviceGL& rdgl = *reinterpret_cast<IRenderDeviceGL*>((reinterpret_cast<char*>(&rd) + sizeof(IRenderDevice)));
 	rdgl.unbindShader();
 }

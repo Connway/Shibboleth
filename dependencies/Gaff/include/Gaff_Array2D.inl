@@ -121,14 +121,14 @@ const Array2D<T, Allocator>& Array2D<T, Allocator>::operator=(Array2D<T, Allocat
 template <class T, class Allocator>
 const T* Array2D<T, Allocator>::operator[](size_t index) const
 {
-	assert(index < _height);
+	GAFF_ASSERT(index < _height);
 	return _array + index * _height;
 }
 
 template <class T, class Allocator>
 T* Array2D<T, Allocator>::operator[](size_t index)
 {
-	assert(index < _height);
+	GAFF_ASSERT(index < _height);
 	return _array + index * _height;
 }
 
@@ -178,13 +178,13 @@ void Array2D<T, Allocator>::resize(size_t width, size_t height)
 template <class T, class Allocator>
 const T& Array2D<T, Allocator>::at(size_t x, size_t y) const
 {
-	assert(x < _width && y < _height);
+	GAFF_ASSERT(x < _width && y < _height);
 	return _array[y * _width + x];
 }
 
 template <class T, class Allocator>
 T& Array2D<T, Allocator>::at(size_t x, size_t y)
 {
-	assert(x < _width && y < _height);
+	GAFF_ASSERT(x < _width && y < _height);
 	return _array[y * _width + x];
 }

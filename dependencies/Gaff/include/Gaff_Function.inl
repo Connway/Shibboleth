@@ -355,7 +355,7 @@ template <class ReturnType, class... Args>
 FunctionBinder<ReturnType, Args...>::FunctionBinder(void* object, size_t size):
 	_object_size(size)
 {
-	assert(size <= FUNCTION_BUFFER_SIZE);
+	GAFF_ASSERT(size <= FUNCTION_BUFFER_SIZE);
 	memcpy(_function_buffer, object, size);
 }
 
@@ -384,7 +384,7 @@ FunctionBinder<ReturnType, Args...>::~FunctionBinder(void)
 template <class ReturnType, class... Args>
 ReturnType FunctionBinder<ReturnType, Args...>::operator()(Args... args) const
 {
-	assert(valid());
+	GAFF_ASSERT(valid());
 	const IFunc* function = reinterpret_cast<const IFunc*>(_function_buffer);
 	return function->call(args...);
 }
@@ -392,7 +392,7 @@ ReturnType FunctionBinder<ReturnType, Args...>::operator()(Args... args) const
 template <class ReturnType, class... Args>
 ReturnType FunctionBinder<ReturnType, Args...>::operator()(Args... args)
 {
-	assert(valid());
+	GAFF_ASSERT(valid());
 	IFunc* function = reinterpret_cast<IFunc*>(_function_buffer);
 	return function->call(args...);
 }
@@ -432,14 +432,14 @@ bool FunctionBinder<ReturnType, Args...>::valid(void) const
 template <class ReturnType, class... Args>
 const IFunction<ReturnType, Args...>& FunctionBinder<ReturnType, Args...>::getInterface(void) const
 {
-	assert(valid());
+	GAFF_ASSERT(valid());
 	return *((const IFunc*)_function_buffer);
 }
 
 template <class ReturnType, class... Args>
 IFunction<ReturnType, Args...>& FunctionBinder<ReturnType, Args...>::getInterface(void)
 {
-	assert(valid());
+	GAFF_ASSERT(valid());
 	return *((IFunc*)_function_buffer);
 }
 

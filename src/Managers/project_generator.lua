@@ -89,7 +89,7 @@ project "ManagersModule"
 		"OtterUI", "Game", "Gleam",
 		"Managers", "Memory", "Components",
 		"LuaJIT", "BulletCollision",
-		"BulletDynamics",
+		"BulletDynamics", "Boxer"
 	}
 
 	links
@@ -98,7 +98,7 @@ project "ManagersModule"
 		"OtterUI", "Game", "Gleam",
 		"Managers", "Memory", "Components",
 		"BulletCollision", "BulletDynamics",
-		"LinearMath"
+		"LinearMath", "Boxer"
 	}
 
 	filter { "configurations:Debug", "platforms:x86" }

@@ -35,7 +35,7 @@ int gError;
 
 bool RegisterForRawInput(unsigned int device, const IWindow& window)
 {
-	assert(device >= RAW_INPUT_MOUSE && device <= RAW_INPUT_KEYBOARD);
+	GAFF_ASSERT(device >= RAW_INPUT_MOUSE && device <= RAW_INPUT_KEYBOARD);
 
 	const Window& wnd = (const Window&)window;
 

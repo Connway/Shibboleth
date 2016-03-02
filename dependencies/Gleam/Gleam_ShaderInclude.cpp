@@ -32,7 +32,7 @@ ShaderInclude ShaderInclude::gInclude;
 
 HRESULT __stdcall ShaderInclude::Open(D3D_INCLUDE_TYPE /*IncludeType*/, LPCSTR /*pFileName*/, LPCVOID /*pParentData*/, LPCVOID* /*ppData*/, UINT* /*pBytes*/)
 {
-	//assert(IncludeType == D3D_INCLUDE_LOCAL || IncludeType == D3D_INCLUDE_SYSTEM);
+	//GAFF_ASSERT(IncludeType == D3D_INCLUDE_LOCAL || IncludeType == D3D_INCLUDE_SYSTEM);
 
 	return S_OK;
 }
@@ -68,7 +68,7 @@ NS_END
 //            finalPath = m_SystemDir + "\\" + pFileName;
 //            break;
 //        default:
-//            assert(0);
+//            GAFF_ASSERT(0);
 //        }
 // 
 //        std::ifstream includeFile(finalPath.c_str(), std::ios::in|std::ios::binary|std::ios::ate);

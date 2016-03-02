@@ -39,13 +39,13 @@ size_t Skeleton::getNumBones(void) const
 
 size_t Skeleton::getParentIndex(size_t bone_index) const
 {
-	assert(bone_index < _parent_indices.size());
+	GAFF_ASSERT(bone_index < _parent_indices.size());
 	return _parent_indices[bone_index];
 }
 
 const AString& Skeleton::getName(size_t bone_index) const
 {
-	assert(bone_index < _names.size());
+	GAFF_ASSERT(bone_index < _names.size());
 	return _names[bone_index];
 }
 
@@ -62,7 +62,7 @@ size_t Skeleton::getBoneIndex(const char* name) const
 
 void Skeleton::setReferenceTransform(size_t bone_index, const Gleam::TransformSIMD& transform)
 {
-	assert(bone_index < _parent_indices.size());
+	GAFF_ASSERT(bone_index < _parent_indices.size());
 	_default_pose.getLocalTransforms()[bone_index] = transform;
 }
 
@@ -81,7 +81,7 @@ void Skeleton::addBone(size_t parent_index, const char* name)
 
 void Skeleton::calculateModelTransform(Pose& pose, size_t bone_index)
 {
-	assert(bone_index < _parent_indices.size());
+	GAFF_ASSERT(bone_index < _parent_indices.size());
 
 	Gleam::TransformSIMD& bone_transform = pose.getModelTransforms()[bone_index];
 	size_t parent_index = _parent_indices[bone_index];

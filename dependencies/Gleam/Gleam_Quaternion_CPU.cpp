@@ -21,7 +21,7 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Gleam_Quaternion_CPU.h"
-#include <Gaff_IncludeAssert.h>
+#include <Gaff_Assert.h>
 #include <cmath>
 
 NS_GLEAM
@@ -74,13 +74,13 @@ const QuaternionCPU& QuaternionCPU::operator=(const QuaternionCPU& rhs)
 
 float QuaternionCPU::operator[](int index) const
 {
-	assert(index > -1 && index < 4);
+	GAFF_ASSERT(index > -1 && index < 4);
 	return _quat[index];
 }
 
 float& QuaternionCPU::operator[](int index)
 {
-	assert(index > -1 && index < 4);
+	GAFF_ASSERT(index > -1 && index < 4);
 	return _quat[index];
 }
 
@@ -110,7 +110,7 @@ void QuaternionCPU::set(const Vector4CPU& vec)
 
 void QuaternionCPU::set(float value, unsigned int index)
 {
-	assert(index >= 0 && index < 4);
+	GAFF_ASSERT(index >= 0 && index < 4);
 	_quat[index] = value;
 }
 

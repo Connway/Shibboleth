@@ -100,7 +100,7 @@ DYNAMICEXPORT_C void ShutdownModule(void)
 
 DYNAMICEXPORT_C const char* GetComponentName(unsigned int id)
 {
-	assert(id < NUM_COMPONENTS);
+	GAFF_ASSERT(id < NUM_COMPONENTS);
 	return name_funcs[id]();
 }
 
@@ -111,7 +111,7 @@ DYNAMICEXPORT_C unsigned int GetNumComponents(void)
 
 DYNAMICEXPORT_C Shibboleth::Component* CreateComponent(unsigned int id)
 {
-	assert(id < NUM_COMPONENTS);
+	GAFF_ASSERT(id < NUM_COMPONENTS);
 	return create_funcs[id]();
 }
 

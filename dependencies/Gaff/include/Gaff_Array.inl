@@ -155,14 +155,14 @@ bool Array<T, Allocator>::operator!=(const Array<T, Allocator2>& rhs) const
 template <class T, class Allocator>
 const T& Array<T, Allocator>::operator[](size_t index) const
 {
-	assert(index < _used);
+	GAFF_ASSERT(index < _used);
 	return _array[index];
 }
 
 template <class T, class Allocator>
 T& Array<T, Allocator>::operator[](size_t index)
 {
-	assert(index < _used);
+	GAFF_ASSERT(index < _used);
 	return _array[index];
 }
 
@@ -195,28 +195,28 @@ void Array<T, Allocator>::clearNoFree(void)
 template <class T, class Allocator>
 const T& Array<T, Allocator>::first(void) const
 {
-	assert(_used);
+	GAFF_ASSERT(_used);
 	return _array[0];
 }
 
 template <class T, class Allocator>
 T& Array<T, Allocator>::first(void)
 {
-	assert(_used);
+	GAFF_ASSERT(_used);
 	return _array[0];
 }
 
 template <class T, class Allocator>
 const T& Array<T, Allocator>::last(void) const
 {
-	assert(_used);
+	GAFF_ASSERT(_used);
 	return _array[_used - 1];
 }
 
 template <class T, class Allocator>
 T& Array<T, Allocator>::last(void)
 {
-	assert(_used);
+	GAFF_ASSERT(_used);
 	return _array[_used - 1];
 }
 
@@ -326,7 +326,7 @@ void Array<T, Allocator>::push(const T& data)
 template <class T, class Allocator>
 void Array<T, Allocator>::pop(void)
 {
-	assert(_used);
+	GAFF_ASSERT(_used);
 	deconstruct(_array + _used - 1);
 	--_used;
 }
@@ -335,7 +335,7 @@ template <class T, class Allocator>
 template <class... Args>
 ARRAY_ITERATOR Array<T, Allocator>::emplace(const ARRAY_ITERATOR it, Args&&... args)
 {
-	assert(it >= _array && it <= _array + _used);
+	GAFF_ASSERT(it >= _array && it <= _array + _used);
 	size_t index = static_cast<size_t>(it - _array);
 	emplace(index, std::forward<Args>(args)...);
 	return Iterator(_array + index);
@@ -345,7 +345,7 @@ template <class T, class Allocator>
 template <class... Args>
 void Array<T, Allocator>::emplace(size_t index, Args&&... args)
 {
-	assert(index <= _size);
+	GAFF_ASSERT(index <= _size);
 
 	if (_used + 1 > _size) {
 		reserve((_size == 0) ? 1 : _size * 2);
@@ -378,7 +378,7 @@ void Array<T, Allocator>::emplacePush(Args&&... args)
 template <class T, class Allocator>
 ARRAY_ITERATOR Array<T, Allocator>::insert(const ARRAY_ITERATOR it, const T& data)
 {
-	assert(it >= _array && it <= _array + _used);
+	GAFF_ASSERT(it >= _array && it <= _array + _used);
 	size_t index = static_cast<size_t>(it - _array);
 	insert(index, data);
 	return Iterator(_array + index);
@@ -387,7 +387,7 @@ ARRAY_ITERATOR Array<T, Allocator>::insert(const ARRAY_ITERATOR it, const T& dat
 template <class T, class Allocator>
 ARRAY_ITERATOR Array<T, Allocator>::insert(const ARRAY_ITERATOR it, T&& data)
 {
-	assert(it >= _array && it <= _array + _used);
+	GAFF_ASSERT(it >= _array && it <= _array + _used);
 	size_t index = static_cast<size_t>(it - _array);
 	insert(index, std::move(data));
 	return Iterator(_array + index);
@@ -396,7 +396,7 @@ ARRAY_ITERATOR Array<T, Allocator>::insert(const ARRAY_ITERATOR it, T&& data)
 template <class T, class Allocator>
 void Array<T, Allocator>::insert(size_t index, const T& data)
 {
-	assert(index <= _size);
+	GAFF_ASSERT(index <= _size);
 
 	if (_used == _size) {
 		reserve((_size == 0) ? 1 : _size * 2);
@@ -413,7 +413,7 @@ void Array<T, Allocator>::insert(size_t index, const T& data)
 template <class T, class Allocator>
 void Array<T, Allocator>::insert(size_t index, T&& data)
 {
-	assert(index <= _size);
+	GAFF_ASSERT(index <= _size);
 
 	if (_used + 1 > _size) {
 		reserve((_size == 0) ? 1 : _size * 2);
@@ -430,7 +430,7 @@ void Array<T, Allocator>::insert(size_t index, T&& data)
 template <class T, class Allocator>
 ARRAY_ITERATOR Array<T, Allocator>::erase(const ARRAY_ITERATOR it)
 {
-	assert(it >= _array && it < _array + _used);
+	GAFF_ASSERT(it >= _array && it < _array + _used);
 
 	size_t index = static_cast<size_t>(it - _array);
 	erase(index);
@@ -441,7 +441,7 @@ ARRAY_ITERATOR Array<T, Allocator>::erase(const ARRAY_ITERATOR it)
 template <class T, class Allocator>
 void Array<T, Allocator>::erase(size_t index)
 {
-	assert(index < _used && _used > 0);
+	GAFF_ASSERT(index < _used && _used > 0);
 
 	deconstruct(_array + index);
 
@@ -455,7 +455,7 @@ void Array<T, Allocator>::erase(size_t index)
 template <class T, class Allocator>
 ARRAY_ITERATOR Array<T, Allocator>::fastErase(const ARRAY_ITERATOR it)
 {
-	assert(it >= _array && it < _array + _used);
+	GAFF_ASSERT(it >= _array && it < _array + _used);
 
 	size_t index = static_cast<size_t>(it - _array);
 	fastErase(index);
@@ -466,7 +466,7 @@ ARRAY_ITERATOR Array<T, Allocator>::fastErase(const ARRAY_ITERATOR it)
 template <class T, class Allocator>
 void Array<T, Allocator>::fastErase(size_t index)
 {
-	assert(index < _used && _used > 0);
+	GAFF_ASSERT(index < _used && _used > 0);
 
 	deconstruct(_array + index);
 	memcpy(_array + index, _array + _used - 1, sizeof(T));
@@ -565,8 +565,8 @@ template <class T, class Allocator>
 template <class T2, class Pred>
 const ARRAY_ITERATOR Array<T, Allocator>::linearSearch(const ARRAY_ITERATOR range_begin, const ARRAY_ITERATOR range_end, const T2& value, const Pred& pred) const
 {
-	assert(range_begin >= _array && range_begin <= _array + _used);
-	assert(range_end >= _array && range_end <= _array + _used);
+	GAFF_ASSERT(range_begin >= _array && range_begin <= _array + _used);
+	GAFF_ASSERT(range_end >= _array && range_end <= _array + _used);
 
 	const Iterator it = LinearSearch(range_begin, range_end, value, pred);
 	return (it) ? it : end();
@@ -576,8 +576,8 @@ template <class T, class Allocator>
 template <class T2, class Pred>
 ARRAY_ITERATOR Array<T, Allocator>::linearSearch(ARRAY_ITERATOR range_begin, ARRAY_ITERATOR range_end, const T2& value, const Pred& pred)
 {
-	assert(range_begin >= _array && range_begin <= _array + _used);
-	assert(range_end >= _array && range_end <= _array + _used);
+	GAFF_ASSERT(range_begin >= _array && range_begin <= _array + _used);
+	GAFF_ASSERT(range_end >= _array && range_end <= _array + _used);
 
 	const Iterator it = LinearSearch(range_begin, range_end, value, pred);
 	return (it) ? it : end();
@@ -587,7 +587,7 @@ template <class T, class Allocator>
 template <class T2, class Pred>
 size_t Array<T, Allocator>::linearSearch(size_t range_begin, size_t range_end, const T2& value, const Pred& pred) const
 {
-	assert(range_end <= _used);
+	GAFF_ASSERT(range_end <= _used);
 	return LinearSearch(_array, range_begin, range_end, value, pred);
 }
 
@@ -613,8 +613,8 @@ const ARRAY_ITERATOR Array<T, Allocator>::binarySearch(
 	const T2& value,
 	const Pred& pred) const
 {
-	assert(range_begin >= _array && range_begin <= _array + _used);
-	assert(range_end >= _array && range_end <= _array + _used);
+	GAFF_ASSERT(range_begin >= _array && range_begin <= _array + _used);
+	GAFF_ASSERT(range_end >= _array && range_end <= _array + _used);
 
 	return BinarySearch(range_begin, range_end, value, pred);
 }
@@ -627,8 +627,8 @@ ARRAY_ITERATOR Array<T, Allocator>::binarySearch(
 	const T2& value,
 	const Pred& pred)
 {
-	assert(range_begin >= _array && range_begin <= _array + _used);
-	assert(range_end >= _array && range_end <= _array + _used);
+	GAFF_ASSERT(range_begin >= _array && range_begin <= _array + _used);
+	GAFF_ASSERT(range_end >= _array && range_end <= _array + _used);
 
 	return BinarySearch(range_begin, range_end, value, pred);
 }
@@ -641,7 +641,7 @@ size_t Array<T, Allocator>::binarySearch(
 	const T2& value,
 	const Pred& pred) const
 {
-	assert(range_end <= _used);
+	GAFF_ASSERT(range_end <= _used);
 	return BinarySearch(_array, range_begin, range_end, value, pred);
 }
 
@@ -743,7 +743,7 @@ void Array<T, Allocator>::resizeHelper(size_t new_size)
 template <class T, class T2, class Pred>
 const T* LinearSearch(const T* range_begin, const T* range_end, const T2& value, const Pred& pred)
 {
-	assert(range_begin <= range_end);
+	GAFF_ASSERT(range_begin <= range_end);
 
 	for (; range_begin < range_end; ++range_begin) {
 		if (pred(*range_begin, value)) {
@@ -757,7 +757,7 @@ const T* LinearSearch(const T* range_begin, const T* range_end, const T2& value,
 template <class T, class T2, class Pred>
 T* LinearSearch(T* range_begin, T* range_end, const T2& value, const Pred& pred)
 {
-	assert(range_begin <= range_end);
+	GAFF_ASSERT(range_begin <= range_end);
 
 	for (; range_begin < range_end; ++range_begin) {
 		if (pred(*range_begin, value)) {
@@ -771,7 +771,7 @@ T* LinearSearch(T* range_begin, T* range_end, const T2& value, const Pred& pred)
 template <class T, class T2, class Pred>
 size_t LinearSearch(const T* data, size_t range_begin, size_t range_end, const T2& value, const Pred& pred)
 {
-	assert(range_begin <= range_end);
+	GAFF_ASSERT(range_begin <= range_end);
 
 	for (size_t i = range_begin; i < range_end; ++i) {
 		if (pred(data[i], value)) {
@@ -785,7 +785,7 @@ size_t LinearSearch(const T* data, size_t range_begin, size_t range_end, const T
 template <class T, class T2, class Pred>
 const T* BinarySearch(const T* range_begin, const T* range_end, const T2& value, const Pred& pred)
 {
-	assert(range_begin <= range_end);
+	GAFF_ASSERT(range_begin <= range_end);
 
 	while (range_begin != range_end) {
 		T* mid = range_begin + static_cast<size_t>(range_end - range_begin) / 2;
@@ -803,7 +803,7 @@ const T* BinarySearch(const T* range_begin, const T* range_end, const T2& value,
 template <class T, class T2, class Pred>
 T* BinarySearch(T* range_begin, T* range_end, const T2& value, const Pred& pred)
 {
-	assert(range_begin <= range_end);
+	GAFF_ASSERT(range_begin <= range_end);
 
 	while (range_begin != range_end) {
 		T* mid = range_begin + static_cast<size_t>(range_end - range_begin) / 2;
@@ -821,7 +821,7 @@ T* BinarySearch(T* range_begin, T* range_end, const T2& value, const Pred& pred)
 template <class T, class T2, class Pred>
 size_t BinarySearch(const T* data, size_t range_begin, size_t range_end, const T2& value, const Pred& pred)
 {
-	assert(range_begin <= range_end);
+	GAFF_ASSERT(range_begin <= range_end);
 
 	while (range_begin != range_end) {
 		size_t mid = range_begin + (range_end - range_begin) / 2;

@@ -62,7 +62,7 @@ static const char* gOpenModes[12] = {
 */
 bool File::CheckExtension(const char* file_name, size_t file_name_size, const char* extension, size_t extension_size)
 {
-	assert(file_name && extension && file_name_size > extension_size);
+	GAFF_ASSERT(file_name && extension && file_name_size > extension_size);
 	return strcmp(file_name + file_name_size - extension_size, extension) == 0;
 }
 
@@ -78,14 +78,14 @@ bool File::CheckExtension(const char* file_name, size_t file_name_size, const ch
 */
 bool File::CheckExtension(const char* file_name, const char* extension)
 {
-	assert(file_name && extension && strlen(file_name) && strlen(extension));
+	GAFF_ASSERT(file_name && extension && strlen(file_name) && strlen(extension));
 	return CheckExtension(file_name, strlen(file_name), extension, strlen(extension));
 }
 
 
 bool File::Remove(const char* file_name)
 {
-	assert(file_name && strlen(file_name));
+	GAFF_ASSERT(file_name && strlen(file_name));
 
 #ifdef _UNICODE
 	CONVERT_TO_UTF16(temp, file_name);
@@ -97,7 +97,7 @@ bool File::Remove(const char* file_name)
 
 bool File::Rename(const char* old_file_name, const char* new_file_name)
 {
-	assert(old_file_name && new_file_name && strlen(old_file_name) && strlen(new_file_name));
+	GAFF_ASSERT(old_file_name && new_file_name && strlen(old_file_name) && strlen(new_file_name));
 	
 #ifdef _UNICODE
 	CONVERT_TO_UTF16(temp1, old_file_name);
@@ -111,7 +111,7 @@ bool File::Rename(const char* old_file_name, const char* new_file_name)
 File::File(const char* file_name, OPEN_MODE mode):
 	_file(nullptr)
 {
-	assert(file_name);
+	GAFF_ASSERT(file_name);
 	open(file_name, mode);
 }
 
@@ -159,7 +159,7 @@ File::OPEN_MODE File::getMode(void) const
 
 bool File::open(const char* file_name, OPEN_MODE mode)
 {
-	assert(file_name && strlen(file_name));
+	GAFF_ASSERT(file_name && strlen(file_name));
 
 	if (_file) {
 		return false;
@@ -188,7 +188,7 @@ bool File::open(const char* file_name, OPEN_MODE mode)
 */
 bool File::redirect(FILE* file, const char* file_name, OPEN_MODE mode)
 {
-	assert(!_file && file_name);
+	GAFF_ASSERT(!_file && file_name);
 
 #ifdef _UNICODE
 	CONVERT_TO_UTF16(temp, file_name);
@@ -210,7 +210,7 @@ bool File::redirect(FILE* file, const char* file_name, OPEN_MODE mode)
 */
 bool File::redirect(const char* file_name, OPEN_MODE mode)
 {
-	assert(_file && file_name);
+	GAFF_ASSERT(_file && file_name);
 
 #ifdef _UNICODE
 	CONVERT_TO_UTF16(temp, file_name);
@@ -246,7 +246,7 @@ bool File::isOpen(void) const
 */
 bool File::neof(void) const
 {
-	assert(_file);
+	GAFF_ASSERT(_file);
 	return !feof(_file);
 }
 
@@ -256,7 +256,7 @@ bool File::neof(void) const
 */
 bool File::eof(void) const
 {
-	assert(_file);
+	GAFF_ASSERT(_file);
 	return feof(_file) != 0;
 }
 
@@ -266,7 +266,7 @@ bool File::eof(void) const
 */
 bool File::flush(void)
 {
-	assert(_file);
+	GAFF_ASSERT(_file);
 	return !fflush(_file);
 }
 
@@ -275,31 +275,31 @@ bool File::flush(void)
 */
 void File::setBuffer(char* buffer)
 {
-	assert(_file && buffer);
+	GAFF_ASSERT(_file && buffer);
 	setbuf(_file, buffer);
 }
 
 size_t File::read(void* buffer, size_t element_size, size_t element_count)
 {
-	assert(_file && buffer && element_size && element_count);
+	GAFF_ASSERT(_file && buffer && element_size && element_count);
 	return fread(buffer, element_size, element_count, _file);
 }
 
 size_t File::write(void* buffer, size_t element_size, size_t element_count)
 {
-	assert(_file && buffer && element_size && element_count);
+	GAFF_ASSERT(_file && buffer && element_size && element_count);
 	return fwrite(buffer, element_size, element_count, _file);
 }
 
 void File::printfVA(const char* format_string, va_list vl)
 {
-	assert(_file && format_string && vl);
+	GAFF_ASSERT(_file && format_string && vl);
 	vfprintf(_file, format_string, vl);
 }
 
 void File::printf(const char* format_string, ...)
 {
-	assert(_file && format_string);
+	GAFF_ASSERT(_file && format_string);
 
 	va_list vl;
 	va_start(vl, format_string);
@@ -309,25 +309,25 @@ void File::printf(const char* format_string, ...)
 
 bool File::writeChar(char c)
 {
-	assert(_file);
+	GAFF_ASSERT(_file);
 	return fputc(c, _file) != EOF;
 }
 
 int File::readChar(void)
 {
-	assert(_file);
+	GAFF_ASSERT(_file);
 	return fgetc(_file);
 }
 
 bool File::writeString(const char* s)
 {
-	assert(_file && s);
+	GAFF_ASSERT(_file && s);
 	return fputs(s, _file) != EOF;
 }
 
 bool File::readString(char* buffer, int max_byte_count)
 {
-	assert(_file && buffer && max_byte_count > -1);
+	GAFF_ASSERT(_file && buffer && max_byte_count > -1);
 	char* tmp = fgets(buffer, max_byte_count, _file);
 	return tmp != nullptr;
 }
@@ -338,19 +338,19 @@ bool File::readString(char* buffer, int max_byte_count)
 */
 long File::getFilePos(void) const
 {
-	assert(_file);
+	GAFF_ASSERT(_file);
 	return ftell(_file);
 }
 
 bool File::seek(long offset, SEEK_ORIGIN origin)
 {
-	assert(_file);
+	GAFF_ASSERT(_file);
 	return !fseek(_file, offset, origin);
 }
 
 void File::rewind(void)
 {
-	assert(_file);
+	GAFF_ASSERT(_file);
 	::rewind(_file);
 }
 
@@ -360,14 +360,14 @@ void File::rewind(void)
 */
 bool File::openTempFile(void)
 {
-	assert(!_file);
+	GAFF_ASSERT(!_file);
 	_file = tmpfile();
 	return _file != NULL && _file != nullptr;
 }
 
 long File::getFileSize(void)
 {
-	assert(_file);
+	GAFF_ASSERT(_file);
 	long size;
 
 	if (fseek(_file, 0, Gaff::File::END)) {
@@ -382,7 +382,7 @@ long File::getFileSize(void)
 
 bool File::readEntireFile(char* buffer)
 {
-	assert(buffer && _file);
+	GAFF_ASSERT(buffer && _file);
 	size_t size = static_cast<size_t>(getFileSize());
 	size_t bytes_read = 0;
 

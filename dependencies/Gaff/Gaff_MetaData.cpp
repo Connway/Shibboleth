@@ -21,6 +21,7 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Gaff_MetaData.h"
+#include "Gaff_Assert.h"
 #include <assimp/types.h>
 #include <assimp/metadata.h>
 
@@ -47,55 +48,55 @@ MetaData::~MetaData(void)
 
 unsigned int MetaData::getNumProperties(void) const
 {
-	assert(_meta_data);
+	GAFF_ASSERT(_meta_data);
 	return _meta_data->mNumProperties;
 }
 
 const char* MetaData::getKey(unsigned int index) const
 {
-	assert(_meta_data && index < _meta_data->mNumProperties);
+	GAFF_ASSERT(_meta_data && index < _meta_data->mNumProperties);
 	return _meta_data->mKeys[index].C_Str();
 }
 
 MetaData::ValueType MetaData::getValueType(unsigned int index) const
 {
-	assert(_meta_data && index < _meta_data->mNumProperties);
+	GAFF_ASSERT(_meta_data && index < _meta_data->mNumProperties);
 	return static_cast<ValueType>(_meta_data->mValues[index].mType);
 }
 
 bool MetaData::getBool(unsigned int index) const
 {
-	assert(_meta_data && index < _meta_data->mNumProperties && _meta_data->mValues[index].mType == AI_BOOL);
+	GAFF_ASSERT(_meta_data && index < _meta_data->mNumProperties && _meta_data->mValues[index].mType == AI_BOOL);
 	return *static_cast<bool*>(_meta_data->mValues[index].mData);
 }
 
 int MetaData::getInt(unsigned int index) const
 {
-	assert(_meta_data && index < _meta_data->mNumProperties && _meta_data->mValues[index].mType == AI_INT);
+	GAFF_ASSERT(_meta_data && index < _meta_data->mNumProperties && _meta_data->mValues[index].mType == AI_INT);
 	return *static_cast<int*>(_meta_data->mValues[index].mData);
 }
 
 uint64_t MetaData::getUInt64(unsigned int index) const
 {
-	assert(_meta_data && index < _meta_data->mNumProperties && _meta_data->mValues[index].mType == AI_UINT64);
+	GAFF_ASSERT(_meta_data && index < _meta_data->mNumProperties && _meta_data->mValues[index].mType == AI_UINT64);
 	return *static_cast<uint64_t*>(_meta_data->mValues[index].mData);
 }
 
 float MetaData::getFloat(unsigned int index) const
 {
-	assert(_meta_data && index < _meta_data->mNumProperties && _meta_data->mValues[index].mType == AI_FLOAT);
+	GAFF_ASSERT(_meta_data && index < _meta_data->mNumProperties && _meta_data->mValues[index].mType == AI_FLOAT);
 	return *static_cast<float*>(_meta_data->mValues[index].mData);
 }
 
 const char* MetaData::getString(unsigned int index) const
 {
-	assert(_meta_data && index < _meta_data->mNumProperties && _meta_data->mValues[index].mType == AI_AISTRING);
+	GAFF_ASSERT(_meta_data && index < _meta_data->mNumProperties && _meta_data->mValues[index].mType == AI_AISTRING);
 	return static_cast<aiString*>(_meta_data->mValues[index].mData)->C_Str();
 }
 
 const float* MetaData::getVec3(unsigned int index) const
 {
-	assert(_meta_data && index < _meta_data->mNumProperties && _meta_data->mValues[index].mType == AI_AIVECTOR3D);
+	GAFF_ASSERT(_meta_data && index < _meta_data->mNumProperties && _meta_data->mValues[index].mType == AI_AIVECTOR3D);
 	return &static_cast<aiVector3D*>(_meta_data->mValues[index].mData)->x;
 }
 

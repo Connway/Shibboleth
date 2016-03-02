@@ -76,7 +76,7 @@ ModelLoader::~ModelLoader(void)
 
 Gaff::IVirtualDestructor* ModelLoader::load(const char* file_name, uint64_t, HashMap<AString, IFile*>& file_map)
 {
-	assert(file_map.hasElementWithKey(AString(file_name)));
+	GAFF_ASSERT(file_map.hasElementWithKey(AString(file_name)));
 
 	GAFF_SCOPE_EXIT([&]()
 	{

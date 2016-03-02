@@ -44,27 +44,27 @@ CommandListGL::~CommandListGL(void)
 
 const ICommandList& CommandListGL::operator=(const ICommandList& rhs)
 {
-	assert(rhs.getRendererType() == RENDERER_OPENGL);
+	GAFF_ASSERT(rhs.getRendererType() == RENDERER_OPENGL);
 	_commands = reinterpret_cast<const CommandListGL&>(rhs)._commands;
 	return *this;
 }
 
 const ICommandList& CommandListGL::operator=(ICommandList&& rhs)
 {
-	assert(rhs.getRendererType() == RENDERER_OPENGL);
+	GAFF_ASSERT(rhs.getRendererType() == RENDERER_OPENGL);
 	_commands = std::move(reinterpret_cast<const CommandListGL&>(rhs)._commands);
 	return *this;
 }
 
 bool CommandListGL::operator==(const ICommandList& rhs) const
 {
-	assert(rhs.getRendererType() == RENDERER_OPENGL);
+	GAFF_ASSERT(rhs.getRendererType() == RENDERER_OPENGL);
 	return _commands == reinterpret_cast<const CommandListGL&>(rhs)._commands;
 }
 
 bool CommandListGL::operator!=(const ICommandList& rhs) const
 {
-	assert(rhs.getRendererType() == RENDERER_OPENGL);
+	GAFF_ASSERT(rhs.getRendererType() == RENDERER_OPENGL);
 	return _commands != reinterpret_cast<const CommandListGL&>(rhs)._commands;
 }
 

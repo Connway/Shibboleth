@@ -21,7 +21,7 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Gaff_Mesh.h"
-#include "Gaff_IncludeAssert.h"
+#include "Gaff_Assert.h"
 #include <assimp/mesh.h>
 
 NS_GAFF
@@ -49,13 +49,13 @@ Face::~Face(void)
 
 unsigned int Face::getNumIndices(void) const
 {
-	assert(_face);
+	GAFF_ASSERT(_face);
 	return _face->mNumIndices;
 }
 
 unsigned int Face::getIndice(unsigned int index) const
 {
-	assert(_face && index < _face->mNumIndices);
+	GAFF_ASSERT(_face && index < _face->mNumIndices);
 	return _face->mIndices[index];
 }
 
@@ -105,13 +105,13 @@ VertexWeight::~VertexWeight(void)
 
 unsigned int VertexWeight::getVertexIndex(void) const
 {
-	assert(_weight);
+	GAFF_ASSERT(_weight);
 	return _weight->mVertexId;
 }
 
 float VertexWeight::getWeight(void) const
 {
-	assert(_weight);
+	GAFF_ASSERT(_weight);
 	return _weight->mWeight;
 }
 
@@ -163,37 +163,37 @@ Bone::~Bone(void)
 
 const char* Bone::getName(void) const
 {
-	assert(_bone);
+	GAFF_ASSERT(_bone);
 	return _bone->mName.C_Str();
 }
 
 unsigned int Bone::getNumWeights(void) const
 {
-	assert(_bone);
+	GAFF_ASSERT(_bone);
 	return _bone->mNumWeights;
 }
 
 VertexWeight Bone::getWeight(unsigned int index) const
 {
-	assert(_bone && index < _bone->mNumWeights);
+	GAFF_ASSERT(_bone && index < _bone->mNumWeights);
 	return VertexWeight(_bone->mWeights + index);
 }
 
 const float* Bone::getTransformMatrix(void) const
 {
-	assert(_bone);
+	GAFF_ASSERT(_bone);
 	return &_bone->mOffsetMatrix.a1;
 }
 
 const float* Bone::getPosition(void) const
 {
-	assert(_bone);
+	GAFF_ASSERT(_bone);
 	return _pos;
 }
 
 const float* Bone::getRotationMatrix(void) const
 {
-	assert(_bone);
+	GAFF_ASSERT(_bone);
 	return _rotation;
 }
 
@@ -265,133 +265,133 @@ Mesh::~Mesh(void)
 
 bool Mesh::hasFaces(void) const
 {
-	assert(_mesh);
+	GAFF_ASSERT(_mesh);
 	return _mesh->HasFaces();
 }
 
 bool Mesh::hasBones(void) const
 {
-	assert(_mesh);
+	GAFF_ASSERT(_mesh);
 	return _mesh->HasBones();
 }
 
 bool Mesh::hasVertices(void) const
 {
-	assert(_mesh);
+	GAFF_ASSERT(_mesh);
 	return _mesh->HasPositions();
 }
 
 bool Mesh::hasNormals(void) const
 {
-	assert(_mesh);
+	GAFF_ASSERT(_mesh);
 	return _mesh->HasNormals();
 }
 
 bool Mesh::hasTangentsAndBitangents(void) const
 {
-	assert(_mesh);
+	GAFF_ASSERT(_mesh);
 	return _mesh->HasTangentsAndBitangents();
 }
 
 bool Mesh::hasColors(unsigned int set) const
 {
-	assert(_mesh && set < AI_MAX_NUMBER_OF_COLOR_SETS);
+	GAFF_ASSERT(_mesh && set < AI_MAX_NUMBER_OF_COLOR_SETS);
 	return _mesh->HasVertexColors(set);
 }
 
 bool Mesh::hasUVs(unsigned int set) const
 {
-	assert(_mesh && set < AI_MAX_NUMBER_OF_TEXTURECOORDS);
+	GAFF_ASSERT(_mesh && set < AI_MAX_NUMBER_OF_TEXTURECOORDS);
 	return _mesh->HasTextureCoords(set);
 }
 
 const char* Mesh::getName(void) const
 {
-	assert(_mesh);
+	GAFF_ASSERT(_mesh);
 	return _mesh->mName.C_Str();
 }
 
 unsigned int Mesh::getPrimitiveTypes(void) const
 {
-	assert(_mesh);
+	GAFF_ASSERT(_mesh);
 	return _mesh->mPrimitiveTypes;
 }
 
 unsigned int Mesh::getNumVertices(void) const
 {
-	assert(_mesh);
+	GAFF_ASSERT(_mesh);
 	return _mesh->mNumVertices;
 }
 
 unsigned int Mesh::getNumFaces(void) const
 {
-	assert(_mesh);
+	GAFF_ASSERT(_mesh);
 	return _mesh->mNumFaces;
 }
 
 unsigned int Mesh::getNumBones(void) const
 {
-	assert(_mesh);
+	GAFF_ASSERT(_mesh);
 	return _mesh->mNumBones;
 }
 
 //unsigned int Mesh::getNumAnimMeshes(void) const
 //{
-//	assert(_mesh);
+//	GAFF_ASSERT(_mesh);
 //	return _mesh->mNumAnimMeshes;
 //}
 
 //unsigned int Mesh::getMaterialIndex(void) const
 //{
-//	assert(_mesh);
+//	GAFF_ASSERT(_mesh);
 //	return _mesh->mMaterialIndex;
 //}
 
 unsigned int Mesh::getNumUVComponents(unsigned int channel) const
 {
-	assert(_mesh && channel < AI_MAX_NUMBER_OF_TEXTURECOORDS);
+	GAFF_ASSERT(_mesh && channel < AI_MAX_NUMBER_OF_TEXTURECOORDS);
 	return _mesh->mNumUVComponents[channel];
 }
 
 unsigned int Mesh::getNumUVChannels(void) const
 {
-	assert(_mesh);
+	GAFF_ASSERT(_mesh);
 	return _mesh->GetNumUVChannels();
 }
 
 unsigned int Mesh::getNumColorChannels(void) const
 {
-	assert(_mesh);
+	GAFF_ASSERT(_mesh);
 	return _mesh->GetNumColorChannels();
 }
 
 const float* Mesh::getVertex(unsigned int index) const
 {
-	assert(_mesh && index < _mesh->mNumVertices);
+	GAFF_ASSERT(_mesh && index < _mesh->mNumVertices);
 	return &_mesh->mVertices[index].x;
 }
 
 const float* Mesh::getNormals(unsigned int index) const
 {
-	assert(_mesh && index < _mesh->mNumVertices);
+	GAFF_ASSERT(_mesh && index < _mesh->mNumVertices);
 	return &_mesh->mNormals[index].x;
 }
 
 const float* Mesh::getTangents(unsigned int index) const
 {
-	assert(_mesh && index < _mesh->mNumVertices);
+	GAFF_ASSERT(_mesh && index < _mesh->mNumVertices);
 	return &_mesh->mTangents[index].x;
 }
 
 const float* Mesh::getBitangents(unsigned int index) const
 {
-	assert(_mesh && index < _mesh->mNumVertices);
+	GAFF_ASSERT(_mesh && index < _mesh->mNumVertices);
 	return &_mesh->mBitangents[index].x;
 }
 
 const float* Mesh::getVertexColor(unsigned int set, unsigned int index) const
 {
-	assert(_mesh);
+	GAFF_ASSERT(_mesh);
 	return (_mesh->mColors[set]) ? &_mesh->mColors[set][index].r : nullptr;
 }
 
@@ -399,19 +399,19 @@ const float* Mesh::getUV(unsigned int set, unsigned int index) const
 {
 	// I'm assuming that if a texture channel doesn't exist, then
 	// _mesh->mNumUVComponents[set] will be zero.
-	assert(_mesh && _mesh->mTextureCoords[set]);
+	GAFF_ASSERT(_mesh && _mesh->mTextureCoords[set]);
 	return &_mesh->mTextureCoords[set][index].x;
 }
 
 Face Mesh::getFace(unsigned int index) const
 {
-	assert(_mesh && index < _mesh->mNumFaces);
+	GAFF_ASSERT(_mesh && index < _mesh->mNumFaces);
 	return Face(_mesh->mFaces + index);
 }
 
 Bone Mesh::getBone(unsigned int index) const
 {
-	assert(_mesh && index < _mesh->mNumBones);
+	GAFF_ASSERT(_mesh && index < _mesh->mNumBones);
 	return Bone(_mesh->mBones[index]);
 }
 

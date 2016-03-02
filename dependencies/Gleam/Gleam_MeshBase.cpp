@@ -22,9 +22,7 @@ THE SOFTWARE.
 
 #include "Gleam_MeshBase.h"
 #include "Gleam_IRenderDevice.h"
-#include "Gleam_Global.h"
 #include "Gleam_IBuffer.h"
-#include <Gaff_IncludeAssert.h>
 
 NS_GLEAM
 
@@ -57,13 +55,13 @@ void MeshBase::addBuffer(IBuffer* buffer)
 
 const IBuffer* MeshBase::getBuffer(unsigned int index) const
 {
-	assert(index < _vert_data.size());
+	GAFF_ASSERT(index < _vert_data.size());
 	return _vert_data[index];
 }
 
 IBuffer* MeshBase::getBuffer(unsigned int index)
 {
-	assert(index < _vert_data.size());
+	GAFF_ASSERT(index < _vert_data.size());
 	return _vert_data[index];
 }
 
@@ -74,7 +72,7 @@ size_t MeshBase::getBufferCount(void) const
 
 void MeshBase::setIndiceBuffer(IBuffer* buffer)
 {
-	assert(buffer);
+	GAFF_ASSERT(buffer);
 	SAFEGAFFRELEASE(_indices);
 	_indices = buffer;
 	buffer->addRef();
@@ -111,7 +109,7 @@ bool MeshBase::addVertDataHelper(
 	IBuffer* index_buffer, IBuffer* vert_buffer
 )
 {
-	assert(vert_data && vert_count && vert_size && indices && index_count &&
+	GAFF_ASSERT(vert_data && vert_count && vert_size && indices && index_count &&
 			index_buffer && vert_buffer);
 
 	if (!vert_buffer->init(rd, vert_data, vert_count * vert_size, IBuffer::VERTEX_DATA, vert_size)) {

@@ -21,7 +21,7 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Gaff_Light.h"
-#include "Gaff_IncludeAssert.h"
+#include "Gaff_Assert.h"
 #include <assimp/light.h>
 
 NS_GAFF
@@ -47,73 +47,73 @@ Light::~Light(void)
 
 const char* Light::getName(void) const
 {
-	assert(_light);
+	GAFF_ASSERT(_light);
 	return _light->mName.C_Str();
 }
 
 LightType Light::getType(void) const
 {
-	assert(_light);
+	GAFF_ASSERT(_light);
 	return (LightType)_light->mType;
 }
 
 const float* Light::getPosition(void) const
 {
-	assert(_light);
+	GAFF_ASSERT(_light);
 	return &_light->mPosition.x;
 }
 
 const float* Light::getDirection(void) const
 {
-	assert(_light);
+	GAFF_ASSERT(_light);
 	return &_light->mDirection.x;
 }
 
 float Light::getAttenuationConstant(void) const
 {
-	assert(_light);
+	GAFF_ASSERT(_light);
 	return _light->mAttenuationConstant;
 }
 
 float Light::getAttenuationLinear(void) const
 {
-	assert(_light);
+	GAFF_ASSERT(_light);
 	return _light->mAttenuationLinear;
 }
 
 float Light::getAttenuationQuadratic(void) const
 {
-	assert(_light);
+	GAFF_ASSERT(_light);
 	return _light->mAttenuationQuadratic;
 }
 
 const float* Light::getDiffuseColor(void) const
 {
-	assert(_light);
+	GAFF_ASSERT(_light);
 	return &_light->mColorDiffuse.r;
 }
 
 const float* Light::getSpecularColor(void) const
 {
-	assert(_light);
+	GAFF_ASSERT(_light);
 	return &_light->mColorSpecular.r;
 }
 
 const float* Light::getAmbientColor(void) const
 {
-	assert(_light);
+	GAFF_ASSERT(_light);
 	return &_light->mColorAmbient.r;
 }
 
 float Light::getInnerConeAngle(void) const
 {
-	assert(_light);
+	GAFF_ASSERT(_light);
 	return _light->mAngleInnerCone;
 }
 
 float Light::getOuterConeAngle(void) const
 {
-	assert(_light);
+	GAFF_ASSERT(_light);
 	return _light->mAngleOuterCone;
 }
 

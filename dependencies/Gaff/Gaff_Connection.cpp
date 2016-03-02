@@ -21,7 +21,7 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Gaff_Connection.h"
-#include "Gaff_IncludeAssert.h"
+#include "Gaff_Assert.h"
 #include "Gaff_Host.h"
 #include <enet/enet.h>
 
@@ -59,7 +59,7 @@ Connection::~Connection(void)
 */
 void Connection::destroy(void)
 {
-	assert(_cleanup);
+	GAFF_ASSERT(_cleanup);
 
 	if (_peer) {
 		enet_peer_disconnect_now(_peer, 0);
@@ -78,25 +78,25 @@ PeerIDType Connection::getID(void) const
 
 unsigned int Connection::getHost(void) const
 {
-	assert(_peer);
+	GAFF_ASSERT(_peer);
 	return _peer->address.host;
 }
 
 unsigned short Connection::getPort(void) const
 {
-	assert(_peer);
+	GAFF_ASSERT(_peer);
 	return _peer->address.port;
 }
 
 void* Connection::getUserData(void) const
 {
-	assert(_peer);
+	GAFF_ASSERT(_peer);
 	return _peer->data;
 }
 
 void Connection::setUserData(void* data)
 {
-	assert(_peer);
+	GAFF_ASSERT(_peer);
 	_peer->data = data;
 }
 
@@ -105,7 +105,7 @@ void Connection::setUserData(void* data)
 */
 void Connection::setThrottle(unsigned int interval, unsigned int acceleration, unsigned int deceleration)
 {
-	assert(_peer);
+	GAFF_ASSERT(_peer);
 	enet_peer_throttle_configure(_peer, interval, acceleration, deceleration);
 }
 
@@ -114,7 +114,7 @@ void Connection::setThrottle(unsigned int interval, unsigned int acceleration, u
 */
 void Connection::setTimeout(unsigned int limit, unsigned int min, unsigned int max)
 {
-	assert(_peer);
+	GAFF_ASSERT(_peer);
 	enet_peer_timeout(_peer, limit, min, max);
 }
 
@@ -124,7 +124,7 @@ void Connection::setTimeout(unsigned int limit, unsigned int min, unsigned int m
 */
 void Connection::setPingInterval(unsigned int interval)
 {
-	assert(_peer);
+	GAFF_ASSERT(_peer);
 	enet_peer_ping_interval(_peer, interval);
 }
 
@@ -133,7 +133,7 @@ void Connection::setPingInterval(unsigned int interval)
 */
 void Connection::disconnect(unsigned int data)
 {
-	assert(_peer);
+	GAFF_ASSERT(_peer);
 	enet_peer_disconnect(_peer, data);
 }
 
@@ -142,7 +142,7 @@ void Connection::disconnect(unsigned int data)
 */
 void Connection::disconnectNow(unsigned int data)
 {
-	assert(_peer);
+	GAFF_ASSERT(_peer);
 	enet_peer_disconnect_now(_peer, data);
 }
 
@@ -151,13 +151,13 @@ void Connection::disconnectNow(unsigned int data)
 */
 void Connection::disconnectLater(unsigned int data)
 {
-	assert(_peer);
+	GAFF_ASSERT(_peer);
 	enet_peer_disconnect_later(_peer, data);
 }
 
 void Connection::ping(void)
 {
-	assert(_peer);
+	GAFF_ASSERT(_peer);
 	enet_peer_ping(_peer);
 }
 
@@ -171,7 +171,7 @@ void Connection::ping(void)
 */
 bool Connection::send(unsigned char channel, void* data, size_t data_size, unsigned int packet_flags)
 {
-	assert(_peer);
+	GAFF_ASSERT(_peer);
 	ENetPacket* packet = enet_packet_create(data, data_size, packet_flags);
 	return !enet_peer_send(_peer, channel, packet);
 }

@@ -61,7 +61,7 @@ Object* ObjectManager::createObject(void)
 		});
 
 		// If we generated a duplicate ID, then something is borked
-		assert(it == _objects.end() || (*it)->getID() != id);
+		GAFF_ASSERT(it == _objects.end() || (*it)->getID() != id);
 
 		_objects.insert(it, object);
 	}
@@ -71,13 +71,13 @@ Object* ObjectManager::createObject(void)
 
 void ObjectManager::removeObject(Object* object)
 {
-	assert(object);
+	GAFF_ASSERT(object);
 	removeObject(object->getID());
 }
 
 void ObjectManager::removeObject(unsigned int id)
 {
-	assert(id < _next_id);
+	GAFF_ASSERT(id < _next_id);
 	Object* object = nullptr;
 
 	{

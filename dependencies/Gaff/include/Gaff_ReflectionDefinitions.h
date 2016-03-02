@@ -225,11 +225,11 @@ THE SOFTWARE.
 	void ReflectionDefinition<T, Allocator>::name::set(const void* value, size_t index, T* object) \
 	{ \
 		if (_var) { \
-			assert(index < (object->*_var).size()); \
+			GAFF_ASSERT(index < (object->*_var).size()); \
 			(object->*_var)[index] = *reinterpret_cast<const type*>(value); \
 		} else if (_getter) { \
 			VarType& array = const_cast<VarType&>((object->*_getter)()); \
-			assert(index < array.size()); \
+			GAFF_ASSERT(index < array.size()); \
 			array[index] = *reinterpret_cast<const type*>(value); \
 		} \
 	}
@@ -244,11 +244,11 @@ THE SOFTWARE.
 	void ReflectionDefinition<T, Allocator>::name::get(void* out, size_t index, const T* object) const \
 	{ \
 		if (_var) { \
-			assert(index < (object->*_var).size()); \
+			GAFF_ASSERT(index < (object->*_var).size()); \
 			*reinterpret_cast<type*>(out) = (object->*_var)[index]; \
 		} else if (_getter) { \
 			const VarType& array = (object->*_getter)(); \
-			assert(index < array.size()); \
+			GAFF_ASSERT(index < array.size()); \
 			*reinterpret_cast<type*>(out) = array[index]; \
 		} \
 	}
@@ -297,14 +297,14 @@ THE SOFTWARE.
 	void ReflectionDefinition<T, Allocator>::name::move(size_t src_index, size_t dest_index, T* object) \
 	{ \
 		if (_var) { \
-			assert(src_index < (object->*_var).size() && dest_index <= (object->*_var).size()); \
+			GAFF_ASSERT(src_index < (object->*_var).size() && dest_index <= (object->*_var).size()); \
 			ElementType temp = std::move((object->*_var)[src_index]); \
 			(object->*_var).erase(src_index); \
 			dest_index = (dest_index > src_index) ? dest_index - 1 : dest_index; /* If the dest index was above the source index, shift it down by one.*/ \
 			(object->*_var).emplace(dest_index, std::move(temp)); \
 		} else if (_getter) { \
 			VarType& array = const_cast<VarType&>((object->*_getter)()); \
-			assert(src_index < array.size() && dest_index <= array.size()); \
+			GAFF_ASSERT(src_index < array.size() && dest_index <= array.size()); \
 			ElementType temp = std::move(array[src_index]); \
 			array.erase(src_index); \
 			dest_index = (dest_index > src_index) ? dest_index - 1 : dest_index; /* If the dest index was above the source index, shift it down by one.*/ \
@@ -400,7 +400,7 @@ THE SOFTWARE.
 	template <size_t array_size> \
 	void ReflectionDefinition<T, Allocator>::name<array_size>::get(void* out, size_t index, const T* object) const \
 	{ \
-		assert(index < array_size); \
+		GAFF_ASSERT(index < array_size); \
 		const VarType* array = nullptr; \
 		if (_var) { \
 			array = (object->*_var); \
@@ -423,7 +423,7 @@ THE SOFTWARE.
 	template <size_t array_size> \
 	void ReflectionDefinition<T, Allocator>::name<array_size>::set(const void* value, size_t index, T* object) \
 	{ \
-		assert(index < array_size); \
+		GAFF_ASSERT(index < array_size); \
 		VarType* array = nullptr; \
 		if (_var) { \
 			array = (object->*_var); \
@@ -454,7 +454,7 @@ THE SOFTWARE.
 	template <size_t array_size> \
 	void ReflectionDefinition<T, Allocator>::name<array_size>::move(size_t src_index, size_t dest_index, T* object) \
 	{ \
-		assert(src_index < array_size && dest_index <= array_size); \
+		GAFF_ASSERT(src_index < array_size && dest_index <= array_size); \
 		VarType* array = nullptr; \
 		if (_var) { \
 			array = (object->*_var); \

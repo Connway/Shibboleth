@@ -23,7 +23,7 @@ THE SOFTWARE.
 #if defined(__linux__) || defined(__APPLE__)
 
 #include "Gaff_StackTrace_Linux.h"
-#include "Gaff_IncludeAssert.h"
+#include "Gaff_Assert.h"
 #include <execinfo.h>
 #include <cstring>
 

@@ -254,6 +254,9 @@
     <ProjectReference Include="..\dependencies\LinearMath.vcxproj">
       <Project>{EAF25DFD-D6AA-9F4A-3FB2-78A62B893A3B}</Project>
     </ProjectReference>
+    <ProjectReference Include="..\dependencies\Boxer.vcxproj">
+      <Project>{653BE80C-D14F-10BE-9AD1-B31D06A50CEF}</Project>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

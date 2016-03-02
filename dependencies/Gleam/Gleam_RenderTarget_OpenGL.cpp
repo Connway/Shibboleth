@@ -23,7 +23,6 @@ THE SOFTWARE.
 #include "Gleam_RenderTarget_OpenGL.h"
 #include "Gleam_Texture_OpenGL.h"
 #include "Gleam_IRenderDevice.h"
-#include "Gaff_IncludeAssert.h"
 #include <GL/glew.h>
 
 NS_GLEAM
@@ -44,7 +43,7 @@ RenderTargetGL::~RenderTargetGL(void)
 
 bool RenderTargetGL::init(void)
 {
-	assert(!_frame_buffer);
+	GAFF_ASSERT(!_frame_buffer);
 
 #ifndef OPENGL_MULTITHREAD
 	glGenFramebuffers(1, &_frame_buffer);
@@ -67,11 +66,11 @@ bool RenderTargetGL::addTexture(IRenderDevice&, const ITexture* color_texture, C
 	{
 		GLint max_color_attachments = 0;
 		glGetIntegerv(GL_MAX_COLOR_ATTACHMENTS, &max_color_attachments);
-		assert(_attach_count < GL_MAX_COLOR_ATTACHMENTS);
+		GAFF_ASSERT(_attach_count < GL_MAX_COLOR_ATTACHMENTS);
 	}
 #endif
 
-	assert(color_texture && color_texture->getRendererType() == RENDERER_OPENGL);
+	GAFF_ASSERT(color_texture && color_texture->getRendererType() == RENDERER_OPENGL);
 
 #ifdef OPENGL_MULTITHREAD
 	if (!_frame_buffer) {
@@ -117,14 +116,14 @@ void RenderTargetGL::popTexture(void)
 	}
 #endif
 
-	assert(_attach_count > 0);
+	GAFF_ASSERT(_attach_count > 0);
 	_draw_buffers.pop();
 	--_attach_count;
 }
 
 bool RenderTargetGL::addDepthStencilBuffer(IRenderDevice&, const ITexture* depth_stencil_texture)
 {
-	assert(depth_stencil_texture && depth_stencil_texture->getRendererType() == RENDERER_OPENGL);
+	GAFF_ASSERT(depth_stencil_texture && depth_stencil_texture->getRendererType() == RENDERER_OPENGL);
 
 #ifdef OPENGL_MULTITHREAD
 	if (!_frame_buffer) {
@@ -154,7 +153,7 @@ bool RenderTargetGL::addDepthStencilBuffer(IRenderDevice&, const ITexture* depth
 			break;
 	}
 
-	assert(attachment != 0);
+	GAFF_ASSERT(attachment != 0);
 
 	glFramebufferTexture2D(GL_FRAMEBUFFER, attachment, GL_TEXTURE_2D, static_cast<const TextureGL*>(depth_stencil_texture)->getTexture(), 0);
 	glBindFramebuffer(GL_FRAMEBUFFER, static_cast<GLuint>(fb));
@@ -200,7 +199,7 @@ void RenderTargetGL::unbind(IRenderDevice&)
 
 void RenderTargetGL::clear(IRenderDevice& rd, unsigned int clear_flags, float clear_depth, unsigned char clear_stencil, float* clear_color)
 {
-	assert(rd.getRendererType() == RENDERER_OPENGL);
+	GAFF_ASSERT(rd.getRendererType() == RENDERER_OPENGL);
 
 	GLbitfield clear_bits = 0;
 

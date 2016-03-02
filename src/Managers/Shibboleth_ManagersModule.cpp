@@ -133,7 +133,7 @@ DYNAMICEXPORT_C unsigned int GetNumManagers(void)
 
 DYNAMICEXPORT_C Shibboleth::IManager* CreateManager(unsigned int id)
 {
-	assert(id < NUM_MANAGERS);
+	GAFF_ASSERT(id < NUM_MANAGERS);
 	return create_funcs[id]();
 }
 

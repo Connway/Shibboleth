@@ -22,7 +22,7 @@ THE SOFTWARE.
 
 #include "Gleam_Frustum_CPU.h"
 //#include "Gleam_Matrix4x4_CPU.h"
-#include <Gaff_IncludeAssert.h>
+#include <Gaff_Assert.h>
 #include <cmath>
 
 NS_GLEAM
@@ -64,7 +64,7 @@ const FrustumCPU& FrustumCPU::operator=(const FrustumCPU& rhs)
 
 const PlaneCPU& FrustumCPU::getPlane(unsigned int index) const
 {
-	assert(index >= 0 && index < 6);
+	GAFF_ASSERT(index >= 0 && index < 6);
 	return _planes[index];
 }
 

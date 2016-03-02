@@ -34,152 +34,152 @@ DeferredRenderDeviceBase::~DeferredRenderDeviceBase(void)
 
 IRenderDevice::AdapterList DeferredRenderDeviceBase::getDisplayModes(int)
 {
-	assert(0 && "Calling an immediate render device function on a deferred render device");
+	GAFF_ASSERT_MSG(false, "Calling an immediate render device function on a deferred render device");
 	return IRenderDevice::AdapterList();
 }
 
 bool DeferredRenderDeviceBase::initThreadData(unsigned int*, size_t)
 {
-	assert(0 && "Calling an immediate render device function on a deferred render device");
+	GAFF_ASSERT_MSG(false, "Calling an immediate render device function on a deferred render device");
 	return false;
 }
 
 bool DeferredRenderDeviceBase::init(const IWindow&, unsigned int, unsigned int, unsigned int, bool)
 {
-	assert(0 && "Calling an immediate render device function on a deferred render device");
+	GAFF_ASSERT_MSG(false, "Calling an immediate render device function on a deferred render device");
 	return false;
 }
 
 bool DeferredRenderDeviceBase::isVsync(unsigned int, unsigned int) const
 {
-	assert(0 && "Calling an immediate render device function on a deferred render device");
+	GAFF_ASSERT_MSG(false, "Calling an immediate render device function on a deferred render device");
 	return false;
 }
 
 void DeferredRenderDeviceBase::setVsync(bool, unsigned int, unsigned int)
 {
-	assert(0 && "Calling an immediate render device function on a deferred render device");
+	GAFF_ASSERT_MSG(false, "Calling an immediate render device function on a deferred render device");
 }
 
 void DeferredRenderDeviceBase::setClearColor(float, float, float, float)
 {
-	assert(0 && "Calling an immediate render device function on a deferred render device");
+	GAFF_ASSERT_MSG(false, "Calling an immediate render device function on a deferred render device");
 }
 
 void DeferredRenderDeviceBase::beginFrame(void)
 {
-	assert(0 && "Calling an immediate render device function on a deferred render device");
+	GAFF_ASSERT_MSG(false, "Calling an immediate render device function on a deferred render device");
 }
 
 void DeferredRenderDeviceBase::endFrame(void)
 {
-	assert(0 && "Calling an immediate render device function on a deferred render device");
+	GAFF_ASSERT_MSG(false, "Calling an immediate render device function on a deferred render device");
 }
 
 bool DeferredRenderDeviceBase::resize(const IWindow&)
 {
-	assert(0 && "Calling an immediate render device function on a deferred render device");
+	GAFF_ASSERT_MSG(false, "Calling an immediate render device function on a deferred render device");
 	return false;
 }
 
 bool DeferredRenderDeviceBase::handleFocusGained(const IWindow&)
 {
-	assert(0 && "Calling an immediate render device function on a deferred render device");
+	GAFF_ASSERT_MSG(false, "Calling an immediate render device function on a deferred render device");
 	return false;
 }
 
 void DeferredRenderDeviceBase::resetRenderState(void)
 {
-	assert(0 && "Calling an immediate render device function on a deferred render device");
+	GAFF_ASSERT_MSG(false, "Calling an immediate render device function on a deferred render device");
 }
 
 unsigned int DeferredRenderDeviceBase::getViewportWidth(unsigned int, unsigned int) const
 {
-	assert(0 && "Calling an immediate render device function on a deferred render device");
+	GAFF_ASSERT_MSG(false, "Calling an immediate render device function on a deferred render device");
 	return UINT_FAIL;
 }
 
 unsigned int DeferredRenderDeviceBase::getViewportHeight(unsigned int, unsigned int) const
 {
-	assert(0 && "Calling an immediate render device function on a deferred render device");
+	GAFF_ASSERT_MSG(false, "Calling an immediate render device function on a deferred render device");
 	return UINT_FAIL;
 }
 
 unsigned int DeferredRenderDeviceBase::getActiveViewportWidth(void)
 {
-	assert(0 && "Calling an immediate render device function on a deferred render device");
+	GAFF_ASSERT_MSG(false, "Calling an immediate render device function on a deferred render device");
 	return UINT_FAIL;
 }
 
 unsigned int DeferredRenderDeviceBase::getActiveViewportHeight(void)
 {
-	assert(0 && "Calling an immediate render device function on a deferred render device");
+	GAFF_ASSERT_MSG(false, "Calling an immediate render device function on a deferred render device");
 	return UINT_FAIL;
 }
 
 unsigned int DeferredRenderDeviceBase::getNumOutputs(unsigned int) const
 {
-	assert(0 && "Calling an immediate render device function on a deferred render device");
+	GAFF_ASSERT_MSG(false, "Calling an immediate render device function on a deferred render device");
 	return UINT_FAIL;
 }
 
 unsigned int DeferredRenderDeviceBase::getNumDevices(void) const
 {
-	assert(0 && "Calling an immediate render device function on a deferred render device");
+	GAFF_ASSERT_MSG(false, "Calling an immediate render device function on a deferred render device");
 	return UINT_FAIL;
 }
 
 IRenderTargetPtr DeferredRenderDeviceBase::getOutputRenderTarget(unsigned int, unsigned int)
 {
-	assert(0 && "Calling an immediate render device function on a deferred render device");
+	GAFF_ASSERT_MSG(false, "Calling an immediate render device function on a deferred render device");
 	return IRenderTargetPtr();
 }
 
 IRenderTargetPtr DeferredRenderDeviceBase::getActiveOutputRenderTarget(void)
 {
-	assert(0 && "Calling an immediate render device function on a deferred render device");
+	GAFF_ASSERT_MSG(false, "Calling an immediate render device function on a deferred render device");
 	return IRenderTargetPtr();
 }
 
 bool DeferredRenderDeviceBase::setCurrentOutput(unsigned int)
 {
-	assert(0 && "Calling an immediate render device function on a deferred render device");
+	GAFF_ASSERT_MSG(false, "Calling an immediate render device function on a deferred render device");
 	return false;
 }
 
 unsigned int DeferredRenderDeviceBase::getCurrentOutput(void) const
 {
-	assert(0 && "Calling an immediate render device function on a deferred render device");
+	GAFF_ASSERT_MSG(false, "Calling an immediate render device function on a deferred render device");
 	return UINT_FAIL;
 }
 
 bool DeferredRenderDeviceBase::setCurrentDevice(unsigned int)
 {
-	assert(0 && "Calling an immediate render device function on a deferred render device");
+	GAFF_ASSERT_MSG(false, "Calling an immediate render device function on a deferred render device");
 	return false;
 }
 
 unsigned int DeferredRenderDeviceBase::getCurrentDevice(void) const
 {
-	assert(0 && "Calling an immediate render device function on a deferred render device");
+	GAFF_ASSERT_MSG(false, "Calling an immediate render device function on a deferred render device");
 	return UINT_FAIL;
 }
 
 unsigned int DeferredRenderDeviceBase::getDeviceForAdapter(unsigned int) const
 {
-	assert(0 && "Calling an immediate render device function on a deferred render device");
+	GAFF_ASSERT_MSG(false, "Calling an immediate render device function on a deferred render device");
 	return UINT_FAIL;
 }
 
 unsigned int DeferredRenderDeviceBase::getDeviceForMonitor(unsigned int) const
 {
-	assert(0 && "Calling an immediate render device function on a deferred render device");
+	GAFF_ASSERT_MSG(false, "Calling an immediate render device function on a deferred render device");
 	return UINT_FAIL;
 }
 
 IRenderDevice* DeferredRenderDeviceBase::createDeferredRenderDevice(void)
 {
-	assert(0 && "Calling an immediate render device function on a deferred render device");
+	GAFF_ASSERT_MSG(false, "Calling an immediate render device function on a deferred render device");
 	return nullptr;
 }
 

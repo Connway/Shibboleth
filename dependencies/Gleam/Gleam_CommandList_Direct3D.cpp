@@ -21,7 +21,7 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Gleam_CommandList_Direct3D.h"
-#include <Gaff_IncludeAssert.h>
+#include <Gaff_Assert.h>
 
 NS_GLEAM
 
@@ -46,27 +46,27 @@ CommandListD3D::~CommandListD3D(void)
 
 const ICommandList& CommandListD3D::operator=(const ICommandList& rhs)
 {
-	assert(rhs.getRendererType() == RENDERER_DIRECT3D);
+	GAFF_ASSERT(rhs.getRendererType() == RENDERER_DIRECT3D);
 	_command_list = reinterpret_cast<const CommandListD3D&>(rhs)._command_list;
 	return *this;
 }
 
 const ICommandList& CommandListD3D::operator=(ICommandList&& rhs)
 {
-	assert(rhs.getRendererType() == RENDERER_DIRECT3D);
+	GAFF_ASSERT(rhs.getRendererType() == RENDERER_DIRECT3D);
 	_command_list = std::move(reinterpret_cast<CommandListD3D&>(rhs)._command_list);
 	return *this;
 }
 
 bool CommandListD3D::operator==(const ICommandList& rhs) const
 {
-	assert(rhs.getRendererType() == RENDERER_DIRECT3D);
+	GAFF_ASSERT(rhs.getRendererType() == RENDERER_DIRECT3D);
 	return _command_list == reinterpret_cast<const CommandListD3D&>(rhs)._command_list;
 }
 
 bool CommandListD3D::operator!=(const ICommandList& rhs) const
 {
-	assert(rhs.getRendererType() == RENDERER_DIRECT3D);
+	GAFF_ASSERT(rhs.getRendererType() == RENDERER_DIRECT3D);
 	return _command_list != reinterpret_cast<const CommandListD3D&>(rhs)._command_list;
 }
 

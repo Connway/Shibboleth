@@ -23,7 +23,7 @@ THE SOFTWARE.
 #if defined(_WIN32) || defined(_WIN64)
 
 #include "Gaff_StackTrace_Windows.h"
-#include "Gaff_IncludeAssert.h"
+#include "Gaff_Assert.h"
 
 NS_GAFF
 
@@ -56,7 +56,7 @@ bool StackTrace::Init(void)
 */
 void StackTrace::Destroy(void)
 {
-	assert(_handle);
+	GAFF_ASSERT(_handle);
 	SymCleanup(_handle);
 	_handle = nullptr;
 }
@@ -92,7 +92,7 @@ const StackTrace& StackTrace::operator=(const StackTrace& rhs)
 */
 unsigned short StackTrace::captureStack(unsigned int frames_to_capture)
 {
-	assert(frames_to_capture <= MAX_FRAMES);
+	GAFF_ASSERT(frames_to_capture <= MAX_FRAMES);
 	_frames = CaptureStackBackTrace(0, frames_to_capture, _stack, nullptr);
 
 	char data[sizeof(SYMBOL_INFO) + NAME_SIZE - 1];

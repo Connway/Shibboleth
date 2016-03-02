@@ -98,7 +98,7 @@ void ComponentManager::allManagersCreated(void)
 Component* ComponentManager::createComponent(AHashString name)
 {
 	size_t index = _components.indexOf(name);
-	assert(name.size() && index != SIZE_T_FAIL);
+	GAFF_ASSERT(name.size() && index != SIZE_T_FAIL);
 
 	ComponentEntry& entry = _components.valueAt(index);
 	Component* component = entry.create(entry.component_id);
@@ -112,13 +112,13 @@ Component* ComponentManager::createComponent(AHashString name)
 
 Component* ComponentManager::createComponent(const char* name)
 {
-	assert(name && _components.indexOf(name) != SIZE_T_FAIL);
+	GAFF_ASSERT(name && _components.indexOf(name) != SIZE_T_FAIL);
 	return createComponent(AHashString(name));
 }
 
 void ComponentManager::destroyComponent(Component* component)
 {
-	assert(component);
+	GAFF_ASSERT(component);
 	ComponentEntry& entry = _components.valueAt(component->getIndex());
 	entry.destroy(component, entry.component_id);
 }
@@ -127,7 +127,7 @@ bool ComponentManager::addComponents(DynamicLoader::ModulePtr& module)
 {
 	LogManager::FileLockPair& log = GetApp().getGameLogFile();
 
-	assert(module.valid());
+	GAFF_ASSERT(module.valid());
 	GetNumComponentsFunc num_comp_func = module->getFunc<GetNumComponentsFunc>("GetNumComponents");
 	GetComponentNameFunc comp_name_func = module->getFunc<GetComponentNameFunc>("GetComponentName");
 	CreateComponentFunc create_comp_func = module->getFunc<CreateComponentFunc>("CreateComponent");

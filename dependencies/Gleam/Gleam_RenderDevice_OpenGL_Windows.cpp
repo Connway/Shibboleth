@@ -26,7 +26,6 @@ THE SOFTWARE.
 #include "Gleam_RenderTarget_OpenGL.h"
 #include "Gleam_Window_Windows.h"
 
-#include <Gaff_IncludeAssert.h>
 #include <Gaff_Thread.h>
 #include <GL/glew.h>
 #include <GL/wglew.h>
@@ -81,7 +80,7 @@ bool RenderDeviceGL::initThreadData(unsigned int* thread_ids, size_t num_ids)
 
 	// Add main thread data
 	GleamArray< GleamArray<HGLRC> >& thread_data = _thread_contexts[Gaff::Thread::GetCurrentThreadID()];
-	assert(thread_data.empty());
+	GAFF_ASSERT(thread_data.empty());
 	thread_data.resize(_devices.size());
 
 	for (size_t j = 0; j < _devices.size(); ++j) {
@@ -217,7 +216,7 @@ IRenderDevice::AdapterList RenderDeviceGL::getDisplayModes(int)
 
 bool RenderDeviceGL::init(const IWindow& window, unsigned int adapter_id, unsigned int display_id, unsigned int display_mode_id, bool vsync)
 {
-	assert(
+	GAFF_ASSERT(
 		_display_info.size() > adapter_id &&
 		_display_info[adapter_id].output_info.size() > display_id &&
 		_display_info[adapter_id].output_info[display_id].display_mode_list.size() > display_mode_id
@@ -354,19 +353,19 @@ void RenderDeviceGL::destroy(void)
 
 bool RenderDeviceGL::isVsync(unsigned int device, unsigned int output) const
 {
-	assert(_devices.size() > device && _devices[device].vsync.size() > output);
+	GAFF_ASSERT(_devices.size() > device && _devices[device].vsync.size() > output);
 	return _devices[device].vsync[output];
 }
 
 void RenderDeviceGL::setVsync(bool vsync, unsigned int device, unsigned int output)
 {
-	assert(_devices.size() > device && _devices[device].vsync.size() > output);
+	GAFF_ASSERT(_devices.size() > device && _devices[device].vsync.size() > output);
 	_devices[device].vsync.setBit(output, vsync);
 }
 
 void RenderDeviceGL::beginFrame(void)
 {
-	assert(_devices.size() > _curr_device && _devices[_curr_device].outputs.size() > _curr_output);
+	GAFF_ASSERT(_devices.size() > _curr_device && _devices[_curr_device].outputs.size() > _curr_output);
 	glViewport(_active_viewport->x, _active_viewport->y, _active_viewport->width, _active_viewport->height);
 	resetRenderState();
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT); 
@@ -374,7 +373,7 @@ void RenderDeviceGL::beginFrame(void)
 
 void RenderDeviceGL::endFrame(void)
 {
-	assert(_devices.size() > _curr_device && _devices[_curr_device].outputs.size() > _curr_output);
+	GAFF_ASSERT(_devices.size() > _curr_device && _devices[_curr_device].outputs.size() > _curr_output);
 	SwapBuffers(_active_output);
 }
 
@@ -409,31 +408,31 @@ bool RenderDeviceGL::handleFocusGained(const IWindow&)
 
 unsigned int RenderDeviceGL::getViewportWidth(unsigned int device, unsigned int output) const
 {
-	assert(_devices.size() > device && _devices[device].viewports.size() > output);
+	GAFF_ASSERT(_devices.size() > device && _devices[device].viewports.size() > output);
 	return static_cast<unsigned int>(_devices[device].viewports[output].width);
 }
 
 unsigned int RenderDeviceGL::getViewportHeight(unsigned int device, unsigned int output) const
 {
-	assert(_devices.size() > device && _devices[device].viewports.size() > output);
+	GAFF_ASSERT(_devices.size() > device && _devices[device].viewports.size() > output);
 	return static_cast<unsigned int>(_devices[device].viewports[output].height);
 }
 
 unsigned int RenderDeviceGL::getActiveViewportWidth(void)
 {
-	assert(_devices.size() > _curr_device && _devices[_curr_device].viewports.size() > _curr_output);
+	GAFF_ASSERT(_devices.size() > _curr_device && _devices[_curr_device].viewports.size() > _curr_output);
 	return getViewportWidth(_curr_device, _curr_output);
 }
 
 unsigned int RenderDeviceGL::getActiveViewportHeight(void)
 {
-	assert(_devices.size() > _curr_device && _devices[_curr_device].viewports.size() > _curr_output);
+	GAFF_ASSERT(_devices.size() > _curr_device && _devices[_curr_device].viewports.size() > _curr_output);
 	return getViewportHeight(_curr_device, _curr_output);
 }
 
 unsigned int RenderDeviceGL::getNumOutputs(unsigned int device) const
 {
-	assert(_devices.size() > device);
+	GAFF_ASSERT(_devices.size() > device);
 	return static_cast<unsigned int>(_devices[device].outputs.size());
 }
 
@@ -444,19 +443,19 @@ unsigned int RenderDeviceGL::getNumDevices(void) const
 
 IRenderTargetPtr RenderDeviceGL::getOutputRenderTarget(unsigned int device, unsigned int output)
 {
-	assert(_devices.size() > device && _devices[device].rts.size() > output);
+	GAFF_ASSERT(_devices.size() > device && _devices[device].rts.size() > output);
 	return _devices[device].rts[output];
 }
 
 IRenderTargetPtr RenderDeviceGL::getActiveOutputRenderTarget(void)
 {
-	assert(_devices.size() > _curr_device && _devices[_curr_device].rts.size() > _curr_output);
+	GAFF_ASSERT(_devices.size() > _curr_device && _devices[_curr_device].rts.size() > _curr_output);
 	return getOutputRenderTarget(_curr_device, _curr_output);
 }
 
 bool RenderDeviceGL::setCurrentOutput(unsigned int output)
 {
-	assert(_devices[_curr_device].outputs.size() > output);
+	GAFF_ASSERT(_devices[_curr_device].outputs.size() > output);
 
 	if (_curr_output == output) {
 		return true;
@@ -489,7 +488,7 @@ unsigned int RenderDeviceGL::getCurrentOutput(void) const
 // Fix this for proper thread local storage
 bool RenderDeviceGL::setCurrentDevice(unsigned int device)
 {
-	assert(_devices.size() > device && _devices[device].vsync.size() > 0);
+	GAFF_ASSERT(_devices.size() > device && _devices[device].vsync.size() > 0);
 	unsigned int prev_device = _curr_device;
 	unsigned int prev_output = _curr_output;
 	_curr_device = device;

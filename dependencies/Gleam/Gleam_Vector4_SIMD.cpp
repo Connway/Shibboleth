@@ -21,7 +21,7 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Gleam_Vector4_SIMD.h"
-#include <Gaff_IncludeAssert.h>
+#include <Gaff_Assert.h>
 #include <Gaff_Math.h>
 #include <cmath>
 
@@ -85,13 +85,13 @@ const Vector4SIMD& Vector4SIMD::operator=(const Vector4SIMD& rhs)
 
 float Vector4SIMD::operator[](int index) const
 {
-	assert(index > -1 && index < 4);
+	GAFF_ASSERT(index > -1 && index < 4);
 	return SIMDGet(_vec, index);
 }
 
 //float& Vector4SIMD::operator[](int index)
 //{
-//	assert(index > -1 && index < 4);
+//	GAFF_ASSERT(index > -1 && index < 4);
 //	return _vec[index];
 //}
 
@@ -231,7 +231,7 @@ void Vector4SIMD::set(float x, float y, float z, float w)
 
 void Vector4SIMD::set(const float* elements)
 {
-	assert(elements);
+	GAFF_ASSERT(elements);
 
 #ifdef SIMD_SET_ALIGNED
 	_vec = SIMDLoadAligned(elements);
@@ -242,13 +242,13 @@ void Vector4SIMD::set(const float* elements)
 
 void Vector4SIMD::set(float value, unsigned int index)
 {
-	assert(index >= 0 && index < 4);
+	GAFF_ASSERT(index >= 0 && index < 4);
 	SIMDSet(_vec, value, index);
 }
 
 Vector4SIMD Vector4SIMD::get(unsigned int index) const
 {
-	assert(index >= 0 && index < 4);
+	GAFF_ASSERT(index >= 0 && index < 4);
 	return Vector4SIMD(SIMDShuffle<3, 3, 3, 3>(_vec, _vec));
 }
 

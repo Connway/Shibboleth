@@ -26,7 +26,6 @@ THE SOFTWARE.
 #include "Gleam_IRenderDevice_Direct3D.h"
 #include "Gleam_IRenderDevice.h"
 #include "Gleam_Buffer_Direct3D.h"
-#include <Gaff_IncludeAssert.h>
 
 NS_GLEAM
 
@@ -99,7 +98,7 @@ void MeshD3D::setTopologyType(TOPOLOGY_TYPE topology)
 
 void MeshD3D::renderNonIndexed(IRenderDevice& rd, unsigned int vert_count, unsigned int start_location)
 {
-	assert(rd.getRendererType() == RENDERER_DIRECT3D && _vert_data.size() && _indices && _indices->getRendererType() == RENDERER_DIRECT3D);
+	GAFF_ASSERT(rd.getRendererType() == RENDERER_DIRECT3D && _vert_data.size() && _indices && _indices->getRendererType() == RENDERER_DIRECT3D);
 
 	IRenderDeviceD3D& rd3d = reinterpret_cast<IRenderDeviceD3D&>(*(reinterpret_cast<char*>(&rd) + sizeof(IRenderDevice)));
 	ID3D11DeviceContext* context = rd3d.getActiveDeviceContext();
@@ -110,7 +109,7 @@ void MeshD3D::renderNonIndexed(IRenderDevice& rd, unsigned int vert_count, unsig
 
 void MeshD3D::renderInstanced(IRenderDevice& rd, unsigned int count)
 {
-	assert(rd.getRendererType() == RENDERER_DIRECT3D && _vert_data.size() && _indices && _indices->getRendererType() == RENDERER_DIRECT3D);
+	GAFF_ASSERT(rd.getRendererType() == RENDERER_DIRECT3D && _vert_data.size() && _indices && _indices->getRendererType() == RENDERER_DIRECT3D);
 
 	IRenderDeviceD3D& rd3d = reinterpret_cast<IRenderDeviceD3D&>(*(reinterpret_cast<char*>(&rd) + sizeof(IRenderDevice)));
 	ID3D11DeviceContext* context = rd3d.getActiveDeviceContext();
@@ -122,7 +121,7 @@ void MeshD3D::renderInstanced(IRenderDevice& rd, unsigned int count)
 
 void MeshD3D::render(IRenderDevice& rd)
 {
-	assert(rd.getRendererType() == RENDERER_DIRECT3D && _vert_data.size() && _indices && _indices->getRendererType() == RENDERER_DIRECT3D);
+	GAFF_ASSERT(rd.getRendererType() == RENDERER_DIRECT3D && _vert_data.size() && _indices && _indices->getRendererType() == RENDERER_DIRECT3D);
 
 	IRenderDeviceD3D& rd3d = reinterpret_cast<IRenderDeviceD3D&>(*(reinterpret_cast<char*>(&rd) + sizeof(IRenderDevice)));
 	ID3D11DeviceContext* context = rd3d.getActiveDeviceContext();
@@ -147,7 +146,7 @@ void MeshD3D::cacheBuffers(void)
 
 	for (unsigned int i = 0; i < _vert_data.size(); ++i) {
 		temp = _vert_data[i];
-		assert(temp && temp->getRendererType() == RENDERER_DIRECT3D);
+		GAFF_ASSERT(temp && temp->getRendererType() == RENDERER_DIRECT3D);
 		_buffers.push(reinterpret_cast<BufferD3D*>(temp)->getBuffer());
 		_strides.push(temp->getStride());
 		_offsets.push(0);

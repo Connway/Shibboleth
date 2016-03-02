@@ -45,7 +45,7 @@ TextureLoader::~TextureLoader(void)
 
 Gaff::IVirtualDestructor* TextureLoader::load(const char* file_name, uint64_t, HashMap<AString, IFile*>& file_map)
 {
-	assert(file_map.hasElementWithKey(AString(file_name)));
+	GAFF_ASSERT(file_map.hasElementWithKey(AString(file_name)));
 
 	GAFF_SCOPE_EXIT([&]()
 	{
@@ -91,7 +91,7 @@ Gaff::IVirtualDestructor* TextureLoader::load(const char* file_name, uint64_t, H
 		}
 	}
 
-	assert(file_map.hasElementWithKey(AString(json["image_file"].getString())));
+	GAFF_ASSERT(file_map.hasElementWithKey(AString(json["image_file"].getString())));
 	file = file_map[AString(json["image_file"].getString())];
 
 	Gaff::Image image;
@@ -136,7 +136,7 @@ Gaff::IVirtualDestructor* TextureLoader::load(const char* file_name, uint64_t, H
 		_render_mgr.getWindowsWithTagsAny(disp_tags) :
 		_render_mgr.getWindowsWithTags(disp_tags);
 
-	assert(!windows.empty());
+	GAFF_ASSERT(!windows.empty());
 
 	texture_data->textures.resize(rd.getNumDevices());
 

@@ -85,7 +85,7 @@ public:
 	template <class T>
 	void broadcastT(unsigned char channel, T* data, unsigned int packet_flags = PACKET_RELIABLE)
 	{
-		assert(_host);
+		GAFF_ASSERT(_host);
 		broadcast(channel, data, sizeof(T), packet_flags);
 	}
 

@@ -152,7 +152,7 @@ SHIB_ENUM_REF_IMPL_EMBEDDED(Gleam_IShader_Type, Gleam::IShader::SHADER_TYPE)
 #define GRAPHICS_FUNCTION_IMPL(Class, Func) \
 	Gleam::I##Class* RenderManager::create##Class(void) \
 	{ \
-		assert(_graphics_functions.Func); \
+		GAFF_ASSERT(_graphics_functions.Func); \
 		return _graphics_functions.Func(); \
 	}
 
@@ -246,7 +246,7 @@ bool RenderManager::init(const char* module)
 
 Array<RenderManager::RenderDevicePtr>& RenderManager::getDeferredRenderDevices(unsigned int thread_id)
 {
-	assert(_deferred_devices.hasElementWithKey(thread_id));
+	GAFF_ASSERT(_deferred_devices.hasElementWithKey(thread_id));
 	return _deferred_devices[thread_id];
 }
 
@@ -267,7 +267,7 @@ bool RenderManager::createWindow(
 	unsigned int adapter_id, unsigned int display_id, bool vsync,
 	unsigned short tags)
 {
-	assert(_render_device && _graphics_functions.create_window);
+	GAFF_ASSERT(_render_device && _graphics_functions.create_window);
 
 	Gleam::IWindow* window = _graphics_functions.create_window();
 	LogManager::FileLockPair& log = _app.getGameLogFile();
@@ -406,7 +406,7 @@ size_t RenderManager::getNumWindows(void) const
 
 const RenderManager::WindowData& RenderManager::getWindowData(unsigned int window) const
 {
-	assert(window < _windows.size());
+	GAFF_ASSERT(window < _windows.size());
 	return _windows[window];
 }
 
@@ -417,7 +417,7 @@ const Array<RenderManager::WindowData>& RenderManager::getWindowData(void) const
 
 const char* RenderManager::getShaderExtension(void) const
 {
-	assert(_graphics_functions.get_shader_extension);
+	GAFF_ASSERT(_graphics_functions.get_shader_extension);
 	return _graphics_functions.get_shader_extension();
 }
 

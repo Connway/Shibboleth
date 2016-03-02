@@ -22,8 +22,8 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Gaff_IncludeAssert.h"
 #include "Gaff_Predicates.h"
+#include "Gaff_Assert.h"
 
 NS_GAFF
 

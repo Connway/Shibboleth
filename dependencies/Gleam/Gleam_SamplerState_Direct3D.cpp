@@ -26,7 +26,6 @@ THE SOFTWARE.
 #include "Gleam_IRenderDevice_Direct3D.h"
 #include "Gleam_IRenderDevice.h"
 #include "Gleam_IncludeD3D11.h"
-#include <Gaff_IncludeAssert.h>
 
 NS_GLEAM
 
@@ -61,7 +60,7 @@ bool SamplerStateD3D::init(
 	float border_r, float border_g, float border_b, float border_a
 	)
 {
-	assert(rd.getRendererType() == RENDERER_DIRECT3D && max_anisotropy <= 16);
+	GAFF_ASSERT(rd.getRendererType() == RENDERER_DIRECT3D && max_anisotropy <= 16);
 
 	D3D11_SAMPLER_DESC desc;
 	desc.AddressU = static_cast<D3D11_TEXTURE_ADDRESS_MODE>(wrap_u);

@@ -34,7 +34,7 @@ using IEnumReflectionDefinition = Gaff::IEnumReflectionDefinition<ProxyAllocator
 template <class T>
 EnumReflectionDefinition<T>& GetEnumRefDef(void)
 {
-	assert(0 && "GetEnumRefDef() for type not overloaded.");
+	GAFF_ASSERT_MSG(false, "GetEnumRefDef() for type not overloaded.");
 	static EnumReflectionDefinition<T> never_used;
 	return never_used;
 }

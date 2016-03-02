@@ -99,14 +99,14 @@ bool StaticArray<T, array_size>::operator!=(const StaticArray<T, array_size>& rh
 template <class T, size_t array_size>
 const T& StaticArray<T, array_size>::operator[](size_t index) const
 {
-	assert(index < array_size);
+	GAFF_ASSERT(index < array_size);
 	return _array[index];
 }
 
 template <class T, size_t array_size>
 T& StaticArray<T, array_size>::operator[](size_t index)
 {
-	assert(index < array_size);
+	GAFF_ASSERT(index < array_size);
 	return _array[index];
 }
 
@@ -185,9 +185,9 @@ STATIC_ARRAY_ITERATOR StaticArray<T, array_size>::linearSearch(
 	const T2& data,
 	const Pred& pred) const
 {
-	assert(range_begin >= _array && range_begin <= _array + array_size);
-	assert(range_end >= _array && range_end <= _array + array_size);
-	assert(range_begin <= range_end);
+	GAFF_ASSERT(range_begin >= _array && range_begin <= _array + array_size);
+	GAFF_ASSERT(range_end >= _array && range_end <= _array + array_size);
+	GAFF_ASSERT(range_begin <= range_end);
 
 	size_t index1 = static_cast<size_t>(range_begin - _array);
 	size_t index2 = static_cast<size_t>(range_end - _array);
@@ -200,7 +200,7 @@ template <class T, size_t array_size>
 template <class T2, class Pred>
 size_t StaticArray<T, array_size>::linearSearch(size_t range_begin, size_t range_end, const T2& data, const Pred& pred) const
 {
-	assert(range_begin <= range_end && range_end <= array_size);
+	GAFF_ASSERT(range_begin <= range_end && range_end <= array_size);
 
 	for (size_t i = range_begin; i < range_end; ++i) {
 		if (pred(_array[i], data)) {
@@ -226,9 +226,9 @@ STATIC_ARRAY_ITERATOR StaticArray<T, array_size>::binarySearch(
 	const T2& data,
 	const Pred& pred) const
 {
-	assert(range_begin >= _array && range_begin <= _array + array_size);
-	assert(range_end >= _array && range_end <= _array + array_size);
-	assert(range_begin <= range_end);
+	GAFF_ASSERT(range_begin >= _array && range_begin <= _array + array_size);
+	GAFF_ASSERT(range_end >= _array && range_end <= _array + array_size);
+	GAFF_ASSERT(range_begin <= range_end);
 
 	size_t index1 = static_cast<size_t>(range_begin - _array);
 	size_t index2 = static_cast<size_t>(range_end - _array);
@@ -241,7 +241,7 @@ template <class T, size_t array_size>
 template <class T2, class Pred>
 size_t StaticArray<T, array_size>::binarySearch(size_t range_begin, size_t range_end, const T2& data, const Pred& pred) const
 {
-	assert(range_end <= array_size && range_begin <= range_end);
+	GAFF_ASSERT(range_end <= array_size && range_begin <= range_end);
 
 	size_t mid = 0;
 
