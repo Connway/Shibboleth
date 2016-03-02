@@ -23,24 +23,23 @@ THE SOFTWARE.
 #if defined(_WIN32) || defined(_WIN64)
 
 #include "Gleam_ShaderInclude.h"
-#include "Gaff_IncludeAssert.h"
-#include "Gleam_Global.h"
+//#include "Gleam_Global.h"
 //#include "Gaff_File.h"
 
 NS_GLEAM
 
 ShaderInclude ShaderInclude::gInclude;
 
-HRESULT __stdcall ShaderInclude::Open(D3D_INCLUDE_TYPE IncludeType, LPCSTR pFileName, LPCVOID pParentData, LPCVOID *ppData, UINT *pBytes)
+HRESULT __stdcall ShaderInclude::Open(D3D_INCLUDE_TYPE /*IncludeType*/, LPCSTR /*pFileName*/, LPCVOID /*pParentData*/, LPCVOID* /*ppData*/, UINT* /*pBytes*/)
 {
-	assert(IncludeType == D3D_INCLUDE_LOCAL || IncludeType == D3D_INCLUDE_SYSTEM);
+	//assert(IncludeType == D3D_INCLUDE_LOCAL || IncludeType == D3D_INCLUDE_SYSTEM);
 
 	return S_OK;
 }
 
-HRESULT __stdcall ShaderInclude::Close(LPCVOID pData)
+HRESULT __stdcall ShaderInclude::Close(LPCVOID /*pData*/)
 {
-	GleamFree((void*)pData);
+	//GleamFree((void*)pData);
 	return S_OK;
 }
 

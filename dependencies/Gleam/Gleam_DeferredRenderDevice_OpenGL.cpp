@@ -72,7 +72,7 @@ bool DeferredRenderDeviceGL::finishCommandList(ICommandList* command_list)
 	return true;
 }
 
-void DeferredRenderDeviceGL::renderNoVertexInput(unsigned int vert_count)
+void DeferredRenderDeviceGL::renderNoVertexInput(unsigned int /*vert_count*/)
 {
 	// TODO: IMPLEMENT ME!
 }
@@ -146,8 +146,9 @@ void DeferredRenderDeviceGL::setRasterState(const RasterStateGL* raster_state)
 
 		Gaff::CachedFunction<void, GLfloat, GLfloat, GLfloat> poc_cache(
 			poc_func,
-			raster_settings.depth_bias,
-			raster_settings.slope_scale_depth_bias, raster_settings.depth_bias_clamp
+			static_cast<GLfloat>(raster_settings.depth_bias),
+			raster_settings.slope_scale_depth_bias,
+			raster_settings.depth_bias_clamp
 		);
 
 		_command_list.addCommand(poc_cache);

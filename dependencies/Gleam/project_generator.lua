@@ -9,6 +9,8 @@ project "Gleam"
 	kind "StaticLib"
 	language "C++"
 
+	flags { "FatalWarnings" }
+
 	filter { "options:simd" }
 		defines { "USE_SIMD" }
 

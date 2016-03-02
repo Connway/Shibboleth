@@ -110,7 +110,7 @@ bool RenderDeviceGLBase::finishCommandList(ICommandList*)
 	return false;
 }
 
-void RenderDeviceGLBase::renderNoVertexInput(unsigned int vert_count)
+void RenderDeviceGLBase::renderNoVertexInput(unsigned int /*vert_count*/)
 {
 	// TODO: IMPLEMENT ME!
 }
@@ -161,7 +161,7 @@ void RenderDeviceGLBase::setRasterState(const RasterStateGL* raster_state)
 		const IRasterState::RasterStateSettings& raster_settings = raster_state->getRasterSettings();
 
 		glEnable(GL_POLYGON_OFFSET_FILL);
-		glPolygonOffsetClampEXT(raster_settings.depth_bias, raster_settings.slope_scale_depth_bias, raster_settings.depth_bias_clamp);
+		glPolygonOffsetClampEXT(static_cast<GLfloat>(raster_settings.depth_bias), raster_settings.slope_scale_depth_bias, raster_settings.depth_bias_clamp);
 
 		glPolygonMode(GL_FRONT_AND_BACK, (raster_settings.wireframe) ? GL_LINE : GL_FILL);
 

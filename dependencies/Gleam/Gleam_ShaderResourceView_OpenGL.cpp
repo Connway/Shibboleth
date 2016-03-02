@@ -51,7 +51,7 @@ bool ShaderResourceViewGL::init(IRenderDevice&, const IBuffer* buffer)
 	assert(buffer);
 	const BufferGL* buf = reinterpret_cast<const BufferGL*>(buffer);
 	_resource = buf->getBuffer();
-	_target = -1; // TODO: Fix this.
+	_target = static_cast<unsigned int>(-1); // TODO: Fix this.
 	_view_type = VIEW_BUFFER;
 	return true;
 }
