@@ -25,7 +25,6 @@ THE SOFTWARE.
 #include "Gleam_Texture_Direct3D.h"
 #include "Gleam_IRenderDevice_Direct3D.h"
 #include "Gleam_IRenderDevice.h"
-#include <Gaff_IncludeAssert.h>
 #include <cmath>
 
 NS_GLEAM
@@ -230,8 +229,8 @@ void TextureD3D::destroy(void)
 
 bool TextureD3D::init3D(IRenderDevice& rd, int width, int height, int depth, FORMAT format, int mip_levels, const void* buffer)
 {
-	assert(width > 0 && height > 0 && depth > 0 && mip_levels > 0);
-	assert(rd.getRendererType() == RENDERER_DIRECT3D);
+	GAFF_ASSERT(width > 0 && height > 0 && depth > 0 && mip_levels > 0);
+	GAFF_ASSERT(rd.getRendererType() == RENDERER_DIRECT3D);
 
 	IRenderDeviceD3D& rd3d = reinterpret_cast<IRenderDeviceD3D&>(*(reinterpret_cast<char*>(&rd) + sizeof(IRenderDevice)));
 	ID3D11Device* device = rd3d.getActiveDevice();
@@ -275,8 +274,8 @@ bool TextureD3D::init3D(IRenderDevice& rd, int width, int height, int depth, FOR
 
 bool TextureD3D::init2D(IRenderDevice& rd, int width, int height, FORMAT format, int mip_levels, const void* buffer)
 {
-	assert(width > 0 && height > 0 && mip_levels > 0);
-	assert(rd.getRendererType() == RENDERER_DIRECT3D);
+	GAFF_ASSERT(width > 0 && height > 0 && mip_levels > 0);
+	GAFF_ASSERT(rd.getRendererType() == RENDERER_DIRECT3D);
 
 	IRenderDeviceD3D& rd3d = reinterpret_cast<IRenderDeviceD3D&>(*(reinterpret_cast<char*>(&rd) + sizeof(IRenderDevice)));
 	ID3D11Device* device = rd3d.getActiveDevice();
@@ -322,8 +321,8 @@ bool TextureD3D::init2D(IRenderDevice& rd, int width, int height, FORMAT format,
 
 bool TextureD3D::init1D(IRenderDevice& rd, int width, FORMAT format, int mip_levels, const void* buffer)
 {
-	assert(width > 0 && mip_levels > 0);
-	assert(rd.getRendererType() == RENDERER_DIRECT3D);
+	GAFF_ASSERT(width > 0 && mip_levels > 0);
+	GAFF_ASSERT(rd.getRendererType() == RENDERER_DIRECT3D);
 
 	IRenderDeviceD3D& rd3d = reinterpret_cast<IRenderDeviceD3D&>(*(reinterpret_cast<char*>(&rd) + sizeof(IRenderDevice)));
 	ID3D11Device* device = rd3d.getActiveDevice();
@@ -366,8 +365,8 @@ bool TextureD3D::init1D(IRenderDevice& rd, int width, FORMAT format, int mip_lev
 
 bool TextureD3D::initCubemap(IRenderDevice& rd, int width, int height, FORMAT format, int mip_levels, const void* buffer)
 {
-	assert(width > 0 && height > 0 && mip_levels > 0);
-	assert(rd.getRendererType() == RENDERER_DIRECT3D);
+	GAFF_ASSERT(width > 0 && height > 0 && mip_levels > 0);
+	GAFF_ASSERT(rd.getRendererType() == RENDERER_DIRECT3D);
 
 	IRenderDeviceD3D& rd3d = reinterpret_cast<IRenderDeviceD3D&>(*(reinterpret_cast<char*>(&rd) + sizeof(IRenderDevice)));
 	ID3D11Device* device = rd3d.getActiveDevice();
@@ -413,8 +412,8 @@ bool TextureD3D::initCubemap(IRenderDevice& rd, int width, int height, FORMAT fo
 
 bool TextureD3D::initDepthStencil(IRenderDevice& rd, int width, int height, FORMAT format)
 {
-	assert(width > 0 && height > 0);
-	assert(rd.getRendererType() == RENDERER_DIRECT3D);
+	GAFF_ASSERT(width > 0 && height > 0);
+	GAFF_ASSERT(rd.getRendererType() == RENDERER_DIRECT3D);
 
 	IRenderDeviceD3D& rd3d = reinterpret_cast<IRenderDeviceD3D&>(*(reinterpret_cast<char*>(&rd) + sizeof(IRenderDevice)));
 	ID3D11Device* device = rd3d.getActiveDevice();
@@ -452,7 +451,7 @@ bool TextureD3D::initDepthStencil(IRenderDevice& rd, int width, int height, FORM
 			break;
 	}
 
-	assert(_type != TYPE_SIZE);
+	GAFF_ASSERT(_type != TYPE_SIZE);
 
 	D3D11_TEXTURE2D_DESC depth_stencil_desc;
 	depth_stencil_desc.Width = static_cast<UINT>(width);

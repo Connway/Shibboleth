@@ -23,7 +23,7 @@ THE SOFTWARE.
 #if defined(__linux__) || defined(__APPLE__)
 
 #include "Gaff_Utils.h"
-#include "Gaff_IncludeAssert.h"
+#include "Gaff_Assert.h"
 #include <sys/stat.h>
 #include <unistd.h>
 #include <errno.h>
@@ -40,13 +40,13 @@ unsigned long GetNumberOfCores(void)
 
 bool CreateDir(const char* dirname, unsigned short mode)
 {
-	assert(dirname);
+	GAFF_ASSERT(dirname);
 	return mkdir(dirname, mode) == 0 || errno == EEXIST;
 }
 
 void DebugPrintf(const char* format_string, ...)
 {
-	assert(format_string);
+	GAFF_ASSERT(format_string);
 
 	va_list vl;
 	va_start(vl, format_string);

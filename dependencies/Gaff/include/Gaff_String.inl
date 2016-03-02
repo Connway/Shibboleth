@@ -215,14 +215,14 @@ bool String<T, Allocator>::operator>(const T* rhs) const
 template <class T, class Allocator>
 const T& String<T, Allocator>::operator[](size_t index) const
 {
-	assert(index < _size);
+	GAFF_ASSERT(index < _size);
 	return getBuffer()[index];
 }
 
 template <class T, class Allocator>
 T& String<T, Allocator>::operator[](size_t index)
 {
-	assert(index < _size);
+	GAFF_ASSERT(index < _size);
 	return getBuffer()[index];
 }
 
@@ -355,14 +355,14 @@ String<T, Allocator> String<T, Allocator>::getExtension(T delimiting_character) 
 template <class T, class Allocator>
 String<T, Allocator> String<T, Allocator>::substring(size_t begin, size_t end) const
 {
-	assert(end > begin && begin < _size && end < _size);
+	GAFF_ASSERT(end > begin && begin < _size && end < _size);
 	return String<T, Allocator>(getBuffer() + begin, end - begin);
 }
 
 template <class T, class Allocator>
 String<T, Allocator> String<T, Allocator>::substring(size_t begin) const
 {
-	assert(begin < _size);
+	GAFF_ASSERT(begin < _size);
 	return String<T, Allocator>(getBuffer() + begin, _size - begin);
 }
 
@@ -452,7 +452,7 @@ void String<T, Allocator>::erase(size_t begin_index, size_t end_index)
 template <class T, class Allocator>
 void String<T, Allocator>::erase(size_t index)
 {
-	assert(index < _size);
+	GAFF_ASSERT(index < _size);
 	fastErase(index, index + 1);
 	trim();
 }
@@ -467,7 +467,7 @@ void String<T, Allocator>::erase(T character)
 template <class T, class Allocator>
 void String<T, Allocator>::fastErase(size_t begin_index, size_t end_index)
 {
-	assert(begin_index < end_index && begin_index < _size && end_index < _size);
+	GAFF_ASSERT(begin_index < end_index && begin_index < _size && end_index < _size);
 
 	size_t new_size = _size - (end_index - begin_index);
 	T* old_string = _string_ptr;

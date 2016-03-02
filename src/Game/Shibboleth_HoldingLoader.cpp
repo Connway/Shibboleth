@@ -41,7 +41,7 @@ HoldingLoader::~HoldingLoader(void)
 Gaff::IVirtualDestructor* HoldingLoader::load(const char* file_name, uint64_t user_data, HashMap<AString, IFile*>& file_map)
 {
 	AString fname(file_name);
-	assert(file_map.hasElementWithKey(fname));
+	GAFF_ASSERT(file_map.hasElementWithKey(fname));
 
 	IFile* file = file_map[fname];
 

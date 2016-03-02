@@ -22,7 +22,7 @@ THE SOFTWARE.
 
 #include "Gleam_Matrix4x4_CPU.h"
 #include "Gleam_Vector4_CPU.h"
-#include <Gaff_IncludeAssert.h>
+#include <Gaff_Assert.h>
 #include <cstring>
 #include <cfloat>
 #include <cmath>
@@ -185,7 +185,7 @@ Matrix4x4CPU Matrix4x4CPU::operator-(const Matrix4x4CPU& rhs) const
 
 const Matrix4x4CPU& Matrix4x4CPU::operator/=(float rhs)
 {
-	assert(rhs != 0);
+	GAFF_ASSERT(rhs != 0.0f);
 	_a[0] /= rhs;
 	_a[1] /= rhs;
 	_a[2] /= rhs;
@@ -207,7 +207,7 @@ const Matrix4x4CPU& Matrix4x4CPU::operator/=(float rhs)
 
 Matrix4x4CPU Matrix4x4CPU::operator/(float rhs) const
 {
-	assert(rhs != 0);
+	GAFF_ASSERT(rhs != 0.0f);
 	Matrix4x4CPU temp(*this);
 	temp /= rhs;
 	return temp;
@@ -252,13 +252,13 @@ Vector4CPU Matrix4x4CPU::operator*(const Vector4CPU& rhs) const
 
 const float* Matrix4x4CPU::operator[](int index) const
 {
-	assert(index > -1 && index < 4);
+	GAFF_ASSERT(index > -1 && index < 4);
 	return _m[index];
 }
 
 //float* Matrix4x4CPU::operator[](int index)
 //{
-//	assert(index > -1 && index < 4);
+//	GAFF_ASSERT(index > -1 && index < 4);
 //	return _m[index];
 //}
 
@@ -274,15 +274,15 @@ const float* Matrix4x4CPU::getBuffer(void) const
 
 float Matrix4x4CPU::at(int column, int row) const
 {
-	assert(column > -1 && column < 4);
-	assert(row >-1 && row < 4);
+	GAFF_ASSERT(column > -1 && column < 4);
+	GAFF_ASSERT(row >-1 && row < 4);
 	return _m[column][row];
 }
 
 //float& Matrix4x4CPU::at(int column, int row)
 //{
-//	assert(column > -1 && column < 4);
-//	assert(row >-1 && row < 4);
+//	GAFF_ASSERT(column > -1 && column < 4);
+//	GAFF_ASSERT(row >-1 && row < 4);
 //
 //	return _m[column][row];
 //}
@@ -305,14 +305,14 @@ void Matrix4x4CPU::set(const float* elements)
 
 void Matrix4x4CPU::set(int column, int row, float value)
 {
-	assert(column > -1 && column < 4);
-	assert(row >-1 && row < 4);
+	GAFF_ASSERT(column > -1 && column < 4);
+	GAFF_ASSERT(row >-1 && row < 4);
 	_m[column][row] = value;
 }
 
 Vector4CPU Matrix4x4CPU::getColumn(int column) const
 {
-	assert(column > -1 && column < 4);
+	GAFF_ASSERT(column > -1 && column < 4);
 	return Vector4CPU(_m[column]);
 }
 
@@ -525,7 +525,7 @@ void Matrix4x4CPU::setRotation(float radians, const Vector4CPU& axis)
 
 void Matrix4x4CPU::setRotation(float radians, float x, float y, float z)
 {
-	assert(x != 0.0f && y != 0.0f && z != 0.0f);
+	GAFF_ASSERT(x != 0.0f && y != 0.0f && z != 0.0f);
 	float inv_length = 1.0f / sqrtf(x*x + y*y + z*z);
 	x *= inv_length;
 	y *= inv_length;

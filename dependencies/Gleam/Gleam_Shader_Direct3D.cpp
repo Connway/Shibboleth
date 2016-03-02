@@ -69,25 +69,25 @@ ShaderD3D::~ShaderD3D(void)
 
 bool ShaderD3D::initSource(IRenderDevice& rd, const char* shader_source, size_t source_size, SHADER_TYPE shader_type)
 {
-	assert(shader_type < SHADER_TYPE_SIZE);
+	GAFF_ASSERT(shader_type < SHADER_TYPE_SIZE);
 	return (this->*source_init_funcs[shader_type])(rd, shader_source, source_size);
 }
 
 bool ShaderD3D::initSource(IRenderDevice& rd, const char* shader_source, SHADER_TYPE shader_type)
 {
-	assert(shader_type < SHADER_TYPE_SIZE);
+	GAFF_ASSERT(shader_type < SHADER_TYPE_SIZE);
 	return (this->*source_init_funcs[shader_type])(rd, shader_source, strlen(shader_source));
 }
 
 bool ShaderD3D::init(IRenderDevice& rd, const char* file_path, SHADER_TYPE shader_type)
 {
-	assert(shader_type < SHADER_TYPE_SIZE);
+	GAFF_ASSERT(shader_type < SHADER_TYPE_SIZE);
 	return (this->*init_funcs[shader_type])(rd, file_path);
 }
 
 bool ShaderD3D::initVertex(IRenderDevice& rd, const char* file_path)
 {
-	assert(rd.getRendererType() == RENDERER_DIRECT3D && file_path);
+	GAFF_ASSERT(rd.getRendererType() == RENDERER_DIRECT3D && file_path);
 
 	char* shader_src = nullptr;
 	SIZE_T shader_size = 0;
@@ -116,7 +116,7 @@ bool ShaderD3D::initVertex(IRenderDevice& rd, const char* file_path)
 
 bool ShaderD3D::initPixel(IRenderDevice& rd, const char* file_path)
 {
-	assert(rd.getRendererType() == RENDERER_DIRECT3D && file_path);
+	GAFF_ASSERT(rd.getRendererType() == RENDERER_DIRECT3D && file_path);
 
 	char* shader_src = nullptr;
 	SIZE_T shader_size = 0;
@@ -145,7 +145,7 @@ bool ShaderD3D::initPixel(IRenderDevice& rd, const char* file_path)
 
 bool ShaderD3D::initDomain(IRenderDevice& rd, const char* file_path)
 {
-	assert(rd.getRendererType() == RENDERER_DIRECT3D && file_path);
+	GAFF_ASSERT(rd.getRendererType() == RENDERER_DIRECT3D && file_path);
 
 	char* shader_src = nullptr;
 	SIZE_T shader_size = 0;
@@ -174,7 +174,7 @@ bool ShaderD3D::initDomain(IRenderDevice& rd, const char* file_path)
 
 bool ShaderD3D::initGeometry(IRenderDevice& rd, const char* file_path)
 {
-	assert(rd.getRendererType() == RENDERER_DIRECT3D && file_path);
+	GAFF_ASSERT(rd.getRendererType() == RENDERER_DIRECT3D && file_path);
 
 	char* shader_src = nullptr;
 	SIZE_T shader_size = 0;
@@ -203,7 +203,7 @@ bool ShaderD3D::initGeometry(IRenderDevice& rd, const char* file_path)
 
 bool ShaderD3D::initHull(IRenderDevice& rd, const char* file_path)
 {
-	assert(rd.getRendererType() == RENDERER_DIRECT3D && file_path);
+	GAFF_ASSERT(rd.getRendererType() == RENDERER_DIRECT3D && file_path);
 
 	char* shader_src = nullptr;
 	SIZE_T shader_size = 0;
@@ -232,7 +232,7 @@ bool ShaderD3D::initHull(IRenderDevice& rd, const char* file_path)
 
 bool ShaderD3D::initCompute(IRenderDevice& rd, const char* file_path)
 {
-	assert(rd.getRendererType() == RENDERER_DIRECT3D && file_path);
+	GAFF_ASSERT(rd.getRendererType() == RENDERER_DIRECT3D && file_path);
 
 	char* shader_src = nullptr;
 	SIZE_T shader_size = 0;
@@ -260,7 +260,7 @@ bool ShaderD3D::initCompute(IRenderDevice& rd, const char* file_path)
 
 bool ShaderD3D::initVertexSource(IRenderDevice& rd, const char* source, size_t source_size)
 {
-	assert(rd.getRendererType() == RENDERER_DIRECT3D && source);
+	GAFF_ASSERT(rd.getRendererType() == RENDERER_DIRECT3D && source);
 
 	_shader_buffer = compileShader(source, source_size, "VertexMain", "vs_5_0");
 
@@ -280,7 +280,7 @@ bool ShaderD3D::initVertexSource(IRenderDevice& rd, const char* source, size_t s
 
 bool ShaderD3D::initPixelSource(IRenderDevice& rd, const char* source, size_t source_size)
 {
-	assert(rd.getRendererType() == RENDERER_DIRECT3D && source);
+	GAFF_ASSERT(rd.getRendererType() == RENDERER_DIRECT3D && source);
 
 	_shader_buffer = compileShader(source, source_size, "PixelMain", "ps_5_0");
 
@@ -300,7 +300,7 @@ bool ShaderD3D::initPixelSource(IRenderDevice& rd, const char* source, size_t so
 
 bool ShaderD3D::initDomainSource(IRenderDevice& rd, const char* source, size_t source_size)
 {
-	assert(rd.getRendererType() == RENDERER_DIRECT3D && source);
+	GAFF_ASSERT(rd.getRendererType() == RENDERER_DIRECT3D && source);
 
 	_shader_buffer = compileShader(source, source_size, "DomainMain", "ds_5_0");
 
@@ -320,7 +320,7 @@ bool ShaderD3D::initDomainSource(IRenderDevice& rd, const char* source, size_t s
 
 bool ShaderD3D::initGeometrySource(IRenderDevice& rd, const char* source, size_t source_size)
 {
-	assert(rd.getRendererType() == RENDERER_DIRECT3D && source);
+	GAFF_ASSERT(rd.getRendererType() == RENDERER_DIRECT3D && source);
 
 	_shader_buffer = compileShader(source, source_size, "GeometryMain", "gs_5_0");
 
@@ -340,7 +340,7 @@ bool ShaderD3D::initGeometrySource(IRenderDevice& rd, const char* source, size_t
 
 bool ShaderD3D::initHullSource(IRenderDevice& rd, const char* source, size_t source_size)
 {
-	assert(rd.getRendererType() == RENDERER_DIRECT3D && source);
+	GAFF_ASSERT(rd.getRendererType() == RENDERER_DIRECT3D && source);
 
 	_shader_buffer = compileShader(source, source_size, "HullMain", "hs_5_0");
 
@@ -360,7 +360,7 @@ bool ShaderD3D::initHullSource(IRenderDevice& rd, const char* source, size_t sou
 
 bool ShaderD3D::initComputeSource(IRenderDevice& rd, const char* source, size_t source_size)
 {
-	assert(rd.getRendererType() == RENDERER_DIRECT3D && source);
+	GAFF_ASSERT(rd.getRendererType() == RENDERER_DIRECT3D && source);
 
 	_shader_buffer = compileShader(source, source_size, "ComputeMain", "cs_5_0");
 
@@ -460,7 +460,7 @@ ID3DBlob* ShaderD3D::getByteCodeBuffer(void) const
 
 bool ShaderD3D::loadFile(const char* file_path, char*& shader_src, SIZE_T& shader_size) const
 {
-	assert(file_path);
+	GAFF_ASSERT(file_path);
 
 	Gaff::File shader(file_path, Gaff::File::READ_BINARY);
 
@@ -498,7 +498,7 @@ bool ShaderD3D::loadFile(const char* file_path, char*& shader_src, SIZE_T& shade
 
 ID3DBlob* ShaderD3D::compileShader(const char* shader_src, SIZE_T shader_size, /*macro, include,*/ LPCSTR entry_point, LPCSTR target)
 {
-	assert(shader_src && entry_point && target);
+	GAFF_ASSERT(shader_src && entry_point && target);
 
 	if (shader_size == SIZE_T_FAIL) {
 		shader_size = strlen(shader_src);

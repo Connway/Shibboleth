@@ -61,7 +61,7 @@ static void LogJob(void* data)
 
 void LogMessage(LogManager::FileLockPair& flp, unsigned int job_pool, LogManager::LOG_TYPE log_type, const char* format, ...)
 {
-	assert(gApp && format && strlen(format));
+	GAFF_ASSERT(gApp && format && strlen(format));
 
 	char temp[512] = { 0 };
 
@@ -96,7 +96,7 @@ void SetApp(IApp& app)
 
 IApp& GetApp(void)
 {
-	assert(gApp);
+	GAFF_ASSERT(gApp);
 	return *gApp;
 }
 

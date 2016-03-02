@@ -56,7 +56,7 @@ OtterUIRenderer::~OtterUIRenderer(void)
 
 bool OtterUIRenderer::init(const char* default_shader)
 {
-	assert(default_shader && strlen(default_shader));
+	GAFF_ASSERT(default_shader && strlen(default_shader));
 
 	// request default shader program
 	_programs = _resource_manager.requestResource(default_shader);
@@ -234,7 +234,7 @@ void OtterUIRenderer::setShaderProgram(const ResWrap<ProgramData>& programs)
 
 void OtterUIRenderer::OnLoadTexture(sint32 textureID, const char* szPath)
 {
-	assert(!_resource_map.hasElementWithKey(textureID));
+	GAFF_ASSERT(!_resource_map.hasElementWithKey(textureID));
 
 	// Apply some fixup to the file extension. Make it read *.texture instead.
 	ResWrap<TextureData> tex_res = _resource_manager.requestResource(szPath);
@@ -293,7 +293,7 @@ void OtterUIRenderer::OnCommitVertexBuffer(const Otter::GUIVertex* pVertices, ui
 
 void OtterUIRenderer::OnDrawBatch(const Otter::DrawBatch& batch)
 {
-	assert(_programs);
+	GAFF_ASSERT(_programs);
 
 	if (batch.mPrimitiveType == Otter::kPrim_TriangleFan) {
 		// not supported, report error
@@ -306,7 +306,7 @@ void OtterUIRenderer::OnDrawBatch(const Otter::DrawBatch& batch)
 	ProgramBuffersPtr& program_buffers = _program_buffers[curr_device];
 	ResourceData& res_data = _resource_map[batch.mTextureID];
 	ProgramPtr& program = _programs->programs[curr_device];
-	assert(res_data.resource && !res_data.resource_views.empty());
+	GAFF_ASSERT(res_data.resource && !res_data.resource_views.empty());
 
 	DeviceData& device_data = _device_data[curr_device];
 	OutputData& output_data = device_data.output_data[_render_device.getCurrentOutput()];

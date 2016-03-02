@@ -22,7 +22,7 @@ THE SOFTWARE.
 
 #include "Gleam_Frustum_SIMD.h"
 //#include "Gleam_Matrix4x4_SIMD.h"
-#include <Gaff_IncludeAssert.h>
+#include <Gaff_Assert.h>
 #include <cmath>
 
 NS_GLEAM
@@ -64,7 +64,7 @@ const FrustumSIMD& FrustumSIMD::operator=(const FrustumSIMD& rhs)
 
 const PlaneSIMD& FrustumSIMD::getPlane(unsigned int index) const
 {
-	assert(index >= 0 && index < 6);
+	GAFF_ASSERT(index >= 0 && index < 6);
 	return _planes[index];
 }
 

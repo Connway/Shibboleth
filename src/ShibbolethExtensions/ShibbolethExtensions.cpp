@@ -68,7 +68,7 @@ extern "C" Q_DECL_EXPORT bool LoadInstanceData(const QString&, const QJsonObject
 
 extern "C" Q_DECL_EXPORT QWidget* CreateInstance(const QString& widget_name, QDockWidget* dock_window)
 {
-	Q_ASSERT(create_funcs.contains(widget_name));
+	Q_GAFF_ASSERT(create_funcs.contains(widget_name));
 	return create_funcs[widget_name](*gWindow);
 }
 

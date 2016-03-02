@@ -28,7 +28,6 @@ THE SOFTWARE.
 #include "Gleam_Buffer_Direct3D.h"
 #include "Gleam_IRenderDevice.h"
 #include "Gleam_IncludeD3D11.h"
-#include <Gaff_IncludeAssert.h>
 
 NS_GLEAM
 
@@ -56,7 +55,7 @@ bool ShaderResourceViewD3D::init(IRenderDevice& rd, const ITexture* texture)
 {
 	IRenderDeviceD3D& rd3d = reinterpret_cast<IRenderDeviceD3D&>(*(reinterpret_cast<char*>(&rd) + sizeof(IRenderDevice)));
 	ID3D11Device* device = rd3d.getActiveDevice();
-	assert(texture);
+	GAFF_ASSERT(texture);
 
 	_view_type = VIEW_TEXTURE;
 
@@ -77,7 +76,7 @@ bool ShaderResourceViewD3D::init(IRenderDevice& rd, const IBuffer* buffer)
 {
 	IRenderDeviceD3D& rd3d = reinterpret_cast<IRenderDeviceD3D&>(*(reinterpret_cast<char*>(&rd) + sizeof(IRenderDevice)));
 	ID3D11Device* device = rd3d.getActiveDevice();
-	assert(buffer);
+	GAFF_ASSERT(buffer);
 
 	_view_type = VIEW_TEXTURE;
 

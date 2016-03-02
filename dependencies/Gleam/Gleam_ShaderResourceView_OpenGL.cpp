@@ -23,7 +23,7 @@ THE SOFTWARE.
 #include "Gleam_ShaderResourceView_OpenGL.h"
 #include "Gleam_Texture_OpenGL.h"
 #include "Gleam_Buffer_OpenGL.h"
-#include <Gaff_IncludeAssert.h>
+#include <Gaff_Assert.h>
 
 NS_GLEAM
 
@@ -38,7 +38,7 @@ ShaderResourceViewGL::~ShaderResourceViewGL(void)
 
 bool ShaderResourceViewGL::init(IRenderDevice&, const ITexture* texture)
 {
-	assert(texture);
+	GAFF_ASSERT(texture);
 	const TextureGL* tex = reinterpret_cast<const TextureGL*>(texture);
 	_resource = tex->getTexture();
 	_target = tex->getTexType();
@@ -48,7 +48,7 @@ bool ShaderResourceViewGL::init(IRenderDevice&, const ITexture* texture)
 
 bool ShaderResourceViewGL::init(IRenderDevice&, const IBuffer* buffer)
 {
-	assert(buffer);
+	GAFF_ASSERT(buffer);
 	const BufferGL* buf = reinterpret_cast<const BufferGL*>(buffer);
 	_resource = buf->getBuffer();
 	_target = static_cast<unsigned int>(-1); // TODO: Fix this.

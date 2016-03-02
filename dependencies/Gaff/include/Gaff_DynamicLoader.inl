@@ -41,7 +41,7 @@ void DynamicLoader<Allocator>::clear(void)
 template <class Allocator>
 typename DynamicLoader<Allocator>::ModulePtr DynamicLoader<Allocator>::loadModule(const char* filename, const char* name)
 {
-	assert(filename && name && strlen(filename) && strlen(name));
+	GAFF_ASSERT(filename && name && strlen(filename) && strlen(name));
 
 	if (_modules.indexOf(name) != SIZE_T_FAIL) {
 		return getModule(name);
@@ -63,7 +63,7 @@ typename DynamicLoader<Allocator>::ModulePtr DynamicLoader<Allocator>::loadModul
 template <class Allocator>
 typename DynamicLoader<Allocator>::ModulePtr DynamicLoader<Allocator>::getModule(const char* name)
 {
-	assert(name && strlen(name));
+	GAFF_ASSERT(name && strlen(name));
 	HString str(name, FNV1aHash32, _allocator);
 	return _modules[name];
 }
@@ -71,7 +71,7 @@ typename DynamicLoader<Allocator>::ModulePtr DynamicLoader<Allocator>::getModule
 template <class Allocator>
 void DynamicLoader<Allocator>::removeModule(const char* name)
 {
-	assert(name && strlen(name));
+	GAFF_ASSERT(name && strlen(name));
 	HString str(name, FNV1aHash32, _allocator);
 	_modules.erase(str);
 }

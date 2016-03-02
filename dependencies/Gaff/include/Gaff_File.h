@@ -20,12 +20,9 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-/*! \file */
-
 #pragma once
 
-#include "Gaff_IncludeAssert.h"
-#include "Gaff_Defines.h"
+#include "Gaff_Assert.h"
 #include <cstring>
 #include <cstdio>
 

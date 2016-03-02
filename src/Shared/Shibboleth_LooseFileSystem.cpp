@@ -69,7 +69,7 @@ LooseFileSystem::~LooseFileSystem(void)
 
 IFile* LooseFileSystem::openFile(const char* file_name)
 {
-	assert(file_name && strlen(file_name));
+	GAFF_ASSERT(file_name && strlen(file_name));
 	Gaff::ScopedLock<Gaff::SpinLock> scoped_lock(_file_lock);
 
 	auto it = _files.linearSearch(file_name, [](const FileData& lhs, const char* rhs) -> bool
@@ -121,7 +121,7 @@ IFile* LooseFileSystem::openFile(const char* file_name)
 
 void LooseFileSystem::closeFile(IFile* file)
 {
-	assert(file);
+	GAFF_ASSERT(file);
 	Gaff::ScopedLock<Gaff::SpinLock> scoped_lock(_file_lock);
 
 	auto it = _files.linearSearch(file, [](const FileData& lhs, const IFile* rhs) -> bool

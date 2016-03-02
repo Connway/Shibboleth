@@ -21,7 +21,7 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Gaff_Camera.h"
-#include "Gaff_IncludeAssert.h"
+#include "Gaff_Assert.h"
 #include <assimp/camera.h>
 
 NS_GAFF
@@ -47,49 +47,49 @@ Camera::~Camera(void)
 
 const char* Camera::getName(void) const
 {
-	assert(_camera);
+	GAFF_ASSERT(_camera);
 	return _camera->mName.C_Str();
 }
 
 const float* Camera::getPosition(void) const
 {
-	assert(_camera);
+	GAFF_ASSERT(_camera);
 	return &_camera->mPosition.x;
 }
 
 const float* Camera::getDirection(void) const
 {
-	assert(_camera);
+	GAFF_ASSERT(_camera);
 	return &_camera->mLookAt.x;
 }
 
 const float* Camera::getUp(void) const
 {
-	assert(_camera);
+	GAFF_ASSERT(_camera);
 	return &_camera->mUp.x;
 }
 
 float Camera::getHorizFOV(void) const
 {
-	assert(_camera);
+	GAFF_ASSERT(_camera);
 	return _camera->mHorizontalFOV;
 }
 
 float Camera::getClipNear(void) const
 {
-	assert(_camera);
+	GAFF_ASSERT(_camera);
 	return _camera->mClipPlaneNear;
 }
 
 float Camera::getClipFar(void) const
 {
-	assert(_camera);
+	GAFF_ASSERT(_camera);
 	return _camera->mClipPlaneFar;
 }
 
 float Camera::getAspectRatio(void) const
 {
-	assert(_camera);
+	GAFF_ASSERT(_camera);
 	return _camera->mAspect;
 }
 

@@ -109,7 +109,7 @@ void LoadGraphicsModuleState::generateDefaultConfig(Gaff::JSON& cfg)
 
 	RenderManager& render_manager = _app.getManagerT<RenderManager>("Render Manager");
 	Gleam::IRenderDevice::AdapterList adapters = render_manager.getRenderDevice().getDisplayModes();
-	assert(!adapters.empty());
+	GAFF_ASSERT(!adapters.empty());
 
 	Gaff::JSON windows = Gaff::JSON::createArray();
 	Gaff::JSON window_entry = Gaff::JSON::createObject();

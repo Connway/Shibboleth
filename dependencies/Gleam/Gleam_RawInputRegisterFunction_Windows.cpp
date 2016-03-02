@@ -24,13 +24,12 @@ THE SOFTWARE.
 
 #include "Gleam_RawInputRegisterFunction.h"
 #include "Gleam_Window_Windows.h"
-#include <Gaff_IncludeAssert.h>
 
 NS_GLEAM
 
 bool RegisterForRawInput(unsigned short device, const IWindow& window)
 {
-	assert(device == RAW_INPUT_MOUSE || (device >= RAW_INPUT_JOYSTICK && device <= RAW_INPUT_KEYBOARD));
+	GAFF_ASSERT(device == RAW_INPUT_MOUSE || (device >= RAW_INPUT_JOYSTICK && device <= RAW_INPUT_KEYBOARD));
 	
 
 	RAWINPUTDEVICE rid;

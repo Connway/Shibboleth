@@ -22,7 +22,6 @@ THE SOFTWARE.
 
 #include "Gleam_WindowHelpers_Windows.h"
 #include "Gleam_Window_Windows.h"
-#include <Gaff_IncludeAssert.h>
 
 NS_GLEAM
 
@@ -65,7 +64,7 @@ void WindowInput(AnyMessage* message, Window*, WPARAM, LPARAM l)
 
 #ifdef _DEBUG
 	GetRawInputData((HRAWINPUT)l, RID_INPUT, nullptr, &dwSize, sizeof(RAWINPUTHEADER));
-	assert(dwSize <= 64);
+	GAFF_ASSERT(dwSize <= 64);
 #endif
 
 	GetRawInputData((HRAWINPUT)l, RID_INPUT, lpb, &dwSize, sizeof(RAWINPUTHEADER));

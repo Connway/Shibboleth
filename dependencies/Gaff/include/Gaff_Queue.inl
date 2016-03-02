@@ -210,7 +210,7 @@ void Queue<T, Allocator>::push(T&& data)
 template <class T, class Allocator>
 void Queue<T, Allocator>::pop(void)
 {
-	assert(_used > 0);
+	GAFF_ASSERT(_used > 0);
 	deconstruct(_begin);
 	increment(&_begin);
 	--_used;
@@ -232,21 +232,21 @@ void Queue<T, Allocator>::emplacePush(Args&&... args)
 template <class T, class Allocator>
 const T& Queue<T, Allocator>::first(void) const
 {
-	assert(_used > 0);
+	GAFF_ASSERT(_used > 0);
 	return *_begin;
 }
 
 template <class T, class Allocator>
 T& Queue<T, Allocator>::first(void)
 {
-	assert(_used > 0);
+	GAFF_ASSERT(_used > 0);
 	return *_begin;
 }
 
 template <class T, class Allocator>
 const T& Queue<T, Allocator>::last(void) const
 {
-	assert(_used > 0);
+	GAFF_ASSERT(_used > 0);
 	T* end = _end;
 	decrement(&end);
 	return *end;
@@ -255,7 +255,7 @@ const T& Queue<T, Allocator>::last(void) const
 template <class T, class Allocator>
 T& Queue<T, Allocator>::last(void)
 {
-	assert(_used > 0);
+	GAFF_ASSERT(_used > 0);
 	T* end = _end;
 	decrement(&end);
 	return *end;

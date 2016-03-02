@@ -209,14 +209,14 @@ bool RenderPipelineManager::init(void)
 
 void RenderPipelineManager::setOutputCamera(CameraComponent* camera)
 {
-	assert(!_output_cameras.empty());
+	GAFF_ASSERT(!_output_cameras.empty());
 
 	// Use the data from the render target information to find the display we belong to.
 	auto windows = (camera->getRenderTarget()->any_display_with_tags) ?
 		_render_mgr->getWindowsWithTagsAny(camera->getRenderTarget()->tags) :
 		_render_mgr->getWindowsWithTags(camera->getRenderTarget()->tags);
 
-	assert(windows.size() == 1);
+	GAFF_ASSERT(windows.size() == 1);
 
 	for (auto it = _output_cameras.begin(); it != _output_cameras.end(); ++it) {
 		if (it->device == windows[0]->device && it->output == windows[0]->output) {
@@ -228,7 +228,7 @@ void RenderPipelineManager::setOutputCamera(CameraComponent* camera)
 
 CameraComponent* RenderPipelineManager::getOutputCamera(unsigned int monitor) const
 {
-	assert(monitor < _output_cameras.size());
+	GAFF_ASSERT(monitor < _output_cameras.size());
 	return _output_cameras[monitor].camera;
 }
 
@@ -250,7 +250,7 @@ size_t RenderPipelineManager::getActivePipeline(void) const
 
 void RenderPipelineManager::setActivePipeline(size_t pipeline)
 {
-	assert(pipeline < _pipelines.size());
+	GAFF_ASSERT(pipeline < _pipelines.size());
 	_active_pipeline = pipeline;
 }
 
@@ -269,7 +269,7 @@ bool RenderPipelineManager::addRenderPipelines(DynamicLoader::ModulePtr& module)
 {
 	LogManager::FileLockPair& log = GetApp().getGameLogFile();
 
-	assert(module.valid());
+	GAFF_ASSERT(module.valid());
 	CreateRenderPipelineFunc create_pipeline = module->getFunc<CreateRenderPipelineFunc>("CreateRenderPipeline");
 	DestroyRenderPipelineFunc destroy_pipeline = module->getFunc<DestroyRenderPipelineFunc>("DestroyRenderPipeline");
 	GetNumRenderPipelinesFunc num_pipelines = module->getFunc<GetNumRenderPipelinesFunc>("GetNumRenderPipelines");

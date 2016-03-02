@@ -553,7 +553,7 @@ bool HashMap<Key, Value, Allocator>::operator!=(const HashMap<Key, Value, Alloca
 template <class Key, class Value, class Allocator>
 const Value& HashMap<Key, Value, Allocator>::operator[](const Key& key) const
 {
-	assert(_size);
+	GAFF_ASSERT(_size);
 
 	//if (_size == 0) {
 	//	return Value();
@@ -567,7 +567,7 @@ const Value& HashMap<Key, Value, Allocator>::operator[](const Key& key) const
 		++i;
 	}
 
-	assert(i != _size);
+	GAFF_ASSERT(i != _size);
 	return _slots[index].value;
 
 	//return (i == _size) ? Value() : _slots[index].value;
@@ -642,42 +642,42 @@ Value& HashMap<Key, Value, Allocator>::operator[](Key&& key)
 template <class Key, class Value, class Allocator>
 const Value& HashMap<Key, Value, Allocator>::valueAt(size_t index) const
 {
-	assert(index < _size);
+	GAFF_ASSERT(index < _size);
 	return _slots[index].value;
 }
 
 template <class Key, class Value, class Allocator>
 Value& HashMap<Key, Value, Allocator>::valueAt(size_t index)
 {
-	assert(index < _size);
+	GAFF_ASSERT(index < _size);
 	return _slots[index].value;
 }
 
 template <class Key, class Value, class Allocator>
 const Key& HashMap<Key, Value, Allocator>::keyAt(size_t index) const
 {
-	assert(index < _size);
+	GAFF_ASSERT(index < _size);
 	return _slots[index].key;
 }
 
 template <class Key, class Value, class Allocator>
 bool HashMap<Key, Value, Allocator>::isOccupied(size_t index) const
 {
-	assert(index < _size);
+	GAFF_ASSERT(index < _size);
 	return _slots[index].occupied;
 }
 
 template <class Key, class Value, class Allocator>
 void HashMap<Key, Value, Allocator>::erase(const Iterator& it)
 {
-	assert(it._slot >= _slots && it._slot < _slots + _size);
+	GAFF_ASSERT(it._slot >= _slots && it._slot < _slots + _size);
 	erase(static_cast<size_t>(it._slot - _slots));
 }
 
 template <class Key, class Value, class Allocator>
 void HashMap<Key, Value, Allocator>::erase(size_t index)
 {
-	assert(index < _size);
+	GAFF_ASSERT(index < _size);
 	deconstruct(&_slots[index].key);
 	deconstruct(&_slots[index].value);
 	_slots[index].occupied = false;
@@ -690,7 +690,7 @@ template <class Key, class Value, class Allocator>
 void HashMap<Key, Value, Allocator>::erase(const Key& key)
 {
 	size_t index = indexOf(key);
-	assert(index != SIZE_T_FAIL);
+	GAFF_ASSERT(index != SIZE_T_FAIL);
 	erase(index);
 }
 
@@ -1018,7 +1018,7 @@ bool HashMap<String<T, Allocator>, Value, Allocator>::operator!=(const HashMap<S
 template <class Value, class Allocator, class T>
 const Value& HashMap<String<T, Allocator>, Value, Allocator>::operator[](const String<T, Allocator>& key) const
 {
-	assert(_size);
+	GAFF_ASSERT(_size);
 
 	//if (_size == 0) {
 	//	return Value();
@@ -1032,7 +1032,7 @@ const Value& HashMap<String<T, Allocator>, Value, Allocator>::operator[](const S
 		++i;
 	}
 
-	assert(i != _size);
+	GAFF_ASSERT(i != _size);
 	return _slots[index].value;
 
 	//return (i == _size) ? Value() : _slots[index].value;
@@ -1107,42 +1107,42 @@ Value& HashMap<String<T, Allocator>, Value, Allocator>::operator[](String<T, All
 template <class Value, class Allocator, class T>
 const Value& HashMap<String<T, Allocator>, Value, Allocator>::valueAt(size_t index) const
 {
-	assert(index < _size);
+	GAFF_ASSERT(index < _size);
 	return _slots[index].value;
 }
 
 template <class Value, class Allocator, class T>
 Value& HashMap<String<T, Allocator>, Value, Allocator>::valueAt(size_t index)
 {
-	assert(index < _size);
+	GAFF_ASSERT(index < _size);
 	return _slots[index].value;
 }
 
 template <class Value, class Allocator, class T>
 const String<T, Allocator>& HashMap<String<T, Allocator>, Value, Allocator>::keyAt(size_t index) const
 {
-	assert(index < _size);
+	GAFF_ASSERT(index < _size);
 	return _slots[index].key;
 }
 
 template <class Value, class Allocator, class T>
 bool HashMap<String<T, Allocator>, Value, Allocator>::isOccupied(size_t index) const
 {
-	assert(index < _size);
+	GAFF_ASSERT(index < _size);
 	return _slots[index].occupied;
 }
 
 template <class Value, class Allocator, class T>
 void HashMap<String<T, Allocator>, Value, Allocator>::erase(const Iterator& it)
 {
-	assert(it._slot >= _slots && it._slot < _slots + _size);
+	GAFF_ASSERT(it._slot >= _slots && it._slot < _slots + _size);
 	erase(static_cast<size_t>(it._slot - _slots));
 }
 
 template <class Value, class Allocator, class T>
 void HashMap<String<T, Allocator>, Value, Allocator>::erase(size_t index)
 {
-	assert(index < _size);
+	GAFF_ASSERT(index < _size);
 	deconstruct(&_slots[index].key);
 	deconstruct(&_slots[index].value);
 	_slots[index].occupied = false;
@@ -1155,7 +1155,7 @@ template <class Value, class Allocator, class T>
 void HashMap<String<T, Allocator>, Value, Allocator>::erase(const String<T, Allocator>& key)
 {
 	size_t index = indexOf(key);
-	assert(index != SIZE_T_FAIL);
+	GAFF_ASSERT(index != SIZE_T_FAIL);
 	erase(index);
 }
 
@@ -1484,7 +1484,7 @@ bool HashMap<HashString<T, Allocator>, Value, Allocator>::operator!=(const HashM
 template <class Value, class Allocator, class T>
 const Value& HashMap<HashString<T, Allocator>, Value, Allocator>::operator[](const HashString<T, Allocator>& key) const
 {
-	assert(_size);
+	GAFF_ASSERT(_size);
 
 	//if (_size == 0) {
 	//	return Value();
@@ -1498,7 +1498,7 @@ const Value& HashMap<HashString<T, Allocator>, Value, Allocator>::operator[](con
 		++i;
 	}
 
-	assert(i != _size);
+	GAFF_ASSERT(i != _size);
 	return _slots[index].value;
 
 	//return (i == _size) ? Value() : _slots[index].value;
@@ -1573,42 +1573,42 @@ Value& HashMap<HashString<T, Allocator>, Value, Allocator>::operator[](HashStrin
 template <class Value, class Allocator, class T>
 const Value& HashMap<HashString<T, Allocator>, Value, Allocator>::valueAt(size_t index) const
 {
-	assert(index < _size);
+	GAFF_ASSERT(index < _size);
 	return _slots[index].value;
 }
 
 template <class Value, class Allocator, class T>
 Value& HashMap<HashString<T, Allocator>, Value, Allocator>::valueAt(size_t index)
 {
-	assert(index < _size);
+	GAFF_ASSERT(index < _size);
 	return _slots[index].value;
 }
 
 template <class Value, class Allocator, class T>
 const HashString<T, Allocator>& HashMap<HashString<T, Allocator>, Value, Allocator>::keyAt(size_t index) const
 {
-	assert(index < _size);
+	GAFF_ASSERT(index < _size);
 	return _slots[index].key;
 }
 
 template <class Value, class Allocator, class T>
 bool HashMap<HashString<T, Allocator>, Value, Allocator>::isOccupied(size_t index) const
 {
-	assert(index < _size);
+	GAFF_ASSERT(index < _size);
 	return _slots[index].occupied;
 }
 
 template <class Value, class Allocator, class T>
 void HashMap<HashString<T, Allocator>, Value, Allocator>::erase(const Iterator& it)
 {
-	assert(it._slot >= _slots && it._slot < _slots + _size);
+	GAFF_ASSERT(it._slot >= _slots && it._slot < _slots + _size);
 	erase(static_cast<size_t>(it._slot - _slots));
 }
 
 template <class Value, class Allocator, class T>
 void HashMap<HashString<T, Allocator>, Value, Allocator>::erase(size_t index)
 {
-	assert(index < _size);
+	GAFF_ASSERT(index < _size);
 	deconstruct(&_slots[index].key);
 	deconstruct(&_slots[index].value);
 	_slots[index].occupied = false;
@@ -1621,7 +1621,7 @@ template <class Value, class Allocator, class T>
 void HashMap<HashString<T, Allocator>, Value, Allocator>::erase(const HashString<T, Allocator>& key)
 {
 	size_t index = indexOf(key);
-	assert(index != SIZE_T_FAIL);
+	GAFF_ASSERT(index != SIZE_T_FAIL);
 	erase(index);
 }
 

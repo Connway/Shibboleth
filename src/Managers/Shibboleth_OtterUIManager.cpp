@@ -21,8 +21,6 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Shibboleth_OtterUIManager.h"
-#include "Shibboleth_Allocator.h"
-#include <Gaff_IncludeAssert.h>
 #include <Otter.h>
 
 NS_SHIBBOLETH
@@ -73,7 +71,7 @@ void OtterUIManager::destroy(void)
 
 bool OtterUIManager::loadScene(const char* filename, const char* name, Otter::Scene** scene_out)
 {
-	assert(_system && name && strlen(name));
+	GAFF_ASSERT(_system && name && strlen(name));
 	Otter::Scene* out_temp = nullptr;
 	_system->LoadScene(filename, &out_temp);
 
@@ -90,7 +88,7 @@ bool OtterUIManager::loadScene(const char* filename, const char* name, Otter::Sc
 
 bool OtterUIManager::loadScene(unsigned char* buffer, unsigned int buffer_size, bool copy_buffer, const char* name, Otter::Scene** scene_out)
 {
-	assert(_system && buffer && buffer_size && name && strlen(name));
+	GAFF_ASSERT(_system && buffer && buffer_size && name && strlen(name));
 	Otter::Scene* out_temp = nullptr;
 
 	_system->LoadScene(buffer, buffer_size, copy_buffer, &out_temp);
@@ -108,7 +106,7 @@ bool OtterUIManager::loadScene(unsigned char* buffer, unsigned int buffer_size, 
 
 void OtterUIManager::clear(void)
 {
-	assert(_system);
+	GAFF_ASSERT(_system);
 	_system->UnloadAllScenes();
 	_scenes.clear();
 }
@@ -125,13 +123,13 @@ void OtterUIManager::setFPS(unsigned int fps)
 
 void OtterUIManager::update(float dt)
 {
-	assert(_system);
+	GAFF_ASSERT(_system);
 	_system->Update((float)_fps * dt);
 }
 
 bool OtterUIManager::draw(void)
 {
-	assert(_system);
+	GAFF_ASSERT(_system);
 	return _system->Draw() == Otter::kResult_OK;
 }
 
@@ -142,25 +140,25 @@ void OtterUIManager::setResolution(unsigned int width, unsigned int height)
 
 void OtterUIManager::setSoundSystem(Otter::ISoundSystem* sound_system)
 {
-	assert(sound_system);
+	GAFF_ASSERT(sound_system);
 	_system->SetSoundSystem(sound_system);
 }
 
 void OtterUIManager::setFileSystem(Otter::IFileSystem* file_system)
 {
-	assert(file_system);
+	GAFF_ASSERT(file_system);
 	_system->SetFileSystem(file_system);
 }
 
 void OtterUIManager::setRenderer(Otter::IRenderer* renderer)
 {
-	assert(renderer);
+	GAFF_ASSERT(renderer);
 	_system->SetRenderer(renderer);
 }
 
 void OtterUIManager::addPlugin(Otter::IPlugin* plugin)
 {
-	assert(plugin);
+	GAFF_ASSERT(plugin);
 	_system->AddPlugin(plugin);
 }
 
@@ -171,13 +169,13 @@ const char* OtterUIManager::getName(void) const
 
 Otter::Scene* OtterUIManager::getScene(unsigned int index)
 {
-	assert(_system && index < _system->GetSceneCount());
+	GAFF_ASSERT(_system && index < _system->GetSceneCount());
 	return _system->GetScene(index);
 }
 
 unsigned int OtterUIManager::getNumScenes(void) const
 {
-	assert(_system);
+	GAFF_ASSERT(_system);
 	return _system->GetSceneCount();
 }
 

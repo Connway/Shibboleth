@@ -21,7 +21,7 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Gaff_NodeAnimation.h"
-#include "Gaff_IncludeAssert.h"
+#include "Gaff_Assert.h"
 
 NS_GAFF
 
@@ -64,14 +64,14 @@ RotationKey::~RotationKey(void)
 
 double RotationKey::getTime(void) const
 {
-	assert(_key);
+	GAFF_ASSERT(_key);
 	return _key->mTime;
 	//return _time;
 }
 
 const float* RotationKey::getQuaternion(void) const
 {
-	assert(_key);
+	GAFF_ASSERT(_key);
 	return &_key->mValue.w;
 	//return _quat;
 }
@@ -94,7 +94,7 @@ const RotationKey& RotationKey::operator=(const RotationKey& rhs)
 
 bool RotationKey::operator==(const RotationKey& rhs) const
 {
-	assert(_key);
+	GAFF_ASSERT(_key);
 	return *_key == *rhs._key;
 	//return _quat[0] == rhs._quat[0] &&
 	//	_quat[1] == rhs._quat[1] &&
@@ -104,7 +104,7 @@ bool RotationKey::operator==(const RotationKey& rhs) const
 
 bool RotationKey::operator!=(const RotationKey& rhs) const
 {
-	assert(_key);
+	GAFF_ASSERT(_key);
 	return *_key != *rhs._key;
 	//return _quat[0] != rhs._quat[0] ||
 	//	_quat[1] != rhs._quat[1] ||
@@ -114,14 +114,14 @@ bool RotationKey::operator!=(const RotationKey& rhs) const
 
 bool RotationKey::operator<(const RotationKey& rhs) const
 {
-	assert(_key);
+	GAFF_ASSERT(_key);
 	return *_key < *rhs._key;
 	//return _time < rhs._time;
 }
 
 bool RotationKey::operator>(const RotationKey& rhs) const
 {
-	assert(_key);
+	GAFF_ASSERT(_key);
 	return *_key > *rhs._key;
 	//return _time > rhs._time;
 }
@@ -162,14 +162,14 @@ VectorKey::~VectorKey(void)
 
 double VectorKey::getTime(void) const
 {
-	assert(_key);
+	GAFF_ASSERT(_key);
 	return _key->mTime;
 	//return _time;
 }
 
 const float* VectorKey::getVector(void) const
 {
-	assert(_key);
+	GAFF_ASSERT(_key);
 	return &_key->mValue.x;
 	//return _vec;
 }
@@ -191,7 +191,7 @@ const VectorKey& VectorKey::operator=(const VectorKey& rhs)
 
 bool VectorKey::operator==(const VectorKey& rhs) const
 {
-	assert(_key);
+	GAFF_ASSERT(_key);
 	return *_key == *rhs._key;
 	//return _vec[0] == rhs._vec[0] &&
 	//	_vec[1] == rhs._vec[1] &&
@@ -200,7 +200,7 @@ bool VectorKey::operator==(const VectorKey& rhs) const
 
 bool VectorKey::operator!=(const VectorKey& rhs) const
 {
-	assert(_key);
+	GAFF_ASSERT(_key);
 	return *_key != *rhs._key;
 	//return _vec[0] != rhs._vec[0] ||
 	//	_vec[1] != rhs._vec[1] ||
@@ -209,14 +209,14 @@ bool VectorKey::operator!=(const VectorKey& rhs) const
 
 bool VectorKey::operator<(const VectorKey& rhs) const
 {
-	assert(_key);
+	GAFF_ASSERT(_key);
 	return *_key < *rhs._key;
 	//return _time < rhs._time;
 }
 
 bool VectorKey::operator>(const VectorKey& rhs) const
 {
-	assert(_key);
+	GAFF_ASSERT(_key);
 	return *_key > *rhs._key;
 	//return _time > rhs._time;
 }
@@ -246,55 +246,55 @@ NodeAnimation::~NodeAnimation(void)
 
 const char* NodeAnimation::getName(void) const
 {
-	assert(_node_animation);
+	GAFF_ASSERT(_node_animation);
 	return _node_animation->mNodeName.C_Str();
 }
 
 unsigned int NodeAnimation::getNumPositionKeys(void) const
 {
-	assert(_node_animation);
+	GAFF_ASSERT(_node_animation);
 	return _node_animation->mNumPositionKeys;
 }
 
 unsigned int NodeAnimation::getNumRotationKeys(void) const
 {
-	assert(_node_animation);
+	GAFF_ASSERT(_node_animation);
 	return _node_animation->mNumRotationKeys;
 }
 
 unsigned int NodeAnimation::getNumScaleKeys(void) const
 {
-	assert(_node_animation);
+	GAFF_ASSERT(_node_animation);
 	return _node_animation->mNumScalingKeys;
 }
 
 AnimationBehavior NodeAnimation::getPreAnimState(void) const
 {
-	assert(_node_animation);
+	GAFF_ASSERT(_node_animation);
 	return (AnimationBehavior)_node_animation->mPreState;
 }
 
 AnimationBehavior NodeAnimation::getPostAnimState(void) const
 {
-	assert(_node_animation);
+	GAFF_ASSERT(_node_animation);
 	return (AnimationBehavior)_node_animation->mPostState;
 }
 
 VectorKey NodeAnimation::getPositionKey(unsigned int key) const
 {
-	assert(_node_animation && key < _node_animation->mNumPositionKeys);
+	GAFF_ASSERT(_node_animation && key < _node_animation->mNumPositionKeys);
 	return VectorKey(_node_animation->mPositionKeys + key);
 }
 
 RotationKey NodeAnimation::getRotationKey(unsigned int key) const
 {
-	assert(_node_animation && key < _node_animation->mNumRotationKeys);
+	GAFF_ASSERT(_node_animation && key < _node_animation->mNumRotationKeys);
 	return RotationKey(_node_animation->mRotationKeys + key);
 }
 
 VectorKey NodeAnimation::getScaleKey(unsigned int key) const
 {
-	assert(_node_animation && key < _node_animation->mNumScalingKeys);
+	GAFF_ASSERT(_node_animation && key < _node_animation->mNumScalingKeys);
 	return VectorKey(_node_animation->mScalingKeys + key);
 }
 

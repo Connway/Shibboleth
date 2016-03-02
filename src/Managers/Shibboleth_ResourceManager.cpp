@@ -103,7 +103,7 @@ void ResourceReadingJob(void* data)
 			for (auto it = read_data->json_elements->begin(); it != read_data->json_elements->end(); ++it) {
 				Gaff::JSON file_name = json.getObject(it->json_element.getBuffer());
 
-				assert(file_name.isString() || it->optional);
+				GAFF_ASSERT(file_name.isString() || it->optional);
 
 				if (!file_name.isString()) {
 					continue;
@@ -223,7 +223,7 @@ void ResourceContainer::removeCallback(const Gaff::FunctionBinder<void, Resource
 
 void ResourceContainer::setResource(Gaff::IVirtualDestructor* resource)
 {
-	assert(resource && !_resource);
+	GAFF_ASSERT(resource && !_resource);
 	AtomicCompareExchangePointer((volatile PVOID*)&_resource, resource, nullptr);
 }
 
@@ -258,7 +258,7 @@ ResourceManager::ResourceManager(void):
 ResourceManager::~ResourceManager(void)
 {
 	for (auto it = _resource_cache.begin(); it != _resource_cache.end(); ++it) {
-		//assert(!it.getValue()->getRefCount());
+		//GAFF_ASSERT(!it.getValue()->getRefCount());
 		it.getValue().set(nullptr);
 	}
 
@@ -272,13 +272,13 @@ const char* ResourceManager::getName(void) const
 
 void ResourceManager::registerResourceLoader(IResourceLoader* res_loader, const Array<AString>& resource_types, unsigned int thread_pool, const Array<JSONModifiers>& json_elements)
 {
-	assert(res_loader && resource_types.size());
+	GAFF_ASSERT(res_loader && resource_types.size());
 
 	Gaff::SharedPtr<Array<JSONModifiers>, ProxyAllocator> je(GetAllocator()->template allocT< Array<JSONModifiers> >(json_elements));
 	LoaderData loader_data = { je, ResourceLoaderPtr(res_loader), thread_pool };
 
 	for (auto it = resource_types.begin(); it != resource_types.end(); ++it) {
-		assert(_resource_loaders.indexOf(AHashString(*it)) == SIZE_T_FAIL);
+		GAFF_ASSERT(_resource_loaders.indexOf(AHashString(*it)) == SIZE_T_FAIL);
 		_resource_loaders[AHashString(*it)] = loader_data;
 	}
 }
@@ -286,7 +286,7 @@ void ResourceManager::registerResourceLoader(IResourceLoader* res_loader, const 
 void ResourceManager::registerResourceLoader(IResourceLoader* res_loader, const char* resource_type, unsigned int thread_pool, const Array<JSONModifiers>& json_elements)
 {
 	// We've already registered a loader for this file type.
-	assert(_resource_loaders.indexOf(AHashString(resource_type)) == SIZE_T_FAIL);
+	GAFF_ASSERT(_resource_loaders.indexOf(AHashString(resource_type)) == SIZE_T_FAIL);
 	Gaff::SharedPtr<Array<JSONModifiers>, ProxyAllocator> je(GetAllocator()->template allocT< Array<JSONModifiers> >(json_elements));
 	LoaderData loader_data = { je, ResourceLoaderPtr(res_loader), thread_pool };
 	_resource_loaders[AHashString(resource_type)] = loader_data;
@@ -294,7 +294,7 @@ void ResourceManager::registerResourceLoader(IResourceLoader* res_loader, const 
 
 ResourcePtr ResourceManager::requestResource(const char* resource_type, const char* instance_name, uint64_t user_data)
 {
-	assert(resource_type && strlen(resource_type) && instance_name && strlen(instance_name));
+	GAFF_ASSERT(resource_type && strlen(resource_type) && instance_name && strlen(instance_name));
 
 	AHashString res_key(instance_name);
 
@@ -304,7 +304,7 @@ ResourcePtr ResourceManager::requestResource(const char* resource_type, const ch
 	if (it == _resource_cache.end()) {
 		// We have no cache of this resource or have yet to make a request for it,
 		// so make a load request.
-		assert(_resource_loaders.indexOf(AHashString(resource_type)) != SIZE_T_FAIL);
+		GAFF_ASSERT(_resource_loaders.indexOf(AHashString(resource_type)) != SIZE_T_FAIL);
 
 		ResourceContainer* res_cont = reinterpret_cast<ResourceContainer*>(GetAllocator()->alloc(sizeof(ResourceContainer)));
 		new (res_cont) ResourceContainer(res_key, this, &ResourceManager::zeroRefCallback, user_data);
@@ -339,7 +339,7 @@ ResourcePtr ResourceManager::requestResource(const char* resource_type, const ch
 
 ResourcePtr ResourceManager::requestResource(const char* filename, uint64_t user_data)
 {
-	assert(filename && strlen(filename));
+	GAFF_ASSERT(filename && strlen(filename));
 
 	AHashString res_key(filename);
 
@@ -350,7 +350,7 @@ ResourcePtr ResourceManager::requestResource(const char* filename, uint64_t user
 		// We have no cache of this resource or have yet to make a request for it,
 		// so make a load request.
 		AString extension = res_key.getString().getExtension('.');
-		assert(extension.size() && _resource_loaders.indexOf(AHashString(extension)) != SIZE_T_FAIL);
+		GAFF_ASSERT(extension.size() && _resource_loaders.indexOf(AHashString(extension)) != SIZE_T_FAIL);
 
 		ResourceContainer* res_cont = reinterpret_cast<ResourceContainer*>(GetAllocator()->alloc(sizeof(ResourceContainer)));
 		new (res_cont) ResourceContainer(res_key, this, &ResourceManager::zeroRefCallback, user_data);
@@ -393,7 +393,7 @@ ResourcePtr ResourceManager::loadResourceImmediately(const char* filename, uint6
 	if (it == _resource_cache.end()) {
 		// We have no cache of this resource or have yet to make a request for it.
 		AString extension = res_key.getString().getExtension('.');
-		assert(extension.size() && _resource_loaders.indexOf(AHashString(extension)) != SIZE_T_FAIL);
+		GAFF_ASSERT(extension.size() && _resource_loaders.indexOf(AHashString(extension)) != SIZE_T_FAIL);
 
 		ResourceContainer* res_cont = reinterpret_cast<ResourceContainer*>(GetAllocator()->alloc(sizeof(ResourceContainer)));
 		new (res_cont)ResourceContainer(res_key, this, &ResourceManager::zeroRefCallback, user_data);
@@ -439,7 +439,7 @@ void ResourceManager::removeRequestAddedCallback(const Gaff::FunctionBinder<void
 void ResourceManager::zeroRefCallback(const AHashString& res_key)
 {
 	Gaff::ScopedLock<Gaff::SpinLock> lock(_res_cache_lock);
-	assert(_resource_cache.indexOf(res_key) != SIZE_T_FAIL);
+	GAFF_ASSERT(_resource_cache.indexOf(res_key) != SIZE_T_FAIL);
 	_resource_cache[res_key].set(nullptr);
 	_resource_cache.erase(res_key);
 }

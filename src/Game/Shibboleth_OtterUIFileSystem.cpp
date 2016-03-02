@@ -40,7 +40,7 @@ OtterUIFileSystem::~OtterUIFileSystem(void)
 void* OtterUIFileSystem::Open(const char* szFilename, Otter::AccessFlag flags)
 {
 	// To my knowledge, OtterUI doesn't ever request to write any files.
-	assert(flags == (Otter::kBinary | Otter::kRead));
+	GAFF_ASSERT(flags == (Otter::kBinary | Otter::kRead));
 
 	IFile* file = _file_system.openFile(szFilename);
 
@@ -56,7 +56,7 @@ void* OtterUIFileSystem::Open(const char* szFilename, Otter::AccessFlag flags)
 void OtterUIFileSystem::Close(void* pHandle)
 {
 	auto it = _files.linearSearch(pHandle);
-	assert(it != _files.end());
+	GAFF_ASSERT(it != _files.end());
 
 	_file_system.closeFile(*it);
 	_files.fastErase(it);
@@ -64,7 +64,7 @@ void OtterUIFileSystem::Close(void* pHandle)
 
 uint32 OtterUIFileSystem::Read(void* pHandle, uint8* data, uint32 count)
 {
-	assert(_files.linearSearch(pHandle) != _files.end());
+	GAFF_ASSERT(_files.linearSearch(pHandle) != _files.end());
 	IFile* file = reinterpret_cast<IFile*>(pHandle);
 	unsigned int size = Gaff::Min(static_cast<uint32>(file->size()), count);
 
@@ -74,18 +74,18 @@ uint32 OtterUIFileSystem::Read(void* pHandle, uint8* data, uint32 count)
 
 uint32 OtterUIFileSystem::Write(void* pHandle, uint8* /*data*/, uint32 /*count*/)
 {
-	assert(_files.linearSearch(pHandle) != _files.end());
+	GAFF_ASSERT(_files.linearSearch(pHandle) != _files.end());
 	return 0;
 }
 
 void OtterUIFileSystem::Seek(void* pHandle, uint32 /*offset*/, Otter::SeekFlag /*seekFlag*/)
 {
-	assert(_files.linearSearch(pHandle) != _files.end());
+	GAFF_ASSERT(_files.linearSearch(pHandle) != _files.end());
 }
 
 uint32 OtterUIFileSystem::Size(void* pHandle)
 {
-	assert(_files.linearSearch(pHandle) != _files.end());
+	GAFF_ASSERT(_files.linearSearch(pHandle) != _files.end());
 	return static_cast<uint32>(reinterpret_cast<IFile*>(pHandle)->size());
 }
 

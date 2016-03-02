@@ -191,7 +191,7 @@ RenderTargetLoader::~RenderTargetLoader(void)
 
 Gaff::IVirtualDestructor* RenderTargetLoader::load(const char* file_name, uint64_t, HashMap<AString, IFile*>& file_map)
 {
-	assert(file_map.hasElementWithKey(AString(file_name)));
+	GAFF_ASSERT(file_map.hasElementWithKey(AString(file_name)));
 	IFile*& file = file_map[AString(file_name)];
 
 	Gaff::JSON rt_settings;
@@ -258,7 +258,7 @@ Gaff::IVirtualDestructor* RenderTargetLoader::load(const char* file_name, uint64
 		rm.getWindowsWithTagsAny(disp_tags) :
 		rm.getWindowsWithTags(disp_tags);
 
-	assert(!windows.empty());
+	GAFF_ASSERT(!windows.empty());
 
 	// Cache the window width/height if there is only one window with this tag
 	int window_width = -1;

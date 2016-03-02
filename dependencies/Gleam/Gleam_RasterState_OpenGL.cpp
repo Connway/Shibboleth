@@ -22,7 +22,6 @@ THE SOFTWARE.
 
 #include "Gleam_RasterState_OpenGL.h"
 #include "Gleam_RenderDevice_OpenGL.h"
-#include <Gaff_IncludeAssert.h>
 
 NS_GLEAM
 
@@ -36,7 +35,7 @@ RasterStateGL::~RasterStateGL(void)
 
 bool RasterStateGL::init(IRenderDevice& rd, const RasterStateSettings& settings)
 {
-	assert(rd.getRendererType() == RENDERER_OPENGL);
+	GAFF_ASSERT(rd.getRendererType() == RENDERER_OPENGL);
 	_raster_settings = settings;
 	return true;
 }
@@ -47,14 +46,14 @@ void RasterStateGL::destroy(void)
 
 void RasterStateGL::set(IRenderDevice& rd) const
 {
-	assert(rd.getRendererType() == RENDERER_OPENGL);
+	GAFF_ASSERT(rd.getRendererType() == RENDERER_OPENGL);
 	IRenderDeviceGL& rdgl = reinterpret_cast<IRenderDeviceGL&>(*(reinterpret_cast<char*>(&rd) + sizeof(IRenderDevice)));
 	rdgl.setRasterState(this);
 }
 
 void RasterStateGL::unset(IRenderDevice& rd) const
 {
-	assert(rd.getRendererType() == RENDERER_OPENGL);
+	GAFF_ASSERT(rd.getRendererType() == RENDERER_OPENGL);
 	IRenderDeviceGL& rdgl = reinterpret_cast<IRenderDeviceGL&>(*(reinterpret_cast<char*>(&rd) + sizeof(IRenderDevice)));
 	rdgl.setRasterState(nullptr);
 }

@@ -28,7 +28,6 @@ THE SOFTWARE.
 #include "Gleam_CommandList_Direct3D.h"
 #include "Gleam_Window_Windows.h"
 #include "Gleam_Global.h"
-#include <Gaff_IncludeAssert.h>
 
 NS_GLEAM
 
@@ -169,9 +168,10 @@ bool RenderDeviceD3D::initThreadData(unsigned int*, size_t)
 
 bool RenderDeviceD3D::init(const IWindow& window, unsigned int adapter_id, unsigned int display_id, unsigned int display_mode_id, bool vsync)
 {
-	assert(	_display_info.size() > adapter_id &&
-			_display_info[adapter_id].output_info.size() > display_id &&
-			_display_info[adapter_id].output_info[display_id].display_mode_list.size() > display_id
+	GAFF_ASSERT(
+		_display_info.size() > adapter_id &&
+		_display_info[adapter_id].output_info.size() > display_id &&
+		_display_info[adapter_id].output_info[display_id].display_mode_list.size() > display_id
 	);
 
 	const Window& wnd = reinterpret_cast<const Window&>(window);
@@ -361,13 +361,13 @@ void RenderDeviceD3D::destroy(void)
 
 bool RenderDeviceD3D::isVsync(unsigned int device, unsigned int output) const
 {
-	assert(_devices.size() > device && _devices[device].vsync.size() > output);
+	GAFF_ASSERT(_devices.size() > device && _devices[device].vsync.size() > output);
 	return _devices[device].vsync[output];
 }
 
 void RenderDeviceD3D::setVsync(bool vsync, unsigned int device, unsigned int output)
 {
-	assert(_devices.size() > device && _devices[device].vsync.size() > output);
+	GAFF_ASSERT(_devices.size() > device && _devices[device].vsync.size() > output);
 	_devices[device].vsync.setBit(output, vsync);
 }
 
@@ -491,31 +491,31 @@ RendererType RenderDeviceD3D::getRendererType(void) const
 
 unsigned int RenderDeviceD3D::getViewportWidth(unsigned int device, unsigned int output) const
 {
-	assert(_devices.size() > device && _devices[device].viewports.size() > output);
+	GAFF_ASSERT(_devices.size() > device && _devices[device].viewports.size() > output);
 	return static_cast<unsigned int>(_devices[device].viewports[output].Width);
 }
 
 unsigned int RenderDeviceD3D::getViewportHeight(unsigned int device, unsigned int output) const
 {
-	assert(_devices.size() > device && _devices[device].viewports.size() > output);
+	GAFF_ASSERT(_devices.size() > device && _devices[device].viewports.size() > output);
 	return static_cast<unsigned int>(_devices[device].viewports[output].Height);
 }
 
 unsigned int RenderDeviceD3D::getActiveViewportWidth(void)
 {
-	assert(_devices.size() > _curr_device && _devices[_curr_device].viewports.size() > _curr_output);
+	GAFF_ASSERT(_devices.size() > _curr_device && _devices[_curr_device].viewports.size() > _curr_output);
 	return getViewportWidth(_curr_device, _curr_output);
 }
 
 unsigned int RenderDeviceD3D::getActiveViewportHeight(void)
 {
-	assert(_devices.size() > _curr_device && _devices[_curr_device].viewports.size() > _curr_output);
+	GAFF_ASSERT(_devices.size() > _curr_device && _devices[_curr_device].viewports.size() > _curr_output);
 	return getViewportHeight(_curr_device, _curr_output);
 }
 
 unsigned int RenderDeviceD3D::getNumOutputs(unsigned int device) const
 {
-	assert(_devices.size() > device);
+	GAFF_ASSERT(_devices.size() > device);
 	return static_cast<unsigned int>(_devices[device].render_targets.size());
 }
 
@@ -526,19 +526,19 @@ unsigned int RenderDeviceD3D::getNumDevices(void) const
 
 IRenderTargetPtr RenderDeviceD3D::getOutputRenderTarget(unsigned int device, unsigned int output)
 {
-	assert(_devices.size() > device && _devices[device].gleam_rts.size() > output);
+	GAFF_ASSERT(_devices.size() > device && _devices[device].gleam_rts.size() > output);
 	return _devices[device].gleam_rts[output];
 }
 
 IRenderTargetPtr RenderDeviceD3D::getActiveOutputRenderTarget(void)
 {
-	assert(_devices.size() > _curr_device && _devices[_curr_device].gleam_rts.size() > _curr_output);
+	GAFF_ASSERT(_devices.size() > _curr_device && _devices[_curr_device].gleam_rts.size() > _curr_output);
 	return getOutputRenderTarget(_curr_device, _curr_output);
 }
 
 bool RenderDeviceD3D::setCurrentOutput(unsigned int output)
 {
-	assert(_devices[_curr_device].swap_chains.size() > output);
+	GAFF_ASSERT(_devices[_curr_device].swap_chains.size() > output);
 
 	_active_render_target = _devices[_curr_device].render_targets[output].get();
 	_active_swap_chain = _devices[_curr_device].swap_chains[output].get();
@@ -557,7 +557,7 @@ unsigned int RenderDeviceD3D::getCurrentOutput(void) const
 
 bool RenderDeviceD3D::setCurrentDevice(unsigned int device)
 {
-	assert(_devices.size() > device);
+	GAFF_ASSERT(_devices.size() > device);
 
 	_active_context = _devices[device].context.get();
 	_active_device = _devices[device].device.get();
@@ -616,15 +616,15 @@ IRenderDevice* RenderDeviceD3D::createDeferredRenderDevice(void)
 
 void RenderDeviceD3D::executeCommandList(ICommandList* command_list)
 {
-	assert(command_list->getRendererType() == RENDERER_DIRECT3D && _active_context);
+	GAFF_ASSERT(command_list->getRendererType() == RENDERER_DIRECT3D && _active_context);
 	CommandListD3D* cmd_list = reinterpret_cast<CommandListD3D*>(command_list);
-	assert(cmd_list->getCommandList());
+	GAFF_ASSERT(cmd_list->getCommandList());
 	_active_context->ExecuteCommandList(cmd_list->getCommandList(), FALSE);
 }
 
 bool RenderDeviceD3D::finishCommandList(ICommandList*)
 {
-	assert(0 && "Calling a deferred render device function on an immediate render device");
+	GAFF_ASSERT_MSG(false, "Calling a deferred render device function on an immediate render device");
 	return false;
 }
 
@@ -639,13 +639,13 @@ void RenderDeviceD3D::renderNoVertexInput(unsigned int vert_count)
 
 ID3D11DeviceContext* RenderDeviceD3D::getDeviceContext(unsigned int device)
 {
-	assert(_devices.size() > device);
+	GAFF_ASSERT(_devices.size() > device);
 	return _devices[device].context.get();
 }
 
 ID3D11Device* RenderDeviceD3D::getDevice(unsigned int device)
 {
-	assert(_devices.size() > device);
+	GAFF_ASSERT(_devices.size() > device);
 	return _devices[device].device.get();
 }
 

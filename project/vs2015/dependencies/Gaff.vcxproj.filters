@@ -161,9 +161,6 @@
     <ClInclude Include="..\..\..\dependencies\Gaff\include\Gaff_Image.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\dependencies\Gaff\include\Gaff_IncludeAssert.h">
-      <Filter>include</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\dependencies\Gaff\include\Gaff_IncludeWindows.h">
       <Filter>include</Filter>
     </ClInclude>

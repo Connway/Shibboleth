@@ -72,15 +72,15 @@ public:
 		IValueContainer(void) {}
 		virtual ~IValueContainer(void) {}
 
-		virtual void get(void* /*out*/, const void* /*object*/) const { assert(0 && "GET: Value container is not a value/string/object!"); }
-		virtual void get(void* /*out*/, size_t /*index*/, const void* /*object*/) const { assert(0 && "GET: Value container it not an array!"); }
-		virtual void set(const void* /*value*/, void* /*object*/) { assert(0 && "SET: Value container is not a value/string/object!"); } // Set object
-		virtual void set(const void* /*value*/, size_t /*index*/, void* /*object*/) { assert(0 && "SET: Value container it not an array!"); } // Set array element
+		virtual void get(void* /*out*/, const void* /*object*/) const { GAFF_ASSERT_MSG(false, "GET: Value container is not a value/string/object!"); }
+		virtual void get(void* /*out*/, size_t /*index*/, const void* /*object*/) const { GAFF_ASSERT_MSG(false, "GET: Value container it not an array!"); }
+		virtual void set(const void* /*value*/, void* /*object*/) { GAFF_ASSERT_MSG(false, "SET: Value container is not a value/string/object!"); } // Set object
+		virtual void set(const void* /*value*/, size_t /*index*/, void* /*object*/) { GAFF_ASSERT_MSG(false, "SET: Value container it not an array!"); } // Set array element
 
 		// Array specific functionality
-		virtual size_t size(const void* /*object*/) const { assert(0 && "SIZE: Value container it not an array!"); return 0; }
-		virtual void resize(size_t /*new_size*/, void* /*object*/) { assert(0 && "RESIZE: Value container it not an array or is a static array!"); }
-		virtual void move(size_t /*src_index*/, size_t /*dest_index*/, void* /*object*/) { assert(0 && "MOVE: Value container it not an array!"); }
+		virtual size_t size(const void* /*object*/) const { GAFF_ASSERT_MSG(false, "SIZE: Value container it not an array!"); return 0; }
+		virtual void resize(size_t /*new_size*/, void* /*object*/) { GAFF_ASSERT_MSG(false, "RESIZE: Value container it not an array or is a static array!"); }
+		virtual void move(size_t /*src_index*/, size_t /*dest_index*/, void* /*object*/) { GAFF_ASSERT_MSG(false, "MOVE: Value container it not an array!"); }
 
 		virtual bool isFixedArray(void) const = 0;
 		virtual bool isArray(void) const = 0;

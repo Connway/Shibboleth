@@ -21,7 +21,7 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Gaff_MeshAnimation.h"
-#include "Gaff_IncludeAssert.h"
+#include "Gaff_Assert.h"
 #include <assimp/anim.h>
 
 NS_GAFF
@@ -33,7 +33,7 @@ MeshKey::MeshKey(const aiMeshKey* key):
 	_key(key)
 	//_time(key->mTime), _index(key->mValue)
 {
-	assert(key);
+	GAFF_ASSERT(key);
 }
 
 MeshKey::MeshKey(const MeshKey& key):
@@ -54,14 +54,14 @@ MeshKey::~MeshKey(void)
 
 double MeshKey::getTime(void) const
 {
-	assert(_key);
+	GAFF_ASSERT(_key);
 	return _key->mTime;
 	//return _time;
 }
 
 unsigned int MeshKey::getIndex(void) const
 {
-	assert(_key);
+	GAFF_ASSERT(_key);
 	return _key->mValue;
 	//return _index;
 }
@@ -81,28 +81,28 @@ const MeshKey& MeshKey::operator=(const MeshKey& rhs)
 
 bool MeshKey::operator==(const MeshKey& rhs) const
 {
-	assert(_key);
+	GAFF_ASSERT(_key);
 	return *_key == *rhs._key;
 	//return _index == rhs._index;
 }
 
 bool MeshKey::operator!=(const MeshKey& rhs) const
 {
-	assert(_key);
+	GAFF_ASSERT(_key);
 	return *_key != *rhs._key;
 	//return _index != rhs._index;
 }
 
 bool MeshKey::operator<(const MeshKey& rhs) const
 {
-	assert(_key);
+	GAFF_ASSERT(_key);
 	return *_key < *rhs._key;
 	//return _time < rhs._time;
 }
 
 bool MeshKey::operator>(const MeshKey& rhs) const
 {
-	assert(_key);
+	GAFF_ASSERT(_key);
 	return *_key > *rhs._key;
 	//return _time > rhs._time;
 }
@@ -132,19 +132,19 @@ MeshAnimation::~MeshAnimation(void)
 
 const char* MeshAnimation::getName(void) const
 {
-	assert(_mesh_animation);
+	GAFF_ASSERT(_mesh_animation);
 	return _mesh_animation->mName.C_Str();
 }
 
 unsigned int MeshAnimation::getNumKeys(void) const
 {
-	assert(_mesh_animation);
+	GAFF_ASSERT(_mesh_animation);
 	return _mesh_animation->mNumKeys;
 }
 
 MeshKey MeshAnimation::getKey(unsigned int key) const
 {
-	assert(_mesh_animation && key < _mesh_animation->mNumKeys);
+	GAFF_ASSERT(_mesh_animation && key < _mesh_animation->mNumKeys);
 	return MeshKey(_mesh_animation->mKeys + key);
 }
 

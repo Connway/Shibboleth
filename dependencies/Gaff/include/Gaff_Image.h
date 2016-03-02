@@ -96,7 +96,7 @@ public:
 	template <class T, class Allocator>
 	bool load(const String<T, Allocator>& filename)
 	{
-		assert(filename.size());
+		GAFF_ASSERT(filename.size());
 		return load(filename.getBuffer());
 	}
 

@@ -109,7 +109,7 @@ void MessageBroadcaster::addListeners(void)
 				listeners = &it_listeners->second;
 			}
 
-			assert(listeners);
+			GAFF_ASSERT(listeners);
 
 			listeners->lock.writeLock();
 
@@ -135,7 +135,7 @@ void MessageBroadcaster::removeListeners(void)
 		Gaff::ScopedReadLock<Gaff::ReadWriteSpinLock> read_lock(_listener_lock);
 
 		for (auto it_rem = _listener_remove_queue.begin(); it_rem != _listener_remove_queue.end(); ++it_rem) {
-			assert(_listeners.hasElementWithKey(it_rem->first));
+			GAFF_ASSERT(_listeners.hasElementWithKey(it_rem->first));
 			ListenerData& listeners = _listeners[it_rem->first];
 
 			Gaff::ScopedWriteLock<Gaff::ReadWriteSpinLock> write_lock(listeners.lock);
@@ -144,7 +144,7 @@ void MessageBroadcaster::removeListeners(void)
 				return lhs.first < rhs;
 			});
 
-			assert(it != listeners.listeners.end() && it->first == it_rem->second);
+			GAFF_ASSERT(it != listeners.listeners.end() && it->first == it_rem->second);
 			listeners.listeners.erase(it);
 		}
 	}

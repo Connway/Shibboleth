@@ -89,7 +89,7 @@ void FrameManager::setFrameDataFuncs(FrameDataAllocFunc alloc_func, FrameDataFre
 
 bool FrameManager::init(size_t num_frames)
 {
-	assert(_frame_data_alloc && _frame_data_free);
+	GAFF_ASSERT(_frame_data_alloc && _frame_data_free);
 	_frame_data = _frame_data_alloc(num_frames, _frame_data_size);
 	_frame_trackers.resize(num_frames);
 	_num_frames = num_frames;
@@ -104,10 +104,10 @@ void FrameManager::setNumPhases(size_t num_phases)
 
 void* FrameManager::getNextFrameData(size_t phase_id)
 {
-	assert(phase_id < _phase_trackers.size());
+	GAFF_ASSERT(phase_id < _phase_trackers.size());
 
 	unsigned int frame_id = _phase_trackers[phase_id];
-	assert(frame_id < _frame_trackers.size());
+	GAFF_ASSERT(frame_id < _frame_trackers.size());
 
 	// If the frame tracker count is not the same as our phase ID,
 	// then we have used up all the frames. Wait until a frame opens up.
@@ -120,10 +120,10 @@ void* FrameManager::getNextFrameData(size_t phase_id)
 
 void FrameManager::finishFrame(size_t phase_id)
 {
-	assert(phase_id < _phase_trackers.size());
+	GAFF_ASSERT(phase_id < _phase_trackers.size());
 
 	unsigned int& frame_id = _phase_trackers[phase_id];
-	assert(frame_id < _frame_trackers.size());
+	GAFF_ASSERT(frame_id < _frame_trackers.size());
 
 	unsigned int new_val = AtomicIncrement(&_frame_trackers[frame_id].count);
 

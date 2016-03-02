@@ -26,7 +26,6 @@ THE SOFTWARE.
 //////////////////////////////////////////////////////////////////////////
 
 #include "Shibboleth_Allocator.h"
-#include <Gaff_IncludeAssert.h>
 #include <Gaff_Atomic.h>
 #include <Gaff_Utils.h>
 #include <Gaff_File.h>
@@ -75,7 +74,7 @@ Allocator::Allocator(size_t alignment):
 	strncpy(mem_pool_info.pool_name, "Untagged", POOL_NAME_SIZE);
 
 //#if defined(SYMBOL_BUILD) && defined(GATHER_ALLOCATION_STACKTRACE)
-//	assert(Gaff::StackTrace::Init());
+//	GAFF_GAFF_ASSERT(Gaff::StackTrace::Init());
 //#endif
 }
 
@@ -191,7 +190,7 @@ size_t Allocator::getPoolIndex(const char* pool_name)
 	// This is going to fail if we get multiple calls to this with the same alloc_tag at the same time.
 	// Unlikely that this should happen, but it is possible.
 	if (index == SIZE_T_FAIL) {
-		assert(_next_tag < NUM_TAG_POOLS);
+		GAFF_ASSERT(_next_tag < NUM_TAG_POOLS);
 		unsigned int tag_index = AtomicIncrement(&_next_tag) - 1;
 
 		_tag_ids[tag_index] = alloc_tag;
@@ -236,7 +235,7 @@ void* Allocator::alloc(size_t size_bytes)
 
 void Allocator::free(void* data)
 {
-	assert(data);
+	GAFF_ASSERT(data);
 
 	AllocationHeader* header = reinterpret_cast<AllocationHeader*>(reinterpret_cast<char*>(data) - sizeof(AllocationHeader));
 
@@ -248,7 +247,7 @@ void Allocator::free(void* data)
 	g_pt_locks[header->pool_index].lock();
 
 	auto it = allocs.linearSearch(header);
-	assert(it != allocs.end());
+	GAFF_GAFF_ASSERT(it != allocs.end());
 	allocs.fastErase(it);
 
 	g_pt_locks[header->pool_index].unlock();

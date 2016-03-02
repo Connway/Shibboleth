@@ -83,7 +83,7 @@ bool UpdateManager::UpdatePhase::isDone(void) const
 void UpdateManager::UpdatePhase::run(void)
 {
 	// We shouldn't be calling run() if we are already updating.
-	assert(!_counter);
+	GAFF_ASSERT(!_counter);
 
 	void* frame_data = _frame_mgr.getNextFrameData(_id);
 
@@ -131,7 +131,7 @@ void UpdateManager::UpdatePhase::UpdateJob(void* data)
 	phase->_callbacks[row][update_data->cb_index](phase->_timer.getDeltaSec(), update_data->frame_data);
 
 	unsigned int new_val = AtomicDecrement(&phase->_counter);
-	assert(new_val < phase->_callbacks[row].size()); // Double check we don't underflow.
+	GAFF_ASSERT(new_val < phase->_callbacks[row].size()); // Double check we don't underflow.
 
 	if (!new_val) {
 		++row;

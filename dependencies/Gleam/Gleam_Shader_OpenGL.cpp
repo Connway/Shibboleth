@@ -48,70 +48,70 @@ ShaderGL::~ShaderGL(void)
 
 bool ShaderGL::initSource(IRenderDevice&, const char* shader_source, size_t source_size, SHADER_TYPE shader_type)
 {
-	assert(shader_source && source_size && shader_type < SHADER_TYPE_SIZE);
+	GAFF_ASSERT(shader_source && source_size && shader_type < SHADER_TYPE_SIZE);
 	_type = shader_type;
 	return compileShader(shader_source, static_cast<int>(source_size), shader_type);
 }
 
 bool ShaderGL::initSource(IRenderDevice&, const char* shader_source, SHADER_TYPE shader_type)
 {
-	assert(shader_source && shader_type < SHADER_TYPE_SIZE);
+	GAFF_ASSERT(shader_source && shader_type < SHADER_TYPE_SIZE);
 	_type = shader_type;
 	return compileShader(shader_source, static_cast<int>(strlen(shader_source)), shader_type);
 }
 
 bool ShaderGL::init(IRenderDevice&, const char* file_path, SHADER_TYPE shader_type)
 {
-	assert(file_path && shader_type < SHADER_TYPE_SIZE);
+	GAFF_ASSERT(file_path && shader_type < SHADER_TYPE_SIZE);
 	_type = shader_type;
 	return loadFileAndCompileShader(gl_shader_type[shader_type], file_path);
 }
 
 bool ShaderGL::initVertex(IRenderDevice&, const char* file_path)
 {
-	assert(file_path);
+	GAFF_ASSERT(file_path);
 	_type = SHADER_VERTEX;
 	return loadFileAndCompileShader(GL_VERTEX_SHADER, file_path);
 }
 
 bool ShaderGL::initPixel(IRenderDevice&, const char* file_path)
 {
-	assert(file_path);
+	GAFF_ASSERT(file_path);
 	_type = SHADER_PIXEL;
 	return loadFileAndCompileShader(GL_FRAGMENT_SHADER, file_path);
 }
 
 bool ShaderGL::initDomain(IRenderDevice&, const char* file_path)
 {
-	assert(file_path);
+	GAFF_ASSERT(file_path);
 	_type = SHADER_DOMAIN;
 	return loadFileAndCompileShader(GL_TESS_EVALUATION_SHADER, file_path);
 }
 
 bool ShaderGL::initGeometry(IRenderDevice&, const char* file_path)
 {
-	assert(file_path);
+	GAFF_ASSERT(file_path);
 	_type = SHADER_GEOMETRY;
 	return loadFileAndCompileShader(GL_GEOMETRY_SHADER, file_path);
 }
 
 bool ShaderGL::initHull(IRenderDevice&, const char* file_path)
 {
-	assert(file_path);
+	GAFF_ASSERT(file_path);
 	_type = SHADER_HULL;
 	return loadFileAndCompileShader(GL_TESS_CONTROL_SHADER, file_path);
 }
 
 bool ShaderGL::initCompute(IRenderDevice&, const char* file_path)
 {
-	assert(file_path);
+	GAFF_ASSERT(file_path);
 	_type = SHADER_COMPUTE;
 	return loadFileAndCompileShader(GL_COMPUTE_SHADER, file_path);
 }
 
 bool ShaderGL::initVertexSource(IRenderDevice&, const char* source, size_t source_size)
 {
-	assert(source);
+	GAFF_ASSERT(source);
 	_type = SHADER_VERTEX;
 
 	if (source_size == SIZE_T_FAIL) {
@@ -123,7 +123,7 @@ bool ShaderGL::initVertexSource(IRenderDevice&, const char* source, size_t sourc
 
 bool ShaderGL::initPixelSource(IRenderDevice&, const char* source, size_t source_size)
 {
-	assert(source);
+	GAFF_ASSERT(source);
 	_type = SHADER_PIXEL;
 
 	if (source_size == SIZE_T_FAIL) {
@@ -135,7 +135,7 @@ bool ShaderGL::initPixelSource(IRenderDevice&, const char* source, size_t source
 
 bool ShaderGL::initDomainSource(IRenderDevice&, const char* source, size_t source_size)
 {
-	assert(source);
+	GAFF_ASSERT(source);
 	_type = SHADER_DOMAIN;
 
 	if (source_size == SIZE_T_FAIL) {
@@ -147,7 +147,7 @@ bool ShaderGL::initDomainSource(IRenderDevice&, const char* source, size_t sourc
 
 bool ShaderGL::initGeometrySource(IRenderDevice&, const char* source, size_t source_size)
 {
-	assert(source);
+	GAFF_ASSERT(source);
 	_type = SHADER_GEOMETRY;
 
 	if (source_size == SIZE_T_FAIL) {
@@ -159,7 +159,7 @@ bool ShaderGL::initGeometrySource(IRenderDevice&, const char* source, size_t sou
 
 bool ShaderGL::initHullSource(IRenderDevice&, const char* source, size_t source_size)
 {
-	assert(source);
+	GAFF_ASSERT(source);
 	_type = SHADER_HULL;
 
 	if (source_size == SIZE_T_FAIL) {
@@ -171,7 +171,7 @@ bool ShaderGL::initHullSource(IRenderDevice&, const char* source, size_t source_
 
 bool ShaderGL::initComputeSource(IRenderDevice&, const char* source, size_t source_size)
 {
-	assert(source);
+	GAFF_ASSERT(source);
 	_type = SHADER_COMPUTE;
 
 	if (source_size == SIZE_T_FAIL) {
@@ -201,7 +201,7 @@ GLuint ShaderGL::getShader(void) const
 
 bool ShaderGL::loadFileAndCompileShader(unsigned int shader_type, const char* file_path)
 {
-	assert(file_path);
+	GAFF_ASSERT(file_path);
 
 	Gaff::File shader(file_path, Gaff::File::READ_BINARY);
 

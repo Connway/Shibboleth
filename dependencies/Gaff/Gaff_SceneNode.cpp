@@ -21,6 +21,7 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Gaff_SceneNode.h"
+#include "Gaff_Assert.h"
 #include <assimp/scene.h>
 
 NS_GAFF
@@ -46,13 +47,13 @@ SceneNode::~SceneNode(void)
 
 SceneNode SceneNode::findNode(const char* name) const
 {
-	assert(_node);
+	GAFF_ASSERT(_node);
 	return SceneNode(_node->FindNode(name));
 }
 
 SceneNode SceneNode::getParent(void) const
 {
-	assert(_node);
+	GAFF_ASSERT(_node);
 	return SceneNode(_node->mParent);
 }
 
@@ -79,31 +80,31 @@ bool SceneNode::operator!=(const SceneNode& rhs) const
 
 unsigned int SceneNode::getNumChildren(void) const
 {
-	assert(_node);
+	GAFF_ASSERT(_node);
 	return _node->mNumChildren;
 }
 
 SceneNode SceneNode::getChild(unsigned int index) const
 {
-	assert(_node && index < _node->mNumChildren);
+	GAFF_ASSERT(_node && index < _node->mNumChildren);
 	return SceneNode(_node->mChildren[index]);
 }
 
 const float* SceneNode::getTransform(void) const
 {
-	assert(_node);
+	GAFF_ASSERT(_node);
 	return &_node->mTransformation.a1;
 }
 
 const char* SceneNode::getName(void) const
 {
-	assert(_node);
+	GAFF_ASSERT(_node);
 	return _node->mName.C_Str();
 }
 
 MetaData SceneNode::getMetaData(void) const
 {
-	assert(_node);
+	GAFF_ASSERT(_node);
 	return MetaData(_node->mMetaData);
 }
 

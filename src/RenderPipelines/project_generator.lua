@@ -45,7 +45,7 @@ project "RenderPipelines"
 		"Shared", "Gaff", "jansson",
 		"Gleam", "Memory", "Managers",
 		"Components", "Game", "assimp",
-		"esprit"
+		"esprit", "Boxer"
 	}
 
 	links
@@ -53,7 +53,7 @@ project "RenderPipelines"
 		"Shared", "Gaff", "jansson",
 		"Gleam", "Memory", "Managers",
 		"Components", "Game", "assimp",
-		"esprit"
+		"esprit", "Boxer"
 	}
 
 	dofile("../../utils/os_conditionals.lua")

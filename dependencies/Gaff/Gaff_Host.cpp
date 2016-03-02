@@ -21,7 +21,7 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Gaff_Host.h"
-#include "Gaff_IncludeAssert.h"
+#include "Gaff_Assert.h"
 #include <enet/enet.h>
 
 NS_GAFF
@@ -34,7 +34,7 @@ bool NetworkInit(
 	NetworkFreeFunc free_func,
 	NetworkNoMemoryFunc no_mem_func)
 {
-	assert((alloc_func == nullptr && free_func == nullptr) || (alloc_func != nullptr && free_func != nullptr));
+	GAFF_ASSERT((alloc_func == nullptr && free_func == nullptr) || (alloc_func != nullptr && free_func != nullptr));
 
 	ENetCallbacks callbacks;
 	callbacks.malloc = alloc_func;
@@ -79,7 +79,7 @@ Host::~Host(void)
 */
 bool Host::initServer(unsigned short port, const char* address, size_t connections, size_t channels, unsigned int down_speed, unsigned int up_speed)
 {
-	assert(_host == nullptr);
+	GAFF_ASSERT(_host == nullptr);
 
 	ENetAddress addr = { ENET_HOST_ANY, port };
 
@@ -105,7 +105,7 @@ bool Host::initServer(unsigned short port, const char* address, size_t connectio
 */
 bool Host::initClient(size_t connections, size_t channels, unsigned int down_speed, unsigned int up_speed)
 {
-	assert(_host == nullptr);
+	GAFF_ASSERT(_host == nullptr);
 	_host = enet_host_create(nullptr, connections, channels, down_speed, up_speed);
 	return _host != nullptr;
 }
@@ -121,13 +121,13 @@ void Host::destroy(void)
 
 void Host::setBandwidthLimit(unsigned int down_speed, unsigned int up_speed)
 {
-	assert(_host);
+	GAFF_ASSERT(_host);
 	enet_host_bandwidth_limit(_host, down_speed, up_speed);
 }
 
 void Host::setChannelLimit(size_t channels)
 {
-	assert(_host);
+	GAFF_ASSERT(_host);
 	enet_host_channel_limit(_host, channels);
 }
 
@@ -136,19 +136,19 @@ void Host::setChannelLimit(size_t channels)
 */
 unsigned int Host::getHost(void) const
 {
-	assert(_host);
+	GAFF_ASSERT(_host);
 	return _host->address.host;
 }
 
 unsigned short Host::getPort(void) const
 {
-	assert(_host);
+	GAFF_ASSERT(_host);
 	return _host->address.port;
 }
 
 Connection Host::connect(const char* address, unsigned short port, size_t channels)
 {
-	assert(_host);
+	GAFF_ASSERT(_host);
 	Connection connection;
 	connection.connect(*this, address, port, channels, 0);
 	return connection;
@@ -172,7 +172,7 @@ Connection Host::getLatestConnection(void)
 */
 void Host::waitForEvent(NetworkEventCallback& callback, unsigned int timeout)
 {
-	assert(_host);
+	GAFF_ASSERT(_host);
 	ENetEvent event;
 
 	if (enet_host_service(_host, &event, timeout) > 0) {
@@ -203,7 +203,7 @@ void Host::waitForEvent(NetworkEventCallback& callback, unsigned int timeout)
 */
 void Host::checkForEvent(NetworkEventCallback& callback)
 {
-	assert(_host);
+	GAFF_ASSERT(_host);
 	ENetEvent event;
 
 	if (enet_host_check_events(_host, &event) > 0) {
@@ -238,7 +238,7 @@ void Host::checkForEvent(NetworkEventCallback& callback)
 */
 void Host::broadcast(unsigned char channel, void* data, size_t data_size, unsigned int packet_flags)
 {
-	assert(_host);
+	GAFF_ASSERT(_host);
 	ENetPacket* packet = enet_packet_create(data, data_size, packet_flags);
 	enet_host_broadcast(_host, channel, packet);
 }
@@ -248,7 +248,7 @@ void Host::broadcast(unsigned char channel, void* data, size_t data_size, unsign
 */
 void Host::flush(void)
 {
-	assert(_host);
+	GAFF_ASSERT(_host);
 	enet_host_flush(_host);
 }
 
@@ -264,7 +264,7 @@ bool Host::operator!=(const Host& rhs) const
 
 const Host& Host::operator=(const Host& rhs)
 {
-	assert(!_host);
+	GAFF_ASSERT(!_host);
 
 	_host = rhs._host;
 	((Host&)rhs)._host = nullptr; // take over control of their _host pointer

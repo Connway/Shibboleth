@@ -254,6 +254,9 @@
     <ProjectReference Include="..\memory\Memory.vcxproj">
       <Project>{BE94DDC2-AA36-0899-93F1-1BED7F328FE9}</Project>
     </ProjectReference>
+    <ProjectReference Include="..\dependencies\Boxer.vcxproj">
+      <Project>{653BE80C-D14F-10BE-9AD1-B31D06A50CEF}</Project>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

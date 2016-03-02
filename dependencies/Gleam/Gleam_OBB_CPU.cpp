@@ -92,13 +92,13 @@ Vector4CPU OBBCPU::getExtent(void) const
 
 const Vector4CPU& OBBCPU::getAxis(int axis) const
 {
-	assert(axis > -1 && axis < 3);
+	GAFF_ASSERT(axis > -1 && axis < 3);
 	return _axes[axis];
 }
 
 void OBBCPU::setAxis(int axis, const Vector4CPU& vec)
 {
-	assert(axis > -1 && axis < 3);
+	GAFF_ASSERT(axis > -1 && axis < 3);
 	_axes[axis] = vec;
 }
 

@@ -46,7 +46,7 @@ BezierCurve<PointType, Allocator>::~BezierCurve(void)
 template <class PointType, class Allocator>
 PointType BezierCurve<PointType, Allocator>::sample(float t) const
 {
-	assert(!_points.empty());
+	GAFF_ASSERT(!_points.empty());
 
 	// Clamp to range and normalize
 	t = Clamp(t, _points.first().first, _points.last().first) / (_points.last().first - _points.first().first);
@@ -66,7 +66,7 @@ void BezierCurve<PointType, Allocator>::addKey(float t, const PointType& point)
 	unsigned int i = 0;
 
 	for (; i < _points.size(); ++i) {
-		assert(_points[i].first != t);
+		GAFF_ASSERT(_points[i].first != t);
 
 		if (t < _points[i].first) {
 			break;
@@ -79,7 +79,7 @@ void BezierCurve<PointType, Allocator>::addKey(float t, const PointType& point)
 template <class PointType, class Allocator>
 void BezierCurve<PointType, Allocator>::removeKey(unsigned int index)
 {
-	assert(index < _points.size());
+	GAFF_ASSERT(index < _points.size());
 	_points.erase(index);
 }
 
@@ -92,6 +92,6 @@ unsigned int BezierCurve<PointType, Allocator>::getNumKeys(void) const
 template <class PointType, class Allocator>
 const typename BezierCurve<PointType, Allocator>::Key& BezierCurve<PointType, Allocator>::getKey(unsigned int index)
 {
-	assert(index < _points.size());
+	GAFF_ASSERT(index < _points.size());
 	return Key(_points[i].first, _points[i].second);
 }

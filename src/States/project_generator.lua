@@ -91,7 +91,7 @@ project "StatesModule"
 		"zlib", "Gleam", "Game",
 		"esprit", "Managers",
 		"Components", "States",
-		"Memory", "LuaJIT"
+		"Memory", "LuaJIT", "Boxer"
 	}
 
 	links
@@ -103,7 +103,7 @@ project "StatesModule"
 		"assimp", "minizip",
 		"esprit", "Managers",
 		"Components", "States",
-		"Memory"
+		"Memory", "Boxer"
 	}
 
 	filter { "configurations:Debug", "platforms:x86" }

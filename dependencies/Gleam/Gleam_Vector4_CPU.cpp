@@ -21,7 +21,7 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Gleam_Vector4_CPU.h"
-#include <Gaff_IncludeAssert.h>
+#include <Gaff_Assert.h>
 #include <Gaff_Math.h>
 #include <cmath>
 
@@ -79,7 +79,7 @@ const Vector4CPU& Vector4CPU::operator=(const Vector4CPU& rhs)
 
 float Vector4CPU::operator[](int index) const
 {
-	assert(index > -1 && index < 4);
+	GAFF_ASSERT(index > -1 && index < 4);
 	return _vec[index];
 }
 
@@ -247,7 +247,7 @@ void Vector4CPU::set(float x, float y, float z, float w)
 
 void Vector4CPU::set(const float* elements)
 {
-	assert(elements);
+	GAFF_ASSERT(elements);
 	_vec[0] = elements[0];
 	_vec[1] = elements[1];
 	_vec[2] = elements[2];
@@ -256,13 +256,13 @@ void Vector4CPU::set(const float* elements)
 
 void Vector4CPU::set(float value, unsigned int index)
 {
-	assert(index >= 0 && index < 4);
+	GAFF_ASSERT(index >= 0 && index < 4);
 	_vec[index] = value;
 }
 
 Vector4CPU Vector4CPU::get(unsigned int index) const
 {
-	assert(index >= 0 && index < 4);
+	GAFF_ASSERT(index >= 0 && index < 4);
 	return Vector4CPU(_vec[index]);
 }
 
@@ -283,19 +283,19 @@ float Vector4CPU::length(void) const
 
 float Vector4CPU::reciprocalLengthSquared(void) const
 {
-	assert(length() != 0.0f);
+	GAFF_ASSERT(length() != 0.0f);
 	return 1.0f / (_x*_x + _y*_y + _z*_z + _w*_w);
 }
 
 float Vector4CPU::reciprocalLength(void) const
 {
-	assert(length() != 0.0f);
+	GAFF_ASSERT(length() != 0.0f);
 	return 1.0f / sqrtf(_x*_x + _y*_y + _z*_z + _w*_w);
 }
 
 Vector4CPU Vector4CPU::normalize(void) const
 {
-	assert(length() != 0.0f);
+	GAFF_ASSERT(length() != 0.0f);
 	float inv_length = 1.0f / sqrtf(_x*_x + _y*_y + _z*_z + _w*_w);
 
 	return Vector4CPU(
@@ -434,7 +434,7 @@ void Vector4CPU::crossThis(const Vector4CPU& rhs)
 
 void Vector4CPU::normalizeThis(void)
 {
-	assert(length() != 0.0f);
+	GAFF_ASSERT(length() != 0.0f);
 	float inv_length = 1.0f / sqrtf(_x*_x + _y*_y + _z*_z + _w*_w);
 	_x *= inv_length;
 	_y *= inv_length;

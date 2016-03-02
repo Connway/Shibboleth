@@ -50,21 +50,21 @@ RendererType DeferredRenderDeviceD3D::getRendererType(void) const
 
 const float* DeferredRenderDeviceD3D::getClearColor(void) const
 {
-	assert(0 && "Calling a immediate render device function on a deferred render device");
+	GAFF_ASSERT_MSG(false, "Calling a immediate render device function on a deferred render device");
 	return nullptr;
 }
 
 void DeferredRenderDeviceD3D::executeCommandList(ICommandList* command_list)
 {
-	assert(command_list->getRendererType() == RENDERER_DIRECT3D && _context);
+	GAFF_ASSERT(command_list->getRendererType() == RENDERER_DIRECT3D && _context);
 	CommandListD3D* cmd_list = reinterpret_cast<CommandListD3D*>(command_list);
-	assert(cmd_list->getCommandList());
+	GAFF_ASSERT(cmd_list->getCommandList());
 	_context->ExecuteCommandList(cmd_list->getCommandList(), FALSE);
 }
 
 bool DeferredRenderDeviceD3D::finishCommandList(ICommandList* command_list)
 {
-	assert(command_list->getRendererType() == RENDERER_DIRECT3D && _context);
+	GAFF_ASSERT(command_list->getRendererType() == RENDERER_DIRECT3D && _context);
 
 	CommandListD3D* cmd_list = reinterpret_cast<CommandListD3D*>(command_list);
 	ID3D11CommandList* cl = nullptr;
@@ -88,13 +88,13 @@ void DeferredRenderDeviceD3D::renderNoVertexInput(unsigned int vert_count)
 
 ID3D11DeviceContext* DeferredRenderDeviceD3D::getDeviceContext(unsigned int)
 {
-	assert(0 && "Calling a immediate render device function on a deferred render device");
+	GAFF_ASSERT_MSG(false, "Calling a immediate render device function on a deferred render device");
 	return nullptr;
 }
 
 ID3D11Device* DeferredRenderDeviceD3D::getDevice(unsigned int)
 {
-	assert(0 && "Calling a immediate render device function on a deferred render device");
+	GAFF_ASSERT_MSG(false, "Calling a immediate render device function on a deferred render device");
 	return nullptr;
 }
 
@@ -105,7 +105,7 @@ ID3D11DeviceContext* DeferredRenderDeviceD3D::getActiveDeviceContext(void)
 
 ID3D11Device* DeferredRenderDeviceD3D::getActiveDevice(void)
 {
-	assert(0 && "Calling a immediate render device function on a deferred render device");
+	GAFF_ASSERT_MSG(false, "Calling a immediate render device function on a deferred render device");
 	return nullptr;
 }
 

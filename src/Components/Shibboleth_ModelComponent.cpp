@@ -220,7 +220,7 @@ size_t ModelComponent::determineLOD(const Gleam::Vector4CPU& /*pos*/)
 
 //unsigned int ModelComponent::getMeshInstanceHash(size_t index) const
 //{
-//	assert(_model);
+//	GAFF_ASSERT(_model);
 //	unsigned int hash = INIT_HASH32;
 //
 //	// Find first device with a model in it
@@ -337,7 +337,7 @@ void ModelComponent::requestResources(const Gaff::JSON& materials, ResourceManag
 
 void ModelComponent::setupResources(void)
 {
-	assert(_model->models[0][0]->getMeshCount() == _mesh_data.size());
+	GAFF_ASSERT(_model->models[0][0]->getMeshCount() == _mesh_data.size());
 
 	unsigned int num_devices = GetApp().getManagerT<RenderManager>("Render Manager").getRenderDevice().getNumDevices();
 
@@ -346,8 +346,8 @@ void ModelComponent::setupResources(void)
 			Gleam::ProgramReflection prog_refl = it_md->material->programs[device]->getReflectionData();
 			ProgramBuffersPtr& program_buffers = it_md->program_buffers->data[device];
 
-			assert(it_md->textures.size() == prog_refl.total_textures);
-			assert(it_md->samplers.size() == prog_refl.total_samplers);
+			GAFF_ASSERT(it_md->textures.size() == prog_refl.total_textures);
+			GAFF_ASSERT(it_md->samplers.size() == prog_refl.total_samplers);
 
 			// Map textures
 			if (!it_md->textures.empty()) {
@@ -420,7 +420,7 @@ void ModelComponent::setupResources(void)
 
 void ModelComponent::addToOcclusionManager(void)
 {
-	assert(!Gaff::IsAnyBitSet<char>(_flags, MC_IN_OM));
+	GAFF_ASSERT(!Gaff::IsAnyBitSet<char>(_flags, MC_IN_OM));
 
 	_occlusion_id = _occlusion_mgr.addObject(
 		getOwner(), (isStatic()) ? OcclusionManager::OT_STATIC : OcclusionManager::OT_DYNAMIC,
@@ -432,7 +432,7 @@ void ModelComponent::addToOcclusionManager(void)
 
 void ModelComponent::removeFromOcclusionManager(void)
 {
-	assert(Gaff::IsAnyBitSet<char>(_flags, MC_IN_OM));
+	GAFF_ASSERT(Gaff::IsAnyBitSet<char>(_flags, MC_IN_OM));
 	_occlusion_mgr.removeObject(_occlusion_id);
 	_occlusion_id = OcclusionManager::OcclusionID();
 	Gaff::ClearBits<char>(_flags, MC_IN_OM);

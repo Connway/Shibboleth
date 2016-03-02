@@ -129,7 +129,7 @@ void CameraManager::removeCamera(CameraComponent* camera)
 		return lhs->getRenderOrder() < rhs->getRenderOrder();
 	});
 
-	assert(it != _cameras.end() && *it == camera);
+	GAFF_ASSERT(it != _cameras.end() && *it == camera);
 	_cameras.erase(it);
 }
 
@@ -165,7 +165,7 @@ void CameraManager::addModelComponent(ObjectData& od, ModelComponent* mc, const 
 	//auto& program_buffers = mc->getProgramBuffers();
 	//auto& programs = mc->getMaterials();
 
-	//assert(program_buffers.size() == programs.size());
+	//GAFF_ASSERT(program_buffers.size() == programs.size());
 
 	//// For each material per mesh, add the shader data
 	//for (size_t i = 0; i < program_buffers.size(); ++i) {

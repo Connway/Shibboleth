@@ -42,7 +42,7 @@ bool SetupOtterUIState::init(unsigned int /*state_id*/)
 	// Make sure we have a transition for when we finish loading.
 	// If we have more than one transition, you're using this state wrong
 	// and should fix it.
-	assert(_transitions.size() == 1);
+	GAFF_ASSERT(_transitions.size() == 1);
 	//_state_id = state_id;
 	return true;
 }

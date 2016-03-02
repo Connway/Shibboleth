@@ -47,7 +47,7 @@ void LogManager::destroy(void)
 
 bool LogManager::openLogFile(const AHashString& filename)
 {
-	assert(filename.size() && _files.indexOf(filename) == SIZE_T_FAIL);
+	GAFF_ASSERT(filename.size() && _files.indexOf(filename) == SIZE_T_FAIL);
 	Gaff::File file(filename.getBuffer(), Gaff::File::APPEND);
 
 	if (!file.isOpen()) {
@@ -71,49 +71,49 @@ bool LogManager::openLogFile(const AHashString& filename)
 
 bool LogManager::openLogFile(const AString& filename)
 {
-	assert(filename.size() && _files.indexOf(filename) == SIZE_T_FAIL);
+	GAFF_ASSERT(filename.size() && _files.indexOf(filename) == SIZE_T_FAIL);
 	return openLogFile(AHashString(filename));
 }
 
 bool LogManager::openLogFile(const char* filename)
 {
-	assert(filename && _files.indexOf(filename) == SIZE_T_FAIL);
+	GAFF_ASSERT(filename && _files.indexOf(filename) == SIZE_T_FAIL);
 	return openLogFile(AHashString(filename));
 }
 
 void LogManager::closeLogFile(const AHashString& filename)
 {
-	assert(filename.size() && _files.indexOf(filename) != SIZE_T_FAIL);
+	GAFF_ASSERT(filename.size() && _files.indexOf(filename) != SIZE_T_FAIL);
 	_files.erase(filename);
 }
 
 void LogManager::closeLogFile(const AString& filename)
 {
-	assert(filename.size() && _files.indexOf(filename) != SIZE_T_FAIL);
+	GAFF_ASSERT(filename.size() && _files.indexOf(filename) != SIZE_T_FAIL);
 	_files.erase(filename);
 }
 
 void LogManager::closeLogFile(const char* filename)
 {
-	assert(filename && _files.indexOf(filename) != SIZE_T_FAIL);
+	GAFF_ASSERT(filename && _files.indexOf(filename) != SIZE_T_FAIL);
 	_files.erase(filename);
 }
 
 LogManager::FileLockPair& LogManager::getLogFile(const AHashString& filename)
 {
-	assert(filename.size() && _files.indexOf(filename) != SIZE_T_FAIL);
+	GAFF_ASSERT(filename.size() && _files.indexOf(filename) != SIZE_T_FAIL);
 	return _files[filename];
 }
 
 LogManager::FileLockPair& LogManager::getLogFile(const AString& filename)
 {
-	assert(filename.size() && _files.indexOf(filename) != SIZE_T_FAIL);
+	GAFF_ASSERT(filename.size() && _files.indexOf(filename) != SIZE_T_FAIL);
 	return _files[filename];
 }
 
 LogManager::FileLockPair& LogManager::getLogFile(const char* filename)
 {
-	assert(filename && _files.indexOf(filename) != SIZE_T_FAIL);
+	GAFF_ASSERT(filename && _files.indexOf(filename) != SIZE_T_FAIL);
 	return _files[filename];
 }
 

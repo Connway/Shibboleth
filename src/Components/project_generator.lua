@@ -90,7 +90,10 @@ project "ComponentsModule"
 		"zlib", "Gleam", "Game",
 		"esprit", "Components",
 		"Managers", "Memory",
-		"LuaJIT"
+		"LuaJIT", "Boxer",
+		"BulletCollision",
+		"BulletDynamics",
+		"LinearMath"
 	}
 
 	links
@@ -101,8 +104,9 @@ project "ComponentsModule"
 		"zlib", "Gleam", "Game",
 		"esprit", "Components",
 		"Managers", "Memory",
-		"BulletCollision", "BulletDynamics",
-		"LinearMath"
+		"BulletCollision",
+		"BulletDynamics",
+		"LinearMath", "Boxer"
 	}
 
 	filter { "configurations:Debug", "platforms:x86" }

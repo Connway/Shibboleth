@@ -25,8 +25,8 @@ project "Memory"
 		"../../dependencies/dirent"
 	}
 
-	dependson { "Shared", "Gaff" }
-	links { "Shared", "Gaff" }
+	dependson { "Shared", "Gaff", "Boxer" }
+	links { "Shared", "Gaff", "Boxer" }
 
 	filter { "system:windows", "options:symbols" }
 		links { "Dbghelp" }

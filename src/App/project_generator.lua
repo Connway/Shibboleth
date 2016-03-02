@@ -44,12 +44,14 @@ project "App"
 
 	dependson
 	{
-		"Shared", "Gaff", "jansson", "Memory"
+		"Shared", "Gaff", "jansson", "Memory",
+		"Boxer"
 	}
 
 	links
 	{
-		"Shared", "Gaff", "jansson", "Memory"
+		"Shared", "Gaff", "jansson", "Memory",
+		"Boxer"
 	}
 
 	dofile("../../utils/os_conditionals.lua")

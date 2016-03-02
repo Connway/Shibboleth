@@ -34,7 +34,6 @@ THE SOFTWARE.
 #include "Gleam_Mesh_OpenGL.h"
 #include "Gleam_IMesh.h"
 
-#include <Gaff_IncludeAssert.h>
 #include <GL/glew.h>
 
 NS_GLEAM
@@ -99,14 +98,14 @@ IRenderDevice* RenderDeviceGLBase::createDeferredRenderDevice(void)
 
 void RenderDeviceGLBase::executeCommandList(ICommandList* command_list)
 {
-	assert(command_list->getRendererType() == RENDERER_OPENGL);
+	GAFF_ASSERT(command_list->getRendererType() == RENDERER_OPENGL);
 	resetRenderState();
 	reinterpret_cast<CommandListGL*>(command_list)->execute();
 }
 
 bool RenderDeviceGLBase::finishCommandList(ICommandList*)
 {
-	assert(0 && "Calling a deferred render device function on an immediate render device");
+	GAFF_ASSERT_MSG(false, "Calling a deferred render device function on an immediate render device");
 	return false;
 }
 
@@ -276,7 +275,7 @@ void RenderDeviceGLBase::bindProgramBuffers(ProgramBuffersGL* program_buffers)
 		const GleamArray<ISamplerState*>& sampler_states = program_buffers->getSamplerStates(static_cast<Gleam::IShader::SHADER_TYPE>(i));
 		const GleamArray<IBuffer*>& const_bufs = program_buffers->getConstantBuffers(static_cast<Gleam::IShader::SHADER_TYPE>(i));
 
-		assert(sampler_states.size() <= resource_views.size());
+		GAFF_ASSERT(sampler_states.size() <= resource_views.size());
 		unsigned int sampler_count = 0;
 
 		for (unsigned int j = 0; j < const_bufs.size(); ++j) {
@@ -289,7 +288,7 @@ void RenderDeviceGLBase::bindProgramBuffers(ProgramBuffersGL* program_buffers)
 
 			if (resource_views[j]->getViewType() == IShaderResourceView::VIEW_TEXTURE) {
 				// should probably assert that texture_count isn't higher than the supported number of textures
-				assert(texture_count < 32);
+				GAFF_ASSERT(texture_count < 32);
 
 				SamplerStateGL* st = reinterpret_cast<SamplerStateGL*>(sampler_states[sampler_count]);
 
@@ -301,7 +300,7 @@ void RenderDeviceGLBase::bindProgramBuffers(ProgramBuffersGL* program_buffers)
 				++sampler_count;
 
 			} else {
-				assert(0 && "How is your ShaderResourceView not a texture? That's the only type we have implemented ...");
+				GAFF_ASSERT_MSG(false, "How is your ShaderResourceView not a texture? That's the only type we have implemented ...");
 			}
 		}
 	}

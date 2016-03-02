@@ -25,7 +25,6 @@ THE SOFTWARE.
 #include "Gleam_Window_Windows.h"
 #include "Gleam_WindowHelpers_Windows.h"
 #include "Gleam_String.h"
-#include <Gaff_IncludeAssert.h>
 
 NS_GLEAM
 
@@ -120,7 +119,7 @@ bool Window::init(const char* app_name, MODE window_mode,
 					unsigned int width, unsigned int height,
 					int pos_x, int pos_y, const char*)
 {
-	assert(app_name);
+	GAFF_ASSERT(app_name);
 
 	if (gFirstInit) {
 		gLeftKeys[VK_CONTROL] = KEY_LEFTCONTROL;
@@ -268,7 +267,7 @@ bool Window::init(const char* app_name, MODE window_mode,
 void Window::destroy(void)
 {
 	auto it = gWindows.linearSearch(this);
-	assert(it != gWindows.end());
+	GAFF_ASSERT(it != gWindows.end());
 	gWindows.fastErase(it);
 
 	containCursor(false);

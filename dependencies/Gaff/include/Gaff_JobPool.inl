@@ -70,8 +70,8 @@ void JobPool<Allocator>::destroy(void)
 template <class Allocator>
 void JobPool<Allocator>::addJobs(JobData* jobs, size_t num_jobs, Counter** counter, unsigned int pool)
 {
-	assert(pool < _job_pools.size());
-	assert(num_jobs);
+	GAFF_ASSERT(pool < _job_pools.size());
+	GAFF_ASSERT(num_jobs);
 
 	Counter* cnt = nullptr;
 
@@ -91,7 +91,7 @@ void JobPool<Allocator>::addJobs(JobData* jobs, size_t num_jobs, Counter** count
 	job_queue.jobs.reserve(job_queue.jobs.size() + num_jobs);
 
 	for (size_t i = 0; i < num_jobs; ++i) {
-		assert(jobs[i].job_func);
+		GAFF_ASSERT(jobs[i].job_func);
 		job_queue.jobs.emplacePush(JobPair(jobs[i], cnt));
 	}
 
@@ -108,7 +108,7 @@ void JobPool<Allocator>::waitForAndFreeCounter(Counter* counter)
 template <class Allocator>
 void JobPool<Allocator>::waitForCounter(Counter* counter)
 {
-	assert(counter);
+	GAFF_ASSERT(counter);
 
 	while (counter->count && !_thread_data.terminate) {
 		YieldThread();
@@ -118,14 +118,14 @@ void JobPool<Allocator>::waitForCounter(Counter* counter)
 template <class Allocator>
 void JobPool<Allocator>::freeCounter(Counter* counter)
 {
-	assert(counter);
+	GAFF_ASSERT(counter);
 	_allocator.free(counter);
 }
 
 template <class Allocator>
 void JobPool<Allocator>::helpWhileWaiting(Counter* counter)
 {
-	assert(counter);
+	GAFF_ASSERT(counter);
 
 	while (counter->count) {
 		doAJob();
@@ -264,7 +264,7 @@ void JobPool<Allocator>::DoJob(JobPair& job)
 		//	Gaff::DebugPrintf("JOB(%d) - %p:(%d)\n", Gaff::Thread::GetCurrentThreadID(), job.second, job.second->count);
 		//}
 
-		assert(job.second->count);
+		GAFF_ASSERT(job.second->count);
 		AtomicDecrement(&job.second->count);
 	}
 }

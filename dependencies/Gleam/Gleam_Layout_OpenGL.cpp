@@ -127,7 +127,7 @@ bool LayoutGL::init(IRenderDevice&, const LayoutDescription* layout_desc, size_t
 		layout_data.normalized = _format_sizes[layout_desc[i].format].normalized;
 
 		if (layout_desc[i].aligned_byte_offset == APPEND_ALIGNED) {
-			assert(i > 0);
+			GAFF_ASSERT(i > 0);
 			//layout_data.aligned_byte_offset = _format_sizes[layout_desc[i - 1].format].size_bytes;
 			layout_data.aligned_byte_offset = _format_sizes[layout_desc[i - 1].format].size_bytes + _layout_descs[input_slot].last().aligned_byte_offset;
 
@@ -148,14 +148,14 @@ void LayoutGL::destroy(void)
 
 void LayoutGL::setLayout(IRenderDevice& rd, const IMesh* mesh)
 {
-	assert(mesh->getRendererType() == RENDERER_OPENGL && rd.getRendererType() == RENDERER_OPENGL);
+	GAFF_ASSERT(mesh->getRendererType() == RENDERER_OPENGL && rd.getRendererType() == RENDERER_OPENGL);
 	IRenderDeviceGL& rdgl = *reinterpret_cast<IRenderDeviceGL*>((reinterpret_cast<char*>(&rd) + sizeof(IRenderDevice)));
 	rdgl.setLayout(this, mesh);
 }
 
 void LayoutGL::unsetLayout(IRenderDevice& rd)
 {
-	assert(rd.getRendererType() == RENDERER_OPENGL);
+	GAFF_ASSERT(rd.getRendererType() == RENDERER_OPENGL);
 	IRenderDeviceGL& rdgl = *reinterpret_cast<IRenderDeviceGL*>((reinterpret_cast<char*>(&rd) + sizeof(IRenderDevice)));
 	rdgl.unsetLayout(this);
 }

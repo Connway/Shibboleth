@@ -43,14 +43,14 @@ public:
 	template <class T>
 	const T& getUserData(void) const
 	{
-		static_assert(sizeof(T) <= sizeof(uint64_t), "UserDataWrapper: sizeof(T) is greater than 64-bits!");
+		static_GAFF_ASSERT(sizeof(T) <= sizeof(uint64_t), "UserDataWrapper: sizeof(T) is greater than 64-bits!");
 		return reinterpret_cast<T>(_user_data);
 	}
 
 	template <class T>
 	T& getUserData(void)
 	{
-		static_assert(sizeof(T) <= sizeof(uint64_t), "UserDataWrapper: sizeof(T) is greater than 64-bits!");
+		static_GAFF_ASSERT(sizeof(T) <= sizeof(uint64_t), "UserDataWrapper: sizeof(T) is greater than 64-bits!");
 		return reinterpret_cast<T>(_user_data);
 	}
 

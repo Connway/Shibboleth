@@ -224,7 +224,6 @@
     <ClInclude Include="..\..\..\dependencies\Gaff\include\Gaff_IRequestableInterface.h" />
     <ClInclude Include="..\..\..\dependencies\Gaff\include\Gaff_IVirtualDestructor.h" />
     <ClInclude Include="..\..\..\dependencies\Gaff\include\Gaff_Image.h" />
-    <ClInclude Include="..\..\..\dependencies\Gaff\include\Gaff_IncludeAssert.h" />
     <ClInclude Include="..\..\..\dependencies\Gaff\include\Gaff_IncludeWindows.h" />
     <ClInclude Include="..\..\..\dependencies\Gaff\include\Gaff_JSON.h" />
     <ClInclude Include="..\..\..\dependencies\Gaff\include\Gaff_JobPool.h" />

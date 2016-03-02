@@ -30,13 +30,15 @@ project "Graphics"
 	dependson
 	{
 		"Shared", "Gaff", "jansson",
-		"Gleam", "glew", "Memory"
+		"Gleam", "glew", "Memory",
+		"Boxer"
 	}
 
 	links
 	{
 		"Shared", "Gaff", "jansson",
-		"Gleam", "glew", "Memory"
+		"Gleam", "glew", "Memory",
+		"Boxer"
 	}
 
 	filter { "configurations:*Direct3D"}

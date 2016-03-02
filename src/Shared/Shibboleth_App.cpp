@@ -50,7 +50,7 @@ App::~App(void)
 bool App::init(int argc, char** argv)
 {
 #if defined(SYMBOL_BUILD) && defined(INIT_STACKTRACE_SYSTEM)
-	assert(Gaff::StackTrace::Init());
+	GAFF_ASSERT(Gaff::StackTrace::Init());
 #endif
 
 	while (!_seed) {
@@ -532,37 +532,37 @@ void App::destroy(void)
 
 const IManager* App::getManager(const AHashString& name) const
 {
-	assert(name.size() && _manager_map.indexOf(name) != SIZE_T_FAIL);
+	GAFF_ASSERT(name.size() && _manager_map.indexOf(name) != SIZE_T_FAIL);
 	return _manager_map[name].manager;
 }
 
 const IManager* App::getManager(const AString& name) const
 {
-	assert(name.size() && _manager_map.indexOf(name) != SIZE_T_FAIL);
+	GAFF_ASSERT(name.size() && _manager_map.indexOf(name) != SIZE_T_FAIL);
 	return _manager_map[name].manager;
 }
 
 const IManager* App::getManager(const char* name) const
 {
-	assert(name && _manager_map.indexOf(name) != SIZE_T_FAIL);
+	GAFF_ASSERT(name && _manager_map.indexOf(name) != SIZE_T_FAIL);
 	return _manager_map[name].manager;
 }
 
 IManager* App::getManager(const AHashString& name)
 {
-	assert(name.size() && _manager_map.indexOf(name) != SIZE_T_FAIL);
+	GAFF_ASSERT(name.size() && _manager_map.indexOf(name) != SIZE_T_FAIL);
 	return _manager_map[name].manager;
 }
 
 IManager* App::getManager(const AString& name)
 {
-	assert(name.size() && _manager_map.indexOf(name) != SIZE_T_FAIL);
+	GAFF_ASSERT(name.size() && _manager_map.indexOf(name) != SIZE_T_FAIL);
 	return _manager_map[name].manager;
 }
 
 IManager* App::getManager(const char* name)
 {
-	assert(name && _manager_map.indexOf(name) != SIZE_T_FAIL);
+	GAFF_ASSERT(name && _manager_map.indexOf(name) != SIZE_T_FAIL);
 	return _manager_map[name].manager;
 }
 

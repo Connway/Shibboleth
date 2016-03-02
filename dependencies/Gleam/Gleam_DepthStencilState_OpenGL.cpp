@@ -23,7 +23,7 @@ THE SOFTWARE.
 
 #include "Gleam_DepthStencilState_OpenGL.h"
 #include "Gleam_RenderDevice_OpenGL.h"
-#include <Gaff_IncludeAssert.h>
+#include <Gaff_Assert.h>
 #include <GL/glew.h>
 
 NS_GLEAM
@@ -60,7 +60,7 @@ DepthStencilStateGL::~DepthStencilStateGL(void)
 
 bool DepthStencilStateGL::init(IRenderDevice& rd, const DepthStencilStateSettings& settings)
 {
-	assert(rd.getRendererType() == RENDERER_OPENGL);
+	GAFF_ASSERT(rd.getRendererType() == RENDERER_OPENGL);
 	_depth_stencil_settings = settings;
 	return true;
 }
@@ -71,14 +71,14 @@ void DepthStencilStateGL::destroy(void)
 
 void DepthStencilStateGL::set(IRenderDevice& rd) const
 {
-	assert(rd.getRendererType() == RENDERER_OPENGL);
+	GAFF_ASSERT(rd.getRendererType() == RENDERER_OPENGL);
 	IRenderDeviceGL& rdgl = reinterpret_cast<IRenderDeviceGL&>(*(reinterpret_cast<char*>(&rd) + sizeof(IRenderDevice)));
 	rdgl.setDepthStencilState(this);
 }
 
 void DepthStencilStateGL::unset(IRenderDevice& rd) const
 {
-	assert(rd.getRendererType() == RENDERER_OPENGL);
+	GAFF_ASSERT(rd.getRendererType() == RENDERER_OPENGL);
 	IRenderDeviceGL& rdgl = reinterpret_cast<IRenderDeviceGL&>(*(reinterpret_cast<char*>(&rd) + sizeof(IRenderDevice)));
 	rdgl.setDepthStencilState(nullptr);
 }

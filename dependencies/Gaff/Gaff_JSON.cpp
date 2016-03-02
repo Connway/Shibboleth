@@ -69,7 +69,7 @@ json_free_t JSON::_free = free;
 
 void JSON::SetMemoryFunctions(json_malloc_t alloc_func, json_free_t free_func)
 {
-	assert(alloc_func && free_func);
+	GAFF_ASSERT(alloc_func && free_func);
 	json_set_alloc_funcs(alloc_func, free_func);
 	_alloc = alloc_func;
 	_free = free_func;
@@ -234,27 +234,27 @@ bool JSON::validate(const char* input) const
 
 bool JSON::parseFile(const char* filename)
 {
-	assert(!_value && filename && strlen(filename));
+	GAFF_ASSERT(!_value && filename && strlen(filename));
 	_value = json_load_file(filename, JSON_REJECT_DUPLICATES | JSON_DISABLE_EOF_CHECK, &_error);
 	return valid();
 }
 
 bool JSON::parse(const char* input)
 {
-	assert(!_value && input);
+	GAFF_ASSERT(!_value && input);
 	_value = json_loads(input, JSON_REJECT_DUPLICATES | JSON_DISABLE_EOF_CHECK, &_error);
 	return valid();
 }
 
 bool JSON::dumpToFile(const char* filename)
 {
-	assert(_value);
+	GAFF_ASSERT(_value);
 	return !json_dump_file(_value, filename, JSON_INDENT(4) | JSON_SORT_KEYS);
 }
 
 char* JSON::dump(void)
 {
-	assert(_value);
+	GAFF_ASSERT(_value);
 	return json_dumps(_value, JSON_INDENT(4) | JSON_SORT_KEYS);
 }
 
@@ -328,7 +328,7 @@ bool JSON::isNull(void) const
 */
 JSON JSON::getObject(const char* key) const
 {
-	assert(isObject());
+	GAFF_ASSERT(isObject());
 	return JSON(json_object_get(_value, key), true);
 }
 
@@ -339,7 +339,7 @@ JSON JSON::getObject(const char* key) const
 */
 JSON JSON::getObject(size_t index) const
 {
-	assert(isArray() && index < size());
+	GAFF_ASSERT(isArray() && index < size());
 	return JSON(json_array_get(_value, index), true);
 }
 
@@ -390,7 +390,7 @@ double JSON::getNumber(void) const
 */
 void JSON::setObject(const char* key, const JSON& json)
 {
-	assert(json.valid() && isObject());
+	GAFF_ASSERT(json.valid() && isObject());
 	json_object_set(_value, key, json._value);
 }
 
@@ -401,7 +401,7 @@ void JSON::setObject(const char* key, const JSON& json)
 */
 void JSON::setObject(size_t index, const JSON& json)
 {
-	assert(json.valid() && isArray());
+	GAFF_ASSERT(json.valid() && isArray());
 	json_array_set(_value, index, json._value);
 }
 
@@ -412,19 +412,19 @@ void JSON::setObject(size_t index, const JSON& json)
 */
 size_t JSON::size(void) const
 {
-	assert(_value && (isArray() || isObject()));
+	GAFF_ASSERT(_value && (isArray() || isObject()));
 	return (isObject()) ? json_object_size(_value) : json_array_size(_value);
 }
 
 JSON JSON::shallowCopy(void) const
 {
-	assert(_value);
+	GAFF_ASSERT(_value);
 	return JSON(json_copy(_value), false);
 }
 
 JSON JSON::deepCopy(void) const
 {
-	assert(_value);
+	GAFF_ASSERT(_value);
 	return JSON(json_deep_copy(_value), false);
 }
 
@@ -463,21 +463,21 @@ const JSON& JSON::operator=(const JSON& rhs)
 
 const JSON& JSON::operator=(const char* value)
 {
-	assert(_value && isString());
+	GAFF_ASSERT(_value && isString());
 	json_string_set(_value, value);
 	return *this;
 }
 
 const JSON& JSON::operator=(json_int_t value)
 {
-	assert(_value && isInteger());
+	GAFF_ASSERT(_value && isInteger());
 	json_integer_set(_value, value);
 	return *this;
 }
 
 const JSON& JSON::operator=(double value)
 {
-	assert(_value && isReal());
+	GAFF_ASSERT(_value && isReal());
 	json_real_set(_value, value);
 	return *this;
 }
@@ -516,11 +516,11 @@ void JSON::ExtractElementInfoHelper(
 	info.type[type_index] = type.getString();
 
 	if (is_array || is_object) {
-		assert((schema.isArray() && schema_index < schema.size()) || schema_index == 0);
+		GAFF_ASSERT((schema.isArray() && schema_index < schema.size()) || schema_index == 0);
 		JSON s = (schema.isArray()) ? schema[schema_index] : schema;
 
 		if (s.isString()) {
-			assert(schema_map.hasElementWithKey(s.getString()));
+			GAFF_ASSERT(schema_map.hasElementWithKey(s.getString()));
 			s = schema_map[s.getString()];
 		}
 
@@ -531,7 +531,7 @@ void JSON::ExtractElementInfoHelper(
 
 JSON::ElementInfo JSON::ExtractElementInfo(JSON element, const SchemaMap& schema_map)
 {
-	assert(element.isString() || element.isObject());
+	GAFF_ASSERT(element.isString() || element.isObject());
 	ElementInfo info;
 
 	if (element.isString()) {
@@ -541,15 +541,15 @@ JSON::ElementInfo JSON::ExtractElementInfo(JSON element, const SchemaMap& schema
 	JSON type = element["Type"];
 	JSON schema = element["Schema"];
 
-	assert(type.isString() || type.isArray());
-	assert(!schema || schema.isString() || schema.isArray() || schema.isObject());
-	assert(element["Optional"].isBoolean());
-	assert(!element["Requires"] || element["Requires"].isString() || element["Requires"].isArray());
+	GAFF_ASSERT(type.isString() || type.isArray());
+	GAFF_ASSERT(!schema || schema.isString() || schema.isArray() || schema.isObject());
+	GAFF_ASSERT(element["Optional"].isBoolean());
+	GAFF_ASSERT(!element["Requires"] || element["Requires"].isString() || element["Requires"].isArray());
 
 	bool is_object = !strcmp(type.getString(), "Object");
 	bool is_array = !strcmp(type.getString(), "Array");
 
-	assert(!(is_array || is_object) || schema);
+	GAFF_ASSERT(!(is_array || is_object) || schema);
 
 	info.optional = element["Optional"].isTrue();
 	info.requires = element["Requires"];
@@ -620,7 +620,7 @@ bool JSON::checkRequirements(const ElementInfo& info) const
 
 	auto check_lambda = [&](size_t, const JSON& value) -> bool
 	{
-		assert(value.isString());
+		GAFF_ASSERT(value.isString());
 
 		if (getObject(value.getString()).isNull()) {
 			snprintf(_error.text, JSON_ERROR_TEXT_LENGTH, "Element '%s' requires element '%s'.", info.key, value.getString());
@@ -681,13 +681,13 @@ bool JSON::isArraySchema(const JSON& element, const ElementInfo& info, const Sch
 
 	JSON s = schema["Schema"];
 
-	assert(!s || s.isString() || s.isObject());
-	assert(schema["Type"].isString());
+	GAFF_ASSERT(!s || s.isString() || s.isObject());
+	GAFF_ASSERT(schema["Type"].isString());
 
 	const char* type = schema["Type"].getString();
 
 	if (s.isString()) {
-		assert(schema_map.hasElementWithKey(s.getString()));
+		GAFF_ASSERT(schema_map.hasElementWithKey(s.getString()));
 		s = schema_map[s.getString()];
 	}
 
@@ -699,7 +699,7 @@ bool JSON::isArraySchema(const JSON& element, const ElementInfo& info, const Sch
 	bool is_object = !strcmp(type, "Object");
 	bool is_array = !strcmp(type, "Array");
 
-	assert(!(is_object || is_array) || s);
+	GAFF_ASSERT(!(is_object || is_array) || s);
 
 	return !element.forEachInArray([&](size_t index, const JSON& value) -> bool
 	{

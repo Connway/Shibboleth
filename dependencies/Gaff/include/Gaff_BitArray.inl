@@ -108,7 +108,7 @@ bool BitArray<Allocator>::operator!=(const BitArray<Allocator>& rhs) const
 template <class Allocator>
 bool BitArray<Allocator>::operator[](size_t index) const
 {
-	assert(index < _used);
+	GAFF_ASSERT(index < _used);
 	size_t array_index, shift;
 	CalculateIndexAndShift(index, array_index, shift);
 	return (_bit_array[array_index] & (1 << shift)) != 0;
@@ -117,7 +117,7 @@ bool BitArray<Allocator>::operator[](size_t index) const
 template <class Allocator>
 void BitArray<Allocator>::setBit(size_t index, bool value)
 {
-	assert(index < _used);
+	GAFF_ASSERT(index < _used);
 
 	if (value) {
 		set(index);
@@ -129,7 +129,7 @@ void BitArray<Allocator>::setBit(size_t index, bool value)
 template <class Allocator>
 void BitArray<Allocator>::unset(size_t index)
 {
-	assert(index < _used);
+	GAFF_ASSERT(index < _used);
 	size_t array_index, shift;
 	CalculateIndexAndShift(index, array_index, shift);
 	_bit_array[array_index] &= ~(1 << shift);
@@ -138,7 +138,7 @@ void BitArray<Allocator>::unset(size_t index)
 template <class Allocator>
 void BitArray<Allocator>::set(size_t index)
 {
-	assert(index < _used);
+	GAFF_ASSERT(index < _used);
 	size_t array_index, shift;
 	CalculateIndexAndShift(index, array_index, shift);
 	_bit_array[array_index] |= (1 << shift);
@@ -162,14 +162,14 @@ void BitArray<Allocator>::clearNoFree(void)
 template <class Allocator>
 bool BitArray<Allocator>::first(void) const
 {
-	assert(_used);
+	GAFF_ASSERT(_used);
 	return (*this)[0];
 }
 
 template <class Allocator>
 bool BitArray<Allocator>::last(void) const
 {
-	assert(_used);
+	GAFF_ASSERT(_used);
 	return (*this)[_used - 1];
 }
 
@@ -217,7 +217,7 @@ void BitArray<Allocator>::push(bool value)
 template <class Allocator>
 void BitArray<Allocator>::pop(void)
 {
-	assert(_used);
+	GAFF_ASSERT(_used);
 	--_used;
 }
 
@@ -225,7 +225,7 @@ void BitArray<Allocator>::pop(void)
 template <class Allocator>
 void BitArray<Allocator>::insert(bool value, size_t index)
 {
-	assert(index <= _size);
+	GAFF_ASSERT(index <= _size);
 
 	if (_used + 1 > _size) {
 		if (_size == 0) {
@@ -258,7 +258,7 @@ void BitArray<Allocator>::insert(bool value, size_t index)
 template <class Allocator>
 void BitArray<Allocator>::erase(size_t index)
 {
-	assert(index < _used && _used > 0);
+	GAFF_ASSERT(index < _used && _used > 0);
 
 	// Shift all the bits down one
 	for (size_t i = index; i < _used - 1; ++i) {

@@ -21,7 +21,7 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Gaff_Scene.h"
-#include "Gaff_IncludeAssert.h"
+#include "Gaff_Assert.h"
 #include <assimp/scene.h>
 
 NS_GAFF
@@ -47,121 +47,121 @@ Scene::~Scene(void)
 
 bool Scene::hasMeshes(void) const
 {
-	assert(_scene);
+	GAFF_ASSERT(_scene);
 	return _scene->HasMeshes();
 }
 
 //bool Scene::hasMaterials(void) const
 //{
-//	assert(_scene);
+//	GAFF_ASSERT(_scene);
 //	return _scene->HasMaterials();
 //}
 
 bool Scene::hasLights(void) const
 {
-	assert(_scene);
+	GAFF_ASSERT(_scene);
 	return _scene->HasLights();
 }
 
 //bool Scene::hasTextures(void) const
 //{
-//	assert(_scene);
+//	GAFF_ASSERT(_scene);
 //	return _scene->HasTextures();
 //}
 
 bool Scene::hasCameras(void) const
 {
-	assert(_scene);
+	GAFF_ASSERT(_scene);
 	return _scene->HasCameras();
 }
 
 bool Scene::hasAnimations(void) const
 {
-	assert(_scene);
+	GAFF_ASSERT(_scene);
 	return _scene->HasAnimations();
 }
 
 unsigned int Scene::getNumMeshes(void) const
 {
-	assert(_scene);
+	GAFF_ASSERT(_scene);
 	return _scene->mNumMeshes;
 }
 
 //unsigned int Scene::getNumMaterials(void) const
 //{
-//	assert(_scene);
+//	GAFF_ASSERT(_scene);
 //	return _scene->mNumMaterials;
 //}
 
 unsigned int Scene::getNumLights(void) const
 {
-	assert(_scene);
+	GAFF_ASSERT(_scene);
 	return _scene->mNumLights;
 }
 
 //unsigned int Scene::getNumTextures(void) const
 //{
-//	assert(_scene);
+//	GAFF_ASSERT(_scene);
 //	return _scene->mNumTextures;
 //}
 
 unsigned int Scene::getNumCameras(void) const
 {
-	assert(_scene);
+	GAFF_ASSERT(_scene);
 	return _scene->mNumCameras;
 }
 
 unsigned int Scene::getNumAnimations(void) const
 {
-	assert(_scene);
+	GAFF_ASSERT(_scene);
 	return _scene->mNumAnimations;
 }
 
 Mesh Scene::getMesh(unsigned int index) const
 {
-	assert(_scene && index < _scene->mNumMeshes);
+	GAFF_ASSERT(_scene && index < _scene->mNumMeshes);
 	return Mesh(_scene->mMeshes[index]);
 }
 
 //Material Scene::getMaterial(unsigned int index) const
 //{
-//	assert(_scene && index < _scene->mNumMaterials);
+//	GAFF_ASSERT(_scene && index < _scene->mNumMaterials);
 //	return Material(_scene->mMaterials[index]);
 //}
 
 Light Scene::getLight(unsigned int index) const
 {
-	assert(_scene && index < _scene->mNumLights);
+	GAFF_ASSERT(_scene && index < _scene->mNumLights);
 	return Light(_scene->mLights[index]);
 }
 
 //Texture Scene::getTexture(unsigned int index) const
 //{
-//	assert(_scene && index < _scene->mNumTextures);
+//	GAFF_ASSERT(_scene && index < _scene->mNumTextures);
 //	return Texture(_scene->mTextures[index]);
 //}
 
 Camera Scene::getCamera(unsigned int index) const
 {
-	assert(_scene && index < _scene->mNumCameras);
+	GAFF_ASSERT(_scene && index < _scene->mNumCameras);
 	return Camera(_scene->mCameras[index]);
 }
 
 Animation Scene::getAnimation(unsigned int index) const
 {
-	assert(_scene && index < _scene->mNumAnimations);
+	GAFF_ASSERT(_scene && index < _scene->mNumAnimations);
 	return Animation(_scene->mAnimations[index]);
 }
 
 SceneNode Scene::getRootNode(void) const
 {
-	assert(_scene);
+	GAFF_ASSERT(_scene);
 	return SceneNode(_scene->mRootNode);
 }
 
 SceneNode Scene::getNode(const char* name) const
 {
-	assert(_scene);
+	GAFF_ASSERT(_scene);
 	return SceneNode(_scene->mRootNode->FindNode(name));
 }
 

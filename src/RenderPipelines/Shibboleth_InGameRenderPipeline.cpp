@@ -299,7 +299,7 @@ void InGameRenderPipeline::SortIntoRenderPasses(ObjectData& od, unsigned int dev
 				auto& pbs = od.program_buffers[mesh];
 				auto& programs = od.programs[mesh];
 
-				assert(rss[device] && pbs[device] && programs[device]);
+				GAFF_ASSERT(rss[device] && pbs[device] && programs[device]);
 
 				unsigned int first_hash = GenerateFirstInstanceHash(od, mesh, device);
 				unsigned int second_hash = GenerateSecondInstanceHash(od, mesh, device, i, model_hash);

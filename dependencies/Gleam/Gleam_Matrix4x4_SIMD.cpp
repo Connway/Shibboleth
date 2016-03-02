@@ -22,7 +22,7 @@ THE SOFTWARE.
 
 #include "Gleam_Matrix4x4_SIMD.h"
 #include "Gleam_Vector4_SIMD.h"
-#include <Gaff_IncludeAssert.h>
+#include <Gaff_Assert.h>
 #include <cstring>
 #include <cfloat>
 #include <cmath>
@@ -151,7 +151,7 @@ Matrix4x4SIMD Matrix4x4SIMD::operator-(const Matrix4x4SIMD& rhs) const
 
 const Matrix4x4SIMD& Matrix4x4SIMD::operator/=(float rhs)
 {
-	assert(rhs != 0);
+	GAFF_ASSERT(rhs != 0.0f);
 	SIMDType denom = SIMDCreate(rhs);
 	_matrix.elements[0] = SIMDDiv(_matrix.elements[0], denom);
 	_matrix.elements[1] = SIMDDiv(_matrix.elements[1], denom);
@@ -162,7 +162,7 @@ const Matrix4x4SIMD& Matrix4x4SIMD::operator/=(float rhs)
 
 Matrix4x4SIMD Matrix4x4SIMD::operator/(float rhs) const
 {
-	assert(rhs != 0);
+	GAFF_ASSERT(rhs != 0.0f);
 	SIMDType denom = SIMDCreate(rhs);
 
 	SIMDMatrix matrix = {
@@ -177,7 +177,7 @@ Matrix4x4SIMD Matrix4x4SIMD::operator/(float rhs) const
 
 const Matrix4x4SIMD& Matrix4x4SIMD::operator*=(float rhs)
 {
-	assert(rhs != 0);
+	GAFF_ASSERT(rhs != 0.0f);
 	SIMDType scalar = SIMDCreate(rhs);
 	_matrix.elements[0] = SIMDMul(_matrix.elements[0], scalar);
 	_matrix.elements[1] = SIMDMul(_matrix.elements[1], scalar);
@@ -188,7 +188,7 @@ const Matrix4x4SIMD& Matrix4x4SIMD::operator*=(float rhs)
 
 Matrix4x4SIMD Matrix4x4SIMD::operator*(float rhs) const
 {
-	assert(rhs != 0);
+	GAFF_ASSERT(rhs != 0.0f);
 	SIMDType scalar = SIMDCreate(rhs);
 
 	SIMDMatrix matrix = {
@@ -212,14 +212,14 @@ Vector4SIMD Matrix4x4SIMD::operator*(const Vector4SIMD& rhs) const
 
 const float* Matrix4x4SIMD::operator[](int index) const
 {
-	assert(index > -1 && index < 4);
+	GAFF_ASSERT(index > -1 && index < 4);
 	SIMDStore(_matrix.elements[index], _get_buffer_cache[index]);
 	return _get_buffer_cache[index];
 }
 
 //float* Matrix4x4SIMD::operator[](int index)
 //{
-//	assert(index > -1 && index < 4);
+//	GAFF_ASSERT(index > -1 && index < 4);
 //	return _m[index];
 //}
 
@@ -239,15 +239,15 @@ const SIMDMatrix& Matrix4x4SIMD::getSIMDType(void) const
 
 float Matrix4x4SIMD::at(int column, int row) const
 {
-	assert(column > -1 && column < 4);
-	assert(row >-1 && row < 4);
+	GAFF_ASSERT(column > -1 && column < 4);
+	GAFF_ASSERT(row >-1 && row < 4);
 	return SIMDGet(_matrix.elements[column], (unsigned int)row);
 }
 
 //float& Matrix4x4SIMD::at(int column, int row)
 //{
-//	assert(column > -1 && column < 4);
-//	assert(row >-1 && row < 4);
+//	GAFF_ASSERT(column > -1 && column < 4);
+//	GAFF_ASSERT(row >-1 && row < 4);
 //
 //	return _m[column][row];
 //}
@@ -280,14 +280,14 @@ void Matrix4x4SIMD::set(const float* elements)
 
 void Matrix4x4SIMD::set(int column, int row, float value)
 {
-	assert(column > -1 && column < 4);
-	assert(row >-1 && row < 4);
+	GAFF_ASSERT(column > -1 && column < 4);
+	GAFF_ASSERT(row >-1 && row < 4);
 	SIMDSet(_matrix.elements[column], value, (unsigned int)row);
 }
 
 Vector4SIMD Matrix4x4SIMD::getColumn(int column) const
 {
-	assert(column > -1 && column < 4);
+	GAFF_ASSERT(column > -1 && column < 4);
 	return Vector4SIMD(_matrix.elements[column]);
 }
 
@@ -378,7 +378,7 @@ void Matrix4x4SIMD::setRotation(float radians, const Vector4SIMD& axis)
 
 void Matrix4x4SIMD::setRotation(float radians, float x, float y, float z)
 {
-	assert(x != 0.0f && y != 0.0f && z != 0.0f);
+	GAFF_ASSERT(x != 0.0f && y != 0.0f && z != 0.0f);
 	float inv_length = 1.0f / sqrtf(x*x + y*y + z*z);
 	x *= inv_length;
 	y *= inv_length;

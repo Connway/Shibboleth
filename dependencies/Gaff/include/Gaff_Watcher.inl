@@ -74,7 +74,7 @@ void Watcher<T, Allocator>::removeCallback(const typename Watcher<T, Allocator>:
 	ScopedLock<SpinLock> scoped_lock(_lock);
 
 	auto it = _callbacks.linearSearch(callback);
-	assert(it == _callbacks.end());
+	GAFF_ASSERT(it == _callbacks.end());
 
 	_callbacks.fastErase(it);
 }

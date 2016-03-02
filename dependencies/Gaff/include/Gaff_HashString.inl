@@ -123,7 +123,7 @@ bool HashString<T, Allocator>::operator!=(const HashString<T, Allocator>& rhs) c
 template <class T, class Allocator>
 char HashString<T, Allocator>::operator[](size_t index) const
 {
-	assert(index < _string.size());
+	GAFF_ASSERT(index < _string.size());
 	return _string[index];
 }
 
@@ -131,7 +131,7 @@ char HashString<T, Allocator>::operator[](size_t index) const
 //template <class T, class Allocator>
 //char& HashString<T, Allocator>::operator[](size_t index)
 //{
-//	assert(index < _size);
+//	GAFF_ASSERT(index < _size);
 //	return _string[index];
 //}
 

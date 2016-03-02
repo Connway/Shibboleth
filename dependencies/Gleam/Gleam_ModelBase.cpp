@@ -23,7 +23,6 @@ THE SOFTWARE.
 #include "Gleam_ModelBase.h"
 #include "Gleam_ILayout.h"
 #include "Gleam_IMesh.h"
-#include <Gaff_IncludeAssert.h>
 
 NS_GLEAM
 
@@ -52,25 +51,25 @@ void ModelBase::destroy(void)
 
 const ILayout* ModelBase::getLayout(size_t index) const
 {
-	assert(index < _meshes.size());
+	GAFF_ASSERT(index < _meshes.size());
 	return _layouts[index];
 }
 
 ILayout* ModelBase::getLayout(size_t index)
 {
-	assert(index < _meshes.size());
+	GAFF_ASSERT(index < _meshes.size());
 	return _layouts[index];
 }
 
 size_t ModelBase::getIndex(const ILayout* layout) const
 {
-	assert(layout);
+	GAFF_ASSERT(layout);
 	return _layouts.linearSearch(0, _layouts.size(), layout);
 }
 
 size_t ModelBase::addLayout(ILayout* layout)
 {
-	assert(layout);
+	GAFF_ASSERT(layout);
 	_layouts.push(layout);
 	layout->addRef();
 	return _layouts.size() - 1;
@@ -78,13 +77,13 @@ size_t ModelBase::addLayout(ILayout* layout)
 
 const IMesh* ModelBase::getMesh(size_t index) const
 {
-	assert(index < _meshes.size());
+	GAFF_ASSERT(index < _meshes.size());
 	return _meshes[index];
 }
 
 IMesh* ModelBase::getMesh(size_t index)
 {
-	assert(index < _meshes.size());
+	GAFF_ASSERT(index < _meshes.size());
 	return _meshes[index];
 }
 
@@ -95,13 +94,13 @@ size_t ModelBase::getMeshCount(void) const
 
 size_t ModelBase::getIndex(const IMesh* mesh) const
 {
-	assert(mesh);
+	GAFF_ASSERT(mesh);
 	return _meshes.linearSearch(0, _meshes.size(), mesh);
 }
 
 size_t ModelBase::addMesh(IMesh* mesh)
 {
-	assert(mesh);
+	GAFF_ASSERT(mesh);
 	_meshes.push(mesh);
 	mesh->addRef();
 	return _meshes.size() - 1;
@@ -109,8 +108,8 @@ size_t ModelBase::addMesh(IMesh* mesh)
 
 void ModelBase::renderInstanced(IRenderDevice& rd, size_t index, unsigned int count)
 {
-	assert(_layouts.size() == _meshes.size() && index < _meshes.size());
-	assert(_meshes[index] && _layouts[index]);
+	GAFF_ASSERT(_layouts.size() == _meshes.size() && index < _meshes.size());
+	GAFF_ASSERT(_meshes[index] && _layouts[index]);
 
 	IMesh* mesh = _meshes[index];
 	_layouts[index]->setLayout(rd, mesh);
@@ -119,8 +118,8 @@ void ModelBase::renderInstanced(IRenderDevice& rd, size_t index, unsigned int co
 
 void ModelBase::render(IRenderDevice& rd, size_t index)
 {
-	assert(_layouts.size() == _meshes.size() && index < _meshes.size());
-	assert(_meshes[index] && _layouts[index]);
+	GAFF_ASSERT(_layouts.size() == _meshes.size() && index < _meshes.size());
+	GAFF_ASSERT(_meshes[index] && _layouts[index]);
 
 	IMesh* mesh = _meshes[index];
 	_layouts[index]->setLayout(rd, mesh);
