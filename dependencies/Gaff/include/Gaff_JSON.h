@@ -22,7 +22,7 @@ THE SOFTWARE.
 
 #pragma once
 
-#if defined(_WIN32) || defined(_WIN64)
+#ifdef PLATFORM_WINDOWS
 	#pragma warning(push)
 	#pragma warning(disable : 4706)
 #endif
@@ -210,6 +210,6 @@ private:
 
 NS_END
 
-#if defined(_WIN32) || defined(_WIN64)
+#ifdef PLATFORM_WINDOWS
 	#pragma warning(pop)
 #endif

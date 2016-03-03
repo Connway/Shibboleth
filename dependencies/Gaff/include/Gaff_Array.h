@@ -139,6 +139,8 @@ public:
 	template < class T2, class Pred = Less<T, T2> >
 	Iterator binarySearch(const T2& value, const Pred& pred = Pred());
 
+	void reverse(void);
+
 	size_t size(void) const;
 	size_t capacity(void) const;
 
@@ -170,6 +172,9 @@ T* BinarySearch(T* range_begin, T* range_end, const T2& value, const Pred& pred 
 
 template < class T, class T2, class Pred = Less<T, T2> >
 size_t BinarySearch(const T* data, size_t range_begin, size_t range_end, const T2& value, const Pred& pred = Pred());
+
+template <class T>
+void Reverse(T* data, size_t size);
 
 #include "Gaff_Array.inl"
 

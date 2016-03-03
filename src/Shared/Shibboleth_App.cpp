@@ -187,7 +187,11 @@ bool App::loadManagers(void)
 			return false;
 		}
 
+#ifdef PLATFORM_WINDOWS
+		DynamicLoader::ModulePtr module = _dynamic_loader.loadModule(("../" + rel_path).getBuffer(), name);
+#else
 		DynamicLoader::ModulePtr module = _dynamic_loader.loadModule(rel_path.getBuffer(), name);
+#endif
 
 		if (module) {
 			ManagerEntry::InitManagerModuleFunc init_func = module->getFunc<ManagerEntry::InitManagerModuleFunc>("InitModule");
@@ -327,7 +331,11 @@ bool App::loadStates(void)
 			return false;
 		}
 
+#ifdef PLATFORM_WINDOWS
+		AString filename("../States/");
+#else
 		AString filename("./States/");
+#endif
 		filename += module_name.getString();
 		filename += BIT_EXTENSION DYNAMIC_EXTENSION;
 
@@ -432,7 +440,31 @@ bool App::initApp(void)
 			//_log_file_pair->first.printf("ERROR - Failed to set working directory to '%s'.\n", working_dir.getBuffer());
 			return false;
 		}
+
+	// Set DLL auto-load directory.
+#ifdef PLATFORM_WINDOWS
+	#ifdef _UNICODE
+		wchar_t temp[1024] = { 0 };
+		Gaff::ConvertToUTF16(temp, working_dir.getBuffer(), working_dir.size());
+	#else
+		char temp[1024] = { 0 };
+		memcpy(temp, working_dir.getBuffer(), working_dir.size());
+	#endif
+
+		if ((temp[working_dir.size() - 1] == TEXT('/') || temp[working_dir.size() - 1] == TEXT('\\'))) {
+			memcpy(temp + working_dir.size(), TEXT("bin"), sizeof(TCHAR));
+		} else {
+			memcpy(temp + working_dir.size(), TEXT("/bin"), sizeof(TCHAR));
+		}
+
+		SetDllDirectory(temp);
+
+	} else {
+		SetDllDirectory(TEXT("bin"));
 	}
+#else
+	}
+#endif
 
 	return true;
 }

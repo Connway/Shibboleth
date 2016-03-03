@@ -71,7 +71,11 @@ void ComponentManager::allManagersCreated(void)
 			return false;
 		}
 
+#ifdef PLATFORM_WINDOWS
+		DynamicLoader::ModulePtr module = GetApp().loadModule(("../" + rel_path).getBuffer(), name);
+#else
 		DynamicLoader::ModulePtr module = GetApp().loadModule(rel_path.getBuffer(), name);
+#endif
 
 		if (!module.valid()) {
 			log.first.printf("ERROR - Could not load dynamic module '%s'.\n", rel_path.getBuffer());

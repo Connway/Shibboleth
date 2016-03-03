@@ -38,7 +38,7 @@ template <class T>
 void deconstruct(T* data)
 {
 	// To get rid of the stupid unreferenced parameter warning in VS.
-#if defined(_WIN32) || defined(_WIN64)
+#ifdef PLATFORM_WINDOWS
 	(void)(data);
 #endif
 

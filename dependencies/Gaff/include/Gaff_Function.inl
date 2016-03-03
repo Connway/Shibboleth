@@ -28,7 +28,7 @@ THE SOFTWARE.
 ////////////////////////////
 //    STDCALL FUNCTION    //
 ////////////////////////////
-#if defined(_WIN32) || defined(_WIN64)
+#ifdef PLATFORM_WINDOWS
 template <class ReturnType, class... Args>
 STDCallFunction<ReturnType, Args...>::STDCallFunction(FunctionType function):
 	_function(function)
@@ -460,7 +460,7 @@ FunctionBinder<ReturnType, Args...> Bind(ReturnType (*function)(Args...))
 	return FunctionBinder<ReturnType, Args...>(&func, sizeof(func));
 }
 
-#if defined(_WIN32) || defined(_WIN64)
+#ifdef PLATFORM_WINDOWS
 template <class ReturnType, class... Args>
 FunctionBinder<ReturnType, Args...> BindSTDCall(ReturnType (__stdcall *function)(Args...))
 {
