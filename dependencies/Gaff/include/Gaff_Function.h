@@ -60,7 +60,7 @@ public:
 	virtual bool valid(void) const = 0;
 };
 
-#if defined(_WIN32) || defined(_WIN64)
+#ifdef PLATFORM_WINDOWS
 template <class ReturnType, class... Args>
 class STDCallFunction : public IFunction<ReturnType, Args...>
 {
@@ -212,12 +212,12 @@ private:
 	template <class T, class RT, class... As> friend FunctionBinder<RT, As...> Bind(const T&);
 	template <class T, class... As> friend T* construct(T*, As&&...);
 
-#if defined(_WIN32) || defined(_WIN64)
+#ifdef PLATFORM_WINDOWS
 	template <class RT, class... As> friend FunctionBinder<RT, As...> BindSTDCall(RT (__stdcall*)(As...));
 #endif
 };
 
-#if defined(_WIN32) || defined(_WIN64)
+#ifdef PLATFORM_WINDOWS
 	template <class ReturnType, class... Args>
 	FunctionBinder<ReturnType, Args...> BindSTDCall(ReturnType(__stdcall *function)(Args...));
 #endif

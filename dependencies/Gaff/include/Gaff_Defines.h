@@ -55,7 +55,28 @@ THE SOFTWARE.
 #define SAFEGAFFRELEASE(x) if (x) { x->release(); x = nullptr; } // Safely releases pointers that implement IRefCounted.
 #define SAFEGAFFADDREF(x) if (x) { x->addRef(); } // Safely adds a reference to pointers that implement IRefCounted.
 
+// Presumably we would add support for detecting other platforms in the future,
+// such as XBone, PS4, etc. here.
 #if defined(_WIN32) || defined(_WIN64)
+	#define PLATFORM_WINDOWS
+	#define PLATFORM_LITTLE_ENDIAN // Assume little endian until I can figure out how to detect properly
+#elif defined(__linux__)
+	#define PLATFORM_LINUX
+#elif defined(__APPLE__)
+	#define PLATFORM_MAC
+#endif
+
+#ifdef _MSC_VER
+	// Add endian detection for Microsoft compiler here.
+#elif defined(__GNUC__) || defined(__GNUG__) || defined(__clang__)
+	#if defined(__BYTE_ORDER__) && (__BYTE_ORDER__ == __LITTLE_ENDIAN__)
+		#define PLATFORM_LITTLE_ENDIAN
+	#elif defined(__BYTE_ORDER__) && (__BYTE_ORDER__ == __BIG_ENDIAN__)
+		#define PLATFORM_BIG_ENDIAN
+	#endif
+#endif
+
+#ifdef PLATFORM_WINDOWS
 	// Disable nameless struct/union warning
 	// Disable assignment operator could not be generated warning
 	// Disable unrecognized character escape sequence warning
@@ -80,7 +101,7 @@ THE SOFTWARE.
 	#define WARNING(msg) __pragma(message(__FILE__":(" GAFF_STR(__LINE__)") WARNING - " msg))
 	#define YieldThread() Sleep(0) // Yields the thread to the scheduler.
 
-#else
+#elif defined(PLATFORM_LINUX) || defined(PLATFORM_MAC)
 	#define THREAD_LOCAL thread_local // Specifies a static variable to use thread local storage.
 
 	#define GaffFullMain int main(int argc, char** argv)
@@ -90,27 +111,18 @@ THE SOFTWARE.
 	#define YieldThread sched_yield // Yields the thread to the scheduler.
 #endif
 
-#if defined(__linux__)
+#ifdef PLATFORM_LINUX
 	#define DYNAMICEXPORT __attribute__((visibility("default"))) // Specifies a symbol for export.
 	#define DYNAMICIMPORT // Specifies a symbol for import.
-#elif defined(__APPLE__)
+#elif defined(PLATFORM_MAC)
 	#define DYNAMICEXPORT // Specifies a symbol for export.
 	#define DYNAMICIMPORT // Specifies a symbol for import.
 #endif
 
-#if defined(__amd64__) || defined(__x86_64__) || defined(_M_X64) || defined(_M_AMD64) || \
-	defined(__i686__) || defined(_M_IX86) || defined(_X86_)
-
-	#define BITS_PER_BYTE 8 // Specifies the number of bits in a byte on the target platform.
-
-#else
-	#error "Unknown architecture. Cannot deduce number of bits per byte."
-#endif
-
 #ifndef COMPILERALIGN16
-	#if defined(_WIN32) || defined(_WIN64)
+	#ifdef PLATFORM_WINDOWS
 		#define COMPILERALIGN16 __declspec(align(16))
-	#elif defined(__linux__) || defined(__APPLE__)
+	#elif defined(PLATFORM_LINUX) || defined(PLATFORM_MAC)
 		#define COMPILERALIGN16 __attribute__((aligned(16)))
 	#else
 		#error Platform not supported

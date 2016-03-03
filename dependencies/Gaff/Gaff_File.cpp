@@ -26,12 +26,12 @@ THE SOFTWARE.
 	#include "Gaff_String.h"
 #endif
 
-#if defined(_WIN32) || defined(_WIN64)
+#ifdef PLATFORM_WINDOWS
 	#include <io.h>
-#elif defined(__APPLE__)
-	#include <sys/uio.h>
-#else
+#elif PLATFORM_LINUX
 	#include <sys/io.h>
+#elif PLATFORM_MAC
+	#include <sys/uio.h>
 #endif
 
 #include <cstdarg>
@@ -98,7 +98,7 @@ bool File::Remove(const char* file_name)
 bool File::Rename(const char* old_file_name, const char* new_file_name)
 {
 	GAFF_ASSERT(old_file_name && new_file_name && strlen(old_file_name) && strlen(new_file_name));
-	
+
 #ifdef _UNICODE
 	CONVERT_TO_UTF16(temp1, old_file_name);
 	CONVERT_TO_UTF16(temp2, new_file_name);

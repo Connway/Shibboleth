@@ -32,7 +32,7 @@ THE SOFTWARE.
 #define CONNECTION_SPEED_128K 16384
 #define CONNECTION_SPEED_56K 7168
 
-#if defined(_WIN32) || defined(_WIN64)
+#ifdef PLATFORM_WINDOWS
 	#define NETWORK_CALLBACK __cdecl //!< Calling convention for network callback functions
 #else
 	#define NETWORK_CALLBACK //!< Calling convention for network callback functions

@@ -660,6 +660,14 @@ ARRAY_ITERATOR Array<T, Allocator>::binarySearch(const T2& value, const Pred& pr
 }
 
 template <class T, class Allocator>
+void Array<T, Allocator>::reverse(void)
+{
+	if (_used > 1) {
+		Reverse(_array, _used);
+	}
+}
+
+template <class T, class Allocator>
 size_t Array<T, Allocator>::size(void) const
 {
 	return _used;
@@ -834,4 +842,23 @@ size_t BinarySearch(const T* data, size_t range_begin, size_t range_end, const T
 	}
 
 	return range_begin;
+}
+
+template <class T>
+void Reverse(T* data, size_t size)
+{
+	size_t beg = 0;
+	size_t end = size - 1;
+
+	while (beg < end) {
+		char temp[sizeof(T)];
+
+		// Use memcpy to avoid calling constructor/destructor
+		memcpy(temp, _array + beg, sizeof(T));
+		memcpy(_array + beg, _array + end, sizeof(T));
+		memcpy(_array + end, temp, sizeof(T));
+
+		++beg;
+		--end;
+	}
 }

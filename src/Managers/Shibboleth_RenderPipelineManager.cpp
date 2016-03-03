@@ -84,7 +84,11 @@ bool RenderPipelineManager::init(void)
 
 	bool early_out = Gaff::ForEachTypeInDirectory<Gaff::FDT_RegularFile>("./Render Pipelines", [&](const char* name, size_t) -> bool
 	{
+#ifdef PLATFORM_WINDOWS
+		AString rel_path = AString("../Render Pipelines/") + name;
+#else
 		AString rel_path = AString("./Render Pipelines/") + name;
+#endif
 
 		// Error out if it's not a dynamic module
 		if (!Gaff::File::CheckExtension(name, DYNAMIC_EXTENSION)) {

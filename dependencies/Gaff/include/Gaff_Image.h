@@ -84,7 +84,7 @@ public:
 		FILTER_MITCHELL = 0x2609
 	};
 
-#if defined(_WIN32) || defined(_WIN64)
+#ifdef PLATFORM_WINDOWS
 	#define MEMCB __stdcall
 #else
 	#define MEMCB

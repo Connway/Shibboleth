@@ -29,14 +29,14 @@ BitArray<Allocator>::BitArray(const Allocator& allocator):
 template <class Allocator>
 BitArray<Allocator>::BitArray(size_t start_size, const Allocator& allocator):
 	_bit_array(CalculateBytes(start_size), 0, allocator), _used(start_size),
-	_size(_bit_array.size() * BITS_PER_BYTE)
+	_size(_bit_array.size() * CHAR_BIT)
 {
 }
 
 template <class Allocator>
 BitArray<Allocator>::BitArray(size_t start_size, bool init_val, const Allocator& allocator):
 	_bit_array(CalculateBytes(start_size), (init_val) ? static_cast<unsigned char>(-1) : 0, allocator),
-	_used(start_size), _size(_bit_array.size() * BITS_PER_BYTE)
+	_used(start_size), _size(_bit_array.size() * CHAR_BIT)
 {
 }
 
@@ -282,7 +282,7 @@ void BitArray<Allocator>::resize(size_t new_size)
 	}
 
 	_bit_array.resize(CalculateBytes(new_size));
-	_used = _size = _bit_array.size() * BITS_PER_BYTE;
+	_used = _size = _bit_array.size() * CHAR_BIT;
 }
 
 template <class Allocator>
@@ -293,7 +293,7 @@ void BitArray<Allocator>::reserve(size_t reserve_size)
 	}
 
 	_bit_array.resize(CalculateBytes(reserve_size));
-	_size = _bit_array.size() * BITS_PER_BYTE;
+	_size = _bit_array.size() * CHAR_BIT;
 }
 
 template <class Allocator>
@@ -305,14 +305,14 @@ void BitArray<Allocator>::setAllocator(const Allocator& allocator)
 template <class Allocator>
 void BitArray<Allocator>::CalculateIndexAndShift(size_t index, size_t& array_index, size_t& shift)
 {
-	array_index = index / BITS_PER_BYTE;
-	shift = index - array_index * BITS_PER_BYTE;
+	array_index = index / CHAR_BIT;
+	shift = index - array_index * CHAR_BIT;
 }
 
 template <class Allocator>
 size_t BitArray<Allocator>::CalculateBytes(size_t bits)
 {
-	float final_bits = (float)bits / (float)BITS_PER_BYTE;
+	float final_bits = (float)bits / (float)CHAR_BIT;
 	final_bits = ceilf(final_bits);
 	return static_cast<size_t>(final_bits);
 }

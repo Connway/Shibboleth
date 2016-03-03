@@ -26,14 +26,14 @@ THE SOFTWARE.
 	#define _CRT_SECURE_NO_WARNINGS
 #endif
 
-#if defined(_WIN32) || defined(_WIN64)
-	#include "Gaff_IncludeWindows.h"
-#endif
-
 #include "Gaff_HashMap.h"
 #include <dirent.h>
 #include <cstring>
 #include <ctime>
+
+#ifdef PLATFORM_WINDOWS
+	#include "Gaff_IncludeWindows.h"
+#endif
 
 #ifdef __APPLE__
 	/* Return the exact length of d_namlen without zero terminator */
