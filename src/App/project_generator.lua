@@ -28,11 +28,6 @@ project "App"
 
 	configuration {}
 
-	filter { "system:windows", "options:symbols" }
-		links { "Dbghelp" }
-
-	filter {}
-
 	includedirs
 	{
 		"../Shared/include",
@@ -53,5 +48,13 @@ project "App"
 		"Shared", "Gaff", "jansson", "Memory",
 		"Boxer"
 	}
+
+	filter { "system:windows", "options:symbols" }
+		links { "Dbghelp" }
+
+	filter { "system:not windows" }
+		linkoptions { "-Wl,-rpath,./bin" }
+
+	filter {}
 
 	dofile("../../utils/os_conditionals.lua")
