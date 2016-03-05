@@ -339,10 +339,10 @@ void RenderPipelineManager::renderToScreen(double, void*)
 
 		auto& program_buffers = _camera_to_screen_program_buffers->data[camera_data.device];
 		auto& render_target = camera_data.camera->getRenderTarget();
-		auto& texture_srvs = render_target->texture_srvs[camera_data.device];
+		auto* texture_srvs = render_target->texture_srvs[camera_data.device];
 		auto& depth_stencil_srv = render_target->depth_stencil_srvs[camera_data.device];
 
-		size_t num_g_buffers = texture_srvs.size();
+		size_t num_g_buffers = render_target->texture_srvs.width();
 
 		// Add the g-buffers
 		for (size_t j = 0; j < num_g_buffers; ++j) {

@@ -524,72 +524,39 @@ void String<T, Allocator>::trim(void)
 }
 
 template <class T, class Allocator>
+size_t String<T, Allocator>::findFirstOf(const T* string, size_t size) const
+{
+	return FindFirstOf(getBuffer(), _size, string, size);
+}
+
+template <class T, class Allocator>
 size_t String<T, Allocator>::findFirstOf(const T* string) const
 {
-	size_t len = length(string);
+	return FindFirstOf(getBuffer(), _size, string);
+}
 
-	if (_size < len) {
-		return SIZE_T_FAIL;
-	}
-
-	size_t num_iterations = _size - len + 1;
-	const T* buffer = getBuffer();
-
-	for (size_t i = 0; i < num_iterations; ++i) {
-		if (!memcmp(buffer + i, string, sizeof(T) * len)) {
-			return i;
-		}
-	}
-
-	return SIZE_T_FAIL;
+template <class T, class Allocator>
+size_t String<T, Allocator>::findLastOf(const T* string, size_t size) const
+{
+	return FindLastOf(getBuffer(), _size, string, size);
 }
 
 template <class T, class Allocator>
 size_t String<T, Allocator>::findLastOf(const T* string) const
 {
-	size_t len = length(string);
-
-	if (_size < len) {
-		return SIZE_T_FAIL;
-	}
-
-	const T* buffer = getBuffer();
-
-	for (int i = static_cast<int>(_size) - static_cast<int>(len) - 2; i >= 0; --i) {
-		if (!memcmp(buffer + i, string, sizeof(T) * len)) {
-			return static_cast<size_t>(i);
-		}
-	}
-
-	return SIZE_T_FAIL;
+	return FindLastOf(getBuffer(), _size, string);
 }
 
 template <class T, class Allocator>
 size_t String<T, Allocator>::findFirstOf(T character) const
 {
-	const T* buffer = getBuffer();
-
-	for (size_t i = 0; i < _size; ++i) {
-		if (buffer[i] == character) {
-			return i;
-		}
-	}
-
-	return SIZE_T_FAIL;
+	return FindFirstOf(getBuffer(), _size, character);
 }
 
 template <class T, class Allocator>
 size_t String<T, Allocator>::findLastOf(T character) const
 {
-	const T* buffer = getBuffer();
-
-	for (int i = static_cast<int>(_size) - 1; i >= 0; --i) {
-		if (buffer[i] == character) {
-			return i;
-		}
-	}
-
-	return SIZE_T_FAIL;
+	return FindLastOf(getBuffer(), _size, character);
 }
 
 /*!
@@ -726,4 +693,86 @@ template <class T>
 bool greater(const T* s1, size_t n1, const T* s2)
 {
 	return greater(s1, n1, s2, length(s2));
+}
+
+template <class T>
+size_t FindFirstOf(const T* string, size_t str_size, const T* substr, size_t substr_size)
+{
+	if (str_size < substr_size) {
+		return SIZE_T_FAIL;
+	}
+
+	size_t num_iterations = str_size - substr_size + 1;
+
+	for (size_t i = 0; i < num_iterations; ++i) {
+		if (!memcmp(string + i, substr, sizeof(T) * substr_size)) {
+			return i;
+		}
+	}
+
+	return SIZE_T_FAIL;
+}
+
+template <class T>
+size_t FindFirstOf(const T* string, size_t str_size, const T* substr)
+{
+	return FindFirstOf(string, str_size, substr, length(substr));
+}
+
+template <class T>
+size_t FindFirstOf(const T* string, const T* substr)
+{
+	return FindFirstOf(string, length(string), substr, length(substr));
+}
+
+template <class T>
+size_t FindLastOf(const T* string, size_t str_size, const T* substr, size_t substr_size)
+{
+	if (str_size < substr_size) {
+		return SIZE_T_FAIL;
+	}
+
+	for (int i = static_cast<int>(str_size) - static_cast<int>(substr_size); i > -1; --i) {
+		if (!memcmp(string + i, substr, sizeof(T) * substr_size)) {
+			return static_cast<size_t>(i);
+		}
+	}
+
+	return SIZE_T_FAIL;
+}
+
+template <class T>
+size_t FindLastOf(const T* string, size_t str_size, const T* substr)
+{
+	return FindLastOf(string, str_size, substr, length(substr));
+}
+
+template <class T>
+size_t FindLastOf(const T* string, const T* substr)
+{
+	return FindLastOf(string, length(string), substr, length(substr));
+}
+
+template <class T>
+size_t FindFirstOf(const T* string, size_t size, T character)
+{
+	for (size_t i = 0; i < size; ++i) {
+		if (string[i] == character) {
+			return i;
+		}
+	}
+
+	return SIZE_T_FAIL;
+}
+
+template <class T>
+size_t FindLastOf(const T* string, size_t size, T character)
+{
+	for (int i = static_cast<int>(size) - 1; i > -1; --i) {
+		if (string[i] == character) {
+			return i;
+		}
+	}
+
+	return SIZE_T_FAIL;
 }

@@ -204,8 +204,7 @@ bool ModelLoader::loadMeshes(ModelData* data, const Gaff::JSON& lod_tags, const 
 	Array< Array<VertSkeletonData> > vert_skeleton_data;
 
 	// First dimension is for each device.
-	data->models.resize(rd.getNumDevices());
-	data->aabbs.resize(num_lods);
+	data->models.resize(num_lods, rd.getNumDevices());
 
 	Array<unsigned int> devices = (any_display_tags) ?
 		_render_mgr.getDevicesWithTagsAny(display_tags) :
@@ -213,14 +212,11 @@ bool ModelLoader::loadMeshes(ModelData* data, const Gaff::JSON& lod_tags, const 
 
 	// Second dimension is number of LODs. If we don't define LOD tags in
 	// the JSON file, then we assume all meshes are of LOD 0.
-	for (auto it1 = devices.begin(); it1 != devices.end(); ++it1) {
-		rd.setCurrentDevice(*it1);
-		Array<ModelPtr>& models = data->models[*it1];
-
-		models.resize(num_lods);
+	for (auto it = devices.begin(); it != devices.end(); ++it) {
+		rd.setCurrentDevice(*it);
 
 		// Pre-create all the model data structures.
-		for (auto it2 = models.begin(); it2 != models.end(); ++it2) {
+		for (size_t i = 0; i < num_lods; ++i) {
 			ModelPtr model(_render_mgr.createModel());
 
 			if (!model) {
@@ -228,7 +224,7 @@ bool ModelLoader::loadMeshes(ModelData* data, const Gaff::JSON& lod_tags, const 
 				return false;
 			}
 
-			*it2 = model;
+			data->models[*it][i] = model;
 		}
 	}
 
@@ -250,14 +246,9 @@ bool ModelLoader::loadMeshes(ModelData* data, const Gaff::JSON& lod_tags, const 
 
 
 	// Do this for each device
-	for (unsigned int i = 0; i < rd.getNumDevices(); ++i) {
-		// We are not loading the model on this device, but resize so that the entries are filled with empty pointers.
-		if (data->models[i].empty()) {
-			data->models[i].resize(num_lods);
-			continue;
-		}
-
-		rd.setCurrentDevice(i);
+	//for (unsigned int i = 0; i < rd.getNumDevices(); ++i) {
+	for (auto it = devices.begin(); it != devices.end(); ++it) {
+		rd.setCurrentDevice(*it);
 
 		// Iterate over all the meshes
 		for (unsigned int j = 0; j < data->holding_data->scene.getNumMeshes(); ++j) {
@@ -277,9 +268,7 @@ bool ModelLoader::loadMeshes(ModelData* data, const Gaff::JSON& lod_tags, const 
 			} else {
 				lod_tags.forEachInArray([&](size_t index, const Gaff::JSON& value) -> bool
 				{
-					AString mesh_name(scene_mesh.getName());
-
-					if (mesh_name.findFirstOf(value.getString()) != SIZE_T_FAIL) {
+					if (Gaff::FindFirstOf(scene_mesh.getName(), value.getString()) != SIZE_T_FAIL) {
 						lod = index;
 						return true;
 					}
@@ -294,18 +283,18 @@ bool ModelLoader::loadMeshes(ModelData* data, const Gaff::JSON& lod_tags, const 
 				}
 			}
 
-			// Only need to do this once
-			if (i == 0) {
+			// Only calculate AABBs for LOD 0
+			if (it == devices.begin() && lod == 0) {
 				Gleam::AABBCPU aabb;
 
 				for (unsigned int k = 0; k < scene_mesh.getNumVertices(); ++k) {
 					aabb.addPoint(Gleam::Vector4CPU(scene_mesh.getVertex(k)[0], scene_mesh.getVertex(k)[1], scene_mesh.getVertex(k)[2], 1.0f));
 				}
 
-				data->aabbs[lod].push(aabb);
+				data->aabbs.emplacePush(aabb);
 			}
 
-			if (!createMeshAndLayout(rd, scene_mesh, data->models[i][lod].get(), model_prefs, num_bone_weights, vert_skeleton_data[j])) {
+			if (!createMeshAndLayout(rd, scene_mesh, data->models[*it][lod].get(), model_prefs, num_bone_weights, vert_skeleton_data[j])) {
 				return false;
 			}
 
@@ -313,13 +302,10 @@ bool ModelLoader::loadMeshes(ModelData* data, const Gaff::JSON& lod_tags, const 
 		}
 	}
 
-	// Resize the AABB arrays to be exact
-	for (auto it = data->aabbs.begin(); it != data->aabbs.end(); ++it) {
-		it->trim();
-	}
+	data->aabbs.trim();
 
 	// Calculate the total AABB
-	for (auto it = data->aabbs[0].begin(); it != data->aabbs[0].end(); ++it) {
+	for (auto it = data->aabbs.begin(); it != data->aabbs.end(); ++it) {
 		data->combined_aabb.addAABB(*it);
 	}
 
@@ -740,7 +726,7 @@ bool ModelLoader::loadSkeleton(ModelData* data, const Gaff::JSON& model_prefs, u
 		Gaff::Mesh scene_mesh = data->holding_data->scene.getMesh(k);
 
 		// Temporarily to hold vertex bone weight count
-		Array<unsigned int> num_bones(scene_mesh.getNumVertices(), num_bone_weights);
+		Array<unsigned int> num_bones(scene_mesh.getNumVertices(), 0);
 
 		for (unsigned int i = 0; i < scene_mesh.getNumBones(); ++i) {
 			Gaff::Bone bone = scene_mesh.getBone(i);
@@ -756,7 +742,7 @@ bool ModelLoader::loadSkeleton(ModelData* data, const Gaff::JSON& model_prefs, u
 			}
 		}
 
-		vert_skeleton_data[k].resize(num_bones.size());
+		vert_skeleton_data[k].resize(scene_mesh.getNumVertices());
 
 		for (size_t i = 0; i < num_bones.size(); ++i) {
 			max_vertex_bones = Gaff::Max(max_vertex_bones, num_bones[i]);
@@ -766,7 +752,11 @@ bool ModelLoader::loadSkeleton(ModelData* data, const Gaff::JSON& model_prefs, u
 		}
 	}
 
-	num_bone_weights = static_cast<unsigned int>(ceilf((float)max_vertex_bones / 4.0f));
+	num_bone_weights = static_cast<unsigned int>(ceilf(static_cast<float>(max_vertex_bones) / 4.0f));
+
+	if (!num_bone_weights) {
+		return true;
+	}
 
 	// Load skeleton hierarchy
 	// This should load a skeleton that is sorted by parent index. Root being bone 0.
