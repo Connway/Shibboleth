@@ -22,41 +22,11 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Shibboleth_ResourceDefines.h"
-#include <Shibboleth_Array2D.h>
-#include <Gaff_IVirtualDestructor.h>
-#include <Gaff_SceneImporter.h>
-#include <esprit_Skeleton.h>
-#include <Gleam_AABB_CPU.h>
+#include "Shibboleth_ProxyAllocator.h"
+#include <Gaff_Array2D.h>
 
 NS_SHIBBOLETH
 
-struct HoldingData : public Gaff::IVirtualDestructor
-{
-	HoldingData(void) {}
-	~HoldingData(void) {}
-
-	Gaff::SceneImporter importer;
-	Gaff::Scene scene;
-};
-
-struct AnimationData : public Gaff::IVirtualDestructor
-{
-	AnimationData() {}
-	~AnimationData() {}
-};
-
-struct ModelData : public Gaff::IVirtualDestructor
-{
-	ModelData(void) {}
-	~ModelData(void) {}
-
-	Array2D<ModelPtr> models; // [Device][LOD]
-	Array<Gleam::AABBCPU> aabbs; // Was [LOD][Mesh], currently just [Mesh]. Debating if it's working having AABBs per LOD.
-	Gleam::AABBCPU combined_aabb;
-
-	ResourceWrapper<HoldingData> holding_data;
-	esprit::Skeleton skeleton;
-};
+template <class T> using Array2D = Gaff::Array2D<T, ProxyAllocator>;
 
 NS_END

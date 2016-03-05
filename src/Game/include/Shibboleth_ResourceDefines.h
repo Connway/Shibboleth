@@ -24,6 +24,7 @@ THE SOFTWARE.
 
 #include "Shibboleth_ResourceWrapper.h"
 #include "Shibboleth_RenderManager.h"
+#include <Shibboleth_Array2D.h>
 #include <Shibboleth_Array.h>
 #include <Gaff_IVirtualDestructor.h>
 #include <Gleam_ISamplerState.h>
@@ -99,9 +100,11 @@ struct ProgramData : public Gaff::IVirtualDestructor
 struct RenderTargetData : public Gaff::IVirtualDestructor
 {
 	Array<RenderTargetPtr> render_targets;
-	Array< Array<TexturePtr> > textures;
+	//Array< Array<TexturePtr> > textures;
+	//Array< Array<ShaderResourceViewPtr> > texture_srvs;
+	Array2D<TexturePtr> textures;
+	Array2D<ShaderResourceViewPtr> texture_srvs;
 	Array<TexturePtr> depth_stencils;
-	Array< Array<ShaderResourceViewPtr> > texture_srvs;
 	Array<ShaderResourceViewPtr> depth_stencil_srvs;
 
 	// Used for calculating aspect ratio.

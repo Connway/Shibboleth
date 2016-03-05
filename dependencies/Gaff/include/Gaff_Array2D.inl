@@ -152,22 +152,22 @@ void Array2D<T, Allocator>::resize(size_t width, size_t height)
 	size_t min_width = Min(width, _width);
 	size_t min_height = Min(height, _height);
 
-	if (old_array) {
-		// copy over old elements and construct new elements
-		for (size_t i = 0; i < height; ++i) {
-			if (i < min_height) {
-				memcpy(_array + i * width, old_array + i * _width, sizeof(T) * min_width);
+	// copy over old elements and construct new elements
+	for (size_t i = 0; i < height; ++i) {
+		if (old_array && i < min_height) {
+			memcpy(_array + i * width, old_array + i * _width, sizeof(T) * min_width);
 
-				for (size_t j = min_width; j < width; ++j) {
-					construct(_array + i * width + j);
-				}
-
-				for (size_t j = min_width; j < _width; ++j) {
-					deconstruct(old_array + i * _width + j);
-				}
+			for (size_t j = min_width; j < _width; ++j) {
+				deconstruct(old_array + i * _width + j);
 			}
 		}
 
+		for (size_t j = (i < min_height) ? min_width : 0; j < width; ++j) {
+			construct(_array + i * width + j);
+		}
+	}
+
+	if (old_array) {
 		_allocator.free(old_array);
 	}
 
@@ -187,4 +187,16 @@ T& Array2D<T, Allocator>::at(size_t x, size_t y)
 {
 	GAFF_ASSERT(x < _width && y < _height);
 	return _array[y * _width + x];
+}
+
+template <class T, class Allocator>
+size_t Array2D<T, Allocator>::width(void) const
+{
+	return _width;
+}
+
+template <class T, class Allocator>
+size_t Array2D<T, Allocator>::height(void) const
+{
+	return _height;
 }

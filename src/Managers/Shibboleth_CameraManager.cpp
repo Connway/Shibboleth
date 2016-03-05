@@ -139,14 +139,14 @@ void CameraManager::addModelComponent(ObjectData& od, ModelComponent* mc, const 
 
 	size_t lod = mc->determineLOD(eye_pos);
 
-	Array<ModelPtr> lod_models(model_data.models.size(), ModelPtr());
+	Array<ModelPtr> lod_models(model_data.models.height(), ModelPtr());
 
 	// For each device, gather all the LOD models for each device
-	for (size_t i = 0; i < model_data.models.size(); ++i) {
-		Array<ModelPtr>& models = model_data.models[i];
+	for (size_t i = 0; i < model_data.models.height(); ++i) {
+		//Array<ModelPtr>& models = model_data.models[i];
 
-		if (!models.empty() && models[lod]) {
-			lod_models[i] = models[lod];
+		if (model_data.models[i][0] && model_data.models[i][lod]) {
+			lod_models[i] = model_data.models[i][lod];
 		}
 	}
 

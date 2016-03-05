@@ -22,13 +22,13 @@ THE SOFTWARE.
 
 #pragma once
 
+#include "Gaff_HashMap.h"
+#include <jansson.h>
+
 #ifdef PLATFORM_WINDOWS
 	#pragma warning(push)
 	#pragma warning(disable : 4706)
 #endif
-
-#include "Gaff_HashMap.h"
-#include <jansson.h>
 
 NS_GAFF
 

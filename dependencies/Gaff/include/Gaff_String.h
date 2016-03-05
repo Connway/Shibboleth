@@ -99,8 +99,10 @@ public:
 
 	void trim(void);
 
-	size_t findFirstOf(const T* character) const;
-	size_t findLastOf(const T* character) const;
+	size_t findFirstOf(const T* string, size_t size) const;
+	size_t findFirstOf(const T* string) const;
+	size_t findLastOf(const T* string, size_t size) const;
+	size_t findLastOf(const T* string) const;
 	size_t findFirstOf(T character) const;
 	size_t findLastOf(T character) const;
 
@@ -165,6 +167,31 @@ bool greater(const char* s1, size_t n1, const char* s2);
 
 template <>
 bool greater(const wchar_t* s1, size_t n1, const wchar_t* s2);
+
+template <class T>
+size_t FindFirstOf(const T* string, size_t size1, const T* substr, size_t substr_size);
+
+template <class T>
+size_t FindFirstOf(const T* string, size_t size, const T* substr);
+
+template <class T>
+size_t FindFirstOf(const T* string, const T* substr);
+
+template <class T>
+size_t FindLastOf(const T* string, size_t size1, const T* substr, size_t substr_size);
+
+template <class T>
+size_t FindLastOf(const T* string, size_t size, const T* substr);
+
+template <class T>
+size_t FindLastOf(const T* string, const T* substr);
+
+template <class T>
+size_t FindFirstOf(const T* string, size_t size, T character);
+
+template <class T>
+size_t FindLastOf(const T* string, size_t size, T character);
+
 
 INLINE void ConvertToUTF8(char* output, const wchar_t* input, size_t size);
 INLINE void ConvertToUTF16(wchar_t* output, const char* input, size_t size); // size is in bytes, not character count

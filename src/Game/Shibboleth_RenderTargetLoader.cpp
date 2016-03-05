@@ -95,8 +95,12 @@ static bool addOutput(Gleam::IRenderDevice& rd, RenderManager& rm, Gleam::IRende
 		return false;
 	}
 
-	data->texture_srvs[rd.getCurrentDevice()].emplacePush(std::move(srv));
-	data->textures[rd.getCurrentDevice()].emplacePush(std::move(texture));
+	for (size_t i = 0; i < data->textures.width(); ++i) {
+		if (!data->textures[rd.getCurrentDevice()][i]) {
+			data->textures[rd.getCurrentDevice()][i] = std::move(texture);
+			data->texture_srvs[rd.getCurrentDevice()][i] = std::move(srv);
+		}
+	}
 
 	return true;
 }
@@ -243,8 +247,6 @@ Gaff::IVirtualDestructor* RenderTargetLoader::load(const char* file_name, uint64
 	}
 
 	data->render_targets.resize(rd.getNumDevices());
-	data->textures.resize(rd.getNumDevices());
-	data->texture_srvs.resize(rd.getNumDevices());
 	data->depth_stencils.resize(rd.getNumDevices());
 	data->depth_stencil_srvs.resize(rd.getNumDevices());
 
@@ -291,6 +293,9 @@ Gaff::IVirtualDestructor* RenderTargetLoader::load(const char* file_name, uint64
 		}
 
 		if (outputs.isArray()) {
+			data->textures.resize(outputs.size(), rd.getNumDevices());
+			data->texture_srvs.resize(outputs.size(), rd.getNumDevices());
+
 			bool failed = outputs.forEachInArray([&](size_t, const Gaff::JSON& value) -> bool
 			{
 				if (!addOutput(rd, rm, rt.get(), data, window_width, window_height, value, file_name)) {
