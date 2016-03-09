@@ -25,6 +25,7 @@ THE SOFTWARE.
 #include "Shibboleth_Utilities.h"
 #include "Shibboleth_IManager.h"
 #include "Shibboleth_String.h"
+#include <Gaff_CrashHandler.h>
 #include <Gaff_Utils.h>
 #include <Gaff_JSON.h>
 #include <regex>
@@ -39,6 +40,9 @@ App::App(void):
 	_state_machine(ProxyAllocator()), _logger(ProxyAllocator()),
 	_log_file_pair(nullptr), _seed(0), _running(true)
 {
+	Gaff::InitializeCrashHandler();
+	// Set crash handler here
+
 	SetApp(*this);
 }
 

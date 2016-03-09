@@ -5,6 +5,7 @@
 
 import utils.GenUtils
 import subprocess
+import platform
 import sys
 import re
 
@@ -14,7 +15,13 @@ using_physx = False
 vs2013 = False
 vs2015 = False
 
-args = ["premake5"]
+if platform.system() == "Windows":
+	args = ["./utils/premake5"]
+elif platform.system() == "Linux":
+	args = ["./utils/premake5-linux"]
+elif platform.system() == "Darwin":
+	args = ["./utils/premake5-mac"]
+
 args.extend(sys.argv)
 
 for a in args:

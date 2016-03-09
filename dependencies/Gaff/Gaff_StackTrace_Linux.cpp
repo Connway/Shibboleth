@@ -20,7 +20,9 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#if defined(__linux__) || defined(__APPLE__)
+#include "Gaff_Platform.h"
+
+#if defined(PLATFORM_LINUX) || defined(PLATFORM_MAC)
 
 #include "Gaff_StackTrace_Linux.h"
 #include "Gaff_Assert.h"
@@ -128,10 +130,15 @@ const char* StackTrace::getSymbolName(unsigned short frame) const
 	return _strings[frame];
 }
 
-const char* StackTrace::getFileName(unsigned short frame) const
+const char* StackTrace::getFileName(unsigned short frame, const char* app_name) const
 {
-	char command[64] = { 0 };
-	sprintf(command, "addr2line %p -e App", _stack[frame]); // Make a generic way to solve for not hard-coding the "App" part.
+	char command[256] = { 0 };
+
+#ifdef PLATFORM_MAC
+	sprintf(command, "atos -o %s %p", app_name, _stack[frame]); // Make a generic way to solve for not hard-coding the "App" part.
+#else
+	sprintf(command, "addr2line -e %s %p", app_name, _stack[frame]); // Make a generic way to solve for not hard-coding the "App" part.
+#endif
 
 	FILE* stream = popen(command, "r");
 

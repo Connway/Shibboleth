@@ -22,13 +22,15 @@ THE SOFTWARE.
 
 #pragma once
 
-#if defined(_WIN32) || defined(_WIN64)
+#include "Gaff_Platform.h"
+
+#ifdef PLATFORM_WINDOWS
 	#include "Gaff_DynamicModule_Windows.h"
 	#define DYNAMIC_EXTENSION ".dll"
-#elif defined(__linux__)
+#elif defined(PLATFORM_LINUX)
 	#include "Gaff_DynamicModule_Linux.h"
 	#define DYNAMIC_EXTENSION ".so"
-#elif defined(__APPLE__)
+#elif defined(PLATFORM_MAC)
 	#include "Gaff_DynamicModule_Linux.h"
 	#define DYNAMIC_EXTENSION ".dylib"
 #else

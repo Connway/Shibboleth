@@ -202,6 +202,7 @@
     <ClInclude Include="..\..\..\dependencies\Gaff\include\Gaff_CachedFunction.h" />
     <ClInclude Include="..\..\..\dependencies\Gaff\include\Gaff_Camera.h" />
     <ClInclude Include="..\..\..\dependencies\Gaff\include\Gaff_Connection.h" />
+    <ClInclude Include="..\..\..\dependencies\Gaff\include\Gaff_CrashHandler.h" />
     <ClInclude Include="..\..\..\dependencies\Gaff\include\Gaff_CriticalSection.h" />
     <ClInclude Include="..\..\..\dependencies\Gaff\include\Gaff_CriticalSection_Linux.h" />
     <ClInclude Include="..\..\..\dependencies\Gaff\include\Gaff_CriticalSection_Windows.h" />
@@ -237,6 +238,7 @@
     <ClInclude Include="..\..\..\dependencies\Gaff\include\Gaff_NetworkDefines.h" />
     <ClInclude Include="..\..\..\dependencies\Gaff\include\Gaff_NodeAnimation.h" />
     <ClInclude Include="..\..\..\dependencies\Gaff\include\Gaff_Pair.h" />
+    <ClInclude Include="..\..\..\dependencies\Gaff\include\Gaff_Platform.h" />
     <ClInclude Include="..\..\..\dependencies\Gaff\include\Gaff_Predicates.h" />
     <ClInclude Include="..\..\..\dependencies\Gaff\include\Gaff_Queue.h" />
     <ClInclude Include="..\..\..\dependencies\Gaff\include\Gaff_ReadWriteSpinLock.h" />
@@ -271,6 +273,9 @@
     <ClCompile Include="..\..\..\dependencies\Gaff\Gaff_Assert.cpp" />
     <ClCompile Include="..\..\..\dependencies\Gaff\Gaff_Camera.cpp" />
     <ClCompile Include="..\..\..\dependencies\Gaff\Gaff_Connection.cpp" />
+    <ClCompile Include="..\..\..\dependencies\Gaff\Gaff_CrashHandler_Common.cpp" />
+    <ClCompile Include="..\..\..\dependencies\Gaff\Gaff_CrashHandler_Linux.cpp" />
+    <ClCompile Include="..\..\..\dependencies\Gaff\Gaff_CrashHandler_Windows.cpp" />
     <ClCompile Include="..\..\..\dependencies\Gaff\Gaff_CriticalSection_Linux.cpp" />
     <ClCompile Include="..\..\..\dependencies\Gaff\Gaff_CriticalSection_Windows.cpp" />
     <ClCompile Include="..\..\..\dependencies\Gaff\Gaff_DynamicModule_Linux.cpp" />
