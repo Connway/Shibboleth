@@ -20,50 +20,22 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#include "Gaff_Platform.h"
-
-#if defined(PLATFORM_LINUX) || defined(PLATFORM_MAC)
-
-#include "Gaff_DynamicModule_Linux.h"
-#include <dlfcn.h>
+#include "Gaff_CrashHandler.h"
+#include "Gaff_Assert.h"
 
 NS_GAFF
 
-DynamicModule::DynamicModule(void):
-	_module(nullptr)
+CrashHandler g_crash_handler = DefaultCrashHandler;
+
+void DefaultCrashHandler(void)
 {
+	// Assert until we get a proper crash handler.
+	GAFF_ASSERT_MSG(false, "Crash Handler!");
 }
 
-DynamicModule::~DynamicModule(void)
+void SetCrashHandler(CrashHandler crash_handler)
 {
-	destroy();
-}
-
-bool DynamicModule::load(const char* filename)
-{
-	_module = dlopen(filename, RTLD_LAZY);
-	return _module != nullptr;
-}
-
-bool DynamicModule::destroy(void)
-{
-	if (_module) {
-		return dlclose(_module) == 0;
-	}
-
-	return false;
-}
-
-void* DynamicModule::getAddress(const char* name) const
-{
-	return dlsym(_module, name);
-}
-
-const char* DynamicModule::GetErrorString(void)
-{
-	return dlerror();
+	g_crash_handler = crash_handler;
 }
 
 NS_END
-
-#endif

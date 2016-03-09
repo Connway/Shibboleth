@@ -20,50 +20,35 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#include "Gaff_Platform.h"
+// This file is only for defining the PLATFORM_* defines
 
-#if defined(PLATFORM_LINUX) || defined(PLATFORM_MAC)
+#pragma once
 
-#include "Gaff_DynamicModule_Linux.h"
-#include <dlfcn.h>
+#if defined(_WIN32) || defined(_WIN64)
+	#define PLATFORM_WINDOWS
+#elif defined(__linux__)
+	#define PLATFORM_LINUX
+#elif defined(__APPLE__)
+	#define PLATFORM_MAC
+#endif
 
-NS_GAFF
+#ifdef _MSC_VER
+	// Add endian detection for Microsoft compiler here.
+	// Assuming little endian for now
+	#define PLATFORM_LITTLE_ENDIAN
 
-DynamicModule::DynamicModule(void):
-	_module(nullptr)
-{
-}
+#elif defined(__GNUC__) || defined(__GNUG__) || defined(__clang__)
+	#if defined(__BYTE_ORDER__) && (__BYTE_ORDER__ == __LITTLE_ENDIAN__)
+		#define PLATFORM_LITTLE_ENDIAN
+	#elif defined(__BYTE_ORDER__) && (__BYTE_ORDER__ == __BIG_ENDIAN__)
+		#define PLATFORM_BIG_ENDIAN
+	#endif
+#endif
 
-DynamicModule::~DynamicModule(void)
-{
-	destroy();
-}
-
-bool DynamicModule::load(const char* filename)
-{
-	_module = dlopen(filename, RTLD_LAZY);
-	return _module != nullptr;
-}
-
-bool DynamicModule::destroy(void)
-{
-	if (_module) {
-		return dlclose(_module) == 0;
-	}
-
-	return false;
-}
-
-void* DynamicModule::getAddress(const char* name) const
-{
-	return dlsym(_module, name);
-}
-
-const char* DynamicModule::GetErrorString(void)
-{
-	return dlerror();
-}
-
-NS_END
-
+#if defined(__LP64__) || defined(_WIN64)
+	#define PLATFORM_64_BIT
+#elif defined(__LP32__) || defined(_WIN32)
+	#define PLATFORM_32_BIT
+#else
+	#error "Cannot deduce platform bit-age."
 #endif

@@ -29,9 +29,6 @@ NS_GAFF
 #define MAX_FRAMES 32 //!< The maximum number of stack frames we can captures.
 #define NAME_SIZE 256 //!< The maximum size a frame name can be.
 
-/*!
-	\brief Wrapper class for capturing stack traces.
-*/
 class StackTrace
 {
 public:
@@ -51,7 +48,7 @@ public:
 	INLINE uint64_t getAddress(unsigned short frame) const;
 	INLINE unsigned int getLineNumber(unsigned short frame) const;
 	INLINE const char* getSymbolName(unsigned short frame) const;
-	INLINE const char* getFileName(unsigned short frame) const;
+	INLINE const char* getFileName(unsigned short frame, const char* app_name) const;
 
 private:
 	mutable char _file_name_cache[NAME_SIZE];

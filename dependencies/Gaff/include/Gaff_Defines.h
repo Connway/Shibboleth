@@ -22,6 +22,8 @@ THE SOFTWARE.
 
 #pragma once
 
+#include "Gaff_Platform.h"
+
 //#define ATTEMPT_INLINE
 
 #define NUM_TRIES_UNTIL_YIELD 5
@@ -54,27 +56,6 @@ THE SOFTWARE.
 
 #define SAFEGAFFRELEASE(x) if (x) { x->release(); x = nullptr; } // Safely releases pointers that implement IRefCounted.
 #define SAFEGAFFADDREF(x) if (x) { x->addRef(); } // Safely adds a reference to pointers that implement IRefCounted.
-
-// Presumably we would add support for detecting other platforms in the future,
-// such as XBone, PS4, etc. here.
-#if defined(_WIN32) || defined(_WIN64)
-	#define PLATFORM_WINDOWS
-	#define PLATFORM_LITTLE_ENDIAN // Assume little endian until I can figure out how to detect properly
-#elif defined(__linux__)
-	#define PLATFORM_LINUX
-#elif defined(__APPLE__)
-	#define PLATFORM_MAC
-#endif
-
-#ifdef _MSC_VER
-	// Add endian detection for Microsoft compiler here.
-#elif defined(__GNUC__) || defined(__GNUG__) || defined(__clang__)
-	#if defined(__BYTE_ORDER__) && (__BYTE_ORDER__ == __LITTLE_ENDIAN__)
-		#define PLATFORM_LITTLE_ENDIAN
-	#elif defined(__BYTE_ORDER__) && (__BYTE_ORDER__ == __BIG_ENDIAN__)
-		#define PLATFORM_BIG_ENDIAN
-	#endif
-#endif
 
 #ifdef PLATFORM_WINDOWS
 	// Disable nameless struct/union warning
@@ -140,15 +121,7 @@ THE SOFTWARE.
 #define GAFF_STR_HELPER(x) #x
 #define GAFF_STR(x) GAFF_STR_HELPER(x)
 
-#if defined(__LP64__) || defined(_WIN64)
-	#define PLATFORM_64_BIT
-#elif defined(__LP32__) || defined(_WIN32)
-	#define PLATFORM_32_BIT
-#else
-	#error "Cannot deduce platform bit-age."
-#endif
-
-#if defined(__linux__) || defined(__APPLE__)
+#if defined(PLATFORM_LINUX) || defined(PLATFORM_MAC)
 	#include <cstdlib> // For size_t
 	#include <sched.h> // For sched_yield
 #endif

@@ -20,7 +20,9 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#if defined(_WIN32) || defined(_WIN64)
+#include "Gaff_Platform.h"
+
+#ifdef PLATFORM_WINDOWS
 
 #include "Gaff_DynamicModule_Windows.h"
 #include "Gaff_String.h"

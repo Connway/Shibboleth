@@ -20,8 +20,6 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#pragma once
-
 #include "Shibboleth_LoadGraphicsModuleState.h"
 #include <Shibboleth_RenderManager.h>
 #include <Shibboleth_IApp.h>

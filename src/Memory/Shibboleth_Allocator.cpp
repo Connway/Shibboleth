@@ -153,7 +153,7 @@ Allocator::~Allocator(void)
 				for (unsigned short j = 0; j < (*it_st)->stack_trace.getNumCapturedFrames(); ++j) {
 					callstack_log.printf(
 						"\t(0x%llX) [%s:(%u)] %s\n", (*it_st)->stack_trace.getAddress(j),
-						(*it_st)->stack_trace.getFileName(j), (*it_st)->stack_trace.getLineNumber(j),
+						(*it_st)->stack_trace.getFileName(j, APP_NAME), (*it_st)->stack_trace.getLineNumber(j),
 						(*it_st)->stack_trace.getSymbolName(j)
 					);
 				}

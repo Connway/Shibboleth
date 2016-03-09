@@ -20,18 +20,13 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-/*! \file */
-
-/*!
-	\class CriticalSection
-	\brief Small critical section/mutex wrapper.
-*/
-
 #pragma once
 
-#if defined(_WIN32) || defined(_WIN64)
+#include "Gaff_Platform.h"
+
+#ifdef PLATFORM_WINDOWS
 	#include "Gaff_CriticalSection_Windows.h"
-#elif defined(__linux__) || defined(__APPLE__)
+#elif defined(PLATFORM_LINUX) || defined(PLATFORM_MAC)
 	#include "Gaff_CriticalSection_Linux.h"
 #else
 	#error Platform not supported

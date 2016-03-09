@@ -143,7 +143,7 @@ const char* StackTrace::getSymbolName(unsigned short frame) const
 	return _symbol_info[frame].symbol_name;
 }
 
-const char* StackTrace::getFileName(unsigned short frame) const
+const char* StackTrace::getFileName(unsigned short frame, const char*) const
 {
 	return _symbol_info[frame].file_name;
 }

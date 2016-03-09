@@ -22,6 +22,8 @@ THE SOFTWARE.
 
 #pragma once
 
+#include "Gaff_Platform.h"
+
 #ifndef _CRT_SECURE_NO_WARNINGS
 	#define _CRT_SECURE_NO_WARNINGS
 #endif
@@ -31,13 +33,13 @@ THE SOFTWARE.
 	#define NS_END }
 #endif
 
-#if defined(__LP64__) || defined(_WIN64)
+#ifdef PLATFORM_64_BIT
 	#ifdef _DEBUG
 		#define BIT_EXTENSION "64d"
 	#else
 		#define BIT_EXTENSION "64"
 	#endif
-#elif defined(__LP32__) || defined(_WIN32)
+#elif defined(PLATFORM_32_BIT)
 	#ifdef _DEBUG
 		#define BIT_EXTENSION "32d"
 	#else
@@ -46,5 +48,7 @@ THE SOFTWARE.
 #else
 	#error "Cannot deduce platform bit-age."
 #endif
+
+#define APP_NAME "App" BIT_EXTENSION
 
 //#define INIT_STACKTRACE_SYSTEM

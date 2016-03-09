@@ -20,48 +20,34 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#include "Gaff_Platform.h"
+#include "Gaff_CrashHandler.h"
 
-#if defined(PLATFORM_LINUX) || defined(PLATFORM_MAC)
+#ifdef PLATFORM_WINDOWS
 
-#include "Gaff_DynamicModule_Linux.h"
-#include <dlfcn.h>
+#include "Gaff_Utils.h"
 
 NS_GAFF
 
-DynamicModule::DynamicModule(void):
-	_module(nullptr)
-{
-}
+extern CrashHandler g_crash_handler;
 
-DynamicModule::~DynamicModule(void)
+static LONG WINAPI ExceptionHandler(EXCEPTION_POINTERS* /*_exception_info*/)
 {
-	destroy();
-}
+	// Convert to our data structure
 
-bool DynamicModule::load(const char* filename)
-{
-	_module = dlopen(filename, RTLD_LAZY);
-	return _module != nullptr;
-}
-
-bool DynamicModule::destroy(void)
-{
-	if (_module) {
-		return dlclose(_module) == 0;
+	if (g_crash_handler) {
+		g_crash_handler();
 	}
 
-	return false;
+	if (IsDebuggerPresent()) {
+		return EXCEPTION_CONTINUE_SEARCH;
+	}
+
+	return EXCEPTION_EXECUTE_HANDLER;
 }
 
-void* DynamicModule::getAddress(const char* name) const
+void InitializeCrashHandler(void)
 {
-	return dlsym(_module, name);
-}
-
-const char* DynamicModule::GetErrorString(void)
-{
-	return dlerror();
+	SetUnhandledExceptionFilter(ExceptionHandler);
 }
 
 NS_END
