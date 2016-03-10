@@ -26,10 +26,10 @@ THE SOFTWARE.
 
 NS_GAFF
 
-using CrashHandler = void (*)();
+using CrashHandler = void (*)(void* crash_data);
 
 void SetCrashHandler(CrashHandler crash_handler);
-void DefaultCrashHandler(void);
+void DefaultCrashHandler(void* crash_data);
 
 void InitializeCrashHandler(void);
 

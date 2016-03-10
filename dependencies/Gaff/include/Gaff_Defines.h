@@ -57,6 +57,21 @@ THE SOFTWARE.
 #define SAFEGAFFRELEASE(x) if (x) { x->release(); x = nullptr; } // Safely releases pointers that implement IRefCounted.
 #define SAFEGAFFADDREF(x) if (x) { x->addRef(); } // Safely adds a reference to pointers that implement IRefCounted.
 
+#define SIZE_T_FAIL static_cast<size_t>(-1) // Returned from functions that use size_t's, but can potentially fail
+#define UINT_FAIL static_cast<unsigned int>(-1)  // Returned from functions that use unsigned int's, but can potentially fail
+#define DYNAMICEXPORT_C extern "C" DYNAMICEXPORT // Exports a function with C-style symbol names.
+
+#define GAFF_STR_HELPER(x) #x
+#define GAFF_STR(x) GAFF_STR_HELPER(x)
+
+#define ARRAY_SIZE(arr) (sizeof(arr) / sizeof(arr[0]))
+
+#ifdef _DEBUG
+	#define GAFF_ASSERT_ENABLED
+#endif
+
+
+
 #ifdef PLATFORM_WINDOWS
 	// Disable nameless struct/union warning
 	// Disable assignment operator could not be generated warning
@@ -110,17 +125,6 @@ THE SOFTWARE.
 	#endif
 #endif
 
-#ifdef _DEBUG
-	#define GAFF_ASSERT_ENABLED
-#endif
-
-#define SIZE_T_FAIL static_cast<size_t>(-1) // Returned from functions that use size_t's, but can potentially fail
-#define UINT_FAIL static_cast<unsigned int>(-1)  // Returned from functions that use unsigned int's, but can potentially fail
-#define DYNAMICEXPORT_C extern "C" DYNAMICEXPORT // Exports a function with C-style symbol names.
-
-#define GAFF_STR_HELPER(x) #x
-#define GAFF_STR(x) GAFF_STR_HELPER(x)
-
 #if defined(PLATFORM_LINUX) || defined(PLATFORM_MAC)
 	#include <cstdlib> // For size_t
 	#include <sched.h> // For sched_yield
@@ -128,9 +132,6 @@ THE SOFTWARE.
 
 #include <utility> // For std::move() and std::forward()
 #include <stdint.h>
-
-#define REFLECTION_HASH Gaff::FNV1aHash32
-//#define REFLECTION_HASH Gaff::FNV1aHash64
 
 NS_GAFF
 

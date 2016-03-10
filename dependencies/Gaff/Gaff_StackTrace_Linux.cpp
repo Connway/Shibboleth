@@ -20,11 +20,10 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#include "Gaff_Platform.h"
+#include "Gaff_StackTrace_Linux.h"
 
 #if defined(PLATFORM_LINUX) || defined(PLATFORM_MAC)
 
-#include "Gaff_StackTrace_Linux.h"
 #include "Gaff_Assert.h"
 #include <execinfo.h>
 #include <cstring>
