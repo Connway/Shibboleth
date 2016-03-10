@@ -24,6 +24,7 @@ THE SOFTWARE.
 
 #if defined(PLATFORM_LINUX) || defined(PLATFORM_MAC)
 
+#include <sys/resource.h>
 #include <csignal>
 #include <err.h>
 
@@ -31,15 +32,33 @@ NS_GAFF
 
 extern CrashHandler g_crash_handler;
 
-static uint8_t alternate_stack[SIGSTKSZ] = { 0 };
+static uint8_t g_alternate_stack[SIGSTKSZ] = { 0 };
+static CrashData g_crash_data;
 
-static void ExceptionHandler(int /*sig*/, siginfo_t* /*siginfo*/, void* /*context*/)
+struct CrashData
+{
+	int sig;
+	siginfo_t siginfo;;
+	void* context;
+};
+
+static void ExceptionHandler(int sig, siginfo_t* siginfo, void* context)
 {
 	// Convert to our data structure
 
+	g_crash_data.sig = sig;
+	g_crasH_data.siginfo = siginfo;
+	g_crash_data.context = context;
+
 	if (g_crash_handler) {
-		g_crash_handler();
+		g_crash_handler(&g_crash_data);
 	}
+}
+
+void DefaultCrashHandler(void*)
+{
+	// Assert until we get a proper crash handler.
+	GAFF_ASSERT_MSG(false, "Crash Handler!");
 }
 
 void InitializeCrashHandler(void)
@@ -48,7 +67,7 @@ void InitializeCrashHandler(void)
 	stack_t ss = {};
 	/* malloc is usually used here, I'm not 100% sure my static allocation
 	is valid but it seems to work just fine. */
-	ss.ss_sp = static_cast<void*>(alternate_stack);
+	ss.ss_sp = static_cast<void*>(g_alternate_stack);
 	ss.ss_size = SIGSTKSZ;
 	ss.ss_flags = 0;
 
@@ -92,6 +111,11 @@ void InitializeCrashHandler(void)
 	if (sigaction(SIGABRT, &sig_action, NULL)) {
 		err(1, "sigaction");
 	}
+
+	// allow core dumps
+	rlimit core_limits;
+	core_limits.rlim_cur = core_limits.rlim_max = RLIM_INFINITY;
+	setrlimit(RLIMIT_CORE, &core_limits);
 }
 
 NS_END

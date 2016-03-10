@@ -26,16 +26,73 @@ THE SOFTWARE.
 
 #include "Gaff_Utils.h"
 
+// Silence MS warnings
+#pragma warning(push)
+#pragma warning(disable: 4091)
+#include <DbgHelp.h>
+#pragma warning(pop)
+
+#include <Psapi.h>
+
 NS_GAFF
 
 extern CrashHandler g_crash_handler;
 
-static LONG WINAPI ExceptionHandler(EXCEPTION_POINTERS* /*_exception_info*/)
+static void WriteMiniDump(EXCEPTION_POINTERS* _exception_info)
+{
+	// Generate dump file name
+	TCHAR process_name[MAX_PATH] = { 0 };
+	GetProcessImageFileName(GetCurrentProcess(), process_name, MAX_PATH);
+	size_t name_begin = Gaff::FindLastOf(process_name, MAX_PATH - 1, TEXT('\\')) + 1;
+
+	TCHAR dump_format[128] = { 0 };
+	Gaff::GetCurrentTimeString(dump_format, ARRAY_SIZE(dump_format) - 1, TEXT("dumps/0s_%Y-%m-%d %H-%M-%S.dmp"));
+	dump_format[6] = TEXT('%');
+
+	TCHAR dump_file_name[1024] = { 0 };
+
+#ifdef _UNICODE
+	_snwprintf(dump_file_name, ARRAY_SIZE(dump_file_name) - 1, dump_format, process_name + name_begin);
+#else
+	snprintf(dump_file_name, ARRAY_SIZE(dump_file_name) - 1, dump_format, process_name + name_begin);
+#endif
+
+	// Make sure our output folder exists.
+	Gaff::CreateDir("dumps", 0777);
+
+	HANDLE hFile = CreateFile(
+		dump_file_name, GENERIC_READ | GENERIC_WRITE,
+		0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL
+	);
+
+	if (hFile != NULL && hFile != INVALID_HANDLE_VALUE) {
+		MINIDUMP_EXCEPTION_INFORMATION mdei;
+
+		mdei.ThreadId = GetCurrentThreadId();
+		mdei.ExceptionPointers = _exception_info;
+		mdei.ClientPointers = FALSE;
+
+		MINIDUMP_TYPE mdt = static_cast<MINIDUMP_TYPE>(
+			MiniDumpWithIndirectlyReferencedMemory | MiniDumpWithProcessThreadData |
+			MiniDumpWithThreadInfo
+		);
+
+		MiniDumpWriteDump(
+			GetCurrentProcess(), GetCurrentProcessId(),
+			hFile, mdt, (_exception_info != nullptr) ? &mdei : 0,
+			0, 0
+		);
+
+		CloseHandle(hFile);
+	}
+}
+
+static LONG WINAPI ExceptionHandler(EXCEPTION_POINTERS* _exception_info)
 {
 	// Convert to our data structure
 
 	if (g_crash_handler) {
-		g_crash_handler();
+		g_crash_handler(_exception_info);
 	}
 
 	if (IsDebuggerPresent()) {
@@ -43,6 +100,14 @@ static LONG WINAPI ExceptionHandler(EXCEPTION_POINTERS* /*_exception_info*/)
 	}
 
 	return EXCEPTION_EXECUTE_HANDLER;
+}
+
+void DefaultCrashHandler(void* crash_data)
+{
+	WriteMiniDump(reinterpret_cast<EXCEPTION_POINTERS*>(crash_data));
+
+	// Assert until we get a proper crash handler.
+	GAFF_ASSERT_MSG(false, "Crash Handler!");
 }
 
 void InitializeCrashHandler(void)

@@ -23,11 +23,6 @@ project "App"
 
 	files { "**.h", "**.cpp", "**.inl" }
 
-	configuration "windows"
-		includedirs { "../../dependencies/dirent" }
-
-	configuration {}
-
 	includedirs
 	{
 		"../Shared/include",
@@ -49,7 +44,8 @@ project "App"
 		"Boxer"
 	}
 
-	filter { "system:windows", "options:symbols" }
+	filter { "system:windows" }
+		includedirs { "../../dependencies/dirent" }
 		links { "Dbghelp" }
 
 	filter { "system:not windows" }

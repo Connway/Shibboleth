@@ -44,6 +44,7 @@ NS_GAFF
 
 INLINE unsigned long GetNumberOfCores(void); //!< Returns the number of physical cores on the machine.
 INLINE void GetCurrentTimeString(char* buff, size_t count, const char* format); //!< Gets the current time as a string using \a format. Result stored in \a buff.
+INLINE void GetCurrentTimeString(wchar_t* buff, size_t size, const wchar_t* format);
 INLINE bool CreateDir(const char* dirname, unsigned short mode); //<! Creates directory \a dirname with the given access \a mode.
 void DebugPrintf(const char* format_string, ...); //!< Does a printf() to debug output on supported platforms. Unsupported platforms just call normal printf().
 void DebugPrintf(const wchar_t* format_string, ...); //!< Does a printf() to debug output on supported platforms. Unsupported platforms just call normal printf().

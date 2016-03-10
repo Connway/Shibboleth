@@ -31,4 +31,11 @@ void GetCurrentTimeString(char* buff, size_t size, const char* format)
 	strftime(buff, size, format, now);
 }
 
+void GetCurrentTimeString(wchar_t* buff, size_t size, const wchar_t* format)
+{
+	time_t t = time(nullptr);
+	tm* now = localtime(&t);
+	wcsftime(buff, size, format, now);
+}
+
 NS_END

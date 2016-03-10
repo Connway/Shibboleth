@@ -27,12 +27,6 @@ NS_GAFF
 
 CrashHandler g_crash_handler = DefaultCrashHandler;
 
-void DefaultCrashHandler(void)
-{
-	// Assert until we get a proper crash handler.
-	GAFF_ASSERT_MSG(false, "Crash Handler!");
-}
-
 void SetCrashHandler(CrashHandler crash_handler)
 {
 	g_crash_handler = crash_handler;

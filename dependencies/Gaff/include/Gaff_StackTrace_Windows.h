@@ -23,13 +23,6 @@ THE SOFTWARE.
 #pragma once
 
 #include "Gaff_Defines.h"
-#include "Gaff_IncludeWindows.h"
-
-// Silence MS warnings
-#pragma warning(push)
-#pragma warning(disable: 4091)
-#include <DbgHelp.h>
-#pragma warning(pop)
 
 NS_GAFF
 
@@ -58,7 +51,7 @@ public:
 	INLINE const char* getFileName(unsigned short frame, const char* app_name) const;
 
 private:
-	static HANDLE _handle;
+	static void* _handle;
 
 	struct SymbolInfo
 	{
