@@ -47,7 +47,7 @@ static void ExceptionHandler(int sig, siginfo_t* siginfo, void* context)
 	// Convert to our data structure
 
 	g_crash_data.sig = sig;
-	g_crasH_data.siginfo = siginfo;
+	g_crash_data.siginfo = siginfo;
 	g_crash_data.context = context;
 
 	if (g_crash_handler) {
@@ -57,8 +57,6 @@ static void ExceptionHandler(int sig, siginfo_t* siginfo, void* context)
 
 void DefaultCrashHandler(void*)
 {
-	// Assert until we get a proper crash handler.
-	GAFF_ASSERT_MSG(false, "Crash Handler!");
 }
 
 void InitializeCrashHandler(void)
