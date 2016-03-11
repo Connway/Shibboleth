@@ -105,9 +105,6 @@ static LONG WINAPI ExceptionHandler(EXCEPTION_POINTERS* _exception_info)
 void DefaultCrashHandler(void* crash_data)
 {
 	WriteMiniDump(reinterpret_cast<EXCEPTION_POINTERS*>(crash_data));
-
-	// Assert until we get a proper crash handler.
-	GAFF_ASSERT_MSG(false, "Crash Handler!");
 }
 
 void InitializeCrashHandler(void)
