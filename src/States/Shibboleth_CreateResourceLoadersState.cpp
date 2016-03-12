@@ -67,7 +67,7 @@ void CreateResourceLoadersState::enter(void)
 
 void CreateResourceLoadersState::update(void)
 {
-	_app.getGameLogFile().first.writeString("==================================================\n");
+	_app.getGameLogFile().first.writeString("\n==================================================\n");
 	_app.getGameLogFile().first.writeString("==================================================\n");
 	_app.getGameLogFile().first.printf("Creating Resource Loaders...\n");
 

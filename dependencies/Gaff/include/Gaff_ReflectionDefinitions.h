@@ -552,7 +552,7 @@ template <class T, class Allocator>
 class ReflectionDefinition : public IReflectionDefinition
 {
 public:
-	class ValueContainerBase : public IReflectionDefinition::IValueContainer
+	class ValueContainerBase : public IValueContainer
 	{
 	public:
 		ValueContainerBase(const char* key, const Allocator& allocator) : _key(key, allocator) {}
