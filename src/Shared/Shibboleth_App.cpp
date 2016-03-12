@@ -70,9 +70,9 @@ bool App::init(int argc, char** argv)
 	removeExtraLogs(); // Make sure we don't have more than ten logs per log type
 
 	char log_file_name[64] = { 0 };
-	Gaff::GetCurrentTimeString(log_file_name, 64, "Logs/GameLog %Y-%m-%d %H-%M-%S.txt");
+	Gaff::GetCurrentTimeString(log_file_name, 64, "logs/GameLog %Y-%m-%d %H-%M-%S.txt");
 
-	if (!Gaff::CreateDir("./Logs", 0777) || !_logger.openLogFile(log_file_name)) {
+	if (!Gaff::CreateDir("./logs", 0777) || !_logger.openLogFile(log_file_name)) {
 		return false;
 	}
 
@@ -498,20 +498,20 @@ void App::removeExtraLogs(void)
 	callstack_log_count = alloc_log_count = game_log_count = 0;
 	AString temp;
 
-	Gaff::ForEachTypeInDirectory<Gaff::FDT_RegularFile>("./Logs", [&](const char* name, size_t) -> bool
+	Gaff::ForEachTypeInDirectory<Gaff::FDT_RegularFile>("./logs", [&](const char* name, size_t) -> bool
 	{
 		if (std::regex_match(name, std::regex("GameLog.+\.txt")) && game_log_count < game_logs_delete) {
-			temp = AString("./Logs/") + name;
+			temp = AString("./logs/") + name;
 			std::remove(temp.getBuffer());
 			++game_log_count;
 
 		} else if (std::regex_match(name, std::regex("AllocationLog.+\.txt")) && alloc_log_count < alloc_logs_delete) {
-			temp = AString("./Logs/") + name;
+			temp = AString("./logs/") + name;
 			std::remove(temp.getBuffer());
 			++alloc_log_count;
 
 		} else if (std::regex_match(name, std::regex("CallstackLog.+\.txt")) && callstack_log_count < callstack_logs_delete) {
-			temp = AString("./Logs/") + name;
+			temp = AString("./logs/") + name;
 			std::remove(temp.getBuffer());
 			++callstack_log_count;
 		}

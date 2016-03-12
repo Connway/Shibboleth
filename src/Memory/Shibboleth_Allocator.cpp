@@ -90,9 +90,9 @@ Allocator::~Allocator(void)
 //#endif
 
 	char log_file_name[64] = { 0 };
-	Gaff::GetCurrentTimeString(log_file_name, 64, "Logs/AllocationLog %Y-%m-%d %H-%M-%S.txt");
+	Gaff::GetCurrentTimeString(log_file_name, 64, "logs/AllocationLog %Y-%m-%d %H-%M-%S.txt");
 
-	if (!Gaff::CreateDir("./Logs", 0777)) {
+	if (!Gaff::CreateDir("./logs", 0777)) {
 		return;
 	}
 
@@ -103,7 +103,7 @@ Allocator::~Allocator(void)
 	}
 
 #if defined(SYMBOL_BUILD) && defined(GATHER_ALLOCATION_STACKTRACE)
-	Gaff::GetCurrentTimeString(log_file_name, 64, "Logs/CallstackLog %Y-%m-%d %H-%M-%S.txt");
+	Gaff::GetCurrentTimeString(log_file_name, 64, "logs/CallstackLog %Y-%m-%d %H-%M-%S.txt");
 	Gaff::File callstack_log;
 
 	if (callstack_log.open(log_file_name, Gaff::File::WRITE)) {
