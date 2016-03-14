@@ -82,12 +82,11 @@ DYNAMICEXPORT_C bool InitModule(Shibboleth::IApp& app)
 {
 	// set lua allocation function
 
-	Gaff::JSON::SetMemoryFunctions(&Shibboleth::ShibbolethAllocate, &Shibboleth::ShibbolethFree);
 	Gaff::JSON::SetHashSeed(app.getSeed());
 	Shibboleth::SetApp(app);
 
 #ifndef USE_PHYSX
-	Shibboleth::BulletPhysicsManager::SetMemoryFunctions();
+	//Shibboleth::BulletPhysicsManager::SetMemoryFunctions();
 #else
 #endif
 

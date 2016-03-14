@@ -36,7 +36,8 @@ project "Components"
 		"../../dependencies/LuaJIT/src",
 		"../../dependencies/utf8-cpp",
 		"../../dependencies/assimp/include",
-		"../../dependencies/esprit/include"
+		"../../dependencies/esprit/include",
+		"../../dependencies/bullet"
 	}
 
 	dofile("../../utils/os_conditionals.lua")
@@ -79,7 +80,8 @@ project "ComponentsModule"
 		"../../dependencies/LuaJIT/src",
 		"../../dependencies/utf8-cpp",
 		"../../dependencies/assimp/include",
-		"../../dependencies/esprit/include"
+		"../../dependencies/esprit/include",
+		"../../dependencies/bullet"
 	}
 
 	dependson

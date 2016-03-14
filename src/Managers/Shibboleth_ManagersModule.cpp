@@ -110,14 +110,8 @@ static CreateMgrFunc create_funcs[] = {
 
 DYNAMICEXPORT_C bool InitModule(Shibboleth::IApp& app)
 {
-	Gaff::JSON::SetMemoryFunctions(&Shibboleth::ShibbolethAllocate, &Shibboleth::ShibbolethFree);
 	Gaff::JSON::SetHashSeed(app.getSeed());
 	Shibboleth::SetApp(app);
-
-#ifndef USE_PHYSX
-	Shibboleth::BulletPhysicsManager::SetMemoryFunctions();
-#else
-#endif
 
 	return true;
 }

@@ -26,7 +26,7 @@ THE SOFTWARE.
 #include <Shibboleth_String.h>
 #include <Shibboleth_IApp.h>
 #include <Gaff_ScopedLock.h>
-#include <Gaff_Atomic.h>
+#include <Gaff_JSON.h>
 
 NS_SHIBBOLETH
 
@@ -101,3 +101,8 @@ IApp& GetApp(void)
 }
 
 NS_END
+
+STATIC_FILE_FUNC
+{
+	Gaff::JSON::SetMemoryFunctions(&Shibboleth::ShibbolethAllocate, &Shibboleth::ShibbolethFree);
+}
