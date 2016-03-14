@@ -40,8 +40,6 @@ THE SOFTWARE.
 
 NS_SHIBBOLETH
 
-static ProxyAllocator g_Esprit_Allocator;
-
 CreateResourceLoadersState::CreateResourceLoadersState(IApp& app):
 	_app(app)
 {

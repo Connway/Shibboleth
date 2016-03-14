@@ -80,6 +80,82 @@ bool Between(const T& val, const T& min_val, const T& max_val)
 #define INIT_HASH32 2166136261U
 
 template <class T>
+inline uint64_t FNV1Hash64VAdd(uint64_t init, const T* front)
+{
+	return FNV1Hash64(reinterpret_cast<const char*>(front), sizeof(T), init);
+}
+
+template <class T, class... Args>
+inline uint64_t FNV1Hash64VAdd(uint64_t init, const T* front, const Args*... args)
+{
+	init = FNV1Hash64(reinterpret_cast<const char*>(front), sizeof(T), init);
+	return FNV1Hash64VAdd(init, args...);
+}
+
+template <class T>
+inline uint64_t FNV1aHash64VAdd(uint64_t init, const T* front)
+{
+	return FNV1aHash64(reinterpret_cast<const char*>(front), sizeof(T), init);
+}
+
+template <class T, class... Args>
+inline uint64_t FNV1aHash64VAdd(uint64_t init, const T* front, const Args*... args)
+{
+	init = FNV1aHash64(reinterpret_cast<const char*>(front), sizeof(T), init);
+	return FNV1aHash64VAdd(init, args...);
+}
+
+template <class T>
+inline uint32_t FNV1Hash32VAdd(uint32_t init, const T* front)
+{
+	return FNV1Hash32(reinterpret_cast<const char*>(front), sizeof(T), init);
+}
+
+template <class T, class... Args>
+inline uint32_t FNV1Hash32VAdd(uint32_t init, const T* front, const Args*... args)
+{
+	init = FNV1Hash32(reinterpret_cast<const char*>(front), sizeof(T), init);
+	return FNV1Hash32VAdd(init, args...);
+}
+
+template <class T>
+inline uint32_t FNV1aHash32VAdd(uint32_t init, const T* front)
+{
+	return FNV1aHash32(reinterpret_cast<const char*>(front), sizeof(T), init);
+}
+
+template <class T, class... Args>
+inline uint32_t FNV1aHash32VAdd(uint32_t init, const T* front, const Args*... args)
+{
+	init = FNV1aHash32(reinterpret_cast<const char*>(front), sizeof(T), init);
+	return FNV1aHash32VAdd(init, args...);
+}
+
+template <class... Args>
+inline uint64_t FNV1Hash64V(const Args*... args)
+{
+	return FNV1Hash64VAdd(INIT_HASH64, args...);
+}
+
+template <class... Args>
+inline uint64_t FNV1aHash64V(const Args*... args)
+{
+	return FNV1aHash64VAdd(INIT_HASH64, args...);
+}
+
+template <class... Args>
+inline uint32_t FNV1Hash32V(const Args*... args)
+{
+	return FNV1Hash32VAdd(INIT_HASH32, args...);
+}
+
+template <class... Args>
+inline uint32_t FNV1aHash32V(const Args*... args)
+{
+	return FNV1aHash32VAdd(INIT_HASH32, args...);
+}
+
+template <class T>
 inline uint64_t FNV1aHash64T(const T* value, uint64_t init = INIT_HASH64)
 {
 	return FNV1aHash64(reinterpret_cast<const char*>(value), sizeof(T), init);

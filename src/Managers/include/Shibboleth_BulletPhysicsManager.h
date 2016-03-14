@@ -32,9 +32,17 @@ THE SOFTWARE.
 class btCollisionConfiguration;
 class btBroadphaseInterface;
 class btConstraintSolver;
+class btCollisionShape;
 class btDynamicsWorld;
+class btMotionState;
 class btDispatcher;
 class btRigidBody;
+class btVector3;
+
+namespace Gleam
+{
+	class Vector4CPU;
+}
 
 NS_SHIBBOLETH
 
@@ -58,7 +66,15 @@ public:
 
 	void update(double dt, void*);
 
-	void addTestCapsule(Object* object);
+	btCollisionShape* createCollisionShapeCapsule(float radius, float height);
+	btCollisionShape* createCollisionShapeBox(float extent_x, float extent_y, float extent_z);
+	INLINE btCollisionShape* createCollisionShapeBox(float extent);
+	btCollisionShape* createCollisionShapeCone(float radius, float height);
+
+	btRigidBody* createRigidBody(Object* object, btCollisionShape* shape, float mass, btMotionState* motion_state = nullptr);
+
+	void addToMainWorld(btRigidBody* body);
+	void removeFromMainWorld(btRigidBody* body);
 
 private:
 	btCollisionConfiguration* _config;
@@ -68,6 +84,10 @@ private:
 	btDynamicsWorld* _main_world;
 
 	ProxyAllocator _physics_allocator;
+
+	Map<uint32_t, btCollisionShape*> _box_shapes;
+	Map<uint32_t, btCollisionShape*> _capsule_shapes;
+	Map<uint32_t, btCollisionShape*> _cone_shapes;
 
 	SHIB_REF_DEF(BulletPhysicsManager);
 };

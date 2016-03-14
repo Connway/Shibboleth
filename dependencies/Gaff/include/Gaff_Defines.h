@@ -63,6 +63,8 @@ THE SOFTWARE.
 
 #define GAFF_STR_HELPER(x) #x
 #define GAFF_STR(x) GAFF_STR_HELPER(x)
+#define GAFF_CAT_HELPER(x, y) x##y
+#define GAFF_CAT(x, y) GAFF_CAT_HELPER(x, y)
 
 #define ARRAY_SIZE(arr) (sizeof(arr) / sizeof(arr[0]))
 

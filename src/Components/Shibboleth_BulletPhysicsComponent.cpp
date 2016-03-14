@@ -24,6 +24,7 @@ THE SOFTWARE.
 #include <Shibboleth_BulletPhysicsManager.h>
 #include <Shibboleth_Utilities.h>
 #include <Shibboleth_IApp.h>
+#include <BulletDynamics/Dynamics/btRigidBody.h>
 
 NS_SHIBBOLETH
 
@@ -32,7 +33,9 @@ SHIB_REF_IMPL(BulletPhysicsComponent)
 .addBaseClassInterfaceOnly<BulletPhysicsComponent>()
 ;
 
-BulletPhysicsComponent::BulletPhysicsComponent(void)
+BulletPhysicsComponent::BulletPhysicsComponent(void):
+	_collision_shape(nullptr), _rigid_body(nullptr),
+	_mass(0.0f)
 {
 }
 
@@ -58,17 +61,42 @@ bool BulletPhysicsComponent::save(Gaff::JSON& json)
 void BulletPhysicsComponent::addToWorld(void)
 {
 	auto& phys_mgr = GetApp().getManagerT<BulletPhysicsManager>();
-	phys_mgr.addTestCapsule(getOwner());
+	_collision_shape = phys_mgr.createCollisionShapeCapsule(1.0f, 1.0f);
+
+	if (!_collision_shape) {
+		// log error
+		return;
+	}
+
+	_rigid_body = phys_mgr.createRigidBody(getOwner(), _collision_shape, 10.0f);
+
+	phys_mgr.addToMainWorld(_rigid_body);
 }
 
 void BulletPhysicsComponent::removeFromWorld(void)
 {
-	
+	auto& phys_mgr = GetApp().getManagerT<BulletPhysicsManager>();
+	phys_mgr.addToMainWorld(_rigid_body);
 }
 
 void BulletPhysicsComponent::setActive(bool active)
 {
 	Component::setActive(active);
+	
+	if (_rigid_body) {
+		// Set to saved mass properties.
+		if (active) {
+			_rigid_body->setMassProps(_mass, _inertia);
+
+		// Save mass properties and set to static.
+		} else {
+			_mass = 1.0f / _rigid_body->getInvMass();
+			_inertia = _rigid_body->getLocalInertia();
+
+			btVector3 zero(0.0f, 0.0f, 0.0f);
+			_rigid_body->setMassProps(0.0f, zero);
+		}
+	}
 }
 
 NS_END

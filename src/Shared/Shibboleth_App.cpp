@@ -82,7 +82,6 @@ bool App::init(int argc, char** argv)
 	_log_file_pair->first.writeString("==================================================\n");
 	_log_file_pair->first.writeString("Initializing Game...\n");
 
-	Gaff::JSON::SetMemoryFunctions(&ShibbolethAllocate, &ShibbolethFree);
 	Gaff::JSON::SetHashSeed(_seed);
 
 	if (!_job_pool.init()) {

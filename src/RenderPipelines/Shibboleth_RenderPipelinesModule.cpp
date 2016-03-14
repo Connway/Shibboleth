@@ -62,9 +62,7 @@ RPFunc rp_funcs[] = {
 
 DYNAMICEXPORT_C bool InitModule(Shibboleth::IApp& app)
 {
-	Gaff::JSON::SetMemoryFunctions(&Shibboleth::ShibbolethAllocate, &Shibboleth::ShibbolethFree);
 	Gaff::JSON::SetHashSeed(app.getSeed());
-
 	Shibboleth::SetApp(app);
 
 	return true;

@@ -35,10 +35,23 @@ THE SOFTWARE.
 	#include "Gaff_IncludeWindows.h"
 #endif
 
-#ifdef __APPLE__
+#ifdef PLATFORM_MAC
 	/* Return the exact length of d_namlen without zero terminator */
 	#define _D_EXACT_NAMLEN(p) ((p)->d_namlen)
 #endif
+
+#define STATIC_FILE_FUNC \
+	static void static__file__func(void); \
+	namespace { \
+	struct static__file__func__helper \
+	{ \
+	public: \
+		static__file__func__helper(void) { static__file__func(); } \
+	}; \
+	} \
+	static const static__file__func__helper GAFF_CAT(g__static_file_global_, __LINE__); \
+	void static__file__func(void)
+
 
 NS_GAFF
 

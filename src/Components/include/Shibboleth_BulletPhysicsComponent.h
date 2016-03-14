@@ -24,6 +24,10 @@ THE SOFTWARE.
 
 #include <Shibboleth_ReflectionDefinitions.h>
 #include <Shibboleth_Component.h>
+#include <LinearMath/btVector3.h>
+
+class btCollisionShape;
+class btRigidBody;
 
 NS_SHIBBOLETH
 
@@ -49,6 +53,12 @@ public:
 	void removeFromWorld(void) override;
 
 	void setActive(bool active) override;
+
+private:
+	btCollisionShape* _collision_shape;
+	btRigidBody* _rigid_body;
+	btVector3 _inertia;
+	float _mass;
 
 	SHIB_REF_DEF(BulletPhysicsComponent);
 };

@@ -24,17 +24,19 @@ THE SOFTWARE.
 
 #include "Shibboleth_BulletPhysicsManager.h"
 #include <Shibboleth_Object.h>
+#include <Gaff_Utils.h>
 
-#if defined(_WIN32) || defined(_WIN64)
+#ifdef PLATFORM_WINDOWS
 	#pragma warning(push)
 	#pragma warning(disable: 4127)
 #endif
 
 #include <btBulletDynamicsCommon.h>
 
-#if defined(_WIN32) || defined(_WIN64)
+#ifdef PLATFORM_WINDOWS
 	#pragma warning(pop)
 #endif
+
 
 NS_SHIBBOLETH
 
@@ -162,33 +164,90 @@ void BulletPhysicsManager::update(double dt, void*)
 	_main_world->stepSimulation(static_cast<btScalar>(dt));
 }
 
-void BulletPhysicsManager::addTestCapsule(Object* object)
+btCollisionShape* BulletPhysicsManager::createCollisionShapeCapsule(float radius, float height)
 {
-	const auto& pos = object->getWorldPosition();
+	uint32_t hash = Gaff::FNV1aHash32V(&radius, &height);
 
-	btCollisionShape* capsuleShape = _physics_allocator.template allocT<btCapsuleShape>(1.0f, 1.0f);
+	auto it = _capsule_shapes.findElementWithKey(hash);
 
-	btTransform transform;
-	transform.setIdentity();
-	transform.setOrigin(btVector3(pos[0], pos[1], pos[2]));
-	transform.setRotation(btQuaternion(btVector3(0.0f, 0.0f, 1.0f), 1.3f));
+	if (it != _capsule_shapes.end()) {
+		return it->second;
+	}
 
-	btScalar mass(10.0f);
+	btCollisionShape* shape = _physics_allocator.template allocT<btCapsuleShape>(radius, height);
+	_capsule_shapes.emplace(hash, shape);
 
-	//rigidbody is dynamic if and only if mass is non zero, otherwise static
-	btVector3 localInertia(btVector3(0.0f, 0.0f, 0.0f));
-	capsuleShape->calculateLocalInertia(mass, localInertia);
+	return shape;
+}
 
-	// using motionstate is optional, it provides interpolation capabilities, and only synchronizes 'active' objects
-	// TODO: make custom motion state for updating graphics.
-	MotionState* myMotionState = _physics_allocator.template allocT<MotionState>(object);
-	btRigidBody::btRigidBodyConstructionInfo rbInfo(mass, myMotionState, capsuleShape, localInertia);
+btCollisionShape* BulletPhysicsManager::createCollisionShapeBox(float extent_x, float extent_y, float extent_z)
+{
+	uint32_t hash = Gaff::FNV1aHash32V(&extent_x, &extent_y, &extent_z);
+
+	auto it = _box_shapes.findElementWithKey(hash);
+
+	if (it != _box_shapes.end()) {
+		return it->second;
+	}
+
+	btCollisionShape* shape = _physics_allocator.template allocT<btBoxShape>(btVector3(extent_x, extent_y, extent_z));
+	_box_shapes.emplace(hash, shape);
+
+	return shape;
+}
+
+btCollisionShape* BulletPhysicsManager::createCollisionShapeBox(float extent)
+{
+	return createCollisionShapeBox(extent, extent, extent);
+}
+
+btCollisionShape* BulletPhysicsManager::createCollisionShapeCone(float radius, float height)
+{
+	uint32_t hash = Gaff::FNV1aHash32V(&radius, &height);
+
+	auto it = _cone_shapes.findElementWithKey(hash);
+
+	if (it != _cone_shapes.end()) {
+		return it->second;
+	}
+
+	btCollisionShape* shape = _physics_allocator.template allocT<btConeShape>(radius, height);
+	_cone_shapes.emplace(hash, shape);
+
+	return shape;
+}
+
+btRigidBody* BulletPhysicsManager::createRigidBody(Object* object, btCollisionShape* shape, float mass, btMotionState* motion_state)
+{
+	// RigidBody is dynamic if and only if mass is non zero, otherwise static
+	btVector3 localInertia(0.0f, 0.0f, 0.0f);
+	shape->calculateLocalInertia(mass, localInertia);
+
+	if (!motion_state) {
+		motion_state = _physics_allocator.template allocT<MotionState>(object);
+	}
+
+	btRigidBody::btRigidBodyConstructionInfo rbInfo(mass, motion_state, shape, localInertia);
 	btRigidBody* body = _physics_allocator.template allocT<btRigidBody>(rbInfo);
 
-	//add the body to the dynamics world
+	return body;
+}
+
+void BulletPhysicsManager::addToMainWorld(btRigidBody* body)
+{
 	_main_world->addRigidBody(body);
 }
 
+void BulletPhysicsManager::removeFromMainWorld(btRigidBody* body)
+{
+	_main_world->removeRigidBody(body);
+}
+
 NS_END
+
+STATIC_FILE_FUNC
+{
+	Shibboleth::BulletPhysicsManager::SetMemoryFunctions();
+}
 
 #endif
