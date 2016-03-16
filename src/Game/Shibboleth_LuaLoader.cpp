@@ -29,14 +29,14 @@ THE SOFTWARE.
 #include <Shibboleth_IApp.h>
 #include <Gaff_ScopedExit.h>
 
-#if defined (_WIN32) || defined(_WIN64)
+#ifdef PLATFORM_WINDOWS
 	#pragma warning(push)
 	#pragma warning(disable: 4100 4244 4267 4800)
 #endif
 
 #include <LuaState.h>
 
-#if defined (_WIN32) || defined(_WIN64)
+#ifdef PLATFORM_WINDOWS
 	#pragma warning(pop)
 #endif
 

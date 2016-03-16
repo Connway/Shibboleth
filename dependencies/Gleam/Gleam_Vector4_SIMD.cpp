@@ -252,6 +252,26 @@ Vector4SIMD Vector4SIMD::get(unsigned int index) const
 	return Vector4SIMD(SIMDShuffle<3, 3, 3, 3>(_vec, _vec));
 }
 
+float Vector4SIMD::getX(void) const
+{
+	return SIMDGet(_vec, 0);
+}
+
+float Vector4SIMD::getY(void) const
+{
+	return SIMDGet(_vec, 1);
+}
+
+float Vector4SIMD::getZ(void) const
+{
+	return SIMDGet(_vec, 2);
+}
+
+float Vector4SIMD::getW(void) const
+{
+	return SIMDGet(_vec, 3);
+}
+
 const float* Vector4SIMD::getBuffer(void) const
 {
 	SIMDStoreAligned(_vec, _get_buf_cache);

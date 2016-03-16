@@ -68,8 +68,36 @@ public:
 
 	btCollisionShape* createCollisionShapeCapsule(float radius, float height);
 	btCollisionShape* createCollisionShapeBox(float extent_x, float extent_y, float extent_z);
+	INLINE btCollisionShape* createCollisionShapeBox(const Gleam::Vector4CPU& extents);
 	INLINE btCollisionShape* createCollisionShapeBox(float extent);
+	btCollisionShape* createCollisionShapeBox2D(float extent_x, float extent_y);
+	INLINE btCollisionShape* createCollisionShapeBox2D(float extent);
 	btCollisionShape* createCollisionShapeCone(float radius, float height);
+	btCollisionShape* createCollisionShapeSphere(float radius);
+	btCollisionShape* createCollisionShapeCylinder(float extent_x, float extent_y, float extent_z);
+	INLINE btCollisionShape* createCollisionShapeCylinder(const Gleam::Vector4CPU& extents);
+	INLINE btCollisionShape* createCollisionShapeCylinder(float extent);
+	btCollisionShape* createCollisionShapeStaticPlane(float nx, float ny, float nz, float distance);
+	INLINE btCollisionShape* createCollisionShapeStaticPlane(const Gleam::Vector4CPU& norm_dist);
+
+	// btConvexHullShape
+	// btHeightfieldTerrainShape
+	// btMultiSphereShape
+	// btBvhTriangleMeshShape
+	// btScaledBvhTriangleMeshShape
+	// btCompoundShape
+
+	// btUniformScalingShape?
+
+	btCollisionShape* createCollisionShapeTriangle(
+		float x1, float y1, float z1,
+		float x2, float y2, float z2,
+		float x3, float y3, float z3
+	);
+	INLINE btCollisionShape* createCollisionShapeTriangle(
+		const Gleam::Vector4CPU& p1, const Gleam::Vector4CPU& p2,
+		const Gleam::Vector4CPU& p3
+	);
 
 	btRigidBody* createRigidBody(Object* object, btCollisionShape* shape, float mass, btMotionState* motion_state = nullptr);
 
@@ -85,9 +113,12 @@ private:
 
 	ProxyAllocator _physics_allocator;
 
-	Map<uint32_t, btCollisionShape*> _box_shapes;
-	Map<uint32_t, btCollisionShape*> _capsule_shapes;
-	Map<uint32_t, btCollisionShape*> _cone_shapes;
+	Map<uint32_t, btCollisionShape*> _shapes;
+
+	// Would it be better to have a Map per shape type?
+	//Map<uint32_t, btCollisionShape*> _box_shapes;
+	//Map<uint32_t, btCollisionShape*> _capsule_shapes;
+	//Map<uint32_t, btCollisionShape*> _cone_shapes;
 
 	SHIB_REF_DEF(BulletPhysicsManager);
 };

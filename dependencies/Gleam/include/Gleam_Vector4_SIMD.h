@@ -83,6 +83,10 @@ public:
 	INLINE void set(float value, unsigned int index);
 
 	INLINE Vector4SIMD get(unsigned int index) const;
+	INLINE float getX(void) const;
+	INLINE float getY(void) const;
+	INLINE float getZ(void) const;
+	INLINE float getW(void) const;
 
 	INLINE const float* getBuffer(void) const;
 	INLINE const SIMDType& getSIMDType(void) const;

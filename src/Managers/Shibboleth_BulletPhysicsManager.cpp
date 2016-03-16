@@ -28,10 +28,12 @@ THE SOFTWARE.
 
 #ifdef PLATFORM_WINDOWS
 	#pragma warning(push)
-	#pragma warning(disable: 4127)
+	#pragma warning(disable: 4127 4456)
 #endif
 
 #include <btBulletDynamicsCommon.h>
+#include <BulletCollision/CollisionShapes/btTriangleShape.h>
+#include <BulletCollision/CollisionShapes/btBox2dShape.h>
 
 #ifdef PLATFORM_WINDOWS
 	#pragma warning(pop)
@@ -168,14 +170,15 @@ btCollisionShape* BulletPhysicsManager::createCollisionShapeCapsule(float radius
 {
 	uint32_t hash = Gaff::FNV1aHash32V(&radius, &height);
 
-	auto it = _capsule_shapes.findElementWithKey(hash);
+	auto it = _shapes.findElementWithKey(hash);
 
-	if (it != _capsule_shapes.end()) {
+	if (it != _shapes.end()) {
+		GAFF_ASSERT(it->second->getShapeType() == CAPSULE_SHAPE_PROXYTYPE);
 		return it->second;
 	}
 
 	btCollisionShape* shape = _physics_allocator.template allocT<btCapsuleShape>(radius, height);
-	_capsule_shapes.emplace(hash, shape);
+	_shapes.emplace(hash, shape);
 
 	return shape;
 }
@@ -184,16 +187,22 @@ btCollisionShape* BulletPhysicsManager::createCollisionShapeBox(float extent_x, 
 {
 	uint32_t hash = Gaff::FNV1aHash32V(&extent_x, &extent_y, &extent_z);
 
-	auto it = _box_shapes.findElementWithKey(hash);
+	auto it = _shapes.findElementWithKey(hash);
 
-	if (it != _box_shapes.end()) {
+	if (it != _shapes.end()) {
+		GAFF_ASSERT(it->second->getShapeType() == BOX_SHAPE_PROXYTYPE);
 		return it->second;
 	}
 
 	btCollisionShape* shape = _physics_allocator.template allocT<btBoxShape>(btVector3(extent_x, extent_y, extent_z));
-	_box_shapes.emplace(hash, shape);
+	_shapes.emplace(hash, shape);
 
 	return shape;
+}
+
+btCollisionShape* BulletPhysicsManager::createCollisionShapeBox(const Gleam::Vector4CPU& extents)
+{
+	return createCollisionShapeBox(extents[0], extents[1], extents[2]);
 }
 
 btCollisionShape* BulletPhysicsManager::createCollisionShapeBox(float extent)
@@ -201,20 +210,143 @@ btCollisionShape* BulletPhysicsManager::createCollisionShapeBox(float extent)
 	return createCollisionShapeBox(extent, extent, extent);
 }
 
+btCollisionShape* BulletPhysicsManager::createCollisionShapeBox2D(float extent_x, float extent_y)
+{
+	uint32_t hash = Gaff::FNV1aHash32V(&extent_x, &extent_y);
+
+	auto it = _shapes.findElementWithKey(hash);
+
+	if (it != _shapes.end()) {
+		GAFF_ASSERT(it->second->getShapeType() == BOX_2D_SHAPE_PROXYTYPE);
+		return it->second;
+	}
+
+	btCollisionShape* shape = _physics_allocator.template allocT<btBox2dShape>(btVector3(extent_x, extent_y, 0.0f));
+	_shapes.emplace(hash, shape);
+
+	return shape;
+}
+
+btCollisionShape* BulletPhysicsManager::createCollisionShapeBox2D(float extent)
+{
+	return createCollisionShapeBox2D(extent, extent);
+}
+
 btCollisionShape* BulletPhysicsManager::createCollisionShapeCone(float radius, float height)
 {
 	uint32_t hash = Gaff::FNV1aHash32V(&radius, &height);
 
-	auto it = _cone_shapes.findElementWithKey(hash);
+	auto it = _shapes.findElementWithKey(hash);
 
-	if (it != _cone_shapes.end()) {
+	if (it != _shapes.end()) {
+		GAFF_ASSERT(it->second->getShapeType() == CONE_SHAPE_PROXYTYPE);
 		return it->second;
 	}
 
 	btCollisionShape* shape = _physics_allocator.template allocT<btConeShape>(radius, height);
-	_cone_shapes.emplace(hash, shape);
+	_shapes.emplace(hash, shape);
 
 	return shape;
+}
+
+btCollisionShape* BulletPhysicsManager::createCollisionShapeSphere(float radius)
+{
+	uint32_t hash = Gaff::FNV1aHash32T(&radius);
+
+	auto it = _shapes.findElementWithKey(hash);
+
+	if (it != _shapes.end()) {
+		GAFF_ASSERT(it->second->getShapeType() == SPHERE_SHAPE_PROXYTYPE);
+		return it->second;
+	}
+
+	btCollisionShape* shape = _physics_allocator.template allocT<btSphereShape>(radius);
+	_shapes.emplace(hash, shape);
+
+	return shape;
+}
+
+btCollisionShape* BulletPhysicsManager::createCollisionShapeCylinder(float extent_x, float extent_y, float extent_z)
+{
+	uint32_t hash = Gaff::FNV1aHash32V(&extent_x, &extent_y, &extent_z);
+
+	auto it = _shapes.findElementWithKey(hash);
+
+	if (it != _shapes.end()) {
+		GAFF_ASSERT(it->second->getShapeType() == CYLINDER_SHAPE_PROXYTYPE);
+		return it->second;
+	}
+
+	btCollisionShape* shape = _physics_allocator.template allocT<btCylinderShape>(btVector3(extent_x, extent_y, extent_z));
+	_shapes.emplace(hash, shape);
+
+	return shape;
+}
+
+btCollisionShape* BulletPhysicsManager::createCollisionShapeCylinder(const Gleam::Vector4CPU& extents)
+{
+	return createCollisionShapeCylinder(extents[0], extents[1], extents[2]);
+}
+
+btCollisionShape* BulletPhysicsManager::createCollisionShapeCylinder(float extent)
+{
+	return createCollisionShapeCylinder(extent, extent, extent);
+}
+
+btCollisionShape* BulletPhysicsManager::createCollisionShapeStaticPlane(float nx, float ny, float nz, float distance)
+{
+	uint32_t hash = Gaff::FNV1aHash32V(&nx, &ny, &nz, &distance);
+
+	auto it = _shapes.findElementWithKey(hash);
+
+	if (it != _shapes.end()) {
+		GAFF_ASSERT(it->second->getShapeType() == STATIC_PLANE_PROXYTYPE);
+		return it->second;
+	}
+
+	btCollisionShape* shape = _physics_allocator.template allocT<btStaticPlaneShape>(btVector3(nx, ny, nz), distance);
+	_shapes.emplace(hash, shape);
+
+	return shape;
+}
+
+btCollisionShape* BulletPhysicsManager::createCollisionShapeStaticPlane(const Gleam::Vector4CPU& norm_dist)
+{
+	return createCollisionShapeStaticPlane(norm_dist[0], norm_dist[1], norm_dist[2], norm_dist[3]);
+}
+
+btCollisionShape* BulletPhysicsManager::createCollisionShapeTriangle(
+	float x1, float y1, float z1,
+	float x2, float y2, float z2,
+	float x3, float y3, float z3)
+{
+	uint32_t hash = Gaff::FNV1aHash32V(&x1, &y1, &z1, &x2, &y2, &z2, &x3, &y3, &z3);
+
+	auto it = _shapes.findElementWithKey(hash);
+
+	if (it != _shapes.end()) {
+		GAFF_ASSERT(it->second->getShapeType() == TRIANGLE_SHAPE_PROXYTYPE);
+		return it->second;
+	}
+
+	btCollisionShape* shape = _physics_allocator.template allocT<btTriangleShape>(
+		btVector3(x1, y1, z1), btVector3(x2, y2, z2), btVector3(x3, y3, z3)
+	);
+
+	_shapes.emplace(hash, shape);
+
+	return shape;
+}
+
+btCollisionShape* BulletPhysicsManager::createCollisionShapeTriangle(
+	const Gleam::Vector4CPU& p1, const Gleam::Vector4CPU& p2,
+	const Gleam::Vector4CPU& p3)
+{
+	return createCollisionShapeTriangle(
+		p1[0], p1[1], p1[2],
+		p2[0], p2[1], p2[2],
+		p3[0], p3[1], p3[2]
+	);
 }
 
 btRigidBody* BulletPhysicsManager::createRigidBody(Object* object, btCollisionShape* shape, float mass, btMotionState* motion_state)
