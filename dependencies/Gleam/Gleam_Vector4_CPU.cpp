@@ -266,6 +266,26 @@ Vector4CPU Vector4CPU::get(unsigned int index) const
 	return Vector4CPU(_vec[index]);
 }
 
+float Vector4CPU::getX(void) const
+{
+	return _x;
+}
+
+float Vector4CPU::getY(void) const
+{
+	return _y;
+}
+
+float Vector4CPU::getZ(void) const
+{
+	return _z;
+}
+
+float Vector4CPU::getW(void) const
+{
+	return _w;
+}
+
 const float* Vector4CPU::getBuffer(void) const
 {
 	return _vec;
