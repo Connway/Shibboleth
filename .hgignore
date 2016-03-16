@@ -5,7 +5,6 @@ build/*
 *.ncb
 *.sdf
 *.opensdf
-workingdir/App/Logs/*
 *.exp
 dependencies/LuaJIT/lib/*
 dependencies/LuaJIT/src/vc140.pdb
@@ -14,3 +13,5 @@ dependencies/LuaJIT/src/lua51.ilk
 dependencies/LuaJIT/src/luajit.exe
 dependencies/LuaJIT/src/luajit.ilk
 *.pyc
+workingdir/App/logs/*
+workingdir/App/bin/*
