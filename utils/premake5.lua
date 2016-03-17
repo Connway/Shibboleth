@@ -49,7 +49,7 @@ newoption
 
 solution "Shibboleth"
 	if _ACTION then
-		location ("project/" .. _ACTION)
+		location ("../project/" .. _ACTION)
 	end
 
 	if os.get() == "windows" then
@@ -58,10 +58,10 @@ solution "Shibboleth"
 		configurations { "Debug_OpenGL", "Release_OpenGL" }
 	end
 
-	dofile("utils/solution_settings.lua")
+	dofile("solution_settings.lua")
 
-	local dependency_generators = os.matchfiles("dependencies/**/project_generator.lua")
-	local project_generators = os.matchfiles("src/**/project_generator.lua")
+	local dependency_generators = os.matchfiles("../dependencies/**/project_generator.lua")
+	local project_generators = os.matchfiles("../src/**/project_generator.lua")
 
 	group "Dependencies"
 	for i = 1, table.getn(dependency_generators) do

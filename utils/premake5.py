@@ -16,16 +16,16 @@ vs2013 = False
 vs2015 = False
 
 if platform.system() == "Windows":
-	args = ["./utils/premake5"]
+	args = ["premake5"]
 elif platform.system() == "Linux":
-	args = ["./utils/premake5-linux"]
+	args = ["premake5-linux"]
 elif platform.system() == "Darwin":
-	args = ["./utils/premake5-mac"]
+	args = ["premake5-mac"]
 
 args.extend(sys.argv)
 
 for a in args:
-	if re.match(".*premake5.py", a):
+	if re.match("premake5.py", a):
 		args.remove(a)
 		break
 

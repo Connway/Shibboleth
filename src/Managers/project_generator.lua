@@ -87,9 +87,10 @@ project "ManagersModule"
 	{
 		"Shared", "Gaff", "jansson",
 		"OtterUI", "Game", "Gleam",
-		"Managers", "Memory", "Components",
-		"LuaJIT", "BulletCollision",
-		"BulletDynamics", "Boxer"
+		"Managers", "Memory",
+		"LuaJIT", "Boxer", "Components",
+		"BulletCollision", "BulletDynamics",
+		"LinearMath"
 	}
 
 	links
