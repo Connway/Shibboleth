@@ -92,6 +92,7 @@ public:
 	btCollisionShape* createCollisionShapeConvexHull(float* points, size_t num_points, size_t stride);
 	//btCollisionShape* createCollisionShapeMultiSphere(size_t identifier = SIZE_T_FAIL);
 	btCollisionShape* createCollisionShapeCompound(size_t identifier = SIZE_T_FAIL);
+	btCollisionShape* createCollisionShapeConvex2D(btCollisionShape* shape);
 
 	btCollisionShape* createCollisionShapeTriangle(
 		float x1, float y1, float z1,

@@ -34,6 +34,7 @@ THE SOFTWARE.
 #include <btBulletDynamicsCommon.h>
 #include <BulletCollision/CollisionShapes/btHeightfieldTerrainShape.h>
 #include <BulletCollision/CollisionShapes/btTriangleShape.h>
+#include <BulletCollision/CollisionShapes/btConvex2dShape.h>
 #include <BulletCollision/CollisionShapes/btBox2dShape.h>
 
 #ifdef PLATFORM_WINDOWS
@@ -369,6 +370,27 @@ btCollisionShape* BulletPhysicsManager::createCollisionShapeCompound(size_t iden
 	_shapes.emplace(hash, shape);
 
 	return shape;
+}
+
+btCollisionShape* BulletPhysicsManager::createCollisionShapeConvex2D(btCollisionShape* shape)
+{
+	GAFF_ASSERT(shape->isConvex());
+	btConvexShape* convex_shape = reinterpret_cast<btConvexShape*>(shape);
+
+	uint32_t hash = Gaff::FNV1aHash32V(&shape);
+
+	auto it = _shapes.findElementWithKey(hash);
+
+	if (it != _shapes.end()) {
+		GAFF_ASSERT(it->second->getShapeType() == CONVEX_2D_SHAPE_PROXYTYPE);
+		return it->second;
+	}
+
+	btCollisionShape* shape_out = _physics_allocator.template allocT<btConvex2dShape>(convex_shape);
+
+	_shapes.emplace(hash, shape_out);
+
+	return shape_out;
 }
 
 btCollisionShape* BulletPhysicsManager::createCollisionShapeTriangle(
