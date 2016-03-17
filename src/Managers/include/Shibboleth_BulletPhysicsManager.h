@@ -51,6 +51,13 @@ class Object;
 class BulletPhysicsManager : public IManager, public IUpdateQuery
 {
 public:
+	enum HeightfieldUpAxis
+	{
+		UP_X_AXIS = 0,
+		UP_Y_AXIS,
+		UP_Z_AXIS,
+	};
+
 	static const char* GetName(void) { return "Physics Manager"; }
 	static void SetMemoryFunctions(void);
 
@@ -66,6 +73,9 @@ public:
 
 	void update(double dt, void*);
 
+	INLINE void clearMainWorld(void);
+	//INLINE void clearExtraWorld(size_t world);
+
 	btCollisionShape* createCollisionShapeCapsule(float radius, float height);
 	btCollisionShape* createCollisionShapeBox(float extent_x, float extent_y, float extent_z);
 	INLINE btCollisionShape* createCollisionShapeBox(const Gleam::Vector4CPU& extents);
@@ -79,15 +89,9 @@ public:
 	INLINE btCollisionShape* createCollisionShapeCylinder(float extent);
 	btCollisionShape* createCollisionShapeStaticPlane(float nx, float ny, float nz, float distance);
 	INLINE btCollisionShape* createCollisionShapeStaticPlane(const Gleam::Vector4CPU& norm_dist);
-
-	// btConvexHullShape
-	// btHeightfieldTerrainShape
-	// btMultiSphereShape
-	// btBvhTriangleMeshShape
-	// btScaledBvhTriangleMeshShape
-	// btCompoundShape
-
-	// btUniformScalingShape?
+	btCollisionShape* createCollisionShapeConvexHull(float* points, size_t num_points, size_t stride);
+	//btCollisionShape* createCollisionShapeMultiSphere(size_t identifier = SIZE_T_FAIL);
+	btCollisionShape* createCollisionShapeCompound(size_t identifier = SIZE_T_FAIL);
 
 	btCollisionShape* createCollisionShapeTriangle(
 		float x1, float y1, float z1,
@@ -99,10 +103,25 @@ public:
 		const Gleam::Vector4CPU& p3
 	);
 
+	btCollisionShape* createCollisionShapeHeightfield(
+		size_t stick_width, size_t stick_length, const float* data,
+		float height_scale, float min_height, float max_height,
+		HeightfieldUpAxis up_axis, bool flip_quad_edges = false
+	);
+
+	// btBvhTriangleMeshShape?
+	// btScaledBvhTriangleMeshShape?
+	// btUniformScalingShape?
+
+	void removeCollisionShape(btCollisionShape* shape);
+	void clearCollisionShapes(void);
+
 	btRigidBody* createRigidBody(Object* object, btCollisionShape* shape, float mass, btMotionState* motion_state = nullptr);
 
-	void addToMainWorld(btRigidBody* body);
-	void removeFromMainWorld(btRigidBody* body);
+	// collision_group is what group we belong to, collision_mask is what groups we can collide with
+	INLINE void addToMainWorld(btRigidBody* body, short collision_group, short collision_mask);
+	INLINE void addToMainWorld(btRigidBody* body);
+	INLINE void removeFromMainWorld(btRigidBody* body);
 
 private:
 	btCollisionConfiguration* _config;
@@ -115,10 +134,7 @@ private:
 
 	Map<uint32_t, btCollisionShape*> _shapes;
 
-	// Would it be better to have a Map per shape type?
-	//Map<uint32_t, btCollisionShape*> _box_shapes;
-	//Map<uint32_t, btCollisionShape*> _capsule_shapes;
-	//Map<uint32_t, btCollisionShape*> _cone_shapes;
+	void clearWorld(btDynamicsWorld* world);
 
 	SHIB_REF_DEF(BulletPhysicsManager);
 };

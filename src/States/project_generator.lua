@@ -91,7 +91,9 @@ project "StatesModule"
 		"zlib", "Gleam", "Game",
 		"esprit", "Managers",
 		"Components", "States",
-		"Memory", "LuaJIT", "Boxer"
+		"Memory", "LuaJIT", "Boxer",
+		"BulletCollision", "BulletDynamics",
+		"LinearMath"
 	}
 
 	links
@@ -100,10 +102,11 @@ project "StatesModule"
 		"libjpeg", "libpng", "libtiff",
 		"OtterUI", "ResIL", "ResILU",
 		"zlib", "Gleam", "Game",
-		"assimp", "minizip",
-		"esprit", "Managers",
-		"Components", "States",
-		"Memory", "Boxer"
+		"assimp", "minizip", "esprit",
+		"Managers", "Components",
+		"Memory", "Boxer", "States",
+		"BulletCollision", "BulletDynamics",
+		"LinearMath"
 	}
 
 	filter { "configurations:Debug", "platforms:x86" }

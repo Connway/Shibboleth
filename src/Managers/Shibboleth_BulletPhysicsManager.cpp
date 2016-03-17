@@ -32,6 +32,7 @@ THE SOFTWARE.
 #endif
 
 #include <btBulletDynamicsCommon.h>
+#include <BulletCollision/CollisionShapes/btHeightfieldTerrainShape.h>
 #include <BulletCollision/CollisionShapes/btTriangleShape.h>
 #include <BulletCollision/CollisionShapes/btBox2dShape.h>
 
@@ -109,6 +110,19 @@ BulletPhysicsManager::BulletPhysicsManager(void):
 
 BulletPhysicsManager::~BulletPhysicsManager(void)
 {
+	// clearExtraWorlds();
+	clearMainWorld();
+	clearCollisionShapes();
+
+	IAllocator* allocator = GetAllocator();
+
+	// free extra worlds
+
+	allocator->freeT(_main_world);
+	allocator->freeT(_solver);
+	allocator->freeT(_broadphase);
+	allocator->freeT(_dispatcher);
+	allocator->freeT(_config);
 }
 
 const char* BulletPhysicsManager::getName() const
@@ -118,7 +132,6 @@ const char* BulletPhysicsManager::getName() const
 
 void BulletPhysicsManager::allManagersCreated(void)
 {
-	// create main physics world
 	_config = _physics_allocator.template allocT<btDefaultCollisionConfiguration>();
 	_dispatcher = _physics_allocator.template allocT<btCollisionDispatcher>(_config);
 	_broadphase = _physics_allocator.template allocT<btDbvtBroadphase>();
@@ -126,34 +139,6 @@ void BulletPhysicsManager::allManagersCreated(void)
 
 	_main_world = _physics_allocator.template allocT<btDiscreteDynamicsWorld>(_dispatcher, _broadphase, _solver, _config);
 	_main_world->setGravity(btVector3(0.0f, -9.81f, 0.0f));
-
-	// Add a test shape for the ground (remove later!)
-	{
-		btCollisionShape* groundShape = _physics_allocator.template allocT<btBoxShape>(btVector3(btScalar(50.0f), btScalar(1.0f), btScalar(50.0f)));
-
-		//keep track of the shapes, we release memory at exit.
-		//make sure to re-use collision shapes among rigid bodies whenever possible!
-		//btAlignedObjectArray<btCollisionShape*> collisionShapes;
-
-		//collisionShapes.push_back(groundShape);
-
-		btTransform groundTransform;
-		groundTransform.setIdentity();
-		groundTransform.setOrigin(btVector3(0.0f, -15.0f, 0.0f));
-
-		btScalar mass(0.0f);
-
-		//rigidbody is dynamic if and only if mass is non zero, otherwise static
-		btVector3 localInertia(btVector3(0.0f, 0.0f, 0.0f));
-
-		//using motionstate is optional, it provides interpolation capabilities, and only synchronizes 'active' objects
-		btDefaultMotionState* myMotionState = _physics_allocator.template allocT<btDefaultMotionState>(groundTransform);
-		btRigidBody::btRigidBodyConstructionInfo rbInfo(mass, myMotionState, groundShape, localInertia);
-		btRigidBody* body = _physics_allocator.template allocT<btRigidBody>(rbInfo);
-
-		//add the body to the dynamics world
-		_main_world->addRigidBody(body);
-	}
 }
 
 void BulletPhysicsManager::getUpdateEntries(Array<UpdateEntry>& entries)
@@ -165,6 +150,13 @@ void BulletPhysicsManager::update(double dt, void*)
 {
 	_main_world->stepSimulation(static_cast<btScalar>(dt));
 }
+
+void BulletPhysicsManager::clearMainWorld(void)
+{
+	clearWorld(_main_world);
+}
+
+//void clearExtraWorld(size_t world);
 
 btCollisionShape* BulletPhysicsManager::createCollisionShapeCapsule(float radius, float height)
 {
@@ -315,6 +307,70 @@ btCollisionShape* BulletPhysicsManager::createCollisionShapeStaticPlane(const Gl
 	return createCollisionShapeStaticPlane(norm_dist[0], norm_dist[1], norm_dist[2], norm_dist[3]);
 }
 
+btCollisionShape* BulletPhysicsManager::createCollisionShapeConvexHull(float* points, size_t num_points, size_t stride)
+{
+	uint32_t hash = Gaff::FNV1aHash32V(&points, &num_points, &stride);
+
+	auto it = _shapes.findElementWithKey(hash);
+
+	if (it != _shapes.end()) {
+		GAFF_ASSERT(it->second->getShapeType() == CONVEX_HULL_SHAPE_PROXYTYPE);
+		return it->second;
+	}
+
+	btCollisionShape* shape = _physics_allocator.template allocT<btConvexHullShape>(
+		points, static_cast<int>(num_points), static_cast<int>(stride)
+	);
+
+	_shapes.emplace(hash, shape);
+
+	return shape;
+}
+
+//btCollisionShape* BulletPhysicsManager::createCollisionShapeMultiSphere(size_t identifier)
+//{
+//	if (identifier != SIZE_T_FAIL) {
+//		return _physics_allocator.template allocT<btMultiSphereShape>();
+//	}
+//
+//	uint32_t hash = Gaff::FNV1aHash32V(&identifier);
+//
+//	auto it = _shapes.findElementWithKey(hash);
+//
+//	if (it != _shapes.end()) {
+//		GAFF_ASSERT(it->second->getShapeType() == MULTI_SPHERE_SHAPE_PROXYTYPE);
+//		return it->second;
+//	}
+//
+//	btCollisionShape* shape = _physics_allocator.template allocT<btCompoundShape>();
+//
+//	_shapes.emplace(hash, shape);
+//
+//	return shape;
+//}
+
+btCollisionShape* BulletPhysicsManager::createCollisionShapeCompound(size_t identifier)
+{
+	if (identifier == SIZE_T_FAIL) {
+		return _physics_allocator.template allocT<btCompoundShape>();
+	}
+
+	uint32_t hash = Gaff::FNV1aHash32V(&identifier);
+
+	auto it = _shapes.findElementWithKey(hash);
+
+	if (it != _shapes.end()) {
+		GAFF_ASSERT(it->second->getShapeType() == COMPOUND_SHAPE_PROXYTYPE);
+		return it->second;
+	}
+
+	btCollisionShape* shape = _physics_allocator.template allocT<btCompoundShape>();
+
+	_shapes.emplace(hash, shape);
+
+	return shape;
+}
+
 btCollisionShape* BulletPhysicsManager::createCollisionShapeTriangle(
 	float x1, float y1, float z1,
 	float x2, float y2, float z2,
@@ -349,13 +405,61 @@ btCollisionShape* BulletPhysicsManager::createCollisionShapeTriangle(
 	);
 }
 
+btCollisionShape* BulletPhysicsManager::createCollisionShapeHeightfield(
+	size_t stick_width, size_t stick_length, const float* data,
+	float height_scale, float min_height, float max_height,
+	HeightfieldUpAxis up_axis, bool flip_quad_edges)
+{
+	uint32_t hash = Gaff::FNV1aHash32V(
+		&stick_width, &stick_length, &data,
+		&height_scale, &min_height, &max_height,
+		&up_axis, &flip_quad_edges
+	);
+
+	auto it = _shapes.findElementWithKey(hash);
+
+	if (it != _shapes.end()) {
+		GAFF_ASSERT(it->second->getShapeType() == TERRAIN_SHAPE_PROXYTYPE);
+		return it->second;
+	}
+
+	btCollisionShape* shape = _physics_allocator.template allocT<btHeightfieldTerrainShape>(
+		static_cast<int>(stick_width), static_cast<int>(stick_length), data,
+		height_scale, min_height, max_height, up_axis, PHY_FLOAT, flip_quad_edges
+	);
+
+	_shapes.emplace(hash, shape);
+
+	return shape;
+}
+
+void BulletPhysicsManager::removeCollisionShape(btCollisionShape* shape)
+{
+	auto it = _shapes.findElementWithValue(shape);
+
+	if (it != _shapes.end()) {
+		_shapes.erase(it);
+	}
+}
+
+void BulletPhysicsManager::clearCollisionShapes(void)
+{
+	IAllocator* allocator = GetAllocator();
+
+	for (auto it = _shapes.begin(); it != _shapes.end(); ++it) {
+		allocator->freeT(it->second);
+	}
+
+	_shapes.clear();
+}
+
 btRigidBody* BulletPhysicsManager::createRigidBody(Object* object, btCollisionShape* shape, float mass, btMotionState* motion_state)
 {
 	// RigidBody is dynamic if and only if mass is non zero, otherwise static
 	btVector3 localInertia(0.0f, 0.0f, 0.0f);
 	shape->calculateLocalInertia(mass, localInertia);
 
-	if (!motion_state) {
+	if (object && !motion_state) {
 		motion_state = _physics_allocator.template allocT<MotionState>(object);
 	}
 
@@ -363,6 +467,11 @@ btRigidBody* BulletPhysicsManager::createRigidBody(Object* object, btCollisionSh
 	btRigidBody* body = _physics_allocator.template allocT<btRigidBody>(rbInfo);
 
 	return body;
+}
+
+void BulletPhysicsManager::addToMainWorld(btRigidBody* body, short collision_group, short collision_mask)
+{
+	_main_world->addRigidBody(body, collision_group, collision_mask);
 }
 
 void BulletPhysicsManager::addToMainWorld(btRigidBody* body)
@@ -373,6 +482,38 @@ void BulletPhysicsManager::addToMainWorld(btRigidBody* body)
 void BulletPhysicsManager::removeFromMainWorld(btRigidBody* body)
 {
 	_main_world->removeRigidBody(body);
+}
+
+void BulletPhysicsManager::clearWorld(btDynamicsWorld* world)
+{
+	auto& coll_objects = world->getCollisionObjectArray();
+	IAllocator* allocator = GetAllocator();
+
+	for (int i = world->getNumConstraints() - 1; i >= 0; --i) {
+		btTypedConstraint* constraint = world->getConstraint(i);
+		world->removeConstraint(constraint);
+		allocator->freeT(constraint);
+	}
+
+	for (int i = world->getNumCollisionObjects() - 1; i >= 0; --i) {
+		btCollisionObject* object = coll_objects[i];
+		btRigidBody* rb = btRigidBody::upcast(object);
+
+		if (rb) {
+			btMotionState* motion_state = rb->getMotionState();
+
+			if (motion_state) {
+				allocator->freeT(motion_state);
+			}
+
+			world->removeRigidBody(rb);
+
+		} else {
+			world->removeCollisionObject(object);
+		}
+
+		allocator->freeT(object);
+	}
 }
 
 NS_END

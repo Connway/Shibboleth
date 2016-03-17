@@ -30,6 +30,7 @@ THE SOFTWARE.
 #include <Gaff_JSON.h>
 
 #include <Shibboleth_RenderPipelineManager.h>
+#include <Shibboleth_BulletPhysicsManager.h>
 #include <Shibboleth_OcclusionManager.h>
 #include <Shibboleth_CameraComponent.h>
 #include <Shibboleth_UpdateManager.h>
@@ -75,6 +76,10 @@ public:
 
 	void enter(void)
 	{
+		auto& phys_mgr = _app.getManagerT<Shibboleth::BulletPhysicsManager>();
+		auto* plane_coll = phys_mgr.createCollisionShapeStaticPlane(0.0f, 1.0f, 0.0f, -15.0f);
+		phys_mgr.addToMainWorld(phys_mgr.createRigidBody(nullptr, plane_coll, 0.0f));
+
 		_app.getManagerT<Shibboleth::ResourceManager>("Resource Manager").addRequestAddedCallback(Gaff::Bind(this, &LoopState::ResReq));
 
 		_object = _app.getManagerT<Shibboleth::ObjectManager>("Object Manager").createObject();

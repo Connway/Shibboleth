@@ -1,1 +1,0 @@
-@utils\premake5.exe %*
