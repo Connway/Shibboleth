@@ -20,8 +20,6 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-/*! \file */
-
 #pragma once
 
 #include "Gaff_IAllocator.h"
@@ -30,10 +28,6 @@ THE SOFTWARE.
 
 NS_GAFF
 
-/*!
-	\brief Simple malloc/free allocator that makes aligned allocations.
-	\note Alignment is in bytes.
-*/
 class DefaultAlignedAllocator : public IAllocator
 {
 public:
@@ -42,7 +36,7 @@ public:
 	{
 	}
 
-	void* alloc(size_t size_bytes)
+	void* alloc(size_t size_bytes, const char* /*file*/, int /*line*/)
 	{
 		return AlignedMalloc(size_bytes, _alignment);
 	}

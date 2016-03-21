@@ -56,7 +56,7 @@ static void LogJob(void* data)
 
 	gApp->notifyLogCallbacks(log_data->string.getBuffer(), log_data->log_type);
 
-	GetAllocator()->freeT(log_data);
+	SHIB_FREET(log_data, *GetAllocator());
 }
 
 void LogMessage(LogManager::FileLockPair& flp, unsigned int job_pool, LogManager::LOG_TYPE log_type, const char* format, ...)
@@ -71,7 +71,7 @@ void LogMessage(LogManager::FileLockPair& flp, unsigned int job_pool, LogManager
 	va_end(vl);
 
 	//unsigned int curr_flush_count = AtomicUAddFetchOrig(&g_Current_Flush_Count, 1);
-	LogData* log_data = GetAllocator()->template allocT<LogData>();
+	LogData* log_data = SHIB_ALLOCT(LogData, *GetAllocator());
 
 	if (log_data) {
 		log_data->string = temp;

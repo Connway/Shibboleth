@@ -121,7 +121,7 @@ Gaff::IVirtualDestructor* SamplerStateLoader::load(const char* file_name, uint64
 		ss.border_a = static_cast<float>(json["border_a"].getReal());
 	}
 
-	SamplerStateData* sampler_data = GetAllocator()->template allocT<SamplerStateData>();
+	SamplerStateData* sampler_data = SHIB_ALLOCT(SamplerStateData, *GetAllocator());
 
 	if (!sampler_data) {
 		LogMessage(GetApp().getGameLogFile(), TPT_PRINTLOG, LogManager::LOG_ERROR, "ERROR - Failed to allocate Sampler State data structure.\n", file_name);
@@ -138,13 +138,13 @@ Gaff::IVirtualDestructor* SamplerStateLoader::load(const char* file_name, uint64
 
 		if (!sampler) {
 			LogMessage(GetApp().getGameLogFile(), TPT_PRINTLOG, LogManager::LOG_ERROR, "ERROR - Failed to allocate Sampler State for sampler '%s'.\n", file_name);
-			GetAllocator()->freeT(sampler_data);
+			SHIB_FREET(sampler_data, *GetAllocator());
 			return nullptr;
 		}
 
 		if (!sampler->init(rd, ss)) {
 			LogMessage(GetApp().getGameLogFile(), TPT_PRINTLOG, LogManager::LOG_ERROR, "ERROR - Failed to initialize Sampler State for sampler '%s'.\n", file_name);
-			GetAllocator()->freeT(sampler_data);
+			SHIB_FREET(sampler_data, *GetAllocator());
 			return nullptr;
 		}
 

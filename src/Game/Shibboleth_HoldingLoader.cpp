@@ -51,7 +51,7 @@ Gaff::IVirtualDestructor* HoldingLoader::load(const char* file_name, uint64_t us
 		file_map[fname] = nullptr;
 	});
 
-	HoldingData* data = GetAllocator()->template allocT<HoldingData>();
+	HoldingData* data = SHIB_ALLOCT(HoldingData, *GetAllocator());
 
 	if (!data) {
 		return nullptr;
@@ -63,7 +63,7 @@ Gaff::IVirtualDestructor* HoldingLoader::load(const char* file_name, uint64_t us
 	data->scene = data->importer.parseMemory(file->getBuffer(), file->size(), static_cast<unsigned int>(user_data), fname.getBuffer() + ext_index);
 
 	if (!data->scene) {
-		GetAllocator()->freeT(data);
+		SHIB_FREET(data, *GetAllocator());
 		data = nullptr;
 
 	} //else if (data->scene.hasWarnings()) {

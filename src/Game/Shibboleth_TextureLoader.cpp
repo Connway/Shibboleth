@@ -113,7 +113,7 @@ Gaff::IVirtualDestructor* TextureLoader::load(const char* file_name, uint64_t, H
 
 	Gleam::ITexture::FORMAT texture_format = determineFormatAndType(image, json["normalized"].isTrue(), json["SRGBA"].isTrue());
 
-	TextureData* texture_data = GetAllocator()->template allocT<TextureData>();
+	TextureData* texture_data = SHIB_ALLOCT(TextureData, *GetAllocator());
 
 	if (!texture_data) {
 		LogMessage(GetApp().getGameLogFile(), TPT_PRINTLOG, LogManager::LOG_ERROR, "ERROR - Failed to allocate texture data structure.\n", file_name);
@@ -155,13 +155,13 @@ Gaff::IVirtualDestructor* TextureLoader::load(const char* file_name, uint64_t, H
 
 		if (!texture) {
 			LogMessage(GetApp().getGameLogFile(), TPT_PRINTLOG, LogManager::LOG_ERROR, "ERROR - Failed to allocate texture for image %s.\n", file_name);
-			GetAllocator()->freeT(texture_data);
+			SHIB_FREET(texture_data, *GetAllocator());
 			return nullptr;
 		}
 
 		if (texture_format == Gleam::ITexture::FORMAT_SIZE) {
 			LogMessage(GetApp().getGameLogFile(), TPT_PRINTLOG, LogManager::LOG_ERROR, "ERROR - Could not determine the pixel format of image at %s.\n", file_name);
-			GetAllocator()->freeT(texture_data);
+			SHIB_FREET(texture_data, *GetAllocator());
 			return nullptr;
 		}
 
@@ -173,13 +173,13 @@ Gaff::IVirtualDestructor* TextureLoader::load(const char* file_name, uint64_t, H
 		if (texture_data->cubemap) {
 			if (width == 1 || height == 1 || depth != 1) {
 				LogMessage(GetApp().getGameLogFile(), TPT_PRINTLOG, LogManager::LOG_ERROR, "ERROR - Image specified as cubemap, but is not a 2D image. IMAGE: %s.\n", file_name);
-				GetAllocator()->freeT(texture_data);
+				SHIB_FREET(texture_data, *GetAllocator());
 				return nullptr;
 			}
 
 			if (!texture->initCubemap(rd, width, height, texture_format, 1, image.getBuffer())) {
 				LogMessage(GetApp().getGameLogFile(), TPT_PRINTLOG, LogManager::LOG_ERROR, "ERROR - Failed to initialize cubemap texture using image at %s.\n", file_name);
-				GetAllocator()->freeT(texture_data);
+				SHIB_FREET(texture_data, *GetAllocator());
 				return nullptr;
 			}
 
@@ -200,7 +200,7 @@ Gaff::IVirtualDestructor* TextureLoader::load(const char* file_name, uint64_t, H
 
 		if (!success) {
 			LogMessage(GetApp().getGameLogFile(), TPT_PRINTLOG, LogManager::LOG_ERROR, "ERROR - Failed to initialize texture using image at %s.\n", file_name);
-			GetAllocator()->freeT(texture_data);
+			SHIB_FREET(texture_data, *GetAllocator());
 			return nullptr;
 		}
 
@@ -211,13 +211,13 @@ Gaff::IVirtualDestructor* TextureLoader::load(const char* file_name, uint64_t, H
 
 			if (!srv) {
 				LogMessage(GetApp().getGameLogFile(), TPT_PRINTLOG, LogManager::LOG_ERROR, "ERROR - Failed to allocate shader resource view for texture %s.\n", file_name);
-				GetAllocator()->freeT(texture_data);
+				SHIB_FREET(texture_data, *GetAllocator());
 				return false;
 			}
 
 			if (!srv->init(rd, texture.get())) {
 				LogMessage(GetApp().getGameLogFile(), TPT_PRINTLOG, LogManager::LOG_ERROR, "ERROR - Failed to initialize shader resource view for texture %s.\n", file_name);
-				GetAllocator()->freeT(texture_data);
+				SHIB_FREET(texture_data, *GetAllocator());
 				return false;
 			}
 

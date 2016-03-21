@@ -202,7 +202,7 @@ size_t Allocator::getPoolIndex(const char* pool_name)
 	return index + 1;
 }
 
-void* Allocator::alloc(size_t size_bytes, size_t pool_index)
+void* Allocator::alloc(size_t size_bytes, size_t pool_index, const char* /*file*/, int /*line*/)
 {
 	MemoryPoolInfo& mem_pool_info = _tagged_pools[pool_index];
 
@@ -228,9 +228,9 @@ void* Allocator::alloc(size_t size_bytes, size_t pool_index)
 	return reinterpret_cast<char*>(data) + sizeof(AllocationHeader);
 }
 
-void* Allocator::alloc(size_t size_bytes)
+void* Allocator::alloc(size_t size_bytes, const char* file, int line)
 {
-	return alloc(size_bytes, 0);
+	return alloc(size_bytes, 0, file, line);
 }
 
 void Allocator::free(void* data)

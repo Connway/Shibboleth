@@ -44,7 +44,7 @@ Gaff::IVirtualDestructor* ProgramBuffersCreator::load(const char*, uint64_t, Has
 {
 	Gleam::IRenderDevice& rd = _render_mgr.getRenderDevice();
 
-	ProgramBuffersData* data = GetAllocator()->template allocT<ProgramBuffersData>();
+	ProgramBuffersData* data = SHIB_ALLOCT(ProgramBuffersData, *GetAllocator());
 
 	if (!data) {
 		// log error
@@ -58,7 +58,7 @@ Gaff::IVirtualDestructor* ProgramBuffersCreator::load(const char*, uint64_t, Has
 
 		if (!program_buffers) {
 			// log error
-			GetAllocator()->freeT(data);
+			SHIB_FREET(data, *GetAllocator());
 			return nullptr;
 		}
 

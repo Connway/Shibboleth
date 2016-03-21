@@ -157,7 +157,7 @@ bool App::loadFileSystem(void)
 
 	} else {
 		_log_file_pair->first.writeString("Could not find 'FileSystem" BIT_EXTENSION DYNAMIC_EXTENSION "' defaulting to loose file system\n");
-		_fs.file_system = GetAllocator()->template allocT<LooseFileSystem>();
+		_fs.file_system = SHIB_ALLOCT(LooseFileSystem, *GetAllocator());
 
 		if (!_fs.file_system) {
 			_log_file_pair->first.writeString("ERROR - Failed to create loose file system\n");
@@ -557,7 +557,7 @@ void App::destroy(void)
 		_fs.destroy_func(_fs.file_system);
 		_fs.file_system_module = nullptr;
 	} else if (_fs.file_system) {
-		GetAllocator()->freeT(_fs.file_system);
+		SHIB_FREET(_fs.file_system, *GetAllocator());
 	}
 
 #if defined(SYMBOL_BUILD) && defined(INIT_STACKTRACE_SYSTEM)

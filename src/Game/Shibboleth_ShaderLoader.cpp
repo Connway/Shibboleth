@@ -55,7 +55,7 @@ Gaff::IVirtualDestructor* ShaderLoader::load(const char* file_name, uint64_t use
 		file_map[AString(file_name)] = nullptr;
 	});
 
-	ShaderData* shader_data = GetAllocator()->template allocT<ShaderData>();
+	ShaderData* shader_data = SHIB_ALLOCT(ShaderData, *GetAllocator());
 
 	if (!shader_data) {
 		return nullptr;
@@ -70,12 +70,12 @@ Gaff::IVirtualDestructor* ShaderLoader::load(const char* file_name, uint64_t use
 		rd.setCurrentDevice(i);
 
 		if (!shader) {
-			GetAllocator()->freeT(shader_data);
+			SHIB_FREET(shader_data, *GetAllocator());
 			return nullptr;
 		}
 
 		if (!shader->initSource(rd, file->getBuffer(), file->size(), shader_data->shader_type)) {
-			GetAllocator()->freeT(shader_data);
+			SHIB_FREET(shader_data, *GetAllocator());
 			return nullptr;
 		}
 

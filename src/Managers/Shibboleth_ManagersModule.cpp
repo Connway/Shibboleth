@@ -48,17 +48,17 @@ THE SOFTWARE.
 template <class Manager>
 Shibboleth::IManager* CreateManagerT(void)
 {
-	return Shibboleth::GetAllocator()->template allocT<Manager>();
+	return SHIB_ALLOCT(Manager, *Shibboleth::GetAllocator());
 }
 
 template <class Manager>
 Shibboleth::IManager* CreateManagerWithInitT(void)
 {
-	Manager* manager = Shibboleth::GetAllocator()->template allocT<Manager>();
+	Manager* manager = SHIB_ALLOCT(Manager, *Shibboleth::GetAllocator());
 
 	if (manager) {
 		if (!manager->init()) {
-			Shibboleth::GetAllocator()->freeT(manager);
+			SHIB_FREET(manager, *Shibboleth::GetAllocator());
 			manager = nullptr;
 		}
 	}
@@ -133,5 +133,5 @@ DYNAMICEXPORT_C Shibboleth::IManager* CreateManager(unsigned int id)
 
 DYNAMICEXPORT_C void DestroyManager(Shibboleth::IManager* manager, unsigned int)
 {
-	Shibboleth::GetAllocator()->freeT(manager);
+	SHIB_FREET(manager, *Shibboleth::GetAllocator());
 }

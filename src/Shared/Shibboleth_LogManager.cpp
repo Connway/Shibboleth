@@ -39,7 +39,7 @@ void LogManager::destroy(void)
 {
 	for (auto it = _files.begin(); it != _files.end(); ++it) {
 		it->first.writeString("\nCLOSING LOG FILE\n");
-		_allocator.freeT(it->second);
+		SHIB_FREET(it->second, _allocator);
 	}
 
 	_files.clear();
@@ -54,7 +54,7 @@ bool LogManager::openLogFile(const AHashString& filename)
 		return false;
 	}
 
-	Gaff::SpinLock* spin_lock = _allocator.template allocT<Gaff::SpinLock>();
+	Gaff::SpinLock* spin_lock = SHIB_ALLOCT(Gaff::SpinLock, _allocator);
 
 	if (!spin_lock) {
 		return false;

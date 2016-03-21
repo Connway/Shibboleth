@@ -31,7 +31,7 @@ template <class T, class Allocator>
 Queue<T, Allocator>::Queue(size_t start_alloc, const Allocator& allocator) :
 	_allocator(allocator), _used(0), _size(start_alloc)
 {
-	_array = (T*)_allocator.alloc(sizeof(T) * start_alloc);
+	_array = GAFF_ALLOC_CAST(T*, sizeof(T) * start_alloc, _allocator);
 	_begin = _end = _array + (_size / 2);
 }
 
@@ -39,7 +39,7 @@ template <class T, class Allocator>
 Queue<T, Allocator>::Queue(const T* data, size_t size, const Allocator& allocator) :
 	_allocator(allocator), _used(0), _size(size)
 {
-	_array = (T*)_allocator.alloc(sizeof(T) * size);
+	_array = GAFF_ALLOC_CAST(T*, sizeof(T) * size, _allocator);
 	_begin = _end = _array + (size / 2);
 
 	for (size_t i = 0; i < size; ++i) {
@@ -85,7 +85,7 @@ const Queue<T, Allocator>& Queue<T, Allocator>::operator=(const Queue<T, Allocat
 
 	T* begin = rhs._begin;
 
-	_array = (T*)_allocator.alloc(sizeof(T) * rhs._size);
+	_array = GAFF_ALLOC_CAST(T*, sizeof(T) * rhs._size, _allocator);
 	_begin = _end = _array + (rhs._size / 2);
 	_size = rhs._size;
 	_used = 0;
@@ -150,7 +150,7 @@ void Queue<T, Allocator>::clear(void)
 			increment(&_begin);
 		}
 
-		_allocator.free(_array);
+		GAFF_FREE(_array, _allocator);
 		_used = _size = 0;
 		_array = _begin = _end = nullptr;
 	}
@@ -168,7 +168,7 @@ void Queue<T, Allocator>::reserve(size_t new_size)
 	T* old_data = _array;
 	T* begin = _begin;
 
-	_array = reinterpret_cast<T*>(_allocator.alloc(sizeof(T) * new_size));
+	_array = GAFF_ALLOC_CAST(T*, sizeof(T) * new_size, _allocator);
 	_begin = _end = _array + (new_size / 2);
 	_size = new_size;
 	_used = 0;
@@ -179,7 +179,7 @@ void Queue<T, Allocator>::reserve(size_t new_size)
 	}
 
 	if (old_data) {
-		_allocator.free(old_data);
+		GAFF_FREE(old_data, _allocator);
 	}
 }
 

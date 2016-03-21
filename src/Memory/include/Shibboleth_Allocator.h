@@ -37,8 +37,8 @@ public:
 	~Allocator(void);
 
 	size_t getPoolIndex(const char* pool_name) override;
-	void* alloc(size_t size_bytes, size_t pool_index) override;
-	void* alloc(size_t size_bytes) override;
+	void* alloc(size_t size_bytes, size_t pool_index, const char* file, int line) override;
+	void* alloc(size_t size_bytes, const char* file, int line) override;
 	void free(void* data) override;
 
 	INLINE size_t getTotalBytesAllocated(size_t pool_index) const;

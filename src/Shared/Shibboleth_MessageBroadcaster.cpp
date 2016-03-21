@@ -44,7 +44,7 @@ void BroadcastJob(void* data)
 		it->second->call(*msg_data.second);
 	}
 
-	GetAllocator()->freeT(msg_data.second);
+	SHIB_FREET(msg_data.second, *GetAllocator());
 }
 
 MessageBroadcaster::MessageBroadcaster(void)
@@ -55,13 +55,13 @@ MessageBroadcaster::~MessageBroadcaster(void)
 {
 	for (unsigned int i = 0; i < 2; ++i) {
 		for (auto it = _message_queues[i].begin(); it != _message_queues[i].end(); ++it) {
-			GetAllocator()->freeT(it->second);
+			SHIB_FREET(it->second, *GetAllocator());
 		}
 	}
 
 	for (auto it1 = _listeners.begin(); it1 != _listeners.end(); ++it1) {
 		for (auto it2 = it1->second.listeners.begin(); it2 != it1->second.listeners.end(); ++it2) {
-			GetAllocator()->freeT(it2->second);
+			SHIB_FREET(it2->second, *GetAllocator());
 		}
 	}
 

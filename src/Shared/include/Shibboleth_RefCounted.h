@@ -36,7 +36,7 @@ public: \
 	{ \
 		unsigned int new_count = AtomicDecrement(&_count); \
 		if (!new_count) { \
-			GetAllocator()->freeT(this); \
+			SHIB_FREET(this, *GetAllocator()); \
 		} \
 	} \
 	unsigned int getRefCount(void) const \
@@ -65,7 +65,7 @@ public:
 		unsigned int new_count = AtomicDecrement(&_count);
 
 		if (!new_count) {
-			GetAllocator()->freeT(this);
+			SHIB_FREET(this, *GetAllocator());
 		}
 	}
 

@@ -62,7 +62,7 @@ void ResourceLoadingJob(void* data)
 	}
 
 	load_data->res_ptr->callCallbacks();
-	GetAllocator()->freeT(load_data);
+	SHIB_FREET(load_data, *GetAllocator());
 }
 
 void ResourceReadingJob(void* data)
@@ -83,7 +83,7 @@ void ResourceReadingJob(void* data)
 			read_data->res_ptr->_res_state = ResourceContainer::RS_FAILED;
 			read_data->res_ptr->callCallbacks();
 
-			GetAllocator()->freeT(read_data);
+			SHIB_FREET(read_data, *GetAllocator());
 		}
 	});
 
@@ -157,10 +157,10 @@ void ResourceContainer::release(void) const
 		(_res_manager->*_zero_ref_callback)(_res_key);
 
 		if (_resource) {
-			Shibboleth::GetAllocator()->freeT(_resource);
+			SHIB_FREET(_resource, *GetAllocator());
 		}
 
-		Shibboleth::GetAllocator()->freeT(this);
+		SHIB_FREET(this, *GetAllocator());
 	}
 }
 
@@ -274,7 +274,7 @@ void ResourceManager::registerResourceLoader(IResourceLoader* res_loader, const 
 {
 	GAFF_ASSERT(res_loader && resource_types.size());
 
-	Gaff::SharedPtr<Array<JSONModifiers>, ProxyAllocator> je(GetAllocator()->template allocT< Array<JSONModifiers> >(json_elements));
+	Gaff::SharedPtr<Array<JSONModifiers>, ProxyAllocator> je(SHIB_ALLOCT(Array<JSONModifiers>, *GetAllocator(), json_elements));
 	LoaderData loader_data = { je, ResourceLoaderPtr(res_loader), thread_pool };
 
 	for (auto it = resource_types.begin(); it != resource_types.end(); ++it) {
@@ -287,7 +287,7 @@ void ResourceManager::registerResourceLoader(IResourceLoader* res_loader, const 
 {
 	// We've already registered a loader for this file type.
 	GAFF_ASSERT(_resource_loaders.indexOf(AHashString(resource_type)) == SIZE_T_FAIL);
-	Gaff::SharedPtr<Array<JSONModifiers>, ProxyAllocator> je(GetAllocator()->template allocT< Array<JSONModifiers> >(json_elements));
+	Gaff::SharedPtr<Array<JSONModifiers>, ProxyAllocator> je(SHIB_ALLOCT(Array<JSONModifiers>, *GetAllocator(), json_elements));
 	LoaderData loader_data = { je, ResourceLoaderPtr(res_loader), thread_pool };
 	_resource_loaders[AHashString(resource_type)] = loader_data;
 }
@@ -306,7 +306,7 @@ ResourcePtr ResourceManager::requestResource(const char* resource_type, const ch
 		// so make a load request.
 		GAFF_ASSERT(_resource_loaders.indexOf(AHashString(resource_type)) != SIZE_T_FAIL);
 
-		ResourceContainer* res_cont = reinterpret_cast<ResourceContainer*>(GetAllocator()->alloc(sizeof(ResourceContainer)));
+		ResourceContainer* res_cont = SHIB_ALLOC_GLOBAL_CAST(ResourceContainer*, sizeof(ResourceContainer), *GetAllocator());
 		new (res_cont) ResourceContainer(res_key, this, &ResourceManager::zeroRefCallback, user_data);
 
 		ResourcePtr& res_ptr = _resource_cache[res_key];
@@ -319,7 +319,7 @@ ResourcePtr ResourceManager::requestResource(const char* resource_type, const ch
 		// make load task
 		LoaderData& loader_data = _resource_loaders[AHashString(resource_type)];
 
-		ResourceData* res_data = GetAllocator()->template allocT<ResourceData>();
+		ResourceData* res_data = SHIB_ALLOCT(ResourceData, *GetAllocator());
 		res_data->json_elements = nullptr;
 		res_data->res_loader = loader_data.res_loader;
 		res_data->res_ptr = res_ptr;
@@ -352,7 +352,7 @@ ResourcePtr ResourceManager::requestResource(const char* filename, uint64_t user
 		AString extension = res_key.getString().getExtension('.');
 		GAFF_ASSERT(extension.size() && _resource_loaders.indexOf(AHashString(extension)) != SIZE_T_FAIL);
 
-		ResourceContainer* res_cont = reinterpret_cast<ResourceContainer*>(GetAllocator()->alloc(sizeof(ResourceContainer)));
+		ResourceContainer* res_cont = SHIB_ALLOC_GLOBAL_CAST(ResourceContainer*, sizeof(ResourceContainer), *GetAllocator());
 		new (res_cont) ResourceContainer(res_key, this, &ResourceManager::zeroRefCallback, user_data);
 
 		ResourcePtr& res_ptr = _resource_cache[res_key];
@@ -365,7 +365,7 @@ ResourcePtr ResourceManager::requestResource(const char* filename, uint64_t user
 		// make load task
 		LoaderData& loader_data = _resource_loaders[extension];
 
-		ResourceData* res_data = GetAllocator()->template allocT<ResourceData>();
+		ResourceData* res_data = SHIB_ALLOCT(ResourceData, *GetAllocator());
 		res_data->json_elements = loader_data.json_elements.get();
 		res_data->res_loader = loader_data.res_loader;
 		res_data->res_ptr = res_ptr;
@@ -395,7 +395,7 @@ ResourcePtr ResourceManager::loadResourceImmediately(const char* filename, uint6
 		AString extension = res_key.getString().getExtension('.');
 		GAFF_ASSERT(extension.size() && _resource_loaders.indexOf(AHashString(extension)) != SIZE_T_FAIL);
 
-		ResourceContainer* res_cont = reinterpret_cast<ResourceContainer*>(GetAllocator()->alloc(sizeof(ResourceContainer)));
+		ResourceContainer* res_cont = SHIB_ALLOC_GLOBAL_CAST(ResourceContainer*, sizeof(ResourceContainer), *GetAllocator());
 		new (res_cont)ResourceContainer(res_key, this, &ResourceManager::zeroRefCallback, user_data);
 
 		ResourcePtr& res_ptr = _resource_cache[res_key];

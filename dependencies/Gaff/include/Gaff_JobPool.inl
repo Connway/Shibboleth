@@ -79,7 +79,7 @@ void JobPool<Allocator>::addJobs(JobData* jobs, size_t num_jobs, Counter** count
 		if (*counter) {
 			cnt = *counter;
 		} else {
-			*counter = cnt = _allocator.template allocT<Counter>();
+			*counter = cnt = GAFF_ALLOCT(Counter, _allocator);
 		}
 
 		AtomicExchange(&cnt->count, static_cast<unsigned int>(num_jobs));
@@ -119,7 +119,7 @@ template <class Allocator>
 void JobPool<Allocator>::freeCounter(Counter* counter)
 {
 	GAFF_ASSERT(counter);
-	_allocator.free(counter);
+	GAFF_FREE(counter, _allocator);
 }
 
 template <class Allocator>

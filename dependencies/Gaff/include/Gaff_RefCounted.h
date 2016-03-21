@@ -60,7 +60,7 @@ public:
 			// When the allocator resides in the object we are deleting,
 			// we need to make a copy, otherwise there will be crashes.
 			Allocator allocator(_allocator);
-			allocator.freeT(this);
+			GAFF_FREET(this, allocator);
 		}
 	}
 

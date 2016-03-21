@@ -131,7 +131,7 @@ void ProgramBuffersD3D::popSamplerState(IShader::SHADER_TYPE type, size_t count)
 
 IProgramBuffers* ProgramBuffersD3D::clone(void) const
 {
-	ProgramBuffersD3D* pb = GetAllocator()->allocT<ProgramBuffersD3D>();
+	ProgramBuffersD3D* pb = GAFF_ALLOCT(ProgramBuffersD3D, *GetAllocator());
 
 	if (!pb) {
 		PrintfToLog("Failed to clone ProgramBuffersD3D.", LOG_ERROR);

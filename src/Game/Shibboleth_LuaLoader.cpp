@@ -61,7 +61,7 @@ Gaff::IVirtualDestructor* LuaLoader::load(const char* file_name, uint64_t, HashM
 		file = nullptr;
 	});
 
-	SingleDataWrapper<lua::State*>* lua_data = GetAllocator()->template allocT< SingleDataWrapper<lua::State*> >();
+	SingleDataWrapper<lua::State*>* lua_data = SHIB_ALLOCT(SingleDataWrapper<lua::State*>, *GetAllocator());
 
 	if (!lua_data) {
 		LogMessage(GetApp().getGameLogFile(), TPT_PRINTLOG, LogManager::LOG_ERROR, "ERROR - Failed to allocate memory for Lua data.\n");
@@ -72,7 +72,7 @@ Gaff::IVirtualDestructor* LuaLoader::load(const char* file_name, uint64_t, HashM
 
 	if (!lua_data->data) {
 		LogMessage(GetApp().getGameLogFile(), TPT_PRINTLOG, LogManager::LOG_ERROR, "ERROR - Failed to create a Lua state for file '%s'.\n", file_name);
-		GetAllocator()->freeT(lua_data);
+		SHIB_FREET(lua_data, *GetAllocator());
 		return nullptr;
 	}
 

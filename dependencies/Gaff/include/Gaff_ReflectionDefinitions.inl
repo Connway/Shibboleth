@@ -63,7 +63,7 @@ void BaseCallbackHelper<Allocator>::triggerBaseClassCallback(IReflectionDefiniti
 		// This is not optimal, but I'm lazy and it only happens during static initialization.
 		callbacks = &_callbacks[base_ref_def];
 
-		_allocator.freeT((*callbacks)[i]);
+		GAFF_FREET((*callbacks)[i], _allocator);
 	}
 
 	_callbacks.erase(base_ref_def);
@@ -317,7 +317,7 @@ ReflectionDefinition<T, Allocator>&& ReflectionDefinition<T, Allocator>::addBase
 
 	if (!base_ref_def._defined) {
 		Functor<OnCompleteFunctor<T2>, void> ftor(OnCompleteFunctor<T2>(this, true));
-		FunctionBinder<void>* binder = _allocator.template allocT< FunctionBinder<void> >(&ftor, sizeof(ftor));
+		FunctionBinder<void>* binder = GAFF_ALLOCT(FunctionBinder<void>, _allocator, &ftor, sizeof(ftor));
 
 		BaseCallbackHelper<Allocator>::GetInstance(_allocator).addBaseClassCallback(&T2::GetReflectionDefinition(), binder);
 
@@ -330,7 +330,7 @@ ReflectionDefinition<T, Allocator>&& ReflectionDefinition<T, Allocator>::addBase
 
 	for (auto it = base_ref_def._value_containers.begin(); it != base_ref_def._value_containers.end(); ++it) {
 		GAFF_ASSERT(!_value_containers.hasElementWithKey(it.getKey()));
-		BaseValueContainer<T2>* container = _allocator.template allocT< BaseValueContainer<T2> >(it.getKey().getBuffer(), it.getValue(), _allocator);
+		BaseValueContainer<T2>* container = GAFF_ALLOCT(BaseValueContainer<T2>, _allocator, it.getKey().getBuffer(), it.getValue(), _allocator);
 		_value_containers.insert(it.getKey(), ValueContainerPtr(container));
 	}
 
@@ -386,7 +386,7 @@ ReflectionDefinition<T, Allocator>&& ReflectionDefinition<T, Allocator>::addBase
 
 	} else {
 		Functor<OnCompleteFunctor<T2>, void> ftor(OnCompleteFunctor<T2>(this, true));
-		FunctionBinder<void>* binder = _allocator.template allocT< FunctionBinder<void> >(&ftor, sizeof(ftor));
+		FunctionBinder<void>* binder = GAFF_ALLOCT(FunctionBinder<void>, _allocator, &ftor, sizeof(ftor));
 
 		BaseCallbackHelper<Allocator>::GetInstance(_allocator).addBaseClassCallback(&T2::GetReflectionDefinition(), binder);
 
@@ -404,7 +404,7 @@ template <class T2>
 ReflectionDefinition<T, Allocator>&& ReflectionDefinition<T, Allocator>::addObject(const char* key, T2 T::* var, ReflectionDefinition<T2, Allocator>& var_ref_def)
 {
 	GAFF_ASSERT(key && strlen(key) && !_value_containers.hasElementWithKey(key));
-	ObjectContainer<T2>* container = _allocator.template allocT< ObjectContainer<T2> >(key, var, var_ref_def, _allocator);
+	ObjectContainer<T2>* container = GAFF_ALLOCT(ObjectContainer<T2>, _allocator, key, var, var_ref_def, _allocator);
 	_value_containers.insert(key, ValueContainerPtr(container));
 	return std::move(*this);
 }
@@ -414,7 +414,7 @@ template <class T2>
 ReflectionDefinition<T, Allocator>&& ReflectionDefinition<T, Allocator>::addEnum(const char* key, T2 T::* var, const EnumReflectionDefinition<T2, Allocator>& ref_def)
 {
 	GAFF_ASSERT(key && strlen(key) && !_value_containers.hasElementWithKey(key));
-	EnumContainer<T2>* container = _allocator.template allocT< EnumContainer<T2> >(key, var, ref_def, _allocator);
+	EnumContainer<T2>* container = GAFF_ALLOCT(EnumContainer<T2>, _allocator, key, var, ref_def, _allocator);
 	_value_containers.insert(key, ValueContainerPtr(container));
 	return std::move(*this);
 }
@@ -425,7 +425,7 @@ template <class T2>
 ReflectionDefinition<T, Allocator>&& ReflectionDefinition<T, Allocator>::addArray(const char* key, const Array<T2, Allocator>& (T::*getter)(void) const, void (T::*setter)(const Array<T2, Allocator>&), ReflectionDefinition<T2, Allocator>& obj_ref_def)
 {
 	GAFF_ASSERT(key && strlen(key) && !_value_containers.hasElementWithKey(key));
-	ArrayObjectContainer<T2>* container = _allocator.template allocT< ArrayObjectContainer<T2> >(key, obj_ref_def, getter, setter, _allocator);
+	ArrayObjectContainer<T2>* container = GAFF_ALLOCT(ArrayObjectContainer<T2>, _allocator, key, obj_ref_def, getter, setter, _allocator);
 	_value_containers.insert(key, ValueContainerPtr(container));
 	return std::move(*this);
 }
@@ -443,7 +443,7 @@ template <class T2>
 ReflectionDefinition<T, Allocator>&& ReflectionDefinition<T, Allocator>::addArray(const char* key, Array<T2, Allocator> T::* var, ReflectionDefinition<T2, Allocator>& obj_ref_def)
 {
 	GAFF_ASSERT(key && strlen(key) && !_value_containers.hasElementWithKey(key));
-	ArrayObjectContainer<T2>* container = _allocator.template allocT< ArrayObjectContainer<T2> >(key, var, obj_ref_def, _allocator);
+	ArrayObjectContainer<T2>* container = GAFF_ALLOCT(ArrayObjectContainer<T2>, _allocator, key, var, obj_ref_def, _allocator);
 	_value_containers.insert(key, ValueContainerPtr(container));
 	return std::move(*this);
 }
@@ -461,7 +461,7 @@ template <class T2>
 ReflectionDefinition<T, Allocator>&& ReflectionDefinition<T, Allocator>::addArray(const char* key, const Array<T2, Allocator>& (T::*getter)(void) const, void (T::*setter)(const Array<T2, Allocator>&), const EnumReflectionDefinition<T2, Allocator>& enum_ref_def)
 {
 	GAFF_ASSERT(key && strlen(key) && !_value_containers.hasElementWithKey(key));
-	ArrayEnumContainer<T2>* container = _allocator.template allocT< ArrayEnumContainer<T2> >(key, enum_ref_def, getter, setter, _allocator);
+	ArrayEnumContainer<T2>* container = GAFF_ALLOCT(ArrayEnumContainer<T2>, _allocator, key, enum_ref_def, getter, setter, _allocator);
 	_value_containers.insert(key, ValueContainerPtr(container));
 	return std::move(*this);
 }
@@ -471,7 +471,7 @@ template <class T2>
 ReflectionDefinition<T, Allocator>&& ReflectionDefinition<T, Allocator>::addArray(const char* key, Array<T2, Allocator> T::* var, const EnumReflectionDefinition<T2, Allocator>& enum_ref_def)
 {
 	GAFF_ASSERT(key && strlen(key) && !_value_containers.hasElementWithKey(key));
-	ArrayEnumContainer<T2>* container = _allocator.template allocT< ArrayEnumContainer<T2> >(key, var, enum_ref_def, _allocator);
+	ArrayEnumContainer<T2>* container = GAFF_ALLOCT(ArrayEnumContainer<T2>, _allocator, key, var, enum_ref_def, _allocator);
 	_value_containers.insert(key, ValueContainerPtr(container));
 	return std::move(*this);
 }
@@ -480,7 +480,7 @@ template <class T, class Allocator>
 ReflectionDefinition<T, Allocator>&& ReflectionDefinition<T, Allocator>::addArray(const char* key, const Array<double, Allocator>& (T::*getter)(void) const, void (T::*setter)(const Array<double, Allocator>&))
 {
 	GAFF_ASSERT(key && strlen(key) && !_value_containers.hasElementWithKey(key));
-	ArrayDoubleContainer* container = _allocator.template allocT<ArrayDoubleContainer>(key, getter, setter, _allocator);
+	ArrayDoubleContainer* container = GAFF_ALLOCT(ArrayDoubleContainer, _allocator, key, getter, setter, _allocator);
 	_value_containers.insert(key, ValueContainerPtr(container));
 	return std::move(*this);
 }
@@ -489,7 +489,7 @@ template <class T, class Allocator>
 ReflectionDefinition<T, Allocator>&& ReflectionDefinition<T, Allocator>::addArray(const char* key, const Array<float, Allocator>& (T::*getter)(void) const, void (T::*setter)(const Array<float, Allocator>&))
 {
 	GAFF_ASSERT(key && strlen(key) && !_value_containers.hasElementWithKey(key));
-	ArrayFloatContainer* container = _allocator.template allocT<ArrayFloatContainer>(key, getter, setter, _allocator);
+	ArrayFloatContainer* container = GAFF_ALLOCT(ArrayFloatContainer, _allocator, key, getter, setter, _allocator);
 	_value_containers.insert(key, ValueContainerPtr(container));
 	return std::move(*this);
 }
@@ -498,7 +498,7 @@ template <class T, class Allocator>
 ReflectionDefinition<T, Allocator>&& ReflectionDefinition<T, Allocator>::addArray(const char* key, const Array<unsigned int, Allocator>& (T::*getter)(void) const, void (T::*setter)(const Array<unsigned int, Allocator>&))
 {
 	GAFF_ASSERT(key && strlen(key) && !_value_containers.hasElementWithKey(key));
-	ArrayUIntContainer* container = _allocator.template allocT<ArrayUIntContainer>(key, getter, setter, _allocator);
+	ArrayUIntContainer* container = GAFF_ALLOCT(ArrayUIntContainer, _allocator, key, getter, setter, _allocator);
 	_value_containers.insert(key, ValueContainerPtr(container));
 	return std::move(*this);
 }
@@ -507,7 +507,7 @@ template <class T, class Allocator>
 ReflectionDefinition<T, Allocator>&& ReflectionDefinition<T, Allocator>::addArray(const char* key, const Array<int, Allocator>& (T::*getter)(void) const, void (T::*setter)(const Array<int, Allocator>&))
 {
 	GAFF_ASSERT(key && strlen(key) && !_value_containers.hasElementWithKey(key));
-	ArrayIntContainer* container = _allocator.template allocT<ArrayIntContainer>(key, getter, setter, _allocator);
+	ArrayIntContainer* container = GAFF_ALLOCT(ArrayIntContainer, _allocator, key, getter, setter, _allocator);
 	_value_containers.insert(key, ValueContainerPtr(container));
 	return std::move(*this);
 }
@@ -516,7 +516,7 @@ template <class T, class Allocator>
 ReflectionDefinition<T, Allocator>&& ReflectionDefinition<T, Allocator>::addArray(const char* key, const Array<unsigned short, Allocator>& (T::*getter)(void) const, void (T::*setter)(const Array<unsigned short, Allocator>&))
 {
 	GAFF_ASSERT(key && strlen(key) && !_value_containers.hasElementWithKey(key));
-	ArrayUShortContainer* container = _allocator.template allocT<ArrayUShortContainer>(key, getter, setter, _allocator);
+	ArrayUShortContainer* container = GAFF_ALLOCT(ArrayUShortContainer, _allocator, key, getter, setter, _allocator);
 	_value_containers.insert(key, ValueContainerPtr(container));
 	return std::move(*this);
 }
@@ -525,7 +525,7 @@ template <class T, class Allocator>
 ReflectionDefinition<T, Allocator>&& ReflectionDefinition<T, Allocator>::addArray(const char* key, const Array<short, Allocator>& (T::*getter)(void) const, void (T::*setter)(const Array<short, Allocator>&))
 {
 	GAFF_ASSERT(key && strlen(key) && !_value_containers.hasElementWithKey(key));
-	ArrayShortContainer* container = _allocator.template allocT<ArrayShortContainer>(key, getter, setter, _allocator);
+	ArrayShortContainer* container = GAFF_ALLOCT(ArrayShortContainer, _allocator, key, getter, setter, _allocator);
 	_value_containers.insert(key, ValueContainerPtr(container));
 	return std::move(*this);
 }
@@ -534,7 +534,7 @@ template <class T, class Allocator>
 ReflectionDefinition<T, Allocator>&& ReflectionDefinition<T, Allocator>::addArray(const char* key, const Array<unsigned char, Allocator>& (T::*getter)(void) const, void (T::*setter)(const Array<unsigned char, Allocator>&))
 {
 	GAFF_ASSERT(key && strlen(key) && !_value_containers.hasElementWithKey(key));
-	ArrayUCharContainer* container = _allocator.template allocT<ArrayUCharContainer>(key, getter, setter, _allocator);
+	ArrayUCharContainer* container = GAFF_ALLOCT(ArrayUCharContainer, _allocator, key, getter, setter, _allocator);
 	_value_containers.insert(key, ValueContainerPtr(container));
 	return std::move(*this);
 }
@@ -543,7 +543,7 @@ template <class T, class Allocator>
 ReflectionDefinition<T, Allocator>&& ReflectionDefinition<T, Allocator>::addArray(const char* key, const Array<char, Allocator>& (T::*getter)(void) const, void (T::*setter)(const Array<char, Allocator>&))
 {
 	GAFF_ASSERT(key && strlen(key) && !_value_containers.hasElementWithKey(key));
-	ArrayCharContainer* container = _allocator.template allocT<ArrayCharContainer>(key, getter, setter, _allocator);
+	ArrayCharContainer* container = GAFF_ALLOCT(ArrayCharContainer, _allocator, key, getter, setter, _allocator);
 	_value_containers.insert(key, ValueContainerPtr(container));
 	return std::move(*this);
 }
@@ -552,7 +552,7 @@ template <class T, class Allocator>
 ReflectionDefinition<T, Allocator>&& ReflectionDefinition<T, Allocator>::addArray(const char* key, const Array<AString<Allocator>, Allocator>& (T::*getter)(void) const, void (T::*setter)(const Array<AString<Allocator>, Allocator>&))
 {
 	GAFF_ASSERT(key && strlen(key) && !_value_containers.hasElementWithKey(key));
-	ArrayStringContainer* container = _allocator.template allocT<ArrayStringContainer>(key, getter, setter, _allocator);
+	ArrayStringContainer* container = GAFF_ALLOCT(ArrayCharContainer, _allocator, key, getter, setter, _allocator);
 	_value_containers.insert(key, ValueContainerPtr(container));
 	return std::move(*this);
 }
@@ -561,7 +561,7 @@ template <class T, class Allocator>
 ReflectionDefinition<T, Allocator>&& ReflectionDefinition<T, Allocator>::addArray(const char* key, Array<double, Allocator> T::* var)
 {
 	GAFF_ASSERT(key && strlen(key) && !_value_containers.hasElementWithKey(key));
-	ArrayDoubleContainer* container = _allocator.template allocT<ArrayDoubleContainer>(key, var, _allocator);
+	ArrayDoubleContainer* container = GAFF_ALLOCT(ArrayDoubleContainer, _allocator, key, var, _allocator);
 	_value_containers.insert(key, ValueContainerPtr(container));
 	return std::move(*this);
 }
@@ -570,7 +570,7 @@ template <class T, class Allocator>
 ReflectionDefinition<T, Allocator>&& ReflectionDefinition<T, Allocator>::addArray(const char* key, Array<float, Allocator> T::* var)
 {
 	GAFF_ASSERT(key && strlen(key) && !_value_containers.hasElementWithKey(key));
-	ArrayFloatContainer* container = _allocator.template allocT<ArrayFloatContainer>(key, var, _allocator);
+	ArrayFloatContainer* container = GAFF_ALLOCT(ArrayFloatContainer, _allocator, key, var, _allocator);
 	_value_containers.insert(key, ValueContainerPtr(container));
 	return std::move(*this);
 }
@@ -579,7 +579,7 @@ template <class T, class Allocator>
 ReflectionDefinition<T, Allocator>&& ReflectionDefinition<T, Allocator>::addArray(const char* key, Array<unsigned int, Allocator> T::* var)
 {
 	GAFF_ASSERT(key && strlen(key) && !_value_containers.hasElementWithKey(key));
-	ArrayUIntContainer* container = _allocator.template allocT<ArrayUIntContainer>(key, var, _allocator);
+	ArrayUIntContainer* container = GAFF_ALLOCT(ArrayUIntContainer, _allocator, key, var, _allocator);
 	_value_containers.insert(key, ValueContainerPtr(container));
 	return std::move(*this);
 }
@@ -588,7 +588,7 @@ template <class T, class Allocator>
 ReflectionDefinition<T, Allocator>&& ReflectionDefinition<T, Allocator>::addArray(const char* key, Array<int, Allocator> T::* var)
 {
 	GAFF_ASSERT(key && strlen(key) && !_value_containers.hasElementWithKey(key));
-	ArrayIntContainer* container = _allocator.template allocT<ArrayIntContainer>(key, var, _allocator);
+	ArrayIntContainer* container = GAFF_ALLOCT(ArrayIntContainer, _allocator, key, var, _allocator);
 	_value_containers.insert(key, ValueContainerPtr(container));
 	return std::move(*this);
 }
@@ -597,7 +597,7 @@ template <class T, class Allocator>
 ReflectionDefinition<T, Allocator>&& ReflectionDefinition<T, Allocator>::addArray(const char* key, Array<unsigned short, Allocator> T::* var)
 {
 	GAFF_ASSERT(key && strlen(key) && !_value_containers.hasElementWithKey(key));
-	ArrayUShortContainer* container = _allocator.template allocT<ArrayUShortContainer>(key, var, _allocator);
+	ArrayUShortContainer* container = GAFF_ALLOCT(ArrayUShortContainer, _allocator, key, var, _allocator);
 	_value_containers.insert(key, ValueContainerPtr(container));
 	return std::move(*this);
 }
@@ -606,7 +606,7 @@ template <class T, class Allocator>
 ReflectionDefinition<T, Allocator>&& ReflectionDefinition<T, Allocator>::addArray(const char* key, Array<short, Allocator> T::* var)
 {
 	GAFF_ASSERT(key && strlen(key) && !_value_containers.hasElementWithKey(key));
-	ArrayShortContainer* container = _allocator.template allocT<ArrayShortContainer>(key, var, _allocator);
+	ArrayShortContainer* container = GAFF_ALLOCT(ArrayShortContainer, _allocator, key, var, _allocator);
 	_value_containers.insert(key, ValueContainerPtr(container));
 	return std::move(*this);
 }
@@ -615,7 +615,7 @@ template <class T, class Allocator>
 ReflectionDefinition<T, Allocator>&& ReflectionDefinition<T, Allocator>::addArray(const char* key, Array<unsigned char, Allocator> T::* var)
 {
 	GAFF_ASSERT(key && strlen(key) && !_value_containers.hasElementWithKey(key));
-	ArrayUCharContainer* container = _allocator.template allocT<ArrayUCharContainer>(key, var, _allocator);
+	ArrayUCharContainer* container = GAFF_ALLOCT(ArrayUCharContainer, _allocator, key, var, _allocator);
 	_value_containers.insert(key, ValueContainerPtr(container));
 	return std::move(*this);
 }
@@ -624,7 +624,7 @@ template <class T, class Allocator>
 ReflectionDefinition<T, Allocator>&& ReflectionDefinition<T, Allocator>::addArray(const char* key, Array<char, Allocator> T::* var)
 {
 	GAFF_ASSERT(key && strlen(key) && !_value_containers.hasElementWithKey(key));
-	ArrayCharContainer* container = _allocator.template allocT<ArrayCharContainer>(key, var, _allocator);
+	ArrayCharContainer* container = GAFF_ALLOCT(ArrayCharContainer, _allocator, key, var, _allocator);
 	_value_containers.insert(key, ValueContainerPtr(container));
 	return std::move(*this);
 }
@@ -633,7 +633,7 @@ template <class T, class Allocator>
 ReflectionDefinition<T, Allocator>&& ReflectionDefinition<T, Allocator>::addArray(const char* key, Array<AString<Allocator>, Allocator> T::* var)
 {
 	GAFF_ASSERT(key && strlen(key) && !_value_containers.hasElementWithKey(key));
-	ArrayStringContainer* container = _allocator.template allocT<ArrayStringContainer>(key, var, _allocator);
+	ArrayStringContainer* container = GAFF_ALLOCT(ArrayStringContainer, _allocator, key, var, _allocator);
 	_value_containers.insert(key, ValueContainerPtr(container));
 	return std::move(*this);
 }
@@ -643,7 +643,7 @@ template <unsigned int array_size, class T2>
 ReflectionDefinition<T, Allocator>&& ReflectionDefinition<T, Allocator>::addArray(const char* key, const T2* (T::*getter)(void) const, void (T::*setter)(const T2*), const EnumReflectionDefinition<T2, Allocator>& enum_ref_def)
 {
 	GAFF_ASSERT(key && strlen(key) && !_value_containers.hasElementWithKey(key));
-	ArrayFixedEnumContainer<array_size, T2>* container = _allocator.template allocT< ArrayFixedEnumContainer<array_size, T2> >(key, enum_ref_def, getter, setter, _allocator);
+	ArrayFixedEnumContainer<array_size, T2>* container = GAFF_ALLOCT(ArrayFixedEnumContainer<array_size, T2>, _allocator, key, enum_ref_def, getter, setter, _allocator);
 	_value_containers.insert(key, ValueContainerPtr(container));
 	return std::move(*this);
 }
@@ -653,7 +653,7 @@ template <unsigned int array_size, class T2>
 ReflectionDefinition<T, Allocator>&& ReflectionDefinition<T, Allocator>::addArray(const char* key, const T2* (T::*getter)(void) const, void (T::*setter)(const T2*), ReflectionDefinition<T2, Allocator>& obj_ref_def)
 {
 	GAFF_ASSERT(key && strlen(key) && !_value_containers.hasElementWithKey(key));
-	ArrayFixedObjectContainer<array_size, T2>* container = _allocator.template allocT< ArrayFixedObjectContainer<array_size, T2> >(key, obj_ref_def, getter, setter, _allocator);
+	ArrayFixedObjectContainer<array_size, T2>* container = GAFF_ALLOCT(ArrayFixedObjectContainer<array_size, T2>, _allocator, key, obj_ref_def, getter, setter, _allocator);
 	_value_containers.insert(key, ValueContainerPtr(container));
 	return std::move(*this);
 }
@@ -671,7 +671,7 @@ template <unsigned int array_size>
 ReflectionDefinition<T, Allocator>&& ReflectionDefinition<T, Allocator>::addArray(const char* key, const double* (T::*getter)(void) const, void (T::*setter)(const double*))
 {
 	GAFF_ASSERT(key && strlen(key) && !_value_containers.hasElementWithKey(key));
-	ArrayFixedDoubleContainer<array_size>* container = _allocator.template allocT< ArrayFixedDoubleContainer<array_size> >(key, getter, setter, _allocator);
+	ArrayFixedDoubleContainer<array_size>* container = GAFF_ALLOCT(ArrayFixedDoubleContainer<array_size>, _allocator, key, getter, setter, _allocator);
 	_value_containers.insert(key, ValueContainerPtr(container));
 	return std::move(*this);
 }
@@ -681,7 +681,7 @@ template <unsigned int array_size>
 ReflectionDefinition<T, Allocator>&& ReflectionDefinition<T, Allocator>::addArray(const char* key, const float* (T::*getter)(void) const, void (T::*setter)(const float*))
 {
 	GAFF_ASSERT(key && strlen(key) && !_value_containers.hasElementWithKey(key));
-	ArrayFixedFloatContainer<array_size>* container = _allocator.template allocT< ArrayFixedFloatContainer<array_size> >(key, getter, setter, _allocator);
+	ArrayFixedFloatContainer<array_size>* container = GAFF_ALLOCT(ArrayFixedFloatContainer<array_size>, _allocator, key, getter, setter, _allocator);
 	_value_containers.insert(key, ValueContainerPtr(container));
 	return std::move(*this);
 }
@@ -691,7 +691,7 @@ template <unsigned int array_size>
 ReflectionDefinition<T, Allocator>&& ReflectionDefinition<T, Allocator>::addArray(const char* key, const unsigned int* (T::*getter)(void) const, void (T::*setter)(const unsigned int*))
 {
 	GAFF_ASSERT(key && strlen(key) && !_value_containers.hasElementWithKey(key));
-	ArrayFixedUIntContainer<array_size>* container = _allocator.template allocT< ArrayFixedUIntContainer<array_size> >(key, getter, setter, _allocator);
+	ArrayFixedUIntContainer<array_size>* container = GAFF_ALLOCT(ArrayFixedUIntContainer<array_size>, _allocator, key, getter, setter, _allocator);
 	_value_containers.insert(key, ValueContainerPtr(container));
 	return std::move(*this);
 }
@@ -701,7 +701,7 @@ template <unsigned int array_size>
 ReflectionDefinition<T, Allocator>&& ReflectionDefinition<T, Allocator>::addArray(const char* key, const int* (T::*getter)(void) const, void (T::*setter)(const int*))
 {
 	GAFF_ASSERT(key && strlen(key) && !_value_containers.hasElementWithKey(key));
-	ArrayFixedIntContainer<array_size>* container = _allocator.template allocT< ArrayFixedIntContainer<array_size> >(key, getter, setter, _allocator);
+	ArrayFixedIntContainer<array_size>* container = GAFF_ALLOCT(ArrayFixedIntContainer<array_size>, _allocator, key, getter, setter, _allocator);
 	_value_containers.insert(key, ValueContainerPtr(container));
 	return std::move(*this);
 }
@@ -711,7 +711,7 @@ template <unsigned int array_size>
 ReflectionDefinition<T, Allocator>&& ReflectionDefinition<T, Allocator>::addArray(const char* key, const unsigned short* (T::*getter)(void) const, void (T::*setter)(const unsigned short*))
 {
 	GAFF_ASSERT(key && strlen(key) && !_value_containers.hasElementWithKey(key));
-	ArrayFixedUShortContainer<array_size>* container = _allocator.template allocT< ArrayFixedUShortContainer<array_size> >(key, getter, setter, _allocator);
+	ArrayFixedUShortContainer<array_size>* container = GAFF_ALLOCT(ArrayFixedUShortContainer<array_size>, _allocator, key, getter, setter, _allocator);
 	_value_containers.insert(key, ValueContainerPtr(container));
 	return std::move(*this);
 }
@@ -721,7 +721,7 @@ template <unsigned int array_size>
 ReflectionDefinition<T, Allocator>&& ReflectionDefinition<T, Allocator>::addArray(const char* key, const short* (T::*getter)(void) const, void (T::*setter)(const short*))
 {
 	GAFF_ASSERT(key && strlen(key) && !_value_containers.hasElementWithKey(key));
-	ArrayFixedShortContainer<array_size>* container = _allocator.template allocT< ArrayFixedShortContainer<array_size> >(key, getter, setter, _allocator);
+	ArrayFixedShortContainer<array_size>* container = GAFF_ALLOCT(ArrayFixedShortContainer<array_size>, _allocator, key, getter, setter, _allocator);
 	_value_containers.insert(key, ValueContainerPtr(container));
 	return std::move(*this);
 }
@@ -731,7 +731,7 @@ template <unsigned int array_size>
 ReflectionDefinition<T, Allocator>&& ReflectionDefinition<T, Allocator>::addArray(const char* key, const unsigned char* (T::*getter)(void) const, void (T::*setter)(const unsigned char*))
 {
 	GAFF_ASSERT(key && strlen(key) && !_value_containers.hasElementWithKey(key));
-	ArrayFixedUCharContainer<array_size>* container = _allocator.template allocT< ArrayFixedUCharContainer<array_size> >(key, getter, setter, _allocator);
+	ArrayFixedUCharContainer<array_size>* container = GAFF_ALLOCT(ArrayFixedUCharContainer<array_size>, _allocator, key, getter, setter, _allocator);
 	_value_containers.insert(key, ValueContainerPtr(container));
 	return std::move(*this);
 }
@@ -741,7 +741,7 @@ template <unsigned int array_size>
 ReflectionDefinition<T, Allocator>&& ReflectionDefinition<T, Allocator>::addArray(const char* key, const char* (T::*getter)(void) const, void (T::*setter)(const char*))
 {
 	GAFF_ASSERT(key && strlen(key) && !_value_containers.hasElementWithKey(key));
-	ArrayFixedCharContainer<array_size>* container = _allocator.template allocT< ArrayFixedCharContainer<array_size> >(key, getter, setter, _allocator);
+	ArrayFixedCharContainer<array_size>* container = GAFF_ALLOCT(ArrayFixedCharContainer<array_size>, _allocator, key, getter, setter, _allocator);
 	_value_containers.insert(key, ValueContainerPtr(container));
 	return std::move(*this);
 }
@@ -751,7 +751,7 @@ template <unsigned int array_size>
 ReflectionDefinition<T, Allocator>&& ReflectionDefinition<T, Allocator>::addArray(const char* key, const AString<Allocator>* (T::*getter)(void) const, void (T::*setter)(const AString<Allocator>*))
 {
 	GAFF_ASSERT(key && strlen(key) && !_value_containers.hasElementWithKey(key));
-	ArrayFixedStringContainer<array_size>* container = _allocator.template allocT< ArrayFixedStringContainer<array_size> >(key, getter, setter, _allocator);
+	ArrayFixedStringContainer<array_size>* container = GAFF_ALLOCT(ArrayFixedStringContainer<array_size>, _allocator, key, getter, setter, _allocator);
 	_value_containers.insert(key, ValueContainerPtr(container));
 	return std::move(*this);
 }
@@ -761,7 +761,7 @@ template <unsigned int array_size, class T2>
 ReflectionDefinition<T, Allocator>&& ReflectionDefinition<T, Allocator>::addArray(const char* key, T2 (T::*var)[array_size], const EnumReflectionDefinition<T2, Allocator>& enum_ref_def)
 {
 	GAFF_ASSERT(key && strlen(key) && !_value_containers.hasElementWithKey(key));
-	ArrayFixedEnumContainer<array_size, T2>* container = _allocator.template allocT< ArrayFixedEnumContainer<array_size, T2> >(key, var, enum_ref_def, _allocator);
+	ArrayFixedEnumContainer<array_size, T2>* container = GAFF_ALLOCT(ArrayFixedEnumContainer<array_size, T2>, _allocator, key, var, enum_ref_def, _allocator);
 	_value_containers.insert(key, ValueContainerPtr(container));
 	return std::move(*this);
 }
@@ -771,7 +771,7 @@ template <unsigned int array_size, class T2>
 ReflectionDefinition<T, Allocator>&& ReflectionDefinition<T, Allocator>::addArray(const char* key, T2 (T::*var)[array_size], ReflectionDefinition<T2, Allocator>& obj_ref_def)
 {
 	GAFF_ASSERT(key && strlen(key) && !_value_containers.hasElementWithKey(key));
-	ArrayFixedObjectContainer<array_size, T2>* container = _allocator.template allocT< ArrayFixedObjectContainer<array_size, T2> >(key, var, obj_ref_def, _allocator);
+	ArrayFixedObjectContainer<array_size, T2>* container = GAFF_ALLOCT(ArrayFixedObjectContainer<array_size, T2>, _allocator, key, var, obj_ref_def, _allocator);
 	_value_containers.insert(key, ValueContainerPtr(container));
 	return std::move(*this);
 }
@@ -789,7 +789,7 @@ template <unsigned int array_size>
 ReflectionDefinition<T, Allocator>&& ReflectionDefinition<T, Allocator>::addArray(const char* key, double (T::*var)[array_size])
 {
 	GAFF_ASSERT(key && strlen(key) && !_value_containers.hasElementWithKey(key));
-	ArrayFixedDoubleContainer<array_size>* container = _allocator.template allocT< ArrayFixedDoubleContainer<array_size> >(key, var, _allocator);
+	ArrayFixedDoubleContainer<array_size>* container = GAFF_ALLOCT(ArrayFixedDoubleContainer<array_size>, _allocator, key, var, _allocator);
 	_value_containers.insert(key, ValueContainerPtr(container));
 	return std::move(*this);
 }
@@ -799,7 +799,7 @@ template <unsigned int array_size>
 ReflectionDefinition<T, Allocator>&& ReflectionDefinition<T, Allocator>::addArray(const char* key, float (T::*var)[array_size])
 {
 	GAFF_ASSERT(key && strlen(key) && !_value_containers.hasElementWithKey(key));
-	ArrayFixedFloatContainer<array_size>* container = _allocator.template allocT< ArrayFixedFloatContainer<array_size> >(key, var, _allocator);
+	ArrayFixedFloatContainer<array_size>* container = GAFF_ALLOCT(ArrayFixedFloatContainer<array_size>, _allocator, key, var, _allocator);
 	_value_containers.insert(key, ValueContainerPtr(container));
 	return std::move(*this);
 }
@@ -809,7 +809,7 @@ template <unsigned int array_size>
 ReflectionDefinition<T, Allocator>&& ReflectionDefinition<T, Allocator>::addArray(const char* key, unsigned int (T::*var)[array_size])
 {
 	GAFF_ASSERT(key && strlen(key) && !_value_containers.hasElementWithKey(key));
-	ArrayFixedUIntContainer<array_size>* container = _allocator.template allocT< ArrayFixedUIntContainer<array_size> >(key, var, _allocator);
+	ArrayFixedUIntContainer<array_size>* container = GAFF_ALLOCT(ArrayFixedUIntContainer<array_size>, _allocator, key, var, _allocator);
 	_value_containers.insert(key, ValueContainerPtr(container));
 	return std::move(*this);
 }
@@ -819,7 +819,7 @@ template <unsigned int array_size>
 ReflectionDefinition<T, Allocator>&& ReflectionDefinition<T, Allocator>::addArray(const char* key, int (T::*var)[array_size])
 {
 	GAFF_ASSERT(key && strlen(key) && !_value_containers.hasElementWithKey(key));
-	ArrayFixedIntContainer<array_size>* container = _allocator.template allocT< ArrayFixedIntContainer<array_size> >(key, var, _allocator);
+	ArrayFixedIntContainer<array_size>* container = GAFF_ALLOCT(ArrayFixedIntContainer<array_size>, _allocator, key, var, _allocator);
 	_value_containers.insert(key, ValueContainerPtr(container));
 	return std::move(*this);
 }
@@ -829,7 +829,7 @@ template <unsigned int array_size>
 ReflectionDefinition<T, Allocator>&& ReflectionDefinition<T, Allocator>::addArray(const char* key, unsigned short (T::*var)[array_size])
 {
 	GAFF_ASSERT(key && strlen(key) && !_value_containers.hasElementWithKey(key));
-	ArrayFixedUShortContainer<array_size>* container = _allocator.template allocT< ArrayFixedUShortContainer<array_size> >(key, var, _allocator);
+	ArrayFixedUShortContainer<array_size>* container = GAFF_ALLOCT(ArrayFixedUShortContainer<array_size>, _allocator, key, var, _allocator);
 	_value_containers.insert(key, ValueContainerPtr(container));
 	return std::move(*this);
 }
@@ -839,7 +839,7 @@ template <unsigned int array_size>
 ReflectionDefinition<T, Allocator>&& ReflectionDefinition<T, Allocator>::addArray(const char* key, short (T::*var)[array_size])
 {
 	GAFF_ASSERT(key && strlen(key) && !_value_containers.hasElementWithKey(key));
-	ArrayFixedShortContainer<array_size>* container = _allocator.template allocT< ArrayFixedShortContainer<array_size> >(key, var, _allocator);
+	ArrayFixedShortContainer<array_size>* container = GAFF_ALLOCT(ArrayFixedShortContainer<array_size>, _allocator, key, var, _allocator);
 	_value_containers.insert(key, ValueContainerPtr(container));
 	return std::move(*this);
 }
@@ -849,7 +849,7 @@ template <unsigned int array_size>
 ReflectionDefinition<T, Allocator>&& ReflectionDefinition<T, Allocator>::addArray(const char* key, unsigned char (T::*var)[array_size])
 {
 	GAFF_ASSERT(key && strlen(key) && !_value_containers.hasElementWithKey(key));
-	ArrayFixedUCharContainer<array_size>* container = _allocator.template allocT< ArrayFixedUCharContainer<array_size> >(key, var, _allocator);
+	ArrayFixedUCharContainer<array_size>* container = GAFF_ALLOCT(ArrayFixedUCharContainer<array_size>, _allocator, key, var, _allocator);
 	_value_containers.insert(key, ValueContainerPtr(container));
 	return std::move(*this);
 }
@@ -859,7 +859,7 @@ template <unsigned int array_size>
 ReflectionDefinition<T, Allocator>&& ReflectionDefinition<T, Allocator>::addArray(const char* key, char (T::*var)[array_size])
 {
 	GAFF_ASSERT(key && strlen(key) && !_value_containers.hasElementWithKey(key));
-	ArrayFixedCharContainer<array_size>* container = _allocator.template allocT< ArrayFixedCharContainer<array_size> >(key, var, _allocator);
+	ArrayFixedCharContainer<array_size>* container = GAFF_ALLOCT(ArrayFixedCharContainer<array_size>, _allocator, key, var, _allocator);
 	_value_containers.insert(key, ValueContainerPtr(container));
 	return std::move(*this);
 }
@@ -869,7 +869,7 @@ template <unsigned int array_size>
 ReflectionDefinition<T, Allocator>&& ReflectionDefinition<T, Allocator>::addArray(const char* key, AString<Allocator> (T::*var)[array_size])
 {
 	GAFF_ASSERT(key && strlen(key) && !_value_containers.hasElementWithKey(key));
-	ArrayFixedStringContainer<array_size>* container = _allocator.template allocT< ArrayFixedStringContainer<array_size> >(key, var, _allocator);
+	ArrayFixedStringContainer<array_size>* container = GAFF_ALLOCT(ArrayFixedStringContainer<array_size>, _allocator, key, var, _allocator);
 	_value_containers.insert(key, ValueContainerPtr(container));
 	return std::move(*this);
 }
@@ -878,7 +878,7 @@ template <class T, class Allocator>
 ReflectionDefinition<T, Allocator>&& ReflectionDefinition<T, Allocator>::addDouble(const char* key, double T::* var)
 {
 	GAFF_ASSERT(key && strlen(key) && !_value_containers.hasElementWithKey(key));
-	DoubleContainer* container = _allocator.template allocT<DoubleContainer>(key, var, _allocator);
+	DoubleContainer* container = GAFF_ALLOCT(DoubleContainer, _allocator, key, var, _allocator);
 	_value_containers.insert(key, ValueContainerPtr(container));
 	return std::move(*this);
 }
@@ -887,7 +887,7 @@ template <class T, class Allocator>
 ReflectionDefinition<T, Allocator>&& ReflectionDefinition<T, Allocator>::addFloat(const char* key, float T::* var)
 {
 	GAFF_ASSERT(key && strlen(key) && !_value_containers.hasElementWithKey(key));
-	FloatContainer* container = _allocator.template allocT<FloatContainer>(key, var, _allocator);
+	FloatContainer* container = GAFF_ALLOCT(FloatContainer, _allocator, key, var, _allocator);
 	_value_containers.insert(key, ValueContainerPtr(container));
 	return std::move(*this);
 }
@@ -896,7 +896,7 @@ template <class T, class Allocator>
 ReflectionDefinition<T, Allocator>&& ReflectionDefinition<T, Allocator>::addUInt(const char* key, unsigned int T::* var)
 {
 	GAFF_ASSERT(key && strlen(key) && !_value_containers.hasElementWithKey(key));
-	UIntContainer* container = _allocator.template allocT<UIntContainer>(key, var, _allocator);
+	UIntContainer* container = GAFF_ALLOCT(UIntContainer, _allocator, key, var, _allocator);
 	_value_containers.insert(key, ValueContainerPtr(container));
 	return std::move(*this);
 }
@@ -905,7 +905,7 @@ template <class T, class Allocator>
 ReflectionDefinition<T, Allocator>&& ReflectionDefinition<T, Allocator>::addInt(const char* key, int T::* var)
 {
 	GAFF_ASSERT(key && strlen(key) && !_value_containers.hasElementWithKey(key));
-	IntContainer* container = _allocator.template allocT<IntContainer>(key, var, _allocator);
+	IntContainer* container = GAFF_ALLOCT(IntContainer, _allocator, key, var, _allocator);
 	_value_containers.insert(key, ValueContainerPtr(container));
 	return std::move(*this);
 }
@@ -914,7 +914,7 @@ template <class T, class Allocator>
 ReflectionDefinition<T, Allocator>&& ReflectionDefinition<T, Allocator>::addUShort(const char* key, unsigned short T::* var)
 {
 	GAFF_ASSERT(key && strlen(key) && !_value_containers.hasElementWithKey(key));
-	UShortContainer* container = _allocator.template allocT<UShortContainer>(key, var, _allocator);
+	UShortContainer* container = GAFF_ALLOCT(UShortContainer, _allocator, key, var, _allocator);
 	_value_containers.insert(key, ValueContainerPtr(container));
 	return std::move(*this);
 }
@@ -923,7 +923,7 @@ template <class T, class Allocator>
 ReflectionDefinition<T, Allocator>&& ReflectionDefinition<T, Allocator>::addShort(const char* key, short T::* var)
 {
 	GAFF_ASSERT(key && strlen(key) && !_value_containers.hasElementWithKey(key));
-	ShortContainer* container = _allocator.template allocT<ShortContainer>(key, var, _allocator);
+	ShortContainer* container = GAFF_ALLOCT(ShortContainer, _allocator, key, var, _allocator);
 	_value_containers.insert(key, ValueContainerPtr(container));
 	return std::move(*this);
 }
@@ -932,7 +932,7 @@ template <class T, class Allocator>
 ReflectionDefinition<T, Allocator>&& ReflectionDefinition<T, Allocator>::addUChar(const char* key, unsigned char T::* var)
 {
 	GAFF_ASSERT(key && strlen(key) && !_value_containers.hasElementWithKey(key));
-	UCharContainer* container = _allocator.template allocT<UCharContainer>(key, var, _allocator);
+	UCharContainer* container = GAFF_ALLOCT(UCharContainer, _allocator, key, var, _allocator);
 	_value_containers.insert(key, ValueContainerPtr(container));
 	return std::move(*this);
 }
@@ -941,7 +941,7 @@ template <class T, class Allocator>
 ReflectionDefinition<T, Allocator>&& ReflectionDefinition<T, Allocator>::addChar(const char* key, char T::* var)
 {
 	GAFF_ASSERT(key && strlen(key) && !_value_containers.hasElementWithKey(key));
-	CharContainer* container = _allocator.template allocT<CharContainer>(key, var, _allocator);
+	CharContainer* container = GAFF_ALLOCT(CharContainer, _allocator, key, var, _allocator);
 	_value_containers.insert(key, ValueContainerPtr(container));
 	return std::move(*this);
 }
@@ -950,7 +950,7 @@ template <class T, class Allocator>
 ReflectionDefinition<T, Allocator>&& ReflectionDefinition<T, Allocator>::addBool(const char* key, bool T::* var)
 {
 	GAFF_ASSERT(key && strlen(key) && !_value_containers.hasElementWithKey(key));
-	BoolContainer* container = _allocator.template allocT<BoolContainer>(key, var, _allocator);
+	BoolContainer* container = GAFF_ALLOCT(BoolContainer, _allocator, key, var, _allocator);
 	_value_containers.insert(key, ValueContainerPtr(container));
 	return std::move(*this);
 }
@@ -959,7 +959,7 @@ template <class T, class Allocator>
 ReflectionDefinition<T, Allocator>&& ReflectionDefinition<T, Allocator>::addString(const char* key, AString<Allocator> T::* var)
 {
 	GAFF_ASSERT(key && strlen(key) && !_value_containers.hasElementWithKey(key));
-	StringContainer* container = _allocator.template allocT<StringContainer>(key, var, _allocator);
+	StringContainer* container = GAFF_ALLOCT(StringContainer, _allocator, key, var, _allocator);
 	_value_containers.insert(key, ValueContainerPtr(container));
 	return std::move(*this);
 }
@@ -969,7 +969,7 @@ template <class T2>
 ReflectionDefinition<T, Allocator>&& ReflectionDefinition<T, Allocator>::addEnum(const char* key, const EnumReflectionDefinition<T2, Allocator>& ref_def, T2 (T::*getter)(void) const, void (T::*setter)(T2 value))
 {
 	GAFF_ASSERT(key && strlen(key) && !_value_containers.hasElementWithKey(key));
-	EnumContainer<T2>* container = _allocator.template allocT< EnumContainer<T2> >(key, ref_def, getter, setter, _allocator);
+	EnumContainer<T2>* container = GAFF_ALLOCT(EnumContainer<T2>, _allocator, key, ref_def, getter, setter, _allocator);
 	_value_containers.insert(key, ValueContainerPtr(container));
 	return std::move(*this);
 }
@@ -978,7 +978,7 @@ template <class T, class Allocator>
 ReflectionDefinition<T, Allocator>&& ReflectionDefinition<T, Allocator>::addDouble(const char* key, double (T::*getter)(void) const, void (T::*setter)(double value))
 {
 	GAFF_ASSERT(key && strlen(key) && !_value_containers.hasElementWithKey(key));
-	DoubleContainer* container = _allocator.template allocT<DoubleContainer>(key, getter, setter, _allocator);
+	DoubleContainer* container = GAFF_ALLOCT(DoubleContainer, _allocator, key, getter, setter, _allocator);
 	_value_containers.insert(key, ValueContainerPtr(container));
 	return std::move(*this);
 }
@@ -987,7 +987,7 @@ template <class T, class Allocator>
 ReflectionDefinition<T, Allocator>&& ReflectionDefinition<T, Allocator>::addFloat(const char* key, float (T::*getter)(void) const, void (T::*setter)(float value))
 {
 	GAFF_ASSERT(key && strlen(key) && !_value_containers.hasElementWithKey(key));
-	FloatContainer* container = _allocator.template allocT<FloatContainer>(key, getter, setter, _allocator);
+	FloatContainer* container = GAFF_ALLOCT(FloatContainer, _allocator, key, getter, setter, _allocator);
 	_value_containers.insert(key, ValueContainerPtr(container));
 	return std::move(*this);
 }
@@ -996,7 +996,7 @@ template <class T, class Allocator>
 ReflectionDefinition<T, Allocator>&& ReflectionDefinition<T, Allocator>::addUInt(const char* key, unsigned int (T::*getter)(void) const, void (T::*setter)(unsigned int value))
 {
 	GAFF_ASSERT(key && strlen(key) && !_value_containers.hasElementWithKey(key));
-	UIntContainer* container = _allocator.template allocT<UIntContainer>(key, getter, setter, _allocator);
+	UIntContainer* container = GAFF_ALLOCT(UIntContainer, _allocator, key, getter, setter, _allocator);
 	_value_containers.insert(key, ValueContainerPtr(container));
 	return std::move(*this);
 }
@@ -1005,7 +1005,7 @@ template <class T, class Allocator>
 ReflectionDefinition<T, Allocator>&& ReflectionDefinition<T, Allocator>::addInt(const char* key, int (T::*getter)(void) const, void (T::*setter)(int value))
 {
 	GAFF_ASSERT(key && strlen(key) && !_value_containers.hasElementWithKey(key));
-	IntContainer* container = _allocator.template allocT<IntContainer>(key, getter, setter, _allocator);
+	IntContainer* container = GAFF_ALLOCT(IntContainer, _allocator, key, getter, setter, _allocator);
 	_value_containers.insert(key, ValueContainerPtr(container));
 	return std::move(*this)
 }
@@ -1014,7 +1014,7 @@ template <class T, class Allocator>
 ReflectionDefinition<T, Allocator>&& ReflectionDefinition<T, Allocator>::addUShort(const char* key, unsigned short (T::*getter)(void) const, void (T::*setter)(unsigned short value))
 {
 	GAFF_ASSERT(key && strlen(key) && !_value_containers.hasElementWithKey(key));
-	UShortContainer* container = _allocator.template allocT<UShortContainer>(key, getter, setter, _allocator);
+	UShortContainer* container = GAFF_ALLOCT(UShortContainer, _allocator, key, getter, setter, _allocator);
 	_value_containers.insert(key, ValueContainerPtr(container));
 	return std::move(*this);
 }
@@ -1023,7 +1023,7 @@ template <class T, class Allocator>
 ReflectionDefinition<T, Allocator>&& ReflectionDefinition<T, Allocator>::addShort(const char* key, short (T::*getter)(void) const, void (T::*setter)(short value))
 {
 	GAFF_ASSERT(key && strlen(key) && !_value_containers.hasElementWithKey(key));
-	ShortContainer* container = _allocator.template allocT<ShortContainer>(key, getter, setter, _allocator);
+	ShortContainer* container = GAFF_ALLOCT(ShortContainer, _allocator, key, getter, setter, _allocator);
 	_value_containers.insert(key, ValueContainerPtr(container));
 	return std::move(*this);
 }
@@ -1032,7 +1032,7 @@ template <class T, class Allocator>
 ReflectionDefinition<T, Allocator>&& ReflectionDefinition<T, Allocator>::addUChar(const char* key, unsigned char (T::*getter)(void) const, void (T::*setter)(unsigned char value))
 {
 	GAFF_ASSERT(key && strlen(key) && !_value_containers.hasElementWithKey(key));
-	UCharContainer* container = _allocator.template allocT<UCharContainer>(key, getter, setter, _allocator);
+	UCharContainer* container = GAFF_ALLOCT(UCharContainer, _allocator, key, getter, setter, _allocator);
 	_value_containers.insert(key, ValueContainerPtr(container));
 	return std::move(*this);
 }
@@ -1041,7 +1041,7 @@ template <class T, class Allocator>
 ReflectionDefinition<T, Allocator>&& ReflectionDefinition<T, Allocator>::addChar(const char* key, char (T::*getter)(void) const, void (T::*setter)(char value))
 {
 	GAFF_ASSERT(key && strlen(key) && !_value_containers.hasElementWithKey(key));
-	CharContainer* container = _allocator.template allocT<CharContainer>(key, getter, setter, _allocator);
+	CharContainer* container = GAFF_ALLOCT(CharContainer, _allocator, key, getter, setter, _allocator);
 	_value_containers.insert(key, ValueContainerPtr(container));
 	return std::move(*this);
 }
@@ -1050,7 +1050,7 @@ template <class T, class Allocator>
 ReflectionDefinition<T, Allocator>&& ReflectionDefinition<T, Allocator>::addBool(const char* key, bool (T::*getter)(void) const, void (T::*setter)(bool value))
 {
 	GAFF_ASSERT(key && strlen(key) && !_value_containers.hasElementWithKey(key));
-	BoolContainer* container = _allocator.template allocT<BoolContainer>(key, getter, setter, _allocator);
+	BoolContainer* container = GAFF_ALLOCT(BoolContainer, _allocator, key, getter, setter, _allocator);
 	_value_containers.insert(key, ValueContainerPtr(container));
 	return std::move(*this);
 }
@@ -1059,7 +1059,7 @@ template <class T, class Allocator>
 ReflectionDefinition<T, Allocator>&& ReflectionDefinition<T, Allocator>::addString(const char* key, const AString<Allocator>& (T::*getter)(void) const, void (T::*setter)(const AString<Allocator>& value))
 {
 	GAFF_ASSERT(key && strlen(key) && !_value_containers.hasElementWithKey(key));
-	StringContainer* container = _allocator.template allocT<StringContainer>(key, getter, setter, _allocator);
+	StringContainer* container = GAFF_ALLOCT(StringContainer, _allocator, key, getter, setter, _allocator);
 	_value_containers.insert(key, ValueContainerPtr(container));
 	return std::move(*this);
 }

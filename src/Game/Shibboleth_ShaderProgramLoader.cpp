@@ -82,7 +82,7 @@ Gaff::IVirtualDestructor* ShaderProgramLoader::load(const char* file_name, uint6
 
 	GAFF_ASSERT(render_pass.isString());
 	
-	ProgramData* program_data = GetAllocator()->template allocT<ProgramData>();
+	ProgramData* program_data = SHIB_ALLOCT(ProgramData, *GetAllocator());
 
 	if (!program_data) {
 		return nullptr;
@@ -92,41 +92,41 @@ Gaff::IVirtualDestructor* ShaderProgramLoader::load(const char* file_name, uint6
 
 	if (vertex.isString() && !loadShader(program_data, vertex.getString(), Gleam::IShader::SHADER_VERTEX, file_map)) {
 		// log error
-		GetAllocator()->freeT(program_data);
+		SHIB_FREET(program_data, *GetAllocator());
 		return nullptr;
 	}
 
 	if (pixel.isString() && !loadShader(program_data, pixel.getString(), Gleam::IShader::SHADER_PIXEL, file_map)) {
 		// log error
-		GetAllocator()->freeT(program_data);
+		SHIB_FREET(program_data, *GetAllocator());
 		return nullptr;
 	}
 
 	if (hull.isString() && !loadShader(program_data, hull.getString(), Gleam::IShader::SHADER_HULL, file_map)) {
 		// log error
-		GetAllocator()->freeT(program_data);
+		SHIB_FREET(program_data, *GetAllocator());
 		return nullptr;
 	}
 
 	if (geometry.isString() && !loadShader(program_data, geometry.getString(), Gleam::IShader::SHADER_GEOMETRY, file_map)) {
 		// log error
-		GetAllocator()->freeT(program_data);
+		SHIB_FREET(program_data, *GetAllocator());
 		return nullptr;
 	}
 
 	if (domain.isString() && !loadShader(program_data, domain.getString(), Gleam::IShader::SHADER_DOMAIN, file_map)) {
 		// log error
-		GetAllocator()->freeT(program_data);
+		SHIB_FREET(program_data, *GetAllocator());
 		return nullptr;
 	}
 
 	if (!createPrograms(program_data)) {
-		GetAllocator()->freeT(program_data);
+		SHIB_FREET(program_data, *GetAllocator());
 		return nullptr;
 	}
 
 	if (!createRasterStates(program_data, json)) {
-		GetAllocator()->freeT(program_data);
+		SHIB_FREET(program_data, *GetAllocator());
 		return nullptr;
 	}
 

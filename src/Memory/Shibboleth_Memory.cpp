@@ -25,31 +25,31 @@ THE SOFTWARE.
 
 NS_SHIBBOLETH
 
-static Allocator gAllocator;
+static Allocator g_allocator;
 
 size_t GetPoolIndex(const char* pool_name)
 {
-	return gAllocator.getPoolIndex(pool_name);
+	return g_allocator.getPoolIndex(pool_name);
 }
 
 IAllocator* GetAllocator(void)
 {
-	return &gAllocator;
+	return &g_allocator;
 }
 
 void* ShibbolethAllocate(size_t size, size_t pool_index)
 {
-	return gAllocator.alloc(size, pool_index);
+	return SHIB_ALLOC(size, pool_index, g_allocator);
 }
 
 void* ShibbolethAllocate(size_t size)
 {
-	return gAllocator.alloc(size, 0);
+	return SHIB_ALLOC(size, 0, g_allocator);
 }
 
 void ShibbolethFree(void* data)
 {
-	gAllocator.free(data);
+	SHIB_FREE(data, g_allocator);
 }
 
 NS_END

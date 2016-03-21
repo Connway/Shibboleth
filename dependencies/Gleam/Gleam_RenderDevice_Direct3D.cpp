@@ -606,9 +606,8 @@ IRenderDevice* RenderDeviceD3D::createDeferredRenderDevice(void)
 		return nullptr;
 	}
 
-	DeferredRenderDeviceD3D* deferred_render_device = reinterpret_cast<DeferredRenderDeviceD3D*>(GetAllocator()->alloc(sizeof(DeferredRenderDeviceD3D)));
+	DeferredRenderDeviceD3D* deferred_render_device = GAFF_ALLOC_CAST(DeferredRenderDeviceD3D*, sizeof(DeferredRenderDeviceD3D), *GetAllocator());
 	new (deferred_render_device) DeferredRenderDeviceD3D();
-
 	deferred_render_device->_context.set(deferred_context);
 
 	return deferred_render_device;

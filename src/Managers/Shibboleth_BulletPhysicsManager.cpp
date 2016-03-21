@@ -119,11 +119,11 @@ BulletPhysicsManager::~BulletPhysicsManager(void)
 
 	// free extra worlds
 
-	allocator->freeT(_main_world);
-	allocator->freeT(_solver);
-	allocator->freeT(_broadphase);
-	allocator->freeT(_dispatcher);
-	allocator->freeT(_config);
+	SHIB_FREET(_main_world, *allocator);
+	SHIB_FREET(_solver, *allocator);
+	SHIB_FREET(_broadphase, *allocator);
+	SHIB_FREET(_dispatcher, *allocator);
+	SHIB_FREET(_config, *allocator);
 }
 
 const char* BulletPhysicsManager::getName() const
@@ -133,12 +133,12 @@ const char* BulletPhysicsManager::getName() const
 
 void BulletPhysicsManager::allManagersCreated(void)
 {
-	_config = _physics_allocator.template allocT<btDefaultCollisionConfiguration>();
-	_dispatcher = _physics_allocator.template allocT<btCollisionDispatcher>(_config);
-	_broadphase = _physics_allocator.template allocT<btDbvtBroadphase>();
-	_solver = _physics_allocator.template allocT<btSequentialImpulseConstraintSolver>();
+	_config = SHIB_ALLOCT(btDefaultCollisionConfiguration, _physics_allocator);
+	_dispatcher = SHIB_ALLOCT(btCollisionDispatcher, _physics_allocator, _config);
+	_broadphase = SHIB_ALLOCT(btDbvtBroadphase, _physics_allocator);
+	_solver = SHIB_ALLOCT(btSequentialImpulseConstraintSolver, _physics_allocator);
 
-	_main_world = _physics_allocator.template allocT<btDiscreteDynamicsWorld>(_dispatcher, _broadphase, _solver, _config);
+	_main_world = SHIB_ALLOCT(btDiscreteDynamicsWorld, _physics_allocator, _dispatcher, _broadphase, _solver, _config);
 	_main_world->setGravity(btVector3(0.0f, -9.81f, 0.0f));
 }
 
@@ -170,7 +170,7 @@ btCollisionShape* BulletPhysicsManager::createCollisionShapeCapsule(float radius
 		return it->second;
 	}
 
-	btCollisionShape* shape = _physics_allocator.template allocT<btCapsuleShape>(radius, height);
+	btCollisionShape* shape = SHIB_ALLOCT(btCapsuleShape, _physics_allocator, radius, height);
 	_shapes.emplace(hash, shape);
 
 	return shape;
@@ -187,7 +187,7 @@ btCollisionShape* BulletPhysicsManager::createCollisionShapeBox(float extent_x, 
 		return it->second;
 	}
 
-	btCollisionShape* shape = _physics_allocator.template allocT<btBoxShape>(btVector3(extent_x, extent_y, extent_z));
+	btCollisionShape* shape = SHIB_ALLOCT(btBoxShape, _physics_allocator,btVector3(extent_x, extent_y, extent_z));
 	_shapes.emplace(hash, shape);
 
 	return shape;
@@ -214,7 +214,7 @@ btCollisionShape* BulletPhysicsManager::createCollisionShapeBox2D(float extent_x
 		return it->second;
 	}
 
-	btCollisionShape* shape = _physics_allocator.template allocT<btBox2dShape>(btVector3(extent_x, extent_y, 0.0f));
+	btCollisionShape* shape = SHIB_ALLOCT(btBox2dShape, _physics_allocator, btVector3(extent_x, extent_y, 0.0f));
 	_shapes.emplace(hash, shape);
 
 	return shape;
@@ -236,7 +236,7 @@ btCollisionShape* BulletPhysicsManager::createCollisionShapeCone(float radius, f
 		return it->second;
 	}
 
-	btCollisionShape* shape = _physics_allocator.template allocT<btConeShape>(radius, height);
+	btCollisionShape* shape = SHIB_ALLOCT(btConeShape, _physics_allocator, radius, height);
 	_shapes.emplace(hash, shape);
 
 	return shape;
@@ -253,7 +253,7 @@ btCollisionShape* BulletPhysicsManager::createCollisionShapeSphere(float radius)
 		return it->second;
 	}
 
-	btCollisionShape* shape = _physics_allocator.template allocT<btSphereShape>(radius);
+	btCollisionShape* shape = SHIB_ALLOCT(btSphereShape,_physics_allocator,radius);
 	_shapes.emplace(hash, shape);
 
 	return shape;
@@ -270,7 +270,7 @@ btCollisionShape* BulletPhysicsManager::createCollisionShapeCylinder(float exten
 		return it->second;
 	}
 
-	btCollisionShape* shape = _physics_allocator.template allocT<btCylinderShape>(btVector3(extent_x, extent_y, extent_z));
+	btCollisionShape* shape = SHIB_ALLOCT(btCylinderShape, _physics_allocator, btVector3(extent_x, extent_y, extent_z));
 	_shapes.emplace(hash, shape);
 
 	return shape;
@@ -297,7 +297,7 @@ btCollisionShape* BulletPhysicsManager::createCollisionShapeStaticPlane(float nx
 		return it->second;
 	}
 
-	btCollisionShape* shape = _physics_allocator.template allocT<btStaticPlaneShape>(btVector3(nx, ny, nz), distance);
+	btCollisionShape* shape = SHIB_ALLOCT(btStaticPlaneShape, _physics_allocator, btVector3(nx, ny, nz), distance);
 	_shapes.emplace(hash, shape);
 
 	return shape;
@@ -319,7 +319,8 @@ btCollisionShape* BulletPhysicsManager::createCollisionShapeConvexHull(float* po
 		return it->second;
 	}
 
-	btCollisionShape* shape = _physics_allocator.template allocT<btConvexHullShape>(
+	btCollisionShape* shape = SHIB_ALLOCT(
+		btConvexHullShape, _physics_allocator,
 		points, static_cast<int>(num_points), static_cast<int>(stride)
 	);
 
@@ -343,7 +344,7 @@ btCollisionShape* BulletPhysicsManager::createCollisionShapeConvexHull(float* po
 //		return it->second;
 //	}
 //
-//	btCollisionShape* shape = _physics_allocator.template allocT<btCompoundShape>();
+//	btCollisionShape* shape = SHIB_ALLOCT(btMultiSphereShape, _physics_allocator);
 //
 //	_shapes.emplace(hash, shape);
 //
@@ -353,7 +354,7 @@ btCollisionShape* BulletPhysicsManager::createCollisionShapeConvexHull(float* po
 btCollisionShape* BulletPhysicsManager::createCollisionShapeCompound(size_t identifier)
 {
 	if (identifier == SIZE_T_FAIL) {
-		return _physics_allocator.template allocT<btCompoundShape>();
+		return SHIB_ALLOCT(btCompoundShape, _physics_allocator);
 	}
 
 	uint32_t hash = Gaff::FNV1aHash32V(&identifier);
@@ -365,7 +366,7 @@ btCollisionShape* BulletPhysicsManager::createCollisionShapeCompound(size_t iden
 		return it->second;
 	}
 
-	btCollisionShape* shape = _physics_allocator.template allocT<btCompoundShape>();
+	btCollisionShape* shape = SHIB_ALLOCT(btCompoundShape, _physics_allocator);
 
 	_shapes.emplace(hash, shape);
 
@@ -386,7 +387,7 @@ btCollisionShape* BulletPhysicsManager::createCollisionShapeConvex2D(btCollision
 		return it->second;
 	}
 
-	btCollisionShape* shape_out = _physics_allocator.template allocT<btConvex2dShape>(convex_shape);
+	btCollisionShape* shape_out = SHIB_ALLOCT(btConvex2dShape, _physics_allocator, convex_shape);
 
 	_shapes.emplace(hash, shape_out);
 
@@ -407,7 +408,8 @@ btCollisionShape* BulletPhysicsManager::createCollisionShapeTriangle(
 		return it->second;
 	}
 
-	btCollisionShape* shape = _physics_allocator.template allocT<btTriangleShape>(
+	btCollisionShape* shape = SHIB_ALLOCT(
+		btTriangleShape, _physics_allocator,
 		btVector3(x1, y1, z1), btVector3(x2, y2, z2), btVector3(x3, y3, z3)
 	);
 
@@ -445,7 +447,8 @@ btCollisionShape* BulletPhysicsManager::createCollisionShapeHeightfield(
 		return it->second;
 	}
 
-	btCollisionShape* shape = _physics_allocator.template allocT<btHeightfieldTerrainShape>(
+	btCollisionShape* shape = SHIB_ALLOCT(
+		btHeightfieldTerrainShape, _physics_allocator,
 		static_cast<int>(stick_width), static_cast<int>(stick_length), data,
 		height_scale, min_height, max_height, up_axis, PHY_FLOAT, flip_quad_edges
 	);
@@ -469,7 +472,7 @@ void BulletPhysicsManager::clearCollisionShapes(void)
 	IAllocator* allocator = GetAllocator();
 
 	for (auto it = _shapes.begin(); it != _shapes.end(); ++it) {
-		allocator->freeT(it->second);
+		SHIB_FREET(it->second, *allocator);
 	}
 
 	_shapes.clear();
@@ -482,11 +485,11 @@ btRigidBody* BulletPhysicsManager::createRigidBody(Object* object, btCollisionSh
 	shape->calculateLocalInertia(mass, localInertia);
 
 	if (object && !motion_state) {
-		motion_state = _physics_allocator.template allocT<MotionState>(object);
+		motion_state = SHIB_ALLOCT(MotionState, _physics_allocator, object);
 	}
 
 	btRigidBody::btRigidBodyConstructionInfo rbInfo(mass, motion_state, shape, localInertia);
-	btRigidBody* body = _physics_allocator.template allocT<btRigidBody>(rbInfo);
+	btRigidBody* body = SHIB_ALLOCT(btRigidBody, _physics_allocator, rbInfo);
 
 	return body;
 }
@@ -514,7 +517,7 @@ void BulletPhysicsManager::clearWorld(btDynamicsWorld* world)
 	for (int i = world->getNumConstraints() - 1; i >= 0; --i) {
 		btTypedConstraint* constraint = world->getConstraint(i);
 		world->removeConstraint(constraint);
-		allocator->freeT(constraint);
+		SHIB_FREET(constraint, *allocator);
 	}
 
 	for (int i = world->getNumCollisionObjects() - 1; i >= 0; --i) {
@@ -525,7 +528,7 @@ void BulletPhysicsManager::clearWorld(btDynamicsWorld* world)
 			btMotionState* motion_state = rb->getMotionState();
 
 			if (motion_state) {
-				allocator->freeT(motion_state);
+				SHIB_FREET(motion_state, *allocator);
 			}
 
 			world->removeRigidBody(rb);
@@ -534,7 +537,7 @@ void BulletPhysicsManager::clearWorld(btDynamicsWorld* world)
 			world->removeCollisionObject(object);
 		}
 
-		allocator->freeT(object);
+		SHIB_FREET(object, *allocator);
 	}
 }
 

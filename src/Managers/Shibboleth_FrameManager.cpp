@@ -35,13 +35,13 @@ NS_SHIBBOLETH
 static void* DefaultFrameDataAlloc(size_t num_frames, size_t& frame_data_size)
 {
 	frame_data_size = sizeof(FrameData);
-	return GetAllocator()->template allocArrayT<FrameData>(num_frames);
+	return SHIB_ALLOC_ARRAYT(FrameData, *GetAllocator(), num_frames);
 }
 
 static void DefaultFrameDataFree(void* frame_data, size_t num_frames)
 {
 	FrameData* fd = reinterpret_cast<FrameData*>(frame_data);
-	GetAllocator()->freeArrayT(fd, num_frames);
+	SHIB_FREE_ARRAYT(fd, num_frames, *GetAllocator());
 }
 
 

@@ -74,7 +74,7 @@ void CreateResourceLoadersState::update(void)
 
 	// PROGRAM BUFFERS CREATOR
 	{
-		ProgramBuffersCreator* program_buffers_creator = GetAllocator()->template allocT<ProgramBuffersCreator>();
+		ProgramBuffersCreator* program_buffers_creator = SHIB_ALLOCT(ProgramBuffersCreator, *GetAllocator());
 
 		if (!program_buffers_creator) {
 			_app.getGameLogFile().first.printf("ERROR - Failed to create program buffers creator.\n");
@@ -88,7 +88,7 @@ void CreateResourceLoadersState::update(void)
 
 	// BUFFER CREATOR
 	{
-		BufferCreator* buffer_creator = GetAllocator()->template allocT<BufferCreator>();
+		BufferCreator* buffer_creator = SHIB_ALLOCT(BufferCreator, *GetAllocator());
 
 		if (!buffer_creator) {
 			_app.getGameLogFile().first.printf("ERROR - Failed to create buffer creator.\n");
@@ -102,7 +102,7 @@ void CreateResourceLoadersState::update(void)
 
 	// TEXTURE LOADER
 	{
-		TextureLoader* texture_loader = GetAllocator()->template allocT<TextureLoader>(render_mgr);
+		TextureLoader* texture_loader = SHIB_ALLOCT(TextureLoader, *GetAllocator(), render_mgr);
 
 		if (!texture_loader) {
 			_app.getGameLogFile().first.printf("ERROR - Failed to create texture loader.\n");
@@ -120,7 +120,7 @@ void CreateResourceLoadersState::update(void)
 
 	// SAMPLER STATE LOADER
 	{
-		SamplerStateLoader* sampler_loader = GetAllocator()->template allocT<SamplerStateLoader>(render_mgr);
+		SamplerStateLoader* sampler_loader = SHIB_ALLOCT(SamplerStateLoader, *GetAllocator(),render_mgr);
 
 		if (!sampler_loader) {
 			_app.getGameLogFile().first.printf("ERROR - Failed to create sampler state loader.\n");
@@ -134,7 +134,7 @@ void CreateResourceLoadersState::update(void)
 
 	// SHADER LOADER
 	{
-		ShaderLoader* shader_loader = GetAllocator()->template allocT<ShaderLoader>(render_mgr);
+		ShaderLoader* shader_loader = SHIB_ALLOCT(ShaderLoader, *GetAllocator(), render_mgr);
 
 		if (!shader_loader) {
 			_app.getGameLogFile().first.printf("ERROR - Failed to create shader loader.\n");
@@ -150,7 +150,7 @@ void CreateResourceLoadersState::update(void)
 	{
 		SchemaManager& schema_mgr = _app.getManagerT<SchemaManager>("Schema Manager");
 
-		ShaderProgramLoader* shader_program_loader = GetAllocator()->template allocT<ShaderProgramLoader>(res_mgr, schema_mgr, render_mgr);
+		ShaderProgramLoader* shader_program_loader = SHIB_ALLOCT(ShaderProgramLoader, *GetAllocator(), res_mgr, schema_mgr, render_mgr);
 
 		if (!shader_program_loader) {
 			_app.getGameLogFile().first.printf("ERROR - Failed to create shader program loader.\n");
@@ -180,7 +180,7 @@ void CreateResourceLoadersState::update(void)
 
 	// LUA LOADER
 	{
-		LuaLoader* lua_loader = GetAllocator()->template allocT<LuaLoader>();
+		LuaLoader* lua_loader = SHIB_ALLOCT(LuaLoader, *GetAllocator());
 
 		if (!lua_loader) {
 			_app.getGameLogFile().first.printf("ERROR - Failed to create Lua loader.\n");
@@ -194,7 +194,7 @@ void CreateResourceLoadersState::update(void)
 
 	// HOLDING LOADER
 	{
-		HoldingLoader* holding_loader = GetAllocator()->template allocT<HoldingLoader>();
+		HoldingLoader* holding_loader = SHIB_ALLOCT(HoldingLoader, *GetAllocator());
 
 		if (!holding_loader) {
 			_app.getGameLogFile().first.printf("ERROR - Failed to create Holding loader.\n");
@@ -253,7 +253,7 @@ void CreateResourceLoadersState::update(void)
 
 	// MODEL LOADER
 	{
-		ModelLoader* model_loader = GetAllocator()->template allocT<ModelLoader>(render_mgr, res_mgr, *_app.getFileSystem());
+		ModelLoader* model_loader = SHIB_ALLOCT(ModelLoader, *GetAllocator(), render_mgr, res_mgr, *_app.getFileSystem());
 
 		if (!model_loader) {
 			_app.getGameLogFile().first.printf("ERROR - Failed to create Model loader.\n");
@@ -271,7 +271,7 @@ void CreateResourceLoadersState::update(void)
 
 	// RENDER TARGET LOADER
 	{
-		RenderTargetLoader* render_target_loader = GetAllocator()->template allocT<RenderTargetLoader>();
+		RenderTargetLoader* render_target_loader = SHIB_ALLOCT(RenderTargetLoader, *GetAllocator());
 
 		if (!render_target_loader) {
 			_app.getGameLogFile().first.printf("ERROR - Failed to create Render Target loader.\n");

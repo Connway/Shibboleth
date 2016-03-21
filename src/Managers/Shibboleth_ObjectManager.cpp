@@ -41,7 +41,7 @@ ObjectManager::ObjectManager(void):
 ObjectManager::~ObjectManager(void)
 {
 	for (auto it = _objects.begin(); it != _objects.end(); ++it) {
-		GetAllocator()->freeT(*it);
+		SHIB_FREET(*it, *GetAllocator());
 	}
 
 	_objects.clear();
@@ -50,7 +50,7 @@ ObjectManager::~ObjectManager(void)
 Object* ObjectManager::createObject(void)
 {
 	unsigned int id = AtomicUAddFetchOrig(&_next_id, 1);
-	Object* object = GetAllocator()->template allocT<Object>(id);
+	Object* object = SHIB_ALLOCT(Object, *GetAllocator(), id);
 
 	if (object) {
 		Gaff::ScopedLock<Gaff::SpinLock> scoped_lock(_objects_lock);
@@ -95,7 +95,7 @@ void ObjectManager::removeObject(unsigned int id)
 	}
 
 	if (object) {
-		GetAllocator()->freeT(object);
+		SHIB_FREET(object, *GetAllocator());
 	}
 }
 

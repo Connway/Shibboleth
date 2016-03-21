@@ -135,7 +135,7 @@ Gaff::IVirtualDestructor* ModelLoader::load(const char* file_name, uint64_t, Has
 		}
 	}
 
-	ModelData* data = GetAllocator()->template allocT<ModelData>();
+	ModelData* data = SHIB_ALLOCT(ModelData, *GetAllocator());
 
 	if (data) {
 		data->holding_data = _res_mgr.loadResourceImmediately(mesh_file.getString(), generateLoadingFlags(json), file_map);
@@ -146,17 +146,17 @@ Gaff::IVirtualDestructor* ModelLoader::load(const char* file_name, uint64_t, Has
 
 		if (!data->holding_data) {
 			// log error
-			GetAllocator()->freeT(data);
+			SHIB_FREET(data, *GetAllocator());
 			data = nullptr;
 
 		} else if (!data->holding_data->scene) {
 			// log error
-			GetAllocator()->freeT(data);
+			SHIB_FREET(data, *GetAllocator());
 			data = nullptr;
 
 		} else if (!data->holding_data->scene.hasMeshes()) {
 			// log error
-			GetAllocator()->freeT(data);
+			SHIB_FREET(data, *GetAllocator());
 			data = nullptr;
 
 		} else {
@@ -167,26 +167,26 @@ Gaff::IVirtualDestructor* ModelLoader::load(const char* file_name, uint64_t, Has
 			if (!display_tags.isNull()) {
 				if (!display_tags.isArray()) {
 					// log error
-					GetAllocator()->freeT(data);
+					SHIB_FREET(data, *GetAllocator());
 					return nullptr;
 				}
 
 				disp_tags = 0;
 
 				if (EXTRACT_DISPLAY_TAGS(display_tags, disp_tags)) {
-					GetAllocator()->freeT(data);
+					SHIB_FREET(data, *GetAllocator());
 					return nullptr;
 				}
 			}
 
 			if (lod_tags && data->holding_data->scene.getNumMeshes() != lod_tags.size()) {
 				// log error
-				GetAllocator()->freeT(data);
+				SHIB_FREET(data, *GetAllocator());
 				data = nullptr;
 
 			} else if (!loadMeshes(data, lod_tags, json, disp_tags, any_display_tags)) {
 				// log error
-				GetAllocator()->freeT(data);
+				SHIB_FREET(data, *GetAllocator());
 				data = nullptr;
 			}
 		}
@@ -467,7 +467,7 @@ bool ModelLoader::createMeshAndLayout(Gleam::IRenderDevice& rd, const Gaff::Mesh
 		return false;
 	}
 
-	float* vertices = reinterpret_cast<float*>(GetAllocator()->alloc(sizeof(float) * scene_mesh.getNumVertices() * vert_size));
+	float* vertices = SHIB_ALLOC_GLOBAL_CAST(float*, sizeof(float) * scene_mesh.getNumVertices() * vert_size, *GetAllocator());
 
 	if (!vertices) {
 		// Log error
@@ -544,7 +544,7 @@ bool ModelLoader::createMeshAndLayout(Gleam::IRenderDevice& rd, const Gaff::Mesh
 		return false;
 	}
 
-	GetAllocator()->free(vertices);
+	SHIB_FREE(vertices, *GetAllocator());
 
 	Gleam::IShader* shader = nullptr;
 

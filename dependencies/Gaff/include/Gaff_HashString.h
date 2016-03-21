@@ -20,8 +20,6 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-/*! \file */
-
 #pragma once
 
 #include "Gaff_String.h"
@@ -29,9 +27,6 @@ THE SOFTWARE.
 
 NS_GAFF
 
-/*!
-	\brief Similar to String, but stores the hash result of the passed in string.
-*/
 template <class T, class Allocator = DefaultAllocator>
 class HashString
 {

@@ -42,30 +42,30 @@ OtterUIManager::~OtterUIManager(void)
 
 bool OtterUIManager::init(unsigned int memory_size_bytes, bool enable_pre_transformed_verts)
 {
-	_memory_buffer = reinterpret_cast<unsigned char*>(GetAllocator()->alloc(memory_size_bytes));
+	_memory_buffer = reinterpret_cast<unsigned char*>(SHIB_ALLOC_GLOBAL(memory_size_bytes, *GetAllocator()));
 
 	if (!_memory_buffer) {
 		return false;
 	}
 
-	_system = GetAllocator()->template allocT<Otter::System>(_memory_buffer, memory_size_bytes);
+	_system = SHIB_ALLOCT(Otter::System, *GetAllocator(), _memory_buffer, memory_size_bytes);
 
 	if (!_system) {
-		GetAllocator()->free(_memory_buffer);
+		SHIB_FREE(_memory_buffer, *GetAllocator());
 	}
 
 	return _system->EnablePreTransformVerts(enable_pre_transformed_verts) == Otter::kResult_OK &&
-		_system->EnableLogging(true) == Otter::kResult_OK;
+			_system->EnableLogging(true) == Otter::kResult_OK;
 }
 
 void OtterUIManager::destroy(void)
 {
 	if (_system) {
-		GetAllocator()->freeT(_system);
+		SHIB_FREET(_system, *GetAllocator());
 	}
 
 	if (_memory_buffer) {
-		GetAllocator()->free(_memory_buffer);
+		SHIB_FREE(_memory_buffer, *GetAllocator());
 	}
 }
 

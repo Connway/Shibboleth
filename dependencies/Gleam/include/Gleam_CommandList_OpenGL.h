@@ -50,9 +50,12 @@ public:
 	INLINE void clear(void);
 
 	template <class ReturnType, class... Args>
-	INLINE void addCommand(const Gaff::CachedFunction<ReturnType, Args...>& function)
+	void addCommand(const Gaff::CachedFunction<ReturnType, Args...>& function)
 	{
-		Gaff::SharedPtr< Gaff::IFunction<void> > cmd_ptr(GetAllocator()->template allocT< Gaff::CachedFunction<ReturnType, Args...> >(function));
+		// For some reason using the GAFF_ALLOCT macro is confusing the compiler, even though it expands to the same as the line below it.
+		//Gaff::IFunction<void>* func = GAFF_ALLOCT(Gaff::CachedFunction<ReturnType, Args...>, *GetAllocator(), function);
+		Gaff::IFunction<void>* func = (*GetAllocator()).template allocT< Gaff::CachedFunction<ReturnType, Args...> >(__FILE__, __LINE__, function);
+		Gaff::SharedPtr< Gaff::IFunction<void> > cmd_ptr(func);
 		_commands.emplacePush(std::move(cmd_ptr));
 	}
 

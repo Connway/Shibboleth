@@ -190,7 +190,7 @@ private:
 template <class State>
 Shibboleth::IState* CreateStateT(Shibboleth::IApp& app)
 {
-	return Shibboleth::GetAllocator()->template allocT<State>(app);
+	return SHIB_ALLOCT(State, *Shibboleth::GetAllocator(), app);
 }
 
 enum States
@@ -271,5 +271,5 @@ DYNAMICEXPORT_C Shibboleth::IState* CreateState(unsigned int id)
 
 DYNAMICEXPORT_C void DestroyState(Shibboleth::IState* state, unsigned int)
 {
-	Shibboleth::GetAllocator()->freeT(state);
+	SHIB_FREET(state, *Shibboleth::GetAllocator());
 }
