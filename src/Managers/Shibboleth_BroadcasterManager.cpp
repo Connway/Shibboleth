@@ -73,7 +73,7 @@ MessageBroadcaster* BroadcasterManager::getBroadcaster(unsigned int object_id, b
 		}
 
 		_broadcaster_lock.readUnlock();
-		MessageBroadcaster* broadcaster = GetAllocator()->allocT<MessageBroadcaster>();
+		MessageBroadcaster* broadcaster = SHIB_ALLOCT(MessageBroadcaster, *GetAllocator());
 
 		_broadcaster_lock.writeLock();
 		_object_broadcasters.insert(object_id, broadcaster);
@@ -91,7 +91,7 @@ void BroadcasterManager::clear(void)
 	_broadcaster_lock.writeLock();
 
 	for (auto it = _object_broadcasters.begin(); it != _object_broadcasters.end(); ++it) {
-		GetAllocator()->freeT(it->second);
+		SHIB_FREET(it->second, *GetAllocator());
 	}
 
 	_broadcaster_lock.writeUnlock();

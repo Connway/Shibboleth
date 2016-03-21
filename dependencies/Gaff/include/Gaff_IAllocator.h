@@ -25,6 +25,15 @@ THE SOFTWARE.
 #include "Gaff_Defines.h"
 #include <new>
 
+#define GAFF_ALLOC_CAST(Type, size, allocator) reinterpret_cast<Type>(GAFF_ALLOC(size, allocator))
+
+#define GAFF_ALLOC_ARRAYT(Class, allocator, count, ...) (allocator).template allocArrayT<Class>(__FILE__, __LINE__, count, __VA_ARGS__)
+#define GAFF_ALLOCT(Class, allocator, ...) (allocator).template allocT<Class>(__FILE__, __LINE__, __VA_ARGS__)
+#define GAFF_ALLOC(size, allocator) (allocator).alloc(size, __FILE__, __LINE__)
+#define GAFF_FREE_ARRAYT(ptr, size, allocator) (allocator).freeArrayT(ptr, size)
+#define GAFF_FREET(ptr, allocator) (allocator).freeT(ptr)
+#define GAFF_FREE(ptr, allocator) (allocator).free(ptr)
+
 NS_GAFF
 
 template <class T, class... Args>
@@ -50,13 +59,13 @@ class IAllocator
 public:
 	virtual ~IAllocator(void) {}
 
-	virtual void* alloc(size_t size_bytes) = 0;
+	virtual void* alloc(size_t size_bytes, const char* file, int line) = 0;
 	virtual void free(void* data) = 0;
 
 	template <class T, class... Args>
-	T* allocArrayT(size_t count, Args&&... args)
+	T* allocArrayT(const char* file, int line, size_t count, Args&&... args)
 	{
-		T* data = reinterpret_cast<T*>(alloc(sizeof(T) * count));
+		T* data = reinterpret_cast<T*>(alloc(sizeof(T) * count, file, line));
 
 		for (size_t i = 0; i < count; ++i) {
 			construct(data + i, std::forward<Args>(args)...);
@@ -66,9 +75,9 @@ public:
 	}
 
 	template <class T, class... Args>
-	T* allocT(Args&&... args)
+	T* allocT(const char* file, int line, Args&&... args)
 	{
-		T* data = reinterpret_cast<T*>(alloc(sizeof(T)));
+		T* data = reinterpret_cast<T*>(alloc(sizeof(T), file, line));
 		return construct(data, std::forward<Args>(args)...);
 	}
 

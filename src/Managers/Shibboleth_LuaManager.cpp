@@ -36,15 +36,16 @@ THE SOFTWARE.
 
 NS_SHIBBOLETH
 
+static ProxyAllocator g_lua_allocator("Lua");
+
 static void* LuaAllocator(void*, void* ptr, size_t, size_t nsize)
 {
-	static ProxyAllocator allocator("Lua");
 
 	if (ptr) {
-		allocator.free(ptr);
+		SHIB_FREE(ptr, g_lua_allocator);
 	}
 
-	return (nsize) ? allocator.alloc(nsize) : nullptr;
+	return (nsize) ? SHIB_ALLOC_GLOBAL(nsize, g_lua_allocator) : nullptr;
 }
 
 REF_IMPL_REQ(LuaManager);
@@ -72,7 +73,7 @@ void LuaManager::addRegistrant(const Gaff::FunctionBinder<void, lua::State&>& re
 
 lua::State* LuaManager::createNewState(void)
 {
-	lua::State* state = GetAllocator()->template allocT<lua::State>();
+	lua::State* state = SHIB_ALLOCT(lua::State, g_lua_allocator);
 	//lua_setallocf(state->getState(), LuaAllocator, nullptr);
 
 	if (state) {

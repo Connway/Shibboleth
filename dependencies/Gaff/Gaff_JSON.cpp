@@ -39,7 +39,7 @@ NS_GAFF
 class JSON::JSONAllocator
 {
 public:
-	void* alloc(size_t size_bytes)
+	void* alloc(size_t size_bytes, const char* /*file*/, int /*line*/)
 	{
 		return JSON::_alloc(size_bytes);
 	}

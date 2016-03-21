@@ -47,7 +47,7 @@ typename DynamicLoader<Allocator>::ModulePtr DynamicLoader<Allocator>::loadModul
 		return getModule(name);
 	}
 
-	ModulePtr module(_allocator.template allocT<DynamicModule>(), _allocator);
+	ModulePtr module(GAFF_ALLOCT(DynamicModule, _allocator), _allocator);
 
 	if (module.valid()) {
 		if (module->load(filename)) {

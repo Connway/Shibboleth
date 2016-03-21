@@ -492,7 +492,7 @@ const HashMap<Key, Value, Allocator>& HashMap<Key, Value, Allocator>::operator=(
 	}
 
 	if (rhs._size > 0) {
-		_slots = reinterpret_cast<Slot*>(_allocator.alloc(sizeof(Slot) * rhs._size));
+		_slots = GAFF_ALLOC_CAST(Slot*, sizeof(Slot) * rhs._size, _allocator);
 
 		for (size_t i = 0; i < _used; ++i) {
 			construct(&_slots[i].key, rhs._slots[i].key);
@@ -765,7 +765,7 @@ void HashMap<Key, Value, Allocator>::clear(void)
 			_slots[i].occupied = false;
 		}
 
-		_allocator.free(_slots);
+		GAFF_FREE(_slots, _allocator);
 		_used = _size = 0;
 		_slots = nullptr;
 	}
@@ -781,7 +781,7 @@ void HashMap<Key, Value, Allocator>::reserve(size_t new_size)
 	Slot* old_data = _slots;
 	size_t old_size = _size;
 
-	_slots = (Slot*)_allocator.alloc(sizeof(Slot) * new_size);
+	_slots = GAFF_ALLOC_CAST(Slot*, sizeof(Slot) * new_size, _allocator);
 	_size = new_size;
 	_used = 0;
 
@@ -798,7 +798,7 @@ void HashMap<Key, Value, Allocator>::reserve(size_t new_size)
 			}
 		}
 
-		_allocator.free(old_data);
+		GAFF_FREE(old_data, _allocator);
 	}
 }
 
@@ -957,7 +957,7 @@ const HashMap<String<T, Allocator>, Value, Allocator>& HashMap<String<T, Allocat
 	}
 
 	if (rhs._size > 0) {
-		_slots = reinterpret_cast<Slot*>(_allocator.alloc(sizeof(Slot) * rhs._size));
+		_slots = GAFF_ALLOC_CAST(Slot*, sizeof(Slot) * rhs._size, _allocator);
 
 		for (size_t i = 0; i < _used; ++i) {
 			construct(&_slots[i].key, rhs._slots[i].key);
@@ -1230,7 +1230,7 @@ void HashMap<String<T, Allocator>, Value, Allocator>::clear(void)
 			_slots[i].occupied = false;
 		}
 
-		_allocator.free(_slots);
+		GAFF_FREE(_slots, _allocator);
 		_used = _size = 0;
 		_slots = nullptr;
 	}
@@ -1246,7 +1246,7 @@ void HashMap<String<T, Allocator>, Value, Allocator>::reserve(size_t new_size)
 	Slot* old_data = _slots;
 	size_t old_size = _size;
 
-	_slots = reinterpret_cast<Slot*>(_allocator.alloc(sizeof(Slot) * new_size));
+	_slots = GAFF_ALLOC_CAST(Slot*, sizeof(Slot) * new_size, _allocator);
 	_size = new_size;
 	_used = 0;
 
@@ -1263,7 +1263,7 @@ void HashMap<String<T, Allocator>, Value, Allocator>::reserve(size_t new_size)
 			}
 		}
 
-		_allocator.free(old_data);
+		GAFF_FREE(old_data, _allocator);
 	}
 }
 
@@ -1423,7 +1423,7 @@ const HashMap<HashString<T, Allocator>, Value, Allocator>& HashMap<HashString<T,
 	}
 
 	if (rhs._size > 0) {
-		_slots = reinterpret_cast<Slot*>(_allocator.alloc(sizeof(Slot) * rhs._size));
+		_slots = GAFF_ALLOC_CAST(Slot*, sizeof(Slot) * rhs._size, _allocator);
 
 		for (size_t i = 0; i < _used; ++i) {
 			construct(&_slots[i].key, rhs._slots[i].key);
@@ -1696,7 +1696,7 @@ void HashMap<HashString<T, Allocator>, Value, Allocator>::clear(void)
 			_slots[i].occupied = false;
 		}
 
-		_allocator.free(_slots);
+		GAFF_FREE(_slots, _allocator);
 		_used = _size = 0;
 		_slots = nullptr;
 	}
@@ -1712,7 +1712,7 @@ void HashMap<HashString<T, Allocator>, Value, Allocator>::reserve(size_t new_siz
 	Slot* old_data = _slots;
 	size_t old_size = _size;
 
-	_slots = reinterpret_cast<Slot*>(_allocator.alloc(sizeof(Slot) * new_size));
+	_slots = GAFF_ALLOC_CAST(Slot*, sizeof(Slot) * new_size, _allocator);
 	_size = new_size;
 	_used = 0;
 
@@ -1729,7 +1729,7 @@ void HashMap<HashString<T, Allocator>, Value, Allocator>::reserve(size_t new_siz
 			}
 		}
 
-		_allocator.free(old_data);
+		GAFF_FREE(old_data, _allocator);
 	}
 }
 

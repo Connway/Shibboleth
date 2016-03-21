@@ -34,7 +34,7 @@ PackFile::PackFile(void):
 PackFile::~PackFile(void)
 {
 	if (_file_buffer) {
-		GetAllocator()->free(_file_buffer);
+		SHIB_FREE(_file_buffer, *GetAllocator());
 	}
 }
 
@@ -61,7 +61,7 @@ PackFileSystem::PackFileSystem(void)
 PackFileSystem::~PackFileSystem(void)
 {
 	for (auto it = _files.begin(); it != _files.end(); ++it) {
-		GetAllocator()->freeT(it->file);
+		SHIB_FREET(it->file, *GetAllocator());
 	}
 
 	for (auto it = _pack_files.begin(); it != _pack_files.end(); ++it) {
@@ -112,7 +112,7 @@ IFile* PackFileSystem::openFile(const char* file_name)
 			return nullptr;
 		}
 
-		PackFile* file = GetAllocator()->template allocT<PackFile>();
+		PackFile* file = SHIB_ALLOCT(PackFile, *GetAllocator());
 
 		if (!file) {
 			// Log error
@@ -123,22 +123,22 @@ IFile* PackFileSystem::openFile(const char* file_name)
 
 		if (unzGetCurrentFileInfo(*it_pack, &file_info, nullptr, 0, nullptr, 0, nullptr, 0) != UNZ_OK) {
 			// Log error
-			GetAllocator()->freeT(file);
+			SHIB_FREET(file, *GetAllocator());
 			return nullptr;
 		}
 
-		file->_file_buffer = reinterpret_cast<char*>(GetAllocator()->alloc(file_info.uncompressed_size));
+		file->_file_buffer = SHIB_ALLOC_GLOBAL_CAST(char*, file_info.uncompressed_size, *GetAllocator());
 		file->_file_size = file_info.uncompressed_size;
 
 		if (!file->_file_buffer) {
 			// Log error
-			GetAllocator()->freeT(file);
+			SHIB_FREET(file, *GetAllocator());
 			return nullptr;
 		}
 
 		if (unzReadCurrentFile(*it_pack, file->_file_buffer, static_cast<unsigned int>(file->_file_size)) < 0) {
 			// Log error
-			GetAllocator()->freeT(file);
+			SHIB_FREET(file, *GetAllocator());
 			return nullptr;
 		}
 
@@ -172,7 +172,7 @@ void PackFileSystem::closeFile(IFile* file)
 		unsigned int new_count = AtomicDecrement(&it->count);
 
 		if (!new_count) {
-			GetAllocator()->freeT(it->file);
+			SHIB_FREET(it->file, *GetAllocator());
 			_files.fastErase(it);
 		}
 	}
@@ -203,25 +203,25 @@ bool PackFileSystem::forEachFile(const char* directory, const Gaff::FunctionBind
 			}
 
 			if (!strncmp(temp, directory, dir_len)) {
-				PackFile* file = GetAllocator()->template allocT<PackFile>();
+				PackFile* file = SHIB_ALLOCT(PackFile, *GetAllocator());
 
 				if (!file) {
 					// Log error
 					break;
 				}
 
-				file->_file_buffer = reinterpret_cast<char*>(GetAllocator()->alloc(file_info.uncompressed_size));
+				file->_file_buffer = SHIB_ALLOC_GLOBAL_CAST(char*, file_info.uncompressed_size, *GetAllocator());
 				file->_file_size = file_info.uncompressed_size;
 
 				if (!file->_file_buffer) {
 					// Log error
-					GetAllocator()->freeT(file);
-					return nullptr;
+					SHIB_FREET(file, *GetAllocator());
+					break;
 				}
 
 				if (unzReadCurrentFile(*it, file->_file_buffer, static_cast<unsigned int>(file->_file_size)) < 0) {
 					// Log error
-					GetAllocator()->freeT(file);
+					SHIB_FREET(file, *GetAllocator());
 					break;
 				}
 

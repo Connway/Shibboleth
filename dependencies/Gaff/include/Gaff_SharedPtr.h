@@ -101,7 +101,7 @@ public:
 		_data = rhs;
 
 		if (rhs) {
-			_count = reinterpret_cast<volatile unsigned int*>(_allocator.alloc(sizeof(volatile unsigned int)));
+			_count = GAFF_ALLOC_CAST(volatile unsigned int*, sizeof(volatile unsigned int), _allocator);
 			*_count = 1;
 		}
 
@@ -164,10 +164,10 @@ public:
 			unsigned int new_count = AtomicDecrement(_count);
 
 			if (!new_count) {
-				_allocator.free((void*)_count);
+				GAFF_FREE((void*)_count, _allocator);
 
 				if (_data) {
-					_allocator.freeT(_data);
+					GAFF_FREET(_data, _allocator);
 				}
 			}
 		}

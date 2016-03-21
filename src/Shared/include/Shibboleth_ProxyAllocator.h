@@ -51,9 +51,9 @@ public:
 		return *this;
 	}
 
-	void* alloc(size_t size_bytes) override
+	void* alloc(size_t size_bytes, const char* file, int line)
 	{
-		return _allocator->alloc(size_bytes, _pool_index);
+		return _allocator->alloc(size_bytes, _pool_index, file, line);
 	}
 
 	void free(void* data) override

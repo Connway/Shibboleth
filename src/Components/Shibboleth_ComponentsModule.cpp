@@ -40,7 +40,7 @@ THE SOFTWARE.
 template <class Component>
 Shibboleth::Component* CreateComponent(void)
 {
-	return Shibboleth::GetAllocator()->template allocT<Component>();
+	return SHIB_ALLOCT(Component, *Shibboleth::GetAllocator());
 }
 
 enum Components
@@ -116,5 +116,5 @@ DYNAMICEXPORT_C Shibboleth::Component* CreateComponent(unsigned int id)
 
 DYNAMICEXPORT_C void DestroyComponent(Shibboleth::Component* component, unsigned int)
 {
-	Shibboleth::GetAllocator()->freeT(component);
+	SHIB_FREET(component, *Shibboleth::GetAllocator());
 }

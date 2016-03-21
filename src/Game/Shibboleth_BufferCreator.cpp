@@ -44,7 +44,7 @@ Gaff::IVirtualDestructor* BufferCreator::load(const char*, uint64_t buffer_setti
 	Gleam::IBuffer::BufferSettings* bs = reinterpret_cast<Gleam::IBuffer::BufferSettings*>(buffer_settings);
 	Gleam::IRenderDevice& rd = _render_mgr.getRenderDevice();
 
-	BufferData* data = GetAllocator()->template allocT<BufferData>();
+	BufferData* data = SHIB_ALLOCT(BufferData, *GetAllocator());
 
 	if (!data) {
 		// log error
@@ -59,13 +59,13 @@ Gaff::IVirtualDestructor* BufferCreator::load(const char*, uint64_t buffer_setti
 
 		if (!buffer) {
 			// log error
-			GetAllocator()->freeT(data);
+			SHIB_FREET(data, *GetAllocator());
 			return nullptr;
 		}
 
 		if (!buffer->init(rd, *bs)) {
 			// log error
-			GetAllocator()->freeT(data);
+			SHIB_FREET(data, *GetAllocator());
 			return nullptr;
 		}
 

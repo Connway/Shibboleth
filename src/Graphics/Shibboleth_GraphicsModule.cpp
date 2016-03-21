@@ -42,12 +42,12 @@ NS_SHIBBOLETH
 	class IApp;
 NS_END
 
-static Shibboleth::ProxyAllocator gProxyAllocator("Graphics");
+static Shibboleth::ProxyAllocator g_proxy_allocator("Graphics");
 
 DYNAMICEXPORT_C bool InitGraphics(Shibboleth::IApp&, const char* log_file_name)
 {
 	Gleam::SetLogFileName(log_file_name);
-	Gleam::SetAllocator(&gProxyAllocator);
+	Gleam::SetAllocator(&g_proxy_allocator);
 	return true;
 }
 
@@ -57,7 +57,7 @@ DYNAMICEXPORT_C void ShutdownGraphics(void)
 
 DYNAMICEXPORT_C Gleam::IWindow* CreateWindowS(void)
 {
-	return gProxyAllocator.template allocT<Gleam::Window>();
+	return SHIB_ALLOCT(Gleam::Window, g_proxy_allocator);
 }
 
 DYNAMICEXPORT_C void UpdateWindows(void)
@@ -67,82 +67,82 @@ DYNAMICEXPORT_C void UpdateWindows(void)
 
 DYNAMICEXPORT_C Gleam::IShaderResourceView* CreateShaderResourceView(void)
 {
-	return gProxyAllocator.template allocT<Gleam::ShaderResourceView>();
+	return SHIB_ALLOCT(Gleam::ShaderResourceView, g_proxy_allocator);
 }
 
 DYNAMICEXPORT_C Gleam::IDepthStencilState* CreateDepthStencilState(void)
 {
-	return gProxyAllocator.template allocT<Gleam::DepthStencilState>();
+	return SHIB_ALLOCT(Gleam::DepthStencilState, g_proxy_allocator);
 }
 
 DYNAMICEXPORT_C Gleam::IProgramBuffers* CreateProgramBuffers(void)
 {
-	return gProxyAllocator.template allocT<Gleam::ProgramBuffers>();
+	return SHIB_ALLOCT(Gleam::ProgramBuffers, g_proxy_allocator);
 }
 
 DYNAMICEXPORT_C Gleam::IRenderDevice* CreateRenderDevice(void)
 {
-	return gProxyAllocator.template allocT<Gleam::RenderDevice>();
+	return SHIB_ALLOCT(Gleam::RenderDevice, g_proxy_allocator);
 }
 
 DYNAMICEXPORT_C Gleam::IRenderTarget* CreateRenderTarget(void)
 {
-	return gProxyAllocator.template allocT<Gleam::RenderTarget>();
+	return SHIB_ALLOCT(Gleam::RenderTarget, g_proxy_allocator);
 }
 
 DYNAMICEXPORT_C Gleam::ISamplerState* CreateSamplerState(void)
 {
-	return gProxyAllocator.template allocT<Gleam::SamplerState>();
+	return SHIB_ALLOCT(Gleam::SamplerState, g_proxy_allocator);
 }
 
 DYNAMICEXPORT_C Gleam::IRasterState* CreateRasterState(void)
 {
-	return gProxyAllocator.template allocT<Gleam::RasterState>();
+	return SHIB_ALLOCT(Gleam::RasterState, g_proxy_allocator);
 }
 
 DYNAMICEXPORT_C Gleam::ICommandList* CreateCommandList(void)
 {
-	return gProxyAllocator.template allocT<Gleam::CommandList>();
+	return SHIB_ALLOCT(Gleam::CommandList, g_proxy_allocator);
 }
 
 DYNAMICEXPORT_C Gleam::IBlendState* CreateBlendState(void)
 {
-	return gProxyAllocator.template allocT<Gleam::BlendState>();
+	return SHIB_ALLOCT(Gleam::BlendState, g_proxy_allocator);
 }
 
 DYNAMICEXPORT_C Gleam::ITexture* CreateTexture(void)
 {
-	return gProxyAllocator.template allocT<Gleam::Texture>();
+	return SHIB_ALLOCT(Gleam::Texture, g_proxy_allocator);
 }
 
 DYNAMICEXPORT_C Gleam::IProgram* CreateProgram(void)
 {
-	return gProxyAllocator.template allocT<Gleam::Program>();
+	return SHIB_ALLOCT(Gleam::Program, g_proxy_allocator);
 }
 
 DYNAMICEXPORT_C Gleam::ILayout* CreateLayout(void)
 {
-	return gProxyAllocator.template allocT<Gleam::Layout>();
+	return SHIB_ALLOCT(Gleam::Layout, g_proxy_allocator);
 }
 
 DYNAMICEXPORT_C Gleam::IShader* CreateShader(void)
 {
-	return gProxyAllocator.template allocT<Gleam::Shader>();
+	return SHIB_ALLOCT(Gleam::Shader, g_proxy_allocator);
 }
 
 DYNAMICEXPORT_C Gleam::IBuffer* CreateBuffer(void)
 {
-	return gProxyAllocator.template allocT<Gleam::Buffer>();
+	return SHIB_ALLOCT(Gleam::Buffer, g_proxy_allocator);
 }
 
 DYNAMICEXPORT_C Gleam::IModel* CreateModel(void)
 {
-	return gProxyAllocator.template allocT<Gleam::Model>();
+	return SHIB_ALLOCT(Gleam::Model, g_proxy_allocator);
 }
 
 DYNAMICEXPORT_C Gleam::IMesh* CreateMesh(void)
 {
-	return gProxyAllocator.template allocT<Gleam::Mesh>();
+	return SHIB_ALLOCT(Gleam::Mesh, g_proxy_allocator);
 }
 
 DYNAMICEXPORT_C const char* GetShaderExtension(void)

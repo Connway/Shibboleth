@@ -61,11 +61,11 @@ bool MeshD3D::addVertData(
 
 	if (!index_buffer || !vert_buffer) {
 		if (index_buffer) {
-			GetAllocator()->freeT(index_buffer);
+			GAFF_FREET(index_buffer, *GetAllocator());
 		}
 
 		if (vert_buffer) {
-			GetAllocator()->freeT(vert_buffer);
+			GAFF_FREET(vert_buffer, *GetAllocator());
 		}
 
 		return false;
@@ -77,8 +77,8 @@ bool MeshD3D::addVertData(
 	);
 
 	if (!ret) {
-		GetAllocator()->freeT(index_buffer);
-		GetAllocator()->freeT(vert_buffer);
+		GAFF_FREET(index_buffer, *GetAllocator());
+		GAFF_FREET(vert_buffer, *GetAllocator());
 	}
 
 	return ret;

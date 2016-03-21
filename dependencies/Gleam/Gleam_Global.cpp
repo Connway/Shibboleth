@@ -21,13 +21,10 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Gleam_Global.h"
-#include "Gleam_String.h"
 #include <Gaff_DefaultAlignedAllocator.h>
 #include <Gaff_ScopedLock.h>
 #include <Gaff_SpinLock.h>
 #include <Gaff_File.h>
-#include <iostream>
-#include <cstdarg>
 
 #define LOG_NAME_SIZE 128
 
@@ -54,7 +51,7 @@ Gaff::IAllocator* GetAllocator(void)
 
 void* GleamAlloc(size_t size_bytes, const char* filename, unsigned int line_number)
 {
-	void* data = g_allocator->alloc(size_bytes);
+	void* data = GAFF_ALLOC(size_bytes, *g_allocator);
 
 	if (!data) {
 		PrintfToLog("Failed to allocate %i bytes in \'%s\':%i", LOG_ERROR, filename, line_number);
@@ -66,7 +63,7 @@ void* GleamAlloc(size_t size_bytes, const char* filename, unsigned int line_numb
 
 void GleamFree(void* data)
 {
-	g_allocator->free(data);
+	GAFF_FREE(data, *g_allocator);
 }
 
 void SetLogFileName(const char* log_file_name)

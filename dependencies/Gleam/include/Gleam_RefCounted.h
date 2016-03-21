@@ -38,7 +38,7 @@ public: \
 	{ \
 		unsigned int new_count = AtomicDecrement(&_count); \
 		if (!new_count) { \
-			GetAllocator()->freeT(this); \
+			GAFF_FREET(this, *GetAllocator()); \
 		} \
 	} \
 	unsigned int getRefCount(void) const \

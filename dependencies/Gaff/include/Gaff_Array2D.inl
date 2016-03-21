@@ -30,21 +30,21 @@ template <class T, class Allocator>
 Array2D<T, Allocator>::Array2D(size_t width, size_t height, T& init_val, const Allocator& allocator):
 	_array(nullptr), _width(width), _height(height), _allocator(allocator)
 {
-	_array = allocator.template allocArrayT<T>(width * height, init_val);
+	_array = GAFF_ALLOC_ARRAYT(T, width * height, allocator, init_val);
 }
 
 template <class T, class Allocator>
 Array2D<T, Allocator>::Array2D(size_t width, size_t height, const Allocator& allocator):
 _array(nullptr), _width(width), _height(height), _allocator(allocator)
 {
-	_array = allocator.template allocArrayT<T>(width * height);
+	_array = GAFF_ALLOC_ARRAYT(T, width * height, allocator);
 }
 
 template <class T, class Allocator>
 Array2D<T, Allocator>::Array2D(const T** data, size_t width, size_t height, const Allocator& allocator):
 	_array(nullptr), _width(width), _height(height), _allocator(allocator)
 {
-	_array = reinterpret_cast<T*>(allocator.alloc(sizeof(T) * width * height));
+	_array = GAFF_ALLOC_CAST(T*, sizeof(T) * width * height, allocator);
 
 	for (size_t i = 0; i < height; ++i) {
 		for (size_t j = 0; j < width; ++j) {
@@ -57,7 +57,7 @@ template <class T, class Allocator>
 Array2D<T, Allocator>::Array2D(const T* data, size_t width, size_t height, const Allocator& allocator):
 	_array(nullptr), _width(width), _height(height), _allocator(allocator)
 {
-	_array = reinterpret_cast<T*>(allocator.alloc(sizeof(T) * width * height));
+	_array = GAFF_ALLOC_CAST(T*, sizeof(T) * width * height, allocator);
 
 	size_t size = width * height;
 
@@ -92,7 +92,7 @@ const Array2D<T, Allocator>& Array2D<T, Allocator>::operator=(const Array2D<T, A
 {
 	clear();
 
-	_array = reinterpret_cast<T*>(_allocator.alloc(sizeof(T) * rhs._width * rhs._height));
+	_array = GAFF_ALLOC_CAST(T*, sizeof(T) * rhs._width * rhs._height, _allocator);
 	_width = rhs._width;
 	_height = rhs._height;
 
@@ -136,7 +136,7 @@ template <class T, class Allocator>
 void Array2D<T, Allocator>::clear(void)
 {
 	if (_array) {
-		_allocator.freeArrayT(_array, _width * _height);
+		GAFF_FREE_ARRAYT(_array, _width * _height, _allocator);
 		_width = _height = 0;
 		_array = nullptr;
 	}
@@ -147,7 +147,7 @@ void Array2D<T, Allocator>::resize(size_t width, size_t height)
 {
 	T* old_array = _array;
 
-	_array = reinterpret_cast<T*>(_allocator.alloc(sizeof(T) * width * height));
+	_array = GAFF_ALLOC_CAST(T*, sizeof(T) * width * height, _allocator);
 
 	size_t min_width = Min(width, _width);
 	size_t min_height = Min(height, _height);
@@ -168,7 +168,7 @@ void Array2D<T, Allocator>::resize(size_t width, size_t height)
 	}
 
 	if (old_array) {
-		_allocator.free(old_array);
+		GAFF_FREE(old_array, _allocator);
 	}
 
 	_width = width;

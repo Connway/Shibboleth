@@ -35,7 +35,7 @@ String<T, Allocator>::String(const T* string, size_t size, const Allocator& allo
 		_string_buf[size] = 0; // set null-terminator
 
 	} else {
-		_string_ptr = reinterpret_cast<T*>(_allocator.alloc(sizeof(T) * (size + 1)));
+		_string_ptr = GAFF_ALLOC_CAST(T*, sizeof(T) * (size + 1), _allocator);
 
 		memcpy(_string_ptr, string, sizeof(T) * size);
 		_string_ptr[size] = 0; // set null-terminator
@@ -85,7 +85,7 @@ const String<T, Allocator>& String<T, Allocator>::operator=(String<T, Allocator>
 		memcpy(_string_buf, rhs.getBuffer(), sizeof(T) * (_size + 1));
 
 		if (_capacity > SMALL_STRING_SIZE) {
-			_allocator.free(rhs._string_ptr);
+			GAFF_FREE(rhs._string_ptr, _allocator);
 		}
 
 		_capacity = SMALL_STRING_SIZE;
@@ -117,7 +117,7 @@ const String<T, Allocator>& String<T, Allocator>::operator=(const String<T, Allo
 		memcpy(_string_buf, rhs.getBuffer(), sizeof(T) * (_size + 1));
 
 	} else {
-		_string_ptr = reinterpret_cast<T*>(_allocator.alloc(sizeof(T) * (_size + 1)));
+		_string_ptr = GAFF_ALLOC_CAST(T*, sizeof(T) * (_size + 1), _allocator);
 		memcpy(_string_ptr, rhs._string_ptr, sizeof(T) * (_size + 1));
 	}
 
@@ -135,7 +135,7 @@ const String<T, Allocator>& String<T, Allocator>::operator=(const T* rhs)
 		memcpy(_string_buf, rhs, sizeof(T) * (_size + 1));
 
 	} else {
-		_string_ptr = reinterpret_cast<T*>(_allocator.alloc(sizeof(T) * (_size + 1)));
+		_string_ptr = GAFF_ALLOC_CAST(T*, sizeof(T) * (_size + 1), _allocator);
 		memcpy(_string_ptr, rhs, sizeof(T) * (_size + 1));
 		_capacity = _size;
 	}
@@ -291,7 +291,7 @@ void String<T, Allocator>::set(T* string)
 
 	if (_size <= SMALL_STRING_SIZE) {
 		memcpy(_string_buf, string, sizeof(T) * (_size + 1));
-		_allocator.free(string);
+		GAFF_FREE(string, _allocator);
 
 	} else {
 		_string_ptr = string;
@@ -303,7 +303,7 @@ template <class T, class Allocator>
 void String<T, Allocator>::clear(void)
 {
 	if (_capacity > SMALL_STRING_SIZE && _string_ptr) {
-		_allocator.free(_string_ptr);
+		GAFF_FREE(_string_ptr, _allocator);
 		_string_ptr = nullptr;
 	}
 
@@ -376,7 +376,7 @@ void String<T, Allocator>::append(const T* string, size_t size)
 		_string_buf[new_size] = 0;
 
 	} else {
-		T* new_string = reinterpret_cast<T*>(_allocator.alloc(sizeof(T) * (new_size + 1)));
+		T* new_string = GAFF_ALLOC_CAST(T*, sizeof(T) * (new_size + 1), _allocator);
 		new_string[new_size] = 0;
 
 		if (_size) {
@@ -386,7 +386,7 @@ void String<T, Allocator>::append(const T* string, size_t size)
 		memcpy(new_string + _size, string, sizeof(T) * size);
 
 		if (_size > SMALL_STRING_SIZE) {
-			_allocator.free(_string_ptr);
+			GAFF_FREE(_string_ptr, _allocator);
 		}
 
 		_string_ptr = new_string;
@@ -415,7 +415,7 @@ void String<T, Allocator>::resize(size_t new_size)
 	if (new_size <= SMALL_STRING_SIZE) {
 		if (_capacity > SMALL_STRING_SIZE) {
 			memcpy(_string_buf, old_string, sizeof(T) * copy_size);
-			_allocator.free(old_string);
+			GAFF_FREE(old_string, _allocator);
 		}
 
 		_string_buf[new_size] = 0;
@@ -425,11 +425,11 @@ void String<T, Allocator>::resize(size_t new_size)
 		T* new_string = old_string;
 
 		if (_capacity < new_size) {
-			new_string = reinterpret_cast<T*>(_allocator.alloc(sizeof(T) * (new_size + 1)));
+			new_string = GAFF_ALLOC_CAST(T*, sizeof(T) * (new_size + 1), _allocator);
 			memcpy(new_string, getBuffer(), sizeof(T) * _size);
 
 			if (_capacity > SMALL_STRING_SIZE) {
-				_allocator.free(old_string);
+				GAFF_FREE(old_string, _allocator);
 			}
 
 			_capacity = new_size;
@@ -479,7 +479,7 @@ void String<T, Allocator>::fastErase(size_t begin_index, size_t end_index)
 		} else {
 			memcpy(_string_buf, old_string, sizeof(T) * begin_index);
 			memcpy(_string_buf + begin_index, old_string + end_index, sizeof(T) * (_size - end_index));
-			_allocator.free(old_string);
+			GAFF_FREE(old_string, _allocator);
 		}
 
 		_string_buf[new_size] = 0;
@@ -516,10 +516,10 @@ void String<T, Allocator>::trim(void)
 	if (_capacity > SMALL_STRING_SIZE && _size != _capacity) {
 		T* old_string = _string_ptr;
 
-		_string_ptr = reinterpret_cast<T*>(_allocator.alloc(sizeof(T) * (_size + 1)));
+		_string_ptr = GAFF_ALLOC_CAST(T*, sizeof(T) * (_size + 1), _allocator);
 		memcpy(_string_ptr, old_string, sizeof(T) * (_size + 1));
 
-		_allocator.free(old_string);
+		GAFF_FREE(old_string, _allocator);
 	}
 }
 

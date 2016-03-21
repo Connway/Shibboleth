@@ -237,7 +237,7 @@ Gaff::IVirtualDestructor* RenderTargetLoader::load(const char* file_name, uint64
 	}
 
 	// RenderTargetData setup
-	RenderTargetData* data = GetAllocator()->template allocT<RenderTargetData>();
+	RenderTargetData* data = SHIB_ALLOCT(RenderTargetData, *GetAllocator());
 	RenderManager& rm = GetApp().getManagerT<RenderManager>("Render Manager");
 	Gleam::IRenderDevice& rd = rm.getRenderDevice();
 
@@ -282,13 +282,13 @@ Gaff::IVirtualDestructor* RenderTargetLoader::load(const char* file_name, uint64
 
 		if (!rt) {
 			LogMessage(GetApp().getGameLogFile(), TPT_PRINTLOG, LogManager::LOG_ERROR, "ERROR - Failed to allocate Render Target '%s'.\n", file_name);
-			GetAllocator()->freeT(data);
+			SHIB_FREET(data, *GetAllocator());
 			return nullptr;
 		}
 
 		if (!rt->init()) {
 			LogMessage(GetApp().getGameLogFile(), TPT_PRINTLOG, LogManager::LOG_ERROR, "ERROR - Failed to initialize Render Target for '%s'.\n", file_name);
-			GetAllocator()->freeT(data);
+			SHIB_FREET(data, *GetAllocator());
 			return nullptr;
 		}
 
@@ -306,13 +306,13 @@ Gaff::IVirtualDestructor* RenderTargetLoader::load(const char* file_name, uint64
 			});
 
 			if (failed) {
-				GetAllocator()->freeT(data);
+				SHIB_FREET(data, *GetAllocator());
 				return nullptr;
 			}
 		}
 
 		if (!addDepthStencil(rd, rm, rt.get(), data, window_width, window_height, rt_settings, file_name)) {
-			GetAllocator()->freeT(data);
+			SHIB_FREET(data, *GetAllocator());
 			return nullptr;
 		}
 

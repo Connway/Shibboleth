@@ -177,7 +177,7 @@ RenderManager::~RenderManager(void)
 	for (auto it = _windows.begin(); it != _windows.end(); ++it) {
 		Gleam::IWindow* window = it->window;
 		it->window = nullptr;
-		_proxy_allocator.freeT(window);
+		SHIB_FREET(window, _proxy_allocator);
 	}
 
 	_windows.clear();
@@ -290,7 +290,7 @@ bool RenderManager::createWindow(
 			x, y, width, height, device_name
 		);
 
-		_proxy_allocator.freeT(window);
+		SHIB_FREET(window, _proxy_allocator);
 		return false;
 	}
 
@@ -307,14 +307,14 @@ bool RenderManager::createWindow(
 			width, height, adapter_id, display_id
 		);
 
-		_proxy_allocator.freeT(window);
+		SHIB_FREET(window, _proxy_allocator);
 		return false;
 	}
 
 	if (!_render_device->init(*window, adapter_id, display_id, static_cast<unsigned int>(display_mode_id), vsync)) {
 		Gaff::ScopedLock<Gaff::SpinLock> scoped_lock(*log.second);
 		log.first.writeString("ERROR - Failed to initialize render device with window!\n");
-		_proxy_allocator.freeT(window);
+		SHIB_FREET(window, _proxy_allocator);
 		return false;
 	}
 
@@ -335,7 +335,7 @@ void RenderManager::updateWindows(void)
 	for (auto it = _remove_windows.begin(); it != _remove_windows.end(); ++it) {
 		Gleam::IWindow* window = _windows[*it].window;
 		_windows.fastErase(*it);
-		_proxy_allocator.freeT(window);
+		SHIB_FREET(window, _proxy_allocator);
 	}
 
 	_remove_windows.clearNoFree();

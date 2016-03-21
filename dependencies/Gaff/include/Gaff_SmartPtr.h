@@ -135,7 +135,7 @@ private:
 	void destroy(void)
 	{
 		if (_data) {
-			_allocator.freeT(_data);
+			GAFF_FREET(_data, _allocator);
 		}
 	}
 };

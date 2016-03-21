@@ -32,14 +32,14 @@ template <class T, class Allocator>
 Array<T, Allocator>::Array(size_t start_capacity, const Allocator& allocator):
 	_allocator(allocator), _array(nullptr), _used(0), _size(start_capacity)
 {
-	_array = reinterpret_cast<T*>(_allocator.alloc(sizeof(T) * start_capacity));
+	_array = GAFF_ALLOC_CAST(T*, sizeof(T) * start_capacity, _allocator);
 }
 
 template <class T, class Allocator>
 Array<T, Allocator>::Array(size_t start_size, const T& init_val, const Allocator& allocator):
 	_allocator(allocator), _array(nullptr), _used(start_size), _size(start_size)
 {
-	_array = reinterpret_cast<T*>(_allocator.alloc(sizeof(T) * start_size));
+	_array = GAFF_ALLOC_CAST(T*, sizeof(T) * start_size, _allocator);
 
 	for (size_t i = 0; i < start_size; ++i) {
 		construct(_array + i, init_val);
@@ -50,7 +50,7 @@ template <class T, class Allocator>
 Array<T, Allocator>::Array(const T* data, size_t size, const Allocator& allocator):
 	_allocator(allocator), _array(nullptr), _used(size), _size(size)
 {
-	_array = reinterpret_cast<T*>(_allocator.alloc(sizeof(T) * size));
+	_array = GAFF_ALLOC_CAST(T*, sizeof(T) * size, _allocator);
 
 	for (size_t i = 0; i < size; ++i) {
 		construct(_array + i, data[i]);
@@ -92,7 +92,7 @@ const Array<T, Allocator>& Array<T, Allocator>::operator=(const Array<T, Allocat
 
 	} else if (_size != rhs._size) {
 		clear();
-		_array = reinterpret_cast<T*>(_allocator.alloc(sizeof(T) * rhs._size));
+		_array = GAFF_ALLOC_CAST(T*, sizeof(T) * rhs._size, _allocator);
 	}
 
 	for (size_t i = 0; i < rhs._used; ++i) {
@@ -174,7 +174,7 @@ void Array<T, Allocator>::clear(void)
 			deconstruct(_array + i);
 		}
 
-		_allocator.free(static_cast<void*>(_array));
+		GAFF_FREE(static_cast<void*>(_array), _allocator);
 		_used = _size = 0;
 		_array = nullptr;
 	}
@@ -539,7 +539,7 @@ void Array<T, Allocator>::reserve(size_t reserve_size)
 
 	T* old_data = _array;
 
-	_array = reinterpret_cast<T*>(_allocator.alloc(sizeof(T) * reserve_size));
+	_array = GAFF_ALLOC_CAST(T*, sizeof(T) * reserve_size, _allocator);
 	_size = reserve_size;
 
 	if (old_data) {
@@ -549,7 +549,7 @@ void Array<T, Allocator>::reserve(size_t reserve_size)
 			sizeof(T) * _used
 		);
 
-		_allocator.free(reinterpret_cast<void*>(old_data));
+		GAFF_FREE(reinterpret_cast<void*>(old_data), _allocator);
 	}
 }
 
@@ -690,7 +690,7 @@ void Array<T, Allocator>::resizeHelper(size_t new_size, const T& init_val)
 {
 	T* old_data = _array;
 
-	_array = reinterpret_cast<T*>(_allocator.alloc(sizeof(T) * new_size));
+	_array = GAFF_ALLOC_CAST(T*, sizeof(T) * new_size, _allocator);
 
 	for (size_t i = _used; i < new_size; ++i) {
 		construct(_array + i, init_val);
@@ -709,7 +709,7 @@ void Array<T, Allocator>::resizeHelper(size_t new_size, const T& init_val)
 			sizeof(T) * _used
 		);
 
-		_allocator.free(reinterpret_cast<void*>(old_data));
+		GAFF_FREE(reinterpret_cast<void*>(old_data), _allocator);
 	}
 
 	_size = new_size;
@@ -721,7 +721,7 @@ void Array<T, Allocator>::resizeHelper(size_t new_size)
 {
 	T* old_data = _array;
 
-	_array = reinterpret_cast<T*>(_allocator.alloc(sizeof(T) * new_size));
+	_array = GAFF_ALLOC_CAST(T*, sizeof(T) * new_size, _allocator);
 
 	for (size_t i = _used; i < new_size; ++i) {
 		construct(_array + i);
@@ -740,7 +740,7 @@ void Array<T, Allocator>::resizeHelper(size_t new_size)
 			sizeof(T) * _used
 		);
 
-		_allocator.free(reinterpret_cast<void*>(old_data));
+		GAFF_FREE(reinterpret_cast<void*>(old_data), _allocator);
 	}
 
 	_size = new_size;

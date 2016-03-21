@@ -29,19 +29,19 @@ THE SOFTWARE.
 template <class T>
 Shibboleth::IRenderPipeline* CreateRenderPipelineT(void)
 {
-	return Shibboleth::GetAllocator()->template allocT<T>();
+	return SHIB_ALLOCT(T, *Shibboleth::GetAllocator());
 }
 
 template <>
 Shibboleth::IRenderPipeline* CreateRenderPipelineT<Shibboleth::InGameRenderPipeline>(void)
 {
-	Shibboleth::InGameRenderPipeline* rp = Shibboleth::GetAllocator()->template allocT<Shibboleth::InGameRenderPipeline>();
+	Shibboleth::InGameRenderPipeline* rp = SHIB_ALLOCT(Shibboleth::InGameRenderPipeline, *Shibboleth::GetAllocator());
 
 	if (rp) {
 		if (rp->init()) {
 			return rp;
 		} else {
-			Shibboleth::GetAllocator()->freeT(rp);
+			SHIB_FREET(rp, *Shibboleth::GetAllocator());
 		}
 	}
 
@@ -85,5 +85,5 @@ DYNAMICEXPORT_C Shibboleth::IRenderPipeline* CreateRenderPipeline(size_t id)
 
 DYNAMICEXPORT_C void DestroyRenderPipeline(Shibboleth::IRenderPipeline* render_pipeline)
 {
-	Shibboleth::GetAllocator()->freeT(render_pipeline);
+	SHIB_FREET(render_pipeline, *Shibboleth::GetAllocator());
 }
