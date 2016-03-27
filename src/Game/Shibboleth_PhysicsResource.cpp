@@ -34,6 +34,12 @@ SHIB_ENUM_REF_IMPL(PhysicsShapeType)
 .addValue("Sphere", PST_SPHERE)
 .addValue("Cylinder", PST_CYLINDER)
 .addValue("Static Plane", PST_STATIC_PLANE)
+//PST_CONVEX_HULL,
+//PST_MULTI_SPHERE,
+//PST_COMPOUND,
+//PST_CONVEX_2D
+.addValue("Triangle", PST_TRIANGLE)
+//PST_HEIGHTFIELD,
 ;
 
 NS_END

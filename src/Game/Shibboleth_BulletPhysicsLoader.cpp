@@ -166,6 +166,49 @@ static btCollisionShape* CreateCollisionShapeStaticPlane(const Gaff::JSON& json/
 //
 //}
 
+static btCollisionShape* CreateCollisionShapeTriangle(const Gaff::JSON& json)
+{
+	Gaff::JSON p1x = json["Point 1 X"];
+	Gaff::JSON p1y = json["Point 1 Y"];
+	Gaff::JSON p1z = json["Point 1 Z"];
+
+	Gaff::JSON p2x = json["Point 2 X"];
+	Gaff::JSON p2y = json["Point 2 Y"];
+	Gaff::JSON p2z = json["Point 2 Z"];
+
+	Gaff::JSON p3x = json["Point 3 X"];
+	Gaff::JSON p3y = json["Point 3 Y"];
+	Gaff::JSON p3z = json["Point 3 Z"];
+
+	return SHIB_ALLOCT(
+		btTriangleShape, g_physics_allocator,
+		btVector3(
+			static_cast<float>(p1x.getNumber()),
+			static_cast<float>(p1y.getNumber()),
+			static_cast<float>(p1z.getNumber())
+		),
+		btVector3(
+			static_cast<float>(p2x.getNumber()),
+			static_cast<float>(p2y.getNumber()),
+			static_cast<float>(p2z.getNumber())
+		),
+		btVector3(
+			static_cast<float>(p3x.getNumber()),
+			static_cast<float>(p3y.getNumber()),
+			static_cast<float>(p3z.getNumber())
+		)
+	);
+}
+
+//static btCollisionShape* CreateCollisionShapeHeightfield(const Gaff::JSON& json)
+//{
+//	
+//}
+
+// btBvhTriangleMeshShape?
+// btScaledBvhTriangleMeshShape?
+// btUniformScalingShape?
+
 static ShapeCreator g_shape_creators[PST_COUNT] = {
 	CreateCollisionShapeCapsule,
 	CreateCollisionShapeBox,
@@ -173,11 +216,13 @@ static ShapeCreator g_shape_creators[PST_COUNT] = {
 	CreateCollisionShapeCone,
 	CreateCollisionShapeSphere,
 	CreateCollisionShapeCylinder,
-	CreateCollisionShapeStaticPlane//,
+	CreateCollisionShapeStaticPlane,
 	//CreateCollisionShapeConvexHull,
 	//CreateCollisionShapeMultiSphere,
 	//CreateCollisionShapeCompound,
-	//CreateCollisionShapeConvex2D
+	//CreateCollisionShapeConvex2D,
+	CreateCollisionShapeTriangle//,
+	//CreateCollisionShapeHeightfield
 };
 
 static const char* g_physics_schema_names[PST_COUNT] = {
