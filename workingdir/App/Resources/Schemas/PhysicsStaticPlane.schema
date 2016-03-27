@@ -1,0 +1,7 @@
+{
+	"Shape": { "Type": "String", "Optional": false },
+	"Normal X": { "Type": "Number", "Optional": false },
+	"Normal Y": { "Type": "Number", "Optional": false },
+	"Normal Z": { "Type": "Number", "Optional": false },
+	"Distance": { "Type": "Number", "Optional": false }
+}

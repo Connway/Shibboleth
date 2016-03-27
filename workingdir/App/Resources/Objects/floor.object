@@ -1,0 +1,11 @@
+{
+	"name": "Floor",
+
+	"components": {
+		"Physics": {
+			"Type": "Bullet Physics Component",
+			"Physics File": "Resources/Objects/floor.physics",
+			"Mass": 0
+		}
+	}
+}
