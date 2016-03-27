@@ -76,47 +76,6 @@ public:
 	INLINE void clearMainWorld(void);
 	//INLINE void clearExtraWorld(size_t world);
 
-	btCollisionShape* createCollisionShapeCapsule(float radius, float height);
-	btCollisionShape* createCollisionShapeBox(float extent_x, float extent_y, float extent_z);
-	INLINE btCollisionShape* createCollisionShapeBox(const Gleam::Vector4CPU& extents);
-	INLINE btCollisionShape* createCollisionShapeBox(float extent);
-	btCollisionShape* createCollisionShapeBox2D(float extent_x, float extent_y);
-	INLINE btCollisionShape* createCollisionShapeBox2D(float extent);
-	btCollisionShape* createCollisionShapeCone(float radius, float height);
-	btCollisionShape* createCollisionShapeSphere(float radius);
-	btCollisionShape* createCollisionShapeCylinder(float extent_x, float extent_y, float extent_z);
-	INLINE btCollisionShape* createCollisionShapeCylinder(const Gleam::Vector4CPU& extents);
-	INLINE btCollisionShape* createCollisionShapeCylinder(float extent);
-	btCollisionShape* createCollisionShapeStaticPlane(float nx, float ny, float nz, float distance);
-	INLINE btCollisionShape* createCollisionShapeStaticPlane(const Gleam::Vector4CPU& norm_dist);
-	btCollisionShape* createCollisionShapeConvexHull(float* points, size_t num_points, size_t stride);
-	//btCollisionShape* createCollisionShapeMultiSphere(size_t identifier = SIZE_T_FAIL);
-	btCollisionShape* createCollisionShapeCompound(size_t identifier = SIZE_T_FAIL);
-	btCollisionShape* createCollisionShapeConvex2D(btCollisionShape* shape);
-
-	btCollisionShape* createCollisionShapeTriangle(
-		float x1, float y1, float z1,
-		float x2, float y2, float z2,
-		float x3, float y3, float z3
-	);
-	INLINE btCollisionShape* createCollisionShapeTriangle(
-		const Gleam::Vector4CPU& p1, const Gleam::Vector4CPU& p2,
-		const Gleam::Vector4CPU& p3
-	);
-
-	btCollisionShape* createCollisionShapeHeightfield(
-		size_t stick_width, size_t stick_length, const float* data,
-		float height_scale, float min_height, float max_height,
-		HeightfieldUpAxis up_axis, bool flip_quad_edges = false
-	);
-
-	// btBvhTriangleMeshShape?
-	// btScaledBvhTriangleMeshShape?
-	// btUniformScalingShape?
-
-	void removeCollisionShape(btCollisionShape* shape);
-	void clearCollisionShapes(void);
-
 	btRigidBody* createRigidBody(Object* object, btCollisionShape* shape, float mass, btMotionState* motion_state = nullptr);
 
 	// collision_group is what group we belong to, collision_mask is what groups we can collide with
@@ -132,8 +91,6 @@ private:
 	btDynamicsWorld* _main_world;
 
 	ProxyAllocator _physics_allocator;
-
-	Map<uint32_t, btCollisionShape*> _shapes;
 
 	void clearWorld(btDynamicsWorld* world);
 

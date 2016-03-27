@@ -1,0 +1,14 @@
+{
+	"Shape": { "Type": "String", "Optional": false },
+	"Point 1 X": { "Type": "Number", "Optional": false },
+	"Point 1 Y": { "Type": "Number", "Optional": false },
+	"Point 1 Z": { "Type": "Number", "Optional": false },
+
+	"Point 2 X": { "Type": "Number", "Optional": false },
+	"Point 2 Y": { "Type": "Number", "Optional": false },
+	"Point 2 Z": { "Type": "Number", "Optional": false },
+
+	"Point 3 X": { "Type": "Number", "Optional": false },
+	"Point 3 Y": { "Type": "Number", "Optional": false },
+	"Point 3 Z": { "Type": "Number", "Optional": false }
+}
