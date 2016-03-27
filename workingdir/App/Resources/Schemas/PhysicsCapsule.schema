@@ -1,0 +1,5 @@
+{
+	"Shape": { "Type": "String", "Optional": false },
+	"Radius": { "Type": "Number", "Optional": false },
+	"Height": { "Type": "Number", "Optional": false }
+}

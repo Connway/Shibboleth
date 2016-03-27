@@ -1,0 +1,5 @@
+{
+		"Type": { "Type": "String", "Optional": false },
+		"Physics File": { "Type": "String", "Optional": false },
+		"Mass": { "Type": "Number", "Optional": false }
+}

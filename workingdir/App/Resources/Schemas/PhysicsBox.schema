@@ -1,0 +1,6 @@
+{
+	"Shape": { "Type": "String", "Optional": false },
+	"Width": { "Type": "Number", "Optional": false },
+	"Height": { "Type": "Number", "Optional": false },
+	"Depth": { "Type": "Number", "Optional": false }
+}
