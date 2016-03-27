@@ -36,7 +36,8 @@ project "Game"
 		"../../dependencies/assimp/include",
 		"../../dependencies/esprit/include",
 		"../../dependencies/minizip",
-		"../../dependencies/zlib"
+		"../../dependencies/zlib",
+		"../../dependencies/bullet"
 	}
 
 	dofile("../../utils/os_conditionals.lua")

@@ -23,54 +23,41 @@ THE SOFTWARE.
 #pragma once
 
 #include <Shibboleth_ReflectionDefinitions.h>
-#include <Shibboleth_ResourceWrapper.h>
-#include <Shibboleth_Component.h>
-#include <LinearMath/btVector3.h>
+#include <Gaff_IVirtualDestructor.h>
 
-class btRigidBody;
+class btCollisionShape;
 
 NS_SHIBBOLETH
 
-class BulletPhysicsResource;
-
-static const char* g_physics_schema_names[] = {
-	"PhysicsCapsule.schema",
-	"PhysicsBox.schema"
+enum PhysicsShapeType
+{
+	PST_CAPSULE = 0,
+	PST_BOX,
+	PST_BOX_2D,
+	PST_CONE,
+	PST_SPHERE,
+	PST_CYLINDER,
+	PST_STATIC_PLANE,
+	//PST_CONVEX_HULL,
+	//PST_MULTI_SPHERE,
+	//PST_COMPOUND,
+	//PST_CONVEX_2D
+	PST_COUNT
 };
 
-class BulletPhysicsComponent : public Component
+SHIB_ENUM_REF_DEF(PhysicsShapeType);
+
+#ifdef USE_PHYSX
+#else
+
+class BulletPhysicsResource : public Gaff::IVirtualDestructor
 {
 public:
-	INLINE static const char* getComponentName(void)
-	{
-		return "Bullet Physics Component";
-	}
+	BulletPhysicsResource(void) {}
+	~BulletPhysicsResource(void) {}
 
-	BulletPhysicsComponent(void);
-	~BulletPhysicsComponent(void);
-
-	void* rawRequestInterface(Gaff::ReflectionHash class_id) const override;
-
-	const Gaff::JSON& getSchema(void) const;
-
-	bool load(const Gaff::JSON&) override;
-	bool save(Gaff::JSON&) override;
-
-	void addToWorld(void) override;
-	void removeFromWorld(void) override;
-
-	void setActive(bool active) override;
-
-private:
-	btRigidBody* _rigid_body;
-	btVector3 _inertia;
-	float _mass;
-
-	ResourceWrapper<BulletPhysicsResource> _phys_res;
-
-	void collisionShapeLoaded(ResourceContainer*);
-
-	SHIB_REF_DEF(BulletPhysicsComponent);
+	btCollisionShape* collision_shape = nullptr;
 };
+#endif
 
 NS_END

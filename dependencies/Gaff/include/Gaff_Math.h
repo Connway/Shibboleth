@@ -1,3 +1,4 @@
+
 /************************************************************************************
 Copyright (C) 2016 by Nicholas LaCroix
 
@@ -196,14 +197,29 @@ INLINE uint32_t FNV1Hash32(const char* key, size_t len);
 float BinomialCoefficient(float n, float k);
 float BernsteinPolynomial(float t, float n, float k);
 
-//static constexpr uint64_t FNVBasis64 = 14695981039346656037ULL;
-//static constexpr uint64_t FNVPrime64 = 1099511628211ULL;
-//static constexpr uint32_t FNVBasis32 = 2166136261U;
-//static constexpr uint32_t FNVPrime32 = 16777619U;
+static constexpr uint64_t FNVBasis64 = 14695981039346656037ULL;
+static constexpr uint64_t FNVPrime64 = 1099511628211ULL;
+static constexpr uint32_t FNVBasis32 = 2166136261U;
+static constexpr uint32_t FNVPrime32 = 16777619U;
 
-//constexpr uint64_t FNV1aHash64Const(const char* key, uint64_t value = FNVBasis64)
-//{
-//	return (*key) ? FNV1aHash64Const(key + 1, (value ^ (uint64_t)*key) * FNVPrime64) : value;
-//}
+constexpr uint64_t FNV1aHash64Const(const char* key, size_t len, uint64_t init = INIT_HASH64)
+{
+	return (len) ? FNV1aHash64Const(key + 1, len - 1, (init ^ static_cast<uint64_t>(*key)) * 1099511628211ULL) : init;
+}
+
+constexpr uint64_t FNV1Hash64Const(const char* key, size_t len, uint64_t init = INIT_HASH64)
+{
+	return (len) ? FNV1Hash64Const(key + 1, len - 1, (init ^ 1099511628211ULL) * static_cast<uint64_t>(*key)) : init;
+}
+
+constexpr uint32_t FNV1aHash32Const(const char* key, size_t len, uint32_t init = INIT_HASH32)
+{
+	return (len) ? FNV1aHash32Const(key + 1, len - 1, (init ^ static_cast<uint32_t>(*key)) * 16777619U) : init;
+}
+
+constexpr uint32_t FNV1Hash32Const(const char* key, size_t len, uint32_t init = INIT_HASH32)
+{
+	return (len) ? FNV1Hash32Const(key + 1, len - 1, (init ^ 16777619U) * static_cast<uint32_t>(*key)) : init;
+}
 
 NS_END

@@ -48,6 +48,12 @@
     <ClInclude Include="..\..\..\src\Game\include\Shibboleth_PackFileSystem.h">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\src\Game\include\Shibboleth_PhysicsLoader.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\Game\include\Shibboleth_PhysicsResource.h">
+      <Filter>include</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\src\Game\include\Shibboleth_ProgramBuffersCreator.h">
       <Filter>include</Filter>
     </ClInclude>
@@ -81,6 +87,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\src\Game\Shibboleth_BufferCreator.cpp" />
+    <ClCompile Include="..\..\..\src\Game\Shibboleth_BulletPhysicsLoader.cpp" />
     <ClCompile Include="..\..\..\src\Game\Shibboleth_Component.cpp" />
     <ClCompile Include="..\..\..\src\Game\Shibboleth_HoldingLoader.cpp" />
     <ClCompile Include="..\..\..\src\Game\Shibboleth_LuaLoader.cpp" />
@@ -89,6 +96,7 @@
     <ClCompile Include="..\..\..\src\Game\Shibboleth_OtterUIFileSystem.cpp" />
     <ClCompile Include="..\..\..\src\Game\Shibboleth_OtterUIRenderer.cpp" />
     <ClCompile Include="..\..\..\src\Game\Shibboleth_PackFileSystem.cpp" />
+    <ClCompile Include="..\..\..\src\Game\Shibboleth_PhysicsResource.cpp" />
     <ClCompile Include="..\..\..\src\Game\Shibboleth_ProgramBuffersCreator.cpp" />
     <ClCompile Include="..\..\..\src\Game\Shibboleth_RenderTargetLoader.cpp" />
     <ClCompile Include="..\..\..\src\Game\Shibboleth_SamplerStateLoader.cpp" />
