@@ -521,6 +521,7 @@ public:
 	EnumReflectionDefinition<T, Allocator>&& addValue(const char* name, T value);
 	const char* getName(T value) const;
 	T getValue(const char* name) const;
+	bool getValue(const char* name, T& value) const;
 
 	Pair<AString<Allocator>, T> getEntry(size_t index) const;
 

@@ -28,12 +28,12 @@ THE SOFTWARE.
 #include <Shibboleth_IApp.h>
 #include <Gaff_JSON.h>
 
-#ifndef USE_PHYSX
-	#include <Shibboleth_BulletPhysicsComponent.h>
-	#include <Shibboleth_BulletPhysicsManager.h>
-#else
+#ifdef USE_PHYSX
 	#include <Shibboleth_PhysXPhysicsComponent.h>
 	#include <Shibboleth_PhysXPhysicsManager.h>
+#else
+	#include <Shibboleth_BulletPhysicsComponent.h>
+	#include <Shibboleth_BulletPhysicsManager.h>
 #endif
 
 
@@ -71,24 +71,17 @@ static ComponentNameFunc name_funcs[] = {
 	&Shibboleth::LuaComponent::getComponentName,
 	&Shibboleth::ModelComponent::getComponentName,
 	&Shibboleth::CameraComponent::getComponentName,
-#ifndef USE_PHYSX
-	&Shibboleth::BulletPhysicsComponent::getComponentName,
-#else
+#ifdef USE_PHYSX
 	&Shibboleth::PhysXPhysicsComponent::getComponentName,
+#else
+	&Shibboleth::BulletPhysicsComponent::getComponentName,
 #endif
 };
 
 DYNAMICEXPORT_C bool InitModule(Shibboleth::IApp& app)
 {
-	// set lua allocation function
-
 	Gaff::JSON::SetHashSeed(app.getSeed());
 	Shibboleth::SetApp(app);
-
-#ifndef USE_PHYSX
-	//Shibboleth::BulletPhysicsManager::SetMemoryFunctions();
-#else
-#endif
 
 	return true;
 }

@@ -22,55 +22,21 @@ THE SOFTWARE.
 
 #pragma once
 
-#include <Shibboleth_ReflectionDefinitions.h>
-#include <Shibboleth_ResourceWrapper.h>
-#include <Shibboleth_Component.h>
-#include <LinearMath/btVector3.h>
-
-class btRigidBody;
+#include "Shibboleth_IResourceLoader.h"
 
 NS_SHIBBOLETH
 
-class BulletPhysicsResource;
-
-static const char* g_physics_schema_names[] = {
-	"PhysicsCapsule.schema",
-	"PhysicsBox.schema"
-};
-
-class BulletPhysicsComponent : public Component
+class PhysicsLoader : public IResourceLoader
 {
 public:
-	INLINE static const char* getComponentName(void)
-	{
-		return "Bullet Physics Component";
-	}
+	PhysicsLoader(void);
+	~PhysicsLoader(void);
 
-	BulletPhysicsComponent(void);
-	~BulletPhysicsComponent(void);
+	Gaff::IVirtualDestructor* load(const char* file_name, uint64_t, HashMap<AString, IFile*>& file_map);
 
-	void* rawRequestInterface(Gaff::ReflectionHash class_id) const override;
+	GAFF_NO_COPY(PhysicsLoader);
+	GAFF_NO_MOVE(PhysicsLoader);
 
-	const Gaff::JSON& getSchema(void) const;
-
-	bool load(const Gaff::JSON&) override;
-	bool save(Gaff::JSON&) override;
-
-	void addToWorld(void) override;
-	void removeFromWorld(void) override;
-
-	void setActive(bool active) override;
-
-private:
-	btRigidBody* _rigid_body;
-	btVector3 _inertia;
-	float _mass;
-
-	ResourceWrapper<BulletPhysicsResource> _phys_res;
-
-	void collisionShapeLoaded(ResourceContainer*);
-
-	SHIB_REF_DEF(BulletPhysicsComponent);
 };
 
 NS_END

@@ -126,6 +126,19 @@ T EnumReflectionDefinition<T, Allocator>::getValue(const char* name) const
 }
 
 template <class T, class Allocator>
+bool EnumReflectionDefinition<T, Allocator>::getValue(const char* name, T& value) const
+{
+	auto it = _values_map.findElementWithKey(name);
+	
+	if (it == _values_map.end()) {
+		return false;
+	}
+
+	value = it.getValue();
+	return true;
+}
+
+template <class T, class Allocator>
 Pair<AString<Allocator>, T> EnumReflectionDefinition<T, Allocator>::getEntry(size_t index) const
 {
 	GAFF_ASSERT(index < _values_map.size());

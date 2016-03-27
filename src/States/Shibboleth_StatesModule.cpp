@@ -30,7 +30,6 @@ THE SOFTWARE.
 #include <Gaff_JSON.h>
 
 #include <Shibboleth_RenderPipelineManager.h>
-#include <Shibboleth_BulletPhysicsManager.h>
 #include <Shibboleth_OcclusionManager.h>
 #include <Shibboleth_CameraComponent.h>
 #include <Shibboleth_UpdateManager.h>
@@ -43,24 +42,32 @@ class LoopState : public Shibboleth::IState
 public:
 	LoopState(Shibboleth::IApp& app):
 		_object(nullptr), _object2(nullptr),
-		_camera(nullptr), _app(app)
+		_camera(nullptr), _floor(nullptr),
+		_app(app)
 	{
 	}
 
 	~LoopState(void)
 	{
+		auto& occ_mgr = Shibboleth::GetApp().getManagerT<Shibboleth::OcclusionManager>("Occlusion Manager");
+		auto& obj_mgr = Shibboleth::GetApp().getManagerT<Shibboleth::ObjectManager>("Object Manager");
+
 		if (_object) {
-			Shibboleth::GetApp().getManagerT<Shibboleth::OcclusionManager>("Occlusion Manager").removeObject(_object);
-			Shibboleth::GetApp().getManagerT<Shibboleth::ObjectManager>("Object Manager").removeObject(_object->getID());
+			occ_mgr.removeObject(_object);
+			obj_mgr.removeObject(_object->getID());
 		}
 
 		if (_object2) {
-			Shibboleth::GetApp().getManagerT<Shibboleth::OcclusionManager>("Occlusion Manager").removeObject(_object2);
-			Shibboleth::GetApp().getManagerT<Shibboleth::ObjectManager>("Object Manager").removeObject(_object2->getID());
+			occ_mgr.removeObject(_object2);
+			obj_mgr.removeObject(_object2->getID());
 		}
 
 		if (_camera) {
-			Shibboleth::GetApp().getManagerT<Shibboleth::ObjectManager>("Object Manager").removeObject(_camera->getID());
+			obj_mgr.removeObject(_camera->getID());
+		}
+
+		if (_floor) {
+			obj_mgr.removeObject(_floor->getID());
 		}
 	}
 
@@ -76,10 +83,6 @@ public:
 
 	void enter(void)
 	{
-		auto& phys_mgr = _app.getManagerT<Shibboleth::BulletPhysicsManager>();
-		auto* plane_coll = phys_mgr.createCollisionShapeStaticPlane(0.0f, 1.0f, 0.0f, -15.0f);
-		phys_mgr.addToMainWorld(phys_mgr.createRigidBody(nullptr, plane_coll, 0.0f));
-
 		_app.getManagerT<Shibboleth::ResourceManager>("Resource Manager").addRequestAddedCallback(Gaff::Bind(this, &LoopState::ResReq));
 
 		_object = _app.getManagerT<Shibboleth::ObjectManager>("Object Manager").createObject();
@@ -119,10 +122,23 @@ public:
 		if (_camera) {
 			if (_camera->init("Resources/Objects/test_camera.object")) {
 				_camera->setWorldPosition(Gleam::Vector4CPU(0.0f, 5.0f, -50.0f, 1.0f));
-				
+
 			} else {
 				_app.getManagerT<Shibboleth::ObjectManager>("Object Manager").removeObject(_camera->getID());
 				_camera = nullptr;
+				_app.quit();
+			}
+
+		} else {
+			_app.quit();
+		}
+
+		_floor = _app.getManagerT<Shibboleth::ObjectManager>("Object Manager").createObject();
+
+		if (_floor) {
+			if (!_floor->init("Resources/Objects/floor.object")) {
+				_app.getManagerT<Shibboleth::ObjectManager>("Object Manager").removeObject(_floor->getID());
+				_floor = nullptr;
 				_app.quit();
 			}
 
@@ -149,6 +165,7 @@ public:
 		_object->addToWorld();
 		_object2->addToWorld();
 		_camera->addToWorld();
+		_floor->addToWorld();
 	}
 
 	void update(void)
@@ -183,6 +200,7 @@ private:
 	Shibboleth::Object* _object;
 	Shibboleth::Object* _object2;
 	Shibboleth::Object* _camera;
+	Shibboleth::Object* _floor;
 	Shibboleth::IApp& _app;
 	Shibboleth::Array<Shibboleth::ResourcePtr> _resources;
 };

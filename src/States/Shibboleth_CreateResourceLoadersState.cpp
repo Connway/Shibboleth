@@ -29,6 +29,7 @@ THE SOFTWARE.
 #include <Shibboleth_SamplerStateLoader.h>
 #include <Shibboleth_RenderTargetLoader.h>
 #include <Shibboleth_BufferCreator.h>
+#include <Shibboleth_PhysicsLoader.h>
 #include <Shibboleth_TextureLoader.h>
 #include <Shibboleth_HoldingLoader.h>
 #include <Shibboleth_ShaderLoader.h>
@@ -281,6 +282,20 @@ void CreateResourceLoadersState::update(void)
 
 		_app.getGameLogFile().first.printf("Adding Render Target Loader\n");
 		res_mgr.registerResourceLoader(render_target_loader, ".rendertarget");
+	}
+
+	// PHYSICS LOADER
+	{
+		PhysicsLoader* physics_loader = SHIB_ALLOCT(PhysicsLoader, *GetAllocator());
+
+		if (!physics_loader) {
+			_app.getGameLogFile().first.printf("ERROR - Failed to create Physics loader.\n");
+			_app.quit();
+			return;
+		}
+
+		_app.getGameLogFile().first.printf("Adding Render Target Loader\n");
+		res_mgr.registerResourceLoader(physics_loader, ".physics");
 	}
 
 	_app.getGameLogFile().first.printf("Finished Creating Resource Loaders\n\n");

@@ -20,9 +20,14 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
+#ifndef USE_PHYSX
+
 #include "Shibboleth_BulletPhysicsComponent.h"
 #include <Shibboleth_BulletPhysicsManager.h>
+#include <Shibboleth_PhysicsResource.h>
+#include <Shibboleth_SchemaManager.h>
 #include <Shibboleth_Utilities.h>
+#include <Shibboleth_Object.h>
 #include <Shibboleth_IApp.h>
 #include <BulletDynamics/Dynamics/btRigidBody.h>
 
@@ -34,8 +39,7 @@ SHIB_REF_IMPL(BulletPhysicsComponent)
 ;
 
 BulletPhysicsComponent::BulletPhysicsComponent(void):
-	_collision_shape(nullptr), _rigid_body(nullptr),
-	_mass(0.0f)
+	_rigid_body(nullptr), _mass(0.0f)
 {
 }
 
@@ -45,12 +49,20 @@ BulletPhysicsComponent::~BulletPhysicsComponent(void)
 
 const Gaff::JSON& BulletPhysicsComponent::getSchema(void) const
 {
-	return Component::getSchema();
+	static const Gaff::JSON& schema = GetApp().getManagerT<SchemaManager>("Schema Manager").getSchema("BulletPhysicsComponent.schema");
+	return schema;
 }
 
 bool BulletPhysicsComponent::load(const Gaff::JSON& json)
 {
-	return Component::load(json);
+	gRefDef.read(json, this);
+
+	_phys_res = GetApp().getManagerT<ResourceManager>().requestResource(json["Physics File"].getString());
+	_mass = Gaff::Max(0.0f, static_cast<float>(json["Mass"].getNumber()));
+
+	_phys_res.getResourcePtr()->addCallback(Gaff::Bind(this, &BulletPhysicsComponent::collisionShapeLoaded));
+
+	return true;
 }
 
 bool BulletPhysicsComponent::save(Gaff::JSON& json)
@@ -60,17 +72,9 @@ bool BulletPhysicsComponent::save(Gaff::JSON& json)
 
 void BulletPhysicsComponent::addToWorld(void)
 {
-	auto& phys_mgr = GetApp().getManagerT<BulletPhysicsManager>();
-	_collision_shape = phys_mgr.createCollisionShapeCapsule(1.0f, 1.0f);
-
-	if (!_collision_shape) {
-		// log error
-		return;
+	if (_phys_res.getResourcePtr()->isLoaded()) {
+		GetApp().getManagerT<BulletPhysicsManager>().addToMainWorld(_rigid_body);
 	}
-
-	_rigid_body = phys_mgr.createRigidBody(getOwner(), _collision_shape, 10.0f);
-
-	phys_mgr.addToMainWorld(_rigid_body);
 }
 
 void BulletPhysicsComponent::removeFromWorld(void)
@@ -99,4 +103,20 @@ void BulletPhysicsComponent::setActive(bool active)
 	}
 }
 
+void BulletPhysicsComponent::collisionShapeLoaded(ResourceContainer*)
+{
+	if (_phys_res.getResourcePtr()->hasFailed()) {
+		// log error
+		return;
+	}
+
+	_rigid_body = GetApp().getManagerT<BulletPhysicsManager>().createRigidBody(getOwner(), _phys_res->collision_shape, _mass);
+
+	if (getOwner()->isInWorld()) {
+		addToWorld();
+	}
+}
+
 NS_END
+
+#endif

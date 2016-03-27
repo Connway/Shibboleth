@@ -23,7 +23,9 @@
 		},
 		"Test2":
 		{
-			"Type": "Bullet Physics Component"
+			"Type": "Bullet Physics Component",
+			"Physics File": "Resources/Objects/test.physics",
+			"Mass": 10
 		}
 	}
 }
