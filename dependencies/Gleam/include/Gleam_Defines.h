@@ -22,12 +22,14 @@ THE SOFTWARE.
 
 #pragma once
 
+#include <Gaff_Platform.h>
+
 #define OPENGL_MULTITHREAD
 
 #ifndef COMPILERALIGN16
-	#if defined(_WIN32) || defined(_WIN64)
+	#ifdef PLATFORM_WINDOWS
 		#define COMPILERALIGN16 __declspec(align(16))
-	#elif defined(__linux__) || defined(__APPLE__)
+	#elif defined(PLATFORM_LINUX) || defined(PLATFORM_MAC)
 		#define COMPILERALIGN16 __attribute__((aligned(16)))
 	#else
 		#error Platform not supported
@@ -56,7 +58,7 @@ THE SOFTWARE.
 	#define _CRT_SECURE_NO_WARNINGS
 #endif
 
-#if defined(_WIN32) || defined(_WIN64)
+#ifdef PLATFORM_WINDOWS
 	#pragma warning(disable : 4201)
 #else
 	#define __stdcall

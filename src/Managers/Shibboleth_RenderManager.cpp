@@ -28,6 +28,7 @@ THE SOFTWARE.
 #include <Shibboleth_Utilities.h>
 #include <Shibboleth_IApp.h>
 
+#include <Gleam_RawInputRegisterFunction.h>
 #include <Gleam_IRenderDevice.h>
 #include <Gleam_Global.h>
 
@@ -325,7 +326,9 @@ bool RenderManager::createWindow(
 
 	WindowData wnd_data = { window, device_id, _render_device->getNumOutputs(device_id) - 1, tags };
 	_windows.push(wnd_data);
-	return true;
+
+	return Gleam::RegisterForRawInput(RAW_INPUT_KEYBOARD, *window) &&
+			Gleam::RegisterForRawInput(RAW_INPUT_MOUSE, *window);
 }
 
 void RenderManager::updateWindows(void)

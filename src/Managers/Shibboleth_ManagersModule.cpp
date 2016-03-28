@@ -32,6 +32,7 @@ THE SOFTWARE.
 #include <Shibboleth_RenderManager.h>
 #include <Shibboleth_UpdateManager.h>
 #include <Shibboleth_ObjectManager.h>
+#include <Shibboleth_InputManager.h>
 #include <Shibboleth_FrameManager.h>
 #include <Shibboleth_LuaManager.h>
 
@@ -82,6 +83,7 @@ enum Managers
 	RP_MANAGER,
 	SCHEMA_MANAGER,
 	PHYSICS_MANAGER,
+	INPUT_MANAGER,
 	NUM_MANAGERS
 };
 
@@ -102,10 +104,11 @@ static CreateMgrFunc create_funcs[] = {
 	&CreateManagerT<Shibboleth::RenderPipelineManager>,
 	&CreateManagerT<Shibboleth::SchemaManager>,
 #ifndef USE_PHYSX
-	&CreateManagerT<Shibboleth::BulletPhysicsManager>
+	&CreateManagerT<Shibboleth::BulletPhysicsManager>,
 #else
-	&CreateManagerT<Shibboleth::PhysXPhysicsManager>
+	&CreateManagerT<Shibboleth::PhysXPhysicsManager>,
 #endif
+	&CreateManagerWithInitT<Shibboleth::InputManager>
 };
 
 DYNAMICEXPORT_C bool InitModule(Shibboleth::IApp& app)

@@ -22,36 +22,58 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Gleam_IInputDevice.h"
-#include "Gleam_Array.h"
+#include <Shibboleth_ReflectionDefinitions.h>
+#include <Shibboleth_IUpdateQuery.h>
+#include <Shibboleth_IManager.h>
+#include <Shibboleth_Map.h>
+#include <Gleam_Keyboard.h>
+#include <Gleam_Mouse.h>
 
-NS_GLEAM
+namespace Gleam
+{
+	enum KeyCode;
+}
 
-class IWindow;
+NS_SHIBBOLETH
 
-class InputManager
+class InputManager : public IManager, public IUpdateQuery
 {
 public:
+	INLINE static const char* GetName(void)
+	{
+		return "Input Manager";
+	}
+
 	InputManager(void);
 	~InputManager(void);
 
-	bool init(const IWindow& window);
-	void destroy(void);
+	void* rawRequestInterface(Gaff::ReflectionHash class_id) const override;
 
-	void update(void);
+	const char* getName(void) const override;
 
-	INLINE void addInputDevice(IInputDevice* device);
-	bool removeInputDevice(const IInputDevice* device);
-	INLINE IInputDevice* getInputDevice(unsigned int i) const;
+	void getUpdateEntries(Array<UpdateEntry>& entries) override;
 
-	IInputDevice* createKeyboard(bool no_windows_key = false);
-	IInputDevice* createMouse(void);
+	bool init(void);
+	void update(double dt, void*);
+
+	void addKeyBinding(const char* alias, Gleam::KeyCode key_code, bool negative = false);
+	void removeKeyBinding(Gleam::KeyCode key_code);
+
+	void addMouseBinding(const char* alias, Gleam::MouseCode mouse_code, bool negative = false);
+	void removeMouseBinding(Gleam::MouseCode mouse_code);
 
 private:
-	GleamArray<IInputDevice*> _input_devices;
-	const IWindow* _window;
+	Gleam::Keyboard _keyboard;
+	Gleam::Mouse _mouse;
 
-	GAFF_NO_COPY(InputManager);
+	Map<Gleam::KeyCode, Gaff::Pair<float, float*> > _key_bindings;
+	Map<Gleam::MouseCode, Gaff::Pair<float, float*> > _mouse_bindings;
+	Map<uint32_t, float> _values;
+
+	void KeyboardHandler(Gleam::IInputDevice*, unsigned int key, float value);
+	void MouseHandler(Gleam::IInputDevice*, unsigned int event, float value);
+
+	SHIB_REF_DEF(InputManager);
 };
 
 NS_END

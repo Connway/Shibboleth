@@ -66,7 +66,7 @@ enum MouseCode
 	MOUSE_WHEEL,
 };
 
-#if defined(_WIN32) || defined(_WIN64)
+#ifdef PLATFORM_WINDOWS
 enum KeyCode
 {
 	// KEY_CANCEL = 0x03,
@@ -192,7 +192,7 @@ enum KeyCode
 	KEY_APOSTROPHE,
 	KEY_NUMPADENTER = 0x0D
 };
-#elif defined(__linux__)
+#elif defined(PLATFORM_LINUX)
 enum KeyCode
 {
 	// KEY_CANCEL = 0xff69,

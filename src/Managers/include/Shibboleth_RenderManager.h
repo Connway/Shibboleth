@@ -36,6 +36,8 @@ THE SOFTWARE.
 #include <Gaff_SmartPtr.h>
 #include <Gaff_SpinLock.h>
 
+#define GRAPHICS_CFG "cfg/graphics.cfg"
+
 using RasterStatePtr = Gaff::RefPtr<Gleam::IRasterState>;
 
 #define EXTRACT_DISPLAY_TAGS(display_tags, out_tags) \

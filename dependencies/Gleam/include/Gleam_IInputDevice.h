@@ -35,50 +35,13 @@ typedef void (*InputHandler)(IInputDevice*, unsigned int, float);
 class IInputDevice
 {
 public:
-	template <class T>
-	INLINE void registerInputHandler(T* object, void (T::*cb)(IInputDevice*, unsigned int, float))
-	{
-		Gaff::FunctionBinder<void, IInputDevice*, unsigned int, float> function = Gaff::Bind(object, cb); 
-		registerInputHandlerHelper(function);
-	}
-
-	template <class T>
-	INLINE bool removeInputHandler(T* object, void (T::*cb)(IInputDevice*, unsigned int, float))
-	{
-		Gaff::FunctionBinder<void, IInputDevice*, unsigned int, float> function = Gaff::Bind(object, cb); 
-		return removeInputHandlerHelper(function);
-	}
-
-	template <class T>
-	INLINE void registerInputHandler(const T& functor)
-	{
-		Gaff::FunctionBinder<void, IInputDevice*, unsigned int, float> function = Gaff::Bind(functor); 
-		registerInputHandlerHelper(function);
-	}
-
-	template <class T>
-	INLINE bool removeInputHandler(const T& functor)
-	{
-		Gaff::FunctionBinder<void, IInputDevice*, unsigned int, float> function = Gaff::Bind(functor); 
-		return removeInputHandlerHelper(function);
-	}
-
-	INLINE void registerInputHandler(InputHandler handler)
-	{
-		Gaff::FunctionBinder<void, IInputDevice*, unsigned int, float> function = Gaff::Bind(handler); 
-		registerInputHandlerHelper(function);
-	}
-
-	INLINE bool removeInputHandler(InputHandler handler)
-	{
-		Gaff::FunctionBinder<void, IInputDevice*, unsigned int, float> function = Gaff::Bind(handler); 
-		return removeInputHandlerHelper(function);
-	}
+	using InputHandler = Gaff::FunctionBinder<void, IInputDevice*, unsigned int, float>;
 
 	IInputDevice(void) {}
 	virtual ~IInputDevice(void) {}
 
-	virtual bool init(const IWindow& window) = 0;
+	virtual bool init(IWindow& window) = 0; // Specific window init
+	virtual bool init(void) = 0; // Global handler init
 	virtual void destroy(void) = 0;
 
 	virtual void update(void) = 0;
@@ -91,15 +54,12 @@ public:
 	virtual bool isKeyboard(void) const = 0;
 	virtual bool isMouse(void) const = 0;
 
-protected:
-	GleamArray< Gaff::FunctionBinder<void, IInputDevice*, unsigned int, float> > _input_handlers;
-
-	INLINE void registerInputHandlerHelper(const Gaff::FunctionBinder<void, IInputDevice*, unsigned int, float>& cb)
+	INLINE void addInputHandler(const InputHandler& cb)
 	{
-		_input_handlers.push(cb);
+		_input_handlers.emplacePush(cb);
 	}
 
-	bool removeInputHandlerHelper(const Gaff::FunctionBinder<void, IInputDevice*, unsigned int, float>& cb)
+	bool removeInputHandler(const InputHandler& cb)
 	{
 		auto it = _input_handlers.linearSearch(cb);
 
@@ -110,6 +70,9 @@ protected:
 
 		return false;
 	}
+
+protected:
+	GleamArray<InputHandler> _input_handlers;
 
 	GAFF_NO_COPY(IInputDevice);
 	GAFF_NO_MOVE(IInputDevice);

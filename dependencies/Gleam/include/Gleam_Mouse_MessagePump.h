@@ -32,7 +32,8 @@ public:
 	MouseMP(void);
 	~MouseMP(void);
 
-	bool init(const IWindow& window);
+	bool init(IWindow& window);
+	bool init(void);
 	void destroy(void);
 	void update(void);
 
@@ -43,6 +44,9 @@ public:
 	void getNormalizedDeltas(float& ndx, float& ndy) const;
 	short getWheelDelta(void) const;
 
+	INLINE void allowRepeats(bool allow);
+	INLINE bool areRepeatsAllowed(void) const;
+
 	const char* getDeviceName(void) const;
 	const char* getPlatformImplementationString(void) const;
 
@@ -51,10 +55,13 @@ public:
 private:
 	MouseData _curr_data;
 	MouseData _prev_data;
-	IWindow* _window;
 
 	int _dx, _dy;
 	short _wheel;
+
+	char _flags;
+
+	IWindow* _window;
 
 	bool handleMessage(const AnyMessage& message);
 };

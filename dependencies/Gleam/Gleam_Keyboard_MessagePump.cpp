@@ -22,13 +22,16 @@ THE SOFTWARE.
 
 #include "Gleam_Keyboard_MessagePump.h"
 #include "Gleam_RawInputRegisterFunction.h"
-#include "Gleam_IWindow.h"
-#include "Gleam_HashMap.h"
+#include "Gleam_Window.h"
+
+#define KMP_ALLOW_REPEATS (1 << 0)
+#define KMP_NO_WINDOWS_KEY (1 << 1)
+#define KMP_GLOBAL_HANDLER (1 << 2)
 
 NS_GLEAM
 
 KeyboardMP::KeyboardMP(void):
-	_window(nullptr)
+	_flags(0), _window(nullptr)
 {
 	memset(_curr_state, 0, sizeof(_curr_state));
 	memset(_prev_state, 0, sizeof(_prev_state));
@@ -39,35 +42,60 @@ KeyboardMP::~KeyboardMP(void)
 	destroy();
 }
 
-bool KeyboardMP::init(const IWindow& window, bool no_windows_key)
+bool KeyboardMP::init(IWindow& window, bool no_windows_key)
 {
 	if (no_windows_key) {
+		_flags |= KMP_NO_WINDOWS_KEY;
 	}
 
 	return init(window);
 }
 
-bool KeyboardMP::init(const IWindow& window)
+bool KeyboardMP::init(IWindow& window)
 {
 	auto cb = Gaff::Bind(this, &KeyboardMP::handleMessage);
-	_window = const_cast<IWindow*>(&window);
+	_window = &window;
 	_window->addWindowMessageHandler(cb);
 
 	return RegisterForRawInput(RAW_INPUT_KEYBOARD, window);
 }
 
+bool KeyboardMP::init(bool no_windows_key)
+{
+	if (no_windows_key) {
+		_flags |= KMP_NO_WINDOWS_KEY;
+	}
+
+	return init();
+}
+
+bool KeyboardMP::init(void)
+{
+	auto cb = Gaff::Bind(this, &KeyboardMP::handleMessage);
+	Window::AddGlobalMessageHandler(cb);
+
+	_flags |= KMP_GLOBAL_HANDLER;
+	return true;
+}
+
 void KeyboardMP::destroy(void)
 {
+	auto cb = Gaff::Bind(this, &KeyboardMP::handleMessage);
+
 	if (_window) {
-		auto cb = Gaff::Bind(this, &KeyboardMP::handleMessage);
 		_window->removeWindowMessageHandler(cb);
 		_window = nullptr;
+
+	} else {
+		Window::RemoveGlobalMessageHandler(cb);
 	}
+
+	_flags = 0;
 }
 
 void KeyboardMP::update(void)
 {
-	if (_window->areRepeatsAllowed()) {
+	if (areRepeatsAllowed()) {
 		for (unsigned int i = 0; i < 256; ++i) {
 			unsigned char curr = _curr_state[i];
 
@@ -100,6 +128,20 @@ bool KeyboardMP::isKeyDown(KeyCode key) const
 bool KeyboardMP::isKeyUp(KeyCode key) const
 {
 	return !_curr_state[key] == 0;
+}
+
+void KeyboardMP::allowRepeats(bool allow)
+{
+	if (allow) {
+		_flags |= KMP_ALLOW_REPEATS;
+	} else {
+		_flags &= ~KMP_ALLOW_REPEATS;
+	}
+}
+
+bool KeyboardMP::areRepeatsAllowed(void) const
+{
+	return _flags & KMP_ALLOW_REPEATS;
 }
 
 const unsigned char* KeyboardMP::getKeyboardData(void) const

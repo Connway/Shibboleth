@@ -241,7 +241,6 @@
     <ClInclude Include="..\..\..\dependencies\Gleam\include\Gleam_ITexture.h" />
     <ClInclude Include="..\..\..\dependencies\Gleam\include\Gleam_IWindow.h" />
     <ClInclude Include="..\..\..\dependencies\Gleam\include\Gleam_IncludeD3D11.h" />
-    <ClInclude Include="..\..\..\dependencies\Gleam\include\Gleam_InputManager.h" />
     <ClInclude Include="..\..\..\dependencies\Gleam\include\Gleam_Keyboard.h" />
     <ClInclude Include="..\..\..\dependencies\Gleam\include\Gleam_Keyboard_MessagePump.h" />
     <ClInclude Include="..\..\..\dependencies\Gleam\include\Gleam_Layout.h" />
@@ -334,7 +333,6 @@
     <ClCompile Include="..\..\..\dependencies\Gleam\Gleam_Frustum_CPU.cpp" />
     <ClCompile Include="..\..\..\dependencies\Gleam\Gleam_Frustum_SIMD.cpp" />
     <ClCompile Include="..\..\..\dependencies\Gleam\Gleam_Global.cpp" />
-    <ClCompile Include="..\..\..\dependencies\Gleam\Gleam_InputManager.cpp" />
     <ClCompile Include="..\..\..\dependencies\Gleam\Gleam_Keyboard_MessagePump.cpp" />
     <ClCompile Include="..\..\..\dependencies\Gleam\Gleam_Layout_Direct3D.cpp" />
     <ClCompile Include="..\..\..\dependencies\Gleam\Gleam_Layout_OpenGL.cpp" />
