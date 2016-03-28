@@ -32,13 +32,18 @@ public:
 	KeyboardMP(void);
 	~KeyboardMP(void);
 
-	bool init(const IWindow& window, bool no_windows_key);
-	bool init(const IWindow& window);
+	bool init(IWindow& window, bool no_windows_key);
+	bool init(IWindow& window);
+	bool init(bool no_windows_key);
+	bool init(void);
 	void destroy(void);
 	void update(void);
 
 	bool isKeyDown(KeyCode key) const;
 	bool isKeyUp(KeyCode key) const;
+
+	INLINE void allowRepeats(bool allow);
+	INLINE bool areRepeatsAllowed(void) const;
 
 	const unsigned char* getKeyboardData(void) const;
 
@@ -52,6 +57,7 @@ public:
 private:
 	unsigned char _curr_state[256];
 	unsigned char _prev_state[256];
+	char _flags;
 
 	IWindow* _window;
 };

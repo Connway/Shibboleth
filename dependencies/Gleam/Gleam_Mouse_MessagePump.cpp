@@ -22,12 +22,15 @@ THE SOFTWARE.
 
 #include "Gleam_Mouse_MessagePump.h"
 #include "Gleam_RawInputRegisterFunction.h"
-#include "Gleam_IWindow.h"
+#include "Gleam_Window.h"
+
+#define MMP_ALLOW_REPEATS (1 << 0)
+#define MMP_GLOBAL_HANDLER (1 << 1)
 
 NS_GLEAM
 
 MouseMP::MouseMP(void):
-	_window(nullptr)
+	_flags(0), _window(nullptr)
 {
 }
 
@@ -36,30 +39,45 @@ MouseMP::~MouseMP(void)
 	destroy();
 }
 
-bool MouseMP::init(const IWindow& window)
+bool MouseMP::init(IWindow& window)
 {
 	memset(&_curr_data, 0, sizeof(MouseData));
 	memset(&_prev_data, 0, sizeof(MouseData));
 
 	auto cb = Gaff::Bind(this, &MouseMP::handleMessage);
-	_window = const_cast<IWindow*>(&window);
+	_window = &window;
 	_window->addWindowMessageHandler(cb);
 
 	return RegisterForRawInput(RAW_INPUT_MOUSE, window);
 }
 
+bool MouseMP::init(void)
+{
+	auto cb = Gaff::Bind(this, &MouseMP::handleMessage);
+	Window::AddGlobalMessageHandler(cb);
+
+	_flags |= MMP_GLOBAL_HANDLER;
+	return true;
+}
+
 void MouseMP::destroy(void)
 {
+	auto cb = Gaff::Bind(this, &MouseMP::handleMessage);
+
 	if (_window) {
-		auto cb = Gaff::Bind(this, &MouseMP::handleMessage);
 		_window->removeWindowMessageHandler(cb);
 		_window = nullptr;
+
+	} else {
+		Window::RemoveGlobalMessageHandler(cb);
 	}
+
+	_flags = 0;
 }
 
 void MouseMP::update(void)
 {
-	if (_window->areRepeatsAllowed()) {
+	if (areRepeatsAllowed()) {
 		for (unsigned int j = 0; j < _input_handlers.size(); ++j) {
 			_input_handlers[j](this, MOUSE_DELTA_X, static_cast<float>(_curr_data.dx));
 			_input_handlers[j](this, MOUSE_DELTA_Y, static_cast<float>(_curr_data.dy));
@@ -88,15 +106,15 @@ void MouseMP::update(void)
 				_input_handlers[j](this, MOUSE_POS_Y, static_cast<float>(_curr_data.y));
 			}
 
-			if (_curr_data.dx) {
+			if (_curr_data.dx != _prev_data.dx) {
 				_input_handlers[j](this, MOUSE_DELTA_X, static_cast<float>(_curr_data.dx));
 			}
 
-			if (_curr_data.dy) {
+			if (_curr_data.dy != _prev_data.dy) {
 				_input_handlers[j](this, MOUSE_DELTA_Y, static_cast<float>(_curr_data.dy));
 			}
 
-			if (_curr_data.wheel) {
+			if (_curr_data.wheel != _prev_data.wheel) {
 				_input_handlers[j](this, MOUSE_WHEEL, static_cast<float>(_curr_data.wheel));
 			}
 
@@ -150,6 +168,20 @@ void MouseMP::getNormalizedDeltas(float& ndx, float& ndy) const
 short MouseMP::getWheelDelta(void) const
 {
 	return _wheel;
+}
+
+void MouseMP::allowRepeats(bool allow)
+{
+	if (allow) {
+		_flags |= MMP_ALLOW_REPEATS;
+	} else {
+		_flags &= ~MMP_ALLOW_REPEATS;
+	}
+}
+
+bool MouseMP::areRepeatsAllowed(void) const
+{
+	return _flags & MMP_ALLOW_REPEATS;
 }
 
 const char* MouseMP::getDeviceName(void) const

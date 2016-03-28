@@ -126,10 +126,10 @@ bool RenderPipelineManager::init(void)
 	}
 
 	IFileSystem* fs = GetApp().getFileSystem();
-	IFile* file = fs->openFile("graphics.cfg");
+	IFile* file = fs->openFile(GRAPHICS_CFG);
 
 	if (!file) {
-		log.first.printf("ERROR - Could not open file 'graphics.cfg'.\n");
+		log.first.printf("ERROR - Could not open file '" GRAPHICS_CFG "'.\n");
 		GetApp().quit();
 		return false;
 	}
@@ -137,7 +137,7 @@ bool RenderPipelineManager::init(void)
 	Gaff::JSON config;
 
 	if (!config.parse(file->getBuffer())) {
-		log.first.printf("ERROR - 'graphics.cfg' is malformed. Could not parse file.\n");
+		log.first.printf("ERROR - '" GRAPHICS_CFG "' is malformed. Could not parse file.\n");
 		fs->closeFile(file);
 		GetApp().quit();
 		return false;
@@ -146,7 +146,7 @@ bool RenderPipelineManager::init(void)
 	fs->closeFile(file);
 
 	if (!config.isObject()) {
-		log.first.printf("ERROR - 'graphics.cfg' is malformed. Root element is not an object.\n");
+		log.first.printf("ERROR - '" GRAPHICS_CFG "' is malformed. Root element is not an object.\n");
 		GetApp().quit();
 		return false;
 	}
@@ -154,7 +154,7 @@ bool RenderPipelineManager::init(void)
 	Gaff::JSON initial_pipeline = config["initial_pipeline"];
 
 	if (!initial_pipeline.isString()) {
-		log.first.printf("ERROR - 'graphics.cfg' is malformed. Element at 'initial_pipeline' is not a string.\n");
+		log.first.printf("ERROR - '" GRAPHICS_CFG "' is malformed. Element at 'initial_pipeline' is not a string.\n");
 		GetApp().quit();
 		return false;
 	}

@@ -30,13 +30,12 @@ NS_GLEAM
 bool RegisterForRawInput(unsigned short device, const IWindow& window)
 {
 	GAFF_ASSERT(device == RAW_INPUT_MOUSE || (device >= RAW_INPUT_JOYSTICK && device <= RAW_INPUT_KEYBOARD));
-	
 
 	RAWINPUTDEVICE rid;
 	rid.usUsagePage = HID_USAGE_PAGE_GENERIC;
 	rid.usUsage = device;
 	rid.dwFlags = 0;
-	rid.hwndTarget = ((const Window&)window).getHWnd();
+	rid.hwndTarget = reinterpret_cast<const Window&>(window).getHWnd();
 
 	return RegisterRawInputDevices(&rid, 1, sizeof(RAWINPUTDEVICE)) == TRUE;
 }

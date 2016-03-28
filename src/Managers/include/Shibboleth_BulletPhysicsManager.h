@@ -27,7 +27,6 @@ THE SOFTWARE.
 #include <Shibboleth_ReflectionDefinitions.h>
 #include <Shibboleth_IUpdateQuery.h>
 #include <Shibboleth_IManager.h>
-#include <Shibboleth_Map.h>
 
 class btCollisionConfiguration;
 class btBroadphaseInterface;

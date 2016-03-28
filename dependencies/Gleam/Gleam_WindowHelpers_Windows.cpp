@@ -102,9 +102,9 @@ void WindowInput(AnyMessage* message, Window*, WPARAM, LPARAM l)
 
 			case VK_MENU:
 				if (raw->data.keyboard.Flags & RI_KEY_E0) {
-					message->key_char.key = Window::gRightKeys[raw->data.keyboard.VKey];
+					message->key_char.key = Window::g_right_keys[raw->data.keyboard.VKey];
 				} else {
-					message->key_char.key = Window::gLeftKeys[raw->data.keyboard.VKey];
+					message->key_char.key = Window::g_left_keys[raw->data.keyboard.VKey];
 				}
 				break;
 

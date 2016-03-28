@@ -36,6 +36,9 @@ NS_GLEAM
 class Window : public IWindow
 {
 public:
+	static void AddGlobalMessageHandler(const MessageHandler& callback);
+	static bool RemoveGlobalMessageHandler(const MessageHandler& callback);
+
 	static void HandleWindowMessages(void);
 
 	Window(void);
@@ -47,17 +50,14 @@ public:
 				const char* device_name = nullptr);
 	void destroy(void);
 
-	void addWindowMessageHandler(Gaff::FunctionBinder<bool, const AnyMessage&>& callback);
-	bool removeWindowMessageHandler(Gaff::FunctionBinder<bool, const AnyMessage&>& callback);
+	void addWindowMessageHandler(const MessageHandler& callback);
+	bool removeWindowMessageHandler(const MessageHandler& callback);
 
 	void showCursor(bool show);
 	void containCursor(bool contain);
 
 	bool isCursorVisible(void) const;
 	bool isCursorContained(void) const;
-
-	void allowRepeats(bool allow);
-	bool areRepeatsAllowed(void) const;
 
 	bool setWindowMode(MODE window_mode, int width = 0, int height = 0, short refresh_rate = 60);
 	MODE getWindowMode(void) const;
@@ -88,7 +88,6 @@ private:
 
 	MODE _window_mode;
 	bool _cursor_visible;
-	bool _no_repeats;
 	bool _contain;
 
 	Display* _display;
@@ -102,18 +101,14 @@ private:
 	Rotation _original_rotation;
 	short _original_rate;
 
-	int chooseClosestResolution(XRRScreenSize* sizes, int num_sizes,
-								unsigned int width, unsigned int height);
-	int chooseClosestRate(short* rates, int num_rates, short rate);
-	void setToOriginalResolutionRate(void);
-
-	GleamArray< Gaff::FunctionBinder<bool, const AnyMessage&> > _window_callbacks;
+	GleamArray<MessageHandler> _window_callbacks;
 
 	static void WindowProc(XEvent& event);
-	static GleamArray<Display*> gDisplays;
-	static GleamArray<Window*> gWindows;
-	static XEvent gEvent;
 
+	int chooseClosestResolution(XRRScreenSize* sizes, int num_sizes,
+		unsigned int width, unsigned int height);
+	int chooseClosestRate(short* rates, int num_rates, short rate);
+	void setToOriginalResolutionRate(void);
 	INLINE void handleMessage(AnyMessage* message);
 
 	GAFF_NO_COPY(Window);

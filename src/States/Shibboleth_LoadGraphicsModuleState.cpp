@@ -26,8 +26,6 @@ THE SOFTWARE.
 #include <Gleam_IRenderDevice.h>
 #include <Gaff_JSON.h>
 
-#define GRAPHICS_CFG "graphics.cfg"
-
 NS_SHIBBOLETH
 
 LoadGraphicsModuleState::LoadGraphicsModuleState(IApp& app):

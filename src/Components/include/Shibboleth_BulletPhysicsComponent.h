@@ -61,6 +61,9 @@ public:
 
 	void setActive(bool active) override;
 
+	const btRigidBody* getRigidBody(void) const;
+	btRigidBody* getRigidBody(void);
+
 private:
 	btRigidBody* _rigid_body;
 	btVector3 _inertia;

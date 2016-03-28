@@ -28,43 +28,67 @@ THE SOFTWARE.
 
 NS_GLEAM
 
-typedef void (*WindowProcHelper)(AnyMessage*, Window*, WPARAM, LPARAM);
+using WindowProcHelper = void (*)(AnyMessage*, Window*, WPARAM, LPARAM);
 
-static GleamMap<unsigned int, WindowProcHelper> gWindowHelpers;
-static GleamArray<Window*> gWindows;
-static bool gFirstInit = true;
-static MSG gMsg;
+static GleamMap<unsigned int, WindowProcHelper> g_window_helpers;
+static GleamArray<Window*> g_windows;
+static bool g_first_init = true;
+static MSG g_msg;
 
-GleamMap<unsigned short, KeyCode> Window::gRightKeys;
-GleamMap<unsigned short, KeyCode> Window::gLeftKeys;
+static GleamArray<MessageHandler> g_global_message_handlers;
+
+GleamMap<unsigned short, KeyCode> Window::g_right_keys;
+GleamMap<unsigned short, KeyCode> Window::g_left_keys;
 
 static void InitWindowProcHelpers(void)
 {
-	gWindowHelpers.insert(WM_CLOSE, WindowClosed);
-	gWindowHelpers.insert(WM_DESTROY, WindowDestroyed);
-	gWindowHelpers.insert(WM_MOVE, WindowClosed);
-	gWindowHelpers.insert(WM_SIZE, WindowClosed);
-	gWindowHelpers.insert(WM_CHAR, WindowClosed);
-	gWindowHelpers.insert(WM_INPUT, WindowClosed);
-	gWindowHelpers.insert(WM_LBUTTONDOWN, WindowLeftButtonDown);
-	gWindowHelpers.insert(WM_RBUTTONDOWN, WindowRightButtonDown);
-	gWindowHelpers.insert(WM_MBUTTONDOWN, WindowMiddleButtonDown);
-	gWindowHelpers.insert(WM_XBUTTONDOWN, WindowXButtonDown);
-	gWindowHelpers.insert(WM_LBUTTONUP, WindowLeftButtonUp);
-	gWindowHelpers.insert(WM_RBUTTONUP, WindowRightButtonUp);
-	gWindowHelpers.insert(WM_MBUTTONUP, WindowMiddleButtonUp);
-	gWindowHelpers.insert(WM_XBUTTONUP, WindowXButtonUp);
-	gWindowHelpers.insert(WM_MOUSEWHEEL, WindowMouseWheel);
-	gWindowHelpers.insert(WM_SETFOCUS, WindowSetFocus);
-	gWindowHelpers.insert(WM_KILLFOCUS, WindowKillFocus);
+	g_window_helpers.insert(WM_CLOSE, WindowClosed);
+	g_window_helpers.insert(WM_DESTROY, WindowDestroyed);
+	g_window_helpers.insert(WM_MOVE, WindowClosed);
+	g_window_helpers.insert(WM_SIZE, WindowClosed);
+	g_window_helpers.insert(WM_CHAR, WindowClosed);
+	g_window_helpers.insert(WM_INPUT, WindowClosed);
+	g_window_helpers.insert(WM_LBUTTONDOWN, WindowLeftButtonDown);
+	g_window_helpers.insert(WM_RBUTTONDOWN, WindowRightButtonDown);
+	g_window_helpers.insert(WM_MBUTTONDOWN, WindowMiddleButtonDown);
+	g_window_helpers.insert(WM_XBUTTONDOWN, WindowXButtonDown);
+	g_window_helpers.insert(WM_LBUTTONUP, WindowLeftButtonUp);
+	g_window_helpers.insert(WM_RBUTTONUP, WindowRightButtonUp);
+	g_window_helpers.insert(WM_MBUTTONUP, WindowMiddleButtonUp);
+	g_window_helpers.insert(WM_XBUTTONUP, WindowXButtonUp);
+	g_window_helpers.insert(WM_MOUSEWHEEL, WindowMouseWheel);
+	g_window_helpers.insert(WM_SETFOCUS, WindowSetFocus);
+	g_window_helpers.insert(WM_KILLFOCUS, WindowKillFocus);
+}
+
+static bool RemoveMessageHandler(GleamArray<MessageHandler>& handlers, const MessageHandler& callback)
+{
+	auto it = handlers.linearSearch(callback);
+
+	if (it != handlers.end()) {
+		handlers.fastErase(it);
+		return true;
+	}
+
+	return false;
+}
+
+void Window::AddGlobalMessageHandler(const MessageHandler& callback)
+{
+	g_global_message_handlers.emplacePush(callback);
+}
+
+bool Window::RemoveGlobalMessageHandler(const MessageHandler& callback)
+{
+	return RemoveMessageHandler(g_global_message_handlers, callback);
 }
 
 void Window::HandleWindowMessages(void)
 {
 	// Handle the windows messages.
-	while (PeekMessage(&gMsg, NULL, 0, 0, PM_REMOVE)) {
-		TranslateMessage(&gMsg);
-		DispatchMessage(&gMsg);
+	while (PeekMessage(&g_msg, NULL, 0, 0, PM_REMOVE)) {
+		TranslateMessage(&g_msg);
+		DispatchMessage(&g_msg);
 	}
 }
 
@@ -72,26 +96,27 @@ LRESULT CALLBACK Window::WindowProc(HWND hwnd, UINT msg, WPARAM w, LPARAM l)
 {
 	bool handled = false;
 	char buffer[sizeof(AnyMessage)];
+	AnyMessage* message = reinterpret_cast<AnyMessage*>(buffer);
 
-	auto it = gWindows.linearSearch(hwnd, [](const Window* lhs, const HWND rhs) -> bool
+	auto it_wnd = g_windows.linearSearch(hwnd, [](const Window* lhs, const HWND rhs) -> bool
 	{
 		return lhs->getHWnd() == rhs;
 	});
 
-	if (it != gWindows.end())
+	if (it_wnd != g_windows.end())
 	{
-		Window* window = *it;
+		Window* window = *it_wnd;
 
 		if (!window->_window_callbacks.empty()) {
 			// We are assuming doing a map lookup is as fast as the huge switch statement we had before.
-			WindowProcHelper helper_func = gWindowHelpers[msg];
+			WindowProcHelper helper_func = g_window_helpers[msg];
 
 			if (helper_func) {
 				helper_func(reinterpret_cast<AnyMessage*>(buffer), window, w, l);
 				reinterpret_cast<AnyMessage*>(buffer)->base.window = window;
 
 				for (unsigned int i = 0; i < window->_window_callbacks.size(); ++i) {
-					handled = handled || window->_window_callbacks[i](*reinterpret_cast<AnyMessage*>(buffer));
+					handled = handled || window->_window_callbacks[i](*message);
 				}
 
 				if (handled) {
@@ -101,12 +126,16 @@ LRESULT CALLBACK Window::WindowProc(HWND hwnd, UINT msg, WPARAM w, LPARAM l)
 		}
 	}
 
+	for (auto it_hnd = g_global_message_handlers.begin(); it_hnd != g_global_message_handlers.end(); ++it_hnd) {
+		handled = handled || (*it_hnd)(*message);
+	}
+
 	return DefWindowProc(hwnd, msg, w, l);
 }
 
 Window::Window(void):
 	_hinstance(nullptr), _hwnd(nullptr), _window_mode(FULLSCREEN),
-	_cursor_visible(true), _no_repeats(false), _contain(false)
+	_cursor_visible(true), _contain(false)
 {
 }
 
@@ -121,18 +150,18 @@ bool Window::init(const char* app_name, MODE window_mode,
 {
 	GAFF_ASSERT(app_name);
 
-	if (gFirstInit) {
-		gLeftKeys[VK_CONTROL] = KEY_LEFTCONTROL;
-		gLeftKeys[VK_MENU] = KEY_LEFTALT;
-		gLeftKeys[VK_SHIFT] = KEY_LEFTSHIFT;
+	if (g_first_init) {
+		g_left_keys[VK_CONTROL] = KEY_LEFTCONTROL;
+		g_left_keys[VK_MENU] = KEY_LEFTALT;
+		g_left_keys[VK_SHIFT] = KEY_LEFTSHIFT;
 
-		gRightKeys[VK_CONTROL] = KEY_RIGHTCONTROL;
-		gRightKeys[VK_MENU] = KEY_RIGHTALT;
-		gRightKeys[VK_SHIFT] = KEY_RIGHTSHIFT;
+		g_right_keys[VK_CONTROL] = KEY_RIGHTCONTROL;
+		g_right_keys[VK_MENU] = KEY_RIGHTALT;
+		g_right_keys[VK_SHIFT] = KEY_RIGHTSHIFT;
 
 		InitWindowProcHelpers();
 
-		gFirstInit = false;
+		g_first_init = false;
 	}
 
 	WNDCLASSEX wc;
@@ -258,17 +287,17 @@ bool Window::init(const char* app_name, MODE window_mode,
 	SetForegroundWindow(_hwnd);
 	SetFocus(_hwnd);
 
-	ZeroMemory(&gMsg, sizeof(MSG));
-	gWindows.push(this);
+	ZeroMemory(&g_msg, sizeof(MSG));
+	g_windows.push(this);
 
 	return true;
 }
 
 void Window::destroy(void)
 {
-	auto it = gWindows.linearSearch(this);
-	GAFF_ASSERT(it != gWindows.end());
-	gWindows.fastErase(it);
+	auto it = g_windows.linearSearch(this);
+	GAFF_ASSERT(it != g_windows.end());
+	g_windows.fastErase(it);
 
 	containCursor(false);
 	showCursor(true);
@@ -296,21 +325,14 @@ void Window::destroy(void)
 	}
 }
 
-void Window::addWindowMessageHandler(Gaff::FunctionBinder<bool, const AnyMessage&>& callback)
+void Window::addWindowMessageHandler(const MessageHandler& callback)
 {
-	_window_callbacks.push(callback);
+	_window_callbacks.emplacePush(callback);
 }
 
-bool Window::removeWindowMessageHandler(Gaff::FunctionBinder<bool, const AnyMessage&>& callback)
+bool Window::removeWindowMessageHandler(const MessageHandler& callback)
 {
-	auto it = _window_callbacks.linearSearch(callback);
-
-	if (it != _window_callbacks.end()) {
-		_window_callbacks.fastErase(it);
-		return true;
-	}
-
-	return false;
+	return RemoveMessageHandler(_window_callbacks, callback);
 }
 
 void Window::showCursor(bool show)
@@ -352,16 +374,6 @@ bool Window::isCursorVisible(void) const
 bool Window::isCursorContained(void) const
 {
 	return _contain;
-}
-
-void Window::allowRepeats(bool allow)
-{
-	_no_repeats = !allow;
-}
-
-bool Window::areRepeatsAllowed(void) const
-{
-	return !_no_repeats;
 }
 
 bool Window::setWindowMode(MODE window_mode)

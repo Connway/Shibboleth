@@ -35,6 +35,9 @@ NS_GLEAM
 class Window : public IWindow
 {
 public:
+	static void AddGlobalMessageHandler(const MessageHandler& callback);
+	static bool RemoveGlobalMessageHandler(const MessageHandler& callback);
+
 	static void HandleWindowMessages(void);
 
 	Window(void);
@@ -45,8 +48,8 @@ public:
 				int pos_x = 0, int pos_y = 0, const char* compat = nullptr);
 	void destroy(void);
 
-	void addWindowMessageHandler(Gaff::FunctionBinder<bool, const AnyMessage&>& callback);
-	bool removeWindowMessageHandler(Gaff::FunctionBinder<bool, const AnyMessage&>& callback);
+	void addWindowMessageHandler(const MessageHandler& callback);
+	bool removeWindowMessageHandler(const MessageHandler& callback);
 
 	void showCursor(bool show);
 	void containCursor(bool contain);
@@ -84,13 +87,12 @@ private:
 	unsigned int _original_width;
 	unsigned int _original_height;
 	bool _cursor_visible;
-	bool _no_repeats;
 	bool _contain;
 
-	GleamArray< Gaff::FunctionBinder<bool, const AnyMessage&> > _window_callbacks;
+	GleamArray<MessageHandler> _window_callbacks;
 
-	static GleamMap<unsigned short, KeyCode> gRightKeys;
-	static GleamMap<unsigned short, KeyCode> gLeftKeys;
+	static GleamMap<unsigned short, KeyCode> g_right_keys;
+	static GleamMap<unsigned short, KeyCode> g_left_keys;
 
 	static LRESULT CALLBACK WindowProc(HWND hwnd, UINT msg, WPARAM w, LPARAM l);
 

@@ -43,9 +43,32 @@ typedef struct
 	unsigned long status;
 } Hints;
 
-GleamArray<Display*> Window::gDisplays;
-GleamArray<Window*> Window::gWindows;
-XEvent Window::gEvent;
+static GleamArray<MessageHandler> g_global_message_handlers;
+static GleamArray<Display*> gDisplays;
+static GleamArray<Window*> gWindows;
+static XEvent gEvent;
+
+static bool RemoveMessageHandler(GleamArray<MessageHandler>& handlers, const MessageHandler& callback)
+{
+	auto it = handlers.linearSearch(callback);
+
+	if (it != handlers.end()) {
+		handlers.fastErase(it);
+		return true;
+	}
+
+	return false;
+}
+
+void Window::AddGlobalMessageHandler(const MessageHandler& callback)
+{
+	g_global_message_handlers.emplacePush(callback);
+}
+
+bool Window::RemoveGlobalMessageHandler(const MessageHandler& callback)
+{
+	return RemoveMessageHandler(g_global_message_handlers, callback);
+}
 
 void Window::HandleWindowMessages(void)
 {
@@ -275,7 +298,7 @@ void Window::WindowProc(XEvent& event)
 
 Window::Window(void):
 	_window_mode(FULLSCREEN), _cursor_visible(true),
-	_no_repeats(false), _contain(false), _display(nullptr),
+	_contain(false), _display(nullptr),
 	_visual_info(nullptr), _window(0),
 	_delete_window(None), _protocols(None)
 {
@@ -498,21 +521,14 @@ void Window::destroy(void)
 	}
 }
 
-void Window::addWindowMessageHandler(WindowCallback callback)
+void Window::addWindowMessageHandler(const MessageHandler& callback)
 {
-	_window_callbacks.push(callback);
+	_window_callbacks.emplacePush(callback);
 }
 
-bool Window::removeWindowMessageHandler(WindowCallback callback)
+bool Window::removeWindowMessageHandler(const MessageHandler& callback)
 {
-	auto it = _window_callbacks.linearSearch(cb);
-
-	if (it != _window_callbacks.end()) {
-		_window_callbacks.fastErase(it);
-		return true;
-	}
-
-	return false;
+	return RemoveMessageHandler(_window_callbacks, callback);
 }
 
 void Window::showCursor(bool show)
@@ -557,16 +573,6 @@ bool Window::isCursorVisible(void) const
 bool Window::isCursorContained(void) const
 {
 	return _contain;
-}
-
-void Window::allowRepeats(bool allow)
-{
-	_no_repeats = !allow;
-}
-
-bool Window::areRepeatsAllowed(void) const
-{
-	return !_no_repeats;
 }
 
 bool Window::setWindowMode(MODE window_mode, int width, int height, short refresh_rate)
@@ -944,6 +950,10 @@ void Window::handleMessage(AnyMessage* message)
 {
 	for (unsigned int i = 0; i < _window_callbacks.size(); ++i) {
 		_window_callbacks[i](*message);
+	}
+
+	for (auto it = g_global_message_handlers.begin(); it != g_global_message_handlers.end(); ++it) {
+		(*it)(*message);
 	}
 }
 

@@ -103,6 +103,16 @@ void BulletPhysicsComponent::setActive(bool active)
 	}
 }
 
+const btRigidBody* BulletPhysicsComponent::getRigidBody(void) const
+{
+	return _rigid_body;
+}
+
+btRigidBody* BulletPhysicsComponent::getRigidBody(void)
+{
+	return _rigid_body;
+}
+
 void BulletPhysicsComponent::collisionShapeLoaded(ResourceContainer*)
 {
 	if (_phys_res.getResourcePtr()->hasFailed()) {

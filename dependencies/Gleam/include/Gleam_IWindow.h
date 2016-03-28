@@ -27,6 +27,8 @@ THE SOFTWARE.
 
 NS_GLEAM
 
+using MessageHandler = Gaff::FunctionBinder<bool, const AnyMessage&>;
+
 class IWindow
 {
 public:
@@ -44,17 +46,14 @@ public:
 
 	virtual void destroy(void) = 0;
 
-	virtual void addWindowMessageHandler(Gaff::FunctionBinder<bool, const AnyMessage&>& callback) = 0;
-	virtual bool removeWindowMessageHandler(Gaff::FunctionBinder<bool, const AnyMessage&>& callback) = 0;
+	virtual void addWindowMessageHandler(const MessageHandler& callback) = 0;
+	virtual bool removeWindowMessageHandler(const MessageHandler& callback) = 0;
 
 	virtual void showCursor(bool show) = 0;
 	virtual void containCursor(bool contain) = 0;
 
 	virtual bool isCursorVisible(void) const = 0;
 	virtual bool isCursorContained(void) const = 0;
-
-	virtual void allowRepeats(bool allow) = 0;
-	virtual bool areRepeatsAllowed(void) const = 0;
 
 	virtual bool setWindowMode(MODE window_mode) = 0;
 	virtual MODE getWindowMode(void) const = 0;
