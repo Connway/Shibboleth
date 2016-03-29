@@ -1,8 +1,8 @@
-if os.get() == "windows" then
-	platforms { "x86", "x64" }
-else
+-- if os.get() == "windows" then
+-- 	platforms { "x86", "x64" }
+-- else
 	platforms { "x64" }
-end
+-- end
 
 warnings "Extra"
 characterset "Unicode"
@@ -20,9 +20,9 @@ filter { "options:symbols" }
 filter { "options:physx" }
 	defines { "USE_PHYSX" }
 
-filter { "platforms:x86" }
-	architecture "x32"
-	vectorextensions "SSE2"
+-- filter { "platforms:x86" }
+-- 	architecture "x32"
+-- 	vectorextensions "SSE2"
 
 filter { "platforms:x64" }
 	architecture "x64"
