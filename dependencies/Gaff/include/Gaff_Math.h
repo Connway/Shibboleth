@@ -80,6 +80,23 @@ bool Between(const T& val, const T& min_val, const T& max_val)
 #define INIT_HASH64 14695981039346656037ULL
 #define INIT_HASH32 2166136261U
 
+using HashFunc64 = uint64_t (*)(const char*, size_t);
+using HashFunc32 = uint32_t (*)(const char*, size_t);
+
+uint64_t FNV1aHash64(const char* key, size_t len, uint64_t init);
+uint64_t FNV1Hash64(const char* key, size_t len, uint64_t init);
+uint32_t FNV1aHash32(const char* key, size_t len, uint32_t init);
+uint32_t FNV1Hash32(const char* key, size_t len, uint32_t init);
+
+// These functions just call the above functiosn with INIT_HASH64/32
+INLINE uint64_t FNV1aHash64(const char* key, size_t len);
+INLINE uint64_t FNV1Hash64(const char* key, size_t len);
+INLINE uint32_t FNV1aHash32(const char* key, size_t len);
+INLINE uint32_t FNV1Hash32(const char* key, size_t len);
+
+float BinomialCoefficient(float n, float k);
+float BernsteinPolynomial(float t, float n, float k);
+
 template <class T>
 inline uint64_t FNV1Hash64VAdd(uint64_t init, const T* front)
 {
@@ -179,28 +196,6 @@ inline uint32_t FNV1Hash32T(const T* value, uint32_t init = INIT_HASH32)
 {
 	return FNV1Hash32(reinterpret_cast<const char*>(value), sizeof(T), init);
 }
-
-using HashFunc64 = uint64_t (*)(const char*, size_t);
-using HashFunc32 = uint32_t (*)(const char*, size_t);
-
-uint64_t FNV1aHash64(const char* key, size_t len, uint64_t init);
-uint64_t FNV1Hash64(const char* key, size_t len, uint64_t init);
-uint32_t FNV1aHash32(const char* key, size_t len, uint32_t init);
-uint32_t FNV1Hash32(const char* key, size_t len, uint32_t init);
-
-// These functions just call the above functiosn with INIT_HASH64/32
-INLINE uint64_t FNV1aHash64(const char* key, size_t len);
-INLINE uint64_t FNV1Hash64(const char* key, size_t len);
-INLINE uint32_t FNV1aHash32(const char* key, size_t len);
-INLINE uint32_t FNV1Hash32(const char* key, size_t len);
-
-float BinomialCoefficient(float n, float k);
-float BernsteinPolynomial(float t, float n, float k);
-
-static constexpr uint64_t FNVBasis64 = 14695981039346656037ULL;
-static constexpr uint64_t FNVPrime64 = 1099511628211ULL;
-static constexpr uint32_t FNVBasis32 = 2166136261U;
-static constexpr uint32_t FNVPrime32 = 16777619U;
 
 constexpr uint64_t FNV1aHash64Const(const char* key, size_t len, uint64_t init = INIT_HASH64)
 {

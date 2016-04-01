@@ -25,6 +25,7 @@ THE SOFTWARE.
 #include "Gaff_DefaultAllocator.h"
 #include "Gaff_Assert.h"
 #include <utf8.h>
+#include <cstring>
 
 #define SMALL_STRING_SIZE 15
 

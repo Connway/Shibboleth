@@ -98,7 +98,7 @@ const StackTrace& StackTrace::operator=(const StackTrace& rhs)
 	\brief Captures the callstack \a frames_to_capture deep.
 	\return The number of callstack frames captured.
 */
-unsigned short StackTrace::captureStack(unsigned int frames_to_capture)
+unsigned short StackTrace::captureStack(const char*, unsigned int frames_to_capture)
 {
 	GAFF_ASSERT(frames_to_capture <= MAX_FRAMES);
 	_frames = CaptureStackBackTrace(0, frames_to_capture, _stack, nullptr);
@@ -151,7 +151,7 @@ const char* StackTrace::getSymbolName(unsigned short frame) const
 	return _symbol_info[frame].symbol_name;
 }
 
-const char* StackTrace::getFileName(unsigned short frame, const char*) const
+const char* StackTrace::getFileName(unsigned short frame) const
 {
 	return _symbol_info[frame].file_name;
 }

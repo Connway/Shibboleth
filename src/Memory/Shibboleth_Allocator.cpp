@@ -30,7 +30,7 @@ THE SOFTWARE.
 #include <Gaff_Utils.h>
 #include <Gaff_File.h>
 
-#if defined(_WIN32) || defined(_WIN64)
+#ifdef PLATFORM_WINDOWS
 	// Disable "structure was padded due to alignment specifier" warning
 	#pragma warning(push)
 	#pragma warning(disable: 4324)
@@ -153,7 +153,7 @@ Allocator::~Allocator(void)
 				for (unsigned short j = 0; j < (*it_st)->stack_trace.getNumCapturedFrames(); ++j) {
 					callstack_log.printf(
 						"\t(0x%llX) [%s:(%u)] %s\n", (*it_st)->stack_trace.getAddress(j),
-						(*it_st)->stack_trace.getFileName(j, APP_NAME), (*it_st)->stack_trace.getLineNumber(j),
+						(*it_st)->stack_trace.getFileName(j), (*it_st)->stack_trace.getLineNumber(j),
 						(*it_st)->stack_trace.getSymbolName(j)
 					);
 				}
@@ -218,7 +218,7 @@ void* Allocator::alloc(size_t size_bytes, size_t pool_index, const char* /*file*
 #if defined(SYMBOL_BUILD) && defined(GATHER_ALLOCATION_STACKTRACE)
 		g_pt_locks[pool_index].lock();
 
-		header->stack_trace.captureStack();
+		header->stack_trace.captureStack(APP_NAME);
 
 		g_allocs[pool_index].emplacePush(header);
 		g_pt_locks[pool_index].unlock();
@@ -278,6 +278,6 @@ INLINE const char* Allocator::getPoolName(size_t pool_index) const
 
 NS_END
 
-#if defined(_WIN32) || defined(_WIN64)
+#ifdef PLATFORM_WINDOWS
 	#pragma warning(pop)
 #endif
