@@ -28,9 +28,9 @@ THE SOFTWARE.
 
 #ifdef PLATFORM_WINDOWS
 	#include <io.h>
-#elif PLATFORM_LINUX
+#elif defined(PLATFORM_LINUX)
 	#include <sys/io.h>
-#elif PLATFORM_MAC
+#elif defined(PLATFORM_MAC)
 	#include <sys/uio.h>
 #endif
 

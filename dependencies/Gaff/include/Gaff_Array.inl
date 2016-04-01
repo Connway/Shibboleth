@@ -854,9 +854,9 @@ void Reverse(T* data, size_t size)
 		char temp[sizeof(T)];
 
 		// Use memcpy to avoid calling constructor/destructor
-		memcpy(temp, _array + beg, sizeof(T));
-		memcpy(_array + beg, _array + end, sizeof(T));
-		memcpy(_array + end, temp, sizeof(T));
+		memcpy(temp, data + beg, sizeof(T));
+		memcpy(data + beg, data + end, sizeof(T));
+		memcpy(data + end, temp, sizeof(T));
 
 		++beg;
 		--end;

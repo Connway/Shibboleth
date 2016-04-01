@@ -32,22 +32,22 @@ NS_GAFF
 
 extern CrashHandler g_crash_handler;
 
-static uint8_t g_alternate_stack[SIGSTKSZ] = { 0 };
-static CrashData g_crash_data;
-
 struct CrashData
 {
 	int sig;
-	siginfo_t siginfo;;
+	siginfo_t siginfo;
 	void* context;
 };
+
+static uint8_t g_alternate_stack[SIGSTKSZ] = { 0 };
+static CrashData g_crash_data;
 
 static void ExceptionHandler(int sig, siginfo_t* siginfo, void* context)
 {
 	// Convert to our data structure
 
 	g_crash_data.sig = sig;
-	g_crash_data.siginfo = siginfo;
+	g_crash_data.siginfo = *siginfo;
 	g_crash_data.context = context;
 
 	if (g_crash_handler) {

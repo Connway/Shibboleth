@@ -42,13 +42,13 @@ public:
 
 	const StackTrace& operator=(const StackTrace& rhs);
 
-	INLINE unsigned short captureStack(unsigned int frames_to_capture = MAX_FRAMES);
+	INLINE unsigned short captureStack(const char* app_name, unsigned int frames_to_capture = MAX_FRAMES);
 	INLINE unsigned short getNumCapturedFrames(void) const;
 
 	INLINE uint64_t getAddress(unsigned short frame) const;
 	INLINE unsigned int getLineNumber(unsigned short frame) const;
 	INLINE const char* getSymbolName(unsigned short frame) const;
-	INLINE const char* getFileName(unsigned short frame, const char* app_name) const;
+	INLINE const char* getFileName(unsigned short frame) const;
 
 private:
 	static void* _handle;

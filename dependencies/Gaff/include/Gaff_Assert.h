@@ -28,7 +28,13 @@ NS_GAFF
 
 #ifdef GAFF_ASSERT_ENABLED
 	#define GAFF_ASSERT(expr) GAFF_ASSERT_MSG(expr, nullptr)
-	#define GAFF_ASSERT_MSG(expr, msg, ...) (void)((expr) || (Gaff::Assert(msg, #expr, __FILE__, __LINE__, __VA_ARGS__), 0))
+
+	#ifdef _MSC_VER
+		#define GAFF_ASSERT_MSG(expr, msg, ...) (void)((expr) || (Gaff::Assert(msg, #expr, __FILE__, __LINE__, __VA_ARGS__), 0))
+	#elif defined(__GNUC__) || defined(__GNUG__) || defined(__clang__)
+		#define GAFF_ASSERT_MSG(expr, msg, ...) (void)((expr) || (Gaff::Assert(msg, #expr, __FILE__, __LINE__, ##__VA_ARGS__), 0))
+	#endif
+
 #else
 	#define GAFF_ASSERT(expr)
 	#define GAFF_ASSERT_MSG(expr, msg)
