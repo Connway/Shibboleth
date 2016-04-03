@@ -46,8 +46,6 @@ public:
 
 	lua::State* createNewState(void);
 
-	void* rawRequestInterface(Gaff::ReflectionHash class_id) const;
-
 private:
 	Array< Gaff::FunctionBinder<void, lua::State&> > _registrants;
 
@@ -55,6 +53,7 @@ private:
 	GAFF_NO_MOVE(LuaManager);
 
 	SHIB_REF_DEF(LuaManager);
+	REF_DEF_REQ;
 };
 
 NS_END

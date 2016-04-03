@@ -60,8 +60,6 @@ public:
 	bool load(const Gaff::JSON& json) override;
 	bool save(Gaff::JSON& json) override;
 
-	void* rawRequestInterface(Gaff::ReflectionHash class_id) const override;
-
 	void updateFrustum(Object* object, uint64_t);
 
 	INLINE const Gleam::Matrix4x4CPU& getProjectionMatrix(void) const;
@@ -110,6 +108,7 @@ private:
 	void constructProjectionMatrixAndFrustum(void);
 
 	SHIB_REF_DEF(CameraComponent);
+	REF_DEF_REQ;
 };
 
 SHIB_ENUM_REF_DEF_EMBEDDED(ClearMode, CameraComponent::ClearMode);

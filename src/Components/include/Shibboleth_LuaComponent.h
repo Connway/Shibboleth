@@ -54,8 +54,6 @@ public:
 
 	void allComponentsLoaded(void);
 
-	void* rawRequestInterface(Gaff::ReflectionHash class_id) const;
-
 private:
 	ResourceWrapper< SingleDataWrapper<lua::State*> > _script_res;
 
@@ -66,6 +64,7 @@ private:
 	GAFF_NO_MOVE(LuaComponent);
 
 	SHIB_REF_DEF(LuaComponent);
+	REF_DEF_REQ;
 };
 
 NS_END

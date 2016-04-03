@@ -47,8 +47,6 @@ public:
 	InputManager(void);
 	~InputManager(void);
 
-	void* rawRequestInterface(Gaff::ReflectionHash class_id) const override;
-
 	const char* getName(void) const override;
 
 	void getUpdateEntries(Array<UpdateEntry>& entries) override;
@@ -74,6 +72,7 @@ private:
 	void MouseHandler(Gleam::IInputDevice*, unsigned int event, float value);
 
 	SHIB_REF_DEF(InputManager);
+	REF_DEF_REQ;
 };
 
 NS_END

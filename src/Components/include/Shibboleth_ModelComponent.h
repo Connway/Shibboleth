@@ -71,8 +71,6 @@ public:
 
 	void setActive(bool active) override;
 
-	void* rawRequestInterface(Gaff::ReflectionHash class_id) const override;
-
 	void setStatic(bool is_static);
 	bool isStatic(void) const;
 
@@ -108,6 +106,7 @@ private:
 	void removeFromOcclusionManager(void);
 
 	SHIB_REF_DEF(ModelComponent);
+	REF_DEF_REQ;
 };
 
 NS_END

@@ -49,8 +49,6 @@ public:
 	BulletPhysicsComponent(void);
 	~BulletPhysicsComponent(void);
 
-	void* rawRequestInterface(Gaff::ReflectionHash class_id) const override;
-
 	const Gaff::JSON& getSchema(void) const;
 
 	bool load(const Gaff::JSON&) override;
@@ -74,6 +72,7 @@ private:
 	void collisionShapeLoaded(ResourceContainer*);
 
 	SHIB_REF_DEF(BulletPhysicsComponent);
+	REF_DEF_REQ;
 };
 
 NS_END

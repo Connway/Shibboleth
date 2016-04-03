@@ -74,7 +74,7 @@ public:
 			const Interface* interface = (*it)->requestInterface<Interface>();
 
 			if (interface) {
-				components.push(interface);
+				components.emplacePush(interface);
 			}
 		}
 	}
@@ -86,13 +86,12 @@ public:
 			Interface* interface = (*it)->requestInterface<Interface>();
 
 			if (interface) {
-				components.push(interface);
+				components.emplacePush(interface);
 			}
 		}
 	}
 
-	typedef Gaff::FunctionBinder<void, Object*, uint64_t> DirtyCallback;
-	typedef Gaff::FunctionBinder<void, double> UpdateCallback;
+	using DirtyCallback = Gaff::FunctionBinder<void, Object*, uint64_t>;
 
 	Object(unsigned int id);
 	~Object(void);
@@ -134,6 +133,9 @@ public:
 	INLINE Component* getComponent(unsigned int index);
 	INLINE const Array<Component*>& getComponents(void) const;
 	INLINE Array<Component*>& getComponents(void);
+
+	const void* getFirstComponentWithInterface(Gaff::ReflectionHash class_id) const;
+	void* getFirstComponentWithInterface(Gaff::ReflectionHash class_id);
 
 	void addChild(Object* object);
 	void removeFromParent(void);

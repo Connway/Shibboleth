@@ -39,7 +39,6 @@ public:
 	CameraManager(void);
 	~CameraManager(void);
 
-	void* rawRequestInterface(Gaff::ReflectionHash class_id) const override;
 	const char* getName(void) const override;
 	void allManagersCreated(void) override;
 
@@ -56,6 +55,7 @@ private:
 	void addModelComponent(ObjectData& od, ModelComponent* mc, const Gleam::Vector4CPU& eye_pos);
 
 	SHIB_REF_DEF(CameraManager);
+	REF_DEF_REQ;
 };
 
 NS_END

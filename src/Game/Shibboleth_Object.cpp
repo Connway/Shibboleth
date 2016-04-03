@@ -287,6 +287,33 @@ Array<Component*>& Object::getComponents(void)
 	return _components;
 }
 
+const void* Object::getFirstComponentWithInterface(Gaff::ReflectionHash class_id) const
+{
+	for (auto it = _components.begin(); it != _components.end(); ++it) {
+		const void* component = (*it)->rawRequestInterface(class_id);
+
+		if (component) {
+			return component;
+		}
+	}
+
+	return nullptr;
+}
+
+
+void* Object::getFirstComponentWithInterface(Gaff::ReflectionHash class_id)
+{
+	for (auto it = _components.begin(); it != _components.end(); ++it) {
+		void* component = (*it)->rawRequestInterface(class_id);
+
+		if (component) {
+			return component;
+		}
+	}
+
+	return nullptr;
+}
+
 void Object::addChild(Object* object)
 {
 	Gaff::ScopedLock<Gaff::SpinLock> scoped_lock(_children_lock);

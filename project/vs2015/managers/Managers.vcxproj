@@ -108,6 +108,7 @@
     <ClInclude Include="..\..\..\src\Managers\include\Shibboleth_FrameManager.h" />
     <ClInclude Include="..\..\..\src\Managers\include\Shibboleth_InputManager.h" />
     <ClInclude Include="..\..\..\src\Managers\include\Shibboleth_LuaManager.h" />
+    <ClInclude Include="..\..\..\src\Managers\include\Shibboleth_MovementControllerManager.h" />
     <ClInclude Include="..\..\..\src\Managers\include\Shibboleth_ObjectManager.h" />
     <ClInclude Include="..\..\..\src\Managers\include\Shibboleth_OcclusionManager.h" />
     <ClInclude Include="..\..\..\src\Managers\include\Shibboleth_OtterUIManager.h" />
@@ -125,6 +126,7 @@
     <ClCompile Include="..\..\..\src\Managers\Shibboleth_FrameManager.cpp" />
     <ClCompile Include="..\..\..\src\Managers\Shibboleth_InputManager.cpp" />
     <ClCompile Include="..\..\..\src\Managers\Shibboleth_LuaManager.cpp" />
+    <ClCompile Include="..\..\..\src\Managers\Shibboleth_MovementControllerManager.cpp" />
     <ClCompile Include="..\..\..\src\Managers\Shibboleth_ObjectManager.cpp" />
     <ClCompile Include="..\..\..\src\Managers\Shibboleth_OcclusionManager.cpp" />
     <ClCompile Include="..\..\..\src\Managers\Shibboleth_OtterUIManager.cpp" />

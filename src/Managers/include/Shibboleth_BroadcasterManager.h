@@ -39,7 +39,6 @@ public:
 	const char* getName(void) const;
 
 	void getUpdateEntries(Array<UpdateEntry>& entries);
-	void* rawRequestInterface(Gaff::ReflectionHash class_id) const;
 
 	void update(double, void*);
 
@@ -51,6 +50,7 @@ private:
 	Gaff::ReadWriteSpinLock _broadcaster_lock;
 
 	SHIB_REF_DEF(BroadcasterManager);
+	REF_DEF_REQ;
 };
 
 NS_END

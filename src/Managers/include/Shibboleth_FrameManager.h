@@ -100,7 +100,6 @@ public:
 	const char* getName(void) const override;
 	void allManagersCreated(void) override;
 
-	void* rawRequestInterface(Gaff::ReflectionHash class_id) const override;
 	void getUpdateEntries(Array<UpdateEntry>& entries) override;
 
 	void setFrameDataFuncs(FrameDataAllocFunc alloc_func, FrameDataFreeFunc free_func);
@@ -133,6 +132,7 @@ private:
 	GAFF_NO_MOVE(FrameManager);
 
 	SHIB_REF_DEF(FrameManager);
+	REF_DEF_REQ;
 };
 
 NS_END

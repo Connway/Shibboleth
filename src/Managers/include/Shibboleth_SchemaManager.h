@@ -40,7 +40,6 @@ public:
 	SchemaManager(void);
 	~SchemaManager(void);
 
-	void* rawRequestInterface(Gaff::ReflectionHash class_id) const;
 	const char* getName(void) const;
 	void allManagersCreated(void);
 
@@ -52,6 +51,7 @@ private:
 	bool addSchema(const char* file_name, IFile* file);
 
 	SHIB_REF_DEF(SchemaManager);
+	REF_DEF_REQ;
 };
 
 NS_END
