@@ -41,7 +41,6 @@ public:
 	const char* getName(void) const override;
 	void allManagersCreated(void) override;
 
-	void* rawRequestInterface(Gaff::ReflectionHash class_id) const override;
 	void getUpdateEntries(Array<UpdateEntry>& entries) override;
 
 	bool init(void);
@@ -85,6 +84,7 @@ private:
 	void renderToScreen(double dt, void* frame_data);
 
 	SHIB_REF_DEF(RenderPipelineManager);
+	REF_DEF_REQ;
 };
 
 NS_END

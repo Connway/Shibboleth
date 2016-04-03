@@ -55,7 +55,8 @@ public:
 		return reinterpret_cast<Interface*>(rawRequestInterface(class_id));
 	}
 
-	virtual void* rawRequestInterface(ReflectionHash class_id) const = 0;
+	virtual const void* rawRequestInterface(ReflectionHash class_id) const = 0;
+	virtual void* rawRequestInterface(ReflectionHash class_id) = 0;
 };
 
 template <class Interface>

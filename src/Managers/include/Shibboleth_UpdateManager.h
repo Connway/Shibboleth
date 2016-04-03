@@ -24,6 +24,7 @@ THE SOFTWARE.
 
 #include <Shibboleth_ReflectionDefinitions.h>
 #include <Shibboleth_IManager.h>
+#include <Shibboleth_String.h>
 #include <Shibboleth_Array.h>
 #include <Gaff_Function.h>
 #include <Gaff_SpinLock.h>
@@ -50,8 +51,6 @@ public:
 	void allManagersCreated(void);
 
 	void update(void);
-
-	void* rawRequestInterface(Gaff::ReflectionHash class_id) const;
 
 private:
 	class UpdatePhase
@@ -107,6 +106,7 @@ private:
 	GAFF_NO_MOVE(UpdateManager);
 
 	SHIB_REF_DEF(UpdateManager);
+	REF_DEF_REQ;
 };
 
 NS_END

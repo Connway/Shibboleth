@@ -165,8 +165,6 @@ public:
 	void addRequestAddedCallback(const Gaff::FunctionBinder<void, ResourcePtr&>& callback);
 	void removeRequestAddedCallback(const Gaff::FunctionBinder<void, ResourcePtr&>& callback);
 
-	void* rawRequestInterface(Gaff::ReflectionHash class_id) const override;
-
 private:
 	struct LoaderData
 	{
@@ -188,6 +186,7 @@ private:
 	GAFF_NO_MOVE(ResourceManager);
 
 	SHIB_REF_DEF(ResourceManager);
+	REF_DEF_REQ;
 };
 
 NS_END

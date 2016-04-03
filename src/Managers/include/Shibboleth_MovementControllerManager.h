@@ -22,79 +22,71 @@ THE SOFTWARE.
 
 #pragma once
 
-#ifndef USE_PHYSX
-
 #include <Shibboleth_ReflectionDefinitions.h>
 #include <Shibboleth_IUpdateQuery.h>
 #include <Shibboleth_IManager.h>
-
-class btCollisionConfiguration;
-class btBroadphaseInterface;
-class btConstraintSolver;
-class btCollisionShape;
-class btDynamicsWorld;
-class btMotionState;
-class btDispatcher;
-class btRigidBody;
-class btVector3;
-
-namespace Gleam
-{
-	class Vector4CPU;
-}
+#include <Shibboleth_Array.h>
+#include <Shibboleth_Map.h>
 
 NS_SHIBBOLETH
 
 class Object;
 
-class BulletPhysicsManager : public IManager, public IUpdateQuery
+class IMovementController
 {
 public:
-	enum HeightfieldUpAxis
+	IMovementController(void) {}
+	virtual ~IMovementController(void) {}
+
+	virtual void updateMovement(void* component, double dt) = 0;
+};
+
+class MovementControllerManager : public IManager, public IUpdateQuery
+{
+public:
+	static const char* GetName(void) { return "Movement Controller Manager"; }
+
+	template <class Controller>
+	void registerMovementController(void)
 	{
-		UP_X_AXIS = 0,
-		UP_Y_AXIS,
-		UP_Z_AXIS,
-	};
+		auto it = _update_list.findElementWithKey(Controller::GetReflectionHash());
 
-	static const char* GetName(void) { return "Physics Manager"; }
-	static void SetMemoryFunctions(void);
+		if (it == _update_list.end()) {
+			IMovementController* controller = SHIB_ALLOCT(Controller, *GetAllocator());
+			_update_list.emplace(Controller::GetReflectionHash(), Gaff::MakePair(controller, Array<void*>()));
+		}
+	}
 
-	BulletPhysicsManager(void);
-	~BulletPhysicsManager(void);
+	template <class Controller>
+	void registerMovementComponent(void* component)
+	{
+		registerMovementComponent(Controller::GetReflectionHash());
+	}
+
+	template <class Controller>
+	void unregisterMovementComponent(void* component)
+	{
+		unregisterMovementComponent(Controller::GetReflectionHash());
+	}
+
+	MovementControllerManager(void);
+	~MovementControllerManager(void);
 
 	const char* getName(void) const override;
-	void allManagersCreated(void) override;
 
 	void getUpdateEntries(Array<UpdateEntry>& entries) override;
-
 	void update(double dt, void*);
 
-	INLINE void clearMainWorld(void);
-	//INLINE void clearExtraWorld(size_t world);
-
-	btRigidBody* createRigidBody(Object* object, btCollisionShape* shape, float mass, btMotionState* motion_state = nullptr);
-
-	// collision_group is what group we belong to, collision_mask is what groups we can collide with
-	INLINE void addToMainWorld(btRigidBody* body, short collision_group, short collision_mask);
-	INLINE void addToMainWorld(btRigidBody* body);
-	INLINE void removeFromMainWorld(btRigidBody* body);
+	void registerMovementComponent(Gaff::ReflectionHash controller_class_id, void* component);
+	void unregisterMovementComponent(Gaff::ReflectionHash controller_class_id, void* component);
 
 private:
-	btCollisionConfiguration* _config;
-	btBroadphaseInterface* _broadphase;
-	btConstraintSolver* _solver;
-	btDispatcher* _dispatcher;
-	btDynamicsWorld* _main_world;
+	using ControllerObjects = Gaff::Pair< IMovementController*, Array<void*> >;
 
-	ProxyAllocator _physics_allocator;
+	Map<Gaff::ReflectionHash, ControllerObjects> _update_list;
 
-	void clearWorld(btDynamicsWorld* world);
-
-	SHIB_REF_DEF(BulletPhysicsManager);
+	SHIB_REF_DEF(MovementControllerManager);
 	REF_DEF_REQ;
 };
 
 NS_END
-
-#endif

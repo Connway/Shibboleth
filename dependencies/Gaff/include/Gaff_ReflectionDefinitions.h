@@ -573,12 +573,13 @@ public:
 
 	const ReflectionDefinition<T, Allocator>& operator=(ReflectionDefinition<T, Allocator>&& rhs);
 
-	void read(const JSON& json, void* object);
-	void write(JSON& json, const void* object) const;
+	void read(const JSON& json, void* object) override;
+	void write(JSON& json, const void* object) const override;
 
-	void* getInterface(ReflectionHash class_id, const void* object) const;
+	const void* getInterface(ReflectionHash class_id, const void* object) const override;
+	void* getInterface(ReflectionHash class_id, const void* object) override;
 
-	const char* getName(void) const;
+	const char* getName(void) const override;
 
 	void read(const JSON& json, T* object);
 	void write(JSON& json, const T* object) const;
@@ -1111,8 +1112,17 @@ private: \
 
 #define ADD_BASE_CLASS_INTERFACE_ONLY(ClassName) addBaseClass<ClassName>(CLASS_HASH(ClassName))
 
+#define REF_DEF_REQ \
+	public: \
+		const void* rawRequestInterface(Gaff::ReflectionHash class_id) const override; \
+		void* rawRequestInterface(Gaff::ReflectionHash class_id) override
+
 #define REF_IMPL_REQ(ClassName) \
-void* ClassName::rawRequestInterface(Gaff::ReflectionHash class_id) const \
+const void* ClassName::rawRequestInterface(Gaff::ReflectionHash class_id) const \
+{ \
+	return gRefDef.getInterface(class_id, this); \
+} \
+void* ClassName::rawRequestInterface(Gaff::ReflectionHash class_id) \
 { \
 	return gRefDef.getInterface(class_id, this); \
 }

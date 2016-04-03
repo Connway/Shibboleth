@@ -289,13 +289,25 @@ void ReflectionDefinition<T, Allocator>::write(JSON& json, const void* object) c
 }
 
 template <class T, class Allocator>
-void* ReflectionDefinition<T, Allocator>::getInterface(ReflectionHash class_id, const void* object) const
+const void* ReflectionDefinition<T, Allocator>::getInterface(ReflectionHash class_id, const void* object) const
 {
 	auto it = _base_ids.binarySearch(_base_ids.begin(), _base_ids.end(), class_id,
 		[](const Pair< ReflectionHash, FunctionBinder<void*, const void*> >& lhs, ReflectionHash rhs) -> bool
 		{
 			return lhs.first < rhs;
 		});
+
+	return (it != _base_ids.end() && it->first == class_id) ? it->second(object) : nullptr;
+}
+
+template <class T, class Allocator>
+void* ReflectionDefinition<T, Allocator>::getInterface(ReflectionHash class_id, const void* object)
+{
+	auto it = _base_ids.binarySearch(_base_ids.begin(), _base_ids.end(), class_id,
+		[](const Pair< ReflectionHash, FunctionBinder<void*, const void*> >& lhs, ReflectionHash rhs) -> bool
+	{
+		return lhs.first < rhs;
+	});
 
 	return (it != _base_ids.end() && it->first == class_id) ? it->second(object) : nullptr;
 }

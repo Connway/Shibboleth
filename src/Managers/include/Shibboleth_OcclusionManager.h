@@ -72,7 +72,6 @@ public:
 	~OcclusionManager(void);
 
 	void getUpdateEntries(Array<UpdateEntry>& entries);
-	void* rawRequestInterface(Gaff::ReflectionHash class_id) const;
 	const char* getName(void) const;
 
 	OcclusionID addObject(Object* object, OBJ_TYPE object_type, const UserData& user_data = UserData(0, 0));
@@ -173,6 +172,7 @@ private:
 	GAFF_NO_MOVE(OcclusionManager);
 
 	SHIB_REF_DEF(OcclusionManager);
+	REF_DEF_REQ;
 };
 
 NS_END

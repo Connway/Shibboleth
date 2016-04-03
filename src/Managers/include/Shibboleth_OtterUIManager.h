@@ -70,8 +70,6 @@ public:
 
 	const char* getName(void) const;
 
-	void* rawRequestInterface(Gaff::ReflectionHash class_id) const;
-
 private:
 	HashMap<const char*, Otter::Scene*> _scenes;
 
@@ -83,6 +81,7 @@ private:
 	GAFF_NO_MOVE(OtterUIManager);
 	
 	SHIB_REF_DEF(OtterUIManager);
+	REF_DEF_REQ;
 };
 
 NS_END

@@ -25,6 +25,7 @@ THE SOFTWARE.
 #include <Shibboleth_ReflectionDefinitions.h>
 #include <Shibboleth_DynamicLoader.h>
 #include <Shibboleth_IManager.h>
+#include <Shibboleth_Array.h>
 #include <Shibboleth_Map.h>
 #include <Gleam_IShaderResourceView.h>
 #include <Gleam_IRenderTarget.h>
@@ -149,8 +150,6 @@ public:
 	~RenderManager(void);
 
 	const char* getName(void) const override;
-
-	void* rawRequestInterface(Gaff::ReflectionHash class_id) const override;
 
 	bool initThreadData(void);
 	bool init(const char* module);
@@ -280,6 +279,7 @@ private:
 	GAFF_NO_MOVE(RenderManager);
 
 	SHIB_REF_DEF(RenderManager);
+	REF_DEF_REQ;
 };
 
 NS_END

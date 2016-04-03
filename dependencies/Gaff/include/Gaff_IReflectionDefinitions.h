@@ -122,7 +122,8 @@ public:
 			The address where the interface of \a class_id begins at,
 			otherwise nullptr if \a object does not implement\inherit that interface.
 	*/
-	virtual void* getInterface(ReflectionHash class_id, const void* object) const = 0;
+	virtual const void* getInterface(ReflectionHash class_id, const void* object) const = 0;
+	virtual void* getInterface(ReflectionHash class_id, const void* object) = 0;
 
 	/*!
 		\brief Gets the name of the reflected type.

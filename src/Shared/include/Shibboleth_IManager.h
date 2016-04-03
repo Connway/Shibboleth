@@ -22,11 +22,7 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Shibboleth_String.h"
-#include "Shibboleth_Array.h"
 #include <Gaff_IRequestableInterface.h>
-#include <Gaff_Function.h>
-#include <Gaff_Pair.h>
 
 NS_SHIBBOLETH
 

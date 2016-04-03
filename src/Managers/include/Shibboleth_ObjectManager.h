@@ -64,7 +64,6 @@ public:
 	const char* getName(void) const;
 
 	void getUpdateEntries(Array<UpdateEntry>& entries);
-	void* rawRequestInterface(Gaff::ReflectionHash class_id) const;
 
 private:
 	Array<Object*> _objects;
@@ -81,6 +80,7 @@ private:
 	GAFF_NO_MOVE(ObjectManager);
 
 	SHIB_REF_DEF(ObjectManager);
+	REF_DEF_REQ;
 };
 
 NS_END

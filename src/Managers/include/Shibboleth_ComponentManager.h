@@ -48,8 +48,6 @@ public:
 	INLINE Component* createComponent(const char* name);
 	INLINE void destroyComponent(Component* component);
 
-	void* rawRequestInterface(Gaff::ReflectionHash class_id) const;
-
 private:
 	using InitFunc = bool (*)(IApp&);
 	using CreateComponentFunc = Component* (*)(unsigned int);
@@ -73,6 +71,7 @@ private:
 	GAFF_NO_MOVE(ComponentManager);
 
 	SHIB_REF_DEF(ComponentManager);
+	REF_DEF_REQ;
 };
 
 NS_END
