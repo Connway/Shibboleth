@@ -21,13 +21,40 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Shibboleth_LogManager.h"
+#include <Gaff_File.h>
 
 NS_SHIBBOLETH
 
-LogManager::LogManager(const ProxyAllocator& allocator):
-	_files(allocator), _allocator(allocator)
+Gaff::Thread::ReturnType THREAD_CALLTYPE LogManager::LogThread(void* thread_data)
 {
-	_files.reserve(8);
+	LogManager* lm = reinterpret_cast<LogManager*>(thread_data);
+
+	while (!lm->_shutdown) {
+		lm->_log_event.wait();
+		lm->_log_queue_lock.lock();
+
+		for (auto it = lm->_logs.begin(); it != lm->_logs.end(); ++it) {
+			Gaff::File file;
+
+			if (file.open(it->log_file.getBuffer(), Gaff::File::APPEND)) {
+				file.writeString(it->message.getBuffer());
+				file.close();
+			}
+
+			lm->notifyLogCallbacks(it->message.getBuffer(), it->type);
+		}
+
+		lm->_logs.clearNoFree();
+
+		lm->_log_queue_lock.unlock();
+	}
+
+	return 0;
+}
+
+LogManager::LogManager(void):
+	_shutdown(false)
+{
 }
 
 LogManager::~LogManager(void)
@@ -35,86 +62,18 @@ LogManager::~LogManager(void)
 	destroy();
 }
 
+bool LogManager::init(void)
+{
+	_shutdown = false;
+	return _log_thread.create(LogThread, this);
+}
+
 void LogManager::destroy(void)
 {
-	for (auto it = _files.begin(); it != _files.end(); ++it) {
-		it->first.writeString("\nCLOSING LOG FILE\n");
-		SHIB_FREET(it->second, _allocator);
-	}
-
-	_files.clear();
-}
-
-bool LogManager::openLogFile(const AHashString& filename)
-{
-	GAFF_ASSERT(filename.size() && _files.indexOf(filename) == SIZE_T_FAIL);
-	Gaff::File file(filename.getBuffer(), Gaff::File::APPEND);
-
-	if (!file.isOpen()) {
-		return false;
-	}
-
-	Gaff::SpinLock* spin_lock = SHIB_ALLOCT(Gaff::SpinLock, _allocator);
-
-	if (!spin_lock) {
-		return false;
-	}
-
-	FileLockPair flp;
-	flp.first = std::move(file);
-	flp.second = spin_lock;
-
-	_files[filename] = std::move(flp);
-
-	return true;
-}
-
-bool LogManager::openLogFile(const AString& filename)
-{
-	GAFF_ASSERT(filename.size() && _files.indexOf(filename) == SIZE_T_FAIL);
-	return openLogFile(AHashString(filename));
-}
-
-bool LogManager::openLogFile(const char* filename)
-{
-	GAFF_ASSERT(filename && _files.indexOf(filename) == SIZE_T_FAIL);
-	return openLogFile(AHashString(filename));
-}
-
-void LogManager::closeLogFile(const AHashString& filename)
-{
-	GAFF_ASSERT(filename.size() && _files.indexOf(filename) != SIZE_T_FAIL);
-	_files.erase(filename);
-}
-
-void LogManager::closeLogFile(const AString& filename)
-{
-	GAFF_ASSERT(filename.size() && _files.indexOf(filename) != SIZE_T_FAIL);
-	_files.erase(filename);
-}
-
-void LogManager::closeLogFile(const char* filename)
-{
-	GAFF_ASSERT(filename && _files.indexOf(filename) != SIZE_T_FAIL);
-	_files.erase(filename);
-}
-
-LogManager::FileLockPair& LogManager::getLogFile(const AHashString& filename)
-{
-	GAFF_ASSERT(filename.size() && _files.indexOf(filename) != SIZE_T_FAIL);
-	return _files[filename];
-}
-
-LogManager::FileLockPair& LogManager::getLogFile(const AString& filename)
-{
-	GAFF_ASSERT(filename.size() && _files.indexOf(filename) != SIZE_T_FAIL);
-	return _files[filename];
-}
-
-LogManager::FileLockPair& LogManager::getLogFile(const char* filename)
-{
-	GAFF_ASSERT(filename && _files.indexOf(filename) != SIZE_T_FAIL);
-	return _files[filename];
+	_shutdown = true;
+	_log_event.set();
+	_log_thread.wait();
+	_log_thread.close();
 }
 
 void LogManager::addLogCallback(const LogCallback& callback)
@@ -136,6 +95,22 @@ void LogManager::notifyLogCallbacks(const char* message, LOG_TYPE type)
 	for (auto it = _log_callbacks.begin(); it != _log_callbacks.end(); ++it) {
 		(*it)(message, type);
 	}
+}
+
+void LogManager::logMessage(LOG_TYPE type, const char* file, const char* format, ...)
+{
+	char temp[2048] = { 0 };
+	va_list vl;
+
+	va_start(vl, format);
+	vsnprintf_s(temp, 2048, format, vl);
+	va_end(vl);
+
+	_log_queue_lock.lock();
+	_logs.emplacePush(type, file, temp);
+	_log_queue_lock.unlock();
+
+	_log_event.set();
 }
 
 NS_END

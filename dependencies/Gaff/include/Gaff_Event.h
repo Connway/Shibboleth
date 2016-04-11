@@ -20,32 +20,14 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#include "Shibboleth_Utilities.h"
-#include <Shibboleth_RefCounted.h>
-#include <Shibboleth_JobPool.h>
-#include <Shibboleth_String.h>
-#include <Shibboleth_IApp.h>
-#include <Gaff_ScopedLock.h>
-#include <Gaff_JSON.h>
+#pragma once
 
-NS_SHIBBOLETH
+#include "Gaff_Platform.h"
 
-static IApp* gApp = nullptr;
-
-void SetApp(IApp& app)
-{
-	gApp = &app;
-}
-
-IApp& GetApp(void)
-{
-	GAFF_ASSERT(gApp);
-	return *gApp;
-}
-
-NS_END
-
-STATIC_FILE_FUNC
-{
-	Gaff::JSON::SetMemoryFunctions(&Shibboleth::ShibbolethAllocate, &Shibboleth::ShibbolethFree);
-}
+#ifdef PLATFORM_WINDOWS
+	#include "Gaff_Event_Windows.h"
+#elif defined(PLATFORM_LINUX) || defined(PLATFORM_MAC)
+	#include "Gaff_Event_Linux.h"
+#else
+	#error Platform not supported
+#endif

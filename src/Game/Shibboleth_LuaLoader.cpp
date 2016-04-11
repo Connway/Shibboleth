@@ -22,7 +22,6 @@ THE SOFTWARE.
 
 #include "Shibboleth_LuaLoader.h"
 #include "Shibboleth_ResourceDefines.h"
-#include "Shibboleth_TaskPoolTags.h"
 #include "Shibboleth_LuaManager.h"
 #include <Shibboleth_IFileSystem.h>
 #include <Shibboleth_Utilities.h>
@@ -61,17 +60,17 @@ Gaff::IVirtualDestructor* LuaLoader::load(const char* file_name, uint64_t, HashM
 		file = nullptr;
 	});
 
-	SingleDataWrapper<lua::State*>* lua_data = SHIB_ALLOCT(SingleDataWrapper<lua::State*>, *GetAllocator());
+	SingleDataWrapperFree<lua::State>* lua_data = SHIB_ALLOCT(SingleDataWrapperFree<lua::State>, *GetAllocator());
 
 	if (!lua_data) {
-		LogMessage(GetApp().getGameLogFile(), TPT_PRINTLOG, LogManager::LOG_ERROR, "ERROR - Failed to allocate memory for Lua data.\n");
+		GetApp().getLogManager().logMessage(LogManager::LOG_ERROR, GetApp().getLogFileName(), "ERROR - Failed to allocate memory for Lua data.\n");
 		return nullptr;
 	}
 
 	lua_data->data = GetApp().getManagerT<LuaManager>("Lua Manager").createNewState();
 
 	if (!lua_data->data) {
-		LogMessage(GetApp().getGameLogFile(), TPT_PRINTLOG, LogManager::LOG_ERROR, "ERROR - Failed to create a Lua state for file '%s'.\n", file_name);
+		GetApp().getLogManager().logMessage(LogManager::LOG_ERROR, GetApp().getLogFileName(), "ERROR - Failed to create a Lua state for file '%s'.\n", file_name);
 		SHIB_FREET(lua_data, *GetAllocator());
 		return nullptr;
 	}

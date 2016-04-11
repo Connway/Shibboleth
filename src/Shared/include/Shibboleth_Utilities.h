@@ -29,9 +29,6 @@ NS_SHIBBOLETH
 
 class IApp;
 
-void LogMessage(LogManager::FileLockPair& flp, unsigned int job_pool, LogManager::LOG_TYPE log_type, const char* format, ...);
-//INLINE void PrintToLogFlushCount(unsigned int flush_count);
-
 INLINE void SetApp(IApp& app);
 INLINE IApp& GetApp(void);
 

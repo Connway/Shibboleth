@@ -40,8 +40,8 @@ public:
 	static unsigned int GetCurrentThreadID(void);
 	static unsigned int INF; //!< Value for infinite waiting period
 
-	typedef DWORD ReturnType;
-	typedef ReturnType (THREAD_CALLTYPE *ThreadFunc)(void*);
+	using ReturnType = DWORD;
+	using ThreadFunc = ReturnType (THREAD_CALLTYPE *)(void*);
 
 	//! The return values used by wait().
 	enum WaitCode

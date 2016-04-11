@@ -56,10 +56,8 @@ void InputManager::getUpdateEntries(Array<UpdateEntry>& entries)
 
 bool InputManager::init(void)
 {
-	LogManager::FileLockPair& log = GetApp().getGameLogFile();
-
 	if (!_keyboard.init()) {
-		log.first.writeString("ERROR - Failed to initialize keyboard.\n");
+		GetApp().getLogManager().logMessage(LogManager::LOG_ERROR, GetApp().getLogFileName(), "ERROR - Failed to initialize keyboard.\n");
 		return false;
 	}
 
@@ -67,7 +65,7 @@ bool InputManager::init(void)
 	_keyboard.allowRepeats(false);
 
 	if (!_mouse.init()) {
-		log.first.writeString("ERROR - Failed to initialize mouse.\n");
+		GetApp().getLogManager().logMessage(LogManager::LOG_ERROR, GetApp().getLogFileName(), "ERROR - Failed to initialize mouse.\n");
 		return false;
 	}
 
@@ -77,15 +75,15 @@ bool InputManager::init(void)
 	IFile* input_aliases_file = GetApp().getFileSystem()->openFile(INPUT_ALIASES_CFG);
 
 	if (!input_aliases_file) {
-		log.first.writeString("ERROR - Could not open file '" INPUT_ALIASES_CFG "'.\n");
+		GetApp().getLogManager().logMessage(LogManager::LOG_ERROR, GetApp().getLogFileName(), "ERROR - Could not open file '" INPUT_ALIASES_CFG "'.\n");
 		return false;
 	}
 
 	Gaff::JSON aliases;
 
 	if (!aliases.parse(input_aliases_file->getBuffer())) {
-		log.first.writeString("ERROR - Could not parse file '" INPUT_ALIASES_CFG "'.\n");
-		log.first.printf("%s\n", aliases.getErrorText());
+		GetApp().getLogManager().logMessage(LogManager::LOG_ERROR, GetApp().getLogFileName(), "ERROR - Could not parse file '" INPUT_ALIASES_CFG "'.\n");
+		GetApp().getLogManager().logMessage(LogManager::LOG_ERROR, GetApp().getLogFileName(), "ERROR - %s\n", aliases.getErrorText());
 
 		GetApp().getFileSystem()->closeFile(input_aliases_file);
 		return false;
@@ -99,7 +97,7 @@ bool InputManager::init(void)
 	bool succeeded = !aliases.forEachInArray([&](size_t index, const Gaff::JSON& value) -> bool
 	{
 		if (!value.isString()) {
-			log.first.printf("ERROR - Element '%zu' in '%s' is not a string.\n", index, INPUT_ALIASES_CFG);
+			GetApp().getLogManager().logMessage(LogManager::LOG_ERROR, GetApp().getLogFileName(), "ERROR - Element '%zu' in '%s' is not a string.\n", index, INPUT_ALIASES_CFG);
 			return true;
 		}
 

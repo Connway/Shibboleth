@@ -55,8 +55,8 @@ SHIB_ENUM_REF_DEF(PhysicsShapeType);
 class BulletPhysicsResource : public Gaff::IVirtualDestructor
 {
 public:
-	BulletPhysicsResource(void) {}
-	~BulletPhysicsResource(void) {}
+	BulletPhysicsResource(void);
+	~BulletPhysicsResource(void);
 
 	btCollisionShape* collision_shape = nullptr;
 };

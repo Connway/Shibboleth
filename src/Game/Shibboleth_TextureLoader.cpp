@@ -23,7 +23,6 @@ THE SOFTWARE.
 #include "Shibboleth_TextureLoader.h"
 #include "Shibboleth_ResourceDefines.h"
 #include <Shibboleth_RenderManager.h>
-#include <Shibboleth_TaskPoolTags.h>
 #include <Shibboleth_IFileSystem.h>
 #include <Shibboleth_Utilities.h>
 #include <Shibboleth_IApp.h>
@@ -58,21 +57,21 @@ Gaff::IVirtualDestructor* TextureLoader::load(const char* file_name, uint64_t, H
 	});
 
 	IFile* file = file_map[AString(file_name)];
-
+	LogManager& lm = GetApp().getLogManager();
 	Gaff::JSON json;
 	
 	if (!json.parse(file->getBuffer())) {
-		LogMessage(GetApp().getGameLogFile(), TPT_PRINTLOG, LogManager::LOG_ERROR, "ERROR - Failed to parse file '%s'.\n", file_name);
+		lm.logMessage(LogManager::LOG_ERROR, GetApp().getLogFileName(), "ERROR - Failed to parse file '%s'.\n", file_name);
 		return nullptr;
 	}
 
 	if (!json.isObject()) {
-		LogMessage(GetApp().getGameLogFile(), TPT_PRINTLOG, LogManager::LOG_ERROR, "ERROR - Texture file '%s' is malformed.\n", file_name);
+		lm.logMessage(LogManager::LOG_ERROR, GetApp().getLogFileName(), "ERROR - Texture file '%s' is malformed.\n", file_name);
 		return nullptr;
 	}
 
 	if (!json["image_file"].isString()) {
-		LogMessage(GetApp().getGameLogFile(), TPT_PRINTLOG, LogManager::LOG_ERROR, "ERROR - Texture file '%s' is malformed. Value at 'image_file' is not a string.\n", file_name);
+		lm.logMessage(LogManager::LOG_ERROR, GetApp().getLogFileName(), "ERROR - Texture file '%s' is malformed. Value at 'image_file' is not a string.\n", file_name);
 		return nullptr;
 	}
 
@@ -81,12 +80,12 @@ Gaff::IVirtualDestructor* TextureLoader::load(const char* file_name, uint64_t, H
 
 	if (!display_tags.isNull()) {
 		if (!display_tags.isArray()) {
-			LogMessage(GetApp().getGameLogFile(), TPT_PRINTLOG, LogManager::LOG_ERROR, "ERROR - Texture file '%s' is malformed. Value at 'display_tags' is not an array of strings.\n", file_name);
+			lm.logMessage(LogManager::LOG_ERROR, GetApp().getLogFileName(), "ERROR - Texture file '%s' is malformed. Value at 'display_tags' is not an array of strings.\n", file_name);
 			return nullptr;
 		}
 
 		if (EXTRACT_DISPLAY_TAGS(display_tags, disp_tags)) {
-			LogMessage(GetApp().getGameLogFile(), TPT_PRINTLOG, LogManager::LOG_ERROR, "ERROR - Texture file '%s' is malformed. An element in 'display_tags' is not a string.\n", file_name);
+			lm.logMessage(LogManager::LOG_ERROR, GetApp().getLogFileName(), "ERROR - Texture file '%s' is malformed. An element in 'display_tags' is not a string.\n", file_name);
 			return nullptr;
 		}
 	}
@@ -97,17 +96,17 @@ Gaff::IVirtualDestructor* TextureLoader::load(const char* file_name, uint64_t, H
 	Gaff::Image image;
 
 	if (!image.init()) {
-		LogMessage(GetApp().getGameLogFile(), TPT_PRINTLOG, LogManager::LOG_ERROR, "ERROR - Failed to initialize image data structure when loading '%s'.\n", file_name);
+		lm.logMessage(LogManager::LOG_ERROR, GetApp().getLogFileName(), "ERROR - Failed to initialize image data structure when loading '%s'.\n", file_name);
 		return nullptr;
 	}
 
 	if (!image.load(file->getBuffer(), static_cast<unsigned int>(file->size()))) {
-		LogMessage(GetApp().getGameLogFile(), TPT_PRINTLOG, LogManager::LOG_ERROR, "ERROR - Failed to load image '%s' while processing '%s'.\n", json["image_file"].getString(), file_name);
+		lm.logMessage(LogManager::LOG_ERROR, GetApp().getLogFileName(), "ERROR - Failed to load image '%s' while processing '%s'.\n", json["image_file"].getString(), file_name);
 		return nullptr;
 	}
 
 	if (image.getType() == Gaff::Image::TYPE_DOUBLE) {
-		LogMessage(GetApp().getGameLogFile(), TPT_PRINTLOG, LogManager::LOG_ERROR, "ERROR - Image of type double not supported. IMAGE: %s\n", json["image_file"].getString());
+		lm.logMessage(LogManager::LOG_ERROR, GetApp().getLogFileName(), "ERROR - Image of type double not supported. IMAGE: %s\n", json["image_file"].getString());
 		return nullptr;
 	}
 
@@ -116,7 +115,7 @@ Gaff::IVirtualDestructor* TextureLoader::load(const char* file_name, uint64_t, H
 	TextureData* texture_data = SHIB_ALLOCT(TextureData, *GetAllocator());
 
 	if (!texture_data) {
-		LogMessage(GetApp().getGameLogFile(), TPT_PRINTLOG, LogManager::LOG_ERROR, "ERROR - Failed to allocate texture data structure.\n", file_name);
+		lm.logMessage(LogManager::LOG_ERROR, GetApp().getLogFileName(), "ERROR - Failed to allocate texture data structure.\n", file_name);
 		return nullptr;
 	}
 
@@ -154,13 +153,13 @@ Gaff::IVirtualDestructor* TextureLoader::load(const char* file_name, uint64_t, H
 		rd.setCurrentDevice((*it)->device);
 
 		if (!texture) {
-			LogMessage(GetApp().getGameLogFile(), TPT_PRINTLOG, LogManager::LOG_ERROR, "ERROR - Failed to allocate texture for image %s.\n", file_name);
+			lm.logMessage(LogManager::LOG_ERROR, GetApp().getLogFileName(), "ERROR - Failed to allocate texture for image %s.\n", file_name);
 			SHIB_FREET(texture_data, *GetAllocator());
 			return nullptr;
 		}
 
 		if (texture_format == Gleam::ITexture::FORMAT_SIZE) {
-			LogMessage(GetApp().getGameLogFile(), TPT_PRINTLOG, LogManager::LOG_ERROR, "ERROR - Could not determine the pixel format of image at %s.\n", file_name);
+			lm.logMessage(LogManager::LOG_ERROR, GetApp().getLogFileName(), "ERROR - Could not determine the pixel format of image at %s.\n", file_name);
 			SHIB_FREET(texture_data, *GetAllocator());
 			return nullptr;
 		}
@@ -172,13 +171,13 @@ Gaff::IVirtualDestructor* TextureLoader::load(const char* file_name, uint64_t, H
 
 		if (texture_data->cubemap) {
 			if (width == 1 || height == 1 || depth != 1) {
-				LogMessage(GetApp().getGameLogFile(), TPT_PRINTLOG, LogManager::LOG_ERROR, "ERROR - Image specified as cubemap, but is not a 2D image. IMAGE: %s.\n", file_name);
+				lm.logMessage(LogManager::LOG_ERROR, GetApp().getLogFileName(), "ERROR - Image specified as cubemap, but is not a 2D image. IMAGE: %s.\n", file_name);
 				SHIB_FREET(texture_data, *GetAllocator());
 				return nullptr;
 			}
 
 			if (!texture->initCubemap(rd, width, height, texture_format, 1, image.getBuffer())) {
-				LogMessage(GetApp().getGameLogFile(), TPT_PRINTLOG, LogManager::LOG_ERROR, "ERROR - Failed to initialize cubemap texture using image at %s.\n", file_name);
+				lm.logMessage(LogManager::LOG_ERROR, GetApp().getLogFileName(), "ERROR - Failed to initialize cubemap texture using image at %s.\n", file_name);
 				SHIB_FREET(texture_data, *GetAllocator());
 				return nullptr;
 			}
@@ -199,7 +198,7 @@ Gaff::IVirtualDestructor* TextureLoader::load(const char* file_name, uint64_t, H
 		}
 
 		if (!success) {
-			LogMessage(GetApp().getGameLogFile(), TPT_PRINTLOG, LogManager::LOG_ERROR, "ERROR - Failed to initialize texture using image at %s.\n", file_name);
+			lm.logMessage(LogManager::LOG_ERROR, GetApp().getLogFileName(), "ERROR - Failed to initialize texture using image at %s.\n", file_name);
 			SHIB_FREET(texture_data, *GetAllocator());
 			return nullptr;
 		}
@@ -210,13 +209,13 @@ Gaff::IVirtualDestructor* TextureLoader::load(const char* file_name, uint64_t, H
 			ShaderResourceViewPtr srv(_render_mgr.createShaderResourceView());
 
 			if (!srv) {
-				LogMessage(GetApp().getGameLogFile(), TPT_PRINTLOG, LogManager::LOG_ERROR, "ERROR - Failed to allocate shader resource view for texture %s.\n", file_name);
+				lm.logMessage(LogManager::LOG_ERROR, GetApp().getLogFileName(), "ERROR - Failed to allocate shader resource view for texture %s.\n", file_name);
 				SHIB_FREET(texture_data, *GetAllocator());
 				return false;
 			}
 
 			if (!srv->init(rd, texture.get())) {
-				LogMessage(GetApp().getGameLogFile(), TPT_PRINTLOG, LogManager::LOG_ERROR, "ERROR - Failed to initialize shader resource view for texture %s.\n", file_name);
+				lm.logMessage(LogManager::LOG_ERROR, GetApp().getLogFileName(), "ERROR - Failed to initialize shader resource view for texture %s.\n", file_name);
 				SHIB_FREET(texture_data, *GetAllocator());
 				return false;
 			}

@@ -24,6 +24,11 @@ THE SOFTWARE.
 
 #include "Shibboleth_PhysicsResource.h"
 
+#ifdef USE_PHYSX
+#else
+	#include <BulletCollision/CollisionShapes/btCollisionShape.h>
+#endif
+
 NS_SHIBBOLETH
 
 SHIB_ENUM_REF_IMPL(PhysicsShapeType)
@@ -41,5 +46,21 @@ SHIB_ENUM_REF_IMPL(PhysicsShapeType)
 .addValue("Triangle", PST_TRIANGLE)
 //PST_HEIGHTFIELD,
 ;
+
+#ifdef USE_PHYSX
+#else
+
+BulletPhysicsResource::BulletPhysicsResource(void)
+{
+}
+
+BulletPhysicsResource::~BulletPhysicsResource(void)
+{
+	if (collision_shape) {
+		SHIB_FREET(collision_shape, *GetAllocator());
+	}
+}
+
+#endif
 
 NS_END

@@ -74,6 +74,15 @@ struct SingleDataWrapper : public Gaff::IVirtualDestructor
 	T data;
 };
 
+template <class T>
+struct SingleDataWrapperFree : public Gaff::IVirtualDestructor
+{
+	SingleDataWrapperFree(void) {}
+	~SingleDataWrapperFree(void) { if (data) { SHIB_FREET(data, *GetAllocator()); } }
+
+	T* data = nullptr;
+};
+
 struct TextureData : public Gaff::IVirtualDestructor
 {
 	Array<ShaderResourceViewPtr> resource_views;

@@ -20,32 +20,73 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#include "Shibboleth_Utilities.h"
-#include <Shibboleth_RefCounted.h>
-#include <Shibboleth_JobPool.h>
-#include <Shibboleth_String.h>
-#include <Shibboleth_IApp.h>
-#include <Gaff_ScopedLock.h>
-#include <Gaff_JSON.h>
+#include "Gaff_Platform.h"
 
-NS_SHIBBOLETH
+#ifdef PLATFORM_WINDOWS
 
-static IApp* gApp = nullptr;
+#include "Gaff_Event_Windows.h"
+#include "Gaff_Assert.h"
 
-void SetApp(IApp& app)
+#define EVENT_SET (1 << 0)
+#define EVENT_MANUAL_RESET (1 << 1)
+
+NS_GAFF
+
+unsigned long Event::INF = static_cast<unsigned long>(-1);
+
+Event::Event(bool manual_reset, bool initial_state):
+	_event(nullptr), _flags(0)
 {
-	gApp = &app;
+	if (initial_state) {
+		_flags |= EVENT_SET;
+	}
+
+	if (manual_reset) {
+		_flags |= EVENT_MANUAL_RESET;
+	}
+
+	_event = CreateEvent(NULL, manual_reset, initial_state, NULL);
 }
 
-IApp& GetApp(void)
+Event::~Event(void)
 {
-	GAFF_ASSERT(gApp);
-	return *gApp;
+	if (_event) {
+		CloseHandle(_event);
+	}
+}
+
+bool Event::set(void)
+{
+	if (_flags & EVENT_MANUAL_RESET) {
+		_flags |= EVENT_SET;
+	}
+
+	return SetEvent(_event) == TRUE;
+}
+
+bool Event::reset(void)
+{
+	_flags &= ~EVENT_SET;
+	return ResetEvent(_event) == TRUE;
+}
+
+Event::WaitCode Event::wait(unsigned long ms)
+{
+	DWORD ret = WaitForSingleObject(_event, ms);
+
+	switch (ret) {
+		case WAIT_TIMEOUT:
+			return EVENT_TIMEOUT;
+
+		case WAIT_ABANDONED:
+		case WAIT_FAILED:
+			return EVENT_FAILED;
+
+		default:
+			return EVENT_FINISHED;
+	}
 }
 
 NS_END
 
-STATIC_FILE_FUNC
-{
-	Gaff::JSON::SetMemoryFunctions(&Shibboleth::ShibbolethAllocate, &Shibboleth::ShibbolethFree);
-}
+#endif

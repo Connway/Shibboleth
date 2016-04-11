@@ -123,6 +123,9 @@
     <ClInclude Include="..\..\..\dependencies\Gaff\include\Gaff_DynamicModule.h" />
     <ClInclude Include="..\..\..\dependencies\Gaff\include\Gaff_DynamicModule_Linux.h" />
     <ClInclude Include="..\..\..\dependencies\Gaff\include\Gaff_DynamicModule_Windows.h" />
+    <ClInclude Include="..\..\..\dependencies\Gaff\include\Gaff_Event.h" />
+    <ClInclude Include="..\..\..\dependencies\Gaff\include\Gaff_Event_Linux.h" />
+    <ClInclude Include="..\..\..\dependencies\Gaff\include\Gaff_Event_Windows.h" />
     <ClInclude Include="..\..\..\dependencies\Gaff\include\Gaff_File.h" />
     <ClInclude Include="..\..\..\dependencies\Gaff\include\Gaff_Function.h" />
     <ClInclude Include="..\..\..\dependencies\Gaff\include\Gaff_HashMap.h" />
@@ -190,6 +193,8 @@
     <ClCompile Include="..\..\..\dependencies\Gaff\Gaff_CriticalSection_Windows.cpp" />
     <ClCompile Include="..\..\..\dependencies\Gaff\Gaff_DynamicModule_Linux.cpp" />
     <ClCompile Include="..\..\..\dependencies\Gaff\Gaff_DynamicModule_Windows.cpp" />
+    <ClCompile Include="..\..\..\dependencies\Gaff\Gaff_Event_Linux.cpp" />
+    <ClCompile Include="..\..\..\dependencies\Gaff\Gaff_Event_Windows.cpp" />
     <ClCompile Include="..\..\..\dependencies\Gaff\Gaff_File.cpp" />
     <ClCompile Include="..\..\..\dependencies\Gaff\Gaff_Host.cpp" />
     <ClCompile Include="..\..\..\dependencies\Gaff\Gaff_Image.cpp" />

@@ -30,6 +30,7 @@ THE SOFTWARE.
 #include <Gleam_IRenderDevice.h>
 #include <Gleam_IProgram.h>
 #include <Gaff_Utils.h>
+#include <Gaff_File.h>
 
 NS_SHIBBOLETH
 
@@ -76,11 +77,12 @@ bool RenderPipelineManager::init(void)
 	_camera_to_screen_sampler = GetApp().getManagerT<ResourceManager>("Resource Manager").requestResource("Resources/Samplers/anisotropic_16x.sampler");
 	_camera_to_screen_shader = GetApp().getManagerT<ResourceManager>("Resource Manager").requestResource("Resources/Camera To Screen/camera_to_screen.material");
 
-	LogManager::FileLockPair& log = GetApp().getGameLogFile();
-
-	log.first.writeString("\n==================================================\n");
-	log.first.writeString("==================================================\n");
-	log.first.writeString("Loading Render Pipelines...\n");
+	GetApp().getLogManager().logMessage(
+		LogManager::LOG_NORMAL, GetApp().getLogFileName(),
+		"\n==================================================\n"
+		"==================================================\n"
+		"Loading Render Pipelines...\n"
+	);
 
 	bool early_out = Gaff::ForEachTypeInDirectory<Gaff::FDT_RegularFile>("./Render Pipelines", [&](const char* name, size_t) -> bool
 	{
@@ -92,7 +94,7 @@ bool RenderPipelineManager::init(void)
 
 		// Error out if it's not a dynamic module
 		if (!Gaff::File::CheckExtension(name, DYNAMIC_EXTENSION)) {
-			log.first.printf("ERROR - '%s' is not a dynamic module.\n", rel_path.getBuffer());
+			GetApp().getLogManager().logMessage(LogManager::LOG_ERROR, GetApp().getLogFileName(), "ERROR - '%s' is not a dynamic module.\n", rel_path.getBuffer());
 			GetApp().quit();
 			return true;
 
@@ -105,15 +107,15 @@ bool RenderPipelineManager::init(void)
 		DynamicLoader::ModulePtr module = GetApp().loadModule(rel_path.getBuffer(), name);
 
 		if (!module.valid()) {
-			log.first.printf("ERROR - Could not load dynamic module '%s'.\n", rel_path.getBuffer());
+			GetApp().getLogManager().logMessage(LogManager::LOG_ERROR, GetApp().getLogFileName(), "ERROR - Could not load dynamic module '%s'.\n", rel_path.getBuffer());
 			GetApp().quit();
 			return true;
 		}
 
-		log.first.printf("Loading render pipelines from module '%s'\n", rel_path.getBuffer());
+		GetApp().getLogManager().logMessage(LogManager::LOG_NORMAL, GetApp().getLogFileName(), "Loading render pipelines from module '%s'\n", rel_path.getBuffer());
 
 		if (!addRenderPipelines(module)) {
-			log.first.printf("ERROR - Could not load render pipelines in dynamic module '%s'.\n", rel_path.getBuffer());
+			GetApp().getLogManager().logMessage(LogManager::LOG_ERROR, GetApp().getLogFileName(), "ERROR - Could not load render pipelines in dynamic module '%s'.\n", rel_path.getBuffer());
 			GetApp().quit();
 			return true;
 		}
@@ -129,7 +131,7 @@ bool RenderPipelineManager::init(void)
 	IFile* file = fs->openFile(GRAPHICS_CFG);
 
 	if (!file) {
-		log.first.printf("ERROR - Could not open file '" GRAPHICS_CFG "'.\n");
+		GetApp().getLogManager().logMessage(LogManager::LOG_ERROR, GetApp().getLogFileName(), "ERROR - Could not open file '" GRAPHICS_CFG "'.\n");
 		GetApp().quit();
 		return false;
 	}
@@ -137,7 +139,7 @@ bool RenderPipelineManager::init(void)
 	Gaff::JSON config;
 
 	if (!config.parse(file->getBuffer())) {
-		log.first.printf("ERROR - '" GRAPHICS_CFG "' is malformed. Could not parse file.\n");
+		GetApp().getLogManager().logMessage(LogManager::LOG_ERROR, GetApp().getLogFileName(), "ERROR - '" GRAPHICS_CFG "' is malformed. Could not parse file.\n");
 		fs->closeFile(file);
 		GetApp().quit();
 		return false;
@@ -146,7 +148,7 @@ bool RenderPipelineManager::init(void)
 	fs->closeFile(file);
 
 	if (!config.isObject()) {
-		log.first.printf("ERROR - '" GRAPHICS_CFG "' is malformed. Root element is not an object.\n");
+		GetApp().getLogManager().logMessage(LogManager::LOG_ERROR, GetApp().getLogFileName(), "ERROR - '" GRAPHICS_CFG "' is malformed. Root element is not an object.\n");
 		GetApp().quit();
 		return false;
 	}
@@ -154,7 +156,7 @@ bool RenderPipelineManager::init(void)
 	Gaff::JSON initial_pipeline = config["initial_pipeline"];
 
 	if (!initial_pipeline.isString()) {
-		log.first.printf("ERROR - '" GRAPHICS_CFG "' is malformed. Element at 'initial_pipeline' is not a string.\n");
+		GetApp().getLogManager().logMessage(LogManager::LOG_ERROR, GetApp().getLogFileName(), "ERROR - '" GRAPHICS_CFG "' is malformed. Element at 'initial_pipeline' is not a string.\n");
 		GetApp().quit();
 		return false;
 	}
@@ -167,7 +169,7 @@ bool RenderPipelineManager::init(void)
 	}
 
 	if (_active_pipeline == SIZE_T_FAIL) {
-		log.first.printf("ERROR - Could not find initial render pipeline '%s'.\n", initial_pipeline.getString());
+		GetApp().getLogManager().logMessage(LogManager::LOG_ERROR, GetApp().getLogFileName(), "ERROR - Could not find initial render pipeline '%s'.\n", initial_pipeline.getString());
 		GetApp().quit();
 	}
 
@@ -187,17 +189,17 @@ bool RenderPipelineManager::init(void)
 	}
 
 	if (_camera_to_screen_program_buffers.getResourcePtr()->hasFailed()) {
-		GetApp().getGameLogFile().first.writeString("ERROR - Render Pipeline Manager failed to create 'ProgramBuffers'.\n");
+		GetApp().getLogManager().logMessage(LogManager::LOG_ERROR, GetApp().getLogFileName(), "ERROR - Render Pipeline Manager failed to create 'ProgramBuffers'.\n");
 		return false;
 	}
 
 	if (_camera_to_screen_sampler.getResourcePtr()->hasFailed()) {
-		GetApp().getGameLogFile().first.writeString("ERROR - Render Pipeline Manager failed to load resource 'Resources/Samplers/anisotropic_16x.sampler'.\n");
+		GetApp().getLogManager().logMessage(LogManager::LOG_ERROR, GetApp().getLogFileName(), "ERROR - Render Pipeline Manager failed to load resource 'Resources/Samplers/anisotropic_16x.sampler'.\n");
 		return false;
 	}
 
 	if (_camera_to_screen_shader.getResourcePtr()->hasFailed()) {
-		GetApp().getGameLogFile().first.writeString("ERROR - Render Pipeline Manager failed to load resource 'Resources/Camera To Screen/camera_to_screen.material'.\n");
+		GetApp().getLogManager().logMessage(LogManager::LOG_ERROR, GetApp().getLogFileName(), "ERROR - Render Pipeline Manager failed to load resource 'Resources/Camera To Screen/camera_to_screen.material'.\n");
 		return false;
 	}
 
@@ -271,8 +273,6 @@ size_t RenderPipelineManager::getPipelineIndex(const char* name) const
 
 bool RenderPipelineManager::addRenderPipelines(DynamicLoader::ModulePtr& module)
 {
-	LogManager::FileLockPair& log = GetApp().getGameLogFile();
-
 	GAFF_ASSERT(module.valid());
 	CreateRenderPipelineFunc create_pipeline = module->getFunc<CreateRenderPipelineFunc>("CreateRenderPipeline");
 	DestroyRenderPipelineFunc destroy_pipeline = module->getFunc<DestroyRenderPipelineFunc>("DestroyRenderPipeline");
@@ -281,41 +281,41 @@ bool RenderPipelineManager::addRenderPipelines(DynamicLoader::ModulePtr& module)
 	InitFunc init_func = module->getFunc<InitFunc>("InitModule");
 
 	if (!init_func) {
-		log.first.writeString("ERROR - Could not find function named 'InitModule'.\n");
+		GetApp().getLogManager().logMessage(LogManager::LOG_ERROR, GetApp().getLogFileName(), "ERROR - Could not find function named 'InitModule'.\n");
 		return false;
 	}
 
 	if (!create_pipeline) {
-		log.first.writeString("ERROR - Could not find function named 'CreateRenderPipeline'.\n");
+		GetApp().getLogManager().logMessage(LogManager::LOG_ERROR, GetApp().getLogFileName(), "ERROR - Could not find function named 'CreateRenderPipeline'.\n");
 		return false;
 	}
 
 	if (!destroy_pipeline) {
-		log.first.writeString("ERROR - Could not find function named 'DestroyRenderPipeline'.\n");
+		GetApp().getLogManager().logMessage(LogManager::LOG_ERROR, GetApp().getLogFileName(), "ERROR - Could not find function named 'DestroyRenderPipeline'.\n");
 		return false;
 	}
 
 	if (!num_pipelines) {
-		log.first.writeString("ERROR - Could not find function named 'GetNumRenderPipelines'.\n");
+		GetApp().getLogManager().logMessage(LogManager::LOG_ERROR, GetApp().getLogFileName(), "ERROR - Could not find function named 'GetNumRenderPipelines'.\n");
 		return false;
 	}
 
 	if (!init_func(GetApp())) {
-		log.first.writeString("ERROR - Failed to initialize render pipeline module.\n");
+		GetApp().getLogManager().logMessage(LogManager::LOG_ERROR, GetApp().getLogFileName(), "ERROR - Failed to initialize render pipeline module.\n");
 	}
 
 	for (size_t i = 0; i < num_pipelines(); ++i) {
 		IRenderPipeline* pipeline = create_pipeline(i);
 
 		if (!pipeline) {
-			log.first.printf("ERROR - Failed to create pipeline with ID '%zu'", i);
+			GetApp().getLogManager().logMessage(LogManager::LOG_ERROR, GetApp().getLogFileName(), "ERROR - Failed to create pipeline with ID '%zu'", i);
 			return false;
 		}
 
 		_pipeline_map[pipeline->getName()] = destroy_pipeline;
 		_pipelines.push(pipeline);
 
-		log.first.printf("Loaded render pipeline '%s'\n", pipeline->getName());
+		GetApp().getLogManager().logMessage(LogManager::LOG_NORMAL, GetApp().getLogFileName(), "Loaded render pipeline '%s'\n", pipeline->getName());
 	}
 
 	return true;

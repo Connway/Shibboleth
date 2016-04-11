@@ -63,7 +63,7 @@ Thread::~Thread(void)
 	\param thread_data The data to pass to the thread.
 	\return Whether the thread was successfully created.
 */
-bool Thread::create(Thread::ThreadFunc thread_func, void* thread_data)
+bool Thread::create(ThreadFunc thread_func, void* thread_data)
 {
 	_thread = CreateThread(nullptr, 0, thread_func, thread_data, 0, nullptr);
 	return (_thread) ? true : false;

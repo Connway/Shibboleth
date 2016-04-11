@@ -26,7 +26,9 @@ THE SOFTWARE.
 //////////////////////////////////////////////////////////////////////////
 
 #include "Shibboleth_Allocator.h"
+#include <Gaff_Thread.h>
 #include <Gaff_Atomic.h>
+#include <Gaff_Event.h>
 #include <Gaff_Utils.h>
 #include <Gaff_File.h>
 
@@ -48,13 +50,24 @@ THE SOFTWARE.
 
 NS_SHIBBOLETH
 
+struct AllocationInfo
+{
+	size_t pool_index = 0;
+	char file[256] = { 0 };
+	int line = 0;
+
+	AllocationInfo* next = nullptr;
+	AllocationInfo* prev = nullptr;
+};
+
 // Enforce the header being 16-byte aligned so that data falls on 16-byte boundary.
 struct COMPILERALIGN16 AllocationHeader
 {
 	size_t pool_index;
+	AllocationInfo* alloc_info;
 
 #if defined(SYMBOL_BUILD) && defined(GATHER_ALLOCATION_STACKTRACE)
-	Gaff::StackTrace stack_trace;
+		Gaff::StackTrace stack_trace;
 #endif
 };
 
@@ -63,9 +76,78 @@ struct COMPILERALIGN16 AllocationHeader
 	static Gaff::SpinLock g_pt_locks[NUM_TAG_POOLS + 1];
 #endif
 
+struct AllocThreadInfo
+{
+	AllocationInfo* allocs[256] = { nullptr };
+	AllocationInfo* frees[256] = { nullptr };
+	AllocationInfo* _list_head = nullptr;
+
+	volatile unsigned int alloc_index = 0;
+	volatile unsigned int free_index = 0;
+
+	Gaff::Event alloc_event;
+	bool running = true;
+};
+
+static AllocThreadInfo g_thread_info;
+static Gaff::Thread g_thread;
+
+static Gaff::Thread::ReturnType THREAD_CALLTYPE AllocInfoThread(void* data)
+{
+	AllocThreadInfo* ati = reinterpret_cast<AllocThreadInfo*>(data);
+
+	unsigned int curr_alloc_index = 0;
+	unsigned int curr_free_index = 0;
+
+	while (ati->running) {
+		ati->alloc_event.wait();
+
+		while (ati->allocs[curr_alloc_index]) {
+			// Grab the info pointer
+			AllocationInfo* ai = ati->allocs[curr_alloc_index];
+
+			// Free up the slot
+			ati->allocs[curr_alloc_index] = nullptr;
+			curr_alloc_index = (curr_alloc_index + 1) % 256;
+
+			// Process the allocation
+			ai->next = ati->_list_head;
+
+			if (ati->_list_head) {
+				ati->_list_head->prev = ai;
+			}
+
+			ati->_list_head = ai;
+		}
+
+		while (ati->frees[curr_free_index]) {
+			// Grab the info pointer
+			AllocationInfo* ai = ati->frees[curr_free_index];
+
+			// Free up the slot
+			ati->frees[curr_free_index] = nullptr;
+			curr_free_index = (curr_free_index + 1) % 256;
+
+			// Process the free
+			if (ai->prev) {
+				ai->prev->next = ai->next;
+			}
+
+			if (ai->next) {
+				ai->next->prev = ai->prev;
+			}
+
+			if (ai == ati->_list_head) {
+				ati->_list_head = ai->next;
+			}
+		}
+	}
+
+	return 0;
+}
 
 Allocator::Allocator(size_t alignment):
-	_next_tag(0), _alignment(alignment)
+	_alignment(alignment), _next_tag(0)
 {
 	MemoryPoolInfo& mem_pool_info = _tagged_pools[0];
 	mem_pool_info.total_bytes_allocated = 0;
@@ -73,22 +155,166 @@ Allocator::Allocator(size_t alignment):
 	mem_pool_info.num_frees = 0;
 	strncpy(mem_pool_info.pool_name, "Untagged", POOL_NAME_SIZE);
 
-//#if defined(SYMBOL_BUILD) && defined(GATHER_ALLOCATION_STACKTRACE)
-//	GAFF_GAFF_ASSERT(Gaff::StackTrace::Init());
-//#endif
+	GAFF_ASSERT(g_thread.create(AllocInfoThread, &g_thread_info));
 }
 
 Allocator::~Allocator(void)
 {
-//#if defined(SYMBOL_BUILD) && defined(GATHER_ALLOCATION_STACKTRACE)
-//	auto exit_func = [&](void)
-//	{
-//		Gaff::StackTrace::Destroy();
-//	};
-//
-//	GAFF_SCOPE_EXIT(std::move(exit_func));
-//#endif
+	g_thread_info.running = false;
+	g_thread_info.alloc_event.set();
+	g_thread.wait();
+	g_thread.close();
 
+	writeAllocationLog();
+	writeLeakLog();
+}
+
+size_t Allocator::getPoolIndex(const char* pool_name)
+{
+	unsigned int alloc_tag = Gaff::FNV1aHash32(pool_name, strlen(pool_name));
+	size_t index = _tag_ids.linearSearch(0, _tag_ids.size(), alloc_tag);
+
+	// This is going to fail if we get multiple calls to this with the same alloc_tag at the same time.
+	// Unlikely that this should happen, but it is possible.
+	if (index == SIZE_T_FAIL) {
+		GAFF_ASSERT(_next_tag < NUM_TAG_POOLS);
+		unsigned int tag_index = AtomicIncrement(&_next_tag) - 1;
+
+		_tag_ids[tag_index] = alloc_tag;
+		index = tag_index;
+
+		strncpy(_tagged_pools[index + 1].pool_name, pool_name, POOL_NAME_SIZE);
+	}
+
+	return index + 1;
+}
+
+void* Allocator::alloc(size_t size_bytes, size_t pool_index, const char* file, int line)
+{
+	MemoryPoolInfo& mem_pool_info = _tagged_pools[pool_index];
+
+	void* data = Gaff::AlignedMalloc(size_bytes + sizeof(AllocationHeader), _alignment);
+	void* alloc_info = Gaff::AlignedMalloc(sizeof(AllocationInfo), _alignment);
+
+	if (data) {
+		AtomicUAdd(&mem_pool_info.total_bytes_allocated, size_bytes);
+		AtomicIncrement(&mem_pool_info.num_allocations);
+
+		AllocationHeader* header = reinterpret_cast<AllocationHeader*>(data);
+		header->alloc_info = reinterpret_cast<AllocationInfo*>(alloc_info);
+		header->pool_index = pool_index;
+
+#if defined(SYMBOL_BUILD) && defined(GATHER_ALLOCATION_STACKTRACE)
+		g_pt_locks[pool_index].lock();
+
+		header->stack_trace.captureStack(APP_NAME);
+
+		g_allocs[pool_index].emplacePush(header);
+		g_pt_locks[pool_index].unlock();
+#endif
+
+		if (alloc_info) {
+			AllocationInfo* ai = reinterpret_cast<AllocationInfo*>(alloc_info);
+			Gaff::construct(ai);
+
+			strncpy_s(ai->file, file, 256);
+			ai->pool_index = pool_index;
+			ai->line = line;
+			ai->next = ai->prev = nullptr;
+
+			unsigned int next_index = (AtomicIncrement(&g_thread_info.alloc_index) - 1) % 256;
+
+			void* orig = AtomicCompareExchangePointer(
+				reinterpret_cast<void* volatile*>(g_thread_info.allocs + next_index),
+				reinterpret_cast<void*>(ai),
+				nullptr
+			);
+
+			while (orig != nullptr) {
+				orig = AtomicCompareExchangePointer(
+					reinterpret_cast<void* volatile*>(g_thread_info.allocs + next_index),
+					reinterpret_cast<void*>(ai),
+					nullptr
+				);
+			}
+
+			g_thread_info.alloc_event.set();
+		}
+
+		return reinterpret_cast<char*>(data) + sizeof(AllocationHeader);
+	}
+
+	return nullptr;
+}
+
+void* Allocator::alloc(size_t size_bytes, const char* file, int line)
+{
+	return alloc(size_bytes, 0, file, line);
+}
+
+void Allocator::free(void* data)
+{
+	GAFF_ASSERT(data);
+
+	AllocationHeader* header = reinterpret_cast<AllocationHeader*>(reinterpret_cast<char*>(data) - sizeof(AllocationHeader));
+
+	MemoryPoolInfo& mem_pool_info = _tagged_pools[header->pool_index];
+	AtomicIncrement(&mem_pool_info.num_frees);
+
+#if defined(SYMBOL_BUILD) && defined(GATHER_ALLOCATION_STACKTRACE)
+	auto& allocs = g_allocs[header->pool_index];
+	g_pt_locks[header->pool_index].lock();
+
+	auto it = allocs.linearSearch(header);
+	GAFF_GAFF_ASSERT(it != allocs.end());
+	allocs.fastErase(it);
+
+	g_pt_locks[header->pool_index].unlock();
+#endif
+
+	if (header->alloc_info) {
+		unsigned int next_index = (AtomicIncrement(&g_thread_info.free_index) - 1) % 256;
+
+		void* orig = AtomicCompareExchangePointer(
+			reinterpret_cast<void* volatile*>(g_thread_info.frees + next_index),
+			reinterpret_cast<void*>(header->alloc_info), nullptr
+		);
+
+		while (orig != nullptr) {
+			orig = AtomicCompareExchangePointer(
+				reinterpret_cast<void* volatile*>(g_thread_info.frees + next_index),
+				reinterpret_cast<void*>(header->alloc_info), nullptr
+			);
+		}
+
+		g_thread_info.alloc_event.set();
+	}
+
+	Gaff::AlignedFree(header);
+}
+
+size_t Allocator::getTotalBytesAllocated(size_t pool_index) const
+{
+	return _tagged_pools[pool_index].total_bytes_allocated;
+}
+
+size_t Allocator::getNumAllocations(size_t pool_index) const
+{
+	return _tagged_pools[pool_index].num_allocations;
+}
+
+size_t Allocator::getNumFrees(size_t pool_index) const
+{
+	return _tagged_pools[pool_index].num_frees;
+}
+
+const char* Allocator::getPoolName(size_t pool_index) const
+{
+	return _tagged_pools[pool_index].pool_name;
+}
+
+void Allocator::writeAllocationLog(void) const
+{
 	char log_file_name[64] = { 0 };
 	Gaff::GetCurrentTimeString(log_file_name, 64, "logs/AllocationLog %Y-%m-%d %H-%M-%S.txt");
 
@@ -117,12 +343,14 @@ Allocator::~Allocator(void)
 	size_t total_allocs = 0;
 	size_t total_frees = 0;
 
-	log.printf("===========================================================\n");
-	log.printf("Tagged Memory Allocations Log\n");
-	log.printf("===========================================================\n\n");
+	log.printf(
+		"===========================================================\n"
+		"Tagged Memory Allocations Log\n"
+		"===========================================================\n\n"
+	);
 
 	for (size_t i = 0; i < _next_tag + 1; ++i) {
-		MemoryPoolInfo& mem_pool_info = _tagged_pools[i];
+		const MemoryPoolInfo& mem_pool_info = _tagged_pools[i];
 
 		log.printf("%s:\n", mem_pool_info.pool_name);
 		log.printf("\tBytes Allocated: %zu\n", mem_pool_info.total_bytes_allocated);
@@ -155,7 +383,7 @@ Allocator::~Allocator(void)
 						"\t(0x%llX) [%s:(%u)] %s\n", (*it_st)->stack_trace.getAddress(j),
 						(*it_st)->stack_trace.getFileName(j), (*it_st)->stack_trace.getLineNumber(j),
 						(*it_st)->stack_trace.getSymbolName(j)
-					);
+						);
 				}
 
 				callstack_log.printf("\n");
@@ -182,98 +410,30 @@ Allocator::~Allocator(void)
 	}
 }
 
-size_t Allocator::getPoolIndex(const char* pool_name)
+void Allocator::writeLeakLog(void) const
 {
-	unsigned int alloc_tag = Gaff::FNV1aHash32(pool_name, strlen(pool_name));
-	size_t index = _tag_ids.linearSearch(0, _tag_ids.size(), alloc_tag);
-
-	// This is going to fail if we get multiple calls to this with the same alloc_tag at the same time.
-	// Unlikely that this should happen, but it is possible.
-	if (index == SIZE_T_FAIL) {
-		GAFF_ASSERT(_next_tag < NUM_TAG_POOLS);
-		unsigned int tag_index = AtomicIncrement(&_next_tag) - 1;
-
-		_tag_ids[tag_index] = alloc_tag;
-		index = tag_index;
-
-		strncpy(_tagged_pools[index + 1].pool_name, pool_name, POOL_NAME_SIZE);
+	if (!g_thread_info._list_head) {
+		return;
 	}
 
-	return index + 1;
-}
+	char log_file_name[64] = { 0 };
+	Gaff::GetCurrentTimeString(log_file_name, 64, "logs/LeakLog %Y-%m-%d %H-%M-%S.txt");
 
-void* Allocator::alloc(size_t size_bytes, size_t pool_index, const char* /*file*/, int /*line*/)
-{
-	MemoryPoolInfo& mem_pool_info = _tagged_pools[pool_index];
+	Gaff::File log;
 
-	void* data = Gaff::AlignedMalloc(size_bytes + sizeof(AllocationHeader), _alignment);
-
-	if (data) {
-		AtomicUAdd(&mem_pool_info.total_bytes_allocated, size_bytes);
-		AtomicIncrement(&mem_pool_info.num_allocations);
-
-		AllocationHeader* header = reinterpret_cast<AllocationHeader*>(data);
-		header->pool_index = pool_index;
-
-#if defined(SYMBOL_BUILD) && defined(GATHER_ALLOCATION_STACKTRACE)
-		g_pt_locks[pool_index].lock();
-
-		header->stack_trace.captureStack(APP_NAME);
-
-		g_allocs[pool_index].emplacePush(header);
-		g_pt_locks[pool_index].unlock();
-#endif
+	if (!log.open(log_file_name, Gaff::File::WRITE)) {
+		return;
 	}
 
-	return reinterpret_cast<char*>(data) + sizeof(AllocationHeader);
-}
+	log.printf(
+		"===========================================================\n"
+		"Leaked Memory Allocations Log\n"
+		"===========================================================\n\n"
+	);
 
-void* Allocator::alloc(size_t size_bytes, const char* file, int line)
-{
-	return alloc(size_bytes, 0, file, line);
-}
-
-void Allocator::free(void* data)
-{
-	GAFF_ASSERT(data);
-
-	AllocationHeader* header = reinterpret_cast<AllocationHeader*>(reinterpret_cast<char*>(data) - sizeof(AllocationHeader));
-
-	MemoryPoolInfo& mem_pool_info = _tagged_pools[header->pool_index];
-	AtomicIncrement(&mem_pool_info.num_frees);
-
-#if defined(SYMBOL_BUILD) && defined(GATHER_ALLOCATION_STACKTRACE)
-	auto& allocs = g_allocs[header->pool_index];
-	g_pt_locks[header->pool_index].lock();
-
-	auto it = allocs.linearSearch(header);
-	GAFF_GAFF_ASSERT(it != allocs.end());
-	allocs.fastErase(it);
-
-	g_pt_locks[header->pool_index].unlock();
-#endif
-
-	Gaff::AlignedFree(header);
-}
-
-size_t Allocator::getTotalBytesAllocated(size_t pool_index) const
-{
-	return _tagged_pools[pool_index].total_bytes_allocated;
-}
-
-size_t Allocator::getNumAllocations(size_t pool_index) const
-{
-	return _tagged_pools[pool_index].num_allocations;
-}
-
-size_t Allocator::getNumFrees(size_t pool_index) const
-{
-	return _tagged_pools[pool_index].num_frees;
-}
-
-INLINE const char* Allocator::getPoolName(size_t pool_index) const
-{
-	return _tagged_pools[pool_index].pool_name;
+	for (AllocationInfo* info = g_thread_info._list_head; info; info = info->next) {
+		log.printf("%s:(%i) [%s]\n", info->file, info->line, _tagged_pools[info->pool_index].pool_name);
+	}
 }
 
 NS_END

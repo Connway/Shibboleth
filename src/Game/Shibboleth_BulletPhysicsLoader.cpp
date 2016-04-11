@@ -24,7 +24,6 @@ THE SOFTWARE.
 
 #include "Shibboleth_PhysicsLoader.h"
 #include "Shibboleth_PhysicsResource.h"
-#include "Shibboleth_TaskPoolTags.h"
 #include <Shibboleth_SchemaManager.h>
 #include <Shibboleth_IFileSystem.h>
 #include <Shibboleth_Utilities.h>
@@ -247,7 +246,7 @@ static PhysicsShapeType ValidateSchema(const Gaff::JSON& shape_info, const char*
 	const char* shape_name = shape_info["Shape"].getString();
 
 	if (!GetEnumRefDef<PhysicsShapeType>().getValue(shape_name, shape)) {
-		LogMessage(GetApp().getGameLogFile(), TPT_PRINTLOG, LogManager::LOG_ERROR, "ERROR - '%s' is not a value in the PhysicsShapeType enum.\n", shape_name);
+		GetApp().getLogManager().logMessage(LogManager::LOG_ERROR, GetApp().getLogFileName(), "ERROR - '%s' is not a value in the PhysicsShapeType enum.\n", shape_name);
 		return PST_COUNT;
 	}
 	
@@ -257,7 +256,7 @@ static PhysicsShapeType ValidateSchema(const Gaff::JSON& shape_info, const char*
 		return shape;
 	}
 
-	LogMessage(GetApp().getGameLogFile(), TPT_PRINTLOG, LogManager::LOG_ERROR, "ERROR - Could not validate schema for '%s'.\n", file_name);
+	GetApp().getLogManager().logMessage(LogManager::LOG_ERROR, GetApp().getLogFileName(), "ERROR - Could not validate schema for '%s'.\n", file_name);
 	return PST_COUNT;
 }
 
@@ -282,7 +281,7 @@ Gaff::IVirtualDestructor* PhysicsLoader::load(const char* file_name, uint64_t, H
 	file = nullptr;
 
 	if (!success) {
-		LogMessage(GetApp().getGameLogFile(), TPT_PRINTLOG, LogManager::LOG_ERROR, "ERROR - Failed to parse file '%s'.\n", file_name);
+		GetApp().getLogManager().logMessage(LogManager::LOG_ERROR, GetApp().getLogFileName(), "ERROR - Failed to parse file '%s'.\n", file_name);
 		return nullptr;
 	}
 
