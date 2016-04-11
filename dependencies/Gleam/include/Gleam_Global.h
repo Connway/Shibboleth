@@ -33,25 +33,25 @@ NS_GLEAM
 
 enum LOG_MSG_TYPE
 {
-	LOG_ERROR = 0,
+	LOG_NORMAL = 0,
 	LOG_WARNING,
-	LOG_NORMAL
+	LOG_ERROR
 };
+
+using LogFunc = void (*) (const char*, LOG_MSG_TYPE);
 
 void SetAllocator(Gaff::IAllocator* allocator);
 INLINE Gaff::IAllocator* GetAllocator(void);
 void* GleamAlloc(size_t size_bytes, const char* filename, unsigned int line_number);
 INLINE void GleamFree(void* data);
 
-INLINE void SetLogFileName(const char* log_file_name);
-INLINE const char* GetLogFileName(void);
-void WriteMessageToLog(const char* msg, size_t size, LOG_MSG_TYPE type = LOG_NORMAL);
+void SetLogFunc(LogFunc log_func);
 void PrintfToLog(const char* format_string, LOG_MSG_TYPE type, ...);
 
 template <class T, class... Args>
 T* GleamAllocT(const char* filename, unsigned int line_number, Args... args)
 {
-	T* data = (T*)GleamAlloc(sizeof(T), filename, line_number);
+	T* data = reinterpret_cast<T*>(GleamAlloc(sizeof(T), filename, line_number));
 
 	if (data) {
 		Gaff::construct(data, args...);

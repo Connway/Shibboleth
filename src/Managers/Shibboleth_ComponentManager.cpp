@@ -23,6 +23,7 @@ THE SOFTWARE.
 #include "Shibboleth_ComponentManager.h"
 #include <Shibboleth_Utilities.h>
 #include <Shibboleth_IApp.h>
+#include <Gaff_File.h>
 
 NS_SHIBBOLETH
 
@@ -47,12 +48,14 @@ const char* ComponentManager::getName(void) const
 
 void ComponentManager::allManagersCreated(void)
 {
-	LogManager::FileLockPair& log = GetApp().getGameLogFile();
 	//bool error = false;
 
-	log.first.writeString("\n==================================================\n");
-	log.first.writeString("==================================================\n");
-	log.first.writeString("Loading Components...\n");
+	GetApp().getLogManager().logMessage(
+		LogManager::LOG_NORMAL, GetApp().getLogFileName(),
+		"\n==================================================\n"
+		"==================================================\n"
+		"Loading Components...\n"
+	);
 
 	Gaff::ForEachTypeInDirectory<Gaff::FDT_RegularFile>("./Components", [&](const char* name, size_t) -> bool
 	{
@@ -60,7 +63,7 @@ void ComponentManager::allManagersCreated(void)
 
 		// Error out if it's not a dynamic module
 		if (!Gaff::File::CheckExtension(name, DYNAMIC_EXTENSION)) {
-			log.first.printf("ERROR - '%s' is not a dynamic module.\n", rel_path.getBuffer());
+			GetApp().getLogManager().logMessage(LogManager::LOG_ERROR, GetApp().getLogFileName(), "ERROR - '%s' is not a dynamic module.\n", rel_path.getBuffer());
 			//error = true;
 			GetApp().quit();
 			return true;
@@ -78,16 +81,16 @@ void ComponentManager::allManagersCreated(void)
 #endif
 
 		if (!module.valid()) {
-			log.first.printf("ERROR - Could not load dynamic module '%s'.\n", rel_path.getBuffer());
+			GetApp().getLogManager().logMessage(LogManager::LOG_ERROR, GetApp().getLogFileName(), "ERROR - Could not load dynamic module '%s'.\n", rel_path.getBuffer());
 			//error = true;
 			GetApp().quit();
 			return true;
 		}
 
-		log.first.printf("Loading components from module '%s'\n", rel_path.getBuffer());
+		GetApp().getLogManager().logMessage(LogManager::LOG_NORMAL, GetApp().getLogFileName(), "Loading components from module '%s'\n", rel_path.getBuffer());
 
 		if (!addComponents(module)) {
-			log.first.printf("ERROR - Could not load components in dynamic module '%s'.\n", rel_path.getBuffer());
+			GetApp().getLogManager().logMessage(LogManager::LOG_ERROR, GetApp().getLogFileName(), "ERROR - Could not load components in dynamic module '%s'.\n", rel_path.getBuffer());
 			//error = true;
 			GetApp().quit();
 			return true;
@@ -96,7 +99,7 @@ void ComponentManager::allManagersCreated(void)
 		return false;
 	});
 
-	log.first.writeString("Finished Loading Components\n\n");
+	GetApp().getLogManager().logMessage(LogManager::LOG_NORMAL, GetApp().getLogFileName(), "Finished Loading Components\n\n");
 }
 
 Component* ComponentManager::createComponent(AHashString name)
@@ -129,8 +132,6 @@ void ComponentManager::destroyComponent(Component* component)
 
 bool ComponentManager::addComponents(DynamicLoader::ModulePtr& module)
 {
-	LogManager::FileLockPair& log = GetApp().getGameLogFile();
-
 	GAFF_ASSERT(module.valid());
 	GetNumComponentsFunc num_comp_func = module->getFunc<GetNumComponentsFunc>("GetNumComponents");
 	GetComponentNameFunc comp_name_func = module->getFunc<GetComponentNameFunc>("GetComponentName");
@@ -139,32 +140,32 @@ bool ComponentManager::addComponents(DynamicLoader::ModulePtr& module)
 	InitFunc init_func = module->getFunc<InitFunc>("InitModule");
 
 	if (!init_func) {
-		log.first.writeString("ERROR - Could not find function named 'InitModule'.\n");
+		GetApp().getLogManager().logMessage(LogManager::LOG_ERROR, GetApp().getLogFileName(), "ERROR - Could not find function named 'InitModule'.\n");
 		return false;
 	}
 
 	if (!num_comp_func) {
-		log.first.writeString("ERROR - Could not find function named 'GetNumComponent'.\n");
+		GetApp().getLogManager().logMessage(LogManager::LOG_ERROR, GetApp().getLogFileName(), "ERROR - Could not find function named 'GetNumComponent'.\n");
 		return false;
 	}
 
 	if (!comp_name_func) {
-		log.first.writeString("ERROR - Could not find function named 'GetComponentName'.\n");
+		GetApp().getLogManager().logMessage(LogManager::LOG_ERROR, GetApp().getLogFileName(), "ERROR - Could not find function named 'GetComponentName'.\n");
 		return false;
 	}
 
 	if (!create_comp_func) {
-		log.first.writeString("ERROR - Could not find function named 'CreateComponent'.\n");
+		GetApp().getLogManager().logMessage(LogManager::LOG_ERROR, GetApp().getLogFileName(), "ERROR - Could not find function named 'CreateComponent'.\n");
 		return false;
 	}
 
 	if (!destroy_comp_func) {
-		log.first.writeString("ERROR - Could not find function named 'DestroyComponent'.\n");
+		GetApp().getLogManager().logMessage(LogManager::LOG_ERROR, GetApp().getLogFileName(), "ERROR - Could not find function named 'DestroyComponent'.\n");
 		return false;
 	}
 
 	if (!init_func(GetApp())) {
-		log.first.writeString("ERROR - Failed to initialize component module.\n");
+		GetApp().getLogManager().logMessage(LogManager::LOG_ERROR, GetApp().getLogFileName(), "ERROR - Failed to initialize component module.\n");
 		return false;
 	}
 
@@ -174,7 +175,7 @@ bool ComponentManager::addComponents(DynamicLoader::ModulePtr& module)
 		AHashString name = comp_name_func(i);
 
 		if (_components.indexOf(name) != SIZE_T_FAIL) {
-			log.first.printf("ERROR - Component with name '%s' already registered.\n", name.getBuffer());
+			GetApp().getLogManager().logMessage(LogManager::LOG_ERROR, GetApp().getLogFileName(), "ERROR - Component with name '%s' already registered.\n", name.getBuffer());
 			return false;
 		}
 
@@ -186,7 +187,7 @@ bool ComponentManager::addComponents(DynamicLoader::ModulePtr& module)
 		};
 
 		_components.insert(name, entry);
-		log.first.printf("Loaded component '%s'\n", name.getBuffer());
+		GetApp().getLogManager().logMessage(LogManager::LOG_NORMAL, GetApp().getLogFileName(), "Loaded component '%s'\n", name.getBuffer());
 	}
 
 	return true;

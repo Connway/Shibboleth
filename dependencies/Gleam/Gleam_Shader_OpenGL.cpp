@@ -209,7 +209,7 @@ bool ShaderGL::loadFileAndCompileShader(unsigned int shader_type, const char* fi
 		GleamAString msg("Failed to open shader file: ");
 		msg += file_path;
 
-		WriteMessageToLog(msg.getBuffer(), msg.size(), LOG_ERROR);
+		PrintfToLog(msg.getBuffer(), LOG_ERROR);
 		return false;
 	}
 
@@ -226,7 +226,7 @@ bool ShaderGL::loadFileAndCompileShader(unsigned int shader_type, const char* fi
 		GleamAString msg("Failed to read shader file: ");
 		msg += file_path;
 
-		WriteMessageToLog(msg.getBuffer(), msg.size(), LOG_ERROR);
+		PrintfToLog(msg.getBuffer(), LOG_ERROR);
 		return false;
 	}
 
@@ -243,7 +243,7 @@ bool ShaderGL::compileShader(const char* source, int source_size, unsigned int s
 		return false;
 	}
 
-	glShaderSource(shader, 1, (const GLchar**)&source, &source_size);
+	glShaderSource(shader, 1, reinterpret_cast<const GLchar**>(&source), &source_size);
 	glCompileShader(shader);
 
 	GLint status;
@@ -254,12 +254,12 @@ bool ShaderGL::compileShader(const char* source, int source_size, unsigned int s
 		glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &log_length);
 
 		if (log_length) {
-			GLchar* log_buffer = (GLchar*)GleamAllocate(sizeof(GLchar) * (log_length + 1));
+			GLchar* log_buffer = reinterpret_cast<GLchar*>(GleamAllocate(sizeof(GLchar) * (log_length + 1)));
 
 			if (log_buffer) {
 				glGetShaderInfoLog(shader, log_length, NULL, log_buffer);
 
-				WriteMessageToLog(log_buffer, log_length - 1, LOG_ERROR);
+				PrintfToLog(log_buffer, LOG_ERROR);
 				GleamFree(log_buffer);
 			}
 		}
@@ -290,12 +290,12 @@ bool ShaderGL::compileShader(const char* source, int source_size, unsigned int s
 		glGetProgramiv(_shader, GL_INFO_LOG_LENGTH, &log_length);
 
 		if (log_length) {
-			GLchar* log_buffer = (GLchar*)GleamAllocate(sizeof(GLchar) * (log_length + 1));
+			GLchar* log_buffer = reinterpret_cast<GLchar*>(GleamAllocate(sizeof(GLchar) * (log_length + 1)));
 
 			if (log_buffer) {
 				glGetProgramInfoLog(_shader, log_length, NULL, log_buffer);
 
-				WriteMessageToLog(log_buffer, log_length - 1, LOG_ERROR);
+				PrintfToLog(log_buffer, LOG_ERROR);
 				GleamFree(log_buffer);
 			}
 		}

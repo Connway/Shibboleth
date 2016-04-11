@@ -30,6 +30,8 @@ THE SOFTWARE.
 
 NS_SHIBBOLETH
 
+struct AllocationHeader;
+
 class Allocator : public IAllocator
 {
 public:
@@ -62,11 +64,14 @@ private:
 		char pool_name[POOL_NAME_SIZE];
 	};
 
+	size_t _alignment;
+
 	MemoryPoolInfo _tagged_pools[NUM_TAG_POOLS + 1];
 	Gaff::StaticArray<unsigned int, NUM_TAG_POOLS> _tag_ids;
 	volatile unsigned int _next_tag;
 
-	size_t _alignment;
+	void writeAllocationLog(void) const;
+	void writeLeakLog(void) const;
 
 	GAFF_NO_MOVE(Allocator);
 };

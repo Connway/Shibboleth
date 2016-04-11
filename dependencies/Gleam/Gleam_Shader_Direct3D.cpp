@@ -468,7 +468,7 @@ bool ShaderD3D::loadFile(const char* file_path, char*& shader_src, SIZE_T& shade
 		GleamAString msg("Failed to open shader file: ");
 		msg += file_path;
 
-		WriteMessageToLog(msg.getBuffer(), msg.size(), LOG_ERROR);
+		PrintfToLog(msg.getBuffer(), LOG_ERROR);
 		return false;
 	}
 
@@ -489,7 +489,7 @@ bool ShaderD3D::loadFile(const char* file_path, char*& shader_src, SIZE_T& shade
 		GleamAString msg("Failed to read shader file: ");
 		msg += file_path;
 
-		WriteMessageToLog(msg.getBuffer(), msg.size(), LOG_ERROR);
+		PrintfToLog(msg.getBuffer(), LOG_ERROR);
 		return false;
 	}
 
@@ -513,9 +513,8 @@ ID3DBlob* ShaderD3D::compileShader(const char* shader_src, SIZE_T shader_size, /
 	if (FAILED(result)) {
 		if (error_buffer) {
 			const char* error_msg = reinterpret_cast<const char*>(error_buffer->GetBufferPointer());
-			SIZE_T error_size = error_buffer->GetBufferSize();
+			PrintfToLog(error_msg, LOG_ERROR);
 
-			WriteMessageToLog(error_msg, error_size, LOG_ERROR);
 			error_buffer->Release();
 		}
 

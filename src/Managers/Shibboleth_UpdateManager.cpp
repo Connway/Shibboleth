@@ -174,7 +174,7 @@ void UpdateManager::update(void)
 
 void UpdateManager::allManagersCreated(void)
 {
-	LogManager::FileLockPair& log = GetApp().getGameLogFile();
+	LogManager& lm = GetApp().getLogManager();
 	Array<IUpdateQuery::UpdateEntry> entries;
 
 	unsigned int update_query_hash = CLASS_HASH(IUpdateQuery);
@@ -193,7 +193,7 @@ void UpdateManager::allManagersCreated(void)
 	IFile* updates_file = GetApp().getFileSystem()->openFile(UPDATE_ENTRIES_CFG);
 
 	if (!updates_file) {
-		log.first.writeString("ERROR - Could not open file '" UPDATE_ENTRIES_CFG "'.\n");
+		lm.logMessage(LogManager::LOG_ERROR, GetApp().getLogFileName(), "ERROR - Could not open file '" UPDATE_ENTRIES_CFG "'.\n");
 		GetApp().quit();
 		return;
 	}
@@ -205,7 +205,7 @@ void UpdateManager::allManagersCreated(void)
 
 	if (success) {
 		if (!phases.isArray()) {
-			log.first.writeString("ERROR - Root of '" UPDATE_ENTRIES_CFG "' is not an array.\n");
+			lm.logMessage(LogManager::LOG_ERROR, GetApp().getLogFileName(), "ERROR - Root of '" UPDATE_ENTRIES_CFG "' is not an array.\n");
 			GetApp().quit();
 			return;
 		}
@@ -217,7 +217,7 @@ void UpdateManager::allManagersCreated(void)
 		phases.forEachInArray([&](size_t index_phase, const Gaff::JSON& phase) -> bool
 		{
 			if (!phase.isObject()) {
-				log.first.writeString("ERROR - A phase in '" UPDATE_ENTRIES_CFG "' is not an object.\n");
+				lm.logMessage(LogManager::LOG_ERROR, GetApp().getLogFileName(), "ERROR - A phase in '" UPDATE_ENTRIES_CFG "' is not an object.\n");
 				GetApp().quit();
 				return true;
 			}
@@ -227,13 +227,24 @@ void UpdateManager::allManagersCreated(void)
 
 			if (!phase_name.isString()) {
 				unsigned int i = static_cast<unsigned int>(index_phase); // For 64-bit builds where size_t is not 32-bits.
-				log.first.printf("ERROR - The phase in '" UPDATE_ENTRIES_CFG "' at index %d does not have a name or name is not a string.\n", i);
+				lm.logMessage(
+					LogManager::LOG_ERROR, GetApp().getLogFileName(),
+					"ERROR - The phase in '" UPDATE_ENTRIES_CFG
+					"' at index %d does not have a name or name is not a string.\n", 
+					i
+				);
+
 				GetApp().quit();
 				return true;
 			}
 
 			if (!phase_entries.isArray()) {
-				log.first.printf("ERROR - The 'entries' element in phase '%s' in '" UPDATE_ENTRIES_CFG "' is not an array.\n", phase_name.getString());
+				lm.logMessage(
+					LogManager::LOG_ERROR, GetApp().getLogFileName(),
+					"ERROR - The 'entries' element in phase '%s' in '" UPDATE_ENTRIES_CFG
+					"' is not an array.\n", phase_name.getString()
+				);
+
 				GetApp().quit();
 				return true;
 			}
@@ -246,7 +257,12 @@ void UpdateManager::allManagersCreated(void)
 			success = !phase_entries.forEachInArray([&](size_t index_entries, const Gaff::JSON& row) -> bool
 			{
 				if (!row.isArray()) {
-					log.first.printf("ERROR - A row in phase '%s' in '" UPDATE_ENTRIES_CFG "' is not an array.\n", phase_name.getString());
+					lm.logMessage(
+						LogManager::LOG_ERROR, GetApp().getLogFileName(),
+						"ERROR - A row in phase '%s' in '" UPDATE_ENTRIES_CFG "' is not an array.\n",
+						phase_name.getString()
+					);
+
 					GetApp().quit();
 					return true;
 				}
@@ -256,7 +272,13 @@ void UpdateManager::allManagersCreated(void)
 				{
 					if (!entry.isString()) {
 						unsigned int i = static_cast<unsigned int>(index_entries); // For 64-bit builds where size_t is not 32-bits.
-						log.first.printf("ERROR - An entry in row %d in phase '%s' in '" UPDATE_ENTRIES_CFG "' is not a string.\n", i, phase_name.getString());
+						lm.logMessage(
+							LogManager::LOG_ERROR, GetApp().getLogFileName(),
+							"ERROR - An entry in row %d in phase '%s' in '" UPDATE_ENTRIES_CFG
+							"' is not a string.\n",
+							i, phase_name.getString()
+						);
+
 						GetApp().quit();
 						return true;
 					}
@@ -267,7 +289,13 @@ void UpdateManager::allManagersCreated(void)
 					});
 
 					if (it == entries.end()) {
-						log.first.printf("ERROR - UpdateEntry for '%s' in '" UPDATE_ENTRIES_CFG "' was not found.\n", entry.getString());
+						lm.logMessage(
+							LogManager::LOG_ERROR, GetApp().getLogFileName(),
+							"ERROR - UpdateEntry for '%s' in '" UPDATE_ENTRIES_CFG
+							"' was not found.\n",
+							entry.getString()
+						);
+
 						GetApp().quit();
 						return true;
 					}
@@ -283,7 +311,7 @@ void UpdateManager::allManagersCreated(void)
 		});
 
 	} else {
-		log.first.writeString("ERROR - Failed to parse file '" UPDATE_ENTRIES_CFG "'.\n");
+		lm.logMessage(LogManager::LOG_ERROR, GetApp().getLogFileName(), "ERROR - Failed to parse file '" UPDATE_ENTRIES_CFG "'.\n");
 		GetApp().quit();
 	}
 }

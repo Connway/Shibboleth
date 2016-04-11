@@ -24,9 +24,10 @@ THE SOFTWARE.
 
 #include "Shibboleth_MessageBroadcaster.h"
 #include "Shibboleth_DynamicLoader.h"
+#include "Shibboleth_LogManager.h"
+#include "Shibboleth_HashString.h"
 #include "Shibboleth_JobPool.h"
 #include "Shibboleth_HashMap.h"
-#include "Shibboleth_LogManager.h"
 #include "Shibboleth_Array.h"
 
 NS_SHIBBOLETH
@@ -111,10 +112,8 @@ public:
 	virtual void helpUntilNoJobs(void) = 0;
 	virtual void doAJob(void) = 0;
 
-	virtual void addLogCallback(const LogManager::LogCallback& callback) = 0;
-	virtual void removeLogCallback(const LogManager::LogCallback& callback) = 0;
-	virtual void notifyLogCallbacks(const char* message, LogManager::LOG_TYPE type) = 0;
-	virtual LogManager::FileLockPair& getGameLogFile(void) = 0;
+	virtual const char* getLogFileName(void) const = 0;
+	virtual LogManager& getLogManager(void) = 0;
 
 	virtual DynamicLoader::ModulePtr loadModule(const char* filename, const char* name) = 0;
 	virtual size_t getSeed(void) const = 0;

@@ -20,32 +20,35 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#include "Shibboleth_Utilities.h"
-#include <Shibboleth_RefCounted.h>
-#include <Shibboleth_JobPool.h>
-#include <Shibboleth_String.h>
-#include <Shibboleth_IApp.h>
-#include <Gaff_ScopedLock.h>
-#include <Gaff_JSON.h>
+#pragma once
 
-NS_SHIBBOLETH
+#include "Gaff_Defines.h"
+#include "Gaff_IncludeWindows.h"
 
-static IApp* gApp = nullptr;
+NS_GAFF
 
-void SetApp(IApp& app)
+class Event
 {
-	gApp = &app;
-}
+public:
+	static unsigned long INF;
 
-IApp& GetApp(void)
-{
-	GAFF_ASSERT(gApp);
-	return *gApp;
-}
+	enum WaitCode
+	{
+		EVENT_FINISHED = 0,
+		EVENT_TIMEOUT,
+		EVENT_FAILED
+	};
+
+	Event(bool manual_reset = false, bool initial_state = false);
+	~Event(void);
+
+	bool set(void);
+	bool reset(void);
+	WaitCode wait(unsigned long ms = INF);
+
+private:
+	HANDLE _event;
+	char _flags;
+};
 
 NS_END
-
-STATIC_FILE_FUNC
-{
-	Gaff::JSON::SetMemoryFunctions(&Shibboleth::ShibbolethAllocate, &Shibboleth::ShibbolethFree);
-}

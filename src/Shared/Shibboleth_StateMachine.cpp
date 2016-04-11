@@ -24,9 +24,9 @@ THE SOFTWARE.
 
 NS_SHIBBOLETH
 
-StateMachine::StateMachine(const ProxyAllocator& allocator):
-	_states(allocator), _curr_state(UINT_FAIL),
-	_next_state(UINT_FAIL), _restart(false)
+StateMachine::StateMachine(void):
+	_curr_state(UINT_FAIL), _next_state(UINT_FAIL),
+	_restart(false)
 {
 }
 

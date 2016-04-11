@@ -294,7 +294,7 @@ size_t File::write(void* buffer, size_t element_size, size_t element_count)
 void File::printfVA(const char* format_string, va_list vl)
 {
 	GAFF_ASSERT(_file && format_string && vl);
-	vfprintf(_file, format_string, vl);
+	vfprintf_s(_file, format_string, vl);
 }
 
 void File::printf(const char* format_string, ...)
@@ -303,7 +303,7 @@ void File::printf(const char* format_string, ...)
 
 	va_list vl;
 	va_start(vl, format_string);
-	vfprintf(_file, format_string, vl);
+	vfprintf_s(_file, format_string, vl);
 	va_end(vl);
 }
 

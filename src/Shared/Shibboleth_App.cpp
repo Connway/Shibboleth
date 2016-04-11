@@ -28,6 +28,7 @@ THE SOFTWARE.
 #include <Gaff_CrashHandler.h>
 #include <Gaff_Utils.h>
 #include <Gaff_JSON.h>
+#include <Gaff_File.h>
 #include <regex>
 
 #if defined(SYMBOL_BUILD) && defined(INIT_STACKTRACE_SYSTEM)
@@ -37,9 +38,9 @@ THE SOFTWARE.
 NS_SHIBBOLETH
 
 App::App(void):
-	_state_machine(ProxyAllocator()), _logger(ProxyAllocator()),
-	_log_file_pair(nullptr), _seed(0), _running(true)
+	_seed(0), _running(true)
 {
+	memset(_log_file_name, 0, sizeof(_log_file_name));
 	Gaff::InitializeCrashHandler();
 	// Set crash handler here
 
@@ -67,25 +68,28 @@ bool App::init(int argc, char** argv)
 		return false;
 	}
 
-	removeExtraLogs(); // Make sure we don't have more than ten logs per log type
-
-	char log_file_name[64] = { 0 };
-	Gaff::GetCurrentTimeString(log_file_name, 64, "logs/GameLog %Y-%m-%d %H-%M-%S.txt");
-
-	if (!Gaff::CreateDir("./logs", 0777) || !_logger.openLogFile(log_file_name)) {
+	if (!_logger.init()) {
 		return false;
 	}
 
-	_log_file_pair = &_logger.getLogFile(log_file_name);
+	removeExtraLogs(); // Make sure we don't have more than ten logs per log type
 
-	_log_file_pair->first.writeString("==================================================\n");
-	_log_file_pair->first.writeString("==================================================\n");
-	_log_file_pair->first.writeString("Initializing Game...\n");
+	Gaff::GetCurrentTimeString(_log_file_name, ARRAY_SIZE(_log_file_name), "logs/GameLog %Y-%m-%d %H-%M-%S.txt");
+
+	if (!Gaff::CreateDir("./logs", 0777)) {
+		return false;
+	}
+
+	_logger.logMessage(LogManager::LOG_NORMAL, _log_file_name,
+		"==================================================\n"
+		"==================================================\n"
+		"Initializing Game...\n"
+	);
 
 	Gaff::JSON::SetHashSeed(_seed);
 
 	if (!_job_pool.init()) {
-		_log_file_pair->first.writeString("ERROR - Failed to initialize thread pool\n");
+		_logger.logMessage(LogManager::LOG_ERROR, _log_file_name, "ERROR - Failed to initialize thread pool\n");
 		return false;
 	}
 
@@ -113,8 +117,7 @@ bool App::init(int argc, char** argv)
 	Gaff::StackTrace::RefreshModuleList(); // Will fix symbols from DLLs not resolving.
 #endif
 
-	_log_file_pair->first.writeString("Game Successfully Initialized\n\n");
-	_log_file_pair->first.flush();
+	_logger.logMessage(LogManager::LOG_NORMAL, _log_file_name, "Game Successfully Initialized\n\n");
 	return true;
 }
 
@@ -126,12 +129,12 @@ bool App::loadFileSystem(void)
 	}
 
 	if (_fs.file_system_module) {
-		_log_file_pair->first.writeString("Found 'FileSystem" BIT_EXTENSION DYNAMIC_EXTENSION "'. Creating file system\n");
+		_logger.logMessage(LogManager::LOG_NORMAL, _log_file_name, "Found 'FileSystem" BIT_EXTENSION DYNAMIC_EXTENSION "'. Creating file system\n");
 
 		FileSystemData::InitFileSystemModuleFunc init_func = _fs.file_system_module->getFunc<FileSystemData::InitFileSystemModuleFunc>("InitModule");
 
 		if (init_func && !init_func(*this)) {
-			_log_file_pair->first.writeString("ERROR - Failed to init file system module\n");
+			_logger.logMessage(LogManager::LOG_ERROR, _log_file_name, "ERROR - Failed to init file system module\n");
 			return false;
 		}
 
@@ -139,28 +142,28 @@ bool App::loadFileSystem(void)
 		_fs.create_func = _fs.file_system_module->getFunc<FileSystemData::CreateFileSystemFunc>("CreateFileSystem");
 
 		if (!_fs.create_func) {
-			_log_file_pair->first.writeString("ERROR - Failed to find 'CreateFileSystem' in 'FileSystem" BIT_EXTENSION DYNAMIC_EXTENSION "'\n");
+			_logger.logMessage(LogManager::LOG_ERROR, _log_file_name, "ERROR - Failed to find 'CreateFileSystem' in 'FileSystem" BIT_EXTENSION DYNAMIC_EXTENSION "'\n");
 			return false;
 		}
 
 		if (!_fs.destroy_func) {
-			_log_file_pair->first.writeString("ERROR - Failed to find 'DestroyFileSystem' in 'FileSystem" BIT_EXTENSION DYNAMIC_EXTENSION "'\n");
+			_logger.logMessage(LogManager::LOG_ERROR, _log_file_name, "ERROR - Failed to find 'DestroyFileSystem' in 'FileSystem" BIT_EXTENSION DYNAMIC_EXTENSION "'\n");
 			return false;
 		}
 
 		_fs.file_system = _fs.create_func();
 
 		if (!_fs.file_system) {
-			_log_file_pair->first.writeString("ERROR - Failed to create file system from 'FileSystem" BIT_EXTENSION DYNAMIC_EXTENSION "'\n");
+			_logger.logMessage(LogManager::LOG_ERROR, _log_file_name, "ERROR - Failed to create file system from 'FileSystem" BIT_EXTENSION DYNAMIC_EXTENSION "'\n");
 			return false;
 		}
 
 	} else {
-		_log_file_pair->first.writeString("Could not find 'FileSystem" BIT_EXTENSION DYNAMIC_EXTENSION "' defaulting to loose file system\n");
+		_logger.logMessage(LogManager::LOG_NORMAL, _log_file_name, "Could not find 'FileSystem" BIT_EXTENSION DYNAMIC_EXTENSION "' defaulting to loose file system\n");
 		_fs.file_system = SHIB_ALLOCT(LooseFileSystem, *GetAllocator());
 
 		if (!_fs.file_system) {
-			_log_file_pair->first.writeString("ERROR - Failed to create loose file system\n");
+			_logger.logMessage(LogManager::LOG_ERROR, _log_file_name, "ERROR - Failed to create loose file system\n");
 			return false;
 		}
 	}
@@ -171,7 +174,7 @@ bool App::loadFileSystem(void)
 // Still single-threaded at this point, so ok that we're not using the spinlock
 bool App::loadManagers(void)
 {
-	_log_file_pair->first.writeString("Loading Managers...\n");
+	_logger.logMessage(LogManager::LOG_NORMAL, _log_file_name, "Loading Managers...\n");
 
 	bool error = false;
 
@@ -200,12 +203,12 @@ bool App::loadManagers(void)
 			ManagerEntry::InitManagerModuleFunc init_func = module->getFunc<ManagerEntry::InitManagerModuleFunc>("InitModule");
 
 			if (!init_func) {
-				_log_file_pair->first.printf("ERROR - Failed to find function 'InitModule' in dynamic module '%s'\n", rel_path.getBuffer());
+				_logger.logMessage(LogManager::LOG_ERROR, _log_file_name, "ERROR - Failed to find function 'InitModule' in dynamic module '%s'\n", rel_path.getBuffer());
 				error = true;
 				return true;
 
 			} else if (!init_func(*this)) {
-				_log_file_pair->first.printf("ERROR - Failed to initialize '%s'\n", rel_path.getBuffer());
+				_logger.logMessage(LogManager::LOG_ERROR, _log_file_name, "ERROR - Failed to initialize '%s'\n", rel_path.getBuffer());
 				error = true;
 				return true;
 			}
@@ -214,7 +217,7 @@ bool App::loadManagers(void)
 
 			if (!num_mgrs_func) {
 				_dynamic_loader.removeModule(name);
-				_log_file_pair->first.printf("ERROR - Failed to find function 'GetNumManagers' in dynamic module '%s'\n", rel_path.getBuffer());
+				_logger.logMessage(LogManager::LOG_ERROR, _log_file_name, "ERROR - Failed to find function 'GetNumManagers' in dynamic module '%s'\n", rel_path.getBuffer());
 				error = true;
 				return true;
 			}
@@ -232,24 +235,24 @@ bool App::loadManagers(void)
 
 					if (entry.manager) {
 						_manager_map[entry.manager->getName()] = entry;
-						_log_file_pair->first.printf("Loaded manager '%s'\n", entry.manager->getName());
+						_logger.logMessage(LogManager::LOG_NORMAL, _log_file_name, "Loaded manager '%s'\n", entry.manager->getName());
 
 					} else {
-						_log_file_pair->first.printf("ERROR - Failed to create manager from dynamic module '%s'\n", rel_path.getBuffer());
+						_logger.logMessage(LogManager::LOG_ERROR, _log_file_name, "ERROR - Failed to create manager from dynamic module '%s'\n", rel_path.getBuffer());
 						error = true;
 						return true;
 					}
 
 				} else {
 					_dynamic_loader.removeModule(name);
-					_log_file_pair->first.printf("ERROR - Failed to find functions 'CreateManager' and/or 'DestroyManager' in dynamic module '%s'\n", rel_path.getBuffer());
+					_logger.logMessage(LogManager::LOG_ERROR, _log_file_name, "ERROR - Failed to find functions 'CreateManager' and/or 'DestroyManager' in dynamic module '%s'\n", rel_path.getBuffer());
 					error = true;
 					return true;
 				}
 			}
 
 		} else {
-			_log_file_pair->first.printf("ERROR - Failed to load dynamic module '%s' for reason '%s'\n", rel_path.getBuffer(), Gaff::DynamicModule::GetErrorString());
+			_logger.logMessage(LogManager::LOG_ERROR, _log_file_name, "ERROR - Failed to load dynamic module '%s' for reason '%s'\n", rel_path.getBuffer(), Gaff::DynamicModule::GetErrorString());
 			error = true;
 			return true;
 		}
@@ -269,19 +272,19 @@ bool App::loadManagers(void)
 // Still single-threaded at this point, so ok that we're not using the spinlock
 bool App::loadStates(void)
 {
-	_log_file_pair->first.writeString("Loading States...\n");
+	_logger.logMessage(LogManager::LOG_NORMAL, _log_file_name, "Loading States...\n");
 
 	IFile* states_file = _fs.file_system->openFile("States/states.json");
 
 	if (!states_file) {
-		_log_file_pair->first.writeString("ERROR - Could not find 'States/states.json'.\n");
+		_logger.logMessage(LogManager::LOG_ERROR, _log_file_name, "ERROR - Could not find 'States/states.json'.\n");
 		return false;
 	}
 
 	Gaff::JSON state_data;
 
 	if (!state_data.parse(states_file->getBuffer())) {
-		_log_file_pair->first.writeString("ERROR - When parsing 'States/states.json'.\n");
+		_logger.logMessage(LogManager::LOG_ERROR, _log_file_name, "ERROR - When parsing 'States/states.json'.\n");
 		_fs.file_system->closeFile(states_file);
 		return false;
 	}
@@ -289,7 +292,7 @@ bool App::loadStates(void)
 	_fs.file_system->closeFile(states_file);
 
 	if (!state_data.isObject()) {
-		_log_file_pair->first.writeString("ERROR - 'States/states.json' is malformed. Root is not an object.\n");
+		_logger.logMessage(LogManager::LOG_ERROR, _log_file_name, "ERROR - 'States/states.json' is malformed. Root is not an object.\n");
 		return false;
 	}
 
@@ -297,12 +300,12 @@ bool App::loadStates(void)
 	Gaff::JSON states = state_data["states"];
 
 	if (!starting_state.isString()) {
-		_log_file_pair->first.writeString("ERROR - 'States/states.json' is malformed. 'starting_state' is not a string.\n");
+		_logger.logMessage(LogManager::LOG_ERROR, _log_file_name, "ERROR - 'States/states.json' is malformed. 'starting_state' is not a string.\n");
 		return false;
 	}
 
 	if (!states.isArray()) {
-		_log_file_pair->first.writeString("ERROR - 'States/states.json' is malformed. 'states' is not an array.\n");
+		_logger.logMessage(LogManager::LOG_ERROR, _log_file_name, "ERROR - 'States/states.json' is malformed. 'states' is not an array.\n");
 		return false;
 	}
 
@@ -320,17 +323,17 @@ bool App::loadStates(void)
 		Gaff::JSON state_name = state["name"];
 
 		if (!transitions.isArray()) {
-			_log_file_pair->first.printf("ERROR - 'States/states.json' is malformed. Transitions for state entry %zu is not an array.\n", i);
+			_logger.logMessage(LogManager::LOG_ERROR, _log_file_name, "ERROR - 'States/states.json' is malformed. Transitions for state entry %zu is not an array.\n", i);
 			return false;
 		}
 
 		if (!module_name.isString()) {
-			_log_file_pair->first.printf("ERROR - 'States/states.json' is malformed. Module name for state entry %zu is not a string.\n", i);
+			_logger.logMessage(LogManager::LOG_ERROR, _log_file_name, "ERROR - 'States/states.json' is malformed. Module name for state entry %zu is not a string.\n", i);
 			return false;
 		}
 
 		if (!state_name.isString()) {
-			_log_file_pair->first.printf("ERROR - 'States/states.json' is malformed. Name for state entry %zu is not a string.\n", i);
+			_logger.logMessage(LogManager::LOG_ERROR, _log_file_name, "ERROR - 'States/states.json' is malformed. Name for state entry %zu is not a string.\n", i);
 			return false;
 		}
 
@@ -348,10 +351,10 @@ bool App::loadStates(void)
 			StateMachine::StateEntry::InitStateModuleFunc init_func = module->getFunc<StateMachine::StateEntry::InitStateModuleFunc>("InitModule");
 
 			if (!init_func) {
-				_log_file_pair->first.printf("ERROR - Failed to find function 'InitModule' in dynamic module '%s'\n", filename.getBuffer());
+				_logger.logMessage(LogManager::LOG_ERROR, _log_file_name, "ERROR - Failed to find function 'InitModule' in dynamic module '%s'\n", filename.getBuffer());
 				return false;
 			} else if (!init_func(*this)) {
-				_log_file_pair->first.printf("ERROR - Failed to initialize '%s'\n", filename.getBuffer());
+				_logger.logMessage(LogManager::LOG_ERROR, _log_file_name, "ERROR - Failed to initialize '%s'\n", filename.getBuffer());
 				return true;
 			}
 
@@ -359,7 +362,7 @@ bool App::loadStates(void)
 			StateMachine::StateEntry::GetStateNameFunc get_state_name_func = module->getFunc<StateMachine::StateEntry::GetStateNameFunc>("GetStateName");
 
 			if (!num_states_func || !get_state_name_func) {
-				_log_file_pair->first.printf("ERROR - Failed to find functions 'GetNumStates' and/or 'GetStateName' in dynamic module '%s'\n", filename.getBuffer());
+				_logger.logMessage(LogManager::LOG_ERROR, _log_file_name, "ERROR - Failed to find functions 'GetNumStates' and/or 'GetStateName' in dynamic module '%s'\n", filename.getBuffer());
 				return false;
 			}
 
@@ -373,7 +376,7 @@ bool App::loadStates(void)
 			}
 
 			if (j == num_states) {
-				_log_file_pair->first.printf("ERROR - Failed to find state with name '%s' in dynamic module '%s'\n", state_name.getString(), filename.getBuffer());
+				_logger.logMessage(LogManager::LOG_ERROR, _log_file_name, "ERROR - Failed to find state with name '%s' in dynamic module '%s'\n", state_name.getString(), filename.getBuffer());
 				return false;
 			}
 
@@ -392,7 +395,7 @@ bool App::loadStates(void)
 						Gaff::JSON val = transitions[k];
 
 						if (!val.isInteger()) {
-							_log_file_pair->first.printf("ERROR - 'States/states.json' is malformed. Name for state entry %zu is not a string.\n", i);
+							_logger.logMessage(LogManager::LOG_ERROR, _log_file_name, "ERROR - 'States/states.json' is malformed. Name for state entry %zu is not a string.\n", i);
 							return false;
 						}
 
@@ -400,34 +403,34 @@ bool App::loadStates(void)
 					}
 
 					if (!entry.state->init(_state_machine.getNumStates())) {
-						_log_file_pair->first.printf("ERROR - Failed to initialize state '%s'\n", state_name.getString());
+						_logger.logMessage(LogManager::LOG_ERROR, _log_file_name, "ERROR - Failed to initialize state '%s'\n", state_name.getString());
 						return false;
 					}
 
 					_state_machine.addState(entry);
-					_log_file_pair->first.printf("Loaded state '%s'\n", state_name.getString());
+					_logger.logMessage(LogManager::LOG_NORMAL, _log_file_name, "Loaded state '%s'\n", state_name.getString());
 
 					if (entry.name == starting_state.getString()) {
 						_state_machine.switchState(static_cast<unsigned int>(i));
 					}
 
 				} else {
-					_log_file_pair->first.printf("ERROR - Failed to create state '%s' from dynamic module '%s'\n", entry.name.getBuffer(), filename.getBuffer());
+					_logger.logMessage(LogManager::LOG_ERROR, _log_file_name, "ERROR - Failed to create state '%s' from dynamic module '%s'\n", entry.name.getBuffer(), filename.getBuffer());
 					return false;
 				}
 
 			} else {
-				_log_file_pair->first.printf("ERROR - Failed to find functions 'CreateState' and 'DestroyState' in dynamic module '%s'\n", filename.getBuffer());
+				_logger.logMessage(LogManager::LOG_ERROR, _log_file_name, "ERROR - Failed to find functions 'CreateState' and 'DestroyState' in dynamic module '%s'\n", filename.getBuffer());
 				return false;
 			}
 
 		} else {
-			_log_file_pair->first.printf("ERROR - Failed to load dynamic module '%s' for reason '%s'\n", filename.getBuffer(), Gaff::DynamicModule::GetErrorString());
+			_logger.logMessage(LogManager::LOG_ERROR, _log_file_name, "ERROR - Failed to load dynamic module '%s' for reason '%s'\n", filename.getBuffer(), Gaff::DynamicModule::GetErrorString());
 		}
 	}
 
 	if (_state_machine.getNextState() == UINT_FAIL) {
-		_log_file_pair->first.writeString("ERROR - 'starting_state' is set to an invalid state name\n");
+		_logger.logMessage(LogManager::LOG_ERROR, _log_file_name, "ERROR - 'starting_state' is set to an invalid state name\n");
 		return false;
 	}
 
@@ -440,7 +443,7 @@ bool App::initApp(void)
 		const AString& working_dir = _cmd_line_args["working_dir"];
 
 		if (!Gaff::SetWorkingDir(working_dir.getBuffer())) {
-			//_log_file_pair->first.printf("ERROR - Failed to set working directory to '%s'.\n", working_dir.getBuffer());
+			//_logger.logMessage(LogManager::LOG_ERROR, _log_file_name, "ERROR - Failed to set working directory to '%s'.\n", working_dir.getBuffer());
 			return false;
 		}
 
@@ -477,6 +480,7 @@ void App::removeExtraLogs(void)
 	unsigned int callstack_log_count = 0;
 	unsigned int alloc_log_count = 0;
 	unsigned int game_log_count = 0;
+	unsigned int leak_log_count = 0;
 
 	Gaff::ForEachTypeInDirectory<Gaff::FDT_RegularFile>("./Logs", [&](const char* name, size_t) -> bool
 	{
@@ -486,6 +490,8 @@ void App::removeExtraLogs(void)
 			++alloc_log_count;
 		} else if (std::regex_match(name, std::regex("CallstackLog.+\.txt"))) {
 			++callstack_log_count;
+		} else if (std::regex_match(name, std::regex("LeakLog.+\.txt"))) {
+			++leak_log_count;
 		}
 
 		return false;
@@ -494,7 +500,8 @@ void App::removeExtraLogs(void)
 	unsigned int callstack_logs_delete = (callstack_log_count > 10) ? callstack_log_count - 10 : 0;
 	unsigned int alloc_logs_delete = (alloc_log_count > 10) ? alloc_log_count - 10 : 0;
 	unsigned int game_logs_delete = (game_log_count > 10) ? game_log_count - 10 : 0;
-	callstack_log_count = alloc_log_count = game_log_count = 0;
+	unsigned int leak_logs_delete = (leak_log_count > 10) ? leak_log_count - 10 : 0;
+	callstack_log_count = alloc_log_count = game_log_count = leak_log_count = 0;
 	AString temp;
 
 	Gaff::ForEachTypeInDirectory<Gaff::FDT_RegularFile>("./logs", [&](const char* name, size_t) -> bool
@@ -513,6 +520,11 @@ void App::removeExtraLogs(void)
 			temp = AString("./logs/") + name;
 			std::remove(temp.getBuffer());
 			++callstack_log_count;
+
+		} else if (std::regex_match(name, std::regex("LeakLog.+\.txt")) && leak_log_count < leak_logs_delete) {
+			temp = AString("./logs/") + name;
+			std::remove(temp.getBuffer());
+			++leak_log_count;
 		}
 
 		return false;
@@ -657,24 +669,14 @@ void App::doAJob(void)
 	_job_pool.doAJob();
 }
 
-void App::addLogCallback(const LogManager::LogCallback& callback)
+const char* App::getLogFileName(void) const
 {
-	_logger.addLogCallback(callback);
+	return _log_file_name;
 }
 
-void App::removeLogCallback(const LogManager::LogCallback& callback)
+LogManager& App::getLogManager(void)
 {
-	_logger.removeLogCallback(callback);
-}
-
-void App::notifyLogCallbacks(const char* message, LogManager::LOG_TYPE type)
-{
-	_logger.notifyLogCallbacks(message, type);
-}
-
-LogManager::FileLockPair& App::getGameLogFile(void)
-{
-	return *_log_file_pair;
+	return _logger;
 }
 
 DynamicLoader::ModulePtr App::loadModule(const char* filename, const char* name)

@@ -57,7 +57,12 @@ void ResourceLoadingJob(void* data)
 		load_data->res_ptr->setResource(res_data);
 		load_data->res_ptr->_res_state = ResourceContainer::RS_LOADED;
 	} else {
-		// Log error
+		GetApp().getLogManager().logMessage(
+			LogManager::LOG_ERROR, GetApp().getLogFileName(),
+			"ERROR - Failed to load resource '%s'.\n",
+			load_data->res_ptr->getResourceKey().getString().getBuffer()
+		);
+
 		load_data->res_ptr->_res_state = ResourceContainer::RS_FAILED;
 	}
 
@@ -114,7 +119,7 @@ void ResourceReadingJob(void* data)
 				file = fs->openFile(final_name.getBuffer());
 
 				if (!file) {
-					LogMessage(GetApp().getGameLogFile(), TPT_PRINTLOG, LogManager::LOG_ERROR, "ERROR - Failed to find or open file '%s'.\n", final_name.getBuffer());
+					GetApp().getLogManager().logMessage(LogManager::LOG_ERROR, GetApp().getLogFileName(), "ERROR - Failed to find or open file '%s'.\n", final_name.getBuffer());
 					failed = true;
 					return;
 				}
@@ -125,7 +130,7 @@ void ResourceReadingJob(void* data)
 
 		// Create ResourceLoadingJob
 		Gaff::JobData job_data(&ResourceLoadingJob, data);
-		GetApp().getJobPool().addJobs(&job_data);
+		GetApp().getJobPool().addJobs(&job_data, 1, nullptr, read_data->job_pool);
 
 	} else {
 		failed = true;
@@ -372,7 +377,7 @@ ResourcePtr ResourceManager::requestResource(const char* filename, uint64_t user
 		res_data->job_pool = loader_data.job_pool;
 
 		Gaff::JobData job_data(&ResourceReadingJob, res_data);
-		_app.getJobPool().addJobs(&job_data, 1, nullptr, loader_data.job_pool);
+		_app.getJobPool().addJobs(&job_data, 1, nullptr, TPT_IO);
 
 		return res_ptr;
 

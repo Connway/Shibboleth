@@ -21,6 +21,9 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include <Shibboleth_ProxyAllocator.h>
+#include <Shibboleth_Utilities.h>
+#include <Shibboleth_String.h>
+#include <Shibboleth_IApp.h>
 #include <Gleam_ShaderResourceView.h>
 #include <Gleam_DepthStencilState.h>
 #include <Gleam_RenderDevice.h>
@@ -38,16 +41,26 @@ THE SOFTWARE.
 #include <Gleam_Model.h>
 #include <Gleam_Mesh.h>
 
-NS_SHIBBOLETH
-	class IApp;
-NS_END
-
 static Shibboleth::ProxyAllocator g_proxy_allocator("Graphics");
+static Shibboleth::AString g_graphics_log_file;
+
+static void GraphicsLog(const char* message, Gleam::LOG_MSG_TYPE type)
+{
+	static Shibboleth::LogManager& lm = Shibboleth::GetApp().getLogManager();
+
+	lm.logMessage(
+		static_cast<Shibboleth::LogManager::LOG_TYPE>(type),
+		g_graphics_log_file.getBuffer(),
+		message
+	);
+}
+
 
 DYNAMICEXPORT_C bool InitGraphics(Shibboleth::IApp&, const char* log_file_name)
 {
-	Gleam::SetLogFileName(log_file_name);
+	g_graphics_log_file = log_file_name;
 	Gleam::SetAllocator(&g_proxy_allocator);
+	Gleam::SetLogFunc(GraphicsLog);
 	return true;
 }
 

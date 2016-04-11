@@ -64,7 +64,7 @@ bool LuaComponent::load(const Gaff::JSON& json)
 {
 	gRefDef.read(json, this);
 
-	ResourceManager& res_mgr = Shibboleth::GetApp().getManagerT<ResourceManager>("Resource Manager");
+	ResourceManager& res_mgr = GetApp().getManagerT<ResourceManager>("Resource Manager");
 
 	Gaff::JSON script_file = json["Script File"];
 

@@ -24,7 +24,6 @@ THE SOFTWARE.
 #include "Shibboleth_ResourceDefines.h"
 #include <Shibboleth_ReflectionDefinitions.h>
 #include <Shibboleth_RenderManager.h>
-#include <Shibboleth_TaskPoolTags.h>
 #include <Shibboleth_IFileSystem.h>
 #include <Shibboleth_Utilities.h>
 #include <Shibboleth_IApp.h>
@@ -59,27 +58,27 @@ Gaff::IVirtualDestructor* SamplerStateLoader::load(const char* file_name, uint64
 	Gaff::JSON json;
 	
 	if (!json.parse(file->getBuffer())) {
-		LogMessage(GetApp().getGameLogFile(), TPT_PRINTLOG, LogManager::LOG_ERROR, "ERROR - Failed to parse file '%s'.\n", file_name);
+		GetApp().getLogManager().logMessage(LogManager::LOG_ERROR, GetApp().getLogFileName(), "ERROR - Failed to parse file '%s'.\n", file_name);
 		return nullptr;
 	}
 
 	if (!json.isObject()) {
-		LogMessage(GetApp().getGameLogFile(), TPT_PRINTLOG, LogManager::LOG_ERROR, "ERROR - Sampler State file '%s' is malformed.\n", file_name);
+		GetApp().getLogManager().logMessage(LogManager::LOG_ERROR, GetApp().getLogFileName(), "ERROR - Sampler State file '%s' is malformed.\n", file_name);
 		return nullptr;
 	}
 
 	if (!json["filter"].isString()) {
-		LogMessage(GetApp().getGameLogFile(), TPT_PRINTLOG, LogManager::LOG_ERROR, "ERROR - Sampler State file '%s' is malformed. Value at 'filter' is not a string.\n", file_name);
+		GetApp().getLogManager().logMessage(LogManager::LOG_ERROR, GetApp().getLogFileName(), "ERROR - Sampler State file '%s' is malformed. Value at 'filter' is not a string.\n", file_name);
 		return nullptr;
 	}
 
 	if (!json["wrap_u"].isString() || !json["wrap_v"].isString() || !json["wrap_w"].isString()) {
-		LogMessage(GetApp().getGameLogFile(), TPT_PRINTLOG, LogManager::LOG_ERROR, "ERROR - Sampler State file '%s' is malformed. Value at 'wrap_u/v/w' is not a string.\n", file_name);
+		GetApp().getLogManager().logMessage(LogManager::LOG_ERROR, GetApp().getLogFileName(), "ERROR - Sampler State file '%s' is malformed. Value at 'wrap_u/v/w' is not a string.\n", file_name);
 		return nullptr;
 	}
 
 	if (!json["min_lod"].isReal() || !json["max_lod"].isReal() || !json["lod_bias"].isReal()) {
-		LogMessage(GetApp().getGameLogFile(), TPT_PRINTLOG, LogManager::LOG_ERROR, "ERROR - Sampler State file '%s' is malformed. Value at 'min/max_lod' and/or 'lod_bias' is not a float.\n", file_name);
+		GetApp().getLogManager().logMessage(LogManager::LOG_ERROR, GetApp().getLogFileName(), "ERROR - Sampler State file '%s' is malformed. Value at 'min/max_lod' and/or 'lod_bias' is not a float.\n", file_name);
 		return nullptr;
 	}
 
@@ -96,7 +95,7 @@ Gaff::IVirtualDestructor* SamplerStateLoader::load(const char* file_name, uint64
 	};
 
 	if (ss.filter == Gleam::ISamplerState::FILTER_ANISOTROPIC && !json["max_anisotropy"].isInteger()) {
-		LogMessage(GetApp().getGameLogFile(), TPT_PRINTLOG, LogManager::LOG_ERROR, "ERROR - Sampler State file '%s' is malformed. Value at 'max_anisotropy' is not an integer.\n", file_name);
+		GetApp().getLogManager().logMessage(LogManager::LOG_ERROR, GetApp().getLogFileName(), "ERROR - Sampler State file '%s' is malformed. Value at 'max_anisotropy' is not an integer.\n", file_name);
 		return nullptr;
 	}
 
@@ -104,7 +103,7 @@ Gaff::IVirtualDestructor* SamplerStateLoader::load(const char* file_name, uint64
 		ss.wrap_w == Gleam::ISamplerState::WRAP_BORDER) && (!json["border_r"].isReal() || !json["border_g"].isReal() ||
 		!json["border_b"].isReal() || !json["border_a"].isReal())) {
 
-		LogMessage(GetApp().getGameLogFile(), TPT_PRINTLOG, LogManager::LOG_ERROR, "ERROR - Sampler State file '%s' is malformed. A wrap mode is defined as 'BORDER' and value 'border_r/g/b/a' is not a float.\n", file_name);
+		GetApp().getLogManager().logMessage(LogManager::LOG_ERROR, GetApp().getLogFileName(), "ERROR - Sampler State file '%s' is malformed. A wrap mode is defined as 'BORDER' and value 'border_r/g/b/a' is not a float.\n", file_name);
 		return nullptr;
 	}
 
@@ -124,7 +123,7 @@ Gaff::IVirtualDestructor* SamplerStateLoader::load(const char* file_name, uint64
 	SamplerStateData* sampler_data = SHIB_ALLOCT(SamplerStateData, *GetAllocator());
 
 	if (!sampler_data) {
-		LogMessage(GetApp().getGameLogFile(), TPT_PRINTLOG, LogManager::LOG_ERROR, "ERROR - Failed to allocate Sampler State data structure.\n", file_name);
+		GetApp().getLogManager().logMessage(LogManager::LOG_ERROR, GetApp().getLogFileName(), "ERROR - Failed to allocate Sampler State data structure.\n", file_name);
 		return nullptr;
 	}
 
@@ -137,13 +136,13 @@ Gaff::IVirtualDestructor* SamplerStateLoader::load(const char* file_name, uint64
 		rd.setCurrentDevice(i);
 
 		if (!sampler) {
-			LogMessage(GetApp().getGameLogFile(), TPT_PRINTLOG, LogManager::LOG_ERROR, "ERROR - Failed to allocate Sampler State for sampler '%s'.\n", file_name);
+			GetApp().getLogManager().logMessage(LogManager::LOG_ERROR, GetApp().getLogFileName(), "ERROR - Failed to allocate Sampler State for sampler '%s'.\n", file_name);
 			SHIB_FREET(sampler_data, *GetAllocator());
 			return nullptr;
 		}
 
 		if (!sampler->init(rd, ss)) {
-			LogMessage(GetApp().getGameLogFile(), TPT_PRINTLOG, LogManager::LOG_ERROR, "ERROR - Failed to initialize Sampler State for sampler '%s'.\n", file_name);
+			GetApp().getLogManager().logMessage(LogManager::LOG_ERROR, GetApp().getLogFileName(), "ERROR - Failed to initialize Sampler State for sampler '%s'.\n", file_name);
 			SHIB_FREET(sampler_data, *GetAllocator());
 			return nullptr;
 		}

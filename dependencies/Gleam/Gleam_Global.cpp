@@ -22,22 +22,12 @@ THE SOFTWARE.
 
 #include "Gleam_Global.h"
 #include <Gaff_DefaultAlignedAllocator.h>
-#include <Gaff_ScopedLock.h>
-#include <Gaff_SpinLock.h>
-#include <Gaff_File.h>
-
-#define LOG_NAME_SIZE 128
 
 NS_GLEAM
 
 static Gaff::DefaultAlignedAllocator g_backup_allocator(16);
 static Gaff::IAllocator* g_allocator = &g_backup_allocator;
-
-static char g_log_file_name[LOG_NAME_SIZE] = { 0 };
-static bool default_alloc = true;
-
-static Gaff::SpinLock g_spin_lock;
-static Gaff::File g_log_file;
+static LogFunc g_log_func = nullptr;
 
 void SetAllocator(Gaff::IAllocator* allocator)
 {
@@ -51,7 +41,7 @@ Gaff::IAllocator* GetAllocator(void)
 
 void* GleamAlloc(size_t size_bytes, const char* filename, unsigned int line_number)
 {
-	void* data = GAFF_ALLOC(size_bytes, *g_allocator);
+	void* data = g_allocator->alloc(size_bytes, filename, line_number);
 
 	if (!data) {
 		PrintfToLog("Failed to allocate %i bytes in \'%s\':%i", LOG_ERROR, filename, line_number);
@@ -66,77 +56,22 @@ void GleamFree(void* data)
 	GAFF_FREE(data, *g_allocator);
 }
 
-void SetLogFileName(const char* log_file_name)
+void SetLogFunc(LogFunc log_func)
 {
-	strncpy(g_log_file_name, log_file_name, LOG_NAME_SIZE);
-}
-
-const char* GetLogFileName(void)
-{
-	return g_log_file_name;
-}
-
-void WriteMessageToLog(const char* msg, size_t size, LOG_MSG_TYPE type)
-{
-	Gaff::ScopedLock<Gaff::SpinLock> scoped_lock(g_spin_lock);
-
-	if (!g_log_file.isOpen()) {
-		g_log_file.open(g_log_file_name, Gaff::File::APPEND);
-	}
-
-	if (g_log_file.isOpen()) {
-		switch (type) {
-			case LOG_ERROR:
-				g_log_file.writeString("ERROR:\n");
-				break;
-
-			case LOG_WARNING:
-				g_log_file.writeString("WARNING:\n");
-				break;
-
-			case LOG_NORMAL:
-			default:
-				break;
-		}
-
-		g_log_file.write((void*)msg, sizeof(char), size);
-		g_log_file.writeChar('\n');
-		g_log_file.flush();
-	}
+	g_log_func = log_func;
 }
 
 void PrintfToLog(const char* format_string, LOG_MSG_TYPE type, ...)
 {
-	Gaff::ScopedLock<Gaff::SpinLock> scoped_lock(g_spin_lock);
-
-	if (!g_log_file.isOpen()) {
-		g_log_file.open(g_log_file_name, Gaff::File::APPEND);
-	}
-
-	if (g_log_file.isOpen()) {
-		switch (type) {
-			case LOG_ERROR:
-				g_log_file.writeString("ERROR:\n");
-				break;
-
-			case LOG_WARNING:
-				g_log_file.writeString("WARNING:\n");
-				break;
-
-			case LOG_NORMAL:
-			default:
-				break;
-		}
-
+	if (g_log_func) {
+		char temp[2048] = { 0 };
 		va_list vl;
+
 		va_start(vl, type);
-
-		g_log_file.printfVA(format_string, vl);
-		g_log_file.writeChar('\n');
-
+		vsnprintf_s(temp, 2048, format_string, vl);
 		va_end(vl);
 
-		g_log_file.flush();
+		g_log_func(temp, type);
 	}
 }
 

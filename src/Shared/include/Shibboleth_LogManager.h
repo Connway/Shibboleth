@@ -22,14 +22,12 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Shibboleth_HashString.h"
-#include "Shibboleth_HashMap.h"
 #include "Shibboleth_String.h"
 #include "Shibboleth_Array.h"
 #include <Gaff_Function.h>
 #include <Gaff_SpinLock.h>
-#include <Gaff_File.h>
-#include <Gaff_Pair.h>
+#include <Gaff_Thread.h>
+#include <Gaff_Event.h>
 
 NS_SHIBBOLETH
 
@@ -44,31 +42,42 @@ public:
 	};
 
 	typedef Gaff::FunctionBinder<void, const char*, LOG_TYPE> LogCallback;
-	typedef Gaff::Pair<Gaff::File, Gaff::SpinLock*> FileLockPair;
 
-	LogManager(const ProxyAllocator& allocator);
+	LogManager(void);
 	~LogManager(void);
 
+	bool init(void);
 	void destroy(void);
-
-	bool openLogFile(const AHashString& filename);
-	INLINE bool openLogFile(const AString& filename);
-	INLINE bool openLogFile(const char* filename);
-	INLINE void closeLogFile(const AHashString& filename);
-	INLINE void closeLogFile(const AString& filename);
-	INLINE void closeLogFile(const char* filename);
-	INLINE FileLockPair& getLogFile(const AHashString& filename);
-	INLINE FileLockPair& getLogFile(const AString& filename);
-	INLINE FileLockPair& getLogFile(const char* filename);
 
 	INLINE void addLogCallback(const LogCallback& callback);
 	INLINE void removeLogCallback(const LogCallback& callback);
 	void notifyLogCallbacks(const char* message, LOG_TYPE type);
 
+	void logMessage(LOG_TYPE type, const char* file, const char* format, ...);
+
 private:
-	HashMap< AHashString, Gaff::Pair<Gaff::File, Gaff::SpinLock*> > _files;
+	struct LogTasks
+	{
+		LogTasks(LOG_TYPE t, const char* lf, const char* msg):
+			log_file(lf), message(msg), type(t)
+		{
+		}
+
+		AString log_file;
+		AString message;
+		LOG_TYPE type;
+	};
+
+	bool _shutdown;
+
 	Array<LogCallback> _log_callbacks;
-	ProxyAllocator _allocator;
+	Array<LogTasks> _logs;
+	Gaff::SpinLock _log_queue_lock;
+
+	Gaff::Event _log_event;
+	Gaff::Thread _log_thread;
+
+	static Gaff::Thread::ReturnType THREAD_CALLTYPE LogThread(void* thread_data);
 
 	GAFF_NO_COPY(LogManager);
 	GAFF_NO_MOVE(LogManager);

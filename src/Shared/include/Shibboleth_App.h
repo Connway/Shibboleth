@@ -25,6 +25,7 @@ THE SOFTWARE.
 #include "Shibboleth_MessageBroadcaster.h"
 #include "Shibboleth_DynamicLoader.h"
 #include "Shibboleth_StateMachine.h"
+#include "Shibboleth_HashString.h"
 #include "Shibboleth_LogManager.h"
 #include "Shibboleth_JobPool.h"
 #include "Shibboleth_Array.h"
@@ -75,10 +76,8 @@ public:
 	void helpUntilNoJobs(void);
 	void doAJob(void);
 
-	void addLogCallback(const LogManager::LogCallback& callback);
-	void removeLogCallback(const LogManager::LogCallback& callback);
-	void notifyLogCallbacks(const char* message, LogManager::LOG_TYPE type);
-	LogManager::FileLockPair& getGameLogFile(void);
+	const char* getLogFileName(void) const;
+	LogManager& getLogManager(void);
 
 	DynamicLoader::ModulePtr loadModule(const char* filename, const char* name);
 	size_t getSeed(void) const;
@@ -125,12 +124,11 @@ private:
 	JobPool _job_pool;
 
 	LogManager _logger;
+	char _log_file_name[64];
 
 	FileSystemData _fs;
 
 	HashMap<AHashString, AString> _cmd_line_args;
-
-	LogManager::FileLockPair* _log_file_pair;
 
 	size_t _seed;
 
