@@ -233,25 +233,49 @@ T* Array<T, Allocator>::getArray(void)
 }
 
 template <class T, class Allocator>
-ARRAY_ITERATOR Array<T, Allocator>::begin(void) const
+const ARRAY_ITERATOR Array<T, Allocator>::begin(void) const
 {
 	return Iterator(_array);
 }
 
 template <class T, class Allocator>
-ARRAY_ITERATOR Array<T, Allocator>::end(void) const
+ARRAY_ITERATOR Array<T, Allocator>::begin(void)
+{
+	return Iterator(_array);
+}
+
+template <class T, class Allocator>
+const ARRAY_ITERATOR Array<T, Allocator>::end(void) const
 {
 	return Iterator(_array + _used);
 }
 
 template <class T, class Allocator>
-ARRAY_ITERATOR Array<T, Allocator>::rbegin(void) const
+ARRAY_ITERATOR Array<T, Allocator>::end(void)
+{
+	return Iterator(_array + _used);
+}
+
+template <class T, class Allocator>
+const ARRAY_ITERATOR Array<T, Allocator>::rbegin(void) const
 {
 	return Iterator(_array + _used - 1);
 }
 
 template <class T, class Allocator>
-ARRAY_ITERATOR Array<T, Allocator>::rend(void) const
+ARRAY_ITERATOR Array<T, Allocator>::rbegin(void)
+{
+	return Iterator(_array + _used - 1);
+}
+
+template <class T, class Allocator>
+const ARRAY_ITERATOR Array<T, Allocator>::rend(void) const
+{
+	return Iterator(_array - 1);
+}
+
+template <class T, class Allocator>
+ARRAY_ITERATOR Array<T, Allocator>::rend(void)
 {
 	return Iterator(_array - 1);
 }

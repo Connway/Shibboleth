@@ -60,6 +60,9 @@ public:
 	void addMouseBinding(const char* alias, Gleam::MouseCode mouse_code, bool negative = false);
 	void removeMouseBinding(Gleam::MouseCode mouse_code);
 
+	size_t getAliasIndex(const char* alias) const;
+	float getAliasValue(size_t index) const;
+
 private:
 	Gleam::Keyboard _keyboard;
 	Gleam::Mouse _mouse;

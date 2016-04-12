@@ -30,6 +30,8 @@ THE SOFTWARE.
 
 NS_SHIBBOLETH
 
+#include "Shibboleth_InputReflection.inl"
+
 REF_IMPL_REQ(InputManager);
 SHIB_REF_IMPL(InputManager)
 .addBaseClassInterfaceOnly<InputManager>()
@@ -154,6 +156,24 @@ void InputManager::removeMouseBinding(Gleam::MouseCode mouse_code)
 	if (it != _mouse_bindings.end()) {
 		_mouse_bindings.erase(it);
 	}
+}
+
+size_t InputManager::getAliasIndex(const char* alias) const
+{
+	uint32_t hash = Gaff::FNV1aHash32(alias, strlen(alias));
+	auto it = _values.findElementWithKey(hash);
+
+	if (it != _values.end()) {
+		return static_cast<size_t>(it - _values.begin());
+	}
+
+	return SIZE_T_FAIL;
+}
+
+float InputManager::getAliasValue(size_t index) const
+{
+	GAFF_ASSERT(index < _values.size());
+	return _values.atIndex(index)->second;
 }
 
 void InputManager::KeyboardHandler(Gleam::IInputDevice*, unsigned int key, float value)

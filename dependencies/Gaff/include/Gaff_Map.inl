@@ -20,6 +20,8 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
+#define MAP_ITERATOR typename Map<Key, Value, Allocator, Predicate>::Iterator
+
 template <class Key, class Value, class Allocator, class Predicate>
 Map<Key, Value, Allocator, Predicate>::Map(const Allocator& allocator):
 	_array(allocator), _allocator(allocator)
@@ -108,7 +110,7 @@ void Map<Key, Value, Allocator, Predicate>::erase(const Key& key)
 
 template <class Key, class Value, class Allocator, class Predicate>
 template <class... Args>
-typename Map<Key, Value, Allocator, Predicate>::Iterator Map<Key, Value, Allocator, Predicate>::emplace(const Key& key, Args&&... args)
+MAP_ITERATOR Map<Key, Value, Allocator, Predicate>::emplace(const Key& key, Args&&... args)
 {
 	Value temp(std::forward<Args>(args)...);
 	return insert(key, std::move(temp));
@@ -116,14 +118,14 @@ typename Map<Key, Value, Allocator, Predicate>::Iterator Map<Key, Value, Allocat
 
 template <class Key, class Value, class Allocator, class Predicate>
 template <class... Args>
-typename Map<Key, Value, Allocator, Predicate>::Iterator Map<Key, Value, Allocator, Predicate>::emplace(Key&& key, Args&&... args)
+MAP_ITERATOR Map<Key, Value, Allocator, Predicate>::emplace(Key&& key, Args&&... args)
 {
 	Value temp(std::forward<Args>(args)...);
 	return insert(std::move(key), std::move(temp));
 }
 
 template <class Key, class Value, class Allocator, class Predicate>
-typename Map<Key, Value, Allocator, Predicate>::Iterator Map<Key, Value, Allocator, Predicate>::insert(const Key& key, const Value& value)
+MAP_ITERATOR Map<Key, Value, Allocator, Predicate>::insert(const Key& key, const Value& value)
 {
 	Iterator it = _array.binarySearch(_array.begin(), _array.end(), key, Predicate());
 	GAFF_ASSERT(it == _array.end() || it->first != key);
@@ -135,7 +137,7 @@ typename Map<Key, Value, Allocator, Predicate>::Iterator Map<Key, Value, Allocat
 }
 
 template <class Key, class Value, class Allocator, class Predicate>
-typename Map<Key, Value, Allocator, Predicate>::Iterator Map<Key, Value, Allocator, Predicate>::insert(const Key& key, Value&& value)
+MAP_ITERATOR Map<Key, Value, Allocator, Predicate>::insert(const Key& key, Value&& value)
 {
 	Iterator it = _array.binarySearch(_array.begin(), _array.end(), key, Predicate());
 	GAFF_ASSERT(it == _array.end() || it->first != key);
@@ -147,7 +149,7 @@ typename Map<Key, Value, Allocator, Predicate>::Iterator Map<Key, Value, Allocat
 }
 
 template <class Key, class Value, class Allocator, class Predicate>
-typename Map<Key, Value, Allocator, Predicate>::Iterator Map<Key, Value, Allocator, Predicate>::insert(Key&& key, Value&& value)
+MAP_ITERATOR Map<Key, Value, Allocator, Predicate>::insert(Key&& key, Value&& value)
 {
 	Iterator it = _array.binarySearch(_array.begin(), _array.end(), key, Predicate());
 	GAFF_ASSERT(it == _array.end() || it->first != key);
@@ -216,38 +218,89 @@ void Map<Key, Value, Allocator, Predicate>::setAllocator(const Allocator& alloca
 }
 
 template <class Key, class Value, class Allocator, class Predicate>
-typename Map<Key, Value, Allocator, Predicate>::Iterator Map<Key, Value, Allocator, Predicate>::begin(void) const
+const MAP_ITERATOR Map<Key, Value, Allocator, Predicate>::begin(void) const
 {
 	return _array.begin();
 }
 
 template <class Key, class Value, class Allocator, class Predicate>
-typename Map<Key, Value, Allocator, Predicate>::Iterator Map<Key, Value, Allocator, Predicate>::end(void) const
+MAP_ITERATOR Map<Key, Value, Allocator, Predicate>::begin(void)
+{
+	return _array.begin();
+}
+
+template <class Key, class Value, class Allocator, class Predicate>
+const MAP_ITERATOR Map<Key, Value, Allocator, Predicate>::end(void) const
 {
 	return _array.end();
 }
 
 template <class Key, class Value, class Allocator, class Predicate>
-typename Map<Key, Value, Allocator, Predicate>::Iterator Map<Key, Value, Allocator, Predicate>::rbegin(void) const
+MAP_ITERATOR Map<Key, Value, Allocator, Predicate>::end(void)
+{
+	return _array.end();
+}
+
+template <class Key, class Value, class Allocator, class Predicate>
+const MAP_ITERATOR Map<Key, Value, Allocator, Predicate>::rbegin(void) const
 {
 	return _array.rbegin();
 }
 
 template <class Key, class Value, class Allocator, class Predicate>
-typename Map<Key, Value, Allocator, Predicate>::Iterator Map<Key, Value, Allocator, Predicate>::rend(void) const
+MAP_ITERATOR Map<Key, Value, Allocator, Predicate>::rbegin(void)
+{
+	return _array.rbegin();
+}
+
+template <class Key, class Value, class Allocator, class Predicate>
+const MAP_ITERATOR Map<Key, Value, Allocator, Predicate>::rend(void) const
 {
 	return _array.rend();
 }
 
 template <class Key, class Value, class Allocator, class Predicate>
-typename Map<Key, Value, Allocator, Predicate>::Iterator Map<Key, Value, Allocator, Predicate>::findElementWithValue(const Value& value) const
+MAP_ITERATOR Map<Key, Value, Allocator, Predicate>::rend(void)
+{
+	return _array.rend();
+}
+
+template <class Key, class Value, class Allocator, class Predicate>
+const MAP_ITERATOR Map<Key, Value, Allocator, Predicate>::findElementWithValue(const Value& value) const
 {
 	return _array.linearSearch(value, ValueSearchPredicate());
 }
 
 template <class Key, class Value, class Allocator, class Predicate>
-typename Map<Key, Value, Allocator, Predicate>::Iterator Map<Key, Value, Allocator, Predicate>::findElementWithKey(const Key& key) const
+MAP_ITERATOR Map<Key, Value, Allocator, Predicate>::findElementWithValue(const Value& value)
+{
+	return _array.linearSearch(value, ValueSearchPredicate());
+}
+
+template <class Key, class Value, class Allocator, class Predicate>
+const MAP_ITERATOR Map<Key, Value, Allocator, Predicate>::findElementWithKey(const Key& key) const
+{
+	const Iterator it = _array.binarySearch(key, Predicate());
+	return (it != _array.end() && it->first == key) ? it : end();
+}
+
+template <class Key, class Value, class Allocator, class Predicate>
+MAP_ITERATOR Map<Key, Value, Allocator, Predicate>::findElementWithKey(const Key& key)
 {
 	Iterator it = _array.binarySearch(key, Predicate());
 	return (it != _array.end() && it->first == key) ? it : end();
+}
+
+template <class Key, class Value, class Allocator, class Predicate>
+const MAP_ITERATOR Map<Key, Value, Allocator, Predicate>::atIndex(size_t index) const
+{
+	GAFF_ASSERT(index < _array.size());
+	return _array.begin() + index;
+}
+
+template <class Key, class Value, class Allocator, class Predicate>
+MAP_ITERATOR Map<Key, Value, Allocator, Predicate>::atIndex(size_t index)
+{
+	GAFF_ASSERT(index < _array.size());
+	return _array.begin() + index;
 }
