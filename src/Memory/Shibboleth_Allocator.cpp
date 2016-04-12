@@ -80,7 +80,7 @@ struct AllocThreadInfo
 {
 	AllocationInfo* allocs[256] = { nullptr };
 	AllocationInfo* frees[256] = { nullptr };
-	AllocationInfo* _list_head = nullptr;
+	AllocationInfo* list_head = nullptr;
 
 	volatile unsigned int alloc_index = 0;
 	volatile unsigned int free_index = 0;
@@ -111,18 +111,23 @@ static Gaff::Thread::ReturnType THREAD_CALLTYPE AllocInfoThread(void* data)
 			curr_alloc_index = (curr_alloc_index + 1) % 256;
 
 			// Process the allocation
-			ai->next = ati->_list_head;
+			ai->next = ati->list_head;
 
-			if (ati->_list_head) {
-				ati->_list_head->prev = ai;
+			if (ati->list_head) {
+				ati->list_head->prev = ai;
 			}
 
-			ati->_list_head = ai;
+			ati->list_head = ai;
 		}
 
 		while (ati->frees[curr_free_index]) {
 			// Grab the info pointer
 			AllocationInfo* ai = ati->frees[curr_free_index];
+
+			// If we are an allocation that hasn't been added yet, then come back later.
+			if (!ai->prev && !ai->next && ai != ati->list_head) {
+				break;
+			}
 
 			// Free up the slot
 			ati->frees[curr_free_index] = nullptr;
@@ -137,8 +142,8 @@ static Gaff::Thread::ReturnType THREAD_CALLTYPE AllocInfoThread(void* data)
 				ai->next->prev = ai->prev;
 			}
 
-			if (ai == ati->_list_head) {
-				ati->_list_head = ai->next;
+			if (ai == ati->list_head) {
+				ati->list_head = ai->next;
 			}
 		}
 	}
@@ -412,7 +417,7 @@ void Allocator::writeAllocationLog(void) const
 
 void Allocator::writeLeakLog(void) const
 {
-	if (!g_thread_info._list_head) {
+	if (!g_thread_info.list_head) {
 		return;
 	}
 
@@ -431,7 +436,7 @@ void Allocator::writeLeakLog(void) const
 		"===========================================================\n\n"
 	);
 
-	for (AllocationInfo* info = g_thread_info._list_head; info; info = info->next) {
+	for (AllocationInfo* info = g_thread_info.list_head; info; info = info->next) {
 		log.printf("%s:(%i) [%s]\n", info->file, info->line, _tagged_pools[info->pool_index].pool_name);
 	}
 }

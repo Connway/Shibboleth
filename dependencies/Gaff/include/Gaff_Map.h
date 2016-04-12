@@ -84,13 +84,22 @@ public:
 
 	void setAllocator(const Allocator& allocator);
 
-	Iterator begin(void) const;
-	Iterator end(void) const;
-	Iterator rbegin(void) const;
-	Iterator rend(void) const;
+	const Iterator begin(void) const;
+	Iterator begin(void);
+	const Iterator end(void) const;
+	Iterator end(void);
+	const Iterator rbegin(void) const;
+	Iterator rbegin(void);
+	const Iterator rend(void) const;
+	Iterator rend(void);
 
-	Iterator findElementWithValue(const Value& value) const;
-	Iterator findElementWithKey(const Key& key) const;
+	const Iterator findElementWithValue(const Value& value) const;
+	Iterator findElementWithValue(const Value& value);
+	const Iterator findElementWithKey(const Key& key) const;
+	Iterator findElementWithKey(const Key& key);
+
+	const Iterator atIndex(size_t index) const;
+	Iterator atIndex(size_t index);
 
 private:
 	class ValueSearchPredicate

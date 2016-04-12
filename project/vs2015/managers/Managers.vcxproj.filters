@@ -73,4 +73,9 @@
     <ClCompile Include="..\..\..\src\Managers\Shibboleth_UpdateManager.cpp" />
     <ClCompile Include="..\..\..\src\Managers\Shibboleth_MovementControllerManager.cpp" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\..\src\Managers\include\Shibboleth_InputReflection.inl">
+      <Filter>include</Filter>
+    </None>
+  </ItemGroup>
 </Project>

@@ -67,10 +67,14 @@ public:
 	const T* getArray(void) const;
 	T* getArray(void);
 
-	Iterator begin(void) const;
-	Iterator end(void) const;
-	Iterator rbegin(void) const;
-	Iterator rend(void) const;
+	const Iterator begin(void) const;
+	Iterator begin(void);
+	const Iterator end(void) const;
+	Iterator end(void);
+	const Iterator rbegin(void) const;
+	Iterator rbegin(void);
+	const Iterator rend(void) const;
+	Iterator rend(void);
 
 	bool empty(void) const;
 
