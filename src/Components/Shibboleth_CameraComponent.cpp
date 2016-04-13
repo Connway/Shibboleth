@@ -68,6 +68,11 @@ CameraComponent::CameraComponent(void):
 	_viewport[3] = 1.0f;
 }
 
+const char* CameraComponent::GetComponentName(void)
+{
+	return "Camera Component";
+}
+
 CameraComponent::~CameraComponent(void)
 {
 	setActive(false);

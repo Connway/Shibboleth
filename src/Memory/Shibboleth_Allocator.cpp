@@ -50,21 +50,15 @@ THE SOFTWARE.
 
 NS_SHIBBOLETH
 
-struct AllocationInfo
-{
-	size_t pool_index = 0;
-	char file[256] = { 0 };
-	int line = 0;
-
-	AllocationInfo* next = nullptr;
-	AllocationInfo* prev = nullptr;
-};
-
 // Enforce the header being 16-byte aligned so that data falls on 16-byte boundary.
 struct COMPILERALIGN16 AllocationHeader
 {
 	size_t pool_index;
-	AllocationInfo* alloc_info;
+	char file[256] = { 0 };
+	int line = 0;
+
+	AllocationHeader* next = nullptr;
+	AllocationHeader* prev = nullptr;
 
 #if defined(SYMBOL_BUILD) && defined(GATHER_ALLOCATION_STACKTRACE)
 		Gaff::StackTrace stack_trace;
@@ -78,9 +72,9 @@ struct COMPILERALIGN16 AllocationHeader
 
 struct AllocThreadInfo
 {
-	AllocationInfo* allocs[256] = { nullptr };
-	AllocationInfo* frees[256] = { nullptr };
-	AllocationInfo* list_head = nullptr;
+	AllocationHeader* allocs[256] = { nullptr };
+	AllocationHeader* frees[256] = { nullptr };
+	AllocationHeader* list_head = nullptr;
 
 	volatile unsigned int alloc_index = 0;
 	volatile unsigned int free_index = 0;
@@ -104,28 +98,28 @@ static Gaff::Thread::ReturnType THREAD_CALLTYPE AllocInfoThread(void* data)
 
 		while (ati->allocs[curr_alloc_index]) {
 			// Grab the info pointer
-			AllocationInfo* ai = ati->allocs[curr_alloc_index];
+			AllocationHeader* header = ati->allocs[curr_alloc_index];
 
 			// Free up the slot
 			ati->allocs[curr_alloc_index] = nullptr;
 			curr_alloc_index = (curr_alloc_index + 1) % 256;
 
 			// Process the allocation
-			ai->next = ati->list_head;
+			header->next = ati->list_head;
 
 			if (ati->list_head) {
-				ati->list_head->prev = ai;
+				ati->list_head->prev = header;
 			}
 
-			ati->list_head = ai;
+			ati->list_head = header;
 		}
 
 		while (ati->frees[curr_free_index]) {
 			// Grab the info pointer
-			AllocationInfo* ai = ati->frees[curr_free_index];
+			AllocationHeader* header = ati->frees[curr_free_index];
 
 			// If we are an allocation that hasn't been added yet, then come back later.
-			if (!ai->prev && !ai->next && ai != ati->list_head) {
+			if (!header->prev && !header->next && header != ati->list_head) {
 				break;
 			}
 
@@ -134,17 +128,19 @@ static Gaff::Thread::ReturnType THREAD_CALLTYPE AllocInfoThread(void* data)
 			curr_free_index = (curr_free_index + 1) % 256;
 
 			// Process the free
-			if (ai->prev) {
-				ai->prev->next = ai->next;
+			if (header->prev) {
+				header->prev->next = header->next;
 			}
 
-			if (ai->next) {
-				ai->next->prev = ai->prev;
+			if (header->next) {
+				header->next->prev = header->prev;
 			}
 
-			if (ai == ati->list_head) {
-				ati->list_head = ai->next;
+			if (header == ati->list_head) {
+				ati->list_head = header->next;
 			}
+
+			Gaff::AlignedFree(header);
 		}
 	}
 
@@ -199,15 +195,17 @@ void* Allocator::alloc(size_t size_bytes, size_t pool_index, const char* file, i
 	MemoryPoolInfo& mem_pool_info = _tagged_pools[pool_index];
 
 	void* data = Gaff::AlignedMalloc(size_bytes + sizeof(AllocationHeader), _alignment);
-	void* alloc_info = Gaff::AlignedMalloc(sizeof(AllocationInfo), _alignment);
 
 	if (data) {
 		AtomicUAdd(&mem_pool_info.total_bytes_allocated, size_bytes);
 		AtomicIncrement(&mem_pool_info.num_allocations);
 
 		AllocationHeader* header = reinterpret_cast<AllocationHeader*>(data);
-		header->alloc_info = reinterpret_cast<AllocationInfo*>(alloc_info);
 		header->pool_index = pool_index;
+		strncpy_s(header->file, file, 256);
+		header->pool_index = pool_index;
+		header->line = line;
+		header->next = header->prev = nullptr;
 
 #if defined(SYMBOL_BUILD) && defined(GATHER_ALLOCATION_STACKTRACE)
 		g_pt_locks[pool_index].lock();
@@ -218,33 +216,23 @@ void* Allocator::alloc(size_t size_bytes, size_t pool_index, const char* file, i
 		g_pt_locks[pool_index].unlock();
 #endif
 
-		if (alloc_info) {
-			AllocationInfo* ai = reinterpret_cast<AllocationInfo*>(alloc_info);
-			Gaff::construct(ai);
+		unsigned int next_index = (AtomicIncrement(&g_thread_info.alloc_index) - 1) % 256;
 
-			strncpy_s(ai->file, file, 256);
-			ai->pool_index = pool_index;
-			ai->line = line;
-			ai->next = ai->prev = nullptr;
+		void* orig = AtomicCompareExchangePointer(
+			reinterpret_cast<void* volatile*>(g_thread_info.allocs + next_index),
+			reinterpret_cast<void*>(header),
+			nullptr
+		);
 
-			unsigned int next_index = (AtomicIncrement(&g_thread_info.alloc_index) - 1) % 256;
-
-			void* orig = AtomicCompareExchangePointer(
+		while (orig != nullptr) {
+			orig = AtomicCompareExchangePointer(
 				reinterpret_cast<void* volatile*>(g_thread_info.allocs + next_index),
-				reinterpret_cast<void*>(ai),
+				reinterpret_cast<void*>(header),
 				nullptr
 			);
-
-			while (orig != nullptr) {
-				orig = AtomicCompareExchangePointer(
-					reinterpret_cast<void* volatile*>(g_thread_info.allocs + next_index),
-					reinterpret_cast<void*>(ai),
-					nullptr
-				);
-			}
-
-			g_thread_info.alloc_event.set();
 		}
+
+		g_thread_info.alloc_event.set();
 
 		return reinterpret_cast<char*>(data) + sizeof(AllocationHeader);
 	}
@@ -277,25 +265,21 @@ void Allocator::free(void* data)
 	g_pt_locks[header->pool_index].unlock();
 #endif
 
-	if (header->alloc_info) {
-		unsigned int next_index = (AtomicIncrement(&g_thread_info.free_index) - 1) % 256;
+	unsigned int next_index = (AtomicIncrement(&g_thread_info.free_index) - 1) % 256;
 
-		void* orig = AtomicCompareExchangePointer(
+	void* orig = AtomicCompareExchangePointer(
+		reinterpret_cast<void* volatile*>(g_thread_info.frees + next_index),
+		reinterpret_cast<void*>(header), nullptr
+	);
+
+	while (orig != nullptr) {
+		orig = AtomicCompareExchangePointer(
 			reinterpret_cast<void* volatile*>(g_thread_info.frees + next_index),
-			reinterpret_cast<void*>(header->alloc_info), nullptr
+			reinterpret_cast<void*>(header), nullptr
 		);
-
-		while (orig != nullptr) {
-			orig = AtomicCompareExchangePointer(
-				reinterpret_cast<void* volatile*>(g_thread_info.frees + next_index),
-				reinterpret_cast<void*>(header->alloc_info), nullptr
-			);
-		}
-
-		g_thread_info.alloc_event.set();
 	}
 
-	Gaff::AlignedFree(header);
+	g_thread_info.alloc_event.set();
 }
 
 size_t Allocator::getTotalBytesAllocated(size_t pool_index) const
@@ -436,8 +420,9 @@ void Allocator::writeLeakLog(void) const
 		"===========================================================\n\n"
 	);
 
-	for (AllocationInfo* info = g_thread_info.list_head; info; info = info->next) {
-		log.printf("%s:(%i) [%s]\n", info->file, info->line, _tagged_pools[info->pool_index].pool_name);
+	for (AllocationHeader* header = g_thread_info.list_head; header; header = header->next) {
+		log.printf("%s:(%i) [%s]\n", header->file, header->line, _tagged_pools[header->pool_index].pool_name);
+		Gaff::AlignedFree(header);
 	}
 }
 

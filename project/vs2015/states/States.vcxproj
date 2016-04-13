@@ -104,14 +104,14 @@
     <ClInclude Include="..\..\..\src\States\include\Shibboleth_CreateResourceLoadersState.h" />
     <ClInclude Include="..\..\..\src\States\include\Shibboleth_LoadGraphicsModuleState.h" />
     <ClInclude Include="..\..\..\src\States\include\Shibboleth_RegisterLuaClassesState.h" />
-    <ClInclude Include="..\..\..\src\States\include\Shibboleth_SetupGraphicsState.h" />
+    <ClInclude Include="..\..\..\src\States\include\Shibboleth_SetupDevicesState.h" />
     <ClInclude Include="..\..\..\src\States\include\Shibboleth_SetupOtterUIState.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\src\States\Shibboleth_CreateResourceLoadersState.cpp" />
     <ClCompile Include="..\..\..\src\States\Shibboleth_LoadGraphicsModuleState.cpp" />
     <ClCompile Include="..\..\..\src\States\Shibboleth_RegisterLuaClassesState.cpp" />
-    <ClCompile Include="..\..\..\src\States\Shibboleth_SetupGraphicsState.cpp" />
+    <ClCompile Include="..\..\..\src\States\Shibboleth_SetupDevicesState.cpp" />
     <ClCompile Include="..\..\..\src\States\Shibboleth_SetupOtterUIState.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

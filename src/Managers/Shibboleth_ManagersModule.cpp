@@ -108,7 +108,7 @@ static CreateMgrFunc create_funcs[] = {
 #else
 	&CreateManagerT<Shibboleth::PhysXPhysicsManager>,
 #endif
-	&CreateManagerWithInitT<Shibboleth::InputManager>
+	&CreateManagerT<Shibboleth::InputManager>
 };
 
 DYNAMICEXPORT_C bool InitModule(Shibboleth::IApp& app)

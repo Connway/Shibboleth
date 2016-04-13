@@ -68,13 +68,13 @@ static CreateComponentFunc create_funcs[] = {
 };
 
 static ComponentNameFunc name_funcs[] = {
-	&Shibboleth::LuaComponent::getComponentName,
-	&Shibboleth::ModelComponent::getComponentName,
-	&Shibboleth::CameraComponent::getComponentName,
+	&Shibboleth::LuaComponent::GetComponentName,
+	&Shibboleth::ModelComponent::GetComponentName,
+	&Shibboleth::CameraComponent::GetComponentName,
 #ifdef USE_PHYSX
-	&Shibboleth::PhysXPhysicsComponent::getComponentName,
+	&Shibboleth::PhysXPhysicsComponent::GetComponentName,
 #else
-	&Shibboleth::BulletPhysicsComponent::getComponentName,
+	&Shibboleth::BulletPhysicsComponent::GetComponentName,
 #endif
 };
 

@@ -15,7 +15,7 @@
 		},
 
 		{
-			"name": "SetupGraphicsState",
+			"name": "SetupDevicesState",
 			"module": "ShibbolethStates",
 			"transitions": [3]
 		},

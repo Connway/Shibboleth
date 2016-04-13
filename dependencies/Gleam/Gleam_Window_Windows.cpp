@@ -44,10 +44,10 @@ static void InitWindowProcHelpers(void)
 {
 	g_window_helpers.insert(WM_CLOSE, WindowClosed);
 	g_window_helpers.insert(WM_DESTROY, WindowDestroyed);
-	g_window_helpers.insert(WM_MOVE, WindowClosed);
-	g_window_helpers.insert(WM_SIZE, WindowClosed);
-	g_window_helpers.insert(WM_CHAR, WindowClosed);
-	g_window_helpers.insert(WM_INPUT, WindowClosed);
+	g_window_helpers.insert(WM_MOVE, WindowMoved);
+	g_window_helpers.insert(WM_SIZE, WindowResized);
+	g_window_helpers.insert(WM_CHAR, WindowCharacter);
+	g_window_helpers.insert(WM_INPUT, WindowInput);
 	g_window_helpers.insert(WM_LBUTTONDOWN, WindowLeftButtonDown);
 	g_window_helpers.insert(WM_RBUTTONDOWN, WindowRightButtonDown);
 	g_window_helpers.insert(WM_MBUTTONDOWN, WindowMiddleButtonDown);
@@ -119,15 +119,15 @@ LRESULT CALLBACK Window::WindowProc(HWND hwnd, UINT msg, WPARAM w, LPARAM l)
 					handled = handled || window->_window_callbacks[i](*message);
 				}
 
+				for (auto it_hnd = g_global_message_handlers.begin(); it_hnd != g_global_message_handlers.end(); ++it_hnd) {
+					handled = handled || (*it_hnd)(*message);
+				}
+
 				if (handled) {
 					return 0;
 				}
 			}
 		}
-	}
-
-	for (auto it_hnd = g_global_message_handlers.begin(); it_hnd != g_global_message_handlers.end(); ++it_hnd) {
-		handled = handled || (*it_hnd)(*message);
 	}
 
 	return DefWindowProc(hwnd, msg, w, l);

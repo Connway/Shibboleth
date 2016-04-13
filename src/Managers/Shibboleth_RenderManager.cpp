@@ -32,7 +32,6 @@ THE SOFTWARE.
 #include <Gleam_IRenderDevice.h>
 #include <Gleam_Global.h>
 
-#include <Gaff_ScopedLock.h>
 #include <Gaff_Utils.h>
 #include <Gaff_JSON.h>
 
@@ -199,7 +198,7 @@ bool RenderManager::initThreadData(void)
 	_app.getWorkerThreadIDs(thread_ids);
 
 	if (!_render_device->initThreadData(thread_ids.getArray(), thread_ids.size())) {
-		_app.getLogManager().logMessage(LogManager::LOG_ERROR, _app.getLogFileName(), "ERROR - Failed to create render device thread data.\n");
+		_app.getLogManager().logMessage(LogManager::LOG_ERROR, _app.getLogFileName(), "Failed to create render device thread data.\n");
 		return false;
 	}
 
@@ -226,14 +225,14 @@ bool RenderManager::init(const char* module)
 	_app.getLogManager().logMessage(LogManager::LOG_NORMAL, _app.getLogFileName(), "Initializing Render Manager...\n");
 
 	if (!cacheGleamFunctions(_app, module)) {
-		_app.getLogManager().logMessage(LogManager::LOG_ERROR, _app.getLogFileName(), "ERROR - Failed to cache Gleam functions.\n");
+		_app.getLogManager().logMessage(LogManager::LOG_ERROR, _app.getLogFileName(), "Failed to cache Gleam functions.\n");
 		return false;
 	}
 
 	_render_device = _graphics_functions.create_renderdevice();
 
 	if (!_render_device) {
-		_app.getLogManager().logMessage(LogManager::LOG_ERROR, _app.getLogFileName(), "ERROR - Failed to create render device.\n");
+		_app.getLogManager().logMessage(LogManager::LOG_ERROR, _app.getLogFileName(), "Failed to create render device.\n");
 		return false;
 	}
 
@@ -272,14 +271,14 @@ bool RenderManager::createWindow(
 	Gleam::IWindow* window = _graphics_functions.create_window();
 
 	if (!window) {
-		_app.getLogManager().logMessage(LogManager::LOG_ERROR, _app.getLogFileName(), "ERROR - Failed to allocate memory for Window!\n");
+		_app.getLogManager().logMessage(LogManager::LOG_ERROR, _app.getLogFileName(), "Failed to allocate memory for Window!\n");
 		return false;
 	}
 
 	if (!window->init(app_name, window_mode, width, height, x, y, device_name)) {
 		_app.getLogManager().logMessage(
 			LogManager::LOG_ERROR, _app.getLogFileName(),
-			"ERROR - Failed to initialize window with settings\n"
+			"Failed to initialize window with settings\n"
 			"X: %i\n"
 			"Y: %i\n"
 			"Width: %i\n"
@@ -297,7 +296,7 @@ bool RenderManager::createWindow(
 	if (display_mode_id < 0) {
 		_app.getLogManager().logMessage(
 			LogManager::LOG_ERROR, _app.getLogFileName(),
-			"ERROR - Failed to find display mode with settings\n"
+			"Failed to find display mode with settings\n"
 			"Width: %u\n"
 			"Height: %u\n"
 			"Adapter ID: %u\n"
@@ -310,7 +309,7 @@ bool RenderManager::createWindow(
 	}
 
 	if (!_render_device->init(*window, adapter_id, display_id, static_cast<unsigned int>(display_mode_id), vsync)) {
-		_app.getLogManager().logMessage(LogManager::LOG_ERROR, _app.getLogFileName(), "ERROR - Failed to initialize render device with window!\n");
+		_app.getLogManager().logMessage(LogManager::LOG_ERROR, _app.getLogFileName(), "Failed to initialize render device with window!\n");
 		SHIB_FREET(window, _proxy_allocator);
 		return false;
 	}
@@ -436,6 +435,8 @@ GRAPHICS_FUNCTION_IMPL(Shader, create_shader);
 GRAPHICS_FUNCTION_IMPL(Buffer, create_buffer);
 GRAPHICS_FUNCTION_IMPL(Model, create_model);
 GRAPHICS_FUNCTION_IMPL(Mesh, create_mesh);
+GRAPHICS_FUNCTION_IMPL(Keyboard, create_keyboard);
+GRAPHICS_FUNCTION_IMPL(Mouse, create_mouse);
 
 RenderManager::WindowRenderTargets RenderManager::createRenderTargetsForEachWindow(void)
 {
@@ -582,7 +583,7 @@ bool RenderManager::cacheGleamFunctions(IApp& app, const char* module)
 	_gleam_module = app.loadModule(module_path.getBuffer(), module);
 
 	if (!_gleam_module) {
-		_app.getLogManager().logMessage(LogManager::LOG_ERROR, _app.getLogFileName(), "ERROR - Failed to find graphics module '%s'.", module_path.getBuffer());
+		_app.getLogManager().logMessage(LogManager::LOG_ERROR, _app.getLogFileName(), "Failed to find graphics module '%s'.", module_path.getBuffer());
 		return false;
 	}
 
@@ -590,7 +591,7 @@ bool RenderManager::cacheGleamFunctions(IApp& app, const char* module)
 	GraphicsFunctions::InitGraphics init_graphics = _gleam_module->getFunc<GraphicsFunctions::InitGraphics>("InitGraphics");
 
 	if (!init_graphics) {
-		_app.getLogManager().logMessage(LogManager::LOG_ERROR, _app.getLogFileName(), "ERROR - Failed to find function 'InitGraphics' in graphics module '%s'.", module_path.getBuffer());
+		_app.getLogManager().logMessage(LogManager::LOG_ERROR, _app.getLogFileName(), "Failed to find function 'InitGraphics' in graphics module '%s'.", module_path.getBuffer());
 		return false;
 	}
 
@@ -602,7 +603,7 @@ bool RenderManager::cacheGleamFunctions(IApp& app, const char* module)
 	}
 
 	if (!init_graphics(app, log_file_name)) {
-		_app.getLogManager().logMessage(LogManager::LOG_ERROR, _app.getLogFileName(), "ERROR - Graphics module '%s' failed to initialize.", module_path.getBuffer());
+		_app.getLogManager().logMessage(LogManager::LOG_ERROR, _app.getLogFileName(), "Graphics module '%s' failed to initialize.", module_path.getBuffer());
 		return false;
 	}
 
@@ -628,104 +629,116 @@ bool RenderManager::cacheGleamFunctions(IApp& app, const char* module)
 	_graphics_functions.create_buffer = _gleam_module->getFunc<GraphicsFunctions::CreateBuffer>("CreateBuffer");
 	_graphics_functions.create_model = _gleam_module->getFunc<GraphicsFunctions::CreateModel>("CreateModel");
 	_graphics_functions.create_mesh = _gleam_module->getFunc<GraphicsFunctions::CreateMesh>("CreateMesh");
+	_graphics_functions.create_keyboard = _gleam_module->getFunc<GraphicsFunctions::CreateKeyboard>("CreateKeyboard");
+	_graphics_functions.create_mouse = _gleam_module->getFunc<GraphicsFunctions::CreateMouse>("CreateMouse");
 
 	if (!_graphics_functions.shutdown) {
-		_app.getLogManager().logMessage(LogManager::LOG_ERROR, _app.getLogFileName(), "ERROR - Failed to find function 'ShutdownGraphics' in graphics module '%s'.", module_path.getBuffer());
+		_app.getLogManager().logMessage(LogManager::LOG_ERROR, _app.getLogFileName(), "Failed to find function 'ShutdownGraphics' in graphics module '%s'.", module_path.getBuffer());
 		ret = false;
 	}
 
 	if (!_graphics_functions.create_window) {
-		_app.getLogManager().logMessage(LogManager::LOG_ERROR, _app.getLogFileName(), "ERROR - Failed to find function 'CreateWindowS' in graphics module '%s'.", module_path.getBuffer());
+		_app.getLogManager().logMessage(LogManager::LOG_ERROR, _app.getLogFileName(), "Failed to find function 'CreateWindowS' in graphics module '%s'.", module_path.getBuffer());
 		ret = false;
 	}
 
 	if (!_graphics_functions.update_windows) {
-		_app.getLogManager().logMessage(LogManager::LOG_ERROR, _app.getLogFileName(), "ERROR - Failed to find function 'UpdateWindows' in graphics module '%s'.", module_path.getBuffer());
+		_app.getLogManager().logMessage(LogManager::LOG_ERROR, _app.getLogFileName(), "Failed to find function 'UpdateWindows' in graphics module '%s'.", module_path.getBuffer());
 		ret = false;
 	}
 
 	if (!_graphics_functions.get_shader_extension) {
-		_app.getLogManager().logMessage(LogManager::LOG_ERROR, _app.getLogFileName(), "ERROR - Failed to find function 'GetShaderExtension' in graphics module '%s'.", module_path.getBuffer());
+		_app.getLogManager().logMessage(LogManager::LOG_ERROR, _app.getLogFileName(), "Failed to find function 'GetShaderExtension' in graphics module '%s'.", module_path.getBuffer());
 		ret = false;
 	}
 
 	if (!_graphics_functions.create_shaderresourceview) {
-		_app.getLogManager().logMessage(LogManager::LOG_ERROR, _app.getLogFileName(), "ERROR - Failed to find function 'CreateShaderResourceView' in graphics module '%s'.", module_path.getBuffer());
+		_app.getLogManager().logMessage(LogManager::LOG_ERROR, _app.getLogFileName(), "Failed to find function 'CreateShaderResourceView' in graphics module '%s'.", module_path.getBuffer());
 		ret = false;
 	}
 
 	if (!_graphics_functions.create_depthstencilstate) {
-		_app.getLogManager().logMessage(LogManager::LOG_ERROR, _app.getLogFileName(), "ERROR - Failed to find function 'CreateDepthStencilState' in graphics module '%s'.", module_path.getBuffer());
+		_app.getLogManager().logMessage(LogManager::LOG_ERROR, _app.getLogFileName(), "Failed to find function 'CreateDepthStencilState' in graphics module '%s'.", module_path.getBuffer());
 		ret = false;
 	}
 
 	if (!_graphics_functions.create_programbuffers) {
-		_app.getLogManager().logMessage(LogManager::LOG_ERROR, _app.getLogFileName(), "ERROR - Failed to find function 'CreateProgramBuffers' in graphics module '%s'.", module_path.getBuffer());
+		_app.getLogManager().logMessage(LogManager::LOG_ERROR, _app.getLogFileName(), "Failed to find function 'CreateProgramBuffers' in graphics module '%s'.", module_path.getBuffer());
 		ret = false;
 	}
 
 	if (!_graphics_functions.create_renderdevice) {
-		_app.getLogManager().logMessage(LogManager::LOG_ERROR, _app.getLogFileName(), "ERROR - Failed to find function 'CreateRenderDevice' in graphics module '%s'.", module_path.getBuffer());
+		_app.getLogManager().logMessage(LogManager::LOG_ERROR, _app.getLogFileName(), "Failed to find function 'CreateRenderDevice' in graphics module '%s'.", module_path.getBuffer());
 		ret = false;
 	}
 
 	if (!_graphics_functions.create_rendertarget) {
-		_app.getLogManager().logMessage(LogManager::LOG_ERROR, _app.getLogFileName(), "ERROR - Failed to find function 'CreateRenderTarget' in graphics module '%s'.", module_path.getBuffer());
+		_app.getLogManager().logMessage(LogManager::LOG_ERROR, _app.getLogFileName(), "Failed to find function 'CreateRenderTarget' in graphics module '%s'.", module_path.getBuffer());
 		ret = false;
 	}
 
 	if (!_graphics_functions.create_samplerstate) {
-		_app.getLogManager().logMessage(LogManager::LOG_ERROR, _app.getLogFileName(), "ERROR - Failed to find function 'CreateSamplerState' in graphics module '%s'.", module_path.getBuffer());
+		_app.getLogManager().logMessage(LogManager::LOG_ERROR, _app.getLogFileName(), "Failed to find function 'CreateSamplerState' in graphics module '%s'.", module_path.getBuffer());
 		ret = false;
 	}
 
 	if (!_graphics_functions.create_rasterstate) {
-		_app.getLogManager().logMessage(LogManager::LOG_ERROR, _app.getLogFileName(), "ERROR - Failed to find function 'CreateRasterState' in graphics module '%s'.", module_path.getBuffer());
+		_app.getLogManager().logMessage(LogManager::LOG_ERROR, _app.getLogFileName(), "Failed to find function 'CreateRasterState' in graphics module '%s'.", module_path.getBuffer());
 		ret = false;
 	}
 
 	if (!_graphics_functions.create_commandlist) {
-		_app.getLogManager().logMessage(LogManager::LOG_ERROR, _app.getLogFileName(), "ERROR - Failed to find function 'CreateCommandList' in graphics module '%s'.", module_path.getBuffer());
+		_app.getLogManager().logMessage(LogManager::LOG_ERROR, _app.getLogFileName(), "Failed to find function 'CreateCommandList' in graphics module '%s'.", module_path.getBuffer());
 		ret = false;
 	}
 
 	if (!_graphics_functions.create_blendstate) {
-		_app.getLogManager().logMessage(LogManager::LOG_ERROR, _app.getLogFileName(), "ERROR - Failed to find function 'CreateBlendState' in graphics module '%s'.", module_path.getBuffer());
+		_app.getLogManager().logMessage(LogManager::LOG_ERROR, _app.getLogFileName(), "Failed to find function 'CreateBlendState' in graphics module '%s'.", module_path.getBuffer());
 		ret = false;
 	}
 
 	if (!_graphics_functions.create_texture) {
-		_app.getLogManager().logMessage(LogManager::LOG_ERROR, _app.getLogFileName(), "ERROR - Failed to find function 'CreateTexture' in graphics module '%s'.", module_path.getBuffer());
+		_app.getLogManager().logMessage(LogManager::LOG_ERROR, _app.getLogFileName(), "Failed to find function 'CreateTexture' in graphics module '%s'.", module_path.getBuffer());
 		ret = false;
 	}
 
 	if (!_graphics_functions.create_layout) {
-		_app.getLogManager().logMessage(LogManager::LOG_ERROR, _app.getLogFileName(), "ERROR - Failed to find function 'CreateLayout' in graphics module '%s'.", module_path.getBuffer());
+		_app.getLogManager().logMessage(LogManager::LOG_ERROR, _app.getLogFileName(), "Failed to find function 'CreateLayout' in graphics module '%s'.", module_path.getBuffer());
 		ret = false;
 	}
 
 	if (!_graphics_functions.create_program) {
-		_app.getLogManager().logMessage(LogManager::LOG_ERROR, _app.getLogFileName(), "ERROR - Failed to find function 'CreateProgram' in graphics module '%s'.", module_path.getBuffer());
+		_app.getLogManager().logMessage(LogManager::LOG_ERROR, _app.getLogFileName(), "Failed to find function 'CreateProgram' in graphics module '%s'.", module_path.getBuffer());
 		ret = false;
 	}
 
 	if (!_graphics_functions.create_shader) {
-		_app.getLogManager().logMessage(LogManager::LOG_ERROR, _app.getLogFileName(), "ERROR - Failed to find function 'CreateShader' in graphics module '%s'.", module_path.getBuffer());
+		_app.getLogManager().logMessage(LogManager::LOG_ERROR, _app.getLogFileName(), "Failed to find function 'CreateShader' in graphics module '%s'.", module_path.getBuffer());
 		ret = false;
 	}
 
 	if (!_graphics_functions.create_buffer) {
-		_app.getLogManager().logMessage(LogManager::LOG_ERROR, _app.getLogFileName(), "ERROR - Failed to find function 'CreateBuffer' in graphics module '%s'.", module_path.getBuffer());
+		_app.getLogManager().logMessage(LogManager::LOG_ERROR, _app.getLogFileName(), "Failed to find function 'CreateBuffer' in graphics module '%s'.", module_path.getBuffer());
 		ret = false;
 	}
 
 	if (!_graphics_functions.create_model) {
-		_app.getLogManager().logMessage(LogManager::LOG_ERROR, _app.getLogFileName(), "ERROR - Failed to find function 'CreateModel' in graphics module '%s'.", module_path.getBuffer());
+		_app.getLogManager().logMessage(LogManager::LOG_ERROR, _app.getLogFileName(), "Failed to find function 'CreateModel' in graphics module '%s'.", module_path.getBuffer());
 		ret = false;
 	}
 
 	if (!_graphics_functions.create_mesh) {
-		_app.getLogManager().logMessage(LogManager::LOG_ERROR, _app.getLogFileName(), "ERROR - Failed to find function 'CreateMesh' in graphics module '%s'.", module_path.getBuffer());
+		_app.getLogManager().logMessage(LogManager::LOG_ERROR, _app.getLogFileName(), "Failed to find function 'CreateMesh' in graphics module '%s'.", module_path.getBuffer());
+		ret = false;
+	}
+
+	if (!_graphics_functions.create_keyboard) {
+		_app.getLogManager().logMessage(LogManager::LOG_ERROR, _app.getLogFileName(), "Failed to find function 'CreateKeyboard' in graphics module '%s'.", module_path.getBuffer());
+		ret = false;
+	}
+
+	if (!_graphics_functions.create_mouse) {
+		_app.getLogManager().logMessage(LogManager::LOG_ERROR, _app.getLogFileName(), "Failed to find function 'CreateMouse' in graphics module '%s'.", module_path.getBuffer());
 		ret = false;
 	}
 
@@ -770,7 +783,7 @@ bool RenderManager::getDisplayTags(void)
 		Gaff::JSON display_tags;
 
 		if (!display_tags.parse(file->getBuffer())) {
-			_app.getLogManager().logMessage(LogManager::LOG_ERROR, _app.getLogFileName(), "ERROR - Could not parse 'Resources/display_tags.json'.\n");
+			_app.getLogManager().logMessage(LogManager::LOG_ERROR, _app.getLogFileName(), "Could not parse 'Resources/display_tags.json'.\n");
 			_app.getFileSystem()->closeFile(file);
 			return false;
 		}
@@ -778,7 +791,7 @@ bool RenderManager::getDisplayTags(void)
 		_app.getFileSystem()->closeFile(file);
 
 		if (!display_tags.isArray()) {
-			_app.getLogManager().logMessage(LogManager::LOG_ERROR, _app.getLogFileName(), "ERROR - 'Resources/display_tags.json' is improperly formatted. Root object is not an array.\n");
+			_app.getLogManager().logMessage(LogManager::LOG_ERROR, _app.getLogFileName(), "'Resources/display_tags.json' is improperly formatted. Root object is not an array.\n");
 			return false;
 		}
 
@@ -789,7 +802,7 @@ bool RenderManager::getDisplayTags(void)
 		bool ret = display_tags.forEachInArray([&](size_t index, const Gaff::JSON& value) -> bool
 		{
 			if (!value.isString()) {
-				_app.getLogManager().logMessage(LogManager::LOG_ERROR, _app.getLogFileName(), "ERROR - Index '%zu' of 'Resources/display_tags.json' is not a string.\n", index);
+				_app.getLogManager().logMessage(LogManager::LOG_ERROR, _app.getLogFileName(), "Index '%zu' of 'Resources/display_tags.json' is not a string.\n", index);
 				return true;
 			}
 

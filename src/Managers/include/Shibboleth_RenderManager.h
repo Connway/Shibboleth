@@ -70,6 +70,9 @@ namespace Gleam
 	class IBuffer;
 	class IModel;
 	class IMesh;
+
+	class IKeyboard;
+	class IMouse;
 }
 
 NS_SHIBBOLETH
@@ -111,6 +114,7 @@ SHIB_ENUM_REF_DEF_EMBEDDED(Gleam_ISamplerState_Wrap, Gleam::ISamplerState::WRAP)
 SHIB_ENUM_REF_DEF_EMBEDDED(Gleam_ITexture_Format, Gleam::ITexture::FORMAT);
 SHIB_ENUM_REF_DEF_EMBEDDED(Gleam_IShader_Type, Gleam::IShader::SHADER_TYPE);
 
+// Maybe call this device manager instead?
 class RenderManager : public IManager
 {
 public:
@@ -197,6 +201,10 @@ public:
 	INLINE Gleam::IModel* createModel(void);
 	INLINE Gleam::IMesh* createMesh(void);
 
+	// These must be created in the same context as the Windows so that the global input handlers work.
+	INLINE Gleam::IKeyboard* createKeyboard(void);
+	INLINE Gleam::IMouse* createMouse(void);
+
 	WindowRenderTargets createRenderTargetsForEachWindow(void);
 	Array<RasterStatePtr>& getOrCreateRasterStates(unsigned int hash, const Gleam::IRasterState::RasterStateSettings& settings);
 
@@ -226,6 +234,9 @@ private:
 		typedef Gleam::IModel* (*CreateModel)(void);
 		typedef Gleam::IMesh* (*CreateMesh)(void);
 
+		using CreateKeyboard = Gleam::IKeyboard* (*)(void);
+		using CreateMouse = Gleam::IMouse* (*)(void);
+
 		ShutdownGraphics shutdown;
 
 		UpdateWindows update_windows;
@@ -248,6 +259,9 @@ private:
 		CreateBuffer create_buffer;
 		CreateModel create_model;
 		CreateMesh create_mesh;
+
+		CreateKeyboard create_keyboard;
+		CreateMouse create_mouse;
 	};
 
 	RenderDevicePtr _render_device;

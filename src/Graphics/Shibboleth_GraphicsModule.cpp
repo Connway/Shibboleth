@@ -41,6 +41,9 @@ THE SOFTWARE.
 #include <Gleam_Model.h>
 #include <Gleam_Mesh.h>
 
+#include <Gleam_Keyboard.h>
+#include <Gleam_Mouse.h>
+
 static Shibboleth::ProxyAllocator g_proxy_allocator("Graphics");
 static Shibboleth::AString g_graphics_log_file;
 
@@ -156,6 +159,16 @@ DYNAMICEXPORT_C Gleam::IModel* CreateModel(void)
 DYNAMICEXPORT_C Gleam::IMesh* CreateMesh(void)
 {
 	return SHIB_ALLOCT(Gleam::Mesh, g_proxy_allocator);
+}
+
+DYNAMICEXPORT_C Gleam::IKeyboard* CreateKeyboard(void)
+{
+	return SHIB_ALLOCT(Gleam::Keyboard, g_proxy_allocator);
+}
+
+DYNAMICEXPORT_C Gleam::IMouse* CreateMouse(void)
+{
+	return SHIB_ALLOCT(Gleam::Mouse, g_proxy_allocator);
 }
 
 DYNAMICEXPORT_C const char* GetShaderExtension(void)
