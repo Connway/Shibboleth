@@ -46,6 +46,9 @@ public:
 
 	virtual void update(void) = 0;
 
+	virtual void allowRepeats(bool allow) = 0;
+	virtual bool areRepeatsAllowed(void) const = 0;
+
 	virtual const char* getDeviceName(void) const = 0;
 	virtual const char* getPlatformImplementationString(void) const = 0;
 

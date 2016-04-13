@@ -527,6 +527,7 @@ public:
 
 	const char* getNameGeneric(unsigned int value) const;
 	unsigned int getValueGeneric(const char* name) const;
+	bool getValueGeneric(const char* name, unsigned int& value) const;
 
 	Pair<AString<Allocator>, unsigned int> getEntryGeneric(unsigned int index) const;
 	size_t getNumEntries(void) const;

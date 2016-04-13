@@ -46,6 +46,11 @@ SHIB_REF_IMPL(LuaComponent)
 .addBaseClassInterfaceOnly<LuaComponent>()
 ;
 
+const char* LuaComponent::GetComponentName(void)
+{
+	return "Lua Component";
+}
+
 LuaComponent::LuaComponent(void)
 {
 }
@@ -56,7 +61,7 @@ LuaComponent::~LuaComponent(void)
 
 const Gaff::JSON& LuaComponent::getSchema(void) const
 {
-	static const Gaff::JSON& schema = GetApp().getManagerT<SchemaManager>("Schema Manager").getSchema("ScriptComponent.schema");
+	static const Gaff::JSON& schema = GetApp().getManagerT<SchemaManager>().getSchema("ScriptComponent.schema");
 	return schema;
 }
 
@@ -64,7 +69,7 @@ bool LuaComponent::load(const Gaff::JSON& json)
 {
 	gRefDef.read(json, this);
 
-	ResourceManager& res_mgr = GetApp().getManagerT<ResourceManager>("Resource Manager");
+	ResourceManager& res_mgr = GetApp().getManagerT<ResourceManager>();
 
 	Gaff::JSON script_file = json["Script File"];
 

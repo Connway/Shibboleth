@@ -164,6 +164,19 @@ unsigned int EnumReflectionDefinition<T, Allocator>::getValueGeneric(const char*
 }
 
 template <class T, class Allocator>
+bool EnumReflectionDefinition<T, Allocator>::getValueGeneric(const char* name, unsigned int& value) const
+{
+	auto it = _values_map.findElementWithKey(name);
+
+	if (it == _values_map.end()) {
+		return false;
+	}
+
+	value = it.getValue();
+	return true;
+}
+
+template <class T, class Allocator>
 Pair<AString<Allocator>, unsigned int> EnumReflectionDefinition<T, Allocator>::getEntryGeneric(unsigned int index) const
 {
 	GAFF_ASSERT(index < _values_map.size());

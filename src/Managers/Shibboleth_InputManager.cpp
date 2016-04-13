@@ -21,12 +21,15 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Shibboleth_InputManager.h"
+#include <Shibboleth_RenderManager.h>
 #include <Shibboleth_IFileSystem.h>
 #include <Shibboleth_Utilities.h>
 #include <Shibboleth_IApp.h>
-#include <Gleam_Window_Defines.h>
+#include <Gleam_IKeyboard.h>
+#include <Gleam_IMouse.h>
 
 #define INPUT_ALIASES_CFG "cfg/input_aliases.cfg"
+#define KEY_BINDINGS_CFG "cfg/key_bindings.cfg"
 
 NS_SHIBBOLETH
 
@@ -38,7 +41,8 @@ SHIB_REF_IMPL(InputManager)
 .ADD_BASE_CLASS_INTERFACE_ONLY(IUpdateQuery)
 ;
 
-InputManager::InputManager(void)
+InputManager::InputManager(void):
+	_keyboard(nullptr), _mouse(nullptr)
 {
 }
 
@@ -58,64 +62,40 @@ void InputManager::getUpdateEntries(Array<UpdateEntry>& entries)
 
 bool InputManager::init(void)
 {
-	if (!_keyboard.init()) {
-		GetApp().getLogManager().logMessage(LogManager::LOG_ERROR, GetApp().getLogFileName(), "ERROR - Failed to initialize keyboard.\n");
+	RenderManager& rm = GetApp().getManagerT<RenderManager>();
+
+	_keyboard = rm.createKeyboard();
+
+	if (!_keyboard->init()) {
+		GetApp().getLogManager().logMessage(LogManager::LOG_ERROR, GetApp().getLogFileName(), "Failed to initialize keyboard.\n");
+		GetApp().quit();
+	}
+
+	_keyboard->addInputHandler(Gaff::Bind(this, &InputManager::keyboardHandler));
+	_keyboard->allowRepeats(false);
+
+	_mouse = rm.createMouse();
+
+	if (!_mouse->init()) {
+		GetApp().getLogManager().logMessage(LogManager::LOG_ERROR, GetApp().getLogFileName(), "Failed to initialize mouse.\n");
+		GetApp().quit();
+	}
+
+	_mouse->addInputHandler(Gaff::Bind(this, &InputManager::mouseHandler));
+	_mouse->allowRepeats(false);
+
+	if (!loadAliasFile()) {
 		return false;
 	}
 
-	_keyboard.addInputHandler(Gaff::Bind(this, &InputManager::KeyboardHandler));
-	_keyboard.allowRepeats(false);
-
-	if (!_mouse.init()) {
-		GetApp().getLogManager().logMessage(LogManager::LOG_ERROR, GetApp().getLogFileName(), "ERROR - Failed to initialize mouse.\n");
-		return false;
-	}
-
-	_mouse.addInputHandler(Gaff::Bind(this, &InputManager::MouseHandler));
-	_mouse.allowRepeats(false);
-
-	IFile* input_aliases_file = GetApp().getFileSystem()->openFile(INPUT_ALIASES_CFG);
-
-	if (!input_aliases_file) {
-		GetApp().getLogManager().logMessage(LogManager::LOG_ERROR, GetApp().getLogFileName(), "ERROR - Could not open file '" INPUT_ALIASES_CFG "'.\n");
-		return false;
-	}
-
-	Gaff::JSON aliases;
-
-	if (!aliases.parse(input_aliases_file->getBuffer())) {
-		GetApp().getLogManager().logMessage(LogManager::LOG_ERROR, GetApp().getLogFileName(), "ERROR - Could not parse file '" INPUT_ALIASES_CFG "'.\n");
-		GetApp().getLogManager().logMessage(LogManager::LOG_ERROR, GetApp().getLogFileName(), "ERROR - %s\n", aliases.getErrorText());
-
-		GetApp().getFileSystem()->closeFile(input_aliases_file);
-		return false;
-	}
-
-	GetApp().getFileSystem()->closeFile(input_aliases_file);
-
-	GAFF_ASSERT(aliases.isArray());
-	_values.reserve(aliases.size());
-
-	bool succeeded = !aliases.forEachInArray([&](size_t index, const Gaff::JSON& value) -> bool
-	{
-		if (!value.isString()) {
-			GetApp().getLogManager().logMessage(LogManager::LOG_ERROR, GetApp().getLogFileName(), "ERROR - Element '%zu' in '%s' is not a string.\n", index, INPUT_ALIASES_CFG);
-			return true;
-		}
-
-		uint32_t hash = Gaff::FNV1aHash32(value.getString(), strlen(value.getString()));
-		_values.emplace(hash, 0.0f);
-
-		return false;
-	});
-
-	return succeeded;
+	loadKeyBindings();
+	return true;
 }
 
 void InputManager::update(double, void*)
 {
-	_keyboard.update();
-	_mouse.update();
+	_keyboard->update();
+	_mouse->update();
 }
 
 void InputManager::addKeyBinding(const char* alias, Gleam::KeyCode key_code, bool negative)
@@ -176,7 +156,7 @@ float InputManager::getAliasValue(size_t index) const
 	return _values.atIndex(index)->second;
 }
 
-void InputManager::KeyboardHandler(Gleam::IInputDevice*, unsigned int key, float value)
+void InputManager::keyboardHandler(Gleam::IInputDevice*, unsigned int key, float value)
 {
 	Gleam::KeyCode key_code = static_cast<Gleam::KeyCode>(key);
 	auto it = _key_bindings.findElementWithKey(key_code);
@@ -186,7 +166,7 @@ void InputManager::KeyboardHandler(Gleam::IInputDevice*, unsigned int key, float
 	}
 }
 
-void InputManager::MouseHandler(Gleam::IInputDevice*, unsigned int event, float value)
+void InputManager::mouseHandler(Gleam::IInputDevice*, unsigned int event, float value)
 {
 	Gleam::MouseCode mouse_code = static_cast<Gleam::MouseCode>(event);
 	auto it = _mouse_bindings.findElementWithKey(mouse_code);
@@ -194,6 +174,165 @@ void InputManager::MouseHandler(Gleam::IInputDevice*, unsigned int event, float 
 	if (it != _mouse_bindings.end()) {
 		*it->second.second = it->second.first * value;
 	}
+}
+
+bool InputManager::loadAliasFile(void)
+{
+	IFile* input_aliases_file = GetApp().getFileSystem()->openFile(INPUT_ALIASES_CFG);
+
+	if (!input_aliases_file) {
+		GetApp().getLogManager().logMessage(LogManager::LOG_ERROR, GetApp().getLogFileName(), "Could not open file '" INPUT_ALIASES_CFG "'.\n");
+		return false;
+	}
+
+	Gaff::JSON aliases;
+
+	if (!aliases.parse(input_aliases_file->getBuffer())) {
+		GetApp().getLogManager().logMessage(
+			LogManager::LOG_ERROR, GetApp().getLogFileName(),
+			"Could not parse file '" INPUT_ALIASES_CFG "' with error: '%s'\n",
+			aliases.getErrorText()
+		);
+
+		GetApp().getFileSystem()->closeFile(input_aliases_file);
+		return false;
+	}
+
+	GetApp().getFileSystem()->closeFile(input_aliases_file);
+
+	if (!aliases.isArray()) {
+		GetApp().getLogManager().logMessage(
+			LogManager::LOG_ERROR, GetApp().getLogFileName(),
+			"Root element of '" INPUT_ALIASES_CFG "' is not an array.\n"
+		);
+
+		return false;
+	}
+
+	_values.reserve(aliases.size());
+
+	bool succeeded = !aliases.forEachInArray([&](size_t index, const Gaff::JSON& value) -> bool
+	{
+		if (!value.isString()) {
+			GetApp().getLogManager().logMessage(
+				LogManager::LOG_ERROR, GetApp().getLogFileName(),
+				"Element '%zu' in '" INPUT_ALIASES_CFG "' is not a string.\n",
+				index
+			);
+			return true;
+		}
+
+		uint32_t hash = Gaff::FNV1aHash32(value.getString(), strlen(value.getString()));
+		_values.emplace(hash, 0.0f);
+
+		return false;
+	});
+
+	return succeeded;
+}
+
+bool InputManager::loadKeyBindings(void)
+{
+	IFile* key_bidings_file = GetApp().getFileSystem()->openFile(KEY_BINDINGS_CFG);
+
+	if (!key_bidings_file) {
+		GetApp().getLogManager().logMessage(LogManager::LOG_ERROR, GetApp().getLogFileName(), "Could not open file '" KEY_BINDINGS_CFG "'.\n");
+		return false;
+	}
+
+	Gaff::JSON key_bindings;
+
+	if (!key_bindings.parse(key_bidings_file->getBuffer())) {
+		GetApp().getLogManager().logMessage(
+			LogManager::LOG_ERROR, GetApp().getLogFileName(),
+			"Could not parse file '" KEY_BINDINGS_CFG "' with error: '%s'\n",
+			key_bindings.getErrorText()
+		);
+
+		GetApp().getFileSystem()->closeFile(key_bidings_file);
+		return false;
+	}
+
+	GetApp().getFileSystem()->closeFile(key_bidings_file);
+
+	if (!key_bindings.isArray()) {
+		GetApp().getLogManager().logMessage(
+			LogManager::LOG_ERROR, GetApp().getLogFileName(),
+			"Root element of '" KEY_BINDINGS_CFG "' is not an array.\n"
+		);
+
+		return false;
+	}
+
+	const auto& mkeys = GetEnumRefDef<Gleam::MouseCode>();
+	const auto& keys = GetEnumRefDef<Gleam::KeyCode>();
+
+	bool succeeded = true;
+	
+	key_bindings.forEachInArray([&](size_t index, const Gaff::JSON& value) -> bool
+	{
+		if (!value.isObject()) {
+			GetApp().getLogManager().logMessage(
+				LogManager::LOG_ERROR, GetApp().getLogFileName(),
+				"Element '%zu' in '" KEY_BINDINGS_CFG "' is not an object.\n",
+				index
+			);
+
+			succeeded = false;
+			return false;
+		}
+
+		Gaff::JSON negative = value["Negative"];
+		Gaff::JSON binding = value["Binding"];
+		Gaff::JSON alias = value["Alias"];
+
+		if (!binding.isString()) {
+			GetApp().getLogManager().logMessage(
+				LogManager::LOG_ERROR, GetApp().getLogFileName(),
+				"Element '%zu' in '" KEY_BINDINGS_CFG "' does not have key 'Binding' or value is not a string.\n",
+				index
+			);
+
+			succeeded = false;
+			return false;
+		}
+
+		if (!alias.isString()) {
+			GetApp().getLogManager().logMessage(
+				LogManager::LOG_ERROR, GetApp().getLogFileName(),
+				"Element '%zu' in '" KEY_BINDINGS_CFG "' does not have key 'Alias' or value is not a string.\n",
+				index
+			);
+
+			succeeded = false;
+			return false;
+		}
+
+		const char* binding_str = binding.getString();
+		Gleam::MouseCode mouse_code;
+		Gleam::KeyCode key_code;
+
+		if (mkeys.getValue(binding_str, mouse_code)) {
+			addMouseBinding(alias.getString(), mouse_code, negative.isTrue());
+			return false;
+		}
+
+		if (keys.getValue(binding_str, key_code)) {
+			addKeyBinding(alias.getString(), key_code, negative.isTrue());
+			return false;
+		}
+
+		GetApp().getLogManager().logMessage(
+			LogManager::LOG_WARNING, GetApp().getLogFileName(),
+			"Element '%zu' in '" KEY_BINDINGS_CFG "' unknown input value '%s' for 'Binding'.\n",
+			index, binding_str
+		);
+
+		succeeded = false;
+		return false;
+	});
+
+	return succeeded;
 }
 
 NS_END

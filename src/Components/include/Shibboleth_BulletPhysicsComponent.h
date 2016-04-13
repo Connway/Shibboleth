@@ -41,10 +41,7 @@ static const char* g_physics_schema_names[] = {
 class BulletPhysicsComponent : public Component
 {
 public:
-	INLINE static const char* getComponentName(void)
-	{
-		return "Bullet Physics Component";
-	}
+	static const char* GetComponentName(void);
 
 	BulletPhysicsComponent(void);
 	~BulletPhysicsComponent(void);

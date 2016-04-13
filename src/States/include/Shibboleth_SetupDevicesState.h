@@ -32,11 +32,11 @@ NS_SHIBBOLETH
 
 class IApp;
 
-class SetupGraphicsState : public IState
+class SetupDevicesState : public IState
 {
 public:
-	SetupGraphicsState(IApp& app);
-	~SetupGraphicsState(void);
+	SetupDevicesState(IApp& app);
+	~SetupDevicesState(void);
 
 	bool init(unsigned int);
 
@@ -47,8 +47,8 @@ public:
 private:
 	IApp& _app;
 
-	GAFF_NO_COPY(SetupGraphicsState);
-	GAFF_NO_MOVE(SetupGraphicsState);
+	GAFF_NO_COPY(SetupDevicesState);
+	GAFF_NO_MOVE(SetupDevicesState);
 };
 
 NS_END

@@ -35,6 +35,8 @@ class IRenderPipeline;
 class RenderPipelineManager : public IManager, public IUpdateQuery
 {
 public:
+	static const char* GetName(void);
+
 	RenderPipelineManager(void);
 	~RenderPipelineManager(void);
 
@@ -43,7 +45,7 @@ public:
 
 	void getUpdateEntries(Array<UpdateEntry>& entries) override;
 
-	bool init(void);
+	bool init(const char* initial_pipeline);
 
 	INLINE void setOutputCamera(CameraComponent* camera);
 	INLINE CameraComponent* getOutputCamera(unsigned int monitor) const;

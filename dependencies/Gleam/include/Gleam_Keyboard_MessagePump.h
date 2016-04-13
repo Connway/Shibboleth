@@ -42,8 +42,8 @@ public:
 	bool isKeyDown(KeyCode key) const;
 	bool isKeyUp(KeyCode key) const;
 
-	INLINE void allowRepeats(bool allow);
-	INLINE bool areRepeatsAllowed(void) const;
+	void allowRepeats(bool allow);
+	bool areRepeatsAllowed(void) const;
 
 	const unsigned char* getKeyboardData(void) const;
 

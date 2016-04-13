@@ -35,6 +35,7 @@ public:
 
 	virtual bool init(IWindow& window, bool no_windows_key) = 0;
 	virtual bool init(bool no_windows_key) = 0;
+	virtual bool init(void) = 0;
 
 	virtual bool isKeyDown(KeyCode key) const = 0;
 	virtual bool isKeyUp(KeyCode key) const = 0;

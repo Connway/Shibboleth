@@ -46,10 +46,7 @@ public:
 		CM_NOTHING
 	};
 
-	INLINE static const char* getComponentName(void)
-	{
-		return "Camera Component";
-	}
+	static const char* GetComponentName(void);
 
 	CameraComponent(void);
 	~CameraComponent(void);

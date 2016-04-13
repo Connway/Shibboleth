@@ -22,7 +22,7 @@ THE SOFTWARE.
 
 #include <Shibboleth_CreateResourceLoadersState.h>
 #include <Shibboleth_LoadGraphicsModuleState.h>
-#include <Shibboleth_SetupGraphicsState.h>
+#include <Shibboleth_SetupDevicesState.h>
 #include <Shibboleth_SetupOtterUIState.h>
 #include <Shibboleth_Utilities.h>
 #include <Shibboleth_IApp.h>
@@ -224,7 +224,7 @@ enum States
 typedef Shibboleth::IState* (*CreateStateFunc)(Shibboleth::IApp&);
 
 static CreateStateFunc create_funcs[] = {
-	&CreateStateT<Shibboleth::SetupGraphicsState>,
+	&CreateStateT<Shibboleth::SetupDevicesState>,
 	&CreateStateT<Shibboleth::CreateResourceLoadersState>,
 	&CreateStateT<Shibboleth::SetupOtterUIState>,
 	&CreateStateT<Shibboleth::LoadGraphicsModuleState>,
@@ -232,7 +232,7 @@ static CreateStateFunc create_funcs[] = {
 };
 
 static const char* state_names[NUM_STATES] = {
-	"SetupGraphicsState",
+	"SetupDevicesState",
 	"CreateResourceLoadersState",
 	"SetupOtterUIState",
 	"LoadGraphicsModuleState",

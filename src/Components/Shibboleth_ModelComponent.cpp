@@ -83,6 +83,11 @@ SHIB_REF_IMPL(ModelComponent)
 .addBaseClassInterfaceOnly<ModelComponent>()
 ;
 
+const char* ModelComponent::GetComponentName(void)
+{
+	return "Model Component";
+}
+
 ModelComponent::ModelComponent(void):
 	_occlusion_mgr(GetApp().getManagerT<OcclusionManager>("Occlusion Manager")),
 	_requests_finished(0), _total_requests(0), _flags(0)

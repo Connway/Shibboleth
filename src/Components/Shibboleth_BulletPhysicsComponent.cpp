@@ -38,6 +38,11 @@ SHIB_REF_IMPL(BulletPhysicsComponent)
 .addBaseClassInterfaceOnly<BulletPhysicsComponent>()
 ;
 
+const char* BulletPhysicsComponent::GetComponentName(void)
+{
+	return "Bullet Physics Component";
+}
+
 BulletPhysicsComponent::BulletPhysicsComponent(void):
 	_rigid_body(nullptr), _mass(0.0f)
 {

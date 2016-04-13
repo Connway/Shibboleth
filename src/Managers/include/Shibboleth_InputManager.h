@@ -26,11 +26,13 @@ THE SOFTWARE.
 #include <Shibboleth_IUpdateQuery.h>
 #include <Shibboleth_IManager.h>
 #include <Shibboleth_Map.h>
-#include <Gleam_Keyboard.h>
-#include <Gleam_Mouse.h>
+#include <Gleam_Window_Defines.h>
 
 namespace Gleam
 {
+	class IInputDevice;
+	class IKeyboard;
+	class IMouse;
 	enum KeyCode;
 }
 
@@ -64,15 +66,18 @@ public:
 	float getAliasValue(size_t index) const;
 
 private:
-	Gleam::Keyboard _keyboard;
-	Gleam::Mouse _mouse;
+	Gleam::IKeyboard* _keyboard;
+	Gleam::IMouse* _mouse;
 
 	Map<Gleam::KeyCode, Gaff::Pair<float, float*> > _key_bindings;
 	Map<Gleam::MouseCode, Gaff::Pair<float, float*> > _mouse_bindings;
 	Map<uint32_t, float> _values;
 
-	void KeyboardHandler(Gleam::IInputDevice*, unsigned int key, float value);
-	void MouseHandler(Gleam::IInputDevice*, unsigned int event, float value);
+	void keyboardHandler(Gleam::IInputDevice*, unsigned int key, float value);
+	void mouseHandler(Gleam::IInputDevice*, unsigned int event, float value);
+
+	bool loadAliasFile(void);
+	bool loadKeyBindings(void);
 
 	SHIB_REF_DEF(InputManager);
 	REF_DEF_REQ;

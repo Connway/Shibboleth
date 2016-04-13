@@ -37,6 +37,8 @@ NS_SHIBBOLETH
 class LuaManager : public IManager
 {
 public:
+	static const char* GetName(void);
+
 	LuaManager(void);
 	~LuaManager(void);
 
