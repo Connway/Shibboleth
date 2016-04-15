@@ -72,7 +72,7 @@ NS_SHIBBOLETH
 class {1}Component : public Component
 {{
 public:
-	static const char* GetComponentName(void);
+	static const char* GetFriendlyName(void);
 
 	{1}Component(void);
 	~{1}Component(void);
@@ -106,7 +106,7 @@ SHIB_REF_IMPL({1}Component)
 .addBaseClassInterfaceOnly<{1}Component>()
 ;
 
-const char* {1}Component::GetComponentName(void)
+const char* {1}Component::GetFriendlyName(void)
 {{
 	return \"{1} Component\";
 }}

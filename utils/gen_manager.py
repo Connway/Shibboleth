@@ -72,7 +72,7 @@ NS_SHIBBOLETH
 class {1}Manager : public IManager
 {{
 public:
-	static const char* GetName(void);
+	static const char* GetFriendlyName(void);
 
 	{1}Manager(void);
 	~{1}Manager(void);
@@ -101,7 +101,7 @@ SHIB_REF_IMPL({1}Manager)
 .addBaseClassInterfaceOnly<{1}Manager>()
 ;
 
-const char* {1}Manager::GetName(void) const
+const char* {1}Manager::GetFriendlyName(void) const
 {{
 	return \"{1} Manager\";
 }}
@@ -116,7 +116,7 @@ const char* {1}Manager::GetName(void) const
 
 const char* {1}Manager::getName(void) const
 {{
-	return GetName();
+	return GetFriendlyName();
 }}
 
 NS_END
