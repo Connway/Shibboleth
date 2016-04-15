@@ -33,6 +33,11 @@ SHIB_REF_IMPL(ComponentManager)
 .addBaseClassInterfaceOnly<ComponentManager>()
 ;
 
+const char* ComponentManager::GetFriendlyName(void)
+{
+	return "Component Manager";
+}
+
 ComponentManager::ComponentManager(void)
 {
 }
@@ -43,7 +48,7 @@ ComponentManager::~ComponentManager(void)
 
 const char* ComponentManager::getName(void) const
 {
-	return "Component Manager";
+	return GetFriendlyName();
 }
 
 void ComponentManager::allManagersCreated(void)

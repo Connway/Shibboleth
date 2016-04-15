@@ -44,6 +44,8 @@ using UpdateCallback = Gaff::FunctionBinder<void, double, void*>;
 class UpdateManager : public IManager
 {
 public:
+	static const char* GetFriendlyName(void);
+
 	UpdateManager(void);
 	~UpdateManager(void);
 

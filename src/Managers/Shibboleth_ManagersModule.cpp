@@ -43,72 +43,30 @@ THE SOFTWARE.
 #endif
 
 // Other Dependencies
+#include <Shibboleth_ModuleHelpers.h>
 #include <Shibboleth_Utilities.h>
 #include <Shibboleth_IApp.h>
 
-template <class Manager>
-Shibboleth::IManager* CreateManagerT(void)
-{
-	return SHIB_ALLOCT(Manager, *Shibboleth::GetAllocator());
-}
-
-template <class Manager>
-Shibboleth::IManager* CreateManagerWithInitT(void)
-{
-	Manager* manager = SHIB_ALLOCT(Manager, *Shibboleth::GetAllocator());
-
-	if (manager) {
-		if (!manager->init()) {
-			SHIB_FREET(manager, *Shibboleth::GetAllocator());
-			manager = nullptr;
-		}
-	}
-
-	return manager;
-}
-
-enum Managers
-{
-	COMPONENT_MANAGER = 0,
-	RESOURCE_MANAGER,
-	OTTERUI_MANAGER,
-	RENDER_MANAGER,
-	UPDATE_MANAGER,
-	OBJECT_MANAGER,
-	LUA_MANAGER,
-	OCCLUSION_MANAGER,
-	BROADCASTER_MANAGER,
-	CAMERA_MANAGER,
-	FRAME_MANAGER,
-	RP_MANAGER,
-	SCHEMA_MANAGER,
-	PHYSICS_MANAGER,
-	INPUT_MANAGER,
-	NUM_MANAGERS
-};
-
-using CreateMgrFunc = Shibboleth::IManager* (*)(void);
-
-static CreateMgrFunc create_funcs[] = {
-	&CreateManagerT<Shibboleth::ComponentManager>,
-	&CreateManagerT<Shibboleth::ResourceManager>,
-	&CreateManagerWithInitT<Shibboleth::OtterUIManager>,
-	&CreateManagerT<Shibboleth::RenderManager>,
-	&CreateManagerT<Shibboleth::UpdateManager>,
-	&CreateManagerT<Shibboleth::ObjectManager>,
-	&CreateManagerT<Shibboleth::LuaManager>,
-	&CreateManagerT<Shibboleth::OcclusionManager>,
-	&CreateManagerT<Shibboleth::BroadcasterManager>,
-	&CreateManagerT<Shibboleth::CameraManager>,
-	&CreateManagerWithInitT<Shibboleth::FrameManager>,
-	&CreateManagerT<Shibboleth::RenderPipelineManager>,
-	&CreateManagerT<Shibboleth::SchemaManager>,
+static Shibboleth::CreateManagerFunc create_funcs[] = {
+	Shibboleth::CreateManagerT<Shibboleth::ComponentManager>,
+	Shibboleth::CreateManagerT<Shibboleth::ResourceManager>,
+	Shibboleth::CreateManagerWithInitT<Shibboleth::OtterUIManager>,
+	Shibboleth::CreateManagerT<Shibboleth::RenderManager>,
+	Shibboleth::CreateManagerT<Shibboleth::UpdateManager>,
+	Shibboleth::CreateManagerT<Shibboleth::ObjectManager>,
+	Shibboleth::CreateManagerT<Shibboleth::LuaManager>,
+	Shibboleth::CreateManagerT<Shibboleth::OcclusionManager>,
+	Shibboleth::CreateManagerT<Shibboleth::BroadcasterManager>,
+	Shibboleth::CreateManagerT<Shibboleth::CameraManager>,
+	Shibboleth::CreateManagerWithInitT<Shibboleth::FrameManager>,
+	Shibboleth::CreateManagerT<Shibboleth::RenderPipelineManager>,
+	Shibboleth::CreateManagerT<Shibboleth::SchemaManager>,
 #ifndef USE_PHYSX
-	&CreateManagerT<Shibboleth::BulletPhysicsManager>,
+	Shibboleth::CreateManagerT<Shibboleth::BulletPhysicsManager>,
 #else
-	&CreateManagerT<Shibboleth::PhysXPhysicsManager>,
+	Shibboleth::CreateManagerT<Shibboleth::PhysXPhysicsManager>,
 #endif
-	&CreateManagerT<Shibboleth::InputManager>
+	Shibboleth::CreateManagerT<Shibboleth::InputManager>
 };
 
 DYNAMICEXPORT_C bool InitModule(Shibboleth::IApp& app)
@@ -125,12 +83,12 @@ DYNAMICEXPORT_C void ShutdownModule(void)
 
 DYNAMICEXPORT_C unsigned int GetNumManagers(void)
 {
-	return NUM_MANAGERS;
+	return ARRAY_SIZE(create_funcs);
 }
 
 DYNAMICEXPORT_C Shibboleth::IManager* CreateManager(unsigned int id)
 {
-	GAFF_ASSERT(id < NUM_MANAGERS);
+	GAFF_ASSERT(id < ARRAY_SIZE(create_funcs));
 	return create_funcs[id]();
 }
 

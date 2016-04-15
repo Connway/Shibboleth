@@ -250,7 +250,7 @@ SHIB_REF_IMPL(ResourceManager)
 .addBaseClassInterfaceOnly<ResourceManager>()
 ;
 
-const char* ResourceManager::GetName(void)
+const char* ResourceManager::GetFriendlyName(void)
 {
 	return "Resource Manager";
 }
@@ -272,7 +272,7 @@ ResourceManager::~ResourceManager(void)
 
 const char* ResourceManager::getName(void) const
 {
-	return GetName();
+	return GetFriendlyName();
 }
 
 void ResourceManager::registerResourceLoader(IResourceLoader* res_loader, const Array<AString>& resource_types, unsigned int thread_pool, const Array<JSONModifiers>& json_elements)

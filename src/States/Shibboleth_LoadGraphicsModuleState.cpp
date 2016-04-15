@@ -22,6 +22,7 @@ THE SOFTWARE.
 
 #include "Shibboleth_LoadGraphicsModuleState.h"
 #include <Shibboleth_RenderManager.h>
+#include <Shibboleth_Utilities.h>
 #include <Shibboleth_IApp.h>
 #include <Gleam_IRenderDevice.h>
 #include <Gaff_JSON.h>
@@ -29,8 +30,12 @@ THE SOFTWARE.
 
 NS_SHIBBOLETH
 
-LoadGraphicsModuleState::LoadGraphicsModuleState(IApp& app):
-	_app(app)
+const char* LoadGraphicsModuleState::GetFriendlyName(void)
+{
+	return "Load Graphics Module State";
+}
+
+LoadGraphicsModuleState::LoadGraphicsModuleState(void)
 {
 }
 
@@ -49,7 +54,9 @@ void LoadGraphicsModuleState::enter(void)
 
 void LoadGraphicsModuleState::update(void)
 {
-	RenderManager& render_manager = _app.getManagerT<RenderManager>("Render Manager");
+	IApp& app = GetApp();
+
+	RenderManager& render_manager = app.getManagerT<RenderManager>("Render Manager");
 	bool file_exists = false;
 	Gaff::JSON cfg;
 
@@ -61,13 +68,13 @@ void LoadGraphicsModuleState::update(void)
 
 	if (file_exists) {
 		if (!cfg.parseFile(GRAPHICS_CFG)) {
-			_app.getLogManager().logMessage(LogManager::LOG_ERROR, _app.getLogFileName(), "ERROR - Failed to parse '" GRAPHICS_CFG "'.\n");
-			_app.quit();
+			app.getLogManager().logMessage(LogManager::LOG_ERROR, app.getLogFileName(), "ERROR - Failed to parse '" GRAPHICS_CFG "'.\n");
+			app.quit();
 			return;
 		}
 
 	} else {
-		_app.getLogManager().logMessage(LogManager::LOG_NORMAL, _app.getLogFileName(), "No config file found at '" GRAPHICS_CFG "'. Generating default config.\n");
+		app.getLogManager().logMessage(LogManager::LOG_NORMAL, app.getLogFileName(), "No config file found at '" GRAPHICS_CFG "'. Generating default config.\n");
 		generateDefaultConfig(cfg);
 		cfg.dumpToFile(GRAPHICS_CFG);
 	}
@@ -75,17 +82,17 @@ void LoadGraphicsModuleState::update(void)
 	Gaff::JSON module = cfg["module"];
 
 	if (!module.isString()) {
-		_app.getLogManager().logMessage(LogManager::LOG_ERROR, _app.getLogFileName(), "ERROR - Malformed graphics config file '" GRAPHICS_CFG "'. 'module' field is not a string.\n");
-		_app.quit();
+		app.getLogManager().logMessage(LogManager::LOG_ERROR, app.getLogFileName(), "ERROR - Malformed graphics config file '" GRAPHICS_CFG "'. 'module' field is not a string.\n");
+		app.quit();
 		return;
 	}
 
 	if (!render_manager.init(module.getString())) {
-		_app.getLogManager().logMessage(LogManager::LOG_ERROR, _app.getLogFileName(), "ERROR - Failed to initialize the Render Manager using module '%s'.\n", module.getString());
-		_app.quit();
+		app.getLogManager().logMessage(LogManager::LOG_ERROR, app.getLogFileName(), "ERROR - Failed to initialize the Render Manager using module '%s'.\n", module.getString());
+		app.quit();
 	}
 
-	_app.switchState(_transitions[0]);
+	app.switchState(_transitions[0]);
 }
 
 void LoadGraphicsModuleState::exit(void)
@@ -94,6 +101,8 @@ void LoadGraphicsModuleState::exit(void)
 
 void LoadGraphicsModuleState::generateDefaultConfig(Gaff::JSON& cfg)
 {
+	IApp& app = GetApp();
+
 	cfg = Gaff::JSON::createObject();
 
 #if !defined(_WIN32) && !defined(_WIN64)
@@ -102,7 +111,7 @@ void LoadGraphicsModuleState::generateDefaultConfig(Gaff::JSON& cfg)
 	cfg.setObject("module", Gaff::JSON::createString("Graphics_Direct3D"));
 #endif
 
-	RenderManager& render_manager = _app.getManagerT<RenderManager>("Render Manager");
+	RenderManager& render_manager = app.getManagerT<RenderManager>("Render Manager");
 	Gleam::IRenderDevice::AdapterList adapters = render_manager.getRenderDevice().getDisplayModes();
 	GAFF_ASSERT(!adapters.empty());
 

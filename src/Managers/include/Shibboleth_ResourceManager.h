@@ -140,7 +140,7 @@ public:
 		bool optional;
 	};
 
-	static const char* GetName(void);
+	static const char* GetFriendlyName(void);
 
 	ResourceManager(void);
 	~ResourceManager(void);

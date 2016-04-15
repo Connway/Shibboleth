@@ -35,7 +35,9 @@ class IApp;
 class SetupDevicesState : public IState
 {
 public:
-	SetupDevicesState(IApp& app);
+	static const char* GetFriendlyName(void);
+
+	SetupDevicesState(void);
 	~SetupDevicesState(void);
 
 	bool init(unsigned int);
@@ -45,7 +47,6 @@ public:
 	void exit(void);
 
 private:
-	IApp& _app;
 
 	GAFF_NO_COPY(SetupDevicesState);
 	GAFF_NO_MOVE(SetupDevicesState);

@@ -53,7 +53,7 @@ SHIB_REF_IMPL(LuaManager)
 .addBaseClassInterfaceOnly<LuaManager>()
 ;
 
-const char* LuaManager::GetName(void)
+const char* LuaManager::GetFriendlyName(void)
 {
 	return "Lua Manager";
 }
@@ -68,7 +68,7 @@ LuaManager::~LuaManager(void)
 
 const char* LuaManager::getName(void) const
 {
-	return GetName();
+	return GetFriendlyName();
 }
 
 void LuaManager::addRegistrant(const Gaff::FunctionBinder<void, lua::State&>& registrant)

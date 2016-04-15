@@ -24,6 +24,8 @@ THE SOFTWARE.
 #include <Shibboleth_CameraComponent.h>
 #include <Shibboleth_ModelComponent.h>
 #include <Shibboleth_LuaComponent.h>
+
+#include <Shibboleth_ModuleHelpers.h>
 #include <Shibboleth_Utilities.h>
 #include <Shibboleth_IApp.h>
 #include <Gaff_JSON.h>
@@ -36,45 +38,14 @@ THE SOFTWARE.
 	#include <Shibboleth_BulletPhysicsManager.h>
 #endif
 
-
-template <class Component>
-Shibboleth::Component* CreateComponent(void)
-{
-	return SHIB_ALLOCT(Component, *Shibboleth::GetAllocator());
-}
-
-enum Components
-{
-	LUA_COMPONENT = 0,
-	MODEL_COMPONENT,
-	CAMERA_COMPONENT,
-	PHYSICS_COMPONENT,
-	NUM_COMPONENTS
-};
-
-typedef Shibboleth::Component* (*CreateComponentFunc)(void);
-typedef const char* (*ComponentNameFunc)(void);
-typedef void (*RefDefClearFunc)(void);
-
-static CreateComponentFunc create_funcs[] = {
-	&CreateComponent<Shibboleth::LuaComponent>,
-	&CreateComponent<Shibboleth::ModelComponent>,
-	&CreateComponent<Shibboleth::CameraComponent>,
-#ifndef USE_PHYSX
-	&CreateComponent<Shibboleth::BulletPhysicsComponent>
-#else
-	&CreateComponent<Shibboleth::PhysXPhysicsComponent>
-#endif
-};
-
-static ComponentNameFunc name_funcs[] = {
-	&Shibboleth::LuaComponent::GetComponentName,
-	&Shibboleth::ModelComponent::GetComponentName,
-	&Shibboleth::CameraComponent::GetComponentName,
+static Shibboleth::ComponentFuncs components[] = {
+	{ Shibboleth::CreateComponentT<Shibboleth::LuaComponent>, Shibboleth::LuaComponent::GetFriendlyName },
+	{ Shibboleth::CreateComponentT<Shibboleth::ModelComponent>, Shibboleth::ModelComponent::GetFriendlyName },
+	{ Shibboleth::CreateComponentT<Shibboleth::CameraComponent>, Shibboleth::CameraComponent::GetFriendlyName },
 #ifdef USE_PHYSX
-	&Shibboleth::PhysXPhysicsComponent::GetComponentName,
+	{ Shibboleth::CreateComponentT<Shibboleth::PhysXPhysicsComponent>, Shibboleth::PhysXPhysicsComponent::GetFriendlyName },
 #else
-	&Shibboleth::BulletPhysicsComponent::GetComponentName,
+	{ Shibboleth::CreateComponentT<Shibboleth::BulletPhysicsComponent>, Shibboleth::BulletPhysicsComponent::GetFriendlyName },
 #endif
 };
 
@@ -92,19 +63,19 @@ DYNAMICEXPORT_C void ShutdownModule(void)
 
 DYNAMICEXPORT_C const char* GetComponentName(unsigned int id)
 {
-	GAFF_ASSERT(id < NUM_COMPONENTS);
-	return name_funcs[id]();
+	GAFF_ASSERT(id < ARRAY_SIZE(components));
+	return components[id].name();
 }
 
 DYNAMICEXPORT_C unsigned int GetNumComponents(void)
 {
-	return NUM_COMPONENTS;
+	return ARRAY_SIZE(components);
 }
 
 DYNAMICEXPORT_C Shibboleth::Component* CreateComponent(unsigned int id)
 {
-	GAFF_ASSERT(id < NUM_COMPONENTS);
-	return create_funcs[id]();
+	GAFF_ASSERT(id < ARRAY_SIZE(components));
+	return components[id].create();
 }
 
 DYNAMICEXPORT_C void DestroyComponent(Shibboleth::Component* component, unsigned int)

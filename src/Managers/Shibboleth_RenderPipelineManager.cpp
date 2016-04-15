@@ -45,7 +45,7 @@ SHIB_REF_IMPL(RenderPipelineManager)
 ;
 
 
-const char* RenderPipelineManager::GetName(void)
+const char* RenderPipelineManager::GetFriendlyName(void)
 {
 	return "Render Pipeline Manager";
 }
@@ -64,7 +64,7 @@ RenderPipelineManager::~RenderPipelineManager(void)
 
 const char* RenderPipelineManager::getName(void) const
 {
-	return GetName();
+	return GetFriendlyName();
 }
 
 void RenderPipelineManager::allManagersCreated(void)

@@ -48,8 +48,14 @@ public:
 		return false;
 	}
 
+	static const char* GetFriendlyName(void);
+
 	ObjectManager(void);
 	~ObjectManager(void);
+
+	const char* getName(void) const;
+
+	void getUpdateEntries(Array<UpdateEntry>& entries);
 
 	Object* createObject(void);
 	INLINE void removeObject(Object* object);
@@ -60,10 +66,6 @@ public:
 	INLINE bool doesObjectExist(unsigned int id) const;
 
 	void addDirtyObject(Object* object);
-
-	const char* getName(void) const;
-
-	void getUpdateEntries(Array<UpdateEntry>& entries);
 
 private:
 	Array<Object*> _objects;

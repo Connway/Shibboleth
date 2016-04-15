@@ -53,7 +53,7 @@ public:
 		//Array< ResourceWrapper<BufferData> > _buffers;
 	};
 
-	static const char* GetComponentName(void);
+	static const char* GetFriendlyName(void);
 
 	ModelComponent(void);
 	~ModelComponent(void);

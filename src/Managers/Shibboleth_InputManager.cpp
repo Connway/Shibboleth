@@ -41,6 +41,11 @@ SHIB_REF_IMPL(InputManager)
 .ADD_BASE_CLASS_INTERFACE_ONLY(IUpdateQuery)
 ;
 
+const char* InputManager::GetFriendlyName(void)
+{
+	return "Input Manager";
+}
+
 InputManager::InputManager(void):
 	_keyboard(nullptr), _mouse(nullptr)
 {
@@ -52,7 +57,7 @@ InputManager::~InputManager(void)
 
 const char* InputManager::getName(void) const
 {
-	return GetName();
+	return GetFriendlyName();
 }
 
 void InputManager::getUpdateEntries(Array<UpdateEntry>& entries) 
@@ -106,7 +111,7 @@ void InputManager::addKeyBinding(const char* alias, Gleam::KeyCode key_code, boo
 	auto it = _values.findElementWithKey(hash);
 	GAFF_ASSERT_MSG(it != _values.end(), "No input alias with name '%s' found!", alias);
 
-	_key_bindings[key_code] = Gaff::MakePair(sign_scale, &it->second);
+	_key_bindings[key_code] = { sign_scale, &it->second, AString(alias) };
 }
 
 void InputManager::removeKeyBinding(Gleam::KeyCode key_code)
@@ -126,7 +131,7 @@ void InputManager::addMouseBinding(const char* alias, Gleam::MouseCode mouse_cod
 	auto it = _values.findElementWithKey(hash);
 	GAFF_ASSERT_MSG(it != _values.end(), "No input alias with name '%s' found!", alias);
 
-	_mouse_bindings[mouse_code] = Gaff::MakePair(sign_scale, &it->second);
+	_mouse_bindings[mouse_code] = { sign_scale, &it->second, AString(alias) };
 }
 
 void InputManager::removeMouseBinding(Gleam::MouseCode mouse_code)
@@ -162,7 +167,7 @@ void InputManager::keyboardHandler(Gleam::IInputDevice*, unsigned int key, float
 	auto it = _key_bindings.findElementWithKey(key_code);
 
 	if (it != _key_bindings.end()) {
-		*it->second.second = it->second.first * value;
+		*it->second.value = it->second.modifier * value;
 	}
 }
 
@@ -172,8 +177,49 @@ void InputManager::mouseHandler(Gleam::IInputDevice*, unsigned int event, float 
 	auto it = _mouse_bindings.findElementWithKey(mouse_code);
 
 	if (it != _mouse_bindings.end()) {
-		*it->second.second = it->second.first * value;
+		*it->second.value = it->second.modifier * value;
 	}
+}
+
+bool InputManager::saveKeybindings(void)
+{
+	const auto& mkeys = GetEnumRefDef<Gleam::MouseCode>();
+	const auto& keys = GetEnumRefDef<Gleam::KeyCode>();
+	Gaff::JSON bindings = Gaff::JSON::createArray();
+
+	size_t index = 0;
+
+	for (; index < _key_bindings.size(); ++index) {
+		const auto it = _key_bindings.atIndex(index);
+
+		Gaff::JSON key_binding = Gaff::JSON::createObject();
+		Gaff::JSON negative = Gaff::JSON::createBoolean(it->second.modifier < 0.0f);
+		Gaff::JSON alias = Gaff::JSON::createString(it->second.alias.getBuffer());
+		Gaff::JSON binding = Gaff::JSON::createString(keys.getName(it->first));
+
+		key_binding.setObject("Negative", negative);
+		key_binding.setObject("Binding", binding);
+		key_binding.setObject("Alias", alias);
+
+		bindings.setObject(index, key_binding);
+	}
+
+	for (size_t i = 0; i < _mouse_bindings.size(); ++i, ++index) {
+		const auto it = _mouse_bindings.atIndex(i);
+
+		Gaff::JSON key_binding = Gaff::JSON::createObject();
+		Gaff::JSON negative = Gaff::JSON::createBoolean(it->second.modifier < 0.0f);
+		Gaff::JSON alias = Gaff::JSON::createString(it->second.alias.getBuffer());
+		Gaff::JSON binding = Gaff::JSON::createString(mkeys.getName(it->first));
+
+		key_binding.setObject("Negative", negative);
+		key_binding.setObject("Binding", binding);
+		key_binding.setObject("Alias", alias);
+
+		bindings.setObject(index, key_binding);
+	}
+
+	return bindings.dumpToFile(KEY_BINDINGS_CFG);
 }
 
 bool InputManager::loadAliasFile(void)

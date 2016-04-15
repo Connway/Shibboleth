@@ -46,7 +46,7 @@ public:
 		CM_NOTHING
 	};
 
-	static const char* GetComponentName(void);
+	static const char* GetFriendlyName(void);
 
 	CameraComponent(void);
 	~CameraComponent(void);

@@ -24,6 +24,8 @@ THE SOFTWARE.
 #include <Shibboleth_LoadGraphicsModuleState.h>
 #include <Shibboleth_SetupDevicesState.h>
 #include <Shibboleth_SetupOtterUIState.h>
+
+#include <Shibboleth_ModuleHelpers.h>
 #include <Shibboleth_Utilities.h>
 #include <Shibboleth_IApp.h>
 #include <Gaff_Image.h>
@@ -40,10 +42,14 @@ THE SOFTWARE.
 class LoopState : public Shibboleth::IState
 {
 public:
-	LoopState(Shibboleth::IApp& app):
+	static const char* GetFriendlyName(void)
+	{
+		return "Loop State";
+	}
+
+	LoopState(void):
 		_object(nullptr), _object2(nullptr),
-		_camera(nullptr), _floor(nullptr),
-		_app(app)
+		_camera(nullptr), _floor(nullptr)
 	{
 	}
 
@@ -83,67 +89,69 @@ public:
 
 	void enter(void)
 	{
-		_app.getManagerT<Shibboleth::ResourceManager>("Resource Manager").addRequestAddedCallback(Gaff::Bind(this, &LoopState::ResReq));
+		Shibboleth::IApp& app = Shibboleth::GetApp();
 
-		_object = _app.getManagerT<Shibboleth::ObjectManager>("Object Manager").createObject();
+		app.getManagerT<Shibboleth::ResourceManager>("Resource Manager").addRequestAddedCallback(Gaff::Bind(this, &LoopState::ResReq));
+
+		_object = app.getManagerT<Shibboleth::ObjectManager>("Object Manager").createObject();
 
 		if (_object) {
 			if (_object->init("Resources/Objects/test.object")) {
 				_object->setWorldPosition(Gleam::Vector4CPU(-2.5f, 0.0f, 0.0f, 1.0f));
 
 			} else {
-				_app.getManagerT<Shibboleth::ObjectManager>("Object Manager").removeObject(_object->getID());
+				app.getManagerT<Shibboleth::ObjectManager>("Object Manager").removeObject(_object->getID());
 				_object = nullptr;
-				_app.quit();
+				app.quit();
 			}
 
 		} else {
-			_app.quit();
+			app.quit();
 		}
 
-		_object2 = _app.getManagerT<Shibboleth::ObjectManager>("Object Manager").createObject();
+		_object2 = app.getManagerT<Shibboleth::ObjectManager>("Object Manager").createObject();
 
 		if (_object2) {
 			if (_object2->init("Resources/Objects/test.object")) {
 				_object2->setWorldPosition(Gleam::Vector4CPU(2.5f, 0.0f, 0.0f, 1.0f));
 
 			} else {
-				_app.getManagerT<Shibboleth::ObjectManager>("Object Manager").removeObject(_object2->getID());
+				app.getManagerT<Shibboleth::ObjectManager>("Object Manager").removeObject(_object2->getID());
 				_object2 = nullptr;
-				_app.quit();
+				app.quit();
 			}
 
 		} else {
-			_app.quit();
+			app.quit();
 		}
 
-		_camera = _app.getManagerT<Shibboleth::ObjectManager>("Object Manager").createObject();
+		_camera = app.getManagerT<Shibboleth::ObjectManager>("Object Manager").createObject();
 
 		if (_camera) {
 			if (_camera->init("Resources/Objects/test_camera.object")) {
 				_camera->setWorldPosition(Gleam::Vector4CPU(0.0f, 5.0f, -50.0f, 1.0f));
 
 			} else {
-				_app.getManagerT<Shibboleth::ObjectManager>("Object Manager").removeObject(_camera->getID());
+				app.getManagerT<Shibboleth::ObjectManager>("Object Manager").removeObject(_camera->getID());
 				_camera = nullptr;
-				_app.quit();
+				app.quit();
 			}
 
 		} else {
-			_app.quit();
+			app.quit();
 		}
 
-		_floor = _app.getManagerT<Shibboleth::ObjectManager>("Object Manager").createObject();
+		_floor = app.getManagerT<Shibboleth::ObjectManager>("Object Manager").createObject();
 
 		if (_floor) {
 			if (!_floor->init("Resources/Objects/floor.object")) {
-				_app.getManagerT<Shibboleth::ObjectManager>("Object Manager").removeObject(_floor->getID());
+				app.getManagerT<Shibboleth::ObjectManager>("Object Manager").removeObject(_floor->getID());
 				_floor = nullptr;
-				_app.quit();
+				app.quit();
 			}
 
 		} else {
-			_app.quit();
+			app.quit();
 		}
 
 		bool all_loaded = true;
@@ -156,7 +164,7 @@ public:
 
 				if (_resources[i]->hasFailed()) {
 					all_loaded = true;
-					_app.quit();
+					app.quit();
 					break;
 				}
 			}
@@ -170,21 +178,23 @@ public:
 
 	void update(void)
 	{
-		if (!_object || !_object2 || !_camera || _app.isQuitting())
+		Shibboleth::IApp& app = Shibboleth::GetApp();
+
+		if (!_object || !_object2 || !_camera || app.isQuitting())
 			return;
 
 		static Shibboleth::CameraComponent* camera = _camera->getFirstComponentWithInterface<Shibboleth::CameraComponent>();
 		static bool added = false;
 
 		if (!added && camera && camera->getRenderTarget().getResourcePtr()->isLoaded()) {
-			_app.getManagerT<Shibboleth::RenderPipelineManager>("Render Pipeline Manager").setOutputCamera(camera);
+			app.getManagerT<Shibboleth::RenderPipelineManager>("Render Pipeline Manager").setOutputCamera(camera);
 			added = true;
 		}
 
-		static Shibboleth::RenderManager& rm = _app.getManagerT<Shibboleth::RenderManager>("Render Manager");
+		static Shibboleth::RenderManager& rm = app.getManagerT<Shibboleth::RenderManager>("Render Manager");
 		rm.updateWindows(); // This has to happen in the main thread.
 
-		static Shibboleth::UpdateManager& update_manager = _app.getManagerT<Shibboleth::UpdateManager>("Update Manager");
+		static Shibboleth::UpdateManager& update_manager = app.getManagerT<Shibboleth::UpdateManager>("Update Manager");
 		update_manager.update();
 
 		YieldThread();
@@ -192,7 +202,8 @@ public:
 
 	void exit(void)
 	{
-		_app.getManagerT<Shibboleth::ResourceManager>("Resource Manager").removeRequestAddedCallback(Gaff::Bind(this, &LoopState::ResReq));
+		Shibboleth::IApp& app = Shibboleth::GetApp();
+		app.getManagerT<Shibboleth::ResourceManager>("Resource Manager").removeRequestAddedCallback(Gaff::Bind(this, &LoopState::ResReq));
 		_resources.clear();
 	}
 
@@ -201,49 +212,22 @@ private:
 	Shibboleth::Object* _object2;
 	Shibboleth::Object* _camera;
 	Shibboleth::Object* _floor;
-	Shibboleth::IApp& _app;
 	Shibboleth::Array<Shibboleth::ResourcePtr> _resources;
 };
 
-template <class State>
-Shibboleth::IState* CreateStateT(Shibboleth::IApp& app)
-{
-	return SHIB_ALLOCT(State, *Shibboleth::GetAllocator(), app);
-}
-
-enum States
-{
-	SETUP_GRAPHICS_STATE = 0,
-	CREATE_RESOURCE_LOADERS_STATE,
-	SETUP_OTTER_UI_STATE,
-	LOAD_GRAPHICS_MODULE_STATE,
-	LOOP_FOREVER_STATE,
-	NUM_STATES
+static Shibboleth::StateFuncs states[] = {
+	{ Shibboleth::CreateStateT<Shibboleth::SetupDevicesState>, Shibboleth::SetupDevicesState::GetFriendlyName },
+	{ Shibboleth::CreateStateT<Shibboleth::CreateResourceLoadersState>, Shibboleth::CreateResourceLoadersState::GetFriendlyName },
+	{ Shibboleth::CreateStateT<Shibboleth::SetupOtterUIState>, Shibboleth::SetupOtterUIState::GetFriendlyName },
+	{ Shibboleth::CreateStateT<Shibboleth::LoadGraphicsModuleState>, Shibboleth::LoadGraphicsModuleState::GetFriendlyName },
+	{ Shibboleth::CreateStateT<LoopState>, LoopState::GetFriendlyName }
 };
 
-typedef Shibboleth::IState* (*CreateStateFunc)(Shibboleth::IApp&);
-
-static CreateStateFunc create_funcs[] = {
-	&CreateStateT<Shibboleth::SetupDevicesState>,
-	&CreateStateT<Shibboleth::CreateResourceLoadersState>,
-	&CreateStateT<Shibboleth::SetupOtterUIState>,
-	&CreateStateT<Shibboleth::LoadGraphicsModuleState>,
-	&CreateStateT<LoopState>
-};
-
-static const char* state_names[NUM_STATES] = {
-	"SetupDevicesState",
-	"CreateResourceLoadersState",
-	"SetupOtterUIState",
-	"LoadGraphicsModuleState",
-	"loopforeverstate"
-};
-
-static size_t g_pool_index = 0;
+static size_t g_image_pool_index = 0;
 
 void* MEMCB ImageAlloc(const size_t size)
 {
-	return Shibboleth::ShibbolethAllocate(size, g_pool_index);
+	return Shibboleth::ShibbolethAllocate(size, g_image_pool_index);
 }
 
 void MEMCB ImageFree(const void* const data)
@@ -257,7 +241,7 @@ DYNAMICEXPORT_C bool InitModule(Shibboleth::IApp& app)
 	Gaff::JSON::SetHashSeed(app.getSeed());
 	Shibboleth::SetApp(app);
 
-	g_pool_index = Shibboleth::GetPoolIndex("Images");
+	g_image_pool_index = Shibboleth::GetPoolIndex("Images");
 
 	Gaff::Image::SetMemoryFunctions(ImageAlloc, ImageFree);
 	Gaff::Image::SysInit();
@@ -272,19 +256,19 @@ DYNAMICEXPORT_C void ShutdownModule(void)
 
 DYNAMICEXPORT_C const char* GetStateName(unsigned int id)
 {
-	GAFF_ASSERT(id < NUM_STATES);
-	return state_names[id];
+	GAFF_ASSERT(id < ARRAY_SIZE(states));
+	return states[id].name();
 }
 
 DYNAMICEXPORT_C unsigned int GetNumStates(void)
 {
-	return NUM_STATES;
+	return ARRAY_SIZE(states);
 }
 
 DYNAMICEXPORT_C Shibboleth::IState* CreateState(unsigned int id)
 {
-	GAFF_ASSERT(id < NUM_STATES);
-	return create_funcs[id](Shibboleth::GetApp());
+	GAFF_ASSERT(id < ARRAY_SIZE(states));
+	return states[id].create();
 }
 
 DYNAMICEXPORT_C void DestroyState(Shibboleth::IState* state, unsigned int)

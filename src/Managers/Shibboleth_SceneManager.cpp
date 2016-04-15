@@ -20,56 +20,39 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#pragma once
-
-#include <Shibboleth_ReflectionDefinitions.h>
-#include <Shibboleth_ResourceWrapper.h>
-#include <Shibboleth_Component.h>
-#include <LinearMath/btVector3.h>
-
-class btRigidBody;
+#include "Shibboleth_SceneManager.h"
 
 NS_SHIBBOLETH
 
-class BulletPhysicsResource;
+REF_IMPL_REQ(SceneManager);
+SHIB_REF_IMPL(SceneManager)
+.addBaseClassInterfaceOnly<SceneManager>()
+;
 
-static const char* g_physics_schema_names[] = {
-	"PhysicsCapsule.schema",
-	"PhysicsBox.schema"
-};
-
-class BulletPhysicsComponent : public Component
+const char* SceneManager::GetFriendlyName(void) const
 {
-public:
-	static const char* GetFriendlyName(void);
+	return "Scene Manager";
+}
 
-	BulletPhysicsComponent(void);
-	~BulletPhysicsComponent(void);
+SceneManager::SceneManager(void)
+{
+}
 
-	const Gaff::JSON& getSchema(void) const;
+SceneManager::~SceneManager(void)
+{
+}
 
-	bool load(const Gaff::JSON&) override;
-	bool save(Gaff::JSON&) override;
+const char* SceneManager::getName(void) const
+{
+	return GetFriendlyName();
+}
 
-	void addToWorld(void) override;
-	void removeFromWorld(void) override;
+bool SceneManager::loadScene(const char* /*scene_name*/)
+{
+	// open file
+	// parse JSON
 
-	void setActive(bool active) override;
-
-	const btRigidBody* getRigidBody(void) const;
-	btRigidBody* getRigidBody(void);
-
-private:
-	btRigidBody* _rigid_body;
-	btVector3 _inertia;
-	float _mass;
-
-	ResourceWrapper<BulletPhysicsResource> _phys_res;
-
-	void collisionShapeLoaded(ResourceContainer*);
-
-	SHIB_REF_DEF(BulletPhysicsComponent);
-	REF_DEF_REQ;
-};
+	return true;
+}
 
 NS_END

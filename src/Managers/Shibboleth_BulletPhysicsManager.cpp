@@ -93,6 +93,11 @@ static void* PhysicsAllocate(size_t size)
 	return ShibbolethAllocate(size, g_memory_pool);
 }
 
+const char* BulletPhysicsManager::GetFriendlyName(void)
+{
+	return "Physics Manager";
+}
+
 void BulletPhysicsManager::SetMemoryFunctions(void)
 {
 	if (g_memory_pool == SIZE_T_FAIL) {
@@ -127,7 +132,7 @@ BulletPhysicsManager::~BulletPhysicsManager(void)
 
 const char* BulletPhysicsManager::getName() const
 {
-	return GetName();
+	return GetFriendlyName();
 }
 
 void BulletPhysicsManager::allManagersCreated(void)

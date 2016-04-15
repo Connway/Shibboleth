@@ -24,13 +24,18 @@ THE SOFTWARE.
 #include <Shibboleth_RenderPipelineManager.h>
 #include <Shibboleth_RenderManager.h>
 #include <Shibboleth_InputManager.h>
+#include <Shibboleth_Utilities.h>
 #include <Shibboleth_IApp.h>
 #include <Gaff_JSON.h>
 
 NS_SHIBBOLETH
 
-SetupDevicesState::SetupDevicesState(IApp& app):
-	_app(app)
+const char* SetupDevicesState::GetFriendlyName(void)
+{
+	return "Setup Devices State";
+}
+
+SetupDevicesState::SetupDevicesState(void)
 {
 }
 
@@ -49,13 +54,15 @@ void SetupDevicesState::enter(void)
 
 void SetupDevicesState::update(void)
 {
-	RenderManager& render_manager = _app.getManagerT<RenderManager>();
+	IApp& app = GetApp();
+	RenderManager& render_manager = app.getManagerT<RenderManager>();
+	
 
 	Gaff::JSON cfg;
 
 	if (!cfg.parseFile(GRAPHICS_CFG)) {
-		_app.getLogManager().logMessage(LogManager::LOG_ERROR, _app.getLogFileName(), "Failed to parse '" GRAPHICS_CFG "'.\n");
-		_app.quit();
+		app.getLogManager().logMessage(LogManager::LOG_ERROR, app.getLogFileName(), "Failed to parse '" GRAPHICS_CFG "'.\n");
+		app.quit();
 		return;
 	}
 
@@ -64,30 +71,30 @@ void SetupDevicesState::update(void)
 	Gaff::JSON windows = cfg["windows"];
 
 	if (!windows.isArray()) {
-		_app.getLogManager().logMessage(LogManager::LOG_ERROR, _app.getLogFileName(), "Malformed config file '" GRAPHICS_CFG "'.\n");
-		_app.quit();
+		app.getLogManager().logMessage(LogManager::LOG_ERROR, app.getLogFileName(), "Malformed config file '" GRAPHICS_CFG "'.\n");
+		app.quit();
 		return;
 	}
 
 	Gaff::JSON icon = cfg["icon"];
 
 	if (icon && !icon.isString()) {
-		_app.getLogManager().logMessage(LogManager::LOG_WARNING, _app.getLogFileName(), "Malformed config file '" GRAPHICS_CFG "'. Value at 'icon' is not a string.\n");
+		app.getLogManager().logMessage(LogManager::LOG_WARNING, app.getLogFileName(), "Malformed config file '" GRAPHICS_CFG "'. Value at 'icon' is not a string.\n");
 		icon = Gaff::JSON();
 	}
 
 	Gaff::JSON initial_pipeline = cfg["initial_pipeline"];
 
 	if (!initial_pipeline.isString()) {
-		_app.getLogManager().logMessage(LogManager::LOG_ERROR, _app.getLogFileName(), "Malformed config file '" GRAPHICS_CFG "'.\n");
-		_app.quit();
+		app.getLogManager().logMessage(LogManager::LOG_ERROR, app.getLogFileName(), "Malformed config file '" GRAPHICS_CFG "'.\n");
+		app.quit();
 		return;
 	}
 
 	bool failed = windows.forEachInArray([&](size_t, const Gaff::JSON& value) -> bool
 	{
 		if (!value.isObject()) {
-			_app.getLogManager().logMessage(LogManager::LOG_ERROR, _app.getLogFileName(), "Malformed config file '" GRAPHICS_CFG "'.\n");
+			app.getLogManager().logMessage(LogManager::LOG_ERROR, app.getLogFileName(), "Malformed config file '" GRAPHICS_CFG "'.\n");
 			return true;
 		}
 
@@ -105,74 +112,74 @@ void SetupDevicesState::update(void)
 		Gaff::JSON tags = value["tags"];
 
 		if (!x.isInteger()) {
-			_app.getLogManager().logMessage(LogManager::LOG_ERROR, _app.getLogFileName(), "Malformed config file '" GRAPHICS_CFG "'.\n");
+			app.getLogManager().logMessage(LogManager::LOG_ERROR, app.getLogFileName(), "Malformed config file '" GRAPHICS_CFG "'.\n");
 			return true;
 		}
 
 		if (!y.isInteger()) {
-			_app.getLogManager().logMessage(LogManager::LOG_ERROR, _app.getLogFileName(), "Malformed config file '" GRAPHICS_CFG "'.\n");
+			app.getLogManager().logMessage(LogManager::LOG_ERROR, app.getLogFileName(), "Malformed config file '" GRAPHICS_CFG "'.\n");
 			return true;
 		}
 
 		if (!width.isInteger()) {
-			_app.getLogManager().logMessage(LogManager::LOG_ERROR, _app.getLogFileName(), "Malformed config file.\n");
+			app.getLogManager().logMessage(LogManager::LOG_ERROR, app.getLogFileName(), "Malformed config file.\n");
 			return true;
 		}
 
 		if (!height.isInteger()) {
-			_app.getLogManager().logMessage(LogManager::LOG_ERROR, _app.getLogFileName(), "Malformed config file.\n");
+			app.getLogManager().logMessage(LogManager::LOG_ERROR, app.getLogFileName(), "Malformed config file.\n");
 			return true;
 		}
 
 		if (!refresh_rate.isInteger()) {
-			_app.getLogManager().logMessage(LogManager::LOG_ERROR, _app.getLogFileName(), "Malformed config file.\n");
+			app.getLogManager().logMessage(LogManager::LOG_ERROR, app.getLogFileName(), "Malformed config file.\n");
 			return true;
 		}
 
 		if (!device_name.isString()) {
-			_app.getLogManager().logMessage(LogManager::LOG_ERROR, _app.getLogFileName(), "Malformed config file.\n");
+			app.getLogManager().logMessage(LogManager::LOG_ERROR, app.getLogFileName(), "Malformed config file.\n");
 			return true;
 		}
 
 		if (!window_name.isString()) {
-			_app.getLogManager().logMessage(LogManager::LOG_ERROR, _app.getLogFileName(), "Malformed config file.\n");
+			app.getLogManager().logMessage(LogManager::LOG_ERROR, app.getLogFileName(), "Malformed config file.\n");
 			return true;
 		}
 
 		if (!window_mode.isString()) {
-			_app.getLogManager().logMessage(LogManager::LOG_ERROR, _app.getLogFileName(), "Malformed config file.\n");
+			app.getLogManager().logMessage(LogManager::LOG_ERROR, app.getLogFileName(), "Malformed config file.\n");
 			return true;
 		}
 
 		if (!adapter_id.isInteger()) {
-			_app.getLogManager().logMessage(LogManager::LOG_ERROR, _app.getLogFileName(), "Malformed config file.\n");
+			app.getLogManager().logMessage(LogManager::LOG_ERROR, app.getLogFileName(), "Malformed config file.\n");
 			return true;
 		}
 
 		if (!display_id.isInteger()) {
-			_app.getLogManager().logMessage(LogManager::LOG_ERROR, _app.getLogFileName(), "Malformed config file.\n");
+			app.getLogManager().logMessage(LogManager::LOG_ERROR, app.getLogFileName(), "Malformed config file.\n");
 			return true;
 		}
 
 		if (!vsync.isBoolean()) {
-			_app.getLogManager().logMessage(LogManager::LOG_ERROR, _app.getLogFileName(), "Malformed config file.\n");
+			app.getLogManager().logMessage(LogManager::LOG_ERROR, app.getLogFileName(), "Malformed config file.\n");
 			return true;
 		}
 
 		if (!tags.isArray()) {
-			_app.getLogManager().logMessage(LogManager::LOG_ERROR, _app.getLogFileName(), "Malformed config file.\n");
+			app.getLogManager().logMessage(LogManager::LOG_ERROR, app.getLogFileName(), "Malformed config file.\n");
 			return true;
 		}
 
 		unsigned short disp_tags = 0;
 
 		if (EXTRACT_DISPLAY_TAGS(tags, disp_tags)) {
-			_app.getLogManager().logMessage(LogManager::LOG_ERROR, _app.getLogFileName(), "Malformed config file.\n");
+			app.getLogManager().logMessage(LogManager::LOG_ERROR, app.getLogFileName(), "Malformed config file.\n");
 			return nullptr;
 		}
 
 		if (!disp_tags) {
-			_app.getLogManager().logMessage(LogManager::LOG_ERROR, _app.getLogFileName(), "Malformed config file.\n");
+			app.getLogManager().logMessage(LogManager::LOG_ERROR, app.getLogFileName(), "Malformed config file.\n");
 			return nullptr;
 		}
 
@@ -188,7 +195,7 @@ void SetupDevicesState::update(void)
 		} else if (!strncmp(window_mode.getString(), "Fullscreen-Windowed", strlen("Fullscreen-Windowed"))) {
 			wnd_mode = Gleam::IWindow::FULLSCREEN_WINDOWED;
 		} else {
-			_app.getLogManager().logMessage(LogManager::LOG_ERROR, _app.getLogFileName(), "Malformed config file.\n");
+			app.getLogManager().logMessage(LogManager::LOG_ERROR, app.getLogFileName(), "Malformed config file.\n");
 			return true;
 		}
 
@@ -199,8 +206,8 @@ void SetupDevicesState::update(void)
 			static_cast<unsigned int>(adapter_id.getInteger()), static_cast<unsigned int>(display_id.getInteger()),
 			vsync.isTrue(), disp_tags)) {
 
-			_app.getLogManager().logMessage(
-				LogManager::LOG_ERROR, _app.getLogFileName(),
+			app.getLogManager().logMessage(
+				LogManager::LOG_ERROR, app.getLogFileName(),
 				"Failed to create window with values\n"
 				"X: %lli\n"
 				"Y: %lli\n"
@@ -224,7 +231,7 @@ void SetupDevicesState::update(void)
 
 		if (icon) {
 			if (!render_manager.getWindowData(static_cast<unsigned int>(render_manager.getNumWindows() - 1)).window->setIcon(icon.getString())) {
-				_app.getLogManager().logMessage(LogManager::LOG_WARNING, _app.getLogFileName(), "Failed to set window icon to '%s'.\n", icon.getString());
+				app.getLogManager().logMessage(LogManager::LOG_WARNING, app.getLogFileName(), "Failed to set window icon to '%s'.\n", icon.getString());
 			}
 		}
 
@@ -232,34 +239,34 @@ void SetupDevicesState::update(void)
 	});
 
 	if (failed) {
-		_app.getLogManager().logMessage(LogManager::LOG_ERROR, _app.getLogFileName(), "Failed to create windows.\n");
-		_app.quit();
+		app.getLogManager().logMessage(LogManager::LOG_ERROR, app.getLogFileName(), "Failed to create windows.\n");
+		app.quit();
 		return;
 	}
 
 	if (!render_manager.initThreadData()) {
-		_app.getLogManager().logMessage(LogManager::LOG_ERROR, _app.getLogFileName(), "Failed to create thread data for Render Manager.\n");
-		_app.quit();
+		app.getLogManager().logMessage(LogManager::LOG_ERROR, app.getLogFileName(), "Failed to create thread data for Render Manager.\n");
+		app.quit();
 		return;
 	}
 
-	RenderPipelineManager& rp_mgr = _app.getManagerT<RenderPipelineManager>();
+	RenderPipelineManager& rp_mgr = app.getManagerT<RenderPipelineManager>();
 
 	if (!rp_mgr.init(initial_pipeline.getString())) {
-		_app.getLogManager().logMessage(LogManager::LOG_ERROR, _app.getLogFileName(), "Failed to initialize Render Pipeline Manager.\n");
-		_app.quit();
+		app.getLogManager().logMessage(LogManager::LOG_ERROR, app.getLogFileName(), "Failed to initialize Render Pipeline Manager.\n");
+		app.quit();
 		return;
 	}
 
-	InputManager& input_mgr = _app.getManagerT<InputManager>();
+	InputManager& input_mgr = app.getManagerT<InputManager>();
 
 	if (!input_mgr.init()) {
-		_app.getLogManager().logMessage(LogManager::LOG_ERROR, _app.getLogFileName(), "Failed to initialize Input Manager.\n");
-		_app.quit();
+		app.getLogManager().logMessage(LogManager::LOG_ERROR, app.getLogFileName(), "Failed to initialize Input Manager.\n");
+		app.quit();
 		return;
 	}
 
-	_app.switchState(_transitions[0]);
+	app.switchState(_transitions[0]);
 }
 
 void SetupDevicesState::exit(void)

@@ -441,7 +441,7 @@ bool Object::isDirty(void) const
 
 void Object::clearDirty(void)
 {
-	Gaff::ClearBits<char>(_flags, OBJ_DIRTY);
+	Gaff::ClearBits<uint8_t>(_flags, OBJ_DIRTY);
 }
 
 bool Object::isInWorld(void) const
@@ -455,7 +455,7 @@ void Object::addToWorld(void)
 		(*it)->addToWorld();
 	}
 
-	Gaff::SetBits<char>(_flags, OBJ_IN_WORLD);
+	Gaff::SetBits<uint8_t>(_flags, OBJ_IN_WORLD);
 }
 
 void Object::removeFromWorld(void)
@@ -464,7 +464,7 @@ void Object::removeFromWorld(void)
 		(*it)->removeFromWorld();
 	}
 
-	Gaff::ClearBits<char>(_flags, OBJ_IN_WORLD);
+	Gaff::ClearBits<uint8_t>(_flags, OBJ_IN_WORLD);
 }
 
 bool Object::createComponents(const Gaff::JSON& json)
@@ -517,7 +517,7 @@ void Object::markDirty(void)
 {
 	if (!isDirty()) {
 		_obj_mgr.addDirtyObject(this);
-		Gaff::SetBits<char>(_flags, OBJ_DIRTY);
+		Gaff::SetBits<uint8_t>(_flags, OBJ_DIRTY);
 	}
 }
 

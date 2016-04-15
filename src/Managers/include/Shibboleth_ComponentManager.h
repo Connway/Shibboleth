@@ -37,6 +37,8 @@ class IApp;
 class ComponentManager : public IManager
 {
 public:
+	static const char* GetFriendlyName(void);
+
 	ComponentManager(void);
 	~ComponentManager(void);
 

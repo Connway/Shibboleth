@@ -30,6 +30,11 @@ SHIB_REF_IMPL(BroadcasterManager)
 .ADD_BASE_CLASS_INTERFACE_ONLY(IUpdateQuery)
 ;
 
+const char* BroadcasterManager::GetFriendlyName(void)
+{
+	return "Broadcaster Manager";
+}
+
 BroadcasterManager::BroadcasterManager(void)
 {
 }
@@ -41,7 +46,7 @@ BroadcasterManager::~BroadcasterManager(void)
 
 const char* BroadcasterManager::getName(void) const
 {
-	return "Broadcaster Manager";
+	return GetFriendlyName();
 }
 
 void BroadcasterManager::getUpdateEntries(Array<IUpdateQuery::UpdateEntry>& entries)

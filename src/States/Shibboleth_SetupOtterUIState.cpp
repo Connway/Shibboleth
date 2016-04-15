@@ -21,15 +21,19 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Shibboleth_SetupOtterUIState.h"
-#include "Shibboleth_OtterUIManager.h"
-#include "Shibboleth_IApp.h"
-
-#include "Shibboleth_Object.h"
+#include <Shibboleth_OtterUIManager.h>
+#include <Shibboleth_Utilities.h>
+#include <Shibboleth_IApp.h>
 
 NS_SHIBBOLETH
 
-SetupOtterUIState::SetupOtterUIState(IApp& app):
-	_file_system(*app.getFileSystem()), _renderer(app), _app(app)
+const char* SetupOtterUIState::GetFriendlyName(void)
+{
+	return "Setup OtterUI State";
+}
+
+SetupOtterUIState::SetupOtterUIState(void):
+	_file_system(*GetApp().getFileSystem()), _renderer(GetApp())
 {
 }
 
@@ -53,13 +57,14 @@ void SetupOtterUIState::enter(void)
 
 void SetupOtterUIState::update(void)
 {
-	OtterUIManager& otterui_manager = _app.getManagerT<OtterUIManager>("OtterUI Manager");
+	IApp& app = GetApp();
+	OtterUIManager& otterui_manager = app.getManagerT<OtterUIManager>("OtterUI Manager");
 
 	//otterui_manager.setSoundSystem();
 	otterui_manager.setFileSystem(&_file_system);
 	otterui_manager.setRenderer(&_renderer);
 
-	_app.switchState(_transitions[0]);
+	app.switchState(_transitions[0]);
 }
 
 void SetupOtterUIState::exit(void)

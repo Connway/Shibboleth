@@ -157,7 +157,7 @@ SHIB_ENUM_REF_IMPL_EMBEDDED(Gleam_IShader_Type, Gleam::IShader::SHADER_TYPE)
 	}
 
 
-const char* RenderManager::GetName(void)
+const char* RenderManager::GetFriendlyName(void)
 {
 	return "Render Manager";
 }
@@ -189,7 +189,7 @@ RenderManager::~RenderManager(void)
 
 const char* RenderManager::getName(void) const
 {
-	return GetName();
+	return GetFriendlyName();
 }
 
 bool RenderManager::initThreadData(void)

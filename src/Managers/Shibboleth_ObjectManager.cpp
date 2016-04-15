@@ -33,6 +33,11 @@ SHIB_REF_IMPL(ObjectManager)
 .ADD_BASE_CLASS_INTERFACE_ONLY(IUpdateQuery)
 ;
 
+const char* ObjectManager::GetFriendlyName(void)
+{
+	return "Object Manager";
+}
+
 ObjectManager::ObjectManager(void):
 	_next_id(0)
 {
@@ -45,6 +50,16 @@ ObjectManager::~ObjectManager(void)
 	}
 
 	_objects.clear();
+}
+
+const char* ObjectManager::getName(void) const
+{
+	return GetFriendlyName();
+}
+
+void ObjectManager::getUpdateEntries(Array<UpdateEntry>& entries)
+{
+	entries.push(UpdateEntry(AString("Object Manager: Update Dirty Objects"), Gaff::Bind(this, &ObjectManager::updateDirtyObjects)));
 }
 
 Object* ObjectManager::createObject(void)
@@ -134,16 +149,6 @@ void ObjectManager::addDirtyObject(Object* object)
 {
 	Gaff::ScopedLock<Gaff::SpinLock> scoped_lock(_dirty_objects_lock);
 	_dirty_objects.push(object);
-}
-
-const char* ObjectManager::getName(void) const
-{
-	return "Object Manager";
-}
-
-void ObjectManager::getUpdateEntries(Array<UpdateEntry>& entries)
-{
-	entries.push(UpdateEntry(AString("Object Manager: Update Dirty Objects"), Gaff::Bind(this, &ObjectManager::updateDirtyObjects)));
 }
 
 void ObjectManager::updateDirtyObjects(double, void*)

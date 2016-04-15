@@ -35,7 +35,9 @@ class IApp;
 class LoadGraphicsModuleState : public IState
 {
 public:
-	LoadGraphicsModuleState(IApp& app);
+	static const char* GetFriendlyName(void);
+
+	LoadGraphicsModuleState(void);
 	~LoadGraphicsModuleState(void);
 
 	bool init(unsigned int);
@@ -45,8 +47,6 @@ public:
 	void exit(void);
 
 private:
-	IApp& _app;
-
 	void generateDefaultConfig(Gaff::JSON& cfg);
 
 	GAFF_NO_COPY(LoadGraphicsModuleState);

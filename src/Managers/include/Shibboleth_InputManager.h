@@ -41,10 +41,7 @@ NS_SHIBBOLETH
 class InputManager : public IManager, public IUpdateQuery
 {
 public:
-	INLINE static const char* GetName(void)
-	{
-		return "Input Manager";
-	}
+	static const char* GetFriendlyName(void);
 
 	InputManager(void);
 	~InputManager(void);
@@ -65,12 +62,21 @@ public:
 	size_t getAliasIndex(const char* alias) const;
 	float getAliasValue(size_t index) const;
 
+	bool saveKeybindings(void);
+
 private:
+	struct BindingInfo
+	{
+		float modifier;
+		float* value;
+		AString alias;
+	};
+
 	Gleam::IKeyboard* _keyboard;
 	Gleam::IMouse* _mouse;
 
-	Map<Gleam::KeyCode, Gaff::Pair<float, float*> > _key_bindings;
-	Map<Gleam::MouseCode, Gaff::Pair<float, float*> > _mouse_bindings;
+	Map<Gleam::KeyCode, BindingInfo> _key_bindings;
+	Map<Gleam::MouseCode, BindingInfo> _mouse_bindings;
 	Map<uint32_t, float> _values;
 
 	void keyboardHandler(Gleam::IInputDevice*, unsigned int key, float value);

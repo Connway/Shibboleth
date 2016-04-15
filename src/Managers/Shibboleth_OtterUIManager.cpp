@@ -30,6 +30,11 @@ SHIB_REF_IMPL(OtterUIManager)
 .addBaseClassInterfaceOnly<OtterUIManager>()
 ;
 
+const char* OtterUIManager::GetFriendlyName(void)
+{
+	return "OtterUI Manager";
+}
+
 OtterUIManager::OtterUIManager(void):
 	_memory_buffer(nullptr), _system(nullptr), _fps(60)
 {
@@ -38,6 +43,11 @@ OtterUIManager::OtterUIManager(void):
 OtterUIManager::~OtterUIManager(void)
 {
 	destroy();
+}
+
+const char* OtterUIManager::getName(void) const
+{
+	return GetFriendlyName();
 }
 
 bool OtterUIManager::init(unsigned int memory_size_bytes, bool enable_pre_transformed_verts)
@@ -124,7 +134,7 @@ void OtterUIManager::setFPS(unsigned int fps)
 void OtterUIManager::update(float dt)
 {
 	GAFF_ASSERT(_system);
-	_system->Update((float)_fps * dt);
+	_system->Update(static_cast<float>(_fps) * dt);
 }
 
 bool OtterUIManager::draw(void)
@@ -160,11 +170,6 @@ void OtterUIManager::addPlugin(Otter::IPlugin* plugin)
 {
 	GAFF_ASSERT(plugin);
 	_system->AddPlugin(plugin);
-}
-
-const char* OtterUIManager::getName(void) const
-{
-	return "OtterUI Manager";
 }
 
 Otter::Scene* OtterUIManager::getScene(unsigned int index)

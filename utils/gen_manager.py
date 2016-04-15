@@ -101,7 +101,7 @@ SHIB_REF_IMPL({1}Manager)
 .addBaseClassInterfaceOnly<{1}Manager>()
 ;
 
-const char* {1}Manager::getName(void) const
+const char* {1}Manager::GetName(void) const
 {{
 	return \"{1} Manager\";
 }}

@@ -33,7 +33,9 @@ class IApp;
 class SetupOtterUIState : public IState
 {
 public:
-	SetupOtterUIState(IApp& app);
+	static const char* GetFriendlyName(void);
+
+	SetupOtterUIState(void);
 	~SetupOtterUIState(void);
 
 	bool init(unsigned int /*state_id*/);
@@ -45,9 +47,6 @@ public:
 private:
 	OtterUIFileSystem _file_system;
 	OtterUIRenderer _renderer;
-
-	IApp& _app;
-	//unsigned int _state_id;
 
 	GAFF_NO_COPY(SetupOtterUIState);
 	GAFF_NO_MOVE(SetupOtterUIState);

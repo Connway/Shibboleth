@@ -94,6 +94,8 @@ public:
 		return reinterpret_cast<T*>(getNextFrameData(phase_id));
 	}
 
+	static const char* GetFriendlyName(void);
+
 	FrameManager(void);
 	~FrameManager(void);
 
