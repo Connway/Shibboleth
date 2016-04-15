@@ -68,7 +68,7 @@ CameraComponent::CameraComponent(void):
 	_viewport[3] = 1.0f;
 }
 
-const char* CameraComponent::GetComponentName(void)
+const char* CameraComponent::GetFriendlyName(void)
 {
 	return "Camera Component";
 }

@@ -39,7 +39,7 @@ class ResourceManager;
 class LuaComponent : public Component
 {
 public:
-	static const char* GetComponentName(void);
+	static const char* GetFriendlyName(void);
 
 	LuaComponent(void);
 	~LuaComponent(void);

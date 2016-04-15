@@ -115,6 +115,7 @@
     <ClInclude Include="..\..\..\src\Managers\include\Shibboleth_RenderManager.h" />
     <ClInclude Include="..\..\..\src\Managers\include\Shibboleth_RenderPipelineManager.h" />
     <ClInclude Include="..\..\..\src\Managers\include\Shibboleth_ResourceManager.h" />
+    <ClInclude Include="..\..\..\src\Managers\include\Shibboleth_SceneManager.h" />
     <ClInclude Include="..\..\..\src\Managers\include\Shibboleth_SchemaManager.h" />
     <ClInclude Include="..\..\..\src\Managers\include\Shibboleth_UpdateManager.h" />
   </ItemGroup>
@@ -133,6 +134,7 @@
     <ClCompile Include="..\..\..\src\Managers\Shibboleth_RenderManager.cpp" />
     <ClCompile Include="..\..\..\src\Managers\Shibboleth_RenderPipelineManager.cpp" />
     <ClCompile Include="..\..\..\src\Managers\Shibboleth_ResourceManager.cpp" />
+    <ClCompile Include="..\..\..\src\Managers\Shibboleth_SceneManager.cpp" />
     <ClCompile Include="..\..\..\src\Managers\Shibboleth_SchemaManager.cpp" />
     <ClCompile Include="..\..\..\src\Managers\Shibboleth_UpdateManager.cpp" />
   </ItemGroup>

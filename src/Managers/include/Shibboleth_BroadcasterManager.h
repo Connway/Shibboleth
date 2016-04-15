@@ -33,6 +33,8 @@ NS_SHIBBOLETH
 class BroadcasterManager : public IManager, public IUpdateQuery
 {
 public:
+	static const char* GetFriendlyName(void);
+
 	BroadcasterManager(void);
 	~BroadcasterManager(void);
 

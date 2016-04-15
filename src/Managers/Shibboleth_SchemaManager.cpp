@@ -32,7 +32,7 @@ SHIB_REF_IMPL(SchemaManager)
 .addBaseClassInterfaceOnly<SchemaManager>()
 ;
 
-const char* SchemaManager::GetName(void)
+const char* SchemaManager::GetFriendlyName(void)
 {
 	return "Schema Manager";
 }
@@ -47,7 +47,7 @@ SchemaManager::~SchemaManager(void)
 
 const char* SchemaManager::getName(void) const
 {
-	return GetName();
+	return GetFriendlyName();
 }
 
 void SchemaManager::allManagersCreated(void)

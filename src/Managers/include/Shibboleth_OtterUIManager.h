@@ -42,8 +42,12 @@ NS_SHIBBOLETH
 class OtterUIManager : public IManager
 {
 public:
+	static const char* GetFriendlyName(void);
+
 	OtterUIManager(void);
 	~OtterUIManager(void);
+
+	const char* getName(void) const;
 
 	bool init(unsigned int memory_size_bytes = OTTERUI_DEFAULT_MEMORY_BUFFER_SIZE, bool enable_pre_transformed_verts = true);
 	void destroy(void);
@@ -67,8 +71,6 @@ public:
 
 	INLINE Otter::Scene* getScene(unsigned int index);
 	INLINE unsigned int getNumScenes(void) const;
-
-	const char* getName(void) const;
 
 private:
 	HashMap<const char*, Otter::Scene*> _scenes;

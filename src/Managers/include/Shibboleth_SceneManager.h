@@ -23,52 +23,27 @@ THE SOFTWARE.
 #pragma once
 
 #include <Shibboleth_ReflectionDefinitions.h>
-#include <Shibboleth_ResourceWrapper.h>
-#include <Shibboleth_Component.h>
-#include <LinearMath/btVector3.h>
-
-class btRigidBody;
+#include <Shibboleth_IManager.h>
 
 NS_SHIBBOLETH
 
-class BulletPhysicsResource;
-
-static const char* g_physics_schema_names[] = {
-	"PhysicsCapsule.schema",
-	"PhysicsBox.schema"
-};
-
-class BulletPhysicsComponent : public Component
+class SceneManager : public IManager
 {
 public:
 	static const char* GetFriendlyName(void);
 
-	BulletPhysicsComponent(void);
-	~BulletPhysicsComponent(void);
+	SceneManager(void);
+	~SceneManager(void);
 
-	const Gaff::JSON& getSchema(void) const;
+	const char* getName(void) const;
 
-	bool load(const Gaff::JSON&) override;
-	bool save(Gaff::JSON&) override;
-
-	void addToWorld(void) override;
-	void removeFromWorld(void) override;
-
-	void setActive(bool active) override;
-
-	const btRigidBody* getRigidBody(void) const;
-	btRigidBody* getRigidBody(void);
+	bool loadScene(const char* scene_name);
 
 private:
-	btRigidBody* _rigid_body;
-	btVector3 _inertia;
-	float _mass;
+	GAFF_NO_COPY(SceneManager);
+	GAFF_NO_MOVE(SceneManager);
 
-	ResourceWrapper<BulletPhysicsResource> _phys_res;
-
-	void collisionShapeLoaded(ResourceContainer*);
-
-	SHIB_REF_DEF(BulletPhysicsComponent);
+	SHIB_REF_DEF(SceneManager);
 	REF_DEF_REQ;
 };
 

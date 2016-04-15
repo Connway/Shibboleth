@@ -51,6 +51,11 @@ SHIB_REF_IMPL(FrameManager)
 .ADD_BASE_CLASS_INTERFACE_ONLY(IUpdateQuery)
 ;
 
+const char* FrameManager::GetFriendlyName(void)
+{
+	return "Frame Manager";
+}
+
 FrameManager::FrameManager(void):
 	_render_mgr(nullptr), _frame_data(nullptr),
 	_frame_data_alloc(&DefaultFrameDataAlloc),
@@ -68,7 +73,7 @@ FrameManager::~FrameManager(void)
 
 const char* FrameManager::getName(void) const
 {
-	return "Frame Manager";
+	return GetFriendlyName();
 }
 
 void FrameManager::allManagersCreated(void)

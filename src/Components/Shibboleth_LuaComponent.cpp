@@ -46,7 +46,7 @@ SHIB_REF_IMPL(LuaComponent)
 .addBaseClassInterfaceOnly<LuaComponent>()
 ;
 
-const char* LuaComponent::GetComponentName(void)
+const char* LuaComponent::GetFriendlyName(void)
 {
 	return "Lua Component";
 }

@@ -181,7 +181,7 @@ private:
 	unsigned char _layer;
 	unsigned int _id;;
 
-	char _flags;
+	uint8_t _flags;
 
 	bool createComponents(const Gaff::JSON& json);
 	void markDirty(void);

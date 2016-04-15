@@ -36,6 +36,8 @@ struct ObjectData;
 class CameraManager : public IManager, public IUpdateQuery
 {
 public:
+	static const char* GetFriendlyName(void);
+
 	CameraManager(void);
 	~CameraManager(void);
 

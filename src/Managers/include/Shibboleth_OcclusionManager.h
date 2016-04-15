@@ -68,6 +68,8 @@ public:
 		Array<QueryResult> results[OT_SIZE];
 	};
 
+	static const char* GetFriendlyName(void);
+
 	OcclusionManager(void);
 	~OcclusionManager(void);
 

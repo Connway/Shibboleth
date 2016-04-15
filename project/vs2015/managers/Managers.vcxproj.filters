@@ -54,6 +54,9 @@
     <ClInclude Include="..\..\..\src\Managers\include\Shibboleth_MovementControllerManager.h">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\src\Managers\include\Shibboleth_SceneManager.h">
+      <Filter>include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\src\Managers\Shibboleth_BroadcasterManager.cpp" />
@@ -72,6 +75,7 @@
     <ClCompile Include="..\..\..\src\Managers\Shibboleth_SchemaManager.cpp" />
     <ClCompile Include="..\..\..\src\Managers\Shibboleth_UpdateManager.cpp" />
     <ClCompile Include="..\..\..\src\Managers\Shibboleth_MovementControllerManager.cpp" />
+    <ClCompile Include="..\..\..\src\Managers\Shibboleth_SceneManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\..\src\Managers\include\Shibboleth_InputReflection.inl">

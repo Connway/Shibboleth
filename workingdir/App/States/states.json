@@ -1,33 +1,33 @@
 {
-	"starting_state": "LoadGraphicsModuleState",
+	"starting_state": "Load Graphics Module State",
 
 	"states":
 	[
 		{
-			"name": "LoadGraphicsModuleState",
+			"name": "Load Graphics Module State",
 			"module": "ShibbolethStates",
 			"transitions": [1]
 		},
 		{
-			"name": "CreateResourceLoadersState",
+			"name": "Create Resource Loaders State",
 			"module": "ShibbolethStates",
 			"transitions": [2]
 		},
 
 		{
-			"name": "SetupDevicesState",
+			"name": "Setup Devices State",
 			"module": "ShibbolethStates",
 			"transitions": [3]
 		},
 
 		{
-			"name": "SetupOtterUIState",
+			"name": "Setup OtterUI State",
 			"module": "ShibbolethStates",
 			"transitions": [4]
 		},
 
 		{
-			"name": "loopforeverstate",
+			"name": "Loop State",
 			"module": "ShibbolethStates",
 			"transitions": []
 		}

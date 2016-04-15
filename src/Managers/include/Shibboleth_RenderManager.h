@@ -148,7 +148,7 @@ public:
 		Array<SRVPtr> depth_srvs;
 	};
 
-	static const char* GetName(void);
+	static const char* GetFriendlyName(void);
 
 	RenderManager(void);
 	~RenderManager(void);

@@ -31,7 +31,9 @@ class IApp;
 class CreateResourceLoadersState : public IState
 {
 public:
-	CreateResourceLoadersState(IApp& app);
+	static const char* GetFriendlyName(void);
+
+	CreateResourceLoadersState(void);
 	~CreateResourceLoadersState(void);
 
 	bool init(unsigned int /*state_id*/);
@@ -41,8 +43,6 @@ public:
 	void exit(void);
 
 private:
-	IApp& _app;
-	//unsigned int _state_id;
 
 	GAFF_NO_COPY(CreateResourceLoadersState);
 	GAFF_NO_MOVE(CreateResourceLoadersState);

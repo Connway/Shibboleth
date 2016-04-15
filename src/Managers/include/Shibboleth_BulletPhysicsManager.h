@@ -57,7 +57,7 @@ public:
 		UP_Z_AXIS,
 	};
 
-	static const char* GetName(void) { return "Physics Manager"; }
+	static const char* GetFriendlyName(void);
 	static void SetMemoryFunctions(void);
 
 	BulletPhysicsManager(void);

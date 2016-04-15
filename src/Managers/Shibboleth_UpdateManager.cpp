@@ -150,6 +150,11 @@ void UpdateManager::UpdatePhase::UpdateJob(void* data)
 
 
 
+const char* UpdateManager::GetFriendlyName(void)
+{
+	return "Update Manager";
+}
+
 UpdateManager::UpdateManager(void)
 {
 }
@@ -160,7 +165,7 @@ UpdateManager::~UpdateManager(void)
 
 const char* UpdateManager::getName(void) const
 {
-	return "Update Manager";
+	return GetFriendlyName();
 }
 
 void UpdateManager::update(void)

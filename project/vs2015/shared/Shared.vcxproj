@@ -119,6 +119,7 @@
     <ClInclude Include="..\..\..\src\Shared\include\Shibboleth_LooseFileSystem.h" />
     <ClInclude Include="..\..\..\src\Shared\include\Shibboleth_Map.h" />
     <ClInclude Include="..\..\..\src\Shared\include\Shibboleth_MessageBroadcaster.h" />
+    <ClInclude Include="..\..\..\src\Shared\include\Shibboleth_ModuleHelpers.h" />
     <ClInclude Include="..\..\..\src\Shared\include\Shibboleth_ProxyAllocator.h" />
     <ClInclude Include="..\..\..\src\Shared\include\Shibboleth_RefCounted.h" />
     <ClInclude Include="..\..\..\src\Shared\include\Shibboleth_ReflectionDefinitions.h" />

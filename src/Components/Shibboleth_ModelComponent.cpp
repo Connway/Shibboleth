@@ -83,7 +83,7 @@ SHIB_REF_IMPL(ModelComponent)
 .addBaseClassInterfaceOnly<ModelComponent>()
 ;
 
-const char* ModelComponent::GetComponentName(void)
+const char* ModelComponent::GetFriendlyName(void)
 {
 	return "Model Component";
 }

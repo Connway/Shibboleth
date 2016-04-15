@@ -36,13 +36,18 @@ THE SOFTWARE.
 #include <Shibboleth_ModelLoader.h>
 #include <Shibboleth_LuaLoader.h>
 
+#include <Shibboleth_Utilities.h>
 #include <Shibboleth_String.h>
 #include <Shibboleth_IApp.h>
 
 NS_SHIBBOLETH
 
-CreateResourceLoadersState::CreateResourceLoadersState(IApp& app):
-	_app(app)
+const char* CreateResourceLoadersState::GetFriendlyName(void)
+{
+	return "Create Resource Loaders State";
+}
+
+CreateResourceLoadersState::CreateResourceLoadersState(void)
 {
 }
 
@@ -66,26 +71,28 @@ void CreateResourceLoadersState::enter(void)
 
 void CreateResourceLoadersState::update(void)
 {
-	_app.getLogManager().logMessage(LogManager::LOG_NORMAL, _app.getLogFileName(), 
+	IApp& app = GetApp();
+
+	app.getLogManager().logMessage(LogManager::LOG_NORMAL, app.getLogFileName(), 
 		"\n==================================================\n"
 		"==================================================\n"
 		"Creating Resource Loaders...\n"
 	);
 
-	RenderManager& render_mgr = _app.getManagerT<RenderManager>("Render Manager");
-	ResourceManager& res_mgr = _app.getManagerT<ResourceManager>("Resource Manager");
+	RenderManager& render_mgr = app.getManagerT<RenderManager>("Render Manager");
+	ResourceManager& res_mgr = app.getManagerT<ResourceManager>("Resource Manager");
 
 	// PROGRAM BUFFERS CREATOR
 	{
 		ProgramBuffersCreator* program_buffers_creator = SHIB_ALLOCT(ProgramBuffersCreator, *GetAllocator());
 
 		if (!program_buffers_creator) {
-			_app.getLogManager().logMessage(LogManager::LOG_ERROR, _app.getLogFileName(), "ERROR - Failed to create program buffers creator.\n");
-			_app.quit();
+			app.getLogManager().logMessage(LogManager::LOG_ERROR, app.getLogFileName(), "ERROR - Failed to create program buffers creator.\n");
+			app.quit();
 			return;
 		}
 
-		_app.getLogManager().logMessage(LogManager::LOG_NORMAL, _app.getLogFileName(), "Adding Program Buffers Creator\n");
+		app.getLogManager().logMessage(LogManager::LOG_NORMAL, app.getLogFileName(), "Adding Program Buffers Creator\n");
 		res_mgr.registerResourceLoader(program_buffers_creator, "ProgramBuffers");
 	}
 
@@ -94,12 +101,12 @@ void CreateResourceLoadersState::update(void)
 		BufferCreator* buffer_creator = SHIB_ALLOCT(BufferCreator, *GetAllocator());
 
 		if (!buffer_creator) {
-			_app.getLogManager().logMessage(LogManager::LOG_ERROR, _app.getLogFileName(), "ERROR - Failed to create buffer creator.\n");
-			_app.quit();
+			app.getLogManager().logMessage(LogManager::LOG_ERROR, app.getLogFileName(), "ERROR - Failed to create buffer creator.\n");
+			app.quit();
 			return;
 		}
 
-		_app.getLogManager().logMessage(LogManager::LOG_NORMAL, _app.getLogFileName(), "Adding Buffer Creator\n");
+		app.getLogManager().logMessage(LogManager::LOG_NORMAL, app.getLogFileName(), "Adding Buffer Creator\n");
 		res_mgr.registerResourceLoader(buffer_creator, "Buffer");
 	}
 
@@ -108,8 +115,8 @@ void CreateResourceLoadersState::update(void)
 		TextureLoader* texture_loader = SHIB_ALLOCT(TextureLoader, *GetAllocator(), render_mgr);
 
 		if (!texture_loader) {
-			_app.getLogManager().logMessage(LogManager::LOG_ERROR, _app.getLogFileName(), "ERROR - Failed to create texture loader.\n");
-			_app.quit();
+			app.getLogManager().logMessage(LogManager::LOG_ERROR, app.getLogFileName(), "ERROR - Failed to create texture loader.\n");
+			app.quit();
 			return;
 		}
 
@@ -117,7 +124,7 @@ void CreateResourceLoadersState::update(void)
 		ResourceManager::JSONModifiers modifiers = { AString("image_file"), AString(), false };
 		json_elements.emplacePush(modifiers);
 
-		_app.getLogManager().logMessage(LogManager::LOG_NORMAL, _app.getLogFileName(), "Adding Texture Loader\n");
+		app.getLogManager().logMessage(LogManager::LOG_NORMAL, app.getLogFileName(), "Adding Texture Loader\n");
 		res_mgr.registerResourceLoader(texture_loader, ".texture", 0, json_elements);
 	}
 
@@ -126,12 +133,12 @@ void CreateResourceLoadersState::update(void)
 		SamplerStateLoader* sampler_loader = SHIB_ALLOCT(SamplerStateLoader, *GetAllocator(),render_mgr);
 
 		if (!sampler_loader) {
-			_app.getLogManager().logMessage(LogManager::LOG_ERROR, _app.getLogFileName(), "ERROR - Failed to create sampler state loader.\n");
-			_app.quit();
+			app.getLogManager().logMessage(LogManager::LOG_ERROR, app.getLogFileName(), "ERROR - Failed to create sampler state loader.\n");
+			app.quit();
 			return;
 		}
 
-		_app.getLogManager().logMessage(LogManager::LOG_NORMAL, _app.getLogFileName(), "Adding Sampler State Loader\n");
+		app.getLogManager().logMessage(LogManager::LOG_NORMAL, app.getLogFileName(), "Adding Sampler State Loader\n");
 		res_mgr.registerResourceLoader(sampler_loader, ".sampler");
 	}
 
@@ -140,24 +147,24 @@ void CreateResourceLoadersState::update(void)
 		ShaderLoader* shader_loader = SHIB_ALLOCT(ShaderLoader, *GetAllocator(), render_mgr);
 
 		if (!shader_loader) {
-			_app.getLogManager().logMessage(LogManager::LOG_ERROR, _app.getLogFileName(), "ERROR - Failed to create shader loader.\n");
-			_app.quit();
+			app.getLogManager().logMessage(LogManager::LOG_ERROR, app.getLogFileName(), "ERROR - Failed to create shader loader.\n");
+			app.quit();
 			return;
 		}
 
-		_app.getLogManager().logMessage(LogManager::LOG_NORMAL, _app.getLogFileName(), "Adding Shader Loader\n");
+		app.getLogManager().logMessage(LogManager::LOG_NORMAL, app.getLogFileName(), "Adding Shader Loader\n");
 		res_mgr.registerResourceLoader(shader_loader, render_mgr.getShaderExtension());
 	}
 
 	// SHADER PROGRAM LOADER
 	{
-		SchemaManager& schema_mgr = _app.getManagerT<SchemaManager>("Schema Manager");
+		SchemaManager& schema_mgr = app.getManagerT<SchemaManager>("Schema Manager");
 
 		ShaderProgramLoader* shader_program_loader = SHIB_ALLOCT(ShaderProgramLoader, *GetAllocator(), res_mgr, schema_mgr, render_mgr);
 
 		if (!shader_program_loader) {
-			_app.getLogManager().logMessage(LogManager::LOG_ERROR, _app.getLogFileName(), "ERROR - Failed to create shader program loader.\n");
-			_app.quit();
+			app.getLogManager().logMessage(LogManager::LOG_ERROR, app.getLogFileName(), "ERROR - Failed to create shader program loader.\n");
+			app.quit();
 			return;
 		}
 
@@ -177,7 +184,7 @@ void CreateResourceLoadersState::update(void)
 		modifiers.json_element = "Domain";
 		json_elements.emplacePush(modifiers);
 
-		_app.getLogManager().logMessage(LogManager::LOG_NORMAL, _app.getLogFileName(), "Adding Shader Program Loader\n");
+		app.getLogManager().logMessage(LogManager::LOG_NORMAL, app.getLogFileName(), "Adding Shader Program Loader\n");
 		res_mgr.registerResourceLoader(shader_program_loader, ".material", 0, json_elements);
 	}
 
@@ -186,12 +193,12 @@ void CreateResourceLoadersState::update(void)
 		LuaLoader* lua_loader = SHIB_ALLOCT(LuaLoader, *GetAllocator());
 
 		if (!lua_loader) {
-			_app.getLogManager().logMessage(LogManager::LOG_ERROR, _app.getLogFileName(), "ERROR - Failed to create Lua loader.\n");
-			_app.quit();
+			app.getLogManager().logMessage(LogManager::LOG_ERROR, app.getLogFileName(), "ERROR - Failed to create Lua loader.\n");
+			app.quit();
 			return;
 		}
 
-		_app.getLogManager().logMessage(LogManager::LOG_NORMAL, _app.getLogFileName(), "Adding Lua Loader\n");
+		app.getLogManager().logMessage(LogManager::LOG_NORMAL, app.getLogFileName(), "Adding Lua Loader\n");
 		res_mgr.registerResourceLoader(lua_loader, ".lua");
 	}
 
@@ -200,8 +207,8 @@ void CreateResourceLoadersState::update(void)
 		HoldingLoader* holding_loader = SHIB_ALLOCT(HoldingLoader, *GetAllocator());
 
 		if (!holding_loader) {
-			_app.getLogManager().logMessage(LogManager::LOG_ERROR, _app.getLogFileName(), "ERROR - Failed to create Holding loader.\n");
-			_app.quit();
+			app.getLogManager().logMessage(LogManager::LOG_ERROR, app.getLogFileName(), "ERROR - Failed to create Holding loader.\n");
+			app.quit();
 			return;
 		}
 
@@ -250,17 +257,17 @@ void CreateResourceLoadersState::update(void)
 		extensions.emplacePush(".ndo");
 		extensions.emplacePush(".fbx");
 
-		_app.getLogManager().logMessage(LogManager::LOG_NORMAL, _app.getLogFileName(), "Adding Holding Loader\n");
+		app.getLogManager().logMessage(LogManager::LOG_NORMAL, app.getLogFileName(), "Adding Holding Loader\n");
 		res_mgr.registerResourceLoader(holding_loader, extensions);
 	}
 
 	// MODEL LOADER
 	{
-		ModelLoader* model_loader = SHIB_ALLOCT(ModelLoader, *GetAllocator(), render_mgr, res_mgr, *_app.getFileSystem());
+		ModelLoader* model_loader = SHIB_ALLOCT(ModelLoader, *GetAllocator(), render_mgr, res_mgr, *app.getFileSystem());
 
 		if (!model_loader) {
-			_app.getLogManager().logMessage(LogManager::LOG_ERROR, _app.getLogFileName(), "ERROR - Failed to create Model loader.\n");
-			_app.quit();
+			app.getLogManager().logMessage(LogManager::LOG_ERROR, app.getLogFileName(), "ERROR - Failed to create Model loader.\n");
+			app.quit();
 			return;
 		}
 
@@ -268,7 +275,7 @@ void CreateResourceLoadersState::update(void)
 		ResourceManager::JSONModifiers modifiers = { AString("mesh_file"), AString(), true };
 		json_elements.emplacePush(modifiers);
 
-		_app.getLogManager().logMessage(LogManager::LOG_NORMAL, _app.getLogFileName(), "Adding Model Loader\n");
+		app.getLogManager().logMessage(LogManager::LOG_NORMAL, app.getLogFileName(), "Adding Model Loader\n");
 		res_mgr.registerResourceLoader(model_loader, ".model", 0, json_elements);
 	}
 
@@ -277,12 +284,12 @@ void CreateResourceLoadersState::update(void)
 		RenderTargetLoader* render_target_loader = SHIB_ALLOCT(RenderTargetLoader, *GetAllocator());
 
 		if (!render_target_loader) {
-			_app.getLogManager().logMessage(LogManager::LOG_ERROR, _app.getLogFileName(), "ERROR - Failed to create Render Target loader.\n");
-			_app.quit();
+			app.getLogManager().logMessage(LogManager::LOG_ERROR, app.getLogFileName(), "ERROR - Failed to create Render Target loader.\n");
+			app.quit();
 			return;
 		}
 
-		_app.getLogManager().logMessage(LogManager::LOG_NORMAL, _app.getLogFileName(), "Adding Render Target Loader\n");
+		app.getLogManager().logMessage(LogManager::LOG_NORMAL, app.getLogFileName(), "Adding Render Target Loader\n");
 		res_mgr.registerResourceLoader(render_target_loader, ".rendertarget");
 	}
 
@@ -291,17 +298,17 @@ void CreateResourceLoadersState::update(void)
 		PhysicsLoader* physics_loader = SHIB_ALLOCT(PhysicsLoader, *GetAllocator());
 
 		if (!physics_loader) {
-			_app.getLogManager().logMessage(LogManager::LOG_ERROR, _app.getLogFileName(), "ERROR - Failed to create Physics loader.\n");
-			_app.quit();
+			app.getLogManager().logMessage(LogManager::LOG_ERROR, app.getLogFileName(), "ERROR - Failed to create Physics loader.\n");
+			app.quit();
 			return;
 		}
 
-		_app.getLogManager().logMessage(LogManager::LOG_NORMAL, _app.getLogFileName(), "Adding Render Target Loader\n");
+		app.getLogManager().logMessage(LogManager::LOG_NORMAL, app.getLogFileName(), "Adding Render Target Loader\n");
 		res_mgr.registerResourceLoader(physics_loader, ".physics");
 	}
 
-	_app.getLogManager().logMessage(LogManager::LOG_NORMAL, _app.getLogFileName(), "Finished Creating Resource Loaders\n\n");
-	_app.switchState(_transitions[0]);
+	app.getLogManager().logMessage(LogManager::LOG_NORMAL, app.getLogFileName(), "Finished Creating Resource Loaders\n\n");
+	app.switchState(_transitions[0]);
 }
 
 void CreateResourceLoadersState::exit(void)

@@ -77,13 +77,13 @@ public:
 	template <class T>
 	const T& getManagerT(void) const
 	{
-		return *reinterpret_cast<T*>(getManager(T::GetName()));
+		return *reinterpret_cast<T*>(getManager(T::GetFriendlyName()));
 	}
 
 	template <class T>
 	T& getManagerT(void)
 	{
-		return *reinterpret_cast<T*>(getManager(T::GetName()));
+		return *reinterpret_cast<T*>(getManager(T::GetFriendlyName()));
 	}
 
 	IApp(void) {}

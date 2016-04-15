@@ -35,7 +35,7 @@ class IFile;
 class SchemaManager : public IManager
 {
 public:
-	static const char* GetName(void);
+	static const char* GetFriendlyName(void);
 
 	SchemaManager(void);
 	~SchemaManager(void);

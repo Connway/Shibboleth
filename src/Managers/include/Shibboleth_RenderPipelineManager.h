@@ -35,7 +35,7 @@ class IRenderPipeline;
 class RenderPipelineManager : public IManager, public IUpdateQuery
 {
 public:
-	static const char* GetName(void);
+	static const char* GetFriendlyName(void);
 
 	RenderPipelineManager(void);
 	~RenderPipelineManager(void);

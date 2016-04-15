@@ -41,6 +41,10 @@ SHIB_REF_IMPL(CameraManager)
 .ADD_BASE_CLASS_INTERFACE_ONLY(IUpdateQuery)
 ;
 
+const char* CameraManager::GetFriendlyName(void)
+{
+	return "Camera Manager";
+}
 
 CameraManager::CameraManager(void):
 	_occlusion_mgr(nullptr)
@@ -53,7 +57,7 @@ CameraManager::~CameraManager(void)
 
 const char* CameraManager::getName(void) const
 {
-	return "Camera Manager";
+	return GetFriendlyName();
 }
 
 void CameraManager::allManagersCreated(void)

@@ -343,7 +343,14 @@ void OcclusionManager::BVHTree::updateAABBs(size_t index)
 	}
 }
 
+
+
 // Occlusion Manager
+const char* OcclusionManager::GetFriendlyName(void)
+{
+	return "Occlusion Manager";
+}
+
 OcclusionManager::OcclusionManager(void)
 {
 	_bvh_trees[OT_STATIC].setIsStatic(true);
@@ -360,7 +367,7 @@ void OcclusionManager::getUpdateEntries(Array<UpdateEntry>& entries)
 
 const char* OcclusionManager::getName(void) const
 {
-	return "Occlusion Manager";
+	return GetFriendlyName();
 }
 
 OcclusionManager::OcclusionID OcclusionManager::addObject(Object* object, OBJ_TYPE object_type, const UserData& user_data)

@@ -22,54 +22,56 @@ THE SOFTWARE.
 
 #pragma once
 
-#include <Shibboleth_ReflectionDefinitions.h>
-#include <Shibboleth_ResourceWrapper.h>
-#include <Shibboleth_Component.h>
-#include <LinearMath/btVector3.h>
+#include <Shibboleth_Memory.h>
 
-class btRigidBody;
+#define CREATE_MODULE_TYPE(ReturnType, FuncName) \
+	template <class CreateType> \
+	ReturnType* FuncName(void) \
+	{ \
+		return SHIB_ALLOCT(CreateType, *GetAllocator()); \
+	}
+
+#define CREATE_MODULE_TYPE_WITH_INIT(ReturnType, FuncName) \
+	template <class CreateType> \
+	ReturnType* FuncName(void) \
+	{ \
+		CreateType* type = SHIB_ALLOCT(CreateType, *Shibboleth::GetAllocator()); \
+		if (type) { \
+			if (!type->init()) { \
+				SHIB_FREET(type, *GetAllocator()); \
+				type = nullptr; \
+			} \
+		} \
+		return type; \
+	}
+
 
 NS_SHIBBOLETH
 
-class BulletPhysicsResource;
+class Component;
+class IManager;
+class IState;
 
-static const char* g_physics_schema_names[] = {
-	"PhysicsCapsule.schema",
-	"PhysicsBox.schema"
-};
+CREATE_MODULE_TYPE_WITH_INIT(IManager, CreateManagerWithInitT);
 
-class BulletPhysicsComponent : public Component
+CREATE_MODULE_TYPE(Component, CreateComponentT);
+CREATE_MODULE_TYPE(IManager, CreateManagerT);
+CREATE_MODULE_TYPE(IState, CreateStateT);
+
+using ModuleTypeNameFunc = const char* (*)(void);
+
+using CreateComponentFunc = Component* (*)(void);
+using CreateManagerFunc = IManager* (*)(void);
+using CreateStateFunc = IState* (*)(void);
+
+template <class CreateFunc>
+struct ModuleTypeFuncs
 {
-public:
-	static const char* GetFriendlyName(void);
-
-	BulletPhysicsComponent(void);
-	~BulletPhysicsComponent(void);
-
-	const Gaff::JSON& getSchema(void) const;
-
-	bool load(const Gaff::JSON&) override;
-	bool save(Gaff::JSON&) override;
-
-	void addToWorld(void) override;
-	void removeFromWorld(void) override;
-
-	void setActive(bool active) override;
-
-	const btRigidBody* getRigidBody(void) const;
-	btRigidBody* getRigidBody(void);
-
-private:
-	btRigidBody* _rigid_body;
-	btVector3 _inertia;
-	float _mass;
-
-	ResourceWrapper<BulletPhysicsResource> _phys_res;
-
-	void collisionShapeLoaded(ResourceContainer*);
-
-	SHIB_REF_DEF(BulletPhysicsComponent);
-	REF_DEF_REQ;
+	CreateFunc create;
+	ModuleTypeNameFunc name;
 };
+
+using ComponentFuncs = ModuleTypeFuncs<CreateComponentFunc>;
+using StateFuncs = ModuleTypeFuncs<CreateStateFunc>;
 
 NS_END
