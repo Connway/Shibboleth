@@ -77,7 +77,7 @@ Gaff::IVirtualDestructor* SamplerStateLoader::load(const char* file_name, uint64
 		return nullptr;
 	}
 
-	if (!json["min_lod"].isReal() || !json["max_lod"].isReal() || !json["lod_bias"].isReal()) {
+	if (!json["min_lod"].isDouble() || !json["max_lod"].isDouble() || !json["lod_bias"].isDouble()) {
 		GetApp().getLogManager().logMessage(LogManager::LOG_ERROR, GetApp().getLogFileName(), "ERROR - Sampler State file '%s' is malformed. Value at 'min/max_lod' and/or 'lod_bias' is not a float.\n", file_name);
 		return nullptr;
 	}
@@ -87,37 +87,37 @@ Gaff::IVirtualDestructor* SamplerStateLoader::load(const char* file_name, uint64
 		GetEnumRefDef<Gleam::ISamplerState::WRAP>().getValue(json["wrap_u"].getString()),
 		GetEnumRefDef<Gleam::ISamplerState::WRAP>().getValue(json["wrap_v"].getString()),
 		GetEnumRefDef<Gleam::ISamplerState::WRAP>().getValue(json["wrap_w"].getString()),
-		static_cast<float>(json["min_lod"].getReal()),
-		static_cast<float>(json["max_lod"].getReal()),
-		static_cast<float>(json["lod_bias"].getReal()),
+		static_cast<float>(json["min_lod"].getDouble()),
+		static_cast<float>(json["max_lod"].getDouble()),
+		static_cast<float>(json["lod_bias"].getDouble()),
 		0,
 		0.0f, 0.0f, 0.0f, 0.0f
 	};
 
-	if (ss.filter == Gleam::ISamplerState::FILTER_ANISOTROPIC && !json["max_anisotropy"].isInteger()) {
+	if (ss.filter == Gleam::ISamplerState::FILTER_ANISOTROPIC && !json["max_anisotropy"].isInt()) {
 		GetApp().getLogManager().logMessage(LogManager::LOG_ERROR, GetApp().getLogFileName(), "ERROR - Sampler State file '%s' is malformed. Value at 'max_anisotropy' is not an integer.\n", file_name);
 		return nullptr;
 	}
 
 	if ((ss.wrap_u == Gleam::ISamplerState::WRAP_BORDER || ss.wrap_v == Gleam::ISamplerState::WRAP_BORDER ||
-		ss.wrap_w == Gleam::ISamplerState::WRAP_BORDER) && (!json["border_r"].isReal() || !json["border_g"].isReal() ||
-		!json["border_b"].isReal() || !json["border_a"].isReal())) {
+		ss.wrap_w == Gleam::ISamplerState::WRAP_BORDER) && (!json["border_r"].isDouble() || !json["border_g"].isDouble() ||
+		!json["border_b"].isDouble() || !json["border_a"].isDouble())) {
 
 		GetApp().getLogManager().logMessage(LogManager::LOG_ERROR, GetApp().getLogFileName(), "ERROR - Sampler State file '%s' is malformed. A wrap mode is defined as 'BORDER' and value 'border_r/g/b/a' is not a float.\n", file_name);
 		return nullptr;
 	}
 
 	if (ss.filter == Gleam::ISamplerState::FILTER_ANISOTROPIC) {
-		ss.max_anisotropy = static_cast<unsigned int>(json["max_anisotropy"].getInteger());
+		ss.max_anisotropy = static_cast<unsigned int>(json["max_anisotropy"].getInt());
 	}
 
 	if (ss.wrap_u == Gleam::ISamplerState::WRAP_BORDER || ss.wrap_v == Gleam::ISamplerState::WRAP_BORDER ||
 		ss.wrap_w == Gleam::ISamplerState::WRAP_BORDER) {
 
-		ss.border_r = static_cast<float>(json["border_r"].getReal());
-		ss.border_g = static_cast<float>(json["border_g"].getReal());
-		ss.border_b = static_cast<float>(json["border_b"].getReal());
-		ss.border_a = static_cast<float>(json["border_a"].getReal());
+		ss.border_r = static_cast<float>(json["border_r"].getDouble());
+		ss.border_g = static_cast<float>(json["border_g"].getDouble());
+		ss.border_b = static_cast<float>(json["border_b"].getDouble());
+		ss.border_a = static_cast<float>(json["border_a"].getDouble());
 	}
 
 	SamplerStateData* sampler_data = SHIB_ALLOCT(SamplerStateData, *GetAllocator());

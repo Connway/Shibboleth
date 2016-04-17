@@ -185,17 +185,17 @@ bool InputManager::saveKeybindings(void)
 {
 	const auto& mkeys = GetEnumRefDef<Gleam::MouseCode>();
 	const auto& keys = GetEnumRefDef<Gleam::KeyCode>();
-	Gaff::JSON bindings = Gaff::JSON::createArray();
+	Gaff::JSON bindings = Gaff::JSON::CreateArray();
 
 	size_t index = 0;
 
 	for (; index < _key_bindings.size(); ++index) {
 		const auto it = _key_bindings.atIndex(index);
 
-		Gaff::JSON key_binding = Gaff::JSON::createObject();
-		Gaff::JSON negative = Gaff::JSON::createBoolean(it->second.modifier < 0.0f);
-		Gaff::JSON alias = Gaff::JSON::createString(it->second.alias.getBuffer());
-		Gaff::JSON binding = Gaff::JSON::createString(keys.getName(it->first));
+		Gaff::JSON key_binding = Gaff::JSON::CreateObject();
+		Gaff::JSON negative = Gaff::JSON::CreateBool(it->second.modifier < 0.0f);
+		Gaff::JSON alias = Gaff::JSON::CreateString(it->second.alias.getBuffer());
+		Gaff::JSON binding = Gaff::JSON::CreateString(keys.getName(it->first));
 
 		key_binding.setObject("Negative", negative);
 		key_binding.setObject("Binding", binding);
@@ -207,10 +207,10 @@ bool InputManager::saveKeybindings(void)
 	for (size_t i = 0; i < _mouse_bindings.size(); ++i, ++index) {
 		const auto it = _mouse_bindings.atIndex(i);
 
-		Gaff::JSON key_binding = Gaff::JSON::createObject();
-		Gaff::JSON negative = Gaff::JSON::createBoolean(it->second.modifier < 0.0f);
-		Gaff::JSON alias = Gaff::JSON::createString(it->second.alias.getBuffer());
-		Gaff::JSON binding = Gaff::JSON::createString(mkeys.getName(it->first));
+		Gaff::JSON key_binding = Gaff::JSON::CreateObject();
+		Gaff::JSON negative = Gaff::JSON::CreateBool(it->second.modifier < 0.0f);
+		Gaff::JSON alias = Gaff::JSON::CreateString(it->second.alias.getBuffer());
+		Gaff::JSON binding = Gaff::JSON::CreateString(mkeys.getName(it->first));
 
 		key_binding.setObject("Negative", negative);
 		key_binding.setObject("Binding", binding);

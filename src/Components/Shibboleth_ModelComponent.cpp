@@ -64,7 +64,7 @@ SHIB_ENUM_REF_IMPL_EMBEDDED(MAP_TYPE, Gleam::IBuffer::MAP_TYPE)
 template <class T>
 static void RequestResourceArray(Array<T>& res_array, ResourceManager& res_mgr, const Gaff::JSON& json, const Gaff::FunctionBinder<void, ResourceContainer*>& callback)
 {
-	if (json) {
+	if (!json.isNull()) {
 		res_array.resize(json.size());
 
 		json.forEachInArray([&](size_t index, const Gaff::JSON& res) -> bool
@@ -135,14 +135,14 @@ bool ModelComponent::load(const Gaff::JSON& json)
 		Gaff::JSON textures = value["Textures"];
 		Gaff::JSON samplers = value["Samplers"];
 
-		_total_requests += (material) ? 2 : 0; // One for material, one for program buffers
-		_total_requests += (textures) ? textures.size() : 0;
-		_total_requests += (samplers) ? samplers.size() : 0;
+		_total_requests += (material.isNull()) ? 0 : 2; // One for material, one for program buffers
+		_total_requests += (textures.isNull()) ? 0 : textures.size();
+		_total_requests += (samplers.isNull()) ? 0 : samplers.size();
 
 		return false;
 	});
 
-	if (model_file) {
+	if (!model_file.isNull()) {
 		_total_requests += 1;
 	}
 
@@ -320,7 +320,7 @@ void ModelComponent::requestResources(const Gaff::JSON& materials, ResourceManag
 		Gaff::JSON textures = value["Textures"];
 		Gaff::JSON samplers = value["Samplers"];
 
-		if (material) {
+		if (!material.isNull()) {
 			// Make a unique name for this resource
 			snprintf(temp, 256, "ProgramBuffers#%s#%s#%u%zu", getOwner()->getName().getBuffer(), getName().getBuffer(), getOwner()->getID(), index);
 

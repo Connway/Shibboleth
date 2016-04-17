@@ -102,9 +102,6 @@ public:
 
 	const AString& getName(void) const;
 
-	unsigned char getLayer(void) const;
-	void setLayer(unsigned char layer);
-
 	unsigned int getID(void) const;
 	void setID(unsigned int id);
 
@@ -178,7 +175,6 @@ private:
 	ComponentManager& _comp_mgr;
 	ObjectManager& _obj_mgr;
 
-	unsigned char _layer;
 	unsigned int _id;;
 
 	uint8_t _flags;

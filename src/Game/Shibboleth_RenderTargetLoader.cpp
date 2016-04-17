@@ -39,8 +39,8 @@ NS_SHIBBOLETH
 static bool addOutput(Gleam::IRenderDevice& rd, RenderManager& rm, Gleam::IRenderTarget* rt, RenderTargetData* data, int window_width, int window_height, const Gaff::JSON& settings, const char* file_name)
 {
 	Gleam::ITexture::FORMAT t_fmt = GetEnumRefDef<Gleam::ITexture::FORMAT>().getValue(settings["Format"].getString());
-	int width = static_cast<int>(settings["Width"].getInteger());
-	int height = static_cast<int>(settings["Height"].getInteger());
+	int width = static_cast<int>(settings["Width"].getInt());
+	int height = static_cast<int>(settings["Height"].getInt());
 
 	if (width == -1 || height == -1) {
 		// If window_width and window_height are also -1, then we are using a bad tag.
@@ -120,8 +120,8 @@ static bool addDepthStencil(Gleam::IRenderDevice& rd, RenderManager& rm, Gleam::
 		return false;
 	}
 
-	int width = static_cast<int>(settings["Depth-Stencil Width"].getInteger());
-	int height = static_cast<int>(settings["Depth-Stencil Height"].getInteger());
+	int width = static_cast<int>(settings["Depth-Stencil Width"].getInt());
+	int height = static_cast<int>(settings["Depth-Stencil Height"].getInt());
 
 	if (width == -1 || height == -1) {
 		// If window_width and window_height are also -1, then we are using a bad tag.
@@ -213,10 +213,9 @@ Gaff::IVirtualDestructor* RenderTargetLoader::load(const char* file_name, uint64
 	if (!rt_settings.validate(schema)) {
 		GetApp().getLogManager().logMessage(
 			LogManager::LOG_ERROR, GetApp().getLogFileName(),
-			"ERROR - Render Target file '%s' has bad schema for reason '%s' (line %i).\n",
+			"ERROR - Render Target file '%s' has bad schema for reason '%s'.\n",
 			file_name,
-			rt_settings.getErrorText(),
-			rt_settings.getErrorLine()
+			rt_settings.getErrorText()
 		);
 
 		return nullptr;

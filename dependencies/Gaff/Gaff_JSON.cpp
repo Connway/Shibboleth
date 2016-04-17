@@ -22,138 +22,251 @@ THE SOFTWARE.
 
 #include "Gaff_JSON.h"
 #include "Gaff_File.h"
-#include <cstring>
-#include <cstdio>
-
-#ifdef _WIN32
-	#if _MSC_VER < 1900
-		#ifndef snprintf
-			#define snprintf _snprintf
-		#endif
-	#endif
-#endif
-
+#include <rapidjson/filewritestream.h>
+#include <rapidjson/filereadstream.h>
+#include <rapidjson/prettywriter.h>
+#include <rapidjson/error/en.h>
 
 NS_GAFF
 
 class JSON::JSONAllocator
 {
 public:
+	static const bool kNeedFree = true;
+
+	void* Malloc(size_t size)
+	{
+		return (size) ? _alloc(size) : nullptr;
+	}
+
+	void* Realloc(void* ptr, size_t original_size, size_t new_size)
+	{
+		if (original_size >= new_size) {
+			return ptr;
+		}
+
+		if (!ptr) {
+			return Malloc(new_size);
+		}
+
+		if (!new_size) {
+			_free(ptr);
+			return nullptr;
+		}
+
+
+		void* new_ptr = _alloc(new_size);
+		memcpy_s(new_ptr, new_size, ptr, original_size);
+		_free(ptr);
+
+		return new_ptr;
+	}
+
+	static void Free(void* ptr)
+	{
+		_free(ptr);
+	}
+};
+
+class JSON::JSONAllocatorOld
+{
+public:
 	void* alloc(size_t size_bytes, const char* /*file*/, int /*line*/)
 	{
-		return JSON::_alloc(size_bytes);
+		return _alloc(size_bytes);
 	}
 
 	void free(void* data)
 	{
-		JSON::_free(data);
+		_free(data);
 	}
 };
 
 struct JSON::ElementInfo
 {
-	const char* type[16] = { nullptr };
+	char type[16][16];
 	size_t num_types = 0;
 	JSON schema[16];
 	size_t num_schemas = 0;
-	const char* key = nullptr;
+	char key[64] = { 0 };
 	bool optional = false;
 	JSON requires;
 	size_t depth = 0;
 };
 
 
+template <class Writer>
+bool WriteJSON(const JSON& json, Writer& writer)
+{
+	bool success = true;
 
-json_malloc_t JSON::_alloc = malloc;
-json_free_t JSON::_free = free;
+	if (json.isObject()) {
+		success = writer.StartObject();
 
-void JSON::SetMemoryFunctions(json_malloc_t alloc_func, json_free_t free_func)
+		if (success) {
+			success = !json.forEachInObject([&](const char* key, const JSON& value) -> bool
+			{
+				success = writer.Key(key);
+
+				if (success) {
+					success = WriteJSON(value, writer);
+				}
+
+				return !success;
+			});
+		}
+
+		if (success) {
+			success = writer.EndObject();
+		}
+
+	} else if (json.isArray()) {
+		success = writer.StartArray();
+
+		if (success) {
+			success = !json.forEachInArray([&](size_t, const JSON& value) -> bool
+			{
+				return !WriteJSON(value, writer);
+			});
+		}
+
+		if (success) {
+			success = writer.EndArray();
+		}
+
+	} else if (json.isString()) {
+		success = writer.String(json.getString(), static_cast<rapidjson::SizeType>(json.size()));
+
+	} else if (json.isInt()) {
+		success = writer.Int(json.getInt());
+
+	} else if (json.isUInt()) {
+		success = writer.Uint(json.getUInt());
+
+	} else if (json.isInt64()) {
+		success = writer.Int64(json.getInt64());
+
+	} else if (json.isUInt64()) {
+		success = writer.Uint64(json.getUInt64());
+
+	} else if (json.isDouble()) {
+		success = writer.Double(json.getDouble());
+
+	} else if (json.isBool()) {
+		success = writer.Bool(json.getBool());
+
+	} else if (json.isNull()) {
+		success = writer.Null();
+	}
+
+	return success;
+}
+
+JSON::JSONAlloc JSON::_alloc = malloc;
+JSON::JSONFree JSON::_free = free;
+
+void JSON::SetMemoryFunctions(JSONAlloc alloc_func, JSONFree free_func)
 {
 	GAFF_ASSERT(alloc_func && free_func);
-	json_set_alloc_funcs(alloc_func, free_func);
 	_alloc = alloc_func;
 	_free = free_func;
 }
 
-/*!
-	\brief Sets the seed the system uses to calculate hashes.
-	\param hash_seed The hash seed to use.
-	\note
-		If you are using JSON objects across DLL boundaries, make sure to call this in the DLL as well!
-		These hashes have to match, so they must use the same seed!
-*/
-void JSON::SetHashSeed(size_t hash_seed)
+JSON JSON::CreateArray(void)
 {
-	json_object_seed(hash_seed);
+	JSONValue value = JSONValue(rapidjson::kArrayType);
+	return JSON(std::move(value));
 }
 
-JSON JSON::createArray(void)
+JSON JSON::CreateObject(void)
 {
-	return JSON(json_array(), false);
+	JSONValue value = JSONValue(rapidjson::kNumberType);
+	return JSON(std::move(value));
 }
 
-JSON JSON::createObject(void)
+JSON JSON::CreateInt(int val)
 {
-	return JSON(json_object(), false);
+	JSONValue value = JSONValue(val);
+	return JSON(std::move(value));
 }
 
-JSON JSON::createInteger(json_int_t val)
+JSON JSON::CreateUInt(unsigned int val)
 {
-	return JSON(json_integer(val), false);
+	JSONValue value = JSONValue(val);
+	return JSON(std::move(value));
 }
 
-JSON JSON::createReal(double val)
+JSON JSON::CreateInt64(int64_t val)
 {
-	return JSON(json_real(val), false);
+	JSONValue value = JSONValue(val);
+	return JSON(std::move(value));
 }
 
-JSON JSON::createString(const char* val)
+JSON JSON::CreateUInt64(uint64_t val)
 {
-	return JSON(json_string(val), false);
+	JSONValue value = JSONValue(val);
+	return JSON(std::move(value));
 }
 
-JSON JSON::createBoolean(bool val)
+JSON JSON::CreateDouble(double val)
 {
-	return JSON(json_boolean(val), true);
+	JSONValue value = JSONValue(val);
+	return JSON(std::move(value));
 }
 
-JSON JSON::createTrue(void)
+JSON JSON::CreateString(const char* val)
 {
-	return JSON(json_true(), true);
+	JSONAllocator allocator;
+	JSONValue value = JSONValue(val, allocator);
+	return JSON(std::move(value));
 }
 
-JSON JSON::createFalse(void)
+JSON JSON::CreateBool(bool val)
 {
-	return JSON(json_false(), true);
+	JSONValue value = JSONValue(val);
+	return JSON(std::move(value));
 }
 
-JSON JSON::createNull(void)
+JSON JSON::CreateTrue(void)
 {
-	return JSON(json_null(), true);
+	JSONValue value = JSONValue(rapidjson::kTrueType);
+	return JSON(std::move(value));
 }
 
-JSON::JSON(json_t* json, bool increment_ref_count):
-	_value(json)
+JSON JSON::CreateFalse(void)
 {
-	if (_value && increment_ref_count) {
-		json_incref(_value);
-	}
+	JSONValue value = JSONValue(rapidjson::kFalseType);
+	return JSON(std::move(value));
 }
 
-JSON::JSON(const JSON& json):
-	_value(json._value)
+JSON JSON::CreateNull(void)
 {
-	json_incref(_value);
+	JSONValue value = JSONValue(rapidjson::kNullType);
+	return JSON(std::move(value));
 }
 
-JSON::JSON(void):
-	_value(nullptr)
+JSON::JSON(const JSONValue& json)
+{
+	JSONAllocator allocator;
+	_value = JSONValue(json, allocator);
+}
+
+JSON::JSON(const JSON& json)
+{
+	*this = json;
+}
+
+JSON::JSON(JSON&& json):
+	_value(std::move(json._value))
+{
+}
+
+JSON::JSON(void)
 {
 }
 
 JSON::~JSON(void)
 {
-	destroy();
 }
 
 bool JSON::validateFile(const char* schema_file) const
@@ -169,7 +282,7 @@ bool JSON::validateFile(const char* schema_file) const
 	
 	if (input) {
 		if (file.readEntireFile(input)) {
-			memcpy(_error.source, schema_file, Min(static_cast<size_t>(JSON_ERROR_SOURCE_LENGTH), strlen(schema_file) + 1));
+			//memcpy(_error.source, schema_file, Min(static_cast<size_t>(JSON_ERROR_SOURCE_LENGTH), strlen(schema_file) + 1));
 			ret_val = validate(input);
 		}
 
@@ -193,14 +306,14 @@ bool JSON::validate(const JSON& schema_object) const
 		{
 			if (index != schema.size() - 1) {
 				if (!value.isObject()) {
-					snprintf(_error.text, JSON_ERROR_TEXT_LENGTH, "Value at index '%zu' is not an object.", index);
+					//snprintf(_error.text, JSON_ERROR_TEXT_LENGTH, "Value at index '%zu' is not an object.", index);
 					return true;
 				}
 
 				JSON name = value["Name"];
 
-				if (!name) {
-					snprintf(_error.text, JSON_ERROR_TEXT_LENGTH, "Value at index '%zu' is not an object.", index);
+				if (!name.isString()) {
+					//snprintf(_error.text, JSON_ERROR_TEXT_LENGTH, "Value at index '%zu' is not an object.", index);
 					return true;
 				}
 
@@ -225,7 +338,7 @@ bool JSON::validate(const char* input) const
 	JSON schema_object;
 
 	if (!schema_object.parse(input)) {
-		_error = schema_object._error;
+		//_error = schema_object._error;
 		return false;
 	}
 
@@ -234,275 +347,399 @@ bool JSON::validate(const char* input) const
 
 bool JSON::parseFile(const char* filename)
 {
-	GAFF_ASSERT(!_value && filename && strlen(filename));
-	_value = json_load_file(filename, JSON_REJECT_DUPLICATES | JSON_DISABLE_EOF_CHECK, &_error);
-	return valid();
+	GAFF_ASSERT(filename && strlen(filename));
+	FILE* file = nullptr;
+	fopen_s(&file, filename, "r");
+
+	if (!file) {
+		return false;
+	}
+
+	char buffer[2048];
+	rapidjson::FileReadStream stream(file, buffer, 2048);
+
+	JSONDocument document;
+	document.ParseStream<rapidjson::kParseValidateEncodingFlag>(stream);
+
+	fclose(file);
+
+	if (document.HasParseError()) {
+		_error.Set(document.GetParseError(), document.GetErrorOffset());
+		return false;
+	}
+
+	JSONValue& value = document;
+	_value = std::move(value);
+	return true;
 }
 
 bool JSON::parse(const char* input)
 {
-	GAFF_ASSERT(!_value && input);
-	_value = json_loads(input, JSON_REJECT_DUPLICATES | JSON_DISABLE_EOF_CHECK, &_error);
-	return valid();
+	GAFF_ASSERT(input && strlen(input));
+
+	JSONDocument document;
+	document.Parse<rapidjson::kParseValidateEncodingFlag>(input);
+
+	if (document.HasParseError()) {
+		_error.Set(document.GetParseError(), document.GetErrorOffset());
+		return false;
+	}
+
+	JSONValue& value = document;
+	_value = std::move(value);
+	return true;
 }
 
 bool JSON::dumpToFile(const char* filename)
 {
-	GAFF_ASSERT(_value);
-	return !json_dump_file(_value, filename, JSON_INDENT(4) | JSON_SORT_KEYS);
+	GAFF_ASSERT(_value.IsArray() || _value.IsObject());
+	FILE* file = nullptr;
+	fopen_s(&file, filename, "w");
+
+	if (!file) {
+		return false;
+	}
+
+	char buffer[2048];
+	rapidjson::FileWriteStream stream(file, buffer, 2048);
+
+	rapidjson::PrettyWriter<
+		rapidjson::FileWriteStream, rapidjson::UTF8<>,
+		rapidjson::UTF8<>, JSONAllocator
+	> writer(stream);
+
+	bool success = WriteJSON(*this, writer);
+	fclose(file);
+
+	return success;
 }
 
 char* JSON::dump(void)
 {
-	GAFF_ASSERT(_value);
-	return json_dumps(_value, JSON_INDENT(4) | JSON_SORT_KEYS);
-}
-
-void JSON::destroy(void)
-{
-	if (_value) {
-		json_decref(_value);
-		_value = nullptr;
-	}
-}
-
-bool JSON::valid(void) const
-{
-	return _value != nullptr;
+	GAFF_ASSERT(_value.IsArray() || _value.IsObject());
+	//return json_dumps(_value, JSON_INDENT(4) | JSON_SORT_KEYS);
+	return nullptr;
 }
 
 bool JSON::isObject(void) const
 {
-	return json_is_object(_value);
+	return _value.IsObject();
 }
 
 bool JSON::isArray(void) const
 {
-	return json_is_array(_value);
+	return _value.IsArray();
 }
 
 bool JSON::isString(void) const
 {
-	return json_is_string(_value);
+	return _value.IsString();
 }
 
 bool JSON::isNumber(void) const
 {
-	return json_is_number(_value);
+	return _value.IsNumber();
 }
 
-bool JSON::isInteger(void) const
+bool JSON::isInt(void) const
 {
-	return json_is_integer(_value);
+	return _value.IsInt();
 }
 
-bool JSON::isReal(void) const
+bool JSON::isUInt(void) const
 {
-	return json_is_real(_value);
+	return _value.IsUint();
 }
 
-bool JSON::isBoolean(void) const
+bool JSON::isInt64(void) const
 {
-	return json_is_boolean(_value);
+	return _value.IsInt64();
+}
+
+bool JSON::isUInt64(void) const
+{
+	return _value.IsUint64();
+}
+
+bool JSON::isDouble(void) const
+{
+	return _value.IsDouble();
+}
+
+bool JSON::isBool(void) const
+{
+	return _value.IsBool();
 }
 
 bool JSON::isTrue(void) const
 {
-	return json_is_true(_value);
+	return _value.IsTrue();
 }
 
 bool JSON::isFalse(void) const
 {
-	return json_is_false(_value);
+	return _value.IsFalse();
 }
 
 bool JSON::isNull(void) const
 {
-	return json_is_null(_value);
+	return _value.IsNull();
 }
 
-/*!
-	\brief If this is a JSON object, get the value associated with \a key.
-	\param key The key whose value to retrieve.
-	\return Returns the value found at \a key.
-*/
 JSON JSON::getObject(const char* key) const
 {
-	GAFF_ASSERT(isObject());
-	return JSON(json_object_get(_value, key), true);
+	auto it = _value.FindMember(key);
+
+	if (it == _value.MemberEnd()) {
+		return CreateNull();
+	}
+
+	return JSON(it->value);
 }
 
-/*!
-	\brief If this is a JSON array, get the value at \a index.
-	\param index The index in the array to retrieve.
-	\return Returns the value found at \a index.
-*/
 JSON JSON::getObject(size_t index) const
 {
-	GAFF_ASSERT(isArray() && index < size());
-	return JSON(json_array_get(_value, index), true);
+	return JSON(_value[static_cast<rapidjson::SizeType>(index)]);
 }
 
 const char* JSON::getString(const char* default_value) const
 {
-	return (_value) ? json_string_value(_value) : default_value;
+	return (_value.IsNull()) ? default_value : _value.GetString();
 }
 
-json_int_t JSON::getInteger(json_int_t default_value) const
+int JSON::getInt(int default_value) const
 {
-	return (_value) ? json_integer_value(_value) : default_value;
+	return (_value.IsNull()) ? default_value : _value.GetInt();
 }
 
-double JSON::getReal(double default_value) const
+unsigned int JSON::getUInt(unsigned int default_value) const
 {
-	return (_value) ? json_real_value(_value) : default_value;
+	return (_value.IsNull()) ? default_value : _value.GetUint();
+}
+
+int64_t JSON::getInt64(int64_t default_value) const
+{
+	return (_value.IsNull()) ? default_value : _value.GetInt64();
+}
+
+uint64_t JSON::getUInt64(uint64_t default_value) const
+{
+	return (_value.IsNull()) ? default_value : _value.GetUint64();
+}
+
+double JSON::getDouble(double default_value) const
+{
+	return (_value.IsNull()) ? default_value : _value.GetDouble();
 }
 
 double JSON::getNumber(double default_value) const
 {
-	return (_value) ? json_number_value(_value) : default_value;
+	return (_value.IsNull()) ? default_value : getNumber();
+}
+
+bool JSON::getBool(bool default_value) const
+{
+	return (_value.IsNull()) ? default_value : _value.GetBool();
 }
 
 const char* JSON::getString(void) const
 {
-	return json_string_value(_value);
+	return _value.GetString();
 }
 
-json_int_t JSON::getInteger(void) const
+int JSON::getInt(void) const
 {
-	return json_integer_value(_value);
+	return _value.GetInt();
 }
 
-double JSON::getReal(void) const
+unsigned int JSON::getUInt(void) const
 {
-	return json_real_value(_value);
+	return _value.GetUint();
+}
+
+int64_t JSON::getInt64(void) const
+{
+	return _value.GetInt64();
+}
+
+uint64_t JSON::getUInt64(void) const
+{
+	return _value.GetUint64();
+}
+
+double JSON::getDouble(void) const
+{
+	return _value.GetDouble();
 }
 
 double JSON::getNumber(void) const
 {
-	return json_number_value(_value);
+	double value = 0.0f;
+
+	if (_value.IsInt()) {
+		value = static_cast<double>(_value.GetInt());
+	} else if (_value.IsUint()) {
+		value = static_cast<double>(_value.GetUint());
+	} else if (_value.IsInt64()) {
+		value = static_cast<double>(_value.GetInt64());
+	} else if (_value.IsUint64()) {
+		value = static_cast<double>(_value.GetUint64());
+	}
+
+	return value;
 }
 
-/*!
-	\brief If this is a JSON object, set the value associated with \a key to \a json.
-	\param index The index in the array to set.
-	\param json The value associated with \a key.
-*/
+bool JSON::getBool(void) const
+{
+	return _value.GetBool();
+}
+
 void JSON::setObject(const char* key, const JSON& json)
 {
-	GAFF_ASSERT(json.valid() && isObject());
-	json_object_set(_value, key, json._value);
+	GAFF_ASSERT(_value.IsObject());
+	JSONAllocator allocator;
+	JSONValue value(json._value, allocator);
+
+	auto it = _value.FindMember(key);
+
+	if (it != _value.MemberEnd()) {
+		it->value = std::move(value);
+	} else {
+		_value.AddMember(JSONValue(key, allocator), std::move(value), allocator);
+	}
 }
 
-/*!
-	\brief If this is a JSON array, set the value at \a index to \a json.
-	\param index The key whose value we are going to set.
-	\param json The value to set at \a index.
-*/
+void JSON::setObject(const char* key, JSON&& json)
+{
+	GAFF_ASSERT(_value.IsObject());
+	auto it = _value.FindMember(key);
+
+	if (it != _value.MemberEnd()) {
+		it->value = std::move(json._value);
+	} else {
+		JSONAllocator allocator;
+		_value.AddMember(JSONValue(key, allocator), std::move(json._value), allocator);
+	}
+}
+
 void JSON::setObject(size_t index, const JSON& json)
 {
-	GAFF_ASSERT(json.valid() && isArray());
-	json_array_set(_value, index, json._value);
+	GAFF_ASSERT(_value.IsArray() && index < _value.Size());
+	JSONAllocator allocator;
+	JSONValue value(json._value, allocator);
+
+	_value[static_cast<rapidjson::SizeType>(index)] = std::move(value);
 }
 
-/*!
-	\brief
-		Gets either the number of key/value pairs or the number of elements,
-		depending on if it is a JSON object or a JSON array.
-*/
+void JSON::setObject(size_t index, JSON&& json)
+{
+	GAFF_ASSERT(_value.IsArray() && index < _value.Size());
+	_value[static_cast<rapidjson::SizeType>(index)] = std::move(json._value);
+}
+
+void JSON::push(const JSON& json)
+{
+	GAFF_ASSERT(_value.IsArray());
+	JSONAllocator allocator;
+	JSONValue value(json._value, allocator);
+
+	_value.PushBack(std::move(value), allocator);
+}
+
+void JSON::push(JSON&& json)
+{
+	GAFF_ASSERT(_value.IsArray());
+	JSONAllocator allocator;
+	_value.PushBack(std::move(json._value), allocator);
+}
+
 size_t JSON::size(void) const
 {
-	GAFF_ASSERT(_value && (isArray() || isObject()));
-	return (isObject()) ? json_object_size(_value) : json_array_size(_value);
-}
+	GAFF_ASSERT(isArray() || isObject() || isString());
 
-JSON JSON::shallowCopy(void) const
-{
-	GAFF_ASSERT(_value);
-	return JSON(json_copy(_value), false);
-}
+	size_t size = 0;
 
-JSON JSON::deepCopy(void) const
-{
-	GAFF_ASSERT(_value);
-	return JSON(json_deep_copy(_value), false);
-}
+	if (isArray()) {
+		size = _value.Size();
+	} else if (isObject()) {
+		size = _value.MemberCount();
+	} else {
+		size = _value.GetStringLength();
+	}
 
-int JSON::getErrorLine(void) const
-{
-	return _error.line;
-}
-
-int JSON::getErrorColumn(void) const
-{
-	return _error.column;
-}
-
-int JSON::getErrorPosition(void) const
-{
-	return _error.position;
-}
-
-const char* JSON::getErrorSource(void) const
-{
-	return _error.source;
+	return size;
 }
 
 const char* JSON::getErrorText(void) const
 {
-	return _error.text;
+	return _error.IsError() ? rapidjson::GetParseError_En(_error.Code()) : nullptr;
 }
 
 const JSON& JSON::operator=(const JSON& rhs)
 {
-	destroy();
-	_value = rhs._value;
-	json_incref(_value);
+	JSONAllocator allocator;
+	_value = JSONValue(rhs._value, allocator);
+	return *this;
+}
+
+const JSON& JSON::operator=(JSON&& rhs)
+{
+	_value = std::move(rhs._value);
 	return *this;
 }
 
 const JSON& JSON::operator=(const char* value)
 {
-	GAFF_ASSERT(_value && isString());
-	json_string_set(_value, value);
+	JSONAllocator allocator;
+	_value.SetString(value, allocator);
 	return *this;
 }
 
-const JSON& JSON::operator=(json_int_t value)
+const JSON& JSON::operator=(int value)
 {
-	GAFF_ASSERT(_value && isInteger());
-	json_integer_set(_value, value);
+	_value.SetInt(value);
+	return *this;
+}
+
+const JSON& JSON::operator=(unsigned int value)
+{
+	_value.SetUint(value);
+	return *this;
+}
+
+const JSON& JSON::operator=(int64_t value)
+{
+	_value.SetInt64(value);
+	return *this;
+}
+
+const JSON& JSON::operator=(uint64_t value)
+{
+	_value.SetUint64(value);
 	return *this;
 }
 
 const JSON& JSON::operator=(double value)
 {
-	GAFF_ASSERT(_value && isReal());
-	json_real_set(_value, value);
+	_value.SetDouble(value);
 	return *this;
 }
 
 bool JSON::operator==(const JSON& rhs) const
 {
-	return json_equal(_value, rhs._value) == 1;
+	return _value == rhs._value;
 }
 
 bool JSON::operator!=(const JSON& rhs) const
 {
-	return !(*this == rhs);
+	return _value != rhs._value;
 }
 
-/*!
-	\brief This is the same as calling getObject(\a key).
-*/
 JSON JSON::operator[](const char* key) const
 {
 	return getObject(key);
 }
 
-/*!
-	\brief This is the same as calling getObject(\a index).
-*/
 JSON JSON::operator[](size_t index) const
 {
 	return getObject(index);
@@ -513,7 +750,7 @@ void JSON::ExtractElementInfoHelper(
 	const JSON& type, const JSON& schema, const SchemaMap& schema_map,
 	bool is_object, bool is_array)
 {
-	info.type[type_index] = type.getString();
+	strncpy_s(info.type[type_index], type.getString(), 16);
 
 	if (is_array || is_object) {
 		GAFF_ASSERT((schema.isArray() && schema_index < schema.size()) || schema_index == 0);
@@ -542,14 +779,14 @@ JSON::ElementInfo JSON::ExtractElementInfo(JSON element, const SchemaMap& schema
 	JSON schema = element["Schema"];
 
 	GAFF_ASSERT(type.isString() || type.isArray());
-	GAFF_ASSERT(!schema || schema.isString() || schema.isArray() || schema.isObject());
-	GAFF_ASSERT(element["Optional"].isBoolean());
-	GAFF_ASSERT(!element["Requires"] || element["Requires"].isString() || element["Requires"].isArray());
+	GAFF_ASSERT(schema.isNull() || schema.isString() || schema.isArray() || schema.isObject());
+	GAFF_ASSERT(element["Optional"].isBool());
+	GAFF_ASSERT(element["Requires"].isNull() || element["Requires"].isString() || element["Requires"].isArray());
 
 	bool is_object = !strcmp(type.getString(), "Object");
 	bool is_array = !strcmp(type.getString(), "Array");
 
-	GAFF_ASSERT(!(is_array || is_object) || schema);
+	GAFF_ASSERT(!(is_array || is_object) || !schema.isNull());
 
 	info.optional = element["Optional"].isTrue();
 	info.requires = element["Requires"];
@@ -588,15 +825,15 @@ bool JSON::validateSchema(const JSON& schema, const SchemaMap& schema_map) const
 		parse_funcs["String"] = &JSON::isStringSchema;
 		parse_funcs["Number"] = &JSON::isNumberSchema;
 		parse_funcs["Integer"] = &JSON::isIntegerSchema;
-		parse_funcs["Real"] = &JSON::isRealSchema;
-		parse_funcs["Boolean"] = &JSON::isBooleanSchema;
+		parse_funcs["Double"] = &JSON::isDoubleSchema;
+		parse_funcs["Bool"] = &JSON::isBoolSchema;
 	}
 
 	return !schema.forEachInObject([&](const char* key, const JSON& value) -> bool
 	{
 		ElementInfo info = ExtractElementInfo(value, schema_map);
 		JSON element = getObject(key);
-		info.key = key;
+		strncpy_s(info.key, key, 64);
 
 		if (!checkRequirements(info)) {
 			return false;
@@ -614,7 +851,7 @@ bool JSON::validateSchema(const JSON& schema, const SchemaMap& schema_map) const
 
 bool JSON::checkRequirements(const ElementInfo& info) const
 {
-	if (!info.requires) {
+	if (info.requires.isNull()) {
 		return true;
 	}
 
@@ -623,7 +860,7 @@ bool JSON::checkRequirements(const ElementInfo& info) const
 		GAFF_ASSERT(value.isString());
 
 		if (getObject(value.getString()).isNull()) {
-			snprintf(_error.text, JSON_ERROR_TEXT_LENGTH, "Element '%s' requires element '%s'.", info.key, value.getString());
+			//snprintf(_error.text, JSON_ERROR_TEXT_LENGTH, "Element '%s' requires element '%s'.", info.key, value.getString());
 			return true;
 		}
 
@@ -639,15 +876,16 @@ bool JSON::checkRequirements(const ElementInfo& info) const
 
 bool JSON::isObjectSchema(const JSON& element, const ElementInfo& info, const SchemaMap& schema_map, size_t& s_index) const
 {
-	if (!element && info.optional) {
+	if (element.isNull() && info.optional) {
 		return true;
-	} else if (!element && !info.optional) {
-		snprintf(_error.text, JSON_ERROR_TEXT_LENGTH, "Element '%s' is non-optional.", info.key);
+
+	} else if (element.isNull() && !info.optional) {
+		//snprintf(_error.text, JSON_ERROR_TEXT_LENGTH, "Element '%s' is non-optional.", info.key);
 		return false;
 	}
 
 	if (!element.isObject()) {
-		snprintf(_error.text, JSON_ERROR_TEXT_LENGTH, "Element '%s' is not an object.", info.key);
+		//snprintf(_error.text, JSON_ERROR_TEXT_LENGTH, "Element '%s' is not an object.", info.key);
 		return false;
 	}
 
@@ -655,7 +893,7 @@ bool JSON::isObjectSchema(const JSON& element, const ElementInfo& info, const Sc
 	++s_index;
 
 	if (!element.validateSchema(info.schema[index], schema_map)) {
-		_error = element._error;
+		//_error = element._error;
 		return false;
 	}
 
@@ -664,15 +902,16 @@ bool JSON::isObjectSchema(const JSON& element, const ElementInfo& info, const Sc
 
 bool JSON::isArraySchema(const JSON& element, const ElementInfo& info, const SchemaMap& schema_map, size_t& s_index) const
 {
-	if (!element && info.optional) {
+	if (element.isNull() && info.optional) {
 		return true;
-	} else if (!element && !info.optional) {
-		snprintf(_error.text, JSON_ERROR_TEXT_LENGTH, "Element '%s' is non-optional.", info.key);
+
+	} else if (element.isNull() && !info.optional) {
+		//snprintf(_error.text, JSON_ERROR_TEXT_LENGTH, "Element '%s' is non-optional.", info.key);
 		return false;
 	}
 
 	if (!element.isArray()) {
-		snprintf(_error.text, JSON_ERROR_TEXT_LENGTH, "Element '%s' is not an array.", info.key);
+		//snprintf(_error.text, JSON_ERROR_TEXT_LENGTH, "Element '%s' is not an array.", info.key);
 		return false;
 	}
 
@@ -681,7 +920,7 @@ bool JSON::isArraySchema(const JSON& element, const ElementInfo& info, const Sch
 
 	JSON s = schema["Schema"];
 
-	GAFF_ASSERT(!s || s.isString() || s.isObject());
+	GAFF_ASSERT(s.isNull() || s.isString() || s.isObject());
 	GAFF_ASSERT(schema["Type"].isString());
 
 	const char* type = schema["Type"].getString();
@@ -694,45 +933,45 @@ bool JSON::isArraySchema(const JSON& element, const ElementInfo& info, const Sch
 	bool is_string = !strcmp(type, "String");
 	bool is_number = !strcmp(type, "Number");
 	bool is_integer = !strcmp(type, "Integer");
-	bool is_real = !strcmp(type, "Real");
-	bool is_boolean = !strcmp(type, "Boolean");
+	bool is_double = !strcmp(type, "Double");
+	bool is_bool = !strcmp(type, "Bool");
 	bool is_object = !strcmp(type, "Object");
 	bool is_array = !strcmp(type, "Array");
 
-	GAFF_ASSERT(!(is_object || is_array) || s);
+	GAFF_ASSERT(!(is_object || is_array) || !s.isNull());
 
-	return !element.forEachInArray([&](size_t index, const JSON& value) -> bool
+	return !element.forEachInArray([&](size_t /*index*/, const JSON& value) -> bool
 	{
 		if (is_string && !value.isString()) {
-			snprintf(_error.text, JSON_ERROR_TEXT_LENGTH, "Element '%s' index '%zu' depth '%zu' is not a string.", info.key, index, info.depth);
+			//snprintf(_error.text, JSON_ERROR_TEXT_LENGTH, "Element '%s' index '%zu' depth '%zu' is not a string.", info.key, index, info.depth);
 			return true;
 		} else if (is_number && !value.isNumber()) {
-			snprintf(_error.text, JSON_ERROR_TEXT_LENGTH, "Element '%s' index '%zu' depth '%zu' is not a number.", info.key, index, info.depth);
+			//snprintf(_error.text, JSON_ERROR_TEXT_LENGTH, "Element '%s' index '%zu' depth '%zu' is not a number.", info.key, index, info.depth);
 			return true;
-		} else if (is_integer && !value.isInteger()) {
-			snprintf(_error.text, JSON_ERROR_TEXT_LENGTH, "Element '%s' index '%zu' depth '%zu' is not an integer.", info.key, index, info.depth);
+		} else if (is_integer && (!value.isNumber() || value.isDouble())) {
+			//snprintf(_error.text, JSON_ERROR_TEXT_LENGTH, "Element '%s' index '%zu' depth '%zu' is not an integer.", info.key, index, info.depth);
 			return true;
-		} else if (is_real && !value.isReal()) {
-			snprintf(_error.text, JSON_ERROR_TEXT_LENGTH, "Element '%s' index '%zu' depth '%zu' is not a real.", info.key, index, info.depth);
+		} else if (is_double && !value.isDouble()) {
+			//snprintf(_error.text, JSON_ERROR_TEXT_LENGTH, "Element '%s' index '%zu' depth '%zu' is not a double.", info.key, index, info.depth);
 			return true;
-		} else if (is_boolean && !value.isBoolean()) {
-			snprintf(_error.text, JSON_ERROR_TEXT_LENGTH, "Element '%s' index '%zu' depth '%zu' is not a boolean.", info.key, index, info.depth);
+		} else if (is_bool && !value.isBool()) {
+			//snprintf(_error.text, JSON_ERROR_TEXT_LENGTH, "Element '%s' index '%zu' depth '%zu' is not a bool.", info.key, index, info.depth);
 			return true;
 
 		} else if (is_object) {
 			if (!value.isObject()) {
-				snprintf(_error.text, JSON_ERROR_TEXT_LENGTH, "Element '%s' index '%zu' depth '%zu' is not an object.", info.key, index, info.depth);
+				//snprintf(_error.text, JSON_ERROR_TEXT_LENGTH, "Element '%s' index '%zu' depth '%zu' is not an object.", info.key, index, info.depth);
 				return true;
 			}
 
 			if (!value.validateSchema(s, schema_map)) {
-				_error = value._error;
+				//_error = value._error;
 				return true;
 			}
 
 		} else if (is_array) {
 			if (!value.isArray()) {
-				snprintf(_error.text, JSON_ERROR_TEXT_LENGTH, "Element '%s' index '%zu' depth '%zu' is not an array.", info.key, index, info.depth);
+				//snprintf(_error.text, JSON_ERROR_TEXT_LENGTH, "Element '%s' index '%zu' depth '%zu' is not an array.", info.key, index, info.depth);
 				return true;
 			}
 
@@ -749,15 +988,16 @@ bool JSON::isArraySchema(const JSON& element, const ElementInfo& info, const Sch
 
 bool JSON::isStringSchema(const JSON& element, const ElementInfo& info, const SchemaMap&, size_t&) const
 {
-	if (!element && info.optional) {
+	if (element.isNull() && info.optional) {
 		return true;
-	} else if (!element && !info.optional) {
-		snprintf(_error.text, JSON_ERROR_TEXT_LENGTH, "Element '%s' is non-optional.", info.key);
+
+	} else if (element.isNull() && !info.optional) {
+		//snprintf(_error.text, JSON_ERROR_TEXT_LENGTH, "Element '%s' is non-optional.", info.key);
 		return false;
 	}
 
 	if (!element.isString()) {
-		snprintf(_error.text, JSON_ERROR_TEXT_LENGTH, "Element '%s' is not a string.", info.key);
+		//snprintf(_error.text, JSON_ERROR_TEXT_LENGTH, "Element '%s' is not a string.", info.key);
 		return false;
 	}
 
@@ -766,15 +1006,16 @@ bool JSON::isStringSchema(const JSON& element, const ElementInfo& info, const Sc
 
 bool JSON::isNumberSchema(const JSON& element, const ElementInfo& info, const SchemaMap&, size_t&) const
 {
-	if (!element && info.optional) {
+	if (element.isNull() && info.optional) {
 		return true;
-	} else if (!element && !info.optional) {
-		snprintf(_error.text, JSON_ERROR_TEXT_LENGTH, "Element '%s' is non-optional.", info.key);
+
+	} else if (element.isNull() && !info.optional) {
+		//snprintf(_error.text, JSON_ERROR_TEXT_LENGTH, "Element '%s' is non-optional.", info.key);
 		return false;
 	}
 
 	if (!element.isNumber()) {
-		snprintf(_error.text, JSON_ERROR_TEXT_LENGTH, "Element '%s' is not a number.", info.key);
+		//snprintf(_error.text, JSON_ERROR_TEXT_LENGTH, "Element '%s' is not a number.", info.key);
 		return false;
 	}
 
@@ -783,49 +1024,52 @@ bool JSON::isNumberSchema(const JSON& element, const ElementInfo& info, const Sc
 
 bool JSON::isIntegerSchema(const JSON& element, const ElementInfo& info, const SchemaMap&, size_t&) const
 {
-	if (!element && info.optional) {
+	if (element.isNull() && info.optional) {
 		return true;
-	} else if (!element && !info.optional) {
-		snprintf(_error.text, JSON_ERROR_TEXT_LENGTH, "Element '%s' is non-optional.", info.key);
+
+	} else if (element.isNull() && !info.optional) {
+		//snprintf(_error.text, JSON_ERROR_TEXT_LENGTH, "Element '%s' is non-optional.", info.key);
 		return false;
 	}
 
-	if (!element.isInteger()) {
-		snprintf(_error.text, JSON_ERROR_TEXT_LENGTH, "Element '%s' is not an integer.", info.key);
+	if (!element.isNumber() || element.isDouble()) {
+		//snprintf(_error.text, JSON_ERROR_TEXT_LENGTH, "Element '%s' is not an integer.", info.key);
 		return false;
 	}
 
 	return true;
 }
 
-bool JSON::isRealSchema(const JSON& element, const ElementInfo& info, const SchemaMap&, size_t&) const
+bool JSON::isDoubleSchema(const JSON& element, const ElementInfo& info, const SchemaMap&, size_t&) const
 {
-	if (!element && info.optional) {
+	if (element.isNull() && info.optional) {
 		return true;
-	} else if (!element && !info.optional) {
-		snprintf(_error.text, JSON_ERROR_TEXT_LENGTH, "Element '%s' is non-optional.", info.key);
+
+	} else if (element.isNull() && !info.optional) {
+		//snprintf(_error.text, JSON_ERROR_TEXT_LENGTH, "Element '%s' is non-optional.", info.key);
 		return false;
 	}
 
-	if (!element.isReal()) {
-		snprintf(_error.text, JSON_ERROR_TEXT_LENGTH, "Element '%s' is not a real.", info.key);
+	if (!element.isDouble()) {
+		//snprintf(_error.text, JSON_ERROR_TEXT_LENGTH, "Element '%s' is not a double.", info.key);
 		return false;
 	}
 
 	return true;
 }
 
-bool JSON::isBooleanSchema(const JSON& element, const ElementInfo& info, const SchemaMap&, size_t&) const
+bool JSON::isBoolSchema(const JSON& element, const ElementInfo& info, const SchemaMap&, size_t&) const
 {
-	if (!element && info.optional) {
+	if (element.isNull() && info.optional) {
 		return true;
-	} else if (!element && !info.optional) {
-		snprintf(_error.text, JSON_ERROR_TEXT_LENGTH, "Element '%s' is non-optional.", info.key);
+
+	} else if (element.isNull() && !info.optional) {
+		//snprintf(_error.text, JSON_ERROR_TEXT_LENGTH, "Element '%s' is non-optional.", info.key);
 		return false;
 	}
 
-	if (!element.isBoolean()) {
-		snprintf(_error.text, JSON_ERROR_TEXT_LENGTH, "Element '%s' is not a boolean.", info.key);
+	if (!element.isBool()) {
+		//snprintf(_error.text, JSON_ERROR_TEXT_LENGTH, "Element '%s' is not a bool.", info.key);
 		return false;
 	}
 

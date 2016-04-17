@@ -32,7 +32,7 @@ project "RenderPipelines"
 		"../Game/include",
 		"../Managers/include",
 		"../Components/include",
-		"../../dependencies/jansson",
+		"../../dependencies/rapidjson",
 		"../../dependencies/Gleam/include",
 		"../../dependencies/Gaff/include",
 		"../../dependencies/esprit/include",
@@ -42,17 +42,19 @@ project "RenderPipelines"
 
 	dependson
 	{
-		"Shared", "Gaff", "jansson",
-		"Gleam", "Memory", "Managers",
-		"Components", "Game", "assimp",
+		"Shared", "Gaff",
+		"Gleam", "Memory",
+		"Managers", "Components",
+		"Game", "assimp",
 		"esprit", "Boxer"
 	}
 
 	links
 	{
-		"Shared", "Gaff", "jansson",
-		"Gleam", "Memory", "Managers",
-		"Components", "Game", "assimp",
+		"Shared", "Gaff",
+		"Gleam", "Memory",
+		"Managers", "Components",
+		"Game", "assimp",
 		"esprit", "Boxer"
 	}
 

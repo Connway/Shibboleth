@@ -7,11 +7,11 @@
 
 	"Render Pass": { "Type":"String", "Optional": false },
 
-	"Slope Scale Depth Bias": { "Type": "Real", "Optional": true },
-	"Depth Bias Clamp": { "Type": "Real", "Optional": true },
+	"Slope Scale Depth Bias": { "Type": "Double", "Optional": true },
+	"Depth Bias Clamp": { "Type": "Double", "Optional": true },
 	"Depth Bias": { "Type": "Integer", "Optional": true },
-	"Front Face Counter Clockwise": { "Type": "Boolean", "Optional": true },
-	"Scissor Enabled": { "Type": "Boolean", "Optional": true },
-	"Two Sided": { "Type": "Boolean", "Optional": true },
-	"Wireframe": { "Type": "Boolean", "Optional": true }
+	"Front Face Counter Clockwise": { "Type": "Bool", "Optional": true },
+	"Scissor Enabled": { "Type": "Bool", "Optional": true },
+	"Two Sided": { "Type": "Bool", "Optional": true },
+	"Wireframe": { "Type": "Bool", "Optional": true }
 }

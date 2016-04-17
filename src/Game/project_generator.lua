@@ -27,7 +27,7 @@ project "Game"
 		"../Memory/include",
 		"../Managers/include",
 		"../../dependencies/OtterUI/inc",
-		"../../dependencies/jansson",
+		"../../dependencies/rapidjson",
 		"../../dependencies/Gleam/include",
 		"../../dependencies/Gaff/include",
 		"../../dependencies/LuaState",

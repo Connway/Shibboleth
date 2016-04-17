@@ -36,7 +36,7 @@ NS_SHIBBOLETH
 Object::Object(unsigned int id):
 	_comp_mgr(GetApp().getManagerT<ComponentManager>("Component Manager")),
 	_obj_mgr(GetApp().getManagerT<ObjectManager>("Object Manager")),
-	_layer(0), _parent(nullptr), _id(id), _flags(0)
+	_parent(nullptr), _id(id), _flags(0)
 {
 }
 
@@ -103,16 +103,6 @@ void Object::destroy(void)
 const AString& Object::getName(void) const
 {
 	return _name;
-}
-
-unsigned char Object::getLayer(void) const
-{
-	return _layer;
-}
-
-void Object::setLayer(unsigned char layer)
-{
-	_layer = layer;
 }
 
 unsigned int Object::getID(void) const

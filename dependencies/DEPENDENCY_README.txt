@@ -12,7 +12,6 @@ Libraries Affected:
 	LibTIFF
 	libjpeg
 	zlib
-	jansson (changed header files with the line #include <jansson_config.h> to #include "jansson_config.h" and moved the #include <windows.h> in hashtable_seed.c from line 98 to line 42 to remove compile warnings)
 	assimp (Changed '#include "../contrib/unzip/unzip.h' lines to "#include <unzip.h>", as I already have minizip compiled into a separate lib. Fixed compilation error because a variable wasn't initialized.)
 	minizip (commented out a block that says #define _CRT_SECURE_NO_WARNINGS, as I have it defined at the project level)
 	ResIL
@@ -30,7 +29,6 @@ bullet - 2.83.7
 dirent - 1.21
 enet - 1.3.13
 glew - 1.13.0
-jansson - 2.7
 libjpeg - 9b
 libpng - 1.6.21
 libtiff - 4.0.6
@@ -38,5 +36,6 @@ LuaBridge - 2.0
 LuaJIT - 2.0.4
 LuaState - 2.0
 OtterUI - 1.3.6.3 commit a2c5243
+RapidJSON - 1.0.2
 utf8-cpp - 2.3.4
 zlib - 1.2.8

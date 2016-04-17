@@ -23,7 +23,8 @@ THE SOFTWARE.
 #pragma once
 
 #include "Gaff_HashMap.h"
-#include <jansson.h>
+#include "Gaff_IncludeRapidJSON.h"
+#include <rapidjson/document.h>
 
 #ifdef PLATFORM_WINDOWS
 	#pragma warning(push)
@@ -38,27 +39,21 @@ NS_GAFF
 class JSON
 {
 public:
-	/*!
-		\brief If this is JSON object, then iterate over each key/value pair and call \a callback.
-		\tparam
-			Callback The type used for the callback.
-			Callbacks take the signature bool CB(const char* key, const JSON& value)
-			Returning true will end the loop early.
+	using JSONAlloc = void* (*)(size_t);
+	using JSONFree = void (*)(void*);
 
-		\return Returns whether the loop was terminated early.
-	*/
 	template <class Callback>
 	bool forEachInObject(Callback&& callback) const
 	{
-		GAFF_ASSERT(_value && isObject());
-		const char* key = nullptr;
-		json_t* value = nullptr;
+		GAFF_ASSERT(_value.IsObject());
 
-		json_object_foreach(_value, key, value)
-		{
-			JSON json(value, true);
+		auto beg = _value.MemberBegin();
+		auto end = _value.MemberEnd();
 
-			if (callback(key, json)) {
+		for ( ; beg != end; ++beg) {
+			JSON json(beg->value);
+
+			if (callback(beg->name.GetString(), json)) {
 				return true;
 			}
 		}
@@ -66,25 +61,18 @@ public:
 		return false;
 	}
 
-	/*!
-		\brief If this is JSON array, then iterate over each element and call \a callback.
-		\tparam
-			Callback The type used for the callback.
-			Callbacks take the signature bool CB(size_t index, const JSON& value)
-			Returning true will end the loop early.
-
-		\return Returns whether the loop was terminated early.
-	*/
 	template <class Callback>
 	bool forEachInArray(Callback&& callback) const
 	{
-		GAFF_ASSERT(_value && isArray());
-		json_t* value = nullptr;
-		size_t index = 0;
+		GAFF_ASSERT(_value.IsArray());
 
-		json_array_foreach(_value, index, value)
-		{
-			if (callback(index, JSON(value, true))) {
+		auto beg = _value.Begin();
+		auto end = _value.End();
+
+		for (size_t index = 0; beg != end; ++beg, ++index) {
+			JSON json(*beg);
+
+			if (callback(index, json)) {
 				return true;
 			}
 		}
@@ -92,19 +80,22 @@ public:
 		return false;
 	}
 
-	static INLINE void SetMemoryFunctions(json_malloc_t alloc_func, json_free_t free_func);
-	static INLINE void SetHashSeed(size_t hash_seed);
-	static INLINE JSON createArray(void);
-	static INLINE JSON createObject(void);
-	static INLINE JSON createInteger(json_int_t val);
-	static INLINE JSON createReal(double val);
-	static INLINE JSON createString(const char* val);
-	static INLINE JSON createBoolean(bool val);
-	static INLINE JSON createTrue(void);
-	static INLINE JSON createFalse(void);
-	static INLINE JSON createNull(void);
+	static INLINE void SetMemoryFunctions(JSONAlloc alloc_func, JSONFree free_func);
+	static INLINE JSON CreateArray(void);
+	static INLINE JSON CreateObject(void);
+	static INLINE JSON CreateInt(int val);
+	static INLINE JSON CreateUInt(unsigned int val);
+	static INLINE JSON CreateInt64(int64_t val);
+	static INLINE JSON CreateUInt64(uint64_t val);
+	static INLINE JSON CreateDouble(double val);
+	static INLINE JSON CreateString(const char* val);
+	static INLINE JSON CreateBool(bool val);
+	static INLINE JSON CreateTrue(void);
+	static INLINE JSON CreateFalse(void);
+	static INLINE JSON CreateNull(void);
 
 	JSON(const JSON& json);
+	JSON(JSON&& json);
 	JSON(void);
 	~JSON(void);
 
@@ -117,16 +108,16 @@ public:
 	INLINE bool dumpToFile(const char* filename);
 	INLINE char* dump(void);
 
-	INLINE void destroy(void);
-	INLINE bool valid(void) const;
-
 	INLINE bool isObject(void) const;
 	INLINE bool isArray(void) const;
 	INLINE bool isString(void) const;
 	INLINE bool isNumber(void) const;
-	INLINE bool isInteger(void) const;
-	INLINE bool isReal(void) const;
-	INLINE bool isBoolean(void) const;
+	INLINE bool isInt(void) const;
+	INLINE bool isUInt(void) const;
+	INLINE bool isInt64(void) const;
+	INLINE bool isUInt64(void) const;
+	INLINE bool isDouble(void) const;
+	INLINE bool isBool(void) const;
 	INLINE bool isTrue(void) const;
 	INLINE bool isFalse(void) const;
 	INLINE bool isNull(void) const;
@@ -135,56 +126,71 @@ public:
 	INLINE JSON getObject(size_t index) const;
 
 	INLINE const char* getString(const char* default_value) const;
-	INLINE json_int_t getInteger(json_int_t default_value) const;
-	INLINE double getReal(double default_value) const;
+	INLINE int getInt(int default_value) const;
+	INLINE unsigned int getUInt(unsigned int default_value) const;
+	INLINE int64_t getInt64(int64_t default_value) const;
+	INLINE uint64_t getUInt64(uint64_t default_value) const;
+	INLINE double getDouble(double default_value) const;
 	INLINE double getNumber(double default_value) const;
+	INLINE bool getBool(bool default_value) const;
 
 	INLINE const char* getString(void) const;
-	INLINE json_int_t getInteger(void) const;
-	INLINE double getReal(void) const;
+	INLINE int getInt(void) const;
+	INLINE unsigned int getUInt(void) const;
+	INLINE int64_t getInt64(void) const;
+	INLINE uint64_t getUInt64(void) const;
+	INLINE double getDouble(void) const;
 	INLINE double getNumber(void) const;
+	INLINE bool getBool(void) const;
 
 	INLINE void setObject(const char* key, const JSON& json);
+	INLINE void setObject(const char* key, JSON&& json);
 	INLINE void setObject(size_t index, const JSON& json);
+	INLINE void setObject(size_t index, JSON&& json);
+	INLINE void push(const JSON& json);
+	INLINE void push(JSON&& json);
 
 	INLINE size_t size(void) const;
 
-	INLINE JSON shallowCopy(void) const;
-	INLINE JSON deepCopy(void) const;
-
-	INLINE int getErrorLine(void) const;
-	INLINE int getErrorColumn(void) const;
-	INLINE int getErrorPosition(void) const;
-	INLINE const char* getErrorSource(void) const;
 	INLINE const char* getErrorText(void) const;
 
-	const JSON& operator=(const JSON& rhs);
+	INLINE const JSON& operator=(const JSON& rhs);
+	INLINE const JSON& operator=(JSON&& rhs);
 
-	const JSON& operator=(const char* value);
-	const JSON& operator=(json_int_t value);
-	const JSON& operator=(double value);
+	INLINE const JSON& operator=(const char* value);
+	INLINE const JSON& operator=(int value);
+	INLINE const JSON& operator=(unsigned int value);
+	INLINE const JSON& operator=(int64_t value);
+	INLINE const JSON& operator=(uint64_t value);
+	INLINE const JSON& operator=(double value);
 
 	INLINE bool operator==(const JSON& rhs) const;
 	INLINE bool operator!=(const JSON& rhs) const;
 	INLINE JSON operator[](const char* key) const;
 	INLINE JSON operator[](size_t index) const;
 
-	INLINE operator bool(void) const { return valid(); }
-
 private:
-	mutable json_error_t _error;
-	json_t* _value;
-
 	class JSONAllocator;
+	using JSONDocument = rapidjson::GenericDocument<rapidjson::UTF8<>, JSONAllocator, JSONAllocator>;
+	using JSONValue = rapidjson::GenericValue<rapidjson::UTF8<>, JSONAllocator>;
+
+	JSONValue _value;
+	rapidjson::ParseResult _error;
+
+	static JSONAlloc _alloc;
+	static JSONFree _free;
+
+	explicit JSON(const JSONValue& json);
+
+
+
+	class JSONAllocatorOld;
 	struct ElementInfo;
 
-	using SchemaString = AHashString<JSONAllocator>;
-	using SchemaMap = HashMap<SchemaString, JSON, JSONAllocator>;
+	using SchemaString = AHashString<JSONAllocatorOld>;
+	using SchemaMap = HashMap<SchemaString, JSON, JSONAllocatorOld>;
 	using ParseElementFunc = bool (JSON::*)(const JSON&, const ElementInfo&, const SchemaMap&, size_t&) const;
-	using ElementParseMap = HashMap<SchemaString, ParseElementFunc, JSONAllocator>;
-
-	static json_malloc_t _alloc;
-	static json_free_t _free;
+	using ElementParseMap = HashMap<SchemaString, ParseElementFunc, JSONAllocatorOld>;
 
 	static void ExtractElementInfoHelper(
 		ElementInfo& info, size_t type_index, size_t& schema_index,
@@ -193,7 +199,7 @@ private:
 	);
 	static ElementInfo ExtractElementInfo(JSON element, const SchemaMap& schema_map);
 
-	explicit JSON(json_t* json, bool increment_ref_count);
+	//explicit JSON(json_t* json, bool increment_ref_count);
 
 	bool validateSchema(const JSON& schema, const SchemaMap& schema_map) const;
 
@@ -204,8 +210,10 @@ private:
 	bool isStringSchema(const JSON& element, const ElementInfo& info, const SchemaMap&, size_t&) const;
 	bool isNumberSchema(const JSON& element, const ElementInfo& info, const SchemaMap&, size_t&) const;
 	bool isIntegerSchema(const JSON& element, const ElementInfo& info, const SchemaMap&, size_t&) const;
-	bool isRealSchema(const JSON& element, const ElementInfo& info, const SchemaMap&, size_t&) const;
-	bool isBooleanSchema(const JSON& element, const ElementInfo& info, const SchemaMap&, size_t&) const;
+	bool isDoubleSchema(const JSON& element, const ElementInfo& info, const SchemaMap&, size_t&) const;
+	bool isBoolSchema(const JSON& element, const ElementInfo& info, const SchemaMap&, size_t&) const;
+
+	friend class JSONAllocator;
 };
 
 NS_END

@@ -25,11 +25,11 @@ project "Gaff"
 	includedirs
 	{
 		"include",
-		"../jansson",
 		"../enet/include",
 		"../ResIL/IL/include",
 		"../ResIL/include",
 		"../assimp/include",
 		"../utf8-cpp",
-		"../boxer/include"
+		"../boxer/include",
+		"../rapidjson"
 	}

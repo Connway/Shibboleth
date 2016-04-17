@@ -38,14 +38,32 @@ NS_SHIBBOLETH
 
 static ProxyAllocator g_lua_allocator("Lua");
 
-static void* LuaAllocator(void*, void* ptr, size_t, size_t nsize)
+static void* LuaAllocator(void*, void* ptr, size_t original_size, size_t new_size)
 {
-
-	if (ptr) {
-		SHIB_FREE(ptr, g_lua_allocator);
+	if (original_size >= new_size) {
+		return ptr;
 	}
 
-	return (nsize) ? SHIB_ALLOC_GLOBAL(nsize, g_lua_allocator) : nullptr;
+	if (!ptr) {
+		return SHIB_ALLOC_GLOBAL(new_size, g_lua_allocator);
+	}
+
+	if (!new_size) {
+		SHIB_FREE(ptr, g_lua_allocator);
+		return nullptr;
+	}
+
+	void* new_ptr = SHIB_ALLOC_GLOBAL(new_size, g_lua_allocator);
+	memcpy_s(new_ptr, new_size, ptr, original_size);
+	SHIB_FREE(ptr, g_lua_allocator);
+
+	return new_ptr;
+
+	//if (ptr) {
+	//	SHIB_FREE(ptr, g_lua_allocator);
+	//}
+
+	//return (nsize) ? SHIB_ALLOC_GLOBAL(nsize, g_lua_allocator) : nullptr;
 }
 
 REF_IMPL_REQ(LuaManager);

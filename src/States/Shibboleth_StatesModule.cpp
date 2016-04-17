@@ -238,7 +238,6 @@ void MEMCB ImageFree(const void* const data)
 
 DYNAMICEXPORT_C bool InitModule(Shibboleth::IApp& app)
 {
-	Gaff::JSON::SetHashSeed(app.getSeed());
 	Shibboleth::SetApp(app);
 
 	g_image_pool_index = Shibboleth::GetPoolIndex("Images");

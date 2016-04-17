@@ -113,7 +113,7 @@ Gaff::IVirtualDestructor* ModelLoader::load(const char* file_name, uint64_t, Has
 	// We either specify mesh LODs, or we don't. If we don't, then we assume all meshes are LOD 0.
 	// If we specify LOD tags and run across a mesh without the tag, we write a warning to the log
 	// and ignore the mesh.
-	if (!lod_tags.isArray() && lod_tags) {
+	if (!lod_tags.isArray() && !lod_tags.isNull()) {
 		// log error
 		return nullptr;
 	}
@@ -162,7 +162,7 @@ Gaff::IVirtualDestructor* ModelLoader::load(const char* file_name, uint64_t, Has
 		} else {
 			Gaff::JSON display_tags = json["display_tags"];
 			unsigned short disp_tags = DT_ALL;
-			bool any_display_tags = (json["any_display_with_tags"] && json["any_display_tags"].isTrue());
+			bool any_display_tags = (!json["any_display_with_tags"].isNull() && json["any_display_tags"].isTrue());
 
 			if (!display_tags.isNull()) {
 				if (!display_tags.isArray()) {
@@ -179,7 +179,7 @@ Gaff::IVirtualDestructor* ModelLoader::load(const char* file_name, uint64_t, Has
 				}
 			}
 
-			if (lod_tags && data->holding_data->scene.getNumMeshes() != lod_tags.size()) {
+			if (!lod_tags.isNull() && data->holding_data->scene.getNumMeshes() != lod_tags.size()) {
 				// log error
 				SHIB_FREET(data, *GetAllocator());
 				data = nullptr;
@@ -198,7 +198,7 @@ Gaff::IVirtualDestructor* ModelLoader::load(const char* file_name, uint64_t, Has
 bool ModelLoader::loadMeshes(ModelData* data, const Gaff::JSON& lod_tags, const Gaff::JSON& model_prefs, unsigned short display_tags, bool any_display_tags)
 {
 	Gleam::IRenderDevice& rd = _render_mgr.getRenderDevice();
-	size_t num_lods = (!lod_tags) ? 1 : lod_tags.size();
+	size_t num_lods = (lod_tags.isNull()) ? 1 : lod_tags.size();
 	unsigned int num_bone_weights = 0;
 
 	Array< Array<VertSkeletonData> > vert_skeleton_data;
@@ -228,8 +228,8 @@ bool ModelLoader::loadMeshes(ModelData* data, const Gaff::JSON& lod_tags, const 
 		}
 	}
 
-	if (model_prefs["blend_indices_weights"] && model_prefs["blend_indices_weights"].isTrue()) {
-		if (!model_prefs["skeleton_root"] || !model_prefs["skeleton_root"].isString()) {
+	if (!model_prefs["blend_indices_weights"].isNull() && model_prefs["blend_indices_weights"].isTrue()) {
+		if (model_prefs["skeleton_root"].isNull() || !model_prefs["skeleton_root"].isString()) {
 			// log error
 			return false;
 		}
@@ -262,7 +262,7 @@ bool ModelLoader::loadMeshes(ModelData* data, const Gaff::JSON& lod_tags, const 
 			// Determine the LOD level of this mesh
 			size_t lod = SIZE_T_FAIL;
 
-			if (!lod_tags) {
+			if (lod_tags.isNull()) {
 				lod = 0;
 
 			} else {
@@ -337,7 +337,7 @@ bool ModelLoader::createMeshAndLayout(Gleam::IRenderDevice& rd, const Gaff::Mesh
 		layout_desc.push(desc);
 	}
 
-	if (model_prefs["normals"] && model_prefs["normals"].isTrue() && scene_mesh.hasVertices()) {
+	if (!model_prefs["normals"].isNull() && model_prefs["normals"].isTrue() && scene_mesh.hasVertices()) {
 		normals = true;
 		vert_size += 3;
 
@@ -353,7 +353,7 @@ bool ModelLoader::createMeshAndLayout(Gleam::IRenderDevice& rd, const Gaff::Mesh
 		layout_desc.push(desc);
 	}
 
-	if (model_prefs["tangents"] && model_prefs["tangents"].isTrue() && scene_mesh.hasTangentsAndBitangents()) {
+	if (!model_prefs["tangents"].isNull() && model_prefs["tangents"].isTrue() && scene_mesh.hasTangentsAndBitangents()) {
 		tangents = true;
 		vert_size += 6;
 
@@ -372,7 +372,7 @@ bool ModelLoader::createMeshAndLayout(Gleam::IRenderDevice& rd, const Gaff::Mesh
 		layout_desc.push(desc);
 	}
 
-	if (model_prefs["uvs"] && model_prefs["uvs"].isTrue() && scene_mesh.hasUVs(0)) {
+	if (!model_prefs["uvs"].isNull() && model_prefs["uvs"].isTrue() && scene_mesh.hasUVs(0)) {
 		uvs = true;
 
 		for (unsigned int i = 0; i < scene_mesh.getNumUVChannels(); ++i) {
@@ -410,7 +410,7 @@ bool ModelLoader::createMeshAndLayout(Gleam::IRenderDevice& rd, const Gaff::Mesh
 		vert_size += uv_size;
 	}
 
-	if (model_prefs["blend_indices_weights"] && model_prefs["blend_indices_weights"].isTrue()) {
+	if (!model_prefs["blend_indices_weights"].isNull() && model_prefs["blend_indices_weights"].isTrue()) {
 		blend_data = true;
 		vert_size += 8 * num_bone_weights;
 
@@ -443,7 +443,7 @@ bool ModelLoader::createMeshAndLayout(Gleam::IRenderDevice& rd, const Gaff::Mesh
 		}
 	}
 
-	if (model_prefs["vertex_color"]) {
+	if (!model_prefs["vertex_color"].isNull()) {
 		vertex_color = true;
 
 		for (unsigned int i = 0; i < scene_mesh.getNumColorChannels(); ++i) {
@@ -574,53 +574,53 @@ unsigned int ModelLoader::generateLoadingFlags(const Gaff::JSON& model_prefs)
 	// Assumes that the model will only have primitive types that are of type triangle or polygon.
 	unsigned int flags = Gaff::SI_LIMIT_BONE_WEIGHTS; // Limits bone weights to 4.
 
-	if (model_prefs["generate_smooth_normals"] && model_prefs["generate_smooth_normals"].isTrue()) {
+	if (model_prefs["generate_smooth_normals"].isTrue()) {
 		flags |= Gaff::SI_GENERATE_SMOOTH_NORMALS;
-	} else if (model_prefs["normals"] && model_prefs["normals"].isTrue()) {
+	} else if (model_prefs["normals"].isTrue()) {
 		flags |= Gaff::SI_GENERATE_NORMALS;
 	}
 
-	if (model_prefs["uvs"] && model_prefs["uvs"].isTrue()) {
+	if (model_prefs["uvs"].isTrue()) {
 		flags |= Gaff::SI_GENERATE_UVS;
 	}
 
-	if (model_prefs["tangents"] && model_prefs["tangents"].isTrue()) {
+	if (model_prefs["tangents"].isTrue()) {
 		flags |= Gaff::SI_CALC_TANGENTS;
 	}
 
-	if (model_prefs["join_identical_verts"] && model_prefs["join_identical_verts"].isTrue()) {
+	if (model_prefs["join_identical_verts"].isTrue()) {
 		flags |= Gaff::SI_JOIN_IDENTICAL_VERTS;
 	}
 
-	if (model_prefs["make_left_handed"] && model_prefs["make_left_handed"].isTrue()) {
+	if (model_prefs["make_left_handed"].isTrue()) {
 		flags |= Gaff::SI_MAKE_LEFT_HANDED;
 	}
 
-	if (model_prefs["triangulate"] && model_prefs["triangulate"].isTrue()) {
+	if (model_prefs["triangulate"].isTrue()) {
 		flags |= Gaff::SI_TRIANGULATE;
 	}
 
-	if (model_prefs["fix_in_facing_normals"] && model_prefs["fix_in_facing_normals"].isTrue()) {
+	if (model_prefs["fix_in_facing_normals"].isTrue()) {
 		flags |= Gaff::SI_FIX_IN_FACING_NORMALS;
 	}
 
-	if (model_prefs["optimize_meshes"] && model_prefs["optimize_meshes"].isTrue()) {
+	if (model_prefs["optimize_meshes"].isTrue()) {
 		flags |= Gaff::SI_OPTIMIZE_MESHES;
 	}
 
-	if (model_prefs["optimize_graph"] && model_prefs["optimize_graph"].isTrue()) {
+	if (model_prefs["optimize_graph"].isTrue()) {
 		flags |= Gaff::SI_OPTIMIZE_GRAPH;
 	}
 
-	if (model_prefs["flip_uvs"] && model_prefs["flip_uvs"].isTrue()) {
+	if (model_prefs["flip_uvs"].isTrue()) {
 		flags |= Gaff::SI_FLIP_UVS;
 	}
 
-	if (model_prefs["flip_winding"] && model_prefs["flip_winding"].isTrue()) {
+	if (model_prefs["flip_winding"].isTrue()) {
 		flags |= Gaff::SI_FLIP_WINDING;
 	}
 
-	if (model_prefs["remove_degenerates"] && model_prefs["remove_degenerates"].isTrue()) {
+	if (model_prefs["remove_degenerates"].isTrue()) {
 		flags |= Gaff::SI_FIND_DEGENERATES;
 	}
 
@@ -640,15 +640,15 @@ Gleam::IShader* ModelLoader::generateEmptyD3D11Shader(Gleam::IRenderDevice& rd, 
 
 	AString shader_code(d3d11_begin_shader_chunk);
 
-	if (model_prefs["normals"] && model_prefs["normals"].isTrue()) {
+	if (model_prefs["normals"].isTrue()) {
 		shader_code += d3d11_normal_shader_chunk;
 	}
 
-	if (model_prefs["tangents"] && model_prefs["tangents"].isTrue()) {
+	if (model_prefs["tangents"].isTrue()) {
 		shader_code += d3d11_tangents_shader_chunk;
 	}
 
-	if (model_prefs["uvs"] && model_prefs["uvs"].isTrue()) {
+	if (model_prefs["uvs"].isTrue()) {
 		char temp[3] = { 0,0, 0 };
 
 		for (unsigned int i = 0; i < scene_mesh.getNumUVChannels(); ++i) {
@@ -685,7 +685,7 @@ Gleam::IShader* ModelLoader::generateEmptyD3D11Shader(Gleam::IRenderDevice& rd, 
 		}
 	}
 
-	if (model_prefs["blend_indices_weights"] && model_prefs["blend_indices_weights"].isTrue()) {
+	if (model_prefs["blend_indices_weights"].isTrue()) {
 
 		char temp[3] = { 0, 0, 0 }; // I imagine our bone count will always be below 100. :)
 
@@ -767,7 +767,7 @@ bool ModelLoader::loadSkeleton(ModelData* data, const Gaff::JSON& model_prefs, u
 		return false;
 	}
 
-	const char* bone_tag = (model_prefs["bone_tag"]) ? model_prefs["bone_tag"].getString() : nullptr;
+	const char* bone_tag = (!model_prefs["bone_tag"].isNull()) ? model_prefs["bone_tag"].getString() : nullptr;
 	Array<Gaff::SceneNode> nodes(1, root);
 
 	while (!nodes.empty()) {

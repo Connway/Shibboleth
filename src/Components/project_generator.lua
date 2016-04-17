@@ -29,7 +29,7 @@ project "Components"
 		"../Game/include",
 		"../Managers/include",
 		"../../dependencies/OtterUI/inc",
-		"../../dependencies/jansson",
+		"../../dependencies/rapidjson",
 		"../../dependencies/Gleam/include",
 		"../../dependencies/Gaff/include",
 		"../../dependencies/LuaState",
@@ -73,7 +73,7 @@ project "ComponentsModule"
 		"../Game/include",
 		"../Managers/include",
 		"../../dependencies/OtterUI/inc",
-		"../../dependencies/jansson",
+		"../../dependencies/rapidjson",
 		"../../dependencies/Gleam/include",
 		"../../dependencies/Gaff/include",
 		"../../dependencies/LuaState",
@@ -86,8 +86,8 @@ project "ComponentsModule"
 
 	dependson
 	{
-		"Shared", "Gaff", "jansson",
-		"libjpeg", "libpng", "libtiff",
+		"Shared", "Gaff", "libjpeg",
+		"libpng", "libtiff",
 		"OtterUI", "ResIL", "ResILU",
 		"zlib", "Gleam", "Game",
 		"esprit", "Components",
@@ -100,8 +100,8 @@ project "ComponentsModule"
 
 	links
 	{
-		"Shared", "Gaff", "jansson",
-		"libjpeg", "libpng", "libtiff",
+		"Shared", "Gaff", "libjpeg",
+		"libpng", "libtiff",
 		"OtterUI", "ResIL", "ResILU",
 		"zlib", "Gleam", "Game",
 		"esprit", "Components",

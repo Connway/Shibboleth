@@ -30,7 +30,7 @@ project "Managers"
 		"../Components/include",
 		"../../dependencies/assimp/include",
 		"../../dependencies/OtterUI/inc",
-		"../../dependencies/jansson",
+		"../../dependencies/rapidjson",
 		"../../dependencies/Gleam/include",
 		"../../dependencies/Gaff/include",
 		"../../dependencies/esprit/include",
@@ -74,7 +74,7 @@ project "ManagersModule"
 		"../Game/include",
 		"../Components/include",
 		"../../dependencies/OtterUI/inc",
-		"../../dependencies/jansson",
+		"../../dependencies/rapidjson",
 		"../../dependencies/Gleam/include",
 		"../../dependencies/Gaff/include",
 		"../../dependencies/LuaState",
@@ -85,21 +85,26 @@ project "ManagersModule"
 
 	dependson
 	{
-		"Shared", "Gaff", "jansson",
-		"OtterUI", "Game", "Gleam",
-		"Managers", "Memory",
-		"LuaJIT", "Boxer", "Components",
-		"BulletCollision", "BulletDynamics",
+		"Shared", "Gaff",
+		"OtterUI", "Game",
+		 "Gleam", "Managers",
+		 "Memory", "LuaJIT",
+		 "Boxer", "Components",
+		"BulletCollision",
+		"BulletDynamics",
 		"LinearMath"
 	}
 
 	links
 	{
-		"Shared", "Gaff", "jansson",
-		"OtterUI", "Game", "Gleam",
-		"Managers", "Memory", "Components",
-		"BulletCollision", "BulletDynamics",
-		"LinearMath", "Boxer"
+		"Shared", "Gaff",
+		"OtterUI", "Game",
+		 "Gleam", "Managers",
+		 "Memory", "LuaJIT",
+		 "Boxer", "Components",
+		"BulletCollision",
+		"BulletDynamics",
+		"LinearMath"
 	}
 
 	filter { "configurations:Debug", "platforms:x86" }
