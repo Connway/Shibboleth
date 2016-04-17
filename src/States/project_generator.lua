@@ -29,7 +29,7 @@ project "States"
 		"../Game/include",
 		"../Managers/include",
 		"../../dependencies/OtterUI/inc",
-		"../../dependencies/jansson",
+		"../../dependencies/rapidjson",
 		"../../dependencies/Gleam/include",
 		"../../dependencies/Gaff/include",
 		"../../dependencies/LuaState",
@@ -80,33 +80,41 @@ project "StatesModule"
 		"../../dependencies/Gleam/include",
 		"../../dependencies/OtterUI/inc",
 		"../../dependencies/utf8-cpp",
-		"../../dependencies/jansson"
+		"../../dependencies/rapidjson"
 	}
 
 	dependson
 	{
-		"Shared", "Gaff", "jansson",
-		"libjpeg", "libpng", "libtiff",
-		"OtterUI", "ResIL", "ResILU",
-		"zlib", "Gleam", "Game",
-		"esprit", "Managers",
-		"Components", "States",
-		"Memory", "LuaJIT", "Boxer",
-		"BulletCollision", "BulletDynamics",
-		"LinearMath"
+		"Shared", "Gaff",
+		"libjpeg", "libpng",
+		"libtiff", "OtterUI",
+		"ResIL", "ResILU",
+		"zlib", "Gleam",
+		"Game", "esprit",
+		"Managers", "Components",
+		"States", "Memory",
+		"LuaJIT", "Boxer",
+		"BulletCollision",
+		"BulletDynamics",
+		"LinearMath",
+		"assimp", "minizip"
 	}
 
 	links
 	{
-		"Shared", "Gaff", "jansson",
-		"libjpeg", "libpng", "libtiff",
-		"OtterUI", "ResIL", "ResILU",
-		"zlib", "Gleam", "Game",
-		"assimp", "minizip", "esprit",
+		"Shared", "Gaff",
+		"libjpeg", "libpng",
+		"libtiff", "OtterUI",
+		"ResIL", "ResILU",
+		"zlib", "Gleam",
+		"Game", "esprit",
 		"Managers", "Components",
-		"Memory", "Boxer", "States",
-		"BulletCollision", "BulletDynamics",
-		"LinearMath"
+		"States", "Memory",
+		"LuaJIT", "Boxer",
+		"BulletCollision",
+		"BulletDynamics",
+		"LinearMath",
+		"assimp", "minizip"
 	}
 
 	filter { "configurations:Debug", "platforms:x86" }

@@ -4,11 +4,11 @@
 	"Render Target File": { "Type": "String", "Optional": false },
 
 	"Clear Mode": { "Type": "String", "Optional": false },
-	"Viewport": { "Type": "Array", "Optional": false, "Schema": { "Type": "Real" } },
-	"Clear Color": { "Type": "Array", "Optional": false, "Schema": { "Type": "Real" } },
-	"Field of View": { "Type": "Real", "Optional": false },
-	"Z Near": { "Type": "Real", "Optional": false },
-	"Z Far": { "Type": "Real", "Optional": false },
+	"Viewport": { "Type": "Array", "Optional": false, "Schema": { "Type": "Double" } },
+	"Clear Color": { "Type": "Array", "Optional": false, "Schema": { "Type": "Double" } },
+	"Field of View": { "Type": "Double", "Optional": false },
+	"Z Near": { "Type": "Double", "Optional": false },
+	"Z Far": { "Type": "Double", "Optional": false },
 	"Render Order": { "Type": "Integer", "Optional": false },
-	"Active": { "Type": "Boolean", "Optional": false }
+	"Active": { "Type": "Bool", "Optional": false }
 }

@@ -30,7 +30,7 @@ project "Shared"
 	{
 		"include",
 		"../Memory/include",
-		"../../dependencies/jansson",
+		"../../dependencies/rapidjson",
 		"../../dependencies/Gaff/include",
 		"../../dependencies/utf8-cpp"
 	}

@@ -101,7 +101,7 @@
       <WarningLevel>Level4</WarningLevel>
       <TreatWarningAsError>true</TreatWarningAsError>
       <PreprocessorDefinitions>_DEBUG;DEBUG;SYMBOL_BUILD;GLEW_STATIC;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\..\..\dependencies\dirent;..\..\..\src\Shared\include;..\..\..\src\Memory\include;..\..\..\dependencies\jansson;..\..\..\dependencies\Gleam\include;..\..\..\dependencies\Gaff\include;..\..\..\dependencies\utf8-cpp;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\dependencies\dirent;..\..\..\src\Shared\include;..\..\..\src\Memory\include;..\..\..\dependencies\rapidjson;..\..\..\dependencies\Gleam\include;..\..\..\dependencies\Gaff\include;..\..\..\dependencies\utf8-cpp;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
       <ExceptionHandling>Async</ExceptionHandling>
@@ -123,7 +123,7 @@
       <WarningLevel>Level4</WarningLevel>
       <TreatWarningAsError>true</TreatWarningAsError>
       <PreprocessorDefinitions>GLEW_STATIC;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\..\..\dependencies\dirent;..\..\..\src\Shared\include;..\..\..\src\Memory\include;..\..\..\dependencies\jansson;..\..\..\dependencies\Gleam\include;..\..\..\dependencies\Gaff\include;..\..\..\dependencies\utf8-cpp;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\dependencies\dirent;..\..\..\src\Shared\include;..\..\..\src\Memory\include;..\..\..\dependencies\rapidjson;..\..\..\dependencies\Gleam\include;..\..\..\dependencies\Gaff\include;..\..\..\dependencies\utf8-cpp;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
@@ -150,7 +150,7 @@
       <WarningLevel>Level4</WarningLevel>
       <TreatWarningAsError>true</TreatWarningAsError>
       <PreprocessorDefinitions>_DEBUG;DEBUG;SYMBOL_BUILD;USE_DX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\..\..\dependencies\dirent;..\..\..\src\Shared\include;..\..\..\src\Memory\include;..\..\..\dependencies\jansson;..\..\..\dependencies\Gleam\include;..\..\..\dependencies\Gaff\include;..\..\..\dependencies\utf8-cpp;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\dependencies\dirent;..\..\..\src\Shared\include;..\..\..\src\Memory\include;..\..\..\dependencies\rapidjson;..\..\..\dependencies\Gleam\include;..\..\..\dependencies\Gaff\include;..\..\..\dependencies\utf8-cpp;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
       <ExceptionHandling>Async</ExceptionHandling>
@@ -172,7 +172,7 @@
       <WarningLevel>Level4</WarningLevel>
       <TreatWarningAsError>true</TreatWarningAsError>
       <PreprocessorDefinitions>USE_DX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\..\..\dependencies\dirent;..\..\..\src\Shared\include;..\..\..\src\Memory\include;..\..\..\dependencies\jansson;..\..\..\dependencies\Gleam\include;..\..\..\dependencies\Gaff\include;..\..\..\dependencies\utf8-cpp;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\dependencies\dirent;..\..\..\src\Shared\include;..\..\..\src\Memory\include;..\..\..\dependencies\rapidjson;..\..\..\dependencies\Gleam\include;..\..\..\dependencies\Gaff\include;..\..\..\dependencies\utf8-cpp;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
@@ -202,9 +202,6 @@
     </ProjectReference>
     <ProjectReference Include="..\dependencies\Gaff.vcxproj">
       <Project>{99A8857C-85DF-860D-2ECC-6C101AE2020F}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\dependencies\jansson.vcxproj">
-      <Project>{41B9A8CD-AD98-2769-B6B0-B23F220F8ECA}</Project>
     </ProjectReference>
     <ProjectReference Include="..\dependencies\Gleam.vcxproj">
       <Project>{6BBF400D-D7D3-68BE-A055-0C1E0C2965EF}</Project>

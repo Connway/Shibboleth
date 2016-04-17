@@ -86,8 +86,6 @@ bool App::init(int argc, char** argv)
 		"Initializing Game...\n"
 	);
 
-	Gaff::JSON::SetHashSeed(_seed);
-
 	if (!_job_pool.init()) {
 		_logger.logMessage(LogManager::LOG_ERROR, _log_file_name, "ERROR - Failed to initialize thread pool\n");
 		return false;
@@ -389,17 +387,17 @@ bool App::loadStates(void)
 				++state_id;
 
 				if (entry.state) {
-					entry.state->_transitions.reserve(static_cast<unsigned int>(transitions.size()));
+					entry.state->_transitions.reserve(transitions.size());
 
 					for (size_t k = 0; k < transitions.size(); ++k) {
 						Gaff::JSON val = transitions[k];
 
-						if (!val.isInteger()) {
+						if (!val.isInt()) {
 							_logger.logMessage(LogManager::LOG_ERROR, _log_file_name, "ERROR - 'States/states.json' is malformed. Name for state entry %zu is not a string.\n", i);
 							return false;
 						}
 
-						entry.state->_transitions.push(static_cast<unsigned int>(val.getInteger()));
+						entry.state->_transitions.push(static_cast<unsigned int>(val.getInt()));
 					}
 
 					if (!entry.state->init(_state_machine.getNumStates())) {

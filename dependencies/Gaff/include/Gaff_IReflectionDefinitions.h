@@ -104,14 +104,14 @@ public:
 		\param json The JSON object to read from.
 		\param object The reflected object we are populating.
 	*/
-	virtual void read(const Gaff::JSON& json, void* object) = 0;
+	virtual void read(const JSON& json, void* object) = 0;
 
 	/*!
 		\brief Writes data from the reflected object to the JSON object.
 		\param json The JSON object to write to.
 		\param object The object to read from.
 	*/
-	virtual void write(Gaff::JSON& json, const void* object) const = 0;
+	virtual void write(JSON& json, const void* object) const = 0;
 
 	/*!
 		\brief Gets the address offset of a type that this object implements or derives from.

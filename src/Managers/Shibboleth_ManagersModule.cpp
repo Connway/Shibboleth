@@ -71,9 +71,7 @@ static Shibboleth::CreateManagerFunc create_funcs[] = {
 
 DYNAMICEXPORT_C bool InitModule(Shibboleth::IApp& app)
 {
-	Gaff::JSON::SetHashSeed(app.getSeed());
 	Shibboleth::SetApp(app);
-
 	return true;
 }
 

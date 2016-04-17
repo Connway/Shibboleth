@@ -27,21 +27,21 @@ project "App"
 	{
 		"../Shared/include",
 		"../Memory/include",
-		"../../dependencies/jansson",
+		"../../dependencies/rapidjson",
 		"../../dependencies/Gaff/include",
 		"../../dependencies/utf8-cpp"
 	}
 
 	dependson
 	{
-		"Shared", "Gaff", "jansson", "Memory",
-		"Boxer"
+		"Shared", "Gaff",
+		"Memory", "Boxer"
 	}
 
 	links
 	{
-		"Shared", "Gaff", "jansson", "Memory",
-		"Boxer"
+		"Shared", "Gaff",
+		"Memory", "Boxer"
 	}
 
 	filter { "system:windows" }

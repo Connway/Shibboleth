@@ -207,9 +207,9 @@ bool ShaderProgramLoader::createRasterStates(ProgramData* data, const Gaff::JSON
 	Gaff::JSON wireframe = json["Wireframe"];
 
 	Gleam::IRasterState::RasterStateSettings settings;
-	settings.slope_scale_depth_bias = static_cast<float>(ss_depth_bias.getReal(0.0f));
-	settings.depth_bias_clamp = static_cast<float>(depth_bias_clamp.getReal(0.0f));
-	settings.depth_bias = static_cast<int>(depth_bias.getInteger(0));
+	settings.slope_scale_depth_bias = static_cast<float>(ss_depth_bias.getDouble(0.0f));
+	settings.depth_bias_clamp = static_cast<float>(depth_bias_clamp.getDouble(0.0f));
+	settings.depth_bias = static_cast<int>(depth_bias.getInt(0));
 	settings.front_face_counter_clockwise = ffcc.isTrue();
 	settings.scissor_enabled = scissor.isTrue();
 	settings.two_sided = two_sided.isTrue();

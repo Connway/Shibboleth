@@ -21,7 +21,7 @@ project "Graphics"
 	{
 		"../Shared/include",
 		"../Memory/include",
-		"../../dependencies/jansson",
+		"../../dependencies/rapidjson",
 		"../../dependencies/Gleam/include",
 		"../../dependencies/Gaff/include",
 		"../../dependencies/utf8-cpp"
@@ -29,16 +29,16 @@ project "Graphics"
 
 	dependson
 	{
-		"Shared", "Gaff", "jansson",
-		"Gleam", "glew", "Memory",
-		"Boxer"
+		"Shared", "Gaff",
+		"Gleam", "glew",
+		"Memory", "Boxer"
 	}
 
 	links
 	{
-		"Shared", "Gaff", "jansson",
-		"Gleam", "glew", "Memory",
-		"Boxer"
+		"Shared", "Gaff",
+		"Gleam", "glew",
+		"Memory", "Boxer"
 	}
 
 	filter { "configurations:*Direct3D"}

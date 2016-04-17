@@ -1,9 +1,14 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="include">
       <UniqueIdentifier>{89AF369E-F58E-B539-FEA6-40106A051C9B}</UniqueIdentifier>
     </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\..\src\Managers\include\Shibboleth_InputReflection.inl">
+      <Filter>include</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\src\Managers\include\Shibboleth_BroadcasterManager.h">
@@ -27,6 +32,9 @@
     <ClInclude Include="..\..\..\src\Managers\include\Shibboleth_LuaManager.h">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\src\Managers\include\Shibboleth_MovementControllerManager.h">
+      <Filter>include</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\src\Managers\include\Shibboleth_ObjectManager.h">
       <Filter>include</Filter>
     </ClInclude>
@@ -45,16 +53,13 @@
     <ClInclude Include="..\..\..\src\Managers\include\Shibboleth_ResourceManager.h">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\src\Managers\include\Shibboleth_SceneManager.h">
+      <Filter>include</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\src\Managers\include\Shibboleth_SchemaManager.h">
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\src\Managers\include\Shibboleth_UpdateManager.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\src\Managers\include\Shibboleth_MovementControllerManager.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\src\Managers\include\Shibboleth_SceneManager.h">
       <Filter>include</Filter>
     </ClInclude>
   </ItemGroup>
@@ -66,20 +71,15 @@
     <ClCompile Include="..\..\..\src\Managers\Shibboleth_FrameManager.cpp" />
     <ClCompile Include="..\..\..\src\Managers\Shibboleth_InputManager.cpp" />
     <ClCompile Include="..\..\..\src\Managers\Shibboleth_LuaManager.cpp" />
+    <ClCompile Include="..\..\..\src\Managers\Shibboleth_MovementControllerManager.cpp" />
     <ClCompile Include="..\..\..\src\Managers\Shibboleth_ObjectManager.cpp" />
     <ClCompile Include="..\..\..\src\Managers\Shibboleth_OcclusionManager.cpp" />
     <ClCompile Include="..\..\..\src\Managers\Shibboleth_OtterUIManager.cpp" />
     <ClCompile Include="..\..\..\src\Managers\Shibboleth_RenderManager.cpp" />
     <ClCompile Include="..\..\..\src\Managers\Shibboleth_RenderPipelineManager.cpp" />
     <ClCompile Include="..\..\..\src\Managers\Shibboleth_ResourceManager.cpp" />
+    <ClCompile Include="..\..\..\src\Managers\Shibboleth_SceneManager.cpp" />
     <ClCompile Include="..\..\..\src\Managers\Shibboleth_SchemaManager.cpp" />
     <ClCompile Include="..\..\..\src\Managers\Shibboleth_UpdateManager.cpp" />
-    <ClCompile Include="..\..\..\src\Managers\Shibboleth_MovementControllerManager.cpp" />
-    <ClCompile Include="..\..\..\src\Managers\Shibboleth_SceneManager.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="..\..\..\src\Managers\include\Shibboleth_InputReflection.inl">
-      <Filter>include</Filter>
-    </None>
   </ItemGroup>
 </Project>

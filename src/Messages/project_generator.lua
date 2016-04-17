@@ -21,6 +21,6 @@ project "Messages"
 		"../Shared/include",
 		"../Memory/include",
 		"../../dependencies/Gaff/include",
-		"../../dependencies/jansson/",
+		"../../dependencies/rapidjson/",
 		"../../dependencies/utf8-cpp"
 	}

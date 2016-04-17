@@ -276,12 +276,11 @@ void UpdateManager::allManagersCreated(void)
 				success = !row.forEachInArray([&](size_t, const Gaff::JSON& entry) -> bool
 				{
 					if (!entry.isString()) {
-						unsigned int i = static_cast<unsigned int>(index_entries); // For 64-bit builds where size_t is not 32-bits.
 						lm.logMessage(
 							LogManager::LOG_ERROR, GetApp().getLogFileName(),
-							"ERROR - An entry in row %d in phase '%s' in '" UPDATE_ENTRIES_CFG
+							"ERROR - An entry in row %zu in phase '%s' in '" UPDATE_ENTRIES_CFG
 							"' is not a string.\n",
-							i, phase_name.getString()
+							index_entries, phase_name.getString()
 						);
 
 						GetApp().quit();
@@ -316,7 +315,12 @@ void UpdateManager::allManagersCreated(void)
 		});
 
 	} else {
-		lm.logMessage(LogManager::LOG_ERROR, GetApp().getLogFileName(), "ERROR - Failed to parse file '" UPDATE_ENTRIES_CFG "'.\n");
+		lm.logMessage(
+			LogManager::LOG_ERROR, GetApp().getLogFileName(),
+			"Failed to parse file '" UPDATE_ENTRIES_CFG "' with error '%s'.\n",
+			phases.getErrorText()
+		);
+
 		GetApp().quit();
 	}
 }

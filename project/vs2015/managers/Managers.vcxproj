@@ -58,7 +58,7 @@
       <WarningLevel>Level4</WarningLevel>
       <TreatWarningAsError>true</TreatWarningAsError>
       <PreprocessorDefinitions>_DEBUG;DEBUG;SYMBOL_BUILD;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\..\..\dependencies\dirent;..\..\..\src\Managers\include;..\..\..\src\Shared\include;..\..\..\src\Memory\include;..\..\..\src\Game\include;..\..\..\src\Components\include;..\..\..\dependencies\assimp\include;..\..\..\dependencies\OtterUI\inc;..\..\..\dependencies\jansson;..\..\..\dependencies\Gleam\include;..\..\..\dependencies\Gaff\include;..\..\..\dependencies\esprit\include;..\..\..\dependencies\LuaState;..\..\..\dependencies\LuaJIT\src;..\..\..\dependencies\utf8-cpp;..\..\..\dependencies\bullet;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\dependencies\dirent;..\..\..\src\Managers\include;..\..\..\src\Shared\include;..\..\..\src\Memory\include;..\..\..\src\Game\include;..\..\..\src\Components\include;..\..\..\dependencies\assimp\include;..\..\..\dependencies\OtterUI\inc;..\..\..\dependencies\rapidjson;..\..\..\dependencies\Gleam\include;..\..\..\dependencies\Gaff\include;..\..\..\dependencies\esprit\include;..\..\..\dependencies\LuaState;..\..\..\dependencies\LuaJIT\src;..\..\..\dependencies\utf8-cpp;..\..\..\dependencies\bullet;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
       <ExceptionHandling>Async</ExceptionHandling>
@@ -79,7 +79,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level4</WarningLevel>
       <TreatWarningAsError>true</TreatWarningAsError>
-      <AdditionalIncludeDirectories>..\..\..\dependencies\dirent;..\..\..\src\Managers\include;..\..\..\src\Shared\include;..\..\..\src\Memory\include;..\..\..\src\Game\include;..\..\..\src\Components\include;..\..\..\dependencies\assimp\include;..\..\..\dependencies\OtterUI\inc;..\..\..\dependencies\jansson;..\..\..\dependencies\Gleam\include;..\..\..\dependencies\Gaff\include;..\..\..\dependencies\esprit\include;..\..\..\dependencies\LuaState;..\..\..\dependencies\LuaJIT\src;..\..\..\dependencies\utf8-cpp;..\..\..\dependencies\bullet;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\dependencies\dirent;..\..\..\src\Managers\include;..\..\..\src\Shared\include;..\..\..\src\Memory\include;..\..\..\src\Game\include;..\..\..\src\Components\include;..\..\..\dependencies\assimp\include;..\..\..\dependencies\OtterUI\inc;..\..\..\dependencies\rapidjson;..\..\..\dependencies\Gleam\include;..\..\..\dependencies\Gaff\include;..\..\..\dependencies\esprit\include;..\..\..\dependencies\LuaState;..\..\..\dependencies\LuaJIT\src;..\..\..\dependencies\utf8-cpp;..\..\..\dependencies\bullet;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>

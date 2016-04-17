@@ -20,5 +20,5 @@
 	},
 
 	"Display Tags": { "Type": "Array", "Optional": false, "Schema": { "Type": "String" } },
-	"Any Display With Tags": { "Type": "Boolean", "Optional": true }
+	"Any Display With Tags": { "Type": "Bool", "Optional": true }
 }

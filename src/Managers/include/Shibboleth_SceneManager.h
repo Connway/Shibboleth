@@ -24,8 +24,12 @@ THE SOFTWARE.
 
 #include <Shibboleth_ReflectionDefinitions.h>
 #include <Shibboleth_IManager.h>
+#include <Shibboleth_String.h>
+#include <Shibboleth_Array.h>
 
 NS_SHIBBOLETH
+
+class Object;
 
 class SceneManager : public IManager
 {
@@ -38,8 +42,18 @@ public:
 	const char* getName(void) const;
 
 	bool loadScene(const char* scene_name);
+	void activateLayer(size_t layer);
+	void deactivateLayer(size_t layer);
 
 private:
+	struct Layer
+	{
+		Array<Object*> objects;
+		AString name;
+	};
+
+	Array<Layer> _layers;
+
 	GAFF_NO_COPY(SceneManager);
 	GAFF_NO_MOVE(SceneManager);
 

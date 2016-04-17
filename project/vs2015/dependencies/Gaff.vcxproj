@@ -58,7 +58,7 @@
       <WarningLevel>Level4</WarningLevel>
       <TreatWarningAsError>true</TreatWarningAsError>
       <PreprocessorDefinitions>_DEBUG;DEBUG;SYMBOL_BUILD;ENET_DEBUG;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\..\..\dependencies\dirent;..\..\..\dependencies\Gaff\include;..\..\..\dependencies\jansson;..\..\..\dependencies\enet\include;..\..\..\dependencies\ResIL\IL\include;..\..\..\dependencies\ResIL\include;..\..\..\dependencies\assimp\include;..\..\..\dependencies\utf8-cpp;..\..\..\dependencies\boxer\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\dependencies\dirent;..\..\..\dependencies\Gaff\include;..\..\..\dependencies\enet\include;..\..\..\dependencies\ResIL\IL\include;..\..\..\dependencies\ResIL\include;..\..\..\dependencies\assimp\include;..\..\..\dependencies\utf8-cpp;..\..\..\dependencies\boxer\include;..\..\..\dependencies\rapidjson;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
       <ExceptionHandling>Async</ExceptionHandling>
@@ -80,7 +80,7 @@
       <WarningLevel>Level4</WarningLevel>
       <TreatWarningAsError>true</TreatWarningAsError>
       <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\..\..\dependencies\dirent;..\..\..\dependencies\Gaff\include;..\..\..\dependencies\jansson;..\..\..\dependencies\enet\include;..\..\..\dependencies\ResIL\IL\include;..\..\..\dependencies\ResIL\include;..\..\..\dependencies\assimp\include;..\..\..\dependencies\utf8-cpp;..\..\..\dependencies\boxer\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\dependencies\dirent;..\..\..\dependencies\Gaff\include;..\..\..\dependencies\enet\include;..\..\..\dependencies\ResIL\IL\include;..\..\..\dependencies\ResIL\include;..\..\..\dependencies\assimp\include;..\..\..\dependencies\utf8-cpp;..\..\..\dependencies\boxer\include;..\..\..\dependencies\rapidjson;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
@@ -138,6 +138,7 @@
     <ClInclude Include="..\..\..\dependencies\Gaff\include\Gaff_IRequestableInterface.h" />
     <ClInclude Include="..\..\..\dependencies\Gaff\include\Gaff_IVirtualDestructor.h" />
     <ClInclude Include="..\..\..\dependencies\Gaff\include\Gaff_Image.h" />
+    <ClInclude Include="..\..\..\dependencies\Gaff\include\Gaff_IncludeRapidJSON.h" />
     <ClInclude Include="..\..\..\dependencies\Gaff\include\Gaff_IncludeWindows.h" />
     <ClInclude Include="..\..\..\dependencies\Gaff\include\Gaff_JSON.h" />
     <ClInclude Include="..\..\..\dependencies\Gaff\include\Gaff_JobPool.h" />

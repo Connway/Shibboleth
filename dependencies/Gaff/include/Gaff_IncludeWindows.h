@@ -20,12 +20,6 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-/*!
-	\file
-
-	Includes Windows.h with WIN32_LEAN_AND_MEAN defined.
-*/
-
 #pragma once
 
 #ifndef WIN32_LEAN_AND_MEAN

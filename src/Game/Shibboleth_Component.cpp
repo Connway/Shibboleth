@@ -44,7 +44,7 @@ bool Component::validate(const Gaff::JSON& json)
 {
 	const Gaff::JSON& schema = getSchema();
 
-	if (schema && !json.validate(schema)) {
+	if (!schema.isNull() && !json.validate(schema)) {
 		// log error
 		return false;
 	}

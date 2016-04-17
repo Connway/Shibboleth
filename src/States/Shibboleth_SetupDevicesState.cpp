@@ -78,7 +78,7 @@ void SetupDevicesState::update(void)
 
 	Gaff::JSON icon = cfg["icon"];
 
-	if (icon && !icon.isString()) {
+	if (!icon.isNull() && !icon.isString()) {
 		app.getLogManager().logMessage(LogManager::LOG_WARNING, app.getLogFileName(), "Malformed config file '" GRAPHICS_CFG "'. Value at 'icon' is not a string.\n");
 		icon = Gaff::JSON();
 	}
@@ -111,27 +111,27 @@ void SetupDevicesState::update(void)
 		Gaff::JSON vsync = value["vsync"];
 		Gaff::JSON tags = value["tags"];
 
-		if (!x.isInteger()) {
+		if (!x.isInt()) {
 			app.getLogManager().logMessage(LogManager::LOG_ERROR, app.getLogFileName(), "Malformed config file '" GRAPHICS_CFG "'.\n");
 			return true;
 		}
 
-		if (!y.isInteger()) {
+		if (!y.isInt()) {
 			app.getLogManager().logMessage(LogManager::LOG_ERROR, app.getLogFileName(), "Malformed config file '" GRAPHICS_CFG "'.\n");
 			return true;
 		}
 
-		if (!width.isInteger()) {
+		if (!width.isInt()) {
 			app.getLogManager().logMessage(LogManager::LOG_ERROR, app.getLogFileName(), "Malformed config file.\n");
 			return true;
 		}
 
-		if (!height.isInteger()) {
+		if (!height.isInt()) {
 			app.getLogManager().logMessage(LogManager::LOG_ERROR, app.getLogFileName(), "Malformed config file.\n");
 			return true;
 		}
 
-		if (!refresh_rate.isInteger()) {
+		if (!refresh_rate.isInt()) {
 			app.getLogManager().logMessage(LogManager::LOG_ERROR, app.getLogFileName(), "Malformed config file.\n");
 			return true;
 		}
@@ -151,17 +151,17 @@ void SetupDevicesState::update(void)
 			return true;
 		}
 
-		if (!adapter_id.isInteger()) {
+		if (!adapter_id.isInt()) {
 			app.getLogManager().logMessage(LogManager::LOG_ERROR, app.getLogFileName(), "Malformed config file.\n");
 			return true;
 		}
 
-		if (!display_id.isInteger()) {
+		if (!display_id.isInt()) {
 			app.getLogManager().logMessage(LogManager::LOG_ERROR, app.getLogFileName(), "Malformed config file.\n");
 			return true;
 		}
 
-		if (!vsync.isBoolean()) {
+		if (!vsync.isBool()) {
 			app.getLogManager().logMessage(LogManager::LOG_ERROR, app.getLogFileName(), "Malformed config file.\n");
 			return true;
 		}
@@ -200,10 +200,10 @@ void SetupDevicesState::update(void)
 		}
 
 		if (!render_manager.createWindow(wnd_name, wnd_mode,
-			static_cast<unsigned int>(x.getInteger()), static_cast<unsigned int>(y.getInteger()),
-			static_cast<unsigned int>(width.getInteger()), static_cast<unsigned int>(height.getInteger()),
-			static_cast<unsigned int>(refresh_rate.getInteger()), device_name.getString(),
-			static_cast<unsigned int>(adapter_id.getInteger()), static_cast<unsigned int>(display_id.getInteger()),
+			static_cast<unsigned int>(x.getInt()), static_cast<unsigned int>(y.getInt()),
+			static_cast<unsigned int>(width.getInt()), static_cast<unsigned int>(height.getInt()),
+			static_cast<unsigned int>(refresh_rate.getInt()), device_name.getString(),
+			static_cast<unsigned int>(adapter_id.getInt()), static_cast<unsigned int>(display_id.getInt()),
 			vsync.isTrue(), disp_tags)) {
 
 			app.getLogManager().logMessage(
@@ -219,17 +219,17 @@ void SetupDevicesState::update(void)
 				"Adapter ID: %lli\n"
 				"Display ID: %lli\n"
 				"Tags: %uh\n",
-				x.getInteger(), y.getInteger(),
-				width.getInteger(), height.getInteger(),
-				refresh_rate.getInteger(), (vsync.isTrue()) ? "true" : "false",
-				device_name.getString(), adapter_id.getInteger(),
-				display_id.getInteger(), disp_tags
+				x.getInt(), y.getInt(),
+				width.getInt(), height.getInt(),
+				refresh_rate.getInt(), (vsync.isTrue()) ? "true" : "false",
+				device_name.getString(), adapter_id.getInt(),
+				display_id.getInt(), disp_tags
 			);
 
 			return true;
 		}
 
-		if (icon) {
+		if (!icon.isNull()) {
 			if (!render_manager.getWindowData(static_cast<unsigned int>(render_manager.getNumWindows() - 1)).window->setIcon(icon.getString())) {
 				app.getLogManager().logMessage(LogManager::LOG_WARNING, app.getLogFileName(), "Failed to set window icon to '%s'.\n", icon.getString());
 			}

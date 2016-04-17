@@ -103,34 +103,34 @@ void LoadGraphicsModuleState::generateDefaultConfig(Gaff::JSON& cfg)
 {
 	IApp& app = GetApp();
 
-	cfg = Gaff::JSON::createObject();
+	cfg = Gaff::JSON::CreateObject();
 
 #if !defined(_WIN32) && !defined(_WIN64)
-	cfg.setObject("module", Gaff::JSON::createString("Graphics_OpenGL"));
+	cfg.setObject("module", Gaff::JSON::CreateString("Graphics_OpenGL"));
 #else
-	cfg.setObject("module", Gaff::JSON::createString("Graphics_Direct3D"));
+	cfg.setObject("module", Gaff::JSON::CreateString("Graphics_Direct3D"));
 #endif
 
 	RenderManager& render_manager = app.getManagerT<RenderManager>("Render Manager");
 	Gleam::IRenderDevice::AdapterList adapters = render_manager.getRenderDevice().getDisplayModes();
 	GAFF_ASSERT(!adapters.empty());
 
-	Gaff::JSON windows = Gaff::JSON::createArray();
-	Gaff::JSON window_entry = Gaff::JSON::createObject();
-	Gaff::JSON tags = Gaff::JSON::createArray();
-	tags.setObject(size_t(0), Gaff::JSON::createString(GetEnumRefDef<DisplayTags>().getName(DT_1)));
+	Gaff::JSON windows = Gaff::JSON::CreateArray();
+	Gaff::JSON window_entry = Gaff::JSON::CreateObject();
+	Gaff::JSON tags = Gaff::JSON::CreateArray();
+	tags.setObject(size_t(0), Gaff::JSON::CreateString(GetEnumRefDef<DisplayTags>().getName(DT_1)));
 
-	window_entry.setObject("x", Gaff::JSON::createInteger(0));
-	window_entry.setObject("y", Gaff::JSON::createInteger(0));
-	window_entry.setObject("width", Gaff::JSON::createInteger(800));
-	window_entry.setObject("height", Gaff::JSON::createInteger(600));
-	window_entry.setObject("refresh_rate", Gaff::JSON::createInteger(60));
-	window_entry.setObject("window_name", Gaff::JSON::createString("Shibboleth"));
-	window_entry.setObject("windowed_mode", Gaff::JSON::createString("Windowed"));
-	window_entry.setObject("adapter_id", Gaff::JSON::createInteger(0));
-	window_entry.setObject("display_id", Gaff::JSON::createInteger(0));
-	window_entry.setObject("vsync", Gaff::JSON::createFalse());
-	window_entry.setObject("device_name", Gaff::JSON::createString(adapters[0].adapter_name));
+	window_entry.setObject("x", Gaff::JSON::CreateInt(0));
+	window_entry.setObject("y", Gaff::JSON::CreateInt(0));
+	window_entry.setObject("width", Gaff::JSON::CreateInt(800));
+	window_entry.setObject("height", Gaff::JSON::CreateInt(600));
+	window_entry.setObject("refresh_rate", Gaff::JSON::CreateInt(60));
+	window_entry.setObject("window_name", Gaff::JSON::CreateString("Shibboleth"));
+	window_entry.setObject("windowed_mode", Gaff::JSON::CreateString("Windowed"));
+	window_entry.setObject("adapter_id", Gaff::JSON::CreateInt(0));
+	window_entry.setObject("display_id", Gaff::JSON::CreateInt(0));
+	window_entry.setObject("vsync", Gaff::JSON::CreateFalse());
+	window_entry.setObject("device_name", Gaff::JSON::CreateString(adapters[0].adapter_name));
 	window_entry.setObject("tags", tags);
 
 	windows.setObject(size_t(0), window_entry);

@@ -93,7 +93,7 @@ IFile* LooseFileSystem::openFile(const char* file_name)
 		}
 
 		file->_file_size= loose_file.getFileSize();
-		file->_file_buffer = SHIB_ALLOC_GLOBAL_CAST(char*, file->_file_size, *GetAllocator());
+		file->_file_buffer = SHIB_ALLOC_GLOBAL_CAST(char*, file->_file_size + 1, *GetAllocator());
 
 		if (!file->_file_buffer) {
 			SHIB_FREET(it->file, *GetAllocator());
@@ -104,6 +104,8 @@ IFile* LooseFileSystem::openFile(const char* file_name)
 			SHIB_FREET(it->file, *GetAllocator());
 			return nullptr;
 		}
+
+		file->_file_buffer[file->_file_size] = 0;
 
 		FileData file_data;
 		file_data.name = file_name;
