@@ -15,7 +15,7 @@ Libraries Affected:
 	assimp (Changed '#include "../contrib/unzip/unzip.h' lines to "#include <unzip.h>", as I already have minizip compiled into a separate lib. Fixed compilation error because a variable wasn't initialized.)
 	minizip (commented out a block that says #define _CRT_SECURE_NO_WARNINGS, as I have it defined at the project level)
 	ResIL
-	LuaState (added const char* version of doFile and doString)
+	LuaState (added const char* version of doFile and doString and added new constructor to State)
 	OtterUI (got rid of a lot of warnings in Visual Studio and fixed a couple inconsistencies and crash bugs)
 	dirent (got rid of warnings in Visual Studio)
 	Boxer (added support for Abort/Retry/Ignore and Cancel/Try/Continue button configurations)

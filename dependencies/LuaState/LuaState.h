@@ -87,9 +87,9 @@ namespace lua {
             return lua::Value(std::make_shared<detail::StackItem>(_luaState, _deallocQueue, index, pushedValues, pushedValues > 0 ? pushedValues - 1 : 0));
         }
         
-        void initialize(bool loadLibs) {
+        void initialize(lua_State* state, bool loadLibs) {
             _deallocQueue = new detail::DeallocQueue();
-            _luaState = luaL_newstate();
+            _luaState = (state) ? state : luaL_newstate();
             assert(_luaState != nullptr);
             
             if (loadLibs)
@@ -116,11 +116,13 @@ namespace lua {
         /// Constructor creates new state and stores it to pointer.
         ///
         /// @param loadLibs     If we want to open standard libraries - function luaL_openlibs
-        State(bool loadLibs) { initialize(loadLibs); }
+        State(bool loadLibs) { initialize(nullptr, loadLibs); }
         
         /// Constructor creates new state stores it to pointer and loads standard libraries
-        State() { initialize(true); }
-        
+        State() { initialize(nullptr, true); }
+
+		State(lua_State* state, bool loadLibs = true) { initialize(state, loadLibs); }
+
         ~State() {
             lua_close(_luaState);
             delete _deallocQueue;
