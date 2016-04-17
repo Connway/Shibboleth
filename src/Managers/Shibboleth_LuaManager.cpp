@@ -96,8 +96,9 @@ void LuaManager::addRegistrant(const Gaff::FunctionBinder<void, lua::State&>& re
 
 lua::State* LuaManager::createNewState(void)
 {
+	// Until LuaJIT 64-bit builds support custom allocators, we have to leave this commented out. :(
+	//lua::State* state = SHIB_ALLOCT(lua::State, g_lua_allocator, lua_newstate(LuaAllocator, nullptr));
 	lua::State* state = SHIB_ALLOCT(lua::State, g_lua_allocator);
-	//lua_setallocf(state->getState(), LuaAllocator, nullptr);
 
 	if (state) {
 		for (auto it = _registrants.begin(); it != _registrants.end(); ++it) {
