@@ -1,7 +1,14 @@
 {
-	"Shape": { "Type": "String", "Optional": false },
-	"Normal X": { "Type": "Number", "Optional": false },
-	"Normal Y": { "Type": "Number", "Optional": false },
-	"Normal Z": { "Type": "Number", "Optional": false },
-	"Distance": { "Type": "Number", "Optional": false }
+	"type": "object",
+
+	"properties":
+	{
+		"Shape": { "type": "string" },
+		"Normal X": { "type": "number" },
+		"Normal Y": { "type": "number" },
+		"Normal Z": { "type": "number" },
+		"Distance": { "type": "number" }
+	},
+
+	"required": ["Shape", "Normal X", "Normal Y", "Normal Z", "Distance"]
 }

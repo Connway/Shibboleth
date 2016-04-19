@@ -1,21 +1,32 @@
-[
+{
+	"definitions":
 	{
-		"Name": "Material",
-		"Schema": {
-			"Type": "Object",
-			"Optional": false,
-			"Schema": {
-				"Material": { "Type": "String", "Optional": true },
-				"Textures": { "Type": "Array", "Optional": true, "Schema": { "Type": "String" } },
-				"Samplers": { "Type": "Array", "Optional": true, "Schema": { "Type": "String" } }
+		"Material":
+		{
+			"type": "object",
+
+			"properties":
+			{
+				"Material": { "type": "string" },
+				"Textures": { "type": "array", "items": { "type": "string" } },
+				"Samplers": { "type": "array", "items": { "type": "string" } }
 			}
 		}
 	},
 
-	{
-		"Type": { "Type": "String", "Optional": false },
+	"type": "object",
 
-		"Model File": { "Type": "String", "Optional": false },
-		"Materials": { "Type": "Array", "Optional": false, "Schema": "Material" }
-	}
-]
+	"properties":
+	{
+		"Type": { "type": "string" },
+
+		"Model File": { "type": "string" },
+		"Materials":
+		{
+			"type": "array",
+			"items": { "$ref": "#/definitions/Material" }
+		}
+	},
+
+	"required": ["Type", "Model File", "Materials"]
+}

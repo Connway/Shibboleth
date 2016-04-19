@@ -22,10 +22,21 @@ THE SOFTWARE.
 
 #include "Gaff_JSON.h"
 #include "Gaff_File.h"
+
+#ifdef PLATFORM_WINDOWS
+	#pragma warning(push)
+	#pragma warning(disable : 4127)
+#endif
+
 #include <rapidjson/filewritestream.h>
 #include <rapidjson/filereadstream.h>
 #include <rapidjson/prettywriter.h>
 #include <rapidjson/error/en.h>
+#include <rapidjson/schema.h>
+
+#ifdef PLATFORM_WINDOWS
+	#pragma warning(pop)
+#endif
 
 NS_GAFF
 
@@ -36,7 +47,7 @@ public:
 
 	void* Malloc(size_t size)
 	{
-		return (size) ? _alloc(size) : nullptr;
+		return (size) ? g_alloc(size) : nullptr;
 	}
 
 	void* Realloc(void* ptr, size_t original_size, size_t new_size)
@@ -50,50 +61,23 @@ public:
 		}
 
 		if (!new_size) {
-			_free(ptr);
+			g_free(ptr);
 			return nullptr;
 		}
 
 
-		void* new_ptr = _alloc(new_size);
+		void* new_ptr = g_alloc(new_size);
 		memcpy_s(new_ptr, new_size, ptr, original_size);
-		_free(ptr);
+		g_free(ptr);
 
 		return new_ptr;
 	}
 
 	static void Free(void* ptr)
 	{
-		_free(ptr);
+		g_free(ptr);
 	}
 };
-
-class JSON::JSONAllocatorOld
-{
-public:
-	void* alloc(size_t size_bytes, const char* /*file*/, int /*line*/)
-	{
-		return _alloc(size_bytes);
-	}
-
-	void free(void* data)
-	{
-		_free(data);
-	}
-};
-
-struct JSON::ElementInfo
-{
-	char type[16][16];
-	size_t num_types = 0;
-	JSON schema[16];
-	size_t num_schemas = 0;
-	char key[64] = { 0 };
-	bool optional = false;
-	JSON requires;
-	size_t depth = 0;
-};
-
 
 template <class Writer>
 bool WriteJSON(const JSON& json, Writer& writer)
@@ -162,14 +146,15 @@ bool WriteJSON(const JSON& json, Writer& writer)
 	return success;
 }
 
-JSON::JSONAlloc JSON::_alloc = malloc;
-JSON::JSONFree JSON::_free = free;
+JSON::JSONInternalAllocator JSON::g_allocator;
+JSON::JSONAlloc JSON::g_alloc = malloc;
+JSON::JSONFree JSON::g_free = free;
 
 void JSON::SetMemoryFunctions(JSONAlloc alloc_func, JSONFree free_func)
 {
 	GAFF_ASSERT(alloc_func && free_func);
-	_alloc = alloc_func;
-	_free = free_func;
+	g_alloc = alloc_func;
+	g_free = free_func;
 }
 
 JSON JSON::CreateArray(void)
@@ -216,8 +201,7 @@ JSON JSON::CreateDouble(double val)
 
 JSON JSON::CreateString(const char* val)
 {
-	JSONAllocator allocator;
-	JSONValue value = JSONValue(val, allocator);
+	JSONValue value = JSONValue(val, g_allocator);
 	return JSON(std::move(value));
 }
 
@@ -245,15 +229,14 @@ JSON JSON::CreateNull(void)
 	return JSON(std::move(value));
 }
 
-JSON::JSON(const JSONValue& json)
+JSON::JSON(const JSONValue& json):
+	_value(json, g_allocator)
 {
-	JSONAllocator allocator;
-	_value = JSONValue(json, allocator);
 }
 
-JSON::JSON(const JSON& json)
+JSON::JSON(const JSON& json):
+	_value(json._value, g_allocator)
 {
-	*this = json;
 }
 
 JSON::JSON(JSON&& json):
@@ -271,78 +254,98 @@ JSON::~JSON(void)
 
 bool JSON::validateFile(const char* schema_file) const
 {
-	File file;
+	JSON schema;
 
-	if (!file.open(schema_file, File::READ_BINARY)) {
+	if (!schema.parseFile(schema_file)) {
+		_error = schema._error;
 		return false;
 	}
 
-	char* input = reinterpret_cast<char*>(_alloc(sizeof(char) * file.getFileSize()));
-	bool ret_val = false;
-	
-	if (input) {
-		if (file.readEntireFile(input)) {
-			//memcpy(_error.source, schema_file, Min(static_cast<size_t>(JSON_ERROR_SOURCE_LENGTH), strlen(schema_file) + 1));
-			ret_val = validate(input);
-		}
-
-		_free(input);
-	}
-
-	return ret_val;
+	return validate(schema);
 }
 
-// Does not support either-or types for Arrays. Unless a use-case comes up,
-// I have no plans to support it.
-bool JSON::validate(const JSON& schema_object) const
+bool JSON::validate(const JSON& schema) const
 {
-	SchemaMap schema_map;
-	JSON schema = schema_object;
+	using JSONSchemaDocument = rapidjson::GenericSchemaDocument<JSONValue, JSONInternalAllocator>;
+	using JSONSchemaValidator = rapidjson::GenericSchemaValidator<JSONSchemaDocument>;
 
-	if (schema_object.isArray()) {
-		schema_map.reserve(schema_object.size() - 1);
+	JSONSchemaDocument sd(schema._value, nullptr, &g_allocator);
+	JSONSchemaValidator validator(sd);
 
-		bool error = schema_object.forEachInArray([&](size_t index, const JSON& value) -> bool
-		{
-			if (index != schema.size() - 1) {
-				if (!value.isObject()) {
-					//snprintf(_error.text, JSON_ERROR_TEXT_LENGTH, "Value at index '%zu' is not an object.", index);
-					return true;
-				}
+	if (!_value.Accept(validator)) {
+		validator.GetInvalidSchemaPointer().StringifyUriFragment(_schema_error);
 
-				JSON name = value["Name"];
+		const char* keyword_error = validator.GetInvalidSchemaKeyword();
+		size_t size = strlen(keyword_error) + 1;
+		char* buf = _keyword_error.Push(size);
 
-				if (!name.isString()) {
-					//snprintf(_error.text, JSON_ERROR_TEXT_LENGTH, "Value at index '%zu' is not an object.", index);
-					return true;
-				}
-
-				schema_map[name.getString()] = value["Schema"];
-			}
-
-			return false;
-		});
-
-		if (error) {
-			return false;
-		}
-
-		schema = schema_object[schema_object.size() - 1];
-	}
-
-	return validateSchema(schema, schema_map);
-}
-
-bool JSON::validate(const char* input) const
-{
-	JSON schema_object;
-
-	if (!schema_object.parse(input)) {
-		//_error = schema_object._error;
+		memcpy_s(buf, size, keyword_error, size);
 		return false;
 	}
 
-	return validate(schema_object);
+	return true;
+}
+
+bool JSON::validate(const char* schema_input) const
+{
+	GAFF_ASSERT(schema_input && strlen(schema_input));
+	JSON schema;
+
+	if (!schema.parse(schema_input)) {
+		_error = schema._error;
+		return false;
+	}
+
+	return validate(schema);
+}
+
+bool JSON::parseFile(const char* filename, const JSON& schema_object)
+{
+	using JSONSchemaDocument = rapidjson::GenericSchemaDocument<JSONValue, JSONInternalAllocator>;
+	using JSONSchemaValidator = rapidjson::GenericSchemaValidator<JSONSchemaDocument>;
+
+	GAFF_ASSERT(filename && strlen(filename));
+	FILE* file = nullptr;
+	fopen_s(&file, filename, "r");
+
+	if (!file) {
+		return false;
+	}
+
+	char buffer[2048];
+
+	JSONSchemaDocument sd(schema_object._value, nullptr, &g_allocator);
+	JSONSchemaValidator validator(sd);
+
+	rapidjson::FileReadStream stream(file, buffer, 2048);
+	rapidjson::Reader reader;
+
+	_error = reader.Parse(stream, validator);
+
+	if (!_error && _error.Code() == rapidjson::kParseErrorTermination) {
+		validator.GetInvalidSchemaPointer().StringifyUriFragment(_schema_error);
+
+		const char* keyword_error = validator.GetInvalidSchemaKeyword();
+		size_t size = strlen(keyword_error) + 1;
+		char* buf = _keyword_error.Push(size);
+
+		memcpy_s(buf, size, keyword_error, size);
+	}
+
+	return _error.IsError();
+}
+
+bool JSON::parseFile(const char* filename, const char* schema_input)
+{
+	GAFF_ASSERT(filename && strlen(filename));
+	JSON schema;
+
+	if (!schema.parse(schema_input)) {
+		_error = schema._error;
+		return false;
+	}
+
+	return parseFile(filename, schema);
 }
 
 bool JSON::parseFile(const char* filename)
@@ -371,6 +374,48 @@ bool JSON::parseFile(const char* filename)
 	JSONValue& value = document;
 	_value = std::move(value);
 	return true;
+}
+
+bool JSON::parse(const char* input, const JSON& schema)
+{
+	using JSONSchemaDocument = rapidjson::GenericSchemaDocument<JSONValue, JSONInternalAllocator>;
+	using JSONSchemaValidator = rapidjson::GenericSchemaValidator<JSONSchemaDocument>;
+
+	JSONSchemaDocument sd(schema._value, nullptr, &g_allocator);
+	JSONSchemaValidator validator(sd);
+
+	rapidjson::StringStream stream(input);
+	rapidjson::Reader reader;
+
+	_error = reader.Parse(stream, validator);
+
+	if (!_error && _error.Code() == rapidjson::kParseErrorTermination) {
+		validator.GetInvalidSchemaPointer().StringifyUriFragment(_schema_error);
+		_schema_error.Push(0);
+
+		const char* keyword_error = validator.GetInvalidSchemaKeyword();
+		size_t size = strlen(keyword_error) + 1;
+		char* buffer = _keyword_error.Push(size);
+
+		memcpy_s(buffer, size, keyword_error, size);
+	}
+
+	return _error.IsError();
+}
+
+bool JSON::parse(const char* input, const char* schema_input)
+{
+	using JSONSchemaDocument = rapidjson::GenericSchemaDocument<JSONValue, JSONInternalAllocator>;
+	using JSONSchemaValidator = rapidjson::GenericSchemaValidator<JSONSchemaDocument>;
+
+	JSON schema;
+
+	if (!schema.parse(schema_input)) {
+		_error = schema._error;
+		return false;
+	}
+
+	return parse(input, schema);
 }
 
 bool JSON::parse(const char* input)
@@ -405,7 +450,7 @@ bool JSON::dumpToFile(const char* filename)
 
 	rapidjson::PrettyWriter<
 		rapidjson::FileWriteStream, rapidjson::UTF8<>,
-		rapidjson::UTF8<>, JSONAllocator
+		rapidjson::UTF8<>, JSONInternalAllocator
 	> writer(stream);
 
 	bool success = WriteJSON(*this, writer);
@@ -597,15 +642,14 @@ bool JSON::getBool(void) const
 void JSON::setObject(const char* key, const JSON& json)
 {
 	GAFF_ASSERT(_value.IsObject());
-	JSONAllocator allocator;
-	JSONValue value(json._value, allocator);
+	JSONValue value(json._value, g_allocator);
 
 	auto it = _value.FindMember(key);
 
 	if (it != _value.MemberEnd()) {
 		it->value = std::move(value);
 	} else {
-		_value.AddMember(JSONValue(key, allocator), std::move(value), allocator);
+		_value.AddMember(JSONValue(key, g_allocator), std::move(value), g_allocator);
 	}
 }
 
@@ -617,16 +661,14 @@ void JSON::setObject(const char* key, JSON&& json)
 	if (it != _value.MemberEnd()) {
 		it->value = std::move(json._value);
 	} else {
-		JSONAllocator allocator;
-		_value.AddMember(JSONValue(key, allocator), std::move(json._value), allocator);
+		_value.AddMember(JSONValue(key, g_allocator), std::move(json._value), g_allocator);
 	}
 }
 
 void JSON::setObject(size_t index, const JSON& json)
 {
 	GAFF_ASSERT(_value.IsArray() && index < _value.Size());
-	JSONAllocator allocator;
-	JSONValue value(json._value, allocator);
+	JSONValue value(json._value, g_allocator);
 
 	_value[static_cast<rapidjson::SizeType>(index)] = std::move(value);
 }
@@ -640,17 +682,15 @@ void JSON::setObject(size_t index, JSON&& json)
 void JSON::push(const JSON& json)
 {
 	GAFF_ASSERT(_value.IsArray());
-	JSONAllocator allocator;
-	JSONValue value(json._value, allocator);
+	JSONValue value(json._value, g_allocator);
 
-	_value.PushBack(std::move(value), allocator);
+	_value.PushBack(std::move(value), g_allocator);
 }
 
 void JSON::push(JSON&& json)
 {
 	GAFF_ASSERT(_value.IsArray());
-	JSONAllocator allocator;
-	_value.PushBack(std::move(json._value), allocator);
+	_value.PushBack(std::move(json._value), g_allocator);
 }
 
 size_t JSON::size(void) const
@@ -675,10 +715,19 @@ const char* JSON::getErrorText(void) const
 	return _error.IsError() ? rapidjson::GetParseError_En(_error.Code()) : nullptr;
 }
 
+const char* JSON::getSchemaErrorText(void) const
+{
+	return _schema_error.GetString();
+}
+
+const char* JSON::getSchemaKeywordText(void) const
+{
+	return _keyword_error.GetString();
+}
+
 const JSON& JSON::operator=(const JSON& rhs)
 {
-	JSONAllocator allocator;
-	_value = JSONValue(rhs._value, allocator);
+	_value = JSONValue(rhs._value, g_allocator);
 	return *this;
 }
 
@@ -690,8 +739,7 @@ const JSON& JSON::operator=(JSON&& rhs)
 
 const JSON& JSON::operator=(const char* value)
 {
-	JSONAllocator allocator;
-	_value.SetString(value, allocator);
+	_value.SetString(value, g_allocator);
 	return *this;
 }
 
@@ -743,337 +791,6 @@ JSON JSON::operator[](const char* key) const
 JSON JSON::operator[](size_t index) const
 {
 	return getObject(index);
-}
-
-void JSON::ExtractElementInfoHelper(
-	ElementInfo& info, size_t type_index, size_t& schema_index,
-	const JSON& type, const JSON& schema, const SchemaMap& schema_map,
-	bool is_object, bool is_array)
-{
-	strncpy_s(info.type[type_index], type.getString(), 16);
-
-	if (is_array || is_object) {
-		GAFF_ASSERT((schema.isArray() && schema_index < schema.size()) || schema_index == 0);
-		JSON s = (schema.isArray()) ? schema[schema_index] : schema;
-
-		if (s.isString()) {
-			GAFF_ASSERT(schema_map.hasElementWithKey(s.getString()));
-			s = schema_map[s.getString()];
-		}
-
-		info.schema[schema_index] = s;
-		++schema_index;
-	}
-}
-
-JSON::ElementInfo JSON::ExtractElementInfo(JSON element, const SchemaMap& schema_map)
-{
-	GAFF_ASSERT(element.isString() || element.isObject());
-	ElementInfo info;
-
-	if (element.isString()) {
-		element = schema_map[element.getString()];
-	}
-
-	JSON type = element["Type"];
-	JSON schema = element["Schema"];
-
-	GAFF_ASSERT(type.isString() || type.isArray());
-	GAFF_ASSERT(schema.isNull() || schema.isString() || schema.isArray() || schema.isObject());
-	GAFF_ASSERT(element["Optional"].isBool());
-	GAFF_ASSERT(element["Requires"].isNull() || element["Requires"].isString() || element["Requires"].isArray());
-
-	bool is_object = !strcmp(type.getString(), "Object");
-	bool is_array = !strcmp(type.getString(), "Array");
-
-	GAFF_ASSERT(!(is_array || is_object) || !schema.isNull());
-
-	info.optional = element["Optional"].isTrue();
-	info.requires = element["Requires"];
-
-	if (type.isArray()) {
-		size_t j = 0;
-
-		info.num_types = type.size();
-
-		for (size_t i = 0; i < info.num_types; ++i) {
-			ExtractElementInfoHelper(info, i, j, type, schema, schema_map, is_object, is_array);
-		}
-
-		info.num_schemas = j;
-
-	} else {
-		size_t i = 0;
-
-		ExtractElementInfoHelper(info, 0, i, type, schema, schema_map, is_object, is_array);
-
-		info.num_types = 1;
-		info.num_schemas = i;
-	}
-
-	return info;
-}
-
-bool JSON::validateSchema(const JSON& schema, const SchemaMap& schema_map) const
-{
-	static ElementParseMap parse_funcs;
-
-	if (parse_funcs.empty()) {
-		parse_funcs.reserve(7);
-		parse_funcs["Object"] = &JSON::isObjectSchema;
-		parse_funcs["Array"] = &JSON::isArraySchema;
-		parse_funcs["String"] = &JSON::isStringSchema;
-		parse_funcs["Number"] = &JSON::isNumberSchema;
-		parse_funcs["Integer"] = &JSON::isIntegerSchema;
-		parse_funcs["Double"] = &JSON::isDoubleSchema;
-		parse_funcs["Bool"] = &JSON::isBoolSchema;
-	}
-
-	return !schema.forEachInObject([&](const char* key, const JSON& value) -> bool
-	{
-		ElementInfo info = ExtractElementInfo(value, schema_map);
-		JSON element = getObject(key);
-		strncpy_s(info.key, key, 64);
-
-		if (!checkRequirements(info)) {
-			return false;
-		}
-
-		for (size_t i = 0, j = 0; i < info.num_types; ++i) {
-			if ((this->*parse_funcs[info.type[i]])(element, info, schema_map, j)) {
-				return false;
-			}
-		}
-
-		return true;
-	});
-}
-
-bool JSON::checkRequirements(const ElementInfo& info) const
-{
-	if (info.requires.isNull()) {
-		return true;
-	}
-
-	auto check_lambda = [&](size_t, const JSON& value) -> bool
-	{
-		GAFF_ASSERT(value.isString());
-
-		if (getObject(value.getString()).isNull()) {
-			//snprintf(_error.text, JSON_ERROR_TEXT_LENGTH, "Element '%s' requires element '%s'.", info.key, value.getString());
-			return true;
-		}
-
-		return false;
-	};
-
-	if (info.requires.isString()) {
-		return !check_lambda(0, info.requires);
-	}
-
-	return !info.requires.forEachInArray(check_lambda);
-}
-
-bool JSON::isObjectSchema(const JSON& element, const ElementInfo& info, const SchemaMap& schema_map, size_t& s_index) const
-{
-	if (element.isNull() && info.optional) {
-		return true;
-
-	} else if (element.isNull() && !info.optional) {
-		//snprintf(_error.text, JSON_ERROR_TEXT_LENGTH, "Element '%s' is non-optional.", info.key);
-		return false;
-	}
-
-	if (!element.isObject()) {
-		//snprintf(_error.text, JSON_ERROR_TEXT_LENGTH, "Element '%s' is not an object.", info.key);
-		return false;
-	}
-
-	size_t index = s_index;
-	++s_index;
-
-	if (!element.validateSchema(info.schema[index], schema_map)) {
-		//_error = element._error;
-		return false;
-	}
-
-	return true;
-}
-
-bool JSON::isArraySchema(const JSON& element, const ElementInfo& info, const SchemaMap& schema_map, size_t& s_index) const
-{
-	if (element.isNull() && info.optional) {
-		return true;
-
-	} else if (element.isNull() && !info.optional) {
-		//snprintf(_error.text, JSON_ERROR_TEXT_LENGTH, "Element '%s' is non-optional.", info.key);
-		return false;
-	}
-
-	if (!element.isArray()) {
-		//snprintf(_error.text, JSON_ERROR_TEXT_LENGTH, "Element '%s' is not an array.", info.key);
-		return false;
-	}
-
-	JSON schema = info.schema[s_index];
-	++s_index;
-
-	JSON s = schema["Schema"];
-
-	GAFF_ASSERT(s.isNull() || s.isString() || s.isObject());
-	GAFF_ASSERT(schema["Type"].isString());
-
-	const char* type = schema["Type"].getString();
-
-	if (s.isString()) {
-		GAFF_ASSERT(schema_map.hasElementWithKey(s.getString()));
-		s = schema_map[s.getString()];
-	}
-
-	bool is_string = !strcmp(type, "String");
-	bool is_number = !strcmp(type, "Number");
-	bool is_integer = !strcmp(type, "Integer");
-	bool is_double = !strcmp(type, "Double");
-	bool is_bool = !strcmp(type, "Bool");
-	bool is_object = !strcmp(type, "Object");
-	bool is_array = !strcmp(type, "Array");
-
-	GAFF_ASSERT(!(is_object || is_array) || !s.isNull());
-
-	return !element.forEachInArray([&](size_t /*index*/, const JSON& value) -> bool
-	{
-		if (is_string && !value.isString()) {
-			//snprintf(_error.text, JSON_ERROR_TEXT_LENGTH, "Element '%s' index '%zu' depth '%zu' is not a string.", info.key, index, info.depth);
-			return true;
-		} else if (is_number && !value.isNumber()) {
-			//snprintf(_error.text, JSON_ERROR_TEXT_LENGTH, "Element '%s' index '%zu' depth '%zu' is not a number.", info.key, index, info.depth);
-			return true;
-		} else if (is_integer && (!value.isNumber() || value.isDouble())) {
-			//snprintf(_error.text, JSON_ERROR_TEXT_LENGTH, "Element '%s' index '%zu' depth '%zu' is not an integer.", info.key, index, info.depth);
-			return true;
-		} else if (is_double && !value.isDouble()) {
-			//snprintf(_error.text, JSON_ERROR_TEXT_LENGTH, "Element '%s' index '%zu' depth '%zu' is not a double.", info.key, index, info.depth);
-			return true;
-		} else if (is_bool && !value.isBool()) {
-			//snprintf(_error.text, JSON_ERROR_TEXT_LENGTH, "Element '%s' index '%zu' depth '%zu' is not a bool.", info.key, index, info.depth);
-			return true;
-
-		} else if (is_object) {
-			if (!value.isObject()) {
-				//snprintf(_error.text, JSON_ERROR_TEXT_LENGTH, "Element '%s' index '%zu' depth '%zu' is not an object.", info.key, index, info.depth);
-				return true;
-			}
-
-			if (!value.validateSchema(s, schema_map)) {
-				//_error = value._error;
-				return true;
-			}
-
-		} else if (is_array) {
-			if (!value.isArray()) {
-				//snprintf(_error.text, JSON_ERROR_TEXT_LENGTH, "Element '%s' index '%zu' depth '%zu' is not an array.", info.key, index, info.depth);
-				return true;
-			}
-
-			ElementInfo arr_info = ExtractElementInfo(s, schema_map);
-			arr_info.depth = info.depth + 1;
-			size_t temp = 0;
-
-			return !isArraySchema(value, arr_info, schema_map, temp);
-		}
-
-		return false;
-	});
-}
-
-bool JSON::isStringSchema(const JSON& element, const ElementInfo& info, const SchemaMap&, size_t&) const
-{
-	if (element.isNull() && info.optional) {
-		return true;
-
-	} else if (element.isNull() && !info.optional) {
-		//snprintf(_error.text, JSON_ERROR_TEXT_LENGTH, "Element '%s' is non-optional.", info.key);
-		return false;
-	}
-
-	if (!element.isString()) {
-		//snprintf(_error.text, JSON_ERROR_TEXT_LENGTH, "Element '%s' is not a string.", info.key);
-		return false;
-	}
-
-	return true;
-}
-
-bool JSON::isNumberSchema(const JSON& element, const ElementInfo& info, const SchemaMap&, size_t&) const
-{
-	if (element.isNull() && info.optional) {
-		return true;
-
-	} else if (element.isNull() && !info.optional) {
-		//snprintf(_error.text, JSON_ERROR_TEXT_LENGTH, "Element '%s' is non-optional.", info.key);
-		return false;
-	}
-
-	if (!element.isNumber()) {
-		//snprintf(_error.text, JSON_ERROR_TEXT_LENGTH, "Element '%s' is not a number.", info.key);
-		return false;
-	}
-
-	return true;
-}
-
-bool JSON::isIntegerSchema(const JSON& element, const ElementInfo& info, const SchemaMap&, size_t&) const
-{
-	if (element.isNull() && info.optional) {
-		return true;
-
-	} else if (element.isNull() && !info.optional) {
-		//snprintf(_error.text, JSON_ERROR_TEXT_LENGTH, "Element '%s' is non-optional.", info.key);
-		return false;
-	}
-
-	if (!element.isNumber() || element.isDouble()) {
-		//snprintf(_error.text, JSON_ERROR_TEXT_LENGTH, "Element '%s' is not an integer.", info.key);
-		return false;
-	}
-
-	return true;
-}
-
-bool JSON::isDoubleSchema(const JSON& element, const ElementInfo& info, const SchemaMap&, size_t&) const
-{
-	if (element.isNull() && info.optional) {
-		return true;
-
-	} else if (element.isNull() && !info.optional) {
-		//snprintf(_error.text, JSON_ERROR_TEXT_LENGTH, "Element '%s' is non-optional.", info.key);
-		return false;
-	}
-
-	if (!element.isDouble()) {
-		//snprintf(_error.text, JSON_ERROR_TEXT_LENGTH, "Element '%s' is not a double.", info.key);
-		return false;
-	}
-
-	return true;
-}
-
-bool JSON::isBoolSchema(const JSON& element, const ElementInfo& info, const SchemaMap&, size_t&) const
-{
-	if (element.isNull() && info.optional) {
-		return true;
-
-	} else if (element.isNull() && !info.optional) {
-		//snprintf(_error.text, JSON_ERROR_TEXT_LENGTH, "Element '%s' is non-optional.", info.key);
-		return false;
-	}
-
-	if (!element.isBool()) {
-		//snprintf(_error.text, JSON_ERROR_TEXT_LENGTH, "Element '%s' is not a bool.", info.key);
-		return false;
-	}
-
-	return true;
 }
 
 NS_END
