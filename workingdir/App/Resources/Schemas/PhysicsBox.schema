@@ -1,6 +1,13 @@
 {
-	"Shape": { "Type": "String", "Optional": false },
-	"Width": { "Type": "Number", "Optional": false },
-	"Height": { "Type": "Number", "Optional": false },
-	"Depth": { "Type": "Number", "Optional": false }
+	"type": "object",
+
+	"properties":
+	{
+		"Shape": { "type": "string" },
+		"Width": { "type": "number" },
+		"Height": { "type": "number" },
+		"Depth": { "type": "number" }
+	},
+
+	"required": ["Shape", "Width", "Height", "Depth"]
 }

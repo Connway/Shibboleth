@@ -1,17 +1,24 @@
 {
-	"Vertex": { "Type": "String", "Optional": true },
-	"Pixel": { "Type": "String", "Optional": true },
-	"Hull": { "Type": "String", "Optional": true },
-	"Geometry": { "Type": "String", "Optional": true },
-	"Domain": { "Type": "String", "Optional": true },
+	"type": "object",
 
-	"Render Pass": { "Type":"String", "Optional": false },
+	"properties":
+	{
+		"Vertex": { "type": "string" },
+		"Pixel": { "type": "string" },
+		"Hull": { "type": "string" },
+		"Geometry": { "type": "string" },
+		"Domain": { "type": "string" },
 
-	"Slope Scale Depth Bias": { "Type": "Double", "Optional": true },
-	"Depth Bias Clamp": { "Type": "Double", "Optional": true },
-	"Depth Bias": { "Type": "Integer", "Optional": true },
-	"Front Face Counter Clockwise": { "Type": "Bool", "Optional": true },
-	"Scissor Enabled": { "Type": "Bool", "Optional": true },
-	"Two Sided": { "Type": "Bool", "Optional": true },
-	"Wireframe": { "Type": "Bool", "Optional": true }
+		"Render Pass": { "type": "string" },
+
+		"Slope Scale Depth Bias": { "type": "number" },
+		"Depth Bias Clamp": { "type": "number" },
+		"Depth Bias": { "type": "integer" },
+		"Front Face Counter Clockwise": { "type": "boolean" },
+		"Scissor Enabled": { "type": "boolean" },
+		"Two Sided": { "type": "boolean" },
+		"Wireframe": { "type": "boolean" }
+	},
+
+	"required": ["Render Pass"]
 }

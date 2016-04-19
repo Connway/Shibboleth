@@ -1,4 +1,11 @@
 {
-	"Type": { "Type": "String", "Optional": false },
-	"Script File": { "Type": "String", "Optional": false }
+	"type": "object",
+
+	"properties":
+	{
+		"Type": { "type": "string" },
+		"Script File": { "type": "string" }
+	},
+
+	"required": ["Type", "Script File"]
 }

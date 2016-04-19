@@ -24,12 +24,13 @@ THE SOFTWARE.
 
 #include "Gaff_HashMap.h"
 #include "Gaff_IncludeRapidJSON.h"
+#include <rapidjson/stringbuffer.h>
 #include <rapidjson/document.h>
 
-#ifdef PLATFORM_WINDOWS
-	#pragma warning(push)
-	#pragma warning(disable : 4706)
-#endif
+//#ifdef PLATFORM_WINDOWS
+//	#pragma warning(push)
+//	#pragma warning(disable : 4706)
+//#endif
 
 NS_GAFF
 
@@ -46,7 +47,6 @@ public:
 	bool forEachInObject(Callback&& callback) const
 	{
 		GAFF_ASSERT(_value.IsObject());
-
 		auto beg = _value.MemberBegin();
 		auto end = _value.MemberEnd();
 
@@ -65,7 +65,6 @@ public:
 	bool forEachInArray(Callback&& callback) const
 	{
 		GAFF_ASSERT(_value.IsArray());
-
 		auto beg = _value.Begin();
 		auto end = _value.End();
 
@@ -100,13 +99,17 @@ public:
 	~JSON(void);
 
 	bool validateFile(const char* schema_file) const;
-	bool validate(const JSON& schema_object) const;
-	bool validate(const char* input) const;
+	bool validate(const JSON& schema) const;
+	bool validate(const char* schema_input) const;
 
-	INLINE bool parseFile(const char* filename);
-	INLINE bool parse(const char* input);
-	INLINE bool dumpToFile(const char* filename);
-	INLINE char* dump(void);
+	bool parseFile(const char* filename, const JSON& schema);
+	bool parseFile(const char* filename, const char* schema_input);
+	bool parseFile(const char* filename);
+	bool parse(const char* input, const JSON& schema_object);
+	bool parse(const char* input, const char* schema_input);
+	bool parse(const char* input);
+	bool dumpToFile(const char* filename);
+	char* dump(void);
 
 	INLINE bool isObject(void) const;
 	INLINE bool isArray(void) const;
@@ -153,6 +156,8 @@ public:
 	INLINE size_t size(void) const;
 
 	INLINE const char* getErrorText(void) const;
+	INLINE const char* getSchemaErrorText(void) const;
+	INLINE const char* getSchemaKeywordText(void) const;
 
 	INLINE const JSON& operator=(const JSON& rhs);
 	INLINE const JSON& operator=(JSON&& rhs);
@@ -171,53 +176,28 @@ public:
 
 private:
 	class JSONAllocator;
-	using JSONDocument = rapidjson::GenericDocument<rapidjson::UTF8<>, JSONAllocator, JSONAllocator>;
-	using JSONValue = rapidjson::GenericValue<rapidjson::UTF8<>, JSONAllocator>;
+
+	// This allocator is stateful, so cross EXE/DLL boundaries will produce memory dereference crashes.
+	//using JSONInternalAllocator = rapidjson::MemoryPoolAllocator<JSONAllocator>;
+	using JSONInternalAllocator = JSONAllocator;
+	using JSONDocument = rapidjson::GenericDocument<rapidjson::UTF8<>, JSONInternalAllocator, JSONAllocator>;
+	using JSONValue = rapidjson::GenericValue<rapidjson::UTF8<>, JSONInternalAllocator>;
+	using JSONStringBuffer = rapidjson::GenericStringBuffer<rapidjson::UTF8<>, JSONAllocator>;
 
 	JSONValue _value;
-	rapidjson::ParseResult _error;
+	mutable rapidjson::ParseResult _error;
+	mutable JSONStringBuffer _schema_error;
+	mutable JSONStringBuffer _keyword_error;
 
-	static JSONAlloc _alloc;
-	static JSONFree _free;
+	static JSONInternalAllocator g_allocator;
+	static JSONAlloc g_alloc;
+	static JSONFree g_free;
 
 	explicit JSON(const JSONValue& json);
-
-
-
-	class JSONAllocatorOld;
-	struct ElementInfo;
-
-	using SchemaString = AHashString<JSONAllocatorOld>;
-	using SchemaMap = HashMap<SchemaString, JSON, JSONAllocatorOld>;
-	using ParseElementFunc = bool (JSON::*)(const JSON&, const ElementInfo&, const SchemaMap&, size_t&) const;
-	using ElementParseMap = HashMap<SchemaString, ParseElementFunc, JSONAllocatorOld>;
-
-	static void ExtractElementInfoHelper(
-		ElementInfo& info, size_t type_index, size_t& schema_index,
-		const JSON& type, const JSON& schema, const SchemaMap& schema_map,
-		bool is_object, bool is_array
-	);
-	static ElementInfo ExtractElementInfo(JSON element, const SchemaMap& schema_map);
-
-	//explicit JSON(json_t* json, bool increment_ref_count);
-
-	bool validateSchema(const JSON& schema, const SchemaMap& schema_map) const;
-
-	bool checkRequirements(const ElementInfo& info) const;
-
-	bool isObjectSchema(const JSON& element, const ElementInfo& info, const SchemaMap& schema_map, size_t& s_index) const;
-	bool isArraySchema(const JSON& element, const ElementInfo& info, const SchemaMap& schema_map, size_t& s_index) const;
-	bool isStringSchema(const JSON& element, const ElementInfo& info, const SchemaMap&, size_t&) const;
-	bool isNumberSchema(const JSON& element, const ElementInfo& info, const SchemaMap&, size_t&) const;
-	bool isIntegerSchema(const JSON& element, const ElementInfo& info, const SchemaMap&, size_t&) const;
-	bool isDoubleSchema(const JSON& element, const ElementInfo& info, const SchemaMap&, size_t&) const;
-	bool isBoolSchema(const JSON& element, const ElementInfo& info, const SchemaMap&, size_t&) const;
-
-	friend class JSONAllocator;
 };
 
 NS_END
 
-#ifdef PLATFORM_WINDOWS
-	#pragma warning(pop)
-#endif
+//#ifdef PLATFORM_WINDOWS
+//	#pragma warning(pop)
+//#endif

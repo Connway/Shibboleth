@@ -249,9 +249,9 @@ static PhysicsShapeType ValidateSchema(const Gaff::JSON& shape_info, const char*
 		GetApp().getLogManager().logMessage(LogManager::LOG_ERROR, GetApp().getLogFileName(), "ERROR - '%s' is not a value in the PhysicsShapeType enum.\n", shape_name);
 		return PST_COUNT;
 	}
-	
+
 	const Gaff::JSON& schema = schema_mgr.getSchema(g_physics_schema_names[shape]);
-	
+
 	if (shape_info.validate(schema)) {
 		return shape;
 	}

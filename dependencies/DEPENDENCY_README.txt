@@ -36,6 +36,6 @@ LuaBridge - 2.0
 LuaJIT - 2.0.4
 LuaState - 2.0
 OtterUI - 1.3.6.3 commit a2c5243
-RapidJSON - 1.0.2
+RapidJSON - commit 07343d5e3361a940448bb5d2887bb5253a126f32
 utf8-cpp - 2.3.4
 zlib - 1.2.8

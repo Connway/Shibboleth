@@ -29,7 +29,7 @@ SHIB_REF_IMPL(SceneManager)
 .addBaseClassInterfaceOnly<SceneManager>()
 ;
 
-const char* SceneManager::GetFriendlyName(void) const
+const char* SceneManager::GetFriendlyName(void)
 {
 	return "Scene Manager";
 }
