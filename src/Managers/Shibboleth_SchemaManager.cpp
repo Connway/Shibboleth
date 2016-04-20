@@ -63,8 +63,17 @@ const Gaff::JSON& SchemaManager::getSchema(const char* schema_file) const
 
 bool SchemaManager::addSchema(const char* file_name, IFile* file)
 {
-	if (!_schema_map[file_name].parse(file->getBuffer())) {
-		// log error
+	Gaff::JSON& schema = _schema_map[file_name];
+
+	if (!schema.parse(file->getBuffer())) {
+		auto& lm = GetApp().getLogManager();
+
+		lm.logMessage(
+			LogManager::LOG_ERROR, GetApp().getLogFileName(),
+			"Schema failed to parse with error '%s'.\n",
+			schema.getErrorText()
+		);
+
 		GetApp().quit();
 		return true;
 	}

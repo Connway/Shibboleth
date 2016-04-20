@@ -462,7 +462,23 @@ bool JSON::dumpToFile(const char* filename)
 char* JSON::dump(void)
 {
 	GAFF_ASSERT(_value.IsArray() || _value.IsObject());
-	//return json_dumps(_value, JSON_INDENT(4) | JSON_SORT_KEYS);
+	JSONStringBuffer buffer;
+
+	rapidjson::PrettyWriter<
+		JSONStringBuffer, rapidjson::UTF8<>,
+		rapidjson::UTF8<>, JSONInternalAllocator
+	> writer(buffer);
+
+	if (WriteJSON(*this, writer)) {
+		size_t size = buffer.GetSize();
+		char* str = reinterpret_cast<char*>(g_alloc(size + 1));
+
+		memcpy_s(str, size, buffer.GetString(), size);
+		str[size] = 0;
+
+		return str;
+	}
+
 	return nullptr;
 }
 
