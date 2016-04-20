@@ -27,6 +27,10 @@ THE SOFTWARE.
 #include <Shibboleth_String.h>
 #include <Shibboleth_Array.h>
 
+NS_GAFF
+	struct JobData;
+NS_END
+
 NS_SHIBBOLETH
 
 class Object;
@@ -53,6 +57,7 @@ private:
 	};
 
 	Array<Layer> _layers;
+	Array< Array<Gaff::JobData> > _job_cache[2];
 
 	GAFF_NO_COPY(SceneManager);
 	GAFF_NO_MOVE(SceneManager);
