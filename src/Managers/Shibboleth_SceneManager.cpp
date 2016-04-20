@@ -21,8 +21,23 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Shibboleth_SceneManager.h"
+#include <Shibboleth_Utilities.h>
+#include <Shibboleth_Object.h>
+#include <Shibboleth_IApp.h>
 
 NS_SHIBBOLETH
+
+void AddToWorldJob(void* data)
+{
+	Object* object = reinterpret_cast<Object*>(data);
+	object->addToWorld();
+}
+
+void RemoveFromWorldJob(void* data)
+{
+	Object* object = reinterpret_cast<Object*>(data);
+	object->removeFromWorld();
+}
 
 REF_IMPL_REQ(SceneManager);
 SHIB_REF_IMPL(SceneManager)
@@ -53,6 +68,42 @@ bool SceneManager::loadScene(const char* /*scene_name*/)
 	// parse JSON
 
 	return true;
+}
+
+void SceneManager::activateLayer(size_t layer)
+{
+	GAFF_ASSERT(layer < _layers.size());
+	auto& objects = _layers[layer].objects;
+
+	auto& job_data = _job_cache[0][layer];
+
+	for (auto it = objects.begin(); it != objects.end(); ++it) {
+		if (!(*it)->isInWorld()) {
+			job_data.emplacePush(AddToWorldJob, *it);
+			//(*it)->addToWorld();
+		}
+	}
+
+	GetApp().getJobPool().addJobs(job_data.getArray(), job_data.size());
+	job_data.clearNoFree();
+}
+
+void SceneManager::deactivateLayer(size_t layer)
+{
+	GAFF_ASSERT(layer < _layers.size());
+	auto& objects = _layers[layer].objects;
+
+	auto& job_data = _job_cache[1][layer];
+
+	for (auto it = objects.begin(); it != objects.end(); ++it) {
+		if ((*it)->isInWorld()) {
+			job_data.emplacePush(RemoveFromWorldJob, *it);
+			//(*it)->removeFromWorld();
+		}
+	}
+
+	GetApp().getJobPool().addJobs(job_data.getArray(), job_data.size());
+	job_data.clearNoFree();
 }
 
 NS_END
