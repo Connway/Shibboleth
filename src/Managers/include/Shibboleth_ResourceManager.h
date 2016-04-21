@@ -133,8 +133,11 @@ typedef Gaff::RefPtr<ResourceContainer> ResourcePtr;
 class ResourceManager : public IManager
 {
 public:
-	struct JSONModifiers
+	using FilePopulationFunc = void (*)(void);
+
+	struct FileReadInfo
 	{
+		//FilePopulationFunc file_func;
 		AString json_element;
 		AString append_to_filename;
 		bool optional;
@@ -147,8 +150,8 @@ public:
 
 	const char* getName(void) const override;
 
-	void registerResourceLoader(IResourceLoader* res_loader, const Array<AString>& resource_types, unsigned int thread_pool = 0, const Array<JSONModifiers>& json_elements = Array<JSONModifiers>());
-	INLINE void registerResourceLoader(IResourceLoader* res_loader, const char* resource_type, unsigned int thread_pool = 0, const Array<JSONModifiers>& json_elements = Array<JSONModifiers>());
+	void registerResourceLoader(IResourceLoader* res_loader, const Array<AString>& resource_types, unsigned int thread_pool = 0, const Array<FileReadInfo>& json_elements = Array<FileReadInfo>());
+	INLINE void registerResourceLoader(IResourceLoader* res_loader, const char* resource_type, unsigned int thread_pool = 0, const Array<FileReadInfo>& json_elements = Array<FileReadInfo>());
 
 	ResourcePtr requestResource(const char* resource_type, const char* instance_name, uint64_t user_data = 0);
 	ResourcePtr requestResource(const char* filename, uint64_t user_data = 0);
@@ -168,7 +171,7 @@ public:
 private:
 	struct LoaderData
 	{
-		Gaff::SharedPtr<Array<JSONModifiers>, ProxyAllocator> json_elements;
+		Gaff::SharedPtr<Array<FileReadInfo>, ProxyAllocator> json_elements;
 		ResourceLoaderPtr res_loader;
 		unsigned int job_pool;
 	};

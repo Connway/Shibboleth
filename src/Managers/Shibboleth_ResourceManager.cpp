@@ -37,7 +37,7 @@ NS_SHIBBOLETH
 struct ResourceData
 {
 	// Resource Reading
-	const Array<ResourceManager::JSONModifiers>* json_elements; // Lists JSON elements that specify files to read.
+	const Array<ResourceManager::FileReadInfo>* json_elements; // Lists JSON elements that specify files to read.
 	ResourceLoaderPtr res_loader;
 	ResourcePtr res_ptr;
 	unsigned int job_pool;
@@ -275,11 +275,11 @@ const char* ResourceManager::getName(void) const
 	return GetFriendlyName();
 }
 
-void ResourceManager::registerResourceLoader(IResourceLoader* res_loader, const Array<AString>& resource_types, unsigned int thread_pool, const Array<JSONModifiers>& json_elements)
+void ResourceManager::registerResourceLoader(IResourceLoader* res_loader, const Array<AString>& resource_types, unsigned int thread_pool, const Array<FileReadInfo>& json_elements)
 {
 	GAFF_ASSERT(res_loader && resource_types.size());
 
-	Gaff::SharedPtr<Array<JSONModifiers>, ProxyAllocator> je(SHIB_ALLOCT(Array<JSONModifiers>, *GetAllocator(), json_elements));
+	Gaff::SharedPtr<Array<FileReadInfo>, ProxyAllocator> je(SHIB_ALLOCT(Array<FileReadInfo>, *GetAllocator(), json_elements));
 	LoaderData loader_data = { je, ResourceLoaderPtr(res_loader), thread_pool };
 
 	for (auto it = resource_types.begin(); it != resource_types.end(); ++it) {
@@ -288,11 +288,11 @@ void ResourceManager::registerResourceLoader(IResourceLoader* res_loader, const 
 	}
 }
 
-void ResourceManager::registerResourceLoader(IResourceLoader* res_loader, const char* resource_type, unsigned int thread_pool, const Array<JSONModifiers>& json_elements)
+void ResourceManager::registerResourceLoader(IResourceLoader* res_loader, const char* resource_type, unsigned int thread_pool, const Array<FileReadInfo>& json_elements)
 {
 	// We've already registered a loader for this file type.
 	GAFF_ASSERT(_resource_loaders.indexOf(AHashString(resource_type)) == SIZE_T_FAIL);
-	Gaff::SharedPtr<Array<JSONModifiers>, ProxyAllocator> je(SHIB_ALLOCT(Array<JSONModifiers>, *GetAllocator(), json_elements));
+	Gaff::SharedPtr<Array<FileReadInfo>, ProxyAllocator> je(SHIB_ALLOCT(Array<FileReadInfo>, *GetAllocator(), json_elements));
 	LoaderData loader_data = { je, ResourceLoaderPtr(res_loader), thread_pool };
 	_resource_loaders[AHashString(resource_type)] = loader_data;
 }

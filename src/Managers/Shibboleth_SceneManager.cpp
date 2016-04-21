@@ -21,6 +21,9 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Shibboleth_SceneManager.h"
+#include "Shibboleth_SchemaManager.h"
+#include "Shibboleth_ObjectManager.h"
+#include <Shibboleth_IFileSystem.h>
 #include <Shibboleth_Utilities.h>
 #include <Shibboleth_Object.h>
 #include <Shibboleth_IApp.h>
@@ -37,6 +40,50 @@ void RemoveFromWorldJob(void* data)
 {
 	Object* object = reinterpret_cast<Object*>(data);
 	object->removeFromWorld();
+}
+
+void LoadSceneJob(void* data)
+{
+	SceneManager* sm = reinterpret_cast<SceneManager*>(data);
+	IApp& app = GetApp();
+	IFileSystem* fs = app.getFileSystem();
+	IFile* file = fs->openFile(sm->_scene_path.getBuffer());
+
+	if (!file) {
+		// log error
+		// set to failure state
+		return;
+	}
+
+	Gaff::JSON scene_data;
+
+	if (!scene_data.parse(file->getBuffer())) {
+		fs->closeFile(file);
+		// log error
+		// set to failure state
+		return;
+	}
+
+	fs->closeFile(file);
+
+	Gaff::JSON schema = app.getManagerT<SchemaManager>().getSchema("Scene.schema");
+
+	if (!scene_data.validate(schema)) {
+		// log error
+		// set to failure state
+		return;
+	}
+
+	Gaff::JSON layers = scene_data["Layers"];
+
+	sm->_scene.name = scene_data["Name"].getString();
+	sm->_scene.layers.resize(layers.size());
+
+	layers.forEachInArray([sm](size_t index, const Gaff::JSON& value) -> bool
+	{
+		sm->loadLayer(index, value);
+		return false;
+	});
 }
 
 REF_IMPL_REQ(SceneManager);
@@ -62,18 +109,45 @@ const char* SceneManager::getName(void) const
 	return GetFriendlyName();
 }
 
-bool SceneManager::loadScene(const char* /*scene_name*/)
+void SceneManager::loadScene(const char* scene)
 {
-	// open file
-	// parse JSON
+	_scene_path = scene;
+	Gaff::JobData job_data(LoadSceneJob, this);
+	GetApp().getJobPool().addJobs(&job_data);
+}
 
-	return true;
+bool SceneManager::activateLayer(const char* layer)
+{
+	uint32_t hash = Gaff::FNV1aHash32(layer, strlen(layer));
+
+	for (size_t i = 0; i < _scene.layers.size(); ++i) {
+		if (_scene.layers[i].hash == hash) {
+			activateLayer(i);
+			return true;
+		}
+	}
+
+	return false;
+}
+
+bool SceneManager::deactivateLayer(const char* layer)
+{
+	uint32_t hash = Gaff::FNV1aHash32(layer, strlen(layer));
+
+	for (size_t i = 0; i < _scene.layers.size(); ++i) {
+		if (_scene.layers[i].hash == hash) {
+			deactivateLayer(i);
+			return true;
+		}
+	}
+
+	return false;
 }
 
 void SceneManager::activateLayer(size_t layer)
 {
-	GAFF_ASSERT(layer < _layers.size());
-	auto& objects = _layers[layer].objects;
+	GAFF_ASSERT(layer < _scene.layers.size());
+	auto& objects = _scene.layers[layer].objects;
 
 	auto& job_data = _job_cache[0][layer];
 
@@ -90,8 +164,8 @@ void SceneManager::activateLayer(size_t layer)
 
 void SceneManager::deactivateLayer(size_t layer)
 {
-	GAFF_ASSERT(layer < _layers.size());
-	auto& objects = _layers[layer].objects;
+	GAFF_ASSERT(layer < _scene.layers.size());
+	auto& objects = _scene.layers[layer].objects;
 
 	auto& job_data = _job_cache[1][layer];
 
@@ -104,6 +178,89 @@ void SceneManager::deactivateLayer(size_t layer)
 
 	GetApp().getJobPool().addJobs(job_data.getArray(), job_data.size());
 	job_data.clearNoFree();
+}
+
+void SceneManager::loadLayer(size_t index, const Gaff::JSON& layer_data)
+{
+	Layer& layer = _scene.layers[index];
+	layer.name = layer_data["Name"].getString();
+	bool active = layer_data["Active"].getBool();
+
+	IApp& app = GetApp();
+	IFileSystem* fs = app.getFileSystem();
+	IFile* file = fs->openFile(layer_data["Layer File"].getString());
+
+	if (!file) {
+		// log error
+		return;
+	}
+
+	Gaff::JSON lyr;
+
+	if (!lyr.parse(file->getBuffer())) {
+		fs->closeFile(file);
+		// log error
+		return;
+	}
+
+	fs->closeFile(file);
+
+	Gaff::JSON schema = app.getManagerT<SchemaManager>().getSchema("Layer.schema");
+
+	if (!lyr.validate(schema)) {
+		// log error
+		return;
+	}
+
+	ObjectManager& om = app.getManagerT<ObjectManager>();
+	layer.objects.resize(lyr.size(), nullptr);
+
+	lyr.forEachInArray([&layer, &om, fs](size_t index, const Gaff::JSON& value) -> bool
+	{
+		Gaff::JSON obj_file = value["Object File"];
+
+		Object* object = om.createObject();
+		bool success = true;
+
+		if (obj_file.isNull()) {
+			success = object->init(fs, obj_file.getString());
+		} else {
+			success = object->init(value["Object"]);
+		}
+
+		if (success) {
+			layer.objects[index] = object;
+
+		} else {
+			// log error
+			om.removeObject(object);
+		}
+
+		return false;
+	});
+
+	// Run it through again to hook up the children
+	lyr.forEachInArray([&layer](size_t parent_index, const Gaff::JSON& object) -> bool
+	{
+		Object* parent = layer.objects[parent_index];
+
+		object["Children"].forEachInArray([&layer, parent](size_t, const Gaff::JSON& child_index) -> bool
+		{
+			Object* child = layer.objects[child_index.getUInt()];
+			parent->addChild(child);
+			return false;
+		});
+
+		return false;
+	});
+
+	// If the layer starts out active, add the objects to the world
+	if (active) {
+		for (auto it = layer.objects.begin(); it != layer.objects.end(); ++it) {
+			(*it)->addToWorld();
+		}
+	}
+
 }
 
 NS_END

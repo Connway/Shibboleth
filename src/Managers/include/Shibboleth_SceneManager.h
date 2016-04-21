@@ -45,7 +45,10 @@ public:
 
 	const char* getName(void) const;
 
-	bool loadScene(const char* scene_name);
+	void loadScene(const char* scene);
+
+	bool activateLayer(const char* layer);
+	bool deactivateLayer(const char* layer);
 	void activateLayer(size_t layer);
 	void deactivateLayer(size_t layer);
 
@@ -54,16 +57,30 @@ private:
 	{
 		Array<Object*> objects;
 		AString name;
+		uint32_t hash;
 	};
 
-	Array<Layer> _layers;
+	struct Scene
+	{
+		Array<Layer> layers;
+		AString name;
+	};
+
+
+
+	Scene _scene;
 	Array< Array<Gaff::JobData> > _job_cache[2];
+	AString _scene_path;
+
+	void loadLayer(size_t index, const Gaff::JSON& layer);
 
 	GAFF_NO_COPY(SceneManager);
 	GAFF_NO_MOVE(SceneManager);
 
 	SHIB_REF_DEF(SceneManager);
 	REF_DEF_REQ;
+
+	friend void LoadSceneJob(void* data);
 };
 
 NS_END

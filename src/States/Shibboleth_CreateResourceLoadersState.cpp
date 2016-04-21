@@ -120,8 +120,8 @@ void CreateResourceLoadersState::update(void)
 			return;
 		}
 
-		Array<ResourceManager::JSONModifiers> json_elements;
-		ResourceManager::JSONModifiers modifiers = { AString("image_file"), AString(), false };
+		Array<ResourceManager::FileReadInfo> json_elements;
+		ResourceManager::FileReadInfo modifiers = { AString("image_file"), AString(), false };
 		json_elements.emplacePush(modifiers);
 
 		app.getLogManager().logMessage(LogManager::LOG_NORMAL, app.getLogFileName(), "Adding Texture Loader\n");
@@ -168,21 +168,21 @@ void CreateResourceLoadersState::update(void)
 			return;
 		}
 
-		Array<ResourceManager::JSONModifiers> json_elements;
-		ResourceManager::JSONModifiers modifiers = { AString("Vertex"), AString(render_mgr.getShaderExtension()), true };
-		json_elements.emplacePush(modifiers);
+		Array<ResourceManager::FileReadInfo> json_elements;
+		ResourceManager::FileReadInfo file_info = { AString("Vertex"), AString(render_mgr.getShaderExtension()), true };
+		json_elements.emplacePush(file_info);
 
-		modifiers.json_element = "Pixel";
-		json_elements.emplacePush(modifiers);
+		file_info.json_element = "Pixel";
+		json_elements.emplacePush(file_info);
 
-		modifiers.json_element = "Hull";
-		json_elements.emplacePush(modifiers);
+		file_info.json_element = "Hull";
+		json_elements.emplacePush(file_info);
 
-		modifiers.json_element = "Geometry";
-		json_elements.emplacePush(modifiers);
+		file_info.json_element = "Geometry";
+		json_elements.emplacePush(file_info);
 
-		modifiers.json_element = "Domain";
-		json_elements.emplacePush(modifiers);
+		file_info.json_element = "Domain";
+		json_elements.emplacePush(file_info);
 
 		app.getLogManager().logMessage(LogManager::LOG_NORMAL, app.getLogFileName(), "Adding Shader Program Loader\n");
 		res_mgr.registerResourceLoader(shader_program_loader, ".material", 0, json_elements);
@@ -271,8 +271,8 @@ void CreateResourceLoadersState::update(void)
 			return;
 		}
 
-		Array<ResourceManager::JSONModifiers> json_elements;
-		ResourceManager::JSONModifiers modifiers = { AString("mesh_file"), AString(), true };
+		Array<ResourceManager::FileReadInfo> json_elements;
+		ResourceManager::FileReadInfo modifiers = { AString("mesh_file"), AString(), true };
 		json_elements.emplacePush(modifiers);
 
 		app.getLogManager().logMessage(LogManager::LOG_NORMAL, app.getLogFileName(), "Adding Model Loader\n");

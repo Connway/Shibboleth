@@ -32,6 +32,7 @@ THE SOFTWARE.
 #include <Shibboleth_RenderManager.h>
 #include <Shibboleth_UpdateManager.h>
 #include <Shibboleth_ObjectManager.h>
+#include <Shibboleth_SceneManager.h>
 #include <Shibboleth_InputManager.h>
 #include <Shibboleth_FrameManager.h>
 #include <Shibboleth_LuaManager.h>
@@ -66,7 +67,8 @@ static Shibboleth::CreateManagerFunc create_funcs[] = {
 #else
 	Shibboleth::CreateManagerT<Shibboleth::PhysXPhysicsManager>,
 #endif
-	Shibboleth::CreateManagerT<Shibboleth::InputManager>
+	Shibboleth::CreateManagerT<Shibboleth::InputManager>,
+	Shibboleth::CreateManagerT<Shibboleth::SceneManager>
 };
 
 DYNAMICEXPORT_C bool InitModule(Shibboleth::IApp& app)
