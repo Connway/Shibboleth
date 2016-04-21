@@ -22,17 +22,18 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Shibboleth_MessageBroadcaster.h"
 #include "Shibboleth_DynamicLoader.h"
-#include "Shibboleth_LogManager.h"
 #include "Shibboleth_HashString.h"
 #include "Shibboleth_JobPool.h"
 #include "Shibboleth_HashMap.h"
+#include "Shibboleth_String.h"
 #include "Shibboleth_Array.h"
 
 NS_SHIBBOLETH
 
+class MessageBroadcaster;
 class IFileSystem;
+class LogManager;
 class IManager;
 
 class IApp

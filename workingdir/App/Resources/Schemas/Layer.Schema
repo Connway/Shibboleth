@@ -1,0 +1,28 @@
+{
+	"type": "array",
+
+	"items":
+	{
+		"type": "object",
+
+		"properties":
+		{
+			"Children":
+			{
+				"type": "array",
+				"items": { "type": "integer" }
+			},
+
+			"Object File": { "type": "string" },
+			"Object": { "type": "object" }
+		},
+
+		"oneOf":
+		[
+			{ "required": ["Object File"], "not": ["Object"] },
+			{ "required": ["Object"], "not": ["Object File"] }
+		],
+
+		"additionalProperties": false
+	}
+}

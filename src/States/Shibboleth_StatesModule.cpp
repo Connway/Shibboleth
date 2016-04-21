@@ -90,13 +90,14 @@ public:
 	void enter(void)
 	{
 		Shibboleth::IApp& app = Shibboleth::GetApp();
+		Shibboleth::IFileSystem* fs = app.getFileSystem();
 
 		app.getManagerT<Shibboleth::ResourceManager>("Resource Manager").addRequestAddedCallback(Gaff::Bind(this, &LoopState::ResReq));
 
 		_object = app.getManagerT<Shibboleth::ObjectManager>("Object Manager").createObject();
 
 		if (_object) {
-			if (_object->init("Resources/Objects/test.object")) {
+			if (_object->init(fs, "Resources/Objects/test.object")) {
 				_object->setWorldPosition(Gleam::Vector4CPU(-2.5f, 0.0f, 0.0f, 1.0f));
 
 			} else {
@@ -112,7 +113,7 @@ public:
 		_object2 = app.getManagerT<Shibboleth::ObjectManager>("Object Manager").createObject();
 
 		if (_object2) {
-			if (_object2->init("Resources/Objects/test.object")) {
+			if (_object2->init(fs, "Resources/Objects/test.object")) {
 				_object2->setWorldPosition(Gleam::Vector4CPU(2.5f, 0.0f, 0.0f, 1.0f));
 
 			} else {
@@ -128,7 +129,7 @@ public:
 		_camera = app.getManagerT<Shibboleth::ObjectManager>("Object Manager").createObject();
 
 		if (_camera) {
-			if (_camera->init("Resources/Objects/test_camera.object")) {
+			if (_camera->init(fs, "Resources/Objects/test_camera.object")) {
 				_camera->setWorldPosition(Gleam::Vector4CPU(0.0f, 5.0f, -50.0f, 1.0f));
 
 			} else {
@@ -144,7 +145,7 @@ public:
 		_floor = app.getManagerT<Shibboleth::ObjectManager>("Object Manager").createObject();
 
 		if (_floor) {
-			if (!_floor->init("Resources/Objects/floor.object")) {
+			if (!_floor->init(fs, "Resources/Objects/floor.object")) {
 				app.getManagerT<Shibboleth::ObjectManager>("Object Manager").removeObject(_floor->getID());
 				_floor = nullptr;
 				app.quit();

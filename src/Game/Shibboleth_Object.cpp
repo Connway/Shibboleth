@@ -23,13 +23,15 @@ THE SOFTWARE.
 #include "Shibboleth_Object.h"
 #include <Shibboleth_ComponentManager.h>
 #include <Shibboleth_ObjectManager.h>
+#include <Shibboleth_IFileSystem.h>
 #include <Shibboleth_Utilities.h>
 #include <Shibboleth_IApp.h>
 #include <Gaff_ScopedLock.h>
+#include <Gaff_Utils.h>
 #include <Gaff_JSON.h>
 
-#define OBJ_DIRTY 1
-#define OBJ_IN_WORLD 2
+#define OBJ_DIRTY (1 << 0)
+#define OBJ_IN_WORLD (1 << 1)
 
 NS_SHIBBOLETH
 
@@ -76,17 +78,27 @@ bool Object::init(const Gaff::JSON& json)
 	return true;
 }
 
-bool Object::init(const char* file_name)
+bool Object::init(IFileSystem* fs, const char* file_name)
 {
 	GAFF_ASSERT(file_name && strlen(file_name));
 	GAFF_ASSERT(!_name.size());
 
-	Gaff::JSON object_json;
+	IFile* file = fs->openFile(file_name);
 
-	if (!object_json.parseFile(file_name)) {
+	if (!file) {
 		// log error
 		return false;
 	}
+
+	Gaff::JSON object_json;
+
+	if (!object_json.parse(file->getBuffer())) {
+		// log error
+		fs->closeFile(file);
+		return false;
+	}
+
+	fs->closeFile(file);
 
 	return init(object_json);
 }

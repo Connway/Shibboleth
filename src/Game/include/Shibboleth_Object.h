@@ -34,6 +34,7 @@ NS_SHIBBOLETH
 
 class ComponentManager;
 class ObjectManager;
+class IFileSystem;
 class IApp;
 
 class Object
@@ -97,7 +98,7 @@ public:
 	~Object(void);
 
 	bool init(const Gaff::JSON& json);
-	INLINE bool init(const char* file_name);
+	INLINE bool init(IFileSystem* fs, const char* file_name);
 	void destroy(void);
 
 	const AString& getName(void) const;

@@ -30,7 +30,6 @@ THE SOFTWARE.
 #include <Shibboleth_IApp.h>
 
 #include <Gleam_IRenderDevice.h>
-//#include <Gleam_Matrix4x4.h>
 #include <Gleam_IProgram.h>
 #include <Gleam_IBuffer.h>
 #include <Gleam_IModel.h>
@@ -166,7 +165,7 @@ void ModelComponent::addToWorld(void)
 {
 	Component::addToWorld();
 
-	if (isActive()) {
+	if (isActive() && _requests_finished == _total_requests) {
 		addToOcclusionManager();
 	}
 }
@@ -301,6 +300,10 @@ void ModelComponent::ResourceLoadedCallback(ResourceContainer* resource)
 
 		if (new_val == _total_requests) {
 			setupResources();
+
+			if (getOwner()->isInWorld() && isActive()) {
+				addToOcclusionManager();
+			}
 		}
 
 	} else {
@@ -342,7 +345,7 @@ void ModelComponent::setupResources(void)
 {
 	GAFF_ASSERT(_model->models[0][0]->getMeshCount() == _mesh_data.size());
 
-	unsigned int num_devices = GetApp().getManagerT<RenderManager>("Render Manager").getRenderDevice().getNumDevices();
+	unsigned int num_devices = GetApp().getManagerT<RenderManager>().getRenderDevice().getNumDevices();
 
 	for (auto it_md = _mesh_data.begin(); it_md != _mesh_data.end(); ++it_md) {
 		for (unsigned int device = 0; device < num_devices; ++device) {

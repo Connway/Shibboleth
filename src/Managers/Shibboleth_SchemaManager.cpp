@@ -70,7 +70,8 @@ bool SchemaManager::addSchema(const char* file_name, IFile* file)
 
 		lm.logMessage(
 			LogManager::LOG_ERROR, GetApp().getLogFileName(),
-			"Schema failed to parse with error '%s'.\n",
+			"Schema '%s' failed to parse with error '%s'.\n",
+			file_name,
 			schema.getErrorText()
 		);
 
