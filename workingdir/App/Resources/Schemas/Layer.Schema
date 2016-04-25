@@ -14,7 +14,10 @@
 			},
 
 			"Object File": { "type": "string" },
-			"Object": { "type": "object" }
+			"Object": { "type": "object" },
+			"Scale": { "type": "array", "items": { "type": "number" } },
+			"Rotation": { "type": "array", "items": { "type": "number" } },
+			"Position": { "type": "array", "items": { "type": "number" } }
 		},
 
 		"oneOf":

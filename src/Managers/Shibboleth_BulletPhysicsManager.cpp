@@ -153,6 +153,24 @@ void BulletPhysicsManager::getUpdateEntries(Array<UpdateEntry>& entries)
 
 void BulletPhysicsManager::update(double dt, void*)
 {
+	// Lock new bodies array?
+
+	btTransform world_transform;
+
+	for (auto it = _new_bodies.begin(); it != _new_bodies.end(); ++it) {
+		// Update Rigid Body's transform before adding to world.
+		it->body->getMotionState()->getWorldTransform(world_transform);
+		it->body->setWorldTransform(world_transform);
+
+		if (it->only_body) {
+			_main_world->addRigidBody(it->body);
+		} else {
+			_main_world->addRigidBody(it->body, it->collision_group, it->collision_mask);
+		}
+	}
+
+	_new_bodies.clearNoFree();
+
 	_main_world->stepSimulation(static_cast<btScalar>(dt));
 }
 
@@ -181,12 +199,20 @@ btRigidBody* BulletPhysicsManager::createRigidBody(Object* object, btCollisionSh
 
 void BulletPhysicsManager::addToMainWorld(btRigidBody* body, short collision_group, short collision_mask)
 {
-	_main_world->addRigidBody(body, collision_group, collision_mask);
+	_new_bodies_lock.lock();
+	_new_bodies.emplacePush(body, static_cast<short>(collision_group), static_cast<short>(collision_mask), false);
+	_new_bodies_lock.unlock();
+
+	//_main_world->addRigidBody(body, collision_group, collision_mask);
 }
 
 void BulletPhysicsManager::addToMainWorld(btRigidBody* body)
 {
-	_main_world->addRigidBody(body);
+	_new_bodies_lock.lock();
+	_new_bodies.emplacePush(body, static_cast<short>(-1), static_cast<short>(-1), true);
+	_new_bodies_lock.unlock();
+
+	//_main_world->addRigidBody(body);
 }
 
 void BulletPhysicsManager::removeFromMainWorld(btRigidBody* body)

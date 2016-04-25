@@ -84,8 +84,10 @@ void BulletPhysicsComponent::addToWorld(void)
 
 void BulletPhysicsComponent::removeFromWorld(void)
 {
-	auto& phys_mgr = GetApp().getManagerT<BulletPhysicsManager>();
-	phys_mgr.addToMainWorld(_rigid_body);
+	if (_phys_res.getResourcePtr()->isLoaded()) {
+		auto& phys_mgr = GetApp().getManagerT<BulletPhysicsManager>();
+		phys_mgr.removeFromMainWorld(_rigid_body);
+	}
 }
 
 void BulletPhysicsComponent::setActive(bool active)
