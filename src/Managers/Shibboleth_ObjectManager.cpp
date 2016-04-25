@@ -59,6 +59,7 @@ const char* ObjectManager::getName(void) const
 
 void ObjectManager::getUpdateEntries(Array<UpdateEntry>& entries)
 {
+	entries.push(UpdateEntry(AString("Object Manager: Update New Objects"), Gaff::Bind(this, &ObjectManager::updateNewObjects)));
 	entries.push(UpdateEntry(AString("Object Manager: Update Dirty Objects"), Gaff::Bind(this, &ObjectManager::updateDirtyObjects)));
 }
 
@@ -145,16 +146,44 @@ bool ObjectManager::doesObjectExist(unsigned int id) const
 	return getObject(id) != nullptr;
 }
 
+const Object* ObjectManager::findObject(const char* name) const
+{
+	return findObjectHelper(Gaff::FNV1aHash32(name, strlen(name)));
+}
+
+Object* ObjectManager::findObject(const char* name)
+{
+	return findObjectHelper(Gaff::FNV1aHash32(name, strlen(name)));
+}
+
+const Object* ObjectManager::findObject(uint32_t name_hash) const
+{
+	return findObjectHelper(name_hash);
+}
+
+Object* ObjectManager::findObject(uint32_t name_hash)
+{
+	return findObjectHelper(name_hash);
+}
+
 void ObjectManager::addDirtyObject(Object* object)
 {
 	Gaff::ScopedLock<Gaff::SpinLock> scoped_lock(_dirty_objects_lock);
-	_dirty_objects.push(object);
+	_dirty_objects.emplacePush(object);
+}
+
+void ObjectManager::addNewObject(Object* object)
+{
+	Gaff::ScopedLock<Gaff::SpinLock> scoped_lock(_new_objects_lock);
+	_new_objects.emplacePush(object);
 }
 
 void ObjectManager::updateDirtyObjects(double, void*)
 {
 	// generate update jobs
 	// wait for update jobs to finish
+
+	// Lock dirty object array?
 
 	for (auto it = _dirty_objects.begin(); it != _dirty_objects.end(); ++it) {
 		if ((*it)->isDirty()) {
@@ -168,6 +197,40 @@ void ObjectManager::updateDirtyObjects(double, void*)
 	}
 
 	_dirty_objects.clearNoFree();
+}
+
+void ObjectManager::updateNewObjects(double, void*)
+{
+	// generate update jobs
+	// wait for update jobs to finish
+
+	// Lock new object array?
+
+	for (auto it = _new_objects.begin(); it != _new_objects.end(); ++it) {
+		if ((*it)->isDirty()) {
+			(*it)->updateTransforms();
+			(*it)->notifyLocalDirtyCallbacks();
+			(*it)->notifyWorldDirtyCallbacks();
+
+		} else {
+			(*it)->notifyLocalDirtyCallbacks();
+		}
+	}
+
+	_new_objects.clearNoFree();
+}
+
+Object* ObjectManager::findObjectHelper(uint32_t name_hash) const
+{
+	Gaff::ScopedLock<Gaff::SpinLock> lock(_objects_lock);
+
+	for (auto it = _objects.begin(); it != _objects.end(); ++it) {
+		if ((*it)->getNameHash() == name_hash) {
+			return *it;
+		}
+	}
+
+	return nullptr;
 }
 
 NS_END

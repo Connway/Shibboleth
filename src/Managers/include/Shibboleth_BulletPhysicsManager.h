@@ -27,6 +27,7 @@ THE SOFTWARE.
 #include <Shibboleth_ReflectionDefinitions.h>
 #include <Shibboleth_IUpdateQuery.h>
 #include <Shibboleth_IManager.h>
+#include <Gaff_SpinLock.h>
 
 class btCollisionConfiguration;
 class btBroadphaseInterface;
@@ -81,11 +82,28 @@ public:
 	INLINE void removeFromMainWorld(btRigidBody* body);
 
 private:
+	struct AddBodyData
+	{
+		AddBodyData(btRigidBody* b, short cg, short cm, bool ob):
+			body(b), collision_group(cg), collision_mask(cm), only_body(ob)
+		{
+		}
+
+		btRigidBody* body;
+		short collision_group;
+		short collision_mask;
+		bool only_body;
+	};
+
+	btDynamicsWorld* _main_world;
+
+	Array<AddBodyData> _new_bodies;
+	Gaff::SpinLock _new_bodies_lock;
+
 	btCollisionConfiguration* _config;
 	btBroadphaseInterface* _broadphase;
 	btConstraintSolver* _solver;
 	btDispatcher* _dispatcher;
-	btDynamicsWorld* _main_world;
 
 	ProxyAllocator _physics_allocator;
 

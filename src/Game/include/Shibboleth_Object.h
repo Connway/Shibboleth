@@ -23,7 +23,7 @@ THE SOFTWARE.
 #pragma once
 
 #include "Shibboleth_Component.h"
-#include <Shibboleth_String.h>
+#include <Shibboleth_HashString.h>
 #include <Shibboleth_Array.h>
 #include <Gaff_SpinLock.h>
 #include <Gaff_Function.h>
@@ -101,7 +101,8 @@ public:
 	INLINE bool init(IFileSystem* fs, const char* file_name);
 	void destroy(void);
 
-	const AString& getName(void) const;
+	uint32_t getNameHash(void) const;
+	const char* getName(void) const;
 
 	unsigned int getID(void) const;
 	void setID(unsigned int id);
@@ -170,7 +171,7 @@ private:
 	Gaff::SpinLock _children_lock;
 	Object* _parent;
 
-	AString _name;
+	AHashString _name;
 
 	Array<Component*> _components;
 	ComponentManager& _comp_mgr;

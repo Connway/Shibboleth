@@ -325,7 +325,7 @@ void ModelComponent::requestResources(const Gaff::JSON& materials, ResourceManag
 
 		if (!material.isNull()) {
 			// Make a unique name for this resource
-			snprintf(temp, 256, "ProgramBuffers#%s#%s#%u%zu", getOwner()->getName().getBuffer(), getName().getBuffer(), getOwner()->getID(), index);
+			snprintf(temp, 256, "ProgramBuffers#%s#%s#%u%zu", getOwner()->getName(), getName().getBuffer(), getOwner()->getID(), index);
 
 			mesh_data.program_buffers = res_mgr.requestResource("ProgramBuffers", temp);
 			mesh_data.material = res_mgr.requestResource(material.getString());

@@ -65,18 +65,29 @@ public:
 	INLINE bool doesObjectExist(const Object* object) const;
 	INLINE bool doesObjectExist(unsigned int id) const;
 
+	INLINE const Object* findObject(const char* name) const;
+	INLINE Object* findObject(const char* name);
+	INLINE const Object* findObject(uint32_t name_hash) const;
+	INLINE Object* findObject(uint32_t name_hash);
+
 	void addDirtyObject(Object* object);
+	void addNewObject(Object* object);
 
 private:
 	Array<Object*> _objects;
-	Array<Object*> _dirty_objects;
-
 	Gaff::SpinLock _objects_lock;
+
+	Array<Object*> _dirty_objects;
 	Gaff::SpinLock _dirty_objects_lock;
+
+	Array<Object*> _new_objects;
+	Gaff::SpinLock _new_objects_lock;
 
 	volatile unsigned int _next_id;
 
 	void updateDirtyObjects(double, void*);
+	void updateNewObjects(double, void*);
+	Object* findObjectHelper(uint32_t name_hash) const;
 
 	GAFF_NO_COPY(ObjectManager);
 	GAFF_NO_MOVE(ObjectManager);

@@ -2,6 +2,33 @@
 	{
 		"Children": [],
 		"Object File": "Resources/Objects/test.object",
-		"Object": null
+		"Object": null,
+		"Scale": [1, 1, 1],
+		"Rotation": [0, 0, 0, 1],
+		"Position": [-2.5, 0, 0]
+	},
+	{
+		"Children": [],
+		"Object File": "Resources/Objects/test.object",
+		"Object": null,
+		"Scale": [1, 1, 1],
+		"Rotation": [0, 0, 0, 1],
+		"Position": [2.5, 0, 0]
+	},
+	{
+		"Children": [],
+		"Object File": "Resources/Objects/floor.object",
+		"Object": null,
+		"Scale": [1, 1, 1],
+		"Rotation": [0, 0, 0, 1],
+		"Position": [0, 0, 0]
+	},
+	{
+		"Children": [],
+		"Object File": "Resources/Objects/test_camera.object",
+		"Object": null,
+		"Scale": [1, 1, 1],
+		"Rotation": [0, 0, 0, 1],
+		"Position": [0, 5, -50]
 	}
 ]

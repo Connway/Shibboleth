@@ -199,7 +199,14 @@ void SceneManager::loadLayer(size_t index, const Gaff::JSON& layer_data)
 
 	if (!lyr.parse(file->getBuffer())) {
 		fs->closeFile(file);
-		// log error
+
+		app.getLogManager().logMessage(
+			LogManager::LOG_ERROR, app.getLogFileName(),
+			"Failed to parse layer file '%s' with error '%s'.",
+			layer_data["Layer File"].getString(),
+			lyr.getErrorText()
+		);
+
 		return;
 	}
 
@@ -222,7 +229,7 @@ void SceneManager::loadLayer(size_t index, const Gaff::JSON& layer_data)
 		Object* object = om.createObject();
 		bool success = true;
 
-		if (obj_file.isNull()) {
+		if (!obj_file.isNull()) {
 			success = object->init(fs, obj_file.getString());
 		} else {
 			success = object->init(value["Object"]);
@@ -230,6 +237,41 @@ void SceneManager::loadLayer(size_t index, const Gaff::JSON& layer_data)
 
 		if (success) {
 			layer.objects[index] = object;
+
+			Gaff::JSON scale = value["Scale"];
+			Gaff::JSON rot = value["Rotation"];
+			Gaff::JSON pos = value["Position"];
+
+			Gleam::TransformCPU transform;
+			Gleam::QuaternionCPU r;
+			Gleam::Vector4CPU s, p;
+
+			s.set(
+				static_cast<float>(scale[static_cast<size_t>(0)].getDouble()),
+				static_cast<float>(scale[static_cast<size_t>(1)].getDouble()),
+				static_cast<float>(scale[static_cast<size_t>(2)].getDouble()),
+				1.0f
+			);
+
+			r.set(
+				static_cast<float>(rot[static_cast<size_t>(0)].getDouble()),
+				static_cast<float>(rot[static_cast<size_t>(1)].getDouble()),
+				static_cast<float>(rot[static_cast<size_t>(2)].getDouble()),
+				static_cast<float>(rot[static_cast<size_t>(3)].getDouble())
+			);
+
+			p.set(
+				static_cast<float>(pos[static_cast<size_t>(0)].getDouble()),
+				static_cast<float>(pos[static_cast<size_t>(1)].getDouble()),
+				static_cast<float>(pos[static_cast<size_t>(2)].getDouble()),
+				1.0f
+			);
+
+			transform.setTranslation(p);
+			transform.setRotation(r);
+			transform.setScale(s);
+
+			object->setLocalTransform(transform);
 
 		} else {
 			// log error

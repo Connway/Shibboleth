@@ -73,7 +73,9 @@ bool Object::init(const Gaff::JSON& json)
 		_components[i]->allComponentsLoaded();
 	}
 
-	_obj_mgr.addDirtyObject(this); // Start off object as dirty
+	// Start off object as dirty
+	Gaff::SetBits<uint8_t>(_flags, OBJ_DIRTY);
+	_obj_mgr.addNewObject(this);
 
 	return true;
 }
@@ -112,9 +114,14 @@ void Object::destroy(void)
 	removeChildren();
 }
 
-const AString& Object::getName(void) const
+uint32_t Object::getNameHash(void) const
 {
-	return _name;
+	return _name.getHash();
+}
+
+const char* Object::getName(void) const
+{
+	return _name.getBuffer();
 }
 
 unsigned int Object::getID(void) const
