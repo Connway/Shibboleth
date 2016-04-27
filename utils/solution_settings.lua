@@ -13,9 +13,7 @@ nativewchar "Default"
 floatingpoint "Fast"
 startproject "App"
 
-filter { "options:symbols" }
-	flags { "Symbols" }
-	defines { "SYMBOL_BUILD" }
+flags { "Symbols" }
 
 filter { "options:physx" }
 	defines { "USE_PHYSX" }
@@ -61,8 +59,8 @@ configuration "vs*"
 	buildoptions { "/sdl" }
 
 configuration "Debug*"
-	flags { "Symbols" }
-	defines { "_DEBUG", "DEBUG", "SYMBOL_BUILD" }
+	defines { "_DEBUG", "DEBUG" }
+	optimize "Off"
 
 configuration "Release*"
 	flags { "LinkTimeOptimization", "ReleaseRuntime" }

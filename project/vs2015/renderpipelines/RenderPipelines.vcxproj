@@ -59,7 +59,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level4</WarningLevel>
       <TreatWarningAsError>true</TreatWarningAsError>
-      <PreprocessorDefinitions>_DEBUG;DEBUG;SYMBOL_BUILD;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>..\..\..\dependencies\dirent;..\..\..\src\RenderPipelines\include;..\..\..\src\Shared\include;..\..\..\src\Memory\include;..\..\..\src\Game\include;..\..\..\src\Managers\include;..\..\..\src\Components\include;..\..\..\dependencies\rapidjson;..\..\..\dependencies\Gleam\include;..\..\..\dependencies\Gaff\include;..\..\..\dependencies\esprit\include;..\..\..\dependencies\utf8-cpp;..\..\..\dependencies\assimp\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
@@ -81,6 +81,7 @@
       <WarningLevel>Level4</WarningLevel>
       <TreatWarningAsError>true</TreatWarningAsError>
       <AdditionalIncludeDirectories>..\..\..\dependencies\dirent;..\..\..\src\RenderPipelines\include;..\..\..\src\Shared\include;..\..\..\src\Memory\include;..\..\..\src\Game\include;..\..\..\src\Managers\include;..\..\..\src\Components\include;..\..\..\dependencies\rapidjson;..\..\..\dependencies\Gleam\include;..\..\..\dependencies\Gaff\include;..\..\..\dependencies\esprit\include;..\..\..\dependencies\utf8-cpp;..\..\..\dependencies\assimp\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
@@ -93,7 +94,7 @@
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
-      <GenerateDebugInformation>false</GenerateDebugInformation>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <ImportLibrary>..\..\..\build\output\x64\Release\ShibbolethRenderPipelines64.lib</ImportLibrary>

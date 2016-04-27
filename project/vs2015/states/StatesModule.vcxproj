@@ -59,7 +59,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level4</WarningLevel>
       <TreatWarningAsError>true</TreatWarningAsError>
-      <PreprocessorDefinitions>_DEBUG;DEBUG;SYMBOL_BUILD;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>..\..\..\dependencies\dirent;..\..\..\src\States\include;..\..\..\src\Shared\include;..\..\..\src\Memory\include;..\..\..\src\Game\include;..\..\..\src\Managers\include;..\..\..\src\Components\include;..\..\..\dependencies\Gaff\include;..\..\..\dependencies\Gleam\include;..\..\..\dependencies\OtterUI\inc;..\..\..\dependencies\utf8-cpp;..\..\..\dependencies\rapidjson;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
@@ -82,6 +82,7 @@
       <WarningLevel>Level4</WarningLevel>
       <TreatWarningAsError>true</TreatWarningAsError>
       <AdditionalIncludeDirectories>..\..\..\dependencies\dirent;..\..\..\src\States\include;..\..\..\src\Shared\include;..\..\..\src\Memory\include;..\..\..\src\Game\include;..\..\..\src\Managers\include;..\..\..\src\Components\include;..\..\..\dependencies\Gaff\include;..\..\..\dependencies\Gleam\include;..\..\..\dependencies\OtterUI\inc;..\..\..\dependencies\utf8-cpp;..\..\..\dependencies\rapidjson;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
@@ -94,7 +95,7 @@
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
-      <GenerateDebugInformation>false</GenerateDebugInformation>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalDependencies>..\..\..\build\output\x64\Release\lua51.lib;%(AdditionalDependencies)</AdditionalDependencies>
