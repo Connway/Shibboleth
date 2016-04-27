@@ -24,12 +24,6 @@ newoption
 
 newoption
 {
-	trigger = "symbols",
-	description = "Builds symbol information into binaries."
-}
-
-newoption
-{
 	trigger = "fmod_path",
 	value = "path",
 	description = "The path to your FMOD installation. Use only if FMOD is not already in your global VC++ Directories. (Windows Only)"
