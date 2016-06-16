@@ -47,3 +47,6 @@ copy ..\build\output\x64\Release\Memory64.dll ..\workingdir\App\bin\Memory64.dll
 copy ..\build\output\x64\Release\ResIL64.dll ..\workingdir\App\bin\ResIL64.dll /Y
 copy ..\build\output\x64\Release\ResILU64.dll ..\workingdir\App\bin\ResILU64.dll /Y
 copy ..\build\output\x64\Release\App64.exe ..\workingdir\App\App64.exe /Y
+
+copy ..\build\Contrivance\Debug\debug\Contrivance.exe ..\workingdir\Editor\Contrivance64d.exe
+copy ..\build\Contrivance\Release\release\Contrivance.exe ..\workingdir\Editor\Contrivance64.exe

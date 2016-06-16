@@ -40,7 +40,7 @@ THE SOFTWARE.
 
 //#define GATHER_ALLOCATION_STACKTRACE
 
-#if defined(SYMBOL_BUILD) && defined(GATHER_ALLOCATION_STACKTRACE)
+#ifdef GATHER_ALLOCATION_STACKTRACE
 	#include <Gaff_DefaultAlignedAllocator.h>
 	#include <Gaff_ScopedExit.h>
 	#include <Gaff_StackTrace.h>
@@ -60,12 +60,12 @@ struct COMPILERALIGN16 AllocationHeader
 	AllocationHeader* next = nullptr;
 	AllocationHeader* prev = nullptr;
 
-#if defined(SYMBOL_BUILD) && defined(GATHER_ALLOCATION_STACKTRACE)
+#ifdef GATHER_ALLOCATION_STACKTRACE
 		Gaff::StackTrace stack_trace;
 #endif
 };
 
-#if defined(SYMBOL_BUILD) && defined(GATHER_ALLOCATION_STACKTRACE)
+#ifdef GATHER_ALLOCATION_STACKTRACE
 	static Gaff::Array<AllocationHeader*, Gaff::DefaultAlignedAllocator> g_allocs[NUM_TAG_POOLS + 1];
 	static Gaff::SpinLock g_pt_locks[NUM_TAG_POOLS + 1];
 #endif
@@ -207,7 +207,7 @@ void* Allocator::alloc(size_t size_bytes, size_t pool_index, const char* file, i
 		header->line = line;
 		header->next = header->prev = nullptr;
 
-#if defined(SYMBOL_BUILD) && defined(GATHER_ALLOCATION_STACKTRACE)
+#ifdef GATHER_ALLOCATION_STACKTRACE
 		g_pt_locks[pool_index].lock();
 
 		header->stack_trace.captureStack(APP_NAME);
@@ -254,7 +254,7 @@ void Allocator::free(void* data)
 	MemoryPoolInfo& mem_pool_info = _tagged_pools[header->pool_index];
 	AtomicIncrement(&mem_pool_info.num_frees);
 
-#if defined(SYMBOL_BUILD) && defined(GATHER_ALLOCATION_STACKTRACE)
+#ifdef GATHER_ALLOCATION_STACKTRACE
 	auto& allocs = g_allocs[header->pool_index];
 	g_pt_locks[header->pool_index].lock();
 
@@ -317,7 +317,7 @@ void Allocator::writeAllocationLog(void) const
 		return;
 	}
 
-#if defined(SYMBOL_BUILD) && defined(GATHER_ALLOCATION_STACKTRACE)
+#ifdef GATHER_ALLOCATION_STACKTRACE
 	Gaff::GetCurrentTimeString(log_file_name, 64, "logs/CallstackLog %Y-%m-%d %H-%M-%S.txt");
 	Gaff::File callstack_log;
 
@@ -362,7 +362,7 @@ void Allocator::writeAllocationLog(void) const
 			log.printf("\t===========================================================\n\n");
 		}
 
-#if defined(SYMBOL_BUILD) && defined(GATHER_ALLOCATION_STACKTRACE)
+#ifdef GATHER_ALLOCATION_STACKTRACE
 		if (callstack_log.isOpen()) {
 			for (auto it_st = g_allocs[i].begin(); it_st != g_allocs[i].end(); ++it_st) {
 				callstack_log.printf("Address 0x%p:\n", *it_st);
@@ -389,7 +389,7 @@ void Allocator::writeAllocationLog(void) const
 		log.printf("\n===========================================================\n");
 		log.printf("WARNING: Application has a memory leak(s)!\n");
 
-#if defined(SYMBOL_BUILD) && defined(GATHER_ALLOCATION_STACKTRACE)
+#ifdef GATHER_ALLOCATION_STACKTRACE
 		if (callstack_log.isOpen()) {
 			log.printf("         See '%s' for allocation callstacks.\n", log_file_name);
 		}

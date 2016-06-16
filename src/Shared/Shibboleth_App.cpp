@@ -31,7 +31,7 @@ THE SOFTWARE.
 #include <Gaff_File.h>
 #include <regex>
 
-#if defined(SYMBOL_BUILD) && defined(INIT_STACKTRACE_SYSTEM)
+#ifdef INIT_STACKTRACE_SYSTEM
 	#include <Gaff_StackTrace.h>
 #endif
 
@@ -54,7 +54,7 @@ App::~App(void)
 // Still single-threaded at this point, so ok that we're not using the spinlock
 bool App::init(int argc, char** argv)
 {
-#if defined(SYMBOL_BUILD) && defined(INIT_STACKTRACE_SYSTEM)
+#ifdef INIT_STACKTRACE_SYSTEM
 	GAFF_ASSERT(Gaff::StackTrace::Init());
 #endif
 
@@ -95,7 +95,7 @@ bool App::init(int argc, char** argv)
 		return false;
 	}
 
-#if defined(SYMBOL_BUILD) && defined(INIT_STACKTRACE_SYSTEM)
+#ifdef INIT_STACKTRACE_SYSTEM
 	Gaff::StackTrace::RefreshModuleList(); // Will fix symbols from DLLs not resolving.
 #endif
 
@@ -103,7 +103,7 @@ bool App::init(int argc, char** argv)
 		return false;
 	}
 
-#if defined(SYMBOL_BUILD) && defined(INIT_STACKTRACE_SYSTEM)
+#ifdef INIT_STACKTRACE_SYSTEM
 	Gaff::StackTrace::RefreshModuleList(); // Will fix symbols from DLLs not resolving.
 #endif
 
@@ -111,7 +111,7 @@ bool App::init(int argc, char** argv)
 		return false;
 	}
 
-#if defined(SYMBOL_BUILD) && defined(INIT_STACKTRACE_SYSTEM)
+#ifdef INIT_STACKTRACE_SYSTEM
 	Gaff::StackTrace::RefreshModuleList(); // Will fix symbols from DLLs not resolving.
 #endif
 
@@ -570,7 +570,7 @@ void App::destroy(void)
 		SHIB_FREET(_fs.file_system, *GetAllocator());
 	}
 
-#if defined(SYMBOL_BUILD) && defined(INIT_STACKTRACE_SYSTEM)
+#ifdef INIT_STACKTRACE_SYSTEM
 	Gaff::StackTrace::Destroy();
 #endif
 }

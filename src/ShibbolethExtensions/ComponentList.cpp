@@ -1,8 +1,8 @@
 #include "ComponentList.h"
 #include "ui_ComponentList.h"
 
-ComponentList::ComponentList(IContrivanceWindow& window, QWidget *parent):
-	QWidget(parent), _ui(new Ui::ComponentList), _window(window)
+ComponentList::ComponentList(IContrivanceWindow& window):
+	_ui(new Ui::ComponentList), _window(window)
 {
 	_ui->setupUi(this);
 

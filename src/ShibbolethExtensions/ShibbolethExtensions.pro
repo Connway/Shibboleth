@@ -5,20 +5,14 @@
 #-------------------------------------------------
 
 QT       += widgets
-
-QT       -= gui
+CONFIG   += c++11
 
 TARGET = ShibbolethExtensions
 TEMPLATE = lib
 
 DEFINES += SHIBBOLETHEXTENSIONS_LIBRARY
 
-SOURCES += \
-	ShibbolethExtensions.cpp \
-	ObjectEditor.cpp \
-	ComponentList.cpp
-
-INCLUDEPATH += dependencies
+INCLUDEPATH += ../../dependencies/Contrivance
 
 CONFIG(debug, debug|release) {
 	!contains(QMAKE_TARGET.arch, x86_64): TARGET = $$join(TARGET,,,32d)
@@ -35,10 +29,15 @@ unix {
 	INSTALLS += target
 }
 
-FORMS += \
-	ObjectEditor.ui \
-	ComponentList.ui
+SOURCES += \
+	ShibbolethExtensions.cpp \
+	ObjectEditor.cpp \
+	ComponentList.cpp
 
 HEADERS += \
 	ObjectEditor.h \
 	ComponentList.h
+
+FORMS += \
+	ObjectEditor.ui \
+	ComponentList.ui

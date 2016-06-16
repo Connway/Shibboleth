@@ -1,5 +1,5 @@
 /************************************************************************************
-Copyright (C) 2015 by Nicholas LaCroix
+Copyright (C) 2016 by Nicholas LaCroix
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -35,7 +35,7 @@ THE SOFTWARE.
 	#error "Platform not supported"
 #endif
 
-#if defined(Q_OS_WIN32) && !defined(Q_OS_WIN64)
+#if (defined(Q_OS_WIN32) && !defined(Q_OS_WIN64))
 	#ifdef QT_DEBUG
 		#define SHARED_LIBRARY_SUFFIX "32d"
 	#else
@@ -48,6 +48,8 @@ THE SOFTWARE.
 		#define SHARED_LIBRARY_SUFFIX "64"
 	#endif
 #endif
+
+#define Q_DECL_EXPORT_C extern "C" Q_DECL_EXPORT
 
 enum ConsoleMessageType
 {

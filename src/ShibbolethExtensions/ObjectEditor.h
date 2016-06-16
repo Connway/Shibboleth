@@ -15,7 +15,7 @@ class ObjectEditor : public QWidget
 	Q_OBJECT
 
 public:
-	explicit ObjectEditor(IContrivanceWindow& window, QWidget* parent = nullptr);
+	explicit ObjectEditor(IContrivanceWindow& window);
 	~ObjectEditor();
 
 	bool eventFilter(QObject* object, QEvent* event);

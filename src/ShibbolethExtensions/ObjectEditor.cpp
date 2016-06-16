@@ -2,8 +2,8 @@
 #include "ui_ObjectEditor.h"
 #include <Contrivance_IContrivanceWindow.h>
 
-ObjectEditor::ObjectEditor(IContrivanceWindow& window, QWidget* parent):
-	QWidget(parent), _ui(new Ui::ObjectEditor), _window(window)
+ObjectEditor::ObjectEditor(IContrivanceWindow& window):
+	_ui(new Ui::ObjectEditor), _window(window)
 {
 	_ui->setupUi(this);
 
@@ -19,7 +19,6 @@ bool ObjectEditor::eventFilter(QObject* object, QEvent* event)
 {
 	if (event->type() == QEvent::DragEnter) {
 		_window.printToConsole("DRAG ENTER EVENT");
-
 	} else if (event->type() == QEvent::DragResponse) {
 		_window.printToConsole("DRAG RESPONSE EVENT");
 	} else if (event->type() == QEvent::Drop) {
