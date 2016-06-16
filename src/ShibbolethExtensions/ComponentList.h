@@ -15,7 +15,7 @@ class ComponentList : public QWidget
 	Q_OBJECT
 
 public:
-	explicit ComponentList(IContrivanceWindow& window, QWidget* parent = nullptr);
+	explicit ComponentList(IContrivanceWindow& window);
 	~ComponentList();
 
 private:
