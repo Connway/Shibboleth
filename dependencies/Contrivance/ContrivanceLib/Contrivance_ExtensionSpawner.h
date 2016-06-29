@@ -33,7 +33,7 @@ namespace Ui
 }
 
 class IContrivanceWindow;
-class ContrivanceWindow;
+class IContrivanceExtension;
 class QDockWidget;
 class QMainWindow;
 
@@ -42,29 +42,7 @@ class ExtensionSpawner : public QWidget
 	Q_OBJECT
 
 public:
-	struct ExtensionData
-	{
-		// Widget identifiers are QStrings instead of IDs.
-		// I'm expecting this system to not be called very frequently.
-		typedef bool (*InitExtensionModuleFunc)(IContrivanceWindow&);
-		typedef void (*ShutdownExtensionModuleFunc)(void);
-		typedef bool (*SaveInstanceDataFunc)(const QString&, QJsonObject&, QWidget*);
-		typedef bool (*LoadInstanceDataFunc)(const QString&, const QJsonObject&, QWidget*);
-		typedef QWidget* (*CreateInstanceFunc)(const QString&); // Passing in QDockWindow for changing the window title
-		typedef void (*GetExtensionsFunc)(QStringList&);
-
-		QStringList extension_names;
-		QLibrary* library;
-
-		InitExtensionModuleFunc init_func;
-		ShutdownExtensionModuleFunc shutdown_func;
-		SaveInstanceDataFunc save_func;
-		LoadInstanceDataFunc load_func;
-		CreateInstanceFunc create_func;
-		GetExtensionsFunc get_exts_func;
-	};
-
-	explicit ExtensionSpawner(ContrivanceWindow& window, QWidget* parent = nullptr);
+	explicit ExtensionSpawner(IContrivanceWindow& window, QWidget* parent = nullptr);
 	~ExtensionSpawner();
 
 	void loadExtensions(void);
@@ -79,20 +57,50 @@ public:
 
 	//bool eventFilter(QObject* object, QEvent* event);
 
+	void destroyExtension(QDockWidget* dock_widget);
+	void addFreeID(int id);
+
 private:
+	struct ExtensionData
+	{
+		// Widget identifiers are QStrings instead of IDs.
+		// I'm expecting this system to not be called very frequently.
+		typedef bool (*InitExtensionModuleFunc)(IContrivanceWindow&);
+		typedef void (*ShutdownExtensionModuleFunc)(void);
+		typedef bool (*SaveInstanceDataFunc)(const QString&, QJsonObject&, QWidget*);
+		typedef bool (*LoadInstanceDataFunc)(const QString&, const QJsonObject&, QWidget*);
+		typedef IContrivanceExtension* (*CreateInstanceFunc)(const QString&);
+		typedef void (*DestroyInstanceFunc)(IContrivanceExtension*);
+		typedef void (*GetExtensionsFunc)(QStringList&);
+
+		QStringList extension_names;
+		QLibrary* library;
+
+		InitExtensionModuleFunc init_func;
+		ShutdownExtensionModuleFunc shutdown_func;
+		SaveInstanceDataFunc save_func;
+		LoadInstanceDataFunc load_func;
+		CreateInstanceFunc create_func;
+		DestroyInstanceFunc destroy_func;
+		GetExtensionsFunc get_exts_func;
+	};
+
+	struct SpawnedExtension
+	{
+		IContrivanceExtension* extension;
+		QDockWidget* dock_widget;
+		ExtensionData* ext_data;
+	};
+
 	Ui::ExtensionSpawner* _ui;
-	ContrivanceWindow& _window;
+	IContrivanceWindow& _window;
 
 	QVector<ExtensionData> _extension_modules;
 	QHash<QString, int> _extension_indices;
-	QVector<QDockWidget*> _spawned_widgets;
+	QVector<SpawnedExtension> _spawned_widgets;
 	QVector<int> _free_ids;
 
 	int _num_spawned_extensions;
-
-	void addFreeID(int id);
-
-	friend class DockWidgetHelper;
 
 private slots:
 	void itemDoubleClicked(QModelIndex index);

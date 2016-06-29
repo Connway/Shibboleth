@@ -35,22 +35,28 @@
    <item>
     <widget class="QListWidget" name="listWidget">
      <property name="sizeAdjustPolicy">
-      <enum>QAbstractScrollArea::AdjustToContents</enum>
+      <enum>QAbstractScrollArea::AdjustIgnored</enum>
      </property>
      <property name="editTriggers">
       <set>QAbstractItemView::NoEditTriggers</set>
+     </property>
+     <property name="showDropIndicator" stdset="0">
+      <bool>false</bool>
      </property>
      <property name="dragEnabled">
       <bool>true</bool>
      </property>
      <property name="dragDropMode">
-      <enum>QAbstractItemView::InternalMove</enum>
+      <enum>QAbstractItemView::DragOnly</enum>
      </property>
      <property name="defaultDropAction">
       <enum>Qt::IgnoreAction</enum>
      </property>
      <property name="alternatingRowColors">
       <bool>false</bool>
+     </property>
+     <property name="resizeMode">
+      <enum>QListView::Adjust</enum>
      </property>
      <property name="modelColumn">
       <number>0</number>

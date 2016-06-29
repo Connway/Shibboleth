@@ -1,25 +1,26 @@
 #include "Contrivance_DockWidgetWrapper.h"
-#include "Contrivance_ContrivanceWindow.h"
+#include "Contrivance_IContrivanceWindow.h"
+#include "Contrivance_ExtensionSpawner.h"
 #include <QAbstractButton>
 #include <QDockWidget>
 #include <QWindow>
 #include <QAction>
 
-DockWidgetWrapper::DockWidgetWrapper(ContrivanceWindow& window, QDockWidget* dw):
-	_window(window), _dw(dw)
+DockWidgetWrapper::DockWidgetWrapper(IContrivanceWindow& window, QDockWidget* dw):
+	_window(&window), _dw(dw)
 {
 	QAbstractButton* button = dw->findChild<QAbstractButton*>("qt_dockwidget_closebutton");
 	connect(dw->toggleViewAction(), SIGNAL(triggered(bool)), SLOT(windowToggled(bool)));
 	connect(dw, SIGNAL(visibilityChanged(bool)), SLOT(windowVisibilityChanged(bool)));
 	connect(button, SIGNAL(clicked(bool)), SLOT(closeButtonClicked(bool)));
 
-	_window.addSpawnedWindowMenuEntry(dw->toggleViewAction());
+	_window->addSpawnedWindowMenuEntry(dw->toggleViewAction());
 }
 
 DockWidgetWrapper::~DockWidgetWrapper(void)
 {
 	if (_dw) {
-		_window.removeSpawnedWindowMenuEntry(_dw->toggleViewAction());
+		_window->removeSpawnedWindowMenuEntry(_dw->toggleViewAction());
 	}
 }
 
@@ -47,7 +48,9 @@ void DockWidgetWrapper::closeButtonClicked(bool)
 	QDockWidget* dw = _dw;
 	_dw = nullptr;
 
-	_window.removeSpawnedWindowMenuEntry(dw->toggleViewAction());
+	_window->removeSpawnedWindowMenuEntry(dw->toggleViewAction());
+	_window->getExtensionSpawner()->destroyExtension(dw);
+
 	delete dw;
 }
 

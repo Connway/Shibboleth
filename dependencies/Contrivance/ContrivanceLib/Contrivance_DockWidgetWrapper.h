@@ -3,7 +3,7 @@
 
 #include <QObject>
 
-class ContrivanceWindow;
+class IContrivanceWindow;
 class QDockWidget;
 
 class DockWidgetWrapper : public QObject, public QObjectUserData
@@ -11,7 +11,7 @@ class DockWidgetWrapper : public QObject, public QObjectUserData
 	Q_OBJECT
 
 public:
-	DockWidgetWrapper(ContrivanceWindow& window, QDockWidget* dw);
+	DockWidgetWrapper(IContrivanceWindow& window, QDockWidget* dw);
 	~DockWidgetWrapper(void);
 
 private slots:
@@ -20,7 +20,7 @@ private slots:
 	void closeButtonClicked(bool);
 
 private:
-	ContrivanceWindow& _window;
+	IContrivanceWindow* _window;
 	QDockWidget* _dw = nullptr;
 	int _timer_id = -1;
 

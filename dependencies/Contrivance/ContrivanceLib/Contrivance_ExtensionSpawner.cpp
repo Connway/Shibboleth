@@ -21,11 +21,12 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Contrivance_ExtensionSpawner.h"
-#include "Contrivance_ContrivanceWindow.h"
+#include "Contrivance_IContrivanceWindow.h"
 #include "Contrivance_DockWidgetWrapper.h"
-#include "Contrivance_DockWidgetHelper.h"
+#include "Contrivance_ContrivanceExtension.h"
 #include "ui_Contrivance_ExtensionSpawner.h"
 #include <QAbstractButton>
+#include <QMainWindow>
 #include <QDockWidget>
 #include <QMouseEvent>
 #include <QTextStream>
@@ -34,7 +35,7 @@ THE SOFTWARE.
 #include <QHash>
 #include <QDir>
 
-ExtensionSpawner::ExtensionSpawner(ContrivanceWindow& window, QWidget* parent):
+ExtensionSpawner::ExtensionSpawner(IContrivanceWindow& window, QWidget* parent):
 	QWidget(parent), _ui(new Ui::ExtensionSpawner),
 	_window(window), _num_spawned_extensions(0)
 {
@@ -73,6 +74,7 @@ void ExtensionSpawner::loadExtensions(void)
 		ext_data.save_func = (ExtensionData::SaveInstanceDataFunc)ext_data.library->resolve("SaveInstanceData");
 		ext_data.load_func = (ExtensionData::LoadInstanceDataFunc)ext_data.library->resolve("LoadInstanceData");
 		ext_data.create_func = (ExtensionData::CreateInstanceFunc)ext_data.library->resolve("CreateInstance");
+		ext_data.destroy_func = (ExtensionData::DestroyInstanceFunc)ext_data.library->resolve("DestroyInstance");
 		ext_data.get_exts_func = (ExtensionData::GetExtensionsFunc)ext_data.library->resolve("GetExtensions");
 
 		// If we're missing an essential function
@@ -151,7 +153,9 @@ void ExtensionSpawner::close(void)
 
 	for (auto it = spawned_widgets.begin(); it != spawned_widgets.end(); ++it) {
 		//disconnect(*it);
-		delete *it;
+		it->dock_widget->setWidget(nullptr);
+		it->ext_data->destroy_func(it->extension);
+		delete it->dock_widget;
 	}
 
 	// Shutdown and unload all the modules
@@ -191,16 +195,15 @@ void ExtensionSpawner::loadGlobalData(const QJsonObject& object)
 void ExtensionSpawner::saveOpenExtensions(QMainWindow* tab, QJsonArray& widgets) const
 {
 	for (auto it = _spawned_widgets.begin(); it != _spawned_widgets.end(); ++it) {
-		if ((*it)->parentWidget() == tab) {
-			DockWidgetHelper* helper = qobject_cast<DockWidgetHelper*>((*it)->widget());
-			QRect geometry = (*it)->geometry();
+		if (it->dock_widget->parentWidget() == tab) {
+			QRect geometry = it->dock_widget->geometry();
 
 			QJsonObject widget_data;
-			widget_data.insert("Extension", QJsonValue((*it)->windowTitle()));
-			widget_data.insert("Name", QJsonValue((*it)->objectName()));
+			widget_data.insert("Extension", QJsonValue(it->dock_widget->windowTitle()));
+			widget_data.insert("Name", QJsonValue(it->dock_widget->objectName()));
 			widget_data.insert("Width", QJsonValue(geometry.width()));
 			widget_data.insert("Height", QJsonValue(geometry.height()));
-			widget_data.insert("ID", QJsonValue(helper->getID()));
+			widget_data.insert("ID", QJsonValue(it->extension->getID()));
 
 			widgets.push_back(widget_data);
 		}
@@ -267,27 +270,39 @@ void ExtensionSpawner::spawnExtension(const QString& ext_name, QMainWindow* pare
 	}
 
 	ExtensionData& ext_data = _extension_modules[*it_ind];
-	QWidget* widget = ext_data.create_func(ext_name);
+	IContrivanceExtension* ext = ext_data.create_func(ext_name);
 
-	if (!widget) {
+	if (!ext) {
 		_window.printToConsole("Failed to create extension '" + ext_name + "'", CMT_ERROR);
 		delete dock_widget;
 		return;
 	}
 
-	DockWidgetHelper* helper = new DockWidgetHelper(this, widget);
-	helper->setSizeHint(size);
-	helper->setID(id);
+	ext->setSizeHint(size);
+	ext->setID(id);
 
-	dock_widget->setWidget(helper);
+	dock_widget->setWidget(ext->getWidget());
 
 	parent_window->addDockWidget(Qt::LeftDockWidgetArea, dock_widget);
 	dock_widget->setFloating(true);
 	dock_widget->resize(400, 300);
 
-	_spawned_widgets.push_back(dock_widget);
+	SpawnedExtension se = { ext, dock_widget, &ext_data };
+	_spawned_widgets.push_back(se);
 
 	connect(dock_widget, SIGNAL(destroyed(QObject*)), SLOT(widgetDestroyed(QObject*)));
+}
+
+void ExtensionSpawner::destroyExtension(QDockWidget* dock_widget)
+{
+	for (auto it = _spawned_widgets.begin(); it != _spawned_widgets.end(); ++it) {
+		if (it->dock_widget == dock_widget) {
+			dock_widget->setWidget(nullptr);
+			it->ext_data->destroy_func(it->extension);
+			_spawned_widgets.erase(it);
+			break;
+		}
+	}
 }
 
 void ExtensionSpawner::addFreeID(int id)
@@ -299,7 +314,7 @@ void ExtensionSpawner::itemDoubleClicked(QModelIndex index)
 {
 	QString ext_name = _ui->listWidget->item(index.row())->text();
 	bool dock_to_main_window = (QApplication::keyboardModifiers() & Qt::ShiftModifier) != 0;
-	QMainWindow* parent_window = (dock_to_main_window) ? &_window : _window.getCurrentTabWindow();
+	QMainWindow* parent_window = (dock_to_main_window) ? _window.getThisWindow() : _window.getCurrentTabWindow();
 
 	spawnExtension(ext_name, parent_window);
 }
@@ -307,5 +322,5 @@ void ExtensionSpawner::itemDoubleClicked(QModelIndex index)
 void ExtensionSpawner::widgetDestroyed(QObject* dock_widget)
 {
 	QDockWidget* dw = reinterpret_cast<QDockWidget*>(dock_widget);
-	_spawned_widgets.removeAll(dw);
+	destroyExtension(dw);
 }

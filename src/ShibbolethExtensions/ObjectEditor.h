@@ -1,7 +1,7 @@
 #ifndef OBJECTEDITOR_H
 #define OBJECTEDITOR_H
 
-#include <QWidget>
+#include <Contrivance_ContrivanceExtension.h>
 
 namespace Ui
 {
@@ -10,7 +10,7 @@ namespace Ui
 
 class IContrivanceWindow;
 
-class ObjectEditor : public QWidget
+class ObjectEditor : public ContrivanceExtension
 {
 	Q_OBJECT
 
@@ -20,14 +20,8 @@ public:
 
 	bool eventFilter(QObject* object, QEvent* event);
 
-	void dragEnterEvent(QDragEnterEvent *);
-	void dragMoveEvent(QDragMoveEvent *);
-	void dragLeaveEvent(QDragLeaveEvent *);
-	void dropEvent(QDropEvent *);
-
 private:
 	Ui::ObjectEditor* _ui;
-	IContrivanceWindow& _window;
 };
 
 #endif // OBJECTEDITOR_H

@@ -50,17 +50,18 @@ public:
 	~ContrivanceWindow();
 
 	void registerNewShortcut(QWidget* parent, const char* member, const QString& action, const QKeySequence& shortcut = QKeySequence());
-	void setNewShortcuts(const QVector<QKeySequence>& shortcuts); // List should match 1-to-1 with _shortcuts. Should only really be called by the Shortcut Editor.
-	const QVector<Shortcut>& retrieveShortcuts(void) const;
-
 	void registerNewToolbarAction(const QIcon& icon, const QObject* receiver, const char* member, const QString& toolbar_name, const QString& group_name);
 	void registerNewMenuAction(QAction* action, const QString& menu_name, const QString& group_name);
 	void registerNewMenuMenu(QMenu* menu, const QString& menu_name, const QString& group_name);
+
+	void setNewShortcuts(const QVector<QKeySequence>& shortcuts); // List should match 1-to-1 with _shortcuts. Should only really be called by the Shortcut Editor.
+	const QVector<Shortcut>& retrieveShortcuts(void) const;
 
 	void printToConsole(const QString& message, ConsoleMessageType type = CMT_NORMAL);
 
 	ExtensionSpawner* getExtensionSpawner(void);
 	QMainWindow* getCurrentTabWindow(void);
+	QMainWindow* getThisWindow(void);
 
 	void addSpawnedWindowMenuEntry(QAction* spawn_window_action);
 	void removeSpawnedWindowMenuEntry(QAction* spawn_window_action);

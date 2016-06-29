@@ -50,3 +50,6 @@ copy ..\build\output\x64\Release\App64.exe ..\workingdir\App\App64.exe /Y
 
 copy ..\build\Contrivance\Debug\debug\Contrivance.exe ..\workingdir\Editor\Contrivance64d.exe
 copy ..\build\Contrivance\Release\release\Contrivance.exe ..\workingdir\Editor\Contrivance64.exe
+
+copy ..\build\ShibbolethExtensions\Debug\debug\ShibbolethExtensions64d.dll ..\workingdir\Editor\extensions\ShibbolethExtensions64d.dll /Y
+copy ..\build\ShibbolethExtensions\Release\release\ShibbolethExtensions64.dll ..\workingdir\Editor\extensions\ShibbolethExtensions64.dll /Y
