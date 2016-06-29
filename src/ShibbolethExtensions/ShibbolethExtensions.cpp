@@ -35,12 +35,12 @@ class QDockWidget;
 IContrivanceWindow* gWindow = nullptr;
 
 template <class T>
-QWidget* CreateWidget(IContrivanceWindow& window)
+IContrivanceExtension* CreateWidget(IContrivanceWindow& window)
 {
 	return new T(window);
 }
 
-typedef QWidget* (*CreateInstanceFunc)(IContrivanceWindow&);
+typedef IContrivanceExtension* (*CreateInstanceFunc)(IContrivanceWindow&);
 
 QHash<QString, CreateInstanceFunc> create_funcs;
 
@@ -66,10 +66,15 @@ extern "C" Q_DECL_EXPORT bool LoadInstanceData(const QString&, const QJsonObject
 	return true;
 }
 
-extern "C" Q_DECL_EXPORT QWidget* CreateInstance(const QString& widget_name)
+extern "C" Q_DECL_EXPORT IContrivanceExtension* CreateInstance(const QString& widget_name)
 {
 	Q_ASSERT(create_funcs.contains(widget_name));
 	return create_funcs[widget_name](*gWindow);
+}
+
+extern "C" Q_DECL_EXPORT void DestroyInstance(IContrivanceExtension* ext)
+{
+	delete ext;
 }
 
  extern "C" Q_DECL_EXPORT void GetExtensions(QStringList& extensions)

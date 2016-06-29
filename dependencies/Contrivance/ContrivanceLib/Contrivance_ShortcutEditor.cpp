@@ -22,11 +22,11 @@ THE SOFTWARE.
 
 #include "Contrivance_ShortcutEditor.h"
 #include "ui_Contrivance_ShortcutEditor.h"
-#include "Contrivance_ContrivanceWindow.h"
+#include "Contrivance_IContrivanceWindow.h"
 
 #include <QKeySequenceEdit>
 
-ShortcutEditor::ShortcutEditor(ContrivanceWindow& window, QWidget* parent):
+ShortcutEditor::ShortcutEditor(IContrivanceWindow& window, QWidget* parent):
 	QDialog(parent), _window(window), _ui(new Ui::ShortcutEditor)
 {
 	_ui->setupUi(this);

@@ -10,33 +10,21 @@ CONFIG   += c++11
 TARGET = Contrivance
 TEMPLATE = app
 
+INCLUDEPATH += ContrivanceLib
+
+CONFIG(debug, debug|release) {
+	LIBS += -L../../ContrivanceLib/Debug/debug
+}
+
+CONFIG(release, debug|release) {
+	LIBS += -L../../ContrivanceLib/Release/release
+}
+
+LIBS += -lContrivanceLib
+
 SOURCES += \
-	main.cpp \
-	Contrivance_ShortcutEditor.cpp \
-	Contrivance_ContrivanceWindow.cpp \
-	Contrivance_ExtensionSpawner.cpp \
-	Contrivance_Console.cpp \
-    Contrivance_DockWidgetWrapper.cpp \
-    Contrivance_DockWidgetHelper.cpp
+	main.cpp
 
-HEADERS  += \
-	Contrivance_ShortcutEditor.h \
-	Contrivance_ContrivanceWindow.h \
-	Contrivance_Shortcut.h \
-	Contrivance_ExtensionSpawner.h \
-	Contrivance_Defines.h \
-	Contrivance_Console.h \
-	Contrivance_IContrivanceWindow.h \
-    Contrivance_DockWidgetWrapper.h \
-    Contrivance_DockWidgetHelper.h
+HEADERS +=
 
-FORMS    += \
-	Contrivance_ShortcutEditor.ui \
-	Contrivance_ContrivanceWindow.ui \
-	Contrivance_ExtensionSpawner.ui \
-	Contrivance_Console.ui
-
-#TRANSLATIONS += \
-#	Contrivance_<OtherLang>.ts
-
-#DISTFILES +=
+FORMS +=

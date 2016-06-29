@@ -75,8 +75,6 @@ ContrivanceWindow::ContrivanceWindow(QWidget* parent):
 
 	qApp->installEventFilter(this);
 
-	// Re-create plugins
-
 	restoreSaveWindowState(false);
 
 	_ui->menuSpawned_Windows->setEnabled(!_ui->menuSpawned_Windows->actions().isEmpty());
@@ -111,45 +109,6 @@ void ContrivanceWindow::registerNewShortcut(QWidget* parent, const char* member,
 		data.instance = new QShortcut(shortcut, parent, member);
 		_shortcuts.push_back(data);
 	}
-}
-
-void ContrivanceWindow::setNewShortcuts(const QVector<QKeySequence>& shortcuts)
-{
-	printToConsole("Setting new shortcuts");
-
-	QJsonObject root_obj;
-
-	// Add the new shortcuts and construct the JSON object.
-	for (int i = 0; i < shortcuts.count(); ++i) {
-		QKeySequence key_sequence = shortcuts[i];
-
-		// Check for duplicates
-		for (int j = 0; j < i; ++j) {
-			// Use empty key sequence if another shortcut is already using it.
-			if (!shortcuts[j].isEmpty() && shortcuts[i] == shortcuts[j]) {
-				printToConsole(
-					"Shortcut for action '" + _shortcuts[j].action + "' with key sequence '" +
-					key_sequence.toString() + "' is already in use by action '" + _shortcuts[i].action + "'",
-					CMT_WARNING
-				);
-
-				key_sequence = QKeySequence();
-				break;
-			}
-
-		}
-
-		root_obj.insert(_shortcuts[i].action, QJsonValue(key_sequence.toString()));
-		_shortcuts[i].instance->setKey(key_sequence);
-		_shortcuts[i].shortcut = key_sequence;
-	}
-
-	saveShortcuts(root_obj, "keyboard_shortcuts.json");
-}
-
-const QVector<Shortcut>& ContrivanceWindow::retrieveShortcuts(void) const
-{
-	return _shortcuts;
 }
 
 void ContrivanceWindow::registerNewToolbarAction(const QIcon& icon, const QObject* receiver, const char* member, const QString& toolbar_name, const QString& group_name)
@@ -273,6 +232,45 @@ void ContrivanceWindow::registerNewMenuMenu(QMenu* menu, const QString& menu_nam
 	it_m->menu->insertMenu(*it_sep, menu);
 }
 
+void ContrivanceWindow::setNewShortcuts(const QVector<QKeySequence>& shortcuts)
+{
+	printToConsole("Setting new shortcuts");
+
+	QJsonObject root_obj;
+
+	// Add the new shortcuts and construct the JSON object.
+	for (int i = 0; i < shortcuts.count(); ++i) {
+		QKeySequence key_sequence = shortcuts[i];
+
+		// Check for duplicates
+		for (int j = 0; j < i; ++j) {
+			// Use empty key sequence if another shortcut is already using it.
+			if (!shortcuts[j].isEmpty() && shortcuts[i] == shortcuts[j]) {
+				printToConsole(
+					"Shortcut for action '" + _shortcuts[j].action + "' with key sequence '" +
+					key_sequence.toString() + "' is already in use by action '" + _shortcuts[i].action + "'",
+					CMT_WARNING
+				);
+
+				key_sequence = QKeySequence();
+				break;
+			}
+
+		}
+
+		root_obj.insert(_shortcuts[i].action, QJsonValue(key_sequence.toString()));
+		_shortcuts[i].instance->setKey(key_sequence);
+		_shortcuts[i].shortcut = key_sequence;
+	}
+
+	saveShortcuts(root_obj, "keyboard_shortcuts.json");
+}
+
+const QVector<Shortcut>& ContrivanceWindow::retrieveShortcuts(void) const
+{
+	return _shortcuts;
+}
+
 void ContrivanceWindow::printToConsole(const QString& message, ConsoleMessageType type)
 {
 	_console->print(message, type);
@@ -286,6 +284,11 @@ ExtensionSpawner* ContrivanceWindow::getExtensionSpawner(void)
 QMainWindow* ContrivanceWindow::getCurrentTabWindow(void)
 {
 	return qobject_cast<QMainWindow*>(_ui->tabWidget->currentWidget());
+}
+
+QMainWindow* ContrivanceWindow::getThisWindow(void)
+{
+	return this;
 }
 
 void ContrivanceWindow::addSpawnedWindowMenuEntry(QAction* spawn_window_action)

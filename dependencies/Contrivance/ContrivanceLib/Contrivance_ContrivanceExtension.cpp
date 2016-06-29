@@ -20,36 +20,18 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#include "Contrivance_DockWidgetHelper.h"
+#include "Contrivance_ContrivanceExtension.h"
+#include "Contrivance_IContrivanceWindow.h"
 #include "Contrivance_ExtensionSpawner.h"
 
-DockWidgetHelper::DockWidgetHelper(ExtensionSpawner* spawner, QWidget* child):
-	_id(0), _spawner(spawner)
+ContrivanceExtension::ContrivanceExtension(IContrivanceWindow& window):
+	CONTRIVANCE_EXTENSION_INITIALIZER_LIST
 {
-	child->setParent(this);
 }
 
-DockWidgetHelper::~DockWidgetHelper(void)
+ContrivanceExtension::~ContrivanceExtension(void)
 {
-	_spawner->addFreeID(_id);
+	CONTRIVANCE_EXTENSION_DESTRUCTOR;
 }
 
-QSize DockWidgetHelper::sizeHint(void) const
-{
-	return _size;
-}
-
-void DockWidgetHelper::setSizeHint(QSize size)
-{
-	_size = size;
-}
-
-int DockWidgetHelper::getID(void) const
-{
-	return _id;
-}
-
-void DockWidgetHelper::setID(int id)
-{
-	_id = id;
-}
+CONTRIVANCE_EXTENSION_IMPLEMENATION(ContrivanceExtension)

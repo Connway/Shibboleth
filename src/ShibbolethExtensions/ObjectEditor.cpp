@@ -3,7 +3,7 @@
 #include <Contrivance_IContrivanceWindow.h>
 
 ObjectEditor::ObjectEditor(IContrivanceWindow& window):
-	_ui(new Ui::ObjectEditor), _window(window)
+	ContrivanceExtension(window), _ui(new Ui::ObjectEditor)
 {
 	_ui->setupUi(this);
 
@@ -18,32 +18,12 @@ ObjectEditor::~ObjectEditor()
 bool ObjectEditor::eventFilter(QObject* object, QEvent* event)
 {
 	if (event->type() == QEvent::DragEnter) {
-		_window.printToConsole("DRAG ENTER EVENT");
+		_window.printToConsole("OBJECTEDITOR: DRAG ENTER EVENT");
 	} else if (event->type() == QEvent::DragResponse) {
-		_window.printToConsole("DRAG RESPONSE EVENT");
+		_window.printToConsole("OBJECTEDITOR: DRAG RESPONSE EVENT");
 	} else if (event->type() == QEvent::Drop) {
-		_window.printToConsole("DROP EVENT");
+		_window.printToConsole("OBJECTEDITOR: DROP EVENT");
 	}
 
 	return QObject::eventFilter(object, event);
-}
-
-void ObjectEditor::dragEnterEvent(QDragEnterEvent *e)
-{
-	e = e;
-}
-
-void ObjectEditor::dragMoveEvent(QDragMoveEvent *e)
-{
-	e = e;
-}
-
-void ObjectEditor::dragLeaveEvent(QDragLeaveEvent *e)
-{
-	e = e;
-}
-
-void ObjectEditor::dropEvent(QDropEvent *e)
-{
-	e = e;
 }
