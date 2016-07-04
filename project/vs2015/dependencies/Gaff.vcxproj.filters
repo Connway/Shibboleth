@@ -6,65 +6,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\..\dependencies\Gaff\include\Gaff_Array.inl">
-      <Filter>include</Filter>
-    </None>
-    <None Include="..\..\..\dependencies\Gaff\include\Gaff_Array2D.inl">
-      <Filter>include</Filter>
-    </None>
-    <None Include="..\..\..\dependencies\Gaff\include\Gaff_BezierCurve.inl">
-      <Filter>include</Filter>
-    </None>
-    <None Include="..\..\..\dependencies\Gaff\include\Gaff_BitArray.inl">
-      <Filter>include</Filter>
-    </None>
-    <None Include="..\..\..\dependencies\Gaff\include\Gaff_CachedFunction.inl">
-      <Filter>include</Filter>
-    </None>
-    <None Include="..\..\..\dependencies\Gaff\include\Gaff_DynamicLoader.inl">
-      <Filter>include</Filter>
-    </None>
-    <None Include="..\..\..\dependencies\Gaff\include\Gaff_Function.inl">
-      <Filter>include</Filter>
-    </None>
-    <None Include="..\..\..\dependencies\Gaff\include\Gaff_HashMap.inl">
-      <Filter>include</Filter>
-    </None>
-    <None Include="..\..\..\dependencies\Gaff\include\Gaff_HashString.inl">
-      <Filter>include</Filter>
-    </None>
-    <None Include="..\..\..\dependencies\Gaff\include\Gaff_JobPool.inl">
-      <Filter>include</Filter>
-    </None>
-    <None Include="..\..\..\dependencies\Gaff\include\Gaff_LinearCurve.inl">
-      <Filter>include</Filter>
-    </None>
-    <None Include="..\..\..\dependencies\Gaff\include\Gaff_Map.inl">
-      <Filter>include</Filter>
-    </None>
-    <None Include="..\..\..\dependencies\Gaff\include\Gaff_Queue.inl">
-      <Filter>include</Filter>
-    </None>
-    <None Include="..\..\..\dependencies\Gaff\include\Gaff_ReflectionDefinitions.inl">
-      <Filter>include</Filter>
-    </None>
-    <None Include="..\..\..\dependencies\Gaff\include\Gaff_ReflectionDefinitionsContainers.inl">
-      <Filter>include</Filter>
-    </None>
-    <None Include="..\..\..\dependencies\Gaff\include\Gaff_StaticArray.inl">
-      <Filter>include</Filter>
-    </None>
-    <None Include="..\..\..\dependencies\Gaff\include\Gaff_String.inl">
-      <Filter>include</Filter>
-    </None>
-    <None Include="..\..\..\dependencies\Gaff\include\Gaff_Utils_Common.inl">
-      <Filter>include</Filter>
-    </None>
-    <None Include="..\..\..\dependencies\Gaff\include\Gaff_Watcher.inl">
-      <Filter>include</Filter>
-    </None>
-  </ItemGroup>
-  <ItemGroup>
     <ClInclude Include="..\..\..\dependencies\Gaff\include\Gaff_Animation.h">
       <Filter>include</Filter>
     </ClInclude>
@@ -344,5 +285,64 @@
     <ClCompile Include="..\..\..\dependencies\Gaff\Gaff_Utils_Linux.cpp" />
     <ClCompile Include="..\..\..\dependencies\Gaff\Gaff_Utils_Mac.cpp" />
     <ClCompile Include="..\..\..\dependencies\Gaff\Gaff_Utils_Windows.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\..\dependencies\Gaff\include\Gaff_Array.inl">
+      <Filter>include</Filter>
+    </None>
+    <None Include="..\..\..\dependencies\Gaff\include\Gaff_Array2D.inl">
+      <Filter>include</Filter>
+    </None>
+    <None Include="..\..\..\dependencies\Gaff\include\Gaff_BezierCurve.inl">
+      <Filter>include</Filter>
+    </None>
+    <None Include="..\..\..\dependencies\Gaff\include\Gaff_BitArray.inl">
+      <Filter>include</Filter>
+    </None>
+    <None Include="..\..\..\dependencies\Gaff\include\Gaff_CachedFunction.inl">
+      <Filter>include</Filter>
+    </None>
+    <None Include="..\..\..\dependencies\Gaff\include\Gaff_DynamicLoader.inl">
+      <Filter>include</Filter>
+    </None>
+    <None Include="..\..\..\dependencies\Gaff\include\Gaff_Function.inl">
+      <Filter>include</Filter>
+    </None>
+    <None Include="..\..\..\dependencies\Gaff\include\Gaff_HashMap.inl">
+      <Filter>include</Filter>
+    </None>
+    <None Include="..\..\..\dependencies\Gaff\include\Gaff_HashString.inl">
+      <Filter>include</Filter>
+    </None>
+    <None Include="..\..\..\dependencies\Gaff\include\Gaff_JobPool.inl">
+      <Filter>include</Filter>
+    </None>
+    <None Include="..\..\..\dependencies\Gaff\include\Gaff_LinearCurve.inl">
+      <Filter>include</Filter>
+    </None>
+    <None Include="..\..\..\dependencies\Gaff\include\Gaff_Map.inl">
+      <Filter>include</Filter>
+    </None>
+    <None Include="..\..\..\dependencies\Gaff\include\Gaff_Queue.inl">
+      <Filter>include</Filter>
+    </None>
+    <None Include="..\..\..\dependencies\Gaff\include\Gaff_ReflectionDefinitions.inl">
+      <Filter>include</Filter>
+    </None>
+    <None Include="..\..\..\dependencies\Gaff\include\Gaff_ReflectionDefinitionsContainers.inl">
+      <Filter>include</Filter>
+    </None>
+    <None Include="..\..\..\dependencies\Gaff\include\Gaff_StaticArray.inl">
+      <Filter>include</Filter>
+    </None>
+    <None Include="..\..\..\dependencies\Gaff\include\Gaff_String.inl">
+      <Filter>include</Filter>
+    </None>
+    <None Include="..\..\..\dependencies\Gaff\include\Gaff_Utils_Common.inl">
+      <Filter>include</Filter>
+    </None>
+    <None Include="..\..\..\dependencies\Gaff\include\Gaff_Watcher.inl">
+      <Filter>include</Filter>
+    </None>
   </ItemGroup>
 </Project>

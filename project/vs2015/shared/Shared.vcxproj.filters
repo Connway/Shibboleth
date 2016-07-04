@@ -6,11 +6,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\..\src\Shared\include\Shibboleth_MessageBroadcaster.inl">
-      <Filter>include</Filter>
-    </None>
-  </ItemGroup>
-  <ItemGroup>
     <ClInclude Include="..\..\..\src\Shared\include\Shibboleth_App.h">
       <Filter>include</Filter>
     </ClInclude>
@@ -97,5 +92,10 @@
     <ClCompile Include="..\..\..\src\Shared\Shibboleth_MessageBroadcaster.cpp" />
     <ClCompile Include="..\..\..\src\Shared\Shibboleth_StateMachine.cpp" />
     <ClCompile Include="..\..\..\src\Shared\Shibboleth_Utilities.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\..\src\Shared\include\Shibboleth_MessageBroadcaster.inl">
+      <Filter>include</Filter>
+    </None>
   </ItemGroup>
 </Project>

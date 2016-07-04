@@ -48,8 +48,11 @@ copy ..\build\output\x64\Release\ResIL64.dll ..\workingdir\App\bin\ResIL64.dll /
 copy ..\build\output\x64\Release\ResILU64.dll ..\workingdir\App\bin\ResILU64.dll /Y
 copy ..\build\output\x64\Release\App64.exe ..\workingdir\App\App64.exe /Y
 
-copy ..\build\Contrivance\Debug\debug\Contrivance.exe ..\workingdir\Editor\Contrivance64d.exe
-copy ..\build\Contrivance\Release\release\Contrivance.exe ..\workingdir\Editor\Contrivance64.exe
+copy ..\build\output\x64\Debug\Contrivance64d.exe ..\workingdir\Editor\Contrivance64d.exe /Y
+copy ..\build\output\x64\Debug\ShibbolethExtensions64d.dll ..\workingdir\Editor\ShibbolethExtensions64d.dll /Y
 
-copy ..\build\ShibbolethExtensions\Debug\debug\ShibbolethExtensions64d.dll ..\workingdir\Editor\extensions\ShibbolethExtensions64d.dll /Y
-copy ..\build\ShibbolethExtensions\Release\release\ShibbolethExtensions64.dll ..\workingdir\Editor\extensions\ShibbolethExtensions64.dll /Y
+copy ..\build\output\x64\Release\Contrivance64.exe ..\workingdir\Editor\Contrivance64.exe /Y
+copy ..\build\output\x64\Release\ShibbolethExtensions64.dll ..\workingdir\Editor\ShibbolethExtensions64.dll /Y
+
+copy ..\build\QtProjects\src\ShibbolethExtensions\debug\ShibbolethExtensions64d.dll ..\workingdir\Editor\extensions\ShibbolethExtensions64d.dll /Y
+copy ..\build\QtProjects\src\ShibbolethExtensions\release\ShibbolethExtensions64.dll ..\workingdir\Editor\extensions\ShibbolethExtensions64.dll /Y

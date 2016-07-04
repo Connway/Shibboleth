@@ -1,18 +1,38 @@
+/************************************************************************************
+Copyright (C) 2016 by Nicholas LaCroix
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+************************************************************************************/
+
 #include "ComponentList.h"
 #include <Contrivance_IContrivanceWindow.h>
 #include <Contrivance_ExtensionSpawner.h>
 
-CONTRIVANCE_EXTENSION_IMPLEMENATION(ComponentList)
-
 ComponentList::ComponentList(IContrivanceWindow& window):
-	CONTRIVANCE_EXTENSION_INITIALIZER_LIST
+	_window(window)
 {
+	setup();
 	addItem("Test Item");
 }
 
 ComponentList::~ComponentList(void)
 {
-	CONTRIVANCE_EXTENSION_DESTRUCTOR;
 }
 
 /*bool ComponentList::eventFilter(QObject* object, QEvent* event)
@@ -30,36 +50,21 @@ ComponentList::~ComponentList(void)
 	return QObject::eventFilter(object, event);
 }*/
 
-/*
-void setupUi(QWidget *ComponentList)
+void ComponentList::setup(void)
 {
-	if (ComponentList->objectName().isEmpty())
-		ComponentList->setObjectName(QStringLiteral("ComponentList"));
-	ComponentList->resize(400, 300);
-	QSizePolicy sizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-	sizePolicy.setHorizontalStretch(0);
-	sizePolicy.setVerticalStretch(0);
-	sizePolicy.setHeightForWidth(ComponentList->sizePolicy().hasHeightForWidth());
-	ComponentList->setSizePolicy(sizePolicy);
-	horizontalLayout = new QHBoxLayout(ComponentList);
-	horizontalLayout->setObjectName(QStringLiteral("horizontalLayout"));
-	horizontalLayout->setContentsMargins(0, 0, 0, 0);
-	listWidget = new QListWidget(ComponentList);
-	listWidget->setObjectName(QStringLiteral("listWidget"));
-	listWidget->setFrameShape(QFrame::StyledPanel);
-	listWidget->setEditTriggers(QAbstractItemView::NoEditTriggers);
-	listWidget->setProperty("showDropIndicator", QVariant(false));
-	listWidget->setDragEnabled(true);
-	listWidget->setDragDropMode(QAbstractItemView::DragOnly);
-	listWidget->setDefaultDropAction(Qt::IgnoreAction);
-	listWidget->setResizeMode(QListView::Adjust);
-	listWidget->setSortingEnabled(true);
+	QSizePolicy sp(QSizePolicy::Expanding, QSizePolicy::Expanding);
+	sp.setHorizontalStretch(0);
+	sp.setVerticalStretch(0);
+	sp.setHeightForWidth(sizePolicy().hasHeightForWidth());
 
-	horizontalLayout->addWidget(listWidget);
+	setSizePolicy(sp);
 
-
-	retranslateUi(ComponentList);
-
-	QMetaObject::connectSlotsByName(ComponentList);
-} // setupUi
-*/
+	setFrameShape(QFrame::StyledPanel);
+	setEditTriggers(QAbstractItemView::NoEditTriggers);
+	setProperty("showDropIndicator", QVariant(false));
+	setDragEnabled(true);
+	setDragDropMode(QAbstractItemView::DragOnly);
+	setDefaultDropAction(Qt::IgnoreAction);
+	setResizeMode(QListView::Adjust);
+	setSortingEnabled(true);
+}

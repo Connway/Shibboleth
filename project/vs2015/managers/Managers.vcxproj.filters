@@ -6,11 +6,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\..\src\Managers\include\Shibboleth_InputReflection.inl">
-      <Filter>include</Filter>
-    </None>
-  </ItemGroup>
-  <ItemGroup>
     <ClInclude Include="..\..\..\src\Managers\include\Shibboleth_BroadcasterManager.h">
       <Filter>include</Filter>
     </ClInclude>
@@ -81,5 +76,10 @@
     <ClCompile Include="..\..\..\src\Managers\Shibboleth_SceneManager.cpp" />
     <ClCompile Include="..\..\..\src\Managers\Shibboleth_SchemaManager.cpp" />
     <ClCompile Include="..\..\..\src\Managers\Shibboleth_UpdateManager.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\..\src\Managers\include\Shibboleth_InputReflection.inl">
+      <Filter>include</Filter>
+    </None>
   </ItemGroup>
 </Project>

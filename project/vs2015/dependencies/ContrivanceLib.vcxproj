@@ -1,0 +1,211 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{7830B61B-64FE-A921-4D92-1A4839FF8586}</ProjectGuid>
+    <IgnoreWarnCompileDuplicatedFilename>true</IgnoreWarnCompileDuplicatedFilename>
+    <Keyword>Win32Proj</Keyword>
+    <RootNamespace>ContrivanceLib</RootNamespace>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v140</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v140</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <OutDir>..\..\..\build\output\x64\Debug\</OutDir>
+    <IntDir>..\..\..\build\intermediate\x64\Debug\ContrivanceLib\</IntDir>
+    <TargetName>ContrivanceLib</TargetName>
+    <TargetExt>.lib</TargetExt>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <OutDir>..\..\..\build\output\x64\Release\</OutDir>
+    <IntDir>..\..\..\build\intermediate\x64\Release\ContrivanceLib\</IntDir>
+    <TargetName>ContrivanceLib</TargetName>
+    <TargetExt>.lib</TargetExt>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <PreprocessorDefinitions>_DEBUG;DEBUG;QT_CORE_LIB;QT_WIDGETS_LIB;QT_GUI_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(QT_DIR)\include;$(QT_DIR)\include\QtCore;$(QT_DIR)\include\QtWidgets;$(QT_DIR)\include\QtGui;..\..\..\build\intermediate;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <Optimization>Disabled</Optimization>
+      <ExceptionHandling>Async</ExceptionHandling>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <FloatingPointModel>Fast</FloatingPointModel>
+      <AdditionalOptions>/sdl %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <PreprocessorDefinitions>QT_CORE_LIB;QT_WIDGETS_LIB;QT_GUI_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(QT_DIR)\include;$(QT_DIR)\include\QtCore;$(QT_DIR)\include\QtWidgets;$(QT_DIR)\include\QtGui;..\..\..\build\intermediate;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <MinimalRebuild>false</MinimalRebuild>
+      <StringPooling>true</StringPooling>
+      <ExceptionHandling>Async</ExceptionHandling>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <FloatingPointModel>Fast</FloatingPointModel>
+      <AdditionalOptions>/sdl %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\dependencies\Contrivance\ContrivanceLib\Contrivance_Defines.h" />
+    <ClInclude Include="..\..\..\dependencies\Contrivance\ContrivanceLib\Contrivance_IContrivanceWindow.h" />
+    <ClInclude Include="..\..\..\dependencies\Contrivance\ContrivanceLib\Contrivance_Shortcut.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\..\build\intermediate\moc_Contrivance_Console.cpp" />
+    <ClCompile Include="..\..\..\build\intermediate\moc_Contrivance_ContrivanceExtension.cpp" />
+    <ClCompile Include="..\..\..\build\intermediate\moc_Contrivance_ContrivanceWindow.cpp" />
+    <ClCompile Include="..\..\..\build\intermediate\moc_Contrivance_DockWidgetWrapper.cpp" />
+    <ClCompile Include="..\..\..\build\intermediate\moc_Contrivance_ExtensionSpawner.cpp" />
+    <ClCompile Include="..\..\..\build\intermediate\moc_Contrivance_ShortcutEditor.cpp" />
+    <ClCompile Include="..\..\..\dependencies\Contrivance\ContrivanceLib\Contrivance_Console.cpp" />
+    <ClCompile Include="..\..\..\dependencies\Contrivance\ContrivanceLib\Contrivance_ContrivanceExtension.cpp" />
+    <ClCompile Include="..\..\..\dependencies\Contrivance\ContrivanceLib\Contrivance_ContrivanceWindow.cpp" />
+    <ClCompile Include="..\..\..\dependencies\Contrivance\ContrivanceLib\Contrivance_DockWidgetWrapper.cpp" />
+    <ClCompile Include="..\..\..\dependencies\Contrivance\ContrivanceLib\Contrivance_ExtensionSpawner.cpp" />
+    <ClCompile Include="..\..\..\dependencies\Contrivance\ContrivanceLib\Contrivance_ShortcutEditor.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="..\..\..\dependencies\Contrivance\ContrivanceLib\Contrivance_Console.h">
+      <FileType>Document</FileType>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(QT_DIR)/bin/moc "../../../dependencies/Contrivance/ContrivanceLib/Contrivance_Console.h" -o "../../../build/intermediate/moc_Contrivance_Console.cpp" -D_DEBUG -DDEBUG -DQT_CORE_LIB -DQT_WIDGETS_LIB -DQT_GUI_LIB -I"$(QT_DIR)/include" -I"$(QT_DIR)/include/QtCore" -I"$(QT_DIR)/include/QtWidgets" -I"$(QT_DIR)/include/QtGui" -I"../../../build/intermediate"</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">../../../build/intermediate/moc_Contrivance_Console.cpp</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Moc'ing Contrivance_Console.h</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(QT_DIR)/bin/moc "../../../dependencies/Contrivance/ContrivanceLib/Contrivance_Console.h" -o "../../../build/intermediate/moc_Contrivance_Console.cpp" -DQT_CORE_LIB -DQT_WIDGETS_LIB -DQT_GUI_LIB -I"$(QT_DIR)/include" -I"$(QT_DIR)/include/QtCore" -I"$(QT_DIR)/include/QtWidgets" -I"$(QT_DIR)/include/QtGui" -I"../../../build/intermediate"</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">../../../build/intermediate/moc_Contrivance_Console.cpp</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Moc'ing Contrivance_Console.h</Message>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\dependencies\Contrivance\ContrivanceLib\Contrivance_Console.ui">
+      <FileType>Document</FileType>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(QT_DIR)/bin/uic -o "../../../build/intermediate/ui_Contrivance_Console.h" "../../../dependencies/Contrivance/ContrivanceLib/Contrivance_Console.ui"</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">../../../build/intermediate/ui_Contrivance_Console.h</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Uic'ing Contrivance_Console.ui</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(QT_DIR)/bin/uic -o "../../../build/intermediate/ui_Contrivance_Console.h" "../../../dependencies/Contrivance/ContrivanceLib/Contrivance_Console.ui"</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">../../../build/intermediate/ui_Contrivance_Console.h</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Uic'ing Contrivance_Console.ui</Message>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\dependencies\Contrivance\ContrivanceLib\Contrivance_ContrivanceExtension.h">
+      <FileType>Document</FileType>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(QT_DIR)/bin/moc "../../../dependencies/Contrivance/ContrivanceLib/Contrivance_ContrivanceExtension.h" -o "../../../build/intermediate/moc_Contrivance_ContrivanceExtension.cpp" -D_DEBUG -DDEBUG -DQT_CORE_LIB -DQT_WIDGETS_LIB -DQT_GUI_LIB -I"$(QT_DIR)/include" -I"$(QT_DIR)/include/QtCore" -I"$(QT_DIR)/include/QtWidgets" -I"$(QT_DIR)/include/QtGui" -I"../../../build/intermediate"</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">../../../build/intermediate/moc_Contrivance_ContrivanceExtension.cpp</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Moc'ing Contrivance_ContrivanceExtension.h</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(QT_DIR)/bin/moc "../../../dependencies/Contrivance/ContrivanceLib/Contrivance_ContrivanceExtension.h" -o "../../../build/intermediate/moc_Contrivance_ContrivanceExtension.cpp" -DQT_CORE_LIB -DQT_WIDGETS_LIB -DQT_GUI_LIB -I"$(QT_DIR)/include" -I"$(QT_DIR)/include/QtCore" -I"$(QT_DIR)/include/QtWidgets" -I"$(QT_DIR)/include/QtGui" -I"../../../build/intermediate"</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">../../../build/intermediate/moc_Contrivance_ContrivanceExtension.cpp</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Moc'ing Contrivance_ContrivanceExtension.h</Message>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\dependencies\Contrivance\ContrivanceLib\Contrivance_ContrivanceWindow.h">
+      <FileType>Document</FileType>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(QT_DIR)/bin/moc "../../../dependencies/Contrivance/ContrivanceLib/Contrivance_ContrivanceWindow.h" -o "../../../build/intermediate/moc_Contrivance_ContrivanceWindow.cpp" -D_DEBUG -DDEBUG -DQT_CORE_LIB -DQT_WIDGETS_LIB -DQT_GUI_LIB -I"$(QT_DIR)/include" -I"$(QT_DIR)/include/QtCore" -I"$(QT_DIR)/include/QtWidgets" -I"$(QT_DIR)/include/QtGui" -I"../../../build/intermediate"</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">../../../build/intermediate/moc_Contrivance_ContrivanceWindow.cpp</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Moc'ing Contrivance_ContrivanceWindow.h</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(QT_DIR)/bin/moc "../../../dependencies/Contrivance/ContrivanceLib/Contrivance_ContrivanceWindow.h" -o "../../../build/intermediate/moc_Contrivance_ContrivanceWindow.cpp" -DQT_CORE_LIB -DQT_WIDGETS_LIB -DQT_GUI_LIB -I"$(QT_DIR)/include" -I"$(QT_DIR)/include/QtCore" -I"$(QT_DIR)/include/QtWidgets" -I"$(QT_DIR)/include/QtGui" -I"../../../build/intermediate"</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">../../../build/intermediate/moc_Contrivance_ContrivanceWindow.cpp</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Moc'ing Contrivance_ContrivanceWindow.h</Message>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\dependencies\Contrivance\ContrivanceLib\Contrivance_ContrivanceWindow.ui">
+      <FileType>Document</FileType>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(QT_DIR)/bin/uic -o "../../../build/intermediate/ui_Contrivance_ContrivanceWindow.h" "../../../dependencies/Contrivance/ContrivanceLib/Contrivance_ContrivanceWindow.ui"</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">../../../build/intermediate/ui_Contrivance_ContrivanceWindow.h</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Uic'ing Contrivance_ContrivanceWindow.ui</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(QT_DIR)/bin/uic -o "../../../build/intermediate/ui_Contrivance_ContrivanceWindow.h" "../../../dependencies/Contrivance/ContrivanceLib/Contrivance_ContrivanceWindow.ui"</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">../../../build/intermediate/ui_Contrivance_ContrivanceWindow.h</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Uic'ing Contrivance_ContrivanceWindow.ui</Message>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\dependencies\Contrivance\ContrivanceLib\Contrivance_DockWidgetWrapper.h">
+      <FileType>Document</FileType>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(QT_DIR)/bin/moc "../../../dependencies/Contrivance/ContrivanceLib/Contrivance_DockWidgetWrapper.h" -o "../../../build/intermediate/moc_Contrivance_DockWidgetWrapper.cpp" -D_DEBUG -DDEBUG -DQT_CORE_LIB -DQT_WIDGETS_LIB -DQT_GUI_LIB -I"$(QT_DIR)/include" -I"$(QT_DIR)/include/QtCore" -I"$(QT_DIR)/include/QtWidgets" -I"$(QT_DIR)/include/QtGui" -I"../../../build/intermediate"</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">../../../build/intermediate/moc_Contrivance_DockWidgetWrapper.cpp</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Moc'ing Contrivance_DockWidgetWrapper.h</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(QT_DIR)/bin/moc "../../../dependencies/Contrivance/ContrivanceLib/Contrivance_DockWidgetWrapper.h" -o "../../../build/intermediate/moc_Contrivance_DockWidgetWrapper.cpp" -DQT_CORE_LIB -DQT_WIDGETS_LIB -DQT_GUI_LIB -I"$(QT_DIR)/include" -I"$(QT_DIR)/include/QtCore" -I"$(QT_DIR)/include/QtWidgets" -I"$(QT_DIR)/include/QtGui" -I"../../../build/intermediate"</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">../../../build/intermediate/moc_Contrivance_DockWidgetWrapper.cpp</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Moc'ing Contrivance_DockWidgetWrapper.h</Message>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\dependencies\Contrivance\ContrivanceLib\Contrivance_ExtensionSpawner.h">
+      <FileType>Document</FileType>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(QT_DIR)/bin/moc "../../../dependencies/Contrivance/ContrivanceLib/Contrivance_ExtensionSpawner.h" -o "../../../build/intermediate/moc_Contrivance_ExtensionSpawner.cpp" -D_DEBUG -DDEBUG -DQT_CORE_LIB -DQT_WIDGETS_LIB -DQT_GUI_LIB -I"$(QT_DIR)/include" -I"$(QT_DIR)/include/QtCore" -I"$(QT_DIR)/include/QtWidgets" -I"$(QT_DIR)/include/QtGui" -I"../../../build/intermediate"</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">../../../build/intermediate/moc_Contrivance_ExtensionSpawner.cpp</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Moc'ing Contrivance_ExtensionSpawner.h</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(QT_DIR)/bin/moc "../../../dependencies/Contrivance/ContrivanceLib/Contrivance_ExtensionSpawner.h" -o "../../../build/intermediate/moc_Contrivance_ExtensionSpawner.cpp" -DQT_CORE_LIB -DQT_WIDGETS_LIB -DQT_GUI_LIB -I"$(QT_DIR)/include" -I"$(QT_DIR)/include/QtCore" -I"$(QT_DIR)/include/QtWidgets" -I"$(QT_DIR)/include/QtGui" -I"../../../build/intermediate"</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">../../../build/intermediate/moc_Contrivance_ExtensionSpawner.cpp</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Moc'ing Contrivance_ExtensionSpawner.h</Message>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\dependencies\Contrivance\ContrivanceLib\Contrivance_ExtensionSpawner.ui">
+      <FileType>Document</FileType>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(QT_DIR)/bin/uic -o "../../../build/intermediate/ui_Contrivance_ExtensionSpawner.h" "../../../dependencies/Contrivance/ContrivanceLib/Contrivance_ExtensionSpawner.ui"</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">../../../build/intermediate/ui_Contrivance_ExtensionSpawner.h</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Uic'ing Contrivance_ExtensionSpawner.ui</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(QT_DIR)/bin/uic -o "../../../build/intermediate/ui_Contrivance_ExtensionSpawner.h" "../../../dependencies/Contrivance/ContrivanceLib/Contrivance_ExtensionSpawner.ui"</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">../../../build/intermediate/ui_Contrivance_ExtensionSpawner.h</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Uic'ing Contrivance_ExtensionSpawner.ui</Message>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\dependencies\Contrivance\ContrivanceLib\Contrivance_ShortcutEditor.h">
+      <FileType>Document</FileType>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(QT_DIR)/bin/moc "../../../dependencies/Contrivance/ContrivanceLib/Contrivance_ShortcutEditor.h" -o "../../../build/intermediate/moc_Contrivance_ShortcutEditor.cpp" -D_DEBUG -DDEBUG -DQT_CORE_LIB -DQT_WIDGETS_LIB -DQT_GUI_LIB -I"$(QT_DIR)/include" -I"$(QT_DIR)/include/QtCore" -I"$(QT_DIR)/include/QtWidgets" -I"$(QT_DIR)/include/QtGui" -I"../../../build/intermediate"</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">../../../build/intermediate/moc_Contrivance_ShortcutEditor.cpp</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Moc'ing Contrivance_ShortcutEditor.h</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(QT_DIR)/bin/moc "../../../dependencies/Contrivance/ContrivanceLib/Contrivance_ShortcutEditor.h" -o "../../../build/intermediate/moc_Contrivance_ShortcutEditor.cpp" -DQT_CORE_LIB -DQT_WIDGETS_LIB -DQT_GUI_LIB -I"$(QT_DIR)/include" -I"$(QT_DIR)/include/QtCore" -I"$(QT_DIR)/include/QtWidgets" -I"$(QT_DIR)/include/QtGui" -I"../../../build/intermediate"</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">../../../build/intermediate/moc_Contrivance_ShortcutEditor.cpp</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Moc'ing Contrivance_ShortcutEditor.h</Message>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\dependencies\Contrivance\ContrivanceLib\Contrivance_ShortcutEditor.ui">
+      <FileType>Document</FileType>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(QT_DIR)/bin/uic -o "../../../build/intermediate/ui_Contrivance_ShortcutEditor.h" "../../../dependencies/Contrivance/ContrivanceLib/Contrivance_ShortcutEditor.ui"</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">../../../build/intermediate/ui_Contrivance_ShortcutEditor.h</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Uic'ing Contrivance_ShortcutEditor.ui</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(QT_DIR)/bin/uic -o "../../../build/intermediate/ui_Contrivance_ShortcutEditor.h" "../../../dependencies/Contrivance/ContrivanceLib/Contrivance_ShortcutEditor.ui"</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">../../../build/intermediate/ui_Contrivance_ShortcutEditor.h</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Uic'ing Contrivance_ShortcutEditor.ui</Message>
+    </CustomBuild>
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

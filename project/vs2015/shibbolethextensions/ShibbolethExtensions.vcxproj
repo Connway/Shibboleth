@@ -1,0 +1,151 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{792040D8-65AF-C9A1-0ECE-DD9CFA3BDA47}</ProjectGuid>
+    <IgnoreWarnCompileDuplicatedFilename>true</IgnoreWarnCompileDuplicatedFilename>
+    <Keyword>Win32Proj</Keyword>
+    <RootNamespace>ShibbolethExtensions</RootNamespace>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v140</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v140</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <LinkIncremental>true</LinkIncremental>
+    <OutDir>..\..\..\build\output\x64\Debug\</OutDir>
+    <IntDir>..\..\..\build\intermediate\x64\Debug\ShibbolethExtensions\</IntDir>
+    <TargetName>ShibbolethExtensions64d</TargetName>
+    <TargetExt>.dll</TargetExt>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <LinkIncremental>false</LinkIncremental>
+    <OutDir>..\..\..\build\output\x64\Release\</OutDir>
+    <IntDir>..\..\..\build\intermediate\x64\Release\ShibbolethExtensions\</IntDir>
+    <TargetName>ShibbolethExtensions64</TargetName>
+    <TargetExt>.dll</TargetExt>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <PreprocessorDefinitions>_DEBUG;DEBUG;QT_CORE_LIB;QT_WIDGETS_LIB;QT_GUI_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\..\..\dependencies\Contrivance\ContrivanceLib;$(QT_DIR)\include;$(QT_DIR)\include\QtCore;$(QT_DIR)\include\QtWidgets;$(QT_DIR)\include\QtGui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <Optimization>Disabled</Optimization>
+      <ExceptionHandling>Async</ExceptionHandling>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <FloatingPointModel>Fast</FloatingPointModel>
+      <AdditionalOptions>/sdl %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>Qt5Cored.lib;Qt5Widgetsd.lib;Qt5Guid.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(QT_DIR)\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <ImportLibrary>..\..\..\build\output\x64\Debug\ShibbolethExtensions64d.lib</ImportLibrary>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <PreprocessorDefinitions>QT_CORE_LIB;QT_WIDGETS_LIB;QT_GUI_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\..\..\dependencies\Contrivance\ContrivanceLib;$(QT_DIR)\include;$(QT_DIR)\include\QtCore;$(QT_DIR)\include\QtWidgets;$(QT_DIR)\include\QtGui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <MinimalRebuild>false</MinimalRebuild>
+      <StringPooling>true</StringPooling>
+      <ExceptionHandling>Async</ExceptionHandling>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <FloatingPointModel>Fast</FloatingPointModel>
+      <AdditionalOptions>/sdl %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalDependencies>Qt5Core.lib;Qt5Widgets.lib;Qt5Gui.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(QT_DIR)\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <ImportLibrary>..\..\..\build\output\x64\Release\ShibbolethExtensions64.lib</ImportLibrary>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\..\build\intermediate\moc_ComponentList.cpp" />
+    <ClCompile Include="..\..\..\build\intermediate\moc_ObjectCreator.cpp" />
+    <ClCompile Include="..\..\..\build\intermediate\moc_ObjectEditor.cpp" />
+    <ClCompile Include="..\..\..\src\ShibbolethExtensions\ComponentList.cpp" />
+    <ClCompile Include="..\..\..\src\ShibbolethExtensions\ObjectCreator.cpp" />
+    <ClCompile Include="..\..\..\src\ShibbolethExtensions\ObjectEditor.cpp" />
+    <ClCompile Include="..\..\..\src\ShibbolethExtensions\ShibbolethExtensions.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="..\..\..\src\ShibbolethExtensions\ComponentList.h">
+      <FileType>Document</FileType>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(QT_DIR)/bin/moc "../../../src/ShibbolethExtensions/ComponentList.h" -o "../../../build/intermediate/moc_ComponentList.cpp" -D_DEBUG -DDEBUG -DQT_CORE_LIB -DQT_WIDGETS_LIB -DQT_GUI_LIB -I"../../../dependencies/Contrivance/ContrivanceLib" -I"$(QT_DIR)/include" -I"$(QT_DIR)/include/QtCore" -I"$(QT_DIR)/include/QtWidgets" -I"$(QT_DIR)/include/QtGui"</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">../../../build/intermediate/moc_ComponentList.cpp</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Moc'ing ComponentList.h</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(QT_DIR)/bin/moc "../../../src/ShibbolethExtensions/ComponentList.h" -o "../../../build/intermediate/moc_ComponentList.cpp" -DQT_CORE_LIB -DQT_WIDGETS_LIB -DQT_GUI_LIB -I"../../../dependencies/Contrivance/ContrivanceLib" -I"$(QT_DIR)/include" -I"$(QT_DIR)/include/QtCore" -I"$(QT_DIR)/include/QtWidgets" -I"$(QT_DIR)/include/QtGui"</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">../../../build/intermediate/moc_ComponentList.cpp</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Moc'ing ComponentList.h</Message>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\src\ShibbolethExtensions\ObjectCreator.h">
+      <FileType>Document</FileType>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(QT_DIR)/bin/moc "../../../src/ShibbolethExtensions/ObjectCreator.h" -o "../../../build/intermediate/moc_ObjectCreator.cpp" -D_DEBUG -DDEBUG -DQT_CORE_LIB -DQT_WIDGETS_LIB -DQT_GUI_LIB -I"../../../dependencies/Contrivance/ContrivanceLib" -I"$(QT_DIR)/include" -I"$(QT_DIR)/include/QtCore" -I"$(QT_DIR)/include/QtWidgets" -I"$(QT_DIR)/include/QtGui"</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">../../../build/intermediate/moc_ObjectCreator.cpp</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Moc'ing ObjectCreator.h</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(QT_DIR)/bin/moc "../../../src/ShibbolethExtensions/ObjectCreator.h" -o "../../../build/intermediate/moc_ObjectCreator.cpp" -DQT_CORE_LIB -DQT_WIDGETS_LIB -DQT_GUI_LIB -I"../../../dependencies/Contrivance/ContrivanceLib" -I"$(QT_DIR)/include" -I"$(QT_DIR)/include/QtCore" -I"$(QT_DIR)/include/QtWidgets" -I"$(QT_DIR)/include/QtGui"</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">../../../build/intermediate/moc_ObjectCreator.cpp</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Moc'ing ObjectCreator.h</Message>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\src\ShibbolethExtensions\ObjectEditor.h">
+      <FileType>Document</FileType>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(QT_DIR)/bin/moc "../../../src/ShibbolethExtensions/ObjectEditor.h" -o "../../../build/intermediate/moc_ObjectEditor.cpp" -D_DEBUG -DDEBUG -DQT_CORE_LIB -DQT_WIDGETS_LIB -DQT_GUI_LIB -I"../../../dependencies/Contrivance/ContrivanceLib" -I"$(QT_DIR)/include" -I"$(QT_DIR)/include/QtCore" -I"$(QT_DIR)/include/QtWidgets" -I"$(QT_DIR)/include/QtGui"</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">../../../build/intermediate/moc_ObjectEditor.cpp</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Moc'ing ObjectEditor.h</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(QT_DIR)/bin/moc "../../../src/ShibbolethExtensions/ObjectEditor.h" -o "../../../build/intermediate/moc_ObjectEditor.cpp" -DQT_CORE_LIB -DQT_WIDGETS_LIB -DQT_GUI_LIB -I"../../../dependencies/Contrivance/ContrivanceLib" -I"$(QT_DIR)/include" -I"$(QT_DIR)/include/QtCore" -I"$(QT_DIR)/include/QtWidgets" -I"$(QT_DIR)/include/QtGui"</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">../../../build/intermediate/moc_ObjectEditor.cpp</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Moc'ing ObjectEditor.h</Message>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\dependencies\ContrivanceLib.vcxproj">
+      <Project>{7830B61B-64FE-A921-4D92-1A4839FF8586}</Project>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>
