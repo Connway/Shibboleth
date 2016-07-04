@@ -20,29 +20,33 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#ifndef OBJECTEDITOR_H
-#define OBJECTEDITOR_H
+#include "ObjectCreator.h"
+#include "ComponentList.h"
+#include "ObjectEditor.h"
+#include <QHBoxLayout>
 
-#include <QTreeWidget>
-
-class IContrivanceWindow;
-
-class ObjectEditor : public QTreeWidget
+ObjectCreator::ObjectCreator(IContrivanceWindow& window):
+	ContrivanceExtension(window),
+	_cl(nullptr), _oe(nullptr), _hl(nullptr)
 {
-	Q_OBJECT
+	setup();
+}
 
-public:
-	explicit ObjectEditor(IContrivanceWindow& window);
-	~ObjectEditor(void);
+ObjectCreator::~ObjectCreator(void)
+{
+}
 
-	//bool eventFilter(QObject* object, QEvent* event);
+void ObjectCreator::setup(void)
+{
+	_cl = new ComponentList(_window);
+	_oe = new ObjectEditor(_window);
+	_hl = new QHBoxLayout(this);
 
-	void dropEvent(QDropEvent* event) override;
+	_cl->setParent(this);
+	_oe->setParent(this);
 
-private:
-	void setup(void);
+	_hl->addWidget(_oe);
+	_hl->addWidget(_cl);
 
-	IContrivanceWindow& _window;
-};
-
-#endif // OBJECTEDITOR_H
+	setLayout(_hl);
+}

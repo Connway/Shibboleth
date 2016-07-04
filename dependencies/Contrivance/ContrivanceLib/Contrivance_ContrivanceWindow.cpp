@@ -347,7 +347,7 @@ bool ContrivanceWindow::loadShortcuts(const QString& file)
 	return false;
 }
 
-#include <QWindow>
+//#include <QWindow>
 
 bool ContrivanceWindow::eventFilter(QObject* object, QEvent* event)
 {
@@ -358,10 +358,10 @@ bool ContrivanceWindow::eventFilter(QObject* object, QEvent* event)
 		findDockWidget(object);
 		//printToConsole("Focus: " + object->objectName());
 
-		QWindow* window = qobject_cast<QWindow*>(object);
-		if (window) {
-			//printToConsole("Foo");
-		}
+		//QWindow* window = qobject_cast<QWindow*>(object);
+		//if (window) {
+		//	//printToConsole("Foo");
+		//}
 
 		if (!_active_dock_widget) {
 			_active_dock_widget = old_dock_widget;

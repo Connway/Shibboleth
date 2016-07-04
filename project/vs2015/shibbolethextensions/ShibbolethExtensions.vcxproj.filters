@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Generated">
+      <UniqueIdentifier>{3416FE7D-A080-B2F4-E9BE-639A55689049}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\..\build\intermediate\moc_ComponentList.cpp">
+      <Filter>Generated</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\build\intermediate\moc_ObjectCreator.cpp">
+      <Filter>Generated</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\build\intermediate\moc_ObjectEditor.cpp">
+      <Filter>Generated</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\ShibbolethExtensions\ComponentList.cpp" />
+    <ClCompile Include="..\..\..\src\ShibbolethExtensions\ObjectCreator.cpp" />
+    <ClCompile Include="..\..\..\src\ShibbolethExtensions\ObjectEditor.cpp" />
+    <ClCompile Include="..\..\..\src\ShibbolethExtensions\ShibbolethExtensions.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="..\..\..\src\ShibbolethExtensions\ComponentList.h" />
+    <CustomBuild Include="..\..\..\src\ShibbolethExtensions\ObjectCreator.h" />
+    <CustomBuild Include="..\..\..\src\ShibbolethExtensions\ObjectEditor.h" />
+  </ItemGroup>
+</Project>

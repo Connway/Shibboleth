@@ -10,10 +10,11 @@ of the application framework.
     GOALS
 =============
 
-The primary goal is to develop a game engine and editor that is highly extensible and as data driven as possible (where it makes sense).
+The primary goal is to develop a game engine and editor that is highly extensible and as data driven
+as possible (where it makes sense).
 
-I am always looking for feedback from code reviews! If you wish to spend your valuable time giving feedback,
-send me a message on Bitbucket!
+I am always looking for feedback from code reviews! If you wish to spend your valuable time giving
+feedback, send me a message on Bitbucket!
 
 ===============
     LICENSE
@@ -32,18 +33,27 @@ Otherwise the engine won't be able to find the DLLs it needs in order to run.
 
 If you wish to generate your own solution files, just run "utils/premake5 [vs2013/vs2015]".
 
+For building the editor, you must will have to install Qt 5.6.0 or later and define either QTDIR or
+QT_DIR environment variables. Or you can run 'utils/premake5 [vs2013/vs2015] --qt_dir="<dir_to_qt>"'
+to generate solutions with your version of Qt. The Premake script also accepts
+"--qt_prefix=<my_version_prefix>" and will default to Qt5.
 
-If you wish to use any of the libraries mentioned below (Brofiler, PhysX), you will have to use the "premake5.py" Python
-script, as some vcxproj fixes are applied post solution/project generation. The Python script takes the
-exact same arguments as Premake.
 
-BROFILER:
+If you wish to use any of the libraries mentioned below (Brofiler, PhysX), you will have to use the
+"premake5.py" Python script, as some vcxproj fixes are applied post solution/project generation.
+The Python script takes the exact same arguments as Premake.
+
+================
+    BROFILER
+================
 If you want to use Brofiler, you will have to run the Python script "utils/premake5.py [vs2013/vs2015] --brofiler".
 Currently, the code has not been instrumented, but all the compilation and linking setup for Brofiler is finished.
 
-
-PHYSX:
-If you want to use PhysX, you will have to download your own copy of the PhysX source code and unzip to dependencies/PhysX.
+=============
+    PHYSX
+=============
+If you want to use PhysX, you will have to download your own copy of the PhysX source code and unzip
+to dependencies/PhysX.
 
 Folder structure will look like this:
 dependencies/PhysX
@@ -59,9 +69,6 @@ you wish to use PhysX.
 
 In order to use PhysX, you will need to run "utils/premake5.py [vs2013/vs2015] --physx".
 
-=============
-    NOTES
-=============
 
 ============================
     KNOWN ISSUES / TODOS

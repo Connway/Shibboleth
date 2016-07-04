@@ -1,5 +1,5 @@
 /************************************************************************************
-Copyright (C) 2015 by Nicholas LaCroix
+Copyright (C) 2016 by Nicholas LaCroix
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -20,8 +20,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#include "ComponentList.h"
-#include "ObjectEditor.h"
+#include "ObjectCreator.h"
 
 #include <QDockWidget>
 #include <QStringList>
@@ -46,8 +45,7 @@ QHash<QString, CreateInstanceFunc> create_funcs;
 
 extern "C" Q_DECL_EXPORT bool InitExtensionModule(IContrivanceWindow& window)
 {
-	create_funcs["Component List"] = &CreateWidget<ComponentList>;
-	create_funcs["Object Editor"] = &CreateWidget<ObjectEditor>;
+	create_funcs["Object Creator"] = &CreateWidget<ObjectCreator>;
 	gWindow = &window;
 	return true;
 }
@@ -80,6 +78,8 @@ extern "C" Q_DECL_EXPORT void DestroyInstance(IContrivanceExtension* ext)
  extern "C" Q_DECL_EXPORT void GetExtensions(QStringList& extensions)
 {
 	extensions.clear();
-	extensions.push_back("Component List");
-	extensions.push_back("Object Editor");
+
+	for (auto it = create_funcs.begin(); it != create_funcs.end(); ++it) {
+		extensions.push_back(it.key());
+	}
 }

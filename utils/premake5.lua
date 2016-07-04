@@ -41,6 +41,20 @@ newoption
 	description = "Specify to generate the PhysX build project."
 }
 
+newoption
+{
+	trigger = "qt_dir",
+	description = "Specify the Qt directory for Qt-based projects.",
+	value = "Path"
+}
+
+newoption
+{
+	trigger = "qt_prefix",
+	description = "Specifies the prefix for Qt libs to use.",
+	value = "Prefix"
+}
+
 solution "Shibboleth"
 	if _ACTION then
 		location ("../project/" .. _ACTION)
