@@ -20,8 +20,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#ifndef LOGGER_H
-#define LOGGER_H
+#pragma once
 
 #include "Contrivance_Defines.h"
 #include <QWidget>
@@ -31,8 +30,11 @@ namespace Ui
 	class Console;
 }
 
-class ContrivanceWindow;
 class QListWidget;
+
+NS_CONTRIVANCE
+
+class ContrivanceWindow;
 
 class Console : public QWidget
 {
@@ -56,4 +58,4 @@ private slots:
 	void handleCommand(void);
 };
 
-#endif // LOGGER_H
+NS_END

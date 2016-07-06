@@ -20,28 +20,28 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#ifndef OBJECTCREATOR_H
-#define OBJECTCREATOR_H
+#pragma once
 
-#include <Contrivance_ContrivanceExtension.h>
+#include <Shibboleth_Defines.h>
+#include <Contrivance_Extension.h>
+#include <QListWidget>
 
-class ComponentList;
-class ObjectEditor;
-class QHBoxLayout;
+NS_SHIBBOLETH
 
-class ObjectCreator : public ContrivanceExtension
+class ComponentList : public QListWidget, public Contrivance::IExtension
 {
 	Q_OBJECT
+
 public:
-	explicit ObjectCreator(IContrivanceWindow& window);
-	~ObjectCreator(void);
+	explicit ComponentList(Contrivance::IContrivanceWindow& window);
+	~ComponentList(void);
+
+	//bool eventFilter(QObject* object, QEvent* event);
 
 private:
-	ComponentList* _cl;
-	ObjectEditor* _oe;
-	QHBoxLayout* _hl;
-
 	void setup(void);
+
+	CONTRIVANCE_EXTENSION_DECLARATIONS;
 };
 
-#endif // OBJECTCREATOR_H
+NS_END

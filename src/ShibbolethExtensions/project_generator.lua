@@ -40,8 +40,15 @@ project "ShibbolethExtensions"
 	language "C++"
 	warnings "Default"
 
-	includedirs { "../../dependencies/Contrivance/ContrivanceLib" }
-	files { "*.h", "*.cpp", "*.ui" }
+	includedirs
+	{
+		"include",
+		"../Shared/include",
+		"../../dependencies/Contrivance/ContrivanceLib",
+		"../../dependencies/Gaff/include"
+	}
+
+	files { "**.h", "**.cpp", "**.ui" }
 
 	dependson { "ContrivanceLib" }
 	links { "ContrivanceLib" }
@@ -51,5 +58,5 @@ project "ShibbolethExtensions"
 	vpaths
 	{
 		["Generated"] = { "../../build/intermediate/*.*" },
-		[""] = { "*.*"}
+		[""] = { "**.*"}
 	}

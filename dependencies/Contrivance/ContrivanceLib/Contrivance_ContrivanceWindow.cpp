@@ -38,6 +38,8 @@ THE SOFTWARE.
 #include <QTimer>
 #include <QFile>
 
+NS_CONTRIVANCE
+
 ContrivanceWindow::ContrivanceWindow(QWidget* parent):
 	QMainWindow(parent), _ui(new Ui::ContrivanceWindow),
 	_shortcut_editor(nullptr), _tab_renamer(nullptr),
@@ -735,3 +737,5 @@ void ContrivanceWindow::windowStateRestore(void)
 	move(_left, _top);
 	resize(_width, _height);
 }
+
+NS_END

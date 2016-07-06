@@ -20,9 +20,9 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#ifndef CONTRIVANCEEXTENSION_H
-#define CONTRIVANCEEXTENSION_H
+#pragma once
 
+#include "Contrivance_Defines.h"
 #include <QWidget>
 
 #define CONTRIVANCE_EXTENSION_DECLARATIONS \
@@ -36,9 +36,9 @@ THE SOFTWARE.
 	private: \
 		QSize _size; \
 		int _ext_id; \
-		ExtensionSpawner* _spawner; \
+		Contrivance::ExtensionSpawner* _spawner; \
 	protected: \
-		IContrivanceWindow& _window
+		Contrivance::IContrivanceWindow& _window
 
 #define CONTRIVANCE_EXTENSION_IMPLEMENATION(ClassName) \
 	QSize ClassName::sizeHint(void) const \
@@ -72,15 +72,16 @@ THE SOFTWARE.
 
 #define CONTRIVANCE_EXTENSION_DESTRUCTOR _spawner->addFreeID(_ext_id)
 
+NS_CONTRIVANCE
 
 class IContrivanceWindow;
 class ExtensionSpawner;
 
-class IContrivanceExtension
+class IExtension
 {
 public:
-	IContrivanceExtension(void) {}
-	virtual ~IContrivanceExtension(void) {}
+	IExtension(void) {}
+	virtual ~IExtension(void) {}
 
 	virtual QSize sizeHint(void) const = 0;
 	virtual void setSizeHint(QSize size) = 0;
@@ -92,15 +93,15 @@ public:
 	virtual QWidget* getWidget(void) = 0;
 };
 
-class ContrivanceExtension : public QWidget, public IContrivanceExtension
+class Extension : public QWidget, public IExtension
 {
 	Q_OBJECT
 
 public:
-	ContrivanceExtension(IContrivanceWindow& window);
-	~ContrivanceExtension(void);
+	Extension(IContrivanceWindow& window);
+	~Extension(void);
 
 	CONTRIVANCE_EXTENSION_DECLARATIONS;
 };
 
-#endif // CONTRIVANCEEXTENSION_H
+NS_END

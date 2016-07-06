@@ -14,13 +14,13 @@
     <ClCompile Include="..\..\..\build\intermediate\moc_Contrivance_Console.cpp">
       <Filter>Generated</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\build\intermediate\moc_Contrivance_ContrivanceExtension.cpp">
-      <Filter>Generated</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\build\intermediate\moc_Contrivance_ContrivanceWindow.cpp">
       <Filter>Generated</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\build\intermediate\moc_Contrivance_DockWidgetWrapper.cpp">
+      <Filter>Generated</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\build\intermediate\moc_Contrivance_Extension.cpp">
       <Filter>Generated</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\build\intermediate\moc_Contrivance_ExtensionSpawner.cpp">
@@ -30,19 +30,19 @@
       <Filter>Generated</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\dependencies\Contrivance\ContrivanceLib\Contrivance_Console.cpp" />
-    <ClCompile Include="..\..\..\dependencies\Contrivance\ContrivanceLib\Contrivance_ContrivanceExtension.cpp" />
     <ClCompile Include="..\..\..\dependencies\Contrivance\ContrivanceLib\Contrivance_ContrivanceWindow.cpp" />
     <ClCompile Include="..\..\..\dependencies\Contrivance\ContrivanceLib\Contrivance_DockWidgetWrapper.cpp" />
+    <ClCompile Include="..\..\..\dependencies\Contrivance\ContrivanceLib\Contrivance_Extension.cpp" />
     <ClCompile Include="..\..\..\dependencies\Contrivance\ContrivanceLib\Contrivance_ExtensionSpawner.cpp" />
     <ClCompile Include="..\..\..\dependencies\Contrivance\ContrivanceLib\Contrivance_ShortcutEditor.cpp" />
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="..\..\..\dependencies\Contrivance\ContrivanceLib\Contrivance_Console.h" />
     <CustomBuild Include="..\..\..\dependencies\Contrivance\ContrivanceLib\Contrivance_Console.ui" />
-    <CustomBuild Include="..\..\..\dependencies\Contrivance\ContrivanceLib\Contrivance_ContrivanceExtension.h" />
     <CustomBuild Include="..\..\..\dependencies\Contrivance\ContrivanceLib\Contrivance_ContrivanceWindow.h" />
     <CustomBuild Include="..\..\..\dependencies\Contrivance\ContrivanceLib\Contrivance_ContrivanceWindow.ui" />
     <CustomBuild Include="..\..\..\dependencies\Contrivance\ContrivanceLib\Contrivance_DockWidgetWrapper.h" />
+    <CustomBuild Include="..\..\..\dependencies\Contrivance\ContrivanceLib\Contrivance_Extension.h" />
     <CustomBuild Include="..\..\..\dependencies\Contrivance\ContrivanceLib\Contrivance_ExtensionSpawner.h" />
     <CustomBuild Include="..\..\..\dependencies\Contrivance\ContrivanceLib\Contrivance_ExtensionSpawner.ui" />
     <CustomBuild Include="..\..\..\dependencies\Contrivance\ContrivanceLib\Contrivance_ShortcutEditor.h" />

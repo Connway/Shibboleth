@@ -20,9 +20,9 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#ifndef CONTRIVANCE_EXTENSIONSPAWNER_H
-#define CONTRIVANCE_EXTENSIONSPAWNER_H
+#pragma once
 
+#include "Contrivance_Defines.h"
 #include <QAbstractItemModel>
 #include <QLibrary>
 #include <QWidget>
@@ -32,10 +32,13 @@ namespace Ui
 	class ExtensionSpawner;
 }
 
-class IContrivanceWindow;
-class IContrivanceExtension;
 class QDockWidget;
 class QMainWindow;
+
+NS_CONTRIVANCE
+
+class IContrivanceWindow;
+class IExtension;
 
 class ExtensionSpawner : public QWidget
 {
@@ -69,8 +72,8 @@ private:
 		typedef void (*ShutdownExtensionModuleFunc)(void);
 		typedef bool (*SaveInstanceDataFunc)(const QString&, QJsonObject&, QWidget*);
 		typedef bool (*LoadInstanceDataFunc)(const QString&, const QJsonObject&, QWidget*);
-		typedef IContrivanceExtension* (*CreateInstanceFunc)(const QString&);
-		typedef void (*DestroyInstanceFunc)(IContrivanceExtension*);
+		typedef IExtension* (*CreateInstanceFunc)(const QString&);
+		typedef void (*DestroyInstanceFunc)(IExtension*);
 		typedef void (*GetExtensionsFunc)(QStringList&);
 
 		QStringList extension_names;
@@ -87,7 +90,7 @@ private:
 
 	struct SpawnedExtension
 	{
-		IContrivanceExtension* extension;
+		IExtension* extension;
 		QDockWidget* dock_widget;
 		ExtensionData* ext_data;
 	};
@@ -107,4 +110,4 @@ private slots:
 	void widgetDestroyed(QObject* dock_widget);
 };
 
-#endif // CONTRIVANCE_EXTENSIONSPAWNER_H
+NS_END

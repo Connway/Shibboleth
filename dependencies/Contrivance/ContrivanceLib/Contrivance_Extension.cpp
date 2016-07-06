@@ -20,27 +20,22 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#ifndef COMPONENTLIST_H
-#define COMPONENTLIST_H
+#include "Contrivance_Extension.h"
+#include "Contrivance_IContrivanceWindow.h"
+#include "Contrivance_ExtensionSpawner.h"
 
-#include <QListWidget>
+NS_CONTRIVANCE
 
-class IContrivanceWindow;
-
-class ComponentList : public QListWidget
+Extension::Extension(IContrivanceWindow& window):
+	CONTRIVANCE_EXTENSION_INITIALIZER_LIST
 {
-	Q_OBJECT
+}
 
-public:
-	explicit ComponentList(IContrivanceWindow& window);
-	~ComponentList(void);
+Extension::~Extension(void)
+{
+	CONTRIVANCE_EXTENSION_DESTRUCTOR;
+}
 
-	//bool eventFilter(QObject* object, QEvent* event);
+CONTRIVANCE_EXTENSION_IMPLEMENATION(Extension)
 
-private:
-	void setup(void);
-
-	IContrivanceWindow& _window;
-};
-
-#endif // COMPONENTLIST_H
+NS_END

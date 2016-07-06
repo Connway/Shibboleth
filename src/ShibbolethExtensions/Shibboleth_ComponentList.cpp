@@ -20,55 +20,58 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#include "ObjectEditor.h"
+#include "Shibboleth_ComponentList.h"
 #include <Contrivance_IContrivanceWindow.h>
 #include <Contrivance_ExtensionSpawner.h>
-#include <QDropEvent>
-#include <QHeaderView>
 
-ObjectEditor::ObjectEditor(IContrivanceWindow& window):
-	_window(window)
+NS_SHIBBOLETH
+
+CONTRIVANCE_EXTENSION_IMPLEMENATION(ComponentList)
+
+ComponentList::ComponentList(Contrivance::IContrivanceWindow& window):
+	CONTRIVANCE_EXTENSION_INITIALIZER_LIST
 {
 	setup();
+	addItem("Test Item");
 }
 
-ObjectEditor::~ObjectEditor(void)
+ComponentList::~ComponentList(void)
 {
+	CONTRIVANCE_EXTENSION_DESTRUCTOR;
 }
 
-/*bool ObjectEditor::eventFilter(QObject* object, QEvent* event)
+/*bool ComponentList::eventFilter(QObject* object, QEvent* event)
 {
 	if (event->type() == QEvent::DragEnter) {
-		_window.printToConsole("OBJECTEDITOR: DRAG ENTER EVENT");
+		_window.printToConsole("DRAG ENTER EVENT");
 	} else if (event->type() == QEvent::DragResponse) {
-		_window.printToConsole("OBJECTEDITOR: DRAG RESPONSE EVENT");
+		_window.printToConsole("DRAG RESPONSE EVENT");
 	} else if (event->type() == QEvent::Drop) {
-		_window.printToConsole("OBJECTEDITOR: DROP EVENT");
+		_window.printToConsole("DROP EVENT");
+	} else if (event->type() == QEvent::MouseButtonDblClick) {
+		_window.printToConsole("DOUBLE CLICK");
 	}
 
 	return QObject::eventFilter(object, event);
 }*/
 
-void ObjectEditor::dropEvent(QDropEvent* event)
+void ComponentList::setup(void)
 {
-	(event);
-	_window.printToConsole("OBJ EDIT: Drag Drop!");
-	//event->acceptProposedAction();
-}
+	QSizePolicy sp(QSizePolicy::Expanding, QSizePolicy::Expanding);
+	sp.setHorizontalStretch(0);
+	sp.setVerticalStretch(0);
+	sp.setHeightForWidth(sizePolicy().hasHeightForWidth());
 
-void ObjectEditor::setup(void)
-{
-	QTreeWidgetItem* item = new QTreeWidgetItem();
-	item->setText(0, QStringLiteral("1"));
-	setHeaderItem(item);
+	setSizePolicy(sp);
 
-	setAcceptDrops(true);
 	setFrameShape(QFrame::StyledPanel);
 	setEditTriggers(QAbstractItemView::NoEditTriggers);
-	setDragDropMode(QAbstractItemView::DropOnly);
-	setDefaultDropAction(Qt::TargetMoveAction);
+	setProperty("showDropIndicator", QVariant(false));
+	setDragEnabled(true);
+	setDragDropMode(QAbstractItemView::DragOnly);
+	setDefaultDropAction(Qt::IgnoreAction);
+	setResizeMode(QListView::Adjust);
 	setSortingEnabled(true);
-	setAnimated(true);
-
-	header()->setVisible(false);
 }
+
+NS_END
