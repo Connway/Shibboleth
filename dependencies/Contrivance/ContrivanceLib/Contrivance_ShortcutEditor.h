@@ -20,15 +20,17 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#ifndef SHORTCUTEDITOR_H
-#define SHORTCUTEDITOR_H
+#pragma once
 
+#include "Contrivance_Defines.h"
 #include <QDialog>
 
 namespace Ui
 {
 	class ShortcutEditor;
 }
+
+NS_CONTRIVANCE
 
 class IContrivanceWindow;
 
@@ -51,4 +53,4 @@ public slots:
 	void reject(void);
 };
 
-#endif // SHORTCUTEDITOR_H
+NS_END

@@ -26,6 +26,8 @@ THE SOFTWARE.
 
 #include <QKeySequenceEdit>
 
+NS_CONTRIVANCE
+
 ShortcutEditor::ShortcutEditor(IContrivanceWindow& window, QWidget* parent):
 	QDialog(parent), _window(window), _ui(new Ui::ShortcutEditor)
 {
@@ -81,3 +83,5 @@ void ShortcutEditor::reject(void)
 {
 	QDialog::reject();
 }
+
+NS_END

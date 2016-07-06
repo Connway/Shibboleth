@@ -20,29 +20,10 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#ifndef OBJECTEDITOR_H
-#define OBJECTEDITOR_H
+#include "Shibboleth_InspectionPanel.h"
 
-#include <QTreeWidget>
+NS_SHIBBOLETH
 
-class IContrivanceWindow;
 
-class ObjectEditor : public QTreeWidget
-{
-	Q_OBJECT
 
-public:
-	explicit ObjectEditor(IContrivanceWindow& window);
-	~ObjectEditor(void);
-
-	//bool eventFilter(QObject* object, QEvent* event);
-
-	void dropEvent(QDropEvent* event) override;
-
-private:
-	void setup(void);
-
-	IContrivanceWindow& _window;
-};
-
-#endif // OBJECTEDITOR_H
+NS_END

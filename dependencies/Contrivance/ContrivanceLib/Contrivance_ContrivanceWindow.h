@@ -20,8 +20,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#ifndef CONTRIVANCEWINDOW_H
-#define CONTRIVANCEWINDOW_H
+#pragma once
 
 #include "contrivance_IContrivanceWindow.h"
 #include "Contrivance_Shortcut.h"
@@ -35,11 +34,14 @@ namespace Ui
 	class ContrivanceWindow;
 }
 
+class QJsonObject;
+class QLineEdit;
+
+NS_CONTRIVANCE
+
 class ExtensionSpawner;
 class ShortcutEditor;
 class Console;
-class QJsonObject;
-class QLineEdit;
 
 class ContrivanceWindow : public QMainWindow, public IContrivanceWindow
 {
@@ -130,4 +132,4 @@ private slots:
 	void windowStateRestore(void);
 };
 
-#endif // CONTRIVANCEWINDOW_H
+NS_END

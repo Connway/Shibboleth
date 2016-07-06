@@ -6,23 +6,17 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\build\intermediate\moc_ComponentList.cpp">
-      <Filter>Generated</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\build\intermediate\moc_ObjectCreator.cpp">
-      <Filter>Generated</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\build\intermediate\moc_ObjectEditor.cpp">
-      <Filter>Generated</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\src\ShibbolethExtensions\ComponentList.cpp" />
-    <ClCompile Include="..\..\..\src\ShibbolethExtensions\ObjectCreator.cpp" />
-    <ClCompile Include="..\..\..\src\ShibbolethExtensions\ObjectEditor.cpp" />
-    <ClCompile Include="..\..\..\src\ShibbolethExtensions\ShibbolethExtensions.cpp" />
+    <ClInclude Include="..\..\..\src\ShibbolethExtensions\include\Shibboleth_InspectionPanel.h" />
   </ItemGroup>
   <ItemGroup>
-    <CustomBuild Include="..\..\..\src\ShibbolethExtensions\ComponentList.h" />
-    <CustomBuild Include="..\..\..\src\ShibbolethExtensions\ObjectCreator.h" />
-    <CustomBuild Include="..\..\..\src\ShibbolethExtensions\ObjectEditor.h" />
+    <ClCompile Include="..\..\..\build\intermediate\moc_Shibboleth_ComponentList.cpp">
+      <Filter>Generated</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\ShibbolethExtensions\ShibbolethExtensions.cpp" />
+    <ClCompile Include="..\..\..\src\ShibbolethExtensions\Shibboleth_ComponentList.cpp" />
+    <ClCompile Include="..\..\..\src\ShibbolethExtensions\Shibboleth_InspectionPanel.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="..\..\..\src\ShibbolethExtensions\include\Shibboleth_ComponentList.h" />
   </ItemGroup>
 </Project>

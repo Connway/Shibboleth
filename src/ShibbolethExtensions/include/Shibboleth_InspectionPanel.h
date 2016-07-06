@@ -20,18 +20,10 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#include "Contrivance_ContrivanceExtension.h"
-#include "Contrivance_IContrivanceWindow.h"
-#include "Contrivance_ExtensionSpawner.h"
+#pragma once
 
-ContrivanceExtension::ContrivanceExtension(IContrivanceWindow& window):
-	CONTRIVANCE_EXTENSION_INITIALIZER_LIST
-{
-}
+#include <Shibboleth_Defines.h>
 
-ContrivanceExtension::~ContrivanceExtension(void)
-{
-	CONTRIVANCE_EXTENSION_DESTRUCTOR;
-}
+NS_SHIBBOLETH
 
-CONTRIVANCE_EXTENSION_IMPLEMENATION(ContrivanceExtension)
+NS_END

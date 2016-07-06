@@ -23,7 +23,7 @@ THE SOFTWARE.
 #include "Contrivance_ExtensionSpawner.h"
 #include "Contrivance_IContrivanceWindow.h"
 #include "Contrivance_DockWidgetWrapper.h"
-#include "Contrivance_ContrivanceExtension.h"
+#include "Contrivance_Extension.h"
 #include "ui_Contrivance_ExtensionSpawner.h"
 #include <QAbstractButton>
 #include <QMainWindow>
@@ -34,6 +34,8 @@ THE SOFTWARE.
 #include <QJsonArray>
 #include <QHash>
 #include <QDir>
+
+NS_CONTRIVANCE
 
 ExtensionSpawner::ExtensionSpawner(IContrivanceWindow& window, QWidget* parent):
 	QWidget(parent), _ui(new Ui::ExtensionSpawner),
@@ -270,7 +272,7 @@ void ExtensionSpawner::spawnExtension(const QString& ext_name, QMainWindow* pare
 	}
 
 	ExtensionData& ext_data = _extension_modules[*it_ind];
-	IContrivanceExtension* ext = ext_data.create_func(ext_name);
+	IExtension* ext = ext_data.create_func(ext_name);
 
 	if (!ext) {
 		_window.printToConsole("Failed to create extension '" + ext_name + "'", CMT_ERROR);
@@ -324,3 +326,5 @@ void ExtensionSpawner::widgetDestroyed(QObject* dock_widget)
 	QDockWidget* dw = reinterpret_cast<QDockWidget*>(dock_widget);
 	destroyExtension(dw);
 }
+
+NS_END

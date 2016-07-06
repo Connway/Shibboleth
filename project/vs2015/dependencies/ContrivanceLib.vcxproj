@@ -101,15 +101,15 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\build\intermediate\moc_Contrivance_Console.cpp" />
-    <ClCompile Include="..\..\..\build\intermediate\moc_Contrivance_ContrivanceExtension.cpp" />
     <ClCompile Include="..\..\..\build\intermediate\moc_Contrivance_ContrivanceWindow.cpp" />
     <ClCompile Include="..\..\..\build\intermediate\moc_Contrivance_DockWidgetWrapper.cpp" />
+    <ClCompile Include="..\..\..\build\intermediate\moc_Contrivance_Extension.cpp" />
     <ClCompile Include="..\..\..\build\intermediate\moc_Contrivance_ExtensionSpawner.cpp" />
     <ClCompile Include="..\..\..\build\intermediate\moc_Contrivance_ShortcutEditor.cpp" />
     <ClCompile Include="..\..\..\dependencies\Contrivance\ContrivanceLib\Contrivance_Console.cpp" />
-    <ClCompile Include="..\..\..\dependencies\Contrivance\ContrivanceLib\Contrivance_ContrivanceExtension.cpp" />
     <ClCompile Include="..\..\..\dependencies\Contrivance\ContrivanceLib\Contrivance_ContrivanceWindow.cpp" />
     <ClCompile Include="..\..\..\dependencies\Contrivance\ContrivanceLib\Contrivance_DockWidgetWrapper.cpp" />
+    <ClCompile Include="..\..\..\dependencies\Contrivance\ContrivanceLib\Contrivance_Extension.cpp" />
     <ClCompile Include="..\..\..\dependencies\Contrivance\ContrivanceLib\Contrivance_ExtensionSpawner.cpp" />
     <ClCompile Include="..\..\..\dependencies\Contrivance\ContrivanceLib\Contrivance_ShortcutEditor.cpp" />
   </ItemGroup>
@@ -131,15 +131,6 @@
       <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(QT_DIR)/bin/uic -o "../../../build/intermediate/ui_Contrivance_Console.h" "../../../dependencies/Contrivance/ContrivanceLib/Contrivance_Console.ui"</Command>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">../../../build/intermediate/ui_Contrivance_Console.h</Outputs>
       <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Uic'ing Contrivance_Console.ui</Message>
-    </CustomBuild>
-    <CustomBuild Include="..\..\..\dependencies\Contrivance\ContrivanceLib\Contrivance_ContrivanceExtension.h">
-      <FileType>Document</FileType>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(QT_DIR)/bin/moc "../../../dependencies/Contrivance/ContrivanceLib/Contrivance_ContrivanceExtension.h" -o "../../../build/intermediate/moc_Contrivance_ContrivanceExtension.cpp" -D_DEBUG -DDEBUG -DQT_CORE_LIB -DQT_WIDGETS_LIB -DQT_GUI_LIB -I"$(QT_DIR)/include" -I"$(QT_DIR)/include/QtCore" -I"$(QT_DIR)/include/QtWidgets" -I"$(QT_DIR)/include/QtGui" -I"../../../build/intermediate"</Command>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">../../../build/intermediate/moc_Contrivance_ContrivanceExtension.cpp</Outputs>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Moc'ing Contrivance_ContrivanceExtension.h</Message>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(QT_DIR)/bin/moc "../../../dependencies/Contrivance/ContrivanceLib/Contrivance_ContrivanceExtension.h" -o "../../../build/intermediate/moc_Contrivance_ContrivanceExtension.cpp" -DQT_CORE_LIB -DQT_WIDGETS_LIB -DQT_GUI_LIB -I"$(QT_DIR)/include" -I"$(QT_DIR)/include/QtCore" -I"$(QT_DIR)/include/QtWidgets" -I"$(QT_DIR)/include/QtGui" -I"../../../build/intermediate"</Command>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">../../../build/intermediate/moc_Contrivance_ContrivanceExtension.cpp</Outputs>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Moc'ing Contrivance_ContrivanceExtension.h</Message>
     </CustomBuild>
     <CustomBuild Include="..\..\..\dependencies\Contrivance\ContrivanceLib\Contrivance_ContrivanceWindow.h">
       <FileType>Document</FileType>
@@ -167,6 +158,15 @@
       <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(QT_DIR)/bin/moc "../../../dependencies/Contrivance/ContrivanceLib/Contrivance_DockWidgetWrapper.h" -o "../../../build/intermediate/moc_Contrivance_DockWidgetWrapper.cpp" -DQT_CORE_LIB -DQT_WIDGETS_LIB -DQT_GUI_LIB -I"$(QT_DIR)/include" -I"$(QT_DIR)/include/QtCore" -I"$(QT_DIR)/include/QtWidgets" -I"$(QT_DIR)/include/QtGui" -I"../../../build/intermediate"</Command>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">../../../build/intermediate/moc_Contrivance_DockWidgetWrapper.cpp</Outputs>
       <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Moc'ing Contrivance_DockWidgetWrapper.h</Message>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\dependencies\Contrivance\ContrivanceLib\Contrivance_Extension.h">
+      <FileType>Document</FileType>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(QT_DIR)/bin/moc "../../../dependencies/Contrivance/ContrivanceLib/Contrivance_Extension.h" -o "../../../build/intermediate/moc_Contrivance_Extension.cpp" -D_DEBUG -DDEBUG -DQT_CORE_LIB -DQT_WIDGETS_LIB -DQT_GUI_LIB -I"$(QT_DIR)/include" -I"$(QT_DIR)/include/QtCore" -I"$(QT_DIR)/include/QtWidgets" -I"$(QT_DIR)/include/QtGui" -I"../../../build/intermediate"</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">../../../build/intermediate/moc_Contrivance_Extension.cpp</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Moc'ing Contrivance_Extension.h</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(QT_DIR)/bin/moc "../../../dependencies/Contrivance/ContrivanceLib/Contrivance_Extension.h" -o "../../../build/intermediate/moc_Contrivance_Extension.cpp" -DQT_CORE_LIB -DQT_WIDGETS_LIB -DQT_GUI_LIB -I"$(QT_DIR)/include" -I"$(QT_DIR)/include/QtCore" -I"$(QT_DIR)/include/QtWidgets" -I"$(QT_DIR)/include/QtGui" -I"../../../build/intermediate"</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">../../../build/intermediate/moc_Contrivance_Extension.cpp</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Moc'ing Contrivance_Extension.h</Message>
     </CustomBuild>
     <CustomBuild Include="..\..\..\dependencies\Contrivance\ContrivanceLib\Contrivance_ExtensionSpawner.h">
       <FileType>Document</FileType>

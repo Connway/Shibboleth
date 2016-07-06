@@ -20,10 +20,15 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#ifndef CONTRIVANCE_DEFINES_H
-#define CONTRIVANCE_DEFINES_H
+#pragma once
 
 #include <QtGlobal>
+
+#define NS_CONTRIVANCE namespace Contrivance {
+
+#ifndef NS_END
+	#define NS_END }
+#endif
 
 #if defined(Q_OS_WIN)
 	#define SHARED_LIBRARY_EXTENSION ".dll"
@@ -35,7 +40,7 @@ THE SOFTWARE.
 	#error "Platform not supported"
 #endif
 
-#if (defined(Q_OS_WIN32) && !defined(Q_OS_WIN64))
+#if defined(Q_OS_WIN32) && !defined(Q_OS_WIN64)
 	#ifdef QT_DEBUG
 		#define SHARED_LIBRARY_SUFFIX "32d"
 	#else
@@ -58,5 +63,3 @@ enum ConsoleMessageType
 	CMT_ERROR//,
 	//CMT_USR_TYPE_START
 };
-
-#endif // CONTRIVANCE_DEFINES_H

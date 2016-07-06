@@ -20,14 +20,16 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#ifndef CONTRIVANCE_SHORTCUT_H
-#define CONTRIVANCE_SHORTCUT_H
+#pragma once
 
+#include "Contrivance_Defines.h"
 #include <QKeySequence>
 #include <QString>
 
 class QShortcut;
 class QWidget;
+
+NS_CONTRIVANCE
 
 struct Shortcut
 {
@@ -49,5 +51,4 @@ public:
 	QWidget* parent;
 };
 
-#endif // CONTRIVANCE_SHORTCUT_H
-
+NS_END

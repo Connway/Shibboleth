@@ -23,6 +23,8 @@ THE SOFTWARE.
 #include "Contrivance_Console.h"
 #include "ui_Contrivance_Console.h"
 
+NS_CONTRIVANCE
+
 Console::Console(ContrivanceWindow& window, QWidget *parent):
 	QWidget(parent), _ui(new Ui::Console), _window(window),
 	_maximum_log_entries(100000)
@@ -81,3 +83,5 @@ void Console::handleCommand(void)
 
 	// implement command registration system
 }
+
+NS_END

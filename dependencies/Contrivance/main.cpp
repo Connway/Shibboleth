@@ -26,7 +26,7 @@ THE SOFTWARE.
 int main(int argc, char *argv[])
 {
 	QApplication a(argc, argv);
-	ContrivanceWindow w;
+	Contrivance::ContrivanceWindow w;
 	w.showMaximized();
 
 	return a.exec();
