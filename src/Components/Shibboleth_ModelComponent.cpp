@@ -75,7 +75,7 @@ static void RequestResourceArray(Array<T>& res_array, ResourceManager& res_mgr, 
 	}
 }
 
-COMP_REF_DEF_SAVE(ModelComponent, gRefDef);
+COMP_REF_DEF_SAVE(ModelComponent, g_ref_def);
 REF_IMPL_REQ(ModelComponent);
 
 SHIB_REF_IMPL(ModelComponent)
@@ -121,7 +121,7 @@ const Gaff::JSON& ModelComponent::getSchema(void) const
 
 bool ModelComponent::load(const Gaff::JSON& json)
 {
-	gRefDef.read(json, this);
+	g_ref_def.read(json, this);
 
 	Gaff::JSON model_file = json["Model File"];
 	Gaff::JSON materials = json["Materials"];

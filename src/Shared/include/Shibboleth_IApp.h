@@ -87,6 +87,12 @@ public:
 		return *reinterpret_cast<T*>(getManager(T::GetFriendlyName()));
 	}
 
+	template <class T>
+	T& getManagerTReflection(void)
+	{
+		return *Gaff::ReflectionCast<T>(getManager(T::GetFriendlyName()));
+	}
+
 	IApp(void) {}
 	virtual ~IApp(void) {}
 

@@ -93,7 +93,7 @@ public:
 	template <class T>
 	T* getInterface(void* object) const
 	{
-		return reinterpret_cast<T*>(getInterface(T::gHash));
+		return reinterpret_cast<T*>(getInterface(T::g_hash));
 	}
 
 	IReflectionDefinition(void) {}

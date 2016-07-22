@@ -132,4 +132,7 @@ NS_GAFF
 using ReflectionHash = uint32_t;
 //using ReflectionHash = uint64_t;
 
+#define REFL_HASH Gaff::FNV1aHash32
+//#define REFL_HASH Gaff::FNV1aHash64
+
 NS_END

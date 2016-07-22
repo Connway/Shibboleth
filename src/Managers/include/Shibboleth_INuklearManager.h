@@ -22,40 +22,20 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Gaff_Platform.h"
+#include <Shibboleth_ReflectionDefinitions.h>
 
-#ifndef _CRT_SECURE_NO_WARNINGS
-	#define _CRT_SECURE_NO_WARNINGS
-#endif
+NS_SHIBBOLETH
 
-#define NS_SHIBBOLETH namespace Shibboleth {
-#ifndef NS_END
-	#define NS_END }
-#endif
+class INuklearManager
+{
+public:
+	INuklearManager(void) {}
+	virtual ~INuklearManager(void) {}
 
-#ifdef PLATFORM_64_BIT
-	#ifdef _DEBUG
-		#define BIT_EXTENSION "64d"
-	#else
-		#define BIT_EXTENSION "64"
-	#endif
-#elif defined(PLATFORM_32_BIT)
-	#ifdef _DEBUG
-		#define BIT_EXTENSION "32d"
-	#else
-		#define BIT_EXTENSION "32"
-	#endif
-#else
-	#error "Cannot deduce platform bit-age."
-#endif
+	virtual bool init(void) = 0;
 
-#define APP_NAME "App" BIT_EXTENSION
+	SHIB_INTERFACE_REFLECTION(INuklearManager)
+	SHIB_INTERFACE_MANAGER("Nuklear Manager")
+};
 
-//#define INIT_STACKTRACE_SYSTEM
-
-#define SHIB_INTERFACE_MANAGER(ManagerName) \
-	public: \
-		static const char* GetFriendlyName(void) \
-		{ \
-			return ManagerName; \
-		}
+NS_END

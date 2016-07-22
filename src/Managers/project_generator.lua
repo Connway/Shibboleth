@@ -82,7 +82,8 @@ project "ManagersModule"
 		"../../dependencies/LuaState",
 		"../../dependencies/LuaJIT/src",
 		"../../dependencies/utf8-cpp",
-		"../../dependencies/bullet"
+		"../../dependencies/bullet",
+		"../../dependencies/nuklear"
 	}
 
 	dependson

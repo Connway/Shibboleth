@@ -1087,29 +1087,29 @@ public: \
 	static Gaff::ReflectionDefinition<ClassName, Allocator>& GetReflectionDefinition(void); \
 	static Gaff::ReflectionHash GetReflectionHash(void); \
 private: \
-	static Gaff::ReflectionHash gHash; \
-	static Gaff::ReflectionDefinition<ClassName, Allocator> gRefDef
+	static Gaff::ReflectionHash g_hash; \
+	static Gaff::ReflectionDefinition<ClassName, Allocator> g_ref_def
 
-#define CLASS_HASH(ClassName) Gaff::FNV1aHash32(#ClassName, static_cast<Gaff::ReflectionHash>((strlen(#ClassName))))
+#define CLASS_HASH(ClassName) REFL_HASH(#ClassName, strlen(#ClassName))
 
 #define REF_IMPL(ClassName, Allocator) \
-	Gaff::ReflectionHash ClassName::GetReflectionHash(void) { return gHash; } \
-	Gaff::ReflectionDefinition<ClassName, Allocator>& ClassName::GetReflectionDefinition(void) { return gRefDef; } \
-	Gaff::ReflectionHash ClassName::gHash = CLASS_HASH(ClassName); \
-	Gaff::ReflectionDefinition<ClassName, Allocator> ClassName::gRefDef
+	Gaff::ReflectionHash ClassName::GetReflectionHash(void) { return g_hash; } \
+	Gaff::ReflectionDefinition<ClassName, Allocator>& ClassName::GetReflectionDefinition(void) { return g_ref_def; } \
+	Gaff::ReflectionHash ClassName::g_hash = CLASS_HASH(ClassName); \
+	Gaff::ReflectionDefinition<ClassName, Allocator> ClassName::g_ref_def
 
 // uses default allocator
 #define REF_IMPL_ASSIGN_DEFAULT(ClassName, Allocator) \
-	Gaff::ReflectionHash ClassName::GetReflectionHash(void) { return gHash; } \
-	Gaff::ReflectionDefinition<ClassName, Allocator>& ClassName::GetReflectionDefinition(void) { return gRefDef; } \
-	Gaff::ReflectionHash ClassName::gHash = CLASS_HASH(ClassName); \
-	Gaff::ReflectionDefinition<ClassName, Allocator> ClassName::gRefDef = Gaff::RefDef<ClassName, Allocator>(#ClassName).macroFix()
+	Gaff::ReflectionHash ClassName::GetReflectionHash(void) { return g_hash; } \
+	Gaff::ReflectionDefinition<ClassName, Allocator>& ClassName::GetReflectionDefinition(void) { return g_ref_def; } \
+	Gaff::ReflectionHash ClassName::g_hash = CLASS_HASH(ClassName); \
+	Gaff::ReflectionDefinition<ClassName, Allocator> ClassName::g_ref_def = Gaff::RefDef<ClassName, Allocator>(#ClassName).macroFix()
 
 #define REF_IMPL_ASSIGN(ClassName, Allocator, allocator_instance) \
-	Gaff::ReflectionHash ClassName::GetReflectionHash(void) { return gHash; } \
-	Gaff::ReflectionDefinition<ClassName, Allocator>& ClassName::GetReflectionDefinition(void) { return gRefDef; } \
-	Gaff::ReflectionHash ClassName::gHash = CLASS_HASH(ClassName); \
-	Gaff::ReflectionDefinition<ClassName, Allocator> ClassName::gRefDef = Gaff::RefDef<ClassName, Allocator>(#ClassName, allocator_instance).macroFix()
+	Gaff::ReflectionHash ClassName::GetReflectionHash(void) { return g_hash; } \
+	Gaff::ReflectionDefinition<ClassName, Allocator>& ClassName::GetReflectionDefinition(void) { return g_ref_def; } \
+	Gaff::ReflectionHash ClassName::g_hash = CLASS_HASH(ClassName); \
+	Gaff::ReflectionDefinition<ClassName, Allocator> ClassName::g_ref_def = Gaff::RefDef<ClassName, Allocator>(#ClassName, allocator_instance).macroFix()
 
 #define ADD_BASE_CLASS_INTERFACE_ONLY(ClassName) addBaseClass<ClassName>(CLASS_HASH(ClassName))
 
@@ -1121,11 +1121,11 @@ private: \
 #define REF_IMPL_REQ(ClassName) \
 const void* ClassName::rawRequestInterface(Gaff::ReflectionHash class_id) const \
 { \
-	return gRefDef.getInterface(class_id, this); \
+	return g_ref_def.getInterface(class_id, this); \
 } \
 void* ClassName::rawRequestInterface(Gaff::ReflectionHash class_id) \
 { \
-	return gRefDef.getInterface(class_id, this); \
+	return g_ref_def.getInterface(class_id, this); \
 }
 
 #define ENUM_REF_DEF_EMBEDDED(EnumName, Type, Allocator) extern Gaff::EnumReflectionDefinition<Type, Allocator> g##EnumName##RefDef

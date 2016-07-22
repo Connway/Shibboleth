@@ -33,6 +33,7 @@ NS_SHIBBOLETH
 REF_IMPL_REQ(NuklearManager);
 SHIB_REF_IMPL(NuklearManager)
 .addBaseClassInterfaceOnly<NuklearManager>()
+.ADD_BASE_CLASS_INTERFACE_ONLY(INuklearManager)
 .ADD_BASE_CLASS_INTERFACE_ONLY(IUpdateQuery)
 ;
 
@@ -69,17 +70,6 @@ const char* NuklearManager::getName(void) const
 	return GetFriendlyName();
 }
 
-void NuklearManager::allManagersCreated(void)
-{
-	InputManager& inputMgr = GetApp().getManagerT<InputManager>();
-	Gleam::IKeyboard* keyboard = inputMgr.getKeyboard();
-	Gleam::IMouse* mouse = inputMgr.getMouse();
-
-	keyboard->addCharacterHandler(Gaff::Bind(this, &NuklearManager::handleCharacter));
-	keyboard->addInputHandler(Gaff::Bind(this, &NuklearManager::handleKeyboard));
-	mouse->addInputHandler(Gaff::Bind(this, &NuklearManager::handleMouse));
-}
-
 void NuklearManager::getUpdateEntries(Array<UpdateEntry>& entries)
 {
 	entries.emplacePush(AString("Nuklear Manager: Generate Draw Commands"), Gaff::Bind(this, &NuklearManager::generateDrawCommands));
@@ -104,6 +94,14 @@ bool NuklearManager::init(void)
 
 		g_first_init = false;
 	}
+
+	InputManager& inputMgr = GetApp().getManagerT<InputManager>();
+	Gleam::IKeyboard* keyboard = inputMgr.getKeyboard();
+	Gleam::IMouse* mouse = inputMgr.getMouse();
+
+	keyboard->addCharacterHandler(Gaff::Bind(this, &NuklearManager::handleCharacter));
+	keyboard->addInputHandler(Gaff::Bind(this, &NuklearManager::handleKeyboard));
+	mouse->addInputHandler(Gaff::Bind(this, &NuklearManager::handleMouse));
 
 	_allocator.alloc = NuklearAllocate;
 	_allocator.free = NuklearFree;

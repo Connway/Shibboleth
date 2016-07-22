@@ -22,8 +22,8 @@ THE SOFTWARE.
 
 #pragma once
 
+#include "Shibboleth_INuklearManager.h"
 #include "Shibboleth_IUpdateQuery.h"
-#include <Shibboleth_ReflectionDefinitions.h>
 #include <Shibboleth_IncludeNuklear.h>
 #include <Shibboleth_IManager.h>
 #include <Shibboleth_Map.h>
@@ -37,7 +37,7 @@ namespace Gleam
 
 NS_SHIBBOLETH
 
-class NuklearManager : public IManager, public IUpdateQuery
+class NuklearManager : public IManager, public IUpdateQuery, public INuklearManager
 {
 public:
 	static const char* GetFriendlyName(void);
@@ -46,11 +46,10 @@ public:
 	~NuklearManager(void);
 
 	const char* getName(void) const override;
-	void allManagersCreated(void) override;
 
 	void getUpdateEntries(Array<UpdateEntry>& entries) override;
 
-	bool init(void);
+	bool init(void) override;
 
 private:
 	struct NuklearData

@@ -60,7 +60,7 @@ const Gaff::JSON& BulletPhysicsComponent::getSchema(void) const
 
 bool BulletPhysicsComponent::load(const Gaff::JSON& json)
 {
-	gRefDef.read(json, this);
+	g_ref_def.read(json, this);
 
 	_phys_res = GetApp().getManagerT<ResourceManager>().requestResource(json["Physics File"].getString());
 	_mass = Gaff::Max(0.0f, static_cast<float>(json["Mass"].getNumber()));
