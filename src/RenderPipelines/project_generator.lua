@@ -32,10 +32,10 @@ project "RenderPipelines"
 		"../Game/include",
 		"../Managers/include",
 		"../Components/include",
+		"../../frameworks/Gaff/include",
+		"../../frameworks/Gleam/include",
+		"../../frameworks/esprit/include",
 		"../../dependencies/rapidjson",
-		"../../dependencies/Gleam/include",
-		"../../dependencies/Gaff/include",
-		"../../dependencies/esprit/include",
 		"../../dependencies/utf8-cpp",
 		"../../dependencies/assimp/include"
 	}

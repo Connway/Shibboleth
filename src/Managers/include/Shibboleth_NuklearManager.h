@@ -24,13 +24,15 @@ THE SOFTWARE.
 
 #include "Shibboleth_IUpdateQuery.h"
 #include <Shibboleth_ReflectionDefinitions.h>
-#include <Shibboleth_IManager.h>
 #include <Shibboleth_IncludeNuklear.h>
+#include <Shibboleth_IManager.h>
+#include <Shibboleth_Map.h>
 
 namespace Gleam
 {
 	class IInputDevice;
 	class IKeyboard;
+	class IWindow;
 }
 
 NS_SHIBBOLETH
@@ -50,10 +52,27 @@ public:
 
 	bool init(void);
 
-	//INLINE void setImGuiContext(void);
-
 private:
-	//ImGuiContext* _imgui_context = nullptr;
+	struct NuklearData
+	{
+		nk_context context;
+		//nk_font_atlas atlas;
+		nk_buffer cmds;
+		nk_draw_null_texture null_texture;
+		size_t max_vert_buffer;
+		size_t max_index_buffer;
+
+		// viewport
+		// raster state
+		// shader program
+		// const buffer
+		// blend state
+		// vert buffer
+		// index buffer
+		// sampler state
+	};
+
+	Map<Gleam::IWindow*, NuklearData> _nuklear_data;
 	nk_allocator _allocator;
 	nk_context _context;
 

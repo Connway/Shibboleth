@@ -60,7 +60,7 @@
       <WarningLevel>Level4</WarningLevel>
       <TreatWarningAsError>true</TreatWarningAsError>
       <PreprocessorDefinitions>_DEBUG;DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\..\..\dependencies\dirent;..\..\..\src\Managers\include;..\..\..\src\Shared\include;..\..\..\src\Memory\include;..\..\..\src\Game\include;..\..\..\src\Components\include;..\..\..\dependencies\OtterUI\inc;..\..\..\dependencies\rapidjson;..\..\..\dependencies\Gleam\include;..\..\..\dependencies\Gaff\include;..\..\..\dependencies\LuaState;..\..\..\dependencies\LuaJIT\src;..\..\..\dependencies\utf8-cpp;..\..\..\dependencies\bullet;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\dependencies\dirent;..\..\..\src\Managers\include;..\..\..\src\Shared\include;..\..\..\src\Memory\include;..\..\..\src\Game\include;..\..\..\src\Components\include;..\..\..\frameworks\Gaff\include;..\..\..\frameworks\Gleam\include;..\..\..\dependencies\OtterUI\inc;..\..\..\dependencies\rapidjson;..\..\..\dependencies\LuaState;..\..\..\dependencies\LuaJIT\src;..\..\..\dependencies\utf8-cpp;..\..\..\dependencies\bullet;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
       <ExceptionHandling>Async</ExceptionHandling>
@@ -81,7 +81,8 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level4</WarningLevel>
       <TreatWarningAsError>true</TreatWarningAsError>
-      <AdditionalIncludeDirectories>..\..\..\dependencies\dirent;..\..\..\src\Managers\include;..\..\..\src\Shared\include;..\..\..\src\Memory\include;..\..\..\src\Game\include;..\..\..\src\Components\include;..\..\..\dependencies\OtterUI\inc;..\..\..\dependencies\rapidjson;..\..\..\dependencies\Gleam\include;..\..\..\dependencies\Gaff\include;..\..\..\dependencies\LuaState;..\..\..\dependencies\LuaJIT\src;..\..\..\dependencies\utf8-cpp;..\..\..\dependencies\bullet;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\..\..\dependencies\dirent;..\..\..\src\Managers\include;..\..\..\src\Shared\include;..\..\..\src\Memory\include;..\..\..\src\Game\include;..\..\..\src\Components\include;..\..\..\frameworks\Gaff\include;..\..\..\frameworks\Gleam\include;..\..\..\dependencies\OtterUI\inc;..\..\..\dependencies\rapidjson;..\..\..\dependencies\LuaState;..\..\..\dependencies\LuaJIT\src;..\..\..\dependencies\utf8-cpp;..\..\..\dependencies\bullet;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -110,7 +111,7 @@
     <ProjectReference Include="..\shared\Shared.vcxproj">
       <Project>{7C480CD1-68EA-36A7-51A5-4AFB3DE6BDF7}</Project>
     </ProjectReference>
-    <ProjectReference Include="..\dependencies\Gaff.vcxproj">
+    <ProjectReference Include="..\frameworks\Gaff.vcxproj">
       <Project>{99A8857C-85DF-860D-2ECC-6C101AE2020F}</Project>
     </ProjectReference>
     <ProjectReference Include="..\dependencies\OtterUI.vcxproj">
@@ -119,7 +120,7 @@
     <ProjectReference Include="..\game\Game.vcxproj">
       <Project>{7FA9857C-6BE0-860D-14CD-6C1000E3020F}</Project>
     </ProjectReference>
-    <ProjectReference Include="..\dependencies\Gleam.vcxproj">
+    <ProjectReference Include="..\frameworks\Gleam.vcxproj">
       <Project>{6BBF400D-D7D3-68BE-A055-0C1E0C2965EF}</Project>
     </ProjectReference>
     <ProjectReference Include="Managers.vcxproj">
@@ -148,6 +149,9 @@
     </ProjectReference>
     <ProjectReference Include="..\dependencies\imgui.vcxproj">
       <Project>{0098A80F-6CAC-D0C0-352E-7420A101CDF1}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\dependencies\nuklear.vcxproj">
+      <Project>{577BFE2F-C35A-7DCB-CC72-08A238D1E32C}</Project>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

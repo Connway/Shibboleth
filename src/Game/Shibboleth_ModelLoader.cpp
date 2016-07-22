@@ -25,8 +25,8 @@ THE SOFTWARE.
 #include "Shibboleth_ResourceManager.h"
 #include "Shibboleth_RenderManager.h"
 #include <Shibboleth_IFileSystem.h>
+#include <Esprit_Skeleton.h>
 #include <Gleam_IRenderDevice.h>
-#include <esprit_Skeleton.h>
 #include <Gleam_ILayout.h>
 #include <Gleam_IModel.h>
 #include <Gleam_IMesh.h>
@@ -65,9 +65,9 @@ static const char* d3d11_end_shader_chunk =
 
 ModelLoader::ModelLoader(RenderManager& render_mgr, ResourceManager& res_mgr, IFileSystem& file_system):
 	_render_mgr(render_mgr), _res_mgr(res_mgr), _file_system(file_system),
-	_esprit_proxy_allocator("esprit")
+	_esprit_proxy_allocator("Esprit")
 {
-	esprit::SetAllocator(&_esprit_proxy_allocator);
+	Esprit::SetAllocator(&_esprit_proxy_allocator);
 }
 
 ModelLoader::~ModelLoader(void)

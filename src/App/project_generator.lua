@@ -27,8 +27,8 @@ project "App"
 	{
 		"../Shared/include",
 		"../Memory/include",
+		"../../frameworks/Gaff/include",
 		"../../dependencies/rapidjson",
-		"../../dependencies/Gaff/include",
 		"../../dependencies/utf8-cpp"
 	}
 
