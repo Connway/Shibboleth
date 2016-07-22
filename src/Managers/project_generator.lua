@@ -37,7 +37,9 @@ project "Managers"
 		"../../dependencies/LuaState",
 		"../../dependencies/LuaJIT/src",
 		"../../dependencies/utf8-cpp",
-		"../../dependencies/bullet"
+		"../../dependencies/bullet",
+		"../../dependencies/imgui",
+		"../../dependencies/nuklear"
 	}
 
 	dofile("../../utils/os_conditionals.lua")
@@ -87,24 +89,24 @@ project "ManagersModule"
 	{
 		"Shared", "Gaff",
 		"OtterUI", "Game",
-		 "Gleam", "Managers",
-		 "Memory", "LuaJIT",
-		 "Boxer", "Components",
+		"Gleam", "Managers",
+		"Memory", "LuaJIT",
+		"Boxer", "Components",
 		"BulletCollision",
 		"BulletDynamics",
-		"LinearMath"
+		"LinearMath", "imgui"
 	}
 
 	links
 	{
 		"Shared", "Gaff",
 		"OtterUI", "Game",
-		 "Gleam", "Managers",
-		 "Memory", "LuaJIT",
-		 "Boxer", "Components",
+		"Gleam", "Managers",
+		"Memory", "LuaJIT",
+		"Boxer", "Components",
 		"BulletCollision",
 		"BulletDynamics",
-		"LinearMath"
+		"LinearMath", "imgui"
 	}
 
 	filter { "configurations:Debug", "platforms:x86" }

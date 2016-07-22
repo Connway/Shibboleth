@@ -463,7 +463,7 @@ THE SOFTWARE.
 		} \
 		if (array) { \
 			VarType temp = std::move((object->*_var)[src_index]); \
-			deconstruct(array + src_index); \
+			Deconstruct(array + src_index); \
 			for (size_t i = src_index; i  < array_size - 1; ++i) { \
 				memcpy(array + i, array + i + 1, sizeof(VarType)); \
 			} \
@@ -471,7 +471,7 @@ THE SOFTWARE.
 			for (size_t i = array_size - 1; i > dest_index; --i) { \
 				memcpy(array + i, array + i - 1, sizeof(VarType)); \
 			} \
-			construct(array + dest_index, std::move(temp)); \
+			Construct(array + dest_index, std::move(temp)); \
 		} \
 	}
 

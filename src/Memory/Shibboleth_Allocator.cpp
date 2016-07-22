@@ -51,7 +51,7 @@ THE SOFTWARE.
 NS_SHIBBOLETH
 
 // Enforce the header being 16-byte aligned so that data falls on 16-byte boundary.
-struct COMPILERALIGN16 AllocationHeader
+struct alignas(16) AllocationHeader
 {
 	size_t pool_index;
 	char file[256] = { 0 };

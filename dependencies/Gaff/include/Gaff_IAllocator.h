@@ -37,14 +37,14 @@ THE SOFTWARE.
 NS_GAFF
 
 template <class T, class... Args>
-T* construct(T* data, Args&&... args)
+T* Construct(T* data, Args&&... args)
 {
 	return new (data) T(std::forward<Args>(args)...);
 }
 
 // This is giving a warning saying data is unreferenced ... what?
 template <class T>
-void deconstruct(T* data)
+void Deconstruct(T* data)
 {
 	// To get rid of the stupid unreferenced parameter warning in VS.
 #ifdef PLATFORM_WINDOWS
@@ -68,7 +68,7 @@ public:
 		T* data = reinterpret_cast<T*>(alloc(sizeof(T) * count, file, line));
 
 		for (size_t i = 0; i < count; ++i) {
-			construct(data + i, std::forward<Args>(args)...);
+			Construct(data + i, std::forward<Args>(args)...);
 		}
 
 		return data;
@@ -78,14 +78,14 @@ public:
 	T* allocT(const char* file, int line, Args&&... args)
 	{
 		T* data = reinterpret_cast<T*>(alloc(sizeof(T), file, line));
-		return construct(data, std::forward<Args>(args)...);
+		return Construct(data, std::forward<Args>(args)...);
 	}
 
 	template <class T>
 	void freeArrayT(T* data, size_t count)
 	{
 		for (size_t i = 0; i < count; ++i) {
-			deconstruct(data + i);
+			Deconstruct(data + i);
 		}
 
 		free((void*)(data));
@@ -94,7 +94,7 @@ public:
 	template <class T>
 	void freeT(T* data)
 	{
-		deconstruct(data);
+		Deconstruct(data);
 		free((void*)(data));
 	}
 };

@@ -210,7 +210,7 @@ private:
 	template <class T, class RT, class... As> friend FunctionBinder<RT, As...> Bind(T*, RT (T::*)(As...));
 	template <class RT, class... As> friend FunctionBinder<RT, As...> Bind(RT (*)(As...));
 	template <class T, class RT, class... As> friend FunctionBinder<RT, As...> Bind(const T&);
-	template <class T, class... As> friend T* construct(T*, As&&...);
+	template <class T, class... As> friend T* Construct(T*, As&&...);
 
 #ifdef PLATFORM_WINDOWS
 	template <class RT, class... As> friend FunctionBinder<RT, As...> BindSTDCall(RT (__stdcall*)(As...));

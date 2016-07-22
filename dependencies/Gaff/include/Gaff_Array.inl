@@ -42,7 +42,7 @@ Array<T, Allocator>::Array(size_t start_size, const T& init_val, const Allocator
 	_array = GAFF_ALLOC_CAST(T*, sizeof(T) * start_size, _allocator);
 
 	for (size_t i = 0; i < start_size; ++i) {
-		construct(_array + i, init_val);
+		Construct(_array + i, init_val);
 	}
 }
 
@@ -53,7 +53,7 @@ Array<T, Allocator>::Array(const T* data, size_t size, const Allocator& allocato
 	_array = GAFF_ALLOC_CAST(T*, sizeof(T) * size, _allocator);
 
 	for (size_t i = 0; i < size; ++i) {
-		construct(_array + i, data[i]);
+		Construct(_array + i, data[i]);
 	}
 }
 
@@ -96,7 +96,7 @@ const Array<T, Allocator>& Array<T, Allocator>::operator=(const Array<T, Allocat
 	}
 
 	for (size_t i = 0; i < rhs._used; ++i) {
-		construct(_array + i, rhs._array[i]);
+		Construct(_array + i, rhs._array[i]);
 	}
 
 	_used = rhs._used;
@@ -171,7 +171,7 @@ void Array<T, Allocator>::clear(void)
 {
 	if (_array) {
 		for (size_t i = 0; i < _used; ++i) {
-			deconstruct(_array + i);
+			Deconstruct(_array + i);
 		}
 
 		GAFF_FREE(static_cast<void*>(_array), _allocator);
@@ -185,7 +185,7 @@ void Array<T, Allocator>::clearNoFree(void)
 {
 	if (_array) {
 		for (size_t i = 0; i < _used; ++i) {
-			deconstruct(_array + i);
+			Deconstruct(_array + i);
 		}
 
 		_used = 0;
@@ -292,7 +292,7 @@ void Array<T, Allocator>::append(const T* array, size_t count)
 	reserve(_used + count);
 
 	for (size_t i = 0; i < count; ++i) {
-		construct(_array + _used + i, array[i]);
+		Construct(_array + _used + i, array[i]);
 	}
 
 	_used += count;
@@ -310,7 +310,7 @@ void Array<T, Allocator>::append(Array<T, Allocator>&& array)
 	reserve(_used + array.size());
 
 	for (size_t i = 0; i < array.size(); ++i) {
-		construct(_array + _used + i, std::move(array[i]));
+		Construct(_array + _used + i, std::move(array[i]));
 	}
 
 	_used += array.size();
@@ -328,7 +328,7 @@ void Array<T, Allocator>::push(T&& data)
 		}
 	}
 
-	construct(_array + _used, std::move(data));
+	Construct(_array + _used, std::move(data));
 	++_used;
 }
 
@@ -343,7 +343,7 @@ void Array<T, Allocator>::push(const T& data)
 		}
 	}
 
-	construct(_array + _used, data);
+	Construct(_array + _used, data);
 	++_used;
 }
 
@@ -351,7 +351,7 @@ template <class T, class Allocator>
 void Array<T, Allocator>::pop(void)
 {
 	GAFF_ASSERT(_used);
-	deconstruct(_array + _used - 1);
+	Deconstruct(_array + _used - 1);
 	--_used;
 }
 
@@ -379,7 +379,7 @@ void Array<T, Allocator>::emplace(size_t index, Args&&... args)
 		memcpy(_array + i, _array + i - 1, sizeof(T));
 	}
 
-	construct(_array + index, std::forward<Args>(args)...);
+	Construct(_array + index, std::forward<Args>(args)...);
 	++_used;
 }
 
@@ -395,7 +395,7 @@ void Array<T, Allocator>::emplacePush(Args&&... args)
 		}
 	}
 
-	construct(_array + _used, std::forward<Args>(args)...);
+	Construct(_array + _used, std::forward<Args>(args)...);
 	++_used;
 }
 
@@ -430,7 +430,7 @@ void Array<T, Allocator>::insert(size_t index, const T& data)
 		memcpy(_array + i, _array + i - 1, sizeof(T));
 	}
 
-	construct(_array + index, data);
+	Construct(_array + index, data);
 	++_used;
 }
 
@@ -447,7 +447,7 @@ void Array<T, Allocator>::insert(size_t index, T&& data)
 		memcpy(_array + i, _array + i - 1, sizeof(T));
 	}
 
-	construct(_array + index, std::move(data));
+	Construct(_array + index, std::move(data));
 	++_used;
 }
 
@@ -467,7 +467,7 @@ void Array<T, Allocator>::erase(size_t index)
 {
 	GAFF_ASSERT(index < _used && _used > 0);
 
-	deconstruct(_array + index);
+	Deconstruct(_array + index);
 
 	for (size_t i = index; i < _used - 1; ++i) {
 		memcpy(_array + i, _array + i + 1, sizeof(T));
@@ -492,7 +492,7 @@ void Array<T, Allocator>::fastErase(size_t index)
 {
 	GAFF_ASSERT(index < _used && _used > 0);
 
-	deconstruct(_array + index);
+	Deconstruct(_array + index);
 	memcpy(_array + index, _array + _used - 1, sizeof(T));
 
 	--_used;
@@ -506,7 +506,7 @@ void Array<T, Allocator>::resizeFast(size_t new_size, const T& init_val)
 
 	} else if (new_size < _size) {
 		for (size_t i = new_size; i < _used; ++i) {
-			deconstruct(_array + i);
+			Deconstruct(_array + i);
 		}
 
 		_used = new_size;
@@ -524,7 +524,7 @@ void Array<T, Allocator>::resizeFast(size_t new_size)
 
 	} else if (new_size < _size) {
 		for (size_t i = new_size; i < _used; ++i) {
-			deconstruct(_array + i);
+			Deconstruct(_array + i);
 		}
 
 		_used = new_size;
@@ -717,13 +717,13 @@ void Array<T, Allocator>::resizeHelper(size_t new_size, const T& init_val)
 	_array = GAFF_ALLOC_CAST(T*, sizeof(T) * new_size, _allocator);
 
 	for (size_t i = _used; i < new_size; ++i) {
-		construct(_array + i, init_val);
+		Construct(_array + i, init_val);
 	}
 
 	if (old_data) {
 		if (new_size < _used) {
 			for (size_t i = new_size; i < _used; ++i) {
-				deconstruct(old_data + i);
+				Deconstruct(old_data + i);
 			}
 		}
 
@@ -748,13 +748,13 @@ void Array<T, Allocator>::resizeHelper(size_t new_size)
 	_array = GAFF_ALLOC_CAST(T*, sizeof(T) * new_size, _allocator);
 
 	for (size_t i = _used; i < new_size; ++i) {
-		construct(_array + i);
+		Construct(_array + i);
 	}
 
 	if (old_data) {
 		if (new_size < _used) {
 			for (size_t i = new_size; i < _used; ++i) {
-				deconstruct(old_data + i);
+				Deconstruct(old_data + i);
 			}
 		}
 

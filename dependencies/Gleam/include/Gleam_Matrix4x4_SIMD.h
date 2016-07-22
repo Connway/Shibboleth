@@ -36,7 +36,7 @@ class Vector4SIMD;
 // | 01 11 21 31 |
 // | 02 12 22 32 |
 // | 03 13 23 33 |
-class COMPILERALIGN16 Matrix4x4SIMD
+class alignas(16) Matrix4x4SIMD
 {
 public:
 	Matrix4x4SIMD(void);

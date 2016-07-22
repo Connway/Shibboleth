@@ -29,7 +29,8 @@ NS_GLEAM
 
 struct MouseData
 {
-	int x, y;
+	int abs_x, abs_y;
+	int rel_x, rel_y;
 	int dx, dy;
 	bool buttons[MOUSE_BUTTON_COUNT];
 	short wheel;
@@ -42,9 +43,11 @@ public:
 	virtual ~IMouse(void) {}
 
 	virtual const MouseData& getMouseData(void) const = 0;
-	virtual void getPosition(int& x, int& y) const = 0;
+	virtual void getAbsolutePosition(int& x, int& y) const = 0;
+	virtual void getRelativePosition(int& x, int& y) const = 0;
 	virtual void getDeltas(int& dx, int& dy) const = 0;
-	virtual void getNormalizedPosition(float& nx, float& ny) const = 0;
+	//virtual void getNormalizedAbsolutePosition(float& nx, float& ny) const = 0;
+	virtual void getNormalizedRelativePosition(float& nx, float& ny) const = 0;
 	virtual void getNormalizedDeltas(float& ndx, float& ndy) const = 0;
 	virtual short getWheelDelta(void) const = 0;
 

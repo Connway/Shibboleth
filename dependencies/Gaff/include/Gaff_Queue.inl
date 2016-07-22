@@ -146,7 +146,7 @@ void Queue<T, Allocator>::clear(void)
 {
 	if (_array) {
 		for (size_t i = 0; i < _used; ++i) {
-			deconstruct(_begin);
+			Deconstruct(_begin);
 			increment(&_begin);
 		}
 
@@ -190,7 +190,7 @@ void Queue<T, Allocator>::push(const T& data)
 		reserve(_size * 2);
 	}
 
-	construct(_end, data);
+	Construct(_end, data);
 	increment(&_end);
 	++_used;
 }
@@ -202,7 +202,7 @@ void Queue<T, Allocator>::push(T&& data)
 		reserve(_size * 2);
 	}
 
-	construct(_end, std::move(data));
+	Construct(_end, std::move(data));
 	increment(&_end);
 	++_used;
 }
@@ -211,7 +211,7 @@ template <class T, class Allocator>
 void Queue<T, Allocator>::pop(void)
 {
 	GAFF_ASSERT(_used > 0);
-	deconstruct(_begin);
+	Deconstruct(_begin);
 	increment(&_begin);
 	--_used;
 }
@@ -224,7 +224,7 @@ void Queue<T, Allocator>::emplacePush(Args&&... args)
 		reserve(_size * 2);
 	}
 
-	construct(_end, std::forward<Args>(args)...);
+	Construct(_end, std::forward<Args>(args)...);
 	increment(&_end);
 	++_used;
 }

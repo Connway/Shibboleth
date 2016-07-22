@@ -222,6 +222,26 @@ bool InputManager::saveKeybindings(void)
 	return bindings.dumpToFile(KEY_BINDINGS_CFG);
 }
 
+const Gleam::IKeyboard* InputManager::getKeyboard(void) const
+{
+	return _keyboard;
+}
+
+Gleam::IKeyboard* InputManager::getKeyboard(void)
+{
+	return _keyboard;
+}
+
+const Gleam::IMouse* InputManager::getMouse(void) const
+{
+	return _mouse;
+}
+
+Gleam::IMouse* InputManager::getMouse(void)
+{
+	return _mouse;
+}
+
 bool InputManager::loadAliasFile(void)
 {
 	IFile* input_aliases_file = GetApp().getFileSystem()->openFile(INPUT_ALIASES_CFG);

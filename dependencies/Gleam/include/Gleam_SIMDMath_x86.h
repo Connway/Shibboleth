@@ -31,7 +31,7 @@ NS_GLEAM
 typedef __m128i SIMDTypei;
 typedef __m128 SIMDType;
 
-struct COMPILERALIGN16 SIMDMaskStruct
+struct alignas(16) SIMDMaskStruct
 {
 	SIMDMaskStruct(unsigned int a, unsigned int b, unsigned int c, unsigned int d)
 	{
@@ -51,14 +51,14 @@ struct COMPILERALIGN16 SIMDMaskStruct
 	INLINE operator SIMDType(void) const { return vec; }
 };
 
-struct COMPILERALIGN16 SIMDTransform
+struct alignas(16) SIMDTransform
 {
 	SIMDType translation;
 	SIMDType rotation;
 	SIMDType scale;
 };
 
-struct COMPILERALIGN16 SIMDMatrix
+struct alignas(16) SIMDMatrix
 {
 	SIMDType elements[4];
 };

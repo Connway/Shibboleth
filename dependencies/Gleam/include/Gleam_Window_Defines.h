@@ -331,8 +331,10 @@ struct MouseMoveMessage
 {
 	EventType type;
 	IWindow* window;
-	int x;
-	int y;
+	int abs_x;
+	int abs_y;
+	int rel_x;
+	int rel_y;
 	int dx;
 	int dy;
 };

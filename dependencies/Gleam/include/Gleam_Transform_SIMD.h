@@ -30,7 +30,7 @@ WARNING("SIMD data structures are potentially going to be deprecated.")
 
 NS_GLEAM
 
-class COMPILERALIGN16 TransformSIMD
+class alignas(16) TransformSIMD
 {
 public:
 	TransformSIMD(const Vector4SIMD& scale, const QuaternionSIMD& rotation, const Vector4SIMD& translation);

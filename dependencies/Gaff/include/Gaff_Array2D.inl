@@ -48,7 +48,7 @@ Array2D<T, Allocator>::Array2D(const T** data, size_t width, size_t height, cons
 
 	for (size_t i = 0; i < height; ++i) {
 		for (size_t j = 0; j < width; ++j) {
-			construct(_array + i * width + j, data[i][j]);
+			Construct(_array + i * width + j, data[i][j]);
 		}
 	}
 }
@@ -62,7 +62,7 @@ Array2D<T, Allocator>::Array2D(const T* data, size_t width, size_t height, const
 	size_t size = width * height;
 
 	for (size_t i = 0; i < size; ++i) {
-		construct(_array + i, data[i]);
+		Construct(_array + i, data[i]);
 	}
 }
 
@@ -99,7 +99,7 @@ const Array2D<T, Allocator>& Array2D<T, Allocator>::operator=(const Array2D<T, A
 	size_t size = _width * _height;
 
 	for (size_t i = 0; i < size; ++i) {
-		construct(_array + i, rhs._array[i]);
+		Construct(_array + i, rhs._array[i]);
 	}
 
 	return *this;
@@ -158,12 +158,12 @@ void Array2D<T, Allocator>::resize(size_t width, size_t height)
 			memcpy(_array + i * width, old_array + i * _width, sizeof(T) * min_width);
 
 			for (size_t j = min_width; j < _width; ++j) {
-				deconstruct(old_array + i * _width + j);
+				Deconstruct(old_array + i * _width + j);
 			}
 		}
 
 		for (size_t j = (i < min_height) ? min_width : 0; j < width; ++j) {
-			construct(_array + i * width + j);
+			Construct(_array + i * width + j);
 		}
 	}
 
