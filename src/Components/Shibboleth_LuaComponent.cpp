@@ -39,7 +39,7 @@ THE SOFTWARE.
 
 NS_SHIBBOLETH
 
-COMP_REF_DEF_SAVE(LuaComponent, gRefDef);
+COMP_REF_DEF_SAVE(LuaComponent, g_ref_def);
 REF_IMPL_REQ(LuaComponent);
 
 SHIB_REF_IMPL(LuaComponent)
@@ -67,7 +67,7 @@ const Gaff::JSON& LuaComponent::getSchema(void) const
 
 bool LuaComponent::load(const Gaff::JSON& json)
 {
-	gRefDef.read(json, this);
+	g_ref_def.read(json, this);
 
 	ResourceManager& res_mgr = GetApp().getManagerT<ResourceManager>();
 

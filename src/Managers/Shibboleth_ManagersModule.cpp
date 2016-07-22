@@ -27,6 +27,7 @@ THE SOFTWARE.
 #include <Shibboleth_OcclusionManager.h>
 #include <Shibboleth_ResourceManager.h>
 #include <Shibboleth_OtterUIManager.h>
+#include <Shibboleth_NuklearManager.h>
 #include <Shibboleth_CameraManager.h>
 #include <Shibboleth_SchemaManager.h>
 #include <Shibboleth_RenderManager.h>
@@ -68,7 +69,8 @@ static Shibboleth::CreateManagerFunc create_funcs[] = {
 	Shibboleth::CreateManagerT<Shibboleth::PhysXPhysicsManager>,
 #endif
 	Shibboleth::CreateManagerT<Shibboleth::InputManager>,
-	Shibboleth::CreateManagerT<Shibboleth::SceneManager>
+	Shibboleth::CreateManagerT<Shibboleth::SceneManager>,
+	Shibboleth::CreateManagerT<Shibboleth::NuklearManager>
 };
 
 DYNAMICEXPORT_C bool InitModule(Shibboleth::IApp& app)

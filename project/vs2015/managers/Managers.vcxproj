@@ -108,6 +108,7 @@
     <ClInclude Include="..\..\..\src\Managers\include\Shibboleth_CameraManager.h" />
     <ClInclude Include="..\..\..\src\Managers\include\Shibboleth_ComponentManager.h" />
     <ClInclude Include="..\..\..\src\Managers\include\Shibboleth_FrameManager.h" />
+    <ClInclude Include="..\..\..\src\Managers\include\Shibboleth_INuklearManager.h" />
     <ClInclude Include="..\..\..\src\Managers\include\Shibboleth_ImGuiManager.h" />
     <ClInclude Include="..\..\..\src\Managers\include\Shibboleth_InputManager.h" />
     <ClInclude Include="..\..\..\src\Managers\include\Shibboleth_LuaManager.h" />

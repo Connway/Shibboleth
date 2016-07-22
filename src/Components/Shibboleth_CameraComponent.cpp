@@ -92,7 +92,7 @@ bool CameraComponent::validate(const Gaff::JSON& json)
 
 bool CameraComponent::load(const Gaff::JSON& json)
 {
-	gRefDef.read(json, this);
+	g_ref_def.read(json, this);
 
 	_render_target = GetApp().getManagerT<ResourceManager>("Resource Manager").requestResource(json["Render Target File"].getString());
 	_render_target.getResourcePtr()->addCallback(Gaff::Bind(this, &CameraComponent::RenderTargetCallback));
@@ -108,7 +108,7 @@ bool CameraComponent::load(const Gaff::JSON& json)
 
 bool CameraComponent::save(Gaff::JSON& json)
 {
-	gRefDef.write(json, this);
+	g_ref_def.write(json, this);
 	return true;
 }
 

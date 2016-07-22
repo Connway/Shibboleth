@@ -22,6 +22,7 @@ THE SOFTWARE.
 
 #include "Shibboleth_SetupDevicesState.h"
 #include <Shibboleth_RenderPipelineManager.h>
+#include <Shibboleth_INuklearManager.h>
 #include <Shibboleth_RenderManager.h>
 #include <Shibboleth_InputManager.h>
 #include <Shibboleth_Utilities.h>
@@ -209,15 +210,15 @@ void SetupDevicesState::update(void)
 			app.getLogManager().logMessage(
 				LogManager::LOG_ERROR, app.getLogFileName(),
 				"Failed to create window with values\n"
-				"X: %lli\n"
-				"Y: %lli\n"
-				"Width: %lli\n"
-				"Height: %lli\n"
-				"Refresh Rate: %lli\n"
+				"X: %i\n"
+				"Y: %i\n"
+				"Width: %i\n"
+				"Height: %i\n"
+				"Refresh Rate: %i\n"
 				"Vsync: %s\n"
 				"Device Name: %s\n"
-				"Adapter ID: %lli\n"
-				"Display ID: %lli\n"
+				"Adapter ID: %i\n"
+				"Display ID: %i\n"
 				"Tags: %uh\n",
 				x.getInt(), y.getInt(),
 				width.getInt(), height.getInt(),
@@ -262,6 +263,14 @@ void SetupDevicesState::update(void)
 
 	if (!input_mgr.init()) {
 		app.getLogManager().logMessage(LogManager::LOG_ERROR, app.getLogFileName(), "Failed to initialize Input Manager.\n");
+		app.quit();
+		return;
+	}
+
+	INuklearManager& nk_mgr = app.getManagerTReflection<INuklearManager>();
+
+	if (!nk_mgr.init()) {
+		app.getLogManager().logMessage(LogManager::LOG_ERROR, app.getLogFileName(), "Failed to initialize Nuklear Manager.\n");
 		app.quit();
 		return;
 	}

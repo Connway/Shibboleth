@@ -21,6 +21,9 @@
     <ClInclude Include="..\..\..\src\Managers\include\Shibboleth_FrameManager.h">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\src\Managers\include\Shibboleth_INuklearManager.h">
+      <Filter>include</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\src\Managers\include\Shibboleth_ImGuiManager.h">
       <Filter>include</Filter>
     </ClInclude>
