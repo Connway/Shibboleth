@@ -26,4 +26,8 @@ THE SOFTWARE.
 	#define WIN32_LEAN_AND_MEAN
 #endif
 
+#ifndef NOMINMAX
+	#define NOMINMAX
+#endif
+
 #include <Windows.h>

@@ -38,9 +38,11 @@ public:
 	void update(void);
 
 	const MouseData& getMouseData(void) const;
-	void getPosition(int& x, int& y) const;
+	void getAbsolutePosition(int& x, int& y) const;
+	void getRelativePosition(int& x, int& y) const;
 	void getDeltas(int& dx, int& dy) const;
-	void getNormalizedPosition(float& nx, float& ny) const;
+	//void getNormalizedAbsolutePosition(float& nx, float& ny) const;
+	void getNormalizedRelativePosition(float& nx, float& ny) const;
 	void getNormalizedDeltas(float& ndx, float& ndy) const;
 	short getWheelDelta(void) const;
 

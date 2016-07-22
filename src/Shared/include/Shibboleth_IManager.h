@@ -23,6 +23,7 @@ THE SOFTWARE.
 #pragma once
 
 #include <Gaff_IRequestableInterface.h>
+#include <Shibboleth_Defines.h>
 
 NS_SHIBBOLETH
 

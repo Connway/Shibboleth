@@ -22,12 +22,11 @@ THE SOFTWARE.
 
 #include "Shibboleth_InspectionPanel.h"
 #include "Shibboleth_ComponentList.h"
+#include "Shibboleth_PrefabEditor.h"
 #include <QStringList>
 #include <QJsonObject>
 #include <QWidget>
 #include <QHash>
-
-Contrivance::IContrivanceWindow* gWindow = nullptr;
 
 template <class T>
 Contrivance::IExtension* CreateWidget(Contrivance::IContrivanceWindow& window)
@@ -35,14 +34,18 @@ Contrivance::IExtension* CreateWidget(Contrivance::IContrivanceWindow& window)
 	return new T(window);
 }
 
-typedef Contrivance::IExtension* (*CreateInstanceFunc)(Contrivance::IContrivanceWindow&);
+using CreateInstanceFunc = Contrivance::IExtension* (*)(Contrivance::IContrivanceWindow&);
 
-QHash<QString, CreateInstanceFunc> create_funcs;
+static Contrivance::IContrivanceWindow* g_window = nullptr;
+static QHash<QString, CreateInstanceFunc> g_create_funcs;
 
 extern "C" Q_DECL_EXPORT bool InitExtensionModule(Contrivance::IContrivanceWindow& window)
 {
-	create_funcs["Component List"] = &CreateWidget<Shibboleth::ComponentList>;
-	gWindow = &window;
+	g_create_funcs.reserve(2);
+
+	g_create_funcs["Component List"] = &CreateWidget<Shibboleth::ComponentList>;
+	g_create_funcs["Prefab Editor"] = &CreateWidget<Shibboleth::PrefabEditor>;
+	g_window = &window;
 	return true;
 }
 
@@ -62,8 +65,8 @@ extern "C" Q_DECL_EXPORT bool LoadInstanceData(const QString&, const QJsonObject
 
 extern "C" Q_DECL_EXPORT Contrivance::IExtension* CreateInstance(const QString& widget_name)
 {
-	Q_ASSERT(create_funcs.contains(widget_name));
-	return create_funcs[widget_name](*gWindow);
+	Q_ASSERT(g_create_funcs.contains(widget_name));
+	return g_create_funcs[widget_name](*g_window);
 }
 
 extern "C" Q_DECL_EXPORT void DestroyInstance(Contrivance::IExtension* ext)
@@ -75,7 +78,7 @@ extern "C" Q_DECL_EXPORT void DestroyInstance(Contrivance::IExtension* ext)
 {
 	extensions.clear();
 
-	for (auto it = create_funcs.begin(); it != create_funcs.end(); ++it) {
+	for (auto it = g_create_funcs.begin(); it != g_create_funcs.end(); ++it) {
 		extensions.push_back(it.key());
 	}
 }

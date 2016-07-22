@@ -81,8 +81,8 @@ void MouseMP::update(void)
 		for (unsigned int j = 0; j < _input_handlers.size(); ++j) {
 			_input_handlers[j](this, MOUSE_DELTA_X, static_cast<float>(_curr_data.dx));
 			_input_handlers[j](this, MOUSE_DELTA_Y, static_cast<float>(_curr_data.dy));
-			_input_handlers[j](this, MOUSE_POS_X, static_cast<float>(_curr_data.x));
-			_input_handlers[j](this, MOUSE_POS_Y, static_cast<float>(_curr_data.y));
+			_input_handlers[j](this, MOUSE_POS_X, static_cast<float>(_curr_data.rel_x));
+			_input_handlers[j](this, MOUSE_POS_Y, static_cast<float>(_curr_data.rel_y));
 
 			for (int i = 0; i < MOUSE_BUTTON_COUNT; ++i) {
 				_input_handlers[j](this, i, static_cast<float>(_curr_data.buttons[i]));
@@ -98,12 +98,12 @@ void MouseMP::update(void)
 
 	} else {
 		for (unsigned int j = 0; j < _input_handlers.size(); ++j) {
-			if (_curr_data.x != _prev_data.x) {
-				_input_handlers[j](this, MOUSE_POS_X, static_cast<float>(_curr_data.x));
+			if (_curr_data.rel_x != _prev_data.rel_x) {
+				_input_handlers[j](this, MOUSE_POS_X, static_cast<float>(_curr_data.rel_x));
 			}
 
-			if (_curr_data.y != _prev_data.y) {
-				_input_handlers[j](this, MOUSE_POS_Y, static_cast<float>(_curr_data.y));
+			if (_curr_data.rel_y != _prev_data.rel_y) {
+				_input_handlers[j](this, MOUSE_POS_Y, static_cast<float>(_curr_data.rel_y));
 			}
 
 			if (_curr_data.dx != _prev_data.dx) {
@@ -141,10 +141,16 @@ const MouseData& MouseMP::getMouseData(void) const
 	return _curr_data;
 }
 
-void MouseMP::getPosition(int& x, int& y) const
+void MouseMP::getAbsolutePosition(int& x, int& y) const
 {
-	x = _curr_data.x;
-	y = _curr_data.y;
+	x = _curr_data.abs_x;
+	y = _curr_data.abs_y;
+}
+
+void MouseMP::getRelativePosition(int& x, int& y) const
+{
+	x = _curr_data.rel_x;
+	y = _curr_data.rel_y;
 }
 
 void MouseMP::getDeltas(int& dx, int& dy) const
@@ -153,10 +159,16 @@ void MouseMP::getDeltas(int& dx, int& dy) const
 	dy = _dy;
 }
 
-void MouseMP::getNormalizedPosition(float& nx, float& ny) const
+//void MouseMP::getNormalizedAbsolutePosition(float& nx, float& ny) const
+//{
+//	nx = static_cast<float>(_curr_data.abs_x) / static_cast<float>(_window->getWidth());
+//	ny = static_cast<float>(_curr_data.abs_y) / static_cast<float>(_window->getHeight());
+//}
+
+void MouseMP::getNormalizedRelativePosition(float& nx, float& ny) const
 {
-	nx = static_cast<float>(_curr_data.x) / static_cast<float>(_window->getWidth());
-	ny = static_cast<float>(_curr_data.y) / static_cast<float>(_window->getHeight());
+	nx = static_cast<float>(_curr_data.rel_x) / static_cast<float>(_window->getWidth());
+	ny = static_cast<float>(_curr_data.rel_y) / static_cast<float>(_window->getHeight());
 }
 
 void MouseMP::getNormalizedDeltas(float& ndx, float& ndy) const
@@ -203,8 +215,10 @@ bool MouseMP::handleMessage(const AnyMessage& message)
 {
 	switch (message.base.type) {
 		case IN_MOUSEMOVE:
-			_curr_data.x = message.mouse_move.x;
-			_curr_data.y = message.mouse_move.y;
+			_curr_data.abs_x = message.mouse_move.abs_x;
+			_curr_data.abs_y = message.mouse_move.abs_y;
+			_curr_data.rel_x = message.mouse_move.rel_x;
+			_curr_data.rel_y = message.mouse_move.rel_y;
 			_dx = _curr_data.dx = message.mouse_move.dx;
 			_dy = _curr_data.dy = message.mouse_move.dy;
 			return true;

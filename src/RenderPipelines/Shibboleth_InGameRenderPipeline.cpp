@@ -227,9 +227,9 @@ void InGameRenderPipeline::GenerateCommandLists(void* job_data)
 void InGameRenderPipeline::GenerateCameraCommandLists(Array<RenderManager::RenderDevicePtr>& rds, GenerateJobData* jd)
 {
 	if (!gInit) {
-		Gaff::construct(&gInstance_buffer_pool, jd->first->_render_mgr.getRenderDevice().getNumDevices(), Gaff::Pair<BufferPtr, ShaderResourceViewPtr>());
-		Gaff::construct(gRender_pass_info + RP_OPAQUE);
-		Gaff::construct(gRender_pass_info + RP_TRANSPARENT);
+		Gaff::Construct(&gInstance_buffer_pool, jd->first->_render_mgr.getRenderDevice().getNumDevices(), Gaff::Pair<BufferPtr, ShaderResourceViewPtr>());
+		Gaff::Construct(gRender_pass_info + RP_OPAQUE);
+		Gaff::Construct(gRender_pass_info + RP_TRANSPARENT);
 		gInit = true;
 	}
 

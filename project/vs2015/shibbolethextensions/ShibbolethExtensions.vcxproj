@@ -107,9 +107,11 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\build\intermediate\moc_Shibboleth_ComponentList.cpp" />
+    <ClCompile Include="..\..\..\build\intermediate\moc_Shibboleth_PrefabEditor.cpp" />
     <ClCompile Include="..\..\..\src\ShibbolethExtensions\ShibbolethExtensions.cpp" />
     <ClCompile Include="..\..\..\src\ShibbolethExtensions\Shibboleth_ComponentList.cpp" />
     <ClCompile Include="..\..\..\src\ShibbolethExtensions\Shibboleth_InspectionPanel.cpp" />
+    <ClCompile Include="..\..\..\src\ShibbolethExtensions\Shibboleth_PrefabEditor.cpp" />
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="..\..\..\src\ShibbolethExtensions\include\Shibboleth_ComponentList.h">
@@ -120,6 +122,15 @@
       <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(QT_DIR)/bin/moc "../../../src/ShibbolethExtensions/include/Shibboleth_ComponentList.h" -o "../../../build/intermediate/moc_Shibboleth_ComponentList.cpp" -DQT_CORE_LIB -DQT_WIDGETS_LIB -DQT_GUI_LIB -I"../../../src/ShibbolethExtensions/include" -I"../../../src/Shared/include" -I"../../../dependencies/Contrivance/ContrivanceLib" -I"../../../dependencies/Gaff/include" -I"$(QT_DIR)/include" -I"$(QT_DIR)/include/QtCore" -I"$(QT_DIR)/include/QtWidgets" -I"$(QT_DIR)/include/QtGui"</Command>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">../../../build/intermediate/moc_Shibboleth_ComponentList.cpp</Outputs>
       <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Moc'ing Shibboleth_ComponentList.h</Message>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\src\ShibbolethExtensions\include\Shibboleth_PrefabEditor.h">
+      <FileType>Document</FileType>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(QT_DIR)/bin/moc "../../../src/ShibbolethExtensions/include/Shibboleth_PrefabEditor.h" -o "../../../build/intermediate/moc_Shibboleth_PrefabEditor.cpp" -D_DEBUG -DDEBUG -DQT_CORE_LIB -DQT_WIDGETS_LIB -DQT_GUI_LIB -I"../../../src/ShibbolethExtensions/include" -I"../../../src/Shared/include" -I"../../../dependencies/Contrivance/ContrivanceLib" -I"../../../dependencies/Gaff/include" -I"$(QT_DIR)/include" -I"$(QT_DIR)/include/QtCore" -I"$(QT_DIR)/include/QtWidgets" -I"$(QT_DIR)/include/QtGui"</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">../../../build/intermediate/moc_Shibboleth_PrefabEditor.cpp</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Moc'ing Shibboleth_PrefabEditor.h</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(QT_DIR)/bin/moc "../../../src/ShibbolethExtensions/include/Shibboleth_PrefabEditor.h" -o "../../../build/intermediate/moc_Shibboleth_PrefabEditor.cpp" -DQT_CORE_LIB -DQT_WIDGETS_LIB -DQT_GUI_LIB -I"../../../src/ShibbolethExtensions/include" -I"../../../src/Shared/include" -I"../../../dependencies/Contrivance/ContrivanceLib" -I"../../../dependencies/Gaff/include" -I"$(QT_DIR)/include" -I"$(QT_DIR)/include/QtCore" -I"$(QT_DIR)/include/QtWidgets" -I"$(QT_DIR)/include/QtGui"</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">../../../build/intermediate/moc_Shibboleth_PrefabEditor.cpp</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Moc'ing Shibboleth_PrefabEditor.h</Message>
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>

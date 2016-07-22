@@ -36,14 +36,14 @@ THE SOFTWARE.
 // Declares copy constructor and assignment operator as private.
 #define GAFF_NO_COPY(x) \
 	private: \
-		x(const x&); \
-		const x& operator=(const x&)
+		x(const x&) = delete; \
+		const x& operator=(const x&) = delete
 
 // Declares move constructor and assignment operator as private.
 #define GAFF_NO_MOVE(x) \
 	private: \
-	x(x&&); \
-	const x& operator=(x&&)
+		x(x&&) = delete; \
+		const x& operator=(x&&) = delete
 
 #ifdef ATTEMPT_INLINE
 	#define INLINE inline
@@ -67,6 +67,8 @@ THE SOFTWARE.
 #define GAFF_CAT(x, y) GAFF_CAT_HELPER(x, y)
 
 #define ARRAY_SIZE(arr) (sizeof(arr) / sizeof(arr[0]))
+
+#define FLAG_BIT(index) (1 << index)
 
 #ifdef _DEBUG
 	#define GAFF_ASSERT_ENABLED
@@ -115,16 +117,6 @@ THE SOFTWARE.
 #elif defined(PLATFORM_MAC)
 	#define DYNAMICEXPORT // Specifies a symbol for export.
 	#define DYNAMICIMPORT // Specifies a symbol for import.
-#endif
-
-#ifndef COMPILERALIGN16
-	#ifdef PLATFORM_WINDOWS
-		#define COMPILERALIGN16 __declspec(align(16))
-	#elif defined(PLATFORM_LINUX) || defined(PLATFORM_MAC)
-		#define COMPILERALIGN16 __attribute__((aligned(16)))
-	#else
-		#error Platform not supported
-	#endif
 #endif
 
 #if defined(PLATFORM_LINUX) || defined(PLATFORM_MAC)

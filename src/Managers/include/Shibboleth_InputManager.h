@@ -64,6 +64,12 @@ public:
 
 	bool saveKeybindings(void);
 
+	const Gleam::IKeyboard* getKeyboard(void) const;
+	Gleam::IKeyboard* getKeyboard(void);
+
+	const Gleam::IMouse* getMouse(void) const;
+	Gleam::IMouse* getMouse(void);
+
 private:
 	struct BindingInfo
 	{

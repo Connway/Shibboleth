@@ -57,7 +57,7 @@ void WindowCharacter(AnyMessage* message, Window*, WPARAM w, LPARAM)
 	message->key_char.character = static_cast<unsigned int>(w);
 }
 
-void WindowInput(AnyMessage* message, Window*, WPARAM, LPARAM l)
+void WindowInput(AnyMessage* message, Window* window, WPARAM, LPARAM l)
 {
 	UINT dwSize = 64;
 	BYTE lpb[64];
@@ -76,11 +76,21 @@ void WindowInput(AnyMessage* message, Window*, WPARAM, LPARAM l)
 
 		POINT pos;
 		if (GetCursorPos(&pos)) {
-			message->mouse_move.x = pos.x;
-			message->mouse_move.y = pos.y;
+			message->mouse_move.abs_x = pos.x;
+			message->mouse_move.abs_y = pos.y;
 		} else {
-			message->mouse_move.x += raw->data.mouse.lLastX;
-			message->mouse_move.y += raw->data.mouse.lLastY;
+			// This shouldn't happen, but just in case.
+			message->mouse_move.abs_x += raw->data.mouse.lLastX;
+			message->mouse_move.abs_y += raw->data.mouse.lLastY;
+		}
+
+		if (MapWindowPoints(NULL, window->getHWnd(), &pos, 1)) {
+			message->mouse_move.rel_x = pos.x;
+			message->mouse_move.rel_y = pos.y;
+		} else {
+			// This shouldn't happen, but just in case.
+			message->mouse_move.rel_x += raw->data.mouse.lLastX;
+			message->mouse_move.rel_y += raw->data.mouse.lLastY;
 		}
 
 		message->mouse_move.dx = raw->data.mouse.lLastX;
@@ -166,7 +176,7 @@ void WindowXButtonUp(AnyMessage* message, Window*, WPARAM w, LPARAM)
 void WindowMouseWheel(AnyMessage* message, Window*, WPARAM w, LPARAM)
 {
 	message->base.type = IN_MOUSEWHEEL;
-	message->mouse_state.wheel = (short)HIWORD(w) / WHEEL_DELTA;
+	message->mouse_state.wheel = static_cast<short>(HIWORD(w) / WHEEL_DELTA);
 }
 
 void WindowSetFocus(AnyMessage* message, Window* window, WPARAM, LPARAM)

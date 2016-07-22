@@ -29,7 +29,7 @@ WARNING("SIMD data structures are potentially going to be deprecated.")
 
 NS_GLEAM
 
-class COMPILERALIGN16 Vector4SIMD
+class alignas(16) Vector4SIMD
 {
 public:
 	Vector4SIMD(void);

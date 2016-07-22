@@ -99,7 +99,7 @@ void KeyboardMP::update(void)
 		for (unsigned int i = 0; i < 256; ++i) {
 			unsigned char curr = _curr_state[i];
 
-			for (unsigned int j = 0; j < _input_handlers.size(); ++j) {
+			for (size_t j = 0; j < _input_handlers.size(); ++j) {
 				_input_handlers[j](this, i, static_cast<float>(curr));
 			}
 		}
@@ -110,7 +110,7 @@ void KeyboardMP::update(void)
 			unsigned char prev = _prev_state[i];
 
 			if (curr != prev) {
-				for (unsigned int j = 0; j < _input_handlers.size(); ++j) {
+				for (size_t j = 0; j < _input_handlers.size(); ++j) {
 					_input_handlers[j](this, i, static_cast<float>(curr));
 				}
 			}
@@ -173,6 +173,13 @@ bool KeyboardMP::handleMessage(const AnyMessage& message)
 
 		case IN_KEYUP:
 			_curr_state[message.key_char.key] = false;
+			return true;
+
+		case IN_CHARACTER:
+			for (size_t i = 0; i < _character_handlers.size(); ++i) {
+				_character_handlers[i](this, message.key_char.character);
+			}
+
 			return true;
 
 		// To get rid of pesky "case not handled" warnings in GCC

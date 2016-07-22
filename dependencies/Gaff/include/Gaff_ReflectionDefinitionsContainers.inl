@@ -1536,7 +1536,7 @@ void ReflectionDefinition<T, Allocator>::ArrayFixedEnumContainer<array_size, T2>
 
 	if (array) {
 		T2 temp = std::move((object->*_var)[src_index]);
-		deconstruct(array + src_index);
+		Deconstruct(array + src_index);
 
 		for (size_t i = src_index; i  < array_size - 1; ++i) {
 			memcpy(array + i, array + i + 1, sizeof(T2));
@@ -1549,7 +1549,7 @@ void ReflectionDefinition<T, Allocator>::ArrayFixedEnumContainer<array_size, T2>
 			memcpy(array + i, array + i - 1, sizeof(T2));
 		}
 
-		construct(array + dest_index, std::move(temp));
+		Construct(array + dest_index, std::move(temp));
 	}
 }
 
@@ -1774,7 +1774,7 @@ void ReflectionDefinition<T, Allocator>::ArrayFixedObjectContainer<array_size, T
 
 	if (array) {
 		T2 temp = std::move((object->*_var)[src_index]);
-		deconstruct(array + src_index);
+		Deconstruct(array + src_index);
 
 		for (size_t i = src_index; i  < array_size - 1; ++i) {
 			memcpy(array + i, array + i + 1, sizeof(T2));

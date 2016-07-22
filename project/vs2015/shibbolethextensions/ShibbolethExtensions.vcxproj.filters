@@ -12,11 +12,16 @@
     <ClCompile Include="..\..\..\build\intermediate\moc_Shibboleth_ComponentList.cpp">
       <Filter>Generated</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\build\intermediate\moc_Shibboleth_PrefabEditor.cpp">
+      <Filter>Generated</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\..\src\ShibbolethExtensions\ShibbolethExtensions.cpp" />
     <ClCompile Include="..\..\..\src\ShibbolethExtensions\Shibboleth_ComponentList.cpp" />
     <ClCompile Include="..\..\..\src\ShibbolethExtensions\Shibboleth_InspectionPanel.cpp" />
+    <ClCompile Include="..\..\..\src\ShibbolethExtensions\Shibboleth_PrefabEditor.cpp" />
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="..\..\..\src\ShibbolethExtensions\include\Shibboleth_ComponentList.h" />
+    <CustomBuild Include="..\..\..\src\ShibbolethExtensions\include\Shibboleth_PrefabEditor.h" />
   </ItemGroup>
 </Project>

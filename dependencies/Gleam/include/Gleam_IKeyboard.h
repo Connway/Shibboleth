@@ -30,6 +30,8 @@ NS_GLEAM
 class IKeyboard : public IInputDevice
 {
 public:
+	using CharacterHandler = Gaff::FunctionBinder<void, IKeyboard*, unsigned int>;
+
 	IKeyboard(void) {}
 	virtual ~IKeyboard(void) {}
 
@@ -44,6 +46,26 @@ public:
 
 	bool isKeyboard(void) const { return true; }
 	bool isMouse(void) const { return false; }
+
+	INLINE void addCharacterHandler(const CharacterHandler& handler)
+	{
+		_character_handlers.emplacePush(handler);
+	}
+
+	bool removeCharacterHandler(const CharacterHandler& handler)
+	{
+		auto it = _character_handlers.linearSearch(handler);
+
+		if (it != _character_handlers.end()) {
+			_character_handlers.fastErase(it);
+			return true;
+		}
+
+		return false;
+	}
+
+protected:
+	GleamArray<CharacterHandler> _character_handlers;
 };
 
 NS_END

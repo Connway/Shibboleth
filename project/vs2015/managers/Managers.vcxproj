@@ -58,7 +58,7 @@
       <WarningLevel>Level4</WarningLevel>
       <TreatWarningAsError>true</TreatWarningAsError>
       <PreprocessorDefinitions>_DEBUG;DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\..\..\dependencies\dirent;..\..\..\src\Managers\include;..\..\..\src\Shared\include;..\..\..\src\Memory\include;..\..\..\src\Game\include;..\..\..\src\Components\include;..\..\..\dependencies\assimp\include;..\..\..\dependencies\OtterUI\inc;..\..\..\dependencies\rapidjson;..\..\..\dependencies\Gleam\include;..\..\..\dependencies\Gaff\include;..\..\..\dependencies\esprit\include;..\..\..\dependencies\LuaState;..\..\..\dependencies\LuaJIT\src;..\..\..\dependencies\utf8-cpp;..\..\..\dependencies\bullet;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\dependencies\dirent;..\..\..\src\Managers\include;..\..\..\src\Shared\include;..\..\..\src\Memory\include;..\..\..\src\Game\include;..\..\..\src\Components\include;..\..\..\dependencies\assimp\include;..\..\..\dependencies\OtterUI\inc;..\..\..\dependencies\rapidjson;..\..\..\dependencies\Gleam\include;..\..\..\dependencies\Gaff\include;..\..\..\dependencies\esprit\include;..\..\..\dependencies\LuaState;..\..\..\dependencies\LuaJIT\src;..\..\..\dependencies\utf8-cpp;..\..\..\dependencies\bullet;..\..\..\dependencies\imgui;..\..\..\dependencies\nuklear;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
       <ExceptionHandling>Async</ExceptionHandling>
@@ -79,7 +79,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level4</WarningLevel>
       <TreatWarningAsError>true</TreatWarningAsError>
-      <AdditionalIncludeDirectories>..\..\..\dependencies\dirent;..\..\..\src\Managers\include;..\..\..\src\Shared\include;..\..\..\src\Memory\include;..\..\..\src\Game\include;..\..\..\src\Components\include;..\..\..\dependencies\assimp\include;..\..\..\dependencies\OtterUI\inc;..\..\..\dependencies\rapidjson;..\..\..\dependencies\Gleam\include;..\..\..\dependencies\Gaff\include;..\..\..\dependencies\esprit\include;..\..\..\dependencies\LuaState;..\..\..\dependencies\LuaJIT\src;..\..\..\dependencies\utf8-cpp;..\..\..\dependencies\bullet;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\dependencies\dirent;..\..\..\src\Managers\include;..\..\..\src\Shared\include;..\..\..\src\Memory\include;..\..\..\src\Game\include;..\..\..\src\Components\include;..\..\..\dependencies\assimp\include;..\..\..\dependencies\OtterUI\inc;..\..\..\dependencies\rapidjson;..\..\..\dependencies\Gleam\include;..\..\..\dependencies\Gaff\include;..\..\..\dependencies\esprit\include;..\..\..\dependencies\LuaState;..\..\..\dependencies\LuaJIT\src;..\..\..\dependencies\utf8-cpp;..\..\..\dependencies\bullet;..\..\..\dependencies\imgui;..\..\..\dependencies\nuklear;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -107,9 +107,11 @@
     <ClInclude Include="..\..\..\src\Managers\include\Shibboleth_CameraManager.h" />
     <ClInclude Include="..\..\..\src\Managers\include\Shibboleth_ComponentManager.h" />
     <ClInclude Include="..\..\..\src\Managers\include\Shibboleth_FrameManager.h" />
+    <ClInclude Include="..\..\..\src\Managers\include\Shibboleth_ImGuiManager.h" />
     <ClInclude Include="..\..\..\src\Managers\include\Shibboleth_InputManager.h" />
     <ClInclude Include="..\..\..\src\Managers\include\Shibboleth_LuaManager.h" />
     <ClInclude Include="..\..\..\src\Managers\include\Shibboleth_MovementControllerManager.h" />
+    <ClInclude Include="..\..\..\src\Managers\include\Shibboleth_NuklearManager.h" />
     <ClInclude Include="..\..\..\src\Managers\include\Shibboleth_ObjectManager.h" />
     <ClInclude Include="..\..\..\src\Managers\include\Shibboleth_OcclusionManager.h" />
     <ClInclude Include="..\..\..\src\Managers\include\Shibboleth_OtterUIManager.h" />
@@ -126,9 +128,11 @@
     <ClCompile Include="..\..\..\src\Managers\Shibboleth_CameraManager.cpp" />
     <ClCompile Include="..\..\..\src\Managers\Shibboleth_ComponentManager.cpp" />
     <ClCompile Include="..\..\..\src\Managers\Shibboleth_FrameManager.cpp" />
+    <ClCompile Include="..\..\..\src\Managers\Shibboleth_ImGuiManager.cpp" />
     <ClCompile Include="..\..\..\src\Managers\Shibboleth_InputManager.cpp" />
     <ClCompile Include="..\..\..\src\Managers\Shibboleth_LuaManager.cpp" />
     <ClCompile Include="..\..\..\src\Managers\Shibboleth_MovementControllerManager.cpp" />
+    <ClCompile Include="..\..\..\src\Managers\Shibboleth_NuklearManager.cpp" />
     <ClCompile Include="..\..\..\src\Managers\Shibboleth_ObjectManager.cpp" />
     <ClCompile Include="..\..\..\src\Managers\Shibboleth_OcclusionManager.cpp" />
     <ClCompile Include="..\..\..\src\Managers\Shibboleth_OtterUIManager.cpp" />

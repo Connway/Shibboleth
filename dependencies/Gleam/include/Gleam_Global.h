@@ -54,7 +54,7 @@ T* GleamAllocT(const char* filename, unsigned int line_number, Args... args)
 	T* data = reinterpret_cast<T*>(GleamAlloc(sizeof(T), filename, line_number));
 
 	if (data) {
-		Gaff::construct(data, args...);
+		Gaff::Construct(data, args...);
 	}
 
 	return data;

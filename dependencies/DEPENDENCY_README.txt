@@ -19,7 +19,7 @@ Libraries Affected:
 	OtterUI (got rid of a lot of warnings in Visual Studio and fixed a couple inconsistencies and crash bugs)
 	dirent (got rid of warnings in Visual Studio)
 	Boxer (added support for Abort/Retry/Ignore and Cancel/Try/Continue button configurations)
-
+	imgui (uses modified version from the LimuxEngine with some fixes of my own)
 
 Dependencies versions:
 Assimp - 3.2
@@ -29,6 +29,7 @@ bullet - 2.83.7
 dirent - 1.21
 enet - 1.3.13
 glew - 1.13.0
+imgui - 1.50
 libjpeg - 9b
 libpng - 1.6.21
 libtiff - 4.0.6

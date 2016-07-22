@@ -195,8 +195,12 @@ void Window::WindowProc(XEvent& event)
 							}
 						}
 
-						message->mouse_move.x = (int)win_x;
-						message->mouse_move.y = (int)win_y;
+						message->mouse_move.rel_x = (int)win_x;
+						message->mouse_move.rel_y = (int)win_y;
+
+						//message->mouse_move.abs_x = (int)win_x;
+						//message->mouse_move.abs_y = (int)win_y;
+
 					} break;
 
 					case XI_KeyPress: {
