@@ -31,7 +31,7 @@ project "Shared"
 		"include",
 		"../Memory/include",
 		"../../dependencies/rapidjson",
-		"../../dependencies/Gaff/include",
+		"../../frameworks/Gaff/include",
 		"../../dependencies/utf8-cpp"
 	}
 

@@ -29,7 +29,6 @@ THE SOFTWARE.
 #include <Shibboleth_Utilities.h>
 #include <Shibboleth_IApp.h>
 #include <Gaff_Image.h>
-#include <Gaff_JSON.h>
 
 #include <Shibboleth_RenderPipelineManager.h>
 #include <Shibboleth_OcclusionManager.h>
@@ -92,77 +91,9 @@ public:
 	void enter(void)
 	{
 		Shibboleth::IApp& app = Shibboleth::GetApp();
-		//Shibboleth::IFileSystem* fs = app.getFileSystem();
-
 		app.getManagerT<Shibboleth::ResourceManager>().addRequestAddedCallback(Gaff::Bind(this, &LoopState::ResReq));
-
 		app.getManagerT<Shibboleth::SceneManager>().loadScene("Resources/Scenes/test.scene");
 
-		//_object = app.getManagerT<Shibboleth::ObjectManager>().createObject();
-
-		//if (_object) {
-		//	if (_object->init(fs, "Resources/Objects/test.object")) {
-		//		_object->setWorldPosition(Gleam::Vector4CPU(-2.5f, 0.0f, 0.0f, 1.0f));
-
-		//	} else {
-		//		app.getManagerT<Shibboleth::ObjectManager>().removeObject(_object->getID());
-		//		_object = nullptr;
-		//		app.quit();
-		//	}
-
-		//} else {
-		//	app.quit();
-		//}
-
-		//_object2 = app.getManagerT<Shibboleth::ObjectManager>().createObject();
-
-		//if (_object2) {
-		//	if (_object2->init(fs, "Resources/Objects/test.object")) {
-		//		_object2->setWorldPosition(Gleam::Vector4CPU(2.5f, 0.0f, 0.0f, 1.0f));
-
-		//	} else {
-		//		app.getManagerT<Shibboleth::ObjectManager>().removeObject(_object2->getID());
-		//		_object2 = nullptr;
-		//		app.quit();
-		//	}
-
-		//} else {
-		//	app.quit();
-		//}
-
-		//_camera = app.getManagerT<Shibboleth::ObjectManager>().createObject();
-
-		//if (_camera) {
-		//	if (_camera->init(fs, "Resources/Objects/test_camera.object")) {
-		//		_camera->setWorldPosition(Gleam::Vector4CPU(0.0f, 5.0f, -50.0f, 1.0f));
-
-		//	} else {
-		//		app.getManagerT<Shibboleth::ObjectManager>().removeObject(_camera->getID());
-		//		_camera = nullptr;
-		//		app.quit();
-		//	}
-
-		//} else {
-		//	app.quit();
-		//}
-
-		//_floor = app.getManagerT<Shibboleth::ObjectManager>().createObject();
-
-		//if (_floor) {
-		//	if (!_floor->init(fs, "Resources/Objects/floor.object")) {
-		//		app.getManagerT<Shibboleth::ObjectManager>().removeObject(_floor->getID());
-		//		_floor = nullptr;
-		//		app.quit();
-		//	}
-
-		//} else {
-		//	app.quit();
-		//}
-
-		//_object->addToWorld();
-		//_object2->addToWorld();
-		//_camera->addToWorld();
-		//_floor->addToWorld();
 	}
 
 	void update(void)
@@ -187,25 +118,20 @@ public:
 			}
 		} while (!all_loaded || _resources.empty());
 
-		Shibboleth::Object* camera = app.getManagerT<Shibboleth::ObjectManager>().findObject("Test Camera");
+		static bool already_set = false;
 
-		if (camera) {
-			Shibboleth::CameraComponent* camera_cmp = camera->getFirstComponentWithInterface<Shibboleth::CameraComponent>();
-			static bool already_set = false;
+		if (!already_set) {
+			Shibboleth::Object* camera = app.getManagerT<Shibboleth::ObjectManager>().findObject("Test Camera");
 
-			if (camera_cmp && !already_set) {
-				app.getManagerT<Shibboleth::RenderPipelineManager>().setOutputCamera(camera_cmp);
-				already_set = true;
+			if (camera) {
+				Shibboleth::CameraComponent* camera_cmp = camera->getFirstComponentWithInterface<Shibboleth::CameraComponent>();
+
+				if (camera_cmp) {
+					app.getManagerT<Shibboleth::RenderPipelineManager>().setOutputCamera(camera_cmp);
+					already_set = true;
+				}
 			}
 		}
-
-		//static Shibboleth::CameraComponent* camera = _camera->getFirstComponentWithInterface<Shibboleth::CameraComponent>();
-		//static bool added = false;
-
-		//if (!added && camera && camera->getRenderTarget().getResourcePtr()->isLoaded()) {
-		//	app.getManagerT<Shibboleth::RenderPipelineManager>().setOutputCamera(camera);
-		//	added = true;
-		//}
 
 		static Shibboleth::RenderManager& rm = app.getManagerT<Shibboleth::RenderManager>();
 		rm.updateWindows(); // This has to happen in the main thread.

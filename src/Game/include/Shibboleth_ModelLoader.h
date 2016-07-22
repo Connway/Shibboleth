@@ -38,7 +38,7 @@ namespace Gleam {
 	class IModel;
 }
 
-namespace esprit {
+namespace Esprit {
 	class Skeleton;
 }
 

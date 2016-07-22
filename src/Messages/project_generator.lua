@@ -20,7 +20,7 @@ project "Messages"
 		"include",
 		"../Shared/include",
 		"../Memory/include",
-		"../../dependencies/Gaff/include",
+		"../../frameworks/Gaff/include",
 		"../../dependencies/rapidjson/",
 		"../../dependencies/utf8-cpp"
 	}

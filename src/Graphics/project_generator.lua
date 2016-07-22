@@ -21,9 +21,9 @@ project "Graphics"
 	{
 		"../Shared/include",
 		"../Memory/include",
+		"../../frameworks/Gaff/include",
+		"../../frameworks/Gleam/include",
 		"../../dependencies/rapidjson",
-		"../../dependencies/Gleam/include",
-		"../../dependencies/Gaff/include",
 		"../../dependencies/utf8-cpp"
 	}
 

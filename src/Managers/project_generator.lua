@@ -28,12 +28,12 @@ project "Managers"
 		"../Memory/include",
 		"../Game/include",
 		"../Components/include",
+		"../../frameworks/Gaff/include",
+		"../../frameworks/Gleam/include",
+		"../../frameworks/esprit/include",
 		"../../dependencies/assimp/include",
 		"../../dependencies/OtterUI/inc",
 		"../../dependencies/rapidjson",
-		"../../dependencies/Gleam/include",
-		"../../dependencies/Gaff/include",
-		"../../dependencies/esprit/include",
 		"../../dependencies/LuaState",
 		"../../dependencies/LuaJIT/src",
 		"../../dependencies/utf8-cpp",
@@ -75,10 +75,10 @@ project "ManagersModule"
 		"../Memory/include",
 		"../Game/include",
 		"../Components/include",
+		"../../frameworks/Gaff/include",
+		"../../frameworks/Gleam/include",
 		"../../dependencies/OtterUI/inc",
 		"../../dependencies/rapidjson",
-		"../../dependencies/Gleam/include",
-		"../../dependencies/Gaff/include",
 		"../../dependencies/LuaState",
 		"../../dependencies/LuaJIT/src",
 		"../../dependencies/utf8-cpp",
@@ -94,7 +94,8 @@ project "ManagersModule"
 		"Boxer", "Components",
 		"BulletCollision",
 		"BulletDynamics",
-		"LinearMath", "imgui"
+		"LinearMath", "imgui",
+		"nuklear"
 	}
 
 	links
@@ -106,7 +107,8 @@ project "ManagersModule"
 		"Boxer", "Components",
 		"BulletCollision",
 		"BulletDynamics",
-		"LinearMath", "imgui"
+		"LinearMath", "imgui",
+		"nuklear"
 	}
 
 	filter { "configurations:Debug", "platforms:x86" }

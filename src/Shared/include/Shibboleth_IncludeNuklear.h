@@ -23,14 +23,20 @@ THE SOFTWARE.
 #pragma once
 
 #include <Gaff_Platform.h>
+#include <cstring>
 
 #ifdef PLATFORM_WINDOWS
 	#pragma warning(push)
-	#pragma warning(disable: 4127)
+	#pragma warning(disable: 4127 4505)
 #endif
 
 #define NK_INCLUDE_FIXED_TYPES
-#include <nuklear.h>
+
+#ifdef NK_LOCAL
+	#include "nuklear.h"
+#else
+	#include <nuklear.h>
+#endif
 
 #ifdef PLATFORM_WINDOWS
 	#pragma warning(pop)

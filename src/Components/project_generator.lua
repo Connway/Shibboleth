@@ -28,15 +28,15 @@ project "Components"
 		"../Memory/include",
 		"../Game/include",
 		"../Managers/include",
+		"../../frameworks/Gaff/include",
+		"../../frameworks/Gleam/include",
+		"../../frameworks/esprit/include",
 		"../../dependencies/OtterUI/inc",
 		"../../dependencies/rapidjson",
-		"../../dependencies/Gleam/include",
-		"../../dependencies/Gaff/include",
 		"../../dependencies/LuaState",
 		"../../dependencies/LuaJIT/src",
 		"../../dependencies/utf8-cpp",
 		"../../dependencies/assimp/include",
-		"../../dependencies/esprit/include",
 		"../../dependencies/bullet"
 	}
 
@@ -72,15 +72,15 @@ project "ComponentsModule"
 		"../Memory/include",
 		"../Game/include",
 		"../Managers/include",
+		"../../frameworks/Gaff/include",
+		"../../frameworks/Gleam/include",
+		"../../frameworks/esprit/include",
 		"../../dependencies/OtterUI/inc",
 		"../../dependencies/rapidjson",
-		"../../dependencies/Gleam/include",
-		"../../dependencies/Gaff/include",
 		"../../dependencies/LuaState",
 		"../../dependencies/LuaJIT/src",
 		"../../dependencies/utf8-cpp",
 		"../../dependencies/assimp/include",
-		"../../dependencies/esprit/include",
 		"../../dependencies/bullet"
 	}
 

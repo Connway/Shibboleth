@@ -22,15 +22,11 @@ THE SOFTWARE.
 
 #include "Shibboleth_NuklearManager.h"
 #include "Shibboleth_InputManager.h"
-//#include <Shibboleth_IncludeImgui.h>
 #include <Shibboleth_Utilities.h>
 #include <Shibboleth_IApp.h>
 #include <Gleam_Window_Defines.h>
 #include <Gleam_IKeyboard.h>
 #include <Gleam_IMouse.h>
-
-#define NK_IMPLEMENTATION
-#include <Shibboleth_IncludeNuklear.h>
 
 NS_SHIBBOLETH
 
@@ -65,11 +61,7 @@ NuklearManager::NuklearManager(void)
 
 NuklearManager::~NuklearManager(void)
 {
-	//ImGui::Shutdown();
-
-	//if (_imgui_context) {
-	//	ImGui::DestroyContext(_imgui_context);
-	//}
+	nk_free(&_context);
 }
 
 const char* NuklearManager::getName(void) const
@@ -113,37 +105,6 @@ bool NuklearManager::init(void)
 		g_first_init = false;
 	}
 
-	//_imgui_context = ImGui::CreateContext(ImGuiAllocate, ShibbolethFree);
-
-	//if (!_imgui_context) {
-	//	return false;
-	//}
-
-	//ImGui::SetCurrentContext(_imgui_context);
-
-	//// Setup input codes
-	//ImGuiIO& io = ImGui::GetIO();
-
-	//io.KeyMap[ImGuiKey_Tab] = Gleam::KEY_TAB;
-	//io.KeyMap[ImGuiKey_LeftArrow] = Gleam::KEY_LEFT;
-	//io.KeyMap[ImGuiKey_RightArrow] = Gleam::KEY_RIGHT;
-	//io.KeyMap[ImGuiKey_UpArrow] = Gleam::KEY_UP;
-	//io.KeyMap[ImGuiKey_DownArrow] = Gleam::KEY_DOWN;
-	//io.KeyMap[ImGuiKey_PageUp] = Gleam::KEY_PAGEUP;
-	//io.KeyMap[ImGuiKey_PageDown] = Gleam::KEY_PAGEDOWN;
-	//io.KeyMap[ImGuiKey_Home] = Gleam::KEY_HOME;
-	//io.KeyMap[ImGuiKey_End] = Gleam::KEY_END;
-	//io.KeyMap[ImGuiKey_Delete] = Gleam::KEY_DELETE;
-	//io.KeyMap[ImGuiKey_Backspace] = Gleam::KEY_BACKSPACE;
-	//io.KeyMap[ImGuiKey_Enter] = Gleam::KEY_ENTER;
-	//io.KeyMap[ImGuiKey_Escape] = Gleam::KEY_ESCAPE;
-	//io.KeyMap[ImGuiKey_A] = Gleam::KEY_A;
-	//io.KeyMap[ImGuiKey_C] = Gleam::KEY_C;
-	//io.KeyMap[ImGuiKey_V] = Gleam::KEY_V;
-	//io.KeyMap[ImGuiKey_X] = Gleam::KEY_X;
-	//io.KeyMap[ImGuiKey_Y] = Gleam::KEY_Y;
-	//io.KeyMap[ImGuiKey_Z] = Gleam::KEY_Z;
-
 	_allocator.alloc = NuklearAllocate;
 	_allocator.free = NuklearFree;
 	_allocator.userdata.ptr = nullptr;
@@ -155,11 +116,6 @@ bool NuklearManager::init(void)
 
 	return true;
 }
-
-//void NuklearManager::setImGuiContext(void)
-//{
-//	ImGui::SetCurrentContext(_imgui_context);
-//}
 
 void NuklearManager::generateDrawCommands(double /*dt*/, void* /*frame_data*/)
 {
@@ -234,9 +190,19 @@ void NuklearManager::handleMouse(Gleam::IInputDevice* input_device, unsigned int
 
 	mouse->getRelativePosition(x, y);
 
-	//nk_input_button(&_context, button, x, y, value > 0.0f);
-	(input_code);
-	(value);
+	switch (input_code) {
+		case Gleam::MOUSE_LEFT:
+			nk_input_button(&_context, NK_BUTTON_LEFT, x, y, value > 0.0f);
+			break;
+
+		case Gleam::MOUSE_RIGHT:
+			nk_input_button(&_context, NK_BUTTON_RIGHT, x, y, value > 0.0f);
+			break;
+
+		case Gleam::MOUSE_MIDDLE:
+			nk_input_button(&_context, NK_BUTTON_MIDDLE, x, y, value > 0.0f);
+			break;
+	}
 }
 
 void NuklearManager::handleCharacter(Gleam::IKeyboard*, unsigned int char_code)

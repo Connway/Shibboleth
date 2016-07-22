@@ -59,4 +59,10 @@ EnumReflectionDefinition<T>& GetEnumRefDef(void)
 	template<> EnumReflectionDefinition<EnumName>& GetEnumRefDef<EnumName>(void) { return g##EnumName##RefDef; } \
 	ENUM_REF_IMPL_ASSIGN(EnumName, ProxyAllocator, ProxyAllocator("Reflection"))
 
+#define SHIB_INTERFACE_REFLECTION(FriendlyName) \
+	static const char* GetFriendlyName(void) \
+	{ \
+		return FriendlyName; \
+	}
+
 NS_END

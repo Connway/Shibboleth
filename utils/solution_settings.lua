@@ -13,7 +13,7 @@ nativewchar "Default"
 floatingpoint "Fast"
 startproject "App"
 
-flags { "Symbols" }
+flags { "Symbols", "C++14" }
 
 filter { "options:physx" }
 	defines { "USE_PHYSX" }
@@ -41,9 +41,6 @@ filter { "configurations:Release*", "platforms:x64" }
 	objdir "../build/intermediate"
 	targetdir "../build/output/x64/Release"
 
-filter { "language:C++", "action:gmake" }
-	buildoptions { "-std=c++11", "-x c++" }
-
 filter { "configurations:Debug*", "action:gmake", "options:not debug_optimization" }
 	optimize "Off"
 
@@ -64,6 +61,7 @@ configuration "Debug*"
 
 configuration "Release*"
 	flags { "LinkTimeOptimization", "ReleaseRuntime" }
+	defines { "NDEBUG" }
 	optimize "Speed"
 
 configuration {}
