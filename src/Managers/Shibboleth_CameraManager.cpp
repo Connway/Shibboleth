@@ -38,13 +38,9 @@ NS_SHIBBOLETH
 REF_IMPL_REQ(CameraManager);
 SHIB_REF_IMPL(CameraManager)
 .addBaseClassInterfaceOnly<CameraManager>()
+.ADD_BASE_CLASS_INTERFACE_ONLY(ICameraManager)
 .ADD_BASE_CLASS_INTERFACE_ONLY(IUpdateQuery)
 ;
-
-const char* CameraManager::GetFriendlyName(void)
-{
-	return "Camera Manager";
-}
 
 CameraManager::CameraManager(void):
 	_occlusion_mgr(nullptr)
@@ -68,52 +64,6 @@ void CameraManager::allManagersCreated(void)
 void CameraManager::getUpdateEntries(Array<UpdateEntry>& entries)
 {
 	entries.emplacePush(AString("Camera Manager: Update"), Gaff::Bind(this, &CameraManager::update));
-}
-
-void CameraManager::update(double, void* frame_data)
-{
-	FrameData* fd = reinterpret_cast<FrameData*>(frame_data);
-	fd->camera_object_data.clearNoFree();
-
-	OcclusionManager::QueryData query_result;
-
-	for (auto it = _cameras.begin(); it != _cameras.end(); ++it) {
-		ObjectData& od = fd->camera_object_data[*it];
-
-		od.active = (*it)->isActive();
-
-		if (od.active) {
-			od.projection_matrix = (*it)->getProjectionMatrix();
-			od.eye_transform = (*it)->getOwner()->getWorldTransform();
-			od.inv_eye_transform = od.eye_transform.inverse();
-			od.clear_mode = (*it)->getClearMode();
-
-			if (od.clear_mode == CameraComponent::CM_COLOR) {
-				memcpy(od.clear_color, (*it)->getClearColor(), sizeof(float) * 4);
-			}
-
-			//_occlusion_mgr->findObjectsInFrustum((*it)->getFrustum(), od.objects);
-			_occlusion_mgr->findObjectsInFrustum((*it)->getFrustum(), query_result);
-
-			for (int i = OcclusionManager::OT_STATIC; i < OcclusionManager::OT_SIZE; ++i) {
-				// Copy all the transforms.
-				for (auto it_obj = query_result.results[i].begin(); it_obj != query_result.results[i].end(); ++it_obj) {
-					//od.transforms[i].emplacePush(it_obj->first->getWorldTransform());
-					od.transforms.emplacePush(it_obj->first->getWorldTransform());
-
-					switch (it_obj->second.second) {
-						case OMT_MODEL_COMP:
-							addModelComponent(od, reinterpret_cast<ModelComponent*>(it_obj->second.first), it_obj->first->getWorldTransform().getTranslation());
-							break;
-
-						case OMT_INST_COMP:
-							//addInstancedModelComponent(od, reinterpret_cast<InstancedModelComponent*>(it_obj->second.first));
-							break;
-					}
-				}
-			}
-		}
-	}
 }
 
 void CameraManager::registerCamera(CameraComponent* camera)
@@ -188,6 +138,52 @@ void CameraManager::addModelComponent(ObjectData& od, ModelComponent* mc, const 
 	//	od.programs.emplacePush(programs[i]->programs);
 	//	od.render_pass.emplacePush(programs[i]->render_pass);
 	//}
+}
+
+void CameraManager::update(double, void* frame_data)
+{
+	FrameData* fd = reinterpret_cast<FrameData*>(frame_data);
+	fd->camera_object_data.clearNoFree();
+
+	OcclusionManager::QueryData query_result;
+
+	for (auto it = _cameras.begin(); it != _cameras.end(); ++it) {
+		ObjectData& od = fd->camera_object_data[*it];
+
+		od.active = (*it)->isActive();
+
+		if (od.active) {
+			od.projection_matrix = (*it)->getProjectionMatrix();
+			od.eye_transform = (*it)->getOwner()->getWorldTransform();
+			od.inv_eye_transform = od.eye_transform.inverse();
+			od.clear_mode = (*it)->getClearMode();
+
+			if (od.clear_mode == CameraComponent::CM_COLOR) {
+				memcpy(od.clear_color, (*it)->getClearColor(), sizeof(float) * 4);
+			}
+
+			//_occlusion_mgr->findObjectsInFrustum((*it)->getFrustum(), od.objects);
+			_occlusion_mgr->findObjectsInFrustum((*it)->getFrustum(), query_result);
+
+			for (int i = OcclusionManager::OT_STATIC; i < OcclusionManager::OT_SIZE; ++i) {
+				// Copy all the transforms.
+				for (auto it_obj = query_result.results[i].begin(); it_obj != query_result.results[i].end(); ++it_obj) {
+					//od.transforms[i].emplacePush(it_obj->first->getWorldTransform());
+					od.transforms.emplacePush(it_obj->first->getWorldTransform());
+
+					switch (it_obj->second.second) {
+					case OMT_MODEL_COMP:
+						addModelComponent(od, reinterpret_cast<ModelComponent*>(it_obj->second.first), it_obj->first->getWorldTransform().getTranslation());
+						break;
+
+					case OMT_INST_COMP:
+						//addInstancedModelComponent(od, reinterpret_cast<InstancedModelComponent*>(it_obj->second.first));
+						break;
+					}
+				}
+			}
+		}
+	}
 }
 
 NS_END

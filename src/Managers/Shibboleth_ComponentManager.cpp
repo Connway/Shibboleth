@@ -21,6 +21,7 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Shibboleth_ComponentManager.h"
+#include "Shibboleth_Component.h"
 #include <Shibboleth_Utilities.h>
 #include <Shibboleth_IApp.h>
 #include <Gaff_File.h>
@@ -31,12 +32,8 @@ REF_IMPL_REQ(ComponentManager);
 
 SHIB_REF_IMPL(ComponentManager)
 .addBaseClassInterfaceOnly<ComponentManager>()
+.ADD_BASE_CLASS_INTERFACE_ONLY(IComponentManager)
 ;
-
-const char* ComponentManager::GetFriendlyName(void)
-{
-	return "Component Manager";
-}
 
 ComponentManager::ComponentManager(void)
 {
@@ -107,7 +104,7 @@ void ComponentManager::allManagersCreated(void)
 	GetApp().getLogManager().logMessage(LogManager::LOG_NORMAL, GetApp().getLogFileName(), "Finished Loading Components\n\n");
 }
 
-Component* ComponentManager::createComponent(AHashString name)
+Component* ComponentManager::createComponent(const AHashString& name)
 {
 	size_t index = _components.indexOf(name);
 	GAFF_ASSERT(name.size() && index != SIZE_T_FAIL);

@@ -22,34 +22,32 @@ THE SOFTWARE.
 
 #pragma once
 
-#include <Shibboleth_ReflectionDefinitions.h>
-#include <Shibboleth_MessageBroadcaster.h>
+#include "Shibboleth_IBroadcasterManager.h"
 #include <Shibboleth_IUpdateQuery.h>
 #include <Shibboleth_IManager.h>
 #include <Shibboleth_Map.h>
+#include <Gaff_ReadWriteSpinLock.h>
 
 NS_SHIBBOLETH
 
-class BroadcasterManager : public IManager, public IUpdateQuery
+class BroadcasterManager : public IManager, public IUpdateQuery, public IBroadcasterManager
 {
 public:
-	static const char* GetFriendlyName(void);
-
 	BroadcasterManager(void);
 	~BroadcasterManager(void);
 
-	const char* getName(void) const;
+	const char* getName(void) const override;
 
-	void getUpdateEntries(Array<UpdateEntry>& entries);
+	void getUpdateEntries(Array<UpdateEntry>& entries) override;
 
-	void update(double, void*);
-
-	MessageBroadcaster* getBroadcaster(unsigned int object_id, bool create_if_doesnt_exist);
-	void clear(void);
+	MessageBroadcaster* getBroadcaster(unsigned int object_id, bool create_if_doesnt_exist) override;
+	void clear(void) override;
 
 private:
 	Map<unsigned int, MessageBroadcaster*> _object_broadcasters;
 	Gaff::ReadWriteSpinLock _broadcaster_lock;
+
+	void update(double, void*);
 
 	SHIB_REF_DEF(BroadcasterManager);
 	REF_DEF_REQ;

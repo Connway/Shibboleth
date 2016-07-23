@@ -22,31 +22,22 @@ THE SOFTWARE.
 
 #pragma once
 
-#include <Shibboleth_ReflectionDefinitions.h>
+#include "Shibboleth_ILuaManager.h"
 #include <Shibboleth_IManager.h>
 #include <Shibboleth_Array.h>
-#include <Gaff_Function.h>
-
-namespace lua
-{
-	class State;
-}
 
 NS_SHIBBOLETH
 
-class LuaManager : public IManager
+class LuaManager : public IManager, public ILuaManager
 {
 public:
-	static const char* GetFriendlyName(void);
-
 	LuaManager(void);
 	~LuaManager(void);
 
 	const char* getName(void) const;
 
-	void addRegistrant(const Gaff::FunctionBinder<void, lua::State&>& registrant);
-
-	lua::State* createNewState(void);
+	void addRegistrant(const Gaff::FunctionBinder<void, lua::State&>& registrant) override;
+	lua::State* createNewState(void) override;
 
 private:
 	Array< Gaff::FunctionBinder<void, lua::State&> > _registrants;

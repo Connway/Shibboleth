@@ -35,6 +35,7 @@ NS_SHIBBOLETH
 REF_IMPL_REQ(OcclusionManager);
 SHIB_REF_IMPL(OcclusionManager)
 .addBaseClassInterfaceOnly<OcclusionManager>()
+.ADD_BASE_CLASS_INTERFACE_ONLY(IOcclusionManager)
 .ADD_BASE_CLASS_INTERFACE_ONLY(IUpdateQuery)
 ;
 
@@ -346,11 +347,6 @@ void OcclusionManager::BVHTree::updateAABBs(size_t index)
 
 
 // Occlusion Manager
-const char* OcclusionManager::GetFriendlyName(void)
-{
-	return "Occlusion Manager";
-}
-
 OcclusionManager::OcclusionManager(void)
 {
 	_bvh_trees[OT_STATIC].setIsStatic(true);
@@ -401,13 +397,6 @@ void OcclusionManager::constructStaticTree(const Array<Object*>& objects, Array<
 	_bvh_trees[OT_STATIC].construct(objects, id_out);
 }
 
-void OcclusionManager::update(double, void*)
-{
-	for (unsigned int i = 0; i < OT_SIZE; ++i) {
-		_bvh_trees[i].update();
-	}
-}
-
 void OcclusionManager::findObjectsInFrustum(const Gleam::FrustumCPU& frustum, OBJ_TYPE object_type, Array<QueryResult>& out) const
 {
 	BVHTree::FrustumQueryData data;	
@@ -443,6 +432,13 @@ OcclusionManager::QueryData OcclusionManager::findObjectsInFrustum(const Gleam::
 	QueryData out;
 	findObjectsInFrustum(frustum, out);
 	return out;
+}
+
+void OcclusionManager::update(double, void*)
+{
+	for (unsigned int i = 0; i < OT_SIZE; ++i) {
+		_bvh_trees[i].update();
+	}
 }
 
 NS_END

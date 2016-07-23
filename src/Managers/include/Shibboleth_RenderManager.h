@@ -22,146 +22,31 @@ THE SOFTWARE.
 
 #pragma once
 
-#include <Shibboleth_ReflectionDefinitions.h>
+#include "Shibboleth_IRenderManager.h"
 #include <Shibboleth_DynamicLoader.h>
 #include <Shibboleth_IManager.h>
-#include <Shibboleth_Array.h>
 #include <Shibboleth_Map.h>
-#include <Gleam_IShaderResourceView.h>
-#include <Gleam_IRenderTarget.h>
-#include <Gleam_ISamplerstate.h>
-#include <Gleam_IRasterState.h>
-#include <Gleam_ITexture.h>
-#include <Gleam_IShader.h>
-#include <Gleam_IWindow.h>
-#include <Gaff_SmartPtr.h>
-#include <Gaff_SpinLock.h>
-
-#define GRAPHICS_CFG "cfg/graphics.cfg"
-
-using RasterStatePtr = Gaff::RefPtr<Gleam::IRasterState>;
-
-#define EXTRACT_DISPLAY_TAGS(display_tags, out_tags) \
-	display_tags.forEachInArray([&](size_t, const Gaff::JSON& value) -> bool \
-	{ \
-		if (!value.isString()) { \
-			return true; \
-		} \
-		out_tags |= GetEnumRefDef<DisplayTags>().getValue(value.getString()); \
-		return false; \
-	})
-
-namespace Gaff
-{
-	class JSON;
-}
-
-namespace Gleam
-{
-	class IDepthStencilState;
-	class IProgramBuffers;
-	class IRenderDevice;
-	class ISamplerState;
-	class ICommandList;
-	class IBlendState;
-	class IProgram;
-	class ILayout;
-	class IShader;
-	class IBuffer;
-	class IModel;
-	class IMesh;
-
-	class IKeyboard;
-	class IMouse;
-}
 
 NS_SHIBBOLETH
 
 class IApp;
 
-enum DisplayTags
-{
-	DT_ALL = 0xFFFF,
-	DT_1 = 0x0001,
-	DT_2 = 0x0002,
-	DT_3 = 0x0004,
-	DT_4 = 0x0008,
-	DT_5 = 0x0010,
-	DT_6 = 0x0020,
-	DT_7 = 0x0040,
-	DT_8 = 0x0080,
-	DT_9 = 0x0100,
-	DT_10 = 0x0200,
-	DT_11 = 0x0400,
-	DT_12 = 0x0800,
-	DT_13 = 0x1000,
-	DT_14 = 0x2000,
-	DT_15 = 0x4000,
-	DT_16 = 0x8000,
-};
-
-enum RenderPasses
-{
-	RP_OPAQUE = 0,
-	RP_TRANSPARENT,
-	RP_COUNT
-};
-
-SHIB_ENUM_REF_DEF(DisplayTags);
-SHIB_ENUM_REF_DEF(RenderPasses);
-SHIB_ENUM_REF_DEF_EMBEDDED(Gleam_ISamplerState_Filter, Gleam::ISamplerState::FILTER);
-SHIB_ENUM_REF_DEF_EMBEDDED(Gleam_ISamplerState_Wrap, Gleam::ISamplerState::WRAP);
-SHIB_ENUM_REF_DEF_EMBEDDED(Gleam_ITexture_Format, Gleam::ITexture::FORMAT);
-SHIB_ENUM_REF_DEF_EMBEDDED(Gleam_IShader_Type, Gleam::IShader::SHADER_TYPE);
-
 // Maybe call this device manager instead?
-class RenderManager : public IManager
+class RenderManager : public IManager, public IRenderManager
 {
 public:
-	using RenderDevicePtr = Gaff::SmartPtr<Gleam::IRenderDevice, ProxyAllocator>;
-	using RenderTargetPtr = Gaff::RefPtr<Gleam::IRenderTarget>;
-	using SRVPtr = Gaff::RefPtr<Gleam::IShaderResourceView>;
-	using TexturePtr = Gaff::RefPtr<Gleam::ITexture>;
-
-	struct WindowData
-	{
-		Gleam::IWindow* window;
-		unsigned int device;
-		unsigned int output;
-		unsigned short tags;
-	};
-
-	struct WindowRenderTargets
-	{
-		Array<RenderTargetPtr> rts;
-
-		Array<TexturePtr> diffuse;
-		Array<TexturePtr> specular;
-		Array<TexturePtr> normal;
-		Array<TexturePtr> position;
-		Array<TexturePtr> depth;
-
-		Array<SRVPtr> diffuse_srvs;
-		Array<SRVPtr> specular_srvs;
-		Array<SRVPtr> normal_srvs;
-		Array<SRVPtr> position_srvs;
-		Array<SRVPtr> depth_srvs;
-	};
-
-	static const char* GetFriendlyName(void);
-
 	RenderManager(void);
 	~RenderManager(void);
 
 	const char* getName(void) const override;
 
-	bool initThreadData(void);
-	bool init(const char* module);
+	bool initThreadData(void) override;
+	bool init(const char* module) override;
 
-	INLINE Array<RenderDevicePtr>& getDeferredRenderDevices(unsigned int thread_id);
+	Array<RenderDevicePtr>& getDeferredRenderDevices(unsigned int thread_id) override;
 
-	INLINE Gleam::IRenderDevice& getRenderDevice(void);
-	INLINE Array<Gaff::SpinLock>& getContextLocks(void);
+	Gleam::IRenderDevice& getRenderDevice(void) override;
+	Array<Gaff::SpinLock>& getContextLocks(void) override;
 
 	// Don't call this in a thread sensitive environment
 	bool createWindow(
@@ -170,43 +55,43 @@ public:
 		unsigned int refresh_rate, const char* device_name,
 		unsigned int adapter_id, unsigned int display_id, bool vsync,
 		unsigned short tags = 0
-	);
+	) override;
 
-	void updateWindows(void);
-	Array<const WindowData*> getWindowsWithTagsAny(unsigned short tags) const; // Gets windows with any of these tags. If tags is zero, returns all windows.
-	Array<const WindowData*> getWindowsWithTags(unsigned short tags) const; // Gets windows with exactly these tags. If tags is zero, returns all windows.
+	void updateWindows(void) override;
+	Array<const WindowData*> getWindowsWithTagsAny(unsigned short tags) const override; // Gets windows with any of these tags. If tags is zero, returns all windows.
+	Array<const WindowData*> getWindowsWithTags(unsigned short tags) const override; // Gets windows with exactly these tags. If tags is zero, returns all windows.
 
-	Array<unsigned int> getDevicesWithTagsAny(unsigned short tags) const; // Gets all devices with windows with any of these tags.
-	Array<unsigned int> getDevicesWithTags(unsigned short tags) const; // Gets all devices with windows with exactly these tags.
+	Array<unsigned int> getDevicesWithTagsAny(unsigned short tags) const override; // Gets all devices with windows with any of these tags.
+	Array<unsigned int> getDevicesWithTags(unsigned short tags) const override; // Gets all devices with windows with exactly these tags.
 
-	INLINE size_t getNumWindows(void) const;
-	INLINE const WindowData& getWindowData(unsigned int window) const;
-	INLINE const Array<WindowData>& getWindowData(void) const;
+	size_t getNumWindows(void) const override;
+	const WindowData& getWindowData(unsigned int window) const override;
+	const Array<WindowData>& getWindowData(void) const override;
 
-	INLINE const char* getShaderExtension(void) const;
-	INLINE Gleam::IShaderResourceView* createShaderResourceView(void);
-	INLINE Gleam::IDepthStencilState* createDepthStencilState(void);
-	INLINE Gleam::IProgramBuffers* createProgramBuffers(void);
-	INLINE Gleam::IRenderDevice* createRenderDevice(void);
-	INLINE Gleam::IRenderTarget* createRenderTarget(void);
-	INLINE Gleam::ISamplerState* createSamplerState(void);
-	INLINE Gleam::IRasterState* createRasterState(void);
-	INLINE Gleam::ICommandList* createCommandList(void);
-	INLINE Gleam::IBlendState* createBlendState(void);
-	INLINE Gleam::ITexture* createTexture(void);
-	INLINE Gleam::IProgram* createProgram(void);
-	INLINE Gleam::ILayout* createLayout(void);
-	INLINE Gleam::IShader* createShader(void);
-	INLINE Gleam::IBuffer* createBuffer(void);
-	INLINE Gleam::IModel* createModel(void);
-	INLINE Gleam::IMesh* createMesh(void);
+	const char* getShaderExtension(void) const override;
+	Gleam::IShaderResourceView* createShaderResourceView(void) override;
+	Gleam::IDepthStencilState* createDepthStencilState(void) override;
+	Gleam::IProgramBuffers* createProgramBuffers(void) override;
+	Gleam::IRenderDevice* createRenderDevice(void) override;
+	Gleam::IRenderTarget* createRenderTarget(void) override;
+	Gleam::ISamplerState* createSamplerState(void) override;
+	Gleam::IRasterState* createRasterState(void) override;
+	Gleam::ICommandList* createCommandList(void) override;
+	Gleam::IBlendState* createBlendState(void) override;
+	Gleam::ITexture* createTexture(void) override;
+	Gleam::IProgram* createProgram(void) override;
+	Gleam::ILayout* createLayout(void) override;
+	Gleam::IShader* createShader(void) override;
+	Gleam::IBuffer* createBuffer(void) override;
+	Gleam::IModel* createModel(void) override;
+	Gleam::IMesh* createMesh(void) override;
 
 	// These must be created in the same context as the Windows so that the global input handlers work.
-	INLINE Gleam::IKeyboard* createKeyboard(void);
-	INLINE Gleam::IMouse* createMouse(void);
+	Gleam::IKeyboard* createKeyboard(void) override;
+	Gleam::IMouse* createMouse(void) override;
 
-	WindowRenderTargets createRenderTargetsForEachWindow(void);
-	Array<RasterStatePtr>& getOrCreateRasterStates(unsigned int hash, const Gleam::IRasterState::RasterStateSettings& settings);
+	WindowRenderTargets createRenderTargetsForEachWindow(void) override;
+	Array<RasterStatePtr>& getOrCreateRasterStates(unsigned int hash, const Gleam::IRasterState::RasterStateSettings& settings) override;
 
 private:
 	struct GraphicsFunctions

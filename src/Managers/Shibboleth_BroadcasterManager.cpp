@@ -21,19 +21,16 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Shibboleth_BroadcasterManager.h"
+#include <Shibboleth_MessageBroadcaster.h>
 
 NS_SHIBBOLETH
 
 REF_IMPL_REQ(BroadcasterManager);
 SHIB_REF_IMPL(BroadcasterManager)
 .addBaseClassInterfaceOnly<BroadcasterManager>()
+.ADD_BASE_CLASS_INTERFACE_ONLY(IBroadcasterManager)
 .ADD_BASE_CLASS_INTERFACE_ONLY(IUpdateQuery)
 ;
-
-const char* BroadcasterManager::GetFriendlyName(void)
-{
-	return "Broadcaster Manager";
-}
 
 BroadcasterManager::BroadcasterManager(void)
 {
@@ -52,17 +49,6 @@ const char* BroadcasterManager::getName(void) const
 void BroadcasterManager::getUpdateEntries(Array<IUpdateQuery::UpdateEntry>& entries)
 {
 	entries.emplacePush(AString("Broadcaster Manager: Update"), Gaff::Bind(this, &BroadcasterManager::update));
-}
-
-void BroadcasterManager::update(double, void*)
-{
-	_broadcaster_lock.readLock();
-
-	for (auto it = _object_broadcasters.begin(); it != _object_broadcasters.end(); ++it) {
-		it->second->update();
-	}
-
-	_broadcaster_lock.readUnlock();
 }
 
 MessageBroadcaster* BroadcasterManager::getBroadcaster(unsigned int object_id, bool create_if_doesnt_exist)
@@ -100,6 +86,17 @@ void BroadcasterManager::clear(void)
 	}
 
 	_broadcaster_lock.writeUnlock();
+}
+
+void BroadcasterManager::update(double, void*)
+{
+	_broadcaster_lock.readLock();
+
+	for (auto it = _object_broadcasters.begin(); it != _object_broadcasters.end(); ++it) {
+		it->second->update();
+	}
+
+	_broadcaster_lock.readUnlock();
 }
 
 NS_END

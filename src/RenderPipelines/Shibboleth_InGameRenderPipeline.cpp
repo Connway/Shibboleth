@@ -29,6 +29,7 @@ THE SOFTWARE.
 #include <Shibboleth_Utilities.h>
 #include <Shibboleth_IApp.h>
 
+#include <Gleam_IShaderResourceView.h>
 #include <Gleam_IRenderDevice.h>
 #include <Gleam_IProgram.h>
 #include <Gleam_IBuffer.h>
@@ -218,13 +219,13 @@ void InGameRenderPipeline::run(double, void* frame_data)
 void InGameRenderPipeline::GenerateCommandLists(void* job_data)
 {
 	GenerateJobData* jd = reinterpret_cast<GenerateJobData*>(job_data);
-	Array<RenderManager::RenderDevicePtr>& rds = jd->first->_render_mgr.getDeferredRenderDevices(Gaff::Thread::GetCurrentThreadID());
+	Array<RenderDevicePtr>& rds = jd->first->_render_mgr.getDeferredRenderDevices(Gaff::Thread::GetCurrentThreadID());
 
 	GenerateCameraCommandLists(rds, jd);
 	GenerateLightCommandLists(rds, jd);
 }
 
-void InGameRenderPipeline::GenerateCameraCommandLists(Array<RenderManager::RenderDevicePtr>& rds, GenerateJobData* jd)
+void InGameRenderPipeline::GenerateCameraCommandLists(Array<RenderDevicePtr>& rds, GenerateJobData* jd)
 {
 	if (!gInit) {
 		Gaff::Construct(&gInstance_buffer_pool, jd->first->_render_mgr.getRenderDevice().getNumDevices(), Gaff::Pair<BufferPtr, ShaderResourceViewPtr>());
@@ -281,7 +282,7 @@ void InGameRenderPipeline::GenerateCameraCommandLists(Array<RenderManager::Rende
 	}
 }
 
-void InGameRenderPipeline::GenerateLightCommandLists(Array<RenderManager::RenderDevicePtr>& /*rds*/, GenerateJobData* /*jd*/)
+void InGameRenderPipeline::GenerateLightCommandLists(Array<RenderDevicePtr>& /*rds*/, GenerateJobData* /*jd*/)
 {
 }
 

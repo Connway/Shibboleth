@@ -27,6 +27,7 @@ THE SOFTWARE.
 #include <Shibboleth_Utilities.h>
 #include <Shibboleth_IApp.h>
 
+#include <Gleam_IShaderResourceView.h>
 #include <Gleam_IRenderDevice.h>
 #include <Gleam_IProgram.h>
 #include <Gaff_Utils.h>

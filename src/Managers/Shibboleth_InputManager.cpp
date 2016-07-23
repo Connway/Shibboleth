@@ -38,13 +38,9 @@ NS_SHIBBOLETH
 REF_IMPL_REQ(InputManager);
 SHIB_REF_IMPL(InputManager)
 .addBaseClassInterfaceOnly<InputManager>()
+.ADD_BASE_CLASS_INTERFACE_ONLY(IInputManager)
 .ADD_BASE_CLASS_INTERFACE_ONLY(IUpdateQuery)
 ;
-
-const char* InputManager::GetFriendlyName(void)
-{
-	return "Input Manager";
-}
 
 InputManager::InputManager(void):
 	_keyboard(nullptr), _mouse(nullptr)

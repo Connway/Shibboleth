@@ -22,7 +22,7 @@ THE SOFTWARE.
 
 #pragma once
 
-#include <Shibboleth_ReflectionDefinitions.h>
+#include "Shibboleth_IInputManager.h"
 #include <Shibboleth_IUpdateQuery.h>
 #include <Shibboleth_IManager.h>
 #include <Shibboleth_Map.h>
@@ -38,11 +38,9 @@ namespace Gleam
 
 NS_SHIBBOLETH
 
-class InputManager : public IManager, public IUpdateQuery
+class InputManager : public IManager, public IUpdateQuery, public IInputManager
 {
 public:
-	static const char* GetFriendlyName(void);
-
 	InputManager(void);
 	~InputManager(void);
 

@@ -48,13 +48,9 @@ static void DefaultFrameDataFree(void* frame_data, size_t num_frames)
 REF_IMPL_REQ(FrameManager);
 SHIB_REF_IMPL(FrameManager)
 .addBaseClassInterfaceOnly<FrameManager>()
+.ADD_BASE_CLASS_INTERFACE_ONLY(IFrameManager)
 .ADD_BASE_CLASS_INTERFACE_ONLY(IUpdateQuery)
 ;
-
-const char* FrameManager::GetFriendlyName(void)
-{
-	return "Frame Manager";
-}
 
 FrameManager::FrameManager(void):
 	_render_mgr(nullptr), _frame_data(nullptr),

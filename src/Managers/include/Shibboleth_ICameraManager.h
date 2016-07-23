@@ -22,46 +22,23 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Shibboleth_ICameraManager.h"
-#include <Shibboleth_IUpdateQuery.h>
-#include <Shibboleth_IManager.h>
-
-namespace Gleam
-{
-	class Vector4CPU;
-}
+#include <Shibboleth_ReflectionDefinitions.h>
 
 NS_SHIBBOLETH
 
-class OcclusionManager;
-class ModelComponent;
-class Object;
+class CameraComponent;
 
-struct ObjectData;
-
-class CameraManager : public IManager, public IUpdateQuery, public ICameraManager
+class ICameraManager
 {
 public:
-	CameraManager(void);
-	~CameraManager(void);
+	ICameraManager(void) {}
+	virtual ~ICameraManager(void) {}
 
-	const char* getName(void) const override;
-	void allManagersCreated(void) override;
+	virtual void registerCamera(CameraComponent* camera) = 0;
+	virtual void removeCamera(CameraComponent* camera) = 0;
 
-	void getUpdateEntries(Array<UpdateEntry>& entries) override;
-
-	void registerCamera(CameraComponent* camera) override;
-	void removeCamera(CameraComponent* camera) override;
-
-private:
-	Array<CameraComponent*> _cameras;
-	OcclusionManager* _occlusion_mgr;
-
-	void addModelComponent(ObjectData& od, ModelComponent* mc, const Gleam::Vector4CPU& eye_pos);
-	void update(double, void* frame_data);
-
-	SHIB_REF_DEF(CameraManager);
-	REF_DEF_REQ;
+	SHIB_INTERFACE_REFLECTION(ICameraManager)
+	SHIB_INTERFACE_MANAGER("Camera Manager")
 };
 
 NS_END

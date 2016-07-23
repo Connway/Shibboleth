@@ -24,6 +24,13 @@ THE SOFTWARE.
 
 NS_SHIBBOLETH
 
+REF_IMPL_REQ(MovementControllerManager);
+SHIB_REF_IMPL(MovementControllerManager)
+.addBaseClassInterfaceOnly<MovementControllerManager>()
+.ADD_BASE_CLASS_INTERFACE_ONLY(IMovementControllerManager)
+.ADD_BASE_CLASS_INTERFACE_ONLY(IUpdateQuery)
+;
+
 MovementControllerManager::MovementControllerManager(void)
 {
 }
@@ -39,24 +46,12 @@ MovementControllerManager::~MovementControllerManager(void)
 
 const char* MovementControllerManager::getName(void) const
 {
-	return GetName();
+	return GetFriendlyName();
 }
 
 void MovementControllerManager::getUpdateEntries(Array<UpdateEntry>& entries)
 {
 	entries.emplacePush(AString("Movement Controller Manager: Update"), Gaff::Bind(this, &MovementControllerManager::update));
-}
-
-void MovementControllerManager::update(double dt, void*)
-{
-	for (auto it_list = _update_list.begin(); it_list != _update_list.end(); ++it_list) {
-		IMovementController* controller = it_list->second.first;
-		auto& components = it_list->second.second;
-
-		for (auto it_cmp = components.begin(); it_cmp != components.end(); ++it_cmp) {
-			controller->updateMovement(*it_cmp, dt);
-		}
-	}
 }
 
 void MovementControllerManager::registerMovementComponent(Gaff::ReflectionHash controller_class_id, void* component)
@@ -89,6 +84,18 @@ void MovementControllerManager::unregisterMovementComponent(Gaff::ReflectionHash
 	}
 
 	comps.fastErase(it_cmp);
+}
+
+void MovementControllerManager::update(double dt, void*)
+{
+	for (auto it_list = _update_list.begin(); it_list != _update_list.end(); ++it_list) {
+		IMovementController* controller = it_list->second.first;
+		auto& components = it_list->second.second;
+
+		for (auto it_cmp = components.begin(); it_cmp != components.end(); ++it_cmp) {
+			controller->updateMovement(*it_cmp, dt);
+		}
+	}
 }
 
 NS_END

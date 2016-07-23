@@ -53,7 +53,7 @@ static void NuklearFree(nk_handle, void* data)
 
 const char* NuklearManager::GetFriendlyName(void)
 {
-	return "Nuklear Manager";
+	return INuklearManager::GetFriendlyName();
 }
 
 NuklearManager::NuklearManager(void)

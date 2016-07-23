@@ -69,12 +69,8 @@ static void* LuaAllocator(void*, void* ptr, size_t original_size, size_t new_siz
 REF_IMPL_REQ(LuaManager);
 SHIB_REF_IMPL(LuaManager)
 .addBaseClassInterfaceOnly<LuaManager>()
+.ADD_BASE_CLASS_INTERFACE_ONLY(ILuaManager)
 ;
-
-const char* LuaManager::GetFriendlyName(void)
-{
-	return "Lua Manager";
-}
 
 LuaManager::LuaManager(void)
 {

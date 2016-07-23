@@ -22,11 +22,10 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Shibboleth_IUpdateQuery.h"
-#include <Shibboleth_ReflectionDefinitions.h>
+#include "Shibboleth_IOcclusionManager.h"
+#include <Shibboleth_IUpdateQuery.h>
 #include <Shibboleth_IManager.h>
 #include <Shibboleth_Watcher.h>
-#include <Shibboleth_Array.h>
 #include <Shibboleth_Map.h>
 #include <Gleam_AABB_CPU.h>
 
@@ -40,54 +39,26 @@ NS_END
 
 NS_SHIBBOLETH
 
-class Object;
-class IApp;
-
-class OcclusionManager : public IManager, public IUpdateQuery
+class OcclusionManager : public IManager, public IUpdateQuery, public IOcclusionManager
 {
 public:
-	using UserData = Gaff::Pair<uint64_t, uint64_t>;
-	using QueryResult = Gaff::Pair<Object*, const UserData&>;
-
-	enum OBJ_TYPE
-	{
-		OT_STATIC = 0,
-		OT_DYNAMIC,
-		OT_LIGHT,
-		OT_SIZE
-	};
-
-	struct OcclusionID
-	{
-		size_t index = SIZE_T_FAIL;
-		OBJ_TYPE object_type = OT_SIZE;
-	};
-
-	struct QueryData
-	{
-		Array<QueryResult> results[OT_SIZE];
-	};
-
-	static const char* GetFriendlyName(void);
 
 	OcclusionManager(void);
 	~OcclusionManager(void);
 
-	void getUpdateEntries(Array<UpdateEntry>& entries);
-	const char* getName(void) const;
+	void getUpdateEntries(Array<UpdateEntry>& entries) override;
+	const char* getName(void) const override;
 
-	OcclusionID addObject(Object* object, OBJ_TYPE object_type, const UserData& user_data = UserData(0, 0));
-	INLINE void removeObject(Object* object);
-	INLINE void removeObject(OcclusionID id);
+	OcclusionID addObject(Object* object, OBJ_TYPE object_type, const UserData& user_data = UserData(0, 0)) override;
+	void removeObject(Object* object) override;
+	void removeObject(OcclusionID id) override;
 
-	INLINE void constructStaticTree(const Array<Object*>& objects, Array<OcclusionID>* id_out = nullptr);
+	void constructStaticTree(const Array<Object*>& objects, Array<OcclusionID>* id_out = nullptr) override;
 
-	void update(double, void*);
-
-	void findObjectsInFrustum(const Gleam::FrustumCPU& frustum, OBJ_TYPE object_type, Array<QueryResult>& out) const;
-	INLINE void findObjectsInFrustum(const Gleam::FrustumCPU& frustum, QueryData& out) const;
-	INLINE Array<QueryResult> findObjectsInFrustum(const Gleam::FrustumCPU& frustum, OBJ_TYPE object_type) const;
-	INLINE QueryData findObjectsInFrustum(const Gleam::FrustumCPU& frustum) const;
+	void findObjectsInFrustum(const Gleam::FrustumCPU& frustum, OBJ_TYPE object_type, Array<QueryResult>& out) const override;
+	void findObjectsInFrustum(const Gleam::FrustumCPU& frustum, QueryData& out) const override;
+	Array<QueryResult> findObjectsInFrustum(const Gleam::FrustumCPU& frustum, OBJ_TYPE object_type) const override;
+	QueryData findObjectsInFrustum(const Gleam::FrustumCPU& frustum) const override;
 
 private:
 	class BVHTree
@@ -169,6 +140,8 @@ private:
 
 	BVHTree _bvh_trees[OT_SIZE];
 	Map<Object*, OcclusionID> _node_map;
+
+	void update(double, void*);
 
 	GAFF_NO_COPY(OcclusionManager);
 	GAFF_NO_MOVE(OcclusionManager);
