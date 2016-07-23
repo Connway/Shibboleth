@@ -22,13 +22,13 @@ THE SOFTWARE.
 
 #include "Shibboleth_RenderManager.h"
 #include "Shibboleth_FrameManager.h"
-#include <Shibboleth_CameraComponent.h>
 #include <Shibboleth_ModelComponent.h>
 #include <Shibboleth_IFileSystem.h>
 #include <Shibboleth_Utilities.h>
 #include <Shibboleth_IApp.h>
 
 #include <Gleam_RawInputRegisterFunction.h>
+#include <Gleam_IShaderResourceView.h>
 #include <Gleam_IRenderDevice.h>
 #include <Gleam_Global.h>
 
@@ -40,6 +40,7 @@ NS_SHIBBOLETH
 REF_IMPL_REQ(RenderManager);
 SHIB_REF_IMPL(RenderManager)
 .addBaseClassInterfaceOnly<RenderManager>()
+.ADD_BASE_CLASS_INTERFACE_ONLY(IRenderManager)
 ;
 
 // Default values
@@ -157,11 +158,6 @@ SHIB_ENUM_REF_IMPL_EMBEDDED(Gleam_IShader_Type, Gleam::IShader::SHADER_TYPE)
 	}
 
 
-const char* RenderManager::GetFriendlyName(void)
-{
-	return "Render Manager";
-}
-
 RenderManager::RenderManager(void):
 	_render_device(nullptr, ProxyAllocator("Graphics")),
 	_proxy_allocator("Graphics"), _app(GetApp())
@@ -243,7 +239,7 @@ bool RenderManager::init(const char* module)
 	return true;
 }
 
-Array<RenderManager::RenderDevicePtr>& RenderManager::getDeferredRenderDevices(unsigned int thread_id)
+Array<RenderDevicePtr>& RenderManager::getDeferredRenderDevices(unsigned int thread_id)
 {
 	GAFF_ASSERT(_deferred_devices.hasElementWithKey(thread_id));
 	return _deferred_devices[thread_id];

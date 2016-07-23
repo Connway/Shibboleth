@@ -24,7 +24,7 @@ THE SOFTWARE.
 
 #ifndef USE_PHYSX
 
-#include <Shibboleth_ReflectionDefinitions.h>
+#include "Shibboleth_IBulletPhysicsManager.h"
 #include <Shibboleth_IUpdateQuery.h>
 #include <Shibboleth_IManager.h>
 #include <Gaff_SpinLock.h>
@@ -32,11 +32,8 @@ THE SOFTWARE.
 class btCollisionConfiguration;
 class btBroadphaseInterface;
 class btConstraintSolver;
-class btCollisionShape;
 class btDynamicsWorld;
-class btMotionState;
 class btDispatcher;
-class btRigidBody;
 class btVector3;
 
 namespace Gleam
@@ -46,19 +43,9 @@ namespace Gleam
 
 NS_SHIBBOLETH
 
-class Object;
-
-class BulletPhysicsManager : public IManager, public IUpdateQuery
+class BulletPhysicsManager : public IManager, public IUpdateQuery, public IBulletPhysicsManager
 {
 public:
-	enum HeightfieldUpAxis
-	{
-		UP_X_AXIS = 0,
-		UP_Y_AXIS,
-		UP_Z_AXIS,
-	};
-
-	static const char* GetFriendlyName(void);
 	static void SetMemoryFunctions(void);
 
 	BulletPhysicsManager(void);
@@ -69,17 +56,15 @@ public:
 
 	void getUpdateEntries(Array<UpdateEntry>& entries) override;
 
-	void update(double dt, void*);
+	void clearMainWorld(void) override;
+	//void clearExtraWorld(size_t world) override;
 
-	INLINE void clearMainWorld(void);
-	//INLINE void clearExtraWorld(size_t world);
-
-	btRigidBody* createRigidBody(Object* object, btCollisionShape* shape, float mass, btMotionState* motion_state = nullptr);
+	btRigidBody* createRigidBody(Object* object, btCollisionShape* shape, float mass, btMotionState* motion_state = nullptr) override;
 
 	// collision_group is what group we belong to, collision_mask is what groups we can collide with
-	INLINE void addToMainWorld(btRigidBody* body, short collision_group, short collision_mask);
-	INLINE void addToMainWorld(btRigidBody* body);
-	INLINE void removeFromMainWorld(btRigidBody* body);
+	void addToMainWorld(btRigidBody* body, short collision_group, short collision_mask) override;
+	void addToMainWorld(btRigidBody* body) override;
+	void removeFromMainWorld(btRigidBody* body) override;
 
 private:
 	struct AddBodyData
@@ -108,6 +93,7 @@ private:
 	ProxyAllocator _physics_allocator;
 
 	void clearWorld(btDynamicsWorld* world);
+	void update(double dt, void*);
 
 	SHIB_REF_DEF(BulletPhysicsManager);
 	REF_DEF_REQ;

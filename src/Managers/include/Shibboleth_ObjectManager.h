@@ -22,18 +22,15 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Shibboleth_IUpdateQuery.h"
-#include "Shibboleth_IManager.h"
-#include <Shibboleth_ReflectionDefinitions.h>
+#include "Shibboleth_IObjectManager.h"
+#include <Shibboleth_IUpdateQuery.h>
+#include <Shibboleth_IManager.h>
 #include <Shibboleth_Array.h>
 #include <Gaff_SpinLock.h>
 
 NS_SHIBBOLETH
 
-class Object;
-class IApp;
-
-class ObjectManager : public IManager, public IUpdateQuery
+class ObjectManager : public IManager, public IUpdateQuery, public IObjectManager
 {
 public:
 	template <class Callback>
@@ -48,30 +45,27 @@ public:
 		return false;
 	}
 
-	static const char* GetFriendlyName(void);
-
 	ObjectManager(void);
 	~ObjectManager(void);
 
-	const char* getName(void) const;
+	const char* getName(void) const override;
+	void getUpdateEntries(Array<UpdateEntry>& entries) override;
 
-	void getUpdateEntries(Array<UpdateEntry>& entries);
+	Object* createObject(void) override;
+	void removeObject(Object* object) override;
+	void removeObject(unsigned int id) override;
+	const Object* getObject(unsigned int id) const override;
+	Object* getObject(unsigned int id) override;
+	bool doesObjectExist(const Object* object) const override;
+	bool doesObjectExist(unsigned int id) const override;
 
-	Object* createObject(void);
-	INLINE void removeObject(Object* object);
-	void removeObject(unsigned int id);
-	const Object* getObject(unsigned int id) const;
-	Object* getObject(unsigned int id);
-	INLINE bool doesObjectExist(const Object* object) const;
-	INLINE bool doesObjectExist(unsigned int id) const;
+	const Object* findObject(const char* name) const override;
+	Object* findObject(const char* name) override;
+	const Object* findObject(uint32_t name_hash) const override;
+	Object* findObject(uint32_t name_hash) override;
 
-	INLINE const Object* findObject(const char* name) const;
-	INLINE Object* findObject(const char* name);
-	INLINE const Object* findObject(uint32_t name_hash) const;
-	INLINE Object* findObject(uint32_t name_hash);
-
-	void addDirtyObject(Object* object);
-	void addNewObject(Object* object);
+	void addDirtyObject(Object* object) override;
+	void addNewObject(Object* object) override;
 
 private:
 	Array<Object*> _objects;

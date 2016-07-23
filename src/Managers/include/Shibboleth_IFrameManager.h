@@ -22,46 +22,29 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Shibboleth_ICameraManager.h"
-#include <Shibboleth_IUpdateQuery.h>
-#include <Shibboleth_IManager.h>
-
-namespace Gleam
-{
-	class Vector4CPU;
-}
+#include <Shibboleth_ReflectionDefinitions.h>
 
 NS_SHIBBOLETH
 
-class OcclusionManager;
-class ModelComponent;
-class Object;
-
-struct ObjectData;
-
-class CameraManager : public IManager, public IUpdateQuery, public ICameraManager
+class IFrameManager
 {
 public:
-	CameraManager(void);
-	~CameraManager(void);
+	using FrameDataAllocFunc = void* (*)(size_t, size_t&);
+	using FrameDataFreeFunc = void(*)(void*, size_t);
 
-	const char* getName(void) const override;
-	void allManagersCreated(void) override;
+	IFrameManager(void) {}
+	virtual ~IFrameManager(void) {}
 
-	void getUpdateEntries(Array<UpdateEntry>& entries) override;
+	virtual void setFrameDataFuncs(FrameDataAllocFunc alloc_func, FrameDataFreeFunc free_func) = 0;
 
-	void registerCamera(CameraComponent* camera) override;
-	void removeCamera(CameraComponent* camera) override;
+	virtual bool init(size_t num_frames = 16) = 0;
+	virtual void setNumPhases(size_t num_phases) = 0;
 
-private:
-	Array<CameraComponent*> _cameras;
-	OcclusionManager* _occlusion_mgr;
+	virtual void* getNextFrameData(size_t phase_id) = 0;
+	virtual void finishFrame(size_t phase_id) = 0;
 
-	void addModelComponent(ObjectData& od, ModelComponent* mc, const Gleam::Vector4CPU& eye_pos);
-	void update(double, void* frame_data);
-
-	SHIB_REF_DEF(CameraManager);
-	REF_DEF_REQ;
+	SHIB_INTERFACE_REFLECTION(IFrameManager)
+	SHIB_INTERFACE_MANAGER("Frame Manager")
 };
 
 NS_END

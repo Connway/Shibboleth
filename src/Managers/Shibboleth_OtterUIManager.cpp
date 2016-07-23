@@ -28,12 +28,8 @@ NS_SHIBBOLETH
 REF_IMPL_REQ(OtterUIManager);
 SHIB_REF_IMPL(OtterUIManager)
 .addBaseClassInterfaceOnly<OtterUIManager>()
+.ADD_BASE_CLASS_INTERFACE_ONLY(IOtterUIManager)
 ;
-
-const char* OtterUIManager::GetFriendlyName(void)
-{
-	return "OtterUI Manager";
-}
 
 OtterUIManager::OtterUIManager(void):
 	_memory_buffer(nullptr), _system(nullptr), _fps(60)
@@ -131,18 +127,6 @@ void OtterUIManager::setFPS(unsigned int fps)
 	_fps = fps;
 }
 
-void OtterUIManager::update(float dt)
-{
-	GAFF_ASSERT(_system);
-	_system->Update(static_cast<float>(_fps) * dt);
-}
-
-bool OtterUIManager::draw(void)
-{
-	GAFF_ASSERT(_system);
-	return _system->Draw() == Otter::kResult_OK;
-}
-
 void OtterUIManager::setResolution(unsigned int width, unsigned int height)
 {
 	_system->SetResolution(width, height);
@@ -182,6 +166,18 @@ unsigned int OtterUIManager::getNumScenes(void) const
 {
 	GAFF_ASSERT(_system);
 	return _system->GetSceneCount();
+}
+
+void OtterUIManager::update(float dt)
+{
+	GAFF_ASSERT(_system);
+	_system->Update(static_cast<float>(_fps) * dt);
+}
+
+bool OtterUIManager::draw(void)
+{
+	GAFF_ASSERT(_system);
+	return _system->Draw() == Otter::kResult_OK;
 }
 
 NS_END

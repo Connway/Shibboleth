@@ -67,6 +67,6 @@ public:
 	GAFF_NO_COPY(IRenderTarget);
 };
 
-typedef Gaff::RefPtr<IRenderTarget> IRenderTargetPtr;
+using IRenderTargetPtr = Gaff::RefPtr<IRenderTarget>;
 
 NS_END

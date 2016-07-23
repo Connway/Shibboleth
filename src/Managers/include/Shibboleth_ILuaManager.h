@@ -22,46 +22,27 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Shibboleth_ICameraManager.h"
-#include <Shibboleth_IUpdateQuery.h>
-#include <Shibboleth_IManager.h>
+#include <Shibboleth_ReflectionDefinitions.h>
+#include <Gaff_Function.h>
 
-namespace Gleam
+namespace lua
 {
-	class Vector4CPU;
+	class State;
 }
 
 NS_SHIBBOLETH
 
-class OcclusionManager;
-class ModelComponent;
-class Object;
-
-struct ObjectData;
-
-class CameraManager : public IManager, public IUpdateQuery, public ICameraManager
+class ILuaManager
 {
 public:
-	CameraManager(void);
-	~CameraManager(void);
+	ILuaManager(void) {}
+	virtual ~ILuaManager(void) {}
 
-	const char* getName(void) const override;
-	void allManagersCreated(void) override;
+	virtual void addRegistrant(const Gaff::FunctionBinder<void, lua::State&>& registrant) = 0;
+	virtual lua::State* createNewState(void) = 0;
 
-	void getUpdateEntries(Array<UpdateEntry>& entries) override;
-
-	void registerCamera(CameraComponent* camera) override;
-	void removeCamera(CameraComponent* camera) override;
-
-private:
-	Array<CameraComponent*> _cameras;
-	OcclusionManager* _occlusion_mgr;
-
-	void addModelComponent(ObjectData& od, ModelComponent* mc, const Gleam::Vector4CPU& eye_pos);
-	void update(double, void* frame_data);
-
-	SHIB_REF_DEF(CameraManager);
-	REF_DEF_REQ;
+	SHIB_INTERFACE_REFLECTION(ILuaManager)
+	SHIB_INTERFACE_MANAGER("Lua Manager")
 };
 
 NS_END

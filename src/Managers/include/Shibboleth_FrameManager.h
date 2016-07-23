@@ -22,8 +22,10 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Shibboleth_OcclusionManager.h"
+//#include "Shibboleth_OcclusionManager.h"
+#include "Shibboleth_IFrameManager.h"
 #include <Shibboleth_CameraComponent.h>
+#include <Shibboleth_IUpdateQuery.h>
 #include <Shibboleth_IManager.h>
 #include <Gleam_Transform_CPU.h>
 #include <Gleam_ICommandList.h>
@@ -82,19 +84,14 @@ struct FrameData
 	//Map<LightComponent*, ObjectData> shadow_object_data;
 };
 
-class FrameManager : public IManager, public IUpdateQuery
+class FrameManager : public IManager, public IUpdateQuery, public IFrameManager
 {
 public:
-	using FrameDataAllocFunc = void* (*)(size_t, size_t&);
-	using FrameDataFreeFunc = void (*)(void*, size_t);
-
 	template <class T>
 	T* getNextFrameDataT(size_t phase_id)
 	{
 		return reinterpret_cast<T*>(getNextFrameData(phase_id));
 	}
-
-	static const char* GetFriendlyName(void);
 
 	FrameManager(void);
 	~FrameManager(void);
@@ -104,13 +101,13 @@ public:
 
 	void getUpdateEntries(Array<UpdateEntry>& entries) override;
 
-	void setFrameDataFuncs(FrameDataAllocFunc alloc_func, FrameDataFreeFunc free_func);
+	void setFrameDataFuncs(FrameDataAllocFunc alloc_func, FrameDataFreeFunc free_func) override;
 
-	bool init(size_t num_frames = 16);
-	void setNumPhases(size_t num_phases);
+	bool init(size_t num_frames = 16) override;
+	void setNumPhases(size_t num_phases) override;
 
-	void* getNextFrameData(size_t phase_id);
-	void finishFrame(size_t phase_id);
+	void* getNextFrameData(size_t phase_id) override;
+	void finishFrame(size_t phase_id) override;
 
 private:
 	struct CounterHack

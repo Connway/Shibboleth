@@ -22,46 +22,34 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Shibboleth_ICameraManager.h"
-#include <Shibboleth_IUpdateQuery.h>
-#include <Shibboleth_IManager.h>
+#include <Shibboleth_ReflectionDefinitions.h>
 
-namespace Gleam
-{
-	class Vector4CPU;
-}
+class btCollisionShape;
+class btMotionState;
+class btRigidBody;
 
 NS_SHIBBOLETH
 
-class OcclusionManager;
-class ModelComponent;
 class Object;
 
-struct ObjectData;
-
-class CameraManager : public IManager, public IUpdateQuery, public ICameraManager
+class IBulletPhysicsManager
 {
 public:
-	CameraManager(void);
-	~CameraManager(void);
+	IBulletPhysicsManager(void) {}
+	virtual ~IBulletPhysicsManager(void) {}
 
-	const char* getName(void) const override;
-	void allManagersCreated(void) override;
+	virtual void clearMainWorld(void) = 0;
+	//virtual void clearExtraWorld(size_t world) = 0;
 
-	void getUpdateEntries(Array<UpdateEntry>& entries) override;
+	virtual btRigidBody* createRigidBody(Object* object, btCollisionShape* shape, float mass, btMotionState* motion_state = nullptr) = 0;
 
-	void registerCamera(CameraComponent* camera) override;
-	void removeCamera(CameraComponent* camera) override;
+	// collision_group is what group we belong to, collision_mask is what groups we can collide with
+	virtual void addToMainWorld(btRigidBody* body, short collision_group, short collision_mask) = 0;
+	virtual void addToMainWorld(btRigidBody* body) = 0;
+	virtual void removeFromMainWorld(btRigidBody* body) = 0;
 
-private:
-	Array<CameraComponent*> _cameras;
-	OcclusionManager* _occlusion_mgr;
-
-	void addModelComponent(ObjectData& od, ModelComponent* mc, const Gleam::Vector4CPU& eye_pos);
-	void update(double, void* frame_data);
-
-	SHIB_REF_DEF(CameraManager);
-	REF_DEF_REQ;
+	SHIB_INTERFACE_REFLECTION(IBulletPhysicsManager)
+	SHIB_INTERFACE_MANAGER("Physics Manager")
 };
 
 NS_END

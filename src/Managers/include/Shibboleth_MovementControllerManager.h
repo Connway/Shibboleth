@@ -22,10 +22,9 @@ THE SOFTWARE.
 
 #pragma once
 
-#include <Shibboleth_ReflectionDefinitions.h>
+#include "Shibboleth_IMovementControllerManager.h"
 #include <Shibboleth_IUpdateQuery.h>
 #include <Shibboleth_IManager.h>
-#include <Shibboleth_Array.h>
 #include <Shibboleth_Map.h>
 
 NS_SHIBBOLETH
@@ -41,11 +40,9 @@ public:
 	virtual void updateMovement(void* component, double dt) = 0;
 };
 
-class MovementControllerManager : public IManager, public IUpdateQuery
+class MovementControllerManager : public IManager, public IUpdateQuery, public IMovementControllerManager
 {
 public:
-	static const char* GetName(void) { return "Movement Controller Manager"; }
-
 	template <class Controller>
 	void registerMovementController(void)
 	{
@@ -75,15 +72,16 @@ public:
 	const char* getName(void) const override;
 
 	void getUpdateEntries(Array<UpdateEntry>& entries) override;
-	void update(double dt, void*);
 
-	void registerMovementComponent(Gaff::ReflectionHash controller_class_id, void* component);
-	void unregisterMovementComponent(Gaff::ReflectionHash controller_class_id, void* component);
+	void registerMovementComponent(Gaff::ReflectionHash controller_class_id, void* component) override;
+	void unregisterMovementComponent(Gaff::ReflectionHash controller_class_id, void* component) override;
 
 private:
 	using ControllerObjects = Gaff::Pair< IMovementController*, Array<void*> >;
 
 	Map<Gaff::ReflectionHash, ControllerObjects> _update_list;
+
+	void update(double dt, void*);
 
 	SHIB_REF_DEF(MovementControllerManager);
 	REF_DEF_REQ;

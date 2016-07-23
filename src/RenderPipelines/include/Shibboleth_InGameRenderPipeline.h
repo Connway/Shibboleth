@@ -25,6 +25,7 @@ THE SOFTWARE.
 #include <Shibboleth_JobPool.h>
 #include <Shibboleth_Array.h>
 #include <Gleam_IDepthStencilState.h>
+#include <Gleam_IRenderTarget.h>
 #include <Gleam_IBlendState.h>
 
 NS_SHIBBOLETH
@@ -50,8 +51,8 @@ private:
 	using GenerateJobData = Gaff::Pair<InGameRenderPipeline*, FrameData*>;
 
 	static void GenerateCommandLists(void* job_data);
-	static void GenerateCameraCommandLists(Array<RenderManager::RenderDevicePtr>& rds, GenerateJobData* jd);
-	static void GenerateLightCommandLists(Array<RenderManager::RenderDevicePtr>& rds, GenerateJobData* jd);
+	static void GenerateCameraCommandLists(Array<RenderDevicePtr>& rds, GenerateJobData* jd);
+	static void GenerateLightCommandLists(Array<RenderDevicePtr>& rds, GenerateJobData* jd);
 
 	static void SortIntoRenderPasses(ObjectData& od, unsigned int device);
 	static void RunCommands(Gleam::IRenderDevice* rd, GenerateJobData* jd, unsigned int device, const ObjectData& od);

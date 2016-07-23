@@ -30,13 +30,9 @@ NS_SHIBBOLETH
 REF_IMPL_REQ(ObjectManager);
 SHIB_REF_IMPL(ObjectManager)
 .addBaseClassInterfaceOnly<ObjectManager>()
+.ADD_BASE_CLASS_INTERFACE_ONLY(IObjectManager)
 .ADD_BASE_CLASS_INTERFACE_ONLY(IUpdateQuery)
 ;
-
-const char* ObjectManager::GetFriendlyName(void)
-{
-	return "Object Manager";
-}
 
 ObjectManager::ObjectManager(void):
 	_next_id(0)

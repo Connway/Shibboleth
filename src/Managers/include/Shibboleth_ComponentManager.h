@@ -22,33 +22,28 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Shibboleth_Component.h"
-#include <Shibboleth_ReflectionDefinitions.h>
+#include "Shibboleth_IComponentManager.h"
 #include <Shibboleth_DynamicLoader.h>
-#include <Shibboleth_HashString.h>
 #include <Shibboleth_IManager.h>
 #include <Shibboleth_HashMap.h>
-#include <Shibboleth_String.h>
 
 NS_SHIBBOLETH
 
 class IApp;
 
-class ComponentManager : public IManager
+class ComponentManager : public IManager, public IComponentManager
 {
 public:
-	static const char* GetFriendlyName(void);
-
 	ComponentManager(void);
 	~ComponentManager(void);
 
-	const char* getName(void) const;
+	const char* getName(void) const override;
 
-	void allManagersCreated(void);
+	void allManagersCreated(void) override;
 
-	INLINE Component* createComponent(AHashString name);
-	INLINE Component* createComponent(const char* name);
-	INLINE void destroyComponent(Component* component);
+	Component* createComponent(const AHashString& name) override;
+	Component* createComponent(const char* name) override;
+	void destroyComponent(Component* component) override;
 
 private:
 	using InitFunc = bool (*)(IApp&);

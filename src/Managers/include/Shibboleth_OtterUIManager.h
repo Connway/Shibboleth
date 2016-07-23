@@ -22,55 +22,44 @@ THE SOFTWARE.
 
 #pragma once
 
-#include <Shibboleth_ReflectionDefinitions.h>
+#include "Shibboleth_IOtterUIManager.h"
 #include <Shibboleth_IManager.h>
 #include <Shibboleth_HashMap.h>
 
-#define OTTERUI_DEFAULT_MEMORY_BUFFER_SIZE 2 * 1024 * 1024
-
-namespace Otter {
-	class ISoundSystem;
-	class IFileSystem;
-	class IRenderer;
-	class IPlugin;
+namespace Otter
+{
 	class System;
-	class Scene;
 }
 
 NS_SHIBBOLETH
 
-class OtterUIManager : public IManager
+class OtterUIManager : public IManager, public IOtterUIManager
 {
 public:
-	static const char* GetFriendlyName(void);
-
 	OtterUIManager(void);
 	~OtterUIManager(void);
 
-	const char* getName(void) const;
+	const char* getName(void) const override;
 
-	bool init(unsigned int memory_size_bytes = OTTERUI_DEFAULT_MEMORY_BUFFER_SIZE, bool enable_pre_transformed_verts = true);
-	void destroy(void);
+	bool init(unsigned int memory_size_bytes = OTTERUI_DEFAULT_MEMORY_BUFFER_SIZE, bool enable_pre_transformed_verts = true) override;
+	void destroy(void) override;
 
-	INLINE bool loadScene(const char* filename, const char* name, Otter::Scene** scene_out = nullptr);
-	INLINE bool loadScene(unsigned char* buffer, unsigned int buffer_size, bool copy_buffer, const char* name, Otter::Scene** scene_out = nullptr);
+	bool loadScene(const char* filename, const char* name, Otter::Scene** scene_out = nullptr) override;
+	bool loadScene(unsigned char* buffer, unsigned int buffer_size, bool copy_buffer, const char* name, Otter::Scene** scene_out = nullptr) override;
 
-	INLINE void clear(void);
+	void clear(void) override;
 
-	INLINE unsigned int getFPS(void) const;
-	INLINE void setFPS(unsigned int fps);
+	unsigned int getFPS(void) const override;
+	void setFPS(unsigned int fps) override;
 
-	INLINE void update(float dt); // Time is in seconds
-	INLINE bool draw(void);
+	void setResolution(unsigned int width, unsigned int height) override;
+	void setSoundSystem(Otter::ISoundSystem* sound_system) override;
+	void setFileSystem(Otter::IFileSystem* file_system) override;
+	void setRenderer(Otter::IRenderer* renderer) override;
+	void addPlugin(Otter::IPlugin* plugin) override;
 
-	INLINE void setResolution(unsigned int width, unsigned int height);
-	INLINE void setSoundSystem(Otter::ISoundSystem* sound_system);
-	INLINE void setFileSystem(Otter::IFileSystem* file_system);
-	INLINE void setRenderer(Otter::IRenderer* renderer);
-	INLINE void addPlugin(Otter::IPlugin* plugin);
-
-	INLINE Otter::Scene* getScene(unsigned int index);
-	INLINE unsigned int getNumScenes(void) const;
+	Otter::Scene* getScene(unsigned int index) override;
+	unsigned int getNumScenes(void) const override;
 
 private:
 	HashMap<const char*, Otter::Scene*> _scenes;
@@ -78,6 +67,10 @@ private:
 	unsigned char* _memory_buffer;
 	Otter::System* _system;
 	unsigned int _fps;
+
+	// TODO: Convert to use UpdateManager
+	void update(float dt); // Time is in seconds
+	bool draw(void);
 
 	GAFF_NO_COPY(OtterUIManager);
 	GAFF_NO_MOVE(OtterUIManager);

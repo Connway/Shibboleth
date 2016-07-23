@@ -83,6 +83,7 @@ private:
 REF_IMPL_REQ(BulletPhysicsManager);
 SHIB_REF_IMPL(BulletPhysicsManager)
 .addBaseClassInterfaceOnly<BulletPhysicsManager>()
+.ADD_BASE_CLASS_INTERFACE_ONLY(IBulletPhysicsManager)
 .ADD_BASE_CLASS_INTERFACE_ONLY(IUpdateQuery)
 ;
 
@@ -91,11 +92,6 @@ static size_t g_memory_pool = SIZE_T_FAIL;
 static void* PhysicsAllocate(size_t size)
 {
 	return ShibbolethAllocate(size, g_memory_pool);
-}
-
-const char* BulletPhysicsManager::GetFriendlyName(void)
-{
-	return "Physics Manager";
 }
 
 void BulletPhysicsManager::SetMemoryFunctions(void)
@@ -149,29 +145,6 @@ void BulletPhysicsManager::allManagersCreated(void)
 void BulletPhysicsManager::getUpdateEntries(Array<UpdateEntry>& entries)
 {
 	entries.emplacePush(AString("Physics Manager: Update"), Gaff::Bind(this, &BulletPhysicsManager::update));
-}
-
-void BulletPhysicsManager::update(double dt, void*)
-{
-	// Lock new bodies array?
-
-	btTransform world_transform;
-
-	for (auto it = _new_bodies.begin(); it != _new_bodies.end(); ++it) {
-		// Update Rigid Body's transform before adding to world.
-		it->body->getMotionState()->getWorldTransform(world_transform);
-		it->body->setWorldTransform(world_transform);
-
-		if (it->only_body) {
-			_main_world->addRigidBody(it->body);
-		} else {
-			_main_world->addRigidBody(it->body, it->collision_group, it->collision_mask);
-		}
-	}
-
-	_new_bodies.clearNoFree();
-
-	_main_world->stepSimulation(static_cast<btScalar>(dt));
 }
 
 void BulletPhysicsManager::clearMainWorld(void)
@@ -250,6 +223,30 @@ void BulletPhysicsManager::clearWorld(btDynamicsWorld* world)
 
 		SHIB_FREET(object, *allocator);
 	}
+}
+
+void BulletPhysicsManager::update(double dt, void*)
+{
+	// Lock new bodies array?
+
+	btTransform world_transform;
+
+	for (auto it = _new_bodies.begin(); it != _new_bodies.end(); ++it) {
+		// Update Rigid Body's transform before adding to world.
+		it->body->getMotionState()->getWorldTransform(world_transform);
+		it->body->setWorldTransform(world_transform);
+
+		if (it->only_body) {
+			_main_world->addRigidBody(it->body);
+		}
+		else {
+			_main_world->addRigidBody(it->body, it->collision_group, it->collision_mask);
+		}
+	}
+
+	_new_bodies.clearNoFree();
+
+	_main_world->stepSimulation(static_cast<btScalar>(dt));
 }
 
 NS_END
