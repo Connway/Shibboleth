@@ -21,7 +21,7 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Shibboleth_ImGuiManager.h"
-#include "Shibboleth_InputManager.h"
+#include "Shibboleth_IInputManager.h"
 #include <Shibboleth_IncludeImgui.h>
 #include <Shibboleth_Utilities.h>
 #include <Shibboleth_IApp.h>
@@ -68,7 +68,7 @@ const char* ImGuiManager::getName(void) const
 
 void ImGuiManager::allManagersCreated(void)
 {
-	//GetApp().getManagerT<InputManager>().getKeyboard()->addCharacterHandler(Gaff::Bind(this, &ImGuiManager::handleCharacter));
+	//GetApp().getManagerT<IInputManager>().getKeyboard()->addCharacterHandler(Gaff::Bind(this, &ImGuiManager::handleCharacter));
 }
 
 void ImGuiManager::getUpdateEntries(Array<UpdateEntry>& /*entries*/)

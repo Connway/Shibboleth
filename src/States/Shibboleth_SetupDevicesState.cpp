@@ -21,12 +21,13 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Shibboleth_SetupDevicesState.h"
-#include <Shibboleth_RenderPipelineManager.h>
+#include <Shibboleth_IRenderPipelineManager.h>
 #include <Shibboleth_INuklearManager.h>
-#include <Shibboleth_RenderManager.h>
-#include <Shibboleth_InputManager.h>
+#include <Shibboleth_IRenderManager.h>
+#include <Shibboleth_IInputManager.h>
 #include <Shibboleth_Utilities.h>
 #include <Shibboleth_IApp.h>
+#include <Gaff_IRequestableInterface.h>
 #include <Gaff_JSON.h>
 
 NS_SHIBBOLETH
@@ -56,8 +57,7 @@ void SetupDevicesState::enter(void)
 void SetupDevicesState::update(void)
 {
 	IApp& app = GetApp();
-	RenderManager& render_manager = app.getManagerT<RenderManager>();
-	
+	IRenderManager& render_manager = app.getManagerT<IRenderManager>();
 
 	Gaff::JSON cfg;
 
@@ -251,7 +251,7 @@ void SetupDevicesState::update(void)
 		return;
 	}
 
-	RenderPipelineManager& rp_mgr = app.getManagerT<RenderPipelineManager>();
+	IRenderPipelineManager& rp_mgr = app.getManagerT<IRenderPipelineManager>();
 
 	if (!rp_mgr.init(initial_pipeline.getString())) {
 		app.getLogManager().logMessage(LogManager::LOG_ERROR, app.getLogFileName(), "Failed to initialize Render Pipeline Manager.\n");
@@ -259,7 +259,7 @@ void SetupDevicesState::update(void)
 		return;
 	}
 
-	InputManager& input_mgr = app.getManagerT<InputManager>();
+	IInputManager& input_mgr = app.getManagerT<IInputManager>();
 
 	if (!input_mgr.init()) {
 		app.getLogManager().logMessage(LogManager::LOG_ERROR, app.getLogFileName(), "Failed to initialize Input Manager.\n");
@@ -267,7 +267,7 @@ void SetupDevicesState::update(void)
 		return;
 	}
 
-	INuklearManager& nk_mgr = app.getManagerTReflection<INuklearManager>();
+	INuklearManager& nk_mgr = app.getManagerT<INuklearManager>();
 
 	if (!nk_mgr.init()) {
 		app.getLogManager().logMessage(LogManager::LOG_ERROR, app.getLogFileName(), "Failed to initialize Nuklear Manager.\n");

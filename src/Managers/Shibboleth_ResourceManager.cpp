@@ -49,13 +49,15 @@ struct ResourceData
 void ResourceLoadingJob(void* data)
 {
 	ResourceData* load_data = reinterpret_cast<ResourceData*>(data);
-	load_data->res_ptr->_res_state = ResourceContainer::RS_PENDING;
+	ResourceContainer* rc = reinterpret_cast<ResourceContainer*>(load_data->res_ptr.get());
+
+	rc->_res_state = ResourceContainerBase::RS_PENDING;
 
 	Gaff::IVirtualDestructor* res_data = load_data->res_loader->load(load_data->res_ptr->getResourceKey().getString().getBuffer(), load_data->res_ptr->getUserData(), load_data->file_map);
 
 	if (res_data) {
-		load_data->res_ptr->setResource(res_data);
-		load_data->res_ptr->_res_state = ResourceContainer::RS_LOADED;
+		rc->setResource(res_data);
+		rc->_res_state = ResourceContainerBase::RS_LOADED;
 	} else {
 		GetApp().getLogManager().logMessage(
 			LogManager::LOG_ERROR, GetApp().getLogFileName(),
@@ -63,16 +65,17 @@ void ResourceLoadingJob(void* data)
 			load_data->res_ptr->getResourceKey().getString().getBuffer()
 		);
 
-		load_data->res_ptr->_res_state = ResourceContainer::RS_FAILED;
+		rc->_res_state = ResourceContainer::RS_FAILED;
 	}
 
-	load_data->res_ptr->callCallbacks();
+	rc->callCallbacks();
 	SHIB_FREET(load_data, *GetAllocator());
 }
 
 void ResourceReadingJob(void* data)
 {
 	ResourceData* read_data = reinterpret_cast<ResourceData*>(data);
+	ResourceContainer* rc = reinterpret_cast<ResourceContainer*>(read_data->res_ptr.get());
 	IFileSystem* fs = GetApp().getFileSystem();
 	IFile* file = fs->openFile(read_data->res_ptr->getResourceKey().getString().getBuffer());
 	HashMap<AString, IFile*>& file_map = read_data->file_map;
@@ -85,8 +88,8 @@ void ResourceReadingJob(void* data)
 				GetApp().getFileSystem()->closeFile(*it);
 			}
 
-			read_data->res_ptr->_res_state = ResourceContainer::RS_FAILED;
-			read_data->res_ptr->callCallbacks();
+			rc->_res_state = ResourceContainer::RS_FAILED;
+			rc->callCallbacks();
 
 			SHIB_FREET(read_data, *GetAllocator());
 		}
@@ -138,19 +141,16 @@ void ResourceReadingJob(void* data)
 }
 
 // Resource Container
-ResourceContainer::ResourceContainer(const AHashString& res_key, ResourceManager* res_manager, ZRC zero_ref_callback, uint64_t user_data):
-	_res_manager(res_manager), _zero_ref_callback(zero_ref_callback), _res_key(res_key),
-	_resource(nullptr), _user_data(user_data), _ref_count(0), _res_state(RS_NONE)
+ResourceContainer::ResourceContainer(
+	const AHashString& res_key, ResourceManager* res_manager,
+	ZRC zero_ref_callback, uint64_t user_data):
+
+	ResourceContainerBase(res_key, user_data), _res_manager(res_manager), _zero_ref_callback(zero_ref_callback)
 {
 }
 
 ResourceContainer::~ResourceContainer(void)
 {
-}
-
-void ResourceContainer::addRef(void) const
-{
-	AtomicIncrement(&_ref_count);
 }
 
 void ResourceContainer::release(void) const
@@ -166,63 +166,6 @@ void ResourceContainer::release(void) const
 		}
 
 		SHIB_FREET(this, *GetAllocator());
-	}
-}
-
-unsigned int ResourceContainer::getRefCount(void) const
-{
-	return _ref_count;
-}
-
-uint64_t ResourceContainer::getUserData(void) const
-{
-	return _user_data;
-}
-
-const AHashString& ResourceContainer::getResourceKey(void) const
-{
-	return _res_key;
-}
-
-ResourceContainer::ResourceState ResourceContainer::getResourceState(void) const
-{
-	return _res_state;
-}
-
-bool ResourceContainer::isLoaded(void) const
-{
-	return _res_state == RS_LOADED;
-}
-
-bool ResourceContainer::isPending(void) const
-{
-	return _res_state == RS_PENDING;
-}
-
-bool ResourceContainer::hasFailed(void) const
-{
-	return _res_state == RS_FAILED;
-}
-
-void ResourceContainer::addCallback(const Gaff::FunctionBinder<void, ResourceContainer*>& callback)
-{
-	// We're already loaded!
-	if (_resource != nullptr) {
-		callback(this);
-		return;
-	}
-
-	Gaff::ScopedLock<Gaff::SpinLock> lock(_callback_lock);
-	_callbacks.push(callback);
-}
-
-void ResourceContainer::removeCallback(const Gaff::FunctionBinder<void, ResourceContainer*>& callback)
-{
-	Gaff::ScopedLock<Gaff::SpinLock> lock(_callback_lock);
-	auto it = _callbacks.linearSearch(callback);
-
-	if (it != _callbacks.end()) {
-		_callbacks.fastErase(it);
 	}
 }
 
@@ -248,12 +191,8 @@ void ResourceContainer::callCallbacks(void)
 REF_IMPL_REQ(ResourceManager);
 SHIB_REF_IMPL(ResourceManager)
 .addBaseClassInterfaceOnly<ResourceManager>()
+.ADD_BASE_CLASS_INTERFACE_ONLY(IResourceManager)
 ;
-
-const char* ResourceManager::GetFriendlyName(void)
-{
-	return "Resource Manager";
-}
 
 ResourceManager::ResourceManager(void):
 	_app(GetApp())
@@ -411,12 +350,12 @@ ResourcePtr ResourceManager::loadResourceImmediately(const char* filename, uint6
 		Gaff::IVirtualDestructor* data = loader_data.res_loader->load(filename, user_data, file_map);
 
 		if (data) {
-			res_ptr->setResource(data);
-			res_ptr->_res_state = ResourceContainer::RS_LOADED;
+			res_cont->setResource(data);
+			res_cont->_res_state = ResourceContainer::RS_LOADED;
 
 		} else {
 			// Log error
-			res_ptr->_res_state = ResourceContainer::RS_FAILED;
+			res_cont->_res_state = ResourceContainer::RS_FAILED;
 		}
 
 		return res_ptr;

@@ -45,15 +45,15 @@ namespace Esprit {
 NS_SHIBBOLETH
 
 struct GraphicsUserData;
-class ResourceManager;
-class RenderManager;
+class IResourceManager;
+class IRenderManager;
 class IFileSystem;
 struct ModelData;
 
 class ModelLoader : public IResourceLoader
 {
 public:
-	ModelLoader(RenderManager& render_mgr, ResourceManager& res_mgr, IFileSystem& file_system);
+	ModelLoader(IRenderManager& render_mgr, IResourceManager& res_mgr, IFileSystem& file_system);
 	~ModelLoader(void);
 
 	Gaff::IVirtualDestructor* load(const char* file_name, uint64_t, HashMap<AString, IFile*>& file_map);
@@ -65,8 +65,8 @@ private:
 		Array<float> bone_weights;
 	};
 
-	RenderManager& _render_mgr;
-	ResourceManager& _res_mgr;
+	IRenderManager& _render_mgr;
+	IResourceManager& _res_mgr;
 	IFileSystem& _file_system;
 	ProxyAllocator _esprit_proxy_allocator;
 

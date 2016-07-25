@@ -26,7 +26,7 @@ THE SOFTWARE.
 #include "Shibboleth_ResourceWrapper.h"
 #include "Shibboleth_Component.h"
 #include <Shibboleth_ReflectionDefinitions.h>
-#include <Shibboleth_OcclusionManager.h>
+#include <Shibboleth_IOcclusionManager.h>
 #include <Gleam_IBuffer.h>
 
 NS_GLEAM
@@ -35,8 +35,7 @@ NS_END
 
 NS_SHIBBOLETH
 
-class ResourceManager;
-class RenderManager;
+class IResourceManager;
 //class LoadingMessage;
 struct ModelData;
 
@@ -85,18 +84,18 @@ private:
 	ResourceWrapper<ModelData> _model;
 	Array<MeshData> _mesh_data;
 
-	OcclusionManager::OcclusionID _occlusion_id;
+	IOcclusionManager::OcclusionID _occlusion_id;
 
 	volatile size_t _requests_finished;
 	volatile size_t _total_requests;
 
-	OcclusionManager& _occlusion_mgr;
+	IOcclusionManager& _occlusion_mgr;
 
 	char _flags;
 
-	void ResourceLoadedCallback(ResourceContainer* resource);
+	void ResourceLoadedCallback(ResourceContainerBase* resource);
 
-	void requestResources(const Gaff::JSON& materials, ResourceManager& res_mgr);
+	void requestResources(const Gaff::JSON& materials, IResourceManager& res_mgr);
 	void setupResources(void);
 
 	void addToOcclusionManager(void);

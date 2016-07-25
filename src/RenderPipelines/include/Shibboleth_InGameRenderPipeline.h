@@ -21,7 +21,7 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include <Shibboleth_IRenderPipeline.h>
-#include <Shibboleth_RenderManager.h>
+#include <Shibboleth_IRenderManager.h>
 #include <Shibboleth_JobPool.h>
 #include <Shibboleth_Array.h>
 #include <Gleam_IDepthStencilState.h>
@@ -30,7 +30,6 @@ THE SOFTWARE.
 
 NS_SHIBBOLETH
 
-class RenderManager;
 struct ObjectData;
 struct FrameData;
 
@@ -59,8 +58,8 @@ private:
 	static void ClearCamera(Gleam::IRenderDevice* rd, ObjectData& od, Gleam::IRenderTargetPtr& rt);
 	static unsigned int GenerateFirstInstanceHash(ObjectData& od, size_t mesh_index, unsigned int device);
 	static unsigned int GenerateSecondInstanceHash(ObjectData& od, size_t mesh_index, unsigned int device, size_t submesh_index, unsigned int hash_init);
-	static Gleam::IBuffer* CreateInstanceBuffer(RenderManager& render_mgr, unsigned int device, unsigned int num_elements);
-	static Gleam::IShaderResourceView* CreateInstanceResourceView(RenderManager& render_mgr, Gleam::IBuffer* buffer);
+	static Gleam::IBuffer* CreateInstanceBuffer(IRenderManager& render_mgr, unsigned int device, unsigned int num_elements);
+	static Gleam::IShaderResourceView* CreateInstanceResourceView(IRenderManager& render_mgr, Gleam::IBuffer* buffer);
 
 	// Array size is number of devices
 	Array<IDepthStencilStatePtr> _ds_states[RP_COUNT];
@@ -69,7 +68,7 @@ private:
 	Array<Gaff::JobData> _job_cache;
 	Gaff::Counter* _counter;
 
-	RenderManager& _render_mgr;
+	IRenderManager& _render_mgr;
 
 	GAFF_NO_COPY(InGameRenderPipeline);
 	GAFF_NO_MOVE(InGameRenderPipeline);

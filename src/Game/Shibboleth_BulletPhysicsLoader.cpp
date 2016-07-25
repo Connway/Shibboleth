@@ -24,7 +24,7 @@ THE SOFTWARE.
 
 #include "Shibboleth_PhysicsLoader.h"
 #include "Shibboleth_PhysicsResource.h"
-#include <Shibboleth_SchemaManager.h>
+#include <Shibboleth_ISchemaManager.h>
 #include <Shibboleth_IFileSystem.h>
 #include <Shibboleth_Utilities.h>
 #include <Shibboleth_IApp.h>
@@ -240,7 +240,7 @@ static const char* g_physics_schema_names[PST_COUNT] = {
 
 static PhysicsShapeType ValidateSchema(const Gaff::JSON& shape_info, const char* file_name)
 {
-	SchemaManager& schema_mgr = GetApp().getManagerT<SchemaManager>();
+	ISchemaManager& schema_mgr = GetApp().getManagerT<ISchemaManager>();
 	PhysicsShapeType shape = PST_COUNT;
 		
 	const char* shape_name = shape_info["Shape"].getString();

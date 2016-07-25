@@ -22,17 +22,13 @@ THE SOFTWARE.
 
 #pragma once
 
-#include <Shibboleth_ReflectionDefinitions.h>
+#include "Shibboleth_IResourceManager.h"
 #include <Shibboleth_IResourceLoader.h>
 #include <Shibboleth_RefCounted.h>
 #include <Shibboleth_HashString.h>
 #include <Shibboleth_IManager.h>
-#include <Shibboleth_HashMap.h>
-#include <Shibboleth_Array.h>
 #include <Gaff_SharedPtr.h>
-#include <Gaff_SpinLock.h>
 #include <Gaff_Function.h>
-#include <Gaff_RefPtr.h>
 
 NS_GAFF
 	class IVirtualDestructor;
@@ -43,78 +39,16 @@ NS_SHIBBOLETH
 class ResourceManager;
 class IApp;
 
-class ResourceContainer : public Gaff::IRefCounted
+class ResourceContainer : public ResourceContainerBase
 {
 public:
-	enum ResourceState
-	{
-		RS_NONE,
-		RS_PENDING,
-		RS_FAILED,
-		RS_LOADED
-	};
-
-	template <class T>
-	const T* getResourcePtr(void) const
-	{
-		return (T*)_resource;
-	}
-
-	template <class T>
-	T* getResourcePtr(void)
-	{
-		return (T*)_resource;
-	}
-
-	template <class T>
-	const T& getResource(void) const
-	{
-		return *((T*)_resource);
-	}
-
-	template <class T>
-	T& getResource(void)
-	{
-		return *((T*)_resource);
-	}
-
 	~ResourceContainer(void);
-
-	INLINE void addRef(void) const;
-	void release(void) const;
-
-	INLINE unsigned int getRefCount(void) const;
-	INLINE uint64_t getUserData(void) const;
-
-	INLINE const AHashString& getResourceKey(void) const;
-
-	INLINE ResourceState getResourceState(void) const;
-
-	INLINE bool isLoaded(void) const;
-	INLINE bool isPending(void) const;
-	INLINE bool hasFailed(void) const;
-
-	void addCallback(const Gaff::FunctionBinder<void, ResourceContainer*>& callback);
-	void removeCallback(const Gaff::FunctionBinder<void, ResourceContainer*>& callback);
+	void release(void) const override;
 
 private:
-	typedef void (ResourceManager::*ZRC)(const AHashString&);
+	using ZRC = void (ResourceManager::*)(const AHashString&);
 	ResourceManager* _res_manager;
 	ZRC _zero_ref_callback;
-
-	AHashString _res_key;
-
-	Array< Gaff::FunctionBinder<void, ResourceContainer*> > _callbacks;
-
-	volatile Gaff::IVirtualDestructor* _resource;
-
-	uint64_t _user_data;
-
-	mutable volatile unsigned int _ref_count;
-
-	Gaff::SpinLock _callback_lock;
-
-	ResourceState _res_state;
 
 	ResourceContainer(const AHashString& res_key, ResourceManager* res_manager, ZRC zero_ref_callback, uint64_t user_data);
 	void setResource(Gaff::IVirtualDestructor* resource);
@@ -126,35 +60,19 @@ private:
 };
 
 
-typedef Gaff::SharedPtr<IResourceLoader, ProxyAllocator> ResourceLoaderPtr;
-typedef Gaff::RefPtr<ResourceContainer> ResourcePtr;
-
-
-class ResourceManager : public IManager
+class ResourceManager : public IManager, public IResourceManager
 {
 public:
-	using FilePopulationFunc = void (*)(void);
-
-	struct FileReadInfo
-	{
-		//FilePopulationFunc file_func;
-		AString json_element;
-		AString append_to_filename;
-		bool optional;
-	};
-
-	static const char* GetFriendlyName(void);
-
 	ResourceManager(void);
 	~ResourceManager(void);
 
 	const char* getName(void) const override;
 
-	void registerResourceLoader(IResourceLoader* res_loader, const Array<AString>& resource_types, unsigned int thread_pool = 0, const Array<FileReadInfo>& json_elements = Array<FileReadInfo>());
-	INLINE void registerResourceLoader(IResourceLoader* res_loader, const char* resource_type, unsigned int thread_pool = 0, const Array<FileReadInfo>& json_elements = Array<FileReadInfo>());
+	void registerResourceLoader(IResourceLoader* res_loader, const Array<AString>& resource_types, unsigned int thread_pool = 0, const Array<FileReadInfo>& json_elements = Array<FileReadInfo>()) override;
+	void registerResourceLoader(IResourceLoader* res_loader, const char* resource_type, unsigned int thread_pool = 0, const Array<FileReadInfo>& json_elements = Array<FileReadInfo>()) override;
 
-	ResourcePtr requestResource(const char* resource_type, const char* instance_name, uint64_t user_data = 0);
-	ResourcePtr requestResource(const char* filename, uint64_t user_data = 0);
+	ResourcePtr requestResource(const char* resource_type, const char* instance_name, uint64_t user_data = 0) override;
+	ResourcePtr requestResource(const char* filename, uint64_t user_data = 0) override;
 
 	/***********************************************************************************************************
 		Blocks calling thread. Calls the loader immediately. On return, resource should be valid if succeeded.
@@ -163,10 +81,10 @@ public:
 		WARNING: DO NOT MIX requestResource() AND loadResourceImmediately() CALLS! USE ONE OR THE OTHER, NOT BOTH!
 		MIXING CALLS CAN POTENTIALLY CAUSE DEADLOCK!
 	***********************************************************************************************************/
-	ResourcePtr loadResourceImmediately(const char* filename, uint64_t user_data, HashMap<AString, IFile*>& file_map);
+	ResourcePtr loadResourceImmediately(const char* filename, uint64_t user_data, HashMap<AString, IFile*>& file_map) override;
 
-	void addRequestAddedCallback(const Gaff::FunctionBinder<void, ResourcePtr&>& callback);
-	void removeRequestAddedCallback(const Gaff::FunctionBinder<void, ResourcePtr&>& callback);
+	void addRequestAddedCallback(const Gaff::FunctionBinder<void, ResourcePtr&>& callback) override;
+	void removeRequestAddedCallback(const Gaff::FunctionBinder<void, ResourcePtr&>& callback) override;
 
 private:
 	struct LoaderData

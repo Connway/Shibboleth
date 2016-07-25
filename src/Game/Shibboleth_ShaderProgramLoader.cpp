@@ -21,10 +21,9 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Shibboleth_ShaderProgramLoader.h"
-#include "Shibboleth_ResourceManager.h"
-#include "Shibboleth_RenderManager.h"
-#include <Shibboleth_ReflectionDefinitions.h>
-#include <Shibboleth_SchemaManager.h>
+#include "Shibboleth_IResourceManager.h"
+#include "Shibboleth_IRenderManager.h"
+#include <Shibboleth_ISchemaManager.h>
 #include <Shibboleth_IFileSystem.h>
 #include <Shibboleth_Utilities.h>
 #include <Shibboleth_IApp.h>
@@ -36,7 +35,7 @@ THE SOFTWARE.
 
 NS_SHIBBOLETH
 
-ShaderProgramLoader::ShaderProgramLoader(ResourceManager& res_mgr, SchemaManager& schema_mgr, RenderManager& render_mgr):
+ShaderProgramLoader::ShaderProgramLoader(IResourceManager& res_mgr, ISchemaManager& schema_mgr, IRenderManager& render_mgr):
 	_res_mgr(res_mgr), _schema_mgr(schema_mgr), _render_mgr(render_mgr)
 {
 }

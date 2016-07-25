@@ -22,7 +22,7 @@ THE SOFTWARE.
 
 #include "Shibboleth_ShaderLoader.h"
 #include "Shibboleth_ResourceDefines.h"
-#include "Shibboleth_RenderManager.h"
+#include "Shibboleth_IRenderManager.h"
 #include <Shibboleth_IFileSystem.h>
 #include <Shibboleth_Utilities.h>
 #include <Shibboleth_IApp.h>
@@ -33,7 +33,7 @@ THE SOFTWARE.
 
 NS_SHIBBOLETH
 
-ShaderLoader::ShaderLoader(RenderManager& render_mgr):
+ShaderLoader::ShaderLoader(IRenderManager& render_mgr):
 	_render_mgr(render_mgr)
 {
 }

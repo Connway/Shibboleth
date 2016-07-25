@@ -21,7 +21,7 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Shibboleth_NuklearManager.h"
-#include "Shibboleth_InputManager.h"
+#include "Shibboleth_IInputManager.h"
 #include <Shibboleth_Utilities.h>
 #include <Shibboleth_IApp.h>
 #include <Gleam_Window_Defines.h>
@@ -95,7 +95,7 @@ bool NuklearManager::init(void)
 		g_first_init = false;
 	}
 
-	InputManager& inputMgr = GetApp().getManagerT<InputManager>();
+	IInputManager& inputMgr = GetApp().getManagerT<IInputManager>();
 	Gleam::IKeyboard* keyboard = inputMgr.getKeyboard();
 	Gleam::IMouse* mouse = inputMgr.getMouse();
 

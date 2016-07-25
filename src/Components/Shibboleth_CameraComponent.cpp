@@ -21,10 +21,10 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Shibboleth_CameraComponent.h"
-#include <Shibboleth_ResourceManager.h>
-#include <Shibboleth_SchemaManager.h>
-#include <Shibboleth_RenderManager.h>
-#include <Shibboleth_CameraManager.h>
+#include <Shibboleth_IResourceManager.h>
+#include <Shibboleth_ISchemaManager.h>
+#include <Shibboleth_IRenderManager.h>
+#include <Shibboleth_ICameraManager.h>
 #include <Shibboleth_Utilities.h>
 #include <Shibboleth_Object.h>
 #include <Shibboleth_IApp.h>
@@ -80,7 +80,7 @@ CameraComponent::~CameraComponent(void)
 
 const Gaff::JSON& CameraComponent::getSchema(void) const
 {
-	static const Gaff::JSON& schema = GetApp().getManagerT<SchemaManager>("Schema Manager").getSchema("CameraComponent.schema");
+	static const Gaff::JSON& schema = GetApp().getManagerT<ISchemaManager>().getSchema("CameraComponent.schema");
 	return schema;
 }
 
@@ -94,14 +94,14 @@ bool CameraComponent::load(const Gaff::JSON& json)
 {
 	g_ref_def.read(json, this);
 
-	_render_target = GetApp().getManagerT<ResourceManager>("Resource Manager").requestResource(json["Render Target File"].getString());
+	_render_target = GetApp().getManagerT<IResourceManager>().requestResource(json["Render Target File"].getString());
 	_render_target.getResourcePtr()->addCallback(Gaff::Bind(this, &CameraComponent::RenderTargetCallback));
 
 	if (isActive()) {
 		getOwner()->registerForWorldDirtyCallback(Gaff::Bind(this, &CameraComponent::updateFrustum));
 	}
 
-	GetApp().getManagerT<CameraManager>("Camera Manager").registerCamera(this);
+	GetApp().getManagerT<ICameraManager>().registerCamera(this);
 
 	return true;
 }
@@ -225,7 +225,7 @@ void CameraComponent::setActive(bool active)
 	}
 }
 
-void CameraComponent::RenderTargetCallback(ResourceContainer*)
+void CameraComponent::RenderTargetCallback(ResourceContainerBase*)
 {
 	if (_render_target.getResourcePtr()->hasFailed()) {
 		// log error
@@ -236,7 +236,7 @@ void CameraComponent::RenderTargetCallback(ResourceContainer*)
 	_aspect_ratio = static_cast<float>(_render_target->width) / static_cast<float>(_render_target->height);
 	constructProjectionMatrixAndFrustum();
 
-	RenderManager& render_mgr = GetApp().getManagerT<RenderManager>("Render Manager");
+	IRenderManager& render_mgr = GetApp().getManagerT<IRenderManager>();
 
 	_devices = (_render_target->any_display_with_tags) ?
 		render_mgr.getDevicesWithTagsAny(_render_target->tags) :

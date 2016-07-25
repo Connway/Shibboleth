@@ -27,19 +27,19 @@ THE SOFTWARE.
 
 NS_SHIBBOLETH
 
-class RenderManager;
+class IRenderManager;
 class IFileSystem;
 
 class SamplerStateLoader : public IResourceLoader
 {
 public:
-	SamplerStateLoader(RenderManager& render_mgr);
+	SamplerStateLoader(IRenderManager& render_mgr);
 	~SamplerStateLoader(void);
 
 	Gaff::IVirtualDestructor* load(const char* file_name, uint64_t, HashMap<AString, IFile*>& file_map);
 
 private:
-	RenderManager& _render_mgr;
+	IRenderManager& _render_mgr;
 
 	GAFF_NO_COPY(SamplerStateLoader);
 	GAFF_NO_MOVE(SamplerStateLoader);

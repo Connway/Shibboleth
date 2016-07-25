@@ -23,11 +23,10 @@ THE SOFTWARE.
 #pragma once
 
 #include "Shibboleth_ResourceWrapper.h"
-#include "Shibboleth_RenderManager.h"
+#include <Shibboleth_IRenderManager.h>
 #include <Shibboleth_Array2D.h>
 #include <Shibboleth_Array.h>
 #include <Gaff_IVirtualDestructor.h>
-#include <Gleam_ISamplerState.h>
 #include <Gleam_IShader.h>
 #include <Gaff_RefPtr.h>
 #include <Gaff_Image.h>
@@ -35,11 +34,15 @@ THE SOFTWARE.
 namespace Gleam
 {
 	class IShaderResourceView;
+	//class IDepthStencilState;
 	class IProgramBuffers;
 	class IRenderDevice;
 	class IRenderTarget;
+	class ISamplerState;
 	class IRenderState;
+	//class IRasterState;
 	class ICommandList;
+	//class IBlendState;
 	class ITexture;
 	class ILayout;
 	class IProgram;

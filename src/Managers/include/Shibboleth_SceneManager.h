@@ -22,7 +22,7 @@ THE SOFTWARE.
 
 #pragma once
 
-#include <Shibboleth_ReflectionDefinitions.h>
+#include "Shibboleth_ISceneManager.h"
 #include <Shibboleth_IManager.h>
 #include <Shibboleth_String.h>
 #include <Shibboleth_Array.h>
@@ -35,22 +35,20 @@ NS_SHIBBOLETH
 
 class Object;
 
-class SceneManager : public IManager
+class SceneManager : public IManager, public ISceneManager
 {
 public:
-	static const char* GetFriendlyName(void);
-
 	SceneManager(void);
 	~SceneManager(void);
 
 	const char* getName(void) const;
 
-	void loadScene(const char* scene);
+	void loadScene(const char* scene) override;
 
-	bool activateLayer(const char* layer);
-	bool deactivateLayer(const char* layer);
-	void activateLayer(size_t layer);
-	void deactivateLayer(size_t layer);
+	bool activateLayer(const char* layer) override;
+	bool deactivateLayer(const char* layer) override;
+	void activateLayer(size_t layer) override;
+	void deactivateLayer(size_t layer) override;
 
 private:
 	struct Layer
@@ -65,8 +63,6 @@ private:
 		Array<Layer> layers;
 		AString name;
 	};
-
-
 
 	Scene _scene;
 	Array< Array<Gaff::JobData> > _job_cache[2];

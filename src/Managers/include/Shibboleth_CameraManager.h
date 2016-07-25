@@ -33,7 +33,7 @@ namespace Gleam
 
 NS_SHIBBOLETH
 
-class OcclusionManager;
+class IOcclusionManager;
 class ModelComponent;
 class Object;
 
@@ -55,7 +55,7 @@ public:
 
 private:
 	Array<CameraComponent*> _cameras;
-	OcclusionManager* _occlusion_mgr;
+	IOcclusionManager* _occlusion_mgr;
 
 	void addModelComponent(ObjectData& od, ModelComponent* mc, const Gleam::Vector4CPU& eye_pos);
 	void update(double, void* frame_data);

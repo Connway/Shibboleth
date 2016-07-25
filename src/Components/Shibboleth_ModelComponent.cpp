@@ -24,7 +24,7 @@ THE SOFTWARE.
 #include "Shibboleth_ModelAnimResources.h"
 
 #include <Shibboleth_OcclusionUserDataTags.h>
-#include <Shibboleth_SchemaManager.h>
+#include <Shibboleth_ISchemaManager.h>
 #include <Shibboleth_Utilities.h>
 #include <Shibboleth_Object.h>
 #include <Shibboleth_IApp.h>
@@ -61,7 +61,7 @@ SHIB_ENUM_REF_IMPL_EMBEDDED(MAP_TYPE, Gleam::IBuffer::MAP_TYPE)
 
 // Helper function for making resource requests.
 template <class T>
-static void RequestResourceArray(Array<T>& res_array, ResourceManager& res_mgr, const Gaff::JSON& json, const Gaff::FunctionBinder<void, ResourceContainer*>& callback)
+static void RequestResourceArray(Array<T>& res_array, IResourceManager& res_mgr, const Gaff::JSON& json, const Gaff::FunctionBinder<void, ResourceContainerBase*>& callback)
 {
 	if (!json.isNull()) {
 		res_array.resize(json.size());
@@ -88,7 +88,7 @@ const char* ModelComponent::GetFriendlyName(void)
 }
 
 ModelComponent::ModelComponent(void):
-	_occlusion_mgr(GetApp().getManagerT<OcclusionManager>("Occlusion Manager")),
+	_occlusion_mgr(GetApp().getManagerT<IOcclusionManager>()),
 	_requests_finished(0), _total_requests(0), _flags(0)
 {
 }
@@ -115,7 +115,7 @@ ModelComponent::~ModelComponent(void)
 
 const Gaff::JSON& ModelComponent::getSchema(void) const
 {
-	static const Gaff::JSON& schema = GetApp().getManagerT<SchemaManager>("Schema Manager").getSchema("ModelComponent.schema");
+	static const Gaff::JSON& schema = GetApp().getManagerT<ISchemaManager>().getSchema("ModelComponent.schema");
 	return schema;
 }
 
@@ -145,7 +145,7 @@ bool ModelComponent::load(const Gaff::JSON& json)
 		_total_requests += 1;
 	}
 
-	ResourceManager& res_mgr = Shibboleth::GetApp().getManagerT<Shibboleth::ResourceManager>("Resource Manager");
+	IResourceManager& res_mgr = GetApp().getManagerT<IResourceManager>();
 
 	if (model_file.isString()) {
 		_model = res_mgr.requestResource(model_file.getString());
@@ -293,7 +293,7 @@ ModelData& ModelComponent::getModel(void)
 	return *_model;
 }
 
-void ModelComponent::ResourceLoadedCallback(ResourceContainer* resource)
+void ModelComponent::ResourceLoadedCallback(ResourceContainerBase* resource)
 {
 	if (resource->isLoaded()) {
 		size_t new_val = AtomicIncrement(&_requests_finished);
@@ -311,7 +311,7 @@ void ModelComponent::ResourceLoadedCallback(ResourceContainer* resource)
 	}
 }
 
-void ModelComponent::requestResources(const Gaff::JSON& materials, ResourceManager& res_mgr)
+void ModelComponent::requestResources(const Gaff::JSON& materials, IResourceManager& res_mgr)
 {
 	auto callback = Gaff::Bind(this, &ModelComponent::ResourceLoadedCallback);
 	char temp[256] = { 0 };
@@ -345,7 +345,7 @@ void ModelComponent::setupResources(void)
 {
 	GAFF_ASSERT(_model->models[0][0]->getMeshCount() == _mesh_data.size());
 
-	unsigned int num_devices = GetApp().getManagerT<RenderManager>().getRenderDevice().getNumDevices();
+	unsigned int num_devices = GetApp().getManagerT<IRenderManager>().getRenderDevice().getNumDevices();
 
 	for (auto it_md = _mesh_data.begin(); it_md != _mesh_data.end(); ++it_md) {
 		for (unsigned int device = 0; device < num_devices; ++device) {
@@ -429,8 +429,8 @@ void ModelComponent::addToOcclusionManager(void)
 	GAFF_ASSERT(!Gaff::IsAnyBitSet<char>(_flags, MC_IN_OM));
 
 	_occlusion_id = _occlusion_mgr.addObject(
-		getOwner(), (isStatic()) ? OcclusionManager::OT_STATIC : OcclusionManager::OT_DYNAMIC,
-		OcclusionManager::UserData(uint64_t(this), OMT_MODEL_COMP)
+		getOwner(), (isStatic()) ? IOcclusionManager::OT_STATIC : IOcclusionManager::OT_DYNAMIC,
+		IOcclusionManager::UserData(uint64_t(this), OMT_MODEL_COMP)
 	);
 
 	Gaff::SetBits<char>(_flags, MC_IN_OM);
@@ -440,7 +440,7 @@ void ModelComponent::removeFromOcclusionManager(void)
 {
 	GAFF_ASSERT(Gaff::IsAnyBitSet<char>(_flags, MC_IN_OM));
 	_occlusion_mgr.removeObject(_occlusion_id);
-	_occlusion_id = OcclusionManager::OcclusionID();
+	_occlusion_id = IOcclusionManager::OcclusionID();
 	Gaff::ClearBits<char>(_flags, MC_IN_OM);
 }
 

@@ -21,8 +21,9 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Shibboleth_CreateResourceLoadersState.h"
-#include <Shibboleth_ResourceManager.h>
-#include <Shibboleth_RenderManager.h>
+#include <Shibboleth_IResourceManager.h>
+#include <Shibboleth_IRenderManager.h>
+#include <Shibboleth_ISchemaManager.h>
 
 #include <Shibboleth_ProgramBuffersCreator.h>
 #include <Shibboleth_ShaderProgramLoader.h>
@@ -79,8 +80,8 @@ void CreateResourceLoadersState::update(void)
 		"Creating Resource Loaders...\n"
 	);
 
-	RenderManager& render_mgr = app.getManagerT<RenderManager>("Render Manager");
-	ResourceManager& res_mgr = app.getManagerT<ResourceManager>("Resource Manager");
+	IRenderManager& render_mgr = app.getManagerT<IRenderManager>();
+	IResourceManager& res_mgr = app.getManagerT<IResourceManager>();
 
 	// PROGRAM BUFFERS CREATOR
 	{
@@ -120,8 +121,8 @@ void CreateResourceLoadersState::update(void)
 			return;
 		}
 
-		Array<ResourceManager::FileReadInfo> json_elements;
-		ResourceManager::FileReadInfo modifiers = { AString("image_file"), AString(), false };
+		Array<IResourceManager::FileReadInfo> json_elements;
+		IResourceManager::FileReadInfo modifiers = { AString("image_file"), AString(), false };
 		json_elements.emplacePush(modifiers);
 
 		app.getLogManager().logMessage(LogManager::LOG_NORMAL, app.getLogFileName(), "Adding Texture Loader\n");
@@ -130,7 +131,7 @@ void CreateResourceLoadersState::update(void)
 
 	// SAMPLER STATE LOADER
 	{
-		SamplerStateLoader* sampler_loader = SHIB_ALLOCT(SamplerStateLoader, *GetAllocator(),render_mgr);
+		SamplerStateLoader* sampler_loader = SHIB_ALLOCT(SamplerStateLoader, *GetAllocator(), render_mgr);
 
 		if (!sampler_loader) {
 			app.getLogManager().logMessage(LogManager::LOG_ERROR, app.getLogFileName(), "ERROR - Failed to create sampler state loader.\n");
@@ -158,7 +159,7 @@ void CreateResourceLoadersState::update(void)
 
 	// SHADER PROGRAM LOADER
 	{
-		SchemaManager& schema_mgr = app.getManagerT<SchemaManager>("Schema Manager");
+		ISchemaManager& schema_mgr = app.getManagerT<ISchemaManager>();
 
 		ShaderProgramLoader* shader_program_loader = SHIB_ALLOCT(ShaderProgramLoader, *GetAllocator(), res_mgr, schema_mgr, render_mgr);
 
@@ -168,8 +169,8 @@ void CreateResourceLoadersState::update(void)
 			return;
 		}
 
-		Array<ResourceManager::FileReadInfo> json_elements;
-		ResourceManager::FileReadInfo file_info = { AString("Vertex"), AString(render_mgr.getShaderExtension()), true };
+		Array<IResourceManager::FileReadInfo> json_elements;
+		IResourceManager::FileReadInfo file_info = { AString("Vertex"), AString(render_mgr.getShaderExtension()), true };
 		json_elements.emplacePush(file_info);
 
 		file_info.json_element = "Pixel";
@@ -271,8 +272,8 @@ void CreateResourceLoadersState::update(void)
 			return;
 		}
 
-		Array<ResourceManager::FileReadInfo> json_elements;
-		ResourceManager::FileReadInfo modifiers = { AString("mesh_file"), AString(), true };
+		Array<IResourceManager::FileReadInfo> json_elements;
+		IResourceManager::FileReadInfo modifiers = { AString("mesh_file"), AString(), true };
 		json_elements.emplacePush(modifiers);
 
 		app.getLogManager().logMessage(LogManager::LOG_NORMAL, app.getLogFileName(), "Adding Model Loader\n");

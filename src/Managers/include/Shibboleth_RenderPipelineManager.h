@@ -22,21 +22,21 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Shibboleth_RenderManager.h"
-#include "Shibboleth_IUpdateQuery.h"
-#include <Shibboleth_ReflectionDefinitions.h>
+#include "Shibboleth_IRenderPipelineManager.h"
+#include "Shibboleth_IRenderManager.h"
 #include <Shibboleth_ResourceDefines.h>
+#include <Shibboleth_DynamicLoader.h>
+#include <Shibboleth_IUpdateQuery.h>
+#include <Shibboleth_IManager.h>
 
 NS_SHIBBOLETH
 
-class CameraComponent;
 class IRenderPipeline;
+class IApp;
 
-class RenderPipelineManager : public IManager, public IUpdateQuery
+class RenderPipelineManager : public IManager, public IUpdateQuery, public IRenderPipelineManager
 {
 public:
-	static const char* GetFriendlyName(void);
-
 	RenderPipelineManager(void);
 	~RenderPipelineManager(void);
 
@@ -45,16 +45,16 @@ public:
 
 	void getUpdateEntries(Array<UpdateEntry>& entries) override;
 
-	bool init(const char* initial_pipeline);
+	bool init(const char* initial_pipeline) override;
 
-	INLINE void setOutputCamera(CameraComponent* camera);
-	INLINE CameraComponent* getOutputCamera(unsigned int monitor) const;
-	INLINE void refreshMonitors(void);
+	void setOutputCamera(CameraComponent* camera) override;
+	CameraComponent* getOutputCamera(unsigned int monitor) const override;
+	void refreshMonitors(void) override;
 
-	INLINE size_t getActivePipeline(void) const;
-	INLINE void setActivePipeline(size_t pipeline);
+	size_t getActivePipeline(void) const override;
+	void setActivePipeline(size_t pipeline) override;
 
-	size_t getPipelineIndex(const char* name) const;
+	size_t getPipelineIndex(const char* name) const override;
 
 private:
 	struct CameraData
@@ -78,8 +78,8 @@ private:
 	ResourceWrapper<SamplerStateData> _camera_to_screen_sampler;
 	ResourceWrapper<ProgramData> _camera_to_screen_shader;
 
-	RenderManager::WindowRenderTargets _render_targets;
-	RenderManager* _render_mgr;
+	IRenderManager::WindowRenderTargets _render_targets;
+	IRenderManager* _render_mgr;
 
 	bool addRenderPipelines(DynamicLoader::ModulePtr& module);
 	void generateCommandLists(double dt, void* frame_data);

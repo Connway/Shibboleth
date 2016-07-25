@@ -22,6 +22,7 @@ THE SOFTWARE.
 
 #pragma once
 
+#include <Shibboleth_ReflectionDefinitions.h>
 #include <Shibboleth_String.h>
 #include <Shibboleth_Array.h>
 #include <Gaff_Function.h>
@@ -37,6 +38,8 @@ public:
 	virtual ~IUpdateQuery(void) {}
 
 	virtual void getUpdateEntries(Array<UpdateEntry>& entries) = 0;
+
+	SHIB_INTERFACE_REFLECTION(IUpdateQuery)
 };
 
 NS_END

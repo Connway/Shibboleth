@@ -30,13 +30,12 @@ THE SOFTWARE.
 #include <Shibboleth_IApp.h>
 #include <Gaff_Image.h>
 
-#include <Shibboleth_RenderPipelineManager.h>
-#include <Shibboleth_OcclusionManager.h>
+#include <Shibboleth_IRenderPipelineManager.h>
+#include <Shibboleth_IOcclusionManager.h>
 #include <Shibboleth_CameraComponent.h>
-#include <Shibboleth_UpdateManager.h>
-#include <Shibboleth_ObjectManager.h>
-#include <Shibboleth_RenderManager.h>
-#include <Shibboleth_SceneManager.h>
+#include <Shibboleth_IUpdateManager.h>
+#include <Shibboleth_IObjectManager.h>
+#include <Shibboleth_ISceneManager.h>
 #include <Shibboleth_Object.h>
 
 class LoopState : public Shibboleth::IState
@@ -55,8 +54,8 @@ public:
 
 	~LoopState(void)
 	{
-		auto& occ_mgr = Shibboleth::GetApp().getManagerT<Shibboleth::OcclusionManager>();
-		auto& obj_mgr = Shibboleth::GetApp().getManagerT<Shibboleth::ObjectManager>();
+		auto& occ_mgr = Shibboleth::GetApp().getManagerT<Shibboleth::IOcclusionManager>();
+		auto& obj_mgr = Shibboleth::GetApp().getManagerT<Shibboleth::IObjectManager>();
 
 		if (_object) {
 			occ_mgr.removeObject(_object);
@@ -91,8 +90,8 @@ public:
 	void enter(void)
 	{
 		Shibboleth::IApp& app = Shibboleth::GetApp();
-		app.getManagerT<Shibboleth::ResourceManager>().addRequestAddedCallback(Gaff::Bind(this, &LoopState::ResReq));
-		app.getManagerT<Shibboleth::SceneManager>().loadScene("Resources/Scenes/test.scene");
+		app.getManagerT<Shibboleth::IResourceManager>().addRequestAddedCallback(Gaff::Bind(this, &LoopState::ResReq));
+		app.getManagerT<Shibboleth::ISceneManager>().loadScene("Resources/Scenes/test.scene");
 
 	}
 
@@ -121,22 +120,22 @@ public:
 		static bool already_set = false;
 
 		if (!already_set) {
-			Shibboleth::Object* camera = app.getManagerT<Shibboleth::ObjectManager>().findObject("Test Camera");
+			Shibboleth::Object* camera = app.getManagerT<Shibboleth::IObjectManager>().findObject("Test Camera");
 
 			if (camera) {
 				Shibboleth::CameraComponent* camera_cmp = camera->getFirstComponentWithInterface<Shibboleth::CameraComponent>();
 
 				if (camera_cmp) {
-					app.getManagerT<Shibboleth::RenderPipelineManager>().setOutputCamera(camera_cmp);
+					app.getManagerT<Shibboleth::IRenderPipelineManager>().setOutputCamera(camera_cmp);
 					already_set = true;
 				}
 			}
 		}
 
-		static Shibboleth::RenderManager& rm = app.getManagerT<Shibboleth::RenderManager>();
+		static Shibboleth::IRenderManager& rm = app.getManagerT<Shibboleth::IRenderManager>();
 		rm.updateWindows(); // This has to happen in the main thread.
 
-		static Shibboleth::UpdateManager& update_manager = app.getManagerT<Shibboleth::UpdateManager>();
+		static Shibboleth::IUpdateManager& update_manager = app.getManagerT<Shibboleth::IUpdateManager>();
 		update_manager.update();
 
 		YieldThread();
@@ -145,7 +144,7 @@ public:
 	void exit(void)
 	{
 		Shibboleth::IApp& app = Shibboleth::GetApp();
-		app.getManagerT<Shibboleth::ResourceManager>().removeRequestAddedCallback(Gaff::Bind(this, &LoopState::ResReq));
+		app.getManagerT<Shibboleth::IResourceManager>().removeRequestAddedCallback(Gaff::Bind(this, &LoopState::ResReq));
 		_resources.clear();
 	}
 
