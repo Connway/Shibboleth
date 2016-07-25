@@ -21,10 +21,11 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Shibboleth_FrameManager.h"
-#include "Shibboleth_RenderManager.h"
+#include "Shibboleth_IRenderManager.h"
 #include <Shibboleth_Utilities.h>
 #include <Shibboleth_IApp.h>
 #include <Gleam_IRenderDevice.h>
+#include <Gleam_ICommandList.h>
 #include <Gleam_IProgram.h>
 #include <Gleam_IModel.h>
 #include <Gaff_Atomic.h>
@@ -74,7 +75,7 @@ const char* FrameManager::getName(void) const
 
 void FrameManager::allManagersCreated(void)
 {
-	_render_mgr = &GetApp().getManagerT<RenderManager>("Render Manager");
+	_render_mgr = &GetApp().getManagerT<IRenderManager>();
 }
 
 void FrameManager::getUpdateEntries(Array<UpdateEntry>& entries)

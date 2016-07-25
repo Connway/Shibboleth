@@ -21,19 +21,19 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Shibboleth_LuaComponent.h"
-#include <Shibboleth_ResourceManager.h>
-#include <Shibboleth_SchemaManager.h>
+#include <Shibboleth_IResourceManager.h>
+#include <Shibboleth_ISchemaManager.h>
 #include <Shibboleth_Utilities.h>
 #include <Shibboleth_IApp.h>
 
-#if defined (_WIN32) || defined(_WIN64)
+#ifdef PLATFORM_WINDOWS
 	#pragma warning(push)
 	#pragma warning(disable: 4100 4244 4267 4800)
 #endif
 
 #include <LuaState.h>
 
-#if defined (_WIN32) || defined(_WIN64)
+#ifdef PLATFORM_WINDOWS
 	#pragma warning(pop)
 #endif
 
@@ -61,7 +61,7 @@ LuaComponent::~LuaComponent(void)
 
 const Gaff::JSON& LuaComponent::getSchema(void) const
 {
-	static const Gaff::JSON& schema = GetApp().getManagerT<SchemaManager>().getSchema("ScriptComponent.schema");
+	static const Gaff::JSON& schema = GetApp().getManagerT<ISchemaManager>().getSchema("ScriptComponent.schema");
 	return schema;
 }
 
@@ -69,7 +69,7 @@ bool LuaComponent::load(const Gaff::JSON& json)
 {
 	g_ref_def.read(json, this);
 
-	ResourceManager& res_mgr = GetApp().getManagerT<ResourceManager>();
+	IResourceManager& res_mgr = GetApp().getManagerT<IResourceManager>();
 
 	Gaff::JSON script_file = json["Script File"];
 
@@ -83,7 +83,7 @@ void LuaComponent::allComponentsLoaded(void)
 {
 }
 
-void LuaComponent::scriptLoaded(ResourceContainer*)
+void LuaComponent::scriptLoaded(ResourceContainerBase*)
 {
 	if (_script_res.getResourcePtr()->isLoaded()) {
 		cacheFunctions();

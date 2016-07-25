@@ -42,14 +42,9 @@ const char* gRenderToScreenPixelShader = "";
 REF_IMPL_REQ(RenderPipelineManager);
 SHIB_REF_IMPL(RenderPipelineManager)
 .addBaseClassInterfaceOnly<RenderPipelineManager>()
+.ADD_BASE_CLASS_INTERFACE_ONLY(IRenderPipelineManager)
 .ADD_BASE_CLASS_INTERFACE_ONLY(IUpdateQuery)
 ;
-
-
-const char* RenderPipelineManager::GetFriendlyName(void)
-{
-	return "Render Pipeline Manager";
-}
 
 RenderPipelineManager::RenderPipelineManager(void):
 	_active_pipeline(SIZE_T_FAIL), _render_mgr(nullptr)
@@ -80,9 +75,10 @@ void RenderPipelineManager::getUpdateEntries(Array<UpdateEntry>& entries)
 
 bool RenderPipelineManager::init(const char* initial_pipeline)
 {
-	_camera_to_screen_program_buffers = GetApp().getManagerT<ResourceManager>("Resource Manager").requestResource("ProgramBuffers", "render_pipeline_manager_program_buffers");
-	_camera_to_screen_sampler = GetApp().getManagerT<ResourceManager>("Resource Manager").requestResource("Resources/Samplers/anisotropic_16x.sampler");
-	_camera_to_screen_shader = GetApp().getManagerT<ResourceManager>("Resource Manager").requestResource("Resources/Camera To Screen/camera_to_screen.material");
+	IResourceManager& res_mgr = GetApp().getManagerT<IResourceManager>();
+	_camera_to_screen_program_buffers = res_mgr.requestResource("ProgramBuffers", "render_pipeline_manager_program_buffers");
+	_camera_to_screen_sampler = res_mgr.requestResource("Resources/Samplers/anisotropic_16x.sampler");
+	_camera_to_screen_shader = res_mgr.requestResource("Resources/Camera To Screen/camera_to_screen.material");
 
 	GetApp().getLogManager().logMessage(
 		LogManager::LOG_NORMAL, GetApp().getLogFileName(),
@@ -146,7 +142,7 @@ bool RenderPipelineManager::init(const char* initial_pipeline)
 		GetApp().quit();
 	}
 
-	_render_mgr = &GetApp().getManagerT<RenderManager>();
+	_render_mgr = &GetApp().getManagerT<IRenderManager>();
 
 	// Wait for resources to finish loading
 	while (!_camera_to_screen_program_buffers.getResourcePtr()->isLoaded() &&

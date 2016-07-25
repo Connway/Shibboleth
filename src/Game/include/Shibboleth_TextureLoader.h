@@ -32,19 +32,19 @@ namespace Gaff
 
 NS_SHIBBOLETH
 
-class RenderManager;
+class IRenderManager;
 class IFileSystem;
 
 class TextureLoader : public IResourceLoader
 {
 public:
-	TextureLoader(RenderManager& render_mgr);
+	TextureLoader(IRenderManager& render_mgr);
 	~TextureLoader(void);
 
 	Gaff::IVirtualDestructor* load(const char* file_name, uint64_t, HashMap<AString, IFile*>& file_map);
 
 private:
-	RenderManager& _render_mgr;
+	IRenderManager& _render_mgr;
 
 	Gleam::ITexture::FORMAT determineFormatAndType(const Gaff::Image& image, bool normalized, bool srgba) const;
 	Gleam::ITexture::FORMAT determineRGBAType(const Gaff::Image& image, bool normalized, bool srgba) const;

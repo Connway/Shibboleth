@@ -21,7 +21,7 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Shibboleth_UpdateManager.h"
-#include "Shibboleth_FrameManager.h"
+#include "Shibboleth_IFrameManager.h"
 #include "Shibboleth_IUpdateQuery.h"
 #include <Shibboleth_IFileSystem.h>
 #include <Shibboleth_Utilities.h>
@@ -36,10 +36,11 @@ NS_SHIBBOLETH
 REF_IMPL_REQ(UpdateManager);
 SHIB_REF_IMPL(UpdateManager)
 .addBaseClassInterfaceOnly<UpdateManager>()
+.ADD_BASE_CLASS_INTERFACE_ONLY(IUpdateManager)
 ;
 
 UpdateManager::UpdatePhase::UpdatePhase(void):
-	_counter(0), _frame_mgr(GetApp().getManagerT<FrameManager>("Frame Manager"))
+	_counter(0), _frame_mgr(GetApp().getManagerT<IFrameManager>())
 {
 }
 
@@ -150,11 +151,6 @@ void UpdateManager::UpdatePhase::UpdateJob(void* data)
 
 
 
-const char* UpdateManager::GetFriendlyName(void)
-{
-	return "Update Manager";
-}
-
 UpdateManager::UpdateManager(void)
 {
 }
@@ -182,11 +178,9 @@ void UpdateManager::allManagersCreated(void)
 	LogManager& lm = GetApp().getLogManager();
 	Array<IUpdateQuery::UpdateEntry> entries;
 
-	unsigned int update_query_hash = CLASS_HASH(IUpdateQuery);
-
 	reinterpret_cast<App&>(GetApp()).forEachManager([&](IManager& manager) -> bool
 	{
-		IUpdateQuery* update_query = manager.requestInterface<IUpdateQuery>(update_query_hash);
+		IUpdateQuery* update_query = manager.requestInterface<IUpdateQuery>();
 
 		if (update_query) {
 			update_query->getUpdateEntries(entries);
@@ -215,7 +209,7 @@ void UpdateManager::allManagersCreated(void)
 			return;
 		}
 
-		GetApp().getManagerT<FrameManager>("Frame Manager").setNumPhases(phases.size());
+		GetApp().getManagerT<IFrameManager>().setNumPhases(phases.size());
 		_phases.resize(phases.size());
 
 		// Process each phase

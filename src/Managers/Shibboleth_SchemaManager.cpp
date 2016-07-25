@@ -30,12 +30,8 @@ NS_SHIBBOLETH
 REF_IMPL_REQ(SchemaManager);
 SHIB_REF_IMPL(SchemaManager)
 .addBaseClassInterfaceOnly<SchemaManager>()
+.ADD_BASE_CLASS_INTERFACE_ONLY(ISchemaManager)
 ;
-
-const char* SchemaManager::GetFriendlyName(void)
-{
-	return "Schema Manager";
-}
 
 SchemaManager::SchemaManager(void)
 {

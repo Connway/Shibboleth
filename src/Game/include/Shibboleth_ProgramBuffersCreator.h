@@ -27,7 +27,7 @@ THE SOFTWARE.
 
 NS_SHIBBOLETH
 
-class RenderManager;
+class IRenderManager;
 
 class ProgramBuffersCreator : public IResourceLoader
 {
@@ -38,7 +38,7 @@ public:
 	Gaff::IVirtualDestructor* load(const char*, uint64_t, HashMap<AString, IFile*>&);
 
 private:
-	RenderManager& _render_mgr;
+	IRenderManager& _render_mgr;
 
 	GAFF_NO_COPY(ProgramBuffersCreator);
 	GAFF_NO_MOVE(ProgramBuffersCreator);

@@ -23,6 +23,12 @@ THE SOFTWARE.
 #pragma once
 
 #include <Shibboleth_ReflectionDefinitions.h>
+#include <Gleam_Window_Defines.h>
+
+NS_GLEAM
+	class IKeyboard;
+	class IMouse;
+NS_END
 
 NS_SHIBBOLETH
 
@@ -31,6 +37,25 @@ class IInputManager
 public:
 	IInputManager(void) {}
 	virtual ~IInputManager(void) {}
+
+	virtual bool init(void) = 0;
+
+	virtual void addKeyBinding(const char* alias, Gleam::KeyCode key_code, bool negative = false) = 0;
+	virtual void removeKeyBinding(Gleam::KeyCode key_code) = 0;
+
+	virtual void addMouseBinding(const char* alias, Gleam::MouseCode mouse_code, bool negative = false) = 0;
+	virtual void removeMouseBinding(Gleam::MouseCode mouse_code) = 0;
+
+	virtual size_t getAliasIndex(const char* alias) const = 0;
+	virtual float getAliasValue(size_t index) const = 0;
+
+	virtual bool saveKeybindings(void) = 0;
+
+	virtual const Gleam::IKeyboard* getKeyboard(void) const = 0;
+	virtual Gleam::IKeyboard* getKeyboard(void) = 0;
+
+	virtual const Gleam::IMouse* getMouse(void) const = 0;
+	virtual Gleam::IMouse* getMouse(void) = 0;
 
 	SHIB_INTERFACE_REFLECTION(IInputManager)
 	SHIB_INTERFACE_MANAGER("Input Manager")

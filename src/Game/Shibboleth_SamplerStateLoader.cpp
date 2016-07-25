@@ -23,7 +23,7 @@ THE SOFTWARE.
 #include "Shibboleth_SamplerStateLoader.h"
 #include "Shibboleth_ResourceDefines.h"
 #include <Shibboleth_ReflectionDefinitions.h>
-#include <Shibboleth_RenderManager.h>
+#include <Shibboleth_IRenderManager.h>
 #include <Shibboleth_IFileSystem.h>
 #include <Shibboleth_Utilities.h>
 #include <Shibboleth_IApp.h>
@@ -34,7 +34,7 @@ THE SOFTWARE.
 
 NS_SHIBBOLETH
 
-SamplerStateLoader::SamplerStateLoader(RenderManager& render_mgr):
+SamplerStateLoader::SamplerStateLoader(IRenderManager& render_mgr):
 	_render_mgr(render_mgr)
 {
 }

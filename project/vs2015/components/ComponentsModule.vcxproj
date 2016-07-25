@@ -147,9 +147,6 @@
     <ProjectReference Include="Components.vcxproj">
       <Project>{6B7DD516-5735-1764-C03C-F0BFAC13B254}</Project>
     </ProjectReference>
-    <ProjectReference Include="..\managers\Managers.vcxproj">
-      <Project>{B34CFEBD-9F19-59C9-C832-4771B45E8E57}</Project>
-    </ProjectReference>
     <ProjectReference Include="..\memory\Memory.vcxproj">
       <Project>{BE94DDC2-AA36-0899-93F1-1BED7F328FE9}</Project>
     </ProjectReference>

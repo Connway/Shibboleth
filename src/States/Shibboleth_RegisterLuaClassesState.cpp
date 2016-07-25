@@ -21,10 +21,10 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Shibboleth_RegisterLuaClassesState.h"
-#include <Shibboleth_LuaManager.h>
+#include <Shibboleth_ILuaManager.h>
 #include <Shibboleth_IApp.h>
 
-#if defined (_WIN32) || defined(_WIN64)
+#ifdef PLATFORM_WINDOWS
 	#pragma warning(push)
 	#pragma warning(disable: 4100 4244 4267 4800)
 #endif
@@ -32,7 +32,7 @@ THE SOFTWARE.
 #include <LuaState.h>
 #include <LuaBridge.h>
 
-#if defined (_WIN32) || defined(_WIN64)
+#ifdef PLATFORM_WINDOWS
 	#pragma warning(pop)
 #endif
 
@@ -63,7 +63,7 @@ void RegisterLuaClassesState::enter(void)
 
 void RegisterLuaClassesState::update(void)
 {
-	_app.getManagerT<LuaManager>("Lua Manager").addRegistrant(Gaff::Bind(RegisterBaseClassesWithLua));
+	_app.getManagerT<ILuaManager>().addRegistrant(Gaff::Bind(RegisterBaseClassesWithLua));
 }
 
 void RegisterLuaClassesState::exit(void)

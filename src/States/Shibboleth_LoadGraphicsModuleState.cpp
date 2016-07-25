@@ -21,7 +21,7 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Shibboleth_LoadGraphicsModuleState.h"
-#include <Shibboleth_RenderManager.h>
+#include <Shibboleth_IRenderManager.h>
 #include <Shibboleth_Utilities.h>
 #include <Shibboleth_IApp.h>
 #include <Gleam_IRenderDevice.h>
@@ -56,7 +56,7 @@ void LoadGraphicsModuleState::update(void)
 {
 	IApp& app = GetApp();
 
-	RenderManager& render_manager = app.getManagerT<RenderManager>("Render Manager");
+	IRenderManager& render_manager = app.getManagerT<IRenderManager>();
 	bool file_exists = false;
 	Gaff::JSON cfg;
 
@@ -111,7 +111,7 @@ void LoadGraphicsModuleState::generateDefaultConfig(Gaff::JSON& cfg)
 	cfg.setObject("module", Gaff::JSON::CreateString("Graphics_Direct3D"));
 #endif
 
-	RenderManager& render_manager = app.getManagerT<RenderManager>("Render Manager");
+	IRenderManager& render_manager = app.getManagerT<IRenderManager>();
 	Gleam::IRenderDevice::AdapterList adapters = render_manager.getRenderDevice().getDisplayModes();
 	GAFF_ASSERT(!adapters.empty());
 

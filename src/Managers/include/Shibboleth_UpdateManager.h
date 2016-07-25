@@ -22,7 +22,7 @@ THE SOFTWARE.
 
 #pragma once
 
-#include <Shibboleth_ReflectionDefinitions.h>
+#include "Shibboleth_IUpdateManager.h"
 #include <Shibboleth_IManager.h>
 #include <Shibboleth_String.h>
 #include <Shibboleth_Array.h>
@@ -37,22 +37,20 @@ NS_END
 
 NS_SHIBBOLETH
 
-class FrameManager;
+class IFrameManager;
 
 using UpdateCallback = Gaff::FunctionBinder<void, double, void*>;
 
-class UpdateManager : public IManager
+class UpdateManager : public IManager, public IUpdateManager
 {
 public:
-	static const char* GetFriendlyName(void);
-
 	UpdateManager(void);
 	~UpdateManager(void);
 
-	const char* getName(void) const;
-	void allManagersCreated(void);
+	const char* getName(void) const override;
+	void allManagersCreated(void) override;
 
-	void update(void);
+	void update(void) override;
 
 private:
 	class UpdatePhase
@@ -88,7 +86,7 @@ private:
 		Gaff::Timer _timer;
 		AString _name;
 
-		FrameManager& _frame_mgr;
+		IFrameManager& _frame_mgr;
 
 		size_t _id;
 		volatile unsigned int _counter;

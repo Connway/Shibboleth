@@ -22,7 +22,7 @@ THE SOFTWARE.
 
 #pragma once
 
-#include <Shibboleth_ReflectionDefinitions.h>
+#include "Shibboleth_ISchemaManager.h"
 #include <Shibboleth_HashString.h>
 #include <Shibboleth_HashMap.h>
 #include <Shibboleth_IManager.h>
@@ -32,18 +32,16 @@ NS_SHIBBOLETH
 
 class IFile;
 
-class SchemaManager : public IManager
+class SchemaManager : public IManager, public ISchemaManager
 {
 public:
-	static const char* GetFriendlyName(void);
-
 	SchemaManager(void);
 	~SchemaManager(void);
 
 	const char* getName(void) const;
 	void allManagersCreated(void);
 
-	INLINE const Gaff::JSON& getSchema(const char* schema_file) const;
+	const Gaff::JSON& getSchema(const char* schema_file) const override;
 
 private:
 	HashMap<AHashString, Gaff::JSON> _schema_map;

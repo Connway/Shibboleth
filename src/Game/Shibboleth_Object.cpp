@@ -21,8 +21,8 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Shibboleth_Object.h"
-#include <Shibboleth_ComponentManager.h>
-#include <Shibboleth_ObjectManager.h>
+#include <Shibboleth_IComponentManager.h>
+#include <Shibboleth_IObjectManager.h>
 #include <Shibboleth_IFileSystem.h>
 #include <Shibboleth_Utilities.h>
 #include <Shibboleth_IApp.h>
@@ -36,8 +36,8 @@ THE SOFTWARE.
 NS_SHIBBOLETH
 
 Object::Object(unsigned int id):
-	_comp_mgr(GetApp().getManagerT<ComponentManager>("Component Manager")),
-	_obj_mgr(GetApp().getManagerT<ObjectManager>("Object Manager")),
+	_comp_mgr(GetApp().getManagerT<IComponentManager>()),
+	_obj_mgr(GetApp().getManagerT<IObjectManager>()),
 	_parent(nullptr), _id(id), _flags(0)
 {
 }

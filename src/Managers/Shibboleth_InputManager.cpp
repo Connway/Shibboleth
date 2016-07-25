@@ -63,7 +63,7 @@ void InputManager::getUpdateEntries(Array<UpdateEntry>& entries)
 
 bool InputManager::init(void)
 {
-	RenderManager& rm = GetApp().getManagerT<RenderManager>();
+	IRenderManager& rm = GetApp().getManagerT<IRenderManager>();
 
 	_keyboard = rm.createKeyboard();
 

@@ -26,8 +26,8 @@ THE SOFTWARE.
 
 #include "Shibboleth_RenderTargetLoader.h"
 #include "Shibboleth_ResourceDefines.h"
-#include <Shibboleth_SchemaManager.h>
-#include <Shibboleth_RenderManager.h>
+#include <Shibboleth_ISchemaManager.h>
+#include <Shibboleth_IRenderManager.h>
 #include <Shibboleth_IFileSystem.h>
 #include <Shibboleth_Utilities.h>
 #include <Shibboleth_IApp.h>
@@ -37,7 +37,7 @@ THE SOFTWARE.
 
 NS_SHIBBOLETH
 
-static bool addOutput(Gleam::IRenderDevice& rd, RenderManager& rm, Gleam::IRenderTarget* rt, RenderTargetData* data, int window_width, int window_height, const Gaff::JSON& settings, const char* file_name)
+static bool addOutput(Gleam::IRenderDevice& rd, IRenderManager& rm, Gleam::IRenderTarget* rt, RenderTargetData* data, int window_width, int window_height, const Gaff::JSON& settings, const char* file_name)
 {
 	Gleam::ITexture::FORMAT t_fmt = GetEnumRefDef<Gleam::ITexture::FORMAT>().getValue(settings["Format"].getString());
 	int width = static_cast<int>(settings["Width"].getInt());
@@ -105,7 +105,7 @@ static bool addOutput(Gleam::IRenderDevice& rd, RenderManager& rm, Gleam::IRende
 	return true;
 }
 
-static bool addDepthStencil(Gleam::IRenderDevice& rd, RenderManager& rm, Gleam::IRenderTarget* rt, RenderTargetData* data, int window_width, int window_height, const Gaff::JSON& settings, const char* file_name)
+static bool addDepthStencil(Gleam::IRenderDevice& rd, IRenderManager& rm, Gleam::IRenderTarget* rt, RenderTargetData* data, int window_width, int window_height, const Gaff::JSON& settings, const char* file_name)
 {
 	// We're not adding Depth-Stencil to this Render Target.
 	if (!settings["Depth-Stencil Format"].isString()) {
@@ -209,7 +209,7 @@ Gaff::IVirtualDestructor* RenderTargetLoader::load(const char* file_name, uint64
 		return nullptr;
 	}
 
-	static const Gaff::JSON& schema = GetApp().getManagerT<SchemaManager>("Schema Manager").getSchema("RenderTarget.schema");
+	static const Gaff::JSON& schema = GetApp().getManagerT<ISchemaManager>().getSchema("RenderTarget.schema");
 
 	if (!rt_settings.validate(schema)) {
 		GetApp().getLogManager().logMessage(
@@ -237,7 +237,7 @@ Gaff::IVirtualDestructor* RenderTargetLoader::load(const char* file_name, uint64
 
 	// RenderTargetData setup
 	RenderTargetData* data = SHIB_ALLOCT(RenderTargetData, *GetAllocator());
-	RenderManager& rm = GetApp().getManagerT<RenderManager>("Render Manager");
+	IRenderManager& rm = GetApp().getManagerT<IRenderManager>();
 	Gleam::IRenderDevice& rd = rm.getRenderDevice();
 
 	if (!data) {
@@ -255,7 +255,7 @@ Gaff::IVirtualDestructor* RenderTargetLoader::load(const char* file_name, uint64
 	const Gaff::JSON& outputs = rt_settings["Outputs"];
 
 	// Get windows with these tags
-	Array<const RenderManager::WindowData*> windows = (data->any_display_with_tags) ?
+	Array<const IRenderManager::WindowData*> windows = (data->any_display_with_tags) ?
 		rm.getWindowsWithTagsAny(disp_tags) :
 		rm.getWindowsWithTags(disp_tags);
 

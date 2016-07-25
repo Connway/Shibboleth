@@ -21,8 +21,8 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Shibboleth_CameraManager.h"
-#include "Shibboleth_OcclusionManager.h"
-#include "Shibboleth_FrameManager.h"
+#include "Shibboleth_IOcclusionManager.h"
+#include "Shibboleth_IFrameManager.h"
 #include <Shibboleth_OcclusionUserDataTags.h>
 #include <Shibboleth_ModelAnimResources.h>
 #include <Shibboleth_CameraComponent.h>
@@ -30,6 +30,7 @@ THE SOFTWARE.
 #include <Shibboleth_Utilities.h>
 #include <Shibboleth_Object.h>
 #include <Shibboleth_IApp.h>
+#include <Gleam_ICommandList.h>
 #include <Gleam_IProgram.h>
 #include <Gleam_IModel.h>
 
@@ -58,7 +59,7 @@ const char* CameraManager::getName(void) const
 
 void CameraManager::allManagersCreated(void)
 {
-	_occlusion_mgr = &GetApp().getManagerT<OcclusionManager>("Occlusion Manager");
+	_occlusion_mgr = &GetApp().getManagerT<IOcclusionManager>();
 }
 
 void CameraManager::getUpdateEntries(Array<UpdateEntry>& entries)
@@ -145,7 +146,7 @@ void CameraManager::update(double, void* frame_data)
 	FrameData* fd = reinterpret_cast<FrameData*>(frame_data);
 	fd->camera_object_data.clearNoFree();
 
-	OcclusionManager::QueryData query_result;
+	IOcclusionManager::QueryData query_result;
 
 	for (auto it = _cameras.begin(); it != _cameras.end(); ++it) {
 		ObjectData& od = fd->camera_object_data[*it];
@@ -165,7 +166,7 @@ void CameraManager::update(double, void* frame_data)
 			//_occlusion_mgr->findObjectsInFrustum((*it)->getFrustum(), od.objects);
 			_occlusion_mgr->findObjectsInFrustum((*it)->getFrustum(), query_result);
 
-			for (int i = OcclusionManager::OT_STATIC; i < OcclusionManager::OT_SIZE; ++i) {
+			for (int i = IOcclusionManager::OT_STATIC; i < IOcclusionManager::OT_SIZE; ++i) {
 				// Copy all the transforms.
 				for (auto it_obj = query_result.results[i].begin(); it_obj != query_result.results[i].end(); ++it_obj) {
 					//od.transforms[i].emplacePush(it_obj->first->getWorldTransform());

@@ -91,11 +91,10 @@ project "ComponentsModule"
 		"OtterUI", "ResIL", "ResILU",
 		"zlib", "Gleam", "Game",
 		"esprit", "Components",
-		"Managers", "Memory",
-		"LuaJIT", "Boxer",
+		"Memory", "LuaJIT",
 		"BulletCollision",
 		"BulletDynamics",
-		"LinearMath"
+		"LinearMath", "Boxer"
 	}
 
 	links
@@ -105,10 +104,10 @@ project "ComponentsModule"
 		"OtterUI", "ResIL", "ResILU",
 		"zlib", "Gleam", "Game",
 		"esprit", "Components",
-		"Managers", "Memory",
+		"Memory", "Boxer"
 		"BulletCollision",
 		"BulletDynamics",
-		"LinearMath", "Boxer"
+		"LinearMath"
 	}
 
 	filter { "configurations:Debug", "platforms:x86" }

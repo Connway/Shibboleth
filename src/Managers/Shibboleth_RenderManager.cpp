@@ -21,7 +21,7 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Shibboleth_RenderManager.h"
-#include "Shibboleth_FrameManager.h"
+#include "Shibboleth_IFrameManager.h"
 #include <Shibboleth_ModelComponent.h>
 #include <Shibboleth_IFileSystem.h>
 #include <Shibboleth_Utilities.h>

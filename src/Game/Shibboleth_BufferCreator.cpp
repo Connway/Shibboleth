@@ -22,7 +22,7 @@ THE SOFTWARE.
 
 #include "Shibboleth_BufferCreator.h"
 #include "Shibboleth_ResourceDefines.h"
-#include <Shibboleth_RenderManager.h>
+#include <Shibboleth_IRenderManager.h>
 #include <Shibboleth_Utilities.h>
 #include <Shibboleth_IApp.h>
 #include <Gleam_IRenderDevice.h>
@@ -31,7 +31,7 @@ THE SOFTWARE.
 NS_SHIBBOLETH
 
 BufferCreator::BufferCreator(void):
-	_render_mgr(GetApp().getManagerT<RenderManager>("Render Manager"))
+	_render_mgr(GetApp().getManagerT<IRenderManager>())
 {
 }
 

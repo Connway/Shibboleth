@@ -22,67 +22,14 @@ THE SOFTWARE.
 
 #pragma once
 
-//#include "Shibboleth_OcclusionManager.h"
 #include "Shibboleth_IFrameManager.h"
-#include <Shibboleth_CameraComponent.h>
 #include <Shibboleth_IUpdateQuery.h>
 #include <Shibboleth_IManager.h>
-#include <Gleam_Transform_CPU.h>
-#include <Gleam_ICommandList.h>
-#include <Gaff_SmartPtr.h>
 
 NS_SHIBBOLETH
 
 class CameraComponent;
-class RenderManager;
-
-struct ObjectData
-{
-	//struct Test
-	//{
-	//	Array<ProgramBuffersPtr> program_buffers; // [Mesh]
-	//	Array<ProgramPtr> programs; // [Mesh]
-	//	ModelPtr model;
-	//	Gleam::TransformCPU transform;
-	//};
-
-	using CommandListPtr = Gaff::SmartPtr<Gleam::ICommandList, ProxyAllocator>;
-
-	bool active;
-	volatile unsigned int curr_device;
-
-	Array< Array<RasterStatePtr> > raster_states; // [Mesh][Device]
-	Array< Array<ProgramBuffersPtr> > program_buffers; // [Mesh][Device]
-	Array< Array<ProgramPtr> > programs; // [Mesh][Device]
-	Array<RenderPasses> render_pass; // [Mesh]
-	Array< Array<ModelPtr> > models; // [Object][Device]
-	Array<Gleam::TransformCPU> transforms; // [Object]
-
-	//Array<Gleam::TransformCPU> transforms[OcclusionManager::OT_SIZE];
-	Gleam::Matrix4x4CPU projection_matrix;
-	Gleam::TransformCPU eye_transform;
-	Gleam::TransformCPU inv_eye_transform;
-	float clear_color[4];
-	int clear_mode;
-
-	Array< Array<CommandListPtr> > command_lists; // [Device][CmdList]
-	Array<Gaff::SpinLock> cmd_lists_locks; // [Device]
-};
-
-class FramePredicate
-{
-public:
-	bool operator()(const Gaff::Pair<CameraComponent*, ObjectData>& lhs, const CameraComponent* rhs) const
-	{
-		return lhs.first->getRenderOrder() < rhs->getRenderOrder();
-	}
-};
-
-struct FrameData
-{
-	Map<CameraComponent*, ObjectData, FramePredicate> camera_object_data;
-	//Map<LightComponent*, ObjectData> shadow_object_data;
-};
+class IRenderManager;
 
 class FrameManager : public IManager, public IUpdateQuery, public IFrameManager
 {
@@ -118,7 +65,7 @@ private:
 	Array<unsigned int> _phase_trackers;
 	Array<CounterHack> _frame_trackers;
 
-	RenderManager* _render_mgr;
+	IRenderManager* _render_mgr;
 	void* _frame_data;
 	FrameDataAllocFunc _frame_data_alloc;
 	FrameDataFreeFunc _frame_data_free;

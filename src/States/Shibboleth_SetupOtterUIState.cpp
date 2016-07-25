@@ -21,7 +21,7 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Shibboleth_SetupOtterUIState.h"
-#include <Shibboleth_OtterUIManager.h>
+#include <Shibboleth_IOtterUIManager.h>
 #include <Shibboleth_Utilities.h>
 #include <Shibboleth_IApp.h>
 
@@ -58,7 +58,7 @@ void SetupOtterUIState::enter(void)
 void SetupOtterUIState::update(void)
 {
 	IApp& app = GetApp();
-	OtterUIManager& otterui_manager = app.getManagerT<OtterUIManager>("OtterUI Manager");
+	IOtterUIManager& otterui_manager = app.getManagerT<IOtterUIManager>();
 
 	//otterui_manager.setSoundSystem();
 	otterui_manager.setFileSystem(&_file_system);

@@ -32,8 +32,8 @@ THE SOFTWARE.
 
 NS_SHIBBOLETH
 
-class ComponentManager;
-class ObjectManager;
+class IComponentManager;
+class IObjectManager;
 class IFileSystem;
 class IApp;
 
@@ -174,8 +174,8 @@ private:
 	AHashString _name;
 
 	Array<Component*> _components;
-	ComponentManager& _comp_mgr;
-	ObjectManager& _obj_mgr;
+	IComponentManager& _comp_mgr;
+	IObjectManager& _obj_mgr;
 
 	unsigned int _id;;
 

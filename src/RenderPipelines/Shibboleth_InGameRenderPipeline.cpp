@@ -23,7 +23,7 @@ THE SOFTWARE.
 // TODO: Listen for level change messages or region unload messages to clear the render pass info.
 
 #include "Shibboleth_InGameRenderPipeline.h"
-#include <Shibboleth_FrameManager.h>
+#include <Shibboleth_IFrameManager.h>
 
 #include <Shibboleth_CameraComponent.h>
 #include <Shibboleth_Utilities.h>
@@ -31,6 +31,7 @@ THE SOFTWARE.
 
 #include <Gleam_IShaderResourceView.h>
 #include <Gleam_IRenderDevice.h>
+#include <Gleam_ICommandList.h>
 #include <Gleam_IProgram.h>
 #include <Gleam_IBuffer.h>
 #include <Gleam_IModel.h>
@@ -38,7 +39,7 @@ THE SOFTWARE.
 #define INSTANCE_ALLOC_CHUNK 256
 #define INSTANCE_BUFFER_ELEMENT_SIZE 16 * 1 // sizeof(matrix) * num_matrices
 
-#if defined(_WIN32) || defined(_WIN64)
+#ifdef PLATFORM_WINDOWS
 	#pragma warning(push)
 	#pragma warning(disable: 4309)
 #endif
@@ -83,7 +84,7 @@ static THREAD_LOCAL bool gInit = false;
 InGameRenderPipeline::InGameRenderPipeline(void):
 	_job_cache(GetApp().getJobPool().getNumTotalThreads()),
 	_counter(nullptr),
-	_render_mgr(GetApp().getManagerT<RenderManager>())
+	_render_mgr(GetApp().getManagerT<IRenderManager>())
 {
 }
 
@@ -439,7 +440,7 @@ unsigned int InGameRenderPipeline::GenerateSecondInstanceHash(ObjectData& od, si
 	return Gaff::FNV1aHash32T(&submesh_index, hash);
 }
 
-Gleam::IBuffer* InGameRenderPipeline::CreateInstanceBuffer(RenderManager& render_mgr, unsigned int device, unsigned int num_elements)
+Gleam::IBuffer* InGameRenderPipeline::CreateInstanceBuffer(IRenderManager& render_mgr, unsigned int device, unsigned int num_elements)
 {
 	unsigned int buffer_size = ((num_elements + INSTANCE_ALLOC_CHUNK - 1) / INSTANCE_ALLOC_CHUNK) * INSTANCE_ALLOC_CHUNK;
 
@@ -468,10 +469,10 @@ Gleam::IBuffer* InGameRenderPipeline::CreateInstanceBuffer(RenderManager& render
 	return buffer;
 }
 
-Gleam::IShaderResourceView* InGameRenderPipeline::CreateInstanceResourceView(RenderManager& render_mgr, Gleam::IBuffer* buffer)
+Gleam::IShaderResourceView* InGameRenderPipeline::CreateInstanceResourceView(IRenderManager& render_mgr, Gleam::IBuffer* buffer)
 {
 	Gleam::IShaderResourceView* srv = render_mgr.createShaderResourceView();
-
+ 
 	if (!srv) {
 		// log error
 		return nullptr;
@@ -493,6 +494,6 @@ Gleam::IShaderResourceView* InGameRenderPipeline::CreateInstanceResourceView(Ren
 
 NS_END
 
-#if defined(_WIN32) || defined(_WIN64)
+#ifdef PLATFORM_WINDOWS
 	#pragma warning(pop)
 #endif

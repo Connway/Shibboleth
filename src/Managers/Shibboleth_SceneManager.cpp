@@ -21,8 +21,8 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Shibboleth_SceneManager.h"
-#include "Shibboleth_SchemaManager.h"
-#include "Shibboleth_ObjectManager.h"
+#include "Shibboleth_ISchemaManager.h"
+#include "Shibboleth_IObjectManager.h"
 #include <Shibboleth_IFileSystem.h>
 #include <Shibboleth_Utilities.h>
 #include <Shibboleth_Object.h>
@@ -66,7 +66,7 @@ void LoadSceneJob(void* data)
 
 	fs->closeFile(file);
 
-	Gaff::JSON schema = app.getManagerT<SchemaManager>().getSchema("Scene.schema");
+	Gaff::JSON schema = app.getManagerT<ISchemaManager>().getSchema("Scene.schema");
 
 	if (!scene_data.validate(schema)) {
 		// log error
@@ -89,12 +89,8 @@ void LoadSceneJob(void* data)
 REF_IMPL_REQ(SceneManager);
 SHIB_REF_IMPL(SceneManager)
 .addBaseClassInterfaceOnly<SceneManager>()
+.ADD_BASE_CLASS_INTERFACE_ONLY(ISceneManager)
 ;
-
-const char* SceneManager::GetFriendlyName(void)
-{
-	return "Scene Manager";
-}
 
 SceneManager::SceneManager(void)
 {
@@ -212,14 +208,14 @@ void SceneManager::loadLayer(size_t index, const Gaff::JSON& layer_data)
 
 	fs->closeFile(file);
 
-	Gaff::JSON schema = app.getManagerT<SchemaManager>().getSchema("Layer.schema");
+	Gaff::JSON schema = app.getManagerT<ISchemaManager>().getSchema("Layer.schema");
 
 	if (!lyr.validate(schema)) {
 		// log error
 		return;
 	}
 
-	ObjectManager& om = app.getManagerT<ObjectManager>();
+	IObjectManager& om = app.getManagerT<IObjectManager>();
 	layer.objects.resize(lyr.size(), nullptr);
 
 	lyr.forEachInArray([&layer, &om, fs](size_t index, const Gaff::JSON& value) -> bool

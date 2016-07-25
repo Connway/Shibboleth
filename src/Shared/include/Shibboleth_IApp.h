@@ -24,10 +24,12 @@ THE SOFTWARE.
 
 #include "Shibboleth_DynamicLoader.h"
 #include "Shibboleth_HashString.h"
+#include "Shibboleth_IManager.h"
 #include "Shibboleth_JobPool.h"
 #include "Shibboleth_HashMap.h"
 #include "Shibboleth_String.h"
 #include "Shibboleth_Array.h"
+#include <Gaff_IRequestableInterface.h>
 
 NS_SHIBBOLETH
 
@@ -40,55 +42,61 @@ class IApp
 {
 public:
 	template <class T>
-	const T& getManagerT(const AHashString& name) const
+	const T& getManagerTUnsafe(const AHashString& name) const
 	{
 		return *reinterpret_cast<T*>(getManager(name));
 	}
 
 	template <class T>
-	T& getManagerT(const AHashString& name)
+	T& getManagerTUnsafe(const AHashString& name)
 	{
 		return *reinterpret_cast<T*>(getManager(name));
 	}
 
 	template <class T>
-	const T& getManagerT(const AString& name) const
+	const T& getManagerTUnsafe(const AString& name) const
 	{
 		return *reinterpret_cast<T*>(getManager(name));
 	}
 
 	template <class T>
-	T& getManagerT(const AString& name)
+	T& getMangetManagerTUnsafeagerT(const AString& name)
 	{
 		return *reinterpret_cast<T*>(getManager(name));
 	}
 
 	template <class T>
-	const T& getManagerT(const char* name) const
+	const T& getManagerTUnsafe(const char* name) const
 	{
 		return *reinterpret_cast<T*>(getManager(name));
 	}
 
 	template <class T>
-	T& getManagerT(const char* name)
+	T& getManagerTUnsafe(const char* name)
 	{
 		return *reinterpret_cast<T*>(getManager(name));
+	}
+
+	template <class T>
+	const T& getManagerTUnsafe(void) const
+	{
+		return *reinterpret_cast<T*>(getManager(T::GetFriendlyName()));
+	}
+
+	template <class T>
+	T& getManagerTUnsafe(void)
+	{
+		return *reinterpret_cast<T*>(getManager(T::GetFriendlyName()));
 	}
 
 	template <class T>
 	const T& getManagerT(void) const
 	{
-		return *reinterpret_cast<T*>(getManager(T::GetFriendlyName()));
+		return *Gaff::ReflectionCast<T>(getManager(T::GetFriendlyName()));
 	}
 
 	template <class T>
 	T& getManagerT(void)
-	{
-		return *reinterpret_cast<T*>(getManager(T::GetFriendlyName()));
-	}
-
-	template <class T>
-	T& getManagerTReflection(void)
 	{
 		return *Gaff::ReflectionCast<T>(getManager(T::GetFriendlyName()));
 	}

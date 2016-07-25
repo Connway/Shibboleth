@@ -23,14 +23,13 @@ THE SOFTWARE.
 #pragma once
 
 #include "Shibboleth_ResourceDefines.h"
-#include "Shibboleth_ResourceManager.h"
 #include "Shibboleth_ResourceWrapper.h"
 #include "Shibboleth_Map.h"
 #include <Interfaces/IRenderer.h>
 
 NS_SHIBBOLETH
 
-class RenderManager;
+class IRenderManager;
 class IApp;
 
 class OtterUIRenderer : public Otter::IRenderer
@@ -86,8 +85,8 @@ private:
 	Array<ProgramBuffersPtr> _program_buffers;
 	Array<DeviceData> _device_data;
 
-	ResourceManager& _resource_manager;
-	RenderManager& _render_manager;
+	IResourceManager& _resource_manager;
+	IRenderManager& _render_manager;
 	IApp& _app;
 
 	Gleam::IRenderDevice& _render_device;

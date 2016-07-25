@@ -101,7 +101,7 @@ private:
 	float _z_far;
 	unsigned char _render_order;
 
-	void RenderTargetCallback(ResourceContainer*);
+	void RenderTargetCallback(ResourceContainerBase*);
 	void constructProjectionMatrixAndFrustum(void);
 
 	SHIB_REF_DEF(CameraComponent);

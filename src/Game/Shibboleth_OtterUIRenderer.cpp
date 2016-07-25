@@ -21,7 +21,8 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Shibboleth_OtterUIRenderer.h"
-#include "Shibboleth_RenderManager.h"
+#include "Shibboleth_IResourceManager.h"
+#include "Shibboleth_IRenderManager.h"
 #include "Shibboleth_IApp.h"
 #include <Gleam_IShaderResourceView.h>
 #include <Gleam_ISamplerState.h>
@@ -44,9 +45,9 @@ static Gleam::IMesh::TOPOLOGY_TYPE otter_topology_map[3] = {
 };
 
 OtterUIRenderer::OtterUIRenderer(IApp& app):
-	_resource_manager(app.getManagerT<ResourceManager>("Resource Manager")),
-	_render_manager(app.getManagerT<RenderManager>("Render Manager")),
-	_app(app), _render_device(app.getManagerT<RenderManager>("Render Manager").getRenderDevice())
+	_resource_manager(app.getManagerT<IResourceManager>()),
+	_render_manager(app.getManagerT<IRenderManager>()),
+	_app(app), _render_device(app.getManagerT<IRenderManager>().getRenderDevice())
 {
 }
 

@@ -22,7 +22,7 @@ THE SOFTWARE.
 
 #pragma once
 
-#include <Shibboleth_ResourceManager.h>
+#include <Shibboleth_IResourceManager.h>
 
 NS_SHIBBOLETH
 

@@ -22,7 +22,7 @@ THE SOFTWARE.
 
 #include "Shibboleth_TextureLoader.h"
 #include "Shibboleth_ResourceDefines.h"
-#include <Shibboleth_RenderManager.h>
+#include <Shibboleth_IRenderManager.h>
 #include <Shibboleth_IFileSystem.h>
 #include <Shibboleth_Utilities.h>
 #include <Shibboleth_IApp.h>
@@ -34,7 +34,7 @@ THE SOFTWARE.
 
 NS_SHIBBOLETH
 
-TextureLoader::TextureLoader(RenderManager& render_mgr):
+TextureLoader::TextureLoader(IRenderManager& render_mgr):
 	_render_mgr(render_mgr)
 {
 }
@@ -132,7 +132,7 @@ Gaff::IVirtualDestructor* TextureLoader::load(const char* file_name, uint64_t, H
 
 	Gleam::IRenderDevice& rd = _render_mgr.getRenderDevice();
 
-	Array<const RenderManager::WindowData*> windows = (json["any_display_with_tags"].isTrue()) ?
+	Array<const IRenderManager::WindowData*> windows = (json["any_display_with_tags"].isTrue()) ?
 		_render_mgr.getWindowsWithTagsAny(disp_tags) :
 		_render_mgr.getWindowsWithTags(disp_tags);
 

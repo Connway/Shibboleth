@@ -20,7 +20,6 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#include <Shibboleth_ComponentManager.h>
 #include <Shibboleth_CameraComponent.h>
 #include <Shibboleth_ModelComponent.h>
 #include <Shibboleth_LuaComponent.h>
@@ -32,10 +31,8 @@ THE SOFTWARE.
 
 #ifdef USE_PHYSX
 	#include <Shibboleth_PhysXPhysicsComponent.h>
-	#include <Shibboleth_PhysXPhysicsManager.h>
 #else
 	#include <Shibboleth_BulletPhysicsComponent.h>
-	#include <Shibboleth_BulletPhysicsManager.h>
 #endif
 
 static Shibboleth::ComponentFuncs components[] = {
