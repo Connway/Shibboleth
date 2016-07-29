@@ -67,7 +67,6 @@ THE SOFTWARE.
 #define GAFF_CAT(x, y) GAFF_CAT_HELPER(x, y)
 
 #define ARRAY_SIZE(arr) (sizeof(arr) / sizeof(arr[0]))
-
 #define FLAG_BIT(index) (1 << index)
 
 #ifdef _DEBUG
