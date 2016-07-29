@@ -12,6 +12,9 @@
     <ClInclude Include="..\..\..\src\Game\include\Shibboleth_Component.h">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\src\Game\include\Shibboleth_GraphicsEnums.h">
+      <Filter>include</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\src\Game\include\Shibboleth_HoldingLoader.h">
       <Filter>include</Filter>
     </ClInclude>
@@ -89,6 +92,7 @@
     <ClCompile Include="..\..\..\src\Game\Shibboleth_BufferCreator.cpp" />
     <ClCompile Include="..\..\..\src\Game\Shibboleth_BulletPhysicsLoader.cpp" />
     <ClCompile Include="..\..\..\src\Game\Shibboleth_Component.cpp" />
+    <ClCompile Include="..\..\..\src\Game\Shibboleth_GraphicsEnums.cpp" />
     <ClCompile Include="..\..\..\src\Game\Shibboleth_HoldingLoader.cpp" />
     <ClCompile Include="..\..\..\src\Game\Shibboleth_LuaLoader.cpp" />
     <ClCompile Include="..\..\..\src\Game\Shibboleth_ModelLoader.cpp" />

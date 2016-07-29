@@ -104,7 +104,7 @@ project "ComponentsModule"
 		"OtterUI", "ResIL", "ResILU",
 		"zlib", "Gleam", "Game",
 		"esprit", "Components",
-		"Memory", "Boxer"
+		"Memory", "Boxer",
 		"BulletCollision",
 		"BulletDynamics",
 		"LinearMath"

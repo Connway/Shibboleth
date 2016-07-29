@@ -22,12 +22,9 @@ THE SOFTWARE.
 
 #pragma once
 
-#include <Shibboleth_ReflectionDefinitions.h>
+#include <Shibboleth_GraphicsEnums.h>
 #include <Shibboleth_Array.h>
-#include <Gleam_ISamplerState.h>
 #include <Gleam_IRasterState.h>
-#include <Gleam_ITexture.h>
-#include <Gleam_IShader.h>
 #include <Gleam_IWindow.h>
 #include <Gaff_SpinLock.h>
 #include <Gaff_SmartPtr.h>
@@ -56,13 +53,11 @@ namespace Gleam
 	class IDepthStencilState;
 	class IProgramBuffers;
 	class IRenderDevice;
-	class ISamplerState;
 	class IRenderTarget;
 	class ICommandList;
 	class IBlendState;
 	class IProgram;
 	class ILayout;
-	class IShader;
 	class IBuffer;
 	class IModel;
 	class IMesh;
@@ -80,41 +75,6 @@ using RenderDevicePtr = Gaff::SmartPtr<Gleam::IRenderDevice, ProxyAllocator>;
 using RenderTargetPtr = Gaff::RefPtr<Gleam::IRenderTarget>;
 using SRVPtr = Gaff::RefPtr<Gleam::IShaderResourceView>;
 using TexturePtr = Gaff::RefPtr<Gleam::ITexture>;
-
-enum DisplayTags
-{
-	DT_ALL = 0xFFFF,
-	DT_1 = 0x0001,
-	DT_2 = 0x0002,
-	DT_3 = 0x0004,
-	DT_4 = 0x0008,
-	DT_5 = 0x0010,
-	DT_6 = 0x0020,
-	DT_7 = 0x0040,
-	DT_8 = 0x0080,
-	DT_9 = 0x0100,
-	DT_10 = 0x0200,
-	DT_11 = 0x0400,
-	DT_12 = 0x0800,
-	DT_13 = 0x1000,
-	DT_14 = 0x2000,
-	DT_15 = 0x4000,
-	DT_16 = 0x8000,
-};
-
-enum RenderPasses
-{
-	RP_OPAQUE = 0,
-	RP_TRANSPARENT,
-	RP_COUNT
-};
-
-SHIB_ENUM_REF_DEF(DisplayTags);
-SHIB_ENUM_REF_DEF(RenderPasses);
-SHIB_ENUM_REF_DEF_EMBEDDED(Gleam_ISamplerState_Filter, Gleam::ISamplerState::FILTER);
-SHIB_ENUM_REF_DEF_EMBEDDED(Gleam_ISamplerState_Wrap, Gleam::ISamplerState::WRAP);
-SHIB_ENUM_REF_DEF_EMBEDDED(Gleam_ITexture_Format, Gleam::ITexture::FORMAT);
-SHIB_ENUM_REF_DEF_EMBEDDED(Gleam_IShader_Type, Gleam::IShader::SHADER_TYPE);
 
 class IRenderManager
 {
