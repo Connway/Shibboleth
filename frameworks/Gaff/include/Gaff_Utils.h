@@ -97,6 +97,9 @@ template <class Allocator>
 void ParseCommandLine(int argc, char** argv, HashMap<AHashString<Allocator>, AString<Allocator>, Allocator>& out);
 
 template <class T>
+void SetBitsToValue(T& value, T bits, bool set);
+
+template <class T>
 void SetBits(T& value, T bits);
 
 template <class T>

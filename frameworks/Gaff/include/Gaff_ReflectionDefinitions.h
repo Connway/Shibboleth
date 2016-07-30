@@ -728,6 +728,9 @@ public:
 	template <class T2>
 	ReflectionDefinition<T, Allocator>&& addEnum(const char* key, const EnumReflectionDefinition<T2, Allocator>& ref_def, T2 (T::*getter)(void) const, void (T::*setter)(T2 value));
 
+	template <class Flags>
+	ReflectionDefinition<T, Allocator>&& addFlags(const char* key, Flags flags, Flags T::* var);
+
 	ReflectionDefinition<T, Allocator>&& addDouble(const char* key, double (T::*getter)(void) const, void (T::*Setter)(double value));
 	ReflectionDefinition<T, Allocator>&& addFloat(const char* key, float (T::*getter)(void) const, void (T::*setter)(float value));
 	ReflectionDefinition<T, Allocator>&& addUInt(const char* key, unsigned int (T::*getter)(void) const, void (T::*setter)(unsigned int value));
@@ -1022,6 +1025,33 @@ private:
 		T2 T::* _var;
 
 		GAFF_NO_COPY(EnumContainer);
+	};
+
+	template <class Flags>
+	class FlagsContainer : public ValueContainerBase
+	{
+	public:
+		FlagsContainer(const char* key, Flags flags, Flags T::* var, const Allocator& allocator);
+
+		void read(const JSON& json, T* object);
+		void write(JSON& json, const T* object) const;
+
+		void get(void* out, const void* object) const;
+		void get(void* out, const T* object) const;
+
+		void set(const void* value, void* object);
+		void set(const void* value, T* object);
+
+		bool isFixedArray(void) const;
+		bool isArray(void) const;
+
+		ReflectionValueType getType(void) const;
+
+	private:
+		Flags T::* _var;
+		Flags _flags;
+
+		GAFF_NO_COPY(FlagsContainer);
 	};
 
 	template <class T2>
