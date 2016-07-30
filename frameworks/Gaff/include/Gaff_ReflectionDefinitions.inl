@@ -1013,6 +1013,16 @@ ReflectionDefinition<T, Allocator>&& ReflectionDefinition<T, Allocator>::addEnum
 }
 
 template <class T, class Allocator>
+template <class Flags>
+ReflectionDefinition<T, Allocator>&& ReflectionDefinition<T, Allocator>::addFlags(const char* key, Flags flags, Flags T::* var)
+{
+	GAFF_ASSERT(key && strlen(key) && !_value_containers.hasElementWithKey(key));
+	FlagsContainer<Flags>* container = GAFF_ALLOCT(FlagsContainer<Flags>, _allocator, key, flags, var, _allocator);
+	_value_containers.insert(key, ValueContainerPtr(container));
+	return std::move(*this);
+}
+
+template <class T, class Allocator>
 ReflectionDefinition<T, Allocator>&& ReflectionDefinition<T, Allocator>::addDouble(const char* key, double (T::*getter)(void) const, void (T::*setter)(double value))
 {
 	GAFF_ASSERT(key && strlen(key) && !_value_containers.hasElementWithKey(key));

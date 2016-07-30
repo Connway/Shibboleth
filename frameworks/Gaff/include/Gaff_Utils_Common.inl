@@ -203,6 +203,16 @@ void ParseCommandLine(int argc, char** argv, HashMap<AHashString<Allocator>, ASt
 }
 
 template <class T>
+void SetBitsToValue(T& value, T bits, bool set)
+{
+	if (set) {
+		SetBits(value, bits);
+	} else {
+		ClearBits(value, bits);
+	}
+}
+
+template <class T>
 void SetBits(T& value, T bits)
 {
 	value |= bits;

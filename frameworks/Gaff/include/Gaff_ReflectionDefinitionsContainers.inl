@@ -2501,6 +2501,93 @@ void ReflectionDefinition<T, Allocator>::EnumContainer<T2>::set(const void* valu
 
 
 
+// Flags
+template <class T, class Allocator>
+template <class Flags>
+ReflectionDefinition<T, Allocator>::FlagsContainer<Flags>::FlagsContainer(const char* key, Flags flags, Flags T::* var, const Allocator& allocator):
+	ValueContainerBase(key, allocator), _var(var), _flags(flags)
+{
+}
+
+template <class T, class Allocator>
+template <class Flags>
+void ReflectionDefinition<T, Allocator>::FlagsContainer<Flags>::read(const JSON& json, T* object)
+{
+	GAFF_ASSERT(json[reinterpret_cast<const char*>(ValueContainerBase::_key.getBuffer())].isBool());
+
+	if (json[reinterpret_cast<const char*>(ValueContainerBase::_key.getBuffer())].isTrue()) {
+		object->*_var |= _flags;
+	} else {
+		object->*_var &= ~_flags;
+	}
+}
+
+template <class T, class Allocator>
+template <class Flags>
+void ReflectionDefinition<T, Allocator>::FlagsContainer<Flags>::write(JSON& json, const T* object) const
+{
+	GAFF_ASSERT(json[ValueContainerBase::_key.getBuffer()].isNull());
+	bool value = (object->*_var & _flags) != 0;
+	json.setObject(ValueContainerBase::_key.getBuffer(), JSON::CreateBool(value));
+}
+
+template <class T, class Allocator>
+template <class Flags>
+void ReflectionDefinition<T, Allocator>::FlagsContainer<Flags>::get(void* out, const void* object) const
+{
+	return get(out, reinterpret_cast<const T*>(object));
+}
+
+template <class T, class Allocator>
+template <class Flags>
+void ReflectionDefinition<T, Allocator>::FlagsContainer<Flags>::get(void* out, const T* object) const
+{
+	*reinterpret_cast<bool*>(out) = (object->*_var & _flags )!= 0;
+}
+
+template <class T, class Allocator>
+template <class Flags>
+void ReflectionDefinition<T, Allocator>::FlagsContainer<Flags>::set(const void* value, void* object)
+{
+	set(value, reinterpret_cast<T*>(object));
+}
+
+template <class T, class Allocator>
+template <class Flags>
+void ReflectionDefinition<T, Allocator>::FlagsContainer<Flags>::set(const void* value, T* object)
+{
+	if (*reinterpret_cast<const bool*>(value)) {
+		object->*_var |= _flags;
+	} else {
+		object->*_var &= ~_flags;
+	}
+}
+
+template <class T, class Allocator>
+template <class Flags>
+bool ReflectionDefinition<T, Allocator>::FlagsContainer<Flags>::isFixedArray(void) const
+{
+	return false;
+}
+
+template <class T, class Allocator>
+template <class Flags>
+bool ReflectionDefinition<T, Allocator>::FlagsContainer<Flags>::isArray(void) const
+{
+	return false;
+}
+
+template <class T, class Allocator>
+template <class Flags>
+ReflectionValueType ReflectionDefinition<T, Allocator>::FlagsContainer<Flags>::getType(void) const
+{
+	return VT_BOOL;
+}
+
+
+
+
+
 // Base
 template <class T, class Allocator>
 template <class T2>
