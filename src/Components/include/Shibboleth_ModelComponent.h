@@ -22,38 +22,15 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Shibboleth_ResourceDefines.h"
-#include "Shibboleth_ResourceWrapper.h"
-#include "Shibboleth_Component.h"
-#include <Shibboleth_ReflectionDefinitions.h>
+#include "Shibboleth_IModelComponent.h"
 #include <Shibboleth_IOcclusionManager.h>
-#include <Gleam_IBuffer.h>
-
-NS_GLEAM
-	class Vector4CPU;
-NS_END
+#include <Shibboleth_Component.h>
 
 NS_SHIBBOLETH
 
-class IResourceManager;
-//class LoadingMessage;
-struct ModelData;
-
-class ModelComponent : public Component
+class ModelComponent : public Component, public IModelComponent
 {
 public:
-	struct MeshData
-	{
-		ResourceWrapper<ProgramBuffersData> program_buffers;
-		ResourceWrapper<ProgramData> material;
-
-		Array< ResourceWrapper<TextureData> > textures;
-		Array< ResourceWrapper<SamplerStateData> > samplers;
-		//Array< ResourceWrapper<BufferData> > _buffers;
-	};
-
-	static const char* GetFriendlyName(void);
-
 	ModelComponent(void);
 	~ModelComponent(void);
 
@@ -67,18 +44,18 @@ public:
 
 	void setActive(bool active) override;
 
-	void setStatic(bool is_static);
-	bool isStatic(void) const;
+	void setStatic(bool is_static) override;
+	bool isStatic(void) const override;
 
-	size_t determineLOD(const Gleam::Vector4CPU& pos);
+	size_t determineLOD(const Gleam::Vector4CPU& pos) override;
 
-	//unsigned int getMeshInstanceHash(size_t mesh) const;
+	//unsigned int getMeshInstanceHash(size_t mesh) const override;
 
-	INLINE const Array<MeshData>& getMeshData(void) const;
-	INLINE Array<MeshData>& getMeshData(void);
+	const Array<MeshData>& getMeshData(void) const override;
+	Array<MeshData>& getMeshData(void) override;
 	
-	INLINE const ModelData& getModel(void) const;
-	INLINE ModelData& getModel(void);
+	const ModelData& getModel(void) const override;
+	ModelData& getModel(void) override;
 
 private:
 	ResourceWrapper<ModelData> _model;

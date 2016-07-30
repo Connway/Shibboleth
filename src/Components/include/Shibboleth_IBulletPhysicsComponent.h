@@ -22,44 +22,23 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Shibboleth_ILuaComponent.h"
-#include <Shibboleth_ResourceDefines.h>
-#include <Shibboleth_ResourceWrapper.h>
-#include <Shibboleth_Component.h>
+#include <Shibboleth_ReflectionDefinitions.h>
 
-namespace lua
-{
-	class State;
-}
+class btRigidBody;
 
 NS_SHIBBOLETH
 
-class ResourceManager;
-
-class LuaComponent : public Component, public ILuaComponent
+class IBulletPhysicsComponent
 {
 public:
-	LuaComponent(void);
-	~LuaComponent(void);
+	IBulletPhysicsComponent(void) {}
+	virtual ~IBulletPhysicsComponent(void) {}
 
-	const Gaff::JSON& getSchema(void) const;
+	virtual const btRigidBody* getRigidBody(void) const = 0;
+	virtual btRigidBody* getRigidBody(void) = 0;
 
-	bool load(const Gaff::JSON& json);
-	bool save(Gaff::JSON& json);
-
-	void allComponentsLoaded(void);
-
-private:
-	ResourceWrapper< SingleDataWrapper<lua::State*> > _script_res;
-
-	void scriptLoaded(ResourceContainerBase*);
-	void cacheFunctions(void);
-
-	GAFF_NO_COPY(LuaComponent);
-	GAFF_NO_MOVE(LuaComponent);
-
-	SHIB_REF_DEF(LuaComponent);
-	REF_DEF_REQ;
+	SHIB_INTERFACE_REFLECTION(IBulletPhysicsComponent)
+	SHIB_INTERFACE_NAME("Bullet Physics Component")
 };
 
 NS_END

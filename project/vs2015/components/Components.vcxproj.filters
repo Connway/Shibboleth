@@ -12,6 +12,18 @@
     <ClInclude Include="..\..\..\src\Components\include\Shibboleth_CameraComponent.h">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\src\Components\include\Shibboleth_IBulletPhysicsComponent.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\Components\include\Shibboleth_ICameraComponent.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\Components\include\Shibboleth_ILuaComponent.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\Components\include\Shibboleth_IModelComponent.h">
+      <Filter>include</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\src\Components\include\Shibboleth_LuaComponent.h">
       <Filter>include</Filter>
     </ClInclude>

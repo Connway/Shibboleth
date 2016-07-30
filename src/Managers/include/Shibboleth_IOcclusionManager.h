@@ -74,7 +74,7 @@ public:
 	virtual QueryData findObjectsInFrustum(const Gleam::FrustumCPU& frustum) const = 0;
 
 	SHIB_INTERFACE_REFLECTION(IOcclusionManager)
-	SHIB_INTERFACE_MANAGER("Occlusion Manager")
+	SHIB_INTERFACE_NAME("Occlusion Manager")
 };
 
 NS_END

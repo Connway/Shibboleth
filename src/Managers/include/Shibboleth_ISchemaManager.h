@@ -35,7 +35,7 @@ public:
 	virtual const Gaff::JSON& getSchema(const char* schema_file) const = 0;
 
 	SHIB_INTERFACE_REFLECTION(ISchemaManager)
-	SHIB_INTERFACE_MANAGER("Schema Manager")
+	SHIB_INTERFACE_NAME("Schema Manager")
 };
 
 NS_END

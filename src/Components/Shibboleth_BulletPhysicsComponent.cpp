@@ -36,12 +36,8 @@ NS_SHIBBOLETH
 REF_IMPL_REQ(BulletPhysicsComponent);
 SHIB_REF_IMPL(BulletPhysicsComponent)
 .addBaseClassInterfaceOnly<BulletPhysicsComponent>()
+.ADD_BASE_CLASS_INTERFACE_ONLY(IBulletPhysicsComponent)
 ;
-
-const char* BulletPhysicsComponent::GetFriendlyName(void)
-{
-	return "Bullet Physics Component";
-}
 
 BulletPhysicsComponent::BulletPhysicsComponent(void):
 	_rigid_body(nullptr), _mass(0.0f)

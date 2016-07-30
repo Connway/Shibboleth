@@ -42,7 +42,7 @@ public:
 	virtual lua::State* createNewState(void) = 0;
 
 	SHIB_INTERFACE_REFLECTION(ILuaManager)
-	SHIB_INTERFACE_MANAGER("Lua Manager")
+	SHIB_INTERFACE_NAME("Lua Manager")
 };
 
 NS_END

@@ -53,7 +53,7 @@ THE SOFTWARE.
 
 //#define INIT_STACKTRACE_SYSTEM
 
-#define SHIB_INTERFACE_MANAGER(ManagerName) \
+#define SHIB_INTERFACE_NAME(ManagerName) \
 	public: \
 		static const char* GetFriendlyName(void) \
 		{ \

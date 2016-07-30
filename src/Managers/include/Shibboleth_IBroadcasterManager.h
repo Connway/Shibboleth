@@ -38,7 +38,7 @@ public:
 	virtual void clear(void) = 0;
 
 	SHIB_INTERFACE_REFLECTION(IBroadcasterManager)
-	SHIB_INTERFACE_MANAGER("Broadcaster Manager")
+	SHIB_INTERFACE_NAME("Broadcaster Manager")
 };
 
 NS_END

@@ -35,7 +35,7 @@ public:
 	virtual void update(void) = 0;
 
 	SHIB_INTERFACE_REFLECTION(IUpdateManager)
-	SHIB_INTERFACE_MANAGER("Update Manager")
+	SHIB_INTERFACE_NAME("Update Manager")
 };
 
 NS_END

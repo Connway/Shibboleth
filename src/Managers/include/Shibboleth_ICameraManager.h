@@ -38,7 +38,7 @@ public:
 	virtual void removeCamera(CameraComponent* camera) = 0;
 
 	SHIB_INTERFACE_REFLECTION(ICameraManager)
-	SHIB_INTERFACE_MANAGER("Camera Manager")
+	SHIB_INTERFACE_NAME("Camera Manager")
 };
 
 NS_END

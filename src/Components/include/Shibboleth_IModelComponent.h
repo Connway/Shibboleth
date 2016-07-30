@@ -22,44 +22,52 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Shibboleth_ILuaComponent.h"
+#include <Shibboleth_ReflectionDefinitions.h>
 #include <Shibboleth_ResourceDefines.h>
 #include <Shibboleth_ResourceWrapper.h>
-#include <Shibboleth_Component.h>
+#include <Shibboleth_Array.h>
 
-namespace lua
+namespace Gleam
 {
-	class State;
+	class Vector4CPU;
 }
 
 NS_SHIBBOLETH
 
-class ResourceManager;
+struct ModelData;
 
-class LuaComponent : public Component, public ILuaComponent
+class IModelComponent
 {
 public:
-	LuaComponent(void);
-	~LuaComponent(void);
+	struct MeshData
+	{
+		ResourceWrapper<ProgramBuffersData> program_buffers;
+		ResourceWrapper<ProgramData> material;
 
-	const Gaff::JSON& getSchema(void) const;
+		Array< ResourceWrapper<TextureData> > textures;
+		Array< ResourceWrapper<SamplerStateData> > samplers;
+		//Array< ResourceWrapper<BufferData> > _buffers;
+	};
 
-	bool load(const Gaff::JSON& json);
-	bool save(Gaff::JSON& json);
 
-	void allComponentsLoaded(void);
+	IModelComponent(void) {}
+	virtual ~IModelComponent(void) {}
 
-private:
-	ResourceWrapper< SingleDataWrapper<lua::State*> > _script_res;
+	virtual void setStatic(bool is_static) = 0;
+	virtual bool isStatic(void) const = 0;
 
-	void scriptLoaded(ResourceContainerBase*);
-	void cacheFunctions(void);
+	virtual size_t determineLOD(const Gleam::Vector4CPU& pos) = 0;
 
-	GAFF_NO_COPY(LuaComponent);
-	GAFF_NO_MOVE(LuaComponent);
+	//virtual unsigned int getMeshInstanceHash(size_t mesh) const;
 
-	SHIB_REF_DEF(LuaComponent);
-	REF_DEF_REQ;
+	virtual const Array<MeshData>& getMeshData(void) const = 0;
+	virtual Array<MeshData>& getMeshData(void) = 0;
+
+	virtual const ModelData& getModel(void) const = 0;
+	virtual ModelData& getModel(void) = 0;
+
+	SHIB_INTERFACE_REFLECTION(IModelComponent)
+	SHIB_INTERFACE_NAME("Model Component")
 };
 
 NS_END

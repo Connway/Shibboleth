@@ -22,7 +22,7 @@ THE SOFTWARE.
 
 #pragma once
 
-#include <Shibboleth_ReflectionDefinitions.h>
+#include "Shibboleth_IBulletPhysicsComponent.h"
 #include <Shibboleth_ResourceWrapper.h>
 #include <Shibboleth_Component.h>
 #include <LinearMath/btVector3.h>
@@ -38,11 +38,9 @@ static const char* g_physics_schema_names[] = {
 	"PhysicsBox.schema"
 };
 
-class BulletPhysicsComponent : public Component
+class BulletPhysicsComponent : public Component, public IBulletPhysicsComponent
 {
 public:
-	static const char* GetFriendlyName(void);
-
 	BulletPhysicsComponent(void);
 	~BulletPhysicsComponent(void);
 
@@ -56,8 +54,8 @@ public:
 
 	void setActive(bool active) override;
 
-	const btRigidBody* getRigidBody(void) const;
-	btRigidBody* getRigidBody(void);
+	const btRigidBody* getRigidBody(void) const override;
+	btRigidBody* getRigidBody(void) override;
 
 private:
 	btRigidBody* _rigid_body;

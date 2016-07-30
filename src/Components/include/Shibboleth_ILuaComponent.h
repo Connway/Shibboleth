@@ -22,44 +22,18 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Shibboleth_ILuaComponent.h"
-#include <Shibboleth_ResourceDefines.h>
-#include <Shibboleth_ResourceWrapper.h>
-#include <Shibboleth_Component.h>
-
-namespace lua
-{
-	class State;
-}
+#include <Shibboleth_ReflectionDefinitions.h>
 
 NS_SHIBBOLETH
 
-class ResourceManager;
-
-class LuaComponent : public Component, public ILuaComponent
+class ILuaComponent
 {
 public:
-	LuaComponent(void);
-	~LuaComponent(void);
+	ILuaComponent(void) {}
+	virtual ~ILuaComponent(void) {}
 
-	const Gaff::JSON& getSchema(void) const;
-
-	bool load(const Gaff::JSON& json);
-	bool save(Gaff::JSON& json);
-
-	void allComponentsLoaded(void);
-
-private:
-	ResourceWrapper< SingleDataWrapper<lua::State*> > _script_res;
-
-	void scriptLoaded(ResourceContainerBase*);
-	void cacheFunctions(void);
-
-	GAFF_NO_COPY(LuaComponent);
-	GAFF_NO_MOVE(LuaComponent);
-
-	SHIB_REF_DEF(LuaComponent);
-	REF_DEF_REQ;
+	SHIB_INTERFACE_REFLECTION(ILuaComponent)
+	SHIB_INTERFACE_NAME("Lua Component")
 };
 
 NS_END

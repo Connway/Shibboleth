@@ -182,7 +182,7 @@ bool RenderPipelineManager::init(const char* initial_pipeline)
 	return true;
 }
 
-void RenderPipelineManager::setOutputCamera(CameraComponent* camera)
+void RenderPipelineManager::setOutputCamera(ICameraComponent* camera)
 {
 	GAFF_ASSERT(!_output_cameras.empty());
 
@@ -201,7 +201,7 @@ void RenderPipelineManager::setOutputCamera(CameraComponent* camera)
 	}
 }
 
-CameraComponent* RenderPipelineManager::getOutputCamera(unsigned int monitor) const
+ICameraComponent* RenderPipelineManager::getOutputCamera(unsigned int monitor) const
 {
 	GAFF_ASSERT(monitor < _output_cameras.size());
 	return _output_cameras[monitor].camera;

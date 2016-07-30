@@ -26,7 +26,7 @@ THE SOFTWARE.
 
 NS_SHIBBOLETH
 
-class CameraComponent;
+class ICameraComponent;
 
 class IRenderPipelineManager
 {
@@ -36,8 +36,8 @@ public:
 
 	virtual bool init(const char* initial_pipeline) = 0;
 
-	virtual void setOutputCamera(CameraComponent* camera) = 0;
-	virtual CameraComponent* getOutputCamera(unsigned int monitor) const = 0;
+	virtual void setOutputCamera(ICameraComponent* camera) = 0;
+	virtual ICameraComponent* getOutputCamera(unsigned int monitor) const = 0;
 	virtual void refreshMonitors(void) = 0;
 
 	virtual size_t getActivePipeline(void) const = 0;
@@ -46,7 +46,7 @@ public:
 	virtual size_t getPipelineIndex(const char* name) const = 0;
 
 	SHIB_INTERFACE_REFLECTION(IRenderPipelineManager)
-	SHIB_INTERFACE_MANAGER("Render Pipeline Manager")
+	SHIB_INTERFACE_NAME("Render Pipeline Manager")
 };
 
 NS_END

@@ -161,7 +161,7 @@ public:
 	virtual Array<RasterStatePtr>& getOrCreateRasterStates(unsigned int hash, const Gleam::IRasterState::RasterStateSettings& settings) = 0;
 
 	SHIB_INTERFACE_REFLECTION(IRenderManager)
-	SHIB_INTERFACE_MANAGER("Render Manager")
+	SHIB_INTERFACE_NAME("Render Manager")
 };
 
 NS_END

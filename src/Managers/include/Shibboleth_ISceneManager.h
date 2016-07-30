@@ -40,7 +40,7 @@ public:
 	virtual void deactivateLayer(size_t layer) = 0;
 
 	SHIB_INTERFACE_REFLECTION(ISceneManager)
-	SHIB_INTERFACE_MANAGER("Scene Manager")
+	SHIB_INTERFACE_NAME("Scene Manager")
 };
 
 NS_END
