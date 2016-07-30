@@ -40,7 +40,7 @@ public:
 	virtual void destroyComponent(Component* component) = 0;
 
 	SHIB_INTERFACE_REFLECTION(IComponentManager)
-	SHIB_INTERFACE_MANAGER("Component Manager")
+	SHIB_INTERFACE_NAME("Component Manager")
 };
 
 NS_END

@@ -42,6 +42,7 @@ SHIB_ENUM_REF_IMPL_EMBEDDED(ClearMode, CameraComponent::ClearMode)
 REF_IMPL_REQ(CameraComponent);
 SHIB_REF_IMPL(CameraComponent)
 .addBaseClassInterfaceOnly<CameraComponent>()
+.ADD_BASE_CLASS_INTERFACE_ONLY(ICameraComponent)
 .addEnum("Clear Mode", &CameraComponent::_clear_mode, GetEnumRefDef<CameraComponent::ClearMode>())
 .addArray("Viewport", &CameraComponent::_viewport)
 .addArray("Clear Color", &CameraComponent::_clear_color)
@@ -66,11 +67,6 @@ CameraComponent::CameraComponent(void):
 	_viewport[1] = 0.0f;
 	_viewport[2] = 1.0f;
 	_viewport[3] = 1.0f;
-}
-
-const char* CameraComponent::GetFriendlyName(void)
-{
-	return "Camera Component";
 }
 
 CameraComponent::~CameraComponent(void)
@@ -110,12 +106,6 @@ bool CameraComponent::save(Gaff::JSON& json)
 {
 	g_ref_def.write(json, this);
 	return true;
-}
-
-void CameraComponent::updateFrustum(Object* object, uint64_t)
-{
-	_frustum = _unstransformed_frustum;
-	_frustum.transform(object->getWorldTransform());
 }
 
 const Gleam::Matrix4x4CPU& CameraComponent::getProjectionMatrix(void) const
@@ -248,6 +238,12 @@ void CameraComponent::constructProjectionMatrixAndFrustum(void)
 	_projection_matrix.setPerspectiveLH(_fov * Gaff::DegToRad, _aspect_ratio, _z_near, _z_far);
 	_unstransformed_frustum.construct(_fov, _aspect_ratio, _z_near, _z_far);
 	updateFrustum(getOwner(), 0);
+}
+
+void CameraComponent::updateFrustum(Object* object, uint64_t)
+{
+	_frustum = _unstransformed_frustum;
+	_frustum.transform(object->getWorldTransform());
 }
 
 NS_END

@@ -36,7 +36,7 @@ public:
 	virtual void unregisterMovementComponent(Gaff::ReflectionHash controller_class_id, void* component) = 0;
 
 	SHIB_INTERFACE_REFLECTION(IMovementControllerManager)
-	SHIB_INTERFACE_MANAGER("Movement Controller Manager")
+	SHIB_INTERFACE_NAME("Movement Controller Manager")
 };
 
 NS_END

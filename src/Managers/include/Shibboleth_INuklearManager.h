@@ -35,7 +35,7 @@ public:
 	virtual bool init(void) = 0;
 
 	SHIB_INTERFACE_REFLECTION(INuklearManager)
-	SHIB_INTERFACE_MANAGER("Nuklear Manager")
+	SHIB_INTERFACE_NAME("Nuklear Manager")
 };
 
 NS_END

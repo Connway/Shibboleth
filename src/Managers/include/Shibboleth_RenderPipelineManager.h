@@ -47,8 +47,8 @@ public:
 
 	bool init(const char* initial_pipeline) override;
 
-	void setOutputCamera(CameraComponent* camera) override;
-	CameraComponent* getOutputCamera(unsigned int monitor) const override;
+	void setOutputCamera(ICameraComponent* camera) override;
+	ICameraComponent* getOutputCamera(unsigned int monitor) const override;
 	void refreshMonitors(void) override;
 
 	size_t getActivePipeline(void) const override;
@@ -59,7 +59,7 @@ public:
 private:
 	struct CameraData
 	{
-		CameraComponent* camera;
+		ICameraComponent* camera;
 		unsigned int device;
 		unsigned int output;
 	};

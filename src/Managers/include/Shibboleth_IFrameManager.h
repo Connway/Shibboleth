@@ -103,7 +103,7 @@ public:
 	virtual void finishFrame(size_t phase_id) = 0;
 
 	SHIB_INTERFACE_REFLECTION(IFrameManager)
-	SHIB_INTERFACE_MANAGER("Frame Manager")
+	SHIB_INTERFACE_NAME("Frame Manager")
 };
 
 NS_END

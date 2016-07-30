@@ -80,12 +80,8 @@ REF_IMPL_REQ(ModelComponent);
 
 SHIB_REF_IMPL(ModelComponent)
 .addBaseClassInterfaceOnly<ModelComponent>()
+.ADD_BASE_CLASS_INTERFACE_ONLY(IModelComponent)
 ;
-
-const char* ModelComponent::GetFriendlyName(void)
-{
-	return "Model Component";
-}
 
 ModelComponent::ModelComponent(void):
 	_occlusion_mgr(GetApp().getManagerT<IOcclusionManager>()),

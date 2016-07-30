@@ -58,7 +58,7 @@ public:
 	virtual Gleam::IMouse* getMouse(void) = 0;
 
 	SHIB_INTERFACE_REFLECTION(IInputManager)
-	SHIB_INTERFACE_MANAGER("Input Manager")
+	SHIB_INTERFACE_NAME("Input Manager")
 };
 
 NS_END

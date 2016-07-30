@@ -49,7 +49,7 @@ public:
 	virtual void removeFromMainWorld(btRigidBody* body) = 0;
 
 	SHIB_INTERFACE_REFLECTION(IBulletPhysicsManager)
-	SHIB_INTERFACE_MANAGER("Physics Manager")
+	SHIB_INTERFACE_NAME("Physics Manager")
 };
 
 NS_END

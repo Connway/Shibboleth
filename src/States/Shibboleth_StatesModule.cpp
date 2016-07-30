@@ -32,7 +32,7 @@ THE SOFTWARE.
 
 #include <Shibboleth_IRenderPipelineManager.h>
 #include <Shibboleth_IOcclusionManager.h>
-#include <Shibboleth_CameraComponent.h>
+#include <Shibboleth_ICameraComponent.h>
 #include <Shibboleth_IUpdateManager.h>
 #include <Shibboleth_IObjectManager.h>
 #include <Shibboleth_ISceneManager.h>
@@ -123,7 +123,7 @@ public:
 			Shibboleth::Object* camera = app.getManagerT<Shibboleth::IObjectManager>().findObject("Test Camera");
 
 			if (camera) {
-				Shibboleth::CameraComponent* camera_cmp = camera->getFirstComponentWithInterface<Shibboleth::CameraComponent>();
+				Shibboleth::ICameraComponent* camera_cmp = camera->getFirstComponentWithInterface<Shibboleth::ICameraComponent>();
 
 				if (camera_cmp) {
 					app.getManagerT<Shibboleth::IRenderPipelineManager>().setOutputCamera(camera_cmp);

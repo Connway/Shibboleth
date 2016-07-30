@@ -51,7 +51,7 @@ public:
 	virtual void addNewObject(Object* object) = 0;
 
 	SHIB_INTERFACE_REFLECTION(IObjectManager)
-	SHIB_INTERFACE_MANAGER("Object Manager")
+	SHIB_INTERFACE_NAME("Object Manager")
 };
 
 NS_END

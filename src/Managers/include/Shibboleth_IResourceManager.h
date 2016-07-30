@@ -186,7 +186,7 @@ public:
 	virtual void removeRequestAddedCallback(const Gaff::FunctionBinder<void, ResourcePtr&>& callback) = 0;
 
 	SHIB_INTERFACE_REFLECTION(IResourceManager)
-	SHIB_INTERFACE_MANAGER("Resource Manager")
+	SHIB_INTERFACE_NAME("Resource Manager")
 };
 
 NS_END

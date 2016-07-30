@@ -64,7 +64,7 @@ public:
 	virtual unsigned int getNumScenes(void) const = 0;
 
 	SHIB_INTERFACE_REFLECTION(IOtterUIManager)
-	SHIB_INTERFACE_MANAGER("OtterUI Manager")
+	SHIB_INTERFACE_NAME("OtterUI Manager")
 };
 
 NS_END
