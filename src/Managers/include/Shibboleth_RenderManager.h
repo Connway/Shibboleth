@@ -54,15 +54,15 @@ public:
 		int x, int y, unsigned int width, unsigned int height,
 		unsigned int refresh_rate, const char* device_name,
 		unsigned int adapter_id, unsigned int display_id, bool vsync,
-		unsigned short tags = 0
+		uint16_t tags = 0
 	) override;
 
 	void updateWindows(void) override;
-	Array<const WindowData*> getWindowsWithTagsAny(unsigned short tags) const override; // Gets windows with any of these tags. If tags is zero, returns all windows.
-	Array<const WindowData*> getWindowsWithTags(unsigned short tags) const override; // Gets windows with exactly these tags. If tags is zero, returns all windows.
+	Array<const WindowData*> getWindowsWithTagsAny(uint16_t tags) const override; // Gets windows with any of these tags. If tags is zero, returns all windows.
+	Array<const WindowData*> getWindowsWithTags(uint16_t tags) const override; // Gets windows with exactly these tags. If tags is zero, returns all windows.
 
-	Array<unsigned int> getDevicesWithTagsAny(unsigned short tags) const override; // Gets all devices with windows with any of these tags.
-	Array<unsigned int> getDevicesWithTags(unsigned short tags) const override; // Gets all devices with windows with exactly these tags.
+	Array<unsigned int> getDevicesWithTagsAny(uint16_t tags) const override; // Gets all devices with windows with any of these tags.
+	Array<unsigned int> getDevicesWithTags(uint16_t tags) const override; // Gets all devices with windows with exactly these tags.
 
 	size_t getNumWindows(void) const override;
 	const WindowData& getWindowData(unsigned int window) const override;
@@ -92,6 +92,8 @@ public:
 
 	WindowRenderTargets createRenderTargetsForEachWindow(void) override;
 	Array<RasterStatePtr>& getOrCreateRasterStates(unsigned int hash, const Gleam::IRasterState::RasterStateSettings& settings) override;
+
+	uint16_t getDislayTags(const Gaff::JSON& json_tags) const override;
 
 private:
 	struct GraphicsFunctions

@@ -20,49 +20,46 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-template <class T, class Allocator>
-HashString<T, Allocator>::HashString(const HashString<T, Allocator>& string, HashFunc32 hash):
-	_string(string._string),
-	_hash_value(hash(reinterpret_cast<const char*>(string.getBuffer()), string.size() * sizeof(T))),
-	_hash_func(hash)
+template <class T, class Allocator, class HashType>
+HashString<T, Allocator, HashType>::HashString(const HashString<T, Allocator, HashType>& string, HashFunc hash):
+	_string(string._string), _hash_value(0), _hash_func(hash)
 {
+	calculateHash();
 }
 
-template <class T, class Allocator>
-HashString<T, Allocator>::HashString(const String<T, Allocator>& string, HashFunc32 hash):
-	_string(string),
-	_hash_value(hash(reinterpret_cast<const char*>(string.getBuffer()), string.size() * sizeof(T))),
-	_hash_func(hash)
+template <class T, class Allocator, class HashType>
+HashString<T, Allocator, HashType>::HashString(const String<T, Allocator>& string, HashFunc hash):
+	_string(string), _hash_value(0), _hash_func(hash)
 {
+	calculateHash();
 }
 
-template <class T, class Allocator>
-HashString<T, Allocator>::HashString(const T* string, HashFunc32 hash, const Allocator& allocator):
-	_string(string, allocator),
-	_hash_value(hash(reinterpret_cast<const char*>(string), _string.size() * sizeof(T))),
-	_hash_func(hash)
+template <class T, class Allocator, class HashType>
+HashString<T, Allocator, HashType>::HashString(const T* string, HashFunc hash, const Allocator& allocator):
+	_string(string, allocator), _hash_value(0), _hash_func(hash)
 {
+	calculateHash();
 }
 
-template <class T, class Allocator>
-HashString<T, Allocator>::HashString(HashFunc32 hash, const Allocator& allocator):
+template <class T, class Allocator, class HashType>
+HashString<T, Allocator, HashType>::HashString(HashFunc hash, const Allocator& allocator):
 	_string(allocator), _hash_value(0), _hash_func(hash)
 {
 }
 
-template <class T, class Allocator>
-HashString<T, Allocator>::HashString(HashString<T, Allocator>&& rhs):
+template <class T, class Allocator, class HashType>
+HashString<T, Allocator, HashType>::HashString(HashString<T, Allocator, HashType>&& rhs):
 	_string(std::move(rhs._string)), _hash_value(rhs._hash_value), _hash_func(rhs._hash_func)
 {
 }
 
-template <class T, class Allocator>
-HashString<T, Allocator>::~HashString(void)
+template <class T, class Allocator, class HashType>
+HashString<T, Allocator, HashType>::~HashString(void)
 {
 }
 
-template <class T, class Allocator>
-const HashString<T, Allocator>& HashString<T, Allocator>::operator=(const HashString<T, Allocator>& rhs)
+template <class T, class Allocator, class HashType>
+const HashString<T, Allocator, HashType>& HashString<T, Allocator, HashType>::operator=(const HashString<T, Allocator, HashType>& rhs)
 {
 	if (this == &rhs) {
 		return *this;
@@ -75,98 +72,88 @@ const HashString<T, Allocator>& HashString<T, Allocator>::operator=(const HashSt
 	return *this;
 }
 
-template <class T, class Allocator>
-const HashString<T, Allocator>& HashString<T, Allocator>::operator=(const String<T, Allocator>& rhs)
+template <class T, class Allocator, class HashType>
+const HashString<T, Allocator, HashType>& HashString<T, Allocator, HashType>::operator=(const String<T, Allocator>& rhs)
 {
 	_string = rhs;
-	_hash_value = _hash_func(reinterpret_cast<const char*>(_string.getBuffer()), _string.size() * sizeof(T));
+	calculateHash();
 	return *this;
 }
 
-template <class T, class Allocator>
-const HashString<T, Allocator>& HashString<T, Allocator>::operator=(HashString<T, Allocator>&& rhs)
+template <class T, class Allocator, class HashType>
+const HashString<T, Allocator, HashType>& HashString<T, Allocator, HashType>::operator=(HashString<T, Allocator, HashType>&& rhs)
 {
+	if (this == &rhs) {
+		return *this;
+	}
+
 	_string = std::move(rhs._string);
 	_hash_value = rhs._hash_value;
 	_hash_func = rhs._hash_func;
+
 	return *this;
 }
 
-template <class T, class Allocator>
-const HashString<T, Allocator>& HashString<T, Allocator>::operator=(String<T, Allocator>&& rhs)
+template <class T, class Allocator, class HashType>
+const HashString<T, Allocator, HashType>& HashString<T, Allocator, HashType>::operator=(String<T, Allocator>&& rhs)
 {
 	_string = std::move(rhs);
-	_hash_value = _hash_func(reinterpret_cast<const char*>(_string.getBuffer()), _string.size() * sizeof(T));
+	calculateHash();
 	return *this;
 }
 
-template <class T, class Allocator>
-const HashString<T, Allocator>& HashString<T, Allocator>::operator=(const T* rhs)
+template <class T, class Allocator, class HashType>
+const HashString<T, Allocator, HashType>& HashString<T, Allocator, HashType>::operator=(const T* rhs)
 {
 	_string = rhs;
-	_hash_value = _hash_func(reinterpret_cast<const char*>(rhs), _string.size() * sizeof(T));
+	calculateHash();
 	return *this;
 }
 
-template <class T, class Allocator>
-bool HashString<T, Allocator>::operator==(const HashString<T, Allocator>& rhs) const
+template <class T, class Allocator, class HashType>
+bool HashString<T, Allocator, HashType>::operator==(const HashString<T, Allocator, HashType>& rhs) const
 {
 	return _hash_value == rhs._hash_value;
 }
 
-template <class T, class Allocator>
-bool HashString<T, Allocator>::operator!=(const HashString<T, Allocator>& rhs) const
+template <class T, class Allocator, class HashType>
+bool HashString<T, Allocator, HashType>::operator!=(const HashString<T, Allocator, HashType>& rhs) const
 {
 	return _hash_value != rhs._hash_value;
 }
 
-template <class T, class Allocator>
-char HashString<T, Allocator>::operator[](size_t index) const
-{
-	GAFF_ASSERT(index < _string.size());
-	return _string[index];
-}
-
-// required reference for operations like string[i] = 'a';
-//template <class T, class Allocator>
-//char& HashString<T, Allocator>::operator[](size_t index)
-//{
-//	GAFF_ASSERT(index < _size);
-//	return _string[index];
-//}
-
-template <class T, class Allocator>
-const HashString<T, Allocator>& HashString<T, Allocator>::operator+=(const HashString<T, Allocator>& rhs)
+template <class T, class Allocator, class HashType>
+const HashString<T, Allocator, HashType>& HashString<T, Allocator, HashType>::operator+=(const HashString<T, Allocator, HashType>& rhs)
 {
 	return (*this = _string + rhs._string);
 }
 
-template <class T, class Allocator>
-const HashString<T, Allocator>& HashString<T, Allocator>::operator+=(const String<T, Allocator>& rhs)
+template <class T, class Allocator, class HashType>
+const HashString<T, Allocator, HashType>& HashString<T, Allocator, HashType>::operator+=(const String<T, Allocator>& rhs)
 {
 	return (*this = _string + rhs);
 }
 
-template <class T, class Allocator>
-const HashString<T, Allocator>& HashString<T, Allocator>::operator+=(const T* rhs)
+template <class T, class Allocator, class HashType>
+const HashString<T, Allocator, HashType>& HashString<T, Allocator, HashType>::operator+=(const T* rhs)
 {
 	return (*this = _string + rhs);
 }
 
-template <class T, class Allocator>
-HashString<T, Allocator> HashString<T, Allocator>::operator+(const HashString<T, Allocator>& rhs) const
+template <class T, class Allocator, class HashType>
+HashString<T, Allocator, HashType> HashString<T, Allocator, HashType>::operator+(const HashString<T, Allocator, HashType>& rhs) const
 {
 	return HashString(_string + rhs._string, _hash_func);
 }
 
-template <class T, class Allocator>
-HashString<T, Allocator> HashString<T, Allocator>::operator+(const String<T, Allocator>& rhs)
+template <class T, class Allocator, class HashType>
+HashString<T, Allocator, HashType> HashString<T, Allocator, HashType>::operator+(const String<T, Allocator>& rhs)
 {
 	return HashString(_string + rhs);
 }
 
-template <class T, class Allocator>
-HashString<T, Allocator> HashString<T, Allocator>::operator+(const T* rhs) const
+template <class T, class Allocator, class HashType>
+HashString<T, Allocator, HashType> HashString<T, Allocator, HashType>::operator+(const T* rhs) const
 {
 	return HashString(_string + rhs, _hash_func);
 }
@@ -177,40 +164,51 @@ HashString<T, Allocator> HashString<T, Allocator>::operator+(const T* rhs) const
 	\param string The raw string to use.
 	\note Using this function means you are passing ownership of \a string to HashString.
 */
-template <class T, class Allocator>
-void HashString<T, Allocator>::set(T* string)
+template <class T, class Allocator, class HashType>
+void HashString<T, Allocator, HashType>::set(T* string)
 {
 	_string.set(string);
 	_hash_value = _hash_func(reinterpret_cast<const char*>(string), _string.size() * sizeof(T));
 }
 
-template <class T, class Allocator>
-void HashString<T, Allocator>::clear(void)
+template <class T, class Allocator, class HashType>
+void HashString<T, Allocator, HashType>::clear(void)
 {
 	_string.clear();
 	_hash_value = 0;
 }
 
-template <class T, class Allocator>
-size_t HashString<T, Allocator>::size(void) const
+template <class T, class Allocator, class HashType>
+size_t HashString<T, Allocator, HashType>::size(void) const
 {
 	return _string.size();
 }
 
-template <class T, class Allocator>
-const String<T, Allocator>& HashString<T, Allocator>::getString(void) const
+template <class T, class Allocator, class HashType>
+const String<T, Allocator>& HashString<T, Allocator, HashType>::getString(void) const
 {
 	return _string;
 }
 
-template <class T, class Allocator>
-const T* HashString<T, Allocator>::getBuffer(void) const
+template <class T, class Allocator, class HashType>
+const T* HashString<T, Allocator, HashType>::getBuffer(void) const
 {
 	return _string.getBuffer();
 }
 
-template <class T, class Allocator>
-unsigned int HashString<T, Allocator>::getHash(void) const
+template <class T, class Allocator, class HashType>
+HashType HashString<T, Allocator, HashType>::getHash(void) const
 {
 	return _hash_value;
+}
+
+template <class T, class Allocator, class HashType>
+void HashString<T, Allocator, HashType>::calculateHash(void)
+{
+	if (_hash_func) {
+		_hash_value = _hash_func(reinterpret_cast<const char*>(_string.getBuffer()), _string.size() * sizeof(T));
+	} else {
+		ContainerHash hash_value = CONT_HASH(reinterpret_cast<const char*>(_string.getBuffer()), _string.size() * sizeof(T));
+		_hash_value = static_cast<HashType>(hash_value);
+	}
 }

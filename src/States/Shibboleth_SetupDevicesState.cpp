@@ -172,10 +172,10 @@ void SetupDevicesState::update(void)
 			return true;
 		}
 
-		unsigned short disp_tags = 0;
+		uint16_t disp_tags = render_manager.getDislayTags(tags);
 
-		if (EXTRACT_DISPLAY_TAGS(tags, disp_tags)) {
-			app.getLogManager().logMessage(LogManager::LOG_ERROR, app.getLogFileName(), "Malformed config file.\n");
+		if (!disp_tags) {
+			app.getLogManager().logMessage(LogManager::LOG_ERROR, app.getLogFileName(), "Malformed config file or no tags found.\n");
 			return nullptr;
 		}
 

@@ -161,7 +161,7 @@ Gaff::IVirtualDestructor* ModelLoader::load(const char* file_name, uint64_t, Has
 
 		} else {
 			Gaff::JSON display_tags = json["display_tags"];
-			unsigned short disp_tags = DT_ALL;
+			uint16_t disp_tags = DT_ALL;
 			bool any_display_tags = (!json["any_display_with_tags"].isNull() && json["any_display_tags"].isTrue());
 
 			if (!display_tags.isNull()) {
@@ -171,9 +171,10 @@ Gaff::IVirtualDestructor* ModelLoader::load(const char* file_name, uint64_t, Has
 					return nullptr;
 				}
 
-				disp_tags = 0;
+				disp_tags = _render_mgr.getDislayTags(display_tags);
 
-				if (EXTRACT_DISPLAY_TAGS(display_tags, disp_tags)) {
+				if (!disp_tags) {
+					// log error
 					SHIB_FREET(data, *GetAllocator());
 					return nullptr;
 				}

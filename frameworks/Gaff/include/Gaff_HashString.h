@@ -27,38 +27,35 @@ THE SOFTWARE.
 
 NS_GAFF
 
-template <class T, class Allocator = DefaultAllocator>
+template <class T, class Allocator = DefaultAllocator, class HashType = ContainerHash>
 class HashString
 {
 public:
-	HashString(const HashString<T, Allocator>& string, HashFunc32 hash = FNV1aHash32);
-	HashString(const String<T, Allocator>& string, HashFunc32 hash = FNV1aHash32);
-	HashString(const T* string, HashFunc32 hash = FNV1aHash32, const Allocator& allocator = Allocator());
-	HashString(HashFunc32 hash = FNV1aHash32, const Allocator& allocator = Allocator());
-	HashString(HashString<T, Allocator>&& rhs);
+	using HashFunc = HashType (*)(const char*, size_t);
+
+	HashString(const HashString<T, Allocator, HashType>& string, HashFunc hash = nullptr);
+	HashString(const String<T, Allocator>& string, HashFunc hash = nullptr);
+	HashString(const T* string, HashFunc hash = nullptr, const Allocator& allocator = Allocator());
+	HashString(HashFunc hash = nullptr, const Allocator& allocator = Allocator());
+	HashString(HashString<T, Allocator, HashType>&& rhs);
 	~HashString(void);
 
-	const HashString<T, Allocator>& operator=(const HashString<T, Allocator>& rhs);
-	const HashString<T, Allocator>& operator=(const String<T, Allocator>& rhs);
-	const HashString<T, Allocator>& operator=(HashString<T, Allocator>&& rhs);
-	const HashString<T, Allocator>& operator=(String<T, Allocator>&& rhs);
-	const HashString<T, Allocator>& operator=(const T* rhs);
+	const HashString<T, Allocator, HashType>& operator=(const HashString<T, Allocator, HashType>& rhs);
+	const HashString<T, Allocator, HashType>& operator=(const String<T, Allocator>& rhs);
+	const HashString<T, Allocator, HashType>& operator=(HashString<T, Allocator, HashType>&& rhs);
+	const HashString<T, Allocator, HashType>& operator=(String<T, Allocator>&& rhs);
+	const HashString<T, Allocator, HashType>& operator=(const T* rhs);
 
-	bool operator==(const HashString<T, Allocator>& rhs) const;
-	bool operator!=(const HashString<T, Allocator>& rhs) const;
+	bool operator==(const HashString<T, Allocator, HashType>& rhs) const;
+	bool operator!=(const HashString<T, Allocator, HashType>& rhs) const;
 
-	char operator[](size_t index) const;
+	const HashString<T, Allocator, HashType>& operator+=(const HashString<T, Allocator, HashType>& rhs);
+	const HashString<T, Allocator, HashType>& operator+=(const String<T, Allocator>& rhs);
+	const HashString<T, Allocator, HashType>& operator+=(const T* rhs);
 
-	// required reference for operations like string[i] = 'a';
-	// char& operator[](size_t index);
-
-	const HashString<T, Allocator>& operator+=(const HashString<T, Allocator>& rhs);
-	const HashString<T, Allocator>& operator+=(const String<T, Allocator>& rhs);
-	const HashString<T, Allocator>& operator+=(const T* rhs);
-
-	HashString<T, Allocator> operator+(const HashString<T, Allocator>& rhs) const;
-	HashString<T, Allocator> operator+(const String<T, Allocator>& rhs);
-	HashString<T, Allocator> operator+(const T* rhs) const;
+	HashString<T, Allocator, HashType> operator+(const HashString<T, Allocator, HashType>& rhs) const;
+	HashString<T, Allocator, HashType> operator+(const String<T, Allocator>& rhs);
+	HashString<T, Allocator, HashType> operator+(const T* rhs) const;
 
 	// WARNING: This function takes ownership of the string instead of copying
 	void set(T* string);
@@ -67,12 +64,14 @@ public:
 
 	const String<T, Allocator>& getString(void) const;
 	const T* getBuffer(void) const;
-	unsigned int getHash(void) const;
+	HashType getHash(void) const;
 
 private:
 	String<T, Allocator> _string;
-	unsigned int _hash_value;
-	HashFunc32 _hash_func;
+	HashType _hash_value;
+	HashFunc _hash_func;
+
+	void calculateHash(void);
 };
 
 #include "Gaff_HashString.inl"
