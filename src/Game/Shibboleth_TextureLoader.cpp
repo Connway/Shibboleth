@@ -77,7 +77,7 @@ Gaff::IVirtualDestructor* TextureLoader::load(const char* file_name, uint64_t, H
 	}
 
 	Gaff::JSON display_tags = json["display_tags"];
-	unsigned short disp_tags = 0;
+	uint16_t disp_tags = 0;
 
 	if (!display_tags.isNull()) {
 		if (!display_tags.isArray()) {
@@ -85,8 +85,15 @@ Gaff::IVirtualDestructor* TextureLoader::load(const char* file_name, uint64_t, H
 			return nullptr;
 		}
 
-		if (EXTRACT_DISPLAY_TAGS(display_tags, disp_tags)) {
-			lm.logMessage(LogManager::LOG_ERROR, GetApp().getLogFileName(), "ERROR - Texture file '%s' is malformed. An element in 'display_tags' is not a string.\n", file_name);
+		disp_tags = _render_mgr.getDislayTags(display_tags);
+
+		if (!disp_tags) {
+			lm.logMessage(
+				LogManager::LOG_ERROR, GetApp().getLogFileName(),
+				"ERROR - Texture file '%s' is malformed (an element in 'display_tags' is not a string) or no tags found.\n",
+				file_name
+			);
+
 			return nullptr;
 		}
 	}

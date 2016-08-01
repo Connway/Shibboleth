@@ -123,7 +123,7 @@ struct RenderTargetData : public Gaff::IVirtualDestructor
 	unsigned int width;
 	unsigned int height;
 
-	unsigned short tags;
+	uint16_t tags;
 	bool any_display_with_tags;
 };
 

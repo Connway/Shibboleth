@@ -32,16 +32,6 @@ THE SOFTWARE.
 
 #define GRAPHICS_CFG "cfg/graphics.cfg"
 
-#define EXTRACT_DISPLAY_TAGS(display_tags, out_tags) \
-	display_tags.forEachInArray([&](size_t, const Gaff::JSON& value) -> bool \
-	{ \
-		if (!value.isString()) { \
-			return true; \
-		} \
-		out_tags |= GetEnumRefDef<DisplayTags>().getValue(value.getString()); \
-		return false; \
-	})
-
 namespace Gaff
 {
 	class JSON;
@@ -84,7 +74,7 @@ public:
 		Gleam::IWindow* window;
 		unsigned int device;
 		unsigned int output;
-		unsigned short tags;
+		uint16_t tags;
 	};
 
 	struct WindowRenderTargets
@@ -121,15 +111,15 @@ public:
 		int x, int y, unsigned int width, unsigned int height,
 		unsigned int refresh_rate, const char* device_name,
 		unsigned int adapter_id, unsigned int display_id, bool vsync,
-		unsigned short tags = 0
+		uint16_t tags = 0
 	) = 0;
 
 	virtual void updateWindows(void) = 0;
-	virtual Array<const WindowData*> getWindowsWithTagsAny(unsigned short tags) const = 0; // Gets windows with any of these tags. If tags is zero, returns all windows.
-	virtual Array<const WindowData*> getWindowsWithTags(unsigned short tags) const = 0; // Gets windows with exactly these tags. If tags is zero, returns all windows.
+	virtual Array<const WindowData*> getWindowsWithTagsAny(uint16_t tags) const = 0; // Gets windows with any of these tags. If tags is zero, returns all windows.
+	virtual Array<const WindowData*> getWindowsWithTags(uint16_t tags) const = 0; // Gets windows with exactly these tags. If tags is zero, returns all windows.
 
-	virtual Array<unsigned int> getDevicesWithTagsAny(unsigned short tags) const = 0; // Gets all devices with windows with any of these tags.
-	virtual Array<unsigned int> getDevicesWithTags(unsigned short tags) const = 0; // Gets all devices with windows with exactly these tags.
+	virtual Array<unsigned int> getDevicesWithTagsAny(uint16_t tags) const = 0; // Gets all devices with windows with any of these tags.
+	virtual Array<unsigned int> getDevicesWithTags(uint16_t tags) const = 0; // Gets all devices with windows with exactly these tags.
 
 	virtual size_t getNumWindows(void) const = 0;
 	virtual const WindowData& getWindowData(unsigned int window) const = 0;
@@ -159,6 +149,8 @@ public:
 
 	virtual WindowRenderTargets createRenderTargetsForEachWindow(void) = 0;
 	virtual Array<RasterStatePtr>& getOrCreateRasterStates(unsigned int hash, const Gleam::IRasterState::RasterStateSettings& settings) = 0;
+
+	virtual uint16_t getDislayTags(const Gaff::JSON& json_tags) const = 0;
 
 	SHIB_INTERFACE_REFLECTION(IRenderManager)
 	SHIB_INTERFACE_NAME("Render Manager")

@@ -158,7 +158,7 @@ bool RenderManager::createWindow(
 	int x, int y, unsigned int width, unsigned int height,
 	unsigned int refresh_rate, const char* device_name,
 	unsigned int adapter_id, unsigned int display_id, bool vsync,
-	unsigned short tags)
+	uint16_t tags)
 {
 	GAFF_ASSERT(_render_device && _graphics_functions.create_window);
 
@@ -237,7 +237,7 @@ void RenderManager::updateWindows(void)
 	}
 }
 
-Array<const RenderManager::WindowData*> RenderManager::getWindowsWithTagsAny(unsigned short tags) const
+Array<const RenderManager::WindowData*> RenderManager::getWindowsWithTagsAny(uint16_t tags) const
 {
 	Array<const WindowData*> out;
 
@@ -250,7 +250,7 @@ Array<const RenderManager::WindowData*> RenderManager::getWindowsWithTagsAny(uns
 	return out;
 }
 
-Array<const RenderManager::WindowData*> RenderManager::getWindowsWithTags(unsigned short tags) const
+Array<const RenderManager::WindowData*> RenderManager::getWindowsWithTags(uint16_t tags) const
 {
 	Array<const WindowData*> out;
 
@@ -263,7 +263,7 @@ Array<const RenderManager::WindowData*> RenderManager::getWindowsWithTags(unsign
 	return out;
 }
 
-Array<unsigned int> RenderManager::getDevicesWithTagsAny(unsigned short tags) const
+Array<unsigned int> RenderManager::getDevicesWithTagsAny(uint16_t tags) const
 {
 	Array<const WindowData*> windows = getWindowsWithTagsAny(tags);
 	Array<unsigned int> devices;
@@ -277,7 +277,7 @@ Array<unsigned int> RenderManager::getDevicesWithTagsAny(unsigned short tags) co
 	return devices;
 }
 
-Array<unsigned int> RenderManager::getDevicesWithTags(unsigned short tags) const
+Array<unsigned int> RenderManager::getDevicesWithTags(uint16_t tags) const
 {
 	Array<const WindowData*> windows = getWindowsWithTags(tags);
 	Array<unsigned int> devices;
@@ -429,6 +429,24 @@ Array<RasterStatePtr>& RenderManager::getOrCreateRasterStates(unsigned int hash,
 	_rs_lock.unlock();
 
 	return raster_states;
+}
+
+uint16_t RenderManager::getDislayTags(const Gaff::JSON& json_tags) const
+{
+	const auto& dt_ref_def = GetEnumRefDef<DisplayTags>();
+	uint16_t out_tags = 0;
+
+	json_tags.forEachInArray([&](size_t, const Gaff::JSON& value) -> bool
+	{
+		if (!value.isString()) {
+				return true;
+		}
+
+		out_tags |= dt_ref_def.getValue(value.getString());
+		return false;
+	});
+
+	return out_tags;
 }
 
 int RenderManager::getDisplayModeID(unsigned int width, unsigned int height, unsigned int refresh_rate, unsigned int adapter_id, unsigned int display_id)

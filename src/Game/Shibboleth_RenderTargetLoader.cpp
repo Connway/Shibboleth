@@ -222,22 +222,28 @@ Gaff::IVirtualDestructor* RenderTargetLoader::load(const char* file_name, uint64
 		return nullptr;
 	}
 
+	IRenderManager& rm = GetApp().getManagerT<IRenderManager>();
 	Gaff::JSON display_tags = rt_settings["Display Tags"];
-	unsigned short disp_tags = DT_ALL;
+	uint16_t disp_tags = DT_ALL;
 
 	if (!display_tags.isNull()) {
 		disp_tags = 0;
 
-		if (EXTRACT_DISPLAY_TAGS(display_tags, disp_tags)) {
+		disp_tags = rm.getDislayTags(display_tags);
+
+		if (!disp_tags) {
 			// This should never get hit. Schema check would have failed.
-			GetApp().getLogManager().logMessage(LogManager::LOG_ERROR, GetApp().getLogFileName(), "ERROR - Render Target file '%s' is malformed. An element in 'display_tags' is not a string.\n", file_name);
+			GetApp().getLogManager().logMessage(
+				LogManager::LOG_ERROR, GetApp().getLogFileName(),
+				"ERROR - Render Target file '%s' is malformed (an element in 'display_tags' is not a string) or no tags were found.\n",
+				file_name
+			);
 			return nullptr;
 		}
 	}
 
 	// RenderTargetData setup
 	RenderTargetData* data = SHIB_ALLOCT(RenderTargetData, *GetAllocator());
-	IRenderManager& rm = GetApp().getManagerT<IRenderManager>();
 	Gleam::IRenderDevice& rd = rm.getRenderDevice();
 
 	if (!data) {
