@@ -26,13 +26,11 @@ THE SOFTWARE.
 #pragma once
 
 #include "Gaff_HashString.h"
-#include "Gaff_Math.h"
 #include <cstring>
 
 NS_GAFF
 
-// Normal
-template <class Key, class Value, class Allocator = DefaultAllocator>
+template <class Key, class Value, class Allocator = DefaultAllocator, class HashType = ContainerHash>
 class HashMap
 {
 private:
@@ -82,7 +80,9 @@ public:
 		friend class HashMap<Key, Value, Allocator>;
 	};
 
-	HashMap(HashFunc32 hash, const Allocator& allocator = Allocator());
+	using HashFunc = HashType (*)(const char*, size_t);
+
+	HashMap(HashFunc hash, const Allocator& allocator = Allocator());
 	HashMap(const Allocator& allocator = Allocator());
 	HashMap(const HashMap<Key, Value, Allocator>& rhs);
 	HashMap(HashMap<Key, Value, Allocator>&& rhs);
@@ -99,8 +99,7 @@ public:
 	Value& operator[](const Key& key);
 	Value& operator[](Key&& key);
 
-	// dangerous functions
-	// slots are potentially unoccupied
+	// Dangerous functions! Slots are potentially unoccupied
 	const Value& valueAt(size_t index) const;
 	Value& valueAt(size_t index);
 	const Key& keyAt(size_t index) const;
@@ -140,241 +139,7 @@ private:
 	size_t _size;
 	size_t _used;
 
-	HashFunc32 _hash;
-	Slot* _slots;
-
-	void rebuildMap(void);
-};
-
-// String Specialization
-template <class Value, class Allocator, class T>
-class HashMap<String<T, Allocator>, Value, Allocator>
-{
-private:
-	struct Slot
-	{
-		String<T, Allocator> key;
-		Value value;
-		size_t initial_index;
-		bool occupied;
-	};
-
-public:
-	class Iterator
-	{
-	public:
-		Iterator(const Iterator& it);
-		Iterator(void);
-
-		const Iterator& backward(void) const;
-		const Iterator& forward(void) const;
-
-		const Iterator& operator++(void) const;
-		const Iterator& operator--(void) const;
-		Iterator operator++(int) const;
-		Iterator operator--(int) const;
-
-		bool operator==(const Iterator& rhs) const;
-		bool operator!=(const Iterator& rhs) const;
-
-		const Iterator& operator=(const Iterator& rhs) const;
-
-		const Value& operator*(void) const;
-		Value& operator*(void);
-
-		const Value* operator->(void) const;
-		Value* operator->(void);
-
-		const String<T, Allocator>& getKey(void) const;
-		const Value& getValue(void) const;
-		Value& getValue(void);
-
-	private:
-		Iterator(Slot* slot, Slot* end, Slot* rend);
-
-		mutable Slot* _slot;
-		mutable Slot* _rend;
-		mutable Slot* _end;
-		friend class HashMap<String<T, Allocator>, Value, Allocator>;
-	};
-
-	HashMap(HashFunc32 hash, const Allocator& allocator = Allocator());
-	HashMap(const Allocator& allocator = Allocator());
-	HashMap(const HashMap<String<T, Allocator>, Value, Allocator>& rhs);
-	HashMap(HashMap<String<T, Allocator>, Value, Allocator>&& rhs);
-	~HashMap(void);
-
-	const HashMap<String<T, Allocator>, Value, Allocator>& operator=(const HashMap<String<T, Allocator>, Value, Allocator>& rhs);
-	const HashMap<String<T, Allocator>, Value, Allocator>& operator=(HashMap<String<T, Allocator>, Value, Allocator>&& rhs);
-
-	bool operator==(const HashMap<String<T, Allocator>, Value, Allocator>& rhs) const;
-	bool operator!=(const HashMap<String<T, Allocator>, Value, Allocator>& rhs) const;
-
-	// Dangerous function! Data potentially doesn't exist!
-	const Value& operator[](const String<T, Allocator>& key) const;
-	Value& operator[](const String<T, Allocator>& key);
-	Value& operator[](String<T, Allocator>&& key);
-
-	// dangerous functions
-	// slots are potentially unoccupied
-	const Value& valueAt(size_t index) const;
-	Value& valueAt(size_t index);
-	const String<T, Allocator>& keyAt(size_t index) const;
-
-	bool isOccupied(size_t index) const;
-
-	void erase(const Iterator& it);
-	void erase(size_t index);
-	void erase(const String<T, Allocator>& key);
-
-	void insert(String<T, Allocator>&& key, Value&& value);
-	void insert(const String<T, Allocator>& key, Value&& value);
-	void insert(const String<T, Allocator>& key, const Value& value);
-
-	bool hasElementWithValue(const Value& value) const;
-	bool hasElementWithKey(const String<T, Allocator>& key) const;
-	size_t indexOf(const String<T, Allocator>& key) const;
-
-	void clear(void);
-	void reserve(size_t new_size);
-
-	size_t capacity(void) const;
-	size_t size(void) const;
-	bool empty(void) const;
-
-	void setAllocator(const Allocator& allocator);
-
-	Iterator findElementWithValue(const Value& value) const;
-	Iterator findElementWithKey(const String<T, Allocator>& value) const;
-
-	Iterator begin(void) const;
-	Iterator end(void) const;
-	Iterator rbegin(void) const;
-	Iterator rend(void) const;
-
-private:
-	Allocator _allocator;
-	size_t _size;
-	size_t _used;
-
-	HashFunc32 _hash;
-	Slot* _slots;
-
-	void rebuildMap(void);
-};
-
-// HashString Specialization
-template <class Value, class Allocator, class T>
-class HashMap<HashString<T, Allocator>, Value, Allocator>
-{
-private:
-	struct Slot
-	{
-		HashString<T, Allocator> key;
-		Value value;
-		size_t initial_index;
-		bool occupied;
-	};
-
-public:
-	class Iterator
-	{
-	public:
-		Iterator(const Iterator& it);
-		Iterator(void);
-
-		const Iterator& backward(void) const;
-		const Iterator& forward(void) const;
-
-		const Iterator& operator++(void) const;
-		const Iterator& operator--(void) const;
-		Iterator operator++(int) const;
-		Iterator operator--(int) const;
-
-		bool operator==(const Iterator& rhs) const;
-		bool operator!=(const Iterator& rhs) const;
-
-		const Iterator& operator=(const Iterator& rhs) const;
-
-		const Value& operator*(void) const;
-		Value& operator*(void);
-
-		const Value* operator->(void) const;
-		Value* operator->(void);
-
-		const HashString<T, Allocator>& getKey(void) const;
-		const Value& getValue(void) const;
-		Value& getValue(void);
-
-	private:
-		Iterator(Slot* slot, Slot* end, Slot* rend);
-
-		mutable Slot* _slot;
-		mutable Slot* _rend;
-		mutable Slot* _end;
-		friend class HashMap<HashString<T, Allocator>, Value, Allocator>;
-	};
-
-	HashMap(HashFunc32 hash, const Allocator& allocator = Allocator());
-	HashMap(const Allocator& allocator = Allocator());
-	HashMap(const HashMap<HashString<T, Allocator>, Value, Allocator>& rhs);
-	HashMap(HashMap<HashString<T, Allocator>, Value, Allocator>&& rhs);
-	~HashMap(void);
-
-	const HashMap<HashString<T, Allocator>, Value, Allocator>& operator=(const HashMap<HashString<T, Allocator>, Value, Allocator>& rhs);
-	const HashMap<HashString<T, Allocator>, Value, Allocator>& operator=(HashMap<HashString<T, Allocator>, Value, Allocator>&& rhs);
-
-	bool operator==(const HashMap<HashString<T, Allocator>, Value, Allocator>& rhs) const;
-	bool operator!=(const HashMap<HashString<T, Allocator>, Value, Allocator>& rhs) const;
-
-	// Dangerous function! Data potentially doesn't exist!
-	const Value& operator[](const HashString<T, Allocator>& key) const;
-	Value& operator[](const HashString<T, Allocator>& key);
-	Value& operator[](HashString<T, Allocator>&& key);
-
-	// dangerous functions
-	// slots are potentially unoccupied
-	const Value& valueAt(size_t index) const;
-	Value& valueAt(size_t index);
-	const HashString<T, Allocator>& keyAt(size_t index) const;
-
-	bool isOccupied(size_t index) const;
-
-	void erase(const Iterator& it);
-	void erase(size_t index);
-	void erase(const HashString<T, Allocator>& key);
-
-	void insert(HashString<T, Allocator>&& key, Value&& value);
-	void insert(const HashString<T, Allocator>& key, Value&& value);
-	void insert(const HashString<T, Allocator>& key, const Value& value);
-
-	bool hasElementWithValue(const Value& value) const;
-	bool hasElementWithKey(const HashString<T, Allocator>& key) const;
-	size_t indexOf(const HashString<T, Allocator>& key) const;
-
-	void clear(void);
-	void reserve(size_t new_size);
-
-	size_t capacity(void) const;
-	size_t size(void) const;
-	bool empty(void) const;
-
-	void setAllocator(const Allocator& allocator);
-
-	Iterator findElementWithValue(const Value& value) const;
-	Iterator findElementWithKey(const HashString<T, Allocator>& value) const;
-
-	Iterator begin(void) const;
-	Iterator end(void) const;
-	Iterator rbegin(void) const;
-	Iterator rend(void) const;
-
-private:
-	Allocator _allocator;
-	size_t _size;
-	size_t _used;
-
-	HashFunc32 _hash;
+	HashFunc _hash;
 	Slot* _slots;
 
 	void rebuildMap(void);
