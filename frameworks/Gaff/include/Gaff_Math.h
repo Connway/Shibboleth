@@ -98,101 +98,101 @@ float BinomialCoefficient(float n, float k);
 float BernsteinPolynomial(float t, float n, float k);
 
 template <class T>
-inline uint64_t FNV1Hash64VAdd(uint64_t init, const T* front)
+uint64_t FNV1Hash64VAdd(uint64_t init, const T* front)
 {
 	return FNV1Hash64(reinterpret_cast<const char*>(front), sizeof(T), init);
 }
 
 template <class T, class... Args>
-inline uint64_t FNV1Hash64VAdd(uint64_t init, const T* front, const Args*... args)
+uint64_t FNV1Hash64VAdd(uint64_t init, const T* front, const Args*... args)
 {
 	init = FNV1Hash64(reinterpret_cast<const char*>(front), sizeof(T), init);
 	return FNV1Hash64VAdd(init, args...);
 }
 
 template <class T>
-inline uint64_t FNV1aHash64VAdd(uint64_t init, const T* front)
+uint64_t FNV1aHash64VAdd(uint64_t init, const T* front)
 {
 	return FNV1aHash64(reinterpret_cast<const char*>(front), sizeof(T), init);
 }
 
 template <class T, class... Args>
-inline uint64_t FNV1aHash64VAdd(uint64_t init, const T* front, const Args*... args)
+uint64_t FNV1aHash64VAdd(uint64_t init, const T* front, const Args*... args)
 {
 	init = FNV1aHash64(reinterpret_cast<const char*>(front), sizeof(T), init);
 	return FNV1aHash64VAdd(init, args...);
 }
 
 template <class T>
-inline uint32_t FNV1Hash32VAdd(uint32_t init, const T* front)
+uint32_t FNV1Hash32VAdd(uint32_t init, const T* front)
 {
 	return FNV1Hash32(reinterpret_cast<const char*>(front), sizeof(T), init);
 }
 
 template <class T, class... Args>
-inline uint32_t FNV1Hash32VAdd(uint32_t init, const T* front, const Args*... args)
+uint32_t FNV1Hash32VAdd(uint32_t init, const T* front, const Args*... args)
 {
 	init = FNV1Hash32(reinterpret_cast<const char*>(front), sizeof(T), init);
 	return FNV1Hash32VAdd(init, args...);
 }
 
 template <class T>
-inline uint32_t FNV1aHash32VAdd(uint32_t init, const T* front)
+uint32_t FNV1aHash32VAdd(uint32_t init, const T* front)
 {
 	return FNV1aHash32(reinterpret_cast<const char*>(front), sizeof(T), init);
 }
 
 template <class T, class... Args>
-inline uint32_t FNV1aHash32VAdd(uint32_t init, const T* front, const Args*... args)
+uint32_t FNV1aHash32VAdd(uint32_t init, const T* front, const Args*... args)
 {
 	init = FNV1aHash32(reinterpret_cast<const char*>(front), sizeof(T), init);
 	return FNV1aHash32VAdd(init, args...);
 }
 
 template <class... Args>
-inline uint64_t FNV1Hash64V(const Args*... args)
+uint64_t FNV1Hash64V(const Args*... args)
 {
 	return FNV1Hash64VAdd(INIT_HASH64, args...);
 }
 
 template <class... Args>
-inline uint64_t FNV1aHash64V(const Args*... args)
+uint64_t FNV1aHash64V(const Args*... args)
 {
 	return FNV1aHash64VAdd(INIT_HASH64, args...);
 }
 
 template <class... Args>
-inline uint32_t FNV1Hash32V(const Args*... args)
+uint32_t FNV1Hash32V(const Args*... args)
 {
 	return FNV1Hash32VAdd(INIT_HASH32, args...);
 }
 
 template <class... Args>
-inline uint32_t FNV1aHash32V(const Args*... args)
+uint32_t FNV1aHash32V(const Args*... args)
 {
 	return FNV1aHash32VAdd(INIT_HASH32, args...);
 }
 
 template <class T>
-inline uint64_t FNV1aHash64T(const T* value, uint64_t init = INIT_HASH64)
+uint64_t FNV1aHash64T(const T* value, uint64_t init = INIT_HASH64)
 {
 	return FNV1aHash64(reinterpret_cast<const char*>(value), sizeof(T), init);
 }
 
 template <class T>
-inline uint64_t FNV1Hash64T(const T* value, uint64_t init = INIT_HASH64)
+uint64_t FNV1Hash64T(const T* value, uint64_t init = INIT_HASH64)
 {
 	return FNV1Hash64(reinterpret_cast<const char*>(value), sizeof(T), init);
 }
 
 template <class T>
-inline uint32_t FNV1aHash32T(const T* value, uint32_t init = INIT_HASH32)
+uint32_t FNV1aHash32T(const T* value, uint32_t init = INIT_HASH32)
 {
 	return FNV1aHash32(reinterpret_cast<const char*>(value), sizeof(T), init);
 }
 
 template <class T>
-inline uint32_t FNV1Hash32T(const T* value, uint32_t init = INIT_HASH32)
+uint32_t FNV1Hash32T(const T* value, uint32_t init = INIT_HASH32)
 {
 	return FNV1Hash32(reinterpret_cast<const char*>(value), sizeof(T), init);
 }
