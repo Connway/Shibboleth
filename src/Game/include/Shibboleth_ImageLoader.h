@@ -23,25 +23,19 @@ THE SOFTWARE.
 #pragma once
 
 #include "Shibboleth_IResourceLoader.h"
-#include <Gaff_Defines.h>
 
 NS_SHIBBOLETH
 
-class IRenderManager;
-
-class ShaderLoader : public IResourceLoader
+class ImageLoader : public IResourceLoader
 {
 public:
-	ShaderLoader(IRenderManager& render_mgr);
-	~ShaderLoader(void);
+	ImageLoader(void);
+	~ImageLoader(void);
 
 	ResourceLoadData load(const IFile* file, ResourceContainer* res_cont) override;
 
-private:
-	IRenderManager& _render_mgr;
-
-	GAFF_NO_COPY(ShaderLoader);
-	GAFF_NO_MOVE(ShaderLoader);
+	GAFF_NO_COPY(ImageLoader);
+	GAFF_NO_MOVE(ImageLoader);
 };
 
 NS_END

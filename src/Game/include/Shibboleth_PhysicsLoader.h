@@ -32,7 +32,7 @@ public:
 	PhysicsLoader(void);
 	~PhysicsLoader(void);
 
-	Gaff::IVirtualDestructor* load(const char* file_name, uint64_t, HashMap<AString, IFile*>& file_map);
+	ResourceLoadData load(const IFile* file, ResourceContainer* res_cont) override;
 
 	GAFF_NO_COPY(PhysicsLoader);
 	GAFF_NO_MOVE(PhysicsLoader);

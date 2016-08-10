@@ -35,6 +35,7 @@ THE SOFTWARE.
 #include <Shibboleth_HoldingLoader.h>
 #include <Shibboleth_ShaderLoader.h>
 #include <Shibboleth_ModelLoader.h>
+#include <Shibboleth_ImageLoader.h>
 #include <Shibboleth_LuaLoader.h>
 
 #include <Shibboleth_Utilities.h>
@@ -121,12 +122,32 @@ void CreateResourceLoadersState::update(void)
 			return;
 		}
 
-		Array<IResourceManager::FileReadInfo> json_elements;
-		IResourceManager::FileReadInfo modifiers = { AString("image_file"), AString(), false };
-		json_elements.emplacePush(modifiers);
-
 		app.getLogManager().logMessage(LogManager::LOG_NORMAL, app.getLogFileName(), "Adding Texture Loader\n");
-		res_mgr.registerResourceLoader(texture_loader, ".texture", 0, json_elements);
+		res_mgr.registerResourceLoader(texture_loader, ".texture");
+	}
+
+	// IMAGE LOADER
+	{
+		ImageLoader* image_loader = SHIB_ALLOCT(ImageLoader, *GetAllocator());
+
+		if (!image_loader) {
+			app.getLogManager().logMessage(LogManager::LOG_ERROR, app.getLogFileName(), "ERROR - Failed to create image loader.\n");
+			app.quit();
+			return;
+		}
+
+		Array<AString> extensions;
+		extensions.emplacePush(".tga");
+		extensions.emplacePush(".jpeg");
+		extensions.emplacePush(".jpg");
+		extensions.emplacePush(".dds");
+		extensions.emplacePush(".png");
+		extensions.emplacePush(".bmp");
+		extensions.emplacePush(".hdr");
+		extensions.emplacePush(".tif");
+
+		app.getLogManager().logMessage(LogManager::LOG_NORMAL, app.getLogFileName(), "Adding Image Loader\n");
+		res_mgr.registerResourceLoader(image_loader, extensions);
 	}
 
 	// SAMPLER STATE LOADER
@@ -169,24 +190,8 @@ void CreateResourceLoadersState::update(void)
 			return;
 		}
 
-		Array<IResourceManager::FileReadInfo> json_elements;
-		IResourceManager::FileReadInfo file_info = { AString("Vertex"), AString(render_mgr.getShaderExtension()), true };
-		json_elements.emplacePush(file_info);
-
-		file_info.json_element = "Pixel";
-		json_elements.emplacePush(file_info);
-
-		file_info.json_element = "Hull";
-		json_elements.emplacePush(file_info);
-
-		file_info.json_element = "Geometry";
-		json_elements.emplacePush(file_info);
-
-		file_info.json_element = "Domain";
-		json_elements.emplacePush(file_info);
-
 		app.getLogManager().logMessage(LogManager::LOG_NORMAL, app.getLogFileName(), "Adding Shader Program Loader\n");
-		res_mgr.registerResourceLoader(shader_program_loader, ".material", 0, json_elements);
+		res_mgr.registerResourceLoader(shader_program_loader, ".material");
 	}
 
 	// LUA LOADER
@@ -272,12 +277,8 @@ void CreateResourceLoadersState::update(void)
 			return;
 		}
 
-		Array<IResourceManager::FileReadInfo> json_elements;
-		IResourceManager::FileReadInfo modifiers = { AString("mesh_file"), AString(), true };
-		json_elements.emplacePush(modifiers);
-
 		app.getLogManager().logMessage(LogManager::LOG_NORMAL, app.getLogFileName(), "Adding Model Loader\n");
-		res_mgr.registerResourceLoader(model_loader, ".model", 0, json_elements);
+		res_mgr.registerResourceLoader(model_loader, ".model");
 	}
 
 	// RENDER TARGET LOADER

@@ -28,6 +28,7 @@ THE SOFTWARE.
 #include <Shibboleth_DynamicLoader.h>
 #include <Shibboleth_IUpdateQuery.h>
 #include <Shibboleth_IManager.h>
+#include <Shibboleth_HashMap.h>
 
 NS_SHIBBOLETH
 

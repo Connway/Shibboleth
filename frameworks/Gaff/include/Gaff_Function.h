@@ -26,8 +26,9 @@ THE SOFTWARE.
 #include "Gaff_Pair.h"
 #include <cstring>
 #include <tuple>
+#include <new>
 
-#define FUNCTION_BUFFER_SIZE 32
+#define FUNCTION_BUFFER_SIZE 256
 
 NS_GAFF
 
@@ -40,11 +41,6 @@ public:
 	IFunction(void) {}
 	virtual ~IFunction(void) {}
 
-	ReturnType operator()(Args... args) const
-	{
-		return call(args...);
-	}
-
 	ReturnType operator()(Args... args)
 	{
 		return call(args...);
@@ -55,9 +51,10 @@ public:
 		return valid();
 	}
 
-	virtual ReturnType call(Args... args) const = 0;
 	virtual ReturnType call(Args... args) = 0;
+	virtual void copy(char* buffer) const = 0;
 	virtual bool valid(void) const = 0;
+
 };
 
 #ifdef PLATFORM_WINDOWS
@@ -82,8 +79,8 @@ public:
 	void set(FunctionType function);
 	FunctionType get(void) const;
 
-	ReturnType call(Args... args) const;
 	ReturnType call(Args... args);
+	void copy(char* buffer) const;
 	bool valid(void) const;
 
 private:
@@ -112,8 +109,8 @@ public:
 	void set(FunctionType function);
 	FunctionType get(void) const;
 
-	ReturnType call(Args... args) const;
 	ReturnType call(Args... args);
+	void copy(char* buffer) const;
 	bool valid(void) const;
 
 private:
@@ -141,8 +138,8 @@ public:
 	void set(T* object, FunctionType function);
 	Pair<T*, FunctionType> get(void) const;
 
-	ReturnType call(Args... args) const;
 	ReturnType call(Args... args);
+	void copy(char* buffer) const;
 	bool valid(void) const;
 
 private:
@@ -169,8 +166,8 @@ public:
 	const T& getFunctor(void) const;
 	T& getFunctor(void);
 
-	ReturnType call(Args... args) const;
 	ReturnType call(Args... args);
+	void copy(char* buffer) const;
 	bool valid(void) const;
 
 private:
@@ -188,7 +185,6 @@ public:
 	FunctionBinder(void);
 	~FunctionBinder(void);
 
-	ReturnType operator()(Args... args) const;
 	ReturnType operator()(Args... args);
 
 	const Binder& operator=(const Binder& rhs);

@@ -193,20 +193,15 @@ RenderTargetLoader::~RenderTargetLoader(void)
 {
 }
 
-Gaff::IVirtualDestructor* RenderTargetLoader::load(const char* file_name, uint64_t, HashMap<AString, IFile*>& file_map)
+ResourceLoadData RenderTargetLoader::load(const IFile* file, ResourceContainer* res_cont)
 {
-	GAFF_ASSERT(file_map.hasElementWithKey(AString(file_name)));
-	IFile*& file = file_map[AString(file_name)];
-
+	const char* file_name = res_cont->getResourceKey().getBuffer();
 	Gaff::JSON rt_settings;
 	bool success = rt_settings.parse(file->getBuffer());
 
-	GetApp().getFileSystem()->closeFile(file);
-	file = nullptr;
-
 	if (!success) {
 		GetApp().getLogManager().logMessage(LogManager::LOG_ERROR, GetApp().getLogFileName(), "ERROR - Failed to parse file '%s'.\n", file_name);
-		return nullptr;
+		return { nullptr };
 	}
 
 	static const Gaff::JSON& schema = GetApp().getManagerT<ISchemaManager>().getSchema("RenderTarget.schema");
@@ -219,7 +214,7 @@ Gaff::IVirtualDestructor* RenderTargetLoader::load(const char* file_name, uint64
 			rt_settings.getErrorText()
 		);
 
-		return nullptr;
+		return { nullptr };
 	}
 
 	IRenderManager& rm = GetApp().getManagerT<IRenderManager>();
@@ -238,7 +233,8 @@ Gaff::IVirtualDestructor* RenderTargetLoader::load(const char* file_name, uint64
 				"ERROR - Render Target file '%s' is malformed (an element in 'display_tags' is not a string) or no tags were found.\n",
 				file_name
 			);
-			return nullptr;
+
+			return { nullptr };
 		}
 	}
 
@@ -248,7 +244,7 @@ Gaff::IVirtualDestructor* RenderTargetLoader::load(const char* file_name, uint64
 
 	if (!data) {
 		GetApp().getLogManager().logMessage(LogManager::LOG_ERROR, GetApp().getLogFileName(), "ERROR - Failed to allocate data for Render Target for '%s'.\n", file_name);
-		return nullptr;
+		return { nullptr };
 	}
 
 	data->render_targets.resize(rd.getNumDevices());
@@ -288,13 +284,13 @@ Gaff::IVirtualDestructor* RenderTargetLoader::load(const char* file_name, uint64
 		if (!rt) {
 			GetApp().getLogManager().logMessage(LogManager::LOG_ERROR, GetApp().getLogFileName(), "ERROR - Failed to allocate Render Target '%s'.\n", file_name);
 			SHIB_FREET(data, *GetAllocator());
-			return nullptr;
+			return { nullptr };
 		}
 
 		if (!rt->init()) {
 			GetApp().getLogManager().logMessage(LogManager::LOG_ERROR, GetApp().getLogFileName(), "ERROR - Failed to initialize Render Target for '%s'.\n", file_name);
 			SHIB_FREET(data, *GetAllocator());
-			return nullptr;
+			return { nullptr };
 		}
 
 		if (outputs.isArray()) {
@@ -312,19 +308,19 @@ Gaff::IVirtualDestructor* RenderTargetLoader::load(const char* file_name, uint64
 
 			if (failed) {
 				SHIB_FREET(data, *GetAllocator());
-				return nullptr;
+				return { nullptr };
 			}
 		}
 
 		if (!addDepthStencil(rd, rm, rt.get(), data, window_width, window_height, rt_settings, file_name)) {
 			SHIB_FREET(data, *GetAllocator());
-			return nullptr;
+			return { nullptr };
 		}
 
 		data->render_targets[(*it)->device] = rt;
 	}
 
-	return data;
+	return { data };
 }
 
 NS_END

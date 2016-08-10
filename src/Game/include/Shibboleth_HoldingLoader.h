@@ -33,7 +33,7 @@ public:
 	HoldingLoader(void);
 	~HoldingLoader(void);
 
-	Gaff::IVirtualDestructor* load(const char* file_name, uint64_t user_data, HashMap<AString, IFile*>& file_map);
+	ResourceLoadData load(const IFile* file, ResourceContainer* res_cont) override;
 
 	GAFF_NO_COPY(HoldingLoader);
 	GAFF_NO_MOVE(HoldingLoader);

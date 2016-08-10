@@ -52,7 +52,7 @@ public:
 private:
 	ResourceWrapper< SingleDataWrapper<lua::State*> > _script_res;
 
-	void scriptLoaded(ResourceContainerBase*);
+	void scriptLoaded(ResourceContainer*);
 	void cacheFunctions(void);
 
 	GAFF_NO_COPY(LuaComponent);

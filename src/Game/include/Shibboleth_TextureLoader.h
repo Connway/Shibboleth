@@ -25,15 +25,16 @@ THE SOFTWARE.
 #include "Shibboleth_IResourceLoader.h"
 #include <Gleam_ITexture.h>
 
-namespace Gaff
-{
+NS_GAFF
 	class Image;
-}
+	class JSON;
+NS_END
 
 NS_SHIBBOLETH
 
 class IRenderManager;
 class IFileSystem;
+struct TextureData;
 
 class TextureLoader : public IResourceLoader
 {
@@ -41,7 +42,7 @@ public:
 	TextureLoader(IRenderManager& render_mgr);
 	~TextureLoader(void);
 
-	Gaff::IVirtualDestructor* load(const char* file_name, uint64_t, HashMap<AString, IFile*>& file_map);
+	ResourceLoadData load(const IFile* file, ResourceContainer* res_cont) override;
 
 private:
 	IRenderManager& _render_mgr;
@@ -53,8 +54,12 @@ private:
 	Gleam::ITexture::FORMAT determineBGRType(const Gaff::Image& image, bool normalized) const;
 	Gleam::ITexture::FORMAT determineGreyscaleType(const Gaff::Image& image, bool normalized) const;
 
+	bool finishLoadingResource(const char* file_name, TextureData* texture_data, const Gaff::JSON& json, const Gaff::Image& image);
+
 	GAFF_NO_COPY(TextureLoader);
 	GAFF_NO_MOVE(TextureLoader);
+
+	friend class TextureLoaderFunctor;
 };
 
 NS_END

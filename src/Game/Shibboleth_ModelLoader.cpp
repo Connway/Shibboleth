@@ -62,44 +62,81 @@ static const char* d3d11_end_shader_chunk =
 "}"
 ;
 
+static ProxyAllocator g_esprit_proxy_allocator("Esprit");
+
+
+class ModelLoaderFunctor : public ResourceLoaderFunctorBase
+{
+public:
+	ModelLoaderFunctor(ResourceContainer* res_cont, ModelData* model_data, ModelLoader* loader, const Gaff::JSON& json):
+		_json(json), _model_data(model_data), _loader(loader), _res_cont(res_cont)
+	{
+	}
+
+	~ModelLoaderFunctor(void) {}
+
+	void operator()(ResourceContainer* res_cont)
+	{
+		if (res_cont->isLoaded()) {
+			HoldingData& holding_data = res_cont->getResource<HoldingData>();
+
+			if (!holding_data.scene) {
+				// log error
+				SHIB_FREET(_model_data, *GetAllocator());
+				failedToLoadResource(_res_cont);
+
+			} else if (!holding_data.scene.hasMeshes()) {
+				// log error
+				SHIB_FREET(_model_data, *GetAllocator());
+				failedToLoadResource(_res_cont);
+			}
+
+			if (!_loader->finishLoadingResource(_res_cont->getResourceKey().getBuffer(), _model_data, _json, holding_data)) {
+				SHIB_FREET(_model_data, *GetAllocator());
+				failedToLoadResource(_res_cont);
+			}
+
+			// Don't want to hold onto the CPU side of the mesh.
+			if (!_json["keep_cpu"].isTrue()) {
+				clearSubResources(_res_cont);
+			}
+
+			resourceLoadSuccessful(_res_cont);
+
+		} else {
+			failedToLoadResource(_res_cont);
+		}
+	}
+
+private:
+	Gaff::JSON _json;
+	ModelData* _model_data;
+	ModelLoader* _loader;
+	ResourceContainer* _res_cont;
+};
 
 ModelLoader::ModelLoader(IRenderManager& render_mgr, IResourceManager& res_mgr, IFileSystem& file_system):
-	_render_mgr(render_mgr), _res_mgr(res_mgr), _file_system(file_system),
-	_esprit_proxy_allocator("Esprit")
+	_render_mgr(render_mgr), _res_mgr(res_mgr), _file_system(file_system)
 {
-	Esprit::SetAllocator(&_esprit_proxy_allocator);
+	Esprit::SetAllocator(&g_esprit_proxy_allocator);
 }
 
 ModelLoader::~ModelLoader(void)
 {
 }
 
-Gaff::IVirtualDestructor* ModelLoader::load(const char* file_name, uint64_t, HashMap<AString, IFile*>& file_map)
+ResourceLoadData ModelLoader::load(const IFile* file, ResourceContainer* res_cont)
 {
-	GAFF_ASSERT(file_map.hasElementWithKey(AString(file_name)));
-
-	GAFF_SCOPE_EXIT([&]()
-	{
-		for (auto it = file_map.begin(); it != file_map.end(); ++it) {
-			if (*it) {
-				_file_system.closeFile(*it);
-				*it = nullptr;
-			}
-		}
-	});
-
-	IFile* file = file_map[AString(file_name)];
-
 	Gaff::JSON json;
 	
 	if (!json.parse(file->getBuffer())) {
 		// log error
-		return nullptr;
+		return { nullptr };
 	}
 
 	if (!json.isObject()) {
 		// log error
-		return nullptr;
+		return { nullptr };
 	}
 
 	Gaff::JSON mesh_file = json["mesh_file"];
@@ -107,7 +144,7 @@ Gaff::IVirtualDestructor* ModelLoader::load(const char* file_name, uint64_t, Has
 
 	if (!mesh_file.isString()) {
 		// log error
-		return nullptr;
+		return { nullptr };
 	}
 
 	// We either specify mesh LODs, or we don't. If we don't, then we assume all meshes are LOD 0.
@@ -115,7 +152,7 @@ Gaff::IVirtualDestructor* ModelLoader::load(const char* file_name, uint64_t, Has
 	// and ignore the mesh.
 	if (!lod_tags.isArray() && !lod_tags.isNull()) {
 		// log error
-		return nullptr;
+		return { nullptr };
 	}
 
 	// Check LOD tags are correct data type.
@@ -131,72 +168,30 @@ Gaff::IVirtualDestructor* ModelLoader::load(const char* file_name, uint64_t, Has
 		});
 
 		if (check_fail) {
-			return nullptr;
+			return { nullptr };
 		}
 	}
 
 	ModelData* data = SHIB_ALLOCT(ModelData, *GetAllocator());
 
-	if (data) {
-		data->holding_data = _res_mgr.loadResourceImmediately(mesh_file.getString(), generateLoadingFlags(json), file_map);
-
-		// Loop until loaded. Just in case we got a resource reference requested from somewhere else.
-		while (!data->holding_data.getResourcePtr()->isLoaded() && !data->holding_data.getResourcePtr()->hasFailed()) {
-		}
-
-		if (!data->holding_data) {
-			// log error
-			SHIB_FREET(data, *GetAllocator());
-			data = nullptr;
-
-		} else if (!data->holding_data->scene) {
-			// log error
-			SHIB_FREET(data, *GetAllocator());
-			data = nullptr;
-
-		} else if (!data->holding_data->scene.hasMeshes()) {
-			// log error
-			SHIB_FREET(data, *GetAllocator());
-			data = nullptr;
-
-		} else {
-			Gaff::JSON display_tags = json["display_tags"];
-			uint16_t disp_tags = DT_ALL;
-			bool any_display_tags = (!json["any_display_with_tags"].isNull() && json["any_display_tags"].isTrue());
-
-			if (!display_tags.isNull()) {
-				if (!display_tags.isArray()) {
-					// log error
-					SHIB_FREET(data, *GetAllocator());
-					return nullptr;
-				}
-
-				disp_tags = _render_mgr.getDislayTags(display_tags);
-
-				if (!disp_tags) {
-					// log error
-					SHIB_FREET(data, *GetAllocator());
-					return nullptr;
-				}
-			}
-
-			if (!lod_tags.isNull() && data->holding_data->scene.getNumMeshes() != lod_tags.size()) {
-				// log error
-				SHIB_FREET(data, *GetAllocator());
-				data = nullptr;
-
-			} else if (!loadMeshes(data, lod_tags, json, disp_tags, any_display_tags)) {
-				// log error
-				SHIB_FREET(data, *GetAllocator());
-				data = nullptr;
-			}
-		}
+	if (!data) {
+		// log error
+		return { nullptr };
 	}
 
-	return data;
+	ResourceLoadData res_load_data = { data };
+	SubResourceData sub_res_data = {
+		AString(mesh_file.getString()),
+		generateLoadingFlags(json),
+		Gaff::Bind<ModelLoaderFunctor, void, ResourceContainer*>(ModelLoaderFunctor(res_cont, data, this, json))
+	};
+
+	res_load_data.sub_res_data.emplacePush(sub_res_data);
+
+	return res_load_data;
 }
 
-bool ModelLoader::loadMeshes(ModelData* data, const Gaff::JSON& lod_tags, const Gaff::JSON& model_prefs, unsigned short display_tags, bool any_display_tags)
+bool ModelLoader::loadMeshes(ModelData* data, const Gaff::JSON& lod_tags, const Gaff::JSON& model_prefs, const HoldingData& holding_data, unsigned short display_tags, bool any_display_tags)
 {
 	Gleam::IRenderDevice& rd = _render_mgr.getRenderDevice();
 	size_t num_lods = (lod_tags.isNull()) ? 1 : lod_tags.size();
@@ -239,7 +234,7 @@ bool ModelLoader::loadMeshes(ModelData* data, const Gaff::JSON& lod_tags, const 
 		//	// log warning
 		//}
 
-		if (!loadSkeleton(data, model_prefs, num_bone_weights, vert_skeleton_data)) {
+		if (!loadSkeleton(data, model_prefs, holding_data, num_bone_weights, vert_skeleton_data)) {
 			// log error
 			return false;
 		}
@@ -252,8 +247,8 @@ bool ModelLoader::loadMeshes(ModelData* data, const Gaff::JSON& lod_tags, const 
 		rd.setCurrentDevice(*it);
 
 		// Iterate over all the meshes
-		for (unsigned int j = 0; j < data->holding_data->scene.getNumMeshes(); ++j) {
-			Gaff::Mesh scene_mesh = data->holding_data->scene.getMesh(j);
+		for (unsigned int j = 0; j < holding_data.scene.getNumMeshes(); ++j) {
+			Gaff::Mesh scene_mesh = holding_data.scene.getMesh(j);
 
 			if (!scene_mesh) {
 				// Log Error
@@ -714,17 +709,17 @@ Gleam::IShader* ModelLoader::generateEmptyD3D11Shader(Gleam::IRenderDevice& rd, 
 	return shader;
 }
 
-bool ModelLoader::loadSkeleton(ModelData* data, const Gaff::JSON& model_prefs, unsigned int& num_bone_weights, Array< Array<VertSkeletonData> >& vert_skeleton_data)
+bool ModelLoader::loadSkeleton(ModelData* data, const Gaff::JSON& model_prefs, const HoldingData& holding_data, unsigned int& num_bone_weights, Array< Array<VertSkeletonData> >& vert_skeleton_data)
 {
 	// Determine number of float4's for vertex data
 	unsigned int max_vertex_bones = 0;
 	num_bone_weights = 0;
 
-	vert_skeleton_data.resize(data->holding_data->scene.getNumMeshes());
+	vert_skeleton_data.resize(holding_data.scene.getNumMeshes());
 
 	// Count which vertex has the most bones associated with it
-	for (unsigned int k = 0; k < data->holding_data->scene.getNumMeshes(); ++k) {
-		Gaff::Mesh scene_mesh = data->holding_data->scene.getMesh(k);
+	for (unsigned int k = 0; k < holding_data.scene.getNumMeshes(); ++k) {
+		Gaff::Mesh scene_mesh = holding_data.scene.getMesh(k);
 
 		// Temporarily to hold vertex bone weight count
 		Array<unsigned int> num_bones(scene_mesh.getNumVertices(), 0);
@@ -761,7 +756,7 @@ bool ModelLoader::loadSkeleton(ModelData* data, const Gaff::JSON& model_prefs, u
 
 	// Load skeleton hierarchy
 	// This should load a skeleton that is sorted by parent index. Root being bone 0.
-	Gaff::SceneNode root = data->holding_data->scene.getNode(model_prefs["skeleton_root"].getString());
+	Gaff::SceneNode root = holding_data.scene.getNode(model_prefs["skeleton_root"].getString());
 
 	if (!root) {
 		// log error
@@ -829,8 +824,8 @@ bool ModelLoader::loadSkeleton(ModelData* data, const Gaff::JSON& model_prefs, u
 	}
 
 	// Cache some bone vert data for later
-	for (size_t i = 0; i < data->holding_data->scene.getNumMeshes(); ++i) {
-		Gaff::Mesh scene_mesh = data->holding_data->scene.getMesh(static_cast<unsigned int>(i));
+	for (size_t i = 0; i < holding_data.scene.getNumMeshes(); ++i) {
+		Gaff::Mesh scene_mesh = holding_data.scene.getMesh(static_cast<unsigned int>(i));
 
 		for (unsigned int j = 0; j < scene_mesh.getNumBones(); ++j) {
 			Gaff::Bone bone = scene_mesh.getBone(j);
@@ -847,6 +842,66 @@ bool ModelLoader::loadSkeleton(ModelData* data, const Gaff::JSON& model_prefs, u
 			}
 		}
 	}
+
+	return true;
+}
+
+bool ModelLoader::finishLoadingResource(const char* /*file_name*/, ModelData* model_data, const Gaff::JSON& json, const HoldingData& holding_data)
+{
+	//data->holding_data = _res_mgr.loadResourceImmediately(mesh_file.getString(), generateLoadingFlags(json), file_map);
+
+	// Loop until loaded. Just in case we got a resource reference requested from somewhere else.
+	//while (!data->holding_data.getResourcePtr()->isLoaded() && !data->holding_data.getResourcePtr()->hasFailed()) {
+	//}
+
+	//if (!data->holding_data) {
+	//	// log error
+	//	SHIB_FREET(data, *GetAllocator());
+	//	data = nullptr;
+
+	//} else if (!data->holding_data->scene) {
+	//	// log error
+	//	SHIB_FREET(data, *GetAllocator());
+	//	data = nullptr;
+
+	//} else if (!data->holding_data->scene.hasMeshes()) {
+	//	// log error
+	//	SHIB_FREET(data, *GetAllocator());
+	//	data = nullptr;
+
+	//} else {
+		Gaff::JSON display_tags = json["display_tags"];
+		Gaff::JSON lod_tags = json["lod_tags"];
+		uint16_t disp_tags = DT_ALL;
+		bool any_display_tags = (!json["any_display_with_tags"].isNull() && json["any_display_tags"].isTrue());
+
+		if (!display_tags.isNull()) {
+			if (!display_tags.isArray()) {
+				// log error
+				//SHIB_FREET(data, *GetAllocator());
+				return false;
+			}
+
+			disp_tags = _render_mgr.getDislayTags(display_tags);
+
+			if (!disp_tags) {
+				// log error
+				//SHIB_FREET(data, *GetAllocator());
+				return false;
+			}
+		}
+
+		if (!lod_tags.isNull() && holding_data.scene.getNumMeshes() != lod_tags.size()) {
+			// log error
+			//SHIB_FREET(data, *GetAllocator());
+			return false;
+
+		} else if (!loadMeshes(model_data, lod_tags, json, holding_data, disp_tags, any_display_tags)) {
+			// log error
+			//SHIB_FREET(data, *GetAllocator());
+			return false;
+		}
+	//}
 
 	return true;
 }

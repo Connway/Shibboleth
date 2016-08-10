@@ -69,8 +69,9 @@ bool LuaComponent::load(const Gaff::JSON& json)
 
 	Gaff::JSON script_file = json["Script File"];
 
+	auto callback = Gaff::Bind(this, &LuaComponent::scriptLoaded);
 	_script_res = res_mgr.requestResource(script_file.getString());
-	_script_res.getResourcePtr()->addCallback(Gaff::Bind(this, &LuaComponent::scriptLoaded));
+	_script_res.getResourcePtr()->addCallback(callback);
 
 	return true;
 }
@@ -79,7 +80,7 @@ void LuaComponent::allComponentsLoaded(void)
 {
 }
 
-void LuaComponent::scriptLoaded(ResourceContainerBase*)
+void LuaComponent::scriptLoaded(ResourceContainer*)
 {
 	if (_script_res.getResourcePtr()->isLoaded()) {
 		cacheFunctions();

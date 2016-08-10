@@ -23,8 +23,11 @@ THE SOFTWARE.
 #pragma once
 
 #include "Shibboleth_IResourceLoader.h"
-#include "Shibboleth_ResourceDefines.h"
 #include <Gleam_IShader.h>
+
+NS_GAFF
+	class JSON;
+NS_END
 
 NS_SHIBBOLETH
 
@@ -32,6 +35,8 @@ class IResourceManager;
 class ISchemaManager;
 class IRenderManager;
 class IFileSystem;
+struct ProgramData;
+struct ShaderData;
 
 class ShaderProgramLoader : public IResourceLoader
 {
@@ -39,16 +44,18 @@ public:
 	ShaderProgramLoader(IResourceManager& res_mgr, ISchemaManager& schema_mgr, IRenderManager& render_mgr);
 	~ShaderProgramLoader(void);
 
-	Gaff::IVirtualDestructor* load(const char* file_name, uint64_t, HashMap<AString, IFile*>& file_map);
+	ResourceLoadData load(const IFile* file, ResourceContainer* res_cont) override;
 
 private:
 	IResourceManager& _res_mgr;
 	ISchemaManager& _schema_mgr;
 	IRenderManager& _render_mgr;
 
-	bool loadShader(ProgramData* data, const char* file_name, Gleam::IShader::SHADER_TYPE shader_type, HashMap<AString, IFile*>& file_map);
+	bool loadShader(ProgramData* program_data, ShaderData* shader_data);
 	bool createPrograms(ProgramData* data);
 	bool createRasterStates(ProgramData* data, const Gaff::JSON& json);
+
+	friend class ShaderLoadedFunctor;
 
 	GAFF_NO_COPY(ShaderProgramLoader);
 	GAFF_NO_MOVE(ShaderProgramLoader);

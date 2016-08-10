@@ -90,8 +90,9 @@ bool CameraComponent::load(const Gaff::JSON& json)
 {
 	g_ref_def.read(json, this);
 
+	auto resCallback = Gaff::Bind(this, &CameraComponent::renderTargetCallback);
 	_render_target = GetApp().getManagerT<IResourceManager>().requestResource(json["Render Target File"].getString());
-	_render_target.getResourcePtr()->addCallback(Gaff::Bind(this, &CameraComponent::RenderTargetCallback));
+	_render_target.getResourcePtr()->addCallback(resCallback);
 
 	if (isActive()) {
 		getOwner()->registerForWorldDirtyCallback(Gaff::Bind(this, &CameraComponent::updateFrustum));
@@ -215,7 +216,7 @@ void CameraComponent::setActive(bool active)
 	}
 }
 
-void CameraComponent::RenderTargetCallback(ResourceContainerBase*)
+void CameraComponent::renderTargetCallback(ResourceContainer*)
 {
 	if (_render_target.getResourcePtr()->hasFailed()) {
 		// log error

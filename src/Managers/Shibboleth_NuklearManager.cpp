@@ -62,7 +62,9 @@ NuklearManager::NuklearManager(void)
 
 NuklearManager::~NuklearManager(void)
 {
-	nk_free(&_context);
+	if (_init) {
+		nk_free(&_context);
+	}
 }
 
 const char* NuklearManager::getName(void) const
@@ -112,6 +114,7 @@ bool NuklearManager::init(void)
 		return false;
 	}
 
+	_init = true;
 	return true;
 }
 

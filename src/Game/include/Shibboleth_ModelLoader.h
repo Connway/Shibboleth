@@ -48,6 +48,7 @@ struct GraphicsUserData;
 class IResourceManager;
 class IRenderManager;
 class IFileSystem;
+struct HoldingData;
 struct ModelData;
 
 class ModelLoader : public IResourceLoader
@@ -56,7 +57,7 @@ public:
 	ModelLoader(IRenderManager& render_mgr, IResourceManager& res_mgr, IFileSystem& file_system);
 	~ModelLoader(void);
 
-	Gaff::IVirtualDestructor* load(const char* file_name, uint64_t, HashMap<AString, IFile*>& file_map);
+	ResourceLoadData load(const IFile* file, ResourceContainer* res_cont) override;
 
 private:
 	struct VertSkeletonData
@@ -68,16 +69,19 @@ private:
 	IRenderManager& _render_mgr;
 	IResourceManager& _res_mgr;
 	IFileSystem& _file_system;
-	ProxyAllocator _esprit_proxy_allocator;
 
-	bool loadMeshes(ModelData* data, const Gaff::JSON& lod_tags, const Gaff::JSON& model_prefs, unsigned short display_tags, bool any_display_tags);
+	bool loadMeshes(ModelData* data, const Gaff::JSON& lod_tags, const Gaff::JSON& model_prefs, const HoldingData& holding_data, unsigned short display_tags, bool any_display_tags);
 	bool createMeshAndLayout(Gleam::IRenderDevice& rd, const Gaff::Mesh& scene_mesh, Gleam::IModel* model, const Gaff::JSON& model_prefs, unsigned int num_bone_weights, const Array<VertSkeletonData>& vert_skeleton_data);
 	unsigned int generateLoadingFlags(const Gaff::JSON& model_prefs);
 	Gleam::IShader* generateEmptyD3D11Shader(Gleam::IRenderDevice& rd, const Gaff::JSON& model_prefs, const Gaff::Mesh& scene_mesh, size_t num_bone_weights) const;
-	bool loadSkeleton(ModelData* data, const Gaff::JSON& model_prefs, unsigned int& num_bone_weights, Array< Array<VertSkeletonData> >& vert_skeleton_data);
+	bool loadSkeleton(ModelData* data, const Gaff::JSON& model_prefs, const HoldingData& holding_data, unsigned int& num_bone_weights, Array< Array<VertSkeletonData> >& vert_skeleton_data);
+
+	bool finishLoadingResource(const char* file_name, ModelData* model_data, const Gaff::JSON& json, const HoldingData& holding_data);
 
 	GAFF_NO_COPY(ModelLoader);
 	GAFF_NO_MOVE(ModelLoader);
+
+	friend class ModelLoaderFunctor;
 };
 
 NS_END

@@ -131,7 +131,7 @@ void Image::destroy()
 	\param image_size Size of \a image in bytes.
 	\return Whether the image was successfully loaded.
 */
-bool Image::load(void* image, unsigned int image_size)
+bool Image::load(const void* image, unsigned int image_size)
 {
 	GAFF_ASSERT(_initialized);
 	ilBindImage(_image);

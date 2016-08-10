@@ -35,6 +35,8 @@ class CachedFunction : public IFunction<ReturnType>
 public:
 	static_assert(sizeof...(Args) > 0, "CachedFunction requires at least one function argument!");
 
+	using Func = CachedFunction<ReturnType, Args...>;
+
 	CachedFunction(const FunctionBinder<ReturnType, Args...>& function, const Args&... args);
 	CachedFunction(const FunctionBinder<ReturnType, Args...>& function, Args&&... args);
 	CachedFunction(const CachedFunction<ReturnType, Args...>& function);
@@ -61,8 +63,8 @@ public:
 	template <unsigned int index>
 	void setArg(typename std::tuple_element< index, std::tuple<Args...> >::type&& argument);
 
-	ReturnType call(void) const;
 	ReturnType call(void);
+	void copy(char* buffer) const;
 	bool valid(void) const;
 
 private:

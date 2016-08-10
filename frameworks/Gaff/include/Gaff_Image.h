@@ -120,7 +120,7 @@ public:
 	bool init(void);
 	void destroy();
 
-	bool load(void* image, unsigned int image_size);
+	bool load(const void* image, unsigned int image_size);
 	bool load(const char* filename);
 
 	bool save(const char* filename, bool allow_overwrite = false);

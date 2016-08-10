@@ -37,7 +37,7 @@ STDCallFunction<ReturnType, Args...>::STDCallFunction(FunctionType function):
 
 template <class ReturnType, class... Args>
 STDCallFunction<ReturnType, Args...>::STDCallFunction(const Func& function):
-	_function(function._function),
+	_function(function._function)
 {
 }
 
@@ -92,15 +92,16 @@ typename STDCALLFUNCTION::FunctionType STDCallFunction<ReturnType, Args...>::get
 }
 
 template <class ReturnType, class... Args>
-ReturnType STDCallFunction<ReturnType, Args...>::call(Args... args) const
+ReturnType STDCallFunction<ReturnType, Args...>::call(Args... args)
 {
 	return _function(args...);
 }
 
 template <class ReturnType, class... Args>
-ReturnType STDCallFunction<ReturnType, Args...>::call(Args... args)
+void STDCallFunction<ReturnType, Args...>::copy(char* buffer) const
 {
-	return _function(args...);
+	Func* rhs = reinterpret_cast<Func*>(buffer);
+	new (rhs) Func(_function);
 }
 
 template <class ReturnType, class... Args>
@@ -176,15 +177,16 @@ typename FUNCTION::FunctionType Function<ReturnType, Args...>::get(void) const
 }
 
 template <class ReturnType, class... Args>
-ReturnType Function<ReturnType, Args...>::call(Args... args) const
+ReturnType Function<ReturnType, Args...>::call(Args... args)
 {
 	return _function(args...);
 }
 
 template <class ReturnType, class... Args>
-ReturnType Function<ReturnType, Args...>::call(Args... args)
+void Function<ReturnType, Args...>::copy(char* buffer) const
 {
-	return _function(args...);
+	Func* rhs = reinterpret_cast<Func*>(buffer);
+	new (rhs) Func(_function);
 }
 
 template <class ReturnType, class... Args>
@@ -254,15 +256,16 @@ Pair<T*, typename MEMBER_FUNCTION::FunctionType> MemberFunction<T, ReturnType, A
 }
 
 template <class T, class ReturnType, class... Args>
-ReturnType MemberFunction<T, ReturnType, Args...>::call(Args... args) const
+ReturnType MemberFunction<T, ReturnType, Args...>::call(Args... args)
 {
 	return (_object->*_function)(args...);
 }
 
 template <class T, class ReturnType, class... Args>
-ReturnType MemberFunction<T, ReturnType, Args...>::call(Args... args)
+void MemberFunction<T, ReturnType, Args...>::copy(char* buffer) const
 {
-	return (_object->*_function)(args...);
+	Func* rhs = reinterpret_cast<Func*>(buffer);
+	new (rhs) Func(_object, _function);
 }
 
 template <class T, class ReturnType, class... Args>
@@ -331,15 +334,16 @@ T& Functor<T, ReturnType, Args...>::getFunctor(void)
 }
 
 template <class T, class ReturnType, class... Args>
-ReturnType Functor<T, ReturnType, Args...>::call(Args... args) const
+ReturnType Functor<T, ReturnType, Args...>::call(Args... args)
 {
 	return _functor(args...);
 }
 
 template <class T, class ReturnType, class... Args>
-ReturnType Functor<T, ReturnType, Args...>::call(Args... args)
+void Functor<T, ReturnType, Args...>::copy(char* buffer) const
 {
-	return _functor(args...);
+	Func* rhs = reinterpret_cast<Func*>(buffer);
+	new (rhs) Func(_functor);
 }
 
 template <class T, class ReturnType, class... Args>
@@ -363,7 +367,10 @@ template <class ReturnType, class... Args>
 FunctionBinder<ReturnType, Args...>::FunctionBinder(const Binder& rhs):
 	_object_size(rhs._object_size)
 {
-	memcpy(_function_buffer, rhs._function_buffer, _object_size);
+	if (_object_size) {
+		const IFunc* func = reinterpret_cast<const IFunc*>(rhs._function_buffer);
+		func->copy(_function_buffer);
+	}
 }
 
 template <class ReturnType, class... Args>
@@ -376,17 +383,9 @@ template <class ReturnType, class... Args>
 FunctionBinder<ReturnType, Args...>::~FunctionBinder(void)
 {
 	if (valid()) {
-		IFunc* function = (IFunc*)_function_buffer;
+		IFunc* function = reinterpret_cast<IFunc*>(_function_buffer);
 		function->~IFunc();
 	}
-}
-
-template <class ReturnType, class... Args>
-ReturnType FunctionBinder<ReturnType, Args...>::operator()(Args... args) const
-{
-	GAFF_ASSERT(valid());
-	const IFunc* function = reinterpret_cast<const IFunc*>(_function_buffer);
-	return function->call(args...);
 }
 
 template <class ReturnType, class... Args>
@@ -398,9 +397,10 @@ ReturnType FunctionBinder<ReturnType, Args...>::operator()(Args... args)
 }
 
 template <class ReturnType, class... Args>
-const FunctionBinder<ReturnType, Args...>& FunctionBinder<ReturnType, Args...>::operator=(const FunctionBinder<ReturnType, Args...>& rhs)
+const FunctionBinder<ReturnType, Args...>& FunctionBinder<ReturnType, Args...>::operator=(const Binder& rhs)
 {
-	memcpy(_function_buffer, rhs._function_buffer, rhs._object_size);
+	const IFunc* func = reinterpret_cast<const IFunc*>(rhs._function_buffer);
+	func->copy(_function_buffer);
 	_object_size = rhs._object_size;
 	return *this;
 }
@@ -433,14 +433,14 @@ template <class ReturnType, class... Args>
 const IFunction<ReturnType, Args...>& FunctionBinder<ReturnType, Args...>::getInterface(void) const
 {
 	GAFF_ASSERT(valid());
-	return *((const IFunc*)_function_buffer);
+	return *reinterpret_cast<const IFunc*>(_function_buffer);
 }
 
 template <class ReturnType, class... Args>
 IFunction<ReturnType, Args...>& FunctionBinder<ReturnType, Args...>::getInterface(void)
 {
 	GAFF_ASSERT(valid());
-	return *((IFunc*)_function_buffer);
+	return *reinterpret_cast<IFunc*>(_function_buffer);
 }
 
 //////////////////////////
@@ -472,8 +472,17 @@ FunctionBinder<ReturnType, Args...> BindSTDCall(ReturnType (__stdcall *function)
 template <class T, class ReturnType, class... Args>
 FunctionBinder<ReturnType, Args...> Bind(const T& functor)
 {
-	Functor<T, ReturnType, Args...> ftor(functor);
-	return FunctionBinder<ReturnType, Args...>(&ftor, sizeof(ftor));
+	static_assert(sizeof(functor) <= FUNCTION_BUFFER_SIZE, "Functor size must be less than or equal to FUNCTION_BUFFER_SIZE!");
+
+	// Construct directly
+	FunctionBinder<ReturnType, Args...> binder;
+
+	Functor<T, ReturnType, Args...>* ftor = reinterpret_cast< Functor<T, ReturnType, Args...>* >(binder._function_buffer);
+	new (ftor) Functor<T, ReturnType, Args...>(functor);
+
+	binder._object_size = sizeof(functor);
+
+	return binder;
 }
 #
 

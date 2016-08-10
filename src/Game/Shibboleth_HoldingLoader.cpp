@@ -23,10 +23,7 @@ THE SOFTWARE.
 #include "Shibboleth_HoldingLoader.h"
 #include "Shibboleth_ModelAnimResources.h"
 #include <Shibboleth_IFileSystem.h>
-#include <Shibboleth_Utilities.h>
 #include <Shibboleth_IApp.h>
-#include <Gaff_ScopedExit.h>
-#include <Gleam_IModel.h>
 
 NS_SHIBBOLETH
 
@@ -38,29 +35,19 @@ HoldingLoader::~HoldingLoader(void)
 {
 }
 
-Gaff::IVirtualDestructor* HoldingLoader::load(const char* file_name, uint64_t user_data, HashMap<AString, IFile*>& file_map)
+ResourceLoadData HoldingLoader::load(const IFile* file, ResourceContainer* res_cont)
 {
-	AString fname(file_name);
-	GAFF_ASSERT(file_map.hasElementWithKey(fname));
-
-	IFile* file = file_map[fname];
-
-	GAFF_SCOPE_EXIT([&]()
-	{
-		GetApp().getFileSystem()->closeFile(file);
-		file_map[fname] = nullptr;
-	});
-
+	const char* file_name = res_cont->getResourceKey().getBuffer();
 	HoldingData* data = SHIB_ALLOCT(HoldingData, *GetAllocator());
 
 	if (!data) {
-		return nullptr;
+		return { nullptr };
 	}
 
-	size_t ext_index = fname.findLastOf('.');
+	size_t ext_index = Gaff::FindLastOf(file_name, '.');
 	ext_index = (ext_index == SIZE_T_FAIL) ? 0 : ext_index;
 
-	data->scene = data->importer.parseMemory(file->getBuffer(), file->size(), static_cast<unsigned int>(user_data), fname.getBuffer() + ext_index);
+	data->scene = data->importer.parseMemory(file->getBuffer(), file->size(), static_cast<unsigned int>(res_cont->getUserData()), file_name + ext_index);
 
 	if (!data->scene) {
 		SHIB_FREET(data, *GetAllocator());
@@ -70,7 +57,7 @@ Gaff::IVirtualDestructor* HoldingLoader::load(const char* file_name, uint64_t us
 		// Log warnings if they come up
 	//}
 
-	return data;
+	return { data };
 }
 
 NS_END
