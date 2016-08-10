@@ -36,7 +36,7 @@ public:
 	SamplerStateLoader(IRenderManager& render_mgr);
 	~SamplerStateLoader(void);
 
-	Gaff::IVirtualDestructor* load(const char* file_name, uint64_t, HashMap<AString, IFile*>& file_map);
+	ResourceLoadData load(const IFile* file, ResourceContainer* res_cont) override;
 
 private:
 	IRenderManager& _render_mgr;

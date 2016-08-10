@@ -70,7 +70,7 @@ private:
 
 	char _flags;
 
-	void ResourceLoadedCallback(ResourceContainerBase* resource);
+	void resourceLoadedCallback(ResourceContainer* resource);
 
 	void requestResources(const Gaff::JSON& materials, IResourceManager& res_mgr);
 	void setupResources(void);

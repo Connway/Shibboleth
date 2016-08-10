@@ -20,57 +20,48 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#include "Shibboleth_LuaLoader.h"
+#pragma once
+
+#include "Shibboleth_ImageLoader.h"
 #include "Shibboleth_ResourceDefines.h"
-#include "Shibboleth_ILuaManager.h"
 #include <Shibboleth_IFileSystem.h>
 #include <Shibboleth_Utilities.h>
 #include <Shibboleth_IApp.h>
-#include <Gaff_ScopedExit.h>
-
-#ifdef PLATFORM_WINDOWS
-	#pragma warning(push)
-	#pragma warning(disable: 4100 4244 4267 4800)
-#endif
-
-#include <LuaState.h>
-
-#ifdef PLATFORM_WINDOWS
-	#pragma warning(pop)
-#endif
+#include <Gaff_Image.h>
 
 NS_SHIBBOLETH
 
-LuaLoader::LuaLoader(void)
+ImageLoader::ImageLoader(void)
 {
 }
 
-LuaLoader::~LuaLoader(void)
+ImageLoader::~ImageLoader(void)
 {
 }
 
-ResourceLoadData LuaLoader::load(const IFile* file, ResourceContainer* res_cont)
+ResourceLoadData ImageLoader::load(const IFile* file, ResourceContainer* res_cont)
 {
-	SingleDataWrapperFree<lua::State>* lua_data = SHIB_ALLOCT(SingleDataWrapperFree<lua::State>, *GetAllocator());
+	SingleDataWrapper<Gaff::Image>* image_data = SHIB_ALLOCT(SingleDataWrapper<Gaff::Image>, *GetAllocator());
+	const char* file_name = res_cont->getResourceKey().getBuffer();
 
-	if (!lua_data) {
-		GetApp().getLogManager().logMessage(LogManager::LOG_ERROR, GetApp().getLogFileName(), "ERROR - Failed to allocate memory for Lua data.\n");
+	if (!image_data) {
+		GetApp().getLogManager().logMessage(LogManager::LOG_ERROR, GetApp().getLogFileName(), "ERROR - Failed to allocate memory for image data.\n");
 		return { nullptr };
 	}
 
-	lua_data->data = GetApp().getManagerT<ILuaManager>().createNewState();
-
-	if (!lua_data->data) {
-		GetApp().getLogManager().logMessage(LogManager::LOG_ERROR, GetApp().getLogFileName(), "ERROR - Failed to create a Lua state for file '%s'.\n", res_cont->getResourceKey().getBuffer());
-		SHIB_FREET(lua_data, *GetAllocator());
+	if (!image_data->data.init()) {
+		GetApp().getLogManager().logMessage(LogManager::LOG_ERROR, GetApp().getLogFileName(), "ERROR - Failed to initialize image data structure when loading '%s'.\n", file_name);
+		SHIB_FREET(image_data, *GetAllocator());
 		return { nullptr };
 	}
 
-	// Need to copy to temp to add null-terminator
-	AString temp(file->getBuffer(), file->size());
-	lua_data->data->doString(temp.getBuffer());
+	if (!image_data->data.load(file->getBuffer(), static_cast<unsigned int>(file->size()))) {
+		GetApp().getLogManager().logMessage(LogManager::LOG_ERROR, GetApp().getLogFileName(), "ERROR - Failed to load image '%s' while processing '%s'.\n", file_name);
+		SHIB_FREET(image_data, *GetAllocator());
+		return { nullptr };
+	}
 
-	return { lua_data };
+	return { image_data };
 }
 
 NS_END

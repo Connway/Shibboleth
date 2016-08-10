@@ -61,7 +61,8 @@ bool BulletPhysicsComponent::load(const Gaff::JSON& json)
 	_phys_res = GetApp().getManagerT<IResourceManager>().requestResource(json["Physics File"].getString());
 	_mass = Gaff::Max(0.0f, static_cast<float>(json["Mass"].getNumber()));
 
-	_phys_res.getResourcePtr()->addCallback(Gaff::Bind(this, &BulletPhysicsComponent::collisionShapeLoaded));
+	auto callback = Gaff::Bind(this, &BulletPhysicsComponent::collisionShapeLoaded);
+	_phys_res.getResourcePtr()->addCallback(callback);
 
 	return true;
 }
@@ -116,7 +117,7 @@ btRigidBody* BulletPhysicsComponent::getRigidBody(void)
 	return _rigid_body;
 }
 
-void BulletPhysicsComponent::collisionShapeLoaded(ResourceContainerBase*)
+void BulletPhysicsComponent::collisionShapeLoaded(ResourceContainer*)
 {
 	if (_phys_res.getResourcePtr()->hasFailed()) {
 		// log error

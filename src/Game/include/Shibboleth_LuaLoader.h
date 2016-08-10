@@ -26,16 +26,13 @@ THE SOFTWARE.
 
 NS_SHIBBOLETH
 
-class IFileSystem;
-class LuaManager;
-
 class LuaLoader : public IResourceLoader
 {
 public:
 	LuaLoader(void);
 	~LuaLoader(void);
 
-	Gaff::IVirtualDestructor* load(const char* file_name, uint64_t, HashMap<AString, IFile*>& file_map);
+	ResourceLoadData load(const IFile* file, ResourceContainer* res_cont) override;
 
 	GAFF_NO_COPY(LuaLoader);
 	GAFF_NO_MOVE(LuaLoader);

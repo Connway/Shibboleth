@@ -74,6 +74,7 @@ private:
 	Map<Gleam::IWindow*, NuklearData> _nuklear_data;
 	nk_allocator _allocator;
 	nk_context _context;
+	bool _init = false;
 
 	void generateDrawCommands(double dt, void* frame_data);
 	void submitDrawCommands(double, void* frame_data);

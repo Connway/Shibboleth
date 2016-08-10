@@ -35,7 +35,7 @@ public:
 	ProgramBuffersCreator(void);
 	~ProgramBuffersCreator(void);
 
-	Gaff::IVirtualDestructor* load(const char*, uint64_t, HashMap<AString, IFile*>&);
+	ResourceLoadData load(const IFile* file, ResourceContainer* res_cont) override;
 
 private:
 	IRenderManager& _render_mgr;

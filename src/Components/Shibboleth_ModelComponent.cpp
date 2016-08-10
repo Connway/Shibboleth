@@ -41,27 +41,9 @@ THE SOFTWARE.
 
 NS_SHIBBOLETH
 
-// Defining enum reflection for Gleam::IBuffer here because I don't think we will ever need it outside of this file.
-SHIB_ENUM_REF_DEF_EMBEDDED(BUFFER_TYPE, Gleam::IBuffer::BUFFER_TYPE);
-SHIB_ENUM_REF_IMPL_EMBEDDED(BUFFER_TYPE, Gleam::IBuffer::BUFFER_TYPE)
-.addValue("Vertex Data", Gleam::IBuffer::VERTEX_DATA)
-.addValue("Index Data", Gleam::IBuffer::INDEX_DATA)
-.addValue("Shader Data", Gleam::IBuffer::SHADER_DATA)
-//.addValue("Structured Data", Gleam::IBuffer::STRUCTURED_DATA)
-;
-
-SHIB_ENUM_REF_DEF_EMBEDDED(MAP_TYPE, Gleam::IBuffer::MAP_TYPE);
-SHIB_ENUM_REF_IMPL_EMBEDDED(MAP_TYPE, Gleam::IBuffer::MAP_TYPE)
-.addValue("None", Gleam::IBuffer::NONE)
-.addValue("Read", Gleam::IBuffer::READ)
-.addValue("Write", Gleam::IBuffer::WRITE)
-.addValue("Read/Write", Gleam::IBuffer::READ_WRITE)
-.addValue("Write No Overwrite", Gleam::IBuffer::WRITE_NO_OVERWRITE)
-;
-
 // Helper function for making resource requests.
 template <class T>
-static void RequestResourceArray(Array<T>& res_array, IResourceManager& res_mgr, const Gaff::JSON& json, const Gaff::FunctionBinder<void, ResourceContainerBase*>& callback)
+static void RequestResourceArray(Array<T>& res_array, IResourceManager& res_mgr, const Gaff::JSON& json, Gaff::FunctionBinder<void, ResourceContainer*>& callback)
 {
 	if (!json.isNull()) {
 		res_array.resize(json.size());
@@ -91,7 +73,7 @@ ModelComponent::ModelComponent(void):
 
 ModelComponent::~ModelComponent(void)
 {
-	auto callback = Gaff::Bind(this, &ModelComponent::ResourceLoadedCallback);
+	auto callback = Gaff::Bind(this, &ModelComponent::resourceLoadedCallback);
 
 	for (auto it_md = _mesh_data.begin(); it_md != _mesh_data.end(); ++it_md) {
 		it_md->program_buffers.getResourcePtr()->removeCallback(callback);
@@ -145,7 +127,8 @@ bool ModelComponent::load(const Gaff::JSON& json)
 
 	if (model_file.isString()) {
 		_model = res_mgr.requestResource(model_file.getString());
-		_model.getResourcePtr()->addCallback(Gaff::Bind(this, &ModelComponent::ResourceLoadedCallback));
+		auto callback = Gaff::Bind(this, &ModelComponent::resourceLoadedCallback);
+		_model.getResourcePtr()->addCallback(callback);
 	}
 
 	requestResources(materials, res_mgr);
@@ -289,7 +272,7 @@ ModelData& ModelComponent::getModel(void)
 	return *_model;
 }
 
-void ModelComponent::ResourceLoadedCallback(ResourceContainerBase* resource)
+void ModelComponent::resourceLoadedCallback(ResourceContainer* resource)
 {
 	if (resource->isLoaded()) {
 		size_t new_val = AtomicIncrement(&_requests_finished);
@@ -309,7 +292,7 @@ void ModelComponent::ResourceLoadedCallback(ResourceContainerBase* resource)
 
 void ModelComponent::requestResources(const Gaff::JSON& materials, IResourceManager& res_mgr)
 {
-	auto callback = Gaff::Bind(this, &ModelComponent::ResourceLoadedCallback);
+	auto callback = Gaff::Bind(this, &ModelComponent::resourceLoadedCallback);
 	char temp[256] = { 0 };
 
 	materials.forEachInArray([&](size_t index, const Gaff::JSON& value) -> bool

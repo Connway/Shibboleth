@@ -178,7 +178,7 @@ void PackFileSystem::closeFile(IFile* file)
 	}
 }
 
-bool PackFileSystem::forEachFile(const char* directory, const Gaff::FunctionBinder<bool, const char*, IFile*>& callback)
+bool PackFileSystem::forEachFile(const char* directory, Gaff::FunctionBinder<bool, const char*, IFile*>& callback)
 {
 	size_t dir_len = strlen(directory);
 	unz_file_info file_info;

@@ -59,11 +59,12 @@ static void GraphicsLog(const char* message, Gleam::LOG_MSG_TYPE type)
 }
 
 
-DYNAMICEXPORT_C bool InitGraphics(Shibboleth::IApp&, const char* log_file_name)
+DYNAMICEXPORT_C bool InitGraphics(Shibboleth::IApp& app, const char* log_file_name)
 {
 	g_graphics_log_file = log_file_name;
 	Gleam::SetAllocator(&g_proxy_allocator);
 	Gleam::SetLogFunc(GraphicsLog);
+	Shibboleth::SetApp(app);
 	return true;
 }
 

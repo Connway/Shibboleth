@@ -83,7 +83,7 @@ private:
 	float _z_far;
 	unsigned char _render_order;
 
-	void RenderTargetCallback(ResourceContainerBase*);
+	void renderTargetCallback(ResourceContainer*);
 	void constructProjectionMatrixAndFrustum(void);
 	void updateFrustum(Object* object, uint64_t);
 

@@ -24,11 +24,9 @@ THE SOFTWARE.
 #include "Shibboleth_ResourceDefines.h"
 #include "Shibboleth_IRenderManager.h"
 #include <Shibboleth_IFileSystem.h>
-#include <Shibboleth_Utilities.h>
 #include <Shibboleth_IApp.h>
 #include <Gleam_IRenderDevice.h>
 #include <Gleam_IShader.h>
-#include <Gaff_ScopedExit.h>
 #include <Gaff_File.h>
 
 NS_SHIBBOLETH
@@ -42,26 +40,17 @@ ShaderLoader::~ShaderLoader(void)
 {
 }
 
-Gaff::IVirtualDestructor* ShaderLoader::load(const char* file_name, uint64_t user_data, HashMap<AString, IFile*>& file_map)
+ResourceLoadData ShaderLoader::load(const IFile* file, ResourceContainer* res_cont)
 {
-	GAFF_ASSERT(Gaff::File::CheckExtension(file_name, _render_mgr.getShaderExtension()) && file_map.hasElementWithKey(AString(file_name)));
-	GAFF_ASSERT(user_data < Gleam::IShader::SHADER_TYPE_SIZE);
-
-	IFile* file = file_map[AString(file_name)];
-
-	GAFF_SCOPE_EXIT([&]()
-	{
-		GetApp().getFileSystem()->closeFile(file);
-		file_map[AString(file_name)] = nullptr;
-	});
+	GAFF_ASSERT(res_cont->getUserData() < Gleam::IShader::SHADER_TYPE_SIZE);
 
 	ShaderData* shader_data = SHIB_ALLOCT(ShaderData, *GetAllocator());
 
 	if (!shader_data) {
-		return nullptr;
+		return { nullptr };
 	}
 
-	shader_data->shader_type = static_cast<Gleam::IShader::SHADER_TYPE>(user_data);
+	shader_data->shader_type = static_cast<Gleam::IShader::SHADER_TYPE>(res_cont->getUserData());
 
 	Gleam::IRenderDevice& rd = _render_mgr.getRenderDevice();
 
@@ -71,18 +60,18 @@ Gaff::IVirtualDestructor* ShaderLoader::load(const char* file_name, uint64_t use
 
 		if (!shader) {
 			SHIB_FREET(shader_data, *GetAllocator());
-			return nullptr;
+			return { nullptr };
 		}
 
 		if (!shader->initSource(rd, file->getBuffer(), file->size(), shader_data->shader_type)) {
 			SHIB_FREET(shader_data, *GetAllocator());
-			return nullptr;
+			return { nullptr };
 		}
 
 		shader_data->shaders.push(shader);
 	}
 
-	return shader_data;
+	return { shader_data };
 }
 
 NS_END

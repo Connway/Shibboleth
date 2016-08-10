@@ -26,6 +26,7 @@ THE SOFTWARE.
 #include <Gleam_ISamplerState.h>
 #include <Gleam_ITexture.h>
 #include <Gleam_IShader.h>
+#include <Gleam_IBuffer.h>
 
 NS_SHIBBOLETH
 
@@ -63,5 +64,7 @@ SHIB_ENUM_REF_DEF_EMBEDDED(Gleam_ISamplerState_Filter, Gleam::ISamplerState::FIL
 SHIB_ENUM_REF_DEF_EMBEDDED(Gleam_ISamplerState_Wrap, Gleam::ISamplerState::WRAP);
 SHIB_ENUM_REF_DEF_EMBEDDED(Gleam_ITexture_Format, Gleam::ITexture::FORMAT);
 SHIB_ENUM_REF_DEF_EMBEDDED(Gleam_IShader_Type, Gleam::IShader::SHADER_TYPE);
+SHIB_ENUM_REF_DEF_EMBEDDED(BUFFER_TYPE, Gleam::IBuffer::BUFFER_TYPE);
+SHIB_ENUM_REF_DEF_EMBEDDED(MAP_TYPE, Gleam::IBuffer::MAP_TYPE);
 
 NS_END

@@ -64,7 +64,7 @@ private:
 
 	ResourceWrapper<BulletPhysicsResource> _phys_res;
 
-	void collisionShapeLoaded(ResourceContainerBase*);
+	void collisionShapeLoaded(ResourceContainer*);
 
 	SHIB_REF_DEF(BulletPhysicsComponent);
 	REF_DEF_REQ;

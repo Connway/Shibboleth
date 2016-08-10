@@ -21,19 +21,61 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Shibboleth_ShaderProgramLoader.h"
-#include "Shibboleth_IResourceManager.h"
+#include "Shibboleth_ResourceDefines.h"
+#include <Shibboleth_IResourceManager.h>
 #include "Shibboleth_IRenderManager.h"
 #include <Shibboleth_ISchemaManager.h>
 #include <Shibboleth_IFileSystem.h>
 #include <Shibboleth_Utilities.h>
-#include <Shibboleth_IApp.h>
 #include <Gleam_IRenderDevice.h>
 #include <Gleam_IRasterState.h>
 #include <Gleam_IProgram.h>
-#include <Gaff_ScopedExit.h>
 #include <Gaff_JSON.h>
 
 NS_SHIBBOLETH
+
+class ShaderLoadedFunctor : public ResourceLoaderFunctorBase
+{
+public:
+	ShaderLoadedFunctor(
+		ResourceContainer* res_cont, ProgramData* program_data,
+		ShaderProgramLoader* loader
+	):
+		_program_data(program_data), _loader(loader),
+		_res_cont(res_cont)
+	{
+	}
+
+	~ShaderLoadedFunctor(void) {}
+
+	void operator()(ResourceContainer* res_cont)
+	{
+		if (res_cont->isLoaded()) {
+			ShaderData* shader_data = res_cont->getResourcePtr<ShaderData>();
+			_program_data->shaders[shader_data->shader_type] = shader_data;
+
+			// All the resources haven't loaded yet.
+			if (!subResourceLoaded(_res_cont)) {
+				return;
+			}
+
+			if (!_loader->createPrograms(_program_data)) {
+				failedToLoadResource(_res_cont);
+				return;
+			}
+
+			resourceLoadSuccessful(_res_cont);
+
+		} else if (!_res_cont->hasFailed()) {
+			failedToLoadResource(_res_cont);
+		}
+	}
+
+private:
+	ProgramData* _program_data;
+	ShaderProgramLoader* _loader;
+	ResourceContainer* _res_cont;
+};
 
 ShaderProgramLoader::ShaderProgramLoader(IResourceManager& res_mgr, ISchemaManager& schema_mgr, IRenderManager& render_mgr):
 	_res_mgr(res_mgr), _schema_mgr(schema_mgr), _render_mgr(render_mgr)
@@ -44,29 +86,16 @@ ShaderProgramLoader::~ShaderProgramLoader(void)
 {
 }
 
-Gaff::IVirtualDestructor* ShaderProgramLoader::load(const char* file_name, uint64_t, HashMap<AString, IFile*>& file_map)
+ResourceLoadData ShaderProgramLoader::load(const IFile* file, ResourceContainer* res_cont)
 {
-	GAFF_ASSERT(file_map.hasElementWithKey(AString(file_name)));
-
-	GAFF_SCOPE_EXIT([&]()
-	{
-		for (auto it = file_map.begin(); it != file_map.end(); ++it) {
-			if (*it) {
-				GetApp().getFileSystem()->closeFile(*it);
-			}
-		}
-	});
-
-	IFile* file = file_map[AString(file_name)];
-
 	Gaff::JSON json;
 
 	if (!json.parse(file->getBuffer())) {
-		return nullptr;
+		return { nullptr };
 	}
 
 	if (!json.validate(_schema_mgr.getSchema("Material.schema"))) {
-		return nullptr;
+		return { nullptr };
 	}
 
 	Gaff::JSON vertex = json["Vertex"];
@@ -76,73 +105,60 @@ Gaff::IVirtualDestructor* ShaderProgramLoader::load(const char* file_name, uint6
 	Gaff::JSON domain = json["Domain"];
 	Gaff::JSON render_pass = json["Render Pass"];
 
-	GAFF_ASSERT(vertex.isString() || pixel.isString() || hull.isString() ||
-			geometry.isString() || domain.isString());
+	GAFF_ASSERT(
+		vertex.isString() || pixel.isString() || hull.isString() ||
+		geometry.isString() || domain.isString()
+	);
 
 	GAFF_ASSERT(render_pass.isString());
 	
 	ProgramData* program_data = SHIB_ALLOCT(ProgramData, *GetAllocator());
 
 	if (!program_data) {
-		return nullptr;
+		return { nullptr };
 	}
 
 	program_data->render_pass = GetEnumRefDef<RenderPasses>().getValue(render_pass.getString());
 
-	if (vertex.isString() && !loadShader(program_data, vertex.getString(), Gleam::IShader::SHADER_VERTEX, file_map)) {
-		// log error
-		SHIB_FREET(program_data, *GetAllocator());
-		return nullptr;
-	}
-
-	if (pixel.isString() && !loadShader(program_data, pixel.getString(), Gleam::IShader::SHADER_PIXEL, file_map)) {
-		// log error
-		SHIB_FREET(program_data, *GetAllocator());
-		return nullptr;
-	}
-
-	if (hull.isString() && !loadShader(program_data, hull.getString(), Gleam::IShader::SHADER_HULL, file_map)) {
-		// log error
-		SHIB_FREET(program_data, *GetAllocator());
-		return nullptr;
-	}
-
-	if (geometry.isString() && !loadShader(program_data, geometry.getString(), Gleam::IShader::SHADER_GEOMETRY, file_map)) {
-		// log error
-		SHIB_FREET(program_data, *GetAllocator());
-		return nullptr;
-	}
-
-	if (domain.isString() && !loadShader(program_data, domain.getString(), Gleam::IShader::SHADER_DOMAIN, file_map)) {
-		// log error
-		SHIB_FREET(program_data, *GetAllocator());
-		return nullptr;
-	}
-
-	if (!createPrograms(program_data)) {
-		SHIB_FREET(program_data, *GetAllocator());
-		return nullptr;
-	}
-
 	if (!createRasterStates(program_data, json)) {
 		SHIB_FREET(program_data, *GetAllocator());
-		return nullptr;
+		return { nullptr };
 	}
 
-	return program_data;
-}
+	auto callback = Gaff::Bind<ShaderLoadedFunctor, void, ResourceContainer*>(ShaderLoadedFunctor(res_cont, program_data, this));
+	ResourceLoadData res_load_data { program_data };
+	res_load_data.sub_res_data.reserve(5);
 
-bool ShaderProgramLoader::loadShader(ProgramData* data, const char* file_name, Gleam::IShader::SHADER_TYPE shader_type, HashMap<AString, IFile*>& file_map)
-{
-	AString fname = AString(file_name) + _render_mgr.getShaderExtension();
-	data->shaders[shader_type] = _res_mgr.loadResourceImmediately(fname.getBuffer(), shader_type, file_map);
+	memset(program_data->shaders, 0, sizeof(program_data->shaders));
 
-	// Loop until loaded
-	while (!data->shaders[shader_type].getResourcePtr()->isLoaded() &&
-			!data->shaders[shader_type].getResourcePtr()->hasFailed()) {
+	const char* shader_ext = +_render_mgr.getShaderExtension();
+
+	if (vertex.isString()) {
+		SubResourceData sub_data = { AString(vertex.getString()) + shader_ext, Gleam::IShader::SHADER_VERTEX, callback };
+		res_load_data.sub_res_data.emplacePush(sub_data);
 	}
 
-	return !data->shaders[shader_type].getResourcePtr()->hasFailed();
+	if (pixel.isString()) {
+		SubResourceData sub_data = { AString(pixel.getString()) + shader_ext, Gleam::IShader::SHADER_PIXEL, callback };
+		res_load_data.sub_res_data.emplacePush(sub_data);
+	}
+
+	if (hull.isString()) {
+		SubResourceData sub_data = { AString(hull.getString()) + shader_ext, Gleam::IShader::SHADER_HULL, callback };
+		res_load_data.sub_res_data.emplacePush(sub_data);
+	}
+
+	if (geometry.isString()) {
+		SubResourceData sub_data = { AString(geometry.getString()) + shader_ext, Gleam::IShader::SHADER_GEOMETRY, callback };
+		res_load_data.sub_res_data.emplacePush(sub_data);
+	}
+
+	if (domain.isString()) {
+		SubResourceData sub_data = { AString(domain.getString()) + shader_ext, Gleam::IShader::SHADER_DOMAIN, callback };
+		res_load_data.sub_res_data.emplacePush(sub_data);
+	}
+
+	return res_load_data;
 }
 
 bool ShaderProgramLoader::createPrograms(ProgramData* data)
@@ -165,27 +181,27 @@ bool ShaderProgramLoader::createPrograms(ProgramData* data)
 		}
 
 		if (data->shaders[Gleam::IShader::SHADER_VERTEX]) {
-			ShaderData* vert_shaders = data->shaders[Gleam::IShader::SHADER_VERTEX].getDataPtr();
+			ShaderData* vert_shaders = data->shaders[Gleam::IShader::SHADER_VERTEX];
 			program->attach(vert_shaders->shaders[i].get());
 		}
 
 		if (data->shaders[Gleam::IShader::SHADER_PIXEL]) {
-			ShaderData* pixel_shaders = data->shaders[Gleam::IShader::SHADER_PIXEL].getDataPtr();
+			ShaderData* pixel_shaders = data->shaders[Gleam::IShader::SHADER_PIXEL];
 			program->attach(pixel_shaders->shaders[i].get());
 		}
 
 		if (data->shaders[Gleam::IShader::SHADER_HULL]) {
-			ShaderData* hull_shaders = data->shaders[Gleam::IShader::SHADER_HULL].getDataPtr();
+			ShaderData* hull_shaders = data->shaders[Gleam::IShader::SHADER_HULL];
 			program->attach(hull_shaders->shaders[i].get());
 		}
 
 		if (data->shaders[Gleam::IShader::SHADER_GEOMETRY]) {
-			ShaderData* geo_shaders = data->shaders[Gleam::IShader::SHADER_GEOMETRY].getDataPtr();
+			ShaderData* geo_shaders = data->shaders[Gleam::IShader::SHADER_GEOMETRY];
 			program->attach(geo_shaders->shaders[i].get());
 		}
 
 		if (data->shaders[Gleam::IShader::SHADER_DOMAIN]) {
-			ShaderData* domain_shaders = data->shaders[Gleam::IShader::SHADER_DOMAIN].getDataPtr();
+			ShaderData* domain_shaders = data->shaders[Gleam::IShader::SHADER_DOMAIN];
 			program->attach(domain_shaders->shaders[i].get());
 		}
 

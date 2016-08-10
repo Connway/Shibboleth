@@ -26,8 +26,9 @@ THE SOFTWARE.
 #include <Shibboleth_Array2D.h>
 #include <Gaff_IVirtualDestructor.h>
 #include <Gaff_SceneImporter.h>
-#include <Esprit_Skeleton.h>
 #include <Gleam_AABB_CPU.h>
+#include <Gleam_IModel.h>
+#include <Esprit_Skeleton.h>
 
 NS_SHIBBOLETH
 
@@ -55,7 +56,6 @@ struct ModelData : public Gaff::IVirtualDestructor
 	Array<Gleam::AABBCPU> aabbs; // Was [LOD][Mesh], currently just [Mesh]. Debating if it's working having AABBs per LOD.
 	Gleam::AABBCPU combined_aabb;
 
-	ResourceWrapper<HoldingData> holding_data;
 	Esprit::Skeleton skeleton;
 };
 

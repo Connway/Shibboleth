@@ -85,7 +85,7 @@ void CachedFunction<ReturnType, Args...>::moveSetArguments(Args&&... args)
 template <class ReturnType, class... Args>
 void CachedFunction<ReturnType, Args...>::setArguments(Args&&... args)
 {
-	_arguments.set(args...);
+	_arguments.set(std::forward(args)...);
 }
 
 template <class ReturnType, class... Args>
@@ -117,15 +117,16 @@ void CachedFunction<ReturnType, Args...>::setArg(typename std::tuple_element< in
 }
 
 template <class ReturnType, class... Args>
-ReturnType CachedFunction<ReturnType, Args...>::call(void) const
+ReturnType CachedFunction<ReturnType, Args...>::call(void)
 {
 	return FunctionTupleUnwrapper<std::tuple<Args...>::_Mysize>::Call(_function.getInterface(), _arguments);
 }
 
 template <class ReturnType, class... Args>
-ReturnType CachedFunction<ReturnType, Args...>::call(void)
+void CachedFunction<ReturnType, Args...>::copy(char* buffer) const
 {
-	return FunctionTupleUnwrapper<std::tuple<Args...>::_Mysize>::Call(_function.getInterface(), _arguments);
+	Func* rhs = reinterpret_cast<Func*>(buffer);
+	new (rhs) Func(*this);
 }
 
 template <class ReturnType, class... Args>

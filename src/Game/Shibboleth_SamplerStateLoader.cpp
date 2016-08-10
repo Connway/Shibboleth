@@ -43,43 +43,34 @@ SamplerStateLoader::~SamplerStateLoader(void)
 {
 }
 
-Gaff::IVirtualDestructor* SamplerStateLoader::load(const char* file_name, uint64_t, HashMap<AString, IFile*>& file_map)
+ResourceLoadData SamplerStateLoader::load(const IFile* file, ResourceContainer* res_cont)
 {
-	GAFF_ASSERT(file_map.hasElementWithKey(AString(file_name)));
-
-	IFile* file = file_map[AString(file_name)];
-
-	GAFF_SCOPE_EXIT([&]()
-	{
-		GetApp().getFileSystem()->closeFile(file);
-		file_map[AString(file_name)] = nullptr;
-	});
-
+	const char* file_name = res_cont->getResourceKey().getBuffer();
 	Gaff::JSON json;
 	
 	if (!json.parse(file->getBuffer())) {
 		GetApp().getLogManager().logMessage(LogManager::LOG_ERROR, GetApp().getLogFileName(), "ERROR - Failed to parse file '%s'.\n", file_name);
-		return nullptr;
+		return { nullptr };
 	}
 
 	if (!json.isObject()) {
 		GetApp().getLogManager().logMessage(LogManager::LOG_ERROR, GetApp().getLogFileName(), "ERROR - Sampler State file '%s' is malformed.\n", file_name);
-		return nullptr;
+		return { nullptr };
 	}
 
 	if (!json["filter"].isString()) {
 		GetApp().getLogManager().logMessage(LogManager::LOG_ERROR, GetApp().getLogFileName(), "ERROR - Sampler State file '%s' is malformed. Value at 'filter' is not a string.\n", file_name);
-		return nullptr;
+		return { nullptr };
 	}
 
 	if (!json["wrap_u"].isString() || !json["wrap_v"].isString() || !json["wrap_w"].isString()) {
 		GetApp().getLogManager().logMessage(LogManager::LOG_ERROR, GetApp().getLogFileName(), "ERROR - Sampler State file '%s' is malformed. Value at 'wrap_u/v/w' is not a string.\n", file_name);
-		return nullptr;
+		return { nullptr };
 	}
 
 	if (!json["min_lod"].isDouble() || !json["max_lod"].isDouble() || !json["lod_bias"].isDouble()) {
 		GetApp().getLogManager().logMessage(LogManager::LOG_ERROR, GetApp().getLogFileName(), "ERROR - Sampler State file '%s' is malformed. Value at 'min/max_lod' and/or 'lod_bias' is not a float.\n", file_name);
-		return nullptr;
+		return { nullptr };
 	}
 
 	Gleam::ISamplerState::SamplerSettings ss = {
@@ -96,7 +87,7 @@ Gaff::IVirtualDestructor* SamplerStateLoader::load(const char* file_name, uint64
 
 	if (ss.filter == Gleam::ISamplerState::FILTER_ANISOTROPIC && !json["max_anisotropy"].isInt()) {
 		GetApp().getLogManager().logMessage(LogManager::LOG_ERROR, GetApp().getLogFileName(), "ERROR - Sampler State file '%s' is malformed. Value at 'max_anisotropy' is not an integer.\n", file_name);
-		return nullptr;
+		return { nullptr };
 	}
 
 	if ((ss.wrap_u == Gleam::ISamplerState::WRAP_BORDER || ss.wrap_v == Gleam::ISamplerState::WRAP_BORDER ||
@@ -104,7 +95,7 @@ Gaff::IVirtualDestructor* SamplerStateLoader::load(const char* file_name, uint64
 		!json["border_b"].isDouble() || !json["border_a"].isDouble())) {
 
 		GetApp().getLogManager().logMessage(LogManager::LOG_ERROR, GetApp().getLogFileName(), "ERROR - Sampler State file '%s' is malformed. A wrap mode is defined as 'BORDER' and value 'border_r/g/b/a' is not a float.\n", file_name);
-		return nullptr;
+		return { nullptr };
 	}
 
 	if (ss.filter == Gleam::ISamplerState::FILTER_ANISOTROPIC) {
@@ -124,7 +115,7 @@ Gaff::IVirtualDestructor* SamplerStateLoader::load(const char* file_name, uint64
 
 	if (!sampler_data) {
 		GetApp().getLogManager().logMessage(LogManager::LOG_ERROR, GetApp().getLogFileName(), "ERROR - Failed to allocate Sampler State data structure.\n", file_name);
-		return nullptr;
+		return { nullptr };
 	}
 
 	Gleam::IRenderDevice& rd = _render_mgr.getRenderDevice();
@@ -138,19 +129,19 @@ Gaff::IVirtualDestructor* SamplerStateLoader::load(const char* file_name, uint64
 		if (!sampler) {
 			GetApp().getLogManager().logMessage(LogManager::LOG_ERROR, GetApp().getLogFileName(), "ERROR - Failed to allocate Sampler State for sampler '%s'.\n", file_name);
 			SHIB_FREET(sampler_data, *GetAllocator());
-			return nullptr;
+			return { nullptr };
 		}
 
 		if (!sampler->init(rd, ss)) {
 			GetApp().getLogManager().logMessage(LogManager::LOG_ERROR, GetApp().getLogFileName(), "ERROR - Failed to initialize Sampler State for sampler '%s'.\n", file_name);
 			SHIB_FREET(sampler_data, *GetAllocator());
-			return nullptr;
+			return { nullptr };
 		}
 
 		sampler_data->data[i] = std::move(sampler);
 	}
 
-	return sampler_data;
+	return { sampler_data };
 }
 
 NS_END

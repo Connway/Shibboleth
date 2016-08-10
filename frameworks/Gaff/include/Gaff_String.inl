@@ -776,3 +776,9 @@ size_t FindLastOf(const T* string, size_t size, T character)
 
 	return SIZE_T_FAIL;
 }
+
+template <class T>
+size_t FindLastOf(const T* string, T character)
+{
+	return FindLastOf(string, length(string), character);
+}

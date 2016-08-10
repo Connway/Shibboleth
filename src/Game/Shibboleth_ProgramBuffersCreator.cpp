@@ -40,7 +40,7 @@ ProgramBuffersCreator::~ProgramBuffersCreator(void)
 {
 }
 
-Gaff::IVirtualDestructor* ProgramBuffersCreator::load(const char*, uint64_t, HashMap<AString, IFile*>&)
+ResourceLoadData ProgramBuffersCreator::load(const IFile*, ResourceContainer*)
 {
 	Gleam::IRenderDevice& rd = _render_mgr.getRenderDevice();
 
@@ -48,7 +48,7 @@ Gaff::IVirtualDestructor* ProgramBuffersCreator::load(const char*, uint64_t, Has
 
 	if (!data) {
 		// log error
-		return nullptr;
+		return { nullptr };
 	}
 
 	data->data.reserve(rd.getNumDevices());
@@ -59,13 +59,13 @@ Gaff::IVirtualDestructor* ProgramBuffersCreator::load(const char*, uint64_t, Has
 		if (!program_buffers) {
 			// log error
 			SHIB_FREET(data, *GetAllocator());
-			return nullptr;
+			return { nullptr };
 		}
 
 		data->data.push(program_buffers);
 	}
 
-	return data;
+	return { data };
 }
 
 NS_END

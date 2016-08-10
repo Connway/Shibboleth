@@ -126,4 +126,19 @@ SHIB_ENUM_REF_IMPL_EMBEDDED(Gleam_IShader_Type, Gleam::IShader::SHADER_TYPE)
 .addValue("Hull", Gleam::IShader::SHADER_HULL)
 ;
 
+SHIB_ENUM_REF_IMPL_EMBEDDED(BUFFER_TYPE, Gleam::IBuffer::BUFFER_TYPE)
+.addValue("Vertex Data", Gleam::IBuffer::VERTEX_DATA)
+.addValue("Index Data", Gleam::IBuffer::INDEX_DATA)
+.addValue("Shader Data", Gleam::IBuffer::SHADER_DATA)
+.addValue("Structured Data", Gleam::IBuffer::STRUCTURED_DATA)
+;
+
+SHIB_ENUM_REF_IMPL_EMBEDDED(MAP_TYPE, Gleam::IBuffer::MAP_TYPE)
+.addValue("None", Gleam::IBuffer::NONE)
+.addValue("Read", Gleam::IBuffer::READ)
+.addValue("Write", Gleam::IBuffer::WRITE)
+.addValue("Read/Write", Gleam::IBuffer::READ_WRITE)
+.addValue("Write No Overwrite", Gleam::IBuffer::WRITE_NO_OVERWRITE)
+;
+
 NS_END

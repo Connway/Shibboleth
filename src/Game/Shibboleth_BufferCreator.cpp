@@ -39,16 +39,16 @@ BufferCreator::~BufferCreator(void)
 {
 }
 
-Gaff::IVirtualDestructor* BufferCreator::load(const char*, uint64_t buffer_settings, HashMap<AString, IFile*>&)
+ResourceLoadData BufferCreator::load(const IFile*, ResourceContainer* res_cont)
 {
-	Gleam::IBuffer::BufferSettings* bs = reinterpret_cast<Gleam::IBuffer::BufferSettings*>(buffer_settings);
+	Gleam::IBuffer::BufferSettings* bs = reinterpret_cast<Gleam::IBuffer::BufferSettings*>(res_cont->getUserData());
 	Gleam::IRenderDevice& rd = _render_mgr.getRenderDevice();
 
 	BufferData* data = SHIB_ALLOCT(BufferData, *GetAllocator());
 
 	if (!data) {
 		// log error
-		return nullptr;
+		return { nullptr };
 	}
 
 	data->data.reserve(rd.getNumDevices());
@@ -60,19 +60,19 @@ Gaff::IVirtualDestructor* BufferCreator::load(const char*, uint64_t buffer_setti
 		if (!buffer) {
 			// log error
 			SHIB_FREET(data, *GetAllocator());
-			return nullptr;
+			return { nullptr };
 		}
 
 		if (!buffer->init(rd, *bs)) {
 			// log error
 			SHIB_FREET(data, *GetAllocator());
-			return nullptr;
+			return { nullptr };
 		}
 
 		data->data.push(buffer);
 	}
 
-	return data;
+	return { data };
 }
 
 NS_END

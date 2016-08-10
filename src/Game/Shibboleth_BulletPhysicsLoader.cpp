@@ -24,6 +24,7 @@ THE SOFTWARE.
 
 #include "Shibboleth_PhysicsLoader.h"
 #include "Shibboleth_PhysicsResource.h"
+#include <Shibboleth_IResourceManager.h>
 #include <Shibboleth_ISchemaManager.h>
 #include <Shibboleth_IFileSystem.h>
 #include <Shibboleth_Utilities.h>
@@ -269,32 +270,27 @@ PhysicsLoader::~PhysicsLoader(void)
 {
 }
 
-Gaff::IVirtualDestructor* PhysicsLoader::load(const char* file_name, uint64_t, HashMap<AString, IFile*>& file_map)
+ResourceLoadData PhysicsLoader::load(const IFile* file, ResourceContainer* res_cont)
 {
-	GAFF_ASSERT(file_map.hasElementWithKey(AString(file_name)));
-	IFile*& file = file_map[AString(file_name)];
-
+	const char* file_name = res_cont->getResourceKey().getBuffer();
 	Gaff::JSON shape_info;
 	bool success = shape_info.parse(file->getBuffer());
 
-	GetApp().getFileSystem()->closeFile(file);
-	file = nullptr;
-
 	if (!success) {
 		GetApp().getLogManager().logMessage(LogManager::LOG_ERROR, GetApp().getLogFileName(), "ERROR - Failed to parse file '%s'.\n", file_name);
-		return nullptr;
+		return { nullptr };
 	}
 
 	PhysicsShapeType shape_type = ValidateSchema(shape_info, file_name);
 
 	if (shape_type == PST_COUNT) {
-		return nullptr;
+		return { nullptr };
 	}
 
 	BulletPhysicsResource* phys_resource = SHIB_ALLOCT(BulletPhysicsResource, g_physics_allocator);
 	phys_resource->collision_shape = g_shape_creators[shape_type](shape_info);
 
-	return phys_resource;
+	return { phys_resource };
 }
 
 NS_END
