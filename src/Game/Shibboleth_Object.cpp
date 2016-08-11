@@ -525,8 +525,8 @@ bool Object::createComponents(const Gaff::JSON& json)
 void Object::markDirty(void)
 {
 	if (!isDirty()) {
-		_obj_mgr.addDirtyObject(this);
 		Gaff::SetBits<uint8_t>(_flags, OBJ_DIRTY);
+		_obj_mgr.addDirtyObject(this);
 	}
 }
 

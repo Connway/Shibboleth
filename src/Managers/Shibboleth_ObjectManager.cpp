@@ -165,6 +165,7 @@ Object* ObjectManager::findObject(uint32_t name_hash)
 void ObjectManager::addDirtyObject(Object* object)
 {
 	Gaff::ScopedLock<Gaff::SpinLock> scoped_lock(_dirty_objects_lock);
+	GAFF_ASSERT(_dirty_objects.linearSearch(object) == _dirty_objects.end());
 	_dirty_objects.emplacePush(object);
 }
 

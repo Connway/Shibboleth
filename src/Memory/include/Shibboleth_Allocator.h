@@ -24,6 +24,7 @@ THE SOFTWARE.
 
 #include "Shibboleth_IAllocator.h"
 #include <Gaff_StaticArray.h>
+#include <Gaff_SpinLock.h>
 
 #define NUM_TAG_POOLS 16
 #define POOL_NAME_SIZE 32
@@ -64,10 +65,12 @@ private:
 		char pool_name[POOL_NAME_SIZE];
 	};
 
+	AllocationHeader* _list_head;
 	size_t _alignment;
 
 	MemoryPoolInfo _tagged_pools[NUM_TAG_POOLS + 1];
 	Gaff::StaticArray<unsigned int, NUM_TAG_POOLS> _tag_ids;
+	Gaff::SpinLock _alloc_lock;
 	volatile unsigned int _next_tag;
 
 	void writeAllocationLog(void) const;

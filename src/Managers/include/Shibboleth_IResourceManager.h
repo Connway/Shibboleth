@@ -204,8 +204,8 @@ public:
 	virtual void registerResourceLoader(IResourceLoader* res_loader, const Array<AString>& resource_types, unsigned int thread_pool = 0) = 0;
 	virtual void registerResourceLoader(IResourceLoader* res_loader, const char* resource_type, unsigned int thread_pool = 0) = 0;
 
-	virtual ResourcePtr requestResource(const char* resource_type, const char* instance_name, uint64_t user_data = 0, ResourceContainer* parent_resource = nullptr) = 0;
-	virtual ResourcePtr requestResource(const char* filename, uint64_t user_data = 0, ResourceContainer* parent_resource = nullptr) = 0;
+	virtual ResourcePtr requestResource(const char* resource_type, const char* instance_name, uint64_t user_data = 0) = 0;
+	virtual ResourcePtr requestResource(const char* filename, uint64_t user_data = 0) = 0;
 
 	virtual void addRequestAddedCallback(const Gaff::FunctionBinder<void, ResourcePtr&>& callback) = 0;
 	virtual void removeRequestAddedCallback(const Gaff::FunctionBinder<void, ResourcePtr&>& callback) = 0;

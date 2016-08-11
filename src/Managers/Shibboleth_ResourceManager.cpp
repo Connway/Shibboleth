@@ -34,7 +34,6 @@ struct ResourceData
 {
 	IResourceLoader* res_loader;
 	ResourcePtr res_ptr;
-	ResourcePtr parent_res_ptr;
 	unsigned int job_pool;
 	IFile* file;
 	IResourceManager* res_mgr;
@@ -44,7 +43,6 @@ void ResourceLoadingJob(void* data)
 {
 	ResourceData* res_data = reinterpret_cast<ResourceData*>(data);
 	ResourceContainer* rc = res_data->res_ptr.get();
-	IFileSystem* fs = GetApp().getFileSystem();
 
 	rc->_res_state = ResourceContainer::RS_PENDING;
 
@@ -58,7 +56,8 @@ void ResourceLoadingJob(void* data)
 		rc->_resource = load_data.data;
 
 		for (auto it = load_data.sub_res_data.begin(); it != load_data.sub_res_data.end(); ++it) {
-			ResourcePtr res_ptr = res_data->res_mgr->requestResource(it->file_name.getBuffer(), it->user_data, rc);
+			ResourcePtr res_ptr = res_data->res_mgr->requestResource(it->file_name.getBuffer(), it->user_data);
+			rc->_sub_resources.emplacePush(res_ptr);
 			res_ptr->addCallback(it->callback);
 		}
 
@@ -69,6 +68,7 @@ void ResourceLoadingJob(void* data)
 	}
 
 	if (res_data->file) {
+		IFileSystem* fs = GetApp().getFileSystem();
 		fs->closeFile(res_data->file);
 	}
 
@@ -142,10 +142,9 @@ void ResourceManager::registerResourceLoader(IResourceLoader* res_loader, const 
 	_resource_loaders[resource_type] = loader_data;
 }
 
-ResourcePtr ResourceManager::requestResource(const char* resource_type, const char* instance_name, uint64_t user_data, ResourceContainer* parent_resource)
+ResourcePtr ResourceManager::requestResource(const char* resource_type, const char* instance_name, uint64_t user_data)
 {
 	GAFF_ASSERT(resource_type && strlen(resource_type) && instance_name && strlen(instance_name));
-
 	AHashString res_key(instance_name);
 
 	Gaff::ScopedLock<Gaff::SpinLock> lock(_res_cache_lock);
@@ -156,12 +155,9 @@ ResourcePtr ResourceManager::requestResource(const char* resource_type, const ch
 		// so make a load request.
 		GAFF_ASSERT(_resource_loaders.indexOf(resource_type) != SIZE_T_FAIL);
 
-		ResourceContainer* res_cont = SHIB_ALLOC_GLOBAL_CAST(ResourceContainer*, sizeof(ResourceContainer), *GetAllocator());
-		new (res_cont) ResourceContainer(res_key, user_data, this);
-
-		_resource_cache[res_key] = res_cont;
-
+		ResourceContainer* res_cont = SHIB_ALLOCT(ResourceContainer, *GetAllocator(), res_key, user_data, this);
 		ResourcePtr res_ptr(res_cont);
+		_resource_cache[res_key] = res_cont;
 
 		for (auto& callback : _request_added_callbacks) {
 			callback(res_ptr);
@@ -173,16 +169,9 @@ ResourcePtr ResourceManager::requestResource(const char* resource_type, const ch
 		ResourceData* res_data = SHIB_ALLOCT(ResourceData, *GetAllocator());
 		res_data->res_loader = loader_data.res_loader.get();
 		res_data->res_ptr = res_ptr;
-		res_data->parent_res_ptr = parent_resource;
 		res_data->job_pool = loader_data.job_pool;
 		res_data->file = nullptr;
 		res_data->res_mgr = this;
-
-		if (parent_resource) {
-			parent_resource->_sub_resources.emplacePush(res_ptr);
-		}
-
-		_resource_cache[res_key] = res_cont;
 
 		Gaff::JobData job_data(&ResourceLoadingJob, res_data);
 		GetApp().getJobPool().addJobs(&job_data, 1, nullptr, loader_data.job_pool);
@@ -195,7 +184,7 @@ ResourcePtr ResourceManager::requestResource(const char* resource_type, const ch
 	return ResourcePtr(it.getValue());
 }
 
-ResourcePtr ResourceManager::requestResource(const char* filename, uint64_t user_data, ResourceContainer* parent_resource)
+ResourcePtr ResourceManager::requestResource(const char* filename, uint64_t user_data)
 {
 	GAFF_ASSERT(filename && strlen(filename));
 	AHashString res_key(filename);
@@ -209,10 +198,9 @@ ResourcePtr ResourceManager::requestResource(const char* filename, uint64_t user
 		AString extension = res_key.getString().getExtension('.');
 		GAFF_ASSERT(extension.size() && _resource_loaders.indexOf(extension) != SIZE_T_FAIL);
 
-		ResourceContainer* res_cont = SHIB_ALLOC_GLOBAL_CAST(ResourceContainer*, sizeof(ResourceContainer), *GetAllocator());
-		new (res_cont) ResourceContainer(res_key, user_data, this);
-
+		ResourceContainer* res_cont = SHIB_ALLOCT(ResourceContainer, *GetAllocator(), res_key, user_data, this);
 		ResourcePtr res_ptr(res_cont);
+		_resource_cache[res_key] = res_cont;
 
 		for (auto& callback : _request_added_callbacks) {
 			callback(res_ptr);
@@ -224,16 +212,9 @@ ResourcePtr ResourceManager::requestResource(const char* filename, uint64_t user
 		ResourceData* res_data = SHIB_ALLOCT(ResourceData, *GetAllocator());
 		res_data->res_loader = loader_data.res_loader.get();
 		res_data->res_ptr = res_ptr;
-		res_data->parent_res_ptr = parent_resource;
 		res_data->job_pool = loader_data.job_pool;
 		res_data->file = nullptr;
 		res_data->res_mgr = this;
-
-		if (parent_resource) {
-			parent_resource->_sub_resources.emplacePush(res_ptr);
-		}
-
-		_resource_cache[res_key] = res_cont;
 
 		Gaff::JobData job_data(&ResourceReadingJob, res_data);
 		GetApp().getJobPool().addJobs(&job_data, 1, nullptr, TPT_IO);

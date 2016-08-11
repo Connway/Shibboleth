@@ -30,7 +30,6 @@ THE SOFTWARE.
 
 #include <Gleam_ISamplerState.h>
 #include <Gleam_IRenderDevice.h>
-#include <Gaff_ScopedExit.h>
 
 NS_SHIBBOLETH
 
@@ -47,7 +46,7 @@ ResourceLoadData SamplerStateLoader::load(const IFile* file, ResourceContainer* 
 {
 	const char* file_name = res_cont->getResourceKey().getBuffer();
 	Gaff::JSON json;
-	
+
 	if (!json.parse(file->getBuffer())) {
 		GetApp().getLogManager().logMessage(LogManager::LOG_ERROR, GetApp().getLogFileName(), "ERROR - Failed to parse file '%s'.\n", file_name);
 		return { nullptr };
