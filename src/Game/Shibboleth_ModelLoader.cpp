@@ -30,7 +30,6 @@ THE SOFTWARE.
 #include <Gleam_ILayout.h>
 #include <Gleam_IModel.h>
 #include <Gleam_IMesh.h>
-#include <Gaff_ScopedExit.h>
 #include <Gaff_JSON.h>
 
 NS_SHIBBOLETH
@@ -128,7 +127,7 @@ ModelLoader::~ModelLoader(void)
 ResourceLoadData ModelLoader::load(const IFile* file, ResourceContainer* res_cont)
 {
 	Gaff::JSON json;
-	
+
 	if (!json.parse(file->getBuffer())) {
 		// log error
 		return { nullptr };

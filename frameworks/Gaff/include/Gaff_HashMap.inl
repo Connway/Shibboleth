@@ -71,7 +71,7 @@ const typename HashMap<Key, Value, Allocator, HashType>::Iterator& HashMap<Key, 
 	while (_slot != _rend) {
 		--_slot;
 
-		if (_slot->occupied) {
+		if (_slot == _rend || _slot->occupied) {
 			break;
 		}
 	}
@@ -85,7 +85,7 @@ const typename HashMap<Key, Value, Allocator, HashType>::Iterator& HashMap<Key, 
 	while (_slot != _end) {
 		++_slot;
 
-		if (_slot->occupied) {
+		if (_slot == _end || _slot->occupied) {
 			break;
 		}
 	}

@@ -120,8 +120,8 @@ public:
 	void registerResourceLoader(IResourceLoader* res_loader, const Array<AString>& resource_types, unsigned int thread_pool = 0) override;
 	void registerResourceLoader(IResourceLoader* res_loader, const char* resource_type, unsigned int thread_pool = 0) override;
 
-	ResourcePtr requestResource(const char* resource_type, const char* instance_name, uint64_t user_data = 0, ResourceContainer* parent_resource = nullptr) override;
-	ResourcePtr requestResource(const char* filename, uint64_t user_data = 0, ResourceContainer* parent_resource = nullptr) override;
+	ResourcePtr requestResource(const char* resource_type, const char* instance_name, uint64_t user_data = 0) override;
+	ResourcePtr requestResource(const char* filename, uint64_t user_data = 0) override;
 
 	void addRequestAddedCallback(const Gaff::FunctionBinder<void, ResourcePtr&>& callback) override;
 	void removeRequestAddedCallback(const Gaff::FunctionBinder<void, ResourcePtr&>& callback) override;
@@ -133,12 +133,10 @@ private:
 		unsigned int job_pool;
 	};
 
+	Gaff::SpinLock _res_cache_lock;
 	HashMap<AHashString, LoaderData> _resource_loaders;
 	HashMap<AHashString, ResourceContainer*> _resource_cache;
 	Array< Gaff::FunctionBinder<void, ResourcePtr&> > _request_added_callbacks;
-	//IApp& _app;
-
-	Gaff::SpinLock _res_cache_lock;
 
 	void handleZeroRef(const AHashString& res_key) override;
 

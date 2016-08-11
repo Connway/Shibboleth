@@ -44,8 +44,8 @@ SHIB_REF_IMPL(RenderManager)
 ;
 
 static DisplayTags g_display_tags_values[] = {
-	DT_1, DT_2, DT_3, DT_4, DT_5, DT_6, DT_7, DT_8, DT_9, DT_10,
-	DT_11, DT_12, DT_13, DT_14, DT_15, DT_16
+	DT_1, DT_2, DT_3, DT_4, DT_5, DT_6, DT_7, DT_8,
+	DT_9, DT_10, DT_11, DT_12, DT_13, DT_14, DT_15, DT_16
 };
 
 #define GRAPHICS_FUNCTION_IMPL(Class, Func) \
