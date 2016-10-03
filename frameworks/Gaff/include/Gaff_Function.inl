@@ -360,7 +360,7 @@ FunctionBinder<ReturnType, Args...>::FunctionBinder(void* object, size_t size):
 	_object_size(size)
 {
 	GAFF_ASSERT(size <= FUNCTION_BUFFER_SIZE);
-	memcpy(_function_buffer, object, size);
+	memcpy_s(_function_buffer, FUNCTION_BUFFER_SIZE, object, size);
 }
 
 template <class ReturnType, class... Args>

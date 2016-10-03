@@ -38,7 +38,7 @@ THE SOFTWARE.
 NS_SHIBBOLETH
 
 App::App(void):
-	_seed(0), _running(true)
+	_running(true), _main_loop(nullptr)
 {
 	memset(_log_file_name, 0, sizeof(_log_file_name));
 	Gaff::InitializeCrashHandler();
@@ -57,10 +57,6 @@ bool App::init(int argc, char** argv)
 #ifdef INIT_STACKTRACE_SYSTEM
 	GAFF_ASSERT(Gaff::StackTrace::Init());
 #endif
-
-	while (!_seed) {
-		_seed = static_cast<size_t>(time(NULL));
-	}
 
 	_cmd_line_args = Gaff::ParseCommandLine<ProxyAllocator>(argc, argv);
 
@@ -107,7 +103,7 @@ bool App::init(int argc, char** argv)
 	Gaff::StackTrace::RefreshModuleList(); // Will fix symbols from DLLs not resolving.
 #endif
 
-	if (!loadStates()) {
+	if (!loadMainLoop()) {
 		return false;
 	}
 
@@ -267,168 +263,34 @@ bool App::loadManagers(void)
 	return !error;
 }
 
-// Still single-threaded at this point, so ok that we're not using the spinlock
-bool App::loadStates(void)
+bool App::loadMainLoop(void)
 {
-	_logger.logMessage(LogManager::LOG_NORMAL, _log_file_name, "Loading States...\n");
+	const char* main_loop_module = "MainLoop" BIT_EXTENSION DYNAMIC_EXTENSION;
+	DynamicLoader::ModulePtr module = _dynamic_loader.loadModule(main_loop_module, "MainLoop");
 
-	IFile* states_file = _fs.file_system->openFile("States/states.json");
+	if (module) {
+		using InitModuleFunc = bool (*)(IApp&);
+		InitModuleFunc init_func = module->getFunc<InitModuleFunc>("InitModule");
 
-	if (!states_file) {
-		_logger.logMessage(LogManager::LOG_ERROR, _log_file_name, "ERROR - Could not find 'States/states.json'.\n");
-		return false;
-	}
-
-	Gaff::JSON state_data;
-
-	if (!state_data.parse(states_file->getBuffer())) {
-		_logger.logMessage(LogManager::LOG_ERROR, _log_file_name, "ERROR - When parsing 'States/states.json'.\n");
-		_fs.file_system->closeFile(states_file);
-		return false;
-	}
-
-	_fs.file_system->closeFile(states_file);
-
-	if (!state_data.isObject()) {
-		_logger.logMessage(LogManager::LOG_ERROR, _log_file_name, "ERROR - 'States/states.json' is malformed. Root is not an object.\n");
-		return false;
-	}
-
-	Gaff::JSON starting_state = state_data["starting_state"];
-	Gaff::JSON states = state_data["states"];
-
-	if (!starting_state.isString()) {
-		_logger.logMessage(LogManager::LOG_ERROR, _log_file_name, "ERROR - 'States/states.json' is malformed. 'starting_state' is not a string.\n");
-		return false;
-	}
-
-	if (!states.isArray()) {
-		_logger.logMessage(LogManager::LOG_ERROR, _log_file_name, "ERROR - 'States/states.json' is malformed. 'states' is not an array.\n");
-		return false;
-	}
-
-	unsigned int state_id = 0;
-
-	for (size_t i = 0; i < states.size(); ++i) {
-		Gaff::JSON state = states[i];
-
-		if (!state.isObject()) {
+		if (!init_func) {
+			_logger.logMessage(LogManager::LOG_ERROR, _log_file_name, "ERROR - Failed to find function 'InitModule' in dynamic module '%s'\n", main_loop_module);
 			return false;
 		}
 
-		Gaff::JSON transitions = state["transitions"];
-		Gaff::JSON module_name = state["module"];
-		Gaff::JSON state_name = state["name"];
+		_main_loop = module->getFunc<MainLoopFunc>("MainLoop");
 
-		if (!transitions.isArray()) {
-			_logger.logMessage(LogManager::LOG_ERROR, _log_file_name, "ERROR - 'States/states.json' is malformed. Transitions for state entry %zu is not an array.\n", i);
+		if (!_main_loop) {
+			_logger.logMessage(LogManager::LOG_ERROR, _log_file_name, "ERROR - Failed to find function 'MainLoop' in dynamic module '%s'\n", main_loop_module);
 			return false;
 		}
 
-		if (!module_name.isString()) {
-			_logger.logMessage(LogManager::LOG_ERROR, _log_file_name, "ERROR - 'States/states.json' is malformed. Module name for state entry %zu is not a string.\n", i);
+		if (!init_func(*this)) {
+			_logger.logMessage(LogManager::LOG_ERROR, _log_file_name, "ERROR - Failed to initialize '%s'\n", main_loop_module);
 			return false;
 		}
 
-		if (!state_name.isString()) {
-			_logger.logMessage(LogManager::LOG_ERROR, _log_file_name, "ERROR - 'States/states.json' is malformed. Name for state entry %zu is not a string.\n", i);
-			return false;
-		}
-
-#ifdef PLATFORM_WINDOWS
-		AString filename("../States/");
-#else
-		AString filename("./States/");
-#endif
-		filename += module_name.getString();
-		filename += BIT_EXTENSION DYNAMIC_EXTENSION;
-
-		DynamicLoader::ModulePtr module = _dynamic_loader.loadModule(filename.getBuffer(), module_name.getString());
-
-		if (module) {
-			StateMachine::StateEntry::InitStateModuleFunc init_func = module->getFunc<StateMachine::StateEntry::InitStateModuleFunc>("InitModule");
-
-			if (!init_func) {
-				_logger.logMessage(LogManager::LOG_ERROR, _log_file_name, "ERROR - Failed to find function 'InitModule' in dynamic module '%s'\n", filename.getBuffer());
-				return false;
-			} else if (!init_func(*this)) {
-				_logger.logMessage(LogManager::LOG_ERROR, _log_file_name, "ERROR - Failed to initialize '%s'\n", filename.getBuffer());
-				return true;
-			}
-
-			StateMachine::StateEntry::GetNumStatesFunc num_states_func = module->getFunc<StateMachine::StateEntry::GetNumStatesFunc>("GetNumStates");
-			StateMachine::StateEntry::GetStateNameFunc get_state_name_func = module->getFunc<StateMachine::StateEntry::GetStateNameFunc>("GetStateName");
-
-			if (!num_states_func || !get_state_name_func) {
-				_logger.logMessage(LogManager::LOG_ERROR, _log_file_name, "ERROR - Failed to find functions 'GetNumStates' and/or 'GetStateName' in dynamic module '%s'\n", filename.getBuffer());
-				return false;
-			}
-
-			unsigned int num_states = num_states_func();
-			unsigned int j = 0;
-
-			for (; j < num_states; ++j) {
-				if (!strcmp(state_name.getString(), get_state_name_func(j))) {
-					break;
-				}
-			}
-
-			if (j == num_states) {
-				_logger.logMessage(LogManager::LOG_ERROR, _log_file_name, "ERROR - Failed to find state with name '%s' in dynamic module '%s'\n", state_name.getString(), filename.getBuffer());
-				return false;
-			}
-
-			StateMachine::StateEntry entry = { AString(state_name.getString()), nullptr, nullptr, nullptr, state_id, j };
-			entry.create_func = module->getFunc<StateMachine::StateEntry::CreateStateFunc>("CreateState");
-			entry.destroy_func = module->getFunc<StateMachine::StateEntry::DestroyStateFunc>("DestroyState");
-
-			if (entry.create_func && entry.destroy_func) {
-				entry.state = entry.create_func(j);
-				++state_id;
-
-				if (entry.state) {
-					entry.state->_transitions.reserve(transitions.size());
-
-					for (size_t k = 0; k < transitions.size(); ++k) {
-						Gaff::JSON val = transitions[k];
-
-						if (!val.isInt()) {
-							_logger.logMessage(LogManager::LOG_ERROR, _log_file_name, "ERROR - 'States/states.json' is malformed. Name for state entry %zu is not a string.\n", i);
-							return false;
-						}
-
-						entry.state->_transitions.push(static_cast<unsigned int>(val.getInt()));
-					}
-
-					if (!entry.state->init(_state_machine.getNumStates())) {
-						_logger.logMessage(LogManager::LOG_ERROR, _log_file_name, "ERROR - Failed to initialize state '%s'\n", state_name.getString());
-						return false;
-					}
-
-					_state_machine.addState(entry);
-					_logger.logMessage(LogManager::LOG_NORMAL, _log_file_name, "Loaded state '%s'\n", state_name.getString());
-
-					if (entry.name == starting_state.getString()) {
-						_state_machine.switchState(static_cast<unsigned int>(i));
-					}
-
-				} else {
-					_logger.logMessage(LogManager::LOG_ERROR, _log_file_name, "ERROR - Failed to create state '%s' from dynamic module '%s'\n", entry.name.getBuffer(), filename.getBuffer());
-					return false;
-				}
-
-			} else {
-				_logger.logMessage(LogManager::LOG_ERROR, _log_file_name, "ERROR - Failed to find functions 'CreateState' and 'DestroyState' in dynamic module '%s'\n", filename.getBuffer());
-				return false;
-			}
-
-		} else {
-			_logger.logMessage(LogManager::LOG_ERROR, _log_file_name, "ERROR - Failed to load dynamic module '%s' for reason '%s'\n", filename.getBuffer(), Gaff::DynamicModule::GetErrorString());
-		}
-	}
-
-	if (_state_machine.getNextState() == UINT_FAIL) {
-		_logger.logMessage(LogManager::LOG_ERROR, _log_file_name, "ERROR - 'starting_state' is set to an invalid state name\n");
+	} else {
+		_logger.logMessage(LogManager::LOG_ERROR, _log_file_name, "ERROR - Failed to open module '%s'\n", main_loop_module);
 		return false;
 	}
 
@@ -533,14 +395,13 @@ void App::run(void)
 {
 	while (_running) {
 		_broadcaster.update();
-		_state_machine.update();
+		_main_loop();
 	}
 }
 
 void App::destroy(void)
 {
 	_job_pool.destroy();
-	_state_machine.clear();
 
 	for (ManagerMap::Iterator it = _manager_map.begin(); it != _manager_map.end(); ++it) {
 		it->destroy_func(it->manager, it->manager_id);
@@ -551,7 +412,7 @@ void App::destroy(void)
 
 	_dynamic_loader.forEachModule([](DynamicLoader::ModulePtr module) -> bool
 	{
-		void(*shutdown_func)(void) = module->getFunc<void(*)(void)>("ShutdownModule");
+		void (*shutdown_func)(void) = module->getFunc<void (*)(void)>("ShutdownModule");
 
 		if (shutdown_func) {
 			shutdown_func();
@@ -616,21 +477,6 @@ MessageBroadcaster& App::getBroadcaster(void)
 	return _broadcaster;
 }
 
-const Array<unsigned int>& App::getStateTransitions(unsigned int state_id)
-{
-	return _state_machine.getTransitions(state_id);
-}
-
-unsigned int App::getStateID(const char* name)
-{
-	return _state_machine.getStateID(name);
-}
-
-void App::switchState(unsigned int state)
-{
-	_state_machine.switchState(state);
-}
-
 IFileSystem* App::getFileSystem(void)
 {
 	return _fs.file_system;
@@ -680,11 +526,6 @@ LogManager& App::getLogManager(void)
 DynamicLoader::ModulePtr App::loadModule(const char* filename, const char* name)
 {
 	return _dynamic_loader.loadModule(filename, name);
-}
-
-size_t App::getSeed(void) const
-{
-	return _seed;
 }
 
 bool App::isQuitting(void) const

@@ -237,7 +237,7 @@ bool File::close(void)
 
 bool File::isOpen(void) const
 {
-	return _file != NULL && _file != nullptr;
+	return _file != nullptr;
 }
 
 /*!
@@ -362,7 +362,7 @@ bool File::openTempFile(void)
 {
 	GAFF_ASSERT(!_file);
 	_file = tmpfile();
-	return _file != NULL && _file != nullptr;
+	return _file != nullptr;
 }
 
 long File::getFileSize(void)

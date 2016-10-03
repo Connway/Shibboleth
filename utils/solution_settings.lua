@@ -41,6 +41,22 @@ filter { "configurations:Release*", "platforms:x64" }
 	objdir "../build/intermediate"
 	targetdir "../build/output/x64/Release"
 
+filter { "configurations:Debug_Analyze", "platforms:x86" }
+	objdir "../build/intermediate"
+	targetdir "../build/output/x86/Debug_Analyze"
+
+filter { "configurations:Debug_Analyze", "platforms:x64" }
+	objdir "../build/intermediate"
+	targetdir "../build/output/x64/Debug_Analyze"
+
+filter { "configurations:Release_Analyze", "platforms:x86" }
+	objdir "../build/intermediate"
+	targetdir "../build/output/x86/Release_Analyze"
+
+filter { "configurations:Release_Analyze", "platforms:x64" }
+	objdir "../build/intermediate"
+	targetdir "../build/output/x64/Release_Analyze"
+
 filter { "configurations:Debug*", "action:gmake", "options:not debug_optimization" }
 	optimize "Off"
 
@@ -50,10 +66,13 @@ filter { "configurations:Debug*", "action:gmake", "options:debug_optimization" }
 filter { "options:simd_set_aligned"}
 	defines { "SIMD_SET_ALIGNED" }
 
-filter {}
+filter { "action:vs*", "configurations:*Analyze"}
+	buildoptions { "/analyze" }
 
-configuration "vs*"
+filter { "action:vs*" }
 	buildoptions { "/sdl" }
+
+filter {}
 
 configuration "Debug*"
 	defines { "_DEBUG", "DEBUG" }

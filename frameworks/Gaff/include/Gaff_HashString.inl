@@ -21,24 +21,56 @@ THE SOFTWARE.
 ************************************************************************************/
 
 template <class T, class Allocator, class HashType>
+HashType CalculateHash(const String<T, Allocator>& value, HashType (*hash_func)(const char*, size_t))
+{
+	if (hash_func) {
+		return hash_func(reinterpret_cast<const char*>(_string.getBuffer()), _string.size() * sizeof(T));
+	}
+
+	uint32_t hash_value = FNV1aHash32(reinterpret_cast<const char*>(_string.getBuffer()), _string.size() * sizeof(T));
+	return static_cast<HashType>(hash_value);
+}
+
+template <class T, class Allocator>
+uint32_t CalculateHash(const String<T, Allocator>& value, uint32_t (*hash_func)(const char*, size_t))
+{
+	if (hash_func) {
+		return hash_func(reinterpret_cast<const char*>(value.getBuffer()), value.size() * sizeof(T));
+	}
+
+	return FNV1aHash32(reinterpret_cast<const char*>(value.getBuffer()), value.size() * sizeof(T));
+}
+
+template <class T, class Allocator>
+uint64_t CalculateHash(const String<T, Allocator>& value, uint64_t (*hash_func)(const char*, size_t))
+{
+	if (hash_func) {
+		return hash_func(reinterpret_cast<const char*>(value.getBuffer()), value.size() * sizeof(T));
+	}
+
+	return FNV1aHash64(reinterpret_cast<const char*>(value.getBuffer()), value.size() * sizeof(T));
+}
+
+
+template <class T, class Allocator, class HashType>
 HashString<T, Allocator, HashType>::HashString(const HashString<T, Allocator, HashType>& string, HashFunc hash):
 	_string(string._string), _hash_value(0), _hash_func(hash)
 {
-	calculateHash();
+	_hash_value = CalculateHash(_string, _hash_func);
 }
 
 template <class T, class Allocator, class HashType>
 HashString<T, Allocator, HashType>::HashString(const String<T, Allocator>& string, HashFunc hash):
 	_string(string), _hash_value(0), _hash_func(hash)
 {
-	calculateHash();
+	_hash_value = CalculateHash(_string, _hash_func);
 }
 
 template <class T, class Allocator, class HashType>
 HashString<T, Allocator, HashType>::HashString(const T* string, HashFunc hash, const Allocator& allocator):
 	_string(string, allocator), _hash_value(0), _hash_func(hash)
 {
-	calculateHash();
+	_hash_value = CalculateHash(_string, _hash_func);
 }
 
 template <class T, class Allocator, class HashType>
@@ -76,7 +108,7 @@ template <class T, class Allocator, class HashType>
 const HashString<T, Allocator, HashType>& HashString<T, Allocator, HashType>::operator=(const String<T, Allocator>& rhs)
 {
 	_string = rhs;
-	calculateHash();
+	 _hash_value = CalculateHash(_string, _hash_func);
 	return *this;
 }
 
@@ -98,7 +130,7 @@ template <class T, class Allocator, class HashType>
 const HashString<T, Allocator, HashType>& HashString<T, Allocator, HashType>::operator=(String<T, Allocator>&& rhs)
 {
 	_string = std::move(rhs);
-	calculateHash();
+	 _hash_value = CalculateHash(_string, _hash_func);
 	return *this;
 }
 
@@ -106,7 +138,7 @@ template <class T, class Allocator, class HashType>
 const HashString<T, Allocator, HashType>& HashString<T, Allocator, HashType>::operator=(const T* rhs)
 {
 	_string = rhs;
-	calculateHash();
+	 _hash_value = CalculateHash(_string, _hash_func);
 	return *this;
 }
 
@@ -200,15 +232,4 @@ template <class T, class Allocator, class HashType>
 HashType HashString<T, Allocator, HashType>::getHash(void) const
 {
 	return _hash_value;
-}
-
-template <class T, class Allocator, class HashType>
-void HashString<T, Allocator, HashType>::calculateHash(void)
-{
-	if (_hash_func) {
-		_hash_value = _hash_func(reinterpret_cast<const char*>(_string.getBuffer()), _string.size() * sizeof(T));
-	} else {
-		ContainerHash hash_value = CONT_HASH(reinterpret_cast<const char*>(_string.getBuffer()), _string.size() * sizeof(T));
-		_hash_value = static_cast<HashType>(hash_value);
-	}
 }

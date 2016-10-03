@@ -6,7 +6,7 @@ mkdir "..\workingdir\App\Render Pipelines"
 
 copy ..\build\output\x86\Debug\ShibbolethComponents32d.dll ..\workingdir\App\Components\ShibbolethComponents32d.dll /Y
 copy ..\build\output\x86\Debug\ShibbolethManagers32d.dll ..\workingdir\App\Managers\ShibbolethManagers32d.dll /Y
-copy ..\build\output\x86\Debug\ShibbolethStates32d.dll ..\workingdir\App\States\ShibbolethStates32d.dll /Y
+copy ..\build\output\x86\Debug\MainLoop32d.dll ..\workingdir\App\bin\MainLoop32d.dll /Y
 copy ..\build\output\x86\Debug\Graphics_OpenGL32d.dll ..\workingdir\App\bin\Graphics_OpenGL32d.dll /Y
 copy ..\build\output\x86\Debug\Graphics_Direct3D32d.dll ..\workingdir\App\bin\Graphics_Direct3D32d.dll /Y
 copy ..\build\output\x86\Debug\ShibbolethRenderPipelines32d.dll "..\workingdir\App\Render Pipelines\ShibbolethRenderPipelines32d.dll" /Y
@@ -17,7 +17,7 @@ copy ..\build\output\x86\Debug\App32d.exe ..\workingdir\App\App32d.exe /Y
 
 copy ..\build\output\x64\Debug\ShibbolethComponents64d.dll ..\workingdir\App\Components\ShibbolethComponents64d.dll /Y
 copy ..\build\output\x64\Debug\ShibbolethManagers64d.dll ..\workingdir\App\Managers\ShibbolethManagers64d.dll /Y
-copy ..\build\output\x64\Debug\ShibbolethStates64d.dll ..\workingdir\App\States\ShibbolethStates64d.dll /Y
+copy ..\build\output\x64\Debug\MainLoop64d.dll ..\workingdir\App\bin\MainLoop64d.dll /Y
 copy ..\build\output\x64\Debug\Graphics_OpenGL64d.dll ..\workingdir\App\bin\Graphics_OpenGL64d.dll /Y
 copy ..\build\output\x64\Debug\Graphics_Direct3D64d.dll ..\workingdir\App\bin\Graphics_Direct3D64d.dll /Y
 copy ..\build\output\x64\Debug\ShibbolethRenderPipelines64d.dll "..\workingdir\App\Render Pipelines\ShibbolethRenderPipelines64d.dll" /Y
@@ -28,7 +28,7 @@ copy ..\build\output\x64\Debug\App64d.exe ..\workingdir\App\App64d.exe /Y
 
 copy ..\build\output\x86\Release\ShibbolethComponents32.dll ..\workingdir\App\Components\ShibbolethComponents32.dll /Y
 copy ..\build\output\x86\Release\ShibbolethManagers32.dll ..\workingdir\App\Managers\ShibbolethManagers32.dll /Y
-copy ..\build\output\x86\Release\ShibbolethStates32.dll ..\workingdir\App\States\ShibbolethStates32.dll /Y
+copy ..\build\output\x86\Release\MainLoop32.dll ..\workingdir\App\bin\MainLoop32.dll /Y
 copy ..\build\output\x86\Release\Graphics_OpenGL32.dll ..\workingdir\App\bin\Graphics_OpenGL32.dll /Y
 copy ..\build\output\x86\Release\Graphics_Direct3D32.dll ..\workingdir\App\bin\Graphics_Direct3D32.dll /Y
 copy ..\build\output\x86\Release\ShibbolethRenderPipelines32.dll "..\workingdir\App\Render Pipelines\ShibbolethRenderPipelines32.dll" /Y
@@ -39,7 +39,7 @@ copy ..\build\output\x86\Release\App32.exe ..\workingdir\App\App32.exe /Y
 
 copy ..\build\output\x64\Release\ShibbolethComponents64.dll ..\workingdir\App\Components\ShibbolethComponents64.dll /Y
 copy ..\build\output\x64\Release\ShibbolethManagers64.dll ..\workingdir\App\Managers\ShibbolethManagers64.dll /Y
-copy ..\build\output\x64\Release\ShibbolethStates64.dll ..\workingdir\App\States\ShibbolethStates64.dll /Y
+copy ..\build\output\x64\Release\MainLoop64.dll ..\workingdir\App\bin\MainLoop64.dll /Y
 copy ..\build\output\x64\Release\Graphics_OpenGL64.dll ..\workingdir\App\bin\Graphics_OpenGL64.dll /Y
 copy ..\build\output\x64\Release\Graphics_Direct3D64.dll ..\workingdir\App\bin\Graphics_Direct3D64.dll /Y
 copy ..\build\output\x64\Release\ShibbolethRenderPipelines64.dll "..\workingdir\App\Render Pipelines\ShibbolethRenderPipelines64.dll" /Y

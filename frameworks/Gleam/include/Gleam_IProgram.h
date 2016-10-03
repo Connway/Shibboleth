@@ -23,10 +23,10 @@ THE SOFTWARE.
 #pragma once
 
 #include "Gleam_IShader.h"
+#include "Gleam_String.h"
 #include "Gleam_Array.h"
 
 #define MAX_SHADER_VAR 16
-#define MAX_SHADER_VAR_NAME 256
 
 NS_GLEAM
 
@@ -82,16 +82,16 @@ public:
 
 struct ConstBufferReflection
 {
-	char name[MAX_SHADER_VAR_NAME] = { 0 };
+	GleamAString name;
 	size_t size_bytes = 0;
 };
 
 struct ShaderReflection
 {
 	ConstBufferReflection const_buff_reflection[MAX_SHADER_VAR];
-	char textures[MAX_SHADER_VAR][MAX_SHADER_VAR_NAME];
-	char samplers[MAX_SHADER_VAR][MAX_SHADER_VAR_NAME];
-	char structured_buffers[MAX_SHADER_VAR][MAX_SHADER_VAR_NAME];
+	GleamAString textures[MAX_SHADER_VAR];
+	GleamAString samplers[MAX_SHADER_VAR];
+	GleamAString structured_buffers[MAX_SHADER_VAR];
 
 	size_t num_constant_buffers = 0;
 	size_t num_textures = 0;

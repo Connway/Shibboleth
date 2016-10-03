@@ -22,34 +22,14 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Shibboleth_IState.h"
-
-NS_GAFF
-	class JSON;
-NS_END
+#include <Shibboleth_Defines.h>
 
 NS_SHIBBOLETH
 
-class IApp;
-
-class SetupDevicesState : public IState
-{
-public:
-	static const char* GetFriendlyName(void);
-
-	SetupDevicesState(void);
-	~SetupDevicesState(void);
-
-	bool init(unsigned int);
-
-	void enter(void);
-	void update(void);
-	void exit(void);
-
-private:
-
-	GAFF_NO_COPY(SetupDevicesState);
-	GAFF_NO_MOVE(SetupDevicesState);
-};
+bool CreateResourceLoaders(void);
+//bool RegisterLuaClasses(void);
+bool LoadGraphicsModule(void);
+bool SetupDevices(void);
+//bool SetupOtterUI(void);
 
 NS_END

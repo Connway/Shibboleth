@@ -28,7 +28,7 @@ THE SOFTWARE.
 #include <tuple>
 #include <new>
 
-#define FUNCTION_BUFFER_SIZE 256
+const size_t FUNCTION_BUFFER_SIZE = 256;
 
 NS_GAFF
 

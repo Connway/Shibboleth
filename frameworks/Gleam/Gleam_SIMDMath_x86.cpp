@@ -963,10 +963,10 @@ SIMDType SIMDMatrixMulRow(const SIMDType& row, const SIMDType& col1, const SIMDT
 SIMDMatrix SIMDMatrixMul(const SIMDMatrix& left, const SIMDMatrix& right)
 {
 	SIMDMatrix result = {{
-		SIMDMatrixMulRow(right.elements[0], left.elements[1], left.elements[2], left.elements[3], left.elements[4]),
-		SIMDMatrixMulRow(right.elements[1], left.elements[1], left.elements[2], left.elements[3], left.elements[4]),
-		SIMDMatrixMulRow(right.elements[2], left.elements[1], left.elements[2], left.elements[3], left.elements[4]),
-		SIMDMatrixMulRow(right.elements[3], left.elements[1], left.elements[2], left.elements[3], left.elements[4])
+		SIMDMatrixMulRow(right.elements[0], left.elements[0], left.elements[1], left.elements[2], left.elements[3]),
+		SIMDMatrixMulRow(right.elements[1], left.elements[0], left.elements[1], left.elements[2], left.elements[3]),
+		SIMDMatrixMulRow(right.elements[2], left.elements[0], left.elements[1], left.elements[2], left.elements[3]),
+		SIMDMatrixMulRow(right.elements[3], left.elements[0], left.elements[1], left.elements[2], left.elements[3])
 	}};
 
 	return result;

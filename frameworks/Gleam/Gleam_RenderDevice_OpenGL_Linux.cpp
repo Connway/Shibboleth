@@ -57,7 +57,7 @@ IRenderDevice::AdapterList RenderDeviceGL::getDisplayModes(int)
 
 		for (unsigned int j = 0; j < NUM_DEVICES_OUTPUTS_TO_ITERATE; ++j) {
 			char buff[8] = { 0 };
-			sprintf(buff, ":%i.%i", i, j);
+			sprintf(buff, ":%u.%u", i, j);
 
 			::Display* display = XOpenDisplay(buff);
 
@@ -220,7 +220,7 @@ bool RenderDeviceGL::init(const IWindow& window, unsigned int adapter_id, unsign
 		if (glXMakeCurrent(wnd.getDisplay(), wnd.getWindow(), context) == False) {
 			return false;
 		}
-		
+
 		if (glewInit() != GLEW_OK) {
 			return false;
 		}
@@ -264,7 +264,7 @@ void RenderDeviceGL::setVsync(bool vsync, unsigned int device, unsigned int outp
 void RenderDeviceGL::beginFrame(void)
 {
 	GAFF_ASSERT(_devices.size() > _curr_device && _devices[_curr_device].windows.size() > _curr_output);
-	glViewport(_active_viewport->x, _active_viewport->y, _active_viewport->width, _active_viewport->height);	
+	glViewport(_active_viewport->x, _active_viewport->y, _active_viewport->width, _active_viewport->height);
 	resetRenderState();
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 }
@@ -286,7 +286,7 @@ bool RenderDeviceGL::resize(const IWindow& window)
 			it->viewports[index].width = wnd.getWidth();
 			it->viewports[index].height = wnd.getHeight();
 			((RenderTargetGL*)it->rts[index].get())->setViewport(wnd.getWidth(), wnd.getHeight());
-			
+
 			if (&window == _active_window) {
 				glViewport(0, 0, wnd.getWidth(), wnd.getHeight());
 			}

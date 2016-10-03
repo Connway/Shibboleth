@@ -41,29 +41,15 @@ newoption
 	description = "Specify to generate the PhysX build project."
 }
 
-newoption
-{
-	trigger = "qt_dir",
-	description = "Specify the Qt directory for Qt-based projects.",
-	value = "Path"
-}
-
-newoption
-{
-	trigger = "qt_prefix",
-	description = "Specifies the prefix for Qt libs to use.",
-	value = "Prefix"
-}
-
 solution "Shibboleth"
 	if _ACTION then
 		location ("../project/" .. _ACTION)
 	end
 
 	if os.get() == "windows" then
-		configurations { "Debug_OpenGL", "Release_OpenGL", "Debug_Direct3D", "Release_Direct3D" }
+		configurations { "Debug_OpenGL", "Release_OpenGL", "Debug_Direct3D", "Release_Direct3D", "Debug_Analyze", "Release_Analyze" }
 	else
-		configurations { "Debug_OpenGL", "Release_OpenGL" }
+		configurations { "Debug_OpenGL", "Release_OpenGL", "Debug_Analyze", "Release_Analyze" }
 	end
 
 	dofile("solution_settings.lua")

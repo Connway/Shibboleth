@@ -137,13 +137,4 @@ using ReflectionHashFunc = uint32_t (*)(const char*, size_t);
 #define REFL_HASH Gaff::FNV1aHash32
 //#define REFL_HASH Gaff::FNV1aHash64
 
-using ContainerHash = uint32_t;
-//using ContainerHash = uint64_t;
-
-using ContainerHashFunc = uint32_t (*)(const char*, size_t);
-//using ContainerHashFunc = uint64_t (*)(const char*, size_t);
-
-#define CONT_HASH Gaff::FNV1aHash32
-//#define CONT_HASH Gaff::FNV1aHash64
-
 NS_END

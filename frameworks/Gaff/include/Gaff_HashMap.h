@@ -30,7 +30,7 @@ THE SOFTWARE.
 
 NS_GAFF
 
-template <class Key, class Value, class Allocator = DefaultAllocator, class HashType = ContainerHash>
+template <class Key, class Value, class Allocator = DefaultAllocator, class HashType = uint32_t>
 class HashMap
 {
 private:
