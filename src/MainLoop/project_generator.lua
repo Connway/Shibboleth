@@ -1,50 +1,50 @@
-group "States Module"
+group "Main Loop Module"
 
-project "States"
-	if _ACTION then
-		location ("../../project/" .. _ACTION .. "/states")
-	end
+-- project "States"
+-- 	if _ACTION then
+-- 		location ("../../project/" .. _ACTION .. "/states")
+-- 	end
 
-	configurations { "Debug", "Release" }
-	dofile("../../utils/config_map.lua")
+-- 	configurations { "Debug", "Release" }
+-- 	dofile("../../utils/config_map.lua")
 
-	kind "StaticLib"
-	language "C++"
+-- 	kind "StaticLib"
+-- 	language "C++"
 
-	flags { "FatalWarnings" }
+-- 	flags { "FatalWarnings" }
 
-	files { "**.h", "**.cpp", "**.inl" }
-	excludes { "Shibboleth_StatesModule.cpp" }
+-- 	files { "**.h", "**.cpp", "**.inl" }
+-- 	excludes { "Shibboleth_StatesModule.cpp" }
 
-	configuration "windows"
-		includedirs { "../../dependencies/dirent" }
+-- 	configuration "windows"
+-- 		includedirs { "../../dependencies/dirent" }
 
-	configuration {}
+-- 	configuration {}
 
-	includedirs
-	{
-		"include",
-		"../Shared/include",
-		"../Memory/include",
-		"../Game/include",
-		"../Managers/include",
-		"../../frameworks/Gaff/include",
-		"../../frameworks/Gleam/include",
-		"../../frameworks/esprit/include",
-		"../../dependencies/OtterUI/inc",
-		"../../dependencies/rapidjson",
-		"../../dependencies/LuaState",
-		"../../dependencies/LuaBridge",
-		"../../dependencies/LuaJIT/src",
-		"../../dependencies/utf8-cpp",
-		"../../dependencies/assimp/include",
-		"../../dependencies/minizip",
-		"../../dependencies/zlib"
-	}
+-- 	includedirs
+-- 	{
+-- 		"include",
+-- 		"../Shared/include",
+-- 		"../Memory/include",
+-- 		"../Game/include",
+-- 		"../Managers/include",
+-- 		"../../frameworks/Gaff/include",
+-- 		"../../frameworks/Gleam/include",
+-- 		"../../frameworks/esprit/include",
+-- 		"../../dependencies/OtterUI/inc",
+-- 		"../../dependencies/rapidjson",
+-- 		"../../dependencies/LuaState",
+-- 		"../../dependencies/LuaBridge",
+-- 		"../../dependencies/LuaJIT/src",
+-- 		"../../dependencies/utf8-cpp",
+-- 		"../../dependencies/assimp/include",
+-- 		"../../dependencies/minizip",
+-- 		"../../dependencies/zlib"
+-- 	}
 
-	dofile("../../utils/os_conditionals.lua")
+-- 	dofile("../../utils/os_conditionals.lua")
 
-project "StatesModule"
+project "MainLoopModule"
 	if _ACTION then
 		location ("../../project/" .. _ACTION .. "/states")
 	end
@@ -59,9 +59,9 @@ project "StatesModule"
 
 	flags { "FatalWarnings" }
 
-	targetname "ShibbolethStates"
+	targetname "MainLoop"
 
-	files { "Shibboleth_StatesModule.cpp" }
+	files { "**.h", "**.cpp", "**.inl" }
 
 	configuration "windows"
 		includedirs { "../../dependencies/dirent" }
@@ -109,7 +109,7 @@ project "StatesModule"
 		"zlib", "Gleam",
 		"Game", "esprit",
 		"Components",
-		"States", "Memory",
+		"Memory",
 		"LuaJIT", "Boxer",
 		"BulletCollision",
 		"BulletDynamics",

@@ -22,33 +22,88 @@ THE SOFTWARE.
 
 #define HASHMAP_ITERATOR(TYPE) HashMap<TYPE, Value, Allocator>::Iterator
 
-template <class Key, class HashType>
-HashType HashKey(const Key& key, HashType (*hash_func)(const char*, size_t))
+template <class Key>
+class HashKey
 {
-	if (hash_func) {
-		return hash_func(reinterpret_cast<const char*>(&key), sizeof(Key));
+public:
+	template <class HashType>
+	static HashType Hash(const Key& key, HashType (*hash_func)(const char*, size_t))
+	{
+		if (hash_func) {
+			return hash_func(reinterpret_cast<const char*>(&key), sizeof(Key));
+		}
+
+		uint32_t hash = FNV1aHash32(reinterpret_cast<const char*>(&key), sizeof(Key));
+		return static_cast<HashType>(hash);
 	}
 
-	ContainerHash hash = CONT_HASH(reinterpret_cast<const char*>(&key), sizeof(Key));
-	return static_cast<HashType>(hash);
-}
+	template <>
+	static uint32_t Hash(const Key& key, uint32_t (*hash_func)(const char*, size_t))
+	{
+		if (hash_func) {
+			return hash_func(reinterpret_cast<const char*>(&key), sizeof(Key));
+		}
 
-template <class T, class Allocator, class HashType>
-HashType HashKey(const String<T, Allocator>& key, HashType (*hash_func)(const char*, size_t))
-{
-	if (hash_func) {
-		return hash_func(key.getBuffer(), key.size() * sizeof(T));
+		return FNV1aHash32(reinterpret_cast<const char*>(&key), sizeof(Key));
 	}
 
-	ContainerHash hash = CONT_HASH(key.getBuffer(), key.size() * sizeof(T));
-	return static_cast<HashType>(hash);
-}
+	template <>
+	static uint64_t Hash(const Key& key, uint64_t (*hash_func)(const char*, size_t))
+	{
+		if (hash_func) {
+			return hash_func(reinterpret_cast<const char*>(&key), sizeof(Key));
+		}
+
+		return FNV1aHash64(reinterpret_cast<const char*>(&key), sizeof(Key));
+	}
+};
+
+template <class T, class Allocator>
+class HashKey< String<T, Allocator> >
+{
+public:
+	template <class HashType>
+	static HashType Hash(const String<T, Allocator>& key, HashType (*hash_func)(const char*, size_t))
+	{
+		if (hash_func) {
+			return hash_func(key.getBuffer(), key.size() * sizeof(T));
+		}
+
+		uint32_t hash = FNV1aHash32(key.getBuffer(), key.size() * sizeof(T));
+		return static_cast<HashType>(hash);
+	}
+
+	template <>
+	static uint32_t Hash(const String<T, Allocator>& key, uint32_t (*hash_func)(const char*, size_t))
+	{
+		if (hash_func) {
+			return hash_func(key.getBuffer(), key.size() * sizeof(T));
+		}
+
+		return FNV1aHash32(key.getBuffer(), key.size() * sizeof(T));
+	}
+
+	template <>
+	static uint64_t Hash(const String<T, Allocator>& key, uint64_t (*hash_func)(const char*, size_t))
+	{
+		if (hash_func) {
+			return hash_func(key.getBuffer(), key.size() * sizeof(T));
+		}
+
+		return FNV1aHash64(key.getBuffer(), key.size() * sizeof(T));
+	}
+};
 
 template <class T, class Allocator, class HashType>
-HashType HashKey(const HashString<T, Allocator, HashType>& key, HashType(*)(const char*, size_t))
+class HashKey< HashString<T, Allocator, HashType> >
 {
-	return key.getHash();
-}
+public:
+	static HashType Hash(const HashString<T, Allocator, HashType>& key, HashType (*)(const char*, size_t))
+	{
+		return key.getHash();
+	}
+};
+
 
 ////////////////////
 //    Iterator    //
@@ -310,7 +365,7 @@ const Value& HashMap<Key, Value, Allocator, HashType>::operator[](const Key& key
 	//	return Value();
 	//}
 
-	size_t index = HashKey(key, _hash) % _size;
+	size_t index = HashKey<Key>::Hash(key, _hash) % _size;
 	size_t i = 0;
 
 	while (_slots[index].occupied && _slots[index].key != key && i < _size) {
@@ -331,7 +386,7 @@ Value& HashMap<Key, Value, Allocator, HashType>::operator[](const Key& key)
 		reserve(1);
 	}
 
-	size_t index = HashKey(key, _hash) % _size;
+	size_t index = HashKey<Key>::Hash(key, _hash) % _size;
 	size_t i = 0;
 
 	while (_slots[index].occupied && _slots[index].key != key && i < _size) {
@@ -363,7 +418,7 @@ Value& HashMap<Key, Value, Allocator, HashType>::operator[](Key&& key)
 		reserve(1);
 	}
 
-	size_t index = HashKey(key, _hash) % _size;
+	size_t index = HashKey<Key>::Hash(key, _hash) % _size;
 	size_t i = 0;
 
 	while (_slots[index].occupied && _slots[index].key != key && i < _size) {
@@ -488,7 +543,7 @@ size_t HashMap<Key, Value, Allocator, HashType>::indexOf(const Key& key) const
 		return SIZE_T_FAIL;
 	}
 
-	size_t index = HashKey(key, _hash) % _size;
+	size_t index = HashKey<Key>::Hash(key, _hash) % _size;
 	size_t i = 0;
 
 	while (_slots[index].occupied && _slots[index].key != key && i < _size) {

@@ -95,7 +95,7 @@ bool RenderDeviceGL::initThreadData(unsigned int* thread_ids, size_t num_ids)
 IRenderDevice::AdapterList RenderDeviceGL::getDisplayModes(int)
 {
 	DISPLAY_DEVICE disp_device;
-	DEVMODE mode;
+	DEVMODE mode = {};
 
 	disp_device.cb = sizeof(DISPLAY_DEVICE);
 

@@ -24,7 +24,6 @@ THE SOFTWARE.
 
 #include "Shibboleth_MessageBroadcaster.h"
 #include "Shibboleth_DynamicLoader.h"
-#include "Shibboleth_StateMachine.h"
 #include "Shibboleth_HashString.h"
 #include "Shibboleth_LogManager.h"
 #include "Shibboleth_JobPool.h"
@@ -80,7 +79,6 @@ public:
 	LogManager& getLogManager(void);
 
 	DynamicLoader::ModulePtr loadModule(const char* filename, const char* name);
-	size_t getSeed(void) const;
 
 	bool isQuitting(void) const;
 	void quit(void);
@@ -115,14 +113,16 @@ private:
 		CreateFileSystemFunc create_func;
 	};
 
-	typedef HashMap<AHashString, ManagerEntry> ManagerMap;
+	using ManagerMap = HashMap<AHashString, ManagerEntry>;
+	using MainLoopFunc = void (*)(void);
+
+	bool _running;
+	MainLoopFunc _main_loop;
 
 	MessageBroadcaster _broadcaster;
 	DynamicLoader _dynamic_loader;
-	StateMachine _state_machine;
 	ManagerMap _manager_map;
 	JobPool _job_pool;
-
 	LogManager _logger;
 	char _log_file_name[64];
 
@@ -130,13 +130,9 @@ private:
 
 	HashMap<AHashString, AString> _cmd_line_args;
 
-	size_t _seed;
-
-	bool _running;
-
 	bool loadFileSystem(void);
 	bool loadManagers(void);
-	bool loadStates(void);
+	bool loadMainLoop(void);
 	bool initApp(void);
 
 	void removeExtraLogs(void);

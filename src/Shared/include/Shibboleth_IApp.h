@@ -113,10 +113,6 @@ public:
 
 	virtual MessageBroadcaster& getBroadcaster(void) = 0;
 
-	virtual const Array<unsigned int>& getStateTransitions(unsigned int state_id) = 0;
-	virtual unsigned int getStateID(const char* name) = 0;
-	virtual void switchState(unsigned int state_id) = 0;
-
 	virtual IFileSystem* getFileSystem(void) = 0;
 	virtual const HashMap<AHashString, AString>& getCmdLine(void) const = 0;
 	virtual HashMap<AHashString, AString>& getCmdLine(void) = 0;
@@ -131,7 +127,6 @@ public:
 	virtual LogManager& getLogManager(void) = 0;
 
 	virtual DynamicLoader::ModulePtr loadModule(const char* filename, const char* name) = 0;
-	virtual size_t getSeed(void) const = 0;
 
 	virtual bool isQuitting(void) const = 0;
 	virtual void quit(void) = 0;

@@ -399,9 +399,7 @@ ShaderReflection ProgramD3D::getShaderReflectionData(const IShader* shader, Prog
 			return reflection;
 		}
 
-		strncpy(reflection.const_buff_reflection[i].name, cb_desc.Name, MAX_SHADER_VAR_NAME);
-		reflection.const_buff_reflection[i].name[255] = 0;
-
+		reflection.const_buff_reflection[i].name = cb_desc.Name;
 		reflection.const_buff_reflection[i].size_bytes = cb_desc.Size;
 	}
 
@@ -416,17 +414,17 @@ ShaderReflection ProgramD3D::getShaderReflectionData(const IShader* shader, Prog
 
 		switch (res_desc.Type) {
 			case D3D_SIT_TEXTURE:
-				strncpy(reflection.textures[reflection.num_textures], res_desc.Name, MAX_SHADER_VAR_NAME);
+				reflection.textures[reflection.num_textures] = res_desc.Name;
 				++reflection.num_textures;
 				break;
 
 			case D3D_SIT_SAMPLER:
-				strncpy(reflection.samplers[reflection.num_samplers], res_desc.Name, MAX_SHADER_VAR_NAME);
+				reflection.samplers[reflection.num_samplers] = res_desc.Name;
 				++reflection.num_samplers;
 				break;
 
 			case D3D_SIT_STRUCTURED:
-				strncpy(reflection.structured_buffers[reflection.num_structured_buffers], res_desc.Name, MAX_SHADER_VAR_NAME);
+				reflection.structured_buffers[reflection.num_structured_buffers] = res_desc.Name;
 				++reflection.num_structured_buffers;
 				break;
 		}

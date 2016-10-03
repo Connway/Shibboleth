@@ -143,7 +143,7 @@ void RenderTargetD3D::clear(IRenderDevice& rd, unsigned int clear_flags, float c
 	GAFF_ASSERT(rd.getRendererType() == RENDERER_DIRECT3D);
 	IRenderDeviceD3D& rd3d = reinterpret_cast<IRenderDeviceD3D&>(*(reinterpret_cast<char*>(&rd) + sizeof(IRenderDevice)));
 
-	if (clear_flags | CLEAR_COLOR) {
+	if (clear_flags & CLEAR_COLOR) {
 		for (size_t i = 0; i < _render_target_views.size(); ++i) {
 			rd3d.getActiveDeviceContext()->ClearRenderTargetView(_render_target_views[i], (clear_color) ? clear_color : rd3d.getClearColor());
 		}

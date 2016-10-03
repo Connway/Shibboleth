@@ -20,55 +20,23 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#include "Shibboleth_SetupOtterUIState.h"
-#include <Shibboleth_IOtterUIManager.h>
+#include "Shibboleth_MainLoop.h"
 #include <Shibboleth_Utilities.h>
-#include <Shibboleth_IApp.h>
 
-NS_SHIBBOLETH
+static Shibboleth::MainLoop g_main_loop;
 
-const char* SetupOtterUIState::GetFriendlyName(void)
+DYNAMICEXPORT_C bool InitModule(Shibboleth::IApp& app)
 {
-	return "Setup OtterUI State";
+	Shibboleth::SetApp(app);
+	return g_main_loop.init();
 }
 
-SetupOtterUIState::SetupOtterUIState(void):
-	_file_system(*GetApp().getFileSystem()), _renderer(GetApp())
+DYNAMICEXPORT_C void ShutdownModule(void)
 {
+	g_main_loop.cleanup();
 }
 
-SetupOtterUIState::~SetupOtterUIState(void)
+DYNAMICEXPORT_C void MainLoop(void)
 {
+	g_main_loop.update();
 }
-
-bool SetupOtterUIState::init(unsigned int /*state_id*/)
-{
-	// Make sure we have a transition for when we finish loading.
-	// If we have more than one transition, you're using this state wrong
-	// and should fix it.
-	GAFF_ASSERT(_transitions.size() == 1);
-	//_state_id = state_id;
-	return true;
-}
-
-void SetupOtterUIState::enter(void)
-{
-}
-
-void SetupOtterUIState::update(void)
-{
-	IApp& app = GetApp();
-	IOtterUIManager& otterui_manager = app.getManagerT<IOtterUIManager>();
-
-	//otterui_manager.setSoundSystem();
-	otterui_manager.setFileSystem(&_file_system);
-	otterui_manager.setRenderer(&_renderer);
-
-	app.switchState(_transitions[0]);
-}
-
-void SetupOtterUIState::exit(void)
-{
-}
-
-NS_END

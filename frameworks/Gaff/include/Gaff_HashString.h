@@ -27,7 +27,7 @@ THE SOFTWARE.
 
 NS_GAFF
 
-template <class T, class Allocator = DefaultAllocator, class HashType = ContainerHash>
+template <class T, class Allocator = DefaultAllocator, class HashType = uint32_t>
 class HashString
 {
 public:
@@ -70,13 +70,14 @@ private:
 	String<T, Allocator> _string;
 	HashType _hash_value;
 	HashFunc _hash_func;
-
-	void calculateHash(void);
 };
 
 #include "Gaff_HashString.inl"
 
 template <class Allocator = DefaultAllocator> using AHashString = HashString<char, Allocator>;
 template <class Allocator = DefaultAllocator> using WHashString = HashString<wchar_t, Allocator>;
+
+template <class Allocator = DefaultAllocator> using HashString32 = AHashString<Allocator>;
+template <class Allocator = DefaultAllocator> using HashString64 = HashString<char, Allocator, uint64_t>;
 
 NS_END

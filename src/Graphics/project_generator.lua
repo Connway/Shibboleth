@@ -44,6 +44,9 @@ project "Graphics"
 	filter { "configurations:*Direct3D"}
 		defines { "USE_DX" }
 
+	filter { "configurations:*Analyze"}
+		defines { "USE_DX" }
+
 	filter { "configurations:*OpenGL"}
 		defines { "GLEW_STATIC" }
 
@@ -70,6 +73,19 @@ project "Graphics"
 
 	filter { "configurations:Release_OpenGL", "platforms:x64" }
 		targetsuffix "_OpenGL64"
+
+	-- Just use Direct3D for the Analyze builds.
+	filter { "configurations:Debug_Analyze", "platforms:x86" }
+		targetsuffix "_Direct3D32d"
+
+	filter { "configurations:Release_Analyze", "platforms:x86" }
+		targetsuffix "_Direct3D32"
+
+	filter { "configurations:Debug_Analyze", "platforms:x64" }
+		targetsuffix "_Direct3D64d"
+
+	filter { "configurations:Release_Analyze", "platforms:x64" }
+		targetsuffix "_Direct3D64"
 
 	filter { "configurations:*OpenGL", "system:windows" }
 		links { "OpenGL32" }

@@ -20,54 +20,34 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#include "Shibboleth_RegisterLuaClassesState.h"
-#include <Shibboleth_ILuaManager.h>
-#include <Shibboleth_IApp.h>
+#pragma once
 
-#ifdef PLATFORM_WINDOWS
-	#pragma warning(push)
-	#pragma warning(disable: 4100 4244 4267 4800)
-#endif
-
-#include <LuaState.h>
-#include <LuaBridge.h>
-
-#ifdef PLATFORM_WINDOWS
-	#pragma warning(pop)
-#endif
+#include <Shibboleth_IResourceManager.h>
 
 NS_SHIBBOLETH
 
-static void RegisterBaseClassesWithLua(lua::State& /*state*/)
-{
+class IRenderManager;
+class IUpdateManager;
+class Object;
 
-}
-
-RegisterLuaClassesState::RegisterLuaClassesState(IApp& app):
-	_app(app)
+class MainLoop
 {
-}
+public:
+	bool init(void);
+	void cleanup(void);
+	void update(void);
 
-RegisterLuaClassesState::~RegisterLuaClassesState(void)
-{
-}
+private:
+	IRenderManager* _render_mgr = nullptr;
+	IUpdateManager* _update_mgr = nullptr;
+	Object* _object = nullptr;
+	Object* _object2 = nullptr;
+	Object* _camera = nullptr;
+	Object* _floor = nullptr;
+	Array<ResourcePtr> _resources;
+	Gaff::SpinLock _res_lock;
 
-bool RegisterLuaClassesState::init(unsigned int)
-{
-	return true;
-}
-
-void RegisterLuaClassesState::enter(void)
-{
-}
-
-void RegisterLuaClassesState::update(void)
-{
-	_app.getManagerT<ILuaManager>().addRegistrant(Gaff::Bind(RegisterBaseClassesWithLua));
-}
-
-void RegisterLuaClassesState::exit(void)
-{
-}
+	void ResReq(ResourcePtr& res);
+};
 
 NS_END
