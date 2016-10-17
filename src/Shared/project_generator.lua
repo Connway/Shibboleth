@@ -5,7 +5,7 @@ project "Shared"
 		location ("../../project/" .. _ACTION .. "/shared")
 	end
 
-	configurations { "Debug", "Release" }
+	dofile("../../utils/default_configs.lua")
 	dofile("../../utils/config_map.lua")
 
 	kind "StaticLib"
@@ -32,7 +32,7 @@ project "Shared"
 		"../Memory/include",
 		"../../dependencies/rapidjson",
 		"../../frameworks/Gaff/include",
-		"../../dependencies/utf8-cpp"
+		"../../dependencies/EASTL/include"
 	}
 
 	dofile("../../utils/os_conditionals.lua")

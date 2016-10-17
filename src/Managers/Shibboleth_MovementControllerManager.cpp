@@ -51,7 +51,7 @@ const char* MovementControllerManager::getName(void) const
 
 void MovementControllerManager::getUpdateEntries(Array<UpdateEntry>& entries)
 {
-	entries.emplacePush(AString("Movement Controller Manager: Update"), Gaff::Bind(this, &MovementControllerManager::update));
+	entries.emplacePush(U8String("Movement Controller Manager: Update"), Gaff::Bind(this, &MovementControllerManager::update));
 }
 
 void MovementControllerManager::registerMovementComponent(Gaff::ReflectionHash controller_class_id, void* component)

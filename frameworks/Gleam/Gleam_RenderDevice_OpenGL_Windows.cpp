@@ -105,7 +105,7 @@ IRenderDevice::AdapterList RenderDeviceGL::getDisplayModes(int)
 		}
 
 #ifdef _UNICODE
-		GleamAString dev_string, dev_name;
+		GleamU8String dev_string, dev_name;
 		dev_string.convertToUTF8(disp_device.DeviceString, wcslen(disp_device.DeviceString));
 		dev_name.convertToUTF8(disp_device.DeviceName, wcslen(disp_device.DeviceName));
 #endif

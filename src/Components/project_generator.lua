@@ -5,7 +5,7 @@ project "Components"
 		location ("../../project/" .. _ACTION .. "/components")
 	end
 
-	configurations { "Debug", "Release" }
+	dofile("../../utils/default_configs.lua")
 	dofile("../../utils/config_map.lua")
 
 	kind "StaticLib"
@@ -47,7 +47,7 @@ project "ComponentsModule"
 		location ("../../project/" .. _ACTION .. "/components")
 	end
 
-	configurations { "Debug", "Release" }
+	dofile("../../utils/default_configs.lua")
 	dofile("../../utils/config_map.lua")
 
 	dofile("../../utils/module_suffix.lua")
@@ -94,7 +94,7 @@ project "ComponentsModule"
 		"Memory", "LuaJIT",
 		"BulletCollision",
 		"BulletDynamics",
-		"LinearMath", "Boxer"
+		"LinearMath"
 	}
 
 	links
@@ -104,7 +104,7 @@ project "ComponentsModule"
 		"OtterUI", "ResIL", "ResILU",
 		"zlib", "Gleam", "Game",
 		"esprit", "Components",
-		"Memory", "Boxer",
+		"Memory",
 		"BulletCollision",
 		"BulletDynamics",
 		"LinearMath"

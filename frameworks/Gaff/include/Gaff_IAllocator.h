@@ -59,6 +59,15 @@ class IAllocator
 public:
 	virtual ~IAllocator(void) {}
 
+	// For EASTL support.
+	virtual void* allocate(size_t n, int flags = 0) = 0;
+	virtual void* allocate(size_t n, size_t alignment, size_t offset, int flags = 0) = 0;
+	virtual void deallocate(void* p, size_t n) = 0;
+
+	virtual const char* get_name() const = 0;
+	virtual void set_name(const char* pName) = 0;
+
+	virtual void* alloc(size_t size_bytes, size_t alignment, const char* file, int line) = 0;
 	virtual void* alloc(size_t size_bytes, const char* file, int line) = 0;
 	virtual void free(void* data) = 0;
 

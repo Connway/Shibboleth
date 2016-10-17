@@ -20,13 +20,12 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
+#define GAFF_UTILS_NO_CONTAINERS
+
 #include "Shibboleth_Utilities.h"
-#include <Shibboleth_RefCounted.h>
-#include <Shibboleth_JobPool.h>
-#include <Shibboleth_String.h>
-#include <Shibboleth_IApp.h>
-#include <Gaff_ScopedLock.h>
-#include <Gaff_JSON.h>
+#include <Shibboleth_Memory.h>
+#include <Gaff_Utils.h>
+//#include <Gaff_JSON.h>
 
 NS_SHIBBOLETH
 
@@ -39,7 +38,7 @@ void SetApp(IApp& app)
 
 IApp& GetApp(void)
 {
-	GAFF_ASSERT(gApp);
+	//GAFF_ASSERT(gApp);
 	return *gApp;
 }
 
@@ -47,5 +46,5 @@ NS_END
 
 STATIC_FILE_FUNC
 {
-	Gaff::JSON::SetMemoryFunctions(&Shibboleth::ShibbolethAllocate, &Shibboleth::ShibbolethFree);
+	//Gaff::JSON::SetMemoryFunctions(&Shibboleth::ShibbolethAllocate, &Shibboleth::ShibbolethFree);
 }

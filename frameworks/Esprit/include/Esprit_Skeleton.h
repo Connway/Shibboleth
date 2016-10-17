@@ -22,8 +22,8 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Esprit_String.h"
-#include "Esprit_Array.h"
+#include "Esprit_HashString.h"
+#include "Esprit_Vector.h"
 #include "Esprit_Pose.h"
 
 NS_ESPRIT
@@ -34,10 +34,10 @@ public:
 	Skeleton(void);
 	~Skeleton(void);
 
-	size_t getNumBones(void) const;
+	INLINE size_t getNumBones(void) const;
 
 	INLINE size_t getParentIndex(size_t bone_index) const;
-	INLINE const AString& getName(size_t bone_index) const;
+	INLINE const HashString32& getName(size_t bone_index) const;
 	size_t getBoneIndex(const char* name) const;
 
 	void setReferenceTransform(size_t bone_index, const Gleam::TransformSIMD& transform);
@@ -50,8 +50,8 @@ public:
 
 private:
 	Pose _default_pose;
-	Array<size_t> _parent_indices;
-	Array<AString> _names;
+	Vector<size_t> _parent_indices;
+	Vector<HashString32> _bone_hashes;
 
 	GAFF_NO_COPY(Skeleton);
 	GAFF_NO_MOVE(Skeleton);

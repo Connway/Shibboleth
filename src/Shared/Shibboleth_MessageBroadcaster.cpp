@@ -32,13 +32,13 @@ void BroadcastJob(void* data)
 {
 	MessageBroadcaster* broadcaster = reinterpret_cast<MessageBroadcaster*>(data);
 
-	size_t index = AtomicIncrement(&broadcaster->_next_id) - 1;
-	Gaff::Pair<unsigned int, IMessage*>& msg_data = broadcaster->_message_queues[broadcaster->_curr_queue][index];
+	int32_t index = (++broadcaster->_next_id) - 1;
+	std::pair<int32_t, IMessage*>& msg_data = broadcaster->_message_queues[broadcaster->_curr_queue][index];
 
 	Gaff::ScopedReadLock<Gaff::ReadWriteSpinLock> listener_lock(broadcaster->_listener_lock);
 
 	MessageBroadcaster::ListenerData& listener_data = broadcaster->_listeners[msg_data.first];
-	Gaff::ScopedReadLock<Gaff::ReadWriteSpinLock> ld_lock(listener_data.lock);
+	Gaff::ScopedReadLock<Gaff::ReadWriteSpinLock> ld_lock(*listener_data.lock);
 
 	for (auto it = listener_data.listeners.begin(); it != listener_data.listeners.end(); ++it) {
 		it->second->call(*msg_data.second);
@@ -73,7 +73,7 @@ MessageBroadcaster::~MessageBroadcaster(void)
 void MessageBroadcaster::remove(BroadcastID id)
 {
 	Gaff::ScopedLock<Gaff::SpinLock> lock(_listener_remove_lock);
-	_listener_remove_queue.emplacePush(id);
+	_listener_remove_queue.emplace_back(id);
 }
 
 void MessageBroadcaster::update(bool wait)
@@ -93,7 +93,7 @@ void MessageBroadcaster::addListeners(void)
 		_listener_lock.readLock();
 
 		for (auto it_add = _listener_add_queue.begin(); it_add != _listener_add_queue.end(); ++it_add) {
-			auto it_listeners = _listeners.findElementWithKey(it_add->first.first);
+			auto it_listeners = _listeners.find(it_add->first.first);
 			ListenerData* listeners = nullptr;
 
 			if (it_listeners == _listeners.end()) {
@@ -111,15 +111,16 @@ void MessageBroadcaster::addListeners(void)
 
 			GAFF_ASSERT(listeners);
 
-			listeners->lock.writeLock();
+			listeners->lock->writeLock();
 
-			auto it = listeners->listeners.binarySearch(it_add->first.second, [](const Listener& lhs, size_t rhs) -> bool
+			auto it = eastl::lower_bound(listeners->listeners.begin(), listeners->listeners.end(), it_add->first.second,
+			[](const Listener& lhs, int32_t rhs) -> bool
 			{
 				return lhs.first < rhs;
 			});
 
 			listeners->listeners.emplace(it, it_add->first.second, it_add->second);
-			listeners->lock.writeUnlock();
+			listeners->lock->writeUnlock();
 		}
 
 		_listener_lock.readUnlock();
@@ -135,11 +136,13 @@ void MessageBroadcaster::removeListeners(void)
 		Gaff::ScopedReadLock<Gaff::ReadWriteSpinLock> read_lock(_listener_lock);
 
 		for (auto it_rem = _listener_remove_queue.begin(); it_rem != _listener_remove_queue.end(); ++it_rem) {
-			GAFF_ASSERT(_listeners.hasElementWithKey(it_rem->first));
+			GAFF_ASSERT(_listeners.find(it_rem->first) != _listeners.end());
 			ListenerData& listeners = _listeners[it_rem->first];
 
-			Gaff::ScopedWriteLock<Gaff::ReadWriteSpinLock> write_lock(listeners.lock);
-			auto it = listeners.listeners.binarySearch(it_rem->second, [](const Listener& lhs, size_t rhs) -> bool
+			Gaff::ScopedWriteLock<Gaff::ReadWriteSpinLock> write_lock(*listeners.lock);
+
+			auto it = eastl::lower_bound(listeners.listeners.begin(), listeners.listeners.end(), it_rem->second,
+			[](const Listener& lhs, int32_t rhs) -> bool
 			{
 				return lhs.first < rhs;
 			});
@@ -153,7 +156,7 @@ void MessageBroadcaster::removeListeners(void)
 void MessageBroadcaster::swapMessageQueues(void)
 {
 	Gaff::ScopedLock<Gaff::SpinLock> lock(_message_add_lock);
-	_message_queues[_curr_queue].clearNoFree();
+	_message_queues[_curr_queue].clear();
 	_curr_queue = 1 - _curr_queue;
 }
 
@@ -164,21 +167,21 @@ void MessageBroadcaster::spawnBroadcastTasks(bool wait)
 	}
 
 	// Might want to cache this array so we're not allocating all the time.
-	Array<Gaff::JobData> jobs_data(_message_queues[_curr_queue].size());
+	Vector<Gaff::JobData> jobs_data(_message_queues[_curr_queue].size());
 
 	_listener_lock.readLock();
 
 	for (auto it_msg = _message_queues[_curr_queue].begin(); it_msg != _message_queues[_curr_queue].end(); ++it_msg) {
 
 		// Only broadcast the message if there are people actually listening for it.
-		if (_listeners.findElementWithKey(it_msg->first) != _listeners.end()) {
-			jobs_data.emplacePush(&BroadcastJob, this);
+		if (_listeners.find(it_msg->first) != _listeners.end()) {
+			jobs_data.emplace_back(&BroadcastJob, this);
 		}
 	}
 
 	_listener_lock.readUnlock();
 
-	GetApp().getJobPool().addJobs(jobs_data.getArray(), jobs_data.size(), &_counter);
+	GetApp().getJobPool().addJobs(jobs_data.data(), jobs_data.size(), &_counter);
 
 	if (wait) {
 		waitForCounter();

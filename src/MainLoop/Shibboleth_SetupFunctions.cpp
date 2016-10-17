@@ -118,7 +118,7 @@ bool CreateResourceLoaders(void)
 			return false;
 		}
 
-		Array<AString> extensions;
+		Array<U8String> extensions;
 		extensions.emplacePush(".tga");
 		extensions.emplacePush(".jpeg");
 		extensions.emplacePush(".jpg");
@@ -200,7 +200,7 @@ bool CreateResourceLoaders(void)
 			return false;
 		}
 
-		Array<AString> extensions;
+		Array<U8String> extensions;
 		extensions.emplacePush(".b3d");
 		extensions.emplacePush(".dae");
 		extensions.emplacePush(".blend");

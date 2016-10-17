@@ -23,11 +23,7 @@ THE SOFTWARE.
 #pragma once
 
 #include "Shibboleth_MessageBroadcaster.h"
-#include "Shibboleth_DynamicLoader.h"
-#include "Shibboleth_HashString.h"
 #include "Shibboleth_LogManager.h"
-#include "Shibboleth_JobPool.h"
-#include "Shibboleth_Array.h"
 #include "Shibboleth_IApp.h"
 
 NS_SHIBBOLETH
@@ -52,26 +48,22 @@ public:
 	void run(void);
 	void destroy(void);
 
-	const IManager* getManager(const AHashString& name) const;
-	const IManager* getManager(const AString& name) const;
-	const IManager* getManager(const char* name) const;
-	IManager* getManager(const AHashString& name);
-	IManager* getManager(const AString& name);
-	IManager* getManager(const char* name);
+	const IManager* getManager(const HashString32& name) const;
+	IManager* getManager(const HashString32& name);
 
 	MessageBroadcaster& getBroadcaster(void);
 
-	const Array<unsigned int>& getStateTransitions(unsigned int state_id);
+	const Vector<unsigned int>& getStateTransitions(unsigned int state_id);
 	unsigned int getStateID(const char* name);
 	void switchState(unsigned int state);
 
 	IFileSystem* getFileSystem(void);
-	const HashMap<AHashString, AString>& getCmdLine(void) const;
-	HashMap<AHashString, AString>& getCmdLine(void);
+	const VectorMap<HashString32, U8String>& getCmdLine(void) const;
+	VectorMap<HashString32, U8String>& getCmdLine(void);
 
 	JobPool& getJobPool(void);
 
-	void getWorkerThreadIDs(Array<unsigned int>& out) const;
+	void getWorkerThreadIDs(Vector<uint32_t>& out) const;
 	void helpUntilNoJobs(void);
 	void doAJob(void);
 
@@ -113,7 +105,7 @@ private:
 		CreateFileSystemFunc create_func;
 	};
 
-	using ManagerMap = HashMap<AHashString, ManagerEntry>;
+	using ManagerMap = VectorMap<HashString32, ManagerEntry>;
 	using MainLoopFunc = void (*)(void);
 
 	bool _running;
@@ -128,7 +120,7 @@ private:
 
 	FileSystemData _fs;
 
-	HashMap<AHashString, AString> _cmd_line_args;
+	VectorMap<HashString32, U8String> _cmd_line_args;
 
 	bool loadFileSystem(void);
 	bool loadManagers(void);

@@ -23,7 +23,6 @@ THE SOFTWARE.
 #pragma once
 
 #include "Gaff_Assert.h"
-#include "Gaff_Pair.h"
 #include <cstring>
 #include <tuple>
 #include <new>
@@ -136,7 +135,7 @@ public:
 	FunctionType getFunction(void) const;
 
 	void set(T* object, FunctionType function);
-	Pair<T*, FunctionType> get(void) const;
+	std::pair<T*, FunctionType> get(void) const;
 
 	ReturnType call(Args... args);
 	void copy(char* buffer) const;

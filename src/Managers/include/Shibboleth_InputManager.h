@@ -73,7 +73,7 @@ private:
 	{
 		float modifier;
 		float* value;
-		AString alias;
+		U8String alias;
 	};
 
 	Gleam::IKeyboard* _keyboard;

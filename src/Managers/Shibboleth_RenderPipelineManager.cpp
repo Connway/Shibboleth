@@ -69,8 +69,8 @@ void RenderPipelineManager::allManagersCreated(void)
 
 void RenderPipelineManager::getUpdateEntries(Array<UpdateEntry>& entries)
 {
-	entries.emplacePush(AString("Render Pipeline Manager: Generate Command Lists"), Gaff::Bind(this, &RenderPipelineManager::generateCommandLists));
-	entries.emplacePush(AString("Render Pipeline Manager: Render To Screen"), Gaff::Bind(this, &RenderPipelineManager::renderToScreen));
+	entries.emplacePush(U8String("Render Pipeline Manager: Generate Command Lists"), Gaff::Bind(this, &RenderPipelineManager::generateCommandLists));
+	entries.emplacePush(U8String("Render Pipeline Manager: Render To Screen"), Gaff::Bind(this, &RenderPipelineManager::renderToScreen));
 }
 
 bool RenderPipelineManager::init(const char* initial_pipeline)
@@ -90,9 +90,9 @@ bool RenderPipelineManager::init(const char* initial_pipeline)
 	bool early_out = Gaff::ForEachTypeInDirectory<Gaff::FDT_RegularFile>("./Render Pipelines", [&](const char* name, size_t) -> bool
 	{
 #ifdef PLATFORM_WINDOWS
-		AString rel_path = AString("../Render Pipelines/") + name;
+		U8String rel_path = U8String("../Render Pipelines/") + name;
 #else
-		AString rel_path = AString("./Render Pipelines/") + name;
+		U8String rel_path = U8String("./Render Pipelines/") + name;
 #endif
 
 		// Error out if it's not a dynamic module

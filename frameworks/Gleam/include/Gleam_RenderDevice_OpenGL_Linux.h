@@ -81,7 +81,7 @@ private:
 	struct OutputInfo
 	{
 		GleamArray<ScreenMode> display_mode_list; // figure out xrandr data structure
-		GleamAString name;
+		GleamU8String name;
 	};
 
 	struct AdapterInfo

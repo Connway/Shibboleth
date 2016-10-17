@@ -76,7 +76,7 @@ NS_SHIBBOLETH
 //		return *((T*)_resource);
 //	}
 //
-//	ResourceContainerBase(const AHashString& res_key, uint64_t user_data):
+//	ResourceContainerBase(const HashString32& res_key, uint64_t user_data):
 //		 _res_key(res_key), _resource(nullptr), _user_data(user_data),
 //		_ref_count(0), _res_state(RS_NONE)
 //	{
@@ -105,7 +105,7 @@ NS_SHIBBOLETH
 //	unsigned int getRefCount(void) const { return _ref_count; }
 //	uint64_t getUserData(void) const { return _user_data; }
 //
-//	const AHashString& getResourceKey(void) const { return _res_key; }
+//	const HashString32& getResourceKey(void) const { return _res_key; }
 //
 //	ResourceState getResourceState(void) const { return _res_state; }
 //
@@ -136,7 +136,7 @@ NS_SHIBBOLETH
 //	}
 //
 //protected:
-//	AHashString _res_key;
+//	HashString32 _res_key;
 //
 //	Array< Gaff::FunctionBinder<void, ResourceContainerBase*> > _callbacks;
 //
@@ -159,15 +159,15 @@ NS_SHIBBOLETH
 //	struct FileReadInfo
 //	{
 //		//FilePopulationFunc file_func;
-//		AString json_element;
-//		AString append_to_filename;
+//		U8String json_element;
+//		U8String append_to_filename;
 //		bool optional;
 //	};
 //
 //	IResourceManager(void) {}
 //	virtual ~IResourceManager(void) {}
 //
-//	virtual void registerResourceLoader(IResourceLoader* res_loader, const Array<AString>& resource_types, unsigned int thread_pool = 0, const Array<FileReadInfo>& json_elements = Array<FileReadInfo>()) = 0;
+//	virtual void registerResourceLoader(IResourceLoader* res_loader, const Array<U8String>& resource_types, unsigned int thread_pool = 0, const Array<FileReadInfo>& json_elements = Array<FileReadInfo>()) = 0;
 //	virtual void registerResourceLoader(IResourceLoader* res_loader, const char* resource_type, unsigned int thread_pool = 0, const Array<FileReadInfo>& json_elements = Array<FileReadInfo>()) = 0;
 //
 //	virtual ResourcePtr requestResource(const char* resource_type, const char* instance_name, uint64_t user_data = 0) = 0;
@@ -180,7 +180,7 @@ NS_SHIBBOLETH
 //	WARNING: DO NOT MIX requestResource() AND loadResourceImmediately() CALLS! USE ONE OR THE OTHER, NOT BOTH!
 //	MIXING CALLS CAN POTENTIALLY CAUSE DEADLOCK!
 //	***********************************************************************************************************/
-//	virtual ResourcePtr loadResourceImmediately(const char* filename, uint64_t user_data, HashMap<AString, IFile*>& file_map) = 0;
+//	virtual ResourcePtr loadResourceImmediately(const char* filename, uint64_t user_data, HashMap<U8String, IFile*>& file_map) = 0;
 //
 //	virtual void addRequestAddedCallback(const Gaff::FunctionBinder<void, ResourcePtr&>& callback) = 0;
 //	virtual void removeRequestAddedCallback(const Gaff::FunctionBinder<void, ResourcePtr&>& callback) = 0;
@@ -192,7 +192,7 @@ NS_SHIBBOLETH
 class ResourceContainer;
 class IResourceLoader;
 
-using ResourceLoaderPtr = Gaff::SharedPtr<IResourceLoader, ProxyAllocator>;
+using ResourceLoaderPtr = Gaff::SharedPtr<IResourceLoader>;
 using ResourcePtr = Gaff::RefPtr<ResourceContainer>;
 
 class IResourceManager
@@ -201,7 +201,7 @@ public:
 	IResourceManager(void) {}
 	virtual ~IResourceManager(void) {}
 
-	virtual void registerResourceLoader(IResourceLoader* res_loader, const Array<AString>& resource_types, unsigned int thread_pool = 0) = 0;
+	virtual void registerResourceLoader(IResourceLoader* res_loader, const Array<U8String>& resource_types, unsigned int thread_pool = 0) = 0;
 	virtual void registerResourceLoader(IResourceLoader* res_loader, const char* resource_type, unsigned int thread_pool = 0) = 0;
 
 	virtual ResourcePtr requestResource(const char* resource_type, const char* instance_name, uint64_t user_data = 0) = 0;
@@ -214,7 +214,7 @@ public:
 	SHIB_INTERFACE_NAME("Resource Manager")
 
 private:
-	virtual void handleZeroRef(const AHashString& res_key) = 0;
+	virtual void handleZeroRef(const HashString32& res_key) = 0;
 
 	friend class ResourceContainer;
 };
@@ -254,7 +254,7 @@ public:
 		return *((T*)_resource);
 	}
 
-	ResourceContainer(const AHashString& res_key, uint64_t user_data, IResourceManager* res_mgr):
+	ResourceContainer(const HashString32& res_key, uint64_t user_data, IResourceManager* res_mgr):
 		_ref_count(0), _sub_res_loaded_count(0), _resource(nullptr),
 		_res_state(RS_NONE), _res_key(res_key), _user_data(user_data),
 		_res_mgr(res_mgr)
@@ -286,7 +286,7 @@ public:
 	unsigned int getRefCount(void) const override { return _ref_count; }
 	uint64_t getUserData(void) const { return _user_data; }
 
-	const AHashString& getResourceKey(void) const { return _res_key; }
+	const HashString32& getResourceKey(void) const { return _res_key; }
 
 	ResourceState getResourceState(void) const { return _res_state; }
 
@@ -325,7 +325,7 @@ private:
 	// Remove volatile?
 	volatile Gaff::IVirtualDestructor* _resource;
 	ResourceState _res_state;
-	AHashString _res_key;
+	HashString32 _res_key;
 	uint64_t _user_data;
 
 	Array< Gaff::FunctionBinder<void, ResourceContainer*> > _callbacks;

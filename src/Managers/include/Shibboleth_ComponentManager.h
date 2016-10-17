@@ -41,7 +41,7 @@ public:
 
 	void allManagersCreated(void) override;
 
-	Component* createComponent(const AHashString& name) override;
+	Component* createComponent(const HashString32& name) override;
 	Component* createComponent(const char* name) override;
 	void destroyComponent(Component* component) override;
 
@@ -60,7 +60,7 @@ private:
 		unsigned int component_id;
 	};
 
-	HashMap<AHashString, ComponentEntry> _components;
+	HashMap<HashString32, ComponentEntry> _components;
 
 	bool addComponents(DynamicLoader::ModulePtr& module);
 

@@ -26,9 +26,9 @@ THE SOFTWARE.
 #include "Shibboleth_HashString.h"
 #include "Shibboleth_IManager.h"
 #include "Shibboleth_JobPool.h"
-#include "Shibboleth_HashMap.h"
+#include "Shibboleth_VectorMap.h"
 #include "Shibboleth_String.h"
-#include "Shibboleth_Array.h"
+#include "Shibboleth_Vector.h"
 #include <Gaff_IRequestableInterface.h>
 
 NS_SHIBBOLETH
@@ -42,25 +42,25 @@ class IApp
 {
 public:
 	template <class T>
-	const T& getManagerTUnsafe(const AHashString& name) const
+	const T& getManagerTUnsafe(const HashString32& name) const
 	{
 		return *reinterpret_cast<T*>(getManager(name));
 	}
 
 	template <class T>
-	T& getManagerTUnsafe(const AHashString& name)
+	T& getManagerTUnsafe(const HashString32& name)
 	{
 		return *reinterpret_cast<T*>(getManager(name));
 	}
 
 	template <class T>
-	const T& getManagerTUnsafe(const AString& name) const
+	const T& getManagerTUnsafe(const U8String& name) const
 	{
 		return *reinterpret_cast<T*>(getManager(name));
 	}
 
 	template <class T>
-	T& getMangetManagerTUnsafeagerT(const AString& name)
+	T& getMangetManagerTUnsafeagerT(const U8String& name)
 	{
 		return *reinterpret_cast<T*>(getManager(name));
 	}
@@ -104,22 +104,18 @@ public:
 	IApp(void) {}
 	virtual ~IApp(void) {}
 
-	virtual const IManager* getManager(const AHashString& name) const = 0;
-	virtual const IManager* getManager(const AString& name) const = 0;
-	virtual const IManager* getManager(const char* name) const = 0;
-	virtual IManager* getManager(const AHashString& name) = 0;
-	virtual IManager* getManager(const AString& name) = 0;
-	virtual IManager* getManager(const char* name) = 0;
+	virtual const IManager* getManager(const HashString32& name) const = 0;
+	virtual IManager* getManager(const HashString32& name) = 0;
 
 	virtual MessageBroadcaster& getBroadcaster(void) = 0;
 
 	virtual IFileSystem* getFileSystem(void) = 0;
-	virtual const HashMap<AHashString, AString>& getCmdLine(void) const = 0;
-	virtual HashMap<AHashString, AString>& getCmdLine(void) = 0;
+	virtual const VectorMap<HashString32, U8String>& getCmdLine(void) const = 0;
+	virtual VectorMap<HashString32, U8String>& getCmdLine(void) = 0;
 
 	virtual JobPool& getJobPool(void) = 0;
 
-	virtual void getWorkerThreadIDs(Array<unsigned int>& out) const = 0;
+	virtual void getWorkerThreadIDs(Vector<uint32_t>& out) const = 0;
 	virtual void helpUntilNoJobs(void) = 0;
 	virtual void doAJob(void) = 0;
 

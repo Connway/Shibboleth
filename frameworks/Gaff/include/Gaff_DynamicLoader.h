@@ -23,8 +23,9 @@ THE SOFTWARE.
 #pragma once
 
 #include "Gaff_DynamicModule.h"
-#include "Gaff_SharedPtr.h"
-#include "Gaff_HashMap.h"
+#include "Gaff_HashString.h"
+#include "Gaff_SmartPtrs.h"
+#include "Gaff_VectorMap.h"
 
 NS_GAFF
 
@@ -48,8 +49,8 @@ public:
 	template <class Callback>
 	bool forEachModule(Callback&& callback)
 	{
-		for (typename HMap::Iterator it = _modules.begin(); it != _modules.end(); ++it) {
-			if (callback(*it)) {
+		for (auto it = _modules.begin(); it != _modules.end(); ++it) {
+			if (callback(it->second)) {
 				return true;
 			}
 		}
@@ -57,7 +58,7 @@ public:
 		return false;
 	}
 
-	typedef SharedPtr<DynamicModule, Allocator> ModulePtr;
+	using ModulePtr = SharedPtr<DynamicModule>;
 
 	DynamicLoader(const Allocator& allocator = Allocator());
 	~DynamicLoader(void);
@@ -70,8 +71,8 @@ public:
 	void removeModule(const char* name);
 
 private:
-	typedef AHashString<Allocator> HString;
-	typedef HashMap<HString, ModulePtr, Allocator> HMap;
+	using HString = HashString32<Allocator>;
+	using HMap = VectorMap<HString, ModulePtr, Allocator>;
 
 	HMap _modules;
 	Allocator _allocator;

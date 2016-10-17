@@ -84,7 +84,7 @@ bool Component::isActive(void) const
 	return _active;
 }
 
-const AString& Component::getName(void) const
+const U8String& Component::getName(void) const
 {
 	return _name;
 }

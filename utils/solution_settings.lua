@@ -12,8 +12,9 @@ rtti "Off"
 nativewchar "Default"
 floatingpoint "Fast"
 startproject "App"
+symbols "On"
 
-flags { "Symbols", "C++14" }
+flags { "C++14" }
 
 filter { "options:physx" }
 	defines { "USE_PHYSX" }
@@ -41,21 +42,13 @@ filter { "configurations:Release*", "platforms:x64" }
 	objdir "../build/intermediate"
 	targetdir "../build/output/x64/Release"
 
-filter { "configurations:Debug_Analyze", "platforms:x86" }
+filter { "configurations:Analyze", "platforms:x86" }
 	objdir "../build/intermediate"
-	targetdir "../build/output/x86/Debug_Analyze"
+	targetdir "../build/output/x86/Analyze"
 
-filter { "configurations:Debug_Analyze", "platforms:x64" }
+filter { "configurations:Analyze", "platforms:x64" }
 	objdir "../build/intermediate"
-	targetdir "../build/output/x64/Debug_Analyze"
-
-filter { "configurations:Release_Analyze", "platforms:x86" }
-	objdir "../build/intermediate"
-	targetdir "../build/output/x86/Release_Analyze"
-
-filter { "configurations:Release_Analyze", "platforms:x64" }
-	objdir "../build/intermediate"
-	targetdir "../build/output/x64/Release_Analyze"
+	targetdir "../build/output/x64/Analyze"
 
 filter { "configurations:Debug*", "action:gmake", "options:not debug_optimization" }
 	optimize "Off"
@@ -71,6 +64,16 @@ filter { "action:vs*", "configurations:*Analyze"}
 
 filter { "action:vs*" }
 	buildoptions { "/sdl" }
+
+filter { "system:windows" }
+	defines { "WIN32", "_WINDOWS" }
+
+filter { "system:windows", "configurations:*Clang" }
+	toolset "msc-llvm-vs2014"
+	-- defines { "__clang__" }
+
+filter { "system:windows", "configurations:not *Clang" }
+	toolset "v140"
 
 filter {}
 

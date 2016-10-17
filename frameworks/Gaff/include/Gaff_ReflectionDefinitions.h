@@ -523,13 +523,13 @@ public:
 	T getValue(const char* name) const;
 	bool getValue(const char* name, T& value) const;
 
-	Pair<AString<Allocator>, T> getEntry(size_t index) const;
+	Pair<U8String<Allocator>, T> getEntry(size_t index) const;
 
 	const char* getNameGeneric(unsigned int value) const;
 	unsigned int getValueGeneric(const char* name) const;
 	bool getValueGeneric(const char* name, unsigned int& value) const;
 
-	Pair<AString<Allocator>, unsigned int> getEntryGeneric(unsigned int index) const;
+	Pair<U8String<Allocator>, unsigned int> getEntryGeneric(unsigned int index) const;
 	size_t getNumEntries(void) const;
 
 	const char* getEnumName(void) const;
@@ -543,8 +543,8 @@ public:
 	EnumReflectionDefinition<T, Allocator>&& macroFix(void);
 
 private:
-	HashMap<AHashString<Allocator>, T, Allocator> _values_map;
-	AString<Allocator> _name;
+	HashMap<HashString32<Allocator>, T, Allocator> _values_map;
+	U8String<Allocator> _name;
 	bool _defined;
 
 	GAFF_NO_COPY(EnumReflectionDefinition);
@@ -564,7 +564,7 @@ public:
 		virtual void write(JSON& json, const T* object) const = 0;
 
 	protected:
-		AString<Allocator> _key;
+		U8String<Allocator> _key;
 	};
 
 	ReflectionDefinition(ReflectionDefinition<T, Allocator>&& ref_def);
@@ -630,7 +630,7 @@ public:
 	ReflectionDefinition<T, Allocator>&& addArray(const char* key, const Array<short, Allocator>& (T::*getter)(void) const, void (T::*setter)(const Array<short, Allocator>&));
 	ReflectionDefinition<T, Allocator>&& addArray(const char* key, const Array<unsigned char, Allocator>& (T::*getter)(void) const, void (T::*setter)(const Array<unsigned char, Allocator>&));
 	ReflectionDefinition<T, Allocator>&& addArray(const char* key, const Array<char, Allocator>& (T::*getter)(void) const, void (T::*setter)(const Array<char, Allocator>&));
-	ReflectionDefinition<T, Allocator>&& addArray(const char* key, const Array<AString<Allocator>, Allocator>& (T::*getter)(void) const, void (T::*setter)(const Array<AString<Allocator>, Allocator>&));
+	ReflectionDefinition<T, Allocator>&& addArray(const char* key, const Array<U8String<Allocator>, Allocator>& (T::*getter)(void) const, void (T::*setter)(const Array<U8String<Allocator>, Allocator>&));
 
 	ReflectionDefinition<T, Allocator>&& addArray(const char* key, Array<double, Allocator> T::* var);
 	ReflectionDefinition<T, Allocator>&& addArray(const char* key, Array<float, Allocator> T::* var);
@@ -640,7 +640,7 @@ public:
 	ReflectionDefinition<T, Allocator>&& addArray(const char* key, Array<short, Allocator> T::* var);
 	ReflectionDefinition<T, Allocator>&& addArray(const char* key, Array<unsigned char, Allocator> T::* var);
 	ReflectionDefinition<T, Allocator>&& addArray(const char* key, Array<char, Allocator> T::* var);
-	ReflectionDefinition<T, Allocator>&& addArray(const char* key, Array<AString<Allocator>, Allocator> T::* var);
+	ReflectionDefinition<T, Allocator>&& addArray(const char* key, Array<U8String<Allocator>, Allocator> T::* var);
 
 	template <unsigned int array_size, class T2>
 	ReflectionDefinition<T, Allocator>&& addArray(const char* key, const T2* (T::*getter)(void) const, void (T::*setter)(const T2*), const EnumReflectionDefinition<T2, Allocator>& enum_ref_def);
@@ -676,7 +676,7 @@ public:
 	ReflectionDefinition<T, Allocator>&& addArray(const char* key, const char* (T::*getter)(void) const, void (T::*setter)(const char*));
 
 	template <unsigned int array_size>
-	ReflectionDefinition<T, Allocator>&& addArray(const char* key, const AString<Allocator>* (T::*getter)(void) const, void (T::*setter)(const AString<Allocator>*));
+	ReflectionDefinition<T, Allocator>&& addArray(const char* key, const U8String<Allocator>* (T::*getter)(void) const, void (T::*setter)(const U8String<Allocator>*));
 
 	template <unsigned int array_size, class T2>
 	ReflectionDefinition<T, Allocator>&& addArray(const char* key, T2 (T::*var)[array_size], const EnumReflectionDefinition<T2, Allocator>& enum_ref_def);
@@ -712,7 +712,7 @@ public:
 	ReflectionDefinition<T, Allocator>&& addArray(const char* key, char (T::*var)[array_size]);
 
 	template <unsigned int array_size>
-	ReflectionDefinition<T, Allocator>&& addArray(const char* key, AString<Allocator> (T::*var)[array_size]);
+	ReflectionDefinition<T, Allocator>&& addArray(const char* key, U8String<Allocator> (T::*var)[array_size]);
 
 	ReflectionDefinition<T, Allocator>&& addDouble(const char* key, double T::* var);
 	ReflectionDefinition<T, Allocator>&& addFloat(const char* key, float T::* var);
@@ -723,7 +723,7 @@ public:
 	ReflectionDefinition<T, Allocator>&& addUChar(const char* key, unsigned char T::* var);
 	ReflectionDefinition<T, Allocator>&& addChar(const char* key, char T::* var);
 	ReflectionDefinition<T, Allocator>&& addBool(const char* key, bool T::* var);
-	ReflectionDefinition<T, Allocator>&& addString(const char* key, AString<Allocator> T::* var);
+	ReflectionDefinition<T, Allocator>&& addString(const char* key, U8String<Allocator> T::* var);
 
 	template <class T2>
 	ReflectionDefinition<T, Allocator>&& addEnum(const char* key, const EnumReflectionDefinition<T2, Allocator>& ref_def, T2 (T::*getter)(void) const, void (T::*setter)(T2 value));
@@ -740,7 +740,7 @@ public:
 	ReflectionDefinition<T, Allocator>&& addUChar(const char* key, unsigned char (T::*getter)(void) const, void (T::*setter)(unsigned char value));
 	ReflectionDefinition<T, Allocator>&& addChar(const char* key, char (T::*getter)(void) const, void (T::*setter)(char value));
 	ReflectionDefinition<T, Allocator>&& addBool(const char* key, bool (T::*getter)(void) const, void (T::*setter)(bool value));
-	ReflectionDefinition<T, Allocator>&& addString(const char* key, const AString<Allocator>& (T::*getter)(void) const, void (T::*setter)(const AString<Allocator>& value));
+	ReflectionDefinition<T, Allocator>&& addString(const char* key, const U8String<Allocator>& (T::*getter)(void) const, void (T::*setter)(const U8String<Allocator>& value));
 
 	ReflectionDefinition<T, Allocator>&& addCustom(const char* key, ValueContainerBase* container);
 
@@ -753,7 +753,7 @@ public:
 	ReflectionDefinition<T, Allocator>&& macroFix(void);
 
 private:
-	typedef SharedPtr<ValueContainerBase, Allocator> ValueContainerPtr;
+	using ValueContainerPtr = SharedPtr<ValueContainerBase>;
 
 	VAR_CONTAINER(DoubleContainer, double);
 	VAR_CONTAINER(FloatContainer, float);
@@ -764,7 +764,7 @@ private:
 	VAR_CONTAINER(UCharContainer, unsigned char);
 	VAR_CONTAINER(CharContainer, char);
 	VAR_CONTAINER(BoolContainer, bool);
-	VAR_CONTAINER_REF(StringContainer, AString<Allocator>);
+	VAR_CONTAINER_REF(StringContainer, U8String<Allocator>);
 
 	ARRAY_CONTAINER(ArrayDoubleContainer, double);
 	ARRAY_CONTAINER(ArrayFloatContainer, float);
@@ -775,7 +775,7 @@ private:
 	ARRAY_CONTAINER(ArrayUCharContainer, unsigned char);
 	ARRAY_CONTAINER(ArrayCharContainer, char);
 	//ARRAY_CONTAINER(ArrayBoolContainer, bool); // Maybe not support this and support BitArray instead?
-	ARRAY_CONTAINER(ArrayStringContainer, AString<Allocator>);
+	ARRAY_CONTAINER(ArrayStringContainer, U8String<Allocator>);
 
 	ARRAY_CONTAINER_FIXED(ArrayFixedDoubleContainer, double);
 	ARRAY_CONTAINER_FIXED(ArrayFixedFloatContainer, float);
@@ -785,7 +785,7 @@ private:
 	ARRAY_CONTAINER_FIXED(ArrayFixedShortContainer, short);
 	ARRAY_CONTAINER_FIXED(ArrayFixedUCharContainer, unsigned char);
 	ARRAY_CONTAINER_FIXED(ArrayFixedCharContainer, char);
-	ARRAY_CONTAINER_FIXED(ArrayFixedStringContainer, AString<Allocator>);
+	ARRAY_CONTAINER_FIXED(ArrayFixedStringContainer, U8String<Allocator>);
 
 	template <size_t array_size, class T2>
 	class ArrayFixedEnumContainer : public ValueContainerBase
@@ -1099,11 +1099,11 @@ private:
 		return static_cast<T2*>(reinterpret_cast<T*>(const_cast<void*>(object)));
 	}
 
-	HashMap<AHashString<Allocator>, ValueContainerPtr, Allocator> _value_containers;
+	HashMap<HashString32<Allocator>, ValueContainerPtr, Allocator> _value_containers;
 	Array<Pair< ReflectionHash, FunctionBinder<void*, const void*> >, Allocator> _base_ids;
 	Array<IOnCompleteFunctor*, Allocator> _callback_references;
 
-	AString<Allocator> _name;
+	U8String<Allocator> _name;
 	Allocator _allocator;
 	unsigned int _base_classes_remaining;
 	bool _defined;

@@ -84,7 +84,7 @@ private:
 		Array<UpdateData> _data_cache;
 		Array<Gaff::JobData> _jobs;
 		Gaff::Timer _timer;
-		AString _name;
+		U8String _name;
 
 		IFrameManager& _frame_mgr;
 

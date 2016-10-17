@@ -3,7 +3,7 @@ project "Esprit"
 		location ("../../project/" .. _ACTION .. "/frameworks")
 	end
 
-	configurations { "Debug", "Release" }
+	dofile("../../utils/default_configs.lua")
 	dofile("../../utils/config_map.lua")
 
 	kind "StaticLib"
@@ -15,6 +15,12 @@ project "Esprit"
 	filter { "options:simd_set_aligned"}
 		defines { "SIMD_SET_ALIGNED" }
 
+	filter { "system:windows", "configurations:not *Clang" }
+		flags { "FatalWarnings" }
+
+	filter { "system:not windows" }
+		flags { "FatalWarnings" }
+
 	filter {}
 
 	files { "**.h", "**.cpp" }
@@ -24,5 +30,5 @@ project "Esprit"
 		"include",
 		"../Gaff/include",
 		"../Gleam/include",
-		"../../dependencies/utf8-cpp"
+		"../../dependencies/EASTL/include"
 	}

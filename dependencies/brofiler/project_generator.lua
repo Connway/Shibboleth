@@ -5,7 +5,7 @@ if _OPTIONS["brofiler"] and _OS == "windows" then
 			location ("../../project/" .. _ACTION .. "/dependencies")
 		end
 
-		configurations { "Debug", "Release" }
+		dofile("../../utils/default_configs.lua")
 		dofile("../../utils/config_map.lua")
 
 		kind "SharedLib"

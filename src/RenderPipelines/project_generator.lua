@@ -5,7 +5,7 @@ project "RenderPipelines"
 		location ("../../project/" .. _ACTION .. "/renderpipelines")
 	end
 
-	configurations { "Debug", "Release" }
+	dofile("../../utils/default_configs.lua")
 	dofile("../../utils/config_map.lua")
 
 	dofile("../../utils/module_suffix.lua")
@@ -46,7 +46,7 @@ project "RenderPipelines"
 		"Gleam", "Memory",
 		"Managers", "Components",
 		"Game", "assimp",
-		"esprit", "Boxer"
+		"esprit"
 	}
 
 	links
@@ -55,7 +55,7 @@ project "RenderPipelines"
 		"Gleam", "Memory",
 		"Managers", "Components",
 		"Game", "assimp",
-		"esprit", "Boxer"
+		"esprit"
 	}
 
 	dofile("../../utils/os_conditionals.lua")

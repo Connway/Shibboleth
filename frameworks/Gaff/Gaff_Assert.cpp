@@ -22,7 +22,6 @@ THE SOFTWARE.
 
 #include "Gaff_Assert.h"
 #include "Gaff_Utils.h"
-#include <boxer/boxer.h>
 #include <cstdarg>
 
 #define FINAL_ASSERT_MSG_LEN 2048
@@ -49,26 +48,26 @@ void DefaultAssertHandler(const char* msg, const char* expr, const char* file, i
 		);
 	}
 
-	boxer::Selection selection = boxer::show(final_msg, "Assert Triggered!", boxer::Style::Error, boxer::Buttons::AbortRetryIgnore);
+	//boxer::Selection selection = boxer::show(final_msg, "Assert Triggered!", boxer::Style::Error, boxer::Buttons::AbortRetryIgnore);
 
-	switch (selection) {
-		// Terminate the application.
-		case boxer::Selection::Abort:
-			exit(-1);
-			break;
+	//switch (selection) {
+	//	// Terminate the application.
+	//	case boxer::Selection::Abort:
+	//		exit(-1);
+	//		break;
 
-		// Break into debugger if one is present.
-		case boxer::Selection::Retry:
-			if (IsDebuggerAttached()) {
-				DebugBreak();
-			}
-			break;
+	//	// Break into debugger if one is present.
+	//	case boxer::Selection::Retry:
+	//		if (IsDebuggerAttached()) {
+	//			DebugBreak();
+	//		}
+	//		break;
 
-		// Try to continue on.
-		case boxer::Selection::Ignore:
-		default:
-			break;
-	}
+	//	// Try to continue on.
+	//	case boxer::Selection::Ignore:
+	//	default:
+	//		break;
+	//}
 }
 
 void SetAssertHandler(AssertHandler handler)

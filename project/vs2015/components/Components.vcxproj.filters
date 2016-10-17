@@ -18,13 +18,7 @@
     <ClInclude Include="..\..\..\src\Components\include\Shibboleth_ICameraComponent.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\src\Components\include\Shibboleth_ILuaComponent.h">
-      <Filter>include</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\src\Components\include\Shibboleth_IModelComponent.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\src\Components\include\Shibboleth_LuaComponent.h">
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\src\Components\include\Shibboleth_ModelComponent.h">
@@ -34,7 +28,6 @@
   <ItemGroup>
     <ClCompile Include="..\..\..\src\Components\Shibboleth_BulletPhysicsComponent.cpp" />
     <ClCompile Include="..\..\..\src\Components\Shibboleth_CameraComponent.cpp" />
-    <ClCompile Include="..\..\..\src\Components\Shibboleth_LuaComponent.cpp" />
     <ClCompile Include="..\..\..\src\Components\Shibboleth_ModelComponent.cpp" />
   </ItemGroup>
 </Project>

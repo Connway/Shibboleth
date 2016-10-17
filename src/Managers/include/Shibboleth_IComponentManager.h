@@ -35,7 +35,7 @@ public:
 	IComponentManager(void) {}
 	virtual ~IComponentManager(void) {}
 
-	virtual Component* createComponent(const AHashString& name) = 0;
+	virtual Component* createComponent(const HashString32& name) = 0;
 	virtual Component* createComponent(const char* name) = 0;
 	virtual void destroyComponent(Component* component) = 0;
 

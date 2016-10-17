@@ -65,7 +65,7 @@ public:
 	virtual void setActive(bool active);
 	virtual bool isActive(void) const;
 
-	const AString& getName(void) const;
+	const U8String& getName(void) const;
 	void setName(const char* name);
 
 	const Object* getOwner(void) const;
@@ -76,7 +76,7 @@ public:
 	void setIndex(size_t index);
 
 private:
-	AString _name;
+	U8String _name;
 	Object* _owner;
 	size_t _comp_index;
 	bool _active;

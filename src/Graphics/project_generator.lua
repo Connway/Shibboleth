@@ -31,14 +31,14 @@ project "Graphics"
 	{
 		"Shared", "Gaff",
 		"Gleam", "glew",
-		"Memory", "Boxer"
+		"Memory"
 	}
 
 	links
 	{
 		"Shared", "Gaff",
 		"Gleam", "glew",
-		"Memory", "Boxer"
+		"Memory"
 	}
 
 	filter { "configurations:*Direct3D"}

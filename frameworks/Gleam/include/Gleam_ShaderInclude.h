@@ -34,13 +34,13 @@ public:
 	HRESULT __stdcall Open(D3D_INCLUDE_TYPE IncludeType, LPCSTR pFileName, LPCVOID pParentData, LPCVOID *ppData, UINT *pBytes);
 	HRESULT __stdcall Close(LPCVOID pData);
 
-	const GleamAString& getWorkingDir(void) const;
+	const GleamU8String& getWorkingDir(void) const;
 	void setWorkingDir(const char* dir);
 
 	static ShaderInclude gInclude;
 
 private:
-	GleamAString _working_dir;
+	GleamU8String _working_dir;
 };
 
 NS_END

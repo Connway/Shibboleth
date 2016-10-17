@@ -24,7 +24,7 @@ THE SOFTWARE.
 
 #include "Shibboleth_IFileSystem.h"
 #include "Shibboleth_String.h"
-#include "Shibboleth_Array.h"
+#include "Shibboleth_Vector.h"
 #include <Gaff_SpinLock.h>
 
 NS_SHIBBOLETH
@@ -61,20 +61,44 @@ public:
 private:
 	struct FileData
 	{
-		FileData(void) {}
-		FileData(FileData&& file_data):
-			name(std::move(file_data.name)),
-			file(file_data.file),
-			count(file_data.count)
+		FileData(void) = default;
+
+		FileData(const FileData& rhs):
+			name(rhs.name),
+			file(rhs.file),
+			count(static_cast<int32_t>(rhs.count))
 		{
 		}
 
-		AString name;
+		FileData(FileData&& rhs):
+			name(std::move(rhs.name)),
+			file(rhs.file),
+			count(static_cast<int32_t>(rhs.count))
+		{
+		}
+
+		FileData& operator=(const FileData& rhs)
+		{
+			name = rhs.name;
+			file = rhs.file;
+			count = static_cast<int32_t>(rhs.count);
+			return *this;
+		}
+
+		FileData& operator=(FileData&& rhs)
+		{
+			name = std::move(rhs.name);
+			file = rhs.file;
+			count = static_cast<int32_t>(rhs.count);
+			return *this;
+		}
+
+		U8String name;
 		IFile* file;
-		volatile unsigned int count;
+		std::atomic_int32_t count;
 	};
 
-	Array<FileData> _files;
+	Vector<FileData> _files;
 	Gaff::SpinLock _file_lock;
 };
 

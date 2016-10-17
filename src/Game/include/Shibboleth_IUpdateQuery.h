@@ -33,7 +33,7 @@ NS_SHIBBOLETH
 class IUpdateQuery
 {
 public:
-	using UpdateEntry = Gaff::Pair< AString, Gaff::FunctionBinder<void, double, void*> >;
+	using UpdateEntry = Gaff::Pair< U8String, Gaff::FunctionBinder<void, double, void*> >;
 
 	virtual ~IUpdateQuery(void) {}
 

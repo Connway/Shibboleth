@@ -23,24 +23,45 @@ THE SOFTWARE.
 #pragma once
 
 #include "Gaff_Defines.h"
+#include <atomic>
 
 NS_GAFF
 
 class SpinLock
 {
 public:
-	SpinLock(const SpinLock& lock); // For supporting Array
-	SpinLock(void);
-	~SpinLock(void);
+	SpinLock(void) = default;
 
-	INLINE void lock(void) const;
-	INLINE bool tryLock(void) const;
-	INLINE void unlock(void) const;
+	INLINE void lock(void);
+	INLINE bool tryLock(void);
+	INLINE void unlock(void);
 
 private:
-	mutable volatile long _lock;
+	std::atomic_flag _lock;
 
 	GAFF_NO_MOVE(SpinLock);
+	GAFF_NO_COPY(SpinLock);
+};
+
+class ReadWriteSpinLock
+{
+public:
+	ReadWriteSpinLock(void) = default;
+
+	INLINE void readLock(void);
+	INLINE bool tryReadLock(void);
+	INLINE void readUnlock(void);
+
+	INLINE void writeLock(void);
+	INLINE bool tryWriteLock(void);
+	INLINE void writeUnlock(void);
+
+private:
+	std::atomic_int32_t _read_lock;
+	std::atomic_flag _write_lock;
+
+	GAFF_NO_MOVE(ReadWriteSpinLock);
+	GAFF_NO_COPY(ReadWriteSpinLock);
 };
 
 NS_END

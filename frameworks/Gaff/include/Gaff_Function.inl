@@ -250,9 +250,9 @@ void MemberFunction<T, ReturnType, Args...>::set(T* object, FunctionType functio
 }
 
 template <class T, class ReturnType, class... Args>
-Pair<T*, typename MEMBER_FUNCTION::FunctionType> MemberFunction<T, ReturnType, Args...>::get(void) const
+std::pair<T*, typename MEMBER_FUNCTION::FunctionType> MemberFunction<T, ReturnType, Args...>::get(void) const
 {
-	return MakePair(_object, _function);
+	return std::make_pair(_object, _function);
 }
 
 template <class T, class ReturnType, class... Args>

@@ -55,8 +55,8 @@ const char* ObjectManager::getName(void) const
 
 void ObjectManager::getUpdateEntries(Array<UpdateEntry>& entries)
 {
-	entries.push(UpdateEntry(AString("Object Manager: Update New Objects"), Gaff::Bind(this, &ObjectManager::updateNewObjects)));
-	entries.push(UpdateEntry(AString("Object Manager: Update Dirty Objects"), Gaff::Bind(this, &ObjectManager::updateDirtyObjects)));
+	entries.push(UpdateEntry(U8String("Object Manager: Update New Objects"), Gaff::Bind(this, &ObjectManager::updateNewObjects)));
+	entries.push(UpdateEntry(U8String("Object Manager: Update Dirty Objects"), Gaff::Bind(this, &ObjectManager::updateDirtyObjects)));
 }
 
 Object* ObjectManager::createObject(void)

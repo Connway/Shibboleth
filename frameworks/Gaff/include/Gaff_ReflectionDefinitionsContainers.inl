@@ -296,7 +296,7 @@ VAR_CONTAINER_READ(StringContainer)
 	if (_var) {
 		object->*_var = json[reinterpret_cast<const char*>(ValueContainerBase::_key.getBuffer())].getString();
 	} else if (_setter) {
-		(object->*_setter)(AString<Allocator>(json[reinterpret_cast<const char*>(ValueContainerBase::_key.getBuffer())].getString()));
+		(object->*_setter)(U8String<Allocator>(json[reinterpret_cast<const char*>(ValueContainerBase::_key.getBuffer())].getString()));
 	}
 }
 
@@ -844,7 +844,7 @@ ARRAY_CONTAINER_READ(ArrayStringContainer)
 		});
 
 	} else if (_setter) {
-		Array<AString<Allocator>, Allocator>& arr = const_cast<Array<AString<Allocator>, Allocator>&>((object->*_getter)());
+		Array<U8String<Allocator>, Allocator>& arr = const_cast<Array<U8String<Allocator>, Allocator>&>((object->*_getter)());
 		arr.resize(array.size());
 
 		array.forEachInArray([&](size_t index, const JSON& value) -> bool
@@ -868,7 +868,7 @@ ARRAY_CONTAINER_WRITE(ArrayStringContainer)
 		}
 
 	} else if (_getter) {
-		const Array<AString<Allocator>, Allocator>& value = (object->*_getter)();
+		const Array<U8String<Allocator>, Allocator>& value = (object->*_getter)();
 
 		for (size_t i = 0; i < (object->*_var).size(); ++i) {
 			array.setObject(i, JSON::CreateString(value[i].getBuffer()));

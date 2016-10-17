@@ -29,7 +29,7 @@ NS_GLEAM
 
 template <class T> using GleamString = Gaff::String<T, Gleam::ProxyAllocator>;
 
-typedef Gaff::String<char, ProxyAllocator> GleamAString;
+typedef Gaff::String<char, ProxyAllocator> GleamU8String;
 typedef Gaff::String<wchar_t, ProxyAllocator> GleamWString;
 
 NS_END

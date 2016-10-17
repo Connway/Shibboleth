@@ -58,8 +58,12 @@ const char* Image::GetErrorString(unsigned int error)
 {
 #ifdef _UNICODE
 	static char temp[STRING_CONVERSION_BUFFER_SIZE] = { 0 };
+
 	const wchar_t* str = iluErrorString(error);
-	ConvertToUTF8(temp, str, wcslen(str));
+	char* temp_begin = temp;
+	char* temp_end = temp + STRING_CONVERSION_BUFFER_SIZE;
+
+	eastl::DecodePart(str, str + eastl::CharStrlen(str), temp_begin, temp_end);
 	return temp;
 #else
 	return iluErrorString(error);
@@ -144,7 +148,7 @@ bool Image::load(const char* filename)
 	ilBindImage(_image);
 
 #ifdef _UNICODE
-	CONVERT_TO_UTF16(temp, filename);
+	CONVERT_STRING(wchar_t, temp, filename);
 	return ilLoadImage(temp) != 0;
 #else
 	return ilLoadImage(filename) != 0;
@@ -162,7 +166,7 @@ bool Image::save(const char* filename, bool allow_overwrite)
 	}
 
 #ifdef _UNICODE
-	CONVERT_TO_UTF16(temp, filename);
+	CONVERT_STRING(wchar_t, temp, filename);
 	bool ret = ilSaveImage(temp) != 0;
 #else
 	bool ret = ilSaveImage(filename) != 0;

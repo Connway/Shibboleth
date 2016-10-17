@@ -358,7 +358,7 @@ OcclusionManager::~OcclusionManager(void)
 
 void OcclusionManager::getUpdateEntries(Array<UpdateEntry>& entries)
 {
-	entries.push(UpdateEntry(AString("Occlusion Manager: Update"), Gaff::Bind(this, &OcclusionManager::update)));
+	entries.push(UpdateEntry(U8String("Occlusion Manager: Update"), Gaff::Bind(this, &OcclusionManager::update)));
 }
 
 const char* OcclusionManager::getName(void) const

@@ -61,7 +61,7 @@ void ComponentManager::allManagersCreated(void)
 
 	Gaff::ForEachTypeInDirectory<Gaff::FDT_RegularFile>("./Components", [&](const char* name, size_t) -> bool
 	{
-		AString rel_path = AString("./Components/") + name;
+		U8String rel_path = U8String("./Components/") + name;
 
 		// Error out if it's not a dynamic module
 		if (!Gaff::File::CheckExtension(name, DYNAMIC_EXTENSION)) {
@@ -104,7 +104,7 @@ void ComponentManager::allManagersCreated(void)
 	GetApp().getLogManager().logMessage(LogManager::LOG_NORMAL, GetApp().getLogFileName(), "Finished Loading Components\n\n");
 }
 
-Component* ComponentManager::createComponent(const AHashString& name)
+Component* ComponentManager::createComponent(const HashString32& name)
 {
 	size_t index = _components.indexOf(name);
 	GAFF_ASSERT(name.size() && index != SIZE_T_FAIL);
@@ -122,7 +122,7 @@ Component* ComponentManager::createComponent(const AHashString& name)
 Component* ComponentManager::createComponent(const char* name)
 {
 	GAFF_ASSERT(name && _components.indexOf(name) != SIZE_T_FAIL);
-	return createComponent(AHashString(name));
+	return createComponent(HashString32(name));
 }
 
 void ComponentManager::destroyComponent(Component* component)
@@ -174,7 +174,7 @@ bool ComponentManager::addComponents(DynamicLoader::ModulePtr& module)
 	unsigned int num_comps = num_comp_func();
 
 	for (unsigned int i = 0; i < num_comps; ++i) {
-		AHashString name = comp_name_func(i);
+		HashString32 name = comp_name_func(i);
 
 		if (_components.indexOf(name) != SIZE_T_FAIL) {
 			GetApp().getLogManager().logMessage(LogManager::LOG_ERROR, GetApp().getLogFileName(), "ERROR - Component with name '%s' already registered.\n", name.getBuffer());

@@ -6,13 +6,13 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\..\frameworks\Esprit\include\Esprit_Array.h">
-      <Filter>include</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\frameworks\Esprit\include\Esprit_Defines.h">
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\frameworks\Esprit\include\Esprit_Global.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\frameworks\Esprit\include\Esprit_HashString.h">
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\frameworks\Esprit\include\Esprit_Pose.h">
@@ -24,7 +24,7 @@
     <ClInclude Include="..\..\..\frameworks\Esprit\include\Esprit_Skeleton.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\frameworks\Esprit\include\Esprit_String.h">
+    <ClInclude Include="..\..\..\frameworks\Esprit\include\Esprit_Vector.h">
       <Filter>include</Filter>
     </ClInclude>
   </ItemGroup>

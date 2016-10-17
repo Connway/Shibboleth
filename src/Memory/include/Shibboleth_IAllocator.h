@@ -27,6 +27,7 @@ THE SOFTWARE.
 
 #define SHIB_ALLOC_GLOBAL_CAST GAFF_ALLOC_CAST
 #define SHIB_ALLOC_CAST(Type, size, pool_index, allocator) reinterpret_cast<Type>(SHIB_ALLOC(size, pool_index, allocator))
+#define SHIB_ALLOC_ALIGNED(size, alignment, pool_index, allocator) (allocator).alloc(size, alignment, pool_index, __FILE__, __LINE__)
 #define SHIB_ALLOC(size, pool_index, allocator) (allocator).alloc(size, pool_index, __FILE__, __LINE__)
 #define SHIB_ALLOC_GLOBAL GAFF_ALLOC
 #define SHIB_ALLOC_ARRAYT GAFF_ALLOC_ARRAYT
@@ -43,8 +44,11 @@ public:
 	IAllocator(void) {}
 	virtual ~IAllocator(void) {}
 
-	virtual size_t getPoolIndex(const char* pool_name) = 0;
-	virtual void* alloc(size_t size_bytes, size_t pool_index, const char* file, int line) = 0;
+	virtual int32_t getPoolIndex(const char* pool_name) = 0;
+	virtual void* alloc(size_t size_bytes, size_t alignment, int32_t pool_index, const char* file, int line) = 0;
+	virtual void* alloc(size_t size_bytes, int32_t pool_index, const char* file, int line) = 0;
+
+	virtual void* alloc(size_t size_bytes, size_t alignment, const char* file, int line) = 0;
 	virtual void* alloc(size_t size_bytes, const char* file, int line) = 0;
 
 	GAFF_NO_COPY(IAllocator);

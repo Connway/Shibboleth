@@ -5,7 +5,7 @@ project "Messages"
 		location ("../../project/" .. _ACTION .. "/messages")
 	end
 
-	configurations { "Debug", "Release" }
+	dofile("../../utils/default_configs.lua")
 	dofile("../../utils/config_map.lua")
 
 	kind "StaticLib"

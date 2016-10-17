@@ -22,30 +22,18 @@ THE SOFTWARE.
 
 #include "Gaff_SpinLock.h"
 #include "Gaff_Assert.h"
-#include "Gaff_Atomic.h"
+
+#ifdef PLATFORM_WINDOWS
+	#include "Gaff_IncludeWindows.h"
+#endif
 
 NS_GAFF
 
-SpinLock::SpinLock(const SpinLock& lock):
-	_lock(0)
+void SpinLock::lock(void)
 {
-	GAFF_ASSERT(!lock._lock);
-}
+	int32_t tries = 0;
 
-SpinLock::SpinLock(void):
-	_lock(0)
-{
-}
-
-SpinLock::~SpinLock(void)
-{
-}
-
-void SpinLock::lock(void) const
-{
-	unsigned int tries = 0;
-
-	while (AtomicAcquire(&_lock)) {
+	while (_lock.test_and_set()) {
 		++tries;
 
 		if (tries == NUM_TRIES_UNTIL_YIELD) {
@@ -55,15 +43,76 @@ void SpinLock::lock(void) const
 	}
 }
 
-bool SpinLock::tryLock(void) const
+bool SpinLock::tryLock(void)
 {
-	return !AtomicAcquire(&_lock);
+	return !_lock.test_and_set();
 }
 
-void SpinLock::unlock(void) const
+void SpinLock::unlock(void)
 {
-	GAFF_ASSERT(_lock);
-	AtomicRelease(&_lock);
+	_lock.clear();
+}
+
+
+
+void ReadWriteSpinLock::readLock(void)
+{
+	int32_t tries = 0;
+
+	while (!_read_lock && _write_lock.test_and_set()) {
+		++tries;
+
+		if (tries == NUM_TRIES_UNTIL_YIELD) {
+			tries = 0;
+			YieldThread();
+		}
+	}
+
+	++_read_lock;
+}
+
+bool ReadWriteSpinLock::tryReadLock(void)
+{
+	if (!_write_lock.test_and_set()) {
+		++_read_lock;
+		return true;
+	}
+
+	return false;
+}
+
+void ReadWriteSpinLock::readUnlock(void)
+{
+	int32_t new_val = --_read_lock;
+	GAFF_ASSERT(new_val > -1);
+
+	if (!new_val) {
+		_write_lock.clear();
+	}
+}
+
+void ReadWriteSpinLock::writeLock(void)
+{
+	int32_t tries = 0;
+
+	while (_write_lock.test_and_set()) {
+		++tries;
+
+		if (tries == NUM_TRIES_UNTIL_YIELD) {
+			tries = 0;
+			YieldThread();
+		}
+	}
+}
+
+bool ReadWriteSpinLock::tryWriteLock(void)
+{
+	return !_write_lock.test_and_set();
+}
+
+void ReadWriteSpinLock::writeUnlock(void)
+{
+	_write_lock.clear();
 }
 
 NS_END

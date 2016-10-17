@@ -109,7 +109,7 @@ ResourceLoadData TextureLoader::load(const IFile* file, ResourceContainer* res_c
 	ResourceLoadData res_load_data = { texture_data };
 	res_load_data.sub_res_data.resize(1);
 	res_load_data.sub_res_data[0] = {
-		AString(json["image_file"].getString()),
+		U8String(json["image_file"].getString()),
 		0,
 		Gaff::Bind<TextureLoaderFunctor, void, ResourceContainer*>(TextureLoaderFunctor(res_cont, texture_data, this, json))
 	};

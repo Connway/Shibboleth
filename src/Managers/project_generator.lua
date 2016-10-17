@@ -5,7 +5,7 @@ project "Managers"
 		location ("../../project/" .. _ACTION .. "/managers")
 	end
 
-	configurations { "Debug", "Release" }
+	dofile("../../utils/default_configs.lua")
 	dofile("../../utils/config_map.lua")
 
 	kind "StaticLib"
@@ -49,7 +49,7 @@ project "ManagersModule"
 		location ("../../project/" .. _ACTION .. "/managers")
 	end
 
-	configurations { "Debug", "Release" }
+	dofile("../../utils/default_configs.lua")
 	dofile("../../utils/config_map.lua")
 
 	dofile("../../utils/module_suffix.lua")
@@ -105,7 +105,7 @@ project "ManagersModule"
 		"OtterUI", "Game",
 		"Gleam", "Managers",
 		"Memory", "LuaJIT",
-		"Boxer", "Components",
+		"Components",
 		"BulletCollision",
 		"BulletDynamics",
 		"LinearMath", "imgui",

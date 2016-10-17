@@ -29,15 +29,54 @@ NS_ESPRIT
 class ProxyAllocator : public Gaff::IAllocator
 {
 public:
-	void* alloc(size_t size_bytes, const char* file, int line)
+	ProxyAllocator(const char* name = nullptr):
+		_name(name)
+	{
+	}
+
+	// For EASTL support.
+	void* allocate(size_t n, int flags = 0) override
+	{
+		return GetAllocator()->allocate(n, flags);
+	}
+
+	void* allocate(size_t n, size_t alignment, size_t offset, int flags = 0) override
+	{
+		return GetAllocator()->allocate(n, alignment, offset, flags);
+	}
+
+	void deallocate(void* p, size_t n) override
+	{
+		return GetAllocator()->deallocate(p, n);
+	}
+
+	const char* get_name() const override
+	{
+		return _name;
+	}
+
+	void set_name(const char* pName) override
+	{
+		_name = pName;
+	}
+
+	void* alloc(size_t size_bytes, size_t alignment, const char* file, int line) override
+	{
+		return GetAllocator()->alloc(size_bytes, alignment, file, line);
+	}
+
+	void* alloc(size_t size_bytes, const char* file, int line) override
 	{
 		return GetAllocator()->alloc(size_bytes, file, line);
 	}
 
-	void free(void* data)
+	void free(void* data) override
 	{
 		GetAllocator()->free(data);
 	}
+
+private:
+	const char* _name;
 };
 
 NS_END

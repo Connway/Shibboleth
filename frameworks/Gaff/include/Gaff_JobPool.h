@@ -20,16 +20,14 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-/*! \file */
-
 #pragma once
 
 #include "Gaff_SpinLock.h"
 #include "Gaff_Thread.h"
-#include "Gaff_Atomic.h"
+#include "Gaff_Vector.h"
 #include "Gaff_Queue.h"
 #include "Gaff_Utils.h"
-#include "Gaff_Pair.h"
+#include <atomic>
 
 NS_GAFF
 
@@ -60,10 +58,10 @@ struct JobData
 
 struct Counter
 {
-	volatile unsigned int count;
+	std::atomic_int32_t count;
 };
 
-using JobPair = Pair<JobData, Counter*>;
+using JobPair = std::pair<JobData, Counter*>;
 
 template <class Allocator = DefaultAllocator>
 class JobPool
@@ -85,17 +83,17 @@ public:
 	void helpUntilNoJobs(void);
 	void doAJob(void);
 
-	unsigned int getNumActiveThreads(void) const;
+	int32_t getNumActiveThreads(void) const;
 	size_t getNumTotalThreads(void) const;
 
-	void getThreadIDs(unsigned int* out) const;
+	void getThreadIDs(uint32_t* out) const;
 
 private:
 	struct JobQueue
 	{
 		Queue<JobPair, Allocator> jobs;
-		SpinLock read_write_lock;
-		SpinLock thread_lock;
+		UniquePtr<SpinLock> read_write_lock;
+		UniquePtr<SpinLock> thread_lock;
 	};
 
 	struct ThreadData
@@ -104,13 +102,13 @@ private:
 		bool terminate;
 	};
 
-	Array<JobQueue, Allocator> _job_pools;
-	Array<Thread, Allocator> _threads;
+	Vector<JobQueue, Allocator> _job_pools;
+	Vector<Thread, Allocator> _threads;
 	ThreadData _thread_data;
 
 	Allocator _allocator;
 
-	volatile unsigned int _active_threads;
+	std::atomic_int32_t _active_threads;
 
 	static void ProcessMainJobQueue(JobQueue& job_queue);
 	static void ProcessJobQueue(JobQueue& job_queue);

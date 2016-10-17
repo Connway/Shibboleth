@@ -144,7 +144,7 @@ void BulletPhysicsManager::allManagersCreated(void)
 
 void BulletPhysicsManager::getUpdateEntries(Array<UpdateEntry>& entries)
 {
-	entries.emplacePush(AString("Physics Manager: Update"), Gaff::Bind(this, &BulletPhysicsManager::update));
+	entries.emplacePush(U8String("Physics Manager: Update"), Gaff::Bind(this, &BulletPhysicsManager::update));
 }
 
 void BulletPhysicsManager::clearMainWorld(void)

@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="include">
@@ -7,9 +7,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\src\Shared\include\Shibboleth_App.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\src\Shared\include\Shibboleth_Array.h">
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\src\Shared\include\Shibboleth_Array2D.h">
@@ -22,9 +19,6 @@
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\src\Shared\include\Shibboleth_DynamicLoader.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\src\Shared\include\Shibboleth_HashMap.h">
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\src\Shared\include\Shibboleth_HashString.h">
@@ -57,9 +51,6 @@
     <ClInclude Include="..\..\..\src\Shared\include\Shibboleth_LooseFileSystem.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\src\Shared\include\Shibboleth_Map.h">
-      <Filter>include</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\src\Shared\include\Shibboleth_MessageBroadcaster.h">
       <Filter>include</Filter>
     </ClInclude>
@@ -75,10 +66,19 @@
     <ClInclude Include="..\..\..\src\Shared\include\Shibboleth_ReflectionDefinitions.h">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\src\Shared\include\Shibboleth_SmartPtrs.h">
+      <Filter>include</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\src\Shared\include\Shibboleth_String.h">
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\src\Shared\include\Shibboleth_Utilities.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\Shared\include\Shibboleth_Vector.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\Shared\include\Shibboleth_VectorMap.h">
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\src\Shared\include\Shibboleth_Watcher.h">
@@ -90,6 +90,7 @@
     <ClCompile Include="..\..\..\src\Shared\Shibboleth_LogManager.cpp" />
     <ClCompile Include="..\..\..\src\Shared\Shibboleth_LooseFileSystem.cpp" />
     <ClCompile Include="..\..\..\src\Shared\Shibboleth_MessageBroadcaster.cpp" />
+    <ClCompile Include="..\..\..\src\Shared\Shibboleth_NewDelete.cpp" />
     <ClCompile Include="..\..\..\src\Shared\Shibboleth_Utilities.cpp" />
   </ItemGroup>
   <ItemGroup>

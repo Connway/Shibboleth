@@ -41,15 +41,41 @@ newoption
 	description = "Specify to generate the PhysX build project."
 }
 
+newoption
+{
+	trigger = "gen-clang",
+	description = "Generate Clang configurations for Visual Studio projects."
+}
+
 solution "Shibboleth"
 	if _ACTION then
 		location ("../project/" .. _ACTION)
 	end
 
 	if os.get() == "windows" then
-		configurations { "Debug_OpenGL", "Release_OpenGL", "Debug_Direct3D", "Release_Direct3D", "Debug_Analyze", "Release_Analyze" }
+		if _OPTIONS["gen-clang"] then
+			configurations
+			{
+				"Debug_OpenGL", "Release_OpenGL",
+				"Debug_Direct3D", "Release_Direct3D",
+				"Debug_OpenGL_Clang", "Release_OpenGL_Clang",
+				"Debug_Direct3D_Clang", "Release_Direct3D_Clang",
+				"Analyze"
+			}
+		else
+			configurations
+			{
+				"Debug_OpenGL", "Release_OpenGL",
+				"Debug_Direct3D", "Release_Direct3D",
+				"Analyze"
+			}
+		end
 	else
-		configurations { "Debug_OpenGL", "Release_OpenGL", "Debug_Analyze", "Release_Analyze" }
+		configurations
+		{
+			"Debug_OpenGL", "Release_OpenGL",
+			"Analyze"
+		}
 	end
 
 	dofile("solution_settings.lua")
@@ -67,6 +93,9 @@ solution "Shibboleth"
 	for i = 1, table.getn(framework_generators) do
 		dofile(framework_generators[i])
 	end
+
+	group "Tests"
+	dofile("../tests/project_generator.lua")
 
 	for i = 1, table.getn(project_generators) do
 		dofile(project_generators[i])

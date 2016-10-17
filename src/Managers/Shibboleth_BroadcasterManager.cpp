@@ -48,7 +48,7 @@ const char* BroadcasterManager::getName(void) const
 
 void BroadcasterManager::getUpdateEntries(Array<IUpdateQuery::UpdateEntry>& entries)
 {
-	entries.emplacePush(AString("Broadcaster Manager: Update"), Gaff::Bind(this, &BroadcasterManager::update));
+	entries.emplacePush(U8String("Broadcaster Manager: Update"), Gaff::Bind(this, &BroadcasterManager::update));
 }
 
 MessageBroadcaster* BroadcasterManager::getBroadcaster(unsigned int object_id, bool create_if_doesnt_exist)

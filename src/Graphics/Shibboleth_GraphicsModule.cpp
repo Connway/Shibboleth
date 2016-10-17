@@ -45,7 +45,7 @@ THE SOFTWARE.
 #include <Gleam_Mouse.h>
 
 static Shibboleth::ProxyAllocator g_proxy_allocator("Graphics");
-static Shibboleth::AString g_graphics_log_file;
+static Shibboleth::U8String g_graphics_log_file;
 
 static void GraphicsLog(const char* message, Gleam::LOG_MSG_TYPE type)
 {

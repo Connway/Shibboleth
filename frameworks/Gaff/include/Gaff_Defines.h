@@ -33,17 +33,21 @@ THE SOFTWARE.
 	#define NS_END }
 #endif
 
-// Declares copy constructor and assignment operator as private.
 #define GAFF_NO_COPY(x) \
-	private: \
-		x(const x&) = delete; \
-		const x& operator=(const x&) = delete
+	x(const x&) = delete; \
+	x& operator=(const x&) = delete
 
-// Declares move constructor and assignment operator as private.
 #define GAFF_NO_MOVE(x) \
-	private: \
-		x(x&&) = delete; \
-		const x& operator=(x&&) = delete
+	x(x&&) = delete; \
+	x& operator=(x&&) = delete
+
+#define GAFF_COPY_DEFAULT(x) \
+	x(const x&) = default; \
+	x& operator=(const x&) = default
+
+#define GAFF_MOVE_DEFAULT(x) \
+	x(x&&) = default; \
+	x& operator=(x&&) = default
 
 #ifdef ATTEMPT_INLINE
 	#define INLINE inline
@@ -56,6 +60,8 @@ THE SOFTWARE.
 
 #define SAFEGAFFRELEASE(x) if (x) { x->release(); x = nullptr; } // Safely releases pointers that implement IRefCounted.
 #define SAFEGAFFADDREF(x) if (x) { x->addRef(); } // Safely adds a reference to pointers that implement IRefCounted.
+
+#define GAFF_REF(x) ((void)x)
 
 #define SIZE_T_FAIL static_cast<size_t>(-1) // Returned from functions that use size_t's, but can potentially fail
 #define UINT_FAIL static_cast<unsigned int>(-1)  // Returned from functions that use unsigned int's, but can potentially fail
@@ -124,7 +130,7 @@ THE SOFTWARE.
 #endif
 
 #include <utility> // For std::move() and std::forward()
-#include <stdint.h>
+#include <cstdint> // For (u)int*_t and size_t
 
 NS_GAFF
 

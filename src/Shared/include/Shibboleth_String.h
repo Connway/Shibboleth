@@ -28,7 +28,7 @@ THE SOFTWARE.
 NS_SHIBBOLETH
 
 template <class T> using String = Gaff::String<T, ProxyAllocator>;
-typedef Gaff::String<char, ProxyAllocator> AString;
+typedef Gaff::String<char, ProxyAllocator> U8String;
 typedef Gaff::String<wchar_t, ProxyAllocator> WString;
 
 NS_END
