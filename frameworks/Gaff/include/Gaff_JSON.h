@@ -22,7 +22,6 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Gaff_HashMap.h"
 #include "Gaff_IncludeRapidJSON.h"
 #include <rapidjson/stringbuffer.h>
 #include <rapidjson/document.h>
@@ -34,9 +33,6 @@ THE SOFTWARE.
 
 NS_GAFF
 
-/*!
-	\brief Class that represents a JSON object.
-*/
 class JSON
 {
 public:

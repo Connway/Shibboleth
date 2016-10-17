@@ -20,23 +20,17 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-/*! \file */
-
 #pragma once
 
 #include "Gaff_Defines.h"
 
 NS_GAFF
 
-/*!
-	\brief Acquires and releases a lock within a scope.
-	\tparam Lock The type of the lock.
-*/
 template <class Lock>
 class ScopedLock
 {
 public:
-	ScopedLock(const Lock& lock):
+	ScopedLock(Lock& lock):
 		_lock(lock)
 	{
 		_lock.lock();
@@ -48,21 +42,17 @@ public:
 	}
 
 private:
-	const Lock& _lock;
+	Lock& _lock;
 
 	GAFF_NO_COPY(ScopedLock);
 	GAFF_NO_MOVE(ScopedLock);
 };
 
-/*!
-	\brief Acquires a read lock within a scope.
-	\tparam Lock The type of the lock.
-*/
 template <class Lock>
 class ScopedReadLock
 {
 public:
-	ScopedReadLock(const Lock& lock):
+	ScopedReadLock(Lock& lock):
 		_lock(lock)
 	{
 		_lock.readLock();
@@ -74,21 +64,17 @@ public:
 	}
 
 private:
-	const Lock& _lock;
+	Lock& _lock;
 
 	GAFF_NO_COPY(ScopedReadLock);
 	GAFF_NO_MOVE(ScopedReadLock);
 };
 
-/*!
-	\brief Acquires a write lock within a scope.
-	\tparam Lock The type of the lock.
-*/
 template <class Lock>
 class ScopedWriteLock
 {
 public:
-	ScopedWriteLock(const Lock& lock):
+	ScopedWriteLock(Lock& lock):
 		_lock(lock)
 	{
 		_lock.writeLock();
@@ -100,7 +86,7 @@ public:
 	}
 
 private:
-	const Lock& _lock;
+	Lock& _lock;
 
 	GAFF_NO_COPY(ScopedWriteLock);
 	GAFF_NO_MOVE(ScopedWriteLock);

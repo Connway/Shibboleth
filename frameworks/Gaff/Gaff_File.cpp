@@ -88,7 +88,7 @@ bool File::Remove(const char* file_name)
 	GAFF_ASSERT(file_name && strlen(file_name));
 
 #ifdef _UNICODE
-	CONVERT_TO_UTF16(temp, file_name);
+	CONVERT_STRING(wchar_t, temp, file_name);
 	return !_wremove(temp);
 #else
 	return !remove(file_name);
@@ -100,8 +100,8 @@ bool File::Rename(const char* old_file_name, const char* new_file_name)
 	GAFF_ASSERT(old_file_name && new_file_name && strlen(old_file_name) && strlen(new_file_name));
 
 #ifdef _UNICODE
-	CONVERT_TO_UTF16(temp1, old_file_name);
-	CONVERT_TO_UTF16(temp2, new_file_name);
+	CONVERT_STRING(wchar_t, temp1, old_file_name);
+	CONVERT_STRING(wchar_t, temp2, new_file_name);
 	return !_wrename(temp1, temp2);
 #else
 	return !rename(old_file_name, new_file_name);
@@ -168,7 +168,7 @@ bool File::open(const char* file_name, OPEN_MODE mode)
 	_mode = mode;
 
 #ifdef _UNICODE
-	CONVERT_TO_UTF16(temp, file_name);
+	CONVERT_STRING(wchar_t, temp, file_name);
 	_wfopen_s(&_file, temp, gOpenModesW[mode]);
 #else
 	_file = fopen(file_name, gOpenModes[mode]);
@@ -191,7 +191,7 @@ bool File::redirect(FILE* file, const char* file_name, OPEN_MODE mode)
 	GAFF_ASSERT(!_file && file_name);
 
 #ifdef _UNICODE
-	CONVERT_TO_UTF16(temp, file_name);
+	CONVERT_STRING(wchar_t, temp, file_name);
 	_wfreopen_s(&_file, temp, gOpenModesW[mode], file);
 #else
 	_file = freopen(file_name, gOpenModes[mode], file);
@@ -213,7 +213,7 @@ bool File::redirect(const char* file_name, OPEN_MODE mode)
 	GAFF_ASSERT(_file && file_name);
 
 #ifdef _UNICODE
-	CONVERT_TO_UTF16(temp, file_name);
+	CONVERT_STRING(wchar_t, temp, file_name);
 	FILE* out = nullptr;
 	_wfreopen_s(&out, temp, gOpenModesW[mode], _file);
 #else

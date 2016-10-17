@@ -74,8 +74,8 @@ const char* NuklearManager::getName(void) const
 
 void NuklearManager::getUpdateEntries(Array<UpdateEntry>& entries)
 {
-	entries.emplacePush(AString("Nuklear Manager: Generate Draw Commands"), Gaff::Bind(this, &NuklearManager::generateDrawCommands));
-	entries.emplacePush(AString("Nuklear Manager: Submit Draw Commands"), Gaff::Bind(this, &NuklearManager::submitDrawCommands));
+	entries.emplacePush(U8String("Nuklear Manager: Generate Draw Commands"), Gaff::Bind(this, &NuklearManager::generateDrawCommands));
+	entries.emplacePush(U8String("Nuklear Manager: Submit Draw Commands"), Gaff::Bind(this, &NuklearManager::submitDrawCommands));
 }
 
 bool NuklearManager::init(void)

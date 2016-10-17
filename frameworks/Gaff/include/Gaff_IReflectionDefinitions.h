@@ -58,7 +58,7 @@ public:
 	virtual unsigned int getValueGeneric(const char* name) const = 0;
 	virtual bool getValueGeneric(const char* name, unsigned int& value) const = 0;
 
-	virtual Pair<AString<Allocator>, unsigned int> getEntryGeneric(unsigned int index) const = 0;
+	virtual Pair<U8String<Allocator>, unsigned int> getEntryGeneric(unsigned int index) const = 0;
 	virtual size_t getNumEntries(void) const = 0;
 
 	virtual const char* getEnumName(void) const = 0;

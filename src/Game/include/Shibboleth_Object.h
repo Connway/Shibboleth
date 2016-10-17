@@ -171,7 +171,7 @@ private:
 	Gaff::SpinLock _children_lock;
 	Object* _parent;
 
-	AHashString _name;
+	HashString32 _name;
 
 	Array<Component*> _components;
 	IComponentManager& _comp_mgr;

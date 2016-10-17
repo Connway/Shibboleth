@@ -3,7 +3,7 @@ project "Bullet3Common"
 		location ("../../../project/" .. _ACTION .. "/dependencies")
 	end
 
-	configurations { "Debug", "Release" }
+	dofile("../../../utils/default_configs.lua")
 	dofile("../../../utils/config_map.lua")
 
 	language "C++"

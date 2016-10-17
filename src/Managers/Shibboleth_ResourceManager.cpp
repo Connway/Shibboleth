@@ -123,11 +123,11 @@ const char* ResourceManager::getName(void) const
 	return GetFriendlyName();
 }
 
-void ResourceManager::registerResourceLoader(IResourceLoader* res_loader, const Array<AString>& resource_types, unsigned int thread_pool)
+void ResourceManager::registerResourceLoader(IResourceLoader* res_loader, const Array<U8String>& resource_types, unsigned int thread_pool)
 {
 	GAFF_ASSERT(res_loader && resource_types.size());
 
-	LoaderData loader_data = { ResourceLoaderPtr(res_loader), thread_pool };
+	LoaderData loader_data = { ResourceLoaderPtr(res_loader, GetAllocator()), thread_pool };
 
 	for (auto it = resource_types.begin(); it != resource_types.end(); ++it) {
 		GAFF_ASSERT(_resource_loaders.indexOf(*it) == SIZE_T_FAIL);
@@ -138,14 +138,14 @@ void ResourceManager::registerResourceLoader(IResourceLoader* res_loader, const 
 void ResourceManager::registerResourceLoader(IResourceLoader* res_loader, const char* resource_type, unsigned int thread_pool)
 {
 	GAFF_ASSERT(_resource_loaders.indexOf(resource_type) == SIZE_T_FAIL);
-	LoaderData loader_data = { ResourceLoaderPtr(res_loader), thread_pool };
+	LoaderData loader_data = { ResourceLoaderPtr(res_loader, GetAllocator()), thread_pool };
 	_resource_loaders[resource_type] = loader_data;
 }
 
 ResourcePtr ResourceManager::requestResource(const char* resource_type, const char* instance_name, uint64_t user_data)
 {
 	GAFF_ASSERT(resource_type && strlen(resource_type) && instance_name && strlen(instance_name));
-	AHashString res_key(instance_name);
+	HashString32 res_key(instance_name);
 
 	Gaff::ScopedLock<Gaff::SpinLock> lock(_res_cache_lock);
 	auto it = _resource_cache.findElementWithKey(res_key);
@@ -187,7 +187,7 @@ ResourcePtr ResourceManager::requestResource(const char* resource_type, const ch
 ResourcePtr ResourceManager::requestResource(const char* filename, uint64_t user_data)
 {
 	GAFF_ASSERT(filename && strlen(filename));
-	AHashString res_key(filename);
+	HashString32 res_key(filename);
 
 	Gaff::ScopedLock<Gaff::SpinLock> lock(_res_cache_lock);
 	auto it = _resource_cache.findElementWithKey(res_key);
@@ -195,7 +195,7 @@ ResourcePtr ResourceManager::requestResource(const char* filename, uint64_t user
 	if (it == _resource_cache.end()) {
 		// We have no cache of this resource or have yet to make a request for it,
 		// so make a load request.
-		AString extension = res_key.getString().getExtension('.');
+		U8String extension = res_key.getString().getExtension('.');
 		GAFF_ASSERT(extension.size() && _resource_loaders.indexOf(extension) != SIZE_T_FAIL);
 
 		ResourceContainer* res_cont = SHIB_ALLOCT(ResourceContainer, *GetAllocator(), res_key, user_data, this);
@@ -241,7 +241,7 @@ void ResourceManager::removeRequestAddedCallback(const Gaff::FunctionBinder<void
 	}
 }
 
-void ResourceManager::handleZeroRef(const AHashString& res_key)
+void ResourceManager::handleZeroRef(const HashString32& res_key)
 {
 	Gaff::ScopedLock<Gaff::SpinLock> lock(_res_cache_lock);
 	GAFF_ASSERT(_resource_cache.indexOf(res_key) != SIZE_T_FAIL);

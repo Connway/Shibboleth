@@ -5,7 +5,7 @@ project "App"
 		location ("../../project/" .. _ACTION .. "/app")
 	end
 
-	configurations { "Debug", "Release" }
+	dofile("../../utils/default_configs.lua")
 	dofile("../../utils/config_map.lua")
 
 	dofile("../../utils/module_suffix.lua")
@@ -35,13 +35,13 @@ project "App"
 	dependson
 	{
 		"Shared", "Gaff",
-		"Memory", "Boxer"
+		"Memory"
 	}
 
 	links
 	{
 		"Shared", "Gaff",
-		"Memory", "Boxer"
+		"Memory"
 	}
 
 	filter { "system:windows" }

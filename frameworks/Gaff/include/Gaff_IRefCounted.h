@@ -37,7 +37,7 @@ public:
 	virtual void addRef(void) const = 0;
 	virtual void release(void) const = 0;
 
-	virtual unsigned int getRefCount(void) const = 0;
+	virtual int32_t getRefCount(void) const = 0;
 
 	GAFF_NO_COPY(IRefCounted);
 	GAFF_NO_MOVE(IRefCounted);

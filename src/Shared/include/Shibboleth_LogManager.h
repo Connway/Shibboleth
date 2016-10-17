@@ -23,7 +23,7 @@ THE SOFTWARE.
 #pragma once
 
 #include "Shibboleth_String.h"
-#include "Shibboleth_Array.h"
+#include "Shibboleth_Vector.h"
 #include <Gaff_Function.h>
 #include <Gaff_SpinLock.h>
 #include <Gaff_Thread.h>
@@ -63,15 +63,15 @@ private:
 		{
 		}
 
-		AString log_file;
-		AString message;
+		U8String log_file;
+		U8String message;
 		LOG_TYPE type;
 	};
 
 	bool _shutdown;
 
-	Array<LogCallback> _log_callbacks;
-	Array<LogTasks> _logs;
+	Vector<LogCallback> _log_callbacks;
+	Vector<LogTasks> _logs;
 	Gaff::SpinLock _log_queue_lock;
 
 	Gaff::Event _log_event;

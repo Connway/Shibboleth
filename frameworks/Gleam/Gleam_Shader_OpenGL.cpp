@@ -206,7 +206,7 @@ bool ShaderGL::loadFileAndCompileShader(unsigned int shader_type, const char* fi
 	Gaff::File shader(file_path, Gaff::File::READ_BINARY);
 
 	if (!shader.isOpen()) {
-		GleamAString msg("Failed to open shader file: ");
+		GleamU8String msg("Failed to open shader file: ");
 		msg += file_path;
 
 		PrintfToLog(msg.getBuffer(), LOG_ERROR);
@@ -223,7 +223,7 @@ bool ShaderGL::loadFileAndCompileShader(unsigned int shader_type, const char* fi
 	if (!shader.readEntireFile(shader_src)) {
 		GleamFree(shader_src);
 
-		GleamAString msg("Failed to read shader file: ");
+		GleamU8String msg("Failed to read shader file: ");
 		msg += file_path;
 
 		PrintfToLog(msg.getBuffer(), LOG_ERROR);

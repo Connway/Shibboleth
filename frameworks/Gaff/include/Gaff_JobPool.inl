@@ -39,12 +39,17 @@ bool JobPool<Allocator>::init(unsigned int num_pools, unsigned int num_threads)
 {
 	_job_pools.resize(num_pools + 1);
 
+	for (JobQueue& job_queue : _job_pools) {
+		job_queue.read_write_lock = UniquePtr<SpinLock>(GAFF_ALLOCT(Gaff::SpinLock, _allocator));
+		job_queue.thread_lock = UniquePtr<SpinLock>(GAFF_ALLOCT(Gaff::SpinLock, _allocator));
+	}
+
 	_thread_data.job_pool = this;
 	_thread_data.terminate = false;
 	_threads.reserve(num_threads);
 
 	for (unsigned long i = 0; i < num_threads; ++i) {
-		_threads.emplacePush();
+		_threads.emplace_back();
 
 		if (!_threads[i].create(JobThread, &_thread_data)) {
 			destroy();
@@ -82,20 +87,20 @@ void JobPool<Allocator>::addJobs(JobData* jobs, size_t num_jobs, Counter** count
 			*counter = cnt = GAFF_ALLOCT(Counter, _allocator);
 		}
 
-		AtomicExchange(&cnt->count, static_cast<unsigned int>(num_jobs));
+		cnt->count = static_cast<int32_t>(num_jobs);
 	}
 
 	typename JobPool<Allocator>::JobQueue& job_queue = _job_pools[pool];
 
-	job_queue.read_write_lock.lock();
-	job_queue.jobs.reserve(job_queue.jobs.size() + num_jobs);
+	job_queue.read_write_lock->lock();
+	//job_queue.jobs.reserve(job_queue.jobs.size() + num_jobs);
 
 	for (size_t i = 0; i < num_jobs; ++i) {
 		GAFF_ASSERT(jobs[i].job_func);
-		job_queue.jobs.emplacePush(JobPair(jobs[i], cnt));
+		job_queue.jobs.emplace_back(JobPair(jobs[i], cnt));
 	}
 
-	job_queue.read_write_lock.unlock();
+	job_queue.read_write_lock->unlock();
 }
 
 template <class Allocator>
@@ -146,9 +151,9 @@ void JobPool<Allocator>::helpUntilNoJobs(void)
 	for (unsigned int i = 1; i < _job_pools.size(); ++i) {
 		typename JobPool<Allocator>::JobQueue& job_queue = _job_pools[i];
 
-		if (job_queue.thread_lock.tryLock()) {
+		if (job_queue.thread_lock->tryLock()) {
 			ProcessJobQueue(job_queue);
-			job_queue.thread_lock.unlock();
+			job_queue.thread_lock->unlock();
 		}
 	}
 
@@ -165,39 +170,39 @@ void JobPool<Allocator>::doAJob(void)
 	for (size_t i = 1; i < _job_pools.size(); ++i) {
 		typename JobPool<Allocator>::JobQueue& job_queue = _job_pools[i];
 
-		if (job_queue.thread_lock.tryLock()) {
+		if (job_queue.thread_lock->tryLock()) {
 			if (!job_queue.jobs.empty()) {
-				job = job_queue.jobs.first();
+				job = job_queue.jobs.front();
 				job_queue.jobs.pop();
 				DoJob(job);
 
-				job_queue.thread_lock.unlock();
+				job_queue.thread_lock->unlock();
 				return;
 
 			} else {
-				job_queue.thread_lock.unlock();
+				job_queue.thread_lock->unlock();
 			}
 		}
 	}
 
 	typename JobPool<Allocator>::JobQueue& job_queue = _job_pools[0];
 
-	job_queue.read_write_lock.lock();
+	job_queue.read_write_lock->lock();
 
 	if (!job_queue.jobs.empty()) {
-		job = job_queue.jobs.first();
+		job = job_queue.jobs.front();
 		job_queue.jobs.pop();
 
-		job_queue.read_write_lock.unlock();
+		job_queue.read_write_lock->unlock();
 		DoJob(job);
 
 	} else {
-		job_queue.read_write_lock.unlock();
+		job_queue.read_write_lock->unlock();
 	}
 }
 
 template <class Allocator>
-unsigned int JobPool<Allocator>::getNumActiveThreads(void) const
+int32_t JobPool<Allocator>::getNumActiveThreads(void) const
 {
 	return _active_threads;
 }
@@ -209,9 +214,9 @@ size_t JobPool<Allocator>::getNumTotalThreads(void) const
 }
 
 template <class Allocator>
-void JobPool<Allocator>::getThreadIDs(unsigned int* out) const
+void JobPool<Allocator>::getThreadIDs(uint32_t* out) const
 {
-	for (unsigned int i = 0; i < _threads.size(); ++i) {
+	for (size_t i = 0; i < _threads.size(); ++i) {
 		out[i] = _threads[i].getID();
 	}
 }
@@ -222,17 +227,17 @@ void JobPool<Allocator>::ProcessMainJobQueue(typename JobPool<Allocator>::JobQue
 	JobPair job;
 
 	for (;;) {
-		job_queue.read_write_lock.lock();
+		job_queue.read_write_lock->lock();
 
 		if (!job_queue.jobs.empty()) {
-			job = job_queue.jobs.first();
+			job = job_queue.jobs.front();
 			job_queue.jobs.pop();
 
-			job_queue.read_write_lock.unlock();
+			job_queue.read_write_lock->unlock();
 			DoJob(job);
 
 		} else {
-			job_queue.read_write_lock.unlock();
+			job_queue.read_write_lock->unlock();
 			break;
 		}
 	}
@@ -244,7 +249,7 @@ void JobPool<Allocator>::ProcessJobQueue(typename JobPool<Allocator>::JobQueue& 
 	JobPair job;
 
 	while (!job_queue.jobs.empty()) {
-		job = job_queue.jobs.first();
+		job = job_queue.jobs.front();
 		job_queue.jobs.pop();
 		DoJob(job);
 	}
@@ -256,7 +261,7 @@ void JobPool<Allocator>::DoJob(JobPair& job)
 	job.first.job_func(job.first.job_data);
 
 	if (job.second) {
-		//Gaff::DebugPrintf("FUNC: %p\n", job.first);
+		//Gaff::DebugPrintf("FUNC: %p\n", job.front);
 
 		//if (!job.second->count) {
 		//	Gaff::DebugPrintf("JOB FAIL(%d) - %p:(%d)\n", Gaff::Thread::GetCurrentThreadID(), job.second, job.second->count);
@@ -265,7 +270,7 @@ void JobPool<Allocator>::DoJob(JobPair& job)
 		//}
 
 		GAFF_ASSERT(job.second->count);
-		AtomicDecrement(&job.second->count);
+		--job.second->count;
 	}
 }
 
@@ -276,10 +281,10 @@ Thread::ReturnType THREAD_CALLTYPE JobPool<Allocator>::JobThread(void* thread_da
 	JobPool<Allocator>* job_pool = td->job_pool;
 
 	while (!td->terminate) {
-		AtomicIncrement(&job_pool->_active_threads);
+		++job_pool->_active_threads;
 		job_pool->helpUntilNoJobs();
 		YieldThread(); // Probably a good idea to give some time back to the CPU for other stuff.
-		AtomicDecrement(&job_pool->_active_threads);
+		--job_pool->_active_threads;
 	}
 
 	return 0;

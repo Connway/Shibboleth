@@ -24,8 +24,8 @@ THE SOFTWARE.
 #include "Shibboleth_LooseFileSystem.h"
 #include "Shibboleth_Utilities.h"
 #include "Shibboleth_IManager.h"
-#include "Shibboleth_String.h"
 #include <Gaff_CrashHandler.h>
+#include <Gaff_Directory.h>
 #include <Gaff_Utils.h>
 #include <Gaff_JSON.h>
 #include <Gaff_File.h>
@@ -118,7 +118,7 @@ bool App::init(int argc, char** argv)
 // Still single-threaded at this point, so ok that we're not using the spinlock
 bool App::loadFileSystem(void)
 {
-	if (!_cmd_line_args.hasElementWithKey("lfs") && !_cmd_line_args.hasElementWithKey("loose_file_system")) {
+	if (_cmd_line_args.find("lfs") != _cmd_line_args.end() && _cmd_line_args.find("loose_file_system") != _cmd_line_args.end()) {
 		_fs.file_system_module = _dynamic_loader.loadModule("./FileSystem" BIT_EXTENSION DYNAMIC_EXTENSION, "File System");
 	}
 
@@ -175,7 +175,7 @@ bool App::loadManagers(void)
 	// Load managers from DLLs
 	Gaff::ForEachTypeInDirectory<Gaff::FDT_RegularFile>("./Managers", [&](const char* name, size_t) -> bool
 	{
-		AString rel_path = AString("./Managers/") + name;
+		U8String rel_path = U8String("./Managers/") + name;
 
 		// If it's not a dynamic module, just skip over it.
 		if (!Gaff::File::CheckExtension(name, DYNAMIC_EXTENSION)) {
@@ -188,21 +188,21 @@ bool App::loadManagers(void)
 		}
 
 #ifdef PLATFORM_WINDOWS
-		DynamicLoader::ModulePtr module = _dynamic_loader.loadModule(("../" + rel_path).getBuffer(), name);
+		DynamicLoader::ModulePtr module = _dynamic_loader.loadModule(("../" + rel_path).data(), name);
 #else
-		DynamicLoader::ModulePtr module = _dynamic_loader.loadModule(rel_path.getBuffer(), name);
+		DynamicLoader::ModulePtr module = _dynamic_loader.loadModule(rel_path.data(), name);
 #endif
 
 		if (module) {
 			ManagerEntry::InitManagerModuleFunc init_func = module->getFunc<ManagerEntry::InitManagerModuleFunc>("InitModule");
 
 			if (!init_func) {
-				_logger.logMessage(LogManager::LOG_ERROR, _log_file_name, "ERROR - Failed to find function 'InitModule' in dynamic module '%s'\n", rel_path.getBuffer());
+				_logger.logMessage(LogManager::LOG_ERROR, _log_file_name, "ERROR - Failed to find function 'InitModule' in dynamic module '%s'\n", rel_path.data());
 				error = true;
 				return true;
 
 			} else if (!init_func(*this)) {
-				_logger.logMessage(LogManager::LOG_ERROR, _log_file_name, "ERROR - Failed to initialize '%s'\n", rel_path.getBuffer());
+				_logger.logMessage(LogManager::LOG_ERROR, _log_file_name, "ERROR - Failed to initialize '%s'\n", rel_path.data());
 				error = true;
 				return true;
 			}
@@ -211,7 +211,7 @@ bool App::loadManagers(void)
 
 			if (!num_mgrs_func) {
 				_dynamic_loader.removeModule(name);
-				_logger.logMessage(LogManager::LOG_ERROR, _log_file_name, "ERROR - Failed to find function 'GetNumManagers' in dynamic module '%s'\n", rel_path.getBuffer());
+				_logger.logMessage(LogManager::LOG_ERROR, _log_file_name, "ERROR - Failed to find function 'GetNumManagers' in dynamic module '%s'\n", rel_path.data());
 				error = true;
 				return true;
 			}
@@ -232,21 +232,21 @@ bool App::loadManagers(void)
 						_logger.logMessage(LogManager::LOG_NORMAL, _log_file_name, "Loaded manager '%s'\n", entry.manager->getName());
 
 					} else {
-						_logger.logMessage(LogManager::LOG_ERROR, _log_file_name, "ERROR - Failed to create manager from dynamic module '%s'\n", rel_path.getBuffer());
+						_logger.logMessage(LogManager::LOG_ERROR, _log_file_name, "ERROR - Failed to create manager from dynamic module '%s'\n", rel_path.data());
 						error = true;
 						return true;
 					}
 
 				} else {
 					_dynamic_loader.removeModule(name);
-					_logger.logMessage(LogManager::LOG_ERROR, _log_file_name, "ERROR - Failed to find functions 'CreateManager' and/or 'DestroyManager' in dynamic module '%s'\n", rel_path.getBuffer());
+					_logger.logMessage(LogManager::LOG_ERROR, _log_file_name, "ERROR - Failed to find functions 'CreateManager' and/or 'DestroyManager' in dynamic module '%s'\n", rel_path.data());
 					error = true;
 					return true;
 				}
 			}
 
 		} else {
-			_logger.logMessage(LogManager::LOG_ERROR, _log_file_name, "ERROR - Failed to load dynamic module '%s' for reason '%s'\n", rel_path.getBuffer(), Gaff::DynamicModule::GetErrorString());
+			_logger.logMessage(LogManager::LOG_ERROR, _log_file_name, "ERROR - Failed to load dynamic module '%s' for reason '%s'\n", rel_path.data(), Gaff::DynamicModule::GetErrorString());
 			error = true;
 			return true;
 		}
@@ -256,7 +256,7 @@ bool App::loadManagers(void)
 
 	if (!error) {
 		for (auto it = _manager_map.begin(); it != _manager_map.end(); ++it) {
-			(*it).manager->allManagersCreated();
+			it->second.manager->allManagersCreated();
 		}
 	}
 
@@ -299,22 +299,24 @@ bool App::loadMainLoop(void)
 
 bool App::initApp(void)
 {
-	if (_cmd_line_args.hasElementWithKey("working_dir")) {
-		const AString& working_dir = _cmd_line_args["working_dir"];
+	auto it = _cmd_line_args.find("working_dir");
 
-		if (!Gaff::SetWorkingDir(working_dir.getBuffer())) {
-			//_logger.logMessage(LogManager::LOG_ERROR, _log_file_name, "ERROR - Failed to set working directory to '%s'.\n", working_dir.getBuffer());
+	if (it != _cmd_line_args.end()) {
+		const U8String& working_dir = it->second;
+
+		if (!Gaff::SetWorkingDir(working_dir.data())) {
+			//_logger.logMessage(LogManager::LOG_ERROR, _log_file_name, "ERROR - Failed to set working directory to '%s'.\n", working_dir.data());
 			return false;
 		}
 
 	// Set DLL auto-load directory.
 #ifdef PLATFORM_WINDOWS
 	#ifdef _UNICODE
-		wchar_t temp[1024] = { 0 };
-		Gaff::ConvertToUTF16(temp, working_dir.getBuffer(), working_dir.size());
+		const char8_t* working_dir_ptr = working_dir.data();
+		CONVERT_STRING(wchar_t, temp, working_dir_ptr);
 	#else
 		char temp[1024] = { 0 };
-		memcpy(temp, working_dir.getBuffer(), working_dir.size());
+		memcpy(temp, working_dir.data(), working_dir.size());
 	#endif
 
 		if ((temp[working_dir.size() - 1] == TEXT('/') || temp[working_dir.size() - 1] == TEXT('\\'))) {
@@ -362,28 +364,28 @@ void App::removeExtraLogs(void)
 	unsigned int game_logs_delete = (game_log_count > 10) ? game_log_count - 10 : 0;
 	unsigned int leak_logs_delete = (leak_log_count > 10) ? leak_log_count - 10 : 0;
 	callstack_log_count = alloc_log_count = game_log_count = leak_log_count = 0;
-	AString temp;
+	U8String temp;
 
 	Gaff::ForEachTypeInDirectory<Gaff::FDT_RegularFile>("./logs", [&](const char* name, size_t) -> bool
 	{
 		if (std::regex_match(name, std::regex("GameLog.+\.txt")) && game_log_count < game_logs_delete) {
-			temp = AString("./logs/") + name;
-			std::remove(temp.getBuffer());
+			temp = U8String("./logs/") + name;
+			std::remove(temp.data());
 			++game_log_count;
 
 		} else if (std::regex_match(name, std::regex("AllocationLog.+\.txt")) && alloc_log_count < alloc_logs_delete) {
-			temp = AString("./logs/") + name;
-			std::remove(temp.getBuffer());
+			temp = U8String("./logs/") + name;
+			std::remove(temp.data());
 			++alloc_log_count;
 
 		} else if (std::regex_match(name, std::regex("CallstackLog.+\.txt")) && callstack_log_count < callstack_logs_delete) {
-			temp = AString("./logs/") + name;
-			std::remove(temp.getBuffer());
+			temp = U8String("./logs/") + name;
+			std::remove(temp.data());
 			++callstack_log_count;
 
 		} else if (std::regex_match(name, std::regex("LeakLog.+\.txt")) && leak_log_count < leak_logs_delete) {
-			temp = AString("./logs/") + name;
-			std::remove(temp.getBuffer());
+			temp = U8String("./logs/") + name;
+			std::remove(temp.data());
 			++leak_log_count;
 		}
 
@@ -403,8 +405,8 @@ void App::destroy(void)
 {
 	_job_pool.destroy();
 
-	for (ManagerMap::Iterator it = _manager_map.begin(); it != _manager_map.end(); ++it) {
-		it->destroy_func(it->manager, it->manager_id);
+	for (auto it = _manager_map.begin(); it != _manager_map.end(); ++it) {
+		it->second.destroy_func(it->second.manager, it->second.manager_id);
 	}
 
 	_manager_map.clear();
@@ -436,39 +438,16 @@ void App::destroy(void)
 #endif
 }
 
-const IManager* App::getManager(const AHashString& name) const
+const IManager* App::getManager(const HashString32& name) const
 {
-	GAFF_ASSERT(name.size() && _manager_map.indexOf(name) != SIZE_T_FAIL);
-	return _manager_map[name].manager;
+	auto it = _manager_map.find(name);
+	GAFF_ASSERT(name.size() && it != _manager_map.end());
+	return it->second.manager;
 }
 
-const IManager* App::getManager(const AString& name) const
+IManager* App::getManager(const HashString32& name)
 {
-	GAFF_ASSERT(name.size() && _manager_map.indexOf(name) != SIZE_T_FAIL);
-	return _manager_map[name].manager;
-}
-
-const IManager* App::getManager(const char* name) const
-{
-	GAFF_ASSERT(name && _manager_map.indexOf(name) != SIZE_T_FAIL);
-	return _manager_map[name].manager;
-}
-
-IManager* App::getManager(const AHashString& name)
-{
-	GAFF_ASSERT(name.size() && _manager_map.indexOf(name) != SIZE_T_FAIL);
-	return _manager_map[name].manager;
-}
-
-IManager* App::getManager(const AString& name)
-{
-	GAFF_ASSERT(name.size() && _manager_map.indexOf(name) != SIZE_T_FAIL);
-	return _manager_map[name].manager;
-}
-
-IManager* App::getManager(const char* name)
-{
-	GAFF_ASSERT(name && _manager_map.indexOf(name) != SIZE_T_FAIL);
+	GAFF_ASSERT(name.size() && _manager_map.find(name) != _manager_map.end());
 	return _manager_map[name].manager;
 }
 
@@ -482,12 +461,12 @@ IFileSystem* App::getFileSystem(void)
 	return _fs.file_system;
 }
 
-const HashMap<AHashString, AString>& App::getCmdLine(void) const
+const VectorMap<HashString32, U8String>& App::getCmdLine(void) const
 {
 	return _cmd_line_args;
 }
 
-HashMap<AHashString, AString>& App::getCmdLine(void)
+VectorMap<HashString32, U8String>& App::getCmdLine(void)
 {
 	return _cmd_line_args;
 }
@@ -497,10 +476,10 @@ JobPool& App::getJobPool(void)
 	return _job_pool;
 }
 
-void App::getWorkerThreadIDs(Array<unsigned int>& out) const
+void App::getWorkerThreadIDs(Vector<uint32_t>& out) const
 {
 	out.resize(_job_pool.getNumTotalThreads());
-	_job_pool.getThreadIDs(out.getArray());
+	_job_pool.getThreadIDs(out.data());
 }
 
 void App::helpUntilNoJobs(void)

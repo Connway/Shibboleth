@@ -72,7 +72,7 @@ private:
 		{
 		}
 
-		AString name;
+		U8String name;
 		IFile* file;
 		volatile unsigned int count;
 	};

@@ -3,16 +3,16 @@ project "BulletDynamics"
                 location ("../../../project/" .. _ACTION .. "/dependencies")
         end
 
-        configurations { "Debug", "Release" }
+        dofile("../../../utils/default_configs.lua")
         dofile("../../../utils/config_map.lua")
 
         language "C++"
         kind "StaticLib"
-	includedirs {
-		"..",
-	}
-	files {
-		"Dynamics/*.cpp",
+        includedirs {
+        	"..",
+        }
+        files {
+        	"Dynamics/*.cpp",
                 "Dynamics/*.h",
                 "ConstraintSolver/*.cpp",
                 "ConstraintSolver/*.h",
@@ -24,4 +24,4 @@ project "BulletDynamics"
                 "Vehicle/*.h",
                 "Character/*.cpp",
                 "Character/*.h"
-	}
+        }

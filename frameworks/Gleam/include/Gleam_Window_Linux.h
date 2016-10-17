@@ -83,7 +83,7 @@ public:
 private:
 	int _pos_x, _pos_y;
 	unsigned int _width, _height;
-	GleamAString _application_name;
+	GleamU8String _application_name;
 	short _refresh_rate;
 
 	MODE _window_mode;

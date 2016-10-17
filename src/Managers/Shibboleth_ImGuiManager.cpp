@@ -73,8 +73,8 @@ void ImGuiManager::allManagersCreated(void)
 
 void ImGuiManager::getUpdateEntries(Array<UpdateEntry>& /*entries*/)
 {
-	//entries.emplacePush(AString("ImGui Manager: Generate Draw Commands"), Gaff::Bind(this, &ImGuiManager::generateDrawCommands));
-	//entries.emplacePush(AString("ImGui Manager: Submit Draw Commands"), Gaff::Bind(this, &ImGuiManager::submitDrawCommands));
+	//entries.emplacePush(U8String("ImGui Manager: Generate Draw Commands"), Gaff::Bind(this, &ImGuiManager::generateDrawCommands));
+	//entries.emplacePush(U8String("ImGui Manager: Submit Draw Commands"), Gaff::Bind(this, &ImGuiManager::submitDrawCommands));
 }
 
 bool ImGuiManager::init(void)

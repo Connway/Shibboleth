@@ -180,7 +180,7 @@ ResourceLoadData ModelLoader::load(const IFile* file, ResourceContainer* res_con
 
 	ResourceLoadData res_load_data = { data };
 	SubResourceData sub_res_data = {
-		AString(mesh_file.getString()),
+		U8String(mesh_file.getString()),
 		generateLoadingFlags(json),
 		Gaff::Bind<ModelLoaderFunctor, void, ResourceContainer*>(ModelLoaderFunctor(res_cont, data, this, json))
 	};
@@ -633,7 +633,7 @@ Gleam::IShader* ModelLoader::generateEmptyD3D11Shader(Gleam::IRenderDevice& rd, 
 
 	shader->addRef(); // Count is initialized to zero. Increment so we clean up properly.
 
-	AString shader_code(d3d11_begin_shader_chunk);
+	U8String shader_code(d3d11_begin_shader_chunk);
 
 	if (model_prefs["normals"].isTrue()) {
 		shader_code += d3d11_normal_shader_chunk;
@@ -774,7 +774,7 @@ bool ModelLoader::loadSkeleton(ModelData* data, const Gaff::JSON& model_prefs, c
 
 			// If we don't have a bone tag, we assume everything in the hierarchy is a bone
 			if (bone_tag) {
-				AString name(nodes[i].getName());
+				U8String name(nodes[i].getName());
 
 				// If this is not a bone, just ignore it
 				if (name.findFirstOf(bone_tag) != 0) {

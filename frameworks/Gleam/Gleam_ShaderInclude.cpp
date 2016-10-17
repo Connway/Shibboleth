@@ -43,7 +43,7 @@ HRESULT __stdcall ShaderInclude::Close(LPCVOID /*pData*/)
 	return S_OK;
 }
 
-const GleamAString& ShaderInclude::getWorkingDir(void) const
+const GleamU8String& ShaderInclude::getWorkingDir(void) const
 {
 	return _working_dir;
 }

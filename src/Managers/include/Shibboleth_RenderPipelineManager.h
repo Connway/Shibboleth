@@ -72,7 +72,7 @@ private:
 
 	Array<CameraData> _output_cameras; // Array size == num of monitors. Element is camera that is being outputted to monitor.
 	Array<IRenderPipeline*> _pipelines;
-	HashMap<AHashString, DestroyRenderPipelineFunc> _pipeline_map;
+	HashMap<HashString32, DestroyRenderPipelineFunc> _pipeline_map;
 	size_t _active_pipeline;
 
 	ResourceWrapper<ProgramBuffersData> _camera_to_screen_program_buffers;

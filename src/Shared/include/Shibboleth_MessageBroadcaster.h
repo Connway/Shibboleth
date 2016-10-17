@@ -22,16 +22,14 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Shibboleth_ProxyAllocator.h"
-#include "Shibboleth_RefCounted.h"
-#include "Shibboleth_Array.h"
-#include "Shibboleth_Map.h"
+#include "Shibboleth_Vector.h"
+#include "Shibboleth_VectorMap.h"
+#include "Shibboleth_SmartPtrs.h"
 #include <Shibboleth_Memory.h>
 #include <Gaff_IVirtualDestructor.h>
-#include <Gaff_ReadWriteSpinLock.h>
 #include <Gaff_Function.h>
 #include <Gaff_SpinLock.h>
-#include <Gaff_Atomic.h>
+#include <atomic>
 
 NS_GAFF
 	struct Counter;
@@ -44,7 +42,7 @@ NS_SHIBBOLETH
 using IMessage = Gaff::IVirtualDestructor;
 
 // Message Hash and Listener ID
-using BroadcastID = Gaff::Pair<unsigned int, size_t>;
+using BroadcastID = std::pair<int32_t, int32_t>;
 
 class MessageBroadcaster
 {
@@ -88,33 +86,35 @@ private:
 		Gaff::FunctionBinder<void, const Message&> _callback;
 	};
 
-	using Listener = Gaff::Pair<size_t, IMessageFunctor*>;
+	using Listener = std::pair<size_t, IMessageFunctor*>;
 
 	struct ListenerData
 	{
-		ListenerData(void) {}
+		ListenerData(void) = default;
+		GAFF_COPY_DEFAULT(ListenerData);
+		GAFF_MOVE_DEFAULT(ListenerData);
 
-		Array<Listener> listeners;
-		Gaff::ReadWriteSpinLock lock;
+		Vector<Listener> listeners;
+		UniquePtr<Gaff::ReadWriteSpinLock> lock = UniquePtr<Gaff::ReadWriteSpinLock>(SHIB_ALLOCT(Gaff::ReadWriteSpinLock, *GetAllocator()));
 	};
 
-	Array< Gaff::Pair<unsigned int, IMessage*> > _message_queues[2];
+	Vector< std::pair<int32_t, IMessage*> > _message_queues[2];
 	Gaff::SpinLock _message_add_lock;
 
-	Map<unsigned int, ListenerData> _listeners;
+	VectorMap<int32_t, ListenerData> _listeners;
 	Gaff::ReadWriteSpinLock _listener_lock;
 
-	Array< Gaff::Pair<BroadcastID, IMessageFunctor*> > _listener_add_queue;
+	Vector< std::pair<BroadcastID, IMessageFunctor*> > _listener_add_queue;
 	Gaff::SpinLock _listener_add_lock;
 
-	Array<BroadcastID> _listener_remove_queue;
+	Vector<BroadcastID> _listener_remove_queue;
 	Gaff::SpinLock _listener_remove_lock;
 
 	Gaff::Counter* _counter;
 
-	volatile size_t _next_message;
-	volatile size_t _next_id;
-	size_t _curr_queue;
+	std::atomic_int32_t _next_message;
+	std::atomic_int32_t _next_id;
+	int32_t _curr_queue;
 
 	void addListeners(void);
 	void removeListeners(void);

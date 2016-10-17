@@ -134,27 +134,27 @@ ResourceLoadData ShaderProgramLoader::load(const IFile* file, ResourceContainer*
 	const char* shader_ext = +_render_mgr.getShaderExtension();
 
 	if (vertex.isString()) {
-		SubResourceData sub_data = { AString(vertex.getString()) + shader_ext, Gleam::IShader::SHADER_VERTEX, callback };
+		SubResourceData sub_data = { U8String(vertex.getString()) + shader_ext, Gleam::IShader::SHADER_VERTEX, callback };
 		res_load_data.sub_res_data.emplacePush(sub_data);
 	}
 
 	if (pixel.isString()) {
-		SubResourceData sub_data = { AString(pixel.getString()) + shader_ext, Gleam::IShader::SHADER_PIXEL, callback };
+		SubResourceData sub_data = { U8String(pixel.getString()) + shader_ext, Gleam::IShader::SHADER_PIXEL, callback };
 		res_load_data.sub_res_data.emplacePush(sub_data);
 	}
 
 	if (hull.isString()) {
-		SubResourceData sub_data = { AString(hull.getString()) + shader_ext, Gleam::IShader::SHADER_HULL, callback };
+		SubResourceData sub_data = { U8String(hull.getString()) + shader_ext, Gleam::IShader::SHADER_HULL, callback };
 		res_load_data.sub_res_data.emplacePush(sub_data);
 	}
 
 	if (geometry.isString()) {
-		SubResourceData sub_data = { AString(geometry.getString()) + shader_ext, Gleam::IShader::SHADER_GEOMETRY, callback };
+		SubResourceData sub_data = { U8String(geometry.getString()) + shader_ext, Gleam::IShader::SHADER_GEOMETRY, callback };
 		res_load_data.sub_res_data.emplacePush(sub_data);
 	}
 
 	if (domain.isString()) {
-		SubResourceData sub_data = { AString(domain.getString()) + shader_ext, Gleam::IShader::SHADER_DOMAIN, callback };
+		SubResourceData sub_data = { U8String(domain.getString()) + shader_ext, Gleam::IShader::SHADER_DOMAIN, callback };
 		res_load_data.sub_res_data.emplacePush(sub_data);
 	}
 

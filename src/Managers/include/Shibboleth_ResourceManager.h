@@ -45,11 +45,11 @@ NS_SHIBBOLETH
 //	void release(void) const override;
 //
 //private:
-//	using ZRC = void (ResourceManager::*)(const AHashString&);
+//	using ZRC = void (ResourceManager::*)(const HashString32&);
 //	ResourceManager* _res_manager;
 //	ZRC _zero_ref_callback;
 //
-//	ResourceContainer(const AHashString& res_key, ResourceManager* res_manager, ZRC zero_ref_callback, uint64_t user_data);
+//	ResourceContainer(const HashString32& res_key, ResourceManager* res_manager, ZRC zero_ref_callback, uint64_t user_data);
 //	void setResource(Gaff::IVirtualDestructor* resource);
 //	void callCallbacks(void);
 //
@@ -67,7 +67,7 @@ NS_SHIBBOLETH
 //
 //	const char* getName(void) const override;
 //
-//	void registerResourceLoader(IResourceLoader* res_loader, const Array<AString>& resource_types, unsigned int thread_pool = 0, const Array<FileReadInfo>& json_elements = Array<FileReadInfo>()) override;
+//	void registerResourceLoader(IResourceLoader* res_loader, const Array<U8String>& resource_types, unsigned int thread_pool = 0, const Array<FileReadInfo>& json_elements = Array<FileReadInfo>()) override;
 //	void registerResourceLoader(IResourceLoader* res_loader, const char* resource_type, unsigned int thread_pool = 0, const Array<FileReadInfo>& json_elements = Array<FileReadInfo>()) override;
 //
 //	ResourcePtr requestResource(const char* resource_type, const char* instance_name, uint64_t user_data = 0) override;
@@ -80,7 +80,7 @@ NS_SHIBBOLETH
 //		WARNING: DO NOT MIX requestResource() AND loadResourceImmediately() CALLS! USE ONE OR THE OTHER, NOT BOTH!
 //		MIXING CALLS CAN POTENTIALLY CAUSE DEADLOCK!
 //	***********************************************************************************************************/
-//	ResourcePtr loadResourceImmediately(const char* filename, uint64_t user_data, HashMap<AString, IFile*>& file_map) override;
+//	ResourcePtr loadResourceImmediately(const char* filename, uint64_t user_data, HashMap<U8String, IFile*>& file_map) override;
 //
 //	void addRequestAddedCallback(const Gaff::FunctionBinder<void, ResourcePtr&>& callback) override;
 //	void removeRequestAddedCallback(const Gaff::FunctionBinder<void, ResourcePtr&>& callback) override;
@@ -93,14 +93,14 @@ NS_SHIBBOLETH
 //		unsigned int job_pool;
 //	};
 //
-//	HashMap<AHashString, LoaderData> _resource_loaders;
-//	HashMap<AHashString, ResourcePtr> _resource_cache;
+//	HashMap<HashString32, LoaderData> _resource_loaders;
+//	HashMap<HashString32, ResourcePtr> _resource_cache;
 //	Array< Gaff::FunctionBinder<void, ResourcePtr&> > _request_added_callbacks;
 //	IApp& _app;
 //
 //	Gaff::SpinLock _res_cache_lock;
 //
-//	void zeroRefCallback(const AHashString& res_key);
+//	void zeroRefCallback(const HashString32& res_key);
 //
 //	GAFF_NO_COPY(ResourceManager);
 //	GAFF_NO_MOVE(ResourceManager);
@@ -117,7 +117,7 @@ public:
 
 	const char* getName(void) const override;
 
-	void registerResourceLoader(IResourceLoader* res_loader, const Array<AString>& resource_types, unsigned int thread_pool = 0) override;
+	void registerResourceLoader(IResourceLoader* res_loader, const Array<U8String>& resource_types, unsigned int thread_pool = 0) override;
 	void registerResourceLoader(IResourceLoader* res_loader, const char* resource_type, unsigned int thread_pool = 0) override;
 
 	ResourcePtr requestResource(const char* resource_type, const char* instance_name, uint64_t user_data = 0) override;
@@ -134,11 +134,11 @@ private:
 	};
 
 	Gaff::SpinLock _res_cache_lock;
-	HashMap<AHashString, LoaderData> _resource_loaders;
-	HashMap<AHashString, ResourceContainer*> _resource_cache;
+	HashMap<HashString32, LoaderData> _resource_loaders;
+	HashMap<HashString32, ResourceContainer*> _resource_cache;
 	Array< Gaff::FunctionBinder<void, ResourcePtr&> > _request_added_callbacks;
 
-	void handleZeroRef(const AHashString& res_key) override;
+	void handleZeroRef(const HashString32& res_key) override;
 
 	GAFF_NO_COPY(ResourceManager);
 	GAFF_NO_MOVE(ResourceManager);

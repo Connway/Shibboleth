@@ -54,19 +54,19 @@ private:
 	struct Layer
 	{
 		Array<Object*> objects;
-		AString name;
+		U8String name;
 		uint32_t hash;
 	};
 
 	struct Scene
 	{
 		Array<Layer> layers;
-		AString name;
+		U8String name;
 	};
 
 	Scene _scene;
 	Array< Array<Gaff::JobData> > _job_cache[2];
-	AString _scene_path;
+	U8String _scene_path;
 
 	void loadLayer(size_t index, const Gaff::JSON& layer);
 

@@ -3,19 +3,23 @@ project "Gleam"
 		location ("../../project/" .. _ACTION .. "/frameworks")
 	end
 
-	configurations { "Debug", "Release" }
+	dofile("../../utils/default_configs.lua")
 	dofile("../../utils/config_map.lua")
 
 	kind "StaticLib"
 	language "C++"
-
-	flags { "FatalWarnings" }
 
 	filter { "options:simd" }
 		defines { "USE_SIMD" }
 
 	filter { "options:simd_set_aligned"}
 		defines { "SIMD_SET_ALIGNED" }
+
+	filter { "system:windows", "configurations:not *Clang" }
+		flags { "FatalWarnings" }
+
+	filter { "system:not windows" }
+		flags { "FatalWarnings" }
 
 	filter {}
 
@@ -34,5 +38,5 @@ project "Gleam"
 		"include",
 		"../Gaff/include",
 		"../../dependencies/glew/include",
-		"../../dependencies/utf8-cpp"
+		"../../dependencies/EASTL/include"
 	}

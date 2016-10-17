@@ -477,7 +477,7 @@ bool Window::isFullScreen(void) const
 bool Window::setIcon(const char* icon)
 {
 #ifdef _UNICODE
-	CONVERT_TO_UTF16(temp, icon);
+	CONVERT_STRING(wchar_t, temp, icon);
 	HANDLE hIcon = LoadImageW(_hinstance, temp, IMAGE_ICON, 64, 64, LR_LOADFROMFILE);
 #else
 	HANDLE hIcon = LoadImageA(_hinstance, icon, IMAGE_ICON, 64, 64, LR_LOADFROMFILE);

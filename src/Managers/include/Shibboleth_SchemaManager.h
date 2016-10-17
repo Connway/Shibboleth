@@ -44,7 +44,7 @@ public:
 	const Gaff::JSON& getSchema(const char* schema_file) const override;
 
 private:
-	HashMap<AHashString, Gaff::JSON> _schema_map;
+	HashMap<HashString32, Gaff::JSON> _schema_map;
 
 	bool addSchema(const char* file_name, IFile* file);
 

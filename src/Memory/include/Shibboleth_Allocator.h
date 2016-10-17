@@ -23,7 +23,7 @@ THE SOFTWARE.
 #pragma once
 
 #include "Shibboleth_IAllocator.h"
-#include <Gaff_StaticArray.h>
+#include <eastl/fixed_vector.h>
 #include <Gaff_SpinLock.h>
 
 #define NUM_TAG_POOLS 16
@@ -33,14 +33,26 @@ NS_SHIBBOLETH
 
 struct AllocationHeader;
 
-class Allocator : public IAllocator
+class Allocator final : public IAllocator
 {
 public:
-	explicit Allocator(size_t alignment = 16);
+	explicit Allocator(void);
 	~Allocator(void);
 
-	size_t getPoolIndex(const char* pool_name) override;
-	void* alloc(size_t size_bytes, size_t pool_index, const char* file, int line) override;
+	// For EASTL support.
+	void* allocate(size_t n, int flags = 0) override;
+	void* allocate(size_t n, size_t alignment, size_t, int flags = 0) override;
+	void deallocate(void* p, size_t) override;
+
+	const char* get_name() const override;
+	void set_name(const char* pName) override;
+
+
+	int32_t getPoolIndex(const char* pool_name) override;
+	void* alloc(size_t size_bytes, size_t alignment, int32_t pool_index, const char* file, int line) override;
+	void* alloc(size_t size_bytes, int32_t pool_index, const char* file, int line) override;
+
+	void* alloc(size_t size_bytes, size_t alignment, const char* file, int line) override;
 	void* alloc(size_t size_bytes, const char* file, int line) override;
 	void free(void* data) override;
 
@@ -59,19 +71,25 @@ private:
 			pool_name[0] = 0;
 		}
 
-		volatile size_t total_bytes_allocated;
-		volatile size_t num_allocations;
-		volatile size_t num_frees;
+		std::atomic_size_t total_bytes_allocated;
+		std::atomic_size_t num_allocations;
+		std::atomic_size_t num_frees;
 		char pool_name[POOL_NAME_SIZE];
 	};
 
 	AllocationHeader* _list_head;
-	size_t _alignment;
 
 	MemoryPoolInfo _tagged_pools[NUM_TAG_POOLS + 1];
-	Gaff::StaticArray<unsigned int, NUM_TAG_POOLS> _tag_ids;
+	eastl::fixed_vector<uint32_t, NUM_TAG_POOLS, false> _tag_ids;
 	Gaff::SpinLock _alloc_lock;
-	volatile unsigned int _next_tag;
+
+	void setHeaderData(
+		AllocationHeader* header,
+		int32_t pool_index,
+		size_t size_bytes,
+		const char* file,
+		int line
+	);
 
 	void writeAllocationLog(void) const;
 	void writeLeakLog(void) const;

@@ -25,6 +25,8 @@ THE SOFTWARE.
 #ifdef PLATFORM_WINDOWS
 
 #include "Gaff_Utils.h"
+#include "Gaff_IncludeWindows.h"
+#include <EASTL/algorithm.h>
 
 // Silence MS warnings
 #pragma warning(push)
@@ -44,6 +46,7 @@ static void WriteMiniDump(EXCEPTION_POINTERS* _exception_info)
 	TCHAR process_name[MAX_PATH] = { 0 };
 	GetProcessImageFileName(GetCurrentProcess(), process_name, MAX_PATH);
 	size_t name_begin = Gaff::FindLastOf(process_name, MAX_PATH - 1, TEXT('\\')) + 1;
+
 
 	TCHAR dump_format[128] = { 0 };
 	Gaff::GetCurrentTimeString(dump_format, ARRAY_SIZE(dump_format) - 1, TEXT("dumps/0s_%Y-%m-%d %H-%M-%S.dmp"));

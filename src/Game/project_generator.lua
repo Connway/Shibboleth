@@ -5,7 +5,7 @@ project "Game"
 		location ("../../project/" .. _ACTION .. "/game")
 	end
 
-	configurations { "Debug", "Release" }
+	dofile("../../utils/default_configs.lua")
 	dofile("../../utils/config_map.lua")
 
 	kind "StaticLib"

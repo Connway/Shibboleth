@@ -36,15 +36,15 @@ Gaff::Thread::ReturnType THREAD_CALLTYPE LogManager::LogThread(void* thread_data
 		for (auto it = lm->_logs.begin(); it != lm->_logs.end(); ++it) {
 			Gaff::File file;
 
-			if (file.open(it->log_file.getBuffer(), Gaff::File::APPEND)) {
-				file.writeString(it->message.getBuffer());
+			if (file.open(it->log_file.data(), Gaff::File::APPEND)) {
+				file.writeString(it->message.data());
 				file.close();
 			}
 
-			lm->notifyLogCallbacks(it->message.getBuffer(), it->type);
+			lm->notifyLogCallbacks(it->message.data(), it->type);
 		}
 
-		lm->_logs.clearNoFree();
+		lm->_logs.clear();
 
 		lm->_log_queue_lock.unlock();
 	}
@@ -78,15 +78,15 @@ void LogManager::destroy(void)
 
 void LogManager::addLogCallback(const LogCallback& callback)
 {
-	_log_callbacks.emplacePush(callback);
+	_log_callbacks.emplace_back(callback);
 }
 
 void LogManager::removeLogCallback(const LogCallback& callback)
 {
-	auto it = _log_callbacks.linearSearch(callback);
+	auto it = eastl::find(_log_callbacks.begin(), _log_callbacks.end(), callback);
 
 	if (it != _log_callbacks.end()) {
-		_log_callbacks.fastErase(it);
+		_log_callbacks.erase_unsorted(it);
 	}
 }
 
@@ -107,7 +107,7 @@ void LogManager::logMessage(LOG_TYPE type, const char* file, const char* format,
 	va_end(vl);
 
 	_log_queue_lock.lock();
-	_logs.emplacePush(type, file, temp);
+	_logs.emplace_back(type, file, temp);
 	_log_queue_lock.unlock();
 
 	_log_event.set();

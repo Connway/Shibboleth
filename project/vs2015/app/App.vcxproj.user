@@ -8,11 +8,7 @@
     <LocalDebuggerWorkingDirectory>..\..\..\workingdir\App</LocalDebuggerWorkingDirectory>
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug_Analyze|x64'">
-    <LocalDebuggerWorkingDirectory>..\..\..\workingdir\App</LocalDebuggerWorkingDirectory>
-    <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_Analyze|x64'">
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Analyze|x64'">
     <LocalDebuggerWorkingDirectory>..\..\..\workingdir\App</LocalDebuggerWorkingDirectory>
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
   </PropertyGroup>

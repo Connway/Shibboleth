@@ -39,9 +39,6 @@
     <ClInclude Include="..\..\..\src\Managers\include\Shibboleth_IInputManager.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\src\Managers\include\Shibboleth_ILuaManager.h">
-      <Filter>include</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\src\Managers\include\Shibboleth_IMovementControllerManager.h">
       <Filter>include</Filter>
     </ClInclude>
@@ -79,9 +76,6 @@
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\src\Managers\include\Shibboleth_InputManager.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\src\Managers\include\Shibboleth_LuaManager.h">
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\src\Managers\include\Shibboleth_MovementControllerManager.h">
@@ -126,7 +120,6 @@
     <ClCompile Include="..\..\..\src\Managers\Shibboleth_FrameManager.cpp" />
     <ClCompile Include="..\..\..\src\Managers\Shibboleth_ImGuiManager.cpp" />
     <ClCompile Include="..\..\..\src\Managers\Shibboleth_InputManager.cpp" />
-    <ClCompile Include="..\..\..\src\Managers\Shibboleth_LuaManager.cpp" />
     <ClCompile Include="..\..\..\src\Managers\Shibboleth_MovementControllerManager.cpp" />
     <ClCompile Include="..\..\..\src\Managers\Shibboleth_NuklearManager.cpp" />
     <ClCompile Include="..\..\..\src\Managers\Shibboleth_ObjectManager.cpp" />

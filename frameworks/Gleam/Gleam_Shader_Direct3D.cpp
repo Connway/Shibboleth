@@ -465,7 +465,7 @@ bool ShaderD3D::loadFile(const char* file_path, char*& shader_src, SIZE_T& shade
 	Gaff::File shader(file_path, Gaff::File::READ_BINARY);
 
 	if (!shader.isOpen()) {
-		GleamAString msg("Failed to open shader file: ");
+		GleamU8String msg("Failed to open shader file: ");
 		msg += file_path;
 
 		PrintfToLog(msg.getBuffer(), LOG_ERROR);
@@ -486,7 +486,7 @@ bool ShaderD3D::loadFile(const char* file_path, char*& shader_src, SIZE_T& shade
 		shader_src = nullptr;
 		shader_size = 0;
 
-		GleamAString msg("Failed to read shader file: ");
+		GleamU8String msg("Failed to read shader file: ");
 		msg += file_path;
 
 		PrintfToLog(msg.getBuffer(), LOG_ERROR);

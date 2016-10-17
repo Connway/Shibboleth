@@ -58,7 +58,7 @@ const char* InputManager::getName(void) const
 
 void InputManager::getUpdateEntries(Array<UpdateEntry>& entries) 
 {
-	entries.emplacePush(AString("Input Manager: Update"), Gaff::Bind(this, &InputManager::update));
+	entries.emplacePush(U8String("Input Manager: Update"), Gaff::Bind(this, &InputManager::update));
 }
 
 bool InputManager::init(void)
@@ -107,7 +107,7 @@ void InputManager::addKeyBinding(const char* alias, Gleam::KeyCode key_code, boo
 	auto it = _values.findElementWithKey(hash);
 	GAFF_ASSERT_MSG(it != _values.end(), "No input alias with name '%s' found!", alias);
 
-	_key_bindings[key_code] = { sign_scale, &it->second, AString(alias) };
+	_key_bindings[key_code] = { sign_scale, &it->second, U8String(alias) };
 }
 
 void InputManager::removeKeyBinding(Gleam::KeyCode key_code)
@@ -127,7 +127,7 @@ void InputManager::addMouseBinding(const char* alias, Gleam::MouseCode mouse_cod
 	auto it = _values.findElementWithKey(hash);
 	GAFF_ASSERT_MSG(it != _values.end(), "No input alias with name '%s' found!", alias);
 
-	_mouse_bindings[mouse_code] = { sign_scale, &it->second, AString(alias) };
+	_mouse_bindings[mouse_code] = { sign_scale, &it->second, U8String(alias) };
 }
 
 void InputManager::removeMouseBinding(Gleam::MouseCode mouse_code)

@@ -24,6 +24,8 @@ THE SOFTWARE.
 
 #include "Gaff_Utils.h"
 #include "Gaff_Assert.h"
+#include "Gaff_String.h"
+#include "Gaff_IncludeWindows.h"
 #include <direct.h>
 #include <errno.h>
 
@@ -50,7 +52,7 @@ void DebugPrintf(const char* format_string, ...)
 	va_start(vl, format_string);
 
 #ifdef _UNICODE
-	CONVERT_TO_UTF16(temp, format_string);
+	CONVERT_STRING(wchar_t, temp, format_string);
 	wchar_t buf[256] = { 0 };
 	_vsnwprintf(buf, 256, temp, vl);
 	OutputDebugStringW(buf);
@@ -66,11 +68,16 @@ void DebugPrintf(const char* format_string, ...)
 bool SetWorkingDir(const char* directory)
 {
 #ifdef _UNICODE
-	CONVERT_TO_UTF16(temp, directory);
+	CONVERT_STRING(wchar_t, temp, directory);
 	return SetCurrentDirectoryW(temp) != 0;
 #else
 	return SetCurrentDirectoryW(directory) != 0;
 #endif
+}
+
+void* AlignedOffsetMalloc(size_t size, size_t alignment, size_t offset)
+{
+	return _aligned_offset_malloc(size, alignment, offset);
 }
 
 void* AlignedMalloc(size_t size, size_t alignment)

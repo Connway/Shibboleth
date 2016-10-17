@@ -44,7 +44,7 @@ DynamicModule::~DynamicModule(void)
 bool DynamicModule::load(const char* filename)
 {
 #ifdef _UNICODE
-	CONVERT_TO_UTF16(temp, filename);
+	CONVERT_STRING(wchar_t, temp, filename);
 	_module = LoadLibraryEx(temp, NULL, 0);
 #else
 	_module = LoadLibraryEx(filename, NULL, 0);
@@ -85,7 +85,11 @@ const char* DynamicModule::GetErrorString(void)
 	);
 
 #ifdef _UNICODE
-	ConvertToUTF8(error, msg, wcslen(msg));
+	const wchar_t* src_beg = msg;
+	char* error_begin = error;
+	char* error_end = error + MAX_ERR_LEN;
+
+	eastl::DecodePart(src_beg, src_beg + eastl::CharStrlen(src_beg), error_begin, error_end);
 #else
 	memcpy(_error, msg, strlen(msg));
 #endif

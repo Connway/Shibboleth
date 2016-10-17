@@ -48,6 +48,8 @@ public:
 
 	bool operator==(const HashString<T, Allocator, HashType>& rhs) const;
 	bool operator!=(const HashString<T, Allocator, HashType>& rhs) const;
+	bool operator<(const HashString<T, Allocator, HashType>& rhs) const;
+	bool operator>(const HashString<T, Allocator, HashType>& rhs) const;
 
 	const HashString<T, Allocator, HashType>& operator+=(const HashString<T, Allocator, HashType>& rhs);
 	const HashString<T, Allocator, HashType>& operator+=(const String<T, Allocator>& rhs);
@@ -74,10 +76,7 @@ private:
 
 #include "Gaff_HashString.inl"
 
-template <class Allocator = DefaultAllocator> using AHashString = HashString<char, Allocator>;
-template <class Allocator = DefaultAllocator> using WHashString = HashString<wchar_t, Allocator>;
-
-template <class Allocator = DefaultAllocator> using HashString32 = AHashString<Allocator>;
+template <class Allocator = DefaultAllocator> using HashString32 = HashString<char, Allocator>;
 template <class Allocator = DefaultAllocator> using HashString64 = HashString<char, Allocator, uint64_t>;
 
 NS_END

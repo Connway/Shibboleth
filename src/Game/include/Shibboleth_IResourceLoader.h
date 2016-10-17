@@ -38,7 +38,7 @@ class IFile;
 
 struct SubResourceData
 {
-	AString file_name;
+	U8String file_name;
 	uint64_t user_data;
 	Gaff::FunctionBinder<void, ResourceContainer*> callback;
 };

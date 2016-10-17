@@ -21,6 +21,7 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Esprit_Skeleton.h"
+#include <Gaff_Assert.h>
 
 NS_ESPRIT
 
@@ -43,16 +44,16 @@ size_t Skeleton::getParentIndex(size_t bone_index) const
 	return _parent_indices[bone_index];
 }
 
-const AString& Skeleton::getName(size_t bone_index) const
+const HashString32& Skeleton::getName(size_t bone_index) const
 {
-	GAFF_ASSERT(bone_index < _names.size());
-	return _names[bone_index];
+	GAFF_ASSERT(bone_index < _bone_hashes.size());
+	return _bone_hashes[bone_index];
 }
 
 size_t Skeleton::getBoneIndex(const char* name) const
 {
-	for (size_t i = 0; i < _names.size(); ++i) {
-		if (_names[i] == name) {
+	for (size_t i = 0; i < _bone_hashes.size(); ++i) {
+		if (_bone_hashes[i] == name) {
 			return i;
 		}
 	}
@@ -68,14 +69,14 @@ void Skeleton::setReferenceTransform(size_t bone_index, const Gleam::TransformSI
 
 void Skeleton::addBone(size_t parent_index, const char* name)
 {
-	AString str_name;
+	HashString32 str_name;
 
 	if (name) {
 		str_name = name;
 	}
 
-	_parent_indices.push(parent_index);
-	_names.push(std::move(str_name));
+	_parent_indices.push_back(parent_index);
+	_bone_hashes.push_back(std::move(str_name));
 	_default_pose.setNumBones(_parent_indices.size());
 }
 

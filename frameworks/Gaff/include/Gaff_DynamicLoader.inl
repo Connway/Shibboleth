@@ -43,16 +43,18 @@ typename DynamicLoader<Allocator>::ModulePtr DynamicLoader<Allocator>::loadModul
 {
 	GAFF_ASSERT(filename && name && strlen(filename) && strlen(name));
 
-	if (_modules.indexOf(name) != SIZE_T_FAIL) {
-		return getModule(name);
+	auto it = _modules.find(name);
+
+	if (it != _modules.end()) {
+		return it->second;
 	}
 
-	ModulePtr module(GAFF_ALLOCT(DynamicModule, _allocator), _allocator);
+	ModulePtr module = MakeShared<DynamicModule, Allocator>(_allocator);
 
-	if (module.valid()) {
+	if (module) {
 		if (module->load(filename)) {
 			HString str(name, FNV1aHash32, _allocator);
-			_modules.insert(str, module);
+			_modules[name] = module;
 			return module;
 		}
 	}

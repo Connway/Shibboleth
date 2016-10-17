@@ -5,12 +5,12 @@ project "Memory"
 		location ("../../project/" .. _ACTION .. "/memory")
 	end
 
-	configurations { "Debug", "Release" }
+	dofile("../../utils/default_configs.lua")
 	dofile("../../utils/config_map.lua")
 
 	kind "SharedLib"
 	language "C++"
-	defines { "IS_MEMORY" }
+	defines { "IS_MEMORY", "JEMALLOC_EXPORT=" }
 
 	flags { "FatalWarnings" }
 
@@ -21,12 +21,16 @@ project "Memory"
 		"include",
 		"../Shared/include",
 		"../../frameworks/Gaff/include",
-		"../../dependencies/utf8-cpp",
+		"../../dependencies/jemalloc/include",
+		"../../dependencies/EASTL/include",
 		"../../dependencies/dirent"
 	}
 
-	dependson { "Shared", "Gaff", "Boxer" }
-	links { "Shared", "Gaff", "Boxer" }
+	dependson { "Gaff", "EASTL", "jemalloc" }
+	links { "Gaff", "EASTL", "jemalloc" }
+
+	filter { "action:vs*" }
+		includedirs { "../../dependencies/jemalloc/include/msvc_compat" }
 
 	filter { "system:windows", "options:symbols" }
 		links { "Dbghelp" }
@@ -42,6 +46,9 @@ project "Memory"
 
 	filter { "configurations:Release", "platforms:x64" }
 		targetsuffix "64"
+
+	filter { "configurations:Debug*"}
+		defines { "JEMALLOC_DEBUG" }
 
 	filter {}
 

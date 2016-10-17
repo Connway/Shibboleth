@@ -112,7 +112,7 @@ static bool addDepthStencil(Gleam::IRenderDevice& rd, IRenderManager& rm, Gleam:
 		return true;
 	}
 
-	AString depth_stencil_format(settings["Depth-Stencil Format"].getString());
+	U8String depth_stencil_format(settings["Depth-Stencil Format"].getString());
 
 	Gleam::ITexture::FORMAT ds_fmt = GetEnumRefDef<Gleam::ITexture::FORMAT>().getValue(depth_stencil_format.getBuffer());
 

@@ -489,7 +489,7 @@ int RenderManager::getDisplayModeID(unsigned int width, unsigned int height, uns
 // Still single-threaded at this point, so ok that we're not using the spinlock
 bool RenderManager::cacheGleamFunctions(IApp& app, const char* module)
 {
-	AString module_path(module);
+	U8String module_path(module);
 	module_path += BIT_EXTENSION;
 
 	_gleam_module = app.loadModule(module_path.getBuffer(), module);

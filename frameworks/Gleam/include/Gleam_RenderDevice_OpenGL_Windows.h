@@ -79,14 +79,14 @@ private:
 	struct OutputInfo
 	{
 		GleamArray<DEVMODE> display_mode_list;
-		GleamAString name;
+		GleamU8String name;
 	};
 
 	struct AdapterInfo
 	{
 		GleamArray<OutputInfo> output_info;
 		DISPLAY_DEVICE display_device;
-		GleamAString name;
+		GleamU8String name;
 	};
 
 	struct Viewport

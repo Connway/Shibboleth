@@ -82,16 +82,16 @@ public:
 
 struct ConstBufferReflection
 {
-	GleamAString name;
+	GleamU8String name;
 	size_t size_bytes = 0;
 };
 
 struct ShaderReflection
 {
 	ConstBufferReflection const_buff_reflection[MAX_SHADER_VAR];
-	GleamAString textures[MAX_SHADER_VAR];
-	GleamAString samplers[MAX_SHADER_VAR];
-	GleamAString structured_buffers[MAX_SHADER_VAR];
+	GleamU8String textures[MAX_SHADER_VAR];
+	GleamU8String samplers[MAX_SHADER_VAR];
+	GleamU8String structured_buffers[MAX_SHADER_VAR];
 
 	size_t num_constant_buffers = 0;
 	size_t num_textures = 0;

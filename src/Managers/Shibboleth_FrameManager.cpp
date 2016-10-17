@@ -80,7 +80,7 @@ void FrameManager::allManagersCreated(void)
 
 void FrameManager::getUpdateEntries(Array<UpdateEntry>& entries)
 {
-	entries.emplacePush(AString("Frame Manager: Submit Command Lists"), Gaff::Bind(this, &FrameManager::submitCommandLists));
+	entries.emplacePush(U8String("Frame Manager: Submit Command Lists"), Gaff::Bind(this, &FrameManager::submitCommandLists));
 }
 
 void FrameManager::setFrameDataFuncs(FrameDataAllocFunc alloc_func, FrameDataFreeFunc free_func)

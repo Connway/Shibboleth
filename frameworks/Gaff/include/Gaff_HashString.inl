@@ -24,10 +24,10 @@ template <class T, class Allocator, class HashType>
 HashType CalculateHash(const String<T, Allocator>& value, HashType (*hash_func)(const char*, size_t))
 {
 	if (hash_func) {
-		return hash_func(reinterpret_cast<const char*>(_string.getBuffer()), _string.size() * sizeof(T));
+		return hash_func(reinterpret_cast<const char*>(_string.data()), _string.size() * sizeof(T));
 	}
 
-	uint32_t hash_value = FNV1aHash32(reinterpret_cast<const char*>(_string.getBuffer()), _string.size() * sizeof(T));
+	uint32_t hash_value = FNV1aHash32(reinterpret_cast<const char*>(_string.data()), _string.size() * sizeof(T));
 	return static_cast<HashType>(hash_value);
 }
 
@@ -35,20 +35,20 @@ template <class T, class Allocator>
 uint32_t CalculateHash(const String<T, Allocator>& value, uint32_t (*hash_func)(const char*, size_t))
 {
 	if (hash_func) {
-		return hash_func(reinterpret_cast<const char*>(value.getBuffer()), value.size() * sizeof(T));
+		return hash_func(reinterpret_cast<const char*>(value.data()), value.size() * sizeof(T));
 	}
 
-	return FNV1aHash32(reinterpret_cast<const char*>(value.getBuffer()), value.size() * sizeof(T));
+	return FNV1aHash32(reinterpret_cast<const char*>(value.data()), value.size() * sizeof(T));
 }
 
 template <class T, class Allocator>
 uint64_t CalculateHash(const String<T, Allocator>& value, uint64_t (*hash_func)(const char*, size_t))
 {
 	if (hash_func) {
-		return hash_func(reinterpret_cast<const char*>(value.getBuffer()), value.size() * sizeof(T));
+		return hash_func(reinterpret_cast<const char*>(value.data()), value.size() * sizeof(T));
 	}
 
-	return FNV1aHash64(reinterpret_cast<const char*>(value.getBuffer()), value.size() * sizeof(T));
+	return FNV1aHash64(reinterpret_cast<const char*>(value.data()), value.size() * sizeof(T));
 }
 
 
@@ -155,6 +155,18 @@ bool HashString<T, Allocator, HashType>::operator!=(const HashString<T, Allocato
 }
 
 template <class T, class Allocator, class HashType>
+bool HashString<T, Allocator, HashType>::operator<(const HashString<T, Allocator, HashType>& rhs) const
+{
+	return _hash_value < rhs._hash_value;
+}
+
+template <class T, class Allocator, class HashType>
+bool HashString<T, Allocator, HashType>::operator>(const HashString<T, Allocator, HashType>& rhs) const
+{
+	return _hash_value > rhs._hash_value;
+}
+
+template <class T, class Allocator, class HashType>
 const HashString<T, Allocator, HashType>& HashString<T, Allocator, HashType>::operator+=(const HashString<T, Allocator, HashType>& rhs)
 {
 	return (*this = _string + rhs._string);
@@ -225,7 +237,7 @@ const String<T, Allocator>& HashString<T, Allocator, HashType>::getString(void) 
 template <class T, class Allocator, class HashType>
 const T* HashString<T, Allocator, HashType>::getBuffer(void) const
 {
-	return _string.getBuffer();
+	return _string.data();
 }
 
 template <class T, class Allocator, class HashType>

@@ -1,55 +1,11 @@
 group "Main Loop Module"
 
--- project "States"
--- 	if _ACTION then
--- 		location ("../../project/" .. _ACTION .. "/states")
--- 	end
-
--- 	configurations { "Debug", "Release" }
--- 	dofile("../../utils/config_map.lua")
-
--- 	kind "StaticLib"
--- 	language "C++"
-
--- 	flags { "FatalWarnings" }
-
--- 	files { "**.h", "**.cpp", "**.inl" }
--- 	excludes { "Shibboleth_StatesModule.cpp" }
-
--- 	configuration "windows"
--- 		includedirs { "../../dependencies/dirent" }
-
--- 	configuration {}
-
--- 	includedirs
--- 	{
--- 		"include",
--- 		"../Shared/include",
--- 		"../Memory/include",
--- 		"../Game/include",
--- 		"../Managers/include",
--- 		"../../frameworks/Gaff/include",
--- 		"../../frameworks/Gleam/include",
--- 		"../../frameworks/esprit/include",
--- 		"../../dependencies/OtterUI/inc",
--- 		"../../dependencies/rapidjson",
--- 		"../../dependencies/LuaState",
--- 		"../../dependencies/LuaBridge",
--- 		"../../dependencies/LuaJIT/src",
--- 		"../../dependencies/utf8-cpp",
--- 		"../../dependencies/assimp/include",
--- 		"../../dependencies/minizip",
--- 		"../../dependencies/zlib"
--- 	}
-
--- 	dofile("../../utils/os_conditionals.lua")
-
 project "MainLoopModule"
 	if _ACTION then
 		location ("../../project/" .. _ACTION .. "/states")
 	end
 
-	configurations { "Debug", "Release" }
+	dofile("../../utils/default_configs.lua")
 	dofile("../../utils/config_map.lua")
 
 	dofile("../../utils/module_suffix.lua")
@@ -93,7 +49,7 @@ project "MainLoopModule"
 		"Game", "esprit",
 		"Components",
 		"States", "Memory",
-		"LuaJIT", "Boxer",
+		"LuaJIT",
 		"BulletCollision",
 		"BulletDynamics",
 		"LinearMath",
@@ -109,8 +65,7 @@ project "MainLoopModule"
 		"zlib", "Gleam",
 		"Game", "esprit",
 		"Components",
-		"Memory",
-		"LuaJIT", "Boxer",
+		"Memory","LuaJIT",
 		"BulletCollision",
 		"BulletDynamics",
 		"LinearMath",

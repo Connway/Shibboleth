@@ -22,7 +22,8 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Shibboleth_IAllocator.h"
+#include <Shibboleth_Defines.h>
+#include <Gaff_Defines.h>
 
 #ifdef IS_MEMORY
 	#define MEMORY_API DYNAMICEXPORT
@@ -32,11 +33,16 @@ THE SOFTWARE.
 
 NS_SHIBBOLETH
 
+class IAllocator;
+
 // GetPoolIndex() is not thread-safe. Applications need to ensure they've created all their pools before threading.
-MEMORY_API size_t GetPoolIndex(const char* pool_name);
+MEMORY_API int32_t GetPoolIndex(const char* pool_name);
 MEMORY_API IAllocator* GetAllocator(void);
 
-MEMORY_API void* ShibbolethAllocate(size_t size, size_t pool_index);
+MEMORY_API void* ShibbolethAllocate(size_t size, size_t alignment, int32_t pool_index);
+MEMORY_API void* ShibbolethAllocate(size_t size, int32_t pool_index);
+
+MEMORY_API void* ShibbolethAllocate(size_t size, size_t alignment);
 MEMORY_API void* ShibbolethAllocate(size_t size);
 MEMORY_API void ShibbolethFree(void* data);
 

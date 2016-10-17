@@ -24,6 +24,7 @@ THE SOFTWARE.
 
 #include "Gaff_Utils.h"
 #include "Gaff_Assert.h"
+#include <EASTL/allocator_malloc.h>
 #include <sys/stat.h>
 #include <unistd.h>
 #include <errno.h>
@@ -59,10 +60,15 @@ bool SetWorkingDir(const char* directory)
 	return !chdir(directory);
 }
 
+void* AlignedOffsetMalloc(size_t size, size_t alignment, size_t /*offset*/)
+{
+	return AlignedMalloc(size, alignment);
+}
+
 void* AlignedMalloc(size_t size, size_t alignment)
 {
 	void* data;
-	posix_memalign(&data, alignment, size);
+	memalign(&data, alignment, size);
 	return data;
 }
 
