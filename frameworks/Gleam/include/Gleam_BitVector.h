@@ -22,11 +22,11 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Shibboleth_ProxyAllocator.h"
-#include <Gaff_Array2D.h>
+#include "Gleam_ProxyAllocator.h"
+#include <EASTL/bitvector.h>
 
-NS_SHIBBOLETH
+NS_GLEAM
 
-template <class T> using Array2D = Gaff::Array2D<T, ProxyAllocator>;
+using BitVector = eastl::bitvector<ProxyAllocator>;
 
 NS_END

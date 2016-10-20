@@ -50,6 +50,14 @@ filter { "configurations:Analyze", "platforms:x64" }
 	objdir "../build/intermediate"
 	targetdir "../build/output/x64/Analyze"
 
+filter { "configurations:Profile", "platforms:x86" }
+	objdir "../build/intermediate"
+	targetdir "../build/output/x86/Profile"
+
+filter { "configurations:Profile", "platforms:x64" }
+	objdir "../build/intermediate"
+	targetdir "../build/output/x64/Profile"
+
 filter { "configurations:Debug*", "action:gmake", "options:not debug_optimization" }
 	optimize "Off"
 
@@ -59,8 +67,11 @@ filter { "configurations:Debug*", "action:gmake", "options:debug_optimization" }
 filter { "options:simd_set_aligned"}
 	defines { "SIMD_SET_ALIGNED" }
 
-filter { "action:vs*", "configurations:*Analyze"}
+filter { "action:vs*", "configurations:Analyze"}
 	buildoptions { "/analyze" }
+
+filter { "configurations:Profile" }
+	defines { "SHIB_PROFILE" }
 
 filter { "action:vs*" }
 	buildoptions { "/sdl" }
@@ -70,7 +81,6 @@ filter { "system:windows" }
 
 filter { "system:windows", "configurations:*Clang" }
 	toolset "msc-llvm-vs2014"
-	-- defines { "__clang__" }
 
 filter { "system:windows", "configurations:not *Clang" }
 	toolset "v140"

@@ -44,7 +44,7 @@ project "Graphics"
 	filter { "configurations:*Direct3D"}
 		defines { "USE_DX" }
 
-	filter { "configurations:*Analyze"}
+	filter { "configurations:Analyze"}
 		defines { "USE_DX" }
 
 	filter { "configurations:*OpenGL"}
@@ -75,16 +75,10 @@ project "Graphics"
 		targetsuffix "_OpenGL64"
 
 	-- Just use Direct3D for the Analyze builds.
-	filter { "configurations:Debug_Analyze", "platforms:x86" }
-		targetsuffix "_Direct3D32d"
-
-	filter { "configurations:Release_Analyze", "platforms:x86" }
+	filter { "configurations:Analyze", "platforms:x86" }
 		targetsuffix "_Direct3D32"
 
-	filter { "configurations:Debug_Analyze", "platforms:x64" }
-		targetsuffix "_Direct3D64d"
-
-	filter { "configurations:Release_Analyze", "platforms:x64" }
+	filter { "configurations:Analyze", "platforms:x64" }
 		targetsuffix "_Direct3D64"
 
 	filter { "configurations:*OpenGL", "system:windows" }

@@ -23,6 +23,10 @@ THE SOFTWARE.
 #pragma once
 
 #include "Gleam_ProxyAllocator.h"
-#include <Gaff_BitArray.h>
+#include <EASTL/vector.h>
 
-typedef Gaff::BitArray<Gleam::ProxyAllocator> GleamBitArray;
+NS_GLEAM
+
+template <class T> using Vector = eastl::vector<T, ProxyAllocator>;
+
+NS_END

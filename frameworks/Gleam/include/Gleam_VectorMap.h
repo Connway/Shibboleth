@@ -23,6 +23,11 @@ THE SOFTWARE.
 #pragma once
 
 #include "Gleam_ProxyAllocator.h"
-#include <Gaff_HashMap.h>
+#include <EASTL/vector_map.h>
 
-template <class Key, class Value> using GleamHashMap = Gaff::HashMap<Key, Value, Gleam::ProxyAllocator>;
+NS_GLEAM
+
+template < class Key, class Value, class Compare = eastl::less<Key> >
+using VectorMap = eastl::vector_map<Key, Value, Compare, ProxyAllocator>;
+
+NS_END

@@ -25,11 +25,6 @@ THE SOFTWARE.
 #include "Gleam_Global.h"
 #include <Gaff_IAllocator.h>
 
-// Disable warning for no assignment operator generated
-#if defined(_WIN32) || defined(_WIN64)
-	#pragma warning(disable : 4512)
-#endif
-
 NS_GLEAM
 
 class ProxyAllocator : public Gaff::IAllocator
@@ -47,7 +42,3 @@ public:
 };
 
 NS_END
-
-#if defined(_WIN32) || defined(_WIN64)
-	#pragma warning(default : 4512)
-#endif

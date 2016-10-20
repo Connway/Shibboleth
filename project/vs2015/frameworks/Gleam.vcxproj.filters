@@ -15,10 +15,7 @@
     <ClInclude Include="..\..\..\frameworks\Gleam\include\Gleam_AABB_SIMD.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\frameworks\Gleam\include\Gleam_Array.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\frameworks\Gleam\include\Gleam_BitArray.h">
+    <ClInclude Include="..\..\..\frameworks\Gleam\include\Gleam_BitVector.h">
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\frameworks\Gleam\include\Gleam_BlendState.h">
@@ -82,9 +79,6 @@
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\frameworks\Gleam\include\Gleam_Global.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\frameworks\Gleam\include\Gleam_HashMap.h">
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\frameworks\Gleam\include\Gleam_IBlendState.h">
@@ -351,6 +345,9 @@
     <ClInclude Include="..\..\..\frameworks\Gleam\include\Gleam_Transform_SIMD.h">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\frameworks\Gleam\include\Gleam_Vector.h">
+      <Filter>include</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\frameworks\Gleam\include\Gleam_Vector4.h">
       <Filter>include</Filter>
     </ClInclude>
@@ -358,6 +355,9 @@
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\frameworks\Gleam\include\Gleam_Vector4_SIMD.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\frameworks\Gleam\include\Gleam_VectorMap.h">
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\frameworks\Gleam\include\Gleam_Window.h">
