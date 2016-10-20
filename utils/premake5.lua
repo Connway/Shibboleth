@@ -60,21 +60,21 @@ solution "Shibboleth"
 				"Debug_Direct3D", "Release_Direct3D",
 				"Debug_OpenGL_Clang", "Release_OpenGL_Clang",
 				"Debug_Direct3D_Clang", "Release_Direct3D_Clang",
-				"Analyze"
+				"Analyze", "Profile", "Profile_Clang"
 			}
 		else
 			configurations
 			{
 				"Debug_OpenGL", "Release_OpenGL",
 				"Debug_Direct3D", "Release_Direct3D",
-				"Analyze"
+				"Analyze", "Profile"
 			}
 		end
 	else
 		configurations
 		{
 			"Debug_OpenGL", "Release_OpenGL",
-			"Analyze"
+			"Analyze", "Profile"
 		}
 	end
 

@@ -23,11 +23,9 @@ project "Gleam"
 
 	filter {}
 
-	configuration "windows"
-		includedirs { "../../dependencies/dirent" }
-		defines { "_CRT_SECURE_NO_WARNINGS" }
-
-	configuration {}
+	-- configuration "windows"
+	-- 	includedirs { "../../dependencies/dirent" }
+	-- 	defines { "_CRT_SECURE_NO_WARNINGS" }
 
 	defines { "GLEW_STATIC" }
 
