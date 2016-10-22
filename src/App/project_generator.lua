@@ -5,8 +5,6 @@ project "App"
 		location ("../../project/" .. _ACTION .. "/app")
 	end
 
-	dofile("../../utils/module_suffix.lua")
-
 	if _OPTIONS["console_app"] then
 		kind "ConsoleApp"
 	else
@@ -15,8 +13,6 @@ project "App"
 
 	debugdir "../../workingdir/App"
 	language "C++"
-
-	flags { "FatalWarnings" }
 
 	files { "**.h", "**.cpp", "**.inl" }
 
@@ -40,6 +36,9 @@ project "App"
 		"Shared", "Gaff",
 		"Memory"
 	}
+
+	filter { "configurations:not Analyze*" }
+		flags { "FatalWarnings" }
 
 	filter { "system:windows" }
 		includedirs { "../../dependencies/dirent" }

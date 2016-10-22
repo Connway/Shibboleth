@@ -8,10 +8,11 @@ project "Managers"
 	kind "StaticLib"
 	language "C++"
 
-	flags { "FatalWarnings" }
-
 	files { "**.h", "**.cpp", "**.inl" }
 	excludes { "Shibboleth_ManagersModule.cpp" }
+
+	filter { "configurations:not Analyze*" }
+		flags { "FatalWarnings" }
 
 	filter { "system:windows" }
 		includedirs { "../../dependencies/dirent" }
@@ -43,16 +44,15 @@ project "ManagersModule"
 		location ("../../project/" .. _ACTION .. "/managers")
 	end
 
-	dofile("../../utils/module_suffix.lua")
-
 	kind "SharedLib"
 	language "C++"
-
-	flags { "FatalWarnings" }
 
 	targetname "ShibbolethManagers"
 
 	files { "Shibboleth_ManagersModule.cpp" }
+
+	filter { "configurations:not Analyze*" }
+		flags { "FatalWarnings" }
 
 	filter { "system:windows" }
 		includedirs { "../../dependencies/dirent" }

@@ -3,8 +3,6 @@ project "ResIL"
 		location ("../../project/" .. _ACTION .. "/dependencies")
 	end
 
-	dofile("../../utils/module_suffix.lua")
-
 	kind "SharedLib"
 	language "C"
 	warnings "Default"
@@ -35,8 +33,6 @@ project "ResILU"
 	if _ACTION then
 		location ("../../project/" .. _ACTION .. "/dependencies")
 	end
-
-	dofile("../../utils/module_suffix.lua")
 
 	kind "SharedLib"
 	language "C"

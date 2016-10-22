@@ -50,6 +50,8 @@ if _OPTIONS["gen-clang"] and _ACTION == "vs2015" then
 	SetIntermediateAndTargetDirs("Optimized_Debug_Clang")
 end
 
+dofile("module_suffix.lua")
+
 filter { "configurations:Debug*", "toolset:gcc", "options:not debug_optimization" }
 	optimize "Off"
 

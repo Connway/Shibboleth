@@ -86,35 +86,35 @@
     <LinkIncremental>true</LinkIncremental>
     <OutDir>..\..\..\build\output\x64\Debug\</OutDir>
     <IntDir>..\..\..\build\intermediate\x64\Debug\Graphics_OpenGL\</IntDir>
-    <TargetName>Graphics_OpenGL_OpenGL64d</TargetName>
+    <TargetName>Graphics_OpenGL64d</TargetName>
     <TargetExt>.dll</TargetExt>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
     <OutDir>..\..\..\build\output\x64\Release\</OutDir>
     <IntDir>..\..\..\build\intermediate\x64\Release\Graphics_OpenGL\</IntDir>
-    <TargetName>Graphics_OpenGL_OpenGL64</TargetName>
+    <TargetName>Graphics_OpenGL64</TargetName>
     <TargetExt>.dll</TargetExt>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Analyze|x64'">
     <LinkIncremental>false</LinkIncremental>
     <OutDir>..\..\..\build\output\x64\Analyze\</OutDir>
     <IntDir>..\..\..\build\intermediate\x64\Analyze\Graphics_OpenGL\</IntDir>
-    <TargetName>Graphics_OpenGL_OpenGL64a</TargetName>
+    <TargetName>Graphics_OpenGL64a</TargetName>
     <TargetExt>.dll</TargetExt>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">
     <LinkIncremental>false</LinkIncremental>
     <OutDir>..\..\..\build\output\x64\Profile\</OutDir>
     <IntDir>..\..\..\build\intermediate\x64\Profile\Graphics_OpenGL\</IntDir>
-    <TargetName>Graphics_OpenGL_OpenGL64p</TargetName>
+    <TargetName>Graphics_OpenGL64p</TargetName>
     <TargetExt>.dll</TargetExt>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Optimized_Debug|x64'">
     <LinkIncremental>false</LinkIncremental>
     <OutDir>..\..\..\build\output\x64\Optimized_Debug\</OutDir>
     <IntDir>..\..\..\build\intermediate\x64\Optimized_Debug\Graphics_OpenGL\</IntDir>
-    <TargetName>Graphics_OpenGL_OpenGL64od</TargetName>
+    <TargetName>Graphics_OpenGL64od</TargetName>
     <TargetExt>.dll</TargetExt>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -135,7 +135,7 @@
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>OpenGL32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <ImportLibrary>..\..\..\build\output\x64\Debug\Graphics_OpenGL_OpenGL64d.lib</ImportLibrary>
+      <ImportLibrary>..\..\..\build\output\x64\Debug\Graphics_OpenGL64d.lib</ImportLibrary>
       <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
     </Link>
   </ItemDefinitionGroup>
@@ -163,7 +163,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalDependencies>OpenGL32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <ImportLibrary>..\..\..\build\output\x64\Release\Graphics_OpenGL_OpenGL64.lib</ImportLibrary>
+      <ImportLibrary>..\..\..\build\output\x64\Release\Graphics_OpenGL64.lib</ImportLibrary>
       <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
     </Link>
   </ItemDefinitionGroup>
@@ -171,7 +171,6 @@
     <ClCompile>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level4</WarningLevel>
-      <TreatWarningAsError>true</TreatWarningAsError>
       <PreprocessorDefinitions>NDEBUG;WIN32;_WINDOWS;GLEW_STATIC;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>..\..\..\dependencies\dirent;..\..\..\src\Shared\include;..\..\..\src\Memory\include;..\..\..\frameworks\Gaff\include;..\..\..\frameworks\Gleam\include;..\..\..\dependencies\rapidjson;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
@@ -191,8 +190,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalDependencies>OpenGL32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <ImportLibrary>..\..\..\build\output\x64\Analyze\Graphics_OpenGL_OpenGL64a.lib</ImportLibrary>
-      <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
+      <ImportLibrary>..\..\..\build\output\x64\Analyze\Graphics_OpenGL64a.lib</ImportLibrary>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">
@@ -219,7 +217,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalDependencies>OpenGL32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <ImportLibrary>..\..\..\build\output\x64\Profile\Graphics_OpenGL_OpenGL64p.lib</ImportLibrary>
+      <ImportLibrary>..\..\..\build\output\x64\Profile\Graphics_OpenGL64p.lib</ImportLibrary>
       <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
     </Link>
   </ItemDefinitionGroup>
@@ -247,7 +245,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalDependencies>OpenGL32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <ImportLibrary>..\..\..\build\output\x64\Optimized_Debug\Graphics_OpenGL_OpenGL64od.lib</ImportLibrary>
+      <ImportLibrary>..\..\..\build\output\x64\Optimized_Debug\Graphics_OpenGL64od.lib</ImportLibrary>
       <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
     </Link>
   </ItemDefinitionGroup>
