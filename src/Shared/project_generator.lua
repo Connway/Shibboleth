@@ -5,9 +5,6 @@ project "Shared"
 		location ("../../project/" .. _ACTION .. "/shared")
 	end
 
-	dofile("../../utils/default_configs.lua")
-	dofile("../../utils/config_map.lua")
-
 	kind "StaticLib"
 	language "C++"
 

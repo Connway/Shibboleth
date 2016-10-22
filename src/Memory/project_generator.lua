@@ -5,8 +5,7 @@ project "Memory"
 		location ("../../project/" .. _ACTION .. "/memory")
 	end
 
-	dofile("../../utils/default_configs.lua")
-	dofile("../../utils/config_map.lua")
+	dofile("../../utils/module_suffix.lua")
 
 	kind "SharedLib"
 	language "C++"
@@ -35,19 +34,7 @@ project "Memory"
 	filter { "system:windows", "options:symbols" }
 		links { "Dbghelp" }
 
-	filter { "configurations:Debug", "platforms:x86" }
-		targetsuffix "32d"
-
-	filter { "configurations:Release", "platforms:x86" }
-		targetsuffix "32"
-
-	filter { "configurations:Debug", "platforms:x64" }
-		targetsuffix "64d"
-
-	filter { "configurations:Release", "platforms:x64" }
-		targetsuffix "64"
-
-	filter { "configurations:Debug*"}
+	filter { "configurations:Debug* or Optimized_Debug*"}
 		defines { "JEMALLOC_DEBUG" }
 
 	filter {}

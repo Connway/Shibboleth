@@ -1,3 +1,13 @@
+function SetIntermediateAndTargetDirs(configuration)
+	filter { "configurations:" .. configuration, "platforms:x86" }
+		objdir "../build/intermediate"
+		targetdir("../build/output/x86/" .. configuration)
+
+	filter { "configurations:" .. configuration, "platforms:x64" }
+		objdir "../build/intermediate"
+		targetdir("../build/output/x64/" .. configuration)
+end
+
 -- if os.get() == "windows" then
 -- 	platforms { "x86", "x64" }
 -- else
@@ -26,52 +36,49 @@ filter { "options:physx" }
 filter { "platforms:x64" }
 	architecture "x64"
 
-filter { "configurations:Debug*", "platforms:x86" }
-	objdir "../build/intermediate"
-	targetdir "../build/output/x86/Debug"
+SetIntermediateAndTargetDirs("Debug")
+SetIntermediateAndTargetDirs("Release")
+SetIntermediateAndTargetDirs("Analyze")
+SetIntermediateAndTargetDirs("Profile")
+SetIntermediateAndTargetDirs("Optimized_Debug")
 
-filter { "configurations:Debug*", "platforms:x64" }
-	objdir "../build/intermediate"
-	targetdir "../build/output/x64/Debug"
+if _OPTIONS["gen-clang"] and _ACTION == "vs2015" then
+	SetIntermediateAndTargetDirs("Debug_Clang")
+	SetIntermediateAndTargetDirs("Release_Clang")
+	SetIntermediateAndTargetDirs("Analyze_Clang")
+	SetIntermediateAndTargetDirs("Profile_Clang")
+	SetIntermediateAndTargetDirs("Optimized_Debug_Clang")
+end
 
-filter { "configurations:Release*", "platforms:x86" }
-	objdir "../build/intermediate"
-	targetdir "../build/output/x86/Release"
-
-filter { "configurations:Release*", "platforms:x64" }
-	objdir "../build/intermediate"
-	targetdir "../build/output/x64/Release"
-
-filter { "configurations:Analyze", "platforms:x86" }
-	objdir "../build/intermediate"
-	targetdir "../build/output/x86/Analyze"
-
-filter { "configurations:Analyze", "platforms:x64" }
-	objdir "../build/intermediate"
-	targetdir "../build/output/x64/Analyze"
-
-filter { "configurations:Profile", "platforms:x86" }
-	objdir "../build/intermediate"
-	targetdir "../build/output/x86/Profile"
-
-filter { "configurations:Profile", "platforms:x64" }
-	objdir "../build/intermediate"
-	targetdir "../build/output/x64/Profile"
-
-filter { "configurations:Debug*", "action:gmake", "options:not debug_optimization" }
+filter { "configurations:Debug*", "toolset:gcc", "options:not debug_optimization" }
 	optimize "Off"
 
-filter { "configurations:Debug*", "action:gmake", "options:debug_optimization" }
+filter { "configurations:Debug*", "toolset:gcc", "options:debug_optimization" }
 	optimize "Debug"
+
+filter { "configurations:Debug*", "toolset:not gcc" }
+	optimize "Debug"
+
+filter { "configurations:Debug* or Optimized_Debug*" }
+	defines { "_DEBUG", "DEBUG" }
+
+filter { "configurations:Release* or Profile* or Analyze*" }
+	flags { "LinkTimeOptimization", "ReleaseRuntime" }
+	defines { "NDEBUG" }
+	optimize "Speed"
+
+filter { "configurations:Optimized_Debug*" }
+	flags { "LinkTimeOptimization", "ReleaseRuntime" }
+	optimize "Speed"
+
+filter { "configurations:Profile" }
+	defines { "SHIB_PROFILE" }
 
 filter { "options:simd_set_aligned"}
 	defines { "SIMD_SET_ALIGNED" }
 
 filter { "action:vs*", "configurations:Analyze"}
 	buildoptions { "/analyze" }
-
-filter { "configurations:Profile" }
-	defines { "SHIB_PROFILE" }
 
 filter { "action:vs*" }
 	buildoptions { "/sdl" }
@@ -86,14 +93,3 @@ filter { "system:windows", "configurations:not *Clang" }
 	toolset "v140"
 
 filter {}
-
-configuration "Debug*"
-	defines { "_DEBUG", "DEBUG" }
-	optimize "Off"
-
-configuration "Release*"
-	flags { "LinkTimeOptimization", "ReleaseRuntime" }
-	defines { "NDEBUG" }
-	optimize "Speed"
-
-configuration {}

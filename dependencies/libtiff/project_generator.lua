@@ -3,9 +3,6 @@ project "libtiff"
 		location ("../../project/" .. _ACTION .. "/dependencies")
 	end
 
-	dofile("../../utils/default_configs.lua")
-	dofile("../../utils/config_map.lua")
-
 	kind "StaticLib"
 	language "C"
 	warnings "Default"
@@ -18,12 +15,10 @@ project "libtiff"
 		files { "tif_win32.c" }
 		excludes { "tif_unix.c" }
 
-	configuration "vs*"
+	filter { "action:vs*" }
 		defines { "_CRT_SECURE_NO_WARNINGS" }
 
-	configuration {}
-
-	filter { "action:gmake" }
+	filter { "action:gmake", "toolset:gcc or clang" }
 		buildoptions { "-fPIC" }
 
 	filter {}

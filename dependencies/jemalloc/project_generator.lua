@@ -3,9 +3,6 @@ project "jemalloc"
 		location ("../../project/" .. _ACTION .. "/dependencies")
 	end
 
-	dofile("../../utils/default_configs.lua")
-	dofile("../../utils/config_map.lua")
-
 	kind "StaticLib"
 	language "C"
 	warnings "Default"
@@ -15,7 +12,7 @@ project "jemalloc"
 	files { "**.h", "**.c" }
 	includedirs { "include" }
 
-	filter { "configurations:Debug*"}
+	filter { "configurations:Debug* or Optimized_Debug*"}
 		defines { "JEMALLOC_DEBUG" }
 
 	filter { "system:not macos"}

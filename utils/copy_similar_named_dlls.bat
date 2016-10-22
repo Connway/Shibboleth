@@ -22,6 +22,5 @@
 	@exit /b %errorlevel%
 )
 
-copy ..\dependencies\LuaJIT\lib\%cfg%\%arch%\lua51.dll ..\workingdir\App\bin\lua51.dll /Y
 copy ..\dependencies\prebuilt\EasyHook\%cfg2%\EasyHook32.dll ..\workingdir\App\bin\EasyHook32.dll
 copy ..\dependencies\prebuilt\EasyHook\%cfg2%\EasyHook32.dll ..\workingdir\App\bin\EasyHook64.dll

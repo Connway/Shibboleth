@@ -3,9 +3,6 @@ project "minizip"
 		location ("../../project/" .. _ACTION .. "/dependencies")
 	end
 
-	dofile("../../utils/default_configs.lua")
-	dofile("../../utils/config_map.lua")
-
 	kind "StaticLib"
 	language "C"
 	warnings "Default"
@@ -13,10 +10,10 @@ project "minizip"
 	files { "**.c", "**.h" }
 	includedirs { "../zlib" }
 
-	configuration "not windows"
+	filter { "system:not windows" }
 		excludes { "iowin32.h", "iowin32.c" }
 
-	configuration "vs*"
+	filter { "action:vs*" }
 		defines { "_CRT_SECURE_NO_WARNINGS" }
 
-	configuration {}
+	filter {}

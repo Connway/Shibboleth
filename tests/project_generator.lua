@@ -26,9 +26,6 @@ for i = 1, table.getn(tests) do
 			location ("../project/" .. _ACTION .. "/tests")
 		end
 
-		dofile("../utils/default_configs.lua")
-		dofile("../utils/config_map.lua")
-
 		kind "ConsoleApp"
 		language "C++"
 

@@ -3,9 +3,6 @@ project "Gaff"
 		location ("../../project/" .. _ACTION .. "/frameworks")
 	end
 
-	dofile("../../utils/default_configs.lua")
-	dofile("../../utils/config_map.lua")
-
 	kind "StaticLib"
 	language "C++"
 
@@ -15,16 +12,14 @@ project "Gaff"
 	filter { "system:not windows" }
 		flags { "FatalWarnings" }
 
-	filter {}
-
-	configuration "Debug"
-		defines { "ENET_DEBUG" }
-
-	configuration "windows"
+	filter { "system:windows" }
 		includedirs { "../../dependencies/dirent" }
 		defines { "_CRT_SECURE_NO_WARNINGS" }
 
-	configuration {}
+	filter { "configurations:Debug* or Optimized_Debug*" }
+		defines { "ENET_DEBUG" }
+
+	filter {}
 
 	files { "**.h", "**.cpp", "**.inl" }
 

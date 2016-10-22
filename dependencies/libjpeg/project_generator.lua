@@ -3,9 +3,6 @@ project "libjpeg"
 		location ("../../project/" .. _ACTION .. "/dependencies")
 	end
 
-	dofile("../../utils/default_configs.lua")
-	dofile("../../utils/config_map.lua")
-
 	kind "StaticLib"
 	language "C"
 	warnings "Default"
@@ -43,12 +40,10 @@ project "libjpeg"
 		"jpegtran.c"
 	}
 
-	configuration "vs*"
+	filter { "configurations:vs*" }
 		defines { "_CRT_SECURE_NO_WARNINGS" }
 
-	configuration {}
-
-	filter { "action:gmake" }
+	filter { "action:gmake", "toolset:gcc or clang" }
 		buildoptions { "-fPIC" }
 
 	filter {}
