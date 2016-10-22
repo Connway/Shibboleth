@@ -5,9 +5,6 @@ project "Game"
 		location ("../../project/" .. _ACTION .. "/game")
 	end
 
-	dofile("../../utils/default_configs.lua")
-	dofile("../../utils/config_map.lua")
-
 	kind "StaticLib"
 	language "C++"
 
@@ -15,10 +12,10 @@ project "Game"
 
 	files { "**.h", "**.cpp", "**.inl" }
 
-	configuration "windows"
+	filter { "system:windows" }
 		includedirs { "../../dependencies/dirent" }
 
-	configuration {}
+	filter {}
 
 	includedirs
 	{

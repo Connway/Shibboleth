@@ -5,9 +5,6 @@ project "RenderPipelines"
 		location ("../../project/" .. _ACTION .. "/renderpipelines")
 	end
 
-	dofile("../../utils/default_configs.lua")
-	dofile("../../utils/config_map.lua")
-
 	dofile("../../utils/module_suffix.lua")
 
 	kind "SharedLib"
@@ -19,10 +16,10 @@ project "RenderPipelines"
 
 	files { "**.h", "**.cpp", "**.inl" }
 
-	configuration "windows"
+	filter { "system:windows" }
 		includedirs { "../../dependencies/dirent" }
 
-	configuration {}
+	filter {}
 
 	includedirs
 	{

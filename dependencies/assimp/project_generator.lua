@@ -3,9 +3,6 @@ project "assimp"
 		location ("../../project/" .. _ACTION .. "/dependencies")
 	end
 
-	dofile("../../utils/default_configs.lua")
-	dofile("../../utils/config_map.lua")
-
 	kind "StaticLib"
 	language "C++"
 	warnings "Default"
@@ -35,9 +32,7 @@ project "assimp"
 	filter { "system:windows" }
 		defines { "_CRT_SECURE_NO_WARNINGS", "_SCL_SECURE_NO_WARNINGS" }
 
-	filter {}
-
-	configuration "vs2015"
+	filter { "action:vs*" }
 		buildoptions { "/bigobj" }
 
-	configuration {}
+	filter {}

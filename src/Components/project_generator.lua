@@ -5,9 +5,6 @@ project "Components"
 		location ("../../project/" .. _ACTION .. "/components")
 	end
 
-	dofile("../../utils/default_configs.lua")
-	dofile("../../utils/config_map.lua")
-
 	kind "StaticLib"
 	language "C++"
 
@@ -16,10 +13,10 @@ project "Components"
 	files { "**.h", "**.cpp", "**.inl" }
 	excludes { "Shibboleth_ComponentsModule.cpp" }
 
-	configuration "windows"
+	filter { "system:windows" }
 		includedirs { "../../dependencies/dirent" }
 
-	configuration {}
+	filter {}
 
 	includedirs
 	{
@@ -33,9 +30,6 @@ project "Components"
 		"../../frameworks/esprit/include",
 		"../../dependencies/OtterUI/inc",
 		"../../dependencies/rapidjson",
-		"../../dependencies/LuaState",
-		"../../dependencies/LuaJIT/src",
-		"../../dependencies/utf8-cpp",
 		"../../dependencies/assimp/include",
 		"../../dependencies/bullet"
 	}
@@ -47,9 +41,6 @@ project "ComponentsModule"
 		location ("../../project/" .. _ACTION .. "/components")
 	end
 
-	dofile("../../utils/default_configs.lua")
-	dofile("../../utils/config_map.lua")
-
 	dofile("../../utils/module_suffix.lua")
 
 	kind "SharedLib"
@@ -60,10 +51,10 @@ project "ComponentsModule"
 
 	files { "Shibboleth_ComponentsModule.cpp" }
 
-	configuration "windows"
+	filter { "system:windows" }
 		includedirs { "../../dependencies/dirent" }
 
-	configuration {}
+	filter {}
 
 	includedirs
 	{
@@ -77,9 +68,6 @@ project "ComponentsModule"
 		"../../frameworks/esprit/include",
 		"../../dependencies/OtterUI/inc",
 		"../../dependencies/rapidjson",
-		"../../dependencies/LuaState",
-		"../../dependencies/LuaJIT/src",
-		"../../dependencies/utf8-cpp",
 		"../../dependencies/assimp/include",
 		"../../dependencies/bullet"
 	}
@@ -109,19 +97,5 @@ project "ComponentsModule"
 		"BulletDynamics",
 		"LinearMath"
 	}
-
-	filter { "configurations:Debug", "platforms:x86" }
-		links { "../../build/output/x86/Debug/lua51" }
-
-	filter { "configurations:Debug", "platforms:x64" }
-		links { "../../build/output/x64/Debug/lua51" }
-
-	filter { "configurations:Release", "platforms:x86" }
-		links { "../../build/output/x86/Release/lua51" }
-
-	filter { "configurations:Release", "platforms:x64" }
-		links { "../../build/output/x64/Release/lua51" }
-
-	filter {}
 
 	dofile("../../utils/os_conditionals.lua")

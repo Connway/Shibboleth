@@ -5,9 +5,6 @@ project "App"
 		location ("../../project/" .. _ACTION .. "/app")
 	end
 
-	dofile("../../utils/default_configs.lua")
-	dofile("../../utils/config_map.lua")
-
 	dofile("../../utils/module_suffix.lua")
 
 	if _OPTIONS["console_app"] then

@@ -3,9 +3,6 @@ project "Gleam"
 		location ("../../project/" .. _ACTION .. "/frameworks")
 	end
 
-	dofile("../../utils/default_configs.lua")
-	dofile("../../utils/config_map.lua")
-
 	kind "StaticLib"
 	language "C++"
 

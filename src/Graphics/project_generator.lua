@@ -1,93 +1,96 @@
 group "Graphics Modules"
 
-project "Graphics"
-	if _ACTION then
-		location ("../../project/" .. _ACTION .. "/graphics")
-	end
+function SuffixSetup(configuration)
+	filter { "configurations:Debug*", "platforms:x86" }
+		targetsuffix("_" .. configuration .. "32d")
 
-	configuration "windows"
-		includedirs { "../../dependencies/dirent" }
+	filter { "configurations:Release*", "platforms:x86" }
+		targetsuffix("_" .. configuration .. "32")
 
-	configuration {}
+	filter { "configurations:Analyze*", "platforms:x86" }
+		targetsuffix("_" .. configuration .. "32a")
 
-	kind "SharedLib"
-	language "C++"
+	filter { "configurations:Profile*", "platforms:x86" }
+		targetsuffix("_" .. configuration .. "32p")
 
-	flags { "FatalWarnings" }
+	filter { "configurations:Optimized_Debug*", "platforms:x86" }
+		targetsuffix("_" .. configuration .. "32od")
 
-	files { "**.h", "**.cpp", "**.inl" }
+	filter { "configurations:Debug*", "platforms:x64" }
+		targetsuffix("_" .. configuration .. "64d")
 
-	includedirs
-	{
-		"../Shared/include",
-		"../Memory/include",
-		"../../frameworks/Gaff/include",
-		"../../frameworks/Gleam/include",
-		"../../dependencies/rapidjson",
-		"../../dependencies/utf8-cpp"
-	}
+	filter { "configurations:Release*", "platforms:x64" }
+		targetsuffix("_" .. configuration .. "64")
 
-	dependson
-	{
-		"Shared", "Gaff",
-		"Gleam", "glew",
-		"Memory"
-	}
+	filter { "configurations:Analyze*", "platforms:x64" }
+		targetsuffix("_" .. configuration .. "64a")
 
-	links
-	{
-		"Shared", "Gaff",
-		"Gleam", "glew",
-		"Memory"
-	}
+	filter { "configurations:Profile*", "platforms:x64" }
+		targetsuffix("_" .. configuration .. "64p")
 
-	filter { "configurations:*Direct3D"}
-		defines { "USE_DX" }
-
-	filter { "configurations:Analyze"}
-		defines { "USE_DX" }
-
-	filter { "configurations:*OpenGL"}
-		defines { "GLEW_STATIC" }
-
-	filter { "configurations:Debug_Direct3D", "platforms:x86" }
-		targetsuffix "_Direct3D32d"
-
-	filter { "configurations:Release_Direct3D", "platforms:x86" }
-		targetsuffix "_Direct3D32"
-
-	filter { "configurations:Debug_OpenGL", "platforms:x86" }
-		targetsuffix "_OpenGL32d"
-
-	filter { "configurations:Release_OpenGL", "platforms:x86" }
-		targetsuffix "_OpenGL32"
-
-	filter { "configurations:Debug_Direct3D", "platforms:x64" }
-		targetsuffix "_Direct3D64d"
-
-	filter { "configurations:Release_Direct3D", "platforms:x64" }
-		targetsuffix "_Direct3D64"
-
-	filter { "configurations:Debug_OpenGL", "platforms:x64" }
-		targetsuffix "_OpenGL64d"
-
-	filter { "configurations:Release_OpenGL", "platforms:x64" }
-		targetsuffix "_OpenGL64"
-
-	-- Just use Direct3D for the Analyze builds.
-	filter { "configurations:Analyze", "platforms:x86" }
-		targetsuffix "_Direct3D32"
-
-	filter { "configurations:Analyze", "platforms:x64" }
-		targetsuffix "_Direct3D64"
-
-	filter { "configurations:*OpenGL", "system:windows" }
-		links { "OpenGL32" }
-
-	filter { "configurations:*OpenGL", "system:not windows" }
-		links { "gl" }
-
-	filter { "configurations:*Direct3D", "system:windows" }
-		links { "d3d11", "D3dcompiler", "dxgi", "dxguid" }
+	filter { "configurations:Optimized_Debug*", "platforms:x64" }
+		targetsuffix("_" .. configuration .. "64od")
 
 	filter {}
+end
+
+function GraphicsCommonSetup(project_name)
+	project(project_name)
+		if _ACTION then
+			location ("../../project/" .. _ACTION .. "/graphics")
+		end
+
+		filter { "system:windows" }
+			includedirs { "../../dependencies/dirent" }
+
+		filter {}
+
+		kind "SharedLib"
+		language "C++"
+
+		flags { "FatalWarnings" }
+
+		files { "**.h", "**.cpp", "**.inl" }
+
+		includedirs
+		{
+			"../Shared/include",
+			"../Memory/include",
+			"../../frameworks/Gaff/include",
+			"../../frameworks/Gleam/include",
+			"../../dependencies/rapidjson"
+		}
+
+		dependson
+		{
+			"Shared", "Gaff",
+			"Gleam", "glew",
+			"Memory"
+		}
+
+		links
+		{
+			"Shared", "Gaff",
+			"Gleam", "glew",
+			"Memory"
+		}
+end
+
+
+if os.get() == "windows" then
+	GraphicsCommonSetup("Graphics_Direct3D")
+		defines { "USE_DX" }
+		links { "d3d11", "D3dcompiler", "dxgi", "dxguid" }
+		SuffixSetup("Direct3D")
+end
+
+GraphicsCommonSetup("Graphics_OpenGL")
+	defines { "GLEW_STATIC" }
+
+	filter { "system:windows" }
+		links { "OpenGL32" }
+
+	filter { "system:not windows" }
+		links { "gl" }
+
+	SuffixSetup("OpenGL")

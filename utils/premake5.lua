@@ -52,29 +52,26 @@ solution "Shibboleth"
 		location ("../project/" .. _ACTION)
 	end
 
-	if os.get() == "windows" then
-		if _OPTIONS["gen-clang"] then
-			configurations
-			{
-				"Debug_OpenGL", "Release_OpenGL",
-				"Debug_Direct3D", "Release_Direct3D",
-				"Debug_OpenGL_Clang", "Release_OpenGL_Clang",
-				"Debug_Direct3D_Clang", "Release_Direct3D_Clang",
-				"Analyze", "Profile", "Profile_Clang"
-			}
-		else
-			configurations
-			{
-				"Debug_OpenGL", "Release_OpenGL",
-				"Debug_Direct3D", "Release_Direct3D",
-				"Analyze", "Profile"
-			}
-		end
+	if _OPTIONS["gen-clang"] and _ACTION == "vs2015" then
+		configurations
+		{
+			"Debug", "Release",
+			"Debug_Clang", "Release_Clang",
+			"Analyze",
+			"Profile", "Profile_Clang",
+			"Optimized_Debug", "Optimized_Debug_Clang"
+		}
+	elseif _ACTION == "vs2015" then
+		configurations
+		{
+			"Debug", "Release", "Analyze",
+			"Profile", "Optimized_Debug"
+		}
 	else
 		configurations
 		{
-			"Debug_OpenGL", "Release_OpenGL",
-			"Analyze", "Profile"
+			"Debug", "Release",
+			"Profile", "Optimized_Debug"
 		}
 	end
 

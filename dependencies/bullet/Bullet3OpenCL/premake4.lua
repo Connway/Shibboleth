@@ -7,9 +7,6 @@ function createProject(vendor)
 				location ("../../../project/" .. _ACTION .. "/dependencies")
 			end
 
-			dofile("../../../utils/default_configs.lua")
-			dofile("../../../utils/config_map.lua")
-
 			initOpenCL(vendor)
 
 			language "C++"

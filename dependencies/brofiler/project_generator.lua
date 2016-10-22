@@ -5,9 +5,6 @@ if _OPTIONS["brofiler"] and _OS == "windows" then
 			location ("../../project/" .. _ACTION .. "/dependencies")
 		end
 
-		dofile("../../utils/default_configs.lua")
-		dofile("../../utils/config_map.lua")
-
 		kind "SharedLib"
 		language "C++"
 		warnings "Default"
