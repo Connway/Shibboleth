@@ -5,16 +5,15 @@ project "MainLoopModule"
 		location ("../../project/" .. _ACTION .. "/states")
 	end
 
-	dofile("../../utils/module_suffix.lua")
-
 	kind "SharedLib"
 	language "C++"
-
-	flags { "FatalWarnings" }
 
 	targetname "MainLoop"
 
 	files { "**.h", "**.cpp", "**.inl" }
+
+	filter { "configurations:not Analyze*" }
+		flags { "FatalWarnings" }
 
 	filter { "system:windows" }
 		includedirs { "../../dependencies/dirent" }

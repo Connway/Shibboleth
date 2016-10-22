@@ -118,7 +118,7 @@
       <WarningLevel>Level4</WarningLevel>
       <TreatWarningAsError>true</TreatWarningAsError>
       <PreprocessorDefinitions>_DEBUG;DEBUG;WIN32;_WINDOWS;_CRT_SECURE_NO_WARNINGS;ENET_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\..\..\dependencies\dirent;..\..\..\frameworks\Gaff\include;..\..\..\dependencies\EASTL\include;..\..\..\dependencies\enet\include;..\..\..\dependencies\ResIL\IL\include;..\..\..\dependencies\ResIL\include;..\..\..\dependencies\assimp\include;..\..\..\dependencies\utf8-cpp;..\..\..\dependencies\rapidjson;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\dependencies\dirent;..\..\..\frameworks\Gaff\include;..\..\..\dependencies\EASTL\include;..\..\..\dependencies\enet\include;..\..\..\dependencies\ResIL\IL\include;..\..\..\dependencies\ResIL\include;..\..\..\dependencies\rapidjson;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
       <ExceptionHandling>Async</ExceptionHandling>
@@ -140,7 +140,7 @@
       <WarningLevel>Level4</WarningLevel>
       <TreatWarningAsError>true</TreatWarningAsError>
       <PreprocessorDefinitions>NDEBUG;WIN32;_WINDOWS;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\..\..\dependencies\dirent;..\..\..\frameworks\Gaff\include;..\..\..\dependencies\EASTL\include;..\..\..\dependencies\enet\include;..\..\..\dependencies\ResIL\IL\include;..\..\..\dependencies\ResIL\include;..\..\..\dependencies\assimp\include;..\..\..\dependencies\utf8-cpp;..\..\..\dependencies\rapidjson;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\dependencies\dirent;..\..\..\frameworks\Gaff\include;..\..\..\dependencies\EASTL\include;..\..\..\dependencies\enet\include;..\..\..\dependencies\ResIL\IL\include;..\..\..\dependencies\ResIL\include;..\..\..\dependencies\rapidjson;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -166,9 +166,8 @@
     <ClCompile>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level4</WarningLevel>
-      <TreatWarningAsError>true</TreatWarningAsError>
       <PreprocessorDefinitions>NDEBUG;WIN32;_WINDOWS;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\..\..\dependencies\dirent;..\..\..\frameworks\Gaff\include;..\..\..\dependencies\EASTL\include;..\..\..\dependencies\enet\include;..\..\..\dependencies\ResIL\IL\include;..\..\..\dependencies\ResIL\include;..\..\..\dependencies\assimp\include;..\..\..\dependencies\utf8-cpp;..\..\..\dependencies\rapidjson;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\dependencies\dirent;..\..\..\frameworks\Gaff\include;..\..\..\dependencies\EASTL\include;..\..\..\dependencies\enet\include;..\..\..\dependencies\ResIL\IL\include;..\..\..\dependencies\ResIL\include;..\..\..\dependencies\rapidjson;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -186,9 +185,6 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
-    <Lib>
-      <TreatLibWarningAsErrors>true</TreatLibWarningAsErrors>
-    </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">
     <ClCompile>
@@ -196,7 +192,7 @@
       <WarningLevel>Level4</WarningLevel>
       <TreatWarningAsError>true</TreatWarningAsError>
       <PreprocessorDefinitions>NDEBUG;SHIB_PROFILE;WIN32;_WINDOWS;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\..\..\dependencies\dirent;..\..\..\frameworks\Gaff\include;..\..\..\dependencies\EASTL\include;..\..\..\dependencies\enet\include;..\..\..\dependencies\ResIL\IL\include;..\..\..\dependencies\ResIL\include;..\..\..\dependencies\assimp\include;..\..\..\dependencies\utf8-cpp;..\..\..\dependencies\rapidjson;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\dependencies\dirent;..\..\..\frameworks\Gaff\include;..\..\..\dependencies\EASTL\include;..\..\..\dependencies\enet\include;..\..\..\dependencies\ResIL\IL\include;..\..\..\dependencies\ResIL\include;..\..\..\dependencies\rapidjson;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -224,7 +220,7 @@
       <WarningLevel>Level4</WarningLevel>
       <TreatWarningAsError>true</TreatWarningAsError>
       <PreprocessorDefinitions>_DEBUG;DEBUG;WIN32;_WINDOWS;_CRT_SECURE_NO_WARNINGS;ENET_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\..\..\dependencies\dirent;..\..\..\frameworks\Gaff\include;..\..\..\dependencies\EASTL\include;..\..\..\dependencies\enet\include;..\..\..\dependencies\ResIL\IL\include;..\..\..\dependencies\ResIL\include;..\..\..\dependencies\assimp\include;..\..\..\dependencies\utf8-cpp;..\..\..\dependencies\rapidjson;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\dependencies\dirent;..\..\..\frameworks\Gaff\include;..\..\..\dependencies\EASTL\include;..\..\..\dependencies\enet\include;..\..\..\dependencies\ResIL\IL\include;..\..\..\dependencies\ResIL\include;..\..\..\dependencies\rapidjson;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -247,11 +243,9 @@
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_Animation.h" />
     <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_Assert.h" />
     <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_BezierCurve.h" />
     <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_CachedFunction.h" />
-    <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_Camera.h" />
     <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_Connection.h" />
     <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_CrashHandler.h" />
     <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_CriticalSection.h" />
@@ -283,23 +277,16 @@
     <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_IncludeWindows.h" />
     <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_JSON.h" />
     <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_JobPool.h" />
-    <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_Light.h" />
     <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_LinearCurve.h" />
     <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_Math.h" />
     <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_Mesh.h" />
-    <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_MeshAnimation.h" />
-    <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_MetaData.h" />
     <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_NetworkDefines.h" />
-    <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_NodeAnimation.h" />
     <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_Platform.h" />
     <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_Predicates.h" />
     <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_Queue.h" />
     <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_RefCounted.h" />
     <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_RefPtr.h" />
     <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_ReflectionDefinitions.h" />
-    <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_Scene.h" />
-    <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_SceneImporter.h" />
-    <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_SceneNode.h" />
     <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_ScopedExit.h" />
     <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_ScopedLock.h" />
     <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_SmartPtrs.h" />
@@ -321,9 +308,7 @@
     <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_Watcher.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\frameworks\Gaff\Gaff_Animation.cpp" />
     <ClCompile Include="..\..\..\frameworks\Gaff\Gaff_Assert.cpp" />
-    <ClCompile Include="..\..\..\frameworks\Gaff\Gaff_Camera.cpp" />
     <ClCompile Include="..\..\..\frameworks\Gaff\Gaff_Connection.cpp" />
     <ClCompile Include="..\..\..\frameworks\Gaff\Gaff_CrashHandler_Common.cpp" />
     <ClCompile Include="..\..\..\frameworks\Gaff\Gaff_CrashHandler_Linux.cpp" />
@@ -338,15 +323,7 @@
     <ClCompile Include="..\..\..\frameworks\Gaff\Gaff_Host.cpp" />
     <ClCompile Include="..\..\..\frameworks\Gaff\Gaff_Image.cpp" />
     <ClCompile Include="..\..\..\frameworks\Gaff\Gaff_JSON.cpp" />
-    <ClCompile Include="..\..\..\frameworks\Gaff\Gaff_Light.cpp" />
     <ClCompile Include="..\..\..\frameworks\Gaff\Gaff_Math.cpp" />
-    <ClCompile Include="..\..\..\frameworks\Gaff\Gaff_Mesh.cpp" />
-    <ClCompile Include="..\..\..\frameworks\Gaff\Gaff_MeshAnimation.cpp" />
-    <ClCompile Include="..\..\..\frameworks\Gaff\Gaff_MetaData.cpp" />
-    <ClCompile Include="..\..\..\frameworks\Gaff\Gaff_NodeAnimation.cpp" />
-    <ClCompile Include="..\..\..\frameworks\Gaff\Gaff_Scene.cpp" />
-    <ClCompile Include="..\..\..\frameworks\Gaff\Gaff_SceneImporter.cpp" />
-    <ClCompile Include="..\..\..\frameworks\Gaff\Gaff_SceneNode.cpp" />
     <ClCompile Include="..\..\..\frameworks\Gaff\Gaff_SpinLock.cpp" />
     <ClCompile Include="..\..\..\frameworks\Gaff\Gaff_StackTrace_Linux.cpp" />
     <ClCompile Include="..\..\..\frameworks\Gaff\Gaff_StackTrace_Windows.cpp" />

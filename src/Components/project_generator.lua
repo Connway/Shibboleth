@@ -8,10 +8,11 @@ project "Components"
 	kind "StaticLib"
 	language "C++"
 
-	flags { "FatalWarnings" }
-
 	files { "**.h", "**.cpp", "**.inl" }
 	excludes { "Shibboleth_ComponentsModule.cpp" }
+
+	filter { "configurations:not Analyze*" }
+		flags { "FatalWarnings" }
 
 	filter { "system:windows" }
 		includedirs { "../../dependencies/dirent" }
@@ -41,15 +42,15 @@ project "ComponentsModule"
 		location ("../../project/" .. _ACTION .. "/components")
 	end
 
-	dofile("../../utils/module_suffix.lua")
-
 	kind "SharedLib"
 	language "C++"
 
 	targetname "ShibbolethComponents"
-	flags { "FatalWarnings" }
 
 	files { "Shibboleth_ComponentsModule.cpp" }
+
+	filter { "configurations:not Analyze*" }
+		flags { "FatalWarnings" }
 
 	filter { "system:windows" }
 		includedirs { "../../dependencies/dirent" }

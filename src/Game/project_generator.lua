@@ -8,9 +8,10 @@ project "Game"
 	kind "StaticLib"
 	language "C++"
 
-	flags { "FatalWarnings" }
-
 	files { "**.h", "**.cpp", "**.inl" }
+
+	filter { "configurations:not Analyze*" }
+		flags { "FatalWarnings" }
 
 	filter { "system:windows" }
 		includedirs { "../../dependencies/dirent" }

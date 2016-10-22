@@ -8,7 +8,8 @@ project "Shared"
 	kind "StaticLib"
 	language "C++"
 
-	flags { "FatalWarnings" }
+	filter { "configurations:not Analyze*" }
+		flags { "FatalWarnings" }
 
 	filter { "system:windows" }
 		includedirs { "../../dependencies/dirent" }

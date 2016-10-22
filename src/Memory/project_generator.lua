@@ -5,13 +5,9 @@ project "Memory"
 		location ("../../project/" .. _ACTION .. "/memory")
 	end
 
-	dofile("../../utils/module_suffix.lua")
-
 	kind "SharedLib"
 	language "C++"
 	defines { "IS_MEMORY", "JEMALLOC_EXPORT=" }
-
-	flags { "FatalWarnings" }
 
 	files { "**.h", "**.cpp" }
 
@@ -27,6 +23,9 @@ project "Memory"
 
 	dependson { "Gaff", "EASTL", "jemalloc" }
 	links { "Gaff", "EASTL", "jemalloc" }
+
+	filter { "configurations:not Analyze*" }
+		flags { "FatalWarnings" }
 
 	filter { "action:vs*" }
 		includedirs { "../../dependencies/jemalloc/include/msvc_compat" }

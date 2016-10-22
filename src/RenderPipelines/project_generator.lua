@@ -5,16 +5,15 @@ project "RenderPipelines"
 		location ("../../project/" .. _ACTION .. "/renderpipelines")
 	end
 
-	dofile("../../utils/module_suffix.lua")
-
 	kind "SharedLib"
 	language "C++"
-
-	flags { "FatalWarnings" }
 
 	targetname "ShibbolethRenderPipelines"
 
 	files { "**.h", "**.cpp", "**.inl" }
+
+	filter { "configurations:not Analyze*" }
+		flags { "FatalWarnings" }
 
 	filter { "system:windows" }
 		includedirs { "../../dependencies/dirent" }

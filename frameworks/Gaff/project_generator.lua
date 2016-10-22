@@ -6,10 +6,7 @@ project "Gaff"
 	kind "StaticLib"
 	language "C++"
 
-	filter { "system:windows", "configurations:not *Clang" }
-		flags { "FatalWarnings" }
-
-	filter { "system:not windows" }
+	filter { "configurations:not *Clang", "configurations:not Analyze*" }
 		flags { "FatalWarnings" }
 
 	filter { "system:windows" }
@@ -30,7 +27,5 @@ project "Gaff"
 		"../../dependencies/enet/include",
 		"../../dependencies/ResIL/IL/include",
 		"../../dependencies/ResIL/include",
-		"../../dependencies/assimp/include",
-		"../../dependencies/utf8-cpp",
 		"../../dependencies/rapidjson"
 	}

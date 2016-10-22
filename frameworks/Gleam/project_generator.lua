@@ -12,10 +12,7 @@ project "Gleam"
 	filter { "options:simd_set_aligned"}
 		defines { "SIMD_SET_ALIGNED" }
 
-	filter { "system:windows", "configurations:not *Clang" }
-		flags { "FatalWarnings" }
-
-	filter { "system:not windows" }
+	filter { "configurations:not *Clang", "configurations:not Analyze*" }
 		flags { "FatalWarnings" }
 
 	filter {}

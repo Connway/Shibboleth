@@ -6,9 +6,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_Animation.h">
-      <Filter>include</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_Assert.h">
       <Filter>include</Filter>
     </ClInclude>
@@ -16,9 +13,6 @@
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_CachedFunction.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_Camera.h">
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_Connection.h">
@@ -114,9 +108,6 @@
     <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_JobPool.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_Light.h">
-      <Filter>include</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_LinearCurve.h">
       <Filter>include</Filter>
     </ClInclude>
@@ -126,16 +117,7 @@
     <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_Mesh.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_MeshAnimation.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_MetaData.h">
-      <Filter>include</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_NetworkDefines.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_NodeAnimation.h">
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_Platform.h">
@@ -154,15 +136,6 @@
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_ReflectionDefinitions.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_Scene.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_SceneImporter.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_SceneNode.h">
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_ScopedExit.h">
@@ -224,9 +197,7 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\frameworks\Gaff\Gaff_Animation.cpp" />
     <ClCompile Include="..\..\..\frameworks\Gaff\Gaff_Assert.cpp" />
-    <ClCompile Include="..\..\..\frameworks\Gaff\Gaff_Camera.cpp" />
     <ClCompile Include="..\..\..\frameworks\Gaff\Gaff_Connection.cpp" />
     <ClCompile Include="..\..\..\frameworks\Gaff\Gaff_CrashHandler_Common.cpp" />
     <ClCompile Include="..\..\..\frameworks\Gaff\Gaff_CrashHandler_Linux.cpp" />
@@ -241,15 +212,7 @@
     <ClCompile Include="..\..\..\frameworks\Gaff\Gaff_Host.cpp" />
     <ClCompile Include="..\..\..\frameworks\Gaff\Gaff_Image.cpp" />
     <ClCompile Include="..\..\..\frameworks\Gaff\Gaff_JSON.cpp" />
-    <ClCompile Include="..\..\..\frameworks\Gaff\Gaff_Light.cpp" />
     <ClCompile Include="..\..\..\frameworks\Gaff\Gaff_Math.cpp" />
-    <ClCompile Include="..\..\..\frameworks\Gaff\Gaff_Mesh.cpp" />
-    <ClCompile Include="..\..\..\frameworks\Gaff\Gaff_MeshAnimation.cpp" />
-    <ClCompile Include="..\..\..\frameworks\Gaff\Gaff_MetaData.cpp" />
-    <ClCompile Include="..\..\..\frameworks\Gaff\Gaff_NodeAnimation.cpp" />
-    <ClCompile Include="..\..\..\frameworks\Gaff\Gaff_Scene.cpp" />
-    <ClCompile Include="..\..\..\frameworks\Gaff\Gaff_SceneImporter.cpp" />
-    <ClCompile Include="..\..\..\frameworks\Gaff\Gaff_SceneNode.cpp" />
     <ClCompile Include="..\..\..\frameworks\Gaff\Gaff_SpinLock.cpp" />
     <ClCompile Include="..\..\..\frameworks\Gaff\Gaff_StackTrace_Linux.cpp" />
     <ClCompile Include="..\..\..\frameworks\Gaff\Gaff_StackTrace_Windows.cpp" />

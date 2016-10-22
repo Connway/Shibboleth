@@ -1,44 +1,13 @@
 group "Graphics Modules"
 
-function SuffixSetup(configuration)
-	filter { "configurations:Debug*", "platforms:x86" }
-		targetsuffix("_" .. configuration .. "32d")
-
-	filter { "configurations:Release*", "platforms:x86" }
-		targetsuffix("_" .. configuration .. "32")
-
-	filter { "configurations:Analyze*", "platforms:x86" }
-		targetsuffix("_" .. configuration .. "32a")
-
-	filter { "configurations:Profile*", "platforms:x86" }
-		targetsuffix("_" .. configuration .. "32p")
-
-	filter { "configurations:Optimized_Debug*", "platforms:x86" }
-		targetsuffix("_" .. configuration .. "32od")
-
-	filter { "configurations:Debug*", "platforms:x64" }
-		targetsuffix("_" .. configuration .. "64d")
-
-	filter { "configurations:Release*", "platforms:x64" }
-		targetsuffix("_" .. configuration .. "64")
-
-	filter { "configurations:Analyze*", "platforms:x64" }
-		targetsuffix("_" .. configuration .. "64a")
-
-	filter { "configurations:Profile*", "platforms:x64" }
-		targetsuffix("_" .. configuration .. "64p")
-
-	filter { "configurations:Optimized_Debug*", "platforms:x64" }
-		targetsuffix("_" .. configuration .. "64od")
-
-	filter {}
-end
-
 function GraphicsCommonSetup(project_name)
 	project(project_name)
 		if _ACTION then
 			location ("../../project/" .. _ACTION .. "/graphics")
 		end
+
+		filter { "configurations:not Analyze*" }
+			flags { "FatalWarnings" }
 
 		filter { "system:windows" }
 			includedirs { "../../dependencies/dirent" }
@@ -47,8 +16,6 @@ function GraphicsCommonSetup(project_name)
 
 		kind "SharedLib"
 		language "C++"
-
-		flags { "FatalWarnings" }
 
 		files { "**.h", "**.cpp", "**.inl" }
 
@@ -81,7 +48,6 @@ if os.get() == "windows" then
 	GraphicsCommonSetup("Graphics_Direct3D")
 		defines { "USE_DX" }
 		links { "d3d11", "D3dcompiler", "dxgi", "dxguid" }
-		SuffixSetup("Direct3D")
 end
 
 GraphicsCommonSetup("Graphics_OpenGL")
@@ -92,5 +58,3 @@ GraphicsCommonSetup("Graphics_OpenGL")
 
 	filter { "system:not windows" }
 		links { "gl" }
-
-	SuffixSetup("OpenGL")

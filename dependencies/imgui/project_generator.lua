@@ -6,7 +6,10 @@ project "imgui"
 	kind "StaticLib"
 	language "C++"
 
-	flags { "FatalWarnings" }
+	filter { "configurations:not Analyze*" }
+		flags { "FatalWarnings" }
+
+	filter {}
 
 	defines { "STATIC_PLUGINS" }
 	files { "**.h", "**.cpp", "**.inl" }

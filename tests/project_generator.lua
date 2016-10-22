@@ -29,7 +29,10 @@ for i = 1, table.getn(tests) do
 		kind "ConsoleApp"
 		language "C++"
 
-		flags { "FatalWarnings" }
+		filter { "configurations:not Analyze*" }
+			flags { "FatalWarnings" }
+
+		filter {}
 
 		if tests.files == nil then
 			files { settings.name .. ".cpp" }

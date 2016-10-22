@@ -8,7 +8,10 @@ project "Messages"
 	kind "StaticLib"
 	language "C++"
 
-	flags { "FatalWarnings" }
+	filter { "configurations:not Analyze*" }
+		flags { "FatalWarnings" }
+
+	filter {}
 
 	files { "**.h", "**.cpp", "**.inl" }
 
