@@ -48,8 +48,8 @@ public:
 	void run(void);
 	void destroy(void);
 
-	const IManager* getManager(const HashString32& name) const;
-	IManager* getManager(const HashString32& name);
+	const IManager* getManager(Gaff::Hash32 name) const;
+	IManager* getManager(Gaff::Hash32 name);
 
 	MessageBroadcaster& getBroadcaster(void);
 
@@ -61,14 +61,8 @@ public:
 	const VectorMap<HashString32, U8String>& getCmdLine(void) const;
 	VectorMap<HashString32, U8String>& getCmdLine(void);
 
-	JobPool& getJobPool(void);
-
-	void getWorkerThreadIDs(Vector<uint32_t>& out) const;
-	void helpUntilNoJobs(void);
-	void doAJob(void);
-
-	const char* getLogFileName(void) const;
 	LogManager& getLogManager(void);
+	JobPool& getJobPool(void);
 
 	DynamicLoader::ModulePtr loadModule(const char* filename, const char* name);
 
@@ -105,7 +99,7 @@ private:
 		CreateFileSystemFunc create_func;
 	};
 
-	using ManagerMap = VectorMap<HashString32, ManagerEntry>;
+	using ManagerMap = VectorMap<Gaff::Hash32, ManagerEntry>;
 	using MainLoopFunc = void (*)(void);
 
 	bool _running;
@@ -116,7 +110,6 @@ private:
 	ManagerMap _manager_map;
 	JobPool _job_pool;
 	LogManager _logger;
-	char _log_file_name[64];
 
 	FileSystemData _fs;
 

@@ -44,68 +44,68 @@ public:
 	template <class T>
 	const T& getManagerTUnsafe(const HashString32& name) const
 	{
-		return *reinterpret_cast<T*>(getManager(name));
+		return *reinterpret_cast<T*>(getManager(name.getHash()));
 	}
 
 	template <class T>
 	T& getManagerTUnsafe(const HashString32& name)
 	{
-		return *reinterpret_cast<T*>(getManager(name));
+		return *reinterpret_cast<T*>(getManager(name.getHash()));
 	}
 
 	template <class T>
 	const T& getManagerTUnsafe(const U8String& name) const
 	{
-		return *reinterpret_cast<T*>(getManager(name));
+		return *reinterpret_cast<T*>(getManager(name.data()));
 	}
 
 	template <class T>
 	T& getMangetManagerTUnsafeagerT(const U8String& name)
 	{
-		return *reinterpret_cast<T*>(getManager(name));
+		return *reinterpret_cast<T*>(getManager(name.data()));
 	}
 
 	template <class T>
 	const T& getManagerTUnsafe(const char* name) const
 	{
-		return *reinterpret_cast<T*>(getManager(name));
+		return *reinterpret_cast<T*>(getManager(Gaff::FNV1aHash32String(name)));
 	}
 
 	template <class T>
 	T& getManagerTUnsafe(const char* name)
 	{
-		return *reinterpret_cast<T*>(getManager(name));
+		return *reinterpret_cast<T*>(getManager(Gaff::FNV1aHash32String(name)));
 	}
 
-	template <class T>
-	const T& getManagerTUnsafe(void) const
-	{
-		return *reinterpret_cast<T*>(getManager(T::GetFriendlyName()));
-	}
+	//template <class T>
+	//const T& getManagerTUnsafe(void) const
+	//{
+	//	return *reinterpret_cast<T*>(getManager(T::GetFriendlyName()));
+	//}
 
-	template <class T>
-	T& getManagerTUnsafe(void)
-	{
-		return *reinterpret_cast<T*>(getManager(T::GetFriendlyName()));
-	}
+	//template <class T>
+	//T& getManagerTUnsafe(void)
+	//{
+	//	return *reinterpret_cast<T*>(getManager(T::GetFriendlyName()));
+	//}
 
-	template <class T>
-	const T& getManagerT(void) const
-	{
-		return *Gaff::ReflectionCast<T>(getManager(T::GetFriendlyName()));
-	}
+	//template <class T>
+	//const T& getManagerT(void) const
+	//{
+	//	return *Gaff::ReflectionCast<T>(getManager(T::GetFriendlyName()));
+	//}
 
-	template <class T>
-	T& getManagerT(void)
-	{
-		return *Gaff::ReflectionCast<T>(getManager(T::GetFriendlyName()));
-	}
+	//template <class T>
+	//T& getManagerT(void)
+	//{
+	//	return *Gaff::ReflectionCast<T>(getManager(T::GetFriendlyName()));
+	//}
 
 	IApp(void) {}
 	virtual ~IApp(void) {}
 
-	virtual const IManager* getManager(const HashString32& name) const = 0;
-	virtual IManager* getManager(const HashString32& name) = 0;
+	virtual const IManager* getManager(Gaff::Hash32 name) const = 0;
+	virtual IManager* getManager(Gaff::Hash32 name) = 0;
 
 	virtual MessageBroadcaster& getBroadcaster(void) = 0;
 
@@ -113,14 +113,8 @@ public:
 	virtual const VectorMap<HashString32, U8String>& getCmdLine(void) const = 0;
 	virtual VectorMap<HashString32, U8String>& getCmdLine(void) = 0;
 
-	virtual JobPool& getJobPool(void) = 0;
-
-	virtual void getWorkerThreadIDs(Vector<uint32_t>& out) const = 0;
-	virtual void helpUntilNoJobs(void) = 0;
-	virtual void doAJob(void) = 0;
-
-	virtual const char* getLogFileName(void) const = 0;
 	virtual LogManager& getLogManager(void) = 0;
+	virtual JobPool& getJobPool(void) = 0;
 
 	virtual DynamicLoader::ModulePtr loadModule(const char* filename, const char* name) = 0;
 

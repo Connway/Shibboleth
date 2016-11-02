@@ -43,7 +43,7 @@ typename DynamicLoader<Allocator>::ModulePtr DynamicLoader<Allocator>::loadModul
 {
 	GAFF_ASSERT(filename && name && strlen(filename) && strlen(name));
 
-	auto it = _modules.find(name);
+	auto it = Find(_modules, FNV1aHash32String(name));
 
 	if (it != _modules.end()) {
 		return it->second;
@@ -53,8 +53,7 @@ typename DynamicLoader<Allocator>::ModulePtr DynamicLoader<Allocator>::loadModul
 
 	if (module) {
 		if (module->load(filename)) {
-			HString str(name, FNV1aHash32, _allocator);
-			_modules[name] = module;
+			_modules.emplace(std::move(HString(name, FNV1aHash32, _allocator)), module);
 			return module;
 		}
 	}
@@ -66,14 +65,22 @@ template <class Allocator>
 typename DynamicLoader<Allocator>::ModulePtr DynamicLoader<Allocator>::getModule(const char* name)
 {
 	GAFF_ASSERT(name && strlen(name));
-	HString str(name, FNV1aHash32, _allocator);
-	return _modules[name];
+	auto it = Find(_modules, Gaff::FNV1aHash32String(name));
+
+	if (it != _modules.end()) {
+		return it->second;
+	}
+
+	return ModulePtr();
 }
 
 template <class Allocator>
 void DynamicLoader<Allocator>::removeModule(const char* name)
 {
 	GAFF_ASSERT(name && strlen(name));
-	HString str(name, FNV1aHash32, _allocator);
-	_modules.erase(str);
+	auto it = Find(_modules, Gaff::FNV1aHash32String(name));
+
+	if (it != _modules.end()) {
+		_modules.erase(it);
+	}
 }

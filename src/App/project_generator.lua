@@ -22,7 +22,7 @@ project "App"
 		"../Memory/include",
 		"../../frameworks/Gaff/include",
 		"../../dependencies/rapidjson",
-		"../../dependencies/utf8-cpp"
+		"../../dependencies/EASTL/include"
 	}
 
 	dependson
@@ -34,7 +34,7 @@ project "App"
 	links
 	{
 		"Shared", "Gaff",
-		"Memory"
+		"Memory", "EASTL"
 	}
 
 	filter { "configurations:not Analyze*" }

@@ -21,35 +21,31 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Shibboleth_LogManager.h"
-#include <Gaff_File.h>
+#include <EASTL/algorithm.h>
+#include <Gaff_Utils.h>
+#include <mutex>
 
 NS_SHIBBOLETH
 
-Gaff::Thread::ReturnType THREAD_CALLTYPE LogManager::LogThread(void* thread_data)
+void LogManager::LogThread(LogManager& lm)
 {
-	LogManager* lm = reinterpret_cast<LogManager*>(thread_data);
+	while (!lm._shutdown) {
+		lm._log_event.wait();
 
-	while (!lm->_shutdown) {
-		lm->_log_event.wait();
-		lm->_log_queue_lock.lock();
+		lm._log_queue_lock.lock();
 
-		for (auto it = lm->_logs.begin(); it != lm->_logs.end(); ++it) {
-			Gaff::File file;
+		LogTask task = std::move(lm._logs.front());
+		lm._logs.pop();
 
-			if (file.open(it->log_file.data(), Gaff::File::APPEND)) {
-				file.writeString(it->message.data());
-				file.close();
-			}
+		lm._log_queue_lock.unlock();
 
-			lm->notifyLogCallbacks(it->message.data(), it->type);
-		}
+		task.file.writeString(task.message.data());
+		task.file.writeChar('\n');
+		task.file.flush();
 
-		lm->_logs.clear();
-
-		lm->_log_queue_lock.unlock();
+		std::lock_guard<Gaff::SpinLock> lock(lm._log_callback_lock);
+		lm.notifyLogCallbacks(task.message.data(), task.type);
 	}
-
-	return 0;
 }
 
 LogManager::LogManager(void):
@@ -64,20 +60,27 @@ LogManager::~LogManager(void)
 
 bool LogManager::init(void)
 {
-	_shutdown = false;
-	return _log_thread.create(LogThread, this);
+	addChannel("Default", "Log");
+
+	std::thread log_thread(LogThread, std::ref(*this));
+	_log_thread.swap(log_thread);
+
+	return _log_thread.get_id() == std::thread::id();
 }
 
 void LogManager::destroy(void)
 {
 	_shutdown = true;
+
 	_log_event.set();
-	_log_thread.wait();
-	_log_thread.close();
+	_log_thread.join();
+
+	_shutdown = true;
 }
 
 void LogManager::addLogCallback(const LogCallback& callback)
 {
+	std::lock_guard<Gaff::SpinLock> lock(_log_callback_lock);
 	_log_callbacks.emplace_back(callback);
 }
 
@@ -90,27 +93,107 @@ void LogManager::removeLogCallback(const LogCallback& callback)
 	}
 }
 
-void LogManager::notifyLogCallbacks(const char* message, LOG_TYPE type)
+void LogManager::notifyLogCallbacks(const char* message, LogType type)
 {
 	for (auto it = _log_callbacks.begin(); it != _log_callbacks.end(); ++it) {
 		(*it)(message, type);
 	}
 }
 
-void LogManager::logMessage(LOG_TYPE type, const char* file, const char* format, ...)
+void LogManager::addChannel(Gaff::HashStringTemp32 channel, const char* file)
+{
+	auto it = Gaff::Find(_channels, channel);
+
+	if (it == _channels.end()) {
+		char8_t time_string[64] = { 0 };
+		char8_t file_name[256] = { 0 };
+
+		Gaff::GetCurrentTimeString(time_string, ARRAY_SIZE(time_string), "%Y-%m-%d %H-%M-%S");
+
+		snprintf(
+			file_name,
+			ARRAY_SIZE(file_name),
+			"%s %s.txt",
+			file,
+			time_string
+		);
+
+		auto pair = eastl::make_pair<HashString32, Gaff::File>(HashString32(channel), Gaff::File());
+
+		if (pair.second.open(file_name, Gaff::File::WRITE) && channel.getHash() != LOG_CHANNEL_DEFAULT) {
+			_channels.insert(std::move(pair));
+
+		} else {
+			// If this is not the channel added in the constructor, then log the error in that channel.
+			if (channel.getHash() != LOG_CHANNEL_DEFAULT) {
+				logMessage(
+					LOG_ERROR,
+					LOG_CHANNEL_DEFAULT,
+					"Failed to create channel '%s'! Failed to open file '%s'!",
+					channel.getBuffer(),
+					file_name
+				);
+			}
+		}
+	}
+}
+
+void LogManager::logMessage(LogType type, Gaff::HashStringTemp32 channel, const char* format, ...)
+{
+	va_list vl;
+	va_start(vl, format);
+	
+	if(!logMessageHelper(type, channel.getHash(), format, vl) && channel.getHash() != LOG_CHANNEL_DEFAULT) {
+		logMessage(
+			LOG_ERROR,
+			LOG_CHANNEL_DEFAULT,
+			"Failed to find channel '%s'!",
+			channel.getBuffer()
+		);
+
+		// Log the message to the default channel.
+		logMessageHelper(type, LOG_CHANNEL_DEFAULT, format, vl);
+	}
+	
+	va_end(vl);
+}
+
+void LogManager::logMessage(LogType type, Gaff::Hash32 channel, const char* format, ...)
+{
+	va_list vl;
+	va_start(vl, format);
+
+	if (!logMessageHelper(type, channel, format, vl) && channel != LOG_CHANNEL_DEFAULT) {
+		logMessage(
+			LOG_ERROR,
+			LOG_CHANNEL_DEFAULT,
+			"Failed to find channel with hash '%u'!",
+			channel
+		);
+
+		// Log the message to the default channel.
+		logMessageHelper(type, LOG_CHANNEL_DEFAULT, format, vl);
+	}
+
+	va_end(vl);
+}
+
+bool LogManager::logMessageHelper(LogType type, Gaff::Hash32 channel, const char* format, va_list& vl)
 {
 	char temp[2048] = { 0 };
-	va_list vl;
+	vsnprintf(temp, ARRAY_SIZE(temp), format, vl);
 
-	va_start(vl, format);
-	vsnprintf_s(temp, 2048, format, vl);
-	va_end(vl);
+	auto it = Gaff::Find(_channels, channel);
 
-	_log_queue_lock.lock();
-	_logs.emplace_back(type, file, temp);
-	_log_queue_lock.unlock();
+	if (it == _channels.end()) {
+		return false;
+	}
 
+	std::lock_guard<Gaff::SpinLock> lock(_log_queue_lock);
+	_logs.emplace_back(it->second, temp, type);
 	_log_event.set();
+
+	return true;
 }
 
 NS_END

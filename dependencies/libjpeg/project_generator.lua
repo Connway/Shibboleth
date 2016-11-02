@@ -40,7 +40,7 @@ project "libjpeg"
 		"jpegtran.c"
 	}
 
-	filter { "configurations:vs*" }
+	filter { "action:vs*" }
 		defines { "_CRT_SECURE_NO_WARNINGS" }
 
 	filter { "action:gmake", "toolset:gcc or clang" }

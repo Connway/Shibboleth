@@ -34,11 +34,11 @@ THE SOFTWARE.
 #define STATIC_FILE_FUNC \
 	static void static__file__func(void); \
 	namespace { \
-	struct static__file__func__helper \
-	{ \
-	public: \
-		static__file__func__helper(void) { static__file__func(); } \
-	}; \
+		struct static__file__func__helper \
+		{ \
+		public: \
+			static__file__func__helper(void) { static__file__func(); } \
+		}; \
 	} \
 	static const static__file__func__helper GAFF_CAT(g__static_file_global_, __LINE__); \
 	void static__file__func(void)

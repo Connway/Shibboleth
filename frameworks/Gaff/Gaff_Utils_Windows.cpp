@@ -51,28 +51,18 @@ void DebugPrintf(const char* format_string, ...)
 	va_list vl;
 	va_start(vl, format_string);
 
-#ifdef _UNICODE
 	CONVERT_STRING(wchar_t, temp, format_string);
 	wchar_t buf[256] = { 0 };
 	_vsnwprintf(buf, 256, temp, vl);
 	OutputDebugStringW(buf);
-#else
-	char buf[256] = { 0 };
-	vsnprintf(buf, 256, format_string, vl);
-	OutputDebugStringA(buf);
-#endif
 
 	va_end(vl);
 }
 
 bool SetWorkingDir(const char* directory)
 {
-#ifdef _UNICODE
 	CONVERT_STRING(wchar_t, temp, directory);
 	return SetCurrentDirectoryW(temp) != 0;
-#else
-	return SetCurrentDirectoryW(directory) != 0;
-#endif
 }
 
 void* AlignedOffsetMalloc(size_t size, size_t alignment, size_t offset)

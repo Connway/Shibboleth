@@ -4,6 +4,9 @@
     <Filter Include="include">
       <UniqueIdentifier>{89AF369E-F58E-B539-FEA6-40106A051C9B}</UniqueIdentifier>
     </Filter>
+    <Filter Include="include\EAAssert">
+      <UniqueIdentifier>{B0E5F499-9CDE-13EC-C510-F970B168F3F7}</UniqueIdentifier>
+    </Filter>
     <Filter Include="include\EABase">
       <UniqueIdentifier>{D9EBD9FC-C5B9-CD02-AE4D-3E299ABAA967}</UniqueIdentifier>
     </Filter>
@@ -19,11 +22,17 @@
     <Filter Include="include\EASTL\internal">
       <UniqueIdentifier>{DDA4291A-C99E-526C-B20B-E97C9EA4B8D8}</UniqueIdentifier>
     </Filter>
+    <Filter Include="include\EAStdC">
+      <UniqueIdentifier>{0C8DE3FC-F85A-D702-E1EE-4729CD5BB367}</UniqueIdentifier>
+    </Filter>
     <Filter Include="source">
       <UniqueIdentifier>{76FF3A1C-62A1-65F2-4B5C-7946379DEC42}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\..\dependencies\EASTL\include\EAAssert\eaassert.h">
+      <Filter>include\EAAssert</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\dependencies\EASTL\include\EABase\config\eacompiler.h">
       <Filter>include\EABase\config</Filter>
     </ClInclude>
@@ -58,6 +67,9 @@
       <Filter>include\EASTL</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\dependencies\EASTL\include\EASTL\allocator_malloc.h">
+      <Filter>include\EASTL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\EASTL\include\EASTL\any.h">
       <Filter>include\EASTL</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\dependencies\EASTL\include\EASTL\array.h">
@@ -192,6 +204,9 @@
     <ClInclude Include="..\..\..\dependencies\EASTL\include\EASTL\internal\hashtable.h">
       <Filter>include\EASTL\internal</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\EASTL\include\EASTL\internal\in_place_t.h">
+      <Filter>include\EASTL\internal</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\dependencies\EASTL\include\EASTL\internal\integer_sequence.h">
       <Filter>include\EASTL\internal</Filter>
     </ClInclude>
@@ -294,6 +309,9 @@
     <ClInclude Include="..\..\..\dependencies\EASTL\include\EASTL\scoped_ptr.h">
       <Filter>include\EASTL</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\EASTL\include\EASTL\segmented_vector.h">
+      <Filter>include\EASTL</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\dependencies\EASTL\include\EASTL\set.h">
       <Filter>include\EASTL</Filter>
     </ClInclude>
@@ -313,6 +331,12 @@
       <Filter>include\EASTL</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\dependencies\EASTL\include\EASTL\string.h">
+      <Filter>include\EASTL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\EASTL\include\EASTL\string_hash_map.h">
+      <Filter>include\EASTL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\EASTL\include\EASTL\string_map.h">
       <Filter>include\EASTL</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\dependencies\EASTL\include\EASTL\tuple.h">
@@ -348,8 +372,38 @@
     <ClInclude Include="..\..\..\dependencies\EASTL\include\EASTL\weak_ptr.h">
       <Filter>include\EASTL</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\EASTL\include\EAStdC\EAAlignment.h">
+      <Filter>include\EAStdC</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\EASTL\include\EAStdC\EADateTime.h">
+      <Filter>include\EAStdC</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\EASTL\include\EAStdC\EAMemory.h">
+      <Filter>include\EAStdC</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\EASTL\include\EAStdC\EAProcess.h">
+      <Filter>include\EAStdC</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\EASTL\include\EAStdC\EASprintf.h">
+      <Filter>include\EAStdC</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\EASTL\include\EAStdC\EAStopwatch.h">
+      <Filter>include\EAStdC</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\EASTL\include\EAStdC\EAString.h">
+      <Filter>include\EAStdC</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\EASTL\include\EAStdC\EATextUtil.h">
+      <Filter>include\EAStdC</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\..\dependencies\EASTL\source\EAMemory.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\dependencies\EASTL\source\EASprintf.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\..\dependencies\EASTL\source\allocator_eastl.cpp">
       <Filter>source</Filter>
     </ClCompile>

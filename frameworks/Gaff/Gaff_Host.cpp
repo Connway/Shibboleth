@@ -52,7 +52,7 @@ void NetworkDestroy(void)
 Host::Host(const Host& host):
 	_latest_connection(nullptr), _host(host._host)
 {
-	((Host&)host)._host = nullptr; // take over control of their _host pointer
+	const_cast<Host&>(host)._host = nullptr; // take over control of their _host pointer
 }
 
 Host::Host(void):

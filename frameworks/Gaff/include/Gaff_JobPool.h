@@ -23,11 +23,11 @@ THE SOFTWARE.
 #pragma once
 
 #include "Gaff_SpinLock.h"
-#include "Gaff_Thread.h"
 #include "Gaff_Vector.h"
 #include "Gaff_Queue.h"
 #include "Gaff_Utils.h"
 #include <atomic>
+#include <thread>
 
 NS_GAFF
 
@@ -86,7 +86,7 @@ public:
 	int32_t getNumActiveThreads(void) const;
 	size_t getNumTotalThreads(void) const;
 
-	void getThreadIDs(uint32_t* out) const;
+	void getThreadIDs(size_t* out) const;
 
 private:
 	struct JobQueue
@@ -103,7 +103,7 @@ private:
 	};
 
 	Vector<JobQueue, Allocator> _job_pools;
-	Vector<Thread, Allocator> _threads;
+	Vector<std::thread, Allocator> _threads;
 	ThreadData _thread_data;
 
 	Allocator _allocator;
@@ -114,9 +114,7 @@ private:
 	static void ProcessJobQueue(JobQueue& job_queue);
 	static void DoJob(JobPair& job);
 
-	static Thread::ReturnType THREAD_CALLTYPE JobThread(void* thread_data);
-
-	friend Thread::ReturnType THREAD_CALLTYPE JobThread(void* thread_data);
+	static void JobThread(ThreadData& td);
 
 	GAFF_NO_COPY(JobPool);
 	GAFF_NO_MOVE(JobPool);
