@@ -54,11 +54,7 @@ static void WriteMiniDump(EXCEPTION_POINTERS* _exception_info)
 
 	TCHAR dump_file_name[1024] = { 0 };
 
-#ifdef _UNICODE
 	_snwprintf(dump_file_name, ARRAY_SIZE(dump_file_name) - 1, dump_format, process_name + name_begin);
-#else
-	snprintf(dump_file_name, ARRAY_SIZE(dump_file_name) - 1, dump_format, process_name + name_begin);
-#endif
 
 	// Make sure our output folder exists.
 	Gaff::CreateDir("dumps", 0777);

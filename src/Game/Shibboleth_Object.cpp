@@ -35,7 +35,7 @@ THE SOFTWARE.
 
 NS_SHIBBOLETH
 
-Object::Object(unsigned int id):
+Object::Object(uint32_t id):
 	_comp_mgr(GetApp().getManagerT<IComponentManager>()),
 	_obj_mgr(GetApp().getManagerT<IObjectManager>()),
 	_parent(nullptr), _id(id), _flags(0)
@@ -114,22 +114,17 @@ void Object::destroy(void)
 	removeChildren();
 }
 
-uint32_t Object::getNameHash(void) const
+const HashString64& Object::getName(void) const
 {
-	return _name.getHash();
+	return _name;
 }
 
-const char* Object::getName(void) const
-{
-	return _name.getBuffer();
-}
-
-unsigned int Object::getID(void) const
+uint32_t Object::getID(void) const
 {
 	return _id;
 }
 
-void Object::setID(unsigned int id)
+void Object::setID(uint32_t id)
 {
 	_id = id;
 }

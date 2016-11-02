@@ -264,6 +264,7 @@
     <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_Event_Windows.h" />
     <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_File.h" />
     <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_Function.h" />
+    <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_Hash.h" />
     <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_HashString.h" />
     <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_Host.h" />
     <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_IAllocator.h" />
@@ -284,24 +285,19 @@
     <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_Platform.h" />
     <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_Predicates.h" />
     <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_Queue.h" />
+    <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_SerializeInterfaces.h" />
     <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_RefCounted.h" />
     <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_RefPtr.h" />
     <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_ReflectionDefinitions.h" />
     <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_ScopedExit.h" />
     <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_ScopedLock.h" />
+    <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_Reflection.h" />
     <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_SmartPtrs.h" />
     <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_SpinLock.h" />
     <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_StackTrace.h" />
     <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_StackTrace_Linux.h" />
     <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_StackTrace_Windows.h" />
     <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_String.h" />
-    <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_Thread.h" />
-    <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_Thread_Linux.h" />
-    <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_Thread_Windows.h" />
-    <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_Timer.h" />
-    <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_Timer_Linux.h" />
-    <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_Timer_Mac.h" />
-    <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_Timer_Windows.h" />
     <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_Utils.h" />
     <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_Vector.h" />
     <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_VectorMap.h" />
@@ -327,15 +323,11 @@
     <ClCompile Include="..\..\..\frameworks\Gaff\Gaff_SpinLock.cpp" />
     <ClCompile Include="..\..\..\frameworks\Gaff\Gaff_StackTrace_Linux.cpp" />
     <ClCompile Include="..\..\..\frameworks\Gaff\Gaff_StackTrace_Windows.cpp" />
-    <ClCompile Include="..\..\..\frameworks\Gaff\Gaff_Thread_Linux.cpp" />
-    <ClCompile Include="..\..\..\frameworks\Gaff\Gaff_Thread_Windows.cpp" />
-    <ClCompile Include="..\..\..\frameworks\Gaff\Gaff_Timer_Linux.cpp" />
-    <ClCompile Include="..\..\..\frameworks\Gaff\Gaff_Timer_Mac.cpp" />
-    <ClCompile Include="..\..\..\frameworks\Gaff\Gaff_Timer_Windows.cpp" />
     <ClCompile Include="..\..\..\frameworks\Gaff\Gaff_Utils_Common.cpp" />
     <ClCompile Include="..\..\..\frameworks\Gaff\Gaff_Utils_Linux.cpp" />
     <ClCompile Include="..\..\..\frameworks\Gaff\Gaff_Utils_Mac.cpp" />
     <ClCompile Include="..\..\..\frameworks\Gaff\Gaff_Utils_Windows.cpp" />
+    <ClCompile Include="..\..\..\frameworks\Gaff\include\Gaff_Hash.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\..\frameworks\Gaff\include\Gaff_BezierCurve.inl" />

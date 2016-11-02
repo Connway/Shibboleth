@@ -20,43 +20,34 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-/*! \file */
-
 #pragma once
 
 #include "Gaff_Defines.h"
-#include <time.h>
 
 NS_GAFF
 
-/*!
-	\brief High-performance timer class.
-*/
-class Timer
+class IReflectionDefinition
 {
 public:
-	Timer(void);
+	virtual ~IReflectionDefinition(void) {}
 
-	INLINE bool start(void);
-	bool stop(void);
+	template <class T>
+	inline const T* getInterface(const void* object) const
+	{
+		return reinterpret_cast<const T*>(getInterface(T::g_hash, object));
+	}
 
-	INLINE double getDeltaSec(void) const;
-	INLINE long long getDeltaMilli(void) const;
-	INLINE long long getDeltaMicro(void) const;
+	template <class T>
+	inline T* getInterface(void* object)
+	{
+		return reinterpret_cast<T*>(getInterface(T::g_hash, object));
+	}
 
-	INLINE double getCurrSec(void) const;
-	INLINE long long getCurrMilli(void) const;
-	long long getCurrMicro(void) const;
+	virtual void load(ISerializeReader& reader, void* object) const = 0;
+	virtual void save(ISerializeWriter& writer, const void* object) const = 0;
 
-	INLINE double getTotalTime(void) const;
-	INLINE void resetTotalTime(void);
-
-private:
-	timespec _start;
-	timespec _stop;
-	long long _deltaTime;
-
-	double _totalTime;
+	virtual const void* getInterface(ReflectionHash class_id, const void* object) const = 0;
+	virtual void* getInterface(ReflectionHash class_id, void* object) = 0;
 };
 
 NS_END

@@ -94,18 +94,17 @@ public:
 
 	using DirtyCallback = Gaff::FunctionBinder<void, Object*, uint64_t>;
 
-	Object(unsigned int id);
+	Object(uint32_t id);
 	~Object(void);
 
 	bool init(const Gaff::JSON& json);
 	INLINE bool init(IFileSystem* fs, const char* file_name);
 	void destroy(void);
 
-	uint32_t getNameHash(void) const;
-	const char* getName(void) const;
+	INLINE const HashString64& getName(void) const;
 
-	unsigned int getID(void) const;
-	void setID(unsigned int id);
+	INLINE uint32_t getID(void) const;
+	INLINE void setID(uint32_t id);
 
 	INLINE const Gleam::TransformCPU& getLocalTransform(void) const;
 	INLINE const Gleam::TransformCPU& getWorldTransform(void) const;
@@ -171,13 +170,13 @@ private:
 	Gaff::SpinLock _children_lock;
 	Object* _parent;
 
-	HashString32 _name;
+	HashString64 _name;
 
 	Array<Component*> _components;
 	IComponentManager& _comp_mgr;
 	IObjectManager& _obj_mgr;
 
-	unsigned int _id;;
+	uint32_t _id;
 
 	uint8_t _flags;
 

@@ -42,6 +42,10 @@ GleamMap<unsigned short, KeyCode> Window::g_left_keys;
 
 static void InitWindowProcHelpers(void)
 {
+	//WM_MOUSELEAVE
+	//WM_GETMINMAXINFO
+	//WM_ENTERSIZEMOVE
+	//WM_EXITSIZEMOVE
 	g_window_helpers.insert(WM_CLOSE, WindowClosed);
 	g_window_helpers.insert(WM_DESTROY, WindowDestroyed);
 	g_window_helpers.insert(WM_MOVE, WindowMoved);
@@ -175,10 +179,8 @@ bool Window::init(const char* app_name, MODE window_mode,
 	_application_name = app_name;
 	_window_mode = window_mode;
 
-#ifdef _UNICODE
 	GleamWString an;
 	an.convertToUTF16(app_name, strlen(app_name));
-#endif
 
 	wc.style = CS_HREDRAW | CS_VREDRAW | CS_OWNDC;
 	wc.lpfnWndProc = WindowProc;
@@ -188,13 +190,9 @@ bool Window::init(const char* app_name, MODE window_mode,
 	wc.hIcon = LoadIcon(NULL, IDI_WINLOGO);
 	wc.hIconSm = wc.hIcon;
 	wc.hCursor = LoadCursor(NULL, IDC_ARROW);
-	wc.hbrBackground = (HBRUSH)GetStockObject(BLACK_BRUSH);
+	wc.hbrBackground = static_cast<HBRUSH>(GetStockObject(BLACK_BRUSH));
 	wc.lpszMenuName = NULL;
-#ifdef _UNICODE
 	wc.lpszClassName = an.getBuffer();
-#else
-	wc.lpszClassName = _application_name.getBuffer();
-#endif
 	wc.cbSize = sizeof(WNDCLASSEX);
 
 	if (!RegisterClassEx(&wc)) {
@@ -244,8 +242,8 @@ bool Window::init(const char* app_name, MODE window_mode,
 		DEVMODE dm_screen_settings;
 		memset(&dm_screen_settings, 0, sizeof(dm_screen_settings));
 		dm_screen_settings.dmSize = sizeof(dm_screen_settings);
-		dm_screen_settings.dmPelsWidth  = (unsigned long)width;
-		dm_screen_settings.dmPelsHeight = (unsigned long)height;
+		dm_screen_settings.dmPelsWidth  = static_cast<DWORD>(width);
+		dm_screen_settings.dmPelsHeight = static_cast<DWORD>(height);
 		dm_screen_settings.dmBitsPerPel = 32;
 		dm_screen_settings.dmFields = DM_BITSPERPEL | DM_PELSWIDTH | DM_PELSHEIGHT;
 
@@ -268,11 +266,7 @@ bool Window::init(const char* app_name, MODE window_mode,
 	}
 
 	_hwnd = CreateWindowEx(
-#ifdef _UNICODE
 		WS_EX_APPWINDOW, an.getBuffer(), an.getBuffer(),
-#else
-		WS_EX_APPWINDOW, _application_name.getBuffer(), _application_name.getBuffer(),
-#endif
 		WS_CLIPSIBLINGS | WS_CLIPCHILDREN | flags,
 		window_rect.left, window_rect.top, window_rect.right - window_rect.left, window_rect.bottom - window_rect.top,
 		NULL, NULL, _hinstance, NULL
@@ -312,14 +306,11 @@ void Window::destroy(void)
 	}
 
 	if (_hinstance) {
-#ifdef _UNICODE
 		GleamWString an;
 		an.convertToUTF16(_application_name.getBuffer(), _application_name.size());
 
 		UnregisterClass(an.getBuffer(), _hinstance);
-#else
-		UnregisterClass(_application_name, _hinstance);
-#endif
+
 		_application_name.clear();
 		_hinstance = nullptr;
 	}
@@ -404,8 +395,8 @@ bool Window::setWindowMode(MODE window_mode)
 		// If full screen set the screen to maximum size of the users desktop and 32bit.
 		memset(&dm_screen_settings, 0, sizeof(dm_screen_settings));
 		dm_screen_settings.dmSize = sizeof(dm_screen_settings);
-		dm_screen_settings.dmPelsWidth  = (unsigned long)_width;
-		dm_screen_settings.dmPelsHeight = (unsigned long)_height;
+		dm_screen_settings.dmPelsWidth  = static_cast<DWORD>(_width);
+		dm_screen_settings.dmPelsHeight = static_cast<DWORD>(_height);
 		dm_screen_settings.dmBitsPerPel = 32;
 		dm_screen_settings.dmFields = DM_BITSPERPEL | DM_PELSWIDTH | DM_PELSHEIGHT;
 
@@ -414,8 +405,8 @@ bool Window::setWindowMode(MODE window_mode)
 			// If we try to change to a bad mode, default to desktop resolution
 			_width = GetSystemMetrics(SM_CXSCREEN);
 			_height = GetSystemMetrics(SM_CYSCREEN);
-			dm_screen_settings.dmPelsWidth = (unsigned long)_width;
-			dm_screen_settings.dmPelsHeight = (unsigned long)_height;
+			dm_screen_settings.dmPelsWidth = static_cast<DWORD>(_width);
+			dm_screen_settings.dmPelsHeight = static_cast<DWORD>(_height);
 
 			// try one last time using desktop resolution
 			if (ChangeDisplaySettings(&dm_screen_settings, CDS_FULLSCREEN) != DISP_CHANGE_SUCCESSFUL) {
@@ -476,12 +467,8 @@ bool Window::isFullScreen(void) const
 
 bool Window::setIcon(const char* icon)
 {
-#ifdef _UNICODE
 	CONVERT_STRING(wchar_t, temp, icon);
 	HANDLE hIcon = LoadImageW(_hinstance, temp, IMAGE_ICON, 64, 64, LR_LOADFROMFILE);
-#else
-	HANDLE hIcon = LoadImageA(_hinstance, icon, IMAGE_ICON, 64, 64, LR_LOADFROMFILE);
-#endif
 
 	if (!hIcon) {
 		return false;

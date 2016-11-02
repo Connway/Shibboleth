@@ -22,11 +22,8 @@ THE SOFTWARE.
 
 #include "Gaff_File.h"
 
-#ifdef _UNICODE
-	#include "Gaff_String.h"
-#endif
-
 #ifdef PLATFORM_WINDOWS
+	#include "Gaff_String.h"
 	#include <io.h>
 #elif defined(PLATFORM_LINUX)
 	#include <sys/io.h>
@@ -38,44 +35,24 @@ THE SOFTWARE.
 
 NS_GAFF
 
-static const char* gOpenModes[12] = {
-		"r", "w", "a", "r+", "w+", "a+",
-		"rb", "wb", "ab", "rb+", "wb+", "ab+"
-};
-
-#ifdef _UNICODE
-	static const wchar_t* gOpenModesW[12] = {
+#ifdef PLATFORM_WINDOWS
+	static const wchar_t* gOpenModesW[] = {
 		L"r", L"w", L"a", L"r+", L"w+", L"a+",
 		L"rb", L"wb", L"ab", L"rb+", L"wb+", L"ab+"
 	};
+#else
+	static const char* gOpenModes[] = {
+		"r", "w", "a", "r+", "w+", "a+",
+		"rb", "wb", "ab", "rb+", "wb+", "ab+"
+	};
 #endif
 
-/*!
-	\brief Checks of the \a file_name ends with \a extension. This version takes string sizes to avoid calls to strlen().
-
-	\param file_name The name of the file we are checking the extension of.
-	\param file_name_size The length of \a file_name (in bytes).
-	\param extension The extension we are checking for.
-	\param extension_size The length of \a extension (in bytes).
-
-	\return Whether \a file_name has \a extension.
-*/
 bool File::CheckExtension(const char* file_name, size_t file_name_size, const char* extension, size_t extension_size)
 {
 	GAFF_ASSERT(file_name && extension && file_name_size > extension_size);
 	return strcmp(file_name + file_name_size - extension_size, extension) == 0;
 }
 
-/*!
-	\brief Checks of the \a file_name ends with \a extension.
-
-	\param file_name The name of the file we are checking the extension of.
-	\param extension The extension we are checking for.
-
-	\return Whether \a file_name has \a extension.
-
-	\note This function makes calls to strlen().
-*/
 bool File::CheckExtension(const char* file_name, const char* extension)
 {
 	GAFF_ASSERT(file_name && extension && strlen(file_name) && strlen(extension));
@@ -87,7 +64,7 @@ bool File::Remove(const char* file_name)
 {
 	GAFF_ASSERT(file_name && strlen(file_name));
 
-#ifdef _UNICODE
+#ifdef PLATFORM_WINDOWS
 	CONVERT_STRING(wchar_t, temp, file_name);
 	return !_wremove(temp);
 #else
@@ -99,7 +76,7 @@ bool File::Rename(const char* old_file_name, const char* new_file_name)
 {
 	GAFF_ASSERT(old_file_name && new_file_name && strlen(old_file_name) && strlen(new_file_name));
 
-#ifdef _UNICODE
+#ifdef PLATFORM_WINDOWS
 	CONVERT_STRING(wchar_t, temp1, old_file_name);
 	CONVERT_STRING(wchar_t, temp2, new_file_name);
 	return !_wrename(temp1, temp2);
@@ -108,7 +85,7 @@ bool File::Rename(const char* old_file_name, const char* new_file_name)
 #endif
 }
 
-File::File(const char* file_name, OPEN_MODE mode):
+File::File(const char* file_name, OpenMode mode):
 	_file(nullptr)
 {
 	GAFF_ASSERT(file_name);
@@ -131,7 +108,7 @@ File::~File(void)
 	close();
 }
 
-const File& File::operator=(File&& rhs)
+File& File::operator=(File&& rhs)
 {
 	_file = rhs._file;
 	_mode = rhs._mode;
@@ -149,15 +126,12 @@ FILE* File::getFile(void)
 	return _file;
 }
 
-/*!
-	\brief Get's the mode that this file was opened with.
-*/
-File::OPEN_MODE File::getMode(void) const
+File::OpenMode File::getMode(void) const
 {
 	return _mode;
 }
 
-bool File::open(const char* file_name, OPEN_MODE mode)
+bool File::open(const char* file_name, OpenMode mode)
 {
 	GAFF_ASSERT(file_name && strlen(file_name));
 
@@ -167,7 +141,7 @@ bool File::open(const char* file_name, OPEN_MODE mode)
 
 	_mode = mode;
 
-#ifdef _UNICODE
+#ifdef PLATFORM_WINDOWS
 	CONVERT_STRING(wchar_t, temp, file_name);
 	_wfopen_s(&_file, temp, gOpenModesW[mode]);
 #else
@@ -177,20 +151,11 @@ bool File::open(const char* file_name, OPEN_MODE mode)
 	return _file != NULL;
 }
 
-/*!
-	\brief Redirect's the \a file stream to the file found at \a file_name.
-
-	\param file The file stream to redirect.
-	\param file_name The file to redirect the \a file stream to.
-	\param mode The mode to open \a file_name with.
-
-	\return Whether the redirect succeeded.
-*/
-bool File::redirect(FILE* file, const char* file_name, OPEN_MODE mode)
+bool File::redirect(FILE* file, const char* file_name, OpenMode mode)
 {
 	GAFF_ASSERT(!_file && file_name);
 
-#ifdef _UNICODE
+#ifdef PLATFORM_WINDOWS
 	CONVERT_STRING(wchar_t, temp, file_name);
 	_wfreopen_s(&_file, temp, gOpenModesW[mode], file);
 #else
@@ -200,19 +165,11 @@ bool File::redirect(FILE* file, const char* file_name, OPEN_MODE mode)
 	return _file && _file == file;
 }
 
-/*!
-	\brief Redirects the file stream that this File currently has open to \a file_name.
-
-	\param file_name The file to redirect the currently opened file stream to.
-	\param mode The mode to open \a file_name with.
-
-	\return Whether the redirect succeeded.
-*/
-bool File::redirect(const char* file_name, OPEN_MODE mode)
+bool File::redirect(const char* file_name, OpenMode mode)
 {
 	GAFF_ASSERT(_file && file_name);
 
-#ifdef _UNICODE
+#ifdef PLATFORM_WINDOWS
 	CONVERT_STRING(wchar_t, temp, file_name);
 	FILE* out = nullptr;
 	_wfreopen_s(&out, temp, gOpenModesW[mode], _file);
@@ -240,39 +197,24 @@ bool File::isOpen(void) const
 	return _file != nullptr;
 }
 
-/*!
-	\brief Not-End-of-File.
-	\return Returns true if we ARE NOT at the end of the file, false otherwise.
-*/
 bool File::neof(void) const
 {
 	GAFF_ASSERT(_file);
 	return !feof(_file);
 }
 
-/*!
-	\brief End-of-File.
-	\return Returns true if we ARE at the end of the file, false otherwise.
-*/
 bool File::eof(void) const
 {
 	GAFF_ASSERT(_file);
 	return feof(_file) != 0;
 }
 
-/*!
-	\brief Flushes the current file stream buffer to disk.
-	\bool Returns whether flushing succeeded.
-*/
 bool File::flush(void)
 {
 	GAFF_ASSERT(_file);
 	return !fflush(_file);
 }
 
-/*!
-	\brief Sets the internal buffer to use for I/O operations performed on the file stream.
-*/
 void File::setBuffer(char* buffer)
 {
 	GAFF_ASSERT(_file && buffer);
@@ -332,10 +274,6 @@ bool File::readString(char* buffer, int max_byte_count)
 	return tmp != nullptr;
 }
 
-/*!
-	\brief Gets the current position in the file stream.
-	\return The current position in the file stream.
-*/
 long File::getFilePos(void) const
 {
 	GAFF_ASSERT(_file);
@@ -354,10 +292,6 @@ void File::rewind(void)
 	::rewind(_file);
 }
 
-/*!
-	\brief Opens a temporary file using the name returned by tmpfile().
-	\return Whether the file successfully opened.
-*/
 bool File::openTempFile(void)
 {
 	GAFF_ASSERT(!_file);

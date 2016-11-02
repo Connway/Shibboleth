@@ -23,7 +23,7 @@ THE SOFTWARE.
 #pragma once
 
 #include "Shibboleth_ProxyAllocator.h"
-#include <EASTL/vector_map.h>
+#include <Gaff_VectorMap.h>
 
 NS_SHIBBOLETH
 

@@ -68,7 +68,7 @@ void PrintfToLog(const char* format_string, LOG_MSG_TYPE type, ...)
 		va_list vl;
 
 		va_start(vl, type);
-		vsnprintf_s(temp, 2048, format_string, vl);
+		vsnprintf(temp, 2048, format_string, vl);
 		va_end(vl);
 
 		g_log_func(temp, type);

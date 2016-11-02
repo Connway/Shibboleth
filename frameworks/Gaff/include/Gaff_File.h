@@ -43,7 +43,7 @@ public:
 	/*!
 		\brief Modes in which we can open a file.
 	*/
-	enum OPEN_MODE
+	enum OpenMode
 	{
 		READ = 0, //!< Open a file for read-only.
 		WRITE, //!< Open a file for write-only. Deletes existing content.
@@ -69,17 +69,17 @@ public:
 		END = SEEK_END //!< Starts seeking from the end of the file.
 	};
 
-	File(const char* file_name, OPEN_MODE mode = READ);
+	File(const char* file_name, OpenMode mode = READ);
 	File(File&& rhs);
 	File(void);
 	~File(void);
 
-	const File& operator=(File&& rhs);
+	File& operator=(File&& rhs);
 
 	INLINE const FILE* getFile(void) const;
 	INLINE FILE* getFile(void);
 
-	INLINE OPEN_MODE getMode(void) const;
+	INLINE OpenMode getMode(void) const;
 
 	template <class T>
 	size_t writeT(const T* data, size_t element_count)
@@ -93,10 +93,10 @@ public:
 		return write(&data, sizeof(T), 1);
 	}
 
-	bool open(const char* file_name, OPEN_MODE mode = READ);
+	bool open(const char* file_name, OpenMode mode = READ);
 
-	INLINE bool redirect(FILE* file, const char* file_name, OPEN_MODE mode = WRITE);
-	INLINE bool redirect(const char* file_name, OPEN_MODE mode = WRITE);
+	INLINE bool redirect(FILE* file, const char* file_name, OpenMode mode = WRITE);
+	INLINE bool redirect(const char* file_name, OpenMode mode = WRITE);
 
 	bool close(void);
 	INLINE bool isOpen(void) const;
@@ -130,7 +130,7 @@ public:
 
 private:
 	FILE* _file;
-	OPEN_MODE _mode;
+	OpenMode _mode;
 
 	GAFF_NO_COPY(File);
 };

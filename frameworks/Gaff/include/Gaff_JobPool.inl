@@ -49,9 +49,9 @@ bool JobPool<Allocator>::init(unsigned int num_pools, unsigned int num_threads)
 	_threads.reserve(num_threads);
 
 	for (unsigned long i = 0; i < num_threads; ++i) {
-		_threads.emplace_back();
+		_threads.emplace_back(JobThread, std::ref(_thread_data));
 
-		if (!_threads[i].create(JobThread, &_thread_data)) {
+		if (_threads.back().get_id() == std::thread::id()) {
 			destroy();
 			return false;
 		}
@@ -66,7 +66,7 @@ void JobPool<Allocator>::destroy(void)
 	_thread_data.terminate = true;
 
 	for (unsigned int i = 0; i < _threads.size(); ++i) {
-		_threads[i].wait();
+		_threads[i].join();
 	}
 
 	_threads.clear();
@@ -214,10 +214,10 @@ size_t JobPool<Allocator>::getNumTotalThreads(void) const
 }
 
 template <class Allocator>
-void JobPool<Allocator>::getThreadIDs(uint32_t* out) const
+void JobPool<Allocator>::getThreadIDs(size_t* out) const
 {
 	for (size_t i = 0; i < _threads.size(); ++i) {
-		out[i] = _threads[i].getID();
+		out[i] = std::hash<std::thread::id>{}(_threads[i].get_id());
 	}
 }
 
@@ -275,17 +275,14 @@ void JobPool<Allocator>::DoJob(JobPair& job)
 }
 
 template <class Allocator>
-Thread::ReturnType THREAD_CALLTYPE JobPool<Allocator>::JobThread(void* thread_data)
+void JobPool<Allocator>::JobThread(ThreadData& td)
 {
-	ThreadData* td = reinterpret_cast<ThreadData*>(thread_data);
-	JobPool<Allocator>* job_pool = td->job_pool;
+	JobPool<Allocator>* job_pool = td.job_pool;
 
-	while (!td->terminate) {
+	while (!td.terminate) {
 		++job_pool->_active_threads;
 		job_pool->helpUntilNoJobs();
 		YieldThread(); // Probably a good idea to give some time back to the CPU for other stuff.
 		--job_pool->_active_threads;
 	}
-
-	return 0;
 }

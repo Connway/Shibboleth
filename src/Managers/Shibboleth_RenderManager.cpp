@@ -88,7 +88,7 @@ const char* RenderManager::getName(void) const
 
 bool RenderManager::initThreadData(void)
 {
-	Array<unsigned int> thread_ids;
+	Array<size_t> thread_ids;
 	_app.getWorkerThreadIDs(thread_ids);
 
 	if (!_render_device->initThreadData(thread_ids.getArray(), thread_ids.size())) {

@@ -95,22 +95,11 @@ THE SOFTWARE.
 	#define DYNAMICIMPORT __declspec(dllimport) // Specifies a symbol for import.
 	#define THREAD_LOCAL __declspec(thread) // Specifies a static variable to use thread local storage.
 
-	#ifdef _UNICODE
-		#define GaffFullMain int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR lpCmdLine, int nShowCmd)
-		#define GaffMain WINAPI wWinMain
-	#else
-		#define GaffFullMain int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR lpCmdLine, int nShowCmd)
-		#define GaffMain WINAPI WinMain
-	#endif
-
 	#define WARNING(msg) __pragma(message(__FILE__":(" GAFF_STR(__LINE__)") WARNING - " msg))
 	#define YieldThread() Sleep(0) // Yields the thread to the scheduler.
 
 #elif defined(PLATFORM_LINUX) || defined(PLATFORM_MAC)
 	#define THREAD_LOCAL thread_local // Specifies a static variable to use thread local storage.
-
-	#define GaffFullMain int main(int argc, char** argv)
-	#define GaffMain main
 
 	#define WARNING(msg) _Pragma(message(__FILE__":(" GAFF_STR(__LINE__)") WARNING - " msg))
 	#define YieldThread sched_yield // Yields the thread to the scheduler.
@@ -131,16 +120,3 @@ THE SOFTWARE.
 
 #include <utility> // For std::move() and std::forward()
 #include <cstdint> // For (u)int*_t and size_t
-
-NS_GAFF
-
-using ReflectionHash = uint32_t;
-//using ReflectionHash = uint64_t;
-
-using ReflectionHashFunc = uint32_t (*)(const char*, size_t);
-//using ReflectionHashFunc = uint64_t (*)(const char*, size_t);
-
-#define REFL_HASH Gaff::FNV1aHash32
-//#define REFL_HASH Gaff::FNV1aHash64
-
-NS_END

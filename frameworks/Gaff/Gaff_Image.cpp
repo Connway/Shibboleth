@@ -56,7 +56,7 @@ unsigned int Image::GetError(void)
 
 const char* Image::GetErrorString(unsigned int error)
 {
-#ifdef _UNICODE
+#ifdef PLATFORM_WINDOWS
 	static char temp[STRING_CONVERSION_BUFFER_SIZE] = { 0 };
 
 	const wchar_t* str = iluErrorString(error);
@@ -147,7 +147,7 @@ bool Image::load(const char* filename)
 	GAFF_ASSERT(_initialized);
 	ilBindImage(_image);
 
-#ifdef _UNICODE
+#ifdef PLATFORM_WINDOWS
 	CONVERT_STRING(wchar_t, temp, filename);
 	return ilLoadImage(temp) != 0;
 #else
@@ -165,7 +165,7 @@ bool Image::save(const char* filename, bool allow_overwrite)
 		return false;
 	}
 
-#ifdef _UNICODE
+#ifdef PLATFORM_WINDOWS
 	CONVERT_STRING(wchar_t, temp, filename);
 	bool ret = ilSaveImage(temp) != 0;
 #else

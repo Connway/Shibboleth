@@ -28,7 +28,10 @@ THE SOFTWARE.
 NS_SHIBBOLETH
 
 template <class T> using HashString = Gaff::HashString<T, ProxyAllocator>;
-typedef Gaff::HashString<char, ProxyAllocator> HashString32;
-typedef Gaff::HashString<wchar_t, ProxyAllocator> WHashString;
+using HashString32 = Gaff::HashString32<ProxyAllocator>;
+using HashString64 = Gaff::HashString64<ProxyAllocator>;
+
+using HashStringTemp32 = Gaff::HashStringTemp32;
+using HashStringTemp64 = Gaff::HashStringTemp64;
 
 NS_END

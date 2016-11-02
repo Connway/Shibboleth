@@ -41,7 +41,7 @@ public:
 
 	AdapterList getDisplayModes(int compat = 28/*29*/) override;
 
-	bool initThreadData(unsigned int* thread_ids, size_t num_ids) override;
+	bool initThreadData(size_t* thread_ids, size_t num_ids) override;
 	bool init(const IWindow& window, unsigned int adapter_id, unsigned int display_id, unsigned int display_mode_id, bool vsync = false) override;
 	void destroy(void) override;
 
@@ -113,7 +113,7 @@ private:
 	GleamArray<Device> _devices;
 
 	// Key is thread id, value is 2D array. First index is device, second is output.
-	GleamMap< unsigned int, GleamArray< GleamArray<HGLRC> > > _thread_contexts;
+	GleamMap< size_t, GleamArray< GleamArray<HGLRC> > > _thread_contexts;
 	Gaff::SpinLock _thread_data_lock;
 
 	// Fix this

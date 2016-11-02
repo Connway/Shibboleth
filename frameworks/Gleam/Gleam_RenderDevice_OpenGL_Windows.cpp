@@ -50,7 +50,7 @@ RenderDeviceGL::~RenderDeviceGL(void)
 }
 
 // Assumed to be called in the main thread.
-bool RenderDeviceGL::initThreadData(unsigned int* thread_ids, size_t num_ids)
+bool RenderDeviceGL::initThreadData(size_t* thread_ids, size_t num_ids)
 {
 	for (size_t i = 0; i < num_ids; ++i) {
 		GleamArray< GleamArray<HGLRC> >& thread_data = _thread_contexts[thread_ids[i]];
@@ -104,11 +104,9 @@ IRenderDevice::AdapterList RenderDeviceGL::getDisplayModes(int)
 			continue;
 		}
 
-#ifdef _UNICODE
 		GleamU8String dev_string, dev_name;
 		dev_string.convertToUTF8(disp_device.DeviceString, wcslen(disp_device.DeviceString));
 		dev_name.convertToUTF8(disp_device.DeviceName, wcslen(disp_device.DeviceName));
-#endif
 
 		// Find an entry that already exists. We might be a different display on the same device.
 		GleamArray<AdapterInfo>::Iterator it_disp = _display_info.linearSearch(dev_string.getBuffer(), [](const AdapterInfo& lhs, const char* rhs) -> bool
@@ -119,11 +117,7 @@ IRenderDevice::AdapterList RenderDeviceGL::getDisplayModes(int)
 		if (it_disp == _display_info.end()) {
 			AdapterInfo adapter;
 			adapter.display_device = disp_device;
-#ifdef _UNICODE
 			adapter.name = dev_string;
-#else
-			adapter.name = adapter.display_device.DeviceString;
-#endif
 
 			it_disp = _display_info.insert(it_disp, adapter);
 		}
@@ -136,11 +130,7 @@ IRenderDevice::AdapterList RenderDeviceGL::getDisplayModes(int)
 		if (it_out == it_disp->output_info.end()) {
 			OutputInfo display;
 
-#ifdef _UNICODE
 			display.name = dev_name;
-#else
-			display.name = disp_device.DeviceName;
-#endif
 
 			it_out = it_disp->output_info.insert(it_out, display);
 		}

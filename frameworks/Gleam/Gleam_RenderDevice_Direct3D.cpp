@@ -161,7 +161,7 @@ IRenderDevice::AdapterList RenderDeviceD3D::getDisplayModes(int color_format)
 	return out;
 }
 
-bool RenderDeviceD3D::initThreadData(unsigned int*, size_t)
+bool RenderDeviceD3D::initThreadData(size_t*, size_t)
 {
 	return true;
 }

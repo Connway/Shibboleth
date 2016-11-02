@@ -227,6 +227,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\..\dependencies\EASTL\include\EAAssert\eaassert.h" />
     <ClInclude Include="..\..\..\dependencies\EASTL\include\EABase\config\eacompiler.h" />
     <ClInclude Include="..\..\..\dependencies\EASTL\include\EABase\config\eacompilertraits.h" />
     <ClInclude Include="..\..\..\dependencies\EASTL\include\EABase\config\eaplatform.h" />
@@ -239,6 +240,7 @@
     <ClInclude Include="..\..\..\dependencies\EASTL\include\EASTL\algorithm.h" />
     <ClInclude Include="..\..\..\dependencies\EASTL\include\EASTL\allocator.h" />
     <ClInclude Include="..\..\..\dependencies\EASTL\include\EASTL\allocator_malloc.h" />
+    <ClInclude Include="..\..\..\dependencies\EASTL\include\EASTL\any.h" />
     <ClInclude Include="..\..\..\dependencies\EASTL\include\EASTL\array.h" />
     <ClInclude Include="..\..\..\dependencies\EASTL\include\EASTL\bitset.h" />
     <ClInclude Include="..\..\..\dependencies\EASTL\include\EASTL\bitvector.h" />
@@ -283,6 +285,7 @@
     <ClInclude Include="..\..\..\dependencies\EASTL\include\EASTL\internal\functional_base.h" />
     <ClInclude Include="..\..\..\dependencies\EASTL\include\EASTL\internal\generic_iterator.h" />
     <ClInclude Include="..\..\..\dependencies\EASTL\include\EASTL\internal\hashtable.h" />
+    <ClInclude Include="..\..\..\dependencies\EASTL\include\EASTL\internal\in_place_t.h" />
     <ClInclude Include="..\..\..\dependencies\EASTL\include\EASTL\internal\integer_sequence.h" />
     <ClInclude Include="..\..\..\dependencies\EASTL\include\EASTL\internal\intrusive_hashtable.h" />
     <ClInclude Include="..\..\..\dependencies\EASTL\include\EASTL\internal\mem_fn.h" />
@@ -317,6 +320,7 @@
     <ClInclude Include="..\..\..\dependencies\EASTL\include\EASTL\safe_ptr.h" />
     <ClInclude Include="..\..\..\dependencies\EASTL\include\EASTL\scoped_array.h" />
     <ClInclude Include="..\..\..\dependencies\EASTL\include\EASTL\scoped_ptr.h" />
+    <ClInclude Include="..\..\..\dependencies\EASTL\include\EASTL\segmented_vector.h" />
     <ClInclude Include="..\..\..\dependencies\EASTL\include\EASTL\set.h" />
     <ClInclude Include="..\..\..\dependencies\EASTL\include\EASTL\shared_array.h" />
     <ClInclude Include="..\..\..\dependencies\EASTL\include\EASTL\shared_ptr.h" />
@@ -324,6 +328,8 @@
     <ClInclude Include="..\..\..\dependencies\EASTL\include\EASTL\sort.h" />
     <ClInclude Include="..\..\..\dependencies\EASTL\include\EASTL\stack.h" />
     <ClInclude Include="..\..\..\dependencies\EASTL\include\EASTL\string.h" />
+    <ClInclude Include="..\..\..\dependencies\EASTL\include\EASTL\string_hash_map.h" />
+    <ClInclude Include="..\..\..\dependencies\EASTL\include\EASTL\string_map.h" />
     <ClInclude Include="..\..\..\dependencies\EASTL\include\EASTL\tuple.h" />
     <ClInclude Include="..\..\..\dependencies\EASTL\include\EASTL\type_traits.h" />
     <ClInclude Include="..\..\..\dependencies\EASTL\include\EASTL\unique_ptr.h" />
@@ -335,8 +341,18 @@
     <ClInclude Include="..\..\..\dependencies\EASTL\include\EASTL\vector_set.h" />
     <ClInclude Include="..\..\..\dependencies\EASTL\include\EASTL\version.h" />
     <ClInclude Include="..\..\..\dependencies\EASTL\include\EASTL\weak_ptr.h" />
+    <ClInclude Include="..\..\..\dependencies\EASTL\include\EAStdC\EAAlignment.h" />
+    <ClInclude Include="..\..\..\dependencies\EASTL\include\EAStdC\EADateTime.h" />
+    <ClInclude Include="..\..\..\dependencies\EASTL\include\EAStdC\EAMemory.h" />
+    <ClInclude Include="..\..\..\dependencies\EASTL\include\EAStdC\EAProcess.h" />
+    <ClInclude Include="..\..\..\dependencies\EASTL\include\EAStdC\EASprintf.h" />
+    <ClInclude Include="..\..\..\dependencies\EASTL\include\EAStdC\EAStopwatch.h" />
+    <ClInclude Include="..\..\..\dependencies\EASTL\include\EAStdC\EAString.h" />
+    <ClInclude Include="..\..\..\dependencies\EASTL\include\EAStdC\EATextUtil.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\..\dependencies\EASTL\source\EAMemory.cpp" />
+    <ClCompile Include="..\..\..\dependencies\EASTL\source\EASprintf.cpp" />
     <ClCompile Include="..\..\..\dependencies\EASTL\source\allocator_eastl.cpp" />
     <ClCompile Include="..\..\..\dependencies\EASTL\source\assert.cpp" />
     <ClCompile Include="..\..\..\dependencies\EASTL\source\fixed_pool.cpp" />

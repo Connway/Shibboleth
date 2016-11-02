@@ -30,4 +30,39 @@ NS_GAFF
 template < class Key, class Value, class Allocator, class Compare = eastl::less<Key> >
 using VectorMap = eastl::vector_map<Key, Value, Compare, Allocator>;
 
+
+template <class BinaryCompare, class T, class Key, class Value, class Allocator, class Compare>
+typename VectorMap<Key, Value, Allocator, Compare>::iterator Find(VectorMap<Key, Value, Allocator, Compare>& map, const T& value, const BinaryCompare& binary_compare = BinaryCompare())
+{
+	using Container = VectorMap<Key, Value, Allocator, Compare>;
+
+	auto it = eastl::lower_bound(map.begin(), map.end(), value,
+	[&binary_compare](const typename Container::value_type& lhs, const T& rhs) -> bool
+	{
+		return binary_compare(lhs.first, rhs);
+	});
+
+	if (it != map.end() && binary_compare(value, it->first))
+		return map.end();
+
+	return it;
+}
+
+template <class T, class Key, class Value, class Allocator, class Compare>
+typename VectorMap<Key, Value, Allocator, Compare>::iterator Find(VectorMap<Key, Value, Allocator, Compare>& map, const T& value)
+{
+	using Container = VectorMap<Key, Value, Allocator, Compare>;
+
+	auto it = eastl::lower_bound(map.begin(), map.end(), value,
+	[](const typename Container::value_type& lhs, const T& rhs) -> bool
+	{
+		return eastl::less_2<Key, T>{}(lhs.first, rhs);
+	});
+
+	if (it != map.end() && eastl::less_2<T, Key>{}(value, it->first))
+		return map.end();
+
+	return it;
+}
+
 NS_END
