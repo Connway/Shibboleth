@@ -15,6 +15,23 @@ local tests = {
 			"Gaff", "Memory",
 			"EASTL", "Shared"
 		}
+	},
+	{
+		name = "ReflectionTest",
+
+		includedirs = {
+			"../dependencies/EASTL/include",
+			"../dependencies/CATCH",
+
+			"../frameworks/Gaff/include",
+			"../src/Shared/include",
+			"../src/Memory/include"
+		},
+
+		links = {
+			"Gaff", "Memory",
+			"EASTL", "Shared"
+		}
 	}
 }
 

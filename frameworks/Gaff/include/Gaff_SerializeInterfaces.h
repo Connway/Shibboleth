@@ -77,6 +77,7 @@ public:
 
 	virtual void load(ISerializeReader& reader, void* object) const = 0;
 	virtual void save(ISerializeWriter& writer, const void* object) const = 0;
+	virtual const char* getName(void) const = 0;
 };
 
 NS_END

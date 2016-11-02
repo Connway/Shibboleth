@@ -44,19 +44,19 @@ public:
 	}
 
 	template <class Interface>
-	const Interface* requestInterface(ReflectionHash class_id) const
+	const Interface* requestInterface(uint32_t class_id) const
 	{
 		return reinterpret_cast<const Interface*>(rawRequestInterface(class_id));
 	}
 
 	template <class Interface>
-	Interface* requestInterface(ReflectionHash class_id)
+	Interface* requestInterface(uint32_t class_id)
 	{
 		return reinterpret_cast<Interface*>(rawRequestInterface(class_id));
 	}
 
-	virtual const void* rawRequestInterface(ReflectionHash class_id) const = 0;
-	virtual void* rawRequestInterface(ReflectionHash class_id) = 0;
+	virtual const void* rawRequestInterface(uint32_t class_id) const = 0;
+	virtual void* rawRequestInterface(uint32_t class_id) = 0;
 };
 
 template <class Interface>

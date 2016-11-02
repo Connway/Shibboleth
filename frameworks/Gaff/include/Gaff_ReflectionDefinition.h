@@ -22,20 +22,43 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Gaff_Reflection.h"
+#include "Gaff_IReflectionDefinition.h"
+#include "Gaff_VectorMap.h"
+#include "Gaff_String.h"
 
 NS_GAFF
 
-class IReflectionDefinition
+template <class T, class Allocator>
+class ReflectionDefinition : public IReflectionDefinition
 {
 public:
-	virtual ~IReflectionDefinition(void) {}
+	//explicit ReflectionDefinition(const char* name, const Allocator& allocator = Allocator());
+	//ReflectionDefinition(const Allocator& allocator = Allocator());
+	//~ReflectionDefinition(void) = default;
 
-	virtual void load(ISerializeReader& reader, void* object) const = 0;
-	virtual void save(ISerializeWriter& writer, const void* object) const = 0;
+	void load(ISerializeReader& reader, void* object) const override;
+	void save(ISerializeWriter& writer, const void* object) const override;
+	void load(ISerializeReader& reader, T& object) const;
+	void save(ISerializeWriter& writer, const T& object) const;
 
-	virtual const void* getInterface(ReflectionHash class_id, const void* object) const = 0;
-	virtual void* getInterface(ReflectionHash class_id, void* object) const = 0;
+	//const void* getInterface(ReflectionHash class_id, const void* object) const override;
+	//void* getInterface(ReflectionHash class_id, void* object) const override;
+
+	ReflectionDefinition& setAllocator(const Allocator& allocator);
+
+private:
+
+
+	//HashMap<HashString32<Allocator>, ValueContainerPtr, Allocator> _value_containers;
+	//Array<Pair< ReflectionHash, FunctionBinder<void*, const void*> >, Allocator> _base_ids;
+	//Array<IOnCompleteFunctor*, Allocator> _callback_references;
+
+	U8String<Allocator> _name;
+	Allocator _allocator;
+	unsigned int _base_classes_remaining;
+	bool _defined;
 };
 
 NS_END
+
+#include "Gaff_ReflectionDefinition.inl"
