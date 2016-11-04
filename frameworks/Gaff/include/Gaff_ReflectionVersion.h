@@ -22,43 +22,25 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Gaff_DefaultAllocator.h"
-#include <EASTL/shared_ptr.h>
-#include <EASTL/unique_ptr.h>
+#include "Gaff_Hash.h"
 
 NS_GAFF
 
 template <class T>
-using SharedPtr = eastl::shared_ptr<T>;
-
-template <class T, class Allocator, class... Args>
-SharedPtr<T> MakeShared(const Allocator& allocator = Allocator(), Args&&... args)
-{
-	return eastl::allocate_shared<T>(allocator, std::forward(args)...);
-}
-
-
-
-template <class T, class Allocator = DefaultAllocator>
-class AllocatorDeleter
+class ReflectionVersion final
 {
 public:
-	AllocatorDeleter(void) = default;
-	GAFF_COPY_DEFAULT(AllocatorDeleter);
-	GAFF_MOVE_DEFAULT(AllocatorDeleter);
+	ReflectionVersion& baseClass(const char*, ReflectionHash interface_name, ptrdiff_t offset);
 
-	void operator()(T* ptr) const
-	{
-		if (ptr) {
-			GAFF_FREET(ptr, _allocator);
-		}
-	}
+	template <class Base>
+	ReflectionVersion& baseClass(void);
+
+	Gaff::Hash64 getHash(void) const;
 
 private:
-	mutable Allocator _allocator;
+	Gaff::Hash64 _hash = INIT_HASH64;
 };
 
-template <class T, class Allocator = DefaultAllocator>
-using UniquePtr = eastl::unique_ptr< T, AllocatorDeleter<T, Allocator> >;
-
 NS_END
+
+#include "Gaff_ReflectionVersion.inl"

@@ -26,49 +26,17 @@ THE SOFTWARE.
 
 NS_GAFF
 
-class IRequestableInterface
+class IReflectionDefinition;
+
+class IReflectionObject
 {
 public:
-	virtual ~IRequestableInterface(void) {}
+	virtual ~IReflectionObject(void) {}
 
-	template <class Interface>
-	const Interface* requestInterface(void) const
-	{
-		return reinterpret_cast<const Interface*>(rawRequestInterface(Interface::GetReflectionHash()));
-	}
+	virtual const IReflectionDefinition& getReflectionDefinition(void) const = 0;
 
-	template <class Interface>
-	Interface* requestInterface(void)
-	{
-		return reinterpret_cast<Interface*>(rawRequestInterface(Interface::GetReflectionHash()));
-	}
-
-	template <class Interface>
-	const Interface* requestInterface(uint32_t class_id) const
-	{
-		return reinterpret_cast<const Interface*>(rawRequestInterface(class_id));
-	}
-
-	template <class Interface>
-	Interface* requestInterface(uint32_t class_id)
-	{
-		return reinterpret_cast<Interface*>(rawRequestInterface(class_id));
-	}
-
-	virtual const void* rawRequestInterface(uint32_t class_id) const = 0;
-	virtual void* rawRequestInterface(uint32_t class_id) = 0;
+	virtual const void* getBasePointer(void) const  = 0;
+	virtual void* getBasePointer(void) = 0;
 };
-
-template <class Interface>
-const Interface* ReflectionCast(const IRequestableInterface* object)
-{
-	return reinterpret_cast<const Interface*>(object->rawRequestInterface(Interface::GetReflectionHash()));
-}
-
-template <class Interface>
-Interface* ReflectionCast(IRequestableInterface* object)
-{
-	return reinterpret_cast<Interface*>(object->rawRequestInterface(Interface::GetReflectionHash()));
-}
 
 NS_END

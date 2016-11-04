@@ -24,12 +24,14 @@ THE SOFTWARE.
 
 #include "Shibboleth_DynamicLoader.h"
 #include "Shibboleth_HashString.h"
-#include "Shibboleth_IManager.h"
 #include "Shibboleth_JobPool.h"
 #include "Shibboleth_VectorMap.h"
 #include "Shibboleth_String.h"
-#include "Shibboleth_Vector.h"
-#include <Gaff_IRequestableInterface.h>
+#include <Gaff_Reflection.h>
+
+NS_GAFF
+	class IReflectionDefinition;
+NS_END
 
 NS_SHIBBOLETH
 
@@ -41,6 +43,18 @@ class IManager;
 class IApp
 {
 public:
+	template <class T>
+	const T& getManagerTUnsafe(HashStringTemp32 name) const
+	{
+		return *reinterpret_cast<T*>(getManager(name.getHash()));
+	}
+
+	template <class T>
+	T& getManagerTUnsafe(HashStringTemp32 name)
+	{
+		return *reinterpret_cast<T*>(getManager(name.getHash()));
+	}
+
 	template <class T>
 	const T& getManagerTUnsafe(const HashString32& name) const
 	{
@@ -117,6 +131,9 @@ public:
 	virtual JobPool& getJobPool(void) = 0;
 
 	virtual DynamicLoader::ModulePtr loadModule(const char* filename, const char* name) = 0;
+
+	virtual const Gaff::IReflectionDefinition* getReflection(Gaff::ReflectionHash name) const = 0;
+	virtual void registerReflection(Gaff::ReflectionHash name, Gaff::IReflectionDefinition* ref_def) = 0;
 
 	virtual bool isQuitting(void) const = 0;
 	virtual void quit(void) = 0;

@@ -22,12 +22,12 @@ THE SOFTWARE.
 
 #pragma once
 
-#include <Gaff_IRequestableInterface.h>
+#include <Gaff_IReflectionObject.h>
 #include <Shibboleth_Defines.h>
 
 NS_SHIBBOLETH
 
-class IManager : public Gaff::IRequestableInterface
+class IManager : public Gaff::IReflectionObject
 {
 public:
 	IManager(void) {}

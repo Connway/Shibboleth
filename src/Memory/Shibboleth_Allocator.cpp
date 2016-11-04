@@ -105,7 +105,7 @@ void Allocator::set_name(const char*)
 
 int32_t Allocator::getPoolIndex(const char* pool_name)
 {
-	uint32_t alloc_tag = Gaff::FNV1aHash32(pool_name, strlen(pool_name));
+	Gaff::Hash32 alloc_tag = Gaff::FNV1aHash32(pool_name, strlen(pool_name));
 	auto it = eastl::find(_tag_ids.begin(), _tag_ids.end(), alloc_tag);
 
 	if (it == _tag_ids.end()) {

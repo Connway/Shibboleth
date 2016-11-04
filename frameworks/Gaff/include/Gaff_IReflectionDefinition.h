@@ -26,10 +26,28 @@ THE SOFTWARE.
 
 NS_GAFF
 
+class ISerializeReader;
+class ISerializeWriter;
+class ISerializeInfo;
+
 class IReflectionDefinition
 {
 public:
+	template <class T>
+	const T* getInterface(const void* object) const
+	{
+		return reinterpret_cast<const T*>(getInterface(T::GetReflectionHash(), object));
+	}
+
+	template <class T>
+	T* getInterface(void* object)
+	{
+		return reinterpret_cast<T*>(getInterface(T::GetReflectionHash(), object));
+	}
+
 	virtual ~IReflectionDefinition(void) {}
+
+	virtual const ISerializeInfo& getReflectionInstance(void) const = 0;
 
 	virtual void load(ISerializeReader& reader, void* object) const = 0;
 	virtual void save(ISerializeWriter& writer, const void* object) const = 0;

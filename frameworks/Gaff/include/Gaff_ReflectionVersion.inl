@@ -20,45 +20,25 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#pragma once
-
-#include "Gaff_DefaultAllocator.h"
-#include <EASTL/shared_ptr.h>
-#include <EASTL/unique_ptr.h>
-
 NS_GAFF
 
 template <class T>
-using SharedPtr = eastl::shared_ptr<T>;
-
-template <class T, class Allocator, class... Args>
-SharedPtr<T> MakeShared(const Allocator& allocator = Allocator(), Args&&... args)
+ReflectionVersion<T>& ReflectionVersion<T>::baseClass(const char*, ReflectionHash /*hash*/, ptrdiff_t /*offset*/)
 {
-	return eastl::allocate_shared<T>(allocator, std::forward(args)...);
+	return *this;
 }
 
-
-
-template <class T, class Allocator = DefaultAllocator>
-class AllocatorDeleter
+template <class T>
+template <class Base>
+ReflectionVersion<T>& ReflectionVersion<T>::baseClass(void)
 {
-public:
-	AllocatorDeleter(void) = default;
-	GAFF_COPY_DEFAULT(AllocatorDeleter);
-	GAFF_MOVE_DEFAULT(AllocatorDeleter);
+	return baseClass(Base::GetReflectionName(), Base::GetReflectionHash(), Gaff::OffsetOfClass<T, Base>());
+}
 
-	void operator()(T* ptr) const
-	{
-		if (ptr) {
-			GAFF_FREET(ptr, _allocator);
-		}
-	}
-
-private:
-	mutable Allocator _allocator;
-};
-
-template <class T, class Allocator = DefaultAllocator>
-using UniquePtr = eastl::unique_ptr< T, AllocatorDeleter<T, Allocator> >;
+template <class T>
+Gaff::Hash64 ReflectionVersion<T>::getHash(void) const
+{
+	return _hash;
+}
 
 NS_END

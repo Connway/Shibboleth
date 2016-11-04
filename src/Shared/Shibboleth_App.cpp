@@ -24,6 +24,7 @@ THE SOFTWARE.
 #include "Shibboleth_LooseFileSystem.h"
 #include "Shibboleth_Utilities.h"
 #include "Shibboleth_IManager.h"
+#include <Gaff_IReflectionDefinition.h>
 #include <Gaff_CrashHandler.h>
 #include <Gaff_Directory.h>
 #include <Gaff_Utils.h>
@@ -478,6 +479,18 @@ JobPool& App::getJobPool(void)
 DynamicLoader::ModulePtr App::loadModule(const char* filename, const char* name)
 {
 	return _dynamic_loader.loadModule(filename, name);
+}
+
+const Gaff::IReflectionDefinition* App::getReflection(Gaff::ReflectionHash name) const
+{
+	auto it = _reflection_map.find(name);
+	return (it == _reflection_map.end()) ? nullptr : it->second.get();
+}
+
+void App::registerReflection(Gaff::ReflectionHash name, Gaff::IReflectionDefinition* ref_def)
+{
+	GAFF_ASSERT(_reflection_map.find(name) == _reflection_map.end());
+	_reflection_map[name].reset(ref_def);
 }
 
 bool App::isQuitting(void) const

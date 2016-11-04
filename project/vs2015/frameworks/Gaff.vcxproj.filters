@@ -93,7 +93,7 @@
     <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_IReflectionDefinitions.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_IRequestableInterface.h">
+    <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_IReflectionObject.h">
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_IVirtualDestructor.h">
@@ -241,6 +241,9 @@
       <Filter>include</Filter>
     </None>
     <None Include="..\..\..\frameworks\Gaff\include\Gaff_LinearCurve.inl">
+      <Filter>include</Filter>
+    </None>
+    <None Include="..\..\..\frameworks\Gaff\include\Gaff_ReflectionDefinition.inl">
       <Filter>include</Filter>
     </None>
     <None Include="..\..\..\frameworks\Gaff\include\Gaff_ReflectionDefinitions.inl">

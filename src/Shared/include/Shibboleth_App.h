@@ -48,26 +48,25 @@ public:
 	void run(void);
 	void destroy(void);
 
-	const IManager* getManager(Gaff::Hash32 name) const;
-	IManager* getManager(Gaff::Hash32 name);
+	const IManager* getManager(Gaff::Hash32 name) const override;
+	IManager* getManager(Gaff::Hash32 name) override;
 
-	MessageBroadcaster& getBroadcaster(void);
+	MessageBroadcaster& getBroadcaster(void) override;
 
-	const Vector<unsigned int>& getStateTransitions(unsigned int state_id);
-	unsigned int getStateID(const char* name);
-	void switchState(unsigned int state);
+	IFileSystem* getFileSystem(void) override;
+	const VectorMap<HashString32, U8String>& getCmdLine(void) const override;
+	VectorMap<HashString32, U8String>& getCmdLine(void) override;
 
-	IFileSystem* getFileSystem(void);
-	const VectorMap<HashString32, U8String>& getCmdLine(void) const;
-	VectorMap<HashString32, U8String>& getCmdLine(void);
+	LogManager& getLogManager(void) override;
+	JobPool& getJobPool(void) override;
 
-	LogManager& getLogManager(void);
-	JobPool& getJobPool(void);
+	DynamicLoader::ModulePtr loadModule(const char* filename, const char* name) override;
 
-	DynamicLoader::ModulePtr loadModule(const char* filename, const char* name);
+	const Gaff::IReflectionDefinition* getReflection(Gaff::ReflectionHash name) const override;
+	void registerReflection(Gaff::ReflectionHash name, Gaff::IReflectionDefinition* ref_def) override;
 
-	bool isQuitting(void) const;
-	void quit(void);
+	bool isQuitting(void) const override;
+	void quit(void) override;
 
 private:
 	struct ManagerEntry
@@ -104,6 +103,7 @@ private:
 
 	bool _running;
 	MainLoopFunc _main_loop;
+	VectorMap< Gaff::ReflectionHash, UniquePtr<Gaff::IReflectionDefinition> > _reflection_map;
 
 	MessageBroadcaster _broadcaster;
 	DynamicLoader _dynamic_loader;
