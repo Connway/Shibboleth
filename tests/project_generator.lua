@@ -31,7 +31,14 @@ local tests = {
 		links = {
 			"Gaff", "Memory",
 			"EASTL", "Shared"
-		}
+		},
+
+		extra = function ()
+			filter { "system:windows" }
+				links { "DbgHelp" }
+
+			filter {}
+		end
 	}
 }
 
@@ -51,16 +58,20 @@ for i = 1, table.getn(tests) do
 
 		filter {}
 
-		if tests.files == nil then
-			files { settings.name .. ".cpp" }
-		else
+		if settings.files then
 			files(settings.files)
+		else
+			files { settings.name .. ".cpp" }
 		end
 
-		if tests.dependson == nil then
-			dependson(settings.links)
-		else
+		if settings.dependson then
 			dependson(settings.dependson)
+		else
+			dependson(settings.links)
+		end
+
+		if settings.extra then
+			settings.extra()
 		end
 
 		includedirs(settings.includedirs)

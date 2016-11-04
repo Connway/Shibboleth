@@ -276,6 +276,7 @@
     <ClCompile Include="..\..\..\src\Shared\Shibboleth_LooseFileSystem.cpp" />
     <ClCompile Include="..\..\..\src\Shared\Shibboleth_MessageBroadcaster.cpp" />
     <ClCompile Include="..\..\..\src\Shared\Shibboleth_NewDelete.cpp" />
+    <ClCompile Include="..\..\..\src\Shared\Shibboleth_Reflection.cpp" />
     <ClCompile Include="..\..\..\src\Shared\Shibboleth_Utilities.cpp" />
   </ItemGroup>
   <ItemGroup>

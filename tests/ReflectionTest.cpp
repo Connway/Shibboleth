@@ -24,19 +24,37 @@ THE SOFTWARE.
 #include <catch.hpp>
 
 #include <Shibboleth_Reflection.h>
+#include <Shibboleth_App.h>
 
 NS_SHIBBOLETH
 
-class Test
+App g_app;
+
+class Base /*: public Gaff::IReflectionObject*/
 {
-	int i = 0;
-	int j = 10;
+	int a = 1;
+	SHIB_REFLECTION_CLASS_DECLARE(Base)
 };
 
-SHIB_REFLECTION_CLASS_DECLARE(Test);
+class Base2
+{
+	int b = 2;
+};
 
-SHIB_REFLECTION_CLASS_DEFINE_BEGIN(Test)
-SHIB_REFLECTION_CLASS_DEFINE_END(Test)
+class Derived : public Base, public Base2
+{
+public:
+	int c = 3;
+	SHIB_REFLECTION_CLASS_DECLARE(Derived)
+};
+
+SHIB_REFLECTION_CLASS_DEFINE_BEGIN(Base)
+SHIB_REFLECTION_CLASS_DEFINE_END(Base)
+
+SHIB_REFLECTION_CLASS_DEFINE_BEGIN(Derived)
+	.baseClass<Base>()
+	.BASE_CLASS(Base2)
+SHIB_REFLECTION_CLASS_DEFINE_END(Derived)
 
 NS_END
 
@@ -65,7 +83,40 @@ TEST_CASE("reflection basic test", "[shibboleth_reflection_basic]")
 	REQUIRE(!strcmp(Shibboleth::Reflection<uint64_t>::GetName(), "uint64_t"));
 	REQUIRE(!strcmp(Shibboleth::Reflection<float>::GetName(), "float"));
 	REQUIRE(!strcmp(Shibboleth::Reflection<double>::GetName(), "double"));
+}
 
-	printf("Reflection Class: %s\n", Shibboleth::Reflection<Shibboleth::Test>::GetName());
-	REQUIRE(!strcmp(Shibboleth::Reflection<Shibboleth::Test>::GetName(), "Test"));
+TEST_CASE("reflection class test", "[shibboleth_reflection_class]")
+{
+	Shibboleth::g_app.init(0, nullptr);
+	Shibboleth::SetApp(Shibboleth::g_app);
+
+	printf("Reflection Class: %s\n", Shibboleth::Reflection<Shibboleth::Derived>::GetName());
+	REQUIRE(!strcmp(Shibboleth::Reflection<Shibboleth::Derived>::GetName(), "Derived"));
+
+	Shibboleth::Reflection<Shibboleth::Derived>::Init();
+	Shibboleth::Reflection<Shibboleth::Base>::Init();
+	Shibboleth::Derived test;
+
+	//ptrdiff_t offset = Gaff::OffsetOfClass<Shibboleth::Derived, Shibboleth::Base>();
+	//printf("Base offset: %ti\n", offset);
+	//Shibboleth::Base* base = reinterpret_cast<Shibboleth::Base*>(reinterpret_cast<char*>(&test) + offset);
+
+	//offset = Gaff::OffsetOfClass<Shibboleth::Derived, Shibboleth::Base2>();
+	//printf("Base2 offset: %ti\n", offset);
+	//Shibboleth::Base2* base2 = reinterpret_cast<Shibboleth::Base2*>(reinterpret_cast<char*>(&test) + offset);
+
+	//GAFF_REF(base); GAFF_REF(base2);
+
+	//offset = OFFSET_OF(&Shibboleth::Derived::c);
+	//printf("&Derived::c offset: %ti\n", offset);
+
+	Shibboleth::Base& base = test;
+	//Shibboleth::Base2& base2 = test;
+	Shibboleth::Derived* ref_result = Gaff::ReflectionCast<Shibboleth::Derived>(base);
+	//Shibboleth::Derived* ref_result2 = Gaff::ReflectionCast<Shibboleth::Derived>(base2);
+
+	REQUIRE(ref_result == &test);
+	//REQUIRE(ref_result2 == &test);
+
+	Shibboleth::g_app.destroy();
 }

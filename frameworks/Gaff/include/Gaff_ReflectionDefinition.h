@@ -23,42 +23,61 @@ THE SOFTWARE.
 #pragma once
 
 #include "Gaff_IReflectionDefinition.h"
+#include "Gaff_ReflectionVersion.h"
+#include "Gaff_HashString.h"
 #include "Gaff_VectorMap.h"
-#include "Gaff_String.h"
+#include "Gaff_Assert.h"
+#include "Gaff_Utils.h"
 
 NS_GAFF
 
 template <class T, class Allocator>
-class ReflectionDefinition : public IReflectionDefinition
+class ReflectionDefinition final : public IReflectionDefinition
 {
 public:
-	//explicit ReflectionDefinition(const char* name, const Allocator& allocator = Allocator());
-	//ReflectionDefinition(const Allocator& allocator = Allocator());
-	//~ReflectionDefinition(void) = default;
+	GAFF_STRUCTORS_DEFAULT(ReflectionDefinition);
+	GAFF_NO_COPY(ReflectionDefinition);
+	GAFF_NO_MOVE(ReflectionDefinition);
 
 	void load(ISerializeReader& reader, void* object) const override;
 	void save(ISerializeWriter& writer, const void* object) const override;
 	void load(ISerializeReader& reader, T& object) const;
 	void save(ISerializeWriter& writer, const T& object) const;
 
-	//const void* getInterface(ReflectionHash class_id, const void* object) const override;
-	//void* getInterface(ReflectionHash class_id, void* object) const override;
+	const void* getInterface(ReflectionHash class_hash, const void* object) const override;
+	void* getInterface(ReflectionHash class_hash, void* object) const override;
 
-	ReflectionDefinition& setAllocator(const Allocator& allocator);
+	void setAllocator(const Allocator& allocator);
+
+	void setReflectionInstance(const ISerializeInfo* reflection_instance);
+	const ISerializeInfo& getReflectionInstance(void) const override;
+
+	Hash64 getVersionHash(void) const;
+
+	ReflectionDefinition& baseClass(const char* name, ReflectionHash hash, ptrdiff_t offset);
+
+	template <class Base>
+	ReflectionDefinition& baseClass(void);
 
 private:
-
+	VectorMap<HashString32<Allocator>, ptrdiff_t, Allocator> _base_class_offsets;
 
 	//HashMap<HashString32<Allocator>, ValueContainerPtr, Allocator> _value_containers;
 	//Array<Pair< ReflectionHash, FunctionBinder<void*, const void*> >, Allocator> _base_ids;
 	//Array<IOnCompleteFunctor*, Allocator> _callback_references;
 
 	U8String<Allocator> _name;
+	const ISerializeInfo* _reflection_instance = nullptr;
 	Allocator _allocator;
+
 	unsigned int _base_classes_remaining;
 	bool _defined;
+
+	ReflectionVersion<T> _version;
 };
 
 NS_END
 
 #include "Gaff_ReflectionDefinition.inl"
+
+#define BASE_CLASS(type) baseClass(#type, REFL_HASH_CONST(#type), Gaff::OffsetOfClass<ThisType, Base>())

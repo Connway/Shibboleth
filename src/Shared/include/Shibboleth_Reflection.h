@@ -23,16 +23,19 @@ THE SOFTWARE.
 #pragma once
 
 #include "Shibboleth_ProxyAllocator.h"
+#include "Shibboleth_Utilities.h"
+#include "Shibboleth_IApp.h"
 #include <Gaff_SerializeInterfaces.h>
 #include <Gaff_ReflectionDefinition.h>
-#include <Gaff_Assert.h>
+#include <Gaff_ReflectionVersion.h>
+#include <Gaff_IReflectionObject.h>
 
 NS_SHIBBOLETH
 
-GAFF_REFLECTION_DEFINE_DEFAULT_AND_POD();
+GAFF_REFLECTION_DECLARE_DEFAULT_AND_POD();
 
 #define SHIB_REFLECTION_CLASS_DECLARE(type) \
-	GAFF_REFLECTION_CLASS_DECLARE_BASE(type); \
+	GAFF_REFLECTION_CLASS_DECLARE_BASE(type, ProxyAllocator); \
 		void load(Gaff::ISerializeReader& reader, void* object) const override \
 		{ \
 			GAFF_ASSERT(g_reflection_definition); \
@@ -55,19 +58,46 @@ GAFF_REFLECTION_DEFINE_DEFAULT_AND_POD();
 			GAFF_ASSERT(g_reflection_definition); \
 			g_reflection_definition->save(writer, object); \
 		} \
-		static const Gaff::IReflectionDefinition* GetReflectionDefinition(void) \
+		static const Gaff::ReflectionDefinition<type, ProxyAllocator>& GetReflectionDefinition(void) \
 		{ \
-			return g_reflection_definition; \
+			GAFF_ASSERT(g_reflection_definition); \
+			return *g_reflection_definition; \
 		} \
 	private: \
 		static Gaff::ReflectionDefinition<type, ProxyAllocator>* g_reflection_definition; \
-	}
 
 #define SHIB_REFLECTION_CLASS_DEFINE_BEGIN(type) \
+	GAFF_REFLECTION_CLASS_DEFINE_BEGIN_BASE_BEGIN(type, ProxyAllocator); \
 	Gaff::ReflectionDefinition<type, ProxyAllocator>* Reflection<type>::g_reflection_definition = nullptr; \
 	void Reflection<type>::Init(void) \
 	{ \
-		g_reflection_definition->setAllocator(ProxyAllocator("Reflection"))
+		g_reflection_definition = reinterpret_cast< Gaff::ReflectionDefinition<type, ProxyAllocator>* >( \
+			const_cast< Gaff::IReflectionDefinition* >( \
+				Shibboleth::GetApp().getReflection(REFL_HASH_CONST(#type)) \
+			) \
+		); \
+		if (g_reflection_definition) { \
+			Gaff::ReflectionVersion<type> version; \
+			type::ReflectionInit(version); \
+			GAFF_ASSERT_MSG( \
+				version.getHash() == g_reflection_definition->getVersionHash(), \
+				"Version hash for " #type " does not match!" \
+			); \
+		} else { \
+			g_reflection_definition = reinterpret_cast< Gaff::ReflectionDefinition<type, ProxyAllocator>* >( \
+				ShibbolethAllocate( \
+					sizeof(Gaff::ReflectionDefinition<type, ProxyAllocator>), \
+					GetPoolIndex("Reflection") \
+				) \
+			); \
+			Gaff::Construct(g_reflection_definition); \
+			Shibboleth::GetApp().registerReflection(REFL_HASH_CONST(#type),  g_reflection_definition); \
+			g_reflection_definition->setAllocator(ProxyAllocator("Reflection")); \
+			g_reflection_definition->setReflectionInstance(&g_instance); \
+			type::ReflectionInit(*g_reflection_definition); \
+		} \
+	} \
+	GAFF_REFLECTION_CLASS_DEFINE_BEGIN_BASE_END(type)
 
 #define SHIB_REFLECTION_CLASS_DEFINE_END GAFF_REFLECTION_CLASS_DEFINE_END
 

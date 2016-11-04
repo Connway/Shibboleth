@@ -54,23 +54,69 @@ void ReflectionDefinition<T, Allocator>::save(ISerializeWriter& /*writer*/, cons
 {
 }
 
-//template <class T, class Allocator>
-//const void* ReflectionDefinition<T, Allocator>::getInterface(ReflectionHash /*class_id*/, const void* /*object*/) const
-//{
-//	return nullptr;
-//}
-//
-//template <class T, class Allocator>
-//void* ReflectionDefinition<T, Allocator>::getInterface(ReflectionHash /*class_id*/, void* /*object*/) const
-//{
-//	return nullptr;
-//}
+template <class T, class Allocator>
+const void* ReflectionDefinition<T, Allocator>::getInterface(ReflectionHash class_hash, const void* object) const
+{
+	if (class_hash == T::GetReflectionHash()) {
+		return object;
+	}
+
+	auto it = Gaff::Find(_base_class_offsets, class_hash);
+
+	if (it == _base_class_offsets.end()) {
+		return nullptr;
+	}
+
+	return reinterpret_cast<const int8_t*>(object) + it->second;
+}
 
 template <class T, class Allocator>
-ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::setAllocator(const Allocator& allocator)
+void* ReflectionDefinition<T, Allocator>::getInterface(ReflectionHash class_hash, void* object) const
 {
+	return const_cast<void*>(getInterface(class_hash, const_cast<const void*>(object)));
+}
+
+template <class T, class Allocator>
+void ReflectionDefinition<T, Allocator>::setAllocator(const Allocator& allocator)
+{
+	_base_class_offsets.set_allocator(allocator);
 	_allocator = allocator;
+}
+
+template <class T, class Allocator>
+void ReflectionDefinition<T, Allocator>::setReflectionInstance(const ISerializeInfo* reflection_instance)
+{
+	_reflection_instance = reflection_instance;
+}
+
+template <class T, class Allocator>
+const ISerializeInfo& ReflectionDefinition<T, Allocator>::getReflectionInstance(void) const
+{
+	GAFF_ASSERT(_reflection_instance);
+	return *_reflection_instance;
+}
+
+template <class T, class Allocator>
+Hash64 ReflectionDefinition<T, Allocator>::getVersionHash(void) const
+{
+	return _version.getHash();
+}
+
+template <class T, class Allocator>
+ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::baseClass(const char* name, ReflectionHash hash, ptrdiff_t offset)
+{
+	auto pair = std::move(eastl::make_pair(HashString32<Allocator>(name, hash, nullptr, _allocator), offset));
+	_base_class_offsets.insert(std::move(pair));
+
+	_version.baseClass(name, hash, offset);
 	return *this;
+}
+
+template <class T, class Allocator>
+template <class Base>
+ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::baseClass(void)
+{
+	return baseClass(Base::GetReflectionName(), Base::GetReflectionHash(), Gaff::OffsetOfClass<T, Base>());
 }
 
 NS_END

@@ -34,17 +34,22 @@ void LogManager::LogThread(LogManager& lm)
 
 		lm._log_queue_lock.lock();
 
-		LogTask task = std::move(lm._logs.front());
-		lm._logs.pop();
+		if (lm._logs.empty()) {
+			lm._log_queue_lock.unlock();
 
-		lm._log_queue_lock.unlock();
+		} else {
+			LogTask task = std::move(lm._logs.front());
+			lm._logs.pop();
 
-		task.file.writeString(task.message.data());
-		task.file.writeChar('\n');
-		task.file.flush();
+			lm._log_queue_lock.unlock();
 
-		std::lock_guard<Gaff::SpinLock> lock(lm._log_callback_lock);
-		lm.notifyLogCallbacks(task.message.data(), task.type);
+			task.file.writeString(task.message.data());
+			task.file.writeChar('\n');
+			task.file.flush();
+
+			std::lock_guard<Gaff::SpinLock> lock(lm._log_callback_lock);
+			lm.notifyLogCallbacks(task.message.data(), task.type);
+		}
 	}
 }
 
@@ -73,9 +78,12 @@ void LogManager::destroy(void)
 	_shutdown = true;
 
 	_log_event.set();
-	_log_thread.join();
 
-	_shutdown = true;
+	if (_log_thread.joinable()) {
+		_log_thread.join();
+	}
+
+	_shutdown = false;
 }
 
 void LogManager::addLogCallback(const LogCallback& callback)

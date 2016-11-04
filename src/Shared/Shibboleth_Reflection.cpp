@@ -20,45 +20,10 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#pragma once
+#include "Shibboleth_Reflection.h"
 
-#include "Gaff_DefaultAllocator.h"
-#include <EASTL/shared_ptr.h>
-#include <EASTL/unique_ptr.h>
+NS_SHIBBOLETH
 
-NS_GAFF
-
-template <class T>
-using SharedPtr = eastl::shared_ptr<T>;
-
-template <class T, class Allocator, class... Args>
-SharedPtr<T> MakeShared(const Allocator& allocator = Allocator(), Args&&... args)
-{
-	return eastl::allocate_shared<T>(allocator, std::forward(args)...);
-}
-
-
-
-template <class T, class Allocator = DefaultAllocator>
-class AllocatorDeleter
-{
-public:
-	AllocatorDeleter(void) = default;
-	GAFF_COPY_DEFAULT(AllocatorDeleter);
-	GAFF_MOVE_DEFAULT(AllocatorDeleter);
-
-	void operator()(T* ptr) const
-	{
-		if (ptr) {
-			GAFF_FREET(ptr, _allocator);
-		}
-	}
-
-private:
-	mutable Allocator _allocator;
-};
-
-template <class T, class Allocator = DefaultAllocator>
-using UniquePtr = eastl::unique_ptr< T, AllocatorDeleter<T, Allocator> >;
+GAFF_REFLECTION_DEFINE_POD();
 
 NS_END

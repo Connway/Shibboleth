@@ -120,3 +120,15 @@ bool AreAllBitsSet(const T& value, T bits)
 {
 	return (value & bits) == bits;
 }
+
+template <class T, class R, R T::*M>
+constexpr ptrdiff_t OffsetOfMember(void)
+{
+	return reinterpret_cast<ptrdiff_t>(&(((T*)0)->*M));
+};
+
+template <class Derived, class Base>
+ptrdiff_t OffsetOfClass(void)
+{
+	return ((ptrdiff_t)(Base*)(Derived*)1) - 1;
+}

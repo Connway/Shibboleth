@@ -84,6 +84,17 @@ bool IsAnyBitSet(const T& value, T bits);
 template <class T>
 bool AreAllBitsSet(const T& value, T bits);
 
+template <class T, class R, R T::*M>
+constexpr ptrdiff_t OffsetOfMember(void);
+
+template <class Derived, class Base>
+ptrdiff_t OffsetOfClass(void);
+
+template <typename T, typename M> M GetMemberType(M T::*);
+template <typename T, typename M> T GetClassType(M T::*);
+
+#define OFFSET_OF(x) Gaff::OffsetOfMember<decltype(Gaff::GetClassType(x)), decltype(Gaff::GetMemberType(x)), x>()
+
 #include "Gaff_Utils_Common.inl"
 
 NS_END

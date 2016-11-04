@@ -33,6 +33,10 @@ THE SOFTWARE.
 	#define NS_END }
 #endif
 
+#define GAFF_STRUCTORS_DEFAULT(x) \
+	x(void) = default; \
+	~x(void) = default
+
 #define GAFF_NO_COPY(x) \
 	x(const x&) = delete; \
 	x& operator=(const x&) = delete

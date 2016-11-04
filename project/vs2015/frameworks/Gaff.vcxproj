@@ -272,7 +272,7 @@
     <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_IRefCounted.h" />
     <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_IReflectionDefinition.h" />
     <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_IReflectionDefinitions.h" />
-    <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_IRequestableInterface.h" />
+    <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_IReflectionObject.h" />
     <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_IVirtualDestructor.h" />
     <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_Image.h" />
     <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_IncludeRapidJSON.h" />
@@ -340,6 +340,7 @@
     <None Include="..\..\..\frameworks\Gaff\include\Gaff_HashString.inl" />
     <None Include="..\..\..\frameworks\Gaff\include\Gaff_JobPool.inl" />
     <None Include="..\..\..\frameworks\Gaff\include\Gaff_LinearCurve.inl" />
+    <None Include="..\..\..\frameworks\Gaff\include\Gaff_ReflectionDefinition.inl" />
     <None Include="..\..\..\frameworks\Gaff\include\Gaff_ReflectionDefinitions.inl" />
     <None Include="..\..\..\frameworks\Gaff\include\Gaff_ReflectionDefinitionsContainers.inl" />
     <None Include="..\..\..\frameworks\Gaff\include\Gaff_Utils_Common.inl" />
