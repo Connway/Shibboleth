@@ -80,4 +80,4 @@ NS_END
 
 #include "Gaff_ReflectionDefinition.inl"
 
-#define BASE_CLASS(type) baseClass(#type, REFL_HASH_CONST(#type), Gaff::OffsetOfClass<ThisType, Base>())
+#define BASE_CLASS(type) baseClass(#type, REFL_HASH_CONST(#type), Gaff::OffsetOfClass<ThisType, type>())

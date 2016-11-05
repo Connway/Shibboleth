@@ -284,7 +284,20 @@ T* ReflectionCast(Base& object)
 	return const_cast<Gaff::IReflectionDefinition&>(object.getReflectionDefinition()).getInterface<T>(object.getBasePointer());
 }
 
-#define REFLECTION_CAST(T, Base) \
-	return const_cast<Gaff::IReflectionDefinition&>(object.getReflectionDefinition()).getInterface<T>(object.getBasePointer())
+#define REFLECTION_CAST_PTR_NAME(T, name, object) \
+	reinterpret_cast<T*>( \
+		const_cast<Gaff::IReflectionDefinition&>((object)->getReflectionDefinition()).getInterface( \
+			REFL_HASH_CONST(name), (object)->getBasePointer() \
+		) \
+	)
+
+#define REFLECTION_CAST_PTR(T, object) \
+	reinterpret_cast<T*>( \
+		const_cast<Gaff::IReflectionDefinition&>((object)->getReflectionDefinition()).getInterface( \
+			REFL_HASH_CONST(#T), (object)->getBasePointer() \
+		) \
+	)
+
+#define REFLECTION_CAST(T, object) *REFLECTION_CAST_PTR(T, &object)
 
 NS_END
