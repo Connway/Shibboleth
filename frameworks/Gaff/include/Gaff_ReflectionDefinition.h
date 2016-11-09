@@ -35,6 +35,56 @@ template <class T, class Allocator>
 class ReflectionDefinition final : public IReflectionDefinition
 {
 public:
+	class IVar : public IReflectionVar
+	{
+	public:
+		template <class DataType>
+		const DataType& getDataT(const T& object) const
+		{
+			GAFF_ASSERT(getType() == GetRVT<DataType>());
+			return *reinterpret_cast<const DataType*>(getData(object));
+		}
+
+		template <class DataType>
+		void setDataT(T& object, const DataType& data)
+		{
+			GAFF_ASSERT(getType() == GetRVT<DataType>());
+			setData(object, &data);
+		}
+
+		template <class DataType>
+		void setDataT(T& object, DataType&& data)
+		{
+			GAFF_ASSERT(getType() == GetRVT<DataType>());
+			setDataMove(object, &data);
+		}
+
+		virtual ~IVar(void) {}
+
+		virtual ReflectionValueType getType(void) const = 0;
+		virtual const void* getData(const T& object) const = 0;
+		virtual void setData(T& object, const void* data) = 0; // asignment copy
+		virtual void setDataMove(T& object, void* data) = 0; // assignment move if possible
+
+		const void* getData(const void* object) const override
+		{
+			GAFF_ASSERT(object);
+			return getData(*reinterpret_cast<const T*>(object));
+		}
+
+		void setData(void* object, const void* data) override
+		{
+			GAFF_ASSERT(object);
+			setData(*reinterpret_cast<T*>(object), data);
+		}
+
+		void setDataMove(void* object, void* data) override
+		{
+			GAFF_ASSERT(object);
+			setData(*reinterpret_cast<T*>(object), data);
+		}
+	};
+
 	GAFF_STRUCTORS_DEFAULT(ReflectionDefinition);
 	GAFF_NO_COPY(ReflectionDefinition);
 	GAFF_NO_MOVE(ReflectionDefinition);
@@ -54,26 +104,98 @@ public:
 
 	Hash64 getVersionHash(void) const;
 
+	int32_t getNumVariables(void) const override;
+	Hash32 getVariableHash(int32_t index) const override;
+	IReflectionVar* getVariable(int32_t index) const override;
+	IReflectionVar* getVariable(Hash32 name) const override;
+
+	const HashString32<Allocator>& getVariableName(int32_t index) const;
+	IVar* getVar(int32_t index) const;
+	IVar* getVar(Hash32 name) const;
+
 	ReflectionDefinition& baseClass(const char* name, ReflectionHash hash, ptrdiff_t offset);
 
 	template <class Base>
 	ReflectionDefinition& baseClass(void);
 
+	template <class Var, size_t size>
+	ReflectionDefinition& var(const char(&name)[size], Var T::*ptr);
+
+	template <class Ret, class Var, size_t size>
+	ReflectionDefinition& var(const char(&name)[size], Ret (T::*getter)(void) const, void (T::*setter)(Var));
+
+	void finish(void);
+
 private:
+	template <class Var>
+	class VarPtr final : public IVar
+	{
+	public:
+		VarPtr(Var T::*ptr);
+
+		ReflectionValueType getType(void) const override;
+		const void* getData(const T& object) const override;
+		void setData(T& object, const void* data) override;
+		void setDataMove(T& object, void* data) override;
+
+	private:
+		Var T::*_ptr;
+	};
+
+	template <class Ret, class Var>
+	class VarFuncPtr final : public IVar
+	{
+	public:
+		using Getter = Ret (T::*)(void) const;
+		using Setter = void (T::*)(Var);
+
+		VarFuncPtr(Getter getter, Setter setter);
+
+		ReflectionValueType getType(void) const override;
+		const void* getData(const T& object) const override;
+		void setData(T& object, const void* data) override;
+		void setDataMove(T& object, void* data) override;
+
+	private:
+		Getter _getter;
+		Setter _setter;
+
+		mutable const typename std::remove_reference<Ret>::type* _copy_ptr = nullptr;
+		mutable typename std::remove_const< typename std::remove_reference<Ret>::type >::type _copy;
+	};
+
+	template <class Base>
+	class BaseVarPtr final : public IVar
+	{
+	public:
+		BaseVarPtr(typename ReflectionDefinition<Base, Allocator>::IVar* base_var);
+
+		ReflectionValueType getType(void) const override;
+		const void* getData(const T& object) const override;
+		void setData(T& object, const void* data) override;
+		void setDataMove(T& object, void* data) override;
+
+	private:
+		typename ReflectionDefinition<Base, Allocator>::IVar* _base_var;
+	};
+
+	using IVarPtr = UniquePtr<IVar, Allocator>;
+
 	VectorMap<HashString32<Allocator>, ptrdiff_t, Allocator> _base_class_offsets;
+	VectorMap<HashString32<Allocator>, IVarPtr, Allocator> _vars;
 
-	//HashMap<HashString32<Allocator>, ValueContainerPtr, Allocator> _value_containers;
-	//Array<Pair< ReflectionHash, FunctionBinder<void*, const void*> >, Allocator> _base_ids;
-	//Array<IOnCompleteFunctor*, Allocator> _callback_references;
-
-	U8String<Allocator> _name;
 	const ISerializeInfo* _reflection_instance = nullptr;
 	Allocator _allocator;
 
-	unsigned int _base_classes_remaining;
-	bool _defined;
+	int32_t _base_classes_remaining = 0;
 
 	ReflectionVersion<T> _version;
+
+	template <class Base>
+	static void RegisterBaseVariables(void);
+
+	template <class RefT, class Allocator>
+	friend class ReflectionDefinition;
 };
 
 NS_END

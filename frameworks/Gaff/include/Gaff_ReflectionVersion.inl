@@ -23,8 +23,10 @@ THE SOFTWARE.
 NS_GAFF
 
 template <class T>
-ReflectionVersion<T>& ReflectionVersion<T>::baseClass(const char*, ReflectionHash /*hash*/, ptrdiff_t /*offset*/)
+ReflectionVersion<T>& ReflectionVersion<T>::baseClass(const char* name, ReflectionHash /*hash*/, ptrdiff_t offset)
 {
+	_hash = FNV1aHash64String(name, _hash);
+	_hash = FNV1aHash64T(&offset, _hash);
 	return *this;
 }
 
@@ -32,11 +34,35 @@ template <class T>
 template <class Base>
 ReflectionVersion<T>& ReflectionVersion<T>::baseClass(void)
 {
-	return baseClass(Base::GetReflectionName(), Base::GetReflectionHash(), Gaff::OffsetOfClass<T, Base>());
+	return baseClass(Base::GetReflectionName(), Base::GetReflectionHash(), OffsetOfClass<T, Base>());
 }
 
 template <class T>
-Gaff::Hash64 ReflectionVersion<T>::getHash(void) const
+template <class Var, size_t size>
+ReflectionVersion<T>& ReflectionVersion<T>::var(const char(&name)[size], Var T::*ptr)
+{
+	_hash = FNV1aHash64(name, size ,_hash);
+	_hash = FNV1aHash64T(&ptr, _hash);
+	return *this;
+}
+
+template <class T>
+template <class Ret, class Var, size_t size>
+ReflectionVersion<T>& ReflectionVersion<T>::var(const char(&name)[size], Ret (T::*getter)(void) const, void (T::*setter)(Var))
+{
+	_hash = FNV1aHash64(name, size, _hash);
+	_hash = FNV1aHash64T(&getter, _hash);
+	_hash = FNV1aHash64T(&setter, _hash);
+	return *this;
+}
+
+template <class T>
+void ReflectionVersion<T>::finish(void)
+{
+}
+
+template <class T>
+Hash64 ReflectionVersion<T>::getHash(void) const
 {
 	return _hash;
 }

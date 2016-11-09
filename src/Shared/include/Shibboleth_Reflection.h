@@ -22,6 +22,8 @@ THE SOFTWARE.
 
 #pragma once
 
+#define GAFF_REFLECTION_NAMESPACE Shibboleth
+
 #include "Shibboleth_ProxyAllocator.h"
 #include "Shibboleth_Utilities.h"
 #include "Shibboleth_IApp.h"
@@ -62,6 +64,13 @@ GAFF_REFLECTION_DECLARE_DEFAULT_AND_POD();
 		{ \
 			GAFF_ASSERT(g_reflection_definition); \
 			return *g_reflection_definition; \
+		} \
+		static void SetAllocator(const ProxyAllocator& a) \
+		{ \
+			if (g_reflection_definition) {\
+				g_reflection_definition->setAllocator(a); \
+			} \
+			g_on_defined_callbacks.set_allocator(a); \
 		} \
 	private: \
 		static Gaff::ReflectionDefinition<type, ProxyAllocator>* g_reflection_definition; \

@@ -35,6 +35,14 @@ public:
 	template <class Base>
 	ReflectionVersion& baseClass(void);
 
+	template <class Var, size_t size>
+	ReflectionVersion& var(const char(&name)[size], Var T::*ptr);
+
+	template <class Ret, class Var, size_t size>
+	ReflectionVersion& var(const char(&name)[size], Ret (T::*getter)(void) const, void (T::*setter)(Var));
+
+	void finish(void);
+
 	Gaff::Hash64 getHash(void) const;
 
 private:

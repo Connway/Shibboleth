@@ -32,6 +32,7 @@ App g_app;
 
 class Base /*: public Gaff::IReflectionObject*/
 {
+public:
 	int a = 1;
 	SHIB_REFLECTION_CLASS_DECLARE(Base)
 };
@@ -44,16 +45,25 @@ class Base2
 class Derived : public Base, public Base2
 {
 public:
+	const int& getCRef(void) const { return c; }
+	int getC(void) const { return c; }
+	void setC(int v) { c = v; }
+
 	int c = 3;
 	SHIB_REFLECTION_CLASS_DECLARE(Derived)
 };
 
 SHIB_REFLECTION_CLASS_DEFINE_BEGIN(Base)
+	.var("a", &Base::a)
 SHIB_REFLECTION_CLASS_DEFINE_END(Base)
 
 SHIB_REFLECTION_CLASS_DEFINE_BEGIN(Derived)
 	.baseClass<Base>()
 	.BASE_CLASS(Base2)
+
+	.var("c", &Derived::c)
+	.var("cFunc", &Derived::getC, &Derived::setC)
+	.var("cRef", &Derived::getCRef, &Derived::setC)
 SHIB_REFLECTION_CLASS_DEFINE_END(Derived)
 
 NS_END
@@ -87,11 +97,16 @@ TEST_CASE("reflection basic test", "[shibboleth_reflection_basic]")
 
 TEST_CASE("reflection class test", "[shibboleth_reflection_class]")
 {
+	Shibboleth::Reflection<Shibboleth::Derived>::SetAllocator(Shibboleth::ProxyAllocator("Reflection"));
+	Shibboleth::Reflection<Shibboleth::Base>::SetAllocator(Shibboleth::ProxyAllocator("Reflection"));
+
 	Shibboleth::g_app.init(0, nullptr);
 	Shibboleth::SetApp(Shibboleth::g_app);
 
 	printf("Reflection Class: %s\n", Shibboleth::Reflection<Shibboleth::Derived>::GetName());
+	printf("Reflection Class: %s\n", Shibboleth::Reflection<Shibboleth::Base>::GetName());
 	REQUIRE(!strcmp(Shibboleth::Reflection<Shibboleth::Derived>::GetName(), "Derived"));
+	REQUIRE(!strcmp(Shibboleth::Reflection<Shibboleth::Base>::GetName(), "Base"));
 
 	Shibboleth::Reflection<Shibboleth::Derived>::Init();
 	Shibboleth::Reflection<Shibboleth::Base>::Init();
@@ -104,6 +119,39 @@ TEST_CASE("reflection class test", "[shibboleth_reflection_class]")
 
 	REQUIRE(ref_result == &test);
 	REQUIRE(ref_result2 == &base2);
+
+	Gaff::Hash64 hash = Shibboleth::Reflection<Shibboleth::Derived>::GetReflectionDefinition().getVersionHash();
+	printf("Version Hash: %llu\n", hash);
+
+	int test_get_func_ref = Shibboleth::Reflection<Shibboleth::Derived>::GetReflectionDefinition().getVar(Gaff::FNV1aHash32Const("cRef"))->getDataT<int>(*ref_result);
+	int test_get_func = Shibboleth::Reflection<Shibboleth::Derived>::GetReflectionDefinition().getVar(Gaff::FNV1aHash32Const("cFunc"))->getDataT<int>(*ref_result);
+	int test_get = Shibboleth::Reflection<Shibboleth::Derived>::GetReflectionDefinition().getVar(Gaff::FNV1aHash32Const("c"))->getDataT<int>(*ref_result);
+
+	printf(
+		"GetFuncRef: %i\n"
+		"GetFunc: %i\n"
+		"GetVar: %i\n",
+		test_get_func_ref,
+		test_get_func,
+		test_get
+	);
+
+	REQUIRE(test_get_func_ref == ref_result->c);
+	REQUIRE(test_get_func == ref_result->c);
+	REQUIRE(test_get == ref_result->c);
+
+	auto* ref_var = Shibboleth::Reflection<Shibboleth::Derived>::GetReflectionDefinition().getVar(Gaff::FNV1aHash32Const("a"));
+	int test_base_get = ref_var->getDataT<int>(*ref_result);
+	printf("GetBase: %i\n", test_base_get);
+
+	REQUIRE(test_base_get == base.a);
+
+	ref_var->setDataT(*ref_result, 20);
+	test_base_get = ref_var->getDataT<int>(*ref_result);
+	printf("SetBase: %i\n", test_base_get);
+
+	REQUIRE(test_base_get == base.a);
+	REQUIRE(test_base_get == 20);
 
 	Shibboleth::g_app.destroy();
 }
