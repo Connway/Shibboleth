@@ -147,7 +147,7 @@
     <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_ReflectionDefinition.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_ReflectionDefinitions.h">
+    <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_ReflectionVersion.h">
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_ScopedExit.h">
@@ -246,10 +246,7 @@
     <None Include="..\..\..\frameworks\Gaff\include\Gaff_ReflectionDefinition.inl">
       <Filter>include</Filter>
     </None>
-    <None Include="..\..\..\frameworks\Gaff\include\Gaff_ReflectionDefinitions.inl">
-      <Filter>include</Filter>
-    </None>
-    <None Include="..\..\..\frameworks\Gaff\include\Gaff_ReflectionDefinitionsContainers.inl">
+    <None Include="..\..\..\frameworks\Gaff\include\Gaff_ReflectionVersion.inl">
       <Filter>include</Filter>
     </None>
     <None Include="..\..\..\frameworks\Gaff\include\Gaff_Utils_Common.inl">
