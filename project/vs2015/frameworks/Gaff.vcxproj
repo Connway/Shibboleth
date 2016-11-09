@@ -290,7 +290,7 @@
     <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_RefPtr.h" />
     <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_Reflection.h" />
     <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_ReflectionDefinition.h" />
-    <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_ReflectionDefinitions.h" />
+    <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_ReflectionVersion.h" />
     <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_ScopedExit.h" />
     <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_ScopedLock.h" />
     <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_SerializeInterfaces.h" />
@@ -341,8 +341,7 @@
     <None Include="..\..\..\frameworks\Gaff\include\Gaff_JobPool.inl" />
     <None Include="..\..\..\frameworks\Gaff\include\Gaff_LinearCurve.inl" />
     <None Include="..\..\..\frameworks\Gaff\include\Gaff_ReflectionDefinition.inl" />
-    <None Include="..\..\..\frameworks\Gaff\include\Gaff_ReflectionDefinitions.inl" />
-    <None Include="..\..\..\frameworks\Gaff\include\Gaff_ReflectionDefinitionsContainers.inl" />
+    <None Include="..\..\..\frameworks\Gaff\include\Gaff_ReflectionVersion.inl" />
     <None Include="..\..\..\frameworks\Gaff\include\Gaff_Utils_Common.inl" />
     <None Include="..\..\..\frameworks\Gaff\include\Gaff_Watcher.inl" />
   </ItemGroup>
