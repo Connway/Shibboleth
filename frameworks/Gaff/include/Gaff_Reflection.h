@@ -24,6 +24,10 @@ THE SOFTWARE.
 
 #include "Gaff_Hash.h"
 
+#ifndef GAFF_REFLECTION_NAMESPACE
+	#define GAFF_REFLECTION_NAMESPACE Gaff
+#endif
+
 #define GAFF_REFLECTION_CLASS_DECLARE_BASE(type, allocator) \
 	public: \
 		using ThisType = type; \
@@ -58,6 +62,10 @@ THE SOFTWARE.
 	{ \
 	private: \
 		static Reflection<type> g_instance; \
+		static bool g_defined; \
+		static Gaff::Vector<void (*)(void), allocator> g_on_defined_callbacks; \
+		template <class RefT, class RefAllocator> \
+		friend class Gaff::ReflectionDefinition; \
 	public: \
 		constexpr static bool HasReflection = true; \
 		const char* getName(void) const override \
@@ -106,11 +114,18 @@ THE SOFTWARE.
 		{ \
 			return g_reflection_definition; \
 		} \
+		static void SetAllocator(const allocator& a) \
+		{ \
+			g_reflection_definition.setAllocator(a); \
+			g_on_defined_callbacks.set_allocator(a); \
+		} \
 	private: \
 		static Gaff::ReflectionDefinition<type, allocator> g_reflection_definition; \
 
 #define GAFF_REFLECTION_CLASS_DEFINE_BEGIN_BASE_BEGIN(type, allocator) \
 	Reflection<type> Reflection<type>::g_instance; \
+	bool Reflection<type>::g_defined = false; \
+	Gaff::Vector<void (*)(void), allocator> Reflection<type>::g_on_defined_callbacks; \
 	const Gaff::ReflectionDefinition<type, allocator>& type::GetReflectionDefinition(void) \
 	{ \
 		return Reflection<type>::GetReflectionDefinition(); \
@@ -140,7 +155,10 @@ THE SOFTWARE.
 	} \
 	GAFF_REFLECTION_CLASS_DEFINE_BEGIN_BASE_END(type)
 
-#define GAFF_REFLECTION_CLASS_DEFINE_END(type) ;}
+#define GAFF_REFLECTION_CLASS_DEFINE_END(type) \
+		; \
+		builder.finish(); \
+	}
 
 #define GAFF_REFLECTION_CLASS_STATIC_INIT(type) \
 	static void static__reflection__init__func__##type(void); \
@@ -258,12 +276,36 @@ THE SOFTWARE.
 	Reflection<float> Reflection<float>::g_instance; \
 	Reflection<double> Reflection<double>::g_instance
 
+#define RVT_FUNC(type, value) \
+	template <> \
+	inline ReflectionValueType GetRVT<type>(void) \
+	{ \
+		return value; \
+	}
+
+
+
 #define REFL_HASH Gaff::FNV1aHash32
 //#define REFL_HASH Gaff::FNV1aHash64
 
 #define REFL_HASH_CONST Gaff::FNV1aHash32Const
 //#define REFL_HASH_CONST Gaff::FNV1aHash64Const
 
+#define REFLECTION_CAST_PTR_NAME(T, name, object) \
+	reinterpret_cast<T*>( \
+		const_cast<Gaff::IReflectionDefinition&>((object)->getReflectionDefinition()).getInterface( \
+			REFL_HASH_CONST(name), (object)->getBasePointer() \
+		) \
+	)
+
+#define REFLECTION_CAST_PTR(T, object) \
+	reinterpret_cast<T*>( \
+		const_cast<Gaff::IReflectionDefinition&>((object)->getReflectionDefinition()).getInterface( \
+			REFL_HASH_CONST(#T), (object)->getBasePointer() \
+		) \
+	)
+
+#define REFLECTION_CAST(T, object) *REFLECTION_CAST_PTR(T, &object)
 
 NS_GAFF
 
@@ -284,20 +326,49 @@ T* ReflectionCast(Base& object)
 	return const_cast<Gaff::IReflectionDefinition&>(object.getReflectionDefinition()).getInterface<T>(object.getBasePointer());
 }
 
-#define REFLECTION_CAST_PTR_NAME(T, name, object) \
-	reinterpret_cast<T*>( \
-		const_cast<Gaff::IReflectionDefinition&>((object)->getReflectionDefinition()).getInterface( \
-			REFL_HASH_CONST(name), (object)->getBasePointer() \
-		) \
-	)
 
-#define REFLECTION_CAST_PTR(T, object) \
-	reinterpret_cast<T*>( \
-		const_cast<Gaff::IReflectionDefinition&>((object)->getReflectionDefinition()).getInterface( \
-			REFL_HASH_CONST(#T), (object)->getBasePointer() \
-		) \
-	)
+enum ReflectionValueType
+{
+	VT_BOOL = 0,
+	VT_INT8,
+	VT_INT16,
+	VT_INT32,
+	VT_INT64,
+	VT_UINT8,
+	VT_UINT16,
+	VT_UINT32,
+	VT_UINT64,
+	VT_ENUM,
+	VT_FLOAT,
+	VT_DOUBLE,
+	VT_STRING,
+	VT_OBJECT,
+	VT_SIZE
+};
 
-#define REFLECTION_CAST(T, object) *REFLECTION_CAST_PTR(T, &object)
+template <class T>
+inline ReflectionValueType GetRVT(void)
+{
+	if (std::is_enum<T>()) {
+		return VT_ENUM;
+	}
+	else if (std::is_class<T>()) {
+		return VT_OBJECT;
+	}
+
+	return VT_SIZE;
+}
+
+RVT_FUNC(bool, VT_BOOL)
+RVT_FUNC(int8_t, VT_INT8)
+RVT_FUNC(int16_t, VT_INT16)
+RVT_FUNC(int32_t, VT_INT32)
+RVT_FUNC(int64_t, VT_INT64)
+RVT_FUNC(uint8_t, VT_UINT8)
+RVT_FUNC(uint16_t, VT_UINT16)
+RVT_FUNC(uint32_t, VT_UINT32)
+RVT_FUNC(uint64_t, VT_UINT64)
+RVT_FUNC(float, VT_FLOAT)
+RVT_FUNC(double, VT_DOUBLE)
 
 NS_END

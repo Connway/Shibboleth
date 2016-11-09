@@ -30,6 +30,16 @@ class ISerializeReader;
 class ISerializeWriter;
 class ISerializeInfo;
 
+class IReflectionVar
+{
+public:
+	virtual ~IReflectionVar(void) {}
+
+	virtual const void* getData(const void* object) const = 0;
+	virtual void setData(void* object, const void* data) = 0;
+	virtual void setDataMove(void* object, void* data) = 0;
+};
+
 class IReflectionDefinition
 {
 public:
@@ -54,6 +64,11 @@ public:
 
 	virtual const void* getInterface(ReflectionHash class_id, const void* object) const = 0;
 	virtual void* getInterface(ReflectionHash class_id, void* object) const = 0;
+
+	virtual int32_t getNumVariables(void) const = 0;
+	virtual Hash32 getVariableHash(int32_t index) const = 0;
+	virtual IReflectionVar* getVariable(int32_t index) const = 0;
+	virtual IReflectionVar* getVariable(Hash32 name) const = 0;
 };
 
 NS_END
