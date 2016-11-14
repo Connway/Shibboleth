@@ -201,9 +201,9 @@ void ReflectionDefinition<T, Allocator>::setAllocator(const Allocator& allocator
 }
 
 template <class T, class Allocator>
-void ReflectionDefinition<T, Allocator>::setReflectionInstance(const ISerializeInfo* reflection_instance)
+void ReflectionDefinition<T, Allocator>::setReflectionInstance(const ISerializeInfo& reflection_instance)
 {
-	_reflection_instance = reflection_instance;
+	_reflection_instance = &reflection_instance;
 }
 
 template <class T, class Allocator>

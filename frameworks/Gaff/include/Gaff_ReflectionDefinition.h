@@ -99,7 +99,7 @@ public:
 
 	void setAllocator(const Allocator& allocator);
 
-	void setReflectionInstance(const ISerializeInfo* reflection_instance);
+	void setReflectionInstance(const ISerializeInfo& reflection_instance);
 	const ISerializeInfo& getReflectionInstance(void) const override;
 
 	Hash64 getVersionHash(void) const;
