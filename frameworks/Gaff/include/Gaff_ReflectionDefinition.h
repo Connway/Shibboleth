@@ -124,6 +124,12 @@ public:
 	template <class Ret, class Var, size_t size>
 	ReflectionDefinition& var(const char(&name)[size], Ret (T::*getter)(void) const, void (T::*setter)(Var));
 
+	//template <class Var, class Vec_Allocator, size_t size>
+	//ReflectionDefinition& var(const char(&name)[size], Vector<Var, Vec_Allocator> T::*vec);
+
+	//template <class Var, size_t array_size, size_t name_size>
+	//ReflectionDefinition& var(const char(&name)[name_size], Var (T::*arr)[array_size]);
+
 	void finish(void);
 
 private:

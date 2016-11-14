@@ -67,7 +67,8 @@ THE SOFTWARE.
 
 #define GAFF_REF(x) ((void)x)
 
-#define SIZE_T_FAIL static_cast<size_t>(-1) // Returned from functions that use size_t's, but can potentially fail
+#define UFAIL(type) static_cast<type>(-1)
+#define SIZE_T_FAIL UFAIL(size_t) // Returned from functions that use size_t's, but can potentially fail
 #define UINT_FAIL static_cast<unsigned int>(-1)  // Returned from functions that use unsigned int's, but can potentially fail
 #define DYNAMICEXPORT_C extern "C" DYNAMICEXPORT // Exports a function with C-style symbol names.
 
@@ -83,7 +84,63 @@ THE SOFTWARE.
 	#define GAFF_ASSERT_ENABLED
 #endif
 
+#define GAFF_EXPAND(x) x
+#define GAFF_FOR_EACH_NARG(...) GAFF_FOR_EACH_NARG_(__VA_ARGS__, GAFF_FOR_EACH_RSEQ_N())
+#define GAFF_FOR_EACH_NARG_(...) GAFF_EXPAND(GAFF_FOR_EACH_ARG_N(__VA_ARGS__))
+#define GAFF_FOR_EACH_ARG_N(_1, _2, _3, _4, _5, _6, _7, _8, N, ...) N
+#define GAFF_FOR_EACH_RSEQ_N() 8, 7, 6, 5, 4, 3, 2, 1, 0
 
+#define GAFF_FOR_EACH_1(what, x, ...) what(x)
+#define GAFF_FOR_EACH_2(what, x, ...) \
+  what(x); \
+  GAFF_EXPAND(GAFF_FOR_EACH_1(what,  __VA_ARGS__))
+#define GAFF_FOR_EACH_3(what, x, ...) \
+  what(x); \
+  GAFF_EXPAND(GAFF_FOR_EACH_2(what, __VA_ARGS__))
+#define GAFF_FOR_EACH_4(what, x, ...) \
+  what(x); \
+  GAFF_EXPAND(GAFF_FOR_EACH_3(what,  __VA_ARGS__))
+#define GAFF_FOR_EACH_5(what, x, ...) \
+  what(x); \
+  GAFF_EXPAND(GAFF_FOR_EACH_4(what,  __VA_ARGS__))
+#define GAFF_FOR_EACH_6(what, x, ...) \
+  what(x); \
+  GAFF_EXPAND(GAFF_FOR_EACH_5(what,  __VA_ARGS__))
+#define GAFF_FOR_EACH_7(what, x, ...) \
+  what(x); \
+  GAFF_EXPAND(GAFF_FOR_EACH_6(what,  __VA_ARGS__))
+#define GAFF_FOR_EACH_8(what, x, ...) \
+  what(x); \
+  GAFF_EXPAND(GAFF_FOR_EACH_7(what,  __VA_ARGS__))
+#define GAFF_FOR_EACH_(N, what, ...) GAFF_EXPAND(GAFF_CAT_HELPER(GAFF_FOR_EACH_, N)(what, __VA_ARGS__))
+#define GAFF_FOR_EACH(what, ...) GAFF_FOR_EACH_(GAFF_FOR_EACH_NARG(__VA_ARGS__), what, __VA_ARGS__)
+
+#define GAFF_FOR_EACH_COMMA_1(what, x, ...) what(x)
+#define GAFF_FOR_EACH_COMMA_2(what, x, ...) \
+  what(x), \
+  GAFF_EXPAND(GAFF_FOR_EACH_COMMA_1(what,  __VA_ARGS__))
+#define GAFF_FOR_EACH_COMMA_3(what, x, ...) \
+  what(x), \
+  GAFF_EXPAND(GAFF_FOR_EACH_COMMA_2(what, __VA_ARGS__))
+#define GAFF_FOR_EACH_COMMA_4(what, x, ...) \
+  what(x), \
+  GAFF_EXPAND(GAFF_FOR_EACH_COMMA_3(what,  __VA_ARGS__))
+#define GAFF_FOR_EACH_COMMA_5(what, x, ...) \
+  what(x), \
+  GAFF_EXPAND(GAFF_FOR_EACH_COMMA_4(what,  __VA_ARGS__))
+#define GAFF_FOR_EACH_COMMA_6(what, x, ...) \
+  what(x), \
+  GAFF_EXPAND(GAFF_FOR_EACH_COMMA_5(what,  __VA_ARGS__))
+#define GAFF_FOR_EACH_COMMA_7(what, x, ...) \
+  what(x), \
+  GAFF_EXPAND(GAFF_FOR_EACH_COMMA_6(what,  __VA_ARGS__))
+#define GAFF_FOR_EACH_COMMA_8(what, x, ...) \
+  what(x), \
+  GAFF_EXPAND(GAFF_FOR_EACH_COMMA_7(what,  __VA_ARGS__))
+#define GAFF_FOR_EACH_COMMA_(N, what, ...) GAFF_EXPAND(GAFF_CAT_HELPER(GAFF_FOR_EACH_COMMA_, N)(what, __VA_ARGS__))
+#define GAFF_FOR_EACH_COMMA(what, ...) GAFF_FOR_EACH_COMMA_(GAFF_FOR_EACH_NARG(__VA_ARGS__), what, __VA_ARGS__)
+
+#define GAFF_SINGLE_ARG(...) __VA_ARGS__
 
 #ifdef PLATFORM_WINDOWS
 	// Disable nameless struct/union warning

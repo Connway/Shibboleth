@@ -23,6 +23,7 @@ THE SOFTWARE.
 #pragma once
 
 #include "Gaff_Reflection.h"
+#include "Gaff_Assert.h"
 
 NS_GAFF
 
@@ -38,6 +39,24 @@ public:
 	virtual const void* getData(const void* object) const = 0;
 	virtual void setData(void* object, const void* data) = 0;
 	virtual void setDataMove(void* object, void* data) = 0;
+
+	virtual bool isArray(void) const { return false; }
+	virtual int32_t size(void) const { return 0; }
+
+	virtual void setElement(int32_t, const void*)
+	{
+		GAFF_ASSERT_MSG(false, "Reflection variable is not an array!");
+	}
+
+	virtual void setElementMove(int32_t, void*)
+	{
+		GAFF_ASSERT_MSG(false, "Reflection variable is not an array!");
+	}
+
+	virtual void swap(int32_t, int32_t)
+	{
+		GAFF_ASSERT_MSG(false, "Reflection variable is not an array!");
+	}
 };
 
 class IReflectionDefinition
