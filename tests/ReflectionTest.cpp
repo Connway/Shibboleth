@@ -26,15 +26,13 @@ THE SOFTWARE.
 #include <Shibboleth_Reflection.h>
 #include <Shibboleth_App.h>
 
-NS_SHIBBOLETH
-
-App g_app;
+Shibboleth::App g_app;
 
 class Base /*: public Gaff::IReflectionObject*/
 {
 public:
 	int a = 1;
-	SHIB_REFLECTION_CLASS_DECLARE(Base)
+	SHIB_REFLECTION_CLASS_DECLARE(Base);
 };
 
 class Base2
@@ -50,13 +48,17 @@ public:
 	void setC(int v) { c = v; }
 
 	int c = 3;
-	SHIB_REFLECTION_CLASS_DECLARE(Derived)
+	SHIB_REFLECTION_CLASS_DECLARE(Derived);
 };
 
+SHIB_REFLECTION_SERIALIZE_DECLARE(Base);
+SHIB_REFLECTION_SERIALIZE_DEFINE(Base);
 SHIB_REFLECTION_CLASS_DEFINE_BEGIN(Base)
 	.var("a", &Base::a)
 SHIB_REFLECTION_CLASS_DEFINE_END(Base)
 
+SHIB_REFLECTION_SERIALIZE_DECLARE(Derived);
+SHIB_REFLECTION_SERIALIZE_DEFINE(Derived);
 SHIB_REFLECTION_CLASS_DEFINE_BEGIN(Derived)
 	.baseClass<Base>()
 	.BASE_CLASS(Base2)
@@ -67,10 +69,23 @@ SHIB_REFLECTION_CLASS_DEFINE_BEGIN(Derived)
 SHIB_REFLECTION_CLASS_DEFINE_END(Derived)
 
 
+// Namespace Test
+namespace Foo
+{
+	class NamespaceClass
+	{
+		SHIB_REFLECTION_CLASS_DECLARE(NamespaceClass);
+	};
+}
 
-NS_END
+SHIB_REFLECTION_SERIALIZE_DECLARE(Foo::NamespaceClass);
+SHIB_REFLECTION_SERIALIZE_DEFINE(Foo::NamespaceClass);
 
-class Foo;
+namespace Foo
+{
+	SHIB_REFLECTION_CLASS_DEFINE_BEGIN(NamespaceClass)
+	SHIB_REFLECTION_CLASS_DEFINE_END(NamespaceClass)
+}
 
 TEST_CASE("reflection basic test", "[shibboleth_reflection_basic]")
 {
@@ -99,35 +114,37 @@ TEST_CASE("reflection basic test", "[shibboleth_reflection_basic]")
 
 TEST_CASE("reflection class test", "[shibboleth_reflection_class]")
 {
-	Shibboleth::Reflection<Shibboleth::Derived>::SetAllocator(Shibboleth::ProxyAllocator("Reflection"));
-	Shibboleth::Reflection<Shibboleth::Base>::SetAllocator(Shibboleth::ProxyAllocator("Reflection"));
+	Shibboleth::Reflection<Derived>::SetAllocator(Shibboleth::ProxyAllocator("Reflection"));
+	Shibboleth::Reflection<Base>::SetAllocator(Shibboleth::ProxyAllocator("Reflection"));
 
-	Shibboleth::g_app.init(0, nullptr);
-	Shibboleth::SetApp(Shibboleth::g_app);
+	g_app.init(0, nullptr);
+	Shibboleth::SetApp(g_app);
 
-	printf("Reflection Class: %s\n", Shibboleth::Reflection<Shibboleth::Derived>::GetName());
-	printf("Reflection Class: %s\n", Shibboleth::Reflection<Shibboleth::Base>::GetName());
-	REQUIRE(!strcmp(Shibboleth::Reflection<Shibboleth::Derived>::GetName(), "Derived"));
-	REQUIRE(!strcmp(Shibboleth::Reflection<Shibboleth::Base>::GetName(), "Base"));
+	printf("Reflection Class: %s\n", Shibboleth::Reflection<Derived>::GetName());
+	printf("Reflection Class: %s\n", Shibboleth::Reflection<Base>::GetName());
+	printf("Reflection Class: %s\n", Shibboleth::Reflection<Foo::NamespaceClass>::GetName());
+	REQUIRE(!strcmp(Shibboleth::Reflection<Derived>::GetName(), "Derived"));
+	REQUIRE(!strcmp(Shibboleth::Reflection<Base>::GetName(), "Base"));
+	REQUIRE(!strcmp(Shibboleth::Reflection<Foo::NamespaceClass>::GetName(), "NamespaceClass"));
 
-	Shibboleth::Reflection<Shibboleth::Derived>::Init();
-	Shibboleth::Reflection<Shibboleth::Base>::Init();
-	Shibboleth::Derived test;
+	Shibboleth::Reflection<Derived>::Init();
+	Shibboleth::Reflection<Base>::Init();
+	Derived test;
 
-	Shibboleth::Base& base = test;
-	Shibboleth::Base2& base2 = test;
-	Shibboleth::Derived* ref_result = Gaff::ReflectionCast<Shibboleth::Derived>(base);
-	Shibboleth::Base2* ref_result2 = REFLECTION_CAST_PTR_NAME(Shibboleth::Base2, "Base2", &base);
+	Base& base = test;
+	Base2& base2 = test;
+	Derived* ref_result = Gaff::ReflectionCast<Derived>(base);
+	Base2* ref_result2 = REFLECTION_CAST_PTR_NAME(Base2, "Base2", &base);
 
 	REQUIRE(ref_result == &test);
 	REQUIRE(ref_result2 == &base2);
 
-	Gaff::Hash64 hash = Shibboleth::Reflection<Shibboleth::Derived>::GetReflectionDefinition().getVersionHash();
+	Gaff::Hash64 hash = Shibboleth::Reflection<Derived>::GetReflectionDefinition().getVersionHash();
 	printf("Version Hash: %llu\n", hash);
 
-	int test_get_func_ref = Shibboleth::Reflection<Shibboleth::Derived>::GetReflectionDefinition().getVar(Gaff::FNV1aHash32Const("cRef"))->getDataT<int>(*ref_result);
-	int test_get_func = Shibboleth::Reflection<Shibboleth::Derived>::GetReflectionDefinition().getVar(Gaff::FNV1aHash32Const("cFunc"))->getDataT<int>(*ref_result);
-	int test_get = Shibboleth::Reflection<Shibboleth::Derived>::GetReflectionDefinition().getVar(Gaff::FNV1aHash32Const("c"))->getDataT<int>(*ref_result);
+	int test_get_func_ref = Shibboleth::Reflection<Derived>::GetReflectionDefinition().getVar(Gaff::FNV1aHash32Const("cRef"))->getDataT<int>(*ref_result);
+	int test_get_func = Shibboleth::Reflection<Derived>::GetReflectionDefinition().getVar(Gaff::FNV1aHash32Const("cFunc"))->getDataT<int>(*ref_result);
+	int test_get = Shibboleth::Reflection<Derived>::GetReflectionDefinition().getVar(Gaff::FNV1aHash32Const("c"))->getDataT<int>(*ref_result);
 
 	printf(
 		"GetFuncRef: %i\n"
@@ -142,7 +159,7 @@ TEST_CASE("reflection class test", "[shibboleth_reflection_class]")
 	REQUIRE(test_get_func == ref_result->c);
 	REQUIRE(test_get == ref_result->c);
 
-	auto* ref_var = Shibboleth::Reflection<Shibboleth::Derived>::GetReflectionDefinition().getVar(Gaff::FNV1aHash32Const("a"));
+	auto* ref_var = Shibboleth::Reflection<Derived>::GetReflectionDefinition().getVar(Gaff::FNV1aHash32Const("a"));
 	int test_base_get = ref_var->getDataT<int>(*ref_result);
 	printf("GetBase: %i\n", test_base_get);
 
@@ -155,11 +172,8 @@ TEST_CASE("reflection class test", "[shibboleth_reflection_class]")
 	REQUIRE(test_base_get == base.a);
 	REQUIRE(test_base_get == 20);
 
-	Shibboleth::g_app.destroy();
+	g_app.destroy();
 }
-
-NS_SHIBBOLETH
-//namespace Foo {
 
 template <class T>
 class Test1
@@ -170,6 +184,8 @@ class Test1
 	SHIB_TEMPLATE_REFLECTION_CLASS_DECLARE(Test1, T);
 };
 
+SHIB_TEMPLATE_REFLECTION_SERIALIZE_DECLARE(Test1, T);
+SHIB_TEMPLATE_REFLECTION_SERIALIZE_DEFINE(Test1, T);
 SHIB_TEMPLATE_REFLECTION_CLASS_DEFINE_BEGIN(Test1, T)
 	.var("a", &Test1::a)
 	.var("t", &Test1::t)
@@ -186,29 +202,28 @@ class Test2
 	SHIB_TEMPLATE_REFLECTION_CLASS_DECLARE(Test2, T1, T2);
 };
 
+SHIB_TEMPLATE_REFLECTION_SERIALIZE_DECLARE(Test2, T1, T2);
+SHIB_TEMPLATE_REFLECTION_SERIALIZE_DEFINE(Test2, T1, T2);
 SHIB_TEMPLATE_REFLECTION_CLASS_DEFINE_BEGIN(Test2, T1, T2)
 	.var("a", &Test2::a)
 	.var("t1", &Test2::t1)
 	.var("t2", &Test2::t2)
 SHIB_TEMPLATE_REFLECTION_CLASS_DEFINE_END(Test2, T1, T2)
 
-//}
-NS_END
-
 TEST_CASE("reflection template class test", "[shibboleth_reflection_template_class]")
 {
-	Shibboleth::Reflection< Shibboleth::Test1<int32_t> >::Init();
-	Shibboleth::Reflection< Shibboleth::Test1<double> >::Init();
-	Shibboleth::Reflection< Shibboleth::Test2<int32_t, int8_t> >::Init();
-	Shibboleth::Reflection< Shibboleth::Test2<float, double> >::Init();
+	Shibboleth::Reflection< Test1<int32_t> >::Init();
+	Shibboleth::Reflection< Test1<double> >::Init();
+	Shibboleth::Reflection< Test2<int32_t, int8_t> >::Init();
+	Shibboleth::Reflection< Test2<float, double> >::Init();
 
-	printf("\nReflection Class: %s\n", Shibboleth::Reflection< Shibboleth::Test1<int32_t> >::GetName());
-	printf("Reflection Class: %s\n", Shibboleth::Reflection< Shibboleth::Test1<double> >::GetName());
-	printf("Reflection Class: %s\n", Shibboleth::Reflection< Shibboleth::Test2<int32_t, int8_t> >::GetName());
-	printf("Reflection Class: %s\n", Shibboleth::Reflection< Shibboleth::Test2<float, double> >::GetName());
+	printf("\nReflection Class: %s\n", Shibboleth::Reflection< Test1<int32_t> >::GetName());
+	printf("Reflection Class: %s\n", Shibboleth::Reflection< Test1<double> >::GetName());
+	printf("Reflection Class: %s\n", Shibboleth::Reflection< Test2<int32_t, int8_t> >::GetName());
+	printf("Reflection Class: %s\n", Shibboleth::Reflection< Test2<float, double> >::GetName());
 
-	REQUIRE(!strcmp(Shibboleth::Reflection< Shibboleth::Test1<int32_t> >::GetName(), "Test1<int32_t>"));
-	REQUIRE(!strcmp(Shibboleth::Reflection< Shibboleth::Test1<double> >::GetName(), "Test1<double>"));
-	REQUIRE(!strcmp(Shibboleth::Reflection< Shibboleth::Test2<int32_t, int8_t> >::GetName(), "Test2<int32_t, int8_t>"));
-	REQUIRE(!strcmp(Shibboleth::Reflection< Shibboleth::Test2<float, double> >::GetName(), "Test2<float, double>"));
+	REQUIRE(!strcmp(Shibboleth::Reflection< Test1<int32_t> >::GetName(), "Test1<int32_t>"));
+	REQUIRE(!strcmp(Shibboleth::Reflection< Test1<double> >::GetName(), "Test1<double>"));
+	REQUIRE(!strcmp(Shibboleth::Reflection< Test2<int32_t, int8_t> >::GetName(), "Test2<int32_t, int8_t>"));
+	REQUIRE(!strcmp(Shibboleth::Reflection< Test2<float, double> >::GetName(), "Test2<float, double>"));
 }
