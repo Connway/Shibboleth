@@ -66,6 +66,8 @@ SHIB_REFLECTION_CLASS_DEFINE_BEGIN(Derived)
 	.var("cRef", &Derived::getCRef, &Derived::setC)
 SHIB_REFLECTION_CLASS_DEFINE_END(Derived)
 
+
+
 NS_END
 
 class Foo;
@@ -154,4 +156,59 @@ TEST_CASE("reflection class test", "[shibboleth_reflection_class]")
 	REQUIRE(test_base_get == 20);
 
 	Shibboleth::g_app.destroy();
+}
+
+NS_SHIBBOLETH
+//namespace Foo {
+
+template <class T>
+class Test1
+{
+	double a = 20.0;
+	T t;
+
+	SHIB_TEMPLATE_REFLECTION_CLASS_DECLARE(Test1, T);
+};
+
+SHIB_TEMPLATE_REFLECTION_CLASS_DEFINE_BEGIN(Test1, T)
+	.var("a", &Test1::a)
+	.var("t", &Test1::t)
+SHIB_TEMPLATE_REFLECTION_CLASS_DEFINE_END(Test1, T)
+
+
+template <class T1, class T2>
+class Test2
+{
+	float a = 11.0f;
+	T1 t1;
+	T2 t2;
+
+	SHIB_TEMPLATE_REFLECTION_CLASS_DECLARE(Test2, T1, T2);
+};
+
+SHIB_TEMPLATE_REFLECTION_CLASS_DEFINE_BEGIN(Test2, T1, T2)
+	.var("a", &Test2::a)
+	.var("t1", &Test2::t1)
+	.var("t2", &Test2::t2)
+SHIB_TEMPLATE_REFLECTION_CLASS_DEFINE_END(Test2, T1, T2)
+
+//}
+NS_END
+
+TEST_CASE("reflection template class test", "[shibboleth_reflection_template_class]")
+{
+	Shibboleth::Reflection< Shibboleth::Test1<int32_t> >::Init();
+	Shibboleth::Reflection< Shibboleth::Test1<double> >::Init();
+	Shibboleth::Reflection< Shibboleth::Test2<int32_t, int8_t> >::Init();
+	Shibboleth::Reflection< Shibboleth::Test2<float, double> >::Init();
+
+	printf("\nReflection Class: %s\n", Shibboleth::Reflection< Shibboleth::Test1<int32_t> >::GetName());
+	printf("Reflection Class: %s\n", Shibboleth::Reflection< Shibboleth::Test1<double> >::GetName());
+	printf("Reflection Class: %s\n", Shibboleth::Reflection< Shibboleth::Test2<int32_t, int8_t> >::GetName());
+	printf("Reflection Class: %s\n", Shibboleth::Reflection< Shibboleth::Test2<float, double> >::GetName());
+
+	REQUIRE(!strcmp(Shibboleth::Reflection< Shibboleth::Test1<int32_t> >::GetName(), "Test1<int32_t>"));
+	REQUIRE(!strcmp(Shibboleth::Reflection< Shibboleth::Test1<double> >::GetName(), "Test1<double>"));
+	REQUIRE(!strcmp(Shibboleth::Reflection< Shibboleth::Test2<int32_t, int8_t> >::GetName(), "Test2<int32_t, int8_t>"));
+	REQUIRE(!strcmp(Shibboleth::Reflection< Shibboleth::Test2<float, double> >::GetName(), "Test2<float, double>"));
 }
