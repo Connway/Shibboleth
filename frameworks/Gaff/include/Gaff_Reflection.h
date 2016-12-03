@@ -31,7 +31,7 @@ THE SOFTWARE.
 #define GAFF_TEMPLATE_GET_NAME(x) GAFF_REFLECTION_NAMESPACE::Reflection<x>::GetName()
 #define GAFF_TEMPLATE_REFLECTION_CLASS(x) class x
 
-#define GAFF_REFLECTION_SERIALIZE_DECLARE_COMMON(type, allocator) \
+#define GAFF_REFLECTION_DECLARE_COMMON(type, allocator) \
 	class Reflection<type> final : public Gaff::ISerializeInfo \
 	{ \
 	private: \
@@ -50,6 +50,10 @@ THE SOFTWARE.
 		{ \
 			return GetHash(); \
 		} \
+		void init(void) override \
+		{ \
+			Init(); \
+		} \
 		constexpr static Gaff::ReflectionHash GetHash(void) \
 		{ \
 			return type::GetReflectionHash(); \
@@ -63,7 +67,7 @@ THE SOFTWARE.
 			return g_instance; \
 		}
 
-#define GAFF_REFLECTION_SERIALIZE_DECLARE_BASE(type, allocator) \
+#define GAFF_REFLECTION_DECLARE_BASE(type, allocator) \
 		void load(Gaff::ISerializeReader& reader, void* object) const override \
 		{ \
 			GAFF_ASSERT(object); \
@@ -100,11 +104,11 @@ THE SOFTWARE.
 		static Gaff::ReflectionDefinition<type, allocator> g_reflection_definition; \
 	};
 
-#define GAFF_REFLECTION_SERIALIZE_DECLARE(type, allocator) \
+#define GAFF_REFLECTION_DECLARE(type, allocator) \
 namespace GAFF_REFLECTION_NAMESPACE { \
 	template <> \
-	GAFF_REFLECTION_SERIALIZE_DECLARE_COMMON(type, allocator) \
-	GAFF_REFLECTION_SERIALIZE_DECLARE_BASE(type, allocator) \
+	GAFF_REFLECTION_DECLARE_COMMON(type, allocator) \
+	GAFF_REFLECTION_DECLARE_BASE(type, allocator) \
 NS_END
 
 #define GAFF_REFLECTION_CLASS_DECLARE(type, allocator) \
@@ -134,14 +138,14 @@ NS_END
 		template <class ReflectionBuilder> \
 		static void BuildReflection(ReflectionBuilder& builder)
 
-#define GAFF_REFLECTION_SERIALIZE_DEFINE_BASE(type, allocator) \
+#define GAFF_REFLECTION_DEFINE_BASE(type, allocator) \
 	GAFF_REFLECTION_NAMESPACE::Reflection<type> GAFF_REFLECTION_NAMESPACE::Reflection<type>::g_instance; \
 	bool GAFF_REFLECTION_NAMESPACE::Reflection<type>::g_defined = false; \
 	Gaff::Vector<void (*)(void), allocator> GAFF_REFLECTION_NAMESPACE::Reflection<type>::g_on_defined_callbacks
 
-#define GAFF_REFLECTION_SERIALIZE_DEFINE(type, allocator) \
+#define GAFF_REFLECTION_DEFINE(type, allocator) \
 	Gaff::ReflectionDefinition<type, allocator> GAFF_REFLECTION_NAMESPACE::Reflection<type>::g_reflection_definition; \
-	GAFF_REFLECTION_SERIALIZE_DEFINE_BASE(type, allocator)
+	GAFF_REFLECTION_DEFINE_BASE(type, allocator)
 
 #define GAFF_REFLECTION_CLASS_DEFINE_BEGIN(type, allocator) \
 	const Gaff::ReflectionDefinition<type, allocator>& type::GetReflectionDefinition(void) \
@@ -159,11 +163,11 @@ NS_END
 	}
 
 
-#define GAFF_TEMPLATE_REFLECTION_SERIALIZE_DECLARE(type, allocator, ...) \
+#define GAFF_TEMPLATE_REFLECTION_DECLARE(type, allocator, ...) \
 namespace GAFF_REFLECTION_NAMESPACE { \
 	template < GAFF_FOR_EACH_COMMA(GAFF_TEMPLATE_REFLECTION_CLASS, __VA_ARGS__) > \
-	GAFF_REFLECTION_SERIALIZE_DECLARE_COMMON(GAFF_SINGLE_ARG(type<__VA_ARGS__>), allocator, __VA_ARGS__) \
-	GAFF_REFLECTION_SERIALIZE_DECLARE_BASE(GAFF_SINGLE_ARG(type<__VA_ARGS__>), allocator) \
+	GAFF_REFLECTION_DECLARE_COMMON(GAFF_SINGLE_ARG(type<__VA_ARGS__>), allocator, __VA_ARGS__) \
+	GAFF_REFLECTION_DECLARE_BASE(GAFF_SINGLE_ARG(type<__VA_ARGS__>), allocator) \
 NS_END
 
 #define GAFF_TEMPLATE_REFLECTION_CLASS_DECLARE(type, allocator, ...) \
@@ -208,7 +212,7 @@ NS_END
 		template <class ReflectionBuilder> \
 		static void BuildReflection(ReflectionBuilder& builder)
 
-#define GAFF_TEMPLATE_REFLECTION_SERIALIZE_DEFINE_BASE(type, allocator, ...) \
+#define GAFF_TEMPLATE_REFLECTION_DEFINE_BASE(type, allocator, ...) \
 	template < GAFF_FOR_EACH_COMMA(GAFF_TEMPLATE_REFLECTION_CLASS, __VA_ARGS__) > \
 	GAFF_REFLECTION_NAMESPACE::Reflection< type<__VA_ARGS__> > GAFF_REFLECTION_NAMESPACE::Reflection< type<__VA_ARGS__> >::g_instance; \
 	template < GAFF_FOR_EACH_COMMA(GAFF_TEMPLATE_REFLECTION_CLASS, __VA_ARGS__) > \
@@ -216,10 +220,10 @@ NS_END
 	template < GAFF_FOR_EACH_COMMA(GAFF_TEMPLATE_REFLECTION_CLASS, __VA_ARGS__) > \
 	Gaff::Vector<void (*)(void), allocator> GAFF_REFLECTION_NAMESPACE::Reflection< type<__VA_ARGS__> >::g_on_defined_callbacks
 
-#define GAFF_TEMPLATE_REFLECTION_SERIALIZE_DEFINE(type, allocator, ...) \
+#define GAFF_TEMPLATE_REFLECTION_DEFINE(type, allocator, ...) \
 	template < GAFF_FOR_EACH_COMMA(GAFF_TEMPLATE_REFLECTION_CLASS, __VA_ARGS__) > \
 	Gaff::ReflectionDefinition<type, allocator> GAFF_REFLECTION_NAMESPACE::Reflection< type<__VA_ARGS__> >::g_reflection_definition; \
-	GAFF_TEMPLATE_REFLECTION_SERIALIZE_DEFINE_BASE(type, allocator, __VA_ARGS__)
+	GAFF_TEMPLATE_REFLECTION_DEFINE_BASE(type, allocator, __VA_ARGS__)
 
 #define GAFF_TEMPLATE_REFLECTION_CLASS_DEFINE_BEGIN(type, allocator, ...) \
 	template < GAFF_FOR_EACH_COMMA(GAFF_TEMPLATE_REFLECTION_CLASS, __VA_ARGS__) > \
@@ -268,6 +272,9 @@ NS_END
 		{ \
 			GAFF_ASSERT(object); \
 			Save(writer, *reinterpret_cast<const type*>(object)); \
+		} \
+		void init(void) override \
+		{ \
 		} \
 		const char* getName(void) const override \
 		{ \
@@ -453,17 +460,15 @@ enum ReflectionValueType
 };
 
 template <class T>
-inline ReflectionValueType GetRVT(void)
+constexpr ReflectionValueType GetRVT(void)
 {
-	if (std::is_enum<T>()) {
-		return VT_ENUM;
-	}
-	else if (std::is_class<T>()) {
-		return VT_OBJECT;
-	}
-
-	return VT_SIZE;
+	return (std::is_enum<T>()) ?
+		VT_ENUM :
+			(std::is_class<T>()) ?
+			VT_OBJECT :
+			VT_SIZE;
 }
+
 
 RVT_FUNC(bool, VT_BOOL)
 RVT_FUNC(int8_t, VT_INT8)

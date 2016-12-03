@@ -36,26 +36,82 @@ class IReflectionVar
 public:
 	virtual ~IReflectionVar(void) {}
 
+	template <class DataType>
+	void setDataT(void* object, const DataType& data)
+	{
+		GAFF_ASSERT(getType() == GetRVT< std::remove_reference<DataType>::type >());
+		setData(object, &data);
+	}
+
+	template <class DataType>
+	void setDataMoveT(void* object, DataType&& data)
+	{
+		GAFF_ASSERT(getType() == GetRVT< std::remove_reference<DataType>::type >());
+		setDataMove(object, &data);
+	}
+
+	template <class DataType>
+	const DataType& getElementT(const void* object, int32_t index) const
+	{
+		GAFF_ASSERT((isFixedArray() || isVector()) && size(object) > index);
+		GAFF_ASSERT(getType() == GetRVT< std::remove_reference<DataType>::type >());
+		return *reinterpret_cast<const DataType*>(getElement(object, index));
+	}
+
+	template <class DataType>
+	void setElementT(void* object, int32_t index, const DataType& data)
+	{
+		GAFF_ASSERT((isFixedArray() || isVector()) && size(object) > index);
+		GAFF_ASSERT(getType() == GetRVT< std::remove_reference<DataType>::type >());
+		setElement(object, index, &data);
+	}
+
+	template <class DataType>
+	void setElementMoveT(void* object, int32_t index, DataType&& data)
+	{
+		GAFF_ASSERT((isFixedArray() || isVector()) && size(object) > index);
+		GAFF_ASSERT(getType() == GetRVT< std::remove_reference<DataType>::type >());
+		setElementMove(object, index, &data);
+	}
+
+	virtual ReflectionValueType getType(void) const = 0;
 	virtual const void* getData(const void* object) const = 0;
 	virtual void setData(void* object, const void* data) = 0;
 	virtual void setDataMove(void* object, void* data) = 0;
 
-	virtual bool isArray(void) const { return false; }
-	virtual int32_t size(void) const { return 0; }
+	virtual bool isFixedArray(void) const { return false; }
+	virtual bool isVector(void) const { return false; }
 
-	virtual void setElement(int32_t, const void*)
+	virtual int32_t size(const void*) const
 	{
-		GAFF_ASSERT_MSG(false, "Reflection variable is not an array!");
+		GAFF_ASSERT_MSG(false, "Reflection variable is not an array or vector!");
+		return 0;
 	}
 
-	virtual void setElementMove(int32_t, void*)
+	virtual const void* getElement(const void*, int32_t) const
 	{
-		GAFF_ASSERT_MSG(false, "Reflection variable is not an array!");
+		GAFF_ASSERT_MSG(false, "Reflection variable is not an array or vector!");
+		return nullptr;
 	}
 
-	virtual void swap(int32_t, int32_t)
+	virtual void setElement(void*, int32_t, const void*)
 	{
-		GAFF_ASSERT_MSG(false, "Reflection variable is not an array!");
+		GAFF_ASSERT_MSG(false, "Reflection variable is not an array or vector!");
+	}
+
+	virtual void setElementMove(void*, int32_t, void*)
+	{
+		GAFF_ASSERT_MSG(false, "Reflection variable is not an array or vector!");
+	}
+
+	virtual void swap(void*, int32_t, int32_t)
+	{
+		GAFF_ASSERT_MSG(false, "Reflection variable is not an array or vector!");
+	}
+
+	virtual void resize(void*, size_t)
+	{
+		GAFF_ASSERT_MSG(false, "Reflection variable is not a vector!");
 	}
 };
 

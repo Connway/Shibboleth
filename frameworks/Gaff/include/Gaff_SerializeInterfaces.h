@@ -75,6 +75,8 @@ class ISerializeInfo
 public:
 	virtual ~ISerializeInfo(void) {}
 
+	virtual void init(void) = 0;
+
 	virtual void load(ISerializeReader& reader, void* object) const = 0;
 	virtual void save(ISerializeWriter& writer, const void* object) const = 0;
 	virtual const char* getName(void) const = 0;
