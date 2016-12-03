@@ -29,7 +29,15 @@ THE SOFTWARE.
 #include "Gaff_Assert.h"
 #include "Gaff_Utils.h"
 
+#ifdef PLATFORM_WINDOWS
+	#pragma warning(push)
+	#pragma warning(disable : 4505)
+#endif
+
 NS_GAFF
+
+template <class Allocator>
+using ReflectionHashString = HashString<char, ReflectionHash, Allocator>;
 
 template <class T, class Allocator>
 class ReflectionDefinition final : public IReflectionDefinition
@@ -41,48 +49,49 @@ public:
 		template <class DataType>
 		const DataType& getDataT(const T& object) const
 		{
-			GAFF_ASSERT(getType() == GetRVT<DataType>());
-			return *reinterpret_cast<const DataType*>(getData(object));
+			GAFF_ASSERT(getType() == GetRVT< std::remove_reference<DataType>::type >());
+			return *reinterpret_cast<const DataType*>(getData(&object));
 		}
 
 		template <class DataType>
 		void setDataT(T& object, const DataType& data)
 		{
-			GAFF_ASSERT(getType() == GetRVT<DataType>());
-			setData(object, &data);
+			GAFF_ASSERT(getType() == GetRVT< std::remove_reference<DataType>::type >());
+			setData(&object, &data);
 		}
 
 		template <class DataType>
-		void setDataT(T& object, DataType&& data)
+		void setDataMoveT(T& object, DataType&& data)
 		{
-			GAFF_ASSERT(getType() == GetRVT<DataType>());
-			setDataMove(object, &data);
+			GAFF_ASSERT(getType() == GetRVT< std::remove_reference<DataType>::type >());
+			setDataMove(&object, &data);
+		}
+
+		template <class DataType>
+		const DataType& getElementT(const T& object, int32_t index) const
+		{
+			GAFF_ASSERT((isFixedArray() || isVector()) && size(&object) > index);
+			GAFF_ASSERT(getType() == GetRVT< std::remove_reference<DataType>::type >());
+			return *reinterpret_cast<const DataType*>(getElement(&object, index));
+		}
+
+		template <class DataType>
+		void setElementT(T& object, int32_t index, const DataType& data)
+		{
+			GAFF_ASSERT((isFixedArray() || isVector()) && size(&object) > index);
+			GAFF_ASSERT(getType() == GetRVT< std::remove_reference<DataType>::type >());
+			setElement(&object, index, &data);
+		}
+
+		template <class DataType>
+		void setElementMoveT(T& object, int32_t index, DataType&& data)
+		{
+			GAFF_ASSERT((isFixedArray() || isVector()) && size(&object) > index);
+			GAFF_ASSERT(getType() == GetRVT< std::remove_reference<DataType>::type >());
+			setElementMove(&object, index, &data);
 		}
 
 		virtual ~IVar(void) {}
-
-		virtual ReflectionValueType getType(void) const = 0;
-		virtual const void* getData(const T& object) const = 0;
-		virtual void setData(T& object, const void* data) = 0; // asignment copy
-		virtual void setDataMove(T& object, void* data) = 0; // assignment move if possible
-
-		const void* getData(const void* object) const override
-		{
-			GAFF_ASSERT(object);
-			return getData(*reinterpret_cast<const T*>(object));
-		}
-
-		void setData(void* object, const void* data) override
-		{
-			GAFF_ASSERT(object);
-			setData(*reinterpret_cast<T*>(object), data);
-		}
-
-		void setDataMove(void* object, void* data) override
-		{
-			GAFF_ASSERT(object);
-			setData(*reinterpret_cast<T*>(object), data);
-		}
 	};
 
 	GAFF_STRUCTORS_DEFAULT(ReflectionDefinition);
@@ -105,13 +114,13 @@ public:
 	Hash64 getVersionHash(void) const;
 
 	int32_t getNumVariables(void) const override;
-	Hash32 getVariableHash(int32_t index) const override;
+	ReflectionHash getVariableHash(int32_t index) const override;
 	IReflectionVar* getVariable(int32_t index) const override;
-	IReflectionVar* getVariable(Hash32 name) const override;
+	IReflectionVar* getVariable(ReflectionHash name) const override;
 
-	const HashString32<Allocator>& getVariableName(int32_t index) const;
+	const ReflectionHashString<Allocator>& getVariableName(int32_t index) const;
 	IVar* getVar(int32_t index) const;
-	IVar* getVar(Hash32 name) const;
+	IVar* getVar(ReflectionHash name) const;
 
 	ReflectionDefinition& baseClass(const char* name, ReflectionHash hash, ptrdiff_t offset);
 
@@ -119,16 +128,19 @@ public:
 	ReflectionDefinition& baseClass(void);
 
 	template <class Var, size_t size>
-	ReflectionDefinition& var(const char(&name)[size], Var T::*ptr);
+	ReflectionDefinition& var(const char (&name)[size], Var T::*ptr);
 
 	template <class Ret, class Var, size_t size>
-	ReflectionDefinition& var(const char(&name)[size], Ret (T::*getter)(void) const, void (T::*setter)(Var));
+	ReflectionDefinition& var(const char (&name)[size], Ret (T::*getter)(void) const, void (T::*setter)(Var));
 
-	//template <class Var, class Vec_Allocator, size_t size>
-	//ReflectionDefinition& var(const char(&name)[size], Vector<Var, Vec_Allocator> T::*vec);
+	template <class Var, class Vec_Allocator, size_t size>
+	ReflectionDefinition& var(const char (&name)[size], Vector<Var, Vec_Allocator> T::*vec);
 
-	//template <class Var, size_t array_size, size_t name_size>
-	//ReflectionDefinition& var(const char(&name)[name_size], Var (T::*arr)[array_size]);
+	template <class Var, size_t array_size, size_t name_size>
+	ReflectionDefinition& var(const char (&name)[name_size], Var (T::*arr)[array_size]);
+
+	template <class Ret, size_t size, class... Args>
+	ReflectionDefinition& func(const char (&name)[size], Ret (T::*ptr)(Args...));
 
 	void finish(void);
 
@@ -140,12 +152,12 @@ private:
 		VarPtr(Var T::*ptr);
 
 		ReflectionValueType getType(void) const override;
-		const void* getData(const T& object) const override;
-		void setData(T& object, const void* data) override;
-		void setDataMove(T& object, void* data) override;
+		const void* getData(const void* object) const override;
+		void setData(void* object, const void* data) override;
+		void setDataMove(void* object, void* data) override;
 
 	private:
-		Var T::*_ptr;
+		Var T::*_ptr = nullptr;
 	};
 
 	template <class Ret, class Var>
@@ -158,13 +170,13 @@ private:
 		VarFuncPtr(Getter getter, Setter setter);
 
 		ReflectionValueType getType(void) const override;
-		const void* getData(const T& object) const override;
-		void setData(T& object, const void* data) override;
-		void setDataMove(T& object, void* data) override;
+		const void* getData(const void* object) const override;
+		void setData(void* object, const void* data) override;
+		void setDataMove(void* object, void* data) override;
 
 	private:
-		Getter _getter;
-		Setter _setter;
+		Getter _getter = nullptr;
+		Setter _setter = nullptr;
 
 		mutable const typename std::remove_reference<Ret>::type* _copy_ptr = nullptr;
 		mutable typename std::remove_const< typename std::remove_reference<Ret>::type >::type _copy;
@@ -177,18 +189,78 @@ private:
 		BaseVarPtr(typename ReflectionDefinition<Base, Allocator>::IVar* base_var);
 
 		ReflectionValueType getType(void) const override;
-		const void* getData(const T& object) const override;
-		void setData(T& object, const void* data) override;
-		void setDataMove(T& object, void* data) override;
+		const void* getData(const void* object) const override;
+		void setData(void* object, const void* data) override;
+		void setDataMove(void* object, void* data) override;
+
+		bool isFixedArray(void) const override;
+		bool isVector(void) const override;
+		int32_t size(const void*) const override;
+
+		const void* getElement(const void* object, int32_t index) const override;
+		void setElement(void* object, int32_t index, const void* data) override;
+		void setElementMove(void* object, int32_t index, void* data) override;
+		void swap(void* object, int32_t index_a, int32_t index_b) override;
+		void resize(void* object, size_t new_size) override;
 
 	private:
 		typename ReflectionDefinition<Base, Allocator>::IVar* _base_var;
 	};
 
+	template <class Var, size_t array_size>
+	class ArrayPtr final : public IVar
+	{
+	public:
+		ArrayPtr(Var (T::*ptr)[array_size]);
+
+		ReflectionValueType getType(void) const override;
+		const void* getData(const void* object) const override;
+		void setData(void* object, const void* data) override;
+		void setDataMove(void* object, void* data) override;
+
+		bool isFixedArray(void) const override { return true; }
+		bool isVector(void) const override { return false; }
+		int32_t size(const void*) const override { return static_cast<int32_t>(array_size); }
+
+		const void* getElement(const void* object, int32_t index) const override;
+		void setElement(void* object, int32_t index, const void* data) override;
+		void setElementMove(void* object, int32_t index, void* data) override;
+		void swap(void* object, int32_t index_a, int32_t index_b) override;
+		void resize(void* object, size_t new_size) override;
+	
+	private:
+		Var (T::*_ptr)[array_size] = nullptr;
+	};
+
+	template <class Var, class Vec_Allocator>
+	class VectorPtr final : public IVar
+	{
+	public:
+		VectorPtr(Vector<Var, Vec_Allocator> T::*ptr);
+
+		ReflectionValueType getType(void) const override;
+		const void* getData(const void* object) const override;
+		void setData(void* object, const void* data) override;
+		void setDataMove(void* object, void* data) override;
+
+		bool isFixedArray(void) const override { return false; }
+		bool isVector(void) const override { return true; }
+		int32_t size(const void* object) const override;
+
+		const void* getElement(const void* object, int32_t index) const override;
+		void setElement(void* object, int32_t index, const void* data) override;
+		void setElementMove(void* object, int32_t index, void* data) override;
+		void swap(void* object, int32_t index_a, int32_t index_b) override;
+		void resize(void* object, size_t new_size) override;
+
+	private:
+		Vector<Var, Vec_Allocator> T::*_ptr = nullptr;
+	};
+
 	using IVarPtr = UniquePtr<IVar, Allocator>;
 
-	VectorMap<HashString32<Allocator>, ptrdiff_t, Allocator> _base_class_offsets;
-	VectorMap<HashString32<Allocator>, IVarPtr, Allocator> _vars;
+	VectorMap<ReflectionHashString<Allocator>, ptrdiff_t, Allocator> _base_class_offsets;
+	VectorMap<ReflectionHashString<Allocator>, IVarPtr, Allocator> _vars;
 
 	const ISerializeInfo* _reflection_instance = nullptr;
 	Allocator _allocator;
@@ -209,3 +281,7 @@ NS_END
 #include "Gaff_ReflectionDefinition.inl"
 
 #define BASE_CLASS(type) baseClass(#type, REFL_HASH_CONST(#type), Gaff::OffsetOfClass<ThisType, type>())
+
+#ifdef PLATFORM_WINDOWS
+	#pragma warning(pop)
+#endif

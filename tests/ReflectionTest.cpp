@@ -51,14 +51,14 @@ public:
 	SHIB_REFLECTION_CLASS_DECLARE(Derived);
 };
 
-SHIB_REFLECTION_SERIALIZE_DECLARE(Base);
-SHIB_REFLECTION_SERIALIZE_DEFINE(Base);
+SHIB_REFLECTION_DECLARE(Base);
+SHIB_REFLECTION_DEFINE(Base);
 SHIB_REFLECTION_CLASS_DEFINE_BEGIN(Base)
 	.var("a", &Base::a)
 SHIB_REFLECTION_CLASS_DEFINE_END(Base)
 
-SHIB_REFLECTION_SERIALIZE_DECLARE(Derived);
-SHIB_REFLECTION_SERIALIZE_DEFINE(Derived);
+SHIB_REFLECTION_DECLARE(Derived);
+SHIB_REFLECTION_DEFINE(Derived);
 SHIB_REFLECTION_CLASS_DEFINE_BEGIN(Derived)
 	.baseClass<Base>()
 	.BASE_CLASS(Base2)
@@ -78,8 +78,8 @@ namespace Foo
 	};
 }
 
-SHIB_REFLECTION_SERIALIZE_DECLARE(Foo::NamespaceClass);
-SHIB_REFLECTION_SERIALIZE_DEFINE(Foo::NamespaceClass);
+SHIB_REFLECTION_DECLARE(Foo::NamespaceClass);
+SHIB_REFLECTION_DEFINE(Foo::NamespaceClass);
 
 namespace Foo
 {
@@ -184,8 +184,8 @@ class Test1
 	SHIB_TEMPLATE_REFLECTION_CLASS_DECLARE(Test1, T);
 };
 
-SHIB_TEMPLATE_REFLECTION_SERIALIZE_DECLARE(Test1, T);
-SHIB_TEMPLATE_REFLECTION_SERIALIZE_DEFINE(Test1, T);
+SHIB_TEMPLATE_REFLECTION_DECLARE(Test1, T);
+SHIB_TEMPLATE_REFLECTION_DEFINE(Test1, T);
 SHIB_TEMPLATE_REFLECTION_CLASS_DEFINE_BEGIN(Test1, T)
 	.var("a", &Test1::a)
 	.var("t", &Test1::t)
@@ -202,8 +202,8 @@ class Test2
 	SHIB_TEMPLATE_REFLECTION_CLASS_DECLARE(Test2, T1, T2);
 };
 
-SHIB_TEMPLATE_REFLECTION_SERIALIZE_DECLARE(Test2, T1, T2);
-SHIB_TEMPLATE_REFLECTION_SERIALIZE_DEFINE(Test2, T1, T2);
+SHIB_TEMPLATE_REFLECTION_DECLARE(Test2, T1, T2);
+SHIB_TEMPLATE_REFLECTION_DEFINE(Test2, T1, T2);
 SHIB_TEMPLATE_REFLECTION_CLASS_DEFINE_BEGIN(Test2, T1, T2)
 	.var("a", &Test2::a)
 	.var("t1", &Test2::t1)
@@ -226,4 +226,128 @@ TEST_CASE("reflection template class test", "[shibboleth_reflection_template_cla
 	REQUIRE(!strcmp(Shibboleth::Reflection< Test1<double> >::GetName(), "Test1<double>"));
 	REQUIRE(!strcmp(Shibboleth::Reflection< Test2<int32_t, int8_t> >::GetName(), "Test2<int32_t, int8_t>"));
 	REQUIRE(!strcmp(Shibboleth::Reflection< Test2<float, double> >::GetName(), "Test2<float, double>"));
+}
+
+
+class VecTest : public Gaff::IReflectionObject
+{
+	Shibboleth::Vector<uint32_t> vec;
+	float arr[4] = { 0.0f, 1.0f, 2.0f, 3.0f };
+	Base base[2];
+
+	SHIB_REFLECTION_CLASS_DECLARE(VecTest);
+};
+
+SHIB_REFLECTION_DECLARE(VecTest);
+SHIB_REFLECTION_DEFINE(VecTest);
+
+SHIB_REFLECTION_CLASS_DEFINE_BEGIN(VecTest)
+	.var("vec", &VecTest::vec)
+	.var("arr", &VecTest::arr)
+	.var("base", &VecTest::base)
+SHIB_REFLECTION_CLASS_DEFINE_END(VecTest)
+
+TEST_CASE("reflection array/vector test", "[shibboleth_reflection_vector_array]")
+{
+	Shibboleth::Reflection<VecTest>::Init();
+
+	printf("\nReflection Class: %s\n", Shibboleth::Reflection<VecTest>::GetName());
+
+	VecTest instance;
+	Gaff::IReflectionObject* ptr = &instance;
+
+	const Gaff::ReflectionDefinition<VecTest, Shibboleth::ProxyAllocator>& ref_def = Shibboleth::Reflection<VecTest>::GetReflectionDefinition();
+	Gaff::IReflectionVar* vec_var = ref_def.getVariable(Gaff::FNV1aHash32Const("vec"));
+	Gaff::IReflectionVar* arr_var = ref_def.getVariable(Gaff::FNV1aHash32Const("arr"));
+	Gaff::IReflectionVar* base_var = ref_def.getVariable(Gaff::FNV1aHash32Const("base"));
+	void* base_ptr = ptr->getBasePointer();
+
+	REQUIRE(vec_var->isVector());
+	REQUIRE(!vec_var->isFixedArray());
+	REQUIRE(vec_var->size(base_ptr) == 0);
+
+	REQUIRE(!arr_var->isVector());
+	REQUIRE(arr_var->isFixedArray());
+	REQUIRE(arr_var->size(base_ptr) == 4);
+
+	REQUIRE(!base_var->isVector());
+	REQUIRE(base_var->isFixedArray());
+	REQUIRE(base_var->size(base_ptr) == 2);
+
+	vec_var->resize(base_ptr, 4);
+	REQUIRE(vec_var->size(base_ptr) == 4);
+
+	for (int32_t i = 0; i < 4; ++i) {
+		float val = arr_var->getElementT<float>(base_ptr, i);
+		REQUIRE(val == static_cast<float>(i));
+
+		printf("Fixed Array[%i]: %f\n", i, val);
+
+		vec_var->setElementT(base_ptr, i, static_cast<uint32_t>(4 - i));
+	}
+
+	for (int32_t i = 0; i < 4; ++i) {
+		uint32_t val = vec_var->getElementT<uint32_t>(base_ptr, i);
+		REQUIRE(val == static_cast<uint32_t>(4 - i));
+		printf("Vector[%i]: %u\n", i, val);
+	}
+
+	for (int32_t i = 0; i < 2; ++i) {
+		Base val = base_var->getElementT<Base>(base_ptr, i);
+		REQUIRE(val.a == 1);
+		printf("Base Array[%i]: %i\n", i, val.a);
+	}
+
+	arr_var->swap(base_ptr, 1, 2);
+	vec_var->swap(base_ptr, 0, 3);
+
+	for (int32_t i = 0; i < 4; ++i) {
+		float val = arr_var->getElementT<float>(base_ptr, i);
+		printf("Swapped Fixed Array[%i]: %f\n", i, val);
+	}
+
+	for (int32_t i = 0; i < 4; ++i) {
+		uint32_t val = vec_var->getElementT<uint32_t>(base_ptr, i);
+		printf("Swapped Vector[%i]: %u\n", i, val);
+	}
+
+	REQUIRE(arr_var->getElementT<float>(base_ptr, 0) == 0.0f);
+	REQUIRE(arr_var->getElementT<float>(base_ptr, 1) == 2.0f);
+	REQUIRE(arr_var->getElementT<float>(base_ptr, 2) == 1.0f);
+	REQUIRE(arr_var->getElementT<float>(base_ptr, 3) == 3.0f);
+
+	REQUIRE(vec_var->getElementT<uint32_t>(base_ptr, 0) == 1u);
+	REQUIRE(vec_var->getElementT<uint32_t>(base_ptr, 1) == 3u);
+	REQUIRE(vec_var->getElementT<uint32_t>(base_ptr, 2) == 2u);
+	REQUIRE(vec_var->getElementT<uint32_t>(base_ptr, 3) == 4u);
+
+	REQUIRE(base_var->getElementT<Base>(base_ptr, 0).a == 1);
+	REQUIRE(base_var->getElementT<Base>(base_ptr, 1).a == 1);
+
+	float test_data[] = { 5.0f, 6.0f, 7.0f, 8.0f };
+	arr_var->setDataT(base_ptr, *test_data);
+
+	for (int32_t i = 0; i < 4; ++i) {
+		float val = arr_var->getElementT<float>(base_ptr, i);
+		printf("SetData Fixed Array[%i]: %f\n", i, val);
+		REQUIRE(val == (i + 5.0f));
+	}
+
+	Base base_data[2];
+	base_data[0].a = 2;
+	base_data[1].a = 3;
+	base_var->setDataT(base_ptr, *base_data);
+
+	REQUIRE(base_var->getElementT<Base>(base_ptr, 0).a == 2);
+	REQUIRE(base_var->getElementT<Base>(base_ptr, 1).a == 3);
+	printf("Base Array[0]: %i\n", base_var->getElementT<Base>(base_ptr, 0).a);
+	printf("Base Array[1]: %i\n", base_var->getElementT<Base>(base_ptr, 1).a);
+
+	base_data[0].a = 40;
+	base_var->setElementT(base_ptr, 1, base_data[0]);
+
+	REQUIRE(base_var->getElementT<Base>(base_ptr, 0).a == 2);
+	REQUIRE(base_var->getElementT<Base>(base_ptr, 1).a == 40);
+	printf("SetElement Base Array[0]: %i\n", base_var->getElementT<Base>(base_ptr, 0).a);
+	printf("SetElement Base Array[1]: %i\n", base_var->getElementT<Base>(base_ptr, 1).a);
 }

@@ -43,10 +43,10 @@ public:
 
 	void finish(void);
 
-	Gaff::Hash64 getHash(void) const;
+	Hash64 getHash(void) const;
 
 private:
-	Gaff::Hash64 _hash = INIT_HASH64;
+	Hash64 _hash = INIT_HASH64;
 };
 
 NS_END

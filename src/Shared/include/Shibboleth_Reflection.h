@@ -36,7 +36,7 @@ NS_SHIBBOLETH
 
 GAFF_REFLECTION_DECLARE_DEFAULT_AND_POD();
 
-#define SHIB_REFLECTION_SERIALIZE_DECLARE_BASE(type) \
+#define SHIB_REFLECTION_DECLARE_BASE(type) \
 		void load(Gaff::ISerializeReader& reader, void* object) const override \
 		{ \
 			GAFF_ASSERT(g_reflection_definition); \
@@ -71,68 +71,111 @@ GAFF_REFLECTION_DECLARE_DEFAULT_AND_POD();
 			} \
 			g_on_defined_callbacks.set_allocator(a); \
 		} \
-		static void Init(void) \
-		{ \
-			g_reflection_definition = reinterpret_cast< Gaff::ReflectionDefinition<type, ProxyAllocator>* >( \
-				const_cast< Gaff::IReflectionDefinition* >( \
-					Shibboleth::GetApp().getReflection(REFL_HASH_CONST(#type)) \
-				) \
-			); \
-			if (g_reflection_definition) { \
-				Gaff::ReflectionVersion<type> version; \
-				type::BuildReflection(version); \
-				GAFF_ASSERT_MSG( \
-					version.getHash() == g_reflection_definition->getVersionHash(), \
-					"Version hash for " #type " does not match!" \
-				); \
-			} else { \
-				g_reflection_definition = reinterpret_cast< Gaff::ReflectionDefinition<type, ProxyAllocator>* >( \
-					ShibbolethAllocate( \
-						sizeof(Gaff::ReflectionDefinition<type, ProxyAllocator>), \
-						GetPoolIndex("Reflection") \
-					) \
-				); \
-				Gaff::Construct(g_reflection_definition); \
-				Shibboleth::GetApp().registerReflection(REFL_HASH_CONST(#type),  g_reflection_definition); \
-				g_reflection_definition->setAllocator(ProxyAllocator("Reflection")); \
-				g_reflection_definition->setReflectionInstance(g_instance); \
-				type::BuildReflection(*g_reflection_definition); \
-			} \
-		} \
+		static void Init(void); \
 	private: \
 		static Gaff::ReflectionDefinition<type, ProxyAllocator>* g_reflection_definition; \
 	};
 
-#define SHIB_REFLECTION_SERIALIZE_DECLARE(type) \
+#define SHIB_REFLECTION_DECLARE(type) \
 NS_SHIBBOLETH \
 	template <> \
-	GAFF_REFLECTION_SERIALIZE_DECLARE_COMMON(type, ProxyAllocator) \
-	SHIB_REFLECTION_SERIALIZE_DECLARE_BASE(type) \
+	GAFF_REFLECTION_DECLARE_COMMON(type, ProxyAllocator) \
+	SHIB_REFLECTION_DECLARE_BASE(type) \
 NS_END
 
 #define SHIB_REFLECTION_CLASS_DECLARE(type) GAFF_REFLECTION_CLASS_DECLARE(type, Shibboleth::ProxyAllocator)
 
-#define SHIB_REFLECTION_SERIALIZE_DEFINE(type) \
+#define SHIB_REFLECTION_DEFINE(type) \
+	SHIB_REFLECTION_DEFINE_BEGIN(type) \
+	SHIB_REFLECTION_DEFINE_END(type)
+
+#define SHIB_REFLECTION_DEFINE_BEGIN(type) \
 	Gaff::ReflectionDefinition<type, Shibboleth::ProxyAllocator>* Shibboleth::Reflection<type>::g_reflection_definition = nullptr; \
-	GAFF_REFLECTION_SERIALIZE_DEFINE_BASE(type, Shibboleth::ProxyAllocator)
+	GAFF_REFLECTION_DEFINE_BASE(type, Shibboleth::ProxyAllocator); \
+	void Shibboleth::Reflection<type>::Init() \
+	{ \
+		g_reflection_definition = reinterpret_cast< Gaff::ReflectionDefinition<type, ProxyAllocator>* >( \
+			const_cast< Gaff::IReflectionDefinition* >( \
+				Shibboleth::GetApp().getReflection(REFL_HASH_CONST(#type)) \
+			) \
+		); \
+		if (g_reflection_definition) { \
+			Gaff::ReflectionVersion<type> version; \
+			type::BuildReflection(version); \
+			GAFF_ASSERT_MSG( \
+				version.getHash() == g_reflection_definition->getVersionHash(), \
+				"Version hash for " #type " does not match!" \
+			); \
+		} else { \
+			g_reflection_definition = reinterpret_cast< Gaff::ReflectionDefinition<type, ProxyAllocator>* >( \
+				ShibbolethAllocate( \
+					sizeof(Gaff::ReflectionDefinition<type, ProxyAllocator>), \
+					GetPoolIndex("Reflection") \
+				) \
+			); \
+			Gaff::Construct(g_reflection_definition); \
+			Shibboleth::GetApp().registerReflection(REFL_HASH_CONST(#type),  g_reflection_definition); \
+			g_reflection_definition->setAllocator(ProxyAllocator("Reflection")); \
+			g_reflection_definition->setReflectionInstance(g_instance); \
+			type::BuildReflection(*g_reflection_definition);
+
+#define SHIB_REFLECTION_DEFINE_END(type) \
+		} \
+	}
 
 #define SHIB_REFLECTION_CLASS_DEFINE_BEGIN(type) GAFF_REFLECTION_CLASS_DEFINE_BEGIN(type, Shibboleth::ProxyAllocator)
 #define SHIB_REFLECTION_CLASS_DEFINE_END GAFF_REFLECTION_CLASS_DEFINE_END
 
 
-#define SHIB_TEMPLATE_REFLECTION_SERIALIZE_DECLARE(type, ...) \
+#define SHIB_TEMPLATE_REFLECTION_DECLARE(type, ...) \
 NS_SHIBBOLETH \
 	template < GAFF_FOR_EACH_COMMA(GAFF_TEMPLATE_REFLECTION_CLASS, __VA_ARGS__) > \
-	GAFF_REFLECTION_SERIALIZE_DECLARE_COMMON(GAFF_SINGLE_ARG(type<__VA_ARGS__>), ProxyAllocator) \
-	SHIB_REFLECTION_SERIALIZE_DECLARE_BASE(GAFF_SINGLE_ARG(type<__VA_ARGS__>)) \
+	GAFF_REFLECTION_DECLARE_COMMON(GAFF_SINGLE_ARG(type<__VA_ARGS__>), ProxyAllocator) \
+	SHIB_REFLECTION_DECLARE_BASE(GAFF_SINGLE_ARG(type<__VA_ARGS__>)) \
 NS_END
 
 #define SHIB_TEMPLATE_REFLECTION_CLASS_DECLARE(type, ...) GAFF_TEMPLATE_REFLECTION_CLASS_DECLARE(type, Shibboleth::ProxyAllocator, __VA_ARGS__)
 
-#define SHIB_TEMPLATE_REFLECTION_SERIALIZE_DEFINE(type, ...) \
+#define SHIB_TEMPLATE_REFLECTION_DEFINE(type, ...) \
+	SHIB_TEMPLATE_REFLECTION_DEFINE_BEGIN(type, __VA_ARGS__) \
+	SHIB_TEMPLATE_REFLECTION_DEFINE_END(type, __VA_ARGS__)
+
+#define SHIB_TEMPLATE_REFLECTION_DEFINE_BEGIN(type, ...) \
 	template < GAFF_FOR_EACH_COMMA(GAFF_TEMPLATE_REFLECTION_CLASS, __VA_ARGS__) > \
 	Gaff::ReflectionDefinition<type<__VA_ARGS__>, Shibboleth::ProxyAllocator>* Shibboleth::Reflection< type<__VA_ARGS__> >::g_reflection_definition = nullptr; \
-	GAFF_TEMPLATE_REFLECTION_SERIALIZE_DEFINE_BASE(type, Shibboleth::ProxyAllocator, __VA_ARGS__)
+	GAFF_TEMPLATE_REFLECTION_DEFINE_BASE(type, Shibboleth::ProxyAllocator, __VA_ARGS__); \
+	template < GAFF_FOR_EACH_COMMA(GAFF_TEMPLATE_REFLECTION_CLASS, __VA_ARGS__) > \
+	void Shibboleth::Reflection< type<__VA_ARGS__> >::Init() \
+	{ \
+		g_reflection_definition = reinterpret_cast< Gaff::ReflectionDefinition<type<__VA_ARGS__>, ProxyAllocator>* >( \
+			const_cast< Gaff::IReflectionDefinition* >( \
+				Shibboleth::GetApp().getReflection(GetHash()) \
+			) \
+		); \
+		if (g_reflection_definition) { \
+			Gaff::ReflectionVersion< type<__VA_ARGS__> > version; \
+			type<__VA_ARGS__>::BuildReflection(version); \
+			GAFF_ASSERT_MSG( \
+				version.getHash() == g_reflection_definition->getVersionHash(), \
+				"Version hash for %s does not match!", \
+				GetName() \
+			); \
+		} else { \
+			g_reflection_definition = reinterpret_cast< Gaff::ReflectionDefinition<type<__VA_ARGS__>, ProxyAllocator>* >( \
+				ShibbolethAllocate( \
+					sizeof(Gaff::ReflectionDefinition<type<__VA_ARGS__>, ProxyAllocator>), \
+					GetPoolIndex("Reflection") \
+				) \
+			); \
+			Gaff::Construct(g_reflection_definition); \
+			Shibboleth::GetApp().registerReflection(GetHash(),  g_reflection_definition); \
+			g_reflection_definition->setAllocator(ProxyAllocator("Reflection")); \
+			g_reflection_definition->setReflectionInstance(g_instance); \
+			type<__VA_ARGS__>::BuildReflection(*g_reflection_definition);
+
+#define SHIB_TEMPLATE_REFLECTION_DEFINE_END(type, ...) \
+		} \
+	}
 
 #define SHIB_TEMPLATE_REFLECTION_CLASS_DEFINE_BEGIN(type, ...) GAFF_TEMPLATE_REFLECTION_CLASS_DEFINE_BEGIN(type, Shibboleth::ProxyAllocator, __VA_ARGS__)
 #define SHIB_TEMPLATE_REFLECTION_CLASS_DEFINE_END GAFF_TEMPLATE_REFLECTION_CLASS_DEFINE_END 
