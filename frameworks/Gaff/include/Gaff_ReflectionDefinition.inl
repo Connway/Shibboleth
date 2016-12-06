@@ -595,22 +595,22 @@ typename ReflectionDefinition<T, Allocator>::IVar* ReflectionDefinition<T, Alloc
 }
 
 template <class T, class Allocator>
-ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::baseClass(const char* name, ReflectionHash hash, ptrdiff_t offset)
+ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::base(const char* name, ReflectionHash hash, ptrdiff_t offset)
 {
 	auto pair = std::move(eastl::make_pair(ReflectionHashString<Allocator>(name, hash, nullptr, _allocator), offset));
 
 	GAFF_ASSERT(_base_class_offsets.find(pair.first) == _base_class_offsets.end());
 	_base_class_offsets.insert(std::move(pair));
 
-	_version.baseClass(name, hash, offset);
+	_version.base(name, hash, offset);
 	return *this;
 }
 
 template <class T, class Allocator>
 template <class Base>
-ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::baseClass(void)
+ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::base(void)
 {
-	baseClass(Base::GetReflectionName(), Base::GetReflectionHash(), Gaff::OffsetOfClass<T, Base>());
+	base(Base::GetReflectionName(), Base::GetReflectionHash(), Gaff::OffsetOfClass<T, Base>());
 
 	// Add IVarPtr's from base class.
 	if (GAFF_REFLECTION_NAMESPACE::Reflection<Base>::g_defined) {
@@ -634,6 +634,14 @@ ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::baseClas
 		GAFF_REFLECTION_NAMESPACE::Reflection<Base>::g_on_defined_callbacks.emplace_back(&RegisterBaseVariables<Base>);
 	}
 
+	return *this;
+}
+
+template <class T, class Allocator>
+template <class Constructor>
+ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::ctor(void)
+{
+	_version.ctor<Constructor>();
 	return *this;
 }
 
@@ -713,7 +721,25 @@ ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::var(cons
 }
 
 template <class T, class Allocator>
-template <class Ret, size_t size, class... Args>
+template <size_t size, class Ret, class... Args>
+ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::func(const char (&name)[size], Ret (T::*ptr)(Args...) const)
+{
+	//using PtrType = FuncPtr<Ret, Args...>;
+
+	//eastl::pair<ReflectionHashString<Allocator>, IVarPtr> pair(
+	//	ReflectionHashString<Allocator>(name, name_size, nullptr, _allocator),
+	//	IVarPtr(GAFF_ALLOCT(PtrType, _allocator, arr))
+	//);
+
+	//GAFF_ASSERT(_funcs.find(pair.first) == _funcs.end());
+
+	//_funcs.insert(std::move(pair));
+	_version.func(name, ptr);
+	return *this;
+}
+
+template <class T, class Allocator>
+template <size_t size, class Ret, class... Args>
 ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::func(const char (&name)[size], Ret (T::*ptr)(Args...))
 {
 	//using PtrType = FuncPtr<Ret, Args...>;

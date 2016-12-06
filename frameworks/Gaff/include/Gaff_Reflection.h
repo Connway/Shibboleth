@@ -411,13 +411,8 @@ NS_END
 		) \
 	)
 
-#define REFLECTION_CAST_PTR(T, object) \
-	reinterpret_cast<T*>( \
-		const_cast<Gaff::IReflectionDefinition&>((object)->getReflectionDefinition()).getInterface( \
-			REFL_HASH_CONST(#T), (object)->getBasePointer() \
-		) \
-	)
-
+#define REFLECTION_CAST_NAME(T, name, object) *REFLECTION_CAST_PTR_NAME(T, name, &object)
+#define REFLECTION_CAST_PTR(T, object) REFLECTION_CAST_PTR_NAME(T, #T, object)
 #define REFLECTION_CAST(T, object) *REFLECTION_CAST_PTR(T, &object)
 
 NS_GAFF

@@ -60,8 +60,8 @@ SHIB_REFLECTION_CLASS_DEFINE_END(Base)
 SHIB_REFLECTION_DECLARE(Derived);
 SHIB_REFLECTION_DEFINE(Derived);
 SHIB_REFLECTION_CLASS_DEFINE_BEGIN(Derived)
-	.baseClass<Base>()
-	.BASE_CLASS(Base2)
+	.base<Base>()
+	.BASE(Base2)
 
 	.var("c", &Derived::c)
 	.var("cFunc", &Derived::getC, &Derived::setC)
@@ -134,7 +134,7 @@ TEST_CASE("reflection class test", "[shibboleth_reflection_class]")
 	Base& base = test;
 	Base2& base2 = test;
 	Derived* ref_result = Gaff::ReflectionCast<Derived>(base);
-	Base2* ref_result2 = REFLECTION_CAST_PTR_NAME(Base2, "Base2", &base);
+	Base2* ref_result2 = REFLECTION_CAST_PTR(Base2, &base);
 
 	REQUIRE(ref_result == &test);
 	REQUIRE(ref_result2 == &base2);
@@ -171,8 +171,6 @@ TEST_CASE("reflection class test", "[shibboleth_reflection_class]")
 
 	REQUIRE(test_base_get == base.a);
 	REQUIRE(test_base_get == 20);
-
-	g_app.destroy();
 }
 
 template <class T>

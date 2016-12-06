@@ -122,10 +122,13 @@ public:
 	IVar* getVar(int32_t index) const;
 	IVar* getVar(ReflectionHash name) const;
 
-	ReflectionDefinition& baseClass(const char* name, ReflectionHash hash, ptrdiff_t offset);
+	ReflectionDefinition& base(const char* name, ReflectionHash hash, ptrdiff_t offset);
 
 	template <class Base>
-	ReflectionDefinition& baseClass(void);
+	ReflectionDefinition& base(void);
+
+	template <class Constructor>
+	ReflectionDefinition& ctor(void);
 
 	template <class Var, size_t size>
 	ReflectionDefinition& var(const char (&name)[size], Var T::*ptr);
@@ -139,7 +142,10 @@ public:
 	template <class Var, size_t array_size, size_t name_size>
 	ReflectionDefinition& var(const char (&name)[name_size], Var (T::*arr)[array_size]);
 
-	template <class Ret, size_t size, class... Args>
+	template <size_t size, class Ret, class... Args>
+	ReflectionDefinition& func(const char (&name)[size], Ret (T::*ptr)(Args...) const);
+
+	template <size_t size, class Ret, class... Args>
 	ReflectionDefinition& func(const char (&name)[size], Ret (T::*ptr)(Args...));
 
 	void finish(void);
@@ -280,7 +286,7 @@ NS_END
 
 #include "Gaff_ReflectionDefinition.inl"
 
-#define BASE_CLASS(type) baseClass(#type, REFL_HASH_CONST(#type), Gaff::OffsetOfClass<ThisType, type>())
+#define BASE(type) base(#type, REFL_HASH_CONST(#type), Gaff::OffsetOfClass<ThisType, type>())
 
 #ifdef PLATFORM_WINDOWS
 	#pragma warning(pop)

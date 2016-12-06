@@ -39,6 +39,35 @@ local tests = {
 
 			filter {}
 		end
+	},
+	{
+		name = "ScriptTest",
+
+		includedirs = {
+			"../dependencies/EASTL/include",
+			"../dependencies/CATCH",
+			"../dependencies/chaiscript",
+			"../dependencies/angelscript/angelscript/include",
+
+			"../frameworks/Gaff/include",
+			"../src/Shared/include",
+			"../src/Memory/include",
+			"../src/Scripting/include"
+		},
+
+		links = {
+			"Gaff", "Memory",
+			"EASTL", "Shared",
+			"Scripting"
+		},
+
+		extra = function ()
+			filter { "system:windows" }
+				links { "DbgHelp" }
+				-- buildoptions { "/bigobj"}
+
+			filter {}
+		end
 	}
 }
 
