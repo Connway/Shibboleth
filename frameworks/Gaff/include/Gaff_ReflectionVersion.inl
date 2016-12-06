@@ -23,7 +23,7 @@ THE SOFTWARE.
 NS_GAFF
 
 template <class T>
-ReflectionVersion<T>& ReflectionVersion<T>::baseClass(const char* name, ReflectionHash /*hash*/, ptrdiff_t offset)
+ReflectionVersion<T>& ReflectionVersion<T>::base(const char* name, ReflectionHash /*hash*/, ptrdiff_t offset)
 {
 	_hash = FNV1aHash64String(name, _hash);
 	_hash = FNV1aHash64T(&offset, _hash);
@@ -32,9 +32,16 @@ ReflectionVersion<T>& ReflectionVersion<T>::baseClass(const char* name, Reflecti
 
 template <class T>
 template <class Base>
-ReflectionVersion<T>& ReflectionVersion<T>::baseClass(void)
+ReflectionVersion<T>& ReflectionVersion<T>::base(void)
 {
-	return baseClass(Base::GetReflectionName(), Base::GetReflectionHash(), OffsetOfClass<T, Base>());
+	return base(Base::GetReflectionName(), Base::GetReflectionHash(), OffsetOfClass<T, Base>());
+}
+
+template <class T>
+template <class Constructor>
+ReflectionVersion<T>& ReflectionVersion<T>::ctor(void)
+{
+	return *this;
 }
 
 template <class T>
@@ -53,6 +60,24 @@ ReflectionVersion<T>& ReflectionVersion<T>::var(const char(&name)[size], Ret (T:
 	_hash = FNV1aHash64(name, size, _hash);
 	_hash = FNV1aHash64T(&getter, _hash);
 	_hash = FNV1aHash64T(&setter, _hash);
+	return *this;
+}
+
+template <class T>
+template <size_t size, class Ret, class... Args>
+ReflectionVersion<T>& ReflectionVersion<T>::func(const char(&name)[size], Ret (T::*ptr)(Args...) const)
+{
+	_hash = FNV1aHash64(name, size, _hash);
+	_hash = FNV1aHash64T(&ptr, _hash);
+	return *this;
+}
+
+template <class T>
+template <size_t size, class Ret, class... Args>
+ReflectionVersion<T>& ReflectionVersion<T>::func(const char(&name)[size], Ret (T::*ptr)(Args...))
+{
+	_hash = FNV1aHash64(name, size, _hash);
+	_hash = FNV1aHash64T(&ptr, _hash);
 	return *this;
 }
 

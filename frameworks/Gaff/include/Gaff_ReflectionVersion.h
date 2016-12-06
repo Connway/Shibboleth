@@ -30,16 +30,26 @@ template <class T>
 class ReflectionVersion final
 {
 public:
-	ReflectionVersion& baseClass(const char*, ReflectionHash interface_name, ptrdiff_t offset);
+	ReflectionVersion& base(const char*, ReflectionHash interface_name, ptrdiff_t offset);
 
 	template <class Base>
-	ReflectionVersion& baseClass(void);
+	ReflectionVersion& base(void);
+
+	template <class Constructor>
+	ReflectionVersion& ctor(void);
 
 	template <class Var, size_t size>
 	ReflectionVersion& var(const char(&name)[size], Var T::*ptr);
 
 	template <class Ret, class Var, size_t size>
 	ReflectionVersion& var(const char(&name)[size], Ret (T::*getter)(void) const, void (T::*setter)(Var));
+
+
+	template <size_t size, class Ret, class... Args>
+	ReflectionVersion& func(const char (&name)[size], Ret (T::*ptr)(Args...) const);
+
+	template <size_t size, class Ret, class... Args>
+	ReflectionVersion& func(const char (&name)[size], Ret (T::*ptr)(Args...));
 
 	void finish(void);
 
