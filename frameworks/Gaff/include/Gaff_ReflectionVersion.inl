@@ -23,8 +23,10 @@ THE SOFTWARE.
 NS_GAFF
 
 template <class T>
-ReflectionVersion<T>& ReflectionVersion<T>::base(const char* name, ReflectionHash /*hash*/, ptrdiff_t offset)
+template <class Base>
+ReflectionVersion<T>& ReflectionVersion<T>::base(const char* name, ReflectionHash /*hash*/)
 {
+	const ptrdiff_t offset = Gaff::OffsetOfClass<T, Base>();
 	_hash = FNV1aHash64String(name, _hash);
 	_hash = FNV1aHash64T(&offset, _hash);
 	return *this;
@@ -34,11 +36,11 @@ template <class T>
 template <class Base>
 ReflectionVersion<T>& ReflectionVersion<T>::base(void)
 {
-	return base(Base::GetReflectionName(), Base::GetReflectionHash(), OffsetOfClass<T, Base>());
+	return base<Base>(Base::GetReflectionName(), Base::GetReflectionHash());
 }
 
 template <class T>
-template <class Constructor>
+template <class... Args>
 ReflectionVersion<T>& ReflectionVersion<T>::ctor(void)
 {
 	return *this;

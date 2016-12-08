@@ -19,6 +19,7 @@ project "Scripting"
 		"../Shared/include",
 		"../../dependencies/EASTL/include",
 		"../../dependencies/chaiscript",
+		"../../dependencies/angelscript/angelscript/include",
 		"../../frameworks/Gaff/include"
 	}
 

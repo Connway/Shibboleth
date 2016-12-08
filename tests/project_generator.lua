@@ -48,6 +48,7 @@ local tests = {
 			"../dependencies/CATCH",
 			"../dependencies/chaiscript",
 			"../dependencies/angelscript/angelscript/include",
+			"../dependencies/angelscript/add_on/scriptbuilder",
 
 			"../frameworks/Gaff/include",
 			"../src/Shared/include",
@@ -58,7 +59,7 @@ local tests = {
 		links = {
 			"Gaff", "Memory",
 			"EASTL", "Shared",
-			"Scripting"
+			"Scripting", "angelscript"
 		},
 
 		extra = function ()

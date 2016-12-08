@@ -29,8 +29,10 @@ ChaiScriptClassRegister<T>::ChaiScriptClassRegister(chaiscript::Module& module):
 }
 
 template <class T>
-ChaiScriptClassRegister<T>& ChaiScriptClassRegister<T>::base(const char*, Gaff::ReflectionHash interface_name, ptrdiff_t offset)
+template <class Base>
+ChaiScriptClassRegister<T>& ChaiScriptClassRegister<T>::base(const char*, Gaff::ReflectionHash)
 {
+	ChaiScriptModuleAdd(_module, chaiscript::base_class<Base, T>());
 	return *this;
 }
 
@@ -38,14 +40,15 @@ template <class T>
 template <class Base>
 ChaiScriptClassRegister<T>& ChaiScriptClassRegister<T>::base(void)
 {
+	ChaiScriptModuleAdd(_module, chaiscript::base_class<Base, T>());
 	return *this;
 }
 
 template <class T>
-template <class Constructor>
+template <class... Args>
 ChaiScriptClassRegister<T>& ChaiScriptClassRegister<T>::ctor(void)
 {
-	ChaiScriptModuleAdd(_module, Reflection<T>::GetName(), chaiscript::constructor<Constructor>());
+	ChaiScriptModuleAdd(_module, Reflection<T>::GetName(), chaiscript::constructor<T(Args...)>());
 	return *this;
 }
 

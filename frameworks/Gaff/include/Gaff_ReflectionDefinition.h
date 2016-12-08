@@ -105,10 +105,10 @@ public:
 
 	const void* getInterface(ReflectionHash class_hash, const void* object) const override;
 	void* getInterface(ReflectionHash class_hash, void* object) const override;
+	bool hasInterface(ReflectionHash class_hash) const override;
 
 	void setAllocator(const Allocator& allocator);
 
-	void setReflectionInstance(const ISerializeInfo& reflection_instance);
 	const ISerializeInfo& getReflectionInstance(void) const override;
 
 	Hash64 getVersionHash(void) const;
@@ -122,12 +122,13 @@ public:
 	IVar* getVar(int32_t index) const;
 	IVar* getVar(ReflectionHash name) const;
 
-	ReflectionDefinition& base(const char* name, ReflectionHash hash, ptrdiff_t offset);
+	template <class Base>
+	ReflectionDefinition& base(const char* name, ReflectionHash hash);
 
 	template <class Base>
 	ReflectionDefinition& base(void);
 
-	template <class Constructor>
+	template <class... Args>
 	ReflectionDefinition& ctor(void);
 
 	template <class Var, size_t size>
@@ -286,7 +287,7 @@ NS_END
 
 #include "Gaff_ReflectionDefinition.inl"
 
-#define BASE(type) base(#type, REFL_HASH_CONST(#type), Gaff::OffsetOfClass<ThisType, type>())
+#define BASE(type) base<type>(#type, REFL_HASH_CONST(#type))
 
 #ifdef PLATFORM_WINDOWS
 	#pragma warning(pop)

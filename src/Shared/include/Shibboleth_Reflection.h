@@ -89,7 +89,7 @@ NS_END
 	SHIB_REFLECTION_DEFINE_BEGIN(type) \
 	SHIB_REFLECTION_DEFINE_END(type)
 
-#define SHIB_REFLECTION_DEFINE_BEGIN(type) \
+#define SHIB_REFLECTION_DEFINE_BEGIN_CUSTOM_BUILDER(type) \
 	Gaff::ReflectionDefinition<type, Shibboleth::ProxyAllocator>* Shibboleth::Reflection<type>::g_reflection_definition = nullptr; \
 	GAFF_REFLECTION_DEFINE_BASE(type, Shibboleth::ProxyAllocator); \
 	void Shibboleth::Reflection<type>::Init() \
@@ -101,7 +101,7 @@ NS_END
 		); \
 		if (g_reflection_definition) { \
 			Gaff::ReflectionVersion<type> version; \
-			type::BuildReflection(version); \
+			BuildReflection(version); \
 			GAFF_ASSERT_MSG( \
 				version.getHash() == g_reflection_definition->getVersionHash(), \
 				"Version hash for " #type " does not match!" \
@@ -116,12 +116,27 @@ NS_END
 			Gaff::Construct(g_reflection_definition); \
 			Shibboleth::GetApp().registerReflection(REFL_HASH_CONST(#type),  g_reflection_definition); \
 			g_reflection_definition->setAllocator(ProxyAllocator("Reflection")); \
-			g_reflection_definition->setReflectionInstance(g_instance); \
-			type::BuildReflection(*g_reflection_definition);
+			BuildReflection(*g_reflection_definition);
+
+#define SHIB_REFLECTION_DEFINE_BEGIN(type) \
+	template <class ReflectionBuilder> \
+	void GAFF_REFLECTION_NAMESPACE::Reflection<type>::BuildReflection(ReflectionBuilder& builder) \
+	{ \
+		type::BuildReflection(builder); \
+	} \
+	SHIB_REFLECTION_DEFINE_BEGIN_CUSTOM_BUILDER(type)
 
 #define SHIB_REFLECTION_DEFINE_END(type) \
 		} \
 	}
+
+#define SHIB_REFLECTION_BUILDER_BEGIN(type) \
+	template <class ReflectionBuilder> \
+	void GAFF_REFLECTION_NAMESPACE::Reflection<type>::BuildReflection(ReflectionBuilder& builder) \
+	{ \
+		builder
+
+#define SHIB_REFLECTION_BUILDER_END GAFF_REFLECTION_DEFINE_END
 
 #define SHIB_REFLECTION_CLASS_DEFINE_BEGIN(type) GAFF_REFLECTION_CLASS_DEFINE_BEGIN(type, Shibboleth::ProxyAllocator)
 #define SHIB_REFLECTION_CLASS_DEFINE_END GAFF_REFLECTION_CLASS_DEFINE_END
@@ -170,7 +185,6 @@ NS_END
 			Gaff::Construct(g_reflection_definition); \
 			Shibboleth::GetApp().registerReflection(GetHash(),  g_reflection_definition); \
 			g_reflection_definition->setAllocator(ProxyAllocator("Reflection")); \
-			g_reflection_definition->setReflectionInstance(g_instance); \
 			type<__VA_ARGS__>::BuildReflection(*g_reflection_definition);
 
 #define SHIB_TEMPLATE_REFLECTION_DEFINE_END(type, ...) \

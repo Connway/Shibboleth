@@ -54,6 +54,11 @@ ChaiScriptModulePtr CreateChaiScriptModule(void)
 	return chaiscript::ModulePtr(new chaiscript::Module);
 }
 
+void ChaiScriptModuleEval(chaiscript::Module& module, const char* script)
+{
+	module.eval(script);
+}
+
 void ChaiScriptModuleAdd(chaiscript::Module& module, const char* name, const chaiscript::Type_Info& info)
 {
 	module.add(info, name);

@@ -500,7 +500,7 @@ void ReflectionDefinition<T, Allocator>::save(ISerializeWriter& /*writer*/, cons
 template <class T, class Allocator>
 const void* ReflectionDefinition<T, Allocator>::getInterface(ReflectionHash class_hash, const void* object) const
 {
-	if (class_hash == T::GetReflectionHash()) {
+	if (class_hash == GAFF_REFLECTION_NAMESPACE::Reflection<T>::GetHash()) {
 		return object;
 	}
 
@@ -520,6 +520,17 @@ void* ReflectionDefinition<T, Allocator>::getInterface(ReflectionHash class_hash
 }
 
 template <class T, class Allocator>
+bool ReflectionDefinition<T, Allocator>::hasInterface(ReflectionHash class_hash) const
+{
+	if (class_hash == GAFF_REFLECTION_NAMESPACE::Reflection<T>::GetHash()) {
+		return true;
+	}
+
+	auto it = Gaff::Find(_base_class_offsets, class_hash);
+	return it != _base_class_offsets.end();
+}
+
+template <class T, class Allocator>
 void ReflectionDefinition<T, Allocator>::setAllocator(const Allocator& allocator)
 {
 	_base_class_offsets.set_allocator(allocator);
@@ -527,16 +538,9 @@ void ReflectionDefinition<T, Allocator>::setAllocator(const Allocator& allocator
 }
 
 template <class T, class Allocator>
-void ReflectionDefinition<T, Allocator>::setReflectionInstance(const ISerializeInfo& reflection_instance)
-{
-	_reflection_instance = &reflection_instance;
-}
-
-template <class T, class Allocator>
 const ISerializeInfo& ReflectionDefinition<T, Allocator>::getReflectionInstance(void) const
 {
-	GAFF_ASSERT(_reflection_instance);
-	return *_reflection_instance;
+	return GAFF_REFLECTION_NAMESPACE::Reflection<T>::GetInstance();
 }
 
 template <class T, class Allocator>
@@ -595,14 +599,21 @@ typename ReflectionDefinition<T, Allocator>::IVar* ReflectionDefinition<T, Alloc
 }
 
 template <class T, class Allocator>
-ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::base(const char* name, ReflectionHash hash, ptrdiff_t offset)
+template <class Base>
+ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::base(const char* name, ReflectionHash hash)
 {
-	auto pair = std::move(eastl::make_pair(ReflectionHashString<Allocator>(name, hash, nullptr, _allocator), offset));
+	const ptrdiff_t offset = Gaff::OffsetOfClass<T, Base>();
+	auto pair = std::move(
+		eastl::make_pair(
+			ReflectionHashString<Allocator>(name, hash, nullptr, _allocator),
+			offset
+		)
+	);
 
 	GAFF_ASSERT(_base_class_offsets.find(pair.first) == _base_class_offsets.end());
 	_base_class_offsets.insert(std::move(pair));
 
-	_version.base(name, hash, offset);
+	_version.base<Base>(name, hash);
 	return *this;
 }
 
@@ -610,13 +621,13 @@ template <class T, class Allocator>
 template <class Base>
 ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::base(void)
 {
-	base(Base::GetReflectionName(), Base::GetReflectionHash(), Gaff::OffsetOfClass<T, Base>());
+	base<Base>(Base::GetReflectionName(), Base::GetReflectionHash());
 
 	// Add IVarPtr's from base class.
 	if (GAFF_REFLECTION_NAMESPACE::Reflection<Base>::g_defined) {
 		ReflectionDefinition<Base, Allocator>& base_ref_def = const_cast<ReflectionDefinition<Base, Allocator>&>(
 			GAFF_REFLECTION_NAMESPACE::Reflection<Base>::GetReflectionDefinition()
-			);
+		);
 
 		for (int32_t i = 0; i < base_ref_def.getNumVariables(); ++i) {
 			eastl::pair<ReflectionHashString<Allocator>, IVarPtr> pair(
@@ -638,10 +649,10 @@ ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::base(voi
 }
 
 template <class T, class Allocator>
-template <class Constructor>
+template <class... Args>
 ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::ctor(void)
 {
-	_version.ctor<Constructor>();
+	_version.ctor<T(Args...)>();
 	return *this;
 }
 

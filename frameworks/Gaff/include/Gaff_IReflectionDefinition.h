@@ -139,6 +139,7 @@ public:
 
 	virtual const void* getInterface(ReflectionHash class_id, const void* object) const = 0;
 	virtual void* getInterface(ReflectionHash class_id, void* object) const = 0;
+	virtual bool hasInterface(ReflectionHash class_hash) const = 0;
 
 	virtual int32_t getNumVariables(void) const = 0;
 	virtual Hash32 getVariableHash(int32_t index) const = 0;
