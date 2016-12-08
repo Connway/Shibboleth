@@ -9,6 +9,7 @@ project "angelscript"
 
 	files
 	{
+		"add_on/scriptbuilder/*.*",
 		"angelscript/**.cpp",
 		"angelscript/**.h",
 		"angelscript/**.inl",

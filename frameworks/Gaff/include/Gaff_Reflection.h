@@ -56,16 +56,18 @@ THE SOFTWARE.
 		} \
 		constexpr static Gaff::ReflectionHash GetHash(void) \
 		{ \
-			return type::GetReflectionHash(); \
+			return REFL_HASH_CONST(#type); \
 		} \
 		constexpr static const char* GetName(void) \
 		{ \
-			return type::GetReflectionName(); \
+			return #type; \
 		} \
 		static Reflection<type>& GetInstance(void) \
 		{ \
 			return g_instance; \
-		}
+		} \
+		template <class ReflectionBuilder> \
+		static void BuildReflection(ReflectionBuilder& builder); \
 
 #define GAFF_REFLECTION_DECLARE_BASE(type, allocator) \
 		void load(Gaff::ISerializeReader& reader, void* object) const override \
@@ -98,7 +100,7 @@ THE SOFTWARE.
 		static void Init(void) \
 		{ \
 			g_reflection_definition.setReflectionInstance(g_instance); \
-			type::BuildReflection(g_reflection_definition); \
+			BuildReflection(g_reflection_definition); \
 		} \
 	private: \
 		static Gaff::ReflectionDefinition<type, allocator> g_reflection_definition; \
@@ -145,7 +147,24 @@ NS_END
 
 #define GAFF_REFLECTION_DEFINE(type, allocator) \
 	Gaff::ReflectionDefinition<type, allocator> GAFF_REFLECTION_NAMESPACE::Reflection<type>::g_reflection_definition; \
+	template <class ReflectionBuilder> \
+	void GAFF_REFLECTION_NAMESPACE::Reflection<type>::BuildReflection(ReflectionBuilder& builder) \
+	{ \
+		type::BuildReflection(builder); \
+	} \
 	GAFF_REFLECTION_DEFINE_BASE(type, allocator)
+
+#define GAFF_REFLECTION_DEFINE_BEGIN(type, allocator) \
+	Gaff::ReflectionDefinition<type, allocator> GAFF_REFLECTION_NAMESPACE::Reflection<type>::g_reflection_definition; \
+	GAFF_REFLECTION_DEFINE_BASE(type, allocator); \
+	template <class ReflectionBuilder> \
+	void GAFF_REFLECTION_NAMESPACE::Reflection<type>::BuildReflection(ReflectionBuilder& builder) \
+	{ \
+		builder
+
+#define GAFF_REFLECTION_DEFINE_END(type, ...) \
+		.finish(); \
+	}
 
 #define GAFF_REFLECTION_CLASS_DEFINE_BEGIN(type, allocator) \
 	const Gaff::ReflectionDefinition<type, allocator>& type::GetReflectionDefinition(void) \
@@ -157,11 +176,7 @@ NS_END
 	{ \
 		builder
 
-#define GAFF_REFLECTION_CLASS_DEFINE_END(type, ...) \
-		; \
-		builder.finish(); \
-	}
-
+#define GAFF_REFLECTION_CLASS_DEFINE_END GAFF_REFLECTION_DEFINE_END
 
 #define GAFF_TEMPLATE_REFLECTION_DECLARE(type, allocator, ...) \
 namespace GAFF_REFLECTION_NAMESPACE { \
@@ -223,7 +238,25 @@ NS_END
 #define GAFF_TEMPLATE_REFLECTION_DEFINE(type, allocator, ...) \
 	template < GAFF_FOR_EACH_COMMA(GAFF_TEMPLATE_REFLECTION_CLASS, __VA_ARGS__) > \
 	Gaff::ReflectionDefinition<type, allocator> GAFF_REFLECTION_NAMESPACE::Reflection< type<__VA_ARGS__> >::g_reflection_definition; \
+	template < GAFF_FOR_EACH_COMMA(GAFF_TEMPLATE_REFLECTION_CLASS, __VA_ARGS__) > \
+	template <class ReflectionBuilder> \
+	void GAFF_REFLECTION_NAMESPACE::Reflection< type<__VA_ARGS__> >::BuildReflection(ReflectionBuilder& builder) \
+	{ \
+		type<__VA_ARGS__>::BuildReflection(builder); \
+	} \
 	GAFF_TEMPLATE_REFLECTION_DEFINE_BASE(type, allocator, __VA_ARGS__)
+
+#define GAFF_TEMPLATE_REFLECTION_DEFINE_BEGIN(type, allocator, ...) \
+	template < GAFF_FOR_EACH_COMMA(GAFF_TEMPLATE_REFLECTION_CLASS, __VA_ARGS__) > \
+	Gaff::ReflectionDefinition<type, allocator> GAFF_REFLECTION_NAMESPACE::Reflection< type<__VA_ARGS__> >::g_reflection_definition; \
+	GAFF_TEMPLATE_REFLECTION_DEFINE_BASE(type, allocator, __VA_ARGS__); \
+	template < GAFF_FOR_EACH_COMMA(GAFF_TEMPLATE_REFLECTION_CLASS, __VA_ARGS__) > \
+	template <class ReflectionBuilder> \
+	void GAFF_REFLECTION_NAMESPACE::Reflection< type<__VA_ARGS__> >::BuildReflection(ReflectionBuilder& builder) \
+	{ \
+		builder
+
+#define GAFF_TEMPLATE_REFLECTION_DEFINE_END GAFF_REFLECTION_DEFINE_END 
 
 #define GAFF_TEMPLATE_REFLECTION_CLASS_DEFINE_BEGIN(type, allocator, ...) \
 	template < GAFF_FOR_EACH_COMMA(GAFF_TEMPLATE_REFLECTION_CLASS, __VA_ARGS__) > \

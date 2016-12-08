@@ -27,12 +27,12 @@ THE SOFTWARE.
 #include <algorithm>
 #include <memory>
 
-// For defining bare minimum needed to register classes.
 #ifdef PLATFORM_WINDOWS
 	#pragma warning(push)
 	#pragma warning(disable : 4541)
 #endif
 
+// For defining bare minimum needed to register classes.
 #include <dispatchkit/proxy_constructors.hpp>
 #include <dispatchkit/register_function.hpp>
 #include <dispatchkit/type_info.hpp>
@@ -60,6 +60,7 @@ void ChaiScriptEval(chaiscript::ChaiScript* chai, const char* script);
 void ChaiScriptAdd(chaiscript::ChaiScript* chai, const ChaiScriptModulePtr& module);
 ChaiScriptModulePtr CreateChaiScriptModule(void);
 
+void ChaiScriptModuleEval(chaiscript::Module& module, const char* script);
 void ChaiScriptModuleAdd(chaiscript::Module& module, const char* name, const chaiscript::Type_Info& info);
 void ChaiScriptModuleAdd(chaiscript::Module& module, const char* name, const chaiscript::Proxy_Function& function);
 void ChaiScriptModuleAdd(chaiscript::Module& module, const chaiscript::Type_Conversion& type_conversion);
@@ -72,12 +73,13 @@ class ChaiScriptClassRegister
 public:
 	ChaiScriptClassRegister(chaiscript::Module& module);
 
-	ChaiScriptClassRegister& base(const char*, Gaff::ReflectionHash interface_name, ptrdiff_t offset);
+	template <class Base>
+	ChaiScriptClassRegister& base(const char*, Gaff::ReflectionHash);
 
 	template <class Base>
 	ChaiScriptClassRegister& base(void);
 
-	template <class Constructor>
+	template <class... Args>
 	ChaiScriptClassRegister& ctor(void);
 
 	template <class Var, size_t size>

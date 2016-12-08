@@ -6,6 +6,9 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\..\src\Scripting\include\Shibboleth_AngelScript.h">
+      <Filter>include</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\src\Scripting\include\Shibboleth_ChaiScript.h">
       <Filter>include</Filter>
     </ClInclude>
@@ -22,6 +25,9 @@
     <ClCompile Include="..\..\..\src\Scripting\Shibboleth_ChaiScriptResource.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\..\..\src\Scripting\include\Shibboleth_AngelScript.inl">
+      <Filter>include</Filter>
+    </None>
     <None Include="..\..\..\src\Scripting\include\Shibboleth_ChaiScript.inl">
       <Filter>include</Filter>
     </None>

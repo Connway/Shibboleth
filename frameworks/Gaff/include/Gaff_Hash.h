@@ -221,20 +221,23 @@ Hash32 FNV1Hash32String(const T* string, Hash32 init = INIT_HASH32)
 template <class T>
 constexpr Hash64 FNV1aHash64StringConst(const T* string, Hash64 init = INIT_HASH64)
 {
-	return (*string) ? FNV1aHash64StringConst(string + 1, init ^ static_cast<Hash64>(*string) * 1099511628211ULL) : init;
+	return (*string) ? FNV1aHash64StringConst(string + 1, (init ^ static_cast<Hash64>(*string)) * 1099511628211ULL) : init;
 }
 
-constexpr Hash64 FNV1Hash64StringConst(const char* string, Hash64 init = INIT_HASH64)
+template <class T>
+constexpr Hash64 FNV1Hash64StringConst(const T* string, Hash64 init = INIT_HASH64)
 {
 	return (*string) ? FNV1Hash64StringConst(string + 1, (init ^ 1099511628211ULL) * static_cast<Hash64>(*string)) : init;
 }
 
-constexpr Hash32 FNV1aHash32StringConst(const char* string, Hash32 init = INIT_HASH32)
+template <class T>
+constexpr Hash32 FNV1aHash32StringConst(const T* string, Hash32 init = INIT_HASH32)
 {
-	return (*string) ? FNV1aHash32StringConst(string + 1, init ^ static_cast<Hash32>(*string) * 16777619U) : init;
+	return (*string) ? FNV1aHash32StringConst(string + 1, (init ^ static_cast<Hash32>(*string)) * 16777619U) : init;
 }
 
-constexpr Hash32 FNV1Hash32StringConst(const char* string, Hash32 init = INIT_HASH32)
+template <class T>
+constexpr Hash32 FNV1Hash32StringConst(const char* T, Hash32 init = INIT_HASH32)
 {
 	return (*string) ? FNV1Hash32StringConst(string + 1, (init ^ 16777619U) * static_cast<Hash32>(*string)) : init;
 }

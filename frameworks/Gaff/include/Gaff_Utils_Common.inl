@@ -125,7 +125,13 @@ template <class T, class R, R T::*M>
 constexpr ptrdiff_t OffsetOfMember(void)
 {
 	return reinterpret_cast<ptrdiff_t>(&(((T*)0)->*M));
-};
+}
+
+template <class T, class R>
+ptrdiff_t OffsetOfMember(R T::*m)
+{
+	return reinterpret_cast<ptrdiff_t>(&(((T*)0)->*m));
+}
 
 template <class Derived, class Base>
 ptrdiff_t OffsetOfClass(void)

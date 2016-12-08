@@ -30,12 +30,13 @@ template <class T>
 class ReflectionVersion final
 {
 public:
-	ReflectionVersion& base(const char*, ReflectionHash interface_name, ptrdiff_t offset);
+	template <class Base>
+	ReflectionVersion& base(const char* name, ReflectionHash /*hash*/);
 
 	template <class Base>
 	ReflectionVersion& base(void);
 
-	template <class Constructor>
+	template <class... Args>
 	ReflectionVersion& ctor(void);
 
 	template <class Var, size_t size>
