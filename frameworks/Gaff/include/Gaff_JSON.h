@@ -22,6 +22,13 @@ THE SOFTWARE.
 
 #pragma once
 
+#include "Gaff_Platform.h"
+
+// To get rid of the massive amount of macro redefinition warnings on Windows.
+#ifdef PLATFORM_WINDOWS
+	#include "Gaff_IncludeWindows.h"
+#endif
+
 #include "Gaff_IncludeRapidJSON.h"
 #include <rapidjson/stringbuffer.h>
 #include <rapidjson/document.h>

@@ -177,6 +177,9 @@
     <ClInclude Include="..\..\..\dependencies\EASTL\include\EASTL\internal\allocator_traits_fwd_decls.h">
       <Filter>include\EASTL\internal</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\EASTL\include\EASTL\internal\char_traits.h">
+      <Filter>include\EASTL\internal</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\dependencies\EASTL\include\EASTL\internal\config.h">
       <Filter>include\EASTL\internal</Filter>
     </ClInclude>

@@ -6,106 +6,11 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\..\src\Game\include\Shibboleth_BufferCreator.h">
-      <Filter>include</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\src\Game\include\Shibboleth_Component.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\src\Game\include\Shibboleth_GraphicsEnums.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\src\Game\include\Shibboleth_HoldingLoader.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\src\Game\include\Shibboleth_IRenderPipeline.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\src\Game\include\Shibboleth_IResourceLoader.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\src\Game\include\Shibboleth_IUpdateQuery.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\src\Game\include\Shibboleth_ImageLoader.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\src\Game\include\Shibboleth_ModelAnimResources.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\src\Game\include\Shibboleth_ModelLoader.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\src\Game\include\Shibboleth_Object.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\src\Game\include\Shibboleth_OcclusionUserDataTags.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\src\Game\include\Shibboleth_OtterUIFileSystem.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\src\Game\include\Shibboleth_OtterUIRenderer.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\src\Game\include\Shibboleth_PackFileSystem.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\src\Game\include\Shibboleth_PhysicsLoader.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\src\Game\include\Shibboleth_PhysicsResource.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\src\Game\include\Shibboleth_ProgramBuffersCreator.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\src\Game\include\Shibboleth_RenderTargetLoader.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\src\Game\include\Shibboleth_ResourceDefines.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\src\Game\include\Shibboleth_ResourceWrapper.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\src\Game\include\Shibboleth_SamplerStateLoader.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\src\Game\include\Shibboleth_ShaderLoader.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\src\Game\include\Shibboleth_ShaderProgramLoader.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\src\Game\include\Shibboleth_TaskPoolTags.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\src\Game\include\Shibboleth_TextureLoader.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\src\Game\include\Shibboleth_UserDataWrapper.h">
       <Filter>include</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\src\Game\Shibboleth_BufferCreator.cpp" />
-    <ClCompile Include="..\..\..\src\Game\Shibboleth_BulletPhysicsLoader.cpp" />
     <ClCompile Include="..\..\..\src\Game\Shibboleth_Component.cpp" />
-    <ClCompile Include="..\..\..\src\Game\Shibboleth_GraphicsEnums.cpp" />
-    <ClCompile Include="..\..\..\src\Game\Shibboleth_HoldingLoader.cpp" />
-    <ClCompile Include="..\..\..\src\Game\Shibboleth_ImageLoader.cpp" />
-    <ClCompile Include="..\..\..\src\Game\Shibboleth_ModelLoader.cpp" />
-    <ClCompile Include="..\..\..\src\Game\Shibboleth_Object.cpp" />
-    <ClCompile Include="..\..\..\src\Game\Shibboleth_OtterUIFileSystem.cpp" />
-    <ClCompile Include="..\..\..\src\Game\Shibboleth_OtterUIRenderer.cpp" />
-    <ClCompile Include="..\..\..\src\Game\Shibboleth_PackFileSystem.cpp" />
-    <ClCompile Include="..\..\..\src\Game\Shibboleth_PhysicsResource.cpp" />
-    <ClCompile Include="..\..\..\src\Game\Shibboleth_ProgramBuffersCreator.cpp" />
-    <ClCompile Include="..\..\..\src\Game\Shibboleth_RenderTargetLoader.cpp" />
-    <ClCompile Include="..\..\..\src\Game\Shibboleth_SamplerStateLoader.cpp" />
-    <ClCompile Include="..\..\..\src\Game\Shibboleth_ShaderLoader.cpp" />
-    <ClCompile Include="..\..\..\src\Game\Shibboleth_ShaderProgramLoader.cpp" />
-    <ClCompile Include="..\..\..\src\Game\Shibboleth_TextureLoader.cpp" />
   </ItemGroup>
 </Project>

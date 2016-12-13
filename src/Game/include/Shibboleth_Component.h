@@ -23,39 +23,25 @@ THE SOFTWARE.
 #pragma once
 
 #include <Shibboleth_String.h>
-#include <Gaff_IRequestableInterface.h>
+#include <Gaff_IReflectionObject.h>
 #include <Gaff_JSON.h>
 
 NS_SHIBBOLETH
 
-#define COMP_REF_DEF_LOAD(Class, RefDefName) \
-	bool Class::load(const Gaff::JSON& json) \
-	{ \
-		RefDefName.read(json, this); \
-		return true; \
-	}
-
-#define COMP_REF_DEF_SAVE(Class, RefDefName) \
-	bool Class::save(Gaff::JSON& json) \
-	{ \
-		RefDefName.write(json, this); \
-		return true; \
-	}
-
 class Object;
 
-class Component : public Gaff::IRequestableInterface
+class Component : public Gaff::IReflectionObject
 {
 public:
 	Component(void);
 	virtual ~Component(void);
 
-	virtual const Gaff::JSON& getSchema(void) const;
+	//virtual const Gaff::JSON& getSchema(void) const;
 
-	virtual bool validate(const Gaff::JSON& json);
+	//virtual bool validate(const Gaff::JSON& json);
 
-	virtual bool load(const Gaff::JSON&);
-	virtual bool save(Gaff::JSON&);
+	//virtual bool load(const Gaff::JSON&);
+	//virtual bool save(Gaff::JSON&);
 
 	virtual void allComponentsLoaded(void);
 

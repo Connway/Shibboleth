@@ -80,6 +80,14 @@ GAFF_REFLECTION_DECLARE_DEFAULT_AND_POD();
 NS_SHIBBOLETH \
 	template <> \
 	GAFF_REFLECTION_DECLARE_COMMON(type, ProxyAllocator) \
+	constexpr static Gaff::ReflectionHash GetHash(void) \
+	{ \
+		return REFL_HASH_CONST(#type); \
+	} \
+	constexpr static const char* GetName(void) \
+	{ \
+		return #type; \
+	} \
 	SHIB_REFLECTION_DECLARE_BASE(type) \
 NS_END
 
@@ -99,14 +107,13 @@ NS_END
 				Shibboleth::GetApp().getReflection(REFL_HASH_CONST(#type)) \
 			) \
 		); \
-		if (g_reflection_definition) { \
-			Gaff::ReflectionVersion<type> version; \
-			BuildReflection(version); \
-			GAFF_ASSERT_MSG( \
-				version.getHash() == g_reflection_definition->getVersionHash(), \
-				"Version hash for " #type " does not match!" \
-			); \
-		} else { \
+		Gaff::ReflectionVersion<type> version; \
+		BuildReflection(version); \
+		GAFF_ASSERT_MSG( \
+			version.getHash() == GetInstance()._version.getHash(), \
+			"Version hash for " #type " does not match!" \
+		); \
+		if (!g_reflection_definition) { \
 			g_reflection_definition = reinterpret_cast< Gaff::ReflectionDefinition<type, ProxyAllocator>* >( \
 				ShibbolethAllocate( \
 					sizeof(Gaff::ReflectionDefinition<type, ProxyAllocator>), \
@@ -120,7 +127,7 @@ NS_END
 
 #define SHIB_REFLECTION_DEFINE_BEGIN(type) \
 	template <class ReflectionBuilder> \
-	void GAFF_REFLECTION_NAMESPACE::Reflection<type>::BuildReflection(ReflectionBuilder& builder) \
+	void Shibboleth::Reflection<type>::BuildReflection(ReflectionBuilder& builder) \
 	{ \
 		type::BuildReflection(builder); \
 	} \
@@ -130,13 +137,8 @@ NS_END
 		} \
 	}
 
-#define SHIB_REFLECTION_BUILDER_BEGIN(type) \
-	template <class ReflectionBuilder> \
-	void GAFF_REFLECTION_NAMESPACE::Reflection<type>::BuildReflection(ReflectionBuilder& builder) \
-	{ \
-		builder
-
-#define SHIB_REFLECTION_BUILDER_END GAFF_REFLECTION_DEFINE_END
+#define SHIB_REFLECTION_BUILDER_BEGIN GAFF_REFLECTION_BUILDER_BEGIN
+#define SHIB_REFLECTION_BUILDER_END GAFF_REFLECTION_BUILDER_END
 
 #define SHIB_REFLECTION_CLASS_DEFINE_BEGIN(type) GAFF_REFLECTION_CLASS_DEFINE_BEGIN(type, Shibboleth::ProxyAllocator)
 #define SHIB_REFLECTION_CLASS_DEFINE_END GAFF_REFLECTION_CLASS_DEFINE_END
@@ -146,6 +148,29 @@ NS_END
 NS_SHIBBOLETH \
 	template < GAFF_FOR_EACH_COMMA(GAFF_TEMPLATE_REFLECTION_CLASS, __VA_ARGS__) > \
 	GAFF_REFLECTION_DECLARE_COMMON(GAFF_SINGLE_ARG(type<__VA_ARGS__>), ProxyAllocator) \
+	constexpr static Gaff::ReflectionHash GetHash(void) \
+	{ \
+		return GAFF_REFLECTION_NAMESPACE::CalcTemplateHash<__VA_ARGS__>(REFL_HASH_CONST(#type)); \
+	} \
+	static const char* GetName(void) \
+	{ \
+		static char s_name[128] = { 0 }; \
+		if (!s_name[0]) { \
+			char format[64] = { 0 }; \
+			int32_t index = snprintf(format, 32, "%s<", #type); \
+			for (int32_t i = 0; i < Gaff::GetNumArgs<__VA_ARGS__>(); ++i) { \
+				if (i) { \
+					format[index++] = ','; \
+					format[index++] = ' '; \
+				} \
+				format[index++] = '%'; \
+				format[index++] = 's'; \
+			} \
+			format[index++] = '>'; \
+			snprintf(s_name, 128, format, GAFF_FOR_EACH_COMMA(GAFF_TEMPLATE_GET_NAME, __VA_ARGS__)); \
+		} \
+		return s_name; \
+	} \
 	SHIB_REFLECTION_DECLARE_BASE(GAFF_SINGLE_ARG(type<__VA_ARGS__>)) \
 NS_END
 
@@ -155,9 +180,9 @@ NS_END
 	SHIB_TEMPLATE_REFLECTION_DEFINE_BEGIN(type, __VA_ARGS__) \
 	SHIB_TEMPLATE_REFLECTION_DEFINE_END(type, __VA_ARGS__)
 
-#define SHIB_TEMPLATE_REFLECTION_DEFINE_BEGIN(type, ...) \
+#define SHIB_TEMPLATE_REFLECTION_DEFINE_BEGIN_CUSTOM_BUILDER(type, ...) \
 	template < GAFF_FOR_EACH_COMMA(GAFF_TEMPLATE_REFLECTION_CLASS, __VA_ARGS__) > \
-	Gaff::ReflectionDefinition<type<__VA_ARGS__>, Shibboleth::ProxyAllocator>* Shibboleth::Reflection< type<__VA_ARGS__> >::g_reflection_definition = nullptr; \
+	Gaff::ReflectionDefinition< type<__VA_ARGS__>, Shibboleth::ProxyAllocator>* Shibboleth::Reflection< type<__VA_ARGS__> >::g_reflection_definition; \
 	GAFF_TEMPLATE_REFLECTION_DEFINE_BASE(type, Shibboleth::ProxyAllocator, __VA_ARGS__); \
 	template < GAFF_FOR_EACH_COMMA(GAFF_TEMPLATE_REFLECTION_CLASS, __VA_ARGS__) > \
 	void Shibboleth::Reflection< type<__VA_ARGS__> >::Init() \
@@ -167,15 +192,14 @@ NS_END
 				Shibboleth::GetApp().getReflection(GetHash()) \
 			) \
 		); \
-		if (g_reflection_definition) { \
-			Gaff::ReflectionVersion< type<__VA_ARGS__> > version; \
-			type<__VA_ARGS__>::BuildReflection(version); \
-			GAFF_ASSERT_MSG( \
-				version.getHash() == g_reflection_definition->getVersionHash(), \
-				"Version hash for %s does not match!", \
-				GetName() \
-			); \
-		} else { \
+		Gaff::ReflectionVersion< type<__VA_ARGS__> > version; \
+		type<__VA_ARGS__>::BuildReflection(version); \
+		GAFF_ASSERT_MSG( \
+			version.getHash() == GetInstance()._version.getHash(), \
+			"Version hash for %s does not match!", \
+			GetName() \
+		); \
+		if (!g_reflection_definition) { \
 			g_reflection_definition = reinterpret_cast< Gaff::ReflectionDefinition<type<__VA_ARGS__>, ProxyAllocator>* >( \
 				ShibbolethAllocate( \
 					sizeof(Gaff::ReflectionDefinition<type<__VA_ARGS__>, ProxyAllocator>), \
@@ -187,9 +211,21 @@ NS_END
 			g_reflection_definition->setAllocator(ProxyAllocator("Reflection")); \
 			type<__VA_ARGS__>::BuildReflection(*g_reflection_definition);
 
+#define SHIB_TEMPLATE_REFLECTION_DEFINE_BEGIN(type, ...) \
+	template < GAFF_FOR_EACH_COMMA(GAFF_TEMPLATE_REFLECTION_CLASS, __VA_ARGS__) > \
+	template <class ReflectionBuilder> \
+	void Shibboleth::Reflection< type<__VA_ARGS__> >::BuildReflection(ReflectionBuilder& builder) \
+	{ \
+		type<__VA_ARGS__>::BuildReflection(builder); \
+	} \
+	SHIB_TEMPLATE_REFLECTION_DEFINE_BEGIN_CUSTOM_BUILDER(type, __VA_ARGS__)
+
 #define SHIB_TEMPLATE_REFLECTION_DEFINE_END(type, ...) \
 		} \
 	}
+
+#define SHIB_TEMPLATE_REFLECTION_BUILDER_BEGIN GAFF_TEMPLATE_REFLECTION_BUILDER_BEGIN
+#define SHIB_TEMPLATE_REFLECTION_BUILDER_END GAFF_TEMPLATE_REFLECTION_BUILDER_END
 
 #define SHIB_TEMPLATE_REFLECTION_CLASS_DEFINE_BEGIN(type, ...) GAFF_TEMPLATE_REFLECTION_CLASS_DEFINE_BEGIN(type, Shibboleth::ProxyAllocator, __VA_ARGS__)
 #define SHIB_TEMPLATE_REFLECTION_CLASS_DEFINE_END GAFF_TEMPLATE_REFLECTION_CLASS_DEFINE_END 

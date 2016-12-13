@@ -81,11 +81,8 @@ namespace Foo
 SHIB_REFLECTION_DECLARE(Foo::NamespaceClass);
 SHIB_REFLECTION_DEFINE(Foo::NamespaceClass);
 
-namespace Foo
-{
-	SHIB_REFLECTION_CLASS_DEFINE_BEGIN(NamespaceClass)
-	SHIB_REFLECTION_CLASS_DEFINE_END(NamespaceClass)
-}
+SHIB_REFLECTION_CLASS_DEFINE_BEGIN(Foo::NamespaceClass)
+SHIB_REFLECTION_CLASS_DEFINE_END(Foo::NamespaceClass)
 
 TEST_CASE("reflection basic test", "[shibboleth_reflection_basic]")
 {
@@ -125,7 +122,7 @@ TEST_CASE("reflection class test", "[shibboleth_reflection_class]")
 	printf("Reflection Class: %s\n", Shibboleth::Reflection<Foo::NamespaceClass>::GetName());
 	REQUIRE(!strcmp(Shibboleth::Reflection<Derived>::GetName(), "Derived"));
 	REQUIRE(!strcmp(Shibboleth::Reflection<Base>::GetName(), "Base"));
-	REQUIRE(!strcmp(Shibboleth::Reflection<Foo::NamespaceClass>::GetName(), "NamespaceClass"));
+	REQUIRE(!strcmp(Shibboleth::Reflection<Foo::NamespaceClass>::GetName(), "Foo::NamespaceClass"));
 
 	Shibboleth::Reflection<Derived>::Init();
 	Shibboleth::Reflection<Base>::Init();
@@ -139,7 +136,7 @@ TEST_CASE("reflection class test", "[shibboleth_reflection_class]")
 	REQUIRE(ref_result == &test);
 	REQUIRE(ref_result2 == &base2);
 
-	Gaff::Hash64 hash = Shibboleth::Reflection<Derived>::GetReflectionDefinition().getVersionHash();
+	Gaff::Hash64 hash = Shibboleth::Reflection<Derived>::GetVersion();
 	printf("Version Hash: %llu\n", hash);
 
 	int test_get_func_ref = Shibboleth::Reflection<Derived>::GetReflectionDefinition().getVar(Gaff::FNV1aHash32Const("cRef"))->getDataT<int>(*ref_result);

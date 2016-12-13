@@ -544,12 +544,6 @@ const ISerializeInfo& ReflectionDefinition<T, Allocator>::getReflectionInstance(
 }
 
 template <class T, class Allocator>
-Hash64 ReflectionDefinition<T, Allocator>::getVersionHash(void) const
-{
-	return _version.getHash();
-}
-
-template <class T, class Allocator>
 int32_t ReflectionDefinition<T, Allocator>::getNumVariables(void) const
 {
 	return static_cast<int32_t>(_vars.size());
@@ -613,7 +607,6 @@ ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::base(con
 	GAFF_ASSERT(_base_class_offsets.find(pair.first) == _base_class_offsets.end());
 	_base_class_offsets.insert(std::move(pair));
 
-	_version.base<Base>(name, hash);
 	return *this;
 }
 
@@ -652,7 +645,6 @@ template <class T, class Allocator>
 template <class... Args>
 ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::ctor(void)
 {
-	_version.ctor<T(Args...)>();
 	return *this;
 }
 
@@ -670,7 +662,6 @@ ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::var(cons
 	GAFF_ASSERT(_vars.find(pair.first) == _vars.end());
 
 	_vars.insert(std::move(pair));
-	_version.var(name, ptr);
 	return *this;
 }
 
@@ -689,7 +680,6 @@ ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::var(cons
 	GAFF_ASSERT(_vars.find(pair.first) == _vars.end());
 
 	_vars.insert(std::move(pair));
-	_version.var(name, getter, setter);
 	return *this;
 }
 
@@ -708,7 +698,6 @@ ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::var(cons
 	GAFF_ASSERT(_vars.find(pair.first) == _vars.end());
 
 	_vars.insert(std::move(pair));
-	_version.var(name, vec);
 	return *this;
 }
 
@@ -727,7 +716,6 @@ ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::var(cons
 	GAFF_ASSERT(_vars.find(pair.first) == _vars.end());
 
 	_vars.insert(std::move(pair));
-	_version.var(name, arr);
 	return *this;
 }
 
@@ -735,6 +723,7 @@ template <class T, class Allocator>
 template <size_t size, class Ret, class... Args>
 ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::func(const char (&name)[size], Ret (T::*ptr)(Args...) const)
 {
+	GAFF_REF(name); GAFF_REF(ptr);
 	//using PtrType = FuncPtr<Ret, Args...>;
 
 	//eastl::pair<ReflectionHashString<Allocator>, IVarPtr> pair(
@@ -745,7 +734,6 @@ ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::func(con
 	//GAFF_ASSERT(_funcs.find(pair.first) == _funcs.end());
 
 	//_funcs.insert(std::move(pair));
-	_version.func(name, ptr);
 	return *this;
 }
 
@@ -753,6 +741,7 @@ template <class T, class Allocator>
 template <size_t size, class Ret, class... Args>
 ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::func(const char (&name)[size], Ret (T::*ptr)(Args...))
 {
+	GAFF_REF(name); GAFF_REF(ptr);
 	//using PtrType = FuncPtr<Ret, Args...>;
 
 	//eastl::pair<ReflectionHashString<Allocator>, IVarPtr> pair(
@@ -763,7 +752,6 @@ ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::func(con
 	//GAFF_ASSERT(_funcs.find(pair.first) == _funcs.end());
 
 	//_funcs.insert(std::move(pair));
-	_version.func(name, ptr);
 	return *this;
 }
 

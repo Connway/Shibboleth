@@ -12,7 +12,7 @@
 //
 // Any instance of optional<T> at any given time either contains a value or does not
 // contain a value. When an instance of optional<T> contains a value, it means that an
-// object of type T, referred to as the optional object’s contained value, is allocated
+// object of type T, referred to as the optional object's contained value, is allocated
 // within the storage of the optional object. Implementations are not permitted to use
 // additional storage, such as dynamic memory, to allocate its contained value. 
 //
@@ -312,6 +312,15 @@ namespace eastl
 		    }
 	    }
 
+		inline void reset()
+		{
+			if (engaged)
+			{
+				destruct_value();
+				engaged = false;
+			}
+		}
+
 	private:
 
 	    inline void construct_value(const value_type& v)
@@ -319,15 +328,6 @@ namespace eastl
 
 	    inline void construct_value(value_type&& v)
 			{ ::new (eastl::addressof(val)) value_type(eastl::move(v)); }
-
-	    inline void reset()
-		{
-			if(engaged)
-			{
-				destruct_value();
-				engaged = false;
-			}
-		}
 
 	    inline T* get_value_address() EASTL_OPTIONAL_NOEXCEPT
 	    {
