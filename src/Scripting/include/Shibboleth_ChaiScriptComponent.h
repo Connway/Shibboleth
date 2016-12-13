@@ -21,3 +21,21 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #pragma once
+
+#include <Shibboleth_Component.h>
+#include <Shibboleth_Reflection.h>
+
+NS_SHIBBOLETH
+
+class ChaiScriptComponent final : public Component
+{
+public:
+
+private:
+
+	SHIB_REFLECTION_CLASS_DECLARE(ChaiScriptComponent);
+};
+
+NS_END
+
+SHIB_REFLECTION_DECLARE(ChaiScriptComponent)

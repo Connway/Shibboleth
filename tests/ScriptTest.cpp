@@ -42,8 +42,6 @@ public:
 
 	void testSet(int val) { test_var = val; }
 	int testGet(void) const { return test_var; }
-
-	//SHIB_REFLECTION_CLASS_DECLARE(ScriptTest);
 };
 
 SHIB_REFLECTION_DECLARE(ScriptTest);
@@ -56,7 +54,6 @@ SHIB_REFLECTION_DEFINE_BEGIN_CUSTOM_BUILDER(ScriptTest)
 	BuildReflection(asr);
 SHIB_REFLECTION_DEFINE_END(ScriptTest)
 
-//SHIB_REFLECTION_CLASS_DEFINE_BEGIN(ScriptTest)
 SHIB_REFLECTION_BUILDER_BEGIN(ScriptTest)
 	.ctor<>()
 	.var("test_var", &ScriptTest::test_var)

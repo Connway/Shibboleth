@@ -18,6 +18,8 @@ project "Game"
 
 	filter {}
 
+	removefiles { "disable/**.*" }
+
 	includedirs
 	{
 		"include",
@@ -27,15 +29,12 @@ project "Game"
 		"../../frameworks/Gaff/include",
 		"../../frameworks/Gleam/include",
 		"../../frameworks/esprit/include",
-		"../../dependencies/OtterUI/inc",
 		"../../dependencies/rapidjson",
-		"../../dependencies/LuaState",
-		"../../dependencies/LuaJIT/src",
-		"../../dependencies/utf8-cpp",
 		"../../dependencies/assimp/include",
 		"../../dependencies/minizip",
 		"../../dependencies/zlib",
-		"../../dependencies/bullet"
+		"../../dependencies/bullet",
+		"../../dependencies/EASTL/include"
 	}
 
 	dofile("../../utils/os_conditionals.lua")

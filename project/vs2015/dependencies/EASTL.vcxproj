@@ -276,6 +276,7 @@
     <ClInclude Include="..\..\..\dependencies\EASTL\include\EASTL\initializer_list.h" />
     <ClInclude Include="..\..\..\dependencies\EASTL\include\EASTL\internal\allocator_traits.h" />
     <ClInclude Include="..\..\..\dependencies\EASTL\include\EASTL\internal\allocator_traits_fwd_decls.h" />
+    <ClInclude Include="..\..\..\dependencies\EASTL\include\EASTL\internal\char_traits.h" />
     <ClInclude Include="..\..\..\dependencies\EASTL\include\EASTL\internal\config.h" />
     <ClInclude Include="..\..\..\dependencies\EASTL\include\EASTL\internal\copy_help.h" />
     <ClInclude Include="..\..\..\dependencies\EASTL\include\EASTL\internal\enable_shared.h" />

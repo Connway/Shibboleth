@@ -34,33 +34,33 @@ Component::~Component(void)
 {
 }
 
-const Gaff::JSON& Component::getSchema(void) const
-{
-	static Gaff::JSON empty_schema;
-	return empty_schema;
-}
-
-bool Component::validate(const Gaff::JSON& json)
-{
-	const Gaff::JSON& schema = getSchema();
-
-	if (!schema.isNull() && !json.validate(schema)) {
-		// log error
-		return false;
-	}
-
-	return true;
-}
-
-bool Component::load(const Gaff::JSON&)
-{
-	return true;
-}
-
-bool Component::save(Gaff::JSON&)
-{
-	return true;
-}
+//const Gaff::JSON& Component::getSchema(void) const
+//{
+//	static Gaff::JSON empty_schema;
+//	return empty_schema;
+//}
+//
+//bool Component::validate(const Gaff::JSON& json)
+//{
+//	const Gaff::JSON& schema = getSchema();
+//
+//	if (!schema.isNull() && !json.validate(schema)) {
+//		// log error
+//		return false;
+//	}
+//
+//	return true;
+//}
+//
+//bool Component::load(const Gaff::JSON&)
+//{
+//	return true;
+//}
+//
+//bool Component::save(Gaff::JSON&)
+//{
+//	return true;
+//}
 
 void Component::allComponentsLoaded(void)
 {

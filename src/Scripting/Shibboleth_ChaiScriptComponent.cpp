@@ -21,3 +21,14 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Shibboleth_ChaiScriptComponent.h"
+
+SHIB_REFLECTION_DEFINE(Shibboleth::ChaiScriptComponent)
+
+NS_SHIBBOLETH
+
+SHIB_REFLECTION_CLASS_DEFINE_BEGIN(ChaiScriptComponent)
+	.BASE(Component)
+	//.var("Script", &ChaiScriptComponent::_resource)
+SHIB_REFLECTION_CLASS_DEFINE_END(ChaiScriptComponent)
+
+NS_END

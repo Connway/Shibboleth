@@ -23,7 +23,6 @@ THE SOFTWARE.
 #pragma once
 
 #include "Gaff_IReflectionDefinition.h"
-#include "Gaff_ReflectionVersion.h"
 #include "Gaff_HashString.h"
 #include "Gaff_VectorMap.h"
 #include "Gaff_Assert.h"
@@ -110,8 +109,6 @@ public:
 	void setAllocator(const Allocator& allocator);
 
 	const ISerializeInfo& getReflectionInstance(void) const override;
-
-	Hash64 getVersionHash(void) const;
 
 	int32_t getNumVariables(void) const override;
 	ReflectionHash getVariableHash(int32_t index) const override;
@@ -273,8 +270,6 @@ private:
 	Allocator _allocator;
 
 	int32_t _base_classes_remaining = 0;
-
-	ReflectionVersion<T> _version;
 
 	template <class Base>
 	static void RegisterBaseVariables(void);
