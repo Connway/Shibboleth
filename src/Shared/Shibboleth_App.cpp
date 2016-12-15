@@ -24,7 +24,7 @@ THE SOFTWARE.
 #include "Shibboleth_LooseFileSystem.h"
 #include "Shibboleth_Utilities.h"
 #include "Shibboleth_IManager.h"
-#include <Gaff_IReflectionDefinition.h>
+#include "Gaff_ReflectionInterfaces.h"
 #include <Gaff_CrashHandler.h>
 #include <Gaff_Directory.h>
 #include <Gaff_Utils.h>
@@ -403,6 +403,7 @@ void App::destroy(void)
 		it->second.destroy_func(it->second.manager, it->second.manager_id);
 	}
 
+	_reflection_map.clear();
 	_manager_map.clear();
 	_logger.destroy();
 

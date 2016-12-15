@@ -40,16 +40,24 @@ project "ScriptingModule"
 
 	files { "Shibboleth_ScriptingModule.cpp" }
 
-	-- includedirs
-	-- {
-	-- 	"include",
-	-- 	"../Memory/include",
-	-- 	"../Shared/include",
-	-- 	"../../dependencies/EASTL/include",
+	prebuildmessage "Generating Gen_ReflectionInit.h!"
+	prebuildcommands
+	{
+		"py ../../../utils/gen_module_file.py ../../../src/Scripting"
+	}
+
+	includedirs
+	{
+		"include",
+		"../Memory/include",
+		"../Shared/include",
+		"../Game/include",
+		"../../dependencies/EASTL/include",
+		"../../dependencies/rapidjson",
 	-- 	"../../dependencies/chaiscript",
 	-- 	"../../dependencies/angelscript/angelscript/include",
-	-- 	"../../frameworks/Gaff/include"
-	-- }
+		"../../frameworks/Gaff/include"
+	}
 
 	dependson
 	{

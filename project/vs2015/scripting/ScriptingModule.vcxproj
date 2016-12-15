@@ -122,6 +122,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level4</WarningLevel>
       <PreprocessorDefinitions>_DEBUG;DEBUG;WIN32;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\..\..\src\Scripting\include;..\..\..\src\Memory\include;..\..\..\src\Shared\include;..\..\..\src\Game\include;..\..\..\dependencies\EASTL\include;..\..\..\dependencies\rapidjson;..\..\..\frameworks\Gaff\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
       <ExceptionHandling>Async</ExceptionHandling>
@@ -134,12 +135,17 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <ImportLibrary>..\..\..\build\output\x64\Debug\ScriptingModule64d.lib</ImportLibrary>
     </Link>
+    <PreBuildEvent>
+      <Command>py ../../../utils/gen_module_file.py ../../../src/Scripting</Command>
+      <Message>Generating Gen_ReflectionInit.h!</Message>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level4</WarningLevel>
       <PreprocessorDefinitions>NDEBUG;WIN32;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\..\..\src\Scripting\include;..\..\..\src\Memory\include;..\..\..\src\Shared\include;..\..\..\src\Game\include;..\..\..\dependencies\EASTL\include;..\..\..\dependencies\rapidjson;..\..\..\frameworks\Gaff\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -158,12 +164,17 @@
       <OptimizeReferences>true</OptimizeReferences>
       <ImportLibrary>..\..\..\build\output\x64\Release\ScriptingModule64.lib</ImportLibrary>
     </Link>
+    <PreBuildEvent>
+      <Command>py ../../../utils/gen_module_file.py ../../../src/Scripting</Command>
+      <Message>Generating Gen_ReflectionInit.h!</Message>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Analyze|x64'">
     <ClCompile>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level4</WarningLevel>
       <PreprocessorDefinitions>NDEBUG;WIN32;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\..\..\src\Scripting\include;..\..\..\src\Memory\include;..\..\..\src\Shared\include;..\..\..\src\Game\include;..\..\..\dependencies\EASTL\include;..\..\..\dependencies\rapidjson;..\..\..\frameworks\Gaff\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -182,12 +193,17 @@
       <OptimizeReferences>true</OptimizeReferences>
       <ImportLibrary>..\..\..\build\output\x64\Analyze\ScriptingModule64a.lib</ImportLibrary>
     </Link>
+    <PreBuildEvent>
+      <Command>py ../../../utils/gen_module_file.py ../../../src/Scripting</Command>
+      <Message>Generating Gen_ReflectionInit.h!</Message>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">
     <ClCompile>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level4</WarningLevel>
       <PreprocessorDefinitions>NDEBUG;SHIB_PROFILE;WIN32;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\..\..\src\Scripting\include;..\..\..\src\Memory\include;..\..\..\src\Shared\include;..\..\..\src\Game\include;..\..\..\dependencies\EASTL\include;..\..\..\dependencies\rapidjson;..\..\..\frameworks\Gaff\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -206,12 +222,17 @@
       <OptimizeReferences>true</OptimizeReferences>
       <ImportLibrary>..\..\..\build\output\x64\Profile\ScriptingModule64p.lib</ImportLibrary>
     </Link>
+    <PreBuildEvent>
+      <Command>py ../../../utils/gen_module_file.py ../../../src/Scripting</Command>
+      <Message>Generating Gen_ReflectionInit.h!</Message>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Optimized_Debug|x64'">
     <ClCompile>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level4</WarningLevel>
       <PreprocessorDefinitions>_DEBUG;DEBUG;WIN32;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\..\..\src\Scripting\include;..\..\..\src\Memory\include;..\..\..\src\Shared\include;..\..\..\src\Game\include;..\..\..\dependencies\EASTL\include;..\..\..\dependencies\rapidjson;..\..\..\frameworks\Gaff\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -230,6 +251,10 @@
       <OptimizeReferences>true</OptimizeReferences>
       <ImportLibrary>..\..\..\build\output\x64\Optimized_Debug\ScriptingModule64od.lib</ImportLibrary>
     </Link>
+    <PreBuildEvent>
+      <Command>py ../../../utils/gen_module_file.py ../../../src/Scripting</Command>
+      <Message>Generating Gen_ReflectionInit.h!</Message>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\src\Scripting\Shibboleth_ScriptingModule.cpp" />

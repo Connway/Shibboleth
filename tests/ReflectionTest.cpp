@@ -25,6 +25,7 @@ THE SOFTWARE.
 
 #include <Shibboleth_Reflection.h>
 #include <Shibboleth_App.h>
+#include <Gaff_DynamicModule.h>
 
 Shibboleth::App g_app;
 
@@ -345,4 +346,20 @@ TEST_CASE("reflection array/vector test", "[shibboleth_reflection_vector_array]"
 	REQUIRE(base_var->getElementT<Base>(base_ptr, 1).a == 40);
 	printf("SetElement Base Array[0]: %i\n", base_var->getElementT<Base>(base_ptr, 0).a);
 	printf("SetElement Base Array[1]: %i\n", base_var->getElementT<Base>(base_ptr, 1).a);
+}
+
+TEST_CASE("reflection module test", "[shibboleth_reflection_module]")
+{
+	Gaff::DynamicModule module;
+	bool ret = module.load("ScriptingModule" BIT_EXTENSION);
+
+	REQUIRE(ret);
+
+	if (ret) {
+		using InitFunc = bool (*)(Shibboleth::IApp*);
+		InitFunc init = module.getFunc<InitFunc>("InitModule");
+		init(&g_app);
+	}
+
+	g_app.destroy();
 }

@@ -20,12 +20,23 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#include <Shibboleth_Utilities.h>
-#include <Gen_ReflectionInit.h>
+#pragma once
 
-DYNAMICEXPORT_C bool InitModule(Shibboleth::IApp* app)
+#include "Gaff_ReflectionInterfaces.h"
+
+NS_GAFF
+
+static IReflection* g_head = nullptr;
+
+void AddToReflectionChain(IReflection* reflection)
 {
-	Shibboleth::SetApp(*app);
-	Gen::InitReflection();
-	return true;
+	reflection->next = g_head;
+	g_head = reflection;
 }
+
+IReflection* GetReflectionChainHead(void)
+{
+	return g_head;
+}
+
+NS_END

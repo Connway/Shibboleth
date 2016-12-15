@@ -29,7 +29,21 @@ NS_GAFF
 
 class ISerializeReader;
 class ISerializeWriter;
-class ISerializeInfo;
+
+class IReflection
+{
+public:
+	virtual ~IReflection(void) {}
+
+	virtual void init(void) = 0;
+
+	virtual void load(ISerializeReader& reader, void* object) const = 0;
+	virtual void save(ISerializeWriter& writer, const void* object) const = 0;
+	virtual const char* getName(void) const = 0;
+	virtual ReflectionHash getHash(void) const = 0;
+
+	IReflection* next = nullptr;
+};
 
 class IReflectionVar
 {
@@ -132,7 +146,7 @@ public:
 
 	virtual ~IReflectionDefinition(void) {}
 
-	virtual const ISerializeInfo& getReflectionInstance(void) const = 0;
+	virtual const IReflection& getReflectionInstance(void) const = 0;
 
 	virtual void load(ISerializeReader& reader, void* object) const = 0;
 	virtual void save(ISerializeWriter& writer, const void* object) const = 0;
