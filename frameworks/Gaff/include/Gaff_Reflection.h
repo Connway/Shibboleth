@@ -32,7 +32,7 @@ THE SOFTWARE.
 #define GAFF_TEMPLATE_REFLECTION_CLASS(x) class x
 
 #define GAFF_REFLECTION_DECLARE_COMMON(type, allocator) \
-	class Reflection<type> final : public Gaff::ISerializeInfo \
+	class Reflection<type> final : public Gaff::IReflection \
 	{ \
 	private: \
 		Gaff::ReflectionVersion<type> _version; \
@@ -46,6 +46,7 @@ THE SOFTWARE.
 		Reflection(void) \
 		{ \
 			BuildReflection(_version); \
+			Gaff::AddToReflectionChain(this); \
 		} \
 		const char* getName(void) const override \
 		{ \
@@ -356,7 +357,7 @@ NS_END
 
 #define GAFF_POD_SERIALIZABLE(type, read_write_suffix) \
 	template <> \
-	class Reflection<type> final : public Gaff::ISerializeInfo \
+	class Reflection<type> final : public Gaff::IReflection \
 	{ \
 	public: \
 		constexpr static bool HasReflection = true; \
@@ -407,7 +408,7 @@ NS_END
 
 #define GAFF_REFLECTION_DECLARE_DEFAULT_AND_POD() \
 	template <class T> \
-	class Reflection final : public Gaff::ISerializeInfo \
+	class Reflection final : public Gaff::IReflection \
 	{ \
 	public: \
 		constexpr static bool HasReflection = false; \
@@ -513,6 +514,11 @@ NS_END
 #define REFLECTION_CAST(T, object) *REFLECTION_CAST_PTR(T, &object)
 
 NS_GAFF
+
+class IReflection;
+
+void AddToReflectionChain(IReflection* reflection);
+IReflection* GetReflectionChainHead(void);
 
 using ReflectionHash = Hash32;
 //using ReflectionHash = Hash64;

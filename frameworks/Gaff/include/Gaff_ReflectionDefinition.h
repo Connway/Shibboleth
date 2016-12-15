@@ -22,7 +22,7 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Gaff_IReflectionDefinition.h"
+#include "Gaff_ReflectionInterfaces.h"
 #include "Gaff_HashString.h"
 #include "Gaff_VectorMap.h"
 #include "Gaff_Assert.h"
@@ -108,7 +108,7 @@ public:
 
 	void setAllocator(const Allocator& allocator);
 
-	const ISerializeInfo& getReflectionInstance(void) const override;
+	const IReflection& getReflectionInstance(void) const override;
 
 	int32_t getNumVariables(void) const override;
 	ReflectionHash getVariableHash(int32_t index) const override;
@@ -266,7 +266,7 @@ private:
 	VectorMap<ReflectionHashString<Allocator>, ptrdiff_t, Allocator> _base_class_offsets;
 	VectorMap<ReflectionHashString<Allocator>, IVarPtr, Allocator> _vars;
 
-	const ISerializeInfo* _reflection_instance = nullptr;
+	const IReflection* _reflection_instance = nullptr;
 	Allocator _allocator;
 
 	int32_t _base_classes_remaining = 0;

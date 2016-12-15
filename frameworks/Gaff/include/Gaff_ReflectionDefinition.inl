@@ -538,7 +538,7 @@ void ReflectionDefinition<T, Allocator>::setAllocator(const Allocator& allocator
 }
 
 template <class T, class Allocator>
-const ISerializeInfo& ReflectionDefinition<T, Allocator>::getReflectionInstance(void) const
+const IReflection& ReflectionDefinition<T, Allocator>::getReflectionInstance(void) const
 {
 	return GAFF_REFLECTION_NAMESPACE::Reflection<T>::GetInstance();
 }

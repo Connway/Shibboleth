@@ -227,6 +227,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\..\src\Scripting\include\Gen_ReflectionInit.h" />
     <ClInclude Include="..\..\..\src\Scripting\include\Shibboleth_AngelScript.h" />
     <ClInclude Include="..\..\..\src\Scripting\include\Shibboleth_ChaiScript.h" />
     <ClInclude Include="..\..\..\src\Scripting\include\Shibboleth_ChaiScriptComponent.h" />

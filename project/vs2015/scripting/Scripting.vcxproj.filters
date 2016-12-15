@@ -6,6 +6,9 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\..\src\Scripting\include\Gen_ReflectionInit.h">
+      <Filter>include</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\src\Scripting\include\Shibboleth_AngelScript.h">
       <Filter>include</Filter>
     </ClInclude>

@@ -22,8 +22,6 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Gaff_Hash.h"
-
 NS_GAFF
 
 class ISerializeReader
@@ -68,19 +66,6 @@ public:
 
 	virtual void writeString(const char* value, size_t size) const = 0;
 	virtual void writeString(const char* value) const = 0;
-};
-
-class ISerializeInfo
-{
-public:
-	virtual ~ISerializeInfo(void) {}
-
-	virtual void init(void) = 0;
-
-	virtual void load(ISerializeReader& reader, void* object) const = 0;
-	virtual void save(ISerializeWriter& writer, const void* object) const = 0;
-	virtual const char* getName(void) const = 0;
-	virtual ReflectionHash getHash(void) const = 0;
 };
 
 NS_END
