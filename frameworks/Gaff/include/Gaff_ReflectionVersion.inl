@@ -43,6 +43,7 @@ template <class T>
 template <class... Args>
 ReflectionVersion<T>& ReflectionVersion<T>::ctor(void)
 {
+	_hash = GAFF_REFLECTION_NAMESPACE::CalcTemplateHash<Args...>(_hash);
 	return *this;
 }
 

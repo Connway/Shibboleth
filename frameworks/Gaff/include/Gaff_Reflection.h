@@ -440,21 +440,34 @@ NS_END
 	template <class First, class... Rest> \
 	struct CalcTemplateHashHelper<First, Rest...> \
 	{ \
-		constexpr static Gaff::ReflectionHash Hash(Gaff::ReflectionHash init) \
+		constexpr static Gaff::Hash32 Hash(Gaff::Hash32 init) \
 		{ \
-			return CalcTemplateHashHelper<Rest...>::Hash(REFL_HASH_STRING_CONST(Reflection<First>::GetName(), init)); \
+			return CalcTemplateHashHelper<Rest...>::Hash(Gaff::FNV1aHash32StringConst(Reflection<First>::GetName(), init)); \
+		} \
+		constexpr static Gaff::Hash64 Hash(Gaff::Hash64 init) \
+		{ \
+			return CalcTemplateHashHelper<Rest...>::Hash(Gaff::FNV1aHash64StringConst(Reflection<First>::GetName(), init)); \
 		} \
 	}; \
 	template <> \
 	struct CalcTemplateHashHelper<> \
 	{ \
-		constexpr static Gaff::ReflectionHash Hash(Gaff::ReflectionHash init) \
+		constexpr static Gaff::Hash32 Hash(Gaff::Hash32 init) \
 		{ \
-			return init; \
+			return Gaff::FNV1aHash32StringConst("void", init); \
+		} \
+		constexpr static Gaff::Hash64 Hash(Gaff::Hash64 init) \
+		{ \
+			return Gaff::FNV1aHash64StringConst("void", init); \
 		} \
 	}; \
 	template <class... T> \
-	constexpr Gaff::ReflectionHash CalcTemplateHash(Gaff::ReflectionHash init) \
+	constexpr Gaff::Hash32 CalcTemplateHash(Gaff::Hash32 init) \
+	{ \
+		return CalcTemplateHashHelper<T...>::Hash(init); \
+	} \
+	template <class... T> \
+	constexpr Gaff::Hash64 CalcTemplateHash(Gaff::Hash64 init) \
 	{ \
 		return CalcTemplateHashHelper<T...>::Hash(init); \
 	} \
@@ -501,6 +514,9 @@ NS_END
 
 #define REFL_HASH_STRING_CONST Gaff::FNV1aHash32StringConst
 //#define REFL_HASH_CONST Gaff::FNV1aHash64StringConst
+
+#define REFL_INIT_HASH INIT_HASH32
+//#define REFL_INIT_HASH INIT_HASH64
 
 #define REFLECTION_CAST_PTR_NAME(T, name, object) \
 	reinterpret_cast<T*>( \
