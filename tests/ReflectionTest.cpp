@@ -348,6 +348,36 @@ TEST_CASE("reflection array/vector test", "[shibboleth_reflection_vector_array]"
 	printf("SetElement Base Array[1]: %i\n", base_var->getElementT<Base>(base_ptr, 1).a);
 }
 
+
+class CtorTest
+{
+public:
+	CtorTest(void) {}
+	CtorTest(int val): a(val) {}
+
+	int a = 200;
+
+	SHIB_REFLECTION_CLASS_DECLARE(CtorTest);
+};
+
+SHIB_REFLECTION_DECLARE(CtorTest);
+SHIB_REFLECTION_DEFINE(CtorTest);
+SHIB_REFLECTION_CLASS_DEFINE_BEGIN(CtorTest)
+	.ctor<>()
+	.ctor<int>()
+	.var("a", &CtorTest::a)
+SHIB_REFLECTION_CLASS_DEFINE_END(CtorTest)
+
+TEST_CASE("reflection factory test", "[shibboleth_factory]")
+{
+	Shibboleth::Reflection<CtorTest>::Init();
+	CtorTest* test_a = Shibboleth::Reflection<CtorTest>::GetReflectionDefinition().create();
+	CtorTest* test_b = Shibboleth::Reflection<CtorTest>::GetReflectionDefinition().create(100);
+
+	REQUIRE(test_a->a == 200);
+	REQUIRE(test_b->a == 100);
+}
+
 TEST_CASE("reflection module test", "[shibboleth_reflection_module]")
 {
 	Gaff::DynamicModule module;

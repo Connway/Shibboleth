@@ -22,6 +22,12 @@ THE SOFTWARE.
 
 NS_GAFF
 
+template <class T, class... Args>
+void* FactoryFunc(IAllocator& allocator, Args&&... args)
+{
+	return GAFF_ALLOCT(T, allocator, std::forward<Args>(args)...);
+}
+
 // VarPtr
 template <class T, class Allocator>
 template <class Var>
@@ -534,6 +540,8 @@ template <class T, class Allocator>
 void ReflectionDefinition<T, Allocator>::setAllocator(const Allocator& allocator)
 {
 	_base_class_offsets.set_allocator(allocator);
+	_ctors.set_allocator(allocator);
+	_vars.set_allocator(allocator);
 	_allocator = allocator;
 }
 
@@ -568,6 +576,13 @@ IReflectionVar* ReflectionDefinition<T, Allocator>::getVariable(ReflectionHash n
 {
 	GAFF_ASSERT(Find(_vars, name) != _vars.end());
 	return getVar(name);
+}
+
+template <class T, class Allocator>
+IReflectionDefinition::VoidFunc ReflectionDefinition<T, Allocator>::getFactory(ReflectionHash ctor_hash) const
+{
+	auto it = _ctors.find(ctor_hash);
+	return it == _ctors.end() ? 0 : it->second;
 }
 
 template <class T, class Allocator>
@@ -645,6 +660,12 @@ template <class T, class Allocator>
 template <class... Args>
 ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::ctor(void)
 {
+	ReflectionHash hash = GAFF_REFLECTION_NAMESPACE::CalcTemplateHash<Args...>(REFL_INIT_HASH);
+	GAFF_ASSERT(!getFactory(hash));
+
+	void* (*factory_func)(IAllocator&, Args&&...) = FactoryFunc<T, Args...>;
+	_ctors.emplace(hash, reinterpret_cast<VoidFunc>(factory_func));
+
 	return *this;
 }
 

@@ -93,6 +93,12 @@ public:
 		virtual ~IVar(void) {}
 	};
 
+	template <class... Args>
+	T* create(Args&&... args) const
+	{
+		return createAlloc<T>(_allocator, std::forward<Args>(args)...);
+	}
+
 	GAFF_STRUCTORS_DEFAULT(ReflectionDefinition);
 	GAFF_NO_COPY(ReflectionDefinition);
 	GAFF_NO_MOVE(ReflectionDefinition);
@@ -114,6 +120,8 @@ public:
 	ReflectionHash getVariableHash(int32_t index) const override;
 	IReflectionVar* getVariable(int32_t index) const override;
 	IReflectionVar* getVariable(ReflectionHash name) const override;
+
+	VoidFunc getFactory(ReflectionHash ctor_hash) const override;
 
 	const ReflectionHashString<Allocator>& getVariableName(int32_t index) const;
 	IVar* getVar(int32_t index) const;
@@ -265,9 +273,10 @@ private:
 
 	VectorMap<ReflectionHashString<Allocator>, ptrdiff_t, Allocator> _base_class_offsets;
 	VectorMap<ReflectionHashString<Allocator>, IVarPtr, Allocator> _vars;
+	VectorMap<ReflectionHash, VoidFunc, Allocator> _ctors;
 
 	const IReflection* _reflection_instance = nullptr;
-	Allocator _allocator;
+	mutable Allocator _allocator;
 
 	int32_t _base_classes_remaining = 0;
 
