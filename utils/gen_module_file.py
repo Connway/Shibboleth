@@ -81,8 +81,11 @@ for n in namespaces:
 output = gen_file.format(include_files, using_namespaces, init_funcs)
 output_file = os.path.join(module_dir, "include", "Gen_ReflectionInit.h")
 
-f = open(output_file, "r")
+f = None
 
-if not output in f:
+if os.path.isfile(output_file):
+	f = open(output_file, "r")
+
+if not f or not output in f:
 	f = open(output_file, "w")
 	f.write(output)
