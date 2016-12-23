@@ -275,7 +275,6 @@ private:
 	VectorMap<ReflectionHashString<Allocator>, IVarPtr, Allocator> _vars;
 	VectorMap<ReflectionHash, VoidFunc, Allocator> _ctors;
 
-	const IReflection* _reflection_instance = nullptr;
 	mutable Allocator _allocator;
 
 	int32_t _base_classes_remaining = 0;

@@ -629,7 +629,7 @@ template <class T, class Allocator>
 template <class Base>
 ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::base(void)
 {
-	base<Base>(Base::GetReflectionName(), Base::GetReflectionHash());
+	base<Base>(GAFF_REFLECTION_NAMESPACE::Reflection<Base>::GetName(), GAFF_REFLECTION_NAMESPACE::Reflection<Base>::GetHash());
 
 	// Add IVarPtr's from base class.
 	if (GAFF_REFLECTION_NAMESPACE::Reflection<Base>::g_defined) {

@@ -20,23 +20,15 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#pragma once
+#include "Shibboleth_AngelScriptComponent.h"
 
-#include "Gaff_ReflectionInterfaces.h"
+SHIB_REFLECTION_DEFINE(Shibboleth::AngelScriptComponent)
 
-NS_GAFF
+NS_SHIBBOLETH
 
-static IReflection* g_head = nullptr;
-
-void AddToReflectionChain(IReflection* reflection)
-{
-	reflection->next = g_head;
-	g_head = reflection;
-}
-
-IReflection* GetReflectionChainHead(void)
-{
-	return g_head;
-}
+SHIB_REFLECTION_CLASS_DEFINE_BEGIN(AngelScriptComponent)
+	.BASE(Component)
+	//.var("Script", &AngelScriptComponent::_resource)
+SHIB_REFLECTION_CLASS_DEFINE_END(AngelScriptComponent)
 
 NS_END

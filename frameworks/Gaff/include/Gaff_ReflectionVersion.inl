@@ -36,7 +36,7 @@ template <class T>
 template <class Base>
 ReflectionVersion<T>& ReflectionVersion<T>::base(void)
 {
-	return base<Base>(Base::GetReflectionName(), Base::GetReflectionHash());
+	return base<Base>(GAFF_REFLECTION_NAMESPACE::Reflection<Base>::GetName(), GAFF_REFLECTION_NAMESPACE::Reflection<Base>::GetHash());
 }
 
 template <class T>
@@ -82,11 +82,6 @@ ReflectionVersion<T>& ReflectionVersion<T>::func(const char(&name)[size], Ret (T
 	_hash = FNV1aHash64(name, size, _hash);
 	_hash = FNV1aHash64T(&ptr, _hash);
 	return *this;
-}
-
-template <class T>
-void ReflectionVersion<T>::finish(void)
-{
 }
 
 template <class T>

@@ -107,13 +107,14 @@ NS_END
 				Shibboleth::GetApp().getReflection(REFL_HASH_CONST(#type)) \
 			) \
 		); \
-		Gaff::ReflectionVersion<type> version; \
-		BuildReflection(version); \
-		GAFF_ASSERT_MSG( \
-			version.getHash() == GetInstance()._version.getHash(), \
-			"Version hash for " #type " does not match!" \
-		); \
-		if (!g_reflection_definition) { \
+		if (g_reflection_definition) { \
+			Gaff::ReflectionVersion<type> version; \
+			BuildReflection(version); \
+			GAFF_ASSERT_MSG( \
+				version.getHash() == g_reflection_definition->getReflectionInstance().getVersion(), \
+				"Version hash for " #type " does not match!" \
+			); \
+		} else { \
 			g_reflection_definition = reinterpret_cast< Gaff::ReflectionDefinition<type, ProxyAllocator>* >( \
 				ShibbolethAllocate( \
 					sizeof(Gaff::ReflectionDefinition<type, ProxyAllocator>), \
@@ -133,7 +134,8 @@ NS_END
 	} \
 	SHIB_REFLECTION_DEFINE_BEGIN_CUSTOM_BUILDER(type)
 
-#define SHIB_REFLECTION_DEFINE_END(type) \
+#define SHIB_REFLECTION_DEFINE_END(type, ...) \
+			g_reflection_definition->finish(); \
 		} \
 	}
 
@@ -192,14 +194,15 @@ NS_END
 				Shibboleth::GetApp().getReflection(GetHash()) \
 			) \
 		); \
-		Gaff::ReflectionVersion< type<__VA_ARGS__> > version; \
-		type<__VA_ARGS__>::BuildReflection(version); \
-		GAFF_ASSERT_MSG( \
-			version.getHash() == GetInstance()._version.getHash(), \
-			"Version hash for %s does not match!", \
-			GetName() \
-		); \
-		if (!g_reflection_definition) { \
+		if (g_reflection_definition) { \
+			Gaff::ReflectionVersion< type<__VA_ARGS__> > version; \
+			type<__VA_ARGS__>::BuildReflection(version); \
+			GAFF_ASSERT_MSG( \
+				version.getHash() == g_reflection_definition->getReflectionInstance().getVersion(), \
+				"Version hash for %s does not match!", \
+				GetName() \
+			); \
+		} else { \
 			g_reflection_definition = reinterpret_cast< Gaff::ReflectionDefinition<type<__VA_ARGS__>, ProxyAllocator>* >( \
 				ShibbolethAllocate( \
 					sizeof(Gaff::ReflectionDefinition<type<__VA_ARGS__>, ProxyAllocator>), \
@@ -220,9 +223,7 @@ NS_END
 	} \
 	SHIB_TEMPLATE_REFLECTION_DEFINE_BEGIN_CUSTOM_BUILDER(type, __VA_ARGS__)
 
-#define SHIB_TEMPLATE_REFLECTION_DEFINE_END(type, ...) \
-		} \
-	}
+#define SHIB_TEMPLATE_REFLECTION_DEFINE_END SHIB_REFLECTION_DEFINE_END
 
 #define SHIB_TEMPLATE_REFLECTION_BUILDER_BEGIN GAFF_TEMPLATE_REFLECTION_BUILDER_BEGIN
 #define SHIB_TEMPLATE_REFLECTION_BUILDER_END GAFF_TEMPLATE_REFLECTION_BUILDER_END

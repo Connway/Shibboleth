@@ -322,7 +322,6 @@
     <ClCompile Include="..\..\..\frameworks\Gaff\Gaff_Image.cpp" />
     <ClCompile Include="..\..\..\frameworks\Gaff\Gaff_JSON.cpp" />
     <ClCompile Include="..\..\..\frameworks\Gaff\Gaff_Math.cpp" />
-    <ClCompile Include="..\..\..\frameworks\Gaff\Gaff_Reflection.cpp" />
     <ClCompile Include="..\..\..\frameworks\Gaff\Gaff_SpinLock.cpp" />
     <ClCompile Include="..\..\..\frameworks\Gaff\Gaff_StackTrace_Linux.cpp" />
     <ClCompile Include="..\..\..\frameworks\Gaff\Gaff_StackTrace_Windows.cpp" />
