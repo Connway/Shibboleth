@@ -43,10 +43,10 @@ THE SOFTWARE.
 		friend class Gaff::ReflectionDefinition; \
 	public: \
 		constexpr static bool HasReflection = true; \
+		constexpr static bool HasClassReflection = Gaff::IsClassReflected<type>::value; \
 		Reflection(void) \
 		{ \
 			BuildReflection(_version); \
-			Gaff::AddToReflectionChain(this); \
 		} \
 		const char* getName(void) const override \
 		{ \
@@ -55,6 +55,10 @@ THE SOFTWARE.
 		Gaff::ReflectionHash getHash(void) const override \
 		{ \
 			return GetHash(); \
+		} \
+		Gaff::Hash64 getVersion(void) const override \
+		{ \
+			return GetVersion(); \
 		} \
 		void init(void) override \
 		{ \
@@ -67,6 +71,14 @@ THE SOFTWARE.
 		static Gaff::Hash64 GetVersion(void) \
 		{ \
 			return g_instance._version.getHash(); \
+		} \
+		static bool IsDefined(void) \
+		{ \
+			return g_defined; \
+		} \
+		static void RegisterOnDefinedCallback(void (*callback)(void)) \
+		{ \
+			g_on_defined_callbacks.emplace_back(callback); \
 		} \
 		template <class ReflectionBuilder> \
 		static void BuildReflection(ReflectionBuilder& builder); \
@@ -181,7 +193,7 @@ NS_END
 	GAFF_REFLECTION_DEFINE_BEGIN_CUSTOM_BUILDER(type, allocator)
 
 #define GAFF_REFLECTION_DEFINE_END(type, ...) \
-		.finish(); \
+		g_reflection_definition.finish(); \
 	}
 
 #define GAFF_REFLECTION_BUILDER_BEGIN(type) \
@@ -190,7 +202,7 @@ NS_END
 	{ \
 		builder
 
-#define GAFF_REFLECTION_BUILDER_END GAFF_REFLECTION_DEFINE_END
+#define GAFF_REFLECTION_BUILDER_END(type) ; }
 
 #define GAFF_REFLECTION_CLASS_DEFINE_BEGIN(type, allocator) \
 	const Gaff::ReflectionDefinition<type, allocator>& type::GetReflectionDefinition(void) \
@@ -202,7 +214,7 @@ NS_END
 	{ \
 		builder
 
-#define GAFF_REFLECTION_CLASS_DEFINE_END GAFF_REFLECTION_DEFINE_END
+#define GAFF_REFLECTION_CLASS_DEFINE_END(type, ...) ; }
 
 #define GAFF_TEMPLATE_REFLECTION_DECLARE(type, allocator, ...) \
 namespace GAFF_REFLECTION_NAMESPACE { \
@@ -321,7 +333,7 @@ NS_END
 	{ \
 		builder
 
-#define GAFF_TEMPLATE_REFLECTION_BUILDER_END GAFF_REFLECTION_DEFINE_END
+#define GAFF_TEMPLATE_REFLECTION_BUILDER_END GAFF_REFLECTION_BUILDER_END
 
 #define GAFF_TEMPLATE_REFLECTION_CLASS_DEFINE_BEGIN(type, allocator, ...) \
 	template < GAFF_FOR_EACH_COMMA(GAFF_TEMPLATE_REFLECTION_CLASS, __VA_ARGS__) > \
@@ -382,6 +394,10 @@ NS_END
 		{ \
 			return GetHash(); \
 		} \
+		Gaff::Hash64 getVersion(void) const override \
+		{ \
+			return GetVersion(); \
+		} \
 		static void Load(Gaff::ISerializeReader& reader, type& value) \
 		{ \
 			value = reader.read##read_write_suffix(); \
@@ -393,6 +409,10 @@ NS_END
 		constexpr static Gaff::ReflectionHash GetHash(void) \
 		{ \
 			return REFL_HASH_CONST(#type); \
+		} \
+		constexpr static Gaff::Hash64 GetVersion(void) \
+		{ \
+			return Gaff::FNV1aHash64Const(#type); \
 		} \
 		constexpr static const char* GetName(void) \
 		{ \
@@ -412,6 +432,7 @@ NS_END
 	{ \
 	public: \
 		constexpr static bool HasReflection = false; \
+		constexpr static bool HasClassReflection = false; \
 		Reflection(void) \
 		{ \
 			GAFF_ASSERT_MSG(false, "Unknown object type."); \
@@ -433,6 +454,18 @@ NS_END
 		{ \
 			GAFF_ASSERT_MSG(false, "Unknown object type."); \
 			return 0; \
+		} \
+		Gaff::Hash64 getVersion(void) const override \
+		{ \
+			GAFF_ASSERT_MSG(false, "Unknown object type."); \
+			return 0; \
+		} \
+		static bool IsDefined(void) \
+		{ \
+			return false; \
+		} \
+		static void RegisterOnDefinedCallback(void (*)(void)) \
+		{ \
 		} \
 	}; \
 	template <class...> \
@@ -531,20 +564,32 @@ NS_END
 
 NS_GAFF
 
-class IReflection;
-
-void AddToReflectionChain(IReflection* reflection);
-IReflection* GetReflectionChainHead(void);
-
 using ReflectionHash = Hash32;
 //using ReflectionHash = Hash64;
 
 using ReflectionHashFunc = ReflectionHash (*)(const char*, size_t);
 
+template <class C>
+class IsClassReflected
+{
+	template <class T>
+	constexpr static std::true_type testSignature(const void* (T::*)(void) const);
+
+	template <class T>
+	constexpr static decltype(testSignature(&T::getBasePointer)) test(std::nullptr_t);
+
+	template <class T>
+	constexpr static std::false_type test(...);
+
+public:
+	using type = decltype(test<C>(nullptr));
+	constexpr static bool value = type::value;
+};
+
 template <class T, class Base>
 const T* ReflectionCast(const Base& object)
 {
-	return object.getReflectionDefinition().getInterface<T>(&object.getBasePointer());
+	return object.getReflectionDefinition().getInterface<T>(object.getBasePointer());
 }
 
 template <class T, class Base>

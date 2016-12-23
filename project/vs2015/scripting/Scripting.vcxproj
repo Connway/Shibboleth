@@ -229,18 +229,15 @@
   <ItemGroup>
     <ClInclude Include="..\..\..\src\Scripting\include\Gen_ReflectionInit.h" />
     <ClInclude Include="..\..\..\src\Scripting\include\Shibboleth_AngelScript.h" />
-    <ClInclude Include="..\..\..\src\Scripting\include\Shibboleth_ChaiScript.h" />
-    <ClInclude Include="..\..\..\src\Scripting\include\Shibboleth_ChaiScriptComponent.h" />
-    <ClInclude Include="..\..\..\src\Scripting\include\Shibboleth_ChaiScriptResource.h" />
+    <ClInclude Include="..\..\..\src\Scripting\include\Shibboleth_AngelScriptComponent.h" />
+    <ClInclude Include="..\..\..\src\Scripting\include\Shibboleth_AngelScriptResource.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\src\Scripting\Shibboleth_ChaiScript.cpp" />
-    <ClCompile Include="..\..\..\src\Scripting\Shibboleth_ChaiScriptComponent.cpp" />
-    <ClCompile Include="..\..\..\src\Scripting\Shibboleth_ChaiScriptResource.cpp" />
+    <ClCompile Include="..\..\..\src\Scripting\Shibboleth_AngelScriptComponent.cpp" />
+    <ClCompile Include="..\..\..\src\Scripting\Shibboleth_AngelScriptResource.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\..\src\Scripting\include\Shibboleth_AngelScript.inl" />
-    <None Include="..\..\..\src\Scripting\include\Shibboleth_ChaiScript.inl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

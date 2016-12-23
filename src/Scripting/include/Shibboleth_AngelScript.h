@@ -23,11 +23,12 @@ THE SOFTWARE.
 #pragma once
 
 #include <Shibboleth_Reflection.h>
+#include <Gaff_IRefCounted.h>
 #include <angelscript.h>
 
 NS_SHIBBOLETH
 
-template <class T>
+template <class T, class B = T>
 class AngelScriptClassRegister
 {
 public:
@@ -43,56 +44,23 @@ public:
 	AngelScriptClassRegister& ctor(void);
 
 	template <class Var, size_t size>
-	AngelScriptClassRegister& var(const char(&name)[size], Var T::*ptr);
+	AngelScriptClassRegister& var(const char(&name)[size], Var B::*ptr);
 
 	template <class Ret, class Var, size_t size>
-	AngelScriptClassRegister& var(const char(&name)[size], Ret(T::*getter)(void) const, void (T::*setter)(Var));
+	AngelScriptClassRegister& var(const char(&name)[size], Ret(B::*getter)(void) const, void (B::*setter)(Var));
 
 	template <size_t size, class Ret, class... Args>
-	AngelScriptClassRegister& func(const char(&name)[size], Ret(T::*ptr)(Args...) const);
+	AngelScriptClassRegister& func(const char(&name)[size], Ret(B::*ptr)(Args...) const);
 
 	template <size_t size, class Ret, class... Args>
-	AngelScriptClassRegister& func(const char(&name)[size], Ret(T::*ptr)(Args...));
-
-	void finish(void);
+	AngelScriptClassRegister& func(const char(&name)[size], Ret(B::*ptr)(Args...));
 
 private:
-	asIScriptEngine* _engine = nullptr;
+	static asIScriptEngine* g_engine;
 	asDWORD _flags = asGetTypeTraits<T>();
-};
-
-template <class T, class B>
-class AngelScriptClassBaseRegister
-{
-public:
-	AngelScriptClassBaseRegister(asIScriptEngine* engine);
 
 	template <class Base>
-	AngelScriptClassBaseRegister& base(const char* name, Gaff::ReflectionHash hash);
-
-	template <class Base>
-	AngelScriptClassBaseRegister& base(void);
-
-	template <class... Args>
-	AngelScriptClassBaseRegister& ctor(void);
-
-	template <class Var, size_t size>
-	AngelScriptClassBaseRegister& var(const char(&name)[size], Var T::*ptr);
-
-	template <class Ret, class Var, size_t size>
-	AngelScriptClassBaseRegister& var(const char(&name)[size], Ret(T::*getter)(void) const, void (T::*setter)(Var));
-
-	template <size_t size, class Ret, class... Args>
-	AngelScriptClassBaseRegister& func(const char(&name)[size], Ret(T::*ptr)(Args...) const);
-
-	template <size_t size, class Ret, class... Args>
-	AngelScriptClassBaseRegister& func(const char(&name)[size], Ret(T::*ptr)(Args...));
-
-	void finish(void);
-
-private:
-	asIScriptEngine* _engine = nullptr;
-	asDWORD _flags = asGetTypeTraits<T>();
+	static void RegisterBaseClass(void);
 };
 
 NS_END

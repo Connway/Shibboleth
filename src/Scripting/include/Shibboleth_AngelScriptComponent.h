@@ -27,15 +27,15 @@ THE SOFTWARE.
 
 NS_SHIBBOLETH
 
-class ChaiScriptComponent final : public Component
+class AngelScriptComponent final : public Component
 {
 public:
 
 private:
 
-	SHIB_REFLECTION_CLASS_DECLARE(ChaiScriptComponent);
+	SHIB_REFLECTION_CLASS_DECLARE(AngelScriptComponent);
 };
 
 NS_END
 
-SHIB_REFLECTION_DECLARE(ChaiScriptComponent)
+SHIB_REFLECTION_DECLARE(AngelScriptComponent)

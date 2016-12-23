@@ -42,8 +42,7 @@ public:
 	virtual void save(ISerializeWriter& writer, const void* object) const = 0;
 	virtual const char* getName(void) const = 0;
 	virtual ReflectionHash getHash(void) const = 0;
-
-	IReflection* next = nullptr;
+	virtual Hash64 getVersion(void) const = 0;
 };
 
 class IReflectionVar

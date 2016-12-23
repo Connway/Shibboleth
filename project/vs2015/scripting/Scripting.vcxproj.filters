@@ -12,26 +12,19 @@
     <ClInclude Include="..\..\..\src\Scripting\include\Shibboleth_AngelScript.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\src\Scripting\include\Shibboleth_ChaiScript.h">
+    <ClInclude Include="..\..\..\src\Scripting\include\Shibboleth_AngelScriptComponent.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\src\Scripting\include\Shibboleth_ChaiScriptComponent.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\src\Scripting\include\Shibboleth_ChaiScriptResource.h">
+    <ClInclude Include="..\..\..\src\Scripting\include\Shibboleth_AngelScriptResource.h">
       <Filter>include</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\src\Scripting\Shibboleth_ChaiScript.cpp" />
-    <ClCompile Include="..\..\..\src\Scripting\Shibboleth_ChaiScriptComponent.cpp" />
-    <ClCompile Include="..\..\..\src\Scripting\Shibboleth_ChaiScriptResource.cpp" />
+    <ClCompile Include="..\..\..\src\Scripting\Shibboleth_AngelScriptComponent.cpp" />
+    <ClCompile Include="..\..\..\src\Scripting\Shibboleth_AngelScriptResource.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\..\src\Scripting\include\Shibboleth_AngelScript.inl">
-      <Filter>include</Filter>
-    </None>
-    <None Include="..\..\..\src\Scripting\include\Shibboleth_ChaiScript.inl">
       <Filter>include</Filter>
     </None>
   </ItemGroup>

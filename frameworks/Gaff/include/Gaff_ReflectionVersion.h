@@ -45,14 +45,11 @@ public:
 	template <class Ret, class Var, size_t size>
 	ReflectionVersion& var(const char(&name)[size], Ret (T::*getter)(void) const, void (T::*setter)(Var));
 
-
 	template <size_t size, class Ret, class... Args>
 	ReflectionVersion& func(const char (&name)[size], Ret (T::*ptr)(Args...) const);
 
 	template <size_t size, class Ret, class... Args>
 	ReflectionVersion& func(const char (&name)[size], Ret (T::*ptr)(Args...));
-
-	void finish(void);
 
 	Hash64 getHash(void) const;
 

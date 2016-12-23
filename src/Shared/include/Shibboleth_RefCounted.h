@@ -26,7 +26,7 @@ THE SOFTWARE.
 #include <Gaff_IRefCounted.h>
 #include <atomic>
 
-#define SHIB_REF_COUNTED(Class) \
+#define SHIB_REF_COUNTED() \
 public: \
 	void addRef(void) const \
 	{ \
@@ -36,7 +36,7 @@ public: \
 	{ \
 		int32_t new_count = --_count; \
 		if (!new_count) { \
-			SHIB_FREET(this, *GetAllocator()); \
+			SHIB_FREET(this, *Shibboleth::GetAllocator()); \
 		} \
 	} \
 	int32_t getRefCount(void) const \
@@ -44,7 +44,7 @@ public: \
 		return _count; \
 	} \
 private: \
-	mutable std::atomic_int32_t _count = 0 // Use C++11 in-class initialization so that classes don't have to modify constructors.
+	mutable std::atomic_int32_t _count = 0
 
 NS_SHIBBOLETH
 
