@@ -31,7 +31,7 @@ class ReflectionVersion final
 {
 public:
 	template <class Base>
-	ReflectionVersion& base(const char* name, ReflectionHash /*hash*/);
+	ReflectionVersion& base(const char* name);
 
 	template <class Base>
 	ReflectionVersion& base(void);

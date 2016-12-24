@@ -108,9 +108,9 @@ public:
 	void load(ISerializeReader& reader, T& object) const;
 	void save(ISerializeWriter& writer, const T& object) const;
 
-	const void* getInterface(ReflectionHash class_hash, const void* object) const override;
-	void* getInterface(ReflectionHash class_hash, void* object) const override;
-	bool hasInterface(ReflectionHash class_hash) const override;
+	const void* getInterface(Hash64 class_hash, const void* object) const override;
+	void* getInterface(Hash64 class_hash, void* object) const override;
+	bool hasInterface(Hash64 class_hash) const override;
 
 	void setAllocator(const Allocator& allocator);
 
@@ -121,14 +121,14 @@ public:
 	IReflectionVar* getVariable(int32_t index) const override;
 	IReflectionVar* getVariable(ReflectionHash name) const override;
 
-	VoidFunc getFactory(ReflectionHash ctor_hash) const override;
+	VoidFunc getFactory(Hash64 ctor_hash) const override;
 
 	const ReflectionHashString<Allocator>& getVariableName(int32_t index) const;
 	IVar* getVar(int32_t index) const;
 	IVar* getVar(ReflectionHash name) const;
 
 	template <class Base>
-	ReflectionDefinition& base(const char* name, ReflectionHash hash);
+	ReflectionDefinition& base(const char* name);
 
 	template <class Base>
 	ReflectionDefinition& base(void);
@@ -271,9 +271,9 @@ private:
 
 	using IVarPtr = UniquePtr<IVar, Allocator>;
 
-	VectorMap<ReflectionHashString<Allocator>, ptrdiff_t, Allocator> _base_class_offsets;
+	VectorMap<HashString64<Allocator>, ptrdiff_t, Allocator> _base_class_offsets;
 	VectorMap<ReflectionHashString<Allocator>, IVarPtr, Allocator> _vars;
-	VectorMap<ReflectionHash, VoidFunc, Allocator> _ctors;
+	VectorMap<Hash64, VoidFunc, Allocator> _ctors;
 
 	mutable Allocator _allocator;
 
@@ -290,7 +290,7 @@ NS_END
 
 #include "Gaff_ReflectionDefinition.inl"
 
-#define BASE(type) base<type>(#type, REFL_HASH_CONST(#type))
+#define BASE(type) base<type>(#type)
 
 #ifdef PLATFORM_WINDOWS
 	#pragma warning(pop)

@@ -504,7 +504,7 @@ void ReflectionDefinition<T, Allocator>::save(ISerializeWriter& /*writer*/, cons
 }
 
 template <class T, class Allocator>
-const void* ReflectionDefinition<T, Allocator>::getInterface(ReflectionHash class_hash, const void* object) const
+const void* ReflectionDefinition<T, Allocator>::getInterface(Hash64 class_hash, const void* object) const
 {
 	if (class_hash == GAFF_REFLECTION_NAMESPACE::Reflection<T>::GetHash()) {
 		return object;
@@ -520,13 +520,13 @@ const void* ReflectionDefinition<T, Allocator>::getInterface(ReflectionHash clas
 }
 
 template <class T, class Allocator>
-void* ReflectionDefinition<T, Allocator>::getInterface(ReflectionHash class_hash, void* object) const
+void* ReflectionDefinition<T, Allocator>::getInterface(Hash64 class_hash, void* object) const
 {
 	return const_cast<void*>(getInterface(class_hash, const_cast<const void*>(object)));
 }
 
 template <class T, class Allocator>
-bool ReflectionDefinition<T, Allocator>::hasInterface(ReflectionHash class_hash) const
+bool ReflectionDefinition<T, Allocator>::hasInterface(Hash64 class_hash) const
 {
 	if (class_hash == GAFF_REFLECTION_NAMESPACE::Reflection<T>::GetHash()) {
 		return true;
@@ -579,7 +579,7 @@ IReflectionVar* ReflectionDefinition<T, Allocator>::getVariable(ReflectionHash n
 }
 
 template <class T, class Allocator>
-IReflectionDefinition::VoidFunc ReflectionDefinition<T, Allocator>::getFactory(ReflectionHash ctor_hash) const
+IReflectionDefinition::VoidFunc ReflectionDefinition<T, Allocator>::getFactory(Hash64 ctor_hash) const
 {
 	auto it = _ctors.find(ctor_hash);
 	return it == _ctors.end() ? 0 : it->second;
@@ -609,12 +609,12 @@ typename ReflectionDefinition<T, Allocator>::IVar* ReflectionDefinition<T, Alloc
 
 template <class T, class Allocator>
 template <class Base>
-ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::base(const char* name, ReflectionHash hash)
+ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::base(const char* name)
 {
 	const ptrdiff_t offset = Gaff::OffsetOfClass<T, Base>();
 	auto pair = std::move(
 		eastl::make_pair(
-			ReflectionHashString<Allocator>(name, hash, nullptr, _allocator),
+			HashString64<Allocator>(name, nullptr, _allocator),
 			offset
 		)
 	);
@@ -629,7 +629,7 @@ template <class T, class Allocator>
 template <class Base>
 ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::base(void)
 {
-	base<Base>(GAFF_REFLECTION_NAMESPACE::Reflection<Base>::GetName(), GAFF_REFLECTION_NAMESPACE::Reflection<Base>::GetHash());
+	base<Base>(GAFF_REFLECTION_NAMESPACE::Reflection<Base>::GetName());
 
 	// Add IVarPtr's from base class.
 	if (GAFF_REFLECTION_NAMESPACE::Reflection<Base>::g_defined) {
@@ -660,7 +660,7 @@ template <class T, class Allocator>
 template <class... Args>
 ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::ctor(void)
 {
-	ReflectionHash hash = GAFF_REFLECTION_NAMESPACE::CalcTemplateHash<Args...>(REFL_INIT_HASH);
+	Hash64 hash = GAFF_REFLECTION_NAMESPACE::CalcTemplateHash<Args...>(INIT_HASH64);
 	GAFF_ASSERT(!getFactory(hash));
 
 	void* (*factory_func)(IAllocator&, Args&&...) = FactoryFunc<T, Args...>;
@@ -676,7 +676,7 @@ ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::var(cons
 	static_assert(!std::is_pointer<Var>::value, "Cannot reflect pointers.");
 
 	eastl::pair<ReflectionHashString<Allocator>, IVarPtr> pair(
-		ReflectionHashString<Allocator>(name, size, nullptr, _allocator),
+		ReflectionHashString<Allocator>(name, size - 1, nullptr, _allocator),
 		IVarPtr(GAFF_ALLOCT(VarPtr<Var>, _allocator, ptr))
 	);
 
@@ -694,7 +694,7 @@ ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::var(cons
 	using PtrType = VarFuncPtr<Ret, Var>;
 
 	eastl::pair<ReflectionHashString<Allocator>, IVarPtr> pair(
-		ReflectionHashString<Allocator>(name, size, nullptr, _allocator),
+		ReflectionHashString<Allocator>(name, size - 1, nullptr, _allocator),
 		IVarPtr(GAFF_ALLOCT(PtrType, _allocator, getter, setter))
 	);
 
@@ -712,7 +712,7 @@ ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::var(cons
 	using PtrType = VectorPtr<Var, Vec_Allocator>;
 
 	eastl::pair<ReflectionHashString<Allocator>, IVarPtr> pair(
-		ReflectionHashString<Allocator>(name, size, nullptr, _allocator),
+		ReflectionHashString<Allocator>(name, size - 1, nullptr, _allocator),
 		IVarPtr(GAFF_ALLOCT(PtrType, _allocator, vec))
 	);
 
@@ -730,7 +730,7 @@ ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::var(cons
 	using PtrType = ArrayPtr<Var, array_size>;
 
 	eastl::pair<ReflectionHashString<Allocator>, IVarPtr> pair(
-		ReflectionHashString<Allocator>(name, name_size, nullptr, _allocator),
+		ReflectionHashString<Allocator>(name, name_size - 1, nullptr, _allocator),
 		IVarPtr(GAFF_ALLOCT(PtrType, _allocator, arr))
 	);
 
@@ -748,7 +748,7 @@ ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::func(con
 	//using PtrType = FuncPtr<Ret, Args...>;
 
 	//eastl::pair<ReflectionHashString<Allocator>, IVarPtr> pair(
-	//	ReflectionHashString<Allocator>(name, name_size, nullptr, _allocator),
+	//	ReflectionHashString<Allocator>(name, size - 1, nullptr, _allocator),
 	//	IVarPtr(GAFF_ALLOCT(PtrType, _allocator, arr))
 	//);
 
@@ -766,7 +766,7 @@ ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::func(con
 	//using PtrType = FuncPtr<Ret, Args...>;
 
 	//eastl::pair<ReflectionHashString<Allocator>, IVarPtr> pair(
-	//	ReflectionHashString<Allocator>(name, name_size, nullptr, _allocator),
+	//	ReflectionHashString<Allocator>(name, size - 1, nullptr, _allocator),
 	//	IVarPtr(GAFF_ALLOCT(PtrType, _allocator, arr))
 	//);
 

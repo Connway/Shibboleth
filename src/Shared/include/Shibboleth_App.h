@@ -62,8 +62,8 @@ public:
 
 	DynamicLoader::ModulePtr loadModule(const char* filename, const char* name) override;
 
-	const Gaff::IReflectionDefinition* getReflection(Gaff::ReflectionHash name) const override;
-	void registerReflection(Gaff::ReflectionHash name, Gaff::IReflectionDefinition* ref_def) override;
+	const Gaff::IReflectionDefinition* getReflection(Gaff::Hash64 name) const override;
+	void registerReflection(Gaff::Hash64 name, Gaff::IReflectionDefinition* ref_def) override;
 
 	bool isQuitting(void) const override;
 	void quit(void) override;
@@ -103,7 +103,7 @@ private:
 
 	bool _running;
 	MainLoopFunc _main_loop;
-	VectorMap< Gaff::ReflectionHash, UniquePtr<Gaff::IReflectionDefinition> > _reflection_map;
+	VectorMap< Gaff::Hash64, UniquePtr<Gaff::IReflectionDefinition> > _reflection_map;
 
 	MessageBroadcaster _broadcaster;
 	DynamicLoader _dynamic_loader;

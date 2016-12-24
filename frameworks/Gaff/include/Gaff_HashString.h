@@ -90,7 +90,8 @@ public:
 	explicit HashString(const HashStringTemp<T, HashType>& string, HashFunc hash = nullptr, const Allocator& allocator = Allocator());
 	explicit HashString(const T* string, HashFunc hash = nullptr, const Allocator& allocator = Allocator());
 	HashString(const T* string, size_t size, HashType hash, HashFunc hash_func = nullptr, const Allocator& allocator = Allocator());
-	HashString(const T* string, HashType hash, HashFunc hash_func = nullptr, const Allocator& allocator = Allocator());
+	// HashString64 gets build errors from this constructor, as Hash64 is the same data type as size_t.
+	//HashString(const T* string, HashType hash, HashFunc hash_func = nullptr, const Allocator& allocator = Allocator());
 	HashString(HashFunc hash = nullptr, const Allocator& allocator = Allocator());
 
 	HashString(const HashString<T, HashType, Allocator>& string) = default;

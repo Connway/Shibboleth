@@ -20,6 +20,11 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
+#ifdef PLATFORM_WINDOWS
+	#pragma warning(push)
+	#pragma warning(disable : 4127)
+#endif
+
 NS_SHIBBOLETH
 
 #define TEMP_DECL_SIZE 1024
@@ -133,47 +138,50 @@ struct BaseClassHelper<true>
 	{
 		char temp[TEMP_DECL_SIZE] = { 0 };
 
-		const T* (*const_refl_cast)(const B*) = ReflectionCastNotRefCounted<const T, const B>;
-		T* (*refl_cast)(B*) = ReflectionCastNotRefCounted<T, B>;
+		asDWORD t_flags = engine->GetTypeInfoByName(Reflection<T>::GetName())->GetFlags();
+		asDWORD b_flags = engine->GetTypeInfoByName(Reflection<B>::GetName())->GetFlags();
 
-		const B* (*const_impl_cast)(const T*) = ImpliedCast<const T, const B>;
-		B* (*impl_cast)(T*) = ImpliedCast<T, B>;
+		// Both need class reflection in order for this to work.
+		if (Reflection<T>::HasClassReflection && Reflection<B>::HasClassReflection) {
+			const T* (*const_refl_cast)(const B*) = nullptr;
+			T* (*refl_cast)(B*) = nullptr;
 
-		snprintf(temp, TEMP_DECL_SIZE, "%s& opCast()", Reflection<T>::GetName());
-		engine->RegisterObjectMethod(Reflection<B>::GetName(), temp, asFUNCTION(refl_cast), asCALL_CDECL_OBJLAST);
+			if (std::is_base_of<Gaff::IRefCounted, T>::value) {
+				const_refl_cast = ReflectionCastRefCounted<const T, const B>;
+				refl_cast = ReflectionCastRefCounted<T, B>;
 
-		snprintf(temp, TEMP_DECL_SIZE, "%s& opImplCast()", Reflection<B>::GetName());
-		engine->RegisterObjectMethod(Reflection<T>::GetName(), temp, asFUNCTION(impl_cast), asCALL_CDECL_OBJLAST);
+			} else if (t_flags & (asOBJ_REF | asOBJ_NOCOUNT)){
+				const_refl_cast = ReflectionCastNotRefCounted<const T, const B>;
+				refl_cast = ReflectionCastNotRefCounted<T, B>;
+			}
 
-		// Const versions
-		snprintf(temp, TEMP_DECL_SIZE, "const %s& opCast() const", Reflection<T>::GetName());
-		engine->RegisterObjectMethod(Reflection<B>::GetName(), temp, asFUNCTION(const_refl_cast), asCALL_CDECL_OBJLAST);
+			if (const_refl_cast && refl_cast) {
+				snprintf(temp, TEMP_DECL_SIZE, "const %s@ opCast() const", Reflection<T>::GetName());
+				engine->RegisterObjectMethod(Reflection<B>::GetName(), temp, asFUNCTION(const_refl_cast), asCALL_CDECL_OBJLAST);
 
-		snprintf(temp, TEMP_DECL_SIZE, "const %s& opImplCast() const", Reflection<B>::GetName());
-		engine->RegisterObjectMethod(Reflection<T>::GetName(), temp, asFUNCTION(const_impl_cast), asCALL_CDECL_OBJLAST);
-
-		if (std::is_base_of<Gaff::IRefCounted, T>::value) {
-			const_refl_cast = ReflectionCastRefCounted<const T, const B>;
-			refl_cast = ReflectionCastRefCounted<T, B>;
-
-			snprintf(temp, TEMP_DECL_SIZE, "%s@ opCast()", Reflection<T>::GetName());
-			engine->RegisterObjectMethod(Reflection<B>::GetName(), temp, asFUNCTION(refl_cast), asCALL_CDECL_OBJLAST);
-
-			// Const version
-			snprintf(temp, TEMP_DECL_SIZE, "const %s@ opCast() const", Reflection<T>::GetName());
-			engine->RegisterObjectMethod(Reflection<B>::GetName(), temp, asFUNCTION(const_refl_cast), asCALL_CDECL_OBJLAST);
+				snprintf(temp, TEMP_DECL_SIZE, "%s@ opCast()", Reflection<T>::GetName());
+				engine->RegisterObjectMethod(Reflection<B>::GetName(), temp, asFUNCTION(refl_cast), asCALL_CDECL_OBJLAST);
+			}
 		}
+
+		const B* (*const_impl_cast)(const T*) = nullptr;
+		B* (*impl_cast)(T*) = nullptr;
 
 		if (std::is_base_of<Gaff::IRefCounted, B>::value) {
 			const_impl_cast = ImpliedCastRefCounted<const T, const B>;
 			impl_cast = ImpliedCastRefCounted<T, B>;
 
-			snprintf(temp, TEMP_DECL_SIZE, "%s@ opImplCast()", Reflection<B>::GetName());
-			engine->RegisterObjectMethod(Reflection<T>::GetName(), temp, asFUNCTION(impl_cast), asCALL_CDECL_OBJLAST);
+		} else if (b_flags & (asOBJ_REF | asOBJ_NOCOUNT)) {
+			const_impl_cast = ImpliedCast<const T, const B>;
+			impl_cast = ImpliedCast<T, B>;
+		}
 
-			// Const version
+		if (const_impl_cast && impl_cast) {
 			snprintf(temp, TEMP_DECL_SIZE, "const %s@ opImplCast() const", Reflection<B>::GetName());
 			engine->RegisterObjectMethod(Reflection<T>::GetName(), temp, asFUNCTION(const_impl_cast), asCALL_CDECL_OBJLAST);
+
+			snprintf(temp, TEMP_DECL_SIZE, "%s@ opImplCast()", Reflection<B>::GetName());
+			engine->RegisterObjectMethod(Reflection<T>::GetName(), temp, asFUNCTION(impl_cast), asCALL_CDECL_OBJLAST);
 		}
 	}
 };
@@ -308,7 +316,7 @@ template <class T, class B>
 asIScriptEngine* AngelScriptClassRegister<T, B>::g_engine = nullptr;
 
 template <class T, class B>
-AngelScriptClassRegister<T, B>::AngelScriptClassRegister(asIScriptEngine* engine)
+AngelScriptClassRegister<T, B>::AngelScriptClassRegister(asIScriptEngine* engine, AngelScriptFlags as_flags)
 {
 	g_engine = engine;
 
@@ -316,16 +324,22 @@ AngelScriptClassRegister<T, B>::AngelScriptClassRegister(asIScriptEngine* engine
 		const auto& ref_def = Reflection<T>::GetReflectionDefinition();
 		int size = 0;
 
-		if (ref_def.hasInterface(REFL_HASH_STRING_CONST("Gaff::IRefCounted"))) {
-			_flags = asOBJ_REF;
+		if (ref_def.hasInterface(Gaff::FNV1aHash64Const("Gaff::IRefCounted"))) {
+			_flags = asOBJ_REF | ((as_flags & AS_NO_REF_COUNT) ? asOBJ_NOCOUNT : 0);
+
 		} else {
-			_flags |= asOBJ_VALUE;
-			size = static_cast<int>(sizeof(T));
+			if (as_flags & AS_VALUE_AS_REF) {
+				_flags = asOBJ_REF | asOBJ_NOCOUNT;
+			} else {
+				_flags = asGetTypeTraits<T>() | asOBJ_VALUE;
+				size = static_cast<int>(sizeof(T));
+			}
 		}
 
 		g_engine->RegisterObjectType(Reflection<T>::GetName(), size, _flags);
 
-		if (_flags & asOBJ_REF) {
+		// Is a reference that has ref counting.
+		if ((_flags & (asOBJ_REF | asOBJ_NOCOUNT)) == asOBJ_REF) {
 			AddReleaseFunc<B> add_ref = RefCountedHelper<std::is_base_of<Gaff::IRefCounted, B>::value>::GetAddRef<B>();
 			AddReleaseFunc<B> release = RefCountedHelper<std::is_base_of<Gaff::IRefCounted, B>::value>::GetRelease<B>();
 
@@ -335,7 +349,7 @@ AngelScriptClassRegister<T, B>::AngelScriptClassRegister(asIScriptEngine* engine
 			g_engine->RegisterObjectBehaviour(Reflection<T>::GetName(), asBEHAVE_ADDREF, "void f()", func_add_ref, asCALL_THISCALL);
 			g_engine->RegisterObjectBehaviour(Reflection<T>::GetName(), asBEHAVE_RELEASE, "void f()", func_release, asCALL_THISCALL);
 
-		} else {
+		} else if (_flags & asOBJ_VALUE) {
 			g_engine->RegisterObjectBehaviour(Reflection<T>::GetName(), asBEHAVE_DESTRUCT, "void f()", asFUNCTION(ObjectDestructor<B>), asCALL_CDECL_OBJFIRST);
 		}
 	}
@@ -343,7 +357,7 @@ AngelScriptClassRegister<T, B>::AngelScriptClassRegister(asIScriptEngine* engine
 
 template <class T, class B>
 template <class Base>
-AngelScriptClassRegister<T, B>& AngelScriptClassRegister<T, B>::base(const char* /*name*/, Gaff::ReflectionHash /*hash*/)
+AngelScriptClassRegister<T, B>& AngelScriptClassRegister<T, B>::base(const char*)
 {
 	return base<Base>();
 }
@@ -376,10 +390,12 @@ AngelScriptClassRegister<T, B>& AngelScriptClassRegister<T, B>::ctor(void)
 
 		// Register factory.
 		if (_flags & asOBJ_REF) {
-			snprintf(temp_a, TEMP_DECL_SIZE, "%s@ f(", Reflection<T>::GetName());
-			const char* decl = GenFuncDecl<Args...>(temp_a, temp_b);
+			if (!(_flags & asOBJ_NOCOUNT)) {
+				snprintf(temp_a, TEMP_DECL_SIZE, "%s@ f(", Reflection<T>::GetName());
+				const char* decl = GenFuncDecl<Args...>(temp_a, temp_b);
 
-			g_engine->RegisterObjectBehaviour(Reflection<T>::GetName(), asBEHAVE_FACTORY, decl, asFUNCTION(GAFF_SINGLE_ARG(ASFactoryFunc<T, Args...>)), asCALL_CDECL);
+				g_engine->RegisterObjectBehaviour(Reflection<T>::GetName(), asBEHAVE_FACTORY, decl, asFUNCTION(GAFF_SINGLE_ARG(ASFactoryFunc<T, Args...>)), asCALL_CDECL);
+			}
 
 		} else {
 			snprintf(temp_a, TEMP_DECL_SIZE, "%s", "void f(");
@@ -507,3 +523,7 @@ void AngelScriptClassRegister<T, B>::RegisterBaseClass(void)
 }
 
 NS_END
+
+#ifdef PLATFORM_WINDOWS
+	#pragma warning(pop)
+#endif

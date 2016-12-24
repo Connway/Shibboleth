@@ -184,7 +184,7 @@ HashString<T, HashType, Allocator>::HashString(const HashStringTemp<T, HashType>
 }
 
 template <class T, class HashType, class Allocator>
-HashString<T, HashType, Allocator>::HashString(const T* string, size_t size, HashFunc hash, const Allocator& allocator) :
+HashString<T, HashType, Allocator>::HashString(const T* string, size_t size, HashFunc hash, const Allocator& allocator):
 	_string(string, size, allocator), _hash_value(0), _hash_func(hash)
 {
 	_hash_value = CalculateHash(_string, hash);
@@ -203,11 +203,11 @@ HashString<T, HashType, Allocator>::HashString(const T* string, size_t size, Has
 {
 }
 
-template <class T, class HashType, class Allocator>
-HashString<T, HashType, Allocator>::HashString(const T* string, HashType hash, HashFunc hash_func, const Allocator& allocator):
-	_string(string, allocator), _hash_value(hash), _hash_func(hash_func)
-{
-}
+//template <class T, class HashType, class Allocator>
+//HashString<T, HashType, Allocator>::HashString(const T* string, HashType hash, HashFunc hash_func, const Allocator& allocator):
+//	_string(string, allocator), _hash_value(hash), _hash_func(hash_func)
+//{
+//}
 
 template <class T, class HashType, class Allocator>
 HashString<T, HashType, Allocator>::HashString(HashFunc hash, const Allocator& allocator):

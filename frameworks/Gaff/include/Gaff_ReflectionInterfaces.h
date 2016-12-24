@@ -41,7 +41,7 @@ public:
 	virtual void load(ISerializeReader& reader, void* object) const = 0;
 	virtual void save(ISerializeWriter& writer, const void* object) const = 0;
 	virtual const char* getName(void) const = 0;
-	virtual ReflectionHash getHash(void) const = 0;
+	virtual Hash64 getHash(void) const = 0;
 	virtual Hash64 getVersion(void) const = 0;
 };
 
@@ -147,10 +147,10 @@ public:
 	template <class T, class... Args>
 	T* createAlloc(IAllocator& allocator, Args&&... args) const
 	{
-		ReflectionHash hash = GAFF_REFLECTION_NAMESPACE::Reflection<T>::GetHash();
+		Hash64 hash = GAFF_REFLECTION_NAMESPACE::Reflection<T>::GetHash();
 		GAFF_ASSERT(hasInterface(hash));
 
-		ReflectionHash ctor_hash = GAFF_REFLECTION_NAMESPACE::CalcTemplateHash<Args...>(REFL_INIT_HASH);
+		Hash64 ctor_hash = GAFF_REFLECTION_NAMESPACE::CalcTemplateHash<Args...>(INIT_HASH64);
 
 		using FactoryFunc = void* (*)(IAllocator&, Args&&...);
 		FactoryFunc factory_func = reinterpret_cast<FactoryFunc>(getFactory(ctor_hash));
@@ -172,9 +172,9 @@ public:
 	virtual void load(ISerializeReader& reader, void* object) const = 0;
 	virtual void save(ISerializeWriter& writer, const void* object) const = 0;
 
-	virtual const void* getInterface(ReflectionHash class_id, const void* object) const = 0;
-	virtual void* getInterface(ReflectionHash class_id, void* object) const = 0;
-	virtual bool hasInterface(ReflectionHash class_hash) const = 0;
+	virtual const void* getInterface(Hash64 class_id, const void* object) const = 0;
+	virtual void* getInterface(Hash64 class_id, void* object) const = 0;
+	virtual bool hasInterface(Hash64 class_hash) const = 0;
 
 	virtual int32_t getNumVariables(void) const = 0;
 	virtual Hash32 getVariableHash(int32_t index) const = 0;
@@ -183,7 +183,7 @@ public:
 
 	using VoidFunc = void (*)(void);
 
-	virtual VoidFunc getFactory(ReflectionHash ctor_hash) const = 0;
+	virtual VoidFunc getFactory(Hash64 ctor_hash) const = 0;
 };
 
 NS_END

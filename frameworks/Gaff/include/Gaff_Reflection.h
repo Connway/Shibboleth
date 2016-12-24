@@ -52,7 +52,7 @@ THE SOFTWARE.
 		{ \
 			return GetName(); \
 		} \
-		Gaff::ReflectionHash getHash(void) const override \
+		Gaff::Hash64 getHash(void) const override \
 		{ \
 			return GetHash(); \
 		} \
@@ -124,9 +124,9 @@ THE SOFTWARE.
 namespace GAFF_REFLECTION_NAMESPACE { \
 	template <> \
 	GAFF_REFLECTION_DECLARE_COMMON(type, allocator) \
-	constexpr static Gaff::ReflectionHash GetHash(void) \
+	constexpr static Gaff::Hash64 GetHash(void) \
 	{ \
-		return REFL_HASH_CONST(#type); \
+		return Gaff::FNV1aHash64Const(#type); \
 	} \
 	constexpr static const char* GetName(void) \
 	{ \
@@ -138,9 +138,9 @@ NS_END
 #define GAFF_REFLECTION_CLASS_DECLARE(type, allocator) \
 	public: \
 		using ThisType = type; \
-		constexpr static Gaff::ReflectionHash GetReflectionHash(void) \
+		constexpr static Gaff::Hash64 GetReflectionHash(void) \
 		{ \
-			return REFL_HASH_CONST(#type); \
+			return Gaff::FNV1aHash64Const(#type); \
 		} \
 		constexpr static const char* GetReflectionName(void) \
 		{ \
@@ -220,9 +220,9 @@ NS_END
 namespace GAFF_REFLECTION_NAMESPACE { \
 	template < GAFF_FOR_EACH_COMMA(GAFF_TEMPLATE_REFLECTION_CLASS, __VA_ARGS__) > \
 	GAFF_REFLECTION_DECLARE_COMMON(GAFF_SINGLE_ARG(type<__VA_ARGS__>), allocator, __VA_ARGS__) \
-	constexpr static Gaff::ReflectionHash GetHash(void) \
+	constexpr static Gaff::Hash64 GetHash(void) \
 	{ \
-		return GAFF_REFLECTION_NAMESPACE::CalcTemplateHash<__VA_ARGS__>(REFL_HASH_CONST(#type)); \
+		return GAFF_REFLECTION_NAMESPACE::CalcTemplateHash<__VA_ARGS__>(Gaff::FNV1aHash64Const(#type)); \
 	} \
 	static const char* GetName(void) \
 	{ \
@@ -249,9 +249,9 @@ NS_END
 #define GAFF_TEMPLATE_REFLECTION_CLASS_DECLARE(type, allocator, ...) \
 	public: \
 		using ThisType = type<__VA_ARGS__>; \
-		constexpr static Gaff::ReflectionHash GetReflectionHash(void) \
+		constexpr static Gaff::Hash64 GetReflectionHash(void) \
 		{ \
-			return GAFF_REFLECTION_NAMESPACE::CalcTemplateHash<__VA_ARGS__>(REFL_HASH_CONST(#type)); \
+			return GAFF_REFLECTION_NAMESPACE::CalcTemplateHash<__VA_ARGS__>(Gaff::FNV1aHash64Const(#type)); \
 		} \
 		static const char* GetReflectionName(void) \
 		{ \
@@ -390,7 +390,7 @@ NS_END
 		{ \
 			return GetName(); \
 		} \
-		Gaff::ReflectionHash getHash(void) const override \
+		Gaff::Hash64 getHash(void) const override \
 		{ \
 			return GetHash(); \
 		} \
@@ -406,13 +406,13 @@ NS_END
 		{ \
 			writer.write##read_write_suffix(value); \
 		} \
-		constexpr static Gaff::ReflectionHash GetHash(void) \
+		constexpr static Gaff::Hash64 GetHash(void) \
 		{ \
-			return REFL_HASH_CONST(#type); \
+			return Gaff::FNV1aHash64Const(#type); \
 		} \
 		constexpr static Gaff::Hash64 GetVersion(void) \
 		{ \
-			return Gaff::FNV1aHash64Const(#type); \
+			return GetHash(); \
 		} \
 		constexpr static const char* GetName(void) \
 		{ \
@@ -450,7 +450,7 @@ NS_END
 			GAFF_ASSERT_MSG(false, "Unknown object type."); \
 			return "Unknown"; \
 		} \
-		Gaff::ReflectionHash getHash(void) const override \
+		Gaff::Hash64 getHash(void) const override \
 		{ \
 			GAFF_ASSERT_MSG(false, "Unknown object type."); \
 			return 0; \
@@ -487,11 +487,11 @@ NS_END
 	{ \
 		constexpr static Gaff::Hash32 Hash(Gaff::Hash32 init) \
 		{ \
-			return Gaff::FNV1aHash32StringConst("void", init); \
+			return Gaff::FNV1aHash32Const("void", init); \
 		} \
 		constexpr static Gaff::Hash64 Hash(Gaff::Hash64 init) \
 		{ \
-			return Gaff::FNV1aHash64StringConst("void", init); \
+			return Gaff::FNV1aHash64Const("void", init); \
 		} \
 	}; \
 	template <class... T> \
@@ -536,25 +536,10 @@ NS_END
 
 
 
-#define REFL_HASH Gaff::FNV1aHash32
-//#define REFL_HASH Gaff::FNV1aHash64
-
-#define REFL_HASH_STRING Gaff::FNV1aHash32String
-//#define REFL_HASH_STRING Gaff::FNV1aHash64String
-
-#define REFL_HASH_CONST Gaff::FNV1aHash32Const
-//#define REFL_HASH_CONST Gaff::FNV1aHash64Const
-
-#define REFL_HASH_STRING_CONST Gaff::FNV1aHash32StringConst
-//#define REFL_HASH_CONST Gaff::FNV1aHash64StringConst
-
-#define REFL_INIT_HASH INIT_HASH32
-//#define REFL_INIT_HASH INIT_HASH64
-
 #define REFLECTION_CAST_PTR_NAME(T, name, object) \
 	reinterpret_cast<T*>( \
 		const_cast<Gaff::IReflectionDefinition&>((object)->getReflectionDefinition()).getInterface( \
-			REFL_HASH_CONST(name), (object)->getBasePointer() \
+			Gaff::FNV1aHash64Const(name), (object)->getBasePointer() \
 		) \
 	)
 
@@ -572,18 +557,29 @@ using ReflectionHashFunc = ReflectionHash (*)(const char*, size_t);
 template <class C>
 class IsClassReflected
 {
-	template <class T>
-	constexpr static std::true_type testSignature(const void* (T::*)(void) const);
+	// This one catches inheritance.
+//	template <class T>
+//	constexpr static std::true_type testSignature(const void* (T::*)(void) const);
+//
+//	template <class T>
+//	constexpr static decltype(testSignature(&T::getBasePointer)) test(std::nullptr_t);
+//
+//	template <class T>
+//	constexpr static std::false_type test(...);
+//
+//public:
+//	using type = decltype(test<C>(nullptr));
+//	constexpr static bool value = type::value;
 
-	template <class T>
-	constexpr static decltype(testSignature(&T::getBasePointer)) test(std::nullptr_t);
-
-	template <class T>
-	constexpr static std::false_type test(...);
+	// This one does not catch inheritance.
+	template<typename U, const void* (U::*)(void) const> struct SFINAE {};
+	template<typename U>
+	constexpr static char Test(SFINAE<U, &U::getBasePointer>*);
+	template<typename U> 
+	constexpr static int Test(...);
 
 public:
-	using type = decltype(test<C>(nullptr));
-	constexpr static bool value = type::value;
+	constexpr static bool value = sizeof(Test<C>(0)) == sizeof(char);
 };
 
 template <class T, class Base>
@@ -595,7 +591,7 @@ const T* ReflectionCast(const Base& object)
 template <class T, class Base>
 T* ReflectionCast(Base& object)
 {
-	return const_cast<Gaff::IReflectionDefinition&>(object.getReflectionDefinition()).getInterface<T>(object.getBasePointer());
+	return const_cast<IReflectionDefinition&>(object.getReflectionDefinition()).getInterface<T>(object.getBasePointer());
 }
 
 

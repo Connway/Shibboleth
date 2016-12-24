@@ -150,12 +150,12 @@ Hash32 FNV1Hash32T(const T* value, Hash32 init = INIT_HASH32)
 	return FNV1Hash32(reinterpret_cast<const char*>(value), sizeof(T), init);
 }
 
-constexpr Hash64 FNV1aHash64Const(const char* key, size_t len, Hash64 init = INIT_HASH64)
+constexpr Hash64 FNV1aHash64Const(const char* key, size_t len, Hash64 init)
 {
 	return (len) ? FNV1aHash64Const(key + 1, len - 1, (init ^ static_cast<Hash64>(*key)) * 1099511628211ULL) : init;
 }
 
-constexpr Hash64 FNV1Hash64Const(const char* key, size_t len, Hash64 init = INIT_HASH64)
+constexpr Hash64 FNV1Hash64Const(const char* key, size_t len, Hash64 init)
 {
 	return (len) ? FNV1Hash64Const(key + 1, len - 1, (init ^ 1099511628211ULL) * static_cast<Hash64>(*key)) : init;
 }
