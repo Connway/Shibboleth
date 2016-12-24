@@ -482,13 +482,13 @@ DynamicLoader::ModulePtr App::loadModule(const char* filename, const char* name)
 	return _dynamic_loader.loadModule(filename, name);
 }
 
-const Gaff::IReflectionDefinition* App::getReflection(Gaff::ReflectionHash name) const
+const Gaff::IReflectionDefinition* App::getReflection(Gaff::Hash64 name) const
 {
 	auto it = _reflection_map.find(name);
 	return (it == _reflection_map.end()) ? nullptr : it->second.get();
 }
 
-void App::registerReflection(Gaff::ReflectionHash name, Gaff::IReflectionDefinition* ref_def)
+void App::registerReflection(Gaff::Hash64 name, Gaff::IReflectionDefinition* ref_def)
 {
 	GAFF_ASSERT(_reflection_map.find(name) == _reflection_map.end());
 	_reflection_map[name].reset(ref_def);

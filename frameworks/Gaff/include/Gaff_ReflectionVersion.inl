@@ -24,7 +24,7 @@ NS_GAFF
 
 template <class T>
 template <class Base>
-ReflectionVersion<T>& ReflectionVersion<T>::base(const char* name, ReflectionHash /*hash*/)
+ReflectionVersion<T>& ReflectionVersion<T>::base(const char* name)
 {
 	const ptrdiff_t offset = Gaff::OffsetOfClass<T, Base>();
 	_hash = FNV1aHash64String(name, _hash);
@@ -36,7 +36,7 @@ template <class T>
 template <class Base>
 ReflectionVersion<T>& ReflectionVersion<T>::base(void)
 {
-	return base<Base>(GAFF_REFLECTION_NAMESPACE::Reflection<Base>::GetName(), GAFF_REFLECTION_NAMESPACE::Reflection<Base>::GetHash());
+	return base<Base>(GAFF_REFLECTION_NAMESPACE::Reflection<Base>::GetName());
 }
 
 template <class T>

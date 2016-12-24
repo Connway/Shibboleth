@@ -28,14 +28,20 @@ THE SOFTWARE.
 
 NS_SHIBBOLETH
 
+enum AngelScriptFlags {
+	AS_NONE = 0,
+	AS_NO_REF_COUNT = 1 << 0,
+	AS_VALUE_AS_REF = 1 << 1
+};
+
 template <class T, class B = T>
 class AngelScriptClassRegister
 {
 public:
-	AngelScriptClassRegister(asIScriptEngine* engine);
+	AngelScriptClassRegister(asIScriptEngine* engine, AngelScriptFlags as_flags = AS_NONE);
 
 	template <class Base>
-	AngelScriptClassRegister& base(const char* name, Gaff::ReflectionHash hash);
+	AngelScriptClassRegister& base(const char*);
 
 	template <class Base>
 	AngelScriptClassRegister& base(void);
@@ -57,7 +63,7 @@ public:
 
 private:
 	static asIScriptEngine* g_engine;
-	asDWORD _flags = asGetTypeTraits<T>();
+	asDWORD _flags = 0;
 
 	template <class Base>
 	static void RegisterBaseClass(void);

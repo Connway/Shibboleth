@@ -208,19 +208,14 @@ public:
 
 SHIB_REFLECTION_DECLARE(BaseTest);
 
-//SHIB_REFLECTION_DEFINE_BEGIN_CUSTOM_BUILDER(BaseTest)
 SHIB_REFLECTION_DEFINE_BEGIN(BaseTest)
-	AngelScriptClassRegister<BaseTest> asr(e);
+	AngelScriptClassRegister<BaseTest> asr(e, Shibboleth::AS_VALUE_AS_REF);
 	BuildReflection(asr);
 SHIB_REFLECTION_DEFINE_END(BaseTest)
-//SHIB_REFLECTION_BUILDER_END(BaseTest)
 
-//SHIB_REFLECTION_BUILDER_BEGIN(BaseTest)
 SHIB_REFLECTION_CLASS_DEFINE_BEGIN(BaseTest)
-	.ctor<>()
 	.var("bar", &BaseTest::bar)
 SHIB_REFLECTION_CLASS_DEFINE_END(BaseTest)
-//SHIB_REFLECTION_BUILDER_END(BaseTest)
 
 
 class TestRefCount : public Gaff::IRefCounted, public BaseTest
@@ -252,21 +247,23 @@ public:
 
 private:
 	mutable std::atomic_int32_t _count = 0;
+
+	SHIB_REFLECTION_CLASS_DECLARE(TestRefCount);
 };
 
 SHIB_REFLECTION_DECLARE(TestRefCount);
 
-SHIB_REFLECTION_DEFINE_BEGIN_CUSTOM_BUILDER(TestRefCount)
+SHIB_REFLECTION_DEFINE_BEGIN(TestRefCount)
 	AngelScriptClassRegister<TestRefCount> asr(e);
 	BuildReflection(asr);
 SHIB_REFLECTION_DEFINE_END(TestRefCount)
 
-SHIB_REFLECTION_BUILDER_BEGIN(TestRefCount)
+SHIB_REFLECTION_CLASS_DEFINE_BEGIN(TestRefCount)
 	.BASE(Gaff::IRefCounted)
 	.base<BaseTest>()
 	.ctor<>()
 	.var("foo", &TestRefCount::foo)
-SHIB_REFLECTION_BUILDER_END(TestRefCount)
+SHIB_REFLECTION_CLASS_DEFINE_END(TestRefCount)
 
 TEST_CASE("reflection_refcounted_test", "[shibboleth_reflection_refcounted]")
 {
@@ -281,10 +278,6 @@ TEST_CASE("reflection_refcounted_test", "[shibboleth_reflection_refcounted]")
 	Shibboleth::Reflection<TestRefCount>::Init();
 	Shibboleth::Reflection<BaseTest>::Init();
 
-	static_assert(Gaff::IsClassReflected<BaseTest>::value, "Not class reflected!");
-	static_assert(Shibboleth::Reflection<BaseTest>::HasClassReflection, "Not class reflected!");
-
-
 	CScriptBuilder builder;
 
 	builder.StartNewModule(e, "testscript");
@@ -295,13 +288,22 @@ TEST_CASE("reflection_refcounted_test", "[shibboleth_reflection_refcounted]")
 		R""(
 		void main()
 		{
-			TestRefCount foo;
+			TestRefCount@ foo = TestRefCount();
 			print(foo.foo);
 			foo.foo = 5514;
 			print(foo.foo);
 
 			print(foo.bar);
 			foo.bar = 1234;
+			print(foo.bar);
+
+			BaseTest@ b = @foo;
+			TestRefCount@ c;
+			@c = cast<TestRefCount>(b);
+
+			b.bar = 1235;
+			print(b.bar);
+			print(c.bar);
 			print(foo.bar);
 		}
 		)""

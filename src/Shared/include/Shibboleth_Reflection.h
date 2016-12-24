@@ -80,9 +80,9 @@ GAFF_REFLECTION_DECLARE_DEFAULT_AND_POD();
 NS_SHIBBOLETH \
 	template <> \
 	GAFF_REFLECTION_DECLARE_COMMON(type, ProxyAllocator) \
-	constexpr static Gaff::ReflectionHash GetHash(void) \
+	constexpr static Gaff::Hash64 GetHash(void) \
 	{ \
-		return REFL_HASH_CONST(#type); \
+		return Gaff::FNV1aHash64Const(#type); \
 	} \
 	constexpr static const char* GetName(void) \
 	{ \
@@ -104,7 +104,7 @@ NS_END
 	{ \
 		g_reflection_definition = reinterpret_cast< Gaff::ReflectionDefinition<type, ProxyAllocator>* >( \
 			const_cast< Gaff::IReflectionDefinition* >( \
-				Shibboleth::GetApp().getReflection(REFL_HASH_CONST(#type)) \
+				Shibboleth::GetApp().getReflection(Gaff::FNV1aHash64Const(#type)) \
 			) \
 		); \
 		if (g_reflection_definition) { \
@@ -122,7 +122,7 @@ NS_END
 				) \
 			); \
 			Gaff::Construct(g_reflection_definition); \
-			Shibboleth::GetApp().registerReflection(REFL_HASH_CONST(#type),  g_reflection_definition); \
+			Shibboleth::GetApp().registerReflection(Gaff::FNV1aHash64Const(#type),  g_reflection_definition); \
 			g_reflection_definition->setAllocator(ProxyAllocator("Reflection")); \
 			BuildReflection(*g_reflection_definition);
 
@@ -146,13 +146,16 @@ NS_END
 #define SHIB_REFLECTION_CLASS_DEFINE_END GAFF_REFLECTION_CLASS_DEFINE_END
 
 
+//return GAFF_REFLECTION_NAMESPACE::CalcTemplateHash<__VA_ARGS__>(Gaff::FNV1aHash64Const(#type));
+
+
 #define SHIB_TEMPLATE_REFLECTION_DECLARE(type, ...) \
 NS_SHIBBOLETH \
 	template < GAFF_FOR_EACH_COMMA(GAFF_TEMPLATE_REFLECTION_CLASS, __VA_ARGS__) > \
 	GAFF_REFLECTION_DECLARE_COMMON(GAFF_SINGLE_ARG(type<__VA_ARGS__>), ProxyAllocator) \
-	constexpr static Gaff::ReflectionHash GetHash(void) \
+	constexpr static Gaff::Hash64 GetHash(void) \
 	{ \
-		return GAFF_REFLECTION_NAMESPACE::CalcTemplateHash<__VA_ARGS__>(REFL_HASH_CONST(#type)); \
+		return GAFF_REFLECTION_NAMESPACE::CalcTemplateHash<__VA_ARGS__>(Gaff::FNV1aHash64Const(#type)); \
 	} \
 	static const char* GetName(void) \
 	{ \
