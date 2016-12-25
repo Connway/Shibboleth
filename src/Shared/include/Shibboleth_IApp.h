@@ -133,7 +133,7 @@ public:
 	virtual DynamicLoader::ModulePtr loadModule(const char* filename, const char* name) = 0;
 
 	virtual const Gaff::IReflectionDefinition* getReflection(Gaff::Hash64 name) const = 0;
-	virtual void registerReflection(Gaff::Hash64 name, Gaff::IReflectionDefinition* ref_def) = 0;
+	virtual void registerReflection(Gaff::Hash64 name, Gaff::IReflectionDefinition& ref_def) = 0;
 
 	virtual bool isQuitting(void) const = 0;
 	virtual void quit(void) = 0;

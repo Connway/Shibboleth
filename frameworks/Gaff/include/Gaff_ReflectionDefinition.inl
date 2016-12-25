@@ -660,7 +660,7 @@ template <class T, class Allocator>
 template <class... Args>
 ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::ctor(void)
 {
-	Hash64 hash = GAFF_REFLECTION_NAMESPACE::CalcTemplateHash<Args...>(INIT_HASH64);
+	Hash64 hash = CalcTemplateHash<Args...>(INIT_HASH64);
 	GAFF_ASSERT(!getFactory(hash));
 
 	void* (*factory_func)(IAllocator&, Args&&...) = FactoryFunc<T, Args...>;

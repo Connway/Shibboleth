@@ -257,7 +257,7 @@ bool App::loadManagers(void)
 
 	if (!error) {
 		for (auto it = _manager_map.begin(); it != _manager_map.end(); ++it) {
-			it->second.manager->allManagersCreated();
+			it->second.manager->allModulesLoaded();
 		}
 	}
 
@@ -488,10 +488,20 @@ const Gaff::IReflectionDefinition* App::getReflection(Gaff::Hash64 name) const
 	return (it == _reflection_map.end()) ? nullptr : it->second.get();
 }
 
-void App::registerReflection(Gaff::Hash64 name, Gaff::IReflectionDefinition* ref_def)
+void App::registerReflection(Gaff::Hash64 name, Gaff::IReflectionDefinition& ref_def)
 {
 	GAFF_ASSERT(_reflection_map.find(name) == _reflection_map.end());
-	_reflection_map[name].reset(ref_def);
+	_reflection_map[name].reset(&ref_def);
+
+	// Register if a manager.
+	if (ref_def.hasInterface(Gaff::FNV1aHash64Const("IManager"))) {
+		ProxyAllocator allocator;
+		void* data = ref_def.createAlloc(allocator);
+		IManager* manager = reinterpret_cast<IManager*>(ref_def.getInterface(Gaff::FNV1aHash64Const("IManager"), data));
+
+		// Add manager to manager map.
+		GAFF_REF(manager);
+	}
 }
 
 bool App::isQuitting(void) const

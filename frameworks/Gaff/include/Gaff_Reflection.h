@@ -47,6 +47,7 @@ THE SOFTWARE.
 		Reflection(void) \
 		{ \
 			BuildReflection(_version); \
+			Gaff::AddToReflectionChain(this); \
 		} \
 		const char* getName(void) const override \
 		{ \
@@ -113,7 +114,6 @@ THE SOFTWARE.
 		} \
 		static void Init(void) \
 		{ \
-			g_reflection_definition.setReflectionInstance(g_instance); \
 			BuildReflection(g_reflection_definition); \
 		} \
 	private: \
@@ -222,7 +222,7 @@ namespace GAFF_REFLECTION_NAMESPACE { \
 	GAFF_REFLECTION_DECLARE_COMMON(GAFF_SINGLE_ARG(type<__VA_ARGS__>), allocator, __VA_ARGS__) \
 	constexpr static Gaff::Hash64 GetHash(void) \
 	{ \
-		return GAFF_REFLECTION_NAMESPACE::CalcTemplateHash<__VA_ARGS__>(Gaff::FNV1aHash64Const(#type)); \
+		return Gaff::CalcTemplateHash<__VA_ARGS__>(Gaff::FNV1aHash64Const(#type)); \
 	} \
 	static const char* GetName(void) \
 	{ \
@@ -251,7 +251,7 @@ NS_END
 		using ThisType = type<__VA_ARGS__>; \
 		constexpr static Gaff::Hash64 GetReflectionHash(void) \
 		{ \
-			return GAFF_REFLECTION_NAMESPACE::CalcTemplateHash<__VA_ARGS__>(Gaff::FNV1aHash64Const(#type)); \
+			return Gaff::CalcTemplateHash<__VA_ARGS__>(Gaff::FNV1aHash64Const(#type)); \
 		} \
 		static const char* GetReflectionName(void) \
 		{ \
@@ -468,42 +468,6 @@ NS_END
 		{ \
 		} \
 	}; \
-	template <class...> \
-	struct CalcTemplateHashHelper; \
-	template <class First, class... Rest> \
-	struct CalcTemplateHashHelper<First, Rest...> \
-	{ \
-		constexpr static Gaff::Hash32 Hash(Gaff::Hash32 init) \
-		{ \
-			return CalcTemplateHashHelper<Rest...>::Hash(Gaff::FNV1aHash32StringConst(Reflection<First>::GetName(), init)); \
-		} \
-		constexpr static Gaff::Hash64 Hash(Gaff::Hash64 init) \
-		{ \
-			return CalcTemplateHashHelper<Rest...>::Hash(Gaff::FNV1aHash64StringConst(Reflection<First>::GetName(), init)); \
-		} \
-	}; \
-	template <> \
-	struct CalcTemplateHashHelper<> \
-	{ \
-		constexpr static Gaff::Hash32 Hash(Gaff::Hash32 init) \
-		{ \
-			return Gaff::FNV1aHash32Const("void", init); \
-		} \
-		constexpr static Gaff::Hash64 Hash(Gaff::Hash64 init) \
-		{ \
-			return Gaff::FNV1aHash64Const("void", init); \
-		} \
-	}; \
-	template <class... T> \
-	constexpr Gaff::Hash32 CalcTemplateHash(Gaff::Hash32 init) \
-	{ \
-		return CalcTemplateHashHelper<T...>::Hash(init); \
-	} \
-	template <class... T> \
-	constexpr Gaff::Hash64 CalcTemplateHash(Gaff::Hash64 init) \
-	{ \
-		return CalcTemplateHashHelper<T...>::Hash(init); \
-	} \
 	GAFF_POD_SERIALIZABLE(int8_t, Int8); \
 	GAFF_POD_SERIALIZABLE(int16_t, Int16); \
 	GAFF_POD_SERIALIZABLE(int32_t, Int32); \
@@ -643,5 +607,54 @@ int32_t GetNumArgs(void)
 {
 	return sizeof...(T);
 }
+
+template <class...>
+struct CalcTemplateHashHelper;
+
+template <class First, class... Rest>
+struct CalcTemplateHashHelper<First, Rest...>
+{
+	constexpr static Gaff::Hash32 Hash(Gaff::Hash32 init)
+	{
+		return CalcTemplateHashHelper<Rest...>::Hash(Gaff::FNV1aHash32StringConst(GAFF_REFLECTION_NAMESPACE::Reflection<First>::GetName(), init));
+	}
+
+	constexpr static Gaff::Hash64 Hash(Gaff::Hash64 init)
+	{
+		return CalcTemplateHashHelper<Rest...>::Hash(Gaff::FNV1aHash64StringConst(GAFF_REFLECTION_NAMESPACE::Reflection<First>::GetName(), init));
+	}
+};
+
+template <>
+struct CalcTemplateHashHelper<>
+{
+	constexpr static Gaff::Hash32 Hash(Gaff::Hash32 init)
+	{
+		return Gaff::FNV1aHash32Const("void", init);
+	}
+
+	constexpr static Gaff::Hash64 Hash(Gaff::Hash64 init)
+	{
+		return Gaff::FNV1aHash64Const("void", init);
+	}
+};
+
+template <class... T>
+constexpr Gaff::Hash32 CalcTemplateHash(Gaff::Hash32 init)
+{
+	return CalcTemplateHashHelper<T...>::Hash(init);
+}
+
+template <class... T>
+constexpr Gaff::Hash64 CalcTemplateHash(Gaff::Hash64 init)
+{
+	return CalcTemplateHashHelper<T...>::Hash(init);
+}
+
+
+class IReflection;
+
+void AddToReflectionChain(IReflection* reflection);
+IReflection* GetReflectionChainHead(void);
 
 NS_END

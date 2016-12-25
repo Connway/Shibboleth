@@ -12,7 +12,15 @@ namespace Gen
 {1}
 	void InitReflection(void)
 	{{
-{2}	}}
+{2}
+		// Initialize any other reflection that we reference, but isn't owned by our module.
+		Gaff::IReflection* head = Gaff::GetReflectionChainHead();
+
+		while (head) {{
+			head->init();
+			head = head->next;
+		}}
+	}}
 }}
 """
 

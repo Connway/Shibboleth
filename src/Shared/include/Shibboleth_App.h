@@ -63,7 +63,7 @@ public:
 	DynamicLoader::ModulePtr loadModule(const char* filename, const char* name) override;
 
 	const Gaff::IReflectionDefinition* getReflection(Gaff::Hash64 name) const override;
-	void registerReflection(Gaff::Hash64 name, Gaff::IReflectionDefinition* ref_def) override;
+	void registerReflection(Gaff::Hash64 name, Gaff::IReflectionDefinition& ref_def) override;
 
 	bool isQuitting(void) const override;
 	void quit(void) override;

@@ -98,13 +98,17 @@ NS_END
 	SHIB_REFLECTION_DEFINE_END(type)
 
 #define SHIB_REFLECTION_DEFINE_BEGIN_CUSTOM_BUILDER(type) \
-	Gaff::ReflectionDefinition<type, Shibboleth::ProxyAllocator>* Shibboleth::Reflection<type>::g_reflection_definition = nullptr; \
-	GAFF_REFLECTION_DEFINE_BASE(type, Shibboleth::ProxyAllocator); \
-	void Shibboleth::Reflection<type>::Init() \
+NS_SHIBBOLETH \
+	Gaff::ReflectionDefinition<type, ProxyAllocator>* Reflection<type>::g_reflection_definition = nullptr; \
+	GAFF_REFLECTION_DEFINE_BASE(type, ProxyAllocator); \
+	void Reflection<type>::Init() \
 	{ \
+		if (g_reflection_definition) { \
+			return; \
+		} \
 		g_reflection_definition = reinterpret_cast< Gaff::ReflectionDefinition<type, ProxyAllocator>* >( \
 			const_cast< Gaff::IReflectionDefinition* >( \
-				Shibboleth::GetApp().getReflection(Gaff::FNV1aHash64Const(#type)) \
+				GetApp().getReflection(Gaff::FNV1aHash64Const(#type)) \
 			) \
 		); \
 		if (g_reflection_definition) { \
@@ -122,22 +126,25 @@ NS_END
 				) \
 			); \
 			Gaff::Construct(g_reflection_definition); \
-			Shibboleth::GetApp().registerReflection(Gaff::FNV1aHash64Const(#type),  g_reflection_definition); \
+			GetApp().registerReflection(Gaff::FNV1aHash64Const(#type), *g_reflection_definition); \
 			g_reflection_definition->setAllocator(ProxyAllocator("Reflection")); \
 			BuildReflection(*g_reflection_definition);
 
 #define SHIB_REFLECTION_DEFINE_BEGIN(type) \
+NS_SHIBBOLETH \
 	template <class ReflectionBuilder> \
-	void Shibboleth::Reflection<type>::BuildReflection(ReflectionBuilder& builder) \
+	void Reflection<type>::BuildReflection(ReflectionBuilder& builder) \
 	{ \
 		type::BuildReflection(builder); \
 	} \
+NS_END \
 	SHIB_REFLECTION_DEFINE_BEGIN_CUSTOM_BUILDER(type)
 
 #define SHIB_REFLECTION_DEFINE_END(type, ...) \
 			g_reflection_definition->finish(); \
 		} \
-	}
+	} \
+NS_END
 
 #define SHIB_REFLECTION_BUILDER_BEGIN GAFF_REFLECTION_BUILDER_BEGIN
 #define SHIB_REFLECTION_BUILDER_END GAFF_REFLECTION_BUILDER_END
@@ -145,17 +152,13 @@ NS_END
 #define SHIB_REFLECTION_CLASS_DEFINE_BEGIN(type) GAFF_REFLECTION_CLASS_DEFINE_BEGIN(type, Shibboleth::ProxyAllocator)
 #define SHIB_REFLECTION_CLASS_DEFINE_END GAFF_REFLECTION_CLASS_DEFINE_END
 
-
-//return GAFF_REFLECTION_NAMESPACE::CalcTemplateHash<__VA_ARGS__>(Gaff::FNV1aHash64Const(#type));
-
-
 #define SHIB_TEMPLATE_REFLECTION_DECLARE(type, ...) \
 NS_SHIBBOLETH \
 	template < GAFF_FOR_EACH_COMMA(GAFF_TEMPLATE_REFLECTION_CLASS, __VA_ARGS__) > \
 	GAFF_REFLECTION_DECLARE_COMMON(GAFF_SINGLE_ARG(type<__VA_ARGS__>), ProxyAllocator) \
 	constexpr static Gaff::Hash64 GetHash(void) \
 	{ \
-		return GAFF_REFLECTION_NAMESPACE::CalcTemplateHash<__VA_ARGS__>(Gaff::FNV1aHash64Const(#type)); \
+		return Gaff::CalcTemplateHash<__VA_ARGS__>(Gaff::FNV1aHash64Const(#type)); \
 	} \
 	static const char* GetName(void) \
 	{ \
@@ -186,12 +189,16 @@ NS_END
 	SHIB_TEMPLATE_REFLECTION_DEFINE_END(type, __VA_ARGS__)
 
 #define SHIB_TEMPLATE_REFLECTION_DEFINE_BEGIN_CUSTOM_BUILDER(type, ...) \
+NS_SHIBBOLETH \
 	template < GAFF_FOR_EACH_COMMA(GAFF_TEMPLATE_REFLECTION_CLASS, __VA_ARGS__) > \
 	Gaff::ReflectionDefinition< type<__VA_ARGS__>, Shibboleth::ProxyAllocator>* Shibboleth::Reflection< type<__VA_ARGS__> >::g_reflection_definition; \
 	GAFF_TEMPLATE_REFLECTION_DEFINE_BASE(type, Shibboleth::ProxyAllocator, __VA_ARGS__); \
 	template < GAFF_FOR_EACH_COMMA(GAFF_TEMPLATE_REFLECTION_CLASS, __VA_ARGS__) > \
 	void Shibboleth::Reflection< type<__VA_ARGS__> >::Init() \
 	{ \
+		if (g_reflection_definition) { \
+			return; \
+		} \
 		g_reflection_definition = reinterpret_cast< Gaff::ReflectionDefinition<type<__VA_ARGS__>, ProxyAllocator>* >( \
 			const_cast< Gaff::IReflectionDefinition* >( \
 				Shibboleth::GetApp().getReflection(GetHash()) \
@@ -213,17 +220,19 @@ NS_END
 				) \
 			); \
 			Gaff::Construct(g_reflection_definition); \
-			Shibboleth::GetApp().registerReflection(GetHash(),  g_reflection_definition); \
+			Shibboleth::GetApp().registerReflection(GetHash(), *g_reflection_definition); \
 			g_reflection_definition->setAllocator(ProxyAllocator("Reflection")); \
 			type<__VA_ARGS__>::BuildReflection(*g_reflection_definition);
 
 #define SHIB_TEMPLATE_REFLECTION_DEFINE_BEGIN(type, ...) \
+NS_SHIBBOLETH \
 	template < GAFF_FOR_EACH_COMMA(GAFF_TEMPLATE_REFLECTION_CLASS, __VA_ARGS__) > \
 	template <class ReflectionBuilder> \
 	void Shibboleth::Reflection< type<__VA_ARGS__> >::BuildReflection(ReflectionBuilder& builder) \
 	{ \
 		type<__VA_ARGS__>::BuildReflection(builder); \
 	} \
+NS_END \
 	SHIB_TEMPLATE_REFLECTION_DEFINE_BEGIN_CUSTOM_BUILDER(type, __VA_ARGS__)
 
 #define SHIB_TEMPLATE_REFLECTION_DEFINE_END SHIB_REFLECTION_DEFINE_END

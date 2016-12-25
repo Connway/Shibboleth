@@ -59,7 +59,7 @@ local tests = {
 		links = {
 			"Gaff", "Memory",
 			"EASTL", "Shared",
-			"Scripting", "angelscript"
+			"angelscript"
 		},
 
 		extra = function ()
