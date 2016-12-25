@@ -43,6 +43,8 @@ public:
 	virtual const char* getName(void) const = 0;
 	virtual Hash64 getHash(void) const = 0;
 	virtual Hash64 getVersion(void) const = 0;
+
+	IReflection* next = nullptr;
 };
 
 class IReflectionVar
@@ -145,12 +147,12 @@ public:
 	}
 
 	template <class T, class... Args>
-	T* createAlloc(IAllocator& allocator, Args&&... args) const
+	T* createAllocT(IAllocator& allocator, Args&&... args) const
 	{
 		Hash64 hash = GAFF_REFLECTION_NAMESPACE::Reflection<T>::GetHash();
 		GAFF_ASSERT(hasInterface(hash));
 
-		Hash64 ctor_hash = GAFF_REFLECTION_NAMESPACE::CalcTemplateHash<Args...>(INIT_HASH64);
+		Hash64 ctor_hash = CalcTemplateHash<Args...>(INIT_HASH64);
 
 		using FactoryFunc = void* (*)(IAllocator&, Args&&...);
 		FactoryFunc factory_func = reinterpret_cast<FactoryFunc>(getFactory(ctor_hash));
@@ -163,6 +165,21 @@ public:
 		}
 
 		return instance;
+	}
+
+	template <class... Args>
+	void* createAlloc(IAllocator& allocator, Args&&... args) const
+	{
+		Hash64 ctor_hash = CalcTemplateHash<Args...>(INIT_HASH64);
+
+		using FactoryFunc = void* (*)(IAllocator&, Args&&...);
+		FactoryFunc factory_func = reinterpret_cast<FactoryFunc>(getFactory(ctor_hash));
+
+		if (factory_func) {
+			return factory_func(allocator, std::forward<Args>(args)...);
+		}
+
+		return nullptr;
 	}
 
 	virtual ~IReflectionDefinition(void) {}

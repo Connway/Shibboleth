@@ -26,7 +26,7 @@ THE SOFTWARE.
 #include <Gaff_IAllocator.h>
 
 #define SHIB_ALLOC_GLOBAL_CAST GAFF_ALLOC_CAST
-#define SHIB_ALLOC_CAST(Type, size, pool_index, allocator) reinterpret_cast<Type>(SHIB_ALLOC(size, pool_index, allocator))
+#define SHIB_ALLOC_CAST(Type, pool_index, allocator) reinterpret_cast<Type*>(SHIB_ALLOC(sizeof(Type), pool_index, allocator))
 #define SHIB_ALLOC_ALIGNED(size, alignment, pool_index, allocator) (allocator).alloc(size, alignment, pool_index, __FILE__, __LINE__)
 #define SHIB_ALLOC(size, pool_index, allocator) (allocator).alloc(size, pool_index, __FILE__, __LINE__)
 #define SHIB_ALLOC_GLOBAL GAFF_ALLOC

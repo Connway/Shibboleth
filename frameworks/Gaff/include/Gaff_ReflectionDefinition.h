@@ -96,7 +96,7 @@ public:
 	template <class... Args>
 	T* create(Args&&... args) const
 	{
-		return createAlloc<T>(_allocator, std::forward<Args>(args)...);
+		return createAllocT<T>(_allocator, std::forward<Args>(args)...);
 	}
 
 	GAFF_STRUCTORS_DEFAULT(ReflectionDefinition);

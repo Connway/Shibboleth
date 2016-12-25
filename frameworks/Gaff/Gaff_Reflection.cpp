@@ -22,24 +22,21 @@ THE SOFTWARE.
 
 #pragma once
 
-#include <Gaff_IReflectionObject.h>
-#include <Shibboleth_Defines.h>
+#include "Gaff_ReflectionInterfaces.h"
 
-NS_SHIBBOLETH
+NS_GAFF
 
-class IManager : public Gaff::IReflectionObject
+static IReflection* g_head = nullptr;
+
+void AddToReflectionChain(IReflection* reflection)
 {
-public:
-	IManager(void) {}
-	virtual ~IManager(void) {}
+	reflection->next = g_head;
+	g_head = reflection;
+}
 
-	virtual const char* getName(void) const = 0;
-	virtual void allModulesLoaded(void) {}
-
-	virtual bool init(void) { return true; }
-
-	GAFF_NO_COPY(IManager);
-	GAFF_NO_MOVE(IManager);
-};
+IReflection* GetReflectionChainHead(void)
+{
+	return g_head;
+}
 
 NS_END

@@ -15,12 +15,16 @@
     <ClInclude Include="..\..\..\src\Scripting\include\Shibboleth_AngelScriptComponent.h">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\src\Scripting\include\Shibboleth_AngelScriptManager.h">
+      <Filter>include</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\src\Scripting\include\Shibboleth_AngelScriptResource.h">
       <Filter>include</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\src\Scripting\Shibboleth_AngelScriptComponent.cpp" />
+    <ClCompile Include="..\..\..\src\Scripting\Shibboleth_AngelScriptManager.cpp" />
     <ClCompile Include="..\..\..\src\Scripting\Shibboleth_AngelScriptResource.cpp" />
   </ItemGroup>
   <ItemGroup>
