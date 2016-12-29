@@ -70,7 +70,7 @@ bool LogManager::init(void)
 	std::thread log_thread(LogThread, std::ref(*this));
 	_log_thread.swap(log_thread);
 
-	return _log_thread.get_id() == std::thread::id();
+	return _log_thread.get_id() != std::thread::id();
 }
 
 void LogManager::destroy(void)

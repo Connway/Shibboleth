@@ -22,6 +22,7 @@ THE SOFTWARE.
 
 #pragma once
 
+#include "Gaff_SmartPtrs.h"
 #include "Gaff_SpinLock.h"
 #include "Gaff_Vector.h"
 #include "Gaff_Queue.h"
@@ -70,7 +71,7 @@ public:
 	JobPool(const Allocator& allocator = Allocator());
 	~JobPool(void);
 
-	bool init(unsigned int num_pools = 7, unsigned int num_threads = static_cast<unsigned int>(GetNumberOfCores()));
+	bool init(int32_t num_pools = 7, int32_t num_threads = static_cast<int32_t>(GetNumberOfCores()));
 	void destroy(void);
 
 	void addJobs(JobData* jobs, size_t num_jobs = 1, Counter** counter = nullptr, unsigned int pool = 0);
@@ -92,8 +93,8 @@ private:
 	struct JobQueue
 	{
 		Queue<JobPair, Allocator> jobs;
-		UniquePtr<SpinLock> read_write_lock;
-		UniquePtr<SpinLock> thread_lock;
+		UniquePtr<SpinLock, Allocator> read_write_lock;
+		UniquePtr<SpinLock, Allocator> thread_lock;
 	};
 
 	struct ThreadData

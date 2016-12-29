@@ -149,7 +149,7 @@ public:
 	template <class T, class... Args>
 	T* createAllocT(IAllocator& allocator, Args&&... args) const
 	{
-		Hash64 hash = GAFF_REFLECTION_NAMESPACE::Reflection<T>::GetHash();
+		Hash64 hash = getReflectionInstance().getHash();
 		GAFF_ASSERT(hasInterface(hash));
 
 		Hash64 ctor_hash = CalcTemplateHash<Args...>(INIT_HASH64);

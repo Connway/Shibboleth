@@ -33,22 +33,21 @@ JobPool<Allocator>::~JobPool(void)
 	destroy();
 }
 
-
 template <class Allocator>
-bool JobPool<Allocator>::init(unsigned int num_pools, unsigned int num_threads)
+bool JobPool<Allocator>::init(int32_t num_pools, int32_t num_threads)
 {
 	_job_pools.resize(num_pools + 1);
 
 	for (JobQueue& job_queue : _job_pools) {
-		job_queue.read_write_lock = UniquePtr<SpinLock>(GAFF_ALLOCT(Gaff::SpinLock, _allocator));
-		job_queue.thread_lock = UniquePtr<SpinLock>(GAFF_ALLOCT(Gaff::SpinLock, _allocator));
+		job_queue.read_write_lock = UniquePtr<SpinLock, Allocator>(GAFF_ALLOCT(Gaff::SpinLock, _allocator));
+		job_queue.thread_lock = UniquePtr<SpinLock, Allocator>(GAFF_ALLOCT(Gaff::SpinLock, _allocator));
 	}
 
 	_thread_data.job_pool = this;
 	_thread_data.terminate = false;
 	_threads.reserve(num_threads);
 
-	for (unsigned long i = 0; i < num_threads; ++i) {
+	for (int32_t i = 0; i < num_threads; ++i) {
 		_threads.emplace_back(JobThread, std::ref(_thread_data));
 
 		if (_threads.back().get_id() == std::thread::id()) {
@@ -65,11 +64,12 @@ void JobPool<Allocator>::destroy(void)
 {
 	_thread_data.terminate = true;
 
-	for (unsigned int i = 0; i < _threads.size(); ++i) {
-		_threads[i].join();
+	for (std::thread& thread : _threads) {
+		thread.join();
 	}
 
 	_threads.clear();
+	_job_pools.clear();
 }
 
 template <class Allocator>

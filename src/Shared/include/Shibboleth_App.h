@@ -24,6 +24,7 @@ THE SOFTWARE.
 
 #include "Shibboleth_MessageBroadcaster.h"
 #include "Shibboleth_LogManager.h"
+#include "Shibboleth_SmartPtrs.h"
 #include "Shibboleth_IApp.h"
 
 NS_SHIBBOLETH
@@ -34,8 +35,18 @@ public:
 	template <class Callback>
 	void forEachManager(Callback&& callback)
 	{
-		for (auto it = _manager_map.begin(); it != _manager_map.end(); ++it) {
-			if (callback(*it->manager)) {
+		for (auto it = _managers.begin(); it != _managers.end(); ++it) {
+			if (callback(*it)) {
+				break;
+			}
+		}
+	}
+
+	template <class Callback>
+	void forEachReflection(Callback&& callback)
+	{
+		for (auto it = _reflection_map.begin(); it != _reflection_map.end(); ++it) {
+			if (callback(*it->second)) {
 				break;
 			}
 		}
@@ -48,8 +59,8 @@ public:
 	void run(void);
 	void destroy(void);
 
-	const IManager* getManager(Gaff::Hash32 name) const override;
-	IManager* getManager(Gaff::Hash32 name) override;
+	const IManager* getManager(Gaff::Hash64 name) const override;
+	IManager* getManager(Gaff::Hash64 name) override;
 
 	MessageBroadcaster& getBroadcaster(void) override;
 
@@ -64,24 +75,15 @@ public:
 
 	const Gaff::IReflectionDefinition* getReflection(Gaff::Hash64 name) const override;
 	void registerReflection(Gaff::Hash64 name, Gaff::IReflectionDefinition& ref_def) override;
+	void registerTypeBucket(Gaff::Hash64 name) override;
+	const Vector<Gaff::Hash64>* getTypeBucket(Gaff::Hash64 name) const override;
 
 	bool isQuitting(void) const override;
 	void quit(void) override;
 
 private:
-	struct ManagerEntry
-	{
-		typedef IManager* (*CreateManagerFunc)(unsigned int);
-		typedef void (*DestroyManagerFunc)(IManager*, unsigned int);
-		typedef unsigned int (*GetNumManagersFunc)(void);
-		typedef bool (*InitManagerModuleFunc)(IApp&);
+	using InitModuleFunc = bool (*)(IApp&);
 
-		DynamicLoader::ModulePtr module;
-		CreateManagerFunc create_func;
-		DestroyManagerFunc destroy_func;
-		IManager* manager;
-		unsigned int manager_id;
-	};
 
 	struct FileSystemData
 	{
@@ -98,16 +100,17 @@ private:
 		CreateFileSystemFunc create_func;
 	};
 
-	using ManagerMap = VectorMap<Gaff::Hash32, ManagerEntry>;
 	using MainLoopFunc = void (*)(void);
 
 	bool _running;
 	MainLoopFunc _main_loop;
+
 	VectorMap< Gaff::Hash64, UniquePtr<Gaff::IReflectionDefinition> > _reflection_map;
+	VectorMap< Gaff::Hash64, UniquePtr<IManager> > _manager_map;
+	VectorMap< Gaff::Hash64, Vector<Gaff::Hash64> > _type_buckets;
 
 	MessageBroadcaster _broadcaster;
 	DynamicLoader _dynamic_loader;
-	ManagerMap _manager_map;
 	JobPool _job_pool;
 	LogManager _logger;
 
@@ -116,8 +119,8 @@ private:
 	VectorMap<HashString32, U8String> _cmd_line_args;
 
 	bool loadFileSystem(void);
-	bool loadManagers(void);
 	bool loadMainLoop(void);
+	bool loadModules(void);
 	bool initApp(void);
 
 	void removeExtraLogs(void);

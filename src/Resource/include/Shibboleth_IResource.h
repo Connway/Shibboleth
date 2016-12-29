@@ -22,13 +22,14 @@ THE SOFTWARE.
 
 #pragma once
 
-#include <Shibboleth_IResource.h>
+#include <Shibboleth_Defines.h>
 
 NS_SHIBBOLETH
 
-class AngelScriptResource : public IResource
+class IResource
 {
 public:
+	virtual ~IResource(void) {}
 };
 
 NS_END

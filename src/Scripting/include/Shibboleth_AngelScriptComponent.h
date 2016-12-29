@@ -22,8 +22,8 @@ THE SOFTWARE.
 
 #pragma once
 
-#include <Shibboleth_Component.h>
 #include <Shibboleth_Reflection.h>
+#include <Shibboleth_Component.h>
 
 NS_SHIBBOLETH
 

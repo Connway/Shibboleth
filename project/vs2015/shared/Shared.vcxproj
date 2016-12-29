@@ -257,12 +257,10 @@
     <ClInclude Include="..\..\..\src\Shared\include\Shibboleth_LogManager.h" />
     <ClInclude Include="..\..\..\src\Shared\include\Shibboleth_LooseFileSystem.h" />
     <ClInclude Include="..\..\..\src\Shared\include\Shibboleth_MessageBroadcaster.h" />
-    <ClInclude Include="..\..\..\src\Shared\include\Shibboleth_ModuleHelpers.h" />
     <ClInclude Include="..\..\..\src\Shared\include\Shibboleth_ProxyAllocator.h" />
     <ClInclude Include="..\..\..\src\Shared\include\Shibboleth_Queue.h" />
     <ClInclude Include="..\..\..\src\Shared\include\Shibboleth_RefCounted.h" />
     <ClInclude Include="..\..\..\src\Shared\include\Shibboleth_Reflection.h" />
-    <ClInclude Include="..\..\..\src\Shared\include\Shibboleth_ReflectionDefinitions.h" />
     <ClInclude Include="..\..\..\src\Shared\include\Shibboleth_SmartPtrs.h" />
     <ClInclude Include="..\..\..\src\Shared\include\Shibboleth_String.h" />
     <ClInclude Include="..\..\..\src\Shared\include\Shibboleth_Utilities.h" />
