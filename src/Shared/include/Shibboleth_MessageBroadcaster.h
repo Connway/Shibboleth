@@ -26,7 +26,6 @@ THE SOFTWARE.
 #include "Shibboleth_VectorMap.h"
 #include "Shibboleth_SmartPtrs.h"
 #include <Shibboleth_Memory.h>
-#include <Gaff_IVirtualDestructor.h>
 #include <Gaff_Function.h>
 #include <Gaff_SpinLock.h>
 #include <atomic>
@@ -39,7 +38,12 @@ NS_SHIBBOLETH
 
 // Do not use messages for triggering things that need to happen this frame.
 
-using IMessage = Gaff::IVirtualDestructor;
+class IMessage
+{
+public:
+	virtual ~IMessage(void) {}
+};
+
 
 // Message Hash and Listener ID
 using BroadcastID = std::pair<int32_t, int32_t>;

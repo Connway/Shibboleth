@@ -1,4 +1,4 @@
-group "Scripting"
+group "Modules/Scripting"
 
 project "Scripting"
 	if _ACTION then
@@ -18,17 +18,13 @@ project "Scripting"
 		"../Memory/include",
 		"../Shared/include",
 		"../Game/include",
+		"../Resource/include",
 		"../../dependencies/EASTL/include",
-		"../../dependencies/chaiscript",
 		"../../dependencies/angelscript/angelscript/include",
 		"../../dependencies/rapidjson",
 		"../../frameworks/Gaff/include"
 	}
 
-	filter { "action:vs*" }
-		buildoptions { "/bigobj" }
-
-	filter {}
 
 project "ScriptingModule"
 	if _ACTION then
@@ -40,11 +36,14 @@ project "ScriptingModule"
 
 	files { "Shibboleth_ScriptingModule.cpp" }
 
-	prebuildmessage "Generating Gen_ReflectionInit.h!"
-	prebuildcommands
-	{
-		"py ../../../utils/gen_module_file.py ../../../src/Scripting"
-	}
+	-- prebuildmessage "Generating Gen_ReflectionInit.h!"
+	-- prebuildcommands
+	-- {
+	-- 	"py ../../../utils/gen_module_file.py ../../../src/Scripting"
+	-- }
+
+	ModuleGen("Scripting")
+	ModuleCopy("Scripting")
 
 	includedirs
 	{

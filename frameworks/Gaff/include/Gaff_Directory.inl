@@ -32,7 +32,7 @@ bool ForEachInDirectory(const char* directory, Callback&& callback)
 	DIR* dir = opendir(directory);
 
 	if (!dir) {
-		return true;
+		return false;
 	}
 
 	dirent* entry = readdir(dir);
@@ -57,7 +57,7 @@ bool ForEachTypeInDirectory(const char* directory, Callback&& callback)
 	DIR* dir = opendir(directory);
 
 	if (!dir) {
-		return true;
+		return false;
 	}
 
 	dirent* entry = readdir(dir);

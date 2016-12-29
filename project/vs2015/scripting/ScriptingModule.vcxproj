@@ -137,8 +137,12 @@
     </Link>
     <PreBuildEvent>
       <Command>py ../../../utils/gen_module_file.py ../../../src/Scripting</Command>
-      <Message>Generating Gen_ReflectionInit.h!</Message>
+      <Message>Generating Gen_ReflectionInit.h for module Scripting!</Message>
     </PreBuildEvent>
+    <PostBuildEvent>
+      <Command>mkdir ..\..\..\workingdir\App\Modules
+IF EXIST ..\..\..\build\output\x64\Debug\$(TargetFileName)\ (xcopy /Q /E /Y /I ..\..\..\build\output\x64\Debug\$(TargetFileName) ..\..\..\workingdir\App\Modules &gt; nul) ELSE (xcopy /Q /Y /I ..\..\..\build\output\x64\Debug\$(TargetFileName) ..\..\..\workingdir\App\Modules &gt; nul)</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -166,8 +170,12 @@
     </Link>
     <PreBuildEvent>
       <Command>py ../../../utils/gen_module_file.py ../../../src/Scripting</Command>
-      <Message>Generating Gen_ReflectionInit.h!</Message>
+      <Message>Generating Gen_ReflectionInit.h for module Scripting!</Message>
     </PreBuildEvent>
+    <PostBuildEvent>
+      <Command>mkdir ..\..\..\workingdir\App\Modules
+IF EXIST ..\..\..\build\output\x64\Release\$(TargetFileName)\ (xcopy /Q /E /Y /I ..\..\..\build\output\x64\Release\$(TargetFileName) ..\..\..\workingdir\App\Modules &gt; nul) ELSE (xcopy /Q /Y /I ..\..\..\build\output\x64\Release\$(TargetFileName) ..\..\..\workingdir\App\Modules &gt; nul)</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Analyze|x64'">
     <ClCompile>
@@ -195,8 +203,12 @@
     </Link>
     <PreBuildEvent>
       <Command>py ../../../utils/gen_module_file.py ../../../src/Scripting</Command>
-      <Message>Generating Gen_ReflectionInit.h!</Message>
+      <Message>Generating Gen_ReflectionInit.h for module Scripting!</Message>
     </PreBuildEvent>
+    <PostBuildEvent>
+      <Command>mkdir ..\..\..\workingdir\App\Modules
+IF EXIST ..\..\..\build\output\x64\Analyze\$(TargetFileName)\ (xcopy /Q /E /Y /I ..\..\..\build\output\x64\Analyze\$(TargetFileName) ..\..\..\workingdir\App\Modules &gt; nul) ELSE (xcopy /Q /Y /I ..\..\..\build\output\x64\Analyze\$(TargetFileName) ..\..\..\workingdir\App\Modules &gt; nul)</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">
     <ClCompile>
@@ -224,8 +236,12 @@
     </Link>
     <PreBuildEvent>
       <Command>py ../../../utils/gen_module_file.py ../../../src/Scripting</Command>
-      <Message>Generating Gen_ReflectionInit.h!</Message>
+      <Message>Generating Gen_ReflectionInit.h for module Scripting!</Message>
     </PreBuildEvent>
+    <PostBuildEvent>
+      <Command>mkdir ..\..\..\workingdir\App\Modules
+IF EXIST ..\..\..\build\output\x64\Profile\$(TargetFileName)\ (xcopy /Q /E /Y /I ..\..\..\build\output\x64\Profile\$(TargetFileName) ..\..\..\workingdir\App\Modules &gt; nul) ELSE (xcopy /Q /Y /I ..\..\..\build\output\x64\Profile\$(TargetFileName) ..\..\..\workingdir\App\Modules &gt; nul)</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Optimized_Debug|x64'">
     <ClCompile>
@@ -253,8 +269,12 @@
     </Link>
     <PreBuildEvent>
       <Command>py ../../../utils/gen_module_file.py ../../../src/Scripting</Command>
-      <Message>Generating Gen_ReflectionInit.h!</Message>
+      <Message>Generating Gen_ReflectionInit.h for module Scripting!</Message>
     </PreBuildEvent>
+    <PostBuildEvent>
+      <Command>mkdir ..\..\..\workingdir\App\Modules
+IF EXIST ..\..\..\build\output\x64\Optimized_Debug\$(TargetFileName)\ (xcopy /Q /E /Y /I ..\..\..\build\output\x64\Optimized_Debug\$(TargetFileName) ..\..\..\workingdir\App\Modules &gt; nul) ELSE (xcopy /Q /Y /I ..\..\..\build\output\x64\Optimized_Debug\$(TargetFileName) ..\..\..\workingdir\App\Modules &gt; nul)</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\src\Scripting\Shibboleth_ScriptingModule.cpp" />

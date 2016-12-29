@@ -17,6 +17,7 @@ Libraries Affected:
 	ResIL
 	OtterUI (got rid of a lot of warnings in Visual Studio and fixed a couple inconsistencies and crash bugs)
 	dirent (got rid of warnings in Visual Studio)
+	EASTL (eabase.h line 358. Defining EA_COMPILER_HAS_C99_FORMAT_MACROS.)
 
 Dependencies versions:
 Assimp - 3.2

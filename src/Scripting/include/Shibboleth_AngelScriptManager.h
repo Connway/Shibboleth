@@ -22,13 +22,28 @@ THE SOFTWARE.
 
 #pragma once
 
-#include <Shibboleth_IResource.h>
+#include <Shibboleth_Reflection.h>
+#include <Shibboleth_IManager.h>
+
+class asIScriptEngine;
 
 NS_SHIBBOLETH
 
-class AngelScriptResource : public IResource
+class AngelScriptManager final : public IManager
 {
 public:
+	AngelScriptManager(void);
+
+	const char* getName(void) const override { return GetReflectionName(); }
+
+	asIScriptEngine* getEngine(void) const { return _engine; }
+
+private:
+	asIScriptEngine* _engine = nullptr;
+
+	SHIB_REFLECTION_CLASS_DECLARE(AngelScriptManager);
 };
 
 NS_END
+
+SHIB_REFLECTION_DECLARE(AngelScriptManager)

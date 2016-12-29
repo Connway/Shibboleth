@@ -93,7 +93,7 @@ bool App::init(int argc, char** argv)
 	Gaff::StackTrace::RefreshModuleList(); // Will fix symbols from DLLs not resolving.
 #endif
 
-	if (!loadManagers()) {
+	if (!loadModules()) {
 		return false;
 	}
 
@@ -125,7 +125,7 @@ bool App::loadFileSystem(void)
 	if (_fs.file_system_module) {
 		LogInfoDefault("Found 'FileSystem" BIT_EXTENSION DYNAMIC_EXTENSION "'. Creating file system\n");
 
-		FileSystemData::InitFileSystemModuleFunc init_func = _fs.file_system_module->getFunc<FileSystemData::InitFileSystemModuleFunc>("InitModule");
+		InitModuleFunc init_func = _fs.file_system_module->getFunc<InitModuleFunc>("InitModule");
 
 		if (init_func && !init_func(*this)) {
 			LogErrorDefault("ERROR - Failed to init file system module\n");
@@ -165,112 +165,12 @@ bool App::loadFileSystem(void)
 	return true;
 }
 
-// Still single-threaded at this point, so ok that we're not using the spinlock
-bool App::loadManagers(void)
-{
-	LogInfoDefault("Loading Managers...\n");
-
-	bool error = false;
-
-	// Load managers from DLLs
-	Gaff::ForEachTypeInDirectory<Gaff::FDT_RegularFile>("./Managers", [&](const char* name, size_t) -> bool
-	{
-		U8String rel_path = U8String("./Managers/") + name;
-
-		// If it's not a dynamic module, just skip over it.
-		if (!Gaff::File::CheckExtension(name, DYNAMIC_EXTENSION)) {
-			return false;
-
-		// It is a dynamic module, but not compiled for our architecture.
-		// Or not compiled in our build mode. Just skip over it.
-		} else if (!Gaff::File::CheckExtension(name, BIT_EXTENSION DYNAMIC_EXTENSION)) {
-			return false;
-		}
-
-#ifdef PLATFORM_WINDOWS
-		DynamicLoader::ModulePtr module = _dynamic_loader.loadModule(("../" + rel_path).data(), name);
-#else
-		DynamicLoader::ModulePtr module = _dynamic_loader.loadModule(rel_path.data(), name);
-#endif
-
-		if (module) {
-			ManagerEntry::InitManagerModuleFunc init_func = module->getFunc<ManagerEntry::InitManagerModuleFunc>("InitModule");
-
-			if (!init_func) {
-				LogErrorDefault("ERROR - Failed to find function 'InitModule' in dynamic module '%s'\n", rel_path.data());
-				error = true;
-				return true;
-
-			} else if (!init_func(*this)) {
-				LogErrorDefault("ERROR - Failed to initialize '%s'\n", rel_path.data());
-				error = true;
-				return true;
-			}
-
-			ManagerEntry::GetNumManagersFunc num_mgrs_func = module->getFunc<ManagerEntry::GetNumManagersFunc>("GetNumManagers");
-
-			if (!num_mgrs_func) {
-				_dynamic_loader.removeModule(name);
-				LogErrorDefault("ERROR - Failed to find function 'GetNumManagers' in dynamic module '%s'\n", rel_path.data());
-				error = true;
-				return true;
-			}
-
-			unsigned int num_managers = num_mgrs_func();
-
-			for (unsigned int i = 0; i < num_managers; ++i) {
-				ManagerEntry entry = { module, nullptr, nullptr, nullptr, i };
-				entry.create_func = module->getFunc<ManagerEntry::CreateManagerFunc>("CreateManager");
-				entry.destroy_func = module->getFunc<ManagerEntry::DestroyManagerFunc>("DestroyManager");
-
-				if (entry.create_func && entry.destroy_func) {
-					entry.manager = entry.create_func(i);
-					entry.manager_id = i;
-
-					if (entry.manager) {
-						Gaff::Hash32 hash = Gaff::FNV1aHash32String(entry.manager->getName());
-						_manager_map[hash] = entry;
-						LogInfoDefault("Loaded manager '%s'\n", entry.manager->getName());
-
-					} else {
-						LogErrorDefault("ERROR - Failed to create manager from dynamic module '%s'\n", rel_path.data());
-						error = true;
-						return true;
-					}
-
-				} else {
-					_dynamic_loader.removeModule(name);
-					LogErrorDefault("ERROR - Failed to find functions 'CreateManager' and/or 'DestroyManager' in dynamic module '%s'\n", rel_path.data());
-					error = true;
-					return true;
-				}
-			}
-
-		} else {
-			LogErrorDefault("ERROR - Failed to load dynamic module '%s' for reason '%s'\n", rel_path.data(), Gaff::DynamicModule::GetErrorString());
-			error = true;
-			return true;
-		}
-
-		return false;
-	});
-
-	if (!error) {
-		for (auto it = _manager_map.begin(); it != _manager_map.end(); ++it) {
-			it->second.manager->allModulesLoaded();
-		}
-	}
-
-	return !error;
-}
-
 bool App::loadMainLoop(void)
 {
 	const char* main_loop_module = "MainLoop" BIT_EXTENSION DYNAMIC_EXTENSION;
 	DynamicLoader::ModulePtr module = _dynamic_loader.loadModule(main_loop_module, "MainLoop");
 
 	if (module) {
-		using InitModuleFunc = bool (*)(IApp&);
 		InitModuleFunc init_func = module->getFunc<InitModuleFunc>("InitModule");
 
 		if (!init_func) {
@@ -296,6 +196,63 @@ bool App::loadMainLoop(void)
 	}
 
 	return true;
+}
+
+bool App::loadModules(void)
+{
+	const bool error = Gaff::ForEachTypeInDirectory<Gaff::FDT_RegularFile>("./Modules", [&](const char* name, size_t) -> bool
+	{
+		U8String rel_path = U8String("./Modules/") + name;
+
+		// If it's not a dynamic module,
+		// or if it is not compiled for our architecture and build mode,
+		// then just skip over it.
+		if (!Gaff::File::CheckExtension(name, BIT_EXTENSION DYNAMIC_EXTENSION)) {
+			return false;
+		}
+
+#ifdef PLATFORM_WINDOWS
+		DynamicLoader::ModulePtr module = _dynamic_loader.loadModule(("../" + rel_path).data(), name);
+#else
+		DynamicLoader::ModulePtr module = _dynamic_loader.loadModule(rel_path.data(), name);
+#endif
+
+		if (!module) {
+			return false;
+		}
+
+		InitModuleFunc init_func = module->getFunc<InitModuleFunc>("InitModule");
+
+		if (!init_func) {
+			LogErrorDefault("ERROR - Failed to find function 'InitModule' in dynamic module '%s'\n", rel_path.data());
+			return true;
+
+		} else if (!init_func(*this)) {
+			LogErrorDefault("ERROR - Failed to initialize '%s'\n", rel_path.data());
+		}
+
+		return false;
+	});
+
+	if (!error) {
+		_dynamic_loader.forEachModule([&](DynamicLoader::ModulePtr& module) -> bool
+		{
+			using AllModulesLoadedFunc = void (*)(void);
+			AllModulesLoadedFunc aml_func = module->getFunc<AllModulesLoadedFunc>("AllModulesLoaded");
+
+			if (aml_func) {
+				aml_func();
+			}
+
+			return false;
+		});
+
+		for (auto it = _manager_map.begin(); it != _manager_map.end(); ++it) {
+			it->second->allModulesLoaded();
+		}
+	}
+
+	return !error;
 }
 
 bool App::initApp(void)
@@ -399,12 +356,12 @@ void App::destroy(void)
 {
 	_job_pool.destroy();
 
-	for (auto it = _manager_map.begin(); it != _manager_map.end(); ++it) {
-		it->second.destroy_func(it->second.manager, it->second.manager_id);
-	}
+	//for (auto it = _manager_map.begin(); it != _manager_map.end(); ++it) {
+	//	it->second.destroy_func(it->second.manager, it->second.manager_id);
+	//}
 
 	_reflection_map.clear();
-	_manager_map.clear();
+	//_manager_map.clear();
 	_logger.destroy();
 
 	_dynamic_loader.forEachModule([](DynamicLoader::ModulePtr module) -> bool
@@ -433,18 +390,18 @@ void App::destroy(void)
 #endif
 }
 
-const IManager* App::getManager(Gaff::Hash32 name) const
+const IManager* App::getManager(Gaff::Hash64 name) const
 {
 	auto it = _manager_map.find(name);
 	GAFF_ASSERT(name && it != _manager_map.end());
-	return it->second.manager;
+	return it->second.get();
 }
 
-IManager* App::getManager(Gaff::Hash32 name)
+IManager* App::getManager(Gaff::Hash64 name)
 {
 	auto it = _manager_map.find(name);
 	GAFF_ASSERT(name && it != _manager_map.end());
-	return it->second.manager;
+	return it->second.get();
 }
 
 MessageBroadcaster& App::getBroadcaster(void)
@@ -496,12 +453,43 @@ void App::registerReflection(Gaff::Hash64 name, Gaff::IReflectionDefinition& ref
 	// Register if a manager.
 	if (ref_def.hasInterface(Gaff::FNV1aHash64Const("IManager"))) {
 		ProxyAllocator allocator;
-		void* data = ref_def.createAlloc(allocator);
-		IManager* manager = reinterpret_cast<IManager*>(ref_def.getInterface(Gaff::FNV1aHash64Const("IManager"), data));
+		IManager* manager = ref_def.createAllocT<IManager>(allocator);
 
-		// Add manager to manager map.
-		GAFF_REF(manager);
+		GAFF_ASSERT(_manager_map.find(name) == _manager_map.end());
+		_manager_map[name].reset(manager);
 	}
+
+	// Check if this type implements an interface that has a type bucket request.
+	for (auto it = _type_buckets.begin(); it != _type_buckets.end(); ++it) {
+		if (ref_def.hasInterface(it->first)) {
+			it->second.emplace_back(name);
+		}
+	}
+}
+
+void App::registerTypeBucket(Gaff::Hash64 name)
+{
+	if (_type_buckets.find(name) == _type_buckets.end()) {
+		return;
+	}
+
+	Vector<Gaff::Hash64>& types = _type_buckets[name];
+
+	for (const auto& ref_map_pair : _reflection_map) {
+		const auto& ref_def = ref_map_pair.second;
+		const Gaff::Hash64 class_hash = ref_def->getReflectionInstance().getHash();
+
+		// Don't care about the concrete version of class. Only reflected types that inherit from the class.
+		if (name != class_hash && ref_def->hasInterface(name)) {
+			types.emplace_back(class_hash);
+		}
+	}
+}
+
+const Vector<Gaff::Hash64>* App::getTypeBucket(Gaff::Hash64 name) const
+{
+	auto it = _type_buckets.find(name);
+	return (it == _type_buckets.end()) ? nullptr : &it->second;
 }
 
 bool App::isQuitting(void) const

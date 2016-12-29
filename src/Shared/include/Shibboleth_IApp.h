@@ -26,6 +26,7 @@ THE SOFTWARE.
 #include "Shibboleth_HashString.h"
 #include "Shibboleth_JobPool.h"
 #include "Shibboleth_VectorMap.h"
+#include "Shibboleth_Vector.h"
 #include "Shibboleth_String.h"
 #include <Gaff_Reflection.h>
 
@@ -44,25 +45,25 @@ class IApp
 {
 public:
 	template <class T>
-	const T& getManagerTUnsafe(HashStringTemp32 name) const
+	const T& getManagerTUnsafe(HashStringTemp64 name) const
 	{
 		return *reinterpret_cast<T*>(getManager(name.getHash()));
 	}
 
 	template <class T>
-	T& getManagerTUnsafe(HashStringTemp32 name)
+	T& getManagerTUnsafe(HashStringTemp64 name)
 	{
 		return *reinterpret_cast<T*>(getManager(name.getHash()));
 	}
 
 	template <class T>
-	const T& getManagerTUnsafe(const HashString32& name) const
+	const T& getManagerTUnsafe(const HashString64& name) const
 	{
 		return *reinterpret_cast<T*>(getManager(name.getHash()));
 	}
 
 	template <class T>
-	T& getManagerTUnsafe(const HashString32& name)
+	T& getManagerTUnsafe(const HashString64& name)
 	{
 		return *reinterpret_cast<T*>(getManager(name.getHash()));
 	}
@@ -74,7 +75,7 @@ public:
 	}
 
 	template <class T>
-	T& getMangetManagerTUnsafeagerT(const U8String& name)
+	T& getManagerTUnsafe(const U8String& name)
 	{
 		return *reinterpret_cast<T*>(getManager(name.data()));
 	}
@@ -82,13 +83,13 @@ public:
 	template <class T>
 	const T& getManagerTUnsafe(const char* name) const
 	{
-		return *reinterpret_cast<T*>(getManager(Gaff::FNV1aHash32String(name)));
+		return *reinterpret_cast<T*>(getManager(Gaff::FNV1aHash64String(name)));
 	}
 
 	template <class T>
 	T& getManagerTUnsafe(const char* name)
 	{
-		return *reinterpret_cast<T*>(getManager(Gaff::FNV1aHash32String(name)));
+		return *reinterpret_cast<T*>(getManager(Gaff::FNV1aHash64String(name)));
 	}
 
 	//template <class T>
@@ -118,8 +119,8 @@ public:
 	IApp(void) {}
 	virtual ~IApp(void) {}
 
-	virtual const IManager* getManager(Gaff::Hash32 name) const = 0;
-	virtual IManager* getManager(Gaff::Hash32 name) = 0;
+	virtual const IManager* getManager(Gaff::Hash64 name) const = 0;
+	virtual IManager* getManager(Gaff::Hash64 name) = 0;
 
 	virtual MessageBroadcaster& getBroadcaster(void) = 0;
 
@@ -134,6 +135,8 @@ public:
 
 	virtual const Gaff::IReflectionDefinition* getReflection(Gaff::Hash64 name) const = 0;
 	virtual void registerReflection(Gaff::Hash64 name, Gaff::IReflectionDefinition& ref_def) = 0;
+	virtual void registerTypeBucket(Gaff::Hash64 name) = 0;
+	virtual const Vector<Gaff::Hash64>* getTypeBucket(Gaff::Hash64 name) const = 0;
 
 	virtual bool isQuitting(void) const = 0;
 	virtual void quit(void) = 0;

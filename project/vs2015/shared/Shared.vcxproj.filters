@@ -48,9 +48,6 @@
     <ClInclude Include="..\..\..\src\Shared\include\Shibboleth_MessageBroadcaster.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\src\Shared\include\Shibboleth_ModuleHelpers.h">
-      <Filter>include</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\src\Shared\include\Shibboleth_ProxyAllocator.h">
       <Filter>include</Filter>
     </ClInclude>
@@ -61,9 +58,6 @@
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\src\Shared\include\Shibboleth_Reflection.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\src\Shared\include\Shibboleth_ReflectionDefinitions.h">
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\src\Shared\include\Shibboleth_SmartPtrs.h">

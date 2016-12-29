@@ -20,19 +20,21 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-/*! \file */
+#include "Shibboleth_AngelScriptManager.h"
 
-#pragma once
+SHIB_REFLECTION_DEFINE(AngelScriptManager)
 
-#include "Gaff_Defines.h"
+NS_SHIBBOLETH
 
-NS_GAFF
+SHIB_REFLECTION_CLASS_DEFINE_BEGIN(AngelScriptManager)
+	.BASE(IManager)
+	.ctor<>()
+SHIB_REFLECTION_CLASS_DEFINE_END(AngelScriptManager)
 
-class IVirtualDestructor
+AngelScriptManager::AngelScriptManager(void)
 {
-public:
-	IVirtualDestructor(void) {}
-	virtual ~IVirtualDestructor(void) {}
-};
+	// Ensure creation of pool index.
+	GetAllocator()->getPoolIndex("AngelScript");
+}
 
 NS_END

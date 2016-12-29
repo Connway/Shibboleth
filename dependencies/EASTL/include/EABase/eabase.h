@@ -355,7 +355,8 @@
 	typedef double              double_t;
 #endif
 
-#if defined(EA_COMPILER_HAS_INTTYPES) && !defined(EA_COMPILER_MSVC)
+// VS2015 has these format macros defined.
+#if defined(EA_COMPILER_HAS_INTTYPES) && (!defined(EA_COMPILER_MSVC) || defined(EA_COMPILER_MSVC_2015))
 	#define EA_COMPILER_HAS_C99_FORMAT_MACROS 
 #endif
 

@@ -47,6 +47,8 @@ newoption
 	description = "Generate Clang configurations for Visual Studio projects."
 }
 
+dofile("helper_functions.lua")
+
 solution "Shibboleth"
 	if _ACTION then
 		location ("../project/" .. _ACTION)

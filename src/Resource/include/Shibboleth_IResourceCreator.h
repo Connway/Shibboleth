@@ -22,56 +22,14 @@ THE SOFTWARE.
 
 #pragma once
 
-#include <Shibboleth_Memory.h>
-
-#define CREATE_MODULE_TYPE(ReturnType, FuncName) \
-	template <class CreateType> \
-	ReturnType* FuncName(void) \
-	{ \
-		return SHIB_ALLOCT(CreateType, *GetAllocator()); \
-	}
-
-#define CREATE_MODULE_TYPE_WITH_INIT(ReturnType, FuncName) \
-	template <class CreateType> \
-	ReturnType* FuncName(void) \
-	{ \
-		CreateType* type = SHIB_ALLOCT(CreateType, *Shibboleth::GetAllocator()); \
-		if (type) { \
-			if (!type->init()) { \
-				SHIB_FREET(type, *GetAllocator()); \
-				type = nullptr; \
-			} \
-		} \
-		return type; \
-	}
-
+#include <Shibboleth_Defines.h>
 
 NS_SHIBBOLETH
 
-class Component;
-class IManager;
-class IState;
-
-CREATE_MODULE_TYPE_WITH_INIT(IManager, CreateManagerWithInitT);
-
-CREATE_MODULE_TYPE(Component, CreateComponentT);
-CREATE_MODULE_TYPE(IManager, CreateManagerT);
-CREATE_MODULE_TYPE(IState, CreateStateT);
-
-using ModuleTypeNameFunc = const char* (*)(void);
-
-using CreateComponentFunc = Component* (*)(void);
-using CreateManagerFunc = IManager* (*)(void);
-using CreateStateFunc = IState* (*)(void);
-
-template <class CreateFunc>
-struct ModuleTypeFuncs
+class IResourceCreaator
 {
-	CreateFunc create;
-	ModuleTypeNameFunc name;
+public:
+	virtual ~IResourceCreaator(void) {}
 };
-
-using ComponentFuncs = ModuleTypeFuncs<CreateComponentFunc>;
-using StateFuncs = ModuleTypeFuncs<CreateStateFunc>;
 
 NS_END
