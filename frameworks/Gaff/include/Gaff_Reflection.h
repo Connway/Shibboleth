@@ -204,6 +204,10 @@ NS_END
 
 #define GAFF_REFLECTION_BUILDER_END(type) ; }
 
+#define GAFF_REFLECTION_CLASS_DEFINE(type, allocator) \
+	GAFF_REFLECTION_CLASS_DEFINE_BEGIN(type, allocator) \
+	GAFF_REFLECTION_CLASS_DEFINE_END(type, allocator)
+
 #define GAFF_REFLECTION_CLASS_DEFINE_BEGIN(type, allocator) \
 	const Gaff::ReflectionDefinition<type, allocator>& type::GetReflectionDefinition(void) \
 	{ \

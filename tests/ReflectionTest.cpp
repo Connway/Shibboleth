@@ -393,3 +393,55 @@ TEST_CASE("reflection module test", "[shibboleth_reflection_module]")
 
 	g_app.destroy();
 }
+
+
+class AttrTest
+{
+public:
+	AttrTest(void) {}
+	AttrTest(int val) : a(val) {}
+
+	int a = 555;
+
+	SHIB_REFLECTION_CLASS_DECLARE(AttrTest);
+};
+
+class TestAttr : public Gaff::IAttribute
+{
+	SHIB_REFLECTION_CLASS_DECLARE(TestAttr);
+};
+
+SHIB_REFLECTION_DECLARE(TestAttr);
+SHIB_REFLECTION_DEFINE(TestAttr);
+SHIB_REFLECTION_CLASS_DEFINE(TestAttr);
+//SHIB_REFLECTION_CLASS_DEFINE_BEGIN(AttrTest)
+//SHIB_REFLECTION_CLASS_DEFINE_END(AttrTest)
+
+
+SHIB_REFLECTION_DECLARE(AttrTest);
+SHIB_REFLECTION_DEFINE(AttrTest);
+SHIB_REFLECTION_CLASS_DEFINE_BEGIN(AttrTest)
+	.classAttrs
+	(
+		TestAttr(),
+		TestAttr(),
+		TestAttr()
+	)
+	.varAttrs
+	(
+		"a",
+		TestAttr(),
+		TestAttr()
+	)
+
+	.ctor<>()
+	.ctor<int>()
+	.var("a", &AttrTest::a)
+SHIB_REFLECTION_CLASS_DEFINE_END(AttrTest)
+
+
+TEST_CASE("reflection attribute test", "[shibboleth_attribute]")
+{
+	Shibboleth::Reflection<TestAttr>::Init();
+	Shibboleth::Reflection<AttrTest>::Init();
+}

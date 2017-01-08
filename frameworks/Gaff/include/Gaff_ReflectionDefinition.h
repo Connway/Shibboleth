@@ -23,6 +23,7 @@ THE SOFTWARE.
 #pragma once
 
 #include "Gaff_ReflectionInterfaces.h"
+#include "Gaff_IReflectionObject.h"
 #include "Gaff_HashString.h"
 #include "Gaff_VectorMap.h"
 #include "Gaff_Assert.h"
@@ -35,13 +36,19 @@ THE SOFTWARE.
 
 NS_GAFF
 
+using IAttribute = IReflectionObject;
+
 template <class T, class Allocator>
 class ReflectionDefinition final : public IReflectionDefinition
 {
 public:
+	using IAttributePtr = UniquePtr<IAttribute, Allocator>;
+
 	class IVar : public IReflectionVar
 	{
 	public:
+		virtual ~IVar(void) {}
+
 		template <class DataType>
 		const DataType& getDataT(const T& object) const
 		{
@@ -86,19 +93,14 @@ public:
 			GAFF_ASSERT(getType() == GetRVT< std::remove_reference<DataType>::type >());
 			setElementMove(&object, index, &data);
 		}
-
-		virtual ~IVar(void) {}
 	};
-
-	template <class... Args>
-	T* create(Args&&... args) const
-	{
-		return createAllocT<T>(_allocator, std::forward<Args>(args)...);
-	}
 
 	GAFF_STRUCTORS_DEFAULT(ReflectionDefinition);
 	GAFF_NO_COPY(ReflectionDefinition);
 	GAFF_NO_MOVE(ReflectionDefinition);
+
+	template <class... Args>
+	T* create(Args&&... args) const;
 
 	void load(ISerializeReader& reader, void* object) const override;
 	void save(ISerializeWriter& writer, const void* object) const override;
@@ -150,6 +152,12 @@ public:
 
 	template <size_t size, class Ret, class... Args>
 	ReflectionDefinition& func(const char (&name)[size], Ret (T::*ptr)(Args...));
+
+	template <class... Args>
+	ReflectionDefinition& classAttrs(const Args&... args);
+
+	template <size_t size, class... Args>
+	ReflectionDefinition& varAttrs(const char (&name)[size], const Args&... args);
 
 	void finish(void);
 
@@ -272,7 +280,9 @@ private:
 	VectorMap<HashString32<Allocator>, IVarPtr, Allocator> _vars;
 	VectorMap<Hash64, VoidFunc, Allocator> _ctors;
 
-	//VectorMap<Hash32, IAttributePtr, Allocator> _base_class_attrs;
+	VectorMap<Hash32, Vector<IAttributePtr, Allocator>, Allocator> _var_attrs;
+	VectorMap<Hash64, Vector<IAttributePtr, Allocator>, Allocator> _base_class_attrs;
+	Vector<IAttributePtr, Allocator> _class_attrs;
 
 	mutable Allocator _allocator;
 
@@ -280,6 +290,14 @@ private:
 
 	template <class Base>
 	static void RegisterBaseVariables(void);
+
+	template <class First, class... Rest>
+	ReflectionDefinition& addVarAttributes(Vector<IAttributePtr, Allocator>& attrs, const First& first, const Rest&... rest);
+	ReflectionDefinition& addVarAttributes(Vector<IAttributePtr, Allocator>&);
+
+	template <class First, class... Rest>
+	ReflectionDefinition& addClassAttributes(const First& first, const Rest&... rest);
+	ReflectionDefinition& addClassAttributes(void);
 
 	template <class RefT, class Allocator>
 	friend class ReflectionDefinition;
