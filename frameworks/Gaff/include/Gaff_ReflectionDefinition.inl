@@ -482,6 +482,13 @@ void ReflectionDefinition<T, Allocator>::VectorPtr<Var, Vec_Allocator>::resize(v
 
 // ReflectionDefinition
 template <class T, class Allocator>
+template <class... Args>
+T* ReflectionDefinition<T, Allocator>::create(Args&&... args) const
+{
+	return createAllocT<T>(_allocator, std::forward<Args>(args)...);
+}
+
+template <class T, class Allocator>
 void ReflectionDefinition<T, Allocator>::load(ISerializeReader& reader, void* object) const
 {
 	load(reader, *reinterpret_cast<T*>(object));
@@ -542,6 +549,11 @@ void ReflectionDefinition<T, Allocator>::setAllocator(const Allocator& allocator
 	_base_class_offsets.set_allocator(allocator);
 	_ctors.set_allocator(allocator);
 	_vars.set_allocator(allocator);
+
+	_base_class_attrs.set_allocator(allocator);
+	_var_attrs.set_allocator(allocator);
+	_class_attrs.set_allocator(allocator);
+
 	_allocator = allocator;
 }
 
@@ -629,13 +641,11 @@ template <class T, class Allocator>
 template <class Base>
 ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::base(void)
 {
-	base<Base>(GAFF_REFLECTION_NAMESPACE::Reflection<Base>::GetName());
-
-	// Add IVarPtr's from base class.
+	// Add IVarPtr's and funcs from base class.
 	if (GAFF_REFLECTION_NAMESPACE::Reflection<Base>::g_defined) {
-		ReflectionDefinition<Base, Allocator>& base_ref_def = const_cast<ReflectionDefinition<Base, Allocator>&>(
-			GAFF_REFLECTION_NAMESPACE::Reflection<Base>::GetReflectionDefinition()
-		);
+		const ReflectionDefinition<Base, Allocator>& base_ref_def = GAFF_REFLECTION_NAMESPACE::Reflection<Base>::GetReflectionDefinition();
+
+		base<Base>(GAFF_REFLECTION_NAMESPACE::Reflection<Base>::GetName());
 
 		for (int32_t i = 0; i < base_ref_def.getNumVariables(); ++i) {
 			eastl::pair<HashString32<Allocator>, IVarPtr> pair(
@@ -646,6 +656,12 @@ ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::base(voi
 			GAFF_ASSERT(_vars.find(pair.first) == _vars.end());
 			_vars.insert(std::move(pair));
 		}
+
+		// add base class var attrs
+
+		// add base class funcs
+
+		// add base class func attrs
 
 	// Register for callback if base class hasn't been defined yet.
 	} else {
@@ -777,6 +793,22 @@ ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::func(con
 }
 
 template <class T, class Allocator>
+template <class... Args>
+ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::classAttrs(const Args&... args)
+{
+	return addClassAttributes(args...);
+}
+
+template <class T, class Allocator>
+template <size_t size, class... Args>
+ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::varAttrs(const char (&name)[size], const Args&... args)
+{
+	auto& attrs = _var_attrs[FNV1aHash32Const(name)];
+	attrs.set_allocator(_allocator);
+	return addVarAttributes(attrs, args...);
+}
+
+template <class T, class Allocator>
 void ReflectionDefinition<T, Allocator>::finish(void)
 {
 	if (!_base_classes_remaining) {
@@ -801,23 +833,36 @@ void ReflectionDefinition<T, Allocator>::RegisterBaseVariables(void)
 	--ref_def._base_classes_remaining;
 	GAFF_ASSERT(ref_def._base_classes_remaining >= 0);
 
-	ReflectionDefinition<Base, Allocator>& base_ref_def = const_cast<ReflectionDefinition<Base, Allocator>&>(
-		GAFF_REFLECTION_NAMESPACE::Reflection<Base>::GetReflectionDefinition()
-	);
-
-	GAFF_ASSERT(GAFF_REFLECTION_NAMESPACE::Reflection<Base>::g_defined);
-
-	for (int32_t i = 0; i < base_ref_def.getNumVariables(); ++i) {
-		eastl::pair<HashString32<Allocator>, IVarPtr> pair(
-			base_ref_def.getVariableName(i),
-			IVarPtr(GAFF_ALLOCT(BaseVarPtr<Base>, ref_def._allocator, base_ref_def.getVar(i)))
-		);
-
-		GAFF_ASSERT(ref_def._vars.find(pair.first) == ref_def._vars.end());
-		ref_def._vars.insert(std::move(pair));
-	}
-
+	ref_def.base<Base>();
 	ref_def.finish();
+}
+
+template <class T, class Allocator>
+template <class First, class... Rest>
+ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::addVarAttributes(Vector<IAttributePtr, Allocator>& attrs, const First& first, const Rest&... rest)
+{
+	attrs.emplace_back(IAttributePtr(GAFF_ALLOCT(First, _allocator, first)));
+	return addVarAttributes(attrs, rest...);
+}
+
+template <class T, class Allocator>
+ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::addVarAttributes(Vector<IAttributePtr, Allocator>&)
+{
+	return *this;
+}
+
+template <class T, class Allocator>
+template <class First, class... Rest>
+ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::addClassAttributes(const First& first, const Rest&... rest)
+{
+	_class_attrs.emplace_back(IAttributePtr(GAFF_ALLOCT(First, _allocator, first)));
+	return addClassAttributes(rest...);
+}
+
+template <class T, class Allocator>
+ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::addClassAttributes(void)
+{
+	return *this;
 }
 
 NS_END

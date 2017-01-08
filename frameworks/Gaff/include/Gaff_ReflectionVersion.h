@@ -51,6 +51,18 @@ public:
 	template <size_t size, class Ret, class... Args>
 	ReflectionVersion& func(const char (&name)[size], Ret (T::*ptr)(Args...));
 
+	template <class... Args>
+	ReflectionVersion& classAttrs(const Args&... /*args*/)
+	{
+		return *this;
+	}
+
+	template <size_t size, class... Args>
+	ReflectionVersion& varAttrs(const char(&/*name*/)[size], const Args&... /*args*/)
+	{
+		return *this;
+	}
+
 	Hash64 getHash(void) const;
 
 private:
