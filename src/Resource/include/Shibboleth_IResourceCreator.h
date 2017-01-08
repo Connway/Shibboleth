@@ -26,10 +26,14 @@ THE SOFTWARE.
 
 NS_SHIBBOLETH
 
-class IResourceCreaator
+class IResource;
+
+class IResourceCreator
 {
 public:
-	virtual ~IResourceCreaator(void) {}
+	virtual ~IResourceCreator(void) {}
+
+	virtual IResource* create() = 0;
 };
 
 NS_END

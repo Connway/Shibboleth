@@ -22,14 +22,62 @@ THE SOFTWARE.
 
 #pragma once
 
-#include <Shibboleth_Defines.h>
+#include <Shibboleth_HashString.h>
+#include <Shibboleth_Vector.h>
+#include <Gaff_IRefCounted.h>
+#include <Gaff_RefPtr.h>
+#include <EASTL/functional.h>
+#include <atomic>
 
 NS_SHIBBOLETH
 
-class IResource
+class ResourceManager;
+class IFile;
+
+class IResource;
+using IResourcePtr = Gaff::RefPtr<IResource>;
+
+class IResource : public Gaff::IRefCounted
 {
 public:
-	virtual ~IResource(void) {}
+	enum ResourceState
+	{
+		RS_PENDING = 0,
+		RS_FAILED,
+		RS_LOADED
+	};
+
+	using ResStateCallbackFunc = void (IResource*);
+
+	virtual void load(void) = 0;
+	virtual bool readsFromDisk(void) const { return true; }
+
+	void addRef(void) const override;
+	void release(void) const override;
+	int32_t getRefCount(void) const override;
+
+	void addResourceStateCallback(eastl::function<ResStateCallbackFunc>&& callback);
+	void removeResourceStateCallback(const eastl::function<ResStateCallbackFunc>& callback);
+
+	const HashString64& getFilePath(void) const;
+	ResourceState getState(void) const;
+
+protected:
+	Vector<IResourcePtr> _sub_resources = Vector<IResourcePtr>(ProxyAllocator("Resource"));
+	Vector< eastl::function<ResStateCallbackFunc> > _callbacks;
+	ResourceState _state = RS_PENDING;
+
+	IFile* loadFile(const char* file_path);
+	void callCallbacks(void);
+
+private:
+	mutable std::atomic_int32_t _count = 0;
+	HashString64 _file_path;
+	ResourceManager* _res_mgr = nullptr;
+
+	void setResourceManager(ResourceManager* res_mgr);
+
+	friend class ResourceManager;
 };
 
 NS_END

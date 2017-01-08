@@ -33,7 +33,6 @@ public:
 	IManager(void) {}
 	virtual ~IManager(void) {}
 
-	virtual const char* getName(void) const = 0;
 	virtual void allModulesLoaded(void) {}
 
 	virtual bool init(void) { return true; }

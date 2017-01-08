@@ -2,7 +2,7 @@ group "Main Loop Module"
 
 project "MainLoopModule"
 	if _ACTION then
-		location ("../../project/" .. _ACTION .. "/states")
+		location ("../../project/" .. _ACTION .. "/mainloop")
 	end
 
 	kind "SharedLib"
@@ -25,46 +25,25 @@ project "MainLoopModule"
 		"include",
 		"../Shared/include",
 		"../Memory/include",
-		"../Game/include",
-		"../Managers/include",
-		"../Components/include",
 		"../../frameworks/Gaff/include",
-		"../../frameworks/Gleam/include",
-		"../../dependencies/OtterUI/inc",
-		"../../dependencies/rapidjson"
+		"../../dependencies/EASTL/include"
 	}
 
 	dependson
 	{
 		"Shared", "Gaff",
-		"libjpeg", "libpng",
-		"libtiff", "OtterUI",
-		"ResIL", "ResILU",
-		"zlib", "Gleam",
-		"Game", "esprit",
-		"Components",
-		"States", "Memory",
-		"LuaJIT",
-		"BulletCollision",
-		"BulletDynamics",
-		"LinearMath",
-		"assimp", "minizip"
+		"Memory", "EASTL"
 	}
 
 	links
 	{
 		"Shared", "Gaff",
-		"libjpeg", "libpng",
-		"libtiff", "OtterUI",
-		"ResIL", "ResILU",
-		"zlib", "Gleam",
-		"Game", "esprit",
-		"Components",
-		"Memory","LuaJIT",
-		"BulletCollision",
-		"BulletDynamics",
-		"LinearMath",
-		"assimp", "minizip"
+		"Memory", "EASTL"
+	}
+
+	postbuildcommands
+	{
+		"{COPY} %{cfg.targetdir}/%{cfg.buildtarget.name} ../../../workingdir/App/bin"
 	}
 
 	dofile("../../utils/os_conditionals.lua")

@@ -175,7 +175,7 @@ void MessageBroadcaster::spawnBroadcastTasks(bool wait)
 
 		// Only broadcast the message if there are people actually listening for it.
 		if (_listeners.find(it_msg->first) != _listeners.end()) {
-			jobs_data.emplace_back(&BroadcastJob, this);
+			jobs_data.emplace_back(Gaff::JobData{&BroadcastJob, this});
 		}
 	}
 

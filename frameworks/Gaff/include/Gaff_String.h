@@ -125,7 +125,7 @@ size_t FindLastOf(const T* string, size_t size, T character)
 template <class T>
 size_t FindLastOf(const T* string, T character)
 {
-	return FindLastOf(string, length(string), character);
+	return FindLastOf(string, eastl::CharStrlen(string), character);
 }
 
 NS_END

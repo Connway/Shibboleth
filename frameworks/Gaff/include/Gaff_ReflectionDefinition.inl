@@ -558,7 +558,7 @@ int32_t ReflectionDefinition<T, Allocator>::getNumVariables(void) const
 }
 
 template <class T, class Allocator>
-ReflectionHash ReflectionDefinition<T, Allocator>::getVariableHash(int32_t index) const
+Hash32 ReflectionDefinition<T, Allocator>::getVariableHash(int32_t index) const
 {
 	GAFF_ASSERT(index < _vars.size());
 	return getVariableName(index).getHash();
@@ -572,7 +572,7 @@ IReflectionVar* ReflectionDefinition<T, Allocator>::getVariable(int32_t index) c
 }
 
 template <class T, class Allocator>
-IReflectionVar* ReflectionDefinition<T, Allocator>::getVariable(ReflectionHash name) const
+IReflectionVar* ReflectionDefinition<T, Allocator>::getVariable(Hash32 name) const
 {
 	GAFF_ASSERT(Find(_vars, name) != _vars.end());
 	return getVar(name);
@@ -586,7 +586,7 @@ IReflectionDefinition::VoidFunc ReflectionDefinition<T, Allocator>::getFactory(H
 }
 
 template <class T, class Allocator>
-const ReflectionHashString<Allocator>& ReflectionDefinition<T, Allocator>::getVariableName(int32_t index) const
+const HashString32<Allocator>& ReflectionDefinition<T, Allocator>::getVariableName(int32_t index) const
 {
 	GAFF_ASSERT(index < _vars.size());
 	return (_vars.begin() + index)->first;
@@ -600,7 +600,7 @@ typename ReflectionDefinition<T, Allocator>::IVar* ReflectionDefinition<T, Alloc
 }
 
 template <class T, class Allocator>
-typename ReflectionDefinition<T, Allocator>::IVar* ReflectionDefinition<T, Allocator>::getVar(ReflectionHash name) const
+typename ReflectionDefinition<T, Allocator>::IVar* ReflectionDefinition<T, Allocator>::getVar(Hash32 name) const
 {
 	auto it = Find(_vars, name);
 	GAFF_ASSERT(it != _vars.end());
@@ -638,7 +638,7 @@ ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::base(voi
 		);
 
 		for (int32_t i = 0; i < base_ref_def.getNumVariables(); ++i) {
-			eastl::pair<ReflectionHashString<Allocator>, IVarPtr> pair(
+			eastl::pair<HashString32<Allocator>, IVarPtr> pair(
 				base_ref_def.getVariableName(i),
 				IVarPtr(GAFF_ALLOCT(BaseVarPtr<Base>, _allocator, base_ref_def.getVar(i)))
 			);
@@ -675,8 +675,8 @@ ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::var(cons
 {
 	static_assert(!std::is_pointer<Var>::value, "Cannot reflect pointers.");
 
-	eastl::pair<ReflectionHashString<Allocator>, IVarPtr> pair(
-		ReflectionHashString<Allocator>(name, size - 1, nullptr, _allocator),
+	eastl::pair<HashString32<Allocator>, IVarPtr> pair(
+		HashString32<Allocator>(name, size - 1, nullptr, _allocator),
 		IVarPtr(GAFF_ALLOCT(VarPtr<Var>, _allocator, ptr))
 	);
 
@@ -693,8 +693,8 @@ ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::var(cons
 	static_assert(!std::is_pointer<Ret>::value, "Cannot reflect pointers.");
 	using PtrType = VarFuncPtr<Ret, Var>;
 
-	eastl::pair<ReflectionHashString<Allocator>, IVarPtr> pair(
-		ReflectionHashString<Allocator>(name, size - 1, nullptr, _allocator),
+	eastl::pair<HashString32<Allocator>, IVarPtr> pair(
+		HashString32<Allocator>(name, size - 1, nullptr, _allocator),
 		IVarPtr(GAFF_ALLOCT(PtrType, _allocator, getter, setter))
 	);
 
@@ -711,8 +711,8 @@ ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::var(cons
 	static_assert(!std::is_pointer<Var>::value, "Cannot reflect pointers.");
 	using PtrType = VectorPtr<Var, Vec_Allocator>;
 
-	eastl::pair<ReflectionHashString<Allocator>, IVarPtr> pair(
-		ReflectionHashString<Allocator>(name, size - 1, nullptr, _allocator),
+	eastl::pair<HashString32<Allocator>, IVarPtr> pair(
+		HashString32<Allocator>(name, size - 1, nullptr, _allocator),
 		IVarPtr(GAFF_ALLOCT(PtrType, _allocator, vec))
 	);
 
@@ -729,8 +729,8 @@ ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::var(cons
 	static_assert(!std::is_pointer<Var>::value, "Cannot reflect pointers.");
 	using PtrType = ArrayPtr<Var, array_size>;
 
-	eastl::pair<ReflectionHashString<Allocator>, IVarPtr> pair(
-		ReflectionHashString<Allocator>(name, name_size - 1, nullptr, _allocator),
+	eastl::pair<HashString32<Allocator>, IVarPtr> pair(
+		HashString32<Allocator>(name, name_size - 1, nullptr, _allocator),
 		IVarPtr(GAFF_ALLOCT(PtrType, _allocator, arr))
 	);
 
@@ -747,8 +747,8 @@ ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::func(con
 	GAFF_REF(name); GAFF_REF(ptr);
 	//using PtrType = FuncPtr<Ret, Args...>;
 
-	//eastl::pair<ReflectionHashString<Allocator>, IVarPtr> pair(
-	//	ReflectionHashString<Allocator>(name, size - 1, nullptr, _allocator),
+	//eastl::pair<HashString32<Allocator>, IVarPtr> pair(
+	//	HashString32<Allocator>(name, size - 1, nullptr, _allocator),
 	//	IVarPtr(GAFF_ALLOCT(PtrType, _allocator, arr))
 	//);
 
@@ -765,8 +765,8 @@ ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::func(con
 	GAFF_REF(name); GAFF_REF(ptr);
 	//using PtrType = FuncPtr<Ret, Args...>;
 
-	//eastl::pair<ReflectionHashString<Allocator>, IVarPtr> pair(
-	//	ReflectionHashString<Allocator>(name, size - 1, nullptr, _allocator),
+	//eastl::pair<HashString32<Allocator>, IVarPtr> pair(
+	//	HashString32<Allocator>(name, size - 1, nullptr, _allocator),
 	//	IVarPtr(GAFF_ALLOCT(PtrType, _allocator, arr))
 	//);
 
@@ -808,7 +808,7 @@ void ReflectionDefinition<T, Allocator>::RegisterBaseVariables(void)
 	GAFF_ASSERT(GAFF_REFLECTION_NAMESPACE::Reflection<Base>::g_defined);
 
 	for (int32_t i = 0; i < base_ref_def.getNumVariables(); ++i) {
-		eastl::pair<ReflectionHashString<Allocator>, IVarPtr> pair(
+		eastl::pair<HashString32<Allocator>, IVarPtr> pair(
 			base_ref_def.getVariableName(i),
 			IVarPtr(GAFF_ALLOCT(BaseVarPtr<Base>, ref_def._allocator, base_ref_def.getVar(i)))
 		);

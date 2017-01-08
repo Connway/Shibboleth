@@ -22,13 +22,14 @@ THE SOFTWARE.
 
 #pragma once
 
-#include <Shibboleth_IResourceManager.h>
+//#include <Shibboleth_IResourceManager.h>
+#include <Shibboleth_Defines.h>
 
 NS_SHIBBOLETH
 
-class IRenderManager;
-class IUpdateManager;
-class Object;
+//class IRenderManager;
+//class IUpdateManager;
+//class Object;
 
 class MainLoop
 {
@@ -38,16 +39,16 @@ public:
 	void update(void);
 
 private:
-	IRenderManager* _render_mgr = nullptr;
-	IUpdateManager* _update_mgr = nullptr;
-	Object* _object = nullptr;
-	Object* _object2 = nullptr;
-	Object* _camera = nullptr;
-	Object* _floor = nullptr;
-	Array<ResourcePtr> _resources;
-	Gaff::SpinLock _res_lock;
+	//IRenderManager* _render_mgr = nullptr;
+	//IUpdateManager* _update_mgr = nullptr;
+	//Object* _object = nullptr;
+	//Object* _object2 = nullptr;
+	//Object* _camera = nullptr;
+	//Object* _floor = nullptr;
+	//Array<ResourcePtr> _resources;
+	//Gaff::SpinLock _res_lock;
 
-	void ResReq(ResourcePtr& res);
+	//void ResReq(ResourcePtr& res);
 };
 
 NS_END

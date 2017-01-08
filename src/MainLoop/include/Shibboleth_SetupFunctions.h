@@ -26,10 +26,10 @@ THE SOFTWARE.
 
 NS_SHIBBOLETH
 
-bool CreateResourceLoaders(void);
+//bool CreateResourceLoaders(void);
 //bool RegisterLuaClasses(void);
-bool LoadGraphicsModule(void);
-bool SetupDevices(void);
+//bool LoadGraphicsModule(void);
+//bool SetupDevices(void);
 //bool SetupOtterUI(void);
 
 NS_END
