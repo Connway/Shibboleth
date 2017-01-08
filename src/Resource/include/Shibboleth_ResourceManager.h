@@ -22,60 +22,47 @@ THE SOFTWARE.
 
 #pragma once
 
-#include <Shibboleth_IAllocator.h>
-#include <Shibboleth_Memory.h>
-#include <Gaff_IRefCounted.h>
-#include <atomic>
-
-#define SHIB_REF_COUNTED() \
-public: \
-	void addRef(void) const \
-	{ \
-		++_count; \
-	} \
-	void release(void) const \
-	{ \
-		int32_t new_count = --_count; \
-		if (!new_count) { \
-			SHIB_FREET(this, *Shibboleth::GetAllocator()); \
-		} \
-	} \
-	int32_t getRefCount(void) const \
-	{ \
-		return _count; \
-	} \
-private: \
-	mutable std::atomic_int32_t _count = 0
+#include "Shibboleth_IResource.h"
+#include <Shibboleth_VectorMap.h>
+#include <Shibboleth_IManager.h>
+#include <Gaff_SpinLock.h>
+#include <Gaff_RefPtr.h>
 
 NS_SHIBBOLETH
 
-class RefCounted : public Gaff::IRefCounted
+class ResourceManager : public IManager
 {
 public:
-	void addRef(void) const
+	ResourceManager(void);
+
+	void allModulesLoaded(void) override;
+
+	template <size_t size>
+	IResourcePtr requestResource(const char (&string)[size])
 	{
-		++_count;
+		return requestResource(Gaff::HashStringTemp64(string));
 	}
 
-	void release(void) const
+	IResourcePtr requestResource(const char* name)
 	{
-		int32_t new_count = --_count;
-
-		if (!new_count) {
-			SHIB_FREET(this, *GetAllocator());
-		}
+		return requestResource(Gaff::HashStringTemp64(name, eastl::CharStrlen(name)));
 	}
 
-	int32_t getRefCount(void) const
-	{
-		return _count;
-	}
+	IResourcePtr requestResource(Gaff::HashStringTemp64 name);
 
 private:
-	mutable std::atomic_int32_t _count = 0;
+	using FactoryFunc = void* (*)(Gaff::IAllocator&);
 
-	GAFF_NO_COPY(RefCounted);
-	GAFF_NO_MOVE(RefCounted);
+	Gaff::SpinLock _res_lock;
+	Vector<IResourcePtr> _resources;
+	VectorMap<Gaff::Hash32, FactoryFunc> _resource_factories;
+	ProxyAllocator _allocator = ProxyAllocator("Resource");
+
+	void removeResource(const IResource* resource);
+
+	static void ResourceFileLoadJob(void* data);
+
+	friend class IResource;
 };
 
 NS_END

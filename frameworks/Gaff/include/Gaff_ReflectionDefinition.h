@@ -35,9 +35,6 @@ THE SOFTWARE.
 
 NS_GAFF
 
-template <class Allocator>
-using ReflectionHashString = HashString<char, ReflectionHash, Allocator>;
-
 template <class T, class Allocator>
 class ReflectionDefinition final : public IReflectionDefinition
 {
@@ -117,15 +114,15 @@ public:
 	const IReflection& getReflectionInstance(void) const override;
 
 	int32_t getNumVariables(void) const override;
-	ReflectionHash getVariableHash(int32_t index) const override;
+	Hash32 getVariableHash(int32_t index) const override;
 	IReflectionVar* getVariable(int32_t index) const override;
-	IReflectionVar* getVariable(ReflectionHash name) const override;
+	IReflectionVar* getVariable(Hash32 name) const override;
 
 	VoidFunc getFactory(Hash64 ctor_hash) const override;
 
-	const ReflectionHashString<Allocator>& getVariableName(int32_t index) const;
+	const HashString32<Allocator>& getVariableName(int32_t index) const;
 	IVar* getVar(int32_t index) const;
-	IVar* getVar(ReflectionHash name) const;
+	IVar* getVar(Hash32 name) const;
 
 	template <class Base>
 	ReflectionDefinition& base(const char* name);
@@ -272,8 +269,10 @@ private:
 	using IVarPtr = UniquePtr<IVar, Allocator>;
 
 	VectorMap<HashString64<Allocator>, ptrdiff_t, Allocator> _base_class_offsets;
-	VectorMap<ReflectionHashString<Allocator>, IVarPtr, Allocator> _vars;
+	VectorMap<HashString32<Allocator>, IVarPtr, Allocator> _vars;
 	VectorMap<Hash64, VoidFunc, Allocator> _ctors;
+
+	//VectorMap<Hash32, IAttributePtr, Allocator> _base_class_attrs;
 
 	mutable Allocator _allocator;
 

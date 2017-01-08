@@ -24,6 +24,7 @@ THE SOFTWARE.
 
 #include "Gaff_SmartPtrs.h"
 #include "Gaff_SpinLock.h"
+#include "Gaff_Assert.h"
 #include "Gaff_Vector.h"
 #include "Gaff_Queue.h"
 #include "Gaff_Utils.h"
@@ -35,23 +36,6 @@ NS_GAFF
 struct JobData
 {
 	using JobFunc = void (*)(void*);
-
-	JobData(JobFunc func = nullptr, void* data = nullptr):
-		job_func(func), job_data(data)
-	{
-	}
-
-	JobData(const JobData& job):
-		job_func(job.job_func), job_data(job.job_data)
-	{
-	}
-
-	const JobData& operator=(const JobData& job)
-	{
-		job_func = job.job_func;
-		job_data = job.job_data;
-		return *this;
-	}
 
 	JobFunc job_func;
 	void* job_data;
@@ -74,7 +58,7 @@ public:
 	bool init(int32_t num_pools = 7, int32_t num_threads = static_cast<int32_t>(GetNumberOfCores()));
 	void destroy(void);
 
-	void addJobs(JobData* jobs, size_t num_jobs = 1, Counter** counter = nullptr, unsigned int pool = 0);
+	void addJobs(JobData* jobs, size_t num_jobs = 1, Counter** counter = nullptr, int32_t pool = 0);
 	void waitForAndFreeCounter(Counter* counter);
 	void waitForCounter(Counter* counter);
 	void freeCounter(Counter* counter);

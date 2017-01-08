@@ -513,11 +513,6 @@ NS_END
 
 NS_GAFF
 
-using ReflectionHash = Hash32;
-//using ReflectionHash = Hash64;
-
-using ReflectionHashFunc = ReflectionHash (*)(const char*, size_t);
-
 template <class C>
 class IsClassReflected
 {

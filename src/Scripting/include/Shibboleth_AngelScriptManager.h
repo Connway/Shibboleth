@@ -34,8 +34,6 @@ class AngelScriptManager final : public IManager
 public:
 	AngelScriptManager(void);
 
-	const char* getName(void) const override { return GetReflectionName(); }
-
 	asIScriptEngine* getEngine(void) const { return _engine; }
 
 private:

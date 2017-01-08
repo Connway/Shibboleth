@@ -38,4 +38,9 @@ project "Memory"
 
 	filter {}
 
+	postbuildcommands
+	{
+		"{COPY} %{cfg.targetdir}/%{cfg.buildtarget.name} ../../../workingdir/App/bin"
+	}
+
 	dofile("../../utils/os_conditionals.lua")

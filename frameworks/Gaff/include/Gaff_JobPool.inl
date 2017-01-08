@@ -73,7 +73,7 @@ void JobPool<Allocator>::destroy(void)
 }
 
 template <class Allocator>
-void JobPool<Allocator>::addJobs(JobData* jobs, size_t num_jobs, Counter** counter, unsigned int pool)
+void JobPool<Allocator>::addJobs(JobData* jobs, size_t num_jobs, Counter** counter, int32_t pool)
 {
 	GAFF_ASSERT(pool < _job_pools.size());
 	GAFF_ASSERT(num_jobs);
