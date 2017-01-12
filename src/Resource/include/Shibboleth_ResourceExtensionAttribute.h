@@ -1,5 +1,5 @@
 /************************************************************************************
-Copyright (C) 2016 by Nicholas LaCroix
+Copyright (C) 2017 by Nicholas LaCroix
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -22,18 +22,24 @@ THE SOFTWARE.
 
 #pragma once
 
-#include <Shibboleth_Defines.h>
+#include <Shibboleth_Reflection.h>
+#include <Gaff_HashString.h>
 
 NS_SHIBBOLETH
 
-class IResource;
-
-class IResourceCreator
+class ResExtAttribute : public Gaff::IAttribute
 {
 public:
-	virtual ~IResourceCreator(void) {}
+	ResExtAttribute(const char* extension): _extension(extension, eastl::CharStrlen(extension)) {}
 
-	virtual IResource* create() = 0;
+	const HashStringTemp32& getExtension(void) const { return _extension; }
+
+private:
+	HashStringTemp32 _extension;
+
+	SHIB_REFLECTION_CLASS_DECLARE(ResExtAttribute);
 };
 
 NS_END
+
+SHIB_REFLECTION_DECLARE(ResExtAttribute)

@@ -69,7 +69,7 @@ HashStringTemp<T, HashType>::HashStringTemp(const String<T, Allocator>& string, 
 
 template <class T, class HashType>
 template <size_t size>
-HashStringTemp<T, HashType>::HashStringTemp(const char(&string)[size], HashFunc hash):
+HashStringTemp<T, HashType>::HashStringTemp(const T (&string)[size], HashFunc hash):
 	_string(string), _hash_value(CalculateHash(string, size - 1, hash))
 {
 }

@@ -526,6 +526,26 @@ void AngelScriptClassRegister<T, B>::RegisterBaseClass(void)
 	BaseClassHelper<Reflection<Base>::HasClassReflection>::RegisterCastFunctions<T, Base>(g_engine);
 }
 
+template <class T, class B>
+template <class... Args>
+AngelScriptClassRegister<T, B>& AngelScriptClassRegister<T, B>::classAttrs(const Args&...)
+{
+	return *this;
+}
+
+template <class T, class B>
+template <size_t size, class... Args>
+AngelScriptClassRegister<T, B>& AngelScriptClassRegister<T, B>::varAttrs(const char(&)[size], const Args&...)
+{
+	return *this;
+}
+
+template <class T, class B>
+AngelScriptClassRegister<T, B>& AngelScriptClassRegister<T, B>::attrFile(const char*)
+{
+	return *this;
+}
+
 NS_END
 
 #ifdef PLATFORM_WINDOWS

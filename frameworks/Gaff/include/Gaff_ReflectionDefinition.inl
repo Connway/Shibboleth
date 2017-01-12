@@ -28,6 +28,60 @@ void* FactoryFunc(IAllocator& allocator, Args&&... args)
 	return GAFF_ALLOCT(T, allocator, std::forward<Args>(args)...);
 }
 
+// IVar
+template <class T, class Allocator>
+template <class DataType>
+const DataType& ReflectionDefinition<T, Allocator>::IVar::getDataT(const T& object) const
+{
+	GAFF_ASSERT(getType() == GetRVT< std::remove_reference<DataType>::type >());
+	return *reinterpret_cast<const DataType*>(getData(&object));
+}
+
+template <class T, class Allocator>
+template <class DataType>
+void ReflectionDefinition<T, Allocator>::IVar::setDataT(T& object, const DataType& data)
+{
+	GAFF_ASSERT(getType() == GetRVT< std::remove_reference<DataType>::type >());
+	setData(&object, &data);
+}
+
+template <class T, class Allocator>
+template <class DataType>
+void ReflectionDefinition<T, Allocator>::IVar::setDataMoveT(T& object, DataType&& data)
+{
+	GAFF_ASSERT(getType() == GetRVT< std::remove_reference<DataType>::type >());
+	setDataMove(&object, &data);
+}
+
+template <class T, class Allocator>
+template <class DataType>
+const DataType& ReflectionDefinition<T, Allocator>::IVar::getElementT(const T& object, int32_t index) const
+{
+	GAFF_ASSERT((isFixedArray() || isVector()) && size(&object) > index);
+	GAFF_ASSERT(getType() == GetRVT< std::remove_reference<DataType>::type >());
+	return *reinterpret_cast<const DataType*>(getElement(&object, index));
+}
+
+template <class T, class Allocator>
+template <class DataType>
+void ReflectionDefinition<T, Allocator>::IVar::setElementT(T& object, int32_t index, const DataType& data)
+{
+	GAFF_ASSERT((isFixedArray() || isVector()) && size(&object) > index);
+	GAFF_ASSERT(getType() == GetRVT< std::remove_reference<DataType>::type >());
+	setElement(&object, index, &data);
+}
+
+template <class T, class Allocator>
+template <class DataType>
+void ReflectionDefinition<T, Allocator>::IVar::setElementMoveT(T& object, int32_t index, DataType&& data)
+{
+	GAFF_ASSERT((isFixedArray() || isVector()) && size(&object) > index);
+	GAFF_ASSERT(getType() == GetRVT< std::remove_reference<DataType>::type >());
+	setElementMove(&object, index, &data);
+}
+
+
+
 // VarPtr
 template <class T, class Allocator>
 template <class Var>
@@ -591,6 +645,36 @@ IReflectionVar* ReflectionDefinition<T, Allocator>::getVariable(Hash32 name) con
 }
 
 template <class T, class Allocator>
+int32_t ReflectionDefinition<T, Allocator>::getNumClassAttributes(void) const
+{
+	return static_cast<int32_t>(_class_attrs.size());
+}
+
+template <class T, class Allocator>
+const IAttribute* ReflectionDefinition<T, Allocator>::getClassAttribute(int32_t index) const
+{
+	GAFF_ASSERT(index < getNumClassAttributes());
+	return _class_attrs[index].get();
+}
+
+template <class T, class Allocator>
+int32_t ReflectionDefinition<T, Allocator>::getNumVarAttributes(Hash32 name) const
+{
+	auto it = _var_attrs.find(name);
+	GAFF_ASSERT(it != _var_attrs.end());
+	return static_cast<int32_t>(it->second.size());
+}
+
+template <class T, class Allocator>
+const IAttribute* ReflectionDefinition<T, Allocator>::getVarAttribute(Hash32 name, int32_t index) const
+{
+	auto it = _var_attrs.find(name);
+	GAFF_ASSERT(it != _var_attrs.end());
+	GAFF_ASSERT(index < getNumVarAttributes(name));
+	return it->second[index].get();
+}
+
+template <class T, class Allocator>
 IReflectionDefinition::VoidFunc ReflectionDefinition<T, Allocator>::getFactory(Hash64 ctor_hash) const
 {
 	auto it = _ctors.find(ctor_hash);
@@ -806,6 +890,12 @@ ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::varAttrs
 	auto& attrs = _var_attrs[FNV1aHash32Const(name)];
 	attrs.set_allocator(_allocator);
 	return addVarAttributes(attrs, args...);
+}
+
+template <class T, class Allocator>
+ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::attrFile(const char* file)
+{
+	_attr_file = file;
 }
 
 template <class T, class Allocator>

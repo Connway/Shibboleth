@@ -36,12 +36,6 @@ project "ScriptingModule"
 
 	files { "Shibboleth_ScriptingModule.cpp" }
 
-	-- prebuildmessage "Generating Gen_ReflectionInit.h!"
-	-- prebuildcommands
-	-- {
-	-- 	"py ../../../utils/gen_module_file.py ../../../src/Scripting"
-	-- }
-
 	ModuleGen("Scripting")
 	ModuleCopy("Scripting")
 
@@ -53,8 +47,6 @@ project "ScriptingModule"
 		"../Game/include",
 		"../../dependencies/EASTL/include",
 		"../../dependencies/rapidjson",
-	-- 	"../../dependencies/chaiscript",
-	-- 	"../../dependencies/angelscript/angelscript/include",
 		"../../frameworks/Gaff/include"
 	}
 

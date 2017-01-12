@@ -23,6 +23,7 @@ THE SOFTWARE.
 #pragma once
 
 #include "Shibboleth_IResource.h"
+#include <Shibboleth_Reflection.h>
 #include <Shibboleth_VectorMap.h>
 #include <Shibboleth_IManager.h>
 #include <Gaff_SpinLock.h>
@@ -63,6 +64,10 @@ private:
 	static void ResourceFileLoadJob(void* data);
 
 	friend class IResource;
+
+	SHIB_REFLECTION_CLASS_DECLARE(ResourceManager);
 };
 
 NS_END
+
+SHIB_REFLECTION_DECLARE(ResourceManager)

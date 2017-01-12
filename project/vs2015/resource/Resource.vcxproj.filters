@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="include">
@@ -6,10 +6,13 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\..\src\Resource\include\Gen_ReflectionInit.h">
+      <Filter>include</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\src\Resource\include\Shibboleth_IResource.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\src\Resource\include\Shibboleth_IResourceCreator.h">
+    <ClInclude Include="..\..\..\src\Resource\include\Shibboleth_ResourceExtensionAttribute.h">
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\src\Resource\include\Shibboleth_ResourceManager.h">
@@ -18,6 +21,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\src\Resource\Shibboleth_IResource.cpp" />
+    <ClCompile Include="..\..\..\src\Resource\Shibboleth_ResourceExtensionAttribute.cpp" />
     <ClCompile Include="..\..\..\src\Resource\Shibboleth_ResourceManager.cpp" />
   </ItemGroup>
 </Project>

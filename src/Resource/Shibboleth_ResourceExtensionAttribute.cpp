@@ -1,5 +1,5 @@
 /************************************************************************************
-Copyright (C) 2016 by Nicholas LaCroix
+Copyright (C) 2017 by Nicholas LaCroix
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -20,35 +20,12 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#pragma once
+#include "Shibboleth_ResourceExtensionAttribute.h"
 
-#include "Gaff_ReflectionInterfaces.h"
+SHIB_REFLECTION_DEFINE(ResExtAttribute)
 
-NS_GAFF
+NS_SHIBBOLETH
 
-static IReflection* g_attr_head = nullptr;
-static IReflection* g_head = nullptr;
-
-void AddToAttributeReflectionChain(IReflection* reflection)
-{
-	reflection->attr_next = g_attr_head;
-	g_attr_head = reflection;
-}
-
-IReflection* GetAttributeReflectionChainHead(void)
-{
-	return g_attr_head;
-}
-
-void AddToReflectionChain(IReflection* reflection)
-{
-	reflection->next = g_head;
-	g_head = reflection;
-}
-
-IReflection* GetReflectionChainHead(void)
-{
-	return g_head;
-}
+SHIB_REFLECTION_CLASS_DEFINE(ResExtAttribute)
 
 NS_END

@@ -40,7 +40,7 @@ public:
 	HashStringTemp(const String<T, Allocator>& string, HashFunc hash = nullptr);
 
 	template <size_t size>
-	HashStringTemp(const char (&string)[size], HashFunc hash = nullptr);
+	HashStringTemp(const T (&string)[size], HashFunc hash = nullptr);
 
 	HashStringTemp(const T* string, size_t size, HashFunc hash = nullptr);
 
@@ -75,7 +75,7 @@ public:
 	HashType getHash(void) const;
 
 private:
-	const T* _string;
+	const T* const _string;
 	HashType _hash_value;
 };
 

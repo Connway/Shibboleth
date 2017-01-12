@@ -21,6 +21,7 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Shibboleth_ResourceManager.h"
+#include "Shibboleth_ResourceExtensionAttribute.h"
 #include <Shibboleth_IFileSystem.h>
 #include <Shibboleth_Utilities.h>
 #include <Shibboleth_IApp.h>
@@ -29,7 +30,11 @@ THE SOFTWARE.
 #include <EASTL/algorithm.h>
 #include <mutex>
 
+SHIB_REFLECTION_DEFINE(ResourceManager)
+
 NS_SHIBBOLETH
+
+SHIB_REFLECTION_CLASS_DEFINE(ResourceManager)
 
 ResourceManager::ResourceManager(void)
 {
@@ -42,17 +47,28 @@ void ResourceManager::allModulesLoaded(void)
 	const Vector<Gaff::Hash64>* type_bucket = app.getTypeBucket(Gaff::FNV1aHash64Const("IResource"));
 	GAFF_ASSERT(type_bucket);
 
+	Vector<const ResExtAttribute*> ext_attrs;
+
 	for (Gaff::Hash64 class_hash : *type_bucket) {
-		//GAFF_ASSERT(_resource_factories.find(class_hash) == _resource_factories.end());
-
 		const Gaff::IReflectionDefinition* ref_def = app.getReflection(class_hash);
+		FactoryFunc factory_func = ref_def->template getFactory<>();
 
-		Gaff::Hash64 ctor_hash = Gaff::CalcTemplateHash<>(Gaff::INIT_HASH64);
-		FactoryFunc factory_func = reinterpret_cast<FactoryFunc>(ref_def->getFactory(ctor_hash));
+		ref_def->getClassAttributes(ext_attrs);
 
-		GAFF_ASSERT_MSG(factory_func, "Class '%s' does not have a default constructor!", ref_def->getReflectionInstance().getName());
+		GAFF_ASSERT_MSG(factory_func, "Resource '%s' does not have a default constructor!", ref_def->getReflectionInstance().getName());
+		GAFF_ASSERT_MSG(!ext_attrs.empty(), "Resource '%s' does not have any ResExtAttribute's!", ref_def->getReflectionInstance().getName());
 
-		_resource_factories[class_hash] = factory_func;
+		for (const ResExtAttribute * ext_attr : ext_attrs) {
+			GAFF_ASSERT_MSG(
+				_resource_factories.find(ext_attr->getExtension().getHash()) == _resource_factories.end(),
+				"File extension '%s' already has a resource associated with it!",
+				ext_attr->getExtension().getBuffer()
+			);
+
+			_resource_factories[ext_attr->getExtension().getHash()] = factory_func;
+		}
+
+		ext_attrs.clear();
 	}
 }
 
