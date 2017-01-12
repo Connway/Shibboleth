@@ -23,6 +23,7 @@ THE SOFTWARE.
 #pragma once
 
 #include "Gaff_Reflection.h"
+#include "Gaff_Vector.h"
 #include "Gaff_Assert.h"
 
 NS_GAFF
@@ -44,6 +45,7 @@ public:
 	virtual Hash64 getHash(void) const = 0;
 	virtual Hash64 getVersion(void) const = 0;
 
+	IReflection* attr_next = nullptr;
 	IReflection* next = nullptr;
 };
 
@@ -134,6 +136,9 @@ public:
 class IReflectionDefinition
 {
 public:
+	template <class... Args>
+	using FactoryFunc = void* (*)(IAllocator&, Args...);
+
 	template <class T>
 	const T* getInterface(const void* object) const
 	{
@@ -154,8 +159,7 @@ public:
 
 		Hash64 ctor_hash = CalcTemplateHash<Args...>(INIT_HASH64);
 
-		using FactoryFunc = void* (*)(IAllocator&, Args&&...);
-		FactoryFunc factory_func = reinterpret_cast<FactoryFunc>(getFactory(ctor_hash));
+		FactoryFunc<Args...> factory_func = reinterpret_cast< FactoryFunc<Args...> >(getFactory(ctor_hash));
 
 		T* instance = nullptr;
 
@@ -172,14 +176,80 @@ public:
 	{
 		Hash64 ctor_hash = CalcTemplateHash<Args...>(INIT_HASH64);
 
-		using FactoryFunc = void* (*)(IAllocator&, Args&&...);
-		FactoryFunc factory_func = reinterpret_cast<FactoryFunc>(getFactory(ctor_hash));
+		FactoryFunc<Args...> factory_func = reinterpret_cast< FactoryFunc<Args...> >(getFactory(ctor_hash));
 
 		if (factory_func) {
 			return factory_func(allocator, std::forward<Args>(args)...);
 		}
 
 		return nullptr;
+	}
+
+	template <class T>
+	const T* getClassAttribute(void) const
+	{
+		for (int32_t i = 0; i < getNumClassAttributes(); ++i) {
+			const IAttribute* const attribute = getClassAttribute(i);
+			const T* attr = ReflectionCast<T>(*attribute);
+
+			if (attr) {
+				return attr;
+			}
+		}
+
+		return nullptr;
+	}
+
+	template <class T>
+	const T* getVarAttribute(Hash32 name) const
+	{
+		const int32_t size = getNumVarAttributes(name);
+
+		for (int32_t i = 0; i < size; ++i) {
+			const IAttribute* const attribute = getVarAttribute(name, i);
+			const T* attr = ReflectionCast<T>(*attribute);
+
+			if (attr) {
+				return attr;
+			}
+		}
+
+		return nullptr;
+	}
+
+	template <class T, class Allocator>
+	void getClassAttributes(Vector<const T*, Allocator>& out) const
+	{
+		for (int32_t i = 0; i < getNumClassAttributes(); ++i) {
+			const IAttribute* const attribute = getClassAttribute(i);
+			const T* attr = ReflectionCast<T>(*attribute);
+
+			if (attr) {
+				out.emplace_back(attr);
+			}
+		}
+	}
+
+	template <class T, class Allocator>
+	void getVarAttributes(Vector<const T*, Allocator>& out) const
+	{
+		const int32_t size = getNumVarAttributes(name);
+
+		for (int32_t i = 0; i < size; ++i) {
+			const IAttribute* const attribute = getVarAttribute(name, i);
+			const T* attr = ReflectionCast<T>(*attribute);
+
+			if (attr) {
+				out.emplace_back(attr);
+			}
+		}
+	}
+
+	template <class... Args>
+	FactoryFunc<Args...> getFactory(void) const
+	{
+		Hash64 ctor_hash = Gaff::CalcTemplateHash<Args...>(INIT_HASH64);
+		return reinterpret_cast< FactoryFunc<Args...> >(getFactory(ctor_hash));
 	}
 
 	virtual ~IReflectionDefinition(void) {}
@@ -197,6 +267,12 @@ public:
 	virtual Hash32 getVariableHash(int32_t index) const = 0;
 	virtual IReflectionVar* getVariable(int32_t index) const = 0;
 	virtual IReflectionVar* getVariable(Hash32 name) const = 0;
+
+	virtual int32_t getNumClassAttributes(void) const = 0;
+	virtual const IAttribute* getClassAttribute(int32_t index) const = 0;
+
+	virtual int32_t getNumVarAttributes(Hash32 name) const = 0;
+	virtual const IAttribute* getVarAttribute(Hash32 name, int32_t index) const = 0;
 
 	using VoidFunc = void (*)(void);
 

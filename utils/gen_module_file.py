@@ -4,17 +4,31 @@ import os
 
 gen_file = """// This file is generated! Any modifications will be lost in subsequent builds!
 
+#pragma once
+
 // Includes
 {0}
+#include <Gaff_ReflectionInterfaces.h>
+#include <Gaff_Reflection.h>
+
 namespace Gen
 {{
 	// Using namespaces.
 {1}
 	void InitReflection(void)
 	{{
+		// Initialize Attributes first.
 {2}
+		Gaff::IReflection* head = Gaff::GetAttributeReflectionChainHead();
+
+		while (head) {{
+			head->init();
+			head = head->attr_next;
+		}}
+
+{3}
 		// Initialize any other reflection that we reference, but isn't owned by our module.
-		Gaff::IReflection* head = Gaff::GetReflectionChainHead();
+		head = Gaff::GetReflectionChainHead();
 
 		while (head) {{
 			head->init();
@@ -75,18 +89,22 @@ for root, _, files in os.walk(module_dir):
 
 include_files = ""
 using_namespaces = ""
+init_attr_funcs = ""
 init_funcs = ""
 
 for file, classes in file_class_map.items():
 	include_files = include_files + "#include <" + file + ">\n"
 
 	for c in classes:
-		init_funcs = init_funcs + "\t\tReflection<" + c + ">::Init();\n"
+		if c.endswith("Attribute"):
+			init_attr_funcs = init_attr_funcs + "\t\tReflection<" + c + ">::Init();\n"
+		else:
+			init_funcs = init_funcs + "\t\tReflection<" + c + ">::Init();\n"
 
 for n in namespaces:
 	using_namespaces = using_namespaces + "\tusing namespace " + n + ";\n"
 
-output = gen_file.format(include_files, using_namespaces, init_funcs)
+output = gen_file.format(include_files, using_namespaces, init_attr_funcs, init_funcs)
 output_file = os.path.join(module_dir, "include", "Gen_ReflectionInit.h")
 
 f = None

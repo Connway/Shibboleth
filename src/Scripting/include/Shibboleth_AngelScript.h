@@ -61,6 +61,14 @@ public:
 	template <size_t size, class Ret, class... Args>
 	AngelScriptClassRegister& func(const char(&name)[size], Ret(B::*ptr)(Args...));
 
+	template <class... Args>
+	AngelScriptClassRegister& classAttrs(const Args&...);
+
+	template <size_t size, class... Args>
+	AngelScriptClassRegister& varAttrs(const char (&)[size], const Args&...);
+
+	AngelScriptClassRegister& attrFile(const char*);
+
 private:
 	static asIScriptEngine* g_engine;
 	asDWORD _flags = 0;

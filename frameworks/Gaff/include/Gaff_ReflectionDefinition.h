@@ -50,49 +50,22 @@ public:
 		virtual ~IVar(void) {}
 
 		template <class DataType>
-		const DataType& getDataT(const T& object) const
-		{
-			GAFF_ASSERT(getType() == GetRVT< std::remove_reference<DataType>::type >());
-			return *reinterpret_cast<const DataType*>(getData(&object));
-		}
+		const DataType& getDataT(const T& object) const;
 
 		template <class DataType>
-		void setDataT(T& object, const DataType& data)
-		{
-			GAFF_ASSERT(getType() == GetRVT< std::remove_reference<DataType>::type >());
-			setData(&object, &data);
-		}
+		void setDataT(T& object, const DataType& data);
 
 		template <class DataType>
-		void setDataMoveT(T& object, DataType&& data)
-		{
-			GAFF_ASSERT(getType() == GetRVT< std::remove_reference<DataType>::type >());
-			setDataMove(&object, &data);
-		}
+		void setDataMoveT(T& object, DataType&& data);
 
 		template <class DataType>
-		const DataType& getElementT(const T& object, int32_t index) const
-		{
-			GAFF_ASSERT((isFixedArray() || isVector()) && size(&object) > index);
-			GAFF_ASSERT(getType() == GetRVT< std::remove_reference<DataType>::type >());
-			return *reinterpret_cast<const DataType*>(getElement(&object, index));
-		}
+		const DataType& getElementT(const T& object, int32_t index) const;
 
 		template <class DataType>
-		void setElementT(T& object, int32_t index, const DataType& data)
-		{
-			GAFF_ASSERT((isFixedArray() || isVector()) && size(&object) > index);
-			GAFF_ASSERT(getType() == GetRVT< std::remove_reference<DataType>::type >());
-			setElement(&object, index, &data);
-		}
+		void setElementT(T& object, int32_t index, const DataType& data);
 
 		template <class DataType>
-		void setElementMoveT(T& object, int32_t index, DataType&& data)
-		{
-			GAFF_ASSERT((isFixedArray() || isVector()) && size(&object) > index);
-			GAFF_ASSERT(getType() == GetRVT< std::remove_reference<DataType>::type >());
-			setElementMove(&object, index, &data);
-		}
+		void setElementMoveT(T& object, int32_t index, DataType&& data);
 	};
 
 	GAFF_STRUCTORS_DEFAULT(ReflectionDefinition);
@@ -119,6 +92,12 @@ public:
 	Hash32 getVariableHash(int32_t index) const override;
 	IReflectionVar* getVariable(int32_t index) const override;
 	IReflectionVar* getVariable(Hash32 name) const override;
+
+	int32_t getNumClassAttributes(void) const override;
+	const IAttribute* getClassAttribute(int32_t index) const override;
+
+	int32_t getNumVarAttributes(Hash32 name) const override;
+	const IAttribute* getVarAttribute(Hash32 name, int32_t index) const override;
 
 	VoidFunc getFactory(Hash64 ctor_hash) const override;
 
@@ -158,6 +137,8 @@ public:
 
 	template <size_t size, class... Args>
 	ReflectionDefinition& varAttrs(const char (&name)[size], const Args&... args);
+
+	ReflectionDefinition& attrFile(const char* file);
 
 	void finish(void);
 
@@ -287,6 +268,7 @@ private:
 	mutable Allocator _allocator;
 
 	int32_t _base_classes_remaining = 0;
+	const char* _attr_file = nullptr;
 
 	template <class Base>
 	static void RegisterBaseVariables(void);
