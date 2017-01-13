@@ -34,7 +34,10 @@ SHIB_REFLECTION_DEFINE(ResourceManager)
 
 NS_SHIBBOLETH
 
-SHIB_REFLECTION_CLASS_DEFINE(ResourceManager)
+SHIB_REFLECTION_CLASS_DEFINE_BEGIN(ResourceManager)
+	.BASE(IManager)
+	.ctor<>()
+SHIB_REFLECTION_CLASS_DEFINE_END(ResourceManager)
 
 ResourceManager::ResourceManager(void)
 {

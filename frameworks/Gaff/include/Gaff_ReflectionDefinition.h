@@ -23,7 +23,6 @@ THE SOFTWARE.
 #pragma once
 
 #include "Gaff_ReflectionInterfaces.h"
-#include "Gaff_IReflectionObject.h"
 #include "Gaff_HashString.h"
 #include "Gaff_VectorMap.h"
 #include "Gaff_Assert.h"
@@ -35,8 +34,6 @@ THE SOFTWARE.
 #endif
 
 NS_GAFF
-
-using IAttribute = IReflectionObject;
 
 template <class T, class Allocator>
 class ReflectionDefinition final : public IReflectionDefinition

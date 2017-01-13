@@ -21,3 +21,22 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Shibboleth_AngelScriptResource.h"
+#include <Shibboleth_ResourceExtensionAttribute.h>
+
+SHIB_REFLECTION_DEFINE(AngelScriptResource)
+
+NS_SHIBBOLETH
+
+SHIB_REFLECTION_CLASS_DEFINE_BEGIN(AngelScriptResource)
+	.classAttrs(ResExtAttribute(".as"))
+
+	.BASE(IResource)
+	.ctor<>()
+SHIB_REFLECTION_CLASS_DEFINE_END(AngelScriptResource)
+
+void AngelScriptResource::load(void)
+{
+	
+}
+
+NS_END

@@ -32,6 +32,23 @@ class ISerializeReader;
 class ISerializeWriter;
 class IAllocator;
 
+class IReflectionDefinition;
+
+class IReflectionObject
+{
+public:
+	virtual ~IReflectionObject(void) {}
+
+	virtual const IReflectionDefinition& getReflectionDefinition(void) const = 0;
+
+	virtual const void* getBasePointer(void) const = 0;
+	virtual void* getBasePointer(void) = 0;
+};
+
+class IAttribute : public IReflectionObject
+{
+};
+
 class IReflection
 {
 public:
@@ -137,7 +154,7 @@ class IReflectionDefinition
 {
 public:
 	template <class... Args>
-	using FactoryFunc = void* (*)(IAllocator&, Args...);
+	using FactoryFunc = void* (*)(IAllocator&, Args&&...);
 
 	template <class T>
 	const T* getInterface(const void* object) const

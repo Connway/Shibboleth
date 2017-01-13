@@ -22,7 +22,7 @@ THE SOFTWARE.
 
 #pragma once
 
-#include <Gaff_IReflectionObject.h>
+#include <Gaff_ReflectionInterfaces.h>
 #include <Shibboleth_Defines.h>
 
 NS_SHIBBOLETH
