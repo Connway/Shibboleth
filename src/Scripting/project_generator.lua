@@ -45,6 +45,7 @@ project "ScriptingModule"
 		"../Memory/include",
 		"../Shared/include",
 		"../Game/include",
+		"../Resource/include",
 		"../../dependencies/EASTL/include",
 		"../../dependencies/rapidjson",
 		"../../frameworks/Gaff/include"
@@ -55,7 +56,7 @@ project "ScriptingModule"
 		"Scripting", "Memory",
 		"Gaff", "Shared",
 		"EASTL", "angelscript",
-		"Game"
+		"Game", "Resource"
 	}
 
 	links
@@ -63,5 +64,5 @@ project "ScriptingModule"
 		"Scripting", "Memory",
 		"Gaff", "Shared",
 		"EASTL", "angelscript",
-		"Game"
+		"Game", "Resource"
 	}

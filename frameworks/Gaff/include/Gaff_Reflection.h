@@ -22,7 +22,6 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Gaff_IReflectionObject.h"
 #include "Gaff_Hash.h"
 
 #ifndef GAFF_REFLECTION_NAMESPACE
@@ -48,7 +47,7 @@ THE SOFTWARE.
 		Reflection(void) \
 		{ \
 			BuildReflection(_version); \
-			if (std::is_base_of<Gaff::IAttribute, Reflection>::value) { \
+			if (std::is_base_of<Gaff::IAttribute, type>::value) { \
 				Gaff::AddToAttributeReflectionChain(this); \
 			} else { \
 				Gaff::AddToReflectionChain(this); \
@@ -657,7 +656,6 @@ constexpr Gaff::Hash64 CalcTemplateHash(Gaff::Hash64 init)
 
 
 class IReflection;
-using IAttribute = IReflectionObject;
 
 void AddToAttributeReflectionChain(IReflection* reflection);
 IReflection* GetAttributeReflectionChainHead(void);

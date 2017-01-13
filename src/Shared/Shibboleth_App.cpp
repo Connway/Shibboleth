@@ -356,12 +356,8 @@ void App::destroy(void)
 {
 	_job_pool.destroy();
 
-	//for (auto it = _manager_map.begin(); it != _manager_map.end(); ++it) {
-	//	it->second.destroy_func(it->second.manager, it->second.manager_id);
-	//}
-
 	_reflection_map.clear();
-	//_manager_map.clear();
+	_manager_map.clear();
 	_logger.destroy();
 
 	_dynamic_loader.forEachModule([](DynamicLoader::ModulePtr module) -> bool
@@ -469,7 +465,7 @@ void App::registerReflection(Gaff::Hash64 name, Gaff::IReflectionDefinition& ref
 
 void App::registerTypeBucket(Gaff::Hash64 name)
 {
-	if (_type_buckets.find(name) == _type_buckets.end()) {
+	if (_type_buckets.find(name) != _type_buckets.end()) {
 		return;
 	}
 

@@ -30,7 +30,6 @@ THE SOFTWARE.
 #include <Gaff_SerializeInterfaces.h>
 #include <Gaff_ReflectionDefinition.h>
 #include <Gaff_ReflectionVersion.h>
-#include <Gaff_IReflectionObject.h>
 
 NS_SHIBBOLETH
 
@@ -126,7 +125,6 @@ NS_SHIBBOLETH \
 				) \
 			); \
 			Gaff::Construct(g_reflection_definition); \
-			GetApp().registerReflection(Gaff::FNV1aHash64Const(#type), *g_reflection_definition); \
 			g_reflection_definition->setAllocator(ProxyAllocator("Reflection")); \
 			BuildReflection(*g_reflection_definition);
 
@@ -141,6 +139,7 @@ NS_END \
 	SHIB_REFLECTION_DEFINE_BEGIN_CUSTOM_BUILDER(type)
 
 #define SHIB_REFLECTION_DEFINE_END(type, ...) \
+			GetApp().registerReflection(Gaff::FNV1aHash64Const(#type), *g_reflection_definition); \
 			g_reflection_definition->finish(); \
 		} \
 	} \

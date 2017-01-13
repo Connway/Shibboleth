@@ -763,7 +763,7 @@ ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::ctor(voi
 	Hash64 hash = CalcTemplateHash<Args...>(INIT_HASH64);
 	GAFF_ASSERT(!getFactory(hash));
 
-	void* (*factory_func)(IAllocator&, Args&&...) = FactoryFunc<T, Args...>;
+	void* (*factory_func)(IAllocator&, Args&&...) = Gaff::FactoryFunc<T, Args...>;
 	_ctors.emplace(hash, reinterpret_cast<VoidFunc>(factory_func));
 
 	return *this;

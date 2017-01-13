@@ -270,7 +270,6 @@
     <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_IAllocator.h" />
     <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_ICurve.h" />
     <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_IRefCounted.h" />
-    <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_IReflectionObject.h" />
     <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_Image.h" />
     <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_IncludeRapidJSON.h" />
     <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_IncludeWindows.h" />

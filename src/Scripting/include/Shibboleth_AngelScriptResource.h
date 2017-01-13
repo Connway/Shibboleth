@@ -22,6 +22,7 @@ THE SOFTWARE.
 
 #pragma once
 
+#include <Shibboleth_Reflection.h>
 #include <Shibboleth_IResource.h>
 
 NS_SHIBBOLETH
@@ -29,6 +30,11 @@ NS_SHIBBOLETH
 class AngelScriptResource : public IResource
 {
 public:
+	void load(void) override;
+
+	SHIB_REFLECTION_CLASS_DECLARE(AngelScriptResource);
 };
 
 NS_END
+
+SHIB_REFLECTION_DECLARE(AngelScriptResource)
