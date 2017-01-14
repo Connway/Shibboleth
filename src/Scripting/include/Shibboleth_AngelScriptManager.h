@@ -26,18 +26,21 @@ THE SOFTWARE.
 #include <Shibboleth_IManager.h>
 
 class asIScriptEngine;
+class asMessageInfo;
 
 NS_SHIBBOLETH
 
 class AngelScriptManager final : public IManager
 {
 public:
-	AngelScriptManager(void);
+	bool init(void) override;
 
 	asIScriptEngine* getEngine(void) const { return _engine; }
 
 private:
 	asIScriptEngine* _engine = nullptr;
+
+	void messageCallback(const asMessageInfo* msg, void* param);
 
 	SHIB_REFLECTION_CLASS_DECLARE(AngelScriptManager);
 };

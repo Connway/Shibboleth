@@ -21,6 +21,7 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Shibboleth_AngelScriptManager.h"
+#include <angelscript.h>
 
 SHIB_REFLECTION_DEFINE(AngelScriptManager)
 
@@ -31,10 +32,30 @@ SHIB_REFLECTION_CLASS_DEFINE_BEGIN(AngelScriptManager)
 	.ctor<>()
 SHIB_REFLECTION_CLASS_DEFINE_END(AngelScriptManager)
 
-AngelScriptManager::AngelScriptManager(void)
+// Ensure creation of pool index.
+static int32_t g_as_alloc_pool = GetAllocator()->getPoolIndex("AngelScript");
+
+static void* ASAlloc(size_t size)
 {
-	// Ensure creation of pool index.
-	GetAllocator()->getPoolIndex("AngelScript");
+	return SHIB_ALLOC(size, g_as_alloc_pool, *GetAllocator());
+}
+
+
+bool AngelScriptManager::init(void)
+{
+	asSetGlobalMemoryFunctions(ASAlloc, ShibbolethFree);
+	_engine = asCreateScriptEngine();
+
+	_engine->SetMessageCallback(asMETHOD(AngelScriptManager, messageCallback), this, asCALL_THISCALL);
+	_engine->SetEngineProperty(asEP_DISALLOW_VALUE_ASSIGN_FOR_REF_TYPE, 1);
+	_engine->SetEngineProperty(asEP_ALLOW_UNSAFE_REFERENCES, 1);
+
+	return true;
+}
+
+void AngelScriptManager::messageCallback(const asMessageInfo* msg, void* /*param*/)
+{
+	GAFF_REF(msg);
 }
 
 NS_END

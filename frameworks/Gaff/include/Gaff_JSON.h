@@ -24,19 +24,9 @@ THE SOFTWARE.
 
 #include "Gaff_Platform.h"
 
-// To get rid of the massive amount of macro redefinition warnings on Windows.
-#ifdef PLATFORM_WINDOWS
-	#include "Gaff_IncludeWindows.h"
-#endif
-
 #include "Gaff_IncludeRapidJSON.h"
 #include <rapidjson/stringbuffer.h>
 #include <rapidjson/document.h>
-
-//#ifdef PLATFORM_WINDOWS
-//	#pragma warning(push)
-//	#pragma warning(disable : 4706)
-//#endif
 
 NS_GAFF
 
@@ -200,7 +190,3 @@ private:
 };
 
 NS_END
-
-//#ifdef PLATFORM_WINDOWS
-//	#pragma warning(pop)
-//#endif
