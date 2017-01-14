@@ -25,7 +25,7 @@ THE SOFTWARE.
 #include "Shibboleth_Utilities.h"
 #include <Shibboleth_Memory.h>
 #include <Gaff_Utils.h>
-//#include <Gaff_JSON.h>
+#include <Gaff_JSON.h>
 
 NS_SHIBBOLETH
 
@@ -38,7 +38,7 @@ void SetApp(IApp& app)
 
 IApp& GetApp(void)
 {
-	//GAFF_ASSERT(gApp);
+	GAFF_ASSERT(gApp);
 	return *gApp;
 }
 
@@ -46,5 +46,5 @@ NS_END
 
 STATIC_FILE_FUNC
 {
-	//Gaff::JSON::SetMemoryFunctions(&Shibboleth::ShibbolethAllocate, &Shibboleth::ShibbolethFree);
+	Gaff::JSON::SetMemoryFunctions(&Shibboleth::ShibbolethAllocate, &Shibboleth::ShibbolethFree);
 }

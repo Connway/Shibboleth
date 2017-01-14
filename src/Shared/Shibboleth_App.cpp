@@ -200,6 +200,10 @@ bool App::loadMainLoop(void)
 
 bool App::loadModules(void)
 {
+	// load module order list
+	// load those modules first
+	// then load the rest
+
 	const bool error = Gaff::ForEachTypeInDirectory<Gaff::FDT_RegularFile>("./Modules", [&](const char* name, size_t) -> bool
 	{
 		U8String rel_path = U8String("./Modules/") + name;
@@ -450,6 +454,12 @@ void App::registerReflection(Gaff::Hash64 name, Gaff::IReflectionDefinition& ref
 	if (ref_def.hasInterface(Gaff::FNV1aHash64Const("IManager"))) {
 		ProxyAllocator allocator;
 		IManager* manager = ref_def.createAllocT<IManager>(allocator);
+
+		if (!manager->init()) {
+			// log error
+			SHIB_FREET(manager, *GetAllocator());
+			return;
+		}
 
 		GAFF_ASSERT(_manager_map.find(name) == _manager_map.end());
 		_manager_map[name].reset(manager);
