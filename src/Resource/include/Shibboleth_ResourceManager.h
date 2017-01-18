@@ -29,6 +29,8 @@ THE SOFTWARE.
 #include <Gaff_SpinLock.h>
 #include <Gaff_RefPtr.h>
 
+#define JOB_POOL_READ_FILE 1
+
 NS_SHIBBOLETH
 
 class ResourceManager : public IManager
@@ -37,6 +39,11 @@ public:
 	ResourceManager(void);
 
 	void allModulesLoaded(void) override;
+
+	int32_t getNextJobPoolIndex(void)
+	{
+		return ++_next_job_pool_index;
+	}
 
 	template <size_t size>
 	IResourcePtr requestResource(const char (&string)[size])
@@ -58,6 +65,7 @@ private:
 	Vector<IResourcePtr> _resources;
 	VectorMap<Gaff::Hash32, FactoryFunc> _resource_factories;
 	ProxyAllocator _allocator = ProxyAllocator("Resource");
+	int32_t _next_job_pool_index = JOB_POOL_READ_FILE;
 
 	void removeResource(const IResource* resource);
 
@@ -67,6 +75,19 @@ private:
 
 	SHIB_REFLECTION_CLASS_DECLARE(ResourceManager);
 };
+
+
+#ifdef _MSC_VER
+	#pragma warning(push)
+	#pragma warning(disable : 4307)
+#endif
+
+constexpr const Gaff::Hash32 LOG_CHANNEL_RESOURCE = Gaff::FNV1aHash32Const("Resource");
+
+#ifdef _MSC_VER
+	#pragma warning(pop)
+#endif
+
 
 NS_END
 

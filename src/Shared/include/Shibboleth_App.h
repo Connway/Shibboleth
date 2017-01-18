@@ -84,7 +84,6 @@ public:
 private:
 	using InitModuleFunc = bool (*)(IApp&);
 
-
 	struct FileSystemData
 	{
 		FileSystemData(void): file_system(nullptr), destroy_func(nullptr), create_func(nullptr) {}
@@ -123,6 +122,7 @@ private:
 	bool loadModules(void);
 	bool initApp(void);
 
+	bool loadModule(const char* module_name);
 	void removeExtraLogs(void);
 
 	GAFF_NO_COPY(App);

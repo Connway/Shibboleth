@@ -61,7 +61,7 @@ public:
 		auto beg = _value.Begin();
 		auto end = _value.End();
 
-		for (size_t index = 0; beg != end; ++beg, ++index) {
+		for (int32_t index = 0; beg != end; ++beg, ++index) {
 			JSON json(*beg);
 
 			if (callback(index, json)) {

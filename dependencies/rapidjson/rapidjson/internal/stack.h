@@ -205,7 +205,9 @@ private:
 
     void Destroy() {
         Allocator::Free(stack_);
-        RAPIDJSON_DELETE(ownAllocator_); // Only delete if it is owned by the stack
+
+        if (ownAllocator_)
+            RAPIDJSON_DELETE(ownAllocator_); // Only delete if it is owned by the stack
     }
 
     // Prohibit copy constructor & assignment operator.

@@ -204,38 +204,26 @@ bool App::loadModules(void)
 	// load those modules first
 	// then load the rest
 
+	Gaff::JSON modules_cfg;
+
+	if (modules_cfg.parseFile("cfg/module_load_order.cfg")) {
+		GAFF_ASSERT(modules_cfg.isArray());
+
+		modules_cfg.forEachInArray([&](int32_t, const Gaff::JSON& value) -> bool
+		{
+			GAFF_ASSERT(value.isString());
+			const U8String path = U8String(value.getString()) + "Module" BIT_EXTENSION DYNAMIC_EXTENSION;
+			loadModule(path.data());
+			return false;
+		});
+
+	} else {
+		LogWarningDefault("Failed to load 'manual_load_order.cfg'!");
+	}
+
 	const bool error = Gaff::ForEachTypeInDirectory<Gaff::FDT_RegularFile>("./Modules", [&](const char* name, size_t) -> bool
 	{
-		U8String rel_path = U8String("./Modules/") + name;
-
-		// If it's not a dynamic module,
-		// or if it is not compiled for our architecture and build mode,
-		// then just skip over it.
-		if (!Gaff::File::CheckExtension(name, BIT_EXTENSION DYNAMIC_EXTENSION)) {
-			return false;
-		}
-
-#ifdef PLATFORM_WINDOWS
-		DynamicLoader::ModulePtr module = _dynamic_loader.loadModule(("../" + rel_path).data(), name);
-#else
-		DynamicLoader::ModulePtr module = _dynamic_loader.loadModule(rel_path.data(), name);
-#endif
-
-		if (!module) {
-			return false;
-		}
-
-		InitModuleFunc init_func = module->getFunc<InitModuleFunc>("InitModule");
-
-		if (!init_func) {
-			LogErrorDefault("ERROR - Failed to find function 'InitModule' in dynamic module '%s'\n", rel_path.data());
-			return true;
-
-		} else if (!init_func(*this)) {
-			LogErrorDefault("ERROR - Failed to initialize '%s'\n", rel_path.data());
-		}
-
-		return false;
+		return !(_dynamic_loader.getModule(name) || loadModule(name));
 	});
 
 	if (!error) {
@@ -287,6 +275,42 @@ bool App::initApp(void)
 	} else {
 		SetDllDirectory(TEXT("bin"));
 #endif
+	}
+
+	return true;
+}
+
+bool App::loadModule(const char* module_name)
+{
+	// If it's not a dynamic module,
+	// or if it is not compiled for our architecture and build mode,
+	// then just skip over it.
+	if (!Gaff::File::CheckExtension(module_name, BIT_EXTENSION DYNAMIC_EXTENSION)) {
+		return true;
+	}
+
+	U8String rel_path = U8String("./Modules/") + module_name;
+
+#ifdef PLATFORM_WINDOWS
+	DynamicLoader::ModulePtr module = _dynamic_loader.loadModule(("../" + rel_path).data(), module_name);
+#else
+	DynamicLoader::ModulePtr module = _dynamic_loader.loadModule(rel_path.data(), name);
+#endif
+
+	if (!module) {
+		LogWarningDefault("Failed to find or load dynamic module '%s'\n", rel_path.data());
+		return false;
+	}
+
+	InitModuleFunc init_func = module->getFunc<InitModuleFunc>("InitModule");
+
+	if (!init_func) {
+		LogErrorDefault("Failed to find function 'InitModule' in dynamic module '%s'\n", rel_path.data());
+		return false;
+	}
+	else if (!init_func(*this)) {
+		LogErrorDefault("Failed to initialize dynamic module '%s'\n", rel_path.data());
+		return false;
 	}
 
 	return true;

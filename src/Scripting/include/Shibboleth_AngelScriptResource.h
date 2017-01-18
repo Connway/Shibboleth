@@ -25,12 +25,26 @@ THE SOFTWARE.
 #include <Shibboleth_Reflection.h>
 #include <Shibboleth_IResource.h>
 
+class asIScriptModule;
+
 NS_SHIBBOLETH
 
 class AngelScriptResource : public IResource
 {
 public:
+	AngelScriptResource(void);
+
 	void load(void) override;
+
+	const asIScriptModule* getModule(void) const;
+
+private:
+	asIScriptModule* _module = nullptr;
+	IFile* _script_file = nullptr;
+
+	void loadScript(void);
+
+	static void LoadScript(void* data);
 
 	SHIB_REFLECTION_CLASS_DECLARE(AngelScriptResource);
 };

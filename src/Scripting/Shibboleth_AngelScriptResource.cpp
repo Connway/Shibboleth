@@ -21,7 +21,12 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Shibboleth_AngelScriptResource.h"
+#include "Shibboleth_AngelScriptManager.h"
 #include <Shibboleth_ResourceExtensionAttribute.h>
+#include <Shibboleth_ResourceManager.h>
+#include <Shibboleth_IFileSystem.h>
+#include <Shibboleth_LogManager.h>
+#include <scriptbuilder.h>
 
 SHIB_REFLECTION_DEFINE(AngelScriptResource)
 
@@ -34,9 +39,58 @@ SHIB_REFLECTION_CLASS_DEFINE_BEGIN(AngelScriptResource)
 	.ctor<>()
 SHIB_REFLECTION_CLASS_DEFINE_END(AngelScriptResource)
 
+static int32_t g_pool_index = -1;
+
+AngelScriptResource::AngelScriptResource(void)
+{
+	if (g_pool_index == -1) {
+		ResourceManager& res_mgr = GetApp().getManagerTUnsafe<ResourceManager>();
+		g_pool_index = res_mgr.getNextJobPoolIndex();
+	}
+}
+
 void AngelScriptResource::load(void)
 {
-	
+	_script_file = loadFile(getFilePath().getBuffer());
+
+	if (_script_file) {
+		Gaff::JobData job_data = { LoadScript, this };
+		GetApp().getJobPool().addJobs(&job_data, 1, nullptr, g_pool_index);
+	}
+}
+
+const asIScriptModule* AngelScriptResource::getModule(void) const
+{
+	return _module;
+}
+
+void AngelScriptResource::loadScript(void)
+{
+	AngelScriptManager& as_mgr = GetApp().getManagerTUnsafe<AngelScriptManager>();
+	asIScriptEngine* const engine = as_mgr.getEngine();
+
+	CScriptBuilder builder;
+
+	int r = builder.StartNewModule(engine, getFilePath().getBuffer());
+	RES_FAIL_MSG(r < 0, "Failed to create new script module for script '%s'!", getFilePath().getBuffer());
+
+	r = builder.AddSectionFromMemory("script", _script_file->getBuffer(), static_cast<unsigned int>(_script_file->size()));
+	RES_FAIL_MSG(r < 0, "Failed to add section for script '%s'!", getFilePath().getBuffer());
+
+	r = builder.BuildModule();
+	RES_FAIL_MSG(r < 0, "Failed to build module for script '%s'!", getFilePath().getBuffer());
+
+	_module = engine->GetModule(getFilePath().getBuffer());
+	RES_FAIL_MSG(!_module, "Failed to get module for script '%s'!", getFilePath().getBuffer());
+
+	_state = RS_LOADED;
+	callCallbacks();
+}
+
+void AngelScriptResource::LoadScript(void* data)
+{
+	AngelScriptResource* const as_res = reinterpret_cast<AngelScriptResource*>(data);
+	as_res->loadScript();
 }
 
 NS_END

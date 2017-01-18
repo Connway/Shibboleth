@@ -121,7 +121,7 @@ void LogManager::addChannel(Gaff::HashStringTemp32 channel, const char* file)
 		snprintf(
 			file_name,
 			ARRAY_SIZE(file_name),
-			"%s %s.txt",
+			"Logs/%s %s.txt",
 			file,
 			time_string
 		);
@@ -150,7 +150,7 @@ void LogManager::logMessage(LogType type, Gaff::HashStringTemp32 channel, const 
 {
 	va_list vl;
 	va_start(vl, format);
-	
+
 	if(!logMessageHelper(type, channel.getHash(), format, vl) && channel.getHash() != LOG_CHANNEL_DEFAULT) {
 		logMessage(
 			LOG_ERROR,
@@ -162,7 +162,7 @@ void LogManager::logMessage(LogType type, Gaff::HashStringTemp32 channel, const 
 		// Log the message to the default channel.
 		logMessageHelper(type, LOG_CHANNEL_DEFAULT, format, vl);
 	}
-	
+
 	va_end(vl);
 }
 

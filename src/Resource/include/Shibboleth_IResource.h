@@ -29,6 +29,15 @@ THE SOFTWARE.
 #include <EASTL/functional.h>
 #include <atomic>
 
+#define RES_FAIL_MSG(cond, msg, ...) \
+	if (cond) { \
+		LogError(LOG_CHANNEL_RESOURCE, msg, __VA_ARGS__); \
+		_state = RS_FAILED; \
+		callCallbacks(); \
+		return; \
+	}
+
+
 NS_SHIBBOLETH
 
 class ResourceManager;

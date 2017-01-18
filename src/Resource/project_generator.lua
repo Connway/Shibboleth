@@ -12,6 +12,11 @@ project "Resource"
 	files { "**.h", "**.cpp", "**.inl" }
 	removefiles { "Shibboleth_ResourceModule.cpp" }
 
+	filter { "configurations:not Analyze*" }
+		flags { "FatalWarnings" }
+
+	filter {}
+
 	includedirs
 	{
 		"include",
@@ -38,6 +43,11 @@ project "ResourceModule"
 
 	ModuleGen("Resource")
 	ModuleCopy()
+
+	filter { "configurations:not Analyze*" }
+		flags { "FatalWarnings" }
+
+	filter {}
 
 	includedirs
 	{

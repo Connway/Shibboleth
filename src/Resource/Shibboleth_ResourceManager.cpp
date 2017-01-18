@@ -23,6 +23,7 @@ THE SOFTWARE.
 #include "Shibboleth_ResourceManager.h"
 #include "Shibboleth_ResourceExtensionAttribute.h"
 #include <Shibboleth_IFileSystem.h>
+#include <Shibboleth_LogManager.h>
 #include <Shibboleth_Utilities.h>
 #include <Shibboleth_IApp.h>
 #include <Gaff_ReflectionInterfaces.h>
@@ -42,6 +43,7 @@ SHIB_REFLECTION_CLASS_DEFINE_END(ResourceManager)
 ResourceManager::ResourceManager(void)
 {
 	GetApp().registerTypeBucket(Gaff::FNV1aHash64Const("IResource"));
+	GetApp().getLogManager().addChannel("Resource", "ResourceLog");
 }
 
 void ResourceManager::allModulesLoaded(void)
@@ -117,8 +119,8 @@ IResourcePtr ResourceManager::requestResource(Gaff::HashStringTemp64 name)
 	_resources.insert(it_res, res_ptr);
 
 	// Create and add resource load job.
-	Gaff::JobData job_data = { ResourceManager::ResourceFileLoadJob, res };
-	GetApp().getJobPool().addJobs(&job_data, 1, nullptr, (res->readsFromDisk()) ? JP_READ_FILE : 0);
+	Gaff::JobData job_data = { ResourceFileLoadJob, res };
+	GetApp().getJobPool().addJobs(&job_data, 1, nullptr, (res->readsFromDisk()) ? JOB_POOL_READ_FILE : 0);
 
 	return res_ptr;
 }
