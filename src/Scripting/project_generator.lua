@@ -12,6 +12,11 @@ project "Scripting"
 	files { "**.h", "**.cpp", "**.inl" }
 	removefiles { "Shibboleth_ScriptingModule.cpp" }
 
+	filter { "configurations:not Analyze*" }
+		flags { "FatalWarnings" }
+
+	filter {}
+
 	includedirs
 	{
 		"include",
@@ -21,6 +26,7 @@ project "Scripting"
 		"../Resource/include",
 		"../../dependencies/EASTL/include",
 		"../../dependencies/angelscript/angelscript/include",
+		"../../dependencies/angelscript/add_on/scriptbuilder",
 		"../../dependencies/rapidjson",
 		"../../frameworks/Gaff/include"
 	}
@@ -38,6 +44,11 @@ project "ScriptingModule"
 
 	ModuleGen("Scripting")
 	ModuleCopy("Scripting")
+
+	filter { "configurations:not Analyze*" }
+		flags { "FatalWarnings" }
+
+	filter {}
 
 	includedirs
 	{

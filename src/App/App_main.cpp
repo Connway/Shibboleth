@@ -27,6 +27,7 @@ int main(int argc, char** argv)
 	Shibboleth::App app;
 
 	if (!app.init(argc, argv)) {
+		app.destroy();
 		return -1;
 	}
 

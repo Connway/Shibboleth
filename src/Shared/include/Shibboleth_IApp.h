@@ -28,7 +28,7 @@ THE SOFTWARE.
 #include "Shibboleth_VectorMap.h"
 #include "Shibboleth_Vector.h"
 #include "Shibboleth_String.h"
-#include <Gaff_Reflection.h>
+#include "Shibboleth_Reflection.h"
 
 NS_GAFF
 	class IReflectionDefinition;
@@ -71,13 +71,13 @@ public:
 	template <class T>
 	const T& getManagerTUnsafe(const U8String& name) const
 	{
-		return *reinterpret_cast<T*>(getManager(name.data()));
+		return *reinterpret_cast<T*>(getManager(Gaff::FNV1aHash64String(name.data())));
 	}
 
 	template <class T>
 	T& getManagerTUnsafe(const U8String& name)
 	{
-		return *reinterpret_cast<T*>(getManager(name.data()));
+		return *reinterpret_cast<T*>(getManager(Gaff::FNV1aHash64String(name.data())));
 	}
 
 	template <class T>
@@ -92,17 +92,17 @@ public:
 		return *reinterpret_cast<T*>(getManager(Gaff::FNV1aHash64String(name)));
 	}
 
-	//template <class T>
-	//const T& getManagerTUnsafe(void) const
-	//{
-	//	return *reinterpret_cast<T*>(getManager(T::GetFriendlyName()));
-	//}
+	template <class T>
+	const T& getManagerTUnsafe(void) const
+	{
+		return *reinterpret_cast<T*>(getManager(Reflection<T>::GetHash()));
+	}
 
-	//template <class T>
-	//T& getManagerTUnsafe(void)
-	//{
-	//	return *reinterpret_cast<T*>(getManager(T::GetFriendlyName()));
-	//}
+	template <class T>
+	T& getManagerTUnsafe(void)
+	{
+		return *reinterpret_cast<T*>(getManager(Reflection<T>::GetHash()));
+	}
 
 	//template <class T>
 	//const T& getManagerT(void) const

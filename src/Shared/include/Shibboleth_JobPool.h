@@ -29,7 +29,4 @@ NS_SHIBBOLETH
 
 using JobPool = Gaff::JobPool<ProxyAllocator>;
 
-#define JP_READ_FILE 1
-#define JP_USER_BEGIN 2
-
 NS_END
