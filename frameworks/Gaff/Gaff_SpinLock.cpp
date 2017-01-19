@@ -29,6 +29,10 @@ THE SOFTWARE.
 
 NS_GAFF
 
+SpinLock::SpinLock(void)
+{
+}
+
 void SpinLock::lock(void)
 {
 	int32_t tries = 0;
@@ -54,6 +58,10 @@ void SpinLock::unlock(void)
 }
 
 
+
+ReadWriteSpinLock::ReadWriteSpinLock(void)
+{
+}
 
 void ReadWriteSpinLock::readLock(void)
 {

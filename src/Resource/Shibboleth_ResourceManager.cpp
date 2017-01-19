@@ -114,7 +114,8 @@ IResourcePtr ResourceManager::requestResource(Gaff::HashStringTemp64 name)
 	// Assume all resources always inherit from IResource first.
 	IResource* res = reinterpret_cast<IResource*>(it_fact->second(_allocator));
 	IResourcePtr res_ptr(res);
-	res->setResourceManager(this);
+	res->_file_path = HashString64(name);
+	res->_res_mgr = this;
 
 	_resources.insert(it_res, res_ptr);
 
@@ -123,6 +124,14 @@ IResourcePtr ResourceManager::requestResource(Gaff::HashStringTemp64 name)
 	GetApp().getJobPool().addJobs(&job_data, 1, nullptr, (res->readsFromDisk()) ? JOB_POOL_READ_FILE : 0);
 
 	return res_ptr;
+}
+
+void ResourceManager::waitForResource(const IResourcePtr& resource)
+{
+	while (resource->_state == IResource::RS_PENDING) {
+		// Help out.
+		YieldThread();
+	}
 }
 
 void ResourceManager::removeResource(const IResource* resource)

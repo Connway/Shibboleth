@@ -57,6 +57,8 @@ project "ScriptingModule"
 		"../Shared/include",
 		"../Game/include",
 		"../Resource/include",
+		"../../dependencies/angelscript/add_on/scriptbuilder",
+		"../../dependencies/angelscript/angelscript/include",
 		"../../dependencies/EASTL/include",
 		"../../dependencies/rapidjson",
 		"../../frameworks/Gaff/include"

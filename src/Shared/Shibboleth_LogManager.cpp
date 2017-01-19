@@ -84,6 +84,9 @@ void LogManager::destroy(void)
 	}
 
 	_shutdown = false;
+
+	_log_callbacks.clear();
+	_channels.clear();
 }
 
 void LogManager::addLogCallback(const LogCallback& callback)

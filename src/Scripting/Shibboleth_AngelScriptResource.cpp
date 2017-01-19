@@ -26,7 +26,6 @@ THE SOFTWARE.
 #include <Shibboleth_ResourceManager.h>
 #include <Shibboleth_IFileSystem.h>
 #include <Shibboleth_LogManager.h>
-#include <scriptbuilder.h>
 
 SHIB_REFLECTION_DEFINE(AngelScriptResource)
 
@@ -64,20 +63,23 @@ const asIScriptModule* AngelScriptResource::getModule(void) const
 	return _module;
 }
 
+CScriptBuilder& AngelScriptResource::getBuilder(void)
+{
+	return _builder;
+}
+
 void AngelScriptResource::loadScript(void)
 {
 	AngelScriptManager& as_mgr = GetApp().getManagerTUnsafe<AngelScriptManager>();
 	asIScriptEngine* const engine = as_mgr.getEngine();
 
-	CScriptBuilder builder;
-
-	int r = builder.StartNewModule(engine, getFilePath().getBuffer());
+	int r = _builder.StartNewModule(engine, getFilePath().getBuffer());
 	RES_FAIL_MSG(r < 0, "Failed to create new script module for script '%s'!", getFilePath().getBuffer());
 
-	r = builder.AddSectionFromMemory("script", _script_file->getBuffer(), static_cast<unsigned int>(_script_file->size()));
+	r = _builder.AddSectionFromMemory("script", _script_file->getBuffer(), static_cast<unsigned int>(_script_file->size()));
 	RES_FAIL_MSG(r < 0, "Failed to add section for script '%s'!", getFilePath().getBuffer());
 
-	r = builder.BuildModule();
+	r = _builder.BuildModule();
 	RES_FAIL_MSG(r < 0, "Failed to build module for script '%s'!", getFilePath().getBuffer());
 
 	_module = engine->GetModule(getFilePath().getBuffer());

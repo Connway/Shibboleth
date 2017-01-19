@@ -64,7 +64,7 @@ bool App::init(int argc, char** argv)
 		return false;
 	}
 
-	if (!_logger.init()) {
+	if (!_log_mgr.init()) {
 		return false;
 	}
 
@@ -386,7 +386,7 @@ void App::destroy(void)
 
 	_reflection_map.clear();
 	_manager_map.clear();
-	_logger.destroy();
+	_log_mgr.destroy();
 
 	_dynamic_loader.forEachModule([](DynamicLoader::ModulePtr module) -> bool
 	{
@@ -450,7 +450,7 @@ VectorMap<HashString32, U8String>& App::getCmdLine(void)
 
 LogManager& App::getLogManager(void)
 {
-	return _logger;
+	return _log_mgr;
 }
 
 JobPool& App::getJobPool(void)

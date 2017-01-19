@@ -30,14 +30,14 @@ NS_GAFF
 class SpinLock
 {
 public:
-	SpinLock(void) = default;
+	SpinLock(void);
 
 	INLINE void lock(void);
 	INLINE bool tryLock(void);
 	INLINE void unlock(void);
 
 private:
-	std::atomic_flag _lock;
+	std::atomic_flag _lock = { 0 };
 
 	GAFF_NO_MOVE(SpinLock);
 	GAFF_NO_COPY(SpinLock);
@@ -46,7 +46,7 @@ private:
 class ReadWriteSpinLock
 {
 public:
-	ReadWriteSpinLock(void) = default;
+	ReadWriteSpinLock(void);
 
 	INLINE void readLock(void);
 	INLINE bool tryReadLock(void);
@@ -57,8 +57,8 @@ public:
 	INLINE void writeUnlock(void);
 
 private:
-	std::atomic_int32_t _read_lock;
-	std::atomic_flag _write_lock;
+	std::atomic_int32_t _read_lock = 0;
+	std::atomic_flag _write_lock = { 0 };
 
 	GAFF_NO_MOVE(ReadWriteSpinLock);
 	GAFF_NO_COPY(ReadWriteSpinLock);

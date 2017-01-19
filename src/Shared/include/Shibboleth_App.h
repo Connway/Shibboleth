@@ -111,7 +111,7 @@ private:
 	MessageBroadcaster _broadcaster;
 	DynamicLoader _dynamic_loader;
 	JobPool _job_pool;
-	LogManager _logger;
+	LogManager _log_mgr;
 
 	FileSystemData _fs;
 
