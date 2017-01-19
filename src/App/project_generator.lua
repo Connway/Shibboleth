@@ -28,7 +28,7 @@ project "App"
 	dependson
 	{
 		"Shared", "Gaff",
-		"Memory"
+		"Memory", "EASTL"
 	}
 
 	links

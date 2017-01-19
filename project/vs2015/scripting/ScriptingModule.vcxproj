@@ -123,7 +123,7 @@
       <WarningLevel>Level4</WarningLevel>
       <TreatWarningAsError>true</TreatWarningAsError>
       <PreprocessorDefinitions>_DEBUG;DEBUG;WIN32;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\..\..\src\Scripting\include;..\..\..\src\Memory\include;..\..\..\src\Shared\include;..\..\..\src\Game\include;..\..\..\src\Resource\include;..\..\..\dependencies\EASTL\include;..\..\..\dependencies\rapidjson;..\..\..\frameworks\Gaff\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\src\Scripting\include;..\..\..\src\Memory\include;..\..\..\src\Shared\include;..\..\..\src\Game\include;..\..\..\src\Resource\include;..\..\..\dependencies\angelscript\add_on\scriptbuilder;..\..\..\dependencies\angelscript\angelscript\include;..\..\..\dependencies\EASTL\include;..\..\..\dependencies\rapidjson;..\..\..\frameworks\Gaff\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
       <ExceptionHandling>Async</ExceptionHandling>
@@ -152,7 +152,7 @@ IF EXIST ..\..\..\build\output\x64\Debug\$(TargetFileName)\ (xcopy /Q /E /Y /I .
       <WarningLevel>Level4</WarningLevel>
       <TreatWarningAsError>true</TreatWarningAsError>
       <PreprocessorDefinitions>NDEBUG;WIN32;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\..\..\src\Scripting\include;..\..\..\src\Memory\include;..\..\..\src\Shared\include;..\..\..\src\Game\include;..\..\..\src\Resource\include;..\..\..\dependencies\EASTL\include;..\..\..\dependencies\rapidjson;..\..\..\frameworks\Gaff\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\src\Scripting\include;..\..\..\src\Memory\include;..\..\..\src\Shared\include;..\..\..\src\Game\include;..\..\..\src\Resource\include;..\..\..\dependencies\angelscript\add_on\scriptbuilder;..\..\..\dependencies\angelscript\angelscript\include;..\..\..\dependencies\EASTL\include;..\..\..\dependencies\rapidjson;..\..\..\frameworks\Gaff\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -186,7 +186,7 @@ IF EXIST ..\..\..\build\output\x64\Release\$(TargetFileName)\ (xcopy /Q /E /Y /I
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level4</WarningLevel>
       <PreprocessorDefinitions>NDEBUG;WIN32;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\..\..\src\Scripting\include;..\..\..\src\Memory\include;..\..\..\src\Shared\include;..\..\..\src\Game\include;..\..\..\src\Resource\include;..\..\..\dependencies\EASTL\include;..\..\..\dependencies\rapidjson;..\..\..\frameworks\Gaff\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\src\Scripting\include;..\..\..\src\Memory\include;..\..\..\src\Shared\include;..\..\..\src\Game\include;..\..\..\src\Resource\include;..\..\..\dependencies\angelscript\add_on\scriptbuilder;..\..\..\dependencies\angelscript\angelscript\include;..\..\..\dependencies\EASTL\include;..\..\..\dependencies\rapidjson;..\..\..\frameworks\Gaff\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -220,7 +220,7 @@ IF EXIST ..\..\..\build\output\x64\Analyze\$(TargetFileName)\ (xcopy /Q /E /Y /I
       <WarningLevel>Level4</WarningLevel>
       <TreatWarningAsError>true</TreatWarningAsError>
       <PreprocessorDefinitions>NDEBUG;SHIB_PROFILE;WIN32;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\..\..\src\Scripting\include;..\..\..\src\Memory\include;..\..\..\src\Shared\include;..\..\..\src\Game\include;..\..\..\src\Resource\include;..\..\..\dependencies\EASTL\include;..\..\..\dependencies\rapidjson;..\..\..\frameworks\Gaff\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\src\Scripting\include;..\..\..\src\Memory\include;..\..\..\src\Shared\include;..\..\..\src\Game\include;..\..\..\src\Resource\include;..\..\..\dependencies\angelscript\add_on\scriptbuilder;..\..\..\dependencies\angelscript\angelscript\include;..\..\..\dependencies\EASTL\include;..\..\..\dependencies\rapidjson;..\..\..\frameworks\Gaff\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -255,7 +255,7 @@ IF EXIST ..\..\..\build\output\x64\Profile\$(TargetFileName)\ (xcopy /Q /E /Y /I
       <WarningLevel>Level4</WarningLevel>
       <TreatWarningAsError>true</TreatWarningAsError>
       <PreprocessorDefinitions>_DEBUG;DEBUG;WIN32;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\..\..\src\Scripting\include;..\..\..\src\Memory\include;..\..\..\src\Shared\include;..\..\..\src\Game\include;..\..\..\src\Resource\include;..\..\..\dependencies\EASTL\include;..\..\..\dependencies\rapidjson;..\..\..\frameworks\Gaff\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\src\Scripting\include;..\..\..\src\Memory\include;..\..\..\src\Shared\include;..\..\..\src\Game\include;..\..\..\src\Resource\include;..\..\..\dependencies\angelscript\add_on\scriptbuilder;..\..\..\dependencies\angelscript\angelscript\include;..\..\..\dependencies\EASTL\include;..\..\..\dependencies\rapidjson;..\..\..\frameworks\Gaff\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>

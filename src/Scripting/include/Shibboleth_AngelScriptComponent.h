@@ -22,16 +22,28 @@ THE SOFTWARE.
 
 #pragma once
 
-#include <Shibboleth_Reflection.h>
+#include <Shibboleth_AngelScriptResource.h>
 #include <Shibboleth_Component.h>
+
+class asIScriptContext;
+class asIScriptObject;
+class asITypeInfo;
 
 NS_SHIBBOLETH
 
 class AngelScriptComponent final : public Component
 {
 public:
+	void allComponentsLoaded(void) override;
+
+	void addToWorld(void) override;
+	void removeFromWorld(void) override;
 
 private:
+	asIScriptContext* _context = nullptr;
+	asIScriptObject* _object = nullptr;
+	const asITypeInfo* _type_info = nullptr;
+	AngelScriptResourcePtr _res;
 
 	SHIB_REFLECTION_CLASS_DECLARE(AngelScriptComponent);
 };

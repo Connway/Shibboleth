@@ -101,9 +101,4 @@ void IResource::callCallbacks(void)
 	_callbacks.clear();
 }
 
-void IResource::setResourceManager(ResourceManager* res_mgr)
-{
-	_res_mgr = res_mgr;
-}
-
 NS_END

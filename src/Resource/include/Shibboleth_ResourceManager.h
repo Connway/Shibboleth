@@ -58,6 +58,8 @@ public:
 
 	IResourcePtr requestResource(Gaff::HashStringTemp64 name);
 
+	void waitForResource(const IResourcePtr& resource);
+
 private:
 	using FactoryFunc = void* (*)(Gaff::IAllocator&);
 

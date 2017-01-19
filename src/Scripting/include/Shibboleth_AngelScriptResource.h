@@ -24,8 +24,7 @@ THE SOFTWARE.
 
 #include <Shibboleth_Reflection.h>
 #include <Shibboleth_IResource.h>
-
-class asIScriptModule;
+#include <scriptbuilder.h>
 
 NS_SHIBBOLETH
 
@@ -37,9 +36,12 @@ public:
 	void load(void) override;
 
 	const asIScriptModule* getModule(void) const;
+	CScriptBuilder& getBuilder(void); // For metadata.
 
 private:
 	asIScriptModule* _module = nullptr;
+	CScriptBuilder _builder;
+
 	IFile* _script_file = nullptr;
 
 	void loadScript(void);
@@ -48,6 +50,8 @@ private:
 
 	SHIB_REFLECTION_CLASS_DECLARE(AngelScriptResource);
 };
+
+using AngelScriptResourcePtr = Gaff::RefPtr<AngelScriptResource>;
 
 NS_END
 

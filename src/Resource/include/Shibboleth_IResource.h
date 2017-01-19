@@ -84,8 +84,6 @@ private:
 	HashString64 _file_path;
 	ResourceManager* _res_mgr = nullptr;
 
-	void setResourceManager(ResourceManager* res_mgr);
-
 	friend class ResourceManager;
 };
 
