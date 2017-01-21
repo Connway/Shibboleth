@@ -28,7 +28,7 @@ THE SOFTWARE.
 
 NS_SHIBBOLETH
 
-class AngelScriptResource : public IResource
+class AngelScriptResource final : public IResource
 {
 public:
 	AngelScriptResource(void);

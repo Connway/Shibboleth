@@ -112,16 +112,16 @@ public:
 	ReflectionDefinition& ctor(void);
 
 	template <class Var, size_t size>
-	ReflectionDefinition& var(const char (&name)[size], Var T::*ptr);
+	ReflectionDefinition& var(const char (&name)[size], Var T::*ptr, bool read_only = false);
 
 	template <class Ret, class Var, size_t size>
 	ReflectionDefinition& var(const char (&name)[size], Ret (T::*getter)(void) const, void (T::*setter)(Var));
 
 	template <class Var, class Vec_Allocator, size_t size>
-	ReflectionDefinition& var(const char (&name)[size], Vector<Var, Vec_Allocator> T::*vec);
+	ReflectionDefinition& var(const char (&name)[size], Vector<Var, Vec_Allocator> T::*vec, bool read_only = false);
 
 	template <class Var, size_t array_size, size_t name_size>
-	ReflectionDefinition& var(const char (&name)[name_size], Var (T::*arr)[array_size]);
+	ReflectionDefinition& var(const char (&name)[name_size], Var (T::*arr)[array_size], bool read_only = false);
 
 	template <size_t size, class Ret, class... Args>
 	ReflectionDefinition& func(const char (&name)[size], Ret (T::*ptr)(Args...) const);
@@ -144,15 +144,18 @@ private:
 	class VarPtr final : public IVar
 	{
 	public:
-		VarPtr(Var T::*ptr);
+		VarPtr(Var T::*ptr, bool read_only);
 
 		ReflectionValueType getType(void) const override;
 		const void* getData(const void* object) const override;
 		void setData(void* object, const void* data) override;
 		void setDataMove(void* object, void* data) override;
 
+		bool isReadOnly(void) const override;
+
 	private:
 		Var T::*_ptr = nullptr;
+		const bool _read_only = false;
 	};
 
 	template <class Ret, class Var>
@@ -168,6 +171,8 @@ private:
 		const void* getData(const void* object) const override;
 		void setData(void* object, const void* data) override;
 		void setDataMove(void* object, void* data) override;
+
+		bool isReadOnly(void) const override;
 
 	private:
 		Getter _getter = nullptr;
@@ -190,6 +195,7 @@ private:
 
 		bool isFixedArray(void) const override;
 		bool isVector(void) const override;
+		bool isReadOnly(void) const override;
 		int32_t size(const void*) const override;
 
 		const void* getElement(const void* object, int32_t index) const override;
@@ -206,7 +212,7 @@ private:
 	class ArrayPtr final : public IVar
 	{
 	public:
-		ArrayPtr(Var (T::*ptr)[array_size]);
+		ArrayPtr(Var (T::*ptr)[array_size], bool read_only);
 
 		ReflectionValueType getType(void) const override;
 		const void* getData(const void* object) const override;
@@ -215,6 +221,7 @@ private:
 
 		bool isFixedArray(void) const override { return true; }
 		bool isVector(void) const override { return false; }
+		bool isReadOnly(void) const { return _read_only; }
 		int32_t size(const void*) const override { return static_cast<int32_t>(array_size); }
 
 		const void* getElement(const void* object, int32_t index) const override;
@@ -225,13 +232,14 @@ private:
 	
 	private:
 		Var (T::*_ptr)[array_size] = nullptr;
+		bool _read_only = false;
 	};
 
 	template <class Var, class Vec_Allocator>
 	class VectorPtr final : public IVar
 	{
 	public:
-		VectorPtr(Vector<Var, Vec_Allocator> T::*ptr);
+		VectorPtr(Vector<Var, Vec_Allocator> T::*ptr, bool read_only);
 
 		ReflectionValueType getType(void) const override;
 		const void* getData(const void* object) const override;
@@ -240,6 +248,7 @@ private:
 
 		bool isFixedArray(void) const override { return false; }
 		bool isVector(void) const override { return true; }
+		bool isReadOnly(void) const { return _read_only; }
 		int32_t size(const void* object) const override;
 
 		const void* getElement(const void* object, int32_t index) const override;
@@ -250,6 +259,7 @@ private:
 
 	private:
 		Vector<Var, Vec_Allocator> T::*_ptr = nullptr;
+		bool _read_only = false;
 	};
 
 	using IVarPtr = UniquePtr<IVar, Allocator>;

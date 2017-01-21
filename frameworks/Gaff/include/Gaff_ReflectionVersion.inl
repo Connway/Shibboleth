@@ -49,10 +49,11 @@ ReflectionVersion<T>& ReflectionVersion<T>::ctor(void)
 
 template <class T>
 template <class Var, size_t size>
-ReflectionVersion<T>& ReflectionVersion<T>::var(const char(&name)[size], Var T::*ptr)
+ReflectionVersion<T>& ReflectionVersion<T>::var(const char(&name)[size], Var T::*ptr, bool read_only)
 {
 	_hash = FNV1aHash64(name, size ,_hash);
 	_hash = FNV1aHash64T(&ptr, _hash);
+	_hash = FNV1aHash64T(&read_only, _hash);
 	return *this;
 }
 

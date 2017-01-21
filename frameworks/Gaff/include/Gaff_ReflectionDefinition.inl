@@ -85,8 +85,8 @@ void ReflectionDefinition<T, Allocator>::IVar::setElementMoveT(T& object, int32_
 // VarPtr
 template <class T, class Allocator>
 template <class Var>
-ReflectionDefinition<T, Allocator>::VarPtr<Var>::VarPtr(Var T::*ptr):
-	_ptr(ptr)
+ReflectionDefinition<T, Allocator>::VarPtr<Var>::VarPtr(Var T::*ptr, bool read_only):
+	_ptr(ptr), _read_only(read_only)
 {
 	GAFF_ASSERT(ptr);
 }
@@ -110,6 +110,7 @@ template <class T, class Allocator>
 template <class Var>
 void ReflectionDefinition<T, Allocator>::VarPtr<Var>::setData(void* object, const void* data)
 {
+	GAFF_ASSERT(!_read_only);
 	T* obj = reinterpret_cast<T*>(object);
 	(obj->*_ptr) = *reinterpret_cast<const Var*>(data);
 }
@@ -118,8 +119,16 @@ template <class T, class Allocator>
 template <class Var>
 void ReflectionDefinition<T, Allocator>::VarPtr<Var>::setDataMove(void* object, void* data)
 {
+	GAFF_ASSERT(!_read_only);
 	T* obj = reinterpret_cast<T*>(object);
 	(obj->*_ptr) = std::move(*reinterpret_cast<Var*>(data));
+}
+
+template <class T, class Allocator>
+template <class Var>
+bool ReflectionDefinition<T, Allocator>::VarPtr<Var>::isReadOnly(void) const
+{
+	return _read_only;
 }
 
 
@@ -182,6 +191,13 @@ void ReflectionDefinition<T, Allocator>::VarFuncPtr<Ret, Var>::setDataMove(void*
 	(obj->*_setter)(*reinterpret_cast<Var*>(data));
 }
 
+template <class T, class Allocator>
+template <class Ret, class Var>
+bool ReflectionDefinition<T, Allocator>::VarFuncPtr<Ret, Var>::isReadOnly(void) const
+{
+	return _setter == nullptr;
+}
+
 
 
 // BaseVarPtr
@@ -240,6 +256,13 @@ template <class Base>
 bool ReflectionDefinition<T, Allocator>::BaseVarPtr<Base>::isVector(void) const
 {
 	return _base_var->isVector();
+}
+
+template <class T, class Allocator>
+template <class Base>
+bool ReflectionDefinition<T, Allocator>::BaseVarPtr<Base>::isReadOnly(void) const
+{
+	return _base_var->isReadOnly();
 }
 
 template <class T, class Allocator>
@@ -308,8 +331,8 @@ void ReflectionDefinition<T, Allocator>::BaseVarPtr<Base>::resize(void* object, 
 // ArrayPtr
 template <class T, class Allocator>
 template <class Var, size_t array_size>
-ReflectionDefinition<T, Allocator>::ArrayPtr<Var, array_size>::ArrayPtr(Var (T::*ptr)[array_size]):
-	_ptr(ptr)
+ReflectionDefinition<T, Allocator>::ArrayPtr<Var, array_size>::ArrayPtr(Var (T::*ptr)[array_size], bool read_only):
+	_ptr(ptr), _read_only(read_only)
 {
 	GAFF_ASSERT(ptr);
 }
@@ -416,8 +439,8 @@ void ReflectionDefinition<T, Allocator>::ArrayPtr<Var, array_size>::resize(void*
 // VectorPtr
 template <class T, class Allocator>
 template <class Var, class Vec_Allocator>
-ReflectionDefinition<T, Allocator>::VectorPtr<Var, Vec_Allocator>::VectorPtr(Vector<Var, Vec_Allocator> (T::*ptr)) :
-	_ptr(ptr)
+ReflectionDefinition<T, Allocator>::VectorPtr<Var, Vec_Allocator>::VectorPtr(Vector<Var, Vec_Allocator> (T::*ptr), bool read_only):
+	_ptr(ptr), _read_only(read_only)
 {
 	GAFF_ASSERT(ptr);
 }
@@ -771,13 +794,13 @@ ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::ctor(voi
 
 template <class T, class Allocator>
 template <class Var, size_t size>
-ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::var(const char (&name)[size], Var T::*ptr)
+ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::var(const char (&name)[size], Var T::*ptr, bool read_only)
 {
 	static_assert(!std::is_pointer<Var>::value, "Cannot reflect pointers.");
 
 	eastl::pair<HashString32<Allocator>, IVarPtr> pair(
 		HashString32<Allocator>(name, size - 1, nullptr, _allocator),
-		IVarPtr(GAFF_ALLOCT(VarPtr<Var>, _allocator, ptr))
+		IVarPtr(GAFF_ALLOCT(VarPtr<Var>, _allocator, ptr, read_only))
 	);
 
 	GAFF_ASSERT(_vars.find(pair.first) == _vars.end());
@@ -806,14 +829,14 @@ ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::var(cons
 
 template <class T, class Allocator>
 template <class Var, class Vec_Allocator, size_t size>
-ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::var(const char (&name)[size], Vector<Var, Vec_Allocator> T::*vec)
+ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::var(const char (&name)[size], Vector<Var, Vec_Allocator> T::*vec, bool read_only)
 {
 	static_assert(!std::is_pointer<Var>::value, "Cannot reflect pointers.");
 	using PtrType = VectorPtr<Var, Vec_Allocator>;
 
 	eastl::pair<HashString32<Allocator>, IVarPtr> pair(
 		HashString32<Allocator>(name, size - 1, nullptr, _allocator),
-		IVarPtr(GAFF_ALLOCT(PtrType, _allocator, vec))
+		IVarPtr(GAFF_ALLOCT(PtrType, _allocator, vec, read_only))
 	);
 
 	GAFF_ASSERT(_vars.find(pair.first) == _vars.end());
@@ -824,14 +847,14 @@ ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::var(cons
 
 template <class T, class Allocator>
 template <class Var, size_t array_size, size_t name_size>
-ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::var(const char (&name)[name_size], Var (T::*arr)[array_size])
+ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::var(const char (&name)[name_size], Var (T::*arr)[array_size], bool read_only)
 {
 	static_assert(!std::is_pointer<Var>::value, "Cannot reflect pointers.");
 	using PtrType = ArrayPtr<Var, array_size>;
 
 	eastl::pair<HashString32<Allocator>, IVarPtr> pair(
 		HashString32<Allocator>(name, name_size - 1, nullptr, _allocator),
-		IVarPtr(GAFF_ALLOCT(PtrType, _allocator, arr))
+		IVarPtr(GAFF_ALLOCT(PtrType, _allocator, arr, read_only))
 	);
 
 	GAFF_ASSERT(_vars.find(pair.first) == _vars.end());

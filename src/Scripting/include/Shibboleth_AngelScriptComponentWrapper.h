@@ -22,53 +22,32 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Gaff_Hash.h"
+#include <Shibboleth_RefCounted.h>
 
-NS_GAFF
+class asIScriptEngine;
 
-template <class T>
-class ReflectionVersion final
+NS_SHIBBOLETH
+
+class AngelScriptComponent;
+class Component;
+class Object;
+
+class AngelScriptComponentWrapper final : public RefCounted
 {
 public:
-	template <class Base>
-	ReflectionVersion& base(const char* name);
-
-	template <class Base>
-	ReflectionVersion& base(void);
-
-	template <class... Args>
-	ReflectionVersion& ctor(void);
-
-	template <class Var, size_t size>
-	ReflectionVersion& var(const char(&name)[size], Var T::*ptr, bool read_only = false);
-
-	template <class Ret, class Var, size_t size>
-	ReflectionVersion& var(const char(&name)[size], Ret (T::*getter)(void) const, void (T::*setter)(Var));
-
-	template <size_t size, class Ret, class... Args>
-	ReflectionVersion& func(const char (&name)[size], Ret (T::*ptr)(Args...) const);
-
-	template <size_t size, class Ret, class... Args>
-	ReflectionVersion& func(const char (&name)[size], Ret (T::*ptr)(Args...));
-
-	template <class... Args>
-	ReflectionVersion& classAttrs(const Args&... /*args*/)
-	{
-		return *this;
-	}
-
-	template <size_t size, class... Args>
-	ReflectionVersion& varAttrs(const char(&/*name*/)[size], const Args&... /*args*/)
-	{
-		return *this;
-	}
-
-	Hash64 getHash(void) const;
+	static void Register(asIScriptEngine* engine);
 
 private:
-	Hash64 _hash = INIT_HASH64;
+	AngelScriptComponent* _script_comp = nullptr;
+
+	const Component* impliedCast(void) const;
+	Component* impliedCast(void);
+
+	const Object* getOwner(void) const;
+	Object* getOwner(void);
+
+	bool isActive(void) const;
+	void setActive(bool active);
 };
 
 NS_END
-
-#include "Gaff_ReflectionVersion.inl"
