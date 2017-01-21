@@ -52,6 +52,8 @@ NS_SHIBBOLETH
 class RefCounted : public Gaff::IRefCounted
 {
 public:
+	RefCounted(void) {}
+
 	void addRef(void) const
 	{
 		++_count;

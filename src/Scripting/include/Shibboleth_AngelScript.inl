@@ -84,7 +84,7 @@ void* ASFactoryFunc(Args&&... args)
 	IAllocator* const allocator = GetAllocator();
 	int32_t pool_index = allocator->getPoolIndex("AngelScript");
 
-	T* instance = SHIB_ALLOC_CAST(T, pool_index, *allocator);
+	T* const instance = SHIB_ALLOC_CAST(T, pool_index, *allocator);
 	Gaff::Construct(instance, std::forward<Args>(args)...);
 	RefCountedHelper<std::is_base_of<Gaff::IRefCounted, T>::value>::AddRef(*instance);
 	return instance;
@@ -414,7 +414,7 @@ AngelScriptClassRegister<T, B>& AngelScriptClassRegister<T, B>::ctor(void)
 
 template <class T, class B>
 template <class Var, size_t size>
-AngelScriptClassRegister<T, B>& AngelScriptClassRegister<T, B>::var(const char (&name)[size], Var B::*ptr)
+AngelScriptClassRegister<T, B>& AngelScriptClassRegister<T, B>::var(const char (&name)[size], Var B::*ptr, bool /*read_only*/)
 {
 	char temp[TEMP_DECL_SIZE] = { 0 };
 	snprintf(temp, TEMP_DECL_SIZE, "%s %s", GetNameString(Reflection<Var>::GetName()), name);
@@ -428,37 +428,44 @@ template <class T, class B>
 template <class Ret, class Var, size_t size>
 AngelScriptClassRegister<T, B>& AngelScriptClassRegister<T, B>::var(const char (&name)[size], Ret (B::*getter)(void) const, void (B::*setter)(Var))
 {
-	asSFuncPtr func_getter = asSMethodPtr<sizeof(void (B::*)())>::Convert((void (B::*)())(getter));
-	asSFuncPtr func_setter = asSMethodPtr<sizeof(void (B::*)())>::Convert((void (B::*)())(setter));
-
 	using R = std::remove_reference< std::remove_const<Ret>::type >::type;
 	using V = std::remove_reference< std::remove_const<Var>::type >::type;
 
 	char temp[TEMP_DECL_SIZE] = { 0 };
-	sprintf(
-		temp,
-		TEMP_DECL_SIZE,
-		"%s%s%s %s() const",
-		(std::is_const<Ret>::value) ? "const " : "",
-		GetNameString(Reflection<R>::GetName()),
-		(std::is_reference<Ret>::value) ? "&" : "",
-		name
-	);
 
-	g_engine->RegisterObjectMethod(Reflection<T>::GetName(), temp, getter);
+	if (getter) {
+		asSFuncPtr func_getter = asSMethodPtr<sizeof(void (B::*)())>::Convert((void (B::*)())(getter));
 
-	snprintf(
-		temp,
-		TEMP_DECL_SIZE,
-		"void %s(%s%s%s%s) const",
-		name,
-		(std::is_const<Var>::value) ? "const " : "",
-		GetNameString(Reflection<V>::GetName()),
-		(std::is_reference<Var>::value) ? "&" : ""
-		(std::is_reference<Var>::value) ? " in" : ""
-	);
+		snprintf(
+			temp,
+			TEMP_DECL_SIZE,
+			"%s%s%s get_%s() const",
+			(std::is_const<Ret>::value) ? "const " : "",
+			GetNameString(Reflection<R>::GetName()),
+			(std::is_reference<Ret>::value) ? "&" : "",
+			name
+		);
 
-	g_engine->RegisterObjectMethod(Reflection<T>::GetName(), temp, setter);
+		g_engine->RegisterObjectMethod(Reflection<T>::GetName(), temp, func_getter, asCALL_THISCALL);
+	}
+
+	if (setter) {
+		asSFuncPtr func_setter = asSMethodPtr<sizeof(void (B::*)())>::Convert((void (B::*)())(setter));
+
+		snprintf(
+			temp,
+			TEMP_DECL_SIZE,
+			"void set_%s(%s%s%s%s) const",
+			name,
+			(std::is_const<Var>::value) ? "const " : "",
+			GetNameString(Reflection<V>::GetName()),
+			(std::is_reference<Var>::value) ? "&" : "",
+			(std::is_reference<Var>::value) ? " in" : ""
+		);
+
+		g_engine->RegisterObjectMethod(Reflection<T>::GetName(), temp, func_setter, asCALL_THISCALL);
+	}
+
 	return *this;
 }
 

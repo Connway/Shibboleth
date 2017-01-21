@@ -55,6 +55,8 @@ SHIB_REFLECTION_BUILDER_BEGIN(ScriptTest)
 	.var("test_var", &ScriptTest::test_var)
 	.func("testSet", &ScriptTest::testSet)
 	.func("testGet", &ScriptTest::testGet)
+	.var("test_accessor", &ScriptTest::testGet, &ScriptTest::testSet)
+	.var("test_readonly", &ScriptTest::testGet, static_cast<void (ScriptTest::*)(int)>(nullptr))
 SHIB_REFLECTION_BUILDER_END(ScriptTest)
 
 static void MessageCallback(const asSMessageInfo* msg, void* /*param*/)
@@ -122,6 +124,12 @@ TEST_CASE("reflection_script_test", "[shibboleth_reflection_script]")
 			print(test.testGet());
 			test.testSet(500);
 			print(test.test_var);
+
+			test.test_accessor = 150;
+			print(test.test_accessor);
+
+			test.test_accessor = 12345;
+			print(test.test_readonly);
 		}
 
 		void test3()

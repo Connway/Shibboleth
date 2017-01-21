@@ -35,7 +35,7 @@ enum AngelScriptFlags {
 };
 
 template <class T, class B = T>
-class AngelScriptClassRegister
+class AngelScriptClassRegister final
 {
 public:
 	AngelScriptClassRegister(asIScriptEngine* engine, AngelScriptFlags as_flags = AS_NONE);
@@ -50,16 +50,16 @@ public:
 	AngelScriptClassRegister& ctor(void);
 
 	template <class Var, size_t size>
-	AngelScriptClassRegister& var(const char(&name)[size], Var B::*ptr);
+	AngelScriptClassRegister& var(const char(&name)[size], Var B::*ptr, bool read_only = false);
 
 	template <class Ret, class Var, size_t size>
-	AngelScriptClassRegister& var(const char(&name)[size], Ret(B::*getter)(void) const, void (B::*setter)(Var));
+	AngelScriptClassRegister& var(const char(&name)[size], Ret (B::*getter)(void) const, void (B::*setter)(Var));
 
 	template <size_t size, class Ret, class... Args>
-	AngelScriptClassRegister& func(const char(&name)[size], Ret(B::*ptr)(Args...) const);
+	AngelScriptClassRegister& func(const char(&name)[size], Ret (B::*ptr)(Args...) const);
 
 	template <size_t size, class Ret, class... Args>
-	AngelScriptClassRegister& func(const char(&name)[size], Ret(B::*ptr)(Args...));
+	AngelScriptClassRegister& func(const char(&name)[size], Ret (B::*ptr)(Args...));
 
 	template <class... Args>
 	AngelScriptClassRegister& classAttrs(const Args&...);

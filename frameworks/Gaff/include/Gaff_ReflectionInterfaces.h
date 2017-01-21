@@ -116,6 +116,7 @@ public:
 
 	virtual bool isFixedArray(void) const { return false; }
 	virtual bool isVector(void) const { return false; }
+	virtual bool isReadOnly(void) const = 0;
 
 	virtual int32_t size(const void*) const
 	{

@@ -21,6 +21,7 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Shibboleth_AngelScriptManager.h"
+#include "Shibboleth_AngelScriptComponentWrapper.h"
 #include <angelscript.h>
 
 SHIB_REFLECTION_DEFINE(AngelScriptManager)
@@ -49,6 +50,8 @@ bool AngelScriptManager::init(void)
 	_engine->SetMessageCallback(asMETHOD(AngelScriptManager, messageCallback), this, asCALL_THISCALL);
 	_engine->SetEngineProperty(asEP_DISALLOW_VALUE_ASSIGN_FOR_REF_TYPE, 1);
 	_engine->SetEngineProperty(asEP_ALLOW_UNSAFE_REFERENCES, 1);
+
+	AngelScriptComponentWrapper::Register(_engine);
 
 	return true;
 }
