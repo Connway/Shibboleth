@@ -21,6 +21,8 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Shibboleth_AngelScriptComponent.h"
+#include "Shibboleth_AngelScriptManager.h"
+#include <Shibboleth_LogManager.h>
 
 SHIB_REFLECTION_DEFINE(Shibboleth::AngelScriptComponent)
 
@@ -30,6 +32,22 @@ SHIB_REFLECTION_CLASS_DEFINE_BEGIN(AngelScriptComponent)
 	.BASE(Component)
 	//.var("Script", &AngelScriptComponent::_res)
 SHIB_REFLECTION_CLASS_DEFINE_END(AngelScriptComponent)
+
+AngelScriptComponent::~AngelScriptComponent(void)
+{
+	if (_object) {
+		_object->Release();
+	}
+
+	if (_context) {
+		AngelScriptManager& as_mgr = GetApp().getManagerTUnsafe<AngelScriptManager>();
+		Gaff::SpinLock& lock = as_mgr.getEngineLock();
+
+		lock.lock();
+		as_mgr.getEngine()->ReturnContext(_context);
+		lock.unlock();
+	}
+}
 
 void AngelScriptComponent::allComponentsLoaded(void)
 {
@@ -67,33 +85,66 @@ void AngelScriptComponent::allComponentsLoaded(void)
 
 			_type_info = module->GetTypeInfoByName(temp);
 		}
+
+		// Construct the script component.
+		if (_type_info) {
+			asIScriptEngine* const engine = module->GetEngine();
+
+			char temp_decl[128] = { 0 };
+			snprintf(temp_decl, 128, "%s@ %s()", _type_info->GetName(), _type_info->GetName());
+			asIScriptFunction* const factory = _type_info->GetFactoryByDecl(temp_decl);
+
+			if (!factory) {
+				LogErrorDefault("Failed to find default constructor for script class '%s'!", _type_info->GetName());
+				_type_info = nullptr;
+				_res = nullptr;
+				return;
+			}
+
+			Gaff::SpinLock& lock = GetApp().getManagerTUnsafe<AngelScriptManager>().getEngineLock();
+
+			lock.lock();
+			_context = engine->CreateContext();
+			lock.unlock();
+
+			_context->Prepare(factory);
+			_context->Execute();
+
+			// Get the script object we just made.
+			_object = *reinterpret_cast<asIScriptObject**>(_context->GetAddressOfReturnValue());
+			_object->AddRef();
+
+			// Call init() if it has one.
+			asIScriptFunction* const init_func = _type_info->GetMethodByName("init");
+
+			if (init_func) {
+				_context->Prepare(init_func);
+				_context->SetObject(_object);
+				_context->Execute();
+			}
+		}
 	}
 }
 
 void AngelScriptComponent::addToWorld(void)
 {
-	// Create an instance of the script object.
-	if (_res && _res->getState() == IResource::RS_LOADED && _type_info) {
-		const asIScriptModule* const module = _res->getModule();
-		asIScriptEngine* const engine = module->GetEngine();
+	asIScriptFunction* const func = _type_info->GetMethodByName("onAddToWorld");
 
-		char temp_decl[128] = { 0 };
-		snprintf(temp_decl, 128, "%s@ %s()", _type_info->GetName(), _type_info->GetName());
-		asIScriptFunction* const factory = _type_info->GetFactoryByDecl(temp_decl);
-
-		_context = engine->CreateContext();
-		_context->Prepare(factory);
+	if (func) {
+		_context->Prepare(func);
+		_context->SetObject(_object);
 		_context->Execute();
-
-		_object = *reinterpret_cast<asIScriptObject**>(_context->GetAddressOfReturnValue());
-		_object->AddRef();
 	}
 }
 
 void AngelScriptComponent::removeFromWorld(void)
 {
-	if (_object) {
-		_object->Release();
+	asIScriptFunction* const func = _type_info->GetMethodByName("removeFromWorld");
+
+	if (func) {
+		_context->Prepare(func);
+		_context->SetObject(_object);
+		_context->Execute();
 	}
 }
 

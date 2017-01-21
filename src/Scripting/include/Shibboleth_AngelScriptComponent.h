@@ -34,6 +34,8 @@ NS_SHIBBOLETH
 class AngelScriptComponent final : public Component
 {
 public:
+	~AngelScriptComponent(void);
+
 	void allComponentsLoaded(void) override;
 
 	void addToWorld(void) override;

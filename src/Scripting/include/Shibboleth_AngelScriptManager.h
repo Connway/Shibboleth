@@ -24,6 +24,7 @@ THE SOFTWARE.
 
 #include <Shibboleth_Reflection.h>
 #include <Shibboleth_IManager.h>
+#include <Gaff_SpinLock.h>
 
 class asIScriptEngine;
 class asMessageInfo;
@@ -35,10 +36,12 @@ class AngelScriptManager final : public IManager
 public:
 	bool init(void) override;
 
-	asIScriptEngine* getEngine(void) const { return _engine; }
+	asIScriptEngine* getEngine(void) const;
+	Gaff::SpinLock& getEngineLock(void);
 
 private:
 	asIScriptEngine* _engine = nullptr;
+	Gaff::SpinLock _lock;
 
 	void messageCallback(const asMessageInfo* msg, void* param);
 

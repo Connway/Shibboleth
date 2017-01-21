@@ -72,6 +72,9 @@ void AngelScriptResource::loadScript(void)
 {
 	AngelScriptManager& as_mgr = GetApp().getManagerTUnsafe<AngelScriptManager>();
 	asIScriptEngine* const engine = as_mgr.getEngine();
+	Gaff::SpinLock& lock = as_mgr.getEngineLock();
+
+	lock.lock();
 
 	int r = _builder.StartNewModule(engine, getFilePath().getBuffer());
 	RES_FAIL_MSG(r < 0, "Failed to create new script module for script '%s'!", getFilePath().getBuffer());
@@ -84,6 +87,8 @@ void AngelScriptResource::loadScript(void)
 
 	_module = engine->GetModule(getFilePath().getBuffer());
 	RES_FAIL_MSG(!_module, "Failed to get module for script '%s'!", getFilePath().getBuffer());
+
+	lock.unlock();
 
 	_state = RS_LOADED;
 	callCallbacks();

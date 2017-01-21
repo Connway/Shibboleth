@@ -53,6 +53,16 @@ bool AngelScriptManager::init(void)
 	return true;
 }
 
+asIScriptEngine* AngelScriptManager::getEngine(void) const
+{
+	return _engine;
+}
+
+Gaff::SpinLock& AngelScriptManager::getEngineLock(void)
+{
+	return _lock;
+}
+
 void AngelScriptManager::messageCallback(const asMessageInfo* msg, void* /*param*/)
 {
 	GAFF_REF(msg);
