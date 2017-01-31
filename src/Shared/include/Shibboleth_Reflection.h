@@ -30,6 +30,7 @@ THE SOFTWARE.
 #include <Gaff_SerializeInterfaces.h>
 #include <Gaff_ReflectionDefinition.h>
 #include <Gaff_ReflectionVersion.h>
+#include <Gaff_Reflection.h>
 
 NS_SHIBBOLETH
 

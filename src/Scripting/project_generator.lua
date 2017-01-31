@@ -22,7 +22,7 @@ project "Scripting"
 		"include",
 		"../Memory/include",
 		"../Shared/include",
-		"../Game/include",
+		"../Entity/include",
 		"../Resource/include",
 		"../../dependencies/EASTL/include",
 		"../../dependencies/angelscript/angelscript/include",
@@ -30,6 +30,7 @@ project "Scripting"
 		"../../dependencies/rapidjson",
 		"../../frameworks/Gaff/include"
 	}
+
 
 
 project "ScriptingModule"
@@ -55,7 +56,7 @@ project "ScriptingModule"
 		"include",
 		"../Memory/include",
 		"../Shared/include",
-		"../Game/include",
+		"../Entity/include",
 		"../Resource/include",
 		"../../dependencies/angelscript/add_on/scriptbuilder",
 		"../../dependencies/angelscript/angelscript/include",
@@ -69,7 +70,7 @@ project "ScriptingModule"
 		"Scripting", "Memory",
 		"Gaff", "Shared",
 		"EASTL", "angelscript",
-		"Game", "Resource"
+		"Resource", "Entity"
 	}
 
 	links
@@ -77,5 +78,5 @@ project "ScriptingModule"
 		"Scripting", "Memory",
 		"Gaff", "Shared",
 		"EASTL", "angelscript",
-		"Game", "Resource"
+		"Resource", "Entity"
 	}

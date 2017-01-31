@@ -124,7 +124,7 @@
       <TreatWarningAsError>true</TreatWarningAsError>
       <PreprocessorDefinitions>_DEBUG;DEBUG;WIN32;_WINDOWS;IS_MEMORY;JEMALLOC_EXPORT=;JEMALLOC_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>..\..\..\src\Memory\include;..\..\..\src\Shared\include;..\..\..\frameworks\Gaff\include;..\..\..\dependencies\jemalloc\include;..\..\..\dependencies\EASTL\include;..\..\..\dependencies\dirent;..\..\..\dependencies\jemalloc\include\msvc_compat;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
       <ExceptionHandling>Async</ExceptionHandling>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>

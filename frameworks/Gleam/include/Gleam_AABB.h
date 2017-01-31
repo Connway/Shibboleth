@@ -22,16 +22,49 @@ THE SOFTWARE.
 
 #pragma once
 
-#ifdef USE_SIMD
-	#include "Gleam_AABB_SIMD.h"
+#include "Gleam_Defines.h"
+#include <mat4x4.hpp>
 
-	NS_GLEAM
-		typedef AABBSIMD AABB;
-	NS_END
-#else
-	#include "Gleam_AABB_CPU.h"
+NS_GLEAM
 
-	NS_GLEAM
-		typedef AABBCPU AABB;
-	NS_END
-#endif
+class Transform;
+
+class AABB
+{
+public:
+	AABB(const glm::vec3& min = glm::vec3(), const glm::vec3& max = glm::vec3());
+	AABB(const AABB& aabb);
+
+	AABB& operator=(const AABB& rhs);
+
+	const glm::vec3& getMin(void) const;
+	const glm::vec3& getMax(void) const;
+	glm::vec3 getExtent(void) const;
+	glm::vec3 getCenter(void) const;
+	void setMin(const glm::vec3& min);
+	void setMax(const glm::vec3& max);
+
+	void addPoint(float x, float y, float z);
+	void addPoint(const float* point);
+	void addPoint(const glm::vec3& point);
+
+	void addPoints(const float* points, int32_t num_points, int32_t stride = 3);
+	void addPoints(const glm::vec3* points, int32_t num_points);
+
+	void addAABB(const AABB& aabb);
+
+	void reset(void);
+
+	const glm::vec3* generatePoints(glm::vec3* out) const;
+
+	void transform(const Transform& transform);
+	void transform(const glm::mat4x4& transform);
+	bool contains(const glm::vec3& point) const;
+
+private:
+	glm::vec3 _min;
+	glm::vec3 _max;
+	glm::vec3 _transform_cache[8];
+};
+
+NS_END

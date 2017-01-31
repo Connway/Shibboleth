@@ -342,6 +342,9 @@
     <ClInclude Include="..\..\..\dependencies\EASTL\include\EASTL\string_map.h">
       <Filter>include\EASTL</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\EASTL\include\EASTL\string_view.h">
+      <Filter>include\EASTL</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\dependencies\EASTL\include\EASTL\tuple.h">
       <Filter>include\EASTL</Filter>
     </ClInclude>

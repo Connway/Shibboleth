@@ -23,8 +23,8 @@ THE SOFTWARE.
 #pragma once
 
 #include "Shibboleth_DynamicLoader.h"
-#include "Shibboleth_HashString.h"
 #include "Shibboleth_JobPool.h"
+#include "Shibboleth_HashString.h"
 #include "Shibboleth_VectorMap.h"
 #include "Shibboleth_Vector.h"
 #include "Shibboleth_String.h"
@@ -45,54 +45,6 @@ class IApp
 {
 public:
 	template <class T>
-	const T& getManagerTUnsafe(HashStringTemp64 name) const
-	{
-		return *reinterpret_cast<T*>(getManager(name.getHash()));
-	}
-
-	template <class T>
-	T& getManagerTUnsafe(HashStringTemp64 name)
-	{
-		return *reinterpret_cast<T*>(getManager(name.getHash()));
-	}
-
-	template <class T>
-	const T& getManagerTUnsafe(const HashString64& name) const
-	{
-		return *reinterpret_cast<T*>(getManager(name.getHash()));
-	}
-
-	template <class T>
-	T& getManagerTUnsafe(const HashString64& name)
-	{
-		return *reinterpret_cast<T*>(getManager(name.getHash()));
-	}
-
-	template <class T>
-	const T& getManagerTUnsafe(const U8String& name) const
-	{
-		return *reinterpret_cast<T*>(getManager(Gaff::FNV1aHash64String(name.data())));
-	}
-
-	template <class T>
-	T& getManagerTUnsafe(const U8String& name)
-	{
-		return *reinterpret_cast<T*>(getManager(Gaff::FNV1aHash64String(name.data())));
-	}
-
-	template <class T>
-	const T& getManagerTUnsafe(const char* name) const
-	{
-		return *reinterpret_cast<T*>(getManager(Gaff::FNV1aHash64String(name)));
-	}
-
-	template <class T>
-	T& getManagerTUnsafe(const char* name)
-	{
-		return *reinterpret_cast<T*>(getManager(Gaff::FNV1aHash64String(name)));
-	}
-
-	template <class T>
 	const T& getManagerTUnsafe(void) const
 	{
 		return *reinterpret_cast<T*>(getManager(Reflection<T>::GetHash()));
@@ -104,17 +56,19 @@ public:
 		return *reinterpret_cast<T*>(getManager(Reflection<T>::GetHash()));
 	}
 
-	//template <class T>
-	//const T& getManagerT(void) const
-	//{
-	//	return *Gaff::ReflectionCast<T>(getManager(T::GetFriendlyName()));
-	//}
+	template <class T>
+	const T& getManagerT(void) const
+	{
+		const IManager* const manager = getManager(Reflection<T>::GetHash());
+		return Gaff::ReflecionCast<T>(*manager);
+	}
 
-	//template <class T>
-	//T& getManagerT(void)
-	//{
-	//	return *Gaff::ReflectionCast<T>(getManager(T::GetFriendlyName()));
-	//}
+	template <class T>
+	T& getManagerT(void)
+	{
+		IManager* const manager = getManager(Reflection<T>::GetHash());
+		return Gaff::ReflecionCast<T>(*manager);
+	}
 
 	IApp(void) {}
 	virtual ~IApp(void) {}
