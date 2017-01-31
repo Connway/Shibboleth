@@ -25,10 +25,13 @@ project "Gleam"
 
 	files { "**.h", "**.cpp" }
 
+	removefiles { "disable/**.*" }
+
 	includedirs
 	{
 		"include",
 		"../Gaff/include",
 		"../../dependencies/glew/include",
-		"../../dependencies/EASTL/include"
+		"../../dependencies/EASTL/include",
+		"../../dependencies/glm"
 	}

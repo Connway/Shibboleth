@@ -26,10 +26,6 @@ project "Resource"
 		"../../frameworks/Gaff/include"
 	}
 
-	filter { "action:vs*" }
-		buildoptions { "/bigobj" }
-
-	filter {}
 
 project "ResourceModule"
 	if _ACTION then

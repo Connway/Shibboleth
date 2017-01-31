@@ -124,7 +124,7 @@
       <TreatWarningAsError>true</TreatWarningAsError>
       <PreprocessorDefinitions>_DEBUG;DEBUG;WIN32;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>..\..\..\dependencies\EASTL\include;..\..\..\dependencies\CATCH;..\..\..\dependencies\chaiscript;..\..\..\dependencies\angelscript\angelscript\include;..\..\..\dependencies\angelscript\add_on\scriptbuilder;..\..\..\frameworks\Gaff\include;..\..\..\src\Shared\include;..\..\..\src\Memory\include;..\..\..\src\Scripting\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
       <ExceptionHandling>Async</ExceptionHandling>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>

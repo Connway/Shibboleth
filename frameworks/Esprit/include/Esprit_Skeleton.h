@@ -22,9 +22,9 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Esprit_HashString.h"
 #include "Esprit_Vector.h"
 #include "Esprit_Pose.h"
+#include <Gaff_Hash.h>
 
 NS_ESPRIT
 
@@ -34,24 +34,24 @@ public:
 	Skeleton(void);
 	~Skeleton(void);
 
-	INLINE size_t getNumBones(void) const;
+	int32_t getNumBones(void) const;
 
-	INLINE size_t getParentIndex(size_t bone_index) const;
-	INLINE const HashString32& getName(size_t bone_index) const;
-	size_t getBoneIndex(const char* name) const;
+	int32_t getParentIndex(int32_t bone_index) const;
+	const Gaff::Hash32& getNameHash(int32_t bone_index) const;
+	int32_t getBoneIndex(Gaff::Hash32 name) const;
 
-	void setReferenceTransform(size_t bone_index, const Gleam::TransformSIMD& transform);
-	void addBone(size_t parent_index, const char* name = nullptr);
+	void setReferenceTransform(int32_t bone_index, const Gleam::TransformSIMD& transform);
+	void addBone(int32_t parent_index, Gaff::Hash32 name);
 
 	// Function assumes that parent's model-space transform has already been calculated
-	void calculateModelTransform(Pose& pose, size_t bone_index);
+	void calculateModelTransform(Pose& pose, int32_t bone_index);
 	// Assumes that bones were pushed in order, starting with root
 	void calculateModelTransform(Pose& pose);
 
 private:
 	Pose _default_pose;
-	Vector<size_t> _parent_indices;
-	Vector<HashString32> _bone_hashes;
+	Vector<int32_t> _parent_indices;
+	Vector<Gaff::Hash32> _bone_hashes;
 
 	GAFF_NO_COPY(Skeleton);
 	GAFF_NO_MOVE(Skeleton);
