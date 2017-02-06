@@ -205,6 +205,8 @@ public:
 	template <class... Args>
 	using FactoryFunc = void* (*)(IAllocator&, Args&&...);
 
+	using VoidFunc = void (*)(void);
+
 	template <class T>
 	const T* getInterface(const void* object) const
 	{
@@ -339,8 +341,6 @@ public:
 
 	virtual int32_t getNumVarAttributes(Hash32 name) const = 0;
 	virtual const IAttribute* getVarAttribute(Hash32 name, int32_t index) const = 0;
-
-	using VoidFunc = void (*)(void);
 
 	virtual VoidFunc getFactory(Hash64 ctor_hash) const = 0;
 };

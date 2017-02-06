@@ -867,17 +867,36 @@ template <class T, class Allocator>
 template <size_t size, class Ret, class... Args>
 ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::func(const char (&name)[size], Ret (T::*ptr)(Args...) const)
 {
-	GAFF_REF(name); GAFF_REF(ptr);
-	//using PtrType = FuncPtr<Ret, Args...>;
+	auto it = Find(_funcs, FNV1aHash32Const(name));
 
-	//eastl::pair<HashString32<Allocator>, IVarPtr> pair(
-	//	HashString32<Allocator>(name, size - 1, nullptr, _allocator),
-	//	IVarPtr(GAFF_ALLOCT(PtrType, _allocator, arr))
-	//);
+	if (it == _funcs.end()) {
+		eastl::pair<HashString32<Allocator>, FuncData> pair(
+			HashString32<Allocator>(name, size - 1, nullptr, _allocator),
+			{
+				{ reinterpret_cast<VoidFunc>(ptr) },
+				{ CalcTemplateHash<Ret, Args...>(INIT_HASH64) },
+				{ true }
+			}
+		);
 
-	//GAFF_ASSERT(_funcs.find(pair.first) == _funcs.end());
+		_funcs.insert(std::move(pair));
+	}
+	else {
+		FuncData& func_data = it->second;
+		bool found = false;
 
-	//_funcs.insert(std::move(pair));
+		for (int32_t i = 0; i < FuncData::NUM_OVERLOADS; ++i) {
+			if (!func_data.func[i]) {
+				func_data.func[i] = reinterpret_cast<VoidFunc>(ptr);
+				func_data.hash[i] = CalcTemplateHash<Ret, Args...>(INIT_HASH64);
+				func_data.is_const[i] = true;
+				found = true;
+			}
+		}
+
+		GAFF_ASSERT_MSG(found, "Function overloading only supports 8 overloads per function name!");
+	}
+
 	return *this;
 }
 
@@ -885,17 +904,36 @@ template <class T, class Allocator>
 template <size_t size, class Ret, class... Args>
 ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::func(const char (&name)[size], Ret (T::*ptr)(Args...))
 {
-	GAFF_REF(name); GAFF_REF(ptr);
-	//using PtrType = FuncPtr<Ret, Args...>;
+	auto it = Find(_funcs, FNV1aHash32Const(name));
 
-	//eastl::pair<HashString32<Allocator>, IVarPtr> pair(
-	//	HashString32<Allocator>(name, size - 1, nullptr, _allocator),
-	//	IVarPtr(GAFF_ALLOCT(PtrType, _allocator, arr))
-	//);
+	if (it == _funcs.end()) {
+		eastl::pair<HashString32<Allocator>, FuncData> pair(
+			HashString32<Allocator>(name, size - 1, nullptr, _allocator),
+			{
+				{ reinterpret_cast<VoidFunc>(ptr) },
+				{ CalcTemplateHash<Ret, Args...>(INIT_HASH64) },
+				{ false }
+			}
+		);
 
-	//GAFF_ASSERT(_funcs.find(pair.first) == _funcs.end());
+		_funcs.insert(std::move(pair));
+	}
+	else {
+		FuncData& func_data = it->second;
+		bool found = false;
 
-	//_funcs.insert(std::move(pair));
+		for (int32_t i = 0; i < FuncData::NUM_OVERLOADS; ++i) {
+			if (!func_data.func[i]) {
+				func_data.func[i] = reinterpret_cast<VoidFunc>(ptr);
+				func_data.hash[i] = CalcTemplateHash<Ret, Args...>(INIT_HASH64);
+				func_data.is_const[i] = false;
+				found = true;
+			}
+		}
+
+		GAFF_ASSERT_MSG(found, "Function overloading only supports 8 overloads per function name!");
+	}
+
 	return *this;
 }
 
