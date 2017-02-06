@@ -570,39 +570,75 @@ struct CalcTemplateHashHelper;
 template <class First, class... Rest>
 struct CalcTemplateHashHelper<First, Rest...>
 {
-	constexpr static Gaff::Hash32 Hash(Gaff::Hash32 init)
+	constexpr static Hash32 Hash(Hash32 init)
 	{
-		return CalcTemplateHashHelper<Rest...>::Hash(Gaff::FNV1aHash32StringConst(GAFF_REFLECTION_NAMESPACE::Reflection<First>::GetName(), init));
+		return CalcTemplateHashHelper<Rest...>::Hash(HashHelper<std::is_void<First>::value>::Hash<First>(init));
 	}
 
-	constexpr static Gaff::Hash64 Hash(Gaff::Hash64 init)
+	constexpr static Hash64 Hash(Hash64 init)
 	{
-		return CalcTemplateHashHelper<Rest...>::Hash(Gaff::FNV1aHash64StringConst(GAFF_REFLECTION_NAMESPACE::Reflection<First>::GetName(), init));
+		return CalcTemplateHashHelper<Rest...>::Hash(HashHelper<std::is_void<First>::value>::Hash<First>(init));
 	}
+
+private:
+	template <bool is_void>
+	struct HashHelper;
+
+	template <>
+	struct HashHelper<true>
+	{
+		template <class T>
+		constexpr static Hash32 Hash(Hash32 init)
+		{
+			return FNV1aHash32Const("void", init);
+		}
+
+		template <class T>
+		constexpr static Hash64 Hash(Hash64 init)
+		{
+			return FNV1aHash64Const("void", init);
+		}
+	};
+
+	template <>
+	struct HashHelper<false>
+	{
+		template <class T>
+		constexpr static Hash32 Hash(Hash32 init)
+		{
+			return FNV1aHash32StringConst(GAFF_REFLECTION_NAMESPACE::Reflection<T>::GetName(), init);
+		}
+
+		template <class T>
+		constexpr static Hash64 Hash(Hash64 init)
+		{
+			return FNV1aHash64StringConst(GAFF_REFLECTION_NAMESPACE::Reflection<T>::GetName(), init);
+		}
+	};
 };
 
 template <>
 struct CalcTemplateHashHelper<>
 {
-	constexpr static Gaff::Hash32 Hash(Gaff::Hash32 init)
+	constexpr static Hash32 Hash(Hash32 init)
 	{
-		return Gaff::FNV1aHash32Const("void", init);
+		return FNV1aHash32Const("void", init);
 	}
 
-	constexpr static Gaff::Hash64 Hash(Gaff::Hash64 init)
+	constexpr static Hash64 Hash(Hash64 init)
 	{
-		return Gaff::FNV1aHash64Const("void", init);
+		return FNV1aHash64Const("void", init);
 	}
 };
 
 template <class... T>
-constexpr Gaff::Hash32 CalcTemplateHash(Gaff::Hash32 init)
+constexpr Hash32 CalcTemplateHash(Hash32 init)
 {
 	return CalcTemplateHashHelper<T...>::Hash(init);
 }
 
 template <class... T>
-constexpr Gaff::Hash64 CalcTemplateHash(Gaff::Hash64 init)
+constexpr Hash64 CalcTemplateHash(Hash64 init)
 {
 	return CalcTemplateHashHelper<T...>::Hash(init);
 }

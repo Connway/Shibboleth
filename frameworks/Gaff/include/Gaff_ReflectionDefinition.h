@@ -264,8 +264,17 @@ private:
 
 	using IVarPtr = UniquePtr<IVar, Allocator>;
 
+	struct FuncData
+	{
+		static constexpr int32_t NUM_OVERLOADS = 8;
+		VoidFunc func[NUM_OVERLOADS];
+		Hash64 hash[NUM_OVERLOADS];
+		bool is_const[NUM_OVERLOADS];
+	};
+
 	VectorMap<HashString64<Allocator>, ptrdiff_t, Allocator> _base_class_offsets;
 	VectorMap<HashString32<Allocator>, IVarPtr, Allocator> _vars;
+	VectorMap<HashString32<Allocator>, FuncData, Allocator> _funcs;
 	VectorMap<Hash64, VoidFunc, Allocator> _ctors;
 
 	VectorMap<Hash32, Vector<IAttributePtr, Allocator>, Allocator> _var_attrs;
