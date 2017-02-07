@@ -445,3 +445,67 @@ TEST_CASE("reflection attribute test", "[shibboleth_attribute]")
 	Shibboleth::Reflection<TestAttr>::Init();
 	Shibboleth::Reflection<AttrTest>::Init();
 }
+
+
+class FuncTest : public Gaff::IReflectionObject
+{
+	int getMyInt(void) const { return _my_int; }
+	void setMyInt(int i) { _my_int = i; }
+
+	int _my_int = 1238;
+
+	SHIB_REFLECTION_CLASS_DECLARE(FuncTest);
+};
+
+SHIB_REFLECTION_DECLARE(FuncTest);
+SHIB_REFLECTION_DEFINE(FuncTest);
+
+SHIB_REFLECTION_CLASS_DEFINE_BEGIN(FuncTest)
+	.ctor<>()
+	.func("getMyInt", &FuncTest::getMyInt)
+	.func("setMyInt", &FuncTest::setMyInt)
+	.func("myInt", &FuncTest::getMyInt)
+	.func("myInt", &FuncTest::setMyInt)
+SHIB_REFLECTION_CLASS_DEFINE_END(FuncTest)
+
+TEST_CASE("reflection func test", "[shibboleth_func]")
+{
+	Shibboleth::Reflection<FuncTest>::Init();
+
+	const Gaff::IReflectionDefinition& ref_def = Shibboleth::Reflection<FuncTest>::GetReflectionDefinition();
+	Gaff::IReflectionFunction<int>* const get_func = ref_def.getFunc<int>(Gaff::FNV1aHash32Const("getMyInt"));
+	Gaff::IReflectionFunction<void, int>* const set_func = ref_def.getFunc<void, int>(Gaff::FNV1aHash32Const("setMyInt"));
+	Gaff::IReflectionFunction<int>* const ovl_get_func = ref_def.getFunc<int>(Gaff::FNV1aHash32Const("myInt"));
+	Gaff::IReflectionFunction<void, int>* const ovl_set_func = ref_def.getFunc<void, int>(Gaff::FNV1aHash32Const("myInt"));
+
+	void* data = ref_def.createAlloc(*Shibboleth::GetAllocator());
+
+	REQUIRE(data);
+	REQUIRE(get_func);
+	REQUIRE(get_func->isConst());
+	REQUIRE(get_func->call(data) == 1238);
+
+	REQUIRE(set_func);
+	REQUIRE(!set_func->isConst());
+
+	printf("getMyInt: %i\n", get_func->call(data));
+
+	set_func->call(data, 999);
+	REQUIRE(get_func->call(data) == 999);
+
+	printf("setMyInt: %i\n", get_func->call(data));
+
+	REQUIRE(ovl_get_func);
+	REQUIRE(ovl_get_func->isConst());
+	REQUIRE(ovl_get_func->call(data) == 999);
+	printf("myInt (get): %i\n", ovl_get_func->call(data));
+
+	REQUIRE(ovl_set_func);
+	REQUIRE(!ovl_set_func->isConst());
+	ovl_set_func->call(data, 987);
+
+	REQUIRE(ovl_get_func->call(data) == 987);
+	printf("myInt (set): %i\n", ovl_get_func->call(data));
+
+	SHIB_FREE(data, *Shibboleth::GetAllocator());
+}

@@ -39,6 +39,7 @@ template <class T, class Allocator>
 class ReflectionDefinition final : public IReflectionDefinition
 {
 public:
+	using VoidMemberFunc = void (T::*)(void);
 	using IAttributePtr = UniquePtr<IAttribute, Allocator>;
 
 	class IVar : public IReflectionVar
@@ -97,6 +98,7 @@ public:
 	const IAttribute* getVarAttribute(Hash32 name, int32_t index) const override;
 
 	VoidFunc getFactory(Hash64 ctor_hash) const override;
+	void* getFunc(Hash32 name, Hash64 args) const override;
 
 	const HashString32<Allocator>& getVariableName(int32_t index) const;
 	IVar* getVar(int32_t index) const;
@@ -134,6 +136,9 @@ public:
 
 	template <size_t size, class... Args>
 	ReflectionDefinition& varAttrs(const char (&name)[size], const Args&... args);
+
+	template <size_t size, class... Args>
+	ReflectionDefinition& funcAttrs(const char (&name)[size], const Args&... args);
 
 	ReflectionDefinition& attrFile(const char* file);
 
@@ -262,14 +267,91 @@ private:
 		bool _read_only = false;
 	};
 
+	class VirtualDestructor
+	{
+	public:
+		virtual ~VirtualDestructor(void) {}
+	};
+
+	template <class Ret, class... Args>
+	class ReflectionFunction: public IReflectionFunction<Ret, Args...>, public VirtualDestructor
+	{
+	public:
+		using MemFuncConst = Ret (T::*)(Args...) const;
+		using MemFunc = Ret (T::*)(Args...);
+
+		ReflectionFunction(MemFuncConst func, bool is_const) :
+			_is_const(is_const)
+		{
+			_func.const_func = func;
+		}
+
+		ReflectionFunction(MemFunc func, bool is_const):
+			_is_const(is_const)
+		{
+			_func.non_const_func = func;
+		}
+
+		Ret call(const void* obj, Args... args) const override
+		{
+			GAFF_ASSERT(_is_const);
+			const T* const object = reinterpret_cast<const T*>(obj);
+			return (object->*_func.const_func)(args...);
+		}
+
+		Ret call(void* obj, Args... args) const override
+		{
+			T* const object = reinterpret_cast<T*>(obj);
+
+			if (_is_const) {
+				return (object->*_func.const_func)(args...);
+			}
+
+			return (object->*_func.non_const_func)(args...);
+		}
+
+		bool isConst(void) const override { return _is_const; }
+
+	private:
+		union Func
+		{
+			MemFuncConst const_func;
+			MemFunc non_const_func;
+		};
+
+		Func _func;
+		bool _is_const;
+	};
+
+	using IRefFuncPtr = UniquePtr<VirtualDestructor, Allocator>;
 	using IVarPtr = UniquePtr<IVar, Allocator>;
 
 	struct FuncData
 	{
+		FuncData(void) = default;
+
+		FuncData(const FuncData& rhs)
+		{
+			*this = rhs;
+		}
+
+		FuncData& operator=(const FuncData& rhs)
+		{
+			FuncData& rhs_cast = const_cast<FuncData&>(rhs);
+
+			for (int32_t i = 0; i < NUM_OVERLOADS; ++i) {
+				func[i] = std::move(rhs_cast.func[i]);
+			}
+
+			memcpy(hash, rhs.hash, ARRAY_SIZE(hash));
+			memcpy(offset, rhs.offset, ARRAY_SIZE(offset));
+			return *this;
+		}
+
 		static constexpr int32_t NUM_OVERLOADS = 8;
-		VoidFunc func[NUM_OVERLOADS];
 		Hash64 hash[NUM_OVERLOADS];
-		bool is_const[NUM_OVERLOADS];
+		IRefFuncPtr func[NUM_OVERLOADS];
+		int32_t offset[NUM_OVERLOADS];
 	};
 
 	VectorMap<HashString64<Allocator>, ptrdiff_t, Allocator> _base_class_offsets;
@@ -277,8 +359,9 @@ private:
 	VectorMap<HashString32<Allocator>, FuncData, Allocator> _funcs;
 	VectorMap<Hash64, VoidFunc, Allocator> _ctors;
 
-	VectorMap<Hash32, Vector<IAttributePtr, Allocator>, Allocator> _var_attrs;
 	VectorMap<Hash64, Vector<IAttributePtr, Allocator>, Allocator> _base_class_attrs;
+	VectorMap<Hash32, Vector<IAttributePtr, Allocator>, Allocator> _var_attrs;
+	VectorMap<Hash32, Vector<IAttributePtr, Allocator>, Allocator> _func_attrs;
 	Vector<IAttributePtr, Allocator> _class_attrs;
 
 	mutable Allocator _allocator;
@@ -290,12 +373,8 @@ private:
 	static void RegisterBaseVariables(void);
 
 	template <class First, class... Rest>
-	ReflectionDefinition& addVarAttributes(Vector<IAttributePtr, Allocator>& attrs, const First& first, const Rest&... rest);
-	ReflectionDefinition& addVarAttributes(Vector<IAttributePtr, Allocator>&);
-
-	template <class First, class... Rest>
-	ReflectionDefinition& addClassAttributes(const First& first, const Rest&... rest);
-	ReflectionDefinition& addClassAttributes(void);
+	ReflectionDefinition& addAttributes(Vector<IAttributePtr, Allocator>& attrs, const First& first, const Rest&... rest);
+	ReflectionDefinition& addAttributes(Vector<IAttributePtr, Allocator>&);
 
 	template <class RefT, class Allocator>
 	friend class ReflectionDefinition;

@@ -41,7 +41,7 @@ typename VectorMap<Key, Value, Allocator, Compare>::const_iterator Find(const Ve
 		return binary_compare(lhs.first, rhs);
 	});
 
-	if (it != map.end() && binary_compare(value, it->first))
+	if (it != map.end() && value != it->first)
 		return map.end();
 
 	return it;
@@ -58,7 +58,7 @@ typename VectorMap<Key, Value, Allocator, Compare>::iterator Find(VectorMap<Key,
 		return binary_compare(lhs.first, rhs);
 	});
 
-	if (it != map.end() && binary_compare(value, it->first))
+	if (it != map.end() && value != it->first)
 		return map.end();
 
 	return it;
@@ -75,7 +75,7 @@ typename VectorMap<Key, Value, Allocator, Compare>::const_iterator Find(const Ve
 		return eastl::less_2<Key, T>{}(lhs.first, rhs);
 	});
 
-	if (it != map.end() && eastl::less_2<T, Key>{}(value, it->first))
+	if (it != map.end() && value != it->first)
 		return map.end();
 
 	return it;
@@ -92,7 +92,7 @@ typename VectorMap<Key, Value, Allocator, Compare>::iterator Find(VectorMap<Key,
 		return eastl::less_2<Key, T>{}(lhs.first, rhs);
 	});
 
-	if (it != map.end() && eastl::less_2<T, Key>{}(value, it->first))
+	if (it != map.end() && value != it->first)
 		return map.end();
 
 	return it;

@@ -52,6 +52,7 @@ NS_SHIBBOLETH
 // Enforce the header being 16-byte aligned so that data falls on 16-byte boundary.
 struct alignas(16) AllocationHeader
 {
+	size_t alloc_size;
 	size_t pool_index;
 	char file[256] = { 0 };
 	int line = 0;
@@ -173,19 +174,30 @@ void Allocator::free(void* data)
 {
 	GAFF_ASSERT(data);
 
-	AllocationHeader* header = reinterpret_cast<AllocationHeader*>(reinterpret_cast<char*>(data) - sizeof(AllocationHeader));
+	// Looping over the alloc list is a terrible way of determining if a call to delete is valid.
+
+	//AllocationHeader* header = reinterpret_cast<AllocationHeader*>(reinterpret_cast<char*>(data) - sizeof(AllocationHeader));
+	AllocationHeader* header = nullptr;
 
 	_alloc_lock.lock();
 
-	bool found = false;
+	//bool found = false;
 	for (AllocationHeader* list = _list_head; list; list = list->next) {
-		if (header == list) {
-			found = true;
+		if (data >= reinterpret_cast<char*>(list) + sizeof(AllocationHeader) &&
+			data < reinterpret_cast<char*>(list) + list->alloc_size + sizeof(AllocationHeader)) {
+
+			header = list;
 			break;
 		}
+
+		//if (header == list) {
+		//	found = true;
+		//	break;
+		//}
 	}
 
-	GAFF_ASSERT(found);
+	//GAFF_ASSERT(found);
+	GAFF_ASSERT(header);
 
 	MemoryPoolInfo& mem_pool_info = _tagged_pools[header->pool_index];
 	++mem_pool_info.num_frees;
@@ -252,6 +264,7 @@ void Allocator::setHeaderData(
 	++mem_pool_info.num_allocations;
 
 	// Set the header data.
+	header->alloc_size = size_bytes;
 	header->pool_index = pool_index;
 	strncpy_s(header->file, file, 256);
 	header->pool_index = pool_index;

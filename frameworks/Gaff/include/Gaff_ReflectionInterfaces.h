@@ -199,6 +199,17 @@ public:
 	}
 };
 
+template <class Ret, class... Args>
+class IReflectionFunction
+{
+public:
+	virtual ~IReflectionFunction(void) {}
+
+	virtual Ret call(const void* obj, Args... args) const = 0;
+	virtual Ret call(void* obj, Args... args) const = 0;
+	virtual bool isConst(void) const = 0;
+};
+
 class IReflectionDefinition
 {
 public:
@@ -320,6 +331,19 @@ public:
 		return reinterpret_cast< FactoryFunc<Args...> >(getFactory(ctor_hash));
 	}
 
+	template <class Ret, class... Args>
+	IReflectionFunction<Ret, Args...>* getFunc(Hash32 name) const
+	{
+		Hash64 arg_hash = Gaff::CalcTemplateHash<Ret, Args...>(INIT_HASH64);
+		void* functor = getFunc(name, arg_hash);
+
+		if (functor) {
+			return reinterpret_cast< IReflectionFunction<Ret, Args...>* >(functor);
+		}
+
+		return nullptr;
+	}
+
 	virtual ~IReflectionDefinition(void) {}
 
 	virtual const IReflection& getReflectionInstance(void) const = 0;
@@ -343,6 +367,7 @@ public:
 	virtual const IAttribute* getVarAttribute(Hash32 name, int32_t index) const = 0;
 
 	virtual VoidFunc getFactory(Hash64 ctor_hash) const = 0;
+	virtual void* getFunc(Hash32 name, Hash64 args) const = 0;
 };
 
 NS_END

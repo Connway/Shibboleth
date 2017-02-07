@@ -140,7 +140,7 @@ NS_END \
 	SHIB_REFLECTION_DEFINE_BEGIN_CUSTOM_BUILDER(type)
 
 #define SHIB_REFLECTION_DEFINE_END(type, ...) \
-			GetApp().registerReflection(Gaff::FNV1aHash64Const(#type), *g_reflection_definition); \
+			GetApp().registerReflection(GetHash(), *g_reflection_definition); \
 			g_reflection_definition->finish(); \
 		} \
 	} \
@@ -210,7 +210,7 @@ NS_SHIBBOLETH \
 		); \
 		if (g_reflection_definition) { \
 			Gaff::ReflectionVersion< type<__VA_ARGS__> > version; \
-			type<__VA_ARGS__>::BuildReflection(version); \
+			BuildReflection(version); \
 			GAFF_ASSERT_MSG( \
 				version.getHash() == g_reflection_definition->getReflectionInstance().getVersion(), \
 				"Version hash for %s does not match!", \
@@ -224,9 +224,8 @@ NS_SHIBBOLETH \
 				) \
 			); \
 			Gaff::Construct(g_reflection_definition); \
-			Shibboleth::GetApp().registerReflection(GetHash(), *g_reflection_definition); \
 			g_reflection_definition->setAllocator(ProxyAllocator("Reflection")); \
-			type<__VA_ARGS__>::BuildReflection(*g_reflection_definition);
+			BuildReflection(*g_reflection_definition);
 
 #define SHIB_TEMPLATE_REFLECTION_DEFINE_BEGIN(type, ...) \
 NS_SHIBBOLETH \
