@@ -171,25 +171,25 @@ constexpr Hash32 FNV1Hash32Const(const char* key, size_t len, Hash32 init = INIT
 }
 
 template <size_t size>
-constexpr Hash64 FNV1aHash64Const(const char(&key)[size], Hash64 init = INIT_HASH64)
+constexpr Hash64 FNV1aHash64Const(const char (&key)[size], Hash64 init = INIT_HASH64)
 {
 	return FNV1aHash64Const(key, size - 1, init);
 }
 
 template <size_t size>
-constexpr Hash64 FNV1Hash64Const(const char(&key)[size], Hash64 init = INIT_HASH64)
+constexpr Hash64 FNV1Hash64Const(const char (&key)[size], Hash64 init = INIT_HASH64)
 {
 	return FNV1Hash64Const(key, size - 1, init);
 }
 
 template <size_t size>
-constexpr Hash32 FNV1aHash32Const(const char(&key)[size], Hash32 init = INIT_HASH32)
+constexpr Hash32 FNV1aHash32Const(const char (&key)[size], Hash32 init = INIT_HASH32)
 {
 	return FNV1aHash32Const(key, size - 1, init);
 }
 
 template <size_t size>
-constexpr Hash32 FNV1Hash32Const(const char(&key)[size], Hash32 init = INIT_HASH32)
+constexpr Hash32 FNV1Hash32Const(const char (&key)[size], Hash32 init = INIT_HASH32)
 {
 	return FNV1Hash32Const(key, size - 1, init);
 }

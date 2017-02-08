@@ -581,6 +581,41 @@ struct CalcTemplateHashHelper<First, Rest...>
 	}
 
 private:
+	template <bool condition>
+	struct StringConditionHash;
+
+	template <>
+	struct StringConditionHash<true>
+	{
+		template <size_t size>
+		constexpr static Hash32 Hash(const char (&string)[size], Hash32 init)
+		{
+			return FNV1aHash32Const(string, init);
+		}
+
+		template <size_t size>
+		constexpr static Hash64 Hash(const char (&string)[size], Hash64 init)
+		{
+			return FNV1aHash64Const(string, init);
+		}
+	};
+
+	template <>
+	struct StringConditionHash<false>
+	{
+		template <size_t size>
+		constexpr static Hash32 Hash(const char (&)[size], Hash32 init)
+		{
+			return init;
+		}
+
+		template <size_t size>
+		constexpr static Hash64 Hash(const char (&)[size], Hash64 init)
+		{
+			return init;
+		}
+	};
+
 	template <bool is_void>
 	struct HashHelper;
 
@@ -606,13 +641,39 @@ private:
 		template <class T>
 		constexpr static Hash32 Hash(Hash32 init)
 		{
-			return FNV1aHash32StringConst(GAFF_REFLECTION_NAMESPACE::Reflection<T>::GetName(), init);
+			using NoPtr = std::remove_pointer<T>::type;
+			using NoRef = std::remove_reference<NoPtr>::type;
+			using V = std::remove_const<NoRef>::type;
+
+			// This may be ugly as sin, but if you didn't see the struggle
+			// I had to endure to find a crazy VC++ compiler bug just to arrive at this code.
+			// Thanks for issuing no warnings/errors about bad constexpr functions Microsoft.
+			return StringConditionHash<std::is_pointer<T>::value>::Hash("*",
+				StringConditionHash<std::is_reference<NoPtr>::value>::Hash("&",
+					FNV1aHash32StringConst(GAFF_REFLECTION_NAMESPACE::Reflection<V>::GetName(),
+						StringConditionHash<std::is_const<NoRef>::value>::Hash("const", init)
+					)
+				)
+			);
 		}
 
 		template <class T>
 		constexpr static Hash64 Hash(Hash64 init)
 		{
-			return FNV1aHash64StringConst(GAFF_REFLECTION_NAMESPACE::Reflection<T>::GetName(), init);
+			using NoPtr = std::remove_pointer<T>::type;
+			using NoRef = std::remove_reference<NoPtr>::type;
+			using V = std::remove_const<NoRef>::type;
+
+			// This may be ugly as sin, but if you didn't see the struggle
+			// I had to endure to find a crazy VC++ compiler bug just to arrive at this code.
+			// Thanks for issuing no warnings/errors about bad constexpr functions Microsoft.
+			return StringConditionHash<std::is_pointer<T>::value>::Hash("*",
+				StringConditionHash<std::is_reference<NoPtr>::value>::Hash("&",
+					FNV1aHash64StringConst(GAFF_REFLECTION_NAMESPACE::Reflection<V>::GetName(),
+						StringConditionHash<std::is_const<NoRef>::value>::Hash("const", init)
+					)
+				)
+			);
 		}
 	};
 };

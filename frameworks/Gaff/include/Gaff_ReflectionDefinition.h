@@ -39,7 +39,6 @@ template <class T, class Allocator>
 class ReflectionDefinition final : public IReflectionDefinition
 {
 public:
-	using VoidMemberFunc = void (T::*)(void);
 	using IAttributePtr = UniquePtr<IAttribute, Allocator>;
 
 	class IVar : public IReflectionVar
@@ -343,8 +342,8 @@ private:
 				func[i] = std::move(rhs_cast.func[i]);
 			}
 
-			memcpy(hash, rhs.hash, ARRAY_SIZE(hash));
-			memcpy(offset, rhs.offset, ARRAY_SIZE(offset));
+			memcpy(hash, rhs.hash, sizeof(Hash64) * ARRAY_SIZE(hash));
+			memcpy(offset, rhs.offset, sizeof(int32_t) * ARRAY_SIZE(offset));
 			return *this;
 		}
 

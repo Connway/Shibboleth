@@ -20,6 +20,11 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
+#ifdef PLATFORM_WINDOWS
+	#pragma warning(push)
+	#pragma warning(disable : 4307)
+#endif
+
 NS_GAFF
 
 template <class T, class... Args>
@@ -887,12 +892,12 @@ ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::func(con
 {
 	auto it = Find(_funcs, FNV1aHash32Const(name));
 
-	ptrdiff_t offset_interface = Gaff::OffsetOfClass< ReflectionFunction<Ret, Args...>, IReflectionFunction<Ret, Args...> >();
-	ptrdiff_t offset_ptr = Gaff::OffsetOfClass<ReflectionFunction<Ret, Args...>, VirtualDestructor>();
-	Hash64 arg_hash = CalcTemplateHash<Ret, Args...>(INIT_HASH64);
+	const ptrdiff_t offset_interface = Gaff::OffsetOfClass< ReflectionFunction<Ret, Args...>, IReflectionFunction<Ret, Args...> >();
+	const ptrdiff_t offset_ptr = Gaff::OffsetOfClass<ReflectionFunction<Ret, Args...>, VirtualDestructor>();
+	const Hash64 arg_hash = CalcTemplateHash<Ret, Args...>(INIT_HASH64);
 
 	if (it == _funcs.end()) {
-		ReflectionFunction<Ret, Args...>* ref_func = SHIB_ALLOCT(
+		ReflectionFunction<Ret, Args...>* const ref_func = SHIB_ALLOCT(
 			GAFF_SINGLE_ARG(ReflectionFunction<Ret, Args...>),
 			_allocator,
 			ptr, true
@@ -903,8 +908,18 @@ ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::func(con
 			FuncData()
 		);
 
+		Hash64 test1 = arg_hash;
+		const Hash64 test2 = arg_hash;
+		uint64_t test3 = arg_hash;
+		const uint64_t test4 = arg_hash;
+		GAFF_REF(test1);
+		GAFF_REF(test2);
+		GAFF_REF(test3);
+		GAFF_REF(test4);
+
 		it = _funcs.insert(std::move(pair)).first;
 		it->second.func[0].reset(ref_func);
+		memcpy(&it->second.hash[0], &arg_hash, sizeof(Hash64));
 		it->second.hash[0] = arg_hash;
 		it->second.offset[0] = static_cast<int32_t>(offset_ptr - offset_interface);
 	}
@@ -916,7 +931,7 @@ ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::func(con
 			GAFF_ASSERT(!func_data.func[i] || func_data.hash[i] != arg_hash);
 
 			if (!func_data.func[i]) {
-				ReflectionFunction<Ret, Args...>* ref_func = SHIB_ALLOCT(
+				ReflectionFunction<Ret, Args...>* const ref_func = SHIB_ALLOCT(
 					GAFF_SINGLE_ARG(ReflectionFunction<Ret, Args...>),
 					_allocator,
 					ptr, true
@@ -942,12 +957,12 @@ ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::func(con
 {
 	auto it = Find(_funcs, FNV1aHash32Const(name));
 
-	ptrdiff_t offset_interface = Gaff::OffsetOfClass< ReflectionFunction<Ret, Args...>, IReflectionFunction<Ret, Args...> >();
-	ptrdiff_t offset_ptr = Gaff::OffsetOfClass<ReflectionFunction<Ret, Args...>, VirtualDestructor>();
-	Hash64 arg_hash = CalcTemplateHash<Ret, Args...>(INIT_HASH64);
+	const ptrdiff_t offset_interface = Gaff::OffsetOfClass< ReflectionFunction<Ret, Args...>, IReflectionFunction<Ret, Args...> >();
+	const ptrdiff_t offset_ptr = Gaff::OffsetOfClass<ReflectionFunction<Ret, Args...>, VirtualDestructor>();
+	const Hash64 arg_hash = CalcTemplateHash<Ret, Args...>(INIT_HASH64);
 
 	if (it == _funcs.end()) {
-		ReflectionFunction<Ret, Args...>* ref_func = SHIB_ALLOCT(
+		ReflectionFunction<Ret, Args...>* const ref_func = SHIB_ALLOCT(
 			GAFF_SINGLE_ARG(ReflectionFunction<Ret, Args...>),
 			_allocator,
 			ptr, false
@@ -971,7 +986,7 @@ ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::func(con
 			GAFF_ASSERT(!func_data.func[i] || func_data.hash[i] != arg_hash);
 
 			if (!func_data.func[i]) {
-				ReflectionFunction<Ret, Args...>* ref_func = SHIB_ALLOCT(
+				ReflectionFunction<Ret, Args...>* const ref_func = SHIB_ALLOCT(
 					GAFF_SINGLE_ARG(ReflectionFunction<Ret, Args...>),
 					_allocator,
 					ptr, false
@@ -1066,3 +1081,7 @@ ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::addAttri
 }
 
 NS_END
+
+#ifdef PLATFORM_WINDOWS
+	#pragma warning(pop)
+#endif
