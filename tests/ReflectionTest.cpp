@@ -452,6 +452,9 @@ class FuncTest : public Gaff::IReflectionObject
 	int getMyInt(void) const { return _my_int; }
 	void setMyInt(int i) { _my_int = i; }
 
+	const int& getIntRef(void) const { return _my_int; }
+	void setIntRef(const int& i) { _my_int = i; }
+
 	int _my_int = 1238;
 
 	SHIB_REFLECTION_CLASS_DECLARE(FuncTest);
@@ -466,6 +469,8 @@ SHIB_REFLECTION_CLASS_DEFINE_BEGIN(FuncTest)
 	.func("setMyInt", &FuncTest::setMyInt)
 	.func("myInt", &FuncTest::getMyInt)
 	.func("myInt", &FuncTest::setMyInt)
+	.func("getIntRef", &FuncTest::getIntRef)
+	.func("setIntRef", &FuncTest::setIntRef)
 SHIB_REFLECTION_CLASS_DEFINE_END(FuncTest)
 
 TEST_CASE("reflection func test", "[shibboleth_func]")
@@ -477,6 +482,8 @@ TEST_CASE("reflection func test", "[shibboleth_func]")
 	Gaff::IReflectionFunction<void, int>* const set_func = ref_def.getFunc<void, int>(Gaff::FNV1aHash32Const("setMyInt"));
 	Gaff::IReflectionFunction<int>* const ovl_get_func = ref_def.getFunc<int>(Gaff::FNV1aHash32Const("myInt"));
 	Gaff::IReflectionFunction<void, int>* const ovl_set_func = ref_def.getFunc<void, int>(Gaff::FNV1aHash32Const("myInt"));
+	Gaff::IReflectionFunction<const int&>* const ref_get_func = ref_def.getFunc<const int&>(Gaff::FNV1aHash32Const("getIntRef"));
+	Gaff::IReflectionFunction<void, const int&>* const ref_set_func = ref_def.getFunc<void, const int&>(Gaff::FNV1aHash32Const("setIntRef"));
 
 	void* data = ref_def.createAlloc(*Shibboleth::GetAllocator());
 
@@ -506,6 +513,18 @@ TEST_CASE("reflection func test", "[shibboleth_func]")
 
 	REQUIRE(ovl_get_func->call(data) == 987);
 	printf("myInt (set): %i\n", ovl_get_func->call(data));
+
+	REQUIRE(ref_get_func);
+	REQUIRE(ref_get_func->isConst());
+	REQUIRE(ref_get_func->call(data) == 987);
+	printf("getIntRef: %i\n", ref_get_func->call(data));
+
+	REQUIRE(ref_set_func);
+	REQUIRE(!ref_set_func->isConst());
+	ref_set_func->call(data, 1111);
+
+	REQUIRE(ref_get_func->call(data) == 1111);
+	printf("setIntRef: %i\n", ref_get_func->call(data));
 
 	SHIB_FREE(data, *Shibboleth::GetAllocator());
 }
