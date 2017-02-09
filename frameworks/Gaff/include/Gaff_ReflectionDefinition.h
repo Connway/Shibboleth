@@ -182,8 +182,11 @@ private:
 		Getter _getter = nullptr;
 		Setter _setter = nullptr;
 
-		mutable const typename std::remove_reference<Ret>::type* _copy_ptr = nullptr;
-		mutable typename std::remove_const< typename std::remove_reference<Ret>::type >::type _copy;
+		union
+		{
+			mutable const typename std::remove_reference<Ret>::type* _copy_ptr = nullptr;
+			mutable typename std::remove_const< typename std::remove_reference<Ret>::type >::type _copy;
+		};
 	};
 
 	template <class Base>

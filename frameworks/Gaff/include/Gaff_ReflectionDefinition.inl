@@ -819,7 +819,7 @@ template <class T, class Allocator>
 template <class Var, size_t size>
 ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::var(const char (&name)[size], Var T::*ptr, bool read_only)
 {
-	static_assert(!std::is_pointer<Var>::value, "Cannot reflect pointers.");
+	static_assert(GAFF_REFLECTION_NAMESPACE::Reflection<Var>::HasReflection, "Type is not reflected!");
 
 	eastl::pair<HashString32<Allocator>, IVarPtr> pair(
 		HashString32<Allocator>(name, size - 1, nullptr, _allocator),
@@ -832,11 +832,39 @@ ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::var(cons
 	return *this;
 }
 
+template <bool is_pointer>
+struct ValueHelper;
+
+template <>
+struct ValueHelper<true>
+{
+	template <class T>
+	using type = typename std::add_pointer<T>::type;
+};
+
+template <>
+struct ValueHelper<false>
+{
+	template <class T>
+	using type = T;
+};
+
 template <class T, class Allocator>
 template <class Ret, class Var, size_t size>
 ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::var(const char (&name)[size], Ret (T::*getter)(void) const, void (T::*setter)(Var))
 {
-	static_assert(!std::is_pointer<Ret>::value, "Cannot reflect pointers.");
+	using RetNoRef = std::remove_reference<Ret>::type;
+	using RetNoPointer = std::remove_pointer<RetNoRef>::type;
+	using RetNoConst = std::remove_const<RetNoPointer>::type;
+	using RetFinal = ValueHelper<std::is_pointer<RetNoRef>::value>::type<RetNoConst>;
+
+	using VarNoRef = std::remove_reference<Var>::type;
+	using VarNoPointer = std::remove_pointer<VarNoRef>::type;
+	using VarNoConst = std::remove_const<VarNoPointer>::type;
+	using VarFinal = ValueHelper<std::is_pointer<VarNoRef>::value>::type<VarNoConst>;
+
+	static_assert(GAFF_REFLECTION_NAMESPACE::Reflection<RetFinal>::HasReflection, "Getter return type is not reflected!");
+	static_assert(GAFF_REFLECTION_NAMESPACE::Reflection<VarFinal>::HasReflection, "Setter arg type is not reflected!");
 	using PtrType = VarFuncPtr<Ret, Var>;
 
 	eastl::pair<HashString32<Allocator>, IVarPtr> pair(
@@ -908,18 +936,8 @@ ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::func(con
 			FuncData()
 		);
 
-		Hash64 test1 = arg_hash;
-		const Hash64 test2 = arg_hash;
-		uint64_t test3 = arg_hash;
-		const uint64_t test4 = arg_hash;
-		GAFF_REF(test1);
-		GAFF_REF(test2);
-		GAFF_REF(test3);
-		GAFF_REF(test4);
-
 		it = _funcs.insert(std::move(pair)).first;
 		it->second.func[0].reset(ref_func);
-		memcpy(&it->second.hash[0], &arg_hash, sizeof(Hash64));
 		it->second.hash[0] = arg_hash;
 		it->second.offset[0] = static_cast<int32_t>(offset_ptr - offset_interface);
 	}
