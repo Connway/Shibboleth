@@ -90,6 +90,9 @@
     <ClInclude Include="..\..\..\dependencies\EASTL\include\EASTL\bonus\compressed_pair.h">
       <Filter>include\EASTL\bonus</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\EASTL\include\EASTL\bonus\fixed_ring_buffer.h">
+      <Filter>include\EASTL\bonus</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\dependencies\EASTL\include\EASTL\bonus\fixed_string_abstract.h">
       <Filter>include\EASTL\bonus</Filter>
     </ClInclude>
@@ -352,6 +355,12 @@
       <Filter>include\EASTL</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\dependencies\EASTL\include\EASTL\unique_ptr.h">
+      <Filter>include\EASTL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\EASTL\include\EASTL\unordered_map.h">
+      <Filter>include\EASTL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\EASTL\include\EASTL\unordered_set.h">
       <Filter>include\EASTL</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\dependencies\EASTL\include\EASTL\utility.h">

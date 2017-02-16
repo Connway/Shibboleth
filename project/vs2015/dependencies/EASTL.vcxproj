@@ -247,6 +247,7 @@
     <ClInclude Include="..\..\..\dependencies\EASTL\include\EASTL\bonus\adaptors.h" />
     <ClInclude Include="..\..\..\dependencies\EASTL\include\EASTL\bonus\call_traits.h" />
     <ClInclude Include="..\..\..\dependencies\EASTL\include\EASTL\bonus\compressed_pair.h" />
+    <ClInclude Include="..\..\..\dependencies\EASTL\include\EASTL\bonus\fixed_ring_buffer.h" />
     <ClInclude Include="..\..\..\dependencies\EASTL\include\EASTL\bonus\fixed_string_abstract.h" />
     <ClInclude Include="..\..\..\dependencies\EASTL\include\EASTL\bonus\intrusive_sdlist.h" />
     <ClInclude Include="..\..\..\dependencies\EASTL\include\EASTL\bonus\intrusive_slist.h" />
@@ -335,6 +336,8 @@
     <ClInclude Include="..\..\..\dependencies\EASTL\include\EASTL\tuple.h" />
     <ClInclude Include="..\..\..\dependencies\EASTL\include\EASTL\type_traits.h" />
     <ClInclude Include="..\..\..\dependencies\EASTL\include\EASTL\unique_ptr.h" />
+    <ClInclude Include="..\..\..\dependencies\EASTL\include\EASTL\unordered_map.h" />
+    <ClInclude Include="..\..\..\dependencies\EASTL\include\EASTL\unordered_set.h" />
     <ClInclude Include="..\..\..\dependencies\EASTL\include\EASTL\utility.h" />
     <ClInclude Include="..\..\..\dependencies\EASTL\include\EASTL\vector.h" />
     <ClInclude Include="..\..\..\dependencies\EASTL\include\EASTL\vector_map.h" />

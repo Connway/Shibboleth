@@ -54,6 +54,12 @@
     <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_DynamicModule_Windows.h">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_EnumReflection.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_EnumReflectionDefinition.h">
+      <Filter>include</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_Event.h">
       <Filter>include</Filter>
     </ClInclude>
@@ -191,6 +197,7 @@
     <ClCompile Include="..\..\..\frameworks\Gaff\Gaff_CriticalSection_Windows.cpp" />
     <ClCompile Include="..\..\..\frameworks\Gaff\Gaff_DynamicModule_Linux.cpp" />
     <ClCompile Include="..\..\..\frameworks\Gaff\Gaff_DynamicModule_Windows.cpp" />
+    <ClCompile Include="..\..\..\frameworks\Gaff\Gaff_EnumReflection.cpp" />
     <ClCompile Include="..\..\..\frameworks\Gaff\Gaff_Event_Linux.cpp" />
     <ClCompile Include="..\..\..\frameworks\Gaff\Gaff_Event_Windows.cpp" />
     <ClCompile Include="..\..\..\frameworks\Gaff\Gaff_File.cpp" />
@@ -221,6 +228,9 @@
       <Filter>include</Filter>
     </None>
     <None Include="..\..\..\frameworks\Gaff\include\Gaff_DynamicLoader.inl">
+      <Filter>include</Filter>
+    </None>
+    <None Include="..\..\..\frameworks\Gaff\include\Gaff_EnumReflectionDefinition.inl">
       <Filter>include</Filter>
     </None>
     <None Include="..\..\..\frameworks\Gaff\include\Gaff_Function.inl">

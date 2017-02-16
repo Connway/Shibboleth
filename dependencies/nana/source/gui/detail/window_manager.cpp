@@ -1,7 +1,7 @@
 /*
  *	Window Manager Implementation
  *	Nana C++ Library(http://www.nanapro.org)
- *	Copyright(C) 2003-2016 Jinhao(cnjinhao@hotmail.com)
+ *	Copyright(C) 2003-2017 Jinhao(cnjinhao@hotmail.com)
  *
  *	Distributed under the Boost Software License, Version 1.0.
  *	(See accompanying file LICENSE_1_0.txt or copy at
@@ -335,7 +335,7 @@ namespace detail
 
 			void window_manager::revertible_mutex::revert()
 			{
-				if(impl_->thread.ref && (impl_->thread.tid == nana::system::this_thread_id()))
+				if(impl_->thread.tid == nana::system::this_thread_id())
 				{
 					std::size_t cnt = impl_->thread.ref;
 
@@ -346,24 +346,30 @@ namespace detail
 					for (std::size_t i = 0; i < cnt; ++i)
 						impl_->mutex.unlock();
 				}
+				else
+					throw std::runtime_error("The revert is not allowed");
 			}
 
 			void window_manager::revertible_mutex::forward()
 			{
 				impl_->mutex.lock();
+				
 				if(impl_->invoke_stack.size())
 				{
 					auto thr = impl_->invoke_stack.back();
+
+					impl_->invoke_stack.pop_back();
+					
 					if(thr.tid == nana::system::this_thread_id())
 					{
-						impl_->invoke_stack.pop_back();
 						for (std::size_t i = 0; i < thr.ref; ++i)
 							impl_->mutex.lock();
 						impl_->thread = thr;
 					}
 					else
-						throw std::runtime_error("Nana.GUI: The forward is not matched.");
+						throw std::runtime_error("The forward is not matched. Please report this issue");
 				}
+
 				impl_->mutex.unlock();
 			}
 		//end class revertible_mutex
@@ -679,6 +685,30 @@ namespace detail
 			}
 		}
 
+		void sync_child_root_display(window_manager::core_window_t* wd)
+		{
+			for (auto & child : wd->children)
+			{
+				if (category::flags::root != child->other.category)
+				{
+					sync_child_root_display(child);
+					continue;
+				}
+
+				auto const vs_parents = child->visible_parents();
+
+				if (vs_parents != child->visible)
+				{
+					native_interface::show_window(child->root, vs_parents, false);
+				}
+				else
+				{
+					if (child->visible != native_interface::is_window_visible(child->root))
+						native_interface::show_window(child->root, child->visible, false);
+				}
+			}
+		}
+
 		//show
 		//@brief: show or hide a window
 		bool window_manager::show(core_window_t* wd, bool visible)
@@ -713,8 +743,15 @@ namespace detail
 				if(category::flags::root != wd->other.category)
 					bedrock::instance().event_expose(wd, visible);
 
-				if(nv)
+				if (nv)
+				{
+					if (visible && !wd->visible_parents())
+						return true;
+
 					native_interface::show_window(nv, visible, wd->flags.take_active);
+				}
+
+				sync_child_root_display(wd);
 			}
 			return true;
 		}
@@ -759,6 +796,10 @@ namespace detail
 						arg.window_handle = reinterpret_cast<window>(wd);
 						arg.x = x;
 						arg.y = y;
+
+						if (wd->effect.bground)
+							wd->other.upd_state = basic_window::update_state::request_refresh;
+
 						brock.emit(event_code::move, wd, arg, true, brock.get_thread_context());
 						return true;
 					}
@@ -802,6 +843,9 @@ namespace detail
 					wd->pos_owner.y = r.y;
 					_m_move_core(wd, delta);
 					moved = true;
+
+					if ((!size_changed) && wd->effect.bground)
+						wd->other.upd_state = basic_window::update_state::request_refresh;
 
 					arg_move arg;
 					arg.window_handle = reinterpret_cast<window>(wd);
@@ -989,26 +1033,28 @@ namespace detail
 
 			if (wd->displayed())
 			{
+				using paint_operation = window_layer::paint_operation;
+
 				if(forced || (false == wd->belong_to_lazy()))
 				{
 					if (!wd->flags.refreshing)
 					{
-						window_layer::paint(wd, redraw, false);
+						window_layer::paint(wd, (redraw ? paint_operation::try_refresh : paint_operation::none), false);
 						this->map(wd, forced, update_area);
 						return true;
 					}
 					else if (forced)
 					{
-						window_layer::paint(wd, false, false);
+						window_layer::paint(wd, paint_operation::none, false);
 						this->map(wd, true, update_area);
 						return true;
 					}
 				}
 				else if (redraw)
-					window_layer::paint(wd, true, false);
+					window_layer::paint(wd, paint_operation::try_refresh, false);
 
 				if (wd->other.upd_state == core_window_t::update_state::lazy)
-					wd->other.upd_state = core_window_t::update_state::refresh;
+					wd->other.upd_state = core_window_t::update_state::refreshed;
 			}
 			return true;
 		}
@@ -1020,43 +1066,43 @@ namespace detail
 
 			//It's not worthy to redraw if visible is false
 			if (impl_->wd_register.available(wd) && wd->displayed())
-				window_layer::paint(wd, true, true);
+				window_layer::paint(wd, window_layer::paint_operation::try_refresh, true);
 		}
 
 		//do_lazy_refresh
 		//@brief: defined a behavior of flush the screen
-		//@return: it returns true if the wnd is available
-		bool window_manager::do_lazy_refresh(core_window_t* wd, bool force_copy_to_screen, bool refresh_tree)
+		void window_manager::do_lazy_refresh(core_window_t* wd, bool force_copy_to_screen, bool refresh_tree)
 		{
 			//Thread-Safe Required!
 			std::lock_guard<mutex_type> lock(mutex_);
 
 			if (false == impl_->wd_register.available(wd))
-				return false;
+				return;
 
 			//It's not worthy to redraw if visible is false
 			if(wd->visible && (!wd->is_draw_through()))
 			{
+				using paint_operation = window_layer::paint_operation;
 				if (wd->visible_parents())
 				{
-					if ((wd->other.upd_state == core_window_t::update_state::refresh) || force_copy_to_screen)
+					if ((wd->other.upd_state == core_window_t::update_state::refreshed) || (wd->other.upd_state == core_window_t::update_state::request_refresh) || force_copy_to_screen)
 					{
-						window_layer::paint(wd, false, refresh_tree);
+						window_layer::paint(wd, (wd->other.upd_state == core_window_t::update_state::request_refresh ? paint_operation::try_refresh : paint_operation::have_refreshed), refresh_tree);
 						this->map(wd, force_copy_to_screen);
 					}
 					else if (effects::edge_nimbus::none != wd->effect.edge_nimbus)
 					{
 						//The window is still mapped because of edge nimbus effect.
 						//Avoid duplicate copy if action state is not changed and the window is not focused.
-						if ((wd->flags.action != wd->flags.action_before) || (bedrock::instance().focus() == wd))
+						if (wd->flags.action != wd->flags.action_before)
 							this->map(wd, true);
 					}
 				}
 				else
-					window_layer::paint(wd, true, refresh_tree);	//only refreshing if it has an invisible parent
+					window_layer::paint(wd, paint_operation::try_refresh, refresh_tree);	//only refreshing if it has an invisible parent
 			}
 			wd->other.upd_state = core_window_t::update_state::none;
-			return true;
+			return;
 		}
 
 		//get_graphics
@@ -1371,6 +1417,7 @@ namespace detail
 
 		void window_manager::remove_trash_handle(unsigned tid)
 		{
+			internal_scope_guard lock;
 			impl_->wd_register.delete_trash(tid);
 		}
 

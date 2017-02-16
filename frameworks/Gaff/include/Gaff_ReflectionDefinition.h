@@ -96,6 +96,9 @@ public:
 	int32_t getNumVarAttributes(Hash32 name) const override;
 	const IAttribute* getVarAttribute(Hash32 name, int32_t index) const override;
 
+	int32_t getNumFuncAttributes(Hash32 name) const override;
+	const IAttribute* getFuncAttribute(Hash32 name, int32_t index) const override;
+
 	VoidFunc getFactory(Hash64 ctor_hash) const override;
 	void* getFunc(Hash32 name, Hash64 args) const override;
 
@@ -361,7 +364,6 @@ private:
 	VectorMap<HashString32<Allocator>, FuncData, Allocator> _funcs;
 	VectorMap<Hash64, VoidFunc, Allocator> _ctors;
 
-	VectorMap<Hash64, Vector<IAttributePtr, Allocator>, Allocator> _base_class_attrs;
 	VectorMap<Hash32, Vector<IAttributePtr, Allocator>, Allocator> _var_attrs;
 	VectorMap<Hash32, Vector<IAttributePtr, Allocator>, Allocator> _func_attrs;
 	Vector<IAttributePtr, Allocator> _class_attrs;

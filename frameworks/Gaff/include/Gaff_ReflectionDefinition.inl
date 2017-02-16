@@ -633,7 +633,6 @@ void ReflectionDefinition<T, Allocator>::setAllocator(const Allocator& allocator
 	_vars.set_allocator(allocator);
 	_funcs.set_allocator(allocator);
 
-	_base_class_attrs.set_allocator(allocator);
 	_var_attrs.set_allocator(allocator);
 	_func_attrs.set_allocator(allocator);
 	_class_attrs.set_allocator(allocator);
@@ -700,7 +699,24 @@ const IAttribute* ReflectionDefinition<T, Allocator>::getVarAttribute(Hash32 nam
 {
 	auto it = _var_attrs.find(name);
 	GAFF_ASSERT(it != _var_attrs.end());
-	GAFF_ASSERT(index < getNumVarAttributes(name));
+	GAFF_ASSERT(index < static_cast<int32_t>(it->second.size()));
+	return it->second[index].get();
+}
+
+template <class T, class Allocator>
+int32_t ReflectionDefinition<T, Allocator>::getNumFuncAttributes(Hash32 name) const
+{
+	auto it = _func_attrs.find(name);
+	GAFF_ASSERT(it != _func_attrs.end());
+	return static_cast<int32_t>(it->second.size());
+}
+
+template <class T, class Allocator>
+const IAttribute* ReflectionDefinition<T, Allocator>::getFuncAttribute(Hash32 name, int32_t index) const
+{
+	auto it = _func_attrs.find(name);
+	GAFF_ASSERT(it != _func_attrs.end());
+	GAFF_ASSERT(index < static_cast<int32_t>(it->second.size()));
 	return it->second[index].get();
 }
 
@@ -792,6 +808,8 @@ ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::base(voi
 		// add base class funcs
 
 		// add base class func attrs
+
+		// add base class class attrs
 
 	// Register for callback if base class hasn't been defined yet.
 	} else {

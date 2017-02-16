@@ -259,6 +259,8 @@
     <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_DynamicModule.h" />
     <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_DynamicModule_Linux.h" />
     <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_DynamicModule_Windows.h" />
+    <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_EnumReflection.h" />
+    <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_EnumReflectionDefinition.h" />
     <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_Event.h" />
     <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_Event_Linux.h" />
     <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_Event_Windows.h" />
@@ -312,6 +314,7 @@
     <ClCompile Include="..\..\..\frameworks\Gaff\Gaff_CriticalSection_Windows.cpp" />
     <ClCompile Include="..\..\..\frameworks\Gaff\Gaff_DynamicModule_Linux.cpp" />
     <ClCompile Include="..\..\..\frameworks\Gaff\Gaff_DynamicModule_Windows.cpp" />
+    <ClCompile Include="..\..\..\frameworks\Gaff\Gaff_EnumReflection.cpp" />
     <ClCompile Include="..\..\..\frameworks\Gaff\Gaff_Event_Linux.cpp" />
     <ClCompile Include="..\..\..\frameworks\Gaff\Gaff_Event_Windows.cpp" />
     <ClCompile Include="..\..\..\frameworks\Gaff\Gaff_File.cpp" />
@@ -334,6 +337,7 @@
     <None Include="..\..\..\frameworks\Gaff\include\Gaff_CachedFunction.inl" />
     <None Include="..\..\..\frameworks\Gaff\include\Gaff_Directory.inl" />
     <None Include="..\..\..\frameworks\Gaff\include\Gaff_DynamicLoader.inl" />
+    <None Include="..\..\..\frameworks\Gaff\include\Gaff_EnumReflectionDefinition.inl" />
     <None Include="..\..\..\frameworks\Gaff\include\Gaff_Function.inl" />
     <None Include="..\..\..\frameworks\Gaff\include\Gaff_HashString.inl" />
     <None Include="..\..\..\frameworks\Gaff\include\Gaff_JobPool.inl" />

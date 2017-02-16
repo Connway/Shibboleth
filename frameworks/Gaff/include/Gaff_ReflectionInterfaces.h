@@ -366,8 +366,51 @@ public:
 	virtual int32_t getNumVarAttributes(Hash32 name) const = 0;
 	virtual const IAttribute* getVarAttribute(Hash32 name, int32_t index) const = 0;
 
+	virtual int32_t getNumFuncAttributes(Hash32 name) const = 0;
+	virtual const IAttribute* getFuncAttribute(Hash32 name, int32_t index) const = 0;
+
 	virtual VoidFunc getFactory(Hash64 ctor_hash) const = 0;
 	virtual void* getFunc(Hash32 name, Hash64 args) const = 0;
+};
+
+class IEnumReflection
+{
+public:
+	virtual ~IEnumReflection(void) {}
+
+	virtual void init(void) = 0;
+
+	virtual void load(ISerializeReader& reader, void* object) const = 0;
+	virtual void save(ISerializeWriter& writer, const void* object) const = 0;
+	virtual const char* getName(void) const = 0;;
+	virtual Hash64 getHash(void) const = 0;
+	virtual Hash64 getVersion(void) const = 0;
+
+	IEnumReflection* next = nullptr;
+};
+
+class IEnumReflectionDefinition
+{
+public:
+	virtual ~IEnumReflectionDefinition(void) {}
+
+	virtual const IEnumReflection& getReflectionInstance(void) const = 0;
+
+	virtual void load(ISerializeReader& reader, void* object) const = 0;
+	virtual void save(ISerializeWriter& writer, const void* object) const = 0;
+
+	virtual int32_t getNumEntries(void) const = 0;
+	virtual const char* getEntryNameFromValue(int32_t value) const = 0;
+	virtual const char* getEntryNameFromIndex(int32_t index) const = 0;
+	virtual int32_t getEntryValue(int32_t index) const = 0;
+	virtual int32_t getEntryValue(const char* name) const = 0;
+	virtual int32_t getEntryValue(Hash32 name) const = 0;
+
+	virtual int32_t getNumEnumAttributes(void) const = 0;
+	virtual const IAttribute* getEnumAttribute(int32_t index) const = 0;
+
+	virtual int32_t getNumEntryAttributes(Hash32 name) const = 0;
+	virtual const IAttribute* getEntryAttribute(Hash32 name, int32_t index) const = 0;
 };
 
 NS_END

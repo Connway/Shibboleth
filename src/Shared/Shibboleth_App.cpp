@@ -463,6 +463,18 @@ DynamicLoader::ModulePtr App::loadModule(const char* filename, const char* name)
 	return _dynamic_loader.loadModule(filename, name);
 }
 
+const Gaff::IEnumReflectionDefinition* App::getEnumReflection(Gaff::Hash64 name) const
+{
+	auto it = _enum_reflection_map.find(name);
+	return (it == _enum_reflection_map.end()) ? nullptr : it->second.get();
+}
+
+void App::registerEnumReflection(Gaff::Hash64 name, Gaff::IEnumReflectionDefinition& ref_def)
+{
+	GAFF_ASSERT(_enum_reflection_map.find(name) == _enum_reflection_map.end());
+	_enum_reflection_map[name].reset(&ref_def);
+}
+
 const Gaff::IReflectionDefinition* App::getReflection(Gaff::Hash64 name) const
 {
 	auto it = _reflection_map.find(name);
