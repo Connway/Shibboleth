@@ -73,6 +73,9 @@ public:
 
 	DynamicLoader::ModulePtr loadModule(const char* filename, const char* name) override;
 
+	const Gaff::IEnumReflectionDefinition* getEnumReflection(Gaff::Hash64 name) const override;
+	void registerEnumReflection(Gaff::Hash64 name, Gaff::IEnumReflectionDefinition& ref_def) override;
+
 	const Gaff::IReflectionDefinition* getReflection(Gaff::Hash64 name) const override;
 	void registerReflection(Gaff::Hash64 name, Gaff::IReflectionDefinition& ref_def) override;
 	void registerTypeBucket(Gaff::Hash64 name) override;
@@ -104,6 +107,7 @@ private:
 	bool _running;
 	MainLoopFunc _main_loop;
 
+	VectorMap< Gaff::Hash64, UniquePtr<Gaff::IEnumReflectionDefinition> > _enum_reflection_map;
 	VectorMap< Gaff::Hash64, UniquePtr<Gaff::IReflectionDefinition> > _reflection_map;
 	VectorMap< Gaff::Hash64, UniquePtr<IManager> > _manager_map;
 	VectorMap< Gaff::Hash64, Vector<Gaff::Hash64> > _type_buckets;

@@ -27,9 +27,6 @@ THE SOFTWARE.
 #include "Shibboleth_ProxyAllocator.h"
 #include "Shibboleth_Utilities.h"
 #include "Shibboleth_IApp.h"
-#include <Gaff_SerializeInterfaces.h>
-#include <Gaff_ReflectionDefinition.h>
-#include <Gaff_ReflectionVersion.h>
 #include <Gaff_Reflection.h>
 
 NS_SHIBBOLETH
@@ -66,7 +63,7 @@ GAFF_REFLECTION_DECLARE_DEFAULT_AND_POD();
 		} \
 		static void SetAllocator(const ProxyAllocator& a) \
 		{ \
-			if (g_reflection_definition) {\
+			if (g_reflection_definition) { \
 				g_reflection_definition->setAllocator(a); \
 			} \
 			g_on_defined_callbacks.set_allocator(a); \

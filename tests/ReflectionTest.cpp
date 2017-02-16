@@ -23,6 +23,7 @@ THE SOFTWARE.
 #define CATCH_CONFIG_MAIN
 #include <catch.hpp>
 
+#include <Shibboleth_EnumReflection.h>
 #include <Shibboleth_Reflection.h>
 #include <Shibboleth_App.h>
 #include <Gaff_DynamicModule.h>
@@ -527,4 +528,51 @@ TEST_CASE("reflection func test", "[shibboleth_func]")
 	printf("setIntRef: %i\n", ref_get_func->call(data));
 
 	SHIB_FREE(data, *Shibboleth::GetAllocator());
+}
+
+enum TestEnum
+{
+	TE_MINUS_ONE = -1,
+	TE_ZERO,
+	TE_ONE,
+	TE_TWO,
+	TE_TWENTY = 20
+};
+
+SHIB_ENUM_REFLECTION_DECLARE(TestEnum)
+
+SHIB_ENUM_REFLECTION_DEFINE_BEGIN(TestEnum)
+	.entry("MinusOne", TE_MINUS_ONE)
+	.entry("Zero", TE_ZERO)
+	.entry("One", TE_ONE)
+	.entry("Two", TE_TWO)
+	.entry("Twenty", TE_TWENTY)
+SHIB_ENUM_REFLECTION_DEFINE_END(TestEnum)
+
+TEST_CASE("reflection enum test", "[shibboleth_enum]")
+{
+	Shibboleth::EnumReflection<TestEnum>::Init();
+
+	const Gaff::IEnumReflectionDefinition& ref_def = Shibboleth::EnumReflection<TestEnum>::GetReflectionDefinition();
+	REQUIRE(ref_def.getNumEntries() == 5);
+
+	printf("Enum Name Index 0: %s\n", ref_def.getEntryNameFromIndex(0));
+
+	REQUIRE(!strcmp("MinusOne", ref_def.getEntryNameFromValue(TE_MINUS_ONE)));
+	REQUIRE(!strcmp("Zero", ref_def.getEntryNameFromValue(TE_ZERO)));
+	REQUIRE(!strcmp("One", ref_def.getEntryNameFromValue(TE_ONE)));
+	REQUIRE(!strcmp("Two", ref_def.getEntryNameFromValue(TE_TWO)));
+	REQUIRE(!strcmp("Twenty", ref_def.getEntryNameFromValue(TE_TWENTY)));
+
+	printf("TE_MINUS_ONE: %s\n", ref_def.getEntryNameFromValue(TE_MINUS_ONE));
+	printf("TE_ZERO: %s\n", ref_def.getEntryNameFromValue(TE_ZERO));
+	printf("TE_ONE: %s\n", ref_def.getEntryNameFromValue(TE_ONE));
+	printf("TE_TWO: %s\n", ref_def.getEntryNameFromValue(TE_TWO));
+	printf("TE_TWENTY: %s\n", ref_def.getEntryNameFromValue(TE_TWENTY));
+
+	REQUIRE(ref_def.getEntryValue("MinusOne") == -1);
+	REQUIRE(ref_def.getEntryValue("Zero") == 0);
+	REQUIRE(ref_def.getEntryValue("One") == 1);
+	REQUIRE(ref_def.getEntryValue("Two") == 2);
+	REQUIRE(ref_def.getEntryValue("Twenty") == 20);
 }

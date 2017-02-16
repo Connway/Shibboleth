@@ -237,7 +237,7 @@ namespace detail
 		if(wd_manager().available(wd) == false)
 			return false;
 
-		core_window_t * prev_wd;
+		core_window_t * prev_wd = nullptr;
 		if(thrd)
 		{
 			prev_wd = thrd->event_window;
@@ -567,9 +567,12 @@ namespace detail
 
 				if(xevent.xbutton.button == Button4 || xevent.xbutton.button == Button5)
 					break;
-					
+
 				msgwnd = wd_manager.find_window(native_window, xevent.xbutton.x, xevent.xbutton.y);
-				if(nullptr == msgwnd) break;
+
+				pressed_wd = nullptr;
+				if(nullptr == msgwnd)
+					break;
 					
 				if ((msgwnd == msgwnd->root_widget->other.attribute.root->menubar) && brock.get_menu(msgwnd->root, true))
 					brock.erase_menu(true);
@@ -578,7 +581,9 @@ namespace detail
 
 				if(msgwnd->flags.enabled)
 				{
-					bool dbl_click = (last_mouse_down_window == msgwnd) && (xevent.xbutton.time - last_mouse_down_time <= 400);
+					pressed_wd = msgwnd;
+
+					const bool dbl_click = (last_mouse_down_window == msgwnd) && (xevent.xbutton.time - last_mouse_down_time <= 400);
 					last_mouse_down_time = xevent.xbutton.time;
 					last_mouse_down_window = msgwnd;
 
@@ -597,28 +602,31 @@ namespace detail
 					auto retain = msgwnd->annex.events_ptr;
 					context.event_window = msgwnd;
 
-					pressed_wd = nullptr;
-
 					msgwnd->set_action(mouse_action::pressed);
 					arg_mouse arg;
 					assign_arg(arg, msgwnd, ButtonPress, xevent);
 					arg.evt_code = dbl_click ? event_code::dbl_click : event_code::mouse_down;
-					if(brock.emit(arg.evt_code, msgwnd, arg, true, &context))
+					if (brock.emit(arg.evt_code, msgwnd, arg, true, &context))
 					{
-						if (wd_manager.available(msgwnd))
+						//If a root window is created during the mouse_down event, Nana.GUI will ignore the mouse_up event.
+						if (msgwnd->root != native_interface::get_focus_window())
 						{
-							pressed_wd = msgwnd;
-							//If a root window is created during the mouse_down event, Nana.GUI will ignore the mouse_up event.
-							if (msgwnd->root != native_interface::get_focus_window())
+							auto pos = native_interface::cursor_position();
+							auto rootwd = native_interface::find_window(pos.x, pos.y);
+							native_interface::calc_window_point(rootwd, pos);
+							if(msgwnd != wd_manager.find_window(rootwd, pos.x, pos.y))
 							{
 								//call the drawer mouse up event for restoring the surface graphics
 								msgwnd->set_action(mouse_action::normal);
 
+								arg.evt_code = event_code::mouse_up;
 								draw_invoker(&drawer::mouse_up, msgwnd, arg, &context);
 								wd_manager.do_lazy_refresh(msgwnd, false);
 							}
 						}
 					}
+					else
+						pressed_wd = nullptr;
 				}
 				break;
 			case ButtonRelease:
@@ -1146,7 +1154,7 @@ namespace detail
 		}
 	}
 
-	void bedrock::pump_event(window modal_window, bool /*is_modal*/)
+	void bedrock::pump_event(window condition_wd, bool is_modal)
 	{
 		thread_context * context = open_thread_context();
 		if(0 == context->window_count)
@@ -1157,13 +1165,15 @@ namespace detail
 		}
 
 		++(context->event_pump_ref_count);
-		wd_manager().internal_lock().revert();
+
+		auto & lock = wd_manager().internal_lock();
+		lock.revert();
 		
-		native_window_type owner_native = 0;
+		native_window_type owner_native{};
 		core_window_t * owner = 0;
-		if(modal_window)
+		if(condition_wd && is_modal)
 		{
-			native_window_type modal = reinterpret_cast<core_window_t*>(modal_window)->root;
+			native_window_type modal = reinterpret_cast<core_window_t*>(condition_wd)->root;
 			owner_native = native_interface::get_owner_window(modal);
 			if(owner_native)
 			{
@@ -1174,7 +1184,7 @@ namespace detail
 			}	
 		}
 		
-		nana::detail::platform_spec::instance().msg_dispatch(modal_window ? reinterpret_cast<core_window_t*>(modal_window)->root : 0);
+		nana::detail::platform_spec::instance().msg_dispatch(condition_wd ? reinterpret_cast<core_window_t*>(condition_wd)->root : 0);
 
 		if(owner_native)
 		{
@@ -1182,11 +1192,12 @@ namespace detail
 				owner->flags.enabled = true;
 			native_interface::enable_window(owner_native, true);
 		}
-		
-		wd_manager().internal_lock().forward();
+
+		lock.forward();
+
 		if(0 == --(context->event_pump_ref_count))
 		{
-			if(0 == modal_window || 0 == context->window_count)
+			if(0 == condition_wd || 0 == context->window_count)
 				remove_thread_context();
 		}
 
@@ -1203,17 +1214,7 @@ namespace detail
 	{
 		thread_context* thrd = get_thread_context(0);
 		if(thrd && thrd->event_window)
-		{
-			//the state none should be tested, becuase in an event, there would be draw after an update,
-			//if the none is not tested, the draw after update will not be refreshed.
-			switch(thrd->event_window->other.upd_state)
-			{
-			case core_window_t::update_state::none:
-			case core_window_t::update_state::lazy:
-				thrd->event_window->other.upd_state = core_window_t::update_state::refresh;
-			default:	break;
-			}
-		}
+			thrd->event_window->other.upd_state = core_window_t::update_state::refreshed;
 	}
 
 	//Dynamically set a cursor for a window

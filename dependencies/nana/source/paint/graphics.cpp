@@ -156,6 +156,18 @@ namespace paint
 			return (impl_->font_ptr->italic);
 		}
 
+		bool font::underline() const
+		{
+			if(empty()) return false;
+			return (impl_->font_ptr->underline);
+		}
+
+		bool font::strikeout() const
+		{
+			if(empty()) return false;
+			return (impl_->font_ptr->strikeout);
+		}
+
 		native_font_type font::handle() const
 		{
 			if(empty())	return nullptr;
@@ -765,12 +777,22 @@ namespace paint
 					::ReleaseDC(reinterpret_cast<HWND>(dst), dc);
 				}
 #elif defined(NANA_X11)
-				Display * display = nana::detail::platform_spec::instance().open_display();
+				auto & spec = nana::detail::platform_spec::instance();
+				
+				Display * display = spec.open_display();
+				
+				nana::detail::platform_scope_guard lock;
+				
 				::XCopyArea(display,
 					impl_->handle->pixmap, reinterpret_cast<Window>(dst), impl_->handle->context,
 						sx, sy, width, height, dx, dy);
 
-				::XMapWindow(display, reinterpret_cast<Window>(dst));
+				XWindowAttributes attr;
+				spec.set_error_handler();
+				::XGetWindowAttributes(display, reinterpret_cast<Window>(dst), &attr);
+				if(BadWindow != spec.rev_error_handler() && attr.map_state != IsUnmapped)
+					::XMapWindow(display, reinterpret_cast<Window>(dst));
+					
 				::XFlush(display);
 #endif
 			}

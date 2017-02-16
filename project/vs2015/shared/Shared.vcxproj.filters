@@ -15,6 +15,9 @@
     <ClInclude Include="..\..\..\src\Shared\include\Shibboleth_DynamicLoader.h">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\src\Shared\include\Shibboleth_EnumReflection.h">
+      <Filter>include</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\src\Shared\include\Shibboleth_HashString.h">
       <Filter>include</Filter>
     </ClInclude>

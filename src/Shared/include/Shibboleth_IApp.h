@@ -31,6 +31,7 @@ THE SOFTWARE.
 #include "Shibboleth_Reflection.h"
 
 NS_GAFF
+	class IEnumReflectionDefinition;
 	class IReflectionDefinition;
 NS_END
 
@@ -86,6 +87,9 @@ public:
 	virtual JobPool& getJobPool(void) = 0;
 
 	virtual DynamicLoader::ModulePtr loadModule(const char* filename, const char* name) = 0;
+
+	virtual const Gaff::IEnumReflectionDefinition* getEnumReflection(Gaff::Hash64 name) const = 0;
+	virtual void registerEnumReflection(Gaff::Hash64 name, Gaff::IEnumReflectionDefinition& ref_def) = 0;
 
 	virtual const Gaff::IReflectionDefinition* getReflection(Gaff::Hash64 name) const = 0;
 	virtual void registerReflection(Gaff::Hash64 name, Gaff::IReflectionDefinition& ref_def) = 0;

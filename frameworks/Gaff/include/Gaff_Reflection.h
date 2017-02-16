@@ -22,7 +22,9 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Gaff_Hash.h"
+#include "Gaff_SerializeInterfaces.h"
+#include "Gaff_ReflectionDefinition.h"
+#include "Gaff_ReflectionVersion.h"
 
 #ifndef GAFF_REFLECTION_NAMESPACE
 	#define GAFF_REFLECTION_NAMESPACE Gaff
@@ -171,17 +173,13 @@ NS_END
 	bool GAFF_REFLECTION_NAMESPACE::Reflection<type>::g_defined = false; \
 	Gaff::Vector<void (*)(void), allocator> GAFF_REFLECTION_NAMESPACE::Reflection<type>::g_on_defined_callbacks
 
-#define GAFF_REFLECTION_DEFINE_BEGIN_CUSTOM_BUILDER(type) \
+#define GAFF_REFLECTION_DEFINE_BEGIN_CUSTOM_BUILDER(type, allocator) \
 	Gaff::ReflectionDefinition<type, allocator> GAFF_REFLECTION_NAMESPACE::Reflection<type>::g_reflection_definition; \
 	GAFF_REFLECTION_DEFINE_BASE(type, allocator); \
 	void GAFF_REFLECTION_NAMESPACE::Reflection<type>::Init() \
 	{ \
 		Gaff::ReflectionVersion<type> version; \
 		BuildReflection(version); \
-		GAFF_ASSERT_MSG( \
-			version.getHash() == GetInstance()._version.getHash(), \
-			"Version hash for " #type " does not match!" \
-		); \
 		BuildReflection(g_reflection_definition); \
 
 #define GAFF_REFLECTION_DEFINE(type, allocator) \
@@ -703,9 +701,6 @@ constexpr Hash64 CalcTemplateHash(Hash64 init)
 {
 	return CalcTemplateHashHelper<T...>::Hash(init);
 }
-
-
-class IReflection;
 
 void AddToAttributeReflectionChain(IReflection* reflection);
 IReflection* GetAttributeReflectionChainHead(void);

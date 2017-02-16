@@ -1,7 +1,7 @@
 /*
  *	A Treebox Implementation
  *	Nana C++ Library(http://www.nanapro.org)
- *	Copyright(C) 2003-2015 Jinhao(cnjinhao@hotmail.com)
+ *	Copyright(C) 2003-2017 Jinhao(cnjinhao@hotmail.com)
  *
  *	Distributed under the Boost Software License, Version 1.0.
  *	(See accompanying file LICENSE_1_0.txt or copy at
@@ -166,7 +166,7 @@ namespace nana
 			class trigger::item_locator
 			{
 			public:
-				typedef tree_cont_type::node_type node_type;
+				using node_type = tree_cont_type::node_type;
 
 				item_locator(implement * impl, int item_pos, int x, int y);
 				int operator()(node_type &node, int affect);
@@ -866,8 +866,7 @@ namespace nana
 				item_proxy& item_proxy::check(bool ck)
 				{
 					trigger_->check(node_, ck ? checkstate::checked : checkstate::unchecked);
-					if(trigger_->draw())
-						API::update_window(trigger_->impl()->data.widget_ptr->handle());
+					trigger_->draw();
 					return *this;
 				}
 
@@ -1324,29 +1323,31 @@ namespace nana
 					node_r.width = comp_placer->item_width(*impl_->data.graph, node_attr_);
 					node_r.height = comp_placer->item_height(*impl_->data.graph);
 
-					if(pos_.y < item_pos_.y + static_cast<int>(node_r.height))
+					if ((pos_.y < item_pos_.y + static_cast<int>(node_r.height)) && (pos_.y >= item_pos_.y))
 					{
-						auto logic_pos = pos_ - item_pos_;
-						node_ = &node;
+						auto const logic_pos = pos_ - item_pos_;
 
-						for(int comp = static_cast<int>(component::begin); comp != static_cast<int>(component::end); ++comp)
+						for (int comp = static_cast<int>(component::begin); comp != static_cast<int>(component::end); ++comp)
 						{
 							nana::rectangle r = node_r;
-							if(comp_placer->locate(static_cast<component>(comp), node_attr_, &r))
+							if (!comp_placer->locate(static_cast<component>(comp), node_attr_, &r))
+								continue;
+							
+							if (r.is_hit(logic_pos))
 							{
-								if(r.is_hit(logic_pos))
-								{
-									what_ = static_cast<component>(comp);
-									if(component::expender == what_ && (false == node_attr_.has_children))
-										what_ = component::end;
+								node_ = &node;
+								what_ = static_cast<component>(comp);
+								if (component::expender == what_ && (false == node_attr_.has_children))
+									what_ = component::end;
 
-									if(component::text == what_)
-										node_text_r_ = r;
+								if (component::text == what_)
+									node_text_r_ = r;
 
-									return 0;
-								}
+								break;
 							}
 						}
+
+						return 0; //Stop iterating
 					}
 
 					item_pos_.y += node_r.height;
@@ -1563,35 +1564,6 @@ namespace nana
 					return impl_;
 				}
 
-				void trigger::auto_draw(bool ad)
-				{
-					if(impl_->attr.auto_draw != ad)
-					{
-						impl_->attr.auto_draw = ad;
-						if(ad)
-							API::update_window(impl_->data.widget_ptr->handle());
-					}
-				}
-
-				void trigger::checkable(bool enable)
-				{
-					auto & comp_placer = impl_->data.comp_placer;
-					if(comp_placer->enabled(component::crook) != enable)
-					{
-						comp_placer->enable(component::crook, enable);
-						if(impl_->attr.auto_draw)
-						{
-							impl_->draw(false);
-							API::update_window(impl_->data.widget_ptr->handle());
-						}
-					}
-				}
-
-				bool trigger::checkable() const
-				{
-					return impl_->data.comp_placer->enabled(component::crook);
-				}
-
 				void trigger::check(node_type* node, checkstate cs)
 				{
 					if (!node->owner) return;
@@ -1664,7 +1636,8 @@ namespace nana
 					if (!impl_->attr.auto_draw)
 						return false;
 
-					impl_->draw(false);
+					if(impl_->draw(false))
+						API::update_window(impl_->data.widget_ptr->handle());
 					return true;
 				}
 
@@ -1727,11 +1700,6 @@ namespace nana
 					return x;
 				}
 
-				bool trigger::verify(const void* node) const
-				{
-					return impl_->attr.tree_cont.verify(reinterpret_cast<const node_type*>(node));
-				}
-
 				bool trigger::verify_kinship(node_type* parent, node_type* child) const
 				{
 					if(false == (parent && child)) return false;
@@ -1744,7 +1712,7 @@ namespace nana
 
 				void trigger::remove(node_type* node)
 				{
-					if(!verify(node))
+					if (!tree().verify(node))
 						return;
 
 					auto & shape = impl_->shape;
@@ -1769,10 +1737,10 @@ namespace nana
 
 				void trigger::selected(node_type* node)
 				{
-					if(impl_->attr.tree_cont.verify(node) && impl_->set_selected(node))
+					if(tree().verify(node) && impl_->set_selected(node))
 					{
-						impl_->draw(true);
-						API::update_window(impl_->data.widget_ptr->handle());
+						if(impl_->draw(true))
+							API::update_window(impl_->data.widget_ptr->handle());
 					}
 				}
 
@@ -1908,22 +1876,15 @@ namespace nana
 								if(impl_->set_expanded(node_state.event_node, !node_state.event_node->value.second.expanded))
 									impl_->make_adjust(node_state.event_node, 0);
 
-								has_redraw = true;
-							}
-							else if(nl.item_body())
-							{
-								if(node_state.selected != node_state.event_node)
-								{
-									impl_->set_selected(node_state.event_node);
-									has_redraw = true;
-								}
+								has_redraw = true;	//btw, don't select the node
 							}
 						}
-						else if(node_state.selected != node_state.event_node)
-						{
-							impl_->set_selected(node_state.event_node);
-							has_redraw = true;
-						}
+					}
+					
+					if ((!has_redraw) && (node_state.selected != node_state.event_node))
+					{
+						impl_->set_selected(node_state.event_node);
+						has_redraw = true;
 					}
 
 					if(has_redraw)
@@ -2160,6 +2121,8 @@ namespace nana
 	}//end namespace drawerbase
 
 	//class treebox
+		using component = drawerbase::treebox::component;
+
 		treebox::treebox(){}
 
 		treebox::treebox(window wd, bool visible)
@@ -2184,18 +2147,37 @@ namespace nana
 
 		void treebox::auto_draw(bool ad)
 		{
-			get_drawer_trigger().auto_draw(ad);
+			auto impl = get_drawer_trigger().impl();
+			if (impl->attr.auto_draw != ad)
+			{
+				impl->attr.auto_draw = ad;
+				if (ad)
+					API::refresh_window(this->handle());
+			}
 		}
 
 		treebox & treebox::checkable(bool enable)
 		{
-			get_drawer_trigger().checkable(enable);
+			auto impl = get_drawer_trigger().impl();
+			auto & comp_placer = impl->data.comp_placer;
+			if (comp_placer->enabled(component::crook) != enable)
+			{
+				comp_placer->enable(component::crook, enable);
+				get_drawer_trigger().draw();
+			}
 			return *this;
 		}
 
 		bool treebox::checkable() const
 		{
-			return get_drawer_trigger().checkable();
+			return get_drawer_trigger().impl()->data.comp_placer->enabled(component::crook);
+		}
+
+		void treebox::clear()
+		{
+			auto impl = get_drawer_trigger().impl();
+			impl->attr.tree_cont.clear();
+			get_drawer_trigger().draw();
 		}
 
 		treebox::node_image_type& treebox::icon(const std::string& id) const

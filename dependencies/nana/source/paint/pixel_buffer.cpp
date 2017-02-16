@@ -795,7 +795,7 @@ namespace nana{	namespace paint
 		std::unique_ptr<unsigned char[]> autoptr;
 
 		auto rgb_color = clr.px_color().value;
-		nana::pixel_color_t rgb_imd;
+		nana::pixel_color_t rgb_imd = {};
 		if(fade)
 		{
 			autoptr = detail::alloc_fade_table(1 - fade_rate);
