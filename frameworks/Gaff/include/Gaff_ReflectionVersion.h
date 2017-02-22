@@ -52,16 +52,13 @@ public:
 	ReflectionVersion& func(const char (&name)[size], Ret (T::*ptr)(Args...));
 
 	template <class... Args>
-	ReflectionVersion& classAttrs(const Args&... /*args*/)
-	{
-		return *this;
-	}
+	ReflectionVersion& classAttrs(const Args&...);
 
 	template <size_t size, class... Args>
-	ReflectionVersion& varAttrs(const char(&/*name*/)[size], const Args&... /*args*/)
-	{
-		return *this;
-	}
+	ReflectionVersion& varAttrs(const char(&name)[size], const Args&...);
+
+	template <size_t size, class... Args>
+	ReflectionVersion& funcAttrs(const char(&name)[size], const Args&...);
 
 	Hash64 getHash(void) const;
 

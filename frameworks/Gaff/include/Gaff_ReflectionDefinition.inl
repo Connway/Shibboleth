@@ -690,8 +690,7 @@ template <class T, class Allocator>
 int32_t ReflectionDefinition<T, Allocator>::getNumVarAttributes(Hash32 name) const
 {
 	auto it = _var_attrs.find(name);
-	GAFF_ASSERT(it != _var_attrs.end());
-	return static_cast<int32_t>(it->second.size());
+	return (it != _var_attrs.end()) ? static_cast<int32_t>(it->second.size()) : 0;
 }
 
 template <class T, class Allocator>
@@ -707,17 +706,43 @@ template <class T, class Allocator>
 int32_t ReflectionDefinition<T, Allocator>::getNumFuncAttributes(Hash32 name) const
 {
 	auto it = _func_attrs.find(name);
-	GAFF_ASSERT(it != _func_attrs.end());
-	return static_cast<int32_t>(it->second.size());
+
+	if (it == _func_attrs.end()) {
+		for (auto it_base = _base_classes.begin(); it_base != _base_classes.end(); ++it_base) {
+			const int32_t num = it_base->second->getNumFuncAttributes(name);
+
+			if (num > 0) {
+				return num;
+			}
+		}
+
+	} else {
+		return static_cast<int32_t>(it->second.size());
+	}
+
+	return 0;
 }
 
 template <class T, class Allocator>
 const IAttribute* ReflectionDefinition<T, Allocator>::getFuncAttribute(Hash32 name, int32_t index) const
 {
 	auto it = _func_attrs.find(name);
-	GAFF_ASSERT(it != _func_attrs.end());
-	GAFF_ASSERT(index < static_cast<int32_t>(it->second.size()));
-	return it->second[index].get();
+
+	if (it == _func_attrs.end()) {
+		for (auto it_base = _base_classes.begin(); it_base != _base_classes.end(); ++it_base) {
+			const int32_t num = it_base->second->getNumFuncAttributes(name);
+
+			if (num > 0) {
+				GAFF_ASSERT(index < num);
+				return it_base->second->getFuncAttribute(name, index);
+			}
+		}
+
+	} else {
+		return it->second[index].get();
+	}
+
+	return nullptr;
 }
 
 template <class T, class Allocator>
@@ -793,6 +818,13 @@ ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::base(voi
 
 		base<Base>(GAFF_REFLECTION_NAMESPACE::Reflection<Base>::GetName());
 
+		// For calling base class functions.
+		_base_classes.emplace(
+			GAFF_REFLECTION_NAMESPACE::Reflection<Base>::GetHash(),
+			&base_ref_def
+		);
+
+		// Base class vars
 		for (int32_t i = 0; i < base_ref_def.getNumVariables(); ++i) {
 			eastl::pair<HashString32<Allocator>, IVarPtr> pair(
 				base_ref_def.getVariableName(i),
@@ -801,15 +833,24 @@ ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::base(voi
 
 			GAFF_ASSERT(_vars.find(pair.first) == _vars.end());
 			_vars.insert(std::move(pair));
+
+			// Base class var attrs
+			const Hash32 var_hash = pair.first.getHash();
+			const int32_t num_var_attrs = base_ref_def.getNumVarAttributes(var_hash);
+
+			for (int32_t j = 0; j < num_var_attrs; ++j) {
+				const IAttribute* const attribute = base_ref_def.getVarAttribute(var_hash, j);
+
+				auto& attrs = _var_attrs[var_hash];
+				attrs.set_allocator(_allocator);
+				attrs.emplace_back(attribute->clone());
+			}
 		}
 
-		// add base class var attrs
-
-		// add base class funcs
-
-		// add base class func attrs
-
-		// add base class class attrs
+		// Base class class attrs
+		for (int32_t i = 0; i < base_ref_def.getNumClassAttributes(); ++i) {
+			_class_attrs.emplace_back(base_ref_def.getClassAttribute(i)->clone());
+		}
 
 	// Register for callback if base class hasn't been defined yet.
 	} else {

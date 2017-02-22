@@ -30,4 +30,9 @@ SHIB_REFLECTION_CLASS_DEFINE_BEGIN(ResExtAttribute)
 	.BASE(Gaff::IAttribute)
 SHIB_REFLECTION_CLASS_DEFINE_END(ResExtAttribute)
 
+Gaff::IAttribute* ResExtAttribute::clone(void) const
+{
+	return SHIB_ALLOCT_POOL(ResExtAttribute, GetAllocator()->getPoolIndex("Reflection"), *GetAllocator(), _extension.getBuffer());
+}
+
 NS_END

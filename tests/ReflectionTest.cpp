@@ -409,6 +409,8 @@ public:
 
 class TestAttr : public Gaff::IAttribute
 {
+	Gaff::IAttribute* clone(void) const { return SHIB_ALLOCT(TestAttr, *Shibboleth::GetAllocator()); }
+
 	SHIB_REFLECTION_CLASS_DECLARE(TestAttr);
 };
 
@@ -575,4 +577,110 @@ TEST_CASE("reflection enum test", "[shibboleth_enum]")
 	REQUIRE(ref_def.getEntryValue("One") == 1);
 	REQUIRE(ref_def.getEntryValue("Two") == 2);
 	REQUIRE(ref_def.getEntryValue("Twenty") == 20);
+}
+
+
+class SerializeTestClass
+{
+};
+
+using STCPtr = Shibboleth::UniquePtr<SerializeTestClass>;
+
+SHIB_REFLECTION_DECLARE_SERIALIZE(STCPtr, 0)
+
+SHIB_REFLECTION_DEFINE_SERIALIZE_INIT(STCPtr)
+{
+}
+
+SHIB_REFLECTION_DEFINE_SERIALIZE_LOAD(STCPtr)
+{
+	GAFF_REF(reader);
+	GAFF_REF(object);
+	printf("Load STCPtr\n");
+}
+
+SHIB_REFLECTION_DEFINE_SERIALIZE_SAVE(STCPtr)
+{
+	GAFF_REF(writer);
+	GAFF_REF(object);
+	printf("Save STCPtr\n");
+}
+
+template <class T, class TT>
+class SerializeTestTemplate
+{
+};
+
+SHIB_TEMPLATE_REFLECTION_DECLARE_SERIALIZE(SerializeTestTemplate, 0, T, TT)
+
+SHIB_TEMPLATE_REFLECTION_DEFINE_SERIALIZE_INIT(SerializeTestTemplate, T, TT)
+{
+}
+
+SHIB_TEMPLATE_REFLECTION_DEFINE_SERIALIZE_LOAD(SerializeTestTemplate, T, TT)
+{
+	GAFF_REF(reader);
+	GAFF_REF(object);
+	printf("Load %s\n", Shibboleth::Reflection< SerializeTestTemplate<T, TT> >::GetName());
+}
+
+SHIB_TEMPLATE_REFLECTION_DEFINE_SERIALIZE_SAVE(SerializeTestTemplate, T, TT)
+{
+	GAFF_REF(writer);
+	GAFF_REF(object);
+	printf("Save %s\n", Shibboleth::Reflection< SerializeTestTemplate<T, TT> >::GetName());
+}
+
+
+
+class EmptyReader : public Gaff::ISerializeReader
+{
+	int8_t readInt8(void) const { return 0; }
+	int16_t readInt16(void) const { return 0; }
+	int32_t readInt32(void) const { return 0; }
+	int64_t readInt64(void) const { return 0; }
+
+	uint8_t readUInt8(void) const { return 0; }
+	uint16_t readUInt16(void) const { return 0; }
+	uint32_t readUInt32(void) const { return 0; }
+	uint64_t readUInt64(void) const { return 0; }
+
+	float readFloat(void) const { return 0.0f; }
+	double readDouble(void) const { return 0.0; }
+
+	size_t readStringLength(void) const { return 0; }
+	const char* readString(void) const { return nullptr; }
+};
+
+class EmptyWriter : public Gaff::ISerializeWriter
+{
+	void writeInt8(int8_t value) const { GAFF_REF(value); }
+	void writeInt16(int16_t value) const { GAFF_REF(value); }
+	void writeInt32(int32_t value) const { GAFF_REF(value); }
+	void writeInt64(int64_t value) const { GAFF_REF(value); }
+
+	void writeUInt8(uint8_t value) const { GAFF_REF(value); }
+	void writeUInt16(uint16_t value) const { GAFF_REF(value); }
+	void writeUInt32(uint32_t value) const { GAFF_REF(value); }
+	void writeUInt64(uint64_t value) const { GAFF_REF(value); }
+
+	void writeFloat(float value) const { GAFF_REF(value); }
+	void writeDouble(double value) const { GAFF_REF(value); }
+
+	void writeString(const char* value, size_t size) const { GAFF_REF(value); GAFF_REF(size); }
+	void writeString(const char* value) const { GAFF_REF(value); }
+};
+
+TEST_CASE("reflection serialize test", "[shibboleth_serialize]")
+{
+	EmptyReader reader;
+	EmptyWriter writer;
+
+	STCPtr stc;
+	Shibboleth::Reflection<STCPtr>::Load(reader, stc);
+	Shibboleth::Reflection<STCPtr>::Save(writer, stc);
+
+	SerializeTestTemplate<int32_t, double> stt;
+	Shibboleth::Reflection< SerializeTestTemplate<int32_t, double> >::Load(reader, stt);
+	Shibboleth::Reflection< SerializeTestTemplate<int32_t, double> >::Save(writer, stt);
 }

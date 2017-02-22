@@ -34,6 +34,8 @@ public:
 
 	const HashStringTemp32& getExtension(void) const { return _extension; }
 
+	Gaff::IAttribute* clone(void) const override;
+
 private:
 	HashStringTemp32 _extension;
 

@@ -279,13 +279,15 @@ private:
 	};
 
 	template <class Ret, class... Args>
-	class ReflectionFunction: public IReflectionFunction<Ret, Args...>, public VirtualDestructor
+	class ReflectionFunction : public IReflectionFunction<Ret, Args...>, public VirtualDestructor
 	{
 	public:
 		using MemFuncConst = Ret (T::*)(Args...) const;
 		using MemFunc = Ret (T::*)(Args...);
 
-		ReflectionFunction(MemFuncConst func, bool is_const) :
+		ReflectionFunction(const ReflectionFunction& ref_func) = default;
+
+		ReflectionFunction(MemFuncConst func, bool is_const):
 			_is_const(is_const)
 		{
 			_func.const_func = func;
@@ -328,11 +330,46 @@ private:
 		bool _is_const;
 	};
 
+	//template <class Base, class Ret, class... Args>
+	//class BaseReflectionFunction : public IReflectionFunction<Ret, Args...>, public VirtualDestructor
+	//{
+	//public:
+	//	using BaseRefFunc = typename ReflectionDefinition<Base, Allocator>::ReflectionFunction<Ret, Args...>;
+
+	//	BaseReflectionFunction(const BaseRefFunc& base_ref_func): _base_ref_func(base_ref_func) {}
+
+	//	Ret call(const void* obj, Args... args) const override
+	//	{
+	//		GAFF_ASSERT(_is_const);
+	//		const Base* base = reinterpret_cast<const T*>(obj);
+	//		return _base_ref_func.template call<Ret, Args...>(base, args...);
+	//	}
+
+	//	Ret call(void* obj, Args... args) const override
+	//	{
+	//		Base* base = reinterpret_cast<T*>(obj);
+	//		return _base_ref_func.template call<Ret, Args...>(base, args...);
+	//	}
+
+	//	bool isConst(void) const override { return _base_ref_func.isConst(); }
+
+	//private:
+	//	BaseRefFunc _base_ref_func;
+	//};
+
 	using IRefFuncPtr = UniquePtr<VirtualDestructor, Allocator>;
 	using IVarPtr = UniquePtr<IVar, Allocator>;
 
 	struct FuncData
 	{
+		//using RegisterFunc = void (*)(VectorMap<HashString32<Allocator>, FuncData, Allocator>&, int32_t);
+
+		//template <class Ret, class... Args>
+		//void BaseClassRegister(FuncData& func_data, int32_t index)
+		//{
+
+		//}
+
 		FuncData(void) = default;
 
 		FuncData(const FuncData& rhs)
@@ -348,8 +385,9 @@ private:
 				func[i] = std::move(rhs_cast.func[i]);
 			}
 
-			memcpy(hash, rhs.hash, sizeof(Hash64) * ARRAY_SIZE(hash));
-			memcpy(offset, rhs.offset, sizeof(int32_t) * ARRAY_SIZE(offset));
+			memcpy(hash, rhs.hash, sizeof(Hash64) * NUM_OVERLOADS);
+			memcpy(offset, rhs.offset, sizeof(int32_t) * NUM_OVERLOADS);
+			//memcpy(base_class_copy_funcs, sizeof(RegisterFunc) * NUM_OVERLOADS);
 			return *this;
 		}
 
@@ -357,12 +395,14 @@ private:
 		Hash64 hash[NUM_OVERLOADS];
 		IRefFuncPtr func[NUM_OVERLOADS];
 		int32_t offset[NUM_OVERLOADS];
+		//RegisterFunc base_class_copy_funcs[NUM_OVERLOADS];
 	};
 
 	VectorMap<HashString64<Allocator>, ptrdiff_t, Allocator> _base_class_offsets;
 	VectorMap<HashString32<Allocator>, IVarPtr, Allocator> _vars;
 	VectorMap<HashString32<Allocator>, FuncData, Allocator> _funcs;
 	VectorMap<Hash64, VoidFunc, Allocator> _ctors;
+	VectorMap<Hash64, const IReflectionDefinition*, Allocator> _base_classes;
 
 	VectorMap<Hash32, Vector<IAttributePtr, Allocator>, Allocator> _var_attrs;
 	VectorMap<Hash32, Vector<IAttributePtr, Allocator>, Allocator> _func_attrs;
