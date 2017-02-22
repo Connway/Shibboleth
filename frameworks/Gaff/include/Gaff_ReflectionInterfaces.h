@@ -95,6 +95,8 @@ public:
 
 class IAttribute : public IReflectionObject
 {
+public:
+	virtual IAttribute* clone(void) const = 0;
 };
 
 class IReflection
