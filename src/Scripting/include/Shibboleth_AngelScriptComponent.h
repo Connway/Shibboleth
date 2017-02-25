@@ -47,6 +47,8 @@ private:
 	const asITypeInfo* _type_info = nullptr;
 	AngelScriptResourcePtr _res;
 
+	void onScriptLoaded(IResource* res);
+
 	SHIB_REFLECTION_CLASS_DECLARE(AngelScriptComponent);
 };
 
