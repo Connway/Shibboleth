@@ -22,6 +22,7 @@ THE SOFTWARE.
 
 #pragma once
 
+#include <Shibboleth_Reflection.h>
 #include <Shibboleth_HashString.h>
 #include <Shibboleth_Vector.h>
 #include <Gaff_IRefCounted.h>
@@ -56,8 +57,6 @@ public:
 		RS_LOADED
 	};
 
-	using ResStateCallbackFunc = void (IResource*);
-
 	virtual void load(void) = 0;
 	virtual bool readsFromDisk(void) const { return true; }
 
@@ -65,15 +64,15 @@ public:
 	void release(void) const override;
 	int32_t getRefCount(void) const override;
 
-	void addResourceStateCallback(eastl::function<ResStateCallbackFunc>&& callback);
-	void removeResourceStateCallback(const eastl::function<ResStateCallbackFunc>& callback);
+	void addResourceStateCallback(eastl::function<void (IResource*)>&& callback);
+	void removeResourceStateCallback(const eastl::function<void (IResource*)>& callback);
 
 	const HashString64& getFilePath(void) const;
 	ResourceState getState(void) const;
 
 protected:
 	Vector<IResourcePtr> _sub_resources = Vector<IResourcePtr>(ProxyAllocator("Resource"));
-	Vector< eastl::function<ResStateCallbackFunc> > _callbacks;
+	Vector< eastl::function<void (IResource*)> > _callbacks;
 	ResourceState _state = RS_PENDING;
 
 	IFile* loadFile(const char* file_path);
@@ -88,3 +87,5 @@ private:
 };
 
 NS_END
+
+SHIB_TEMPLATE_REFLECTION_DECLARE_SERIALIZE(Gaff::RefPtr, 0, T);

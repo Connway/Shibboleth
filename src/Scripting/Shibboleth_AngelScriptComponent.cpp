@@ -30,7 +30,8 @@ NS_SHIBBOLETH
 
 SHIB_REFLECTION_CLASS_DEFINE_BEGIN(AngelScriptComponent)
 	.BASE(Component)
-	//.var("Script", &AngelScriptComponent::_res)
+
+	.var("Script", &AngelScriptComponent::_res)
 SHIB_REFLECTION_CLASS_DEFINE_END(AngelScriptComponent)
 
 AngelScriptComponent::~AngelScriptComponent(void)
@@ -51,6 +52,14 @@ AngelScriptComponent::~AngelScriptComponent(void)
 
 void AngelScriptComponent::allComponentsLoaded(void)
 {
+	ProxyAllocator proxy_allocator;
+	eastl::function<void (IResource*)> cb(eastl::allocator_arg, proxy_allocator, [&](IResource* res) -> void
+	{
+		onScriptLoaded(res);
+	});
+
+	_res->addResourceStateCallback(std::move(cb));
+
 	// Determine class by either metadata markup or match the file name.
 	if (_res && _res->getState() == IResource::RS_LOADED) {
 		const asIScriptModule* const module = _res->getModule();
@@ -146,6 +155,11 @@ void AngelScriptComponent::removeFromWorld(void)
 		_context->SetObject(_object);
 		_context->Execute();
 	}
+}
+
+void AngelScriptComponent::onScriptLoaded(IResource* /*res*/)
+{
+	
 }
 
 NS_END
