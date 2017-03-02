@@ -45,10 +45,17 @@ public:
 		return ++_next_job_pool_index;
 	}
 
-	template <size_t size>
-	IResourcePtr requestResource(const char (&string)[size])
+	template <class T>
+	Gaff::RefPtr<T> requestResourceT(const char* name)
 	{
-		return requestResource(Gaff::HashStringTemp64(string));
+		Gaff::RefPtr<T> ptr(reinterpret_cast<T*>(requestResource(name).get()));
+		return ptr;
+	}
+
+	template <size_t size>
+	IResourcePtr requestResource(const char (&name)[size])
+	{
+		return requestResource(Gaff::HashStringTemp64(name, size - 1));
 	}
 
 	IResourcePtr requestResource(const char* name)
@@ -58,7 +65,7 @@ public:
 
 	IResourcePtr requestResource(Gaff::HashStringTemp64 name);
 
-	void waitForResource(const IResourcePtr& resource);
+	void waitForResource(IResource& resource);
 
 private:
 	using FactoryFunc = void* (*)(Gaff::IAllocator&);

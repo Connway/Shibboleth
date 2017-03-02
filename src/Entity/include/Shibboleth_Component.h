@@ -24,7 +24,7 @@ THE SOFTWARE.
 
 #include <Shibboleth_String.h>
 #include <Gaff_ReflectionInterfaces.h>
-#include <Gaff_JSON.h>
+//#include <Gaff_JSON.h>
 
 NS_SHIBBOLETH
 

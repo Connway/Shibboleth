@@ -21,13 +21,13 @@ THE SOFTWARE.
 ************************************************************************************/
 
 template <class T, class HashType>
-HashType CalculateHash(const T* value, size_t size, HashType(*hash_func)(const char*, size_t))
+HashType CalculateHash(const T* value, size_t size, HashType (*hash_func)(const char*, size_t))
 {
 	if (hash_func) {
 		return hash_func(reinterpret_cast<const char*>(value), size * sizeof(T));
 	}
 
-	Hash32 hash_value = FNV1aHash32(reinterpret_cast<const char*>(value), value * sizeof(T));
+	Hash32 hash_value = FNV1aHash32(reinterpret_cast<const char*>(value), size * sizeof(T));
 	return static_cast<HashType>(hash_value);
 }
 
@@ -42,7 +42,7 @@ Hash32 CalculateHash(const T* value, size_t size, Hash32 (*hash_func)(const char
 }
 
 template <class T>
-Hash64 CalculateHash(const T* value, size_t size, Hash64(*hash_func)(const char*, size_t))
+Hash64 CalculateHash(const T* value, size_t size, Hash64 (*hash_func)(const char*, size_t))
 {
 	if (hash_func) {
 		return hash_func(reinterpret_cast<const char*>(value), size * sizeof(T));

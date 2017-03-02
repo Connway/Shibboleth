@@ -27,18 +27,28 @@ project "MainLoopModule"
 		"../Memory/include",
 		"../../frameworks/Gaff/include",
 		"../../dependencies/EASTL/include"
+
+		, "../Scripting/include",
+		"../Resource/include",
+		"../../dependencies/angelscript/angelscript/include",
+		"../../dependencies/angelscript/add_on/scriptbuilder",
+		"../Entity/include"
 	}
 
 	dependson
 	{
 		"Shared", "Gaff",
 		"Memory", "EASTL"
+
+		, "Scripting", "Resource", "angelscript", "Entity"
 	}
 
 	links
 	{
 		"Shared", "Gaff",
 		"Memory", "EASTL"
+
+		, "Scripting", "Resource", "angelscript", "Entity"
 	}
 
 	postbuildcommands

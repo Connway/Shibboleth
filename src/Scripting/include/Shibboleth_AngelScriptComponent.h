@@ -25,10 +25,6 @@ THE SOFTWARE.
 #include <Shibboleth_AngelScriptResource.h>
 #include <Shibboleth_Component.h>
 
-class asIScriptContext;
-class asIScriptObject;
-class asITypeInfo;
-
 NS_SHIBBOLETH
 
 class AngelScriptComponent final : public Component
@@ -41,10 +37,60 @@ public:
 	void addToWorld(void) override;
 	void removeFromWorld(void) override;
 
+	void setScript(const AngelScriptResourcePtr& script);
+	const AngelScriptResourcePtr& getScript(void) const;
+
+	int32_t getPropertyIndex(const char* name) const;
+	int32_t getPropertyIndex(Gaff::Hash32 name) const;
+
+	int32_t getFunctionIndex(const char* name) const;
+	int32_t getFunctionIndex(Gaff::Hash32 name) const;
+
+	template <class T>
+	const T& getProperty(const char* name) const;
+
+	template <class T>
+	const T& getProperty(Gaff::Hash32 name) const;
+
+	template <class T>
+	const T& getProperty(int32_t index) const;
+
+	template <class T>
+	T& getProperty(const char* name);
+
+	template <class T>
+	T& getProperty(Gaff::Hash32 name);
+
+	template <class T>
+	T& getProperty(int32_t index);
+
+	void prepareMethod(const char* name);
+	void prepareMethod(Gaff::Hash32 name);
+	void prepareMethod(int32_t index);
+
+	void callMethod(void);
+
+	template <class T>
+	void setArg(int32_t index, T value);
+
+	template <class T>
+	T getReturnValue(void);
+
 private:
+	struct PropertyData
+	{
+		int type_id;
+		asITypeInfo* type_info;
+		void* property;
+	};
+
 	asIScriptContext* _context = nullptr;
 	asIScriptObject* _object = nullptr;
 	const asITypeInfo* _type_info = nullptr;
+
+	VectorMap<Gaff::Hash32, PropertyData> _property_map;
+	VectorMap<Gaff::Hash32, asIScriptFunction*> _method_map;
+
 	AngelScriptResourcePtr _res;
 
 	void onScriptLoaded(IResource* res);
@@ -53,5 +99,7 @@ private:
 };
 
 NS_END
+
+#include "Shibboleth_AngelScriptComponent.inl"
 
 SHIB_REFLECTION_DECLARE(AngelScriptComponent)

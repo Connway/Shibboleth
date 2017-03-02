@@ -30,6 +30,8 @@ THE SOFTWARE.
 #include <Gaff_SpinLock.h>
 #include <Gaff_Function.h>
 
+#include <Gaff_JSON.h>
+
 NS_SHIBBOLETH
 
 class IComponentManager;
