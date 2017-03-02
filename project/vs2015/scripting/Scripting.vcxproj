@@ -258,6 +258,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\..\src\Scripting\include\Shibboleth_AngelScript.inl" />
+    <None Include="..\..\..\src\Scripting\include\Shibboleth_AngelScriptComponent.inl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

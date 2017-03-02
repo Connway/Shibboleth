@@ -59,7 +59,111 @@ void AngelScriptComponent::allComponentsLoaded(void)
 	});
 
 	_res->addResourceStateCallback(std::move(cb));
+}
 
+void AngelScriptComponent::addToWorld(void)
+{
+	asIScriptFunction* const func = _type_info->GetMethodByName("onAddToWorld");
+
+	if (func) {
+		_context->Prepare(func);
+		_context->SetObject(_object);
+		_context->Execute();
+	}
+}
+
+void AngelScriptComponent::removeFromWorld(void)
+{
+	asIScriptFunction* const func = _type_info->GetMethodByName("removeFromWorld");
+
+	if (func) {
+		_context->Prepare(func);
+		_context->SetObject(_object);
+		_context->Execute();
+	}
+}
+
+void AngelScriptComponent::setScript(const AngelScriptResourcePtr& script)
+{
+	_type_info = nullptr;
+
+	if (_object) {
+		_object->Release();
+		_object = nullptr;
+	}
+
+	if (_context) {
+		Gaff::SpinLock& lock = GetApp().getManagerTUnsafe<AngelScriptManager>().getEngineLock();
+
+		lock.lock();
+		_context->GetEngine()->ReturnContext(_context);
+		lock.unlock();
+
+		_context = nullptr;
+	}
+
+	_property_map.clear();
+	_method_map.clear();
+
+	_res = script;
+
+	onScriptLoaded(_res.get());
+}
+
+const AngelScriptResourcePtr& AngelScriptComponent::getScript(void) const
+{
+	return _res;
+}
+
+int32_t AngelScriptComponent::getPropertyIndex(const char* name) const
+{
+	return getPropertyIndex(Gaff::FNV1aHash32String(name));
+}
+
+int32_t AngelScriptComponent::getPropertyIndex(Gaff::Hash32 name) const
+{
+	auto it = _property_map.find(name);
+	return (it == _property_map.end()) ? -1 : static_cast<int32_t>(it - _property_map.begin());
+}
+
+int32_t AngelScriptComponent::getFunctionIndex(const char* name) const
+{
+	return getFunctionIndex(Gaff::FNV1aHash32String(name));
+}
+
+int32_t AngelScriptComponent::getFunctionIndex(Gaff::Hash32 name) const
+{
+	auto it = _method_map.find(name);
+	return (it == _method_map.end()) ? -1 : static_cast<int32_t>(it - _method_map.begin());
+}
+
+void AngelScriptComponent::prepareMethod(const char* name)
+{
+	return prepareMethod(Gaff::FNV1aHash32String(name));
+}
+
+void AngelScriptComponent::prepareMethod(Gaff::Hash32 name)
+{
+	auto it = _method_map.find(name);
+	GAFF_ASSERT(it != _method_map.end());
+	_context->Prepare(it->second);
+	_context->SetObject(_object);
+}
+
+void AngelScriptComponent::prepareMethod(int32_t index)
+{
+	GAFF_ASSERT(index < static_cast<int32_t>(_method_map.size()));
+	auto it = _method_map.begin() + index;
+	_context->Prepare(it->second);
+}
+
+void AngelScriptComponent::callMethod(void)
+{
+	_context->Execute();
+}
+
+void AngelScriptComponent::onScriptLoaded(IResource* /*res*/)
+{
 	// Determine class by either metadata markup or match the file name.
 	if (_res && _res->getState() == IResource::RS_LOADED) {
 		const asIScriptModule* const module = _res->getModule();
@@ -131,35 +235,27 @@ void AngelScriptComponent::allComponentsLoaded(void)
 				_context->SetObject(_object);
 				_context->Execute();
 			}
+
+			asUINT num_props = _object->GetPropertyCount();
+
+			for (asUINT i = 0; i < num_props; ++i) {
+				const char* const name = _object->GetPropertyName(i);
+				int type_id = _object->GetPropertyTypeId(i);
+
+				PropertyData& data = _property_map[Gaff::FNV1aHash32String(name)];
+				data.type_id = type_id;
+				data.type_info = (type_id <= asTYPEID_DOUBLE) ? nullptr : module->GetEngine()->GetTypeInfoById(type_id);
+				data.property = _object->GetAddressOfProperty(i);
+			}
+
+			asUINT num_methods = _type_info->GetMethodCount();
+
+			for (asUINT i = 0; i < num_methods; ++i) {
+				asIScriptFunction* const func = _type_info->GetMethodByIndex(i);
+				_method_map[Gaff::FNV1aHash32String(func->GetName())] = func;
+			}
 		}
 	}
-}
-
-void AngelScriptComponent::addToWorld(void)
-{
-	asIScriptFunction* const func = _type_info->GetMethodByName("onAddToWorld");
-
-	if (func) {
-		_context->Prepare(func);
-		_context->SetObject(_object);
-		_context->Execute();
-	}
-}
-
-void AngelScriptComponent::removeFromWorld(void)
-{
-	asIScriptFunction* const func = _type_info->GetMethodByName("removeFromWorld");
-
-	if (func) {
-		_context->Prepare(func);
-		_context->SetObject(_object);
-		_context->Execute();
-	}
-}
-
-void AngelScriptComponent::onScriptLoaded(IResource* /*res*/)
-{
-	
 }
 
 NS_END
