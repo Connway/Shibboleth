@@ -37,6 +37,12 @@ THE SOFTWARE.
 NS_GAFF
 
 template <class T, class... Args>
+T* ConstructExact(T* data, Args... args)
+{
+	return new (data) T(args...);
+}
+
+template <class T, class... Args>
 T* Construct(T* data, Args&&... args)
 {
 	return new (data) T(std::forward<Args>(args)...);

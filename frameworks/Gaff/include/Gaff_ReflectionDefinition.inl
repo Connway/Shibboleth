@@ -28,9 +28,9 @@ THE SOFTWARE.
 NS_GAFF
 
 template <class T, class... Args>
-void* FactoryFunc(IAllocator& allocator, Args&&... args)
+void* FactoryFunc(IAllocator& allocator, Args... args)
 {
-	return GAFF_ALLOCT(T, allocator, std::forward<Args>(args)...);
+	return GAFF_ALLOCT(T, allocator, args...);
 }
 
 // IVar
@@ -868,7 +868,7 @@ ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::ctor(voi
 	Hash64 hash = CalcTemplateHash<Args...>(INIT_HASH64);
 	GAFF_ASSERT(!getFactory(hash));
 
-	void* (*factory_func)(IAllocator&, Args&&...) = Gaff::FactoryFunc<T, Args...>;
+	void* (*factory_func)(IAllocator&, Args...) = Gaff::FactoryFunc<T, Args...>;
 	_ctors.emplace(hash, reinterpret_cast<VoidFunc>(factory_func));
 
 	return *this;

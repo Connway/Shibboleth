@@ -27,7 +27,7 @@ THE SOFTWARE.
 #include <Gaff_SpinLock.h>
 
 class asIScriptEngine;
-class asMessageInfo;
+struct asSMessageInfo;
 
 NS_SHIBBOLETH
 
@@ -43,7 +43,7 @@ private:
 	asIScriptEngine* _engine = nullptr;
 	Gaff::SpinLock _lock;
 
-	void messageCallback(const asMessageInfo* msg, void* param);
+	void messageCallback(const asSMessageInfo* msg, void* param);
 
 	SHIB_REFLECTION_CLASS_DECLARE(AngelScriptManager);
 };

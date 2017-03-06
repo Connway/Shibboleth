@@ -58,6 +58,7 @@ bool AngelScriptManager::init(void)
 	// Declare them ahead of time so that we can add functions that reference them without generating errors.
 	_engine->RegisterObjectType("Object", 0, asOBJ_REF | asOBJ_NOCOUNT);
 	_engine->RegisterObjectType("Component", 0, asOBJ_REF | asOBJ_NOCOUNT);
+	RegisterMath(_engine);
 	RegisterObject(_engine);
 	RegisterComponent(_engine);
 	AngelScriptComponentWrapper::Register(_engine);
@@ -75,7 +76,7 @@ Gaff::SpinLock& AngelScriptManager::getEngineLock(void)
 	return _lock;
 }
 
-void AngelScriptManager::messageCallback(const asMessageInfo* msg, void* /*param*/)
+void AngelScriptManager::messageCallback(const asSMessageInfo* msg, void* /*param*/)
 {
 	GAFF_REF(msg);
 }
