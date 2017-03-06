@@ -23,15 +23,13 @@ THE SOFTWARE.
 #include "Shibboleth_AngelScriptBaseTypes.h"
 #include <Shibboleth_Object.h>
 #include <angelscript.h>
-//#include <glm/detail/func_common.hpp>
 #include <vec4.hpp>
 #include <vec3.hpp>
 #include <vec2.hpp>
 
-
 #define REGISTER_VEC(name, type) \
 	REGISTER_BASE_VEC_TYPE(name, type); \
-	engine->RegisterObjectBehaviour(#name, asBEHAVE_CONSTRUCT, "void f(float)", asFUNCTION(GAFF_SINGLE_ARG(Gaff::Construct<glm::##type, float>)), asCALL_CDECL_OBJFIRST); \
+	engine->RegisterObjectBehaviour(#name, asBEHAVE_CONSTRUCT, "void f(float)", asFUNCTION(GAFF_SINGLE_ARG(Gaff::ConstructExact<glm::##type, float>)), asCALL_CDECL_OBJFIRST); \
 	engine->RegisterObjectMethod(#name, #name "& opAddAssign(float)", asMETHODPR(glm::##type, operator+=, (float), glm::##type&), asCALL_THISCALL); \
 	engine->RegisterObjectMethod(#name, #name "& opSubAssign(float)", asMETHODPR(glm::##type, operator-=, (float), glm::##type&), asCALL_THISCALL); \
 	engine->RegisterObjectMethod(#name, #name "& opDivAssign(const " #name "& in)", asMETHODPR(glm::##type, operator/=, (const glm::##type&), glm::##type&), asCALL_THISCALL); \
@@ -44,7 +42,7 @@ THE SOFTWARE.
 	engine->RegisterObjectMethod(#name, #name " opMul(float) const", asFUNCTIONPR(glm::operator*, (const glm::##type&, float), glm::##type), asCALL_CDECL_OBJFIRST); \
 	engine->RegisterObjectMethod(#name, #name " opMod(const " #name "& in) const", asFUNCTIONPR(GAFF_SINGLE_ARG(glm::mod<float, glm::highp, glm::t##type>), (const glm::##type&, const glm::##type&), glm::##type), asCALL_CDECL_OBJFIRST); \
 	engine->RegisterObjectMethod(#name, #name " opMod(float) const", asFUNCTIONPR(GAFF_SINGLE_ARG(glm::mod<float, glm::highp, glm::t##type>), (const glm::##type&, float), glm::##type), asCALL_CDECL_OBJFIRST); \
-	engine->RegisterObjectMethod(#name, "float& opPow(const " #name "& in) const", asFUNCTIONPR(GAFF_SINGLE_ARG(glm::pow<float, glm::highp, glm::t##type>), (const glm::##type&, const glm::##type&), glm::##type), asCALL_THISCALL); \
+	engine->RegisterObjectMethod(#name, #name " opPow(const " #name "& in) const", asFUNCTIONPR(GAFF_SINGLE_ARG(glm::pow<float, glm::highp, glm::t##type>), (const glm::##type&, const glm::##type&), glm::##type), asCALL_CDECL_OBJFIRST); \
 	engine->RegisterObjectMethod(#name, #name "& opPreInc()", asMETHODPR(glm::##type, operator++, (void), glm::##type&), asCALL_THISCALL); \
 	engine->RegisterObjectMethod(#name, #name "& opPreDec()", asMETHODPR(glm::##type, operator--, (void), glm::##type&), asCALL_THISCALL); \
 	engine->RegisterObjectMethod(#name, #name " opPostInc() const", asMETHODPR(glm::##type, operator++, (int), glm::##type), asCALL_THISCALL); \
@@ -68,8 +66,8 @@ THE SOFTWARE.
 	engine->RegisterObjectMethod(#name, #name " clamp(float, float) const", asFUNCTIONPR(GAFF_SINGLE_ARG(glm::clamp<float, glm::highp, glm::t##type>), (const glm::##type&, float, float), glm::##type), asCALL_CDECL_OBJFIRST)
 
 #define REGISTER_BASE_VEC_TYPE(name, type) \
-	engine->RegisterObjectBehaviour(#name, asBEHAVE_CONSTRUCT, "void f()", asFUNCTION(Gaff::Construct<glm::##type>), asCALL_CDECL_OBJFIRST); \
-	engine->RegisterObjectBehaviour(#name, asBEHAVE_CONSTRUCT, "void f(const " #name "& in)", asFUNCTION(GAFF_SINGLE_ARG(Gaff::Construct<glm::##type, glm::##type>)), asCALL_CDECL_OBJFIRST); \
+	engine->RegisterObjectBehaviour(#name, asBEHAVE_CONSTRUCT, "void f()", asFUNCTION(Gaff::ConstructExact<glm::##type>), asCALL_CDECL_OBJFIRST); \
+	engine->RegisterObjectBehaviour(#name, asBEHAVE_CONSTRUCT, "void f(const " #name "& in)", asFUNCTION(GAFF_SINGLE_ARG(Gaff::ConstructExact<glm::##type, const glm::##type&>)), asCALL_CDECL_OBJFIRST); \
 	engine->RegisterObjectMethod(#name, #name "& opAssign(const " #name "& in)", asMETHODPR(glm::##type, operator=, (const glm::##type&), glm::##type&), asCALL_THISCALL); \
 	engine->RegisterObjectMethod(#name, #name "& opAddAssign(const " #name "& in)", asMETHODPR(glm::##type, operator+=, (const glm::##type&), glm::##type&), asCALL_THISCALL); \
 	engine->RegisterObjectMethod(#name, #name "& opSubAssign(const " #name "& in)", asMETHODPR(glm::##type, operator-=, (const glm::##type&), glm::##type&), asCALL_THISCALL); \
@@ -121,7 +119,7 @@ void RegisterMath(asIScriptEngine* engine)
 	// Vec2
 	REGISTER_VEC(Vec2, vec2);
 
-	engine->RegisterObjectBehaviour("Vec2", asBEHAVE_CONSTRUCT, "void f(float, float)", asFUNCTION(GAFF_SINGLE_ARG(Gaff::Construct<glm::vec2, float, float>)), asCALL_CDECL_OBJFIRST);
+	engine->RegisterObjectBehaviour("Vec2", asBEHAVE_CONSTRUCT, "void f(float, float)", asFUNCTION(GAFF_SINGLE_ARG(Gaff::ConstructExact<glm::vec2, float, float>)), asCALL_CDECL_OBJFIRST);
 
 	engine->RegisterObjectProperty("Vec2", "float x", asOFFSET(glm::vec2, x));
 	engine->RegisterObjectProperty("Vec2", "float y", asOFFSET(glm::vec2, y));
@@ -133,10 +131,10 @@ void RegisterMath(asIScriptEngine* engine)
 	// Vec3
 	REGISTER_VEC(Vec3, vec3);
 
-	engine->RegisterObjectBehaviour("Vec3", asBEHAVE_CONSTRUCT, "void f(float, float, float)", asFUNCTION(GAFF_SINGLE_ARG(Gaff::Construct<glm::vec3, float, float, float>)), asCALL_CDECL_OBJFIRST);
-	engine->RegisterObjectBehaviour("Vec3", asBEHAVE_CONSTRUCT, "void f(const Vec2& in, float)", asFUNCTION(GAFF_SINGLE_ARG(Gaff::Construct<glm::vec3, glm::vec2, float>)), asCALL_CDECL_OBJFIRST);
+	engine->RegisterObjectBehaviour("Vec3", asBEHAVE_CONSTRUCT, "void f(float, float, float)", asFUNCTION(GAFF_SINGLE_ARG(Gaff::ConstructExact<glm::vec3, float, float, float>)), asCALL_CDECL_OBJFIRST);
+	engine->RegisterObjectBehaviour("Vec3", asBEHAVE_CONSTRUCT, "void f(const Vec2& in, float)", asFUNCTION(GAFF_SINGLE_ARG(Gaff::ConstructExact<glm::vec3, const glm::vec2&, float>)), asCALL_CDECL_OBJFIRST);
 
-	engine->RegisterObjectMethod("Quat", "Vec3 opMul(const Quat& in) const", asFUNCTIONPR(glm::operator*, (const glm::vec3&, const glm::quat&), glm::vec3), asCALL_CDECL_OBJFIRST);
+	engine->RegisterObjectMethod("Vec3", "Vec3 opMul(const Quat& in) const", asFUNCTIONPR(glm::operator*, (const glm::vec3&, const glm::quat&), glm::vec3), asCALL_CDECL_OBJFIRST);
 
 	engine->RegisterObjectMethod("Vec3", "Vec3 cross(const Vec3& in) const", asFUNCTIONPR(GAFF_SINGLE_ARG(glm::cross<float, glm::highp>), (const glm::vec3&, const glm::vec3&), glm::vec3), asCALL_CDECL_OBJFIRST);
 
@@ -153,11 +151,11 @@ void RegisterMath(asIScriptEngine* engine)
 	// Vec4
 	REGISTER_VEC(Vec4, vec4);
 
-	engine->RegisterObjectBehaviour("Vec4", asBEHAVE_CONSTRUCT, "void f(float, float, float, float)", asFUNCTION(GAFF_SINGLE_ARG(Gaff::Construct<glm::vec4, float, float, float, float>)), asCALL_CDECL_OBJFIRST);
-	engine->RegisterObjectBehaviour("Vec4", asBEHAVE_CONSTRUCT, "void f(const Vec2& in, float, float)", asFUNCTION(GAFF_SINGLE_ARG(Gaff::Construct<glm::vec4, glm::vec2, float, float>)), asCALL_CDECL_OBJFIRST);
-	engine->RegisterObjectBehaviour("Vec4", asBEHAVE_CONSTRUCT, "void f(const Vec3& in, float)", asFUNCTION(GAFF_SINGLE_ARG(Gaff::Construct<glm::vec4, glm::vec3, float>)), asCALL_CDECL_OBJFIRST);
+	engine->RegisterObjectBehaviour("Vec4", asBEHAVE_CONSTRUCT, "void f(float, float, float, float)", asFUNCTION(GAFF_SINGLE_ARG(Gaff::ConstructExact<glm::vec4, float, float, float, float>)), asCALL_CDECL_OBJFIRST);
+	engine->RegisterObjectBehaviour("Vec4", asBEHAVE_CONSTRUCT, "void f(const Vec2& in, float, float)", asFUNCTION(GAFF_SINGLE_ARG(Gaff::ConstructExact<glm::vec4, const glm::vec2&, float, float>)), asCALL_CDECL_OBJFIRST);
+	engine->RegisterObjectBehaviour("Vec4", asBEHAVE_CONSTRUCT, "void f(const Vec3& in, float)", asFUNCTION(GAFF_SINGLE_ARG(Gaff::ConstructExact<glm::vec4, const glm::vec3&, float>)), asCALL_CDECL_OBJFIRST);
 
-	engine->RegisterObjectMethod("Quat", "Vec4 opMul(const Quat& in) const", asFUNCTIONPR(glm::operator*, (const glm::vec4&, const glm::quat&), glm::vec4), asCALL_CDECL_OBJFIRST);
+	engine->RegisterObjectMethod("Vec4", "Vec4 opMul(const Quat& in) const", asFUNCTIONPR(glm::operator*, (const glm::vec4&, const glm::quat&), glm::vec4), asCALL_CDECL_OBJFIRST);
 
 	engine->RegisterObjectProperty("Vec4", "float x", asOFFSET(glm::vec4, x));
 	engine->RegisterObjectProperty("Vec4", "float y", asOFFSET(glm::vec4, y));
@@ -176,9 +174,9 @@ void RegisterMath(asIScriptEngine* engine)
 	REGISTER_BASE_VEC_TYPE(Quat, quat);
 
 	engine->RegisterGlobalFunction("Quat FromAxisAngle(const float& in, const Vec3& in)", asFUNCTION(GAFF_SINGLE_ARG(glm::angleAxis<float, glm::highp>)), asCALL_CDECL);
-	engine->RegisterObjectBehaviour("Quat", asBEHAVE_CONSTRUCT, "void f(float, float, float, float)", asFUNCTION(GAFF_SINGLE_ARG(Gaff::Construct<glm::quat, float, float, float, float>)), asCALL_CDECL_OBJFIRST);
-	engine->RegisterObjectBehaviour("Quat", asBEHAVE_CONSTRUCT, "void f(const Vec3& in, const Vec3& in)", asFUNCTION(GAFF_SINGLE_ARG(Gaff::Construct<glm::quat, glm::vec3, glm::vec3>)), asCALL_CDECL_OBJFIRST);
-	engine->RegisterObjectBehaviour("Quat", asBEHAVE_CONSTRUCT, "void f(float, const Vec3& in)", asFUNCTION(GAFF_SINGLE_ARG(Gaff::Construct<glm::quat, float, glm::vec3>)), asCALL_CDECL_OBJFIRST);
+	engine->RegisterObjectBehaviour("Quat", asBEHAVE_CONSTRUCT, "void f(float, float, float, float)", asFUNCTION(GAFF_SINGLE_ARG(Gaff::ConstructExact<glm::quat, float, float, float, float>)), asCALL_CDECL_OBJFIRST);
+	engine->RegisterObjectBehaviour("Quat", asBEHAVE_CONSTRUCT, "void f(const Vec3& in, const Vec3& in)", asFUNCTION(GAFF_SINGLE_ARG(Gaff::ConstructExact<glm::quat, const glm::vec3&, const glm::vec3&>)), asCALL_CDECL_OBJFIRST);
+	engine->RegisterObjectBehaviour("Quat", asBEHAVE_CONSTRUCT, "void f(float, const Vec3& in)", asFUNCTION(GAFF_SINGLE_ARG(Gaff::ConstructExact<glm::quat, float, const glm::vec3&>)), asCALL_CDECL_OBJFIRST);
 
 	engine->RegisterObjectMethod("Quat", "Quat opDiv(const float& in) const", asFUNCTIONPR(glm::operator/, (const glm::quat&, const float&), glm::quat), asCALL_CDECL_OBJFIRST);
 	engine->RegisterObjectMethod("Quat", "Vec3 opMul(const Vec3& in) const", asFUNCTIONPR(glm::operator*, (const glm::quat&, const glm::vec3&), glm::vec3), asCALL_CDECL_OBJFIRST);

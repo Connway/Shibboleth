@@ -199,6 +199,9 @@ void MainLoop::update(void)
 	int32_t b = asc.getReturnValue<int32_t>();
 	GAFF_REF(b);
 
+	asc.prepareMethod("testMath");
+	asc.callMethod();
+
 	GetApp().quit();
 }
 
