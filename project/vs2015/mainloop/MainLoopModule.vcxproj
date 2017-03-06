@@ -293,6 +293,9 @@
     <ProjectReference Include="..\entity\Entity.vcxproj">
       <Project>{A2E9DAB0-8E8B-0587-7746-19DB63878CD7}</Project>
     </ProjectReference>
+    <ProjectReference Include="..\frameworks\Gleam.vcxproj">
+      <Project>{6BBF400D-D7D3-68BE-A055-0C1E0C2965EF}</Project>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

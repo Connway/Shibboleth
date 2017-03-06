@@ -228,6 +228,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\..\dependencies\angelscript\add_on\scriptarray\scriptarray.h" />
     <ClInclude Include="..\..\..\dependencies\angelscript\add_on\scriptbuilder\scriptbuilder.h" />
     <ClInclude Include="..\..\..\dependencies\angelscript\angelscript\include\angelscript.h" />
     <ClInclude Include="..\..\..\dependencies\angelscript\angelscript\source\as_array.h" />
@@ -269,6 +270,7 @@
     <ClInclude Include="..\..\..\dependencies\angelscript\angelscript\source\as_variablescope.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\..\dependencies\angelscript\add_on\scriptarray\scriptarray.cpp" />
     <ClCompile Include="..\..\..\dependencies\angelscript\add_on\scriptbuilder\scriptbuilder.cpp" />
     <ClCompile Include="..\..\..\dependencies\angelscript\angelscript\source\as_atomic.cpp" />
     <ClCompile Include="..\..\..\dependencies\angelscript\angelscript\source\as_builder.cpp" />

@@ -35,6 +35,10 @@ THE SOFTWARE.
 
 //#include <Shibboleth_ICameraComponent.h>
 
+#include <Shibboleth_AngelScriptResource.h>
+#include <Shibboleth_ResourceManager.h>
+#include <Shibboleth_AngelScriptComponent.h>
+
 NS_SHIBBOLETH
 
 //static size_t g_image_pool_index = 0;
@@ -148,6 +152,52 @@ void MainLoop::update(void)
 	//_update_mgr->update();
 
 	//YieldThread();
+
+
+	AngelScriptResourcePtr script_res = GetApp().getManagerTUnsafe<ResourceManager>().requestResourceT<AngelScriptResource>("TestScript.as");
+
+	ProxyAllocator proxy_allocator;
+	eastl::function<void(IResource*)> cb(eastl::allocator_arg, proxy_allocator, [&](IResource* /*res*/) -> void
+	{
+		int i = 10;
+		i += 5;
+		i = i;
+	});
+
+	script_res->addResourceStateCallback(std::move(cb));
+
+	GetApp().getManagerTUnsafe<ResourceManager>().waitForResource(*script_res);
+
+	AngelScriptComponent asc;
+
+	asc.setScript(script_res);
+
+	int32_t& a = asc.getProperty<int32_t>("a");
+	GAFF_REF(a);
+
+	asc.prepareMethod("testFunc");
+	asc.callMethod();
+
+	asc.prepareMethod("printA");
+	asc.callMethod();
+
+	asc.prepareMethod("testFunc2");
+	asc.setArg(0, 9999);
+	asc.callMethod();
+
+	asc.prepareMethod("printA");
+	asc.callMethod();
+
+	a = 2222;
+
+	asc.prepareMethod("printA");
+	asc.callMethod();
+
+	asc.prepareMethod("testRet");
+	asc.callMethod();
+
+	int32_t b = asc.getReturnValue<int32_t>();
+	GAFF_REF(b);
 
 	GetApp().quit();
 }

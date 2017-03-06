@@ -40,7 +40,7 @@ project "MainLoopModule"
 		"Shared", "Gaff",
 		"Memory", "EASTL"
 
-		, "Scripting", "Resource", "angelscript", "Entity"
+		, "Scripting", "Resource", "angelscript", "Entity", "Gleam"
 	}
 
 	links
@@ -48,7 +48,7 @@ project "MainLoopModule"
 		"Shared", "Gaff",
 		"Memory", "EASTL"
 
-		, "Scripting", "Resource", "angelscript", "Entity"
+		, "Scripting", "Resource", "angelscript", "Entity", "Gleam"
 	}
 
 	postbuildcommands

@@ -12,6 +12,9 @@
     <ClInclude Include="..\..\..\src\Scripting\include\Shibboleth_AngelScript.h">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\src\Scripting\include\Shibboleth_AngelScriptBaseTypes.h">
+      <Filter>include</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\src\Scripting\include\Shibboleth_AngelScriptComponent.h">
       <Filter>include</Filter>
     </ClInclude>
@@ -26,6 +29,7 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\..\src\Scripting\Shibboleth_AngelScriptBaseTypes.cpp" />
     <ClCompile Include="..\..\..\src\Scripting\Shibboleth_AngelScriptComponent.cpp" />
     <ClCompile Include="..\..\..\src\Scripting\Shibboleth_AngelScriptComponentWrapper.cpp" />
     <ClCompile Include="..\..\..\src\Scripting\Shibboleth_AngelScriptManager.cpp" />

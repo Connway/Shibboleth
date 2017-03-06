@@ -39,24 +39,15 @@ static void* WrapperFactory(void)
 
 void AngelScriptComponentWrapper::Register(asIScriptEngine* engine)
 {
-	//engine->RegisterObjectType("Object", 0, asOBJ_REF | asOBJ_NOCOUNT);
-
-	engine->RegisterObjectType("Component", 0, asOBJ_REF | asOBJ_NOCOUNT);
-	//engine->RegisterObjectMethod("Component", "const Object@ get_owner() const", asMETHODPR(Component, getOwner, (void) const, const Object*), asCALL_THISCALL);
-	//engine->RegisterObjectMethod("Component", "Object@ get_owner()", asMETHODPR(Component, getOwner, (void), Object*), asCALL_THISCALL);
-	////engine->RegisterObjectMethod("Component", "const String@ get_name() const", asMETHOD(Component, getName), asCALL_THISCALL);
-	engine->RegisterObjectMethod("Component", "bool get_active() const", asMETHOD(Component, isActive), asCALL_THISCALL);
-	engine->RegisterObjectMethod("Component", "void set_active(bool)", asMETHOD(Component, setActive), asCALL_THISCALL);
-
 	engine->RegisterObjectType("ScriptComponent", 0, asOBJ_REF);
 	engine->RegisterObjectBehaviour("ScriptComponent", asBEHAVE_FACTORY, "ScriptComponent@ f()", asFUNCTION(WrapperFactory), asCALL_CDECL);
 	engine->RegisterObjectBehaviour("ScriptComponent", asBEHAVE_ADDREF, "void f()", asMETHOD(AngelScriptComponentWrapper, addRef), asCALL_THISCALL);
 	engine->RegisterObjectBehaviour("ScriptComponent", asBEHAVE_RELEASE, "void f()", asMETHOD(AngelScriptComponentWrapper, release), asCALL_THISCALL);
-	//engine->RegisterObjectMethod("ScriptComponent", "const Object@ get_owner() const", asMETHODPR(AngelScriptComponentWrapper, getOwner, (void) const, const Object*), asCALL_THISCALL);
-	//engine->RegisterObjectMethod("ScriptComponent", "Object@ get_owner()", asMETHODPR(AngelScriptComponentWrapper, getOwner, (void), Object*), asCALL_THISCALL);
-	////engine->RegisterObjectMethod("ScriptComponent", "const String@ get_name() const", asMETHOD(AngelScriptComponentWrapper, getName), asCALL_THISCALL);
-	//engine->RegisterObjectMethod("ScriptComponent", "bool get_active() const", asMETHOD(AngelScriptComponentWrapper, isActive), asCALL_THISCALL);
-	//engine->RegisterObjectMethod("ScriptComponent", "void set_active(bool)", asMETHOD(AngelScriptComponentWrapper, setActive), asCALL_THISCALL);
+	engine->RegisterObjectMethod("ScriptComponent", "const Object@ get_owner() const", asMETHODPR(AngelScriptComponentWrapper, getOwner, (void) const, const Object*), asCALL_THISCALL);
+	engine->RegisterObjectMethod("ScriptComponent", "Object@ get_owner()", asMETHODPR(AngelScriptComponentWrapper, getOwner, (void), Object*), asCALL_THISCALL);
+	//engine->RegisterObjectMethod("ScriptComponent", "const String@ get_name() const", asMETHOD(AngelScriptComponentWrapper, getName), asCALL_THISCALL);
+	engine->RegisterObjectMethod("ScriptComponent", "bool get_active() const", asMETHOD(AngelScriptComponentWrapper, isActive), asCALL_THISCALL);
+	engine->RegisterObjectMethod("ScriptComponent", "void set_active(bool)", asMETHOD(AngelScriptComponentWrapper, setActive), asCALL_THISCALL);
 
 	engine->RegisterObjectMethod("ScriptComponent", "const Component@ opImplCast() const", asMETHODPR(AngelScriptComponentWrapper, impliedCast, (void) const, const Component*), asCALL_THISCALL);
 	engine->RegisterObjectMethod("ScriptComponent", "Component@ opImplCast()", asMETHODPR(AngelScriptComponentWrapper, impliedCast, (void), Component*), asCALL_THISCALL);

@@ -27,8 +27,11 @@ project "Scripting"
 		"../../dependencies/EASTL/include",
 		"../../dependencies/angelscript/angelscript/include",
 		"../../dependencies/angelscript/add_on/scriptbuilder",
+		"../../dependencies/angelscript/add_on/scriptarray",
 		"../../dependencies/rapidjson",
-		"../../frameworks/Gaff/include"
+		"../../dependencies/glm",
+		"../../frameworks/Gaff/include",
+		"../../frameworks/Gleam/include"
 	}
 
 
@@ -62,21 +65,32 @@ project "ScriptingModule"
 		"../../dependencies/angelscript/angelscript/include",
 		"../../dependencies/EASTL/include",
 		"../../dependencies/rapidjson",
+		"../../dependencies/glm",
 		"../../frameworks/Gaff/include"
 	}
 
 	dependson
 	{
-		"Scripting", "Memory",
-		"Gaff", "Shared",
-		"EASTL", "angelscript",
-		"Resource", "Entity"
+		"Gaff",
+		"Gleam",
+		"Scripting",
+		"Memory",
+		"Shared",
+		"EASTL",
+		"angelscript",
+		"Resource",
+		"Entity",
 	}
 
 	links
 	{
-		"Scripting", "Memory",
-		"Gaff", "Shared",
-		"EASTL", "angelscript",
-		"Resource", "Entity"
+		"Gaff",
+		"Gleam",
+		"Scripting",
+		"Memory",
+		"Shared",
+		"EASTL",
+		"angelscript",
+		"Resource",
+		"Entity",
 	}
