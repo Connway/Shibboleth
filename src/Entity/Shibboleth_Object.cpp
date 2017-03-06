@@ -265,9 +265,9 @@ void Object::setLocalAABB(const Gleam::AABB& aabb)
 	markDirty();
 }
 
-size_t Object::getNumComponents(void) const
+int32_t Object::getNumComponents(void) const
 {
-	return _components.size();
+	return static_cast<int32_t>(_components.size());
 }
 
 const Component* Object::getComponent(int32_t index) const

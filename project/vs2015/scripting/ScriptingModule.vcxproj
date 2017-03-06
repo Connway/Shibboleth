@@ -288,14 +288,17 @@ IF EXIST ..\..\..\build\output\x64\Optimized_Debug\$(TargetFileName)\ (xcopy /Q 
     <ClCompile Include="..\..\..\src\Scripting\Shibboleth_ScriptingModule.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\frameworks\Gaff.vcxproj">
+      <Project>{99A8857C-85DF-860D-2ECC-6C101AE2020F}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\frameworks\Gleam.vcxproj">
+      <Project>{6BBF400D-D7D3-68BE-A055-0C1E0C2965EF}</Project>
+    </ProjectReference>
     <ProjectReference Include="Scripting.vcxproj">
       <Project>{985A7358-04C5-27CF-4D03-D974B9AC0524}</Project>
     </ProjectReference>
     <ProjectReference Include="..\memory\Memory.vcxproj">
       <Project>{BE94DDC2-AA36-0899-93F1-1BED7F328FE9}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\frameworks\Gaff.vcxproj">
-      <Project>{99A8857C-85DF-860D-2ECC-6C101AE2020F}</Project>
     </ProjectReference>
     <ProjectReference Include="..\shared\Shared.vcxproj">
       <Project>{7C480CD1-68EA-36A7-51A5-4AFB3DE6BDF7}</Project>

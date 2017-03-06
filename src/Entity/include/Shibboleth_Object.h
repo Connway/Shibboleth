@@ -128,7 +128,7 @@ public:
 	const Gleam::AABB& getWorldAABB(void) const;
 	void setLocalAABB(const Gleam::AABB& aabb);
 
-	size_t getNumComponents(void) const;
+	int32_t getNumComponents(void) const;
 	const Component* getComponent(int32_t index) const;
 	Component* getComponent(int32_t index);
 	const Vector<Component*>& getComponents(void) const;

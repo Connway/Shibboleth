@@ -22,6 +22,8 @@ THE SOFTWARE.
 
 #include "Shibboleth_AngelScriptManager.h"
 #include "Shibboleth_AngelScriptComponentWrapper.h"
+#include "Shibboleth_AngelScriptBaseTypes.h"
+#include <scriptarray.h>
 #include <angelscript.h>
 
 SHIB_REFLECTION_DEFINE(AngelScriptManager)
@@ -41,16 +43,23 @@ static void* ASAlloc(size_t size)
 	return SHIB_ALLOC(size, g_as_alloc_pool, *GetAllocator());
 }
 
-
 bool AngelScriptManager::init(void)
 {
 	asSetGlobalMemoryFunctions(ASAlloc, ShibbolethFree);
 	_engine = asCreateScriptEngine();
 
+	//CScriptArray::SetMemoryFunctions();
+	RegisterScriptArray(_engine, true);
+
 	_engine->SetMessageCallback(asMETHOD(AngelScriptManager, messageCallback), this, asCALL_THISCALL);
 	_engine->SetEngineProperty(asEP_DISALLOW_VALUE_ASSIGN_FOR_REF_TYPE, 1);
 	_engine->SetEngineProperty(asEP_ALLOW_UNSAFE_REFERENCES, 1);
 
+	// Declare them ahead of time so that we can add functions that reference them without generating errors.
+	_engine->RegisterObjectType("Object", 0, asOBJ_REF | asOBJ_NOCOUNT);
+	_engine->RegisterObjectType("Component", 0, asOBJ_REF | asOBJ_NOCOUNT);
+	RegisterObject(_engine);
+	RegisterComponent(_engine);
 	AngelScriptComponentWrapper::Register(_engine);
 
 	return true;

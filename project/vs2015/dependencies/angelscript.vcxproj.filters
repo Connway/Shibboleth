@@ -4,6 +4,9 @@
     <Filter Include="add_on">
       <UniqueIdentifier>{EA746DF1-D616-98C7-BFD1-AB1BAB121F18}</UniqueIdentifier>
     </Filter>
+    <Filter Include="add_on\scriptarray">
+      <UniqueIdentifier>{CD321B19-B916-DC6E-2277-D6C10E7AC6F0}</UniqueIdentifier>
+    </Filter>
     <Filter Include="add_on\scriptbuilder">
       <UniqueIdentifier>{75B00F20-613F-99E9-0A5E-ADE4F6CBA98F}</UniqueIdentifier>
     </Filter>
@@ -18,6 +21,9 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\..\dependencies\angelscript\add_on\scriptarray\scriptarray.h">
+      <Filter>add_on\scriptarray</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\dependencies\angelscript\add_on\scriptbuilder\scriptbuilder.h">
       <Filter>add_on\scriptbuilder</Filter>
     </ClInclude>
@@ -137,6 +143,9 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\..\dependencies\angelscript\add_on\scriptarray\scriptarray.cpp">
+      <Filter>add_on\scriptarray</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\..\dependencies\angelscript\add_on\scriptbuilder\scriptbuilder.cpp">
       <Filter>add_on\scriptbuilder</Filter>
     </ClCompile>
