@@ -22,8 +22,7 @@ THE SOFTWARE.
 
 #include "Shibboleth_AngelScriptComponentWrapper.h"
 #include "Shibboleth_AngelScriptComponent.h"
-//#include "Shibboleth_AngelScript.h"
-#include <angelscript.h>
+#include <Shibboleth_IncludeAngelScript.h>
 
 NS_SHIBBOLETH
 
@@ -35,6 +34,22 @@ static void* WrapperFactory(void)
 	AngelScriptComponentWrapper* const instance = SHIB_ALLOCT_POOL(AngelScriptComponentWrapper, pool_index, *allocator);
 	instance->addRef();
 	return instance;
+}
+
+static void GetInterface(asIScriptGeneric* generic)
+{
+	AngelScriptComponentWrapper* const wrapper = reinterpret_cast<AngelScriptComponentWrapper*>(generic->GetObject());
+	void** const out = reinterpret_cast<void**>(generic->GetArgAddress(0));
+	const int type_id = generic->GetArgTypeId(0);
+
+	GAFF_ASSERT(type_id > asTYPEID_DOUBLE);
+	GAFF_ASSERT(type_id & asTYPEID_OBJHANDLE);
+
+	asITypeInfo* const type_info = generic->GetEngine()->GetTypeInfoById(type_id);
+	asIScriptObject* const script_object = wrapper->getScript()->getObject();
+	asITypeInfo* const script_type_info = script_object->GetObjectType();
+
+	script_object->GetEngine()->RefCastObject(script_object, script_type_info, type_info, out);
 }
 
 void AngelScriptComponentWrapper::Register(asIScriptEngine* engine)
@@ -51,6 +66,18 @@ void AngelScriptComponentWrapper::Register(asIScriptEngine* engine)
 
 	engine->RegisterObjectMethod("ScriptComponent", "const Component@ opImplCast() const", asMETHODPR(AngelScriptComponentWrapper, impliedCast, (void) const, const Component*), asCALL_THISCALL);
 	engine->RegisterObjectMethod("ScriptComponent", "Component@ opImplCast()", asMETHODPR(AngelScriptComponentWrapper, impliedCast, (void), Component*), asCALL_THISCALL);
+
+	engine->RegisterObjectMethod("ScriptComponent", "void opCast(?& out)", asFUNCTION(GetInterface), asCALL_GENERIC);
+}
+
+const AngelScriptComponent* AngelScriptComponentWrapper::getScript(void) const
+{
+	return _script_comp;
+}
+
+AngelScriptComponent* AngelScriptComponentWrapper::getScript(void)
+{
+	return _script_comp;
 }
 
 const Component* AngelScriptComponentWrapper::impliedCast(void) const

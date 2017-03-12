@@ -134,6 +134,9 @@ public:
 	const Vector<Component*>& getComponents(void) const;
 	Vector<Component*>& getComponents(void);
 
+	//void addComponent(Component* component);
+	//void removeComponent(Component* component);
+
 	const void* getFirstComponentWithInterface(Gaff::Hash64 class_id) const;
 	void* getFirstComponentWithInterface(Gaff::Hash64 class_id);
 

@@ -91,7 +91,7 @@ filter { "system:windows" }
 filter { "system:windows", "configurations:*Clang" }
 	toolset "msc-llvm-vs2014"
 
-filter { "system:windows", "configurations:not *Clang" }
-	toolset "v140"
+-- filter { "system:windows", "configurations:not *Clang" }
+	-- toolset "v140"
 
 filter {}

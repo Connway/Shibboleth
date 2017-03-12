@@ -251,6 +251,7 @@
     <ClInclude Include="..\..\..\src\Shared\include\Shibboleth_IApp.h" />
     <ClInclude Include="..\..\..\src\Shared\include\Shibboleth_IFileSystem.h" />
     <ClInclude Include="..\..\..\src\Shared\include\Shibboleth_IManager.h" />
+    <ClInclude Include="..\..\..\src\Shared\include\Shibboleth_IncludeAngelScript.h" />
     <ClInclude Include="..\..\..\src\Shared\include\Shibboleth_IncludeImgui.h" />
     <ClInclude Include="..\..\..\src\Shared\include\Shibboleth_IncludeNuklear.h" />
     <ClInclude Include="..\..\..\src\Shared\include\Shibboleth_JobPool.h" />

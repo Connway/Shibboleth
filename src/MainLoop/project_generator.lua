@@ -32,7 +32,10 @@ project "MainLoopModule"
 		"../Resource/include",
 		"../../dependencies/angelscript/angelscript/include",
 		"../../dependencies/angelscript/add_on/scriptbuilder",
-		"../Entity/include"
+		"../Entity/include",
+		"../../frameworks/Gleam/include",
+		"../../dependencies/glm",
+		"../../dependencies/rapidjson"
 	}
 
 	dependson

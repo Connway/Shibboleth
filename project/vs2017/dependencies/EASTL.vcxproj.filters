@@ -1,0 +1,450 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="include">
+      <UniqueIdentifier>{89AF369E-F58E-B539-FEA6-40106A051C9B}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\EAAssert">
+      <UniqueIdentifier>{B0E5F499-9CDE-13EC-C510-F970B168F3F7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\EABase">
+      <UniqueIdentifier>{D9EBD9FC-C5B9-CD02-AE4D-3E299ABAA967}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\EABase\config">
+      <UniqueIdentifier>{DE8CE7B1-4AF9-A2AC-13ED-3A0A7F18C514}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\EASTL">
+      <UniqueIdentifier>{7193D0A2-DD53-4CD9-A68E-9556120E91B5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\EASTL\bonus">
+      <UniqueIdentifier>{A73CF69E-139E-D3AC-9C0B-1A5F086C0A6C}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\EASTL\internal">
+      <UniqueIdentifier>{DDA4291A-C99E-526C-B20B-E97C9EA4B8D8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\EAStdC">
+      <UniqueIdentifier>{0C8DE3FC-F85A-D702-E1EE-4729CD5BB367}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="source">
+      <UniqueIdentifier>{76FF3A1C-62A1-65F2-4B5C-7946379DEC42}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\dependencies\EASTL\include\EAAssert\eaassert.h">
+      <Filter>include\EAAssert</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\EASTL\include\EABase\config\eacompiler.h">
+      <Filter>include\EABase\config</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\EASTL\include\EABase\config\eacompilertraits.h">
+      <Filter>include\EABase\config</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\EASTL\include\EABase\config\eaplatform.h">
+      <Filter>include\EABase\config</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\EASTL\include\EABase\eabase.h">
+      <Filter>include\EABase</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\EASTL\include\EABase\eahave.h">
+      <Filter>include\EABase</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\EASTL\include\EABase\earesult.h">
+      <Filter>include\EABase</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\EASTL\include\EABase\eastdarg.h">
+      <Filter>include\EABase</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\EASTL\include\EABase\nullptr.h">
+      <Filter>include\EABase</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\EASTL\include\EABase\version.h">
+      <Filter>include\EABase</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\EASTL\include\EASTL\algorithm.h">
+      <Filter>include\EASTL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\EASTL\include\EASTL\allocator.h">
+      <Filter>include\EASTL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\EASTL\include\EASTL\allocator_malloc.h">
+      <Filter>include\EASTL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\EASTL\include\EASTL\any.h">
+      <Filter>include\EASTL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\EASTL\include\EASTL\array.h">
+      <Filter>include\EASTL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\EASTL\include\EASTL\bitset.h">
+      <Filter>include\EASTL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\EASTL\include\EASTL\bitvector.h">
+      <Filter>include\EASTL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\EASTL\include\EASTL\bonus\adaptors.h">
+      <Filter>include\EASTL\bonus</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\EASTL\include\EASTL\bonus\call_traits.h">
+      <Filter>include\EASTL\bonus</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\EASTL\include\EASTL\bonus\compressed_pair.h">
+      <Filter>include\EASTL\bonus</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\EASTL\include\EASTL\bonus\fixed_ring_buffer.h">
+      <Filter>include\EASTL\bonus</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\EASTL\include\EASTL\bonus\fixed_string_abstract.h">
+      <Filter>include\EASTL\bonus</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\EASTL\include\EASTL\bonus\intrusive_sdlist.h">
+      <Filter>include\EASTL\bonus</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\EASTL\include\EASTL\bonus\intrusive_slist.h">
+      <Filter>include\EASTL\bonus</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\EASTL\include\EASTL\bonus\list_map.h">
+      <Filter>include\EASTL\bonus</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\EASTL\include\EASTL\bonus\ring_buffer.h">
+      <Filter>include\EASTL\bonus</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\EASTL\include\EASTL\bonus\sort_extra.h">
+      <Filter>include\EASTL\bonus</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\EASTL\include\EASTL\bonus\sparse_matrix.h">
+      <Filter>include\EASTL\bonus</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\EASTL\include\EASTL\bonus\string_abstract.h">
+      <Filter>include\EASTL\bonus</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\EASTL\include\EASTL\chrono.h">
+      <Filter>include\EASTL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\EASTL\include\EASTL\core_allocator.h">
+      <Filter>include\EASTL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\EASTL\include\EASTL\core_allocator_adapter.h">
+      <Filter>include\EASTL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\EASTL\include\EASTL\deque.h">
+      <Filter>include\EASTL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\EASTL\include\EASTL\fixed_allocator.h">
+      <Filter>include\EASTL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\EASTL\include\EASTL\fixed_hash_map.h">
+      <Filter>include\EASTL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\EASTL\include\EASTL\fixed_hash_set.h">
+      <Filter>include\EASTL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\EASTL\include\EASTL\fixed_list.h">
+      <Filter>include\EASTL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\EASTL\include\EASTL\fixed_map.h">
+      <Filter>include\EASTL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\EASTL\include\EASTL\fixed_set.h">
+      <Filter>include\EASTL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\EASTL\include\EASTL\fixed_slist.h">
+      <Filter>include\EASTL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\EASTL\include\EASTL\fixed_string.h">
+      <Filter>include\EASTL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\EASTL\include\EASTL\fixed_substring.h">
+      <Filter>include\EASTL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\EASTL\include\EASTL\fixed_vector.h">
+      <Filter>include\EASTL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\EASTL\include\EASTL\functional.h">
+      <Filter>include\EASTL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\EASTL\include\EASTL\hash_map.h">
+      <Filter>include\EASTL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\EASTL\include\EASTL\hash_set.h">
+      <Filter>include\EASTL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\EASTL\include\EASTL\heap.h">
+      <Filter>include\EASTL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\EASTL\include\EASTL\initializer_list.h">
+      <Filter>include\EASTL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\EASTL\include\EASTL\internal\allocator_traits.h">
+      <Filter>include\EASTL\internal</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\EASTL\include\EASTL\internal\allocator_traits_fwd_decls.h">
+      <Filter>include\EASTL\internal</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\EASTL\include\EASTL\internal\char_traits.h">
+      <Filter>include\EASTL\internal</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\EASTL\include\EASTL\internal\config.h">
+      <Filter>include\EASTL\internal</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\EASTL\include\EASTL\internal\copy_help.h">
+      <Filter>include\EASTL\internal</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\EASTL\include\EASTL\internal\enable_shared.h">
+      <Filter>include\EASTL\internal</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\EASTL\include\EASTL\internal\fill_help.h">
+      <Filter>include\EASTL\internal</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\EASTL\include\EASTL\internal\fixed_pool.h">
+      <Filter>include\EASTL\internal</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\EASTL\include\EASTL\internal\function.h">
+      <Filter>include\EASTL\internal</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\EASTL\include\EASTL\internal\functional_base.h">
+      <Filter>include\EASTL\internal</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\EASTL\include\EASTL\internal\generic_iterator.h">
+      <Filter>include\EASTL\internal</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\EASTL\include\EASTL\internal\hashtable.h">
+      <Filter>include\EASTL\internal</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\EASTL\include\EASTL\internal\in_place_t.h">
+      <Filter>include\EASTL\internal</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\EASTL\include\EASTL\internal\integer_sequence.h">
+      <Filter>include\EASTL\internal</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\EASTL\include\EASTL\internal\intrusive_hashtable.h">
+      <Filter>include\EASTL\internal</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\EASTL\include\EASTL\internal\mem_fn.h">
+      <Filter>include\EASTL\internal</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\EASTL\include\EASTL\internal\move_help.h">
+      <Filter>include\EASTL\internal</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\EASTL\include\EASTL\internal\pair_fwd_decls.h">
+      <Filter>include\EASTL\internal</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\EASTL\include\EASTL\internal\red_black_tree.h">
+      <Filter>include\EASTL\internal</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\EASTL\include\EASTL\internal\smart_ptr.h">
+      <Filter>include\EASTL\internal</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\EASTL\include\EASTL\internal\thread_support.h">
+      <Filter>include\EASTL\internal</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\EASTL\include\EASTL\internal\tuple_fwd_decls.h">
+      <Filter>include\EASTL\internal</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\EASTL\include\EASTL\internal\type_compound.h">
+      <Filter>include\EASTL\internal</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\EASTL\include\EASTL\internal\type_fundamental.h">
+      <Filter>include\EASTL\internal</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\EASTL\include\EASTL\internal\type_pod.h">
+      <Filter>include\EASTL\internal</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\EASTL\include\EASTL\internal\type_properties.h">
+      <Filter>include\EASTL\internal</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\EASTL\include\EASTL\internal\type_transformations.h">
+      <Filter>include\EASTL\internal</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\EASTL\include\EASTL\intrusive_hash_map.h">
+      <Filter>include\EASTL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\EASTL\include\EASTL\intrusive_hash_set.h">
+      <Filter>include\EASTL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\EASTL\include\EASTL\intrusive_list.h">
+      <Filter>include\EASTL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\EASTL\include\EASTL\intrusive_ptr.h">
+      <Filter>include\EASTL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\EASTL\include\EASTL\iterator.h">
+      <Filter>include\EASTL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\EASTL\include\EASTL\linked_array.h">
+      <Filter>include\EASTL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\EASTL\include\EASTL\linked_ptr.h">
+      <Filter>include\EASTL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\EASTL\include\EASTL\list.h">
+      <Filter>include\EASTL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\EASTL\include\EASTL\map.h">
+      <Filter>include\EASTL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\EASTL\include\EASTL\memory.h">
+      <Filter>include\EASTL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\EASTL\include\EASTL\numeric.h">
+      <Filter>include\EASTL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\EASTL\include\EASTL\numeric_limits.h">
+      <Filter>include\EASTL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\EASTL\include\EASTL\optional.h">
+      <Filter>include\EASTL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\EASTL\include\EASTL\priority_queue.h">
+      <Filter>include\EASTL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\EASTL\include\EASTL\queue.h">
+      <Filter>include\EASTL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\EASTL\include\EASTL\random.h">
+      <Filter>include\EASTL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\EASTL\include\EASTL\ratio.h">
+      <Filter>include\EASTL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\EASTL\include\EASTL\safe_ptr.h">
+      <Filter>include\EASTL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\EASTL\include\EASTL\scoped_array.h">
+      <Filter>include\EASTL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\EASTL\include\EASTL\scoped_ptr.h">
+      <Filter>include\EASTL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\EASTL\include\EASTL\segmented_vector.h">
+      <Filter>include\EASTL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\EASTL\include\EASTL\set.h">
+      <Filter>include\EASTL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\EASTL\include\EASTL\shared_array.h">
+      <Filter>include\EASTL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\EASTL\include\EASTL\shared_ptr.h">
+      <Filter>include\EASTL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\EASTL\include\EASTL\slist.h">
+      <Filter>include\EASTL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\EASTL\include\EASTL\sort.h">
+      <Filter>include\EASTL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\EASTL\include\EASTL\stack.h">
+      <Filter>include\EASTL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\EASTL\include\EASTL\string.h">
+      <Filter>include\EASTL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\EASTL\include\EASTL\string_hash_map.h">
+      <Filter>include\EASTL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\EASTL\include\EASTL\string_map.h">
+      <Filter>include\EASTL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\EASTL\include\EASTL\string_view.h">
+      <Filter>include\EASTL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\EASTL\include\EASTL\tuple.h">
+      <Filter>include\EASTL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\EASTL\include\EASTL\type_traits.h">
+      <Filter>include\EASTL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\EASTL\include\EASTL\unique_ptr.h">
+      <Filter>include\EASTL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\EASTL\include\EASTL\unordered_map.h">
+      <Filter>include\EASTL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\EASTL\include\EASTL\unordered_set.h">
+      <Filter>include\EASTL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\EASTL\include\EASTL\utility.h">
+      <Filter>include\EASTL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\EASTL\include\EASTL\vector.h">
+      <Filter>include\EASTL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\EASTL\include\EASTL\vector_map.h">
+      <Filter>include\EASTL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\EASTL\include\EASTL\vector_multimap.h">
+      <Filter>include\EASTL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\EASTL\include\EASTL\vector_multiset.h">
+      <Filter>include\EASTL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\EASTL\include\EASTL\vector_set.h">
+      <Filter>include\EASTL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\EASTL\include\EASTL\version.h">
+      <Filter>include\EASTL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\EASTL\include\EASTL\weak_ptr.h">
+      <Filter>include\EASTL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\EASTL\include\EAStdC\EAAlignment.h">
+      <Filter>include\EAStdC</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\EASTL\include\EAStdC\EADateTime.h">
+      <Filter>include\EAStdC</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\EASTL\include\EAStdC\EAMemory.h">
+      <Filter>include\EAStdC</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\EASTL\include\EAStdC\EAProcess.h">
+      <Filter>include\EAStdC</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\EASTL\include\EAStdC\EASprintf.h">
+      <Filter>include\EAStdC</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\EASTL\include\EAStdC\EAStopwatch.h">
+      <Filter>include\EAStdC</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\EASTL\include\EAStdC\EAString.h">
+      <Filter>include\EAStdC</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\EASTL\include\EAStdC\EATextUtil.h">
+      <Filter>include\EAStdC</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\..\dependencies\EASTL\source\EAMemory.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\dependencies\EASTL\source\EASprintf.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\dependencies\EASTL\source\allocator_eastl.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\dependencies\EASTL\source\assert.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\dependencies\EASTL\source\fixed_pool.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\dependencies\EASTL\source\hashtable.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\dependencies\EASTL\source\intrusive_list.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\dependencies\EASTL\source\numeric_limits.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\dependencies\EASTL\source\red_black_tree.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\dependencies\EASTL\source\string.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\dependencies\EASTL\source\thread_support.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>

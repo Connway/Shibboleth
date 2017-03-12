@@ -23,8 +23,9 @@ THE SOFTWARE.
 #include "Shibboleth_AngelScriptManager.h"
 #include "Shibboleth_AngelScriptComponentWrapper.h"
 #include "Shibboleth_AngelScriptBaseTypes.h"
+#include <Shibboleth_IncludeAngelScript.h>
+#include <Shibboleth_LogManager.h>
 #include <scriptarray.h>
-#include <angelscript.h>
 
 SHIB_REFLECTION_DEFINE(AngelScriptManager)
 
@@ -43,25 +44,43 @@ static void* ASAlloc(size_t size)
 	return SHIB_ALLOC(size, g_as_alloc_pool, *GetAllocator());
 }
 
+static void ScriptPrint(int a)
+{
+	char tmp[1024] = { 0 };
+	snprintf(tmp, 1024, "Script Print: %i\n", a);
+	OutputDebugStringA(tmp);
+}
+
+static void ScriptPrint(float a)
+{
+	char tmp[1024] = { 0 };
+	snprintf(tmp, 1024, "Script Print: %f\n", a);
+	OutputDebugStringA(tmp);
+}
+
 bool AngelScriptManager::init(void)
 {
 	asSetGlobalMemoryFunctions(ASAlloc, ShibbolethFree);
 	_engine = asCreateScriptEngine();
 
 	//CScriptArray::SetMemoryFunctions();
-	RegisterScriptArray(_engine, true);
 
 	_engine->SetMessageCallback(asMETHOD(AngelScriptManager, messageCallback), this, asCALL_THISCALL);
 	_engine->SetEngineProperty(asEP_DISALLOW_VALUE_ASSIGN_FOR_REF_TYPE, 1);
 	_engine->SetEngineProperty(asEP_ALLOW_UNSAFE_REFERENCES, 1);
 
+	_engine->RegisterGlobalFunction("void print(int)", asFUNCTIONPR(ScriptPrint, (int), void), asCALL_CDECL);
+	_engine->RegisterGlobalFunction("void print(float)", asFUNCTIONPR(ScriptPrint, (float), void), asCALL_CDECL);
+
+	RegisterScriptArray(_engine, true);
+
 	// Declare them ahead of time so that we can add functions that reference them without generating errors.
-	_engine->RegisterObjectType("Object", 0, asOBJ_REF | asOBJ_NOCOUNT);
-	_engine->RegisterObjectType("Component", 0, asOBJ_REF | asOBJ_NOCOUNT);
+	DeclareTypes(_engine);
 	RegisterMath(_engine);
 	RegisterObject(_engine);
 	RegisterComponent(_engine);
-	AngelScriptComponentWrapper::Register(_engine);
+
+	//AngelScriptComponentWrapper::Register(_engine);
 
 	return true;
 }

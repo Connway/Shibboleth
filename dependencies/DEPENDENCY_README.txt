@@ -14,25 +14,5 @@ Libraries Affected:
 	zlib
 	assimp (Changed '#include "../contrib/unzip/unzip.h' lines to "#include <unzip.h>", as I already have minizip compiled into a separate lib. Fixed compilation error because a variable wasn't initialized.)
 	minizip (commented out a block that says #define _CRT_SECURE_NO_WARNINGS, as I have it defined at the project level)
-	ResIL
 	OtterUI (got rid of a lot of warnings in Visual Studio and fixed a couple inconsistencies and crash bugs)
 	dirent (got rid of warnings in Visual Studio)
-	EASTL (fixed some compilation warnings in Visual Studio)
-
-Dependencies versions:
-Assimp - 3.2
-Brofiler - 1.1.1
-bullet - 2.83.7
-ChaiScript - 5.8.5
-dirent - 1.21
-EASTL - commit 51718cd804bd3a5b446a305826e164cf35776518
-enet - 1.3.13
-glew - 1.13.0
-jemalloc - 4.2.1
-libjpeg - 9b
-libpng - 1.6.21
-libtiff - 4.0.6
-nana - 1.4.1
-OtterUI - 1.3.6.3 commit a2c5243
-RapidJSON - commit 07343d5e3361a940448bb5d2887bb5253a126f32
-zlib - 1.2.8

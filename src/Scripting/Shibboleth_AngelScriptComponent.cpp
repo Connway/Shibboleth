@@ -24,6 +24,11 @@ THE SOFTWARE.
 #include "Shibboleth_AngelScriptManager.h"
 #include <Shibboleth_LogManager.h>
 
+#ifdef PLATFORM_WINDOWS
+	#pragma warning(push)
+	#pragma warning(disable : 4307)
+#endif
+
 SHIB_REFLECTION_DEFINE(Shibboleth::AngelScriptComponent)
 
 NS_SHIBBOLETH
@@ -113,6 +118,16 @@ void AngelScriptComponent::setScript(const AngelScriptResourcePtr& script)
 const AngelScriptResourcePtr& AngelScriptComponent::getScript(void) const
 {
 	return _res;
+}
+
+const asIScriptObject* AngelScriptComponent::getObject(void) const
+{
+	return _object;
+}
+
+asIScriptObject* AngelScriptComponent::getObject(void)
+{
+	return _object;
 }
 
 int32_t AngelScriptComponent::getPropertyIndex(const char* name) const
@@ -238,11 +253,19 @@ void AngelScriptComponent::onScriptLoaded(IResource* /*res*/)
 
 			asUINT num_props = _object->GetPropertyCount();
 
+			constexpr Gaff::Hash32 comp_hash = Gaff::FNV1aHash32Const("_component");
+
 			for (asUINT i = 0; i < num_props; ++i) {
 				const char* const name = _object->GetPropertyName(i);
 				int type_id = _object->GetPropertyTypeId(i);
 
-				PropertyData& data = _property_map[Gaff::FNV1aHash32String(name)];
+				const Gaff::Hash32 prop_name = Gaff::FNV1aHash32String(name);
+
+				if (prop_name == comp_hash) {
+					*reinterpret_cast<void**>(_object->GetAddressOfProperty(i)) = this;
+				}
+
+				PropertyData& data = _property_map[prop_name];
 				data.type_id = type_id;
 				data.type_info = (type_id <= asTYPEID_DOUBLE) ? nullptr : module->GetEngine()->GetTypeInfoById(type_id);
 				data.property = _object->GetAddressOfProperty(i);
@@ -259,3 +282,7 @@ void AngelScriptComponent::onScriptLoaded(IResource* /*res*/)
 }
 
 NS_END
+
+#ifdef PLATFORM_WINDOWS
+	#pragma warning(pop)
+#endif

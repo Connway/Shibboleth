@@ -24,7 +24,7 @@ THE SOFTWARE.
 
 #include <Shibboleth_Reflection.h>
 #include <Gaff_IRefCounted.h>
-#include <angelscript.h>
+#include <Shibboleth_IncludeAngelScript.h>
 
 NS_SHIBBOLETH
 
