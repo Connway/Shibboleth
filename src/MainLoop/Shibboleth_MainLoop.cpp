@@ -57,6 +57,20 @@ NS_SHIBBOLETH
 
 bool MainLoop::init(void)
 {
+	Gaff::IReflection* head = Gaff::GetAttributeReflectionChainHead();
+
+	while (head) {
+		head->init();
+		head = head->attr_next;
+	}
+
+	head = Gaff::GetReflectionChainHead();
+
+	while (head) {
+		head->init();
+		head = head->next;
+	}
+
 	//_render_mgr = &GetApp().getManagerT<IRenderManager>();
 	//_update_mgr = &GetApp().getManagerT<IUpdateManager>();
 
