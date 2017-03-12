@@ -28,8 +28,10 @@ class asIScriptEngine;
 
 NS_SHIBBOLETH
 
+void DeclareTypes(asIScriptEngine* engine);
 void RegisterObject(asIScriptEngine* engine);
 void RegisterComponent(asIScriptEngine* engine);
 void RegisterMath(asIScriptEngine* engine);
+void RegisterString(asIScriptEngine* engine);
 
 NS_END

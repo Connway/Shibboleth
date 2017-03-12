@@ -48,4 +48,3 @@ You may also easily drag and drop the source files into your project.
     KNOWN ISSUES
 ====================
 
-Saving TIFF files is broken in 64-bit builds. This is not in Gaff code, but in DevIL/ResIL code.

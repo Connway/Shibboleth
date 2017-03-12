@@ -24,6 +24,7 @@ THE SOFTWARE.
 
 #include <Shibboleth_Reflection.h>
 #include <Shibboleth_IResource.h>
+#include <Shibboleth_IncludeAngelScript.h>
 #include <scriptbuilder.h>
 
 NS_SHIBBOLETH

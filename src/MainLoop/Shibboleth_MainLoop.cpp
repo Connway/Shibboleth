@@ -38,6 +38,7 @@ THE SOFTWARE.
 #include <Shibboleth_AngelScriptResource.h>
 #include <Shibboleth_ResourceManager.h>
 #include <Shibboleth_AngelScriptComponent.h>
+#include <Shibboleth_Object.h>
 
 NS_SHIBBOLETH
 
@@ -200,6 +201,15 @@ void MainLoop::update(void)
 	GAFF_REF(b);
 
 	asc.prepareMethod("testMath");
+	asc.callMethod();
+
+	Object obj(123);
+
+	asc.prepareMethod("testObj");
+	asc.setArg<Object&>(0, obj);
+	asc.callMethod();
+
+	asc.prepareMethod("testComp");
 	asc.callMethod();
 
 	GetApp().quit();

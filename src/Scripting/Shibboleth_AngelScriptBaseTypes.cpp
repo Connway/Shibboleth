@@ -21,8 +21,9 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Shibboleth_AngelScriptBaseTypes.h"
+#include "Shibboleth_AngelScriptComponent.h"
 #include <Shibboleth_Object.h>
-#include <angelscript.h>
+#include <Shibboleth_IncludeAngelScript.h>
 #include <vec4.hpp>
 #include <vec3.hpp>
 #include <vec2.hpp>
@@ -86,17 +87,102 @@ THE SOFTWARE.
 
 NS_SHIBBOLETH
 
+static void GetComponentFromObject(asIScriptGeneric* generic)
+{
+	Object* const object = reinterpret_cast<Object*>(generic->GetObject());
+	void** const out = reinterpret_cast<void**>(generic->GetArgAddress(0));
+	const int type_id = generic->GetArgTypeId(0);
+
+	GAFF_ASSERT(type_id > asTYPEID_DOUBLE);
+	GAFF_ASSERT(type_id & asTYPEID_OBJHANDLE);
+	GAFF_ASSERT(!(generic->GetObjectTypeId() & asTYPEID_HANDLETOCONST) || type_id & asTYPEID_HANDLETOCONST);
+
+	const asITypeInfo* const type_info = generic->GetEngine()->GetTypeInfoById(type_id);
+
+	// Find the first script component that has a script class with this name.
+	if (type_id & asTYPEID_SCRIPTOBJECT) {
+		const Vector<Component*>& components = object->getComponents();
+
+		for (Component* component : components) {
+			AngelScriptComponent* const script = Gaff::ReflectionCast<AngelScriptComponent>(*component);
+
+			if (script) {
+				asIScriptObject* const script_object = script->getObject();
+
+				if (type_info == script_object->GetObjectType()) {
+					*out = script_object;
+				}
+			}
+		}
+
+	// Get the first component that implements this interface.
+	} else {
+		const char* const name = type_info->GetName();
+		const Gaff::Hash64 class_hash = Gaff::FNV1aHash64String(name);
+		*out = object->getFirstComponentWithInterface(class_hash);
+	}
+}
+
+static void GetInterfaceFromComponent(asIScriptGeneric* generic)
+{
+	Component* const component = reinterpret_cast<Component*>(generic->GetObject());
+	void** const out = reinterpret_cast<void**>(generic->GetArgAddress(0));
+	const int type_id = generic->GetArgTypeId(0);
+
+	GAFF_ASSERT(type_id > asTYPEID_DOUBLE);
+	GAFF_ASSERT(type_id & asTYPEID_OBJHANDLE);
+	GAFF_ASSERT(!(generic->GetObjectTypeId() & asTYPEID_HANDLETOCONST) || type_id & asTYPEID_HANDLETOCONST);
+
+	AngelScriptComponent* const script = Gaff::ReflectionCast<AngelScriptComponent>(*component);
+	asIScriptEngine* const engine = generic->GetEngine();
+	asITypeInfo* const type_info = engine->GetTypeInfoById(type_id);
+
+	// Try and cast the held script to the associated type.
+	if (script) {
+		asIScriptObject* const object = script->getObject();
+		engine->RefCastObject(object, object->GetObjectType(), type_info, out);
+
+	// Use reflection definition to cast.
+	} else {
+		*out = component->getReflectionDefinition().getInterface(Gaff::FNV1aHash64String(type_info->GetName()), component->getBasePointer());
+	}
+}
+
+void DeclareTypes(asIScriptEngine* engine)
+{
+	engine->RegisterObjectType("Object", 0, asOBJ_REF | asOBJ_NOCOUNT);
+	engine->RegisterObjectType("Component", 0, asOBJ_REF | asOBJ_NOCOUNT);
+	engine->RegisterObjectType("Vec2", sizeof(glm::vec2), asOBJ_VALUE | asOBJ_POD | asOBJ_APP_CLASS_ALLFLOATS | asGetTypeTraits<glm::vec2>());
+	engine->RegisterObjectType("Vec3", sizeof(glm::vec3), asOBJ_VALUE | asOBJ_POD | asOBJ_APP_CLASS_ALLFLOATS | asGetTypeTraits<glm::vec3>());
+	engine->RegisterObjectType("Vec4", sizeof(glm::vec4), asOBJ_VALUE | asOBJ_POD | asOBJ_APP_CLASS_ALLFLOATS | asGetTypeTraits<glm::vec4>());
+	engine->RegisterObjectType("Quat", sizeof(glm::quat), asOBJ_VALUE | asOBJ_POD | asOBJ_APP_CLASS_ALLFLOATS | asGetTypeTraits<glm::quat>());
+}
+
 void RegisterObject(asIScriptEngine* engine)
 {
 	//engine->RegisterObjectMethod("Object", "const HashString64@ get_name() const", asMETHOD(Object, getName), asCALL_THISCALL);
-	engine->RegisterObjectMethod("Object", "int get_numComponents() const", asMETHOD(Object, getNumComponents), asCALL_THISCALL);
+	engine->RegisterObjectMethod("Object", "int get_num_components() const", asMETHOD(Object, getNumComponents), asCALL_THISCALL);
 	engine->RegisterObjectMethod("Object", "const Component@ getComponent(int) const", asMETHODPR(Object, getComponent, (int32_t) const, const Component*), asCALL_THISCALL);
 	engine->RegisterObjectMethod("Object", "Component@ getComponent(int)", asMETHODPR(Object, getComponent, (int32_t), Component*), asCALL_THISCALL);
-	//engine->RegisterObjectMethod("Object", "void getComponent(?& out) const", asFUNCTION(getComponent), asCALL_CDECL_OBJFIRST);
+	engine->RegisterObjectMethod("Object", "void getComponent(?& out) const", asFUNCTION(GetComponentFromObject), asCALL_GENERIC);
+	engine->RegisterObjectMethod("Object", "const Vec3& get_local_position() const", asMETHOD(Object, getLocalPosition), asCALL_THISCALL);
+	engine->RegisterObjectMethod("Object", "const Vec3& get_world_position() const", asMETHOD(Object, getWorldPosition), asCALL_THISCALL);
+	engine->RegisterObjectMethod("Object", "const Quat& get_local_rotation() const", asMETHOD(Object, getLocalRotation), asCALL_THISCALL);
+	engine->RegisterObjectMethod("Object", "const Quat& get_world_rotation() const", asMETHOD(Object, getWorldRotation), asCALL_THISCALL);
+	engine->RegisterObjectMethod("Object", "const Vec3& get_local_scale() const", asMETHOD(Object, getLocalScale), asCALL_THISCALL);
+	engine->RegisterObjectMethod("Object", "const Vec3& get_world_scale() const", asMETHOD(Object, getWorldScale), asCALL_THISCALL);
+	engine->RegisterObjectMethod("Object", "void set_local_position(const Vec3&)", asMETHOD(Object, setLocalPosition), asCALL_THISCALL);
+	engine->RegisterObjectMethod("Object", "void set_world_position(const Vec3&)", asMETHOD(Object, setWorldPosition), asCALL_THISCALL);
+	engine->RegisterObjectMethod("Object", "void set_local_rotation(const Quat&)", asMETHOD(Object, setLocalRotation), asCALL_THISCALL);
+	engine->RegisterObjectMethod("Object", "void set_world_rotation(const Quat&)", asMETHOD(Object, setWorldRotation), asCALL_THISCALL);
+	engine->RegisterObjectMethod("Object", "void set_local_scale(const Vec3&)", asMETHOD(Object, setLocalScale), asCALL_THISCALL);
+	engine->RegisterObjectMethod("Object", "void set_world_scale(const Vec3&)", asMETHOD(Object, setWorldScale), asCALL_THISCALL);
 
 	engine->RegisterObjectMethod("Object", "void addChild(Object@)", asMETHOD(Object, addChild), asCALL_THISCALL);
 	engine->RegisterObjectMethod("Object", "void removeFromParent()", asMETHOD(Object, removeFromParent), asCALL_THISCALL);
 	engine->RegisterObjectMethod("Object", "void removeChildren()", asMETHOD(Object, removeChildren), asCALL_THISCALL);
+
+	engine->RegisterObjectMethod("Object", "bool get_in_world() const", asMETHOD(Object, isInWorld), asCALL_THISCALL);
 }
 
 void RegisterComponent(asIScriptEngine* engine)
@@ -106,16 +192,11 @@ void RegisterComponent(asIScriptEngine* engine)
 	//engine->RegisterObjectMethod("Component", "const String@ get_name() const", asMETHOD(Component, getName), asCALL_THISCALL);
 	engine->RegisterObjectMethod("Component", "bool get_active() const", asMETHOD(Component, isActive), asCALL_THISCALL);
 	engine->RegisterObjectMethod("Component", "void set_active(bool)", asMETHOD(Component, setActive), asCALL_THISCALL);
-	//engine->RegisterObjectMethod("Component", "void getInterface(?& out) const", asFUNCTION(), asCALL_CDECL_OBJFIRST);
+	engine->RegisterObjectMethod("Component", "void opCast(?& out)", asFUNCTION(GetInterfaceFromComponent), asCALL_GENERIC);
 }
 
 void RegisterMath(asIScriptEngine* engine)
 {
-	engine->RegisterObjectType("Vec2", sizeof(glm::vec2), asOBJ_VALUE | asOBJ_POD | asOBJ_APP_CLASS_ALLFLOATS | asGetTypeTraits<glm::vec2>());
-	engine->RegisterObjectType("Vec3", sizeof(glm::vec3), asOBJ_VALUE | asOBJ_POD | asOBJ_APP_CLASS_ALLFLOATS | asGetTypeTraits<glm::vec3>());
-	engine->RegisterObjectType("Vec4", sizeof(glm::vec4), asOBJ_VALUE | asOBJ_POD | asOBJ_APP_CLASS_ALLFLOATS | asGetTypeTraits<glm::vec4>());
-	engine->RegisterObjectType("Quat", sizeof(glm::quat), asOBJ_VALUE | asOBJ_POD | asOBJ_APP_CLASS_ALLFLOATS | asGetTypeTraits<glm::quat>());
-
 	// Vec2
 	REGISTER_VEC(Vec2, vec2);
 
@@ -198,6 +279,11 @@ void RegisterMath(asIScriptEngine* engine)
 	engine->RegisterObjectProperty("Quat", "float y", asOFFSET(glm::quat, y));
 	engine->RegisterObjectProperty("Quat", "float z", asOFFSET(glm::quat, z));
 	engine->RegisterObjectProperty("Quat", "float w", asOFFSET(glm::quat, w));
+}
+
+void RegisterString(asIScriptEngine* /*engine*/)
+{
+	
 }
 
 NS_END

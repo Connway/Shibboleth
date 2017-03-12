@@ -95,29 +95,6 @@ constexpr asETypeIdFlags GetTypeFlag<double>(void)
 	return asTYPEID_DOUBLE;
 }
 
-template <bool is_ptr>
-struct PushObjectHelper;
-
-template <>
-struct PushObjectHelper<true>
-{
-	template <class T>
-	static void Push(asIScriptContext* context, int32_t index, T ptr)
-	{
-		static_assert(std::is_pointer<T>::value, "Value is supposed to be a pointer!");
-		context->SetArgObject(static_cast<asUINT>(index), ptr);
-	}
-};
-
-template <>
-struct PushObjectHelper<false>
-{
-	template <class T>
-	static void Push(asIScriptContext*, int32_t, T)
-	{
-	}
-};
-
 template <class T>
 inline void PushArg(asIScriptContext* /*context*/, int32_t /*index*/, T /*value*/)
 {
@@ -183,6 +160,41 @@ inline void PushArg<uint64_t>(asIScriptContext* context, int32_t index, uint64_t
 }
 
 
+template <bool is_ptr, bool is_ref>
+struct PushObjectHelper;
+
+template <>
+struct PushObjectHelper<true, false>
+{
+	template <class T>
+	static void Push(asIScriptContext* context, int32_t index, T* ptr)
+	{
+		context->SetArgObject(static_cast<asUINT>(index), ptr);
+	}
+};
+
+template <>
+struct PushObjectHelper<false, true>
+{
+	template <class T>
+	static void Push(asIScriptContext* context, int32_t index, T& ref)
+	{
+		T* const ptr = &ref;
+		context->SetArgAddress(static_cast<asUINT>(index), ptr);
+	}
+};
+
+template <>
+struct PushObjectHelper<false, false>
+{
+	template <class T>
+	static void Push(asIScriptContext* context, int32_t index, T value)
+	{
+		PushArg(context, index, value);
+	}
+};
+
+
 template <class T>
 const T& AngelScriptComponent::getProperty(const char* name) const
 {
@@ -236,7 +248,7 @@ void AngelScriptComponent::setArg(int32_t index, T value)
 {
 	static_assert(
 		std::is_arithmetic<T>::value || std::is_reference<T>::value || std::is_pointer<T>::value,
-		"Type T must be either a built-in value type or a reference or pointer."
+		"Type T must be either a built-in value type, reference or a pointer."
 	);
 
 	GAFF_ASSERT(_context->GetFunction());
@@ -248,14 +260,7 @@ void AngelScriptComponent::setArg(int32_t index, T value)
 	GAFF_ASSERT(type_id > asTYPEID_DOUBLE || type_id == GetTypeFlag<T>());
 #endif
 
-	if (std::is_arithmetic<T>::value) {
-		PushArg(_context, index, value);
-	} else if (std::is_reference<T>::value) {
-		T* ptr = &value;
-		_context->SetArgAddress(static_cast<asUINT>(index), ptr);
-	} else {
-		PushObjectHelper<std::is_pointer<T>::value>::Push(_context, index, value);
-	}
+	PushObjectHelper<std::is_pointer<T>::value, std::is_reference<T>::value>::Push(_context, index, value);
 }
 
 template <class T>

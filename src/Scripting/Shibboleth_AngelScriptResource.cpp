@@ -79,13 +79,38 @@ void AngelScriptResource::loadScript(void)
 	int r = _builder.StartNewModule(engine, getFilePath().getBuffer());
 	RES_FAIL_MSG(r < 0, "Failed to create new script module for script '%s'!", getFilePath().getBuffer());
 
+	r = _builder.AddSectionFromMemory(
+		"ScriptComponent",
+		R"(
+			shared abstract class ScriptComponent
+			{
+				Object@ owner
+				{
+					get { return _component.owner; }
+				}
+
+				bool active
+				{
+					get { return _component.active; }
+					set { _component.active = value; }
+				}
+
+				const Component@ opImplCast() const { return _component; }
+				Component@ opImplCast() { return _component; }
+
+				private Component@ _component;
+			}
+		)"
+	);
+	RES_FAIL_MSG(r < 0, "Failed to add section for `ScriptComponent`!");
+
 	r = _builder.AddSectionFromMemory("script", _script_file->getBuffer(), static_cast<unsigned int>(_script_file->size()));
 	RES_FAIL_MSG(r < 0, "Failed to add section for script '%s'!", getFilePath().getBuffer());
 
 	r = _builder.BuildModule();
 	RES_FAIL_MSG(r < 0, "Failed to build module for script '%s'!", getFilePath().getBuffer());
 
-	_module = engine->GetModule(getFilePath().getBuffer());
+	_module = _builder.GetModule();
 	RES_FAIL_MSG(!_module, "Failed to get module for script '%s'!", getFilePath().getBuffer());
 
 	lock.unlock();

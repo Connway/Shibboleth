@@ -37,6 +37,9 @@ class AngelScriptComponentWrapper final : public RefCounted
 public:
 	static void Register(asIScriptEngine* engine);
 
+	const AngelScriptComponent* getScript(void) const;
+	AngelScriptComponent* getScript(void);
+
 private:
 	AngelScriptComponent* _script_comp = nullptr;
 

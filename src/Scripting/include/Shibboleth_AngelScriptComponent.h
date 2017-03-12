@@ -40,6 +40,9 @@ public:
 	void setScript(const AngelScriptResourcePtr& script);
 	const AngelScriptResourcePtr& getScript(void) const;
 
+	const asIScriptObject* getObject(void) const;
+	asIScriptObject* getObject(void);
+
 	int32_t getPropertyIndex(const char* name) const;
 	int32_t getPropertyIndex(Gaff::Hash32 name) const;
 
