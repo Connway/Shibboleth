@@ -110,7 +110,7 @@ NS_SHIBBOLETH \
 		} \
 		g_reflection_definition = reinterpret_cast< Gaff::ReflectionDefinition<type, ProxyAllocator>* >( \
 			const_cast< Gaff::IReflectionDefinition* >( \
-				GetApp().getReflection(Gaff::FNV1aHash64Const(#type)) \
+				GetApp().getReflection(GetHash()) \
 			) \
 		); \
 		if (g_reflection_definition) { \
