@@ -170,21 +170,9 @@ void MainLoop::update(void)
 
 
 	AngelScriptResourcePtr script_res = GetApp().getManagerTUnsafe<ResourceManager>().requestResourceT<AngelScriptResource>("TestScript.as");
-
-	ProxyAllocator proxy_allocator;
-	eastl::function<void(IResource*)> cb(eastl::allocator_arg, proxy_allocator, [&](IResource* /*res*/) -> void
-	{
-		int i = 10;
-		i += 5;
-		i = i;
-	});
-
-	script_res->addResourceStateCallback(std::move(cb));
-
 	GetApp().getManagerTUnsafe<ResourceManager>().waitForResource(*script_res);
 
 	AngelScriptComponent asc;
-
 	asc.setScript(script_res);
 
 	int32_t& a = asc.getProperty<int32_t>("a");
