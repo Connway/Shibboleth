@@ -77,6 +77,7 @@ bool AngelScriptManager::init(void)
 	// Declare them ahead of time so that we can add functions that reference them without generating errors.
 	DeclareTypes(_engine);
 	RegisterMath(_engine);
+	RegisterString(_engine);
 	RegisterObject(_engine);
 	RegisterComponent(_engine);
 

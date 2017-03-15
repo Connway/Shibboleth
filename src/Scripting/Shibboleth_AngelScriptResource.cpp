@@ -98,6 +98,9 @@ void AngelScriptResource::loadScript(void)
 				const Component@ opImplCast() const { return _component; }
 				Component@ opImplCast() { return _component; }
 
+				// No way to forward this?
+				//void opCast(?& out value) { _component.opCast(value); }
+
 				private Component@ _component;
 			}
 		)"

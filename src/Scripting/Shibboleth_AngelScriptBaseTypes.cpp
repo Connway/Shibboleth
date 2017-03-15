@@ -24,9 +24,19 @@ THE SOFTWARE.
 #include "Shibboleth_AngelScriptComponent.h"
 #include <Shibboleth_Object.h>
 #include <Shibboleth_IncludeAngelScript.h>
+#include <gtc/quaternion.hpp>
 #include <vec4.hpp>
 #include <vec3.hpp>
 #include <vec2.hpp>
+
+#ifdef PLATFORM_64_BIT
+	#define SIZE_T_STRING "uint64"
+#elif defined(PLATFORM_32_BIT)
+	#define SIZE_T_STRING "uint32"
+#else
+static_assert(false, "size_t is not 32 or 64-bits!");
+#endif
+
 
 #define REGISTER_VEC(name, type) \
 	REGISTER_BASE_VEC_TYPE(name, type); \
@@ -35,7 +45,7 @@ THE SOFTWARE.
 	engine->RegisterObjectMethod(#name, #name "& opSubAssign(float)", asMETHODPR(glm::##type, operator-=, (float), glm::##type&), asCALL_THISCALL); \
 	engine->RegisterObjectMethod(#name, #name "& opDivAssign(const " #name "& in)", asMETHODPR(glm::##type, operator/=, (const glm::##type&), glm::##type&), asCALL_THISCALL); \
 	engine->RegisterObjectMethod(#name, #name "& opMulAssign(float)", asMETHODPR(glm::##type, operator*=, (float), glm::##type&), asCALL_THISCALL); \
-	engine->RegisterObjectMethod(#name, #name " opAdd(float) const", asFUNCTIONPR(glm::operator+, (float, const glm::##type&), glm::##type), asCALL_CDECL_OBJFIRST); \
+	engine->RegisterObjectMethod(#name, #name " opAdd(float) const", asFUNCTIONPR(glm::operator+, (const glm::##type&, float), glm::##type), asCALL_CDECL_OBJFIRST); \
 	engine->RegisterObjectMethod(#name, #name " opSub(const " #name "& in) const", asFUNCTIONPR(glm::operator-, (const glm::##type&, const glm::##type&), glm::##type), asCALL_CDECL_OBJFIRST); \
 	engine->RegisterObjectMethod(#name, #name " opSub(float) const", asFUNCTIONPR(glm::operator-, (const glm::##type&, float), glm::##type), asCALL_CDECL_OBJFIRST); \
 	engine->RegisterObjectMethod(#name, #name " opDiv(const " #name "& in) const", asFUNCTIONPR(glm::operator/, (const glm::##type&, const glm::##type&), glm::##type), asCALL_CDECL_OBJFIRST); \
@@ -44,10 +54,14 @@ THE SOFTWARE.
 	engine->RegisterObjectMethod(#name, #name " opMod(const " #name "& in) const", asFUNCTIONPR(GAFF_SINGLE_ARG(glm::mod<float, glm::highp, glm::t##type>), (const glm::##type&, const glm::##type&), glm::##type), asCALL_CDECL_OBJFIRST); \
 	engine->RegisterObjectMethod(#name, #name " opMod(float) const", asFUNCTIONPR(GAFF_SINGLE_ARG(glm::mod<float, glm::highp, glm::t##type>), (const glm::##type&, float), glm::##type), asCALL_CDECL_OBJFIRST); \
 	engine->RegisterObjectMethod(#name, #name " opPow(const " #name "& in) const", asFUNCTIONPR(GAFF_SINGLE_ARG(glm::pow<float, glm::highp, glm::t##type>), (const glm::##type&, const glm::##type&), glm::##type), asCALL_CDECL_OBJFIRST); \
+	engine->RegisterObjectMethod(#name, #name " opAdd_r(float) const", asFUNCTIONPR(glm::operator+, (float, const glm::##type&), glm::##type), asCALL_CDECL_OBJLAST); \
+	engine->RegisterObjectMethod(#name, #name " opSub_r(float) const", asFUNCTIONPR(glm::operator-, (float, const glm::##type&), glm::##type), asCALL_CDECL_OBJLAST); \
+	engine->RegisterObjectMethod(#name, #name " opDiv_r(float) const", asFUNCTIONPR(glm::operator/, (float, const glm::##type&), glm::##type), asCALL_CDECL_OBJLAST); \
+	engine->RegisterObjectMethod(#name, #name " opMul_r(float) const", asFUNCTIONPR(glm::operator*, (float, const glm::##type&), glm::##type), asCALL_CDECL_OBJLAST); \
 	engine->RegisterObjectMethod(#name, #name "& opPreInc()", asMETHODPR(glm::##type, operator++, (void), glm::##type&), asCALL_THISCALL); \
 	engine->RegisterObjectMethod(#name, #name "& opPreDec()", asMETHODPR(glm::##type, operator--, (void), glm::##type&), asCALL_THISCALL); \
-	engine->RegisterObjectMethod(#name, #name " opPostInc() const", asMETHODPR(glm::##type, operator++, (int), glm::##type), asCALL_THISCALL); \
-	engine->RegisterObjectMethod(#name, #name " opPostDec() const", asMETHODPR(glm::##type, operator--, (int), glm::##type), asCALL_THISCALL); \
+	engine->RegisterObjectMethod(#name, #name " opPostInc() const", asMETHODPR(glm::##type, operator++, (int32_t), glm::##type), asCALL_THISCALL); \
+	engine->RegisterObjectMethod(#name, #name " opPostDec() const", asMETHODPR(glm::##type, operator--, (int32_t), glm::##type), asCALL_THISCALL); \
 	engine->RegisterObjectMethod(#name, "float distance(const " #name "& in) const", asFUNCTION(GAFF_SINGLE_ARG(glm::distance<float, glm::highp, glm::t##type>)), asCALL_CDECL_OBJFIRST); \
 	engine->RegisterObjectMethod(#name, #name " reflect(const " #name "& in) const", asFUNCTION(GAFF_SINGLE_ARG(glm::reflect<float, glm::highp, glm::t##type>)), asCALL_CDECL_OBJFIRST); \
 	engine->RegisterObjectMethod(#name, #name " refract(const " #name "& in, float) const", asFUNCTION(GAFF_SINGLE_ARG(glm::refract<float, glm::highp, glm::t##type>)), asCALL_CDECL_OBJFIRST); \
@@ -78,14 +92,22 @@ THE SOFTWARE.
 	engine->RegisterObjectMethod(#name, #name " opMul(const " #name "& in) const", asFUNCTIONPR(glm::operator*, (const glm::##type&, const glm::##type&), glm::##type), asCALL_CDECL_OBJFIRST); \
 	engine->RegisterObjectMethod(#name, #name " opNeg() const", asFUNCTIONPR(glm::operator-, (const glm::##type&), glm::##type), asCALL_CDECL_OBJFIRST); \
 	engine->RegisterObjectMethod(#name, "bool opEquals(const " #name "& in) const", asFUNCTIONPR(glm::operator==, (const glm::##type&, const glm::##type&), bool), asCALL_CDECL_OBJFIRST); \
-	engine->RegisterObjectMethod(#name, "const float& opIndex(int) const", asMETHODPR(glm::##type, operator[], (int) const, const float&), asCALL_THISCALL); \
-	engine->RegisterObjectMethod(#name, "float& opIndex(int)", asMETHODPR(glm::##type, operator[], (int), float&), asCALL_THISCALL); \
+	engine->RegisterObjectMethod(#name, "const float& opIndex(int32) const", asMETHODPR(glm::##type, operator[], (int32_t) const, const float&), asCALL_THISCALL); \
+	engine->RegisterObjectMethod(#name, "float& opIndex(int32)", asMETHODPR(glm::##type, operator[], (int32_t), float&), asCALL_THISCALL); \
 	engine->RegisterObjectMethod(#name, "float length() const", asFUNCTION(GAFF_SINGLE_ARG(glm::length<float, glm::highp, glm::t##type>)), asCALL_CDECL_OBJFIRST); \
 	engine->RegisterObjectMethod(#name, "float dot(const " #name "& in) const", asFUNCTION(GAFF_SINGLE_ARG(glm::dot<float, glm::highp, glm::t##type>)), asCALL_CDECL_OBJFIRST); \
 	engine->RegisterObjectMethod(#name, #name " normalize(const " #name "& in) const", asFUNCTION(GAFF_SINGLE_ARG(glm::normalize<float, glm::highp, glm::t##type>)), asCALL_CDECL_OBJFIRST)
 
 
 NS_SHIBBOLETH
+
+template <class T>
+static void ObjectDestructor(void* memory)
+{
+	// Because VS2015 complains that this function does't reference "memory" ...
+	GAFF_REF(memory);
+	reinterpret_cast<T*>(memory)->~T();
+}
 
 static void GetComponentFromObject(asIScriptGeneric* generic)
 {
@@ -148,10 +170,16 @@ static void GetInterfaceFromComponent(asIScriptGeneric* generic)
 	}
 }
 
+static U8String StringFactory(asUINT size, const char* str)
+{
+	return U8String (str, size, ProxyAllocator("AngelScript String"));
+}
+
 void DeclareTypes(asIScriptEngine* engine)
 {
 	engine->RegisterObjectType("Object", 0, asOBJ_REF | asOBJ_NOCOUNT);
 	engine->RegisterObjectType("Component", 0, asOBJ_REF | asOBJ_NOCOUNT);
+	engine->RegisterObjectType("String", sizeof(U8String), asOBJ_VALUE | asGetTypeTraits<U8String>());
 	engine->RegisterObjectType("Vec2", sizeof(glm::vec2), asOBJ_VALUE | asOBJ_POD | asOBJ_APP_CLASS_ALLFLOATS | asGetTypeTraits<glm::vec2>());
 	engine->RegisterObjectType("Vec3", sizeof(glm::vec3), asOBJ_VALUE | asOBJ_POD | asOBJ_APP_CLASS_ALLFLOATS | asGetTypeTraits<glm::vec3>());
 	engine->RegisterObjectType("Vec4", sizeof(glm::vec4), asOBJ_VALUE | asOBJ_POD | asOBJ_APP_CLASS_ALLFLOATS | asGetTypeTraits<glm::vec4>());
@@ -160,11 +188,12 @@ void DeclareTypes(asIScriptEngine* engine)
 
 void RegisterObject(asIScriptEngine* engine)
 {
-	//engine->RegisterObjectMethod("Object", "const HashString64@ get_name() const", asMETHOD(Object, getName), asCALL_THISCALL);
-	engine->RegisterObjectMethod("Object", "int get_num_components() const", asMETHOD(Object, getNumComponents), asCALL_THISCALL);
-	engine->RegisterObjectMethod("Object", "const Component@ getComponent(int) const", asMETHODPR(Object, getComponent, (int32_t) const, const Component*), asCALL_THISCALL);
-	engine->RegisterObjectMethod("Object", "Component@ getComponent(int)", asMETHODPR(Object, getComponent, (int32_t), Component*), asCALL_THISCALL);
+	//engine->RegisterObjectMethod("Object", "const HashString64& get_name() const", asMETHOD(Object, getName), asCALL_THISCALL);
+	engine->RegisterObjectMethod("Object", "int32 get_num_components() const", asMETHOD(Object, getNumComponents), asCALL_THISCALL);
+	engine->RegisterObjectMethod("Object", "const Component@ getComponent(int32) const", asMETHODPR(Object, getComponent, (int32_t) const, const Component*), asCALL_THISCALL);
+	engine->RegisterObjectMethod("Object", "Component@ getComponent(int32)", asMETHODPR(Object, getComponent, (int32_t), Component*), asCALL_THISCALL);
 	engine->RegisterObjectMethod("Object", "void getComponent(?& out) const", asFUNCTION(GetComponentFromObject), asCALL_GENERIC);
+	//engine->RegisterObjectMethod("Object", "void getComponent(?& out)", asFUNCTION(GetComponentFromObject), asCALL_GENERIC);
 	engine->RegisterObjectMethod("Object", "const Vec3& get_local_position() const", asMETHOD(Object, getLocalPosition), asCALL_THISCALL);
 	engine->RegisterObjectMethod("Object", "const Vec3& get_world_position() const", asMETHOD(Object, getWorldPosition), asCALL_THISCALL);
 	engine->RegisterObjectMethod("Object", "const Quat& get_local_rotation() const", asMETHOD(Object, getLocalRotation), asCALL_THISCALL);
@@ -189,10 +218,11 @@ void RegisterComponent(asIScriptEngine* engine)
 {
 	engine->RegisterObjectMethod("Component", "const Object@ get_owner() const", asMETHODPR(Component, getOwner, (void) const, const Object*), asCALL_THISCALL);
 	engine->RegisterObjectMethod("Component", "Object@ get_owner()", asMETHODPR(Component, getOwner, (void), Object*), asCALL_THISCALL);
-	//engine->RegisterObjectMethod("Component", "const String@ get_name() const", asMETHOD(Component, getName), asCALL_THISCALL);
+	engine->RegisterObjectMethod("Component", "const String& get_name() const", asMETHOD(Component, getName), asCALL_THISCALL);
 	engine->RegisterObjectMethod("Component", "bool get_active() const", asMETHOD(Component, isActive), asCALL_THISCALL);
 	engine->RegisterObjectMethod("Component", "void set_active(bool)", asMETHOD(Component, setActive), asCALL_THISCALL);
-	engine->RegisterObjectMethod("Component", "void opCast(?& out)", asFUNCTION(GetInterfaceFromComponent), asCALL_GENERIC);
+	engine->RegisterObjectMethod("Component", "void opCast(?& out) const", asFUNCTION(GetInterfaceFromComponent), asCALL_GENERIC);
+	//engine->RegisterObjectMethod("Component", "void opCast(?& out)", asFUNCTION(GetInterfaceFromComponent), asCALL_GENERIC);
 }
 
 void RegisterMath(asIScriptEngine* engine)
@@ -215,8 +245,6 @@ void RegisterMath(asIScriptEngine* engine)
 	engine->RegisterObjectBehaviour("Vec3", asBEHAVE_CONSTRUCT, "void f(float, float, float)", asFUNCTION(GAFF_SINGLE_ARG(Gaff::ConstructExact<glm::vec3, float, float, float>)), asCALL_CDECL_OBJFIRST);
 	engine->RegisterObjectBehaviour("Vec3", asBEHAVE_CONSTRUCT, "void f(const Vec2& in, float)", asFUNCTION(GAFF_SINGLE_ARG(Gaff::ConstructExact<glm::vec3, const glm::vec2&, float>)), asCALL_CDECL_OBJFIRST);
 
-	engine->RegisterObjectMethod("Vec3", "Vec3 opMul(const Quat& in) const", asFUNCTIONPR(glm::operator*, (const glm::vec3&, const glm::quat&), glm::vec3), asCALL_CDECL_OBJFIRST);
-
 	engine->RegisterObjectMethod("Vec3", "Vec3 cross(const Vec3& in) const", asFUNCTIONPR(GAFF_SINGLE_ARG(glm::cross<float, glm::highp>), (const glm::vec3&, const glm::vec3&), glm::vec3), asCALL_CDECL_OBJFIRST);
 
 	engine->RegisterObjectProperty("Vec3", "float x", asOFFSET(glm::vec3, x));
@@ -235,8 +263,6 @@ void RegisterMath(asIScriptEngine* engine)
 	engine->RegisterObjectBehaviour("Vec4", asBEHAVE_CONSTRUCT, "void f(float, float, float, float)", asFUNCTION(GAFF_SINGLE_ARG(Gaff::ConstructExact<glm::vec4, float, float, float, float>)), asCALL_CDECL_OBJFIRST);
 	engine->RegisterObjectBehaviour("Vec4", asBEHAVE_CONSTRUCT, "void f(const Vec2& in, float, float)", asFUNCTION(GAFF_SINGLE_ARG(Gaff::ConstructExact<glm::vec4, const glm::vec2&, float, float>)), asCALL_CDECL_OBJFIRST);
 	engine->RegisterObjectBehaviour("Vec4", asBEHAVE_CONSTRUCT, "void f(const Vec3& in, float)", asFUNCTION(GAFF_SINGLE_ARG(Gaff::ConstructExact<glm::vec4, const glm::vec3&, float>)), asCALL_CDECL_OBJFIRST);
-
-	engine->RegisterObjectMethod("Vec4", "Vec4 opMul(const Quat& in) const", asFUNCTIONPR(glm::operator*, (const glm::vec4&, const glm::quat&), glm::vec4), asCALL_CDECL_OBJFIRST);
 
 	engine->RegisterObjectProperty("Vec4", "float x", asOFFSET(glm::vec4, x));
 	engine->RegisterObjectProperty("Vec4", "float y", asOFFSET(glm::vec4, y));
@@ -262,6 +288,8 @@ void RegisterMath(asIScriptEngine* engine)
 	engine->RegisterObjectMethod("Quat", "Quat opDiv(const float& in) const", asFUNCTIONPR(glm::operator/, (const glm::quat&, const float&), glm::quat), asCALL_CDECL_OBJFIRST);
 	engine->RegisterObjectMethod("Quat", "Vec3 opMul(const Vec3& in) const", asFUNCTIONPR(glm::operator*, (const glm::quat&, const glm::vec3&), glm::vec3), asCALL_CDECL_OBJFIRST);
 	engine->RegisterObjectMethod("Quat", "Vec4 opMul(const Vec4& in) const", asFUNCTIONPR(glm::operator*, (const glm::quat&, const glm::vec4&), glm::vec4), asCALL_CDECL_OBJFIRST);
+	engine->RegisterObjectMethod("Vec3", "Vec3 opMul_r(const Vec3& in) const", asFUNCTIONPR(glm::operator*, (const glm::quat&, const glm::vec3&), glm::vec3), asCALL_CDECL_OBJLAST);
+	engine->RegisterObjectMethod("Vec4", "Vec4 opMul_r(const Vec4& in) const", asFUNCTIONPR(glm::operator*, (const glm::quat&, const glm::vec4&), glm::vec4), asCALL_CDECL_OBJLAST);
 
 	engine->RegisterObjectMethod("Quat", "Quat lerp(const Quat& in, float) const", asFUNCTION(GAFF_SINGLE_ARG(glm::lerp<float, glm::highp>)), asCALL_CDECL_OBJFIRST);
 	engine->RegisterObjectMethod("Quat", "Quat slerp(const Quat& in, float) const", asFUNCTION(GAFF_SINGLE_ARG(glm::slerp<float, glm::highp>)), asCALL_CDECL_OBJFIRST);
@@ -281,9 +309,97 @@ void RegisterMath(asIScriptEngine* engine)
 	engine->RegisterObjectProperty("Quat", "float w", asOFFSET(glm::quat, w));
 }
 
-void RegisterString(asIScriptEngine* /*engine*/)
+void RegisterString(asIScriptEngine* engine)
 {
-	
+	engine->RegisterGlobalProperty("const " SIZE_T_STRING " npos", const_cast<size_t*>(&U8String::npos));
+
+	engine->RegisterStringFactory("String", asFUNCTION(StringFactory), asCALL_CDECL);
+	engine->RegisterObjectBehaviour("String", asBEHAVE_CONSTRUCT, "void f()", asFUNCTION(Gaff::ConstructExact<U8String>), asCALL_CDECL_OBJFIRST);
+	engine->RegisterObjectBehaviour("String", asBEHAVE_CONSTRUCT, "void f(const String& in)", asFUNCTION(GAFF_SINGLE_ARG(Gaff::ConstructExact<U8String, const U8String&>)), asCALL_CDECL_OBJFIRST);
+	engine->RegisterObjectBehaviour("String", asBEHAVE_CONSTRUCT, "void f(const String& in, " SIZE_T_STRING ", " SIZE_T_STRING " n = npos)", asFUNCTION(GAFF_SINGLE_ARG(Gaff::ConstructExact<U8String, const U8String&, size_t, size_t>)), asCALL_CDECL_OBJFIRST);
+	engine->RegisterObjectBehaviour("String", asBEHAVE_DESTRUCT, "void f()", asFUNCTION(ObjectDestructor<U8String>), asCALL_CDECL_OBJFIRST);
+
+	engine->RegisterObjectMethod("String", "String& opAssign(const String& in)", asMETHODPR(U8String, operator=, (const U8String&), U8String&), asCALL_THISCALL);
+	engine->RegisterObjectMethod("String", "String& opAssign(int8)", asMETHODPR(U8String, operator=, (char), U8String&), asCALL_THISCALL);
+	engine->RegisterObjectMethod("String", "String& opAddAssign(const String& in)", asMETHODPR(U8String, operator+=, (const U8String&), U8String&), asCALL_THISCALL);
+	engine->RegisterObjectMethod("String", "String& opAddAssign(int8)", asMETHODPR(U8String, operator+=, (char), U8String&), asCALL_THISCALL);
+
+	engine->RegisterObjectMethod("String", "String& opAdd(const String& in) const", asFUNCTIONPR(eastl::operator+, (const U8String&, const U8String&), U8String), asCALL_CDECL_OBJFIRST);
+	engine->RegisterObjectMethod("String", "String& opAdd(int8) const", asFUNCTIONPR(eastl::operator+, (const U8String&, char), U8String), asCALL_CDECL_OBJFIRST);
+	engine->RegisterObjectMethod("String", "String& opAdd_r(int8) const", asFUNCTIONPR(eastl::operator+, (char, const U8String&), U8String), asCALL_CDECL_OBJLAST);
+
+	engine->RegisterObjectMethod("String", "bool opEquals(const String& in) const", asFUNCTIONPR(eastl::operator==, (const U8String&, const U8String&), bool), asCALL_CDECL_OBJFIRST);
+
+	engine->RegisterObjectMethod("String", "int32 opCmp(const String& in) const", asMETHODPR(U8String, compare, (const U8String&) const, int32_t), asCALL_THISCALL);
+
+	engine->RegisterObjectMethod("String", "const int8& opIndex(" SIZE_T_STRING ") const", asMETHODPR(U8String, operator[], (size_t) const, const char&), asCALL_THISCALL);
+	engine->RegisterObjectMethod("String", "int8& opIndex(" SIZE_T_STRING ")", asMETHODPR(U8String, operator[], (size_t), char&), asCALL_THISCALL);
+
+	engine->RegisterObjectMethod("String", "bool get_empty() const", asMETHOD(U8String, empty), asCALL_THISCALL);
+	engine->RegisterObjectMethod("String", SIZE_T_STRING " get_size() const", asMETHOD(U8String, size), asCALL_THISCALL);
+	engine->RegisterObjectMethod("String", "void set_size(" SIZE_T_STRING ")", asMETHODPR(U8String, resize, (size_t), void), asCALL_THISCALL);
+	engine->RegisterObjectMethod("String", SIZE_T_STRING " get_capacity() const", asMETHOD(U8String, capacity), asCALL_THISCALL);
+	engine->RegisterObjectMethod("String", "void set_capacity(" SIZE_T_STRING ")", asMETHOD(U8String, set_capacity), asCALL_THISCALL);
+	engine->RegisterObjectMethod("String", "void resize(" SIZE_T_STRING ", int8)", asMETHODPR(U8String, resize, (size_t, char), void), asCALL_THISCALL);
+	engine->RegisterObjectMethod("String", "void reserve(" SIZE_T_STRING ")", asMETHOD(U8String, reserve), asCALL_THISCALL);
+
+	engine->RegisterObjectMethod("String", "const int8& front() const", asMETHODPR(U8String, front, (void) const, const char&), asCALL_THISCALL);
+	engine->RegisterObjectMethod("String", "int8& front()", asMETHODPR(U8String, front, (void), char&), asCALL_THISCALL);
+	engine->RegisterObjectMethod("String", "const int8& back() const", asMETHODPR(U8String, back, (void) const, const char&), asCALL_THISCALL);
+	engine->RegisterObjectMethod("String", "int8& back()", asMETHODPR(U8String, back, (void), char&), asCALL_THISCALL);
+
+	engine->RegisterObjectMethod("String", "void push(int8)", asMETHOD(U8String, push_back), asCALL_THISCALL);
+	engine->RegisterObjectMethod("String", "void pop()", asMETHOD(U8String, pop_back), asCALL_THISCALL);
+
+	engine->RegisterObjectMethod("String", "String& append(const String& in)", asMETHODPR(U8String, append, (const U8String&), U8String&), asCALL_THISCALL);
+	engine->RegisterObjectMethod("String", "String& append(const String& in, " SIZE_T_STRING ", " SIZE_T_STRING ")", asMETHODPR(U8String, append, (const U8String&, size_t, size_t), U8String&), asCALL_THISCALL);
+	engine->RegisterObjectMethod("String", "String& append(" SIZE_T_STRING ", int8)", asMETHODPR(U8String, append, (size_t, char), U8String&), asCALL_THISCALL);
+
+	engine->RegisterObjectMethod("String", "String& insert(" SIZE_T_STRING ", const String& in)", asMETHODPR(U8String, insert, (size_t, const U8String&), U8String&), asCALL_THISCALL);
+	engine->RegisterObjectMethod("String", "String& insert(" SIZE_T_STRING ", const String& in, " SIZE_T_STRING ", " SIZE_T_STRING ")", asMETHODPR(U8String, insert, (size_t, const U8String&, size_t, size_t), U8String&), asCALL_THISCALL);
+	engine->RegisterObjectMethod("String", "String& insert(" SIZE_T_STRING ", " SIZE_T_STRING ",  int8)", asMETHODPR(U8String, insert, (size_t, size_t, char), U8String&), asCALL_THISCALL);
+
+	engine->RegisterObjectMethod("String", "String& erase(" SIZE_T_STRING " pos = 0, " SIZE_T_STRING " n = npos)", asMETHODPR(U8String, erase, (size_t, size_t), U8String&), asCALL_THISCALL);
+
+	engine->RegisterObjectMethod("String", "String& replace(" SIZE_T_STRING ", " SIZE_T_STRING ", const String& in)", asMETHODPR(U8String, replace, (size_t, size_t, const U8String&), U8String&), asCALL_THISCALL);
+	engine->RegisterObjectMethod("String", "String& replace(" SIZE_T_STRING ", " SIZE_T_STRING ", const String& in, " SIZE_T_STRING ", " SIZE_T_STRING ")", asMETHODPR(U8String, replace, (size_t, size_t, const U8String&, size_t, size_t), U8String&), asCALL_THISCALL);
+	engine->RegisterObjectMethod("String", "String& replace(" SIZE_T_STRING ", " SIZE_T_STRING ", " SIZE_T_STRING ", int8)", asMETHODPR(U8String, replace, (size_t, size_t, size_t, char), U8String&), asCALL_THISCALL);
+
+	engine->RegisterObjectMethod("String", SIZE_T_STRING " find(const String& in, " SIZE_T_STRING " pos = 0) const", asMETHODPR(U8String, find, (const U8String&, size_t) const, size_t), asCALL_THISCALL);
+	engine->RegisterObjectMethod("String", SIZE_T_STRING " find(int8, " SIZE_T_STRING " pos = 0) const", asMETHODPR(U8String, find, (char, size_t) const, size_t), asCALL_THISCALL);
+
+	engine->RegisterObjectMethod("String", SIZE_T_STRING " rfind(const String& in, " SIZE_T_STRING " pos = npos) const", asMETHODPR(U8String, rfind, (const U8String&, size_t) const, size_t), asCALL_THISCALL);
+	engine->RegisterObjectMethod("String", SIZE_T_STRING " rfind(int8, " SIZE_T_STRING " pos = npos) const", asMETHODPR(U8String, rfind, (char, size_t) const, size_t), asCALL_THISCALL);
+
+	engine->RegisterObjectMethod("String", SIZE_T_STRING " find_first_of(const String& in, " SIZE_T_STRING " pos = 0) const", asMETHODPR(U8String, find_first_of, (const U8String&, size_t) const, size_t), asCALL_THISCALL);
+	engine->RegisterObjectMethod("String", SIZE_T_STRING " find_first_of(int8, " SIZE_T_STRING " pos = 0) const", asMETHODPR(U8String, find_first_of, (char, size_t) const, size_t), asCALL_THISCALL);
+
+	engine->RegisterObjectMethod("String", SIZE_T_STRING " find_last_of(const String& in, " SIZE_T_STRING " pos = npos) const", asMETHODPR(U8String, find_last_of, (const U8String&, size_t) const, size_t), asCALL_THISCALL);
+	engine->RegisterObjectMethod("String", SIZE_T_STRING " find_last_of(int8, " SIZE_T_STRING " pos = npos) const", asMETHODPR(U8String, find_last_of, (char, size_t) const, size_t), asCALL_THISCALL);
+
+	engine->RegisterObjectMethod("String", SIZE_T_STRING " find_first_not_of(const String& in, " SIZE_T_STRING " pos = 0) const", asMETHODPR(U8String, find_first_not_of, (const U8String&, size_t) const, size_t), asCALL_THISCALL);
+	engine->RegisterObjectMethod("String", SIZE_T_STRING " find_first_not_of(int8, " SIZE_T_STRING " pos = 0) const", asMETHODPR(U8String, find_first_not_of, (char, size_t) const, size_t), asCALL_THISCALL);
+
+	engine->RegisterObjectMethod("String", SIZE_T_STRING " find_last_not_of(const String& in, " SIZE_T_STRING " pos = npos) const", asMETHODPR(U8String, find_last_not_of, (const U8String&, size_t) const, size_t), asCALL_THISCALL);
+	engine->RegisterObjectMethod("String", SIZE_T_STRING " find_last_not_of(int8, " SIZE_T_STRING " pos = npos) const", asMETHODPR(U8String, find_last_not_of, (char, size_t) const, size_t), asCALL_THISCALL);
+
+	engine->RegisterObjectMethod("String", "String substr(" SIZE_T_STRING " pos = 0, " SIZE_T_STRING " n = npos) const", asMETHOD(U8String, substr), asCALL_THISCALL);
+
+	engine->RegisterObjectMethod("String", "int32 compare(const String& in) const", asMETHODPR(U8String, compare, (const U8String&) const, int32_t), asCALL_THISCALL);
+	engine->RegisterObjectMethod("String", "int32 compare(" SIZE_T_STRING ", " SIZE_T_STRING ", const String& in) const", asMETHODPR(U8String, compare, (size_t, size_t, const U8String&) const, int32_t), asCALL_THISCALL);
+	engine->RegisterObjectMethod("String", "int32 compare(" SIZE_T_STRING ", " SIZE_T_STRING ", const String& in, " SIZE_T_STRING ", " SIZE_T_STRING ") const", asMETHODPR(U8String, compare, (size_t, size_t, const U8String&, size_t, size_t) const, int32_t), asCALL_THISCALL);
+
+	engine->RegisterObjectMethod("String", "int32 comparei(const String& in) const", asMETHODPR(U8String, comparei, (const U8String&) const, int32_t), asCALL_THISCALL);
+
+	engine->RegisterObjectMethod("String", "void make_lower()", asMETHOD(U8String, make_lower), asCALL_THISCALL);
+	engine->RegisterObjectMethod("String", "void make_upper()", asMETHOD(U8String, make_upper), asCALL_THISCALL);
+	engine->RegisterObjectMethod("String", "void ltrim()", asMETHOD(U8String, ltrim), asCALL_THISCALL);
+	engine->RegisterObjectMethod("String", "void rtrim()", asMETHOD(U8String, rtrim), asCALL_THISCALL);
+	engine->RegisterObjectMethod("String", "void trim()", asMETHOD(U8String, trim), asCALL_THISCALL);
+	engine->RegisterObjectMethod("String", "String left(" SIZE_T_STRING ") const", asMETHOD(U8String, left), asCALL_THISCALL);
+	engine->RegisterObjectMethod("String", "String right(" SIZE_T_STRING ") const", asMETHOD(U8String, right), asCALL_THISCALL);
+	engine->RegisterObjectMethod("String", "bool validate() const", asMETHOD(U8String, validate), asCALL_THISCALL);
+	engine->RegisterObjectMethod("String", "void swap(const String& in)", asMETHOD(U8String, swap), asCALL_THISCALL);
 }
 
 NS_END
