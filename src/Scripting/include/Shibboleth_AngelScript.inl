@@ -79,7 +79,7 @@ struct RefCountedHelper<false>
 };
 
 template <class T, class... Args>
-void* ASFactoryFunc(Args... args)
+T* ASFactoryFunc(Args... args)
 {
 	IAllocator* const allocator = GetAllocator();
 	int32_t pool_index = allocator->getPoolIndex("AngelScript");
@@ -219,11 +219,11 @@ static const Gaff::Hash64 g_name_hashes[] = {
 static const char* g_name_strings[] = {
 	"int8",
 	"int16",
-	"int",
+	"int32",
 	"int64",
 	"uint8",
 	"uint16",
-	"uint",
+	"uint32",
 	"uint64"
 };
 
@@ -303,17 +303,17 @@ struct GetNameHelper<T, false>
 };
 
 template <class T, class... Args>
-void ObjectConstructor(void* memory, Args&&... args)
+void ObjectConstructor(T* instance, Args... args)
 {
-	Gaff::Construct(reinterpret_cast<T*>(memory), std::forward<Args>(args)...);
+	Gaff::ConstructExact(instance, args...);
 }
 
 template <class T>
-void ObjectDestructor(void* memory)
+void ObjectDestructor(T* instance)
 {
-	// Because VS2015 complains that this function does't reference "memory" ...
-	GAFF_REF(memory);
-	reinterpret_cast<T*>(memory)->~T();
+	// Because VS2015 complains that this function does't reference "instance" ...
+	GAFF_REF(instance);
+	instance->~T();
 }
 
 template <class T, class B>
