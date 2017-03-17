@@ -102,11 +102,43 @@ static_assert(false, "size_t is not 32 or 64-bits!");
 NS_SHIBBOLETH
 
 template <class T>
-static void ObjectDestructor(void* memory)
+static void ObjectDestructor(T* instance)
 {
-	// Because VS2015 complains that this function does't reference "memory" ...
-	GAFF_REF(memory);
-	reinterpret_cast<T*>(memory)->~T();
+	// Because VS2015 complains that this function does't reference "instance" ...
+	GAFF_REF(instance);
+	instance->~T();
+}
+
+template <class HS>
+static void HashStringConstructor(HS* object, const U8String& string)
+{
+	Gaff::ConstructExact(object, string.data(), string.size(), nullptr, ProxyAllocator("AngelScript String"));
+}
+
+template <class HS>
+static void HashStringConstructor(HS* object, const HS& hs)
+{
+	Gaff::ConstructExact(object, hs);
+}
+
+template <class HS>
+static void HashStringConstructor(HS* object)
+{
+	Gaff::ConstructExact(object, nullptr, ProxyAllocator("AngelScript String"));
+}
+
+template <class HS, class HS2>
+static int32_t CompareHashStrings(const HS& lhs, const HS2& rhs)
+{
+	if (lhs < rhs) {
+		return -1;
+	}
+	else if (lhs > rhs) {
+		return 1;
+	}
+	else {
+		return 0;
+	}
 }
 
 static void GetComponentFromObject(asIScriptGeneric* generic)
@@ -180,6 +212,8 @@ void DeclareTypes(asIScriptEngine* engine)
 	engine->RegisterObjectType("Object", 0, asOBJ_REF | asOBJ_NOCOUNT);
 	engine->RegisterObjectType("Component", 0, asOBJ_REF | asOBJ_NOCOUNT);
 	engine->RegisterObjectType("String", sizeof(U8String), asOBJ_VALUE | asGetTypeTraits<U8String>());
+	engine->RegisterObjectType("HashString64", sizeof(HashString64), asOBJ_VALUE | asGetTypeTraits<HashString64>());
+	engine->RegisterObjectType("HashString32", sizeof(HashString32), asOBJ_VALUE | asGetTypeTraits<HashString32>());
 	engine->RegisterObjectType("Vec2", sizeof(glm::vec2), asOBJ_VALUE | asOBJ_POD | asOBJ_APP_CLASS_ALLFLOATS | asGetTypeTraits<glm::vec2>());
 	engine->RegisterObjectType("Vec3", sizeof(glm::vec3), asOBJ_VALUE | asOBJ_POD | asOBJ_APP_CLASS_ALLFLOATS | asGetTypeTraits<glm::vec3>());
 	engine->RegisterObjectType("Vec4", sizeof(glm::vec4), asOBJ_VALUE | asOBJ_POD | asOBJ_APP_CLASS_ALLFLOATS | asGetTypeTraits<glm::vec4>());
@@ -188,7 +222,7 @@ void DeclareTypes(asIScriptEngine* engine)
 
 void RegisterObject(asIScriptEngine* engine)
 {
-	//engine->RegisterObjectMethod("Object", "const HashString64& get_name() const", asMETHOD(Object, getName), asCALL_THISCALL);
+	engine->RegisterObjectMethod("Object", "const HashString64& get_name() const", asMETHOD(Object, getName), asCALL_THISCALL);
 	engine->RegisterObjectMethod("Object", "int32 get_num_components() const", asMETHOD(Object, getNumComponents), asCALL_THISCALL);
 	engine->RegisterObjectMethod("Object", "const Component@ getComponent(int32) const", asMETHODPR(Object, getComponent, (int32_t) const, const Component*), asCALL_THISCALL);
 	engine->RegisterObjectMethod("Object", "Component@ getComponent(int32)", asMETHODPR(Object, getComponent, (int32_t), Component*), asCALL_THISCALL);
@@ -288,8 +322,8 @@ void RegisterMath(asIScriptEngine* engine)
 	engine->RegisterObjectMethod("Quat", "Quat opDiv(const float& in) const", asFUNCTIONPR(glm::operator/, (const glm::quat&, const float&), glm::quat), asCALL_CDECL_OBJFIRST);
 	engine->RegisterObjectMethod("Quat", "Vec3 opMul(const Vec3& in) const", asFUNCTIONPR(glm::operator*, (const glm::quat&, const glm::vec3&), glm::vec3), asCALL_CDECL_OBJFIRST);
 	engine->RegisterObjectMethod("Quat", "Vec4 opMul(const Vec4& in) const", asFUNCTIONPR(glm::operator*, (const glm::quat&, const glm::vec4&), glm::vec4), asCALL_CDECL_OBJFIRST);
-	engine->RegisterObjectMethod("Vec3", "Vec3 opMul_r(const Vec3& in) const", asFUNCTIONPR(glm::operator*, (const glm::quat&, const glm::vec3&), glm::vec3), asCALL_CDECL_OBJLAST);
-	engine->RegisterObjectMethod("Vec4", "Vec4 opMul_r(const Vec4& in) const", asFUNCTIONPR(glm::operator*, (const glm::quat&, const glm::vec4&), glm::vec4), asCALL_CDECL_OBJLAST);
+	engine->RegisterObjectMethod("Quat", "Vec3 opMul_r(const Vec3& in) const", asFUNCTIONPR(glm::operator*, (const glm::quat&, const glm::vec3&), glm::vec3), asCALL_CDECL_OBJLAST);
+	engine->RegisterObjectMethod("Quat", "Vec4 opMul_r(const Vec4& in) const", asFUNCTIONPR(glm::operator*, (const glm::quat&, const glm::vec4&), glm::vec4), asCALL_CDECL_OBJLAST);
 
 	engine->RegisterObjectMethod("Quat", "Quat lerp(const Quat& in, float) const", asFUNCTION(GAFF_SINGLE_ARG(glm::lerp<float, glm::highp>)), asCALL_CDECL_OBJFIRST);
 	engine->RegisterObjectMethod("Quat", "Quat slerp(const Quat& in, float) const", asFUNCTION(GAFF_SINGLE_ARG(glm::slerp<float, glm::highp>)), asCALL_CDECL_OBJFIRST);
@@ -400,6 +434,42 @@ void RegisterString(asIScriptEngine* engine)
 	engine->RegisterObjectMethod("String", "String right(" SIZE_T_STRING ") const", asMETHOD(U8String, right), asCALL_THISCALL);
 	engine->RegisterObjectMethod("String", "bool validate() const", asMETHOD(U8String, validate), asCALL_THISCALL);
 	engine->RegisterObjectMethod("String", "void swap(const String& in)", asMETHOD(U8String, swap), asCALL_THISCALL);
+}
+
+void RegisterStringHash(asIScriptEngine* engine)
+{
+	// HashString64
+	engine->RegisterObjectBehaviour("HashString64", asBEHAVE_CONSTRUCT, "void f(const HashString64& in)", asFUNCTIONPR(HashStringConstructor<HashString64>, (HashString64*, const HashString64&), void), asCALL_CDECL_OBJFIRST);
+	engine->RegisterObjectBehaviour("HashString64", asBEHAVE_CONSTRUCT, "void f(const String& in)", asFUNCTIONPR(HashStringConstructor<HashString64>, (HashString64*, const U8String&), void), asCALL_CDECL_OBJFIRST);
+	engine->RegisterObjectBehaviour("HashString64", asBEHAVE_CONSTRUCT, "void f()", asFUNCTIONPR(HashStringConstructor<HashString64>, (HashString64*), void), asCALL_CDECL_OBJFIRST);
+	engine->RegisterObjectBehaviour("HashString64", asBEHAVE_DESTRUCT, "void f()", asFUNCTION(ObjectDestructor<HashString64>), asCALL_CDECL_OBJFIRST);
+
+	// Should we support HashStringTemp64?
+	engine->RegisterObjectMethod("HashString64", "HashString64& opAssign(const HashString64& in)", asMETHODPR(HashString64, operator=, (const HashString64&), HashString64&), asCALL_THISCALL);
+	engine->RegisterObjectMethod("HashString64", "HashString64& opAssign(const String& in)", asMETHODPR(HashString64, operator=, (const U8String&), HashString64&), asCALL_THISCALL);
+	engine->RegisterObjectMethod("HashString64", "bool opEquals(const HashString64& in) const", asMETHODPR(HashString64, operator==, (const HashString64&) const, bool), asCALL_THISCALL);
+	engine->RegisterObjectMethod("HashString64", "bool opEquals(uint64) const", asMETHODPR(HashString64, operator==, (uint64_t) const, bool), asCALL_THISCALL);
+	engine->RegisterObjectMethod("HashString64", "int32 opCmp(uint64) const", asFUNCTION(GAFF_SINGLE_ARG(CompareHashStrings<HashString64, uint64_t>)), asCALL_CDECL_OBJFIRST);
+
+	engine->RegisterObjectMethod("HashString64", "const String& get_string() const", asMETHOD(HashString64, getString), asCALL_THISCALL);
+	engine->RegisterObjectMethod("HashString64", "uint64 get_hash() const", asMETHOD(HashString64, getHash), asCALL_THISCALL);
+
+
+	// HashString32
+	engine->RegisterObjectBehaviour("HashString32", asBEHAVE_CONSTRUCT, "void f(const HashString32& in)", asFUNCTIONPR(HashStringConstructor<HashString32>, (HashString32*, const HashString32&), void), asCALL_CDECL_OBJFIRST);
+	engine->RegisterObjectBehaviour("HashString32", asBEHAVE_CONSTRUCT, "void f(const String& in)", asFUNCTIONPR(HashStringConstructor<HashString32>, (HashString32*, const U8String&), void), asCALL_CDECL_OBJFIRST);
+	engine->RegisterObjectBehaviour("HashString32", asBEHAVE_CONSTRUCT, "void f()", asFUNCTIONPR(HashStringConstructor<HashString32>, (HashString32*), void), asCALL_CDECL_OBJFIRST);
+	engine->RegisterObjectBehaviour("HashString32", asBEHAVE_DESTRUCT, "void f()", asFUNCTION(ObjectDestructor<HashString32>), asCALL_CDECL_OBJFIRST);
+
+	// Should we support HashStringTemp32?
+	engine->RegisterObjectMethod("HashString32", "HashString32& opAssign(const HashString32& in)", asMETHODPR(HashString32, operator=, (const HashString32&), HashString32&), asCALL_THISCALL);
+	engine->RegisterObjectMethod("HashString32", "HashString32& opAssign(const String& in)", asMETHODPR(HashString32, operator=, (const U8String&), HashString32&), asCALL_THISCALL);
+	engine->RegisterObjectMethod("HashString32", "bool opEquals(const HashString32& in) const", asMETHODPR(HashString32, operator==, (const HashString32&) const, bool), asCALL_THISCALL);
+	engine->RegisterObjectMethod("HashString32", "bool opEquals(uint32) const", asMETHODPR(HashString32, operator==, (uint32_t) const, bool), asCALL_THISCALL);
+	engine->RegisterObjectMethod("HashString32", "int32 opCmp(uint32) const", asFUNCTION(GAFF_SINGLE_ARG(CompareHashStrings<HashString32, uint32_t>)), asCALL_CDECL_OBJFIRST);
+
+	engine->RegisterObjectMethod("HashString32", "const String& get_string() const", asMETHOD(HashString32, getString), asCALL_THISCALL);
+	engine->RegisterObjectMethod("HashString32", "uint32 get_hash() const", asMETHOD(HashString32, getHash), asCALL_THISCALL);
 }
 
 NS_END

@@ -78,6 +78,7 @@ bool AngelScriptManager::init(void)
 	DeclareTypes(_engine);
 	RegisterMath(_engine);
 	RegisterString(_engine);
+	RegisterStringHash(_engine);
 	RegisterObject(_engine);
 	RegisterComponent(_engine);
 
