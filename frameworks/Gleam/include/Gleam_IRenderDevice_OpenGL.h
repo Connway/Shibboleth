@@ -23,6 +23,7 @@ THE SOFTWARE.
 #pragma once
 
 #include "Gleam_Defines.h"
+#include "Gaff_Defines.h"
 
 NS_GLEAM
 
@@ -53,9 +54,10 @@ public:
 
 	virtual void bindProgramBuffers(ProgramBuffersGL* program_buffers) = 0;
 
-	virtual void renderMeshNonIndexed(unsigned int topology, unsigned int vert_count, unsigned int start_location) = 0;
-	virtual void renderMeshInstanced(MeshGL* mesh, unsigned int count) = 0;
+	virtual void renderMeshNonIndexed(uint32_t topology, int32_t vert_count, int32_t start_location) = 0;
+	virtual void renderMeshInstanced(MeshGL* mesh, int32_t count) = 0;
 	virtual void renderMesh(MeshGL* mesh) = 0;
+	virtual void renderNoVertexInput(int32_t vert_count) = 0;
 };
 
 NS_END

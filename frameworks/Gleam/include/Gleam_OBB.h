@@ -22,16 +22,39 @@ THE SOFTWARE.
 
 #pragma once
 
-#ifdef USE_SIMD
-	#include "Gleam_OBB_SIMD.h"
+#include "Gleam_Defines.h"
+#include <vec3.hpp>
 
-	NS_GLEAM
-		typedef OBBSIMD OBB;
-	NS_END
-#else
-	#include "Gleam_OBB_CPU.h"
+NS_GLEAM
 
-	NS_GLEAM
-		typedef OBBCPU OBB;
-	NS_END
-#endif
+class Transform;
+class AABB;
+
+class OBB
+{
+public:
+	OBB(const glm::vec3& center, const glm::vec3& right, const glm::vec3& up, const glm::vec3& forward);
+	OBB(const AABB& aabb, const Transform& transform);
+	OBB(const AABB& aabb);
+	OBB(const OBB& obb);
+	OBB(void);
+	~OBB(void);
+
+	INLINE const glm::vec3& getCenter(void) const;
+	INLINE glm::vec3 getExtent(void) const;
+
+	INLINE void setAxis(int axis, const glm::vec3& vec);
+	INLINE const glm::vec3& getAxis(int axis) const;
+	INLINE const glm::vec3* getAxes(void) const;
+
+	const glm::vec3* generatePoints(glm::vec3* out) const;
+
+	INLINE void transform(const Transform& transform);
+	bool contains(const glm::vec3& point) const;
+
+private:
+	glm::vec3 _center;
+	glm::vec3 _axes[3];
+};
+
+NS_END

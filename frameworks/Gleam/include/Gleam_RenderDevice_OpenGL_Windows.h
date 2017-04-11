@@ -22,31 +22,32 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Gleam_RenderDevice_OpenGL_Base.h"
-#include "Gleam_BitArray.h"
+#include "Gleam_IRenderDevice_OpenGL.h"
+#include "Gleam_IRenderDevice.h"
+#include "Gleam_BitVector.h"
+#include "Gleam_VectorMap.h"
 #include "Gleam_String.h"
-#include "Gleam_Map.h"
 #include <Gaff_IncludeWindows.h>
 #include <Gaff_SpinLock.h>
 
 NS_GLEAM
 
-class RenderDeviceGL : public RenderDeviceGLBase
+class RenderDeviceGL : public IRenderDevice, public IRenderDeviceGL
 {
 public:
+	static bool CheckRequiredExtensions(void);
+
 	RenderDeviceGL(void);
 	~RenderDeviceGL(void);
 
-	static bool CheckRequiredExtensions(void);
-
 	AdapterList getDisplayModes(int compat = 28/*29*/) override;
 
-	bool initThreadData(size_t* thread_ids, size_t num_ids) override;
-	bool init(const IWindow& window, unsigned int adapter_id, unsigned int display_id, unsigned int display_mode_id, bool vsync = false) override;
+	bool initThreadData(std::thread::id* thread_ids, size_t num_ids) override;
+	bool init(const IWindow& window, int32_t adapter_id, int32_t display_id, int32_t display_mode_id, bool vsync = false) override;
 	void destroy(void) override;
 
-	bool isVsync(unsigned int device, unsigned int output) const override;
-	void setVsync(bool vsync, unsigned int device, unsigned int output) override;
+	bool isVsync(int32_t device, int32_t output) const override;
+	void setVsync(bool vsync, int32_t device, int32_t output) override;
 
 	void beginFrame(void) override;
 	void endFrame(void) override;
@@ -54,39 +55,70 @@ public:
 	bool resize(const IWindow& window) override;
 	bool handleFocusGained(const IWindow&) override;
 
-	unsigned int getViewportWidth(unsigned int device, unsigned int output) const override;
-	unsigned int getViewportHeight(unsigned int device, unsigned int output) const override;
+	int32_t getViewportWidth(int32_t device, int32_t output) const override;
+	int32_t getViewportHeight(int32_t device, int32_t output) const override;
 
-	unsigned int getActiveViewportWidth(void) override;
-	unsigned int getActiveViewportHeight(void) override;
+	int32_t getActiveViewportWidth(void) override;
+	int32_t getActiveViewportHeight(void) override;
 
-	unsigned int getNumOutputs(unsigned int device) const override;
-	unsigned int getNumDevices(void) const override;
+	int32_t getNumOutputs(int32_t device) const override;
+	int32_t getNumDevices(void) const override;
 
-	IRenderTargetPtr getOutputRenderTarget(unsigned int device, unsigned int output) override;
+	IRenderTargetPtr getOutputRenderTarget(int32_t device, int32_t output) override;
 	IRenderTargetPtr getActiveOutputRenderTarget(void) override;
 
-	bool setCurrentOutput(unsigned int output) override;
-	unsigned int getCurrentOutput(void) const override;
+	bool setCurrentOutput(int32_t output) override;
+	int32_t getCurrentOutput(void) const override;
 
-	bool setCurrentDevice(unsigned int device) override;
-	unsigned int getCurrentDevice(void) const override;
+	bool setCurrentDevice(int32_t device) override;
+	int32_t getCurrentDevice(void) const override;
 
-	unsigned int getDeviceForAdapter(unsigned int adapter_id) const override;
-	unsigned int getDeviceForMonitor(unsigned int monitor) const override;
+	int32_t getDeviceForAdapter(int32_t adapter_id) const override;
+	int32_t getDeviceForMonitor(int32_t monitor) const override;
+
+
+	// Common
+	void setClearColor(float r, float g, float b, float a) override;
+
+	void resetRenderState(void) override;
+
+	bool isDeferred(void) const override;
+	RendererType getRendererType(void) const override;
+
+	IRenderDevice* createDeferredRenderDevice(void) override;
+	void executeCommandList(ICommandList* command_list) override;
+	bool finishCommandList(ICommandList* command_list) override;
+
+	// For supporting deferred contexts
+	void setDepthStencilState(const DepthStencilStateGL* ds_state) override;
+	void setRasterState(const RasterStateGL* raster_state) override;
+	void setBlendState(const BlendStateGL* blend_state) override;
+
+	void setLayout(LayoutGL* layout, const IMesh* mesh) override;
+	void unsetLayout(LayoutGL* layout) override;
+
+	void bindShader(ProgramGL* shader) override;
+	void unbindShader(void) override;
+
+	void bindProgramBuffers(ProgramBuffersGL* program_buffers) override;
+
+	void renderMeshNonIndexed(uint32_t topology, int32_t vert_count, int32_t start_location) override;
+	void renderMeshInstanced(MeshGL* mesh, int32_t count) override;
+	void renderMesh(MeshGL* mesh) override;
+	void renderNoVertexInput(int32_t vert_count) override;
 
 private:
 	struct OutputInfo
 	{
-		GleamArray<DEVMODE> display_mode_list;
-		GleamU8String name;
+		Vector<DEVMODE> display_mode_list;
+		U8String name;
 	};
 
 	struct AdapterInfo
 	{
-		GleamArray<OutputInfo> output_info;
+		Vector<OutputInfo> output_info;
 		DISPLAY_DEVICE display_device;
-		GleamU8String name;
+		U8String name;
 	};
 
 	struct Viewport
@@ -99,29 +131,28 @@ private:
 
 	struct Device
 	{
-		GleamArray<HGLRC> contexts;
-		GleamArray<HDC> outputs;
-		GleamArray<Viewport> viewports;
-		GleamArray<HWND> windows;
-		GleamArray<IRenderTargetPtr> rts;
-		GleamBitArray vsync;
+		Vector<HGLRC> contexts;
+		Vector<HDC> outputs;
+		Vector<Viewport> viewports;
+		Vector<HWND> windows;
+		Vector<IRenderTargetPtr> rts;
+		BitVector vsync;
 
-		unsigned int adapter_id;
+		int32_t adapter_id;
 	};
 
-	GleamArray<AdapterInfo> _display_info;
-	GleamArray<Device> _devices;
+	Vector<AdapterInfo> _display_info;
+	Vector<Device> _devices;
 
 	// Key is thread id, value is 2D array. First index is device, second is output.
-	GleamMap< size_t, GleamArray< GleamArray<HGLRC> > > _thread_contexts;
-	Gaff::SpinLock _thread_data_lock;
+	VectorMap< std::thread::id, Vector< Vector<HGLRC> > > _thread_contexts;
 
 	// Fix this
 	static THREAD_LOCAL const Viewport* _active_viewport;
 	static THREAD_LOCAL HDC _active_output;
 
-	static THREAD_LOCAL unsigned int _curr_output;
-	static THREAD_LOCAL unsigned int _curr_device;
+	static THREAD_LOCAL int32_t _curr_output;
+	static THREAD_LOCAL int32_t _curr_device;
 
 	bool _glew_already_initialized;
 };

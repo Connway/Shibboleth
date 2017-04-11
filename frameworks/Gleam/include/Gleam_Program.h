@@ -22,8 +22,8 @@ THE SOFTWARE.
 
 #pragma once
 
-#ifdef USE_DX
-	#include "Gleam_Program_Direct3D.h"
+#ifdef USE_D3D11
+	#include "Gleam_Program_Direct3D11.h"
 
 	NS_GLEAM
 		typedef ProgramBuffersD3D ProgramBuffers;

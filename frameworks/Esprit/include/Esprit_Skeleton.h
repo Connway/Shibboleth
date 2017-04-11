@@ -40,7 +40,7 @@ public:
 	const Gaff::Hash32& getNameHash(int32_t bone_index) const;
 	int32_t getBoneIndex(Gaff::Hash32 name) const;
 
-	void setReferenceTransform(int32_t bone_index, const Gleam::TransformSIMD& transform);
+	void setReferenceTransform(int32_t bone_index, const Gleam::Transform& transform);
 	void addBone(int32_t parent_index, Gaff::Hash32 name);
 
 	// Function assumes that parent's model-space transform has already been calculated

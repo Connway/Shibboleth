@@ -61,7 +61,7 @@ int32_t Skeleton::getBoneIndex(Gaff::Hash32 name) const
 	return -1;
 }
 
-void Skeleton::setReferenceTransform(int32_t bone_index, const Gleam::TransformSIMD& transform)
+void Skeleton::setReferenceTransform(int32_t bone_index, const Gleam::Transform& transform)
 {
 	GAFF_ASSERT(bone_index < _parent_indices.size());
 	_default_pose.getLocalTransforms()[bone_index] = transform;
@@ -78,7 +78,7 @@ void Skeleton::calculateModelTransform(Pose& pose, int32_t bone_index)
 {
 	GAFF_ASSERT(bone_index < _parent_indices.size());
 
-	Gleam::TransformSIMD& bone_transform = pose.getModelTransforms()[bone_index];
+	Gleam::Transform& bone_transform = pose.getModelTransforms()[bone_index];
 	int32_t parent_index = _parent_indices[bone_index];
 
 	if (parent_index != SIZE_T_FAIL) {

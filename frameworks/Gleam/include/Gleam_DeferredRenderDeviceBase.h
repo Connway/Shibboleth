@@ -32,46 +32,17 @@ public:
 	DeferredRenderDeviceBase(void);
 	~DeferredRenderDeviceBase(void);
 
-	AdapterList getDisplayModes(int compat = 28);
+	bool init(int32_t adapter_id) override;
 
-	bool initThreadData(unsigned int* thread_ids, size_t num_ids);
-	bool init(const IWindow& window, unsigned int adapter_id, unsigned int display_id, unsigned int display_mode_id, bool vsync = false);
+	//void beginFrame(void) override;
+	//void endFrame(void) override;
 
-	bool isVsync(unsigned int device, unsigned int output) const;
-	void setVsync(bool vsync, unsigned int device, unsigned int output);
+	//bool resize(const IWindow& window) override;
+	//bool handleFocusGained(const IWindow& window) override;
 
-	void setClearColor(float r, float g, float b, float a);
+	void resetRenderState(void) override;
 
-	void beginFrame(void);
-	void endFrame(void);
-
-	bool resize(const IWindow& window);
-	bool handleFocusGained(const IWindow& window);
-
-	void resetRenderState(void);
-
-	unsigned int getViewportWidth(unsigned int device, unsigned int output) const;
-	unsigned int getViewportHeight(unsigned int device, unsigned int output) const;
-
-	unsigned int getActiveViewportWidth(void);
-	unsigned int getActiveViewportHeight(void);
-
-	unsigned int getNumOutputs(unsigned int device) const;
-	unsigned int getNumDevices(void) const;
-
-	IRenderTargetPtr getOutputRenderTarget(unsigned int device, unsigned int output);
-	IRenderTargetPtr getActiveOutputRenderTarget(void);
-
-	bool setCurrentOutput(unsigned int output);
-	unsigned int getCurrentOutput(void) const;
-
-	bool setCurrentDevice(unsigned int device);
-	unsigned int getCurrentDevice(void) const;
-
-	unsigned int getDeviceForAdapter(unsigned int adapter_id) const;
-	unsigned int getDeviceForMonitor(unsigned int monitor) const;
-
-	IRenderDevice* createDeferredRenderDevice(void);
+	IRenderDevice* createDeferredRenderDevice(void) override;
 };
 
 NS_END

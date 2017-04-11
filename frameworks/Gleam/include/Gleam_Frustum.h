@@ -22,16 +22,30 @@ THE SOFTWARE.
 
 #pragma once
 
-#ifdef USE_SIMD
-	#include "Gleam_Frustum_SIMD.h"
+#include "Gleam_Plane.h"
 
-	NS_GLEAM
-		typedef FrustumSIMD Frustum;
-	NS_END
-#else
-	#include "Gleam_Frustum_CPU.h"
+NS_GLEAM
 
-	NS_GLEAM
-		typedef FrustumCPU Frustum;
-	NS_END
-#endif
+class Transform;
+class AABB;
+//class OBB;
+
+class Frustum
+{
+public:
+	Frustum(float fov, float aspect_ratio, float z_near, float z_far);
+	GAFF_STRUCTORS_DEFAULT(Frustum);
+	GAFF_COPY_DEFAULT(Frustum);
+
+	void construct(float fov, float aspect_ratio, float z_near, float z_far);
+
+	bool contains(const AABB& aabb) const;
+	//bool contains(const OBB& obb) const;
+
+	void transform(const Transform& transform);
+
+private:
+	Plane _planes[6];
+};
+
+NS_END

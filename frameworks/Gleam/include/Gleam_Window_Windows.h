@@ -25,8 +25,8 @@ THE SOFTWARE.
 #include "Gleam_Window_Defines.h"
 #include "Gleam_IWindow.h"
 #include "Gleam_String.h"
-#include "Gleam_Array.h"
-#include "Gleam_Map.h"
+#include "Gleam_VectorMap.h"
+#include "Gleam_Vector.h"
 #include <Gaff_IncludeWindows.h>
 #include <Gaff_Function.h>
 
@@ -44,55 +44,55 @@ public:
 	~Window(void);
 
 	bool init(const char* app_name, MODE window_mode = FULLSCREEN,
-				unsigned int width = 0, unsigned int height = 0,
-				int pos_x = 0, int pos_y = 0, const char* compat = nullptr);
-	void destroy(void);
+				int32_t width = 0, int32_t height = 0,
+				int32_t pos_x = 0, int32_t pos_y = 0, const char* compat = nullptr) override;
+	void destroy(void) override;
 
-	void addWindowMessageHandler(const MessageHandler& callback);
-	bool removeWindowMessageHandler(const MessageHandler& callback);
+	void addWindowMessageHandler(const MessageHandler& callback) override;
+	bool removeWindowMessageHandler(const MessageHandler& callback) override;
 
-	void showCursor(bool show);
-	void containCursor(bool contain);
+	void showCursor(bool show) override;
+	void containCursor(bool contain) override;
 
-	bool isCursorVisible(void) const;
-	bool isCursorContained(void) const;
+	bool isCursorVisible(void) const override;
+	bool isCursorContained(void) const override;
 
-	void allowRepeats(bool allow);
-	bool areRepeatsAllowed(void) const;
+	void allowRepeats(bool allow) override;
+	bool areRepeatsAllowed(void) const override;
 
-	bool setWindowMode(MODE window_mode);
-	MODE getWindowMode(void) const;
+	bool setWindowMode(MODE window_mode) override;
+	MODE getWindowMode(void) const override;
 
-	void getPos(int& x, int& y) const;
-	void getDimensions(unsigned int& width, unsigned int& height) const;
-	int getPosX(void) const;
-	int getPosY(void) const;
-	unsigned int getWidth(void) const;
-	unsigned int getHeight(void) const;
-	bool isFullScreen(void) const;
+	void getPos(int32_t& x, int32_t& y) const override;
+	void getDimensions(int32_t& width, int32_t& height) const override;
+	int32_t getPosX(void) const override;
+	int32_t getPosY(void) const override;
+	int32_t getWidth(void) const override;
+	int32_t getHeight(void) const override;
+	bool isFullScreen(void) const override;
 
-	bool setIcon(const char* icon);
+	bool setIcon(const char* icon) override;
 
 	INLINE HINSTANCE getHInstance(void) const;
 	INLINE HWND getHWnd(void) const;
 
 private:
-	int _pos_x, _pos_y;
-	unsigned int _width, _height;
-	GleamU8String _application_name;
+	int32_t _pos_x, _pos_y;
+	int32_t _width, _height;
+	U8String _application_name;
 	HINSTANCE _hinstance;
 	HWND _hwnd;
 
 	MODE _window_mode;
-	unsigned int _original_width;
-	unsigned int _original_height;
+	int32_t _original_width;
+	int32_t _original_height;
 	bool _cursor_visible;
 	bool _contain;
 
-	GleamArray<MessageHandler> _window_callbacks;
+	Vector<MessageHandler> _window_callbacks;
 
-	static GleamMap<unsigned short, KeyCode> g_right_keys;
-	static GleamMap<unsigned short, KeyCode> g_left_keys;
+	static VectorMap<uint16_t, KeyCode> g_right_keys;
+	static VectorMap<uint16_t, KeyCode> g_left_keys;
 
 	static LRESULT CALLBACK WindowProc(HWND hwnd, UINT msg, WPARAM w, LPARAM l);
 

@@ -200,8 +200,6 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\frameworks\Gleam\include\Gleam_AABB.h" />
-    <ClInclude Include="..\..\..\frameworks\Gleam\include\Gleam_AABB_CPU.h" />
-    <ClInclude Include="..\..\..\frameworks\Gleam\include\Gleam_AABB_SIMD.h" />
     <ClInclude Include="..\..\..\frameworks\Gleam\include\Gleam_BitVector.h" />
     <ClInclude Include="..\..\..\frameworks\Gleam\include\Gleam_BlendState.h" />
     <ClInclude Include="..\..\..\frameworks\Gleam\include\Gleam_BlendState_Direct3D.h" />
@@ -276,9 +274,6 @@
     <ClInclude Include="..\..\..\frameworks\Gleam\include\Gleam_Program_Direct3D.h" />
     <ClInclude Include="..\..\..\frameworks\Gleam\include\Gleam_Program_OpenGL.h" />
     <ClInclude Include="..\..\..\frameworks\Gleam\include\Gleam_ProxyAllocator.h" />
-    <ClInclude Include="..\..\..\frameworks\Gleam\include\Gleam_Quaternion.h" />
-    <ClInclude Include="..\..\..\frameworks\Gleam\include\Gleam_Quaternion_CPU.h" />
-    <ClInclude Include="..\..\..\frameworks\Gleam\include\Gleam_Quaternion_SIMD.h" />
     <ClInclude Include="..\..\..\frameworks\Gleam\include\Gleam_RasterState.h" />
     <ClInclude Include="..\..\..\frameworks\Gleam\include\Gleam_RasterState_Direct3D.h" />
     <ClInclude Include="..\..\..\frameworks\Gleam\include\Gleam_RasterState_OpenGL.h" />
@@ -310,12 +305,7 @@
     <ClInclude Include="..\..\..\frameworks\Gleam\include\Gleam_Texture_Direct3D.h" />
     <ClInclude Include="..\..\..\frameworks\Gleam\include\Gleam_Texture_OpenGL.h" />
     <ClInclude Include="..\..\..\frameworks\Gleam\include\Gleam_Transform.h" />
-    <ClInclude Include="..\..\..\frameworks\Gleam\include\Gleam_Transform_CPU.h" />
-    <ClInclude Include="..\..\..\frameworks\Gleam\include\Gleam_Transform_SIMD.h" />
     <ClInclude Include="..\..\..\frameworks\Gleam\include\Gleam_Vector.h" />
-    <ClInclude Include="..\..\..\frameworks\Gleam\include\Gleam_Vector4.h" />
-    <ClInclude Include="..\..\..\frameworks\Gleam\include\Gleam_Vector4_CPU.h" />
-    <ClInclude Include="..\..\..\frameworks\Gleam\include\Gleam_Vector4_SIMD.h" />
     <ClInclude Include="..\..\..\frameworks\Gleam\include\Gleam_VectorMap.h" />
     <ClInclude Include="..\..\..\frameworks\Gleam\include\Gleam_Window.h" />
     <ClInclude Include="..\..\..\frameworks\Gleam\include\Gleam_WindowHelpers_Windows.h" />
@@ -325,6 +315,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\frameworks\Gleam\Gleam_AABB.cpp" />
+    <ClCompile Include="..\..\..\frameworks\Gleam\Gleam_Frustum.cpp" />
+    <ClCompile Include="..\..\..\frameworks\Gleam\Gleam_Plane.cpp" />
     <ClCompile Include="..\..\..\frameworks\Gleam\Gleam_Transform.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

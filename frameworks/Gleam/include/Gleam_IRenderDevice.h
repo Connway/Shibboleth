@@ -22,96 +22,93 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Gleam_IRenderTarget.h"
-#include "Gleam_Array.h"
+#include "Gleam_Vector.h"
+#include <Gaff_Assert.h>
 
 NS_GLEAM
 
 class ICommandList;
-class IWindow;
+//class IWindow;
 
 class IRenderDevice
 {
 public:
 	struct DisplayMode
 	{
-		unsigned int refresh_rate;
-		unsigned int width;
-		unsigned int height;
-		unsigned int id;
-		int x;
-		int y;
+		int32_t refresh_rate;
+		int32_t width;
+		int32_t height;
+		int32_t id;
+		int32_t x;
+		int32_t y;
 	};
 	
 	struct Display
 	{
-		GleamArray<DisplayMode> display_modes;
-		unsigned int id;
+		Vector<DisplayMode> display_modes;
+		int32_t id;
 	};
 
 	struct Adapter
 	{
 		char adapter_name[128];
-		GleamArray<Display> displays;
-		unsigned int memory;
-		unsigned int id;
+		Vector<Display> displays;
+		int32_t memory;
+		int32_t id;
 	};
 
-	typedef GleamArray<Adapter> AdapterList;
+	using AdapterList = Vector<Adapter>;
 
 	IRenderDevice(void) {}
 	virtual ~IRenderDevice(void) {}
 
-	virtual AdapterList getDisplayModes(int compat = 28/*29*/) = 0;
+	virtual bool init(int32_t adapter_id) = 0;
 
-	virtual bool initThreadData(size_t* thread_ids, size_t num_ids) = 0;
-	virtual bool init(const IWindow& window, unsigned int adapter_id, unsigned int display_id, unsigned int display_mode_id, bool vsync = false) = 0;
-	virtual void destroy(void) = 0;
+	//virtual void beginFrame(void) = 0;
+	//virtual void endFrame(void) = 0;
 
-	virtual bool isVsync(unsigned int device, unsigned int output) const = 0;
-	virtual void setVsync(bool vsync, unsigned int device, unsigned int output) = 0;
-
-	virtual void setClearColor(float r, float g, float b, float a) = 0;
-
-	virtual void beginFrame(void) = 0;
-	virtual void endFrame(void) = 0;
-
-	virtual bool resize(const IWindow& window) = 0;
-	virtual bool handleFocusGained(const IWindow& window) = 0;
+	//virtual bool resize(const IWindow& window) = 0;
+	//virtual bool handleFocusGained(const IWindow& window) = 0;
 
 	virtual void resetRenderState(void) = 0;
 
 	virtual bool isDeferred(void) const = 0;
 	virtual RendererType getRendererType(void) const = 0;
 
-	virtual unsigned int getViewportWidth(unsigned int device, unsigned int output) const = 0;
-	virtual unsigned int getViewportHeight(unsigned int device, unsigned int output) const = 0;
+	//virtual int32_t getViewportWidth(int32_t device, int32_t output) const = 0;
+	//virtual int32_t getViewportHeight(int32_t device, int32_t output) const = 0;
 
-	virtual unsigned int getActiveViewportWidth(void) = 0;
-	virtual unsigned int getActiveViewportHeight(void) = 0;
+	//virtual int32_t getActiveViewportWidth(void) = 0;
+	//virtual int32_t getActiveViewportHeight(void) = 0;
 
-	virtual unsigned int getNumOutputs(unsigned int device) const = 0;
-	virtual unsigned int getNumDevices(void) const = 0;
+	//virtual int32_t getNumOutputs(int32_t device) const = 0;
+	//virtual int32_t getNumDevices(void) const = 0;
 
-	virtual IRenderTargetPtr getOutputRenderTarget(unsigned int device, unsigned int output) = 0;
-	virtual IRenderTargetPtr getActiveOutputRenderTarget(void) = 0;
+	//virtual IRenderTargetPtr getOutputRenderTarget(int32_t device, int32_t output) = 0;
+	//virtual IRenderTargetPtr getActiveOutputRenderTarget(void) = 0;
 
-	virtual bool setCurrentOutput(unsigned int output) = 0;
-	virtual unsigned int getCurrentOutput(void) const = 0;
+	//virtual bool setCurrentOutput(int32_t output) = 0;
+	//virtual int32_t getCurrentOutput(void) const = 0;
 
-	virtual bool setCurrentDevice(unsigned int device) = 0;
-	virtual unsigned int getCurrentDevice(void) const = 0;
+	//virtual bool setCurrentDevice(int32_t device) = 0;
+	//virtual int32_t getCurrentDevice(void) const = 0;
 
-	virtual unsigned int getDeviceForAdapter(unsigned int adapter_id) const = 0;
-	virtual unsigned int getDeviceForMonitor(unsigned int monitor) const = 0;
+	//virtual int32_t getDeviceForAdapter(int32_t adapter_id) const = 0;
+	//virtual int32_t getDeviceForMonitor(int32_t monitor) const = 0;
 
 	virtual IRenderDevice* createDeferredRenderDevice(void) = 0;
 	virtual void executeCommandList(ICommandList* command_list) = 0;
 	virtual bool finishCommandList(ICommandList* command_list) = 0;
 
-	virtual void renderNoVertexInput(unsigned int vert_count) = 0;
+	virtual void renderNoVertexInput(int32_t vert_count) = 0;
 
 	GAFF_NO_COPY(IRenderDevice);
 };
+
+template <RendererType type>
+IRenderDevice::AdapterList GetDisplayModes(void)
+{
+	GAFF_ASSERT_MSG(false, "Unrecognized RendererType!");
+}
 
 NS_END
