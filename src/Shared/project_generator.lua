@@ -30,7 +30,8 @@ project "Shared"
 		"../Memory/include",
 		"../../dependencies/rapidjson",
 		"../../frameworks/Gaff/include",
-		"../../dependencies/EASTL/include"
-	}
+		"../../dependencies/EASTL/include",
+		"../../dependencies/glm"
+		}
 
 	dofile("../../utils/os_conditionals.lua")

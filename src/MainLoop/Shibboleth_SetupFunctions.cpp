@@ -576,7 +576,7 @@ NS_SHIBBOLETH
 //#if !defined(_WIN32) && !defined(_WIN64)
 //	cfg.setObject("module", Gaff::JSON::CreateString("Graphics_OpenGL"));
 //#else
-//	cfg.setObject("module", Gaff::JSON::CreateString("Graphics_Direct3D"));
+//	cfg.setObject("module", Gaff::JSON::CreateString("Graphics_Direct3D11"));
 //#endif
 //
 //	IRenderManager& render_manager = app.getManagerT<IRenderManager>();

@@ -20,20 +20,35 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-/*! \file */
-
 #pragma once
 
 #include "Gaff_DefaultAllocator.h"
 #include "Gaff_IRefCounted.h"
-#include "Gaff_Atomic.h"
+#include <atomic>
 
 NS_GAFF
 
-/*!
-	\brief A simple, default implementation of a reference counted object.
-	\tparam Allocator The allocator type we will use to de-allocate ourselves.
-*/
+#define GAFF_REF_COUNTED(Class, Allocator) \
+public: \
+	void addRef(void) const \
+	{ \
+		++_count; \
+	} \
+	void release(void) const \
+	{ \
+		const int32_t new_count = --_count; \
+		if (!new_count) { \
+			GAFF_FREET(this, Allocator); \
+		} \
+	} \
+	int32_t getRefCount(void) const \
+	{ \
+		return _count; \
+	} \
+private: \
+	mutable std::atomic_int32_t _count = 0
+
+
 template <class Allocator = DefaultAllocator>
 class RefCounted : public IRefCounted
 {
@@ -43,35 +58,31 @@ public:
 	{
 	}
 
-	~RefCounted(void)
-	{
-	}
-
 	void addRef(void) const
 	{
-		AtomicIncrement(&_count);
+		++_count;
 	}
 
 	void release(void) const
 	{
-		unsigned int new_count = AtomicDecrement(&_count);
+		const int32_t new_count = --_count;
 
 		if (!new_count) {
 			// When the allocator resides in the object we are deleting,
 			// we need to make a copy, otherwise there will be crashes.
 			Allocator allocator(_allocator);
-			GAFF_FREET(this, allocator);
+			GAFF_FREET(this, _allocator);
 		}
 	}
 
-	unsigned int getRefCount(void) const
+	int32_t getRefCount(void) const
 	{
 		return _count;
 	}
 
 private:
+	mutable std::atomic_int32_t _count = 0;
 	mutable Allocator _allocator;
-	mutable volatile unsigned int _count;
 
 	GAFF_NO_COPY(RefCounted);
 	GAFF_NO_MOVE(RefCounted);

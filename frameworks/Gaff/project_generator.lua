@@ -25,5 +25,6 @@ project "Gaff"
 		"include",
 		"../../dependencies/EASTL/include",
 		"../../dependencies/enet/include",
-		"../../dependencies/rapidjson"
+		"../../dependencies/rapidjson",
+		"../../dependencies/mpack"
 	}

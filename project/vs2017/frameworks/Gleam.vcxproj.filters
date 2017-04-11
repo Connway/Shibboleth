@@ -9,12 +9,6 @@
     <ClInclude Include="..\..\..\frameworks\Gleam\include\Gleam_AABB.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\frameworks\Gleam\include\Gleam_AABB_CPU.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\frameworks\Gleam\include\Gleam_AABB_SIMD.h">
-      <Filter>include</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\frameworks\Gleam\include\Gleam_BitVector.h">
       <Filter>include</Filter>
     </ClInclude>
@@ -237,15 +231,6 @@
     <ClInclude Include="..\..\..\frameworks\Gleam\include\Gleam_ProxyAllocator.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\frameworks\Gleam\include\Gleam_Quaternion.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\frameworks\Gleam\include\Gleam_Quaternion_CPU.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\frameworks\Gleam\include\Gleam_Quaternion_SIMD.h">
-      <Filter>include</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\frameworks\Gleam\include\Gleam_RasterState.h">
       <Filter>include</Filter>
     </ClInclude>
@@ -339,22 +324,7 @@
     <ClInclude Include="..\..\..\frameworks\Gleam\include\Gleam_Transform.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\frameworks\Gleam\include\Gleam_Transform_CPU.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\frameworks\Gleam\include\Gleam_Transform_SIMD.h">
-      <Filter>include</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\frameworks\Gleam\include\Gleam_Vector.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\frameworks\Gleam\include\Gleam_Vector4.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\frameworks\Gleam\include\Gleam_Vector4_CPU.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\frameworks\Gleam\include\Gleam_Vector4_SIMD.h">
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\frameworks\Gleam\include\Gleam_VectorMap.h">
@@ -378,6 +348,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\frameworks\Gleam\Gleam_AABB.cpp" />
+    <ClCompile Include="..\..\..\frameworks\Gleam\Gleam_Frustum.cpp" />
+    <ClCompile Include="..\..\..\frameworks\Gleam\Gleam_Plane.cpp" />
     <ClCompile Include="..\..\..\frameworks\Gleam\Gleam_Transform.cpp" />
   </ItemGroup>
 </Project>

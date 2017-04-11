@@ -6,12 +6,6 @@ project "Esprit"
 	kind "StaticLib"
 	language "C++"
 
-	filter { "options:simd" }
-		defines { "USE_SIMD" }
-
-	filter { "options:simd_set_aligned"}
-		defines { "SIMD_SET_ALIGNED" }
-
 	filter { "configurations:not *Clang", "configurations:not Analyze*" }
 		flags { "FatalWarnings" }
 
@@ -24,5 +18,6 @@ project "Esprit"
 		"include",
 		"../Gaff/include",
 		"../Gleam/include",
-		"../../dependencies/EASTL/include"
+		"../../dependencies/EASTL/include",
+		"../../dependencies/glm"
 	}

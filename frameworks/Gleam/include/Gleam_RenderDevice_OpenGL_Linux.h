@@ -22,16 +22,19 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Gleam_RenderDevice_OpenGL_Base.h"
-#include "Gleam_BitArray.h"
+#include "Gleam_IRenderDevice_OpenGL.h"
+#include "Gleam_IRenderDevice.h"
+#include "Gleam_BitVector.h"
 #include "Gleam_String.h"
 #include <GL/glxew.h>
 
 NS_GLEAM
 
-class RenderDeviceGL : public RenderDeviceGLBase
+class RenderDeviceGL : public IRenderDevice, public IRenderDeviceGL
 {
 public:
+	static bool CheckRequiredExtensions(void);
+
 	RenderDeviceGL(void);
 	~RenderDeviceGL(void);
 
@@ -70,6 +73,37 @@ public:
 	unsigned int getDeviceForAdapter(unsigned int adapter_id) const override;
 	unsigned int getDeviceForMonitor(unsigned int monitor) const override;
 
+	// Common
+	void setClearColor(float r, float g, float b, float a) override;
+
+	void resetRenderState(void) override;
+
+	bool isDeferred(void) const override;
+	RendererType getRendererType(void) const override;
+
+	IRenderDevice* createDeferredRenderDevice(void) override;
+	void executeCommandList(ICommandList* command_list) override;
+	bool finishCommandList(ICommandList* command_list) override;
+
+	void renderNoVertexInput(unsigned int vert_count) override;
+
+	// For supporting deferred contexts
+	void setDepthStencilState(const DepthStencilStateGL* ds_state) override;
+	void setRasterState(const RasterStateGL* raster_state) override;
+	void setBlendState(const BlendStateGL* blend_state) override;
+
+	void setLayout(LayoutGL* layout, const IMesh* mesh) override;
+	void unsetLayout(LayoutGL* layout) override;
+
+	void bindShader(ProgramGL* shader) override;
+	void unbindShader(void) override;
+
+	void bindProgramBuffers(ProgramBuffersGL* program_buffers) override;
+
+	void renderMeshNonIndexed(unsigned int topology, unsigned int vert_count, unsigned int start_location) override;
+	void renderMeshInstanced(MeshGL* mesh, unsigned int count) override;
+	void renderMesh(MeshGL* mesh) override;
+
 private:
 	struct ScreenMode
 	{
@@ -80,13 +114,13 @@ private:
 
 	struct OutputInfo
 	{
-		GleamArray<ScreenMode> display_mode_list; // figure out xrandr data structure
-		GleamU8String name;
+		Vector<ScreenMode> display_mode_list; // figure out xrandr data structure
+		U8String name;
 	};
 
 	struct AdapterInfo
 	{
-		GleamArray<OutputInfo> output_info;
+		Vector<OutputInfo> output_info;
 		//DISPLAY_DEVICE display_device; // figure out xrandr data structure
 		//GleamGString name;
 	};
@@ -101,17 +135,17 @@ private:
 
 	struct Device
 	{
-		GleamArray<GLXContext> contexts;
-		GleamArray<Viewport> viewports;
-		GleamArray<Window*> windows;
-		GleamArray<IRenderTargetPtr> rts;
-		GleamBitArray vsync;
+		Vector<GLXContext> contexts;
+		Vector<Viewport> viewports;
+		Vector<Window*> windows;
+		Vector<IRenderTargetPtr> rts;
+		BitVector vsync;
 
 		unsigned int adapter_id;
 	};
 
-	GleamArray<AdapterInfo> _display_info;
-	GleamArray<Device> _devices;
+	Vector<AdapterInfo> _display_info;
+	Vector<Device> _devices;
 
 	const Viewport* _active_viewport;
 	Window* _active_window;

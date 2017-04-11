@@ -23,7 +23,7 @@ THE SOFTWARE.
 #pragma once
 
 #include "Esprit_Vector.h"
-#include <Gleam_Transform_SIMD.h>
+#include <Gleam_Transform.h>
 
 NS_ESPRIT
 
@@ -36,15 +36,15 @@ public:
 	void setNumBones(size_t num_bones);
 	size_t getNumBones(void) const;
 
-	const Vector<Gleam::TransformSIMD>& getLocalTransforms(void) const;
-	Vector<Gleam::TransformSIMD>& getLocalTransforms(void);
+	const Vector<Gleam::Transform>& getLocalTransforms(void) const;
+	Vector<Gleam::Transform>& getLocalTransforms(void);
 
-	const Vector<Gleam::TransformSIMD>& getModelTransforms(void) const;
-	Vector<Gleam::TransformSIMD>& getModelTransforms(void);
+	const Vector<Gleam::Transform>& getModelTransforms(void) const;
+	Vector<Gleam::Transform>& getModelTransforms(void);
 
 private:
-	Vector<Gleam::TransformSIMD> _local_bone_transforms;
-	Vector<Gleam::TransformSIMD> _model_bone_transforms;
+	Vector<Gleam::Transform> _local_bone_transforms;
+	Vector<Gleam::Transform> _model_bone_transforms;
 
 	GAFF_NO_COPY(Pose);
 	GAFF_NO_MOVE(Pose);

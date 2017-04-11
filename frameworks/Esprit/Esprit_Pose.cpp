@@ -43,22 +43,22 @@ size_t Pose::getNumBones(void) const
 	return _local_bone_transforms.size();
 }
 
-const Vector<Gleam::TransformSIMD>& Pose::getLocalTransforms(void) const
+const Vector<Gleam::Transform>& Pose::getLocalTransforms(void) const
 {
 	return _local_bone_transforms;
 }
 
-Vector<Gleam::TransformSIMD>& Pose::getLocalTransforms(void)
+Vector<Gleam::Transform>& Pose::getLocalTransforms(void)
 {
 	return _local_bone_transforms;
 }
 
-const Vector<Gleam::TransformSIMD>& Pose::getModelTransforms(void) const
+const Vector<Gleam::Transform>& Pose::getModelTransforms(void) const
 {
 	return _model_bone_transforms;
 }
 
-Vector<Gleam::TransformSIMD>& Pose::getModelTransforms(void)
+Vector<Gleam::Transform>& Pose::getModelTransforms(void)
 {
 	return _model_bone_transforms;
 }

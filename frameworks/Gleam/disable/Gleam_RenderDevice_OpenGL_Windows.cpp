@@ -26,7 +26,6 @@ THE SOFTWARE.
 #include "Gleam_RenderTarget_OpenGL.h"
 #include "Gleam_Window_Windows.h"
 
-#include <Gaff_Thread.h>
 #include <GL/glew.h>
 #include <GL/wglew.h>
 
@@ -35,8 +34,8 @@ NS_GLEAM
 const RenderDeviceGL::Viewport* RenderDeviceGL::_active_viewport = nullptr;
 HDC RenderDeviceGL::_active_output = nullptr;
 
-unsigned int RenderDeviceGL::_curr_output = UINT_FAIL;
-unsigned int RenderDeviceGL::_curr_device = UINT_FAIL;
+int32_t RenderDeviceGL::_curr_output = -1;
+int32_t RenderDeviceGL::_curr_device = -1;
 
 
 RenderDeviceGL::RenderDeviceGL(void):
@@ -50,15 +49,15 @@ RenderDeviceGL::~RenderDeviceGL(void)
 }
 
 // Assumed to be called in the main thread.
-bool RenderDeviceGL::initThreadData(size_t* thread_ids, size_t num_ids)
+bool RenderDeviceGL::initThreadData(std::thread::id* thread_ids, size_t num_ids)
 {
 	for (size_t i = 0; i < num_ids; ++i) {
-		GleamArray< GleamArray<HGLRC> >& thread_data = _thread_contexts[thread_ids[i]];
+		Vector< Vector<HGLRC> >& thread_data = _thread_contexts[thread_ids[i]];
 
 		thread_data.resize(_devices.size());
 
 		for (size_t j = 0; j < _devices.size(); ++j) {
-			unsigned int num_outputs = getNumOutputs(static_cast<unsigned int>(j));
+			int32_t num_outputs = getNumOutputs(j);
 			thread_data[j].reserve(num_outputs);
 
 			for (size_t k = 0; k < num_outputs; ++k) {
@@ -73,19 +72,19 @@ bool RenderDeviceGL::initThreadData(size_t* thread_ids, size_t num_ids)
 					return false;
 				}
 
-				thread_data[j].push(context);
+				thread_data[j].push_back(context);
 			}
 		}
 	}
 
 	// Add main thread data
-	GleamArray< GleamArray<HGLRC> >& thread_data = _thread_contexts[Gaff::Thread::GetCurrentThreadID()];
+	Vector< Vector<HGLRC> >& thread_data = _thread_contexts[std::this_thread::get_id()];
 	GAFF_ASSERT(thread_data.empty());
 	thread_data.resize(_devices.size());
 
-	for (size_t j = 0; j < _devices.size(); ++j) {
-		for (size_t k = 0; k < getNumOutputs(static_cast<unsigned int>(j)); ++k) {
-			thread_data[j].push(_devices[j].contexts[k]);
+	for (int32_t j = 0; j < static_cast<int32_t>(_devices.size()); ++j) {
+		for (int32_t k = 0; k < getNumOutputs(j); ++k) {
+			thread_data[j].push_back(_devices[j].contexts[k]);
 		}
 	}
 
@@ -99,17 +98,17 @@ IRenderDevice::AdapterList RenderDeviceGL::getDisplayModes(int)
 
 	disp_device.cb = sizeof(DISPLAY_DEVICE);
 
-	for (unsigned int i = 0; EnumDisplayDevices(nullptr, i, &disp_device, EDD_GET_DEVICE_INTERFACE_NAME); ++i) {
+	for (DWORD i = 0; EnumDisplayDevices(nullptr, i, &disp_device, EDD_GET_DEVICE_INTERFACE_NAME); ++i) {
 		if (!(disp_device.StateFlags & DISPLAY_DEVICE_ACTIVE)) {
 			continue;
 		}
 
-		GleamU8String dev_string, dev_name;
-		dev_string.convertToUTF8(disp_device.DeviceString, wcslen(disp_device.DeviceString));
-		dev_name.convertToUTF8(disp_device.DeviceName, wcslen(disp_device.DeviceName));
+		U8String dev_string, dev_name;
+		dev_string.assign_convert(disp_device.DeviceString, wcslen(disp_device.DeviceString));
+		dev_name.assign_convert(disp_device.DeviceName, wcslen(disp_device.DeviceName));
 
 		// Find an entry that already exists. We might be a different display on the same device.
-		GleamArray<AdapterInfo>::Iterator it_disp = _display_info.linearSearch(dev_string.getBuffer(), [](const AdapterInfo& lhs, const char* rhs) -> bool
+		auto it_disp = eastl::find(_display_info.begin(), _display_info.end(), dev_string, [](const AdapterInfo& lhs, const U8String& rhs) -> bool
 		{
 			return lhs.name == rhs;
 		});
@@ -122,7 +121,7 @@ IRenderDevice::AdapterList RenderDeviceGL::getDisplayModes(int)
 			it_disp = _display_info.insert(it_disp, adapter);
 		}
 
-		GleamArray<OutputInfo>::Iterator it_out = it_disp->output_info.linearSearch(dev_name.getBuffer(), [](const OutputInfo& lhs, const char* rhs) -> bool
+		auto it_out = eastl::find(it_disp->output_info.begin(), it_disp->output_info.end(), dev_name, [](const OutputInfo& lhs, const U8String& rhs) -> bool
 		{
 			return lhs.name == rhs;
 		});
@@ -135,23 +134,23 @@ IRenderDevice::AdapterList RenderDeviceGL::getDisplayModes(int)
 			it_out = it_disp->output_info.insert(it_out, display);
 		}
 
-		for (unsigned int j = 0; EnumDisplaySettings(disp_device.DeviceName, j, &mode); ++j) {
+		for (DWORD j = 0; EnumDisplaySettings(disp_device.DeviceName, j, &mode); ++j) {
 			if (mode.dmBitsPerPel != 32) {
 				continue;
 			}
 
-			it_out->display_mode_list.push(mode);
+			it_out->display_mode_list.push_back(mode);
 		}
 
 		// Remove duplicate entries. We don't care about the scaling or scanline order or other funky stuff.
-		for (unsigned int j = 1; j < it_out->display_mode_list.size();) {
+		for (int32_t j = 1; j < static_cast<int32_t>(it_out->display_mode_list.size());) {
 			const DEVMODE& curr = it_out->display_mode_list[j];
 			const DEVMODE& prev = it_out->display_mode_list[j - 1];
 
 			if (curr.dmPelsWidth == prev.dmPelsWidth && curr.dmPelsHeight == prev.dmPelsHeight &&
 				curr.dmDisplayFrequency == prev.dmDisplayFrequency) {
 
-				it_out->display_mode_list.erase(j);
+				it_out->display_mode_list.erase(it_out->display_mode_list.begin() + j);
 
 			} else {
 				++j;
@@ -159,12 +158,12 @@ IRenderDevice::AdapterList RenderDeviceGL::getDisplayModes(int)
 		}
 	}
 
-	_display_info.trim();
+	_display_info.shrink_to_fit();
 
 	// Convert Windows data structures into our structure
 	AdapterList out(_display_info.size());
 
-	for (unsigned int i = 0; i < _display_info.size(); ++i) {
+	for (int32_t i = 0; i < static_cast<int32_t>(_display_info.size()); ++i) {
 		const AdapterInfo& adpt_info = _display_info[i];
 		Adapter adpt;
 
@@ -172,15 +171,15 @@ IRenderDevice::AdapterList RenderDeviceGL::getDisplayModes(int)
 		adpt.memory = 0;
 		adpt.id = i;
 
-		strncpy(adpt.adapter_name, adpt_info.name.getBuffer(), 128);
+		strncpy(adpt.adapter_name, adpt_info.name.data(), 128);
 
-		for (unsigned int j = 0; j < adpt_info.output_info.size(); ++j) {
+		for (int32_t j = 0; j < static_cast<int32_t>(adpt_info.output_info.size()); ++j) {
 			const OutputInfo& out_info = adpt_info.output_info[j];
 			Display display;
 			display.display_modes.reserve(out_info.display_mode_list.size());
 			display.id = j;
 
-			for (unsigned int k = 0; k < out_info.display_mode_list.size(); ++k) {
+			for (int32_t k = 0; k < static_cast<int32_t>(out_info.display_mode_list.size()); ++k) {
 				const DEVMODE& mode_desc = out_info.display_mode_list[k];
 
 				DisplayMode disp_mode = {
@@ -192,19 +191,19 @@ IRenderDevice::AdapterList RenderDeviceGL::getDisplayModes(int)
 					mode_desc.dmPosition.y
 				};
 
-				display.display_modes.push(disp_mode);
+				display.display_modes.push_back(disp_mode);
 			}
 
-			adpt.displays.push(display);
+			adpt.displays.push_back(display);
 		}
 
-		out.push(adpt);
+		out.push_back(adpt);
 	}
 
 	return out;
 }
 
-bool RenderDeviceGL::init(const IWindow& window, unsigned int adapter_id, unsigned int display_id, unsigned int display_mode_id, bool vsync)
+bool RenderDeviceGL::init(const IWindow& window, int32_t adapter_id, int32_t display_id, int32_t display_mode_id, bool vsync)
 {
 	GAFF_ASSERT(
 		_display_info.size() > adapter_id &&
@@ -212,7 +211,7 @@ bool RenderDeviceGL::init(const IWindow& window, unsigned int adapter_id, unsign
 		_display_info[adapter_id].output_info[display_id].display_mode_list.size() > display_mode_id
 	);
 
-	const Window& wnd = (const Window&)window;
+	const Window& wnd = reinterpret_cast<const Window&>(window);
 	HWND hwnd = wnd.getHWnd();
 
 	// Move the window to the intended adapter/display combination, in hopes of forcing this window to be associated with the correct adapter
@@ -253,7 +252,7 @@ bool RenderDeviceGL::init(const IWindow& window, unsigned int adapter_id, unsign
 		return false;
 	}
 
-	GleamArray<Device>::Iterator it = _devices.linearSearch(adapter_id, [](const Device& lhs, unsigned int rhs) -> bool
+	auto it = eastl::find(_devices.begin(), _devices.end(), adapter_id, [](const Device& lhs, int32_t rhs) -> bool
 	{
 		return lhs.adapter_id == rhs;
 	});
@@ -271,18 +270,18 @@ bool RenderDeviceGL::init(const IWindow& window, unsigned int adapter_id, unsign
 
 		Viewport viewport = { 0, 0, (int)wnd.getWidth(), (int)wnd.getHeight() };
 
-		device.contexts.push(context);
-		device.viewports.push(viewport);
-		device.windows.push(hwnd);
-		device.outputs.push(hdc);
-		device.vsync.push(vsync);
+		device.contexts.push_back(context);
+		device.viewports.push_back(viewport);
+		device.windows.push_back(hwnd);
+		device.outputs.push_back(hdc);
+		device.vsync.push_back(vsync);
 		device.adapter_id = adapter_id;
 
 		RenderTargetGL* rt = GleamAllocateT(RenderTargetGL);
 		rt->setViewport(viewport.width, viewport.height);
-		device.rts.push(IRenderTargetPtr(rt));
+		device.rts.push_back(IRenderTargetPtr(rt));
 
-		_devices.push(device);
+		_devices.push_back(device);
 
 	// We found the device already made, so add our new outputs to the list
 	} else {
@@ -294,15 +293,15 @@ bool RenderDeviceGL::init(const IWindow& window, unsigned int adapter_id, unsign
 		}
 
 		Viewport viewport = { 0, 0, (int)wnd.getWidth(), (int)wnd.getHeight() };
-		it->contexts.push(context);
-		it->viewports.push(viewport);
-		it->windows.push(hwnd);
-		it->outputs.push(hdc);
-		it->vsync.push(vsync);
+		it->contexts.push_back(context);
+		it->viewports.push_back(viewport);
+		it->windows.push_back(hwnd);
+		it->outputs.push_back(hdc);
+		it->vsync.push_back(vsync);
 
 		RenderTargetGL* rt = GleamAllocateT(RenderTargetGL);
 		rt->setViewport(viewport.width, viewport.height);
-		it->rts.push(IRenderTargetPtr(rt));
+		it->rts.push_back(IRenderTargetPtr(rt));
 	}
 
 	if (!_glew_already_initialized) {
@@ -332,7 +331,7 @@ void RenderDeviceGL::destroy(void)
 	wglMakeCurrent(0, 0);
 
 	for (auto it = _devices.begin(); it != _devices.end(); ++it) {
-		for (unsigned int i = 0; i < it->outputs.size(); ++i) {
+		for (size_t i = 0; i < it->outputs.size(); ++i) {
 			ReleaseDC(it->windows[i], it->outputs[i]);
 			wglDeleteContext(it->contexts[i]);
 		}
@@ -341,16 +340,16 @@ void RenderDeviceGL::destroy(void)
 	_devices.clear();
 }
 
-bool RenderDeviceGL::isVsync(unsigned int device, unsigned int output) const
+bool RenderDeviceGL::isVsync(int32_t device, int32_t output) const
 {
 	GAFF_ASSERT(_devices.size() > device && _devices[device].vsync.size() > output);
 	return _devices[device].vsync[output];
 }
 
-void RenderDeviceGL::setVsync(bool vsync, unsigned int device, unsigned int output)
+void RenderDeviceGL::setVsync(bool vsync, int32_t device, int32_t output)
 {
 	GAFF_ASSERT(_devices.size() > device && _devices[device].vsync.size() > output);
-	_devices[device].vsync.setBit(output, vsync);
+	_devices[device].vsync[output] = vsync;
 }
 
 void RenderDeviceGL::beginFrame(void)
@@ -372,9 +371,11 @@ bool RenderDeviceGL::resize(const IWindow& window)
 	const Window& wnd = reinterpret_cast<const Window&>(window);
 
 	for (auto it = _devices.begin(); it != _devices.end(); ++it) {
-		size_t index = it->windows.linearSearch(0, it->windows.size(), wnd.getHWnd());
+		const auto it_wnd = eastl::find(it->windows.begin(), it->windows.end(), wnd.getHWnd());
 
-		if (index != SIZE_T_FAIL) {
+		if (it_wnd != it->windows.end()) {
+			const int32_t index = it_wnd - it->windows.begin();
+
 			it->viewports[index].width = wnd.getWidth();
 			it->viewports[index].height = wnd.getHeight();
 			reinterpret_cast<RenderTargetGL*>(it->rts[index].get())->setViewport(wnd.getWidth(), wnd.getHeight());
@@ -396,42 +397,42 @@ bool RenderDeviceGL::handleFocusGained(const IWindow&)
 	return true;
 }
 
-unsigned int RenderDeviceGL::getViewportWidth(unsigned int device, unsigned int output) const
+int32_t RenderDeviceGL::getViewportWidth(int32_t device, int32_t output) const
 {
 	GAFF_ASSERT(_devices.size() > device && _devices[device].viewports.size() > output);
-	return static_cast<unsigned int>(_devices[device].viewports[output].width);
+	return _devices[device].viewports[output].width;
 }
 
-unsigned int RenderDeviceGL::getViewportHeight(unsigned int device, unsigned int output) const
+int32_t RenderDeviceGL::getViewportHeight(int32_t device, int32_t output) const
 {
 	GAFF_ASSERT(_devices.size() > device && _devices[device].viewports.size() > output);
-	return static_cast<unsigned int>(_devices[device].viewports[output].height);
+	return _devices[device].viewports[output].height;
 }
 
-unsigned int RenderDeviceGL::getActiveViewportWidth(void)
+int32_t RenderDeviceGL::getActiveViewportWidth(void)
 {
 	GAFF_ASSERT(_devices.size() > _curr_device && _devices[_curr_device].viewports.size() > _curr_output);
 	return getViewportWidth(_curr_device, _curr_output);
 }
 
-unsigned int RenderDeviceGL::getActiveViewportHeight(void)
+int32_t RenderDeviceGL::getActiveViewportHeight(void)
 {
 	GAFF_ASSERT(_devices.size() > _curr_device && _devices[_curr_device].viewports.size() > _curr_output);
 	return getViewportHeight(_curr_device, _curr_output);
 }
 
-unsigned int RenderDeviceGL::getNumOutputs(unsigned int device) const
+int32_t RenderDeviceGL::getNumOutputs(int32_t device) const
 {
 	GAFF_ASSERT(_devices.size() > device);
-	return static_cast<unsigned int>(_devices[device].outputs.size());
+	return static_cast<int32_t>(_devices[device].outputs.size());
 }
 
-unsigned int RenderDeviceGL::getNumDevices(void) const
+int32_t RenderDeviceGL::getNumDevices(void) const
 {
-	return static_cast<unsigned int>(_devices.size());
+	return static_cast<int32_t>(_devices.size());
 }
 
-IRenderTargetPtr RenderDeviceGL::getOutputRenderTarget(unsigned int device, unsigned int output)
+IRenderTargetPtr RenderDeviceGL::getOutputRenderTarget(int32_t device, int32_t output)
 {
 	GAFF_ASSERT(_devices.size() > device && _devices[device].rts.size() > output);
 	return _devices[device].rts[output];
@@ -443,7 +444,7 @@ IRenderTargetPtr RenderDeviceGL::getActiveOutputRenderTarget(void)
 	return getOutputRenderTarget(_curr_device, _curr_output);
 }
 
-bool RenderDeviceGL::setCurrentOutput(unsigned int output)
+bool RenderDeviceGL::setCurrentOutput(int32_t output)
 {
 	GAFF_ASSERT(_devices[_curr_device].outputs.size() > output);
 
@@ -451,7 +452,7 @@ bool RenderDeviceGL::setCurrentOutput(unsigned int output)
 		return true;
 	}
 
-	unsigned int thread_id = Gaff::Thread::GetCurrentThreadID();
+	std::thread::id thread_id = std::this_thread::get_id();
 
 	if (wglMakeCurrent(_devices[_curr_device].outputs[output], _thread_contexts[thread_id][_curr_device][output]) == FALSE) {
 		return false;
@@ -470,19 +471,19 @@ bool RenderDeviceGL::setCurrentOutput(unsigned int output)
 	return true;
 }
 
-unsigned int RenderDeviceGL::getCurrentOutput(void) const
+int32_t RenderDeviceGL::getCurrentOutput(void) const
 {
 	return _curr_output;
 }
 
 // Fix this for proper thread local storage
-bool RenderDeviceGL::setCurrentDevice(unsigned int device)
+bool RenderDeviceGL::setCurrentDevice(int32_t device)
 {
 	GAFF_ASSERT(_devices.size() > device && _devices[device].vsync.size() > 0);
-	unsigned int prev_device = _curr_device;
-	unsigned int prev_output = _curr_output;
+	int32_t prev_device = _curr_device;
+	int32_t prev_output = _curr_output;
 	_curr_device = device;
-	_curr_output = UINT_FAIL;
+	_curr_output = -1;
 
 	if (_curr_device != prev_device && !setCurrentOutput(0)) {
 		_curr_device = prev_device;
@@ -495,27 +496,27 @@ bool RenderDeviceGL::setCurrentDevice(unsigned int device)
 	return true;
 }
 
-unsigned int RenderDeviceGL::getCurrentDevice(void) const
+int32_t RenderDeviceGL::getCurrentDevice(void) const
 {
 	return _curr_device;
 }
 
-unsigned int RenderDeviceGL::getDeviceForAdapter(unsigned int adapter_id) const
+int32_t RenderDeviceGL::getDeviceForAdapter(int32_t adapter_id) const
 {
-	for (unsigned int i = 0; i < _devices.size(); ++i) {
+	for (int32_t i = 0; i < static_cast<int32_t>(_devices.size()); ++i) {
 		if (_devices[i].adapter_id == adapter_id) {
 			return i;
 		}
 	}
 
-	return UINT_FAIL;
+	return -1;
 }
 
-unsigned int RenderDeviceGL::getDeviceForMonitor(unsigned int monitor) const
+int32_t RenderDeviceGL::getDeviceForMonitor(int32_t monitor) const
 {
-	unsigned int num_outputs = 0;
+	int32_t num_outputs = 0;
 
-	for (unsigned int i = 0; i < _devices.size(); ++i) {
+	for (int32_t i = 0; i < static_cast<int32_t>(_devices.size()); ++i) {
 		num_outputs += getNumOutputs(i);
 
 		if (num_outputs >= monitor) {
@@ -523,7 +524,7 @@ unsigned int RenderDeviceGL::getDeviceForMonitor(unsigned int monitor) const
 		}
 	}
 
-	return UINT_FAIL;
+	return -1;
 }
 
 
