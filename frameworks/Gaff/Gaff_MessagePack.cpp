@@ -72,12 +72,27 @@ bool MessagePackNode::isString(void) const
 	return _node.data->type == mpack_type_str;
 }
 
-bool MessagePackNode::isInt(void) const
+bool MessagePackNode::isNumber(void) const
+{
+	return isInt64() || isUInt64() || isFloat() || isDouble();
+}
+
+bool MessagePackNode::isInt32(void) const
 {
 	return _node.data->type == mpack_type_int;
 }
 
-bool MessagePackNode::isUInt(void) const
+bool MessagePackNode::isUInt32(void) const
+{
+	return _node.data->type == mpack_type_uint;
+}
+
+bool MessagePackNode::isInt64(void) const
+{
+	return _node.data->type == mpack_type_int;
+}
+
+bool MessagePackNode::isUInt64(void) const
 {
 	return _node.data->type == mpack_type_uint;
 }
@@ -153,6 +168,20 @@ const char* MessagePackNode::getString(char* buffer, size_t buf_size, const char
 	GAFF_ASSERT(_node.tree->error == mpack_ok);
 
 	return buffer;
+}
+
+const char* MessagePackNode::getString(const char* default_value) const
+{
+	GAFF_ASSERT(isString() || isNull());
+
+	if (isNull()) {
+		return default_value;
+	}
+
+	const char* const ret = mpack_node_utf8_cstr_alloc(_node, _node.data->len + 1);
+	GAFF_ASSERT(_node.tree->error == mpack_ok);
+
+	return ret;
 }
 
 int8_t MessagePackNode::getInt8(int8_t default_value) const
@@ -283,6 +312,16 @@ const char* MessagePackNode::getString(char* buffer, size_t buf_size) const
 	mpack_node_copy_utf8(_node, buffer, buf_size);
 	GAFF_ASSERT(_node.tree->error == mpack_ok);
 	return buffer;
+}
+
+const char* MessagePackNode::getString(void) const
+{
+	GAFF_ASSERT(isString());
+
+	const char* const ret = mpack_node_utf8_cstr_alloc(_node, _node.data->len + 1);
+	GAFF_ASSERT(_node.tree->error == mpack_ok);
+
+	return ret;
 }
 
 int8_t MessagePackNode::getInt8(void) const

@@ -112,6 +112,7 @@ public:
 	bool isUInt32(void) const;
 	bool isInt64(void) const;
 	bool isUInt64(void) const;
+	bool isFloat(void) const;
 	bool isDouble(void) const;
 	bool isBool(void) const;
 	bool isTrue(void) const;
@@ -121,21 +122,28 @@ public:
 	JSON getObject(const char* key) const;
 	JSON getObject(size_t index) const;
 
-	size_t getStringLength(void) const;
+	const char* getString(char* buffer, size_t buf_size, const char* default_value) const;
 	const char* getString(const char* default_value) const;
+	int8_t getInt8(int8_t default_value) const;
+	uint8_t getUInt8(uint8_t default_value) const;
+	int16_t getInt16(int16_t default_value) const;
+	uint16_t getUInt16(uint16_t default_value) const;
 	int32_t getInt32(int32_t default_value) const;
 	uint32_t getUInt32(uint32_t default_value) const;
 	int64_t getInt64(int64_t default_value) const;
 	uint64_t getUInt64(uint64_t default_value) const;
+	float getFloat(float default_value) const;
 	double getDouble(double default_value) const;
 	double getNumber(double default_value) const;
 	bool getBool(bool default_value) const;
 
+	const char* getString(char* buffer, size_t buf_size) const;
 	const char* getString(void) const;
 	int32_t getInt32(void) const;
 	uint32_t getUInt32(void) const;
 	int64_t getInt64(void) const;
 	uint64_t getUInt64(void) const;
+	float getFloat(void) const;
 	double getDouble(void) const;
 	double getNumber(void) const;
 	bool getBool(void) const;

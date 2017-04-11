@@ -522,6 +522,11 @@ bool JSON::isUInt64(void) const
 	return _value.IsUint64();
 }
 
+bool JSON::isFloat(void) const
+{
+	return _value.IsFloat();
+}
+
 bool JSON::isDouble(void) const
 {
 	return _value.IsDouble();
@@ -563,9 +568,34 @@ JSON JSON::getObject(size_t index) const
 	return JSON(_value[static_cast<rapidjson::SizeType>(index)]);
 }
 
+const char* JSON::getString(char* buffer, size_t buf_size, const char* default_value) const
+{
+	return (_value.IsNull()) ? default_value : strncpy(buffer, _value.GetString(), buf_size);
+}
+
 const char* JSON::getString(const char* default_value) const
 {
 	return (_value.IsNull()) ? default_value : _value.GetString();
+}
+
+int8_t JSON::getInt8(int8_t default_value) const
+{
+	return (_value.IsNull()) ? default_value : static_cast<int8_t>(_value.GetInt());
+}
+
+uint8_t JSON::getUInt8(uint8_t default_value) const
+{
+	return (_value.IsNull()) ? default_value : static_cast<uint8_t>(_value.GetUint());
+}
+
+int16_t JSON::getInt16(int16_t default_value) const
+{
+	return (_value.IsNull()) ? default_value : static_cast<int16_t>(_value.GetInt());
+}
+
+uint16_t JSON::getUInt16(uint16_t default_value) const
+{
+	return (_value.IsNull()) ? default_value : static_cast<uint16_t>(_value.GetUint());
 }
 
 int32_t JSON::getInt32(int32_t default_value) const
@@ -588,6 +618,11 @@ uint64_t JSON::getUInt64(uint64_t default_value) const
 	return (_value.IsNull()) ? default_value : _value.GetUint64();
 }
 
+float JSON::getFloat(float default_value) const
+{
+	return (_value.IsNull()) ? default_value : _value.GetFloat();
+}
+
 double JSON::getDouble(double default_value) const
 {
 	return (_value.IsNull()) ? default_value : _value.GetDouble();
@@ -603,9 +638,9 @@ bool JSON::getBool(bool default_value) const
 	return (_value.IsNull()) ? default_value : _value.GetBool();
 }
 
-size_t JSON::getStringLength(void) const
+const char* JSON::getString(char* buffer, size_t buf_size) const
 {
-	return _value.GetStringLength();
+	return strncpy(buffer, _value.GetString(), buf_size);
 }
 
 const char* JSON::getString(void) const
@@ -631,6 +666,11 @@ int64_t JSON::getInt64(void) const
 uint64_t JSON::getUInt64(void) const
 {
 	return _value.GetUint64();
+}
+
+float JSON::getFloat(void) const
+{
+	return _value.GetFloat();
 }
 
 double JSON::getDouble(void) const
