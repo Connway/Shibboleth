@@ -51,8 +51,11 @@ public:
 	bool isObject(void) const;
 	bool isArray(void) const;
 	bool isString(void) const;
-	bool isInt(void) const;
-	bool isUInt(void) const;
+	bool isNumber(void) const;
+	bool isInt32(void) const; // Is(U)Int32/64 for compatability with JSON interface.
+	bool isUInt32(void) const;
+	bool isInt64(void) const; 
+	bool isUInt64(void) const;
 	bool isFloat(void) const;
 	bool isDouble(void) const;
 	bool isBool(void) const;
@@ -66,6 +69,7 @@ public:
 	size_t size(void) const;
 
 	const char* getString(char* buffer, size_t buf_size, const char* default_value) const;
+	const char* getString(const char* default_value) const;
 	int8_t getInt8(int8_t default_value) const;
 	uint8_t getUInt8(uint8_t default_value) const;
 	int16_t getInt16(int16_t default_value) const;
@@ -79,6 +83,7 @@ public:
 	bool getBool(bool default_value) const;
 
 	const char* getString(char* buffer, size_t buf_size) const;
+	const char* getString(void) const;
 	int8_t getInt8(void) const;
 	uint8_t getUInt8(void) const;
 	int16_t getInt16(void) const;
