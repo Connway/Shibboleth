@@ -486,7 +486,7 @@ bool Object::createComponents(const Gaff::JSON& json)
 
 	_components.reserve(json.size());
 
-	json.forEachInObject([&](const char* /*key*/, Gaff::JSON& value) -> bool
+	json.forEachInObject([&](const char* /*key*/, const Gaff::JSON& value) -> bool
 	{
 		if (!value.isObject()) {
 			// log error
@@ -494,7 +494,7 @@ bool Object::createComponents(const Gaff::JSON& json)
 			return true;
 		}
 
-		Gaff::JSON type = value["Type"];
+		const Gaff::JSON type = value["Type"];
 
 		if (!type.isString()) {
 			// log error

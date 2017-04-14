@@ -633,54 +633,54 @@ SHIB_TEMPLATE_REFLECTION_DEFINE_SERIALIZE_SAVE(SerializeTestTemplate, T, TT)
 
 
 
-class EmptyReader : public Gaff::ISerializeReader
-{
-	int8_t readInt8(void) const { return 0; }
-	int16_t readInt16(void) const { return 0; }
-	int32_t readInt32(void) const { return 0; }
-	int64_t readInt64(void) const { return 0; }
+//class EmptyReader : public Gaff::ISerializeReader
+//{
+//	int8_t readInt8(void) const { return 0; }
+//	int16_t readInt16(void) const { return 0; }
+//	int32_t readInt32(void) const { return 0; }
+//	int64_t readInt64(void) const { return 0; }
 
-	uint8_t readUInt8(void) const { return 0; }
-	uint16_t readUInt16(void) const { return 0; }
-	uint32_t readUInt32(void) const { return 0; }
-	uint64_t readUInt64(void) const { return 0; }
+//	uint8_t readUInt8(void) const { return 0; }
+//	uint16_t readUInt16(void) const { return 0; }
+//	uint32_t readUInt32(void) const { return 0; }
+//	uint64_t readUInt64(void) const { return 0; }
 
-	float readFloat(void) const { return 0.0f; }
-	double readDouble(void) const { return 0.0; }
+//	float readFloat(void) const { return 0.0f; }
+//	double readDouble(void) const { return 0.0; }
 
-	size_t readStringLength(void) const { return 0; }
-	const char* readString(void) const { return nullptr; }
-};
+//	size_t readStringLength(void) const { return 0; }
+//	const char* readString(void) const { return nullptr; }
+//};
 
-class EmptyWriter : public Gaff::ISerializeWriter
-{
-	void writeInt8(int8_t value) const { GAFF_REF(value); }
-	void writeInt16(int16_t value) const { GAFF_REF(value); }
-	void writeInt32(int32_t value) const { GAFF_REF(value); }
-	void writeInt64(int64_t value) const { GAFF_REF(value); }
+//class EmptyWriter : public Gaff::ISerializeWriter
+//{
+//	void writeInt8(int8_t value) const { GAFF_REF(value); }
+//	void writeInt16(int16_t value) const { GAFF_REF(value); }
+//	void writeInt32(int32_t value) const { GAFF_REF(value); }
+//	void writeInt64(int64_t value) const { GAFF_REF(value); }
 
-	void writeUInt8(uint8_t value) const { GAFF_REF(value); }
-	void writeUInt16(uint16_t value) const { GAFF_REF(value); }
-	void writeUInt32(uint32_t value) const { GAFF_REF(value); }
-	void writeUInt64(uint64_t value) const { GAFF_REF(value); }
+//	void writeUInt8(uint8_t value) const { GAFF_REF(value); }
+//	void writeUInt16(uint16_t value) const { GAFF_REF(value); }
+//	void writeUInt32(uint32_t value) const { GAFF_REF(value); }
+//	void writeUInt64(uint64_t value) const { GAFF_REF(value); }
 
-	void writeFloat(float value) const { GAFF_REF(value); }
-	void writeDouble(double value) const { GAFF_REF(value); }
+//	void writeFloat(float value) const { GAFF_REF(value); }
+//	void writeDouble(double value) const { GAFF_REF(value); }
 
-	void writeString(const char* value, size_t size) const { GAFF_REF(value); GAFF_REF(size); }
-	void writeString(const char* value) const { GAFF_REF(value); }
-};
+//	void writeString(const char* value, size_t size) const { GAFF_REF(value); GAFF_REF(size); }
+//	void writeString(const char* value) const { GAFF_REF(value); }
+//};
 
-TEST_CASE("reflection serialize test", "[shibboleth_serialize]")
-{
-	EmptyReader reader;
-	EmptyWriter writer;
+//TEST_CASE("reflection serialize test", "[shibboleth_serialize]")
+//{
+//	EmptyReader reader;
+//	EmptyWriter writer;
 
-	STCPtr stc;
-	Shibboleth::Reflection<STCPtr>::Load(reader, stc);
-	Shibboleth::Reflection<STCPtr>::Save(writer, stc);
+//	STCPtr stc;
+//	Shibboleth::Reflection<STCPtr>::Load(reader, stc);
+//	Shibboleth::Reflection<STCPtr>::Save(writer, stc);
 
-	SerializeTestTemplate<int32_t, double> stt;
-	Shibboleth::Reflection< SerializeTestTemplate<int32_t, double> >::Load(reader, stt);
-	Shibboleth::Reflection< SerializeTestTemplate<int32_t, double> >::Save(writer, stt);
-}
+//	SerializeTestTemplate<int32_t, double> stt;
+//	Shibboleth::Reflection< SerializeTestTemplate<int32_t, double> >::Load(reader, stt);
+//	Shibboleth::Reflection< SerializeTestTemplate<int32_t, double> >::Save(writer, stt);
+//}

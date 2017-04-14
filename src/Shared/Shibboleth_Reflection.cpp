@@ -25,5 +25,6 @@ THE SOFTWARE.
 NS_SHIBBOLETH
 
 GAFF_REFLECTION_DEFINE_POD();
+Reflection<U8String> Reflection<U8String>::g_instance;
 
 NS_END

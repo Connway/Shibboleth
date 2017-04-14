@@ -22,7 +22,7 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Gaff_Defines.h"
+#include "Gaff_Assert.h"
 
 #ifdef PLATFORM_WINDOWS
 	#pragma warning(push)
@@ -40,11 +40,52 @@ NS_GAFF
 class MessagePackNode
 {
 public:
+	template <class Callback>
+	bool forEachInObject(Callback&& callback) const
+	{
+		GAFF_ASSERT(isObject());
+
+		const int32_t length = static_cast<int32_t>(mpack_node_map_count(_node));
+
+		for (int32_t i = 0; i < length; ++i) {
+			const size_t index = static_cast<size_t>(i);
+
+			const MessagePackNode key(mpack_node_map_key_at(_node, index));
+			const MessagePackNode value(mpack_node_map_value_at(_node, static_cast<size_t>(i)));
+
+			GAFF_ASSERT(key.isString());
+			
+			if (callback(key.getString(), value)) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	template <class Callback>
+	bool forEachInArray(Callback&& callback) const
+	{
+		GAFF_ASSERT(isArray());
+
+		const int32_t length = static_cast<int32_t>(mpack_node_array_length(_node));
+
+		for (int32_t i = 0; i < length; ++i) {
+			const MessagePackNode value(mpack_node_array_at(_node, static_cast<size_t>(i)));
+
+			if (callback(i, value)) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
 	bool operator==(const MessagePackNode& rhs) const;
 	bool operator!=(const MessagePackNode& rhs) const;
 
 	MessagePackNode operator[](const char* key) const;
-	MessagePackNode operator[](size_t index) const;
+	MessagePackNode operator[](int32_t index) const;
 
 	MessagePackNode& operator=(const MessagePackNode& rhs);
 
@@ -64,9 +105,9 @@ public:
 	bool isNull(void) const;
 
 	MessagePackNode getObject(const char* key) const;
-	MessagePackNode getObject(size_t index) const;
+	MessagePackNode getObject(int32_t index) const;
 
-	size_t size(void) const;
+	int32_t size(void) const;
 
 	const char* getString(char* buffer, size_t buf_size, const char* default_value) const;
 	const char* getString(const char* default_value) const;
