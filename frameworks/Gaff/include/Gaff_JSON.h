@@ -44,7 +44,7 @@ public:
 		auto end = _value.MemberEnd();
 
 		for ( ; beg != end; ++beg) {
-			JSON json(beg->value);
+			const JSON json(beg->value);
 
 			if (callback(beg->name.GetString(), json)) {
 				return true;
@@ -62,7 +62,7 @@ public:
 		auto end = _value.End();
 
 		for (int32_t index = 0; beg != end; ++beg, ++index) {
-			JSON json(*beg);
+			const JSON json(*beg);
 
 			if (callback(index, json)) {
 				return true;
@@ -120,7 +120,7 @@ public:
 	bool isNull(void) const;
 
 	JSON getObject(const char* key) const;
-	JSON getObject(size_t index) const;
+	JSON getObject(int32_t index) const;
 
 	const char* getString(char* buffer, size_t buf_size, const char* default_value) const;
 	const char* getString(const char* default_value) const;
@@ -139,6 +139,10 @@ public:
 
 	const char* getString(char* buffer, size_t buf_size) const;
 	const char* getString(void) const;
+	int8_t getInt8(void) const;
+	uint8_t getUInt8(void) const;
+	int16_t getInt16(void) const;
+	uint16_t getUInt16(void) const;
 	int32_t getInt32(void) const;
 	uint32_t getUInt32(void) const;
 	int64_t getInt64(void) const;
@@ -150,12 +154,12 @@ public:
 
 	void setObject(const char* key, const JSON& json);
 	void setObject(const char* key, JSON&& json);
-	void setObject(size_t index, const JSON& json);
-	void setObject(size_t index, JSON&& json);
+	void setObject(int32_t index, const JSON& json);
+	void setObject(int32_t index, JSON&& json);
 	void push(const JSON& json);
 	void push(JSON&& json);
 
-	size_t size(void) const;
+	int32_t size(void) const;
 
 	const char* getErrorText(void) const;
 	const char* getSchemaErrorText(void) const;
@@ -174,7 +178,7 @@ public:
 	bool operator==(const JSON& rhs) const;
 	bool operator!=(const JSON& rhs) const;
 	JSON operator[](const char* key) const;
-	JSON operator[](size_t index) const;
+	JSON operator[](int32_t index) const;
 
 private:
 	class JSONAllocator;

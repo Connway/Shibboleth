@@ -22,28 +22,70 @@ THE SOFTWARE.
 
 #pragma once
 
+#include "Gaff_Defines.h"
+
 NS_GAFF
+
+class ScopeGuard;
 
 class ISerializeReader
 {
 public:
 	virtual ~ISerializeReader(void) {}
 
+	virtual bool isObject(void) const = 0;
+	virtual bool isArray(void) const = 0;
+	virtual bool isString(void) const = 0;
+	virtual bool isNumber(void) const = 0;
+	virtual bool isInt32(void) const = 0;
+	virtual bool isUInt32(void) const = 0;
+	virtual bool isInt64(void) const = 0;
+	virtual bool isUInt64(void) const = 0;
+	virtual bool isFloat(void) const = 0;
+	virtual bool isDouble(void) const = 0;
+	virtual bool isBool(void) const = 0;
+	virtual bool isTrue(void) const = 0;
+	virtual bool isFalse(void) const = 0;
+	virtual bool isNull(void) const = 0;
+
+	virtual void enterElement(const char* key) = 0;
+	virtual void enterElement(size_t index) = 0;
+	virtual void exitElement(void) = 0;
+
+	virtual ScopeGuard enterElementGuard(const char* key) = 0;
+	virtual ScopeGuard enterElementGuard(size_t index) = 0;
+
+	virtual size_t size(void) const = 0;
+
+	virtual const char* readString(char* buffer, size_t buf_size, const char* default_value) const = 0;
+	virtual const char* readString(const char* default_value) const = 0;
+	virtual int8_t readInt8(int8_t default_value) const = 0;
+	virtual uint8_t readUInt8(uint8_t default_value) const = 0;
+	virtual int16_t readInt16(int16_t default_value) const = 0;
+	virtual uint16_t readUInt16(uint16_t default_value) const = 0;
+	virtual int32_t readInt32(int32_t default_value) const = 0;
+	virtual uint32_t readUInt32(uint32_t default_value) const = 0;
+	virtual int64_t readInt64(int64_t default_value) const = 0;
+	virtual uint64_t readUInt64(uint64_t default_value) const = 0;
+	virtual float readFloat(float default_value) const = 0;
+	virtual double readDouble(double default_value) const = 0;
+	virtual double readNumber(double default_value) const = 0;
+	virtual bool readBool(bool default_value) const = 0;
+
+	virtual const char* readString(char* buffer, size_t buf_size) const = 0;
+	virtual const char* readString(void) const = 0;
 	virtual int8_t readInt8(void) const = 0;
-	virtual int16_t readInt16(void) const = 0;
-	virtual int32_t readInt32(void) const = 0;
-	virtual int64_t readInt64(void) const = 0;
-
 	virtual uint8_t readUInt8(void) const = 0;
+	virtual int16_t readInt16(void) const = 0;
 	virtual uint16_t readUInt16(void) const = 0;
+	virtual int32_t readInt32(void) const = 0;
 	virtual uint32_t readUInt32(void) const = 0;
+	virtual int64_t readInt64(void) const = 0;
 	virtual uint64_t readUInt64(void) const = 0;
-
 	virtual float readFloat(void) const = 0;
 	virtual double readDouble(void) const = 0;
-
-	virtual size_t readStringLength(void) const = 0;
-	virtual const char* readString(void) const = 0;
+	virtual double readNumber(void) const = 0;
+	virtual bool readBool(void) const = 0;
 };
 
 class ISerializeWriter
@@ -66,6 +108,19 @@ public:
 
 	virtual void writeString(const char* value, size_t size) const = 0;
 	virtual void writeString(const char* value) const = 0;
+};
+
+class ScopeGuard
+{
+public:
+	GAFF_COPY_DEFAULT(ScopeGuard);
+
+	ScopeGuard(ISerializeReader& reader, const char* key): _reader(reader) { _reader.enterElement(key); }
+	ScopeGuard(ISerializeReader& reader, size_t index) : _reader(reader) { _reader.enterElement(index); }
+	~ScopeGuard(void) { _reader.exitElement(); }
+
+private:
+	ISerializeReader& _reader;
 };
 
 NS_END

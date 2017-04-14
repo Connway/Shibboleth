@@ -33,6 +33,65 @@ NS_SHIBBOLETH
 
 GAFF_REFLECTION_DECLARE_DEFAULT_AND_POD();
 
+template <>
+class Reflection<U8String> final : public Gaff::IReflection
+{
+public:
+	constexpr static bool HasReflection = true;
+	void load(Gaff::ISerializeReader& reader, void* object) const override
+	{
+		GAFF_ASSERT(object);
+		Load(reader, *reinterpret_cast<U8String*>(object));
+	}
+	void save(Gaff::ISerializeWriter& writer, const void* object) const override
+	{
+		GAFF_ASSERT(object);
+		Save(writer, *reinterpret_cast<const U8String*>(object));
+	}
+	void init(void) override
+	{
+	}
+	const char* getName(void) const override
+	{
+		return GetName();
+	}
+	Gaff::Hash64 getHash(void) const override
+	{
+		return GetHash();
+	}
+	Gaff::Hash64 getVersion(void) const override
+	{
+		return GetVersion();
+	}
+	static void Load(Gaff::ISerializeReader& reader, U8String& value)
+	{
+		value = reader.readString();
+	}
+	static void Save(Gaff::ISerializeWriter& writer, const U8String& value)
+	{
+		writer.writeString(value.data(), value.size());
+	}
+	constexpr static Gaff::Hash64 GetHash(void)
+	{
+		return Gaff::FNV1aHash64Const("U8String");
+	}
+	constexpr static Gaff::Hash64 GetVersion(void)
+	{
+		return GetHash();
+	}
+	constexpr static const char* GetName(void)
+	{
+		return "U8String";
+	}
+	static Reflection<U8String>& GetInstance(void)
+	{
+		return g_instance;
+	}
+private:
+	static Reflection<U8String> g_instance;
+};
+
+
 #define SHIB_REFLECTION_DECLARE_SERIALIZE(type, version) GAFF_REFLECTION_DECLARE_SERIALIZE(type, version, ProxyAllocator)
 #define SHIB_REFLECTION_DEFINE_SERIALIZE_INIT(type) GAFF_REFLECTION_DEFINE_SERIALIZE_INIT(type, Shibboleth::ProxyAllocator)
 #define SHIB_REFLECTION_DEFINE_SERIALIZE_LOAD GAFF_REFLECTION_DEFINE_SERIALIZE_LOAD

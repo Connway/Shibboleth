@@ -21,7 +21,6 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Gaff_MessagePack.h"
-#include "Gaff_Assert.h"
 
 NS_GAFF
 
@@ -51,10 +50,10 @@ MessagePackNode MessagePackNode::operator[](const char* key) const
 	return MessagePackNode(mpack_node_map_cstr_optional(_node, key));
 }
 
-MessagePackNode MessagePackNode::operator[](size_t index) const
+MessagePackNode MessagePackNode::operator[](int32_t index) const
 {
 	GAFF_ASSERT(isArray() && index < size());
-	return MessagePackNode(mpack_node_map_value_at(_node, index));
+	return MessagePackNode(mpack_node_array_at(_node, static_cast<size_t>(index)));
 }
 
 bool MessagePackNode::isObject(void) const
@@ -137,23 +136,23 @@ MessagePackNode MessagePackNode::getObject(const char* key) const
 	return MessagePackNode(mpack_node_map_cstr_optional(_node, key));
 }
 
-MessagePackNode MessagePackNode::getObject(size_t index) const
+MessagePackNode MessagePackNode::getObject(int32_t index) const
 {
 	GAFF_ASSERT(isArray() && index < size());
-	return MessagePackNode(mpack_node_map_value_at(_node, index));
+	return MessagePackNode(mpack_node_map_value_at(_node, static_cast<size_t>(index)));
 }
 
-size_t MessagePackNode::size(void) const
+int32_t MessagePackNode::size(void) const
 {
 	GAFF_ASSERT(isString() || isArray() || isObject());
 
 	if (isString()) {
-		return mpack_node_strlen(_node);
+		return static_cast<int32_t>(mpack_node_strlen(_node));
 	} else if (isArray()) {
-		return mpack_node_array_length(_node);
+		return static_cast<int32_t>(mpack_node_array_length(_node));
 	}
 
-	return mpack_node_map_count(_node);
+	return static_cast<int32_t>(mpack_node_map_count(_node));
 }
 
 const char* MessagePackNode::getString(char* buffer, size_t buf_size, const char* default_value) const

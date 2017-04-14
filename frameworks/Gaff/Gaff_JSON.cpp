@@ -563,7 +563,7 @@ JSON JSON::getObject(const char* key) const
 	return JSON(it->value);
 }
 
-JSON JSON::getObject(size_t index) const
+JSON JSON::getObject(int32_t index) const
 {
 	return JSON(_value[static_cast<rapidjson::SizeType>(index)]);
 }
@@ -648,6 +648,26 @@ const char* JSON::getString(void) const
 	return _value.GetString();
 }
 
+int8_t JSON::getInt8(void) const
+{
+	return static_cast<int8_t>(_value.GetInt());
+}
+
+uint8_t JSON::getUInt8(void) const
+{
+	return static_cast<uint8_t>(_value.GetUint());
+}
+
+int16_t JSON::getInt16(void) const
+{
+	return static_cast<int16_t>(_value.GetInt());
+}
+
+uint16_t JSON::getUInt16(void) const
+{
+	return static_cast<uint16_t>(_value.GetUint());
+}
+
 int32_t JSON::getInt32(void) const
 {
 	return _value.GetInt();
@@ -726,17 +746,17 @@ void JSON::setObject(const char* key, JSON&& json)
 	}
 }
 
-void JSON::setObject(size_t index, const JSON& json)
+void JSON::setObject(int32_t index, const JSON& json)
 {
-	GAFF_ASSERT(_value.IsArray() && index < _value.Size());
+	GAFF_ASSERT(_value.IsArray() && index < static_cast<int32_t>(_value.Size()));
 	JSONValue value(json._value, g_allocator);
 
 	_value[static_cast<rapidjson::SizeType>(index)] = std::move(value);
 }
 
-void JSON::setObject(size_t index, JSON&& json)
+void JSON::setObject(int32_t index, JSON&& json)
 {
-	GAFF_ASSERT(_value.IsArray() && index < _value.Size());
+	GAFF_ASSERT(_value.IsArray() && index < static_cast<int32_t>(_value.Size()));
 	_value[static_cast<rapidjson::SizeType>(index)] = std::move(json._value);
 }
 
@@ -754,17 +774,17 @@ void JSON::push(JSON&& json)
 	_value.PushBack(std::move(json._value), g_allocator);
 }
 
-size_t JSON::size(void) const
+int32_t JSON::size(void) const
 {
 	GAFF_ASSERT(isString() || isArray() || isObject());
 
 	if (isString()) {
-		return _value.GetStringLength();
+		return static_cast<int32_t>(_value.GetStringLength());
 	} else if (isArray()) {
-		return _value.Size();
+		return static_cast<int32_t>(_value.Size());
 	}
 
-	return _value.MemberCount();
+	return static_cast<int32_t>(_value.MemberCount());
 }
 
 const char* JSON::getErrorText(void) const
@@ -845,7 +865,7 @@ JSON JSON::operator[](const char* key) const
 	return getObject(key);
 }
 
-JSON JSON::operator[](size_t index) const
+JSON JSON::operator[](int32_t index) const
 {
 	return getObject(index);
 }
