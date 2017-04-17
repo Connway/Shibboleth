@@ -26,9 +26,9 @@ THE SOFTWARE.
 #include <Shibboleth_IFileSystem.h>
 #include <Shibboleth_Utilities.h>
 #include <Shibboleth_IApp.h>
+#include <Gaff_SerializeInterfaces.h>
 #include <Gaff_ScopedLock.h>
 #include <Gaff_Utils.h>
-#include <Gaff_JSON.h>
 
 #define OBJ_DIRTY (1 << 0)
 #define OBJ_IN_WORLD (1 << 1)
@@ -47,64 +47,49 @@ Object::~Object(void)
 	destroy();
 }
 
-bool Object::init(const Gaff::JSON& json)
+bool Object::load(const Gaff::ISerializeReader& reader)
 {
-	Gaff::JSON name = json["name"];
+	{
+		Gaff::ScopeGuard guard = reader.enterElementGuard("name");
+		GAFF_REF(guard);
 
-	if (!name.isString()) {
-		// log error
-		return false;
+		if (!reader.isString()) {
+			// log error
+			return false;
+		}
+
+		char name[256] = {};
+		_name = reader.readString(name, ARRAY_SIZE(name));
 	}
 
-	_name = name.getString();
+	{
+		Gaff::ScopeGuard guard = reader.enterElementGuard("components");
+		GAFF_REF(guard);
 
-	Gaff::JSON components = json["components"];
+		if (!reader.isObject()) {
+			// log error
+			return false;
+		}
 
-	if (!components.isObject()) {
-		// log error
-		return false;
+		if (!createComponents(reader)) {
+			return false;
+		}
+
+		for (Component* comp : _components) {
+			comp->allComponentsLoaded();
+		}
+
+		// Start off object as dirty
+		Gaff::SetBits<uint8_t>(_flags, OBJ_DIRTY);
 	}
-
-	if (!createComponents(components)) {
-		return false;
-	}
-
-	int32_t size = static_cast<int32_t>(_components.size());
-
-	for (int32_t i = 0; i < size; ++i) {
-		_components[i]->allComponentsLoaded();
-	}
-
-	// Start off object as dirty
-	Gaff::SetBits<uint8_t>(_flags, OBJ_DIRTY);
-	//_obj_mgr.addNewObject(this);
 
 	return true;
 }
 
-bool Object::init(IFileSystem* fs, const char* file_name)
+bool Object::save(Gaff::ISerializeWriter& writer)
 {
-	GAFF_ASSERT(file_name && strlen(file_name));
-	GAFF_ASSERT(!_name.size());
-
-	IFile* file = fs->openFile(file_name);
-
-	if (!file) {
-		// log error
-		return false;
-	}
-
-	Gaff::JSON object_json;
-
-	if (!object_json.parse(file->getBuffer())) {
-		// log error
-		fs->closeFile(file);
-		return false;
-	}
-
-	fs->closeFile(file);
-
-	return init(object_json);
+	GAFF_REF(writer);
+	return false;
 }
 
 void Object::destroy(void)
@@ -480,33 +465,34 @@ void Object::removeFromWorld(void)
 	Gaff::ClearBits<uint8_t>(_flags, OBJ_IN_WORLD);
 }
 
-bool Object::createComponents(const Gaff::JSON& json)
+bool Object::createComponents(const Gaff::ISerializeReader& reader)
 {
-	bool error = false;
+	_components.reserve(reader.size());
 
-	_components.reserve(json.size());
-
-	json.forEachInObject([&](const char* /*key*/, const Gaff::JSON& value) -> bool
+	const bool error = reader.forEachInObject([&](const char* /*key*/) -> bool
 	{
-		if (!value.isObject()) {
+		if (!reader.isObject()) {
 			// log error
-			error = true;
 			return true;
 		}
 
-		const Gaff::JSON type = value["Type"];
+		char type[128] = {};
 
-		if (!type.isString()) {
-			// log error
-			error = true;
-			return true;
+		{
+			Gaff::ScopeGuard guard = reader.enterElementGuard("Type");
+
+			if (!reader.isString()) {
+				// log error
+				return true;
+			}
+
+			reader.readString(type, ARRAY_SIZE(type));
 		}
 
-		//Component* component = _comp_mgr.createComponent(type.getString());
+		//Component* component = _comp_mgr.createComponent(type);
 
 		//if (!component) {
 		//	// log error
-		//	error = true;
 		//	return true;
 		//}
 
@@ -514,7 +500,6 @@ bool Object::createComponents(const Gaff::JSON& json)
 		//component->setName(key);
 
 		//if (!component->validate(value) || !component->load(value)) {
-		//	error = true;
 		//	return true;
 		//}
 

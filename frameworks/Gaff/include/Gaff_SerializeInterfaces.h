@@ -31,6 +31,30 @@ class ScopeGuard;
 class ISerializeReader
 {
 public:
+	template <class Callback>
+	bool forEachInObject(Callback&& callback) const
+	{
+		GAFF_ASSERT(isObject());
+		const int32_t len = size();
+		char key[256] = {};
+
+		for (int32_t i = 0; i < len; ++i) {
+			getKey(key, ARRAY_SIZE(key), i);
+			enterElement(key);
+
+			if (callback(key)) {
+				exitElement();
+				return true;
+			}
+
+			exitElement();
+		}
+
+		return false;
+	}
+
+
+
 	virtual ~ISerializeReader(void) {}
 
 	virtual bool isObject(void) const = 0;
@@ -48,14 +72,18 @@ public:
 	virtual bool isFalse(void) const = 0;
 	virtual bool isNull(void) const = 0;
 
-	virtual void enterElement(const char* key) = 0;
-	virtual void enterElement(size_t index) = 0;
-	virtual void exitElement(void) = 0;
+	virtual void enterElement(const char* key) const = 0;
+	virtual void enterElement(int32_t index)  const = 0;
+	virtual void exitElement(void)  const = 0;
 
-	virtual ScopeGuard enterElementGuard(const char* key) = 0;
-	virtual ScopeGuard enterElementGuard(size_t index) = 0;
+	virtual ScopeGuard enterElementGuard(const char* key) const = 0;
+	virtual ScopeGuard enterElementGuard(int32_t index) const = 0;
 
-	virtual size_t size(void) const = 0;
+	virtual void freeString(const char* str) const = 0;
+	virtual int32_t size(void) const = 0;
+
+	virtual const char* getKey(char* buffer, size_t buf_size, int32_t index) const = 0;
+	virtual const char* getKey(int32_t index) const = 0;
 
 	virtual const char* readString(char* buffer, size_t buf_size, const char* default_value) const = 0;
 	virtual const char* readString(const char* default_value) const = 0;
@@ -116,7 +144,7 @@ public:
 	GAFF_COPY_DEFAULT(ScopeGuard);
 
 	ScopeGuard(ISerializeReader& reader, const char* key): _reader(reader) { _reader.enterElement(key); }
-	ScopeGuard(ISerializeReader& reader, size_t index) : _reader(reader) { _reader.enterElement(index); }
+	ScopeGuard(ISerializeReader& reader, int32_t index) : _reader(reader) { _reader.enterElement(index); }
 	~ScopeGuard(void) { _reader.exitElement(); }
 
 private:

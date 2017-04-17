@@ -122,6 +122,10 @@ public:
 	JSON getObject(const char* key) const;
 	JSON getObject(int32_t index) const;
 
+	const char* getKey(char* buffer, size_t buf_size, int32_t index) const;
+	const char* getKey(int32_t index) const;
+	Gaff::JSON getValue(int32_t index) const;
+
 	const char* getString(char* buffer, size_t buf_size, const char* default_value) const;
 	const char* getString(const char* default_value) const;
 	int8_t getInt8(int8_t default_value) const;
@@ -159,6 +163,7 @@ public:
 	void push(const JSON& json);
 	void push(JSON&& json);
 
+	void freeString(const char*) const {}
 	int32_t size(void) const;
 
 	const char* getErrorText(void) const;

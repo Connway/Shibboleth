@@ -24,7 +24,7 @@ THE SOFTWARE.
 
 #include <Shibboleth_String.h>
 #include <Gaff_ReflectionInterfaces.h>
-//#include <Gaff_JSON.h>
+#include <Gaff_SerializeInterfaces.h>
 
 NS_SHIBBOLETH
 
@@ -40,8 +40,8 @@ public:
 
 	//virtual bool validate(const Gaff::JSON& json);
 
-	//virtual bool load(const Gaff::JSON&);
-	//virtual bool save(Gaff::JSON&);
+	//virtual bool load(const Gaff::ISerializeReader& reader);
+	//virtual bool save(Gaff::ISerializeWriter& writer);
 
 	virtual void allComponentsLoaded(void);
 

@@ -107,6 +107,11 @@ public:
 	MessagePackNode getObject(const char* key) const;
 	MessagePackNode getObject(int32_t index) const;
 
+	const char* getKey(char* buffer, size_t buf_size, int32_t index) const;
+	const char* getKey(int32_t index) const;
+	MessagePackNode getValue(int32_t index) const;
+
+	void freeString(const char* str) const;
 	int32_t size(void) const;
 
 	const char* getString(char* buffer, size_t buf_size, const char* default_value) const;

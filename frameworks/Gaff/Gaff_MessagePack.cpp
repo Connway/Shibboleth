@@ -142,6 +142,43 @@ MessagePackNode MessagePackNode::getObject(int32_t index) const
 	return MessagePackNode(mpack_node_map_value_at(_node, static_cast<size_t>(index)));
 }
 
+const char* MessagePackNode::getKey(char* buffer, size_t buf_size, int32_t index) const
+{
+	GAFF_ASSERT(isObject() && index < size());
+
+	mpack_node_t node = mpack_node_map_key_at(_node, static_cast<size_t>(index));
+	GAFF_ASSERT(node.data->type == mpack_type_str);
+
+	mpack_node_copy_utf8(node, buffer, buf_size);
+	GAFF_ASSERT(_node.tree->error == mpack_ok);
+
+	return buffer;
+}
+
+const char* MessagePackNode::getKey(int32_t index) const
+{
+	GAFF_ASSERT(isObject() && index < size());
+
+	mpack_node_t node = mpack_node_map_key_at(_node, static_cast<size_t>(index));
+	GAFF_ASSERT(node.data->type == mpack_type_str);
+
+	const char* const ret = mpack_node_utf8_cstr_alloc(node, node.data->len + 1);
+	GAFF_ASSERT(node.tree->error == mpack_ok);
+
+	return ret;
+}
+
+MessagePackNode MessagePackNode::getValue(int32_t index) const
+{
+	GAFF_ASSERT(isObject() && index < size());
+	return MessagePackNode(mpack_node_map_value_at(_node, static_cast<size_t>(index)));
+}
+
+void MessagePackNode::freeString(const char* str) const
+{
+	MPACK_FREE(const_cast<char*>(str));
+}
+
 int32_t MessagePackNode::size(void) const
 {
 	GAFF_ASSERT(isString() || isArray() || isObject());
