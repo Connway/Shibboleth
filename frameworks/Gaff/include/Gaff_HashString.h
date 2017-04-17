@@ -120,7 +120,7 @@ public:
 	bool operator>(HashType rhs) const;
 
 	// WARNING: This function takes ownership of the string instead of copying
-	void set(T* string);
+	void set(const T* string);
 	void clear(void);
 	size_t size(void) const;
 

@@ -52,28 +52,33 @@ public:
 	bool isFalse(void) const override { return _current.node.isFalse(); }
 	bool isNull(void) const override { return _current.node.isNull(); }
 
-	void enterElement(const char* key) override
+	void enterElement(const char* key) const override
 	{
 		Node node = _stack.back().getObject(key);
 		_stack.push_back(node);
 	}
 
-	void enterElement(size_t index) override
+	void enterElement(int32_t index) const override
 	{
 		Node node = _stack.back().getObject(index);
 		_stack.push_back(node);
 	}
 
-	void exitElement(void) override
+	void exitElement(void) const override
 	{
 		GAFF_ASSERT(_stack.size() > 1);
 		_stack.pop_back();
 	}
 
-	ScopeGuard enterElementGuard(const char* key) { return ScopeGuard(*this, key); }
-	ScopeGuard enterElementGuard(size_t index) { return ScopeGuard(*this, index); }
+	ScopeGuard enterElementGuard(const char* key) const override { return ScopeGuard(*this, key); }
+	ScopeGuard enterElementGuard(int32_t index) const override { return ScopeGuard(*this, index); }
 
-	size_t size(void) const override { return _stack.back().size(); }
+	const char* getKey(char* buffer, size_t buf_size, int32_t index) const override { return _stack.back().getKey(buffer, buf_size, index); }
+	const char* getKey(int32_t index) const override { return _stack.back().getKey(index); }
+
+	void freeString(const char* str) const override { _stack.back().freeString(str); }
+	int32_t size(void) const override { return _stack.back().size(); }
+
 	const char* readString(char* buffer, size_t buf_size, const char* default_value) const override { return _stack.back().getString(buffer, buf_size, default_value); }
 	const char* readString(const char* default_value) const override { return _stack.back().getString(default_value); }
 	int8_t readInt8(int8_t default_value) const override { return _stack.back().getInt8(default_value); }
@@ -105,7 +110,7 @@ public:
 	bool readBool(void) const override { return _stack.back().getBool(); }
 
 private:
-	Vector<Node> _stack;
+	mutable Vector<Node> _stack;
 };
 
 NS_END

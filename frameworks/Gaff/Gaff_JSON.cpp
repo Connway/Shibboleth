@@ -568,6 +568,26 @@ JSON JSON::getObject(int32_t index) const
 	return JSON(_value[static_cast<rapidjson::SizeType>(index)]);
 }
 
+const char* JSON::getKey(char* buffer, size_t buf_size, int32_t index) const
+{
+	GAFF_ASSERT(_value.IsObject() && index < size());
+	const char* const key = (_value.MemberBegin() + index)->name.GetString();
+	strncpy(buffer, key, buf_size);
+	return buffer;
+}
+
+const char* JSON::getKey(int32_t index) const
+{
+	GAFF_ASSERT(_value.IsObject() && index < size());
+	return (_value.MemberBegin() + index)->name.GetString();
+}
+
+JSON JSON::getValue(int32_t index) const
+{
+	GAFF_ASSERT(_value.IsObject() && index < size());
+	return JSON((_value.MemberBegin() + index)->value);
+}
+
 const char* JSON::getString(char* buffer, size_t buf_size, const char* default_value) const
 {
 	return (_value.IsNull()) ? default_value : strncpy(buffer, _value.GetString(), buf_size);

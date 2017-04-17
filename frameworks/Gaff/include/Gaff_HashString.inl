@@ -318,7 +318,7 @@ bool HashString<T, HashType, Allocator>::operator>(HashType rhs) const
 	\note Using this function means you are passing ownership of \a string to HashString.
 */
 template <class T, class HashType, class Allocator>
-void HashString<T, HashType, Allocator>::set(T* string)
+void HashString<T, HashType, Allocator>::set(const T* string)
 {
 	_string.set(string);
 	_hash_value = _hash_func(reinterpret_cast<const char*>(string), _string.size() * sizeof(T));

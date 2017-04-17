@@ -30,7 +30,10 @@ THE SOFTWARE.
 #include <Gaff_SpinLock.h>
 #include <Gaff_Function.h>
 
-#include <Gaff_JSON.h>
+NS_GAFF
+	class ISerializeReader;
+	class ISerializeWriter;
+NS_END
 
 NS_SHIBBOLETH
 
@@ -99,8 +102,9 @@ public:
 	Object(uint32_t id);
 	~Object(void);
 
-	bool init(const Gaff::JSON& json);
-	bool init(IFileSystem* fs, const char* file_name);
+	bool load(const Gaff::ISerializeReader& reader);
+	bool save(Gaff::ISerializeWriter& writer);
+
 	void destroy(void);
 
 	const HashString64& getName(void) const;
@@ -185,7 +189,7 @@ private:
 
 	uint8_t _flags;
 
-	bool createComponents(const Gaff::JSON& json);
+	bool createComponents(const Gaff::ISerializeReader& reader);
 	void markDirty(void);
 
 	GAFF_NO_COPY(Object);
