@@ -489,7 +489,7 @@ void App::registerReflection(Gaff::Hash64 name, Gaff::IReflectionDefinition& ref
 	// Register if a manager.
 	if (ref_def.hasInterface(Gaff::FNV1aHash64Const("IManager"))) {
 		ProxyAllocator allocator;
-		IManager* manager = ref_def.createAllocT<IManager>(allocator);
+		IManager* manager = ref_def.CREATEALLOCT(IManager, allocator);
 
 		if (!manager->init()) {
 			// log error

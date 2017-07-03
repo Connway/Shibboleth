@@ -156,6 +156,9 @@
     <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_SerializeInterfaces.h">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_SerializeReader.h">
+      <Filter>include</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_SmartPtrs.h">
       <Filter>include</Filter>
     </ClInclude>

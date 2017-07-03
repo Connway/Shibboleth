@@ -9,6 +9,10 @@
       <Configuration>Release</Configuration>
       <Platform>x64</Platform>
     </ProjectConfiguration>
+    <ProjectConfiguration Include="Analyze|x64">
+      <Configuration>Analyze</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
     <ProjectConfiguration Include="Profile|x64">
       <Configuration>Profile</Configuration>
       <Platform>x64</Platform>
@@ -38,6 +42,13 @@
     <PlatformToolset>v141</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Analyze|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v141</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+  </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Profile|x64'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
@@ -61,6 +72,9 @@
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Analyze|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
@@ -77,6 +91,12 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <OutDir>..\..\..\build\output\x64\Release\</OutDir>
     <IntDir>..\..\..\build\intermediate\x64\Release\Gleam\</IntDir>
+    <TargetName>Gleam</TargetName>
+    <TargetExt>.lib</TargetExt>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Analyze|x64'">
+    <OutDir>..\..\..\build\output\x64\Analyze\</OutDir>
+    <IntDir>..\..\..\build\intermediate\x64\Analyze\Gleam\</IntDir>
     <TargetName>Gleam</TargetName>
     <TargetExt>.lib</TargetExt>
   </PropertyGroup>
@@ -142,6 +162,30 @@
       <TreatLibWarningAsErrors>true</TreatLibWarningAsErrors>
     </Lib>
   </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Analyze|x64'">
+    <ClCompile>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <WarningLevel>Level4</WarningLevel>
+      <PreprocessorDefinitions>NDEBUG;WIN32;_WINDOWS;GLEW_STATIC;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\..\..\frameworks\Gleam\include;..\..\..\frameworks\Gaff\include;..\..\..\dependencies\glew\include;..\..\..\dependencies\EASTL\include;..\..\..\dependencies\glm;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <MinimalRebuild>false</MinimalRebuild>
+      <StringPooling>true</StringPooling>
+      <ExceptionHandling>Async</ExceptionHandling>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <FloatingPointModel>Fast</FloatingPointModel>
+      <AdditionalOptions>/analyze /sdl %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+  </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">
     <ClCompile>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
@@ -202,25 +246,24 @@
     <ClInclude Include="..\..\..\frameworks\Gleam\include\Gleam_AABB.h" />
     <ClInclude Include="..\..\..\frameworks\Gleam\include\Gleam_BitVector.h" />
     <ClInclude Include="..\..\..\frameworks\Gleam\include\Gleam_BlendState.h" />
-    <ClInclude Include="..\..\..\frameworks\Gleam\include\Gleam_BlendState_Direct3D.h" />
+    <ClInclude Include="..\..\..\frameworks\Gleam\include\Gleam_BlendState_Direct3D11.h" />
     <ClInclude Include="..\..\..\frameworks\Gleam\include\Gleam_BlendState_OpenGL.h" />
     <ClInclude Include="..\..\..\frameworks\Gleam\include\Gleam_Buffer.h" />
-    <ClInclude Include="..\..\..\frameworks\Gleam\include\Gleam_Buffer_Direct3D.h" />
+    <ClInclude Include="..\..\..\frameworks\Gleam\include\Gleam_Buffer_Direct3D11.h" />
     <ClInclude Include="..\..\..\frameworks\Gleam\include\Gleam_Buffer_OpenGL.h" />
+    <ClInclude Include="..\..\..\frameworks\Gleam\include\Gleam_Color.h" />
     <ClInclude Include="..\..\..\frameworks\Gleam\include\Gleam_CommandList.h" />
-    <ClInclude Include="..\..\..\frameworks\Gleam\include\Gleam_CommandList_Direct3D.h" />
+    <ClInclude Include="..\..\..\frameworks\Gleam\include\Gleam_CommandList_Direct3D11.h" />
     <ClInclude Include="..\..\..\frameworks\Gleam\include\Gleam_CommandList_OpenGL.h" />
     <ClInclude Include="..\..\..\frameworks\Gleam\include\Gleam_DeferredRenderDevice.h" />
     <ClInclude Include="..\..\..\frameworks\Gleam\include\Gleam_DeferredRenderDeviceBase.h" />
-    <ClInclude Include="..\..\..\frameworks\Gleam\include\Gleam_DeferredRenderDevice_Direct3D.h" />
+    <ClInclude Include="..\..\..\frameworks\Gleam\include\Gleam_DeferredRenderDevice_Direct3D11.h" />
     <ClInclude Include="..\..\..\frameworks\Gleam\include\Gleam_DeferredRenderDevice_OpenGL.h" />
     <ClInclude Include="..\..\..\frameworks\Gleam\include\Gleam_Defines.h" />
     <ClInclude Include="..\..\..\frameworks\Gleam\include\Gleam_DepthStencilState.h" />
-    <ClInclude Include="..\..\..\frameworks\Gleam\include\Gleam_DepthStencilState_Direct3D.h" />
+    <ClInclude Include="..\..\..\frameworks\Gleam\include\Gleam_DepthStencilState_Direct3D11.h" />
     <ClInclude Include="..\..\..\frameworks\Gleam\include\Gleam_DepthStencilState_OpenGL.h" />
     <ClInclude Include="..\..\..\frameworks\Gleam\include\Gleam_Frustum.h" />
-    <ClInclude Include="..\..\..\frameworks\Gleam\include\Gleam_Frustum_CPU.h" />
-    <ClInclude Include="..\..\..\frameworks\Gleam\include\Gleam_Frustum_SIMD.h" />
     <ClInclude Include="..\..\..\frameworks\Gleam\include\Gleam_Global.h" />
     <ClInclude Include="..\..\..\frameworks\Gleam\include\Gleam_IBlendState.h" />
     <ClInclude Include="..\..\..\frameworks\Gleam\include\Gleam_IBuffer.h" />
@@ -235,8 +278,9 @@
     <ClInclude Include="..\..\..\frameworks\Gleam\include\Gleam_IProgram.h" />
     <ClInclude Include="..\..\..\frameworks\Gleam\include\Gleam_IRasterState.h" />
     <ClInclude Include="..\..\..\frameworks\Gleam\include\Gleam_IRenderDevice.h" />
-    <ClInclude Include="..\..\..\frameworks\Gleam\include\Gleam_IRenderDevice_Direct3D.h" />
+    <ClInclude Include="..\..\..\frameworks\Gleam\include\Gleam_IRenderDevice_Direct3D11.h" />
     <ClInclude Include="..\..\..\frameworks\Gleam\include\Gleam_IRenderDevice_OpenGL.h" />
+    <ClInclude Include="..\..\..\frameworks\Gleam\include\Gleam_IRenderOutput.h" />
     <ClInclude Include="..\..\..\frameworks\Gleam\include\Gleam_IRenderTarget.h" />
     <ClInclude Include="..\..\..\frameworks\Gleam\include\Gleam_ISamplerState.h" />
     <ClInclude Include="..\..\..\frameworks\Gleam\include\Gleam_IShader.h" />
@@ -247,19 +291,15 @@
     <ClInclude Include="..\..\..\frameworks\Gleam\include\Gleam_Keyboard.h" />
     <ClInclude Include="..\..\..\frameworks\Gleam\include\Gleam_Keyboard_MessagePump.h" />
     <ClInclude Include="..\..\..\frameworks\Gleam\include\Gleam_Layout.h" />
-    <ClInclude Include="..\..\..\frameworks\Gleam\include\Gleam_Layout_Direct3D.h" />
+    <ClInclude Include="..\..\..\frameworks\Gleam\include\Gleam_Layout_Direct3D11.h" />
     <ClInclude Include="..\..\..\frameworks\Gleam\include\Gleam_Layout_OpenGL.h" />
-    <ClInclude Include="..\..\..\frameworks\Gleam\include\Gleam_Map.h" />
-    <ClInclude Include="..\..\..\frameworks\Gleam\include\Gleam_Matrix4x4.h" />
-    <ClInclude Include="..\..\..\frameworks\Gleam\include\Gleam_Matrix4x4_CPU.h" />
-    <ClInclude Include="..\..\..\frameworks\Gleam\include\Gleam_Matrix4x4_SIMD.h" />
     <ClInclude Include="..\..\..\frameworks\Gleam\include\Gleam_Mesh.h" />
     <ClInclude Include="..\..\..\frameworks\Gleam\include\Gleam_MeshBase.h" />
-    <ClInclude Include="..\..\..\frameworks\Gleam\include\Gleam_Mesh_Direct3D.h" />
+    <ClInclude Include="..\..\..\frameworks\Gleam\include\Gleam_Mesh_Direct3D11.h" />
     <ClInclude Include="..\..\..\frameworks\Gleam\include\Gleam_Mesh_OpenGL.h" />
     <ClInclude Include="..\..\..\frameworks\Gleam\include\Gleam_Model.h" />
     <ClInclude Include="..\..\..\frameworks\Gleam\include\Gleam_ModelBase.h" />
-    <ClInclude Include="..\..\..\frameworks\Gleam\include\Gleam_Model_Direct3D.h" />
+    <ClInclude Include="..\..\..\frameworks\Gleam\include\Gleam_Model_Direct3D11.h" />
     <ClInclude Include="..\..\..\frameworks\Gleam\include\Gleam_Model_OpenGL.h" />
     <ClInclude Include="..\..\..\frameworks\Gleam\include\Gleam_Mouse.h" />
     <ClInclude Include="..\..\..\frameworks\Gleam\include\Gleam_Mouse_MessagePump.h" />
@@ -267,42 +307,39 @@
     <ClInclude Include="..\..\..\frameworks\Gleam\include\Gleam_OBB_CPU.h" />
     <ClInclude Include="..\..\..\frameworks\Gleam\include\Gleam_OBB_SIMD.h" />
     <ClInclude Include="..\..\..\frameworks\Gleam\include\Gleam_Plane.h" />
-    <ClInclude Include="..\..\..\frameworks\Gleam\include\Gleam_Plane_CPU.h" />
-    <ClInclude Include="..\..\..\frameworks\Gleam\include\Gleam_Plane_SIMD.h" />
     <ClInclude Include="..\..\..\frameworks\Gleam\include\Gleam_Program.h" />
     <ClInclude Include="..\..\..\frameworks\Gleam\include\Gleam_ProgramBase.h" />
-    <ClInclude Include="..\..\..\frameworks\Gleam\include\Gleam_Program_Direct3D.h" />
+    <ClInclude Include="..\..\..\frameworks\Gleam\include\Gleam_Program_Direct3D11.h" />
     <ClInclude Include="..\..\..\frameworks\Gleam\include\Gleam_Program_OpenGL.h" />
     <ClInclude Include="..\..\..\frameworks\Gleam\include\Gleam_ProxyAllocator.h" />
     <ClInclude Include="..\..\..\frameworks\Gleam\include\Gleam_RasterState.h" />
-    <ClInclude Include="..\..\..\frameworks\Gleam\include\Gleam_RasterState_Direct3D.h" />
+    <ClInclude Include="..\..\..\frameworks\Gleam\include\Gleam_RasterState_Direct3D11.h" />
     <ClInclude Include="..\..\..\frameworks\Gleam\include\Gleam_RasterState_OpenGL.h" />
     <ClInclude Include="..\..\..\frameworks\Gleam\include\Gleam_RawInputRegisterFunction.h" />
     <ClInclude Include="..\..\..\frameworks\Gleam\include\Gleam_RefCounted.h" />
     <ClInclude Include="..\..\..\frameworks\Gleam\include\Gleam_RenderDevice.h" />
-    <ClInclude Include="..\..\..\frameworks\Gleam\include\Gleam_RenderDevice_Direct3D.h" />
+    <ClInclude Include="..\..\..\frameworks\Gleam\include\Gleam_RenderDevice_Direct3D11.h" />
     <ClInclude Include="..\..\..\frameworks\Gleam\include\Gleam_RenderDevice_OpenGL.h" />
-    <ClInclude Include="..\..\..\frameworks\Gleam\include\Gleam_RenderDevice_OpenGL_Base.h" />
     <ClInclude Include="..\..\..\frameworks\Gleam\include\Gleam_RenderDevice_OpenGL_Linux.h" />
     <ClInclude Include="..\..\..\frameworks\Gleam\include\Gleam_RenderDevice_OpenGL_Windows.h" />
+    <ClInclude Include="..\..\..\frameworks\Gleam\include\Gleam_RenderOutput.h" />
+    <ClInclude Include="..\..\..\frameworks\Gleam\include\Gleam_RenderOutput_Direct3D11.h" />
     <ClInclude Include="..\..\..\frameworks\Gleam\include\Gleam_RenderTarget.h" />
-    <ClInclude Include="..\..\..\frameworks\Gleam\include\Gleam_RenderTarget_Direct3D.h" />
+    <ClInclude Include="..\..\..\frameworks\Gleam\include\Gleam_RenderTarget_Direct3D11.h" />
     <ClInclude Include="..\..\..\frameworks\Gleam\include\Gleam_RenderTarget_OpenGL.h" />
-    <ClInclude Include="..\..\..\frameworks\Gleam\include\Gleam_SIMDMath.h" />
-    <ClInclude Include="..\..\..\frameworks\Gleam\include\Gleam_SIMDMath_x86.h" />
     <ClInclude Include="..\..\..\frameworks\Gleam\include\Gleam_SamplerState.h" />
-    <ClInclude Include="..\..\..\frameworks\Gleam\include\Gleam_SamplerState_Direct3D.h" />
+    <ClInclude Include="..\..\..\frameworks\Gleam\include\Gleam_SamplerState_Direct3D11.h" />
     <ClInclude Include="..\..\..\frameworks\Gleam\include\Gleam_SamplerState_OpenGL.h" />
     <ClInclude Include="..\..\..\frameworks\Gleam\include\Gleam_Shader.h" />
     <ClInclude Include="..\..\..\frameworks\Gleam\include\Gleam_ShaderInclude.h" />
     <ClInclude Include="..\..\..\frameworks\Gleam\include\Gleam_ShaderResourceView.h" />
-    <ClInclude Include="..\..\..\frameworks\Gleam\include\Gleam_ShaderResourceView_Direct3D.h" />
+    <ClInclude Include="..\..\..\frameworks\Gleam\include\Gleam_ShaderResourceView_Direct3D11.h" />
     <ClInclude Include="..\..\..\frameworks\Gleam\include\Gleam_ShaderResourceView_OpenGL.h" />
-    <ClInclude Include="..\..\..\frameworks\Gleam\include\Gleam_Shader_Direct3D.h" />
+    <ClInclude Include="..\..\..\frameworks\Gleam\include\Gleam_Shader_Direct3D11.h" />
     <ClInclude Include="..\..\..\frameworks\Gleam\include\Gleam_Shader_OpenGL.h" />
     <ClInclude Include="..\..\..\frameworks\Gleam\include\Gleam_String.h" />
     <ClInclude Include="..\..\..\frameworks\Gleam\include\Gleam_Texture.h" />
-    <ClInclude Include="..\..\..\frameworks\Gleam\include\Gleam_Texture_Direct3D.h" />
+    <ClInclude Include="..\..\..\frameworks\Gleam\include\Gleam_Texture_Direct3D11.h" />
     <ClInclude Include="..\..\..\frameworks\Gleam\include\Gleam_Texture_OpenGL.h" />
     <ClInclude Include="..\..\..\frameworks\Gleam\include\Gleam_Transform.h" />
     <ClInclude Include="..\..\..\frameworks\Gleam\include\Gleam_Vector.h" />
@@ -317,6 +354,8 @@
     <ClCompile Include="..\..\..\frameworks\Gleam\Gleam_AABB.cpp" />
     <ClCompile Include="..\..\..\frameworks\Gleam\Gleam_Frustum.cpp" />
     <ClCompile Include="..\..\..\frameworks\Gleam\Gleam_Plane.cpp" />
+    <ClCompile Include="..\..\..\frameworks\Gleam\Gleam_RenderDevice_Direct3D11.cpp" />
+    <ClCompile Include="..\..\..\frameworks\Gleam\Gleam_RenderOutput_Direct3D11.cpp" />
     <ClCompile Include="..\..\..\frameworks\Gleam\Gleam_Transform.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

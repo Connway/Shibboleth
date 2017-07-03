@@ -17,3 +17,4 @@ workingdir/App/logs/*
 workingdir/App/bin/*
 *.VC.db
 *.opendb
+project/vs2017/.vs/*

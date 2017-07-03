@@ -37,20 +37,20 @@ public:
 	{
 	}
 
-	bool isObject(void) const override { return _current.node.isObject(); }
-	bool isArray(void) const override { return _current.node.isArray(); }
-	bool isString(void) const override { return _current.node.isString(); }
-	bool isNumber(void) const override { return _current.node.isNumber(); }
-	bool isInt32(void) const override { return _current.node.isInt32(); }
-	bool isUInt32(void) const override { return _current.node.isUInt32(); }
-	bool isInt64(void) const override { return _current.node.isInt64(); }
-	bool isUInt64(void) const override { return _current.node.isUInt64(); }
-	bool isFloat(void) const override { return _current.node.isFloat(); }
-	bool isDouble(void) const override { return _current.node.isDouble(); }
-	bool isBool(void) const override { return _current.node.isBool(); }
-	bool isTrue(void) const override { return _current.node.isTrue(); }
-	bool isFalse(void) const override { return _current.node.isFalse(); }
-	bool isNull(void) const override { return _current.node.isNull(); }
+	bool isObject(void) const override { return _stack.back().isObject(); }
+	bool isArray(void) const override { return _stack.back().isArray(); }
+	bool isString(void) const override { return _stack.back().isString(); }
+	bool isNumber(void) const override { return _stack.back().isNumber(); }
+	bool isInt32(void) const override { return _stack.back().isInt32(); }
+	bool isUInt32(void) const override { return _stack.back().isUInt32(); }
+	bool isInt64(void) const override { return _stack.back().isInt64(); }
+	bool isUInt64(void) const override { return _stack.back().isUInt64(); }
+	bool isFloat(void) const override { return _stack.back().isFloat(); }
+	bool isDouble(void) const override { return _stack.back().isDouble(); }
+	bool isBool(void) const override { return _stack.back().isBool(); }
+	bool isTrue(void) const override { return _stack.back().isTrue(); }
+	bool isFalse(void) const override { return _stack.back().isFalse(); }
+	bool isNull(void) const override { return _stack.back().isNull(); }
 
 	void enterElement(const char* key) const override
 	{
@@ -98,8 +98,8 @@ public:
 	const char* readString(void) const override { return _stack.back().getString(); }
 	int8_t readInt8(void) const override { return _stack.back().getInt8(); }
 	uint8_t readUInt8(void) const override { return _stack.back().getUInt8(); }
-	int16_t readInt16(void) const override { return _stack.back().getIn16(); }
-	uint16_t readUInt16(void) const override { return _stack.back().getUInt64(); }
+	int16_t readInt16(void) const override { return _stack.back().getInt16(); }
+	uint16_t readUInt16(void) const override { return _stack.back().getUInt16(); }
 	int32_t readInt32(void) const override { return _stack.back().getInt32(); }
 	uint32_t readUInt32(void) const override { return _stack.back().getUInt32(); }
 	int64_t readInt64(void) const override { return _stack.back().getInt64(); }
@@ -110,7 +110,7 @@ public:
 	bool readBool(void) const override { return _stack.back().getBool(); }
 
 private:
-	mutable Vector<Node> _stack;
+	mutable Vector<Node, Allocator> _stack;
 };
 
 NS_END

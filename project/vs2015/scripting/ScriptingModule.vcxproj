@@ -123,7 +123,7 @@
       <WarningLevel>Level4</WarningLevel>
       <TreatWarningAsError>true</TreatWarningAsError>
       <PreprocessorDefinitions>_DEBUG;DEBUG;WIN32;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\..\..\src\Scripting\include;..\..\..\src\Memory\include;..\..\..\src\Shared\include;..\..\..\src\Entity\include;..\..\..\src\Resource\include;..\..\..\dependencies\angelscript\add_on\scriptbuilder;..\..\..\dependencies\angelscript\angelscript\include;..\..\..\dependencies\EASTL\include;..\..\..\dependencies\rapidjson;..\..\..\dependencies\glm;..\..\..\frameworks\Gaff\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\src\Modules\Scripting\include;..\..\..\src\Memory\include;..\..\..\src\Shared\include;..\..\..\src\Modules\Entity\include;..\..\..\src\Modules\Resource\include;..\..\..\dependencies\angelscript\add_on\scriptbuilder;..\..\..\dependencies\angelscript\angelscript\include;..\..\..\dependencies\EASTL\include;..\..\..\dependencies\rapidjson;..\..\..\dependencies\glm;..\..\..\dependencies\libuv\include;..\..\..\frameworks\Gaff\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
       <ExceptionHandling>Async</ExceptionHandling>
@@ -134,11 +134,12 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>ws2_32.lib;iphlpapi.lib;psapi.lib;userenv.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ImportLibrary>..\..\..\build\output\x64\Debug\ScriptingModule64d.lib</ImportLibrary>
       <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
     </Link>
     <PreBuildEvent>
-      <Command>py ../../../utils/gen_module_file.py ../../../src/Scripting</Command>
+      <Command>py ../../../utils/gen_module_file.py ../../../src/Modules/Scripting</Command>
       <Message>Generating Gen_ReflectionInit.h for module Scripting!</Message>
     </PreBuildEvent>
     <PostBuildEvent>
@@ -152,7 +153,7 @@ IF EXIST ..\..\..\build\output\x64\Debug\$(TargetFileName)\ (xcopy /Q /E /Y /I .
       <WarningLevel>Level4</WarningLevel>
       <TreatWarningAsError>true</TreatWarningAsError>
       <PreprocessorDefinitions>NDEBUG;WIN32;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\..\..\src\Scripting\include;..\..\..\src\Memory\include;..\..\..\src\Shared\include;..\..\..\src\Entity\include;..\..\..\src\Resource\include;..\..\..\dependencies\angelscript\add_on\scriptbuilder;..\..\..\dependencies\angelscript\angelscript\include;..\..\..\dependencies\EASTL\include;..\..\..\dependencies\rapidjson;..\..\..\dependencies\glm;..\..\..\frameworks\Gaff\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\src\Modules\Scripting\include;..\..\..\src\Memory\include;..\..\..\src\Shared\include;..\..\..\src\Modules\Entity\include;..\..\..\src\Modules\Resource\include;..\..\..\dependencies\angelscript\add_on\scriptbuilder;..\..\..\dependencies\angelscript\angelscript\include;..\..\..\dependencies\EASTL\include;..\..\..\dependencies\rapidjson;..\..\..\dependencies\glm;..\..\..\dependencies\libuv\include;..\..\..\frameworks\Gaff\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -169,11 +170,12 @@ IF EXIST ..\..\..\build\output\x64\Debug\$(TargetFileName)\ (xcopy /Q /E /Y /I .
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalDependencies>ws2_32.lib;iphlpapi.lib;psapi.lib;userenv.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ImportLibrary>..\..\..\build\output\x64\Release\ScriptingModule64.lib</ImportLibrary>
       <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
     </Link>
     <PreBuildEvent>
-      <Command>py ../../../utils/gen_module_file.py ../../../src/Scripting</Command>
+      <Command>py ../../../utils/gen_module_file.py ../../../src/Modules/Scripting</Command>
       <Message>Generating Gen_ReflectionInit.h for module Scripting!</Message>
     </PreBuildEvent>
     <PostBuildEvent>
@@ -186,7 +188,7 @@ IF EXIST ..\..\..\build\output\x64\Release\$(TargetFileName)\ (xcopy /Q /E /Y /I
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level4</WarningLevel>
       <PreprocessorDefinitions>NDEBUG;WIN32;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\..\..\src\Scripting\include;..\..\..\src\Memory\include;..\..\..\src\Shared\include;..\..\..\src\Entity\include;..\..\..\src\Resource\include;..\..\..\dependencies\angelscript\add_on\scriptbuilder;..\..\..\dependencies\angelscript\angelscript\include;..\..\..\dependencies\EASTL\include;..\..\..\dependencies\rapidjson;..\..\..\dependencies\glm;..\..\..\frameworks\Gaff\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\src\Modules\Scripting\include;..\..\..\src\Memory\include;..\..\..\src\Shared\include;..\..\..\src\Modules\Entity\include;..\..\..\src\Modules\Resource\include;..\..\..\dependencies\angelscript\add_on\scriptbuilder;..\..\..\dependencies\angelscript\angelscript\include;..\..\..\dependencies\EASTL\include;..\..\..\dependencies\rapidjson;..\..\..\dependencies\glm;..\..\..\dependencies\libuv\include;..\..\..\frameworks\Gaff\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -203,10 +205,11 @@ IF EXIST ..\..\..\build\output\x64\Release\$(TargetFileName)\ (xcopy /Q /E /Y /I
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalDependencies>ws2_32.lib;iphlpapi.lib;psapi.lib;userenv.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ImportLibrary>..\..\..\build\output\x64\Analyze\ScriptingModule64a.lib</ImportLibrary>
     </Link>
     <PreBuildEvent>
-      <Command>py ../../../utils/gen_module_file.py ../../../src/Scripting</Command>
+      <Command>py ../../../utils/gen_module_file.py ../../../src/Modules/Scripting</Command>
       <Message>Generating Gen_ReflectionInit.h for module Scripting!</Message>
     </PreBuildEvent>
     <PostBuildEvent>
@@ -220,7 +223,7 @@ IF EXIST ..\..\..\build\output\x64\Analyze\$(TargetFileName)\ (xcopy /Q /E /Y /I
       <WarningLevel>Level4</WarningLevel>
       <TreatWarningAsError>true</TreatWarningAsError>
       <PreprocessorDefinitions>NDEBUG;SHIB_PROFILE;WIN32;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\..\..\src\Scripting\include;..\..\..\src\Memory\include;..\..\..\src\Shared\include;..\..\..\src\Entity\include;..\..\..\src\Resource\include;..\..\..\dependencies\angelscript\add_on\scriptbuilder;..\..\..\dependencies\angelscript\angelscript\include;..\..\..\dependencies\EASTL\include;..\..\..\dependencies\rapidjson;..\..\..\dependencies\glm;..\..\..\frameworks\Gaff\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\src\Modules\Scripting\include;..\..\..\src\Memory\include;..\..\..\src\Shared\include;..\..\..\src\Modules\Entity\include;..\..\..\src\Modules\Resource\include;..\..\..\dependencies\angelscript\add_on\scriptbuilder;..\..\..\dependencies\angelscript\angelscript\include;..\..\..\dependencies\EASTL\include;..\..\..\dependencies\rapidjson;..\..\..\dependencies\glm;..\..\..\dependencies\libuv\include;..\..\..\frameworks\Gaff\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -237,11 +240,12 @@ IF EXIST ..\..\..\build\output\x64\Analyze\$(TargetFileName)\ (xcopy /Q /E /Y /I
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalDependencies>ws2_32.lib;iphlpapi.lib;psapi.lib;userenv.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ImportLibrary>..\..\..\build\output\x64\Profile\ScriptingModule64p.lib</ImportLibrary>
       <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
     </Link>
     <PreBuildEvent>
-      <Command>py ../../../utils/gen_module_file.py ../../../src/Scripting</Command>
+      <Command>py ../../../utils/gen_module_file.py ../../../src/Modules/Scripting</Command>
       <Message>Generating Gen_ReflectionInit.h for module Scripting!</Message>
     </PreBuildEvent>
     <PostBuildEvent>
@@ -255,7 +259,7 @@ IF EXIST ..\..\..\build\output\x64\Profile\$(TargetFileName)\ (xcopy /Q /E /Y /I
       <WarningLevel>Level4</WarningLevel>
       <TreatWarningAsError>true</TreatWarningAsError>
       <PreprocessorDefinitions>_DEBUG;DEBUG;WIN32;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\..\..\src\Scripting\include;..\..\..\src\Memory\include;..\..\..\src\Shared\include;..\..\..\src\Entity\include;..\..\..\src\Resource\include;..\..\..\dependencies\angelscript\add_on\scriptbuilder;..\..\..\dependencies\angelscript\angelscript\include;..\..\..\dependencies\EASTL\include;..\..\..\dependencies\rapidjson;..\..\..\dependencies\glm;..\..\..\frameworks\Gaff\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\src\Modules\Scripting\include;..\..\..\src\Memory\include;..\..\..\src\Shared\include;..\..\..\src\Modules\Entity\include;..\..\..\src\Modules\Resource\include;..\..\..\dependencies\angelscript\add_on\scriptbuilder;..\..\..\dependencies\angelscript\angelscript\include;..\..\..\dependencies\EASTL\include;..\..\..\dependencies\rapidjson;..\..\..\dependencies\glm;..\..\..\dependencies\libuv\include;..\..\..\frameworks\Gaff\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -272,11 +276,12 @@ IF EXIST ..\..\..\build\output\x64\Profile\$(TargetFileName)\ (xcopy /Q /E /Y /I
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalDependencies>ws2_32.lib;iphlpapi.lib;psapi.lib;userenv.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ImportLibrary>..\..\..\build\output\x64\Optimized_Debug\ScriptingModule64od.lib</ImportLibrary>
       <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
     </Link>
     <PreBuildEvent>
-      <Command>py ../../../utils/gen_module_file.py ../../../src/Scripting</Command>
+      <Command>py ../../../utils/gen_module_file.py ../../../src/Modules/Scripting</Command>
       <Message>Generating Gen_ReflectionInit.h for module Scripting!</Message>
     </PreBuildEvent>
     <PostBuildEvent>
@@ -285,7 +290,7 @@ IF EXIST ..\..\..\build\output\x64\Optimized_Debug\$(TargetFileName)\ (xcopy /Q 
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\src\Scripting\Shibboleth_ScriptingModule.cpp" />
+    <ClCompile Include="..\..\..\src\Modules\Scripting\Shibboleth_ScriptingModule.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\frameworks\Gaff.vcxproj">
@@ -314,6 +319,9 @@ IF EXIST ..\..\..\build\output\x64\Optimized_Debug\$(TargetFileName)\ (xcopy /Q 
     </ProjectReference>
     <ProjectReference Include="..\entity\Entity.vcxproj">
       <Project>{A2E9DAB0-8E8B-0587-7746-19DB63878CD7}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\dependencies\libuv.vcxproj">
+      <Project>{C79ADC0F-33AF-04C1-FC30-A820680401F2}</Project>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

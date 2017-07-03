@@ -38,7 +38,7 @@ class Reflection<U8String> final : public Gaff::IReflection
 {
 public:
 	constexpr static bool HasReflection = true;
-	void load(Gaff::ISerializeReader& reader, void* object) const override
+	void load(const Gaff::ISerializeReader& reader, void* object) const override
 	{
 		GAFF_ASSERT(object);
 		Load(reader, *reinterpret_cast<U8String*>(object));
@@ -63,7 +63,7 @@ public:
 	{
 		return GetVersion();
 	}
-	static void Load(Gaff::ISerializeReader& reader, U8String& value)
+	static void Load(const Gaff::ISerializeReader& reader, U8String& value)
 	{
 		value = reader.readString();
 	}
@@ -98,7 +98,7 @@ private:
 #define SHIB_REFLECTION_DEFINE_SERIALIZE_SAVE GAFF_REFLECTION_DEFINE_SERIALIZE_SAVE
 
 #define SHIB_REFLECTION_DECLARE_BASE(type) \
-		void load(Gaff::ISerializeReader& reader, void* object) const override \
+		void load(const Gaff::ISerializeReader& reader, void* object) const override \
 		{ \
 			GAFF_ASSERT(g_reflection_definition); \
 			GAFF_ASSERT(object); \
@@ -110,7 +110,7 @@ private:
 			GAFF_ASSERT(object); \
 			g_reflection_definition->save(writer, object); \
 		} \
-		void Load(Gaff::ISerializeReader& reader, type& object) \
+		void Load(const Gaff::ISerializeReader& reader, type& object) \
 		{ \
 			GAFF_ASSERT(g_reflection_definition); \
 			g_reflection_definition->load(reader, object); \

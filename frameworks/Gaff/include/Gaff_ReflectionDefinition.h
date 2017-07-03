@@ -63,6 +63,9 @@ public:
 
 		template <class DataType>
 		void setElementMoveT(T& object, int32_t index, DataType&& data);
+
+		virtual void load(const ISerializeReader& reader, T& object) = 0;
+		virtual void save(ISerializeWriter& writer, T& object) = 0;
 	};
 
 	GAFF_STRUCTORS_DEFAULT(ReflectionDefinition);
@@ -72,9 +75,9 @@ public:
 	template <class... Args>
 	T* create(Args&&... args) const;
 
-	void load(ISerializeReader& reader, void* object) const override;
+	void load(const ISerializeReader& reader, void* object) const override;
 	void save(ISerializeWriter& writer, const void* object) const override;
-	void load(ISerializeReader& reader, T& object) const;
+	void load(const ISerializeReader& reader, T& object) const;
 	void save(ISerializeWriter& writer, const T& object) const;
 
 	const void* getInterface(Hash64 class_hash, const void* object) const override;
@@ -159,6 +162,8 @@ private:
 		void setDataMove(void* object, void* data) override;
 
 		bool isReadOnly(void) const override;
+
+		void load(const ISerializeReader& reader, T& object) override;
 
 	private:
 		Var T::*_ptr = nullptr;

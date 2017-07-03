@@ -379,7 +379,7 @@ namespace eastl
 	    static void internal_destroy(eastl::true_type, allocator_type& a, T* p) { a.destroy(p); }
 
 	    template <class T>
-	    static void internal_destroy(eastl::false_type, allocator_type&, T* p) { ((void)p); p->~T(); }
+	    static void internal_destroy(eastl::false_type, allocator_type&, T* p) { p->~T(); }
 
 	    template <class T>
 	    static void destroy(allocator_type& a, T* p)

@@ -6,22 +6,22 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\..\src\Entity\include\Gen_ReflectionInit.h">
+    <ClInclude Include="..\..\..\src\Modules\Entity\include\Gen_ReflectionInit.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\src\Entity\include\Shibboleth_Component.h">
+    <ClInclude Include="..\..\..\src\Modules\Entity\include\Shibboleth_Component.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\src\Entity\include\Shibboleth_ComponentManager.h">
+    <ClInclude Include="..\..\..\src\Modules\Entity\include\Shibboleth_ComponentManager.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\src\Entity\include\Shibboleth_Object.h">
+    <ClInclude Include="..\..\..\src\Modules\Entity\include\Shibboleth_Object.h">
       <Filter>include</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\src\Entity\Shibboleth_Component.cpp" />
-    <ClCompile Include="..\..\..\src\Entity\Shibboleth_ComponentManager.cpp" />
-    <ClCompile Include="..\..\..\src\Entity\Shibboleth_Object.cpp" />
+    <ClCompile Include="..\..\..\src\Modules\Entity\Shibboleth_Component.cpp" />
+    <ClCompile Include="..\..\..\src\Modules\Entity\Shibboleth_ComponentManager.cpp" />
+    <ClCompile Include="..\..\..\src\Modules\Entity\Shibboleth_Object.cpp" />
   </ItemGroup>
 </Project>

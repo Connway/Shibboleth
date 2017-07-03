@@ -57,10 +57,10 @@ template <class T>
 constexpr ReflectionValueType GetRVT(void)
 {
 	return (std::is_enum<T>()) ?
-		VT_ENUM :
+			VT_ENUM :
 			(std::is_class<T>()) ?
-			VT_OBJECT :
-			VT_SIZE;
+				VT_OBJECT :
+				VT_SIZE;
 }
 
 #define RVT_FUNC(type, value) \
@@ -106,7 +106,7 @@ public:
 
 	virtual void init(void) = 0;
 
-	virtual void load(ISerializeReader& reader, void* object) const = 0;
+	virtual void load(const ISerializeReader& reader, void* object) const = 0;
 	virtual void save(ISerializeWriter& writer, const void* object) const = 0;
 	virtual const char* getName(void) const = 0;
 	virtual Hash64 getHash(void) const = 0;
@@ -212,6 +212,8 @@ public:
 	virtual bool isConst(void) const = 0;
 };
 
+#define CREATEALLOCT(Class, allocator, ...) createAllocT<Class>(Gaff::FNV1aHash64Const(#Class), allocator, __VA_ARGS__)
+
 class IReflectionDefinition
 {
 public:
@@ -233,9 +235,28 @@ public:
 	}
 
 	template <class T, class... Args>
+	T* createAllocT(Hash64 interface_hash, IAllocator& allocator, Args&&... args) const
+	{
+		GAFF_ASSERT(hasInterface(interface_hash));
+
+		Hash64 ctor_hash = CalcTemplateHash<Args...>(INIT_HASH64);
+
+		FactoryFunc<Args...> factory_func = reinterpret_cast< FactoryFunc<Args...> >(getFactory(ctor_hash));
+
+		T* instance = nullptr;
+
+		if (factory_func) {
+			void* data = factory_func(allocator, std::forward<Args>(args)...);
+			instance = reinterpret_cast<T*>(getInterface(interface_hash, data));
+		}
+
+		return instance;
+	}
+
+	template <class T, class... Args>
 	T* createAllocT(IAllocator& allocator, Args&&... args) const
 	{
-		Hash64 hash = getReflectionInstance().getHash();
+		Hash64 hash = GAFF_REFLECTION_NAMESPACE::Reflection<T>::GetHash();
 		GAFF_ASSERT(hasInterface(hash));
 
 		Hash64 ctor_hash = CalcTemplateHash<Args...>(INIT_HASH64);
@@ -350,7 +371,7 @@ public:
 
 	virtual const IReflection& getReflectionInstance(void) const = 0;
 
-	virtual void load(ISerializeReader& reader, void* object) const = 0;
+	virtual void load(const ISerializeReader& reader, void* object) const = 0;
 	virtual void save(ISerializeWriter& writer, const void* object) const = 0;
 
 	virtual const void* getInterface(Hash64 class_id, const void* object) const = 0;

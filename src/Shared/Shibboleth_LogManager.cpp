@@ -27,8 +27,10 @@ THE SOFTWARE.
 
 NS_SHIBBOLETH
 
-void LogManager::LogThread(LogManager& lm)
+void LogManager::LogThread(void* arg)
 {
+	LogManager& lm = *reinterpret_cast<LogManager*>(arg);
+
 	while (!lm._shutdown) {
 		lm._log_event.wait();
 
@@ -66,11 +68,7 @@ LogManager::~LogManager(void)
 bool LogManager::init(void)
 {
 	addChannel("Default", "Log");
-
-	std::thread log_thread(LogThread, std::ref(*this));
-	_log_thread.swap(log_thread);
-
-	return _log_thread.get_id() != std::thread::id();
+	return !uv_thread_create(&_log_thread, LogThread, this);
 }
 
 void LogManager::destroy(void)
@@ -79,8 +77,8 @@ void LogManager::destroy(void)
 
 	_log_event.set();
 
-	if (_log_thread.joinable()) {
-		_log_thread.join();
+	if (_log_thread) {
+		uv_thread_join(&_log_thread);
 	}
 
 	_shutdown = false;

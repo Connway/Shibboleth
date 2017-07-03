@@ -6,22 +6,22 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\..\src\Resource\include\Gen_ReflectionInit.h">
+    <ClInclude Include="..\..\..\src\Modules\Resource\include\Gen_ReflectionInit.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\src\Resource\include\Shibboleth_IResource.h">
+    <ClInclude Include="..\..\..\src\Modules\Resource\include\Shibboleth_IResource.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\src\Resource\include\Shibboleth_ResourceExtensionAttribute.h">
+    <ClInclude Include="..\..\..\src\Modules\Resource\include\Shibboleth_ResourceExtensionAttribute.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\src\Resource\include\Shibboleth_ResourceManager.h">
+    <ClInclude Include="..\..\..\src\Modules\Resource\include\Shibboleth_ResourceManager.h">
       <Filter>include</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\src\Resource\Shibboleth_IResource.cpp" />
-    <ClCompile Include="..\..\..\src\Resource\Shibboleth_ResourceExtensionAttribute.cpp" />
-    <ClCompile Include="..\..\..\src\Resource\Shibboleth_ResourceManager.cpp" />
+    <ClCompile Include="..\..\..\src\Modules\Resource\Shibboleth_IResource.cpp" />
+    <ClCompile Include="..\..\..\src\Modules\Resource\Shibboleth_ResourceExtensionAttribute.cpp" />
+    <ClCompile Include="..\..\..\src\Modules\Resource\Shibboleth_ResourceManager.cpp" />
   </ItemGroup>
 </Project>

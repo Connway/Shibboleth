@@ -31,7 +31,7 @@ THE SOFTWARE.
 #include <atomic>
 
 NS_GAFF
-	struct Counter;
+	using Counter = std::atomic_int32_t;
 NS_END
 
 NS_SHIBBOLETH

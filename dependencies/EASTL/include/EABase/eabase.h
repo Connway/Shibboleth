@@ -30,7 +30,7 @@
 // not standards-compliant in this respect, so we need an additional include.
 // The case is similar with wchar_t under C++.
 
-#if defined(EA_COMPILER_GNUC) || defined(EA_COMPILER_MSVC) || defined(EA_WCHAR_T_NON_NATIVE) || defined(CS_UNDEFINED_STRING)
+#if defined(EA_COMPILER_GNUC) || defined(EA_COMPILER_MSVC) || defined(EA_WCHAR_T_NON_NATIVE) || defined(EA_PLATFORM_KETTLE)
 	#if defined(EA_COMPILER_MSVC)
 		#pragma warning(push, 0)
 		#pragma warning(disable: 4265 4365 4836 4574)
@@ -114,8 +114,8 @@
 	   #define __STDC_FORMAT_MACROS
 	#endif
 	// The GCC PSP compiler defines standard int types (e.g. uint32_t) but not PRId8, etc.
-	// MSVC doesn't include an inttypes.h header.
-	#if !defined(EA_COMPILER_MSVC)
+	// MSVC added support for inttypes.h header in VS2013.
+	#if !defined(EA_COMPILER_MSVC) || (defined(EA_COMPILER_MSVC) && EA_COMPILER_VERSION >= 1800)
 		#include <inttypes.h> // PRId8, SCNd8, etc.
 	#endif
 	#if defined(_MSC_VER)
@@ -355,8 +355,7 @@
 	typedef double              double_t;
 #endif
 
-// VS2015 has these format macros defined.
-#if defined(EA_COMPILER_HAS_INTTYPES) && (!defined(EA_COMPILER_MSVC) || defined(EA_COMPILER_MSVC_2015))
+#if defined(EA_COMPILER_HAS_INTTYPES) && (!defined(EA_COMPILER_MSVC) || (defined(EA_COMPILER_MSVC) && EA_COMPILER_VERSION >= 1800))
 	#define EA_COMPILER_HAS_C99_FORMAT_MACROS 
 #endif
 
@@ -731,7 +730,11 @@
 		#endif
 	#else
 		typedef uint16_t char16_t;
-		typedef wchar_t  char32_t;
+		#if defined(__cplusplus)
+			typedef wchar_t  char32_t;
+		#else
+			typedef uint32_t char32_t;
+		#endif
 	#endif
 #endif
 
@@ -895,6 +898,8 @@
 #elif defined(__GNUC__) && (defined(__GXX_EXPERIMENTAL_CXX0X__) || (defined(__cplusplus) && (__cplusplus >= 201103L)))
 	// static_assert is defined by the compiler.
 #elif defined(__EDG_VERSION__) && (__EDG_VERSION__ >= 401) && defined(EA_COMPILER_CPP11_ENABLED)
+	// static_assert is defined by the compiler.
+#elif !defined(__cplusplus) && defined(__GLIBC__) && defined(__USE_ISOC11)
 	// static_assert is defined by the compiler.
 #else
 	#define NEED_CUSTOM_STATIC_ASSERT
