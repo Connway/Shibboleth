@@ -172,7 +172,11 @@ void* Allocator::alloc(size_t size_bytes, const char* file, int line)
 
 void Allocator::free(void* data)
 {
-	GAFF_ASSERT(data);
+	if (!data) {
+		return;
+	}
+
+	//GAFF_ASSERT(data);
 
 	// Looping over the alloc list is a terrible way of determining if a call to delete is valid.
 

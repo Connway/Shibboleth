@@ -22,6 +22,7 @@ local tests = {
 		includedirs = {
 			"../dependencies/EASTL/include",
 			"../dependencies/CATCH",
+			"../dependencies/libuv/include",
 
 			"../frameworks/Gaff/include",
 			"../src/Shared/include",
@@ -30,12 +31,13 @@ local tests = {
 
 		links = {
 			"Gaff", "Memory",
-			"EASTL", "Shared"
+			"EASTL", "Shared",
+			"libuv"
 		},
 
 		extra = function ()
 			filter { "system:windows" }
-				links { "DbgHelp" }
+				links { "ws2_32.lib", "iphlpapi.lib", "psapi.lib", "userenv.lib", "DbgHelp" }
 
 			filter {}
 		end
@@ -46,26 +48,25 @@ local tests = {
 		includedirs = {
 			"../dependencies/EASTL/include",
 			"../dependencies/CATCH",
-			"../dependencies/chaiscript",
+			"../dependencies/libuv/include",
 			"../dependencies/angelscript/angelscript/include",
 			"../dependencies/angelscript/add_on/scriptbuilder",
 
 			"../frameworks/Gaff/include",
 			"../src/Shared/include",
 			"../src/Memory/include",
-			"../src/Scripting/include"
+			"../src/Modules/Scripting/include"
 		},
 
 		links = {
 			"Gaff", "Memory",
 			"EASTL", "Shared",
-			"angelscript"
+			"angelscript", "libuv"
 		},
 
 		extra = function ()
 			filter { "system:windows" }
-				links { "DbgHelp" }
-				-- buildoptions { "/bigobj"}
+				links { "ws2_32.lib", "iphlpapi.lib", "psapi.lib", "userenv.lib", "DbgHelp" }
 
 			filter {}
 		end

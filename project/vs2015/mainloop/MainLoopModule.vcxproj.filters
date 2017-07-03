@@ -6,16 +6,16 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\..\src\MainLoop\include\Shibboleth_MainLoop.h">
+    <ClInclude Include="..\..\..\src\Modules\MainLoop\include\Shibboleth_MainLoop.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\src\MainLoop\include\Shibboleth_SetupFunctions.h">
+    <ClInclude Include="..\..\..\src\Modules\MainLoop\include\Shibboleth_SetupFunctions.h">
       <Filter>include</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\src\MainLoop\Shibboleth_MainLoop.cpp" />
-    <ClCompile Include="..\..\..\src\MainLoop\Shibboleth_MainLoopModule.cpp" />
-    <ClCompile Include="..\..\..\src\MainLoop\Shibboleth_SetupFunctions.cpp" />
+    <ClCompile Include="..\..\..\src\Modules\MainLoop\Shibboleth_MainLoop.cpp" />
+    <ClCompile Include="..\..\..\src\Modules\MainLoop\Shibboleth_MainLoopModule.cpp" />
+    <ClCompile Include="..\..\..\src\Modules\MainLoop\Shibboleth_SetupFunctions.cpp" />
   </ItemGroup>
 </Project>

@@ -81,7 +81,7 @@ namespace GAFF_REFLECTION_NAMESPACE { \
 		{ \
 			return g_reflection_definition; \
 		} \
-		static void Load(Gaff::ISerializeReader& reader, type& object) \
+		static void Load(const Gaff::ISerializeReader& reader, type& object) \
 		{ \
 			g_instance.load(reader, &object); \
 		} \
@@ -90,7 +90,7 @@ namespace GAFF_REFLECTION_NAMESPACE { \
 			g_instance.save(writer, &object); \
 		} \
 		static void Init(void); \
-		void load(Gaff::ISerializeReader& reader, void* object) const override; \
+		void load(const Gaff::ISerializeReader& reader, void* object) const override; \
 		void save(Gaff::ISerializeWriter& writer, const void* object) const override; \
 	private: \
 		static Gaff::ReflectionDefinition<type, allocator> g_reflection_definition; \
@@ -104,7 +104,7 @@ namespace GAFF_REFLECTION_NAMESPACE { \
 	void GAFF_REFLECTION_NAMESPACE::Reflection<type>::Init(void)
 
 #define GAFF_REFLECTION_DEFINE_SERIALIZE_LOAD(type) \
-	void GAFF_REFLECTION_NAMESPACE::Reflection<type>::load(Gaff::ISerializeReader& reader, void* object) const
+	void GAFF_REFLECTION_NAMESPACE::Reflection<type>::load(const Gaff::ISerializeReader& reader, void* object) const
 
 #define GAFF_REFLECTION_DEFINE_SERIALIZE_SAVE(type) \
 	void GAFF_REFLECTION_NAMESPACE::Reflection<type>::save(Gaff::ISerializeWriter& writer, const void* object) const
@@ -168,7 +168,7 @@ namespace GAFF_REFLECTION_NAMESPACE { \
 		static void BuildReflection(ReflectionBuilder& builder); \
 
 #define GAFF_REFLECTION_DECLARE_BASE(type, allocator) \
-		void load(Gaff::ISerializeReader& reader, void* object) const override \
+		void load(const Gaff::ISerializeReader& reader, void* object) const override \
 		{ \
 			GAFF_ASSERT(object); \
 			g_reflection_definition.load(reader, object); \
@@ -178,7 +178,7 @@ namespace GAFF_REFLECTION_NAMESPACE { \
 			GAFF_ASSERT(object); \
 			g_reflection_definition.save(writer, object); \
 		} \
-		static void Load(Gaff::ISerializeReader& reader, type& object) \
+		static void Load(const Gaff::ISerializeReader& reader, type& object) \
 		{ \
 			g_reflection_definition.load(reader, object); \
 		} \
@@ -364,7 +364,7 @@ namespace GAFF_REFLECTION_NAMESPACE { \
 		{ \
 			return g_reflection_definition; \
 		} \
-		static void Load(Gaff::ISerializeReader& reader, type<__VA_ARGS__>& object) \
+		static void Load(const Gaff::ISerializeReader& reader, type<__VA_ARGS__>& object) \
 		{ \
 			g_instance.load(reader, &object); \
 		} \
@@ -373,7 +373,7 @@ namespace GAFF_REFLECTION_NAMESPACE { \
 			g_instance.save(writer, &object); \
 		} \
 		static void Init(void); \
-		void load(Gaff::ISerializeReader& reader, void* object) const override; \
+		void load(const Gaff::ISerializeReader& reader, void* object) const override; \
 		void save(Gaff::ISerializeWriter& writer, const void* object) const override; \
 	private: \
 		static Gaff::ReflectionDefinition<type<__VA_ARGS__>, allocator> g_reflection_definition; \
@@ -391,7 +391,7 @@ namespace GAFF_REFLECTION_NAMESPACE { \
 
 #define GAFF_TEMPLATE_REFLECTION_DEFINE_SERIALIZE_LOAD(type, ...) \
 	template < GAFF_FOR_EACH_COMMA(GAFF_TEMPLATE_REFLECTION_CLASS, __VA_ARGS__) > \
-	void GAFF_REFLECTION_NAMESPACE::Reflection< type<__VA_ARGS__> >::load(Gaff::ISerializeReader& reader, void* object) const
+	void GAFF_REFLECTION_NAMESPACE::Reflection< type<__VA_ARGS__> >::load(const Gaff::ISerializeReader& reader, void* object) const
 
 #define GAFF_TEMPLATE_REFLECTION_DEFINE_SERIALIZE_SAVE(type, ...) \
 	template < GAFF_FOR_EACH_COMMA(GAFF_TEMPLATE_REFLECTION_CLASS, __VA_ARGS__) > \
@@ -555,7 +555,7 @@ NS_END
 	{ \
 	public: \
 		constexpr static bool HasReflection = true; \
-		void load(Gaff::ISerializeReader& reader, void* object) const override \
+		void load(const Gaff::ISerializeReader& reader, void* object) const override \
 		{ \
 			GAFF_ASSERT(object); \
 			Load(reader, *reinterpret_cast<type*>(object)); \
@@ -580,7 +580,7 @@ NS_END
 		{ \
 			return GetVersion(); \
 		} \
-		static void Load(Gaff::ISerializeReader& reader, type& value) \
+		static void Load(const Gaff::ISerializeReader& reader, type& value) \
 		{ \
 			value = reader.read##read_write_suffix(); \
 		} \
@@ -619,7 +619,7 @@ NS_END
 		{ \
 			GAFF_ASSERT_MSG(false, "Unknown object type."); \
 		} \
-		void load(Gaff::ISerializeReader& /*reader*/, void* /*object*/) const override \
+		void load(const Gaff::ISerializeReader& /*reader*/, void* /*object*/) const override \
 		{ \
 			GAFF_ASSERT_MSG(false, "Unknown object type."); \
 		} \

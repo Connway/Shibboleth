@@ -132,9 +132,7 @@ public:
 		return _data;
 	}
 
-	/*!
-		\brief Sets the internal pointer without incrementing the reference count.
-	*/
+	// Sets the internal pointer without incrementing the reference count.
 	void set(T* data)
 	{
 		_data = data;

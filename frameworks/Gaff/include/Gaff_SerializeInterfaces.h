@@ -143,12 +143,12 @@ class ScopeGuard
 public:
 	GAFF_COPY_DEFAULT(ScopeGuard);
 
-	ScopeGuard(ISerializeReader& reader, const char* key): _reader(reader) { _reader.enterElement(key); }
-	ScopeGuard(ISerializeReader& reader, int32_t index) : _reader(reader) { _reader.enterElement(index); }
+	ScopeGuard(const ISerializeReader& reader, const char* key): _reader(reader) { _reader.enterElement(key); }
+	ScopeGuard(const ISerializeReader& reader, int32_t index): _reader(reader) { _reader.enterElement(index); }
 	~ScopeGuard(void) { _reader.exitElement(); }
 
 private:
-	ISerializeReader& _reader;
+	const ISerializeReader& _reader;
 };
 
 NS_END

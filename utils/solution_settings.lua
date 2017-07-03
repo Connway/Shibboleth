@@ -42,7 +42,7 @@ SetIntermediateAndTargetDirs("Analyze")
 SetIntermediateAndTargetDirs("Profile")
 SetIntermediateAndTargetDirs("Optimized_Debug")
 
-if _OPTIONS["gen-clang"] and _ACTION == "vs2015" then
+if _OPTIONS["gen-clang"] and (_ACTION == "vs2015" or _ACTION == "vs2017") then
 	SetIntermediateAndTargetDirs("Debug_Clang")
 	SetIntermediateAndTargetDirs("Release_Clang")
 	SetIntermediateAndTargetDirs("Analyze_Clang")
@@ -88,7 +88,7 @@ filter { "action:vs*" }
 filter { "system:windows" }
 	defines { "WIN32", "_WINDOWS" }
 
-filter { "system:windows", "configurations:*Clang" }
+filter { "system:windows", "configurations:*Clang", "action:vs2015" }
 	toolset "msc-llvm-vs2014"
 
 -- filter { "system:windows", "configurations:not *Clang" }

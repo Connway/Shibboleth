@@ -29,7 +29,7 @@ THE SOFTWARE.
 #include "Gaff_Queue.h"
 #include "Gaff_Utils.h"
 #include <atomic>
-#include <thread>
+#include <uv.h>
 
 NS_GAFF
 
@@ -41,11 +41,7 @@ struct JobData
 	void* job_data;
 };
 
-struct Counter
-{
-	std::atomic_int32_t count;
-};
-
+using Counter = std::atomic_int32_t;
 using JobPair = std::pair<JobData, Counter*>;
 
 template <class Allocator = DefaultAllocator>
@@ -71,8 +67,6 @@ public:
 	int32_t getNumActiveThreads(void) const;
 	size_t getNumTotalThreads(void) const;
 
-	void getThreadIDs(size_t* out) const;
-
 private:
 	struct JobQueue
 	{
@@ -88,7 +82,7 @@ private:
 	};
 
 	Vector<JobQueue, Allocator> _job_pools;
-	Vector<std::thread, Allocator> _threads;
+	Vector<uv_thread_t, Allocator> _threads;
 	ThreadData _thread_data;
 
 	Allocator _allocator;
@@ -99,7 +93,7 @@ private:
 	static void ProcessJobQueue(JobQueue& job_queue);
 	static void DoJob(JobPair& job);
 
-	static void JobThread(ThreadData& td);
+	static void JobThread(void* arg);
 
 	GAFF_NO_COPY(JobPool);
 	GAFF_NO_MOVE(JobPool);

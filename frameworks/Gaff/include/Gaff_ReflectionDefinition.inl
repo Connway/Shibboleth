@@ -107,7 +107,7 @@ template <class T, class Allocator>
 template <class Var>
 const void* ReflectionDefinition<T, Allocator>::VarPtr<Var>::getData(const void* object) const
 {
-	const T* obj = reinterpret_cast<const T*>(object);
+	const T* const obj = reinterpret_cast<const T*>(object);
 	return &(obj->*_ptr);
 }
 
@@ -116,7 +116,7 @@ template <class Var>
 void ReflectionDefinition<T, Allocator>::VarPtr<Var>::setData(void* object, const void* data)
 {
 	GAFF_ASSERT(!_read_only);
-	T* obj = reinterpret_cast<T*>(object);
+	T* const obj = reinterpret_cast<T*>(object);
 	(obj->*_ptr) = *reinterpret_cast<const Var*>(data);
 }
 
@@ -125,7 +125,7 @@ template <class Var>
 void ReflectionDefinition<T, Allocator>::VarPtr<Var>::setDataMove(void* object, void* data)
 {
 	GAFF_ASSERT(!_read_only);
-	T* obj = reinterpret_cast<T*>(object);
+	T* const obj = reinterpret_cast<T*>(object);
 	(obj->*_ptr) = std::move(*reinterpret_cast<Var*>(data));
 }
 
@@ -134,6 +134,15 @@ template <class Var>
 bool ReflectionDefinition<T, Allocator>::VarPtr<Var>::isReadOnly(void) const
 {
 	return _read_only;
+}
+
+template <class T, class Allocator>
+template <class Var>
+void ReflectionDefinition<T, Allocator>::VarPtr<Var>::load(const ISerializeReader& reader, T& object)
+{
+	T* const obj = &object;
+	Var* const var = &(obj->*_ptr);
+	GAFF_REFLECTION_NAMESPACE::Reflection<Var>::Load(reader, *var);
 }
 
 
@@ -571,7 +580,7 @@ T* ReflectionDefinition<T, Allocator>::create(Args&&... args) const
 }
 
 template <class T, class Allocator>
-void ReflectionDefinition<T, Allocator>::load(ISerializeReader& reader, void* object) const
+void ReflectionDefinition<T, Allocator>::load(const ISerializeReader& reader, void* object) const
 {
 	load(reader, *reinterpret_cast<T*>(object));
 }
@@ -583,8 +592,14 @@ void ReflectionDefinition<T, Allocator>::save(ISerializeWriter& writer, const vo
 }
 
 template <class T, class Allocator>
-void ReflectionDefinition<T, Allocator>::load(ISerializeReader& /*reader*/, T& /*object*/) const
+void ReflectionDefinition<T, Allocator>::load(const ISerializeReader& reader, T& object) const
 {
+	for (auto& entry : _vars) {
+		if (!entry.second->isReadOnly()) {
+			ScopeGuard scope = reader.enterElementGuard(entry.first.getBuffer());
+			entry.second->load(reader, object);
+		}
+	}
 }
 
 template <class T, class Allocator>

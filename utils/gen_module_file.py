@@ -141,6 +141,6 @@ f = None
 if os.path.isfile(output_file):
 	f = open(output_file, "r")
 
-if not f or not output in f:
+if not f or not output in f.read():
 	f = open(output_file, "w")
 	f.write(output)

@@ -6,40 +6,40 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\..\src\Scripting\include\Gen_ReflectionInit.h">
+    <ClInclude Include="..\..\..\src\Modules\Scripting\include\Gen_ReflectionInit.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\src\Scripting\include\Shibboleth_AngelScript.h">
+    <ClInclude Include="..\..\..\src\Modules\Scripting\include\Shibboleth_AngelScript.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\src\Scripting\include\Shibboleth_AngelScriptBaseTypes.h">
+    <ClInclude Include="..\..\..\src\Modules\Scripting\include\Shibboleth_AngelScriptBaseTypes.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\src\Scripting\include\Shibboleth_AngelScriptComponent.h">
+    <ClInclude Include="..\..\..\src\Modules\Scripting\include\Shibboleth_AngelScriptComponent.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\src\Scripting\include\Shibboleth_AngelScriptComponentWrapper.h">
+    <ClInclude Include="..\..\..\src\Modules\Scripting\include\Shibboleth_AngelScriptComponentWrapper.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\src\Scripting\include\Shibboleth_AngelScriptManager.h">
+    <ClInclude Include="..\..\..\src\Modules\Scripting\include\Shibboleth_AngelScriptManager.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\src\Scripting\include\Shibboleth_AngelScriptResource.h">
+    <ClInclude Include="..\..\..\src\Modules\Scripting\include\Shibboleth_AngelScriptResource.h">
       <Filter>include</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\src\Scripting\Shibboleth_AngelScriptBaseTypes.cpp" />
-    <ClCompile Include="..\..\..\src\Scripting\Shibboleth_AngelScriptComponent.cpp" />
-    <ClCompile Include="..\..\..\src\Scripting\Shibboleth_AngelScriptComponentWrapper.cpp" />
-    <ClCompile Include="..\..\..\src\Scripting\Shibboleth_AngelScriptManager.cpp" />
-    <ClCompile Include="..\..\..\src\Scripting\Shibboleth_AngelScriptResource.cpp" />
+    <ClCompile Include="..\..\..\src\Modules\Scripting\Shibboleth_AngelScriptBaseTypes.cpp" />
+    <ClCompile Include="..\..\..\src\Modules\Scripting\Shibboleth_AngelScriptComponent.cpp" />
+    <ClCompile Include="..\..\..\src\Modules\Scripting\Shibboleth_AngelScriptComponentWrapper.cpp" />
+    <ClCompile Include="..\..\..\src\Modules\Scripting\Shibboleth_AngelScriptManager.cpp" />
+    <ClCompile Include="..\..\..\src\Modules\Scripting\Shibboleth_AngelScriptResource.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\..\src\Scripting\include\Shibboleth_AngelScript.inl">
+    <None Include="..\..\..\src\Modules\Scripting\include\Shibboleth_AngelScript.inl">
       <Filter>include</Filter>
     </None>
-    <None Include="..\..\..\src\Scripting\include\Shibboleth_AngelScriptComponent.inl">
+    <None Include="..\..\..\src\Modules\Scripting\include\Shibboleth_AngelScriptComponent.inl">
       <Filter>include</Filter>
     </None>
   </ItemGroup>

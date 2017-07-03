@@ -45,12 +45,10 @@ bool JobPool<Allocator>::init(int32_t num_pools, int32_t num_threads)
 
 	_thread_data.job_pool = this;
 	_thread_data.terminate = false;
-	_threads.reserve(num_threads);
+	_threads.resize(num_threads);
 
 	for (int32_t i = 0; i < num_threads; ++i) {
-		_threads.emplace_back(JobThread, std::ref(_thread_data));
-
-		if (_threads.back().get_id() == std::thread::id()) {
+		if (uv_thread_create(&_threads[i], JobThread, &_thread_data)) {
 			destroy();
 			return false;
 		}
@@ -64,8 +62,8 @@ void JobPool<Allocator>::destroy(void)
 {
 	_thread_data.terminate = true;
 
-	for (std::thread& thread : _threads) {
-		thread.join();
+	for (uv_thread_t thread : _threads) {
+		uv_thread_join(&thread);
 	}
 
 	_threads.clear();
@@ -87,7 +85,7 @@ void JobPool<Allocator>::addJobs(JobData* jobs, size_t num_jobs, Counter** count
 			*counter = cnt = GAFF_ALLOCT(Counter, _allocator);
 		}
 
-		cnt->count = static_cast<int32_t>(num_jobs);
+		*cnt = static_cast<int32_t>(num_jobs);
 	}
 
 	typename JobPool<Allocator>::JobQueue& job_queue = _job_pools[pool];
@@ -115,7 +113,7 @@ void JobPool<Allocator>::waitForCounter(Counter* counter)
 {
 	GAFF_ASSERT(counter);
 
-	while (counter->count && !_thread_data.terminate) {
+	while (*counter > 0 && !_thread_data.terminate) {
 		YieldThread();
 	}
 }
@@ -132,7 +130,7 @@ void JobPool<Allocator>::helpWhileWaiting(Counter* counter)
 {
 	GAFF_ASSERT(counter);
 
-	while (counter->count) {
+	while (*counter > 0) {
 		doAJob();
 	}
 }
@@ -214,14 +212,6 @@ size_t JobPool<Allocator>::getNumTotalThreads(void) const
 }
 
 template <class Allocator>
-void JobPool<Allocator>::getThreadIDs(size_t* out) const
-{
-	for (size_t i = 0; i < _threads.size(); ++i) {
-		out[i] = std::hash<std::thread::id>{}(_threads[i].get_id());
-	}
-}
-
-template <class Allocator>
 void JobPool<Allocator>::ProcessMainJobQueue(typename JobPool<Allocator>::JobQueue& job_queue)
 {
 	JobPair job;
@@ -269,14 +259,15 @@ void JobPool<Allocator>::DoJob(JobPair& job)
 		//	Gaff::DebugPrintf("JOB(%d) - %p:(%d)\n", Gaff::Thread::GetCurrentThreadID(), job.second, job.second->count);
 		//}
 
-		GAFF_ASSERT(job.second->count);
-		--job.second->count;
+		GAFF_ASSERT(*job.second > 0);
+		--(*job.second);
 	}
 }
 
 template <class Allocator>
-void JobPool<Allocator>::JobThread(ThreadData& td)
+void JobPool<Allocator>::JobThread(void* arg)
 {
+	ThreadData& td = *reinterpret_cast<ThreadData*>(arg);
 	JobPool<Allocator>* job_pool = td.job_pool;
 
 	while (!td.terminate) {
