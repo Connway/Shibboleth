@@ -283,6 +283,7 @@ private:
 		void resize(void* object, size_t new_size) override;
 
 		void load(const ISerializeReader& reader, T& object) override;
+		void save(ISerializeWriter& writer, const T& object) override;
 
 	private:
 		Vector<Var, Vec_Allocator> T::*_ptr = nullptr;
