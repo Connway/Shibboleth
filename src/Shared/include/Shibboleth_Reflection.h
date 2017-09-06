@@ -69,7 +69,7 @@ public:
 	}
 	static void Save(Gaff::ISerializeWriter& writer, const U8String& value)
 	{
-		writer.writeString(value.data(), value.size());
+		writer.writeString(value.data());
 	}
 	constexpr static Gaff::Hash64 GetHash(void)
 	{

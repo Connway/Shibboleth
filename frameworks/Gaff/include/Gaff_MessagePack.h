@@ -198,6 +198,7 @@ public:
 
 	void writeUTF8(const char* key, const char* value);
 	void writeUTF8(const char* value);
+	void writeKey(const char* value);
 	void writeTrue(void);
 	void writeFalse(void);
 	void writeNull(void);

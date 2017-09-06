@@ -120,11 +120,13 @@ class ISerializeWriter
 public:
 	virtual ~ISerializeWriter(void) {}
 
-	virtual void startArray(void) = 0;
+	virtual void startArray(uint32_t size) = 0;
 	virtual void endArray(void) = 0;
 
-	virtual void startObject(void) = 0;
+	virtual void startObject(uint32_t size) = 0;
 	virtual void endObject(void) = 0;
+
+	virtual void writeKey(const char* key) = 0;
 
 	virtual void writeInt8(const char* key, int8_t value) = 0;
 	virtual void writeInt16(const char* key, int16_t value) = 0;
@@ -139,7 +141,6 @@ public:
 	virtual void writeFloat(const char* key, float value) = 0;
 	virtual void writeDouble(const char* key, double value) = 0;
 
-	virtual void writeString(const char* key, const char* value, size_t size) = 0;
 	virtual void writeString(const char* key, const char* value) = 0;
 
 	virtual void writeInt8(int8_t value) = 0;
@@ -155,7 +156,6 @@ public:
 	virtual void writeFloat(float value) = 0;
 	virtual void writeDouble(double value) = 0;
 
-	virtual void writeString(const char* value, size_t size) = 0;
 	virtual void writeString(const char* value) = 0;
 };
 

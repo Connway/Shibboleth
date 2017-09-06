@@ -519,11 +519,13 @@ template <class Var, size_t array_size>
 void ReflectionDefinition<T, Allocator>::ArrayPtr<Var, array_size>::save(ISerializeWriter& writer, const T& object)
 {
 	constexpr int32_t size = static_cast<int32_t>(array_size);
+	writer.startArray(static_cast<uint32_t>(array_size));
 
 	for (int32_t i = 0; i < size; ++i) {
-		ScopeGuard scope = reader.enterElementGuard(i);
-		GAFF_REFLECTION_NAMESPACE::Reflection<Var>::Load(reader, (object.*_ptr)[i]);
+		GAFF_REFLECTION_NAMESPACE::Reflection<Var>::Save(writer, (object.*_ptr)[i]);
 	}
+
+	writer.endArray();
 }
 
 
@@ -660,6 +662,20 @@ void ReflectionDefinition<T, Allocator>::VectorPtr<Var, Vec_Allocator>::load(con
 	}
 }
 
+template <class T, class Allocator>
+template <class Var, class Vec_Allocator>
+void ReflectionDefinition<T, Allocator>::VectorPtr<Var, Vec_Allocator>::save(ISerializeWriter& writer, const T& object)
+{
+	const int32_t size = static_cast<int32_t>((object.*_ptr).size());
+	writer.startArray(static_cast<uint32_t>(size));
+
+	for (int32_t i = 0; i < size; ++i) {
+		GAFF_REFLECTION_NAMESPACE::Reflection<Var>::Save(writer, (object.*_ptr)[i]);
+	}
+
+	writer.endArray();
+}
+
 
 
 // ReflectionDefinition
@@ -696,15 +712,16 @@ void ReflectionDefinition<T, Allocator>::load(const ISerializeReader& reader, T&
 template <class T, class Allocator>
 void ReflectionDefinition<T, Allocator>::save(ISerializeWriter& writer, const T& object) const
 {
+	writer.startObject(static_cast<uint32_t>(_vars.size()));
+
 	for (auto& entry : _vars) {
 		if (!entry.second->isReadOnly()) {
-			//ScopeGuard scope = reader.enterElementGuard(entry.first.getBuffer());
-			if (entry.second->isFixedArray() || entry.second->isVector()) {
-			}
-
+			writer.writeKey(entry.first.getBuffer());
 			entry.second->save(writer, object);
 		}
 	}
+
+	writer.endObject();
 }
 
 template <class T, class Allocator>

@@ -516,6 +516,11 @@ void MessagePackWriter::writeUTF8(const char* value)
 	mpack_write_utf8_cstr_or_nil(&_writer, value);
 }
 
+void MessagePackWriter::writeKey(const char* value)
+{
+	mpack_write_cstr(&_writer, value);
+}
+
 void MessagePackWriter::writeTrue(void)
 {
 	mpack_write_true(&_writer);

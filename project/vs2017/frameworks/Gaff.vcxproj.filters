@@ -117,6 +117,9 @@
     <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_MessagePack.h">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_MessagePackSerializeWriter.h">
+      <Filter>include</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_NetworkDefines.h">
       <Filter>include</Filter>
     </ClInclude>
@@ -187,9 +190,6 @@
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_Watcher.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_MessagePackWriter.h">
       <Filter>include</Filter>
     </ClInclude>
   </ItemGroup>

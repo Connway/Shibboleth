@@ -32,43 +32,43 @@ NS_GAFF
 class MessagePackSerializeWriter : public ISerializeWriter
 {
 public:
-	void startArray(void);
-	void endArray(void);
+	void startArray(uint32_t size) override;
+	void endArray(void) override;
 
-	void startObject(void);
-	void endObject(void);
+	void startObject(uint32_t size) override;
+	void endObject(void) override;
 
-	void writeInt8(const char* key, int8_t value);
-	void writeInt16(const char* key, int16_t value);
-	void writeInt32(const char* key, int32_t value);
-	void writeInt64(const char* key, int64_t value);
+	void writeKey(const char* key) override;
 
-	void writeUInt8(const char* key, uint8_t value);
-	void writeUInt16(const char* key, uint16_t value);
-	void writeUInt32(const char* key, uint32_t value);
-	void writeUInt64(const char* key, uint64_t value);
+	void writeInt8(const char* key, int8_t value) override;
+	void writeInt16(const char* key, int16_t value) override;
+	void writeInt32(const char* key, int32_t value) override;
+	void writeInt64(const char* key, int64_t value) override;
 
-	void writeFloat(const char* key, float value);
-	void writeDouble(const char* key, double value);
+	void writeUInt8(const char* key, uint8_t value) override;
+	void writeUInt16(const char* key, uint16_t value) override;
+	void writeUInt32(const char* key, uint32_t value) override;
+	void writeUInt64(const char* key, uint64_t value) override;
 
-	void writeString(const char* key, const char* value, size_t size);
-	void writeString(const char* key, const char* value);
+	void writeFloat(const char* key, float value) override;
+	void writeDouble(const char* key, double value) override;
 
-	void writeInt8(int8_t value);
-	void writeInt16(int16_t value);
-	void writeInt32(int32_t value);
-	void writeInt64(int64_t value);
+	void writeString(const char* key, const char* value) override;
 
-	void writeUInt8(uint8_t value);
-	void writeUInt16(uint16_t value);
-	void writeUInt32(uint32_t value);
-	void writeUInt64(uint64_t value);
+	void writeInt8(int8_t value) override;
+	void writeInt16(int16_t value) override;
+	void writeInt32(int32_t value) override;
+	void writeInt64(int64_t value) override;
 
-	void writeFloat(float value);
-	void writeDouble(double value);
+	void writeUInt8(uint8_t value) override;
+	void writeUInt16(uint16_t value) override;
+	void writeUInt32(uint32_t value) override;
+	void writeUInt64(uint64_t value) override;
 
-	void writeString(const char* value, size_t size);
-	void writeString(const char* value);
+	void writeFloat(float value) override;
+	void writeDouble(double value) override;
+
+	void writeString(const char* value) override;
 
 private:
 	MessagePackWriter _writer;
