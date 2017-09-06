@@ -189,6 +189,9 @@
     <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_Watcher.h">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_MessagePackWriter.h">
+      <Filter>include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\frameworks\Gaff\Gaff_Assert.cpp" />

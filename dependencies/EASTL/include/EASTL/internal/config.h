@@ -105,8 +105,8 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #ifndef EASTL_VERSION
-	#define EASTL_VERSION   "3.05.07"
-	#define EASTL_VERSION_N  30507
+	#define EASTL_VERSION   "3.05.08"
+	#define EASTL_VERSION_N  30508
 #endif
 
 
@@ -1466,6 +1466,20 @@ namespace eastl
 #endif
 
 ///////////////////////////////////////////////////////////////////////////////
+// EASTL_INLINE_VARIABLE_ENABLED
+//
+// Defined as 0 or 1. 
+// If enabled then C++17-like functionality with inline variable is enabled.
+///////////////////////////////////////////////////////////////////////////////
+#if !defined(EASTL_INLINE_VARIABLE_ENABLED)
+	#if((EABASE_VERSION_N < 20707) || defined(EA_COMPILER_NO_INLINE_VARIABLES))
+		#define EASTL_INLINE_VARIABLE_ENABLED 0
+	#else
+		#define EASTL_INLINE_VARIABLE_ENABLED 1
+	#endif
+#endif
+
+///////////////////////////////////////////////////////////////////////////////
 // EASTL_HAVE_CPP11_TYPE_TRAITS
 //
 // Defined as 0 or 1. 
@@ -1794,7 +1808,7 @@ typedef EASTL_SSIZE_T eastl_ssize_t; // Signed version of eastl_size_t. Concept 
 		// reserved for standard libary usage.
 		EA_DISABLE_CLANG_WARNING(-Wuser-defined-literals)
 		EA_DISABLE_CLANG_WARNING(-Wreserved-user-defined-literal)
-		EA_DISABLE_GCC_WARNING(-Wno-literal-suffix)
+		EA_DISABLE_GCC_WARNING(-Wliteral-suffix)
 		#ifdef _MSC_VER
 			#pragma warning(disable: 4455) // disable warning C4455: literal suffix identifiers that do not start with an underscore are reserved
 		#endif
