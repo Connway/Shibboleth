@@ -65,7 +65,7 @@ public:
 		void setElementMoveT(T& object, int32_t index, DataType&& data);
 
 		virtual void load(const ISerializeReader& reader, T& object) = 0;
-		virtual void save(ISerializeWriter& writer, T& object) = 0;
+		virtual void save(ISerializeWriter& writer, const T& object) = 0;
 	};
 
 	GAFF_STRUCTORS_DEFAULT(ReflectionDefinition);
@@ -164,6 +164,7 @@ private:
 		bool isReadOnly(void) const override;
 
 		void load(const ISerializeReader& reader, T& object) override;
+		void save(ISerializeWriter& writer, const T& object) override;
 
 	private:
 		Var T::*_ptr = nullptr;
@@ -185,6 +186,9 @@ private:
 		void setDataMove(void* object, void* data) override;
 
 		bool isReadOnly(void) const override;
+
+		void load(const ISerializeReader& reader, T& object) override;
+		void save(ISerializeWriter& writer, const T& object) override;
 
 	private:
 		Getter _getter = nullptr;
@@ -219,6 +223,9 @@ private:
 		void swap(void* object, int32_t index_a, int32_t index_b) override;
 		void resize(void* object, size_t new_size) override;
 
+		void load(const ISerializeReader& reader, T& object) override;
+		void save(ISerializeWriter& writer, const T& object) override;
+
 	private:
 		typename ReflectionDefinition<Base, Allocator>::IVar* _base_var;
 	};
@@ -244,7 +251,10 @@ private:
 		void setElementMove(void* object, int32_t index, void* data) override;
 		void swap(void* object, int32_t index_a, int32_t index_b) override;
 		void resize(void* object, size_t new_size) override;
-	
+
+		void load(const ISerializeReader& reader, T& object) override;
+		void save(ISerializeWriter& writer, const T& object) override;
+
 	private:
 		Var (T::*_ptr)[array_size] = nullptr;
 		bool _read_only = false;
@@ -271,6 +281,8 @@ private:
 		void setElementMove(void* object, int32_t index, void* data) override;
 		void swap(void* object, int32_t index_a, int32_t index_b) override;
 		void resize(void* object, size_t new_size) override;
+
+		void load(const ISerializeReader& reader, T& object) override;
 
 	private:
 		Vector<Var, Vec_Allocator> T::*_ptr = nullptr;

@@ -294,6 +294,7 @@
     <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_ScopedLock.h" />
     <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_SerializeInterfaces.h" />
     <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_SerializeReader.h" />
+    <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_MessagePackWriter.h" />
     <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_SmartPtrs.h" />
     <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_SpinLock.h" />
     <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_StackTrace.h" />

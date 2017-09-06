@@ -54,7 +54,6 @@ public:
 	}
 
 
-
 	virtual ~ISerializeReader(void) {}
 
 	virtual bool isObject(void) const = 0;
@@ -121,21 +120,43 @@ class ISerializeWriter
 public:
 	virtual ~ISerializeWriter(void) {}
 
-	virtual void writeInt8(int8_t value) const = 0;
-	virtual void writeInt16(int16_t value) const = 0;
-	virtual void writeInt32(int32_t value) const = 0;
-	virtual void writeInt64(int64_t value) const = 0;
+	virtual void startArray(void) = 0;
+	virtual void endArray(void) = 0;
 
-	virtual void writeUInt8(uint8_t value) const = 0;
-	virtual void writeUInt16(uint16_t value) const = 0;
-	virtual void writeUInt32(uint32_t value) const = 0;
-	virtual void writeUInt64(uint64_t value) const = 0;
+	virtual void startObject(void) = 0;
+	virtual void endObject(void) = 0;
 
-	virtual void writeFloat(float value) const = 0;
-	virtual void writeDouble(double value) const = 0;
+	virtual void writeInt8(const char* key, int8_t value) = 0;
+	virtual void writeInt16(const char* key, int16_t value) = 0;
+	virtual void writeInt32(const char* key, int32_t value) = 0;
+	virtual void writeInt64(const char* key, int64_t value) = 0;
 
-	virtual void writeString(const char* value, size_t size) const = 0;
-	virtual void writeString(const char* value) const = 0;
+	virtual void writeUInt8(const char* key, uint8_t value) = 0;
+	virtual void writeUInt16(const char* key, uint16_t value) = 0;
+	virtual void writeUInt32(const char* key, uint32_t value) = 0;
+	virtual void writeUInt64(const char* key, uint64_t value) = 0;
+
+	virtual void writeFloat(const char* key, float value) = 0;
+	virtual void writeDouble(const char* key, double value) = 0;
+
+	virtual void writeString(const char* key, const char* value, size_t size) = 0;
+	virtual void writeString(const char* key, const char* value) = 0;
+
+	virtual void writeInt8(int8_t value) = 0;
+	virtual void writeInt16(int16_t value) = 0;
+	virtual void writeInt32(int32_t value) = 0;
+	virtual void writeInt64(int64_t value) = 0;
+
+	virtual void writeUInt8(uint8_t value) = 0;
+	virtual void writeUInt16(uint16_t value) = 0;
+	virtual void writeUInt32(uint32_t value) = 0;
+	virtual void writeUInt64(uint64_t value) = 0;
+
+	virtual void writeFloat(float value) = 0;
+	virtual void writeDouble(double value) = 0;
+
+	virtual void writeString(const char* value, size_t size) = 0;
+	virtual void writeString(const char* value) = 0;
 };
 
 class ScopeGuard

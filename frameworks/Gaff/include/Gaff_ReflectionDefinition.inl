@@ -140,9 +140,16 @@ template <class T, class Allocator>
 template <class Var>
 void ReflectionDefinition<T, Allocator>::VarPtr<Var>::load(const ISerializeReader& reader, T& object)
 {
-	T* const obj = &object;
-	Var* const var = &(obj->*_ptr);
+	Var* const var = &(object.*_ptr);
 	GAFF_REFLECTION_NAMESPACE::Reflection<Var>::Load(reader, *var);
+}
+
+template <class T, class Allocator>
+template <class Var>
+void ReflectionDefinition<T, Allocator>::VarPtr<Var>::save(ISerializeWriter& writer, const T& object)
+{
+	const Var* const var = &(object.*_ptr);
+	GAFF_REFLECTION_NAMESPACE::Reflection<Var>::Save(writer, *var);
 }
 
 
@@ -210,6 +217,38 @@ template <class Ret, class Var>
 bool ReflectionDefinition<T, Allocator>::VarFuncPtr<Ret, Var>::isReadOnly(void) const
 {
 	return _setter == nullptr;
+}
+
+template <class T, class Allocator>
+template <class Ret, class Var>
+void ReflectionDefinition<T, Allocator>::VarFuncPtr<Ret, Var>::load(const ISerializeReader& reader, T& object)
+{
+	GAFF_ASSERT(_getter);
+	GAFF_ASSERT(_setter);
+
+	using Type = std::remove_const<std::remove_reference<Ret>::type>::type;
+
+	if (std::is_reference<Ret>::value) {
+		const Type& val = (object.*_getter)();
+		Type& ref = const_cast<Type&>(val);
+		GAFF_REFLECTION_NAMESPACE::Reflection<Type>::Load(reader, ref);
+
+	} else {
+		Type val = Type();
+		GAFF_REFLECTION_NAMESPACE::Reflection<Type>::Load(reader, val);
+		(object.*_setter)(val);
+	}
+}
+
+template <class T, class Allocator>
+template <class Ret, class Var>
+void ReflectionDefinition<T, Allocator>::VarFuncPtr<Ret, Var>::save(ISerializeWriter& writer, const T& object)
+{
+	GAFF_ASSERT(_getter);
+
+	using Type = std::remove_const<std::remove_reference<Ret>::type>::type;
+	const Type& val = (object.*_getter)();
+	GAFF_REFLECTION_NAMESPACE::Reflection<Type>::Save(writer, val);
 }
 
 
@@ -340,6 +379,20 @@ void ReflectionDefinition<T, Allocator>::BaseVarPtr<Base>::resize(void* object, 
 	_base_var->resize(obj, new_size);
 }
 
+template <class T, class Allocator>
+template <class Base>
+void ReflectionDefinition<T, Allocator>::BaseVarPtr<Base>::load(const ISerializeReader& reader, T& object)
+{
+	_base_var->load(reader, object);
+}
+
+template <class T, class Allocator>
+template <class Base>
+void ReflectionDefinition<T, Allocator>::BaseVarPtr<Base>::save(ISerializeWriter& writer, const T& object)
+{
+	_base_var->save(writer, object);
+}
+
 
 
 // ArrayPtr
@@ -446,6 +499,31 @@ template <class Var, size_t array_size>
 void ReflectionDefinition<T, Allocator>::ArrayPtr<Var, array_size>::resize(void*, size_t)
 {
 	GAFF_ASSERT_MSG(false, "Reflection variable is a fixed size array!");
+}
+
+template <class T, class Allocator>
+template <class Var, size_t array_size>
+void ReflectionDefinition<T, Allocator>::ArrayPtr<Var, array_size>::load(const ISerializeReader& reader, T& object)
+{
+	constexpr int32_t size = static_cast<int32_t>(array_size);
+	GAFF_ASSERT(reader.size() == size);
+
+	for (int32_t i = 0; i < size; ++i) {
+		ScopeGuard scope = reader.enterElementGuard(i);
+		GAFF_REFLECTION_NAMESPACE::Reflection<Var>::Load(reader, (object.*_ptr)[i]);
+	}
+}
+
+template <class T, class Allocator>
+template <class Var, size_t array_size>
+void ReflectionDefinition<T, Allocator>::ArrayPtr<Var, array_size>::save(ISerializeWriter& writer, const T& object)
+{
+	constexpr int32_t size = static_cast<int32_t>(array_size);
+
+	for (int32_t i = 0; i < size; ++i) {
+		ScopeGuard scope = reader.enterElementGuard(i);
+		GAFF_REFLECTION_NAMESPACE::Reflection<Var>::Load(reader, (object.*_ptr)[i]);
+	}
 }
 
 
@@ -569,6 +647,19 @@ void ReflectionDefinition<T, Allocator>::VectorPtr<Var, Vec_Allocator>::resize(v
 	(obj->*_ptr).resize(new_size);
 }
 
+template <class T, class Allocator>
+template <class Var, class Vec_Allocator>
+void ReflectionDefinition<T, Allocator>::VectorPtr<Var, Vec_Allocator>::load(const ISerializeReader& reader, T& object)
+{
+	const int32_t size = reader.size();
+	(object.*_ptr).resize(static_cast<size_t>(size));
+
+	for (int32_t i = 0; i < size; ++i) {
+		ScopeGuard scope = reader.enterElementGuard(i);
+		GAFF_REFLECTION_NAMESPACE::Reflection<Var>::Load(reader, (object.*_ptr)[i]);
+	}
+}
+
 
 
 // ReflectionDefinition
@@ -603,8 +694,17 @@ void ReflectionDefinition<T, Allocator>::load(const ISerializeReader& reader, T&
 }
 
 template <class T, class Allocator>
-void ReflectionDefinition<T, Allocator>::save(ISerializeWriter& /*writer*/, const T& /*object*/) const
+void ReflectionDefinition<T, Allocator>::save(ISerializeWriter& writer, const T& object) const
 {
+	for (auto& entry : _vars) {
+		if (!entry.second->isReadOnly()) {
+			//ScopeGuard scope = reader.enterElementGuard(entry.first.getBuffer());
+			if (entry.second->isFixedArray() || entry.second->isVector()) {
+			}
+
+			entry.second->save(writer, object);
+		}
+	}
 }
 
 template <class T, class Allocator>

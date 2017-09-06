@@ -110,12 +110,12 @@ private:
 			GAFF_ASSERT(object); \
 			g_reflection_definition->save(writer, object); \
 		} \
-		void Load(const Gaff::ISerializeReader& reader, type& object) \
+		static void Load(const Gaff::ISerializeReader& reader, type& object) \
 		{ \
 			GAFF_ASSERT(g_reflection_definition); \
 			g_reflection_definition->load(reader, object); \
 		} \
-		void Save(Gaff::ISerializeWriter& writer, const type& object) const \
+		static void Save(Gaff::ISerializeWriter& writer, const type& object) \
 		{ \
 			GAFF_ASSERT(g_reflection_definition); \
 			g_reflection_definition->save(writer, object); \
