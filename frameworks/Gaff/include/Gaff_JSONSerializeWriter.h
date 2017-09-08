@@ -22,21 +22,19 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Gaff_SerializeInterfaces.h"
-#include "Gaff_MessagePack.h"
-#include "Gaff_Vector.h"
-#include "Gaff_Assert.h"
+#include <Gaff_SerializeInterfaces.h>
+#include <Gaff_Vector.h>
+#include <Gaff_JSON.h>
 
 NS_GAFF
 
-class MessagePackSerializeWriter : public ISerializeWriter
+template <class Allocator = DefaultAllocator>
+class JSONSerializeWriter : public ISerializeWriter
 {
 public:
-	bool init(char** buffer, size_t* size);
-	bool init(char* buffer, size_t size);
-	bool init(const char* filename);
+	JSONSerializeWriter(const Allocator& allocator = Allocator());
 
-	void finish(void);
+	const JSON& getRootNode(void) const;
 
 	void startArray(uint32_t size) override;
 	void endArray(void) override;
@@ -77,7 +75,10 @@ public:
 	void writeString(const char* value) override;
 
 private:
-	MessagePackWriter _writer;
+	Vector<JSON, Allocator> _nodes;
+	const char* _key = nullptr;
 };
+
+#include "Gaff_JSONSerializeWriter.inl"
 
 NS_END

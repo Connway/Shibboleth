@@ -23,6 +23,8 @@ local tests = {
 			"../dependencies/EASTL/include",
 			"../dependencies/CATCH",
 			"../dependencies/libuv/include",
+			"../dependencies/mpack",
+			"../dependencies/rapidjson",
 
 			"../frameworks/Gaff/include",
 			"../src/Shared/include",
@@ -32,7 +34,7 @@ local tests = {
 		links = {
 			"Gaff", "Memory",
 			"EASTL", "Shared",
-			"libuv"
+			"libuv", "mpack"
 		},
 
 		extra = function ()

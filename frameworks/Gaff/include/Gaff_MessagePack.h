@@ -126,6 +126,7 @@ public:
 	uint64_t getUInt64(uint64_t default_value) const;
 	float getFloat(float default_value) const;
 	double getDouble(double default_value) const;
+	double getNumber(double default_value) const;
 	bool getBool(bool default_value) const;
 
 	const char* getString(char* buffer, size_t buf_size) const;
@@ -140,6 +141,7 @@ public:
 	uint64_t getUInt64(void) const;
 	float getFloat(void) const;
 	double getDouble(void) const;
+	double getNumber(void) const;
 	bool getBool(void) const;
 
 	const char* getErrorText(void) const;
