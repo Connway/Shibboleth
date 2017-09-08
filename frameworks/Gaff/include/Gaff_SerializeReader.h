@@ -28,14 +28,16 @@ THE SOFTWARE.
 
 NS_GAFF
 
-template <class Node, class Allocator>
+template <class Node, class Allocator = DefaultAllocator>
 class SerializeReader : public ISerializeReader
 {
 public:
-	SerializeReader(const Node& node, const Allocator& allocator):
+	SerializeReader(const Node& node, const Allocator& allocator = Allocator()):
 		_stack(1, node, allocator)
 	{
 	}
+
+	const Node& getRootNode(void) const { return _stack.front(); }
 
 	bool isObject(void) const override { return _stack.back().isObject(); }
 	bool isArray(void) const override { return _stack.back().isArray(); }

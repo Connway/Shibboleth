@@ -331,6 +331,34 @@ double MessagePackNode::getDouble(double default_value) const
 	return ret;
 }
 
+double MessagePackNode::getNumber(double default_value) const
+{
+	if (isNull()) {
+		return default_value;
+	}
+
+	double ret = 0.0;
+
+	if (isInt64()) {
+		ret = static_cast<double>(mpack_node_i64(_node));
+	}
+	
+	if (isUInt64()) {
+		ret = static_cast<double>(mpack_node_u64(_node));
+	}
+	
+	if (isFloat()) {
+		ret = static_cast<double>(mpack_node_float(_node));
+	}
+	
+	if (isDouble()) {
+		ret = mpack_node_double(_node);
+	}
+
+	GAFF_ASSERT(_node.tree->error == mpack_ok);
+	return ret;
+}
+
 bool MessagePackNode::getBool(bool default_value) const
 {
 	if (isNull()) {
@@ -426,6 +454,30 @@ float MessagePackNode::getFloat(void) const
 double MessagePackNode::getDouble(void) const
 {
 	const double ret = mpack_node_double(_node);
+	GAFF_ASSERT(_node.tree->error == mpack_ok);
+	return ret;
+}
+
+double MessagePackNode::getNumber(void) const
+{
+	double ret = 0.0;
+
+	if (isInt64()) {
+		ret = static_cast<double>(mpack_node_i64(_node));
+	}
+
+	if (isUInt64()) {
+		ret = static_cast<double>(mpack_node_u64(_node));
+	}
+
+	if (isFloat()) {
+		ret = static_cast<double>(mpack_node_float(_node));
+	}
+
+	if (isDouble()) {
+		ret = mpack_node_double(_node);
+	}
+
 	GAFF_ASSERT(_node.tree->error == mpack_ok);
 	return ret;
 }

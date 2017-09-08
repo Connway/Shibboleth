@@ -275,6 +275,7 @@
     <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_IncludeRapidJSON.h" />
     <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_IncludeWindows.h" />
     <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_JSON.h" />
+    <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_JSONSerializeWriter.h" />
     <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_JobPool.h" />
     <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_LinearCurve.h" />
     <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_Math.h" />
@@ -343,6 +344,7 @@
     <None Include="..\..\..\frameworks\Gaff\include\Gaff_EnumReflectionDefinition.inl" />
     <None Include="..\..\..\frameworks\Gaff\include\Gaff_Function.inl" />
     <None Include="..\..\..\frameworks\Gaff\include\Gaff_HashString.inl" />
+    <None Include="..\..\..\frameworks\Gaff\include\Gaff_JSONSerializeWriter.inl" />
     <None Include="..\..\..\frameworks\Gaff\include\Gaff_JobPool.inl" />
     <None Include="..\..\..\frameworks\Gaff\include\Gaff_LinearCurve.inl" />
     <None Include="..\..\..\frameworks\Gaff\include\Gaff_ReflectionDefinition.inl" />

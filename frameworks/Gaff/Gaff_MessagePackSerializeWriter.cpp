@@ -24,6 +24,26 @@ THE SOFTWARE.
 
 NS_GAFF
 
+bool MessagePackSerializeWriter::init(char** buffer, size_t* size)
+{
+	return _writer.init(buffer, size);
+}
+
+bool MessagePackSerializeWriter::init(char* buffer, size_t size)
+{
+	return _writer.init(buffer, size);
+}
+
+bool MessagePackSerializeWriter::init(const char* filename)
+{
+	return _writer.init(filename);
+}
+
+void MessagePackSerializeWriter::finish(void)
+{
+	_writer.finish();
+}
+
 void MessagePackSerializeWriter::startArray(uint32_t size)
 {
 	_writer.startArray(size);
