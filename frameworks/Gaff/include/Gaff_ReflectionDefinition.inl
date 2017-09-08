@@ -30,7 +30,7 @@ NS_GAFF
 template <class T, class... Args>
 void* FactoryFunc(IAllocator& allocator, Args... args)
 {
-	return GAFF_ALLOCT(T, allocator, args...);
+	return GAFF_ALLOCT(T, allocator, std::forward<Args>(args)...);
 }
 
 // IVar
@@ -712,7 +712,18 @@ void ReflectionDefinition<T, Allocator>::load(const ISerializeReader& reader, T&
 template <class T, class Allocator>
 void ReflectionDefinition<T, Allocator>::save(ISerializeWriter& writer, const T& object) const
 {
-	writer.startObject(static_cast<uint32_t>(_vars.size()));
+	uint32_t writable_vars = 0;
+
+	// Count how many vars we're actually writing to the object.
+	for (auto& entry : _vars) {
+		// If not read-only and does not have the NoSerialize attribute.
+		if (!entry.second->isReadOnly()) {
+			++writable_vars;
+		}
+	}
+
+	// Write out the object.
+	writer.startObject(writable_vars);
 
 	for (auto& entry : _vars) {
 		if (!entry.second->isReadOnly()) {
@@ -1000,7 +1011,7 @@ ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::ctor(voi
 	Hash64 hash = CalcTemplateHash<Args...>(INIT_HASH64);
 	GAFF_ASSERT(!getFactory(hash));
 
-	void* (*factory_func)(IAllocator&, Args...) = Gaff::FactoryFunc<T, Args...>;
+	FactoryFunc<Args...> factory_func = Gaff::FactoryFunc<T, Args...>;
 	_ctors.emplace(hash, reinterpret_cast<VoidFunc>(factory_func));
 
 	return *this;

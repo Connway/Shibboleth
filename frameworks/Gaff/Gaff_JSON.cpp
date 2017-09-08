@@ -165,7 +165,7 @@ JSON JSON::CreateArray(void)
 
 JSON JSON::CreateObject(void)
 {
-	JSONValue value = JSONValue(rapidjson::kNumberType);
+	JSONValue value = JSONValue(rapidjson::kObjectType);
 	return JSON(std::move(value));
 }
 

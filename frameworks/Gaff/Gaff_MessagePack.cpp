@@ -504,14 +504,25 @@ bool MessagePackReader::parse(const char* buffer, size_t size)
 		return false;
 	}
 
-	_root._node = mpack_tree_root(&_tree);
+	mpack_tree_parse(&_tree);
 
+	if (_tree.error != mpack_ok) {
+		return false;
+	}
+
+	_root._node = mpack_tree_root(&_tree);
 	return _tree.error == mpack_ok;
 }
 
 bool MessagePackReader::openFile(const char* file)
 {
 	mpack_tree_init_filename(&_tree, file, 0);
+
+	if (_tree.error != mpack_ok) {
+		return false;
+	}
+
+	mpack_tree_parse(&_tree);
 
 	if (_tree.error != mpack_ok) {
 		return false;
