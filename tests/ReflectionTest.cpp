@@ -573,7 +573,7 @@ TEST_CASE("reflection enum test", "[shibboleth_enum]")
 	printf("TE_ZERO: %s\n", ref_def.getEntryNameFromValue(TE_ZERO));
 	printf("TE_ONE: %s\n", ref_def.getEntryNameFromValue(TE_ONE));
 	printf("TE_TWO: %s\n", ref_def.getEntryNameFromValue(TE_TWO));
-	printf("TE_TWENTY: %s\n", ref_def.getEntryNameFromValue(TE_TWENTY));
+	printf("TE_TWENTY: %s\n\n", ref_def.getEntryNameFromValue(TE_TWENTY));
 
 	REQUIRE(ref_def.getEntryValue("MinusOne") == -1);
 	REQUIRE(ref_def.getEntryValue("Zero") == 0);
@@ -602,7 +602,7 @@ SHIB_REFLECTION_DEFINE_SERIALIZE_LOAD(STCPtr)
 
 	reader.enterElement("test_string");
 	char buffer[128] = { 0 };
-	printf("Value at 'test_string' is '%s'", reader.readString(buffer, sizeof(buffer)));
+	printf("Value at 'test_string' is '%s'\n", reader.readString(buffer, sizeof(buffer)));
 	reader.exitElement();
 }
 
@@ -611,7 +611,9 @@ SHIB_REFLECTION_DEFINE_SERIALIZE_SAVE(STCPtr)
 	GAFF_REF(object);
 	printf("Save STCPtr\n");
 
+	writer.startObject(1);
 	writer.writeString("test_string", "This is a test string");
+	writer.endObject();
 }
 
 template <class T, class TT>
@@ -631,7 +633,7 @@ SHIB_TEMPLATE_REFLECTION_DEFINE_SERIALIZE_LOAD(SerializeTestTemplate, T, TT)
 	printf("Load %s\n", Shibboleth::Reflection< SerializeTestTemplate<T, TT> >::GetName());
 
 	reader.enterElement("test_double");
-	printf("Value at 'test_string' is '%f'", reader.readDouble());
+	printf("Value at 'test_double' is '%f'\n", reader.readDouble());
 	reader.exitElement();
 }
 
@@ -640,7 +642,9 @@ SHIB_TEMPLATE_REFLECTION_DEFINE_SERIALIZE_SAVE(SerializeTestTemplate, T, TT)
 	GAFF_REF(object);
 	printf("Save %s\n", Shibboleth::Reflection< SerializeTestTemplate<T, TT> >::GetName());
 
+	writer.startObject(1);
 	writer.writeDouble("test_double", 123.0);
+	writer.endObject();
 }
 
 

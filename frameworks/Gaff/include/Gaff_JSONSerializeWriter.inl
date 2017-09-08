@@ -24,7 +24,6 @@ template <class Allocator>
 JSONSerializeWriter<Allocator>::JSONSerializeWriter(const Allocator& allocator):
 	_nodes(allocator)
 {
-	_nodes.push_back(JSON::CreateObject());
 }
 
 template <class Allocator>
@@ -36,29 +35,42 @@ const JSON& JSONSerializeWriter<Allocator>::getRootNode(void) const
 template <class Allocator>
 void JSONSerializeWriter<Allocator>::startArray(uint32_t)
 {
-	JSON& curr_node = _nodes.back();
-	curr_node.setObject(_key, JSON::CreateArray());
-	_nodes.push_back(curr_node[_key]);
+	if (_nodes.empty()) {
+		_nodes.push_back(JSON::CreateArray());
+	} else {
+		JSON& curr_node = _nodes.back();
+		curr_node.setObject(_key, JSON::CreateArray());
+		_nodes.push_back(curr_node[_key]);
+	}
 }
 
 template <class Allocator>
 void JSONSerializeWriter<Allocator>::endArray(void)
 {
-	_nodes.pop_back();
+	if (_nodes.size() > 1) {
+		_nodes.pop_back();
+	}
 }
 
 template <class Allocator>
 void JSONSerializeWriter<Allocator>::startObject(uint32_t)
 {
-	JSON& curr_node = _nodes.back();
-	curr_node.setObject(_key, JSON::CreateObject());
-	_nodes.push_back(curr_node[_key]);
+	if (_nodes.empty()) {
+		_nodes.push_back(JSON::CreateObject());
+	}
+	else {
+		JSON& curr_node = _nodes.back();
+		curr_node.setObject(_key, JSON::CreateObject());
+		_nodes.push_back(curr_node[_key]);
+	}
 }
 
 template <class Allocator>
 void JSONSerializeWriter<Allocator>::endObject(void)
 {
-	_nodes.pop_back();
+	if (_nodes.size() > 1) {
+		_nodes.pop_back();
+	}
 }
 
 template <class Allocator>
