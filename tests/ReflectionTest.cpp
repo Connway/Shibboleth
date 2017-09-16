@@ -651,6 +651,7 @@ SHIB_TEMPLATE_REFLECTION_DEFINE_SERIALIZE_SAVE(SerializeTestTemplate, T, TT)
 
 TEST_CASE("reflection serialize test", "[shibboleth_serialize]")
 {
+	// Test STCPtr with JSON.
 	{
 		Gaff::JSONSerializeWriter<> json_writer;
 		STCPtr stc;
@@ -661,6 +662,7 @@ TEST_CASE("reflection serialize test", "[shibboleth_serialize]")
 		Shibboleth::Reflection<STCPtr>::Load(json_reader, stc);
 	}
 
+	// Test STT with JSON.
 	{
 		Gaff::JSONSerializeWriter<> json_writer;
 		SerializeTestTemplate<int32_t, double> stt;
@@ -671,6 +673,7 @@ TEST_CASE("reflection serialize test", "[shibboleth_serialize]")
 		Shibboleth::Reflection< SerializeTestTemplate<int32_t, double> >::Load(json_reader, stt);
 	}
 
+	// Test STCPtr with MessagePack.
 	{
 		Gaff::MessagePackSerializeWriter mpack_writer;
 		STCPtr stc;
@@ -681,15 +684,37 @@ TEST_CASE("reflection serialize test", "[shibboleth_serialize]")
 			Shibboleth::Reflection<STCPtr>::Save(mpack_writer, stc);
 			mpack_writer.finish();
 
-			Gaff::MessagePackReader reader;
+			// Write buffer to a file.
+			std::fstream file("test.mpack", std::ios_base::out | std::ios_base::trunc);
 
-			if (reader.parse(buffer, sizeof(buffer))) {
-				Gaff::SerializeReader<Gaff::MessagePackNode> mpack_reader(reader.getRoot());
-				Shibboleth::Reflection<STCPtr>::Load(mpack_reader, stc);
+			if (file.is_open()) {
+				file.write(buffer, mpack_writer.size());
+				file.close();
+			}
+
+			// Test buffer we wrote to with mpack_writer.
+			{
+				Gaff::MessagePackReader reader;
+
+				if (reader.parse(buffer, sizeof(buffer))) {
+					Gaff::SerializeReader<Gaff::MessagePackNode> mpack_reader(reader.getRoot());
+					Shibboleth::Reflection<STCPtr>::Load(mpack_reader, stc);
+				}
+			}
+
+			// Test binary file written to disk.
+			{
+				Gaff::MessagePackReader reader;
+
+				if (reader.openFile("test.mpack")) {
+					Gaff::SerializeReader<Gaff::MessagePackNode> mpack_reader(reader.getRoot());
+					Shibboleth::Reflection<STCPtr>::Load(mpack_reader, stc);
+				}
 			}
 		}
 	}
 
+	// Test STT with MessagePack.
 	{
 		Gaff::MessagePackSerializeWriter mpack_writer;
 		SerializeTestTemplate<int32_t, double> stt;
@@ -700,13 +725,33 @@ TEST_CASE("reflection serialize test", "[shibboleth_serialize]")
 			Shibboleth::Reflection< SerializeTestTemplate<int32_t, double> >::Save(mpack_writer, stt);
 			mpack_writer.finish();
 
-			Gaff::MessagePackReader reader;
+			// Write buffer to a file.
+			std::fstream file("test2.mpack", std::ios_base::out | std::ios_base::trunc);
 
-			if (reader.parse(buffer, sizeof(buffer))) {
-				Gaff::SerializeReader<Gaff::MessagePackNode> mpack_reader(reader.getRoot());
-				Shibboleth::Reflection< SerializeTestTemplate<int32_t, double> >::Load(mpack_reader, stt);
+			if (file.is_open()) {
+				file.write(buffer, mpack_writer.size());
+				file.close();
+			}
+
+			// Test buffer we wrote to with mpack_writer.
+			{
+				Gaff::MessagePackReader reader;
+
+				if (reader.parse(buffer, sizeof(buffer))) {
+					Gaff::SerializeReader<Gaff::MessagePackNode> mpack_reader(reader.getRoot());
+					Shibboleth::Reflection< SerializeTestTemplate<int32_t, double> >::Load(mpack_reader, stt);
+				}
+			}
+
+			// Test binary file written to disk.
+			{
+				Gaff::MessagePackReader reader;
+
+				if (reader.openFile("test2.mpack")) {
+					Gaff::SerializeReader<Gaff::MessagePackNode> mpack_reader(reader.getRoot());
+					Shibboleth::Reflection< SerializeTestTemplate<int32_t, double> >::Load(mpack_reader, stt);
+				}
 			}
 		}
 	}
-
 }

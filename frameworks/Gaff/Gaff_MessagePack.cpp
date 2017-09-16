@@ -568,6 +568,11 @@ void MessagePackWriter::finish(void)
 	mpack_writer_destroy(&_writer);
 }
 
+size_t MessagePackWriter::size(void) const
+{
+	return mpack_writer_buffer_used(const_cast<mpack_writer_t*>(&_writer));
+}
+
 void MessagePackWriter::writeUTF8(const char* key, const char* value)
 {
 	mpack_write_cstr(&_writer, key);

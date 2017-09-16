@@ -38,6 +38,8 @@ public:
 
 	void finish(void);
 
+	size_t size(void) const;
+
 	void startArray(uint32_t size) override;
 	void endArray(void) override;
 
