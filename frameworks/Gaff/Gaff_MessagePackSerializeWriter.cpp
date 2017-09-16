@@ -44,6 +44,11 @@ void MessagePackSerializeWriter::finish(void)
 	_writer.finish();
 }
 
+size_t MessagePackSerializeWriter::size(void) const
+{
+	return _writer.size();
+}
+
 void MessagePackSerializeWriter::startArray(uint32_t size)
 {
 	_writer.startArray(size);

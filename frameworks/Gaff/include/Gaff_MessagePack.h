@@ -186,6 +186,8 @@ public:
 	bool init(const char* filename);
 	void finish(void);
 
+	size_t size(void) const;
+
 	template <class T>
 	void write(const char* key, T value)
 	{
