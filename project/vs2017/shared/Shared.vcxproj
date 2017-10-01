@@ -125,6 +125,7 @@
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <FloatingPointModel>Fast</FloatingPointModel>
       <AdditionalOptions>/sdl %(AdditionalOptions)</AdditionalOptions>
+      <LanguageStandard>stdcpp14</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -151,6 +152,7 @@
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <FloatingPointModel>Fast</FloatingPointModel>
       <AdditionalOptions>/sdl %(AdditionalOptions)</AdditionalOptions>
+      <LanguageStandard>stdcpp14</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -178,6 +180,7 @@
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <FloatingPointModel>Fast</FloatingPointModel>
       <AdditionalOptions>/analyze /sdl %(AdditionalOptions)</AdditionalOptions>
+      <LanguageStandard>stdcpp14</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -203,6 +206,7 @@
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <FloatingPointModel>Fast</FloatingPointModel>
       <AdditionalOptions>/sdl %(AdditionalOptions)</AdditionalOptions>
+      <LanguageStandard>stdcpp14</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -231,6 +235,7 @@
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <FloatingPointModel>Fast</FloatingPointModel>
       <AdditionalOptions>/sdl %(AdditionalOptions)</AdditionalOptions>
+      <LanguageStandard>stdcpp14</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -260,6 +265,7 @@
     <ClInclude Include="..\..\..\src\Shared\include\Shibboleth_LooseFileSystem.h" />
     <ClInclude Include="..\..\..\src\Shared\include\Shibboleth_Math.h" />
     <ClInclude Include="..\..\..\src\Shared\include\Shibboleth_MessageBroadcaster.h" />
+    <ClInclude Include="..\..\..\src\Shared\include\Shibboleth_MessageBroadcaster.inl" />
     <ClInclude Include="..\..\..\src\Shared\include\Shibboleth_ProxyAllocator.h" />
     <ClInclude Include="..\..\..\src\Shared\include\Shibboleth_Queue.h" />
     <ClInclude Include="..\..\..\src\Shared\include\Shibboleth_RefCounted.h" />
@@ -280,9 +286,6 @@
     <ClCompile Include="..\..\..\src\Shared\Shibboleth_NewDelete.cpp" />
     <ClCompile Include="..\..\..\src\Shared\Shibboleth_Reflection.cpp" />
     <ClCompile Include="..\..\..\src\Shared\Shibboleth_Utilities.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="..\..\..\src\Shared\include\Shibboleth_MessageBroadcaster.inl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

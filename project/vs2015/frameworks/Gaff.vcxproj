@@ -124,7 +124,7 @@
       <ExceptionHandling>Async</ExceptionHandling>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <FloatingPointModel>Fast</FloatingPointModel>
-      <AdditionalOptions>/sdl %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>/sdl /std:c++14 %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -150,7 +150,7 @@
       <ExceptionHandling>Async</ExceptionHandling>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <FloatingPointModel>Fast</FloatingPointModel>
-      <AdditionalOptions>/sdl %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>/sdl /std:c++14 %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -177,7 +177,7 @@
       <ExceptionHandling>Async</ExceptionHandling>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <FloatingPointModel>Fast</FloatingPointModel>
-      <AdditionalOptions>/analyze /sdl %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>/analyze /sdl /std:c++14 %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -202,7 +202,7 @@
       <ExceptionHandling>Async</ExceptionHandling>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <FloatingPointModel>Fast</FloatingPointModel>
-      <AdditionalOptions>/sdl %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>/sdl /std:c++14 %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -230,7 +230,7 @@
       <ExceptionHandling>Async</ExceptionHandling>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <FloatingPointModel>Fast</FloatingPointModel>
-      <AdditionalOptions>/sdl %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>/sdl /std:c++14 %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -245,7 +245,9 @@
   <ItemGroup>
     <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_Assert.h" />
     <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_BezierCurve.h" />
+    <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_BezierCurve.inl" />
     <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_CachedFunction.h" />
+    <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_CachedFunction.inl" />
     <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_Connection.h" />
     <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_CrashHandler.h" />
     <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_CriticalSection.h" />
@@ -255,19 +257,24 @@
     <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_DefaultAllocator.h" />
     <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_Defines.h" />
     <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_Directory.h" />
+    <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_Directory.inl" />
     <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_DynamicLoader.h" />
+    <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_DynamicLoader.inl" />
     <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_DynamicModule.h" />
     <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_DynamicModule_Linux.h" />
     <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_DynamicModule_Windows.h" />
     <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_EnumReflection.h" />
     <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_EnumReflectionDefinition.h" />
+    <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_EnumReflectionDefinition.inl" />
     <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_Event.h" />
     <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_Event_Linux.h" />
     <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_Event_Windows.h" />
     <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_File.h" />
     <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_Function.h" />
+    <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_Function.inl" />
     <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_Hash.h" />
     <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_HashString.h" />
+    <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_HashString.inl" />
     <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_Host.h" />
     <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_IAllocator.h" />
     <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_ICurve.h" />
@@ -276,8 +283,11 @@
     <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_IncludeWindows.h" />
     <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_JSON.h" />
     <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_JSONSerializeWriter.h" />
+    <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_JSONSerializeWriter.inl" />
     <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_JobPool.h" />
+    <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_JobPool.inl" />
     <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_LinearCurve.h" />
+    <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_LinearCurve.inl" />
     <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_Math.h" />
     <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_Mesh.h" />
     <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_MessagePack.h" />
@@ -290,8 +300,10 @@
     <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_RefPtr.h" />
     <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_Reflection.h" />
     <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_ReflectionDefinition.h" />
+    <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_ReflectionDefinition.inl" />
     <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_ReflectionInterfaces.h" />
     <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_ReflectionVersion.h" />
+    <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_ReflectionVersion.inl" />
     <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_ScopedExit.h" />
     <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_ScopedLock.h" />
     <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_SerializeInterfaces.h" />
@@ -303,9 +315,11 @@
     <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_StackTrace_Windows.h" />
     <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_String.h" />
     <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_Utils.h" />
+    <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_Utils_Common.inl" />
     <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_Vector.h" />
     <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_VectorMap.h" />
     <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_Watcher.h" />
+    <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_Watcher.inl" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\frameworks\Gaff\Gaff_Assert.cpp" />
@@ -335,22 +349,6 @@
     <ClCompile Include="..\..\..\frameworks\Gaff\Gaff_Utils_Mac.cpp" />
     <ClCompile Include="..\..\..\frameworks\Gaff\Gaff_Utils_Windows.cpp" />
     <ClCompile Include="..\..\..\frameworks\Gaff\include\Gaff_Hash.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="..\..\..\frameworks\Gaff\include\Gaff_BezierCurve.inl" />
-    <None Include="..\..\..\frameworks\Gaff\include\Gaff_CachedFunction.inl" />
-    <None Include="..\..\..\frameworks\Gaff\include\Gaff_Directory.inl" />
-    <None Include="..\..\..\frameworks\Gaff\include\Gaff_DynamicLoader.inl" />
-    <None Include="..\..\..\frameworks\Gaff\include\Gaff_EnumReflectionDefinition.inl" />
-    <None Include="..\..\..\frameworks\Gaff\include\Gaff_Function.inl" />
-    <None Include="..\..\..\frameworks\Gaff\include\Gaff_HashString.inl" />
-    <None Include="..\..\..\frameworks\Gaff\include\Gaff_JSONSerializeWriter.inl" />
-    <None Include="..\..\..\frameworks\Gaff\include\Gaff_JobPool.inl" />
-    <None Include="..\..\..\frameworks\Gaff\include\Gaff_LinearCurve.inl" />
-    <None Include="..\..\..\frameworks\Gaff\include\Gaff_ReflectionDefinition.inl" />
-    <None Include="..\..\..\frameworks\Gaff\include\Gaff_ReflectionVersion.inl" />
-    <None Include="..\..\..\frameworks\Gaff\include\Gaff_Utils_Common.inl" />
-    <None Include="..\..\..\frameworks\Gaff\include\Gaff_Watcher.inl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

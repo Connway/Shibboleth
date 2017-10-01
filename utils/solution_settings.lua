@@ -23,8 +23,7 @@ nativewchar "Default"
 floatingpoint "Fast"
 startproject "App"
 symbols "On"
-
-flags { "C++14" }
+cppdialect "C++14"
 
 filter { "options:physx" }
 	defines { "USE_PHYSX" }
@@ -65,13 +64,15 @@ filter { "configurations:Debug* or Optimized_Debug*" }
 	defines { "_DEBUG", "DEBUG" }
 
 filter { "configurations:Release* or Profile* or Analyze*" }
-	flags { "LinkTimeOptimization", "ReleaseRuntime" }
+	flags { "LinkTimeOptimization" }
 	defines { "NDEBUG" }
 	optimize "Speed"
+	runtime "Release"
 
 filter { "configurations:Optimized_Debug*" }
-	flags { "LinkTimeOptimization", "ReleaseRuntime" }
+	flags { "LinkTimeOptimization" }
 	optimize "Speed"
+	runtime "Release"
 
 filter { "configurations:Profile" }
 	defines { "SHIB_PROFILE" }

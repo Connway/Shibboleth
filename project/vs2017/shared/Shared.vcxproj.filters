@@ -57,6 +57,9 @@
     <ClInclude Include="..\..\..\src\Shared\include\Shibboleth_MessageBroadcaster.h">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\src\Shared\include\Shibboleth_MessageBroadcaster.inl">
+      <Filter>include</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\src\Shared\include\Shibboleth_ProxyAllocator.h">
       <Filter>include</Filter>
     </ClInclude>
@@ -97,10 +100,5 @@
     <ClCompile Include="..\..\..\src\Shared\Shibboleth_NewDelete.cpp" />
     <ClCompile Include="..\..\..\src\Shared\Shibboleth_Reflection.cpp" />
     <ClCompile Include="..\..\..\src\Shared\Shibboleth_Utilities.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="..\..\..\src\Shared\include\Shibboleth_MessageBroadcaster.inl">
-      <Filter>include</Filter>
-    </None>
   </ItemGroup>
 </Project>

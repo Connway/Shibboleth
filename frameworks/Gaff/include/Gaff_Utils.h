@@ -23,10 +23,7 @@ THE SOFTWARE.
 #pragma once
 
 #include "Gaff_HashString.h"
-
-#ifndef GAFF_UTILS_NO_CONTAINERS
-	#include "Gaff_VectorMap.h"
-#endif
+#include "Gaff_VectorMap.h"
 
 #include <cstring>
 #include <ctime>
@@ -61,12 +58,18 @@ INLINE void AlignedFree(void* data);
 bool IsDebuggerAttached(void);
 void DebugBreak(void);
 
-#ifndef GAFF_UTILS_NO_CONTAINERS
 template <class Allocator>
 VectorMap<HashString32<Allocator>, U8String<Allocator>, Allocator> ParseCommandLine(int argc, char** argv);
 
 template <class Allocator>
 void ParseCommandLine(int argc, char** argv, VectorMap<HashString32<Allocator>, U8String<Allocator>, Allocator>& out);
+
+#ifdef PLATFORM_WINDOWS
+template <class Allocator>
+VectorMap<HashString32<Allocator>, U8String<Allocator>, Allocator> ParseCommandLine(int argc, wchar_t** argv);
+
+template <class Allocator>
+void ParseCommandLine(int argc, wchar_t** argv, VectorMap<HashString32<Allocator>, U8String<Allocator>, Allocator>& out);
 #endif
 
 template <class T>

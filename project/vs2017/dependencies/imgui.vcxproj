@@ -124,6 +124,7 @@
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <FloatingPointModel>Fast</FloatingPointModel>
       <AdditionalOptions>/sdl %(AdditionalOptions)</AdditionalOptions>
+      <LanguageStandard>stdcpp14</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -149,6 +150,7 @@
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <FloatingPointModel>Fast</FloatingPointModel>
       <AdditionalOptions>/sdl %(AdditionalOptions)</AdditionalOptions>
+      <LanguageStandard>stdcpp14</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -175,6 +177,7 @@
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <FloatingPointModel>Fast</FloatingPointModel>
       <AdditionalOptions>/analyze /sdl %(AdditionalOptions)</AdditionalOptions>
+      <LanguageStandard>stdcpp14</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -199,6 +202,7 @@
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <FloatingPointModel>Fast</FloatingPointModel>
       <AdditionalOptions>/sdl %(AdditionalOptions)</AdditionalOptions>
+      <LanguageStandard>stdcpp14</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -226,6 +230,7 @@
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <FloatingPointModel>Fast</FloatingPointModel>
       <AdditionalOptions>/sdl %(AdditionalOptions)</AdditionalOptions>
+      <LanguageStandard>stdcpp14</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -241,8 +246,10 @@
     <ClInclude Include="..\..\..\dependencies\imgui\imconfig.h" />
     <ClInclude Include="..\..\..\dependencies\imgui\imgui.h" />
     <ClInclude Include="..\..\..\dependencies\imgui\imgui_dock.h" />
+    <ClInclude Include="..\..\..\dependencies\imgui\imgui_dock.inl" />
     <ClInclude Include="..\..\..\dependencies\imgui\imgui_internal.h" />
     <ClInclude Include="..\..\..\dependencies\imgui\imgui_user.h" />
+    <ClInclude Include="..\..\..\dependencies\imgui\imgui_user.inl" />
     <ClInclude Include="..\..\..\dependencies\imgui\stb_rect_pack.h" />
     <ClInclude Include="..\..\..\dependencies\imgui\stb_textedit.h" />
     <ClInclude Include="..\..\..\dependencies\imgui\stb_truetype.h" />
@@ -251,10 +258,6 @@
     <ClCompile Include="..\..\..\dependencies\imgui\imgui.cpp" />
     <ClCompile Include="..\..\..\dependencies\imgui\imgui_demo.cpp" />
     <ClCompile Include="..\..\..\dependencies\imgui\imgui_draw.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="..\..\..\dependencies\imgui\imgui_dock.inl" />
-    <None Include="..\..\..\dependencies\imgui\imgui_user.inl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

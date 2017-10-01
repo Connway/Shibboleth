@@ -12,7 +12,13 @@
     <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_BezierCurve.h">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_BezierCurve.inl">
+      <Filter>include</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_CachedFunction.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_CachedFunction.inl">
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_Connection.h">
@@ -42,7 +48,13 @@
     <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_Directory.h">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_Directory.inl">
+      <Filter>include</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_DynamicLoader.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_DynamicLoader.inl">
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_DynamicModule.h">
@@ -60,6 +72,9 @@
     <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_EnumReflectionDefinition.h">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_EnumReflectionDefinition.inl">
+      <Filter>include</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_Event.h">
       <Filter>include</Filter>
     </ClInclude>
@@ -75,10 +90,16 @@
     <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_Function.h">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_Function.inl">
+      <Filter>include</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_Hash.h">
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_HashString.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_HashString.inl">
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_Host.h">
@@ -105,10 +126,19 @@
     <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_JSONSerializeWriter.h">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_JSONSerializeWriter.inl">
+      <Filter>include</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_JobPool.h">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_JobPool.inl">
+      <Filter>include</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_LinearCurve.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_LinearCurve.inl">
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_Math.h">
@@ -147,10 +177,16 @@
     <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_ReflectionDefinition.h">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_ReflectionDefinition.inl">
+      <Filter>include</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_ReflectionInterfaces.h">
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_ReflectionVersion.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_ReflectionVersion.inl">
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_ScopedExit.h">
@@ -186,6 +222,9 @@
     <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_Utils.h">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_Utils_Common.inl">
+      <Filter>include</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_Vector.h">
       <Filter>include</Filter>
     </ClInclude>
@@ -193,6 +232,9 @@
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_Watcher.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_Watcher.inl">
       <Filter>include</Filter>
     </ClInclude>
   </ItemGroup>
@@ -226,49 +268,5 @@
     <ClCompile Include="..\..\..\frameworks\Gaff\include\Gaff_Hash.cpp">
       <Filter>include</Filter>
     </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="..\..\..\frameworks\Gaff\include\Gaff_BezierCurve.inl">
-      <Filter>include</Filter>
-    </None>
-    <None Include="..\..\..\frameworks\Gaff\include\Gaff_CachedFunction.inl">
-      <Filter>include</Filter>
-    </None>
-    <None Include="..\..\..\frameworks\Gaff\include\Gaff_Directory.inl">
-      <Filter>include</Filter>
-    </None>
-    <None Include="..\..\..\frameworks\Gaff\include\Gaff_DynamicLoader.inl">
-      <Filter>include</Filter>
-    </None>
-    <None Include="..\..\..\frameworks\Gaff\include\Gaff_EnumReflectionDefinition.inl">
-      <Filter>include</Filter>
-    </None>
-    <None Include="..\..\..\frameworks\Gaff\include\Gaff_Function.inl">
-      <Filter>include</Filter>
-    </None>
-    <None Include="..\..\..\frameworks\Gaff\include\Gaff_HashString.inl">
-      <Filter>include</Filter>
-    </None>
-    <None Include="..\..\..\frameworks\Gaff\include\Gaff_JSONSerializeWriter.inl">
-      <Filter>include</Filter>
-    </None>
-    <None Include="..\..\..\frameworks\Gaff\include\Gaff_JobPool.inl">
-      <Filter>include</Filter>
-    </None>
-    <None Include="..\..\..\frameworks\Gaff\include\Gaff_LinearCurve.inl">
-      <Filter>include</Filter>
-    </None>
-    <None Include="..\..\..\frameworks\Gaff\include\Gaff_ReflectionDefinition.inl">
-      <Filter>include</Filter>
-    </None>
-    <None Include="..\..\..\frameworks\Gaff\include\Gaff_ReflectionVersion.inl">
-      <Filter>include</Filter>
-    </None>
-    <None Include="..\..\..\frameworks\Gaff\include\Gaff_Utils_Common.inl">
-      <Filter>include</Filter>
-    </None>
-    <None Include="..\..\..\frameworks\Gaff\include\Gaff_Watcher.inl">
-      <Filter>include</Filter>
-    </None>
   </ItemGroup>
 </Project>

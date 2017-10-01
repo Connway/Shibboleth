@@ -20,8 +20,6 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#define GAFF_UTILS_NO_CONTAINERS
-
 #include "Shibboleth_Utilities.h"
 #include <Shibboleth_Memory.h>
 #include <Gaff_Utils.h>

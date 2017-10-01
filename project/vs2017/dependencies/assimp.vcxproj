@@ -124,6 +124,7 @@
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
       <FloatingPointModel>Fast</FloatingPointModel>
       <AdditionalOptions>/sdl /bigobj %(AdditionalOptions)</AdditionalOptions>
+      <LanguageStandard>stdcpp14</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -146,6 +147,7 @@
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
       <FloatingPointModel>Fast</FloatingPointModel>
       <AdditionalOptions>/sdl /bigobj %(AdditionalOptions)</AdditionalOptions>
+      <LanguageStandard>stdcpp14</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -170,6 +172,7 @@
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
       <FloatingPointModel>Fast</FloatingPointModel>
       <AdditionalOptions>/analyze /sdl /bigobj %(AdditionalOptions)</AdditionalOptions>
+      <LanguageStandard>stdcpp14</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -194,6 +197,7 @@
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
       <FloatingPointModel>Fast</FloatingPointModel>
       <AdditionalOptions>/sdl /bigobj %(AdditionalOptions)</AdditionalOptions>
+      <LanguageStandard>stdcpp14</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -218,6 +222,7 @@
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
       <FloatingPointModel>Fast</FloatingPointModel>
       <AdditionalOptions>/sdl /bigobj %(AdditionalOptions)</AdditionalOptions>
+      <LanguageStandard>stdcpp14</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -243,6 +248,7 @@
     <ClInclude Include="..\..\..\dependencies\assimp\code\Bitmap.h" />
     <ClInclude Include="..\..\..\dependencies\assimp\code\BlenderBMesh.h" />
     <ClInclude Include="..\..\..\dependencies\assimp\code\BlenderDNA.h" />
+    <ClInclude Include="..\..\..\dependencies\assimp\code\BlenderDNA.inl" />
     <ClInclude Include="..\..\..\dependencies\assimp\code\BlenderIntermediate.h" />
     <ClInclude Include="..\..\..\dependencies\assimp\code\BlenderLoader.h" />
     <ClInclude Include="..\..\..\dependencies\assimp\code\BlenderModifier.h" />
@@ -392,6 +398,7 @@
     <ClInclude Include="..\..\..\dependencies\assimp\code\ScenePrivate.h" />
     <ClInclude Include="..\..\..\dependencies\assimp\code\SkeletonMeshBuilder.h" />
     <ClInclude Include="..\..\..\dependencies\assimp\code\SmoothingGroups.h" />
+    <ClInclude Include="..\..\..\dependencies\assimp\code\SmoothingGroups.inl" />
     <ClInclude Include="..\..\..\dependencies\assimp\code\SortByPTypeProcess.h" />
     <ClInclude Include="..\..\..\dependencies\assimp\code\SpatialSort.h" />
     <ClInclude Include="..\..\..\dependencies\assimp\code\SplitByBoneCountProcess.h" />
@@ -466,22 +473,29 @@
     <ClInclude Include="..\..\..\dependencies\assimp\include\assimp\cfileio.h" />
     <ClInclude Include="..\..\..\dependencies\assimp\include\assimp\cimport.h" />
     <ClInclude Include="..\..\..\dependencies\assimp\include\assimp\color4.h" />
+    <ClInclude Include="..\..\..\dependencies\assimp\include\assimp\color4.inl" />
     <ClInclude Include="..\..\..\dependencies\assimp\include\assimp\config.h" />
     <ClInclude Include="..\..\..\dependencies\assimp\include\assimp\defs.h" />
     <ClInclude Include="..\..\..\dependencies\assimp\include\assimp\importerdesc.h" />
     <ClInclude Include="..\..\..\dependencies\assimp\include\assimp\light.h" />
     <ClInclude Include="..\..\..\dependencies\assimp\include\assimp\material.h" />
+    <ClInclude Include="..\..\..\dependencies\assimp\include\assimp\material.inl" />
     <ClInclude Include="..\..\..\dependencies\assimp\include\assimp\matrix3x3.h" />
+    <ClInclude Include="..\..\..\dependencies\assimp\include\assimp\matrix3x3.inl" />
     <ClInclude Include="..\..\..\dependencies\assimp\include\assimp\matrix4x4.h" />
+    <ClInclude Include="..\..\..\dependencies\assimp\include\assimp\matrix4x4.inl" />
     <ClInclude Include="..\..\..\dependencies\assimp\include\assimp\mesh.h" />
     <ClInclude Include="..\..\..\dependencies\assimp\include\assimp\metadata.h" />
     <ClInclude Include="..\..\..\dependencies\assimp\include\assimp\postprocess.h" />
     <ClInclude Include="..\..\..\dependencies\assimp\include\assimp\quaternion.h" />
+    <ClInclude Include="..\..\..\dependencies\assimp\include\assimp\quaternion.inl" />
     <ClInclude Include="..\..\..\dependencies\assimp\include\assimp\scene.h" />
     <ClInclude Include="..\..\..\dependencies\assimp\include\assimp\texture.h" />
     <ClInclude Include="..\..\..\dependencies\assimp\include\assimp\types.h" />
     <ClInclude Include="..\..\..\dependencies\assimp\include\assimp\vector2.h" />
+    <ClInclude Include="..\..\..\dependencies\assimp\include\assimp\vector2.inl" />
     <ClInclude Include="..\..\..\dependencies\assimp\include\assimp\vector3.h" />
+    <ClInclude Include="..\..\..\dependencies\assimp\include\assimp\vector3.inl" />
     <ClInclude Include="..\..\..\dependencies\assimp\include\assimp\version.h" />
   </ItemGroup>
   <ItemGroup>
@@ -647,17 +661,6 @@
     <ClCompile Include="..\..\..\dependencies\assimp\contrib\poly2tri\poly2tri\sweep\cdt.cc" />
     <ClCompile Include="..\..\..\dependencies\assimp\contrib\poly2tri\poly2tri\sweep\sweep.cc" />
     <ClCompile Include="..\..\..\dependencies\assimp\contrib\poly2tri\poly2tri\sweep\sweep_context.cc" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="..\..\..\dependencies\assimp\code\BlenderDNA.inl" />
-    <None Include="..\..\..\dependencies\assimp\code\SmoothingGroups.inl" />
-    <None Include="..\..\..\dependencies\assimp\include\assimp\color4.inl" />
-    <None Include="..\..\..\dependencies\assimp\include\assimp\material.inl" />
-    <None Include="..\..\..\dependencies\assimp\include\assimp\matrix3x3.inl" />
-    <None Include="..\..\..\dependencies\assimp\include\assimp\matrix4x4.inl" />
-    <None Include="..\..\..\dependencies\assimp\include\assimp\quaternion.inl" />
-    <None Include="..\..\..\dependencies\assimp\include\assimp\vector2.inl" />
-    <None Include="..\..\..\dependencies\assimp\include\assimp\vector3.inl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

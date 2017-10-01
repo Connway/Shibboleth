@@ -1,5 +1,10 @@
+dofile("actions.lua")
 dofile("options.lua")
 dofile("helper_functions.lua")
+
+function Generate(generator)
+	dofile(generator)
+end
 
 solution "Shibboleth"
 	dofile("solution_configs.lua")
@@ -10,18 +15,12 @@ solution "Shibboleth"
 	local project_generators = os.matchfiles("../src/**/project_generator.lua")
 
 	group "Dependencies"
-	for i = 1, table.getn(dependency_generators) do
-		dofile(dependency_generators[i])
-	end
+	table.foreachi(dependency_generators, Generate)
 
 	group "Frameworks"
-	for i = 1, table.getn(framework_generators) do
-		dofile(framework_generators[i])
-	end
+	table.foreachi(framework_generators, Generate)
 
 	group "Tests"
 	dofile("../tests/project_generator.lua")
 
-	for i = 1, table.getn(project_generators) do
-		dofile(project_generators[i])
-	end
+	table.foreachi(project_generators, Generate)
