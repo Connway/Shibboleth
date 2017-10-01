@@ -129,7 +129,7 @@
       <ExceptionHandling>Async</ExceptionHandling>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <FloatingPointModel>Fast</FloatingPointModel>
-      <AdditionalOptions>/sdl %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>/sdl /std:c++14 %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -143,7 +143,7 @@
       <Message>Generating Gen_ReflectionInit.h for module Resource!</Message>
     </PreBuildEvent>
     <PostBuildEvent>
-      <Command>mkdir ..\..\..\workingdir\App\Modules
+      <Command>IF NOT EXIST ..\..\..\workingdir\App\Modules (mkdir ..\..\..\workingdir\App\Modules)
 IF EXIST ..\..\..\build\output\x64\Debug\$(TargetFileName)\ (xcopy /Q /E /Y /I ..\..\..\build\output\x64\Debug\$(TargetFileName) ..\..\..\workingdir\App\Modules &gt; nul) ELSE (xcopy /Q /Y /I ..\..\..\build\output\x64\Debug\$(TargetFileName) ..\..\..\workingdir\App\Modules &gt; nul)</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
@@ -163,7 +163,7 @@ IF EXIST ..\..\..\build\output\x64\Debug\$(TargetFileName)\ (xcopy /Q /E /Y /I .
       <ExceptionHandling>Async</ExceptionHandling>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <FloatingPointModel>Fast</FloatingPointModel>
-      <AdditionalOptions>/sdl %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>/sdl /std:c++14 %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -179,7 +179,7 @@ IF EXIST ..\..\..\build\output\x64\Debug\$(TargetFileName)\ (xcopy /Q /E /Y /I .
       <Message>Generating Gen_ReflectionInit.h for module Resource!</Message>
     </PreBuildEvent>
     <PostBuildEvent>
-      <Command>mkdir ..\..\..\workingdir\App\Modules
+      <Command>IF NOT EXIST ..\..\..\workingdir\App\Modules (mkdir ..\..\..\workingdir\App\Modules)
 IF EXIST ..\..\..\build\output\x64\Release\$(TargetFileName)\ (xcopy /Q /E /Y /I ..\..\..\build\output\x64\Release\$(TargetFileName) ..\..\..\workingdir\App\Modules &gt; nul) ELSE (xcopy /Q /Y /I ..\..\..\build\output\x64\Release\$(TargetFileName) ..\..\..\workingdir\App\Modules &gt; nul)</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
@@ -198,7 +198,7 @@ IF EXIST ..\..\..\build\output\x64\Release\$(TargetFileName)\ (xcopy /Q /E /Y /I
       <ExceptionHandling>Async</ExceptionHandling>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <FloatingPointModel>Fast</FloatingPointModel>
-      <AdditionalOptions>/analyze /sdl %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>/analyze /sdl /std:c++14 %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -213,7 +213,7 @@ IF EXIST ..\..\..\build\output\x64\Release\$(TargetFileName)\ (xcopy /Q /E /Y /I
       <Message>Generating Gen_ReflectionInit.h for module Resource!</Message>
     </PreBuildEvent>
     <PostBuildEvent>
-      <Command>mkdir ..\..\..\workingdir\App\Modules
+      <Command>IF NOT EXIST ..\..\..\workingdir\App\Modules (mkdir ..\..\..\workingdir\App\Modules)
 IF EXIST ..\..\..\build\output\x64\Analyze\$(TargetFileName)\ (xcopy /Q /E /Y /I ..\..\..\build\output\x64\Analyze\$(TargetFileName) ..\..\..\workingdir\App\Modules &gt; nul) ELSE (xcopy /Q /Y /I ..\..\..\build\output\x64\Analyze\$(TargetFileName) ..\..\..\workingdir\App\Modules &gt; nul)</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
@@ -233,7 +233,7 @@ IF EXIST ..\..\..\build\output\x64\Analyze\$(TargetFileName)\ (xcopy /Q /E /Y /I
       <ExceptionHandling>Async</ExceptionHandling>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <FloatingPointModel>Fast</FloatingPointModel>
-      <AdditionalOptions>/sdl %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>/sdl /std:c++14 %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -249,7 +249,7 @@ IF EXIST ..\..\..\build\output\x64\Analyze\$(TargetFileName)\ (xcopy /Q /E /Y /I
       <Message>Generating Gen_ReflectionInit.h for module Resource!</Message>
     </PreBuildEvent>
     <PostBuildEvent>
-      <Command>mkdir ..\..\..\workingdir\App\Modules
+      <Command>IF NOT EXIST ..\..\..\workingdir\App\Modules (mkdir ..\..\..\workingdir\App\Modules)
 IF EXIST ..\..\..\build\output\x64\Profile\$(TargetFileName)\ (xcopy /Q /E /Y /I ..\..\..\build\output\x64\Profile\$(TargetFileName) ..\..\..\workingdir\App\Modules &gt; nul) ELSE (xcopy /Q /Y /I ..\..\..\build\output\x64\Profile\$(TargetFileName) ..\..\..\workingdir\App\Modules &gt; nul)</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
@@ -269,7 +269,7 @@ IF EXIST ..\..\..\build\output\x64\Profile\$(TargetFileName)\ (xcopy /Q /E /Y /I
       <ExceptionHandling>Async</ExceptionHandling>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <FloatingPointModel>Fast</FloatingPointModel>
-      <AdditionalOptions>/sdl %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>/sdl /std:c++14 %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -285,7 +285,7 @@ IF EXIST ..\..\..\build\output\x64\Profile\$(TargetFileName)\ (xcopy /Q /E /Y /I
       <Message>Generating Gen_ReflectionInit.h for module Resource!</Message>
     </PreBuildEvent>
     <PostBuildEvent>
-      <Command>mkdir ..\..\..\workingdir\App\Modules
+      <Command>IF NOT EXIST ..\..\..\workingdir\App\Modules (mkdir ..\..\..\workingdir\App\Modules)
 IF EXIST ..\..\..\build\output\x64\Optimized_Debug\$(TargetFileName)\ (xcopy /Q /E /Y /I ..\..\..\build\output\x64\Optimized_Debug\$(TargetFileName) ..\..\..\workingdir\App\Modules &gt; nul) ELSE (xcopy /Q /Y /I ..\..\..\build\output\x64\Optimized_Debug\$(TargetFileName) ..\..\..\workingdir\App\Modules &gt; nul)</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>

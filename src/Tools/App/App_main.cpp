@@ -22,6 +22,22 @@ THE SOFTWARE.
 
 #include <Shibboleth_App.h>
 
+#ifdef PLATFORM_WINDOWS
+int CALLBACK WinMain(HINSTANCE /*hInstance*/, HINSTANCE /*hPrevInstance*/, LPSTR /*lpCmdLine*/, int /*nCmdShow*/)
+{
+	Shibboleth::App app;
+
+	if (!app.init()) {
+		app.destroy();
+		return -1;
+	}
+
+	app.run();
+	app.destroy();
+
+	return 0;
+}
+#else
 int main(int argc, char** argv)
 {
 	Shibboleth::App app;
@@ -36,3 +52,4 @@ int main(int argc, char** argv)
 
 	return 0;
 }
+#endif

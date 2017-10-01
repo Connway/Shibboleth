@@ -58,6 +58,9 @@ public:
 	~App(void);
 
 	bool init(int argc, char** argv);
+#ifdef PLATFORM_WINDOWS
+	bool init(void);
+#endif
 	void run(void);
 	void destroy(void);
 
@@ -68,7 +71,6 @@ public:
 
 	IFileSystem* getFileSystem(void) override;
 	const VectorMap<HashString32, U8String>& getCmdLine(void) const override;
-	VectorMap<HashString32, U8String>& getCmdLine(void) override;
 
 	LogManager& getLogManager(void) override;
 	JobPool& getJobPool(void) override;
@@ -123,6 +125,7 @@ private:
 
 	VectorMap<HashString32, U8String> _cmd_line_args;
 
+	bool initInternal(void);
 	bool loadFileSystem(void);
 	bool loadMainLoop(void);
 	bool loadModules(void);

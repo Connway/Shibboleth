@@ -32,6 +32,10 @@ THE SOFTWARE.
 #include <Gaff_File.h>
 #include <regex>
 
+#ifdef PLATFORM_WINDOWS
+	#include <shellapi.h>
+#endif
+
 #ifdef INIT_STACKTRACE_SYSTEM
 	#include <Gaff_StackTrace.h>
 #endif
@@ -51,14 +55,29 @@ App::~App(void)
 {
 }
 
-// Still single-threaded at this point, so ok that we're not using the spinlock
+// Still single-threaded at this point, so ok that we're not locking.
 bool App::init(int argc, char** argv)
+{
+	_cmd_line_args = Gaff::ParseCommandLine<ProxyAllocator>(argc, argv);
+	return init();
+}
+
+#ifdef PLATFORM_WINDOWS
+// Still single-threaded at this point, so ok that we're not locking.
+bool App::init(void)
+{
+	int argc = 0;
+	wchar_t** argv = CommandLineToArgvW(GetCommandLineW(), &argc);
+	_cmd_line_args = Gaff::ParseCommandLine<ProxyAllocator>(argc, argv);
+	return initInternal();
+}
+#endif
+
+bool App::initInternal(void)
 {
 #ifdef INIT_STACKTRACE_SYSTEM
 	GAFF_ASSERT(Gaff::StackTrace::Init());
 #endif
-
-	_cmd_line_args = Gaff::ParseCommandLine<ProxyAllocator>(argc, argv);
 
 	if (!initApp()) {
 		return false;
@@ -110,8 +129,7 @@ bool App::init(int argc, char** argv)
 #endif
 
 	LogInfoDefault("Game Successfully Initialized\n\n");
-	return true;
-}
+	return true;}
 
 // Still single-threaded at this point, so ok that we're not using the spinlock
 bool App::loadFileSystem(void)
@@ -439,11 +457,6 @@ IFileSystem* App::getFileSystem(void)
 }
 
 const VectorMap<HashString32, U8String>& App::getCmdLine(void) const
-{
-	return _cmd_line_args;
-}
-
-VectorMap<HashString32, U8String>& App::getCmdLine(void)
 {
 	return _cmd_line_args;
 }

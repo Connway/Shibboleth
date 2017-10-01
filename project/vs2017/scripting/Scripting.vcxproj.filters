@@ -12,10 +12,16 @@
     <ClInclude Include="..\..\..\src\Modules\Scripting\include\Shibboleth_AngelScript.h">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\src\Modules\Scripting\include\Shibboleth_AngelScript.inl">
+      <Filter>include</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\src\Modules\Scripting\include\Shibboleth_AngelScriptBaseTypes.h">
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\src\Modules\Scripting\include\Shibboleth_AngelScriptComponent.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\Modules\Scripting\include\Shibboleth_AngelScriptComponent.inl">
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\src\Modules\Scripting\include\Shibboleth_AngelScriptComponentWrapper.h">
@@ -34,13 +40,5 @@
     <ClCompile Include="..\..\..\src\Modules\Scripting\Shibboleth_AngelScriptComponentWrapper.cpp" />
     <ClCompile Include="..\..\..\src\Modules\Scripting\Shibboleth_AngelScriptManager.cpp" />
     <ClCompile Include="..\..\..\src\Modules\Scripting\Shibboleth_AngelScriptResource.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="..\..\..\src\Modules\Scripting\include\Shibboleth_AngelScript.inl">
-      <Filter>include</Filter>
-    </None>
-    <None Include="..\..\..\src\Modules\Scripting\include\Shibboleth_AngelScriptComponent.inl">
-      <Filter>include</Filter>
-    </None>
   </ItemGroup>
 </Project>

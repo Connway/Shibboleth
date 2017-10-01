@@ -20,19 +20,11 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-/*!
-	\brief Parses the command line into option/value(s) pairs using a hashmap.
-	\return A HashMap of option/value strings.
-	\note
-		Options start with either a '-' or '--'. Option values are space separated.
-
-		Example (using JSON style notation for result):
-
-		(cmdline): --option1 value1 value2 -option2 value3 -flag0
-
-		(result): { "option1": "value1 value2", "option2": "value3", "flag0": "" }
-*/
-#ifndef GAFF_UTILS_NO_CONTAINERS
+// Parses the command line into option / value(s) pairs using a hashmap.
+// Options start with either a '-' or '--'.Option values are space separated.
+// Example(using JSON style notation for result) :
+// (cmdline) : --option1 value1 value2 - option2 value3 - flag0
+// (result) : { "option1": "value1 value2", "option2" : "value3", "flag0" : "" }
 template <class Allocator>
 VectorMap<HashString32<Allocator>, U8String<Allocator>, Allocator> ParseCommandLine(int argc, char** argv)
 {
@@ -41,9 +33,7 @@ VectorMap<HashString32<Allocator>, U8String<Allocator>, Allocator> ParseCommandL
 	return opt_flag_map;
 }
 
-/*!
-	\brief Same as ParseCommandLine, but the user provides the HashMap we are outputting to.
-*/
+// Same as ParseCommandLine, but the user provides the HashMap we are outputting to.
 template <class Allocator>
 void ParseCommandLine(int argc, char** argv, VectorMap<HashString32<Allocator>, U8String<Allocator>, Allocator>& out)
 {
@@ -78,6 +68,65 @@ void ParseCommandLine(int argc, char** argv, VectorMap<HashString32<Allocator>, 
 			}
 
 			option = value + option_begin;
+		}
+	}
+
+	if (option.size()) {
+		out[option] = std::move(values);
+	}
+}
+
+#ifdef PLATFORM_WINDOWS
+// Parses the command line into option / value(s) pairs using a hashmap.
+// Options start with either a '-' or '--'.Option values are space separated.
+// Example(using JSON style notation for result) :
+// (cmdline) : --option1 value1 value2 - option2 value3 - flag0
+// (result) : { "option1": "value1 value2", "option2" : "value3", "flag0" : "" }
+template <class Allocator>
+VectorMap<HashString32<Allocator>, U8String<Allocator>, Allocator> ParseCommandLine(int argc, wchar_t** argv)
+{
+	VectorMap<HashString32<Allocator>, U8String<Allocator>, Allocator> opt_flag_map;
+	ParseCommandLine(argc, argv, opt_flag_map);
+	return opt_flag_map;
+}
+
+// Same as ParseCommandLine, but the user provides the HashMap we are outputting to.
+template <class Allocator>
+void ParseCommandLine(int argc, wchar_t** argv, VectorMap<HashString32<Allocator>, U8String<Allocator>, Allocator>& out)
+{
+	if (argc == 1) {
+		return;
+	}
+
+	HashString32<Allocator> option;
+	U8String<Allocator> values;
+
+	for (int i = 1; i < argc; ++i) {
+		unsigned int option_begin = 0;
+		const wchar_t* value = argv[i];
+		CONVERT_STRING(char, temp, value);
+
+		// If it doesn't start with - or -- then skip it!
+		while (temp[option_begin] == '-') {
+			++option_begin;
+		}
+
+		if (!option_begin) {
+			if (option.size()) {
+				if (values.size()) {
+					values += ' ';
+				}
+
+				values += temp;
+			}
+
+		}
+		else {
+			if (option.size()) {
+				out[option] = std::move(values);
+			}
+
+			option = temp + option_begin;
 		}
 	}
 

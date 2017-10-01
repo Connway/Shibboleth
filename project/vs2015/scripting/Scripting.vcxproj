@@ -124,7 +124,7 @@
       <ExceptionHandling>Async</ExceptionHandling>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
       <FloatingPointModel>Fast</FloatingPointModel>
-      <AdditionalOptions>/sdl %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>/sdl /std:c++14 %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -150,7 +150,7 @@
       <ExceptionHandling>Async</ExceptionHandling>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
       <FloatingPointModel>Fast</FloatingPointModel>
-      <AdditionalOptions>/sdl %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>/sdl /std:c++14 %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -177,7 +177,7 @@
       <ExceptionHandling>Async</ExceptionHandling>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
       <FloatingPointModel>Fast</FloatingPointModel>
-      <AdditionalOptions>/analyze /sdl %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>/analyze /sdl /std:c++14 %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -202,7 +202,7 @@
       <ExceptionHandling>Async</ExceptionHandling>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
       <FloatingPointModel>Fast</FloatingPointModel>
-      <AdditionalOptions>/sdl %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>/sdl /std:c++14 %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -230,7 +230,7 @@
       <ExceptionHandling>Async</ExceptionHandling>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
       <FloatingPointModel>Fast</FloatingPointModel>
-      <AdditionalOptions>/sdl %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>/sdl /std:c++14 %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -245,8 +245,10 @@
   <ItemGroup>
     <ClInclude Include="..\..\..\src\Modules\Scripting\include\Gen_ReflectionInit.h" />
     <ClInclude Include="..\..\..\src\Modules\Scripting\include\Shibboleth_AngelScript.h" />
+    <ClInclude Include="..\..\..\src\Modules\Scripting\include\Shibboleth_AngelScript.inl" />
     <ClInclude Include="..\..\..\src\Modules\Scripting\include\Shibboleth_AngelScriptBaseTypes.h" />
     <ClInclude Include="..\..\..\src\Modules\Scripting\include\Shibboleth_AngelScriptComponent.h" />
+    <ClInclude Include="..\..\..\src\Modules\Scripting\include\Shibboleth_AngelScriptComponent.inl" />
     <ClInclude Include="..\..\..\src\Modules\Scripting\include\Shibboleth_AngelScriptComponentWrapper.h" />
     <ClInclude Include="..\..\..\src\Modules\Scripting\include\Shibboleth_AngelScriptManager.h" />
     <ClInclude Include="..\..\..\src\Modules\Scripting\include\Shibboleth_AngelScriptResource.h" />
@@ -257,10 +259,6 @@
     <ClCompile Include="..\..\..\src\Modules\Scripting\Shibboleth_AngelScriptComponentWrapper.cpp" />
     <ClCompile Include="..\..\..\src\Modules\Scripting\Shibboleth_AngelScriptManager.cpp" />
     <ClCompile Include="..\..\..\src\Modules\Scripting\Shibboleth_AngelScriptResource.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="..\..\..\src\Modules\Scripting\include\Shibboleth_AngelScript.inl" />
-    <None Include="..\..\..\src\Modules\Scripting\include\Shibboleth_AngelScriptComponent.inl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

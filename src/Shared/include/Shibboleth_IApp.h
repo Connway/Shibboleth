@@ -81,7 +81,6 @@ public:
 
 	virtual IFileSystem* getFileSystem(void) = 0;
 	virtual const VectorMap<HashString32, U8String>& getCmdLine(void) const = 0;
-	virtual VectorMap<HashString32, U8String>& getCmdLine(void) = 0;
 
 	virtual LogManager& getLogManager(void) = 0;
 	virtual JobPool& getJobPool(void) = 0;

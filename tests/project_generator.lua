@@ -75,9 +75,7 @@ local tests = {
 	}
 }
 
-for i = 1, table.getn(tests) do
-	local settings = tests[i]
-
+function GenTest(settings)
 	project(settings.name)
 		if _ACTION then
 			location ("../project/" .. _ACTION .. "/tests")
@@ -109,5 +107,6 @@ for i = 1, table.getn(tests) do
 
 		includedirs(settings.includedirs)
 		links(settings.links)
-
 end
+
+table.foreachi(tests, GenTest)

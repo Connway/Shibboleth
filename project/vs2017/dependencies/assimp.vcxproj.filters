@@ -114,6 +114,9 @@
     <ClInclude Include="..\..\..\dependencies\assimp\code\BlenderDNA.h">
       <Filter>code</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\assimp\code\BlenderDNA.inl">
+      <Filter>code</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\dependencies\assimp\code\BlenderIntermediate.h">
       <Filter>code</Filter>
     </ClInclude>
@@ -561,6 +564,9 @@
     <ClInclude Include="..\..\..\dependencies\assimp\code\SmoothingGroups.h">
       <Filter>code</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\assimp\code\SmoothingGroups.inl">
+      <Filter>code</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\dependencies\assimp\code\SortByPTypeProcess.h">
       <Filter>code</Filter>
     </ClInclude>
@@ -783,6 +789,9 @@
     <ClInclude Include="..\..\..\dependencies\assimp\include\assimp\color4.h">
       <Filter>include\assimp</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\assimp\include\assimp\color4.inl">
+      <Filter>include\assimp</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\dependencies\assimp\include\assimp\config.h">
       <Filter>include\assimp</Filter>
     </ClInclude>
@@ -798,10 +807,19 @@
     <ClInclude Include="..\..\..\dependencies\assimp\include\assimp\material.h">
       <Filter>include\assimp</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\assimp\include\assimp\material.inl">
+      <Filter>include\assimp</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\dependencies\assimp\include\assimp\matrix3x3.h">
       <Filter>include\assimp</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\assimp\include\assimp\matrix3x3.inl">
+      <Filter>include\assimp</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\dependencies\assimp\include\assimp\matrix4x4.h">
+      <Filter>include\assimp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\assimp\include\assimp\matrix4x4.inl">
       <Filter>include\assimp</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\dependencies\assimp\include\assimp\mesh.h">
@@ -816,6 +834,9 @@
     <ClInclude Include="..\..\..\dependencies\assimp\include\assimp\quaternion.h">
       <Filter>include\assimp</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\assimp\include\assimp\quaternion.inl">
+      <Filter>include\assimp</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\dependencies\assimp\include\assimp\scene.h">
       <Filter>include\assimp</Filter>
     </ClInclude>
@@ -828,7 +849,13 @@
     <ClInclude Include="..\..\..\dependencies\assimp\include\assimp\vector2.h">
       <Filter>include\assimp</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\assimp\include\assimp\vector2.inl">
+      <Filter>include\assimp</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\dependencies\assimp\include\assimp\vector3.h">
+      <Filter>include\assimp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\assimp\include\assimp\vector3.inl">
       <Filter>include\assimp</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\dependencies\assimp\include\assimp\version.h">
@@ -1322,34 +1349,5 @@
     <ClCompile Include="..\..\..\dependencies\assimp\contrib\poly2tri\poly2tri\sweep\sweep_context.cc">
       <Filter>contrib\poly2tri\poly2tri\sweep</Filter>
     </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="..\..\..\dependencies\assimp\code\BlenderDNA.inl">
-      <Filter>code</Filter>
-    </None>
-    <None Include="..\..\..\dependencies\assimp\code\SmoothingGroups.inl">
-      <Filter>code</Filter>
-    </None>
-    <None Include="..\..\..\dependencies\assimp\include\assimp\color4.inl">
-      <Filter>include\assimp</Filter>
-    </None>
-    <None Include="..\..\..\dependencies\assimp\include\assimp\material.inl">
-      <Filter>include\assimp</Filter>
-    </None>
-    <None Include="..\..\..\dependencies\assimp\include\assimp\matrix3x3.inl">
-      <Filter>include\assimp</Filter>
-    </None>
-    <None Include="..\..\..\dependencies\assimp\include\assimp\matrix4x4.inl">
-      <Filter>include\assimp</Filter>
-    </None>
-    <None Include="..\..\..\dependencies\assimp\include\assimp\quaternion.inl">
-      <Filter>include\assimp</Filter>
-    </None>
-    <None Include="..\..\..\dependencies\assimp\include\assimp\vector2.inl">
-      <Filter>include\assimp</Filter>
-    </None>
-    <None Include="..\..\..\dependencies\assimp\include\assimp\vector3.inl">
-      <Filter>include\assimp</Filter>
-    </None>
   </ItemGroup>
 </Project>
