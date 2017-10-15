@@ -12,7 +12,7 @@ project "glew"
 	files { "**.h", "**.c" }
 	includedirs { "include" }
 
-	filter { "configurations:vs*" }
+	filter { "action:vs*" }
 		defines { "_CRT_SECURE_NO_WARNINGS" }
 
 	filter {}

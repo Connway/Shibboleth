@@ -12,27 +12,9 @@ newoption
 
 newoption
 {
-	trigger = "simd",
-	description = "Generate solution with defines for using SIMD instructions."
-}
-
-newoption
-{
-	trigger = "simd_set_aligned",
-	description = "Generate solution with defines for using SIMDStoreAligned and SIMDLoadAligned instructions."
-}
-
-newoption
-{
 	trigger = "fmod_path",
 	value = "path",
 	description = "The path to your FMOD installation. Use only if FMOD is not already in your global VC++ Directories. (Windows Only)"
-}
-
-newoption
-{
-	trigger = "brofiler",
-	description = "Specify to compile and use the Brofiler intrusive profiler. (Windows Only)"
 }
 
 newoption
