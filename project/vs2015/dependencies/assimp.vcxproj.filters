@@ -22,9 +22,6 @@
     <Filter Include="contrib">
       <UniqueIdentifier>{16D079D3-82AF-F86E-8BC7-8345F7255FD0}</UniqueIdentifier>
     </Filter>
-    <Filter Include="contrib\ConvertUTF">
-      <UniqueIdentifier>{9593EA06-8177-AB5C-EAD7-A5AFD6DA95DE}</UniqueIdentifier>
-    </Filter>
     <Filter Include="contrib\clipper">
       <UniqueIdentifier>{349F6F83-A02A-DD47-A93B-603C15463948}</UniqueIdentifier>
     </Filter>
@@ -55,6 +52,15 @@
     <Filter Include="contrib\poly2tri\poly2tri\sweep">
       <UniqueIdentifier>{B111DF3C-1DF5-ED7C-26F8-1BB9925AB4CD}</UniqueIdentifier>
     </Filter>
+    <Filter Include="contrib\utf8cpp">
+      <UniqueIdentifier>{2FF55BFF-9B80-C9C3-A491-4CB8109C25C4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="contrib\utf8cpp\source">
+      <UniqueIdentifier>{6F8C1962-5B86-42B4-44F3-D8C4308CA820}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="contrib\utf8cpp\source\utf8">
+      <UniqueIdentifier>{A54C7232-115A-A018-9A40-9C03064D6CCF}</UniqueIdentifier>
+    </Filter>
     <Filter Include="include">
       <UniqueIdentifier>{89AF369E-F58E-B539-FEA6-40106A051C9B}</UniqueIdentifier>
     </Filter>
@@ -63,6 +69,12 @@
     </Filter>
     <Filter Include="include\assimp\Compiler">
       <UniqueIdentifier>{8F8B9273-FBC2-DA0A-04CD-3E2E70830104}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\assimp\port">
+      <UniqueIdentifier>{19D36570-8534-437E-0EA2-89307A027A3D}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\assimp\port\AndroidJNI">
+      <UniqueIdentifier>{CABBE3D0-B6E1-AD37-9F27-33038BECD203}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -76,6 +88,15 @@
       <Filter>code</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\dependencies\assimp\code\ACLoader.h">
+      <Filter>code</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\assimp\code\AMFImporter.hpp">
+      <Filter>code</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\assimp\code\AMFImporter_Macro.hpp">
+      <Filter>code</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\assimp\code\AMFImporter_Node.hpp">
       <Filter>code</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\dependencies\assimp\code\ASELoader.h">
@@ -219,6 +240,15 @@
     <ClInclude Include="..\..\..\dependencies\assimp\code\ConvertToLHProcess.h">
       <Filter>code</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\assimp\code\CreateAnimMesh.h">
+      <Filter>code</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\assimp\code\D3MFImporter.h">
+      <Filter>code</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\assimp\code\D3MFOpcPackage.h">
+      <Filter>code</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\dependencies\assimp\code\DXFHelper.h">
       <Filter>code</Filter>
     </ClInclude>
@@ -228,16 +258,7 @@
     <ClInclude Include="..\..\..\dependencies\assimp\code\DeboneProcess.h">
       <Filter>code</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\dependencies\assimp\code\DefaultIOStream.h">
-      <Filter>code</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\dependencies\assimp\code\DefaultIOSystem.h">
-      <Filter>code</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\dependencies\assimp\code\DefaultProgressHandler.h">
-      <Filter>code</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\dependencies\assimp\code\Defines.h">
       <Filter>code</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\dependencies\assimp\code\Exceptional.h">
@@ -261,6 +282,9 @@
     <ClInclude Include="..\..\..\dependencies\assimp\code\FBXImporter.h">
       <Filter>code</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\assimp\code\FBXMeshGeometry.h">
+      <Filter>code</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\dependencies\assimp\code\FBXParser.h">
       <Filter>code</Filter>
     </ClInclude>
@@ -271,6 +295,9 @@
       <Filter>code</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\dependencies\assimp\code\FBXUtil.h">
+      <Filter>code</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\assimp\code\FIReader.hpp">
       <Filter>code</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\dependencies\assimp\code\FileLogStream.h">
@@ -322,6 +349,9 @@
       <Filter>code</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\dependencies\assimp\code\IFF.h">
+      <Filter>code</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\assimp\code\IOStreamBuffer.h">
       <Filter>code</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\dependencies\assimp\code\IRRLoader.h">
@@ -405,6 +435,21 @@
     <ClInclude Include="..\..\..\dependencies\assimp\code\MDLLoader.h">
       <Filter>code</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\assimp\code\MMDCpp14.h">
+      <Filter>code</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\assimp\code\MMDImporter.h">
+      <Filter>code</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\assimp\code\MMDPmdParser.h">
+      <Filter>code</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\assimp\code\MMDPmxParser.h">
+      <Filter>code</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\assimp\code\MMDVmdParser.h">
+      <Filter>code</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\dependencies\assimp\code\MS3DLoader.h">
       <Filter>code</Filter>
     </ClInclude>
@@ -415,6 +460,9 @@
       <Filter>code</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\dependencies\assimp\code\MaterialSystem.h">
+      <Filter>code</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\assimp\code\MathFunctions.h">
       <Filter>code</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\dependencies\assimp\code\MemoryIOWrapper.h">
@@ -531,6 +579,9 @@
     <ClInclude Include="..\..\..\dependencies\assimp\code\SGSpatialSort.h">
       <Filter>code</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\assimp\code\SIBImporter.h">
+      <Filter>code</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\dependencies\assimp\code\SMDLoader.h">
       <Filter>code</Filter>
     </ClInclude>
@@ -547,9 +598,6 @@
       <Filter>code</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\dependencies\assimp\code\STLLoader.h">
-      <Filter>code</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\dependencies\assimp\code\SceneCombiner.h">
       <Filter>code</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\dependencies\assimp\code\ScenePreprocessor.h">
@@ -597,6 +645,9 @@
     <ClInclude Include="..\..\..\dependencies\assimp\code\StringComparison.h">
       <Filter>code</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\assimp\code\StringUtils.h">
+      <Filter>code</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\dependencies\assimp\code\Subdivision.h">
       <Filter>code</Filter>
     </ClInclude>
@@ -621,9 +672,6 @@
     <ClInclude Include="..\..\..\dependencies\assimp\code\ValidateDataStructure.h">
       <Filter>code</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\dependencies\assimp\code\Version.h">
-      <Filter>code</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\dependencies\assimp\code\Vertex.h">
       <Filter>code</Filter>
     </ClInclude>
@@ -631,6 +679,18 @@
       <Filter>code</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\dependencies\assimp\code\Win32DebugLogStream.h">
+      <Filter>code</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\assimp\code\X3DExporter.hpp">
+      <Filter>code</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\assimp\code\X3DImporter.hpp">
+      <Filter>code</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\assimp\code\X3DImporter_Macro.hpp">
+      <Filter>code</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\assimp\code\X3DImporter_Node.hpp">
       <Filter>code</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\dependencies\assimp\code\XFileExporter.h">
@@ -657,6 +717,42 @@
     <ClInclude Include="..\..\..\dependencies\assimp\code\fast_atof.h">
       <Filter>code</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\assimp\code\glTF2Asset.h">
+      <Filter>code</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\assimp\code\glTF2Asset.inl">
+      <Filter>code</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\assimp\code\glTF2AssetWriter.h">
+      <Filter>code</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\assimp\code\glTF2AssetWriter.inl">
+      <Filter>code</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\assimp\code\glTF2Exporter.h">
+      <Filter>code</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\assimp\code\glTF2Importer.h">
+      <Filter>code</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\assimp\code\glTFAsset.h">
+      <Filter>code</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\assimp\code\glTFAsset.inl">
+      <Filter>code</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\assimp\code\glTFAssetWriter.h">
+      <Filter>code</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\assimp\code\glTFAssetWriter.inl">
+      <Filter>code</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\assimp\code\glTFExporter.h">
+      <Filter>code</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\assimp\code\glTFImporter.h">
+      <Filter>code</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\dependencies\assimp\code\irrXMLWrapper.h">
       <Filter>code</Filter>
     </ClInclude>
@@ -668,9 +764,6 @@
     </ClInclude>
     <ClInclude Include="..\..\..\dependencies\assimp\code\revision.h">
       <Filter>code</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\dependencies\assimp\contrib\ConvertUTF\ConvertUTF.h">
-      <Filter>contrib\ConvertUTF</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\dependencies\assimp\contrib\clipper\clipper.hpp">
       <Filter>contrib\clipper</Filter>
@@ -708,6 +801,9 @@
     <ClInclude Include="..\..\..\dependencies\assimp\contrib\openddlparser\include\openddlparser\OpenDDLParserUtils.h">
       <Filter>contrib\openddlparser\include\openddlparser</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\assimp\contrib\openddlparser\include\openddlparser\OpenDDLStream.h">
+      <Filter>contrib\openddlparser\include\openddlparser</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\dependencies\assimp\contrib\openddlparser\include\openddlparser\Value.h">
       <Filter>contrib\openddlparser\include\openddlparser</Filter>
     </ClInclude>
@@ -732,6 +828,18 @@
     <ClInclude Include="..\..\..\dependencies\assimp\contrib\poly2tri\poly2tri\sweep\sweep_context.h">
       <Filter>contrib\poly2tri\poly2tri\sweep</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\assimp\contrib\utf8cpp\source\utf8.h">
+      <Filter>contrib\utf8cpp\source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\assimp\contrib\utf8cpp\source\utf8\checked.h">
+      <Filter>contrib\utf8cpp\source\utf8</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\assimp\contrib\utf8cpp\source\utf8\core.h">
+      <Filter>contrib\utf8cpp\source\utf8</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\assimp\contrib\utf8cpp\source\utf8\unchecked.h">
+      <Filter>contrib\utf8cpp\source\utf8</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\dependencies\assimp\include\assimp\Compiler\poppack1.h">
       <Filter>include\assimp\Compiler</Filter>
     </ClInclude>
@@ -741,7 +849,16 @@
     <ClInclude Include="..\..\..\dependencies\assimp\include\assimp\Compiler\pushpack1.h">
       <Filter>include\assimp\Compiler</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\assimp\include\assimp\DefaultIOStream.h">
+      <Filter>include\assimp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\assimp\include\assimp\DefaultIOSystem.h">
+      <Filter>include\assimp</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\dependencies\assimp\include\assimp\DefaultLogger.hpp">
+      <Filter>include\assimp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\assimp\include\assimp\Defines.h">
       <Filter>include\assimp</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\dependencies\assimp\include\assimp\Exporter.hpp">
@@ -766,6 +883,9 @@
       <Filter>include\assimp</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\dependencies\assimp\include\assimp\ProgressHandler.hpp">
+      <Filter>include\assimp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\assimp\include\assimp\SceneCombiner.h">
       <Filter>include\assimp</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\dependencies\assimp\include\assimp\ai_assert.h">
@@ -828,6 +948,9 @@
     <ClInclude Include="..\..\..\dependencies\assimp\include\assimp\metadata.h">
       <Filter>include\assimp</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\assimp\include\assimp\port\AndroidJNI\AndroidJNIIOSystem.h">
+      <Filter>include\assimp\port\AndroidJNI</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\dependencies\assimp\include\assimp\postprocess.h">
       <Filter>include\assimp</Filter>
     </ClInclude>
@@ -873,6 +996,18 @@
       <Filter>code</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\dependencies\assimp\code\ACLoader.cpp">
+      <Filter>code</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\dependencies\assimp\code\AMFImporter.cpp">
+      <Filter>code</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\dependencies\assimp\code\AMFImporter_Geometry.cpp">
+      <Filter>code</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\dependencies\assimp\code\AMFImporter_Material.cpp">
+      <Filter>code</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\dependencies\assimp\code\AMFImporter_Postprocess.cpp">
       <Filter>code</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\dependencies\assimp\code\ASELoader.cpp">
@@ -932,6 +1067,9 @@
     <ClCompile Include="..\..\..\dependencies\assimp\code\C4DImporter.cpp">
       <Filter>code</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\dependencies\assimp\code\CInterfaceIOWrapper.cpp">
+      <Filter>code</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\..\dependencies\assimp\code\COBLoader.cpp">
       <Filter>code</Filter>
     </ClCompile>
@@ -954,6 +1092,15 @@
       <Filter>code</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\dependencies\assimp\code\ConvertToLHProcess.cpp">
+      <Filter>code</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\dependencies\assimp\code\CreateAnimMesh.cpp">
+      <Filter>code</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\dependencies\assimp\code\D3MFImporter.cpp">
+      <Filter>code</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\dependencies\assimp\code\D3MFOpcPackage.cpp">
       <Filter>code</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\dependencies\assimp\code\DXFLoader.cpp">
@@ -1019,6 +1166,9 @@
     <ClCompile Include="..\..\..\dependencies\assimp\code\FBXUtil.cpp">
       <Filter>code</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\dependencies\assimp\code\FIReader.cpp">
+      <Filter>code</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\..\dependencies\assimp\code\FindDegenerates.cpp">
       <Filter>code</Filter>
     </ClCompile>
@@ -1062,6 +1212,12 @@
       <Filter>code</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\dependencies\assimp\code\IFCReaderGen.cpp">
+      <Filter>code</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\dependencies\assimp\code\IFCReaderGen1.cpp">
+      <Filter>code</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\dependencies\assimp\code\IFCReaderGen2.cpp">
       <Filter>code</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\dependencies\assimp\code\IFCUtil.cpp">
@@ -1125,6 +1281,12 @@
       <Filter>code</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\dependencies\assimp\code\MDLMaterialLoader.cpp">
+      <Filter>code</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\dependencies\assimp\code\MMDImporter.cpp">
+      <Filter>code</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\dependencies\assimp\code\MMDPmxParser.cpp">
       <Filter>code</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\dependencies\assimp\code\MS3DLoader.cpp">
@@ -1229,6 +1391,9 @@
     <ClCompile Include="..\..\..\dependencies\assimp\code\SGSpatialSort.cpp">
       <Filter>code</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\dependencies\assimp\code\SIBImporter.cpp">
+      <Filter>code</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\..\dependencies\assimp\code\SMDLoader.cpp">
       <Filter>code</Filter>
     </ClCompile>
@@ -1298,6 +1463,45 @@
     <ClCompile Include="..\..\..\dependencies\assimp\code\VertexTriangleAdjacency.cpp">
       <Filter>code</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\dependencies\assimp\code\X3DExporter.cpp">
+      <Filter>code</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\dependencies\assimp\code\X3DImporter.cpp">
+      <Filter>code</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\dependencies\assimp\code\X3DImporter_Geometry2D.cpp">
+      <Filter>code</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\dependencies\assimp\code\X3DImporter_Geometry3D.cpp">
+      <Filter>code</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\dependencies\assimp\code\X3DImporter_Group.cpp">
+      <Filter>code</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\dependencies\assimp\code\X3DImporter_Light.cpp">
+      <Filter>code</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\dependencies\assimp\code\X3DImporter_Metadata.cpp">
+      <Filter>code</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\dependencies\assimp\code\X3DImporter_Networking.cpp">
+      <Filter>code</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\dependencies\assimp\code\X3DImporter_Postprocess.cpp">
+      <Filter>code</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\dependencies\assimp\code\X3DImporter_Rendering.cpp">
+      <Filter>code</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\dependencies\assimp\code\X3DImporter_Shape.cpp">
+      <Filter>code</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\dependencies\assimp\code\X3DImporter_Texturing.cpp">
+      <Filter>code</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\dependencies\assimp\code\X3DVocabulary.cpp">
+      <Filter>code</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\..\dependencies\assimp\code\XFileExporter.cpp">
       <Filter>code</Filter>
     </ClCompile>
@@ -1310,8 +1514,20 @@
     <ClCompile Include="..\..\..\dependencies\assimp\code\XGLLoader.cpp">
       <Filter>code</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\dependencies\assimp\contrib\ConvertUTF\ConvertUTF.c">
-      <Filter>contrib\ConvertUTF</Filter>
+    <ClCompile Include="..\..\..\dependencies\assimp\code\glTF2Exporter.cpp">
+      <Filter>code</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\dependencies\assimp\code\glTF2Importer.cpp">
+      <Filter>code</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\dependencies\assimp\code\glTFExporter.cpp">
+      <Filter>code</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\dependencies\assimp\code\glTFImporter.cpp">
+      <Filter>code</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\dependencies\assimp\code\scene.cpp">
+      <Filter>code</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\dependencies\assimp\contrib\clipper\clipper.cpp">
       <Filter>contrib\clipper</Filter>
@@ -1329,6 +1545,9 @@
       <Filter>contrib\openddlparser\code</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\dependencies\assimp\contrib\openddlparser\code\OpenDDLParser.cpp">
+      <Filter>contrib\openddlparser\code</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\dependencies\assimp\contrib\openddlparser\code\OpenDDLStream.cpp">
       <Filter>contrib\openddlparser\code</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\dependencies\assimp\contrib\openddlparser\code\Value.cpp">
