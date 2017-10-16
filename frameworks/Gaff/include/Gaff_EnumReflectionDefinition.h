@@ -25,6 +25,7 @@ THE SOFTWARE.
 #include "Gaff_ReflectionInterfaces.h"
 #include "Gaff_HashString.h"
 #include "Gaff_VectorMap.h"
+#include "Gaff_SmartPtrs.h"
 
 NS_GAFF
 
