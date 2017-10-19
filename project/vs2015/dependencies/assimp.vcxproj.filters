@@ -4,18 +4,6 @@
     <Filter Include="code">
       <UniqueIdentifier>{803E957C-6C75-960D-1562-7C100178120F}</UniqueIdentifier>
     </Filter>
-    <Filter Include="code\BoostWorkaround">
-      <UniqueIdentifier>{A25DD842-8EEC-610C-370B-7607237972B2}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="code\BoostWorkaround\boost">
-      <UniqueIdentifier>{982B1318-843B-BFE8-EDF4-2307D923AE81}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="code\BoostWorkaround\boost\math">
-      <UniqueIdentifier>{911BE6CF-FDFE-F40F-0602-234C7264BB60}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="code\BoostWorkaround\boost\tuple">
-      <UniqueIdentifier>{B12033CD-9D71-1E0F-C6D5-0CD1B285B178}</UniqueIdentifier>
-    </Filter>
     <Filter Include="code\res">
       <UniqueIdentifier>{B9362C2A-A503-8735-CE1C-75DDBA48BCC3}</UniqueIdentifier>
     </Filter>
@@ -158,48 +146,6 @@
     </ClInclude>
     <ClInclude Include="..\..\..\dependencies\assimp\code\BlobIOSystem.h">
       <Filter>code</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\dependencies\assimp\code\BoostWorkaround\boost\foreach.hpp">
-      <Filter>code\BoostWorkaround\boost</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\dependencies\assimp\code\BoostWorkaround\boost\format.hpp">
-      <Filter>code\BoostWorkaround\boost</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\dependencies\assimp\code\BoostWorkaround\boost\lexical_cast.hpp">
-      <Filter>code\BoostWorkaround\boost</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\dependencies\assimp\code\BoostWorkaround\boost\make_shared.hpp">
-      <Filter>code\BoostWorkaround\boost</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\dependencies\assimp\code\BoostWorkaround\boost\math\common_factor_rt.hpp">
-      <Filter>code\BoostWorkaround\boost\math</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\dependencies\assimp\code\BoostWorkaround\boost\noncopyable.hpp">
-      <Filter>code\BoostWorkaround\boost</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\dependencies\assimp\code\BoostWorkaround\boost\pointer_cast.hpp">
-      <Filter>code\BoostWorkaround\boost</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\dependencies\assimp\code\BoostWorkaround\boost\scoped_array.hpp">
-      <Filter>code\BoostWorkaround\boost</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\dependencies\assimp\code\BoostWorkaround\boost\scoped_ptr.hpp">
-      <Filter>code\BoostWorkaround\boost</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\dependencies\assimp\code\BoostWorkaround\boost\shared_array.hpp">
-      <Filter>code\BoostWorkaround\boost</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\dependencies\assimp\code\BoostWorkaround\boost\shared_ptr.hpp">
-      <Filter>code\BoostWorkaround\boost</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\dependencies\assimp\code\BoostWorkaround\boost\static_assert.hpp">
-      <Filter>code\BoostWorkaround\boost</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\dependencies\assimp\code\BoostWorkaround\boost\timer.hpp">
-      <Filter>code\BoostWorkaround\boost</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\dependencies\assimp\code\BoostWorkaround\boost\tuple\tuple.hpp">
-      <Filter>code\BoostWorkaround\boost\tuple</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\dependencies\assimp\code\ByteSwapper.h">
       <Filter>code</Filter>

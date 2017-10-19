@@ -26,6 +26,7 @@ THE SOFTWARE.
 #include <Shibboleth_IFileSystem.h>
 #include <Shibboleth_Utilities.h>
 #include <Shibboleth_IApp.h>
+#include <Shibboleth_Math.h>
 #include <Gaff_SerializeInterfaces.h>
 #include <Gaff_ScopedLock.h>
 #include <Gaff_Utils.h>
@@ -49,6 +50,7 @@ Object::~Object(void)
 
 bool Object::load(const Gaff::ISerializeReader& reader)
 {
+	// Load the object name.
 	{
 		Gaff::ScopeGuard guard = reader.enterElementGuard("name");
 		GAFF_REF(guard);
@@ -62,6 +64,7 @@ bool Object::load(const Gaff::ISerializeReader& reader)
 		_name = reader.readString(name, ARRAY_SIZE(name));
 	}
 
+	// Create and load all the components.
 	{
 		Gaff::ScopeGuard guard = reader.enterElementGuard("components");
 		GAFF_REF(guard);
@@ -88,8 +91,24 @@ bool Object::load(const Gaff::ISerializeReader& reader)
 
 bool Object::save(Gaff::ISerializeWriter& writer)
 {
-	GAFF_REF(writer);
-	return false;
+	writer.startObject(4);
+
+	writer.writeString("name", _name.getString().data());
+
+	//Reflection<Gleam::Transform>::Save(writer, _local_transform);
+	//Reflection<Gleam::AABB>::Save(writer, _local_aabb);
+
+	writer.writeKey("components");
+	writer.startArray(static_cast<uint32_t>(_components.size()));
+
+	for (Component* comp : _components) {
+		comp->save(writer);
+	}
+
+	writer.endArray();
+	writer.endObject();
+
+	return true;
 }
 
 void Object::destroy(void)

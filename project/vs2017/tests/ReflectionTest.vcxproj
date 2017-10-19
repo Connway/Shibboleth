@@ -84,36 +84,36 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <OutDir>..\..\..\build\output\x64\Debug\</OutDir>
-    <IntDir>..\..\..\build\intermediate\x64\Debug\ReflectionTest\</IntDir>
+    <OutDir>..\..\..\build\vs2017\output\x64\Debug\</OutDir>
+    <IntDir>..\..\..\build\vs2017\intermediate\x64\Debug\ReflectionTest\</IntDir>
     <TargetName>ReflectionTest64d</TargetName>
     <TargetExt>.exe</TargetExt>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <OutDir>..\..\..\build\output\x64\Release\</OutDir>
-    <IntDir>..\..\..\build\intermediate\x64\Release\ReflectionTest\</IntDir>
+    <OutDir>..\..\..\build\vs2017\output\x64\Release\</OutDir>
+    <IntDir>..\..\..\build\vs2017\intermediate\x64\Release\ReflectionTest\</IntDir>
     <TargetName>ReflectionTest64</TargetName>
     <TargetExt>.exe</TargetExt>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Analyze|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <OutDir>..\..\..\build\output\x64\Analyze\</OutDir>
-    <IntDir>..\..\..\build\intermediate\x64\Analyze\ReflectionTest\</IntDir>
+    <OutDir>..\..\..\build\vs2017\output\x64\Analyze\</OutDir>
+    <IntDir>..\..\..\build\vs2017\intermediate\x64\Analyze\ReflectionTest\</IntDir>
     <TargetName>ReflectionTest64a</TargetName>
     <TargetExt>.exe</TargetExt>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <OutDir>..\..\..\build\output\x64\Profile\</OutDir>
-    <IntDir>..\..\..\build\intermediate\x64\Profile\ReflectionTest\</IntDir>
+    <OutDir>..\..\..\build\vs2017\output\x64\Profile\</OutDir>
+    <IntDir>..\..\..\build\vs2017\intermediate\x64\Profile\ReflectionTest\</IntDir>
     <TargetName>ReflectionTest64p</TargetName>
     <TargetExt>.exe</TargetExt>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Optimized_Debug|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <OutDir>..\..\..\build\output\x64\Optimized_Debug\</OutDir>
-    <IntDir>..\..\..\build\intermediate\x64\Optimized_Debug\ReflectionTest\</IntDir>
+    <OutDir>..\..\..\build\vs2017\output\x64\Optimized_Debug\</OutDir>
+    <IntDir>..\..\..\build\vs2017\intermediate\x64\Optimized_Debug\ReflectionTest\</IntDir>
     <TargetName>ReflectionTest64od</TargetName>
     <TargetExt>.exe</TargetExt>
   </PropertyGroup>

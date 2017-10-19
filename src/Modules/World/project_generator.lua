@@ -20,11 +20,14 @@ project "World"
 	includedirs
 	{
 		"include",
+		"../Entity/include",
 		"../../Memory/include",
 		"../../Shared/include",
 		"../../../dependencies/EASTL/include",
 		"../../../dependencies/libuv/include",
-		"../../../frameworks/Gaff/include"
+		"../../../dependencies/glm",
+		"../../../frameworks/Gaff/include",
+		"../../../frameworks/Gleam/include"
 	}
 
 
@@ -52,24 +55,37 @@ project "WorldModule"
 	includedirs
 	{
 		"include",
+		"../Entity/include",
 		"../../Memory/include",
 		"../../Shared/include",
 		"../../../dependencies/EASTL/include",
 		"../../../dependencies/rapidjson",
 		"../../../dependencies/libuv/include",
-		"../../../frameworks/Gaff/include"
+		"../../../dependencies/glm",
+		"../../../frameworks/Gaff/include",
+		"../../../frameworks/Gleam/include"
 	}
 
 	dependson
 	{
-		"Resource", "Memory",
-		"Gaff", "Shared",
-		"EASTL", "libuv"
+		"Memory",
+		"Gaff",
+		"Gleam",
+		"Shared",
+		"EASTL",
+		"libuv",
+		"Entity",
+		"World"
 	}
 
 	links
 	{
-		"Resource", "Memory",
-		"Gaff", "Shared",
-		"EASTL", "libuv"
+		"Memory",
+		"Gaff",
+		"Gleam",
+		"Shared",
+		"EASTL",
+		"libuv",
+		"Entity",
+		"World"
 	}

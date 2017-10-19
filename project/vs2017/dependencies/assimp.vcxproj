@@ -83,32 +83,32 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <OutDir>..\..\..\build\output\x64\Debug\</OutDir>
-    <IntDir>..\..\..\build\intermediate\x64\Debug\assimp\</IntDir>
+    <OutDir>..\..\..\build\vs2017\output\x64\Debug\</OutDir>
+    <IntDir>..\..\..\build\vs2017\intermediate\x64\Debug\assimp\</IntDir>
     <TargetName>assimp</TargetName>
     <TargetExt>.lib</TargetExt>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <OutDir>..\..\..\build\output\x64\Release\</OutDir>
-    <IntDir>..\..\..\build\intermediate\x64\Release\assimp\</IntDir>
+    <OutDir>..\..\..\build\vs2017\output\x64\Release\</OutDir>
+    <IntDir>..\..\..\build\vs2017\intermediate\x64\Release\assimp\</IntDir>
     <TargetName>assimp</TargetName>
     <TargetExt>.lib</TargetExt>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Analyze|x64'">
-    <OutDir>..\..\..\build\output\x64\Analyze\</OutDir>
-    <IntDir>..\..\..\build\intermediate\x64\Analyze\assimp\</IntDir>
+    <OutDir>..\..\..\build\vs2017\output\x64\Analyze\</OutDir>
+    <IntDir>..\..\..\build\vs2017\intermediate\x64\Analyze\assimp\</IntDir>
     <TargetName>assimp</TargetName>
     <TargetExt>.lib</TargetExt>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">
-    <OutDir>..\..\..\build\output\x64\Profile\</OutDir>
-    <IntDir>..\..\..\build\intermediate\x64\Profile\assimp\</IntDir>
+    <OutDir>..\..\..\build\vs2017\output\x64\Profile\</OutDir>
+    <IntDir>..\..\..\build\vs2017\intermediate\x64\Profile\assimp\</IntDir>
     <TargetName>assimp</TargetName>
     <TargetExt>.lib</TargetExt>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Optimized_Debug|x64'">
-    <OutDir>..\..\..\build\output\x64\Optimized_Debug\</OutDir>
-    <IntDir>..\..\..\build\intermediate\x64\Optimized_Debug\assimp\</IntDir>
+    <OutDir>..\..\..\build\vs2017\output\x64\Optimized_Debug\</OutDir>
+    <IntDir>..\..\..\build\vs2017\intermediate\x64\Optimized_Debug\assimp\</IntDir>
     <TargetName>assimp</TargetName>
     <TargetExt>.lib</TargetExt>
   </PropertyGroup>
@@ -259,20 +259,6 @@
     <ClInclude Include="..\..\..\dependencies\assimp\code\BlenderSceneGen.h" />
     <ClInclude Include="..\..\..\dependencies\assimp\code\BlenderTessellator.h" />
     <ClInclude Include="..\..\..\dependencies\assimp\code\BlobIOSystem.h" />
-    <ClInclude Include="..\..\..\dependencies\assimp\code\BoostWorkaround\boost\foreach.hpp" />
-    <ClInclude Include="..\..\..\dependencies\assimp\code\BoostWorkaround\boost\format.hpp" />
-    <ClInclude Include="..\..\..\dependencies\assimp\code\BoostWorkaround\boost\lexical_cast.hpp" />
-    <ClInclude Include="..\..\..\dependencies\assimp\code\BoostWorkaround\boost\make_shared.hpp" />
-    <ClInclude Include="..\..\..\dependencies\assimp\code\BoostWorkaround\boost\math\common_factor_rt.hpp" />
-    <ClInclude Include="..\..\..\dependencies\assimp\code\BoostWorkaround\boost\noncopyable.hpp" />
-    <ClInclude Include="..\..\..\dependencies\assimp\code\BoostWorkaround\boost\pointer_cast.hpp" />
-    <ClInclude Include="..\..\..\dependencies\assimp\code\BoostWorkaround\boost\scoped_array.hpp" />
-    <ClInclude Include="..\..\..\dependencies\assimp\code\BoostWorkaround\boost\scoped_ptr.hpp" />
-    <ClInclude Include="..\..\..\dependencies\assimp\code\BoostWorkaround\boost\shared_array.hpp" />
-    <ClInclude Include="..\..\..\dependencies\assimp\code\BoostWorkaround\boost\shared_ptr.hpp" />
-    <ClInclude Include="..\..\..\dependencies\assimp\code\BoostWorkaround\boost\static_assert.hpp" />
-    <ClInclude Include="..\..\..\dependencies\assimp\code\BoostWorkaround\boost\timer.hpp" />
-    <ClInclude Include="..\..\..\dependencies\assimp\code\BoostWorkaround\boost\tuple\tuple.hpp" />
     <ClInclude Include="..\..\..\dependencies\assimp\code\ByteSwapper.h" />
     <ClInclude Include="..\..\..\dependencies\assimp\code\C4DImporter.h" />
     <ClInclude Include="..\..\..\dependencies\assimp\code\CInterfaceIOWrapper.h" />

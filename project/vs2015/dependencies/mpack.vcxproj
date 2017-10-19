@@ -83,32 +83,32 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <OutDir>..\..\..\build\output\x64\Debug\</OutDir>
-    <IntDir>..\..\..\build\intermediate\x64\Debug\mpack\</IntDir>
+    <OutDir>..\..\..\build\vs2015\output\x64\Debug\</OutDir>
+    <IntDir>..\..\..\build\vs2015\intermediate\x64\Debug\mpack\</IntDir>
     <TargetName>mpack</TargetName>
     <TargetExt>.lib</TargetExt>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <OutDir>..\..\..\build\output\x64\Release\</OutDir>
-    <IntDir>..\..\..\build\intermediate\x64\Release\mpack\</IntDir>
+    <OutDir>..\..\..\build\vs2015\output\x64\Release\</OutDir>
+    <IntDir>..\..\..\build\vs2015\intermediate\x64\Release\mpack\</IntDir>
     <TargetName>mpack</TargetName>
     <TargetExt>.lib</TargetExt>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Analyze|x64'">
-    <OutDir>..\..\..\build\output\x64\Analyze\</OutDir>
-    <IntDir>..\..\..\build\intermediate\x64\Analyze\mpack\</IntDir>
+    <OutDir>..\..\..\build\vs2015\output\x64\Analyze\</OutDir>
+    <IntDir>..\..\..\build\vs2015\intermediate\x64\Analyze\mpack\</IntDir>
     <TargetName>mpack</TargetName>
     <TargetExt>.lib</TargetExt>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">
-    <OutDir>..\..\..\build\output\x64\Profile\</OutDir>
-    <IntDir>..\..\..\build\intermediate\x64\Profile\mpack\</IntDir>
+    <OutDir>..\..\..\build\vs2015\output\x64\Profile\</OutDir>
+    <IntDir>..\..\..\build\vs2015\intermediate\x64\Profile\mpack\</IntDir>
     <TargetName>mpack</TargetName>
     <TargetExt>.lib</TargetExt>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Optimized_Debug|x64'">
-    <OutDir>..\..\..\build\output\x64\Optimized_Debug\</OutDir>
-    <IntDir>..\..\..\build\intermediate\x64\Optimized_Debug\mpack\</IntDir>
+    <OutDir>..\..\..\build\vs2015\output\x64\Optimized_Debug\</OutDir>
+    <IntDir>..\..\..\build\vs2015\intermediate\x64\Optimized_Debug\mpack\</IntDir>
     <TargetName>mpack</TargetName>
     <TargetExt>.lib</TargetExt>
   </PropertyGroup>

@@ -84,36 +84,36 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <OutDir>..\..\..\build\output\x64\Debug\</OutDir>
-    <IntDir>..\..\..\build\intermediate\x64\Debug\AllocatorTest\</IntDir>
+    <OutDir>..\..\..\build\vs2015\output\x64\Debug\</OutDir>
+    <IntDir>..\..\..\build\vs2015\intermediate\x64\Debug\AllocatorTest\</IntDir>
     <TargetName>AllocatorTest64d</TargetName>
     <TargetExt>.exe</TargetExt>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <OutDir>..\..\..\build\output\x64\Release\</OutDir>
-    <IntDir>..\..\..\build\intermediate\x64\Release\AllocatorTest\</IntDir>
+    <OutDir>..\..\..\build\vs2015\output\x64\Release\</OutDir>
+    <IntDir>..\..\..\build\vs2015\intermediate\x64\Release\AllocatorTest\</IntDir>
     <TargetName>AllocatorTest64</TargetName>
     <TargetExt>.exe</TargetExt>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Analyze|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <OutDir>..\..\..\build\output\x64\Analyze\</OutDir>
-    <IntDir>..\..\..\build\intermediate\x64\Analyze\AllocatorTest\</IntDir>
+    <OutDir>..\..\..\build\vs2015\output\x64\Analyze\</OutDir>
+    <IntDir>..\..\..\build\vs2015\intermediate\x64\Analyze\AllocatorTest\</IntDir>
     <TargetName>AllocatorTest64a</TargetName>
     <TargetExt>.exe</TargetExt>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <OutDir>..\..\..\build\output\x64\Profile\</OutDir>
-    <IntDir>..\..\..\build\intermediate\x64\Profile\AllocatorTest\</IntDir>
+    <OutDir>..\..\..\build\vs2015\output\x64\Profile\</OutDir>
+    <IntDir>..\..\..\build\vs2015\intermediate\x64\Profile\AllocatorTest\</IntDir>
     <TargetName>AllocatorTest64p</TargetName>
     <TargetExt>.exe</TargetExt>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Optimized_Debug|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <OutDir>..\..\..\build\output\x64\Optimized_Debug\</OutDir>
-    <IntDir>..\..\..\build\intermediate\x64\Optimized_Debug\AllocatorTest\</IntDir>
+    <OutDir>..\..\..\build\vs2015\output\x64\Optimized_Debug\</OutDir>
+    <IntDir>..\..\..\build\vs2015\intermediate\x64\Optimized_Debug\AllocatorTest\</IntDir>
     <TargetName>AllocatorTest64od</TargetName>
     <TargetExt>.exe</TargetExt>
   </PropertyGroup>

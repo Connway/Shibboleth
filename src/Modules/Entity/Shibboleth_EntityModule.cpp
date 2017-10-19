@@ -21,10 +21,12 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include <Shibboleth_Utilities.h>
+#include <Shibboleth_IApp.h>
 #include "Gen_ReflectionInit.h"
 
 DYNAMICEXPORT_C bool InitModule(Shibboleth::IApp* app)
 {
+	app->registerTypeBucket(Gaff::FNV1aHash64Const("Component"));
 	Shibboleth::SetApp(*app);
 	Gen::InitReflection();
 	return true;

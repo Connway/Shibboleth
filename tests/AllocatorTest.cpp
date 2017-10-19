@@ -48,7 +48,7 @@ void AllocatorTestHelper(const Allocator& allocator = Allocator())
 	REQUIRE(int_vector.capacity() == 20);
 
 	for (size_t i = 0; i < int_vector.size(); ++i) {
-		REQUIRE(int_vector[i] == i);
+		REQUIRE(int_vector[i] == static_cast<int32_t>(i));
 	}
 }
 

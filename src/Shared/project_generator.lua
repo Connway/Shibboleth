@@ -30,6 +30,7 @@ project "Shared"
 		"../Memory/include",
 		"../../dependencies/rapidjson",
 		"../../frameworks/Gaff/include",
+		"../../frameworks/Gleam/include",
 		"../../dependencies/EASTL/include",
 		"../../dependencies/glm",
 		"../../dependencies/libuv/include"

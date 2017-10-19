@@ -24,7 +24,6 @@ THE SOFTWARE.
 
 #include "Gleam_Defines.h"
 #include <gtc/quaternion.hpp>
-#include <mat4x4.hpp>
 
 NS_GLEAM
 

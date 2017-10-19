@@ -94,10 +94,6 @@ bool MainLoop::init(void)
 	//	return false;
 	//}
 
-	////if (!SetupOtterUI()) {
-	////	return false;
-	////}
-
 	//// Block until loaded.
 	//IApp& app = GetApp();
 	//app.getManagerT<IResourceManager>().addRequestAddedCallback(Gaff::Bind(this, &MainLoop::ResReq));

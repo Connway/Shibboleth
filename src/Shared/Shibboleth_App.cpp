@@ -30,6 +30,7 @@ THE SOFTWARE.
 #include <Gaff_Utils.h>
 #include <Gaff_JSON.h>
 #include <Gaff_File.h>
+#include <EASTL/sort.h>
 #include <regex>
 
 #ifdef PLATFORM_WINDOWS
@@ -517,7 +518,9 @@ void App::registerReflection(Gaff::Hash64 name, Gaff::IReflectionDefinition& ref
 	// Check if this type implements an interface that has a type bucket request.
 	for (auto it = _type_buckets.begin(); it != _type_buckets.end(); ++it) {
 		if (ref_def.hasInterface(it->first)) {
-			it->second.emplace_back(name);
+			// Insert sorted.
+			auto it_name = eastl::lower_bound(it->second.begin(), it->second.end(), name);
+			it->second.insert(it_name, name);
 		}
 	}
 }
@@ -539,6 +542,9 @@ void App::registerTypeBucket(Gaff::Hash64 name)
 			types.emplace_back(class_hash);
 		}
 	}
+
+	// Sort the list for quicker lookup.
+	eastl::sort(types.begin(), types.end());
 }
 
 const Vector<Gaff::Hash64>* App::getTypeBucket(Gaff::Hash64 name) const

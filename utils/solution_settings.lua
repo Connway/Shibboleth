@@ -1,11 +1,11 @@
 function SetIntermediateAndTargetDirs(configuration)
 	filter { "configurations:" .. configuration, "platforms:x86" }
-		objdir "../build/intermediate"
-		targetdir("../build/output/x86/" .. configuration)
+		objdir("../build/" .. _ACTION .. "/intermediate")
+		targetdir("../build/" .. _ACTION .. "/output/x86/" .. configuration)
 
 	filter { "configurations:" .. configuration, "platforms:x64" }
-		objdir "../build/intermediate"
-		targetdir("../build/output/x64/" .. configuration)
+		objdir("../build/" .. _ACTION .. "/intermediate")
+		targetdir("../build/" .. _ACTION .. "/output/x64/" .. configuration)
 end
 
 -- if os.get() == "windows" then
