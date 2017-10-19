@@ -62,14 +62,20 @@ project "ResourceModule"
 
 	dependson
 	{
-		"Resource", "Memory",
-		"Gaff", "Shared",
-		"EASTL", "libuv"
+		"Memory",
+		"Gaff",
+		"Shared",
+		"EASTL",
+		"libuv",
+		"Resource"
 	}
 
 	links
 	{
-		"Resource", "Memory",
-		"Gaff", "Shared",
-		"EASTL", "libuv"
+		"Memory",
+		"Gaff",
+		"Shared",
+		"EASTL",
+		"libuv",
+		"Resource"
 	}

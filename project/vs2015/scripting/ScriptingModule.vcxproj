@@ -84,36 +84,36 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <OutDir>..\..\..\build\output\x64\Debug\</OutDir>
-    <IntDir>..\..\..\build\intermediate\x64\Debug\ScriptingModule\</IntDir>
+    <OutDir>..\..\..\build\vs2015\output\x64\Debug\</OutDir>
+    <IntDir>..\..\..\build\vs2015\intermediate\x64\Debug\ScriptingModule\</IntDir>
     <TargetName>ScriptingModule64d</TargetName>
     <TargetExt>.dll</TargetExt>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <OutDir>..\..\..\build\output\x64\Release\</OutDir>
-    <IntDir>..\..\..\build\intermediate\x64\Release\ScriptingModule\</IntDir>
+    <OutDir>..\..\..\build\vs2015\output\x64\Release\</OutDir>
+    <IntDir>..\..\..\build\vs2015\intermediate\x64\Release\ScriptingModule\</IntDir>
     <TargetName>ScriptingModule64</TargetName>
     <TargetExt>.dll</TargetExt>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Analyze|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <OutDir>..\..\..\build\output\x64\Analyze\</OutDir>
-    <IntDir>..\..\..\build\intermediate\x64\Analyze\ScriptingModule\</IntDir>
+    <OutDir>..\..\..\build\vs2015\output\x64\Analyze\</OutDir>
+    <IntDir>..\..\..\build\vs2015\intermediate\x64\Analyze\ScriptingModule\</IntDir>
     <TargetName>ScriptingModule64a</TargetName>
     <TargetExt>.dll</TargetExt>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <OutDir>..\..\..\build\output\x64\Profile\</OutDir>
-    <IntDir>..\..\..\build\intermediate\x64\Profile\ScriptingModule\</IntDir>
+    <OutDir>..\..\..\build\vs2015\output\x64\Profile\</OutDir>
+    <IntDir>..\..\..\build\vs2015\intermediate\x64\Profile\ScriptingModule\</IntDir>
     <TargetName>ScriptingModule64p</TargetName>
     <TargetExt>.dll</TargetExt>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Optimized_Debug|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <OutDir>..\..\..\build\output\x64\Optimized_Debug\</OutDir>
-    <IntDir>..\..\..\build\intermediate\x64\Optimized_Debug\ScriptingModule\</IntDir>
+    <OutDir>..\..\..\build\vs2015\output\x64\Optimized_Debug\</OutDir>
+    <IntDir>..\..\..\build\vs2015\intermediate\x64\Optimized_Debug\ScriptingModule\</IntDir>
     <TargetName>ScriptingModule64od</TargetName>
     <TargetExt>.dll</TargetExt>
   </PropertyGroup>
@@ -135,7 +135,7 @@
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>ws2_32.lib;iphlpapi.lib;psapi.lib;userenv.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <ImportLibrary>..\..\..\build\output\x64\Debug\ScriptingModule64d.lib</ImportLibrary>
+      <ImportLibrary>..\..\..\build\vs2015\output\x64\Debug\ScriptingModule64d.lib</ImportLibrary>
       <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
     </Link>
     <PreBuildEvent>
@@ -144,7 +144,7 @@
     </PreBuildEvent>
     <PostBuildEvent>
       <Command>IF NOT EXIST ..\..\..\workingdir\App\Modules (mkdir ..\..\..\workingdir\App\Modules)
-IF EXIST ..\..\..\build\output\x64\Debug\$(TargetFileName)\ (xcopy /Q /E /Y /I ..\..\..\build\output\x64\Debug\$(TargetFileName) ..\..\..\workingdir\App\Modules &gt; nul) ELSE (xcopy /Q /Y /I ..\..\..\build\output\x64\Debug\$(TargetFileName) ..\..\..\workingdir\App\Modules &gt; nul)</Command>
+IF EXIST ..\..\..\build\vs2015\output\x64\Debug\$(TargetFileName)\ (xcopy /Q /E /Y /I ..\..\..\build\vs2015\output\x64\Debug\$(TargetFileName) ..\..\..\workingdir\App\Modules &gt; nul) ELSE (xcopy /Q /Y /I ..\..\..\build\vs2015\output\x64\Debug\$(TargetFileName) ..\..\..\workingdir\App\Modules &gt; nul)</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -171,7 +171,7 @@ IF EXIST ..\..\..\build\output\x64\Debug\$(TargetFileName)\ (xcopy /Q /E /Y /I .
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalDependencies>ws2_32.lib;iphlpapi.lib;psapi.lib;userenv.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <ImportLibrary>..\..\..\build\output\x64\Release\ScriptingModule64.lib</ImportLibrary>
+      <ImportLibrary>..\..\..\build\vs2015\output\x64\Release\ScriptingModule64.lib</ImportLibrary>
       <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
     </Link>
     <PreBuildEvent>
@@ -180,7 +180,7 @@ IF EXIST ..\..\..\build\output\x64\Debug\$(TargetFileName)\ (xcopy /Q /E /Y /I .
     </PreBuildEvent>
     <PostBuildEvent>
       <Command>IF NOT EXIST ..\..\..\workingdir\App\Modules (mkdir ..\..\..\workingdir\App\Modules)
-IF EXIST ..\..\..\build\output\x64\Release\$(TargetFileName)\ (xcopy /Q /E /Y /I ..\..\..\build\output\x64\Release\$(TargetFileName) ..\..\..\workingdir\App\Modules &gt; nul) ELSE (xcopy /Q /Y /I ..\..\..\build\output\x64\Release\$(TargetFileName) ..\..\..\workingdir\App\Modules &gt; nul)</Command>
+IF EXIST ..\..\..\build\vs2015\output\x64\Release\$(TargetFileName)\ (xcopy /Q /E /Y /I ..\..\..\build\vs2015\output\x64\Release\$(TargetFileName) ..\..\..\workingdir\App\Modules &gt; nul) ELSE (xcopy /Q /Y /I ..\..\..\build\vs2015\output\x64\Release\$(TargetFileName) ..\..\..\workingdir\App\Modules &gt; nul)</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Analyze|x64'">
@@ -206,7 +206,7 @@ IF EXIST ..\..\..\build\output\x64\Release\$(TargetFileName)\ (xcopy /Q /E /Y /I
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalDependencies>ws2_32.lib;iphlpapi.lib;psapi.lib;userenv.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <ImportLibrary>..\..\..\build\output\x64\Analyze\ScriptingModule64a.lib</ImportLibrary>
+      <ImportLibrary>..\..\..\build\vs2015\output\x64\Analyze\ScriptingModule64a.lib</ImportLibrary>
     </Link>
     <PreBuildEvent>
       <Command>py ../../../utils/gen_module_file.py ../../../src/Modules/Scripting</Command>
@@ -214,7 +214,7 @@ IF EXIST ..\..\..\build\output\x64\Release\$(TargetFileName)\ (xcopy /Q /E /Y /I
     </PreBuildEvent>
     <PostBuildEvent>
       <Command>IF NOT EXIST ..\..\..\workingdir\App\Modules (mkdir ..\..\..\workingdir\App\Modules)
-IF EXIST ..\..\..\build\output\x64\Analyze\$(TargetFileName)\ (xcopy /Q /E /Y /I ..\..\..\build\output\x64\Analyze\$(TargetFileName) ..\..\..\workingdir\App\Modules &gt; nul) ELSE (xcopy /Q /Y /I ..\..\..\build\output\x64\Analyze\$(TargetFileName) ..\..\..\workingdir\App\Modules &gt; nul)</Command>
+IF EXIST ..\..\..\build\vs2015\output\x64\Analyze\$(TargetFileName)\ (xcopy /Q /E /Y /I ..\..\..\build\vs2015\output\x64\Analyze\$(TargetFileName) ..\..\..\workingdir\App\Modules &gt; nul) ELSE (xcopy /Q /Y /I ..\..\..\build\vs2015\output\x64\Analyze\$(TargetFileName) ..\..\..\workingdir\App\Modules &gt; nul)</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">
@@ -241,7 +241,7 @@ IF EXIST ..\..\..\build\output\x64\Analyze\$(TargetFileName)\ (xcopy /Q /E /Y /I
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalDependencies>ws2_32.lib;iphlpapi.lib;psapi.lib;userenv.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <ImportLibrary>..\..\..\build\output\x64\Profile\ScriptingModule64p.lib</ImportLibrary>
+      <ImportLibrary>..\..\..\build\vs2015\output\x64\Profile\ScriptingModule64p.lib</ImportLibrary>
       <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
     </Link>
     <PreBuildEvent>
@@ -250,7 +250,7 @@ IF EXIST ..\..\..\build\output\x64\Analyze\$(TargetFileName)\ (xcopy /Q /E /Y /I
     </PreBuildEvent>
     <PostBuildEvent>
       <Command>IF NOT EXIST ..\..\..\workingdir\App\Modules (mkdir ..\..\..\workingdir\App\Modules)
-IF EXIST ..\..\..\build\output\x64\Profile\$(TargetFileName)\ (xcopy /Q /E /Y /I ..\..\..\build\output\x64\Profile\$(TargetFileName) ..\..\..\workingdir\App\Modules &gt; nul) ELSE (xcopy /Q /Y /I ..\..\..\build\output\x64\Profile\$(TargetFileName) ..\..\..\workingdir\App\Modules &gt; nul)</Command>
+IF EXIST ..\..\..\build\vs2015\output\x64\Profile\$(TargetFileName)\ (xcopy /Q /E /Y /I ..\..\..\build\vs2015\output\x64\Profile\$(TargetFileName) ..\..\..\workingdir\App\Modules &gt; nul) ELSE (xcopy /Q /Y /I ..\..\..\build\vs2015\output\x64\Profile\$(TargetFileName) ..\..\..\workingdir\App\Modules &gt; nul)</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Optimized_Debug|x64'">
@@ -277,7 +277,7 @@ IF EXIST ..\..\..\build\output\x64\Profile\$(TargetFileName)\ (xcopy /Q /E /Y /I
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalDependencies>ws2_32.lib;iphlpapi.lib;psapi.lib;userenv.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <ImportLibrary>..\..\..\build\output\x64\Optimized_Debug\ScriptingModule64od.lib</ImportLibrary>
+      <ImportLibrary>..\..\..\build\vs2015\output\x64\Optimized_Debug\ScriptingModule64od.lib</ImportLibrary>
       <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
     </Link>
     <PreBuildEvent>
@@ -286,7 +286,7 @@ IF EXIST ..\..\..\build\output\x64\Profile\$(TargetFileName)\ (xcopy /Q /E /Y /I
     </PreBuildEvent>
     <PostBuildEvent>
       <Command>IF NOT EXIST ..\..\..\workingdir\App\Modules (mkdir ..\..\..\workingdir\App\Modules)
-IF EXIST ..\..\..\build\output\x64\Optimized_Debug\$(TargetFileName)\ (xcopy /Q /E /Y /I ..\..\..\build\output\x64\Optimized_Debug\$(TargetFileName) ..\..\..\workingdir\App\Modules &gt; nul) ELSE (xcopy /Q /Y /I ..\..\..\build\output\x64\Optimized_Debug\$(TargetFileName) ..\..\..\workingdir\App\Modules &gt; nul)</Command>
+IF EXIST ..\..\..\build\vs2015\output\x64\Optimized_Debug\$(TargetFileName)\ (xcopy /Q /E /Y /I ..\..\..\build\vs2015\output\x64\Optimized_Debug\$(TargetFileName) ..\..\..\workingdir\App\Modules &gt; nul) ELSE (xcopy /Q /Y /I ..\..\..\build\vs2015\output\x64\Optimized_Debug\$(TargetFileName) ..\..\..\workingdir\App\Modules &gt; nul)</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -298,9 +298,6 @@ IF EXIST ..\..\..\build\output\x64\Optimized_Debug\$(TargetFileName)\ (xcopy /Q 
     </ProjectReference>
     <ProjectReference Include="..\frameworks\Gleam.vcxproj">
       <Project>{6BBF400D-D7D3-68BE-A055-0C1E0C2965EF}</Project>
-    </ProjectReference>
-    <ProjectReference Include="Scripting.vcxproj">
-      <Project>{985A7358-04C5-27CF-4D03-D974B9AC0524}</Project>
     </ProjectReference>
     <ProjectReference Include="..\memory\Memory.vcxproj">
       <Project>{BE94DDC2-AA36-0899-93F1-1BED7F328FE9}</Project>
@@ -314,14 +311,17 @@ IF EXIST ..\..\..\build\output\x64\Optimized_Debug\$(TargetFileName)\ (xcopy /Q 
     <ProjectReference Include="..\dependencies\angelscript.vcxproj">
       <Project>{41F231D1-ADA7-AAC6-369C-A49DA250A1CA}</Project>
     </ProjectReference>
+    <ProjectReference Include="..\dependencies\libuv.vcxproj">
+      <Project>{C79ADC0F-33AF-04C1-FC30-A820680401F2}</Project>
+    </ProjectReference>
     <ProjectReference Include="..\resource\Resource.vcxproj">
       <Project>{ED6CDF9B-D939-3AA7-0253-284FEE7E6F35}</Project>
     </ProjectReference>
     <ProjectReference Include="..\entity\Entity.vcxproj">
       <Project>{A2E9DAB0-8E8B-0587-7746-19DB63878CD7}</Project>
     </ProjectReference>
-    <ProjectReference Include="..\dependencies\libuv.vcxproj">
-      <Project>{C79ADC0F-33AF-04C1-FC30-A820680401F2}</Project>
+    <ProjectReference Include="Scripting.vcxproj">
+      <Project>{985A7358-04C5-27CF-4D03-D974B9AC0524}</Project>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

@@ -24,8 +24,6 @@ THE SOFTWARE.
 
 #include <Shibboleth_Reflection.h>
 #include <Shibboleth_String.h>
-#include <Gaff_ReflectionInterfaces.h>
-//#include <Gaff_SerializeInterfaces.h>
 
 NS_SHIBBOLETH
 
@@ -34,6 +32,35 @@ class Object;
 class Component : public Gaff::IReflectionObject
 {
 public:
+	template <class T>
+	static T* Create(void)
+	{
+		const Vector<Gaff::Hash64>* const components = GetApp().getTypeBucket(Gaff::FNV1aHash64Const("Component"));
+		GAFF_ASSERT(components);
+
+		const auto it = eastl::lower_bound(components->begin(), components->end(), Reflection<T>::GetHash());
+		GAFF_ASSERT(it != components->end() && *it == Reflection<T>::GetHash());
+
+		const Gaff::IReflectionDefinition* const reflection = GetApp().getReflection(*it);
+		ProxyAllocator allocator("Components");
+
+		return reflection->createAllocT<T>(allocator);
+	}
+
+	static void* Create(Gaff::Hash64 component_name)
+	{
+		const Vector<Gaff::Hash64>* const components = GetApp().getTypeBucket(Gaff::FNV1aHash64Const("Component"));
+		GAFF_ASSERT(components);
+
+		const auto it = eastl::lower_bound(components->begin(), components->end(), component_name);
+		GAFF_ASSERT(it != components->end() && *it == component_name);
+
+		const Gaff::IReflectionDefinition* const reflection = GetApp().getReflection(*it);
+		ProxyAllocator allocator("Components");
+
+		return reflection->createAlloc(allocator);
+	}
+
 	Component(void);
 	virtual ~Component(void);
 

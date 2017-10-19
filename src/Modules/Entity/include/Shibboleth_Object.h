@@ -195,7 +195,6 @@ private:
 	HashString64 _name;
 
 	Vector<Component*> _components;
-	//IComponentManager& _comp_mgr;
 	//IObjectManager& _obj_mgr;
 
 	uint32_t _id;

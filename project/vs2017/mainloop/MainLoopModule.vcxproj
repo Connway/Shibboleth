@@ -84,36 +84,36 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <OutDir>..\..\..\build\output\x64\Debug\</OutDir>
-    <IntDir>..\..\..\build\intermediate\x64\Debug\MainLoopModule\</IntDir>
+    <OutDir>..\..\..\build\vs2017\output\x64\Debug\</OutDir>
+    <IntDir>..\..\..\build\vs2017\intermediate\x64\Debug\MainLoopModule\</IntDir>
     <TargetName>MainLoop64d</TargetName>
     <TargetExt>.dll</TargetExt>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <OutDir>..\..\..\build\output\x64\Release\</OutDir>
-    <IntDir>..\..\..\build\intermediate\x64\Release\MainLoopModule\</IntDir>
+    <OutDir>..\..\..\build\vs2017\output\x64\Release\</OutDir>
+    <IntDir>..\..\..\build\vs2017\intermediate\x64\Release\MainLoopModule\</IntDir>
     <TargetName>MainLoop64</TargetName>
     <TargetExt>.dll</TargetExt>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Analyze|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <OutDir>..\..\..\build\output\x64\Analyze\</OutDir>
-    <IntDir>..\..\..\build\intermediate\x64\Analyze\MainLoopModule\</IntDir>
+    <OutDir>..\..\..\build\vs2017\output\x64\Analyze\</OutDir>
+    <IntDir>..\..\..\build\vs2017\intermediate\x64\Analyze\MainLoopModule\</IntDir>
     <TargetName>MainLoop64a</TargetName>
     <TargetExt>.dll</TargetExt>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <OutDir>..\..\..\build\output\x64\Profile\</OutDir>
-    <IntDir>..\..\..\build\intermediate\x64\Profile\MainLoopModule\</IntDir>
+    <OutDir>..\..\..\build\vs2017\output\x64\Profile\</OutDir>
+    <IntDir>..\..\..\build\vs2017\intermediate\x64\Profile\MainLoopModule\</IntDir>
     <TargetName>MainLoop64p</TargetName>
     <TargetExt>.dll</TargetExt>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Optimized_Debug|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <OutDir>..\..\..\build\output\x64\Optimized_Debug\</OutDir>
-    <IntDir>..\..\..\build\intermediate\x64\Optimized_Debug\MainLoopModule\</IntDir>
+    <OutDir>..\..\..\build\vs2017\output\x64\Optimized_Debug\</OutDir>
+    <IntDir>..\..\..\build\vs2017\intermediate\x64\Optimized_Debug\MainLoopModule\</IntDir>
     <TargetName>MainLoop64od</TargetName>
     <TargetExt>.dll</TargetExt>
   </PropertyGroup>
@@ -136,11 +136,11 @@
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>ws2_32.lib;iphlpapi.lib;psapi.lib;userenv.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <ImportLibrary>..\..\..\build\output\x64\Debug\MainLoop64d.lib</ImportLibrary>
+      <ImportLibrary>..\..\..\build\vs2017\output\x64\Debug\MainLoop64d.lib</ImportLibrary>
       <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
     </Link>
     <PostBuildEvent>
-      <Command>IF EXIST ..\..\..\build\output\x64\Debug\$(TargetFileName)\ (xcopy /Q /E /Y /I ..\..\..\build\output\x64\Debug\$(TargetFileName) ..\..\..\workingdir\App\bin &gt; nul) ELSE (xcopy /Q /Y /I ..\..\..\build\output\x64\Debug\$(TargetFileName) ..\..\..\workingdir\App\bin &gt; nul)</Command>
+      <Command>IF EXIST ..\..\..\build\vs2017\output\x64\Debug\$(TargetFileName)\ (xcopy /Q /E /Y /I ..\..\..\build\vs2017\output\x64\Debug\$(TargetFileName) ..\..\..\workingdir\App\bin &gt; nul) ELSE (xcopy /Q /Y /I ..\..\..\build\vs2017\output\x64\Debug\$(TargetFileName) ..\..\..\workingdir\App\bin &gt; nul)</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -168,11 +168,11 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalDependencies>ws2_32.lib;iphlpapi.lib;psapi.lib;userenv.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <ImportLibrary>..\..\..\build\output\x64\Release\MainLoop64.lib</ImportLibrary>
+      <ImportLibrary>..\..\..\build\vs2017\output\x64\Release\MainLoop64.lib</ImportLibrary>
       <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
     </Link>
     <PostBuildEvent>
-      <Command>IF EXIST ..\..\..\build\output\x64\Release\$(TargetFileName)\ (xcopy /Q /E /Y /I ..\..\..\build\output\x64\Release\$(TargetFileName) ..\..\..\workingdir\App\bin &gt; nul) ELSE (xcopy /Q /Y /I ..\..\..\build\output\x64\Release\$(TargetFileName) ..\..\..\workingdir\App\bin &gt; nul)</Command>
+      <Command>IF EXIST ..\..\..\build\vs2017\output\x64\Release\$(TargetFileName)\ (xcopy /Q /E /Y /I ..\..\..\build\vs2017\output\x64\Release\$(TargetFileName) ..\..\..\workingdir\App\bin &gt; nul) ELSE (xcopy /Q /Y /I ..\..\..\build\vs2017\output\x64\Release\$(TargetFileName) ..\..\..\workingdir\App\bin &gt; nul)</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Analyze|x64'">
@@ -199,10 +199,10 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalDependencies>ws2_32.lib;iphlpapi.lib;psapi.lib;userenv.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <ImportLibrary>..\..\..\build\output\x64\Analyze\MainLoop64a.lib</ImportLibrary>
+      <ImportLibrary>..\..\..\build\vs2017\output\x64\Analyze\MainLoop64a.lib</ImportLibrary>
     </Link>
     <PostBuildEvent>
-      <Command>IF EXIST ..\..\..\build\output\x64\Analyze\$(TargetFileName)\ (xcopy /Q /E /Y /I ..\..\..\build\output\x64\Analyze\$(TargetFileName) ..\..\..\workingdir\App\bin &gt; nul) ELSE (xcopy /Q /Y /I ..\..\..\build\output\x64\Analyze\$(TargetFileName) ..\..\..\workingdir\App\bin &gt; nul)</Command>
+      <Command>IF EXIST ..\..\..\build\vs2017\output\x64\Analyze\$(TargetFileName)\ (xcopy /Q /E /Y /I ..\..\..\build\vs2017\output\x64\Analyze\$(TargetFileName) ..\..\..\workingdir\App\bin &gt; nul) ELSE (xcopy /Q /Y /I ..\..\..\build\vs2017\output\x64\Analyze\$(TargetFileName) ..\..\..\workingdir\App\bin &gt; nul)</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">
@@ -230,11 +230,11 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalDependencies>ws2_32.lib;iphlpapi.lib;psapi.lib;userenv.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <ImportLibrary>..\..\..\build\output\x64\Profile\MainLoop64p.lib</ImportLibrary>
+      <ImportLibrary>..\..\..\build\vs2017\output\x64\Profile\MainLoop64p.lib</ImportLibrary>
       <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
     </Link>
     <PostBuildEvent>
-      <Command>IF EXIST ..\..\..\build\output\x64\Profile\$(TargetFileName)\ (xcopy /Q /E /Y /I ..\..\..\build\output\x64\Profile\$(TargetFileName) ..\..\..\workingdir\App\bin &gt; nul) ELSE (xcopy /Q /Y /I ..\..\..\build\output\x64\Profile\$(TargetFileName) ..\..\..\workingdir\App\bin &gt; nul)</Command>
+      <Command>IF EXIST ..\..\..\build\vs2017\output\x64\Profile\$(TargetFileName)\ (xcopy /Q /E /Y /I ..\..\..\build\vs2017\output\x64\Profile\$(TargetFileName) ..\..\..\workingdir\App\bin &gt; nul) ELSE (xcopy /Q /Y /I ..\..\..\build\vs2017\output\x64\Profile\$(TargetFileName) ..\..\..\workingdir\App\bin &gt; nul)</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Optimized_Debug|x64'">
@@ -262,11 +262,11 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalDependencies>ws2_32.lib;iphlpapi.lib;psapi.lib;userenv.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <ImportLibrary>..\..\..\build\output\x64\Optimized_Debug\MainLoop64od.lib</ImportLibrary>
+      <ImportLibrary>..\..\..\build\vs2017\output\x64\Optimized_Debug\MainLoop64od.lib</ImportLibrary>
       <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
     </Link>
     <PostBuildEvent>
-      <Command>IF EXIST ..\..\..\build\output\x64\Optimized_Debug\$(TargetFileName)\ (xcopy /Q /E /Y /I ..\..\..\build\output\x64\Optimized_Debug\$(TargetFileName) ..\..\..\workingdir\App\bin &gt; nul) ELSE (xcopy /Q /Y /I ..\..\..\build\output\x64\Optimized_Debug\$(TargetFileName) ..\..\..\workingdir\App\bin &gt; nul)</Command>
+      <Command>IF EXIST ..\..\..\build\vs2017\output\x64\Optimized_Debug\$(TargetFileName)\ (xcopy /Q /E /Y /I ..\..\..\build\vs2017\output\x64\Optimized_Debug\$(TargetFileName) ..\..\..\workingdir\App\bin &gt; nul) ELSE (xcopy /Q /Y /I ..\..\..\build\vs2017\output\x64\Optimized_Debug\$(TargetFileName) ..\..\..\workingdir\App\bin &gt; nul)</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>

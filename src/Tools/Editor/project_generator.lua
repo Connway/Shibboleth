@@ -24,15 +24,19 @@ project "Editor"
 
 	dependson
 	{
-		"Shared", "Gaff",
-		"Memory", "EASTL",
+		"Shared",
+		"Gaff",
+		"Memory",
+		"EASTL",
 		"libuv"
 	}
 
 	links
 	{
-		"Shared", "Gaff",
-		"Memory", "EASTL",
+		"Shared",
+		"Gaff",
+		"Memory",
+		"EASTL",
 		"libuv"
 	}
 

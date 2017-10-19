@@ -78,26 +78,26 @@ project "ScriptingModule"
 	{
 		"Gaff",
 		"Gleam",
-		"Scripting",
 		"Memory",
 		"Shared",
 		"EASTL",
 		"angelscript",
+		"libuv",
 		"Resource",
 		"Entity",
-		"libuv"
+		"Scripting"
 	}
 
 	links
 	{
 		"Gaff",
 		"Gleam",
-		"Scripting",
 		"Memory",
 		"Shared",
 		"EASTL",
 		"angelscript",
+		"libuv",
 		"Resource",
 		"Entity",
-		"libuv"
+		"Scripting"
 	}

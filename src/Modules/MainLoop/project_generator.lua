@@ -42,8 +42,10 @@ project "MainLoopModule"
 
 	dependson
 	{
-		"Shared", "Gaff",
-		"Memory", "EASTL",
+		"Shared",
+		"Gaff",
+		"Memory",
+		"EASTL",
 		"libuv"
 
 		, "Scripting", "Resource", "angelscript", "Entity", "Gleam"
@@ -51,8 +53,10 @@ project "MainLoopModule"
 
 	links
 	{
-		"Shared", "Gaff",
-		"Memory", "EASTL",
+		"Shared",
+		"Gaff",
+		"Memory",
+		"EASTL",
 		"libuv"
 
 		, "Scripting", "Resource", "angelscript", "Entity", "Gleam"

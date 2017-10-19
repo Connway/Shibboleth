@@ -84,36 +84,36 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <OutDir>..\..\..\build\output\x64\Debug\</OutDir>
-    <IntDir>..\..\..\build\intermediate\x64\Debug\App\</IntDir>
+    <OutDir>..\..\..\build\vs2015\output\x64\Debug\</OutDir>
+    <IntDir>..\..\..\build\vs2015\intermediate\x64\Debug\App\</IntDir>
     <TargetName>App64d</TargetName>
     <TargetExt>.exe</TargetExt>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <OutDir>..\..\..\build\output\x64\Release\</OutDir>
-    <IntDir>..\..\..\build\intermediate\x64\Release\App\</IntDir>
+    <OutDir>..\..\..\build\vs2015\output\x64\Release\</OutDir>
+    <IntDir>..\..\..\build\vs2015\intermediate\x64\Release\App\</IntDir>
     <TargetName>App64</TargetName>
     <TargetExt>.exe</TargetExt>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Analyze|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <OutDir>..\..\..\build\output\x64\Analyze\</OutDir>
-    <IntDir>..\..\..\build\intermediate\x64\Analyze\App\</IntDir>
+    <OutDir>..\..\..\build\vs2015\output\x64\Analyze\</OutDir>
+    <IntDir>..\..\..\build\vs2015\intermediate\x64\Analyze\App\</IntDir>
     <TargetName>App64a</TargetName>
     <TargetExt>.exe</TargetExt>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <OutDir>..\..\..\build\output\x64\Profile\</OutDir>
-    <IntDir>..\..\..\build\intermediate\x64\Profile\App\</IntDir>
+    <OutDir>..\..\..\build\vs2015\output\x64\Profile\</OutDir>
+    <IntDir>..\..\..\build\vs2015\intermediate\x64\Profile\App\</IntDir>
     <TargetName>App64p</TargetName>
     <TargetExt>.exe</TargetExt>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Optimized_Debug|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <OutDir>..\..\..\build\output\x64\Optimized_Debug\</OutDir>
-    <IntDir>..\..\..\build\intermediate\x64\Optimized_Debug\App\</IntDir>
+    <OutDir>..\..\..\build\vs2015\output\x64\Optimized_Debug\</OutDir>
+    <IntDir>..\..\..\build\vs2015\intermediate\x64\Optimized_Debug\App\</IntDir>
     <TargetName>App64od</TargetName>
     <TargetExt>.exe</TargetExt>
   </PropertyGroup>
@@ -138,7 +138,7 @@
       <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
     </Link>
     <PostBuildEvent>
-      <Command>IF EXIST ..\..\..\build\output\x64\Debug\$(TargetFileName)\ (xcopy /Q /E /Y /I ..\..\..\build\output\x64\Debug\$(TargetFileName) ..\..\..\workingdir\App &gt; nul) ELSE (xcopy /Q /Y /I ..\..\..\build\output\x64\Debug\$(TargetFileName) ..\..\..\workingdir\App &gt; nul)</Command>
+      <Command>IF EXIST ..\..\..\build\vs2015\output\x64\Debug\$(TargetFileName)\ (xcopy /Q /E /Y /I ..\..\..\build\vs2015\output\x64\Debug\$(TargetFileName) ..\..\..\workingdir\App &gt; nul) ELSE (xcopy /Q /Y /I ..\..\..\build\vs2015\output\x64\Debug\$(TargetFileName) ..\..\..\workingdir\App &gt; nul)</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -168,7 +168,7 @@
       <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
     </Link>
     <PostBuildEvent>
-      <Command>IF EXIST ..\..\..\build\output\x64\Release\$(TargetFileName)\ (xcopy /Q /E /Y /I ..\..\..\build\output\x64\Release\$(TargetFileName) ..\..\..\workingdir\App &gt; nul) ELSE (xcopy /Q /Y /I ..\..\..\build\output\x64\Release\$(TargetFileName) ..\..\..\workingdir\App &gt; nul)</Command>
+      <Command>IF EXIST ..\..\..\build\vs2015\output\x64\Release\$(TargetFileName)\ (xcopy /Q /E /Y /I ..\..\..\build\vs2015\output\x64\Release\$(TargetFileName) ..\..\..\workingdir\App &gt; nul) ELSE (xcopy /Q /Y /I ..\..\..\build\vs2015\output\x64\Release\$(TargetFileName) ..\..\..\workingdir\App &gt; nul)</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Analyze|x64'">
@@ -196,7 +196,7 @@
       <AdditionalDependencies>ws2_32.lib;iphlpapi.lib;psapi.lib;userenv.lib;Dbghelp.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
-      <Command>IF EXIST ..\..\..\build\output\x64\Analyze\$(TargetFileName)\ (xcopy /Q /E /Y /I ..\..\..\build\output\x64\Analyze\$(TargetFileName) ..\..\..\workingdir\App &gt; nul) ELSE (xcopy /Q /Y /I ..\..\..\build\output\x64\Analyze\$(TargetFileName) ..\..\..\workingdir\App &gt; nul)</Command>
+      <Command>IF EXIST ..\..\..\build\vs2015\output\x64\Analyze\$(TargetFileName)\ (xcopy /Q /E /Y /I ..\..\..\build\vs2015\output\x64\Analyze\$(TargetFileName) ..\..\..\workingdir\App &gt; nul) ELSE (xcopy /Q /Y /I ..\..\..\build\vs2015\output\x64\Analyze\$(TargetFileName) ..\..\..\workingdir\App &gt; nul)</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">
@@ -226,7 +226,7 @@
       <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
     </Link>
     <PostBuildEvent>
-      <Command>IF EXIST ..\..\..\build\output\x64\Profile\$(TargetFileName)\ (xcopy /Q /E /Y /I ..\..\..\build\output\x64\Profile\$(TargetFileName) ..\..\..\workingdir\App &gt; nul) ELSE (xcopy /Q /Y /I ..\..\..\build\output\x64\Profile\$(TargetFileName) ..\..\..\workingdir\App &gt; nul)</Command>
+      <Command>IF EXIST ..\..\..\build\vs2015\output\x64\Profile\$(TargetFileName)\ (xcopy /Q /E /Y /I ..\..\..\build\vs2015\output\x64\Profile\$(TargetFileName) ..\..\..\workingdir\App &gt; nul) ELSE (xcopy /Q /Y /I ..\..\..\build\vs2015\output\x64\Profile\$(TargetFileName) ..\..\..\workingdir\App &gt; nul)</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Optimized_Debug|x64'">
@@ -256,7 +256,7 @@
       <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
     </Link>
     <PostBuildEvent>
-      <Command>IF EXIST ..\..\..\build\output\x64\Optimized_Debug\$(TargetFileName)\ (xcopy /Q /E /Y /I ..\..\..\build\output\x64\Optimized_Debug\$(TargetFileName) ..\..\..\workingdir\App &gt; nul) ELSE (xcopy /Q /Y /I ..\..\..\build\output\x64\Optimized_Debug\$(TargetFileName) ..\..\..\workingdir\App &gt; nul)</Command>
+      <Command>IF EXIST ..\..\..\build\vs2015\output\x64\Optimized_Debug\$(TargetFileName)\ (xcopy /Q /E /Y /I ..\..\..\build\vs2015\output\x64\Optimized_Debug\$(TargetFileName) ..\..\..\workingdir\App &gt; nul) ELSE (xcopy /Q /Y /I ..\..\..\build\vs2015\output\x64\Optimized_Debug\$(TargetFileName) ..\..\..\workingdir\App &gt; nul)</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>

@@ -83,32 +83,32 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <OutDir>..\..\..\build\output\x64\Debug\</OutDir>
-    <IntDir>..\..\..\build\intermediate\x64\Debug\Entity\</IntDir>
+    <OutDir>..\..\..\build\vs2015\output\x64\Debug\</OutDir>
+    <IntDir>..\..\..\build\vs2015\intermediate\x64\Debug\Entity\</IntDir>
     <TargetName>Entity</TargetName>
     <TargetExt>.lib</TargetExt>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <OutDir>..\..\..\build\output\x64\Release\</OutDir>
-    <IntDir>..\..\..\build\intermediate\x64\Release\Entity\</IntDir>
+    <OutDir>..\..\..\build\vs2015\output\x64\Release\</OutDir>
+    <IntDir>..\..\..\build\vs2015\intermediate\x64\Release\Entity\</IntDir>
     <TargetName>Entity</TargetName>
     <TargetExt>.lib</TargetExt>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Analyze|x64'">
-    <OutDir>..\..\..\build\output\x64\Analyze\</OutDir>
-    <IntDir>..\..\..\build\intermediate\x64\Analyze\Entity\</IntDir>
+    <OutDir>..\..\..\build\vs2015\output\x64\Analyze\</OutDir>
+    <IntDir>..\..\..\build\vs2015\intermediate\x64\Analyze\Entity\</IntDir>
     <TargetName>Entity</TargetName>
     <TargetExt>.lib</TargetExt>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">
-    <OutDir>..\..\..\build\output\x64\Profile\</OutDir>
-    <IntDir>..\..\..\build\intermediate\x64\Profile\Entity\</IntDir>
+    <OutDir>..\..\..\build\vs2015\output\x64\Profile\</OutDir>
+    <IntDir>..\..\..\build\vs2015\intermediate\x64\Profile\Entity\</IntDir>
     <TargetName>Entity</TargetName>
     <TargetExt>.lib</TargetExt>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Optimized_Debug|x64'">
-    <OutDir>..\..\..\build\output\x64\Optimized_Debug\</OutDir>
-    <IntDir>..\..\..\build\intermediate\x64\Optimized_Debug\Entity\</IntDir>
+    <OutDir>..\..\..\build\vs2015\output\x64\Optimized_Debug\</OutDir>
+    <IntDir>..\..\..\build\vs2015\intermediate\x64\Optimized_Debug\Entity\</IntDir>
     <TargetName>Entity</TargetName>
     <TargetExt>.lib</TargetExt>
   </PropertyGroup>
@@ -245,12 +245,10 @@
   <ItemGroup>
     <ClInclude Include="..\..\..\src\Modules\Entity\include\Gen_ReflectionInit.h" />
     <ClInclude Include="..\..\..\src\Modules\Entity\include\Shibboleth_Component.h" />
-    <ClInclude Include="..\..\..\src\Modules\Entity\include\Shibboleth_ComponentManager.h" />
     <ClInclude Include="..\..\..\src\Modules\Entity\include\Shibboleth_Object.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\src\Modules\Entity\Shibboleth_Component.cpp" />
-    <ClCompile Include="..\..\..\src\Modules\Entity\Shibboleth_ComponentManager.cpp" />
     <ClCompile Include="..\..\..\src\Modules\Entity\Shibboleth_Object.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

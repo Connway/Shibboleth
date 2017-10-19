@@ -65,16 +65,22 @@ project "EntityModule"
 
 	dependson
 	{
-		"Entity", "Memory",
-		"Gaff", "Shared",
-		"EASTL", "libuv"
+		"Memory",
+		"Gaff",
+		"Shared",
+		"EASTL",
+		"libuv",
+		"Entity"
 	}
 
 	links
 	{
-		"Entity", "Memory",
-		"Gaff", "Shared",
-		"EASTL", "libuv"
+		"Memory",
+		"Gaff",
+		"Shared",
+		"EASTL",
+		"libuv",
+		"Entity"
 	}
 
 

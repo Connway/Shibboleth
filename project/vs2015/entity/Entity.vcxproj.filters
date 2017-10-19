@@ -12,16 +12,12 @@
     <ClInclude Include="..\..\..\src\Modules\Entity\include\Shibboleth_Component.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\src\Modules\Entity\include\Shibboleth_ComponentManager.h">
-      <Filter>include</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\src\Modules\Entity\include\Shibboleth_Object.h">
       <Filter>include</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\src\Modules\Entity\Shibboleth_Component.cpp" />
-    <ClCompile Include="..\..\..\src\Modules\Entity\Shibboleth_ComponentManager.cpp" />
     <ClCompile Include="..\..\..\src\Modules\Entity\Shibboleth_Object.cpp" />
   </ItemGroup>
 </Project>
