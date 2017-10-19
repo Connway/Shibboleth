@@ -58,6 +58,8 @@ project "ScriptingModule"
 
 	filter {}
 
+	NewDeleteLinkFix()
+
 	includedirs
 	{
 		"include",
