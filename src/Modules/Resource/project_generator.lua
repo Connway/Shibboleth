@@ -49,6 +49,8 @@ project "ResourceModule"
 
 	filter {}
 
+	NewDeleteLinkFix()
+
 	includedirs
 	{
 		"include",
@@ -60,16 +62,6 @@ project "ResourceModule"
 		"../../../frameworks/Gaff/include"
 	}
 
-	dependson
-	{
-		"Memory",
-		"Gaff",
-		"Shared",
-		"EASTL",
-		"libuv",
-		"Resource"
-	}
-
 	links
 	{
 		"Memory",
@@ -77,5 +69,6 @@ project "ResourceModule"
 		"Shared",
 		"EASTL",
 		"libuv",
-		"Resource"
+		"Resource",
 	}
+
