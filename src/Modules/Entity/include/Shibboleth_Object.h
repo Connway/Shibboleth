@@ -197,9 +197,9 @@ private:
 	Vector<Component*> _components;
 	//IObjectManager& _obj_mgr;
 
-	uint32_t _id;
+	int32_t _id;
 
-	uint8_t _flags;
+	int32_t _flags;
 
 	bool createComponents(const Gaff::ISerializeReader& reader);
 	void markDirty(void);

@@ -83,7 +83,7 @@ bool Object::load(const Gaff::ISerializeReader& reader)
 		}
 
 		// Start off object as dirty
-		Gaff::SetBits<uint8_t>(_flags, OBJ_DIRTY);
+		Gaff::SetBits<int32_t>(_flags, OBJ_DIRTY);
 	}
 
 	return true;
@@ -453,17 +453,17 @@ void Object::notifyWorldDirtyCallbacks(void)
 
 bool Object::isDirty(void) const
 {
-	return Gaff::IsAnyBitSet<char>(_flags, OBJ_DIRTY);
+	return Gaff::IsAnyBitSet<int32_t>(_flags, OBJ_DIRTY);
 }
 
 void Object::clearDirty(void)
 {
-	Gaff::ClearBits<uint8_t>(_flags, OBJ_DIRTY);
+	Gaff::ClearBits<int32_t>(_flags, OBJ_DIRTY);
 }
 
 bool Object::isInWorld(void) const
 {
-	return Gaff::IsAnyBitSet<char>(_flags, OBJ_IN_WORLD);
+	return Gaff::IsAnyBitSet<int32_t>(_flags, OBJ_IN_WORLD);
 }
 
 void Object::addToWorld(void)
@@ -472,7 +472,7 @@ void Object::addToWorld(void)
 		(*it)->onAddToWorld();
 	}
 
-	Gaff::SetBits<uint8_t>(_flags, OBJ_IN_WORLD);
+	Gaff::SetBits<int32_t>(_flags, OBJ_IN_WORLD);
 }
 
 void Object::removeFromWorld(void)
@@ -481,7 +481,7 @@ void Object::removeFromWorld(void)
 		(*it)->onRemoveFromWorld();
 	}
 
-	Gaff::ClearBits<uint8_t>(_flags, OBJ_IN_WORLD);
+	Gaff::ClearBits<int32_t>(_flags, OBJ_IN_WORLD);
 }
 
 bool Object::createComponents(const Gaff::ISerializeReader& reader)
@@ -547,7 +547,7 @@ bool Object::createComponents(const Gaff::ISerializeReader& reader)
 void Object::markDirty(void)
 {
 	if (!isDirty()) {
-		Gaff::SetBits<uint8_t>(_flags, OBJ_DIRTY);
+		Gaff::SetBits<int32_t>(_flags, OBJ_DIRTY);
 		//_obj_mgr.addDirtyObject(this);
 	}
 }
