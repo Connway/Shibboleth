@@ -15,6 +15,10 @@ function ModuleCopy()
 end
 
 function NewDeleteLinkFix()
+	if _ACTION == nil then
+		return
+	end
+
 	filter { "system:windows" }
 		ignoredefaultlibraries { "msvcrt.lib", "msvcrtd.lib" }
 
