@@ -22,6 +22,7 @@ THE SOFTWARE.
 
 #include "Shibboleth_Memory.h"
 #include "Shibboleth_Allocator.h"
+#include <rpmalloc.h>
 
 NS_SHIBBOLETH
 
@@ -60,6 +61,11 @@ void* ShibbolethAllocate(size_t size)
 void ShibbolethFree(void* data)
 {
 	SHIB_FREE(data, g_allocator);
+}
+
+void AllocatorThreadInit(void)
+{
+	coherent_rpmalloc::rpmalloc_thread_initialize();
 }
 
 NS_END
