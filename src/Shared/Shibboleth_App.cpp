@@ -100,7 +100,12 @@ bool App::initInternal(void)
 		"Initializing Game...\n"
 	);
 
-	if (!_job_pool.init()) {
+	auto thread_init = []()
+	{
+		AllocatorThreadInit();
+	};
+
+	if (!_job_pool.init(7, static_cast<int32_t>(Gaff::GetNumberOfCores()), thread_init)) {
 		LogErrorDefault("ERROR - Failed to initialize thread pool\n");
 		return false;
 	}

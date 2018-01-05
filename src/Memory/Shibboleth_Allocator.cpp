@@ -28,8 +28,8 @@ THE SOFTWARE.
 #include "Shibboleth_Allocator.h"
 #include <Gaff_Utils.h>
 #include <Gaff_File.h>
-#include <jemalloc/jemalloc.h>
 #include <eastl/algorithm.h>
+#include <rpmalloc.h>
 
 #ifdef PLATFORM_WINDOWS
 	// Disable "structure was padded due to alignment specifier" warning
@@ -46,6 +46,19 @@ THE SOFTWARE.
 	#include <Gaff_SpinLock.h>
 	#include <Gaff_Map.h>
 #endif
+
+namespace coherent_rpmalloc
+{
+	void* rpmalloc_allocate_memory_external(size_t bytes)
+	{
+		return malloc(bytes);
+	}
+
+	void rpmalloc_deallocate_memory_external(void* ptr)
+	{
+		free(ptr);
+	}
+}
 
 NS_SHIBBOLETH
 
@@ -70,12 +83,16 @@ Allocator::Allocator(void):
 	mem_pool_info.num_allocations = 0;
 	mem_pool_info.num_frees = 0;
 	strncpy(mem_pool_info.pool_name, "Untagged", POOL_NAME_SIZE);
+
+	coherent_rpmalloc::rpmalloc_initialize();
 }
 
 Allocator::~Allocator(void)
 {
 	writeAllocationLog();
 	writeLeakLog();
+
+	coherent_rpmalloc::rpmalloc_finalize();
 }
 
 void* Allocator::allocate(size_t n, int flags)
@@ -124,7 +141,7 @@ int32_t Allocator::getPoolIndex(const char* pool_name)
 
 void* Allocator::alloc(size_t size_bytes, size_t alignment, int32_t pool_index, const char* file, int line)
 {
-	void* data = je_aligned_alloc(alignment, size_bytes + sizeof(AllocationHeader));
+	void* data = coherent_rpmalloc::rpaligned_alloc(alignment, size_bytes + sizeof(AllocationHeader));
 
 	if (data) {
 		setHeaderData(
@@ -143,7 +160,7 @@ void* Allocator::alloc(size_t size_bytes, size_t alignment, int32_t pool_index, 
 
 void* Allocator::alloc(size_t size_bytes, int32_t pool_index, const char* file, int line)
 {
-	void* data = je_malloc(size_bytes + sizeof(AllocationHeader));
+	void* data = coherent_rpmalloc::rpmalloc(size_bytes + sizeof(AllocationHeader));
 
 	if (data) {
 		setHeaderData(
@@ -232,7 +249,7 @@ void Allocator::free(void* data)
 
 	_alloc_lock.unlock();
 
-	je_free(header);
+	coherent_rpmalloc::rpfree(header);
 }
 
 size_t Allocator::getTotalBytesAllocated(size_t pool_index) const
@@ -412,7 +429,7 @@ void Allocator::writeLeakLog(void) const
 		AllocationHeader* old_header = header;
 		header = header->next;
 
-		je_free(old_header);
+		coherent_rpmalloc::rpfree(old_header);
 	}
 }
 

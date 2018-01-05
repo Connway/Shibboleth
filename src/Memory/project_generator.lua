@@ -16,19 +16,16 @@ project "Memory"
 		"include",
 		"../Shared/include",
 		"../../frameworks/Gaff/include",
-		"../../dependencies/jemalloc/include",
+		"../../dependencies/rpmalloc",
 		"../../dependencies/EASTL/include",
 		"../../dependencies/dirent"
 	}
 
-	dependson { "Gaff", "EASTL", "jemalloc" }
-	links { "Gaff", "EASTL", "jemalloc" }
+	dependson { "Gaff", "EASTL", "rpmalloc" }
+	links { "Gaff", "EASTL", "rpmalloc" }
 
 	filter { "configurations:not Analyze*" }
 		flags { "FatalWarnings" }
-
-	filter { "action:vs*" }
-		includedirs { "../../dependencies/jemalloc/include/msvc_compat" }
 
 	filter { "system:windows", "options:symbols" }
 		links { "Dbghelp" }

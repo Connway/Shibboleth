@@ -34,7 +34,7 @@ JobPool<Allocator>::~JobPool(void)
 }
 
 template <class Allocator>
-bool JobPool<Allocator>::init(int32_t num_pools, int32_t num_threads)
+bool JobPool<Allocator>::init(int32_t num_pools, int32_t num_threads, ThreadInitFunc init)
 {
 	_job_pools.resize(num_pools + 1);
 
@@ -44,6 +44,7 @@ bool JobPool<Allocator>::init(int32_t num_pools, int32_t num_threads)
 	}
 
 	_thread_data.job_pool = this;
+	_thread_data.init_func = init;
 	_thread_data.terminate = false;
 	_threads.resize(num_threads);
 
@@ -269,6 +270,10 @@ void JobPool<Allocator>::JobThread(void* arg)
 {
 	ThreadData& td = *reinterpret_cast<ThreadData*>(arg);
 	JobPool<Allocator>* job_pool = td.job_pool;
+
+	if (td.init_func) {
+		td.init_func();
+	}
 
 	while (!td.terminate) {
 		++job_pool->_active_threads;

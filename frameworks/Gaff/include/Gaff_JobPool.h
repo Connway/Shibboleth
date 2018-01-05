@@ -43,6 +43,7 @@ struct JobData
 
 using Counter = std::atomic_int32_t;
 using JobPair = std::pair<JobData, Counter*>;
+using ThreadInitFunc = void (*)(void);
 
 template <class Allocator = DefaultAllocator>
 class JobPool
@@ -51,7 +52,7 @@ public:
 	JobPool(const Allocator& allocator = Allocator());
 	~JobPool(void);
 
-	bool init(int32_t num_pools = 7, int32_t num_threads = static_cast<int32_t>(GetNumberOfCores()));
+	bool init(int32_t num_pools = 7, int32_t num_threads = static_cast<int32_t>(GetNumberOfCores()), ThreadInitFunc init = nullptr);
 	void destroy(void);
 
 	void addJobs(JobData* jobs, size_t num_jobs = 1, Counter** counter = nullptr, int32_t pool = 0);
@@ -78,6 +79,7 @@ private:
 	struct ThreadData
 	{
 		JobPool<Allocator>* job_pool;
+		ThreadInitFunc init_func;
 		bool terminate;
 	};
 
