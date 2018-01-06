@@ -180,6 +180,12 @@ EnumReflectionDefinition<Enum, Allocator>& EnumReflectionDefinition<Enum, Alloca
 }
 
 template <class Enum, class Allocator>
+void EnumReflectionDefinition<Enum, Allocator>::finish(void)
+{
+	GAFF_REFLECTION_NAMESPACE::EnumReflection<Enum>::g_defined = true;
+}
+
+template <class Enum, class Allocator>
 template <class First, class... Rest>
 EnumReflectionDefinition<Enum, Allocator>& EnumReflectionDefinition<Enum, Allocator>::addAttributes(Vector<IAttributePtr, Allocator>& attrs, const First& first, const Rest&... rest)
 {

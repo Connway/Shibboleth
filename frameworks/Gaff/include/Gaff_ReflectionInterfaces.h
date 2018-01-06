@@ -32,6 +32,7 @@ class ISerializeReader;
 class ISerializeWriter;
 class IAllocator;
 
+class IEnumReflectionDefinition;
 class IReflectionDefinition;
 
 enum ReflectionValueType
@@ -97,6 +98,8 @@ class IAttribute : public IReflectionObject
 {
 public:
 	virtual IAttribute* clone(void) const = 0;
+	virtual void finish(Gaff::IReflectionDefinition* /*ref_def*/) {}
+	virtual void finish(Gaff::IEnumReflectionDefinition* /*ref_def*/) {}
 };
 
 class IReflection

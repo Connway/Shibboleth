@@ -117,7 +117,7 @@ namespace GAFF_REFLECTION_NAMESPACE { \
 		Gaff::ReflectionVersion<type> _version; \
 		static Reflection<type> g_instance; \
 		static bool g_defined; \
-		static Gaff::Vector<void (*)(void), allocator> g_on_defined_callbacks; \
+		static Gaff::Vector<eastl::function<void (void)>, allocator> g_on_defined_callbacks; \
 		template <class RefT, class RefAllocator> \
 		friend class Gaff::ReflectionDefinition; \
 	public: \
@@ -125,7 +125,6 @@ namespace GAFF_REFLECTION_NAMESPACE { \
 		constexpr static bool HasClassReflection = Gaff::IsClassReflected<type>::value; \
 		Reflection(void) \
 		{ \
-			BuildReflection(_version); \
 			if (std::is_base_of<Gaff::IAttribute, type>::value) { \
 				Gaff::AddToAttributeReflectionChain(this); \
 			} else { \
@@ -160,9 +159,13 @@ namespace GAFF_REFLECTION_NAMESPACE { \
 		{ \
 			return g_defined; \
 		} \
-		static void RegisterOnDefinedCallback(void (*callback)(void)) \
+		static void RegisterOnDefinedCallback(const eastl::function<void (void)>& callback) \
 		{ \
 			g_on_defined_callbacks.emplace_back(callback); \
+		} \
+		static void RegisterOnDefinedCallback(eastl::function<void (void)>&& callback) \
+		{ \
+			g_on_defined_callbacks.emplace_back(std::move(callback)); \
 		} \
 		template <class ReflectionBuilder> \
 		static void BuildReflection(ReflectionBuilder& builder); \
@@ -197,6 +200,7 @@ namespace GAFF_REFLECTION_NAMESPACE { \
 		} \
 		static void Init(void) \
 		{ \
+			BuildReflection(g_instance._version); \
 			BuildReflection(g_reflection_definition); \
 		} \
 	private: \
@@ -248,16 +252,21 @@ NS_END
 #define GAFF_REFLECTION_DEFINE_BASE(type, allocator) \
 	GAFF_REFLECTION_NAMESPACE::Reflection<type> GAFF_REFLECTION_NAMESPACE::Reflection<type>::g_instance; \
 	bool GAFF_REFLECTION_NAMESPACE::Reflection<type>::g_defined = false; \
-	Gaff::Vector<void (*)(void), allocator> GAFF_REFLECTION_NAMESPACE::Reflection<type>::g_on_defined_callbacks
+	Gaff::Vector<eastl::function<void (void)>, allocator> GAFF_REFLECTION_NAMESPACE::Reflection<type>::g_on_defined_callbacks
 
-#define GAFF_REFLECTION_DEFINE_BEGIN_CUSTOM_BUILDER(type, allocator) \
+#define GAFF_REFLECTION_EXTERNAL_DEFINE(type, allocator) \
+	GAFF_REFLECTION_EXTERNAL_DEFINE_BEGIN(type, allocator) \
+	GAFF_REFLECTION_EXTERNAL_DEFINE_END(type, allocator)
+
+#define GAFF_REFLECTION_EXTERNAL_DEFINE_BEGIN(type, allocator) \
 	Gaff::ReflectionDefinition<type, allocator> GAFF_REFLECTION_NAMESPACE::Reflection<type>::g_reflection_definition; \
 	GAFF_REFLECTION_DEFINE_BASE(type, allocator); \
 	void GAFF_REFLECTION_NAMESPACE::Reflection<type>::Init() \
 	{ \
-		Gaff::ReflectionVersion<type> version; \
-		BuildReflection(version); \
+		BuildReflection(g_instance._version); \
 		BuildReflection(g_reflection_definition); \
+
+#define GAFF_REFLECTION_EXTERNAL_DEFINE_END GAFF_REFLECTION_DEFINE_END
 
 #define GAFF_REFLECTION_DEFINE(type, allocator) \
 	GAFF_REFLECTION_DEFINE_BEGIN(type, allocator) \
@@ -269,11 +278,9 @@ NS_END
 	{ \
 		type::BuildReflection(builder); \
 	} \
-	GAFF_REFLECTION_DEFINE_BEGIN_CUSTOM_BUILDER(type, allocator)
+	GAFF_REFLECTION_EXTERNAL_DEFINE_BEGIN(type, allocator)
 
-#define GAFF_REFLECTION_DEFINE_END(type, ...) \
-		g_reflection_definition.finish(); \
-	}
+#define GAFF_REFLECTION_DEFINE_END(type, ...) }
 
 #define GAFF_REFLECTION_BUILDER_BEGIN(type) \
 	template <class ReflectionBuilder> \
@@ -281,7 +288,10 @@ NS_END
 	{ \
 		builder
 
-#define GAFF_REFLECTION_BUILDER_END(type) ; }
+#define GAFF_REFLECTION_BUILDER_END(type) \
+		; \
+		builder.finish(); \
+	}
 
 #define GAFF_REFLECTION_CLASS_DEFINE(type, allocator) \
 	GAFF_REFLECTION_CLASS_DEFINE_BEGIN(type, allocator) \
@@ -297,7 +307,7 @@ NS_END
 	{ \
 		builder
 
-#define GAFF_REFLECTION_CLASS_DEFINE_END(type, ...) ; }
+#define GAFF_REFLECTION_CLASS_DEFINE_END(type, ...) GAFF_REFLECTION_BUILDER_END(type)
 
 
 // Template Reflection
@@ -476,22 +486,23 @@ NS_END
 	template < GAFF_FOR_EACH_COMMA(GAFF_TEMPLATE_REFLECTION_CLASS, __VA_ARGS__) > \
 	bool GAFF_REFLECTION_NAMESPACE::Reflection< type<__VA_ARGS__> >::g_defined = false; \
 	template < GAFF_FOR_EACH_COMMA(GAFF_TEMPLATE_REFLECTION_CLASS, __VA_ARGS__) > \
-	Gaff::Vector<void (*)(void), allocator> GAFF_REFLECTION_NAMESPACE::Reflection< type<__VA_ARGS__> >::g_on_defined_callbacks
+	Gaff::Vector<eastl::function<void (void)>, allocator> GAFF_REFLECTION_NAMESPACE::Reflection< type<__VA_ARGS__> >::g_on_defined_callbacks
 
-#define GAFF_TEMPLATE_REFLECTION_DEFINE_BEGIN_CUSTOM_BUILDER(type, allocator, ...) \
+#define GAFF_TEMPLATE_REFLECTION_EXTERNAL_DEFINE(type, allocator, ...) \
+	GAFF_TEMPLATE_REFLECTION_EXTERNAL_DEFINE_BEGIN(type, allocator, __VA_ARGS__) \
+	GAFF_TEMPLATE_REFLECTION_EXTERNAL_DEFINE_END(type, allocator, __VA_ARGS__)
+
+#define GAFF_TEMPLATE_REFLECTION_EXTERNAL_DEFINE_BEGIN(type, allocator, ...) \
 	template < GAFF_FOR_EACH_COMMA(GAFF_TEMPLATE_REFLECTION_CLASS, __VA_ARGS__) > \
 	Gaff::ReflectionDefinition< type<__VA_ARGS__>, allocator> GAFF_REFLECTION_NAMESPACE::Reflection< type<__VA_ARGS__> >::g_reflection_definition; \
 	GAFF_TEMPLATE_REFLECTION_DEFINE_BASE(type, allocator, __VA_ARGS__); \
 	template < GAFF_FOR_EACH_COMMA(GAFF_TEMPLATE_REFLECTION_CLASS, __VA_ARGS__) > \
 	void GAFF_REFLECTION_NAMESPACE::Reflection< type<__VA_ARGS__> >::Init() \
 	{ \
-		Gaff::ReflectionVersion< type<__VA_ARGS__> > version; \
-		BuildReflection(version); \
-		GAFF_ASSERT_MSG(\
-			version.getHash() == GetInstance()._version.getHash(), \
-			"Version hash for " #type " does not match!" \
-		); \
+		BuildReflection(g_instance._version); \
 		BuildReflection(g_reflection_definition); \
+
+#define GAFF_TEMPLATE_REFLECTION_EXTERNAL_DEFINE_END GAFF_REFLECTION_DEFINE_END
 
 #define GAFF_TEMPLATE_REFLECTION_DEFINE(type, allocator, ...) \
 	GAFF_TEMPLATE_REFLECTION_DEFINE_BEGIN(type, allocator, __VA_ARGS__) \
@@ -504,7 +515,7 @@ NS_END
 	{ \
 		type<__VA_ARGS__>::BuildReflection(builder); \
 	} \
-	GAFF_TEMPLATE_REFLECTION_DEFINE_BEGIN_CUSTOM_BUILDER(type, allocator, __VA_ARGS__)
+	GAFF_TEMPLATE_REFLECTION_EXTERNAL_DEFINE_BEGIN(type, allocator, __VA_ARGS__)
 
 #define GAFF_TEMPLATE_REFLECTION_DEFINE_END GAFF_REFLECTION_DEFINE_END 
 
@@ -516,6 +527,10 @@ NS_END
 		builder
 
 #define GAFF_TEMPLATE_REFLECTION_BUILDER_END GAFF_REFLECTION_BUILDER_END
+
+#define GAFF_TEMPLATE_REFLECTION_CLASS_DEFINE(type, allocator, ...) \
+	GAFF_TEMPLATE_REFLECTION_CLASS_DEFINE_BEGIN(type, allocator, __VA_ARGS__) \
+	GAFF_TEMPLATE_REFLECTION_CLASS_DEFINE_END(type, allocator, __VA_ARGS__)
 
 #define GAFF_TEMPLATE_REFLECTION_CLASS_DEFINE_BEGIN(type, allocator, ...) \
 	template < GAFF_FOR_EACH_COMMA(GAFF_TEMPLATE_REFLECTION_CLASS, __VA_ARGS__) > \
@@ -532,7 +547,7 @@ NS_END
 #define GAFF_TEMPLATE_REFLECTION_CLASS_DEFINE_END GAFF_REFLECTION_CLASS_DEFINE_END
 
 
-
+// This isn't used anywhere. Why did I add this?
 #define GAFF_REFLECTION_CLASS_STATIC_INIT(type) \
 	static void static__reflection__init__func__##type(void); \
 	namespace { \
@@ -604,6 +619,10 @@ NS_END
 		{ \
 			return g_instance; \
 		} \
+		static bool IsDefined(void) \
+		{ \
+			return true; \
+		} \
 	private: \
 		static Reflection<type> g_instance; \
 	}
@@ -646,7 +665,10 @@ NS_END
 		{ \
 			return false; \
 		} \
-		static void RegisterOnDefinedCallback(void (*)(void)) \
+		static void RegisterOnDefinedCallback(const eastl::function<void (void)>&) \
+		{ \
+		} \
+		static void RegisterOnDefinedCallback(eastl::function<void (void)>&&) \
 		{ \
 		} \
 	}; \

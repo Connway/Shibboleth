@@ -52,6 +52,11 @@ int32_t IResource::getRefCount(void) const
 	return _count;
 }
 
+void IResource::addResourceStateCallback(const eastl::function<void (IResource*)>& callback)
+{
+	_callbacks.emplace_back(callback);
+}
+
 void IResource::addResourceStateCallback(eastl::function<void (IResource*)>&& callback)
 {
 	_callbacks.emplace_back(std::move(callback));

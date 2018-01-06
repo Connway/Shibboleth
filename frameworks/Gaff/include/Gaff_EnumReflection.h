@@ -68,6 +68,11 @@ namespace GAFF_REFLECTION_NAMESPACE
 			GAFF_ASSERT_MSG(false, "Unknown enum.");
 			return 0;
 		}
+
+		static bool IsDefined(void)
+		{
+			return false;
+		}
 	};
 }
 
@@ -79,6 +84,9 @@ namespace GAFF_REFLECTION_NAMESPACE \
 	{ \
 	private: \
 		static EnumReflection<type> g_instance; \
+		static bool g_defined; \
+		template <class RefT, class RefAllocator> \
+		friend class Gaff::EnumReflectionDefinition; \
 	public: \
 		constexpr static bool HasReflection = true; \
 		constexpr static const char* GetName(void) \
@@ -108,6 +116,10 @@ namespace GAFF_REFLECTION_NAMESPACE \
 		void init(void) override \
 		{ \
 			Init(); \
+		} \
+		static bool IsDefined(void) \
+		{ \
+			return g_defined; \
 		} \
 		template <class ReflectionBuilder> \
 		static void BuildReflection(ReflectionBuilder& builder);
@@ -157,7 +169,8 @@ namespace GAFF_REFLECTION_NAMESPACE \
 	GAFF_ENUM_REFLECTION_DECLARE_BASE(type, allocator)
 
 #define GAFF_ENUM_REFLECTION_DEFINE_BASE(type, allocator) \
-	GAFF_REFLECTION_NAMESPACE::EnumReflection<type> GAFF_REFLECTION_NAMESPACE::EnumReflection<type>::g_instance;
+	GAFF_REFLECTION_NAMESPACE::EnumReflection<type> GAFF_REFLECTION_NAMESPACE::EnumReflection<type>::g_instance; \
+	bool GAFF_REFLECTION_NAMESPACE::EnumReflection<type>::g_defined = false
 
 #define GAFF_ENUM_REFLECTION_DEFINE_BEGIN_CUSTOM_INIT(type, allocator) \
 	Gaff::EnumReflectionDefinition<type, allocator> GAFF_REFLECTION_NAMESPACE::EnumReflection<type>::g_enum_reflection_definition; \
@@ -170,18 +183,21 @@ namespace GAFF_REFLECTION_NAMESPACE \
 
 #define GAFF_ENUM_REFLECTION_DEFINE_BEGIN(type, allocator) \
 	GAFF_ENUM_REFLECTION_DEFINE_BEGIN_CUSTOM_INIT(type, allocator) \
-	GAFF_ENUM_REFLECTION_DEFINE_END(type, allocator) \
-	GAFF_ENUM_REFLECTION_BUILDER_BEGIN(type, allocator)
+	GAFF_ENUM_REFLECTION_DEFINE_END(type) \
+	GAFF_ENUM_REFLECTION_BUILDER_BEGIN(type)
 
 #define GAFF_ENUM_REFLECTION_DEFINE_END GAFF_ENUM_REFLECTION_BUILDER_END
 
-#define GAFF_ENUM_REFLECTION_BUILDER_BEGIN(type, allocator) \
+#define GAFF_ENUM_REFLECTION_BUILDER_BEGIN(type) \
 	template <class ReflectionBuilder> \
 	void GAFF_REFLECTION_NAMESPACE::EnumReflection<type>::BuildReflection(ReflectionBuilder& builder) \
 	{ \
 		builder
 
-#define GAFF_ENUM_REFLECTION_BUILDER_END(type, ...) ; }
+#define GAFF_ENUM_REFLECTION_BUILDER_END(type) \
+		; \
+		builder.finish(); \
+	}
 
 
 NS_GAFF

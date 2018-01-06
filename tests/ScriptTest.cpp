@@ -43,14 +43,11 @@ public:
 	int testGet(void) const { return test_var; }
 };
 
-SHIB_REFLECTION_DECLARE(ScriptTest);
-
-SHIB_REFLECTION_DEFINE_BEGIN_CUSTOM_BUILDER(ScriptTest)
-	AngelScriptClassRegister<ScriptTest> asr(e);
-	BuildReflection(asr);
-SHIB_REFLECTION_DEFINE_END(ScriptTest)
+SHIB_REFLECTION_DECLARE(ScriptTest)
+SHIB_REFLECTION_EXTERNAL_DEFINE(ScriptTest)
 
 SHIB_REFLECTION_BUILDER_BEGIN(ScriptTest)
+	.classAttrs(RegisterAngelScriptAttribute<ScriptTest>(AS_NONE, e))
 	.ctor<>()
 	.var("test_var", &ScriptTest::test_var)
 	.func("testSet", &ScriptTest::testSet)
@@ -214,14 +211,11 @@ public:
 	SHIB_REFLECTION_CLASS_DECLARE(BaseTest);
 };
 
-SHIB_REFLECTION_DECLARE(BaseTest);
-
-SHIB_REFLECTION_DEFINE_BEGIN(BaseTest)
-	AngelScriptClassRegister<BaseTest> asr(e, Shibboleth::AS_VALUE_AS_REF);
-	BuildReflection(asr);
-SHIB_REFLECTION_DEFINE_END(BaseTest)
+SHIB_REFLECTION_DECLARE(BaseTest)
+SHIB_REFLECTION_DEFINE(BaseTest)
 
 SHIB_REFLECTION_CLASS_DEFINE_BEGIN(BaseTest)
+	.classAttrs(Shibboleth::RegisterAngelScriptAttribute<BaseTest>(Shibboleth::AS_VALUE_AS_REF, e))
 	.var("bar", &BaseTest::bar)
 SHIB_REFLECTION_CLASS_DEFINE_END(BaseTest)
 
@@ -259,14 +253,11 @@ private:
 	SHIB_REFLECTION_CLASS_DECLARE(TestRefCount);
 };
 
-SHIB_REFLECTION_DECLARE(TestRefCount);
-
-SHIB_REFLECTION_DEFINE_BEGIN(TestRefCount)
-	AngelScriptClassRegister<TestRefCount> asr(e);
-	BuildReflection(asr);
-SHIB_REFLECTION_DEFINE_END(TestRefCount)
+SHIB_REFLECTION_DECLARE(TestRefCount)
+SHIB_REFLECTION_DEFINE(TestRefCount)
 
 SHIB_REFLECTION_CLASS_DEFINE_BEGIN(TestRefCount)
+	.classAttrs(Shibboleth::RegisterAngelScriptAttribute<TestRefCount>(Shibboleth::AS_NONE, e))
 	.BASE(Gaff::IRefCounted)
 	.base<BaseTest>()
 	.ctor<>()
@@ -327,4 +318,6 @@ TEST_CASE("reflection_refcounted_test", "[shibboleth_reflection_refcounted]")
 
 	e->ReturnContext(ctx);
 	e->ShutDownAndRelease();
+
+	g_app.destroy();
 }

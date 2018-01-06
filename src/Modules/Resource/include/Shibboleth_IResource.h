@@ -64,6 +64,7 @@ public:
 	void release(void) const override;
 	int32_t getRefCount(void) const override;
 
+	void addResourceStateCallback(const eastl::function<void (IResource*)>& callback);
 	void addResourceStateCallback(eastl::function<void (IResource*)>&& callback);
 	void removeResourceStateCallback(const eastl::function<void (IResource*)>& callback);
 

@@ -62,6 +62,8 @@ public:
 
 	Hash64 getHash(void) const;
 
+	void finish(void);
+
 private:
 	Hash64 _hash = INIT_HASH64;
 };

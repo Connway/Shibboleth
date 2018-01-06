@@ -29,6 +29,11 @@ NS_SHIBBOLETH
 
 #define TEMP_DECL_SIZE 1024
 
+SHIB_TEMPLATE_REFLECTION_CLASS_DEFINE_BEGIN(RegisterAngelScriptAttribute, T)
+	//.ctor<AngelScriptFlags>()
+	.ctor<>()
+SHIB_TEMPLATE_REFLECTION_CLASS_DEFINE_END(RegisterAngelScriptAttribute, T)
+
 template<class T>
 using AddReleaseFunc = void (T::*)(void) const;
 
@@ -376,9 +381,8 @@ AngelScriptClassRegister<T, B>& AngelScriptClassRegister<T, B>::base(void)
 		BaseClassHelper<Reflection<Base>::HasClassReflection>::RegisterCastFunctions<T, Base>(g_engine);
 
 	// Register for callback if base class hasn't been defined yet.
-	}
-	else if (Reflection<Base>::HasReflection) {
-		Reflection<Base>::RegisterOnDefinedCallback(&RegisterBaseClass<Base>);
+	} else if (Reflection<Base>::HasReflection) {
+		Reflection<Base>::RegisterOnDefinedCallback(Func<void (void)>(&RegisterBaseClass<Base>));
 	}
 
 	return *this;
@@ -551,6 +555,70 @@ template <class T, class B>
 AngelScriptClassRegister<T, B>& AngelScriptClassRegister<T, B>::attrFile(const char*)
 {
 	return *this;
+}
+
+template <class T, class B>
+void AngelScriptClassRegister<T, B>::finish(void)
+{
+}
+
+
+
+// RegisterAngelScriptAttribute
+template <class T>
+RegisterAngelScriptAttribute<T>::RegisterAngelScriptAttribute(AngelScriptFlags flags, asIScriptEngine* engine):
+	_engine(engine), _flags(flags)
+{
+	if (!engine) {
+		if (Reflection<AngelScriptManager>::IsDefined()) {
+			const AngelScriptManager& as_mgr = Shibboleth::GetApp().getManagerT<AngelScriptManager>();
+			_engine = as_mgr.getEngine();
+
+		} else {
+			Reflection<AngelScriptManager>::RegisterOnDefinedCallback(Shibboleth::MemberFunc(this, &RegisterAngelScriptAttribute<T>::managerReflected));
+		}
+	}
+}
+
+template <class T>
+Gaff::IAttribute* RegisterAngelScriptAttribute<T>::clone(void) const
+{
+	return SHIB_ALLOCT_POOL(RegisterAngelScriptAttribute<T>, GetAllocator()->getPoolIndex("Reflection"), *GetAllocator(), _flags);
+}
+
+template <class T>
+void RegisterAngelScriptAttribute<T>::finish(Gaff::IReflectionDefinition*)
+{
+	if (_engine) {
+		AngelScriptClassRegister<T> asr(_engine, _flags);
+		Shibboleth::Reflection<T>::BuildReflection(asr);
+	}
+}
+
+template <class T>
+void RegisterAngelScriptAttribute<T>::finish(Gaff::IEnumReflectionDefinition*)
+{
+	if (_engine) {
+		//	AngelScriptEnumRegister<T> asr(_engine, _flags);
+		//	Shibboleth::Reflection<T>::BuildReflection(asr);
+	}
+}
+
+template <class T>
+void RegisterAngelScriptAttribute<T>::managerReflected(void)
+{
+	const AngelScriptManager& as_mgr = Shibboleth::GetApp().getManagerT<AngelScriptManager>();
+	_engine = as_mgr.getEngine();
+
+	if (std::is_enum<T>::value) {
+		if (EnumReflection<T>::IsDefined()) {
+			finish(reinterpret_cast<Gaff::IEnumReflectionDefinition*>(nullptr));
+		}
+	} else {
+		if (Reflection<T>::IsDefined()) {
+			finish(reinterpret_cast<Gaff::IReflectionDefinition*>(nullptr));
+		}
+	}
 }
 
 NS_END
