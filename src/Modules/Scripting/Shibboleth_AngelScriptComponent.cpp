@@ -24,6 +24,7 @@ THE SOFTWARE.
 #include "Shibboleth_AngelScriptManager.h"
 #include <Shibboleth_ResourceManager.h>
 #include <Shibboleth_LogManager.h>
+#include <Shibboleth_Function.h>
 #include <Shibboleth_Object.h>
 
 #ifdef PLATFORM_WINDOWS
@@ -60,13 +61,7 @@ AngelScriptComponent::~AngelScriptComponent(void)
 
 void AngelScriptComponent::onAllComponentsLoaded(void)
 {
-	ProxyAllocator proxy_allocator;
-	eastl::function<void (IResource*)> cb(eastl::allocator_arg, proxy_allocator, [&](IResource* res) -> void
-	{
-		onScriptLoaded(res);
-	});
-
-	_res->addResourceStateCallback(std::move(cb));
+	_res->addResourceStateCallback(MemberFunc(this, &AngelScriptComponent::onScriptLoaded));
 }
 
 void AngelScriptComponent::onAddToWorld(void)

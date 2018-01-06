@@ -990,6 +990,8 @@ ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::base(voi
 			}
 		}
 
+		// Base class funcs
+
 		// Base class class attrs
 		for (int32_t i = 0; i < base_ref_def.getNumClassAttributes(); ++i) {
 			_class_attrs.emplace_back(base_ref_def.getClassAttribute(i)->clone());
@@ -998,7 +1000,9 @@ ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::base(voi
 	// Register for callback if base class hasn't been defined yet.
 	} else {
 		++_base_classes_remaining;
-		GAFF_REFLECTION_NAMESPACE::Reflection<Base>::g_on_defined_callbacks.emplace_back(&RegisterBaseVariables<Base>);
+
+		eastl::function<void (void)> cb(eastl::allocator_arg, _allocator, &RegisterBaseVariables<Base>);
+		GAFF_REFLECTION_NAMESPACE::Reflection<Base>::g_on_defined_callbacks.emplace_back(std::move(cb));
 	}
 
 	return *this;
@@ -1263,10 +1267,28 @@ void ReflectionDefinition<T, Allocator>::finish(void)
 	if (!_base_classes_remaining) {
 		GAFF_REFLECTION_NAMESPACE::Reflection<T>::g_defined = true;
 
-		for (auto func : GAFF_REFLECTION_NAMESPACE::Reflection<T>::g_on_defined_callbacks) {
+		// Call finish() on attributes first.
+		for (IAttributePtr& class_attr : _class_attrs) {
+			class_attr->finish(this);
+		}
+
+		for (auto func_attr_it = _func_attrs.begin(); func_attr_it != _func_attrs.end(); ++func_attr_it) {
+			for (IAttributePtr& func_attr : func_attr_it->second) {
+				func_attr->finish(this);
+			}
+		}
+
+		for (auto var_attr_it = _func_attrs.begin(); var_attr_it != _var_attrs.end(); ++var_attr_it) {
+			for (IAttributePtr& var_attr : var_attr_it->second) {
+				var_attr->finish(this);
+			}
+		}
+
+		// Call all callbacks waiting for us to finish being defined.
+		for (eastl::function<void(void)>& func : GAFF_REFLECTION_NAMESPACE::Reflection<T>::g_on_defined_callbacks) {
 			func();
 		}
-	
+
 		GAFF_REFLECTION_NAMESPACE::Reflection<T>::g_on_defined_callbacks.clear();
 	}
 }

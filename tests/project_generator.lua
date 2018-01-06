@@ -63,7 +63,9 @@ local tests = {
 		links = {
 			"Gaff", "Memory",
 			"EASTL", "Shared",
-			"angelscript", "libuv"
+			"angelscript", "libuv",
+			"Scripting", "Entity",
+			"Resource", "Gleam"
 		},
 
 		extra = function ()

@@ -71,6 +71,8 @@ public:
 	template <size_t size, class... Args>
 	EnumReflectionDefinition& entryAttrs(const char (&name)[size], const Args&... args);
 
+	void finish(void);
+
 private:
 	VectorMap<HashString32<Allocator>, Enum, Allocator> _entries;
 	VectorMap<Hash32, Vector<IAttributePtr, Allocator>, Allocator> _entry_attrs;

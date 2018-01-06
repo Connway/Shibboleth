@@ -118,4 +118,9 @@ Hash64 ReflectionVersion<T>::getHash(void) const
 	return _hash;
 }
 
+template <class T>
+void ReflectionVersion<T>::finish(void)
+{
+}
+
 NS_END

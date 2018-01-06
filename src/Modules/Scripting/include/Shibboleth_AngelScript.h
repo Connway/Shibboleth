@@ -22,9 +22,12 @@ THE SOFTWARE.
 
 #pragma once
 
+#include <Shibboleth_EnumReflection.h>
 #include <Shibboleth_Reflection.h>
 #include <Gaff_IRefCounted.h>
 #include <Shibboleth_IncludeAngelScript.h>
+#include <Shibboleth_AngelScriptManager.h>
+#include <Shibboleth_Function.h>
 
 NS_SHIBBOLETH
 
@@ -69,6 +72,8 @@ public:
 
 	AngelScriptClassRegister& attrFile(const char*);
 
+	void finish(void);
+
 private:
 	static asIScriptEngine* g_engine;
 	asDWORD _flags = 0;
@@ -77,6 +82,30 @@ private:
 	static void RegisterBaseClass(void);
 };
 
+
+template <class T>
+class RegisterAngelScriptAttribute final : public Gaff::IAttribute
+{
+public:
+	RegisterAngelScriptAttribute(AngelScriptFlags flags = AS_NONE, asIScriptEngine* engine = nullptr);
+
+	Gaff::IAttribute* clone(void) const override;
+
+	void finish(Gaff::IReflectionDefinition*) override;
+	void finish(Gaff::IEnumReflectionDefinition*) override;
+
+private:
+	asIScriptEngine* _engine;
+	AngelScriptFlags _flags;
+
+	void managerReflected(void);
+
+	SHIB_TEMPLATE_REFLECTION_CLASS_DECLARE(RegisterAngelScriptAttribute, T);
+};
+
 NS_END
+
+SHIB_TEMPLATE_REFLECTION_DECLARE(RegisterAngelScriptAttribute, T)
+SHIB_TEMPLATE_REFLECTION_DEFINE(RegisterAngelScriptAttribute, T)
 
 #include"Shibboleth_AngelScript.inl"

@@ -61,14 +61,14 @@ public:
 	const T& getManagerT(void) const
 	{
 		const IManager* const manager = getManager(Reflection<T>::GetHash());
-		return Gaff::ReflecionCast<T>(*manager);
+		return *Gaff::ReflectionCast<T>(*manager);
 	}
 
 	template <class T>
 	T& getManagerT(void)
 	{
 		IManager* const manager = getManager(Reflection<T>::GetHash());
-		return Gaff::ReflecionCast<T>(*manager);
+		return *Gaff::ReflectionCast<T>(*manager);
 	}
 
 	IApp(void) {}
