@@ -1,14 +1,20 @@
 /**
  *	A List Box Implementation
  *	Nana C++ Library(http://www.nanapro.org)
- *	Copyright(C) 2003-2016 Jinhao(cnjinhao@hotmail.com)
+ *	Copyright(C) 2003-2017 Jinhao(cnjinhao@hotmail.com)
  *
  *	Distributed under the Boost Software License, Version 1.0. 
  *	(See accompanying file LICENSE_1_0.txt or copy at 
  *	http://www.boost.org/LICENSE_1_0.txt)
  *
  *	@file: nana/gui/widgets/listbox.hpp
- *
+ *	@contributors:
+ *		Hiroshi Seki
+ *		Ariel Vina-Rodriguez
+ *		leobackes(pr#86,pr#97)
+ *		Benjamin Navarro(pr#81)
+ *		besh81(pr#130)
+ *		dankan1890(pr#158)
  */
 
 #ifndef NANA_GUI_WIDGETS_LISTBOX_HPP
@@ -106,7 +112,7 @@ namespace nana
 				struct intern
 				{
 				public:
-					virtual ~intern() = default;
+					virtual ~intern() noexcept = default;
 				};
 
 				template<typename T>
@@ -115,7 +121,7 @@ namespace nana
 				{
 					const T * ptr;
 
-					real_pointer(const T* p)
+					real_pointer(const T* p) noexcept
 						: ptr(p)
 					{}
 				};
@@ -132,13 +138,13 @@ namespace nana
 				{
 				}
 
-				~const_virtual_pointer()
+				~const_virtual_pointer() noexcept
 				{
 					delete intern_;
 				}
 
 				template<typename Type>
-				const typename std::remove_const<Type>::type *get() const
+				const typename std::remove_const<Type>::type *get() const noexcept
 				{
 					using value_type = typename std::remove_const<Type>::type;
 					auto target = dynamic_cast<real_pointer<value_type>*>(intern_);
@@ -155,8 +161,8 @@ namespace nana
 					::nana::color bgcolor;
 					::nana::color fgcolor;
 
-					format() = default;
-					format(const ::nana::color& bgcolor, const ::nana::color& fgcolor);
+					format() noexcept = default;
+					format(const ::nana::color& bgcolor, const ::nana::color& fgcolor) noexcept;
 				};
 
 				using format_ptr = ::std::unique_ptr<format>;
@@ -166,13 +172,12 @@ namespace nana
 
 				cell() = default;
 				cell(const cell&);
-				cell(cell&&);
-				cell(::std::string);
+				cell(cell&&) noexcept;
+				cell(::std::string) noexcept;
 				cell(::std::string, const format&);
-				cell(::std::string, const ::nana::color& bgcolor, const ::nana::color& fgcolor);
 
 				cell& operator=(const cell&);
-				cell& operator=(cell&&);
+				cell& operator=(cell&&) noexcept;
 			};
 
 			class container_interface
@@ -241,7 +246,7 @@ namespace nana
 				void erase(std::size_t pos) override
 				{
 					auto i = container_.begin();
-					std::advance(i, static_cast<int>(pos));
+					std::advance(i, pos);
 					container_.erase(i);
 				}
 
@@ -258,7 +263,7 @@ namespace nana
 				void emplace(std::size_t pos) override
 				{
 					auto i = container_.begin();
-					std::advance(i, static_cast<int>(pos));
+					std::advance(i, pos);
 
 					container_.emplace(i);
 				}
@@ -330,7 +335,7 @@ namespace nana
 				void erase(std::size_t pos) override
 				{
 					auto i = container_.begin();
-					std::advance(i, static_cast<int>(pos));
+					std::advance(i, pos);
 					container_.erase(i);
 				}
 
@@ -347,7 +352,7 @@ namespace nana
 				void emplace(std::size_t pos) override
 				{
 					auto i = container_.begin();
-					std::advance(i, static_cast<int>(pos));
+					std::advance(i, pos);
 
 					container_.emplace(i);
 				}
@@ -414,7 +419,7 @@ namespace nana
 					throw std::runtime_error("nana::listbox disallow to remove items because of immutable model");
 				}
 
-				void erase(std::size_t pos) override
+				void erase(std::size_t /*pos*/) override
 				{
 					throw std::runtime_error("nana::listbox disallow to remove items because of immutable model");
 				}
@@ -429,7 +434,7 @@ namespace nana
 					return true;
 				}
 
-				void emplace(std::size_t pos) override
+				void emplace(std::size_t /*pos*/) override
 				{
 					throw std::runtime_error("nana::listbox disallow to remove items because of immutable model");
 				}
@@ -439,7 +444,7 @@ namespace nana
 					throw std::runtime_error("nana::listbox disallow to remove items because of immutable model");
 				}
 
-				void assign(std::size_t pos, const std::vector<cell>& cells) override
+				void assign(std::size_t /*pos*/, const std::vector<cell>& /*cells*/) override
 				{
 					throw std::runtime_error("nana::listbox disallow to remove items because of immutable model");
 				}
@@ -449,7 +454,7 @@ namespace nana
 					return ctrans_(container_.at(pos));
 				}
 
-				bool push_back(const const_virtual_pointer& dptr) override
+				bool push_back(const const_virtual_pointer& /*dptr*/) override
 				{
 					throw std::runtime_error("nana::listbox disallow to remove items because of immutable model");
 				}
@@ -476,8 +481,8 @@ namespace nana
 				virtual void lock() = 0;
 				virtual void unlock() = 0;
 
-				virtual container_interface* container() = 0;
-				virtual const container_interface* container() const = 0;
+				virtual container_interface* container() noexcept = 0;
+				virtual const container_interface* container() const noexcept = 0;
 			};
 
 			class model_guard
@@ -530,7 +535,7 @@ namespace nana
 						throw std::invalid_argument("invalid listbox model container type");
 
 					if (nullptr == p->pointer())
-						throw std::runtime_error("the modal is immutable");
+						throw std::runtime_error("the modal is immutable, please declare model_guard with const");
 
 					return *static_cast<stlcontainer*>(p->pointer());
 				}
@@ -582,12 +587,12 @@ namespace nana
 					mutex_.unlock();
 				}
 
-				container_interface* container() override
+				container_interface* container() noexcept override
 				{
 					return &container_;
 				}
 
-				const container_interface* container() const override
+				const container_interface* container() const noexcept override
 				{
 					return &container_;
 				}
@@ -624,12 +629,12 @@ namespace nana
 					mutex_.unlock();
 				}
 
-				container_interface* container() override
+				container_interface* container() noexcept override
 				{
 					return container_ptr_.get();
 				}
 
-				const container_interface* container() const override
+				const container_interface* container() const noexcept override
 				{
 					return container_ptr_.get();
 				}
@@ -642,47 +647,48 @@ namespace nana
 			/// usefull for both absolute and display (sorted) positions
 			struct index_pair
 			{
+				constexpr static const size_type npos = ::nana::npos;
+
 				size_type cat;	//The pos of category
 				size_type item;	//the pos of item in a category.
 
-				explicit index_pair(size_type cat_pos = 0, size_type item_pos = 0)
-					: cat(cat_pos),
-					item(item_pos)
+				explicit index_pair(size_type cat_pos = 0, size_type item_pos = 0) noexcept
+					: cat(cat_pos), item(item_pos)
 				{}
 
-				bool empty() const
+				bool empty() const noexcept
 				{
 					return (npos == cat);
 				}
 
-				void set_both(size_type n)
+				void set_both(size_type n) noexcept
 				{
 					cat = item = n;
 				}
 
-				bool is_category() const
+				bool is_category() const noexcept
 				{
 					return (npos != cat && npos == item);
 				}
 
-				bool is_item() const
-				{
-					return (npos != cat && npos != item);
-				}
-
-				bool operator==(const index_pair& r) const
+				bool operator==(const index_pair& r) const noexcept
 				{
 					return (r.cat == cat && r.item == item);
 				}
 
-				bool operator!=(const index_pair& r) const
+				bool operator!=(const index_pair& r) const noexcept
 				{
 					return !this->operator==(r);
 				}
 
-				bool operator>(const index_pair& r) const
+				bool operator<(const index_pair& r) const noexcept
 				{
-					return (cat > r.cat) || (cat == r.cat && item > r.item);
+					return (cat < r.cat) || ((cat == r.cat) && (r.item != npos) && ((item == npos) || (item < r.item)));
+				}
+
+				bool operator>(const index_pair& r) const noexcept
+				{
+					return (cat > r.cat) || ((cat == r.cat) && (item != npos) && ((r.item == npos) || (item > r.item)));
 				}
 			};
 
@@ -705,7 +711,7 @@ namespace nana
 			class oresolver
 			{
 			public:
-				oresolver(essence*);
+				oresolver(essence*) noexcept;
 				oresolver& operator<<(bool);
 				oresolver& operator<<(short);
 				oresolver& operator<<(unsigned short);
@@ -727,9 +733,9 @@ namespace nana
 				oresolver& operator<<(cell);
 				oresolver& operator<<(std::nullptr_t);
 
-				std::vector<cell> && move_cells();
+				std::vector<cell> && move_cells() noexcept;
 
-				::nana::listbox& listbox();
+				::nana::listbox& listbox() noexcept;
 			private:
 				essence* const ess_;
 				std::vector<cell> cells_;
@@ -738,7 +744,7 @@ namespace nana
 			class iresolver
 			{
 			public:
-				iresolver(std::vector<cell>);
+				iresolver(std::vector<cell>) noexcept;
 
 				iresolver& operator>>(bool&);
 				iresolver& operator>>(short&);
@@ -756,7 +762,7 @@ namespace nana
 				iresolver& operator>>(std::string& text_utf8);
 				iresolver& operator>>(std::wstring&);
 				iresolver& operator>>(cell&);
-				iresolver& operator>>(std::nullptr_t);
+				iresolver& operator>>(std::nullptr_t) noexcept;
 			private:
 				std::vector<cell> cells_;
 				std::size_t pos_{0};
@@ -773,7 +779,7 @@ namespace nana
 			public:
 				trigger();
 				~trigger();
-				essence& ess() const;
+				essence& ess() const noexcept;
 			private:
 				void attached(widget_reference, graph_reference)	override;
 				void detached()	override;
@@ -783,7 +789,6 @@ namespace nana
 				void mouse_leave(graph_reference, const arg_mouse&)	override;
 				void mouse_down(graph_reference, const arg_mouse&)	override;
 				void mouse_up(graph_reference, const arg_mouse&)	override;
-				void mouse_wheel(graph_reference, const arg_wheel&)	override;
 				void dbl_click(graph_reference, const arg_mouse&)	override;
 				void resized(graph_reference, const arg_resized&)		override;
 				void key_press(graph_reference, const arg_keyboard&)	override;
@@ -800,8 +805,7 @@ namespace nana
 				: public std::iterator<std::input_iterator_tag, item_proxy>
 			{
 			public:
-				item_proxy(essence*);
-				item_proxy(essence*, const index_pair&);
+				item_proxy(essence*, const index_pair& = index_pair{npos, npos});
 
 				/// the main porpose of this it to make obvious that item_proxy operate with absolute positions, and dont get moved during sort()
 				static item_proxy from_display(essence *, const index_pair &relative) ;
@@ -813,7 +817,7 @@ namespace nana
 				/// Determines whether the item is displayed on the screen
 				bool displayed() const;
 
-				bool empty() const;
+				bool empty() const noexcept;
 
 				/// Checks/unchecks the item
 				/**
@@ -843,9 +847,9 @@ namespace nana
 				item_proxy& fgcolor(const nana::color&);
 				nana::color fgcolor() const;
 
-				index_pair pos() const;
+				index_pair pos() const noexcept;
 
-				size_type columns() const;
+				size_type columns() const noexcept;
 
 				/// Converts a position of column between display position and absolute position
 				/**
@@ -889,7 +893,7 @@ namespace nana
 				}
 
 				template<typename T>
-				T* value_ptr() const
+				T const * value_ptr() const
 				{
 					return any_cast<T>(_m_value());
 				}
@@ -959,7 +963,7 @@ namespace nana
 				bool operator!=(const item_proxy&) const;
 
 				//Undocumented method
-				essence * _m_ess() const;
+				essence * _m_ess() const noexcept;
 			private:
 				std::vector<cell> _m_cells() const;
 				nana::any		* _m_value(bool alloc_if_empty);
@@ -979,9 +983,9 @@ namespace nana
 				template<typename Value> using value_translator = typename container_translator<Value>::value_translator;
 				template<typename Value> using cell_translator = typename container_translator<Value>::cell_translator;
 
-				cat_proxy() = default;
-				cat_proxy(essence*, size_type pos);
-				cat_proxy(essence*, category_t*);
+				cat_proxy() noexcept = default;
+				cat_proxy(essence*, size_type pos) noexcept;
+				cat_proxy(essence*, category_t*) noexcept;
 
 				/// Append an item at abs end of the category, set_value determines whether assign T object to the value of item.
 				template<typename T>
@@ -1048,6 +1052,19 @@ namespace nana
 				cat_proxy & select(bool);
 				bool selected() const;
 
+				/// Enables/disables the number of items in the category to be displayed behind the category title
+				cat_proxy& display_number(bool display);
+
+				/// Determines whether the category is expanded.
+				bool expanded() const;
+
+				/// Expands/collapses the category
+				/**
+				 * @param expand Indicates whether to expand or collapse the category. If this parameter is true, it expands the category. If the parameter is false, it collapses the category.
+				 * @return the reference of *this.
+				 */
+				cat_proxy& expanded(bool expand);
+
 				/// Behavior of a container
 				void push_back(std::string text_utf8);
 
@@ -1059,12 +1076,14 @@ namespace nana
 				item_proxy at(size_type pos_abs) const;
 				item_proxy back() const;
 
-				/// Returns the absolute index of a item by its display pos, the index of the item isn't changed after sorting.
-				/// convert from display order to absolute (find the real item in that display pos) but without check from current active sorting, in fact using just the last sorting !!!
-				size_type index_by_display_order(size_type disp_order) const;
-				
-				/// find display order for the real item but without check from current active sorting, in fact using just the last sorting !!!
-				size_type display_order(size_type pos) const;
+				/// Converts the index between absolute position and display position
+				/**
+				 * @param from	The index to be converted
+				 * @param from_display_order	If this parameter is true, the method converts a display position to an absolute position.
+				 *								If the parameter is false, the method converts an absolute position to a display position.
+				 * @return a display position or an absolute position that are depending on from_display_order.
+				 */
+				size_type index_cast(size_type from, bool from_display_order) const;
 				
 				/// this cat position
 				size_type position() const;
@@ -1103,8 +1122,8 @@ namespace nana
 			private:
 				void _m_append(std::vector<cell> && cells);
 				void _m_try_append_model(const const_virtual_pointer&);
-				void _m_cat_by_pos();
-				void _m_update();
+				void _m_cat_by_pos() noexcept;
+				void _m_update() noexcept;
 				void _m_reset_model(model_interface*);
 			private:
 				essence*	ess_{nullptr};
@@ -1170,8 +1189,10 @@ namespace nana
 				color_proxy header_fgcolor{ colors::black };
 				color_proxy header_grabbed{ static_cast<color_rgb>(0x8BD6F6)};
 				color_proxy header_floated{ static_cast<color_rgb>(0xBABBBC)};
-				color_proxy item_selected{ static_cast<color_rgb>(0xD5EFFC) };
-				color_proxy item_highlighted{ static_cast<color_rgb>(0xD5EFFC) };
+				color_proxy item_selected{ static_cast<color_rgb>(0xCCE8FF) };
+				color_proxy item_highlighted{ static_cast<color_rgb>(0xE5F3FF) };
+
+				color_proxy selection_box{ static_cast<color_rgb>(0x3399FF) };	///< Color of selection box border.
 
 				/// The max column width which is generated by fit_content is allowed. It is ignored when it is 0, or a max value is passed to fit_content.
 				unsigned max_fit_content{ 0 };
@@ -1181,9 +1202,7 @@ namespace nana
 				unsigned suspension_width	{ 8    };  ///<  def= . the trigger will set this to the width if ("...")
 				unsigned text_margin		{ 5    };  ///<  def= 5. Additional or extended with added (before) to the text width to determine the cell width. cell_w = text_w + ext_w +1
 				unsigned header_height		{ 25   };  ///<  def=25 . header height   header_size
-				unsigned text_height		{ 14   };  ///< the trigger will set this to the height of the text font
 				unsigned item_height_ex		{ 6    };  ///< Set !=0 !!!!  def=6. item_height = text_height + item_height_ex
-				unsigned item_height		{ 24   };  ///<  def=24 . the trigger will set this TO item_height = text_height + item_height_ex
 				unsigned header_splitter_area_before{ 2 }; ///< def=2. But 4 is better... IMO
 				unsigned header_splitter_area_after { 3 }; ///< def=3. But 4 is better... 
 
@@ -1231,8 +1250,9 @@ By \a clicking on one header the list get \a reordered, first up, and then down 
 			}
 			return false;
 		}
-		listbox.anyobj(0, 0, 10); //the type of customer's object is int.
-		listbox.anyobj(0, 0, 20);
+		auto cat = listbox.at(0);
+		cat.at(0).value(10); //10 is custom data.
+		cat.at(1).value(20); //20 is custom data.
 5. listbox is a widget_object, with template parameters drawerbase::listbox::trigger and drawerbase::listbox::scheme 
 amon others.
 That means that listbox have a member trigger_ constructed first and accecible with get_drawer_trigger() and
@@ -1363,7 +1383,7 @@ the nana::detail::basic_window member pointer scheme
 		bool assoc_ordered(bool);
 
 
-		void auto_draw(bool);		///< Set state: Redraw automatically after an operation
+		void auto_draw(bool) noexcept;		///< Set state: Redraw automatically after an operation
 
 		template<typename Function>
 		void avoid_drawing(Function fn)
@@ -1383,11 +1403,18 @@ the nana::detail::basic_window member pointer scheme
 
 		/// Scrolls the view to the first or last item of a specified category
 		void scroll(bool to_bottom, size_type cat_pos = ::nana::npos);
-		void scroll(bool to_bottom, const index_pair& pos);
+
+		/// Scrolls the view to show an item sepcified by absolute position at top/bottom of the listbox.
+		void scroll(bool to_bottom, const index_pair& abs_pos);
 
 		/// Appends a new column with a header text and the specified width at the end, and return it position
 		size_type append_header(std::string text_utf8, unsigned width = 120);
 		size_type append_header(std::wstring text, unsigned width = 120);
+
+		cat_proxy append(std::string category);		///< Appends a new category to the end
+		cat_proxy append(std::wstring category);		///< Appends a new category to the end
+		void append(std::initializer_list<std::string> categories); ///< Appends categories to the end
+		void append(std::initializer_list<std::wstring> categories); ///< Appends categories to the end
 
 		/// Access a column at specified position
 		/**
@@ -1410,10 +1437,8 @@ the nana::detail::basic_window member pointer scheme
 		/// Returns the number of columns
 		size_type column_size() const;
 
-		cat_proxy append(std::string);		///< Appends a new category to the end
-		cat_proxy append(std::wstring);		///< Appends a new category to the end
-		void append(std::initializer_list<std::string>); ///< Appends categories to the end
-		void append(std::initializer_list<std::wstring>); ///< Appends categories to the end
+		/// Returns a rectangle in where the content is drawn.
+		rectangle content_area() const;
 
 		cat_proxy insert(cat_proxy, ::std::string);
 		cat_proxy insert(cat_proxy, ::std::wstring);
@@ -1433,18 +1458,19 @@ the nana::detail::basic_window member pointer scheme
 		void insert_item(const index_pair& abs_pos, const ::std::wstring& text);
 
 		/// Returns an index of item which contains the specified point.
-		index_pair cast(const point & pos) const;
+		index_pair cast(const point & screen_pos) const;
 
 		/// Returns the absolute position of column which contains the specified point.
-		size_type column_from_pos(const point & pos);
+		size_type column_from_pos(const point & pos) const;
 
 		void checkable(bool);
 		index_pairs checked() const;                         ///<Returns the items which are checked.
 
-		void clear(size_type cat);                         ///<Removes all the items from the specified category
-		void clear();                                      ///<Removes all the items from all categories
-		void erase(size_type cat);                         ///<Erases a category
-		void erase();                                      ///<Erases all categories.
+		void clear(size_type cat);			///<Removes all the items from the specified category
+		void clear();						///<Removes all the items from all categories
+		void erase(size_type cat);			///<Erases a category
+		void erase();						///<Erases all categories.
+		void erase(index_pairs indexes);	///<Erases specified items.
 		item_proxy erase(item_proxy);
 
 		bool sortable() const;
@@ -1474,11 +1500,27 @@ the nana::detail::basic_window member pointer scheme
 		void enable_single(bool for_selection, bool category_limited);
 		void disable_single(bool for_selection);
 		export_options& def_export_options();
+
+
+		/// Sets a renderer for category icon
+		/**
+		 * @param icon_renderer The renderer of category icon
+		 * @return the reference of *this.
+		 */
+		listbox& category_icon(std::function<void(paint::graphics& graph, const rectangle& rt_icon, bool expanded)> icon_renderer);
+
+		/// Sets category icons
+		/**
+		 * @param img_expanded An icon displayed in front of category title when the category is expanded.
+		 * @param img_collapsed An icon displayed in front of category title when the category is collapsed.
+		 * @return the reference of *this.
+		 */
+		listbox& category_icon(const paint::image& img_expanded, const paint::image&& img_collapsed);
 	private:
 		drawerbase::listbox::essence & _m_ess() const;
 		nana::any* _m_anyobj(size_type cat, size_type index, bool allocate_if_empty) const override;
 		drawerbase::listbox::category_t* _m_assoc(std::shared_ptr<nana::detail::key_interface>, bool create_if_not_exists);
-		void _m_erase_key(nana::detail::key_interface*);
+		void _m_erase_key(nana::detail::key_interface*) noexcept;
 	};
 }//end namespace nana
 

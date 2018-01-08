@@ -26,7 +26,7 @@
 #include <mutex>
 #endif
 
-#include <nana/detail/platform_spec_selector.hpp>
+#include "../detail/platform_spec_selector.hpp"
 
 #if defined(NANA_LINUX) || defined(NANA_MACOS)
 #include <nana/system/platform.hpp>
@@ -265,6 +265,9 @@ namespace nana
 
 			auto ico = impl_->icons[impl_->play_index++];
 			impl_->set_icon(ico);
+#else
+			//eliminates warnings in clang
+			static_cast<void>(this);
 #endif
 		});
 

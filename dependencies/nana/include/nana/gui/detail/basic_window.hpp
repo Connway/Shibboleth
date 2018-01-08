@@ -17,6 +17,7 @@
 #include "drawer.hpp"
 #include "events_holder.hpp"
 #include "widget_geometrics.hpp"
+#include "widget_content_measurer_interface.hpp"
 #include "widget_notifier_interface.hpp"
 #include <nana/basic_types.hpp>
 #include <nana/system/platform.hpp>
@@ -51,9 +52,10 @@ namespace detail
 		void position(const point& pos) override;
 		nana::point position() const override;
 		size dimension() const override;
-		void dimension(const size& s);
+		void dimension(const size& s) override;
 		void visible(bool visibility) override;
 		bool visible() const override;
+		bool activated() const override;
 	private:
 		basic_window * owner_;
 		point	position_;
@@ -191,6 +193,7 @@ namespace detail
 			//The following pointers refer to the widget's object.
 			std::shared_ptr<general_events> events_ptr;
 			widget_geometrics* scheme{ nullptr };
+			::nana::dev::widget_content_measurer_interface* content_measurer{ nullptr };
 		}annex;
 
 		struct

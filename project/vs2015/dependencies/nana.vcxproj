@@ -236,6 +236,7 @@
     <ClCompile Include="..\..\..\dependencies\nana\source\charset.cpp" />
     <ClCompile Include="..\..\..\dependencies\nana\source\datetime.cpp" />
     <ClCompile Include="..\..\..\dependencies\nana\source\deploy.cpp" />
+    <ClCompile Include="..\..\..\dependencies\nana\source\detail\platform_abstraction.cpp" />
     <ClCompile Include="..\..\..\dependencies\nana\source\detail\platform_spec_posix.cpp" />
     <ClCompile Include="..\..\..\dependencies\nana\source\detail\platform_spec_windows.cpp" />
     <ClCompile Include="..\..\..\dependencies\nana\source\filesystem\filesystem.cpp" />
@@ -283,6 +284,7 @@
     <ClCompile Include="..\..\..\dependencies\nana\source\gui\widgets\picture.cpp" />
     <ClCompile Include="..\..\..\dependencies\nana\source\gui\widgets\progress.cpp" />
     <ClCompile Include="..\..\..\dependencies\nana\source\gui\widgets\scroll.cpp" />
+    <ClCompile Include="..\..\..\dependencies\nana\source\gui\widgets\skeletons\content_view.cpp" />
     <ClCompile Include="..\..\..\dependencies\nana\source\gui\widgets\skeletons\text_editor.cpp" />
     <ClCompile Include="..\..\..\dependencies\nana\source\gui\widgets\slider.cpp" />
     <ClCompile Include="..\..\..\dependencies\nana\source\gui\widgets\spinbox.cpp" />
@@ -300,6 +302,7 @@
     <ClCompile Include="..\..\..\dependencies\nana\source\paint\image_process_selector.cpp" />
     <ClCompile Include="..\..\..\dependencies\nana\source\paint\pixel_buffer.cpp" />
     <ClCompile Include="..\..\..\dependencies\nana\source\paint\text_renderer.cpp" />
+    <ClCompile Include="..\..\..\dependencies\nana\source\stdc++.cpp" />
     <ClCompile Include="..\..\..\dependencies\nana\source\system\dataexch.cpp" />
     <ClCompile Include="..\..\..\dependencies\nana\source\system\platform.cpp" />
     <ClCompile Include="..\..\..\dependencies\nana\source\system\shared_wrapper.cpp" />

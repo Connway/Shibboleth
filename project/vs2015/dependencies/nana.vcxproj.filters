@@ -56,6 +56,9 @@
     <ClCompile Include="..\..\..\dependencies\nana\source\charset.cpp" />
     <ClCompile Include="..\..\..\dependencies\nana\source\datetime.cpp" />
     <ClCompile Include="..\..\..\dependencies\nana\source\deploy.cpp" />
+    <ClCompile Include="..\..\..\dependencies\nana\source\detail\platform_abstraction.cpp">
+      <Filter>detail</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\..\dependencies\nana\source\detail\platform_spec_posix.cpp">
       <Filter>detail</Filter>
     </ClCompile>
@@ -197,6 +200,9 @@
     <ClCompile Include="..\..\..\dependencies\nana\source\gui\widgets\scroll.cpp">
       <Filter>gui\widgets</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\dependencies\nana\source\gui\widgets\skeletons\content_view.cpp">
+      <Filter>gui\widgets\skeletons</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\..\dependencies\nana\source\gui\widgets\skeletons\text_editor.cpp">
       <Filter>gui\widgets\skeletons</Filter>
     </ClCompile>
@@ -246,6 +252,7 @@
     <ClCompile Include="..\..\..\dependencies\nana\source\paint\text_renderer.cpp">
       <Filter>paint</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\dependencies\nana\source\stdc++.cpp" />
     <ClCompile Include="..\..\..\dependencies\nana\source\system\dataexch.cpp">
       <Filter>system</Filter>
     </ClCompile>

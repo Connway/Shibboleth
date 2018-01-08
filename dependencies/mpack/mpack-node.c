@@ -211,12 +211,6 @@ MPACK_STATIC_INLINE int16_t mpack_tree_i16(mpack_tree_parser_t* parser) {return 
 MPACK_STATIC_INLINE int32_t mpack_tree_i32(mpack_tree_parser_t* parser) {return (int32_t)mpack_tree_u32(parser);}
 MPACK_STATIC_INLINE int64_t mpack_tree_i64(mpack_tree_parser_t* parser) {return (int64_t)mpack_tree_u64(parser);}
 
-MPACK_STATIC_INLINE void mpack_skip_exttype(mpack_tree_parser_t* parser) {
-    // the exttype is stored right before the data. we
-    // skip it and get it out of the data when needed.
-    mpack_tree_i8(parser);
-}
-
 MPACK_STATIC_INLINE float mpack_tree_float(mpack_tree_parser_t* parser) {
     union {
         float f;
@@ -373,6 +367,39 @@ static void mpack_tree_parse_bytes(mpack_tree_parser_t* parser, mpack_node_data_
     parser->tree->size += length;
 }
 
+static void mpack_tree_parse_validate_timestamp(mpack_tree_parser_t* parser, mpack_node_data_t* node) {
+    uint32_t nanoseconds;
+    switch (node->len) {
+        case 4:
+            return;
+        case 8:
+            nanoseconds = mpack_load_u32(parser->tree->data + node->value.offset) >> 2;
+            break;
+        case 12:
+            nanoseconds = mpack_load_u32(parser->tree->data + node->value.offset);
+            break;
+        default:
+            mpack_tree_flag_error(parser->tree, mpack_error_invalid);
+            return;
+    }
+
+    if (nanoseconds > MPACK_TIMESTAMP_NANOSECONDS_MAX) {
+        mpack_tree_flag_error(parser->tree, mpack_error_invalid);
+    }
+}
+
+static void mpack_tree_parse_ext(mpack_tree_parser_t* parser, mpack_node_data_t* node) {
+    int8_t exttype = mpack_tree_i8(parser);
+    mpack_tree_parse_bytes(parser, node);
+
+    if (exttype == MPACK_TIMESTAMP_EXTTYPE) {
+        node->type = mpack_type_timestamp;
+        mpack_tree_parse_validate_timestamp(parser, node);
+    } else {
+        node->type = mpack_type_ext;
+    }
+}
+
 static void mpack_tree_parse_node(mpack_tree_parser_t* parser, mpack_node_data_t* node) {
     mpack_assert(node != NULL, "null node?");
 
@@ -523,26 +550,20 @@ static void mpack_tree_parse_node(mpack_tree_parser_t* parser, mpack_node_data_t
 
         // ext8
         case 0xc7:
-            node->type = mpack_type_ext;
             node->len = mpack_tree_u8(parser);
-            mpack_skip_exttype(parser);
-            mpack_tree_parse_bytes(parser, node);
+            mpack_tree_parse_ext(parser, node);
             return;
 
         // ext16
         case 0xc8:
-            node->type = mpack_type_ext;
             node->len = mpack_tree_u16(parser);
-            mpack_skip_exttype(parser);
-            mpack_tree_parse_bytes(parser, node);
+            mpack_tree_parse_ext(parser, node);
             return;
 
         // ext32
         case 0xc9:
-            node->type = mpack_type_ext;
             node->len = mpack_tree_u32(parser);
-            mpack_skip_exttype(parser);
-            mpack_tree_parse_bytes(parser, node);
+            mpack_tree_parse_ext(parser, node);
             return;
 
         // float
@@ -607,42 +628,32 @@ static void mpack_tree_parse_node(mpack_tree_parser_t* parser, mpack_node_data_t
 
         // fixext1
         case 0xd4:
-            node->type = mpack_type_ext;
             node->len = 1;
-            mpack_skip_exttype(parser);
-            mpack_tree_parse_bytes(parser, node);
+            mpack_tree_parse_ext(parser, node);
             return;
 
         // fixext2
         case 0xd5:
-            node->type = mpack_type_ext;
             node->len = 2;
-            mpack_skip_exttype(parser);
-            mpack_tree_parse_bytes(parser, node);
+            mpack_tree_parse_ext(parser, node);
             return;
 
         // fixext4
         case 0xd6:
-            node->type = mpack_type_ext;
             node->len = 4;
-            mpack_skip_exttype(parser);
-            mpack_tree_parse_bytes(parser, node);
+            mpack_tree_parse_ext(parser, node);
             return;
 
         // fixext8
         case 0xd7:
-            node->type = mpack_type_ext;
             node->len = 8;
-            mpack_skip_exttype(parser);
-            mpack_tree_parse_bytes(parser, node);
+            mpack_tree_parse_ext(parser, node);
             return;
 
         // fixext16
         case 0xd8:
-            node->type = mpack_type_ext;
             node->len = 16;
-            mpack_skip_exttype(parser);
-            mpack_tree_parse_bytes(parser, node);
+            mpack_tree_parse_ext(parser, node);
             return;
 
         // str8
@@ -1137,8 +1148,12 @@ mpack_tag_t mpack_node_tag(mpack_node_t node) {
         case mpack_type_bin:     tag.v.l = node.data->len;     break;
 
         case mpack_type_ext:
-            tag.v.l = node.data->len;
-            tag.exttype = mpack_node_exttype_unchecked(node);
+            tag.v.ext.length = node.data->len;
+            tag.v.ext.exttype = mpack_node_exttype_unchecked(node);
+            break;
+
+        case mpack_type_timestamp:
+            tag.v.timestamp = mpack_node_timestamp(node);
             break;
 
         case mpack_type_array:   tag.v.n = node.data->len;  break;
@@ -1151,41 +1166,10 @@ mpack_tag_t mpack_node_tag(mpack_node_t node) {
     return tag;
 }
 
-#if MPACK_STDIO
+#if MPACK_DEBUG && MPACK_STDIO
 static void mpack_node_print_element(mpack_node_t node, size_t depth, FILE* file) {
     mpack_node_data_t* data = node.data;
     switch (data->type) {
-
-        case mpack_type_nil:
-            fprintf(file, "null");
-            break;
-        case mpack_type_bool:
-            fprintf(file, data->value.b ? "true" : "false");
-            break;
-
-        case mpack_type_float:
-            fprintf(file, "%f", data->value.f);
-            break;
-        case mpack_type_double:
-            fprintf(file, "%f", data->value.d);
-            break;
-
-        case mpack_type_int:
-            fprintf(file, "%" PRIi64, data->value.i);
-            break;
-        case mpack_type_uint:
-            fprintf(file, "%" PRIu64, data->value.u);
-            break;
-
-        case mpack_type_bin:
-            fprintf(file, "<binary data of length %u>", data->len);
-            break;
-
-        case mpack_type_ext:
-            fprintf(file, "<ext data of type %i and length %u>",
-                    mpack_node_exttype(node), data->len);
-            break;
-
         case mpack_type_str:
             {
                 putc('"', file);
@@ -1234,6 +1218,15 @@ static void mpack_node_print_element(mpack_node_t node, size_t depth, FILE* file
                 fprintf(file, "    ");
             putc('}', file);
             break;
+
+        default:
+            {
+                char buf[256];
+                mpack_tag_t tag = mpack_node_tag(node);
+                mpack_tag_debug_pseudo_json(tag, buf, sizeof(buf));
+                fputs(buf, file);
+            }
+            break;
     }
 }
 
@@ -1246,6 +1239,58 @@ void mpack_node_print_file(mpack_node_t node, FILE* file) {
     putc('\n', file);
 }
 #endif
+
+
+/*
+ * Node Value Functions
+ */
+
+mpack_timestamp_t mpack_node_timestamp(mpack_node_t node) {
+    mpack_timestamp_t timestamp = {0, 0};
+
+    if (mpack_node_error(node) != mpack_ok)
+        return timestamp;
+
+    if (node.data->type != mpack_type_timestamp) {
+        mpack_node_flag_error(node, mpack_error_type);
+        return timestamp;
+    }
+
+    const char* p = mpack_node_data_unchecked(node);
+
+    switch (node.data->len) {
+        case 4:
+            timestamp.nanoseconds = 0;
+            timestamp.seconds = mpack_load_u32(p);
+            break;
+
+        case 8: {
+            uint64_t value = mpack_load_u64(p);
+            timestamp.nanoseconds = (uint32_t)(value >> 34);
+            timestamp.seconds = value & ((UINT64_C(1) << 34) - 1);
+            break;
+        }
+
+        case 12:
+            timestamp.nanoseconds = mpack_load_u32(p);
+            timestamp.seconds = mpack_load_i64(p + 4);
+            break;
+
+        default:
+            mpack_assert(false, "timestamp with a wrong length should have flagged an error!");
+            break;
+    }
+
+    return timestamp;
+}
+
+int64_t mpack_node_timestamp_seconds(mpack_node_t node) {
+    return mpack_node_timestamp(node).seconds;
+}
+
+uint32_t mpack_node_timestamp_nanoseconds(mpack_node_t node) {
+    return mpack_node_timestamp(node).nanoseconds;
+}
 
 
 

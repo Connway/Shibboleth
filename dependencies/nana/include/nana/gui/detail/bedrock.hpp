@@ -1,7 +1,7 @@
 /**
  *	A Bedrock Implementation
  *	Nana C++ Library(http://www.nanapro.org)
- *	Copyright(C) 2003-2016 Jinhao(cnjinhao@hotmail.com)
+ *	Copyright(C) 2003-2017 Jinhao(cnjinhao@hotmail.com)
  *
  *	Distributed under the Boost Software License, Version 1.0.
  *	(See accompanying file LICENSE_1_0.txt or copy at
@@ -70,6 +70,9 @@ namespace detail
 
 		element_store& get_element_store() const;
 		void map_through_widgets(core_window_t*, native_drawable_type);
+
+		//Closes the windows which are associated with the specified thread. If the given thread_id is 0, it closes all windows
+		void close_thread_window(unsigned thread_id);
 	public:
 		void event_expose(core_window_t *, bool exposed);
 		void event_move(core_window_t*, int x, int y);
@@ -88,11 +91,11 @@ namespace detail
 
 		void manage_form_loader(core_window_t*, bool insert_or_remove);
 	public:
-		bool emit(event_code, core_window_t*, const event_arg&, bool ask_update, thread_context*);
+		// if 'bForce__EmitInternal', then ONLY internal (widget's) events are processed (even through explicit filtering)
+		bool emit(event_code, core_window_t*, const event_arg&, bool ask_update, thread_context*, const bool bForce__EmitInternal = false);
 	private:
-		void _m_emit_core(event_code, core_window_t*, bool draw_only, const event_arg&);
+		void _m_emit_core(event_code, core_window_t*, bool draw_only, const event_arg&, const bool bForce__EmitInternal);
 		void _m_event_filter(event_code, core_window_t*, thread_context*);
-		void _m_except_handler();
 	private:
 		static bedrock bedrock_object;
 

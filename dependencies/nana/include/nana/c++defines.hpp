@@ -1,13 +1,13 @@
 /**
  *	Predefined Symbols for C++
  *	Nana C++ Library(http://www.nanapro.org)
- *	Copyright(C) 2016 Jinhao(cnjinhao@hotmail.com)
+ *	Copyright(C) 2016-2017 Jinhao(cnjinhao@hotmail.com)
  *
  *	Distributed under the Boost Software License, Version 1.0.
  *	(See accompanying file LICENSE_1_0.txt or copy at
  *	http://www.boost.org/LICENSE_1_0.txt)
  *
- *	@file  nana/config.hpp
+ *	@file  nana/c++defines.hpp
  *
  *	@brief Provide switches to adapt to the target OS, use of external libraries or workarounds compiler errors or lack of std C++ support.
  *
@@ -31,13 +31,14 @@
  *	- _SCL_SECURE_NO_WARNNGS, _CRT_SECURE_NO_DEPRECATE (VC)
  *	- STD_CODECVT_NOT_SUPPORTED (VC RC, <codecvt> is a known issue on libstdc++, it works on libc++)
  *	- STD_THREAD_NOT_SUPPORTED (GCC < 4.8.1)
- *	- STD_put_time_NOT_SUPPORTED (GCC < 5)
  *	- STD_NUMERIC_CONVERSIONS_NOT_SUPPORTED  (MinGW with GCC < 4.8.1)
  *	- STD_NUMERIC_CONVERSIONS_NOT_SUPPORTED (MinGW with GCC < 4.8.1)
  *	- STD_TO_STRING_NOT_SUPPORTED (MinGW with GCC < 4.8)
  *	- STD_FILESYSTEM_NOT_SUPPORTED (GCC < 5.3) ....
  *	- CXX_NO_INLINE_NAMESPACE (Visual C++ < 2015)
- *	- STD_MAKE_UNIQUE_NOT_SUPPORTED (GCC < 4.9)
+ *	- _enable_std_make_unique (__cpluscplus < 201402)
+ *	- _enable_std_put_time (GCC < 5)
+ *  - _enable_std_clamp (Visual C++ < 2017)
   */
 
 #ifndef NANA_CXX_DEFINES_INCLUDED
@@ -57,11 +58,11 @@
 #		define CXX_NO_INLINE_NAMESPACE //no support of C++11 inline namespace until Visual C++ 2015
 #		define noexcept		//no support of noexcept until Visual C++ 2015
 
-#		define constexpr const	//no support of constexpr until Visual C++ 2015 ? const ??
+#		define constexpr	//no support of constexpr until Visual C++ 2015 ? const ??
 #	else
 #		undef STD_FILESYSTEM_NOT_SUPPORTED
 #	endif
-#elif defined(__GNUC__)
+#elif defined(__GNUC__) && not defined(__clang__)
 #	if (__GNUC__ == 4 && __GNUC_MINOR__ < 6)
 #		define noexcept		//no support of noexcept until GCC 4.6
 #	endif
@@ -102,14 +103,14 @@
 	#define _CRT_SECURE_NO_DEPRECATE
 	#pragma warning(disable : 4996)
 
-	#if (_MSC_VER >= 1900)
+#	if (_MSC_VER >= 1900)
 		// google: break any code that tries to use codecvt<char16_t> or codecvt<char32_t>.
 		// google: It appears the C++ libs haven't been compiled with native char16_t/char32_t support.
 		// google: Those definitions are for codecvt<wchar_t>::id, codecvt<unsigned short>::id and codecvt<char>::id respectively.
 		// However, the codecvt<char16_t>::id and codecvt<char32_t>::id definitions aren't there, and indeed, if you look at locale0.cpp in the CRT source code you'll see they're not defined at all.
 		// google: That's a known issue, tracked by an active bug (DevDiv#1060849). We were able to update the STL's headers in response to char16_t/char32_t, but we still need to update the separately compiled sources.
-		#define STD_CODECVT_NOT_SUPPORTED
-	#endif // _MSC_VER == 1900
+#		define STD_CODECVT_NOT_SUPPORTED
+#	endif // _MSC_VER == 1900
 
 #elif defined(__clang__)	//Clang
 
@@ -117,15 +118,7 @@
 	#if defined(__GLIBCPP__) || defined(__GLIBCXX__)
 		//<codecvt> is a known issue on libstdc++, it works on libc++
 		#define STD_CODECVT_NOT_SUPPORTED
-
-		#if !defined(__cpp_lib_make_unique) || (__cpp_lib_make_unique != 201304)
-			#ifndef STD_MAKE_UNIQUE_NOT_SUPPORTED
-				#define STD_MAKE_UNIQUE_NOT_SUPPORTED
-			#endif
-		#endif
-
 	#endif
-
 #elif defined(__GNUC__) //GCC
 
 	#include <iosfwd>	//Introduces some implement-specific flags of ISO C++ Library
@@ -145,22 +138,17 @@
 	#endif
 
 
-	#if ((__GNUC__ < 5)   )
-	#	define STD_put_time_NOT_SUPPORTED
-	#endif
+#	if ((__GNUC__ < 5)   )
+#		define _enable_std_put_time
+#	endif
 
-	#if ((__GNUC__ > 5) || ((__GNUC__ == 5) && (__GNUC_MINOR__ >= 3 ) ) )
-	#	undef STD_FILESYSTEM_NOT_SUPPORTED
-    /// \todo define the namespace ????
-	#endif
+#   if ((__GNUC__ > 5) || ((__GNUC__ == 5) && (__GNUC_MINOR__ >= 3 ) ) )
+#	    undef STD_FILESYSTEM_NOT_SUPPORTED
+#   endif
 
 	#if (__GNUC__ == 4)
 		#if ((__GNUC_MINOR__ < 8) || (__GNUC_MINOR__ == 8 && __GNUC_PATCHLEVEL__ < 1))
 			#define STD_THREAD_NOT_SUPPORTED
-		#endif
-
-		#if (__GNUC_MINOR__ < 9)
-			#define STD_MAKE_UNIQUE_NOT_SUPPORTED
 		#endif
 
 		#if defined(NANA_MINGW)
@@ -181,6 +169,34 @@
 			#endif
 		#endif
 	#endif
+#endif
+
+//Assume the std::thread is not implement on MinGW
+//But some toolchains may implement std::thread.
+// it seems that MinGW 6.3 and 7.1 have std::thread
+#ifdef NANA_MINGW
+#	ifndef STD_THREAD_NOT_SUPPORTED
+#		define STD_THREAD_NOT_SUPPORTED
+#	endif
+#endif
+
+
+//Detects the feature std::make_unique
+//std::make_unique has been provided by Visual C++ 2013 and later
+#undef _enable_std_make_unique
+#if (defined(__clang__) && (__cplusplus < 201305L || (__cplusplus == 201305L && (__clang_major__ * 100 + __clang_minor__ < 304 )))) \
+	|| ((!defined(__clang__)) && defined(__GNUC__) && __cplusplus < 201300L)
+#	define _enable_std_make_unique
+#endif
+
+
+//Detects the feature std::clamp
+//Visual C++ 2017 with /std:c++latest provides the std::clamp
+#undef _enable_std_clamp
+#if (defined(_MSC_VER) && ((!defined(_MSVC_LANG)) || _MSVC_LANG < 201403L))	\
+	|| (defined(__clang__) && (__cplusplus < 201406L))						\
+	|| (defined(__GNUC__) && (!defined(__clang__)) && (__cplusplus < 201703))
+#	define _enable_std_clamp
 #endif
 
 
@@ -204,6 +220,9 @@
 #ifdef __has_include
 #  if __has_include(<filesystem>)
 #    undef STD_FILESYSTEM_NOT_SUPPORTED
+#  endif
+#  if __has_include(<mutex>)
+#    undef STD_THREAD_NOT_SUPPORTED
 #  endif
 #endif
 
