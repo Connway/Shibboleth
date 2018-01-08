@@ -329,6 +329,7 @@
     <ClCompile Include="..\..\..\frameworks\Gaff\Gaff_CrashHandler_Windows.cpp" />
     <ClCompile Include="..\..\..\frameworks\Gaff\Gaff_CriticalSection_Linux.cpp" />
     <ClCompile Include="..\..\..\frameworks\Gaff\Gaff_CriticalSection_Windows.cpp" />
+    <ClCompile Include="..\..\..\frameworks\Gaff\Gaff_Directory.cpp" />
     <ClCompile Include="..\..\..\frameworks\Gaff\Gaff_DynamicModule_Linux.cpp" />
     <ClCompile Include="..\..\..\frameworks\Gaff\Gaff_DynamicModule_Windows.cpp" />
     <ClCompile Include="..\..\..\frameworks\Gaff\Gaff_EnumReflection.cpp" />
