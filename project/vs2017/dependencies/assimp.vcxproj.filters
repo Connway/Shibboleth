@@ -49,6 +49,12 @@
     <Filter Include="contrib\utf8cpp\source\utf8">
       <UniqueIdentifier>{A54C7232-115A-A018-9A40-9C03064D6CCF}</UniqueIdentifier>
     </Filter>
+    <Filter Include="contrib\zip">
+      <UniqueIdentifier>{D8C58B9D-447B-0493-CD6F-FE693924FB96}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="contrib\zip\src">
+      <UniqueIdentifier>{EFAF4667-5B3B-B42B-644C-3720D056102C}</UniqueIdentifier>
+    </Filter>
     <Filter Include="include">
       <UniqueIdentifier>{89AF369E-F58E-B539-FEA6-40106A051C9B}</UniqueIdentifier>
     </Filter>
@@ -73,6 +79,9 @@
       <Filter>code</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\dependencies\assimp\code\3DSLoader.h">
+      <Filter>code</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\assimp\code\3MFXmlTags.h">
       <Filter>code</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\dependencies\assimp\code\ACLoader.h">
@@ -187,6 +196,9 @@
       <Filter>code</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\dependencies\assimp\code\CreateAnimMesh.h">
+      <Filter>code</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\assimp\code\D3MFExporter.h">
       <Filter>code</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\dependencies\assimp\code\D3MFImporter.h">
@@ -546,6 +558,9 @@
     <ClInclude Include="..\..\..\dependencies\assimp\code\STLLoader.h">
       <Filter>code</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\assimp\code\ScaleProcess.h">
+      <Filter>code</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\dependencies\assimp\code\ScenePreprocessor.h">
       <Filter>code</Filter>
     </ClInclude>
@@ -785,6 +800,12 @@
     </ClInclude>
     <ClInclude Include="..\..\..\dependencies\assimp\contrib\utf8cpp\source\utf8\unchecked.h">
       <Filter>contrib\utf8cpp\source\utf8</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\assimp\contrib\zip\src\miniz.h">
+      <Filter>contrib\zip\src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\assimp\contrib\zip\src\zip.h">
+      <Filter>contrib\zip\src</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\dependencies\assimp\include\assimp\Compiler\poppack1.h">
       <Filter>include\assimp\Compiler</Filter>
@@ -1043,6 +1064,9 @@
     <ClCompile Include="..\..\..\dependencies\assimp\code\CreateAnimMesh.cpp">
       <Filter>code</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\dependencies\assimp\code\D3MFExporter.cpp">
+      <Filter>code</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\..\dependencies\assimp\code\D3MFImporter.cpp">
       <Filter>code</Filter>
     </ClCompile>
@@ -1155,9 +1179,6 @@
       <Filter>code</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\dependencies\assimp\code\IFCProfile.cpp">
-      <Filter>code</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\dependencies\assimp\code\IFCReaderGen.cpp">
       <Filter>code</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\dependencies\assimp\code\IFCReaderGen1.cpp">
@@ -1355,6 +1376,9 @@
     <ClCompile Include="..\..\..\dependencies\assimp\code\STLLoader.cpp">
       <Filter>code</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\dependencies\assimp\code\ScaleProcess.cpp">
+      <Filter>code</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\..\dependencies\assimp\code\SceneCombiner.cpp">
       <Filter>code</Filter>
     </ClCompile>
@@ -1513,6 +1537,9 @@
     </ClCompile>
     <ClCompile Include="..\..\..\dependencies\assimp\contrib\poly2tri\poly2tri\sweep\sweep_context.cc">
       <Filter>contrib\poly2tri\poly2tri\sweep</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\dependencies\assimp\contrib\zip\src\zip.c">
+      <Filter>contrib\zip\src</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
