@@ -17,8 +17,14 @@ project "assimp"
 		"**.c"
 	}
 
+	excludes
+	{
+		"contrib/zip/test/*.*"
+	}
+
 	includedirs
 	{
+		".",
 		"contrib/openddlparser/include",
 		"contrib/irrXML",
 		"include",

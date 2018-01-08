@@ -117,7 +117,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>_DEBUG;DEBUG;WIN32;_WINDOWS;ASSIMP_BUILD_BOOST_WORKAROUND;ASSIMP_BUILD_NO_OWN_ZLIB;ASSIMP_BUILD_NO_C4D_IMPORTER;ASSIMP_BUILD_NO_IFC_IMPORTER;OPENDDL_STATIC_LIBARY;_CRT_SECURE_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\..\..\dependencies\assimp\contrib\openddlparser\include;..\..\..\dependencies\assimp\contrib\irrXML;..\..\..\dependencies\assimp\include;..\..\..\dependencies\rapidjson;..\..\..\dependencies\minizip;..\..\..\dependencies\zlib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\dependencies\assimp;..\..\..\dependencies\assimp\contrib\openddlparser\include;..\..\..\dependencies\assimp\contrib\irrXML;..\..\..\dependencies\assimp\include;..\..\..\dependencies\rapidjson;..\..\..\dependencies\minizip;..\..\..\dependencies\zlib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
       <ExceptionHandling>Async</ExceptionHandling>
@@ -135,7 +135,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>NDEBUG;WIN32;_WINDOWS;ASSIMP_BUILD_BOOST_WORKAROUND;ASSIMP_BUILD_NO_OWN_ZLIB;ASSIMP_BUILD_NO_C4D_IMPORTER;ASSIMP_BUILD_NO_IFC_IMPORTER;OPENDDL_STATIC_LIBARY;_CRT_SECURE_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\..\..\dependencies\assimp\contrib\openddlparser\include;..\..\..\dependencies\assimp\contrib\irrXML;..\..\..\dependencies\assimp\include;..\..\..\dependencies\rapidjson;..\..\..\dependencies\minizip;..\..\..\dependencies\zlib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\dependencies\assimp;..\..\..\dependencies\assimp\contrib\openddlparser\include;..\..\..\dependencies\assimp\contrib\irrXML;..\..\..\dependencies\assimp\include;..\..\..\dependencies\rapidjson;..\..\..\dependencies\minizip;..\..\..\dependencies\zlib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -159,7 +159,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>NDEBUG;WIN32;_WINDOWS;ASSIMP_BUILD_BOOST_WORKAROUND;ASSIMP_BUILD_NO_OWN_ZLIB;ASSIMP_BUILD_NO_C4D_IMPORTER;ASSIMP_BUILD_NO_IFC_IMPORTER;OPENDDL_STATIC_LIBARY;_CRT_SECURE_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\..\..\dependencies\assimp\contrib\openddlparser\include;..\..\..\dependencies\assimp\contrib\irrXML;..\..\..\dependencies\assimp\include;..\..\..\dependencies\rapidjson;..\..\..\dependencies\minizip;..\..\..\dependencies\zlib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\dependencies\assimp;..\..\..\dependencies\assimp\contrib\openddlparser\include;..\..\..\dependencies\assimp\contrib\irrXML;..\..\..\dependencies\assimp\include;..\..\..\dependencies\rapidjson;..\..\..\dependencies\minizip;..\..\..\dependencies\zlib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -183,7 +183,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>NDEBUG;SHIB_PROFILE;WIN32;_WINDOWS;ASSIMP_BUILD_BOOST_WORKAROUND;ASSIMP_BUILD_NO_OWN_ZLIB;ASSIMP_BUILD_NO_C4D_IMPORTER;ASSIMP_BUILD_NO_IFC_IMPORTER;OPENDDL_STATIC_LIBARY;_CRT_SECURE_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\..\..\dependencies\assimp\contrib\openddlparser\include;..\..\..\dependencies\assimp\contrib\irrXML;..\..\..\dependencies\assimp\include;..\..\..\dependencies\rapidjson;..\..\..\dependencies\minizip;..\..\..\dependencies\zlib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\dependencies\assimp;..\..\..\dependencies\assimp\contrib\openddlparser\include;..\..\..\dependencies\assimp\contrib\irrXML;..\..\..\dependencies\assimp\include;..\..\..\dependencies\rapidjson;..\..\..\dependencies\minizip;..\..\..\dependencies\zlib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -207,7 +207,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>_DEBUG;DEBUG;WIN32;_WINDOWS;ASSIMP_BUILD_BOOST_WORKAROUND;ASSIMP_BUILD_NO_OWN_ZLIB;ASSIMP_BUILD_NO_C4D_IMPORTER;ASSIMP_BUILD_NO_IFC_IMPORTER;OPENDDL_STATIC_LIBARY;_CRT_SECURE_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\..\..\dependencies\assimp\contrib\openddlparser\include;..\..\..\dependencies\assimp\contrib\irrXML;..\..\..\dependencies\assimp\include;..\..\..\dependencies\rapidjson;..\..\..\dependencies\minizip;..\..\..\dependencies\zlib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\dependencies\assimp;..\..\..\dependencies\assimp\contrib\openddlparser\include;..\..\..\dependencies\assimp\contrib\irrXML;..\..\..\dependencies\assimp\include;..\..\..\dependencies\rapidjson;..\..\..\dependencies\minizip;..\..\..\dependencies\zlib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -230,6 +230,7 @@
     <ClInclude Include="..\..\..\dependencies\assimp\code\3DSExporter.h" />
     <ClInclude Include="..\..\..\dependencies\assimp\code\3DSHelper.h" />
     <ClInclude Include="..\..\..\dependencies\assimp\code\3DSLoader.h" />
+    <ClInclude Include="..\..\..\dependencies\assimp\code\3MFXmlTags.h" />
     <ClInclude Include="..\..\..\dependencies\assimp\code\ACLoader.h" />
     <ClInclude Include="..\..\..\dependencies\assimp\code\AMFImporter.hpp" />
     <ClInclude Include="..\..\..\dependencies\assimp\code\AMFImporter_Macro.hpp" />
@@ -268,6 +269,7 @@
     <ClInclude Include="..\..\..\dependencies\assimp\code\ComputeUVMappingProcess.h" />
     <ClInclude Include="..\..\..\dependencies\assimp\code\ConvertToLHProcess.h" />
     <ClInclude Include="..\..\..\dependencies\assimp\code\CreateAnimMesh.h" />
+    <ClInclude Include="..\..\..\dependencies\assimp\code\D3MFExporter.h" />
     <ClInclude Include="..\..\..\dependencies\assimp\code\D3MFImporter.h" />
     <ClInclude Include="..\..\..\dependencies\assimp\code\D3MFOpcPackage.h" />
     <ClInclude Include="..\..\..\dependencies\assimp\code\DXFHelper.h" />
@@ -387,6 +389,7 @@
     <ClInclude Include="..\..\..\dependencies\assimp\code\STEPFileReader.h" />
     <ClInclude Include="..\..\..\dependencies\assimp\code\STLExporter.h" />
     <ClInclude Include="..\..\..\dependencies\assimp\code\STLLoader.h" />
+    <ClInclude Include="..\..\..\dependencies\assimp\code\ScaleProcess.h" />
     <ClInclude Include="..\..\..\dependencies\assimp\code\ScenePreprocessor.h" />
     <ClInclude Include="..\..\..\dependencies\assimp\code\ScenePrivate.h" />
     <ClInclude Include="..\..\..\dependencies\assimp\code\SkeletonMeshBuilder.h" />
@@ -467,6 +470,8 @@
     <ClInclude Include="..\..\..\dependencies\assimp\contrib\utf8cpp\source\utf8\checked.h" />
     <ClInclude Include="..\..\..\dependencies\assimp\contrib\utf8cpp\source\utf8\core.h" />
     <ClInclude Include="..\..\..\dependencies\assimp\contrib\utf8cpp\source\utf8\unchecked.h" />
+    <ClInclude Include="..\..\..\dependencies\assimp\contrib\zip\src\miniz.h" />
+    <ClInclude Include="..\..\..\dependencies\assimp\contrib\zip\src\zip.h" />
     <ClInclude Include="..\..\..\dependencies\assimp\include\assimp\Compiler\poppack1.h" />
     <ClInclude Include="..\..\..\dependencies\assimp\include\assimp\Compiler\pstdint.h" />
     <ClInclude Include="..\..\..\dependencies\assimp\include\assimp\Compiler\pushpack1.h" />
@@ -554,6 +559,7 @@
     <ClCompile Include="..\..\..\dependencies\assimp\code\ComputeUVMappingProcess.cpp" />
     <ClCompile Include="..\..\..\dependencies\assimp\code\ConvertToLHProcess.cpp" />
     <ClCompile Include="..\..\..\dependencies\assimp\code\CreateAnimMesh.cpp" />
+    <ClCompile Include="..\..\..\dependencies\assimp\code\D3MFExporter.cpp" />
     <ClCompile Include="..\..\..\dependencies\assimp\code\D3MFImporter.cpp" />
     <ClCompile Include="..\..\..\dependencies\assimp\code\D3MFOpcPackage.cpp" />
     <ClCompile Include="..\..\..\dependencies\assimp\code\DXFLoader.cpp" />
@@ -592,7 +598,6 @@
     <ClCompile Include="..\..\..\dependencies\assimp\code\IFCMaterial.cpp" />
     <ClCompile Include="..\..\..\dependencies\assimp\code\IFCOpenings.cpp" />
     <ClCompile Include="..\..\..\dependencies\assimp\code\IFCProfile.cpp" />
-    <ClCompile Include="..\..\..\dependencies\assimp\code\IFCReaderGen.cpp" />
     <ClCompile Include="..\..\..\dependencies\assimp\code\IFCReaderGen1.cpp" />
     <ClCompile Include="..\..\..\dependencies\assimp\code\IFCReaderGen2.cpp" />
     <ClCompile Include="..\..\..\dependencies\assimp\code\IFCUtil.cpp" />
@@ -658,6 +663,7 @@
     <ClCompile Include="..\..\..\dependencies\assimp\code\STEPFileReader.cpp" />
     <ClCompile Include="..\..\..\dependencies\assimp\code\STLExporter.cpp" />
     <ClCompile Include="..\..\..\dependencies\assimp\code\STLLoader.cpp" />
+    <ClCompile Include="..\..\..\dependencies\assimp\code\ScaleProcess.cpp" />
     <ClCompile Include="..\..\..\dependencies\assimp\code\SceneCombiner.cpp" />
     <ClCompile Include="..\..\..\dependencies\assimp\code\ScenePreprocessor.cpp" />
     <ClCompile Include="..\..\..\dependencies\assimp\code\SkeletonMeshBuilder.cpp" />
@@ -711,6 +717,7 @@
     <ClCompile Include="..\..\..\dependencies\assimp\contrib\poly2tri\poly2tri\sweep\cdt.cc" />
     <ClCompile Include="..\..\..\dependencies\assimp\contrib\poly2tri\poly2tri\sweep\sweep.cc" />
     <ClCompile Include="..\..\..\dependencies\assimp\contrib\poly2tri\poly2tri\sweep\sweep_context.cc" />
+    <ClCompile Include="..\..\..\dependencies\assimp\contrib\zip\src\zip.c" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
