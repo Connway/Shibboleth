@@ -90,7 +90,7 @@ int mpack_tag_cmp(mpack_tag_t left, mpack_tag_t right) {
     }
 
     if (left.type != right.type)
-        return (int)left.type - (int)right.type;
+        return ((int)left.type < (int)right.type) ? -1 : 1;
 
     switch (left.type) {
         case mpack_type_nil:
@@ -122,12 +122,21 @@ int mpack_tag_cmp(mpack_tag_t left, mpack_tag_t right) {
             return (left.v.l < right.v.l) ? -1 : 1;
 
         case mpack_type_ext:
-            if (left.exttype == right.exttype) {
-                if (left.v.l == right.v.l)
+            if (left.v.ext.exttype == right.v.ext.exttype) {
+                if (left.v.ext.length == right.v.ext.length)
                     return 0;
-                return (left.v.l < right.v.l) ? -1 : 1;
+                return (left.v.ext.length < right.v.ext.length) ? -1 : 1;
             }
-            return (int)left.exttype - (int)right.exttype;
+            return (int)left.v.ext.exttype - (int)right.v.ext.exttype;
+
+        case mpack_type_timestamp:
+            if (left.v.timestamp.seconds == right.v.timestamp.seconds) {
+                if (left.v.timestamp.nanoseconds == right.v.timestamp.nanoseconds) {
+                    return 0;
+                }
+                return (left.v.timestamp.nanoseconds < right.v.timestamp.nanoseconds) ? -1 : 1;
+            }
+            return (left.v.timestamp.seconds < right.v.timestamp.seconds) ? -1 : 1;
 
         // floats should not normally be compared for equality. we compare
         // with memcmp() to silence compiler warnings, but this will return
@@ -154,6 +163,71 @@ int mpack_tag_cmp(mpack_tag_t left, mpack_tag_t right) {
 }
 
 #if MPACK_DEBUG && MPACK_STDIO
+void mpack_tag_debug_pseudo_json(mpack_tag_t tag, char* buffer, size_t buffer_size) {
+    mpack_assert(buffer_size > 0, "buffer size cannot be zero!");
+    buffer[0] = 0;
+
+    switch (tag.type) {
+        case mpack_type_nil:
+            mpack_snprintf(buffer, buffer_size, "null");
+            break;
+        case mpack_type_bool:
+            mpack_snprintf(buffer, buffer_size, tag.v.b ? "true" : "false");
+            break;
+        case mpack_type_int:
+            mpack_snprintf(buffer, buffer_size, "%" PRIi64, tag.v.i);
+            break;
+        case mpack_type_uint:
+            mpack_snprintf(buffer, buffer_size, "%" PRIu64, tag.v.u);
+            break;
+        case mpack_type_float:
+            mpack_snprintf(buffer, buffer_size, "%f", tag.v.f);
+            break;
+        case mpack_type_double:
+            mpack_snprintf(buffer, buffer_size, "%f", tag.v.d);
+            break;
+
+        case mpack_type_str:
+            mpack_snprintf(buffer, buffer_size, "<string of %u bytes>", tag.v.l);
+            break;
+        case mpack_type_bin:
+            mpack_snprintf(buffer, buffer_size, "<binary data of length %u>", tag.v.l);
+            break;
+        case mpack_type_ext:
+            mpack_snprintf(buffer, buffer_size, "<ext data of type %i and length %u>",
+                    tag.v.ext.exttype, tag.v.ext.length);
+            break;
+
+        case mpack_type_array:
+            mpack_snprintf(buffer, buffer_size, "<array of %u elements>", tag.v.n);
+            break;
+        case mpack_type_map:
+            mpack_snprintf(buffer, buffer_size, "<map of %u key-value pairs>", tag.v.n);
+            break;
+
+        case mpack_type_timestamp:
+            {
+                int64_t seconds = tag.v.timestamp.seconds;
+                uint32_t nanoseconds = tag.v.timestamp.nanoseconds;
+                if (nanoseconds == 0) {
+                    mpack_snprintf(buffer, buffer_size, "<timestamp %" PRIi64 ">", seconds);
+                } else {
+                    mpack_snprintf(buffer, buffer_size, "<timestamp %" PRIi64 ".%09u>",
+                            seconds, nanoseconds);
+                }
+            }
+            break;
+
+        default:
+            mpack_snprintf(buffer, buffer_size, "<unknown!>");
+            break;
+    }
+
+    // We always null-terminate the buffer manually just in case the snprintf()
+    // function doesn't null-terminate when the string doesn't fit.
+    buffer[buffer_size - 1] = 0;
+}
+
 void mpack_tag_debug_describe(mpack_tag_t tag, char* buffer, size_t buffer_size) {
     mpack_assert(buffer_size > 0, "buffer size cannot be zero!");
     buffer[0] = 0;
@@ -184,13 +258,25 @@ void mpack_tag_debug_describe(mpack_tag_t tag, char* buffer, size_t buffer_size)
             mpack_snprintf(buffer, buffer_size, "bin of %u bytes", tag.v.l);
             break;
         case mpack_type_ext:
-            mpack_snprintf(buffer, buffer_size, "ext of type %i, %u bytes", tag.exttype, tag.v.l);
+            mpack_snprintf(buffer, buffer_size, "ext of type %i, %u bytes", tag.v.ext.exttype, tag.v.ext.length);
             break;
         case mpack_type_array:
             mpack_snprintf(buffer, buffer_size, "array of %u elements", tag.v.n);
             break;
         case mpack_type_map:
             mpack_snprintf(buffer, buffer_size, "map of %u key-value pairs", tag.v.n);
+            break;
+        case mpack_type_timestamp:
+            {
+                int64_t seconds = tag.v.timestamp.seconds;
+                uint32_t nanoseconds = tag.v.timestamp.nanoseconds;
+                if (nanoseconds == 0) {
+                    mpack_snprintf(buffer, buffer_size, "timestamp %" PRIi64 , seconds);
+                } else {
+                    mpack_snprintf(buffer, buffer_size, "timestamp %" PRIi64 ".%09u",
+                            seconds, nanoseconds);
+                }
+            }
             break;
         default:
             mpack_snprintf(buffer, buffer_size, "unknown!");

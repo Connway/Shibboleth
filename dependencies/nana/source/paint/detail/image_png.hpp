@@ -13,6 +13,7 @@
 
 #include <stdio.h>
 
+
 namespace nana
 {
 	namespace paint{	namespace detail{

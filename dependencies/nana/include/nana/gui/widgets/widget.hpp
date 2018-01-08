@@ -1,7 +1,7 @@
 /**
  *	The fundamental widget class implementation
  *	Nana C++ Library(http://www.nanapro.org)
- *	Copyright(C) 2003-2016 Jinhao(cnjinhao@hotmail.com)
+ *	Copyright(C) 2003-2017 Jinhao(cnjinhao@hotmail.com)
  *
  *	Distributed under the Boost Software License, Version 1.0. 
  *	(See accompanying file LICENSE_1_0.txt or copy at 
@@ -206,7 +206,7 @@ namespace nana
 				API::dev::attach_drawer(*this, trigger_);
 				if(visible)
 					API::show_window(handle_, true);
-				
+
 				this->_m_complete_creation();
 			}
 			return (this->empty() == false);
@@ -227,6 +227,39 @@ namespace nana
 		{
 			return *scheme_;
 		}
+
+		// disables or re-enables internal handling of event within base-widget
+		void filter_event(const event_code evt_code, const bool bDisabled)
+		{
+			trigger_.filter_event(evt_code, bDisabled);
+		}
+
+		void filter_event(const std::vector<event_code> evt_codes, const bool bDisabled)
+		{
+			trigger_.filter_event(evt_codes, bDisabled);
+		}
+
+		void filter_event(const event_filter_status& evt_all_states)
+		{
+			trigger_.filter_event(evt_all_states);
+		}
+
+		void clear_filter()
+		{
+			trigger_.clear_filter();
+		}
+
+		// reads status of if event is filtered
+		bool filter_event(const event_code evt_code)
+		{
+			return trigger_.filter_event(evt_code);
+		}
+
+		event_filter_status filter_event()
+		{
+			return trigger_.filter_event();
+		}
+
 	protected:
 		DrawerTrigger& get_drawer_trigger()
 		{
@@ -247,7 +280,6 @@ namespace nana
 		{
 			widget_base::_m_notify_destroy();
 			events_ = std::make_shared<Events>();
-			API::dev::set_events(handle_, events_);
 		}
 	private:
 		DrawerTrigger trigger_;
@@ -312,7 +344,6 @@ namespace nana
 		{
 			widget_base::_m_notify_destroy();
 			events_ = std::make_shared<Events>();
-			API::dev::set_events(handle_, events_);
 		}
 	private:
 		std::shared_ptr<Events> events_;
@@ -451,7 +482,6 @@ namespace nana
 		{
 			widget_base::_m_notify_destroy();
 			events_ = std::make_shared<Events>();
-			API::dev::set_events(handle_, events_);
 		}
 	private:
 		DrawerTrigger					trigger_;

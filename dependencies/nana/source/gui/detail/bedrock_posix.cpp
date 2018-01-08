@@ -1,7 +1,7 @@
 /*
  *	A Bedrock Implementation
  *	Nana C++ Library(http://www.nanapro.org)
- *	Copyright(C) 2003-2016 Jinhao(cnjinhao@hotmail.com)
+ *	Copyright(C) 2003-2017 Jinhao(cnjinhao@hotmail.com)
  *
  *	Distributed under the Boost Software License, Version 1.0.
  *	(See accompanying file LICENSE_1_0.txt or copy at
@@ -10,7 +10,7 @@
  *	@file: nana/gui/detail/linux_X11/bedrock.cpp
  */
 
-#include <nana/detail/platform_spec_selector.hpp>
+#include "../../detail/platform_spec_selector.hpp"
 #if defined(NANA_POSIX) && defined(NANA_X11)
 #include <nana/gui/detail/bedrock_pi_data.hpp>
 #include <nana/gui/detail/event_code.hpp>
@@ -232,7 +232,7 @@ namespace detail
 		//No implementation for Linux
 	}
 
-	bool bedrock::emit(event_code evt_code, core_window_t* wd, const ::nana::event_arg& arg, bool ask_update, thread_context* thrd)
+	bool bedrock::emit(event_code evt_code, core_window_t* wd, const ::nana::event_arg& arg, bool ask_update, thread_context* thrd, const bool bForce__EmitInternal)
 	{
 		if(wd_manager().available(wd) == false)
 			return false;
@@ -245,22 +245,31 @@ namespace detail
 			_m_event_filter(evt_code, wd, thrd);
 		}
 
-		if(wd->other.upd_state == core_window_t::update_state::none)
-			wd->other.upd_state = core_window_t::update_state::lazy;
+		using update_state = basic_window::update_state;
 
-		_m_emit_core(evt_code, wd, false, arg);
+		if(wd->other.upd_state == update_state::none)
+			wd->other.upd_state = update_state::lazy;
 
-		//A child of wd may not be drawn if it was out of wd's range before wd resized,
-		//so refresh all children of wd when a resized occurs.
-		if(ask_update || (event_code::resized == evt_code))
+		_m_emit_core(evt_code, wd, false, arg, bForce__EmitInternal);
+
+		bool good_wd = false;
+		if(wd_manager().available(wd))
 		{
-			wd_manager().do_lazy_refresh(wd, false, (event_code::resized == evt_code));
+			//A child of wd may not be drawn if it was out of wd's range before wd resized,
+			//so refresh all children of wd when a resized occurs.
+			if(ask_update || (event_code::resized == evt_code) || (update_state::refreshed == wd->other.upd_state))
+			{
+				wd_manager().do_lazy_refresh(wd, false, (event_code::resized == evt_code));
+			}
+			else
+				wd->other.upd_state = update_state::none;
+
+			good_wd = true;
 		}
-		else if(wd_manager().available(wd))
-			wd->other.upd_state = core_window_t::update_state::none;
+		
 
 		if(thrd) thrd->event_window = prev_wd;
-		return true;
+		return good_wd;
 	}
 
 	void assign_arg(arg_mouse& arg, basic_window* wd, unsigned msg, const XEvent& evt)
@@ -376,7 +385,7 @@ namespace detail
 			switch(msg.kind)
 			{
 			case nana::detail::msg_packet_tag::kind_mouse_drop:
-				msgwd = brock.wd_manager().find_window(native_window, msg.u.mouse_drop.x, msg.u.mouse_drop.y);
+				msgwd = brock.wd_manager().find_window(native_window, {msg.u.mouse_drop.x, msg.u.mouse_drop.y});
 				if(msgwd)
 				{
 					arg_dropfiles arg;
@@ -396,7 +405,7 @@ namespace detail
 	}
 
 	template<typename Arg>
-	void draw_invoker(void(::nana::detail::drawer::*event_ptr)(const Arg&), basic_window* wd, const Arg& arg, bedrock::thread_context* thrd)
+	void draw_invoker(void(::nana::detail::drawer::*event_ptr)(const Arg&, const bool), basic_window* wd, const Arg& arg, bedrock::thread_context* thrd)
 	{
 		if(bedrock::instance().wd_manager().available(wd) == false)
 			return;
@@ -410,7 +419,7 @@ namespace detail
 		if(wd->other.upd_state == basic_window::update_state::none)
 			wd->other.upd_state = basic_window::update_state::lazy;
 
-		(wd->drawer.*event_ptr)(arg);
+		(wd->drawer.*event_ptr)(arg, false);
 		if(thrd) thrd->event_window = pre_wd;
 	}
 
@@ -438,8 +447,8 @@ namespace detail
 			keysym = keyboard::os_arrow_left + (keysym - XK_Left); break;
 		case XK_Insert:
 			keysym = keyboard::os_insert; break;
-		case XK_Delete:
-			keysym = keyboard::os_del; break;
+		case XK_Delete: case XK_KP_Delete:
+			keysym = keyboard::del; break;
 		case XK_Shift_L: case XK_Shift_R:	//shift
 			keysym = keyboard::os_shift; break;
 		case XK_Control_L: case XK_Control_R: //ctrl
@@ -511,7 +520,7 @@ namespace detail
 				if(pressed_wd_space)
 					break;
 
-				msgwnd = wd_manager.find_window(native_window, xevent.xcrossing.x, xevent.xcrossing.y);
+				msgwnd = wd_manager.find_window(native_window, {xevent.xcrossing.x, xevent.xcrossing.y});
 				if(msgwnd)
 				{
 					if (mouse_action::pressed != msgwnd->flags.action)
@@ -568,7 +577,7 @@ namespace detail
 				if(xevent.xbutton.button == Button4 || xevent.xbutton.button == Button5)
 					break;
 
-				msgwnd = wd_manager.find_window(native_window, xevent.xbutton.x, xevent.xbutton.y);
+				msgwnd = wd_manager.find_window(native_window, {xevent.xbutton.x, xevent.xbutton.y});
 
 				pressed_wd = nullptr;
 				if(nullptr == msgwnd)
@@ -614,7 +623,7 @@ namespace detail
 							auto pos = native_interface::cursor_position();
 							auto rootwd = native_interface::find_window(pos.x, pos.y);
 							native_interface::calc_window_point(rootwd, pos);
-							if(msgwnd != wd_manager.find_window(rootwd, pos.x, pos.y))
+							if(msgwnd != wd_manager.find_window(rootwd, pos))
 							{
 								//call the drawer mouse up event for restoring the surface graphics
 								msgwnd->set_action(mouse_action::normal);
@@ -634,7 +643,7 @@ namespace detail
 				if(pressed_wd_space)
 					break;
 
-				msgwnd = wd_manager.find_window(native_window, xevent.xbutton.x, xevent.xbutton.y);
+				msgwnd = wd_manager.find_window(native_window, {xevent.xbutton.x, xevent.xbutton.y});
 				if(nullptr == msgwnd)
 					break;
 
@@ -754,7 +763,7 @@ namespace detail
 				if(pressed_wd_space)
 					break;
 
-				msgwnd = wd_manager.find_window(native_window, xevent.xmotion.x, xevent.xmotion.y);
+				msgwnd = wd_manager.find_window(native_window, {xevent.xmotion.x, xevent.xmotion.y});
 				if (wd_manager.available(hovered_wd) && (msgwnd != hovered_wd))
 				{
 					brock.event_msleave(hovered_wd);
@@ -776,7 +785,7 @@ namespace detail
 						if(prev_captured_inside)
 						{
 							evt_code = event_code::mouse_leave;
-							msgwnd->set_action(mouse_action::normal);
+							msgwnd->set_action(mouse_action::normal_captured);
 						}
 						else
 						{
@@ -1193,6 +1202,14 @@ namespace detail
 			native_interface::enable_window(owner_native, true);
 		}
 
+		//Before exit of pump_event, it should call the remove_trash_handle.
+		//Under Linux, if the windows are closed in other threads, all the widgets handles
+		//will be marked as deleted after exit of the event loop and in other threads. So the 
+		//handle should be deleted from trash before exit the pump_event.
+		auto thread_id = ::nana::system::this_thread_id();
+		wd_manager().call_safe_place(thread_id);
+		wd_manager().remove_trash_handle(thread_id);
+
 		lock.forward();
 
 		if(0 == --(context->event_pump_ref_count))
@@ -1282,7 +1299,7 @@ namespace detail
 			return;
 
 		native_interface::calc_window_point(native_handle, pos);
-		auto rev_wd = wd_manager().find_window(native_handle, pos.x, pos.y);
+		auto rev_wd = wd_manager().find_window(native_handle, pos);
 		if (rev_wd)
 			set_cursor(rev_wd, rev_wd->predef_cursor, thrd);
 	}

@@ -1,7 +1,7 @@
 /*
  *	Nana GUI Programming Interface Implementation
  *	Nana C++ Library(http://www.nanapro.org)
- *	Copyright(C) 2003-2016 Jinhao(cnjinhao@hotmail.com)
+ *	Copyright(C) 2003-2017 Jinhao(cnjinhao@hotmail.com)
  *
  *	Distributed under the Boost Software License, Version 1.0.
  *	(See accompanying file LICENSE_1_0.txt or copy at
@@ -62,7 +62,12 @@ namespace API
 
 		bool emit_event(event_code evt_code, window wd, const ::nana::event_arg& arg)
 		{
-			return restrict::bedrock.emit(evt_code, reinterpret_cast<::nana::detail::basic_window*>(wd), arg, true, restrict::bedrock.get_thread_context());
+			return restrict::bedrock.emit(evt_code, reinterpret_cast<::nana::detail::basic_window*>(wd), arg, true, restrict::bedrock.get_thread_context(), false);
+		}
+
+		bool emit_internal_event(event_code evt_code, window wd, const ::nana::event_arg& arg)
+		{
+			return restrict::bedrock.emit(evt_code, reinterpret_cast<::nana::detail::basic_window*>(wd), arg, true, restrict::bedrock.get_thread_context(), true);
 		}
 
 		void enum_widgets_function_base::enum_widgets(window wd, bool recursive)
@@ -155,6 +160,12 @@ namespace API
 		}
 	}
 
+	void effects_bground(std::initializer_list<window> wdgs, const effects::bground_factory_interface& factory, double fade_rate)
+	{
+		for (auto wd : wdgs)
+			effects_bground(wd, factory, fade_rate);
+	}
+
 	bground_mode effects_bground_mode(window wd)
 	{
 		auto const iwd = reinterpret_cast<basic_window*>(wd);
@@ -208,6 +219,14 @@ namespace API
 			auto iwd = reinterpret_cast<basic_window*>(wd);
 			internal_scope_guard lock;
 			return (restrict::wd_manager().available(iwd) ? iwd->annex.scheme : nullptr);
+		}
+
+		void set_measurer(window wd, ::nana::dev::widget_content_measurer_interface* measurer)
+		{
+			auto iwd = reinterpret_cast<basic_window*>(wd);
+			internal_scope_guard lock;
+			if (restrict::wd_manager().available(iwd))
+				iwd->annex.content_measurer = measurer;
 		}
 
 		void attach_drawer(widget& wd, drawer_trigger& dr)
@@ -321,9 +340,53 @@ namespace API
 				iwd->flags.space_click_enabled = enable;
 		}
 
+		bool copy_transparent_background(window wd, paint::graphics& graph)
+		{
+			auto & buf = reinterpret_cast<basic_window*>(wd)->other.glass_buffer;
+			internal_scope_guard lock;
+
+			if (bground_mode::basic != API::effects_bground_mode(wd))
+				return false;
+
+			buf.paste(rectangle{ buf.size() }, graph, 0, 0);
+
+			return true;
+		}
+
+		bool copy_transparent_background(window wd, const rectangle& src_r, paint::graphics& graph, const point& dst_pt)
+		{
+			auto iwd = reinterpret_cast<basic_window*>(wd);
+			internal_scope_guard lock;
+
+			if (bground_mode::basic != API::effects_bground_mode(wd))
+				return false;
+			
+			iwd->other.glass_buffer.paste(src_r, graph, dst_pt.x, dst_pt.y);
+
+			return true;
+		}
+
 		void lazy_refresh()
 		{
 			restrict::bedrock.thread_context_lazy_refresh();
+		}
+
+		void draw_shortkey_underline(paint::graphics& graph, const std::string& text, wchar_t shortkey, std::size_t shortkey_position, const point& text_pos, const color& line_color)
+		{
+			if (shortkey)
+			{
+				auto off_x = (shortkey_position ? graph.text_extent_size(text.c_str(), shortkey_position).width : 0);
+				auto key_px = static_cast<int>(graph.text_extent_size(&shortkey, 1).width);
+
+				unsigned ascent, descent, inleading;
+				graph.text_metrics(ascent, descent, inleading);
+
+				int x = text_pos.x + static_cast<int>(off_x);
+				int y = text_pos.y + static_cast<int>(ascent + 2);
+
+				graph.line({ x, y }, {x + key_px - 1, y}, line_color);
+
+			}
 		}
 	}//end namespace dev
 
@@ -340,74 +403,15 @@ namespace API
 	//close all windows in current thread
 	void exit()
 	{
-		std::vector<basic_window*> v;
-
 		internal_scope_guard lock;
-		restrict::wd_manager().all_handles(v);
-		if(v.size())
-		{
-			std::vector<native_window_type> roots;
-			native_window_type root = nullptr;
-			unsigned tid = nana::system::this_thread_id();
-			for(auto wd : v)
-			{
-				if((wd->thread_id == tid) && (wd->root != root))
-				{
-					root = wd->root;
-					bool exists = false;
-					for (auto i = roots.cbegin(); i != roots.cend(); ++i)
-					{
-						if (*i == root)
-						{
-							exists = true;
-							break;
-						}
-					}
-
-					if (!exists)
-						roots.emplace_back(root);
-				}
-			}
-
-			for(auto i : roots)
-				interface_type::close_window(i);
-		}
+		restrict::bedrock.close_thread_window(nana::system::this_thread_id());
 	}
+
 	//close all windows  
 	void exit_all()
 	{
-		std::vector<basic_window*> v;
-
 		internal_scope_guard lock;
-		restrict::wd_manager().all_handles(v);
-		if (v.size())
-		{
-			std::vector<native_window_type> roots;
-			native_window_type root = nullptr;
-			//unsigned tid = nana::system::this_thread_id();
-			for (auto wd : v)
-			{
-				if (/*(wd->thread_id == tid) &&*/ (wd->root != root))
-				{
-					root = wd->root;
-					bool exists = false;
-					for (auto i = roots.cbegin(); i != roots.cend(); ++i)
-					{
-						if (*i == root)
-						{
-							exists = true;
-							break;
-						}
-					}
-
-					if (!exists)
-						roots.emplace_back(root);
-				}
-			}
-
-			for (auto i : roots)
-				interface_type::close_window(i);
-		}
+		restrict::bedrock.close_thread_window(0);
 	}
 
 	//transform_shortkey_text
@@ -480,12 +484,13 @@ namespace API
 
 	void window_icon_default(const paint::image& small_icon, const paint::image& big_icon)
 	{
-		restrict::wd_manager().default_icon(small_icon, big_icon);
+		restrict::wd_manager().icon(nullptr, small_icon, big_icon);
 	}
 
 	void window_icon(window wd, const paint::image& small_icon, const paint::image& big_icon)
 	{
-		restrict::wd_manager().icon(reinterpret_cast<basic_window*>(wd), small_icon, big_icon);
+		if(nullptr != wd)
+			restrict::wd_manager().icon(reinterpret_cast<basic_window*>(wd), small_icon, big_icon);
 	}
 
 	bool empty_window(window wd)
@@ -518,6 +523,11 @@ namespace API
 			iwd->flags.dropable = enb;
 			interface_type::enable_dropfiles(native_handle, enb);
 		}
+	}
+
+	bool is_transparent_background(window wd)
+	{
+		return (bground_mode::basic == effects_bground_mode(wd));
 	}
 
 	native_window_type root(window wd)
@@ -1009,6 +1019,8 @@ namespace API
 		else
 			return;
 
+		//modal has to guarantee that does not lock the mutex of window_manager before invokeing the pump_event,
+		//otherwise, the modal will prevent the other thread access the window.
 		restrict::bedrock.pump_event(wd, true);
 	}
 
@@ -1171,6 +1183,13 @@ namespace API
 			auto caret = _m_caret();
 			return (caret && caret->visible());
 		}
+
+		bool activated() const override
+		{
+			internal_scope_guard lock;
+			auto caret = _m_caret();
+			return (caret && caret->activated());
+		}
 	private:
 		caret_interface* _m_caret() const
 		{
@@ -1332,7 +1351,7 @@ namespace API
 			::nana::point clipos{pos};
 			interface_type::calc_window_point(wd, clipos);
 			return reinterpret_cast<window>(
-						restrict::wd_manager().find_window(wd, clipos.x, clipos.y));
+						restrict::wd_manager().find_window(wd, clipos));
 		}
 		return nullptr;
 	}
@@ -1392,6 +1411,7 @@ namespace API
 			switch(iwd->flags.action)
 			{
 			case nana::mouse_action::normal:
+			case nana::mouse_action::normal_captured:
 				return (is_focused ? nana::element_state::focus_normal : nana::element_state::normal);
 			case nana::mouse_action::hovered:
 				return (is_focused ? nana::element_state::focus_hovered : nana::element_state::hovered);
@@ -1428,6 +1448,30 @@ namespace API
 	void at_safe_place(window wd, std::function<void()> fn)
 	{
 		restrict::wd_manager().set_safe_place(reinterpret_cast<basic_window*>(wd), std::move(fn));
+	}
+
+	optional<std::pair<size, size>> content_extent(window wd, unsigned limited_px, bool limit_width)
+	{
+		auto iwd = reinterpret_cast<basic_window*>(wd);
+		internal_scope_guard lock;
+
+		if (restrict::wd_manager().available(iwd) && iwd->annex.content_measurer)
+		{
+			paint::graphics* graph = &iwd->drawer.graphics;
+			paint::graphics temp_graph;
+			if (graph->empty())
+			{
+				temp_graph.make({ 1, 1 });
+				temp_graph.typeface(graph->typeface());
+				graph = &temp_graph;
+			}
+
+			auto extent = iwd->annex.content_measurer->measure(*graph, limited_px, limit_width);
+			if (extent)
+				return std::make_pair(extent.value(), extent.value() + iwd->annex.content_measurer->extension());
+		}
+		
+		return{};
 	}
 }//end namespace API
 }//end namespace nana

@@ -1,7 +1,7 @@
 /*
 *	A Message Box Class
 *	Nana C++ Library(http://www.nanapro.org)
-*	Copyright(C) 2003-2015 Jinhao(cnjinhao@hotmail.com)
+*	Copyright(C) 2003-2017 Jinhao(cnjinhao@hotmail.com)
 *
 *	Distributed under the Boost Software License, Version 1.0.
 *	(See accompanying file LICENSE_1_0.txt or copy at
@@ -46,7 +46,7 @@ namespace nana
 		/// Construct that creates a message box with a specified title and default button.
 		msgbox(const ::std::string&);
 
-		/// Construct that creates a message box with an owner windoow, a specified title and buttons. 
+		/// Construct that creates a message box with an owner windoow, a specified title and buttons.
 		msgbox(window, const ::std::string&, button_t = ok);
 
 		/// Sets an icon for informing user.
@@ -108,7 +108,26 @@ namespace nana
 			virtual window create(window, unsigned label_px) = 0;
 			virtual unsigned fixed_pixels() const;
 		};
+
 	public:
+		class boolean
+			: public abstract_content
+		{
+			struct implement;
+		public:
+			boolean(::std::string label, bool initial_value);
+			~boolean();
+
+			bool value() const;
+		private:
+			//Implementation of abstract_content
+			const ::std::string& label() const override;
+			window create(window, unsigned label_px) override;
+			unsigned fixed_pixels() const override;
+		private:
+			std::unique_ptr<implement> impl_;
+		};
+
 		class integer
 			: public abstract_content
 		{
@@ -122,6 +141,7 @@ namespace nana
 			//Implementation of abstract_content
 			const ::std::string& label() const override;
 			window create(window, unsigned label_px) override;
+			unsigned fixed_pixels() const override;
 		private:
 			std::unique_ptr<implement> impl_;
 		};
@@ -139,6 +159,7 @@ namespace nana
 			//Implementation of abstract_content
 			const ::std::string& label() const override;
 			window create(window, unsigned label_px) override;
+			unsigned fixed_pixels() const override;
 		private:
 			std::unique_ptr<implement> impl_;
 		};
@@ -166,6 +187,7 @@ namespace nana
 			//Implementation of abstract_content
 			const ::std::string& label() const override;
 			window create(window, unsigned label_px) override;
+			unsigned fixed_pixels() const override;
 		private:
 			std::unique_ptr<implement> impl_;
 		};
@@ -219,7 +241,6 @@ namespace nana
 		{
 			std::vector<abstract_content*> contents;
 			_m_fetch_args(contents, std::forward<Args>(args)...);
-			
 			if (contents.empty())
 				return false;
 
@@ -240,6 +261,14 @@ namespace nana
 
 		/// Sets a verifier to verify the user input.
 		void verify(std::function<bool(window)> verifier);
+
+		/** Sets the minimum width for the entry fields
+            @param[in] pixels  new minimum width
+
+            If not called, the default is 100 pixels
+        */
+		void min_width_entry_field( unsigned pixels );
+
 	private:
 		void _m_fetch_args(std::vector<abstract_content*>&);
 
@@ -258,6 +287,7 @@ namespace nana
 		std::function<bool(window)> verifier_;
 		::nana::paint::image images_[4];
 		::nana::rectangle valid_areas_[4];
+        unsigned min_width_entry_field_pixels_;
 	};
 }//end namespace nana
 #include <nana/pop_ignore_diagnostic>

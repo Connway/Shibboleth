@@ -105,7 +105,7 @@ namespace nana
 						nana::paint::graphics item_graph({ item_r_.width, item_r_.height });
 						item_graph.typeface(graph_->typeface());
 
-						renderer_->set_color(widget_->bgcolor(), widget_->fgcolor());
+						renderer_->begin_paint(*widget_);
 						renderer_->bground(item_graph, this);
 						renderer_->expander(item_graph, this);
 						renderer_->crook(item_graph, this);
@@ -343,7 +343,9 @@ namespace nana
 						if (attr.auto_draw || ignore_auto_draw)
 						{
 							//Draw background
-							data.graph->rectangle(true, data.widget_ptr->bgcolor());
+							rectangle bground_r{ data.graph->size() };
+							if (!API::dev::copy_transparent_background(data.widget_ptr->handle(), bground_r, *data.graph, {}))
+								data.graph->rectangle(true, data.widget_ptr->bgcolor());
 
 							//Draw tree
 							attr.tree_cont.for_each(shape.first, Renderer(this, nana::point(static_cast<int>(attr.tree_cont.indent_size(shape.first) * shape.indent_pixels) - shape.offset_x, 1)));
@@ -611,7 +613,7 @@ namespace nana
 						{
 							scroll.create(*data.widget_ptr, nana::rectangle(data.graph->width() - 16, 0, 16, data.graph->height()));
 
-							scroll.events().value_changed.connect_unignorable([this](const arg_scroll& arg)
+							scroll.events().value_changed.connect_unignorable([this](const arg_scroll&)
 							{
 								adjust.scroll_timestamp = nana::system::timestamp();
 								adjust.timer.start();
@@ -1201,13 +1203,11 @@ namespace nana
 			class internal_renderer
 				: public renderer_interface
 			{
-				nana::color bgcolor_;
-				nana::color fgcolor_;
+				window window_handle_;
 
-				void set_color(const nana::color & bgcolor, const nana::color& fgcolor) override
+				void begin_paint(::nana::widget& wdg) override
 				{
-					bgcolor_ = bgcolor;
-					fgcolor_ = fgcolor;
+					window_handle_ = wdg.handle();
 				}
 
 				void bground(graph_reference graph, const compset_interface * compset) const override
@@ -1234,8 +1234,20 @@ namespace nana
 
 						if (clrptr)
 						{
-							graph.rectangle(attr.area, false, clrptr[1]);
-							graph.rectangle(attr.area.pare_off(1), true, *clrptr);
+							if (API::is_transparent_background(window_handle_))
+							{
+								paint::graphics item_graph{ attr.area.dimension() };
+								item_graph.rectangle(false, clrptr[1]);
+								item_graph.rectangle(rectangle{attr.area.dimension()}.pare_off(1), true, *clrptr);
+
+
+								graph.blend(attr.area, item_graph, attr.area.position(), 0.5);
+							}
+							else
+							{
+								graph.rectangle(attr.area, false, clrptr[1]);
+								graph.rectangle(attr.area.pare_off(1), true, *clrptr);
+							}
 						}
 					}
 				}
@@ -1255,7 +1267,7 @@ namespace nana
 						auto r = attr.area;
 						r.y += (attr.area.height - 16) / 2;
 						r.width = r.height = 16;
-						arrow.draw(graph, bgcolor_, (attr.mouse_pointed ? colors::deep_sky_blue : colors::black), r, element_state::normal);
+						arrow.draw(graph, API::bgcolor(window_handle_), (attr.mouse_pointed ? colors::deep_sky_blue : colors::black), r, element_state::normal);
 					}
 				}
 
@@ -1266,7 +1278,7 @@ namespace nana
 					{
 						attr.area.y += (attr.area.height - 16) / 2;
 						crook_.check(compset->item_attribute().checked);
-						crook_.draw(graph, bgcolor_, fgcolor_, attr.area, attr.mouse_pointed ? element_state::hovered : element_state::normal);
+						crook_.draw(graph, API::bgcolor(window_handle_), API::fgcolor(window_handle_), attr.area, attr.mouse_pointed ? element_state::hovered : element_state::normal);
 					}
 				}
 
@@ -1308,7 +1320,7 @@ namespace nana
 				{
 					comp_attribute_t attr;
 					if (compset->comp_attribute(component::text, attr))
-						graph.string(point{ attr.area.x, attr.area.y + 3 }, compset->item_attribute().text, fgcolor_);
+						graph.string(point{ attr.area.x, attr.area.y + 3 }, compset->item_attribute().text, API::fgcolor(window_handle_));
 				}
 			private:
 				mutable facade<element::crook> crook_;
@@ -1408,8 +1420,6 @@ namespace nana
 
 				item_renderer(implement * impl, const nana::point& pos)
 					:	impl_(impl),
-						bgcolor_(impl->data.widget_ptr->bgcolor()),
-						fgcolor_(impl->data.widget_ptr->fgcolor()),
 						pos_(pos)
 				{
 				}
@@ -1441,7 +1451,7 @@ namespace nana
 					node_r_.height = comp_placer->item_height(*impl_->data.graph);
 
 					auto renderer = draw_impl->data.renderer;
-					renderer->set_color(bgcolor_, fgcolor_);
+					renderer->begin_paint(*draw_impl->data.widget_ptr);
 					renderer->bground(*draw_impl->data.graph, this);
 					renderer->expander(*draw_impl->data.graph, this);
 					renderer->crook(*draw_impl->data.graph, this);
@@ -1476,8 +1486,6 @@ namespace nana
 				}
 			private:
 				trigger::implement * impl_;
-				::nana::color bgcolor_;
-				::nana::color fgcolor_;
 				::nana::point pos_;
 				const node_type * iterated_node_;
 				item_attribute_t node_attr_;
@@ -1773,6 +1781,11 @@ namespace nana
 					widget.caption("nana treebox");
 				}
 
+				void trigger::detached()
+				{
+					impl_->data.graph = nullptr;
+				}
+
 				void trigger::refresh(graph_reference)
 				{
 					//Don't reset the scroll and update the window
@@ -1791,7 +1804,6 @@ namespace nana
 					if (!node)
 						return;
 
-					auto & node_state = impl_->node_state;
 					switch (nl.what())
 					{
 					case component::icon:
@@ -1813,7 +1825,6 @@ namespace nana
 					item_locator nl(impl_, xpos, arg.pos.x, arg.pos.y);
 					impl_->attr.tree_cont.for_each<item_locator&>(shape.first, nl);
 
-					bool has_redraw = false;
 
 					auto & node_state = impl_->node_state;
 					node_state.pressed_node = nl.node();
@@ -1822,21 +1833,17 @@ namespace nana
 					{
 						if(impl_->set_expanded(node_state.pressed_node, !node_state.pressed_node->value.second.expanded))
 							impl_->make_adjust(node_state.pressed_node, 0);
-
-						has_redraw = true;	//btw, don't select the node
 					}
-					
-					if ((!has_redraw) && (node_state.selected != node_state.pressed_node))
+					else if (node_state.selected != node_state.pressed_node)
 					{
 						impl_->set_selected(node_state.pressed_node);
-						has_redraw = true;
 					}
+					else
+						return;
 
-					if(has_redraw)
-					{
-						impl_->draw(true);
-						API::dev::lazy_refresh();
-					}
+					
+					impl_->draw(true);
+					API::dev::lazy_refresh();
 				}
 
 				void trigger::mouse_up(graph_reference, const arg_mouse& arg)
@@ -2193,7 +2200,7 @@ namespace nana
 				}
 
 				path.insert(0, pnode->value.first);
-				return std::move(path);
+				return path;
 			}
 			return{};
 		}

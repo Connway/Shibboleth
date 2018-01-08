@@ -19,11 +19,11 @@
 #include <cstring>
 
 #if defined(NANA_WINDOWS)
-	#include <windows.h>
+#	include <windows.h>
 #elif defined(NANA_X11)
-	#include <nana/detail/platform_spec_selector.hpp>
-	#include <nana/gui/detail/bedrock.hpp>
-	#include <nana/gui/detail/basic_window.hpp>
+#	include "../detail/platform_spec_selector.hpp"
+#	include <nana/gui/detail/bedrock.hpp>
+#	include <nana/gui/detail/basic_window.hpp>
 #endif
 
 namespace nana{ namespace system{
@@ -117,7 +117,8 @@ namespace nana{ namespace system{
 #else
 			static_cast<void>(g); //eliminate unused parameter compiler warning.
 			static_cast<void>(owner);
-			throw "not implemented yet.";
+			throw std::logic_error("dataexch::set(const paint::graphics&, native_window_type owner) not implemented yet.");
+
 			return false;
 #endif
 		}

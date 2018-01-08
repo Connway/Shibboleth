@@ -1,7 +1,7 @@
 /*
  *	Nana GUI Programming Interface Implementation
  *	Nana C++ Library(http://www.nanapro.org)
- *	Copyright(C) 2003-2016 Jinhao(cnjinhao@hotmail.com)
+ *	Copyright(C) 2003-2017 Jinhao(cnjinhao@hotmail.com)
  *
  *	Distributed under the Boost Software License, Version 1.0.
  *	(See accompanying file LICENSE_1_0.txt or copy at
@@ -16,6 +16,7 @@
 #include "effects.hpp"
 #include "detail/general_events.hpp"
 #include "detail/color_schemes.hpp"
+#include "detail/widget_content_measurer_interface.hpp"
 #include <nana/paint/image.hpp>
 #include <memory>
 
@@ -53,6 +54,8 @@ namespace API
 	effects::edge_nimbus effects_edge_nimbus(window);
 
 	void effects_bground(window, const effects::bground_factory_interface&, double fade_rate);
+	void effects_bground(std::initializer_list<window> wdgs, const effects::bground_factory_interface&, double fade_rate);
+
 	bground_mode effects_bground_mode(window);
 	void effects_bground_remove(window);
 
@@ -73,6 +76,9 @@ namespace API
 		void set_scheme(window, widget_geometrics*);
 		widget_geometrics* get_scheme(window);
 
+		/// Sets a content measurer
+		void set_measurer(window, ::nana::dev::widget_content_measurer_interface*);
+
 		void attach_drawer(widget&, drawer_trigger&);
 		::nana::detail::native_string_type window_caption(window) throw();
 		void window_caption(window, ::nana::detail::native_string_type);
@@ -92,11 +98,16 @@ namespace API
 
 		void enable_space_click(window, bool enable);
 
+		bool copy_transparent_background(window, paint::graphics&);
+		bool copy_transparent_background(window, const rectangle& src_r, paint::graphics&, const point& dst_pt);
+
 		/// Refreshs a widget surface
 		/*
 		 * This function will copy the drawer surface into system window after the event process finished.
 		 */
 		void lazy_refresh();
+
+		void draw_shortkey_underline(paint::graphics&, const std::string& text, wchar_t shortkey, std::size_t shortkey_position, const point& text_pos, const color&);
 	}//end namespace dev
 
 	/// Returns the widget pointer of the specified window.
@@ -109,7 +120,12 @@ namespace API
 	namespace detail
 	{
 		general_events* get_general_events(window);
+
+		// emits both internal and external event (internal event can be filtered)
 		bool emit_event(event_code, window, const ::nana::event_arg&);
+
+		// explicitly emits internal event (internal event not to be filtered)
+		bool emit_internal_event(event_code, window, const ::nana::event_arg&);
 
 		class enum_widgets_function_base
 		{
@@ -191,6 +207,8 @@ namespace API
 	bool is_destroying(window);		///< Determines whether a window is destroying
 	void enable_dropfiles(window, bool);
 
+	bool is_transparent_background(window);
+
     /// \brief Retrieves the native window of a Nana.GUI window.
     ///
     /// The native window type is platform-dependent. Under Microsoft Windows, a conversion can be employed between
@@ -240,6 +258,12 @@ namespace API
 	bool emit_event(event_code evt_code, window wd, const EventArg& arg)
 	{
 		return detail::emit_event(evt_code, wd, arg);
+	}
+
+	template<typename EventArg, typename std::enable_if<std::is_base_of< ::nana::event_arg, EventArg>::value>::type* = nullptr>
+	bool emit_internal_event(event_code evt_code, window wd, const EventArg& arg)
+	{
+		return detail::emit_internal_event(evt_code, wd, arg);
 	}
 
 	void umake_event(event_handle);
@@ -399,6 +423,17 @@ namespace API
 	bool ignore_mouse_focus(window);				///< Determines whether the mouse focus is enabled
 
 	void at_safe_place(window, std::function<void()>);
+
+	/// Returns a widget content extent size
+	/**
+	 * @param wd A handle to a window that returns its content extent size.
+	 * @param limited_px Specifies the max pixels of width or height. If this parameter is zero, this parameter will be ignored.
+	 * @param limit_width Indicates whether the it limits the width or height. If this parameter is *true*, the width is limited.
+	 * If the parameter is *false*, the height is limited. This parameter is ignored if limited_px = 0.
+	 * @return if optional has a value, the first size indicates the content extent, the second size indicates the size of
+	 * widget by the content extent. 
+	 */
+	optional<std::pair<::nana::size, ::nana::size>> content_extent(window wd, unsigned limited_px, bool limit_width);
 }//end namespace API
 
 }//end namespace nana

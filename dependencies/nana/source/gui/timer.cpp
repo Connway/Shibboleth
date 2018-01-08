@@ -28,7 +28,7 @@
 #if defined(NANA_WINDOWS)
 #include <windows.h>
 #elif defined(NANA_LINUX) || defined(NANA_MACOS)
-#include <nana/detail/platform_spec_selector.hpp>
+#include "../detail/platform_spec_selector.hpp"
 #include <nana/system/platform.hpp>
 #endif
 
@@ -142,7 +142,7 @@ namespace nana
 	}; //end class timer_core
 
 #if defined(NANA_WINDOWS)
-	void __stdcall timer_driver::_m_timer_proc(HWND hwnd, UINT uMsg, UINT_PTR id, DWORD dwTime)
+	void __stdcall timer_driver::_m_timer_proc(HWND /*hwnd*/, UINT /*uMsg*/, UINT_PTR id, DWORD /*dwTime*/)
 #else
 	void timer_driver::_m_timer_proc(std::size_t id)
 #endif

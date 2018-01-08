@@ -14,13 +14,14 @@
  *	http://standards.freedesktop.org/clipboards-spec/clipboards-0.1.txt
  */
 
-#include <nana/detail/platform_spec_selector.hpp>
+#include "platform_spec_selector.hpp"
+#include "platform_abstraction.hpp"
 #if defined(NANA_POSIX) && defined(NANA_X11)
 
 #include <nana/push_ignore_diagnostic>
 
 #include <X11/Xlocale.h>
-#include <locale>
+#include <clocale>
 #include <map>
 #include <set>
 #include <algorithm>
@@ -33,7 +34,7 @@
 #include <errno.h>
 #include <sstream>
 
-#include "x11/msg_dispatcher.hpp"
+#include "posix/msg_dispatcher.hpp"
 
 namespace nana
 {
@@ -422,53 +423,6 @@ namespace detail
 		}
 	}
 
-	void drawable_impl_type::fgcolor(const ::nana::color& clr)
-	{
-		auto rgb = clr.px_color().value;
-
-		if (rgb != current_color_)
-		{
-			auto & spec = nana::detail::platform_spec::instance();
-			platform_scope_guard psg;
-
-			current_color_ = rgb;
-			switch(spec.screen_depth())
-			{
-			case 16:
-				rgb = ((((rgb >> 16) & 0xFF) * 31 / 255) << 11) |
-					((((rgb >> 8) & 0xFF) * 63 / 255) << 5)	|
-					(rgb & 0xFF) * 31 / 255;
-				break;
-			}
-			::XSetForeground(spec.open_display(), context, rgb);
-			::XSetBackground(spec.open_display(), context, rgb);
-#if defined(NANA_USE_XFT)
-			xft_fgcolor.color.red = ((0xFF0000 & rgb) >> 16) * 0x101;
-			xft_fgcolor.color.green = ((0xFF00 & rgb) >> 8) * 0x101;
-			xft_fgcolor.color.blue = (0xFF & rgb) * 0x101;
-			xft_fgcolor.color.alpha = 0xFFFF;
-#endif
-		}
-	}
-
-	class font_deleter
-	{
-    public:
-        void operator()(const font_tag* fp) const
-        {
-            if(fp && fp->handle)
-            {
-                platform_scope_guard psg;
-#if defined(NANA_USE_XFT)
-                ::XftFontClose(nana::detail::platform_spec::instance().open_display(), fp->handle);
-#else
-                ::XFreeFontSet(nana::detail::platform_spec::instance().open_display(), fp->handle);
-#endif
-            }
-            delete fp;
-        }
-	};//end class font_deleter
-
 	platform_scope_guard::platform_scope_guard()
 	{
 		platform_spec::instance().lock_xlib();
@@ -561,9 +515,9 @@ namespace detail
 		atombase_.xdnd_typelist = ::XInternAtom(display_, "XdndTypeList", False);
 		atombase_.xdnd_finished = ::XInternAtom(display_, "XdndFinished", False);
 
-		//Create default font object.
-		def_font_ptr_ = make_native_font(nullptr, font_size_to_height(10), 400, false, false, false);
 		msg_dispatcher_ = new msg_dispatcher(display_);
+
+		platform_abstraction::initialize();
 	}
 
 	platform_spec::~platform_spec()
@@ -572,73 +526,9 @@ namespace detail
 
 		//The font should be destroyed before closing display,
 		//otherwise it crashs
-		def_font_ptr_.reset();
+		platform_abstraction::shutdown();
 
 		close_display();
-	}
-
-	const platform_spec::font_ptr_t& platform_spec::default_native_font() const
-	{
-		return def_font_ptr_;
-	}
-	
-	void platform_spec::default_native_font(const font_ptr_t& fp)
-	{
-		def_font_ptr_ = fp;
-	}
-
-	unsigned platform_spec::font_size_to_height(unsigned size) const
-	{
-		return size;
-	}
-
-	unsigned platform_spec::font_height_to_size(unsigned height) const
-	{
-		return height;
-	}
-
-	platform_spec::font_ptr_t platform_spec::make_native_font(const char* name, unsigned height, unsigned weight, bool italic, bool underline, bool strike_out)
-	{
-		font_ptr_t ref;
-#if 1 //Xft
-		if(0 == name || *name == 0)
-			name = "*";
-
-		XftFont* handle = 0;
-		std::stringstream ss;
-		ss<<name<<"-"<<(height ? height : 10);
-		XftPattern * pat = ::XftNameParse(ss.str().c_str());
-		XftResult res;
-		XftPattern * match_pat = ::XftFontMatch(display_, ::XDefaultScreen(display_), pat, &res);
-		if(match_pat)
-			handle = ::XftFontOpenPattern(display_, match_pat);
-#else
-		std::string basestr;
-		if(0 == name || *name == 0)
-		{
-			basestr = "-misc-fixed-*";
-		}
-		else
-			basestr = "-misc-fixed-*";
-
-		char ** missing_list;
-		int missing_count;
-		char * defstr;
-		XFontSet handle = ::XCreateFontSet(display_, const_cast<char*>(basestr.c_str()), &missing_list, &missing_count, &defstr);
-#endif
-		if(handle)
-		{
-			font_tag * impl = new font_tag;
-			impl->name = name;
-			impl->height = height;
-			impl->weight = weight;
-			impl->italic = italic;
-			impl->underline = underline;
-			impl->strikeout = strike_out;
-			impl->handle = handle;
-			return font_ptr_t(impl, font_deleter());
-		}
-		return font_ptr_t();
 	}
 
 	Display* platform_spec::open_display()
@@ -944,6 +834,19 @@ namespace detail
 		{
 			i->second->reinstate();
 			i->second->pos = pos;
+		}
+		auto addr = i->second;
+		if(addr && addr->input_context) {
+			XPoint spot;
+			XVaNestedList list;
+			spot.x = pos.x;
+			spot.y = pos.y + addr->size.height;
+			list = ::XVaCreateNestedList(0, XNSpotLocation, &spot,
+					XNForeground, 0,
+					XNBackground, 0,
+					(void *)0);
+			::XSetICValues(addr->input_context, XNPreeditAttributes, list, NULL);
+			::XFree(list);
 		}
 	}
 
@@ -1381,7 +1284,7 @@ namespace detail
 					Window child;
 					::XTranslateCoordinates(self.display_, self.root_window(), evt.xclient.window, x, y, &self.xdnd_.pos.x, &self.xdnd_.pos.y, &child);
 
-					auto wd = bedrock.wd_manager().find_window(reinterpret_cast<native_window_type>(evt.xclient.window),													self.xdnd_.pos.x, self.xdnd_.pos.y);
+					auto wd = bedrock.wd_manager().find_window(reinterpret_cast<native_window_type>(evt.xclient.window), self.xdnd_.pos);
 					if(wd && wd->flags.dropable)
 					{
 						accepted = true;

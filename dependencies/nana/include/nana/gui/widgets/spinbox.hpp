@@ -56,10 +56,12 @@ namespace nana
 			private:
 				//Overrides drawer_trigger
 				void attached(widget_reference, graph_reference) override;
+				void detached() override;
 				void refresh(graph_reference)	override;
 
 				void focus(graph_reference, const arg_focus&)	override;
 				void mouse_wheel(graph_reference, const arg_wheel&) override;
+				void dbl_click(graph_reference, const arg_mouse&) override;
 				void mouse_down(graph_reference, const arg_mouse&)	override;
 				void mouse_move(graph_reference, const arg_mouse&)	override;
 				void mouse_up(graph_reference, const arg_mouse& arg)	override;
@@ -95,8 +97,11 @@ namespace nana
 		void range(double begin, double last, double step);
 
 		/// Sets the string spin values.
-		void range(std::initializer_list<std::string> values_utf8);
-		void range(std::initializer_list<std::wstring> values);
+		void range(std::vector<std::string> values_utf8);
+
+		std::vector<std::string> range_string() const;
+		std::pair<int, int> range_int() const;
+		std::pair<double, double> range_double() const;
 
 		/// Gets the spined value
 		::std::string value() const;
