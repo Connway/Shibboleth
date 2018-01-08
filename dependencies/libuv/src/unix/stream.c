@@ -859,7 +859,7 @@ start:
   }
 
   if (n < 0) {
-    if (errno != EAGAIN && errno != EWOULDBLOCK) {
+    if (errno != EAGAIN && errno != EWOULDBLOCK && errno != ENOBUFS) {
       err = -errno;
       goto error;
     } else if (stream->flags & UV_STREAM_BLOCKING) {
@@ -1261,8 +1261,9 @@ static void uv__read(uv_stream_t* stream) {
 
 
 int uv_shutdown(uv_shutdown_t* req, uv_stream_t* stream, uv_shutdown_cb cb) {
-  assert((stream->type == UV_TCP || stream->type == UV_NAMED_PIPE) &&
-         "uv_shutdown (unix) only supports uv_handle_t right now");
+  assert(stream->type == UV_TCP ||
+         stream->type == UV_TTY ||
+         stream->type == UV_NAMED_PIPE);
 
   if (!(stream->flags & UV_STREAM_WRITABLE) ||
       stream->flags & UV_STREAM_SHUT ||
@@ -1409,6 +1410,9 @@ int uv_write2(uv_write_t* req,
 
   if (uv__stream_fd(stream) < 0)
     return -EBADF;
+
+  if (!(stream->flags & UV_STREAM_WRITABLE))
+    return -EPIPE;
 
   if (send_handle) {
     if (stream->type != UV_NAMED_PIPE || !((uv_pipe_t*)stream)->ipc)
@@ -1560,6 +1564,9 @@ int uv_read_start(uv_stream_t* stream,
 
   if (stream->flags & UV_CLOSING)
     return -EINVAL;
+
+  if (!(stream->flags & UV_STREAM_READABLE))
+    return -ENOTCONN;
 
   /* The UV_STREAM_READING flag is irrelevant of the state of the tcp - it just
    * expresses the desired state of the user.

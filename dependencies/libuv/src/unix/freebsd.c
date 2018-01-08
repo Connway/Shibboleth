@@ -25,7 +25,6 @@
 #include <string.h>
 #include <errno.h>
 
-#include <kvm.h>
 #include <paths.h>
 #include <sys/user.h>
 #include <sys/types.h>
@@ -48,7 +47,14 @@
 # define CP_INTR 4
 #endif
 
+static uv_mutex_t process_title_mutex;
+static uv_once_t process_title_mutex_once = UV_ONCE_INIT;
 static char *process_title;
+
+
+static void init_process_title_mutex_once(void) {
+  uv_mutex_init(&process_title_mutex);
+}
 
 
 int uv__platform_loop_init(uv_loop_t* loop) {
@@ -161,9 +167,20 @@ char** uv_setup_args(int argc, char** argv) {
 
 int uv_set_process_title(const char* title) {
   int oid[4];
+  char* new_title;
+
+  new_title = uv__strdup(title);
+
+  uv_once(&process_title_mutex_once, init_process_title_mutex_once);
+  uv_mutex_lock(&process_title_mutex);
+
+  if (process_title == NULL) {
+    uv_mutex_unlock(&process_title_mutex);
+    return -ENOMEM;
+  }
 
   uv__free(process_title);
-  process_title = uv__strdup(title);
+  process_title = new_title;
 
   oid[0] = CTL_KERN;
   oid[1] = KERN_PROC;
@@ -177,6 +194,8 @@ int uv_set_process_title(const char* title) {
          process_title,
          strlen(process_title) + 1);
 
+  uv_mutex_unlock(&process_title_mutex);
+
   return 0;
 }
 
@@ -187,51 +206,54 @@ int uv_get_process_title(char* buffer, size_t size) {
   if (buffer == NULL || size == 0)
     return -EINVAL;
 
+  uv_once(&process_title_mutex_once, init_process_title_mutex_once);
+  uv_mutex_lock(&process_title_mutex);
+
   if (process_title) {
     len = strlen(process_title) + 1;
 
-    if (size < len)
+    if (size < len) {
+      uv_mutex_unlock(&process_title_mutex);
       return -ENOBUFS;
+    }
 
     memcpy(buffer, process_title, len);
   } else {
     len = 0;
   }
 
+  uv_mutex_unlock(&process_title_mutex);
+
   buffer[len] = '\0';
 
   return 0;
 }
 
-
 int uv_resident_set_memory(size_t* rss) {
-  kvm_t *kd = NULL;
-  struct kinfo_proc *kinfo = NULL;
-  pid_t pid;
-  int nprocs;
-  size_t page_size = getpagesize();
+  struct kinfo_proc kinfo;
+  size_t page_size;
+  size_t kinfo_size;
+  int mib[4];
 
-  pid = getpid();
+  mib[0] = CTL_KERN;
+  mib[1] = KERN_PROC;
+  mib[2] = KERN_PROC_PID;
+  mib[3] = getpid();
 
-  kd = kvm_open(NULL, _PATH_DEVNULL, NULL, O_RDONLY, "kvm_open");
-  if (kd == NULL) goto error;
+  kinfo_size = sizeof(kinfo);
 
-  kinfo = kvm_getprocs(kd, KERN_PROC_PID, pid, &nprocs);
-  if (kinfo == NULL) goto error;
+  if (sysctl(mib, 4, &kinfo, &kinfo_size, NULL, 0))
+    return -errno;
+
+  page_size = getpagesize();
 
 #ifdef __DragonFly__
-  *rss = kinfo->kp_vm_rssize * page_size;
+  *rss = kinfo.kp_vm_rssize * page_size;
 #else
-  *rss = kinfo->ki_rssize * page_size;
+  *rss = kinfo.ki_rssize * page_size;
 #endif
 
-  kvm_close(kd);
-
   return 0;
-
-error:
-  if (kd) kvm_close(kd);
-  return -EPERM;
 }
 
 

@@ -265,6 +265,7 @@
     <ClCompile Include="..\..\..\dependencies\libuv\src\inet.c" />
     <ClCompile Include="..\..\..\dependencies\libuv\src\threadpool.c" />
     <ClCompile Include="..\..\..\dependencies\libuv\src\uv-common.c" />
+    <ClCompile Include="..\..\..\dependencies\libuv\src\uv-data-getter-setters.c" />
     <ClCompile Include="..\..\..\dependencies\libuv\src\version.c" />
     <ClCompile Include="..\..\..\dependencies\libuv\src\win\async.c" />
     <ClCompile Include="..\..\..\dependencies\libuv\src\win\core.c" />

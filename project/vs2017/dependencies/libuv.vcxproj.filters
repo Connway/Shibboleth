@@ -107,6 +107,9 @@
     <ClCompile Include="..\..\..\dependencies\libuv\src\uv-common.c">
       <Filter>src</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\dependencies\libuv\src\uv-data-getter-setters.c">
+      <Filter>src</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\..\dependencies\libuv\src\version.c">
       <Filter>src</Filter>
     </ClCompile>
