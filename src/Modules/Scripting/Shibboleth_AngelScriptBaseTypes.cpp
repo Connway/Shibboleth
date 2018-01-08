@@ -203,10 +203,92 @@ static void GetInterfaceFromComponent(asIScriptGeneric* generic)
 	}
 }
 
-static U8String StringFactory(asUINT size, const char* str)
+class StringFactory : public asIStringFactory
 {
-	return U8String (str, size, ProxyAllocator("AngelScript String"));
-}
+public:
+	const void* GetStringConstant(const char* str, asUINT length)
+	{
+		const Gaff::Hash64 hash = Gaff::FNV1aHash64(str, length);
+		auto it = eastl::lower_bound(_string_cache.begin(), _string_cache.end(), hash);
+
+		if (it != _string_cache.end() && it->hash == hash) {
+			++it->count;
+
+		} else {
+			CacheData data;
+			data.hash = hash;
+			data.string = U8String(str, length, ProxyAllocator("AngelScript String"));
+			data.count = 1;
+
+			it = _string_cache.insert(it, data);
+		}
+
+		return reinterpret_cast<const void*>(&it->string);
+	}
+
+	int ReleaseStringConstant(const void* str)
+	{
+		if (!str) {
+			return asERROR;
+		}
+
+		const U8String* const string = reinterpret_cast<const U8String*>(str);
+		const Gaff::Hash64 hash = Gaff::FNV1aHash64(string->data(), string->length());
+		auto it = eastl::lower_bound(_string_cache.begin(), _string_cache.end(), hash);
+
+		if (it == _string_cache.end() || it->hash != hash) {
+			return asERROR;
+		}
+
+		--it->count;
+
+		if (!it->count) {
+			_string_cache.erase(it);
+		}
+
+		return asSUCCESS;
+	}
+	
+	int GetRawStringData(const void* str, char* data, asUINT* length) const
+	{
+		if (!str) {
+			return asERROR;
+		}
+
+		if (length) {
+			*length = static_cast<asUINT>(reinterpret_cast<const U8String*>(str)->length());
+		}
+
+		if (data) {
+			memcpy(data, reinterpret_cast<const U8String*>(str)->c_str(), reinterpret_cast<const U8String*>(str)->length());
+		}
+
+		return asSUCCESS;
+	}
+
+private:
+	struct CacheData
+	{
+	public:
+		Gaff::Hash64 hash;
+		U8String string;
+		int count = 0;
+
+		bool operator<(Gaff::Hash64 rhs) const
+		{
+			return hash < rhs;
+		}
+	};
+	
+	Vector<CacheData> _string_cache;
+};
+
+static StringFactory g_string_factory;
+
+//static U8String StringFactory(asUINT size, const char* str)
+//{
+//	return U8String (str, size, ProxyAllocator("AngelScript String"));
+//}
 
 void DeclareTypes(asIScriptEngine* engine)
 {
@@ -350,7 +432,8 @@ void RegisterString(asIScriptEngine* engine)
 {
 	engine->RegisterGlobalProperty("const " SIZE_T_STRING " npos", const_cast<size_t*>(&U8String::npos));
 
-	engine->RegisterStringFactory("String", asFUNCTION(StringFactory), asCALL_CDECL);
+	//engine->RegisterStringFactory("String", asFUNCTION(StringFactory), asCALL_CDECL);
+	engine->RegisterStringFactory("String", &g_string_factory);
 	engine->RegisterObjectBehaviour("String", asBEHAVE_CONSTRUCT, "void f()", asFUNCTION(Gaff::ConstructExact<U8String>), asCALL_CDECL_OBJFIRST);
 	engine->RegisterObjectBehaviour("String", asBEHAVE_CONSTRUCT, "void f(const String& in)", asFUNCTION(GAFF_SINGLE_ARG(Gaff::ConstructExact<U8String, const U8String&>)), asCALL_CDECL_OBJFIRST);
 	engine->RegisterObjectBehaviour("String", asBEHAVE_CONSTRUCT, "void f(const String& in, " SIZE_T_STRING ", " SIZE_T_STRING " n = npos)", asFUNCTION(GAFF_SINGLE_ARG(Gaff::ConstructExact<U8String, const U8String&, size_t, size_t>)), asCALL_CDECL_OBJFIRST);
