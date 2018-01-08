@@ -23,7 +23,17 @@ THE SOFTWARE.
 #pragma once
 
 #include "Gleam_Defines.h"
+
+#ifdef PLATFORM_WINDOWS
+	#pragma warning(push)
+	#pragma warning(disable : 4701)
+#endif
+
 #include <gtc/quaternion.hpp>
+
+#ifdef PLATFORM_WINDOWS
+	#pragma warning(pop)
+#endif
 
 NS_GLEAM
 

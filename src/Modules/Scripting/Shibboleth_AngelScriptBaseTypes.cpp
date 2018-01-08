@@ -25,6 +25,7 @@ THE SOFTWARE.
 #include <Shibboleth_Object.h>
 #include <Shibboleth_IncludeAngelScript.h>
 #include <gtc/quaternion.hpp>
+#include <gtc/vec1.hpp>
 #include <vec4.hpp>
 #include <vec3.hpp>
 #include <vec2.hpp>
@@ -38,7 +39,7 @@ static_assert(false, "size_t is not 32 or 64-bits!");
 #endif
 
 
-#define REGISTER_VEC(name, type) \
+#define REGISTER_VEC(name, type, vec_len) \
 	REGISTER_BASE_VEC_TYPE(name, type); \
 	engine->RegisterObjectBehaviour(#name, asBEHAVE_CONSTRUCT, "void f(float)", asFUNCTION(GAFF_SINGLE_ARG(Gaff::ConstructExact<glm::##type, float>)), asCALL_CDECL_OBJFIRST); \
 	engine->RegisterObjectMethod(#name, #name "& opAddAssign(float)", asMETHODPR(glm::##type, operator+=, (float), glm::##type&), asCALL_THISCALL); \
@@ -51,9 +52,9 @@ static_assert(false, "size_t is not 32 or 64-bits!");
 	engine->RegisterObjectMethod(#name, #name " opDiv(const " #name "& in) const", asFUNCTIONPR(glm::operator/, (const glm::##type&, const glm::##type&), glm::##type), asCALL_CDECL_OBJFIRST); \
 	engine->RegisterObjectMethod(#name, #name " opDiv(float) const", asFUNCTIONPR(glm::operator/, (const glm::##type&, float), glm::##type), asCALL_CDECL_OBJFIRST); \
 	engine->RegisterObjectMethod(#name, #name " opMul(float) const", asFUNCTIONPR(glm::operator*, (const glm::##type&, float), glm::##type), asCALL_CDECL_OBJFIRST); \
-	engine->RegisterObjectMethod(#name, #name " opMod(const " #name "& in) const", asFUNCTIONPR(GAFF_SINGLE_ARG(glm::mod<float, glm::highp, glm::t##type>), (const glm::##type&, const glm::##type&), glm::##type), asCALL_CDECL_OBJFIRST); \
-	engine->RegisterObjectMethod(#name, #name " opMod(float) const", asFUNCTIONPR(GAFF_SINGLE_ARG(glm::mod<float, glm::highp, glm::t##type>), (const glm::##type&, float), glm::##type), asCALL_CDECL_OBJFIRST); \
-	engine->RegisterObjectMethod(#name, #name " opPow(const " #name "& in) const", asFUNCTIONPR(GAFF_SINGLE_ARG(glm::pow<float, glm::highp, glm::t##type>), (const glm::##type&, const glm::##type&), glm::##type), asCALL_CDECL_OBJFIRST); \
+	engine->RegisterObjectMethod(#name, #name " opMod(const " #name "& in) const", asFUNCTIONPR(GAFF_SINGLE_ARG(glm::mod<vec_len, float, glm::highp>), (const glm::##type&, const glm::##type&), glm::##type), asCALL_CDECL_OBJFIRST); \
+	engine->RegisterObjectMethod(#name, #name " opMod(float) const", asFUNCTIONPR(GAFF_SINGLE_ARG(glm::mod<vec_len, float, glm::highp>), (const glm::##type&, float), glm::##type), asCALL_CDECL_OBJFIRST); \
+	engine->RegisterObjectMethod(#name, #name " opPow(const " #name "& in) const", asFUNCTIONPR(GAFF_SINGLE_ARG(glm::pow<vec_len, float, glm::highp>), (const glm::##type&, const glm::##type&), glm::##type), asCALL_CDECL_OBJFIRST); \
 	engine->RegisterObjectMethod(#name, #name " opAdd_r(float) const", asFUNCTIONPR(glm::operator+, (float, const glm::##type&), glm::##type), asCALL_CDECL_OBJLAST); \
 	engine->RegisterObjectMethod(#name, #name " opSub_r(float) const", asFUNCTIONPR(glm::operator-, (float, const glm::##type&), glm::##type), asCALL_CDECL_OBJLAST); \
 	engine->RegisterObjectMethod(#name, #name " opDiv_r(float) const", asFUNCTIONPR(glm::operator/, (float, const glm::##type&), glm::##type), asCALL_CDECL_OBJLAST); \
@@ -62,23 +63,25 @@ static_assert(false, "size_t is not 32 or 64-bits!");
 	engine->RegisterObjectMethod(#name, #name "& opPreDec()", asMETHODPR(glm::##type, operator--, (void), glm::##type&), asCALL_THISCALL); \
 	engine->RegisterObjectMethod(#name, #name " opPostInc() const", asMETHODPR(glm::##type, operator++, (int32_t), glm::##type), asCALL_THISCALL); \
 	engine->RegisterObjectMethod(#name, #name " opPostDec() const", asMETHODPR(glm::##type, operator--, (int32_t), glm::##type), asCALL_THISCALL); \
-	engine->RegisterObjectMethod(#name, "float distance(const " #name "& in) const", asFUNCTION(GAFF_SINGLE_ARG(glm::distance<float, glm::highp, glm::t##type>)), asCALL_CDECL_OBJFIRST); \
-	engine->RegisterObjectMethod(#name, #name " reflect(const " #name "& in) const", asFUNCTION(GAFF_SINGLE_ARG(glm::reflect<float, glm::highp, glm::t##type>)), asCALL_CDECL_OBJFIRST); \
-	engine->RegisterObjectMethod(#name, #name " refract(const " #name "& in, float) const", asFUNCTION(GAFF_SINGLE_ARG(glm::refract<float, glm::highp, glm::t##type>)), asCALL_CDECL_OBJFIRST); \
-	engine->RegisterObjectMethod(#name, #name " abs() const", asFUNCTION(GAFF_SINGLE_ARG(glm::abs<float, glm::highp, glm::t##type>)), asCALL_CDECL_OBJFIRST); \
-	engine->RegisterObjectMethod(#name, #name " sign() const", asFUNCTION(GAFF_SINGLE_ARG(glm::sign<float, glm::highp, glm::t##type>)), asCALL_CDECL_OBJFIRST); \
-	engine->RegisterObjectMethod(#name, #name " floor() const", asFUNCTION(GAFF_SINGLE_ARG(glm::floor<float, glm::highp, glm::t##type>)), asCALL_CDECL_OBJFIRST); \
-	engine->RegisterObjectMethod(#name, #name " trunc() const", asFUNCTION(GAFF_SINGLE_ARG(glm::trunc<float, glm::highp, glm::t##type>)), asCALL_CDECL_OBJFIRST); \
-	engine->RegisterObjectMethod(#name, #name " round() const", asFUNCTION(GAFF_SINGLE_ARG(glm::round<float, glm::highp, glm::t##type>)), asCALL_CDECL_OBJFIRST); \
-	engine->RegisterObjectMethod(#name, #name " roundEven() const", asFUNCTION(GAFF_SINGLE_ARG(glm::roundEven<float, glm::highp, glm::t##type>)), asCALL_CDECL_OBJFIRST); \
-	engine->RegisterObjectMethod(#name, #name " ceil() const", asFUNCTION(GAFF_SINGLE_ARG(glm::ceil<float, glm::highp, glm::t##type>)), asCALL_CDECL_OBJFIRST); \
-	engine->RegisterObjectMethod(#name, #name " fract() const", asFUNCTION(GAFF_SINGLE_ARG(glm::fract<float, glm::highp, glm::t##type>)), asCALL_CDECL_OBJFIRST); \
-	engine->RegisterObjectMethod(#name, #name " min(const " #name "& in) const", asFUNCTIONPR(GAFF_SINGLE_ARG(glm::min<float, glm::highp, glm::t##type>), (const glm::##type&, const glm::##type&), glm::##type), asCALL_CDECL_OBJFIRST); \
-	engine->RegisterObjectMethod(#name, #name " min(float) const", asFUNCTIONPR(GAFF_SINGLE_ARG(glm::min<float, glm::highp, glm::t##type>), (const glm::##type&, float), glm::##type), asCALL_CDECL_OBJFIRST); \
-	engine->RegisterObjectMethod(#name, #name " max(const " #name "& in) const", asFUNCTIONPR(GAFF_SINGLE_ARG(glm::max<float, glm::highp, glm::t##type>), (const glm::##type&, const glm::##type&), glm::##type), asCALL_CDECL_OBJFIRST); \
-	engine->RegisterObjectMethod(#name, #name " max(float) const", asFUNCTIONPR(GAFF_SINGLE_ARG(glm::max<float, glm::highp, glm::t##type>), (const glm::##type&, float), glm::##type), asCALL_CDECL_OBJFIRST); \
-	engine->RegisterObjectMethod(#name, #name " clamp(const " #name "& in, const " #name "& in) const", asFUNCTIONPR(GAFF_SINGLE_ARG(glm::clamp<float, glm::highp, glm::t##type>), (const glm::##type&, const glm::##type&, const glm::##type&), glm::##type), asCALL_CDECL_OBJFIRST); \
-	engine->RegisterObjectMethod(#name, #name " clamp(float, float) const", asFUNCTIONPR(GAFF_SINGLE_ARG(glm::clamp<float, glm::highp, glm::t##type>), (const glm::##type&, float, float), glm::##type), asCALL_CDECL_OBJFIRST)
+	engine->RegisterObjectMethod(#name, "float distance(const " #name "& in) const", asFUNCTION(GAFF_SINGLE_ARG(glm::distance<vec_len, float, glm::highp>)), asCALL_CDECL_OBJFIRST); \
+	engine->RegisterObjectMethod(#name, #name " reflect(const " #name "& in) const", asFUNCTION(GAFF_SINGLE_ARG(glm::reflect<vec_len, float, glm::highp>)), asCALL_CDECL_OBJFIRST); \
+	engine->RegisterObjectMethod(#name, #name " refract(const " #name "& in, float) const", asFUNCTION(GAFF_SINGLE_ARG(glm::refract<vec_len, float, glm::highp>)), asCALL_CDECL_OBJFIRST); \
+	engine->RegisterObjectMethod(#name, #name " abs() const", asFUNCTION(GAFF_SINGLE_ARG(glm::abs<vec_len, float, glm::highp>)), asCALL_CDECL_OBJFIRST); \
+	engine->RegisterObjectMethod(#name, #name " sign() const", asFUNCTION(GAFF_SINGLE_ARG(glm::sign<vec_len, float, glm::highp>)), asCALL_CDECL_OBJFIRST); \
+	engine->RegisterObjectMethod(#name, #name " floor() const", asFUNCTION(GAFF_SINGLE_ARG(glm::floor<vec_len, float, glm::highp>)), asCALL_CDECL_OBJFIRST); \
+	engine->RegisterObjectMethod(#name, #name " trunc() const", asFUNCTION(GAFF_SINGLE_ARG(glm::trunc<vec_len, float, glm::highp>)), asCALL_CDECL_OBJFIRST); \
+	engine->RegisterObjectMethod(#name, #name " round() const", asFUNCTION(GAFF_SINGLE_ARG(glm::round<vec_len, float, glm::highp>)), asCALL_CDECL_OBJFIRST); \
+	engine->RegisterObjectMethod(#name, #name " roundEven() const", asFUNCTION(GAFF_SINGLE_ARG(glm::roundEven<vec_len, float, glm::highp>)), asCALL_CDECL_OBJFIRST); \
+	engine->RegisterObjectMethod(#name, #name " ceil() const", asFUNCTION(GAFF_SINGLE_ARG(glm::ceil<vec_len, float, glm::highp>)), asCALL_CDECL_OBJFIRST); \
+	engine->RegisterObjectMethod(#name, #name " fract() const", asFUNCTION(GAFF_SINGLE_ARG(glm::fract<vec_len, float, glm::highp>)), asCALL_CDECL_OBJFIRST); \
+	engine->RegisterObjectMethod(#name, #name " min(const " #name "& in) const", asFUNCTIONPR(GAFF_SINGLE_ARG(glm::min<vec_len, float, glm::highp>), (const glm::##type&, const glm::##type&), glm::##type), asCALL_CDECL_OBJFIRST); \
+	engine->RegisterObjectMethod(#name, #name " min(float) const", asFUNCTIONPR(GAFF_SINGLE_ARG(glm::min<vec_len, float, glm::highp>), (const glm::##type&, float), glm::##type), asCALL_CDECL_OBJFIRST); \
+	engine->RegisterObjectMethod(#name, #name " max(const " #name "& in) const", asFUNCTIONPR(GAFF_SINGLE_ARG(glm::max<vec_len, float, glm::highp>), (const glm::##type&, const glm::##type&), glm::##type), asCALL_CDECL_OBJFIRST); \
+	engine->RegisterObjectMethod(#name, #name " max(float) const", asFUNCTIONPR(GAFF_SINGLE_ARG(glm::max<vec_len, float, glm::highp>), (const glm::##type&, float), glm::##type), asCALL_CDECL_OBJFIRST); \
+	engine->RegisterObjectMethod(#name, #name " clamp(const " #name "& in, const " #name "& in) const", asFUNCTIONPR(GAFF_SINGLE_ARG(glm::clamp<vec_len, float, glm::highp>), (const glm::##type&, const glm::##type&, const glm::##type&), glm::##type), asCALL_CDECL_OBJFIRST); \
+	engine->RegisterObjectMethod(#name, #name " clamp(float, float) const", asFUNCTIONPR(GAFF_SINGLE_ARG(glm::clamp<vec_len, float, glm::highp>), (const glm::##type&, float, float), glm::##type), asCALL_CDECL_OBJFIRST); \
+	engine->RegisterObjectMethod(#name, "float dot(const " #name "& in) const", asFUNCTION(GAFF_SINGLE_ARG(glm::dot<vec_len, float, glm::highp>)), asCALL_CDECL_OBJFIRST); \
+	engine->RegisterObjectMethod(#name, #name " normalize(const " #name "& in) const", asFUNCTION(GAFF_SINGLE_ARG(glm::normalize<vec_len, float, glm::highp>)), asCALL_CDECL_OBJFIRST)
 
 #define REGISTER_BASE_VEC_TYPE(name, type) \
 	engine->RegisterObjectBehaviour(#name, asBEHAVE_CONSTRUCT, "void f()", asFUNCTION(Gaff::ConstructExact<glm::##type>), asCALL_CDECL_OBJFIRST); \
@@ -94,9 +97,7 @@ static_assert(false, "size_t is not 32 or 64-bits!");
 	engine->RegisterObjectMethod(#name, "bool opEquals(const " #name "& in) const", asFUNCTIONPR(glm::operator==, (const glm::##type&, const glm::##type&), bool), asCALL_CDECL_OBJFIRST); \
 	engine->RegisterObjectMethod(#name, "const float& opIndex(int32) const", asMETHODPR(glm::##type, operator[], (int32_t) const, const float&), asCALL_THISCALL); \
 	engine->RegisterObjectMethod(#name, "float& opIndex(int32)", asMETHODPR(glm::##type, operator[], (int32_t), float&), asCALL_THISCALL); \
-	engine->RegisterObjectMethod(#name, "float length() const", asFUNCTION(GAFF_SINGLE_ARG(glm::length<float, glm::highp, glm::t##type>)), asCALL_CDECL_OBJFIRST); \
-	engine->RegisterObjectMethod(#name, "float dot(const " #name "& in) const", asFUNCTION(GAFF_SINGLE_ARG(glm::dot<float, glm::highp, glm::t##type>)), asCALL_CDECL_OBJFIRST); \
-	engine->RegisterObjectMethod(#name, #name " normalize(const " #name "& in) const", asFUNCTION(GAFF_SINGLE_ARG(glm::normalize<float, glm::highp, glm::t##type>)), asCALL_CDECL_OBJFIRST)
+	engine->RegisterObjectMethod(#name, "int length() const", asFUNCTION(glm::##type::length), asCALL_CDECL)
 
 
 NS_SHIBBOLETH
@@ -262,7 +263,7 @@ void RegisterComponent(asIScriptEngine* engine)
 void RegisterMath(asIScriptEngine* engine)
 {
 	// Vec2
-	REGISTER_VEC(Vec2, vec2);
+	REGISTER_VEC(Vec2, vec2, 2);
 
 	engine->RegisterObjectBehaviour("Vec2", asBEHAVE_CONSTRUCT, "void f(float, float)", asFUNCTION(GAFF_SINGLE_ARG(Gaff::ConstructExact<glm::vec2, float, float>)), asCALL_CDECL_OBJFIRST);
 
@@ -274,7 +275,7 @@ void RegisterMath(asIScriptEngine* engine)
 	engine->RegisterObjectProperty("Vec2", "float t", asOFFSET(glm::vec2, t));
 
 	// Vec3
-	REGISTER_VEC(Vec3, vec3);
+	REGISTER_VEC(Vec3, vec3, 3);
 
 	engine->RegisterObjectBehaviour("Vec3", asBEHAVE_CONSTRUCT, "void f(float, float, float)", asFUNCTION(GAFF_SINGLE_ARG(Gaff::ConstructExact<glm::vec3, float, float, float>)), asCALL_CDECL_OBJFIRST);
 	engine->RegisterObjectBehaviour("Vec3", asBEHAVE_CONSTRUCT, "void f(const Vec2& in, float)", asFUNCTION(GAFF_SINGLE_ARG(Gaff::ConstructExact<glm::vec3, const glm::vec2&, float>)), asCALL_CDECL_OBJFIRST);
@@ -292,7 +293,7 @@ void RegisterMath(asIScriptEngine* engine)
 	engine->RegisterObjectProperty("Vec3", "float p", asOFFSET(glm::vec3, p));
 
 	// Vec4
-	REGISTER_VEC(Vec4, vec4);
+	REGISTER_VEC(Vec4, vec4, 4);
 
 	engine->RegisterObjectBehaviour("Vec4", asBEHAVE_CONSTRUCT, "void f(float, float, float, float)", asFUNCTION(GAFF_SINGLE_ARG(Gaff::ConstructExact<glm::vec4, float, float, float, float>)), asCALL_CDECL_OBJFIRST);
 	engine->RegisterObjectBehaviour("Vec4", asBEHAVE_CONSTRUCT, "void f(const Vec2& in, float, float)", asFUNCTION(GAFF_SINGLE_ARG(Gaff::ConstructExact<glm::vec4, const glm::vec2&, float, float>)), asCALL_CDECL_OBJFIRST);
@@ -313,6 +314,8 @@ void RegisterMath(asIScriptEngine* engine)
 
 	// Quaternion
 	REGISTER_BASE_VEC_TYPE(Quat, quat);
+	engine->RegisterObjectMethod("Quat", "float dot(const Quat& in) const", asFUNCTION(GAFF_SINGLE_ARG(glm::dot<float, glm::highp>)), asCALL_CDECL_OBJFIRST);
+	engine->RegisterObjectMethod("Quat", "Quat normalize(const Quat& in) const", asFUNCTION(GAFF_SINGLE_ARG(glm::normalize<float, glm::highp>)), asCALL_CDECL_OBJFIRST);
 
 	engine->RegisterGlobalFunction("Quat FromAxisAngle(const float& in, const Vec3& in)", asFUNCTION(GAFF_SINGLE_ARG(glm::angleAxis<float, glm::highp>)), asCALL_CDECL);
 	engine->RegisterObjectBehaviour("Quat", asBEHAVE_CONSTRUCT, "void f(float, float, float, float)", asFUNCTION(GAFF_SINGLE_ARG(Gaff::ConstructExact<glm::quat, float, float, float, float>)), asCALL_CDECL_OBJFIRST);

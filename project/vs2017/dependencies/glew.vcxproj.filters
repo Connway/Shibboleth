@@ -12,6 +12,9 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\..\dependencies\glew\include\GL\eglew.h">
+      <Filter>include\GL</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\dependencies\glew\include\GL\glew.h">
       <Filter>include\GL</Filter>
     </ClInclude>
