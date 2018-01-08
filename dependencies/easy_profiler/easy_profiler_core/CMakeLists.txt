@@ -15,6 +15,10 @@ if (NOT WIN32)
         if (CMAKE_CXX_COMPILER_VERSION VERSION_LESS "3.3")
             set(NO_CXX11_THREAD_LOCAL_SUPPORT TRUE)
         endif ()
+    elseif (CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang")
+        if (CMAKE_CXX_COMPILER_VERSION VERSION_LESS "8.0")
+            set(NO_CXX11_THREAD_LOCAL_SUPPORT TRUE)
+        endif ()
     endif ()
     
     # TODO: Check thread_local keyword support for other compilers for Unix
@@ -161,7 +165,7 @@ target_compile_definitions(easy_profiler PRIVATE
     -D_BUILD_PROFILER=1
     #-DEASY_PROFILER_API_DISABLED # uncomment this to disable profiler api only (you will have to rebuild only easy_profiler)
 )
-if (EASY_OPTION_LIB_STATIC)
+if (NOT BUILD_SHARED_LIBS)
     target_compile_definitions(easy_profiler PUBLIC -DEASY_PROFILER_STATIC=1)
 endif ()
 target_compile_definitions(easy_profiler PUBLIC

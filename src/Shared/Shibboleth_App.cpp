@@ -399,6 +399,7 @@ void App::removeExtraLogs(void)
 void App::run(void)
 {
 	while (_running) {
+		uv_run(uv_default_loop(), UV_RUN_NOWAIT);
 		_broadcaster.update();
 		_main_loop();
 	}

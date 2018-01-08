@@ -135,7 +135,7 @@ void bar() {
 ```
 ## Collect blocks
 
-There are two ways to cature blocks
+There are two ways to capture blocks
 
 ### Collect via network
 
@@ -169,6 +169,8 @@ To capture a thread context-switch event you need:
 #stap -o /tmp/cs_profiling_info.log scripts/context_switch_logger.stp name APPLICATION_NAME
 ```
 APPLICATION_NAME - name of profiling application
+
+There are some known issues on a linux based systems (for more information see [wiki](https://github.com/yse/easy_profiler/wiki/Known-bugs-and-issues))
 
 # Build
 
