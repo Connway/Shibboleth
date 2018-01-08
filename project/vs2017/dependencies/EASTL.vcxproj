@@ -240,6 +240,7 @@
     <ClInclude Include="..\..\..\dependencies\EASTL\include\EABase\eahave.h" />
     <ClInclude Include="..\..\..\dependencies\EASTL\include\EABase\earesult.h" />
     <ClInclude Include="..\..\..\dependencies\EASTL\include\EABase\eastdarg.h" />
+    <ClInclude Include="..\..\..\dependencies\EASTL\include\EABase\eaunits.h" />
     <ClInclude Include="..\..\..\dependencies\EASTL\include\EABase\nullptr.h" />
     <ClInclude Include="..\..\..\dependencies\EASTL\include\EABase\version.h" />
     <ClInclude Include="..\..\..\dependencies\EASTL\include\EASTL\algorithm.h" />
