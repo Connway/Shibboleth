@@ -52,13 +52,13 @@ void PrefabResource::load(void)
 	}
 
 	if (Gaff::File::CheckExtension(getFilePath().getBuffer(), ".bin")) {
-		if (!loadMPack(file)) {
+		if (!loadMPack(file, allocator)) {
 			SHIB_FREET(_prefab, allocator);
 			_state = RS_FAILED;
 			_prefab = nullptr;
 		}
 	} else {
-		if (!loadJSON(file)) {
+		if (!loadJSON(file, allocator)) {
 			SHIB_FREET(_prefab, allocator);
 			_state = RS_FAILED;
 			_prefab = nullptr;
@@ -73,7 +73,7 @@ const Object* PrefabResource::getPrefab(void) const
 	return _prefab;
 }
 
-bool PrefabResource::loadJSON(IFile* file)
+bool PrefabResource::loadJSON(IFile* file, const ProxyAllocator& allocator)
 {
 	Gaff::JSON json;
 	
@@ -82,11 +82,11 @@ bool PrefabResource::loadJSON(IFile* file)
 		return false;
 	}
 
-	Gaff::SerializeReader<Gaff::JSON, ProxyAllocator> reader(json, ProxyAllocator());
+	auto reader = Gaff::MakeSerializeReader(json, allocator);
 	return _prefab->load(reader);
 }
 
-bool PrefabResource::loadMPack(IFile* file)
+bool PrefabResource::loadMPack(IFile* file, const ProxyAllocator& allocator)
 {
 	Gaff::MessagePackReader mpack;
 
@@ -95,7 +95,7 @@ bool PrefabResource::loadMPack(IFile* file)
 		return false;
 	}
 
-	Gaff::SerializeReader<Gaff::MessagePackNode, ProxyAllocator> reader(mpack.getRoot(), ProxyAllocator());
+	auto reader = Gaff::MakeSerializeReader(mpack.getRoot(), allocator);
 	return _prefab->load(reader);
 }
 

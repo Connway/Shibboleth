@@ -126,7 +126,7 @@ IResourcePtr ResourceManager::requestResource(Gaff::HashStringTemp64 name)
 	return res_ptr;
 }
 
-void ResourceManager::waitForResource(IResource& resource)
+void ResourceManager::waitForResource(const IResource& resource) const
 {
 	while (resource._state == IResource::RS_PENDING) {
 		// Help out.

@@ -198,7 +198,7 @@ struct PushObjectHelper<false, false>
 template <class T>
 const T& AngelScriptComponent::getProperty(const char* name) const
 {
-	return AngelScriptComponent::getProperty<T>(Gaff::FNV1aHash32String(name));
+	return getProperty<T>(Gaff::FNV1aHash32String(name));
 }
 
 template <class T>
@@ -222,7 +222,7 @@ const T& AngelScriptComponent::getProperty(int32_t) const
 template <class T>
 T& AngelScriptComponent::getProperty(const char* name)
 {
-	return AngelScriptComponent::getProperty<T>(Gaff::FNV1aHash32String(name));
+	return getProperty<T>(Gaff::FNV1aHash32String(name));
 }
 
 template <class T>
@@ -235,7 +235,7 @@ T& AngelScriptComponent::getProperty(Gaff::Hash32 name)
 }
 
 template <class T>
-T& AngelScriptComponent::getProperty(int32_t)
+T& AngelScriptComponent::getProperty(int32_t index)
 {
 	GAFF_ASSERT(index < static_cast<int32_t>(_property_map.size()));
 	auto it = _property_map.begin() + index;

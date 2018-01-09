@@ -174,7 +174,7 @@ static void GetComponentFromObject(asIScriptGeneric* generic)
 	} else {
 		const char* const name = type_info->GetName();
 		const Gaff::Hash64 class_hash = Gaff::FNV1aHash64String(name);
-		*out = object->getFirstComponentWithInterface(class_hash);
+		*out = object->getComponent(class_hash);
 	}
 }
 

@@ -21,7 +21,6 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Shibboleth_Object.h"
-//#include <Shibboleth_IComponentManager.h>
 //#include <Shibboleth_IObjectManager.h>
 #include <Shibboleth_IFileSystem.h>
 #include <Shibboleth_Utilities.h>
@@ -31,13 +30,15 @@ THE SOFTWARE.
 #include <Gaff_ScopedLock.h>
 #include <Gaff_Utils.h>
 
-#define OBJ_DIRTY (1 << 0)
-#define OBJ_IN_WORLD (1 << 1)
-
 NS_SHIBBOLETH
 
+enum ObjectFlags
+{
+	OF_DIRTY = (1 << 0),
+	OF_IN_WORLD = (1 << 1)
+};
+
 Object::Object(int32_t id):
-	//_comp_mgr(GetApp().getManagerT<IComponentManager>()),
 	//_obj_mgr(GetApp().getManagerT<IObjectManager>()),
 	_parent(nullptr), _id(id), _flags(0)
 {
@@ -56,7 +57,7 @@ bool Object::load(const Gaff::ISerializeReader& reader)
 		GAFF_REF(guard);
 
 		if (!reader.isString()) {
-			// log error
+			// TODO: log error
 			return false;
 		}
 
@@ -70,7 +71,7 @@ bool Object::load(const Gaff::ISerializeReader& reader)
 		GAFF_REF(guard);
 
 		if (!reader.isObject()) {
-			// log error
+			// TODO: log error
 			return false;
 		}
 
@@ -83,7 +84,7 @@ bool Object::load(const Gaff::ISerializeReader& reader)
 		}
 
 		// Start off object as dirty
-		Gaff::SetBits<int32_t>(_flags, OBJ_DIRTY);
+		Gaff::SetBits<int32_t>(_flags, OF_DIRTY);
 	}
 
 	return true;
@@ -286,6 +287,65 @@ Component* Object::getComponent(int32_t index)
 	return _components[index];
 }
 
+const void* Object::getComponent(Gaff::Hash64 class_id) const
+{
+	for (const Component* const component : _components) {
+		const void* const interface = component->getReflectionDefinition().getInterface(class_id, component->getBasePointer());
+
+		if (interface) {
+			return interface;
+		}
+	}
+
+	return nullptr;
+}
+
+void* Object::getComponent(Gaff::Hash64 class_id)
+{
+	const void* const interface = const_cast<const Object*>(this)->getComponent(class_id);
+	return const_cast<void*>(interface);
+}
+
+Vector<const void*> Object::getComponents(Gaff::Hash64 class_id) const
+{
+	Vector<const void*> components;
+	getComponents(class_id, components);
+	return components;
+}
+
+Vector<void*> Object::getComponents(Gaff::Hash64 class_id)
+{
+	Vector<void*> components;
+	getComponents(class_id, components);
+	return components;
+}
+
+Vector<const void*>& Object::getComponents(Gaff::Hash64 class_id, Vector<const void*>& components) const
+{
+	for (const Component* const component : _components) {
+		const void* const interface = component->getReflectionDefinition().getInterface(class_id, component->getBasePointer());
+
+		if (interface) {
+			components.push_back(interface);
+		}
+	}
+
+	return components;
+}
+
+Vector<void*>& Object::getComponents(Gaff::Hash64 class_id, Vector<void*>& components)
+{
+	for (Component* const component : _components) {
+		void* const interface = component->getReflectionDefinition().getInterface(class_id, component->getBasePointer());
+
+		if (interface) {
+			components.push_back(interface);
+		}
+	}
+
+	return components;
+}
+
 const Vector<Component*>& Object::getComponents(void) const
 {
 	return _components;
@@ -296,49 +356,46 @@ Vector<Component*>& Object::getComponents(void)
 	return _components;
 }
 
-const void* Object::getFirstComponentWithInterface(Gaff::Hash64 /*class_id*/) const
+void Object::addComponent(Component* component)
 {
-	//for (auto it = _components.begin(); it != _components.end(); ++it) {
-	//	const void* component = (*it)->rawRequestInterface(class_id);
+	component->setOwner(this);
+	component->setIndex(_components.size());
+	_components.emplace_back(component);
 
-	//	if (component) {
-	//		return component;
-	//	}
-	//}
-
-	return nullptr;
+	if (isInWorld()) {
+		component->onAddToWorld();
+	}
 }
 
-
-void* Object::getFirstComponentWithInterface(Gaff::Hash64 /*class_id*/)
+void Object::removeComponent(Component* component, bool destroy)
 {
-	//for (auto it = _components.begin(); it != _components.end(); ++it) {
-	//	void* component = (*it)->rawRequestInterface(class_id);
+	component->setOwner(nullptr);
+	component->setIndex(static_cast<size_t>(-1));
+	_components.erase_unsorted(eastl::find(_components.begin(), _components.end(), component));
 
-	//	if (component) {
-	//		return component;
-	//	}
-	//}
+	if (isInWorld()) {
+		component->onRemoveFromWorld();
+	}
 
-	return nullptr;
+	if (destroy) {
+		SHIB_FREET(component, *GetAllocator());
+	}
 }
 
 void Object::addChild(Object* object)
 {
-	Gaff::ScopedLock<Gaff::SpinLock> scoped_lock(_children_lock);
+	//Gaff::ScopedLock<Gaff::SpinLock> scoped_lock(_children_lock);
 	_children.emplace_back(object);
 	object->_parent = this;
 }
 
 void Object::removeFromParent(void)
 {
-	{
-		Gaff::ScopedLock<Gaff::SpinLock> scoped_lock(_parent->_children_lock);
-		auto it = eastl::find(_parent->_children.begin(), _parent->_children.end(), this);
+	//Gaff::ScopedLock<Gaff::SpinLock> scoped_lock(_parent->_children_lock);
+	auto it = eastl::find(_parent->_children.begin(), _parent->_children.end(), this);
 
-		if (it != _parent->_children.end()) {
-			_parent->_children.erase_unsorted(it);
-		}
+	if (it != _parent->_children.end()) {
+		_parent->_children.erase_unsorted(it);
 	}
 
 	_parent = nullptr;
@@ -346,7 +403,7 @@ void Object::removeFromParent(void)
 
 void Object::removeChildren(void)
 {
-	Gaff::ScopedLock<Gaff::SpinLock> scoped_lock(_children_lock);
+	//Gaff::ScopedLock<Gaff::SpinLock> scoped_lock(_children_lock);
 
 	 for (auto it = _children.begin(); it != _children.end(); ++it) {
 		 (*it)->_parent = nullptr;
@@ -453,17 +510,17 @@ void Object::notifyWorldDirtyCallbacks(void)
 
 bool Object::isDirty(void) const
 {
-	return Gaff::IsAnyBitSet<int32_t>(_flags, OBJ_DIRTY);
+	return Gaff::IsAnyBitSet<int32_t>(_flags, OF_DIRTY);
 }
 
 void Object::clearDirty(void)
 {
-	Gaff::ClearBits<int32_t>(_flags, OBJ_DIRTY);
+	Gaff::ClearBits<int32_t>(_flags, OF_DIRTY);
 }
 
 bool Object::isInWorld(void) const
 {
-	return Gaff::IsAnyBitSet<int32_t>(_flags, OBJ_IN_WORLD);
+	return Gaff::IsAnyBitSet<int32_t>(_flags, OF_IN_WORLD);
 }
 
 void Object::addToWorld(void)
@@ -472,7 +529,7 @@ void Object::addToWorld(void)
 		(*it)->onAddToWorld();
 	}
 
-	Gaff::SetBits<int32_t>(_flags, OBJ_IN_WORLD);
+	Gaff::SetBits<int32_t>(_flags, OF_IN_WORLD);
 }
 
 void Object::removeFromWorld(void)
@@ -481,7 +538,7 @@ void Object::removeFromWorld(void)
 		(*it)->onRemoveFromWorld();
 	}
 
-	Gaff::ClearBits<int32_t>(_flags, OBJ_IN_WORLD);
+	Gaff::ClearBits<int32_t>(_flags, OF_IN_WORLD);
 }
 
 bool Object::createComponents(const Gaff::ISerializeReader& reader)
@@ -491,7 +548,7 @@ bool Object::createComponents(const Gaff::ISerializeReader& reader)
 	const bool error = reader.forEachInObject([&](const char* key) -> bool
 	{
 		if (!reader.isObject()) {
-			// log error
+			// TODO: log error
 			return true;
 		}
 
@@ -502,7 +559,7 @@ bool Object::createComponents(const Gaff::ISerializeReader& reader)
 			char type[128] = {};
 
 			if (!reader.isString()) {
-				// log error
+				// TODO: log error
 				return true;
 			}
 
@@ -514,7 +571,7 @@ bool Object::createComponents(const Gaff::ISerializeReader& reader)
 		const Gaff::IReflectionDefinition* const ref_def = Shibboleth::GetApp().getReflection(name);
 
 		if (!ref_def) {
-			// log error
+			// TODO: log error
 			return false;
 		}
 
@@ -522,7 +579,7 @@ bool Object::createComponents(const Gaff::ISerializeReader& reader)
 		Component* const component = ref_def->CREATEALLOCT(Component, allocator);
 
 		if (!component) {
-			// log error
+			// TODO: log error
 			return true;
 		}
 
@@ -531,7 +588,7 @@ bool Object::createComponents(const Gaff::ISerializeReader& reader)
 		component->setIndex(_components.size());
 
 		//if (!component->validate(value)) {
-		//	// log error
+		//	// TODO: log error
 		//	return false;
 		//}
 
@@ -547,7 +604,7 @@ bool Object::createComponents(const Gaff::ISerializeReader& reader)
 void Object::markDirty(void)
 {
 	if (!isDirty()) {
-		Gaff::SetBits<int32_t>(_flags, OBJ_DIRTY);
+		Gaff::SetBits<int32_t>(_flags, OF_DIRTY);
 		//_obj_mgr.addDirtyObject(this);
 	}
 }
