@@ -48,42 +48,35 @@ public:
 	template <class T>
 	const T* getComponent(void) const
 	{
-		for (const Component* const component : _components) {
-			const T* const interface = Gaff::ReflectionCast<T>(*component);
-
-			if (interface) {
-				return interface;
-			}
-		}
-
-		return nullptr;
+		const void* const interface = getComponent(Reflection<T>::GetHash());
+		return reinterpret_cast<const T*>(interface);
 	}
 
 	template <class T>
 	T* getComponent(void)
 	{
-		const T* const interface = const_cast<const Object*>(this)->getComponent<T>();
-		return const_cast<T*>(interface);
+		void* const interface = getComponent(Reflection<T>::GetHash());
+		return reinterpret_cast<T*>(interface);
 	}
 
 	template <class T>
-	Vector<const T*> getAllComponents(void) const
+	Vector<const T*> getComponents(void) const
 	{
 		Vector<const T*> components;
-		getAllComponents(components);
+		getComponents(components);
 		return components;
 	}
 
 	template <class T>
-	Vector<T*> getAllComponents(void)
+	Vector<T*> getComponents(void)
 	{
 		Vector<T*> components;
-		getAllComponents(components);
+		getComponents(components);
 		return components;
 	}
 
 	template <class T>
-	Vector<const T*>& getAllComponents(Vector<const T*>& components) const
+	Vector<const T*>& getComponents(Vector<const T*>& components) const
 	{
 		for (const Component* const component : _components) {
 			const T* const interface = Gaff::ReflectionCast<T>(component);
@@ -97,7 +90,7 @@ public:
 	}
 
 	template <class T>
-	Vector<T*>& getAllComponents(Vector<T*>& components)
+	Vector<T*>& getComponents(Vector<T*>& components)
 	{
 		for (const Component* const component : _components) {
 			T* const interface = ReflectionCast<T>(*it);
@@ -108,6 +101,20 @@ public:
 		}
 
 		return components;
+	}
+
+	template <class T, class... Args>
+	T* addComponent(Args&&... args)
+	{
+		T* const component = Reflection<T>::GetReflectionDefinition().create(std::forward<Args>(args)...);
+
+		if (!component) {
+			// TODO: log error
+			return nullptr;
+		}
+
+		addComponent(component);
+		return component;
 	}
 
 	using DirtyCallback = Gaff::FunctionBinder<void, Object*, uint64_t>;
@@ -148,14 +155,18 @@ public:
 	int32_t getNumComponents(void) const;
 	const Component* getComponent(int32_t index) const;
 	Component* getComponent(int32_t index);
+	const void* getComponent(Gaff::Hash64 class_id) const;
+	void* getComponent(Gaff::Hash64 class_id);
+
+	Vector<const void*> getComponents(Gaff::Hash64 class_id) const;
+	Vector<void*> getComponents(Gaff::Hash64 class_id);
+	Vector<const void*>& getComponents(Gaff::Hash64 class_id, Vector<const void*>& components) const;
+	Vector<void*>& getComponents(Gaff::Hash64 class_id, Vector<void*>& components);
 	const Vector<Component*>& getComponents(void) const;
 	Vector<Component*>& getComponents(void);
 
-	//void addComponent(Component* component);
-	//void removeComponent(Component* component);
-
-	const void* getFirstComponentWithInterface(Gaff::Hash64 class_id) const;
-	void* getFirstComponentWithInterface(Gaff::Hash64 class_id);
+	void addComponent(Component* component);
+	void removeComponent(Component* component, bool destroy = false);
 
 	void addChild(Object* object);
 	void removeFromParent(void);
@@ -189,7 +200,7 @@ private:
 	Gaff::SpinLock _world_cb_lock;
 
 	Vector<Object*> _children;
-	Gaff::SpinLock _children_lock;
+	//Gaff::SpinLock _children_lock;
 	Object* _parent;
 
 	HashString64 _name;

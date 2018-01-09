@@ -115,4 +115,10 @@ private:
 	mutable Vector<Node, Allocator> _stack;
 };
 
+template <class Node, class Allocator = DefaultAllocator>
+SerializeReader<Node, Allocator> MakeSerializeReader(const Node& node, const Allocator& allocator = Allocator())
+{
+	return Gaff::SerializeReader<Node, Allocator>(node, allocator);
+}
+
 NS_END

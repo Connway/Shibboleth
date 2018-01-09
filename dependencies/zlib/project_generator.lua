@@ -9,6 +9,8 @@ project "zlib"
 
 	files { "**.h", "**.c" }
 
+	defines { "Z_LARGE64" }
+
 	filter { "action:vs*" }
 		defines { "_CRT_SECURE_NO_WARNINGS" }
 

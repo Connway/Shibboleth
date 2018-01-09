@@ -63,7 +63,7 @@ public:
 
 	IResourcePtr requestResource(Gaff::HashStringTemp64 name);
 
-	void waitForResource(IResource& resource);
+	void waitForResource(const IResource& resource) const;
 
 private:
 	using FactoryFunc = void* (*)(Gaff::IAllocator&);

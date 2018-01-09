@@ -171,21 +171,15 @@ void MainLoop::update(void)
 	Gaff::JSON json;
 	json.parseFile("Resources/Objects/test2.object");
 
-	Gaff::SerializeReader<Gaff::JSON, Shibboleth::ProxyAllocator> reader(json, Shibboleth::ProxyAllocator());
-	Object object(0);
+	auto reader = Gaff::MakeSerializeReader(json, Shibboleth::ProxyAllocator());
+	Object object(-1);
 
 	object.load(reader);
 
 	AngelScriptComponent& asc = *object.getComponent<AngelScriptComponent>();
-
-	//AngelScriptResourcePtr script_res = GetApp().getManagerTUnsafe<ResourceManager>().requestResourceT<AngelScriptResource>("TestScript.as");
-	//GetApp().getManagerTUnsafe<ResourceManager>().waitForResource(*script_res);
-
-	//AngelScriptComponent asc;
-	//asc.setScript(script_res);
+	GetApp().getManagerTUnsafe<ResourceManager>().waitForResource(*asc.getScript());
 
 	int32_t& a = asc.getProperty<int32_t>("a");
-	GAFF_REF(a);
 
 	asc.prepareMethod("testFunc");
 	asc.callMethod();

@@ -37,8 +37,8 @@ public:
 private:
 	Object* _prefab = nullptr;
 
-	bool loadJSON(IFile* file);
-	bool loadMPack(IFile* file);
+	bool loadJSON(IFile* file, const ProxyAllocator& allocator);
+	bool loadMPack(IFile* file, const ProxyAllocator& allocator);
 
 	SHIB_REFLECTION_CLASS_DECLARE(PrefabResource);
 };
