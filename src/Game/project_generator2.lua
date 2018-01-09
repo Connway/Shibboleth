@@ -37,5 +37,3 @@ project "Game"
 		"../../dependencies/EASTL/include",
 		"../../dependencies/glm"
 	}
-
-	dofile("../../utils/os_conditionals.lua")

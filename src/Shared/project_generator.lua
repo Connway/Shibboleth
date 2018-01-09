@@ -35,5 +35,3 @@ project "Shared"
 		"../../dependencies/glm",
 		"../../dependencies/libuv/include"
 		}
-
-	dofile("../../utils/os_conditionals.lua")

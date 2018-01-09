@@ -35,8 +35,6 @@ project "Components"
 		"../../dependencies/bullet"
 	}
 
-	dofile("../../utils/os_conditionals.lua")
-
 project "ComponentsModule"
 	if _ACTION then
 		location ("../../project/" .. _ACTION .. "/components")
@@ -98,5 +96,3 @@ project "ComponentsModule"
 		"BulletDynamics",
 		"LinearMath"
 	}
-
-	dofile("../../utils/os_conditionals.lua")

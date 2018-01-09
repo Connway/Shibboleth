@@ -33,7 +33,7 @@ public:
 	Object& getRoot(void);
 
 private:
-	Object _root;
+	Object* _root;
 };
 
 NS_END

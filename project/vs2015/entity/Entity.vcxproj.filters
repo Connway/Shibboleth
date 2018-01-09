@@ -15,9 +15,13 @@
     <ClInclude Include="..\..\..\src\Modules\Entity\include\Shibboleth_Object.h">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\src\Modules\Entity\include\Shibboleth_PrefabResource.h">
+      <Filter>include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\src\Modules\Entity\Shibboleth_Component.cpp" />
     <ClCompile Include="..\..\..\src\Modules\Entity\Shibboleth_Object.cpp" />
+    <ClCompile Include="..\..\..\src\Modules\Entity\Shibboleth_PrefabResource.cpp" />
   </ItemGroup>
 </Project>

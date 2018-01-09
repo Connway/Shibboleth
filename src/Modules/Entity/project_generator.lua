@@ -26,8 +26,10 @@ project "Entity"
 		"../../../dependencies/rapidjson",
 		"../../../dependencies/glm",
 		"../../../dependencies/libuv/include",
+		"../../../dependencies/mpack",
 		"../../../frameworks/Gaff/include",
-		"../../../frameworks/Gleam/include"
+		"../../../frameworks/Gleam/include",
+		"../Resource/include"
 	}
 
 
@@ -59,28 +61,28 @@ project "EntityModule"
 		"../../Shared/include",
 		"../../../dependencies/EASTL/include",
 		"../../../dependencies/rapidjson",
+		"../../../dependencies/glm",
 		"../../../dependencies/libuv/include",
-		"../../../frameworks/Gaff/include"
+		"../../../dependencies/mpack",
+		"../../../frameworks/Gaff/include",
+		"../../../frameworks/Gleam/include",
+		"../Resource/include"
 	}
 
-	dependson
+	local dependencies =
 	{
 		"Memory",
 		"Gaff",
+		"Gleam",
 		"Shared",
 		"EASTL",
 		"libuv",
-		"Entity"
+		"Entity",
+		"Resource",
+		"mpack"
 	}
 
-	links
-	{
-		"Memory",
-		"Gaff",
-		"Shared",
-		"EASTL",
-		"libuv",
-		"Entity"
-	}
+	dependson(dependencies)
+	links(dependencies)
 
-
+	NewDeleteLinkFix()

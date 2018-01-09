@@ -20,18 +20,31 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#include "Shibboleth_Layer.h"
+#pragma once
+
+#include "Shibboleth_Object.h"
+#include <Shibboleth_IResource.h>
 
 NS_SHIBBOLETH
 
-const Object& Layer::getRoot(void) const
+class PrefabResource : public IResource
 {
-	return *_root;
-}
+public:
+	void load(void) override;
 
-Object& Layer::getRoot(void)
-{
-	return *_root;
-}
+	const Object* getPrefab(void) const;
+
+private:
+	Object* _prefab = nullptr;
+
+	bool loadJSON(IFile* file);
+	bool loadMPack(IFile* file);
+
+	SHIB_REFLECTION_CLASS_DECLARE(PrefabResource);
+};
+
+using PrefabResourcePtr = Gaff::RefPtr<PrefabResource>;
 
 NS_END
+
+SHIB_REFLECTION_DECLARE(PrefabResource)

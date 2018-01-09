@@ -53,8 +53,6 @@ project "App"
 
 	filter {}
 
-	dofile("../../../utils/os_conditionals.lua")
-
 	postbuildcommands
 	{
 		"{COPY} %{cfg.targetdir}/%{cfg.buildtarget.name} ../../../workingdir/App"

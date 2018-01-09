@@ -31,7 +31,7 @@ parser.add_argument("--copyright", type = argparse.FileType("r"), required = Fal
 args = parser.parse_args()
 
 mit_license = """/************************************************************************************
-Copyright (C) 2016 by {0}
+Copyright (C) 2018 by {0}
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal

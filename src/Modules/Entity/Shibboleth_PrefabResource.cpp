@@ -1,0 +1,102 @@
+/************************************************************************************
+Copyright (C) 2017 by Nicholas LaCroix
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+************************************************************************************/
+
+#include "Shibboleth_PrefabResource.h"
+#include <Shibboleth_ResourceExtensionAttribute.h>
+#include <Shibboleth_IFileSystem.h>
+#include <Gaff_SerializeReader.h>
+#include <Gaff_MessagePack.h>
+#include <Gaff_JSON.h>
+#include <Gaff_File.h>
+
+SHIB_REFLECTION_DEFINE(PrefabResource)
+
+NS_SHIBBOLETH
+
+SHIB_REFLECTION_CLASS_DEFINE_BEGIN(PrefabResource)
+	.classAttrs(ResExtAttribute(".prefab"), ResExtAttribute(".prefab.bin"))
+	.BASE(IResource)
+	.ctor<>()
+SHIB_REFLECTION_CLASS_DEFINE_END(PrefabResource)
+
+void PrefabResource::load(void)
+{
+	ProxyAllocator allocator("Resource");
+	_prefab = SHIB_ALLOCT(Object, allocator, -1);
+
+	IFile* const file = loadFile(getFilePath().getBuffer());
+
+	if (!file) {
+		// TODO: log error
+		callCallbacks();
+		return;
+	}
+
+	if (Gaff::File::CheckExtension(getFilePath().getBuffer(), ".bin")) {
+		if (!loadMPack(file)) {
+			SHIB_FREET(_prefab, allocator);
+			_state = RS_FAILED;
+			_prefab = nullptr;
+		}
+	} else {
+		if (!loadJSON(file)) {
+			SHIB_FREET(_prefab, allocator);
+			_state = RS_FAILED;
+			_prefab = nullptr;
+		}
+	}
+
+	callCallbacks();
+}
+
+const Object* PrefabResource::getPrefab(void) const
+{
+	return _prefab;
+}
+
+bool PrefabResource::loadJSON(IFile* file)
+{
+	Gaff::JSON json;
+	
+	if (!json.parse(file->getBuffer())) {
+		// TODO: Log error
+		return false;
+	}
+
+	Gaff::SerializeReader<Gaff::JSON, ProxyAllocator> reader(json, ProxyAllocator());
+	return _prefab->load(reader);
+}
+
+bool PrefabResource::loadMPack(IFile* file)
+{
+	Gaff::MessagePackReader mpack;
+
+	if (!mpack.parse(file->getBuffer(), file->size())) {
+		// TODO: Log error
+		return false;
+	}
+
+	Gaff::SerializeReader<Gaff::MessagePackNode, ProxyAllocator> reader(mpack.getRoot(), ProxyAllocator());
+	return _prefab->load(reader);
+}
+
+NS_END

@@ -20,13 +20,15 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
+#include "Gen_ReflectionInit.h"
 #include <Shibboleth_Utilities.h>
 #include <Shibboleth_IApp.h>
-#include "Gen_ReflectionInit.h"
+#include <Gaff_MessagePack.h>
 
 DYNAMICEXPORT_C bool InitModule(Shibboleth::IApp* app)
 {
 	app->registerTypeBucket(Gaff::FNV1aHash64Const("Component"));
+	Gaff::MessagePackSetMemoryFunctions(Shibboleth::ShibbolethAllocate, Shibboleth::ShibbolethFree);
 	Shibboleth::SetApp(*app);
 	Gen::InitReflection();
 	return true;
