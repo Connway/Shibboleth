@@ -139,7 +139,8 @@
       <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
     </Link>
     <PostBuildEvent>
-      <Command>IF EXIST ..\..\..\build\vs2017\output\x64\Debug\$(TargetFileName)\ (xcopy /Q /E /Y /I ..\..\..\build\vs2017\output\x64\Debug\$(TargetFileName) ..\..\..\workingdir\App\bin &gt; nul) ELSE (xcopy /Q /Y /I ..\..\..\build\vs2017\output\x64\Debug\$(TargetFileName) ..\..\..\workingdir\App\bin &gt; nul)</Command>
+      <Command>IF NOT EXIST ..\..\..\workingdir\App\bin (mkdir ..\..\..\workingdir\App\bin)
+IF EXIST ..\..\..\build\vs2017\output\x64\Debug\$(TargetFileName)\ (xcopy /Q /E /Y /I ..\..\..\build\vs2017\output\x64\Debug\$(TargetFileName) ..\..\..\workingdir\App\bin &gt; nul) ELSE (xcopy /Q /Y /I ..\..\..\build\vs2017\output\x64\Debug\$(TargetFileName) ..\..\..\workingdir\App\bin &gt; nul)</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -170,7 +171,8 @@
       <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
     </Link>
     <PostBuildEvent>
-      <Command>IF EXIST ..\..\..\build\vs2017\output\x64\Release\$(TargetFileName)\ (xcopy /Q /E /Y /I ..\..\..\build\vs2017\output\x64\Release\$(TargetFileName) ..\..\..\workingdir\App\bin &gt; nul) ELSE (xcopy /Q /Y /I ..\..\..\build\vs2017\output\x64\Release\$(TargetFileName) ..\..\..\workingdir\App\bin &gt; nul)</Command>
+      <Command>IF NOT EXIST ..\..\..\workingdir\App\bin (mkdir ..\..\..\workingdir\App\bin)
+IF EXIST ..\..\..\build\vs2017\output\x64\Release\$(TargetFileName)\ (xcopy /Q /E /Y /I ..\..\..\build\vs2017\output\x64\Release\$(TargetFileName) ..\..\..\workingdir\App\bin &gt; nul) ELSE (xcopy /Q /Y /I ..\..\..\build\vs2017\output\x64\Release\$(TargetFileName) ..\..\..\workingdir\App\bin &gt; nul)</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Analyze|x64'">
@@ -199,7 +201,8 @@
       <ImportLibrary>..\..\..\build\vs2017\output\x64\Analyze\Memory64a.lib</ImportLibrary>
     </Link>
     <PostBuildEvent>
-      <Command>IF EXIST ..\..\..\build\vs2017\output\x64\Analyze\$(TargetFileName)\ (xcopy /Q /E /Y /I ..\..\..\build\vs2017\output\x64\Analyze\$(TargetFileName) ..\..\..\workingdir\App\bin &gt; nul) ELSE (xcopy /Q /Y /I ..\..\..\build\vs2017\output\x64\Analyze\$(TargetFileName) ..\..\..\workingdir\App\bin &gt; nul)</Command>
+      <Command>IF NOT EXIST ..\..\..\workingdir\App\bin (mkdir ..\..\..\workingdir\App\bin)
+IF EXIST ..\..\..\build\vs2017\output\x64\Analyze\$(TargetFileName)\ (xcopy /Q /E /Y /I ..\..\..\build\vs2017\output\x64\Analyze\$(TargetFileName) ..\..\..\workingdir\App\bin &gt; nul) ELSE (xcopy /Q /Y /I ..\..\..\build\vs2017\output\x64\Analyze\$(TargetFileName) ..\..\..\workingdir\App\bin &gt; nul)</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">
@@ -230,7 +233,8 @@
       <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
     </Link>
     <PostBuildEvent>
-      <Command>IF EXIST ..\..\..\build\vs2017\output\x64\Profile\$(TargetFileName)\ (xcopy /Q /E /Y /I ..\..\..\build\vs2017\output\x64\Profile\$(TargetFileName) ..\..\..\workingdir\App\bin &gt; nul) ELSE (xcopy /Q /Y /I ..\..\..\build\vs2017\output\x64\Profile\$(TargetFileName) ..\..\..\workingdir\App\bin &gt; nul)</Command>
+      <Command>IF NOT EXIST ..\..\..\workingdir\App\bin (mkdir ..\..\..\workingdir\App\bin)
+IF EXIST ..\..\..\build\vs2017\output\x64\Profile\$(TargetFileName)\ (xcopy /Q /E /Y /I ..\..\..\build\vs2017\output\x64\Profile\$(TargetFileName) ..\..\..\workingdir\App\bin &gt; nul) ELSE (xcopy /Q /Y /I ..\..\..\build\vs2017\output\x64\Profile\$(TargetFileName) ..\..\..\workingdir\App\bin &gt; nul)</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Optimized_Debug|x64'">
@@ -261,7 +265,8 @@
       <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
     </Link>
     <PostBuildEvent>
-      <Command>IF EXIST ..\..\..\build\vs2017\output\x64\Optimized_Debug\$(TargetFileName)\ (xcopy /Q /E /Y /I ..\..\..\build\vs2017\output\x64\Optimized_Debug\$(TargetFileName) ..\..\..\workingdir\App\bin &gt; nul) ELSE (xcopy /Q /Y /I ..\..\..\build\vs2017\output\x64\Optimized_Debug\$(TargetFileName) ..\..\..\workingdir\App\bin &gt; nul)</Command>
+      <Command>IF NOT EXIST ..\..\..\workingdir\App\bin (mkdir ..\..\..\workingdir\App\bin)
+IF EXIST ..\..\..\build\vs2017\output\x64\Optimized_Debug\$(TargetFileName)\ (xcopy /Q /E /Y /I ..\..\..\build\vs2017\output\x64\Optimized_Debug\$(TargetFileName) ..\..\..\workingdir\App\bin &gt; nul) ELSE (xcopy /Q /Y /I ..\..\..\build\vs2017\output\x64\Optimized_Debug\$(TargetFileName) ..\..\..\workingdir\App\bin &gt; nul)</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
