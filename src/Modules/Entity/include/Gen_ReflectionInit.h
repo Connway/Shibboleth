@@ -3,6 +3,7 @@
 #pragma once
 
 // Includes
+#include <Shibboleth_PrefabResource.h>
 
 #include <Gaff_ReflectionInterfaces.h>
 #include <Gaff_EnumReflection.h>
@@ -34,6 +35,7 @@ namespace Gen
 			head = head->attr_next;
 		}
 
+		Reflection<PrefabResource>::Init();
 
 		// Initialize any other reflection that we reference, but isn't owned by our module.
 		head = Gaff::GetReflectionChainHead();

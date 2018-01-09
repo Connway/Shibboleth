@@ -37,8 +37,6 @@ project "Managers"
 		"../../dependencies/nuklear"
 	}
 
-	dofile("../../utils/os_conditionals.lua")
-
 project "ManagersModule"
 	if _ACTION then
 		location ("../../project/" .. _ACTION .. "/managers")
@@ -99,5 +97,3 @@ project "ManagersModule"
 		"LinearMath", "imgui",
 		"nuklear"
 	}
-
-	dofile("../../utils/os_conditionals.lua")

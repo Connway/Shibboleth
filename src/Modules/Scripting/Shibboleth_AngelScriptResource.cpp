@@ -33,7 +33,6 @@ NS_SHIBBOLETH
 
 SHIB_REFLECTION_CLASS_DEFINE_BEGIN(AngelScriptResource)
 	.classAttrs(ResExtAttribute(".as"))
-
 	.BASE(IResource)
 	.ctor<>()
 SHIB_REFLECTION_CLASS_DEFINE_END(AngelScriptResource)
