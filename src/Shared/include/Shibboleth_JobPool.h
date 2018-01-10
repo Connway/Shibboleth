@@ -29,4 +29,16 @@ NS_SHIBBOLETH
 
 using JobPool = Gaff::JobPool<ProxyAllocator>;
 
+enum JobPoolIndices
+{
+	// Engine level pools.
+	JPI_ANY = 0,
+	JPI_READ_FILE,
+
+	// User defined pools.
+	JPI_SCRIPT,
+
+	JPI_SIZE
+};
+
 NS_END

@@ -44,18 +44,11 @@ static void* ASAlloc(size_t size)
 	return SHIB_ALLOC(size, g_as_alloc_pool, *GetAllocator());
 }
 
-static void ScriptPrint(int a)
+AngelScriptManager::~AngelScriptManager(void)
 {
-	char tmp[1024] = { 0 };
-	snprintf(tmp, 1024, "Script Print: %i\n", a);
-	OutputDebugStringA(tmp);
-}
-
-static void ScriptPrint(float a)
-{
-	char tmp[1024] = { 0 };
-	snprintf(tmp, 1024, "Script Print: %f\n", a);
-	OutputDebugStringA(tmp);
+	if (_engine) {
+		_engine->Release();
+	}
 }
 
 bool AngelScriptManager::init(void)
@@ -63,14 +56,11 @@ bool AngelScriptManager::init(void)
 	asSetGlobalMemoryFunctions(ASAlloc, ShibbolethFree);
 	_engine = asCreateScriptEngine();
 
-	//CScriptArray::SetMemoryFunctions();
+	CScriptArray::SetMemoryFunctions(ASAlloc, ShibbolethFree);
 
 	_engine->SetMessageCallback(asMETHOD(AngelScriptManager, messageCallback), this, asCALL_THISCALL);
 	_engine->SetEngineProperty(asEP_DISALLOW_VALUE_ASSIGN_FOR_REF_TYPE, 1);
 	_engine->SetEngineProperty(asEP_ALLOW_UNSAFE_REFERENCES, 1);
-
-	_engine->RegisterGlobalFunction("void print(int)", asFUNCTIONPR(ScriptPrint, (int), void), asCALL_CDECL);
-	_engine->RegisterGlobalFunction("void print(float)", asFUNCTIONPR(ScriptPrint, (float), void), asCALL_CDECL);
 
 	RegisterScriptArray(_engine, true);
 
@@ -82,7 +72,7 @@ bool AngelScriptManager::init(void)
 	RegisterObject(_engine);
 	RegisterComponent(_engine);
 
-	//AngelScriptComponentWrapper::Register(_engine);
+	AngelScriptComponentWrapper::Register(_engine);
 
 	return true;
 }
@@ -97,8 +87,9 @@ Gaff::SpinLock& AngelScriptManager::getEngineLock(void)
 	return _lock;
 }
 
-void AngelScriptManager::messageCallback(const asSMessageInfo* msg, void* /*param*/)
+void AngelScriptManager::messageCallback(const asSMessageInfo* msg, void* param)
 {
+	GAFF_REF(param);
 	GAFF_REF(msg);
 }
 

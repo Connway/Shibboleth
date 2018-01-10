@@ -60,7 +60,7 @@ App::~App(void)
 bool App::init(int argc, char** argv)
 {
 	_cmd_line_args = Gaff::ParseCommandLine<ProxyAllocator>(argc, argv);
-	return init();
+	return initInternal();
 }
 
 #ifdef PLATFORM_WINDOWS
@@ -105,7 +105,7 @@ bool App::initInternal(void)
 		AllocatorThreadInit();
 	};
 
-	if (!_job_pool.init(7, static_cast<int32_t>(Gaff::GetNumberOfCores()), thread_init)) {
+	if (!_job_pool.init(JPI_SIZE - 1, static_cast<int32_t>(Gaff::GetNumberOfCores()), thread_init)) {
 		LogErrorDefault("ERROR - Failed to initialize thread pool\n");
 		return false;
 	}
@@ -399,7 +399,7 @@ void App::removeExtraLogs(void)
 void App::run(void)
 {
 	while (_running) {
-		uv_run(uv_default_loop(), UV_RUN_NOWAIT);
+		//uv_run(uv_default_loop(), UV_RUN_NOWAIT);
 		_broadcaster.update();
 		_main_loop();
 	}

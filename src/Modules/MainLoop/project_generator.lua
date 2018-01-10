@@ -59,7 +59,7 @@ project "MainLoopModule"
 		"EASTL",
 		"libuv"
 
-		, "Scripting", "Resource", "angelscript", "Entity", "Gleam"
+		, "Scripting", "Resource", "angelscript", "Entity", "Gleam", "mpack"
 	}
 
 	postbuildcommands

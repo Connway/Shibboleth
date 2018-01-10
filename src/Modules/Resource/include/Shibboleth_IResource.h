@@ -71,6 +71,10 @@ public:
 	const HashString64& getFilePath(void) const;
 	ResourceState getState(void) const;
 
+	bool hasFailed(void) const;
+	bool isPending(void) const;
+	bool isLoaded(void) const;
+
 protected:
 	Vector<IResourcePtr> _sub_resources = Vector<IResourcePtr>(ProxyAllocator("Resource"));
 	Vector< eastl::function<void (IResource*)> > _callbacks;

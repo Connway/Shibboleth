@@ -31,7 +31,7 @@ THE SOFTWARE.
 #include <Gaff_SpinLock.h>
 #include <Gaff_Event.h>
 #include <Gaff_File.h>
-#include <uv.h>
+#include <thread>
 
 NS_SHIBBOLETH
 
@@ -83,12 +83,12 @@ private:
 	Gaff::SpinLock _log_queue_lock;
 	Gaff::SpinLock _log_callback_lock;
 
-	uv_thread_t _log_thread;
+	std::thread _log_thread;
 
 
 	bool logMessageHelper(LogType type, Gaff::Hash32 channel, const char* format, va_list& vl);
 
-	static void LogThread(void* arg);
+	static void LogThread(LogManager& lm);
 
 	GAFF_NO_COPY(LogManager);
 	GAFF_NO_MOVE(LogManager);

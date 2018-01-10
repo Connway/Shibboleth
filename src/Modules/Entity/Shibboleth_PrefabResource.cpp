@@ -38,34 +38,21 @@ SHIB_REFLECTION_CLASS_DEFINE_BEGIN(PrefabResource)
 	.ctor<>()
 SHIB_REFLECTION_CLASS_DEFINE_END(PrefabResource)
 
+PrefabResource::~PrefabResource(void)
+{
+	if (_prefab) {
+		SHIB_FREET(_prefab, *GetAllocator());
+	}
+}
+
 void PrefabResource::load(void)
 {
-	ProxyAllocator allocator("Resource");
-	_prefab = SHIB_ALLOCT(Object, allocator, -1);
+	_prefab_file = loadFile(getFilePath().getBuffer());
 
-	IFile* const file = loadFile(getFilePath().getBuffer());
-
-	if (!file) {
-		// TODO: log error
-		callCallbacks();
-		return;
+	if (_prefab_file) {
+		Gaff::JobData job_data = { LoadPrefab, this };
+		GetApp().getJobPool().addJobs(&job_data, 1, nullptr);
 	}
-
-	if (Gaff::File::CheckExtension(getFilePath().getBuffer(), ".bin")) {
-		if (!loadMPack(file, allocator)) {
-			SHIB_FREET(_prefab, allocator);
-			_state = RS_FAILED;
-			_prefab = nullptr;
-		}
-	} else {
-		if (!loadJSON(file, allocator)) {
-			SHIB_FREET(_prefab, allocator);
-			_state = RS_FAILED;
-			_prefab = nullptr;
-		}
-	}
-
-	callCallbacks();
 }
 
 const Object* PrefabResource::getPrefab(void) const
@@ -97,6 +84,40 @@ bool PrefabResource::loadMPack(IFile* file, const ProxyAllocator& allocator)
 
 	auto reader = Gaff::MakeSerializeReader(mpack.getRoot(), allocator);
 	return _prefab->load(reader);
+}
+
+void PrefabResource::LoadPrefab(void* data)
+{
+	PrefabResource* const prefab = reinterpret_cast<PrefabResource*>(data);
+	ProxyAllocator allocator("Resource");
+
+	prefab->_prefab = SHIB_ALLOCT(Object, allocator, -1);
+
+	if (Gaff::File::CheckExtension(prefab->getFilePath().getBuffer(), ".bin")) {
+		if (prefab->loadMPack(prefab->_prefab_file, allocator)) {
+			prefab->_state = RS_LOADED;
+
+		} else {
+			SHIB_FREET(prefab->_prefab, allocator);
+			prefab->_state = RS_FAILED;
+			prefab->_prefab = nullptr;
+		}
+
+	} else {
+		if (prefab->loadJSON(prefab->_prefab_file, allocator)) {
+			prefab->_state = RS_LOADED;
+
+		} else {
+			SHIB_FREET(prefab->_prefab, allocator);
+			prefab->_state = RS_FAILED;
+			prefab->_prefab = nullptr;
+		}
+	}
+
+	GetApp().getFileSystem()->closeFile(prefab->_prefab_file);
+	prefab->_prefab_file = nullptr;
+
+	prefab->callCallbacks();
 }
 
 NS_END

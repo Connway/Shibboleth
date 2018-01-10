@@ -114,8 +114,8 @@ bool Object::save(Gaff::ISerializeWriter& writer)
 
 void Object::destroy(void)
 {
-	for (auto it = _components.begin(); it != _components.end(); ++it) {
-		//_comp_mgr.destroyComponent(*it);
+	for (Component* const component : _components) {
+		SHIB_FREET(component, *GetAllocator());
 	}
 
 	removeChildren();
