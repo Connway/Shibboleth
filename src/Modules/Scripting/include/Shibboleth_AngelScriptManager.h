@@ -34,6 +34,8 @@ NS_SHIBBOLETH
 class AngelScriptManager final : public IManager
 {
 public:
+	~AngelScriptManager(void);
+
 	bool init(void) override;
 
 	asIScriptEngine* getEngine(void) const;

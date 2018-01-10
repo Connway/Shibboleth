@@ -30,15 +30,20 @@ NS_SHIBBOLETH
 class PrefabResource : public IResource
 {
 public:
+	~PrefabResource(void);
+
 	void load(void) override;
 
 	const Object* getPrefab(void) const;
 
 private:
 	Object* _prefab = nullptr;
+	IFile* _prefab_file = nullptr;
 
 	bool loadJSON(IFile* file, const ProxyAllocator& allocator);
 	bool loadMPack(IFile* file, const ProxyAllocator& allocator);
+
+	static void LoadPrefab(void* data);
 
 	SHIB_REFLECTION_CLASS_DECLARE(PrefabResource);
 };

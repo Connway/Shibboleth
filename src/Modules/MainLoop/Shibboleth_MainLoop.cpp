@@ -35,14 +35,11 @@ THE SOFTWARE.
 
 //#include <Shibboleth_ICameraComponent.h>
 
-#include <Shibboleth_AngelScriptResource.h>
 #include <Shibboleth_ResourceManager.h>
-#include <Shibboleth_AngelScriptComponent.h>
-#include <Shibboleth_Object.h>
+#include <Shibboleth_PrefabResource.h>
 
-#include <Gaff_SerializeReader.h>
-//#include <Gaff_MessagePack.h>
-#include <Gaff_JSON.h>
+#include <Shibboleth_AngelScriptComponent.h>
+#include <Shibboleth_AngelScriptResource.h>
 
 NS_SHIBBOLETH
 
@@ -168,54 +165,63 @@ void MainLoop::update(void)
 
 	//YieldThread();
 
-	Gaff::JSON json;
-	json.parseFile("Resources/Objects/test2.object");
+	ResourceManager& res_mgr = GetApp().getManagerTUnsafe<ResourceManager>();
+	PrefabResourcePtr prefab = res_mgr.requestResourceT<PrefabResource>("Objects/test2.prefab");
 
-	auto reader = Gaff::MakeSerializeReader(json, Shibboleth::ProxyAllocator());
-	Object object(-1);
+	res_mgr.waitForResource(*prefab);
 
-	object.load(reader);
+	const Object* const object = prefab->getPrefab();
 
-	AngelScriptComponent& asc = *object.getComponent<AngelScriptComponent>();
-	GetApp().getManagerTUnsafe<ResourceManager>().waitForResource(*asc.getScript());
+	//Gaff::JSON json;
+	//json.parseFile("Resources/Objects/test2.prefab");
 
-	int32_t& a = asc.getProperty<int32_t>("a");
+	//auto reader = Gaff::MakeSerializeReader(json, Shibboleth::ProxyAllocator());
+	//Object object(-1);
 
-	asc.prepareMethod("testFunc");
-	asc.callMethod();
+	//object.load(reader);
 
-	asc.prepareMethod("printA");
-	asc.callMethod();
+	const AngelScriptComponent* const asc = object->getComponent<AngelScriptComponent>();
+	const AngelScriptResourcePtr& script = asc->getScript();
 
-	asc.prepareMethod("testFunc2");
-	asc.setArg(0, 9999);
-	asc.callMethod();
+	res_mgr.waitForResource(*script);
 
-	asc.prepareMethod("printA");
-	asc.callMethod();
+	//int32_t& a = asc.getProperty<int32_t>("a");
 
-	a = 2222;
+	//asc.prepareMethod("testFunc");
+	//asc.callMethod();
 
-	asc.prepareMethod("printA");
-	asc.callMethod();
+	//asc.prepareMethod("printA");
+	//asc.callMethod();
 
-	asc.prepareMethod("testRet");
-	asc.callMethod();
+	//asc.prepareMethod("testFunc2");
+	//asc.setArg(0, 9999);
+	//asc.callMethod();
 
-	int32_t b = asc.getReturnValue<int32_t>();
-	GAFF_REF(b);
+	//asc.prepareMethod("printA");
+	//asc.callMethod();
 
-	asc.prepareMethod("testMath");
-	asc.callMethod();
+	//a = 2222;
 
-	Object obj(123);
+	//asc.prepareMethod("printA");
+	//asc.callMethod();
 
-	asc.prepareMethod("testObj");
-	asc.setArg<Object&>(0, obj);
-	asc.callMethod();
+	//asc.prepareMethod("testRet");
+	//asc.callMethod();
 
-	asc.prepareMethod("testComp");
-	asc.callMethod();
+	//int32_t b = asc.getReturnValue<int32_t>();
+	//GAFF_REF(b);
+
+	//asc.prepareMethod("testMath");
+	//asc.callMethod();
+
+	//Object obj(123);
+
+	//asc.prepareMethod("testObj");
+	//asc.setArg<Object&>(0, obj);
+	//asc.callMethod();
+
+	//asc.prepareMethod("testComp");
+	//asc.callMethod();
 
 
 	GetApp().quit();

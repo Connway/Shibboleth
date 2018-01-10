@@ -33,6 +33,7 @@ class AngelScriptResource final : public IResource
 {
 public:
 	AngelScriptResource(void);
+	~AngelScriptResource(void);
 
 	void load(void) override;
 

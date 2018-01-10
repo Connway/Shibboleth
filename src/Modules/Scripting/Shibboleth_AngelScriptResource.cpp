@@ -37,13 +37,14 @@ SHIB_REFLECTION_CLASS_DEFINE_BEGIN(AngelScriptResource)
 	.ctor<>()
 SHIB_REFLECTION_CLASS_DEFINE_END(AngelScriptResource)
 
-static int32_t g_pool_index = -1;
-
 AngelScriptResource::AngelScriptResource(void)
 {
-	if (g_pool_index == -1) {
-		ResourceManager& res_mgr = GetApp().getManagerTUnsafe<ResourceManager>();
-		g_pool_index = res_mgr.getNextJobPoolIndex();
+}
+
+AngelScriptResource::~AngelScriptResource(void)
+{
+	if (_module) {
+		_module->Discard();
 	}
 }
 
@@ -53,7 +54,7 @@ void AngelScriptResource::load(void)
 
 	if (_script_file) {
 		Gaff::JobData job_data = { LoadScript, this };
-		GetApp().getJobPool().addJobs(&job_data, 1, nullptr, g_pool_index);
+		GetApp().getJobPool().addJobs(&job_data, 1, nullptr, JPI_SCRIPT);
 	}
 }
 
@@ -125,6 +126,9 @@ void AngelScriptResource::LoadScript(void* data)
 {
 	AngelScriptResource* const as_res = reinterpret_cast<AngelScriptResource*>(data);
 	as_res->loadScript();
+
+	GetApp().getFileSystem()->closeFile(as_res->_script_file);
+	as_res->_script_file = nullptr;
 }
 
 NS_END

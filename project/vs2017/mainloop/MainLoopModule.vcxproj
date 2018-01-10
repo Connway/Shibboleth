@@ -314,6 +314,9 @@ IF EXIST ..\..\..\build\vs2017\output\x64\Optimized_Debug\$(TargetFileName)\ (xc
     <ProjectReference Include="..\frameworks\Gleam.vcxproj">
       <Project>{6BBF400D-D7D3-68BE-A055-0C1E0C2965EF}</Project>
     </ProjectReference>
+    <ProjectReference Include="..\dependencies\mpack.vcxproj">
+      <Project>{5183F20F-BD97-1AC1-8619-BE20F2EC16F2}</Project>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

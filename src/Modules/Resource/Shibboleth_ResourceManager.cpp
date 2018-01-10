@@ -85,14 +85,14 @@ IResourcePtr ResourceManager::requestResource(Gaff::HashStringTemp64 name)
 		_resources.begin(),
 		_resources.end(),
 		name.getHash(),
-		[](const IResourcePtr& lhs, Gaff::Hash64 rhs) -> bool
+		[](const IResource* lhs, Gaff::Hash64 rhs) -> bool
 		{
 			return lhs->getFilePath().getHash() < rhs;
 		}
 	);
 
 	if (it_res != _resources.end() && (*it_res)->getFilePath().getHash() == name.getHash()) {
-		return *it_res;
+		return IResourcePtr(*it_res);
 	}
 
 	size_t pos = Gaff::FindLastOf(name.getBuffer(), '.');
@@ -113,17 +113,16 @@ IResourcePtr ResourceManager::requestResource(Gaff::HashStringTemp64 name)
 
 	// Assume all resources always inherit from IResource first.
 	IResource* res = reinterpret_cast<IResource*>(it_fact->second(_allocator));
-	IResourcePtr res_ptr(res);
 	res->_file_path = HashString64(name);
 	res->_res_mgr = this;
 
-	_resources.insert(it_res, res_ptr);
+	_resources.insert(it_res, res);
 
 	// Create and add resource load job.
 	Gaff::JobData job_data = { ResourceFileLoadJob, res };
-	GetApp().getJobPool().addJobs(&job_data, 1, nullptr, (res->readsFromDisk()) ? JOB_POOL_READ_FILE : 0);
+	GetApp().getJobPool().addJobs(&job_data, 1, nullptr, (res->readsFromDisk()) ? JPI_READ_FILE : 0);
 
-	return res_ptr;
+	return IResourcePtr(res);
 }
 
 void ResourceManager::waitForResource(const IResource& resource) const

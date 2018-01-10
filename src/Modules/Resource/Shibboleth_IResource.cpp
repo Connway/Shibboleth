@@ -40,9 +40,8 @@ void IResource::release(void) const
 {
 	int32_t new_count = --_count;
 
-	if (new_count == 1) {
+	if (!new_count) {
 		_res_mgr->removeResource(this);
-	} else if (!new_count) {
 		SHIB_FREET(this, *GetAllocator());
 	}
 }
@@ -81,6 +80,21 @@ IResource::ResourceState IResource::getState(void) const
 	return _state;
 }
 
+bool IResource::hasFailed(void) const
+{
+	return _state == RS_FAILED;
+}
+
+bool IResource::isPending(void) const
+{
+	return _state == RS_PENDING;
+}
+
+bool IResource::isLoaded(void) const
+{
+	return _state == RS_LOADED;
+}
+
 IFile* IResource::loadFile(const char* file_path)
 {
 	char temp[1024] = { 0 };
@@ -89,7 +103,7 @@ IFile* IResource::loadFile(const char* file_path)
 	IFile* file = GetApp().getFileSystem()->openFile(temp);
 
 	if (!file) {
-		// Log error.
+		// TODO: Log error.
 		_state = RS_FAILED;
 		callCallbacks();
 	}
