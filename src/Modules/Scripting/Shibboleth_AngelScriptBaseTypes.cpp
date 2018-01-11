@@ -1,5 +1,5 @@
 /************************************************************************************
-Copyright (C) 2017 by Nicholas LaCroix
+Copyright (C) 2018 by Nicholas LaCroix
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -97,10 +97,16 @@ static_assert(false, "size_t is not 32 or 64-bits!");
 	engine->RegisterObjectMethod(#name, "bool opEquals(const " #name "& in) const", asFUNCTIONPR(glm::operator==, (const glm::##type&, const glm::##type&), bool), asCALL_CDECL_OBJFIRST); \
 	engine->RegisterObjectMethod(#name, "const float& opIndex(int32) const", asMETHODPR(glm::##type, operator[], (int32_t) const, const float&), asCALL_THISCALL); \
 	engine->RegisterObjectMethod(#name, "float& opIndex(int32)", asMETHODPR(glm::##type, operator[], (int32_t), float&), asCALL_THISCALL); \
-	engine->RegisterObjectMethod(#name, "int length() const", asFUNCTION(glm::##type::length), asCALL_CDECL)
+	engine->RegisterObjectMethod(#name, "int length() const", asFUNCTION(GetLength<glm::##type>), asCALL_CDECL_OBJFIRST)
 
 
 NS_SHIBBOLETH
+
+template <class T>
+static int GetLength(void*)
+{
+	return T::length();
+}
 
 template <class T>
 static void ObjectDestructor(T* instance)

@@ -20,14 +20,34 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#pragma once
+#include "Shibboleth_ObjectManager.h"
+#include "Shibboleth_Object.h"
 
-#include "Shibboleth_Defines.h"
-#include <Gaff_ScopedLock.h>
-#include <Gaff_SpinLock.h>
+SHIB_REFLECTION_DEFINE(ObjectManager)
 
 NS_SHIBBOLETH
 
-typedef Gaff::ScopedLock<Gaff::SpinLock> ScopedSpinLock;
+SHIB_REFLECTION_CLASS_DEFINE_BEGIN(ObjectManager)
+	.BASE(IManager)
+	.ctor<>()
+SHIB_REFLECTION_CLASS_DEFINE_END(ObjectManager)
+
+Object* ObjectManager::createObject(void)
+{
+	Object* const object = SHIB_ALLOCT(Object, ProxyAllocator("Object"), _next_id++);
+	_objects.insert(eastl::make_pair(object->getID(), object));
+	return object;
+}
+
+void ObjectManager::destroyObject(const Object* object)
+{
+	GAFF_ASSERT(object);
+	destroyObject(object->getID());
+}
+
+void ObjectManager::destroyObject(int32_t id)
+{
+	_objects.erase(id);
+}
 
 NS_END
