@@ -1,5 +1,5 @@
 /************************************************************************************
-Copyright (C) 2017 by Nicholas LaCroix
+Copyright (C) 2018 by Nicholas LaCroix
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -117,9 +117,7 @@ void AngelScriptResource::loadScript(void)
 	RES_FAIL_MSG(!_module, "Failed to get module for script '%s'!", getFilePath().getBuffer());
 
 	lock.unlock();
-
-	_state = RS_LOADED;
-	callCallbacks();
+	succeeded();
 }
 
 void AngelScriptResource::LoadScript(void* data)

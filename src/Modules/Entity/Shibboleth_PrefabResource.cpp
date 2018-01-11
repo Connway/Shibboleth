@@ -1,5 +1,5 @@
 /************************************************************************************
-Copyright (C) 2017 by Nicholas LaCroix
+Copyright (C) 2018 by Nicholas LaCroix
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -21,6 +21,7 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Shibboleth_PrefabResource.h"
+#include "Shibboleth_ObjectManager.h"
 #include <Shibboleth_ResourceExtensionAttribute.h>
 #include <Shibboleth_IFileSystem.h>
 #include <Gaff_SerializeReader.h>
@@ -41,7 +42,7 @@ SHIB_REFLECTION_CLASS_DEFINE_END(PrefabResource)
 PrefabResource::~PrefabResource(void)
 {
 	if (_prefab) {
-		SHIB_FREET(_prefab, *GetAllocator());
+		GetApp().getManagerTUnsafe<ObjectManager>().destroyObject(_prefab);
 	}
 }
 
@@ -89,35 +90,36 @@ bool PrefabResource::loadMPack(IFile* file, const ProxyAllocator& allocator)
 void PrefabResource::LoadPrefab(void* data)
 {
 	PrefabResource* const prefab = reinterpret_cast<PrefabResource*>(data);
+	ObjectManager& obj_mgr = GetApp().getManagerTUnsafe<ObjectManager>();
 	ProxyAllocator allocator("Resource");
 
-	prefab->_prefab = SHIB_ALLOCT(Object, allocator, -1);
+	IFile* const file = prefab->_prefab_file;
+
+	prefab->_prefab = obj_mgr.createObject();
+	prefab->_prefab_file = nullptr;
 
 	if (Gaff::File::CheckExtension(prefab->getFilePath().getBuffer(), ".bin")) {
-		if (prefab->loadMPack(prefab->_prefab_file, allocator)) {
-			prefab->_state = RS_LOADED;
+		if (prefab->loadMPack(file, allocator)) {
+			prefab->succeeded();
 
 		} else {
-			SHIB_FREET(prefab->_prefab, allocator);
-			prefab->_state = RS_FAILED;
+			obj_mgr.destroyObject(prefab->_prefab);
 			prefab->_prefab = nullptr;
+			prefab->failed();
 		}
 
 	} else {
-		if (prefab->loadJSON(prefab->_prefab_file, allocator)) {
-			prefab->_state = RS_LOADED;
+		if (prefab->loadJSON(file, allocator)) {
+			prefab->succeeded();
 
 		} else {
-			SHIB_FREET(prefab->_prefab, allocator);
-			prefab->_state = RS_FAILED;
+			obj_mgr.destroyObject(prefab->_prefab);
 			prefab->_prefab = nullptr;
+			prefab->failed();
 		}
 	}
 
-	GetApp().getFileSystem()->closeFile(prefab->_prefab_file);
-	prefab->_prefab_file = nullptr;
-
-	prefab->callCallbacks();
+	GetApp().getFileSystem()->closeFile(file);
 }
 
 NS_END

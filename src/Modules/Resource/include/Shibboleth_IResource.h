@@ -1,5 +1,5 @@
 /************************************************************************************
-Copyright (C) 2017 by Nicholas LaCroix
+Copyright (C) 2018 by Nicholas LaCroix
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -33,8 +33,7 @@ THE SOFTWARE.
 #define RES_FAIL_MSG(cond, msg, ...) \
 	if (cond) { \
 		LogError(LOG_CHANNEL_RESOURCE, msg, __VA_ARGS__); \
-		_state = RS_FAILED; \
-		callCallbacks(); \
+		failed(); \
 		return; \
 	}
 
@@ -78,15 +77,21 @@ public:
 protected:
 	Vector<IResourcePtr> _sub_resources = Vector<IResourcePtr>(ProxyAllocator("Resource"));
 	Vector< eastl::function<void (IResource*)> > _callbacks;
-	ResourceState _state = RS_PENDING;
 
 	IFile* loadFile(const char* file_path);
-	void callCallbacks(void);
+
+	void succeeded(void);
+	void failed(void);
 
 private:
 	mutable std::atomic_int32_t _count = 0;
+
+	ResourceState _state = RS_PENDING;
 	HashString64 _file_path;
+
 	ResourceManager* _res_mgr = nullptr;
+
+	void callCallbacks(void);
 
 	friend class ResourceManager;
 };

@@ -1,5 +1,5 @@
 /************************************************************************************
-Copyright (C) 2017 by Nicholas LaCroix
+Copyright (C) 2018 by Nicholas LaCroix
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -72,7 +72,7 @@ bool AngelScriptManager::init(void)
 	RegisterObject(_engine);
 	RegisterComponent(_engine);
 
-	AngelScriptComponentWrapper::Register(_engine);
+	//AngelScriptComponentWrapper::Register(_engine);
 
 	return true;
 }

@@ -42,7 +42,7 @@ class IObjectManager;
 class IFileSystem;
 class IApp;
 
-class Object
+class Object final
 {
 public:
 	template <class T>

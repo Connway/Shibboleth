@@ -1,5 +1,5 @@
 /************************************************************************************
-Copyright (C) 2017 by Nicholas LaCroix
+Copyright (C) 2018 by Nicholas LaCroix
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -105,10 +105,20 @@ IFile* IResource::loadFile(const char* file_path)
 	if (!file) {
 		// TODO: Log error.
 		_state = RS_FAILED;
-		callCallbacks();
 	}
 
 	return file;
+}
+
+void IResource::succeeded(void)
+{
+	callCallbacks();
+	_state = RS_LOADED;
+}
+
+void IResource::failed(void)
+{
+	_state = RS_FAILED;
 }
 
 void IResource::callCallbacks(void)

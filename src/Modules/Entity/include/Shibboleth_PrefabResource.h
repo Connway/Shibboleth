@@ -1,5 +1,5 @@
 /************************************************************************************
-Copyright (C) 2017 by Nicholas LaCroix
+Copyright (C) 2018 by Nicholas LaCroix
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -27,7 +27,7 @@ THE SOFTWARE.
 
 NS_SHIBBOLETH
 
-class PrefabResource : public IResource
+class PrefabResource final : public IResource
 {
 public:
 	~PrefabResource(void);

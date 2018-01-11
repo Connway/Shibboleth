@@ -22,12 +22,29 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Shibboleth_Defines.h"
-#include <Gaff_ScopedLock.h>
-#include <Gaff_SpinLock.h>
+#include <Shibboleth_Reflection.h>
+#include <Shibboleth_IManager.h>
+#include <mutex>
 
 NS_SHIBBOLETH
 
-typedef Gaff::ScopedLock<Gaff::SpinLock> ScopedSpinLock;
+class Object;
+
+class ObjectManager final : public IManager
+{
+public:
+	Object* createObject(void);
+	void destroyObject(const Object* object);
+	void destroyObject(int32_t id);
+
+private:
+	VectorMap<int32_t, Object*> _objects;
+	//Vector<Object*> _dirty_objects;
+	int32_t _next_id = 0;
+
+	SHIB_REFLECTION_CLASS_DECLARE(ObjectManager);
+};
 
 NS_END
+
+SHIB_REFLECTION_DECLARE(ObjectManager)
