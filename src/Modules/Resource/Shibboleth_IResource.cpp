@@ -45,6 +45,10 @@ static void LoadJob(void* data)
 
 void IResource::load(void)
 {
+	if (!readsFromDisk()) {
+		return;
+	}
+
 	IFile* const file = loadFile(getFilePath().getBuffer());
 
 	if (file) {
