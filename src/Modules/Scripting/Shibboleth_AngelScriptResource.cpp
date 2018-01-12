@@ -23,6 +23,7 @@ THE SOFTWARE.
 #include "Shibboleth_AngelScriptResource.h"
 #include "Shibboleth_AngelScriptManager.h"
 #include <Shibboleth_ResourceExtensionAttribute.h>
+#include <Shibboleth_LoadFileCallbackAttribute.h>
 #include <Shibboleth_ResourceManager.h>
 #include <Shibboleth_IFileSystem.h>
 #include <Shibboleth_LogManager.h>
@@ -32,7 +33,7 @@ SHIB_REFLECTION_DEFINE(AngelScriptResource)
 NS_SHIBBOLETH
 
 SHIB_REFLECTION_CLASS_DEFINE_BEGIN(AngelScriptResource)
-	.classAttrs(ResExtAttribute(".as"))
+	.classAttrs(ResExtAttribute(".as"), MakeLoadFileCallbackAttribute(&AngelScriptResource::loadScript, JPI_SCRIPT))
 	.BASE(IResource)
 	.ctor<>()
 SHIB_REFLECTION_CLASS_DEFINE_END(AngelScriptResource)
@@ -48,16 +49,6 @@ AngelScriptResource::~AngelScriptResource(void)
 	}
 }
 
-void AngelScriptResource::load(void)
-{
-	_script_file = loadFile(getFilePath().getBuffer());
-
-	if (_script_file) {
-		Gaff::JobData job_data = { LoadScript, this };
-		GetApp().getJobPool().addJobs(&job_data, 1, nullptr, JPI_SCRIPT);
-	}
-}
-
 const asIScriptModule* AngelScriptResource::getModule(void) const
 {
 	return _module;
@@ -68,7 +59,7 @@ CScriptBuilder& AngelScriptResource::getBuilder(void)
 	return _builder;
 }
 
-void AngelScriptResource::loadScript(void)
+void AngelScriptResource::loadScript(IFile* file)
 {
 	AngelScriptManager& as_mgr = GetApp().getManagerTUnsafe<AngelScriptManager>();
 	asIScriptEngine* const engine = as_mgr.getEngine();
@@ -107,7 +98,7 @@ void AngelScriptResource::loadScript(void)
 	);
 	RES_FAIL_MSG(r < 0, "Failed to add section for `ScriptComponent`!");
 
-	r = _builder.AddSectionFromMemory("script", _script_file->getBuffer(), static_cast<unsigned int>(_script_file->size()));
+	r = _builder.AddSectionFromMemory("script", file->getBuffer(), static_cast<unsigned int>(file->size()));
 	RES_FAIL_MSG(r < 0, "Failed to add section for script '%s'!", getFilePath().getBuffer());
 
 	r = _builder.BuildModule();
@@ -118,15 +109,6 @@ void AngelScriptResource::loadScript(void)
 
 	lock.unlock();
 	succeeded();
-}
-
-void AngelScriptResource::LoadScript(void* data)
-{
-	AngelScriptResource* const as_res = reinterpret_cast<AngelScriptResource*>(data);
-	as_res->loadScript();
-
-	GetApp().getFileSystem()->closeFile(as_res->_script_file);
-	as_res->_script_file = nullptr;
 }
 
 NS_END

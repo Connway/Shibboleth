@@ -21,6 +21,7 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Shibboleth_IResource.h"
+#include "Shibboleth_LoadFileCallbackAttribute.h"
 #include "Shibboleth_ResourceManager.h"
 #include <Shibboleth_IFileSystem.h>
 #include <Shibboleth_IAllocator.h>
@@ -30,6 +31,37 @@ THE SOFTWARE.
 #include <EASTL/algorithm.h>
 
 NS_SHIBBOLETH
+
+static void LoadJob(void* data)
+{
+	eastl::pair<IResource*, IFile*>* job_data = reinterpret_cast<eastl::pair<IResource*, IFile*>*>(data);
+
+	const ILoadFileCallbackAttribute* const cb_attr = job_data->first->getReflectionDefinition().GET_CLASS_ATTRIBUTE(ILoadFileCallbackAttribute);
+	cb_attr->callCallback(job_data->first->getBasePointer(), job_data->second);
+
+	GetApp().getFileSystem()->closeFile(job_data->second);
+	SHIB_FREET(job_data, *GetAllocator());
+}
+
+void IResource::load(void)
+{
+	IFile* const file = loadFile(getFilePath().getBuffer());
+
+	if (file) {
+		const ILoadFileCallbackAttribute* const cb_attr = getReflectionDefinition().GET_CLASS_ATTRIBUTE(ILoadFileCallbackAttribute);
+		GAFF_ASSERT(cb_attr);
+
+		eastl::pair<IResource*, IFile*>* const res_data = SHIB_ALLOCT(
+			GAFF_SINGLE_ARG(eastl::pair<IResource*, IFile*>),
+			ProxyAllocator("Resource"),
+			this,
+			file
+		);
+
+		Gaff::JobData job_data = { LoadJob, res_data };
+		GetApp().getJobPool().addJobs(&job_data, 1, nullptr, cb_attr->getPool());
+	}
+}
 
 void IResource::addRef(void) const
 {
@@ -51,17 +83,17 @@ int32_t IResource::getRefCount(void) const
 	return _count;
 }
 
-void IResource::addResourceStateCallback(const eastl::function<void (IResource*)>& callback)
+void IResource::addLoadedCallback(const eastl::function<void (IResource*)>& callback)
 {
 	_callbacks.emplace_back(callback);
 }
 
-void IResource::addResourceStateCallback(eastl::function<void (IResource*)>&& callback)
+void IResource::addLoadedCallback(eastl::function<void (IResource*)>&& callback)
 {
 	_callbacks.emplace_back(std::move(callback));
 }
 
-void IResource::removeResourceStateCallback(const eastl::function<void (IResource*)>& callback)
+void IResource::removeLoadedCallback(const eastl::function<void (IResource*)>& callback)
 {
 	auto it = eastl::find(_callbacks.begin(), _callbacks.end(), callback);
 

@@ -61,7 +61,7 @@ AngelScriptComponent::~AngelScriptComponent(void)
 
 void AngelScriptComponent::onAllComponentsLoaded(void)
 {
-	_res->addResourceStateCallback(MemberFunc(this, &AngelScriptComponent::onScriptLoaded));
+	_res->addLoadedCallback(MemberFunc(this, &AngelScriptComponent::onScriptLoaded));
 }
 
 void AngelScriptComponent::onAddToWorld(void)
@@ -186,129 +186,127 @@ void AngelScriptComponent::callMethod(void)
 void AngelScriptComponent::onScriptLoaded(IResource* /*res*/)
 {
 	// Determine class by either metadata markup or match the file name.
-	if (_res && _res->getState() == IResource::RS_LOADED) {
-		const asIScriptModule* const module = _res->getModule();
-		//CScriptBuilder& builder = _res->getBuilder();
+	const asIScriptModule* const module = _res->getModule();
+	//CScriptBuilder& builder = _res->getBuilder();
 
-		//// Check for markup.
-		//for (asUINT i = 0; i < module->GetObjectTypeCount(); ++i) {
-		//	const asITypeInfo* const ti = module->GetObjectTypeByIndex(i);
-		//	const char* const metadata = builder.GetMetadataStringForType(ti->GetTypeId());
+	//// Check for markup.
+	//for (asUINT i = 0; i < module->GetObjectTypeCount(); ++i) {
+	//	const asITypeInfo* const ti = module->GetObjectTypeByIndex(i);
+	//	const char* const metadata = builder.GetMetadataStringForType(ti->GetTypeId());
 
-		//	if (!strcmp(metadata, "ComponentClass")) {
-		//		_type_info = ti;
-		//		break;
-		//	}
-		//}
+	//	if (!strcmp(metadata, "ComponentClass")) {
+	//		_type_info = ti;
+	//		break;
+	//	}
+	//}
 
-		// Find the first class to derive from ScriptComponent.
-		const asITypeInfo * const script_comp_type_info = module->GetTypeInfoByName("ScriptComponent");
-		const asUINT num_types = module->GetObjectTypeCount();
+	// Find the first class to derive from ScriptComponent.
+	const asITypeInfo * const script_comp_type_info = module->GetTypeInfoByName("ScriptComponent");
+	const asUINT num_types = module->GetObjectTypeCount();
 
-		for (asUINT i = 0; i < num_types; ++i) {
-			const asITypeInfo * const type_info =  module->GetObjectTypeByIndex(i);
+	for (asUINT i = 0; i < num_types; ++i) {
+		const asITypeInfo * const type_info =  module->GetObjectTypeByIndex(i);
 
-			if (type_info != script_comp_type_info && type_info->DerivesFrom(script_comp_type_info)) {
-				_type_info = type_info;
-				break;
-			}
+		if (type_info != script_comp_type_info && type_info->DerivesFrom(script_comp_type_info)) {
+			_type_info = type_info;
+			break;
+		}
+	}
+
+	//// If no markup, just take the file name minus the extension.
+	//if (!_type_info) {
+	//	const U8String& path = _res->getFilePath().getString();
+	//	size_t begin_index = Gaff::FindLastOf(path.data(), path.size(), '/');
+	//	const size_t ext_index = Gaff::FindLastOf(path.data(), path.size(), '.');
+
+	//	if (begin_index == SIZE_T_FAIL) {
+	//		begin_index = 0;
+	//	}
+	//	else {
+	//		begin_index += 1;
+	//	}
+
+	//	char temp[128] = { 0 };
+	//	strncpy_s(temp, path.data(), ext_index - begin_index);
+
+	//	_type_info = module->GetTypeInfoByName(temp);
+	//}
+
+	if (!_type_info) {
+		LogErrorDefault("Failed to find a component that inherits from 'ScriptComponent' in '%s'!", _res->getFilePath().getBuffer());
+		return;
+	}
+
+	// Construct the script component.
+	asIScriptEngine* const engine = module->GetEngine();
+
+	char temp_decl[128] = { 0 };
+	snprintf(temp_decl, 128, "%s@ %s()", _type_info->GetName(), _type_info->GetName());
+	asIScriptFunction* const factory = _type_info->GetFactoryByDecl(temp_decl);
+
+	if (!factory) {
+		LogErrorDefault("Failed to find default constructor for script class '%s'!", _type_info->GetName());
+		_type_info = nullptr;
+		_res = nullptr;
+		return;
+	}
+
+	Gaff::SpinLock& lock = GetApp().getManagerTUnsafe<AngelScriptManager>().getEngineLock();
+
+	lock.lock();
+	_context = engine->CreateContext();
+	lock.unlock();
+
+	_context->Prepare(factory);
+	_context->Execute();
+
+	// Get the script object we just made.
+	_object = *reinterpret_cast<asIScriptObject**>(_context->GetAddressOfReturnValue());
+	_object->AddRef();
+
+	// Cache properties.
+	const asUINT num_props = _object->GetPropertyCount();
+
+	constexpr Gaff::Hash32 comp_hash = Gaff::FNV1aHash32Const("_component");
+
+	for (asUINT i = 0; i < num_props; ++i) {
+		const char* const name = _object->GetPropertyName(i);
+		const int type_id = _object->GetPropertyTypeId(i);
+
+		const Gaff::Hash32 prop_name = Gaff::FNV1aHash32String(name);
+
+		if (prop_name == comp_hash) {
+			*reinterpret_cast<void**>(_object->GetAddressOfProperty(i)) = this;
 		}
 
-		//// If no markup, just take the file name minus the extension.
-		//if (!_type_info) {
-		//	const U8String& path = _res->getFilePath().getString();
-		//	size_t begin_index = Gaff::FindLastOf(path.data(), path.size(), '/');
-		//	const size_t ext_index = Gaff::FindLastOf(path.data(), path.size(), '.');
+		PropertyData& data = _property_map[prop_name];
+		data.type_id = type_id;
+		data.type_info = (type_id <= asTYPEID_DOUBLE) ? nullptr : module->GetEngine()->GetTypeInfoById(type_id);
+		data.property = _object->GetAddressOfProperty(i);
+	}
 
-		//	if (begin_index == SIZE_T_FAIL) {
-		//		begin_index = 0;
-		//	}
-		//	else {
-		//		begin_index += 1;
-		//	}
+	// Cache methods.
+	const asUINT num_methods = _type_info->GetMethodCount();
 
-		//	char temp[128] = { 0 };
-		//	strncpy_s(temp, path.data(), ext_index - begin_index);
+	for (asUINT i = 0; i < num_methods; ++i) {
+		asIScriptFunction* const func = _type_info->GetMethodByIndex(i);
+		_method_map[Gaff::FNV1aHash32String(func->GetName())] = func;
+	}
 
-		//	_type_info = module->GetTypeInfoByName(temp);
-		//}
+	// Call onInit() if it has one.
+	asIScriptFunction* const init_func = _type_info->GetMethodByName("onInit");
 
-		if (!_type_info) {
-			LogErrorDefault("Failed to find a component that inherits from 'ScriptComponent' in '%s'!", _res->getFilePath().getBuffer());
-			return;
-		}
-
-		// Construct the script component.
-		asIScriptEngine* const engine = module->GetEngine();
-
-		char temp_decl[128] = { 0 };
-		snprintf(temp_decl, 128, "%s@ %s()", _type_info->GetName(), _type_info->GetName());
-		asIScriptFunction* const factory = _type_info->GetFactoryByDecl(temp_decl);
-
-		if (!factory) {
-			LogErrorDefault("Failed to find default constructor for script class '%s'!", _type_info->GetName());
-			_type_info = nullptr;
-			_res = nullptr;
-			return;
-		}
-
-		Gaff::SpinLock& lock = GetApp().getManagerTUnsafe<AngelScriptManager>().getEngineLock();
-
-		lock.lock();
-		_context = engine->CreateContext();
-		lock.unlock();
-
-		_context->Prepare(factory);
+	if (init_func) {
+		_context->Prepare(init_func);
+		_context->SetObject(_object);
 		_context->Execute();
+	}
 
-		// Get the script object we just made.
-		_object = *reinterpret_cast<asIScriptObject**>(_context->GetAddressOfReturnValue());
-		_object->AddRef();
+	const Object* const owner = getOwner();
 
-		// Cache properties.
-		const asUINT num_props = _object->GetPropertyCount();
-
-		constexpr Gaff::Hash32 comp_hash = Gaff::FNV1aHash32Const("_component");
-
-		for (asUINT i = 0; i < num_props; ++i) {
-			const char* const name = _object->GetPropertyName(i);
-			const int type_id = _object->GetPropertyTypeId(i);
-
-			const Gaff::Hash32 prop_name = Gaff::FNV1aHash32String(name);
-
-			if (prop_name == comp_hash) {
-				*reinterpret_cast<void**>(_object->GetAddressOfProperty(i)) = this;
-			}
-
-			PropertyData& data = _property_map[prop_name];
-			data.type_id = type_id;
-			data.type_info = (type_id <= asTYPEID_DOUBLE) ? nullptr : module->GetEngine()->GetTypeInfoById(type_id);
-			data.property = _object->GetAddressOfProperty(i);
-		}
-
-		// Cache methods.
-		const asUINT num_methods = _type_info->GetMethodCount();
-
-		for (asUINT i = 0; i < num_methods; ++i) {
-			asIScriptFunction* const func = _type_info->GetMethodByIndex(i);
-			_method_map[Gaff::FNV1aHash32String(func->GetName())] = func;
-		}
-
-		// Call onInit() if it has one.
-		asIScriptFunction* const init_func = _type_info->GetMethodByName("onInit");
-
-		if (init_func) {
-			_context->Prepare(init_func);
-			_context->SetObject(_object);
-			_context->Execute();
-		}
-
-		const Object* const owner = getOwner();
-
-		// Call onAddToWorld() if it has one.
-		if (owner && owner->isInWorld()) {
-			onAddToWorld();
-		}
+	// Call onAddToWorld() if it has one.
+	if (owner && owner->isInWorld()) {
+		onAddToWorld();
 	}
 }
 

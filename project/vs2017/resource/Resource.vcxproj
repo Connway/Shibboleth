@@ -250,6 +250,7 @@
   <ItemGroup>
     <ClInclude Include="..\..\..\src\Modules\Resource\include\Gen_ReflectionInit.h" />
     <ClInclude Include="..\..\..\src\Modules\Resource\include\Shibboleth_IResource.h" />
+    <ClInclude Include="..\..\..\src\Modules\Resource\include\Shibboleth_LoadFileCallbackAttribute.h" />
     <ClInclude Include="..\..\..\src\Modules\Resource\include\Shibboleth_ResourceExtensionAttribute.h" />
     <ClInclude Include="..\..\..\src\Modules\Resource\include\Shibboleth_ResourceManager.h" />
   </ItemGroup>
@@ -261,4 +262,4 @@
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
-</Project>
+</Project> 

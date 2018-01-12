@@ -30,10 +30,9 @@ NS_SHIBBOLETH
 class ResExtAttribute : public Gaff::IAttribute
 {
 public:
-	ResExtAttribute(const char* extension): _extension(extension, eastl::CharStrlen(extension)) {}
+	ResExtAttribute(const char* extension);
 
-	const HashStringTemp32& getExtension(void) const { return _extension; }
-
+	const HashStringTemp32& getExtension(void) const;
 	Gaff::IAttribute* clone(void) const override;
 
 private:

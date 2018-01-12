@@ -26,6 +26,8 @@ THE SOFTWARE.
 #include "Gaff_Assert.h"
 #include "Gaff_Hash.h"
 
+#define GET_CLASS_ATTRIBUTE(T) getClassAttribute<T>(Gaff::FNV1aHash64Const(#T))
+
 NS_GAFF
 
 class ISerializeReader;
@@ -285,6 +287,23 @@ public:
 
 		if (factory_func) {
 			return factory_func(allocator, std::forward<Args>(args)...);
+		}
+
+		return nullptr;
+	}
+
+	template <class T>
+	const T* getClassAttribute(Hash64 class_name) const
+	{
+		for (int32_t i = 0; i < getNumClassAttributes(); ++i) {
+			const IAttribute* const attribute = getClassAttribute(i);
+			const void* attr = attribute->getReflectionDefinition().getInterface(
+				class_name, attribute->getBasePointer()
+			);
+
+			if (attr) {
+				return reinterpret_cast<const T*>(attr);
+			}
 		}
 
 		return nullptr;
