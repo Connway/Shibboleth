@@ -46,7 +46,7 @@ class IFile;
 class IResource;
 using IResourcePtr = Gaff::RefPtr<IResource>;
 
-class IResource : public Gaff::IRefCounted
+class IResource : public Gaff::IRefCounted, public Gaff::IReflectionObject
 {
 public:
 	enum ResourceState
@@ -56,16 +56,16 @@ public:
 		RS_LOADED
 	};
 
-	virtual void load(void) = 0;
+	virtual void load(void);
 	virtual bool readsFromDisk(void) const { return true; }
 
 	void addRef(void) const override;
 	void release(void) const override;
 	int32_t getRefCount(void) const override;
 
-	void addResourceStateCallback(const eastl::function<void (IResource*)>& callback);
-	void addResourceStateCallback(eastl::function<void (IResource*)>&& callback);
-	void removeResourceStateCallback(const eastl::function<void (IResource*)>& callback);
+	void addLoadedCallback(const eastl::function<void (IResource*)>& callback);
+	void addLoadedCallback(eastl::function<void (IResource*)>&& callback);
+	void removeLoadedCallback(const eastl::function<void (IResource*)>& callback);
 
 	const HashString64& getFilePath(void) const;
 	ResourceState getState(void) const;

@@ -12,6 +12,9 @@
     <ClInclude Include="..\..\..\src\Modules\Resource\include\Shibboleth_IResource.h">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\src\Modules\Resource\include\Shibboleth_LoadFileCallbackAttribute.h">
+      <Filter>include</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\src\Modules\Resource\include\Shibboleth_ResourceExtensionAttribute.h">
       <Filter>include</Filter>
     </ClInclude>

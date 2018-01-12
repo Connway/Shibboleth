@@ -245,6 +245,7 @@
   <ItemGroup>
     <ClInclude Include="..\..\..\src\Modules\Resource\include\Gen_ReflectionInit.h" />
     <ClInclude Include="..\..\..\src\Modules\Resource\include\Shibboleth_IResource.h" />
+    <ClInclude Include="..\..\..\src\Modules\Resource\include\Shibboleth_LoadFileCallbackAttribute.h" />
     <ClInclude Include="..\..\..\src\Modules\Resource\include\Shibboleth_ResourceExtensionAttribute.h" />
     <ClInclude Include="..\..\..\src\Modules\Resource\include\Shibboleth_ResourceManager.h" />
   </ItemGroup>

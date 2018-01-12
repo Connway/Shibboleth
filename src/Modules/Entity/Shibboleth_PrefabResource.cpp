@@ -23,6 +23,7 @@ THE SOFTWARE.
 #include "Shibboleth_PrefabResource.h"
 #include "Shibboleth_ObjectManager.h"
 #include <Shibboleth_ResourceExtensionAttribute.h>
+#include <Shibboleth_LoadFileCallbackAttribute.h>
 #include <Shibboleth_IFileSystem.h>
 #include <Gaff_SerializeReader.h>
 #include <Gaff_MessagePack.h>
@@ -34,7 +35,7 @@ SHIB_REFLECTION_DEFINE(PrefabResource)
 NS_SHIBBOLETH
 
 SHIB_REFLECTION_CLASS_DEFINE_BEGIN(PrefabResource)
-	.classAttrs(ResExtAttribute(".prefab"), ResExtAttribute(".prefab.bin"))
+	.classAttrs(ResExtAttribute(".prefab"), ResExtAttribute(".prefab.bin"), MakeLoadFileCallbackAttribute(&PrefabResource::loadPrefab))
 	.BASE(IResource)
 	.ctor<>()
 SHIB_REFLECTION_CLASS_DEFINE_END(PrefabResource)
@@ -43,16 +44,6 @@ PrefabResource::~PrefabResource(void)
 {
 	if (_prefab) {
 		GetApp().getManagerTUnsafe<ObjectManager>().destroyObject(_prefab);
-	}
-}
-
-void PrefabResource::load(void)
-{
-	_prefab_file = loadFile(getFilePath().getBuffer());
-
-	if (_prefab_file) {
-		Gaff::JobData job_data = { LoadPrefab, this };
-		GetApp().getJobPool().addJobs(&job_data, 1, nullptr);
 	}
 }
 
@@ -87,39 +78,33 @@ bool PrefabResource::loadMPack(IFile* file, const ProxyAllocator& allocator)
 	return _prefab->load(reader);
 }
 
-void PrefabResource::LoadPrefab(void* data)
+void PrefabResource::loadPrefab(IFile* file)
 {
-	PrefabResource* const prefab = reinterpret_cast<PrefabResource*>(data);
 	ObjectManager& obj_mgr = GetApp().getManagerTUnsafe<ObjectManager>();
 	ProxyAllocator allocator("Resource");
 
-	IFile* const file = prefab->_prefab_file;
+	_prefab = obj_mgr.createObject();
 
-	prefab->_prefab = obj_mgr.createObject();
-	prefab->_prefab_file = nullptr;
-
-	if (Gaff::File::CheckExtension(prefab->getFilePath().getBuffer(), ".bin")) {
-		if (prefab->loadMPack(file, allocator)) {
-			prefab->succeeded();
+	if (Gaff::File::CheckExtension(getFilePath().getBuffer(), ".bin")) {
+		if (loadMPack(file, allocator)) {
+			succeeded();
 
 		} else {
-			obj_mgr.destroyObject(prefab->_prefab);
-			prefab->_prefab = nullptr;
-			prefab->failed();
+			obj_mgr.destroyObject(_prefab);
+			_prefab = nullptr;
+			failed();
 		}
 
 	} else {
-		if (prefab->loadJSON(file, allocator)) {
-			prefab->succeeded();
+		if (loadJSON(file, allocator)) {
+			succeeded();
 
 		} else {
-			obj_mgr.destroyObject(prefab->_prefab);
-			prefab->_prefab = nullptr;
-			prefab->failed();
+			obj_mgr.destroyObject(_prefab);
+			_prefab = nullptr;
+			failed();
 		}
 	}
-
-	GetApp().getFileSystem()->closeFile(file);
 }
 
 NS_END

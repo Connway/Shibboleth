@@ -246,11 +246,13 @@
     <ClInclude Include="..\..\..\src\Modules\Entity\include\Gen_ReflectionInit.h" />
     <ClInclude Include="..\..\..\src\Modules\Entity\include\Shibboleth_Component.h" />
     <ClInclude Include="..\..\..\src\Modules\Entity\include\Shibboleth_Object.h" />
+    <ClInclude Include="..\..\..\src\Modules\Entity\include\Shibboleth_ObjectManager.h" />
     <ClInclude Include="..\..\..\src\Modules\Entity\include\Shibboleth_PrefabResource.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\src\Modules\Entity\Shibboleth_Component.cpp" />
     <ClCompile Include="..\..\..\src\Modules\Entity\Shibboleth_Object.cpp" />
+    <ClCompile Include="..\..\..\src\Modules\Entity\Shibboleth_ObjectManager.cpp" />
     <ClCompile Include="..\..\..\src\Modules\Entity\Shibboleth_PrefabResource.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

@@ -30,6 +30,16 @@ SHIB_REFLECTION_CLASS_DEFINE_BEGIN(ResExtAttribute)
 	.BASE(Gaff::IAttribute)
 SHIB_REFLECTION_CLASS_DEFINE_END(ResExtAttribute)
 
+ResExtAttribute::ResExtAttribute(const char* extension):
+	_extension(extension, eastl::CharStrlen(extension))
+{
+}
+
+const HashStringTemp32& ResExtAttribute::getExtension(void) const
+{
+	return _extension;
+}
+
 Gaff::IAttribute* ResExtAttribute::clone(void) const
 {
 	return SHIB_ALLOCT_POOL(ResExtAttribute, GetAllocator()->getPoolIndex("Reflection"), *GetAllocator(), _extension.getBuffer());

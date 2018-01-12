@@ -35,8 +35,6 @@ public:
 	AngelScriptResource(void);
 	~AngelScriptResource(void);
 
-	void load(void) override;
-
 	const asIScriptModule* getModule(void) const;
 	CScriptBuilder& getBuilder(void); // For metadata.
 
@@ -44,11 +42,7 @@ private:
 	asIScriptModule* _module = nullptr;
 	CScriptBuilder _builder;
 
-	IFile* _script_file = nullptr;
-
-	void loadScript(void);
-
-	static void LoadScript(void* data);
+	void loadScript(IFile* file);
 
 	SHIB_REFLECTION_CLASS_DECLARE(AngelScriptResource);
 };
