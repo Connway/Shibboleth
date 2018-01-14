@@ -26,9 +26,6 @@ THE SOFTWARE.
 
 NS_GAFF
 
-/*!
-	\brief Initializes the networking system. This is required to be called before any Connection or Host classes are instantiated.
-*/
 bool NetworkInit(
 	NetworkAllocFunc alloc_func,
 	NetworkFreeFunc free_func,
@@ -65,18 +62,6 @@ Host::~Host(void)
 	destroy();
 }
 
-/*!
-	\brief Initializes the Host as a server.
-
-	\param port The port we will broadcast on.
-	\param address The address we will bind to.
-	\param connections The maximum number of incoming/outgoing connections.
-	\param channels The number of channels allowed per connection.
-	\param down_speed The maximum bandwidth allowed for incoming data.
-	\param up_speed The maximum bandwidth allowed for outgoing data.
-
-	\return Whether the server was successfully created.
-*/
 bool Host::initServer(unsigned short port, const char* address, size_t connections, size_t channels, unsigned int down_speed, unsigned int up_speed)
 {
 	GAFF_ASSERT(_host == nullptr);
@@ -93,16 +78,6 @@ bool Host::initServer(unsigned short port, const char* address, size_t connectio
 	return _host != nullptr;
 }
 
-/*!
-	\brief Initializes the Host as a client.
-
-	\param connections The maximum number of incoming/outgoing connections.
-	\param channels The number of channels allowed per connection.
-	\param down_speed The maximum bandwidth allowed for incoming data.
-	\param up_speed The maximum bandwidth allowed for outgoing data.
-
-	\return Whether the client was successfully created.
-*/
 bool Host::initClient(size_t connections, size_t channels, unsigned int down_speed, unsigned int up_speed)
 {
 	GAFF_ASSERT(_host == nullptr);
@@ -131,9 +106,6 @@ void Host::setChannelLimit(size_t channels)
 	enet_host_channel_limit(_host, channels);
 }
 
-/*!
-	\brief Get's the IP address encoded into an unsigned int.
-*/
 unsigned int Host::getHost(void) const
 {
 	GAFF_ASSERT(_host);
@@ -154,9 +126,6 @@ Connection Host::connect(const char* address, unsigned short port, size_t channe
 	return connection;
 }
 
-/*!
-	\brief Gets the latest connection generated from a EVENT_CONNECTION.
-*/
 Connection Host::getLatestConnection(void)
 {
 	Connection connection(_latest_connection);
@@ -164,12 +133,6 @@ Connection Host::getLatestConnection(void)
 	return connection;
 }
 
-/*!
-	\brief Waits for a network event to occur and calls the \a callback when an event is generated.
-
-	\param callback The callback we will call when an event occurs.
-	\param timeout The number of milliseconds to wait for an event.
-*/
 void Host::waitForEvent(NetworkEventCallback& callback, unsigned int timeout)
 {
 	GAFF_ASSERT(_host);
@@ -197,10 +160,6 @@ void Host::waitForEvent(NetworkEventCallback& callback, unsigned int timeout)
 	}
 }
 
-/*!
-	\brief The same as waitForEvent(), but does not block the thread.
-	\param callback The callback we will call when an event occurs.
-*/
 void Host::checkForEvent(NetworkEventCallback& callback)
 {
 	GAFF_ASSERT(_host);
@@ -228,14 +187,6 @@ void Host::checkForEvent(NetworkEventCallback& callback)
 	}
 }
 
-/*!
-	\brief Broadcasts a packet to all connected peers.
-
-	\param channel The channel to broadcast the packet on.
-	\param data The packet data.
-	\param data_size The packet size in bytes.
-	\param packet_flags A list of bitwise or concatenated PacketFlags.
-*/
 void Host::broadcast(unsigned char channel, void* data, size_t data_size, unsigned int packet_flags)
 {
 	GAFF_ASSERT(_host);
@@ -243,9 +194,6 @@ void Host::broadcast(unsigned char channel, void* data, size_t data_size, unsign
 	enet_host_broadcast(_host, channel, packet);
 }
 
-/*!
-	\brief Flushes the packet queue.
-*/
 void Host::flush(void)
 {
 	GAFF_ASSERT(_host);

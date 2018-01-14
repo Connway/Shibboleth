@@ -101,7 +101,7 @@ bool MainLoop::init(void)
 	//do {
 	//	all_loaded = true;
 
-	//	Gaff::ScopedLock<Gaff::SpinLock> lock(_res_lock);
+	//	std::lock_guard<std::mutex> lock(_res_lock);
 
 	//	for (size_t i = 0; i < _resources.size(); ++i) {
 	//		all_loaded &= _resources[i]->isLoaded();
@@ -229,7 +229,7 @@ void MainLoop::update(void)
 
 //void MainLoop::ResReq(ResourcePtr& res)
 //{
-//	Gaff::ScopedLock<Gaff::SpinLock> lock(_res_lock);
+//	std::lock_guard<std::mutex> lock(_res_lock);
 //	_resources.emplacePush(res);
 //}
 

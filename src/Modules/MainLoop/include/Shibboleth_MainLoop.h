@@ -46,7 +46,7 @@ private:
 	//Object* _camera = nullptr;
 	//Object* _floor = nullptr;
 	//Array<ResourcePtr> _resources;
-	//Gaff::SpinLock _res_lock;
+	//std::mutex _res_lock;
 
 	//void ResReq(ResourcePtr& res);
 };

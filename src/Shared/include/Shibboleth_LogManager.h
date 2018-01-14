@@ -27,8 +27,8 @@ THE SOFTWARE.
 #include "Shibboleth_Vector.h"
 #include "Shibboleth_String.h"
 #include "Shibboleth_Queue.h"
-#include <Gaff_Function.h>
 #include <Gaff_File.h>
+#include <EASTL/functional.h>
 #include <condition_variable>
 #include <thread>
 #include <mutex>
@@ -45,7 +45,7 @@ enum LogType
 class LogManager
 {
 public:
-	using LogCallback = Gaff::FunctionBinder<void, const char*, LogType>;
+	using LogCallback = eastl::function<void (const char*, LogType)>;
 
 	LogManager(void);
 	~LogManager(void);

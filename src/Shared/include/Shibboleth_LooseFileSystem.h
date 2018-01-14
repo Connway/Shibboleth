@@ -57,7 +57,7 @@ public:
 	IFile* openFile(const char* file_name);
 	void closeFile(IFile* file);
 
-	bool forEachFile(const char* directory, Gaff::FunctionBinder<bool, const char*, IFile*>& callback);
+	bool forEachFile(const char* directory, eastl::function<bool (const char*, IFile*)>& callback);
 
 private:
 	struct FileData
