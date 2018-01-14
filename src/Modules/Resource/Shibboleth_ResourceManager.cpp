@@ -79,7 +79,7 @@ void ResourceManager::allModulesLoaded(void)
 
 IResourcePtr ResourceManager::requestResource(Gaff::HashStringTemp64 name)
 {
-	std::lock_guard<Gaff::SpinLock> lock(_res_lock);
+	std::lock_guard<std::mutex> lock(_res_lock);
 
 	auto it_res = eastl::lower_bound(
 		_resources.begin(),
@@ -129,13 +129,13 @@ void ResourceManager::waitForResource(const IResource& resource) const
 {
 	while (resource._state == IResource::RS_PENDING) {
 		// Help out.
-		YieldThread();
+		std::this_thread::yield();
 	}
 }
 
 void ResourceManager::removeResource(const IResource* resource)
 {
-	std::lock_guard<Gaff::SpinLock> lock(_res_lock);
+	std::lock_guard<std::mutex> lock(_res_lock);
 
 	auto it_res = eastl::lower_bound(_resources.begin(), _resources.end(), resource);
 

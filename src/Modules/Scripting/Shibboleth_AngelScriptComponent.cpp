@@ -51,7 +51,7 @@ AngelScriptComponent::~AngelScriptComponent(void)
 
 	if (_context) {
 		AngelScriptManager& as_mgr = GetApp().getManagerTUnsafe<AngelScriptManager>();
-		Gaff::SpinLock& lock = as_mgr.getEngineLock();
+		std::mutex& lock = as_mgr.getEngineLock();
 
 		lock.lock();
 		as_mgr.getEngine()->ReturnContext(_context);
@@ -104,7 +104,7 @@ void AngelScriptComponent::setScript(const AngelScriptResourcePtr& script)
 	}
 
 	if (_context) {
-		Gaff::SpinLock& lock = GetApp().getManagerTUnsafe<AngelScriptManager>().getEngineLock();
+		std::mutex& lock = GetApp().getManagerTUnsafe<AngelScriptManager>().getEngineLock();
 
 		lock.lock();
 		_context->GetEngine()->ReturnContext(_context);
@@ -251,7 +251,7 @@ void AngelScriptComponent::onScriptLoaded(IResource* /*res*/)
 		return;
 	}
 
-	Gaff::SpinLock& lock = GetApp().getManagerTUnsafe<AngelScriptManager>().getEngineLock();
+	std::mutex& lock = GetApp().getManagerTUnsafe<AngelScriptManager>().getEngineLock();
 
 	lock.lock();
 	_context = engine->CreateContext();

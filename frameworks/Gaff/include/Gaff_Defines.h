@@ -157,13 +157,11 @@ THE SOFTWARE.
 	#define THREAD_LOCAL __declspec(thread) // Specifies a static variable to use thread local storage.
 
 	#define WARNING(msg) __pragma(message(__FILE__":(" GAFF_STR(__LINE__)") WARNING - " msg))
-	#define YieldThread() Sleep(0) // Yields the thread to the scheduler.
 
 #elif defined(PLATFORM_LINUX) || defined(PLATFORM_MAC)
 	#define THREAD_LOCAL thread_local // Specifies a static variable to use thread local storage.
 
 	#define WARNING(msg) _Pragma(message(__FILE__":(" GAFF_STR(__LINE__)") WARNING - " msg))
-	#define YieldThread sched_yield // Yields the thread to the scheduler.
 #endif
 
 #ifdef PLATFORM_LINUX

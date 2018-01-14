@@ -77,7 +77,7 @@ public:
 	virtual const IManager* getManager(Gaff::Hash64 name) const = 0;
 	virtual IManager* getManager(Gaff::Hash64 name) = 0;
 
-	virtual MessageBroadcaster& getBroadcaster(void) = 0;
+	//virtual MessageBroadcaster& getBroadcaster(void) = 0;
 
 	virtual IFileSystem* getFileSystem(void) = 0;
 	virtual const VectorMap<HashString32, U8String>& getCmdLine(void) const = 0;

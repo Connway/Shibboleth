@@ -27,8 +27,8 @@ THE SOFTWARE.
 #include <Shibboleth_Vector.h>
 #include <Gleam_Transform.h>
 #include <Gleam_AABB.h>
-#include <Gaff_SpinLock.h>
 #include <Gaff_Function.h>
+#include <mutex>
 
 NS_GAFF
 	class ISerializeReader;
@@ -196,11 +196,11 @@ private:
 
 	Vector< eastl::pair<DirtyCallback, uint64_t> > _local_callbacks;
 	Vector< eastl::pair<DirtyCallback, uint64_t> > _world_callbacks;
-	Gaff::SpinLock _local_cb_lock;
-	Gaff::SpinLock _world_cb_lock;
+	std::mutex _local_cb_lock;
+	std::mutex _world_cb_lock;
 
 	Vector<Object*> _children;
-	//Gaff::SpinLock _children_lock;
+	//std::mutex _children_lock;
 	Object* _parent;
 
 	HashString64 _name;

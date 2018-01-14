@@ -22,7 +22,6 @@ THE SOFTWARE.
 
 #include "Shibboleth_LooseFileSystem.h"
 #include "Shibboleth_String.h"
-#include <Gaff_ScopedLock.h>
 #include <Gaff_Directory.h>
 #include <Gaff_Utils.h>
 #include <Gaff_File.h>
@@ -70,7 +69,7 @@ LooseFileSystem::~LooseFileSystem(void)
 IFile* LooseFileSystem::openFile(const char* file_name)
 {
 	GAFF_ASSERT(file_name && strlen(file_name));
-	Gaff::ScopedLock<Gaff::SpinLock> scoped_lock(_file_lock);
+	std::lock_guard<std::mutex> lock(_file_lock);
 
 	auto it = eastl::find(_files.begin(), _files.end(), file_name,
 	[](const FileData& lhs, const char* rhs) -> bool
@@ -125,7 +124,7 @@ IFile* LooseFileSystem::openFile(const char* file_name)
 void LooseFileSystem::closeFile(IFile* file)
 {
 	GAFF_ASSERT(file);
-	Gaff::ScopedLock<Gaff::SpinLock> scoped_lock(_file_lock);
+	std::lock_guard<std::mutex> lock(_file_lock);
 
 	auto it = eastl::find(_files.begin(), _files.end(), file,
 	[](const FileData& lhs, const IFile* rhs) -> bool

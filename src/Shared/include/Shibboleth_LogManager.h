@@ -28,10 +28,10 @@ THE SOFTWARE.
 #include "Shibboleth_String.h"
 #include "Shibboleth_Queue.h"
 #include <Gaff_Function.h>
-#include <Gaff_SpinLock.h>
-#include <Gaff_Event.h>
 #include <Gaff_File.h>
+#include <condition_variable>
 #include <thread>
+#include <mutex>
 
 NS_SHIBBOLETH
 
@@ -75,13 +75,13 @@ private:
 	};
 
 	bool _shutdown;
-	Gaff::Event _log_event;
+	std::condition_variable _log_event;
 
 	VectorMap<HashString32, Gaff::File> _channels;
 	Vector<LogCallback> _log_callbacks;
 	Queue<LogTask> _logs;
-	Gaff::SpinLock _log_queue_lock;
-	Gaff::SpinLock _log_callback_lock;
+	std::mutex _log_queue_lock;
+	std::mutex _log_callback_lock;
 
 	std::thread _log_thread;
 

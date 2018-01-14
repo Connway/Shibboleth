@@ -39,8 +39,8 @@ bool JobPool<Allocator>::init(int32_t num_pools, int32_t num_threads, ThreadInit
 	_job_pools.resize(num_pools + 1);
 
 	for (JobQueue& job_queue : _job_pools) {
-		job_queue.read_write_lock = UniquePtr<SpinLock, Allocator>(GAFF_ALLOCT(Gaff::SpinLock, _allocator));
-		job_queue.thread_lock = UniquePtr<SpinLock, Allocator>(GAFF_ALLOCT(Gaff::SpinLock, _allocator));
+		job_queue.read_write_lock = UniquePtr<std::mutex, Allocator>(GAFF_ALLOCT(std::mutex, _allocator));
+		job_queue.thread_lock = UniquePtr<std::mutex, Allocator>(GAFF_ALLOCT(std::mutex, _allocator));
 	}
 
 	_thread_data.job_pool = this;
@@ -117,7 +117,7 @@ void JobPool<Allocator>::waitForCounter(const Counter* counter)
 	GAFF_ASSERT(counter);
 
 	while (*counter > 0 && !_thread_data.terminate) {
-		YieldThread();
+		std::this_thread::yield();
 	}
 }
 
@@ -155,7 +155,7 @@ void JobPool<Allocator>::help(eastl::chrono::milliseconds ms)
 	for (size_t i = 1; i < _job_pools.size(); ++i) {
 		typename JobPool<Allocator>::JobQueue& job_queue = _job_pools[i];
 
-		if (job_queue.thread_lock->tryLock()) {
+		if (job_queue.thread_lock->try_lock()) {
 			earlied_out = ProcessJobQueue(job_queue, ms);
 			job_queue.thread_lock->unlock();
 		}
@@ -176,7 +176,7 @@ void JobPool<Allocator>::doAJob(void)
 	for (size_t i = 1; i < _job_pools.size(); ++i) {
 		typename JobPool<Allocator>::JobQueue& job_queue = _job_pools[i];
 
-		if (job_queue.thread_lock->tryLock()) {
+		if (job_queue.thread_lock->try_lock()) {
 			if (job_queue.jobs.empty()) {
 				job_queue.thread_lock->unlock();
 
@@ -283,6 +283,6 @@ void JobPool<Allocator>::JobThread(ThreadData& thread_data)
 
 	while (!thread_data.terminate) {
 		job_pool->help();
-		YieldThread(); // Probably a good idea to give some time back to the CPU for other stuff.
+		std::this_thread::yield(); // Probably a good idea to give some time back to the CPU for other stuff.
 	}
 }

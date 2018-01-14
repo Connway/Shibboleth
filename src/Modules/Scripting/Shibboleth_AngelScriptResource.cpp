@@ -63,7 +63,7 @@ void AngelScriptResource::loadScript(IFile* file)
 {
 	AngelScriptManager& as_mgr = GetApp().getManagerTUnsafe<AngelScriptManager>();
 	asIScriptEngine* const engine = as_mgr.getEngine();
-	Gaff::SpinLock& lock = as_mgr.getEngineLock();
+	std::mutex& lock = as_mgr.getEngineLock();
 
 	lock.lock();
 

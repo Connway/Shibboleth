@@ -163,7 +163,7 @@ void MainLoop::update(void)
 	//_render_mgr->updateWindows(); // This has to happen in the main thread.
 	//_update_mgr->update();
 
-	//YieldThread();
+	//std::this_thread::yield();
 
 	ResourceManager& res_mgr = GetApp().getManagerTUnsafe<ResourceManager>();
 	PrefabResourcePtr prefab = res_mgr.requestResourceT<PrefabResource>("Objects/test2.prefab");

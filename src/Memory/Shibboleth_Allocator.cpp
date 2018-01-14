@@ -43,7 +43,6 @@ THE SOFTWARE.
 	#include <Gaff_DefaultAlignedAllocator.h>
 	#include <Gaff_ScopedExit.h>
 	#include <Gaff_StackTrace.h>
-	#include <Gaff_SpinLock.h>
 	#include <Gaff_Map.h>
 #endif
 

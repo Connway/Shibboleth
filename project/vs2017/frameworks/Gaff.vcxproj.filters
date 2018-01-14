@@ -75,15 +75,6 @@
     <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_EnumReflectionDefinition.inl">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_Event.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_Event_Linux.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_Event_Windows.h">
-      <Filter>include</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_File.h">
       <Filter>include</Filter>
     </ClInclude>
@@ -192,9 +183,6 @@
     <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_ScopedExit.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_ScopedLock.h">
-      <Filter>include</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_SerializeInterfaces.h">
       <Filter>include</Filter>
     </ClInclude>
@@ -202,9 +190,6 @@
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_SmartPtrs.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_SpinLock.h">
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_StackTrace.h">
@@ -250,8 +235,6 @@
     <ClCompile Include="..\..\..\frameworks\Gaff\Gaff_DynamicModule_Linux.cpp" />
     <ClCompile Include="..\..\..\frameworks\Gaff\Gaff_DynamicModule_Windows.cpp" />
     <ClCompile Include="..\..\..\frameworks\Gaff\Gaff_EnumReflection.cpp" />
-    <ClCompile Include="..\..\..\frameworks\Gaff\Gaff_Event_Linux.cpp" />
-    <ClCompile Include="..\..\..\frameworks\Gaff\Gaff_Event_Windows.cpp" />
     <ClCompile Include="..\..\..\frameworks\Gaff\Gaff_File.cpp" />
     <ClCompile Include="..\..\..\frameworks\Gaff\Gaff_Host.cpp" />
     <ClCompile Include="..\..\..\frameworks\Gaff\Gaff_JSON.cpp" />
@@ -259,7 +242,6 @@
     <ClCompile Include="..\..\..\frameworks\Gaff\Gaff_MessagePack.cpp" />
     <ClCompile Include="..\..\..\frameworks\Gaff\Gaff_MessagePackSerializeWriter.cpp" />
     <ClCompile Include="..\..\..\frameworks\Gaff\Gaff_Reflection.cpp" />
-    <ClCompile Include="..\..\..\frameworks\Gaff\Gaff_SpinLock.cpp" />
     <ClCompile Include="..\..\..\frameworks\Gaff\Gaff_StackTrace_Linux.cpp" />
     <ClCompile Include="..\..\..\frameworks\Gaff\Gaff_StackTrace_Windows.cpp" />
     <ClCompile Include="..\..\..\frameworks\Gaff\Gaff_Utils_Common.cpp" />

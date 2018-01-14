@@ -24,7 +24,7 @@ THE SOFTWARE.
 
 #include <Shibboleth_Reflection.h>
 #include <Shibboleth_IManager.h>
-#include <Gaff_SpinLock.h>
+#include <mutex>
 
 class asIScriptEngine;
 struct asSMessageInfo;
@@ -39,11 +39,11 @@ public:
 	bool init(void) override;
 
 	asIScriptEngine* getEngine(void) const;
-	Gaff::SpinLock& getEngineLock(void);
+	std::mutex& getEngineLock(void);
 
 private:
 	asIScriptEngine* _engine = nullptr;
-	Gaff::SpinLock _lock;
+	std::mutex _lock;
 
 	void messageCallback(const asSMessageInfo* msg, void* param);
 

@@ -27,7 +27,6 @@ THE SOFTWARE.
 #include <Shibboleth_IApp.h>
 #include <Shibboleth_Math.h>
 #include <Gaff_SerializeInterfaces.h>
-#include <Gaff_ScopedLock.h>
 #include <Gaff_Utils.h>
 
 NS_SHIBBOLETH
@@ -384,14 +383,14 @@ void Object::removeComponent(Component* component, bool destroy)
 
 void Object::addChild(Object* object)
 {
-	//Gaff::ScopedLock<Gaff::SpinLock> scoped_lock(_children_lock);
+	//std::lock_guard<std::mutex> lock(_children_lock);
 	_children.emplace_back(object);
 	object->_parent = this;
 }
 
 void Object::removeFromParent(void)
 {
-	//Gaff::ScopedLock<Gaff::SpinLock> scoped_lock(_parent->_children_lock);
+	//std::lock_guard<std::mutex> lock(_parent->_children_lock);
 	auto it = eastl::find(_parent->_children.begin(), _parent->_children.end(), this);
 
 	if (it != _parent->_children.end()) {
@@ -403,7 +402,7 @@ void Object::removeFromParent(void)
 
 void Object::removeChildren(void)
 {
-	//Gaff::ScopedLock<Gaff::SpinLock> scoped_lock(_children_lock);
+	//std::lock_guard<std::mutex> lock(_children_lock);
 
 	 for (auto it = _children.begin(); it != _children.end(); ++it) {
 		 (*it)->_parent = nullptr;
@@ -433,13 +432,13 @@ void Object::updateTransforms(void)
 
 void Object::registerForLocalDirtyCallback(const DirtyCallback& callback, uint64_t user_data)
 {
-	Gaff::ScopedLock<Gaff::SpinLock> scoped_lock(_local_cb_lock);
+	std::lock_guard<std::mutex> lock(_local_cb_lock);
 	_local_callbacks.emplace_back(callback, user_data);
 }
 
 void Object::unregisterForLocalDirtyCallback(const DirtyCallback& callback)
 {
-	Gaff::ScopedLock<Gaff::SpinLock> scoped_lock(_local_cb_lock);
+	std::lock_guard<std::mutex> lock(_local_cb_lock);
 
 	auto it = eastl::find(
 		_local_callbacks.begin(),
@@ -475,13 +474,13 @@ void Object::notifyLocalDirtyCallbacks(void)
 
 void Object::registerForWorldDirtyCallback(const DirtyCallback& callback, uint64_t user_data)
 {
-	Gaff::ScopedLock<Gaff::SpinLock> scoped_lock(_world_cb_lock);
+	std::lock_guard<std::mutex> lock(_world_cb_lock);
 	_world_callbacks.emplace_back(callback, user_data);
 }
 
 void Object::unregisterForWorldDirtyCallback(const DirtyCallback& callback)
 {
-	Gaff::ScopedLock<Gaff::SpinLock> scoped_lock(_world_cb_lock);
+	std::lock_guard<std::mutex> lock(_world_cb_lock);
 
 	auto it = eastl::find(
 		_world_callbacks.begin(),
