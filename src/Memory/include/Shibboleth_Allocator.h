@@ -24,8 +24,9 @@ THE SOFTWARE.
 
 #include "Shibboleth_IAllocator.h"
 #include <eastl/fixed_vector.h>
-#include <Gaff_SpinLock.h>
 #include <Gaff_Hash.h>
+#include <atomic>
+#include <mutex>
 
 #define NUM_TAG_POOLS 16
 #define POOL_NAME_SIZE 32
@@ -82,7 +83,7 @@ private:
 
 	MemoryPoolInfo _tagged_pools[NUM_TAG_POOLS + 1];
 	eastl::fixed_vector<Gaff::Hash32, NUM_TAG_POOLS, false> _tag_ids;
-	Gaff::SpinLock _alloc_lock;
+	std::mutex _alloc_lock;
 
 	void setHeaderData(
 		AllocationHeader* header,

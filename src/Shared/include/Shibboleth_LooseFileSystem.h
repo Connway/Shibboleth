@@ -25,7 +25,8 @@ THE SOFTWARE.
 #include "Shibboleth_IFileSystem.h"
 #include "Shibboleth_String.h"
 #include "Shibboleth_Vector.h"
-#include <Gaff_SpinLock.h>
+#include <atomic>
+#include <mutex>
 
 NS_SHIBBOLETH
 
@@ -99,7 +100,7 @@ private:
 	};
 
 	Vector<FileData> _files;
-	Gaff::SpinLock _file_lock;
+	std::mutex _file_lock;
 };
 
 NS_END

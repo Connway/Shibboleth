@@ -25,7 +25,7 @@ THE SOFTWARE.
 #include "Shibboleth_IResource.h"
 #include <Shibboleth_VectorMap.h>
 #include <Shibboleth_IManager.h>
-#include <Gaff_SpinLock.h>
+#include <mutex>
 
 NS_SHIBBOLETH
 
@@ -61,7 +61,7 @@ public:
 private:
 	using FactoryFunc = void* (*)(Gaff::IAllocator&);
 
-	Gaff::SpinLock _res_lock;
+	std::mutex _res_lock;
 	Vector<IResource*> _resources;
 	VectorMap<Gaff::Hash32, FactoryFunc> _resource_factories;
 	ProxyAllocator _allocator = ProxyAllocator("Resource");

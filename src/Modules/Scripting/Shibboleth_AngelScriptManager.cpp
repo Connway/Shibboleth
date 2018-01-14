@@ -82,7 +82,7 @@ asIScriptEngine* AngelScriptManager::getEngine(void) const
 	return _engine;
 }
 
-Gaff::SpinLock& AngelScriptManager::getEngineLock(void)
+std::mutex& AngelScriptManager::getEngineLock(void)
 {
 	return _lock;
 }

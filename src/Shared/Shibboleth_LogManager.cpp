@@ -30,9 +30,10 @@ NS_SHIBBOLETH
 void LogManager::LogThread(LogManager& lm)
 {
 	AllocatorThreadInit();
+	std::unique_lock<std::mutex> unique_lock(lm._log_queue_lock);
 
 	while (!lm._shutdown) {
-		lm._log_event.wait();
+		lm._log_event.wait(unique_lock);
 
 		lm._log_queue_lock.lock();
 
@@ -49,7 +50,7 @@ void LogManager::LogThread(LogManager& lm)
 			task.file.writeChar('\n');
 			task.file.flush();
 
-			std::lock_guard<Gaff::SpinLock> lock(lm._log_callback_lock);
+			std::lock_guard<std::mutex> lock(lm._log_callback_lock);
 			lm.notifyLogCallbacks(task.message.data(), task.type);
 		}
 	}
@@ -79,9 +80,8 @@ void LogManager::destroy(void)
 {
 	_shutdown = true;
 
-	_log_event.set();
-
 	if (_log_thread.joinable()) {
+		_log_event.notify_all();
 		_log_thread.join();
 	}
 
@@ -93,12 +93,13 @@ void LogManager::destroy(void)
 
 void LogManager::addLogCallback(const LogCallback& callback)
 {
-	std::lock_guard<Gaff::SpinLock> lock(_log_callback_lock);
+	std::lock_guard<std::mutex> lock(_log_callback_lock);
 	_log_callbacks.emplace_back(callback);
 }
 
 void LogManager::removeLogCallback(const LogCallback& callback)
 {
+	std::lock_guard<std::mutex> lock(_log_callback_lock);
 	auto it = eastl::find(_log_callbacks.begin(), _log_callbacks.end(), callback);
 
 	if (it != _log_callbacks.end()) {
@@ -108,6 +109,8 @@ void LogManager::removeLogCallback(const LogCallback& callback)
 
 void LogManager::notifyLogCallbacks(const char* message, LogType type)
 {
+	std::lock_guard<std::mutex> lock(_log_callback_lock);
+
 	for (auto it = _log_callbacks.begin(); it != _log_callbacks.end(); ++it) {
 		(*it)(message, type);
 	}
@@ -202,10 +205,12 @@ bool LogManager::logMessageHelper(LogType type, Gaff::Hash32 channel, const char
 		return false;
 	}
 
-	std::lock_guard<Gaff::SpinLock> lock(_log_queue_lock);
-	_logs.emplace_back(it->second, temp, type);
-	_log_event.set();
+	{
+		std::lock_guard<std::mutex> lock(_log_queue_lock);
+		_logs.emplace_back(it->second, temp, type);
+	}
 
+	_log_event.notify_all();
 	return true;
 }
 

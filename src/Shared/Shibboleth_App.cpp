@@ -400,7 +400,7 @@ void App::run(void)
 {
 	while (_running) {
 		//uv_run(uv_default_loop(), UV_RUN_NOWAIT);
-		_broadcaster.update();
+		//_broadcaster.update();
 		_main_loop();
 	}
 }
@@ -453,10 +453,10 @@ IManager* App::getManager(Gaff::Hash64 name)
 	return it->second.get();
 }
 
-MessageBroadcaster& App::getBroadcaster(void)
-{
-	return _broadcaster;
-}
+//MessageBroadcaster& App::getBroadcaster(void)
+//{
+//	return _broadcaster;
+//}
 
 IFileSystem* App::getFileSystem(void)
 {

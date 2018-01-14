@@ -23,7 +23,6 @@ THE SOFTWARE.
 #pragma once
 
 #include "Gaff_SmartPtrs.h"
-#include "Gaff_SpinLock.h"
 #include "Gaff_Assert.h"
 #include "Gaff_Vector.h"
 #include "Gaff_Queue.h"
@@ -31,6 +30,7 @@ THE SOFTWARE.
 #include <EASTL/chrono.h>
 #include <atomic>
 #include <thread>
+#include <mutex>
 
 NS_GAFF
 
@@ -73,8 +73,10 @@ private:
 	struct JobQueue
 	{
 		Queue<JobPair, Allocator> jobs;
-		UniquePtr<SpinLock, Allocator> read_write_lock;
-		UniquePtr<SpinLock, Allocator> thread_lock;
+		UniquePtr<std::mutex, Allocator> read_write_lock;
+		UniquePtr<std::mutex, Allocator> thread_lock;
+		//std::mutex read_write_lock;
+		//std::mutex thread_lock;
 	};
 
 	struct ThreadData

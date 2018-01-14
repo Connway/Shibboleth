@@ -22,7 +22,7 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Shibboleth_MessageBroadcaster.h"
+//#include "Shibboleth_MessageBroadcaster.h"
 #include "Shibboleth_LogManager.h"
 #include "Shibboleth_SmartPtrs.h"
 #include "Shibboleth_IApp.h"
@@ -67,7 +67,7 @@ public:
 	const IManager* getManager(Gaff::Hash64 name) const override;
 	IManager* getManager(Gaff::Hash64 name) override;
 
-	MessageBroadcaster& getBroadcaster(void) override;
+	//MessageBroadcaster& getBroadcaster(void) override;
 
 	IFileSystem* getFileSystem(void) override;
 	const VectorMap<HashString32, U8String>& getCmdLine(void) const override;
@@ -116,7 +116,7 @@ private:
 	VectorMap< Gaff::Hash64, UniquePtr<IManager> > _manager_map;
 	VectorMap< Gaff::Hash64, Vector<Gaff::Hash64> > _type_buckets;
 
-	MessageBroadcaster _broadcaster;
+	//MessageBroadcaster _broadcaster;
 	DynamicLoader _dynamic_loader;
 	JobPool _job_pool;
 	LogManager _log_mgr;

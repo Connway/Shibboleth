@@ -48,11 +48,11 @@ public:
 // Message Hash and Listener ID
 using BroadcastID = std::pair<int32_t, int32_t>;
 
-class MessageBroadcaster
+class Broadcaster
 {
 public:
-	MessageBroadcaster(void);
-	~MessageBroadcaster(void);
+	Broadcaster(void);
+	~Broadcaster(void);
 
 	template <class Message>
 	BroadcastID listen(const Gaff::FunctionBinder<void, const Message&>& callback);
@@ -132,7 +132,7 @@ private:
 class BroadcastRemover
 {
 public:
-	BroadcastRemover(BroadcastID id, MessageBroadcaster& broadcaster);
+	BroadcastRemover(BroadcastID id, Broadcaster& broadcaster);
 	BroadcastRemover(void);
 	~BroadcastRemover(void);
 
@@ -146,10 +146,10 @@ public:
 
 private:
 	BroadcastID _id;
-	MessageBroadcaster* _broadcaster;
+	Broadcaster* _broadcaster;
 	bool _valid;
 };
 
-#include "Shibboleth_MessageBroadcaster.inl"
+#include "Shibboleth_Broadcaster.inl"
 
 NS_END

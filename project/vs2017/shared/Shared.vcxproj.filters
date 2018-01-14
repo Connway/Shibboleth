@@ -9,6 +9,12 @@
     <ClInclude Include="..\..\..\src\Shared\include\Shibboleth_App.h">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\src\Shared\include\Shibboleth_Broadcaster.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\Shared\include\Shibboleth_Broadcaster.inl">
+      <Filter>include</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\src\Shared\include\Shibboleth_Defines.h">
       <Filter>include</Filter>
     </ClInclude>
@@ -42,9 +48,6 @@
     <ClInclude Include="..\..\..\src\Shared\include\Shibboleth_JobPool.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\src\Shared\include\Shibboleth_LockDefines.h">
-      <Filter>include</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\src\Shared\include\Shibboleth_LogManager.h">
       <Filter>include</Filter>
     </ClInclude>
@@ -52,12 +55,6 @@
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\src\Shared\include\Shibboleth_Math.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\src\Shared\include\Shibboleth_MessageBroadcaster.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\src\Shared\include\Shibboleth_MessageBroadcaster.inl">
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\src\Shared\include\Shibboleth_ProxyAllocator.h">
@@ -93,10 +90,10 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\src\Shared\Shibboleth_App.cpp" />
+    <ClCompile Include="..\..\..\src\Shared\Shibboleth_Broadcaster.cpp" />
     <ClCompile Include="..\..\..\src\Shared\Shibboleth_LogManager.cpp" />
     <ClCompile Include="..\..\..\src\Shared\Shibboleth_LooseFileSystem.cpp" />
     <ClCompile Include="..\..\..\src\Shared\Shibboleth_Math.cpp" />
-    <ClCompile Include="..\..\..\src\Shared\Shibboleth_MessageBroadcaster.cpp" />
     <ClCompile Include="..\..\..\src\Shared\Shibboleth_NewDelete.cpp" />
     <ClCompile Include="..\..\..\src\Shared\Shibboleth_Reflection.cpp" />
     <ClCompile Include="..\..\..\src\Shared\Shibboleth_Utilities.cpp" />
