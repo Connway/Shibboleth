@@ -22,10 +22,9 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Gaff_ScopedLock.h"
-#include "Gaff_SpinLock.h"
-#include "Gaff_Function.h"
-#include "Gaff_Array.h"
+#include "Gaff_Vector.h"
+#include <EASTL/functional.h>
+#include <mutex>
 
 NS_GAFF
 
@@ -33,7 +32,7 @@ template <class T, class Allocator = DefaultAllocator>
 class Watcher
 {
 public:
-	typedef Gaff::FunctionBinder<void, const T&> Callback;
+	using Callback = eastl::function<void (const T&)>;
 
 	Watcher(T&& data, const Allocator& allocator = Allocator());
 	Watcher(const T& data, const Allocator& allocator = Allocator());
@@ -53,12 +52,12 @@ public:
 	T& get(void);
 
 private:
-	Array<Callback, Allocator> _callbacks;
+	Vector<Callback, Allocator> _callbacks;
 	T _data;
 
 	Allocator _allocator;
 
-	SpinLock _lock;
+	std::mutex _lock;
 
 	GAFF_NO_COPY(Watcher);
 	GAFF_NO_MOVE(Watcher);

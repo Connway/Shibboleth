@@ -20,11 +20,10 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-/*! \file */
-
 #pragma once
 
 #include "Gaff_Connection.h"
+#include <EASTL/functional.h>
 
 #define CONNECTION_SPEED_UNLIMITED 0
 #define CONNECTION_SPEED_512K 65536
@@ -33,9 +32,9 @@ THE SOFTWARE.
 #define CONNECTION_SPEED_56K 7168
 
 #ifdef PLATFORM_WINDOWS
-	#define NETWORK_CALLBACK __cdecl //!< Calling convention for network callback functions
+	#define NETWORK_CALLBACK __cdecl
 #else
-	#define NETWORK_CALLBACK //!< Calling convention for network callback functions
+	#define NETWORK_CALLBACK
 #endif
 
 struct _ENetHost;
@@ -55,9 +54,6 @@ enum NetworkEventType
 	EVENT_RECEIVED_PACKET
 };
 
-/*!
-	\brief Data passed into the network callback function when an event occurs.
-*/
 struct NetworkCallbackData
 {
 	Gaff::Host* host; //!< The host that generated this event.
@@ -69,7 +65,7 @@ struct NetworkCallbackData
 	size_t data_size; //!< Packet data size (if applicable).
 };
 
-typedef IFunction<void, const NetworkCallbackData&> NetworkEventCallback;
+using NetworkEventCallback = eastl::function<void (const NetworkCallbackData&)>;
 
 bool NetworkInit(
 	NetworkAllocFunc alloc_func = nullptr,

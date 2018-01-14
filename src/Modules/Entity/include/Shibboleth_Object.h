@@ -27,7 +27,7 @@ THE SOFTWARE.
 #include <Shibboleth_Vector.h>
 #include <Gleam_Transform.h>
 #include <Gleam_AABB.h>
-#include <Gaff_Function.h>
+#include <EASTL/functional.h>
 #include <mutex>
 
 NS_GAFF
@@ -117,7 +117,7 @@ public:
 		return component;
 	}
 
-	using DirtyCallback = Gaff::FunctionBinder<void, Object*, uint64_t>;
+	using DirtyCallback = eastl::function<void (Object*, uint64_t)>;
 
 	Object(int32_t id);
 	~Object(void);

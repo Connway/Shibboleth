@@ -23,11 +23,11 @@ THE SOFTWARE.
 #pragma once
 
 #include <Gleam_Window_Defines.h>
-#include <Gaff_Function.h>
+#include <EASTL/functional.h>
 
 NS_GLEAM
 
-using MessageHandler = Gaff::FunctionBinder<bool, const AnyMessage&>;
+using MessageHandler = eastl::function<bool (const AnyMessage&)>;
 
 class IWindow
 {

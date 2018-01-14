@@ -142,7 +142,7 @@ void LooseFileSystem::closeFile(IFile* file)
 	}
 }
 
-bool LooseFileSystem::forEachFile(const char* directory, Gaff::FunctionBinder<bool, const char*, IFile*>& callback)
+bool LooseFileSystem::forEachFile(const char* directory, eastl::function<bool (const char*, IFile*)>& callback)
 {
 	return Gaff::ForEachTypeInDirectory<Gaff::FDT_RegularFile>(directory, [&](const char* file_name, size_t) -> bool
 	{

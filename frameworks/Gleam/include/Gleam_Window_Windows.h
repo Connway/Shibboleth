@@ -28,7 +28,6 @@ THE SOFTWARE.
 #include "Gleam_VectorMap.h"
 #include "Gleam_Vector.h"
 #include <Gaff_IncludeWindows.h>
-#include <Gaff_Function.h>
 
 NS_GLEAM
 
