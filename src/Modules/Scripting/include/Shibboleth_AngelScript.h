@@ -106,6 +106,6 @@ private:
 NS_END
 
 SHIB_TEMPLATE_REFLECTION_DECLARE(RegisterAngelScriptAttribute, T)
-SHIB_TEMPLATE_REFLECTION_DEFINE(RegisterAngelScriptAttribute, T)
+SHIB_TEMPLATE_REFLECTION_DEFINE(RegisterAngelScriptAttribute, 0, T)
 
 #include"Shibboleth_AngelScript.inl"

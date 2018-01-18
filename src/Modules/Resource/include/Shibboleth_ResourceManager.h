@@ -94,9 +94,9 @@ SHIB_REFLECTION_DECLARE(ResourceManager)
 
 
 // Gaff::RefPtr
-SHIB_TEMPLATE_REFLECTION_DECLARE_SERIALIZE(Gaff::RefPtr, 0, T);
+SHIB_TEMPLATE_REFLECTION_DECLARE_SERIALIZE(Gaff::RefPtr, T);
 
-SHIB_TEMPLATE_REFLECTION_DEFINE_SERIALIZE_INIT(Gaff::RefPtr, T)
+SHIB_TEMPLATE_REFLECTION_DEFINE_SERIALIZE_INIT(Gaff::RefPtr, 0, T)
 {
 	static_assert(std::is_base_of<IResource, T>::value, "Expected RefPtr<T> to be an IResource. Override reflection if you wish to use this class with reflection.");
 }

@@ -30,6 +30,8 @@ template <class T>
 class ReflectionVersion final
 {
 public:
+	ReflectionVersion(int32_t start_version);
+
 	template <class Base>
 	ReflectionVersion& base(const char* name);
 
@@ -65,7 +67,7 @@ public:
 	void finish(void);
 
 private:
-	Hash64 _hash = INIT_HASH64;
+	Hash64 _hash;
 };
 
 NS_END

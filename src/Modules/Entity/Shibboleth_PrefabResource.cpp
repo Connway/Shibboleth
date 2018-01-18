@@ -30,7 +30,7 @@ THE SOFTWARE.
 #include <Gaff_JSON.h>
 #include <Gaff_File.h>
 
-SHIB_REFLECTION_DEFINE(PrefabResource)
+SHIB_REFLECTION_DEFINE(PrefabResource, 0)
 
 NS_SHIBBOLETH
 

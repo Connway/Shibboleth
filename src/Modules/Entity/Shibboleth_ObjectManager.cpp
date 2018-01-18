@@ -23,7 +23,7 @@ THE SOFTWARE.
 #include "Shibboleth_ObjectManager.h"
 #include "Shibboleth_Object.h"
 
-SHIB_REFLECTION_DEFINE(ObjectManager)
+SHIB_REFLECTION_DEFINE(ObjectManager, 0)
 
 NS_SHIBBOLETH
 
