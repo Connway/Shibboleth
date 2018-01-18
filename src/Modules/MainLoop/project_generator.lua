@@ -45,8 +45,7 @@ project "MainLoopModule"
 		"Shared",
 		"Gaff",
 		"Memory",
-		"EASTL",
-		"libuv"
+		"EASTL"
 
 		, "Scripting", "Resource", "angelscript", "Entity", "Gleam"
 	}
@@ -56,8 +55,7 @@ project "MainLoopModule"
 		"Shared",
 		"Gaff",
 		"Memory",
-		"EASTL",
-		"libuv"
+		"EASTL"
 
 		, "Scripting", "Resource", "angelscript", "Entity", "Gleam", "mpack"
 	}

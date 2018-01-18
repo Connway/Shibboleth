@@ -18,12 +18,25 @@
 #endif
 
 #ifdef __STDC_VERSION__
+#  ifndef STDC
+#    define STDC
+#  endif
 #  if __STDC_VERSION__ >= 199901L
 #    ifndef STDC99
 #      define STDC99
 #    endif
 #  endif
 #endif
+#if !defined(STDC) && (defined(__STDC__) || defined(__cplusplus))
+#  define STDC
+#endif
+#if !defined(STDC) && (defined(__GNUC__) || defined(__BORLANDC__))
+#  define STDC
+#endif
+#if !defined(STDC) && (defined(MSDOS) || defined(WINDOWS) || defined(WIN32))
+#  define STDC
+#endif
+
 
 /* Maximum value for memLevel in deflateInit2 */
 #ifndef MAX_MEM_LEVEL
@@ -168,6 +181,14 @@ typedef void       *voidp;
 #    define z_off64_t __int64
 #  else
 #    define z_off64_t z_off_t
+#  endif
+#endif
+
+#ifndef OF /* function prototypes */
+#  ifdef STDC
+#    define OF(args)  args
+#  else
+#    define OF(args)  ()
 #  endif
 #endif
 

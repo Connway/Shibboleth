@@ -30,7 +30,7 @@ project "assimp"
 		"include",
 		"../rapidjson",
 		"../minizip",
-		"../zlib"
+		"../zlib-ng"
 	}
 
 	defines

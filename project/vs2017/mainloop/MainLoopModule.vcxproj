@@ -296,9 +296,6 @@ IF EXIST ..\..\..\build\vs2017\output\x64\Optimized_Debug\$(TargetFileName)\ (xc
     <ProjectReference Include="..\dependencies\EASTL.vcxproj">
       <Project>{BEAB040D-2AC0-2CBE-F341-D01D5F1529EF}</Project>
     </ProjectReference>
-    <ProjectReference Include="..\dependencies\libuv.vcxproj">
-      <Project>{C79ADC0F-33AF-04C1-FC30-A820680401F2}</Project>
-    </ProjectReference>
     <ProjectReference Include="..\scripting\Scripting.vcxproj">
       <Project>{985A7358-04C5-27CF-4D03-D974B9AC0524}</Project>
     </ProjectReference>

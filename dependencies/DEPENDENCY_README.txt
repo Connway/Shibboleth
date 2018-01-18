@@ -16,4 +16,4 @@ Libraries Affected:
 	minizip (commented out a block that says #define _CRT_SECURE_NO_WARNINGS, as I have it defined at the project level)
 	dirent (got rid of warnings in Visual Studio)
 	libuv (fixing potentially uninitialized pointer errors)
-	zlib-ng (fixing compilation errors)
+	zlib-ng (fixing compilation errors, adding OF macro, adding STDC defines)

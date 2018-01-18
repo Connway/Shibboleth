@@ -8,7 +8,7 @@ project "libpng"
 	warnings "Default"
 
 	files { "**.h", "**.c" }
-	includedirs { "../zlib" }
+	includedirs { "../zlib-ng" }
 
 	filter { "action:vs*" }
 		defines { "_CRT_SECURE_NO_WARNINGS" }

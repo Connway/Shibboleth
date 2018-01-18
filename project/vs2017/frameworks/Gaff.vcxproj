@@ -251,8 +251,6 @@
     <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_Assert.h" />
     <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_BezierCurve.h" />
     <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_BezierCurve.inl" />
-    <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_CachedFunction.h" />
-    <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_CachedFunction.inl" />
     <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_Connection.h" />
     <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_CrashHandler.h" />
     <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_CriticalSection.h" />
@@ -272,8 +270,6 @@
     <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_EnumReflectionDefinition.h" />
     <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_EnumReflectionDefinition.inl" />
     <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_File.h" />
-    <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_Function.h" />
-    <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_Function.inl" />
     <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_Hash.h" />
     <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_HashString.h" />
     <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_HashString.inl" />
