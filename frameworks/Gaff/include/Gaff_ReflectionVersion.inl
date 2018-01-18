@@ -23,6 +23,12 @@ THE SOFTWARE.
 NS_GAFF
 
 template <class T>
+ReflectionVersion<T>::ReflectionVersion(int32_t start_version)
+{
+	_hash = FNV1aHash64T(&start_version);
+}
+
+template <class T>
 template <class Base>
 ReflectionVersion<T>& ReflectionVersion<T>::base(const char* name)
 {

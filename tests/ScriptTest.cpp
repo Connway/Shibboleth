@@ -44,7 +44,7 @@ public:
 };
 
 SHIB_REFLECTION_DECLARE(ScriptTest)
-SHIB_REFLECTION_EXTERNAL_DEFINE(ScriptTest)
+SHIB_REFLECTION_EXTERNAL_DEFINE(ScriptTest, 0)
 
 SHIB_REFLECTION_BUILDER_BEGIN(ScriptTest)
 	.classAttrs(RegisterAngelScriptAttribute<ScriptTest>(AS_NONE, e))
@@ -212,7 +212,7 @@ public:
 };
 
 SHIB_REFLECTION_DECLARE(BaseTest)
-SHIB_REFLECTION_DEFINE(BaseTest)
+SHIB_REFLECTION_DEFINE(BaseTest, 0)
 
 SHIB_REFLECTION_CLASS_DEFINE_BEGIN(BaseTest)
 	.classAttrs(Shibboleth::RegisterAngelScriptAttribute<BaseTest>(Shibboleth::AS_VALUE_AS_REF, e))
@@ -254,7 +254,7 @@ private:
 };
 
 SHIB_REFLECTION_DECLARE(TestRefCount)
-SHIB_REFLECTION_DEFINE(TestRefCount)
+SHIB_REFLECTION_DEFINE(TestRefCount, 0)
 
 SHIB_REFLECTION_CLASS_DEFINE_BEGIN(TestRefCount)
 	.classAttrs(Shibboleth::RegisterAngelScriptAttribute<TestRefCount>(Shibboleth::AS_NONE, e))

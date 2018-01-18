@@ -22,7 +22,7 @@ THE SOFTWARE.
 
 #include "Shibboleth_ResourceExtensionAttribute.h"
 
-SHIB_REFLECTION_DEFINE(ResExtAttribute)
+SHIB_REFLECTION_DEFINE(ResExtAttribute, 0)
 
 NS_SHIBBOLETH
 
