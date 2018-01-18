@@ -8,7 +8,7 @@ project "libtiff"
 	warnings "Default"
 
 	files { "**.c", "**.h" }
-	includedirs { "../libjpeg", "../zlib" }
+	includedirs { "../libjpeg", "../zlib-ng" }
 	excludes { "tif_win32.c" }
 
 	configuration "windows"

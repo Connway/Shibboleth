@@ -791,8 +791,8 @@ inline size_t WriteArray(IOStream * stream, const T* in, unsigned int size)
                 AssbinChunkWriter uncompressedStream( NULL, 0 );
                 WriteBinaryScene( &uncompressedStream, pScene );
 
-                uLongf uncompressedSize = static_cast<uLongf>(uncompressedStream.Tell());
-                uLongf compressedSize = (uLongf)(uncompressedStream.Tell() * 1.001 + 12.);
+                size_t uncompressedSize = static_cast<size_t>(uncompressedStream.Tell());
+                size_t compressedSize = (size_t)(uncompressedStream.Tell() * 1.001 + 12.);
                 uint8_t* compressedBuffer = new uint8_t[ compressedSize ];
 
                 compress2( compressedBuffer, &compressedSize, (const Bytef*)uncompressedStream.GetBufferPointer(), uncompressedSize, 9 );

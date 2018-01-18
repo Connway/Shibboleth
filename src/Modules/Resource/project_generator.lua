@@ -68,7 +68,6 @@ project "ResourceModule"
 		"Gaff",
 		"Shared",
 		"EASTL",
-		"libuv",
-		"Resource",
+		"Resource"
 	}
 

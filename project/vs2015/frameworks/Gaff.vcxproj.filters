@@ -15,12 +15,6 @@
     <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_BezierCurve.inl">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_CachedFunction.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_CachedFunction.inl">
-      <Filter>include</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_Connection.h">
       <Filter>include</Filter>
     </ClInclude>
@@ -76,12 +70,6 @@
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_File.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_Function.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_Function.inl">
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_Hash.h">

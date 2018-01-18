@@ -8,7 +8,7 @@ project "minizip"
 	warnings "Default"
 
 	files { "**.c", "**.h" }
-	includedirs { "../zlib" }
+	includedirs { "../zlib-ng" }
 
 	filter { "system:not windows" }
 		excludes { "iowin32.h", "iowin32.c" }

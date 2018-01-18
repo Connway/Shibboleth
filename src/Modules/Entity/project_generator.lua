@@ -76,7 +76,6 @@ project "EntityModule"
 		"Gleam",
 		"Shared",
 		"EASTL",
-		"libuv",
 		"Entity",
 		"Resource",
 		"mpack"

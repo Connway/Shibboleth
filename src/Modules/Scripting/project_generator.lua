@@ -84,7 +84,6 @@ project "ScriptingModule"
 		"Shared",
 		"EASTL",
 		"angelscript",
-		"libuv",
 		"Resource",
 		"Entity",
 		"Scripting"
@@ -98,7 +97,6 @@ project "ScriptingModule"
 		"Shared",
 		"EASTL",
 		"angelscript",
-		"libuv",
 		"Resource",
 		"Entity",
 		"Scripting"

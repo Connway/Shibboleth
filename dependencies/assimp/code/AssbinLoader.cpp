@@ -712,8 +712,8 @@ void AssbinImporter::InternReadFile( const std::string& pFile, aiScene* pScene, 
 
     if (compressed)
     {
-        uLongf uncompressedSize = Read<uint32_t>(stream);
-        uLongf compressedSize = static_cast<uLongf>(stream->FileSize() - stream->Tell());
+        size_t uncompressedSize = Read<uint32_t>(stream);
+		size_t compressedSize = static_cast<size_t>(stream->FileSize() - stream->Tell());
 
         unsigned char * compressedData = new unsigned char[ compressedSize ];
         stream->Read( compressedData, 1, compressedSize );
