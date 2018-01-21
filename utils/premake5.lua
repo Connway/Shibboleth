@@ -1,13 +1,19 @@
-dofile("actions.lua")
-dofile("options.lua")
+dofile("solution_configs.lua")
 dofile("helper_functions.lua")
+dofile("options.lua")
+dofile("actions.lua")
 
 function Generate(generator)
 	dofile(generator)
 end
 
 solution "Shibboleth"
-	dofile("solution_configs.lua")
+	if _ACTION then
+		location ("../project/" .. _ACTION)
+	end
+
+	configurations(configs)
+
 	dofile("solution_settings.lua")
 
 	local dependency_generators = os.matchfiles("../dependencies/**/project_generator.lua")
