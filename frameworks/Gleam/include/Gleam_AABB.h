@@ -55,10 +55,10 @@ public:
 
 	void reset(void);
 
-	const glm::vec3* generatePoints(glm::vec3* out) const;
+	glm::vec3* generatePoints(glm::vec3* out) const;
 
-	void transform(const Transform& transform);
 	void transform(const glm::mat4x4& transform);
+	void transform(const Transform& transform);
 	bool contains(const glm::vec3& point) const;
 
 private:

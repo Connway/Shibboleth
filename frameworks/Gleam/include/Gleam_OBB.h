@@ -23,6 +23,7 @@ THE SOFTWARE.
 #pragma once
 
 #include "Gleam_Defines.h"
+#include <mat4x4.hpp>
 #include <vec3.hpp>
 
 NS_GLEAM
@@ -34,22 +35,24 @@ class OBB
 {
 public:
 	OBB(const glm::vec3& center, const glm::vec3& right, const glm::vec3& up, const glm::vec3& forward);
+	OBB(const AABB& aabb, const glm::mat4x4& transform);
 	OBB(const AABB& aabb, const Transform& transform);
 	OBB(const AABB& aabb);
 	OBB(const OBB& obb);
 	OBB(void);
 	~OBB(void);
 
-	INLINE const glm::vec3& getCenter(void) const;
-	INLINE glm::vec3 getExtent(void) const;
+ 	const glm::vec3& getCenter(void) const;
+	glm::vec3 getExtent(void) const;
 
-	INLINE void setAxis(int axis, const glm::vec3& vec);
-	INLINE const glm::vec3& getAxis(int axis) const;
-	INLINE const glm::vec3* getAxes(void) const;
+	void setAxis(int axis, const glm::vec3& vec);
+	const glm::vec3& getAxis(int axis) const;
+	const glm::vec3* getAxes(void) const;
 
-	const glm::vec3* generatePoints(glm::vec3* out) const;
+	glm::vec3* generatePoints(glm::vec3* out) const;
 
-	INLINE void transform(const Transform& transform);
+	void transform(const glm::mat4x4& transform);
+	void transform(const Transform& transform);
 	bool contains(const glm::vec3& point) const;
 
 private:

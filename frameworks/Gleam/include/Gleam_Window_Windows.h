@@ -72,8 +72,8 @@ public:
 
 	bool setIcon(const char* icon) override;
 
-	INLINE HINSTANCE getHInstance(void) const;
-	INLINE HWND getHWnd(void) const;
+	HINSTANCE getHInstance(void) const;
+	HWND getHWnd(void) const;
 
 private:
 	int32_t _pos_x, _pos_y;

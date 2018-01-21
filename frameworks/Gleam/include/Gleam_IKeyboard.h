@@ -30,7 +30,7 @@ NS_GLEAM
 class IKeyboard : public IInputDevice
 {
 public:
-	using CharacterHandler = Gaff::FunctionBinder<void, IKeyboard*, unsigned int>;
+	using CharacterHandler = eastl::function<void (IKeyboard*, int32_t)>;
 
 	IKeyboard(void) {}
 	virtual ~IKeyboard(void) {}
@@ -47,17 +47,22 @@ public:
 	bool isKeyboard(void) const { return true; }
 	bool isMouse(void) const { return false; }
 
-	INLINE void addCharacterHandler(const CharacterHandler& handler)
+	void addCharacterHandler(const CharacterHandler& handler)
 	{
-		_character_handlers.emplacePush(handler);
+		_character_handlers.emplace_back(handler);
+	}
+
+	void addCharacterHandler(CharacterHandler&& handler)
+	{
+		_character_handlers.emplace_back(std::move(handler));
 	}
 
 	bool removeCharacterHandler(const CharacterHandler& handler)
 	{
-		auto it = _character_handlers.linearSearch(handler);
+		auto it = eastl::find(_character_handlers.begin(), _character_handlers.end(), handler);
 
 		if (it != _character_handlers.end()) {
-			_character_handlers.fastErase(it);
+			_character_handlers.erase_unsorted(it);
 			return true;
 		}
 
@@ -65,7 +70,7 @@ public:
 	}
 
 protected:
-	GleamArray<CharacterHandler> _character_handlers;
+	Vector<CharacterHandler> _character_handlers;
 };
 
 NS_END

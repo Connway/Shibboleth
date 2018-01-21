@@ -25,17 +25,11 @@ THE SOFTWARE.
 
 NS_GAFF
 
-/*!
-	\brief See <a href="http://en.wikipedia.org/wiki/Binomial_coefficient">this Wikipedia page</a> for more information.
-*/
 float BinomialCoefficient(float n, float k)
 {
 	return tgammaf(n + 1.0f) / (tgammaf(k + 1.0f) * tgammaf(n - k + 1.0f));
 }
 
-/*!
-	\brief See <a href="http://en.wikipedia.org/wiki/Bernstein_polynomial">this Wikipedia page</a> for more information.
-*/
 float BernsteinPolynomial(float t, float n, float k)
 {
 	return BinomialCoefficient(n, k) * powf(t, k) * powf(1.0f - t, n - k);

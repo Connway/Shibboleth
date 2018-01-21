@@ -55,7 +55,7 @@ public:
 
 	RendererType getRendererType(void) const;
 
-	INLINE unsigned int getShader(void) const;
+	unsigned int getShader(void) const;
 
 private:
 	unsigned int _shader;

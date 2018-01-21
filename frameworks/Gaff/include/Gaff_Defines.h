@@ -23,8 +23,8 @@ THE SOFTWARE.
 #pragma once
 
 #include "Gaff_Platform.h"
-
-//#define ATTEMPT_INLINE
+#include <utility> // For std::move() and std::forward()
+#include <cstdint> // For (u)int*_t and size_t
 
 #define NUM_TRIES_UNTIL_YIELD 5
 
@@ -52,12 +52,6 @@ THE SOFTWARE.
 #define GAFF_MOVE_DEFAULT(x) \
 	x(x&&) = default; \
 	x& operator=(x&&) = default
-
-#ifdef ATTEMPT_INLINE
-	#define INLINE inline
-#else
-	#define INLINE
-#endif
 
 #define SAFERELEASE(x) if (x) { x->Release(); x = nullptr; } // Safely releases Microsoft COM pointers.
 #define SAFEADDREF(x) if (x) { x->AddRef(); } // Safely adds a reference to Microsoft COM pointers.
@@ -176,6 +170,3 @@ THE SOFTWARE.
 	#include <cstdlib> // For size_t
 	#include <sched.h> // For sched_yield
 #endif
-
-#include <utility> // For std::move() and std::forward()
-#include <cstdint> // For (u)int*_t and size_t

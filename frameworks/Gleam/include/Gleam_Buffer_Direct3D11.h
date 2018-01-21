@@ -46,7 +46,7 @@ public:
 
 	RendererType getRendererType(void) const;
 
-	INLINE ID3D11Buffer* getBuffer(void) const;
+	ID3D11Buffer* getBuffer(void) const;
 
 private:
 	ID3D11Buffer* _buffer;

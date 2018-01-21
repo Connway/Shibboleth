@@ -75,7 +75,7 @@ public:
 	IBuffer(void) {}
 	virtual ~IBuffer(void) {}
 
-	INLINE bool init(IRenderDevice& rd, const BufferSettings& buffer_settings)
+	bool init(IRenderDevice& rd, const BufferSettings& buffer_settings)
 	{
 		return init(
 			rd, buffer_settings.data, buffer_settings.size, buffer_settings.type,
@@ -97,10 +97,10 @@ public:
 
 	virtual RendererType getRendererType(void) const = 0;
 
-	INLINE BUFFER_TYPE getBufferType(void) const { return _buffer_type; }
-	INLINE unsigned int getStructuredByteStride(void) const { return _structure_stride; }
-	INLINE unsigned int getStride(void) const { return _stride; }
-	INLINE unsigned int getSize(void) const { return _size; }
+	BUFFER_TYPE getBufferType(void) const { return _buffer_type; }
+	unsigned int getStructuredByteStride(void) const { return _structure_stride; }
+	unsigned int getStride(void) const { return _stride; }
+	unsigned int getSize(void) const { return _size; }
 
 protected:
 	BUFFER_TYPE _buffer_type;

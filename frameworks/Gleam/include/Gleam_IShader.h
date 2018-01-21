@@ -68,7 +68,7 @@ public:
 
 	virtual RendererType getRendererType(void) const = 0;
 
-	INLINE virtual SHADER_TYPE getType(void) const { return _type; }
+	virtual SHADER_TYPE getType(void) const { return _type; }
 
 protected:
 	SHADER_TYPE _type;

@@ -46,8 +46,8 @@ public:
 	void getNormalizedDeltas(float& ndx, float& ndy) const;
 	short getWheelDelta(void) const;
 
-	INLINE void allowRepeats(bool allow);
-	INLINE bool areRepeatsAllowed(void) const;
+	void allowRepeats(bool allow);
+	bool areRepeatsAllowed(void) const;
 
 	const char* getDeviceName(void) const;
 	const char* getPlatformImplementationString(void) const;

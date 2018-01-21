@@ -116,8 +116,14 @@ IRenderDevice::AdapterList GetDisplayModes<RENDERER_DIRECT3D11>(void)
 		const RenderDeviceD3D11::AdapterInfo& adpt_info = RenderDeviceD3D11::g_display_info[i];
 		IRenderDevice::Adapter adpt;
 
+		const wchar_t*  src_begin = adpt_info.adapter_name;
+		const wchar_t* src_end = src_begin + eastl::CharStrlen(adpt_info.adapter_name);
+		char* dest_begin = adpt.adapter_name;
+		char* dest_end = adpt.adapter_name + 128;
+
+		eastl::DecodePart(src_begin, src_end, dest_begin, dest_end);
+
 		adpt.displays.reserve(adpt_info.output_info.size());
-		wcstombs(adpt.adapter_name, adpt_info.adapter_name, 128);
 		adpt.memory = adpt_info.memory;
 		adpt.id = i;
 

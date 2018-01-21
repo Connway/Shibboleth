@@ -20,14 +20,64 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#pragma once
+#include "Gaff_Hash.h"
 
-#include "Gaff_Platform.h"
+NS_GAFF
 
-#ifdef PLATFORM_WINDOWS
-	#include "Gaff_CriticalSection_Windows.h"
-#elif defined(PLATFORM_LINUX) || defined(PLATFORM_MAC)
-	#include "Gaff_CriticalSection_Linux.h"
-#else
-	#error Platform not supported
-#endif
+Hash64 FNV1aHash64(const char* key, size_t len, Hash64 init)
+{
+	for (size_t i = 0; i < len; ++i) {
+		init = (init ^ static_cast<Hash64>(key[i])) * 1099511628211ULL;
+	}
+
+	return init;
+}
+
+Hash64 FNV1Hash64(const char* key, size_t len, Hash64 init)
+{
+	for (size_t i = 0; i < len; ++i) {
+		init = (init ^ 1099511628211ULL) * static_cast<Hash64>(key[i]);
+	}
+
+	return init;
+}
+
+Hash32 FNV1aHash32(const char* key, size_t len, Hash32 init)
+{
+	for (size_t i = 0; i < len; ++i) {
+		init = (init ^ static_cast<Hash32>(key[i])) * 16777619U;
+	}
+
+	return init;
+}
+
+Hash32 FNV1Hash32(const char* key, size_t len, Hash32 init)
+{
+	for (size_t i = 0; i < len; ++i) {
+		init = (init * 16777619U) ^ static_cast<Hash32>(key[i]);
+	}
+
+	return init;
+}
+
+Hash64 FNV1aHash64(const char* key, size_t len)
+{
+	return FNV1aHash64(key, len, INIT_HASH64);
+}
+
+Hash64 FNV1Hash64(const char* key, size_t len)
+{
+	return FNV1Hash64(key, len, INIT_HASH64);
+}
+
+Hash32 FNV1aHash32(const char* key, size_t len)
+{
+	return FNV1aHash32(key, len, INIT_HASH32);
+}
+
+Hash32 FNV1Hash32(const char* key, size_t len)
+{
+	return FNV1Hash32(key, len, INIT_HASH32);
+}
+
+NS_END

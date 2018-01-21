@@ -50,7 +50,7 @@ public:
 
 	bool init(void);
 
-	INLINE void setImGuiContext(void);
+	void setImGuiContext(void);
 
 private:
 	ImGuiContext* _imgui_context = nullptr;

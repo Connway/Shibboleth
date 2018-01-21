@@ -20,13 +20,14 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#include "Gleam_OBB_CPU.h"
-#include "Gleam_Transform_CPU.h"
-#include "Gleam_AABB_CPU.h"
+#include "Gleam_OBB.h"
+#include "Gleam_Transform.h"
+#include "Gleam_AABB.h"
+#include <Gaff_Assert.h>
 
 NS_GLEAM
 
-OBBCPU::OBBCPU(const Vector4CPU& center, const Vector4CPU& right, const Vector4CPU& up, const Vector4CPU& forward):
+OBB::OBB(const glm::vec3& center, const glm::vec3& right, const glm::vec3& up, const glm::vec3& forward):
 	_center(center)
 {
 	_axes[0] = right;
@@ -34,35 +35,50 @@ OBBCPU::OBBCPU(const Vector4CPU& center, const Vector4CPU& right, const Vector4C
 	_axes[2] = forward;
 }
 
-OBBCPU::OBBCPU(const AABBCPU& aabb, const Matrix4x4CPU& transform):
+OBB::OBB(const AABB& aabb, const glm::mat4x4& transform):
 	_center(aabb.getCenter())
 {
-	Vector4CPU half_extent = aabb.getMax() - _center;
-	Vector4CPU right(half_extent[0], 0.0f, 0.0f, 1.0f);
-	Vector4CPU up(0.0f, half_extent[1], 0.0f, 1.0f);
-	Vector4CPU dir(0.0f, 0.0f, half_extent[2], 1.0f);
+	glm::vec3 half_extent = aabb.getMax() - _center;
+	glm::vec3 right(half_extent.x, 0.0f, 0.0f);
+	glm::vec3 up(0.0f, half_extent.x, 0.0f);
+	glm::vec3 dir(0.0f, 0.0f, half_extent.z);
 
 	_axes[0] = right;
 	_axes[1] = up;
 	_axes[2] = dir;
 
-	OBBCPU::transform(transform);
+	OBB::transform(transform);
 }
 
-OBBCPU::OBBCPU(const AABBCPU& aabb):
+OBB::OBB(const AABB& aabb, const Transform& transform):
 	_center(aabb.getCenter())
 {
-	Vector4CPU half_extent = aabb.getMax() - _center;
-	Vector4CPU right(half_extent[0], 0.0f, 0.0f, 1.0f);
-	Vector4CPU up(0.0f, half_extent[1], 0.0f, 1.0f);
-	Vector4CPU dir(0.0f, 0.0f, half_extent[2], 1.0f);
+	glm::vec3 half_extent = aabb.getMax() - _center;
+	glm::vec3 right(half_extent.x, 0.0f, 0.0f);
+	glm::vec3 up(0.0f, half_extent.y, 0.0f);
+	glm::vec3 dir(0.0f, 0.0f, half_extent.z);
+
+	_axes[0] = right;
+	_axes[1] = up;
+	_axes[2] = dir;
+
+	OBB::transform(transform);
+}
+
+OBB::OBB(const AABB& aabb):
+	_center(aabb.getCenter())
+{
+	glm::vec3 half_extent = aabb.getMax() - _center;
+	glm::vec3 right(half_extent.x, 0.0f, 0.0f);
+	glm::vec3 up(0.0f, half_extent.y, 0.0f);
+	glm::vec3 dir(0.0f, 0.0f, half_extent.z);
 
 	_axes[0] = right;
 	_axes[1] = up;
 	_axes[2] = dir;
 }
 
-OBBCPU::OBBCPU(const OBBCPU& obb):
+OBB::OBB(const OBB& obb):
 	_center(obb._center)
 {
 	_axes[0] = obb._axes[0];
@@ -70,74 +86,44 @@ OBBCPU::OBBCPU(const OBBCPU& obb):
 	_axes[2] = obb._axes[2];
 }
 
-OBBCPU::OBBCPU(void):
-	_center(0.0f, 0.0f, 0.0f, 1.0f)
+OBB::OBB(void):
+	_center(0.0f, 0.0f, 0.0f)
 {
-	_axes[0] = _axes[1] = _axes[2] = Vector4CPU::Zero;
+	_axes[0] = _axes[1] = _axes[2] = _center;
 }
 
-OBBCPU::~OBBCPU(void)
+OBB::~OBB(void)
 {
 }
 
-const Vector4CPU& OBBCPU::getCenter(void) const
+const glm::vec3& OBB::getCenter(void) const
 {
 	return _center;
 }
 
-Vector4CPU OBBCPU::getExtent(void) const
+glm::vec3 OBB::getExtent(void) const
 {
 	return _axes[0] + _axes[1] + _axes[2];
 }
 
-const Vector4CPU& OBBCPU::getAxis(int axis) const
+const glm::vec3& OBB::getAxis(int32_t axis) const
 {
 	GAFF_ASSERT(axis > -1 && axis < 3);
 	return _axes[axis];
 }
 
-void OBBCPU::setAxis(int axis, const Vector4CPU& vec)
+void OBB::setAxis(int axis, const glm::vec3& vec)
 {
 	GAFF_ASSERT(axis > -1 && axis < 3);
 	_axes[axis] = vec;
 }
 
-const Vector4CPU* OBBCPU::getAxes(void) const
+const glm::vec3* OBB::getAxes(void) const
 {
 	return _axes;
 }
 
-const GleamArray<Vector4CPU>& OBBCPU::generatePoints(GleamArray<Vector4CPU>& out) const
-{
-	if (out.size() < 8) {
-		out.resize(8);
-	}
-
-	generatePoints(out.getArray());
-
-	return out;
-}
-
-GleamArray<Vector4CPU> OBBCPU::generatePoints(void) const
-{
-	GleamArray<Vector4CPU> points(8);
-
-	// top plane
-	points.emplacePush(_center + _axes[0] + _axes[1] + _axes[2]);
-	points.emplacePush(points[0] - 2.0f * _axes[0]);
-	points.emplacePush(points[1] - 2.0f * _axes[2]);
-	points.emplacePush(points[2] + 2.0f * _axes[0]);
-
-	// bottom plane
-	points.emplacePush(_center + _axes[0] - _axes[1] + _axes[2]);
-	points.emplacePush(points[4] - 2.0f * _axes[0]);
-	points.emplacePush(points[5] - 2.0f * _axes[2]);
-	points.emplacePush(points[6] + 2.0f * _axes[0]);
-
-	return points;
-}
-
-const Vector4CPU* OBBCPU::generatePoints(Vector4CPU* out) const
+glm::vec3* OBB::generatePoints(glm::vec3* out) const
 {
 	// top plane
 	out[0] = _center + _axes[0] + _axes[1] + _axes[2];
@@ -154,7 +140,7 @@ const Vector4CPU* OBBCPU::generatePoints(Vector4CPU* out) const
 	return out;
 }
 
-void OBBCPU::transform(const TransformCPU& transform)
+void OBB::transform(const Transform& transform)
 {
 	_axes[0] = transform.transformVector(_axes[0]);
 	_axes[1] = transform.transformVector(_axes[1]);
@@ -162,17 +148,17 @@ void OBBCPU::transform(const TransformCPU& transform)
 	_center = transform.transformPoint(_center);
 }
 
-void OBBCPU::transform(const Matrix4x4CPU& transform)
+void OBB::transform(const glm::mat4x4& transform)
 {
-	_axes[0] = transform * _axes[0];
-	_axes[1] = transform * _axes[1];
-	_axes[2] = transform * _axes[2];
-	_center = transform * _center;
+	_axes[0] = transform * glm::vec4(_axes[0], 1.0f);
+	_axes[1] = transform * glm::vec4(_axes[1], 1.0f);
+	_axes[2] = transform * glm::vec4(_axes[2], 1.0f);
+	_center = transform * glm::vec4(_center, 1.0f);
 }
 
-bool OBBCPU::contains(const Vector4CPU& point) const
+bool OBB::contains(const glm::vec3& point) const
 {
-	Vector4CPU left, right, bottom, top, back, front;
+	glm::vec3 left, right, bottom, top, back, front;
 	left = _center - _axes[0];
 	right = _center + _axes[0];
 	bottom = _center - _axes[1];
@@ -180,9 +166,9 @@ bool OBBCPU::contains(const Vector4CPU& point) const
 	back = _center - _axes[2];
 	front = _center + _axes[2];
 
-	return (-_axes[0]).dot(point - left) <= 0.0f && _axes[0].dot(point - right) <= 0.0f &&
-			(-_axes[1]).dot(point - bottom) <= 0.0f && _axes[1].dot(point - top) <= 0.0f &&
-			(-_axes[2]).dot(point - back) <= 0.0f && _axes[2].dot(point - front) <= 0.0f;
+	return	glm::dot(-_axes[0], point - left) <= 0.0f && glm::dot(_axes[0], point - right) <= 0.0f &&
+			glm::dot(-_axes[1], point - bottom) <= 0.0f && glm::dot(_axes[1], point - top) <= 0.0f &&
+			glm::dot(-_axes[2], point - back) <= 0.0f && glm::dot(_axes[2], point - front) <= 0.0f;
 }
 
 NS_END

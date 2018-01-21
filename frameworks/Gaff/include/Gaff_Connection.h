@@ -54,33 +54,33 @@ public:
 
 	void destroy(void);
 
-	INLINE PeerIDType getID(void) const;
-	INLINE unsigned int getHost(void) const;
-	INLINE unsigned short getPort(void) const;
+	PeerIDType getID(void) const;
+	unsigned int getHost(void) const;
+	unsigned short getPort(void) const;
 
-	INLINE void* getUserData(void) const;
-	INLINE void setUserData(void* data);
+	void* getUserData(void) const;
+	void setUserData(void* data);
 
-	INLINE void setThrottle(unsigned int interval, unsigned int acceleration, unsigned int deceleration);
-	INLINE void setTimeout(unsigned int limit, unsigned int min, unsigned int max);
-	INLINE void setPingInterval(unsigned int interval);
+	void setThrottle(unsigned int interval, unsigned int acceleration, unsigned int deceleration);
+	void setTimeout(unsigned int limit, unsigned int min, unsigned int max);
+	void setPingInterval(unsigned int interval);
 
-	INLINE void disconnect(unsigned int data = 0);
-	INLINE void disconnectNow(unsigned int data = 0);
-	INLINE void disconnectLater(unsigned int data = 0);
+	void disconnect(unsigned int data = 0);
+	void disconnectNow(unsigned int data = 0);
+	void disconnectLater(unsigned int data = 0);
 
-	INLINE void ping(void);
+	void ping(void);
 
-	INLINE bool send(unsigned char channel, void* data, size_t data_size, unsigned int packet_flags = PACKET_RELIABLE);
+	bool send(unsigned char channel, void* data, size_t data_size, unsigned int packet_flags = PACKET_RELIABLE);
 
-	INLINE bool valid(void) const;
+	bool valid(void) const;
 
-	INLINE bool operator==(const Connection& rhs) const;
-	INLINE bool operator!=(const Connection& rhs) const;
+	bool operator==(const Connection& rhs) const;
+	bool operator!=(const Connection& rhs) const;
 
 	const Connection& operator=(const Connection& rhs);
 
-	INLINE operator bool(void) const;
+	operator bool(void) const;
 
 private:
 	_ENetPeer* _peer;

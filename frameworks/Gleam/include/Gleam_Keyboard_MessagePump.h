@@ -45,7 +45,7 @@ public:
 	void allowRepeats(bool allow);
 	bool areRepeatsAllowed(void) const;
 
-	const unsigned char* getKeyboardData(void) const;
+	const uint8_t* getKeyboardData(void) const;
 
 	const char* getDeviceName(void) const;
 	const char* getPlatformImplementationString(void) const;
@@ -55,8 +55,8 @@ public:
 	bool handleMessage(const AnyMessage& message);
 
 private:
-	unsigned char _curr_state[256];
-	unsigned char _prev_state[256];
+	uint8_t _curr_state[256];
+	uint8_t _prev_state[256];
 	char _flags;
 
 	IWindow* _window;

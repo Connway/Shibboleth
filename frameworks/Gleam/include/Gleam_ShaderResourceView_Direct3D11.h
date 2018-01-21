@@ -41,7 +41,7 @@ public:
 
 	RendererType getRendererType(void) const;
 
-	INLINE ID3D11ShaderResourceView* getResourceView(void) const;
+	ID3D11ShaderResourceView* getResourceView(void) const;
 
 
 private:

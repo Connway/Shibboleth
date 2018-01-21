@@ -23,79 +23,26 @@ THE SOFTWARE.
 #pragma once
 
 #include "Shibboleth_ProxyAllocator.h"
-#include <EASTL/functional.h>
+#include <Gaff_Function.h>
 
 NS_SHIBBOLETH
 
-template <class T, class Ret, class... Args>
-class ConstMemFuncBinder
-{
-public:
-	using MemFunc = Ret (T::*)(Args...) const;
-
-	ConstMemFuncBinder(T* obj, MemFunc func):
-		_func(func), _obj(obj)
-	{
-	}
-
-	Ret operator()(Args&&... args)
-	{
-		return (_obj->*_func)(std::forward<Args>(args)...);
-	}
-
-private:
-	MemFunc _func;
-	T* _obj;
-};
-
-template <class T, class Ret, class... Args>
-class MemFuncBinder
-{
-public:
-	using MemFunc = Ret (T::*)(Args...);
-
-	MemFuncBinder(T* obj, MemFunc func):
-		_func(func), _obj(obj)
-	{
-	}
-
-	Ret operator()(Args&&... args)
-	{
-		return (_obj->*_func)(std::forward<Args>(args)...);
-	}
-
-private:
-	MemFunc _func;
-	T* _obj;
-};
-
-
 template <class Fn, class T>
-eastl::function<Fn> Func(const ProxyAllocator& allocator, T functor)
+eastl::function<Fn> Func(T functor, const ProxyAllocator& allocator = ProxyAllocator())
 {
-	static_assert(std::is_function<Fn>::value, "Shibboleth::Func requires template argument Func to be a function type!");
-	return eastl::function<Fn>(eastl::allocator_arg, allocator, functor);
-}
-
-template <class Fn, class T>
-eastl::function<Fn> Func(T functor)
-{
-	ProxyAllocator allocator;
-	return Func<Fn>(allocator, functor);
+	return Gaff::Func<Fn>(functor, allocator);
 }
 
 template <class T, class Ret, class... Args>
 eastl::function<Ret (Args...)> MemberFunc(const T* obj, Ret (T::*func)(Args...) const, const ProxyAllocator& allocator = ProxyAllocator())
 {
-	ConstMemFuncBinder<T, Ret, Args...> mem_func_binder(obj, func);
-	return Func<Ret (Args...)>(allocator, mem_func_binder);
+	return Gaff::MemberFunc(obj, func, allocator);
 }
 
 template <class T, class Ret, class... Args>
 eastl::function<Ret (Args...)> MemberFunc(T* obj, Ret (T::*func)(Args...), const ProxyAllocator& allocator = ProxyAllocator())
 {
-	MemFuncBinder<T, Ret, Args...> mem_func_binder(obj, func);
-	return Func<Ret (Args...)>(allocator, mem_func_binder);
+	return Gaff::MemberFunc(obj, func, allocator);
 }
 
 NS_END

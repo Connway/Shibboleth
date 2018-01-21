@@ -46,7 +46,7 @@ public:
 
 	RendererType getRendererType(void) const;
 
-	INLINE unsigned int getBuffer(void) const;
+	unsigned int getBuffer(void) const;
 
 private:
 	unsigned int _buffer;

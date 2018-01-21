@@ -23,7 +23,7 @@ THE SOFTWARE.
 #include "Gleam_Plane.h"
 #include "Gleam_Transform.h"
 #include "Gleam_AABB.h"
-//#include "Gleam_OBB.h"
+#include "Gleam_OBB.h"
 
 NS_GLEAM
 
@@ -74,27 +74,26 @@ Plane::ContainResult Plane::contains(const AABB& aabb) const
 	return FRONT;
 }
 
-//Plane::ContainResult Plane::contains(const OBB& obb) const
-//{
-//	glm::vec3 normal(_normal[0], _normal[1], _normal[2], 0.0f);
-//	const glm::vec3* axes = obb.getAxes();
-//
-//	float dist_center = obb.getCenter().dot(normal);
-//	float dist_x = fabsf(axes[0].dot(normal));
-//	float dist_y = fabsf(axes[1].dot(normal));
-//	float dist_z = fabsf(axes[2].dot(normal));
-//
-//	float dist_max = dist_center + dist_x + dist_y + dist_z;
-//	float dist_min = dist_center - dist_x - dist_y - dist_z;
-//
-//	if (dist_max < _normal[3]) {
-//		return BACK;
-//	} else if (dist_min < _normal[3]) {
-//		return INTERSECTS;
-//	}
-//
-//	return FRONT;
-//}
+Plane::ContainResult Plane::contains(const OBB& obb) const
+{
+	const glm::vec3* axes = obb.getAxes();
+
+	float dist_center = glm::dot(obb.getCenter(), _normal);
+	float dist_x = fabsf(glm::dot(axes[0], _normal));
+	float dist_y = fabsf(glm::dot(axes[1], _normal));
+	float dist_z = fabsf(glm::dot(axes[2], _normal));
+
+	float dist_max = dist_center + dist_x + dist_y + dist_z;
+	float dist_min = dist_center - dist_x - dist_y - dist_z;
+
+	if (dist_max < _normal[3]) {
+		return BACK;
+	} else if (dist_min < _normal[3]) {
+		return INTERSECTS;
+	}
+
+	return FRONT;
+}
 
 void Plane::transform(const Transform& transform)
 {

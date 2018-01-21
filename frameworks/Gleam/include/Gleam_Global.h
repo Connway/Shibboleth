@@ -41,9 +41,9 @@ enum LOG_MSG_TYPE
 using LogFunc = void (*) (const char*, LOG_MSG_TYPE);
 
 void SetAllocator(Gaff::IAllocator* allocator);
-INLINE Gaff::IAllocator* GetAllocator(void);
+Gaff::IAllocator* GetAllocator(void);
 void* GleamAlloc(size_t size_bytes, const char* filename, unsigned int line_number);
-INLINE void GleamFree(void* data);
+void GleamFree(void* data);
 
 void SetLogFunc(LogFunc log_func);
 void PrintfToLog(const char* format_string, LOG_MSG_TYPE type, ...);

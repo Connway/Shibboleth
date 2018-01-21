@@ -53,8 +53,8 @@ public:
 	bool init(void);
 	void destroy(void);
 
-	INLINE void addLogCallback(const LogCallback& callback);
-	INLINE void removeLogCallback(const LogCallback& callback);
+	void addLogCallback(const LogCallback& callback);
+	void removeLogCallback(const LogCallback& callback);
 	void notifyLogCallbacks(const char* message, LogType type);
 
 	void addChannel(Gaff::HashStringTemp32 channel, const char* file);

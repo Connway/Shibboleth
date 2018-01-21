@@ -78,7 +78,7 @@ private:
 		BVHTree(void);
 		~BVHTree(void);
 
-		INLINE void setIsStatic(bool is_static);
+		void setIsStatic(bool is_static);
 
 		size_t addObject(Object* object, const UserData& user_data);
 		void removeObject(size_t index);

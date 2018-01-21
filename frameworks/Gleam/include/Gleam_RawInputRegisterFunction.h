@@ -40,7 +40,7 @@ NS_END
 
 NS_GLEAM
 
-	INLINE bool RegisterForRawInput(unsigned short device, const IWindow& window);
+	bool RegisterForRawInput(unsigned short device, const IWindow& window);
 
 NS_END
 

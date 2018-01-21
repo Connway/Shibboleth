@@ -43,7 +43,7 @@ public:
 	virtual bool init(IRenderDevice& rd, const IBuffer* buffer) = 0;
 	virtual void destroy(void) = 0;
 
-	INLINE RES_VIEW_TYPE getViewType(void) const { return _view_type; }
+	RES_VIEW_TYPE getViewType(void) const { return _view_type; }
 
 	virtual RendererType getRendererType(void) const = 0;
 

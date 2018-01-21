@@ -45,7 +45,7 @@ public:
 
 	RendererType getRendererType(void) const;
 
-	INLINE unsigned int getGLTopology(void) const;
+	unsigned int getGLTopology(void) const;
 
 private:
 	unsigned int _gl_topology;

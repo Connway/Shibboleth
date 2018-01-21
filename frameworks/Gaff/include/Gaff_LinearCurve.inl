@@ -43,29 +43,24 @@ LinearCurve<PointType, Allocator>::~LinearCurve(void)
 {
 }
 
-/*!
-	\brief Samples the curve at time \a t. The keys are linearly interpolated between each other.
-	\param t The time at which we are sampling the curve. Will be clamped to be within the range of our keys.
-	\return The point along the curve we have sampled.
-*/
 template <class PointType, class Allocator>
 PointType LinearCurve<PointType, Allocator>::sample(float t) const
 {
 	GAFF_ASSERT(!_points.empty());
 
-	t = Clamp(t, _points.first().first, _points.last().first);
+	t = Clamp(t, _points.first().t, _points.last().t);
 
 	// We clamped, so just use the extreme values
-	if (t == _points.first().first) {
-		_points.first().second;
+	if (t <= _points.first().t) {
+		return _points.first().point;
 
-	} else if (t == _points.last().first) {
-		_points.last().second;
+	} else if (t >= _points.last().t) {
+		return _points.last().point;
 	}
 
-	unsigned int i = 1; // Is never going to terminate on i == 0, so start at 1
+	int32_t i = 1; // Is never going to terminate on i == 0, so start at 1
 
-	for (; i < _points.size() - 1; ++i) {
+	for (; i < static_cast<int32_t>(_points.size()) - 1; ++i) {
 		if (t > _points[i].first) {
 			break;
 		}
@@ -74,42 +69,42 @@ PointType LinearCurve<PointType, Allocator>::sample(float t) const
 	const Pair<float, PointType>& k1 = _points[i - 1];
 	const Pair<float, PointType>& k2 = _points[i];
 
-	t = (t - k1.first) / (k2.first - k1.first); // Normalize
-	return Lerp(k1.second, k2.second, t);
+	t = (t - k1.t) / (k2.t - k1.t); // Normalize
+	return Lerp(k1.point, k2.point, t);
 }
 
 template <class PointType, class Allocator>
 void LinearCurve<PointType, Allocator>::addKey(float t, const PointType& point)
 {
-	unsigned int i = 0;
+	int32_t i = 0;
 
-	for (; i < _points.size(); ++i) {
-		GAFF_ASSERT(_points[i].first != t);
+	for (; i < static_cast<int32_t>(_points.size()); ++i) {
+		GAFF_ASSERT(_points[i].t != t);
 
-		if (t < _points[i].first) {
+		if (t < _points[i].t) {
 			break;
 		}
 	}
 
-	_points.insert(MakePair(t, point), i);
+	_points.insert({ point, t }), i);
 }
 
 template <class PointType, class Allocator>
-void LinearCurve<PointType, Allocator>::removeKey(unsigned int index)
+void LinearCurve<PointType, Allocator>::removeKey(int32_t index)
 {
-	GAFF_ASSERT(index < _points.size());
+	GAFF_ASSERT(index < static_cast<int32_t>(_points.size()));
 	_points.erase(index);
 }
 
 template <class PointType, class Allocator>
-unsigned int LinearCurve<PointType, Allocator>::getNumKeys(void) const
+const typename LinearCurve<PointType, Allocator>::Key& LinearCurve<PointType, Allocator>::getKey(int32_t index) const
 {
-	return _points.size();
+	GAFF_ASSERT(index < static_cast<int32_t>(_points.size()));
+	return _points[i];
 }
 
 template <class PointType, class Allocator>
-const typename LinearCurve<PointType, Allocator>::Key& LinearCurve<PointType, Allocator>::getKey(unsigned int index)
+int32_t LinearCurve<PointType, Allocator>::getNumKeys(void) const
 {
-	GAFF_ASSERT(index < _points.size());
-	return Key(_points[i].first, _points[i].second);
+	return static_cast<int32_t>(_points.size());
 }

@@ -56,15 +56,15 @@ public:
 
 	RendererType getRendererType(void) const;
 
-	INLINE void* getShader(void) const;
-	INLINE ID3D11VertexShader* getVertexShader(void) const;
-	INLINE ID3D11PixelShader* getPixelShader(void) const;
-	INLINE ID3D11DomainShader* getDomainShader(void) const;
-	INLINE ID3D11GeometryShader* getGeometryShader(void) const;
-	INLINE ID3D11HullShader* getHullShader(void) const;
-	INLINE ID3D11ComputeShader* getComputeShader(void) const;
+	void* getShader(void) const;
+	ID3D11VertexShader* getVertexShader(void) const;
+	ID3D11PixelShader* getPixelShader(void) const;
+	ID3D11DomainShader* getDomainShader(void) const;
+	ID3D11GeometryShader* getGeometryShader(void) const;
+	ID3D11HullShader* getHullShader(void) const;
+	ID3D11ComputeShader* getComputeShader(void) const;
 
-	INLINE ID3DBlob* getByteCodeBuffer(void) const;
+	ID3DBlob* getByteCodeBuffer(void) const;
 
 private:
 	union

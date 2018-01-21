@@ -23,6 +23,7 @@ THE SOFTWARE.
 #include "Gleam_Frustum.h"
 #include "Gleam_Transform.h"
 #include "Gleam_AABB.h"
+#include "Gleam_OBB.h"
 #include <cmath>
 
 NS_GLEAM
@@ -61,7 +62,7 @@ void Frustum::construct(float fov, float aspect_ratio, float z_near, float z_far
 bool Frustum::contains(const AABB& aabb) const
 {
 	// Assuming compiler will unroll this loop
-	for (unsigned int i = 0; i < ARRAY_SIZE(_planes); ++i) {
+	for (int32_t i = 0; i < ARRAY_SIZE(_planes); ++i) {
 		// Plane normals are pointing outside. Therefore, if we are in front of a plane, we are outside the frustum.
 		if (_planes[i].contains(aabb) == Plane::FRONT) {
 			return false;
@@ -71,18 +72,18 @@ bool Frustum::contains(const AABB& aabb) const
 	return true;
 }
 
-//bool Frustum::contains(const OBB& obb) const
-//{
-//	// Assuming compiler will unroll this loop
-//	for (unsigned int i = 0; i < 6; ++i) {
-//		// Plane normals are pointing outside. Therefore, if we are in front of a plane, we are outside the frustum.
-//		if (_planes[i].contains(obb) == Plane::FRONT) {
-//			return false;
-//		}
-//	}
-//
-//	return true;
-//}
+bool Frustum::contains(const OBB& obb) const
+{
+	// Assuming compiler will unroll this loop
+	for (int32_t i = 0; i < 6; ++i) {
+		// Plane normals are pointing outside. Therefore, if we are in front of a plane, we are outside the frustum.
+		if (_planes[i].contains(obb) == Plane::FRONT) {
+			return false;
+		}
+	}
+
+	return true;
+}
 
 void Frustum::transform(const Transform& transform)
 {
