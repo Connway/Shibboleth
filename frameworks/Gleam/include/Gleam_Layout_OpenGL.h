@@ -50,7 +50,7 @@ public:
 
 	RendererType getRendererType(void) const override;
 
-	INLINE const GleamArray< GleamArray<LayoutData> >& GetLayoutDescriptors(void) const;
+	const GleamArray< GleamArray<LayoutData> >& GetLayoutDescriptors(void) const;
 
 private:
 	GleamArray< GleamArray<LayoutData> > _layout_descs;

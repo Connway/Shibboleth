@@ -30,7 +30,7 @@ NS_GLEAM
 
 class Transform;
 class AABB;
-//class OBB;
+class OBB;
 
 class Plane
 {
@@ -54,7 +54,7 @@ public:
 	float getDistance(void) const;
 
 	ContainResult contains(const AABB& aabb) const;
-	//ContainResult contains(const OBB& obb) const;
+	ContainResult contains(const OBB& obb) const;
 
 	void transform(const Transform& transform);
 

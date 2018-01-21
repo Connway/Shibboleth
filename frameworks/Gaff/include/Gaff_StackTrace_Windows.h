@@ -32,9 +32,9 @@ NS_GAFF
 class StackTrace
 {
 public:
-	INLINE static bool RefreshModuleList(void);
-	INLINE static bool Init(void);
-	INLINE static void Destroy(void);
+	static bool RefreshModuleList(void);
+	static bool Init(void);
+	static void Destroy(void);
 
 	StackTrace(const StackTrace& trace);
 	StackTrace(void);
@@ -42,13 +42,13 @@ public:
 
 	const StackTrace& operator=(const StackTrace& rhs);
 
-	INLINE unsigned short captureStack(const char* app_name, unsigned int frames_to_capture = MAX_FRAMES);
-	INLINE unsigned short getNumCapturedFrames(void) const;
+	unsigned short captureStack(const char* app_name, unsigned int frames_to_capture = MAX_FRAMES);
+	unsigned short getNumCapturedFrames(void) const;
 
-	INLINE uint64_t getAddress(unsigned short frame) const;
-	INLINE unsigned int getLineNumber(unsigned short frame) const;
-	INLINE const char* getSymbolName(unsigned short frame) const;
-	INLINE const char* getFileName(unsigned short frame) const;
+	uint64_t getAddress(unsigned short frame) const;
+	unsigned int getLineNumber(unsigned short frame) const;
+	const char* getSymbolName(unsigned short frame) const;
+	const char* getFileName(unsigned short frame) const;
 
 private:
 	static void* _handle;

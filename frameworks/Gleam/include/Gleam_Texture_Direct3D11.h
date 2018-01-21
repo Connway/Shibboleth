@@ -44,15 +44,15 @@ public:
 
 	RendererType getRendererType(void) const;
 
-	INLINE ID3D11DepthStencilView* getDepthStencilView(void) const;
+	ID3D11DepthStencilView* getDepthStencilView(void) const;
 
-	INLINE void* getTexture(void) const;
-	INLINE ID3D11Texture1D* getTexture1D(void) const;
-	INLINE ID3D11Texture2D* getTexture2D(void) const;
-	INLINE ID3D11Texture3D* getTexture3D(void) const;
+	void* getTexture(void) const;
+	ID3D11Texture1D* getTexture1D(void) const;
+	ID3D11Texture2D* getTexture2D(void) const;
+	ID3D11Texture3D* getTexture3D(void) const;
 
-	INLINE static DXGI_FORMAT GetD3DFormat(FORMAT format);
-	INLINE static DXGI_FORMAT GetTypedFormat(FORMAT format);
+	static DXGI_FORMAT GetD3DFormat(FORMAT format);
+	static DXGI_FORMAT GetTypedFormat(FORMAT format);
 
 private:
 	ID3D11DepthStencilView* _depth_stencil_view;

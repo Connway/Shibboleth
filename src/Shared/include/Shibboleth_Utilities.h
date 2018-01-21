@@ -29,7 +29,7 @@ NS_SHIBBOLETH
 
 class IApp;
 
-INLINE void SetApp(IApp& app);
-INLINE IApp& GetApp(void);
+void SetApp(IApp& app);
+IApp& GetApp(void);
 
 NS_END

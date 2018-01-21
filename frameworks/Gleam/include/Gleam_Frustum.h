@@ -28,7 +28,7 @@ NS_GLEAM
 
 class Transform;
 class AABB;
-//class OBB;
+class OBB;
 
 class Frustum
 {
@@ -40,7 +40,7 @@ public:
 	void construct(float fov, float aspect_ratio, float z_near, float z_far);
 
 	bool contains(const AABB& aabb) const;
-	//bool contains(const OBB& obb) const;
+	bool contains(const OBB& obb) const;
 
 	void transform(const Transform& transform);
 

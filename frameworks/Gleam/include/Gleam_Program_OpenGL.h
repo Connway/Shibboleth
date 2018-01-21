@@ -56,7 +56,7 @@ public:
 	
 	RendererType getRendererType(void) const;
 
-	INLINE unsigned int getProgram(void) const;
+	unsigned int getProgram(void) const;
 
 private:
 	unsigned int _program;

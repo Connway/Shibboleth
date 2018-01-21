@@ -289,9 +289,9 @@ bool App::initApp(void)
 		CONVERT_STRING(wchar_t, temp, working_dir_ptr);
 
 		if ((temp[working_dir.size() - 1] == TEXT('/') || temp[working_dir.size() - 1] == TEXT('\\'))) {
-			memcpy(temp + working_dir.size(), TEXT("bin"), sizeof(TCHAR));
+			memcpy(temp + working_dir.size(), TEXT("bin"), sizeof(wchar_t));
 		} else {
-			memcpy(temp + working_dir.size(), TEXT("/bin"), sizeof(TCHAR));
+			memcpy(temp + working_dir.size(), TEXT("/bin"), sizeof(wchar_t));
 		}
 
 		SetDllDirectory(temp);

@@ -22,26 +22,27 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Gaff_Defines.h"
-#include "Gaff_IncludeWindows.h"
+#include "Gleam_ProxyAllocator.h"
+#include <Gaff_Function.h>
 
-NS_GAFF
+NS_GLEAM
 
-class CriticalSection
+template <class Fn, class T>
+eastl::function<Fn> Func(T functor, const ProxyAllocator& allocator = ProxyAllocator())
 {
-public:
-	CriticalSection(void);
-	~CriticalSection(void);
+	return Gaff::Func<Fn>(functor, allocator);
+}
 
-	INLINE void lock(void) const;
-	INLINE bool tryLock(void) const;
-	INLINE void unlock(void) const;
+template <class T, class Ret, class... Args>
+eastl::function<Ret (Args...)> MemberFunc(const T* obj, Ret (T::*func)(Args...) const, const ProxyAllocator& allocator = ProxyAllocator())
+{
+	return Gaff::MemberFunc(obj, func, allocator);
+}
 
-private:
-	mutable CRITICAL_SECTION _cs;
-
-	GAFF_NO_COPY(CriticalSection);
-	GAFF_NO_MOVE(CriticalSection);
-};
+template <class T, class Ret, class... Args>
+eastl::function<Ret (Args...)> MemberFunc(T* obj, Ret (T::*func)(Args...), const ProxyAllocator& allocator = ProxyAllocator())
+{
+	return Gaff::MemberFunc(obj, func, allocator);
+}
 
 NS_END

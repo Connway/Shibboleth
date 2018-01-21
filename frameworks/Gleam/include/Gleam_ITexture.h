@@ -103,12 +103,12 @@ public:
 	ITexture(void) {}
 	virtual ~ITexture(void) {}
 
-	INLINE unsigned int getMipLevels(void) const { return _mip_levels; }
-	INLINE FORMAT getFormat(void) const { return _format; }
-	INLINE TYPE getType(void) const { return _type; }
-	INLINE int getWidth(void) const { return _width; }
-	INLINE int getHeight(void) const { return _height; }
-	INLINE int getDepth(void) const { return _depth; }
+	unsigned int getMipLevels(void) const { return _mip_levels; }
+	FORMAT getFormat(void) const { return _format; }
+	TYPE getType(void) const { return _type; }
+	int getWidth(void) const { return _width; }
+	int getHeight(void) const { return _height; }
+	int getDepth(void) const { return _depth; }
 
 	virtual void destroy(void) = 0;
 

@@ -48,7 +48,7 @@ public:
 
 	RendererType getRendererType(void) const;
 
-	INLINE ID3D11SamplerState* getSamplerState(void) const;
+	ID3D11SamplerState* getSamplerState(void) const;
 
 private:
 	ID3D11SamplerState* _sampler_state;

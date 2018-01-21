@@ -23,6 +23,7 @@ THE SOFTWARE.
 #pragma once
 
 #include <Gaff_Platform.h>
+#include <cstdint> // For (u)int*_t and size_t
 
 #define OPENGL_MULTITHREAD
 
@@ -35,14 +36,6 @@ THE SOFTWARE.
 #define RETURNIFFAILED(r) if (FAILED(r)) { return false; }
 #define RETURNIFFALSECLEANUP(r, c) if (!r) { c; return false; }
 #define RETURNIFFALSE(r) if (!r) { return false; }
-
-#ifndef INLINE
-	#ifdef ATTEMPT_INLINE
-		#define INLINE inline
-	#else
-		#define INLINE
-	#endif
-#endif
 
 #ifndef _CRT_SECURE_NO_WARNINGS
 	#define _CRT_SECURE_NO_WARNINGS

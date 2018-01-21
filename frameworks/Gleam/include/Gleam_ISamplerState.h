@@ -60,7 +60,7 @@ public:
 	ISamplerState(void) {}
 	virtual ~ISamplerState(void) {}
 
-	INLINE bool init(IRenderDevice& rd, const SamplerSettings& sampler_settings)
+	bool init(IRenderDevice& rd, const SamplerSettings& sampler_settings)
 	{
 		return init(
 			rd, sampler_settings.filter, sampler_settings.wrap_u, sampler_settings.wrap_v, sampler_settings.wrap_w,

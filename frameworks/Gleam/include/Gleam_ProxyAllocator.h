@@ -30,6 +30,10 @@ NS_GLEAM
 class ProxyAllocator : public Gaff::IAllocator
 {
 public:
+	GAFF_STRUCTORS_DEFAULT(ProxyAllocator);
+	GAFF_COPY_DEFAULT(ProxyAllocator);
+	GAFF_MOVE_DEFAULT(ProxyAllocator);
+
 	explicit ProxyAllocator(const char* name):
 		_name(name)
 	{

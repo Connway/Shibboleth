@@ -36,18 +36,11 @@ THE SOFTWARE.
 
 NS_GAFF
 
-/*!
-	\brief Global initialization of the stack trace system.
-	\note Must be called before using a StackTrace instance. And called per execution context. (eg EXE, DLL)
-*/
 bool StackTrace::Init(void)
 {
 	return true;
 }
 
-/*!
-	\brief Global destruction of the stack trace system.
-*/
 void StackTrace::Destroy(void)
 {
 }
@@ -89,10 +82,6 @@ const StackTrace& StackTrace::operator=(const StackTrace& rhs)
 	return *this;
 }
 
-/*!
-	\brief Captures the callstack \a frames_to_capture deep.
-	\return The number of callstack frames captured.
-*/
 unsigned short StackTrace::captureStack(const char* app_name, unsigned int frames_to_capture)
 {
 	_total_frames = backtrace(_stack, frames_to_capture);

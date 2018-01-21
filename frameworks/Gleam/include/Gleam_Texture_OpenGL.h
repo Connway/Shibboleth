@@ -43,7 +43,7 @@ public:
 
 	RendererType getRendererType(void) const;
 
-	INLINE unsigned int getTexture(void) const;
+	unsigned int getTexture(void) const;
 	unsigned int getTexType(void) const;
 
 private:

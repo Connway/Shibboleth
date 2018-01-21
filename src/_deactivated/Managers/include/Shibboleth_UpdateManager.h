@@ -59,16 +59,16 @@ private:
 		UpdatePhase(void);
 		~UpdatePhase(void);
 
-		INLINE const char* getName(void) const;
-		INLINE void setName(const char* name);
+		const char* getName(void) const;
+		void setName(const char* name);
 
-		INLINE void addUpdate(size_t row, const UpdateCallback& callback);
-		INLINE void setNumRows(size_t num_rows);
+		void addUpdate(size_t row, const UpdateCallback& callback);
+		void setNumRows(size_t num_rows);
 
-		INLINE size_t getID(void) const;
-		INLINE void setID(size_t id);
+		size_t getID(void) const;
+		void setID(size_t id);
 
-		INLINE bool isDone(void) const;
+		bool isDone(void) const;
 		void run(void);
 
 	private:

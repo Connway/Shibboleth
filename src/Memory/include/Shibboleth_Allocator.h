@@ -58,10 +58,10 @@ public:
 	void* alloc(size_t size_bytes, const char* file, int line) override;
 	void free(void* data) override;
 
-	INLINE size_t getTotalBytesAllocated(size_t pool_index) const;
-	INLINE size_t getNumAllocations(size_t pool_index) const;
-	INLINE size_t getNumFrees(size_t pool_index) const;
-	INLINE const char* getPoolName(size_t pool_index) const;
+	size_t getTotalBytesAllocated(size_t pool_index) const;
+	size_t getNumAllocations(size_t pool_index) const;
+	size_t getNumFrees(size_t pool_index) const;
+	const char* getPoolName(size_t pool_index) const;
 
 private:
 	struct MemoryPoolInfo

@@ -312,11 +312,6 @@ bool HashString<T, HashType, Allocator>::operator>(HashType rhs) const
 }
 
 // WARNING: This function takes ownership of the string instead of copying
-/*!
-	\brief Sets the raw string to be used internally. Does not allocate to make a copy.
-	\param string The raw string to use.
-	\note Using this function means you are passing ownership of \a string to HashString.
-*/
 template <class T, class HashType, class Allocator>
 void HashString<T, HashType, Allocator>::set(const T* string)
 {

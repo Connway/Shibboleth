@@ -115,7 +115,7 @@ void AABB::reset(void)
 	_max = glm::vec3(FLT_MIN, FLT_MIN, FLT_MIN);
 }
 
-const glm::vec3* AABB::generatePoints(glm::vec3* out) const
+glm::vec3* AABB::generatePoints(glm::vec3* out) const
 {
 	// bottom plane
 	out[0] = _min;
@@ -132,23 +132,6 @@ const glm::vec3* AABB::generatePoints(glm::vec3* out) const
 	return out;
 }
 
-void AABB::transform(const Transform& transform)
-{
-	generatePoints(_transform_cache);
-	reset();
-
-	_transform_cache[0] = transform.transformPoint(_transform_cache[0]);
-	_transform_cache[1] = transform.transformPoint(_transform_cache[1]);
-	_transform_cache[2] = transform.transformPoint(_transform_cache[2]);
-	_transform_cache[3] = transform.transformPoint(_transform_cache[3]);
-	_transform_cache[4] = transform.transformPoint(_transform_cache[4]);
-	_transform_cache[5] = transform.transformPoint(_transform_cache[5]);
-	_transform_cache[6] = transform.transformPoint(_transform_cache[6]);
-	_transform_cache[7] = transform.transformPoint(_transform_cache[7]);
-
-	addPoints(_transform_cache, 8);
-}
-
 void AABB::transform(const glm::mat4x4& transform)
 {
 	generatePoints(_transform_cache);
@@ -162,6 +145,23 @@ void AABB::transform(const glm::mat4x4& transform)
 	_transform_cache[5] = transform * glm::vec4(_transform_cache[5], 1.0f);
 	_transform_cache[6] = transform * glm::vec4(_transform_cache[6], 1.0f);
 	_transform_cache[7] = transform * glm::vec4(_transform_cache[7], 1.0f);
+
+	addPoints(_transform_cache, 8);
+}
+
+void AABB::transform(const Transform& transform)
+{
+	generatePoints(_transform_cache);
+	reset();
+
+	_transform_cache[0] = transform.transformPoint(_transform_cache[0]);
+	_transform_cache[1] = transform.transformPoint(_transform_cache[1]);
+	_transform_cache[2] = transform.transformPoint(_transform_cache[2]);
+	_transform_cache[3] = transform.transformPoint(_transform_cache[3]);
+	_transform_cache[4] = transform.transformPoint(_transform_cache[4]);
+	_transform_cache[5] = transform.transformPoint(_transform_cache[5]);
+	_transform_cache[6] = transform.transformPoint(_transform_cache[6]);
+	_transform_cache[7] = transform.transformPoint(_transform_cache[7]);
 
 	addPoints(_transform_cache, 8);
 }

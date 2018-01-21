@@ -69,6 +69,9 @@
     <ClInclude Include="..\..\..\frameworks\Gleam\include\Gleam_Frustum.h">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\frameworks\Gleam\include\Gleam_Function.h">
+      <Filter>include</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\frameworks\Gleam\include\Gleam_Global.h">
       <Filter>include</Filter>
     </ClInclude>
@@ -187,12 +190,6 @@
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\frameworks\Gleam\include\Gleam_OBB.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\frameworks\Gleam\include\Gleam_OBB_CPU.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\frameworks\Gleam\include\Gleam_OBB_SIMD.h">
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\frameworks\Gleam\include\Gleam_Plane.h">
@@ -328,6 +325,8 @@
   <ItemGroup>
     <ClCompile Include="..\..\..\frameworks\Gleam\Gleam_AABB.cpp" />
     <ClCompile Include="..\..\..\frameworks\Gleam\Gleam_Frustum.cpp" />
+    <ClCompile Include="..\..\..\frameworks\Gleam\Gleam_Keyboard_MessagePump.cpp" />
+    <ClCompile Include="..\..\..\frameworks\Gleam\Gleam_OBB.cpp" />
     <ClCompile Include="..\..\..\frameworks\Gleam\Gleam_Plane.cpp" />
     <ClCompile Include="..\..\..\frameworks\Gleam\Gleam_RenderDevice_Direct3D11.cpp" />
     <ClCompile Include="..\..\..\frameworks\Gleam\Gleam_RenderOutput_Direct3D11.cpp" />

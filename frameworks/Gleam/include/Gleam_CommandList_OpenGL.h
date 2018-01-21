@@ -47,7 +47,7 @@ public:
 
 	void append(const CommandListGL& command_list);
 	void execute(void);
-	INLINE void clear(void);
+	void clear(void);
 
 	template <class ReturnType, class... Args>
 	void addCommand(const Gaff::CachedFunction<ReturnType, Args...>& function)

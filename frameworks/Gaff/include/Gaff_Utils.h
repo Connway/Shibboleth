@@ -43,17 +43,17 @@ THE SOFTWARE.
 
 NS_GAFF
 
-INLINE unsigned long GetNumberOfCores(void); //!< Returns the number of physical cores on the machine.
-INLINE void GetCurrentTimeString(char* buff, size_t count, const char* format); //!< Gets the current time as a string using \a format. Result stored in \a buff.
-INLINE void GetCurrentTimeString(wchar_t* buff, size_t size, const wchar_t* format);
-INLINE bool CreateDir(const char* dirname, unsigned short mode); //<! Creates directory \a dirname with the given access \a mode.
+unsigned long GetNumberOfCores(void); //!< Returns the number of physical cores on the machine.
+void GetCurrentTimeString(char* buff, size_t count, const char* format); //!< Gets the current time as a string using \a format. Result stored in \a buff.
+void GetCurrentTimeString(wchar_t* buff, size_t size, const wchar_t* format);
+bool CreateDir(const char* dirname, unsigned short mode); //<! Creates directory \a dirname with the given access \a mode.
 void DebugPrintf(const char* format_string, ...); //!< Does a printf() to debug output on supported platforms. Unsupported platforms just call normal printf().
 void DebugPrintf(const wchar_t* format_string, ...); //!< Does a printf() to debug output on supported platforms. Unsupported platforms just call normal printf().
-INLINE bool SetWorkingDir(const char* directory);
+bool SetWorkingDir(const char* directory);
 
-INLINE void* AlignedOffsetMalloc(size_t size, size_t alignment, size_t offset);
-INLINE void* AlignedMalloc(size_t size, size_t alignment);
-INLINE void AlignedFree(void* data);
+void* AlignedOffsetMalloc(size_t size, size_t alignment, size_t offset);
+void* AlignedMalloc(size_t size, size_t alignment);
+void AlignedFree(void* data);
 
 bool IsDebuggerAttached(void);
 void DebugBreak(void);

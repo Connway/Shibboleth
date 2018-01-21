@@ -29,23 +29,10 @@ THE SOFTWARE.
 
 NS_GAFF
 
-/*!
-	\brief Manages and loads dynamic modules. (*.so, *.dll, *.dylib)
-	\tparam Allocator The allocator we will use for memory allocations.
-*/
 template <class Allocator = DefaultAllocator>
 class DynamicLoader
 {
 public:
-	/*!
-		\brief Iterates over each ModulePtr and calls the callback.
-		\tparam
-			Callback The callback to use on each ModulePtr.
-			Callbacks take the form of: bool CB(const ModulePtr&).
-			Returning true will end the loop early.
-
-		\return Returns whether the loop was terminated early.
-	*/
 	template <class Callback>
 	bool forEachModule(Callback&& callback)
 	{

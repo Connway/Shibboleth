@@ -39,8 +39,8 @@ public:
 
 	RendererType getRendererType(void) const;
 
-	INLINE unsigned int getResourceView(void) const;
-	INLINE unsigned int getTarget(void) const;
+	unsigned int getResourceView(void) const;
+	unsigned int getTarget(void) const;
 
 private:
 	unsigned int _resource;

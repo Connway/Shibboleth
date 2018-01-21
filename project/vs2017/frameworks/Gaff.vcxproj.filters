@@ -21,15 +21,6 @@
     <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_CrashHandler.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_CriticalSection.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_CriticalSection_Linux.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_CriticalSection_Windows.h">
-      <Filter>include</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_DefaultAlignedAllocator.h">
       <Filter>include</Filter>
     </ClInclude>
@@ -70,6 +61,9 @@
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_File.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_Function.h">
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_Hash.h">
@@ -121,9 +115,6 @@
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_Math.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_Mesh.h">
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\frameworks\Gaff\include\Gaff_MessagePack.h">
@@ -217,13 +208,12 @@
     <ClCompile Include="..\..\..\frameworks\Gaff\Gaff_CrashHandler_Common.cpp" />
     <ClCompile Include="..\..\..\frameworks\Gaff\Gaff_CrashHandler_Linux.cpp" />
     <ClCompile Include="..\..\..\frameworks\Gaff\Gaff_CrashHandler_Windows.cpp" />
-    <ClCompile Include="..\..\..\frameworks\Gaff\Gaff_CriticalSection_Linux.cpp" />
-    <ClCompile Include="..\..\..\frameworks\Gaff\Gaff_CriticalSection_Windows.cpp" />
     <ClCompile Include="..\..\..\frameworks\Gaff\Gaff_Directory.cpp" />
     <ClCompile Include="..\..\..\frameworks\Gaff\Gaff_DynamicModule_Linux.cpp" />
     <ClCompile Include="..\..\..\frameworks\Gaff\Gaff_DynamicModule_Windows.cpp" />
     <ClCompile Include="..\..\..\frameworks\Gaff\Gaff_EnumReflection.cpp" />
     <ClCompile Include="..\..\..\frameworks\Gaff\Gaff_File.cpp" />
+    <ClCompile Include="..\..\..\frameworks\Gaff\Gaff_Hash.cpp" />
     <ClCompile Include="..\..\..\frameworks\Gaff\Gaff_Host.cpp" />
     <ClCompile Include="..\..\..\frameworks\Gaff\Gaff_JSON.cpp" />
     <ClCompile Include="..\..\..\frameworks\Gaff\Gaff_Math.cpp" />
@@ -236,8 +226,5 @@
     <ClCompile Include="..\..\..\frameworks\Gaff\Gaff_Utils_Linux.cpp" />
     <ClCompile Include="..\..\..\frameworks\Gaff\Gaff_Utils_Mac.cpp" />
     <ClCompile Include="..\..\..\frameworks\Gaff\Gaff_Utils_Windows.cpp" />
-    <ClCompile Include="..\..\..\frameworks\Gaff\include\Gaff_Hash.cpp">
-      <Filter>include</Filter>
-    </ClCompile>
   </ItemGroup>
 </Project>

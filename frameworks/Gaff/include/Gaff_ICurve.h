@@ -20,17 +20,12 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-/*! \file */
-
 #pragma once
 
 #include "Gaff_Defines.h"
 
 NS_GAFF
 
-/*!
-	\brief Curve interface. Exposes a generic sampling interface.
-*/
 template<class PointType>
 class ICurve
 {
@@ -38,11 +33,6 @@ public:
 	ICurve(void) {}
 	virtual ~ICurve(void) {}
 
-	/*!
-		\brief Sample a point at time \a t along our curve.
-		\param t The time at which we wish to sample the curve.
-		\return The point along the curve we have sampled.
-	*/
 	virtual PointType sample(float t) const = 0;
 };
 

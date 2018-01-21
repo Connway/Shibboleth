@@ -46,7 +46,7 @@ public:
 
 	RendererType getRendererType(void) const;
 
-	INLINE unsigned int getSamplerState(void) const;
+	unsigned int getSamplerState(void) const;
 
 private:
 	unsigned int _sampler_state;

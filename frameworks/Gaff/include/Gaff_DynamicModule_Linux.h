@@ -20,67 +20,36 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-/*! \file */
-
 #pragma once
 
 #include "Gaff_String.h"
 
 NS_GAFF
 
-/*!
-	\brief A class that represents a dynamically loaded module. (*.so, *.dll, *.dylib)
-*/
 class DynamicModule
 {
 public:
 	DynamicModule(void);
 	~DynamicModule(void);
 
-	/*!
-		\brief Retrieves a function from the dynamic module.
-
-		\tparam Func The function pointer type the address will be cast to.
-		\param name The name of the symbol to retrieve from the dynamic module.
-
-		\return The function with the symbol \a name, otherwise nullptr.
-	*/
 	template <class Func>
 	Func getFunc(const char* name) const
 	{
 		return reinterpret_cast<Func>(getAddress(name));
 	}
 
-	/*!
-		\brief Retrieves a variable from the dynamic module.
-
-		\tparam Func The type the address will be cast to.
-		\param name The name of the symbol to retrieve from the dynamic module.
-
-		\return The variable with the symbol \a name, otherwise nullptr.
-	*/
 	template <class T>
 	T* getVariable(const char* name) const
 	{
 		return reinterpret_cast<T*>(getAddress(name));
 	}
 
-	/*!
-		\brief Loads the dynamic module found at \a filename from the disk.
-		\param filename The name of the file to load off the disk.
-		\return Whether the dynamic module was successfully loaded.
-	*/
-	INLINE bool load(const char* filename);
-	INLINE bool destroy(void);
+	bool load(const char* filename);
+	bool destroy(void);
 
-	/*!
-		\brief Retrieves the address of the requested symbol \a name.
-		\param name The name of the symbol to retrieve from the dynamic module.
-		\return The address of the symbol \a name, otherwise nullptr.
-	*/
-	INLINE void* getAddress(const char* name) const;
+	void* getAddress(const char* name) const;
 
-	INLINE static const char* GetErrorString(void);
+	static const char* GetErrorString(void);
 
 private:
 	void* _module;

@@ -42,10 +42,10 @@ Hash32 FNV1aHash32(const char* key, size_t len, Hash32 init);
 Hash32 FNV1Hash32(const char* key, size_t len, Hash32 init);
 
 // These functions just call the above functiosn with INIT_HASH64/32
-INLINE Hash64 FNV1aHash64(const char* key, size_t len);
-INLINE Hash64 FNV1Hash64(const char* key, size_t len);
-INLINE Hash32 FNV1aHash32(const char* key, size_t len);
-INLINE Hash32 FNV1Hash32(const char* key, size_t len);
+Hash64 FNV1aHash64(const char* key, size_t len);
+Hash64 FNV1Hash64(const char* key, size_t len);
+Hash32 FNV1aHash32(const char* key, size_t len);
+Hash32 FNV1Hash32(const char* key, size_t len);
 
 float BinomialCoefficient(float n, float k);
 float BernsteinPolynomial(float t, float n, float k);
