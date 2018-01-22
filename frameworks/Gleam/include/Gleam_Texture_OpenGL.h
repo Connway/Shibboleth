@@ -33,24 +33,21 @@ public:
 	TextureGL(void);
 	~TextureGL(void);
 
-	void destroy(void);
+	void destroy(void) override;
 
-	bool init3D(IRenderDevice&, int width, int height, int depth, FORMAT format, int mip_levels = 1, const void* buffer = nullptr);
-	bool init2D(IRenderDevice&, int width, int height, FORMAT format, int mip_levels = 1, const void* buffer = nullptr);
-	bool init1D(IRenderDevice&, int width, FORMAT format, int mip_levels = 1, const void* buffer = nullptr);
-	bool initCubemap(IRenderDevice&, int width, int height, FORMAT format, int mip_levels = 1, const void* buffer = nullptr);
-	bool initDepthStencil(IRenderDevice& rd, int width, int height, FORMAT format);
+	bool init3D(IRenderDevice&, int32_t width, int32_t height, int32_t depth, Format format, int32_t mip_levels = 1, const void* buffer = nullptr) override;
+	bool init2D(IRenderDevice&, int32_t width, int32_t height, Format format, int32_t mip_levels = 1, const void* buffer = nullptr) override;
+	bool init1D(IRenderDevice&, int32_t width, Format format, int32_t mip_levels = 1, const void* buffer = nullptr) override;
+	bool initCubemap(IRenderDevice&, int32_t width, int32_t height, Format format, int32_t mip_levels = 1, const void* buffer = nullptr) override;
+	bool initDepthStencil(IRenderDevice& rd, int32_t width, int32_t height, Format format) override;
 
-	RendererType getRendererType(void) const;
+	RendererType getRendererType(void) const override;
 
-	unsigned int getTexture(void) const;
-	unsigned int getTexType(void) const;
+	uint32_t getTexture(void) const;
+	uint32_t getTexType(void) const;
 
 private:
-	unsigned int _texture;
-
-	static unsigned int determineChannels(FORMAT format);
-	static unsigned int determineType(FORMAT format);
+	uint32_t _texture;
 
 	GLEAM_REF_COUNTED(TextureGL);
 };

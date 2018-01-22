@@ -22,8 +22,8 @@ THE SOFTWARE.
 
 #if defined(_WIN32) || defined(_WIN64)
 
-#include "Gleam_Texture_Direct3D.h"
-#include "Gleam_IRenderDevice_Direct3D.h"
+#include "Gleam_Texture_Direct3D11.h"
+#include "Gleam_IRenderDevice_Direct3D11.h"
 #include "Gleam_IRenderDevice.h"
 #include <cmath>
 
@@ -93,7 +93,7 @@ static DXGI_FORMAT _format_map[ITexture::FORMAT_SIZE] = {
 	DXGI_FORMAT_D32_FLOAT_S8X24_UINT
 };
 
-static unsigned int _format_size[ITexture::FORMAT_SIZE] = {
+static int32_t _format_size[ITexture::FORMAT_SIZE] = {
 	1,
 	2,
 	2,
@@ -157,12 +157,12 @@ static unsigned int _format_size[ITexture::FORMAT_SIZE] = {
 	8
 };
 
-DXGI_FORMAT TextureD3D::GetD3DFormat(FORMAT format)
+DXGI_FORMAT TextureD3D::GetD3DFormat(Format format)
 {
 	return _format_map[format];
 }
 
-DXGI_FORMAT TextureD3D::GetTypedFormat(FORMAT format)
+DXGI_FORMAT TextureD3D::GetTypedFormat(Format format)
 {
 	DXGI_FORMAT typed_format;
 
@@ -227,15 +227,15 @@ void TextureD3D::destroy(void)
 	}
 }
 
-bool TextureD3D::init3D(IRenderDevice& rd, int width, int height, int depth, FORMAT format, int mip_levels, const void* buffer)
+bool TextureD3D::init3D(IRenderDevice& rd, int32_t width, int32_t height, int32_t depth, Format format, int32_t mip_levels, const void* buffer)
 {
 	GAFF_ASSERT(width > 0 && height > 0 && depth > 0 && mip_levels > 0);
-	GAFF_ASSERT(rd.getRendererType() == RENDERER_DIRECT3D);
+	GAFF_ASSERT(rd.getRendererType() == RENDERER_DIRECT3D11);
 
-	IRenderDeviceD3D& rd3d = reinterpret_cast<IRenderDeviceD3D&>(*(reinterpret_cast<char*>(&rd) + sizeof(IRenderDevice)));
-	ID3D11Device* device = rd3d.getActiveDevice();
+	IRenderDeviceD3D11& rd3d = reinterpret_cast<IRenderDeviceD3D11&>(*(reinterpret_cast<char*>(&rd) + sizeof(IRenderDevice)));
+	ID3D11Device* device = rd3d.getDevice();
 
-	_mip_levels = static_cast<unsigned int>(mip_levels);
+	_mip_levels = static_cast<int32_t>(mip_levels);
 	_format = format;
 	_type = THREED;
 	_width = width;
@@ -272,15 +272,15 @@ bool TextureD3D::init3D(IRenderDevice& rd, int width, int height, int depth, FOR
 	return SUCCEEDED(result);
 }
 
-bool TextureD3D::init2D(IRenderDevice& rd, int width, int height, FORMAT format, int mip_levels, const void* buffer)
+bool TextureD3D::init2D(IRenderDevice& rd, int32_t width, int32_t height, Format format, int32_t mip_levels, const void* buffer)
 {
 	GAFF_ASSERT(width > 0 && height > 0 && mip_levels > 0);
-	GAFF_ASSERT(rd.getRendererType() == RENDERER_DIRECT3D);
+	GAFF_ASSERT(rd.getRendererType() == RENDERER_DIRECT3D11);
 
-	IRenderDeviceD3D& rd3d = reinterpret_cast<IRenderDeviceD3D&>(*(reinterpret_cast<char*>(&rd) + sizeof(IRenderDevice)));
-	ID3D11Device* device = rd3d.getActiveDevice();
+	IRenderDeviceD3D11& rd3d = reinterpret_cast<IRenderDeviceD3D11&>(*(reinterpret_cast<char*>(&rd) + sizeof(IRenderDevice)));
+	ID3D11Device* device = rd3d.getDevice();
 
-	_mip_levels = static_cast<unsigned int>(mip_levels);
+	_mip_levels = static_cast<int32_t>(mip_levels);
 	_format = format;
 	_type = TWOD;
 	_width = width;
@@ -319,15 +319,15 @@ bool TextureD3D::init2D(IRenderDevice& rd, int width, int height, FORMAT format,
 	return SUCCEEDED(result);
 }
 
-bool TextureD3D::init1D(IRenderDevice& rd, int width, FORMAT format, int mip_levels, const void* buffer)
+bool TextureD3D::init1D(IRenderDevice& rd, int32_t width, Format format, int32_t mip_levels, const void* buffer)
 {
 	GAFF_ASSERT(width > 0 && mip_levels > 0);
-	GAFF_ASSERT(rd.getRendererType() == RENDERER_DIRECT3D);
+	GAFF_ASSERT(rd.getRendererType() == RENDERER_DIRECT3D11);
 
-	IRenderDeviceD3D& rd3d = reinterpret_cast<IRenderDeviceD3D&>(*(reinterpret_cast<char*>(&rd) + sizeof(IRenderDevice)));
-	ID3D11Device* device = rd3d.getActiveDevice();
+	IRenderDeviceD3D11& rd3d = reinterpret_cast<IRenderDeviceD3D11&>(*(reinterpret_cast<char*>(&rd) + sizeof(IRenderDevice)));
+	ID3D11Device* device = rd3d.getDevice();
 
-	_mip_levels = static_cast<unsigned int>(mip_levels);
+	_mip_levels = static_cast<int32_t>(mip_levels);
 	_format = format;
 	_type = ONED;
 	_width = width;
@@ -363,15 +363,15 @@ bool TextureD3D::init1D(IRenderDevice& rd, int width, FORMAT format, int mip_lev
 	return SUCCEEDED(result);
 }
 
-bool TextureD3D::initCubemap(IRenderDevice& rd, int width, int height, FORMAT format, int mip_levels, const void* buffer)
+bool TextureD3D::initCubemap(IRenderDevice& rd, int32_t width, int32_t height, Format format, int32_t mip_levels, const void* buffer)
 {
 	GAFF_ASSERT(width > 0 && height > 0 && mip_levels > 0);
-	GAFF_ASSERT(rd.getRendererType() == RENDERER_DIRECT3D);
+	GAFF_ASSERT(rd.getRendererType() == RENDERER_DIRECT3D11);
 
-	IRenderDeviceD3D& rd3d = reinterpret_cast<IRenderDeviceD3D&>(*(reinterpret_cast<char*>(&rd) + sizeof(IRenderDevice)));
-	ID3D11Device* device = rd3d.getActiveDevice();
+	IRenderDeviceD3D11& rd3d = reinterpret_cast<IRenderDeviceD3D11&>(*(reinterpret_cast<char*>(&rd) + sizeof(IRenderDevice)));
+	ID3D11Device* device = rd3d.getDevice();
 
-	_mip_levels = static_cast<unsigned int>(mip_levels);
+	_mip_levels = static_cast<int32_t>(mip_levels);
 	_format = format;
 	_type = CUBE;
 	_width = width;
@@ -410,13 +410,13 @@ bool TextureD3D::initCubemap(IRenderDevice& rd, int width, int height, FORMAT fo
 	return SUCCEEDED(result);
 }
 
-bool TextureD3D::initDepthStencil(IRenderDevice& rd, int width, int height, FORMAT format)
+bool TextureD3D::initDepthStencil(IRenderDevice& rd, int32_t width, int32_t height, Format format)
 {
 	GAFF_ASSERT(width > 0 && height > 0);
-	GAFF_ASSERT(rd.getRendererType() == RENDERER_DIRECT3D);
+	GAFF_ASSERT(rd.getRendererType() == RENDERER_DIRECT3D11);
 
-	IRenderDeviceD3D& rd3d = reinterpret_cast<IRenderDeviceD3D&>(*(reinterpret_cast<char*>(&rd) + sizeof(IRenderDevice)));
-	ID3D11Device* device = rd3d.getActiveDevice();
+	IRenderDeviceD3D11& rd3d = reinterpret_cast<IRenderDeviceD3D11&>(*(reinterpret_cast<char*>(&rd) + sizeof(IRenderDevice)));
+	ID3D11Device* device = rd3d.getDevice();
 	DXGI_FORMAT typeless_format = DXGI_FORMAT_R24G8_TYPELESS;
 
 	_format = format;
@@ -486,7 +486,7 @@ bool TextureD3D::initDepthStencil(IRenderDevice& rd, int width, int height, FORM
 
 RendererType TextureD3D::getRendererType(void) const
 {
-	return RENDERER_DIRECT3D;
+	return RENDERER_DIRECT3D11;
 }
 
 ID3D11DepthStencilView* TextureD3D::getDepthStencilView(void) const

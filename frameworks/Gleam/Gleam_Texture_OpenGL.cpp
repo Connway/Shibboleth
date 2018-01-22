@@ -28,7 +28,10 @@ THE SOFTWARE.
 
 NS_GLEAM
 
-static unsigned int _format_map[ITexture::FORMAT_SIZE] = {
+static GLenum DetermineChannels(ITexture::Format format);
+static GLenum DetermineType(ITexture::Format format);
+
+static uint32_t _format_map[ITexture::FORMAT_SIZE] = {
 	GL_R8,
 	GL_R16,
 	GL_RG8,
@@ -93,7 +96,7 @@ static unsigned int _format_map[ITexture::FORMAT_SIZE] = {
 	GL_DEPTH32F_STENCIL8
 };
 
-static unsigned int _format_size[ITexture::FORMAT_SIZE] = {
+static size_t _format_size[ITexture::FORMAT_SIZE] = {
 	1,
 	2,
 	2,
@@ -174,11 +177,11 @@ void TextureGL::destroy(void)
 	}
 }
 
-bool TextureGL::init3D(IRenderDevice&, int width, int height, int depth, FORMAT format, int mip_levels, const void* buffer)
+bool TextureGL::init3D(IRenderDevice&, int32_t width, int32_t height, int32_t depth, Format format, int32_t mip_levels, const void* buffer)
 {
 	GAFF_ASSERT(width > 0 && height > 0 && depth > 0 && mip_levels > 0);
 
-	_mip_levels = static_cast<unsigned int>(mip_levels);
+	_mip_levels = mip_levels;
 	_format = format;
 	_type = THREED;
 	_width = width;
@@ -191,8 +194,8 @@ bool TextureGL::init3D(IRenderDevice&, int width, int height, int depth, FORMAT 
 	GLenum gl_format = _format_map[format];
 
 	if (buffer) {
-		GLenum gl_channels = determineChannels(format);
-		GLenum gl_type = determineType(format);
+		GLenum gl_channels = DetermineChannels(format);
+		GLenum gl_type = DetermineType(format);
 
 		// if this is zero, something seriously went wrong
 		GAFF_ASSERT(gl_channels != 0 && gl_type != 0);
@@ -200,9 +203,9 @@ bool TextureGL::init3D(IRenderDevice&, int width, int height, int depth, FORMAT 
 		//glTexSubImage3D(GL_TEXTURE_3D, 0, 0, 0, 0, width, height, depth, gl_channels, gl_type, buffer);
 		//glTexImage3D(GL_TEXTURE_3D, 0, gl_format, width, height, depth, 0, gl_channels, gl_type, buffer);
 
-		unsigned int byte_size = _format_size[format];
+		size_t byte_size = _format_size[format];
 
-		for (int i = 0; i < mip_levels; ++i) {
+		for (int32_t i = 0; i < mip_levels; ++i) {
 			glTexImage3D(GL_TEXTURE_3D, i, gl_format, width, height, depth, 0, gl_channels, gl_type, buffer);
 			buffer = reinterpret_cast<const unsigned char*>(buffer) + width * height * depth * byte_size;
 			width = Gaff::Max(1, width / 2);
@@ -224,11 +227,11 @@ bool TextureGL::init3D(IRenderDevice&, int width, int height, int depth, FORMAT 
 	return glGetError() == GL_NO_ERROR;
 }
 
-bool TextureGL::init2D(IRenderDevice&, int width, int height, FORMAT format, int mip_levels, const void* buffer)
+bool TextureGL::init2D(IRenderDevice&, int32_t width, int32_t height, Format format, int32_t mip_levels, const void* buffer)
 {
 	GAFF_ASSERT(width > 0 && height > 0 && mip_levels > 0);
 
-	_mip_levels = static_cast<unsigned int>(mip_levels);
+	_mip_levels = mip_levels;
 	_format = format;
 	_type = TWOD;
 	_width = width;
@@ -241,8 +244,8 @@ bool TextureGL::init2D(IRenderDevice&, int width, int height, FORMAT format, int
 	GLenum gl_format = _format_map[format];
 
 	if (buffer) {
-		GLenum gl_channels = determineChannels(format);
-		GLenum gl_type = determineType(format);
+		GLenum gl_channels = DetermineChannels(format);
+		GLenum gl_type = DetermineType(format);
 
 		// if this is zero, something seriously went wrong
 		GAFF_ASSERT(gl_channels != 0 && gl_type != 0);
@@ -250,9 +253,9 @@ bool TextureGL::init2D(IRenderDevice&, int width, int height, FORMAT format, int
 		//glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, width, height, gl_channels, gl_type, buffer);
 		//glTexImage2D(GL_TEXTURE_2D, 0, gl_format, width, height, 0, gl_channels, gl_type, buffer);
 
-		unsigned int byte_size = _format_size[format];
+		size_t byte_size = _format_size[format];
 
-		for (int i = 0; i < mip_levels; ++i) {
+		for (int32_t i = 0; i < mip_levels; ++i) {
 			glTexImage2D(GL_TEXTURE_2D, i, gl_format, width, height, 0, gl_channels, gl_type, buffer);
 			buffer = reinterpret_cast<const unsigned char*>(buffer) + width * height * byte_size;
 			width = Gaff::Max(1, width / 2);
@@ -273,11 +276,11 @@ bool TextureGL::init2D(IRenderDevice&, int width, int height, FORMAT format, int
 	return glGetError() == GL_NO_ERROR;
 }
 
-bool TextureGL::init1D(IRenderDevice&, int width, FORMAT format, int mip_levels, const void* buffer)
+bool TextureGL::init1D(IRenderDevice&, int32_t width, Format format, int32_t mip_levels, const void* buffer)
 {
 	GAFF_ASSERT(width > 0 && mip_levels > 0);
 
-	_mip_levels = static_cast<unsigned int>(mip_levels);
+	_mip_levels = mip_levels;
 	_format = format;
 	_type = ONED;
 	_width = width;
@@ -290,8 +293,8 @@ bool TextureGL::init1D(IRenderDevice&, int width, FORMAT format, int mip_levels,
 	GLenum gl_format = _format_map[format];
 
 	if (buffer) {
-		GLenum gl_channels = determineChannels(format);
-		GLenum gl_type = determineType(format);
+		GLenum gl_channels = DetermineChannels(format);
+		GLenum gl_type = DetermineType(format);
 
 		// if this is zero, something seriously went wrong
 		GAFF_ASSERT(gl_channels != 0 && gl_type != 0);
@@ -299,9 +302,9 @@ bool TextureGL::init1D(IRenderDevice&, int width, FORMAT format, int mip_levels,
 		//glTexSubImage1D(GL_TEXTURE_1D, 0, 0, width, gl_channels, gl_type, buffer);
 		//glTexImage1D(GL_TEXTURE_1D, 0, gl_format, width, 0, gl_channels, gl_type, buffer);
 
-		unsigned int byte_size = _format_size[format];
+		size_t byte_size = _format_size[format];
 
-		for (int i = 0; i < mip_levels; ++i) {
+		for (int32_t i = 0; i < mip_levels; ++i) {
 			glTexImage1D(GL_TEXTURE_1D, i, gl_format, width, 0, gl_channels, gl_type, buffer);
 			buffer = reinterpret_cast<const unsigned char*>(buffer) + width * byte_size;
 			width = Gaff::Max(1, width / 2);
@@ -321,11 +324,11 @@ bool TextureGL::init1D(IRenderDevice&, int width, FORMAT format, int mip_levels,
 	return glGetError() == GL_NO_ERROR;
 }
 
-bool TextureGL::initCubemap(IRenderDevice&, int width, int height, FORMAT format, int mip_levels, const void* buffer)
+bool TextureGL::initCubemap(IRenderDevice&, int32_t width, int32_t height, Format format, int32_t mip_levels, const void* buffer)
 {
 	GAFF_ASSERT(width > 0 && height > 0 && mip_levels > 0);
 
-	_mip_levels = static_cast<unsigned int>(mip_levels);
+	_mip_levels = mip_levels;
 	_format = format;
 	_type = CUBE;
 	_width = width;
@@ -338,8 +341,8 @@ bool TextureGL::initCubemap(IRenderDevice&, int width, int height, FORMAT format
 	GLenum gl_format = _format_map[format];
 
 	if (buffer) {
-		GLenum gl_channels = determineChannels(format);
-		GLenum gl_type = determineType(format);
+		GLenum gl_channels = DetermineChannels(format);
+		GLenum gl_type = DetermineType(format);
 
 		// if this is zero, something seriously went wrong
 		GAFF_ASSERT(gl_channels != 0 && gl_type != 0);
@@ -358,11 +361,11 @@ bool TextureGL::initCubemap(IRenderDevice&, int width, int height, FORMAT format
 		//glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_Z, 0, gl_format, width, height, 0, gl_channels, gl_type, buf + 4 * buf_size);
 		//glTexImage2D(GL_TEXTURE_CUBE_MAP_NEGATIVE_Z, 0, gl_format, width, height, 0, gl_channels, gl_type, buf + 5 * buf_size);
 
-		unsigned int byte_size = _format_size[format];
-		unsigned int buf_size = width * height * byte_size;
+		size_t byte_size = _format_size[format];
+		size_t buf_size = width * height * byte_size;
 		const char* buf = reinterpret_cast<const char*>(buffer);
 
-		for (int i = 0; i < mip_levels; ++i) {
+		for (int32_t i = 0; i < mip_levels; ++i) {
 			glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X, 0, gl_format, width, height, 0, gl_channels, gl_type, buf);
 			glTexImage2D(GL_TEXTURE_CUBE_MAP_NEGATIVE_X, 0, gl_format, width, height, 0, gl_channels, gl_type, buf + buf_size);
 			glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_Y, 0, gl_format, width, height, 0, gl_channels, gl_type, buf + 2 * buf_size);
@@ -396,7 +399,7 @@ bool TextureGL::initCubemap(IRenderDevice&, int width, int height, FORMAT format
 	return glGetError() == GL_NO_ERROR;
 }
 
-bool TextureGL::initDepthStencil(IRenderDevice&, int width, int height, FORMAT format)
+bool TextureGL::initDepthStencil(IRenderDevice&, int32_t width, int32_t height, Format format)
 {
 	GAFF_ASSERT(width > 0 && height > 0);
 
@@ -437,15 +440,15 @@ bool TextureGL::initDepthStencil(IRenderDevice&, int width, int height, FORMAT f
 
 RendererType TextureGL::getRendererType(void) const
 {
-	return RENDERER_OPENGL;
+	return RENDERER_OPENGL_4_3;
 }
 
-unsigned int TextureGL::getTexture(void) const
+uint32_t TextureGL::getTexture(void) const
 {
 	return _texture;
 }
 
-unsigned int TextureGL::getTexType(void) const
+uint32_t TextureGL::getTexType(void) const
 {
 	switch (_type) {
 		case ONED:
@@ -472,202 +475,202 @@ unsigned int TextureGL::getTexType(void) const
 	return 0;
 }
 
-unsigned int TextureGL::determineChannels(FORMAT format)
+GLenum DetermineChannels(ITexture::Format format)
 {
 	GLenum channels = 0;
 
 	switch (format) {
-		case R_8_UNORM:
-		case R_16_UNORM:
-		case R_8_SNORM:
-		case R_16_SNORM:
-		case R_8_I:
-		case R_16_I:
-		case R_32_I:
-		case R_8_UI:
-		case R_16_UI:
-		case R_32_UI:
-		case R_16_F:
-		case R_32_F:
+		case ITexture::R_8_UNORM:
+		case ITexture::R_16_UNORM:
+		case ITexture::R_8_SNORM:
+		case ITexture::R_16_SNORM:
+		case ITexture::R_8_I:
+		case ITexture::R_16_I:
+		case ITexture::R_32_I:
+		case ITexture::R_8_UI:
+		case ITexture::R_16_UI:
+		case ITexture::R_32_UI:
+		case ITexture::R_16_F:
+		case ITexture::R_32_F:
 			channels = GL_RED;
 			break;
 
-		case RG_8_UNORM:
-		case RG_16_UNORM:
-		case RG_8_SNORM:
-		case RG_16_SNORM:
-		case RG_8_I:
-		case RG_16_I:
-		case RG_32_I:
-		case RG_8_UI:
-		case RG_16_UI:
-		case RG_32_UI:
-		case RG_16_F:
-		case RG_32_F:
+		case ITexture::RG_8_UNORM:
+		case ITexture::RG_16_UNORM:
+		case ITexture::RG_8_SNORM:
+		case ITexture::RG_16_SNORM:
+		case ITexture::RG_8_I:
+		case ITexture::RG_16_I:
+		case ITexture::RG_32_I:
+		case ITexture::RG_8_UI:
+		case ITexture::RG_16_UI:
+		case ITexture::RG_32_UI:
+		case ITexture::RG_16_F:
+		case ITexture::RG_32_F:
 			channels = GL_RG;
 			break;
 
-		//case RGB_8_UNORM:
-		//case RGB_8_SNORM:
-		case RGB_16_SNORM:
-		//case RGB_8_I:
-		//case RGB_16_I:
-		case RGB_32_I:
-		//case RGB_8_UI:
-		//case RGB_16_UI:
-		case RGB_32_UI:
-		case RGB_16_F:
-		case RGB_32_F:
-		case RGB_11_11_10_F:
-		case RGBE_9_9_9_5:
+		//case ITexture::RGB_8_UNORM:
+		//case ITexture::RGB_8_SNORM:
+		case ITexture::RGB_16_SNORM:
+		//case ITexture::RGB_8_I:
+		//case ITexture::RGB_16_I:
+		case ITexture::RGB_32_I:
+		//case ITexture::RGB_8_UI:
+		//case ITexture::RGB_16_UI:
+		case ITexture::RGB_32_UI:
+		case ITexture::RGB_16_F:
+		case ITexture::RGB_32_F:
+		case ITexture::RGB_11_11_10_F:
+		case ITexture::RGBE_9_9_9_5:
 			channels = GL_RGB;
 			break;
 
-		case RGBA_8_UNORM:
-		case RGBA_16_UNORM:
-		case RGBA_8_SNORM:
-		case RGBA_8_I:
-		case RGBA_16_I:
-		case RGBA_32_I:
-		case RGBA_8_UI:
-		case RGBA_16_UI:
-		case RGBA_32_UI:
-		case RGBA_16_F:
-		case RGBA_32_F:
-		case RGBA_10_10_10_2_UNORM:
-		case RGBA_10_10_10_2_UI:
-		case SRGBA_8_UNORM:
+		case ITexture::RGBA_8_UNORM:
+		case ITexture::RGBA_16_UNORM:
+		case ITexture::RGBA_8_SNORM:
+		case ITexture::RGBA_8_I:
+		case ITexture::RGBA_16_I:
+		case ITexture::RGBA_32_I:
+		case ITexture::RGBA_8_UI:
+		case ITexture::RGBA_16_UI:
+		case ITexture::RGBA_32_UI:
+		case ITexture::RGBA_16_F:
+		case ITexture::RGBA_32_F:
+		case ITexture::RGBA_10_10_10_2_UNORM:
+		case ITexture::RGBA_10_10_10_2_UI:
+		case ITexture::SRGBA_8_UNORM:
 			channels = GL_RGBA;
 			break;
 
-		case DEPTH_16_UNORM:
-		case DEPTH_32_F:
+		case ITexture::DEPTH_16_UNORM:
+		case ITexture::DEPTH_32_F:
 			channels = GL_DEPTH_COMPONENT;
 			break;
 
-		case DEPTH_STENCIL_24_8_UNORM_UI:
-		case DEPTH_STENCIL_32_8_F:
+		case ITexture::DEPTH_STENCIL_24_8_UNORM_UI:
+		case ITexture::DEPTH_STENCIL_32_8_F:
 			channels = GL_DEPTH_STENCIL;
 			break;
 
 		// To get GCC to stop erroring
-		case FORMAT_SIZE:
+		case ITexture::FORMAT_SIZE:
 			break;
 	}
 
 	return channels;
 }
 
-unsigned int TextureGL::determineType(FORMAT format)
+GLenum DetermineType(ITexture::Format format)
 {
 	GLenum type = 0;
 
 	switch (format) {
-		case R_8_UNORM:
-		case R_8_UI:
-		case RG_8_UNORM:
-		case RG_8_UI:
-		//case RGB_8_UNORM:
-		//case RGB_8_UI:
-		case RGBA_8_UNORM:
-		case RGBA_8_UI:
+		case ITexture::R_8_UNORM:
+		case ITexture::R_8_UI:
+		case ITexture::RG_8_UNORM:
+		case ITexture::RG_8_UI:
+		//case ITexture::RGB_8_UNORM:
+		//case ITexture::RGB_8_UI:
+		case ITexture::RGBA_8_UNORM:
+		case ITexture::RGBA_8_UI:
 			type = GL_UNSIGNED_BYTE;
 			break;
 
-		case R_8_SNORM:
-		case R_8_I:
-		case RG_8_SNORM:
-		case RG_8_I:
-		//case RGB_8_SNORM:
-		//case RGB_8_I:
-		case RGBA_8_SNORM:
-		case RGBA_8_I:
+		case ITexture::R_8_SNORM:
+		case ITexture::R_8_I:
+		case ITexture::RG_8_SNORM:
+		case ITexture::RG_8_I:
+		//case ITexture::RGB_8_SNORM:
+		//case ITexture::RGB_8_I:
+		case ITexture::RGBA_8_SNORM:
+		case ITexture::RGBA_8_I:
 			type = GL_BYTE;
 			break;
 
-		case R_16_UNORM:
-		case R_16_UI:
-		case RG_16_UNORM:
-		case RG_16_UI:
-		//case RGB_16_UI:
-		case RGBA_16_UNORM:
-		case RGBA_16_UI:
+		case ITexture::R_16_UNORM:
+		case ITexture::R_16_UI:
+		case ITexture::RG_16_UNORM:
+		case ITexture::RG_16_UI:
+		//case ITexture::RGB_16_UI:
+		case ITexture::RGBA_16_UNORM:
+		case ITexture::RGBA_16_UI:
 			type = GL_UNSIGNED_SHORT;
 			break;
 
-		case R_16_SNORM:
-		case R_16_I:
-		case RG_16_SNORM:
-		case RG_16_I:
-		case RGB_16_SNORM:
-		//case RGB_16_I:
-		case RGBA_16_I:
+		case ITexture::R_16_SNORM:
+		case ITexture::R_16_I:
+		case ITexture::RG_16_SNORM:
+		case ITexture::RG_16_I:
+		case ITexture::RGB_16_SNORM:
+		//case ITexture::RGB_16_I:
+		case ITexture::RGBA_16_I:
 			type = GL_SHORT;
 			break;
 
-		case R_32_UI:
-		case RG_32_UI:
-		case RGB_32_UI:
-		case RGBA_32_UI:
+		case ITexture::R_32_UI:
+		case ITexture::RG_32_UI:
+		case ITexture::RGB_32_UI:
+		case ITexture::RGBA_32_UI:
 			type = GL_UNSIGNED_INT;
 			break;
 
-		case R_32_I:
-		case RG_32_I:
-		case RGB_32_I:
-		case RGBA_32_I:
+		case ITexture::R_32_I:
+		case ITexture::RG_32_I:
+		case ITexture::RGB_32_I:
+		case ITexture::RGBA_32_I:
 			type = GL_INT;
 			break;
 
-		case R_16_F:
-		case RG_16_F:
-		case RGB_16_F:
-		case RGBA_16_F:
+		case ITexture::R_16_F:
+		case ITexture::RG_16_F:
+		case ITexture::RGB_16_F:
+		case ITexture::RGBA_16_F:
 			type = GL_HALF_FLOAT;
 			break;
 
-		case R_32_F:
-		case RG_32_F:
-		case RGB_32_F:
-		case RGBA_32_F:
+		case ITexture::R_32_F:
+		case ITexture::RG_32_F:
+		case ITexture::RGB_32_F:
+		case ITexture::RGBA_32_F:
 			type = GL_FLOAT;
 			break;
 
-		case RGB_11_11_10_F:
+		case ITexture::RGB_11_11_10_F:
 			type = GL_UNSIGNED_INT_10F_11F_11F_REV;
 			break;
 
-		case RGBE_9_9_9_5:
+		case ITexture::RGBE_9_9_9_5:
 			type = GL_UNSIGNED_INT_5_9_9_9_REV;
 			break;
 
-		case RGBA_10_10_10_2_UNORM:
-		case RGBA_10_10_10_2_UI:
+		case ITexture::RGBA_10_10_10_2_UNORM:
+		case ITexture::RGBA_10_10_10_2_UI:
 			type = GL_UNSIGNED_INT_10_10_10_2;
 			break;
 
-		case SRGBA_8_UNORM:
+		case ITexture::SRGBA_8_UNORM:
 			type = GL_UNSIGNED_BYTE;
 			break;
 
-		case DEPTH_16_UNORM:
+		case ITexture::DEPTH_16_UNORM:
 			type = GL_HALF_FLOAT;
 			break;
 
-		case DEPTH_32_F:
+		case ITexture::DEPTH_32_F:
 			type = GL_FLOAT;
 			break;
 
-		case DEPTH_STENCIL_24_8_UNORM_UI:
+		case ITexture::DEPTH_STENCIL_24_8_UNORM_UI:
 			type = GL_UNSIGNED_INT_24_8;
 			break;
 
-		case DEPTH_STENCIL_32_8_F:
+		case ITexture::DEPTH_STENCIL_32_8_F:
 			type = GL_FLOAT_32_UNSIGNED_INT_24_8_REV;
 			break;
 
 		// To get GCC to stop erroring
-		case FORMAT_SIZE:
+		case ITexture::FORMAT_SIZE:
 			break;
 	}
 
