@@ -22,8 +22,8 @@ THE SOFTWARE.
 
 #if defined(_WIN32) || defined(_WIN64)
 
-#include "Gleam_Buffer_Direct3D.h"
-#include "Gleam_IRenderDevice_Direct3D.h"
+#include "Gleam_Buffer_Direct3D11.h"
+#include "Gleam_IRenderDevice_Direct3D11.h"
 #include "Gleam_IRenderDevice.h"
 #include "Gleam_IncludeD3D11.h"
 
@@ -55,22 +55,22 @@ BufferD3D::~BufferD3D(void)
 }
 
 bool BufferD3D::init(
-	IRenderDevice& rd, const void* data, unsigned int size, BUFFER_TYPE buffer_type,
-	unsigned int stride, MAP_TYPE cpu_access, bool gpu_read_only, unsigned int structure_byte_stride)
+	IRenderDevice& rd, const void* data, size_t size, BufferType buffer_type,
+	int32_t stride, MapType cpu_access, bool gpu_read_only, int32_t structure_byte_stride)
 {
-	GAFF_ASSERT(rd.getRendererType() == RENDERER_DIRECT3D && !_buffer);
-	IRenderDeviceD3D& rd3d = reinterpret_cast<IRenderDeviceD3D&>(*(reinterpret_cast<char*>(&rd) + sizeof(IRenderDevice)));
+	GAFF_ASSERT(rd.getRendererType() == RENDERER_DIRECT3D11 && !_buffer);
 
-	ID3D11Device* device = rd3d.getActiveDevice();
+	IRenderDeviceD3D11& rd3d = reinterpret_cast<IRenderDeviceD3D11&>(*(reinterpret_cast<char*>(&rd) + sizeof(IRenderDevice)));
+	ID3D11Device* device = rd3d.getDevice();
 
 	D3D11_SUBRESOURCE_DATA subres_data;
 	D3D11_BUFFER_DESC desc;
 
 	desc.BindFlags = _type_map[buffer_type];
-	desc.ByteWidth = size;
+	desc.ByteWidth = static_cast<UINT>(size);
 	desc.CPUAccessFlags = 0;
 	desc.MiscFlags = (buffer_type == STRUCTURED_DATA) ? D3D11_RESOURCE_MISC_BUFFER_STRUCTURED : 0;
-	desc.StructureByteStride = structure_byte_stride;
+	desc.StructureByteStride = static_cast<UINT>(structure_byte_stride);
 	desc.Usage = (gpu_read_only && (cpu_access == WRITE || cpu_access == WRITE_NO_OVERWRITE)) ? D3D11_USAGE_DYNAMIC : D3D11_USAGE_DEFAULT;
 
 	switch (cpu_access) {
@@ -105,11 +105,11 @@ void BufferD3D::destroy(void)
 	SAFERELEASE(_buffer)
 }
 
-bool BufferD3D::update(IRenderDevice& rd, const void* data, unsigned int size, unsigned int offset)
+bool BufferD3D::update(IRenderDevice& rd, const void* data, size_t size, size_t offset)
 {
-	GAFF_ASSERT(rd.getRendererType() == RENDERER_DIRECT3D && data);
-	IRenderDeviceD3D& rd3d = reinterpret_cast<IRenderDeviceD3D&>(*(reinterpret_cast<char*>(&rd) + sizeof(IRenderDevice)));
-	ID3D11DeviceContext* context = rd3d.getActiveDeviceContext();
+	GAFF_ASSERT(rd.getRendererType() == RENDERER_DIRECT3D11 && data && size);
+	IRenderDeviceD3D11& rd3d = reinterpret_cast<IRenderDeviceD3D11&>(*(reinterpret_cast<char*>(&rd) + sizeof(IRenderDevice)));
+	ID3D11DeviceContext* context = rd3d.getDeviceContext();
 	D3D11_MAPPED_SUBRESOURCE mapped_resource;
 
 	HRESULT result = context->Map(_buffer, 0, (offset) ? D3D11_MAP_WRITE_NO_OVERWRITE : D3D11_MAP_WRITE_DISCARD, 0, &mapped_resource);
@@ -121,11 +121,11 @@ bool BufferD3D::update(IRenderDevice& rd, const void* data, unsigned int size, u
 	return true;
 }
 
-void* BufferD3D::map(IRenderDevice& rd, MAP_TYPE map_type)
+void* BufferD3D::map(IRenderDevice& rd, MapType map_type)
 {
-	GAFF_ASSERT(rd.getRendererType() == RENDERER_DIRECT3D && map_type != NONE);
-	IRenderDeviceD3D& rd3d = reinterpret_cast<IRenderDeviceD3D&>(*(reinterpret_cast<char*>(&rd) + sizeof(IRenderDevice)));
-	ID3D11DeviceContext* context = rd3d.getActiveDeviceContext();
+	GAFF_ASSERT(rd.getRendererType() == RENDERER_DIRECT3D11 && map_type != NONE);
+	IRenderDeviceD3D11& rd3d = reinterpret_cast<IRenderDeviceD3D11&>(*(reinterpret_cast<char*>(&rd) + sizeof(IRenderDevice)));
+	ID3D11DeviceContext* context = rd3d.getDeviceContext();
 	D3D11_MAPPED_SUBRESOURCE mapped_resource;
 
 	HRESULT result = context->Map(_buffer, 0, _map_map[map_type], 0, &mapped_resource);
@@ -134,15 +134,15 @@ void* BufferD3D::map(IRenderDevice& rd, MAP_TYPE map_type)
 
 void BufferD3D::unmap(IRenderDevice& rd)
 {
-	GAFF_ASSERT(rd.getRendererType() == RENDERER_DIRECT3D);
-	IRenderDeviceD3D& rd3d = reinterpret_cast<IRenderDeviceD3D&>(*(reinterpret_cast<char*>(&rd) + sizeof(IRenderDevice)));
-	ID3D11DeviceContext* context = rd3d.getActiveDeviceContext();
+	GAFF_ASSERT(rd.getRendererType() == RENDERER_DIRECT3D11);
+	IRenderDeviceD3D11& rd3d = reinterpret_cast<IRenderDeviceD3D11&>(*(reinterpret_cast<char*>(&rd) + sizeof(IRenderDevice)));
+	ID3D11DeviceContext* context = rd3d.getDeviceContext();
 	context->Unmap(_buffer, 0);
 }
 
 RendererType BufferD3D::getRendererType(void) const
 {
-	return RENDERER_DIRECT3D;
+	return RENDERER_DIRECT3D11;
 }
 
 ID3D11Buffer* BufferD3D::getBuffer(void) const

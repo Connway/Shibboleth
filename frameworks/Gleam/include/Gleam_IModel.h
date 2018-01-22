@@ -46,7 +46,7 @@ public:
 	virtual ILayout* getLayout(int32_t index) = 0;
 	virtual int32_t getIndex(const ILayout* layout) const = 0;
 
-	virtual ILayout* createLayout(IRenderDevice& rd, const LayoutDescription* layout_desc, unsigned int desc_size, const IShader* shader) = 0;
+	virtual ILayout* createLayout(IRenderDevice& rd, const LayoutDescription* layout_desc, size_t desc_size, const IShader* shader) = 0;
 	virtual int32_t addLayout(ILayout* layout) = 0;
 
 	virtual const IMesh* getMesh(int32_t index) const = 0;

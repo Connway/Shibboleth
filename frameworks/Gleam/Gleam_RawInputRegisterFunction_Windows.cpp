@@ -28,7 +28,7 @@ THE SOFTWARE.
 
 NS_GLEAM
 
-bool RegisterForRawInput(unsigned short device, const IWindow& window)
+bool RegisterForRawInput(uint16_t device, const IWindow& window)
 {
 	GAFF_ASSERT(device == RAW_INPUT_MOUSE || (device >= RAW_INPUT_JOYSTICK && device <= RAW_INPUT_KEYBOARD));
 
