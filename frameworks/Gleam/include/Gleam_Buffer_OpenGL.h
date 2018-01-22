@@ -34,23 +34,23 @@ public:
 	~BufferGL(void);
 
 	bool init(
-		IRenderDevice&, const void* data, unsigned int size, BUFFER_TYPE buffer_type = SHADER_DATA,
-		unsigned int stride = 0, MAP_TYPE cpu_access = NONE, bool gpu_read_only = true,
-		unsigned int structure_byte_stride = 0
+		IRenderDevice&, const void* data, size_t size, BufferType buffer_type = SHADER_DATA,
+		int32_t stride = 0, MapType cpu_access = NONE, bool gpu_read_only = true,
+		int32_t structure_byte_stride = 0
 	);
 	void destroy(void);
 
-	bool update(IRenderDevice&, const void* data, unsigned int size, unsigned int offset = 0);
-	void* map(IRenderDevice&, MAP_TYPE map_type = WRITE);
+	bool update(IRenderDevice&, const void* data, size_t size, size_t offset = 0);
+	void* map(IRenderDevice&, MapType map_type = WRITE);
 	void unmap(IRenderDevice&);
 
 	RendererType getRendererType(void) const;
 
-	unsigned int getBuffer(void) const;
+	uint32_t getBuffer(void) const;
 
 private:
-	unsigned int _buffer;
-	unsigned int _map_flags;
+	uint32_t _buffer;
+	uint32_t _map_flags;
 
 	GLEAM_REF_COUNTED(BufferGL);
 };

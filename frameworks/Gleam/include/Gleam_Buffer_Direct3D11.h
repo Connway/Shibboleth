@@ -35,13 +35,13 @@ public:
 	BufferD3D(void);
 	~BufferD3D(void);
 
-	bool init(IRenderDevice& rd, const void* data, unsigned int size, BUFFER_TYPE buffer_type = SHADER_DATA,
-				unsigned int stride = 0, MAP_TYPE cpu_access = NONE, bool gpu_read_only = true,
-				unsigned int structure_byte_stride = 0);
+	bool init(IRenderDevice& rd, const void* data, size_t size, BufferType buffer_type = SHADER_DATA,
+				int32_t stride = 0, MapType cpu_access = NONE, bool gpu_read_only = true,
+				int32_t structure_byte_stride = 0);
 	void destroy(void);
 
-	bool update(IRenderDevice& rd, const void* data, unsigned int size, unsigned int offset = 0);
-	void* map(IRenderDevice& rd, MAP_TYPE map_type = WRITE);
+	bool update(IRenderDevice& rd, const void* data, size_t size, size_t offset = 0);
+	void* map(IRenderDevice& rd, MapType map_type = WRITE);
 	void unmap(IRenderDevice& rd);
 
 	RendererType getRendererType(void) const;

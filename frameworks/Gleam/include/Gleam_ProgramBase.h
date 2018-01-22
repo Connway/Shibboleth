@@ -37,34 +37,34 @@ public:
 	void clear(void) override;
 
 	const Vector<IBuffer*>& getConstantBuffers(IShader::ShaderType type) const override;
-	const IBuffer* getConstantBuffer(IShader::ShaderType type, size_t index) const override;
-	IBuffer* getConstantBuffer(IShader::ShaderType type, size_t index) override;
+	const IBuffer* getConstantBuffer(IShader::ShaderType type, int32_t index) const override;
+	IBuffer* getConstantBuffer(IShader::ShaderType type, int32_t index) override;
 	void addConstantBuffer(IShader::ShaderType type, IBuffer* const_buffer) override;
-	void removeConstantBuffer(IShader::ShaderType type, size_t index) override;
-	void popConstantBuffer(IShader::ShaderType type, size_t count = 1) override;
+	void removeConstantBuffer(IShader::ShaderType type, int32_t index) override;
+	void popConstantBuffer(IShader::ShaderType type, int32_t count = 1) override;
 
-	size_t getConstantBufferCount(IShader::ShaderType type) const override;
-	size_t getConstantBufferCount(void) const override;
+	int32_t getConstantBufferCount(IShader::ShaderType type) const override;
+	int32_t getConstantBufferCount(void) const override;
 
 	const Vector<IShaderResourceView*>& getResourceViews(IShader::ShaderType type) const override;
-	const IShaderResourceView* getResourceView(IShader::ShaderType type, size_t index) const override;
-	IShaderResourceView* getResourceView(IShader::ShaderType type, size_t index) override;
+	const IShaderResourceView* getResourceView(IShader::ShaderType type, int32_t index) const override;
+	IShaderResourceView* getResourceView(IShader::ShaderType type, int32_t index) override;
 	void addResourceView(IShader::ShaderType type, IShaderResourceView* resource_view) override;
-	void removeResourceView(IShader::ShaderType type, size_t index) override;
-	void popResourceView(IShader::ShaderType type, size_t count = 1) override;
+	void removeResourceView(IShader::ShaderType type, int32_t index) override;
+	void popResourceView(IShader::ShaderType type, int32_t count = 1) override;
 
-	size_t getResourceViewCount(IShader::ShaderType type) const override;
-	size_t getResourceViewCount(void) const override;
+	int32_t getResourceViewCount(IShader::ShaderType type) const override;
+	int32_t getResourceViewCount(void) const override;
 
 	const Vector<ISamplerState*>& getSamplerStates(IShader::ShaderType type) const override;
-	const ISamplerState* getSamplerState(IShader::ShaderType type, size_t index) const override;
-	ISamplerState* getSamplerState(IShader::ShaderType type, size_t index) override;
+	const ISamplerState* getSamplerState(IShader::ShaderType type, int32_t index) const override;
+	ISamplerState* getSamplerState(IShader::ShaderType type, int32_t index) override;
 	void addSamplerState(IShader::ShaderType type, ISamplerState* sampler) override;
-	void removeSamplerState(IShader::ShaderType type, size_t index) override;
-	void popSamplerState(IShader::ShaderType type, size_t count = 1) override;
+	void removeSamplerState(IShader::ShaderType type, int32_t index) override;
+	void popSamplerState(IShader::ShaderType type, int32_t count = 1) override;
 
-	size_t getSamplerCount(IShader::ShaderType type) const override;
-	size_t getSamplerCount(void) const override;
+	int32_t getSamplerCount(IShader::ShaderType type) const override;
+	int32_t getSamplerCount(void) const override;
 
 protected:
 	Vector<IShaderResourceView*> _resource_views[IShader::SHADER_TYPE_SIZE];

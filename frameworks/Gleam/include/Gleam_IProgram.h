@@ -44,34 +44,34 @@ public:
 	virtual void clear(void) = 0;
 
 	virtual const Vector<IBuffer*>& getConstantBuffers(IShader::ShaderType type) const = 0;
-	virtual const IBuffer* getConstantBuffer(IShader::ShaderType type, size_t index) const = 0;
-	virtual IBuffer* getConstantBuffer(IShader::ShaderType type, size_t index) = 0;
+	virtual const IBuffer* getConstantBuffer(IShader::ShaderType type, int32_t index) const = 0;
+	virtual IBuffer* getConstantBuffer(IShader::ShaderType type, int32_t index) = 0;
 	virtual void addConstantBuffer(IShader::ShaderType type, IBuffer* const_buffer) = 0;
-	virtual void removeConstantBuffer(IShader::ShaderType type, size_t index) = 0;
-	virtual void popConstantBuffer(IShader::ShaderType type, size_t count = 1) = 0;
+	virtual void removeConstantBuffer(IShader::ShaderType type, int32_t index) = 0;
+	virtual void popConstantBuffer(IShader::ShaderType type, int32_t count = 1) = 0;
 
-	virtual size_t getConstantBufferCount(IShader::ShaderType type) const = 0;
-	virtual size_t getConstantBufferCount(void) const = 0;
+	virtual int32_t getConstantBufferCount(IShader::ShaderType type) const = 0;
+	virtual int32_t getConstantBufferCount(void) const = 0;
 
 	virtual const Vector<IShaderResourceView*>& getResourceViews(IShader::ShaderType type) const = 0;
-	virtual const IShaderResourceView* getResourceView(IShader::ShaderType type, size_t index) const = 0;
-	virtual IShaderResourceView* getResourceView(IShader::ShaderType type, size_t index) = 0;
+	virtual const IShaderResourceView* getResourceView(IShader::ShaderType type, int32_t index) const = 0;
+	virtual IShaderResourceView* getResourceView(IShader::ShaderType type, int32_t index) = 0;
 	virtual void addResourceView(IShader::ShaderType type, IShaderResourceView* resource_view) = 0;
-	virtual void removeResourceView(IShader::ShaderType type, size_t index) = 0;
-	virtual void popResourceView(IShader::ShaderType type, size_t count = 1) = 0;
+	virtual void removeResourceView(IShader::ShaderType type, int32_t index) = 0;
+	virtual void popResourceView(IShader::ShaderType type, int32_t count = 1) = 0;
 
-	virtual size_t getResourceViewCount(IShader::ShaderType type) const = 0;
-	virtual size_t getResourceViewCount(void) const = 0;
+	virtual int32_t getResourceViewCount(IShader::ShaderType type) const = 0;
+	virtual int32_t getResourceViewCount(void) const = 0;
 
 	virtual const Vector<ISamplerState*>& getSamplerStates(IShader::ShaderType type) const = 0;
-	virtual const ISamplerState* getSamplerState(IShader::ShaderType type, size_t index) const = 0;
-	virtual ISamplerState* getSamplerState(IShader::ShaderType type, size_t index) = 0;
+	virtual const ISamplerState* getSamplerState(IShader::ShaderType type, int32_t index) const = 0;
+	virtual ISamplerState* getSamplerState(IShader::ShaderType type, int32_t index) = 0;
 	virtual void addSamplerState(IShader::ShaderType type, ISamplerState* sampler) = 0;
-	virtual void removeSamplerState(IShader::ShaderType type, size_t index) = 0;
-	virtual void popSamplerState(IShader::ShaderType type, size_t count = 1) = 0;
+	virtual void removeSamplerState(IShader::ShaderType type, int32_t index) = 0;
+	virtual void popSamplerState(IShader::ShaderType type, int32_t count = 1) = 0;
 
-	virtual size_t getSamplerCount(IShader::ShaderType type) const = 0;
-	virtual size_t getSamplerCount(void) const = 0;
+	virtual int32_t getSamplerCount(IShader::ShaderType type) const = 0;
+	virtual int32_t getSamplerCount(void) const = 0;
 
 	virtual IProgramBuffers* clone(void) const = 0;
 
@@ -93,19 +93,19 @@ struct ShaderReflection
 	U8String samplers[MAX_SHADER_VAR];
 	U8String structured_buffers[MAX_SHADER_VAR];
 
-	size_t num_constant_buffers = 0;
-	size_t num_textures = 0;
-	size_t num_samplers = 0;
-	size_t num_structured_buffers = 0;
+	int32_t num_constant_buffers = 0;
+	int32_t num_textures = 0;
+	int32_t num_samplers = 0;
+	int32_t num_structured_buffers = 0;
 };
 
 struct ProgramReflection
 {
 	ShaderReflection shader_reflection[IShader::SHADER_TYPE_SIZE - 1];
-	size_t total_constant_buffers = 0;
-	size_t total_textures = 0;
-	size_t total_samplers = 0;
-	size_t total_structured_buffers = 0;
+	int32_t total_constant_buffers = 0;
+	int32_t total_textures = 0;
+	int32_t total_samplers = 0;
+	int32_t total_structured_buffers = 0;
 };
 
 class IProgram : public Gaff::IRefCounted

@@ -21,6 +21,7 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Gleam_Buffer_OpenGL.h"
+#include "Gleam_IRenderDevice.h"
 #include <Gaff_Assert.h>
 #include <GL/glew.h>
 #include <cstring>
@@ -59,17 +60,17 @@ BufferGL::~BufferGL(void)
 }
 
 bool BufferGL::init(
-	IRenderDevice&, const void* data, unsigned int size, BUFFER_TYPE buffer_type,
-	unsigned int stride, MAP_TYPE cpu_access, bool gpu_read_only, unsigned int structure_byte_stride)
+	IRenderDevice& rd, const void* data, size_t size, BufferType buffer_type,
+	int32_t stride, MapType cpu_access, bool gpu_read_only, int32_t structure_byte_stride)
 {
-	GAFF_ASSERT(!_buffer);
+	GAFF_ASSERT(rd.getRendererType() == RENDERER_OPENGL_4_3 && !_buffer);
 
 	GLenum buff_type = _type_map[buffer_type];
 
 	glGenBuffers(1, &_buffer);
 
 	glBindBuffer(buff_type, _buffer);
-	glBufferData(buff_type, size, data, (gpu_read_only && (cpu_access == WRITE || cpu_access == WRITE_NO_OVERWRITE)) ? GL_DYNAMIC_DRAW : GL_STATIC_DRAW);
+	glBufferData(buff_type, static_cast<GLsizeiptr>(size), data, (gpu_read_only && (cpu_access == WRITE || cpu_access == WRITE_NO_OVERWRITE)) ? GL_DYNAMIC_DRAW : GL_STATIC_DRAW);
 	glBindBuffer(buff_type, 0);
 
 	_map_flags = _map_bit_flags[cpu_access];
@@ -91,9 +92,9 @@ void BufferGL::destroy(void)
 	}
 }
 
-bool BufferGL::update(IRenderDevice& rd, const void* data, unsigned int size, unsigned int offset)
+bool BufferGL::update(IRenderDevice& rd, const void* data, size_t size, size_t offset)
 {
-	GAFF_ASSERT(data && size);
+	GAFF_ASSERT(rd.getRendererType() == RENDERER_OPENGL_4_3 && data && size);
 
 	GLenum buff_type = _type_map[_buffer_type];
 	glBindBuffer(buff_type, _buffer);
@@ -104,8 +105,7 @@ bool BufferGL::update(IRenderDevice& rd, const void* data, unsigned int size, un
 
 	void* buffer = map(rd, (offset) ? WRITE_NO_OVERWRITE : WRITE);
 
-	if (!buffer)
-	{
+	if (!buffer) {
 		return false;
 	}
 
@@ -115,25 +115,26 @@ bool BufferGL::update(IRenderDevice& rd, const void* data, unsigned int size, un
 	return true;
 }
 
-void* BufferGL::map(IRenderDevice&, MAP_TYPE map_type)
+void* BufferGL::map(IRenderDevice& rd, MapType map_type)
 {
-	GAFF_ASSERT(map_type != NONE);
+	GAFF_ASSERT(rd.getRendererType() == RENDERER_OPENGL_4_3 && map_type != NONE);
 	GLenum buff_type = _type_map[_buffer_type];
 	glBindBuffer(buff_type, _buffer);
-	return glMapBufferRange(buff_type, 0, _size, _map_bit_flags[map_type]);
+	return glMapBufferRange(buff_type, 0, static_cast<GLsizeiptr>(_size), _map_bit_flags[map_type]);
 }
 
-void BufferGL::unmap(IRenderDevice&)
+void BufferGL::unmap(IRenderDevice& rd)
 {
+	GAFF_ASSERT(rd.getRendererType() == RENDERER_OPENGL_4_3);
 	glUnmapBuffer(_type_map[_buffer_type]);
 }
 
 RendererType BufferGL::getRendererType(void) const
 {
-	return RENDERER_OPENGL;
+	return RENDERER_OPENGL_4_3;
 }
 
-unsigned int BufferGL::getBuffer(void) const
+uint32_t BufferGL::getBuffer(void) const
 {
 	return _buffer;
 }
