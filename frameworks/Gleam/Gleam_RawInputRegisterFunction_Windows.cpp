@@ -24,6 +24,7 @@ THE SOFTWARE.
 
 #include "Gleam_RawInputRegisterFunction.h"
 #include "Gleam_Window_Windows.h"
+#include <Gaff_Assert.h>
 
 NS_GLEAM
 

@@ -24,21 +24,21 @@ THE SOFTWARE.
 
 #include "Gleam_Window_Windows.h"
 #include "Gleam_WindowHelpers_Windows.h"
-#include "Gleam_String.h"
+#include <Gaff_Assert.h>
 
 NS_GLEAM
 
 using WindowProcHelper = void (*)(AnyMessage*, Window*, WPARAM, LPARAM);
 
-static GleamMap<unsigned int, WindowProcHelper> g_window_helpers;
-static GleamArray<Window*> g_windows;
+static VectorMap<UINT, WindowProcHelper> g_window_helpers;
+static Vector<Window*> g_windows;
 static bool g_first_init = true;
 static MSG g_msg;
 
-static GleamArray<MessageHandler> g_global_message_handlers;
+static Vector<MessageHandler> g_global_message_handlers;
 
-GleamMap<unsigned short, KeyCode> Window::g_right_keys;
-GleamMap<unsigned short, KeyCode> Window::g_left_keys;
+VectorMap<uint16_t, KeyCode> Window::g_right_keys;
+VectorMap<uint16_t, KeyCode> Window::g_left_keys;
 
 static void InitWindowProcHelpers(void)
 {
@@ -46,31 +46,31 @@ static void InitWindowProcHelpers(void)
 	//WM_GETMINMAXINFO
 	//WM_ENTERSIZEMOVE
 	//WM_EXITSIZEMOVE
-	g_window_helpers.insert(WM_CLOSE, WindowClosed);
-	g_window_helpers.insert(WM_DESTROY, WindowDestroyed);
-	g_window_helpers.insert(WM_MOVE, WindowMoved);
-	g_window_helpers.insert(WM_SIZE, WindowResized);
-	g_window_helpers.insert(WM_CHAR, WindowCharacter);
-	g_window_helpers.insert(WM_INPUT, WindowInput);
-	g_window_helpers.insert(WM_LBUTTONDOWN, WindowLeftButtonDown);
-	g_window_helpers.insert(WM_RBUTTONDOWN, WindowRightButtonDown);
-	g_window_helpers.insert(WM_MBUTTONDOWN, WindowMiddleButtonDown);
-	g_window_helpers.insert(WM_XBUTTONDOWN, WindowXButtonDown);
-	g_window_helpers.insert(WM_LBUTTONUP, WindowLeftButtonUp);
-	g_window_helpers.insert(WM_RBUTTONUP, WindowRightButtonUp);
-	g_window_helpers.insert(WM_MBUTTONUP, WindowMiddleButtonUp);
-	g_window_helpers.insert(WM_XBUTTONUP, WindowXButtonUp);
-	g_window_helpers.insert(WM_MOUSEWHEEL, WindowMouseWheel);
-	g_window_helpers.insert(WM_SETFOCUS, WindowSetFocus);
-	g_window_helpers.insert(WM_KILLFOCUS, WindowKillFocus);
+	g_window_helpers.emplace(WM_CLOSE, WindowClosed);
+	g_window_helpers.emplace(WM_DESTROY, WindowDestroyed);
+	g_window_helpers.emplace(WM_MOVE, WindowMoved);
+	g_window_helpers.emplace(WM_SIZE, WindowResized);
+	g_window_helpers.emplace(WM_CHAR, WindowCharacter);
+	g_window_helpers.emplace(WM_INPUT, WindowInput);
+	g_window_helpers.emplace(WM_LBUTTONDOWN, WindowLeftButtonDown);
+	g_window_helpers.emplace(WM_RBUTTONDOWN, WindowRightButtonDown);
+	g_window_helpers.emplace(WM_MBUTTONDOWN, WindowMiddleButtonDown);
+	g_window_helpers.emplace(WM_XBUTTONDOWN, WindowXButtonDown);
+	g_window_helpers.emplace(WM_LBUTTONUP, WindowLeftButtonUp);
+	g_window_helpers.emplace(WM_RBUTTONUP, WindowRightButtonUp);
+	g_window_helpers.emplace(WM_MBUTTONUP, WindowMiddleButtonUp);
+	g_window_helpers.emplace(WM_XBUTTONUP, WindowXButtonUp);
+	g_window_helpers.emplace(WM_MOUSEWHEEL, WindowMouseWheel);
+	g_window_helpers.emplace(WM_SETFOCUS, WindowSetFocus);
+	g_window_helpers.emplace(WM_KILLFOCUS, WindowKillFocus);
 }
 
-static bool RemoveMessageHandler(GleamArray<MessageHandler>& handlers, const MessageHandler& callback)
+static bool RemoveMessageHandler(Vector<MessageHandler>& handlers, const MessageHandler& callback)
 {
-	auto it = handlers.linearSearch(callback);
+	auto it = Gaff::Find(handlers, callback);
 
 	if (it != handlers.end()) {
-		handlers.fastErase(it);
+		handlers.erase_unsorted(it);
 		return true;
 	}
 
@@ -79,7 +79,12 @@ static bool RemoveMessageHandler(GleamArray<MessageHandler>& handlers, const Mes
 
 void Window::AddGlobalMessageHandler(const MessageHandler& callback)
 {
-	g_global_message_handlers.emplacePush(callback);
+	g_global_message_handlers.emplace_back(callback);
+}
+
+void Window::AddGlobalMessageHandler(MessageHandler&& callback)
+{
+	g_global_message_handlers.emplace_back(std::move(callback));
 }
 
 bool Window::RemoveGlobalMessageHandler(const MessageHandler& callback)
@@ -102,7 +107,7 @@ LRESULT CALLBACK Window::WindowProc(HWND hwnd, UINT msg, WPARAM w, LPARAM l)
 	char buffer[sizeof(AnyMessage)];
 	AnyMessage* message = reinterpret_cast<AnyMessage*>(buffer);
 
-	auto it_wnd = g_windows.linearSearch(hwnd, [](const Window* lhs, const HWND rhs) -> bool
+	auto it_wnd = Gaff::Find(g_windows, hwnd, [](const Window* lhs, const HWND rhs) -> bool
 	{
 		return lhs->getHWnd() == rhs;
 	});
@@ -149,8 +154,8 @@ Window::~Window(void)
 }
 
 bool Window::init(const char* app_name, MODE window_mode,
-					unsigned int width, unsigned int height,
-					int pos_x, int pos_y, const char*)
+					int32_t width, int32_t height,
+					int32_t pos_x, int32_t pos_y, const char*)
 {
 	GAFF_ASSERT(app_name);
 
@@ -179,8 +184,7 @@ bool Window::init(const char* app_name, MODE window_mode,
 	_application_name = app_name;
 	_window_mode = window_mode;
 
-	GleamWString an;
-	an.convertToUTF16(app_name, strlen(app_name));
+	CONVERT_STRING(wchar_t, temp, app_name);
 
 	wc.style = CS_HREDRAW | CS_VREDRAW | CS_OWNDC;
 	wc.lpfnWndProc = WindowProc;
@@ -192,7 +196,7 @@ bool Window::init(const char* app_name, MODE window_mode,
 	wc.hCursor = LoadCursor(NULL, IDC_ARROW);
 	wc.hbrBackground = static_cast<HBRUSH>(GetStockObject(BLACK_BRUSH));
 	wc.lpszMenuName = NULL;
-	wc.lpszClassName = an.getBuffer();
+	wc.lpszClassName = temp;
 	wc.cbSize = sizeof(WNDCLASSEX);
 
 	if (!RegisterClassEx(&wc)) {
@@ -266,7 +270,7 @@ bool Window::init(const char* app_name, MODE window_mode,
 	}
 
 	_hwnd = CreateWindowEx(
-		WS_EX_APPWINDOW, an.getBuffer(), an.getBuffer(),
+		WS_EX_APPWINDOW, temp, temp,
 		WS_CLIPSIBLINGS | WS_CLIPCHILDREN | flags,
 		window_rect.left, window_rect.top, window_rect.right - window_rect.left, window_rect.bottom - window_rect.top,
 		NULL, NULL, _hinstance, NULL
@@ -282,16 +286,16 @@ bool Window::init(const char* app_name, MODE window_mode,
 	SetFocus(_hwnd);
 
 	ZeroMemory(&g_msg, sizeof(MSG));
-	g_windows.push(this);
+	g_windows.emplace_back(this);
 
 	return true;
 }
 
 void Window::destroy(void)
 {
-	auto it = g_windows.linearSearch(this);
+	auto it = Gaff::Find(g_windows, this);
 	GAFF_ASSERT(it != g_windows.end());
-	g_windows.fastErase(it);
+	g_windows.erase_unsorted(it);
 
 	containCursor(false);
 	showCursor(true);
@@ -306,10 +310,9 @@ void Window::destroy(void)
 	}
 
 	if (_hinstance) {
-		GleamWString an;
-		an.convertToUTF16(_application_name.getBuffer(), _application_name.size());
-
-		UnregisterClass(an.getBuffer(), _hinstance);
+		const char8_t* app_name = _application_name.data();
+		CONVERT_STRING(wchar_t, temp, app_name);
+		UnregisterClass(temp, _hinstance);
 
 		_application_name.clear();
 		_hinstance = nullptr;
@@ -318,7 +321,12 @@ void Window::destroy(void)
 
 void Window::addWindowMessageHandler(const MessageHandler& callback)
 {
-	_window_callbacks.emplacePush(callback);
+	_window_callbacks.emplace_back(callback);
+}
+
+void Window::addWindowMessageHandler(MessageHandler&& callback)
+{
+	_window_callbacks.emplace_back(std::move(callback));
 }
 
 bool Window::removeWindowMessageHandler(const MessageHandler& callback)
@@ -434,7 +442,7 @@ void Window::getPos(int& x, int& y) const
 	y = _pos_y;
 }
 
-void Window::getDimensions(unsigned int& width, unsigned int& height) const
+void Window::getDimensions(int32_t& width, int32_t& height) const
 {
 	width = _width;
 	height = _height;
@@ -450,12 +458,12 @@ int Window::getPosY(void) const
 	return _pos_y;
 }
 
-unsigned int Window::getWidth(void) const
+int32_t Window::getWidth(void) const
 {
 	return _width;
 }
 
-unsigned int Window::getHeight(void) const
+int32_t Window::getHeight(void) const
 {
 	return _height;
 }

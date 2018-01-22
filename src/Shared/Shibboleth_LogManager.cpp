@@ -100,7 +100,7 @@ void LogManager::addLogCallback(const LogCallback& callback)
 void LogManager::removeLogCallback(const LogCallback& callback)
 {
 	std::lock_guard<std::mutex> lock(_log_callback_lock);
-	auto it = eastl::find(_log_callbacks.begin(), _log_callbacks.end(), callback);
+	auto it = Gaff::Find(_log_callbacks, callback);
 
 	if (it != _log_callbacks.end()) {
 		_log_callbacks.erase_unsorted(it);

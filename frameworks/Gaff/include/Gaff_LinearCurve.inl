@@ -48,14 +48,14 @@ PointType LinearCurve<PointType, Allocator>::sample(float t) const
 {
 	GAFF_ASSERT(!_points.empty());
 
-	t = Clamp(t, _points.first().t, _points.last().t);
+	t = Clamp(t, _points.front().t, _points.back().t);
 
 	// We clamped, so just use the extreme values
-	if (t <= _points.first().t) {
-		return _points.first().point;
+	if (t <= _points.front().t) {
+		return _points.front().point;
 
-	} else if (t >= _points.last().t) {
-		return _points.last().point;
+	} else if (t >= _points.back().t) {
+		return _points.back().point;
 	}
 
 	int32_t i = 1; // Is never going to terminate on i == 0, so start at 1

@@ -23,8 +23,8 @@ THE SOFTWARE.
 #pragma once
 
 #include "Gleam_RefCounted.h"
+#include "Gleam_Vector.h"
 #include "Gleam_IMesh.h"
-#include "Gleam_Array.h"
 
 NS_GLEAM
 
@@ -34,35 +34,35 @@ public:
 	MeshBase(void);
 	~MeshBase(void);
 
-	void destroy(void);
+	void destroy(void) override;
 
-	void addBuffer(IBuffer* buffer);
-	const IBuffer* getBuffer(unsigned int index) const;
-	IBuffer* getBuffer(unsigned int index);
-	size_t getBufferCount(void) const;
+	void addBuffer(IBuffer* buffer) override;
+	const IBuffer* getBuffer(int32_t index) const override;
+	IBuffer* getBuffer(int32_t index) override;
+	int32_t getBufferCount(void) const override;
 
-	void setIndiceBuffer(IBuffer* buffer);
-	const IBuffer* getIndiceBuffer(void) const;
-	IBuffer* getIndiceBuffer(void);
+	void setIndiceBuffer(IBuffer* buffer) override;
+	const IBuffer* getIndiceBuffer(void) const override;
+	IBuffer* getIndiceBuffer(void) override;
 
-	TOPOLOGY_TYPE getTopologyType(void) const;
+	TopologyType getTopologyType(void) const override;
 
-	void setIndexCount(unsigned int count);
-	unsigned int getIndexCount(void) const;
+	void setIndexCount(int32_t count) override;
+	int32_t getIndexCount(void) const override;
 
 protected:
-	GleamArray<IBuffer*> _vert_data;
+	Vector<IBuffer*> _vert_data;
 	IBuffer* _indices;
-	TOPOLOGY_TYPE _topology;
+	TopologyType _topology;
 
 	bool addVertDataHelper(
-		IRenderDevice& rd, const void* vert_data, unsigned int vert_count, unsigned int vert_size,
-		unsigned int* indices, unsigned int index_count, TOPOLOGY_TYPE primitive_type,
+		IRenderDevice& rd, const void* vert_data, int32_t vert_count, int32_t vert_size,
+		int32_t* indices, int32_t index_count, TopologyType primitive_type,
 		IBuffer* index_buffer, IBuffer* vert_buffer
 	);
 
 private:
-	unsigned int _index_count;
+	int32_t _index_count;
 
 	GLEAM_REF_COUNTED(MeshBase);
 };

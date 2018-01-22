@@ -27,7 +27,7 @@ THE SOFTWARE.
 
 NS_GLEAM
 
-typedef Gaff::String<char, ProxyAllocator> U8String;
-typedef Gaff::String<wchar_t, ProxyAllocator> WString;
+template <class T> using String = Gaff::String<T, ProxyAllocator>;
+using U8String = Gaff::U8String<ProxyAllocator>;
 
 NS_END

@@ -99,7 +99,7 @@ void IResource::addLoadedCallback(eastl::function<void (IResource*)>&& callback)
 
 void IResource::removeLoadedCallback(const eastl::function<void (IResource*)>& callback)
 {
-	auto it = eastl::find(_callbacks.begin(), _callbacks.end(), callback);
+	auto it = Gaff::Find(_callbacks, callback);
 
 	if (it != _callbacks.end()) {
 		_callbacks.erase_unsorted(it);

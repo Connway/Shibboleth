@@ -47,6 +47,7 @@ public:
 	virtual void destroy(void) = 0;
 
 	virtual void addWindowMessageHandler(const MessageHandler& callback) = 0;
+	virtual void addWindowMessageHandler(MessageHandler&& callback) = 0;
 	virtual bool removeWindowMessageHandler(const MessageHandler& callback) = 0;
 
 	virtual void showCursor(bool show) = 0;

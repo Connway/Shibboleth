@@ -69,7 +69,7 @@ public:
 
 	bool removeInputHandler(const InputHandler& cb)
 	{
-		auto it = eastl::find(_input_handlers.begin(), _input_handlers.end(), cb);
+		auto it = Gaff::Find(_input_handlers, cb);
 
 		if (it != _input_handlers.end()) {
 			_input_handlers.erase_unsorted(it);

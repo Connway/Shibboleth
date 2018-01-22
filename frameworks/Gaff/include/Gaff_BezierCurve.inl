@@ -49,7 +49,7 @@ PointType BezierCurve<PointType, Allocator>::sample(float t) const
 	GAFF_ASSERT(!_points.empty());
 
 	// Clamp to range and normalize
-	t = Clamp(t, _points.first().t, _points.last().t) / (_points.last().t - _points.first().t);
+	t = Clamp(t, _points.front().t, _points.back().t) / (_points.back().t - _points.front().t);
 
 	PointType point = PointType::zero;
 
