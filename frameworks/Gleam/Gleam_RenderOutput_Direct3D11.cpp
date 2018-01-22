@@ -161,7 +161,7 @@ bool RenderOutputD3D11::init(IRenderDevice& device, const IWindow& window, int32
 	viewport.TopLeftX = 0.0f;
 	viewport.TopLeftY = 0.0f;
 		
-	RenderTargetD3D11* rt = GleamAllocateT(RenderTargetD3D11);
+	RenderTargetD3D11* rt = GLEAM_ALLOCT(RenderTargetD3D11);
 	rt->setRTV(_render_target_view.get(), viewport);
 	_render_target = rt;
 	

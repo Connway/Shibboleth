@@ -23,6 +23,7 @@ THE SOFTWARE.
 #include "Gleam_ModelBase.h"
 #include "Gleam_ILayout.h"
 #include "Gleam_IMesh.h"
+#include <Gaff_Assert.h>
 
 NS_GLEAM
 
@@ -37,11 +38,11 @@ ModelBase::~ModelBase(void)
 
 void ModelBase::destroy(void)
 {
-	for (unsigned int i = 0; i < _layouts.size(); ++i) {
+	for (int32_t i = 0; i < static_cast<int32_t>(_layouts.size()); ++i) {
 		_layouts[i]->release();
 	}
 
-	for (unsigned int i = 0; i < _meshes.size(); ++i) {
+	for (int32_t i = 0; i < static_cast<int32_t>(_meshes.size()); ++i) {
 		_meshes[i]->release();
 	}
 
@@ -49,66 +50,68 @@ void ModelBase::destroy(void)
 	_meshes.clear();
 }
 
-const ILayout* ModelBase::getLayout(size_t index) const
+const ILayout* ModelBase::getLayout(int32_t index) const
 {
-	GAFF_ASSERT(index < _meshes.size());
+	GAFF_ASSERT(index < static_cast<int32_t>(_meshes.size()));
 	return _layouts[index];
 }
 
-ILayout* ModelBase::getLayout(size_t index)
+ILayout* ModelBase::getLayout(int32_t index)
 {
-	GAFF_ASSERT(index < _meshes.size());
+	GAFF_ASSERT(index < static_cast<int32_t>(_meshes.size()));
 	return _layouts[index];
 }
 
-size_t ModelBase::getIndex(const ILayout* layout) const
+int32_t ModelBase::getIndex(const ILayout* layout) const
 {
 	GAFF_ASSERT(layout);
-	return _layouts.linearSearch(0, _layouts.size(), layout);
+	auto it = Gaff::Find(_layouts, layout);
+	return it != _layouts.end() ? static_cast<int32_t>(it - _layouts.begin()) : -1;
 }
 
-size_t ModelBase::addLayout(ILayout* layout)
+int32_t ModelBase::addLayout(ILayout* layout)
 {
 	GAFF_ASSERT(layout);
-	_layouts.push(layout);
+	_layouts.emplace_back(layout);
 	layout->addRef();
-	return _layouts.size() - 1;
+	return static_cast<int32_t>(_layouts.size() - 1);
 }
 
-const IMesh* ModelBase::getMesh(size_t index) const
+const IMesh* ModelBase::getMesh(int32_t index) const
 {
-	GAFF_ASSERT(index < _meshes.size());
+	GAFF_ASSERT(index < static_cast<int32_t>(_meshes.size()));
 	return _meshes[index];
 }
 
-IMesh* ModelBase::getMesh(size_t index)
+IMesh* ModelBase::getMesh(int32_t index)
 {
-	GAFF_ASSERT(index < _meshes.size());
+	GAFF_ASSERT(index < static_cast<int32_t>(_meshes.size()));
 	return _meshes[index];
 }
 
-size_t ModelBase::getMeshCount(void) const
+int32_t ModelBase::getMeshCount(void) const
 {
-	return _meshes.size();
+	return static_cast<int32_t>(_meshes.size());
 }
 
-size_t ModelBase::getIndex(const IMesh* mesh) const
+int32_t ModelBase::getIndex(const IMesh* mesh) const
 {
 	GAFF_ASSERT(mesh);
-	return _meshes.linearSearch(0, _meshes.size(), mesh);
+	auto it = Gaff::Find(_meshes, mesh);
+	return it != _meshes.end() ? static_cast<int32_t>(it - _meshes.begin()) : -1;
 }
 
-size_t ModelBase::addMesh(IMesh* mesh)
+int32_t ModelBase::addMesh(IMesh* mesh)
 {
 	GAFF_ASSERT(mesh);
-	_meshes.push(mesh);
+	_meshes.emplace_back(mesh);
 	mesh->addRef();
-	return _meshes.size() - 1;
+	return static_cast<int32_t>(_meshes.size() - 1);
 }
 
-void ModelBase::renderInstanced(IRenderDevice& rd, size_t index, unsigned int count)
+void ModelBase::renderInstanced(IRenderDevice& rd, int32_t index, int32_t count)
 {
-	GAFF_ASSERT(_layouts.size() == _meshes.size() && index < _meshes.size());
+	GAFF_ASSERT(_layouts.size() == _meshes.size() && index < static_cast<int32_t>(_meshes.size()));
 	GAFF_ASSERT(_meshes[index] && _layouts[index]);
 
 	IMesh* mesh = _meshes[index];
@@ -116,9 +119,9 @@ void ModelBase::renderInstanced(IRenderDevice& rd, size_t index, unsigned int co
 	mesh->renderInstanced(rd, count);
 }
 
-void ModelBase::render(IRenderDevice& rd, size_t index)
+void ModelBase::render(IRenderDevice& rd, int32_t index)
 {
-	GAFF_ASSERT(_layouts.size() == _meshes.size() && index < _meshes.size());
+	GAFF_ASSERT(_layouts.size() == _meshes.size() && index < static_cast<int32_t>(_meshes.size()));
 	GAFF_ASSERT(_meshes[index] && _layouts[index]);
 
 	IMesh* mesh = _meshes[index];

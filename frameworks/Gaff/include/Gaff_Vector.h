@@ -30,4 +30,28 @@ NS_GAFF
 template <class T, class Allocator = DefaultAllocator>
 using Vector = eastl::vector<T, Allocator>;
 
+template <class T, class V, class Allocator, class Predicate>
+typename Vector<T, Allocator>::const_iterator Find(const Vector<T, Allocator>& vec, const V& value, Predicate predicate)
+{
+	return eastl::find(vec.begin(), vec.end(), value, predicate);
+}
+
+template <class T, class V, class Allocator, class Predicate>
+typename Vector<T, Allocator>::iterator Find(Vector<T, Allocator>& vec, const V& value, Predicate predicate)
+{
+	return eastl::find(vec.begin(), vec.end(), value, predicate);
+}
+
+template <class T, class V, class Allocator>
+typename Vector<T, Allocator>::const_iterator Find(const Vector<T, Allocator>& vec, const V& value)
+{
+	return eastl::find(vec.begin(), vec.end(), value);
+}
+
+template <class T, class V, class Allocator>
+typename Vector<T, Allocator>::iterator Find(Vector<T, Allocator>& vec, const V& value)
+{
+	return eastl::find(vec.begin(), vec.end(), value);
+}
+
 NS_END

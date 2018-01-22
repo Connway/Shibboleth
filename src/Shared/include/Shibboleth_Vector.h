@@ -23,10 +23,10 @@ THE SOFTWARE.
 #pragma once
 
 #include "Shibboleth_ProxyAllocator.h"
-#include <EASTL/vector.h>
+#include <Gaff_Vector.h>
 
 NS_SHIBBOLETH
 
-template <class T> using Vector = eastl::vector<T, ProxyAllocator>;
+template <class T> using Vector = Gaff::Vector<T, ProxyAllocator>;
 
 NS_END

@@ -59,7 +59,7 @@ public:
 
 	bool removeCharacterHandler(const CharacterHandler& handler)
 	{
-		auto it = eastl::find(_character_handlers.begin(), _character_handlers.end(), handler);
+		auto it = Gaff::Find(_character_handlers, handler);
 
 		if (it != _character_handlers.end()) {
 			_character_handlers.erase_unsorted(it);

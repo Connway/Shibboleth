@@ -32,7 +32,7 @@ class IRenderDevice;
 class IShader : public Gaff::IRefCounted
 {
 public:
-	enum SHADER_TYPE
+	enum ShaderType
 	{
 		SHADER_VERTEX = 0,
 		SHADER_PIXEL,
@@ -46,9 +46,9 @@ public:
 
 	virtual ~IShader(void) {}
 
-	virtual bool initSource(IRenderDevice& rd, const char* shader_source, size_t source_size, SHADER_TYPE shader_type) = 0;
-	virtual bool initSource(IRenderDevice& rd, const char* shader_source, SHADER_TYPE shader_type) = 0;
-	virtual bool init(IRenderDevice& rd, const char* file_path, SHADER_TYPE shader_type) = 0;
+	virtual bool initSource(IRenderDevice& rd, const char* shader_source, size_t source_size, ShaderType shader_type) = 0;
+	virtual bool initSource(IRenderDevice& rd, const char* shader_source, ShaderType shader_type) = 0;
+	virtual bool init(IRenderDevice& rd, const char* file_path, ShaderType shader_type) = 0;
 
 	virtual bool initVertex(IRenderDevice&, const char* file_path) = 0;
 	virtual bool initPixel(IRenderDevice&, const char* file_path) = 0;
@@ -68,10 +68,10 @@ public:
 
 	virtual RendererType getRendererType(void) const = 0;
 
-	virtual SHADER_TYPE getType(void) const { return _type; }
+	virtual ShaderType getType(void) const { return _type; }
 
 protected:
-	SHADER_TYPE _type;
+	ShaderType _type;
 };
 
 NS_END

@@ -25,7 +25,7 @@ THE SOFTWARE.
 
 NS_GLEAM
 
-static Gaff::DefaultAlignedAllocator g_backup_allocator(16);
+static Gaff::DefaultAllocator g_backup_allocator;
 static Gaff::IAllocator* g_allocator = &g_backup_allocator;
 static LogFunc g_log_func = nullptr;
 
@@ -61,7 +61,7 @@ void SetLogFunc(LogFunc log_func)
 	g_log_func = log_func;
 }
 
-void PrintfToLog(const char* format_string, LOG_MSG_TYPE type, ...)
+void PrintfToLog(const char* format_string, LogMsgType type, ...)
 {
 	if (g_log_func) {
 		char temp[2048] = { 0 };

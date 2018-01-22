@@ -370,7 +370,7 @@ void Object::removeComponent(Component* component, bool destroy)
 {
 	component->setOwner(nullptr);
 	component->setIndex(static_cast<size_t>(-1));
-	_components.erase_unsorted(eastl::find(_components.begin(), _components.end(), component));
+	_components.erase_unsorted(Gaff::Find(_components, component));
 
 	if (isInWorld()) {
 		component->onRemoveFromWorld();
@@ -391,7 +391,7 @@ void Object::addChild(Object* object)
 void Object::removeFromParent(void)
 {
 	//std::lock_guard<std::mutex> lock(_parent->_children_lock);
-	auto it = eastl::find(_parent->_children.begin(), _parent->_children.end(), this);
+	auto it = Gaff::Find(_parent->_children, this);
 
 	if (it != _parent->_children.end()) {
 		_parent->_children.erase_unsorted(it);
@@ -440,9 +440,8 @@ void Object::unregisterForLocalDirtyCallback(const DirtyCallback& callback)
 {
 	std::lock_guard<std::mutex> lock(_local_cb_lock);
 
-	auto it = eastl::find(
-		_local_callbacks.begin(),
-		_local_callbacks.end(),
+	auto it = Gaff::Find(
+		_local_callbacks,
 		callback,
 		[](const eastl::pair<DirtyCallback, uint64_t>& left, const DirtyCallback& right) -> bool
 		{
@@ -482,9 +481,8 @@ void Object::unregisterForWorldDirtyCallback(const DirtyCallback& callback)
 {
 	std::lock_guard<std::mutex> lock(_world_cb_lock);
 
-	auto it = eastl::find(
-		_world_callbacks.begin(),
-		_world_callbacks.end(),
+	auto it = Gaff::Find(
+		_world_callbacks,
 		callback,
 		[](const eastl::pair<DirtyCallback, uint64_t>& left, const DirtyCallback& right) -> bool
 		{

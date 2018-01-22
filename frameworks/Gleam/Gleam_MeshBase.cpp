@@ -37,7 +37,7 @@ MeshBase::~MeshBase(void)
 
 void MeshBase::destroy(void)
 {
-	for (unsigned int i = 0; i < _vert_data.size(); ++i) {
+	for (int32_t i = 0; i < static_cast<int32_t>(_vert_data.size()); ++i) {
 		_vert_data[i]->release();
 	}
 
@@ -49,25 +49,25 @@ void MeshBase::destroy(void)
 
 void MeshBase::addBuffer(IBuffer* buffer)
 {
-	_vert_data.push(buffer);
+	_vert_data.emplace_back(buffer);
 	buffer->addRef();
 }
 
-const IBuffer* MeshBase::getBuffer(unsigned int index) const
+const IBuffer* MeshBase::getBuffer(int32_t index) const
 {
-	GAFF_ASSERT(index < _vert_data.size());
+	GAFF_ASSERT(index < static_cast<int32_t>(_vert_data.size()));
 	return _vert_data[index];
 }
 
-IBuffer* MeshBase::getBuffer(unsigned int index)
+IBuffer* MeshBase::getBuffer(int32_t index)
 {
-	GAFF_ASSERT(index < _vert_data.size());
+	GAFF_ASSERT(index < static_cast<int32_t>(_vert_data.size()));
 	return _vert_data[index];
 }
 
-size_t MeshBase::getBufferCount(void) const
+int32_t MeshBase::getBufferCount(void) const
 {
-	return _vert_data.size();
+	return static_cast<int32_t>(_vert_data.size());
 }
 
 void MeshBase::setIndiceBuffer(IBuffer* buffer)
@@ -88,24 +88,24 @@ IBuffer* MeshBase::getIndiceBuffer(void)
 	return _indices;
 }
 
-MeshBase::TOPOLOGY_TYPE MeshBase::getTopologyType(void) const
+MeshBase::TopologyType MeshBase::getTopologyType(void) const
 {
 	return _topology;
 }
 
-void MeshBase::setIndexCount(unsigned int count)
+void MeshBase::setIndexCount(int32_t count)
 {
 	_index_count = count;
 }
 
-unsigned int MeshBase::getIndexCount(void) const
+int32_t MeshBase::getIndexCount(void) const
 {
 	return _index_count;
 }
 
 bool MeshBase::addVertDataHelper(
-	IRenderDevice& rd, const void* vert_data, unsigned int vert_count, unsigned int vert_size,
-	unsigned int* indices, unsigned int index_count, TOPOLOGY_TYPE primitive_type,
+	IRenderDevice& rd, const void* vert_data, int32_t vert_count, int32_t vert_size,
+	int32_t* indices, int32_t index_count, TopologyType primitive_type,
 	IBuffer* index_buffer, IBuffer* vert_buffer
 )
 {
@@ -116,7 +116,7 @@ bool MeshBase::addVertDataHelper(
 		return false;
 	}
 
-	if (!index_buffer->init(rd, indices, sizeof(unsigned int) * index_count, IBuffer::INDEX_DATA, sizeof(unsigned int))) {
+	if (!index_buffer->init(rd, indices, sizeof(int32_t) * index_count, IBuffer::INDEX_DATA, sizeof(int32_t))) {
 		return false;
 	}
 

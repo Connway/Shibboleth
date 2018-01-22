@@ -31,14 +31,14 @@ THE SOFTWARE.
 
 NS_GLEAM
 
-enum LOG_MSG_TYPE
+enum LogMsgType
 {
 	LOG_NORMAL = 0,
 	LOG_WARNING,
 	LOG_ERROR
 };
 
-using LogFunc = void (*) (const char*, LOG_MSG_TYPE);
+using LogFunc = void (*) (const char*, LogMsgType);
 
 void SetAllocator(Gaff::IAllocator* allocator);
 Gaff::IAllocator* GetAllocator(void);
@@ -46,7 +46,7 @@ void* GleamAlloc(size_t size_bytes, const char* filename, unsigned int line_numb
 void GleamFree(void* data);
 
 void SetLogFunc(LogFunc log_func);
-void PrintfToLog(const char* format_string, LOG_MSG_TYPE type, ...);
+void PrintfToLog(const char* format_string, LogMsgType type, ...);
 
 template <class T, class... Args>
 T* GleamAllocT(const char* filename, unsigned int line_number, Args... args)
@@ -62,5 +62,5 @@ T* GleamAllocT(const char* filename, unsigned int line_number, Args... args)
 
 NS_END
 
-#define GleamAllocateT(T, ...) Gleam::GleamAllocT<T>(__FILE__, __LINE__, ##__VA_ARGS__)
-#define GleamAllocate(size_bytes) Gleam::GleamAlloc(size_bytes, __FILE__, __LINE__)
+#define GLEAM_ALLOCT(T, ...) Gleam::GleamAllocT<T>(__FILE__, __LINE__, ##__VA_ARGS__)
+#define GLEAM_ALLOC(size_bytes) Gleam::GleamAlloc(size_bytes, __FILE__, __LINE__)

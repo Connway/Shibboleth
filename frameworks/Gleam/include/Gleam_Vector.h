@@ -23,10 +23,10 @@ THE SOFTWARE.
 #pragma once
 
 #include "Gleam_ProxyAllocator.h"
-#include <EASTL/vector.h>
+#include <Gaff_Vector.h>
 
 NS_GLEAM
 
-template <class T> using Vector = eastl::vector<T, ProxyAllocator>;
+template <class T> using Vector = Gaff::Vector<T, ProxyAllocator>;
 
 NS_END

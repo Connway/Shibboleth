@@ -71,7 +71,7 @@ IFile* LooseFileSystem::openFile(const char* file_name)
 	GAFF_ASSERT(file_name && strlen(file_name));
 	std::lock_guard<std::mutex> lock(_file_lock);
 
-	auto it = eastl::find(_files.begin(), _files.end(), file_name,
+	auto it = Gaff::Find(_files, file_name,
 	[](const FileData& lhs, const char* rhs) -> bool
 	{
 		return lhs.name == rhs;
@@ -126,14 +126,14 @@ void LooseFileSystem::closeFile(IFile* file)
 	GAFF_ASSERT(file);
 	std::lock_guard<std::mutex> lock(_file_lock);
 
-	auto it = eastl::find(_files.begin(), _files.end(), file,
+	auto it = Gaff::Find(_files, file,
 	[](const FileData& lhs, const IFile* rhs) -> bool
 	{
 		return lhs.file == rhs;
 	});
 
 	if (it != _files.end()) {
-		unsigned int new_count = --it->count;
+		int32_t new_count = --it->count;
 
 		if (!new_count) {
 			SHIB_FREET(it->file, *GetAllocator());

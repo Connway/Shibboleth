@@ -24,9 +24,9 @@ THE SOFTWARE.
 
 #include "Gleam_Window_Defines.h"
 #include "Gleam_IWindow.h"
-#include "Gleam_String.h"
 #include "Gleam_VectorMap.h"
 #include "Gleam_Vector.h"
+#include "Gleam_String.h"
 #include <Gaff_IncludeWindows.h>
 
 NS_GLEAM
@@ -35,6 +35,7 @@ class Window : public IWindow
 {
 public:
 	static void AddGlobalMessageHandler(const MessageHandler& callback);
+	static void AddGlobalMessageHandler(MessageHandler&& callback);
 	static bool RemoveGlobalMessageHandler(const MessageHandler& callback);
 
 	static void HandleWindowMessages(void);
@@ -48,6 +49,7 @@ public:
 	void destroy(void) override;
 
 	void addWindowMessageHandler(const MessageHandler& callback) override;
+	void addWindowMessageHandler(MessageHandler&& callback) override;
 	bool removeWindowMessageHandler(const MessageHandler& callback) override;
 
 	void showCursor(bool show) override;

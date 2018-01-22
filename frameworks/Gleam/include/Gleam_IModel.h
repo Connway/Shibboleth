@@ -42,23 +42,23 @@ public:
 
 	virtual void destroy(void) = 0;
 
-	virtual const ILayout* getLayout(size_t index) const = 0;
-	virtual ILayout* getLayout(size_t index) = 0;
-	virtual size_t getIndex(const ILayout* layout) const = 0;
+	virtual const ILayout* getLayout(int32_t index) const = 0;
+	virtual ILayout* getLayout(int32_t index) = 0;
+	virtual int32_t getIndex(const ILayout* layout) const = 0;
 
 	virtual ILayout* createLayout(IRenderDevice& rd, const LayoutDescription* layout_desc, unsigned int desc_size, const IShader* shader) = 0;
-	virtual size_t addLayout(ILayout* layout) = 0;
+	virtual int32_t addLayout(ILayout* layout) = 0;
 
-	virtual const IMesh* getMesh(size_t index) const = 0;
-	virtual IMesh* getMesh(size_t index) = 0;
-	virtual size_t getMeshCount(void) const = 0;
-	virtual size_t getIndex(const IMesh* mesh) const = 0;
+	virtual const IMesh* getMesh(int32_t index) const = 0;
+	virtual IMesh* getMesh(int32_t index) = 0;
+	virtual int32_t getMeshCount(void) const = 0;
+	virtual int32_t getIndex(const IMesh* mesh) const = 0;
 
 	virtual IMesh* createMesh(void) = 0;
-	virtual size_t addMesh(IMesh* mesh) = 0;
+	virtual int32_t addMesh(IMesh* mesh) = 0;
 
-	virtual void renderInstanced(IRenderDevice& rd, size_t index, unsigned int count) = 0;
-	virtual void render(IRenderDevice& rd, size_t index) = 0;
+	virtual void renderInstanced(IRenderDevice& rd, int32_t index, int32_t count) = 0;
+	virtual void render(IRenderDevice& rd, int32_t index) = 0;
 
 	virtual RendererType getRendererType(void) const = 0;
 
