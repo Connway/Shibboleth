@@ -55,7 +55,7 @@ struct LayoutDescription
 {
 	SEMANTIC semantic;
 	unsigned int semantic_index;
-	ITexture::FORMAT format;
+	ITexture::Format format;
 	unsigned int input_slot;
 	unsigned int aligned_byte_offset;
 	PerDataType per_data_type;

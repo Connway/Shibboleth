@@ -34,15 +34,15 @@ public:
 	TextureD3D(void);
 	~TextureD3D(void);
 
-	void destroy(void);
+	void destroy(void) override;
 
-	bool init3D(IRenderDevice& rd, int width, int height, int depth, FORMAT format, int mip_levels = 1, const void* buffer = nullptr);
-	bool init2D(IRenderDevice& rd, int width, int height, FORMAT format, int mip_levels = 1, const void* buffer = nullptr);
-	bool init1D(IRenderDevice& rd, int width, FORMAT format, int mip_levels = 1, const void* buffer = nullptr);
-	bool initCubemap(IRenderDevice& rd, int width, int height, FORMAT format, int mip_levels = 1, const void* buffer = nullptr);
-	bool initDepthStencil(IRenderDevice& rd, int width, int height, FORMAT format);
+	bool init3D(IRenderDevice& rd, int32_t width, int32_t height, int32_t depth, Format format, int32_t mip_levels = 1, const void* buffer = nullptr) override;
+	bool init2D(IRenderDevice& rd, int32_t width, int32_t height, Format format, int32_t mip_levels = 1, const void* buffer = nullptr) override;
+	bool init1D(IRenderDevice& rd, int32_t width, Format format, int32_t mip_levels = 1, const void* buffer = nullptr) override;
+	bool initCubemap(IRenderDevice& rd, int32_t width, int32_t height, Format format, int32_t mip_levels = 1, const void* buffer = nullptr) override;
+	bool initDepthStencil(IRenderDevice& rd, int32_t width, int32_t height, Format format) override;
 
-	RendererType getRendererType(void) const;
+	RendererType getRendererType(void) const override;
 
 	ID3D11DepthStencilView* getDepthStencilView(void) const;
 
@@ -51,8 +51,8 @@ public:
 	ID3D11Texture2D* getTexture2D(void) const;
 	ID3D11Texture3D* getTexture3D(void) const;
 
-	static DXGI_FORMAT GetD3DFormat(FORMAT format);
-	static DXGI_FORMAT GetTypedFormat(FORMAT format);
+	static DXGI_FORMAT GetD3DFormat(Format format);
+	static DXGI_FORMAT GetTypedFormat(Format format);
 
 private:
 	ID3D11DepthStencilView* _depth_stencil_view;
