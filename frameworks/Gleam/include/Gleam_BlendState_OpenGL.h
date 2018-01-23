@@ -30,8 +30,8 @@ NS_GLEAM
 class BlendStateGL : public IBlendState
 {
 public:
-	static unsigned int Blend_Factors[BLEND_FACTOR_SIZE];
-	static unsigned int Blend_Ops[BLEND_OP_SIZE];
+	static uint32_t Blend_Factors[BLEND_FACTOR_SIZE];
+	static uint32_t Blend_Ops[BLEND_OP_SIZE];
 
 	BlendStateGL(void);
 	~BlendStateGL(void);

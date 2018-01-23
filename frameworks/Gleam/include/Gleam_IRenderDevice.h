@@ -27,6 +27,7 @@ THE SOFTWARE.
 
 NS_GLEAM
 
+class IRenderOutput;
 class ICommandList;
 //class IWindow;
 
@@ -64,13 +65,11 @@ public:
 
 	virtual bool init(int32_t adapter_id) = 0;
 
-	//virtual void beginFrame(void) = 0;
-	//virtual void endFrame(void) = 0;
+	virtual void frameBegin(IRenderOutput& output) = 0;
+	virtual void frameEnd(IRenderOutput& output) = 0;
 
 	//virtual bool resize(const IWindow& window) = 0;
 	//virtual bool handleFocusGained(const IWindow& window) = 0;
-
-	virtual void resetRenderState(void) = 0;
 
 	virtual bool isDeferred(void) const = 0;
 	virtual RendererType getRendererType(void) const = 0;
@@ -100,6 +99,7 @@ public:
 	virtual void executeCommandList(ICommandList* command_list) = 0;
 	virtual bool finishCommandList(ICommandList* command_list) = 0;
 
+	virtual void resetRenderState(void) = 0;
 	virtual void renderNoVertexInput(int32_t vert_count) = 0;
 
 	GAFF_NO_COPY(IRenderDevice);

@@ -498,11 +498,13 @@ IRenderDevice* RenderDeviceD3D11::createDeferredRenderDevice(void)
 		return nullptr;
 	}
 
-	DeferredRenderDeviceD3D11* deferred_render_device = GAFF_ALLOC_CAST(DeferredRenderDeviceD3D11*, sizeof(DeferredRenderDeviceD3D11), *GetAllocator());
-	new (deferred_render_device) DeferredRenderDeviceD3D11();
-	deferred_render_device->_context.set(deferred_context);
+	//DeferredRenderDeviceD3D11* deferred_render_device = GAFF_ALLOC_CAST(DeferredRenderDeviceD3D11*, sizeof(DeferredRenderDeviceD3D11), *GetAllocator());
+	//new (deferred_render_device) DeferredRenderDeviceD3D11();
+	//deferred_render_device->_context.set(deferred_context);
 
-	return deferred_render_device;
+	//return deferred_render_device;
+
+	return nullptr;
 }
 
 void RenderDeviceD3D11::executeCommandList(ICommandList* command_list)

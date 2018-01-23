@@ -33,15 +33,13 @@ struct IDXGIAdapter;
 
 NS_GLEAM
 
-class IRenderOutput;
-
 class RenderDeviceD3D11 : public IRenderDevice, public IRenderDeviceD3D11
 {
 public:
 	bool init(int32_t adapter_id) override;
 
-	void frameBegin(IRenderOutput& output);
-	void frameEnd(IRenderOutput& output);
+	void frameBegin(IRenderOutput& output) override;
+	void frameEnd(IRenderOutput& output) override;
 
 	bool isDeferred(void) const override;
 	RendererType getRendererType(void) const override;

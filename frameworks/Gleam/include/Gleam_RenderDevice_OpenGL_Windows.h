@@ -28,7 +28,7 @@ THE SOFTWARE.
 #include "Gleam_VectorMap.h"
 #include "Gleam_String.h"
 #include <Gaff_IncludeWindows.h>
-#include <Gaff_SpinLock.h>
+#include <mutex>
 
 NS_GLEAM
 
@@ -40,47 +40,10 @@ public:
 	RenderDeviceGL(void);
 	~RenderDeviceGL(void);
 
-	AdapterList getDisplayModes(int compat = 28/*29*/) override;
+	bool init(int32_t adapter_id) override;
 
-	bool initThreadData(std::thread::id* thread_ids, size_t num_ids) override;
-	bool init(const IWindow& window, int32_t adapter_id, int32_t display_id, int32_t display_mode_id, bool vsync = false) override;
-	void destroy(void) override;
-
-	bool isVsync(int32_t device, int32_t output) const override;
-	void setVsync(bool vsync, int32_t device, int32_t output) override;
-
-	void beginFrame(void) override;
-	void endFrame(void) override;
-
-	bool resize(const IWindow& window) override;
-	bool handleFocusGained(const IWindow&) override;
-
-	int32_t getViewportWidth(int32_t device, int32_t output) const override;
-	int32_t getViewportHeight(int32_t device, int32_t output) const override;
-
-	int32_t getActiveViewportWidth(void) override;
-	int32_t getActiveViewportHeight(void) override;
-
-	int32_t getNumOutputs(int32_t device) const override;
-	int32_t getNumDevices(void) const override;
-
-	IRenderTargetPtr getOutputRenderTarget(int32_t device, int32_t output) override;
-	IRenderTargetPtr getActiveOutputRenderTarget(void) override;
-
-	bool setCurrentOutput(int32_t output) override;
-	int32_t getCurrentOutput(void) const override;
-
-	bool setCurrentDevice(int32_t device) override;
-	int32_t getCurrentDevice(void) const override;
-
-	int32_t getDeviceForAdapter(int32_t adapter_id) const override;
-	int32_t getDeviceForMonitor(int32_t monitor) const override;
-
-
-	// Common
-	void setClearColor(float r, float g, float b, float a) override;
-
-	void resetRenderState(void) override;
+	void frameBegin(IRenderOutput& output) override;
+	void frameEnd(IRenderOutput& output) override;
 
 	bool isDeferred(void) const override;
 	RendererType getRendererType(void) const override;
@@ -89,23 +52,40 @@ public:
 	void executeCommandList(ICommandList* command_list) override;
 	bool finishCommandList(ICommandList* command_list) override;
 
-	// For supporting deferred contexts
-	void setDepthStencilState(const DepthStencilStateGL* ds_state) override;
-	void setRasterState(const RasterStateGL* raster_state) override;
-	void setBlendState(const BlendStateGL* blend_state) override;
-
-	void setLayout(LayoutGL* layout, const IMesh* mesh) override;
-	void unsetLayout(LayoutGL* layout) override;
-
-	void bindShader(ProgramGL* shader) override;
-	void unbindShader(void) override;
-
-	void bindProgramBuffers(ProgramBuffersGL* program_buffers) override;
-
-	void renderMeshNonIndexed(uint32_t topology, int32_t vert_count, int32_t start_location) override;
-	void renderMeshInstanced(MeshGL* mesh, int32_t count) override;
-	void renderMesh(MeshGL* mesh) override;
+	void resetRenderState(void) override;
 	void renderNoVertexInput(int32_t vert_count) override;
+
+
+
+	//// Common
+	//void setClearColor(float r, float g, float b, float a) override;
+
+	//void resetRenderState(void) override;
+
+	//bool isDeferred(void) const override;
+	//RendererType getRendererType(void) const override;
+
+	//IRenderDevice* createDeferredRenderDevice(void) override;
+	//void executeCommandList(ICommandList* command_list) override;
+	//bool finishCommandList(ICommandList* command_list) override;
+
+	//// For supporting deferred contexts
+	//void setDepthStencilState(const DepthStencilStateGL* ds_state) override;
+	//void setRasterState(const RasterStateGL* raster_state) override;
+	//void setBlendState(const BlendStateGL* blend_state) override;
+
+	//void setLayout(LayoutGL* layout, const IMesh* mesh) override;
+	//void unsetLayout(LayoutGL* layout) override;
+
+	//void bindShader(ProgramGL* shader) override;
+	//void unbindShader(void) override;
+
+	//void bindProgramBuffers(ProgramBuffersGL* program_buffers) override;
+
+	//void renderMeshNonIndexed(uint32_t topology, int32_t vert_count, int32_t start_location) override;
+	//void renderMeshInstanced(MeshGL* mesh, int32_t count) override;
+	//void renderMesh(MeshGL* mesh) override;
+	//void renderNoVertexInput(int32_t vert_count) override;
 
 private:
 	struct OutputInfo
