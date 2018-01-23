@@ -64,7 +64,7 @@ public:
 		BLEND_OP_SIZE = BLEND_OP_MAX
 	};
 
-	enum COLOR_MASK
+	enum ColorMask
 	{
 		COLOR_RED = 1,
 		COLOR_GREEN = 2,

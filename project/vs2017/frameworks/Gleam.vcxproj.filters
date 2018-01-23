@@ -324,8 +324,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\frameworks\Gleam\Gleam_AABB.cpp" />
+    <ClCompile Include="..\..\..\frameworks\Gleam\Gleam_BlendState_Direct3D11.cpp" />
     <ClCompile Include="..\..\..\frameworks\Gleam\Gleam_Buffer_Direct3D11.cpp" />
-    <ClCompile Include="..\..\..\frameworks\Gleam\Gleam_Buffer_OpenGL.cpp" />
     <ClCompile Include="..\..\..\frameworks\Gleam\Gleam_Frustum.cpp" />
     <ClCompile Include="..\..\..\frameworks\Gleam\Gleam_Global.cpp" />
     <ClCompile Include="..\..\..\frameworks\Gleam\Gleam_Keyboard_MessagePump.cpp" />
@@ -339,7 +339,6 @@
     <ClCompile Include="..\..\..\frameworks\Gleam\Gleam_RenderDevice_Direct3D11.cpp" />
     <ClCompile Include="..\..\..\frameworks\Gleam\Gleam_RenderOutput_Direct3D11.cpp" />
     <ClCompile Include="..\..\..\frameworks\Gleam\Gleam_Texture_Direct3D11.cpp" />
-    <ClCompile Include="..\..\..\frameworks\Gleam\Gleam_Texture_OpenGL.cpp" />
     <ClCompile Include="..\..\..\frameworks\Gleam\Gleam_Transform.cpp" />
     <ClCompile Include="..\..\..\frameworks\Gleam\Gleam_WindowHelpers_Windows.cpp" />
     <ClCompile Include="..\..\..\frameworks\Gleam\Gleam_Window_Linux.cpp" />

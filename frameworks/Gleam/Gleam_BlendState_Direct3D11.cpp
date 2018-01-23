@@ -20,8 +20,8 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#include "Gleam_BlendState_Direct3D.h"
-#include "Gleam_IRenderDevice_Direct3D.h"
+#include "Gleam_BlendState_Direct3D11.h"
+#include "Gleam_IRenderDevice_Direct3D11.h"
 #include "Gleam_IRenderDevice.h"
 #include "Gleam_IncludeD3D11.h"
 #include <Gaff_Assert.h>
@@ -40,10 +40,10 @@ BlendStateD3D::~BlendStateD3D(void)
 
 bool BlendStateD3D::init(IRenderDevice& rd, const BlendStateSettings& settings)
 {
-	GAFF_ASSERT(rd.getRendererType() == RENDERER_DIRECT3D);
+	GAFF_ASSERT(rd.getRendererType() == RENDERER_DIRECT3D11);
 
-	IRenderDeviceD3D& rd3d = reinterpret_cast<IRenderDeviceD3D&>(*(reinterpret_cast<char*>(&rd) + sizeof(IRenderDevice)));
-	ID3D11Device* device = rd3d.getActiveDevice();
+	IRenderDeviceD3D11& rd3d = reinterpret_cast<IRenderDeviceD3D11&>(*(reinterpret_cast<char*>(&rd) + sizeof(IRenderDevice)));
+	ID3D11Device* device = rd3d.getDevice();
 
 	D3D11_BLEND_DESC blend_desc;
 	blend_desc.AlphaToCoverageEnable = false;
@@ -64,10 +64,10 @@ bool BlendStateD3D::init(IRenderDevice& rd, const BlendStateSettings& settings)
 
 bool BlendStateD3D::init(IRenderDevice& rd, const BlendStateSettings* settings)
 {
-	GAFF_ASSERT(rd.getRendererType() == RENDERER_DIRECT3D);
+	GAFF_ASSERT(rd.getRendererType() == RENDERER_DIRECT3D11);
 
-	IRenderDeviceD3D& rd3d = reinterpret_cast<IRenderDeviceD3D&>(*(reinterpret_cast<char*>(&rd) + sizeof(IRenderDevice)));
-	ID3D11Device* device = rd3d.getActiveDevice();
+	IRenderDeviceD3D11& rd3d = reinterpret_cast<IRenderDeviceD3D11&>(*(reinterpret_cast<char*>(&rd) + sizeof(IRenderDevice)));
+	ID3D11Device* device = rd3d.getDevice();
 
 	D3D11_BLEND_DESC blend_desc;
 	blend_desc.AlphaToCoverageEnable = false;
@@ -95,25 +95,25 @@ void BlendStateD3D::destroy(void)
 
 void BlendStateD3D::set(IRenderDevice& rd) const
 {
-	GAFF_ASSERT(rd.getRendererType() == RENDERER_DIRECT3D);
-	IRenderDeviceD3D& rd3d = reinterpret_cast<IRenderDeviceD3D&>(*(reinterpret_cast<char*>(&rd) + sizeof(IRenderDevice)));
-	ID3D11DeviceContext* context = rd3d.getActiveDeviceContext();
+	GAFF_ASSERT(rd.getRendererType() == RENDERER_DIRECT3D11);
+	IRenderDeviceD3D11& rd3d = reinterpret_cast<IRenderDeviceD3D11&>(*(reinterpret_cast<char*>(&rd) + sizeof(IRenderDevice)));
+	ID3D11DeviceContext* context = rd3d.getDeviceContext();
 
 	context->OMSetBlendState(_blend_state, NULL, 0xFFFFFFFF);
 }
 
 void BlendStateD3D::unset(IRenderDevice& rd) const
 {
-	GAFF_ASSERT(rd.getRendererType() == RENDERER_DIRECT3D);
-	IRenderDeviceD3D& rd3d = reinterpret_cast<IRenderDeviceD3D&>(*(reinterpret_cast<char*>(&rd) + sizeof(IRenderDevice)));
-	ID3D11DeviceContext* context = rd3d.getActiveDeviceContext();
+	GAFF_ASSERT(rd.getRendererType() == RENDERER_DIRECT3D11);
+	IRenderDeviceD3D11& rd3d = reinterpret_cast<IRenderDeviceD3D11&>(*(reinterpret_cast<char*>(&rd) + sizeof(IRenderDevice)));
+	ID3D11DeviceContext* context = rd3d.getDeviceContext();
 
 	context->OMSetBlendState(NULL, NULL, 0xFFFFFFFF);
 }
 
 RendererType BlendStateD3D::getRendererType(void) const
 {
-	return RENDERER_DIRECT3D;
+	return RENDERER_DIRECT3D11;
 }
 
 NS_END
