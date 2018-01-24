@@ -72,7 +72,7 @@ bool AngelScriptManager::init(void)
 	RegisterObject(_engine);
 	RegisterComponent(_engine);
 
-	//AngelScriptComponentWrapper::Register(_engine);
+	AngelScriptComponentWrapper::Register(_engine);
 
 	return true;
 }

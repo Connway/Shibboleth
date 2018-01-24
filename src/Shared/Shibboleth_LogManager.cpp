@@ -30,7 +30,7 @@ NS_SHIBBOLETH
 void LogManager::LogThread(LogManager& lm)
 {
 	AllocatorThreadInit();
-	std::unique_lock<std::mutex> unique_lock(lm._log_queue_lock);
+	std::unique_lock<std::mutex> unique_lock(lm._log_condition_lock);
 
 	while (!lm._shutdown) {
 		lm._log_event.wait(unique_lock);
