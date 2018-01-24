@@ -60,10 +60,10 @@ bool LayoutD3D11::init(IRenderDevice& rd, const LayoutDescription* layout_desc, 
 
 	for (size_t i = 0; i < layout_desc_size; ++i) {
 		input_desc[i].SemanticName = _semantic_names[layout_desc[i].semantic];
-		input_desc[i].SemanticIndex = layout_desc[i].semantic_index;
+		input_desc[i].SemanticIndex = static_cast<UINT>(layout_desc[i].semantic_index);
 		input_desc[i].Format = TextureD3D11::GetD3DFormat(layout_desc[i].format);
-		input_desc[i].InputSlot = layout_desc[i].input_slot;
-		input_desc[i].AlignedByteOffset = layout_desc[i].aligned_byte_offset;
+		input_desc[i].InputSlot = static_cast<UINT>(layout_desc[i].input_slot);
+		input_desc[i].AlignedByteOffset = static_cast<UINT>(layout_desc[i].aligned_byte_offset);
 		input_desc[i].InputSlotClass = (layout_desc->per_data_type == PDT_PER_VERTEX) ? D3D11_INPUT_PER_VERTEX_DATA : D3D11_INPUT_PER_INSTANCE_DATA;
 		input_desc[i].InstanceDataStepRate = 0;
 	}

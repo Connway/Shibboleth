@@ -276,7 +276,9 @@
     <ClCompile Include="..\..\..\frameworks\Gleam\Gleam_Keyboard_MessagePump.cpp" />
     <ClCompile Include="..\..\..\frameworks\Gleam\Gleam_Layout_Direct3D11.cpp" />
     <ClCompile Include="..\..\..\frameworks\Gleam\Gleam_MeshBase.cpp" />
+    <ClCompile Include="..\..\..\frameworks\Gleam\Gleam_Mesh_Direct3D11.cpp" />
     <ClCompile Include="..\..\..\frameworks\Gleam\Gleam_ModelBase.cpp" />
+    <ClCompile Include="..\..\..\frameworks\Gleam\Gleam_Model_Direct3D11.cpp" />
     <ClCompile Include="..\..\..\frameworks\Gleam\Gleam_Mouse_MessagePump.cpp" />
     <ClCompile Include="..\..\..\frameworks\Gleam\Gleam_OBB.cpp" />
     <ClCompile Include="..\..\..\frameworks\Gleam\Gleam_Plane.cpp" />

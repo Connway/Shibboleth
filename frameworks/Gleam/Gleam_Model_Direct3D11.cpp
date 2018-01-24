@@ -22,23 +22,23 @@ THE SOFTWARE.
 
 #if defined(_WIN32) || defined(_WIN64)
 
-#include "Gleam_Model_Direct3D.h"
-#include "Gleam_Layout_Direct3D.h"
-#include "Gleam_Mesh_Direct3D.h"
+#include "Gleam_Model_Direct3D11.h"
+#include "Gleam_Layout_Direct3D11.h"
+#include "Gleam_Mesh_Direct3D11.h"
 
 NS_GLEAM
 
-ModelD3D::ModelD3D(void)
+ModelD3D11::ModelD3D11(void)
 {
 }
 
-ModelD3D::~ModelD3D(void)
+ModelD3D11::~ModelD3D11(void)
 {
 }
 
-ILayout* ModelD3D::createLayout(IRenderDevice& rd, const LayoutDescription* layout_desc, unsigned int desc_size, const IShader* shader)
+ILayout* ModelD3D11::createLayout(IRenderDevice& rd, const LayoutDescription* layout_desc, size_t desc_size, const IShader* shader)
 {
-	ILayout* layout = GleamAllocateT(LayoutD3D);
+	ILayout* layout = GLEAM_ALLOCT(LayoutD3D11);
 
 	if (!layout) {
 		return nullptr;
@@ -57,9 +57,9 @@ ILayout* ModelD3D::createLayout(IRenderDevice& rd, const LayoutDescription* layo
 	return layout;
 }
 
-IMesh* ModelD3D::createMesh(void)
+IMesh* ModelD3D11::createMesh(void)
 {
-	IMesh* mesh = GleamAllocateT(MeshD3D);
+	IMesh* mesh = GLEAM_ALLOCT(MeshD3D11);
 
 	if (!mesh) {
 		return nullptr;
@@ -70,9 +70,9 @@ IMesh* ModelD3D::createMesh(void)
 	return mesh;
 }
 
-RendererType ModelD3D::getRendererType(void) const
+RendererType ModelD3D11::getRendererType(void) const
 {
-	return RENDERER_DIRECT3D;
+	return RENDERER_DIRECT3D11;
 }
 
 NS_END
