@@ -27,22 +27,22 @@ THE SOFTWARE.
 
 NS_GLEAM
 
-class MeshD3D : public MeshBase
+class MeshD3D11 : public MeshBase
 {
 public:
-	MeshD3D(void);
-	~MeshD3D(void);
+	MeshD3D11(void);
+	~MeshD3D11(void);
 
 	bool addVertData(
-		IRenderDevice& rd, const void* vert_data, unsigned int vert_count, unsigned int vert_size,
-		unsigned int* indices, unsigned int index_count, TOPOLOGY_TYPE primitive_type = TRIANGLE_LIST
+		IRenderDevice& rd, const void* vert_data, int32_t vert_count, int32_t vert_size,
+		int32_t* indices, int32_t index_count, TopologyType primitive_type = TRIANGLE_LIST
 	);
 
 	void addBuffer(IBuffer* buffer);
 
-	void setTopologyType(TOPOLOGY_TYPE topology);
-	void renderNonIndexed(IRenderDevice& rd, unsigned int vert_count, unsigned int start_location = 0);
-	void renderInstanced(IRenderDevice& rd, unsigned int count);
+	void setTopologyType(TopologyType topology);
+	void renderNonIndexed(IRenderDevice& rd, int32_t vert_count, int32_t start_location = 0);
+	void renderInstanced(IRenderDevice& rd, int32_t count);
 	void render(IRenderDevice& rd);
 
 	RendererType getRendererType(void) const;
@@ -50,9 +50,9 @@ public:
 private:
 	D3D11_PRIMITIVE_TOPOLOGY _d3d_topology;
 
-	GleamArray<ID3D11Buffer*> _buffers;
-	GleamArray<unsigned int> _strides;
-	GleamArray<unsigned int> _offsets;
+	Vector<ID3D11Buffer*> _buffers;
+	Vector<UINT> _strides;
+	Vector<UINT> _offsets;
 
 	void cacheBuffers(void);
 };

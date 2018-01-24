@@ -32,7 +32,7 @@ class IRenderDevice;
 class IShader;
 class IMesh;
 
-enum SEMANTIC
+enum Semantic
 {
 	SEMANTIC_COLOR = 0,
 	SEMANTIC_NORMAL,
@@ -53,11 +53,11 @@ enum PerDataType
 
 struct LayoutDescription
 {
-	SEMANTIC semantic;
-	unsigned int semantic_index;
+	Semantic semantic;
+	int32_t semantic_index;
 	ITexture::Format format;
-	unsigned int input_slot;
-	unsigned int aligned_byte_offset;
+	int32_t input_slot;
+	int32_t aligned_byte_offset;
 	PerDataType per_data_type;
 };
 

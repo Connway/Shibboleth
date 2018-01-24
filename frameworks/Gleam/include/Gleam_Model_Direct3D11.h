@@ -26,13 +26,13 @@ THE SOFTWARE.
 
 NS_GLEAM
 
-class ModelD3D : public ModelBase
+class ModelD3D11 : public ModelBase
 {
 public:
-	ModelD3D(void);
-	~ModelD3D(void);
+	ModelD3D11(void);
+	~ModelD3D11(void);
 
-	ILayout* createLayout(IRenderDevice& rd, const LayoutDescription* layout_desc, unsigned int desc_size, const IShader* shader) override;
+	ILayout* createLayout(IRenderDevice& rd, const LayoutDescription* layout_desc, size_t desc_size, const IShader* shader) override;
 	IMesh* createMesh(void) override;
 
 	RendererType getRendererType(void) const override;

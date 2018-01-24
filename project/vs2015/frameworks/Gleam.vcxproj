@@ -117,8 +117,8 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level4</WarningLevel>
       <TreatWarningAsError>true</TreatWarningAsError>
-      <PreprocessorDefinitions>_DEBUG;DEBUG;WIN32;_WINDOWS;GLEW_STATIC;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\..\..\frameworks\Gleam\include;..\..\..\frameworks\Gaff\include;..\..\..\dependencies\glew\include;..\..\..\dependencies\EASTL\include;..\..\..\dependencies\vulkan;..\..\..\dependencies\glm;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_DEBUG;DEBUG;WIN32;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\..\..\frameworks\Gleam\include;..\..\..\frameworks\Gaff\include;..\..\..\dependencies\EASTL\include;..\..\..\dependencies\vulkan;..\..\..\dependencies\glm;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
       <ExceptionHandling>Async</ExceptionHandling>
@@ -139,8 +139,8 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level4</WarningLevel>
       <TreatWarningAsError>true</TreatWarningAsError>
-      <PreprocessorDefinitions>NDEBUG;WIN32;_WINDOWS;GLEW_STATIC;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\..\..\frameworks\Gleam\include;..\..\..\frameworks\Gaff\include;..\..\..\dependencies\glew\include;..\..\..\dependencies\EASTL\include;..\..\..\dependencies\vulkan;..\..\..\dependencies\glm;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>NDEBUG;WIN32;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\..\..\frameworks\Gleam\include;..\..\..\frameworks\Gaff\include;..\..\..\dependencies\EASTL\include;..\..\..\dependencies\vulkan;..\..\..\dependencies\glm;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -166,8 +166,8 @@
     <ClCompile>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level4</WarningLevel>
-      <PreprocessorDefinitions>NDEBUG;WIN32;_WINDOWS;GLEW_STATIC;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\..\..\frameworks\Gleam\include;..\..\..\frameworks\Gaff\include;..\..\..\dependencies\glew\include;..\..\..\dependencies\EASTL\include;..\..\..\dependencies\vulkan;..\..\..\dependencies\glm;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>NDEBUG;WIN32;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\..\..\frameworks\Gleam\include;..\..\..\frameworks\Gaff\include;..\..\..\dependencies\EASTL\include;..\..\..\dependencies\vulkan;..\..\..\dependencies\glm;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -191,8 +191,8 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level4</WarningLevel>
       <TreatWarningAsError>true</TreatWarningAsError>
-      <PreprocessorDefinitions>NDEBUG;SHIB_PROFILE;WIN32;_WINDOWS;GLEW_STATIC;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\..\..\frameworks\Gleam\include;..\..\..\frameworks\Gaff\include;..\..\..\dependencies\glew\include;..\..\..\dependencies\EASTL\include;..\..\..\dependencies\vulkan;..\..\..\dependencies\glm;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>NDEBUG;SHIB_PROFILE;WIN32;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\..\..\frameworks\Gleam\include;..\..\..\frameworks\Gaff\include;..\..\..\dependencies\EASTL\include;..\..\..\dependencies\vulkan;..\..\..\dependencies\glm;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -219,8 +219,8 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level4</WarningLevel>
       <TreatWarningAsError>true</TreatWarningAsError>
-      <PreprocessorDefinitions>_DEBUG;DEBUG;WIN32;_WINDOWS;GLEW_STATIC;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\..\..\frameworks\Gleam\include;..\..\..\frameworks\Gaff\include;..\..\..\dependencies\glew\include;..\..\..\dependencies\EASTL\include;..\..\..\dependencies\vulkan;..\..\..\dependencies\glm;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_DEBUG;DEBUG;WIN32;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\..\..\frameworks\Gleam\include;..\..\..\frameworks\Gaff\include;..\..\..\dependencies\EASTL\include;..\..\..\dependencies\vulkan;..\..\..\dependencies\glm;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -341,7 +341,9 @@
     <ClCompile Include="..\..\..\frameworks\Gleam\Gleam_Keyboard_MessagePump.cpp" />
     <ClCompile Include="..\..\..\frameworks\Gleam\Gleam_Layout_Direct3D11.cpp" />
     <ClCompile Include="..\..\..\frameworks\Gleam\Gleam_MeshBase.cpp" />
+    <ClCompile Include="..\..\..\frameworks\Gleam\Gleam_Mesh_Direct3D11.cpp" />
     <ClCompile Include="..\..\..\frameworks\Gleam\Gleam_ModelBase.cpp" />
+    <ClCompile Include="..\..\..\frameworks\Gleam\Gleam_Model_Direct3D11.cpp" />
     <ClCompile Include="..\..\..\frameworks\Gleam\Gleam_Mouse_MessagePump.cpp" />
     <ClCompile Include="..\..\..\frameworks\Gleam\Gleam_OBB.cpp" />
     <ClCompile Include="..\..\..\frameworks\Gleam\Gleam_Plane.cpp" />
