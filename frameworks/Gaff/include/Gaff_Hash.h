@@ -22,7 +22,7 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Gaff_Defines.h"
+#include "Gaff_Math.h"
 #include <EASTL/string.h>
 
 NS_GAFF
@@ -46,9 +46,6 @@ Hash64 FNV1aHash64(const char* key, size_t len);
 Hash64 FNV1Hash64(const char* key, size_t len);
 Hash32 FNV1aHash32(const char* key, size_t len);
 Hash32 FNV1Hash32(const char* key, size_t len);
-
-float BinomialCoefficient(float n, float k);
-float BernsteinPolynomial(float t, float n, float k);
 
 template <class T>
 Hash64 FNV1Hash64VAdd(Hash64 init, const T* front)

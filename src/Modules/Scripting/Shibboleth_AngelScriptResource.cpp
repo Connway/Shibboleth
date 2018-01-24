@@ -92,7 +92,7 @@ void AngelScriptResource::loadScript(IFile* file)
 				// No way to forward this?
 				//void opCast(?& out value) { _component.opCast(value); }
 
-				private Component@ _component;
+				private ScriptComponent_Internal@ _component;
 			}
 		)"
 	);

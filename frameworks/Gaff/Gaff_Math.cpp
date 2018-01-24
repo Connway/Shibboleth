@@ -35,4 +35,12 @@ float BernsteinPolynomial(float t, float n, float k)
 	return BinomialCoefficient(n, k) * powf(t, k) * powf(1.0f - t, n - k);
 }
 
+float NormalizeAngle(float angle)
+{
+	angle += Pi;
+	angle -= floorf(angle / (2.0f * Pi)) * (2.0f * Pi);
+	angle -= Pi;
+	return angle;
+}
+
 NS_END
