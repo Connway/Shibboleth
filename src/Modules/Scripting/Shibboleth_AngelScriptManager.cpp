@@ -25,6 +25,7 @@ THE SOFTWARE.
 #include "Shibboleth_AngelScriptBaseTypes.h"
 #include <Shibboleth_IncludeAngelScript.h>
 #include <Shibboleth_LogManager.h>
+#include <scriptbuilder.h>
 #include <scriptarray.h>
 
 SHIB_REFLECTION_DEFINE(AngelScriptManager, 0)
@@ -85,6 +86,36 @@ asIScriptEngine* AngelScriptManager::getEngine(void) const
 std::mutex& AngelScriptManager::getEngineLock(void)
 {
 	return _lock;
+}
+
+int32_t AngelScriptManager::addScriptComponentDefinition(CScriptBuilder& builder)
+{
+	return builder.AddSectionFromMemory(
+		"ScriptComponent",
+		R"(
+			shared abstract class ScriptComponent
+			{
+				Object@ owner
+				{
+					get { return _component.owner; }
+				}
+
+				bool active
+				{
+					get { return _component.active; }
+					set { _component.active = value; }
+				}
+
+				const Component@ opImplCast() const { return _component; }
+				Component@ opImplCast() { return _component; }
+
+				// No way to forward this?
+				//void opCast(?& out value) { _component.opCast(value); }
+
+				private ScriptComponent_Internal@ _component;
+			}
+		)"
+	);
 }
 
 void AngelScriptManager::messageCallback(const asSMessageInfo* msg, void* param)
