@@ -32,36 +32,36 @@ public:
 	MouseMP(void);
 	~MouseMP(void);
 
-	bool init(IWindow& window);
-	bool init(void);
-	void destroy(void);
-	void update(void);
+	bool init(IWindow& window) override;
+	bool init(void) override;
+	void destroy(void) override;
+	void update(void) override;
 
-	const MouseData& getMouseData(void) const;
-	void getAbsolutePosition(int& x, int& y) const;
-	void getRelativePosition(int& x, int& y) const;
-	void getDeltas(int& dx, int& dy) const;
-	//void getNormalizedAbsolutePosition(float& nx, float& ny) const;
-	void getNormalizedRelativePosition(float& nx, float& ny) const;
-	void getNormalizedDeltas(float& ndx, float& ndy) const;
-	short getWheelDelta(void) const;
+	const MouseData& getMouseData(void) const override;
+	void getAbsolutePosition(int32_t& x, int32_t& y) const override;
+	void getRelativePosition(int32_t& x, int32_t& y) const override;
+	void getDeltas(int32_t& dx, int32_t& dy) const;
+	//void getNormalizedAbsolutePosition(float& nx, float& ny) const override;
+	void getNormalizedRelativePosition(float& nx, float& ny) const override;
+	void getNormalizedDeltas(float& ndx, float& ndy) const override;
+	int32_t getWheelDelta(void) const override;
 
-	void allowRepeats(bool allow);
-	bool areRepeatsAllowed(void) const;
+	void allowRepeats(bool allow) override;
+	bool areRepeatsAllowed(void) const override;
 
-	const char* getDeviceName(void) const;
-	const char* getPlatformImplementationString(void) const;
+	const char* getDeviceName(void) const override;
+	const char* getPlatformImplementationString(void) const override;
 
-	const IWindow* getAssociatedWindow(void) const;
+	const IWindow* getAssociatedWindow(void) const override;
 
 private:
 	MouseData _curr_data;
 	MouseData _prev_data;
 
-	int _dx, _dy;
-	short _wheel;
+	int32_t _dx, _dy;
+	int32_t _wheel;
 
-	char _flags;
+	int32_t _flags;
 
 	IWindow* _window;
 

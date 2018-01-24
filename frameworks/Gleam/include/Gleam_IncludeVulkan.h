@@ -22,36 +22,33 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Gleam_DeferredRenderDeviceBase.h"
-#include "Gleam_IRenderDevice_Direct3D11.h"
-#include "Gleam_IncludeD3D11.h"
-#include <Gaff_RefPtr.h>
+#ifdef PLATFORM_WINDOWS
+	#define VULKAN_MODULE_NAME "vulkan-1.dll"
+	#define VK_USE_PLATFORM_WIN32_KHR
+#elif defined(PLATFORM_LINUX)
+	#define VULKAN_MODULE_NAME ".so"
 
-NS_GLEAM
+	#ifdef VULKAN_USE_WAYLAND
+	#else
+		#define VK_USE_PLATFORM_XLIB_KHR
 
-class DeferredRenderDeviceD3D11 : public DeferredRenderDeviceBase, public IRenderDeviceD3D11
-{
-public:
-	~DeferredRenderDeviceD3D11(void);
+		#ifdef VULKAN_USE_XRANDR
+			#define VK_USE_PLATFORM_XLIB_XRANDR_EXT
+		#endif
+	#endif
+#elif defined(PLATFORM_MAC)
+	#define VULKAN_MODULE_NAME ".dylib"
+	#define VK_USE_PLATFORM_MACOS_MVK
+#endif
 
-	bool isDeferred(void) const;
-	RendererType getRendererType(void) const;
+#define VK_NO_PROTOTYPES
+#include <vulkan.h>
 
-	void executeCommandList(ICommandList* command_list);
-	bool finishCommandList(ICommandList* command_list);
-
-	//void resetRenderState(void) override;
-	void renderNoVertexInput(int32_t vert_count) override;
-
-	ID3D11DeviceContext* getDeviceContext(void) override;
-	ID3D11Device* getDevice(void) override;
-	IDXGIAdapter1* getAdapter(void) override;
-
-private:
-	Gaff::COMRefPtr<ID3D11DeviceContext> _context;
-
-	DeferredRenderDeviceD3D11(void);
-	friend class RenderDeviceD3D11;
-};
-
-NS_END
+#ifdef PLATFORM_WINDOWS
+	#define VULKAN_SURFACE_EXT VK_KHR_WIN32_SURFACE_EXTENSION_NAME
+#elif defined(PLATFORM_LINUX)
+	#define VULKAN_SURFACE_EXT VK_KHR_XLIB_SURFACE_EXTENSION_NAME
+	//#define VULKAN_SURFACE_EXT VK_EXT_ACQUIRE_XLIB_DISPLAY_EXTENSION_NAME
+#elif defined(PLATFORM_MAC)
+	#define VULKAN_SURFACE_EXT VK_MVK_MACOS_SURFACE_EXTENSION_NAME
+#endif

@@ -20,68 +20,68 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#include "Gleam_CommandList_Direct3D.h"
+#include "Gleam_CommandList_Direct3D11.h"
 #include <Gaff_Assert.h>
 
 NS_GLEAM
 
-CommandListD3D::CommandListD3D(const CommandListD3D& command_list):
+CommandListD3D11::CommandListD3D11(const CommandListD3D11& command_list):
 	_command_list(command_list._command_list)
 {
 }
 
-CommandListD3D::CommandListD3D(CommandListD3D&& command_list):
+CommandListD3D11::CommandListD3D11(CommandListD3D11&& command_list):
 	_command_list(std::move(command_list._command_list))
 {
 }
 
-CommandListD3D::CommandListD3D(void)
+CommandListD3D11::CommandListD3D11(void)
 {
 }
 
-CommandListD3D::~CommandListD3D(void)
+CommandListD3D11::~CommandListD3D11(void)
 {
 	SAFERELEASE(_command_list);
 }
 
-const ICommandList& CommandListD3D::operator=(const ICommandList& rhs)
+const ICommandList& CommandListD3D11::operator=(const ICommandList& rhs)
 {
-	GAFF_ASSERT(rhs.getRendererType() == RENDERER_DIRECT3D);
-	_command_list = reinterpret_cast<const CommandListD3D&>(rhs)._command_list;
+	GAFF_ASSERT(rhs.getRendererType() == RENDERER_DIRECT3D11);
+	_command_list = reinterpret_cast<const CommandListD3D11&>(rhs)._command_list;
 	return *this;
 }
 
-const ICommandList& CommandListD3D::operator=(ICommandList&& rhs)
+const ICommandList& CommandListD3D11::operator=(ICommandList&& rhs)
 {
-	GAFF_ASSERT(rhs.getRendererType() == RENDERER_DIRECT3D);
-	_command_list = std::move(reinterpret_cast<CommandListD3D&>(rhs)._command_list);
+	GAFF_ASSERT(rhs.getRendererType() == RENDERER_DIRECT3D11);
+	_command_list = std::move(reinterpret_cast<CommandListD3D11&>(rhs)._command_list);
 	return *this;
 }
 
-bool CommandListD3D::operator==(const ICommandList& rhs) const
+bool CommandListD3D11::operator==(const ICommandList& rhs) const
 {
-	GAFF_ASSERT(rhs.getRendererType() == RENDERER_DIRECT3D);
-	return _command_list == reinterpret_cast<const CommandListD3D&>(rhs)._command_list;
+	GAFF_ASSERT(rhs.getRendererType() == RENDERER_DIRECT3D11);
+	return _command_list == reinterpret_cast<const CommandListD3D11&>(rhs)._command_list;
 }
 
-bool CommandListD3D::operator!=(const ICommandList& rhs) const
+bool CommandListD3D11::operator!=(const ICommandList& rhs) const
 {
-	GAFF_ASSERT(rhs.getRendererType() == RENDERER_DIRECT3D);
-	return _command_list != reinterpret_cast<const CommandListD3D&>(rhs)._command_list;
+	GAFF_ASSERT(rhs.getRendererType() == RENDERER_DIRECT3D11);
+	return _command_list != reinterpret_cast<const CommandListD3D11&>(rhs)._command_list;
 }
 
-RendererType CommandListD3D::getRendererType(void) const
+RendererType CommandListD3D11::getRendererType(void) const
 {
-	return RENDERER_DIRECT3D;
+	return RENDERER_DIRECT3D11;
 }
 
-void CommandListD3D::setCommandList(ID3D11CommandList* command_list)
+void CommandListD3D11::setCommandList(ID3D11CommandList* command_list)
 {
 	SAFERELEASE(_command_list);
 	_command_list = command_list;
 }
 
-ID3D11CommandList* CommandListD3D::getCommandList(void)
+ID3D11CommandList* CommandListD3D11::getCommandList(void)
 {
 	return _command_list.get();
 }

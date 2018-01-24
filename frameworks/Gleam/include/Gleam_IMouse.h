@@ -29,11 +29,11 @@ NS_GLEAM
 
 struct MouseData
 {
-	int abs_x, abs_y;
-	int rel_x, rel_y;
-	int dx, dy;
+	int32_t abs_x, abs_y;
+	int32_t rel_x, rel_y;
+	int32_t dx, dy;
 	bool buttons[MOUSE_BUTTON_COUNT];
-	short wheel;
+	int32_t wheel;
 };
 
 class IMouse : public IInputDevice
@@ -43,16 +43,16 @@ public:
 	virtual ~IMouse(void) {}
 
 	virtual const MouseData& getMouseData(void) const = 0;
-	virtual void getAbsolutePosition(int& x, int& y) const = 0;
-	virtual void getRelativePosition(int& x, int& y) const = 0;
-	virtual void getDeltas(int& dx, int& dy) const = 0;
+	virtual void getAbsolutePosition(int32_t& x, int32_t& y) const = 0;
+	virtual void getRelativePosition(int32_t& x, int32_t& y) const = 0;
+	virtual void getDeltas(int32_t& dx, int32_t& dy) const = 0;
 	//virtual void getNormalizedAbsolutePosition(float& nx, float& ny) const = 0;
 	virtual void getNormalizedRelativePosition(float& nx, float& ny) const = 0;
 	virtual void getNormalizedDeltas(float& ndx, float& ndy) const = 0;
-	virtual short getWheelDelta(void) const = 0;
+	virtual int32_t getWheelDelta(void) const = 0;
 
-	bool isKeyboard(void) const { return false; }
-	bool isMouse(void) const { return true; }
+	bool isKeyboard(void) const override { return false; }
+	bool isMouse(void) const override { return true; }
 };
 
 NS_END

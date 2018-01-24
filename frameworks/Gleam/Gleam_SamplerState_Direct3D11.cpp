@@ -22,14 +22,14 @@ THE SOFTWARE.
 
 #if defined(_WIN32) || defined(_WIN64)
 
-#include "Gleam_SamplerState_Direct3D.h"
-#include "Gleam_IRenderDevice_Direct3D.h"
+#include "Gleam_SamplerState_Direct3D11.h"
+#include "Gleam_IRenderDevice_Direct3D11.h"
 #include "Gleam_IRenderDevice.h"
 #include "Gleam_IncludeD3D11.h"
 
 NS_GLEAM
 
-static D3D11_FILTER _filter_map[ISamplerState::FILTER_SIZE] = {
+static D3D11_FILTER g_filter_map[ISamplerState::FILTER_SIZE] = {
 	D3D11_FILTER_MIN_MAG_MIP_POINT,
 	D3D11_FILTER_MIN_MAG_POINT_MIP_LINEAR,
 	D3D11_FILTER_MIN_POINT_MAG_LINEAR_MIP_POINT,
@@ -41,26 +41,25 @@ static D3D11_FILTER _filter_map[ISamplerState::FILTER_SIZE] = {
 	D3D11_FILTER_ANISOTROPIC
 };
 
-SamplerStateD3D::SamplerStateD3D(void):
+SamplerStateD3D11::SamplerStateD3D11(void):
 	_sampler_state(nullptr)
 {
 }
 
-SamplerStateD3D::~SamplerStateD3D(void)
+SamplerStateD3D11::~SamplerStateD3D11(void)
 {
 	destroy();
 }
 
-bool SamplerStateD3D::init(
-	IRenderDevice& rd, FILTER filter,
-	WRAP wrap_u, WRAP wrap_v, WRAP wrap_w,
+bool SamplerStateD3D11::init(
+	IRenderDevice& rd, Filter filter,
+	Wrap wrap_u, Wrap wrap_v, Wrap wrap_w,
 	float min_lod, float max_lod, float lod_bias,
-	unsigned int max_anisotropy,
+	int32_t max_anisotropy,
 	//IRenderState::COMPARISON_FUNC compare_func,
-	float border_r, float border_g, float border_b, float border_a
-	)
+	float border_r, float border_g, float border_b, float border_a)
 {
-	GAFF_ASSERT(rd.getRendererType() == RENDERER_DIRECT3D && max_anisotropy <= 16);
+	GAFF_ASSERT(rd.getRendererType() == RENDERER_DIRECT3D11 && max_anisotropy <= 16);
 
 	D3D11_SAMPLER_DESC desc;
 	desc.AddressU = static_cast<D3D11_TEXTURE_ADDRESS_MODE>(wrap_u);
@@ -72,28 +71,28 @@ bool SamplerStateD3D::init(
 	desc.BorderColor[3] = border_a;
 	//desc.ComparisonFunc = (D3D11_COMPARISON_FUNC)compare_func;
 	desc.ComparisonFunc = D3D11_COMPARISON_NEVER;
-	desc.Filter = _filter_map[filter];
-	desc.MaxAnisotropy = max_anisotropy;
+	desc.Filter = g_filter_map[filter];
+	desc.MaxAnisotropy = static_cast<UINT>(max_anisotropy);
 	desc.MaxLOD = max_lod;
 	desc.MinLOD = min_lod;
 	desc.MipLODBias = lod_bias;
 
-	IRenderDeviceD3D& rd3d = reinterpret_cast<IRenderDeviceD3D&>(*(reinterpret_cast<char*>(&rd) + sizeof(IRenderDevice)));
-	HRESULT result = rd3d.getActiveDevice()->CreateSamplerState(&desc, &_sampler_state);
+	IRenderDeviceD3D11& rd3d = reinterpret_cast<IRenderDeviceD3D11&>(*(reinterpret_cast<char*>(&rd) + sizeof(IRenderDevice)));
+	HRESULT result = rd3d.getDevice()->CreateSamplerState(&desc, &_sampler_state);
 	return SUCCEEDED(result);
 }
 
-void SamplerStateD3D::destroy(void)
+void SamplerStateD3D11::destroy(void)
 {
 	SAFERELEASE(_sampler_state)
 }
 
-RendererType SamplerStateD3D::getRendererType(void) const
+RendererType SamplerStateD3D11::getRendererType(void) const
 {
-	return RENDERER_DIRECT3D;
+	return RENDERER_DIRECT3D11;
 }
 
-ID3D11SamplerState* SamplerStateD3D::getSamplerState(void) const
+ID3D11SamplerState* SamplerStateD3D11::getSamplerState(void) const
 {
 	return _sampler_state;
 }

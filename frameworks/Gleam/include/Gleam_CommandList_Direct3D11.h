@@ -28,13 +28,13 @@ THE SOFTWARE.
 
 NS_GLEAM
 
-class CommandListD3D : public ICommandList
+class CommandListD3D11 : public ICommandList
 {
 public:
-	CommandListD3D(const CommandListD3D& command_list);
-	CommandListD3D(CommandListD3D&& command_list);
-	CommandListD3D(void);
-	~CommandListD3D(void);
+	CommandListD3D11(const CommandListD3D11& command_list);
+	CommandListD3D11(CommandListD3D11&& command_list);
+	CommandListD3D11(void);
+	~CommandListD3D11(void);
 
 	const ICommandList& operator=(const ICommandList& rhs) override;
 	const ICommandList& operator=(ICommandList&& rhs) override;

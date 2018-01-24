@@ -28,17 +28,17 @@ THE SOFTWARE.
 
 NS_GLEAM
 
-BlendStateD3D::BlendStateD3D(void):
+BlendStateD3D11::BlendStateD3D11(void):
 	_blend_state(nullptr)
 {
 }
 
-BlendStateD3D::~BlendStateD3D(void)
+BlendStateD3D11::~BlendStateD3D11(void)
 {
 	destroy();
 }
 
-bool BlendStateD3D::init(IRenderDevice& rd, const BlendStateSettings& settings)
+bool BlendStateD3D11::init(IRenderDevice& rd, const BlendStateSettings& settings)
 {
 	GAFF_ASSERT(rd.getRendererType() == RENDERER_DIRECT3D11);
 
@@ -62,7 +62,7 @@ bool BlendStateD3D::init(IRenderDevice& rd, const BlendStateSettings& settings)
 	return SUCCEEDED(result);
 }
 
-bool BlendStateD3D::init(IRenderDevice& rd, const BlendStateSettings* settings)
+bool BlendStateD3D11::init(IRenderDevice& rd, const BlendStateSettings* settings)
 {
 	GAFF_ASSERT(rd.getRendererType() == RENDERER_DIRECT3D11);
 
@@ -88,12 +88,12 @@ bool BlendStateD3D::init(IRenderDevice& rd, const BlendStateSettings* settings)
 	return SUCCEEDED(result);
 }
 
-void BlendStateD3D::destroy(void)
+void BlendStateD3D11::destroy(void)
 {
 	SAFERELEASE(_blend_state);
 }
 
-void BlendStateD3D::set(IRenderDevice& rd) const
+void BlendStateD3D11::set(IRenderDevice& rd) const
 {
 	GAFF_ASSERT(rd.getRendererType() == RENDERER_DIRECT3D11);
 	IRenderDeviceD3D11& rd3d = reinterpret_cast<IRenderDeviceD3D11&>(*(reinterpret_cast<char*>(&rd) + sizeof(IRenderDevice)));
@@ -102,7 +102,7 @@ void BlendStateD3D::set(IRenderDevice& rd) const
 	context->OMSetBlendState(_blend_state, NULL, 0xFFFFFFFF);
 }
 
-void BlendStateD3D::unset(IRenderDevice& rd) const
+void BlendStateD3D11::unset(IRenderDevice& rd) const
 {
 	GAFF_ASSERT(rd.getRendererType() == RENDERER_DIRECT3D11);
 	IRenderDeviceD3D11& rd3d = reinterpret_cast<IRenderDeviceD3D11&>(*(reinterpret_cast<char*>(&rd) + sizeof(IRenderDevice)));
@@ -111,7 +111,7 @@ void BlendStateD3D::unset(IRenderDevice& rd) const
 	context->OMSetBlendState(NULL, NULL, 0xFFFFFFFF);
 }
 
-RendererType BlendStateD3D::getRendererType(void) const
+RendererType BlendStateD3D11::getRendererType(void) const
 {
 	return RENDERER_DIRECT3D11;
 }

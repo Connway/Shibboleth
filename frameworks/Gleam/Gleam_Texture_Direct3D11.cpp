@@ -157,12 +157,12 @@ static int32_t _format_size[ITexture::FORMAT_SIZE] = {
 	8
 };
 
-DXGI_FORMAT TextureD3D::GetD3DFormat(Format format)
+DXGI_FORMAT TextureD3D11::GetD3DFormat(Format format)
 {
 	return _format_map[format];
 }
 
-DXGI_FORMAT TextureD3D::GetTypedFormat(Format format)
+DXGI_FORMAT TextureD3D11::GetTypedFormat(Format format)
 {
 	DXGI_FORMAT typed_format;
 
@@ -192,17 +192,17 @@ DXGI_FORMAT TextureD3D::GetTypedFormat(Format format)
 }
 
 
-TextureD3D::TextureD3D(void):
+TextureD3D11::TextureD3D11(void):
 	_depth_stencil_view(nullptr), _texture(nullptr)
 {
 }
 
-TextureD3D::~TextureD3D(void)
+TextureD3D11::~TextureD3D11(void)
 {
 	destroy();
 }
 
-void TextureD3D::destroy(void)
+void TextureD3D11::destroy(void)
 {
 	if (_texture) {
 		switch (_type) {
@@ -227,7 +227,7 @@ void TextureD3D::destroy(void)
 	}
 }
 
-bool TextureD3D::init3D(IRenderDevice& rd, int32_t width, int32_t height, int32_t depth, Format format, int32_t mip_levels, const void* buffer)
+bool TextureD3D11::init3D(IRenderDevice& rd, int32_t width, int32_t height, int32_t depth, Format format, int32_t mip_levels, const void* buffer)
 {
 	GAFF_ASSERT(width > 0 && height > 0 && depth > 0 && mip_levels > 0);
 	GAFF_ASSERT(rd.getRendererType() == RENDERER_DIRECT3D11);
@@ -272,7 +272,7 @@ bool TextureD3D::init3D(IRenderDevice& rd, int32_t width, int32_t height, int32_
 	return SUCCEEDED(result);
 }
 
-bool TextureD3D::init2D(IRenderDevice& rd, int32_t width, int32_t height, Format format, int32_t mip_levels, const void* buffer)
+bool TextureD3D11::init2D(IRenderDevice& rd, int32_t width, int32_t height, Format format, int32_t mip_levels, const void* buffer)
 {
 	GAFF_ASSERT(width > 0 && height > 0 && mip_levels > 0);
 	GAFF_ASSERT(rd.getRendererType() == RENDERER_DIRECT3D11);
@@ -319,7 +319,7 @@ bool TextureD3D::init2D(IRenderDevice& rd, int32_t width, int32_t height, Format
 	return SUCCEEDED(result);
 }
 
-bool TextureD3D::init1D(IRenderDevice& rd, int32_t width, Format format, int32_t mip_levels, const void* buffer)
+bool TextureD3D11::init1D(IRenderDevice& rd, int32_t width, Format format, int32_t mip_levels, const void* buffer)
 {
 	GAFF_ASSERT(width > 0 && mip_levels > 0);
 	GAFF_ASSERT(rd.getRendererType() == RENDERER_DIRECT3D11);
@@ -363,7 +363,7 @@ bool TextureD3D::init1D(IRenderDevice& rd, int32_t width, Format format, int32_t
 	return SUCCEEDED(result);
 }
 
-bool TextureD3D::initCubemap(IRenderDevice& rd, int32_t width, int32_t height, Format format, int32_t mip_levels, const void* buffer)
+bool TextureD3D11::initCubemap(IRenderDevice& rd, int32_t width, int32_t height, Format format, int32_t mip_levels, const void* buffer)
 {
 	GAFF_ASSERT(width > 0 && height > 0 && mip_levels > 0);
 	GAFF_ASSERT(rd.getRendererType() == RENDERER_DIRECT3D11);
@@ -410,7 +410,7 @@ bool TextureD3D::initCubemap(IRenderDevice& rd, int32_t width, int32_t height, F
 	return SUCCEEDED(result);
 }
 
-bool TextureD3D::initDepthStencil(IRenderDevice& rd, int32_t width, int32_t height, Format format)
+bool TextureD3D11::initDepthStencil(IRenderDevice& rd, int32_t width, int32_t height, Format format)
 {
 	GAFF_ASSERT(width > 0 && height > 0);
 	GAFF_ASSERT(rd.getRendererType() == RENDERER_DIRECT3D11);
@@ -484,32 +484,32 @@ bool TextureD3D::initDepthStencil(IRenderDevice& rd, int32_t width, int32_t heig
 	return true;
 }
 
-RendererType TextureD3D::getRendererType(void) const
+RendererType TextureD3D11::getRendererType(void) const
 {
 	return RENDERER_DIRECT3D11;
 }
 
-ID3D11DepthStencilView* TextureD3D::getDepthStencilView(void) const
+ID3D11DepthStencilView* TextureD3D11::getDepthStencilView(void) const
 {
 	return _depth_stencil_view;
 }
 
-void* TextureD3D::getTexture(void) const
+void* TextureD3D11::getTexture(void) const
 {
 	return _texture;
 }
 
-ID3D11Texture1D* TextureD3D::getTexture1D(void) const
+ID3D11Texture1D* TextureD3D11::getTexture1D(void) const
 {
 	return _texture_1d;
 }
 
-ID3D11Texture2D* TextureD3D::getTexture2D(void) const
+ID3D11Texture2D* TextureD3D11::getTexture2D(void) const
 {
 	return _texture_2d;
 }
 
-ID3D11Texture3D* TextureD3D::getTexture3D(void) const
+ID3D11Texture3D* TextureD3D11::getTexture3D(void) const
 {
 	return _texture_3d;
 }

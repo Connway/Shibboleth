@@ -63,7 +63,6 @@ THE SOFTWARE.
 
 #define UFAIL(type) static_cast<type>(-1)
 #define SIZE_T_FAIL UFAIL(size_t) // Returned from functions that use size_t's, but can potentially fail
-#define UINT_FAIL static_cast<unsigned int>(-1)  // Returned from functions that use unsigned int's, but can potentially fail
 #define DYNAMICEXPORT_C extern "C" DYNAMICEXPORT // Exports a function with C-style symbol names.
 
 #define GAFF_STR_HELPER(x) #x

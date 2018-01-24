@@ -28,11 +28,11 @@ THE SOFTWARE.
 
 NS_GLEAM
 
-class TextureD3D : public ITexture
+class TextureD3D11 : public ITexture
 {
 public:
-	TextureD3D(void);
-	~TextureD3D(void);
+	TextureD3D11(void);
+	~TextureD3D11(void);
 
 	void destroy(void) override;
 
@@ -65,7 +65,7 @@ private:
 		ID3D11Texture3D* _texture_3d;
 	};
 
-	GLEAM_REF_COUNTED(TextureD3D);
+	GLEAM_REF_COUNTED(TextureD3D11);
 };
 
 NS_END

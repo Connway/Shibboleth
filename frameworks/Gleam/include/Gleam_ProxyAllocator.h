@@ -39,6 +39,11 @@ public:
 	{
 	}
 
+	bool operator==(const ProxyAllocator& rhs) const
+	{
+		return _name == rhs._name;
+	}
+
 	void* alloc(size_t size_bytes, size_t alignment, const char* file, int line) override
 	{
 		return GetAllocator()->alloc(size_bytes, alignment, file, line);

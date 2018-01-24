@@ -29,11 +29,11 @@ struct ID3D11DepthStencilState;
 
 NS_GLEAM
 
-class DepthStencilStateD3D : public IDepthStencilState
+class DepthStencilStateD3D11 : public IDepthStencilState
 {
 public:
-	DepthStencilStateD3D(void);
-	~DepthStencilStateD3D(void);
+	DepthStencilStateD3D11(void);
+	~DepthStencilStateD3D11(void);
 
 	bool init(IRenderDevice& rd, const DepthStencilStateSettings& settings) override;
 	void destroy(void) override;
@@ -47,7 +47,7 @@ private:
 	ID3D11DepthStencilState* _depth_stencil_state;
 	unsigned int _stencil_ref;
 
-	GLEAM_REF_COUNTED(DepthStencilStateD3D);
+	GLEAM_REF_COUNTED(DepthStencilStateD3D11);
 };
 
 NS_END

@@ -22,16 +22,16 @@ THE SOFTWARE.
 
 #if defined(_WIN32) || defined(_WIN64)
 
-#include "Gleam_ShaderResourceView_Direct3D.h"
-#include "Gleam_IRenderDevice_Direct3D.h"
-#include "Gleam_Texture_Direct3D.h"
-#include "Gleam_Buffer_Direct3D.h"
+#include "Gleam_ShaderResourceView_Direct3D11.h"
+#include "Gleam_IRenderDevice_Direct3D11.h"
+#include "Gleam_Texture_Direct3D11.h"
+#include "Gleam_Buffer_Direct3D11.h"
 #include "Gleam_IRenderDevice.h"
 #include "Gleam_IncludeD3D11.h"
 
 NS_GLEAM
 
-static D3D11_SRV_DIMENSION _dimension_map[ITexture::TYPE_SIZE] = {
+static D3D11_SRV_DIMENSION g_dimension_map[ITexture::TYPE_SIZE] = {
 	D3D11_SRV_DIMENSION_TEXTURE1D,
 	D3D11_SRV_DIMENSION_TEXTURE2D,
 	D3D11_SRV_DIMENSION_TEXTURE3D,
@@ -40,42 +40,42 @@ static D3D11_SRV_DIMENSION _dimension_map[ITexture::TYPE_SIZE] = {
 	D3D11_SRV_DIMENSION_TEXTURE2D
 };
 
-ShaderResourceViewD3D::ShaderResourceViewD3D(void):
+ShaderResourceViewD3D11::ShaderResourceViewD3D11(void):
 	_resource_view(nullptr)
 {
 
 }
 
-ShaderResourceViewD3D::~ShaderResourceViewD3D(void)
+ShaderResourceViewD3D11::~ShaderResourceViewD3D11(void)
 {
 	destroy();
 }
 
-bool ShaderResourceViewD3D::init(IRenderDevice& rd, const ITexture* texture)
+bool ShaderResourceViewD3D11::init(IRenderDevice& rd, const ITexture* texture)
 {
-	IRenderDeviceD3D& rd3d = reinterpret_cast<IRenderDeviceD3D&>(*(reinterpret_cast<char*>(&rd) + sizeof(IRenderDevice)));
-	ID3D11Device* device = rd3d.getActiveDevice();
+	IRenderDeviceD3D11& rd3d = reinterpret_cast<IRenderDeviceD3D11&>(*(reinterpret_cast<char*>(&rd) + sizeof(IRenderDevice)));
+	ID3D11Device* device = rd3d.getDevice();
 	GAFF_ASSERT(texture);
 
 	_view_type = VIEW_TEXTURE;
 
 	D3D11_SHADER_RESOURCE_VIEW_DESC shader_desc;
-	shader_desc.Format = TextureD3D::GetTypedFormat(texture->getFormat());
-	shader_desc.ViewDimension = _dimension_map[texture->getType()];
+	shader_desc.Format = TextureD3D11::GetTypedFormat(texture->getFormat());
+	shader_desc.ViewDimension = g_dimension_map[texture->getType()];
 	// the union will set this for all texture types
 	shader_desc.Texture2D.MostDetailedMip = 0;
 	shader_desc.Texture2D.MipLevels = texture->getMipLevels();
 
-	ID3D11Resource* resource = reinterpret_cast<ID3D11Resource*>(reinterpret_cast<const TextureD3D*>(texture)->getTexture());
+	ID3D11Resource* resource = reinterpret_cast<ID3D11Resource*>(reinterpret_cast<const TextureD3D11*>(texture)->getTexture());
 
 	HRESULT result = device->CreateShaderResourceView(resource, &shader_desc, &_resource_view);
 	return SUCCEEDED(result);
 }
 
-bool ShaderResourceViewD3D::init(IRenderDevice& rd, const IBuffer* buffer)
+bool ShaderResourceViewD3D11::init(IRenderDevice& rd, const IBuffer* buffer)
 {
-	IRenderDeviceD3D& rd3d = reinterpret_cast<IRenderDeviceD3D&>(*(reinterpret_cast<char*>(&rd) + sizeof(IRenderDevice)));
-	ID3D11Device* device = rd3d.getActiveDevice();
+	IRenderDeviceD3D11& rd3d = reinterpret_cast<IRenderDeviceD3D11&>(*(reinterpret_cast<char*>(&rd) + sizeof(IRenderDevice)));
+	ID3D11Device* device = rd3d.getDevice();
 	GAFF_ASSERT(buffer);
 
 	_view_type = VIEW_TEXTURE;
@@ -84,26 +84,26 @@ bool ShaderResourceViewD3D::init(IRenderDevice& rd, const IBuffer* buffer)
 	shader_desc.Format = DXGI_FORMAT_UNKNOWN;
 	shader_desc.ViewDimension = D3D11_SRV_DIMENSION_BUFFER;
 	// the union will set this for all texture types
-	shader_desc.Buffer.NumElements = buffer->getSize() / buffer->getStructuredByteStride();
+	shader_desc.Buffer.NumElements = static_cast<UINT>(static_cast<int32_t>(buffer->getSize()) / buffer->getStructuredByteStride());
 	shader_desc.Buffer.FirstElement = 0;
 
-	ID3D11Resource* resource = reinterpret_cast<const BufferD3D*>(buffer)->getBuffer();
+	ID3D11Resource* resource = reinterpret_cast<const BufferD3D11*>(buffer)->getBuffer();
 
 	HRESULT result = device->CreateShaderResourceView(resource, &shader_desc, &_resource_view);
 	return SUCCEEDED(result);
 }
 
-void ShaderResourceViewD3D::destroy(void)
+void ShaderResourceViewD3D11::destroy(void)
 {
 	SAFERELEASE(_resource_view)
 }
 
-RendererType ShaderResourceViewD3D::getRendererType(void) const
+RendererType ShaderResourceViewD3D11::getRendererType(void) const
 {
-	return RENDERER_DIRECT3D;
+	return RENDERER_DIRECT3D11;
 }
 
-ID3D11ShaderResourceView* ShaderResourceViewD3D::getResourceView(void) const
+ID3D11ShaderResourceView* ShaderResourceViewD3D11::getResourceView(void) const
 {
 	return _resource_view;
 }

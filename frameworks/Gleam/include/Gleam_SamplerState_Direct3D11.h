@@ -29,17 +29,17 @@ struct ID3D11SamplerState;
 
 NS_GLEAM
 
-class SamplerStateD3D : public ISamplerState
+class SamplerStateD3D11 : public ISamplerState
 {
 public:
-	SamplerStateD3D(void);
-	~SamplerStateD3D(void);
+	SamplerStateD3D11(void);
+	~SamplerStateD3D11(void);
 
 	bool init(
-		IRenderDevice& rd, FILTER filter,
-		WRAP wrap_u, WRAP wrap_v, WRAP wrap_w,
+		IRenderDevice& rd, Filter filter,
+		Wrap wrap_u, Wrap wrap_v, Wrap wrap_w,
 		float min_lod, float max_lod, float lod_bias,
-		unsigned int max_anisotropy,
+		int32_t max_anisotropy,
 		//IRenderState::COMPARISON_FUNC compare_func,
 		float border_r, float border_g, float border_b, float border_a
 	);
@@ -53,7 +53,7 @@ public:
 private:
 	ID3D11SamplerState* _sampler_state;
 
-	GLEAM_REF_COUNTED(SamplerStateD3D);
+	GLEAM_REF_COUNTED(SamplerStateD3D11);
 };
 
 NS_END
