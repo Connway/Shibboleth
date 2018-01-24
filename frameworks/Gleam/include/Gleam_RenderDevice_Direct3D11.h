@@ -68,17 +68,13 @@ private:
 		int32_t memory;
 	};
 
-	struct Device
-	{
-		Gaff::COMRefPtr<ID3D11DeviceContext> context;
-		Gaff::COMRefPtr<ID3D11Device> device;
-		Gaff::COMRefPtr<IDXGIAdapter1> adapter;
-
-		int32_t adapter_id;
-	};
-
 	static Vector<AdapterInfo> g_display_info;
-	Device _device;
+
+	Gaff::COMRefPtr<ID3D11DeviceContext> _context;
+	Gaff::COMRefPtr<ID3D11Device> _device;
+	Gaff::COMRefPtr<IDXGIAdapter1> _adapter;
+
+	bool _is_deferred = false;
 
 	friend class RenderOutputD3D11;
 

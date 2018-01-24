@@ -22,40 +22,28 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Gleam_RefCounted.h"
-#include "Gleam_ILayout.h"
-#include "Gleam_Array.h"
+#include "Gleam_VulkanWrangler.h"
+#include <Gaff_DynamicModule.h>
 
-NS_GLEAM
+VULKAN_IMPL;
+VULKAN_IMPL_EXT;
+VULKAN_IMPL_OS;
 
-class LayoutGL : public ILayout
+namespace Gleam
 {
-public:
-	struct LayoutData
+	bool WrangleVulkanFunctions(Gaff::DynamicModule& mod)
 	{
-		unsigned int aligned_byte_offset;
-		int size;
-		unsigned int type;
-		bool normalized;
-	};
+		VULKAN_IMPORT(mod);
+		VULKAN_IMPORT_EXT(mod);
+		VULKAN_IMPORT_OS(mod);
 
-	LayoutGL(void);
-	~LayoutGL(void);
+		bool success = true;
+		VULKAN_SUCCESS(success);
+		VULKAN_SUCCESS_OS(success);
 
-	bool init(IRenderDevice&, const LayoutDescription* layout_desc, size_t layout_desc_size, const IShader*) override;
-	void destroy(void) override;
+		bool ext_success = true;
+		VULKAN_SUCCESS_EXT(ext_success);
 
-	void setLayout(IRenderDevice& rd, const IMesh* mesh) override;
-	void unsetLayout(IRenderDevice& rd) override;
-
-	RendererType getRendererType(void) const override;
-
-	const GleamArray< GleamArray<LayoutData> >& GetLayoutDescriptors(void) const;
-
-private:
-	GleamArray< GleamArray<LayoutData> > _layout_descs;
-
-	GLEAM_REF_COUNTED(LayoutGL);
-};
-
-NS_END
+		return success;
+	}
+}

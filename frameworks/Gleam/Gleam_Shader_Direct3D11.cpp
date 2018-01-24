@@ -22,8 +22,8 @@ THE SOFTWARE.
 
 #if defined(_WIN32) || defined(_WIN64)
 
-#include "Gleam_Shader_Direct3D.h"
-#include "Gleam_IRenderDevice_Direct3D.h"
+#include "Gleam_Shader_Direct3D11.h"
+#include "Gleam_IRenderDevice_Direct3D11.h"
 #include "Gleam_IRenderDevice.h"
 #include "Gleam_String.h"
 #include <d3dcompiler.h>
@@ -37,57 +37,57 @@ THE SOFTWARE.
 
 NS_GLEAM
 
-typedef bool (ShaderD3D::*ShaderInitFunc)(IRenderDevice&, const char*);
-static ShaderInitFunc init_funcs[IShader::SHADER_TYPE_SIZE] = {
-	&ShaderD3D::initVertex,
-	&ShaderD3D::initPixel,
-	&ShaderD3D::initDomain,
-	&ShaderD3D::initGeometry,
-	&ShaderD3D::initHull,
-	&ShaderD3D::initCompute
+typedef bool (ShaderD3D11::*ShaderInitFunc)(IRenderDevice&, const char*);
+static ShaderInitFunc g_init_funcs[IShader::SHADER_TYPE_SIZE] = {
+	&ShaderD3D11::initVertex,
+	&ShaderD3D11::initPixel,
+	&ShaderD3D11::initDomain,
+	&ShaderD3D11::initGeometry,
+	&ShaderD3D11::initHull,
+	&ShaderD3D11::initCompute
 };
 
-typedef bool (ShaderD3D::*ShaderInitSourceFunc)(IRenderDevice&, const char*, size_t);
-static ShaderInitSourceFunc source_init_funcs[IShader::SHADER_TYPE_SIZE] = {
-	&ShaderD3D::initVertexSource,
-	&ShaderD3D::initPixelSource,
-	&ShaderD3D::initDomainSource,
-	&ShaderD3D::initGeometrySource,
-	&ShaderD3D::initHullSource,
-	&ShaderD3D::initComputeSource
+typedef bool (ShaderD3D11::*ShaderInitSourceFunc)(IRenderDevice&, const char*, size_t);
+static ShaderInitSourceFunc g_source_init_funcs[IShader::SHADER_TYPE_SIZE] = {
+	&ShaderD3D11::initVertexSource,
+	&ShaderD3D11::initPixelSource,
+	&ShaderD3D11::initDomainSource,
+	&ShaderD3D11::initGeometrySource,
+	&ShaderD3D11::initHullSource,
+	&ShaderD3D11::initComputeSource
 };
 
-ShaderD3D::ShaderD3D(void):
+ShaderD3D11::ShaderD3D11(void):
 	_shader(nullptr), _shader_buffer(nullptr)
 {
 }
 
-ShaderD3D::~ShaderD3D(void)
+ShaderD3D11::~ShaderD3D11(void)
 {
 	destroy();
 }
 
-bool ShaderD3D::initSource(IRenderDevice& rd, const char* shader_source, size_t source_size, SHADER_TYPE shader_type)
+bool ShaderD3D11::initSource(IRenderDevice& rd, const char* shader_source, size_t source_size, ShaderType shader_type)
 {
 	GAFF_ASSERT(shader_type < SHADER_TYPE_SIZE);
-	return (this->*source_init_funcs[shader_type])(rd, shader_source, source_size);
+	return (this->*g_source_init_funcs[shader_type])(rd, shader_source, source_size);
 }
 
-bool ShaderD3D::initSource(IRenderDevice& rd, const char* shader_source, SHADER_TYPE shader_type)
+bool ShaderD3D11::initSource(IRenderDevice& rd, const char* shader_source, ShaderType shader_type)
 {
 	GAFF_ASSERT(shader_type < SHADER_TYPE_SIZE);
-	return (this->*source_init_funcs[shader_type])(rd, shader_source, strlen(shader_source));
+	return (this->*g_source_init_funcs[shader_type])(rd, shader_source, strlen(shader_source));
 }
 
-bool ShaderD3D::init(IRenderDevice& rd, const char* file_path, SHADER_TYPE shader_type)
+bool ShaderD3D11::init(IRenderDevice& rd, const char* file_path, ShaderType shader_type)
 {
 	GAFF_ASSERT(shader_type < SHADER_TYPE_SIZE);
-	return (this->*init_funcs[shader_type])(rd, file_path);
+	return (this->*g_init_funcs[shader_type])(rd, file_path);
 }
 
-bool ShaderD3D::initVertex(IRenderDevice& rd, const char* file_path)
+bool ShaderD3D11::initVertex(IRenderDevice& rd, const char* file_path)
 {
-	GAFF_ASSERT(rd.getRendererType() == RENDERER_DIRECT3D && file_path);
+	GAFF_ASSERT(rd.getRendererType() == RENDERER_DIRECT3D11 && file_path);
 
 	char* shader_src = nullptr;
 	SIZE_T shader_size = 0;
@@ -104,9 +104,9 @@ bool ShaderD3D::initVertex(IRenderDevice& rd, const char* file_path)
 		return false;
 	}
 
-	IRenderDeviceD3D& rd3d = reinterpret_cast<IRenderDeviceD3D&>(*(reinterpret_cast<char*>(&rd) + sizeof(IRenderDevice)));
+	IRenderDeviceD3D11& rd3d = reinterpret_cast<IRenderDeviceD3D11&>(*(reinterpret_cast<char*>(&rd) + sizeof(IRenderDevice)));
 
-	ID3D11Device* device = rd3d.getActiveDevice();
+	ID3D11Device* device = rd3d.getDevice();
 	HRESULT result = device->CreateVertexShader(_shader_buffer->GetBufferPointer(), _shader_buffer->GetBufferSize(), NULL, &_shader_vertex);
 
 	_type = SHADER_VERTEX;
@@ -114,9 +114,9 @@ bool ShaderD3D::initVertex(IRenderDevice& rd, const char* file_path)
 	return SUCCEEDED(result);
 }
 
-bool ShaderD3D::initPixel(IRenderDevice& rd, const char* file_path)
+bool ShaderD3D11::initPixel(IRenderDevice& rd, const char* file_path)
 {
-	GAFF_ASSERT(rd.getRendererType() == RENDERER_DIRECT3D && file_path);
+	GAFF_ASSERT(rd.getRendererType() == RENDERER_DIRECT3D11 && file_path);
 
 	char* shader_src = nullptr;
 	SIZE_T shader_size = 0;
@@ -133,9 +133,9 @@ bool ShaderD3D::initPixel(IRenderDevice& rd, const char* file_path)
 		return false;
 	}
 
-	IRenderDeviceD3D& rd3d = reinterpret_cast<IRenderDeviceD3D&>(*(reinterpret_cast<char*>(&rd) + sizeof(IRenderDevice)));
+	IRenderDeviceD3D11& rd3d = reinterpret_cast<IRenderDeviceD3D11&>(*(reinterpret_cast<char*>(&rd) + sizeof(IRenderDevice)));
 
-	ID3D11Device* device = rd3d.getActiveDevice();
+	ID3D11Device* device = rd3d.getDevice();
 	HRESULT result = device->CreatePixelShader(_shader_buffer->GetBufferPointer(), _shader_buffer->GetBufferSize(), NULL, &_shader_pixel);
 
 	_type = SHADER_PIXEL;
@@ -143,9 +143,9 @@ bool ShaderD3D::initPixel(IRenderDevice& rd, const char* file_path)
 	return SUCCEEDED(result);
 }
 
-bool ShaderD3D::initDomain(IRenderDevice& rd, const char* file_path)
+bool ShaderD3D11::initDomain(IRenderDevice& rd, const char* file_path)
 {
-	GAFF_ASSERT(rd.getRendererType() == RENDERER_DIRECT3D && file_path);
+	GAFF_ASSERT(rd.getRendererType() == RENDERER_DIRECT3D11 && file_path);
 
 	char* shader_src = nullptr;
 	SIZE_T shader_size = 0;
@@ -162,9 +162,9 @@ bool ShaderD3D::initDomain(IRenderDevice& rd, const char* file_path)
 		return false;
 	}
 
-	IRenderDeviceD3D& rd3d = reinterpret_cast<IRenderDeviceD3D&>(*(reinterpret_cast<char*>(&rd) + sizeof(IRenderDevice)));
+	IRenderDeviceD3D11& rd3d = reinterpret_cast<IRenderDeviceD3D11&>(*(reinterpret_cast<char*>(&rd) + sizeof(IRenderDevice)));
 
-	ID3D11Device* device = rd3d.getActiveDevice();
+	ID3D11Device* device = rd3d.getDevice();
 	HRESULT result = device->CreateDomainShader(_shader_buffer->GetBufferPointer(), _shader_buffer->GetBufferSize(), NULL, &_shader_domain);
 
 	_type = SHADER_DOMAIN;
@@ -172,9 +172,9 @@ bool ShaderD3D::initDomain(IRenderDevice& rd, const char* file_path)
 	return SUCCEEDED(result);
 }
 
-bool ShaderD3D::initGeometry(IRenderDevice& rd, const char* file_path)
+bool ShaderD3D11::initGeometry(IRenderDevice& rd, const char* file_path)
 {
-	GAFF_ASSERT(rd.getRendererType() == RENDERER_DIRECT3D && file_path);
+	GAFF_ASSERT(rd.getRendererType() == RENDERER_DIRECT3D11 && file_path);
 
 	char* shader_src = nullptr;
 	SIZE_T shader_size = 0;
@@ -191,9 +191,9 @@ bool ShaderD3D::initGeometry(IRenderDevice& rd, const char* file_path)
 		return false;
 	}
 
-	IRenderDeviceD3D& rd3d = reinterpret_cast<IRenderDeviceD3D&>(*(reinterpret_cast<char*>(&rd) + sizeof(IRenderDevice)));
+	IRenderDeviceD3D11& rd3d = reinterpret_cast<IRenderDeviceD3D11&>(*(reinterpret_cast<char*>(&rd) + sizeof(IRenderDevice)));
 
-	ID3D11Device* device = rd3d.getActiveDevice();
+	ID3D11Device* device = rd3d.getDevice();
 	HRESULT result = device->CreateGeometryShader(_shader_buffer->GetBufferPointer(), _shader_buffer->GetBufferSize(), NULL, &_shader_geometry);
 
 	_type = SHADER_GEOMETRY;
@@ -201,9 +201,9 @@ bool ShaderD3D::initGeometry(IRenderDevice& rd, const char* file_path)
 	return SUCCEEDED(result);
 }
 
-bool ShaderD3D::initHull(IRenderDevice& rd, const char* file_path)
+bool ShaderD3D11::initHull(IRenderDevice& rd, const char* file_path)
 {
-	GAFF_ASSERT(rd.getRendererType() == RENDERER_DIRECT3D && file_path);
+	GAFF_ASSERT(rd.getRendererType() == RENDERER_DIRECT3D11 && file_path);
 
 	char* shader_src = nullptr;
 	SIZE_T shader_size = 0;
@@ -220,9 +220,9 @@ bool ShaderD3D::initHull(IRenderDevice& rd, const char* file_path)
 		return false;
 	}
 
-	IRenderDeviceD3D& rd3d = reinterpret_cast<IRenderDeviceD3D&>(*(reinterpret_cast<char*>(&rd) + sizeof(IRenderDevice)));
+	IRenderDeviceD3D11& rd3d = reinterpret_cast<IRenderDeviceD3D11&>(*(reinterpret_cast<char*>(&rd) + sizeof(IRenderDevice)));
 
-	ID3D11Device* device = rd3d.getActiveDevice();
+	ID3D11Device* device = rd3d.getDevice();
 	HRESULT result = device->CreateHullShader(_shader_buffer->GetBufferPointer(), _shader_buffer->GetBufferSize(), NULL, &_shader_hull);
 
 	_type = SHADER_HULL;
@@ -230,9 +230,9 @@ bool ShaderD3D::initHull(IRenderDevice& rd, const char* file_path)
 	return SUCCEEDED(result);
 }
 
-bool ShaderD3D::initCompute(IRenderDevice& rd, const char* file_path)
+bool ShaderD3D11::initCompute(IRenderDevice& rd, const char* file_path)
 {
-	GAFF_ASSERT(rd.getRendererType() == RENDERER_DIRECT3D && file_path);
+	GAFF_ASSERT(rd.getRendererType() == RENDERER_DIRECT3D11 && file_path);
 
 	char* shader_src = nullptr;
 	SIZE_T shader_size = 0;
@@ -248,9 +248,9 @@ bool ShaderD3D::initCompute(IRenderDevice& rd, const char* file_path)
 		return false;
 	}
 
-	IRenderDeviceD3D& rd3d = reinterpret_cast<IRenderDeviceD3D&>(*(reinterpret_cast<char*>(&rd) + sizeof(IRenderDevice)));
+	IRenderDeviceD3D11& rd3d = reinterpret_cast<IRenderDeviceD3D11&>(*(reinterpret_cast<char*>(&rd) + sizeof(IRenderDevice)));
 
-	ID3D11Device* device = rd3d.getActiveDevice();
+	ID3D11Device* device = rd3d.getDevice();
 	HRESULT result = device->CreateComputeShader(_shader_buffer->GetBufferPointer(), _shader_buffer->GetBufferSize(), NULL, &_shader_compute);
 
 	_type = SHADER_COMPUTE;
@@ -258,9 +258,9 @@ bool ShaderD3D::initCompute(IRenderDevice& rd, const char* file_path)
 	return SUCCEEDED(result);
 }
 
-bool ShaderD3D::initVertexSource(IRenderDevice& rd, const char* source, size_t source_size)
+bool ShaderD3D11::initVertexSource(IRenderDevice& rd, const char* source, size_t source_size)
 {
-	GAFF_ASSERT(rd.getRendererType() == RENDERER_DIRECT3D && source);
+	GAFF_ASSERT(rd.getRendererType() == RENDERER_DIRECT3D11 && source);
 
 	_shader_buffer = compileShader(source, source_size, "VertexMain", "vs_5_0");
 
@@ -268,9 +268,9 @@ bool ShaderD3D::initVertexSource(IRenderDevice& rd, const char* source, size_t s
 		return false;
 	}
 
-	IRenderDeviceD3D& rd3d = reinterpret_cast<IRenderDeviceD3D&>(*(reinterpret_cast<char*>(&rd) + sizeof(IRenderDevice)));
+	IRenderDeviceD3D11& rd3d = reinterpret_cast<IRenderDeviceD3D11&>(*(reinterpret_cast<char*>(&rd) + sizeof(IRenderDevice)));
 
-	ID3D11Device* device = rd3d.getActiveDevice();
+	ID3D11Device* device = rd3d.getDevice();
 	HRESULT result = device->CreateVertexShader(_shader_buffer->GetBufferPointer(), _shader_buffer->GetBufferSize(), NULL, &_shader_vertex);
 
 	_type = SHADER_VERTEX;
@@ -278,9 +278,9 @@ bool ShaderD3D::initVertexSource(IRenderDevice& rd, const char* source, size_t s
 	return SUCCEEDED(result);
 }
 
-bool ShaderD3D::initPixelSource(IRenderDevice& rd, const char* source, size_t source_size)
+bool ShaderD3D11::initPixelSource(IRenderDevice& rd, const char* source, size_t source_size)
 {
-	GAFF_ASSERT(rd.getRendererType() == RENDERER_DIRECT3D && source);
+	GAFF_ASSERT(rd.getRendererType() == RENDERER_DIRECT3D11 && source);
 
 	_shader_buffer = compileShader(source, source_size, "PixelMain", "ps_5_0");
 
@@ -288,9 +288,9 @@ bool ShaderD3D::initPixelSource(IRenderDevice& rd, const char* source, size_t so
 		return false;
 	}
 
-	IRenderDeviceD3D& rd3d = reinterpret_cast<IRenderDeviceD3D&>(*(reinterpret_cast<char*>(&rd) + sizeof(IRenderDevice)));
+	IRenderDeviceD3D11& rd3d = reinterpret_cast<IRenderDeviceD3D11&>(*(reinterpret_cast<char*>(&rd) + sizeof(IRenderDevice)));
 
-	ID3D11Device* device = rd3d.getActiveDevice();
+	ID3D11Device* device = rd3d.getDevice();
 	HRESULT result = device->CreatePixelShader(_shader_buffer->GetBufferPointer(), _shader_buffer->GetBufferSize(), NULL, &_shader_pixel);
 
 	_type = SHADER_PIXEL;
@@ -298,9 +298,9 @@ bool ShaderD3D::initPixelSource(IRenderDevice& rd, const char* source, size_t so
 	return SUCCEEDED(result);
 }
 
-bool ShaderD3D::initDomainSource(IRenderDevice& rd, const char* source, size_t source_size)
+bool ShaderD3D11::initDomainSource(IRenderDevice& rd, const char* source, size_t source_size)
 {
-	GAFF_ASSERT(rd.getRendererType() == RENDERER_DIRECT3D && source);
+	GAFF_ASSERT(rd.getRendererType() == RENDERER_DIRECT3D11 && source);
 
 	_shader_buffer = compileShader(source, source_size, "DomainMain", "ds_5_0");
 
@@ -308,9 +308,9 @@ bool ShaderD3D::initDomainSource(IRenderDevice& rd, const char* source, size_t s
 		return false;
 	}
 
-	IRenderDeviceD3D& rd3d = reinterpret_cast<IRenderDeviceD3D&>(*(reinterpret_cast<char*>(&rd) + sizeof(IRenderDevice)));
+	IRenderDeviceD3D11& rd3d = reinterpret_cast<IRenderDeviceD3D11&>(*(reinterpret_cast<char*>(&rd) + sizeof(IRenderDevice)));
 
-	ID3D11Device* device = rd3d.getActiveDevice();
+	ID3D11Device* device = rd3d.getDevice();
 	HRESULT result = device->CreateDomainShader(_shader_buffer->GetBufferPointer(), _shader_buffer->GetBufferSize(), NULL, &_shader_domain);
 
 	_type = SHADER_DOMAIN;
@@ -318,9 +318,9 @@ bool ShaderD3D::initDomainSource(IRenderDevice& rd, const char* source, size_t s
 	return SUCCEEDED(result);
 }
 
-bool ShaderD3D::initGeometrySource(IRenderDevice& rd, const char* source, size_t source_size)
+bool ShaderD3D11::initGeometrySource(IRenderDevice& rd, const char* source, size_t source_size)
 {
-	GAFF_ASSERT(rd.getRendererType() == RENDERER_DIRECT3D && source);
+	GAFF_ASSERT(rd.getRendererType() == RENDERER_DIRECT3D11 && source);
 
 	_shader_buffer = compileShader(source, source_size, "GeometryMain", "gs_5_0");
 
@@ -328,9 +328,9 @@ bool ShaderD3D::initGeometrySource(IRenderDevice& rd, const char* source, size_t
 		return false;
 	}
 
-	IRenderDeviceD3D& rd3d = reinterpret_cast<IRenderDeviceD3D&>(*(reinterpret_cast<char*>(&rd) + sizeof(IRenderDevice)));
+	IRenderDeviceD3D11& rd3d = reinterpret_cast<IRenderDeviceD3D11&>(*(reinterpret_cast<char*>(&rd) + sizeof(IRenderDevice)));
 
-	ID3D11Device* device = rd3d.getActiveDevice();
+	ID3D11Device* device = rd3d.getDevice();
 	HRESULT result = device->CreateGeometryShader(_shader_buffer->GetBufferPointer(), _shader_buffer->GetBufferSize(), NULL, &_shader_geometry);
 
 	_type = SHADER_GEOMETRY;
@@ -338,9 +338,9 @@ bool ShaderD3D::initGeometrySource(IRenderDevice& rd, const char* source, size_t
 	return SUCCEEDED(result);
 }
 
-bool ShaderD3D::initHullSource(IRenderDevice& rd, const char* source, size_t source_size)
+bool ShaderD3D11::initHullSource(IRenderDevice& rd, const char* source, size_t source_size)
 {
-	GAFF_ASSERT(rd.getRendererType() == RENDERER_DIRECT3D && source);
+	GAFF_ASSERT(rd.getRendererType() == RENDERER_DIRECT3D11 && source);
 
 	_shader_buffer = compileShader(source, source_size, "HullMain", "hs_5_0");
 
@@ -348,9 +348,9 @@ bool ShaderD3D::initHullSource(IRenderDevice& rd, const char* source, size_t sou
 		return false;
 	}
 
-	IRenderDeviceD3D& rd3d = reinterpret_cast<IRenderDeviceD3D&>(*(reinterpret_cast<char*>(&rd) + sizeof(IRenderDevice)));
+	IRenderDeviceD3D11& rd3d = reinterpret_cast<IRenderDeviceD3D11&>(*(reinterpret_cast<char*>(&rd) + sizeof(IRenderDevice)));
 
-	ID3D11Device* device = rd3d.getActiveDevice();
+	ID3D11Device* device = rd3d.getDevice();
 	HRESULT result = device->CreateHullShader(_shader_buffer->GetBufferPointer(), _shader_buffer->GetBufferSize(), NULL, &_shader_hull);
 
 	_type = SHADER_HULL;
@@ -358,9 +358,9 @@ bool ShaderD3D::initHullSource(IRenderDevice& rd, const char* source, size_t sou
 	return SUCCEEDED(result);
 }
 
-bool ShaderD3D::initComputeSource(IRenderDevice& rd, const char* source, size_t source_size)
+bool ShaderD3D11::initComputeSource(IRenderDevice& rd, const char* source, size_t source_size)
 {
-	GAFF_ASSERT(rd.getRendererType() == RENDERER_DIRECT3D && source);
+	GAFF_ASSERT(rd.getRendererType() == RENDERER_DIRECT3D11 && source);
 
 	_shader_buffer = compileShader(source, source_size, "ComputeMain", "cs_5_0");
 
@@ -368,9 +368,9 @@ bool ShaderD3D::initComputeSource(IRenderDevice& rd, const char* source, size_t 
 		return false;
 	}
 
-	IRenderDeviceD3D& rd3d = reinterpret_cast<IRenderDeviceD3D&>(*(reinterpret_cast<char*>(&rd) + sizeof(IRenderDevice)));
+	IRenderDeviceD3D11& rd3d = reinterpret_cast<IRenderDeviceD3D11&>(*(reinterpret_cast<char*>(&rd) + sizeof(IRenderDevice)));
 
-	ID3D11Device* device = rd3d.getActiveDevice();
+	ID3D11Device* device = rd3d.getDevice();
 	HRESULT result = device->CreateComputeShader(_shader_buffer->GetBufferPointer(), _shader_buffer->GetBufferSize(), NULL, &_shader_compute);
 
 	_type = SHADER_COMPUTE;
@@ -378,7 +378,7 @@ bool ShaderD3D::initComputeSource(IRenderDevice& rd, const char* source, size_t 
 	return SUCCEEDED(result);
 }
 
-void ShaderD3D::destroy(void)
+void ShaderD3D11::destroy(void)
 {
 	if (_shader) {
 		switch (_type) {
@@ -413,69 +413,69 @@ void ShaderD3D::destroy(void)
 	SAFERELEASE(_shader_buffer)
 }
 
-RendererType ShaderD3D::getRendererType(void) const
+RendererType ShaderD3D11::getRendererType(void) const
 {
-	return RENDERER_DIRECT3D;
+	return RENDERER_DIRECT3D11;
 }
 
-void* ShaderD3D::getShader(void) const
+void* ShaderD3D11::getShader(void) const
 {
 	return _shader;
 }
 
-ID3D11VertexShader* ShaderD3D::getVertexShader(void) const
+ID3D11VertexShader* ShaderD3D11::getVertexShader(void) const
 {
 	return _shader_vertex;
 }
 
-ID3D11PixelShader* ShaderD3D::getPixelShader(void) const
+ID3D11PixelShader* ShaderD3D11::getPixelShader(void) const
 {
 	return _shader_pixel;
 }
 
-ID3D11DomainShader* ShaderD3D::getDomainShader(void) const
+ID3D11DomainShader* ShaderD3D11::getDomainShader(void) const
 {
 	return _shader_domain;
 }
 
-ID3D11GeometryShader* ShaderD3D::getGeometryShader(void) const
+ID3D11GeometryShader* ShaderD3D11::getGeometryShader(void) const
 {
 	return _shader_geometry;
 }
 
-ID3D11HullShader* ShaderD3D::getHullShader(void) const
+ID3D11HullShader* ShaderD3D11::getHullShader(void) const
 {
 	return _shader_hull;
 }
 
-ID3D11ComputeShader* ShaderD3D::getComputeShader(void) const
+ID3D11ComputeShader* ShaderD3D11::getComputeShader(void) const
 {
 	return _shader_compute;
 }
 
-ID3DBlob* ShaderD3D::getByteCodeBuffer(void) const
+ID3DBlob* ShaderD3D11::getByteCodeBuffer(void) const
 {
 	return _shader_buffer;
 }
 
-bool ShaderD3D::loadFile(const char* file_path, char*& shader_src, SIZE_T& shader_size) const
+bool ShaderD3D11::loadFile(const char* file_path, char*& shader_src, SIZE_T& shader_size) const
 {
 	GAFF_ASSERT(file_path);
 
 	Gaff::File shader(file_path, Gaff::File::READ_BINARY);
 
 	if (!shader.isOpen()) {
-		GleamU8String msg("Failed to open shader file: ");
+		U8String msg("Failed to open shader file: ");
 		msg += file_path;
 
-		PrintfToLog(msg.getBuffer(), LOG_ERROR);
+		PrintfToLog(msg.data(), LOG_ERROR);
 		return false;
 	}
 
 	long size = shader.getFileSize();
 
 	shader_size = size;
-	shader_src = (char*)GleamAllocate(sizeof(char) * shader_size);
+	shader_src = reinterpret_cast<char*>(GLEAM_ALLOC(sizeof(char) * shader_size));
 
 	if (!shader_src || size == -1) {
 		return false;
@@ -486,17 +486,17 @@ bool ShaderD3D::loadFile(const char* file_path, char*& shader_src, SIZE_T& shade
 		shader_src = nullptr;
 		shader_size = 0;
 
-		GleamU8String msg("Failed to read shader file: ");
+		U8String msg("Failed to read shader file: ");
 		msg += file_path;
 
-		PrintfToLog(msg.getBuffer(), LOG_ERROR);
+		PrintfToLog(msg.data(), LOG_ERROR);
 		return false;
 	}
 
 	return true;
 }
 
-ID3DBlob* ShaderD3D::compileShader(const char* shader_src, SIZE_T shader_size, /*macro, include,*/ LPCSTR entry_point, LPCSTR target)
+ID3DBlob* ShaderD3D11::compileShader(const char* shader_src, SIZE_T shader_size, /*macro, include,*/ LPCSTR entry_point, LPCSTR target)
 {
 	GAFF_ASSERT(shader_src && entry_point && target);
 

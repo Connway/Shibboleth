@@ -37,23 +37,23 @@ struct ID3D11Buffer;
 
 NS_GLEAM
 
-class ProgramBuffersD3D : public ProgramBuffersBase
+class ProgramBuffersD3D11 : public ProgramBuffersBase
 {
 public:
-	ProgramBuffersD3D(void);
-	~ProgramBuffersD3D(void);
+	ProgramBuffersD3D11(void);
+	~ProgramBuffersD3D11(void);
 
-	void addConstantBuffer(IShader::SHADER_TYPE type, IBuffer* const_buffer) override;
-	void removeConstantBuffer(IShader::SHADER_TYPE type, size_t index) override;
-	void popConstantBuffer(IShader::SHADER_TYPE type, size_t count = 1) override;
+	void addConstantBuffer(IShader::ShaderType type, IBuffer* const_buffer) override;
+	void removeConstantBuffer(IShader::ShaderType type, int32_t index) override;
+	void popConstantBuffer(IShader::ShaderType type, int32_t count = 1) override;
 
-	void addResourceView(IShader::SHADER_TYPE type, IShaderResourceView* resource_view) override;
-	void removeResourceView(IShader::SHADER_TYPE type, size_t index) override;
-	void popResourceView(IShader::SHADER_TYPE type, size_t count = 1) override;
+	void addResourceView(IShader::ShaderType type, IShaderResourceView* resource_view) override;
+	void removeResourceView(IShader::ShaderType type, int32_t index) override;
+	void popResourceView(IShader::ShaderType type, int32_t count = 1) override;
 
-	void addSamplerState(IShader::SHADER_TYPE type, ISamplerState* sampler) override;
-	void removeSamplerState(IShader::SHADER_TYPE type, size_t index) override;
-	void popSamplerState(IShader::SHADER_TYPE type, size_t count = 1) override;
+	void addSamplerState(IShader::ShaderType type, ISamplerState* sampler) override;
+	void removeSamplerState(IShader::ShaderType type, int32_t index) override;
+	void popSamplerState(IShader::ShaderType type, int32_t count = 1) override;
 
 	IProgramBuffers* clone(void) const override;
 
@@ -62,28 +62,28 @@ public:
 	RendererType getRendererType(void) const override;
 
 private:
-	GleamArray<ID3D11ShaderResourceView*> _res_views[IShader::SHADER_TYPE_SIZE];
-	GleamArray<ID3D11SamplerState*> _samplers[IShader::SHADER_TYPE_SIZE];
-	GleamArray<ID3D11Buffer*> _buffers[IShader::SHADER_TYPE_SIZE];
+	Vector<ID3D11ShaderResourceView*> _res_views[IShader::SHADER_TYPE_SIZE];
+	Vector<ID3D11SamplerState*> _samplers[IShader::SHADER_TYPE_SIZE];
+	Vector<ID3D11Buffer*> _buffers[IShader::SHADER_TYPE_SIZE];
 
-	void cacheResViews(IShader::SHADER_TYPE type);
-	void cacheSamplers(IShader::SHADER_TYPE type);
-	void cacheBuffers(IShader::SHADER_TYPE type);
+	void cacheResViews(IShader::ShaderType type);
+	void cacheSamplers(IShader::ShaderType type);
+	void cacheBuffers(IShader::ShaderType type);
 
-	friend class ProgramD3D;
+	friend class ProgramD3D11;
 };
 
 
-class ProgramD3D : public ProgramBase
+class ProgramD3D11 : public ProgramBase
 {
 public:
-	ProgramD3D(void);
-	~ProgramD3D(void);
+	ProgramD3D11(void);
+	~ProgramD3D11(void);
 
 	bool init(void);
 
 	void attach(IShader* shader);
-	void detach(IShader::SHADER_TYPE shader);
+	void detach(IShader::ShaderType shader);
 
 	void bind(IRenderDevice& rd);
 	void unbind(IRenderDevice& rd);

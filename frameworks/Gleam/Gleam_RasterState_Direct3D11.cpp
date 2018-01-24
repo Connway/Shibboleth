@@ -20,29 +20,29 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#include "Gleam_RasterState_Direct3D.h"
-#include "Gleam_IRenderDevice_Direct3D.h"
+#include "Gleam_RasterState_Direct3D11.h"
+#include "Gleam_IRenderDevice_Direct3D11.h"
 #include "Gleam_IRenderDevice.h"
 #include "Gleam_IncludeD3D11.h"
 
 NS_GLEAM
 
-RasterStateD3D::RasterStateD3D(void):
+RasterStateD3D11::RasterStateD3D11(void):
 	_raster_state(nullptr)
 {
 }
 
-RasterStateD3D::~RasterStateD3D(void)
+RasterStateD3D11::~RasterStateD3D11(void)
 {
 	destroy();
 }
 
-bool RasterStateD3D::init(IRenderDevice& rd, const RasterStateSettings& settings)
+bool RasterStateD3D11::init(IRenderDevice& rd, const RasterStateSettings& settings)
 {
-	GAFF_ASSERT(rd.getRendererType() == RENDERER_DIRECT3D);
+	GAFF_ASSERT(rd.getRendererType() == RENDERER_DIRECT3D11);
 
-	IRenderDeviceD3D& rd3d = reinterpret_cast<IRenderDeviceD3D&>(*(reinterpret_cast<char*>(&rd) + sizeof(IRenderDevice)));
-	ID3D11Device* device = rd3d.getActiveDevice();
+	IRenderDeviceD3D11& rd3d = reinterpret_cast<IRenderDeviceD3D11&>(*(reinterpret_cast<char*>(&rd) + sizeof(IRenderDevice)));
+	ID3D11Device* device = rd3d.getDevice();
 
 	D3D11_RASTERIZER_DESC raster_desc;
 	raster_desc.AntialiasedLineEnable = false;
@@ -60,32 +60,32 @@ bool RasterStateD3D::init(IRenderDevice& rd, const RasterStateSettings& settings
 	return SUCCEEDED(result);
 }
 
-void RasterStateD3D::destroy(void)
+void RasterStateD3D11::destroy(void)
 {
 	SAFERELEASE(_raster_state);
 }
 
-void RasterStateD3D::set(IRenderDevice& rd) const
+void RasterStateD3D11::set(IRenderDevice& rd) const
 {
-	GAFF_ASSERT(rd.getRendererType() == RENDERER_DIRECT3D);
-	IRenderDeviceD3D& rd3d = reinterpret_cast<IRenderDeviceD3D&>(*(reinterpret_cast<char*>(&rd) + sizeof(IRenderDevice)));
-	ID3D11DeviceContext* context = rd3d.getActiveDeviceContext();
+	GAFF_ASSERT(rd.getRendererType() == RENDERER_DIRECT3D11);
+	IRenderDeviceD3D11& rd3d = reinterpret_cast<IRenderDeviceD3D11&>(*(reinterpret_cast<char*>(&rd) + sizeof(IRenderDevice)));
+	ID3D11DeviceContext* context = rd3d.getDeviceContext();
 
 	context->RSSetState(_raster_state);
 }
 
-void RasterStateD3D::unset(IRenderDevice& rd) const
+void RasterStateD3D11::unset(IRenderDevice& rd) const
 {
-	GAFF_ASSERT(rd.getRendererType() == RENDERER_DIRECT3D);
-	IRenderDeviceD3D& rd3d = reinterpret_cast<IRenderDeviceD3D&>(*(reinterpret_cast<char*>(&rd) + sizeof(IRenderDevice)));
-	ID3D11DeviceContext* context = rd3d.getActiveDeviceContext();
+	GAFF_ASSERT(rd.getRendererType() == RENDERER_DIRECT3D11);
+	IRenderDeviceD3D11& rd3d = reinterpret_cast<IRenderDeviceD3D11&>(*(reinterpret_cast<char*>(&rd) + sizeof(IRenderDevice)));
+	ID3D11DeviceContext* context = rd3d.getDeviceContext();
 
 	context->RSSetState(NULL);
 }
 
-RendererType RasterStateD3D::getRendererType(void) const
+RendererType RasterStateD3D11::getRendererType(void) const
 {
-	return RENDERER_DIRECT3D;
+	return RENDERER_DIRECT3D11;
 }
 
 NS_END

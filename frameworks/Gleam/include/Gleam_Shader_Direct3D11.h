@@ -28,15 +28,15 @@ THE SOFTWARE.
 
 NS_GLEAM
 
-class ShaderD3D : public IShader
+class ShaderD3D11 : public IShader
 {
 public:
-	ShaderD3D(void);
-	~ShaderD3D(void);
+	ShaderD3D11(void);
+	~ShaderD3D11(void);
 
-	bool initSource(IRenderDevice& rd, const char* shader_source, size_t source_size, SHADER_TYPE shader_type);
-	bool initSource(IRenderDevice& rd, const char* shader_source, SHADER_TYPE shader_type);
-	bool init(IRenderDevice& rd, const char* file_path, SHADER_TYPE shader_type);
+	bool initSource(IRenderDevice& rd, const char* shader_source, size_t source_size, ShaderType shader_type);
+	bool initSource(IRenderDevice& rd, const char* shader_source, ShaderType shader_type);
+	bool init(IRenderDevice& rd, const char* file_path, ShaderType shader_type);
 
 	bool initVertex(IRenderDevice& rd, const char* file_path);
 	bool initPixel(IRenderDevice& rd, const char* file_path);
@@ -83,7 +83,7 @@ private:
 	bool loadFile(const char* file_path, char*& shader_src, SIZE_T& shader_size) const;
 	ID3DBlob* compileShader(const char* shader, SIZE_T shader_size, /*macro, include,*/ LPCSTR entry_point, LPCSTR target);
 
-	GLEAM_REF_COUNTED(ShaderD3D);
+	GLEAM_REF_COUNTED(ShaderD3D11);
 };
 
 NS_END

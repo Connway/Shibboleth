@@ -29,11 +29,11 @@ struct ID3D11ShaderResourceView;
 
 NS_GLEAM
 
-class ShaderResourceViewD3D : public IShaderResourceView
+class ShaderResourceViewD3D11 : public IShaderResourceView
 {
 public:
-	ShaderResourceViewD3D(void);
-	~ShaderResourceViewD3D(void);
+	ShaderResourceViewD3D11(void);
+	~ShaderResourceViewD3D11(void);
 
 	bool init(IRenderDevice& rd, const ITexture* texture);
 	bool init(IRenderDevice& rd, const IBuffer* buffer);
@@ -43,11 +43,10 @@ public:
 
 	ID3D11ShaderResourceView* getResourceView(void) const;
 
-
 private:
 	ID3D11ShaderResourceView* _resource_view;
 
-	GLEAM_REF_COUNTED(ShaderResourceViewD3D);
+	GLEAM_REF_COUNTED(ShaderResourceViewD3D11);
 };
 
 NS_END

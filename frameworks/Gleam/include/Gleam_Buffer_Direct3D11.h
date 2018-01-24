@@ -29,11 +29,11 @@ struct ID3D11Buffer;
 
 NS_GLEAM
 
-class BufferD3D : public IBuffer
+class BufferD3D11 : public IBuffer
 {
 public:
-	BufferD3D(void);
-	~BufferD3D(void);
+	BufferD3D11(void);
+	~BufferD3D11(void);
 
 	bool init(IRenderDevice& rd, const void* data, size_t size, BufferType buffer_type = SHADER_DATA,
 				int32_t stride = 0, MapType cpu_access = NONE, bool gpu_read_only = true,
@@ -51,7 +51,7 @@ public:
 private:
 	ID3D11Buffer* _buffer;
 
-	GLEAM_REF_COUNTED(BufferD3D);
+	GLEAM_REF_COUNTED(BufferD3D11);
 };
 
 NS_END

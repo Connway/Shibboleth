@@ -23,7 +23,6 @@ THE SOFTWARE.
 #if defined(_WIN32) || defined(_WIN64)
 
 #include "Gleam_RenderDevice_Direct3D11.h"
-#include "Gleam_DeferredRenderDevice_Direct3D11.h"
 #include "Gleam_RenderTarget_Direct3D11.h"
 #include "Gleam_CommandList_Direct3D11.h"
 #include "Gleam_RenderOutput_Direct3D11.h"
@@ -174,7 +173,7 @@ bool RenderDeviceD3D11::init(int32_t adapter_id)
 		return false;
 	}
 
-	_device.adapter.set(adapter);
+	_adapter.set(adapter);
 
 	ID3D11DeviceContext* context = nullptr;
 	ID3D11Device* device = nullptr;
@@ -187,15 +186,15 @@ bool RenderDeviceD3D11::init(int32_t adapter_id)
 //#endif
 
 	D3D_FEATURE_LEVEL feature_level = D3D_FEATURE_LEVEL_11_1;
-	result = D3D11CreateDevice(_device.adapter.get(), D3D_DRIVER_TYPE_UNKNOWN, 0, flags, &feature_level, 1, D3D11_SDK_VERSION, &device, 0, &context);
+	result = D3D11CreateDevice(_adapter.get(), D3D_DRIVER_TYPE_UNKNOWN, 0, flags, &feature_level, 1, D3D11_SDK_VERSION, &device, 0, &context);
 
 	if (FAILED(result)) {
 		// Log error
 		return false;
 	}
 
-	_device.device.set(device);
-	_device.context.set(context);
+	_device.set(device);
+	_context.set(context);
 
 	return true;
 
@@ -382,7 +381,7 @@ void RenderDeviceD3D11::frameBegin(IRenderOutput& output)
 	D3D11_VIEWPORT viewport = out.getViewport();
 
 	resetRenderState();
-	_device.context->RSSetViewports(1, &viewport);
+	_context->RSSetViewports(1, &viewport);
 }
 
 void RenderDeviceD3D11::frameEnd(IRenderOutput& output)
@@ -482,7 +481,7 @@ void RenderDeviceD3D11::frameEnd(IRenderOutput& output)
 
 bool RenderDeviceD3D11::isDeferred(void) const
 {
-	return false;
+	return _is_deferred;
 }
 
 RendererType RenderDeviceD3D11::getRendererType(void) const
@@ -494,62 +493,71 @@ IRenderDevice* RenderDeviceD3D11::createDeferredRenderDevice(void)
 {
 	ID3D11DeviceContext* deferred_context = nullptr;
 
-	if (FAILED(_device.device->CreateDeferredContext(0, &deferred_context))) {
+	if (FAILED(_device->CreateDeferredContext(0, &deferred_context))) {
 		return nullptr;
 	}
 
-	//DeferredRenderDeviceD3D11* deferred_render_device = GAFF_ALLOC_CAST(DeferredRenderDeviceD3D11*, sizeof(DeferredRenderDeviceD3D11), *GetAllocator());
-	//new (deferred_render_device) DeferredRenderDeviceD3D11();
-	//deferred_render_device->_context.set(deferred_context);
+	RenderDeviceD3D11* deferred_render_device = GLEAM_ALLOCT(RenderDeviceD3D11);
+	deferred_render_device->_context.set(deferred_context);
+	deferred_render_device->_device = _device;
+	deferred_render_device->_adapter = _adapter;
+	deferred_render_device->_is_deferred = true;
 
-	//return deferred_render_device;
-
-	return nullptr;
+	return deferred_render_device;
 }
 
 void RenderDeviceD3D11::executeCommandList(ICommandList* command_list)
 {
-	GAFF_ASSERT(command_list->getRendererType() == RENDERER_DIRECT3D11 && _device.context);
-	CommandListD3D* cmd_list = reinterpret_cast<CommandListD3D*>(command_list);
+	GAFF_ASSERT(command_list->getRendererType() == RENDERER_DIRECT3D11 && _context);
+	CommandListD3D11* cmd_list = reinterpret_cast<CommandListD3D11*>(command_list);
 	GAFF_ASSERT(cmd_list->getCommandList());
-	_device.context->ExecuteCommandList(cmd_list->getCommandList(), FALSE);
+	_context->ExecuteCommandList(cmd_list->getCommandList(), FALSE);
 }
 
-bool RenderDeviceD3D11::finishCommandList(ICommandList*)
+bool RenderDeviceD3D11::finishCommandList(ICommandList* command_list)
 {
-	GAFF_ASSERT_MSG(false, "Calling a deferred render device function on an immediate render device");
-	return false;
+	GAFF_ASSERT(_is_deferred && command_list->getRendererType() == RENDERER_DIRECT3D11 && _context);
+
+	CommandListD3D11* cmd_list = reinterpret_cast<CommandListD3D11*>(command_list);
+	ID3D11CommandList* cl = nullptr;
+
+	if (FAILED(_context->FinishCommandList(FALSE, &cl))) {
+		return false;
+	}
+
+	cmd_list->setCommandList(cl);
+	return true;
 }
 
 void RenderDeviceD3D11::resetRenderState(void)
 {
-	_device.context->OMSetDepthStencilState(NULL, 0);
-	_device.context->OMSetBlendState(NULL, NULL, 0xFFFFFFFF);
-	_device.context->RSSetState(NULL);
+	_context->OMSetDepthStencilState(NULL, 0);
+	_context->OMSetBlendState(NULL, NULL, 0xFFFFFFFF);
+	_context->RSSetState(NULL);
 }
 
 void RenderDeviceD3D11::renderNoVertexInput(int32_t vert_count)
 {
-	_device.context->IASetInputLayout(NULL);
-	_device.context->IASetVertexBuffers(0, 0, NULL, NULL, NULL);
-	_device.context->IASetIndexBuffer(NULL, DXGI_FORMAT_R32_UINT, 0);
-	_device.context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-	_device.context->Draw(vert_count, 0);
+	_context->IASetInputLayout(NULL);
+	_context->IASetVertexBuffers(0, 0, NULL, NULL, NULL);
+	_context->IASetIndexBuffer(NULL, DXGI_FORMAT_R32_UINT, 0);
+	_context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	_context->Draw(vert_count, 0);
 }
 
 ID3D11DeviceContext* RenderDeviceD3D11::getDeviceContext(void)
 {
-	return _device.context.get();
+	return _context.get();
 }
 
 ID3D11Device* RenderDeviceD3D11::getDevice(void)
 {
-	return _device.device.get();
+	return _device.get();
 }
 
 IDXGIAdapter1* RenderDeviceD3D11::getAdapter(void)
 {
-	return _device.adapter.get();
+	return _adapter.get();
 }
 
 NS_END

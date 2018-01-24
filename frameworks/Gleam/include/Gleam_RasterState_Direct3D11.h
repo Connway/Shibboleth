@@ -29,11 +29,11 @@ struct ID3D11RasterizerState;
 
 NS_GLEAM
 
-class RasterStateD3D : public IRasterState
+class RasterStateD3D11 : public IRasterState
 {
 public:
-	RasterStateD3D(void);
-	~RasterStateD3D(void);
+	RasterStateD3D11(void);
+	~RasterStateD3D11(void);
 
 	bool init(IRenderDevice& rd, const RasterStateSettings& settings) override;
 	void destroy(void) override;
@@ -46,7 +46,7 @@ public:
 private:
 	ID3D11RasterizerState* _raster_state;
 
-	GLEAM_REF_COUNTED(RasterStateD3D);
+	GLEAM_REF_COUNTED(RasterStateD3D11);
 };
 
 NS_END

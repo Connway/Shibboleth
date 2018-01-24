@@ -29,11 +29,11 @@ struct ID3D11BlendState;
 
 NS_GLEAM
 
-class BlendStateD3D : public IBlendState
+class BlendStateD3D11 : public IBlendState
 {
 public:
-	BlendStateD3D(void);
-	~BlendStateD3D(void);
+	BlendStateD3D11(void);
+	~BlendStateD3D11(void);
 
 	bool init(IRenderDevice& rd, const BlendStateSettings& settings) override;
 	bool init(IRenderDevice& rd, const BlendStateSettings* settings) override;
@@ -47,7 +47,7 @@ public:
 private:
 	ID3D11BlendState* _blend_state;
 
-	GLEAM_REF_COUNTED(BlendStateD3D);
+	GLEAM_REF_COUNTED(BlendStateD3D11);
 };
 
 NS_END

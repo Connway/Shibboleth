@@ -27,5 +27,6 @@ project "Gleam"
 		"../Gaff/include",
 		"../../dependencies/glew/include",
 		"../../dependencies/EASTL/include",
+		"../../dependencies/vulkan",
 		"../../dependencies/glm"
 	}

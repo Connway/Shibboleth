@@ -44,17 +44,17 @@ static D3D11_MAP _map_map[IBuffer::MAP_TYPE_SIZE] = {
 	D3D11_MAP_READ_WRITE
 };
 
-BufferD3D::BufferD3D(void):
+BufferD3D11::BufferD3D11(void):
 	_buffer(nullptr)
 {
 }
 
-BufferD3D::~BufferD3D(void)
+BufferD3D11::~BufferD3D11(void)
 {
 	destroy();
 }
 
-bool BufferD3D::init(
+bool BufferD3D11::init(
 	IRenderDevice& rd, const void* data, size_t size, BufferType buffer_type,
 	int32_t stride, MapType cpu_access, bool gpu_read_only, int32_t structure_byte_stride)
 {
@@ -100,12 +100,12 @@ bool BufferD3D::init(
 	return SUCCEEDED(device->CreateBuffer(&desc, (data) ? &subres_data : nullptr, &_buffer));
 }
 
-void BufferD3D::destroy(void)
+void BufferD3D11::destroy(void)
 {
 	SAFERELEASE(_buffer)
 }
 
-bool BufferD3D::update(IRenderDevice& rd, const void* data, size_t size, size_t offset)
+bool BufferD3D11::update(IRenderDevice& rd, const void* data, size_t size, size_t offset)
 {
 	GAFF_ASSERT(rd.getRendererType() == RENDERER_DIRECT3D11 && data && size);
 	IRenderDeviceD3D11& rd3d = reinterpret_cast<IRenderDeviceD3D11&>(*(reinterpret_cast<char*>(&rd) + sizeof(IRenderDevice)));
@@ -121,7 +121,7 @@ bool BufferD3D::update(IRenderDevice& rd, const void* data, size_t size, size_t 
 	return true;
 }
 
-void* BufferD3D::map(IRenderDevice& rd, MapType map_type)
+void* BufferD3D11::map(IRenderDevice& rd, MapType map_type)
 {
 	GAFF_ASSERT(rd.getRendererType() == RENDERER_DIRECT3D11 && map_type != NONE);
 	IRenderDeviceD3D11& rd3d = reinterpret_cast<IRenderDeviceD3D11&>(*(reinterpret_cast<char*>(&rd) + sizeof(IRenderDevice)));
@@ -132,7 +132,7 @@ void* BufferD3D::map(IRenderDevice& rd, MapType map_type)
 	return (FAILED(result)) ? nullptr : mapped_resource.pData;
 }
 
-void BufferD3D::unmap(IRenderDevice& rd)
+void BufferD3D11::unmap(IRenderDevice& rd)
 {
 	GAFF_ASSERT(rd.getRendererType() == RENDERER_DIRECT3D11);
 	IRenderDeviceD3D11& rd3d = reinterpret_cast<IRenderDeviceD3D11&>(*(reinterpret_cast<char*>(&rd) + sizeof(IRenderDevice)));
@@ -140,12 +140,12 @@ void BufferD3D::unmap(IRenderDevice& rd)
 	context->Unmap(_buffer, 0);
 }
 
-RendererType BufferD3D::getRendererType(void) const
+RendererType BufferD3D11::getRendererType(void) const
 {
 	return RENDERER_DIRECT3D11;
 }
 
-ID3D11Buffer* BufferD3D::getBuffer(void) const
+ID3D11Buffer* BufferD3D11::getBuffer(void) const
 {
 	return _buffer;
 }
