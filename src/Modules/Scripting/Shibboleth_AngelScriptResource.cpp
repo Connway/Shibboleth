@@ -70,32 +70,7 @@ void AngelScriptResource::loadScript(IFile* file)
 	int r = _builder.StartNewModule(engine, getFilePath().getBuffer());
 	RES_FAIL_MSG(r < 0, "Failed to create new script module for script '%s'!", getFilePath().getBuffer());
 
-	r = _builder.AddSectionFromMemory(
-		"ScriptComponent",
-		R"(
-			shared abstract class ScriptComponent
-			{
-				Object@ owner
-				{
-					get { return _component.owner; }
-				}
-
-				bool active
-				{
-					get { return _component.active; }
-					set { _component.active = value; }
-				}
-
-				const Component@ opImplCast() const { return _component; }
-				Component@ opImplCast() { return _component; }
-
-				// No way to forward this?
-				//void opCast(?& out value) { _component.opCast(value); }
-
-				private ScriptComponent_Internal@ _component;
-			}
-		)"
-	);
+	r = as_mgr.addScriptComponentDefinition(_builder);
 	RES_FAIL_MSG(r < 0, "Failed to add section for `ScriptComponent`!");
 
 	r = _builder.AddSectionFromMemory("script", file->getBuffer(), static_cast<unsigned int>(file->size()));

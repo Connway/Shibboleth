@@ -27,6 +27,7 @@ THE SOFTWARE.
 #include <mutex>
 
 class asIScriptEngine;
+class CScriptBuilder;
 struct asSMessageInfo;
 
 NS_SHIBBOLETH
@@ -40,6 +41,8 @@ public:
 
 	asIScriptEngine* getEngine(void) const;
 	std::mutex& getEngineLock(void);
+
+	int32_t addScriptComponentDefinition(CScriptBuilder& builder);
 
 private:
 	asIScriptEngine* _engine = nullptr;
