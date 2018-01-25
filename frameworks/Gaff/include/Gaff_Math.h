@@ -63,6 +63,7 @@ bool Between(const T& val, const T& min_val, const T& max_val)
 float BinomialCoefficient(float n, float k);
 float BernsteinPolynomial(float t, float n, float k);
 
+// Normalize angle to [-Pi, Pi]
 float NormalizeAngle(float angle);
 
 NS_END
