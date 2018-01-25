@@ -50,10 +50,24 @@ void LogManager::LogThread(LogManager& lm)
 			task.file.writeChar('\n');
 			task.file.flush();
 
-			std::lock_guard<std::mutex> lock(lm._log_callback_lock);
 			lm.notifyLogCallbacks(task.message.data(), task.type);
 		}
 	}
+
+	lm._log_queue_lock.lock();
+
+	while (!lm._logs.empty()) {
+		LogTask task = std::move(lm._logs.front());
+		lm._logs.pop();
+
+		task.file.writeString(task.message.data());
+		task.file.writeChar('\n');
+		task.file.flush();
+
+		lm.notifyLogCallbacks(task.message.data(), task.type);
+	}
+
+	lm._log_queue_lock.unlock();
 }
 
 LogManager::LogManager(void):

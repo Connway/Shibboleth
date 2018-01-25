@@ -81,7 +81,7 @@ private:
 	#pragma warning(disable : 4307)
 #endif
 
-constexpr const Gaff::Hash32 LOG_CHANNEL_RESOURCE = Gaff::FNV1aHash32Const("Resource");
+constexpr Gaff::Hash32 LOG_CHANNEL_RESOURCE = Gaff::FNV1aHash32Const("Resource");
 
 #ifdef _MSC_VER
 	#pragma warning(pop)

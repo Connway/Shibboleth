@@ -38,6 +38,23 @@ SHIB_REFLECTION_CLASS_DEFINE_BEGIN(AngelScriptResource)
 	.ctor<>()
 SHIB_REFLECTION_CLASS_DEFINE_END(AngelScriptResource)
 
+static int HandleInclude(const char* include, const char*, CScriptBuilder* builder, void*)
+{
+	IFileSystem* const fs = Shibboleth::GetApp().getFileSystem();
+	IFile* const file = fs->openFile(include);
+
+	if (!file) {
+		LOG_RES_ERROR("Failed to find included script '%s'!", include);
+		return -1;
+	}
+
+	int r = builder->AddSectionFromMemory(include, file->getBuffer(), static_cast<unsigned int>(file->size()));
+
+	fs->closeFile(file);
+	return r;
+}
+
+
 AngelScriptResource::AngelScriptResource(void)
 {
 }
@@ -65,7 +82,9 @@ void AngelScriptResource::loadScript(IFile* file)
 	asIScriptEngine* const engine = as_mgr.getEngine();
 	std::mutex& lock = as_mgr.getEngineLock();
 
-	lock.lock();
+	_builder.SetIncludeCallback(HandleInclude, nullptr);
+
+	std::lock_guard<std::mutex> scoped_lock(lock);
 
 	int r = _builder.StartNewModule(engine, getFilePath().getBuffer());
 	RES_FAIL_MSG(r < 0, "Failed to create new script module for script '%s'!", getFilePath().getBuffer());
@@ -82,7 +101,6 @@ void AngelScriptResource::loadScript(IFile* file)
 	_module = _builder.GetModule();
 	RES_FAIL_MSG(!_module, "Failed to get module for script '%s'!", getFilePath().getBuffer());
 
-	lock.unlock();
 	succeeded();
 }
 
