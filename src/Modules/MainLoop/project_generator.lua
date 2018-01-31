@@ -40,18 +40,7 @@ project "MainLoopModule"
 		"../../../dependencies/rapidjson"
 	}
 
-	dependson
-	{
-		"Shared",
-		"Gaff",
-		"Memory",
-		"EASTL"
-
-		, "Scripting", "Resource", "angelscript", "Entity", "Gleam"
-	}
-
-	links
-	{
+	local deps = {
 		"Shared",
 		"Gaff",
 		"Memory",
@@ -59,6 +48,9 @@ project "MainLoopModule"
 
 		, "Scripting", "Resource", "angelscript", "Entity", "Gleam", "mpack"
 	}
+
+	dependson(deps)
+	links(deps)
 
 	postbuildcommands
 	{
