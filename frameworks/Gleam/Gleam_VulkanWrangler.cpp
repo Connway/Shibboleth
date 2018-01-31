@@ -24,6 +24,10 @@ THE SOFTWARE.
 
 #include "Gleam_VulkanWrangler.h"
 #include <Gaff_DynamicModule.h>
+#include <Gaff_Assert.h>
+
+PFN_vkGetInstanceProcAddr vkGetInstanceProcAddr = nullptr;
+PFN_vkGetDeviceProcAddr vkGetDeviceProcAddr = nullptr;
 
 VULKAN_IMPL;
 VULKAN_IMPL_EXT;
@@ -33,17 +37,25 @@ namespace Gleam
 {
 	bool WrangleVulkanFunctions(Gaff::DynamicModule& mod)
 	{
-		VULKAN_IMPORT(mod);
-		VULKAN_IMPORT_EXT(mod);
-		VULKAN_IMPORT_OS(mod);
+		vkGetInstanceProcAddr = mod.getFunc<PFN_vkGetInstanceProcAddr>("vkGetInstanceProcAddr");
+		vkGetDeviceProcAddr = mod.getFunc<PFN_vkGetDeviceProcAddr>("vkGetDeviceProcAddr");
+
+		if (!vkGetInstanceProcAddr || !vkGetDeviceProcAddr) {
+			return false;
+		}
+
+		VULKAN_GET_PROC_LIST(VULKAN_FUNC_IMPORT_GET_INST, nullptr);
 
 		bool success = true;
-		VULKAN_SUCCESS(success);
-		VULKAN_SUCCESS_OS(success);
-
-		bool ext_success = true;
-		VULKAN_SUCCESS_EXT(ext_success);
+		VULKAN_GET_PROC_LIST(VULKAN_FUNC_SUCCESS, success);
 
 		return success;
+	}
+
+	void WrangleVulkanFunctions(VkInstance instance)
+	{
+		VULKAN_IMPORT(instance);
+		VULKAN_IMPORT_EXT(instance);
+		VULKAN_IMPORT_OS(instance);
 	}
 }

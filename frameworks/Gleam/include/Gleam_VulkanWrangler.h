@@ -33,15 +33,22 @@ namespace Gaff
 namespace Gleam
 {
 	bool WrangleVulkanFunctions(Gaff::DynamicModule& mod);
+	void WrangleVulkanFunctions(VkInstance instance);
 }
 
 #define VULKAN_FUNC_DECL(name, ...) extern PFN_##name name
 #define VULKAN_FUNC_IMPL(name, ...) PFN_##name name = nullptr
 #define VULKAN_FUNC_IMPORT(name, so) name = so.getFunc<PFN_##name>(#name)
 #define VULKAN_FUNC_SUCCESS(name, success) success = success && name
+#define VULKAN_FUNC_IMPORT_GET_INST(name, instance) name = reinterpret_cast<PFN_##name>(vkGetInstanceProcAddr(instance, #name))
+
+#define VULKAN_GET_PROC_LIST(macro, ...) \
+	macro(vkCreateInstance, __VA_ARGS__); \
+	macro(vkEnumerateInstanceExtensionProperties, __VA_ARGS__); \
+	macro(vkEnumerateInstanceLayerProperties, __VA_ARGS__)
+
 
 #define VULKAN_FUNC_LIST(macro, ...) \
-	macro(vkCreateInstance, __VA_ARGS__); \
 	macro(vkDestroyInstance, __VA_ARGS__); \
 	macro(vkEnumeratePhysicalDevices, __VA_ARGS__); \
 	macro(vkGetPhysicalDeviceFeatures, __VA_ARGS__); \
@@ -50,13 +57,9 @@ namespace Gleam
 	macro(vkGetPhysicalDeviceProperties, __VA_ARGS__); \
 	macro(vkGetPhysicalDeviceQueueFamilyProperties, __VA_ARGS__); \
 	macro(vkGetPhysicalDeviceMemoryProperties, __VA_ARGS__); \
-	macro(vkGetInstanceProcAddr, __VA_ARGS__); \
-	macro(vkGetDeviceProcAddr, __VA_ARGS__); \
 	macro(vkCreateDevice, __VA_ARGS__); \
 	macro(vkDestroyDevice, __VA_ARGS__); \
-	macro(vkEnumerateInstanceExtensionProperties, __VA_ARGS__); \
 	macro(vkEnumerateDeviceExtensionProperties, __VA_ARGS__); \
-	macro(vkEnumerateInstanceLayerProperties, __VA_ARGS__); \
 	macro(vkEnumerateDeviceLayerProperties, __VA_ARGS__); \
 	macro(vkGetDeviceQueue, __VA_ARGS__); \
 	macro(vkQueueSubmit, __VA_ARGS__); \
@@ -319,21 +322,24 @@ namespace Gleam
 		macro(vkCreateAndroidSurfaceKHR, __VA_ARGS__)
 #endif
 
+extern PFN_vkGetInstanceProcAddr vkGetInstanceProcAddr;
+extern PFN_vkGetDeviceProcAddr vkGetDeviceProcAddr;
+
 //macro(vkCreateViSurfaceNN, __VA_ARGS__); \
 
-#define VULKAN_DECL VULKAN_FUNC_LIST(VULKAN_FUNC_DECL)
-#define VULKAN_IMPL VULKAN_FUNC_LIST(VULKAN_FUNC_IMPL)
-#define VULKAN_IMPORT(so) VULKAN_FUNC_LIST(VULKAN_FUNC_IMPORT, so)
+#define VULKAN_DECL VULKAN_GET_PROC_LIST(VULKAN_FUNC_DECL); VULKAN_FUNC_LIST(VULKAN_FUNC_DECL)
+#define VULKAN_IMPL VULKAN_GET_PROC_LIST(VULKAN_FUNC_IMPL); VULKAN_FUNC_LIST(VULKAN_FUNC_IMPL)
+#define VULKAN_IMPORT(instance) VULKAN_FUNC_LIST(VULKAN_FUNC_IMPORT_GET_INST, instance)
 #define VULKAN_SUCCESS(success) VULKAN_FUNC_LIST(VULKAN_FUNC_SUCCESS, success)
 
 #define VULKAN_DECL_EXT VULKAN_FUNC_EXT_LIST(VULKAN_FUNC_DECL)
 #define VULKAN_IMPL_EXT VULKAN_FUNC_EXT_LIST(VULKAN_FUNC_IMPL)
-#define VULKAN_IMPORT_EXT(so) VULKAN_FUNC_EXT_LIST(VULKAN_FUNC_IMPORT, so)
+#define VULKAN_IMPORT_EXT(instance) VULKAN_FUNC_EXT_LIST(VULKAN_FUNC_IMPORT_GET_INST, instance)
 #define VULKAN_SUCCESS_EXT(success) VULKAN_FUNC_EXT_LIST(VULKAN_FUNC_SUCCESS, success)
 
 #define VULKAN_DECL_OS VULKAN_FUNC_OS_EXT_LIST(VULKAN_FUNC_DECL)
 #define VULKAN_IMPL_OS VULKAN_FUNC_OS_EXT_LIST(VULKAN_FUNC_IMPL)
-#define VULKAN_IMPORT_OS(so) VULKAN_FUNC_OS_EXT_LIST(VULKAN_FUNC_IMPORT, so)
+#define VULKAN_IMPORT_OS(instance) VULKAN_FUNC_OS_EXT_LIST(VULKAN_FUNC_IMPORT_GET_INST, instance)
 #define VULKAN_SUCCESS_OS(success) VULKAN_FUNC_OS_EXT_LIST(VULKAN_FUNC_SUCCESS, success)
 
 VULKAN_DECL;

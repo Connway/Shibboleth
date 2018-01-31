@@ -1,4 +1,4 @@
-#include "TestFile.as"
+// #include "TestFile.as"
 
 shared class TestComponent : ScriptComponent
 {
