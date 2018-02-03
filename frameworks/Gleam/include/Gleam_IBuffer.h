@@ -1,5 +1,5 @@
 /************************************************************************************
-Copyright (C) 2016 by Nicholas LaCroix
+Copyright (C) 2018 by Nicholas LaCroix
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -32,7 +32,7 @@ class IRenderDevice;
 class IBuffer : public Gaff::IRefCounted
 {
 public:
-	enum BUFFER_TYPE {
+	enum BufferType {
 		VERTEX_DATA = 0,
 		INDEX_DATA,
 		SHADER_DATA,
@@ -40,7 +40,7 @@ public:
 		BUFFER_TYPE_SIZE
 	};
 
-	enum MAP_TYPE {
+	enum MapType {
 		NONE = 0,
 		READ,
 		WRITE,
@@ -50,7 +50,7 @@ public:
 	};
 
 	template <class T>
-	bool update(IRenderDevice& rd, const T* data, unsigned int count)
+	bool update(IRenderDevice& rd, const T* data, int32_t count)
 	{
 		return update(rd, (void*)data, sizeof(T) * count);
 	}
@@ -64,18 +64,18 @@ public:
 	struct BufferSettings
 	{
 		const void* data;
-		unsigned int size;
-		unsigned int stride;
-		BUFFER_TYPE type;
-		MAP_TYPE cpu_access;
+		size_t size;
+		int32_t stride;
+		BufferType type;
+		MapType cpu_access;
 		bool gpu_read_only;
-		unsigned int structure_byte_stride;
+		int32_t structure_byte_stride;
 	};
 
 	IBuffer(void) {}
 	virtual ~IBuffer(void) {}
 
-	INLINE bool init(IRenderDevice& rd, const BufferSettings& buffer_settings)
+	bool init(IRenderDevice& rd, const BufferSettings& buffer_settings)
 	{
 		return init(
 			rd, buffer_settings.data, buffer_settings.size, buffer_settings.type,
@@ -85,28 +85,28 @@ public:
 	}
 
 	virtual bool init(
-		IRenderDevice& rd, const void* data, unsigned int size, BUFFER_TYPE buffer_type = SHADER_DATA,
-		unsigned int stride = 0, MAP_TYPE cpu_access = NONE, bool gpu_read_only = true,
-		unsigned int structure_byte_stride = 0
+		IRenderDevice& rd, const void* data, size_t size, BufferType buffer_type = SHADER_DATA,
+		int32_t stride = 0, MapType cpu_access = NONE, bool gpu_read_only = true,
+		int32_t structure_byte_stride = 0
 	) = 0;
 	virtual void destroy(void) = 0;
 
-	virtual bool update(IRenderDevice& rd, const void* data, unsigned int size, unsigned int offset = 0) = 0;
-	virtual void* map(IRenderDevice& rd, MAP_TYPE map_type = WRITE) = 0;
+	virtual bool update(IRenderDevice& rd, const void* data, size_t size, size_t offset = 0) = 0;
+	virtual void* map(IRenderDevice& rd, MapType map_type = WRITE) = 0;
 	virtual void unmap(IRenderDevice& rd) = 0;
 
 	virtual RendererType getRendererType(void) const = 0;
 
-	INLINE BUFFER_TYPE getBufferType(void) const { return _buffer_type; }
-	INLINE unsigned int getStructuredByteStride(void) const { return _structure_stride; }
-	INLINE unsigned int getStride(void) const { return _stride; }
-	INLINE unsigned int getSize(void) const { return _size; }
+	BufferType getBufferType(void) const { return _buffer_type; }
+	int32_t getStructuredByteStride(void) const { return _structure_stride; }
+	int32_t getStride(void) const { return _stride; }
+	size_t getSize(void) const { return _size; }
 
 protected:
-	BUFFER_TYPE _buffer_type;
-	unsigned int _structure_stride;
-	unsigned int _stride;
-	unsigned int _size;
+	BufferType _buffer_type;
+	int32_t _structure_stride;
+	int32_t _stride;
+	size_t _size;
 
 	GAFF_NO_COPY(IBuffer);
 };

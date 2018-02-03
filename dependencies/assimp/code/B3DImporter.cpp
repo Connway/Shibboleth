@@ -3,12 +3,13 @@
 Open Asset Import Library (assimp)
 ---------------------------------------------------------------------------
 
-Copyright (c) 2006-2015, assimp team
+Copyright (c) 2006-2017, assimp team
+
 
 All rights reserved.
 
-Redistribution and use of this software in source and binary forms, 
-with or without modification, are permitted provided that the following 
+Redistribution and use of this software in source and binary forms,
+with or without modification, are permitted provided that the following
 conditions are met:
 
 * Redistributions of source code must retain the above
@@ -25,16 +26,16 @@ conditions are met:
   derived from this software without specific prior
   written permission of the assimp team.
 
-THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS 
-"AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT 
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+"AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
 LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
-A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT 
+A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
 OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
-SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT 
+SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
 LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
-DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY 
-THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT 
-(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE 
+DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ---------------------------------------------------------------------------
 */
@@ -50,12 +51,13 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "B3DImporter.h"
 #include "TextureTransform.h"
 #include "ConvertToLHProcess.h"
-#include <boost/scoped_ptr.hpp>
-#include "../include/assimp/IOSystem.hpp"
-#include "../include/assimp/anim.h"
-#include "../include/assimp/scene.h"
-#include "../include/assimp/DefaultLogger.hpp"
-
+#include "StringUtils.h"
+#include <memory>
+#include <assimp/IOSystem.hpp>
+#include <assimp/anim.h>
+#include <assimp/scene.h>
+#include <assimp/DefaultLogger.hpp>
+#include <assimp/importerdesc.h>
 
 using namespace Assimp;
 using namespace std;
@@ -70,15 +72,28 @@ static const aiImporterDesc desc = {
     0,
     0,
     0,
-    "b3d" 
+    "b3d"
 };
 
 // (fixme, Aramis) quick workaround to get rid of all those signed to unsigned warnings
-#ifdef _MSC_VER 
+#ifdef _MSC_VER
 #	pragma warning (disable: 4018)
 #endif
 
 //#define DEBUG_B3D
+
+template<typename T>
+void DeleteAllBarePointers(std::vector<T>& x)
+{
+    for(auto p : x)
+    {
+        delete p;
+    }
+}
+
+B3DImporter::~B3DImporter()
+{
+}
 
 // ------------------------------------------------------------------------------------------------
 bool B3DImporter::CanRead( const std::string& pFile, IOSystem* /*pIOHandler*/, bool /*checkSig*/) const{
@@ -113,7 +128,7 @@ void B3DImporter::InternReadFile( const std::string& pFile, aiScene* pScene, IOS
     cout<<"Hello world from the B3DImporter!"<<endl;
 #endif
 
-    boost::scoped_ptr<IOStream> file( pIOHandler->Open( pFile));
+    std::unique_ptr<IOStream> file( pIOHandler->Open( pFile));
 
     // Check whether we can read from the file
     if( file.get() == NULL)
@@ -155,7 +170,8 @@ int B3DImporter::ReadByte(){
 // ------------------------------------------------------------------------------------------------
 int B3DImporter::ReadInt(){
     if( _pos+4<=_buf.size() ){
-        int n=*(int*)&_buf[_pos];
+        int n;
+        memcpy(&n, &_buf[_pos], 4);
         _pos+=4;
         return n;
     }
@@ -166,7 +182,8 @@ int B3DImporter::ReadInt(){
 // ------------------------------------------------------------------------------------------------
 float B3DImporter::ReadFloat(){
     if( _pos+4<=_buf.size() ){
-        float n=*(float*)&_buf[_pos];
+        float n;
+        memcpy(&n, &_buf[_pos], 4);
         _pos+=4;
         return n;
     }
@@ -249,6 +266,21 @@ T *B3DImporter::to_array( const vector<T> &v ){
     return p;
 }
 
+
+// ------------------------------------------------------------------------------------------------
+template<class T>
+T **unique_to_array( vector<std::unique_ptr<T> > &v ){
+    if( v.empty() ) {
+        return 0;
+    }
+    T **p = new T*[ v.size() ];
+    for( size_t i = 0; i < v.size(); ++i ){
+        p[i] = v[i].release();
+    }
+    return p;
+}
+
+
 // ------------------------------------------------------------------------------------------------
 void B3DImporter::ReadTEXS(){
     while( ChunkSize() ){
@@ -277,14 +309,13 @@ void B3DImporter::ReadBRUS(){
         /*int blend=**/ReadInt();
         int fx=ReadInt();
 
-        aiMaterial *mat=new aiMaterial;
-        _materials.push_back( mat );
-        
+        std::unique_ptr<aiMaterial> mat(new aiMaterial);
+
         // Name
         aiString ainame( name );
         mat->AddProperty( &ainame,AI_MATKEY_NAME );
-        
-        // Diffuse color 
+
+        // Diffuse color
         mat->AddProperty( &color,1,AI_MATKEY_COLOR_DIFFUSE );
 
         // Opacity
@@ -293,16 +324,16 @@ void B3DImporter::ReadBRUS(){
         // Specular color
         aiColor3D speccolor( shiny,shiny,shiny );
         mat->AddProperty( &speccolor,1,AI_MATKEY_COLOR_SPECULAR );
-        
+
         // Specular power
         float specpow=shiny*128;
         mat->AddProperty( &specpow,1,AI_MATKEY_SHININESS );
-        
+
         // Double sided
         if( fx & 0x10 ){
-            int i=1; 
+            int i=1;
             mat->AddProperty( &i,1,AI_MATKEY_TWOSIDED );
-        } 		
+        }
 
         //Textures
         for( int i=0;i<n_texs;++i ){
@@ -315,6 +346,7 @@ void B3DImporter::ReadBRUS(){
                 mat->AddProperty( &texname,AI_MATKEY_TEXTURE_DIFFUSE(0) );
             }
         }
+        _materials.emplace_back( std::move(mat) );
     }
 }
 
@@ -330,7 +362,7 @@ void B3DImporter::ReadVRTS(){
     int sz=12+(_vflags&1?12:0)+(_vflags&2?16:0)+(_tcsets*_tcsize*4);
     int n_verts=ChunkSize()/sz;
 
-    int v0=_vertices.size();
+    int v0=static_cast<int>(_vertices.size());
     _vertices.resize( v0+n_verts );
 
     for( int i=0;i<n_verts;++i ){
@@ -368,8 +400,7 @@ void B3DImporter::ReadTRIS( int v0 ){
         Fail( "Bad material id" );
     }
 
-    aiMesh *mesh=new aiMesh;
-    _meshes.push_back( mesh );
+    std::unique_ptr<aiMesh> mesh(new aiMesh);
 
     mesh->mMaterialIndex=matid;
     mesh->mNumFaces=0;
@@ -397,13 +428,15 @@ void B3DImporter::ReadTRIS( int v0 ){
         ++mesh->mNumFaces;
         ++face;
     }
+
+    _meshes.emplace_back( std::move(mesh) );
 }
 
 // ------------------------------------------------------------------------------------------------
 void B3DImporter::ReadMESH(){
     /*int matid=*/ReadInt();
 
-    int v0=_vertices.size();
+    int v0= static_cast<int>(_vertices.size());
 
     while( ChunkSize() ){
         string t=ReadChunk();
@@ -461,17 +494,17 @@ void B3DImporter::ReadKEYS( aiNodeAnim *nodeAnim ){
     }
 
     if( flags & 1 ){
-        nodeAnim->mNumPositionKeys=trans.size();
+        nodeAnim->mNumPositionKeys=static_cast<unsigned int>(trans.size());
         nodeAnim->mPositionKeys=to_array( trans );
     }
 
     if( flags & 2 ){
-        nodeAnim->mNumScalingKeys=scale.size();
+        nodeAnim->mNumScalingKeys=static_cast<unsigned int>(scale.size());
         nodeAnim->mScalingKeys=to_array( scale );
     }
 
     if( flags & 4 ){
-        nodeAnim->mNumRotationKeys=rot.size();
+        nodeAnim->mNumRotationKeys=static_cast<unsigned int>(rot.size());
         nodeAnim->mRotationKeys=to_array( rot );
     }
 }
@@ -482,11 +515,11 @@ void B3DImporter::ReadANIM(){
     int frames=ReadInt();
     float fps=ReadFloat();
 
-    aiAnimation *anim=new aiAnimation;
-    _animations.push_back( anim );
+    std::unique_ptr<aiAnimation> anim(new aiAnimation);
 
     anim->mDuration=frames;
     anim->mTicksPerSecond=fps;
+    _animations.emplace_back( std::move(anim) );
 }
 
 // ------------------------------------------------------------------------------------------------
@@ -505,7 +538,7 @@ aiNode *B3DImporter::ReadNODE( aiNode *parent ){
 
     aiMatrix4x4 tform=trans * rot * scale;
 
-    int nodeid=_nodes.size();
+    int nodeid=static_cast<int>(_nodes.size());
 
     aiNode *node=new aiNode( name );
     _nodes.push_back( node );
@@ -513,16 +546,16 @@ aiNode *B3DImporter::ReadNODE( aiNode *parent ){
     node->mParent=parent;
     node->mTransformation=tform;
 
-    aiNodeAnim *nodeAnim=0;
+    std::unique_ptr<aiNodeAnim> nodeAnim;
     vector<unsigned> meshes;
     vector<aiNode*> children;
 
     while( ChunkSize() ){
         string t=ReadChunk();
         if( t=="MESH" ){
-            int n=_meshes.size();
+            unsigned int n= static_cast<unsigned int>(_meshes.size());
             ReadMESH();
-            for( int i=n;i<(int)_meshes.size();++i ){
+            for( unsigned int i=n;i<static_cast<unsigned int>(_meshes.size());++i ){
                 meshes.push_back( i );
             }
         }else if( t=="BONE" ){
@@ -531,11 +564,10 @@ aiNode *B3DImporter::ReadNODE( aiNode *parent ){
             ReadANIM();
         }else if( t=="KEYS" ){
             if( !nodeAnim ){
-                nodeAnim=new aiNodeAnim;
-                _nodeAnims.push_back( nodeAnim );
+                nodeAnim.reset(new aiNodeAnim);
                 nodeAnim->mNodeName=node->mName;
             }
-            ReadKEYS( nodeAnim );
+            ReadKEYS( nodeAnim.get() );
         }else if( t=="NODE" ){
             aiNode *child=ReadNODE( node );
             children.push_back( child );
@@ -543,10 +575,14 @@ aiNode *B3DImporter::ReadNODE( aiNode *parent ){
         ExitChunk();
     }
 
-    node->mNumMeshes=meshes.size();
+    if (nodeAnim) {
+        _nodeAnims.emplace_back( std::move(nodeAnim) );
+    }
+
+    node->mNumMeshes= static_cast<unsigned int>(meshes.size());
     node->mMeshes=to_array( meshes );
 
-    node->mNumChildren=children.size();
+    node->mNumChildren=static_cast<unsigned int>(children.size());
     node->mChildren=to_array( children );
 
     return node;
@@ -556,22 +592,27 @@ aiNode *B3DImporter::ReadNODE( aiNode *parent ){
 void B3DImporter::ReadBB3D( aiScene *scene ){
 
     _textures.clear();
+
     _materials.clear();
 
     _vertices.clear();
+
     _meshes.clear();
 
+    DeleteAllBarePointers(_nodes);
     _nodes.clear();
+
     _nodeAnims.clear();
+
     _animations.clear();
 
     string t=ReadChunk();
     if( t=="BB3D" ){
         int version=ReadInt();
-        
+
         if (!DefaultLogger::isNullLogger()) {
             char dmp[128];
-            sprintf(dmp,"B3D file format version: %i",version);
+            ai_snprintf(dmp, 128, "B3D file format version: %i",version);
             DefaultLogger::get()->info(dmp);
         }
 
@@ -598,7 +639,7 @@ void B3DImporter::ReadBB3D( aiScene *scene ){
         aiNode *node=_nodes[i];
 
         for( size_t j=0;j<node->mNumMeshes;++j ){
-            aiMesh *mesh=_meshes[node->mMeshes[j]];
+            aiMesh *mesh = _meshes[node->mMeshes[j]].get();
 
             int n_tris=mesh->mNumFaces;
             int n_verts=mesh->mNumVertices=n_tris * 3;
@@ -644,7 +685,7 @@ void B3DImporter::ReadBB3D( aiScene *scene ){
                 aiNode *bnode=_nodes[i];
 
                 bone->mName=bnode->mName;
-                bone->mNumWeights=weights.size();
+                bone->mNumWeights= static_cast<unsigned int>(weights.size());
                 bone->mWeights=to_array( weights );
 
                 aiMatrix4x4 mat=bnode->mTransformation;
@@ -654,34 +695,35 @@ void B3DImporter::ReadBB3D( aiScene *scene ){
                 }
                 bone->mOffsetMatrix=mat.Inverse();
             }
-            mesh->mNumBones=bones.size();
+            mesh->mNumBones= static_cast<unsigned int>(bones.size());
             mesh->mBones=to_array( bones );
         }
     }
 
     //nodes
     scene->mRootNode=_nodes[0];
+    _nodes.clear();  // node ownership now belongs to scene
 
     //material
     if( !_materials.size() ){
-        _materials.push_back( new aiMaterial );
+        _materials.emplace_back( std::unique_ptr<aiMaterial>(new aiMaterial) );
     }
-    scene->mNumMaterials=_materials.size();
-    scene->mMaterials=to_array( _materials );
-    
+    scene->mNumMaterials= static_cast<unsigned int>(_materials.size());
+    scene->mMaterials = unique_to_array( _materials );
+
     //meshes
-    scene->mNumMeshes=_meshes.size();
-    scene->mMeshes=to_array( _meshes );
+    scene->mNumMeshes= static_cast<unsigned int>(_meshes.size());
+    scene->mMeshes = unique_to_array( _meshes );
 
     //animations
     if( _animations.size()==1 && _nodeAnims.size() ){
 
-        aiAnimation *anim=_animations.back();
-        anim->mNumChannels=_nodeAnims.size();
-        anim->mChannels=to_array( _nodeAnims );
+        aiAnimation *anim = _animations.back().get();
+        anim->mNumChannels=static_cast<unsigned int>(_nodeAnims.size());
+        anim->mChannels = unique_to_array( _nodeAnims );
 
-        scene->mNumAnimations=_animations.size();
-        scene->mAnimations=to_array( _animations );
+        scene->mNumAnimations=static_cast<unsigned int>(_animations.size());
+        scene->mAnimations=unique_to_array( _animations );
     }
 
     // convert to RH

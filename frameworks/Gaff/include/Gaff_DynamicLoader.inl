@@ -1,5 +1,5 @@
 /************************************************************************************
-Copyright (C) 2016 by Nicholas LaCroix
+Copyright (C) 2018 by Nicholas LaCroix
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -43,16 +43,17 @@ typename DynamicLoader<Allocator>::ModulePtr DynamicLoader<Allocator>::loadModul
 {
 	GAFF_ASSERT(filename && name && strlen(filename) && strlen(name));
 
-	if (_modules.indexOf(name) != SIZE_T_FAIL) {
-		return getModule(name);
+	auto it = Find(_modules, FNV1aHash32String(name));
+
+	if (it != _modules.end()) {
+		return it->second;
 	}
 
-	ModulePtr module(GAFF_ALLOCT(DynamicModule, _allocator), _allocator);
+	ModulePtr module = MakeShared<DynamicModule, Allocator>(_allocator);
 
-	if (module.valid()) {
+	if (module) {
 		if (module->load(filename)) {
-			HString str(name, FNV1aHash32, _allocator);
-			_modules.insert(str, module);
+			_modules.emplace(std::move(HString(name, FNV1aHash32, _allocator)), module);
 			return module;
 		}
 	}
@@ -64,14 +65,22 @@ template <class Allocator>
 typename DynamicLoader<Allocator>::ModulePtr DynamicLoader<Allocator>::getModule(const char* name)
 {
 	GAFF_ASSERT(name && strlen(name));
-	HString str(name, FNV1aHash32, _allocator);
-	return _modules[name];
+	auto it = Find(_modules, Gaff::FNV1aHash32String(name));
+
+	if (it != _modules.end()) {
+		return it->second;
+	}
+
+	return ModulePtr();
 }
 
 template <class Allocator>
 void DynamicLoader<Allocator>::removeModule(const char* name)
 {
 	GAFF_ASSERT(name && strlen(name));
-	HString str(name, FNV1aHash32, _allocator);
-	_modules.erase(str);
+	auto it = Find(_modules, Gaff::FNV1aHash32String(name));
+
+	if (it != _modules.end()) {
+		_modules.erase(it);
+	}
 }

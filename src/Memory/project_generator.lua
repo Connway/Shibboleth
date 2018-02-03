@@ -5,14 +5,9 @@ project "Memory"
 		location ("../../project/" .. _ACTION .. "/memory")
 	end
 
-	configurations { "Debug", "Release" }
-	dofile("../../utils/config_map.lua")
-
 	kind "SharedLib"
 	language "C++"
-	defines { "IS_MEMORY" }
-
-	flags { "FatalWarnings" }
+	defines { "IS_MEMORY", "JEMALLOC_EXPORT=" }
 
 	files { "**.h", "**.cpp" }
 
@@ -21,28 +16,27 @@ project "Memory"
 		"include",
 		"../Shared/include",
 		"../../frameworks/Gaff/include",
-		"../../dependencies/utf8-cpp",
+		"../../dependencies/rpmalloc",
+		"../../dependencies/EASTL/include",
 		"../../dependencies/dirent"
 	}
 
-	dependson { "Shared", "Gaff", "Boxer" }
-	links { "Shared", "Gaff", "Boxer" }
+	dependson { "Gaff", "EASTL", "rpmalloc" }
+	links { "Gaff", "EASTL", "rpmalloc" }
+
+	filter { "configurations:not Analyze*" }
+		flags { "FatalWarnings" }
 
 	filter { "system:windows", "options:symbols" }
 		links { "Dbghelp" }
 
-	filter { "configurations:Debug", "platforms:x86" }
-		targetsuffix "32d"
-
-	filter { "configurations:Release", "platforms:x86" }
-		targetsuffix "32"
-
-	filter { "configurations:Debug", "platforms:x64" }
-		targetsuffix "64d"
-
-	filter { "configurations:Release", "platforms:x64" }
-		targetsuffix "64"
+	filter { "configurations:Debug* or Optimized_Debug*"}
+		defines { "JEMALLOC_DEBUG" }
 
 	filter {}
 
-	dofile("../../utils/os_conditionals.lua")
+	postbuildcommands
+	{
+		"{MKDIR} ../../../workingdir/App/bin",
+		"{COPY} %{cfg.targetdir}/%{cfg.buildtarget.name} ../../../workingdir/App/bin"
+	}

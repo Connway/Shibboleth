@@ -1,5 +1,5 @@
 /************************************************************************************
-Copyright (C) 2016 by Nicholas LaCroix
+Copyright (C) 2018 by Nicholas LaCroix
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -33,7 +33,7 @@ class IBuffer;
 class IMesh : public Gaff::IRefCounted
 {
 public:
-	enum TOPOLOGY_TYPE {
+	enum TopologyType {
 		POINT_LIST = 0,
 		LINE_LIST,
 		LINE_STRIP,
@@ -55,32 +55,34 @@ public:
 
 	template <class Vertex>
 	bool addVertData(
-		IRenderDevice& rd, const Vertex* vert_data, unsigned int vert_count,
-		unsigned int* indices, unsigned int index_count, TOPOLOGY_TYPE primitive_type = TRIANGLE_LIST)
+		IRenderDevice& rd, const Vertex* vert_data, int32_t vert_count,
+		int32_t* indices, int32_t index_count, TopologyType primitive_type = TRIANGLE_LIST)
 	{
 		return addVertData(rd, vert_data, vert_count, sizeof(Vertex), indices, index_count, primitive_type);
 	}
 
 	virtual bool addVertData(
-		IRenderDevice& rd, const void* vert_data, unsigned int vert_count, unsigned int vert_size,
-		unsigned int* indices, unsigned int index_count, TOPOLOGY_TYPE primitive_type = TRIANGLE_LIST
+		IRenderDevice& rd, const void* vert_data, int32_t vert_count, int32_t vert_size,
+		int32_t* indices, int32_t index_count, TopologyType primitive_type = TRIANGLE_LIST
 	) = 0;
 
 	virtual void addBuffer(IBuffer* buffer) = 0;
-	virtual const IBuffer* getBuffer(unsigned int index) const = 0;
-	virtual IBuffer* getBuffer(unsigned int index) = 0;
-	virtual size_t getBufferCount(void) const = 0;
+	virtual const IBuffer* getBuffer(int32_t index) const = 0;
+	virtual IBuffer* getBuffer(int32_t index) = 0;
+	virtual int32_t getBufferCount(void) const = 0;
 
 	virtual void setIndiceBuffer(IBuffer* buffer) = 0;
+	virtual const IBuffer* getIndiceBuffer(void) const = 0;
+	virtual IBuffer* getIndiceBuffer(void) = 0;
 
-	virtual void setTopologyType(TOPOLOGY_TYPE topology) = 0;
-	virtual TOPOLOGY_TYPE getTopologyType(void) const = 0;
+	virtual void setTopologyType(TopologyType topology) = 0;
+	virtual TopologyType getTopologyType(void) const = 0;
 
-	virtual void setIndexCount(unsigned int count) = 0;
-	virtual unsigned int getIndexCount(void) const = 0;
+	virtual void setIndexCount(int32_t count) = 0;
+	virtual int32_t getIndexCount(void) const = 0;
 
-	virtual void renderNonIndexed(IRenderDevice& rd, unsigned int vert_count, unsigned int start_location = 0) = 0;
-	virtual void renderInstanced(IRenderDevice& rd, unsigned int count) = 0;
+	virtual void renderNonIndexed(IRenderDevice& rd, int32_t vert_count, int32_t start_location = 0) = 0;
+	virtual void renderInstanced(IRenderDevice& rd, int32_t count) = 0;
 	virtual void render(IRenderDevice& rd) = 0;
 
 	virtual RendererType getRendererType(void) const = 0;

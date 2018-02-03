@@ -1,5 +1,5 @@
 /************************************************************************************
-Copyright (C) 2016 by Nicholas LaCroix
+Copyright (C) 2018 by Nicholas LaCroix
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -27,9 +27,6 @@ THE SOFTWARE.
 
 NS_GAFF
 
-/*!
-	\note Takes ownership of the connection.
-*/
 Connection::Connection(const Connection& rhs):
 	_peer(rhs._peer), _cleanup(true)
 {
@@ -53,10 +50,6 @@ Connection::~Connection(void)
 	}
 }
 
-/*!
-	\brief Destroys the connection.
-	\note Will call disconnectNow() if there is an active connection.
-*/
 void Connection::destroy(void)
 {
 	GAFF_ASSERT(_cleanup);
@@ -100,55 +93,36 @@ void Connection::setUserData(void* data)
 	_peer->data = data;
 }
 
-/*!
-	\brief See the <a href="http://enet.bespin.org/group__peer.html#gab35807c848b6c88af12ce8476dffbc84">enet Documentation</a>.
-*/
 void Connection::setThrottle(unsigned int interval, unsigned int acceleration, unsigned int deceleration)
 {
 	GAFF_ASSERT(_peer);
 	enet_peer_throttle_configure(_peer, interval, acceleration, deceleration);
 }
 
-/*!
-	\brief See the <a href="http://enet.bespin.org/group__peer.html#gac48f35cdd39a89318a7b4fc19920b21b">enet Documentation</a>.
-*/
 void Connection::setTimeout(unsigned int limit, unsigned int min, unsigned int max)
 {
 	GAFF_ASSERT(_peer);
 	enet_peer_timeout(_peer, limit, min, max);
 }
 
-/*!
-	\brief Sets the interval at which a connection will be pinged. For more information see the <a href="http://enet.bespin.org/group__peer.html#gacddc2107f6e6b9e39812c1dfecff335b">enet Documentation</a>.
-	\param interval Time in milliseconds to ping the connection.
-*/
 void Connection::setPingInterval(unsigned int interval)
 {
 	GAFF_ASSERT(_peer);
 	enet_peer_ping_interval(_peer, interval);
 }
 
-/*!
-	\brief See the <a href="http://enet.bespin.org/group__peer.html#ga0e807704b6ecace5004c2cdcfbf813c2">enet Documentation</a>.
-*/
 void Connection::disconnect(unsigned int data)
 {
 	GAFF_ASSERT(_peer);
 	enet_peer_disconnect(_peer, data);
 }
 
-/*!
-	\brief See the <a href="http://enet.bespin.org/group__peer.html#ga636cc45f52461b567d6daffe4ab8f4e9">enet Documentation</a>.
-*/
 void Connection::disconnectNow(unsigned int data)
 {
 	GAFF_ASSERT(_peer);
 	enet_peer_disconnect_now(_peer, data);
 }
 
-/*!
-	\brief See the <a href="http://enet.bespin.org/group__peer.html#ga759270d8cccec70f76274e93b49e5ac5">enet Documentation</a>.
-*/
 void Connection::disconnectLater(unsigned int data)
 {
 	GAFF_ASSERT(_peer);
@@ -161,14 +135,6 @@ void Connection::ping(void)
 	enet_peer_ping(_peer);
 }
 
-/*!
-	\brief Queues a packet to be sent.
-	
-	\param channel The channel to send the packet on.
-	\param data The data we are sending.
-	\param data_size The size of the data buffer (in bytes).
-	\param packet_flags A list of bitwise or concatenated PacketFlags.
-*/
 bool Connection::send(unsigned char channel, void* data, size_t data_size, unsigned int packet_flags)
 {
 	GAFF_ASSERT(_peer);
@@ -208,15 +174,6 @@ Connection::operator bool(void) const
 	return valid();
 }
 
-/*!
-	\brief Connects to the \a address at \a port from the specified \a host.
-	
-	\param host The host we are connecting from.
-	\param address The address to connect to.
-	\param port The port to connect to.
-	\param channels The number of channels to open on this connection.
-	\param data User data to pass to the receiving host.
-*/
 void Connection::connect(Host& host, const char* address, unsigned short port, size_t channels, unsigned int data)
 {
 	ENetAddress addr = { ENET_HOST_ANY, port };

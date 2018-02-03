@@ -1,5 +1,5 @@
 /************************************************************************************
-Copyright (C) 2016 by Nicholas LaCroix
+Copyright (C) 2018 by Nicholas LaCroix
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -22,12 +22,9 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Shibboleth_MessageBroadcaster.h"
-#include "Shibboleth_DynamicLoader.h"
-#include "Shibboleth_HashString.h"
+//#include "Shibboleth_MessageBroadcaster.h"
 #include "Shibboleth_LogManager.h"
-#include "Shibboleth_JobPool.h"
-#include "Shibboleth_Array.h"
+#include "Shibboleth_SmartPtrs.h"
 #include "Shibboleth_IApp.h"
 
 NS_SHIBBOLETH
@@ -35,68 +32,64 @@ NS_SHIBBOLETH
 class App : public IApp
 {
 public:
-	template <class Callback>
-	void forEachManager(Callback&& callback)
-	{
-		for (auto it = _manager_map.begin(); it != _manager_map.end(); ++it) {
-			if (callback(*it->manager)) {
-				break;
-			}
-		}
-	}
+	//template <class Callback>
+	//void forEachManager(Callback&& callback)
+	//{
+	//	for (auto it = _managers.begin(); it != _managers.end(); ++it) {
+	//		if (callback(*it)) {
+	//			break;
+	//		}
+	//	}
+	//}
+
+	//template <class Callback>
+	//bool forEachReflection(Callback&& callback)
+	//{
+	//	for (auto& refl_entry : _reflection_map) {
+	//		if (callback(refl_entry.second)) {
+	//			return true;
+	//		}
+	//	}
+
+	//	return false;
+	//}
 
 	App(void);
 	~App(void);
 
 	bool init(int argc, char** argv);
+#ifdef PLATFORM_WINDOWS
+	bool init(void);
+#endif
 	void run(void);
 	void destroy(void);
 
-	const IManager* getManager(const AHashString& name) const;
-	const IManager* getManager(const AString& name) const;
-	const IManager* getManager(const char* name) const;
-	IManager* getManager(const AHashString& name);
-	IManager* getManager(const AString& name);
-	IManager* getManager(const char* name);
+	const IManager* getManager(Gaff::Hash64 name) const override;
+	IManager* getManager(Gaff::Hash64 name) override;
 
-	MessageBroadcaster& getBroadcaster(void);
+	//MessageBroadcaster& getBroadcaster(void) override;
 
-	const Array<unsigned int>& getStateTransitions(unsigned int state_id);
-	unsigned int getStateID(const char* name);
-	void switchState(unsigned int state);
+	IFileSystem* getFileSystem(void) override;
+	const VectorMap<HashString32, U8String>& getCmdLine(void) const override;
 
-	IFileSystem* getFileSystem(void);
-	const HashMap<AHashString, AString>& getCmdLine(void) const;
-	HashMap<AHashString, AString>& getCmdLine(void);
+	LogManager& getLogManager(void) override;
+	JobPool& getJobPool(void) override;
 
-	JobPool& getJobPool(void);
+	DynamicLoader::ModulePtr loadModule(const char* filename, const char* name) override;
 
-	void getWorkerThreadIDs(Array<unsigned int>& out) const;
-	void helpUntilNoJobs(void);
-	void doAJob(void);
+	const Gaff::IEnumReflectionDefinition* getEnumReflection(Gaff::Hash64 name) const override;
+	void registerEnumReflection(Gaff::Hash64 name, Gaff::IEnumReflectionDefinition& ref_def) override;
 
-	const char* getLogFileName(void) const;
-	LogManager& getLogManager(void);
+	const Gaff::IReflectionDefinition* getReflection(Gaff::Hash64 name) const override;
+	void registerReflection(Gaff::Hash64 name, Gaff::IReflectionDefinition& ref_def) override;
+	void registerTypeBucket(Gaff::Hash64 name) override;
+	const Vector<Gaff::Hash64>* getTypeBucket(Gaff::Hash64 name) const override;
 
-	DynamicLoader::ModulePtr loadModule(const char* filename, const char* name);
-
-	bool isQuitting(void) const;
-	void quit(void);
+	bool isQuitting(void) const override;
+	void quit(void) override;
 
 private:
-	struct ManagerEntry
-	{
-		typedef IManager* (*CreateManagerFunc)(unsigned int);
-		typedef void (*DestroyManagerFunc)(IManager*, unsigned int);
-		typedef unsigned int (*GetNumManagersFunc)(void);
-		typedef bool (*InitManagerModuleFunc)(IApp&);
-
-		DynamicLoader::ModulePtr module;
-		CreateManagerFunc create_func;
-		DestroyManagerFunc destroy_func;
-		IManager* manager;
-		unsigned int manager_id;
-	};
+	using InitModuleFunc = bool (*)(IApp&);
 
 	struct FileSystemData
 	{
@@ -113,28 +106,32 @@ private:
 		CreateFileSystemFunc create_func;
 	};
 
-	using ManagerMap = HashMap<AHashString, ManagerEntry>;
 	using MainLoopFunc = void (*)(void);
 
 	bool _running;
 	MainLoopFunc _main_loop;
 
-	MessageBroadcaster _broadcaster;
+	VectorMap< Gaff::Hash64, UniquePtr<Gaff::IEnumReflectionDefinition> > _enum_reflection_map;
+	VectorMap< Gaff::Hash64, UniquePtr<Gaff::IReflectionDefinition> > _reflection_map;
+	VectorMap< Gaff::Hash64, UniquePtr<IManager> > _manager_map;
+	VectorMap< Gaff::Hash64, Vector<Gaff::Hash64> > _type_buckets;
+
+	//MessageBroadcaster _broadcaster;
 	DynamicLoader _dynamic_loader;
-	ManagerMap _manager_map;
 	JobPool _job_pool;
-	LogManager _logger;
-	char _log_file_name[64];
+	LogManager _log_mgr;
 
 	FileSystemData _fs;
 
-	HashMap<AHashString, AString> _cmd_line_args;
+	VectorMap<HashString32, U8String> _cmd_line_args;
 
+	bool initInternal(void);
 	bool loadFileSystem(void);
-	bool loadManagers(void);
 	bool loadMainLoop(void);
+	bool loadModules(void);
 	bool initApp(void);
 
+	bool loadModule(const char* module_name);
 	void removeExtraLogs(void);
 
 	GAFF_NO_COPY(App);

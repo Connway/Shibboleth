@@ -1,5 +1,5 @@
 /************************************************************************************
-Copyright (C) 2016 by Nicholas LaCroix
+Copyright (C) 2018 by Nicholas LaCroix
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -24,8 +24,9 @@ THE SOFTWARE.
 
 #include "Shibboleth_IFileSystem.h"
 #include "Shibboleth_String.h"
-#include "Shibboleth_Array.h"
-#include <Gaff_SpinLock.h>
+#include "Shibboleth_Vector.h"
+#include <atomic>
+#include <mutex>
 
 NS_SHIBBOLETH
 
@@ -56,26 +57,50 @@ public:
 	IFile* openFile(const char* file_name);
 	void closeFile(IFile* file);
 
-	bool forEachFile(const char* directory, Gaff::FunctionBinder<bool, const char*, IFile*>& callback);
+	bool forEachFile(const char* directory, eastl::function<bool (const char*, IFile*)>& callback);
 
 private:
 	struct FileData
 	{
-		FileData(void) {}
-		FileData(FileData&& file_data):
-			name(std::move(file_data.name)),
-			file(file_data.file),
-			count(file_data.count)
+		FileData(void) = default;
+
+		FileData(const FileData& rhs):
+			name(rhs.name),
+			file(rhs.file),
+			count(static_cast<int32_t>(rhs.count))
 		{
 		}
 
-		AString name;
+		FileData(FileData&& rhs):
+			name(std::move(rhs.name)),
+			file(rhs.file),
+			count(static_cast<int32_t>(rhs.count))
+		{
+		}
+
+		FileData& operator=(const FileData& rhs)
+		{
+			name = rhs.name;
+			file = rhs.file;
+			count = static_cast<int32_t>(rhs.count);
+			return *this;
+		}
+
+		FileData& operator=(FileData&& rhs)
+		{
+			name = std::move(rhs.name);
+			file = rhs.file;
+			count = static_cast<int32_t>(rhs.count);
+			return *this;
+		}
+
+		U8String name;
 		IFile* file;
-		volatile unsigned int count;
+		std::atomic_int32_t count;
 	};
 
-	Array<FileData> _files;
-	Gaff::SpinLock _file_lock;
+	Vector<FileData> _files;
+	std::mutex _file_lock;
 };
 
 NS_END

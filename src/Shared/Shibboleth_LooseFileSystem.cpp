@@ -1,5 +1,5 @@
 /************************************************************************************
-Copyright (C) 2016 by Nicholas LaCroix
+Copyright (C) 2018 by Nicholas LaCroix
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -22,8 +22,7 @@ THE SOFTWARE.
 
 #include "Shibboleth_LooseFileSystem.h"
 #include "Shibboleth_String.h"
-#include <Gaff_ScopedLock.h>
-#include <Gaff_Atomic.h>
+#include <Gaff_Directory.h>
 #include <Gaff_Utils.h>
 #include <Gaff_File.h>
 
@@ -70,18 +69,19 @@ LooseFileSystem::~LooseFileSystem(void)
 IFile* LooseFileSystem::openFile(const char* file_name)
 {
 	GAFF_ASSERT(file_name && strlen(file_name));
-	Gaff::ScopedLock<Gaff::SpinLock> scoped_lock(_file_lock);
+	std::lock_guard<std::mutex> lock(_file_lock);
 
-	auto it = _files.linearSearch(file_name, [](const FileData& lhs, const char* rhs) -> bool
+	auto it = Gaff::Find(_files, file_name,
+	[](const FileData& lhs, const char* rhs) -> bool
 	{
 		return lhs.name == rhs;
 	});
 
 	if (it == _files.end()) {
-		AString name = AString("./") + file_name; // Pre-pend './' to name
+		U8String name = U8String("./") + file_name; // Pre-pend './' to name
 		Gaff::File loose_file;
 
-		if (!loose_file.open(name.getBuffer(), Gaff::File::READ_BINARY)) {
+		if (!loose_file.open(name.data(), Gaff::File::READ_BINARY)) {
 			return nullptr;
 		}
 
@@ -112,11 +112,11 @@ IFile* LooseFileSystem::openFile(const char* file_name)
 		file_data.file = file;
 		file_data.count = 1;
 
-		_files.push(std::move(file_data));
+		_files.emplace_back(std::move(file_data));
 		return file;
 
 	} else {
-		AtomicIncrement(&it->count);
+		++it->count;
 		return it->file;
 	}
 }
@@ -124,28 +124,29 @@ IFile* LooseFileSystem::openFile(const char* file_name)
 void LooseFileSystem::closeFile(IFile* file)
 {
 	GAFF_ASSERT(file);
-	Gaff::ScopedLock<Gaff::SpinLock> scoped_lock(_file_lock);
+	std::lock_guard<std::mutex> lock(_file_lock);
 
-	auto it = _files.linearSearch(file, [](const FileData& lhs, const IFile* rhs) -> bool
+	auto it = Gaff::Find(_files, file,
+	[](const FileData& lhs, const IFile* rhs) -> bool
 	{
 		return lhs.file == rhs;
 	});
 
 	if (it != _files.end()) {
-		unsigned int new_count = AtomicDecrement(&it->count);
+		int32_t new_count = --it->count;
 
 		if (!new_count) {
 			SHIB_FREET(it->file, *GetAllocator());
-			_files.fastErase(it);
+			_files.erase_unsorted(it);
 		}
 	}
 }
 
-bool LooseFileSystem::forEachFile(const char* directory, Gaff::FunctionBinder<bool, const char*, IFile*>& callback)
+bool LooseFileSystem::forEachFile(const char* directory, eastl::function<bool (const char*, IFile*)>& callback)
 {
 	return Gaff::ForEachTypeInDirectory<Gaff::FDT_RegularFile>(directory, [&](const char* file_name, size_t) -> bool
 	{
-		AString full_path(directory);
+		U8String full_path(directory);
 
 		if (full_path[full_path.size() - 1] != '/') {
 			full_path += '/';
@@ -153,7 +154,7 @@ bool LooseFileSystem::forEachFile(const char* directory, Gaff::FunctionBinder<bo
 
 		full_path += file_name;
 
-		IFile* file = openFile(full_path.getBuffer());
+		IFile* file = openFile(full_path.data());
 
 		//if (!file) {
 		//	// handle failure

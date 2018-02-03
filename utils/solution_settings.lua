@@ -1,3 +1,15 @@
+function SetIntermediateAndTargetDirs(configuration)
+	if _ACTION then
+		filter { "configurations:" .. configuration, "platforms:x86" }
+			objdir("../build/" .. _ACTION .. "/intermediate")
+			targetdir("../build/" .. _ACTION .. "/output/x86/" .. configuration)
+
+		filter { "configurations:" .. configuration, "platforms:x64" }
+			objdir("../build/" .. _ACTION .. "/intermediate")
+			targetdir("../build/" .. _ACTION .. "/output/x64/" .. configuration)
+	end
+end
+
 -- if os.get() == "windows" then
 -- 	platforms { "x86", "x64" }
 -- else
@@ -12,8 +24,8 @@ rtti "Off"
 nativewchar "Default"
 floatingpoint "Fast"
 startproject "App"
-
-flags { "Symbols", "C++14" }
+symbols "On"
+cppdialect "C++14"
 
 filter { "options:physx" }
 	defines { "USE_PHYSX" }
@@ -25,62 +37,64 @@ filter { "options:physx" }
 filter { "platforms:x64" }
 	architecture "x64"
 
-filter { "configurations:Debug*", "platforms:x86" }
-	objdir "../build/intermediate"
-	targetdir "../build/output/x86/Debug"
+SetIntermediateAndTargetDirs("Debug")
+SetIntermediateAndTargetDirs("Release")
+SetIntermediateAndTargetDirs("Analyze")
+SetIntermediateAndTargetDirs("Profile")
+SetIntermediateAndTargetDirs("Optimized_Debug")
 
-filter { "configurations:Debug*", "platforms:x64" }
-	objdir "../build/intermediate"
-	targetdir "../build/output/x64/Debug"
+if _OPTIONS["gen-clang"] and (_ACTION == "vs2015" or _ACTION == "vs2017") then
+	SetIntermediateAndTargetDirs("Debug_Clang")
+	SetIntermediateAndTargetDirs("Release_Clang")
+	SetIntermediateAndTargetDirs("Analyze_Clang")
+	SetIntermediateAndTargetDirs("Profile_Clang")
+	SetIntermediateAndTargetDirs("Optimized_Debug_Clang")
+end
 
-filter { "configurations:Release*", "platforms:x86" }
-	objdir "../build/intermediate"
-	targetdir "../build/output/x86/Release"
+dofile("module_suffix.lua")
 
-filter { "configurations:Release*", "platforms:x64" }
-	objdir "../build/intermediate"
-	targetdir "../build/output/x64/Release"
-
-filter { "configurations:Debug_Analyze", "platforms:x86" }
-	objdir "../build/intermediate"
-	targetdir "../build/output/x86/Debug_Analyze"
-
-filter { "configurations:Debug_Analyze", "platforms:x64" }
-	objdir "../build/intermediate"
-	targetdir "../build/output/x64/Debug_Analyze"
-
-filter { "configurations:Release_Analyze", "platforms:x86" }
-	objdir "../build/intermediate"
-	targetdir "../build/output/x86/Release_Analyze"
-
-filter { "configurations:Release_Analyze", "platforms:x64" }
-	objdir "../build/intermediate"
-	targetdir "../build/output/x64/Release_Analyze"
-
-filter { "configurations:Debug*", "action:gmake", "options:not debug_optimization" }
+filter { "configurations:Debug*", "toolset:gcc", "options:not debug_optimization" }
 	optimize "Off"
 
-filter { "configurations:Debug*", "action:gmake", "options:debug_optimization" }
+filter { "configurations:Debug*", "toolset:gcc", "options:debug_optimization" }
 	optimize "Debug"
+
+filter { "configurations:Debug*", "toolset:not gcc" }
+	optimize "Debug"
+
+filter { "configurations:Debug* or Optimized_Debug*" }
+	defines { "_DEBUG", "DEBUG" }
+
+filter { "configurations:Release* or Profile* or Analyze*" }
+	flags { "LinkTimeOptimization" }
+	defines { "NDEBUG" }
+	optimize "Speed"
+	runtime "Release"
+
+filter { "configurations:Optimized_Debug*" }
+	flags { "LinkTimeOptimization" }
+	optimize "Speed"
+	runtime "Release"
+
+filter { "configurations:Profile" }
+	defines { "SHIB_PROFILE" }
 
 filter { "options:simd_set_aligned"}
 	defines { "SIMD_SET_ALIGNED" }
 
-filter { "action:vs*", "configurations:*Analyze"}
+filter { "action:vs*", "configurations:Analyze"}
 	buildoptions { "/analyze" }
 
 filter { "action:vs*" }
 	buildoptions { "/sdl" }
 
+filter { "system:windows" }
+	defines { "WIN32", "_WINDOWS" }
+
+filter { "system:windows", "configurations:*Clang", "action:vs2015" }
+	toolset "msc-llvm-vs2014"
+
+-- filter { "system:windows", "configurations:not *Clang" }
+	-- toolset "v140"
+
 filter {}
-
-configuration "Debug*"
-	defines { "_DEBUG", "DEBUG" }
-	optimize "Off"
-
-configuration "Release*"
-	flags { "LinkTimeOptimization", "ReleaseRuntime" }
-	defines { "NDEBUG" }
-	optimize "Speed"
-
-configuration {}

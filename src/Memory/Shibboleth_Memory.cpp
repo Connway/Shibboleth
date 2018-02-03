@@ -1,5 +1,5 @@
 /************************************************************************************
-Copyright (C) 2016 by Nicholas LaCroix
+Copyright (C) 2018 by Nicholas LaCroix
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -22,12 +22,13 @@ THE SOFTWARE.
 
 #include "Shibboleth_Memory.h"
 #include "Shibboleth_Allocator.h"
+#include <rpmalloc.h>
 
 NS_SHIBBOLETH
 
 static Allocator g_allocator;
 
-size_t GetPoolIndex(const char* pool_name)
+int32_t GetPoolIndex(const char* pool_name)
 {
 	return g_allocator.getPoolIndex(pool_name);
 }
@@ -37,9 +38,19 @@ IAllocator* GetAllocator(void)
 	return &g_allocator;
 }
 
-void* ShibbolethAllocate(size_t size, size_t pool_index)
+void* ShibbolethAllocate(size_t size, size_t alignment, int32_t pool_index)
+{
+	return SHIB_ALLOC_ALIGNED(size, alignment, pool_index, g_allocator);
+}
+
+void* ShibbolethAllocate(size_t size, int32_t pool_index)
 {
 	return SHIB_ALLOC(size, pool_index, g_allocator);
+}
+
+void* ShibbolethAllocate(size_t size, size_t alignment)
+{
+	return SHIB_ALLOC_ALIGNED(size, alignment, 0, g_allocator);
 }
 
 void* ShibbolethAllocate(size_t size)
@@ -50,6 +61,11 @@ void* ShibbolethAllocate(size_t size)
 void ShibbolethFree(void* data)
 {
 	SHIB_FREE(data, g_allocator);
+}
+
+void AllocatorThreadInit(void)
+{
+	coherent_rpmalloc::rpmalloc_thread_initialize();
 }
 
 NS_END

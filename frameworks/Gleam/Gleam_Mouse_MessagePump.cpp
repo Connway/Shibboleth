@@ -1,5 +1,5 @@
 /************************************************************************************
-Copyright (C) 2016 by Nicholas LaCroix
+Copyright (C) 2018 by Nicholas LaCroix
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -44,7 +44,7 @@ bool MouseMP::init(IWindow& window)
 	memset(&_curr_data, 0, sizeof(MouseData));
 	memset(&_prev_data, 0, sizeof(MouseData));
 
-	auto cb = Gaff::Bind(this, &MouseMP::handleMessage);
+	auto cb = MemberFunc(this, &MouseMP::handleMessage);
 	_window = &window;
 	_window->addWindowMessageHandler(cb);
 
@@ -53,7 +53,7 @@ bool MouseMP::init(IWindow& window)
 
 bool MouseMP::init(void)
 {
-	auto cb = Gaff::Bind(this, &MouseMP::handleMessage);
+	auto cb = MemberFunc(this, &MouseMP::handleMessage);
 	Window::AddGlobalMessageHandler(cb);
 
 	_flags |= MMP_GLOBAL_HANDLER;
@@ -62,7 +62,7 @@ bool MouseMP::init(void)
 
 void MouseMP::destroy(void)
 {
-	auto cb = Gaff::Bind(this, &MouseMP::handleMessage);
+	auto cb = MemberFunc(this, &MouseMP::handleMessage);
 
 	if (_window) {
 		_window->removeWindowMessageHandler(cb);
@@ -78,13 +78,13 @@ void MouseMP::destroy(void)
 void MouseMP::update(void)
 {
 	if (areRepeatsAllowed()) {
-		for (unsigned int j = 0; j < _input_handlers.size(); ++j) {
+		for (int32_t j = 0; j < static_cast<int32_t>(_input_handlers.size()); ++j) {
 			_input_handlers[j](this, MOUSE_DELTA_X, static_cast<float>(_curr_data.dx));
 			_input_handlers[j](this, MOUSE_DELTA_Y, static_cast<float>(_curr_data.dy));
 			_input_handlers[j](this, MOUSE_POS_X, static_cast<float>(_curr_data.rel_x));
 			_input_handlers[j](this, MOUSE_POS_Y, static_cast<float>(_curr_data.rel_y));
 
-			for (int i = 0; i < MOUSE_BUTTON_COUNT; ++i) {
+			for (int32_t i = 0; i < MOUSE_BUTTON_COUNT; ++i) {
 				_input_handlers[j](this, i, static_cast<float>(_curr_data.buttons[i]));
 			}
 		}
@@ -97,7 +97,7 @@ void MouseMP::update(void)
 		_curr_data.wheel = 0;
 
 	} else {
-		for (unsigned int j = 0; j < _input_handlers.size(); ++j) {
+		for (int32_t j = 0; j < static_cast<int32_t>(_input_handlers.size()); ++j) {
 			if (_curr_data.rel_x != _prev_data.rel_x) {
 				_input_handlers[j](this, MOUSE_POS_X, static_cast<float>(_curr_data.rel_x));
 			}
@@ -118,7 +118,7 @@ void MouseMP::update(void)
 				_input_handlers[j](this, MOUSE_WHEEL, static_cast<float>(_curr_data.wheel));
 			}
 
-			for (int i = 0; i < MOUSE_BUTTON_COUNT; ++i) {
+			for (int32_t i = 0; i < MOUSE_BUTTON_COUNT; ++i) {
 				if (_curr_data.buttons[i] != _prev_data.buttons[i]) {
 					_input_handlers[j](this, i, static_cast<float>(_curr_data.buttons[i]));
 				}
@@ -141,19 +141,19 @@ const MouseData& MouseMP::getMouseData(void) const
 	return _curr_data;
 }
 
-void MouseMP::getAbsolutePosition(int& x, int& y) const
+void MouseMP::getAbsolutePosition(int32_t& x, int32_t& y) const
 {
 	x = _curr_data.abs_x;
 	y = _curr_data.abs_y;
 }
 
-void MouseMP::getRelativePosition(int& x, int& y) const
+void MouseMP::getRelativePosition(int32_t& x, int32_t& y) const
 {
 	x = _curr_data.rel_x;
 	y = _curr_data.rel_y;
 }
 
-void MouseMP::getDeltas(int& dx, int& dy) const
+void MouseMP::getDeltas(int32_t& dx, int32_t& dy) const
 {
 	dx = _dx;
 	dy = _dy;
@@ -177,7 +177,7 @@ void MouseMP::getNormalizedDeltas(float& ndx, float& ndy) const
 	ndy = static_cast<float>(_curr_data.dy) / static_cast<float>(_window->getHeight());
 }
 
-short MouseMP::getWheelDelta(void) const
+int32_t MouseMP::getWheelDelta(void) const
 {
 	return _wheel;
 }

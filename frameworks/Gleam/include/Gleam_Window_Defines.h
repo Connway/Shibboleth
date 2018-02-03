@@ -1,5 +1,5 @@
 /************************************************************************************
-Copyright (C) 2016 by Nicholas LaCroix
+Copyright (C) 2018 by Nicholas LaCroix
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -322,7 +322,7 @@ enum KeyCode
 #endif
 
 struct MessageBase
-{
+{	
 	EventType type;
 	IWindow* window;
 };
@@ -331,12 +331,12 @@ struct MouseMoveMessage
 {
 	EventType type;
 	IWindow* window;
-	int abs_x;
-	int abs_y;
-	int rel_x;
-	int rel_y;
-	int dx;
-	int dy;
+	int32_t abs_x;
+	int32_t abs_y;
+	int32_t rel_x;
+	int32_t rel_y;
+	int32_t dx;
+	int32_t dy;
 };
 
 struct MouseStateMessage
@@ -347,7 +347,7 @@ struct MouseStateMessage
 	union
 	{
 		MouseCode button;
-		short wheel;
+		int16_t wheel;
 	};
 };
 
@@ -359,7 +359,7 @@ struct KeyCharMessage
 	union
 	{
 		KeyCode key;
-		unsigned int character;
+		uint32_t character;
 	};
 };
 

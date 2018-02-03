@@ -1,5 +1,5 @@
 /************************************************************************************
-Copyright (C) 2016 by Nicholas LaCroix
+Copyright (C) 2018 by Nicholas LaCroix
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -22,26 +22,30 @@ THE SOFTWARE.
 
 #pragma once
 
+#include "Shibboleth_HashString.h"
+#include "Shibboleth_VectorMap.h"
+#include "Shibboleth_Vector.h"
 #include "Shibboleth_String.h"
-#include "Shibboleth_Array.h"
-#include <Gaff_Function.h>
-#include <Gaff_SpinLock.h>
-#include <Gaff_Thread.h>
-#include <Gaff_Event.h>
+#include "Shibboleth_Queue.h"
+#include <Gaff_File.h>
+#include <EASTL/functional.h>
+#include <condition_variable>
+#include <thread>
+#include <mutex>
 
 NS_SHIBBOLETH
+
+enum LogType
+{
+	LOG_NORMAL = 0,
+	LOG_WARNING,
+	LOG_ERROR
+};
 
 class LogManager
 {
 public:
-	enum LOG_TYPE
-	{
-		LOG_NORMAL = 0,
-		LOG_WARNING,
-		LOG_ERROR
-	};
-
-	typedef Gaff::FunctionBinder<void, const char*, LOG_TYPE> LogCallback;
+	using LogCallback = eastl::function<void (const char*, LogType)>;
 
 	LogManager(void);
 	~LogManager(void);
@@ -49,38 +53,67 @@ public:
 	bool init(void);
 	void destroy(void);
 
-	INLINE void addLogCallback(const LogCallback& callback);
-	INLINE void removeLogCallback(const LogCallback& callback);
-	void notifyLogCallbacks(const char* message, LOG_TYPE type);
+	void addLogCallback(const LogCallback& callback);
+	void removeLogCallback(const LogCallback& callback);
+	void notifyLogCallbacks(const char* message, LogType type);
 
-	void logMessage(LOG_TYPE type, const char* file, const char* format, ...);
+	void addChannel(Gaff::HashStringTemp32 channel, const char* file);
+	void logMessage(LogType type, Gaff::HashStringTemp32 channel, const char* format, ...);
+	void logMessage(LogType type, Gaff::Hash32 channel, const char* format, ...);
 
 private:
-	struct LogTasks
+	struct LogTask
 	{
-		LogTasks(LOG_TYPE t, const char* lf, const char* msg):
-			log_file(lf), message(msg), type(t)
+		LogTask(Gaff::File& f, const char* m, LogType t):
+			file(f), message(m), type(t)
 		{
 		}
 
-		AString log_file;
-		AString message;
-		LOG_TYPE type;
+		Gaff::File& file;
+		U8String message;
+		LogType type;
 	};
 
 	bool _shutdown;
+	std::condition_variable _log_event;
 
-	Array<LogCallback> _log_callbacks;
-	Array<LogTasks> _logs;
-	Gaff::SpinLock _log_queue_lock;
+	VectorMap<HashString32, Gaff::File> _channels;
+	Vector<LogCallback> _log_callbacks;
+	Queue<LogTask> _logs;
+	std::mutex _log_condition_lock;
+	std::mutex _log_callback_lock;
+	std::mutex _log_queue_lock;
 
-	Gaff::Event _log_event;
-	Gaff::Thread _log_thread;
+	std::thread _log_thread;
 
-	static Gaff::Thread::ReturnType THREAD_CALLTYPE LogThread(void* thread_data);
+
+	bool logMessageHelper(LogType type, Gaff::Hash32 channel, const char* format, va_list& vl);
+
+	static void LogThread(LogManager& lm);
 
 	GAFF_NO_COPY(LogManager);
 	GAFF_NO_MOVE(LogManager);
 };
 
+#ifdef _MSC_VER
+	#pragma warning(push)
+	#pragma warning(disable : 4307)
+#endif
+
+constexpr Gaff::Hash32 LOG_CHANNEL_DEFAULT = Gaff::FNV1aHash32Const("Default");
+
+#ifdef _MSC_VER
+	#pragma warning(pop)
+#endif
+
 NS_END
+
+#define LogWithApp(app, type, channel, message, ...) app.getLogManager().logMessage(type, channel, message, __VA_ARGS__)
+
+#define Log(type, channel, message, ...) LogWithApp(Shibboleth::GetApp(), type, channel, message, __VA_ARGS__)
+#define LogError(channel, message, ...) LogWithApp(Shibboleth::GetApp(), Shibboleth::LOG_ERROR, channel, message, __VA_ARGS__)
+#define LogWarning(channel, message, ...) LogWithApp(Shibboleth::GetApp(), Shibboleth::LOG_WARNING, channel, message, __VA_ARGS__)
+#define LogInfo(channel, message, ...) LogWithApp(Shibboleth::GetApp(), Shibboleth::LOG_NORMAL, channel, message, __VA_ARGS__)
+#define LogErrorDefault(message, ...) LogWithApp(Shibboleth::GetApp(), Shibboleth::LOG_ERROR, Shibboleth::LOG_CHANNEL_DEFAULT, message, __VA_ARGS__)
+#define LogWarningDefault(message, ...) LogWithApp(Shibboleth::GetApp(), Shibboleth::LOG_WARNING, Shibboleth::LOG_CHANNEL_DEFAULT, message, __VA_ARGS__)
+#define LogInfoDefault(message, ...) LogWithApp(Shibboleth::GetApp(), Shibboleth::LOG_NORMAL, Shibboleth::LOG_CHANNEL_DEFAULT, message, __VA_ARGS__)

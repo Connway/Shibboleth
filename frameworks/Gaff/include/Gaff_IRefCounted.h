@@ -1,5 +1,5 @@
 /************************************************************************************
-Copyright (C) 2016 by Nicholas LaCroix
+Copyright (C) 2018 by Nicholas LaCroix
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -20,15 +20,13 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-/*! \file */
-
 #pragma once
 
-#include "Gaff_IVirtualDestructor.h"
+#include "Gaff_Defines.h"
 
 NS_GAFF
 
-class IRefCounted : public IVirtualDestructor
+class IRefCounted
 {
 public:
 	IRefCounted(void) {}
@@ -37,7 +35,7 @@ public:
 	virtual void addRef(void) const = 0;
 	virtual void release(void) const = 0;
 
-	virtual unsigned int getRefCount(void) const = 0;
+	virtual int32_t getRefCount(void) const = 0;
 
 	GAFF_NO_COPY(IRefCounted);
 	GAFF_NO_MOVE(IRefCounted);

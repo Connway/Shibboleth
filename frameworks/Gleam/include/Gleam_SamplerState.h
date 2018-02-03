@@ -1,5 +1,5 @@
 /************************************************************************************
-Copyright (C) 2016 by Nicholas LaCroix
+Copyright (C) 2018 by Nicholas LaCroix
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -22,8 +22,8 @@ THE SOFTWARE.
 
 #pragma once
 
-#ifdef USE_DX
-	#include "Gleam_SamplerState_Direct3D.h"
+#ifdef USE_D3D11
+	#include "Gleam_SamplerState_Direct3D11.h"
 
 	NS_GLEAM
 		typedef SamplerStateD3D SamplerState;

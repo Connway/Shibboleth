@@ -1,5 +1,5 @@
 /************************************************************************************
-Copyright (C) 2016 by Nicholas LaCroix
+Copyright (C) 2018 by Nicholas LaCroix
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -22,19 +22,20 @@ THE SOFTWARE.
 
 #pragma once
 
-#include <Gaff_IRequestableInterface.h>
+#include <Gaff_ReflectionInterfaces.h>
 #include <Shibboleth_Defines.h>
 
 NS_SHIBBOLETH
 
-class IManager : public Gaff::IRequestableInterface
+class IManager : public Gaff::IReflectionObject
 {
 public:
 	IManager(void) {}
 	virtual ~IManager(void) {}
 
-	virtual const char* getName(void) const = 0;
-	virtual void allManagersCreated(void) {}
+	virtual void allModulesLoaded(void) {}
+
+	virtual bool init(void) { return true; }
 
 	GAFF_NO_COPY(IManager);
 	GAFF_NO_MOVE(IManager);

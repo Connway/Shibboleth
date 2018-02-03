@@ -1,5 +1,5 @@
 /************************************************************************************
-Copyright (C) 2016 by Nicholas LaCroix
+Copyright (C) 2018 by Nicholas LaCroix
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -32,8 +32,17 @@ class IRenderDevice;
 class ISamplerState : public Gaff::IRefCounted
 {
 public:
-	enum WRAP { WRAP_REPEAT = 1, WRAP_MIRROR, WRAP_CLAMP, WRAP_BORDER, /*WRAP_MIRROR_ONCE,*/ WRAP_SIZE = WRAP_BORDER/*WRAP_MIRROR_ONCE*/ };
-	enum FILTER
+	enum Wrap
+	{
+		WRAP_REPEAT = 1,
+		WRAP_MIRROR,
+		WRAP_CLAMP,
+		WRAP_BORDER,
+		/*WRAP_MIRROR_ONCE,*/
+		WRAP_SIZE = WRAP_BORDER/*WRAP_MIRROR_ONCE*/
+	};
+	
+	enum Filter
 	{
 		FILTER_NEAREST_NEAREST_NEAREST = 0,
 		FILTER_NEAREST_NEAREST_LINEAR,
@@ -49,18 +58,18 @@ public:
 
 	struct SamplerSettings
 	{
-		FILTER filter;
-		WRAP wrap_u, wrap_v, wrap_w;
+		Filter filter;
+		Wrap wrap_u, wrap_v, wrap_w;
 		float min_lod, max_lod;
 		float lod_bias;
-		unsigned int max_anisotropy;
+		int32_t max_anisotropy;
 		float border_r, border_g, border_b, border_a;
 	};
 
 	ISamplerState(void) {}
 	virtual ~ISamplerState(void) {}
 
-	INLINE bool init(IRenderDevice& rd, const SamplerSettings& sampler_settings)
+	bool init(IRenderDevice& rd, const SamplerSettings& sampler_settings)
 	{
 		return init(
 			rd, sampler_settings.filter, sampler_settings.wrap_u, sampler_settings.wrap_v, sampler_settings.wrap_w,
@@ -71,9 +80,9 @@ public:
 
 	virtual bool init(
 		IRenderDevice& rd,
-		FILTER filter, WRAP wrap_u, WRAP wrap_v, WRAP wrap_w,
+		Filter filter, Wrap wrap_u, Wrap wrap_v, Wrap wrap_w,
 		float min_lod, float max_lod, float lod_bias,
-		unsigned int max_anisotropy,
+		int32_t max_anisotropy,
 		//IRenderState::COMPARISON_FUNC compare_func,
 		float border_r, float border_g, float border_b, float border_a
 	) = 0;

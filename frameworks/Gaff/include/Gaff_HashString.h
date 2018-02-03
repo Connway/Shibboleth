@@ -1,5 +1,5 @@
 /************************************************************************************
-Copyright (C) 2016 by Nicholas LaCroix
+Copyright (C) 2018 by Nicholas LaCroix
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -23,42 +23,104 @@ THE SOFTWARE.
 #pragma once
 
 #include "Gaff_String.h"
-#include "Gaff_Math.h"
+#include "Gaff_Hash.h"
 
 NS_GAFF
 
-template <class T, class Allocator = DefaultAllocator, class HashType = uint32_t>
+template <class T, class HashType, class Allocator>
+class HashString;
+
+template <class T, class HashType>
+class HashStringTemp
+{
+public:
+	using HashFunc = HashType(*)(const char*, size_t);
+
+	template <class Allocator>
+	HashStringTemp(const String<T, Allocator>& string, HashFunc hash = nullptr);
+
+	template <size_t size>
+	HashStringTemp(const T (&string)[size], HashFunc hash = nullptr);
+
+	HashStringTemp(const T* string, size_t size, HashFunc hash = nullptr);
+
+	HashStringTemp(const HashStringTemp<T, HashType>& string) = default;
+	HashStringTemp(HashStringTemp<T, HashType>&& string) = default;
+
+	~HashStringTemp(void) = default;
+
+	HashStringTemp<T, HashType>& operator=(const HashStringTemp<T, HashType>& string) = default;
+	HashStringTemp<T, HashType>& operator=(HashStringTemp<T, HashType>&& string) = default;
+
+	template <class Allocator>
+	bool operator==(const HashString<T, HashType, Allocator>& rhs) const;
+	template <class Allocator>
+	bool operator!=(const HashString<T, HashType, Allocator>& rhs) const;
+	template <class Allocator>
+	bool operator<(const HashString<T, HashType, Allocator>& rhs) const;
+	template <class Allocator>
+	bool operator>(const HashString<T, HashType, Allocator>& rhs) const;
+
+	bool operator==(const HashStringTemp<T, HashType>& rhs) const;
+	bool operator!=(const HashStringTemp<T, HashType>& rhs) const;
+	bool operator<(const HashStringTemp<T, HashType>& rhs) const;
+	bool operator>(const HashStringTemp<T, HashType>& rhs) const;
+
+	bool operator==(HashType rhs) const;
+	bool operator!=(HashType rhs) const;
+	bool operator<(HashType rhs) const;
+	bool operator>(HashType rhs) const;
+
+	const T* getBuffer(void) const;
+	HashType getHash(void) const;
+
+private:
+	const T* const _string;
+	HashType _hash_value;
+};
+
+template <class T, class HashType, class Allocator = DefaultAllocator>
 class HashString
 {
 public:
 	using HashFunc = HashType (*)(const char*, size_t);
 
-	HashString(const HashString<T, Allocator, HashType>& string, HashFunc hash = nullptr);
-	HashString(const String<T, Allocator>& string, HashFunc hash = nullptr);
-	HashString(const T* string, HashFunc hash = nullptr, const Allocator& allocator = Allocator());
+	explicit HashString(const String<T, Allocator>& string, HashFunc hash = nullptr);
+	HashString(const T* string, size_t size, HashFunc hash = nullptr, const Allocator& allocator = Allocator());
+	explicit HashString(const HashStringTemp<T, HashType>& string, HashFunc hash = nullptr, const Allocator& allocator = Allocator());
+	explicit HashString(const T* string, HashFunc hash = nullptr, const Allocator& allocator = Allocator());
+	HashString(const T* string, size_t size, HashType hash, HashFunc hash_func = nullptr, const Allocator& allocator = Allocator());
+	// HashString64 gets build errors from this constructor, as Hash64 is the same data type as size_t.
+	//HashString(const T* string, HashType hash, HashFunc hash_func = nullptr, const Allocator& allocator = Allocator());
 	HashString(HashFunc hash = nullptr, const Allocator& allocator = Allocator());
-	HashString(HashString<T, Allocator, HashType>&& rhs);
-	~HashString(void);
 
-	const HashString<T, Allocator, HashType>& operator=(const HashString<T, Allocator, HashType>& rhs);
-	const HashString<T, Allocator, HashType>& operator=(const String<T, Allocator>& rhs);
-	const HashString<T, Allocator, HashType>& operator=(HashString<T, Allocator, HashType>&& rhs);
-	const HashString<T, Allocator, HashType>& operator=(String<T, Allocator>&& rhs);
-	const HashString<T, Allocator, HashType>& operator=(const T* rhs);
+	HashString(const HashString<T, HashType, Allocator>& string) = default;
+	HashString(HashString<T, HashType, Allocator>&& rhs) = default;
+	~HashString(void) = default;
 
-	bool operator==(const HashString<T, Allocator, HashType>& rhs) const;
-	bool operator!=(const HashString<T, Allocator, HashType>& rhs) const;
+	HashString<T, HashType, Allocator>& operator=(const HashString<T, HashType, Allocator>& rhs) = default;
+	HashString<T, HashType, Allocator>& operator=(HashString<T, HashType, Allocator>&& rhs) = default;
+	HashString<T, HashType, Allocator>& operator=(const String<T, Allocator>& rhs);
+	HashString<T, HashType, Allocator>& operator=(String<T, Allocator>&& rhs);
+	HashString<T, HashType, Allocator>& operator=(const T* rhs);
 
-	const HashString<T, Allocator, HashType>& operator+=(const HashString<T, Allocator, HashType>& rhs);
-	const HashString<T, Allocator, HashType>& operator+=(const String<T, Allocator>& rhs);
-	const HashString<T, Allocator, HashType>& operator+=(const T* rhs);
+	bool operator==(const HashString<T, HashType, Allocator>& rhs) const;
+	bool operator!=(const HashString<T, HashType, Allocator>& rhs) const;
+	bool operator<(const HashString<T, HashType, Allocator>& rhs) const;
+	bool operator>(const HashString<T, HashType, Allocator>& rhs) const;
 
-	HashString<T, Allocator, HashType> operator+(const HashString<T, Allocator, HashType>& rhs) const;
-	HashString<T, Allocator, HashType> operator+(const String<T, Allocator>& rhs);
-	HashString<T, Allocator, HashType> operator+(const T* rhs) const;
+	bool operator==(const HashStringTemp<T, HashType>& rhs) const;
+	bool operator!=(const HashStringTemp<T, HashType>& rhs) const;
+	bool operator<(const HashStringTemp<T, HashType>& rhs) const;
+	bool operator>(const HashStringTemp<T, HashType>& rhs) const;
+
+	bool operator==(HashType rhs) const;
+	bool operator!=(HashType rhs) const;
+	bool operator<(HashType rhs) const;
+	bool operator>(HashType rhs) const;
 
 	// WARNING: This function takes ownership of the string instead of copying
-	void set(T* string);
+	void set(const T* string);
 	void clear(void);
 	size_t size(void) const;
 
@@ -69,15 +131,40 @@ public:
 private:
 	String<T, Allocator> _string;
 	HashType _hash_value;
-	HashFunc _hash_func;
+	HashFunc _hash_func = nullptr;
 };
 
 #include "Gaff_HashString.inl"
 
-template <class Allocator = DefaultAllocator> using AHashString = HashString<char, Allocator>;
-template <class Allocator = DefaultAllocator> using WHashString = HashString<wchar_t, Allocator>;
+template <class Allocator = DefaultAllocator> using HashString32 = HashString<char, Hash32, Allocator>;
+template <class Allocator = DefaultAllocator> using HashString64 = HashString<char, Hash64, Allocator>;
+using HashStringTemp32 = HashStringTemp<char, Hash32>;
+using HashStringTemp64 = HashStringTemp<char, Hash64>;
 
-template <class Allocator = DefaultAllocator> using HashString32 = AHashString<Allocator>;
-template <class Allocator = DefaultAllocator> using HashString64 = HashString<char, Allocator, uint64_t>;
+
+template <class HashTypeA, class T, class HashTypeB, class Allocator>
+bool operator==(HashTypeA lhs, const HashString<T, HashTypeB, Allocator>& rhs);
+
+template <class HashTypeA, class T, class HashTypeB, class Allocator>
+bool operator!=(HashTypeA lhs, const HashString<T, HashTypeB, Allocator>& rhs);
+
+template <class HashTypeA, class T, class HashTypeB, class Allocator>
+bool operator<(HashTypeA lhs, const HashString<T, HashTypeB, Allocator>& rhs);
+
+template <class HashTypeA, class T, class HashTypeB, class Allocator>
+bool operator>(HashTypeA lhs, const HashString<T, HashTypeB, Allocator>& rhs);
+
+
+template <class HashTypeA, class T, class HashTypeB>
+bool operator==(HashTypeA lhs, const HashStringTemp<T, HashTypeB>& rhs);
+
+template <class HashTypeA, class T, class HashTypeB>
+bool operator!=(HashTypeA lhs, const HashStringTemp<T, HashTypeB>& rhs);
+
+template <class HashTypeA, class T, class HashTypeB>
+bool operator<(HashTypeA lhs, const HashStringTemp<T, HashTypeB>& rhs);
+
+template <class HashTypeA, class T, class HashTypeB>
+bool operator>(HashTypeA lhs, const HashStringTemp<T, HashTypeB>& rhs);
 
 NS_END

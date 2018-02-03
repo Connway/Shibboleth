@@ -1,5 +1,5 @@
 /************************************************************************************
-Copyright (C) 2016 by Nicholas LaCroix
+Copyright (C) 2018 by Nicholas LaCroix
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -23,13 +23,17 @@ THE SOFTWARE.
 #pragma once
 
 #include "Shibboleth_DynamicLoader.h"
-#include "Shibboleth_HashString.h"
-#include "Shibboleth_IManager.h"
 #include "Shibboleth_JobPool.h"
-#include "Shibboleth_HashMap.h"
+#include "Shibboleth_HashString.h"
+#include "Shibboleth_VectorMap.h"
+#include "Shibboleth_Vector.h"
 #include "Shibboleth_String.h"
-#include "Shibboleth_Array.h"
-#include <Gaff_IRequestableInterface.h>
+#include "Shibboleth_Reflection.h"
+
+NS_GAFF
+	class IEnumReflectionDefinition;
+	class IReflectionDefinition;
+NS_END
 
 NS_SHIBBOLETH
 
@@ -42,91 +46,54 @@ class IApp
 {
 public:
 	template <class T>
-	const T& getManagerTUnsafe(const AHashString& name) const
-	{
-		return *reinterpret_cast<T*>(getManager(name));
-	}
-
-	template <class T>
-	T& getManagerTUnsafe(const AHashString& name)
-	{
-		return *reinterpret_cast<T*>(getManager(name));
-	}
-
-	template <class T>
-	const T& getManagerTUnsafe(const AString& name) const
-	{
-		return *reinterpret_cast<T*>(getManager(name));
-	}
-
-	template <class T>
-	T& getMangetManagerTUnsafeagerT(const AString& name)
-	{
-		return *reinterpret_cast<T*>(getManager(name));
-	}
-
-	template <class T>
-	const T& getManagerTUnsafe(const char* name) const
-	{
-		return *reinterpret_cast<T*>(getManager(name));
-	}
-
-	template <class T>
-	T& getManagerTUnsafe(const char* name)
-	{
-		return *reinterpret_cast<T*>(getManager(name));
-	}
-
-	template <class T>
 	const T& getManagerTUnsafe(void) const
 	{
-		return *reinterpret_cast<T*>(getManager(T::GetFriendlyName()));
+		return *reinterpret_cast<T*>(getManager(Reflection<T>::GetHash()));
 	}
 
 	template <class T>
 	T& getManagerTUnsafe(void)
 	{
-		return *reinterpret_cast<T*>(getManager(T::GetFriendlyName()));
+		return *reinterpret_cast<T*>(getManager(Reflection<T>::GetHash()));
 	}
 
 	template <class T>
 	const T& getManagerT(void) const
 	{
-		return *Gaff::ReflectionCast<T>(getManager(T::GetFriendlyName()));
+		const IManager* const manager = getManager(Reflection<T>::GetHash());
+		return *Gaff::ReflectionCast<T>(*manager);
 	}
 
 	template <class T>
 	T& getManagerT(void)
 	{
-		return *Gaff::ReflectionCast<T>(getManager(T::GetFriendlyName()));
+		IManager* const manager = getManager(Reflection<T>::GetHash());
+		return *Gaff::ReflectionCast<T>(*manager);
 	}
 
 	IApp(void) {}
 	virtual ~IApp(void) {}
 
-	virtual const IManager* getManager(const AHashString& name) const = 0;
-	virtual const IManager* getManager(const AString& name) const = 0;
-	virtual const IManager* getManager(const char* name) const = 0;
-	virtual IManager* getManager(const AHashString& name) = 0;
-	virtual IManager* getManager(const AString& name) = 0;
-	virtual IManager* getManager(const char* name) = 0;
+	virtual const IManager* getManager(Gaff::Hash64 name) const = 0;
+	virtual IManager* getManager(Gaff::Hash64 name) = 0;
 
-	virtual MessageBroadcaster& getBroadcaster(void) = 0;
+	//virtual MessageBroadcaster& getBroadcaster(void) = 0;
 
 	virtual IFileSystem* getFileSystem(void) = 0;
-	virtual const HashMap<AHashString, AString>& getCmdLine(void) const = 0;
-	virtual HashMap<AHashString, AString>& getCmdLine(void) = 0;
+	virtual const VectorMap<HashString32, U8String>& getCmdLine(void) const = 0;
 
+	virtual LogManager& getLogManager(void) = 0;
 	virtual JobPool& getJobPool(void) = 0;
 
-	virtual void getWorkerThreadIDs(Array<unsigned int>& out) const = 0;
-	virtual void helpUntilNoJobs(void) = 0;
-	virtual void doAJob(void) = 0;
-
-	virtual const char* getLogFileName(void) const = 0;
-	virtual LogManager& getLogManager(void) = 0;
-
 	virtual DynamicLoader::ModulePtr loadModule(const char* filename, const char* name) = 0;
+
+	virtual const Gaff::IEnumReflectionDefinition* getEnumReflection(Gaff::Hash64 name) const = 0;
+	virtual void registerEnumReflection(Gaff::Hash64 name, Gaff::IEnumReflectionDefinition& ref_def) = 0;
+
+	virtual const Gaff::IReflectionDefinition* getReflection(Gaff::Hash64 name) const = 0;
+	virtual void registerReflection(Gaff::Hash64 name, Gaff::IReflectionDefinition& ref_def) = 0;
+	virtual void registerTypeBucket(Gaff::Hash64 name) = 0;
+	virtual const Vector<Gaff::Hash64>* getTypeBucket(Gaff::Hash64 name) const = 0;
 
 	virtual bool isQuitting(void) const = 0;
 	virtual void quit(void) = 0;

@@ -1,5 +1,5 @@
 /************************************************************************************
-Copyright (C) 2016 by Nicholas LaCroix
+Copyright (C) 2018 by Nicholas LaCroix
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -22,8 +22,8 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Esprit_Array.h"
-#include <Gleam_Transform_SIMD.h>
+#include "Esprit_Vector.h"
+#include <Gleam_Transform.h>
 
 NS_ESPRIT
 
@@ -36,14 +36,15 @@ public:
 	void setNumBones(size_t num_bones);
 	size_t getNumBones(void) const;
 
-	const Array<Gleam::TransformSIMD>& getLocalTransforms(void) const;
-	Array<Gleam::TransformSIMD>& getLocalTransforms(void);
-	const Array<Gleam::TransformSIMD>& getModelTransforms(void) const;
-	Array<Gleam::TransformSIMD>& getModelTransforms(void);
+	const Vector<Gleam::Transform>& getLocalTransforms(void) const;
+	Vector<Gleam::Transform>& getLocalTransforms(void);
+
+	const Vector<Gleam::Transform>& getModelTransforms(void) const;
+	Vector<Gleam::Transform>& getModelTransforms(void);
 
 private:
-	Array<Gleam::TransformSIMD> _local_bone_transforms;
-	Array<Gleam::TransformSIMD> _model_bone_transforms;
+	Vector<Gleam::Transform> _local_bone_transforms;
+	Vector<Gleam::Transform> _model_bone_transforms;
 
 	GAFF_NO_COPY(Pose);
 	GAFF_NO_MOVE(Pose);

@@ -1,5 +1,5 @@
 /************************************************************************************
-Copyright (C) 2016 by Nicholas LaCroix
+Copyright (C) 2018 by Nicholas LaCroix
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -25,16 +25,30 @@ THE SOFTWARE.
 #include "Gleam_Global.h"
 #include <Gaff_IAllocator.h>
 
-// Disable warning for no assignment operator generated
-#if defined(_WIN32) || defined(_WIN64)
-	#pragma warning(disable : 4512)
-#endif
-
 NS_GLEAM
 
 class ProxyAllocator : public Gaff::IAllocator
 {
 public:
+	GAFF_STRUCTORS_DEFAULT(ProxyAllocator);
+	GAFF_COPY_DEFAULT(ProxyAllocator);
+	GAFF_MOVE_DEFAULT(ProxyAllocator);
+
+	explicit ProxyAllocator(const char* name):
+		_name(name)
+	{
+	}
+
+	bool operator==(const ProxyAllocator& rhs) const
+	{
+		return _name == rhs._name;
+	}
+
+	void* alloc(size_t size_bytes, size_t alignment, const char* file, int line) override
+	{
+		return GetAllocator()->alloc(size_bytes, alignment, file, line);
+	}
+
 	void* alloc(size_t size_bytes, const char* file, int line)
 	{
 		return GetAllocator()->alloc(size_bytes, file, line);
@@ -44,10 +58,37 @@ public:
 	{
 		GetAllocator()->free(data);
 	}
+
+	// For EASTL support.
+	void* allocate(size_t n, int flags = 0) override
+	{
+		GAFF_REF(flags);
+		return alloc(n, __FILE__, __LINE__);
+	}
+
+	void* allocate(size_t n, size_t alignment, size_t, int flags = 0) override
+	{
+		GAFF_REF(flags);
+		return alloc(n, alignment, __FILE__, __LINE__);
+	}
+
+	void deallocate(void* p, size_t) override
+	{
+		free(p);
+	}
+
+	const char* get_name() const
+	{
+		return _name;
+	}
+
+	void set_name(const char* pName)
+	{
+		_name = pName;
+	}
+
+private:
+	const char* _name = nullptr;
 };
 
 NS_END
-
-#if defined(_WIN32) || defined(_WIN64)
-	#pragma warning(default : 4512)
-#endif

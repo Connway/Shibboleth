@@ -3,25 +3,20 @@ project "libpng"
 		location ("../../project/" .. _ACTION .. "/dependencies")
 	end
 
-	configurations { "Debug", "Release" }
-	dofile("../../utils/config_map.lua")
-
 	kind "StaticLib"
 	language "C"
 	warnings "Default"
 
 	files { "**.h", "**.c" }
-	includedirs { "../zlib" }
+	includedirs { "../zlib-ng" }
 
-	configuration "vs*"
+	filter { "action:vs*" }
 		defines { "_CRT_SECURE_NO_WARNINGS" }
 
-	configuration "Debug"
+	filter { "configurations:Debug* or Optimized_Debug*" }
 		defines { "PNG_DEBUG" }
 
-	configuration {}
-
-	filter { "action:gmake" }
+	filter { "action:gmake", "toolset:gcc or clang" }
 		buildoptions { "-fPIC" }
 
 	filter {}

@@ -1,5 +1,5 @@
 /************************************************************************************
-Copyright (C) 2016 by Nicholas LaCroix
+Copyright (C) 2018 by Nicholas LaCroix
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -20,11 +20,10 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-/*! \file */
-
 #pragma once
 
 #include "Gaff_Connection.h"
+#include <EASTL/functional.h>
 
 #define CONNECTION_SPEED_UNLIMITED 0
 #define CONNECTION_SPEED_512K 65536
@@ -33,9 +32,9 @@ THE SOFTWARE.
 #define CONNECTION_SPEED_56K 7168
 
 #ifdef PLATFORM_WINDOWS
-	#define NETWORK_CALLBACK __cdecl //!< Calling convention for network callback functions
+	#define NETWORK_CALLBACK __cdecl
 #else
-	#define NETWORK_CALLBACK //!< Calling convention for network callback functions
+	#define NETWORK_CALLBACK
 #endif
 
 struct _ENetHost;
@@ -55,9 +54,6 @@ enum NetworkEventType
 	EVENT_RECEIVED_PACKET
 };
 
-/*!
-	\brief Data passed into the network callback function when an event occurs.
-*/
 struct NetworkCallbackData
 {
 	Gaff::Host* host; //!< The host that generated this event.
@@ -69,7 +65,7 @@ struct NetworkCallbackData
 	size_t data_size; //!< Packet data size (if applicable).
 };
 
-typedef IFunction<void, const NetworkCallbackData&> NetworkEventCallback;
+using NetworkEventCallback = eastl::function<void (const NetworkCallbackData&)>;
 
 bool NetworkInit(
 	NetworkAllocFunc alloc_func = nullptr,
@@ -94,29 +90,29 @@ public:
 	~Host(void);
 
 	bool initServer(unsigned short port, const char* address = nullptr, size_t connections = 32, size_t channels = 2, unsigned int down_speed = CONNECTION_SPEED_UNLIMITED, unsigned int up_speed = CONNECTION_SPEED_UNLIMITED);
-	INLINE bool initClient(size_t connections = 1, size_t channels = 2, unsigned int down_speed = CONNECTION_SPEED_128K, unsigned int up_speed = CONNECTION_SPEED_128K);
+	bool initClient(size_t connections = 1, size_t channels = 2, unsigned int down_speed = CONNECTION_SPEED_128K, unsigned int up_speed = CONNECTION_SPEED_128K);
 	void destroy(void);
 
-	INLINE void setBandwidthLimit(unsigned int down_speed, unsigned int up_speed);
-	INLINE void setChannelLimit(size_t channels);
+	void setBandwidthLimit(unsigned int down_speed, unsigned int up_speed);
+	void setChannelLimit(size_t channels);
 
-	INLINE unsigned int getHost(void) const;
-	INLINE unsigned short getPort(void) const;
+	unsigned int getHost(void) const;
+	unsigned short getPort(void) const;
 
 	// set compress/decompress functions used
-	// INLINE void setCompression();
+	// void setCompression();
 
-	INLINE Connection connect(const char* address, unsigned short port, size_t channels = 2);
-	INLINE Connection getLatestConnection(void);
+	Connection connect(const char* address, unsigned short port, size_t channels = 2);
+	Connection getLatestConnection(void);
 
 	void waitForEvent(NetworkEventCallback& callback, unsigned int timeout);
 	void checkForEvent(NetworkEventCallback& callback);
 
-	INLINE void broadcast(unsigned char channel, void* data, size_t data_size, unsigned int packet_flags = PACKET_RELIABLE);
-	INLINE void flush(void);
+	void broadcast(unsigned char channel, void* data, size_t data_size, unsigned int packet_flags = PACKET_RELIABLE);
+	void flush(void);
 
-	INLINE bool operator==(const Host& rhs) const;
-	INLINE bool operator!=(const Host& rhs) const;
+	bool operator==(const Host& rhs) const;
+	bool operator!=(const Host& rhs) const;
 
 	// This shouldn't be called on host objects that have already been initialized
 	const Host& operator=(const Host& rhs);

@@ -1,5 +1,5 @@
 /************************************************************************************
-Copyright (C) 2016 by Nicholas LaCroix
+Copyright (C) 2018 by Nicholas LaCroix
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -43,7 +43,7 @@ HRESULT __stdcall ShaderInclude::Close(LPCVOID /*pData*/)
 	return S_OK;
 }
 
-const GleamAString& ShaderInclude::getWorkingDir(void) const
+const U8String& ShaderInclude::getWorkingDir(void) const
 {
 	return _working_dir;
 }

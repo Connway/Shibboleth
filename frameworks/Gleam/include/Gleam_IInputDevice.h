@@ -1,5 +1,5 @@
 /************************************************************************************
-Copyright (C) 2016 by Nicholas LaCroix
+Copyright (C) 2018 by Nicholas LaCroix
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -22,20 +22,20 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Gleam_Array.h"
-#include <Gaff_Function.h>
+#include "Gleam_Function.h"
+#include "Gleam_Vector.h"
 
 NS_GLEAM
 
 class IInputDevice;
 class IWindow;
 
-typedef void (*InputHandler)(IInputDevice*, unsigned int, float);
+using InputHandler = void (*)(IInputDevice*, int32_t, float);
 
 class IInputDevice
 {
 public:
-	using InputHandler = Gaff::FunctionBinder<void, IInputDevice*, unsigned int, float>;
+	using InputHandler = eastl::function<void (IInputDevice*, int32_t, float)>;
 
 	IInputDevice(void) {}
 	virtual ~IInputDevice(void) {}
@@ -57,17 +57,22 @@ public:
 	virtual bool isKeyboard(void) const = 0;
 	virtual bool isMouse(void) const = 0;
 
-	INLINE void addInputHandler(const InputHandler& cb)
+	void addInputHandler(const InputHandler& cb)
 	{
-		_input_handlers.emplacePush(cb);
+		_input_handlers.emplace_back(cb);
+	}
+
+	void addInputHandler(InputHandler&& cb)
+	{
+		_input_handlers.emplace_back(std::move(cb));
 	}
 
 	bool removeInputHandler(const InputHandler& cb)
 	{
-		auto it = _input_handlers.linearSearch(cb);
+		auto it = Gaff::Find(_input_handlers, cb);
 
 		if (it != _input_handlers.end()) {
-			_input_handlers.fastErase(it);
+			_input_handlers.erase_unsorted(it);
 			return true;
 		}
 
@@ -75,7 +80,7 @@ public:
 	}
 
 protected:
-	GleamArray<InputHandler> _input_handlers;
+	Vector<InputHandler> _input_handlers;
 
 	GAFF_NO_COPY(IInputDevice);
 	GAFF_NO_MOVE(IInputDevice);

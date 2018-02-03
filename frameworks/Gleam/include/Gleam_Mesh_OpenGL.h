@@ -1,5 +1,5 @@
 /************************************************************************************
-Copyright (C) 2016 by Nicholas LaCroix
+Copyright (C) 2018 by Nicholas LaCroix
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -45,7 +45,7 @@ public:
 
 	RendererType getRendererType(void) const;
 
-	INLINE unsigned int getGLTopology(void) const;
+	unsigned int getGLTopology(void) const;
 
 private:
 	unsigned int _gl_topology;

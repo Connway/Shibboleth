@@ -1,5 +1,5 @@
 /************************************************************************************
-Copyright (C) 2016 by Nicholas LaCroix
+Copyright (C) 2018 by Nicholas LaCroix
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -23,9 +23,9 @@ THE SOFTWARE.
 #pragma once
 
 #include "Gleam_Window_Defines.h"
+#include "Gleam_Function.h"
 #include "Gleam_IWindow.h"
-#include "Gleam_Array.h"
-#include <Gaff_Function.h>
+#include "Gleam_Vector.h"
 #include <X11/X.h>
 #include <X11/Xlib.h>
 #include <X11/extensions/Xrandr.h>
@@ -72,9 +72,9 @@ public:
 
 	bool setIcon(const char* icon);
 
-	INLINE XVisualInfo* getVisualInfo(void) const;
-	INLINE Display* getDisplay(void) const;
-	INLINE ::Window getWindow(void) const;
+	XVisualInfo* getVisualInfo(void) const;
+	Display* getDisplay(void) const;
+	::Window getWindow(void) const;
 
 	XRRScreenSize* getResolutions(int& num_sizes, int screen = -1) const;
 	short* getRefreshRates(int& num_rates, int screen = -1) const;
@@ -83,7 +83,7 @@ public:
 private:
 	int _pos_x, _pos_y;
 	unsigned int _width, _height;
-	GleamAString _application_name;
+	GleamU8String _application_name;
 	short _refresh_rate;
 
 	MODE _window_mode;
@@ -109,7 +109,7 @@ private:
 		unsigned int width, unsigned int height);
 	int chooseClosestRate(short* rates, int num_rates, short rate);
 	void setToOriginalResolutionRate(void);
-	INLINE void handleMessage(AnyMessage* message);
+	void handleMessage(AnyMessage* message);
 
 	GAFF_NO_COPY(Window);
 	GAFF_NO_MOVE(Window);

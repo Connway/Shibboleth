@@ -1,5 +1,5 @@
 /************************************************************************************
-Copyright (C) 2016 by Nicholas LaCroix
+Copyright (C) 2018 by Nicholas LaCroix
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -34,7 +34,7 @@ class ITexture;
 class IRenderTarget : public Gaff::IRefCounted
 {
 public:
-	enum CLEAR_FLAGS
+	enum ClearFlags
 	{
 		CLEAR_DEPTH = 1,
 		CLEAR_STENCIL,
@@ -42,7 +42,7 @@ public:
 		CLEAR_ALL = CLEAR_DEPTH | CLEAR_STENCIL | CLEAR_COLOR
 	};
 
-	enum CUBE_FACE { POS_X = 0, NEG_X, POS_Y, NEG_Y, POS_Z, NEG_Z, NONE };
+	enum CubeFace { POS_X = 0, NEG_X, POS_Y, NEG_Y, POS_Z, NEG_Z, NONE };
 
 	IRenderTarget(void) {}
 	virtual ~IRenderTarget(void) {}
@@ -50,7 +50,7 @@ public:
 	virtual bool init(void) = 0;
 	virtual void destroy(void) = 0;
 
-	virtual bool addTexture(IRenderDevice& rd, const ITexture* texture, CUBE_FACE face = NONE) = 0;
+	virtual bool addTexture(IRenderDevice& rd, const ITexture* texture, CubeFace face = NONE) = 0;
 	virtual void popTexture(void) = 0;
 
 	virtual bool addDepthStencilBuffer(IRenderDevice& rd, const ITexture* depth_stencil_texture) = 0;
@@ -58,7 +58,7 @@ public:
 	virtual void bind(IRenderDevice& rd) = 0;
 	virtual void unbind(IRenderDevice& rd) = 0;
 
-	virtual void clear(IRenderDevice& rd, unsigned int clear_flags = CLEAR_DEPTH | CLEAR_STENCIL, float clear_depth = 1.0f, unsigned char clear_stencil = 0, float* clear_color = nullptr) = 0;
+	virtual void clear(IRenderDevice& rd, uint32_t clear_flags = CLEAR_DEPTH | CLEAR_STENCIL, float clear_depth = 1.0f, uint8_t clear_stencil = 0, float* clear_color = nullptr) = 0;
 
 	virtual bool isComplete(void) const = 0;
 

@@ -1,5 +1,5 @@
 /************************************************************************************
-Copyright (C) 2016 by Nicholas LaCroix
+Copyright (C) 2018 by Nicholas LaCroix
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -22,60 +22,59 @@ THE SOFTWARE.
 
 #pragma once
 
+#include <Shibboleth_IAllocator.h>
 #include <Shibboleth_Memory.h>
 #include <Gaff_IRefCounted.h>
-#include <Gaff_Atomic.h>
+#include <atomic>
 
-#define SHIB_REF_COUNTED(Class) \
+#define SHIB_REF_COUNTED() \
 public: \
 	void addRef(void) const \
 	{ \
-		AtomicIncrement(&_count); \
+		++_count; \
 	} \
 	void release(void) const \
 	{ \
-		unsigned int new_count = AtomicDecrement(&_count); \
+		int32_t new_count = --_count; \
 		if (!new_count) { \
-			SHIB_FREET(this, *GetAllocator()); \
+			SHIB_FREET(this, *Shibboleth::GetAllocator()); \
 		} \
 	} \
-	unsigned int getRefCount(void) const \
+	int32_t getRefCount(void) const \
 	{ \
 		return _count; \
 	} \
 private: \
-	mutable volatile unsigned int _count = 0 // Use C++11 in-class initialization so that classes don't have to modify constructors.
+	mutable std::atomic_int32_t _count = 0
 
 NS_SHIBBOLETH
 
 class RefCounted : public Gaff::IRefCounted
 {
 public:
-	RefCounted(void): _count(0) {}
-
-	~RefCounted(void) {}
+	RefCounted(void) {}
 
 	void addRef(void) const
 	{
-		AtomicIncrement(&_count);
+		++_count;
 	}
 
 	void release(void) const
 	{
-		unsigned int new_count = AtomicDecrement(&_count);
+		int32_t new_count = --_count;
 
 		if (!new_count) {
 			SHIB_FREET(this, *GetAllocator());
 		}
 	}
 
-	unsigned int getRefCount(void) const
+	int32_t getRefCount(void) const
 	{
 		return _count;
 	}
 
 private:
-	mutable volatile unsigned int _count;
+	mutable std::atomic_int32_t _count = 0;
 
 	GAFF_NO_COPY(RefCounted);
 	GAFF_NO_MOVE(RefCounted);

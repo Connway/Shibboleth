@@ -3,33 +3,28 @@ project "Gaff"
 		location ("../../project/" .. _ACTION .. "/frameworks")
 	end
 
-	configurations { "Debug", "Release" }
-	dofile("../../utils/config_map.lua")
-
 	kind "StaticLib"
 	language "C++"
 
-	flags { "FatalWarnings" }
+	filter { "configurations:not *Clang", "configurations:not Analyze*" }
+		flags { "FatalWarnings" }
 
-	configuration "Debug"
-		defines { "ENET_DEBUG" }
-
-	configuration "windows"
+	filter { "system:windows" }
 		includedirs { "../../dependencies/dirent" }
 		defines { "_CRT_SECURE_NO_WARNINGS" }
 
-	configuration {}
+	filter { "configurations:Debug* or Optimized_Debug*" }
+		defines { "ENET_DEBUG" }
+
+	filter {}
 
 	files { "**.h", "**.cpp", "**.inl" }
 
 	includedirs
 	{
 		"include",
+		"../../dependencies/EASTL/include",
 		"../../dependencies/enet/include",
-		"../../dependencies/ResIL/IL/include",
-		"../../dependencies/ResIL/include",
-		"../../dependencies/assimp/include",
-		"../../dependencies/utf8-cpp",
-		"../../dependencies/boxer/include",
-		"../../dependencies/rapidjson"
+		"../../dependencies/rapidjson",
+		"../../dependencies/mpack"
 	}

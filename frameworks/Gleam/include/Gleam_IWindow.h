@@ -1,5 +1,5 @@
 /************************************************************************************
-Copyright (C) 2016 by Nicholas LaCroix
+Copyright (C) 2018 by Nicholas LaCroix
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -23,11 +23,11 @@ THE SOFTWARE.
 #pragma once
 
 #include <Gleam_Window_Defines.h>
-#include <Gaff_Function.h>
+#include <EASTL/functional.h>
 
 NS_GLEAM
 
-using MessageHandler = Gaff::FunctionBinder<bool, const AnyMessage&>;
+using MessageHandler = eastl::function<bool (const AnyMessage&)>;
 
 class IWindow
 {
@@ -39,14 +39,15 @@ public:
 
 	virtual bool init(
 		const char* app_name, MODE window_mode = FULLSCREEN,
-		unsigned int width = 0, unsigned int height = 0,
-		int pos_x = 0, int pos_y = 0,
+		int32_t width = 0, int32_t height = 0,
+		int32_t pos_x = 0, int32_t pos_y = 0,
 		const char* compat = nullptr
 	) = 0;
 
 	virtual void destroy(void) = 0;
 
 	virtual void addWindowMessageHandler(const MessageHandler& callback) = 0;
+	virtual void addWindowMessageHandler(MessageHandler&& callback) = 0;
 	virtual bool removeWindowMessageHandler(const MessageHandler& callback) = 0;
 
 	virtual void showCursor(bool show) = 0;
@@ -55,15 +56,18 @@ public:
 	virtual bool isCursorVisible(void) const = 0;
 	virtual bool isCursorContained(void) const = 0;
 
+	virtual void allowRepeats(bool allow) = 0;
+	virtual bool areRepeatsAllowed(void) const = 0;
+
 	virtual bool setWindowMode(MODE window_mode) = 0;
 	virtual MODE getWindowMode(void) const = 0;
 
 	virtual void getPos(int& x, int& y) const = 0;
-	virtual void getDimensions(unsigned int& width, unsigned int& height) const = 0;
-	virtual int getPosX(void) const = 0;
-	virtual int getPosY(void) const = 0;
-	virtual unsigned int getWidth(void) const = 0;
-	virtual unsigned int getHeight(void) const = 0;
+	virtual void getDimensions(int32_t& width, int32_t& height) const = 0;
+	virtual int32_t getPosX(void) const = 0;
+	virtual int32_t getPosY(void) const = 0;
+	virtual int32_t getWidth(void) const = 0;
+	virtual int32_t getHeight(void) const = 0;
 	virtual bool isFullScreen(void) const = 0;
 
 	virtual bool setIcon(const char* icon) = 0;

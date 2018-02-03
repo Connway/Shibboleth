@@ -1,5 +1,5 @@
 /************************************************************************************
-Copyright (C) 2016 by Nicholas LaCroix
+Copyright (C) 2018 by Nicholas LaCroix
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -24,30 +24,67 @@ THE SOFTWARE.
 
 #include "Gaff_IAllocator.h"
 #include "Gaff_Utils.h"
-#include <stdlib.h>
 
 NS_GAFF
 
+template <size_t alignment>
 class DefaultAlignedAllocator : public IAllocator
 {
 public:
-	DefaultAlignedAllocator(size_t alignment = 16):
-		_alignment(alignment)
+	DefaultAlignedAllocator(const char* name = nullptr):
+		_name(name)
 	{
 	}
 
-	void* alloc(size_t size_bytes, const char* /*file*/, int /*line*/)
+	bool operator==(const DefaultAlignedAllocator& rhs) const
 	{
-		return AlignedMalloc(size_bytes, _alignment);
+		return _name == rhs._name;
 	}
 
-	void free(void* data)
+	// For EASTL support.
+	void* allocate(size_t n, int flags = 0) override
+	{
+		GAFF_REF(flags);
+		return AlignedMalloc(n, alignment);
+	}
+
+	void* allocate(size_t n, size_t align, size_t, int flags = 0) override
+	{
+		GAFF_REF(flags);
+		return AlignedMalloc(n, align);
+	}
+
+	void deallocate(void* p, size_t) override
+	{
+		free(p);
+	}
+
+	const char* get_name() const override
+	{
+		return _name;
+	}
+
+	void set_name(const char* pName) override
+	{
+		_name = pName;
+	}
+
+	void* alloc(size_t size_bytes, size_t /*alignment*/, const char* /*file*/, int /*line*/) override
+	{
+		return allocate(size_bytes);
+	}
+
+	void* alloc(size_t size_bytes, const char* /*file*/, int /*line*/) override
+	{
+		return allocate(size_bytes);
+	}
+
+	void free(void* data) override
 	{
 		AlignedFree(data);
 	}
 
-private:
-	size_t _alignment;
+	const char* _name = nullptr;
 };
 
 NS_END

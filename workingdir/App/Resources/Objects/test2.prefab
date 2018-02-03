@@ -1,0 +1,12 @@
+{
+	"name": "Test Object",
+
+	"components":
+	{
+		"Test1":
+		{
+			"Type": "AngelScriptComponent",
+			"Script": "TestScript.as"
+		}
+	}
+}

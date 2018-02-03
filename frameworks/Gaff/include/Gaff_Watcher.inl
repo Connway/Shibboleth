@@ -1,5 +1,5 @@
 /************************************************************************************
-Copyright (C) 2016 by Nicholas LaCroix
+Copyright (C) 2018 by Nicholas LaCroix
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -64,14 +64,14 @@ const Watcher<T, Allocator>& Watcher<T, Allocator>::operator=(const T& rhs)
 template <class T, class Allocator>
 void Watcher<T, Allocator>::addCallback(const typename Watcher<T, Allocator>::Callback& callback)
 {
-	ScopedLock<SpinLock> scoped_lock(_lock);
+	std::lock_guard<std::mutex> lock(_lock);
 	_callbacks.emplacePush(callback);
 }
 
 template <class T, class Allocator>
 void Watcher<T, Allocator>::removeCallback(const typename Watcher<T, Allocator>::Callback& callback)
 {
-	ScopedLock<SpinLock> scoped_lock(_lock);
+	std::lock_guard<std::mutex> lock(_lock);
 
 	auto it = _callbacks.linearSearch(callback);
 	GAFF_ASSERT(it == _callbacks.end());
@@ -82,7 +82,7 @@ void Watcher<T, Allocator>::removeCallback(const typename Watcher<T, Allocator>:
 template <class T, class Allocator>
 void Watcher<T, Allocator>::notifyCallbacks(void)
 {
-	ScopedLock<SpinLock> scoped_lock(_lock);
+	std::lock_guard<std::mutex> lock(_lock);
 
 	for (auto it = _callbacks.begin(); it != _callbacks.end(); ++it) {
 		(*it)(_data);

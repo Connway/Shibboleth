@@ -1,5 +1,5 @@
 /************************************************************************************
-Copyright (C) 2016 by Nicholas LaCroix
+Copyright (C) 2018 by Nicholas LaCroix
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -34,13 +34,13 @@ public:
 	HRESULT __stdcall Open(D3D_INCLUDE_TYPE IncludeType, LPCSTR pFileName, LPCVOID pParentData, LPCVOID *ppData, UINT *pBytes);
 	HRESULT __stdcall Close(LPCVOID pData);
 
-	const GleamAString& getWorkingDir(void) const;
+	const U8String& getWorkingDir(void) const;
 	void setWorkingDir(const char* dir);
 
 	static ShaderInclude gInclude;
 
 private:
-	GleamAString _working_dir;
+	U8String _working_dir;
 };
 
 NS_END

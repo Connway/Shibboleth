@@ -1,5 +1,5 @@
 /************************************************************************************
-Copyright (C) 2016 by Nicholas LaCroix
+Copyright (C) 2018 by Nicholas LaCroix
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -22,21 +22,14 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Gaff_HashMap.h"
+#include "Gaff_Platform.h"
+
 #include "Gaff_IncludeRapidJSON.h"
 #include <rapidjson/stringbuffer.h>
 #include <rapidjson/document.h>
 
-//#ifdef PLATFORM_WINDOWS
-//	#pragma warning(push)
-//	#pragma warning(disable : 4706)
-//#endif
-
 NS_GAFF
 
-/*!
-	\brief Class that represents a JSON object.
-*/
 class JSON
 {
 public:
@@ -51,7 +44,7 @@ public:
 		auto end = _value.MemberEnd();
 
 		for ( ; beg != end; ++beg) {
-			JSON json(beg->value);
+			const JSON json(beg->value);
 
 			if (callback(beg->name.GetString(), json)) {
 				return true;
@@ -68,8 +61,8 @@ public:
 		auto beg = _value.Begin();
 		auto end = _value.End();
 
-		for (size_t index = 0; beg != end; ++beg, ++index) {
-			JSON json(*beg);
+		for (int32_t index = 0; beg != end; ++beg, ++index) {
+			const JSON json(*beg);
 
 			if (callback(index, json)) {
 				return true;
@@ -79,19 +72,19 @@ public:
 		return false;
 	}
 
-	static INLINE void SetMemoryFunctions(JSONAlloc alloc_func, JSONFree free_func);
-	static INLINE JSON CreateArray(void);
-	static INLINE JSON CreateObject(void);
-	static INLINE JSON CreateInt(int val);
-	static INLINE JSON CreateUInt(unsigned int val);
-	static INLINE JSON CreateInt64(int64_t val);
-	static INLINE JSON CreateUInt64(uint64_t val);
-	static INLINE JSON CreateDouble(double val);
-	static INLINE JSON CreateString(const char* val);
-	static INLINE JSON CreateBool(bool val);
-	static INLINE JSON CreateTrue(void);
-	static INLINE JSON CreateFalse(void);
-	static INLINE JSON CreateNull(void);
+	static void SetMemoryFunctions(JSONAlloc alloc_func, JSONFree free_func);
+	static JSON CreateArray(void);
+	static JSON CreateObject(void);
+	static JSON CreateInt32(int32_t val);
+	static JSON CreateUInt32(uint32_t val);
+	static JSON CreateInt64(int64_t val);
+	static JSON CreateUInt64(uint64_t val);
+	static JSON CreateDouble(double val);
+	static JSON CreateString(const char* val);
+	static JSON CreateBool(bool val);
+	static JSON CreateTrue(void);
+	static JSON CreateFalse(void);
+	static JSON CreateNull(void);
 
 	JSON(const JSON& json);
 	JSON(JSON&& json);
@@ -111,68 +104,86 @@ public:
 	bool dumpToFile(const char* filename);
 	char* dump(void);
 
-	INLINE bool isObject(void) const;
-	INLINE bool isArray(void) const;
-	INLINE bool isString(void) const;
-	INLINE bool isNumber(void) const;
-	INLINE bool isInt(void) const;
-	INLINE bool isUInt(void) const;
-	INLINE bool isInt64(void) const;
-	INLINE bool isUInt64(void) const;
-	INLINE bool isDouble(void) const;
-	INLINE bool isBool(void) const;
-	INLINE bool isTrue(void) const;
-	INLINE bool isFalse(void) const;
-	INLINE bool isNull(void) const;
+	bool isObject(void) const;
+	bool isArray(void) const;
+	bool isString(void) const;
+	bool isNumber(void) const;
+	bool isInt32(void) const;
+	bool isUInt32(void) const;
+	bool isInt64(void) const;
+	bool isUInt64(void) const;
+	bool isFloat(void) const;
+	bool isDouble(void) const;
+	bool isBool(void) const;
+	bool isTrue(void) const;
+	bool isFalse(void) const;
+	bool isNull(void) const;
 
-	INLINE JSON getObject(const char* key) const;
-	INLINE JSON getObject(size_t index) const;
+	JSON getObject(const char* key) const;
+	JSON getObject(int32_t index) const;
 
-	INLINE const char* getString(const char* default_value) const;
-	INLINE int getInt(int default_value) const;
-	INLINE unsigned int getUInt(unsigned int default_value) const;
-	INLINE int64_t getInt64(int64_t default_value) const;
-	INLINE uint64_t getUInt64(uint64_t default_value) const;
-	INLINE double getDouble(double default_value) const;
-	INLINE double getNumber(double default_value) const;
-	INLINE bool getBool(bool default_value) const;
+	const char* getKey(char* buffer, size_t buf_size, int32_t index) const;
+	const char* getKey(int32_t index) const;
+	Gaff::JSON getValue(int32_t index) const;
 
-	INLINE const char* getString(void) const;
-	INLINE int getInt(void) const;
-	INLINE unsigned int getUInt(void) const;
-	INLINE int64_t getInt64(void) const;
-	INLINE uint64_t getUInt64(void) const;
-	INLINE double getDouble(void) const;
-	INLINE double getNumber(void) const;
-	INLINE bool getBool(void) const;
+	const char* getString(char* buffer, size_t buf_size, const char* default_value) const;
+	const char* getString(const char* default_value) const;
+	int8_t getInt8(int8_t default_value) const;
+	uint8_t getUInt8(uint8_t default_value) const;
+	int16_t getInt16(int16_t default_value) const;
+	uint16_t getUInt16(uint16_t default_value) const;
+	int32_t getInt32(int32_t default_value) const;
+	uint32_t getUInt32(uint32_t default_value) const;
+	int64_t getInt64(int64_t default_value) const;
+	uint64_t getUInt64(uint64_t default_value) const;
+	float getFloat(float default_value) const;
+	double getDouble(double default_value) const;
+	double getNumber(double default_value) const;
+	bool getBool(bool default_value) const;
 
-	INLINE void setObject(const char* key, const JSON& json);
-	INLINE void setObject(const char* key, JSON&& json);
-	INLINE void setObject(size_t index, const JSON& json);
-	INLINE void setObject(size_t index, JSON&& json);
-	INLINE void push(const JSON& json);
-	INLINE void push(JSON&& json);
+	const char* getString(char* buffer, size_t buf_size) const;
+	const char* getString(void) const;
+	int8_t getInt8(void) const;
+	uint8_t getUInt8(void) const;
+	int16_t getInt16(void) const;
+	uint16_t getUInt16(void) const;
+	int32_t getInt32(void) const;
+	uint32_t getUInt32(void) const;
+	int64_t getInt64(void) const;
+	uint64_t getUInt64(void) const;
+	float getFloat(void) const;
+	double getDouble(void) const;
+	double getNumber(void) const;
+	bool getBool(void) const;
 
-	INLINE size_t size(void) const;
+	void setObject(const char* key, const JSON& json);
+	void setObject(const char* key, JSON&& json);
+	void setObject(int32_t index, const JSON& json);
+	void setObject(int32_t index, JSON&& json);
+	void push(const JSON& json);
+	void push(JSON&& json);
 
-	INLINE const char* getErrorText(void) const;
-	INLINE const char* getSchemaErrorText(void) const;
-	INLINE const char* getSchemaKeywordText(void) const;
+	void freeString(const char*) const {}
+	int32_t size(void) const;
 
-	INLINE const JSON& operator=(const JSON& rhs);
-	INLINE const JSON& operator=(JSON&& rhs);
+	const char* getErrorText(void) const;
+	const char* getSchemaErrorText(void) const;
+	const char* getSchemaKeywordText(void) const;
 
-	INLINE const JSON& operator=(const char* value);
-	INLINE const JSON& operator=(int value);
-	INLINE const JSON& operator=(unsigned int value);
-	INLINE const JSON& operator=(int64_t value);
-	INLINE const JSON& operator=(uint64_t value);
-	INLINE const JSON& operator=(double value);
+	JSON& operator=(const JSON& rhs);
+	JSON& operator=(JSON&& rhs);
 
-	INLINE bool operator==(const JSON& rhs) const;
-	INLINE bool operator!=(const JSON& rhs) const;
-	INLINE JSON operator[](const char* key) const;
-	INLINE JSON operator[](size_t index) const;
+	JSON& operator=(const char* value);
+	JSON& operator=(int32_t value);
+	JSON& operator=(uint32_t value);
+	JSON& operator=(int64_t value);
+	JSON& operator=(uint64_t value);
+	JSON& operator=(double value);
+
+	bool operator==(const JSON& rhs) const;
+	bool operator!=(const JSON& rhs) const;
+	JSON operator[](const char* key) const;
+	JSON operator[](int32_t index) const;
 
 private:
 	class JSONAllocator;
@@ -197,7 +208,3 @@ private:
 };
 
 NS_END
-
-//#ifdef PLATFORM_WINDOWS
-//	#pragma warning(pop)
-//#endif

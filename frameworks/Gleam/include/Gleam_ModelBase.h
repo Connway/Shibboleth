@@ -1,5 +1,5 @@
 /************************************************************************************
-Copyright (C) 2016 by Nicholas LaCroix
+Copyright (C) 2018 by Nicholas LaCroix
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -22,9 +22,9 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Gleam_IModel.h"
 #include "Gleam_RefCounted.h"
-#include "Gleam_Array.h"
+#include "Gleam_Vector.h"
+#include "Gleam_IModel.h"
 
 NS_GLEAM
 
@@ -34,27 +34,27 @@ public:
 	ModelBase(void);
 	~ModelBase(void);
 
-	void destroy(void);
+	void destroy(void) override;
 
-	const ILayout* getLayout(size_t index) const;
-	ILayout* getLayout(size_t index);
-	size_t getIndex(const ILayout* layout) const;
+	const ILayout* getLayout(int32_t index) const override;
+	ILayout* getLayout(int32_t index) override;
+	int32_t getIndex(const ILayout* layout) const override;
 
-	size_t addLayout(ILayout* layout);
+	int32_t addLayout(ILayout* layout) override;
 
-	const IMesh* getMesh(size_t index) const;
-	IMesh* getMesh(size_t index);
-	size_t getMeshCount(void) const;
-	size_t getIndex(const IMesh* mesh) const;
+	const IMesh* getMesh(int32_t index) const override;
+	IMesh* getMesh(int32_t index) override;
+	int32_t getMeshCount(void) const override;
+	int32_t getIndex(const IMesh* mesh) const override;
 
-	size_t addMesh(IMesh* mesh);
+	int32_t addMesh(IMesh* mesh) override;
 
-	void renderInstanced(IRenderDevice& rd, size_t index, unsigned int count);
-	void render(IRenderDevice& rd, size_t index);
+	void renderInstanced(IRenderDevice& rd, int32_t index, int32_t count) override;
+	void render(IRenderDevice& rd, int32_t index) override;
 
 private:
-	GleamArray<ILayout*> _layouts;
-	GleamArray<IMesh*> _meshes;
+	Vector<ILayout*> _layouts;
+	Vector<IMesh*> _meshes;
 
 	GLEAM_REF_COUNTED(ModelBase);
 };

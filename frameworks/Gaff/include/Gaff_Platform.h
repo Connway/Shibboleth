@@ -1,5 +1,5 @@
 /************************************************************************************
-Copyright (C) 2016 by Nicholas LaCroix
+Copyright (C) 2018 by Nicholas LaCroix
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -28,8 +28,14 @@ THE SOFTWARE.
 	#define PLATFORM_WINDOWS
 #elif defined(__linux__)
 	#define PLATFORM_LINUX
-#elif defined(__APPLE__)
+//#elif defined(__ENVIRONMENT_IPHONE_OS_VERSION_MIN_REQUIRED__)
+//	#define PLATFORM_IOS
+#elif defined(__ENVIRONMENT_MAC_OS_X_VERSION_MIN_REQUIRED__)
 	#define PLATFORM_MAC
+//#elif defined(__ANDROID__)
+//	#define PLATFORM_ANDROID
+#else
+	#error "Unsupported platform."
 #endif
 
 #ifdef _MSC_VER
@@ -45,9 +51,13 @@ THE SOFTWARE.
 	#endif
 #endif
 
-#if defined(__LP64__) || defined(_WIN64)
+#if !defined(PLATFORM_LITTLE_ENDIAN) && !defined(PLATFORM_BIG_ENDIAN)
+	#error "Could not determine platform endianness."
+#endif
+
+#if defined(__LP64__) || defined(_WIN64) || defined(_M_X64) || defined(__x86_64__) || defined(__aarch64__)
 	#define PLATFORM_64_BIT
-#elif defined(__LP32__) || defined(_WIN32)
+#elif defined(__LP32__) || defined(_WIN32) || defined(_M_IX86) || defined(__i386__) || defined(__arm__)
 	#define PLATFORM_32_BIT
 #else
 	#error "Cannot deduce platform bit-age."

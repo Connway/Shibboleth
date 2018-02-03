@@ -1,5 +1,5 @@
 /************************************************************************************
-Copyright (C) 2016 by Nicholas LaCroix
+Copyright (C) 2018 by Nicholas LaCroix
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -22,16 +22,49 @@ THE SOFTWARE.
 
 #pragma once
 
-#ifdef USE_SIMD
-	#include "Gleam_Plane_SIMD.h"
+#include "Gleam_Defines.h"
+#include "Gaff_Defines.h"
+#include <vec3.hpp>
 
-	NS_GLEAM
-		typedef PlaneSIMD Plane;
-	NS_END
-#else
-	#include "Gleam_Plane_CPU.h"
+NS_GLEAM
 
-	NS_GLEAM
-		typedef PlaneCPU Plane;
-	NS_END
-#endif
+class Transform;
+class AABB;
+class OBB;
+
+class Plane
+{
+public:
+	enum ContainResult
+	{
+		BACK = 0,
+		FRONT,
+		INTERSECTS
+	};
+
+	Plane(const glm::vec3& point_1, const glm::vec3& point_2, const glm::vec3& point_3);
+	Plane(const glm::vec3& point, const glm::vec3& normal);
+	Plane(const glm::vec3& normal, float distance);
+
+	GAFF_STRUCTORS_DEFAULT(Plane);
+	GAFF_COPY_DEFAULT(Plane);
+
+	glm::vec3 getNormal(void) const;
+	glm::vec3 getPoint(void) const;
+	float getDistance(void) const;
+
+	ContainResult contains(const AABB& aabb) const;
+	ContainResult contains(const OBB& obb) const;
+
+	void transform(const Transform& transform);
+
+	void set(const glm::vec3& point_1, const glm::vec3& point_2, const glm::vec3& point_3);
+	void set(const glm::vec3& point, const glm::vec3& normal);
+	void set(const glm::vec3& normal, float distance);
+
+private:
+	glm::vec3 _normal;
+	float _distance;
+};
+
+NS_END

@@ -3,12 +3,13 @@ project "nuklear"
 		location ("../../project/" .. _ACTION .. "/dependencies")
 	end
 
-	configurations { "Debug", "Release" }
-	dofile("../../utils/config_map.lua")
-
 	kind "StaticLib"
 	language "C++"
-	flags { "FatalWarnings" }
+
+	filter { "configurations:not Analyze*" }
+		flags { "FatalWarnings" }
+
+	filter {}
 
 	files { "**.cpp", "**.h" }
 

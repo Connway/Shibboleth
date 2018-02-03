@@ -1,5 +1,5 @@
 /************************************************************************************
-Copyright (C) 2016 by Nicholas LaCroix
+Copyright (C) 2018 by Nicholas LaCroix
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -22,6 +22,7 @@ THE SOFTWARE.
 
 #include "Gleam_WindowHelpers_Windows.h"
 #include "Gleam_Window_Windows.h"
+#include <Gaff_Assert.h>
 
 NS_GLEAM
 
@@ -54,7 +55,37 @@ void WindowResized(AnyMessage* message, Window* window, WPARAM, LPARAM l)
 void WindowCharacter(AnyMessage* message, Window*, WPARAM w, LPARAM)
 {
 	message->base.type = IN_CHARACTER;
-	message->key_char.character = static_cast<unsigned int>(w);
+	message->key_char.character = static_cast<uint32_t>(w);
+
+	//if (m_keyRepeatEnabled || ((lParam & (1 << 30)) == 0))
+	//{
+	//	// Get the code of the typed character
+	//	Uint32 character = static_cast<Uint32>(wParam);
+
+	//	// Check if it is the first part of a surrogate pair, or a regular character
+	//	if ((character >= 0xD800) && (character <= 0xDBFF))
+	//	{
+	//		// First part of a surrogate pair: store it and wait for the second one
+	//		m_surrogate = static_cast<Uint16>(character);
+	//	}
+	//	else
+	//	{
+	//		// Check if it is the second part of a surrogate pair, or a regular character
+	//		if ((character >= 0xDC00) && (character <= 0xDFFF))
+	//		{
+	//			// Convert the UTF-16 surrogate pair to a single UTF-32 value
+	//			Uint16 utf16[] = { m_surrogate, static_cast<Uint16>(character) };
+	//			sf::Utf16::toUtf32(utf16, utf16 + 2, &character);
+	//			m_surrogate = 0;
+	//		}
+
+	//		// Send a TextEntered event
+	//		Event event;
+	//		event.type = Event::TextEntered;
+	//		event.text.unicode = character;
+	//		pushEvent(event);
+	//	}
+	//}
 }
 
 void WindowInput(AnyMessage* message, Window* window, WPARAM, LPARAM l)
