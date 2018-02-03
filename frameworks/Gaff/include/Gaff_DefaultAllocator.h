@@ -1,5 +1,5 @@
 /************************************************************************************
-Copyright (C) 2016 by Nicholas LaCroix
+Copyright (C) 2018 by Nicholas LaCroix
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -23,22 +23,66 @@ THE SOFTWARE.
 #pragma once
 
 #include "Gaff_IAllocator.h"
-#include <stdlib.h>
 
 NS_GAFF
 
 class DefaultAllocator : public IAllocator
 {
 public:
-	void* alloc(size_t size_bytes, const char* /*file*/, int /*line*/)
+	DefaultAllocator(const char* name = nullptr):
+		_name(name)
 	{
-		return malloc(size_bytes);
 	}
 
-	void free(void* data)
+	bool operator==(const DefaultAllocator& rhs) const
+	{
+		return _name == rhs._name;
+	}
+
+	// For EASTL support.
+	void* allocate(size_t n, int flags = 0) override
+	{
+		GAFF_REF(flags);
+		return malloc(n);
+	}
+
+	void* allocate(size_t n, size_t /*alignment*/, size_t /*offset*/, int flags = 0) override
+	{
+		GAFF_REF(flags);
+		return allocate(n, flags);
+	}
+
+	void deallocate(void* p, size_t) override
+	{
+		free(p);
+	}
+
+	const char* get_name() const override
+	{
+		return _name;
+	}
+
+	void set_name(const char* pName) override
+	{
+		_name = pName;
+	}
+
+	void* alloc(size_t size_bytes, size_t /*alignment*/, const char* /*file*/, int /*line*/) override
+	{
+		return allocate(size_bytes);
+	}
+
+	void* alloc(size_t size_bytes, const char* /*file*/, int /*line*/) override
+	{
+		return allocate(size_bytes);
+	}
+
+	void free(void* data) override
 	{
 		::free(data);
 	}
+
+	const char* _name = nullptr;
 };
 
 NS_END

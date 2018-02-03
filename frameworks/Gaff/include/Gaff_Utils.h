@@ -1,5 +1,5 @@
 /************************************************************************************
-Copyright (C) 2016 by Nicholas LaCroix
+Copyright (C) 2018 by Nicholas LaCroix
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -22,32 +22,20 @@ THE SOFTWARE.
 
 #pragma once
 
-#ifndef _CRT_SECURE_NO_WARNINGS
-	#define _CRT_SECURE_NO_WARNINGS
-#endif
+#include "Gaff_HashString.h"
+#include "Gaff_VectorMap.h"
 
-#include "Gaff_HashMap.h"
-#include <dirent.h>
 #include <cstring>
 #include <ctime>
-
-#ifdef PLATFORM_WINDOWS
-	#include "Gaff_IncludeWindows.h"
-#endif
-
-#ifdef PLATFORM_MAC
-	/* Return the exact length of d_namlen without zero terminator */
-	#define _D_EXACT_NAMLEN(p) ((p)->d_namlen)
-#endif
 
 #define STATIC_FILE_FUNC \
 	static void static__file__func(void); \
 	namespace { \
-	struct static__file__func__helper \
-	{ \
-	public: \
-		static__file__func__helper(void) { static__file__func(); } \
-	}; \
+		struct static__file__func__helper \
+		{ \
+		public: \
+			static__file__func__helper(void) { static__file__func(); } \
+		}; \
 	} \
 	static const static__file__func__helper GAFF_CAT(g__static_file_global_, __LINE__); \
 	void static__file__func(void)
@@ -55,46 +43,34 @@ THE SOFTWARE.
 
 NS_GAFF
 
-INLINE unsigned long GetNumberOfCores(void); //!< Returns the number of physical cores on the machine.
-INLINE void GetCurrentTimeString(char* buff, size_t count, const char* format); //!< Gets the current time as a string using \a format. Result stored in \a buff.
-INLINE void GetCurrentTimeString(wchar_t* buff, size_t size, const wchar_t* format);
-INLINE bool CreateDir(const char* dirname, unsigned short mode); //<! Creates directory \a dirname with the given access \a mode.
+unsigned long GetNumberOfCores(void); //!< Returns the number of physical cores on the machine.
+void GetCurrentTimeString(char* buff, size_t count, const char* format); //!< Gets the current time as a string using \a format. Result stored in \a buff.
+void GetCurrentTimeString(wchar_t* buff, size_t size, const wchar_t* format);
+bool CreateDir(const char* dirname, unsigned short mode); //<! Creates directory \a dirname with the given access \a mode.
 void DebugPrintf(const char* format_string, ...); //!< Does a printf() to debug output on supported platforms. Unsupported platforms just call normal printf().
 void DebugPrintf(const wchar_t* format_string, ...); //!< Does a printf() to debug output on supported platforms. Unsupported platforms just call normal printf().
-INLINE bool SetWorkingDir(const char* directory);
+bool SetWorkingDir(const char* directory);
 
-INLINE void* AlignedMalloc(size_t size, size_t alignment);
-INLINE void AlignedFree(void* data);
+void* AlignedOffsetMalloc(size_t size, size_t alignment, size_t offset);
+void* AlignedMalloc(size_t size, size_t alignment);
+void AlignedFree(void* data);
 
 bool IsDebuggerAttached(void);
 void DebugBreak(void);
 
-//! Used to determine what type an entry in the filesystem is.
-enum FileDataType
-{
-	FDT_Unknown = 0, //!< Unkown filesystem entry.
-	FDT_RegularFile = 0x8000, //!< Entry is a regular file on disk.
-	FDT_Directory = 0x4000, //!< Entry is a directory.
-	FDT_Pipe = 0x1000,
-	//DT_Socket
-	FDT_Character = 0x2000
-	//DT_Block
-};
-
-typedef bool (*FileDirTraversalFunc)(const char* name, size_t name_len, FileDataType type);
-typedef bool (*FileDirTraversalFuncSpecific)(const char* name, size_t name_len);
-
-template <class Callback>
-bool ForEachInDirectory(const char* directory, Callback&& callback);
-
-template <FileDataType type, class Callback>
-bool ForEachTypeInDirectory(const char* directory, Callback&& callback);
+template <class Allocator>
+VectorMap<HashString32<Allocator>, U8String<Allocator>, Allocator> ParseCommandLine(int argc, char** argv);
 
 template <class Allocator>
-HashMap<AHashString<Allocator>, AString<Allocator>, Allocator> ParseCommandLine(int argc, char** argv);
+void ParseCommandLine(int argc, char** argv, VectorMap<HashString32<Allocator>, U8String<Allocator>, Allocator>& out);
+
+#ifdef PLATFORM_WINDOWS
+template <class Allocator>
+VectorMap<HashString32<Allocator>, U8String<Allocator>, Allocator> ParseCommandLine(int argc, wchar_t** argv);
 
 template <class Allocator>
-void ParseCommandLine(int argc, char** argv, HashMap<AHashString<Allocator>, AString<Allocator>, Allocator>& out);
+void ParseCommandLine(int argc, wchar_t** argv, VectorMap<HashString32<Allocator>, U8String<Allocator>, Allocator>& out);
+#endif
 
 template <class T>
 void SetBitsToValue(T& value, T bits, bool set);
@@ -110,6 +86,21 @@ bool IsAnyBitSet(const T& value, T bits);
 
 template <class T>
 bool AreAllBitsSet(const T& value, T bits);
+
+template <class T, class R, R T::*M>
+constexpr ptrdiff_t OffsetOfMember(void);
+
+template <class T, class R>
+ptrdiff_t OffsetOfMember(R T::*m);
+
+template <class Derived, class Base>
+ptrdiff_t OffsetOfClass(void);
+
+template <typename T, typename M> M GetMemberType(M T::*);
+template <typename T, typename M> T GetClassType(M T::*);
+
+#define OFFSET_OF(x) Gaff::OffsetOfMember<decltype(Gaff::GetClassType(x)), decltype(Gaff::GetMemberType(x)), x>()
+
 
 #include "Gaff_Utils_Common.inl"
 

@@ -5,13 +5,11 @@ project "Shared"
 		location ("../../project/" .. _ACTION .. "/shared")
 	end
 
-	configurations { "Debug", "Release" }
-	dofile("../../utils/config_map.lua")
-
 	kind "StaticLib"
 	language "C++"
 
-	flags { "FatalWarnings" }
+	filter { "configurations:not Analyze*" }
+		flags { "FatalWarnings" }
 
 	filter { "system:windows" }
 		includedirs { "../../dependencies/dirent" }
@@ -32,7 +30,8 @@ project "Shared"
 		"../Memory/include",
 		"../../dependencies/rapidjson",
 		"../../frameworks/Gaff/include",
-		"../../dependencies/utf8-cpp"
-	}
-
-	dofile("../../utils/os_conditionals.lua")
+		"../../frameworks/Gleam/include",
+		"../../dependencies/EASTL/include",
+		"../../dependencies/glm",
+		"../../dependencies/libuv/include"
+		}

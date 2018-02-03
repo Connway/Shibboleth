@@ -1,5 +1,5 @@
 /************************************************************************************
-Copyright (C) 2016 by Nicholas LaCroix
+Copyright (C) 2018 by Nicholas LaCroix
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -64,7 +64,7 @@ public:
 		BLEND_OP_SIZE = BLEND_OP_MAX
 	};
 
-	enum COLOR_MASK
+	enum ColorMask
 	{
 		COLOR_RED = 1,
 		COLOR_GREEN = 2,

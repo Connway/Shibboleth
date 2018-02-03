@@ -1,5 +1,5 @@
 /************************************************************************************
-Copyright (C) 2016 by Nicholas LaCroix
+Copyright (C) 2018 by Nicholas LaCroix
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -24,26 +24,11 @@ THE SOFTWARE.
 
 #include "Gleam_ProxyAllocator.h"
 #include <Gaff_RefCounted.h>
-#include <Gaff_Atomic.h>
 
-typedef Gaff::RefCounted<Gleam::ProxyAllocator> GleamRefCounted;
+NS_GLEAM
 
-#define GLEAM_REF_COUNTED(Class) \
-public: \
-	void addRef(void) const \
-	{ \
-		AtomicIncrement(&_count); \
-	} \
-	void release(void) const \
-	{ \
-		unsigned int new_count = AtomicDecrement(&_count); \
-		if (!new_count) { \
-			GAFF_FREET(this, *GetAllocator()); \
-		} \
-	} \
-	unsigned int getRefCount(void) const \
-	{ \
-		return _count; \
-	} \
-private: \
-	mutable volatile unsigned int _count = 0 // Use C++11 in-class initialization so that classes don't have to modify constructors.
+#define GLEAM_REF_COUNTED(Class) GAFF_REF_COUNTED(Class, *Gleam::GetAllocator())
+
+using RefCounted = Gaff::RefCounted<Gleam::ProxyAllocator>;
+
+NS_END

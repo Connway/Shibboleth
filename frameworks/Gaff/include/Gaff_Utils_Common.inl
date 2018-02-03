@@ -1,5 +1,5 @@
 	/************************************************************************************
-Copyright (C) 2016 by Nicholas LaCroix
+Copyright (C) 2018 by Nicholas LaCroix
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -20,154 +20,29 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#ifndef _D_EXACT_NAMLEN
-	#define _D_EXACT_NAMLEN(entry) strlen(entry->d_name)
-#endif
-
-/*!
-	\brief Traverses all filesystem entries in a specific directory.
-
-	\tparam
-		Callback The type used for the callback.
-		Callbacks take the signature bool CB(const char* name, size_t name_len, FileDataType type)
-		Returning true will end the loop early.
-
-	\return Returns whether the loop was terminated early.
-*/
-template <class Callback>
-bool ForEachInDirectory(const char* directory, Callback&& callback)
-{
-	DIR* dir = opendir(directory);
-
-	if (!dir) {
-		return true;
-	}
-
-	dirent* entry = readdir(dir);
-	bool early_out = false;
-
-	while (entry) {
-		if (callback(entry->d_name, _D_EXACT_NAMLEN(entry), static_cast<FileDataType>(entry->d_type))) {
-			early_out = true;
-			break;
-		}
-
-		entry = readdir(dir);
-	}
-
-	closedir(dir);
-	return early_out;
-}
-
-/*!
-	\brief Traverses filesystem entries of \a type in a specific directory.
-
-	\tparam type The filesystem entry type we are filtering to the callback.
-	\tparam
-		Callback The type used for the callback.
-		Callbacks take the signature bool CB(const char* name, size_t name_len)
-		Returning true will end the loop early.
-
-	\return Returns whether the loop was terminated early.
-*/
-template <FileDataType type, class Callback>
-bool ForEachTypeInDirectory(const char* directory, Callback&& callback)
-{
-	DIR* dir = opendir(directory);
-
-	if (!dir) {
-		return true;
-	}
-
-	dirent* entry = readdir(dir);
-	bool early_out = false;
-
-	while (entry) {
-		if (entry->d_type == type) {
-			if (callback(entry->d_name, _D_EXACT_NAMLEN(entry))) {
-				early_out = true;
-				break;
-			}
-		}
-
-		entry = readdir(dir);
-	}
-
-	closedir(dir);
-	return early_out;
-}
-
-/*!
-	\brief Parses the command line into option/value(s) pairs using a hashmap.
-	\return A HashMap of option/value strings.
-	\note
-		Options start with either a '-' or '--'. Option values are space separated.
-
-		Example (using JSON style notation for result):
-
-		(cmdline): --option1 value1 value2 -option2 value3 -flag0
-
-		(result): { "option1": "value1 value2", "option2": "value3", "flag0": "" }
-*/
+// Parses the command line into option / value(s) pairs using a hashmap.
+// Options start with either a '-' or '--'.Option values are space separated.
+// Example(using JSON style notation for result) :
+// (cmdline) : --option1 value1 value2 - option2 value3 - flag0
+// (result) : { "option1": "value1 value2", "option2" : "value3", "flag0" : "" }
 template <class Allocator>
-HashMap<AHashString<Allocator>, AString<Allocator>, Allocator> ParseCommandLine(int argc, char** argv)
+VectorMap<HashString32<Allocator>, U8String<Allocator>, Allocator> ParseCommandLine(int argc, char** argv)
 {
-	HashMap<AHashString<Allocator>, AString<Allocator>, Allocator> opt_flag_map;
-
-	if (argc == 1) {
-		return opt_flag_map;
-	}
-
-	AHashString<Allocator> option;
-	AString<Allocator> values;
-
-	for (int i = 1; i < argc; ++i) {
-		unsigned int option_begin = 0;
-		const char* value = argv[i];
-
-		// If it doesn't start with - or -- then skip it!
-		while (value[option_begin] == '-') {
-			++option_begin;
-		}
-
-		if (!option_begin) {
-			if (option.size()) {
-				if (values.size()) {
-					values += ' ';
-				}
-
-				values += value;
-			}
-
-		} else {
-			if (option.size()) {
-				opt_flag_map.insert(option, values);
-				values.clear();
-			}
-
-			option = value + option_begin;
-		}
-	}
-
-	if (option.size()) {
-		opt_flag_map.insert(option, values);
-	}
-
+	VectorMap<HashString32<Allocator>, U8String<Allocator>, Allocator> opt_flag_map;
+	ParseCommandLine(argc, argv, opt_flag_map);
 	return opt_flag_map;
 }
 
-/*!
-	\brief Same as ParseCommandLine, but the user provides the HashMap we are outputting to.
-*/
+// Same as ParseCommandLine, but the user provides the HashMap we are outputting to.
 template <class Allocator>
-void ParseCommandLine(int argc, char** argv, HashMap<AHashString<Allocator>, AString<Allocator>, Allocator>& out)
+void ParseCommandLine(int argc, char** argv, VectorMap<HashString32<Allocator>, U8String<Allocator>, Allocator>& out)
 {
 	if (argc == 1) {
 		return;
 	}
 
-	AHashString<Allocator> option;
-	AString<Allocator> values;
+	HashString32<Allocator> option;
+	U8String<Allocator> values;
 
 	for (int i = 1; i < argc; ++i) {
 		unsigned int option_begin = 0;
@@ -189,8 +64,7 @@ void ParseCommandLine(int argc, char** argv, HashMap<AHashString<Allocator>, ASt
 
 		} else {
 			if (option.size()) {
-				out.insert(option, values);
-				values.clear();
+				out[option] = std::move(values);
 			}
 
 			option = value + option_begin;
@@ -198,9 +72,69 @@ void ParseCommandLine(int argc, char** argv, HashMap<AHashString<Allocator>, ASt
 	}
 
 	if (option.size()) {
-		out.insert(option, values);
+		out[option] = std::move(values);
 	}
 }
+
+#ifdef PLATFORM_WINDOWS
+// Parses the command line into option / value(s) pairs using a hashmap.
+// Options start with either a '-' or '--'.Option values are space separated.
+// Example(using JSON style notation for result) :
+// (cmdline) : --option1 value1 value2 - option2 value3 - flag0
+// (result) : { "option1": "value1 value2", "option2" : "value3", "flag0" : "" }
+template <class Allocator>
+VectorMap<HashString32<Allocator>, U8String<Allocator>, Allocator> ParseCommandLine(int argc, wchar_t** argv)
+{
+	VectorMap<HashString32<Allocator>, U8String<Allocator>, Allocator> opt_flag_map;
+	ParseCommandLine(argc, argv, opt_flag_map);
+	return opt_flag_map;
+}
+
+// Same as ParseCommandLine, but the user provides the HashMap we are outputting to.
+template <class Allocator>
+void ParseCommandLine(int argc, wchar_t** argv, VectorMap<HashString32<Allocator>, U8String<Allocator>, Allocator>& out)
+{
+	if (argc == 1) {
+		return;
+	}
+
+	HashString32<Allocator> option;
+	U8String<Allocator> values;
+
+	for (int i = 1; i < argc; ++i) {
+		unsigned int option_begin = 0;
+		const wchar_t* value = argv[i];
+		CONVERT_STRING(char, temp, value);
+
+		// If it doesn't start with - or -- then skip it!
+		while (temp[option_begin] == '-') {
+			++option_begin;
+		}
+
+		if (!option_begin) {
+			if (option.size()) {
+				if (values.size()) {
+					values += ' ';
+				}
+
+				values += temp;
+			}
+
+		}
+		else {
+			if (option.size()) {
+				out[option] = std::move(values);
+			}
+
+			option = temp + option_begin;
+		}
+	}
+
+	if (option.size()) {
+		out[option] = std::move(values);
+	}
+}
+#endif
 
 template <class T>
 void SetBitsToValue(T& value, T bits, bool set)
@@ -234,4 +168,22 @@ template <class T>
 bool AreAllBitsSet(const T& value, T bits)
 {
 	return (value & bits) == bits;
+}
+
+template <class T, class R, R T::*M>
+constexpr ptrdiff_t OffsetOfMember(void)
+{
+	return reinterpret_cast<ptrdiff_t>(&(((T*)0)->*M));
+}
+
+template <class T, class R>
+ptrdiff_t OffsetOfMember(R T::*m)
+{
+	return reinterpret_cast<ptrdiff_t>(&(((T*)0)->*m));
+}
+
+template <class Derived, class Base>
+ptrdiff_t OffsetOfClass(void)
+{
+	return ((ptrdiff_t)(Base*)(Derived*)1) - 1;
 }

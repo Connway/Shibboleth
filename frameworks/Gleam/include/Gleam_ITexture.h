@@ -1,5 +1,5 @@
 /************************************************************************************
-Copyright (C) 2016 by Nicholas LaCroix
+Copyright (C) 2018 by Nicholas LaCroix
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -32,8 +32,8 @@ class IRenderDevice;
 class ITexture : public Gaff::IRefCounted
 {
 public:
-	enum TYPE { ONED = 0, TWOD, THREED, CUBE, DEPTH, DEPTH_STENCIL, TYPE_SIZE };
-	enum FORMAT
+	enum Type { ONED = 0, TWOD, THREED, CUBE, DEPTH, DEPTH_STENCIL, TYPE_SIZE };
+	enum Format
 	{
 		R_8_UNORM = 0,
 		R_16_UNORM,
@@ -103,33 +103,33 @@ public:
 	ITexture(void) {}
 	virtual ~ITexture(void) {}
 
-	INLINE unsigned int getMipLevels(void) const { return _mip_levels; }
-	INLINE FORMAT getFormat(void) const { return _format; }
-	INLINE TYPE getType(void) const { return _type; }
-	INLINE int getWidth(void) const { return _width; }
-	INLINE int getHeight(void) const { return _height; }
-	INLINE int getDepth(void) const { return _depth; }
+	int32_t getMipLevels(void) const { return _mip_levels; }
+	Format getFormat(void) const { return _format; }
+	Type getType(void) const { return _type; }
+	int32_t getWidth(void) const { return _width; }
+	int32_t getHeight(void) const { return _height; }
+	int32_t getDepth(void) const { return _depth; }
 
 	virtual void destroy(void) = 0;
 
-	virtual bool init3D(IRenderDevice& rd, int width, int height, int depth, FORMAT format,
-						int mip_levels = 1, const void* buffer = nullptr) = 0;
-	virtual bool init2D(IRenderDevice& rd, int width, int height, FORMAT format,
-						int mip_levels = 1, const void* buffer = nullptr) = 0;
-	virtual bool init1D(IRenderDevice& rd, int width, FORMAT format,
-						int mip_levels = 1, const void* buffer = nullptr) = 0;
-	virtual bool initCubemap(IRenderDevice& rd, int width, int height, FORMAT format, int mip_levels = 1, const void* buffer = nullptr) = 0;
-	virtual bool initDepthStencil(IRenderDevice& rd, int width, int height, FORMAT format) = 0;
+	virtual bool init3D(IRenderDevice& rd, int32_t width, int32_t height, int32_t depth, Format format,
+						int32_t mip_levels = 1, const void* buffer = nullptr) = 0;
+	virtual bool init2D(IRenderDevice& rd, int32_t width, int32_t height, Format format,
+						int32_t mip_levels = 1, const void* buffer = nullptr) = 0;
+	virtual bool init1D(IRenderDevice& rd, int32_t width, Format format,
+						int32_t mip_levels = 1, const void* buffer = nullptr) = 0;
+	virtual bool initCubemap(IRenderDevice& rd, int32_t width, int32_t height, Format format, int32_t mip_levels = 1, const void* buffer = nullptr) = 0;
+	virtual bool initDepthStencil(IRenderDevice& rd, int32_t width, int32_t height, Format format) = 0;
 
 	virtual RendererType getRendererType(void) const = 0;
 
 protected:
-	unsigned int _mip_levels;
-	int _width;
-	int _height;
-	int _depth;
-	FORMAT _format;
-	TYPE _type;
+	int32_t _mip_levels;
+	int32_t _width;
+	int32_t _height;
+	int32_t _depth;
+	Format _format;
+	Type _type;
 
 	GAFF_NO_COPY(ITexture);
 };

@@ -1,5 +1,5 @@
 /************************************************************************************
-Copyright (C) 2016 by Nicholas LaCroix
+Copyright (C) 2018 by Nicholas LaCroix
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -27,9 +27,7 @@ THE SOFTWARE.
 
 NS_GLEAM
 
-template <class T> using GleamString = Gaff::String<T, Gleam::ProxyAllocator>;
-
-typedef Gaff::String<char, ProxyAllocator> GleamAString;
-typedef Gaff::String<wchar_t, ProxyAllocator> GleamWString;
+template <class T> using String = Gaff::String<T, ProxyAllocator>;
+using U8String = Gaff::U8String<ProxyAllocator>;
 
 NS_END

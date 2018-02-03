@@ -1,5 +1,5 @@
 /************************************************************************************
-Copyright (C) 2016 by Nicholas LaCroix
+Copyright (C) 2018 by Nicholas LaCroix
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -24,10 +24,11 @@ THE SOFTWARE.
 
 #include "Gleam_RawInputRegisterFunction.h"
 #include "Gleam_Window_Windows.h"
+#include <Gaff_Assert.h>
 
 NS_GLEAM
 
-bool RegisterForRawInput(unsigned short device, const IWindow& window)
+bool RegisterForRawInput(uint16_t device, const IWindow& window)
 {
 	GAFF_ASSERT(device == RAW_INPUT_MOUSE || (device >= RAW_INPUT_JOYSTICK && device <= RAW_INPUT_KEYBOARD));
 

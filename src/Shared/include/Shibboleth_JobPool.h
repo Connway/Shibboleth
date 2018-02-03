@@ -1,5 +1,5 @@
 /************************************************************************************
-Copyright (C) 2016 by Nicholas LaCroix
+Copyright (C) 2018 by Nicholas LaCroix
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -28,5 +28,17 @@ THE SOFTWARE.
 NS_SHIBBOLETH
 
 using JobPool = Gaff::JobPool<ProxyAllocator>;
+
+enum JobPoolIndices
+{
+	// Engine level pools.
+	JPI_ANY = 0,
+	JPI_READ_FILE,
+
+	// User defined pools.
+	JPI_SCRIPT,
+
+	JPI_SIZE
+};
 
 NS_END

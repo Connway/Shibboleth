@@ -1,5 +1,5 @@
 /************************************************************************************
-Copyright (C) 2016 by Nicholas LaCroix
+Copyright (C) 2018 by Nicholas LaCroix
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -43,13 +43,8 @@ DynamicModule::~DynamicModule(void)
 
 bool DynamicModule::load(const char* filename)
 {
-#ifdef _UNICODE
-	CONVERT_TO_UTF16(temp, filename);
+	CONVERT_STRING(wchar_t, temp, filename);
 	_module = LoadLibraryEx(temp, NULL, 0);
-#else
-	_module = LoadLibraryEx(filename, NULL, 0);
-#endif
-
 	return _module != nullptr;
 }
 
@@ -84,11 +79,11 @@ const char* DynamicModule::GetErrorString(void)
 		NULL
 	);
 
-#ifdef _UNICODE
-	ConvertToUTF8(error, msg, wcslen(msg));
-#else
-	memcpy(_error, msg, strlen(msg));
-#endif
+	const wchar_t* src_beg = msg;
+	char* error_begin = error;
+	char* error_end = error + MAX_ERR_LEN;
+
+	eastl::DecodePart(src_beg, src_beg + eastl::CharStrlen(src_beg), error_begin, error_end);
 
 	LocalFree(msg);
 

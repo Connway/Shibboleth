@@ -1,5 +1,5 @@
 /************************************************************************************
-Copyright (C) 2016 by Nicholas LaCroix
+Copyright (C) 2018 by Nicholas LaCroix
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -25,100 +25,22 @@ THE SOFTWARE.
 
 NS_GAFF
 
-/*!
-	\brief Computes 64-bit hash using FNV-1a algorithm. See <a href="http://www.isthe.com/chongo/tech/comp/fnv/">this page</a> for more details.
-	\param key The buffer we are using to calculate the hash.
-	\param len The length of the buffer in bytes.
-	\return The calculated hash.
-*/
-uint64_t FNV1aHash64(const char* key, size_t len, uint64_t init)
-{
-	for (size_t i = 0; i < len; ++i) {
-		init = (init ^ static_cast<uint64_t>(key[i])) * 1099511628211ULL;
-	}
-
-	return init;
-}
-
-/*!
-	\brief Computes 64-bit hash using FNV-1 algorithm. See <a href="http://www.isthe.com/chongo/tech/comp/fnv/">this page</a> for more details.
-	\param key The buffer we are using to calculate the hash.
-	\param len The length of the buffer in bytes.
-	\return The calculated hash.
-*/
-uint64_t FNV1Hash64(const char* key, size_t len, uint64_t init)
-{
-	for (size_t i = 0; i < len; ++i) {
-		init = (init ^ 1099511628211ULL) * static_cast<uint64_t>(key[i]);
-	}
-
-	return init;
-}
-
-/*!
-	\brief Computes 32-bit hash using FNV-1a algorithm. See <a href="http://www.isthe.com/chongo/tech/comp/fnv/">this page</a> for more details.
-	\param key The buffer we are using to calculate the hash.
-	\param len The length of the buffer in bytes.
-	\return The calculated hash.
-*/
-uint32_t FNV1aHash32(const char* key, size_t len, uint32_t init)
-{
-	for (size_t i = 0; i < len; ++i) {
-		init = (init ^ static_cast<uint32_t>(key[i])) * 16777619U;
-	}
-
-	return init;
-}
-
-/*!
-	\brief Computes 32-bit hash using FNV-1 algorithm. See <a href="http://www.isthe.com/chongo/tech/comp/fnv/">this page</a> for more details.
-	\param key The buffer we are using to calculate the hash.
-	\param len The length of the buffer in bytes.
-	\return The calculated hash.
-*/
-uint32_t FNV1Hash32(const char* key, size_t len, uint32_t init)
-{
-	for (size_t i = 0; i < len; ++i) {
-		init = (init * 16777619U) ^ static_cast<uint32_t>(key[i]);
-	}
-
-	return init;
-}
-
-uint64_t FNV1aHash64(const char* key, size_t len)
-{
-	return FNV1aHash64(key, len, INIT_HASH64);
-}
-
-uint64_t FNV1Hash64(const char* key, size_t len)
-{
-	return FNV1Hash64(key, len, INIT_HASH64);
-}
-
-uint32_t FNV1aHash32(const char* key, size_t len)
-{
-	return FNV1aHash32(key, len, INIT_HASH32);
-}
-
-uint32_t FNV1Hash32(const char* key, size_t len)
-{
-	return FNV1Hash32(key, len, INIT_HASH32);
-}
-
-/*!
-	\brief See <a href="http://en.wikipedia.org/wiki/Binomial_coefficient">this Wikipedia page</a> for more information.
-*/
 float BinomialCoefficient(float n, float k)
 {
 	return tgammaf(n + 1.0f) / (tgammaf(k + 1.0f) * tgammaf(n - k + 1.0f));
 }
 
-/*!
-	\brief See <a href="http://en.wikipedia.org/wiki/Bernstein_polynomial">this Wikipedia page</a> for more information.
-*/
 float BernsteinPolynomial(float t, float n, float k)
 {
 	return BinomialCoefficient(n, k) * powf(t, k) * powf(1.0f - t, n - k);
+}
+
+float NormalizeAngle(float angle)
+{
+	angle += Pi;
+	angle -= floorf(angle / (2.0f * Pi)) * (2.0f * Pi);
+	angle -= Pi;
+	return angle;
 }
 
 NS_END

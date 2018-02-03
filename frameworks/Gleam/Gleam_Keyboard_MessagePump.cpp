@@ -1,5 +1,5 @@
 /************************************************************************************
-Copyright (C) 2016 by Nicholas LaCroix
+Copyright (C) 2018 by Nicholas LaCroix
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -53,7 +53,7 @@ bool KeyboardMP::init(IWindow& window, bool no_windows_key)
 
 bool KeyboardMP::init(IWindow& window)
 {
-	auto cb = Gaff::Bind(this, &KeyboardMP::handleMessage);
+	auto cb = Gleam::MemberFunc(this, &KeyboardMP::handleMessage);
 	_window = &window;
 	_window->addWindowMessageHandler(cb);
 
@@ -71,7 +71,7 @@ bool KeyboardMP::init(bool no_windows_key)
 
 bool KeyboardMP::init(void)
 {
-	auto cb = Gaff::Bind(this, &KeyboardMP::handleMessage);
+	auto cb = MemberFunc(this, &KeyboardMP::handleMessage);
 	Window::AddGlobalMessageHandler(cb);
 
 	_flags |= KMP_GLOBAL_HANDLER;
@@ -80,7 +80,7 @@ bool KeyboardMP::init(void)
 
 void KeyboardMP::destroy(void)
 {
-	auto cb = Gaff::Bind(this, &KeyboardMP::handleMessage);
+	auto cb = MemberFunc(this, &KeyboardMP::handleMessage);
 
 	if (_window) {
 		_window->removeWindowMessageHandler(cb);
@@ -96,8 +96,8 @@ void KeyboardMP::destroy(void)
 void KeyboardMP::update(void)
 {
 	if (areRepeatsAllowed()) {
-		for (unsigned int i = 0; i < 256; ++i) {
-			unsigned char curr = _curr_state[i];
+		for (int32_t i = 0; i < 256; ++i) {
+			uint8_t curr = _curr_state[i];
 
 			for (size_t j = 0; j < _input_handlers.size(); ++j) {
 				_input_handlers[j](this, i, static_cast<float>(curr));
@@ -105,9 +105,9 @@ void KeyboardMP::update(void)
 		}
 
 	} else {
-		for (unsigned int i = 0; i < 256; ++i) {
-			unsigned char curr = _curr_state[i];
-			unsigned char prev = _prev_state[i];
+		for (int32_t i = 0; i < 256; ++i) {
+			uint8_t curr = _curr_state[i];
+			uint8_t prev = _prev_state[i];
 
 			if (curr != prev) {
 				for (size_t j = 0; j < _input_handlers.size(); ++j) {
@@ -144,7 +144,7 @@ bool KeyboardMP::areRepeatsAllowed(void) const
 	return _flags & KMP_ALLOW_REPEATS;
 }
 
-const unsigned char* KeyboardMP::getKeyboardData(void) const
+const uint8_t* KeyboardMP::getKeyboardData(void) const
 {
 	return _curr_state;
 }

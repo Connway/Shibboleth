@@ -40,9 +40,6 @@ GCC compiler version must support C++11. So unless you're running on something s
 
 You may also easily drag and drop the source files into your project.
 
-LINUX PACKAGE DEPENDENCIES:
-	gtk+-3.0 (for Boxer)
-
 =============
     NOTES
 =============
@@ -51,4 +48,3 @@ LINUX PACKAGE DEPENDENCIES:
     KNOWN ISSUES
 ====================
 
-Saving TIFF files is broken in 64-bit builds. This is not in Gaff code, but in DevIL/ResIL code.

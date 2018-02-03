@@ -1,5 +1,5 @@
 /************************************************************************************
-Copyright (C) 2016 by Nicholas LaCroix
+Copyright (C) 2018 by Nicholas LaCroix
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -28,7 +28,10 @@ THE SOFTWARE.
 NS_SHIBBOLETH
 
 template <class T> using HashString = Gaff::HashString<T, ProxyAllocator>;
-typedef Gaff::HashString<char, ProxyAllocator> AHashString;
-typedef Gaff::HashString<wchar_t, ProxyAllocator> WHashString;
+using HashString32 = Gaff::HashString32<ProxyAllocator>;
+using HashString64 = Gaff::HashString64<ProxyAllocator>;
+
+using HashStringTemp32 = Gaff::HashStringTemp32;
+using HashStringTemp64 = Gaff::HashStringTemp64;
 
 NS_END

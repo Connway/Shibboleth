@@ -1,5 +1,5 @@
 /************************************************************************************
-Copyright (C) 2016 by Nicholas LaCroix
+Copyright (C) 2018 by Nicholas LaCroix
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -20,29 +20,24 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-/*! \file */
-
 #pragma once
 
 #include "Gaff_DefaultAllocator.h"
 #include "Gaff_ICurve.h"
-#include "Gaff_Array.h"
-#include "Gaff_Pair.h"
+#include "Gaff_Vector.h"
 #include "Gaff_Math.h"
 
 NS_GAFF
 
-/*!
-	\brief Curve implementation using linear interpolation for sampling.
-
-	\tparam PointType The type that represents our point data.
-	\tparam Allocator The allocator we will use to allocate memory.
-*/
 template <class PointType, class Allocator = DefaultAllocator>
 class LinearCurve : public ICurve<PointType>
 {
 public:
-	typedef Pair<float, PointType> Key;
+	struct Key
+	{
+		PointType point;
+		float t;
+	};
 
 	LinearCurve(const LinearCurve<PointType, Allocator>& curve);
 	LinearCurve(LinearCurve<PointType, Allocator>&& curve);
@@ -52,10 +47,10 @@ public:
 	PointType sample(float t) const;
 
 	void addKey(float t, const PointType& point);
-	void removeKey(unsigned int index);
+	void removeKey(int32_t index);
 
-	unsigned int getNumKeys(void) const;
-	const Key& getKey(unsigned int index);
+	const Key& getKey(int32_t index) const;
+	int32_t getNumKeys(void) const;
 
 private:
 	Array<Key, Allocator> _points;

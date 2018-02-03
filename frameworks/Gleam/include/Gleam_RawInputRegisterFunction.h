@@ -1,5 +1,5 @@
 /************************************************************************************
-Copyright (C) 2016 by Nicholas LaCroix
+Copyright (C) 2018 by Nicholas LaCroix
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -40,7 +40,7 @@ NS_END
 
 NS_GLEAM
 
-	INLINE bool RegisterForRawInput(unsigned short device, const IWindow& window);
+	bool RegisterForRawInput(uint16_t device, const IWindow& window);
 
 NS_END
 

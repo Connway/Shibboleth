@@ -1,5 +1,5 @@
 /************************************************************************************
-Copyright (C) 2016 by Nicholas LaCroix
+Copyright (C) 2018 by Nicholas LaCroix
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -46,10 +46,6 @@ bool StackTrace::RefreshModuleList(void)
 	return SymRefreshModuleList(_handle) != FALSE;
 }
 
-/*!
-	\brief Global initialization of the stack trace system.
-	\note Must be called before using a StackTrace instance. And called per execution context. (eg EXE, DLL)
-*/
 bool StackTrace::Init(void)
 {
 	if (!_handle) {
@@ -59,9 +55,6 @@ bool StackTrace::Init(void)
 	return SymInitialize(_handle, nullptr, TRUE) == TRUE;;
 }
 
-/*!
-	\brief Global destruction of the stack trace system.
-*/
 void StackTrace::Destroy(void)
 {
 	GAFF_ASSERT(_handle);
@@ -94,10 +87,6 @@ const StackTrace& StackTrace::operator=(const StackTrace& rhs)
 	return *this;
 }
 
-/*!
-	\brief Captures the callstack \a frames_to_capture deep.
-	\return The number of callstack frames captured.
-*/
 unsigned short StackTrace::captureStack(const char*, unsigned int frames_to_capture)
 {
 	GAFF_ASSERT(frames_to_capture <= MAX_FRAMES);

@@ -1,5 +1,5 @@
 /************************************************************************************
-Copyright (C) 2016 by Nicholas LaCroix
+Copyright (C) 2018 by Nicholas LaCroix
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -37,6 +37,12 @@ THE SOFTWARE.
 NS_GAFF
 
 template <class T, class... Args>
+T* ConstructExact(T* data, Args... args)
+{
+	return new (data) T(args...);
+}
+
+template <class T, class... Args>
 T* Construct(T* data, Args&&... args)
 {
 	return new (data) T(std::forward<Args>(args)...);
@@ -59,6 +65,15 @@ class IAllocator
 public:
 	virtual ~IAllocator(void) {}
 
+	// For EASTL support.
+	virtual void* allocate(size_t n, int flags = 0) = 0;
+	virtual void* allocate(size_t n, size_t alignment, size_t offset, int flags = 0) = 0;
+	virtual void deallocate(void* p, size_t n) = 0;
+
+	virtual const char* get_name() const = 0;
+	virtual void set_name(const char* pName) = 0;
+
+	virtual void* alloc(size_t size_bytes, size_t alignment, const char* file, int line) = 0;
 	virtual void* alloc(size_t size_bytes, const char* file, int line) = 0;
 	virtual void free(void* data) = 0;
 

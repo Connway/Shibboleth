@@ -1,5 +1,5 @@
 /************************************************************************************
-Copyright (C) 2016 by Nicholas LaCroix
+Copyright (C) 2018 by Nicholas LaCroix
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -28,7 +28,6 @@ THE SOFTWARE.
 NS_SHIBBOLETH
 
 template <class T> using String = Gaff::String<T, ProxyAllocator>;
-typedef Gaff::String<char, ProxyAllocator> AString;
-typedef Gaff::String<wchar_t, ProxyAllocator> WString;
+using U8String = Gaff::U8String<ProxyAllocator>;
 
 NS_END

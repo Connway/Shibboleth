@@ -1,5 +1,5 @@
 /************************************************************************************
-Copyright (C) 2016 by Nicholas LaCroix
+Copyright (C) 2018 by Nicholas LaCroix
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -23,6 +23,7 @@ THE SOFTWARE.
 #pragma once
 
 #include "Gaff_Defines.h"
+#include <cassert> // Until I find a decent cross-platform dialog box.
 
 NS_GAFF
 
@@ -30,9 +31,9 @@ NS_GAFF
 	#define GAFF_ASSERT(expr) GAFF_ASSERT_MSG(expr, nullptr)
 
 	#ifdef _MSC_VER
-		#define GAFF_ASSERT_MSG(expr, msg, ...) (void)((expr) || (Gaff::Assert(msg, #expr, __FILE__, __LINE__, __VA_ARGS__), 0))
+		#define GAFF_ASSERT_MSG(expr, msg, ...) (void)((expr) || (Gaff::Assert(msg, #expr, __FILE__, __LINE__, __VA_ARGS__), 0)); assert(expr)
 	#elif defined(__GNUC__) || defined(__GNUG__) || defined(__clang__)
-		#define GAFF_ASSERT_MSG(expr, msg, ...) (void)((expr) || (Gaff::Assert(msg, #expr, __FILE__, __LINE__, ##__VA_ARGS__), 0))
+		#define GAFF_ASSERT_MSG(expr, msg, ...) (void)((expr) || (Gaff::Assert(msg, #expr, __FILE__, __LINE__, ##__VA_ARGS__) || assert(expr), 0)); assert(expr)
 	#endif
 
 #else

@@ -1,5 +1,5 @@
 /************************************************************************************
-Copyright (C) 2016 by Nicholas LaCroix
+Copyright (C) 2018 by Nicholas LaCroix
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -121,11 +121,11 @@ bool WriteJSON(const JSON& json, Writer& writer)
 	} else if (json.isString()) {
 		success = writer.String(json.getString(), static_cast<rapidjson::SizeType>(json.size()));
 
-	} else if (json.isInt()) {
-		success = writer.Int(json.getInt());
+	} else if (json.isInt32()) {
+		success = writer.Int(json.getInt32());
 
-	} else if (json.isUInt()) {
-		success = writer.Uint(json.getUInt());
+	} else if (json.isUInt32()) {
+		success = writer.Uint(json.getUInt32());
 
 	} else if (json.isInt64()) {
 		success = writer.Int64(json.getInt64());
@@ -165,17 +165,17 @@ JSON JSON::CreateArray(void)
 
 JSON JSON::CreateObject(void)
 {
-	JSONValue value = JSONValue(rapidjson::kNumberType);
+	JSONValue value = JSONValue(rapidjson::kObjectType);
 	return JSON(std::move(value));
 }
 
-JSON JSON::CreateInt(int val)
+JSON JSON::CreateInt32(int32_t val)
 {
 	JSONValue value = JSONValue(val);
 	return JSON(std::move(value));
 }
 
-JSON JSON::CreateUInt(unsigned int val)
+JSON JSON::CreateUInt32(uint32_t val)
 {
 	JSONValue value = JSONValue(val);
 	return JSON(std::move(value));
@@ -502,12 +502,12 @@ bool JSON::isNumber(void) const
 	return _value.IsNumber();
 }
 
-bool JSON::isInt(void) const
+bool JSON::isInt32(void) const
 {
 	return _value.IsInt();
 }
 
-bool JSON::isUInt(void) const
+bool JSON::isUInt32(void) const
 {
 	return _value.IsUint();
 }
@@ -520,6 +520,11 @@ bool JSON::isInt64(void) const
 bool JSON::isUInt64(void) const
 {
 	return _value.IsUint64();
+}
+
+bool JSON::isFloat(void) const
+{
+	return _value.IsFloat();
 }
 
 bool JSON::isDouble(void) const
@@ -558,9 +563,34 @@ JSON JSON::getObject(const char* key) const
 	return JSON(it->value);
 }
 
-JSON JSON::getObject(size_t index) const
+JSON JSON::getObject(int32_t index) const
 {
 	return JSON(_value[static_cast<rapidjson::SizeType>(index)]);
+}
+
+const char* JSON::getKey(char* buffer, size_t buf_size, int32_t index) const
+{
+	GAFF_ASSERT(_value.IsObject() && index < size());
+	const char* const key = (_value.MemberBegin() + index)->name.GetString();
+	strncpy(buffer, key, buf_size);
+	return buffer;
+}
+
+const char* JSON::getKey(int32_t index) const
+{
+	GAFF_ASSERT(_value.IsObject() && index < size());
+	return (_value.MemberBegin() + index)->name.GetString();
+}
+
+JSON JSON::getValue(int32_t index) const
+{
+	GAFF_ASSERT(_value.IsObject() && index < size());
+	return JSON((_value.MemberBegin() + index)->value);
+}
+
+const char* JSON::getString(char* buffer, size_t buf_size, const char* default_value) const
+{
+	return (_value.IsNull()) ? default_value : strncpy(buffer, _value.GetString(), buf_size);
 }
 
 const char* JSON::getString(const char* default_value) const
@@ -568,12 +598,32 @@ const char* JSON::getString(const char* default_value) const
 	return (_value.IsNull()) ? default_value : _value.GetString();
 }
 
-int JSON::getInt(int default_value) const
+int8_t JSON::getInt8(int8_t default_value) const
+{
+	return (_value.IsNull()) ? default_value : static_cast<int8_t>(_value.GetInt());
+}
+
+uint8_t JSON::getUInt8(uint8_t default_value) const
+{
+	return (_value.IsNull()) ? default_value : static_cast<uint8_t>(_value.GetUint());
+}
+
+int16_t JSON::getInt16(int16_t default_value) const
+{
+	return (_value.IsNull()) ? default_value : static_cast<int16_t>(_value.GetInt());
+}
+
+uint16_t JSON::getUInt16(uint16_t default_value) const
+{
+	return (_value.IsNull()) ? default_value : static_cast<uint16_t>(_value.GetUint());
+}
+
+int32_t JSON::getInt32(int32_t default_value) const
 {
 	return (_value.IsNull()) ? default_value : _value.GetInt();
 }
 
-unsigned int JSON::getUInt(unsigned int default_value) const
+uint32_t JSON::getUInt32(uint32_t default_value) const
 {
 	return (_value.IsNull()) ? default_value : _value.GetUint();
 }
@@ -586,6 +636,11 @@ int64_t JSON::getInt64(int64_t default_value) const
 uint64_t JSON::getUInt64(uint64_t default_value) const
 {
 	return (_value.IsNull()) ? default_value : _value.GetUint64();
+}
+
+float JSON::getFloat(float default_value) const
+{
+	return (_value.IsNull()) ? default_value : _value.GetFloat();
 }
 
 double JSON::getDouble(double default_value) const
@@ -603,17 +658,42 @@ bool JSON::getBool(bool default_value) const
 	return (_value.IsNull()) ? default_value : _value.GetBool();
 }
 
+const char* JSON::getString(char* buffer, size_t buf_size) const
+{
+	return strncpy(buffer, _value.GetString(), buf_size);
+}
+
 const char* JSON::getString(void) const
 {
 	return _value.GetString();
 }
 
-int JSON::getInt(void) const
+int8_t JSON::getInt8(void) const
+{
+	return static_cast<int8_t>(_value.GetInt());
+}
+
+uint8_t JSON::getUInt8(void) const
+{
+	return static_cast<uint8_t>(_value.GetUint());
+}
+
+int16_t JSON::getInt16(void) const
+{
+	return static_cast<int16_t>(_value.GetInt());
+}
+
+uint16_t JSON::getUInt16(void) const
+{
+	return static_cast<uint16_t>(_value.GetUint());
+}
+
+int32_t JSON::getInt32(void) const
 {
 	return _value.GetInt();
 }
 
-unsigned int JSON::getUInt(void) const
+uint32_t JSON::getUInt32(void) const
 {
 	return _value.GetUint();
 }
@@ -626,6 +706,11 @@ int64_t JSON::getInt64(void) const
 uint64_t JSON::getUInt64(void) const
 {
 	return _value.GetUint64();
+}
+
+float JSON::getFloat(void) const
+{
+	return _value.GetFloat();
 }
 
 double JSON::getDouble(void) const
@@ -681,17 +766,17 @@ void JSON::setObject(const char* key, JSON&& json)
 	}
 }
 
-void JSON::setObject(size_t index, const JSON& json)
+void JSON::setObject(int32_t index, const JSON& json)
 {
-	GAFF_ASSERT(_value.IsArray() && index < _value.Size());
+	GAFF_ASSERT(_value.IsArray() && index < static_cast<int32_t>(_value.Size()));
 	JSONValue value(json._value, g_allocator);
 
 	_value[static_cast<rapidjson::SizeType>(index)] = std::move(value);
 }
 
-void JSON::setObject(size_t index, JSON&& json)
+void JSON::setObject(int32_t index, JSON&& json)
 {
-	GAFF_ASSERT(_value.IsArray() && index < _value.Size());
+	GAFF_ASSERT(_value.IsArray() && index < static_cast<int32_t>(_value.Size()));
 	_value[static_cast<rapidjson::SizeType>(index)] = std::move(json._value);
 }
 
@@ -709,21 +794,17 @@ void JSON::push(JSON&& json)
 	_value.PushBack(std::move(json._value), g_allocator);
 }
 
-size_t JSON::size(void) const
+int32_t JSON::size(void) const
 {
-	GAFF_ASSERT(isArray() || isObject() || isString());
+	GAFF_ASSERT(isString() || isArray() || isObject());
 
-	size_t size = 0;
-
-	if (isArray()) {
-		size = _value.Size();
-	} else if (isObject()) {
-		size = _value.MemberCount();
-	} else {
-		size = _value.GetStringLength();
+	if (isString()) {
+		return static_cast<int32_t>(_value.GetStringLength());
+	} else if (isArray()) {
+		return static_cast<int32_t>(_value.Size());
 	}
 
-	return size;
+	return static_cast<int32_t>(_value.MemberCount());
 }
 
 const char* JSON::getErrorText(void) const
@@ -741,49 +822,49 @@ const char* JSON::getSchemaKeywordText(void) const
 	return _keyword_error.GetString();
 }
 
-const JSON& JSON::operator=(const JSON& rhs)
+JSON& JSON::operator=(const JSON& rhs)
 {
 	_value = JSONValue(rhs._value, g_allocator);
 	return *this;
 }
 
-const JSON& JSON::operator=(JSON&& rhs)
+JSON& JSON::operator=(JSON&& rhs)
 {
 	_value = std::move(rhs._value);
 	return *this;
 }
 
-const JSON& JSON::operator=(const char* value)
+JSON& JSON::operator=(const char* value)
 {
 	_value.SetString(value, g_allocator);
 	return *this;
 }
 
-const JSON& JSON::operator=(int value)
+JSON& JSON::operator=(int32_t value)
 {
 	_value.SetInt(value);
 	return *this;
 }
 
-const JSON& JSON::operator=(unsigned int value)
+JSON& JSON::operator=(uint32_t value)
 {
 	_value.SetUint(value);
 	return *this;
 }
 
-const JSON& JSON::operator=(int64_t value)
+JSON& JSON::operator=(int64_t value)
 {
 	_value.SetInt64(value);
 	return *this;
 }
 
-const JSON& JSON::operator=(uint64_t value)
+JSON& JSON::operator=(uint64_t value)
 {
 	_value.SetUint64(value);
 	return *this;
 }
 
-const JSON& JSON::operator=(double value)
+JSON& JSON::operator=(double value)
 {
 	_value.SetDouble(value);
 	return *this;
@@ -804,7 +885,7 @@ JSON JSON::operator[](const char* key) const
 	return getObject(key);
 }
 
-JSON JSON::operator[](size_t index) const
+JSON JSON::operator[](int32_t index) const
 {
 	return getObject(index);
 }

@@ -1,5 +1,5 @@
 /************************************************************************************
-Copyright (C) 2016 by Nicholas LaCroix
+Copyright (C) 2018 by Nicholas LaCroix
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -22,14 +22,14 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Shibboleth_LogManager.h"
+#include <Shibboleth_Defines.h>
 #include <Gaff_Defines.h>
 
 NS_SHIBBOLETH
 
 class IApp;
 
-INLINE void SetApp(IApp& app);
-INLINE IApp& GetApp(void);
+void SetApp(IApp& app);
+IApp& GetApp(void);
 
 NS_END

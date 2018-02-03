@@ -3,27 +3,22 @@ project "libtiff"
 		location ("../../project/" .. _ACTION .. "/dependencies")
 	end
 
-	configurations { "Debug", "Release" }
-	dofile("../../utils/config_map.lua")
-
 	kind "StaticLib"
 	language "C"
 	warnings "Default"
 
 	files { "**.c", "**.h" }
-	includedirs { "../libjpeg", "../zlib" }
+	includedirs { "../libjpeg", "../zlib-ng" }
 	excludes { "tif_win32.c" }
 
 	configuration "windows"
 		files { "tif_win32.c" }
 		excludes { "tif_unix.c" }
 
-	configuration "vs*"
+	filter { "action:vs*" }
 		defines { "_CRT_SECURE_NO_WARNINGS" }
 
-	configuration {}
-
-	filter { "action:gmake" }
+	filter { "action:gmake", "toolset:gcc or clang" }
 		buildoptions { "-fPIC" }
 
 	filter {}

@@ -1,5 +1,5 @@
 /************************************************************************************
-Copyright (C) 2016 by Nicholas LaCroix
+Copyright (C) 2018 by Nicholas LaCroix
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -21,11 +21,8 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Shibboleth_Utilities.h"
-#include <Shibboleth_RefCounted.h>
-#include <Shibboleth_JobPool.h>
-#include <Shibboleth_String.h>
-#include <Shibboleth_IApp.h>
-#include <Gaff_ScopedLock.h>
+#include <Shibboleth_Memory.h>
+#include <Gaff_Utils.h>
 #include <Gaff_JSON.h>
 
 NS_SHIBBOLETH

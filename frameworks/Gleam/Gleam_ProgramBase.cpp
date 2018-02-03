@@ -1,5 +1,5 @@
 /************************************************************************************
-Copyright (C) 2016 by Nicholas LaCroix
+Copyright (C) 2018 by Nicholas LaCroix
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -24,6 +24,7 @@ THE SOFTWARE.
 #include "Gleam_IShaderResourceView.h"
 #include "Gleam_ISamplerState.h"
 #include "Gleam_IBuffer.h"
+#include <Gaff_Assert.h>
 
 NS_GLEAM
 
@@ -39,20 +40,20 @@ ProgramBuffersBase::~ProgramBuffersBase(void)
 
 void ProgramBuffersBase::clear(void)
 {
-	for (unsigned int i = 0; i < IShader::SHADER_TYPE_SIZE - 1; ++i) {
-		GleamArray<IShaderResourceView*>& resource_views = _resource_views[i];
-		GleamArray<ISamplerState*>& samplers = _sampler_states[i];
-		GleamArray<IBuffer*>& const_bufs = _constant_buffers[i];
+	for (int32_t i = 0; i < IShader::SHADER_TYPE_SIZE - 1; ++i) {
+		Vector<IShaderResourceView*>& resource_views = _resource_views[i];
+		Vector<ISamplerState*>& samplers = _sampler_states[i];
+		Vector<IBuffer*>& const_bufs = _constant_buffers[i];
 
-		for (unsigned int j = 0; j < resource_views.size(); ++j) {
+		for (int32_t j = 0; j < static_cast<int32_t>(resource_views.size()); ++j) {
 			resource_views[j]->release();
 		}
 
-		for (unsigned int j = 0; j < samplers.size(); ++j) {
+		for (int32_t j = 0; j < static_cast<int32_t>(samplers.size()); ++j) {
 			samplers[j]->release();
 		}
 
-		for (unsigned int j = 0; j < const_bufs.size(); ++j) {
+		for (int32_t j = 0; j < static_cast<int32_t>(const_bufs.size()); ++j) {
 			const_bufs[j]->release();
 		}
 
@@ -62,183 +63,180 @@ void ProgramBuffersBase::clear(void)
 	}
 }
 
-const GleamArray<IBuffer*>& ProgramBuffersBase::getConstantBuffers(IShader::SHADER_TYPE type) const
+const Vector<IBuffer*>& ProgramBuffersBase::getConstantBuffers(IShader::ShaderType type) const
 {
 	GAFF_ASSERT(type < IShader::SHADER_TYPE_SIZE - 1);
 	return _constant_buffers[type];
 }
 
-const IBuffer* ProgramBuffersBase::getConstantBuffer(IShader::SHADER_TYPE type, size_t index) const
+const IBuffer* ProgramBuffersBase::getConstantBuffer(IShader::ShaderType type, int32_t index) const
 {
-	GAFF_ASSERT(type < IShader::SHADER_TYPE_SIZE - 1 && index < _constant_buffers[type].size());
+	GAFF_ASSERT(type < IShader::SHADER_TYPE_SIZE - 1 && index < static_cast<int32_t>(_constant_buffers[type].size()));
 	return _constant_buffers[type][index];
 }
 
-IBuffer* ProgramBuffersBase::getConstantBuffer(IShader::SHADER_TYPE type, size_t index)
+IBuffer* ProgramBuffersBase::getConstantBuffer(IShader::ShaderType type, int32_t index)
 {
-	GAFF_ASSERT(type < IShader::SHADER_TYPE_SIZE - 1 && index < _constant_buffers[type].size());
+	GAFF_ASSERT(type < IShader::SHADER_TYPE_SIZE - 1 && index < static_cast<int32_t>(_constant_buffers[type].size()));
 	return _constant_buffers[type][index];
 }
 
-void ProgramBuffersBase::addConstantBuffer(IShader::SHADER_TYPE type, IBuffer* const_buffer)
+void ProgramBuffersBase::addConstantBuffer(IShader::ShaderType type, IBuffer* const_buffer)
 {
 	GAFF_ASSERT(type < IShader::SHADER_TYPE_SIZE - 1 && const_buffer && const_buffer->getRendererType() == getRendererType());
-	_constant_buffers[type].emplacePush(const_buffer);
+	_constant_buffers[type].emplace_back(const_buffer);
 	const_buffer->addRef();
 }
 
-void ProgramBuffersBase::removeConstantBuffer(IShader::SHADER_TYPE type, size_t index)
+void ProgramBuffersBase::removeConstantBuffer(IShader::ShaderType type, int32_t index)
 {
-	GAFF_ASSERT(type < IShader::SHADER_TYPE_SIZE && index < _constant_buffers[type].size());
+	GAFF_ASSERT(type < IShader::SHADER_TYPE_SIZE && index < static_cast<int32_t>(_constant_buffers[type].size()));
 	_constant_buffers[type][index]->release();
-	_constant_buffers[type].erase(index);
+	_constant_buffers[type].erase(_constant_buffers[type].begin() + index);
 }
 
-void ProgramBuffersBase::popConstantBuffer(IShader::SHADER_TYPE type, size_t count)
+void ProgramBuffersBase::popConstantBuffer(IShader::ShaderType type, int32_t count)
 {
-	GAFF_ASSERT(type < IShader::SHADER_TYPE_SIZE && _constant_buffers[type].size());
-	GAFF_ASSERT(count <= _constant_buffers[type].size());
+	GAFF_ASSERT(type < IShader::SHADER_TYPE_SIZE && count <= static_cast<int32_t>(_constant_buffers[type].size()));
 
 	while (count) {
-		_constant_buffers[type].last()->release();
-		_constant_buffers[type].pop();
+		_constant_buffers[type].back()->release();
+		_constant_buffers[type].pop_back();
 		--count;
 	}
 }
 
-size_t ProgramBuffersBase::getConstantBufferCount(IShader::SHADER_TYPE type) const
+int32_t ProgramBuffersBase::getConstantBufferCount(IShader::ShaderType type) const
 {
-	return _constant_buffers[type].size();
+	return static_cast<int32_t>(_constant_buffers[type].size());
 }
 
-size_t ProgramBuffersBase::getConstantBufferCount(void) const
+int32_t ProgramBuffersBase::getConstantBufferCount(void) const
 {
-	size_t count = 0;
+	int32_t count = 0;
 
-	for (size_t i = 0; i < IShader::SHADER_TYPE_SIZE - 1; ++i) {
-		count += _constant_buffers[i].size();
+	for (int32_t i = 0; i < IShader::SHADER_TYPE_SIZE - 1; ++i) {
+		count += static_cast<int32_t>(_constant_buffers[i].size());
 	}
 
 	return count;
 }
 
-const GleamArray<IShaderResourceView*>& ProgramBuffersBase::getResourceViews(IShader::SHADER_TYPE type) const
+const Vector<IShaderResourceView*>& ProgramBuffersBase::getResourceViews(IShader::ShaderType type) const
 {
 	GAFF_ASSERT(type < IShader::SHADER_TYPE_SIZE - 1);
 	return _resource_views[type];
 }
 
-const IShaderResourceView* ProgramBuffersBase::getResourceView(IShader::SHADER_TYPE type, size_t index) const
+const IShaderResourceView* ProgramBuffersBase::getResourceView(IShader::ShaderType type, int32_t index) const
 {
-	GAFF_ASSERT(type < IShader::SHADER_TYPE_SIZE && index < _resource_views[type].size());
+	GAFF_ASSERT(type < IShader::SHADER_TYPE_SIZE && index < static_cast<int32_t>(_resource_views[type].size()));
 	return _resource_views[type][index];
 }
 
-IShaderResourceView* ProgramBuffersBase::getResourceView(IShader::SHADER_TYPE type, size_t index)
+IShaderResourceView* ProgramBuffersBase::getResourceView(IShader::ShaderType type, int32_t index)
 {
-	GAFF_ASSERT(type < IShader::SHADER_TYPE_SIZE && index < _resource_views[type].size());
+	GAFF_ASSERT(type < IShader::SHADER_TYPE_SIZE && index < static_cast<int32_t>(_resource_views[type].size()));
 	return _resource_views[type][index];
 }
 
-void ProgramBuffersBase::addResourceView(IShader::SHADER_TYPE type, IShaderResourceView* resource_view)
+void ProgramBuffersBase::addResourceView(IShader::ShaderType type, IShaderResourceView* resource_view)
 {
 	GAFF_ASSERT(type < IShader::SHADER_TYPE_SIZE && resource_view && resource_view->getRendererType() == getRendererType());
-	_resource_views[type].emplacePush(resource_view);
+	_resource_views[type].emplace_back(resource_view);
 	resource_view->addRef();
 }
 
-void ProgramBuffersBase::removeResourceView(IShader::SHADER_TYPE type, size_t index)
+void ProgramBuffersBase::removeResourceView(IShader::ShaderType type, int32_t index)
 {
-	GAFF_ASSERT(type < IShader::SHADER_TYPE_SIZE && index < _resource_views[type].size());
+	GAFF_ASSERT(type < IShader::SHADER_TYPE_SIZE && index < static_cast<int32_t>(_resource_views[type].size()));
 	_resource_views[type][index]->release();
-	_resource_views[type].erase(index);
+	_resource_views[type].erase(_resource_views[type].begin() + index);
 }
 
-void ProgramBuffersBase::popResourceView(IShader::SHADER_TYPE type, size_t count)
+void ProgramBuffersBase::popResourceView(IShader::ShaderType type, int32_t count)
 {
-	GAFF_ASSERT(type < IShader::SHADER_TYPE_SIZE && _resource_views[type].size());
-	GAFF_ASSERT(count <= _resource_views[type].size());
+	GAFF_ASSERT(type < IShader::SHADER_TYPE_SIZE && count <= static_cast<int32_t>(_resource_views[type].size()));
 
 	while (count) {
-		_resource_views[type].last()->release();
-		_resource_views[type].pop();
+		_resource_views[type].back()->release();
+		_resource_views[type].pop_back();
 		--count;
 	}
 }
 
-size_t ProgramBuffersBase::getResourceViewCount(IShader::SHADER_TYPE type) const
+int32_t ProgramBuffersBase::getResourceViewCount(IShader::ShaderType type) const
 {
 	GAFF_ASSERT(type < IShader::SHADER_TYPE_SIZE);
-	return _resource_views[type].size();
+	return static_cast<int32_t>(_resource_views[type].size());
 }
 
-size_t ProgramBuffersBase::getResourceViewCount(void) const
+int32_t ProgramBuffersBase::getResourceViewCount(void) const
 {
-	size_t count = 0;
+	int32_t count = 0;
 
-	for (size_t i = 0; i < IShader::SHADER_TYPE_SIZE - 1; ++i) {
-		count += _resource_views[i].size();
+	for (int32_t i = 0; i < IShader::SHADER_TYPE_SIZE - 1; ++i) {
+		count += static_cast<int32_t>(_resource_views[i].size());
 	}
 
 	return count;
 }
 
-const GleamArray<ISamplerState*>& ProgramBuffersBase::getSamplerStates(IShader::SHADER_TYPE type) const
+const Vector<ISamplerState*>& ProgramBuffersBase::getSamplerStates(IShader::ShaderType type) const
 {
 	GAFF_ASSERT(type < IShader::SHADER_TYPE_SIZE - 1);
 	return _sampler_states[type];
 }
 
-const ISamplerState* ProgramBuffersBase::getSamplerState(IShader::SHADER_TYPE type, size_t index) const
+const ISamplerState* ProgramBuffersBase::getSamplerState(IShader::ShaderType type, int32_t index) const
 {
-	GAFF_ASSERT(type < IShader::SHADER_TYPE_SIZE && index < _sampler_states[type].size());
+	GAFF_ASSERT(type < IShader::SHADER_TYPE_SIZE && index < static_cast<int32_t>(_sampler_states[type].size()));
 	return _sampler_states[type][index];
 }
 
-ISamplerState* ProgramBuffersBase::getSamplerState(IShader::SHADER_TYPE type, size_t index)
+ISamplerState* ProgramBuffersBase::getSamplerState(IShader::ShaderType type, int32_t index)
 {
-	GAFF_ASSERT(type < IShader::SHADER_TYPE_SIZE && index < _sampler_states[type].size());
+	GAFF_ASSERT(type < IShader::SHADER_TYPE_SIZE && index < static_cast<int32_t>(_sampler_states[type].size()));
 	return _sampler_states[type][index];
 }
 
-void ProgramBuffersBase::addSamplerState(IShader::SHADER_TYPE type, ISamplerState* sampler)
+void ProgramBuffersBase::addSamplerState(IShader::ShaderType type, ISamplerState* sampler)
 {
 	GAFF_ASSERT(type < IShader::SHADER_TYPE_SIZE && sampler && sampler->getRendererType() == getRendererType());
-	_sampler_states[type].emplacePush(sampler);
+	_sampler_states[type].emplace_back(sampler);
 	sampler->addRef();
 }
 
-void ProgramBuffersBase::removeSamplerState(IShader::SHADER_TYPE type, size_t index)
+void ProgramBuffersBase::removeSamplerState(IShader::ShaderType type, int32_t index)
 {
-	GAFF_ASSERT(type < IShader::SHADER_TYPE_SIZE && index < _sampler_states[type].size());
+	GAFF_ASSERT(type < IShader::SHADER_TYPE_SIZE && index < static_cast<int32_t>(_sampler_states[type].size()));
 	_sampler_states[type][index]->release();
-	_sampler_states[type].erase(index);
+	_sampler_states[type].erase(_sampler_states[type].begin() + index);
 }
 
-void ProgramBuffersBase::popSamplerState(IShader::SHADER_TYPE type, size_t count)
+void ProgramBuffersBase::popSamplerState(IShader::ShaderType type, int32_t count)
 {
-	GAFF_ASSERT(type < IShader::SHADER_TYPE_SIZE && _sampler_states[type].size());
-	GAFF_ASSERT(count <= _sampler_states[type].size());
+	GAFF_ASSERT(type < IShader::SHADER_TYPE_SIZE && count <= static_cast<int32_t>(_sampler_states[type].size()));
 
 	while (count) {
-		_sampler_states[type].last()->release();
-		_sampler_states[type].pop();
+		_sampler_states[type].back()->release();
+		_sampler_states[type].pop_back();
 		--count;
 	}
 }
 
-size_t ProgramBuffersBase::getSamplerCount(IShader::SHADER_TYPE type) const
+int32_t ProgramBuffersBase::getSamplerCount(IShader::ShaderType type) const
 {
 	GAFF_ASSERT(type < IShader::SHADER_TYPE_SIZE);
-	return _sampler_states[type].size();
+	return static_cast<int32_t>(_sampler_states[type].size());
 }
 
-size_t ProgramBuffersBase::getSamplerCount(void) const
+int32_t ProgramBuffersBase::getSamplerCount(void) const
 {
-	size_t count = 0;
+	int32_t count = 0;
 
-	for (size_t i = 0; i < IShader::SHADER_TYPE_SIZE - 1; ++i) {
-		count += _sampler_states[i].size();
+	for (int32_t i = 0; i < IShader::SHADER_TYPE_SIZE - 1; ++i) {
+		count += static_cast<int32_t>(_sampler_states[i].size());
 	}
 
 	return count;
@@ -257,18 +255,18 @@ ProgramBase::~ProgramBase(void)
 
 void ProgramBase::destroy(void)
 {
-	for (size_t i = 0; i < IShader::SHADER_TYPE_SIZE - 1; ++i) {
+	for (int32_t i = 0; i < IShader::SHADER_TYPE_SIZE - 1; ++i) {
 		_attached_shaders[i] = nullptr;
 	}
 }
 
-const IShader* ProgramBase::getAttachedShader(IShader::SHADER_TYPE type) const
+const IShader* ProgramBase::getAttachedShader(IShader::ShaderType type) const
 {
 	GAFF_ASSERT(type >= IShader::SHADER_VERTEX && type < IShader::SHADER_TYPE_SIZE);
 	return _attached_shaders[type].get();
 }
 
-IShader* ProgramBase::getAttachedShader(IShader::SHADER_TYPE type)
+IShader* ProgramBase::getAttachedShader(IShader::ShaderType type)
 {
 	GAFF_ASSERT(type >= IShader::SHADER_VERTEX && type < IShader::SHADER_TYPE_SIZE);
 	return _attached_shaders[type].get();

@@ -1,5 +1,5 @@
 /************************************************************************************
-Copyright (C) 2016 by Nicholas LaCroix
+Copyright (C) 2018 by Nicholas LaCroix
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -43,22 +43,22 @@ size_t Pose::getNumBones(void) const
 	return _local_bone_transforms.size();
 }
 
-const Array<Gleam::TransformSIMD>& Pose::getLocalTransforms(void) const
+const Vector<Gleam::Transform>& Pose::getLocalTransforms(void) const
 {
 	return _local_bone_transforms;
 }
 
-Array<Gleam::TransformSIMD>& Pose::getLocalTransforms(void)
+Vector<Gleam::Transform>& Pose::getLocalTransforms(void)
 {
 	return _local_bone_transforms;
 }
 
-const Array<Gleam::TransformSIMD>& Pose::getModelTransforms(void) const
+const Vector<Gleam::Transform>& Pose::getModelTransforms(void) const
 {
 	return _model_bone_transforms;
 }
 
-Array<Gleam::TransformSIMD>& Pose::getModelTransforms(void)
+Vector<Gleam::Transform>& Pose::getModelTransforms(void)
 {
 	return _model_bone_transforms;
 }

@@ -3,9 +3,6 @@ project "assimp"
 		location ("../../project/" .. _ACTION .. "/dependencies")
 	end
 
-	configurations { "Debug", "Release" }
-	dofile("../../utils/config_map.lua")
-
 	kind "StaticLib"
 	language "C++"
 	warnings "Default"
@@ -20,24 +17,37 @@ project "assimp"
 		"**.c"
 	}
 
-	includedirs
+	excludes
 	{
-		"code/BoostWorkaround",
-		"contrib/openddlparser/include",
-		"include",
-		"../minizip",
-		"../zlib"
+		"contrib/zip/test/*.*"
 	}
 
-	defines { "ASSIMP_BUILD_BOOST_WORKAROUND", "ASSIMP_BUILD_NO_OWN_ZLIB", "ASSIMP_BUILD_NO_C4D_IMPORTER" }
+	includedirs
+	{
+		".",
+		"contrib/openddlparser/include",
+		"contrib/irrXML",
+		"include",
+		"../rapidjson",
+		"../minizip",
+		"../zlib-ng"
+	}
+
+	defines
+	{
+		"ASSIMP_BUILD_BOOST_WORKAROUND",
+		"ASSIMP_BUILD_NO_OWN_ZLIB",
+		"ASSIMP_BUILD_NO_C4D_IMPORTER",
+		"ASSIMP_BUILD_NO_IFC_IMPORTER",
+		"OPENDDL_STATIC_LIBARY"
+	}
+
 	rtti "On"
 
 	filter { "system:windows" }
 		defines { "_CRT_SECURE_NO_WARNINGS", "_SCL_SECURE_NO_WARNINGS" }
 
-	filter {}
-
-	configuration "vs2015"
+	filter { "action:vs*" }
 		buildoptions { "/bigobj" }
 
-	configuration {}
+	filter {}

@@ -1,5 +1,5 @@
 /************************************************************************************
-Copyright (C) 2016 by Nicholas LaCroix
+Copyright (C) 2018 by Nicholas LaCroix
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -20,16 +20,17 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-/*! \file */
-
 #pragma once
 
-#include "Gaff_SpinLock.h"
-#include "Gaff_Thread.h"
-#include "Gaff_Atomic.h"
+#include "Gaff_SmartPtrs.h"
+#include "Gaff_Assert.h"
+#include "Gaff_Vector.h"
 #include "Gaff_Queue.h"
 #include "Gaff_Utils.h"
-#include "Gaff_Pair.h"
+#include <EASTL/chrono.h>
+#include <atomic>
+#include <thread>
+#include <mutex>
 
 NS_GAFF
 
@@ -37,33 +38,13 @@ struct JobData
 {
 	using JobFunc = void (*)(void*);
 
-	JobData(JobFunc func = nullptr, void* data = nullptr):
-		job_func(func), job_data(data)
-	{
-	}
-
-	JobData(const JobData& job):
-		job_func(job.job_func), job_data(job.job_data)
-	{
-	}
-
-	const JobData& operator=(const JobData& job)
-	{
-		job_func = job.job_func;
-		job_data = job.job_data;
-		return *this;
-	}
-
 	JobFunc job_func;
 	void* job_data;
 };
 
-struct Counter
-{
-	volatile unsigned int count;
-};
-
-using JobPair = Pair<JobData, Counter*>;
+using Counter = std::atomic_int32_t;
+using JobPair = std::pair<JobData, Counter*>;
+using ThreadInitFunc = void (*)(void);
 
 template <class Allocator = DefaultAllocator>
 class JobPool
@@ -72,53 +53,49 @@ public:
 	JobPool(const Allocator& allocator = Allocator());
 	~JobPool(void);
 
-	bool init(unsigned int num_pools = 7, unsigned int num_threads = static_cast<unsigned int>(GetNumberOfCores()));
+	bool init(int32_t num_pools = 7, int32_t num_threads = static_cast<int32_t>(GetNumberOfCores()), ThreadInitFunc init = nullptr);
 	void destroy(void);
 
-	void addJobs(JobData* jobs, size_t num_jobs = 1, Counter** counter = nullptr, unsigned int pool = 0);
+	void addJobs(JobData* jobs, size_t num_jobs = 1, Counter** counter = nullptr, int32_t pool = 0);
 	void waitForAndFreeCounter(Counter* counter);
-	void waitForCounter(Counter* counter);
+	void waitForCounter(const Counter* counter);
 	void freeCounter(Counter* counter);
-	void helpWhileWaiting(Counter* counter);
+	void helpWhileWaiting(const Counter* counter);
 	void helpAndFreeCounter(Counter* counter);
 
-	void helpUntilNoJobs(void);
+	void help(eastl::chrono::milliseconds ms = eastl::chrono::milliseconds::zero());
 	void doAJob(void);
 
-	unsigned int getNumActiveThreads(void) const;
 	size_t getNumTotalThreads(void) const;
-
-	void getThreadIDs(unsigned int* out) const;
+	void getThreadIDs(size_t* out) const;
 
 private:
 	struct JobQueue
 	{
 		Queue<JobPair, Allocator> jobs;
-		SpinLock read_write_lock;
-		SpinLock thread_lock;
+		UniquePtr<std::mutex, Allocator> read_write_lock;
+		UniquePtr<std::mutex, Allocator> thread_lock;
+		//std::mutex read_write_lock;
+		//std::mutex thread_lock;
 	};
 
 	struct ThreadData
 	{
 		JobPool<Allocator>* job_pool;
+		ThreadInitFunc init_func;
 		bool terminate;
 	};
 
-	Array<JobQueue, Allocator> _job_pools;
-	Array<Thread, Allocator> _threads;
+	Vector<JobQueue, Allocator> _job_pools;
+	Vector<std::thread, Allocator> _threads;
 	ThreadData _thread_data;
 
 	Allocator _allocator;
 
-	volatile unsigned int _active_threads;
-
-	static void ProcessMainJobQueue(JobQueue& job_queue);
-	static void ProcessJobQueue(JobQueue& job_queue);
+	static bool ProcessJobQueue(JobQueue& job_queue, eastl::chrono::milliseconds ms);
 	static void DoJob(JobPair& job);
 
-	static Thread::ReturnType THREAD_CALLTYPE JobThread(void* thread_data);
-
-	friend Thread::ReturnType THREAD_CALLTYPE JobThread(void* thread_data);
+	static void JobThread(ThreadData& thread_data);
 
 	GAFF_NO_COPY(JobPool);
 	GAFF_NO_MOVE(JobPool);

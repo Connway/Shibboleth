@@ -3,9 +3,6 @@ project "enet"
 		location ("../../project/" .. _ACTION .. "/dependencies")
 	end
 
-	configurations { "Debug", "Release" }
-	dofile("../../utils/config_map.lua")
-
 	kind "StaticLib"
 	language "C"
 	warnings "Default"
@@ -13,10 +10,8 @@ project "enet"
 	files { "**.c", "**.h" }
 	includedirs { "include" }
 
-	configuration "Debug"
+	filter { "configurations:Debug* or Optimized_Debug*" }
 		defines { "ENET_DEBUG" }
-
-	configuration {}
 
 	filter { "system:windows" }
 		defines { "_WINSOCK_DEPRECATED_NO_WARNINGS" }

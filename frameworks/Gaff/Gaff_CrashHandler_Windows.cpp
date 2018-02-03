@@ -1,5 +1,5 @@
 /************************************************************************************
-Copyright (C) 2016 by Nicholas LaCroix
+Copyright (C) 2018 by Nicholas LaCroix
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -25,6 +25,8 @@ THE SOFTWARE.
 #ifdef PLATFORM_WINDOWS
 
 #include "Gaff_Utils.h"
+#include "Gaff_IncludeWindows.h"
+#include <EASTL/algorithm.h>
 
 // Silence MS warnings
 #pragma warning(push)
@@ -45,17 +47,14 @@ static void WriteMiniDump(EXCEPTION_POINTERS* _exception_info)
 	GetProcessImageFileName(GetCurrentProcess(), process_name, MAX_PATH);
 	size_t name_begin = Gaff::FindLastOf(process_name, MAX_PATH - 1, TEXT('\\')) + 1;
 
+
 	TCHAR dump_format[128] = { 0 };
 	Gaff::GetCurrentTimeString(dump_format, ARRAY_SIZE(dump_format) - 1, TEXT("dumps/0s_%Y-%m-%d %H-%M-%S.dmp"));
 	dump_format[6] = TEXT('%');
 
 	TCHAR dump_file_name[1024] = { 0 };
 
-#ifdef _UNICODE
 	_snwprintf(dump_file_name, ARRAY_SIZE(dump_file_name) - 1, dump_format, process_name + name_begin);
-#else
-	snprintf(dump_file_name, ARRAY_SIZE(dump_file_name) - 1, dump_format, process_name + name_begin);
-#endif
 
 	// Make sure our output folder exists.
 	Gaff::CreateDir("dumps", 0777);

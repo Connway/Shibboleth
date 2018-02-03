@@ -1,5 +1,5 @@
 /************************************************************************************
-Copyright (C) 2016 by Nicholas LaCroix
+Copyright (C) 2018 by Nicholas LaCroix
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -32,7 +32,7 @@ class IRenderDevice;
 class IShader;
 class IMesh;
 
-enum SEMANTIC
+enum Semantic
 {
 	SEMANTIC_COLOR = 0,
 	SEMANTIC_NORMAL,
@@ -53,11 +53,11 @@ enum PerDataType
 
 struct LayoutDescription
 {
-	SEMANTIC semantic;
-	unsigned int semantic_index;
-	ITexture::FORMAT format;
-	unsigned int input_slot;
-	unsigned int aligned_byte_offset;
+	Semantic semantic;
+	int32_t semantic_index;
+	ITexture::Format format;
+	int32_t input_slot;
+	int32_t aligned_byte_offset;
 	PerDataType per_data_type;
 };
 

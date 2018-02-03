@@ -1,0 +1,321 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Analyze|x64">
+      <Configuration>Analyze</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Profile|x64">
+      <Configuration>Profile</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Optimized_Debug|x64">
+      <Configuration>Optimized_Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{630C9B7C-4F43-9C0D-F82F-8210E445180F}</ProjectGuid>
+    <IgnoreWarnCompileDuplicatedFilename>true</IgnoreWarnCompileDuplicatedFilename>
+    <Keyword>Win32Proj</Keyword>
+    <RootNamespace>nana</RootNamespace>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v141</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v141</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Analyze|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v141</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Profile|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v141</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Optimized_Debug|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v141</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Analyze|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Optimized_Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <OutDir>..\..\..\build\vs2017\output\x64\Debug\</OutDir>
+    <IntDir>..\..\..\build\vs2017\intermediate\x64\Debug\nana\</IntDir>
+    <TargetName>nana</TargetName>
+    <TargetExt>.lib</TargetExt>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <OutDir>..\..\..\build\vs2017\output\x64\Release\</OutDir>
+    <IntDir>..\..\..\build\vs2017\intermediate\x64\Release\nana\</IntDir>
+    <TargetName>nana</TargetName>
+    <TargetExt>.lib</TargetExt>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Analyze|x64'">
+    <OutDir>..\..\..\build\vs2017\output\x64\Analyze\</OutDir>
+    <IntDir>..\..\..\build\vs2017\intermediate\x64\Analyze\nana\</IntDir>
+    <TargetName>nana</TargetName>
+    <TargetExt>.lib</TargetExt>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">
+    <OutDir>..\..\..\build\vs2017\output\x64\Profile\</OutDir>
+    <IntDir>..\..\..\build\vs2017\intermediate\x64\Profile\nana\</IntDir>
+    <TargetName>nana</TargetName>
+    <TargetExt>.lib</TargetExt>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Optimized_Debug|x64'">
+    <OutDir>..\..\..\build\vs2017\output\x64\Optimized_Debug\</OutDir>
+    <IntDir>..\..\..\build\vs2017\intermediate\x64\Optimized_Debug\nana\</IntDir>
+    <TargetName>nana</TargetName>
+    <TargetExt>.lib</TargetExt>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <PreprocessorDefinitions>_DEBUG;DEBUG;WIN32;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\..\..\dependencies\nana\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+      <Optimization>Disabled</Optimization>
+      <ExceptionHandling>Async</ExceptionHandling>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <FloatingPointModel>Fast</FloatingPointModel>
+      <AdditionalOptions>/sdl %(AdditionalOptions)</AdditionalOptions>
+      <LanguageStandard>stdcpp14</LanguageStandard>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <PreprocessorDefinitions>NDEBUG;WIN32;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\..\..\dependencies\nana\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <MinimalRebuild>false</MinimalRebuild>
+      <StringPooling>true</StringPooling>
+      <ExceptionHandling>Async</ExceptionHandling>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <FloatingPointModel>Fast</FloatingPointModel>
+      <AdditionalOptions>/sdl %(AdditionalOptions)</AdditionalOptions>
+      <LanguageStandard>stdcpp14</LanguageStandard>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Analyze|x64'">
+    <ClCompile>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <PreprocessorDefinitions>NDEBUG;WIN32;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\..\..\dependencies\nana\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <MinimalRebuild>false</MinimalRebuild>
+      <StringPooling>true</StringPooling>
+      <ExceptionHandling>Async</ExceptionHandling>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <FloatingPointModel>Fast</FloatingPointModel>
+      <AdditionalOptions>/analyze /sdl %(AdditionalOptions)</AdditionalOptions>
+      <LanguageStandard>stdcpp14</LanguageStandard>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">
+    <ClCompile>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <PreprocessorDefinitions>NDEBUG;SHIB_PROFILE;WIN32;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\..\..\dependencies\nana\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <MinimalRebuild>false</MinimalRebuild>
+      <StringPooling>true</StringPooling>
+      <ExceptionHandling>Async</ExceptionHandling>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <FloatingPointModel>Fast</FloatingPointModel>
+      <AdditionalOptions>/sdl %(AdditionalOptions)</AdditionalOptions>
+      <LanguageStandard>stdcpp14</LanguageStandard>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Optimized_Debug|x64'">
+    <ClCompile>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <PreprocessorDefinitions>_DEBUG;DEBUG;WIN32;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\..\..\dependencies\nana\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <MinimalRebuild>false</MinimalRebuild>
+      <StringPooling>true</StringPooling>
+      <ExceptionHandling>Async</ExceptionHandling>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <FloatingPointModel>Fast</FloatingPointModel>
+      <AdditionalOptions>/sdl %(AdditionalOptions)</AdditionalOptions>
+      <LanguageStandard>stdcpp14</LanguageStandard>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\..\dependencies\nana\source\any.cpp" />
+    <ClCompile Include="..\..\..\dependencies\nana\source\audio\detail\audio_device.cpp" />
+    <ClCompile Include="..\..\..\dependencies\nana\source\audio\detail\audio_stream.cpp" />
+    <ClCompile Include="..\..\..\dependencies\nana\source\audio\detail\buffer_preparation.cpp" />
+    <ClCompile Include="..\..\..\dependencies\nana\source\audio\player.cpp" />
+    <ClCompile Include="..\..\..\dependencies\nana\source\basic_types.cpp" />
+    <ClCompile Include="..\..\..\dependencies\nana\source\charset.cpp" />
+    <ClCompile Include="..\..\..\dependencies\nana\source\datetime.cpp" />
+    <ClCompile Include="..\..\..\dependencies\nana\source\deploy.cpp" />
+    <ClCompile Include="..\..\..\dependencies\nana\source\detail\platform_abstraction.cpp" />
+    <ClCompile Include="..\..\..\dependencies\nana\source\detail\platform_spec_posix.cpp" />
+    <ClCompile Include="..\..\..\dependencies\nana\source\detail\platform_spec_windows.cpp" />
+    <ClCompile Include="..\..\..\dependencies\nana\source\filesystem\filesystem.cpp" />
+    <ClCompile Include="..\..\..\dependencies\nana\source\gui\animation.cpp" />
+    <ClCompile Include="..\..\..\dependencies\nana\source\gui\basis.cpp" />
+    <ClCompile Include="..\..\..\dependencies\nana\source\gui\detail\basic_window.cpp" />
+    <ClCompile Include="..\..\..\dependencies\nana\source\gui\detail\bedrock_pi.cpp" />
+    <ClCompile Include="..\..\..\dependencies\nana\source\gui\detail\bedrock_posix.cpp" />
+    <ClCompile Include="..\..\..\dependencies\nana\source\gui\detail\bedrock_windows.cpp" />
+    <ClCompile Include="..\..\..\dependencies\nana\source\gui\detail\color_schemes.cpp" />
+    <ClCompile Include="..\..\..\dependencies\nana\source\gui\detail\drawer.cpp" />
+    <ClCompile Include="..\..\..\dependencies\nana\source\gui\detail\element_store.cpp" />
+    <ClCompile Include="..\..\..\dependencies\nana\source\gui\detail\events_operation.cpp" />
+    <ClCompile Include="..\..\..\dependencies\nana\source\gui\detail\native_window_interface.cpp" />
+    <ClCompile Include="..\..\..\dependencies\nana\source\gui\detail\window_layout.cpp" />
+    <ClCompile Include="..\..\..\dependencies\nana\source\gui\detail\window_manager.cpp" />
+    <ClCompile Include="..\..\..\dependencies\nana\source\gui\dragger.cpp" />
+    <ClCompile Include="..\..\..\dependencies\nana\source\gui\drawing.cpp" />
+    <ClCompile Include="..\..\..\dependencies\nana\source\gui\effects.cpp" />
+    <ClCompile Include="..\..\..\dependencies\nana\source\gui\element.cpp" />
+    <ClCompile Include="..\..\..\dependencies\nana\source\gui\filebox.cpp" />
+    <ClCompile Include="..\..\..\dependencies\nana\source\gui\layout_utility.cpp" />
+    <ClCompile Include="..\..\..\dependencies\nana\source\gui\msgbox.cpp" />
+    <ClCompile Include="..\..\..\dependencies\nana\source\gui\notifier.cpp" />
+    <ClCompile Include="..\..\..\dependencies\nana\source\gui\place.cpp" />
+    <ClCompile Include="..\..\..\dependencies\nana\source\gui\programming_interface.cpp" />
+    <ClCompile Include="..\..\..\dependencies\nana\source\gui\screen.cpp" />
+    <ClCompile Include="..\..\..\dependencies\nana\source\gui\state_cursor.cpp" />
+    <ClCompile Include="..\..\..\dependencies\nana\source\gui\timer.cpp" />
+    <ClCompile Include="..\..\..\dependencies\nana\source\gui\tooltip.cpp" />
+    <ClCompile Include="..\..\..\dependencies\nana\source\gui\widgets\button.cpp" />
+    <ClCompile Include="..\..\..\dependencies\nana\source\gui\widgets\categorize.cpp" />
+    <ClCompile Include="..\..\..\dependencies\nana\source\gui\widgets\checkbox.cpp" />
+    <ClCompile Include="..\..\..\dependencies\nana\source\gui\widgets\combox.cpp" />
+    <ClCompile Include="..\..\..\dependencies\nana\source\gui\widgets\date_chooser.cpp" />
+    <ClCompile Include="..\..\..\dependencies\nana\source\gui\widgets\float_listbox.cpp" />
+    <ClCompile Include="..\..\..\dependencies\nana\source\gui\widgets\form.cpp" />
+    <ClCompile Include="..\..\..\dependencies\nana\source\gui\widgets\frame.cpp" />
+    <ClCompile Include="..\..\..\dependencies\nana\source\gui\widgets\group.cpp" />
+    <ClCompile Include="..\..\..\dependencies\nana\source\gui\widgets\label.cpp" />
+    <ClCompile Include="..\..\..\dependencies\nana\source\gui\widgets\listbox.cpp" />
+    <ClCompile Include="..\..\..\dependencies\nana\source\gui\widgets\menu.cpp" />
+    <ClCompile Include="..\..\..\dependencies\nana\source\gui\widgets\menubar.cpp" />
+    <ClCompile Include="..\..\..\dependencies\nana\source\gui\widgets\panel.cpp" />
+    <ClCompile Include="..\..\..\dependencies\nana\source\gui\widgets\picture.cpp" />
+    <ClCompile Include="..\..\..\dependencies\nana\source\gui\widgets\progress.cpp" />
+    <ClCompile Include="..\..\..\dependencies\nana\source\gui\widgets\scroll.cpp" />
+    <ClCompile Include="..\..\..\dependencies\nana\source\gui\widgets\skeletons\content_view.cpp" />
+    <ClCompile Include="..\..\..\dependencies\nana\source\gui\widgets\skeletons\text_editor.cpp" />
+    <ClCompile Include="..\..\..\dependencies\nana\source\gui\widgets\slider.cpp" />
+    <ClCompile Include="..\..\..\dependencies\nana\source\gui\widgets\spinbox.cpp" />
+    <ClCompile Include="..\..\..\dependencies\nana\source\gui\widgets\tabbar.cpp" />
+    <ClCompile Include="..\..\..\dependencies\nana\source\gui\widgets\textbox.cpp" />
+    <ClCompile Include="..\..\..\dependencies\nana\source\gui\widgets\toolbar.cpp" />
+    <ClCompile Include="..\..\..\dependencies\nana\source\gui\widgets\treebox.cpp" />
+    <ClCompile Include="..\..\..\dependencies\nana\source\gui\widgets\widget.cpp" />
+    <ClCompile Include="..\..\..\dependencies\nana\source\gui\wvl.cpp" />
+    <ClCompile Include="..\..\..\dependencies\nana\source\internationalization.cpp" />
+    <ClCompile Include="..\..\..\dependencies\nana\source\paint\detail\image_process_provider.cpp" />
+    <ClCompile Include="..\..\..\dependencies\nana\source\paint\detail\native_paint_interface.cpp" />
+    <ClCompile Include="..\..\..\dependencies\nana\source\paint\graphics.cpp" />
+    <ClCompile Include="..\..\..\dependencies\nana\source\paint\image.cpp" />
+    <ClCompile Include="..\..\..\dependencies\nana\source\paint\image_process_selector.cpp" />
+    <ClCompile Include="..\..\..\dependencies\nana\source\paint\pixel_buffer.cpp" />
+    <ClCompile Include="..\..\..\dependencies\nana\source\paint\text_renderer.cpp" />
+    <ClCompile Include="..\..\..\dependencies\nana\source\stdc++.cpp" />
+    <ClCompile Include="..\..\..\dependencies\nana\source\system\dataexch.cpp" />
+    <ClCompile Include="..\..\..\dependencies\nana\source\system\platform.cpp" />
+    <ClCompile Include="..\..\..\dependencies\nana\source\system\shared_wrapper.cpp" />
+    <ClCompile Include="..\..\..\dependencies\nana\source\system\timepiece.cpp" />
+    <ClCompile Include="..\..\..\dependencies\nana\source\threads\pool.cpp" />
+    <ClCompile Include="..\..\..\dependencies\nana\source\unicode_bidi.cpp" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

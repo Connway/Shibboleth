@@ -1,5 +1,5 @@
 /************************************************************************************
-Copyright (C) 2016 by Nicholas LaCroix
+Copyright (C) 2018 by Nicholas LaCroix
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -21,35 +21,53 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Shibboleth_LogManager.h"
-#include <Gaff_File.h>
+#include <EASTL/algorithm.h>
+#include <Gaff_Utils.h>
+#include <mutex>
 
 NS_SHIBBOLETH
 
-Gaff::Thread::ReturnType THREAD_CALLTYPE LogManager::LogThread(void* thread_data)
+void LogManager::LogThread(LogManager& lm)
 {
-	LogManager* lm = reinterpret_cast<LogManager*>(thread_data);
+	AllocatorThreadInit();
+	std::unique_lock<std::mutex> unique_lock(lm._log_condition_lock);
 
-	while (!lm->_shutdown) {
-		lm->_log_event.wait();
-		lm->_log_queue_lock.lock();
+	while (!lm._shutdown) {
+		lm._log_event.wait(unique_lock);
 
-		for (auto it = lm->_logs.begin(); it != lm->_logs.end(); ++it) {
-			Gaff::File file;
+		lm._log_queue_lock.lock();
 
-			if (file.open(it->log_file.getBuffer(), Gaff::File::APPEND)) {
-				file.writeString(it->message.getBuffer());
-				file.close();
-			}
+		if (lm._logs.empty()) {
+			lm._log_queue_lock.unlock();
 
-			lm->notifyLogCallbacks(it->message.getBuffer(), it->type);
+		} else {
+			LogTask task = std::move(lm._logs.front());
+			lm._logs.pop();
+
+			lm._log_queue_lock.unlock();
+
+			task.file.writeString(task.message.data());
+			task.file.writeChar('\n');
+			task.file.flush();
+
+			lm.notifyLogCallbacks(task.message.data(), task.type);
 		}
-
-		lm->_logs.clearNoFree();
-
-		lm->_log_queue_lock.unlock();
 	}
 
-	return 0;
+	lm._log_queue_lock.lock();
+
+	while (!lm._logs.empty()) {
+		LogTask task = std::move(lm._logs.front());
+		lm._logs.pop();
+
+		task.file.writeString(task.message.data());
+		task.file.writeChar('\n');
+		task.file.flush();
+
+		lm.notifyLogCallbacks(task.message.data(), task.type);
+	}
+
+	lm._log_queue_lock.unlock();
 }
 
 LogManager::LogManager(void):
@@ -64,53 +82,150 @@ LogManager::~LogManager(void)
 
 bool LogManager::init(void)
 {
-	_shutdown = false;
-	return _log_thread.create(LogThread, this);
+	addChannel("Default", "Log");
+
+	std::thread log_thread(LogThread, std::ref(*this));
+	_log_thread.swap(log_thread);
+
+	return _log_thread.joinable();
 }
 
 void LogManager::destroy(void)
 {
 	_shutdown = true;
-	_log_event.set();
-	_log_thread.wait();
-	_log_thread.close();
+
+	if (_log_thread.joinable()) {
+		_log_event.notify_all();
+		_log_thread.join();
+	}
+
+	_shutdown = false;
+
+	_log_callbacks.clear();
+	_channels.clear();
 }
 
 void LogManager::addLogCallback(const LogCallback& callback)
 {
-	_log_callbacks.emplacePush(callback);
+	std::lock_guard<std::mutex> lock(_log_callback_lock);
+	_log_callbacks.emplace_back(callback);
 }
 
 void LogManager::removeLogCallback(const LogCallback& callback)
 {
-	auto it = _log_callbacks.linearSearch(callback);
+	std::lock_guard<std::mutex> lock(_log_callback_lock);
+	auto it = Gaff::Find(_log_callbacks, callback);
 
 	if (it != _log_callbacks.end()) {
-		_log_callbacks.fastErase(it);
+		_log_callbacks.erase_unsorted(it);
 	}
 }
 
-void LogManager::notifyLogCallbacks(const char* message, LOG_TYPE type)
+void LogManager::notifyLogCallbacks(const char* message, LogType type)
 {
+	std::lock_guard<std::mutex> lock(_log_callback_lock);
+
 	for (auto it = _log_callbacks.begin(); it != _log_callbacks.end(); ++it) {
 		(*it)(message, type);
 	}
 }
 
-void LogManager::logMessage(LOG_TYPE type, const char* file, const char* format, ...)
+void LogManager::addChannel(Gaff::HashStringTemp32 channel, const char* file)
+{
+	auto it = Gaff::Find(_channels, channel);
+
+	if (it == _channels.end()) {
+		char8_t time_string[64] = { 0 };
+		char8_t file_name[256] = { 0 };
+
+		Gaff::GetCurrentTimeString(time_string, ARRAY_SIZE(time_string), "%Y-%m-%d %H-%M-%S");
+
+		snprintf(
+			file_name,
+			ARRAY_SIZE(file_name),
+			"Logs/%s %s.txt",
+			file,
+			time_string
+		);
+
+		auto pair = eastl::make_pair<HashString32, Gaff::File>(HashString32(channel), Gaff::File());
+
+		if (pair.second.open(file_name, Gaff::File::WRITE) && channel.getHash() != LOG_CHANNEL_DEFAULT) {
+			_channels.insert(std::move(pair));
+
+		} else {
+			// If this is not the channel added in the constructor, then log the error in that channel.
+			if (channel.getHash() != LOG_CHANNEL_DEFAULT) {
+				logMessage(
+					LOG_ERROR,
+					LOG_CHANNEL_DEFAULT,
+					"Failed to create channel '%s'! Failed to open file '%s'!",
+					channel.getBuffer(),
+					file_name
+				);
+			}
+		}
+	}
+}
+
+void LogManager::logMessage(LogType type, Gaff::HashStringTemp32 channel, const char* format, ...)
+{
+	va_list vl;
+	va_start(vl, format);
+
+	if(!logMessageHelper(type, channel.getHash(), format, vl) && channel.getHash() != LOG_CHANNEL_DEFAULT) {
+		logMessage(
+			LOG_ERROR,
+			LOG_CHANNEL_DEFAULT,
+			"Failed to find channel '%s'!",
+			channel.getBuffer()
+		);
+
+		// Log the message to the default channel.
+		logMessageHelper(type, LOG_CHANNEL_DEFAULT, format, vl);
+	}
+
+	va_end(vl);
+}
+
+void LogManager::logMessage(LogType type, Gaff::Hash32 channel, const char* format, ...)
+{
+	va_list vl;
+	va_start(vl, format);
+
+	if (!logMessageHelper(type, channel, format, vl) && channel != LOG_CHANNEL_DEFAULT) {
+		logMessage(
+			LOG_ERROR,
+			LOG_CHANNEL_DEFAULT,
+			"Failed to find channel with hash '%u'!",
+			channel
+		);
+
+		// Log the message to the default channel.
+		logMessageHelper(type, LOG_CHANNEL_DEFAULT, format, vl);
+	}
+
+	va_end(vl);
+}
+
+bool LogManager::logMessageHelper(LogType type, Gaff::Hash32 channel, const char* format, va_list& vl)
 {
 	char temp[2048] = { 0 };
-	va_list vl;
+	vsnprintf(temp, ARRAY_SIZE(temp), format, vl);
 
-	va_start(vl, format);
-	vsnprintf_s(temp, 2048, format, vl);
-	va_end(vl);
+	auto it = Gaff::Find(_channels, channel);
 
-	_log_queue_lock.lock();
-	_logs.emplacePush(type, file, temp);
-	_log_queue_lock.unlock();
+	if (it == _channels.end()) {
+		return false;
+	}
 
-	_log_event.set();
+	{
+		std::lock_guard<std::mutex> lock(_log_queue_lock);
+		_logs.emplace_back(it->second, temp, type);
+	}
+
+	_log_event.notify_all();
+	return true;
 }
 
 NS_END

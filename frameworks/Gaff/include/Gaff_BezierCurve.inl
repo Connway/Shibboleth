@@ -1,5 +1,5 @@
 /************************************************************************************
-Copyright (C) 2016 by Nicholas LaCroix
+Copyright (C) 2018 by Nicholas LaCroix
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -49,12 +49,12 @@ PointType BezierCurve<PointType, Allocator>::sample(float t) const
 	GAFF_ASSERT(!_points.empty());
 
 	// Clamp to range and normalize
-	t = Clamp(t, _points.first().first, _points.last().first) / (_points.last().first - _points.first().first);
+	t = Clamp(t, _points.front().t, _points.back().t) / (_points.back().t - _points.front().t);
 
 	PointType point = PointType::zero;
 
-	for (unsigned int i = 0; i < _points.size(); ++i) {
-		point += _points[i].second * BernsteinPolynomial(t, (float)(_points.size() - 1), (float)i);
+	for (int32_t i = 0; i < static_cast<int32_t>(_points.size()); ++i) {
+		point += _points[i].point * BernsteinPolynomial(t, static_cast<float>(_points.size() - 1), static_cast<float>(i));
 	}
 
 	return point;
@@ -63,35 +63,35 @@ PointType BezierCurve<PointType, Allocator>::sample(float t) const
 template <class PointType, class Allocator>
 void BezierCurve<PointType, Allocator>::addKey(float t, const PointType& point)
 {
-	unsigned int i = 0;
+	int32_t i = 0;
 
-	for (; i < _points.size(); ++i) {
-		GAFF_ASSERT(_points[i].first != t);
+	for (; i < static_cast<int32_t>(_points.size()); ++i) {
+		GAFF_ASSERT(_points[i].t != t);
 
 		if (t < _points[i].first) {
 			break;
 		}
 	}
 
-	_points.insert(MakePair(t, point), i);
+	_points.insert({ point, t }, i);
 }
 
 template <class PointType, class Allocator>
-void BezierCurve<PointType, Allocator>::removeKey(unsigned int index)
+void BezierCurve<PointType, Allocator>::removeKey(int32_t index)
 {
-	GAFF_ASSERT(index < _points.size());
+	GAFF_ASSERT(index < static_cast<int32_t>(_points.size()));
 	_points.erase(index);
 }
 
 template <class PointType, class Allocator>
-unsigned int BezierCurve<PointType, Allocator>::getNumKeys(void) const
+const typename BezierCurve<PointType, Allocator>::Key& BezierCurve<PointType, Allocator>::getKey(int32_t index) const
 {
-	return _points.size();
+	GAFF_ASSERT(index < static_cast<int32_t>(_points.size()));
+	return _points[i];
 }
 
 template <class PointType, class Allocator>
-const typename BezierCurve<PointType, Allocator>::Key& BezierCurve<PointType, Allocator>::getKey(unsigned int index)
+int32_t BezierCurve<PointType, Allocator>::getNumKeys(void) const
 {
-	GAFF_ASSERT(index < _points.size());
-	return Key(_points[i].first, _points[i].second);
+	return static_cast<int32_t>(_points.size());
 }
