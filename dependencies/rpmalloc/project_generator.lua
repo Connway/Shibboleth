@@ -7,4 +7,4 @@ project "rpmalloc"
 	language "C++"
 	warnings "Default"
 
-	files { "**.cpp", "**.h", "**.inl" }
+	files { "**.cpp", "**.h", "**.inl", "**.hpp" }

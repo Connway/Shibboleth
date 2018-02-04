@@ -3,8 +3,8 @@
 #pragma once
 
 // Includes
-#include <Shibboleth_ResourceExtensionAttribute.h>
 #include <Shibboleth_ResourceManager.h>
+#include <Shibboleth_ResourceExtensionAttribute.h>
 
 #include <Gaff_ReflectionInterfaces.h>
 #include <Gaff_EnumReflection.h>

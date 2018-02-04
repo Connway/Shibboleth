@@ -77,8 +77,8 @@
 //  Support for PNG
 //	  Define the NANA_ENABLE_PNG to enable the support of PNG.
 //
-//#define NANA_ENABLE_PNG	//!
-//#define USE_LIBPNG_FROM_OS // Un-Comment it to use libpng from operating system.
+#define NANA_ENABLE_PNG	//!
+#define USE_LIBPNG_FROM_OS // Un-Comment it to use libpng from operating system.
 #if defined(NANA_ENABLE_PNG)
 	#if !defined(USE_LIBPNG_FROM_OS)
 		#define NANA_LIBPNG
@@ -89,8 +89,8 @@
 //  Support for JPEG
 //	  Define the NANA_ENABLE_JPEG to enable the support of JPEG.
 //
-//#define NANA_ENABLE_JPEG	//!
-//#define USE_LIBJPEG_FROM_OS // Un-Comment it to use libjpeg from operating system.
+#define NANA_ENABLE_JPEG	//!
+#define USE_LIBJPEG_FROM_OS // Un-Comment it to use libjpeg from operating system.
 #if defined(NANA_ENABLE_JPEG)
 	#if !defined(USE_LIBJPEG_FROM_OS)
 		#define NANA_LIBJPEG

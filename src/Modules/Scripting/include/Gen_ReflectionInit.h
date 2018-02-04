@@ -3,9 +3,9 @@
 #pragma once
 
 // Includes
-#include <Shibboleth_AngelScriptComponent.h>
-#include <Shibboleth_AngelScriptManager.h>
 #include <Shibboleth_AngelScriptResource.h>
+#include <Shibboleth_AngelScriptManager.h>
+#include <Shibboleth_AngelScriptComponent.h>
 
 #include <Gaff_ReflectionInterfaces.h>
 #include <Gaff_EnumReflection.h>
@@ -36,9 +36,9 @@ namespace Gen
 			head = head->attr_next;
 		}
 
-		Reflection<AngelScriptComponent>::Init();
-		Reflection<AngelScriptManager>::Init();
 		Reflection<AngelScriptResource>::Init();
+		Reflection<AngelScriptManager>::Init();
+		Reflection<AngelScriptComponent>::Init();
 
 		// Initialize any other reflection that we reference, but isn't owned by our module.
 		head = Gaff::GetReflectionChainHead();

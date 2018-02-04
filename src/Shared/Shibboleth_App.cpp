@@ -135,7 +135,8 @@ bool App::initInternal(void)
 #endif
 
 	LogInfoDefault("Game Successfully Initialized\n\n");
-	return true;}
+	return true;
+}
 
 // Still single-threaded at this point, so ok that we're not using the spinlock
 bool App::loadFileSystem(void)
@@ -224,15 +225,14 @@ bool App::loadMainLoop(void)
 
 bool App::loadModules(void)
 {
-	// load module order list
-	// load those modules first
-	// then load the rest
 
+	// Load module order list.
 	Gaff::JSON modules_cfg;
 
 	if (modules_cfg.parseFile("cfg/module_load_order.cfg")) {
 		GAFF_ASSERT(modules_cfg.isArray());
 
+		// Load those modules first.
 		modules_cfg.forEachInArray([&](int32_t, const Gaff::JSON& value) -> bool
 		{
 			GAFF_ASSERT(value.isString());
@@ -245,11 +245,13 @@ bool App::loadModules(void)
 		LogWarningDefault("Failed to load 'manual_load_order.cfg'!");
 	}
 
+	// Then load the rest.
 	const bool error = Gaff::ForEachTypeInDirectory<Gaff::FDT_RegularFile>("./Modules", [&](const char* name, size_t) -> bool
 	{
 		return !(_dynamic_loader.getModule(name) || loadModule(name));
 	});
 
+	// Notify all modules that every module has been loaded.
 	if (!error) {
 		_dynamic_loader.forEachModule([&](DynamicLoader::ModulePtr& module) -> bool
 		{
@@ -342,10 +344,10 @@ bool App::loadModule(const char* module_name)
 
 void App::removeExtraLogs(void)
 {
-	unsigned int callstack_log_count = 0;
-	unsigned int alloc_log_count = 0;
-	unsigned int game_log_count = 0;
-	unsigned int leak_log_count = 0;
+	int32_t callstack_log_count = 0;
+	int32_t alloc_log_count = 0;
+	int32_t game_log_count = 0;
+	int32_t leak_log_count = 0;
 
 	Gaff::ForEachTypeInDirectory<Gaff::FDT_RegularFile>("./Logs", [&](const char* name, size_t) -> bool
 	{
@@ -362,10 +364,10 @@ void App::removeExtraLogs(void)
 		return false;
 	});
 
-	unsigned int callstack_logs_delete = (callstack_log_count > 10) ? callstack_log_count - 10 : 0;
-	unsigned int alloc_logs_delete = (alloc_log_count > 10) ? alloc_log_count - 10 : 0;
-	unsigned int game_logs_delete = (game_log_count > 10) ? game_log_count - 10 : 0;
-	unsigned int leak_logs_delete = (leak_log_count > 10) ? leak_log_count - 10 : 0;
+	int32_t callstack_logs_delete = (callstack_log_count > 10) ? callstack_log_count - 10 : 0;
+	int32_t alloc_logs_delete = (alloc_log_count > 10) ? alloc_log_count - 10 : 0;
+	int32_t game_logs_delete = (game_log_count > 10) ? game_log_count - 10 : 0;
+	int32_t leak_logs_delete = (leak_log_count > 10) ? leak_log_count - 10 : 0;
 	callstack_log_count = alloc_log_count = game_log_count = leak_log_count = 0;
 	U8String temp;
 

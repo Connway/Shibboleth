@@ -8,5 +8,10 @@ project "nana"
 	warnings "Default"
 	rtti "On"
 
-	files { "**.cpp", "**.h", "**.inl" }
-	includedirs { "include" }
+	files { "**.cpp", "**.h", "**.inl", "**.hpp" }
+	includedirs
+	{
+		"include",
+		"../libjpeg",
+		"../libpng"
+	}

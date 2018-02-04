@@ -243,10 +243,7 @@
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\..\src\Modules\Graphics\include\Shibboleth_Component.h" />
-    <ClInclude Include="..\..\..\src\Modules\Graphics\include\Shibboleth_Object.h" />
-    <ClInclude Include="..\..\..\src\Modules\Graphics\include\Shibboleth_ObjectManager.h" />
-    <ClInclude Include="..\..\..\src\Modules\Graphics\include\Shibboleth_PrefabResource.h" />
+    <ClInclude Include="..\..\..\src\Modules\Graphics\include\Gen_ReflectionInit.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -23,6 +23,13 @@ THE SOFTWARE.
 #pragma once
 
 #include <Shibboleth_Defines.h>
+#include <Shibboleth_App.h>
+#include <EASTL/unique_ptr.h>
+
+namespace nana
+{
+	class form;
+}
 
 NS_SHIBBOLETH
 
@@ -32,13 +39,14 @@ public:
 	Editor(void);
 	~Editor(void);
 
-	bool init(int argc, char** argv);
-#ifdef PLATFORM_WINDOWS
 	bool init(void);
-#endif
+
 	void run(void);
 	void destroy(void);
 
+private:
+	eastl::unique_ptr<nana::form> _main_form = nullptr;
+	App _engine_instance;
 };
 
 NS_END

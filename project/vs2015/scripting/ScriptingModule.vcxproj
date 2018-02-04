@@ -145,8 +145,8 @@ premake5 gen_module_file --module=Scripting</Command>
       <Message>Generating Gen_ReflectionInit.h for module Scripting!</Message>
     </PreBuildEvent>
     <PostBuildEvent>
-      <Command>IF NOT EXIST ..\..\..\workingdir\App\Modules (mkdir ..\..\..\workingdir\App\Modules)
-IF EXIST ..\..\..\build\vs2015\output\x64\Debug\$(TargetFileName)\ (xcopy /Q /E /Y /I ..\..\..\build\vs2015\output\x64\Debug\$(TargetFileName) ..\..\..\workingdir\App\Modules &gt; nul) ELSE (xcopy /Q /Y /I ..\..\..\build\vs2015\output\x64\Debug\$(TargetFileName) ..\..\..\workingdir\App\Modules &gt; nul)</Command>
+      <Command>IF NOT EXIST ..\..\..\workingdir\Modules (mkdir ..\..\..\workingdir\Modules)
+IF EXIST ..\..\..\build\vs2015\output\x64\Debug\$(TargetFileName)\ (xcopy /Q /E /Y /I ..\..\..\build\vs2015\output\x64\Debug\$(TargetFileName) ..\..\..\workingdir\Modules &gt; nul) ELSE (xcopy /Q /Y /I ..\..\..\build\vs2015\output\x64\Debug\$(TargetFileName) ..\..\..\workingdir\Modules &gt; nul)</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -183,8 +183,8 @@ premake5 gen_module_file --module=Scripting</Command>
       <Message>Generating Gen_ReflectionInit.h for module Scripting!</Message>
     </PreBuildEvent>
     <PostBuildEvent>
-      <Command>IF NOT EXIST ..\..\..\workingdir\App\Modules (mkdir ..\..\..\workingdir\App\Modules)
-IF EXIST ..\..\..\build\vs2015\output\x64\Release\$(TargetFileName)\ (xcopy /Q /E /Y /I ..\..\..\build\vs2015\output\x64\Release\$(TargetFileName) ..\..\..\workingdir\App\Modules &gt; nul) ELSE (xcopy /Q /Y /I ..\..\..\build\vs2015\output\x64\Release\$(TargetFileName) ..\..\..\workingdir\App\Modules &gt; nul)</Command>
+      <Command>IF NOT EXIST ..\..\..\workingdir\Modules (mkdir ..\..\..\workingdir\Modules)
+IF EXIST ..\..\..\build\vs2015\output\x64\Release\$(TargetFileName)\ (xcopy /Q /E /Y /I ..\..\..\build\vs2015\output\x64\Release\$(TargetFileName) ..\..\..\workingdir\Modules &gt; nul) ELSE (xcopy /Q /Y /I ..\..\..\build\vs2015\output\x64\Release\$(TargetFileName) ..\..\..\workingdir\Modules &gt; nul)</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Analyze|x64'">
@@ -219,8 +219,8 @@ premake5 gen_module_file --module=Scripting</Command>
       <Message>Generating Gen_ReflectionInit.h for module Scripting!</Message>
     </PreBuildEvent>
     <PostBuildEvent>
-      <Command>IF NOT EXIST ..\..\..\workingdir\App\Modules (mkdir ..\..\..\workingdir\App\Modules)
-IF EXIST ..\..\..\build\vs2015\output\x64\Analyze\$(TargetFileName)\ (xcopy /Q /E /Y /I ..\..\..\build\vs2015\output\x64\Analyze\$(TargetFileName) ..\..\..\workingdir\App\Modules &gt; nul) ELSE (xcopy /Q /Y /I ..\..\..\build\vs2015\output\x64\Analyze\$(TargetFileName) ..\..\..\workingdir\App\Modules &gt; nul)</Command>
+      <Command>IF NOT EXIST ..\..\..\workingdir\Modules (mkdir ..\..\..\workingdir\Modules)
+IF EXIST ..\..\..\build\vs2015\output\x64\Analyze\$(TargetFileName)\ (xcopy /Q /E /Y /I ..\..\..\build\vs2015\output\x64\Analyze\$(TargetFileName) ..\..\..\workingdir\Modules &gt; nul) ELSE (xcopy /Q /Y /I ..\..\..\build\vs2015\output\x64\Analyze\$(TargetFileName) ..\..\..\workingdir\Modules &gt; nul)</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">
@@ -257,8 +257,8 @@ premake5 gen_module_file --module=Scripting</Command>
       <Message>Generating Gen_ReflectionInit.h for module Scripting!</Message>
     </PreBuildEvent>
     <PostBuildEvent>
-      <Command>IF NOT EXIST ..\..\..\workingdir\App\Modules (mkdir ..\..\..\workingdir\App\Modules)
-IF EXIST ..\..\..\build\vs2015\output\x64\Profile\$(TargetFileName)\ (xcopy /Q /E /Y /I ..\..\..\build\vs2015\output\x64\Profile\$(TargetFileName) ..\..\..\workingdir\App\Modules &gt; nul) ELSE (xcopy /Q /Y /I ..\..\..\build\vs2015\output\x64\Profile\$(TargetFileName) ..\..\..\workingdir\App\Modules &gt; nul)</Command>
+      <Command>IF NOT EXIST ..\..\..\workingdir\Modules (mkdir ..\..\..\workingdir\Modules)
+IF EXIST ..\..\..\build\vs2015\output\x64\Profile\$(TargetFileName)\ (xcopy /Q /E /Y /I ..\..\..\build\vs2015\output\x64\Profile\$(TargetFileName) ..\..\..\workingdir\Modules &gt; nul) ELSE (xcopy /Q /Y /I ..\..\..\build\vs2015\output\x64\Profile\$(TargetFileName) ..\..\..\workingdir\Modules &gt; nul)</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Optimized_Debug|x64'">
@@ -295,8 +295,8 @@ premake5 gen_module_file --module=Scripting</Command>
       <Message>Generating Gen_ReflectionInit.h for module Scripting!</Message>
     </PreBuildEvent>
     <PostBuildEvent>
-      <Command>IF NOT EXIST ..\..\..\workingdir\App\Modules (mkdir ..\..\..\workingdir\App\Modules)
-IF EXIST ..\..\..\build\vs2015\output\x64\Optimized_Debug\$(TargetFileName)\ (xcopy /Q /E /Y /I ..\..\..\build\vs2015\output\x64\Optimized_Debug\$(TargetFileName) ..\..\..\workingdir\App\Modules &gt; nul) ELSE (xcopy /Q /Y /I ..\..\..\build\vs2015\output\x64\Optimized_Debug\$(TargetFileName) ..\..\..\workingdir\App\Modules &gt; nul)</Command>
+      <Command>IF NOT EXIST ..\..\..\workingdir\Modules (mkdir ..\..\..\workingdir\Modules)
+IF EXIST ..\..\..\build\vs2015\output\x64\Optimized_Debug\$(TargetFileName)\ (xcopy /Q /E /Y /I ..\..\..\build\vs2015\output\x64\Optimized_Debug\$(TargetFileName) ..\..\..\workingdir\Modules &gt; nul) ELSE (xcopy /Q /Y /I ..\..\..\build\vs2015\output\x64\Optimized_Debug\$(TargetFileName) ..\..\..\workingdir\Modules &gt; nul)</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>

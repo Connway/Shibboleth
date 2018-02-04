@@ -5,7 +5,7 @@ project "Editor"
 		location ("../../../project/" .. _ACTION .. "/Editor")
 	end
 
-	debugdir "../../../workingdir/App"
+	debugdir "../../../workingdir"
 	kind "WindowedApp"
 	language "C++"
 
@@ -19,6 +19,7 @@ project "Editor"
 		"../../../frameworks/Gaff/include",
 		"../../../dependencies/rapidjson",
 		"../../../dependencies/EASTL/include",
+		"../../../dependencies/nana/include"
 	}
 
 	local deps =
@@ -26,7 +27,11 @@ project "Editor"
 		"Shared",
 		"Gaff",
 		"Memory",
-		"EASTL"
+		"EASTL",
+		"libjpeg",
+		"libpng",
+		"zlib-ng",
+		"nana"
 	}
 
 	dependson(deps)
@@ -47,5 +52,5 @@ project "Editor"
 
 	postbuildcommands
 	{
-		"{COPY} %{cfg.targetdir}/%{cfg.buildtarget.name} ../../../workingdir/App"
+		"{COPY} %{cfg.targetdir}/%{cfg.buildtarget.name} ../../../workingdir"
 	}

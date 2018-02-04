@@ -53,6 +53,6 @@ project "MainLoopModule"
 
 	postbuildcommands
 	{
-		"{MKDIR} ../../../workingdir/App/bin",
-		"{COPY} %{cfg.targetdir}/%{cfg.buildtarget.name} ../../../workingdir/App/bin"
+		"{MKDIR} ../../../workingdir/bin",
+		"{COPY} %{cfg.targetdir}/%{cfg.buildtarget.name} ../../../workingdir/bin"
 	}
