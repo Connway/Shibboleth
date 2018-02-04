@@ -11,7 +11,7 @@ project "App"
 		kind "WindowedApp"
 	end
 
-	debugdir "../../../workingdir/App"
+	debugdir "../../../workingdir"
 	language "C++"
 
 	files { "**.h", "**.cpp", "**.inl" }
@@ -54,5 +54,5 @@ project "App"
 
 	postbuildcommands
 	{
-		"{COPY} %{cfg.targetdir}/%{cfg.buildtarget.name} ../../../workingdir/App"
+		"{COPY} %{cfg.targetdir}/%{cfg.buildtarget.name} ../../../workingdir"
 	}

@@ -123,7 +123,7 @@
       <WarningLevel>Level4</WarningLevel>
       <TreatWarningAsError>true</TreatWarningAsError>
       <PreprocessorDefinitions>_DEBUG;DEBUG;WIN32;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\..\..\src\Tools\Editor\include;..\..\..\src\Shared\include;..\..\..\src\Memory\include;..\..\..\frameworks\Gaff\include;..\..\..\dependencies\rapidjson;..\..\..\dependencies\EASTL\include;..\..\..\src\dependencies\dirent;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\src\Tools\Editor\include;..\..\..\src\Shared\include;..\..\..\src\Memory\include;..\..\..\frameworks\Gaff\include;..\..\..\dependencies\rapidjson;..\..\..\dependencies\EASTL\include;..\..\..\dependencies\nana\include;..\..\..\src\dependencies\dirent;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
       <ExceptionHandling>Async</ExceptionHandling>
@@ -138,7 +138,7 @@
       <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
     </Link>
     <PostBuildEvent>
-      <Command>IF EXIST ..\..\..\build\vs2015\output\x64\Debug\$(TargetFileName)\ (xcopy /Q /E /Y /I ..\..\..\build\vs2015\output\x64\Debug\$(TargetFileName) ..\..\..\workingdir\App &gt; nul) ELSE (xcopy /Q /Y /I ..\..\..\build\vs2015\output\x64\Debug\$(TargetFileName) ..\..\..\workingdir\App &gt; nul)</Command>
+      <Command>IF EXIST ..\..\..\build\vs2015\output\x64\Debug\$(TargetFileName)\ (xcopy /Q /E /Y /I ..\..\..\build\vs2015\output\x64\Debug\$(TargetFileName) ..\..\..\workingdir &gt; nul) ELSE (xcopy /Q /Y /I ..\..\..\build\vs2015\output\x64\Debug\$(TargetFileName) ..\..\..\workingdir &gt; nul)</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -147,7 +147,7 @@
       <WarningLevel>Level4</WarningLevel>
       <TreatWarningAsError>true</TreatWarningAsError>
       <PreprocessorDefinitions>NDEBUG;WIN32;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\..\..\src\Tools\Editor\include;..\..\..\src\Shared\include;..\..\..\src\Memory\include;..\..\..\frameworks\Gaff\include;..\..\..\dependencies\rapidjson;..\..\..\dependencies\EASTL\include;..\..\..\src\dependencies\dirent;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\src\Tools\Editor\include;..\..\..\src\Shared\include;..\..\..\src\Memory\include;..\..\..\frameworks\Gaff\include;..\..\..\dependencies\rapidjson;..\..\..\dependencies\EASTL\include;..\..\..\dependencies\nana\include;..\..\..\src\dependencies\dirent;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -168,7 +168,7 @@
       <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
     </Link>
     <PostBuildEvent>
-      <Command>IF EXIST ..\..\..\build\vs2015\output\x64\Release\$(TargetFileName)\ (xcopy /Q /E /Y /I ..\..\..\build\vs2015\output\x64\Release\$(TargetFileName) ..\..\..\workingdir\App &gt; nul) ELSE (xcopy /Q /Y /I ..\..\..\build\vs2015\output\x64\Release\$(TargetFileName) ..\..\..\workingdir\App &gt; nul)</Command>
+      <Command>IF EXIST ..\..\..\build\vs2015\output\x64\Release\$(TargetFileName)\ (xcopy /Q /E /Y /I ..\..\..\build\vs2015\output\x64\Release\$(TargetFileName) ..\..\..\workingdir &gt; nul) ELSE (xcopy /Q /Y /I ..\..\..\build\vs2015\output\x64\Release\$(TargetFileName) ..\..\..\workingdir &gt; nul)</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Analyze|x64'">
@@ -176,7 +176,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level4</WarningLevel>
       <PreprocessorDefinitions>NDEBUG;WIN32;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\..\..\src\Tools\Editor\include;..\..\..\src\Shared\include;..\..\..\src\Memory\include;..\..\..\frameworks\Gaff\include;..\..\..\dependencies\rapidjson;..\..\..\dependencies\EASTL\include;..\..\..\src\dependencies\dirent;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\src\Tools\Editor\include;..\..\..\src\Shared\include;..\..\..\src\Memory\include;..\..\..\frameworks\Gaff\include;..\..\..\dependencies\rapidjson;..\..\..\dependencies\EASTL\include;..\..\..\dependencies\nana\include;..\..\..\src\dependencies\dirent;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -196,7 +196,7 @@
       <AdditionalDependencies>ws2_32.lib;iphlpapi.lib;psapi.lib;userenv.lib;Dbghelp.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
-      <Command>IF EXIST ..\..\..\build\vs2015\output\x64\Analyze\$(TargetFileName)\ (xcopy /Q /E /Y /I ..\..\..\build\vs2015\output\x64\Analyze\$(TargetFileName) ..\..\..\workingdir\App &gt; nul) ELSE (xcopy /Q /Y /I ..\..\..\build\vs2015\output\x64\Analyze\$(TargetFileName) ..\..\..\workingdir\App &gt; nul)</Command>
+      <Command>IF EXIST ..\..\..\build\vs2015\output\x64\Analyze\$(TargetFileName)\ (xcopy /Q /E /Y /I ..\..\..\build\vs2015\output\x64\Analyze\$(TargetFileName) ..\..\..\workingdir &gt; nul) ELSE (xcopy /Q /Y /I ..\..\..\build\vs2015\output\x64\Analyze\$(TargetFileName) ..\..\..\workingdir &gt; nul)</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">
@@ -205,7 +205,7 @@
       <WarningLevel>Level4</WarningLevel>
       <TreatWarningAsError>true</TreatWarningAsError>
       <PreprocessorDefinitions>NDEBUG;SHIB_PROFILE;WIN32;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\..\..\src\Tools\Editor\include;..\..\..\src\Shared\include;..\..\..\src\Memory\include;..\..\..\frameworks\Gaff\include;..\..\..\dependencies\rapidjson;..\..\..\dependencies\EASTL\include;..\..\..\src\dependencies\dirent;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\src\Tools\Editor\include;..\..\..\src\Shared\include;..\..\..\src\Memory\include;..\..\..\frameworks\Gaff\include;..\..\..\dependencies\rapidjson;..\..\..\dependencies\EASTL\include;..\..\..\dependencies\nana\include;..\..\..\src\dependencies\dirent;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -226,7 +226,7 @@
       <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
     </Link>
     <PostBuildEvent>
-      <Command>IF EXIST ..\..\..\build\vs2015\output\x64\Profile\$(TargetFileName)\ (xcopy /Q /E /Y /I ..\..\..\build\vs2015\output\x64\Profile\$(TargetFileName) ..\..\..\workingdir\App &gt; nul) ELSE (xcopy /Q /Y /I ..\..\..\build\vs2015\output\x64\Profile\$(TargetFileName) ..\..\..\workingdir\App &gt; nul)</Command>
+      <Command>IF EXIST ..\..\..\build\vs2015\output\x64\Profile\$(TargetFileName)\ (xcopy /Q /E /Y /I ..\..\..\build\vs2015\output\x64\Profile\$(TargetFileName) ..\..\..\workingdir &gt; nul) ELSE (xcopy /Q /Y /I ..\..\..\build\vs2015\output\x64\Profile\$(TargetFileName) ..\..\..\workingdir &gt; nul)</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Optimized_Debug|x64'">
@@ -235,7 +235,7 @@
       <WarningLevel>Level4</WarningLevel>
       <TreatWarningAsError>true</TreatWarningAsError>
       <PreprocessorDefinitions>_DEBUG;DEBUG;WIN32;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\..\..\src\Tools\Editor\include;..\..\..\src\Shared\include;..\..\..\src\Memory\include;..\..\..\frameworks\Gaff\include;..\..\..\dependencies\rapidjson;..\..\..\dependencies\EASTL\include;..\..\..\src\dependencies\dirent;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\src\Tools\Editor\include;..\..\..\src\Shared\include;..\..\..\src\Memory\include;..\..\..\frameworks\Gaff\include;..\..\..\dependencies\rapidjson;..\..\..\dependencies\EASTL\include;..\..\..\dependencies\nana\include;..\..\..\src\dependencies\dirent;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -256,7 +256,7 @@
       <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
     </Link>
     <PostBuildEvent>
-      <Command>IF EXIST ..\..\..\build\vs2015\output\x64\Optimized_Debug\$(TargetFileName)\ (xcopy /Q /E /Y /I ..\..\..\build\vs2015\output\x64\Optimized_Debug\$(TargetFileName) ..\..\..\workingdir\App &gt; nul) ELSE (xcopy /Q /Y /I ..\..\..\build\vs2015\output\x64\Optimized_Debug\$(TargetFileName) ..\..\..\workingdir\App &gt; nul)</Command>
+      <Command>IF EXIST ..\..\..\build\vs2015\output\x64\Optimized_Debug\$(TargetFileName)\ (xcopy /Q /E /Y /I ..\..\..\build\vs2015\output\x64\Optimized_Debug\$(TargetFileName) ..\..\..\workingdir &gt; nul) ELSE (xcopy /Q /Y /I ..\..\..\build\vs2015\output\x64\Optimized_Debug\$(TargetFileName) ..\..\..\workingdir &gt; nul)</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -278,6 +278,18 @@
     </ProjectReference>
     <ProjectReference Include="..\dependencies\EASTL.vcxproj">
       <Project>{BEAB040D-2AC0-2CBE-F341-D01D5F1529EF}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\dependencies\libjpeg.vcxproj">
+      <Project>{42546879-AE33-E714-B74B-72EB23AA4D76}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\dependencies\libpng.vcxproj">
+      <Project>{C1DD6F0B-AD7F-9AE1-963A-AE35827B2132}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\dependencies\zlib-ng.vcxproj">
+      <Project>{584D90B6-C42C-0F52-CD44-9A2839A375B3}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\dependencies\nana.vcxproj">
+      <Project>{630C9B7C-4F43-9C0D-F82F-8210E445180F}</Project>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

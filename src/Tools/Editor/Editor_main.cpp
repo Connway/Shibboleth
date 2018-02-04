@@ -26,6 +26,9 @@ THE SOFTWARE.
 #include <Gaff_IncludeWindows.h>
 
 int CALLBACK WinMain(HINSTANCE /*hInstance*/, HINSTANCE /*hPrevInstance*/, LPSTR /*lpCmdLine*/, int /*nCmdShow*/)
+#else
+int main(void)
+#endif
 {
 	Shibboleth::Editor editor;
 
@@ -39,19 +42,3 @@ int CALLBACK WinMain(HINSTANCE /*hInstance*/, HINSTANCE /*hPrevInstance*/, LPSTR
 
 	return 0;
 }
-#else
-int main(int argc, char** argv)
-{
-	Shibboleth::Editor editor;
-
-	if (!editor.init(argc, argv)) {
-		editor.destroy();
-		return -1;
-	}
-
-	editor.run();
-	editor.destroy();
-
-	return 0;
-}
-#endif

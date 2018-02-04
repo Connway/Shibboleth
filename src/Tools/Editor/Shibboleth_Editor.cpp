@@ -23,7 +23,9 @@ THE SOFTWARE.
 #pragma once
 
 #include "Shibboleth_Editor.h"
-#include <Gaff_Defines.h>
+#include <Gaff_JSON.h>
+#include <nana/gui/widgets/label.hpp>
+#include <nana/gui.hpp>
 
 NS_SHIBBOLETH
 
@@ -35,22 +37,29 @@ Editor::~Editor(void)
 {
 }
 
-bool Editor::init(int argc, char** argv)
-{
-	GAFF_REF(argc);
-	GAFF_REF(argv);
-	return false;
-}
-
-#ifdef PLATFORM_WINDOWS
 bool Editor::init(void)
 {
-	return false;
+	nana::rectangle rect(0, 0, 800, 600);
+	Gaff::JSON config;
+	
+	if (config.parseFile("cfg/editor.cfg")) {
+		rect.x = config["window_x"].getInt32();
+		rect.y = config["window_y"].getInt32();
+		rect.width = config["window_width"].getUInt32();
+		rect.height = config["window_height"].getUInt32();
+	}
+
+	_main_form.reset(new nana::form(rect));
+	return _engine_instance.init(0, nullptr);
 }
-#endif
 
 void Editor::run(void)
 {
+	nana::label label(*_main_form, nana::rectangle(10, 10, 100, 100));
+	label.caption("Hello, World!");
+
+	_main_form->show();
+	nana::exec();
 }
 
 void Editor::destroy(void)

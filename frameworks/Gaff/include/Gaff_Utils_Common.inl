@@ -37,7 +37,7 @@ VectorMap<HashString32<Allocator>, U8String<Allocator>, Allocator> ParseCommandL
 template <class Allocator>
 void ParseCommandLine(int argc, char** argv, VectorMap<HashString32<Allocator>, U8String<Allocator>, Allocator>& out)
 {
-	if (argc == 1) {
+	if (argc <= 1) {
 		return;
 	}
 
@@ -45,7 +45,7 @@ void ParseCommandLine(int argc, char** argv, VectorMap<HashString32<Allocator>, 
 	U8String<Allocator> values;
 
 	for (int i = 1; i < argc; ++i) {
-		unsigned int option_begin = 0;
+		int32_t option_begin = 0;
 		const char* value = argv[i];
 
 		// If it doesn't start with - or -- then skip it!
@@ -94,7 +94,7 @@ VectorMap<HashString32<Allocator>, U8String<Allocator>, Allocator> ParseCommandL
 template <class Allocator>
 void ParseCommandLine(int argc, wchar_t** argv, VectorMap<HashString32<Allocator>, U8String<Allocator>, Allocator>& out)
 {
-	if (argc == 1) {
+	if (argc <= 1) {
 		return;
 	}
 
@@ -102,7 +102,7 @@ void ParseCommandLine(int argc, wchar_t** argv, VectorMap<HashString32<Allocator
 	U8String<Allocator> values;
 
 	for (int i = 1; i < argc; ++i) {
-		unsigned int option_begin = 0;
+		int32_t option_begin = 0;
 		const wchar_t* value = argv[i];
 		CONVERT_STRING(char, temp, value);
 
