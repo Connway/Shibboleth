@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|x64">
       <Configuration>Debug</Configuration>
@@ -23,44 +23,44 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{4D25640E-B939-8CBF-82BB-2F1FEE8E88F0}</ProjectGuid>
+    <ProjectGuid>{1653CE33-0220-293F-2B39-17E717655ECD}</ProjectGuid>
     <IgnoreWarnCompileDuplicatedFilename>true</IgnoreWarnCompileDuplicatedFilename>
     <Keyword>Win32Proj</Keyword>
-    <RootNamespace>World</RootNamespace>
+    <RootNamespace>Graphics</RootNamespace>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <CharacterSet>Unicode</CharacterSet>
-    <PlatformToolset>v141</PlatformToolset>
+    <PlatformToolset>v140</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <CharacterSet>Unicode</CharacterSet>
-    <PlatformToolset>v141</PlatformToolset>
+    <PlatformToolset>v140</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Analyze|x64'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <CharacterSet>Unicode</CharacterSet>
-    <PlatformToolset>v141</PlatformToolset>
+    <PlatformToolset>v140</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Profile|x64'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <CharacterSet>Unicode</CharacterSet>
-    <PlatformToolset>v141</PlatformToolset>
+    <PlatformToolset>v140</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Optimized_Debug|x64'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <CharacterSet>Unicode</CharacterSet>
-    <PlatformToolset>v141</PlatformToolset>
+    <PlatformToolset>v140</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
@@ -83,33 +83,33 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <OutDir>..\..\..\build\vs2017\output\x64\Debug\</OutDir>
-    <IntDir>..\..\..\build\vs2017\intermediate\x64\Debug\World\</IntDir>
-    <TargetName>World</TargetName>
+    <OutDir>..\..\..\build\vs2015\output\x64\Debug\</OutDir>
+    <IntDir>..\..\..\build\vs2015\intermediate\x64\Debug\Graphics\</IntDir>
+    <TargetName>Graphics</TargetName>
     <TargetExt>.lib</TargetExt>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <OutDir>..\..\..\build\vs2017\output\x64\Release\</OutDir>
-    <IntDir>..\..\..\build\vs2017\intermediate\x64\Release\World\</IntDir>
-    <TargetName>World</TargetName>
+    <OutDir>..\..\..\build\vs2015\output\x64\Release\</OutDir>
+    <IntDir>..\..\..\build\vs2015\intermediate\x64\Release\Graphics\</IntDir>
+    <TargetName>Graphics</TargetName>
     <TargetExt>.lib</TargetExt>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Analyze|x64'">
-    <OutDir>..\..\..\build\vs2017\output\x64\Analyze\</OutDir>
-    <IntDir>..\..\..\build\vs2017\intermediate\x64\Analyze\World\</IntDir>
-    <TargetName>World</TargetName>
+    <OutDir>..\..\..\build\vs2015\output\x64\Analyze\</OutDir>
+    <IntDir>..\..\..\build\vs2015\intermediate\x64\Analyze\Graphics\</IntDir>
+    <TargetName>Graphics</TargetName>
     <TargetExt>.lib</TargetExt>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">
-    <OutDir>..\..\..\build\vs2017\output\x64\Profile\</OutDir>
-    <IntDir>..\..\..\build\vs2017\intermediate\x64\Profile\World\</IntDir>
-    <TargetName>World</TargetName>
+    <OutDir>..\..\..\build\vs2015\output\x64\Profile\</OutDir>
+    <IntDir>..\..\..\build\vs2015\intermediate\x64\Profile\Graphics\</IntDir>
+    <TargetName>Graphics</TargetName>
     <TargetExt>.lib</TargetExt>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Optimized_Debug|x64'">
-    <OutDir>..\..\..\build\vs2017\output\x64\Optimized_Debug\</OutDir>
-    <IntDir>..\..\..\build\vs2017\intermediate\x64\Optimized_Debug\World\</IntDir>
-    <TargetName>World</TargetName>
+    <OutDir>..\..\..\build\vs2015\output\x64\Optimized_Debug\</OutDir>
+    <IntDir>..\..\..\build\vs2015\intermediate\x64\Optimized_Debug\Graphics\</IntDir>
+    <TargetName>Graphics</TargetName>
     <TargetExt>.lib</TargetExt>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -118,14 +118,13 @@
       <WarningLevel>Level4</WarningLevel>
       <TreatWarningAsError>true</TreatWarningAsError>
       <PreprocessorDefinitions>_DEBUG;DEBUG;WIN32;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\..\..\src\Modules\World\include;..\..\..\src\Modules\Entity\include;..\..\..\src\Memory\include;..\..\..\src\Shared\include;..\..\..\dependencies\EASTL\include;..\..\..\dependencies\libuv\include;..\..\..\dependencies\glm;..\..\..\frameworks\Gaff\include;..\..\..\frameworks\Gleam\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\src\Modules\Graphics\include;..\..\..\src\Memory\include;..\..\..\src\Shared\include;..\..\..\dependencies\EASTL\include;..\..\..\frameworks\Gaff\include;..\..\..\frameworks\Gleam\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
       <ExceptionHandling>Async</ExceptionHandling>
-      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <FloatingPointModel>Fast</FloatingPointModel>
-      <AdditionalOptions>/sdl %(AdditionalOptions)</AdditionalOptions>
-      <LanguageStandard>stdcpp14</LanguageStandard>
+      <AdditionalOptions>/sdl /std:c++14 %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -141,7 +140,7 @@
       <WarningLevel>Level4</WarningLevel>
       <TreatWarningAsError>true</TreatWarningAsError>
       <PreprocessorDefinitions>NDEBUG;WIN32;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\..\..\src\Modules\World\include;..\..\..\src\Modules\Entity\include;..\..\..\src\Memory\include;..\..\..\src\Shared\include;..\..\..\dependencies\EASTL\include;..\..\..\dependencies\libuv\include;..\..\..\dependencies\glm;..\..\..\frameworks\Gaff\include;..\..\..\frameworks\Gleam\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\src\Modules\Graphics\include;..\..\..\src\Memory\include;..\..\..\src\Shared\include;..\..\..\dependencies\EASTL\include;..\..\..\frameworks\Gaff\include;..\..\..\frameworks\Gleam\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -149,10 +148,9 @@
       <MinimalRebuild>false</MinimalRebuild>
       <StringPooling>true</StringPooling>
       <ExceptionHandling>Async</ExceptionHandling>
-      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <FloatingPointModel>Fast</FloatingPointModel>
-      <AdditionalOptions>/sdl %(AdditionalOptions)</AdditionalOptions>
-      <LanguageStandard>stdcpp14</LanguageStandard>
+      <AdditionalOptions>/sdl /std:c++14 %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -169,7 +167,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level4</WarningLevel>
       <PreprocessorDefinitions>NDEBUG;WIN32;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\..\..\src\Modules\World\include;..\..\..\src\Modules\Entity\include;..\..\..\src\Memory\include;..\..\..\src\Shared\include;..\..\..\dependencies\EASTL\include;..\..\..\dependencies\libuv\include;..\..\..\dependencies\glm;..\..\..\frameworks\Gaff\include;..\..\..\frameworks\Gleam\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\src\Modules\Graphics\include;..\..\..\src\Memory\include;..\..\..\src\Shared\include;..\..\..\dependencies\EASTL\include;..\..\..\frameworks\Gaff\include;..\..\..\frameworks\Gleam\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -177,10 +175,9 @@
       <MinimalRebuild>false</MinimalRebuild>
       <StringPooling>true</StringPooling>
       <ExceptionHandling>Async</ExceptionHandling>
-      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <FloatingPointModel>Fast</FloatingPointModel>
-      <AdditionalOptions>/analyze /sdl %(AdditionalOptions)</AdditionalOptions>
-      <LanguageStandard>stdcpp14</LanguageStandard>
+      <AdditionalOptions>/analyze /sdl /std:c++14 %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -195,7 +192,7 @@
       <WarningLevel>Level4</WarningLevel>
       <TreatWarningAsError>true</TreatWarningAsError>
       <PreprocessorDefinitions>NDEBUG;SHIB_PROFILE;WIN32;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\..\..\src\Modules\World\include;..\..\..\src\Modules\Entity\include;..\..\..\src\Memory\include;..\..\..\src\Shared\include;..\..\..\dependencies\EASTL\include;..\..\..\dependencies\libuv\include;..\..\..\dependencies\glm;..\..\..\frameworks\Gaff\include;..\..\..\frameworks\Gleam\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\src\Modules\Graphics\include;..\..\..\src\Memory\include;..\..\..\src\Shared\include;..\..\..\dependencies\EASTL\include;..\..\..\frameworks\Gaff\include;..\..\..\frameworks\Gleam\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -203,10 +200,9 @@
       <MinimalRebuild>false</MinimalRebuild>
       <StringPooling>true</StringPooling>
       <ExceptionHandling>Async</ExceptionHandling>
-      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <FloatingPointModel>Fast</FloatingPointModel>
-      <AdditionalOptions>/sdl %(AdditionalOptions)</AdditionalOptions>
-      <LanguageStandard>stdcpp14</LanguageStandard>
+      <AdditionalOptions>/sdl /std:c++14 %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -224,7 +220,7 @@
       <WarningLevel>Level4</WarningLevel>
       <TreatWarningAsError>true</TreatWarningAsError>
       <PreprocessorDefinitions>_DEBUG;DEBUG;WIN32;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\..\..\src\Modules\World\include;..\..\..\src\Modules\Entity\include;..\..\..\src\Memory\include;..\..\..\src\Shared\include;..\..\..\dependencies\EASTL\include;..\..\..\dependencies\libuv\include;..\..\..\dependencies\glm;..\..\..\frameworks\Gaff\include;..\..\..\frameworks\Gleam\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\src\Modules\Graphics\include;..\..\..\src\Memory\include;..\..\..\src\Shared\include;..\..\..\dependencies\EASTL\include;..\..\..\frameworks\Gaff\include;..\..\..\frameworks\Gleam\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -232,10 +228,9 @@
       <MinimalRebuild>false</MinimalRebuild>
       <StringPooling>true</StringPooling>
       <ExceptionHandling>Async</ExceptionHandling>
-      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <FloatingPointModel>Fast</FloatingPointModel>
-      <AdditionalOptions>/sdl %(AdditionalOptions)</AdditionalOptions>
-      <LanguageStandard>stdcpp14</LanguageStandard>
+      <AdditionalOptions>/sdl /std:c++14 %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -247,15 +242,6 @@
       <TreatLibWarningAsErrors>true</TreatLibWarningAsErrors>
     </Lib>
   </ItemDefinitionGroup>
-  <ItemGroup>
-    <ClInclude Include="..\..\..\src\Modules\World\include\Gen_ReflectionInit.h" />
-    <ClInclude Include="..\..\..\src\Modules\World\include\Shibboleth_Layer.h" />
-    <ClInclude Include="..\..\..\src\Modules\World\include\Shibboleth_World.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="..\..\..\src\Modules\World\Shibboleth_Layer.cpp" />
-    <ClCompile Include="..\..\..\src\Modules\World\Shibboleth_World.cpp" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

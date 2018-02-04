@@ -22,9 +22,12 @@ THE SOFTWARE.
 
 #include "Gen_ReflectionInit.h"
 #include <Shibboleth_Utilities.h>
+#include <Shibboleth_Memory.h>
+#include <Gaff_MessagePack.h>
 
 DYNAMICEXPORT_C bool InitModule(Shibboleth::IApp* app)
 {
+	Gaff::MessagePackSetMemoryFunctions(Shibboleth::ShibbolethAllocate, Shibboleth::ShibbolethFree);
 	Shibboleth::SetApp(*app);
 	Gen::InitReflection();
 	return true;

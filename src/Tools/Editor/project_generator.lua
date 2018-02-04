@@ -19,26 +19,18 @@ project "Editor"
 		"../../../frameworks/Gaff/include",
 		"../../../dependencies/rapidjson",
 		"../../../dependencies/EASTL/include",
-		"../../../dependencies/libuv/include"
 	}
 
-	dependson
+	local deps =
 	{
 		"Shared",
 		"Gaff",
 		"Memory",
-		"EASTL",
-		"libuv"
+		"EASTL"
 	}
 
-	links
-	{
-		"Shared",
-		"Gaff",
-		"Memory",
-		"EASTL",
-		"libuv"
-	}
+	dependson(deps)
+	links(deps)
 
 	filter { "configurations:not Analyze*" }
 		flags { "FatalWarnings" }

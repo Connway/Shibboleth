@@ -7,7 +7,6 @@ project "Resource"
 
 	kind "StaticLib"
 	language "C++"
-	rtti "On"
 
 	files { "**.h", "**.cpp", "**.inl" }
 	removefiles { "Shibboleth_ResourceModule.cpp" }
@@ -23,7 +22,6 @@ project "Resource"
 		"../../Memory/include",
 		"../../Shared/include",
 		"../../../dependencies/EASTL/include",
-		"../../../dependencies/libuv/include",
 		"../../../frameworks/Gaff/include"
 	}
 
@@ -58,7 +56,6 @@ project "ResourceModule"
 		"../../Shared/include",
 		"../../../dependencies/EASTL/include",
 		"../../../dependencies/rapidjson",
-		"../../../dependencies/libuv/include",
 		"../../../frameworks/Gaff/include"
 	}
 

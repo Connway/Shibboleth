@@ -20,8 +20,8 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#include <Shibboleth_Utilities.h>
 #include "Gen_ReflectionInit.h"
+#include <Shibboleth_Utilities.h>
 
 DYNAMICEXPORT_C bool InitModule(Shibboleth::IApp* app)
 {

@@ -2,7 +2,8 @@ function ModuleGen(module_name)
 	prebuildmessage("Generating Gen_ReflectionInit.h for module " .. module_name .. "!")
 	prebuildcommands
 	{
-		"py ../../../utils/gen_module_file.py ../../../src/Modules/" .. module_name
+		"cd ../../../utils",
+		"premake5 gen_module_file --module=" .. module_name
 	}
 end
 

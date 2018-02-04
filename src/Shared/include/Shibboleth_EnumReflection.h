@@ -22,7 +22,9 @@ THE SOFTWARE.
 
 #pragma once
 
-#define GAFF_REFLECTION_NAMESPACE Shibboleth
+#ifndef GAFF_REFLECTION_NAMESPACE
+	#define GAFF_REFLECTION_NAMESPACE Shibboleth
+#endif
 
 #include "Shibboleth_ProxyAllocator.h"
 #include "Shibboleth_Utilities.h"

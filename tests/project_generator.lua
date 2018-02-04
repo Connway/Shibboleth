@@ -22,7 +22,6 @@ local tests = {
 		includedirs = {
 			"../dependencies/EASTL/include",
 			"../dependencies/CATCH",
-			"../dependencies/libuv/include",
 			"../dependencies/mpack",
 			"../dependencies/rapidjson",
 
@@ -34,7 +33,7 @@ local tests = {
 		links = {
 			"Gaff", "Memory",
 			"EASTL", "Shared",
-			"libuv", "mpack"
+			"mpack"
 		},
 
 		extra = function ()
@@ -53,7 +52,6 @@ local tests = {
 		includedirs = {
 			"../dependencies/EASTL/include",
 			"../dependencies/CATCH",
-			"../dependencies/libuv/include",
 			"../dependencies/angelscript/angelscript/include",
 			"../dependencies/angelscript/add_on/scriptbuilder",
 
@@ -66,9 +64,9 @@ local tests = {
 		links = {
 			"Gaff", "Memory",
 			"EASTL", "Shared",
-			"angelscript", "libuv",
 			"Scripting", "Entity",
-			"Resource", "Gleam"
+			"Resource", "Gleam",
+			"angelscript"
 		},
 
 		extra = function ()
