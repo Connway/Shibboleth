@@ -1,15 +1,15 @@
-group "Modules/Entity"
+group "Modules/Graphics"
 
-project "Entity"
+project "Graphics"
 	if _ACTION then
-		location ("../../../project/" .. _ACTION .. "/entity")
+		location ("../../../project/" .. _ACTION .. "/graphics")
 	end
 
 	kind "StaticLib"
 	language "C++"
 
 	files { "**.h", "**.cpp", "**.inl" }
-	removefiles { "Shibboleth_EntityModule.cpp" }
+	removefiles { "Shibboleth_GraphicsModule.cpp" }
 
 	filter { "configurations:not Analyze*" }
 		flags { "FatalWarnings" }
@@ -22,26 +22,25 @@ project "Entity"
 		"../../Memory/include",
 		"../../Shared/include",
 		"../../../dependencies/EASTL/include",
-		"../../../dependencies/rapidjson",
-		"../../../dependencies/glm",
-		"../../../dependencies/mpack",
+		-- "../../../dependencies/rapidjson",
+		-- "../../../dependencies/glm",
+		-- "../../../dependencies/mpack",
 		"../../../frameworks/Gaff/include",
-		"../../../frameworks/Gleam/include",
-		"../Resource/include"
+		"../../../frameworks/Gleam/include"
 	}
 
 
-project "EntityModule"
+project "GraphicsModule"
 	if _ACTION then
-		location ("../../../project/" .. _ACTION .. "/entity")
+		location ("../../../project/" .. _ACTION .. "/graphics")
 	end
 
 	kind "SharedLib"
 	language "C++"
 
-	files { "Shibboleth_EntityModule.cpp" }
+	files { "Shibboleth_GraphicsModule.cpp" }
 
-	ModuleGen("Entity")
+	ModuleGen("Graphics")
 	ModuleCopy()
 
 	filter { "configurations:not Analyze*" }
@@ -58,12 +57,11 @@ project "EntityModule"
 		"../../Memory/include",
 		"../../Shared/include",
 		"../../../dependencies/EASTL/include",
-		"../../../dependencies/rapidjson",
-		"../../../dependencies/glm",
+		-- "../../../dependencies/rapidjson",
+		-- "../../../dependencies/glm",
 		"../../../dependencies/mpack",
 		"../../../frameworks/Gaff/include",
-		"../../../frameworks/Gleam/include",
-		"../Resource/include"
+		"../../../frameworks/Gleam/include"
 	}
 
 	local dependencies =
@@ -73,12 +71,11 @@ project "EntityModule"
 		"Gleam",
 		"Shared",
 		"EASTL",
-		"Entity",
-		"Resource",
+		-- "Resource",
 		"mpack"
 	}
 
 	dependson(dependencies)
 	links(dependencies)
 
-	NewDeleteLinkFix()
+	-- NewDeleteLinkFix()

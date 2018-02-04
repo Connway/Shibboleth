@@ -123,7 +123,7 @@
       <WarningLevel>Level4</WarningLevel>
       <TreatWarningAsError>true</TreatWarningAsError>
       <PreprocessorDefinitions>_DEBUG;DEBUG;WIN32;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\..\..\src\dependencies\dirent;..\..\..\src\Modules\MainLoop\include;..\..\..\src\Shared\include;..\..\..\src\Memory\include;..\..\..\frameworks\Gaff\include;..\..\..\dependencies\EASTL\include;..\..\..\dependencies\libuv\include;..\..\..\src\Modules\Scripting\include;..\..\..\src\Modules\Resource\include;..\..\..\dependencies\angelscript\angelscript\include;..\..\..\dependencies\angelscript\add_on\scriptbuilder;..\..\..\src\Modules\Entity\include;..\..\..\frameworks\Gleam\include;..\..\..\dependencies\glm;..\..\..\dependencies\rapidjson;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\src\dependencies\dirent;..\..\..\src\Modules\MainLoop\include;..\..\..\src\Shared\include;..\..\..\src\Memory\include;..\..\..\frameworks\Gaff\include;..\..\..\dependencies\EASTL\include;..\..\..\src\Modules\Scripting\include;..\..\..\src\Modules\Resource\include;..\..\..\dependencies\angelscript\angelscript\include;..\..\..\dependencies\angelscript\add_on\scriptbuilder;..\..\..\src\Modules\Entity\include;..\..\..\frameworks\Gleam\include;..\..\..\dependencies\glm;..\..\..\dependencies\rapidjson;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
       <ExceptionHandling>Async</ExceptionHandling>
@@ -149,7 +149,7 @@ IF EXIST ..\..\..\build\vs2015\output\x64\Debug\$(TargetFileName)\ (xcopy /Q /E 
       <WarningLevel>Level4</WarningLevel>
       <TreatWarningAsError>true</TreatWarningAsError>
       <PreprocessorDefinitions>NDEBUG;WIN32;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\..\..\src\dependencies\dirent;..\..\..\src\Modules\MainLoop\include;..\..\..\src\Shared\include;..\..\..\src\Memory\include;..\..\..\frameworks\Gaff\include;..\..\..\dependencies\EASTL\include;..\..\..\dependencies\libuv\include;..\..\..\src\Modules\Scripting\include;..\..\..\src\Modules\Resource\include;..\..\..\dependencies\angelscript\angelscript\include;..\..\..\dependencies\angelscript\add_on\scriptbuilder;..\..\..\src\Modules\Entity\include;..\..\..\frameworks\Gleam\include;..\..\..\dependencies\glm;..\..\..\dependencies\rapidjson;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\src\dependencies\dirent;..\..\..\src\Modules\MainLoop\include;..\..\..\src\Shared\include;..\..\..\src\Memory\include;..\..\..\frameworks\Gaff\include;..\..\..\dependencies\EASTL\include;..\..\..\src\Modules\Scripting\include;..\..\..\src\Modules\Resource\include;..\..\..\dependencies\angelscript\angelscript\include;..\..\..\dependencies\angelscript\add_on\scriptbuilder;..\..\..\src\Modules\Entity\include;..\..\..\frameworks\Gleam\include;..\..\..\dependencies\glm;..\..\..\dependencies\rapidjson;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -180,7 +180,7 @@ IF EXIST ..\..\..\build\vs2015\output\x64\Release\$(TargetFileName)\ (xcopy /Q /
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level4</WarningLevel>
       <PreprocessorDefinitions>NDEBUG;WIN32;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\..\..\src\dependencies\dirent;..\..\..\src\Modules\MainLoop\include;..\..\..\src\Shared\include;..\..\..\src\Memory\include;..\..\..\frameworks\Gaff\include;..\..\..\dependencies\EASTL\include;..\..\..\dependencies\libuv\include;..\..\..\src\Modules\Scripting\include;..\..\..\src\Modules\Resource\include;..\..\..\dependencies\angelscript\angelscript\include;..\..\..\dependencies\angelscript\add_on\scriptbuilder;..\..\..\src\Modules\Entity\include;..\..\..\frameworks\Gleam\include;..\..\..\dependencies\glm;..\..\..\dependencies\rapidjson;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\src\dependencies\dirent;..\..\..\src\Modules\MainLoop\include;..\..\..\src\Shared\include;..\..\..\src\Memory\include;..\..\..\frameworks\Gaff\include;..\..\..\dependencies\EASTL\include;..\..\..\src\Modules\Scripting\include;..\..\..\src\Modules\Resource\include;..\..\..\dependencies\angelscript\angelscript\include;..\..\..\dependencies\angelscript\add_on\scriptbuilder;..\..\..\src\Modules\Entity\include;..\..\..\frameworks\Gleam\include;..\..\..\dependencies\glm;..\..\..\dependencies\rapidjson;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -211,7 +211,7 @@ IF EXIST ..\..\..\build\vs2015\output\x64\Analyze\$(TargetFileName)\ (xcopy /Q /
       <WarningLevel>Level4</WarningLevel>
       <TreatWarningAsError>true</TreatWarningAsError>
       <PreprocessorDefinitions>NDEBUG;SHIB_PROFILE;WIN32;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\..\..\src\dependencies\dirent;..\..\..\src\Modules\MainLoop\include;..\..\..\src\Shared\include;..\..\..\src\Memory\include;..\..\..\frameworks\Gaff\include;..\..\..\dependencies\EASTL\include;..\..\..\dependencies\libuv\include;..\..\..\src\Modules\Scripting\include;..\..\..\src\Modules\Resource\include;..\..\..\dependencies\angelscript\angelscript\include;..\..\..\dependencies\angelscript\add_on\scriptbuilder;..\..\..\src\Modules\Entity\include;..\..\..\frameworks\Gleam\include;..\..\..\dependencies\glm;..\..\..\dependencies\rapidjson;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\src\dependencies\dirent;..\..\..\src\Modules\MainLoop\include;..\..\..\src\Shared\include;..\..\..\src\Memory\include;..\..\..\frameworks\Gaff\include;..\..\..\dependencies\EASTL\include;..\..\..\src\Modules\Scripting\include;..\..\..\src\Modules\Resource\include;..\..\..\dependencies\angelscript\angelscript\include;..\..\..\dependencies\angelscript\add_on\scriptbuilder;..\..\..\src\Modules\Entity\include;..\..\..\frameworks\Gleam\include;..\..\..\dependencies\glm;..\..\..\dependencies\rapidjson;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -243,7 +243,7 @@ IF EXIST ..\..\..\build\vs2015\output\x64\Profile\$(TargetFileName)\ (xcopy /Q /
       <WarningLevel>Level4</WarningLevel>
       <TreatWarningAsError>true</TreatWarningAsError>
       <PreprocessorDefinitions>_DEBUG;DEBUG;WIN32;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\..\..\src\dependencies\dirent;..\..\..\src\Modules\MainLoop\include;..\..\..\src\Shared\include;..\..\..\src\Memory\include;..\..\..\frameworks\Gaff\include;..\..\..\dependencies\EASTL\include;..\..\..\dependencies\libuv\include;..\..\..\src\Modules\Scripting\include;..\..\..\src\Modules\Resource\include;..\..\..\dependencies\angelscript\angelscript\include;..\..\..\dependencies\angelscript\add_on\scriptbuilder;..\..\..\src\Modules\Entity\include;..\..\..\frameworks\Gleam\include;..\..\..\dependencies\glm;..\..\..\dependencies\rapidjson;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\src\dependencies\dirent;..\..\..\src\Modules\MainLoop\include;..\..\..\src\Shared\include;..\..\..\src\Memory\include;..\..\..\frameworks\Gaff\include;..\..\..\dependencies\EASTL\include;..\..\..\src\Modules\Scripting\include;..\..\..\src\Modules\Resource\include;..\..\..\dependencies\angelscript\angelscript\include;..\..\..\dependencies\angelscript\add_on\scriptbuilder;..\..\..\src\Modules\Entity\include;..\..\..\frameworks\Gleam\include;..\..\..\dependencies\glm;..\..\..\dependencies\rapidjson;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>

@@ -27,8 +27,7 @@ project "MainLoopModule"
 		"../../Shared/include",
 		"../../Memory/include",
 		"../../../frameworks/Gaff/include",
-		"../../../dependencies/EASTL/include",
-		"../../../dependencies/libuv/include"
+		"../../../dependencies/EASTL/include"
 
 		, "../Scripting/include",
 		"../Resource/include",

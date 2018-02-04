@@ -7,7 +7,6 @@ project "Scripting"
 
 	kind "StaticLib"
 	language "C++"
-	rtti "On"
 
 	files { "**.h", "**.cpp", "**.inl" }
 	removefiles { "Shibboleth_ScriptingModule.cpp" }
@@ -30,7 +29,6 @@ project "Scripting"
 		"../../../dependencies/angelscript/add_on/scriptarray",
 		"../../../dependencies/rapidjson",
 		"../../../dependencies/glm",
-		"../../../dependencies/libuv/include",
 		"../../../frameworks/Gaff/include",
 		"../../../frameworks/Gleam/include"
 	}
@@ -72,7 +70,6 @@ project "ScriptingModule"
 		"../../../dependencies/EASTL/include",
 		"../../../dependencies/rapidjson",
 		"../../../dependencies/glm",
-		"../../../dependencies/libuv/include",
 		"../../../frameworks/Gaff/include"
 	}
 

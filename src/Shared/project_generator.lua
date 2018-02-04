@@ -32,6 +32,5 @@ project "Shared"
 		"../../frameworks/Gaff/include",
 		"../../frameworks/Gleam/include",
 		"../../dependencies/EASTL/include",
-		"../../dependencies/glm",
-		"../../dependencies/libuv/include"
+		"../../dependencies/glm"
 		}

@@ -172,57 +172,10 @@ void MainLoop::update(void)
 
 	const Object* const object = prefab->getPrefab();
 
-	//Gaff::JSON json;
-	//json.parseFile("Resources/Objects/test2.prefab");
-
-	//auto reader = Gaff::MakeSerializeReader(json, Shibboleth::ProxyAllocator());
-	//Object object(-1);
-
-	//object.load(reader);
-
 	const AngelScriptComponent* const asc = object->getComponent<AngelScriptComponent>();
 	const AngelScriptResourcePtr& script = asc->getScript();
 
 	res_mgr.waitForResource(*script);
-
-	//int32_t& a = asc.getProperty<int32_t>("a");
-
-	//asc.prepareMethod("testFunc");
-	//asc.callMethod();
-
-	//asc.prepareMethod("printA");
-	//asc.callMethod();
-
-	//asc.prepareMethod("testFunc2");
-	//asc.setArg(0, 9999);
-	//asc.callMethod();
-
-	//asc.prepareMethod("printA");
-	//asc.callMethod();
-
-	//a = 2222;
-
-	//asc.prepareMethod("printA");
-	//asc.callMethod();
-
-	//asc.prepareMethod("testRet");
-	//asc.callMethod();
-
-	//int32_t b = asc.getReturnValue<int32_t>();
-	//GAFF_REF(b);
-
-	//asc.prepareMethod("testMath");
-	//asc.callMethod();
-
-	//Object obj(123);
-
-	//asc.prepareMethod("testObj");
-	//asc.setArg<Object&>(0, obj);
-	//asc.callMethod();
-
-	//asc.prepareMethod("testComp");
-	//asc.callMethod();
-
 
 	GetApp().quit();
 }

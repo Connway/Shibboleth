@@ -22,8 +22,7 @@ project "App"
 		"../../Memory/include",
 		"../../../frameworks/Gaff/include",
 		"../../../dependencies/rapidjson",
-		"../../../dependencies/EASTL/include",
-		"../../../dependencies/libuv/include"
+		"../../../dependencies/EASTL/include"
 	}
 
 	dependson
