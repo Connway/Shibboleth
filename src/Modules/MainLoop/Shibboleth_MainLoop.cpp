@@ -170,6 +170,11 @@ void MainLoop::update(void)
 
 	res_mgr.waitForResource(*prefab);
 
+	if (prefab->hasFailed()) {
+		GetApp().quit();
+		return;
+	}
+
 	const Object* const object = prefab->getPrefab();
 
 	const AngelScriptComponent* const asc = object->getComponent<AngelScriptComponent>();

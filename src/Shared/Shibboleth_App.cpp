@@ -118,6 +118,11 @@ bool App::initInternal(void)
 	Gaff::StackTrace::RefreshModuleList(); // Will fix symbols from DLLs not resolving.
 #endif
 
+	registerTypeBucket(Gaff::FNV1aHash64Const("Gaff::IAttribute"));
+	registerTypeBucket(Gaff::FNV1aHash64Const("IManager"));
+	registerTypeBucket(Gaff::FNV1aHash64Const("**")); // All types not registered with a type bucket.
+	registerTypeBucket(Gaff::FNV1aHash64Const("*"));  // All reflection.
+
 	if (!loadModules()) {
 		return false;
 	}
@@ -225,7 +230,6 @@ bool App::loadMainLoop(void)
 
 bool App::loadModules(void)
 {
-
 	// Load module order list.
 	Gaff::JSON modules_cfg;
 
@@ -251,26 +255,48 @@ bool App::loadModules(void)
 		return !(_dynamic_loader.getModule(name) || loadModule(name));
 	});
 
-	// Notify all modules that every module has been loaded.
-	if (!error) {
-		_dynamic_loader.forEachModule([&](DynamicLoader::ModulePtr& module) -> bool
-		{
-			using AllModulesLoadedFunc = void (*)(void);
-			AllModulesLoadedFunc aml_func = module->getFunc<AllModulesLoadedFunc>("AllModulesLoaded");
-
-			if (aml_func) {
-				aml_func();
-			}
-
-			return false;
-		});
-
-		for (auto it = _manager_map.begin(); it != _manager_map.end(); ++it) {
-			it->second->allModulesLoaded();
-		}
+	if (error) {
+		return false;
 	}
 
-	return !error;
+	// Create manager instances.
+	const Vector<Gaff::Hash64>* manager_bucket = getTypeBucket(Gaff::FNV1aHash64Const("IManager"));
+
+	for (Gaff::Hash64 name : *manager_bucket) {
+		const Gaff::IReflectionDefinition* const ref_def = getReflection(name);
+
+		ProxyAllocator allocator;
+		IManager* manager = ref_def->CREATEALLOCT(IManager, allocator);
+
+		if (!manager->init()) {
+			// log error
+			SHIB_FREET(manager, *GetAllocator());
+			return false;
+		}
+
+		GAFF_ASSERT(_manager_map.find(name) == _manager_map.end());
+		_manager_map[name].reset(manager);
+	}
+
+	// Notify all modules that every module has been loaded.
+	_dynamic_loader.forEachModule([&](const HashString32&, DynamicLoader::ModulePtr& module) -> bool
+	{
+		using AllModulesLoadedFunc = void (*)(void);
+		AllModulesLoadedFunc aml_func = module->getFunc<AllModulesLoadedFunc>("AllModulesLoaded");
+
+		if (aml_func) {
+			aml_func();
+		}
+
+		return false;
+	});
+
+	// Notify all managers that every module has been loaded.
+	for (auto it = _manager_map.begin(); it != _manager_map.end(); ++it) {
+		it->second->allModulesLoaded();
+	}
+
+	return true;
 }
 
 bool App::initApp(void)
@@ -415,7 +441,7 @@ void App::destroy(void)
 	_manager_map.clear();
 	_log_mgr.destroy();
 
-	_dynamic_loader.forEachModule([](DynamicLoader::ModulePtr module) -> bool
+	_dynamic_loader.forEachModule([](const HashString32&, DynamicLoader::ModulePtr module) -> bool
 	{
 		void (*shutdown_func)(void) = module->getFunc<void (*)(void)>("ShutdownModule");
 
@@ -485,6 +511,23 @@ DynamicLoader::ModulePtr App::loadModule(const char* filename, const char* name)
 	return _dynamic_loader.loadModule(filename, name);
 }
 
+Vector<U8String> App::getLoadedModuleNames(void) const
+{
+	Vector<U8String> names;
+
+	_dynamic_loader.forEachModule([&](const HashString32& name, const DynamicLoader::ModulePtr&) -> bool {
+		const U8String& str = name.getString();
+
+		if (str.find("Module") != U8String::npos) {
+			names.emplace_back(str);
+		}
+
+		return false;
+	});
+
+	return names;
+}
+
 const Gaff::IEnumReflectionDefinition* App::getEnumReflection(Gaff::Hash64 name) const
 {
 	auto it = _enum_reflection_map.find(name);
@@ -508,20 +551,7 @@ void App::registerReflection(Gaff::Hash64 name, Gaff::IReflectionDefinition& ref
 	GAFF_ASSERT(_reflection_map.find(name) == _reflection_map.end());
 	_reflection_map[name].reset(&ref_def);
 
-	// Register if a manager.
-	if (ref_def.hasInterface(Gaff::FNV1aHash64Const("IManager"))) {
-		ProxyAllocator allocator;
-		IManager* manager = ref_def.CREATEALLOCT(IManager, allocator);
-
-		if (!manager->init()) {
-			// log error
-			SHIB_FREET(manager, *GetAllocator());
-			return;
-		}
-
-		GAFF_ASSERT(_manager_map.find(name) == _manager_map.end());
-		_manager_map[name].reset(manager);
-	}
+	bool was_inserted = false;
 
 	// Check if this type implements an interface that has a type bucket request.
 	for (auto it = _type_buckets.begin(); it != _type_buckets.end(); ++it) {
@@ -529,8 +559,23 @@ void App::registerReflection(Gaff::Hash64 name, Gaff::IReflectionDefinition& ref
 			// Insert sorted.
 			auto it_name = eastl::lower_bound(it->second.begin(), it->second.end(), name);
 			it->second.insert(it_name, name);
+			was_inserted = true;
 		}
 	}
+
+	if (!was_inserted) {
+		Vector<Gaff::Hash64>& all_bucket = _type_buckets.find(Gaff::FNV1aHash64Const("**"))->second;
+
+		// Insert sorted.
+		auto it_name = eastl::lower_bound(all_bucket.begin(), all_bucket.end(), name);
+		all_bucket.insert(it_name, name);
+	}
+
+	Vector<Gaff::Hash64>& all_bucket = _type_buckets.find(Gaff::FNV1aHash64Const("*"))->second;
+
+	// Insert sorted.
+	auto it_name = eastl::lower_bound(all_bucket.begin(), all_bucket.end(), name);
+	all_bucket.insert(it_name, name);
 }
 
 void App::registerTypeBucket(Gaff::Hash64 name)
@@ -548,6 +593,14 @@ void App::registerTypeBucket(Gaff::Hash64 name)
 		// Don't care about the concrete version of class. Only reflected types that inherit from the class.
 		if (name != class_hash && ref_def->hasInterface(name)) {
 			types.emplace_back(class_hash);
+
+			// Remove from ** bucket.
+			Vector<Gaff::Hash64>& all_bucket = _type_buckets.find(Gaff::FNV1aHash64Const("**"))->second;
+			auto it_name = eastl::lower_bound(all_bucket.begin(), all_bucket.end(), ref_def->getReflectionInstance().getHash());
+
+			if (it_name != all_bucket.end() && *it_name == ref_def->getReflectionInstance().getHash()) {
+				all_bucket.erase(it_name);
+			}
 		}
 	}
 

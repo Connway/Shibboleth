@@ -32,28 +32,6 @@ NS_SHIBBOLETH
 class App : public IApp
 {
 public:
-	//template <class Callback>
-	//void forEachManager(Callback&& callback)
-	//{
-	//	for (auto it = _managers.begin(); it != _managers.end(); ++it) {
-	//		if (callback(*it)) {
-	//			break;
-	//		}
-	//	}
-	//}
-
-	//template <class Callback>
-	//bool forEachReflection(Callback&& callback)
-	//{
-	//	for (auto& refl_entry : _reflection_map) {
-	//		if (callback(refl_entry.second)) {
-	//			return true;
-	//		}
-	//	}
-
-	//	return false;
-	//}
-
 	App(void);
 	~App(void);
 
@@ -76,6 +54,7 @@ public:
 	JobPool& getJobPool(void) override;
 
 	DynamicLoader::ModulePtr loadModule(const char* filename, const char* name) override;
+	Vector<U8String> getLoadedModuleNames(void) const;
 
 	const Gaff::IEnumReflectionDefinition* getEnumReflection(Gaff::Hash64 name) const override;
 	void registerEnumReflection(Gaff::Hash64 name, Gaff::IEnumReflectionDefinition& ref_def) override;
