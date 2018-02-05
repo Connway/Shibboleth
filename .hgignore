@@ -13,3 +13,4 @@ workingdir/bin/*
 *.opendb
 project/vs2017/.vs/*
 project/vs2015/.vs/*
+workingdir/App/logs/*
