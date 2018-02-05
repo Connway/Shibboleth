@@ -34,10 +34,22 @@ class DynamicLoader
 {
 public:
 	template <class Callback>
+	bool forEachModule(Callback&& callback) const
+	{
+		for (auto it = _modules.begin(); it != _modules.end(); ++it) {
+			if (callback(it->first, it->second)) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	template <class Callback>
 	bool forEachModule(Callback&& callback)
 	{
 		for (auto it = _modules.begin(); it != _modules.end(); ++it) {
-			if (callback(it->second)) {
+			if (callback(it->first, it->second)) {
 				return true;
 			}
 		}

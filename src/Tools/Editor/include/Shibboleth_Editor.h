@@ -25,6 +25,10 @@ THE SOFTWARE.
 #include <Shibboleth_Defines.h>
 #include <Shibboleth_App.h>
 #include <EASTL/unique_ptr.h>
+#include <EASTL/vector_map.h>
+#include <EASTL/string.h>
+#include <nana/gui/widgets/menubar.hpp>
+#include <nana/gui/widgets/menu.hpp>
 
 namespace nana
 {
@@ -44,9 +48,21 @@ public:
 	void run(void);
 	void destroy(void);
 
+	void close(void);
+
+	nana::menu* addMenu(const char* name);
+	nana::menu* getMenu(const char* name);
+
 private:
+	eastl::vector_map<eastl::string, nana::menu*> _menu_entries;
+	eastl::vector< eastl::unique_ptr<nana::form> > _sub_forms;
 	eastl::unique_ptr<nana::form> _main_form = nullptr;
+
+	nana::menubar _menu_bar;
+
 	App _engine_instance;
+
+	void addBuiltInMenus(void);
 };
 
 NS_END
