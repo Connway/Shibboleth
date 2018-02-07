@@ -58,6 +58,7 @@ public:
 
 	const Gaff::IEnumReflectionDefinition* getEnumReflection(Gaff::Hash64 name) const override;
 	void registerEnumReflection(Gaff::Hash64 name, Gaff::IEnumReflectionDefinition& ref_def) override;
+	const VectorMap< Gaff::Hash64, UniquePtr<Gaff::IEnumReflectionDefinition> >& getEnumReflectionDefinitions(void) const;
 
 	const Gaff::IReflectionDefinition* getReflection(Gaff::Hash64 name) const override;
 	void registerReflection(Gaff::Hash64 name, Gaff::IReflectionDefinition& ref_def) override;
