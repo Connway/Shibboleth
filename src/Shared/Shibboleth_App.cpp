@@ -540,6 +540,11 @@ void App::registerEnumReflection(Gaff::Hash64 name, Gaff::IEnumReflectionDefinit
 	_enum_reflection_map[name].reset(&ref_def);
 }
 
+const VectorMap< Gaff::Hash64, UniquePtr<Gaff::IEnumReflectionDefinition> >& App::getEnumReflectionDefinitions(void) const
+{
+	return _enum_reflection_map;
+}
+
 const Gaff::IReflectionDefinition* App::getReflection(Gaff::Hash64 name) const
 {
 	auto it = _reflection_map.find(name);

@@ -113,10 +113,10 @@ void Editor::addBuiltInMenus(void)
 	window_menu->append("Modules", std::bind([&](nana::menu::item_proxy&) -> void
 	{
 		nana::rectangle rect;
-		rect.x = _main_form->pos().x + 160;
-		rect.y = _main_form->pos().y + 120;
-		rect.width = 320;
-		rect.height = 240;
+		rect.x = _main_form->pos().x + 300;
+		rect.y = _main_form->pos().y + 200;
+		rect.width = 600;
+		rect.height = 400;
 
 		_sub_forms.emplace_back(new nana::form(rect));
 		nana::form& popup = *_sub_forms.back();
@@ -171,6 +171,10 @@ void Editor::addBuiltInMenus(void)
 
 		for (const U8String& module_name : _engine_instance.getLoadedModuleNames()) {
 			mods.push_back(module_name.data());
+		}
+
+		for (const auto& enum_entry : _engine_instance.getEnumReflectionDefinitions()) {
+			enums.push_back(enum_entry.second->getReflectionInstance().getName());
 		}
 
 		popup.div("<a>");
