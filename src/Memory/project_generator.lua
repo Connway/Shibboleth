@@ -7,7 +7,7 @@ project "Memory"
 
 	kind "SharedLib"
 	language "C++"
-	defines { "IS_MEMORY", "JEMALLOC_EXPORT=" }
+	defines { "IS_MEMORY" }
 
 	files { "**.h", "**.cpp" }
 
@@ -29,9 +29,6 @@ project "Memory"
 
 	filter { "system:windows", "options:symbols" }
 		links { "Dbghelp" }
-
-	filter { "configurations:Debug* or Optimized_Debug*"}
-		defines { "JEMALLOC_DEBUG" }
 
 	filter {}
 

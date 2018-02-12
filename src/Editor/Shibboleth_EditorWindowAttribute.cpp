@@ -20,25 +20,23 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#include <Shibboleth_Editor.h>
+#pragma once
 
-#ifdef PLATFORM_WINDOWS
-#include <Gaff_IncludeWindows.h>
+#include "Shibboleth_EditorWindowAttribute.h"
+#include <Shibboleth_IAllocator.h>
+#include <Shibboleth_Memory.h>
 
-int CALLBACK WinMain(HINSTANCE /*hInstance*/, HINSTANCE /*hPrevInstance*/, LPSTR /*lpCmdLine*/, int /*nCmdShow*/)
-#else
-int main(void)
-#endif
+SHIB_REFLECTION_DEFINE(EditorWindowAttribute, 0)
+
+NS_SHIBBOLETH
+
+SHIB_REFLECTION_CLASS_DEFINE_BEGIN(EditorWindowAttribute)
+	.BASE(Gaff::IAttribute)
+SHIB_REFLECTION_CLASS_DEFINE_END(EditorWindowAttribute)
+
+Gaff::IAttribute* EditorWindowAttribute::clone(void) const
 {
-	Shibboleth::Editor editor;
-
-	if (!editor.init()) {
-		editor.destroy();
-		return -1;
-	}
-
-	editor.run();
-	editor.destroy();
-
-	return 0;
+	return SHIB_ALLOCT_POOL(EditorWindowAttribute, GetAllocator()->getPoolIndex("Reflection"), *GetAllocator());
 }
+
+NS_END
