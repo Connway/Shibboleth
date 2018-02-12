@@ -30,34 +30,34 @@
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <CharacterSet>Unicode</CharacterSet>
     <PlatformToolset>v141</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <CharacterSet>Unicode</CharacterSet>
     <PlatformToolset>v141</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Analyze|x64'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <CharacterSet>Unicode</CharacterSet>
     <PlatformToolset>v141</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Profile|x64'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <CharacterSet>Unicode</CharacterSet>
     <PlatformToolset>v141</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Optimized_Debug|x64'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <CharacterSet>Unicode</CharacterSet>
     <PlatformToolset>v141</PlatformToolset>
@@ -83,39 +83,34 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <LinkIncremental>true</LinkIncremental>
     <OutDir>..\..\..\build\vs2017\output\x64\Debug\</OutDir>
     <IntDir>..\..\..\build\vs2017\intermediate\x64\Debug\Editor\</IntDir>
-    <TargetName>Editor64d</TargetName>
-    <TargetExt>.exe</TargetExt>
+    <TargetName>Editor</TargetName>
+    <TargetExt>.lib</TargetExt>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <LinkIncremental>false</LinkIncremental>
     <OutDir>..\..\..\build\vs2017\output\x64\Release\</OutDir>
     <IntDir>..\..\..\build\vs2017\intermediate\x64\Release\Editor\</IntDir>
-    <TargetName>Editor64</TargetName>
-    <TargetExt>.exe</TargetExt>
+    <TargetName>Editor</TargetName>
+    <TargetExt>.lib</TargetExt>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Analyze|x64'">
-    <LinkIncremental>false</LinkIncremental>
     <OutDir>..\..\..\build\vs2017\output\x64\Analyze\</OutDir>
     <IntDir>..\..\..\build\vs2017\intermediate\x64\Analyze\Editor\</IntDir>
-    <TargetName>Editor64a</TargetName>
-    <TargetExt>.exe</TargetExt>
+    <TargetName>Editor</TargetName>
+    <TargetExt>.lib</TargetExt>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">
-    <LinkIncremental>false</LinkIncremental>
     <OutDir>..\..\..\build\vs2017\output\x64\Profile\</OutDir>
     <IntDir>..\..\..\build\vs2017\intermediate\x64\Profile\Editor\</IntDir>
-    <TargetName>Editor64p</TargetName>
-    <TargetExt>.exe</TargetExt>
+    <TargetName>Editor</TargetName>
+    <TargetExt>.lib</TargetExt>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Optimized_Debug|x64'">
-    <LinkIncremental>false</LinkIncremental>
     <OutDir>..\..\..\build\vs2017\output\x64\Optimized_Debug\</OutDir>
     <IntDir>..\..\..\build\vs2017\intermediate\x64\Optimized_Debug\Editor\</IntDir>
-    <TargetName>Editor64od</TargetName>
-    <TargetExt>.exe</TargetExt>
+    <TargetName>Editor</TargetName>
+    <TargetExt>.lib</TargetExt>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -123,7 +118,7 @@
       <WarningLevel>Level4</WarningLevel>
       <TreatWarningAsError>true</TreatWarningAsError>
       <PreprocessorDefinitions>_DEBUG;DEBUG;WIN32;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\..\..\src\Tools\Editor\include;..\..\..\src\Shared\include;..\..\..\src\Memory\include;..\..\..\frameworks\Gaff\include;..\..\..\dependencies\rapidjson;..\..\..\dependencies\EASTL\include;..\..\..\dependencies\nana\include;..\..\..\src\dependencies\dirent;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\src\Editor\include;..\..\..\src\Shared\include;..\..\..\src\Memory\include;..\..\..\frameworks\Gaff\include;..\..\..\dependencies\EASTL\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
       <ExceptionHandling>Async</ExceptionHandling>
@@ -135,12 +130,10 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>ws2_32.lib;iphlpapi.lib;psapi.lib;userenv.lib;Dbghelp.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
     </Link>
-    <PostBuildEvent>
-      <Command>IF EXIST ..\..\..\build\vs2017\output\x64\Debug\$(TargetFileName)\ (xcopy /Q /E /Y /I ..\..\..\build\vs2017\output\x64\Debug\$(TargetFileName) ..\..\..\workingdir &gt; nul) ELSE (xcopy /Q /Y /I ..\..\..\build\vs2017\output\x64\Debug\$(TargetFileName) ..\..\..\workingdir &gt; nul)</Command>
-    </PostBuildEvent>
+    <Lib>
+      <TreatLibWarningAsErrors>true</TreatLibWarningAsErrors>
+    </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -148,7 +141,7 @@
       <WarningLevel>Level4</WarningLevel>
       <TreatWarningAsError>true</TreatWarningAsError>
       <PreprocessorDefinitions>NDEBUG;WIN32;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\..\..\src\Tools\Editor\include;..\..\..\src\Shared\include;..\..\..\src\Memory\include;..\..\..\frameworks\Gaff\include;..\..\..\dependencies\rapidjson;..\..\..\dependencies\EASTL\include;..\..\..\dependencies\nana\include;..\..\..\src\dependencies\dirent;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\src\Editor\include;..\..\..\src\Shared\include;..\..\..\src\Memory\include;..\..\..\frameworks\Gaff\include;..\..\..\dependencies\EASTL\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -166,19 +159,17 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>ws2_32.lib;iphlpapi.lib;psapi.lib;userenv.lib;Dbghelp.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
     </Link>
-    <PostBuildEvent>
-      <Command>IF EXIST ..\..\..\build\vs2017\output\x64\Release\$(TargetFileName)\ (xcopy /Q /E /Y /I ..\..\..\build\vs2017\output\x64\Release\$(TargetFileName) ..\..\..\workingdir &gt; nul) ELSE (xcopy /Q /Y /I ..\..\..\build\vs2017\output\x64\Release\$(TargetFileName) ..\..\..\workingdir &gt; nul)</Command>
-    </PostBuildEvent>
+    <Lib>
+      <TreatLibWarningAsErrors>true</TreatLibWarningAsErrors>
+    </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Analyze|x64'">
     <ClCompile>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level4</WarningLevel>
       <PreprocessorDefinitions>NDEBUG;WIN32;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\..\..\src\Tools\Editor\include;..\..\..\src\Shared\include;..\..\..\src\Memory\include;..\..\..\frameworks\Gaff\include;..\..\..\dependencies\rapidjson;..\..\..\dependencies\EASTL\include;..\..\..\dependencies\nana\include;..\..\..\src\dependencies\dirent;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\src\Editor\include;..\..\..\src\Shared\include;..\..\..\src\Memory\include;..\..\..\frameworks\Gaff\include;..\..\..\dependencies\EASTL\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -196,11 +187,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>ws2_32.lib;iphlpapi.lib;psapi.lib;userenv.lib;Dbghelp.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
-    <PostBuildEvent>
-      <Command>IF EXIST ..\..\..\build\vs2017\output\x64\Analyze\$(TargetFileName)\ (xcopy /Q /E /Y /I ..\..\..\build\vs2017\output\x64\Analyze\$(TargetFileName) ..\..\..\workingdir &gt; nul) ELSE (xcopy /Q /Y /I ..\..\..\build\vs2017\output\x64\Analyze\$(TargetFileName) ..\..\..\workingdir &gt; nul)</Command>
-    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">
     <ClCompile>
@@ -208,7 +195,7 @@
       <WarningLevel>Level4</WarningLevel>
       <TreatWarningAsError>true</TreatWarningAsError>
       <PreprocessorDefinitions>NDEBUG;SHIB_PROFILE;WIN32;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\..\..\src\Tools\Editor\include;..\..\..\src\Shared\include;..\..\..\src\Memory\include;..\..\..\frameworks\Gaff\include;..\..\..\dependencies\rapidjson;..\..\..\dependencies\EASTL\include;..\..\..\dependencies\nana\include;..\..\..\src\dependencies\dirent;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\src\Editor\include;..\..\..\src\Shared\include;..\..\..\src\Memory\include;..\..\..\frameworks\Gaff\include;..\..\..\dependencies\EASTL\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -226,12 +213,10 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>ws2_32.lib;iphlpapi.lib;psapi.lib;userenv.lib;Dbghelp.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
     </Link>
-    <PostBuildEvent>
-      <Command>IF EXIST ..\..\..\build\vs2017\output\x64\Profile\$(TargetFileName)\ (xcopy /Q /E /Y /I ..\..\..\build\vs2017\output\x64\Profile\$(TargetFileName) ..\..\..\workingdir &gt; nul) ELSE (xcopy /Q /Y /I ..\..\..\build\vs2017\output\x64\Profile\$(TargetFileName) ..\..\..\workingdir &gt; nul)</Command>
-    </PostBuildEvent>
+    <Lib>
+      <TreatLibWarningAsErrors>true</TreatLibWarningAsErrors>
+    </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Optimized_Debug|x64'">
     <ClCompile>
@@ -239,7 +224,7 @@
       <WarningLevel>Level4</WarningLevel>
       <TreatWarningAsError>true</TreatWarningAsError>
       <PreprocessorDefinitions>_DEBUG;DEBUG;WIN32;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\..\..\src\Tools\Editor\include;..\..\..\src\Shared\include;..\..\..\src\Memory\include;..\..\..\frameworks\Gaff\include;..\..\..\dependencies\rapidjson;..\..\..\dependencies\EASTL\include;..\..\..\dependencies\nana\include;..\..\..\src\dependencies\dirent;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\src\Editor\include;..\..\..\src\Shared\include;..\..\..\src\Memory\include;..\..\..\frameworks\Gaff\include;..\..\..\dependencies\EASTL\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -257,45 +242,16 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>ws2_32.lib;iphlpapi.lib;psapi.lib;userenv.lib;Dbghelp.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
     </Link>
-    <PostBuildEvent>
-      <Command>IF EXIST ..\..\..\build\vs2017\output\x64\Optimized_Debug\$(TargetFileName)\ (xcopy /Q /E /Y /I ..\..\..\build\vs2017\output\x64\Optimized_Debug\$(TargetFileName) ..\..\..\workingdir &gt; nul) ELSE (xcopy /Q /Y /I ..\..\..\build\vs2017\output\x64\Optimized_Debug\$(TargetFileName) ..\..\..\workingdir &gt; nul)</Command>
-    </PostBuildEvent>
+    <Lib>
+      <TreatLibWarningAsErrors>true</TreatLibWarningAsErrors>
+    </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\..\src\Tools\Editor\include\Shibboleth_Editor.h" />
+    <ClInclude Include="..\..\..\src\Editor\include\Shibboleth_EditorWindowAttribute.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\src\Tools\Editor\Editor_main.cpp" />
-    <ClCompile Include="..\..\..\src\Tools\Editor\Shibboleth_Editor.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\shared\Shared.vcxproj">
-      <Project>{7C480CD1-68EA-36A7-51A5-4AFB3DE6BDF7}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\frameworks\Gaff.vcxproj">
-      <Project>{99A8857C-85DF-860D-2ECC-6C101AE2020F}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\memory\Memory.vcxproj">
-      <Project>{BE94DDC2-AA36-0899-93F1-1BED7F328FE9}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\dependencies\EASTL.vcxproj">
-      <Project>{BEAB040D-2AC0-2CBE-F341-D01D5F1529EF}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\dependencies\libjpeg.vcxproj">
-      <Project>{42546879-AE33-E714-B74B-72EB23AA4D76}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\dependencies\libpng.vcxproj">
-      <Project>{C1DD6F0B-AD7F-9AE1-963A-AE35827B2132}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\dependencies\zlib-ng.vcxproj">
-      <Project>{584D90B6-C42C-0F52-CD44-9A2839A375B3}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\dependencies\nana.vcxproj">
-      <Project>{630C9B7C-4F43-9C0D-F82F-8210E445180F}</Project>
-    </ProjectReference>
+    <ClCompile Include="..\..\..\src\Editor\Shibboleth_EditorWindowAttribute.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -6,11 +6,12 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\..\src\Editor\include\Shibboleth_EditorWindowAttribute.h">
+    <ClInclude Include="..\..\..\src\Tools\Editor_App\include\Shibboleth_Editor.h">
       <Filter>include</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\src\Editor\Shibboleth_EditorWindowAttribute.cpp" />
+    <ClCompile Include="..\..\..\src\Tools\Editor_App\Editor_main.cpp" />
+    <ClCompile Include="..\..\..\src\Tools\Editor_App\Shibboleth_Editor.cpp" />
   </ItemGroup>
 </Project>
