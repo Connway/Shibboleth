@@ -58,9 +58,6 @@ public:
 	bool isCursorVisible(void) const override;
 	bool isCursorContained(void) const override;
 
-	void allowRepeats(bool allow) override;
-	bool areRepeatsAllowed(void) const override;
-
 	bool setWindowMode(MODE window_mode) override;
 	MODE getWindowMode(void) const override;
 

@@ -26,7 +26,7 @@ THE SOFTWARE.
 	#include "Gleam_ShaderResourceView_Direct3D11.h"
 
 	NS_GLEAM
-		typedef ShaderResourceViewD3D ShaderResourceView;
+		using ShaderResourceView = ShaderResourceViewD3D11;
 	NS_END
 #else
 	#include "Gleam_ShaderResourceView_OpenGL.h"

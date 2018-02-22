@@ -26,7 +26,7 @@ THE SOFTWARE.
 	#include "Gleam_RenderDevice_Direct3D11.h"
 
 	NS_GLEAM
-		typedef RenderDeviceD3D RenderDevice;
+		using RenderDevice = RenderDeviceD3D11;
 	NS_END
 #else
 	#include "Gleam_RenderDevice_OpenGL.h"

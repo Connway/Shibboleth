@@ -26,7 +26,7 @@ THE SOFTWARE.
 	#include "Gleam_RasterState_Direct3D11.h"
 
 	NS_GLEAM
-		using RasterState = RasterStateD3D;
+		using RasterState = RasterStateD3D11;
 	NS_END
 #else
 	#include "Gleam_RasterState_OpenGL.h"

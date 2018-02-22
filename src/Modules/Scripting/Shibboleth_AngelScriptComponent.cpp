@@ -251,7 +251,8 @@ void AngelScriptComponent::onScriptLoaded(IResource* /*res*/)
 		return;
 	}
 
-	std::mutex& lock = GetApp().getManagerTUnsafe<AngelScriptManager>().getEngineLock();
+	AngelScriptManager& as_mgr = GetApp().getManagerTUnsafe<AngelScriptManager>();
+	std::mutex& lock = as_mgr.getEngineLock();
 
 	lock.lock();
 	_context = engine->CreateContext();

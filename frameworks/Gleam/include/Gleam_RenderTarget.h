@@ -26,7 +26,7 @@ THE SOFTWARE.
 	#include "Gleam_RenderTarget_Direct3D11.h"
 
 	NS_GLEAM
-		typedef RenderTargetD3D RenderTarget;
+		using RenderTarget = RenderTargetD3D11;
 	NS_END
 #else
 	#include "Gleam_RenderTarget_OpenGL.h"

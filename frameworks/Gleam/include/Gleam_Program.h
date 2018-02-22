@@ -26,8 +26,8 @@ THE SOFTWARE.
 	#include "Gleam_Program_Direct3D11.h"
 
 	NS_GLEAM
-		typedef ProgramBuffersD3D ProgramBuffers;
-		typedef ProgramD3D Program;
+		using ProgramBuffers = ProgramBuffersD3D11;
+		using Program = ProgramD3D11;
 	NS_END
 #else
 	#include "Gleam_Program_OpenGL.h"

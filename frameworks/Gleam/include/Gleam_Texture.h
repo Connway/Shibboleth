@@ -26,7 +26,7 @@ THE SOFTWARE.
 	#include "Gleam_Texture_Direct3D11.h"
 
 	NS_GLEAM
-		typedef TextureD3D Texture;
+		using Texture = TextureD3D11;
 	NS_END
 #else
 	#include "Gleam_Texture_OpenGL.h"

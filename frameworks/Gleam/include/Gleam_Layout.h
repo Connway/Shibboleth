@@ -26,7 +26,7 @@ THE SOFTWARE.
 	#include "Gleam_Layout_Direct3D11.h"
 
 	NS_GLEAM
-		typedef LayoutD3D Layout;
+		using Layout = LayoutD3D11;
 	NS_END
 #else
 	#include "Gleam_Layout_OpenGL.h"

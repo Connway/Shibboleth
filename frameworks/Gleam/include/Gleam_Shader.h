@@ -26,7 +26,7 @@ THE SOFTWARE.
 	#include "Gleam_Shader_Direct3D11.h"
 
 	NS_GLEAM
-		typedef ShaderD3D Shader;
+		using Shader = ShaderD3D11;
 	NS_END
 #else
 	#include "Gleam_Shader_OpenGL.h"
