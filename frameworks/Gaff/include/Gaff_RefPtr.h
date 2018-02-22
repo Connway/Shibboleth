@@ -30,12 +30,17 @@ template <class T>
 class RefPtr
 {
 public:
-	explicit RefPtr(T* data = nullptr):
+	explicit RefPtr(T* data, bool add_ref = true):
 		_data(data)
 	{
-		if (_data) {
+		if (_data && add_ref) {
 			_data->addRef();
 		}
+	}
+
+	RefPtr(void):
+		_data(nullptr)
+	{
 	}
 
 	RefPtr(const RefPtr<T>& rhs):
@@ -133,9 +138,18 @@ public:
 	}
 
 	// Sets the internal pointer without incrementing the reference count.
-	void set(T* data)
+	void attach(T* data)
 	{
+		SAFEGAFFRELEASE(_data);
 		_data = data;
+	}
+
+	// Relinquishes ownership of the internal pointer.
+	T* detach(void)
+	{
+		T* const temp = _data;
+		_data = nullptr;
+		return temp;
 	}
 
 	RefPtr(RefPtr<T>&& rhs):
@@ -162,12 +176,17 @@ template <class T>
 class COMRefPtr
 {
 public:
-	COMRefPtr(T* data = nullptr):
+	COMRefPtr(T* data, bool add_ref = true):
 		_data(data)
 	{
-		if (_data) {
+		if (_data && add_ref) {
 			_data->AddRef();
 		}
+	}
+
+	COMRefPtr(void):
+		_data(nullptr)
+	{
 	}
 
 	COMRefPtr(const COMRefPtr<T>& rhs):
@@ -254,9 +273,19 @@ public:
 		return _data;
 	}
 
-	void set(T* data)
+	// Sets the internal pointer without incrementing the reference count.
+	void attach(T* data)
 	{
+		SAFERELEASE(_data);
 		_data = data;
+	}
+
+	// Relinquishes ownership of the internal pointer.
+	T* detach(void)
+	{
+		T* const temp = _data;
+		_data = nullptr;
+		return temp;
 	}
 
 	COMRefPtr(COMRefPtr<T>&& rhs):

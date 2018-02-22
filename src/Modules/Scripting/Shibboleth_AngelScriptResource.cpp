@@ -84,22 +84,24 @@ void AngelScriptResource::loadScript(IFile* file)
 
 	_builder.SetIncludeCallback(HandleInclude, nullptr);
 
-	std::lock_guard<std::mutex> scoped_lock(lock);
+	{
+		std::lock_guard<std::mutex> scoped_lock(lock);
 
-	int r = _builder.StartNewModule(engine, getFilePath().getBuffer());
-	RES_FAIL_MSG(r < 0, "Failed to create new script module for script '%s'!", getFilePath().getBuffer());
+		int r = _builder.StartNewModule(engine, getFilePath().getBuffer());
+		RES_FAIL_MSG(r < 0, "Failed to create new script module for script '%s'!", getFilePath().getBuffer());
 
-	r = as_mgr.addScriptComponentDefinition(_builder);
-	RES_FAIL_MSG(r < 0, "Failed to add section for `ScriptComponent`!");
+		r = as_mgr.addScriptComponentDefinition(_builder);
+		RES_FAIL_MSG(r < 0, "Failed to add section for `ScriptComponent`!");
 
-	r = _builder.AddSectionFromMemory("script", file->getBuffer(), static_cast<unsigned int>(file->size()));
-	RES_FAIL_MSG(r < 0, "Failed to add section for script '%s'!", getFilePath().getBuffer());
+		r = _builder.AddSectionFromMemory("script", file->getBuffer(), static_cast<unsigned int>(file->size()));
+		RES_FAIL_MSG(r < 0, "Failed to add section for script '%s'!", getFilePath().getBuffer());
 
-	r = _builder.BuildModule();
-	RES_FAIL_MSG(r < 0, "Failed to build module for script '%s'!", getFilePath().getBuffer());
+		r = _builder.BuildModule();
+		RES_FAIL_MSG(r < 0, "Failed to build module for script '%s'!", getFilePath().getBuffer());
 
-	_module = _builder.GetModule();
-	RES_FAIL_MSG(!_module, "Failed to get module for script '%s'!", getFilePath().getBuffer());
+		_module = _builder.GetModule();
+		RES_FAIL_MSG(!_module, "Failed to get module for script '%s'!", getFilePath().getBuffer());
+	}
 
 	succeeded();
 }

@@ -56,9 +56,6 @@ public:
 	virtual bool isCursorVisible(void) const = 0;
 	virtual bool isCursorContained(void) const = 0;
 
-	virtual void allowRepeats(bool allow) = 0;
-	virtual bool areRepeatsAllowed(void) const = 0;
-
 	virtual bool setWindowMode(MODE window_mode) = 0;
 	virtual MODE getWindowMode(void) const = 0;
 

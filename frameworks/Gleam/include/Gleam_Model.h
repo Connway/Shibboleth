@@ -26,7 +26,7 @@ THE SOFTWARE.
 	#include "Gleam_Model_Direct3D11.h"
 
 	NS_GLEAM
-		typedef ModelD3D Model;
+		using Model = ModelD3D11;
 	NS_END
 #else
 	#include "Gleam_Model_OpenGL.h"

@@ -26,7 +26,7 @@ THE SOFTWARE.
 	#include "Gleam_Buffer_Direct3D11.h"
 
 	NS_GLEAM
-		typedef BufferD3D Buffer;
+		using Buffer = BufferD3D11;
 	NS_END
 #else
 	#include "Gleam_Buffer_OpenGL.h"

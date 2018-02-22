@@ -26,7 +26,7 @@ THE SOFTWARE.
 	#include "Gleam_DepthStencilState_Direct3D11.h"
 
 	NS_GLEAM
-		using DepthStencilState = DepthStencilStateD3D;
+		using DepthStencilState = DepthStencilStateD3D11;
 	NS_END
 #else
 	#include "Gleam_DepthStencilState_OpenGL.h"

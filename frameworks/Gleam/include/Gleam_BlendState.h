@@ -26,7 +26,7 @@ THE SOFTWARE.
 	#include "Gleam_BlendState_Direct3D11.h"
 
 	NS_GLEAM
-		using BlendState = BlendStateD3D;
+		using BlendState = BlendStateD3D11;
 	NS_END
 #else
 	#include "Gleam_BlendState_OpenGL.h"

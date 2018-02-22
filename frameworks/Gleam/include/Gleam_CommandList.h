@@ -26,7 +26,7 @@ THE SOFTWARE.
 	#include "Gleam_CommandList_Direct3D11.h"
 
 	NS_GLEAM
-		typedef CommandListD3D CommandList;
+		using CommandList = CommandListD3D11;
 	NS_END
 #else
 	#include "Gleam_CommandList_OpenGL.h"

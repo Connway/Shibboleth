@@ -1,81 +1,64 @@
 group "Modules/Graphics"
 
-project "Graphics"
-	if _ACTION then
-		location ("../../../project/" .. _ACTION .. "/graphics")
-	end
+function DoGraphicsModule(renderer)
+	project("GraphicsModule" .. renderer)
+		if _ACTION then
+			location("../../../project/" .. _ACTION .. "/graphics")
+		end
 
-	kind "StaticLib"
-	language "C++"
+		kind "SharedLib"
+		language "C++"
 
-	files { "**.h", "**.cpp", "**.inl" }
-	removefiles { "Shibboleth_GraphicsModule.cpp" }
+		-- files { "Shibboleth_GraphicsModule.cpp" }
+		files { "**.h", "**.cpp", "**.inl" }
 
-	filter { "configurations:not Analyze*" }
-		flags { "FatalWarnings" }
+		ModuleGen("Graphics")
+		ModuleCopy()
 
-	filter {}
+		if renderer == "Direct3D11" then
+			defines { "USE_D3D11" }
+			links { "d3d11", "D3dcompiler", "dxgi", "dxguid" }
+		elseif renderer == "Vulkan" then
+			defines { "USE_VULKAN" }
+		end
 
-	includedirs
-	{
-		"include",
-		"../../Memory/include",
-		"../../Shared/include",
-		"../../../dependencies/EASTL/include",
-		-- "../../../dependencies/rapidjson",
-		-- "../../../dependencies/glm",
-		-- "../../../dependencies/mpack",
-		"../../../frameworks/Gaff/include",
-		"../../../frameworks/Gleam/include"
-	}
+		filter { "configurations:not Analyze*" }
+			flags { "FatalWarnings" }
 
+		filter { "system:windows" }
+			links { "ws2_32.lib", "iphlpapi.lib", "psapi.lib", "userenv.lib" }
 
-project "GraphicsModule"
-	if _ACTION then
-		location ("../../../project/" .. _ACTION .. "/graphics")
-	end
+		filter {}
 
-	kind "SharedLib"
-	language "C++"
+		includedirs
+		{
+			"include",
+			"../../Memory/include",
+			"../../Shared/include",
+			"../../../dependencies/EASTL/include",
+			-- "../../../dependencies/rapidjson",
+			-- "../../../dependencies/glm",
+			-- "../../../dependencies/mpack",
+			"../../../frameworks/Gaff/include",
+			"../../../frameworks/Gleam/include"
+		}
 
-	files { "Shibboleth_GraphicsModule.cpp" }
+		local dependencies =
+		{
+			"Memory",
+			"Gaff",
+			"Gleam",
+			"Shared",
+			"EASTL",
+			-- "Resource",
+			-- "mpack"
+		}
 
-	ModuleGen("Graphics")
-	ModuleCopy()
+		dependson(dependencies)
+		links(dependencies)
 
-	filter { "configurations:not Analyze*" }
-		flags { "FatalWarnings" }
+		-- NewDeleteLinkFix()
+end
 
-	filter { "system:windows" }
-		links { "ws2_32.lib", "iphlpapi.lib", "psapi.lib", "userenv.lib" }
-
-	filter {}
-
-	includedirs
-	{
-		"include",
-		"../../Memory/include",
-		"../../Shared/include",
-		"../../../dependencies/EASTL/include",
-		-- "../../../dependencies/rapidjson",
-		-- "../../../dependencies/glm",
-		"../../../dependencies/mpack",
-		"../../../frameworks/Gaff/include",
-		"../../../frameworks/Gleam/include"
-	}
-
-	local dependencies =
-	{
-		"Memory",
-		"Gaff",
-		"Gleam",
-		"Shared",
-		"EASTL",
-		-- "Resource",
-		"mpack"
-	}
-
-	dependson(dependencies)
-	links(dependencies)
-
-	-- NewDeleteLinkFix()
+DoGraphicsModule("Direct3D11")
+-- DoGraphicsModule("Vulkan")

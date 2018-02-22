@@ -23,11 +23,13 @@ THE SOFTWARE.
 #include "Gen_ReflectionInit.h"
 #include <Shibboleth_Utilities.h>
 #include <Shibboleth_Memory.h>
-#include <Gaff_MessagePack.h>
+//#include <Gaff_MessagePack.h>
+#include <Gleam_Global.h>
 
 DYNAMICEXPORT_C bool InitModule(Shibboleth::IApp* app)
 {
-	Gaff::MessagePackSetMemoryFunctions(Shibboleth::ShibbolethAllocate, Shibboleth::ShibbolethFree);
+	//Gaff::MessagePackSetMemoryFunctions(Shibboleth::ShibbolethAllocate, Shibboleth::ShibbolethFree);
+	Gleam::SetAllocator(Shibboleth::GetAllocator());
 	Shibboleth::SetApp(*app);
 	Gen::InitReflection();
 	return true;

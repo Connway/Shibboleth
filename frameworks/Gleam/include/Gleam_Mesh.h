@@ -26,7 +26,7 @@ THE SOFTWARE.
 	#include "Gleam_Mesh_Direct3D11.h"
 
 	NS_GLEAM
-		typedef MeshD3D Mesh;
+		using Mesh = MeshD3D11;
 	NS_END
 #else
 	#include "Gleam_Mesh_OpenGL.h"
