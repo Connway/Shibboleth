@@ -65,6 +65,9 @@ public:
 	void registerTypeBucket(Gaff::Hash64 name) override;
 	const Vector<Gaff::Hash64>* getTypeBucket(Gaff::Hash64 name) const override;
 
+	Vector<const Gaff::IEnumReflectionDefinition*> getEnumReflectionWithAttribute(Gaff::Hash64 name) const override;
+	Vector<const Gaff::IReflectionDefinition*> getReflectionWithAttribute(Gaff::Hash64 name) const override;
+
 	bool isQuitting(void) const override;
 	void quit(void) override;
 

@@ -140,6 +140,12 @@ void JSONSerializeWriter<Allocator>::writeDouble(const char* key, double value)
 }
 
 template <class Allocator>
+void JSONSerializeWriter<Allocator>::writeBool(const char* key, bool value)
+{
+	_nodes.back().setObject(key, JSON::CreateBool(value));
+}
+
+template <class Allocator>
 void JSONSerializeWriter<Allocator>::writeString(const char* key, const char* value)
 {
 	_nodes.back().setObject(key, JSON::CreateString(value));
@@ -223,6 +229,14 @@ void JSONSerializeWriter<Allocator>::writeDouble(double value)
 	JSON& curr_node = _nodes.back();
 	GAFF_ASSERT(curr_node.isArray());
 	curr_node.push(JSON::CreateDouble(value));
+}
+
+template <class Allocator>
+void JSONSerializeWriter<Allocator>::writeBool(bool value)
+{
+	JSON& curr_node = _nodes.back();
+	GAFF_ASSERT(curr_node.isArray());
+	curr_node.push(JSON::CreateBool(value));
 }
 
 template <class Allocator>

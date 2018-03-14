@@ -22,13 +22,13 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Shibboleth_IGraphicsManager.h"
+#include "Shibboleth_IRenderManager.h"
 #include <Shibboleth_Reflection.h>
 #include <Shibboleth_IManager.h>
 
 NS_SHIBBOLETH
 
-class GraphicsManager final : public IManager, public IGraphicsManager
+class RenderManager final : public IManager, public IRenderManager
 {
 public:
 	Gleam::IShaderResourceView* createShaderResourceView(void) const override;
@@ -49,9 +49,11 @@ public:
 	Gleam::IModel* createModel(void) const override;
 	Gleam::IMesh* createMesh(void) const override;
 
-	SHIB_REFLECTION_CLASS_DECLARE(GraphicsManager);
+	void setActiveCamera(CameraComponent* camera) override;
+
+	SHIB_REFLECTION_CLASS_DECLARE(RenderManager);
 };
 
 NS_END
 
-SHIB_REFLECTION_DECLARE(GraphicsManager)
+SHIB_REFLECTION_DECLARE(RenderManager)

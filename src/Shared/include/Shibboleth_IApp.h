@@ -95,6 +95,9 @@ public:
 	virtual void registerTypeBucket(Gaff::Hash64 name) = 0;
 	virtual const Vector<Gaff::Hash64>* getTypeBucket(Gaff::Hash64 name) const = 0;
 
+	virtual Vector<const Gaff::IEnumReflectionDefinition*> getEnumReflectionWithAttribute(Gaff::Hash64 name) const = 0;
+	virtual Vector<const Gaff::IReflectionDefinition*> getReflectionWithAttribute(Gaff::Hash64 name) const = 0;
+
 	virtual bool isQuitting(void) const = 0;
 	virtual void quit(void) = 0;
 };

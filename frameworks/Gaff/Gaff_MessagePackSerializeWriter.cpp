@@ -124,6 +124,11 @@ void MessagePackSerializeWriter::writeDouble(const char* key, double value)
 	_writer.write(key, value);
 }
 
+void MessagePackSerializeWriter::writeBool(const char* key, bool value)
+{
+	_writer.write(key, value);
+}
+
 void MessagePackSerializeWriter::writeString(const char* key, const char* value)
 {
 	_writer.writeUTF8(key, value);
@@ -175,6 +180,11 @@ void MessagePackSerializeWriter::writeFloat(float value)
 }
 
 void MessagePackSerializeWriter::writeDouble(double value)
+{
+	_writer.write(value);
+}
+
+void MessagePackSerializeWriter::writeBool(bool value)
 {
 	_writer.write(value);
 }
