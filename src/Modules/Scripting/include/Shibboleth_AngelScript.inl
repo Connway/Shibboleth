@@ -22,7 +22,7 @@ THE SOFTWARE.
 
 #ifdef PLATFORM_WINDOWS
 	#pragma warning(push)
-	#pragma warning(disable : 4127)
+	#pragma warning(disable : 4127 4505)
 #endif
 
 NS_SHIBBOLETH

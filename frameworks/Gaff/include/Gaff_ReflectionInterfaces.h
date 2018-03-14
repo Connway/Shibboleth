@@ -27,6 +27,7 @@ THE SOFTWARE.
 #include "Gaff_Hash.h"
 
 #define GET_CLASS_ATTRIBUTE(T) getClassAttribute<T>(Gaff::FNV1aHash64Const(#T))
+#define GET_ENUM_ATTRIBUTE(T) getEnumAttribute<T>(Gaff::FNV1aHash64Const(#T))
 
 NS_GAFF
 
@@ -309,6 +310,22 @@ public:
 		return nullptr;
 	}
 
+	const IAttribute* getClassAttribute(Hash64 class_name) const
+	{
+		for (int32_t i = 0; i < getNumClassAttributes(); ++i) {
+			const IAttribute* const attribute = getClassAttribute(i);
+			const void* attr = attribute->getReflectionDefinition().getInterface(
+				class_name, attribute->getBasePointer()
+			);
+
+			if (attr) {
+				return attribute;
+			}
+		}
+
+		return nullptr;
+	}
+
 	template <class T>
 	const T* getClassAttribute(void) const
 	{
@@ -437,6 +454,108 @@ public:
 class IEnumReflectionDefinition
 {
 public:
+	template <class T>
+	const T* getEnumAttribute(Hash64 class_name) const
+	{
+		for (int32_t i = 0; i < getNumEnumAttributes(); ++i) {
+			const IAttribute* const attribute = getEnumAttribute(i);
+			const void* attr = attribute->getReflectionDefinition().getInterface(
+				class_name, attribute->getBasePointer()
+			);
+
+			if (attr) {
+				return reinterpret_cast<const T*>(attr);
+			}
+		}
+
+		return nullptr;
+	}
+
+	const IAttribute* getEnumAttribute(Hash64 class_name) const
+	{
+		for (int32_t i = 0; i < getNumEnumAttributes(); ++i) {
+			const IAttribute* const attribute = getEnumAttribute(i);
+			const void* attr = attribute->getReflectionDefinition().getInterface(
+				class_name, attribute->getBasePointer()
+			);
+
+			if (attr) {
+				return attribute;
+			}
+		}
+
+		return nullptr;
+	}
+
+	template <class T>
+	const T* getEnumAttribute(void) const
+	{
+		for (int32_t i = 0; i < getNumEnumAttributes(); ++i) {
+			const IAttribute* const attribute = getEnumAttribute(i);
+			const T* attr = ReflectionCast<T>(*attribute);
+
+			if (attr) {
+				return attr;
+			}
+		}
+
+		return nullptr;
+	}
+
+		template <class T>
+	const T* getEntryAttribute(Hash32 entry_name, Hash64 class_name) const
+	{
+		const int32_t size = getNumEntryAttributes(entry_name);
+
+		for (int32_t i = 0; i < size; ++i) {
+			const IAttribute* const attribute = getEntryAttribute(entry_name, i);
+			const void* attr = attribute->getReflectionDefinition().getInterface(
+				class_name, attribute->getBasePointer()
+			);
+
+			if (attr) {
+				return reinterpret_cast<const T*>(attr);
+			}
+		}
+
+		return nullptr;
+	}
+
+	const IAttribute* getEntryAttribute(Hash32 entry_name, Hash64 class_name) const
+	{
+		const int32_t size = getNumEntryAttributes(entry_name);
+
+		for (int32_t i = 0; i < size; ++i) {
+			const IAttribute* const attribute = getEntryAttribute(entry_name, i);
+			const void* attr = attribute->getReflectionDefinition().getInterface(
+				class_name, attribute->getBasePointer()
+			);
+
+			if (attr) {
+				return attribute;
+			}
+		}
+
+		return nullptr;
+	}
+
+	template <class T>
+	const T* getEntryAttribute(Hash32 entry_name) const
+	{
+		const int32_t size = getNumEntryAttributes(entry_name);
+
+		for (int32_t i = 0; i < size; ++i) {
+			const IAttribute* const attribute = getEntryAttribute(entry_name, i);
+			const T* attr = ReflectionCast<T>(*attribute);
+
+			if (attr) {
+				return attr;
+			}
+		}
+
+		return nullptr;
+	}
+
 	virtual ~IEnumReflectionDefinition(void) {}
 
 	virtual const IEnumReflection& getReflectionInstance(void) const = 0;

@@ -619,6 +619,32 @@ const Vector<Gaff::Hash64>* App::getTypeBucket(Gaff::Hash64 name) const
 	return (it == _type_buckets.end()) ? nullptr : &it->second;
 }
 
+Vector<const Gaff::IEnumReflectionDefinition*> App::getEnumReflectionWithAttribute(Gaff::Hash64 name) const
+{
+	Vector<const Gaff::IEnumReflectionDefinition*> out;
+
+	for (const auto& entry : _enum_reflection_map) {
+		if (entry.second->getEnumAttribute(name)) {
+			out.push_back(entry.second.get());
+		}
+	}
+
+	return out;
+}
+
+Vector<const Gaff::IReflectionDefinition*> App::getReflectionWithAttribute(Gaff::Hash64 name) const
+{
+	Vector<const Gaff::IReflectionDefinition*> out;
+
+	for (const auto& entry : _reflection_map) {
+		if (entry.second->getClassAttribute(name)) {
+			out.push_back(entry.second.get());
+		}
+	}
+
+	return out;
+}
+
 bool App::isQuitting(void) const
 {
 	return !_running;

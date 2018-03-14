@@ -140,6 +140,7 @@ public:
 
 	virtual void writeFloat(const char* key, float value) = 0;
 	virtual void writeDouble(const char* key, double value) = 0;
+	virtual void writeBool(const char* key, bool value) = 0;
 
 	virtual void writeString(const char* key, const char* value) = 0;
 
@@ -155,6 +156,7 @@ public:
 
 	virtual void writeFloat(float value) = 0;
 	virtual void writeDouble(double value) = 0;
+	virtual void writeBool(bool value) = 0;
 
 	virtual void writeString(const char* value) = 0;
 };

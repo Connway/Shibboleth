@@ -20,7 +20,9 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#include "Shibboleth_GraphicsManager.h"
+#include "Shibboleth_RenderManager.h"
+#include "Shibboleth_CameraComponent.h"
+
 #include <Gleam_ShaderResourceView.h>
 #include <Gleam_DepthStencilState.h>
 #include <Gleam_RenderDevice.h>
@@ -39,99 +41,124 @@ THE SOFTWARE.
 #include <Gleam_Mesh.h>
 #include <Gleam_IncludeD3D11.h>
 
-SHIB_REFLECTION_DEFINE(GraphicsManager, 0)
+SHIB_REFLECTION_DEFINE(RenderManager, 0)
 
 NS_SHIBBOLETH
 
-SHIB_REFLECTION_CLASS_DEFINE_BEGIN(GraphicsManager)
-	.BASE(IGraphicsManager)
+SHIB_REFLECTION_CLASS_DEFINE_BEGIN(RenderManager)
+	.BASE(IRenderManager)
 	.BASE(IManager)
 	.ctor<>()
-SHIB_REFLECTION_CLASS_DEFINE_END(GraphicsManager)
 
-Gleam::IShaderResourceView* GraphicsManager::createShaderResourceView(void) const
+	//.func("createShaderResourceView", &RenderManager::createShaderResourceView)
+	//.func("createDepthStencilState", &RenderManager::createDepthStencilState)
+	//.func("createRenderDevice", &RenderManager::createRenderDevice)
+	//.func("createRenderOutput", &RenderManager::createRenderOutput)
+	//.func("createRenderTarget", &RenderManager::createRenderTarget)
+	//.func("createSamplerState", &RenderManager::createSamplerState)
+	//.func("createCommandList", &RenderManager::createCommandList)
+	//.func("createRasterState", &RenderManager::createRasterState)
+	//.func("createBlendState", &RenderManager::createBlendState)
+	//.func("createTexture", &RenderManager::createTexture)
+	//.func("createProgramBuffers", &RenderManager::createProgramBuffers)
+	//.func("createProgram", &RenderManager::createProgram)
+	//.func("createShader", &RenderManager::createShader)
+	//.func("createBuffer", &RenderManager::createBuffer)
+	//.func("createLayout", &RenderManager::createLayout)
+	//.func("createModel", &RenderManager::createModel)
+	//.func("createMesh", &RenderManager::createMesh)
+
+	.func("setActiveCamera", &RenderManager::setActiveCamera)
+SHIB_REFLECTION_CLASS_DEFINE_END(RenderManager)
+
+Gleam::IShaderResourceView* RenderManager::createShaderResourceView(void) const
 {
 	return SHIB_ALLOCT(Gleam::ShaderResourceView, *GetAllocator());
 }
 
-Gleam::IDepthStencilState* GraphicsManager::createDepthStencilState(void) const
+Gleam::IDepthStencilState* RenderManager::createDepthStencilState(void) const
 {
 	return SHIB_ALLOCT(Gleam::DepthStencilState, *GetAllocator());
 }
 
-Gleam::IRenderDevice* GraphicsManager::createRenderDevice(void) const
+Gleam::IRenderDevice* RenderManager::createRenderDevice(void) const
 {
 	return SHIB_ALLOCT(Gleam::RenderDevice, *GetAllocator());
 }
 
-Gleam::IRenderOutput* GraphicsManager::createRenderOutput(void) const
+Gleam::IRenderOutput* RenderManager::createRenderOutput(void) const
 {
 	return SHIB_ALLOCT(Gleam::RenderOutput, *GetAllocator());
 }
 
-Gleam::IRenderTarget* GraphicsManager::createRenderTarget(void) const
+Gleam::IRenderTarget* RenderManager::createRenderTarget(void) const
 {
 	return SHIB_ALLOCT(Gleam::RenderTarget, *GetAllocator());
 }
 
-Gleam::ISamplerState* GraphicsManager::createSamplerState(void) const
+Gleam::ISamplerState* RenderManager::createSamplerState(void) const
 {
 	return SHIB_ALLOCT(Gleam::SamplerState, *GetAllocator());
 }
 
-Gleam::ICommandList* GraphicsManager::createCommandList(void) const
+Gleam::ICommandList* RenderManager::createCommandList(void) const
 {
 	return SHIB_ALLOCT(Gleam::CommandList, *GetAllocator());
 }
 
-Gleam::IRasterState* GraphicsManager::createRasterState(void) const
+Gleam::IRasterState* RenderManager::createRasterState(void) const
 {
 	return SHIB_ALLOCT(Gleam::RasterState, *GetAllocator());
 }
 
-Gleam::IBlendState* GraphicsManager::createBlendState(void) const
+Gleam::IBlendState* RenderManager::createBlendState(void) const
 {
 	return SHIB_ALLOCT(Gleam::BlendState, *GetAllocator());
 }
 
-Gleam::ITexture* GraphicsManager::createTexture(void) const
+Gleam::ITexture* RenderManager::createTexture(void) const
 {
 	return SHIB_ALLOCT(Gleam::Texture, *GetAllocator());
 }
 
-Gleam::IProgramBuffers* GraphicsManager::createProgramBuffers(void) const
+Gleam::IProgramBuffers* RenderManager::createProgramBuffers(void) const
 {
 	return SHIB_ALLOCT(Gleam::ProgramBuffers, *GetAllocator());
 }
 
-Gleam::IProgram* GraphicsManager::createProgram(void) const
+Gleam::IProgram* RenderManager::createProgram(void) const
 {
 	return SHIB_ALLOCT(Gleam::Program, *GetAllocator());
 }
 
-Gleam::IShader* GraphicsManager::createShader(void) const
+Gleam::IShader* RenderManager::createShader(void) const
 {
 	return SHIB_ALLOCT(Gleam::Shader, *GetAllocator());
 }
 
-Gleam::IBuffer* GraphicsManager::createBuffer(void) const
+Gleam::IBuffer* RenderManager::createBuffer(void) const
 {
 	return SHIB_ALLOCT(Gleam::Buffer, *GetAllocator());
 }
 
-Gleam::ILayout* GraphicsManager::createLayout(void) const
+Gleam::ILayout* RenderManager::createLayout(void) const
 {
 	return SHIB_ALLOCT(Gleam::Layout, *GetAllocator());
 }
 
-Gleam::IModel* GraphicsManager::createModel(void) const
+Gleam::IModel* RenderManager::createModel(void) const
 {
 	return SHIB_ALLOCT(Gleam::Model, *GetAllocator());
 }
 
-Gleam::IMesh* GraphicsManager::createMesh(void) const
+Gleam::IMesh* RenderManager::createMesh(void) const
 {
 	return SHIB_ALLOCT(Gleam::Mesh, *GetAllocator());
+}
+
+void RenderManager::setActiveCamera(CameraComponent* camera)
+{
+	GAFF_REF(camera);
 }
 
 NS_END

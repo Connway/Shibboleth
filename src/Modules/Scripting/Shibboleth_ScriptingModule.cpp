@@ -21,6 +21,7 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Gen_ReflectionInit.h"
+//#include <Shibboleth_RegisterWithScriptAttribute.h>
 #include <Shibboleth_Utilities.h>
 
 DYNAMICEXPORT_C bool InitModule(Shibboleth::IApp* app)
@@ -29,3 +30,22 @@ DYNAMICEXPORT_C bool InitModule(Shibboleth::IApp* app)
 	Gen::InitReflection();
 	return true;
 }
+
+//DYNAMICEXPORT_C void AllModulesLoaded(void)
+//{
+//	const Shibboleth::Vector<const Gaff::IEnumReflectionDefinition*> enum_ref_defs = Shibboleth::GetApp().getEnumReflectionWithAttribute(Gaff::FNV1aHash64Const("IRegisterWithScriptAttribute"));
+//	const Shibboleth::Vector<const Gaff::IReflectionDefinition*> ref_defs = Shibboleth::GetApp().getReflectionWithAttribute(Gaff::FNV1aHash64Const("IRegisterWithScriptAttribute"));
+//
+//	Shibboleth::AngelScriptManager& script_mgr = Shibboleth::GetApp().getManagerTUnsafe<Shibboleth::AngelScriptManager>();
+//
+//	for (const Gaff::IEnumReflectionDefinition* enum_ref_def : enum_ref_defs) {
+//		const IRegisterWithScriptAttribute* const attr = enum_ref_def->GET_ENUM_ATTRIBUTE(IRegisterWithScriptAttribute);
+//	}
+//
+//	for (const Gaff::IReflectionDefinition* ref_def : ref_defs) {
+//		const IRegisterWithScriptAttribute* const attr = ref_def->GET_CLASS_ATTRIBUTE(IRegisterWithScriptAttribute);
+//
+//		//Shibboleth::AngelScriptClassRegister<T> asr(script_mgr.getEngine(), attr->getFlags());
+//		//Shibboleth::Reflection<T>::BuildReflection(asr);
+//	}
+//}

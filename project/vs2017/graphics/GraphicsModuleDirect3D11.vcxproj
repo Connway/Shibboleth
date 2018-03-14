@@ -123,7 +123,7 @@
       <WarningLevel>Level4</WarningLevel>
       <TreatWarningAsError>true</TreatWarningAsError>
       <PreprocessorDefinitions>_DEBUG;DEBUG;WIN32;_WINDOWS;USE_D3D11;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\..\..\src\Modules\Graphics\include;..\..\..\src\Memory\include;..\..\..\src\Shared\include;..\..\..\dependencies\EASTL\include;..\..\..\frameworks\Gaff\include;..\..\..\frameworks\Gleam\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\src\Modules\Graphics\include;..\..\..\src\Memory\include;..\..\..\src\Shared\include;..\..\..\dependencies\EASTL\include;..\..\..\dependencies\angelscript\angelscript\include;..\..\..\frameworks\Gaff\include;..\..\..\frameworks\Gleam\include;..\..\..\src\Modules\Entity\include;..\..\..\src\Modules\Scripting\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
       <ExceptionHandling>Async</ExceptionHandling>
@@ -155,7 +155,7 @@ IF EXIST ..\..\..\build\vs2017\output\x64\Debug\$(TargetFileName)\ (xcopy /Q /E 
       <WarningLevel>Level4</WarningLevel>
       <TreatWarningAsError>true</TreatWarningAsError>
       <PreprocessorDefinitions>NDEBUG;WIN32;_WINDOWS;USE_D3D11;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\..\..\src\Modules\Graphics\include;..\..\..\src\Memory\include;..\..\..\src\Shared\include;..\..\..\dependencies\EASTL\include;..\..\..\frameworks\Gaff\include;..\..\..\frameworks\Gleam\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\src\Modules\Graphics\include;..\..\..\src\Memory\include;..\..\..\src\Shared\include;..\..\..\dependencies\EASTL\include;..\..\..\dependencies\angelscript\angelscript\include;..\..\..\frameworks\Gaff\include;..\..\..\frameworks\Gleam\include;..\..\..\src\Modules\Entity\include;..\..\..\src\Modules\Scripting\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -192,7 +192,7 @@ IF EXIST ..\..\..\build\vs2017\output\x64\Release\$(TargetFileName)\ (xcopy /Q /
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level4</WarningLevel>
       <PreprocessorDefinitions>NDEBUG;WIN32;_WINDOWS;USE_D3D11;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\..\..\src\Modules\Graphics\include;..\..\..\src\Memory\include;..\..\..\src\Shared\include;..\..\..\dependencies\EASTL\include;..\..\..\frameworks\Gaff\include;..\..\..\frameworks\Gleam\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\src\Modules\Graphics\include;..\..\..\src\Memory\include;..\..\..\src\Shared\include;..\..\..\dependencies\EASTL\include;..\..\..\dependencies\angelscript\angelscript\include;..\..\..\frameworks\Gaff\include;..\..\..\frameworks\Gleam\include;..\..\..\src\Modules\Entity\include;..\..\..\src\Modules\Scripting\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -229,7 +229,7 @@ IF EXIST ..\..\..\build\vs2017\output\x64\Analyze\$(TargetFileName)\ (xcopy /Q /
       <WarningLevel>Level4</WarningLevel>
       <TreatWarningAsError>true</TreatWarningAsError>
       <PreprocessorDefinitions>NDEBUG;SHIB_PROFILE;WIN32;_WINDOWS;USE_D3D11;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\..\..\src\Modules\Graphics\include;..\..\..\src\Memory\include;..\..\..\src\Shared\include;..\..\..\dependencies\EASTL\include;..\..\..\frameworks\Gaff\include;..\..\..\frameworks\Gleam\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\src\Modules\Graphics\include;..\..\..\src\Memory\include;..\..\..\src\Shared\include;..\..\..\dependencies\EASTL\include;..\..\..\dependencies\angelscript\angelscript\include;..\..\..\frameworks\Gaff\include;..\..\..\frameworks\Gleam\include;..\..\..\src\Modules\Entity\include;..\..\..\src\Modules\Scripting\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -267,7 +267,7 @@ IF EXIST ..\..\..\build\vs2017\output\x64\Profile\$(TargetFileName)\ (xcopy /Q /
       <WarningLevel>Level4</WarningLevel>
       <TreatWarningAsError>true</TreatWarningAsError>
       <PreprocessorDefinitions>_DEBUG;DEBUG;WIN32;_WINDOWS;USE_D3D11;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\..\..\src\Modules\Graphics\include;..\..\..\src\Memory\include;..\..\..\src\Shared\include;..\..\..\dependencies\EASTL\include;..\..\..\frameworks\Gaff\include;..\..\..\frameworks\Gleam\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\src\Modules\Graphics\include;..\..\..\src\Memory\include;..\..\..\src\Shared\include;..\..\..\dependencies\EASTL\include;..\..\..\dependencies\angelscript\angelscript\include;..\..\..\frameworks\Gaff\include;..\..\..\frameworks\Gleam\include;..\..\..\src\Modules\Entity\include;..\..\..\src\Modules\Scripting\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -301,11 +301,13 @@ IF EXIST ..\..\..\build\vs2017\output\x64\Optimized_Debug\$(TargetFileName)\ (xc
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\src\Modules\Graphics\include\Gen_ReflectionInit.h" />
-    <ClInclude Include="..\..\..\src\Modules\Graphics\include\Shibboleth_GraphicsManager.h" />
-    <ClInclude Include="..\..\..\src\Modules\Graphics\include\Shibboleth_IGraphicsManager.h" />
+    <ClInclude Include="..\..\..\src\Modules\Graphics\include\Shibboleth_CameraComponent.h" />
+    <ClInclude Include="..\..\..\src\Modules\Graphics\include\Shibboleth_RenderManager.h" />
+    <ClInclude Include="..\..\..\src\Modules\Graphics\include\Shibboleth_IRenderManager.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\src\Modules\Graphics\Shibboleth_GraphicsManager.cpp" />
+    <ClCompile Include="..\..\..\src\Modules\Graphics\Shibboleth_CameraComponent.cpp" />
+    <ClCompile Include="..\..\..\src\Modules\Graphics\Shibboleth_RenderManager.cpp" />
     <ClCompile Include="..\..\..\src\Modules\Graphics\Shibboleth_GraphicsModule.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -323,6 +325,18 @@ IF EXIST ..\..\..\build\vs2017\output\x64\Optimized_Debug\$(TargetFileName)\ (xc
     </ProjectReference>
     <ProjectReference Include="..\dependencies\EASTL.vcxproj">
       <Project>{BEAB040D-2AC0-2CBE-F341-D01D5F1529EF}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\entity\Entity.vcxproj">
+      <Project>{A2E9DAB0-8E8B-0587-7746-19DB63878CD7}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\scripting\Scripting.vcxproj">
+      <Project>{985A7358-04C5-27CF-4D03-D974B9AC0524}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\resource\Resource.vcxproj">
+      <Project>{ED6CDF9B-D939-3AA7-0253-284FEE7E6F35}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\dependencies\angelscript.vcxproj">
+      <Project>{41F231D1-ADA7-AAC6-369C-A49DA250A1CA}</Project>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

@@ -36,11 +36,14 @@ function DoGraphicsModule(renderer)
 			"../../Memory/include",
 			"../../Shared/include",
 			"../../../dependencies/EASTL/include",
+			"../../../dependencies/angelscript/angelscript/include",
 			-- "../../../dependencies/rapidjson",
 			-- "../../../dependencies/glm",
 			-- "../../../dependencies/mpack",
 			"../../../frameworks/Gaff/include",
-			"../../../frameworks/Gleam/include"
+			"../../../frameworks/Gleam/include",
+			"../Entity/include",
+			"../Scripting/include"
 		}
 
 		local dependencies =
@@ -50,7 +53,10 @@ function DoGraphicsModule(renderer)
 			"Gleam",
 			"Shared",
 			"EASTL",
-			-- "Resource",
+			"Entity",
+			"Scripting",
+			"Resource",
+			"angelscript",
 			-- "mpack"
 		}
 

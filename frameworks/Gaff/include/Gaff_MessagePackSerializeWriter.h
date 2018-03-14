@@ -60,6 +60,7 @@ public:
 
 	void writeFloat(const char* key, float value) override;
 	void writeDouble(const char* key, double value) override;
+	void writeBool(const char* key, bool value) override;
 
 	void writeString(const char* key, const char* value) override;
 
@@ -75,6 +76,7 @@ public:
 
 	void writeFloat(float value) override;
 	void writeDouble(double value) override;
+	void writeBool(bool value) override;
 
 	void writeString(const char* value) override;
 

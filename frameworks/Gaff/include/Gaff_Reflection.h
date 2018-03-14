@@ -689,7 +689,8 @@ NS_END
 	GAFF_POD_SERIALIZABLE(uint32_t, UInt32); \
 	GAFF_POD_SERIALIZABLE(uint64_t, UInt64); \
 	GAFF_POD_SERIALIZABLE(float, Float); \
-	GAFF_POD_SERIALIZABLE(double, Double)
+	GAFF_POD_SERIALIZABLE(double, Double); \
+	GAFF_POD_SERIALIZABLE(bool, Bool)
 
 #define GAFF_REFLECTION_DEFINE_POD() \
 	Reflection<int8_t> Reflection<int8_t>::g_instance; \
@@ -701,7 +702,8 @@ NS_END
 	Reflection<uint32_t> Reflection<uint32_t>::g_instance; \
 	Reflection<uint64_t> Reflection<uint64_t>::g_instance; \
 	Reflection<float> Reflection<float>::g_instance; \
-	Reflection<double> Reflection<double>::g_instance
+	Reflection<double> Reflection<double>::g_instance; \
+	Reflection<bool> Reflection<bool>::g_instance
 
 
 
@@ -758,7 +760,19 @@ T* ReflectionCast(Base& object)
 	return const_cast<IReflectionDefinition&>(object.getReflectionDefinition()).getInterface<T>(object.getBasePointer());
 }
 
+template <class T, class Base>
+const T* InterfaceCast(const Base& object, Hash64 interface_name)
+{
+	return reinterpret_cast<T*>(object.getReflectionDefinition().getInterface(interface_name, object.getBasePointer()));
+}
 
+template <class T, class Base>
+T* InterfaceCast(Base& object, Hash64 interface_name)
+{
+	return reinterpret_cast<T*>(const_cast<IReflectionDefinition&>(object.getReflectionDefinition()).getInterface(interface_name, object.getBasePointer()));
+}
+
+#define INTERFACE_CAST(interface_type, object) Gaff::InterfaceCast<interface_type>(object, Gaff::FNV1aHash64Const(#interface_type))
 
 
 
