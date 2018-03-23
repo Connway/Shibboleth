@@ -302,13 +302,13 @@ IF EXIST ..\..\..\build\vs2017\output\x64\Optimized_Debug\$(TargetFileName)\ (xc
   <ItemGroup>
     <ClInclude Include="..\..\..\src\Modules\Graphics\include\Gen_ReflectionInit.h" />
     <ClInclude Include="..\..\..\src\Modules\Graphics\include\Shibboleth_CameraComponent.h" />
-    <ClInclude Include="..\..\..\src\Modules\Graphics\include\Shibboleth_RenderManager.h" />
     <ClInclude Include="..\..\..\src\Modules\Graphics\include\Shibboleth_IRenderManager.h" />
+    <ClInclude Include="..\..\..\src\Modules\Graphics\include\Shibboleth_RenderManager.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\src\Modules\Graphics\Shibboleth_CameraComponent.cpp" />
-    <ClCompile Include="..\..\..\src\Modules\Graphics\Shibboleth_RenderManager.cpp" />
     <ClCompile Include="..\..\..\src\Modules\Graphics\Shibboleth_GraphicsModule.cpp" />
+    <ClCompile Include="..\..\..\src\Modules\Graphics\Shibboleth_RenderManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\memory\Memory.vcxproj">

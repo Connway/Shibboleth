@@ -22,7 +22,6 @@ THE SOFTWARE.
 
 #pragma once
 
-#include <Shibboleth_Defines.h>
 #include <Shibboleth_App.h>
 #include <EASTL/unique_ptr.h>
 #include <EASTL/vector_map.h>

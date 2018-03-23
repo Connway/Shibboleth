@@ -147,6 +147,8 @@ public:
 
 	ReflectionDefinition& attrFile(const char* file);
 
+	ReflectionDefinition& version(uint32_t version);
+
 	void finish(void);
 
 private:

@@ -26,7 +26,7 @@ THE SOFTWARE.
 #include <Shibboleth_IAllocator.h>
 #include <Shibboleth_Memory.h>
 
-SHIB_REFLECTION_DEFINE(EditorWindowAttribute, 0)
+SHIB_REFLECTION_DEFINE(EditorWindowAttribute)
 
 NS_SHIBBOLETH
 

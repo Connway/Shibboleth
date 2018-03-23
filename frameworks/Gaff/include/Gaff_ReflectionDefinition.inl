@@ -1262,6 +1262,11 @@ ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::attrFile
 }
 
 template <class T, class Allocator>
+ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::version(uint32_t /*version*/)
+{
+}
+
+template <class T, class Allocator>
 void ReflectionDefinition<T, Allocator>::finish(void)
 {
 	if (!_base_classes_remaining) {

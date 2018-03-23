@@ -28,7 +28,7 @@ THE SOFTWARE.
 #include <Shibboleth_IFileSystem.h>
 #include <Shibboleth_LogManager.h>
 
-SHIB_REFLECTION_DEFINE(AngelScriptResource, 0)
+SHIB_REFLECTION_DEFINE(AngelScriptResource)
 
 NS_SHIBBOLETH
 

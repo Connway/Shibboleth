@@ -99,9 +99,9 @@ namespace GAFF_REFLECTION_NAMESPACE { \
 	}; \
 }
 
-#define GAFF_REFLECTION_DEFINE_SERIALIZE_INIT(type, serialize_version, allocator) \
+#define GAFF_REFLECTION_DEFINE_SERIALIZE_INIT(type, allocator) \
 	Gaff::ReflectionDefinition<type, allocator> GAFF_REFLECTION_NAMESPACE::Reflection<type>::g_reflection_definition; \
-	Gaff::ReflectionVersion<type> GAFF_REFLECTION_NAMESPACE::Reflection<type>::g_version = Gaff::ReflectionVersion<type>(serialize_version); \
+	Gaff::ReflectionVersion<type> GAFF_REFLECTION_NAMESPACE::Reflection<type>::g_version; \
 	GAFF_REFLECTION_NAMESPACE::Reflection<type> GAFF_REFLECTION_NAMESPACE::Reflection<type>::g_instance; \
 	void GAFF_REFLECTION_NAMESPACE::Reflection<type>::Init(void)
 
@@ -251,19 +251,19 @@ NS_END
 		template <class ReflectionBuilder> \
 		static void BuildReflection(ReflectionBuilder& builder)
 
-#define GAFF_REFLECTION_DEFINE_BASE(type, start_version, allocator) \
+#define GAFF_REFLECTION_DEFINE_BASE(type, allocator) \
 	GAFF_REFLECTION_NAMESPACE::Reflection<type> GAFF_REFLECTION_NAMESPACE::Reflection<type>::g_instance; \
-	Gaff::ReflectionVersion<type> GAFF_REFLECTION_NAMESPACE::Reflection<type>::g_version = Gaff::ReflectionVersion<type>(start_version); \
+	Gaff::ReflectionVersion<type> GAFF_REFLECTION_NAMESPACE::Reflection<type>::g_version; \
 	bool GAFF_REFLECTION_NAMESPACE::Reflection<type>::g_defined = false; \
 	Gaff::Vector<eastl::function<void (void)>, allocator> GAFF_REFLECTION_NAMESPACE::Reflection<type>::g_on_defined_callbacks
 
-#define GAFF_REFLECTION_EXTERNAL_DEFINE(type, start_version, allocator) \
-	GAFF_REFLECTION_EXTERNAL_DEFINE_BEGIN(type, start_version, allocator) \
+#define GAFF_REFLECTION_EXTERNAL_DEFINE(type, allocator) \
+	GAFF_REFLECTION_EXTERNAL_DEFINE_BEGIN(type, allocator) \
 	GAFF_REFLECTION_EXTERNAL_DEFINE_END(type, allocator)
 
-#define GAFF_REFLECTION_EXTERNAL_DEFINE_BEGIN(type, start_version, allocator) \
+#define GAFF_REFLECTION_EXTERNAL_DEFINE_BEGIN(type, allocator) \
 	Gaff::ReflectionDefinition<type, allocator> GAFF_REFLECTION_NAMESPACE::Reflection<type>::g_reflection_definition; \
-	GAFF_REFLECTION_DEFINE_BASE(type, start_version, allocator); \
+	GAFF_REFLECTION_DEFINE_BASE(type, allocator); \
 	void GAFF_REFLECTION_NAMESPACE::Reflection<type>::Init() \
 	{ \
 		BuildReflection(g_version); \
@@ -275,13 +275,13 @@ NS_END
 	GAFF_REFLECTION_DEFINE_BEGIN(type, allocator) \
 	GAFF_REFLECTION_DEFINE_END(type, allocator)
 
-#define GAFF_REFLECTION_DEFINE_BEGIN(type, start_version, allocator) \
+#define GAFF_REFLECTION_DEFINE_BEGIN(type, allocator) \
 	template <class ReflectionBuilder> \
 	void GAFF_REFLECTION_NAMESPACE::Reflection<type>::BuildReflection(ReflectionBuilder& builder) \
 	{ \
 		type::BuildReflection(builder); \
 	} \
-	GAFF_REFLECTION_EXTERNAL_DEFINE_BEGIN(type, start_version, allocator)
+	GAFF_REFLECTION_EXTERNAL_DEFINE_BEGIN(type, allocator)
 
 #define GAFF_REFLECTION_DEFINE_END(type, ...) }
 
@@ -395,11 +395,11 @@ namespace GAFF_REFLECTION_NAMESPACE { \
 	}; \
 }
 
-#define GAFF_TEMPLATE_REFLECTION_DEFINE_SERIALIZE_INIT(type, serialize_version, allocator, ...) \
+#define GAFF_TEMPLATE_REFLECTION_DEFINE_SERIALIZE_INIT(type, allocator, ...) \
 	template < GAFF_FOR_EACH_COMMA(GAFF_TEMPLATE_REFLECTION_CLASS, __VA_ARGS__) > \
 	Gaff::ReflectionDefinition<type<__VA_ARGS__>, allocator> GAFF_REFLECTION_NAMESPACE::Reflection< type<__VA_ARGS__> >::g_reflection_definition; \
 	template < GAFF_FOR_EACH_COMMA(GAFF_TEMPLATE_REFLECTION_CLASS, __VA_ARGS__) > \
-	Gaff::ReflectionVersion< type<__VA_ARGS__> > GAFF_REFLECTION_NAMESPACE::Reflection< type<__VA_ARGS__> >::g_version = Gaff::ReflectionVersion< type<__VA_ARGS__> >(serialize_version); \
+	Gaff::ReflectionVersion< type<__VA_ARGS__> > GAFF_REFLECTION_NAMESPACE::Reflection< type<__VA_ARGS__> >::g_version; \
 	template < GAFF_FOR_EACH_COMMA(GAFF_TEMPLATE_REFLECTION_CLASS, __VA_ARGS__) > \
 	GAFF_REFLECTION_NAMESPACE::Reflection< type<__VA_ARGS__> > GAFF_REFLECTION_NAMESPACE::Reflection< type<__VA_ARGS__> >::g_instance; \
 	template < GAFF_FOR_EACH_COMMA(GAFF_TEMPLATE_REFLECTION_CLASS, __VA_ARGS__) > \
@@ -486,9 +486,9 @@ NS_END
 		template <class ReflectionBuilder> \
 		static void BuildReflection(ReflectionBuilder& builder)
 
-#define GAFF_TEMPLATE_REFLECTION_DEFINE_BASE(type, start_version, allocator, ...) \
+#define GAFF_TEMPLATE_REFLECTION_DEFINE_BASE(type, allocator, ...) \
 	template < GAFF_FOR_EACH_COMMA(GAFF_TEMPLATE_REFLECTION_CLASS, __VA_ARGS__) > \
-	Gaff::ReflectionVersion< type<__VA_ARGS__> > GAFF_REFLECTION_NAMESPACE::Reflection< type<__VA_ARGS__> >::g_version = Gaff::ReflectionVersion< type<__VA_ARGS__> >(start_version); \
+	Gaff::ReflectionVersion< type<__VA_ARGS__> > GAFF_REFLECTION_NAMESPACE::Reflection< type<__VA_ARGS__> >::g_version; \
 	template < GAFF_FOR_EACH_COMMA(GAFF_TEMPLATE_REFLECTION_CLASS, __VA_ARGS__) > \
 	GAFF_REFLECTION_NAMESPACE::Reflection< type<__VA_ARGS__> > GAFF_REFLECTION_NAMESPACE::Reflection< type<__VA_ARGS__> >::g_instance; \
 	template < GAFF_FOR_EACH_COMMA(GAFF_TEMPLATE_REFLECTION_CLASS, __VA_ARGS__) > \
