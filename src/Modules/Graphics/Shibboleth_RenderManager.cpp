@@ -41,7 +41,7 @@ THE SOFTWARE.
 #include <Gleam_Mesh.h>
 #include <Gleam_IncludeD3D11.h>
 
-SHIB_REFLECTION_DEFINE(RenderManager, 0)
+SHIB_REFLECTION_DEFINE(RenderManager)
 
 NS_SHIBBOLETH
 

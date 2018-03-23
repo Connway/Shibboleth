@@ -32,7 +32,7 @@ THE SOFTWARE.
 	#pragma warning(disable : 4307)
 #endif
 
-SHIB_REFLECTION_DEFINE(Shibboleth::AngelScriptComponent, 0)
+SHIB_REFLECTION_DEFINE(AngelScriptComponent)
 
 NS_SHIBBOLETH
 

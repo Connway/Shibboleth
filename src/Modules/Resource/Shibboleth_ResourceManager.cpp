@@ -31,7 +31,7 @@ THE SOFTWARE.
 #include <EASTL/algorithm.h>
 #include <mutex>
 
-SHIB_REFLECTION_DEFINE(ResourceManager, 0)
+SHIB_REFLECTION_DEFINE(ResourceManager)
 
 NS_SHIBBOLETH
 

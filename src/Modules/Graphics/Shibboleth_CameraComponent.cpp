@@ -24,7 +24,7 @@ THE SOFTWARE.
 #include "Shibboleth_IRenderManager.h"
 #include <Shibboleth_AngelScript.h>
 
-SHIB_REFLECTION_DEFINE(CameraComponent, 0)
+SHIB_REFLECTION_DEFINE(CameraComponent)
 
 NS_SHIBBOLETH
 

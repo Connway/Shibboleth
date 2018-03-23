@@ -28,7 +28,7 @@ THE SOFTWARE.
 #include <scriptbuilder.h>
 #include <scriptarray.h>
 
-SHIB_REFLECTION_DEFINE(AngelScriptManager, 0)
+SHIB_REFLECTION_DEFINE(AngelScriptManager)
 
 NS_SHIBBOLETH
 

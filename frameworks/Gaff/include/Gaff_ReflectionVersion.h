@@ -22,6 +22,7 @@ THE SOFTWARE.
 
 #pragma once
 
+#include "Gaff_Assert.h"
 #include "Gaff_Hash.h"
 
 NS_GAFF
@@ -30,8 +31,6 @@ template <class T>
 class ReflectionVersion final
 {
 public:
-	ReflectionVersion(int32_t start_version);
-
 	template <class Base>
 	ReflectionVersion& base(const char* name);
 
@@ -62,12 +61,14 @@ public:
 	template <size_t size, class... Args>
 	ReflectionVersion& funcAttrs(const char(&name)[size], const Args&...);
 
+	ReflectionVersion& version(uint32_t version);
+
 	Hash64 getHash(void) const;
 
 	void finish(void);
 
 private:
-	Hash64 _hash;
+	Hash64 _hash = INIT_HASH64;
 };
 
 NS_END
