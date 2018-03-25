@@ -59,7 +59,7 @@ bool Editor::init(void)
 	_main_form->caption("Shibboleth Editor");
 	_main_form->events().destroy([&]() -> void { close(); });
 
-	_main_form->div("<vert<menubar weight=28><dock<dockable_area>>");
+	_main_form->div("vert<menubar weight=25>|<dock <dockable_area>>");
 	_main_form->get_place()["menubar"] << _menu_bar;
 
 	_main_form->get_place().dock< nana::panel<false> >("dockable_area", "form_factory");
