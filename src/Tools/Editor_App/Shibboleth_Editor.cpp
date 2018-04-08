@@ -59,10 +59,8 @@ bool Editor::init(void)
 	_main_form->caption("Shibboleth Editor");
 	_main_form->events().destroy([&]() -> void { close(); });
 
-	_main_form->div("vert<menubar weight=25>|<dock <dockable_area>>");
+	_main_form->div("vert<menubar weight=25>");
 	_main_form->get_place()["menubar"] << _menu_bar;
-
-	_main_form->get_place().dock< nana::panel<false> >("dockable_area", "form_factory");
 
 	addBuiltInMenus();
 
@@ -82,9 +80,9 @@ void Editor::destroy(void)
 
 void Editor::close(void)
 {
-	//for (auto& sub_form : _sub_forms) {
-	//	sub_form->close();
-	//}
+	for (auto& sub_form : _sub_forms) {
+		sub_form->close();
+	}
 
 	_sub_forms.clear();
 	_main_form->close();
@@ -120,17 +118,6 @@ void Editor::addBuiltInMenus(void)
 	// append all editor windows.
 	window_menu->append("&Inspector", [&](nana::menu::item_proxy&) -> void
 	{
-		nana::panel<false>* panel = reinterpret_cast<nana::panel<false>*>(_main_form->get_place().dock_create("form_factory"));
-		nana::place* place = new nana::place(*panel);
-
-		//nana::widget* widget = nana::API::get_widget(form->parent());
-		//widget->caption("Inspector");
-
-		nana::button* button = new nana::button(*panel, "Push Me Bitch");
-		place->div("<a>");
-		(*place)["a"] << *button;
-
-		place->collocate();
 	});
 
 	window_menu->append_splitter();

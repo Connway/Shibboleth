@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="include">
+      <UniqueIdentifier>{89AF369E-F58E-B539-FEA6-40106A051C9B}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\wx">
+      <UniqueIdentifier>{A746B8DA-93FE-F927-FC05-D383E8DC9418}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\wx\richtext">
+      <UniqueIdentifier>{412DA209-AD8E-7F17-36FC-C5C9A25CB6D6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\wx\xrc">
+      <UniqueIdentifier>{83155575-6FE3-487B-5877-B9A144E424E0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src">
+      <UniqueIdentifier>{2DAB880B-99B4-887C-2230-9F7C8E38947C}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\common">
+      <UniqueIdentifier>{E5D74254-D18F-84A1-3A97-5DFD266E1F92}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\richtext">
+      <UniqueIdentifier>{8708AB62-736B-3A07-1CF1-72BD0833068A}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\xrc">
+      <UniqueIdentifier>{094D30A9-752C-AF44-7E44-3A1BEAA215A6}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\richtext\richtextbackgroundpage.h">
+      <Filter>include\wx\richtext</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\richtext\richtextborderspage.h">
+      <Filter>include\wx\richtext</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\richtext\richtextbuffer.h">
+      <Filter>include\wx\richtext</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\richtext\richtextbulletspage.h">
+      <Filter>include\wx\richtext</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\richtext\richtextctrl.h">
+      <Filter>include\wx\richtext</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\richtext\richtextdialogpage.h">
+      <Filter>include\wx\richtext</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\richtext\richtextfontpage.h">
+      <Filter>include\wx\richtext</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\richtext\richtextformatdlg.h">
+      <Filter>include\wx\richtext</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\richtext\richtexthtml.h">
+      <Filter>include\wx\richtext</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\richtext\richtextimagedlg.h">
+      <Filter>include\wx\richtext</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\richtext\richtextindentspage.h">
+      <Filter>include\wx\richtext</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\richtext\richtextliststylepage.h">
+      <Filter>include\wx\richtext</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\richtext\richtextmarginspage.h">
+      <Filter>include\wx\richtext</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\richtext\richtextprint.h">
+      <Filter>include\wx\richtext</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\richtext\richtextsizepage.h">
+      <Filter>include\wx\richtext</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\richtext\richtextstyledlg.h">
+      <Filter>include\wx\richtext</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\richtext\richtextstylepage.h">
+      <Filter>include\wx\richtext</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\richtext\richtextstyles.h">
+      <Filter>include\wx\richtext</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\richtext\richtextsymboldlg.h">
+      <Filter>include\wx\richtext</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\richtext\richtextuicustomization.h">
+      <Filter>include\wx\richtext</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\richtext\richtextxml.h">
+      <Filter>include\wx\richtext</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\xrc\xh_richtext.h">
+      <Filter>include\wx\xrc</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\common\dummy.cpp">
+      <Filter>src\common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\richtext\richtextbuffer.cpp">
+      <Filter>src\richtext</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\richtext\richtextctrl.cpp">
+      <Filter>src\richtext</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\richtext\richtextformatdlg.cpp">
+      <Filter>src\richtext</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\richtext\richtexthtml.cpp">
+      <Filter>src\richtext</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\richtext\richtextimagedlg.cpp">
+      <Filter>src\richtext</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\richtext\richtextprint.cpp">
+      <Filter>src\richtext</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\richtext\richtextstyledlg.cpp">
+      <Filter>src\richtext</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\richtext\richtextstyles.cpp">
+      <Filter>src\richtext</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\richtext\richtextsymboldlg.cpp">
+      <Filter>src\richtext</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\richtext\richtextxml.cpp">
+      <Filter>src\richtext</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\xrc\xh_richtext.cpp">
+      <Filter>src\xrc</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>

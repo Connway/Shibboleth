@@ -1,0 +1,536 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Analyze|x64">
+      <Configuration>Analyze</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Profile|x64">
+      <Configuration>Profile</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Optimized_Debug|x64">
+      <Configuration>Optimized_Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{EF401626-DBE2-40FC-C49D-5450B0DEC74C}</ProjectGuid>
+    <IgnoreWarnCompileDuplicatedFilename>true</IgnoreWarnCompileDuplicatedFilename>
+    <Keyword>Win32Proj</Keyword>
+    <RootNamespace>wxBase</RootNamespace>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v141</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v141</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Analyze|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v141</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Profile|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v141</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Optimized_Debug|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v141</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Analyze|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Optimized_Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <OutDir>..\..\..\build\vs2017\output\x64\Debug\</OutDir>
+    <IntDir>..\..\..\build\vs2017\intermediate\x64\Debug\wxBase\</IntDir>
+    <TargetName>wxBase</TargetName>
+    <TargetExt>.lib</TargetExt>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <OutDir>..\..\..\build\vs2017\output\x64\Release\</OutDir>
+    <IntDir>..\..\..\build\vs2017\intermediate\x64\Release\wxBase\</IntDir>
+    <TargetName>wxBase</TargetName>
+    <TargetExt>.lib</TargetExt>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Analyze|x64'">
+    <OutDir>..\..\..\build\vs2017\output\x64\Analyze\</OutDir>
+    <IntDir>..\..\..\build\vs2017\intermediate\x64\Analyze\wxBase\</IntDir>
+    <TargetName>wxBase</TargetName>
+    <TargetExt>.lib</TargetExt>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">
+    <OutDir>..\..\..\build\vs2017\output\x64\Profile\</OutDir>
+    <IntDir>..\..\..\build\vs2017\intermediate\x64\Profile\wxBase\</IntDir>
+    <TargetName>wxBase</TargetName>
+    <TargetExt>.lib</TargetExt>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Optimized_Debug|x64'">
+    <OutDir>..\..\..\build\vs2017\output\x64\Optimized_Debug\</OutDir>
+    <IntDir>..\..\..\build\vs2017\intermediate\x64\Optimized_Debug\wxBase\</IntDir>
+    <TargetName>wxBase</TargetName>
+    <TargetExt>.lib</TargetExt>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <WarningLevel>Level4</WarningLevel>
+      <PreprocessorDefinitions>UNICODE;_UNICODE;_DEBUG;DEBUG;WIN32;_WINDOWS;NOPCH;WXBUILDING;wxUSE_ZLIB_H_IN_PATH;_CRT_SECURE_NO_DEPRECATE=1;_CRT_NON_CONFORMING_SWPRINTFS=1;_SCL_SECURE_NO_WARNINGS=1;__WXMSW__;wxUSE_GUI=0;wxUSE_BASE=1;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\..\..\dependencies\wxWidgets\include;..\..\..\dependencies\wxWidgets\include\msvc;..\..\..\dependencies\wxWidgets\src\regex;..\..\..\dependencies\zlib-ng;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+      <Optimization>Disabled</Optimization>
+      <ExceptionHandling>Async</ExceptionHandling>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <FloatingPointModel>Fast</FloatingPointModel>
+      <AdditionalOptions>/sdl %(AdditionalOptions)</AdditionalOptions>
+      <LanguageStandard>stdcpp14</LanguageStandard>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <WarningLevel>Level4</WarningLevel>
+      <PreprocessorDefinitions>UNICODE;_UNICODE;NDEBUG;WIN32;_WINDOWS;NOPCH;WXBUILDING;wxUSE_ZLIB_H_IN_PATH;_CRT_SECURE_NO_DEPRECATE=1;_CRT_NON_CONFORMING_SWPRINTFS=1;_SCL_SECURE_NO_WARNINGS=1;__WXMSW__;wxUSE_GUI=0;wxUSE_BASE=1;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\..\..\dependencies\wxWidgets\include;..\..\..\dependencies\wxWidgets\include\msvc;..\..\..\dependencies\wxWidgets\src\regex;..\..\..\dependencies\zlib-ng;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <MinimalRebuild>false</MinimalRebuild>
+      <StringPooling>true</StringPooling>
+      <ExceptionHandling>Async</ExceptionHandling>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <FloatingPointModel>Fast</FloatingPointModel>
+      <AdditionalOptions>/sdl %(AdditionalOptions)</AdditionalOptions>
+      <LanguageStandard>stdcpp14</LanguageStandard>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Analyze|x64'">
+    <ClCompile>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <WarningLevel>Level4</WarningLevel>
+      <PreprocessorDefinitions>UNICODE;_UNICODE;NDEBUG;WIN32;_WINDOWS;NOPCH;WXBUILDING;wxUSE_ZLIB_H_IN_PATH;_CRT_SECURE_NO_DEPRECATE=1;_CRT_NON_CONFORMING_SWPRINTFS=1;_SCL_SECURE_NO_WARNINGS=1;__WXMSW__;wxUSE_GUI=0;wxUSE_BASE=1;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\..\..\dependencies\wxWidgets\include;..\..\..\dependencies\wxWidgets\include\msvc;..\..\..\dependencies\wxWidgets\src\regex;..\..\..\dependencies\zlib-ng;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <MinimalRebuild>false</MinimalRebuild>
+      <StringPooling>true</StringPooling>
+      <ExceptionHandling>Async</ExceptionHandling>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <FloatingPointModel>Fast</FloatingPointModel>
+      <AdditionalOptions>/analyze /sdl %(AdditionalOptions)</AdditionalOptions>
+      <LanguageStandard>stdcpp14</LanguageStandard>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">
+    <ClCompile>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <WarningLevel>Level4</WarningLevel>
+      <PreprocessorDefinitions>UNICODE;_UNICODE;NDEBUG;SHIB_PROFILE;WIN32;_WINDOWS;NOPCH;WXBUILDING;wxUSE_ZLIB_H_IN_PATH;_CRT_SECURE_NO_DEPRECATE=1;_CRT_NON_CONFORMING_SWPRINTFS=1;_SCL_SECURE_NO_WARNINGS=1;__WXMSW__;wxUSE_GUI=0;wxUSE_BASE=1;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\..\..\dependencies\wxWidgets\include;..\..\..\dependencies\wxWidgets\include\msvc;..\..\..\dependencies\wxWidgets\src\regex;..\..\..\dependencies\zlib-ng;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <MinimalRebuild>false</MinimalRebuild>
+      <StringPooling>true</StringPooling>
+      <ExceptionHandling>Async</ExceptionHandling>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <FloatingPointModel>Fast</FloatingPointModel>
+      <AdditionalOptions>/sdl %(AdditionalOptions)</AdditionalOptions>
+      <LanguageStandard>stdcpp14</LanguageStandard>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Optimized_Debug|x64'">
+    <ClCompile>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <WarningLevel>Level4</WarningLevel>
+      <PreprocessorDefinitions>UNICODE;_UNICODE;_DEBUG;DEBUG;WIN32;_WINDOWS;NOPCH;WXBUILDING;wxUSE_ZLIB_H_IN_PATH;_CRT_SECURE_NO_DEPRECATE=1;_CRT_NON_CONFORMING_SWPRINTFS=1;_SCL_SECURE_NO_WARNINGS=1;__WXMSW__;wxUSE_GUI=0;wxUSE_BASE=1;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\..\..\dependencies\wxWidgets\include;..\..\..\dependencies\wxWidgets\include\msvc;..\..\..\dependencies\wxWidgets\src\regex;..\..\..\dependencies\zlib-ng;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <MinimalRebuild>false</MinimalRebuild>
+      <StringPooling>true</StringPooling>
+      <ExceptionHandling>Async</ExceptionHandling>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <FloatingPointModel>Fast</FloatingPointModel>
+      <AdditionalOptions>/sdl %(AdditionalOptions)</AdditionalOptions>
+      <LanguageStandard>stdcpp14</LanguageStandard>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\afterstd.h" />
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\any.h" />
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\anystr.h" />
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\app.h" />
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\apptrait.h" />
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\archive.h" />
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\arrstr.h" />
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\atomic.h" />
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\base64.h" />
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\beforestd.h" />
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\buffer.h" />
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\build.h" />
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\chartype.h" />
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\checkeddelete.h" />
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\chkconf.h" />
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\clntdata.h" />
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\cmdargs.h" />
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\cmdline.h" />
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\confbase.h" />
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\config.h" />
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\containr.h" />
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\convauto.h" />
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\cpp.h" />
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\crt.h" />
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\datetime.h" />
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\datstrm.h" />
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\dde.h" />
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\debug.h" />
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\defs.h" />
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\dir.h" />
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\dlimpexp.h" />
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\dlist.h" />
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\dynarray.h" />
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\dynlib.h" />
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\dynload.h" />
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\encconv.h" />
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\event.h" />
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\eventfilter.h" />
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\evtloop.h" />
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\except.h" />
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\features.h" />
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\ffile.h" />
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\file.h" />
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\fileconf.h" />
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\filefn.h" />
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\filename.h" />
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\filesys.h" />
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\flags.h" />
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\fontenc.h" />
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\fontmap.h" />
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\fs_arc.h" />
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\fs_filter.h" />
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\fs_mem.h" />
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\fs_zip.h" />
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\fswatcher.h" />
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\generic\fswatcher.h" />
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\hash.h" />
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\hashmap.h" />
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\hashset.h" />
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\html\forcelnk.h" />
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\iconloc.h" />
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\init.h" />
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\intl.h" />
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\iosfwrap.h" />
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\ioswrap.h" />
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\ipc.h" />
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\ipcbase.h" />
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\kbdstate.h" />
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\language.h" />
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\link.h" />
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\list.h" />
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\log.h" />
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\longlong.h" />
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\math.h" />
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\memconf.h" />
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\memory.h" />
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\memtext.h" />
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\meta\convertible.h" />
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\meta\if.h" />
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\meta\implicitconversion.h" />
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\meta\int2type.h" />
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\meta\movable.h" />
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\meta\pod.h" />
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\mimetype.h" />
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\module.h" />
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\mousestate.h" />
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\msgout.h" />
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\msgqueue.h" />
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\mstream.h" />
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\msw\apptbase.h" />
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\msw\apptrait.h" />
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\msw\chkconf.h" />
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\msw\crashrpt.h" />
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\msw\dde.h" />
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\msw\debughlp.h" />
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\msw\evtloopconsole.h" />
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\msw\fswatcher.h" />
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\msw\gccpriv.h" />
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\msw\libraries.h" />
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\msw\mimetype.h" />
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\msw\mslu.h" />
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\msw\private.h" />
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\msw\regconf.h" />
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\msw\registry.h" />
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\msw\seh.h" />
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\msw\stackwalk.h" />
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\msw\stdpaths.h" />
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\msw\winundef.h" />
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\msw\wrapcctl.h" />
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\msw\wrapcdlg.h" />
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\msw\wrapwin.h" />
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\numformatter.h" />
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\object.h" />
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\platform.h" />
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\platinfo.h" />
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\power.h" />
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\process.h" />
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\ptr_scpd.h" />
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\ptr_shrd.h" />
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\recguard.h" />
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\regex.h" />
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\rtti.h" />
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\scopedarray.h" />
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\scopedptr.h" />
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\scopeguard.h" />
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\sharedptr.h" />
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\snglinst.h" />
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\sstream.h" />
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\stack.h" />
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\stackwalk.h" />
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\stdpaths.h" />
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\stdstream.h" />
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\stockitem.h" />
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\stopwatch.h" />
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\strconv.h" />
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\stream.h" />
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\string.h" />
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\stringimpl.h" />
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\stringops.h" />
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\strvararg.h" />
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\sysopt.h" />
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\tarstrm.h" />
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\textbuf.h" />
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\textfile.h" />
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\thread.h" />
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\time.h" />
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\timer.h" />
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\tls.h" />
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\tokenzr.h" />
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\tracker.h" />
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\translation.h" />
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\txtstrm.h" />
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\typeinfo.h" />
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\types.h" />
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\unichar.h" />
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\uri.h" />
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\ustring.h" />
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\utils.h" />
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\variant.h" />
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\vector.h" />
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\version.h" />
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\versioninfo.h" />
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\volume.h" />
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\weakref.h" />
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\wfstream.h" />
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\wx.h" />
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\wxchar.h" />
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\wxcrt.h" />
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\wxcrtbase.h" />
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\wxcrtvararg.h" />
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\wxprec.h" />
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\xlocale.h" />
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\xti.h" />
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\xti2.h" />
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\xtictor.h" />
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\xtihandler.h" />
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\xtiprop.h" />
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\xtistrm.h" />
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\xtitypes.h" />
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\zipstrm.h" />
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\zstream.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\common\any.cpp" />
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\common\appbase.cpp" />
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\common\arcall.cpp" />
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\common\arcfind.cpp" />
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\common\archive.cpp" />
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\common\arrstr.cpp" />
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\common\base64.cpp" />
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\common\clntdata.cpp" />
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\common\cmdline.cpp" />
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\common\config.cpp" />
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\common\convauto.cpp" />
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\common\datetime.cpp" />
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\common\datetimefmt.cpp" />
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\common\datstrm.cpp" />
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\common\dircmn.cpp" />
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\common\dummy.cpp" />
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\common\dynarray.cpp" />
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\common\dynlib.cpp" />
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\common\dynload.cpp" />
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\common\encconv.cpp" />
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\common\event.cpp" />
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\common\evtloopcmn.cpp" />
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\common\extended.c" />
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\common\ffile.cpp" />
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\common\file.cpp" />
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\common\fileback.cpp" />
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\common\fileconf.cpp" />
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\common\filefn.cpp" />
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\common\filename.cpp" />
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\common\filesys.cpp" />
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\common\filtall.cpp" />
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\common\filtfind.cpp" />
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\common\fmapbase.cpp" />
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\common\fs_arc.cpp" />
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\common\fs_filter.cpp" />
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\common\fs_mem.cpp" />
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\common\fswatchercmn.cpp" />
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\common\hash.cpp" />
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\common\hashmap.cpp" />
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\common\init.cpp" />
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\common\intl.cpp" />
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\common\ipcbase.cpp" />
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\common\languageinfo.cpp" />
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\common\list.cpp" />
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\common\log.cpp" />
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\common\longlong.cpp" />
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\common\memory.cpp" />
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\common\mimecmn.cpp" />
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\common\module.cpp" />
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\common\msgout.cpp" />
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\common\mstream.cpp" />
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\common\numformatter.cpp" />
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\common\object.cpp" />
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\common\platinfo.cpp" />
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\common\powercmn.cpp" />
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\common\process.cpp" />
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\common\regex.cpp" />
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\common\sstream.cpp" />
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\common\stdpbase.cpp" />
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\common\stdstream.cpp" />
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\common\stopwatch.cpp" />
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\common\strconv.cpp" />
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\common\stream.cpp" />
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\common\string.cpp" />
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\common\stringimpl.cpp" />
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\common\stringops.cpp" />
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\common\strvararg.cpp" />
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\common\sysopt.cpp" />
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\common\tarstrm.cpp" />
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\common\textbuf.cpp" />
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\common\textfile.cpp" />
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\common\threadinfo.cpp" />
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\common\time.cpp" />
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\common\timercmn.cpp" />
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\common\timerimpl.cpp" />
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\common\tokenzr.cpp" />
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\common\translation.cpp" />
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\common\txtstrm.cpp" />
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\common\unichar.cpp" />
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\common\uri.cpp" />
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\common\ustring.cpp" />
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\common\utilscmn.cpp" />
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\common\variant.cpp" />
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\common\wfstream.cpp" />
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\common\wxcrt.cpp" />
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\common\wxprintf.cpp" />
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\common\xlocale.cpp" />
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\common\xti.cpp" />
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\common\xtistrm.cpp" />
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\common\zipstrm.cpp" />
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\common\zstream.cpp" />
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\generic\fswatcherg.cpp" />
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\msw\basemsw.cpp" />
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\msw\crashrpt.cpp" />
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\msw\dde.cpp" />
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\msw\debughlp.cpp" />
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\msw\dir.cpp" />
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\msw\dlmsw.cpp" />
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\msw\evtloopconsole.cpp" />
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\msw\fswatcher.cpp" />
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\msw\main.cpp" />
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\msw\mimetype.cpp" />
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\msw\mslu.cpp" />
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\msw\power.cpp" />
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\msw\regconf.cpp" />
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\msw\registry.cpp" />
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\msw\snglinst.cpp" />
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\msw\stackwalk.cpp" />
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\msw\stdpaths.cpp" />
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\msw\thread.cpp" />
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\msw\timer.cpp" />
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\msw\utils.cpp" />
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\msw\utilsexc.cpp" />
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\msw\volume.cpp" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

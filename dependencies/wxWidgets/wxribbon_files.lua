@@ -1,0 +1,25 @@
+files
+{
+	"include/wx/ribbon/art.h",
+	"include/wx/ribbon/art_internal.h",
+	"include/wx/ribbon/bar.h",
+	"include/wx/ribbon/buttonbar.h",
+	"include/wx/ribbon/control.h",
+	"include/wx/ribbon/gallery.h",
+	"include/wx/ribbon/page.h",
+	"include/wx/ribbon/panel.h",
+	"include/wx/ribbon/toolbar.h",
+	"include/wx/xrc/xh_ribbon.h",
+	"src/common/dummy.cpp",
+	"src/ribbon/art_aui.cpp",
+	"src/ribbon/art_internal.cpp",
+	"src/ribbon/art_msw.cpp",
+	"src/ribbon/bar.cpp",
+	"src/ribbon/buttonbar.cpp",
+	"src/ribbon/control.cpp",
+	"src/ribbon/gallery.cpp",
+	"src/ribbon/page.cpp",
+	"src/ribbon/panel.cpp",
+	"src/ribbon/toolbar.cpp",
+	"src/xrc/xh_ribbon.cpp"
+}

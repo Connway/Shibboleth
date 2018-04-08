@@ -17,3 +17,4 @@ Libraries Affected:
 	dirent (got rid of warnings in Visual Studio)
 	libuv (fixing potentially uninitialized pointer errors)
 	zlib-ng (fixing compilation errors, adding OF macro, adding STDC defines)
+	wxWidgets (Fixing setup.h wxSETUPH_PATH macro. Fixing compiler errors with VS2017.)

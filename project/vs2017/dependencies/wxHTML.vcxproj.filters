@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="include">
+      <UniqueIdentifier>{89AF369E-F58E-B539-FEA6-40106A051C9B}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\wx">
+      <UniqueIdentifier>{A746B8DA-93FE-F927-FC05-D383E8DC9418}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\wx\html">
+      <UniqueIdentifier>{0B0AEF1F-7795-5CE4-80A6-DFD8ECB0B8E4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\wx\msw">
+      <UniqueIdentifier>{EDE65475-D9B4-487B-C248-B9A1AEB524E0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src">
+      <UniqueIdentifier>{2DAB880B-99B4-887C-2230-9F7C8E38947C}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\common">
+      <UniqueIdentifier>{E5D74254-D18F-84A1-3A97-5DFD266E1F92}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\generic">
+      <UniqueIdentifier>{39F340F9-A5A8-B9EE-2E9D-B3C59A51B0F2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\html">
+      <UniqueIdentifier>{513231CF-3DFF-8BDA-6618-7A825244C168}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\msw">
+      <UniqueIdentifier>{731E30A9-DFFD-AE44-E815-3A1B547415A6}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\html\helpctrl.h">
+      <Filter>include\wx\html</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\html\helpdata.h">
+      <Filter>include\wx\html</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\html\helpdlg.h">
+      <Filter>include\wx\html</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\html\helpfrm.h">
+      <Filter>include\wx\html</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\html\helpwnd.h">
+      <Filter>include\wx\html</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\html\htmlcell.h">
+      <Filter>include\wx\html</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\html\htmldefs.h">
+      <Filter>include\wx\html</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\html\htmlfilt.h">
+      <Filter>include\wx\html</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\html\htmlpars.h">
+      <Filter>include\wx\html</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\html\htmlproc.h">
+      <Filter>include\wx\html</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\html\htmltag.h">
+      <Filter>include\wx\html</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\html\htmlwin.h">
+      <Filter>include\wx\html</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\html\htmprint.h">
+      <Filter>include\wx\html</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\html\m_templ.h">
+      <Filter>include\wx\html</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\html\styleparams.h">
+      <Filter>include\wx\html</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\html\winpars.h">
+      <Filter>include\wx\html</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\htmllbox.h">
+      <Filter>include\wx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\msw\helpbest.h">
+      <Filter>include\wx\msw</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\wxhtml.h">
+      <Filter>include\wx</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\common\dummy.cpp">
+      <Filter>src\common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\generic\htmllbox.cpp">
+      <Filter>src\generic</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\html\helpctrl.cpp">
+      <Filter>src\html</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\html\helpdata.cpp">
+      <Filter>src\html</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\html\helpdlg.cpp">
+      <Filter>src\html</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\html\helpfrm.cpp">
+      <Filter>src\html</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\html\helpwnd.cpp">
+      <Filter>src\html</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\html\htmlcell.cpp">
+      <Filter>src\html</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\html\htmlfilt.cpp">
+      <Filter>src\html</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\html\htmlpars.cpp">
+      <Filter>src\html</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\html\htmltag.cpp">
+      <Filter>src\html</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\html\htmlwin.cpp">
+      <Filter>src\html</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\html\htmprint.cpp">
+      <Filter>src\html</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\html\m_dflist.cpp">
+      <Filter>src\html</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\html\m_fonts.cpp">
+      <Filter>src\html</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\html\m_hline.cpp">
+      <Filter>src\html</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\html\m_image.cpp">
+      <Filter>src\html</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\html\m_layout.cpp">
+      <Filter>src\html</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\html\m_links.cpp">
+      <Filter>src\html</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\html\m_list.cpp">
+      <Filter>src\html</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\html\m_pre.cpp">
+      <Filter>src\html</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\html\m_span.cpp">
+      <Filter>src\html</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\html\m_style.cpp">
+      <Filter>src\html</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\html\m_tables.cpp">
+      <Filter>src\html</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\html\styleparams.cpp">
+      <Filter>src\html</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\html\winpars.cpp">
+      <Filter>src\html</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\msw\helpbest.cpp">
+      <Filter>src\msw</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>

@@ -1,0 +1,21 @@
+files
+{
+	"include/wx/aui/aui.h",
+	"include/wx/aui/auibar.h",
+	"include/wx/aui/auibook.h",
+	"include/wx/aui/dockart.h",
+	"include/wx/aui/floatpane.h",
+	"include/wx/aui/framemanager.h",
+	"include/wx/aui/tabart.h",
+	"include/wx/aui/tabmdi.h",
+	"include/wx/xrc/xh_auinotbk.h",
+	"src/common/dummy.cpp",
+	"src/aui/auibar.cpp",
+	"src/aui/auibook.cpp",
+	"src/aui/dockart.cpp",
+	"src/aui/floatpane.cpp",
+	"src/aui/framemanager.cpp",
+	"src/aui/tabart.cpp",
+	"src/aui/tabmdi.cpp",
+	"src/xrc/xh_auinotbk.cpp"
+}

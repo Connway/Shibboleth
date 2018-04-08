@@ -1,0 +1,924 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="include">
+      <UniqueIdentifier>{89AF369E-F58E-B539-FEA6-40106A051C9B}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\wx">
+      <UniqueIdentifier>{A746B8DA-93FE-F927-FC05-D383E8DC9418}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\wx\generic">
+      <UniqueIdentifier>{B3682963-9F4C-EAB8-08AD-E40BF4AFD43A}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\wx\html">
+      <UniqueIdentifier>{0B0AEF1F-7795-5CE4-80A6-DFD8ECB0B8E4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\wx\meta">
+      <UniqueIdentifier>{FD88F11F-6914-5FE4-7225-E2D8DE2FBBE4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\wx\msw">
+      <UniqueIdentifier>{EDE65475-D9B4-487B-C248-B9A1AEB524E0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src">
+      <UniqueIdentifier>{2DAB880B-99B4-887C-2230-9F7C8E38947C}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\common">
+      <UniqueIdentifier>{E5D74254-D18F-84A1-3A97-5DFD266E1F92}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\generic">
+      <UniqueIdentifier>{39F340F9-A5A8-B9EE-2E9D-B3C59A51B0F2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\msw">
+      <UniqueIdentifier>{731E30A9-DFFD-AE44-E815-3A1B547415A6}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\afterstd.h">
+      <Filter>include\wx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\any.h">
+      <Filter>include\wx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\anystr.h">
+      <Filter>include\wx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\app.h">
+      <Filter>include\wx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\apptrait.h">
+      <Filter>include\wx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\archive.h">
+      <Filter>include\wx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\arrstr.h">
+      <Filter>include\wx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\atomic.h">
+      <Filter>include\wx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\base64.h">
+      <Filter>include\wx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\beforestd.h">
+      <Filter>include\wx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\buffer.h">
+      <Filter>include\wx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\build.h">
+      <Filter>include\wx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\chartype.h">
+      <Filter>include\wx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\checkeddelete.h">
+      <Filter>include\wx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\chkconf.h">
+      <Filter>include\wx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\clntdata.h">
+      <Filter>include\wx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\cmdargs.h">
+      <Filter>include\wx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\cmdline.h">
+      <Filter>include\wx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\confbase.h">
+      <Filter>include\wx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\config.h">
+      <Filter>include\wx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\containr.h">
+      <Filter>include\wx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\convauto.h">
+      <Filter>include\wx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\cpp.h">
+      <Filter>include\wx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\crt.h">
+      <Filter>include\wx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\datetime.h">
+      <Filter>include\wx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\datstrm.h">
+      <Filter>include\wx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\dde.h">
+      <Filter>include\wx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\debug.h">
+      <Filter>include\wx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\defs.h">
+      <Filter>include\wx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\dir.h">
+      <Filter>include\wx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\dlimpexp.h">
+      <Filter>include\wx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\dlist.h">
+      <Filter>include\wx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\dynarray.h">
+      <Filter>include\wx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\dynlib.h">
+      <Filter>include\wx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\dynload.h">
+      <Filter>include\wx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\encconv.h">
+      <Filter>include\wx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\event.h">
+      <Filter>include\wx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\eventfilter.h">
+      <Filter>include\wx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\evtloop.h">
+      <Filter>include\wx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\except.h">
+      <Filter>include\wx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\features.h">
+      <Filter>include\wx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\ffile.h">
+      <Filter>include\wx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\file.h">
+      <Filter>include\wx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\fileconf.h">
+      <Filter>include\wx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\filefn.h">
+      <Filter>include\wx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\filename.h">
+      <Filter>include\wx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\filesys.h">
+      <Filter>include\wx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\flags.h">
+      <Filter>include\wx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\fontenc.h">
+      <Filter>include\wx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\fontmap.h">
+      <Filter>include\wx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\fs_arc.h">
+      <Filter>include\wx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\fs_filter.h">
+      <Filter>include\wx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\fs_mem.h">
+      <Filter>include\wx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\fs_zip.h">
+      <Filter>include\wx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\fswatcher.h">
+      <Filter>include\wx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\generic\fswatcher.h">
+      <Filter>include\wx\generic</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\hash.h">
+      <Filter>include\wx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\hashmap.h">
+      <Filter>include\wx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\hashset.h">
+      <Filter>include\wx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\html\forcelnk.h">
+      <Filter>include\wx\html</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\iconloc.h">
+      <Filter>include\wx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\init.h">
+      <Filter>include\wx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\intl.h">
+      <Filter>include\wx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\iosfwrap.h">
+      <Filter>include\wx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\ioswrap.h">
+      <Filter>include\wx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\ipc.h">
+      <Filter>include\wx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\ipcbase.h">
+      <Filter>include\wx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\kbdstate.h">
+      <Filter>include\wx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\language.h">
+      <Filter>include\wx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\link.h">
+      <Filter>include\wx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\list.h">
+      <Filter>include\wx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\log.h">
+      <Filter>include\wx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\longlong.h">
+      <Filter>include\wx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\math.h">
+      <Filter>include\wx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\memconf.h">
+      <Filter>include\wx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\memory.h">
+      <Filter>include\wx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\memtext.h">
+      <Filter>include\wx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\meta\convertible.h">
+      <Filter>include\wx\meta</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\meta\if.h">
+      <Filter>include\wx\meta</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\meta\implicitconversion.h">
+      <Filter>include\wx\meta</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\meta\int2type.h">
+      <Filter>include\wx\meta</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\meta\movable.h">
+      <Filter>include\wx\meta</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\meta\pod.h">
+      <Filter>include\wx\meta</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\mimetype.h">
+      <Filter>include\wx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\module.h">
+      <Filter>include\wx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\mousestate.h">
+      <Filter>include\wx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\msgout.h">
+      <Filter>include\wx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\msgqueue.h">
+      <Filter>include\wx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\mstream.h">
+      <Filter>include\wx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\msw\apptbase.h">
+      <Filter>include\wx\msw</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\msw\apptrait.h">
+      <Filter>include\wx\msw</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\msw\chkconf.h">
+      <Filter>include\wx\msw</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\msw\crashrpt.h">
+      <Filter>include\wx\msw</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\msw\dde.h">
+      <Filter>include\wx\msw</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\msw\debughlp.h">
+      <Filter>include\wx\msw</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\msw\evtloopconsole.h">
+      <Filter>include\wx\msw</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\msw\fswatcher.h">
+      <Filter>include\wx\msw</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\msw\gccpriv.h">
+      <Filter>include\wx\msw</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\msw\libraries.h">
+      <Filter>include\wx\msw</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\msw\mimetype.h">
+      <Filter>include\wx\msw</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\msw\mslu.h">
+      <Filter>include\wx\msw</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\msw\private.h">
+      <Filter>include\wx\msw</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\msw\regconf.h">
+      <Filter>include\wx\msw</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\msw\registry.h">
+      <Filter>include\wx\msw</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\msw\seh.h">
+      <Filter>include\wx\msw</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\msw\stackwalk.h">
+      <Filter>include\wx\msw</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\msw\stdpaths.h">
+      <Filter>include\wx\msw</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\msw\winundef.h">
+      <Filter>include\wx\msw</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\msw\wrapcctl.h">
+      <Filter>include\wx\msw</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\msw\wrapcdlg.h">
+      <Filter>include\wx\msw</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\msw\wrapwin.h">
+      <Filter>include\wx\msw</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\numformatter.h">
+      <Filter>include\wx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\object.h">
+      <Filter>include\wx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\platform.h">
+      <Filter>include\wx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\platinfo.h">
+      <Filter>include\wx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\power.h">
+      <Filter>include\wx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\process.h">
+      <Filter>include\wx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\ptr_scpd.h">
+      <Filter>include\wx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\ptr_shrd.h">
+      <Filter>include\wx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\recguard.h">
+      <Filter>include\wx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\regex.h">
+      <Filter>include\wx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\rtti.h">
+      <Filter>include\wx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\scopedarray.h">
+      <Filter>include\wx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\scopedptr.h">
+      <Filter>include\wx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\scopeguard.h">
+      <Filter>include\wx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\sharedptr.h">
+      <Filter>include\wx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\snglinst.h">
+      <Filter>include\wx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\sstream.h">
+      <Filter>include\wx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\stack.h">
+      <Filter>include\wx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\stackwalk.h">
+      <Filter>include\wx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\stdpaths.h">
+      <Filter>include\wx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\stdstream.h">
+      <Filter>include\wx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\stockitem.h">
+      <Filter>include\wx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\stopwatch.h">
+      <Filter>include\wx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\strconv.h">
+      <Filter>include\wx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\stream.h">
+      <Filter>include\wx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\string.h">
+      <Filter>include\wx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\stringimpl.h">
+      <Filter>include\wx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\stringops.h">
+      <Filter>include\wx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\strvararg.h">
+      <Filter>include\wx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\sysopt.h">
+      <Filter>include\wx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\tarstrm.h">
+      <Filter>include\wx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\textbuf.h">
+      <Filter>include\wx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\textfile.h">
+      <Filter>include\wx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\thread.h">
+      <Filter>include\wx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\time.h">
+      <Filter>include\wx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\timer.h">
+      <Filter>include\wx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\tls.h">
+      <Filter>include\wx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\tokenzr.h">
+      <Filter>include\wx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\tracker.h">
+      <Filter>include\wx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\translation.h">
+      <Filter>include\wx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\txtstrm.h">
+      <Filter>include\wx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\typeinfo.h">
+      <Filter>include\wx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\types.h">
+      <Filter>include\wx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\unichar.h">
+      <Filter>include\wx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\uri.h">
+      <Filter>include\wx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\ustring.h">
+      <Filter>include\wx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\utils.h">
+      <Filter>include\wx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\variant.h">
+      <Filter>include\wx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\vector.h">
+      <Filter>include\wx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\version.h">
+      <Filter>include\wx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\versioninfo.h">
+      <Filter>include\wx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\volume.h">
+      <Filter>include\wx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\weakref.h">
+      <Filter>include\wx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\wfstream.h">
+      <Filter>include\wx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\wx.h">
+      <Filter>include\wx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\wxchar.h">
+      <Filter>include\wx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\wxcrt.h">
+      <Filter>include\wx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\wxcrtbase.h">
+      <Filter>include\wx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\wxcrtvararg.h">
+      <Filter>include\wx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\wxprec.h">
+      <Filter>include\wx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\xlocale.h">
+      <Filter>include\wx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\xti.h">
+      <Filter>include\wx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\xti2.h">
+      <Filter>include\wx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\xtictor.h">
+      <Filter>include\wx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\xtihandler.h">
+      <Filter>include\wx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\xtiprop.h">
+      <Filter>include\wx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\xtistrm.h">
+      <Filter>include\wx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\xtitypes.h">
+      <Filter>include\wx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\zipstrm.h">
+      <Filter>include\wx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dependencies\wxWidgets\include\wx\zstream.h">
+      <Filter>include\wx</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\common\any.cpp">
+      <Filter>src\common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\common\appbase.cpp">
+      <Filter>src\common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\common\arcall.cpp">
+      <Filter>src\common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\common\arcfind.cpp">
+      <Filter>src\common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\common\archive.cpp">
+      <Filter>src\common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\common\arrstr.cpp">
+      <Filter>src\common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\common\base64.cpp">
+      <Filter>src\common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\common\clntdata.cpp">
+      <Filter>src\common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\common\cmdline.cpp">
+      <Filter>src\common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\common\config.cpp">
+      <Filter>src\common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\common\convauto.cpp">
+      <Filter>src\common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\common\datetime.cpp">
+      <Filter>src\common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\common\datetimefmt.cpp">
+      <Filter>src\common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\common\datstrm.cpp">
+      <Filter>src\common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\common\dircmn.cpp">
+      <Filter>src\common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\common\dummy.cpp">
+      <Filter>src\common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\common\dynarray.cpp">
+      <Filter>src\common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\common\dynlib.cpp">
+      <Filter>src\common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\common\dynload.cpp">
+      <Filter>src\common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\common\encconv.cpp">
+      <Filter>src\common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\common\event.cpp">
+      <Filter>src\common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\common\evtloopcmn.cpp">
+      <Filter>src\common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\common\extended.c">
+      <Filter>src\common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\common\ffile.cpp">
+      <Filter>src\common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\common\file.cpp">
+      <Filter>src\common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\common\fileback.cpp">
+      <Filter>src\common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\common\fileconf.cpp">
+      <Filter>src\common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\common\filefn.cpp">
+      <Filter>src\common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\common\filename.cpp">
+      <Filter>src\common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\common\filesys.cpp">
+      <Filter>src\common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\common\filtall.cpp">
+      <Filter>src\common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\common\filtfind.cpp">
+      <Filter>src\common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\common\fmapbase.cpp">
+      <Filter>src\common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\common\fs_arc.cpp">
+      <Filter>src\common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\common\fs_filter.cpp">
+      <Filter>src\common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\common\fs_mem.cpp">
+      <Filter>src\common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\common\fswatchercmn.cpp">
+      <Filter>src\common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\common\hash.cpp">
+      <Filter>src\common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\common\hashmap.cpp">
+      <Filter>src\common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\common\init.cpp">
+      <Filter>src\common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\common\intl.cpp">
+      <Filter>src\common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\common\ipcbase.cpp">
+      <Filter>src\common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\common\languageinfo.cpp">
+      <Filter>src\common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\common\list.cpp">
+      <Filter>src\common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\common\log.cpp">
+      <Filter>src\common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\common\longlong.cpp">
+      <Filter>src\common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\common\memory.cpp">
+      <Filter>src\common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\common\mimecmn.cpp">
+      <Filter>src\common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\common\module.cpp">
+      <Filter>src\common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\common\msgout.cpp">
+      <Filter>src\common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\common\mstream.cpp">
+      <Filter>src\common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\common\numformatter.cpp">
+      <Filter>src\common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\common\object.cpp">
+      <Filter>src\common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\common\platinfo.cpp">
+      <Filter>src\common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\common\powercmn.cpp">
+      <Filter>src\common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\common\process.cpp">
+      <Filter>src\common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\common\regex.cpp">
+      <Filter>src\common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\common\sstream.cpp">
+      <Filter>src\common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\common\stdpbase.cpp">
+      <Filter>src\common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\common\stdstream.cpp">
+      <Filter>src\common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\common\stopwatch.cpp">
+      <Filter>src\common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\common\strconv.cpp">
+      <Filter>src\common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\common\stream.cpp">
+      <Filter>src\common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\common\string.cpp">
+      <Filter>src\common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\common\stringimpl.cpp">
+      <Filter>src\common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\common\stringops.cpp">
+      <Filter>src\common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\common\strvararg.cpp">
+      <Filter>src\common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\common\sysopt.cpp">
+      <Filter>src\common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\common\tarstrm.cpp">
+      <Filter>src\common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\common\textbuf.cpp">
+      <Filter>src\common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\common\textfile.cpp">
+      <Filter>src\common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\common\threadinfo.cpp">
+      <Filter>src\common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\common\time.cpp">
+      <Filter>src\common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\common\timercmn.cpp">
+      <Filter>src\common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\common\timerimpl.cpp">
+      <Filter>src\common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\common\tokenzr.cpp">
+      <Filter>src\common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\common\translation.cpp">
+      <Filter>src\common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\common\txtstrm.cpp">
+      <Filter>src\common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\common\unichar.cpp">
+      <Filter>src\common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\common\uri.cpp">
+      <Filter>src\common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\common\ustring.cpp">
+      <Filter>src\common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\common\utilscmn.cpp">
+      <Filter>src\common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\common\variant.cpp">
+      <Filter>src\common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\common\wfstream.cpp">
+      <Filter>src\common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\common\wxcrt.cpp">
+      <Filter>src\common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\common\wxprintf.cpp">
+      <Filter>src\common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\common\xlocale.cpp">
+      <Filter>src\common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\common\xti.cpp">
+      <Filter>src\common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\common\xtistrm.cpp">
+      <Filter>src\common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\common\zipstrm.cpp">
+      <Filter>src\common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\common\zstream.cpp">
+      <Filter>src\common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\generic\fswatcherg.cpp">
+      <Filter>src\generic</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\msw\basemsw.cpp">
+      <Filter>src\msw</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\msw\crashrpt.cpp">
+      <Filter>src\msw</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\msw\dde.cpp">
+      <Filter>src\msw</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\msw\debughlp.cpp">
+      <Filter>src\msw</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\msw\dir.cpp">
+      <Filter>src\msw</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\msw\dlmsw.cpp">
+      <Filter>src\msw</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\msw\evtloopconsole.cpp">
+      <Filter>src\msw</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\msw\fswatcher.cpp">
+      <Filter>src\msw</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\msw\main.cpp">
+      <Filter>src\msw</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\msw\mimetype.cpp">
+      <Filter>src\msw</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\msw\mslu.cpp">
+      <Filter>src\msw</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\msw\power.cpp">
+      <Filter>src\msw</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\msw\regconf.cpp">
+      <Filter>src\msw</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\msw\registry.cpp">
+      <Filter>src\msw</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\msw\snglinst.cpp">
+      <Filter>src\msw</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\msw\stackwalk.cpp">
+      <Filter>src\msw</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\msw\stdpaths.cpp">
+      <Filter>src\msw</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\msw\thread.cpp">
+      <Filter>src\msw</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\msw\timer.cpp">
+      <Filter>src\msw</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\msw\utils.cpp">
+      <Filter>src\msw</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\msw\utilsexc.cpp">
+      <Filter>src\msw</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\dependencies\wxWidgets\src\msw\volume.cpp">
+      <Filter>src\msw</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>
