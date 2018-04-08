@@ -1,8 +1,6 @@
-group "Modules/Scripting"
-
 project "Scripting"
 	if _ACTION then
-		location ("../../../project/" .. _ACTION .. "/scripting")
+		location(GetModulesLocation())
 	end
 
 	kind "StaticLib"
@@ -21,23 +19,23 @@ project "Scripting"
 		"include",
 		"../Entity/include",
 		"../Resource/include",
-		"../../Memory/include",
-		"../../Shared/include",
-		"../../../dependencies/EASTL/include",
-		"../../../dependencies/angelscript/angelscript/include",
-		"../../../dependencies/angelscript/add_on/scriptbuilder",
-		"../../../dependencies/angelscript/add_on/scriptarray",
-		"../../../dependencies/rapidjson",
-		"../../../dependencies/glm",
-		"../../../frameworks/Gaff/include",
-		"../../../frameworks/Gleam/include"
+		"../../Engine/Memory/include",
+		"../../Engine/Shared/include",
+		"../../Dependencies/EASTL/include",
+		"../../Dependencies/angelscript/angelscript/include",
+		"../../Dependencies/angelscript/add_on/scriptbuilder",
+		"../../Dependencies/angelscript/add_on/scriptarray",
+		"../../Dependencies/rapidjson",
+		"../../Dependencies/glm",
+		"../../Frameworks/Gaff/include",
+		"../../Frameworks/Gleam/include"
 	}
 
 
 
 project "ScriptingModule"
 	if _ACTION then
-		location ("../../../project/" .. _ACTION .. "/scripting")
+		location(GetModulesLocation())
 	end
 
 	kind "SharedLib"
@@ -61,19 +59,19 @@ project "ScriptingModule"
 	includedirs
 	{
 		"include",
-		"../../Memory/include",
-		"../../Shared/include",
+		"../../Engine/Memory/include",
+		"../../Engine/Shared/include",
 		"../Entity/include",
 		"../Resource/include",
-		"../../../dependencies/angelscript/add_on/scriptbuilder",
-		"../../../dependencies/angelscript/angelscript/include",
-		"../../../dependencies/EASTL/include",
-		"../../../dependencies/rapidjson",
-		"../../../dependencies/glm",
-		"../../../frameworks/Gaff/include"
+		"../../Dependencies/angelscript/add_on/scriptbuilder",
+		"../../Dependencies/angelscript/angelscript/include",
+		"../../Dependencies/EASTL/include",
+		"../../Dependencies/rapidjson",
+		"../../Dependencies/glm",
+		"../../Frameworks/Gaff/include"
 	}
 
-	dependson
+	local deps =
 	{
 		"Gaff",
 		"Gleam",
@@ -86,15 +84,5 @@ project "ScriptingModule"
 		"Scripting"
 	}
 
-	links
-	{
-		"Gaff",
-		"Gleam",
-		"Memory",
-		"Shared",
-		"EASTL",
-		"angelscript",
-		"Resource",
-		"Entity",
-		"Scripting"
-	}
+	dependson(deps)
+	links(deps)

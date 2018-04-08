@@ -1,8 +1,6 @@
-group "Modules/Entity"
-
 project "Entity"
 	if _ACTION then
-		location ("../../../project/" .. _ACTION .. "/entity")
+		location(GetModulesLocation())
 	end
 
 	kind "StaticLib"
@@ -19,21 +17,21 @@ project "Entity"
 	includedirs
 	{
 		"include",
-		"../../Memory/include",
-		"../../Shared/include",
-		"../../../dependencies/EASTL/include",
-		"../../../dependencies/rapidjson",
-		"../../../dependencies/glm",
-		"../../../dependencies/mpack",
-		"../../../frameworks/Gaff/include",
-		"../../../frameworks/Gleam/include",
+		"../../Engine/Memory/include",
+		"../../Engine/Shared/include",
+		"../../Dependencies/EASTL/include",
+		"../../Dependencies/rapidjson",
+		"../../Dependencies/glm",
+		"../../Dependencies/mpack",
+		"../../Frameworks/Gaff/include",
+		"../../Frameworks/Gleam/include",
 		"../Resource/include"
 	}
 
 
 project "EntityModule"
 	if _ACTION then
-		location ("../../../project/" .. _ACTION .. "/entity")
+		location(GetModulesLocation())
 	end
 
 	kind "SharedLib"
@@ -55,18 +53,18 @@ project "EntityModule"
 	includedirs
 	{
 		"include",
-		"../../Memory/include",
-		"../../Shared/include",
-		"../../../dependencies/EASTL/include",
-		"../../../dependencies/rapidjson",
-		"../../../dependencies/glm",
-		"../../../dependencies/mpack",
-		"../../../frameworks/Gaff/include",
-		"../../../frameworks/Gleam/include",
+		"../../Engine/Memory/include",
+		"../../Engine/Shared/include",
+		"../../Dependencies/EASTL/include",
+		"../../Dependencies/rapidjson",
+		"../../Dependencies/glm",
+		"../../Dependencies/mpack",
+		"../../Frameworks/Gaff/include",
+		"../../Frameworks/Gleam/include",
 		"../Resource/include"
 	}
 
-	local dependencies =
+	local deps =
 	{
 		"Memory",
 		"Gaff",
@@ -78,7 +76,7 @@ project "EntityModule"
 		"mpack"
 	}
 
-	dependson(dependencies)
-	links(dependencies)
+	dependson(deps)
+	links(deps)
 
 	NewDeleteLinkFix()

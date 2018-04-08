@@ -1,9 +1,7 @@
-group "Modules/Graphics"
-
 function DoGraphicsModule(renderer)
 	project("GraphicsModule" .. renderer)
 		if _ACTION then
-			location("../../../project/" .. _ACTION .. "/graphics")
+			location(GetModulesLocation())
 		end
 
 		kind "SharedLib"
@@ -33,20 +31,20 @@ function DoGraphicsModule(renderer)
 		includedirs
 		{
 			"include",
-			"../../Memory/include",
-			"../../Shared/include",
-			"../../../dependencies/EASTL/include",
-			"../../../dependencies/angelscript/angelscript/include",
-			-- "../../../dependencies/rapidjson",
-			-- "../../../dependencies/glm",
-			-- "../../../dependencies/mpack",
-			"../../../frameworks/Gaff/include",
-			"../../../frameworks/Gleam/include",
+			"../../Engine/Memory/include",
+			"../../Engine/Shared/include",
+			"../../Dependencies/EASTL/include",
+			"../../Dependencies/angelscript/angelscript/include",
+			-- "../../Dependencies/rapidjson",
+			-- "../../Dependencies/glm",
+			-- "../../Dependencies/mpack",
+			"../../Frameworks/Gaff/include",
+			"../../Frameworks/Gleam/include",
 			"../Entity/include",
 			"../Scripting/include"
 		}
 
-		local dependencies =
+		local deps =
 		{
 			"Memory",
 			"Gaff",
@@ -60,8 +58,8 @@ function DoGraphicsModule(renderer)
 			-- "mpack"
 		}
 
-		dependson(dependencies)
-		links(dependencies)
+		dependson(deps)
+		links(deps)
 
 		-- NewDeleteLinkFix()
 end

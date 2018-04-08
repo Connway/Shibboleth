@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="arch">
+      <UniqueIdentifier>{6332947C-4F69-950D-F855-7B10E46B110F}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="arch\x86">
+      <UniqueIdentifier>{98777836-8444-D341-AD5D-C1E9998908D0}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\..\src\Dependencies\zlib-ng\arch\x86\crc_folding.h">
+      <Filter>arch\x86</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\Dependencies\zlib-ng\arch\x86\ctzl.h">
+      <Filter>arch\x86</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\Dependencies\zlib-ng\arch\x86\x86.h">
+      <Filter>arch\x86</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\Dependencies\zlib-ng\crc32.h" />
+    <ClInclude Include="..\..\..\..\src\Dependencies\zlib-ng\deflate.h" />
+    <ClInclude Include="..\..\..\..\src\Dependencies\zlib-ng\deflate_p.h" />
+    <ClInclude Include="..\..\..\..\src\Dependencies\zlib-ng\functable.h" />
+    <ClInclude Include="..\..\..\..\src\Dependencies\zlib-ng\gzguts.h" />
+    <ClInclude Include="..\..\..\..\src\Dependencies\zlib-ng\inffast.h" />
+    <ClInclude Include="..\..\..\..\src\Dependencies\zlib-ng\inffixed.h" />
+    <ClInclude Include="..\..\..\..\src\Dependencies\zlib-ng\inflate.h" />
+    <ClInclude Include="..\..\..\..\src\Dependencies\zlib-ng\inftrees.h" />
+    <ClInclude Include="..\..\..\..\src\Dependencies\zlib-ng\match.h" />
+    <ClInclude Include="..\..\..\..\src\Dependencies\zlib-ng\memcopy.h" />
+    <ClInclude Include="..\..\..\..\src\Dependencies\zlib-ng\trees.h" />
+    <ClInclude Include="..\..\..\..\src\Dependencies\zlib-ng\zconf.h" />
+    <ClInclude Include="..\..\..\..\src\Dependencies\zlib-ng\zlib.h" />
+    <ClInclude Include="..\..\..\..\src\Dependencies\zlib-ng\zutil.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\..\..\src\Dependencies\zlib-ng\adler32.c" />
+    <ClCompile Include="..\..\..\..\src\Dependencies\zlib-ng\arch\x86\crc_folding.c">
+      <Filter>arch\x86</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\src\Dependencies\zlib-ng\arch\x86\crc_pclmulqdq.c">
+      <Filter>arch\x86</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\src\Dependencies\zlib-ng\arch\x86\deflate_quick.c">
+      <Filter>arch\x86</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\src\Dependencies\zlib-ng\arch\x86\fill_window_sse.c">
+      <Filter>arch\x86</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\src\Dependencies\zlib-ng\arch\x86\insert_string_sse.c">
+      <Filter>arch\x86</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\src\Dependencies\zlib-ng\arch\x86\x86.c">
+      <Filter>arch\x86</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\src\Dependencies\zlib-ng\compress.c" />
+    <ClCompile Include="..\..\..\..\src\Dependencies\zlib-ng\crc32.c" />
+    <ClCompile Include="..\..\..\..\src\Dependencies\zlib-ng\deflate.c" />
+    <ClCompile Include="..\..\..\..\src\Dependencies\zlib-ng\deflate_fast.c" />
+    <ClCompile Include="..\..\..\..\src\Dependencies\zlib-ng\deflate_medium.c" />
+    <ClCompile Include="..\..\..\..\src\Dependencies\zlib-ng\deflate_slow.c" />
+    <ClCompile Include="..\..\..\..\src\Dependencies\zlib-ng\functable.c" />
+    <ClCompile Include="..\..\..\..\src\Dependencies\zlib-ng\gzclose.c" />
+    <ClCompile Include="..\..\..\..\src\Dependencies\zlib-ng\gzlib.c" />
+    <ClCompile Include="..\..\..\..\src\Dependencies\zlib-ng\gzread.c" />
+    <ClCompile Include="..\..\..\..\src\Dependencies\zlib-ng\gzwrite.c" />
+    <ClCompile Include="..\..\..\..\src\Dependencies\zlib-ng\infback.c" />
+    <ClCompile Include="..\..\..\..\src\Dependencies\zlib-ng\inffast.c" />
+    <ClCompile Include="..\..\..\..\src\Dependencies\zlib-ng\inflate.c" />
+    <ClCompile Include="..\..\..\..\src\Dependencies\zlib-ng\inftrees.c" />
+    <ClCompile Include="..\..\..\..\src\Dependencies\zlib-ng\match.c" />
+    <ClCompile Include="..\..\..\..\src\Dependencies\zlib-ng\trees.c" />
+    <ClCompile Include="..\..\..\..\src\Dependencies\zlib-ng\uncompr.c" />
+    <ClCompile Include="..\..\..\..\src\Dependencies\zlib-ng\zutil.c" />
+  </ItemGroup>
+</Project>
