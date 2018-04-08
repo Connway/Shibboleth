@@ -1,0 +1,336 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Analyze|x64">
+      <Configuration>Analyze</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Profile|x64">
+      <Configuration>Profile</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Optimized_Debug|x64">
+      <Configuration>Optimized_Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{99A8857C-85DF-860D-2ECC-6C101AE2020F}</ProjectGuid>
+    <IgnoreWarnCompileDuplicatedFilename>true</IgnoreWarnCompileDuplicatedFilename>
+    <Keyword>Win32Proj</Keyword>
+    <RootNamespace>Gaff</RootNamespace>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v140</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v140</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Analyze|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v140</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Profile|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v140</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Optimized_Debug|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v140</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Analyze|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Optimized_Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <OutDir>..\..\..\build\vs2015\output\x64\Debug\</OutDir>
+    <IntDir>..\..\..\build\vs2015\intermediate\x64\Debug\Gaff\</IntDir>
+    <TargetName>Gaff</TargetName>
+    <TargetExt>.lib</TargetExt>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <OutDir>..\..\..\build\vs2015\output\x64\Release\</OutDir>
+    <IntDir>..\..\..\build\vs2015\intermediate\x64\Release\Gaff\</IntDir>
+    <TargetName>Gaff</TargetName>
+    <TargetExt>.lib</TargetExt>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Analyze|x64'">
+    <OutDir>..\..\..\build\vs2015\output\x64\Analyze\</OutDir>
+    <IntDir>..\..\..\build\vs2015\intermediate\x64\Analyze\Gaff\</IntDir>
+    <TargetName>Gaff</TargetName>
+    <TargetExt>.lib</TargetExt>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">
+    <OutDir>..\..\..\build\vs2015\output\x64\Profile\</OutDir>
+    <IntDir>..\..\..\build\vs2015\intermediate\x64\Profile\Gaff\</IntDir>
+    <TargetName>Gaff</TargetName>
+    <TargetExt>.lib</TargetExt>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Optimized_Debug|x64'">
+    <OutDir>..\..\..\build\vs2015\output\x64\Optimized_Debug\</OutDir>
+    <IntDir>..\..\..\build\vs2015\intermediate\x64\Optimized_Debug\Gaff\</IntDir>
+    <TargetName>Gaff</TargetName>
+    <TargetExt>.lib</TargetExt>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <WarningLevel>Level4</WarningLevel>
+      <TreatWarningAsError>true</TreatWarningAsError>
+      <PreprocessorDefinitions>UNICODE;_UNICODE;_DEBUG;DEBUG;WIN32;_WINDOWS;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\..\..\..\src\Dependencies\dirent;..\..\..\..\src\Frameworks\Gaff\include;..\..\..\..\src\Dependencies\EASTL\include;..\..\..\..\src\Dependencies\rapidjson;..\..\..\..\src\Dependencies\mpack;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+      <Optimization>Disabled</Optimization>
+      <ExceptionHandling>Async</ExceptionHandling>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <FloatingPointModel>Fast</FloatingPointModel>
+      <AdditionalOptions>/sdl /std:c++14 %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+    <Lib>
+      <TreatLibWarningAsErrors>true</TreatLibWarningAsErrors>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <WarningLevel>Level4</WarningLevel>
+      <TreatWarningAsError>true</TreatWarningAsError>
+      <PreprocessorDefinitions>UNICODE;_UNICODE;NDEBUG;WIN32;_WINDOWS;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\..\..\..\src\Dependencies\dirent;..\..\..\..\src\Frameworks\Gaff\include;..\..\..\..\src\Dependencies\EASTL\include;..\..\..\..\src\Dependencies\rapidjson;..\..\..\..\src\Dependencies\mpack;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <MinimalRebuild>false</MinimalRebuild>
+      <StringPooling>true</StringPooling>
+      <ExceptionHandling>Async</ExceptionHandling>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <FloatingPointModel>Fast</FloatingPointModel>
+      <AdditionalOptions>/sdl /std:c++14 %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+    <Lib>
+      <TreatLibWarningAsErrors>true</TreatLibWarningAsErrors>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Analyze|x64'">
+    <ClCompile>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <WarningLevel>Level4</WarningLevel>
+      <PreprocessorDefinitions>UNICODE;_UNICODE;NDEBUG;WIN32;_WINDOWS;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\..\..\..\src\Dependencies\dirent;..\..\..\..\src\Frameworks\Gaff\include;..\..\..\..\src\Dependencies\EASTL\include;..\..\..\..\src\Dependencies\rapidjson;..\..\..\..\src\Dependencies\mpack;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <MinimalRebuild>false</MinimalRebuild>
+      <StringPooling>true</StringPooling>
+      <ExceptionHandling>Async</ExceptionHandling>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <FloatingPointModel>Fast</FloatingPointModel>
+      <AdditionalOptions>/analyze /sdl /std:c++14 %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">
+    <ClCompile>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <WarningLevel>Level4</WarningLevel>
+      <TreatWarningAsError>true</TreatWarningAsError>
+      <PreprocessorDefinitions>UNICODE;_UNICODE;NDEBUG;SHIB_PROFILE;WIN32;_WINDOWS;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\..\..\..\src\Dependencies\dirent;..\..\..\..\src\Frameworks\Gaff\include;..\..\..\..\src\Dependencies\EASTL\include;..\..\..\..\src\Dependencies\rapidjson;..\..\..\..\src\Dependencies\mpack;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <MinimalRebuild>false</MinimalRebuild>
+      <StringPooling>true</StringPooling>
+      <ExceptionHandling>Async</ExceptionHandling>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <FloatingPointModel>Fast</FloatingPointModel>
+      <AdditionalOptions>/sdl /std:c++14 %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+    <Lib>
+      <TreatLibWarningAsErrors>true</TreatLibWarningAsErrors>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Optimized_Debug|x64'">
+    <ClCompile>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <WarningLevel>Level4</WarningLevel>
+      <TreatWarningAsError>true</TreatWarningAsError>
+      <PreprocessorDefinitions>UNICODE;_UNICODE;_DEBUG;DEBUG;WIN32;_WINDOWS;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\..\..\..\src\Dependencies\dirent;..\..\..\..\src\Frameworks\Gaff\include;..\..\..\..\src\Dependencies\EASTL\include;..\..\..\..\src\Dependencies\rapidjson;..\..\..\..\src\Dependencies\mpack;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <MinimalRebuild>false</MinimalRebuild>
+      <StringPooling>true</StringPooling>
+      <ExceptionHandling>Async</ExceptionHandling>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <FloatingPointModel>Fast</FloatingPointModel>
+      <AdditionalOptions>/sdl /std:c++14 %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+    <Lib>
+      <TreatLibWarningAsErrors>true</TreatLibWarningAsErrors>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\..\src\Frameworks\Gaff\include\Gaff_Assert.h" />
+    <ClInclude Include="..\..\..\..\src\Frameworks\Gaff\include\Gaff_BezierCurve.h" />
+    <ClInclude Include="..\..\..\..\src\Frameworks\Gaff\include\Gaff_BezierCurve.inl" />
+    <ClInclude Include="..\..\..\..\src\Frameworks\Gaff\include\Gaff_CrashHandler.h" />
+    <ClInclude Include="..\..\..\..\src\Frameworks\Gaff\include\Gaff_DefaultAlignedAllocator.h" />
+    <ClInclude Include="..\..\..\..\src\Frameworks\Gaff\include\Gaff_DefaultAllocator.h" />
+    <ClInclude Include="..\..\..\..\src\Frameworks\Gaff\include\Gaff_Defines.h" />
+    <ClInclude Include="..\..\..\..\src\Frameworks\Gaff\include\Gaff_Directory.h" />
+    <ClInclude Include="..\..\..\..\src\Frameworks\Gaff\include\Gaff_Directory.inl" />
+    <ClInclude Include="..\..\..\..\src\Frameworks\Gaff\include\Gaff_DynamicLoader.h" />
+    <ClInclude Include="..\..\..\..\src\Frameworks\Gaff\include\Gaff_DynamicLoader.inl" />
+    <ClInclude Include="..\..\..\..\src\Frameworks\Gaff\include\Gaff_DynamicModule.h" />
+    <ClInclude Include="..\..\..\..\src\Frameworks\Gaff\include\Gaff_DynamicModule_Linux.h" />
+    <ClInclude Include="..\..\..\..\src\Frameworks\Gaff\include\Gaff_DynamicModule_Windows.h" />
+    <ClInclude Include="..\..\..\..\src\Frameworks\Gaff\include\Gaff_EnumReflection.h" />
+    <ClInclude Include="..\..\..\..\src\Frameworks\Gaff\include\Gaff_EnumReflectionDefinition.h" />
+    <ClInclude Include="..\..\..\..\src\Frameworks\Gaff\include\Gaff_EnumReflectionDefinition.inl" />
+    <ClInclude Include="..\..\..\..\src\Frameworks\Gaff\include\Gaff_File.h" />
+    <ClInclude Include="..\..\..\..\src\Frameworks\Gaff\include\Gaff_Function.h" />
+    <ClInclude Include="..\..\..\..\src\Frameworks\Gaff\include\Gaff_Hash.h" />
+    <ClInclude Include="..\..\..\..\src\Frameworks\Gaff\include\Gaff_HashString.h" />
+    <ClInclude Include="..\..\..\..\src\Frameworks\Gaff\include\Gaff_HashString.inl" />
+    <ClInclude Include="..\..\..\..\src\Frameworks\Gaff\include\Gaff_IAllocator.h" />
+    <ClInclude Include="..\..\..\..\src\Frameworks\Gaff\include\Gaff_ICurve.h" />
+    <ClInclude Include="..\..\..\..\src\Frameworks\Gaff\include\Gaff_IRefCounted.h" />
+    <ClInclude Include="..\..\..\..\src\Frameworks\Gaff\include\Gaff_IncludeRapidJSON.h" />
+    <ClInclude Include="..\..\..\..\src\Frameworks\Gaff\include\Gaff_IncludeWindows.h" />
+    <ClInclude Include="..\..\..\..\src\Frameworks\Gaff\include\Gaff_JSON.h" />
+    <ClInclude Include="..\..\..\..\src\Frameworks\Gaff\include\Gaff_JSONSerializeWriter.h" />
+    <ClInclude Include="..\..\..\..\src\Frameworks\Gaff\include\Gaff_JSONSerializeWriter.inl" />
+    <ClInclude Include="..\..\..\..\src\Frameworks\Gaff\include\Gaff_JobPool.h" />
+    <ClInclude Include="..\..\..\..\src\Frameworks\Gaff\include\Gaff_JobPool.inl" />
+    <ClInclude Include="..\..\..\..\src\Frameworks\Gaff\include\Gaff_LinearCurve.h" />
+    <ClInclude Include="..\..\..\..\src\Frameworks\Gaff\include\Gaff_LinearCurve.inl" />
+    <ClInclude Include="..\..\..\..\src\Frameworks\Gaff\include\Gaff_Math.h" />
+    <ClInclude Include="..\..\..\..\src\Frameworks\Gaff\include\Gaff_MessagePack.h" />
+    <ClInclude Include="..\..\..\..\src\Frameworks\Gaff\include\Gaff_MessagePackSerializeWriter.h" />
+    <ClInclude Include="..\..\..\..\src\Frameworks\Gaff\include\Gaff_NetworkDefines.h" />
+    <ClInclude Include="..\..\..\..\src\Frameworks\Gaff\include\Gaff_Platform.h" />
+    <ClInclude Include="..\..\..\..\src\Frameworks\Gaff\include\Gaff_Predicates.h" />
+    <ClInclude Include="..\..\..\..\src\Frameworks\Gaff\include\Gaff_Queue.h" />
+    <ClInclude Include="..\..\..\..\src\Frameworks\Gaff\include\Gaff_RefCounted.h" />
+    <ClInclude Include="..\..\..\..\src\Frameworks\Gaff\include\Gaff_RefPtr.h" />
+    <ClInclude Include="..\..\..\..\src\Frameworks\Gaff\include\Gaff_Reflection.h" />
+    <ClInclude Include="..\..\..\..\src\Frameworks\Gaff\include\Gaff_ReflectionDefinition.h" />
+    <ClInclude Include="..\..\..\..\src\Frameworks\Gaff\include\Gaff_ReflectionDefinition.inl" />
+    <ClInclude Include="..\..\..\..\src\Frameworks\Gaff\include\Gaff_ReflectionInterfaces.h" />
+    <ClInclude Include="..\..\..\..\src\Frameworks\Gaff\include\Gaff_ReflectionVersion.h" />
+    <ClInclude Include="..\..\..\..\src\Frameworks\Gaff\include\Gaff_ReflectionVersion.inl" />
+    <ClInclude Include="..\..\..\..\src\Frameworks\Gaff\include\Gaff_ScopedExit.h" />
+    <ClInclude Include="..\..\..\..\src\Frameworks\Gaff\include\Gaff_SerializeInterfaces.h" />
+    <ClInclude Include="..\..\..\..\src\Frameworks\Gaff\include\Gaff_SerializeReader.h" />
+    <ClInclude Include="..\..\..\..\src\Frameworks\Gaff\include\Gaff_SmartPtrs.h" />
+    <ClInclude Include="..\..\..\..\src\Frameworks\Gaff\include\Gaff_StackTrace.h" />
+    <ClInclude Include="..\..\..\..\src\Frameworks\Gaff\include\Gaff_StackTrace_Linux.h" />
+    <ClInclude Include="..\..\..\..\src\Frameworks\Gaff\include\Gaff_StackTrace_Windows.h" />
+    <ClInclude Include="..\..\..\..\src\Frameworks\Gaff\include\Gaff_String.h" />
+    <ClInclude Include="..\..\..\..\src\Frameworks\Gaff\include\Gaff_Utils.h" />
+    <ClInclude Include="..\..\..\..\src\Frameworks\Gaff\include\Gaff_Utils_Common.inl" />
+    <ClInclude Include="..\..\..\..\src\Frameworks\Gaff\include\Gaff_Vector.h" />
+    <ClInclude Include="..\..\..\..\src\Frameworks\Gaff\include\Gaff_VectorMap.h" />
+    <ClInclude Include="..\..\..\..\src\Frameworks\Gaff\include\Gaff_Watcher.h" />
+    <ClInclude Include="..\..\..\..\src\Frameworks\Gaff\include\Gaff_Watcher.inl" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\..\..\src\Frameworks\Gaff\Gaff_Assert.cpp" />
+    <ClCompile Include="..\..\..\..\src\Frameworks\Gaff\Gaff_CrashHandler_Common.cpp" />
+    <ClCompile Include="..\..\..\..\src\Frameworks\Gaff\Gaff_CrashHandler_Linux.cpp" />
+    <ClCompile Include="..\..\..\..\src\Frameworks\Gaff\Gaff_CrashHandler_Windows.cpp" />
+    <ClCompile Include="..\..\..\..\src\Frameworks\Gaff\Gaff_Directory.cpp" />
+    <ClCompile Include="..\..\..\..\src\Frameworks\Gaff\Gaff_DynamicModule_Linux.cpp" />
+    <ClCompile Include="..\..\..\..\src\Frameworks\Gaff\Gaff_DynamicModule_Windows.cpp" />
+    <ClCompile Include="..\..\..\..\src\Frameworks\Gaff\Gaff_EnumReflection.cpp" />
+    <ClCompile Include="..\..\..\..\src\Frameworks\Gaff\Gaff_File.cpp" />
+    <ClCompile Include="..\..\..\..\src\Frameworks\Gaff\Gaff_Hash.cpp" />
+    <ClCompile Include="..\..\..\..\src\Frameworks\Gaff\Gaff_JSON.cpp" />
+    <ClCompile Include="..\..\..\..\src\Frameworks\Gaff\Gaff_Math.cpp" />
+    <ClCompile Include="..\..\..\..\src\Frameworks\Gaff\Gaff_MessagePack.cpp" />
+    <ClCompile Include="..\..\..\..\src\Frameworks\Gaff\Gaff_MessagePackSerializeWriter.cpp" />
+    <ClCompile Include="..\..\..\..\src\Frameworks\Gaff\Gaff_Reflection.cpp" />
+    <ClCompile Include="..\..\..\..\src\Frameworks\Gaff\Gaff_StackTrace_Linux.cpp" />
+    <ClCompile Include="..\..\..\..\src\Frameworks\Gaff\Gaff_StackTrace_Windows.cpp" />
+    <ClCompile Include="..\..\..\..\src\Frameworks\Gaff\Gaff_Utils_Common.cpp" />
+    <ClCompile Include="..\..\..\..\src\Frameworks\Gaff\Gaff_Utils_Linux.cpp" />
+    <ClCompile Include="..\..\..\..\src\Frameworks\Gaff\Gaff_Utils_Mac.cpp" />
+    <ClCompile Include="..\..\..\..\src\Frameworks\Gaff\Gaff_Utils_Windows.cpp" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

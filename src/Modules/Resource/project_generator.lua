@@ -1,8 +1,6 @@
-group "Modules/Resource"
-
 project "Resource"
 	if _ACTION then
-		location ("../../../project/" .. _ACTION .. "/resource")
+		location(GetModulesLocation())
 	end
 
 	kind "StaticLib"
@@ -19,16 +17,16 @@ project "Resource"
 	includedirs
 	{
 		"include",
-		"../../Memory/include",
-		"../../Shared/include",
-		"../../../dependencies/EASTL/include",
-		"../../../frameworks/Gaff/include"
+		"../../Engine/Memory/include",
+		"../../Engine/Shared/include",
+		"../../Dependencies/EASTL/include",
+		"../../Frameworks/Gaff/include"
 	}
 
 
 project "ResourceModule"
 	if _ACTION then
-		location ("../../../project/" .. _ACTION .. "/resource")
+		location(GetModulesLocation())
 	end
 
 	kind "SharedLib"
@@ -52,14 +50,14 @@ project "ResourceModule"
 	includedirs
 	{
 		"include",
-		"../../Memory/include",
-		"../../Shared/include",
-		"../../../dependencies/EASTL/include",
-		"../../../dependencies/rapidjson",
-		"../../../frameworks/Gaff/include"
+		"../../Engine/Memory/include",
+		"../../Engine/Shared/include",
+		"../../Dependencies/EASTL/include",
+		"../../Dependencies/rapidjson",
+		"../../Frameworks/Gaff/include"
 	}
 
-	links
+	local deps =
 	{
 		"Memory",
 		"Gaff",
@@ -68,3 +66,5 @@ project "ResourceModule"
 		"Resource"
 	}
 
+	dependson(deps)
+	links(deps)

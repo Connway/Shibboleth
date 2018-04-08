@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="include">
+      <UniqueIdentifier>{89AF369E-F58E-B539-FEA6-40106A051C9B}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\..\src\Modules\Graphics\include\Gen_ReflectionInit.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\Modules\Graphics\include\Shibboleth_CameraComponent.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\Modules\Graphics\include\Shibboleth_IRenderManager.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\Modules\Graphics\include\Shibboleth_RenderManager.h">
+      <Filter>include</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\..\..\src\Modules\Graphics\Shibboleth_CameraComponent.cpp" />
+    <ClCompile Include="..\..\..\..\src\Modules\Graphics\Shibboleth_GraphicsModule.cpp" />
+    <ClCompile Include="..\..\..\..\src\Modules\Graphics\Shibboleth_RenderManager.cpp" />
+  </ItemGroup>
+</Project>

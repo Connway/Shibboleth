@@ -1,8 +1,6 @@
-group "Modules/Main Loop"
-
 project "MainLoopModule"
 	if _ACTION then
-		location ("../../../project/" .. _ACTION .. "/mainloop")
+		location(GetModulesLocation())
 	end
 
 	kind "SharedLib"
@@ -17,26 +15,26 @@ project "MainLoopModule"
 
 	filter { "system:windows" }
 		links { "ws2_32.lib", "iphlpapi.lib", "psapi.lib", "userenv.lib" }
-		includedirs { "../../dependencies/dirent" }
+		includedirs { "../../Dependencies/dirent" }
 
 	filter {}
 
 	includedirs
 	{
 		"include",
-		"../../Shared/include",
-		"../../Memory/include",
-		"../../../frameworks/Gaff/include",
-		"../../../dependencies/EASTL/include"
+		"../../Engine/Shared/include",
+		"../../Engine/Memory/include",
+		"../../Frameworks/Gaff/include",
+		"../../Dependencies/EASTL/include"
 
 		, "../Scripting/include",
 		"../Resource/include",
-		"../../../dependencies/angelscript/angelscript/include",
-		"../../../dependencies/angelscript/add_on/scriptbuilder",
+		"../../Dependencies/angelscript/angelscript/include",
+		"../../Dependencies/angelscript/add_on/scriptbuilder",
 		"../Entity/include",
-		"../../../frameworks/Gleam/include",
-		"../../../dependencies/glm",
-		"../../../dependencies/rapidjson"
+		"../../Frameworks/Gleam/include",
+		"../../Dependencies/glm",
+		"../../Dependencies/rapidjson"
 	}
 
 	local deps = {
@@ -53,6 +51,6 @@ project "MainLoopModule"
 
 	postbuildcommands
 	{
-		"{MKDIR} ../../../workingdir/bin",
-		"{COPY} %{cfg.targetdir}/%{cfg.buildtarget.name} ../../../workingdir/bin"
+		"{MKDIR} ../../../../workingdir/bin",
+		"{COPY} %{cfg.targetdir}/%{cfg.buildtarget.name} ../../../../workingdir/bin"
 	}
