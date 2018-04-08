@@ -27,8 +27,7 @@ startproject "App"
 symbols "On"
 cppdialect "C++14"
 
-filter { "options:physx" }
-	defines { "USE_PHYSX" }
+defines { "UNICODE", "_UNICODE" }
 
 -- filter { "platforms:x86" }
 -- 	architecture "x32"
@@ -90,6 +89,7 @@ filter { "action:vs*" }
 
 filter { "system:windows" }
 	defines { "WIN32", "_WINDOWS" }
+	-- systemversion "10.0.16299.0"
 
 filter { "system:windows", "configurations:*Clang", "action:vs2015" }
 	toolset "msc-llvm-vs2014"
