@@ -260,7 +260,6 @@
     <ClInclude Include="..\..\..\..\src\Engine\Shared\include\Shibboleth_IFileSystem.h" />
     <ClInclude Include="..\..\..\..\src\Engine\Shared\include\Shibboleth_IManager.h" />
     <ClInclude Include="..\..\..\..\src\Engine\Shared\include\Shibboleth_IncludeAngelScript.h" />
-    <ClInclude Include="..\..\..\..\src\Engine\Shared\include\Shibboleth_IncludeNuklear.h" />
     <ClInclude Include="..\..\..\..\src\Engine\Shared\include\Shibboleth_JobPool.h" />
     <ClInclude Include="..\..\..\..\src\Engine\Shared\include\Shibboleth_LogManager.h" />
     <ClInclude Include="..\..\..\..\src\Engine\Shared\include\Shibboleth_LooseFileSystem.h" />

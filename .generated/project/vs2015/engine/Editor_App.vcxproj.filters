@@ -9,13 +9,20 @@
     <ClInclude Include="..\..\..\..\src\Engine\Editor_App\include\Shibboleth_Editor.h">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\..\src\Engine\Editor_App\include\Shibboleth_EditorFrame.h">
+      <Filter>include</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\..\src\Engine\Editor_App\include\Shibboleth_Inspector.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\Engine\Editor_App\include\Shibboleth_ModulesWindow.h">
       <Filter>include</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\..\src\Engine\Editor_App\Editor_Main.cpp" />
     <ClCompile Include="..\..\..\..\src\Engine\Editor_App\Shibboleth_Editor.cpp" />
+    <ClCompile Include="..\..\..\..\src\Engine\Editor_App\Shibboleth_EditorFrame.cpp" />
     <ClCompile Include="..\..\..\..\src\Engine\Editor_App\Shibboleth_Inspector.cpp" />
+    <ClCompile Include="..\..\..\..\src\Engine\Editor_App\Shibboleth_ModulesWindow.cpp" />
   </ItemGroup>
 </Project>

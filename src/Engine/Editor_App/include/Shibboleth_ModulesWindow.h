@@ -22,25 +22,28 @@ THE SOFTWARE.
 
 #pragma once
 
-#include <Shibboleth_IEditor.h>
-#include <Shibboleth_App.h>
-#include <EASTL/unique_ptr.h>
-#include <EASTL/vector_map.h>
-#include <EASTL/string.h>
-#include <wx/wx.h>
+#include <Shibboleth_Defines.h>
+#include <wx/panel.h>
+
+class wxTreeCtrl;
 
 NS_SHIBBOLETH
 
-class EditorFrame;
+class App;
 
-class Editor : public wxApp, public IEditor
+class ModulesWindow : public wxPanel
 {
 public:
-	bool OnInit(void) override;
+	ModulesWindow(wxWindow* parent, App& app);
 
 private:
-	EditorFrame* _frame = nullptr;
-	App _engine_instance;
+	wxTreeCtrl* _tree = nullptr;
+	App& _app;
+
+	wxArrayString _module_names;
+	wxArrayString _refl_names;
+
+	void initTree(void);
 };
 
 NS_END

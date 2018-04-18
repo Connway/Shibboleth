@@ -110,7 +110,7 @@ NS_END
 
 #define LogWithApp(app, type, channel, message, ...) app.getLogManager().logMessage(type, channel, message, __VA_ARGS__)
 
-#define Log(type, channel, message, ...) LogWithApp(Shibboleth::GetApp(), type, channel, message, __VA_ARGS__)
+#define LogType(type, channel, message, ...) LogWithApp(Shibboleth::GetApp(), type, channel, message, __VA_ARGS__)
 #define LogError(channel, message, ...) LogWithApp(Shibboleth::GetApp(), Shibboleth::LOG_ERROR, channel, message, __VA_ARGS__)
 #define LogWarning(channel, message, ...) LogWithApp(Shibboleth::GetApp(), Shibboleth::LOG_WARNING, channel, message, __VA_ARGS__)
 #define LogInfo(channel, message, ...) LogWithApp(Shibboleth::GetApp(), Shibboleth::LOG_NORMAL, channel, message, __VA_ARGS__)

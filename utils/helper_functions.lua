@@ -88,3 +88,21 @@ end
 function RunFile(file)
 	dofile(file)
 end
+
+function IncludeWxWidgets()
+	includedirs { "../../Dependencies/wxWidgets/include" }
+	defines
+	{
+		"NOPCH",
+		-- "WXBUILDING",
+		"wxUSE_ZLIB_H_IN_PATH",
+		-- "wxUSE_GUI=1",
+		-- "wxUSE_BASE=1"
+	}
+
+	filter { "system:windows" }
+		includedirs { "../../Dependencies/wxWidgets/include/msvc" }
+		defines { "__WXMSW__" }
+
+	filter {}
+end

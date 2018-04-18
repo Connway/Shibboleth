@@ -249,6 +249,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\..\src\Engine\Editor\include\Shibboleth_EditorWindowAttribute.h" />
+    <ClInclude Include="..\..\..\..\src\Engine\Editor\include\Shibboleth_IEditor.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\..\src\Engine\Editor\Shibboleth_EditorWindowAttribute.cpp" />

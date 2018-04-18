@@ -13,12 +13,12 @@ project "Editor_App"
 	includedirs
 	{
 		"include",
+		"../Editor/include",
 		"../Shared/include",
 		"../Memory/include",
 		"../../Frameworks/Gaff/include",
 		"../../Dependencies/rapidjson",
-		"../../Dependencies/EASTL/include",
-		"../../Dependencies/nana/include"
+		"../../Dependencies/EASTL/include"
 	}
 
 	local deps =
@@ -30,8 +30,13 @@ project "Editor_App"
 		"libjpeg",
 		"libpng",
 		"zlib-ng",
-		"nana"
+		"wxBase",
+		"wxCore",
+		"wxAUI",
+		"wxADV"
 	}
+
+	IncludeWxWidgets()
 
 	dependson(deps)
 	links(deps)
@@ -40,9 +45,13 @@ project "Editor_App"
 		flags { "FatalWarnings" }
 
 	filter { "system:windows" }
-		links { "ws2_32.lib", "iphlpapi.lib", "psapi.lib", "userenv.lib" }
 		includedirs { "../../Dependencies/dirent" }
-		links { "Dbghelp" }
+		links
+		{
+			"comctl32",
+			"Rpcrt4",
+			"Dbghelp"
+		}
 
 	filter { "system:not windows" }
 		linkoptions { "-Wl,-rpath,./bin" }
