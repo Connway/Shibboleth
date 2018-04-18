@@ -23,7 +23,7 @@ rtti "Off"
 
 nativewchar "Default"
 floatingpoint "Fast"
-startproject "App"
+startproject "Game_App"
 symbols "On"
 cppdialect "C++14"
 

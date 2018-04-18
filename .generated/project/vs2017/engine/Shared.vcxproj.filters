@@ -42,9 +42,6 @@
     <ClInclude Include="..\..\..\..\src\Engine\Shared\include\Shibboleth_IncludeAngelScript.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\src\Engine\Shared\include\Shibboleth_IncludeNuklear.h">
-      <Filter>include</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\..\src\Engine\Shared\include\Shibboleth_JobPool.h">
       <Filter>include</Filter>
     </ClInclude>

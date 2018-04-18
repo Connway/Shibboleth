@@ -22,25 +22,40 @@ THE SOFTWARE.
 
 #pragma once
 
-#include <Shibboleth_IEditor.h>
-#include <Shibboleth_App.h>
-#include <EASTL/unique_ptr.h>
-#include <EASTL/vector_map.h>
-#include <EASTL/string.h>
-#include <wx/wx.h>
+#include <Shibboleth_Defines.h>
+#include <wx/aui/framemanager.h>
+#include <wx/frame.h>
 
 NS_SHIBBOLETH
 
-class EditorFrame;
+class App;
 
-class Editor : public wxApp, public IEditor
+class EditorFrame : public wxFrame
 {
 public:
-	bool OnInit(void) override;
+	EditorFrame(const wxString& title, const wxPoint& pos, const wxSize& size);
+	~EditorFrame(void);
+
+	void setApp(App& app);
 
 private:
-	EditorFrame* _frame = nullptr;
-	App _engine_instance;
+	App* _app = nullptr;
+	wxAuiManager _aui_mgr;
+
+	wxMenuBar* _menu_bar = nullptr;
+	wxMenu* _window_menu = nullptr;
+
+	void OnExit(wxCommandEvent&);
+	void OnAbout(wxCommandEvent&);
+
+	void OnModulesWindow(wxCommandEvent&);
+
+	wxDECLARE_EVENT_TABLE();
+};
+
+enum EditorFrameEventID
+{
+	EF_MODULES = 1
 };
 
 NS_END
