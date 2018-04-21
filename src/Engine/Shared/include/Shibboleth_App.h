@@ -23,6 +23,7 @@ THE SOFTWARE.
 #pragma once
 
 //#include "Shibboleth_MessageBroadcaster.h"
+#include "Shibboleth_ReflectionManager.h"
 #include "Shibboleth_LogManager.h"
 #include "Shibboleth_SmartPtrs.h"
 #include "Shibboleth_IApp.h"
@@ -45,28 +46,17 @@ public:
 	const IManager* getManager(Gaff::Hash64 name) const override;
 	IManager* getManager(Gaff::Hash64 name) override;
 
-	//MessageBroadcaster& getBroadcaster(void) override;
-
 	IFileSystem* getFileSystem(void) override;
 	const VectorMap<HashString32, U8String>& getCmdLine(void) const override;
 
+	//MessageBroadcaster& getBroadcaster(void) override;
+	const ReflectionManager& getReflectionManager(void) const override;
+	ReflectionManager& getReflectionManager(void) override;
 	LogManager& getLogManager(void) override;
 	JobPool& getJobPool(void) override;
 
 	DynamicLoader::ModulePtr loadModule(const char* filename, const char* name) override;
 	Vector<U8String> getLoadedModuleNames(void) const;
-
-	const Gaff::IEnumReflectionDefinition* getEnumReflection(Gaff::Hash64 name) const override;
-	void registerEnumReflection(Gaff::Hash64 name, Gaff::IEnumReflectionDefinition& ref_def) override;
-	const VectorMap< Gaff::Hash64, UniquePtr<Gaff::IEnumReflectionDefinition> >& getEnumReflectionDefinitions(void) const;
-
-	const Gaff::IReflectionDefinition* getReflection(Gaff::Hash64 name) const override;
-	void registerReflection(Gaff::Hash64 name, Gaff::IReflectionDefinition& ref_def) override;
-	void registerTypeBucket(Gaff::Hash64 name) override;
-	const Vector<Gaff::Hash64>* getTypeBucket(Gaff::Hash64 name) const override;
-
-	Vector<const Gaff::IEnumReflectionDefinition*> getEnumReflectionWithAttribute(Gaff::Hash64 name) const override;
-	Vector<const Gaff::IReflectionDefinition*> getReflectionWithAttribute(Gaff::Hash64 name) const override;
 
 	bool isQuitting(void) const override;
 	void quit(void) override;
@@ -94,10 +84,7 @@ private:
 	bool _running;
 	MainLoopFunc _main_loop;
 
-	VectorMap< Gaff::Hash64, UniquePtr<Gaff::IEnumReflectionDefinition> > _enum_reflection_map;
-	VectorMap< Gaff::Hash64, UniquePtr<Gaff::IReflectionDefinition> > _reflection_map;
-	VectorMap< Gaff::Hash64, UniquePtr<IManager> > _manager_map;
-	VectorMap< Gaff::Hash64, Vector<Gaff::Hash64> > _type_buckets;
+	ReflectionManager _reflection_mgr;
 
 	//MessageBroadcaster _broadcaster;
 	DynamicLoader _dynamic_loader;
@@ -106,6 +93,7 @@ private:
 
 	FileSystemData _fs;
 
+	VectorMap< Gaff::Hash64, UniquePtr<IManager> > _manager_map;
 	VectorMap<HashString32, U8String> _cmd_line_args;
 
 	bool initInternal(void);

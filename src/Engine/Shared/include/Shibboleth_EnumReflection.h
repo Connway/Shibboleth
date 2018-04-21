@@ -83,7 +83,7 @@ THE SOFTWARE.
 		} \
 		g_enum_reflection_definition = reinterpret_cast< Gaff::EnumReflectionDefinition<type, ProxyAllocator>* >( \
 			const_cast< Gaff::IEnumReflectionDefinition* >( \
-				GetApp().getEnumReflection(Gaff::FNV1aHash64Const(#type)) \
+				GetApp().getReflectionManager().getEnumReflection(Gaff::FNV1aHash64Const(#type)) \
 			) \
 		); \
 		if (g_enum_reflection_definition) { \
@@ -105,6 +105,7 @@ THE SOFTWARE.
 			BuildReflection(*g_enum_reflection_definition);
 
 #define SHIB_ENUM_REFLECTION_DEFINE_END_CUSTOM_INIT(type) \
+			GetApp().getReflectionManager().registerEnumReflection(GetHash(), g_enum_reflection_definition); \
 		} \
 	}
 

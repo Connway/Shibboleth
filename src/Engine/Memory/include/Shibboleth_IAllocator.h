@@ -36,7 +36,7 @@ THE SOFTWARE.
 #define SHIB_FREET GAFF_FREET
 #define SHIB_FREE GAFF_FREE
 
-#define SHIB_ALLOCT_POOL(Type, pool_index, allocator, ...) Gaff::Construct(SHIB_ALLOC_CAST(Type, pool_index, allocator), __VA_ARGS__);
+#define SHIB_ALLOCT_POOL(Type, pool_index, allocator, ...) Gaff::Construct(SHIB_ALLOC_CAST(Type, pool_index, allocator), __VA_ARGS__)
 
 NS_SHIBBOLETH
 

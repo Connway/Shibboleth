@@ -268,6 +268,7 @@
     <ClInclude Include="..\..\..\..\src\Engine\Shared\include\Shibboleth_Queue.h" />
     <ClInclude Include="..\..\..\..\src\Engine\Shared\include\Shibboleth_RefCounted.h" />
     <ClInclude Include="..\..\..\..\src\Engine\Shared\include\Shibboleth_Reflection.h" />
+    <ClInclude Include="..\..\..\..\src\Engine\Shared\include\Shibboleth_ReflectionManager.h" />
     <ClInclude Include="..\..\..\..\src\Engine\Shared\include\Shibboleth_SmartPtrs.h" />
     <ClInclude Include="..\..\..\..\src\Engine\Shared\include\Shibboleth_String.h" />
     <ClInclude Include="..\..\..\..\src\Engine\Shared\include\Shibboleth_Utilities.h" />
@@ -283,9 +284,10 @@
     <ClCompile Include="..\..\..\..\src\Engine\Shared\Shibboleth_Math.cpp" />
     <ClCompile Include="..\..\..\..\src\Engine\Shared\Shibboleth_NewDelete.cpp" />
     <ClCompile Include="..\..\..\..\src\Engine\Shared\Shibboleth_Reflection.cpp" />
+    <ClCompile Include="..\..\..\..\src\Engine\Shared\Shibboleth_ReflectionManager.cpp" />
     <ClCompile Include="..\..\..\..\src\Engine\Shared\Shibboleth_Utilities.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
-</Project>
+</Project> 

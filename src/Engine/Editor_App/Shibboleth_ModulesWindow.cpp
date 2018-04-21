@@ -60,6 +60,7 @@ void ModulesWindow::initTree(void)
 		const Gaff::JSON module_display = config["module_display"];
 
 		if (module_display.isArray()) {
+			const ReflectionManager& refl_mgr = _app.getReflectionManager();
 			_module_names.Clear();
 			_refl_names.Clear();
 
@@ -72,16 +73,16 @@ void ModulesWindow::initTree(void)
 				_refl_names.Add(refl_name.getString());
 
 
-				const Vector<Gaff::Hash64>* const hashes = _app.getTypeBucket(Gaff::FNV1aHash64String(refl_name.getString()));
+				const Vector<const Gaff::IReflectionDefinition*>* const bucket = refl_mgr.getTypeBucket(Gaff::FNV1aHash64String(refl_name.getString()));
 
-				if (!hashes) {
+				if (!bucket) {
 					continue;
 				}
 
 				const wxTreeItemId id = _tree->AppendItem(root_id, wxString(name.getString()));
 
-				for (Gaff::Hash64 hash : *hashes) {
-					_tree->AppendItem(id, wxString(_app.getReflection(hash)->getReflectionInstance().getName()));
+				for (const Gaff::IReflectionDefinition* ref_data : *bucket) {
+					_tree->AppendItem(id, wxString(ref_data->getReflectionInstance().getName()));
 				}
 			}
 		}

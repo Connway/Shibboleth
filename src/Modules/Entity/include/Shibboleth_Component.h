@@ -35,30 +35,26 @@ public:
 	template <class T>
 	static T* Create(void)
 	{
-		const Vector<Gaff::Hash64>* const components = GetApp().getTypeBucket(Gaff::FNV1aHash64Const("Component"));
+		const Vector<const Gaff::IReflectionDefinition*>* const components = GetApp().getReflectionManager().getTypeBucket(Gaff::FNV1aHash64Const("Component"));
 		GAFF_ASSERT(components);
 
-		const auto it = eastl::lower_bound(components->begin(), components->end(), Reflection<T>::GetHash());
-		GAFF_ASSERT(it != components->end() && *it == Reflection<T>::GetHash());
+		const auto it = eastl::lower_bound(components->begin(), components->end(), component_name, ReflectionManager::CompareRefHash);
+		GAFF_ASSERT(it != components->end() && (*it)->getReflectionInstance().getHash() == component_name);
 
-		const Gaff::IReflectionDefinition* const reflection = GetApp().getReflection(*it);
 		ProxyAllocator allocator("Components");
-
-		return reflection->createAllocT<T>(allocator);
+		return (*it)->createAllocT<T>(allocator);
 	}
 
 	static void* Create(Gaff::Hash64 component_name)
 	{
-		const Vector<Gaff::Hash64>* const components = GetApp().getTypeBucket(Gaff::FNV1aHash64Const("Component"));
+		const Vector<const Gaff::IReflectionDefinition*>* const components = GetApp().getReflectionManager().getTypeBucket(Gaff::FNV1aHash64Const("Component"));
 		GAFF_ASSERT(components);
 
-		const auto it = eastl::lower_bound(components->begin(), components->end(), component_name);
-		GAFF_ASSERT(it != components->end() && *it == component_name);
+		const auto it = eastl::lower_bound(components->begin(), components->end(), component_name, ReflectionManager::CompareRefHash);
+		GAFF_ASSERT(it != components->end() && (*it)->getReflectionInstance().getHash() == component_name);
 
-		const Gaff::IReflectionDefinition* const reflection = GetApp().getReflection(*it);
 		ProxyAllocator allocator("Components");
-
-		return reflection->createAlloc(allocator);
+		return (*it)->createAlloc(allocator);
 	}
 
 	Component(void);

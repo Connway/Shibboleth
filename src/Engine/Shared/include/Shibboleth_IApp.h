@@ -38,6 +38,7 @@ NS_END
 NS_SHIBBOLETH
 
 class MessageBroadcaster;
+class ReflectionManager;
 class IFileSystem;
 class LogManager;
 class IManager;
@@ -82,21 +83,12 @@ public:
 	virtual IFileSystem* getFileSystem(void) = 0;
 	virtual const VectorMap<HashString32, U8String>& getCmdLine(void) const = 0;
 
+	virtual const ReflectionManager& getReflectionManager(void) const = 0;
+	virtual ReflectionManager& getReflectionManager(void) = 0;
 	virtual LogManager& getLogManager(void) = 0;
 	virtual JobPool& getJobPool(void) = 0;
 
 	virtual DynamicLoader::ModulePtr loadModule(const char* filename, const char* name) = 0;
-
-	virtual const Gaff::IEnumReflectionDefinition* getEnumReflection(Gaff::Hash64 name) const = 0;
-	virtual void registerEnumReflection(Gaff::Hash64 name, Gaff::IEnumReflectionDefinition& ref_def) = 0;
-
-	virtual const Gaff::IReflectionDefinition* getReflection(Gaff::Hash64 name) const = 0;
-	virtual void registerReflection(Gaff::Hash64 name, Gaff::IReflectionDefinition& ref_def) = 0;
-	virtual void registerTypeBucket(Gaff::Hash64 name) = 0;
-	virtual const Vector<Gaff::Hash64>* getTypeBucket(Gaff::Hash64 name) const = 0;
-
-	virtual Vector<const Gaff::IEnumReflectionDefinition*> getEnumReflectionWithAttribute(Gaff::Hash64 name) const = 0;
-	virtual Vector<const Gaff::IReflectionDefinition*> getReflectionWithAttribute(Gaff::Hash64 name) const = 0;
 
 	virtual bool isQuitting(void) const = 0;
 	virtual void quit(void) = 0;

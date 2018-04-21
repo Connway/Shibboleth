@@ -26,6 +26,7 @@ THE SOFTWARE.
 	#define GAFF_REFLECTION_NAMESPACE Shibboleth
 #endif
 
+#include "Shibboleth_ReflectionManager.h"
 #include "Shibboleth_ProxyAllocator.h"
 #include "Shibboleth_Utilities.h"
 #include "Shibboleth_IApp.h"
@@ -175,7 +176,7 @@ NS_SHIBBOLETH \
 		} \
 		g_reflection_definition = reinterpret_cast< Gaff::ReflectionDefinition<type, ProxyAllocator>* >( \
 			const_cast< Gaff::IReflectionDefinition* >( \
-				GetApp().getReflection(GetHash()) \
+				GetApp().getReflectionManager().getReflection(GetHash()) \
 			) \
 		); \
 		if (g_reflection_definition) { \
@@ -209,7 +210,7 @@ NS_END \
 	SHIB_REFLECTION_EXTERNAL_DEFINE_BEGIN(type)
 
 #define SHIB_REFLECTION_DEFINE_END(type, ...) \
-			GetApp().registerReflection(GetHash(), *g_reflection_definition); \
+			GetApp().getReflectionManager().registerReflection(GetHash(), g_reflection_definition); \
 		} \
 	} \
 NS_END
@@ -284,7 +285,7 @@ NS_SHIBBOLETH \
 		} \
 		g_reflection_definition = reinterpret_cast< Gaff::ReflectionDefinition<type<__VA_ARGS__>, ProxyAllocator>* >( \
 			const_cast< Gaff::IReflectionDefinition* >( \
-				Shibboleth::GetApp().getReflection(GetHash()) \
+				GetApp().getReflectionManager().getReflection(GetHash()) \
 			) \
 		); \
 		if (g_reflection_definition) { \

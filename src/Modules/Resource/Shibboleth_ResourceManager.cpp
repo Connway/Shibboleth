@@ -42,20 +42,21 @@ SHIB_REFLECTION_CLASS_DEFINE_END(ResourceManager)
 
 ResourceManager::ResourceManager(void)
 {
-	GetApp().registerTypeBucket(Gaff::FNV1aHash64Const("IResource"));
-	GetApp().getLogManager().addChannel("Resource", "ResourceLog");
+	IApp& app = GetApp();
+	app.getReflectionManager().registerTypeBucket(Gaff::FNV1aHash64Const("IResource"));
+	app.getLogManager().addChannel("Resource", "ResourceLog");
 }
 
 void ResourceManager::allModulesLoaded(void)
 {
 	IApp& app = GetApp();
-	const Vector<Gaff::Hash64>* type_bucket = app.getTypeBucket(Gaff::FNV1aHash64Const("IResource"));
+	const ReflectionManager& refl_mgr = app.getReflectionManager();
+	const Vector<const Gaff::IReflectionDefinition*>* type_bucket = refl_mgr.getTypeBucket(Gaff::FNV1aHash64Const("IResource"));
 	GAFF_ASSERT(type_bucket);
 
 	Vector<const ResExtAttribute*> ext_attrs;
 
-	for (Gaff::Hash64 class_hash : *type_bucket) {
-		const Gaff::IReflectionDefinition* ref_def = app.getReflection(class_hash);
+	for (const Gaff::IReflectionDefinition* ref_def : *type_bucket) {
 		FactoryFunc factory_func = ref_def->template getFactory<>();
 
 		ref_def->getClassAttributes(ext_attrs);
