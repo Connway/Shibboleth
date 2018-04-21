@@ -565,7 +565,7 @@ bool Object::createComponents(const Gaff::ISerializeReader& reader)
 			name = Gaff::FNV1aHash64String(type);
 		}
 
-		const Gaff::IReflectionDefinition* const ref_def = Shibboleth::GetApp().getReflection(name);
+		const Gaff::IReflectionDefinition* const ref_def = Shibboleth::GetApp().getReflectionManager().getReflection(name);
 
 		if (!ref_def) {
 			// TODO: log error

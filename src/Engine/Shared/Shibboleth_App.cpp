@@ -30,7 +30,6 @@ THE SOFTWARE.
 #include <Gaff_Utils.h>
 #include <Gaff_JSON.h>
 #include <Gaff_File.h>
-#include <EASTL/sort.h>
 #include <regex>
 
 #ifdef PLATFORM_WINDOWS
@@ -118,10 +117,10 @@ bool App::initInternal(void)
 	Gaff::StackTrace::RefreshModuleList(); // Will fix symbols from DLLs not resolving.
 #endif
 
-	registerTypeBucket(Gaff::FNV1aHash64Const("Gaff::IAttribute"));
-	registerTypeBucket(Gaff::FNV1aHash64Const("IManager"));
-	registerTypeBucket(Gaff::FNV1aHash64Const("**")); // All types not registered with a type bucket.
-	registerTypeBucket(Gaff::FNV1aHash64Const("*"));  // All reflection.
+	_reflection_mgr.registerTypeBucket(Gaff::FNV1aHash64Const("Gaff::IAttribute"));
+	_reflection_mgr.registerTypeBucket(Gaff::FNV1aHash64Const("IManager"));
+	_reflection_mgr.registerTypeBucket(Gaff::FNV1aHash64Const("**")); // All types not registered with a type bucket.
+	_reflection_mgr.registerTypeBucket(Gaff::FNV1aHash64Const("*"));  // All reflection.
 
 	if (!loadModules()) {
 		return false;
@@ -260,10 +259,9 @@ bool App::loadModules(void)
 	}
 
 	// Create manager instances.
-	const Vector<Gaff::Hash64>* manager_bucket = getTypeBucket(Gaff::FNV1aHash64Const("IManager"));
+	const Vector<const Gaff::IReflectionDefinition*>* manager_bucket = _reflection_mgr.getTypeBucket(Gaff::FNV1aHash64Const("IManager"));
 
-	for (Gaff::Hash64 name : *manager_bucket) {
-		const Gaff::IReflectionDefinition* const ref_def = getReflection(name);
+	for (const Gaff::IReflectionDefinition* ref_def : *manager_bucket) {
 
 		ProxyAllocator allocator;
 		IManager* manager = ref_def->CREATEALLOCT(IManager, allocator);
@@ -273,6 +271,8 @@ bool App::loadModules(void)
 			SHIB_FREET(manager, *GetAllocator());
 			return false;
 		}
+
+		const Gaff::Hash64 name = ref_def->getReflectionInstance().getHash();
 
 		GAFF_ASSERT(_manager_map.find(name) == _manager_map.end());
 		_manager_map[name].reset(manager);
@@ -437,7 +437,7 @@ void App::destroy(void)
 {
 	_job_pool.destroy();
 
-	_reflection_map.clear();
+	_reflection_mgr.destroy();
 	_manager_map.clear();
 	_log_mgr.destroy();
 
@@ -496,6 +496,16 @@ const VectorMap<HashString32, U8String>& App::getCmdLine(void) const
 	return _cmd_line_args;
 }
 
+const ReflectionManager& App::getReflectionManager(void) const
+{
+	return _reflection_mgr;
+}
+
+ReflectionManager& App::getReflectionManager(void)
+{
+	return _reflection_mgr;
+}
+
 LogManager& App::getLogManager(void)
 {
 	return _log_mgr;
@@ -526,123 +536,6 @@ Vector<U8String> App::getLoadedModuleNames(void) const
 	});
 
 	return names;
-}
-
-const Gaff::IEnumReflectionDefinition* App::getEnumReflection(Gaff::Hash64 name) const
-{
-	auto it = _enum_reflection_map.find(name);
-	return (it == _enum_reflection_map.end()) ? nullptr : it->second.get();
-}
-
-void App::registerEnumReflection(Gaff::Hash64 name, Gaff::IEnumReflectionDefinition& ref_def)
-{
-	GAFF_ASSERT(_enum_reflection_map.find(name) == _enum_reflection_map.end());
-	_enum_reflection_map[name].reset(&ref_def);
-}
-
-const VectorMap< Gaff::Hash64, UniquePtr<Gaff::IEnumReflectionDefinition> >& App::getEnumReflectionDefinitions(void) const
-{
-	return _enum_reflection_map;
-}
-
-const Gaff::IReflectionDefinition* App::getReflection(Gaff::Hash64 name) const
-{
-	auto it = _reflection_map.find(name);
-	return (it == _reflection_map.end()) ? nullptr : it->second.get();
-}
-
-void App::registerReflection(Gaff::Hash64 name, Gaff::IReflectionDefinition& ref_def)
-{
-	GAFF_ASSERT(_reflection_map.find(name) == _reflection_map.end());
-	_reflection_map[name].reset(&ref_def);
-
-	bool was_inserted = false;
-
-	// Check if this type implements an interface that has a type bucket request.
-	for (auto it = _type_buckets.begin(); it != _type_buckets.end(); ++it) {
-		if (ref_def.hasInterface(it->first)) {
-			// Insert sorted.
-			auto it_name = eastl::lower_bound(it->second.begin(), it->second.end(), name);
-			it->second.insert(it_name, name);
-			was_inserted = true;
-		}
-	}
-
-	if (!was_inserted) {
-		Vector<Gaff::Hash64>& all_bucket = _type_buckets.find(Gaff::FNV1aHash64Const("**"))->second;
-
-		// Insert sorted.
-		auto it_name = eastl::lower_bound(all_bucket.begin(), all_bucket.end(), name);
-		all_bucket.insert(it_name, name);
-	}
-
-	Vector<Gaff::Hash64>& all_bucket = _type_buckets.find(Gaff::FNV1aHash64Const("*"))->second;
-
-	// Insert sorted.
-	auto it_name = eastl::lower_bound(all_bucket.begin(), all_bucket.end(), name);
-	all_bucket.insert(it_name, name);
-}
-
-void App::registerTypeBucket(Gaff::Hash64 name)
-{
-	if (_type_buckets.find(name) != _type_buckets.end()) {
-		return;
-	}
-
-	Vector<Gaff::Hash64>& types = _type_buckets[name];
-
-	for (const auto& ref_map_pair : _reflection_map) {
-		const auto& ref_def = ref_map_pair.second;
-		const Gaff::Hash64 class_hash = ref_def->getReflectionInstance().getHash();
-
-		// Don't care about the concrete version of class. Only reflected types that inherit from the class.
-		if (name != class_hash && ref_def->hasInterface(name)) {
-			types.emplace_back(class_hash);
-
-			// Remove from ** bucket.
-			Vector<Gaff::Hash64>& all_bucket = _type_buckets.find(Gaff::FNV1aHash64Const("**"))->second;
-			auto it_name = eastl::lower_bound(all_bucket.begin(), all_bucket.end(), ref_def->getReflectionInstance().getHash());
-
-			if (it_name != all_bucket.end() && *it_name == ref_def->getReflectionInstance().getHash()) {
-				all_bucket.erase(it_name);
-			}
-		}
-	}
-
-	// Sort the list for quicker lookup.
-	eastl::sort(types.begin(), types.end());
-}
-
-const Vector<Gaff::Hash64>* App::getTypeBucket(Gaff::Hash64 name) const
-{
-	auto it = _type_buckets.find(name);
-	return (it == _type_buckets.end()) ? nullptr : &it->second;
-}
-
-Vector<const Gaff::IEnumReflectionDefinition*> App::getEnumReflectionWithAttribute(Gaff::Hash64 name) const
-{
-	Vector<const Gaff::IEnumReflectionDefinition*> out;
-
-	for (const auto& entry : _enum_reflection_map) {
-		if (entry.second->getEnumAttribute(name)) {
-			out.push_back(entry.second.get());
-		}
-	}
-
-	return out;
-}
-
-Vector<const Gaff::IReflectionDefinition*> App::getReflectionWithAttribute(Gaff::Hash64 name) const
-{
-	Vector<const Gaff::IReflectionDefinition*> out;
-
-	for (const auto& entry : _reflection_map) {
-		if (entry.second->getClassAttribute(name)) {
-			out.push_back(entry.second.get());
-		}
-	}
-
-	return out;
 }
 
 bool App::isQuitting(void) const

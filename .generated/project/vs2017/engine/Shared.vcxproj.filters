@@ -66,6 +66,9 @@
     <ClInclude Include="..\..\..\..\src\Engine\Shared\include\Shibboleth_Reflection.h">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\..\src\Engine\Shared\include\Shibboleth_ReflectionManager.h">
+      <Filter>include</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\..\src\Engine\Shared\include\Shibboleth_SmartPtrs.h">
       <Filter>include</Filter>
     </ClInclude>
@@ -93,6 +96,7 @@
     <ClCompile Include="..\..\..\..\src\Engine\Shared\Shibboleth_Math.cpp" />
     <ClCompile Include="..\..\..\..\src\Engine\Shared\Shibboleth_NewDelete.cpp" />
     <ClCompile Include="..\..\..\..\src\Engine\Shared\Shibboleth_Reflection.cpp" />
+    <ClCompile Include="..\..\..\..\src\Engine\Shared\Shibboleth_ReflectionManager.cpp" />
     <ClCompile Include="..\..\..\..\src\Engine\Shared\Shibboleth_Utilities.cpp" />
   </ItemGroup>
 </Project>

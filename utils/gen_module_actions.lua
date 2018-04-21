@@ -41,7 +41,9 @@ namespace Gen
 			head->init();
 			head = head->next;
 		}
-	}
+
+		// Register our module as the owners of the reflection.
+%s	}
 }
 ]]
 
@@ -149,6 +151,7 @@ newaction
 		local init_attr_funcs = ""
 		local init_enum_funcs = ""
 		local init_funcs = ""
+		local module_registers = ""
 
 		for _,n in pairs(namespaces) do
 			using_namespaces = using_namespaces .. "\tusing namespace " .. n .. ";\n"
@@ -163,6 +166,12 @@ newaction
 				else
 					init_funcs = init_funcs .. "\t\tReflection<" .. c .. ">::Init();\n"
 				end
+
+				if module_registers == "" then
+					module_registers = "\t\tReflectionManager& refl_mgr = GetApp().getReflectionManager();\n\n"
+				end
+
+				module_registers = module_registers .. "\t\trefl_mgr.registerOwningModule(Reflection<" .. c .. ">::GetHash(), \"" .. _OPTIONS["module"] .. "\");\n"
 			end
 		end
 
@@ -174,9 +183,15 @@ newaction
 			for _,e in pairs(enums) do
 				init_enum_funcs = init_enum_funcs .. "\t\tEnumReflection<" .. e .. ">::Init();\n"
 			end
+
+			if module_registers == "" then
+				module_registers = "\t\tReflectionManager& refl_mgr = GetApp().getReflectionManager();\n\n"
+			end
+
+			module_registers = module_registers .. "\t\trefl_mgr.registerEnumOwningModule(EnumReflection<" .. e .. ">::GetHash(), \"" .. _OPTIONS["module"] .. "\");\n"
 		end
 
 		local file_path = include_folder .. "/Gen_ReflectionInit.h"
-		io.writefile(file_path, gen_file:format(include_files, using_namespaces, init_enum_funcs, init_attr_funcs, init_funcs))
+		io.writefile(file_path, gen_file:format(include_files, using_namespaces, init_enum_funcs, init_attr_funcs, init_funcs, module_registers))
 	end
 }
