@@ -103,29 +103,28 @@ void ModulesWindow::initTree(void)
 	}
 }
 
-void ModulesWindow::onModuleSelected(wxCommandEvent& /*event*/)
+void ModulesWindow::onModuleSelected(wxCommandEvent& event)
 {
-	//const int selection = event.GetSelection();
-	//const wxString module_name = _modules_list->GetItem(selection)->GetName();
-	//const Gaff::Hash64 module_hash = Gaff::FNV1aHash64String(module_name.GetData().AsChar());
-	//const ReflectionManager& refl_mgr = _app.getReflectionManager();
+	const wxString module_name = event.GetString();
+	const Gaff::Hash64 module_hash = Gaff::FNV1aHash64String(module_name.GetData().AsChar());
+	const ReflectionManager& refl_mgr = _app.getReflectionManager();
 
-	//for (size_t i = 0; i < _reflection_types.size(); ++i) {
-	//	const wxString& type = _reflection_types[i];
-	//	const Gaff::Hash64 type_hash = Gaff::FNV1aHash64String(type.c_str().AsChar());
-	//	const Vector<const Gaff::IReflectionDefinition*>* const bucket = refl_mgr.getTypeBucket(type_hash, module_hash);
+	for (size_t i = 0; i < _reflection_types.size(); ++i) {
+		const wxString& type = _reflection_types[i];
+		const Gaff::Hash64 type_hash = Gaff::FNV1aHash64String(type.c_str().AsChar());
+		const Vector<const Gaff::IReflectionDefinition*>* const bucket = refl_mgr.getTypeBucket(type_hash, module_hash);
 
-	//	if (!bucket) {
-	//		continue;
-	//	}
+		const wxTreeItemId& id = _tree_ids[i];
+		_reflection_tree->DeleteChildren(id);
 
-	//	const wxTreeItemId& id = _tree_ids[i];
-	//	_reflection_tree->DeleteChildren(id);
+		if (!bucket) {
+			continue;
+		}
 
-	//	for (const Gaff::IReflectionDefinition* ref_def : *bucket) {
-	//		_reflection_tree->AppendItem(id, ref_def->getReflectionInstance().getName());
-	//	}
-	//}
+		for (const Gaff::IReflectionDefinition* ref_def : *bucket) {
+			_reflection_tree->AppendItem(id, ref_def->getReflectionInstance().getName());
+		}
+	}
 }
 
 NS_END
