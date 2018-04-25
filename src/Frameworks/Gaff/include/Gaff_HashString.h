@@ -37,12 +37,12 @@ public:
 	using HashFunc = HashType(*)(const char*, size_t);
 
 	template <class Allocator>
-	HashStringTemp(const String<T, Allocator>& string, HashFunc hash = nullptr);
+	HashStringTemp(const String<T, Allocator>& string, HashFunc hash_func = nullptr);
 
 	template <size_t size>
-	HashStringTemp(const T (&string)[size], HashFunc hash = nullptr);
+	HashStringTemp(const T (&string)[size], HashFunc hash_func = nullptr);
 
-	HashStringTemp(const T* string, size_t size, HashFunc hash = nullptr);
+	HashStringTemp(const T* string, size_t size, HashFunc hash_func = nullptr);
 
 	HashStringTemp(const HashStringTemp<T, HashType>& string) = default;
 	HashStringTemp(HashStringTemp<T, HashType>&& string) = default;
@@ -85,14 +85,14 @@ class HashString
 public:
 	using HashFunc = HashType (*)(const char*, size_t);
 
-	explicit HashString(const String<T, Allocator>& string, HashFunc hash = nullptr);
-	HashString(const T* string, size_t size, HashFunc hash = nullptr, const Allocator& allocator = Allocator());
-	explicit HashString(const HashStringTemp<T, HashType>& string, HashFunc hash = nullptr, const Allocator& allocator = Allocator());
-	explicit HashString(const T* string, HashFunc hash = nullptr, const Allocator& allocator = Allocator());
+	explicit HashString(const String<T, Allocator>& string, HashFunc hash_func = nullptr);
+	HashString(const T* string, size_t size, HashFunc hash_func = nullptr, const Allocator& allocator = Allocator());
+	explicit HashString(const HashStringTemp<T, HashType>& string, HashFunc hash_func = nullptr, const Allocator& allocator = Allocator());
+	explicit HashString(const T* string, HashFunc hash_func = nullptr, const Allocator& allocator = Allocator());
 	HashString(const T* string, size_t size, HashType hash, HashFunc hash_func = nullptr, const Allocator& allocator = Allocator());
 	// HashString64 gets build errors from this constructor, as Hash64 is the same data type as size_t.
 	//HashString(const T* string, HashType hash, HashFunc hash_func = nullptr, const Allocator& allocator = Allocator());
-	HashString(HashFunc hash = nullptr, const Allocator& allocator = Allocator());
+	HashString(HashFunc hash_func = nullptr, const Allocator& allocator = Allocator());
 
 	HashString(const HashString<T, HashType, Allocator>& string) = default;
 	HashString(HashString<T, HashType, Allocator>&& rhs) = default;

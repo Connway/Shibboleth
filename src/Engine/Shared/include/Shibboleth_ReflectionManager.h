@@ -55,6 +55,8 @@ public:
 	Vector<const Gaff::IEnumReflectionDefinition*> getEnumReflectionWithAttribute(Gaff::Hash64 name) const;
 	Vector<const Gaff::IReflectionDefinition*> getReflectionWithAttribute(Gaff::Hash64 name) const;
 
+	Vector<HashString64> getModules(void) const;
+
 private:
 	using TypeBucket = Vector<const Gaff::IReflectionDefinition*>;
 	using TypeBucketMap = VectorMap<Gaff::Hash64, TypeBucket>;

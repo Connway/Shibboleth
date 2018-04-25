@@ -157,6 +157,23 @@ void ReflectionManager::registerTypeBucket(Gaff::Hash64 name)
 	}
 }
 
+const Vector<const Gaff::IReflectionDefinition*>* ReflectionManager::getTypeBucket(Gaff::Hash64 name, Gaff::Hash64 module_name) const
+{
+	const auto it_module = _module_owners.find(HashString64("", 0, module_name));
+
+	if (it_module == _module_owners.end() || it_module->first.getHash() != module_name) {
+		return nullptr;
+	}
+
+	const auto it_bucket = it_module->second.find(name);
+	
+	if (it_bucket == it_module->second.end() || it_bucket->first != name) {
+		return nullptr;
+	}
+
+	return &it_bucket->second;
+}
+
 const Vector<const Gaff::IReflectionDefinition*>* ReflectionManager::getTypeBucket(Gaff::Hash64 name) const
 {
 	const auto it = _type_buckets.find(name);
@@ -188,6 +205,18 @@ Vector<const Gaff::IReflectionDefinition*> ReflectionManager::getReflectionWithA
 
 	return out;
 }
+
+Vector<HashString64> ReflectionManager::getModules(void) const
+{
+	Vector<HashString64> out;
+
+	for (const auto& modules : _module_owners) {
+		out.emplace_back(modules.first);
+	}
+
+	return out;
+}
+
 
 void ReflectionManager::insertType(TypeBucket& bucket, const Gaff::IReflectionDefinition* ref_def)
 {

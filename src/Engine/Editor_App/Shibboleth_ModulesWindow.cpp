@@ -28,31 +28,48 @@ THE SOFTWARE.
 	#include <wx/msw/winundef.h>
 #endif
 
+#include <wx/ownerdrw.h>
 #include <wx/treectrl.h>
+#include <wx/listbox.h>
 #include <wx/sizer.h>
+#include <wx/event.h>
 
 NS_SHIBBOLETH
 
 ModulesWindow::ModulesWindow(wxWindow* parent, App& app):
 	wxPanel(parent), _app(app)
 {
-	_tree = new wxTreeCtrl(this);
-	_tree->SetWindowStyleFlag(wxTR_HIDE_ROOT);
-	_tree->AddRoot(wxT(""));
+	_modules_list = new wxListBox(this, wxID_ANY);
+	_modules_list->SetWindowStyleFlag(wxLB_SINGLE | wxLB_NEEDED_SB | wxLB_SORT);
+
+	_modules_list->Append("All");
+
+	for (const HashString64& module : app.getReflectionManager().getModules()) {
+		_modules_list->Append(module.getBuffer());
+	}
+
+	_reflection_tree = new wxTreeCtrl(this);
+	_reflection_tree->SetWindowStyleFlag(wxTR_HIDE_ROOT);
+	_reflection_tree->AddRoot(wxT(""));
 
 	wxBoxSizer* const sizer = new wxBoxSizer(wxHORIZONTAL);
 
-	sizer->Add(_tree, 1, wxEXPAND | wxALL, 5);
+	sizer->Add(_modules_list, 1, wxEXPAND | wxALL, 5);
+	sizer->Add(_reflection_tree, 1, wxEXPAND | wxALL, 5);
 
 	sizer->SetSizeHints(this);
 	SetSizer(sizer);
 
+	Connect(wxEVT_LISTBOX, wxCommandEventHandler(ModulesWindow::onModuleSelected));
+
 	initTree();
+
+	_modules_list->SetSelection(0);
 }
 
 void ModulesWindow::initTree(void)
 {
-	const wxTreeItemId root_id = _tree->GetRootItem();
+	const wxTreeItemId root_id = _reflection_tree->GetRootItem();
 
 	Gaff::JSON config;
 
@@ -61,17 +78,13 @@ void ModulesWindow::initTree(void)
 
 		if (module_display.isArray()) {
 			const ReflectionManager& refl_mgr = _app.getReflectionManager();
-			_module_names.Clear();
-			_refl_names.Clear();
 
 			for (int32_t i = 0; i < module_display.size(); ++i) {
 				const Gaff::JSON entry = module_display[i];
 				const Gaff::JSON refl_name = entry["reflection_name"];
 				const Gaff::JSON name = entry["name"];
 
-				_module_names.Add(name.getString());
-				_refl_names.Add(refl_name.getString());
-
+				_reflection_types.Add(refl_name.getString());
 
 				const Vector<const Gaff::IReflectionDefinition*>* const bucket = refl_mgr.getTypeBucket(Gaff::FNV1aHash64String(refl_name.getString()));
 
@@ -79,14 +92,40 @@ void ModulesWindow::initTree(void)
 					continue;
 				}
 
-				const wxTreeItemId id = _tree->AppendItem(root_id, wxString(name.getString()));
+				const wxTreeItemId id = _reflection_tree->AppendItem(root_id, name.getString());
+				_tree_ids.Add(id);
 
-				for (const Gaff::IReflectionDefinition* ref_data : *bucket) {
-					_tree->AppendItem(id, wxString(ref_data->getReflectionInstance().getName()));
+				for (const Gaff::IReflectionDefinition* ref_def : *bucket) {
+					_reflection_tree->AppendItem(id, ref_def->getReflectionInstance().getName());
 				}
 			}
 		}
 	}
+}
+
+void ModulesWindow::onModuleSelected(wxCommandEvent& /*event*/)
+{
+	//const int selection = event.GetSelection();
+	//const wxString module_name = _modules_list->GetItem(selection)->GetName();
+	//const Gaff::Hash64 module_hash = Gaff::FNV1aHash64String(module_name.GetData().AsChar());
+	//const ReflectionManager& refl_mgr = _app.getReflectionManager();
+
+	//for (size_t i = 0; i < _reflection_types.size(); ++i) {
+	//	const wxString& type = _reflection_types[i];
+	//	const Gaff::Hash64 type_hash = Gaff::FNV1aHash64String(type.c_str().AsChar());
+	//	const Vector<const Gaff::IReflectionDefinition*>* const bucket = refl_mgr.getTypeBucket(type_hash, module_hash);
+
+	//	if (!bucket) {
+	//		continue;
+	//	}
+
+	//	const wxTreeItemId& id = _tree_ids[i];
+	//	_reflection_tree->DeleteChildren(id);
+
+	//	for (const Gaff::IReflectionDefinition* ref_def : *bucket) {
+	//		_reflection_tree->AppendItem(id, ref_def->getReflectionInstance().getName());
+	//	}
+	//}
 }
 
 NS_END
