@@ -23,9 +23,11 @@ THE SOFTWARE.
 #pragma once
 
 #include <Shibboleth_Defines.h>
+#include <wx/treebase.h>
 #include <wx/panel.h>
 
 class wxTreeCtrl;
+class wxListBox;
 
 NS_SHIBBOLETH
 
@@ -37,13 +39,15 @@ public:
 	ModulesWindow(wxWindow* parent, App& app);
 
 private:
-	wxTreeCtrl* _tree = nullptr;
+	wxTreeCtrl* _reflection_tree = nullptr;
+	wxListBox* _modules_list = nullptr;
 	App& _app;
 
-	wxArrayString _module_names;
-	wxArrayString _refl_names;
+	wxArrayString _reflection_types;
+	wxArrayTreeItemIds _tree_ids;
 
 	void initTree(void);
+	void onModuleSelected(wxCommandEvent& event);
 };
 
 NS_END
