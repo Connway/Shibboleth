@@ -112,7 +112,7 @@ void ReflectionManager::registerOwningModule(Gaff::Hash64 name, const char* modu
 		const auto it = eastl::lower_bound(bucket_pair.second.begin(), bucket_pair.second.end(), name, CompareRefHash);
 
 		if (it != bucket_pair.second.end() && (*it)->getReflectionInstance().getHash() == name) {
-			insertType(module_types[name], it_refl->second.get());
+			insertType(module_types[bucket_pair.first], it_refl->second.get());
 		}
 	}
 }

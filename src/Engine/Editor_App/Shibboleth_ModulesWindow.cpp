@@ -105,14 +105,17 @@ void ModulesWindow::initTree(void)
 
 void ModulesWindow::onModuleSelected(wxCommandEvent& event)
 {
+	const ReflectionManager& refl_mgr = _app.getReflectionManager();
 	const wxString module_name = event.GetString();
 	const Gaff::Hash64 module_hash = Gaff::FNV1aHash64String(module_name.GetData().AsChar());
-	const ReflectionManager& refl_mgr = _app.getReflectionManager();
+	const bool is_all_modules = module_name == "All";
 
 	for (size_t i = 0; i < _reflection_types.size(); ++i) {
 		const wxString& type = _reflection_types[i];
 		const Gaff::Hash64 type_hash = Gaff::FNV1aHash64String(type.c_str().AsChar());
-		const Vector<const Gaff::IReflectionDefinition*>* const bucket = refl_mgr.getTypeBucket(type_hash, module_hash);
+		const Vector<const Gaff::IReflectionDefinition*>* const bucket = (is_all_modules) ?
+			refl_mgr.getTypeBucket(type_hash) :
+			refl_mgr.getTypeBucket(type_hash, module_hash);
 
 		const wxTreeItemId& id = _tree_ids[i];
 		_reflection_tree->DeleteChildren(id);
