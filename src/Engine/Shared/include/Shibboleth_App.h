@@ -27,6 +27,7 @@ THE SOFTWARE.
 #include "Shibboleth_LogManager.h"
 #include "Shibboleth_SmartPtrs.h"
 #include "Shibboleth_IApp.h"
+#include <Gaff_JSON.h>
 
 NS_SHIBBOLETH
 
@@ -36,7 +37,7 @@ public:
 	App(void);
 	~App(void);
 
-	bool init(int argc, char** argv);
+	bool init(int argc, const char** argv);
 #ifdef PLATFORM_WINDOWS
 	bool init(void);
 #endif
@@ -47,7 +48,7 @@ public:
 	IManager* getManager(Gaff::Hash64 name) override;
 
 	IFileSystem* getFileSystem(void) override;
-	const VectorMap<HashString32, U8String>& getCmdLine(void) const override;
+	const Gaff::JSON& getConfigs(void) const override;
 
 	//MessageBroadcaster& getBroadcaster(void) override;
 	const ReflectionManager& getReflectionManager(void) const override;
@@ -56,7 +57,6 @@ public:
 	JobPool& getJobPool(void) override;
 
 	DynamicLoader::ModulePtr loadModule(const char* filename, const char* name) override;
-	Vector<U8String> getLoadedModuleNames(void) const;
 
 	bool isQuitting(void) const override;
 	void quit(void) override;
@@ -94,7 +94,7 @@ private:
 	FileSystemData _fs;
 
 	VectorMap< Gaff::Hash64, UniquePtr<IManager> > _manager_map;
-	VectorMap<HashString32, U8String> _cmd_line_args;
+	Gaff::JSON _configs;
 
 	bool initInternal(void);
 	bool loadFileSystem(void);

@@ -159,7 +159,7 @@ void ReflectionManager::registerTypeBucket(Gaff::Hash64 name)
 
 const Vector<const Gaff::IReflectionDefinition*>* ReflectionManager::getTypeBucket(Gaff::Hash64 name, Gaff::Hash64 module_name) const
 {
-	const auto it_module = _module_owners.find(HashString64("", 0, module_name));
+	const auto it_module = _module_owners.find(HashString64(module_name));
 
 	if (it_module == _module_owners.end() || it_module->first.getHash() != module_name) {
 		return nullptr;

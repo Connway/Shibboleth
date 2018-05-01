@@ -123,7 +123,7 @@
       <WarningLevel>Level4</WarningLevel>
       <TreatWarningAsError>true</TreatWarningAsError>
       <PreprocessorDefinitions>UNICODE;_UNICODE;_DEBUG;DEBUG;WIN32;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\..\..\..\src\Dependencies\EASTL\include;..\..\..\..\src\Dependencies\CATCH;..\..\..\..\src\Dependencies\angelscript\angelscript\include;..\..\..\..\src\Dependencies\angelscript\add_on\scriptbuilder;..\..\..\..\src\Frameworks\Gaff\include;..\..\..\..\src\Engine\Shared\include;..\..\..\..\src\Engine\Memory\include;..\..\..\..\src\Modules\Scripting\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\..\src\Dependencies\EASTL\include;..\..\..\..\src\Dependencies\CATCH;..\..\..\..\src\Dependencies\angelscript\angelscript\include;..\..\..\..\src\Dependencies\angelscript\add_on\scriptbuilder;..\..\..\..\src\Dependencies\rapidjson;..\..\..\..\src\Frameworks\Gaff\include;..\..\..\..\src\Engine\Shared\include;..\..\..\..\src\Engine\Memory\include;..\..\..\..\src\Modules\Scripting\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
       <ExceptionHandling>Async</ExceptionHandling>
@@ -144,7 +144,7 @@
       <WarningLevel>Level4</WarningLevel>
       <TreatWarningAsError>true</TreatWarningAsError>
       <PreprocessorDefinitions>UNICODE;_UNICODE;NDEBUG;WIN32;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\..\..\..\src\Dependencies\EASTL\include;..\..\..\..\src\Dependencies\CATCH;..\..\..\..\src\Dependencies\angelscript\angelscript\include;..\..\..\..\src\Dependencies\angelscript\add_on\scriptbuilder;..\..\..\..\src\Frameworks\Gaff\include;..\..\..\..\src\Engine\Shared\include;..\..\..\..\src\Engine\Memory\include;..\..\..\..\src\Modules\Scripting\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\..\src\Dependencies\EASTL\include;..\..\..\..\src\Dependencies\CATCH;..\..\..\..\src\Dependencies\angelscript\angelscript\include;..\..\..\..\src\Dependencies\angelscript\add_on\scriptbuilder;..\..\..\..\src\Dependencies\rapidjson;..\..\..\..\src\Frameworks\Gaff\include;..\..\..\..\src\Engine\Shared\include;..\..\..\..\src\Engine\Memory\include;..\..\..\..\src\Modules\Scripting\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -170,7 +170,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level4</WarningLevel>
       <PreprocessorDefinitions>UNICODE;_UNICODE;NDEBUG;WIN32;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\..\..\..\src\Dependencies\EASTL\include;..\..\..\..\src\Dependencies\CATCH;..\..\..\..\src\Dependencies\angelscript\angelscript\include;..\..\..\..\src\Dependencies\angelscript\add_on\scriptbuilder;..\..\..\..\src\Frameworks\Gaff\include;..\..\..\..\src\Engine\Shared\include;..\..\..\..\src\Engine\Memory\include;..\..\..\..\src\Modules\Scripting\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\..\src\Dependencies\EASTL\include;..\..\..\..\src\Dependencies\CATCH;..\..\..\..\src\Dependencies\angelscript\angelscript\include;..\..\..\..\src\Dependencies\angelscript\add_on\scriptbuilder;..\..\..\..\src\Dependencies\rapidjson;..\..\..\..\src\Frameworks\Gaff\include;..\..\..\..\src\Engine\Shared\include;..\..\..\..\src\Engine\Memory\include;..\..\..\..\src\Modules\Scripting\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -196,7 +196,7 @@
       <WarningLevel>Level4</WarningLevel>
       <TreatWarningAsError>true</TreatWarningAsError>
       <PreprocessorDefinitions>UNICODE;_UNICODE;NDEBUG;SHIB_PROFILE;WIN32;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\..\..\..\src\Dependencies\EASTL\include;..\..\..\..\src\Dependencies\CATCH;..\..\..\..\src\Dependencies\angelscript\angelscript\include;..\..\..\..\src\Dependencies\angelscript\add_on\scriptbuilder;..\..\..\..\src\Frameworks\Gaff\include;..\..\..\..\src\Engine\Shared\include;..\..\..\..\src\Engine\Memory\include;..\..\..\..\src\Modules\Scripting\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\..\src\Dependencies\EASTL\include;..\..\..\..\src\Dependencies\CATCH;..\..\..\..\src\Dependencies\angelscript\angelscript\include;..\..\..\..\src\Dependencies\angelscript\add_on\scriptbuilder;..\..\..\..\src\Dependencies\rapidjson;..\..\..\..\src\Frameworks\Gaff\include;..\..\..\..\src\Engine\Shared\include;..\..\..\..\src\Engine\Memory\include;..\..\..\..\src\Modules\Scripting\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -223,7 +223,7 @@
       <WarningLevel>Level4</WarningLevel>
       <TreatWarningAsError>true</TreatWarningAsError>
       <PreprocessorDefinitions>UNICODE;_UNICODE;_DEBUG;DEBUG;WIN32;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\..\..\..\src\Dependencies\EASTL\include;..\..\..\..\src\Dependencies\CATCH;..\..\..\..\src\Dependencies\angelscript\angelscript\include;..\..\..\..\src\Dependencies\angelscript\add_on\scriptbuilder;..\..\..\..\src\Frameworks\Gaff\include;..\..\..\..\src\Engine\Shared\include;..\..\..\..\src\Engine\Memory\include;..\..\..\..\src\Modules\Scripting\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\..\src\Dependencies\EASTL\include;..\..\..\..\src\Dependencies\CATCH;..\..\..\..\src\Dependencies\angelscript\angelscript\include;..\..\..\..\src\Dependencies\angelscript\add_on\scriptbuilder;..\..\..\..\src\Dependencies\rapidjson;..\..\..\..\src\Frameworks\Gaff\include;..\..\..\..\src\Engine\Shared\include;..\..\..\..\src\Engine\Memory\include;..\..\..\..\src\Modules\Scripting\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>

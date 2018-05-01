@@ -33,6 +33,7 @@ THE SOFTWARE.
 NS_GAFF
 	class IEnumReflectionDefinition;
 	class IReflectionDefinition;
+	class JSON;
 NS_END
 
 NS_SHIBBOLETH
@@ -81,7 +82,7 @@ public:
 	//virtual MessageBroadcaster& getBroadcaster(void) = 0;
 
 	virtual IFileSystem* getFileSystem(void) = 0;
-	virtual const VectorMap<HashString32, U8String>& getCmdLine(void) const = 0;
+	virtual const Gaff::JSON& getConfigs(void) const = 0;
 
 	virtual const ReflectionManager& getReflectionManager(void) const = 0;
 	virtual ReflectionManager& getReflectionManager(void) = 0;
