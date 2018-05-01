@@ -53,6 +53,8 @@ EditorFrame::EditorFrame(const wxString& title, const wxPoint& pos, const wxSize
 	_menu_bar->Append(_window_menu, "&Window");
 	_menu_bar->Append(menu_help, "&Help");
 
+	// Check reflection for editor windows.
+
 	SetMenuBar(_menu_bar);
 	CreateStatusBar();
 
@@ -97,6 +99,7 @@ void EditorFrame::OnModulesWindow(wxCommandEvent&)
 	ModulesWindow* modules_window = new ModulesWindow(this, *_app);
 	wxAuiPaneInfo pane;
 
+	pane.Caption("Loaded Modules");
 	pane.Float();
 
 	_aui_mgr.AddPane(modules_window, pane);

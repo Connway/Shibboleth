@@ -18,7 +18,7 @@ end
 
 warnings "Extra"
 characterset "Unicode"
-exceptionhandling "SEH" -- unfortunately need exceptions for crash handlers :(
+exceptionhandling "SEH"
 rtti "Off"
 
 nativewchar "Default"
@@ -78,10 +78,7 @@ filter { "configurations:Optimized_Debug*" }
 filter { "configurations:Profile" }
 	defines { "SHIB_PROFILE" }
 
-filter { "options:simd_set_aligned"}
-	defines { "SIMD_SET_ALIGNED" }
-
-filter { "action:vs*", "configurations:Analyze"}
+filter { "action:vs*", "configurations:Analyze*"}
 	buildoptions { "/analyze" }
 
 filter { "action:vs*" }
@@ -90,6 +87,9 @@ filter { "action:vs*" }
 filter { "system:windows" }
 	defines { "WIN32", "_WINDOWS" }
 	-- systemversion "10.0.16299.0"
+
+filter { "system:windows", "platforms:x64" }
+	defines { "WIN64" }
 
 filter { "system:windows", "configurations:*Clang", "action:vs2015" }
 	toolset "msc-llvm-vs2014"
