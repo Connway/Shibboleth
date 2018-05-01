@@ -210,6 +210,12 @@ HashString<T, HashType, Allocator>::HashString(const T* string, size_t size, Has
 //}
 
 template <class T, class HashType, class Allocator>
+HashString<T, HashType, Allocator>::HashString(HashType hash, HashFunc hash_func, const Allocator& allocator):
+	_string(allocator), _hash_value(hash), _hash_func(hash_func)
+{
+}
+
+template <class T, class HashType, class Allocator>
 HashString<T, HashType, Allocator>::HashString(HashFunc hash_func, const Allocator& allocator):
 	_string(allocator), _hash_value(0), _hash_func(hash_func)
 {

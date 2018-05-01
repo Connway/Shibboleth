@@ -56,9 +56,28 @@ App::~App(void)
 }
 
 // Still single-threaded at this point, so ok that we're not locking.
-bool App::init(int argc, char** argv)
+bool App::init(int argc, const char** argv)
 {
-	_cmd_line_args = Gaff::ParseCommandLine<ProxyAllocator>(argc, argv);
+	// If we can't load the initial config, then create an empty object.
+	if (!_configs.parseFile("cfg/app.cfg")) {
+		_configs = Gaff::JSON::CreateObject();
+	}
+
+	// Load any extra configs and add their values to the _configs object.
+	for (int i = 0; i < argc; ++i) {
+		const char* const arg = argv[i];
+		Gaff::JSON extra_configs;
+
+		if (!Gaff::File::CheckExtension(arg, ".cfg") || !extra_configs.parseFile(arg)) {
+			continue;
+		}
+
+		extra_configs.forEachInObject([&](const char* key, const Gaff::JSON& value) -> bool {
+			_configs[key] = value;
+			return false;
+		});
+	}
+
 	return initInternal();
 }
 
@@ -66,9 +85,30 @@ bool App::init(int argc, char** argv)
 // Still single-threaded at this point, so ok that we're not locking.
 bool App::init(void)
 {
+	// If we can't load the initial config, then create an empty object.
+	if (!_configs.parseFile("cfg/app.cfg")) {
+		_configs = Gaff::JSON::CreateObject();
+	}
+
 	int argc = 0;
-	wchar_t** argv = CommandLineToArgvW(GetCommandLineW(), &argc);
-	_cmd_line_args = Gaff::ParseCommandLine<ProxyAllocator>(argc, argv);
+	const wchar_t* const * const argv = CommandLineToArgvW(GetCommandLineW(), &argc);
+
+	// Load any extra configs and add their values to the _configs object.
+	for (int i = 0; i < argc; ++i) {
+		const wchar_t* tmp = argv[i];
+		CONVERT_STRING(char, arg, tmp);
+		Gaff::JSON extra_configs;
+
+		if (!Gaff::File::CheckExtension(arg, ".cfg") || !extra_configs.parseFile(arg)) {
+			continue;
+		}
+
+		extra_configs.forEachInObject([&](const char* key, const Gaff::JSON& value) -> bool {
+			_configs[key] = value;
+			return false;
+		});
+	}
+
 	return initInternal();
 }
 #endif
@@ -145,19 +185,26 @@ bool App::initInternal(void)
 // Still single-threaded at this point, so ok that we're not using the spinlock
 bool App::loadFileSystem(void)
 {
-	if (Gaff::Find(_cmd_line_args, Gaff::FNV1aHash32String("lfs")) != _cmd_line_args.end() ||
-		Gaff::Find(_cmd_line_args, Gaff::FNV1aHash32String("loose_file_system")) != _cmd_line_args.end()) {
+	const Gaff::JSON& lfs = _configs["file_system"];
+	U8String fs = "";
 
-		_fs.file_system_module = _dynamic_loader.loadModule("./FileSystem" BIT_EXTENSION DYNAMIC_EXTENSION, "File System");
-	}
+	if (lfs.isString()) {
+		fs = U8String(lfs.getString()) + BIT_EXTENSION;
+		fs += DYNAMIC_EXTENSION;
 
-	if (_fs.file_system_module) {
-		LogInfoDefault("Found 'FileSystem" BIT_EXTENSION DYNAMIC_EXTENSION "'. Creating file system\n");
+		_fs.file_system_module = _dynamic_loader.loadModule(fs.data(), "File System");
+
+		if (!_fs.file_system_module) {
+			LogInfoDefault("Failed to find filesystem '%s'.\n", fs.data());
+			return false;
+		}
+
+		LogInfoDefault("Found '%s'. Creating file system.\n", fs.data());
 
 		InitModuleFunc init_func = _fs.file_system_module->getFunc<InitModuleFunc>("InitModule");
 
 		if (init_func && !init_func(*this)) {
-			LogErrorDefault("ERROR - Failed to init file system module\n");
+			LogErrorDefault("ERROR - Failed to init file system module.\n");
 			return false;
 		}
 
@@ -165,28 +212,28 @@ bool App::loadFileSystem(void)
 		_fs.create_func = _fs.file_system_module->getFunc<FileSystemData::CreateFileSystemFunc>("CreateFileSystem");
 
 		if (!_fs.create_func) {
-			LogErrorDefault("ERROR - Failed to find 'CreateFileSystem' in 'FileSystem" BIT_EXTENSION DYNAMIC_EXTENSION "'\n");
+			LogErrorDefault("ERROR - Failed to find 'CreateFileSystem' in '%s'.\n", fs.data());
 			return false;
 		}
 
 		if (!_fs.destroy_func) {
-			LogErrorDefault("ERROR - Failed to find 'DestroyFileSystem' in 'FileSystem" BIT_EXTENSION DYNAMIC_EXTENSION "'\n");
+			LogErrorDefault("ERROR - Failed to find 'DestroyFileSystem' in '%s'.\n", fs.data());
 			return false;
 		}
 
 		_fs.file_system = _fs.create_func();
 
 		if (!_fs.file_system) {
-			LogErrorDefault("ERROR - Failed to create file system from 'FileSystem" BIT_EXTENSION DYNAMIC_EXTENSION "'\n");
+			LogErrorDefault("ERROR - Failed to create file system from '%s'.\n", fs.data());
 			return false;
 		}
 
 	} else {
-		LogInfoDefault("Could not find 'FileSystem" BIT_EXTENSION DYNAMIC_EXTENSION "' defaulting to loose file system\n");
+		LogInfoDefault("Defaulting to loose file system.\n", fs.data());
 		_fs.file_system = SHIB_ALLOCT(LooseFileSystem, *GetAllocator());
 
 		if (!_fs.file_system) {
-			LogErrorDefault("ERROR - Failed to create loose file system\n");
+			LogErrorDefault("ERROR - Failed to create loose file system.\n");
 			return false;
 		}
 	}
@@ -301,31 +348,35 @@ bool App::loadModules(void)
 
 bool App::initApp(void)
 {
-	auto it = Gaff::Find(_cmd_line_args, Gaff::HashStringTemp32("working_dir"));
+	const Gaff::JSON& wd = _configs["working_dir"];
 
-	if (it != _cmd_line_args.end()) {
-		const U8String& working_dir = it->second;
-
-		if (!Gaff::SetWorkingDir(working_dir.data())) {
-			LogErrorDefault("ERROR - Failed to set working directory to '%s'.\n", working_dir.data());
+	if (wd.isString()) {
+		if (!Gaff::SetWorkingDir(wd.getString())) {
+			LogErrorDefault("ERROR - Failed to set working directory to '%s'.\n", wd.getString());
 			return false;
 		}
 
-	// Set DLL auto-load directory.
+		// Set DLL auto-load directory.
 #ifdef PLATFORM_WINDOWS
-		const char8_t* working_dir_ptr = working_dir.data();
+		const char8_t* working_dir_ptr = wd.getString();
 		CONVERT_STRING(wchar_t, temp, working_dir_ptr);
 
-		if ((temp[working_dir.size() - 1] == TEXT('/') || temp[working_dir.size() - 1] == TEXT('\\'))) {
-			memcpy(temp + working_dir.size(), TEXT("bin"), sizeof(wchar_t));
+		if ((temp[wd.size() - 1] == TEXT('/') || temp[wd.size() - 1] == TEXT('\\'))) {
+			memcpy(temp + wd.size(), TEXT("bin"), sizeof(wchar_t));
 		} else {
-			memcpy(temp + working_dir.size(), TEXT("/bin"), sizeof(wchar_t));
+			memcpy(temp + wd.size(), TEXT("/bin"), sizeof(wchar_t));
 		}
 
-		SetDllDirectory(temp);
+		if (!SetDllDirectory(temp)) {
+			LogErrorDefault("ERROR - Failed to set working directory to '%s'.\n", wd.getString());
+			return false;
+		}
 
 	} else {
-		SetDllDirectory(TEXT("bin"));
+		if (!SetDllDirectory(TEXT("bin"))) {
+			LogErrorDefault("ERROR - Failed to set working directory to '%s'.\n", wd.getString());
+			return false;
+		}
 #endif
 	}
 
@@ -491,9 +542,9 @@ IFileSystem* App::getFileSystem(void)
 	return _fs.file_system;
 }
 
-const VectorMap<HashString32, U8String>& App::getCmdLine(void) const
+const Gaff::JSON& App::getConfigs(void) const
 {
-	return _cmd_line_args;
+	return _configs;
 }
 
 const ReflectionManager& App::getReflectionManager(void) const
@@ -519,23 +570,6 @@ JobPool& App::getJobPool(void)
 DynamicLoader::ModulePtr App::loadModule(const char* filename, const char* name)
 {
 	return _dynamic_loader.loadModule(filename, name);
-}
-
-Vector<U8String> App::getLoadedModuleNames(void) const
-{
-	Vector<U8String> names;
-
-	_dynamic_loader.forEachModule([&](const HashString32& name, const DynamicLoader::ModulePtr&) -> bool {
-		const U8String& str = name.getString();
-
-		if (str.find("Module") != U8String::npos) {
-			names.emplace_back(str);
-		}
-
-		return false;
-	});
-
-	return names;
 }
 
 bool App::isQuitting(void) const

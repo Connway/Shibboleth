@@ -54,6 +54,7 @@ local tests = {
 			"../Dependencies/CATCH",
 			"../Dependencies/angelscript/angelscript/include",
 			"../Dependencies/angelscript/add_on/scriptbuilder",
+			"../Dependencies/rapidjson",
 
 			"../Frameworks/Gaff/include",
 			"../Engine/Shared/include",

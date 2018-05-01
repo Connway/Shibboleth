@@ -58,20 +58,6 @@ void AlignedFree(void* data);
 bool IsDebuggerAttached(void);
 void DebugBreak(void);
 
-template <class Allocator>
-VectorMap<HashString32<Allocator>, U8String<Allocator>, Allocator> ParseCommandLine(int argc, char** argv);
-
-template <class Allocator>
-void ParseCommandLine(int argc, char** argv, VectorMap<HashString32<Allocator>, U8String<Allocator>, Allocator>& out);
-
-#ifdef PLATFORM_WINDOWS
-template <class Allocator>
-VectorMap<HashString32<Allocator>, U8String<Allocator>, Allocator> ParseCommandLine(int argc, wchar_t** argv);
-
-template <class Allocator>
-void ParseCommandLine(int argc, wchar_t** argv, VectorMap<HashString32<Allocator>, U8String<Allocator>, Allocator>& out);
-#endif
-
 template <class T>
 void SetBitsToValue(T& value, T bits, bool set);
 
