@@ -73,31 +73,29 @@ void ModulesWindow::initTree(void)
 
 	Gaff::JSON config;
 
-	if (config.parseFile("cfg/editor.cfg")) {
-		const Gaff::JSON module_display = config["module_display"];
+	const Gaff::JSON& module_display = _app.getConfigs()["module_display"];
 
-		if (module_display.isArray()) {
-			const ReflectionManager& refl_mgr = _app.getReflectionManager();
+	if (module_display.isArray()) {
+		const ReflectionManager& refl_mgr = _app.getReflectionManager();
 
-			for (int32_t i = 0; i < module_display.size(); ++i) {
-				const Gaff::JSON entry = module_display[i];
-				const Gaff::JSON refl_name = entry["reflection_name"];
-				const Gaff::JSON name = entry["name"];
+		for (int32_t i = 0; i < module_display.size(); ++i) {
+			const Gaff::JSON entry = module_display[i];
+			const Gaff::JSON refl_name = entry["reflection_name"];
+			const Gaff::JSON name = entry["name"];
 
-				_reflection_types.Add(refl_name.getString());
+			_reflection_types.Add(refl_name.getString());
 
-				const Vector<const Gaff::IReflectionDefinition*>* const bucket = refl_mgr.getTypeBucket(Gaff::FNV1aHash64String(refl_name.getString()));
+			const Vector<const Gaff::IReflectionDefinition*>* const bucket = refl_mgr.getTypeBucket(Gaff::FNV1aHash64String(refl_name.getString()));
 
-				if (!bucket) {
-					continue;
-				}
+			if (!bucket) {
+				continue;
+			}
 
-				const wxTreeItemId id = _reflection_tree->AppendItem(root_id, name.getString());
-				_tree_ids.Add(id);
+			const wxTreeItemId id = _reflection_tree->AppendItem(root_id, name.getString());
+			_tree_ids.Add(id);
 
-				for (const Gaff::IReflectionDefinition* ref_def : *bucket) {
-					_reflection_tree->AppendItem(id, ref_def->getReflectionInstance().getName());
-				}
+			for (const Gaff::IReflectionDefinition* ref_def : *bucket) {
+				_reflection_tree->AppendItem(id, ref_def->getReflectionInstance().getName());
 			}
 		}
 	}

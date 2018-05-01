@@ -73,7 +73,7 @@ bool App::init(int argc, const char** argv)
 		}
 
 		extra_configs.forEachInObject([&](const char* key, const Gaff::JSON& value) -> bool {
-			_configs[key] = value;
+			_configs.setObject(key, value);
 			return false;
 		});
 	}
@@ -276,45 +276,66 @@ bool App::loadMainLoop(void)
 
 bool App::loadModules(void)
 {
-	// Load module order list.
-	Gaff::JSON modules_cfg;
+	const Gaff::JSON& module_load_order = _configs["module_load_order"];
+	const Gaff::JSON& module_dirs = _configs["module_directories"];
 
-	if (modules_cfg.parseFile("cfg/module_load_order.cfg")) {
-		GAFF_ASSERT(modules_cfg.isArray());
-
-		// Load those modules first.
-		modules_cfg.forEachInArray([&](int32_t, const Gaff::JSON& value) -> bool
-		{
-			GAFF_ASSERT(value.isString());
-			const U8String path = U8String(value.getString()) + "Module" BIT_EXTENSION DYNAMIC_EXTENSION;
-			loadModule(path.data());
-			return false;
-		});
-
-	} else {
-		LogWarningDefault("Failed to load 'manual_load_order.cfg'!");
+	if (!module_dirs.isNull() && !module_dirs.isArray()) {
+		LogErrorDefault("ERROR - 'module_directories' config option is not an array of strings!\n");
+		return false;
 	}
 
-	// Then load the rest.
-	const bool error = Gaff::ForEachTypeInDirectory<Gaff::FDT_RegularFile>("./Modules", [&](const char* name, size_t) -> bool
-	{
-		return !(_dynamic_loader.getModule(name) || loadModule(name));
-	});
-
-	if (error) {
+	if (!module_load_order.isNull() && !module_load_order.isArray()) {
+		LogErrorDefault("ERROR - 'module_load_order' config option is not an array of strings!\n");
 		return false;
+	}
+
+	if (module_load_order.isArray()) {
+		const int32_t size = module_load_order.size();
+
+		// First pass, load specified modules first.
+		for (int32_t i = 0; i < size; ++i) {
+			const Gaff::JSON& module = module_load_order[i];
+			GAFF_ASSERT(module.isString());
+
+			const U8String path = U8String(module.getString()) + BIT_EXTENSION DYNAMIC_EXTENSION;
+
+			if (!loadModule(path.data())) {
+				LogErrorDefault("ERROR - Failed to load module '%s'!\n", path.data());
+				return false;
+			}
+		}
+	}
+
+	if (module_dirs.isArray()) {
+		const int32_t size = module_dirs.size();
+
+		// Load the rest.
+		for (int32_t i = 0; i < size; ++i) {
+			const Gaff::JSON& dir = module_dirs[i];
+			GAFF_ASSERT(dir.isString());
+
+			const bool error = Gaff::ForEachTypeInDirectory<Gaff::FDT_RegularFile>(dir.getString(), [&](const char* name, size_t) -> bool
+			{
+				U8String md = dir.getString() + U8String("/") + name;
+				return !(_dynamic_loader.getModule(md.data()) || loadModule(md.data()));
+			});
+
+			if (error) {
+				return false;
+			}
+		}
 	}
 
 	// Create manager instances.
 	const Vector<const Gaff::IReflectionDefinition*>* manager_bucket = _reflection_mgr.getTypeBucket(Gaff::FNV1aHash64Const("IManager"));
 
 	for (const Gaff::IReflectionDefinition* ref_def : *manager_bucket) {
-
 		ProxyAllocator allocator;
 		IManager* manager = ref_def->CREATEALLOCT(IManager, allocator);
 
 		if (!manager->init()) {
 			// log error
+			LogErrorDefault("ERROR - Failed to initialize manager '%s'!\n", ref_def->getReflectionInstance().getName());
 			SHIB_FREET(manager, *GetAllocator());
 			return false;
 		}
@@ -326,7 +347,7 @@ bool App::loadModules(void)
 	}
 
 	// Notify all modules that every module has been loaded.
-	_dynamic_loader.forEachModule([&](const HashString32&, DynamicLoader::ModulePtr& module) -> bool
+	_dynamic_loader.forEachModule([](const HashString32&, DynamicLoader::ModulePtr& module) -> bool
 	{
 		using AllModulesLoadedFunc = void (*)(void);
 		AllModulesLoadedFunc aml_func = module->getFunc<AllModulesLoadedFunc>("AllModulesLoaded");
@@ -339,8 +360,8 @@ bool App::loadModules(void)
 	});
 
 	// Notify all managers that every module has been loaded.
-	for (auto it = _manager_map.begin(); it != _manager_map.end(); ++it) {
-		it->second->allModulesLoaded();
+	for (auto& mgr_pair : _manager_map) {
+		mgr_pair.second->allModulesLoaded();
 	}
 
 	return true;
@@ -383,36 +404,34 @@ bool App::initApp(void)
 	return true;
 }
 
-bool App::loadModule(const char* module_name)
+bool App::loadModule(const char* module_path)
 {
 	// If it's not a dynamic module,
 	// or if it is not compiled for our architecture and build mode,
 	// then just skip over it.
-	if (!Gaff::File::CheckExtension(module_name, BIT_EXTENSION DYNAMIC_EXTENSION)) {
+	if (!Gaff::File::CheckExtension(module_path, BIT_EXTENSION DYNAMIC_EXTENSION)) {
 		return true;
 	}
 
-	U8String rel_path = U8String("./Modules/") + module_name;
-
 #ifdef PLATFORM_WINDOWS
-	DynamicLoader::ModulePtr module = _dynamic_loader.loadModule(("../" + rel_path).data(), module_name);
+	DynamicLoader::ModulePtr module = _dynamic_loader.loadModule((U8String("../") + module_path).data(), module_path);
 #else
-	DynamicLoader::ModulePtr module = _dynamic_loader.loadModule(rel_path.data(), name);
+	DynamicLoader::ModulePtr module = _dynamic_loader.loadModule(module_path, name);
 #endif
 
 	if (!module) {
-		LogWarningDefault("Failed to find or load dynamic module '%s'\n", rel_path.data());
+		LogWarningDefault("Failed to find or load dynamic module '%s'\n", module_path);
 		return false;
 	}
 
 	InitModuleFunc init_func = module->getFunc<InitModuleFunc>("InitModule");
 
 	if (!init_func) {
-		LogErrorDefault("Failed to find function 'InitModule' in dynamic module '%s'\n", rel_path.data());
+		LogErrorDefault("Failed to find function 'InitModule' in dynamic module '%s'\n", module_path);
 		return false;
 	}
 	else if (!init_func(*this)) {
-		LogErrorDefault("Failed to initialize dynamic module '%s'\n", rel_path.data());
+		LogErrorDefault("Failed to initialize dynamic module '%s'\n", module_path);
 		return false;
 	}
 

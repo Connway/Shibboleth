@@ -36,7 +36,9 @@ bool Editor::OnInit(void)
 
 	frame->setApp(_engine_instance);
 
-	return _engine_instance.init(0, nullptr);
+	const char* args[] = { "cfg/editor.cfg" };
+
+	return _engine_instance.init(1, args);
 }
 
 NS_END
