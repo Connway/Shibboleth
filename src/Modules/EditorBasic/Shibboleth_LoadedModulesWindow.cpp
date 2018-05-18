@@ -20,31 +20,48 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#include "Shibboleth_ModulesWindow.h"
-#include <Shibboleth_App.h>
+#include "Shibboleth_LoadedModulesWindow.h"
+#include <Shibboleth_EditorWindowAttribute.h>
+#include <Shibboleth_IApp.h>
 #include <Gaff_JSON.h>
 
-#ifdef PLATFORM_WINDOWS
-	#include <wx/msw/winundef.h>
-#endif
-
-#include <wx/ownerdrw.h>
 #include <wx/treectrl.h>
 #include <wx/listbox.h>
 #include <wx/sizer.h>
 #include <wx/event.h>
 
+SHIB_REFLECTION_EXTERNAL_DEFINE(Shibboleth::LoadedModulesWindow)
+
+SHIB_REFLECTION_BUILDER_BEGIN(Shibboleth::LoadedModulesWindow)
+	.CTOR(wxWindow*, wxWindowID, const wxPoint&, const wxSize&)
+	.CTOR(wxWindow*, wxWindowID, const wxPoint&)
+	.CTOR(wxWindow*, wxWindowID)
+	.CTOR(wxWindow*)
+
+	.BASE(wxWindow)
+
+	.classAttrs(
+		EditorWindowAttribute("&Modules", "Loaded Modules")
+	)
+
+SHIB_REFLECTION_BUILDER_END(Shibboleth::LoadedModulesWindow)
+
 NS_SHIBBOLETH
 
-ModulesWindow::ModulesWindow(wxWindow* parent, App& app):
-	wxPanel(parent), _app(app)
+LoadedModulesWindow::LoadedModulesWindow(
+	wxWindow* parent,
+	wxWindowID id,
+	const wxPoint& pos,
+	const wxSize& size
+):
+	wxPanel(parent, id, pos, size)
 {
 	_modules_list = new wxListBox(this, wxID_ANY);
 	_modules_list->SetWindowStyleFlag(wxLB_SINGLE | wxLB_NEEDED_SB | wxLB_SORT);
 
 	_modules_list->Append("All");
 
-	for (const HashString64& module : app.getReflectionManager().getModules()) {
+	for (const HashString64& module : GetApp().getReflectionManager().getModules()) {
 		_modules_list->Append(module.getBuffer());
 	}
 
@@ -60,23 +77,23 @@ ModulesWindow::ModulesWindow(wxWindow* parent, App& app):
 	sizer->SetSizeHints(this);
 	SetSizer(sizer);
 
-	Connect(wxEVT_LISTBOX, wxCommandEventHandler(ModulesWindow::onModuleSelected));
+	Connect(wxEVT_LISTBOX, wxCommandEventHandler(LoadedModulesWindow::onModuleSelected));
 
 	initTree();
 
 	_modules_list->SetSelection(0);
 }
 
-void ModulesWindow::initTree(void)
+void LoadedModulesWindow::initTree(void)
 {
 	const wxTreeItemId root_id = _reflection_tree->GetRootItem();
 
 	Gaff::JSON config;
 
-	const Gaff::JSON& module_display = _app.getConfigs()["module_display"];
+	const Gaff::JSON& module_display = GetApp().getConfigs()["module_display"];
 
 	if (module_display.isArray()) {
-		const ReflectionManager& refl_mgr = _app.getReflectionManager();
+		const ReflectionManager& refl_mgr = GetApp().getReflectionManager();
 
 		for (int32_t i = 0; i < module_display.size(); ++i) {
 			const Gaff::JSON entry = module_display[i];
@@ -101,9 +118,9 @@ void ModulesWindow::initTree(void)
 	}
 }
 
-void ModulesWindow::onModuleSelected(wxCommandEvent& event)
+void LoadedModulesWindow::onModuleSelected(wxCommandEvent& event)
 {
-	const ReflectionManager& refl_mgr = _app.getReflectionManager();
+	const ReflectionManager& refl_mgr = GetApp().getReflectionManager();
 	const wxString module_name = event.GetString();
 	const Gaff::Hash64 module_hash = Gaff::FNV1aHash64String(module_name.GetData().AsChar());
 	const bool is_all_modules = module_name == "All";

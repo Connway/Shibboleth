@@ -37,6 +37,7 @@ public:
 	static bool CompareRefHash(const Gaff::IReflectionDefinition* lhs, Gaff::Hash64 rhs);
 
 	ReflectionManager(void);
+	~ReflectionManager(void);
 
 	void destroy(void);
 

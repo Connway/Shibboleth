@@ -7,6 +7,8 @@ project "expat"
 	language "C"
 	warnings "Default"
 
+	defines { "XML_STATIC" }
+
 	files { "**.h", "**.c" }
 
 	filter { "action:vs*" }

@@ -24,8 +24,9 @@ project "Editor_App"
 	local deps =
 	{
 		"Shared",
-		"Gaff",
 		"Memory",
+		"Editor",
+		"Gaff",
 		"EASTL",
 		"libjpeg",
 		"libpng",

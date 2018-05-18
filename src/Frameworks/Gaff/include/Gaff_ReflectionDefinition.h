@@ -116,6 +116,9 @@ public:
 	ReflectionDefinition& base(void);
 
 	template <class... Args>
+	ReflectionDefinition& ctor(Hash64 factory_hash);
+
+	template <class... Args>
 	ReflectionDefinition& ctor(void);
 
 	template <class Var, size_t size>
@@ -409,7 +412,9 @@ NS_END
 
 #include "Gaff_ReflectionDefinition.inl"
 
+#define ARG_HASH(...) Gaff::CalcTemplateHash<__VA_ARGS__>(Gaff::INIT_HASH64, std::array<const char*, Gaff::GetNumArgs<__VA_ARGS__>()>{ GAFF_FOR_EACH_COMMA(GAFF_STR, __VA_ARGS__) })
 #define BASE(type) base<type>(#type)
+#define CTOR(...) ctor<__VA_ARGS__>(ARG_HASH(__VA_ARGS__))
 
 #ifdef PLATFORM_WINDOWS
 	#pragma warning(pop)

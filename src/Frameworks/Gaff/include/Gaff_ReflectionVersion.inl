@@ -41,6 +41,14 @@ ReflectionVersion<T>& ReflectionVersion<T>::base(void)
 
 template <class T>
 template <class... Args>
+ReflectionVersion<T>& ReflectionVersion<T>::ctor(Hash64 factory_hash)
+{
+	_hash = FNV1aHash64T(&factory_hash, _hash);
+	return *this;
+}
+
+template <class T>
+template <class... Args>
 ReflectionVersion<T>& ReflectionVersion<T>::ctor(void)
 {
 	_hash = CalcTemplateHash<Args...>(_hash);

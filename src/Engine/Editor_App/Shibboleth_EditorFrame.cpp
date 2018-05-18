@@ -21,8 +21,10 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Shibboleth_EditorFrame.h"
-#include "Shibboleth_ModulesWindow.h"
-#include <Shibboleth_App.h>
+#include "Shibboleth_EditorWindowAttribute.h"
+#include <Shibboleth_ReflectionManager.h>
+#include <Shibboleth_Utilities.h>
+#include <Shibboleth_IApp.h>
 #include <Gaff_JSON.h>
 #include <wx/msgdlg.h>
 #include <wx/menu.h>
@@ -30,9 +32,8 @@ THE SOFTWARE.
 NS_SHIBBOLETH
 
 wxBEGIN_EVENT_TABLE(EditorFrame, wxFrame)
-	EVT_MENU(wxID_EXIT, EditorFrame::OnExit)
-	EVT_MENU(wxID_ABOUT, EditorFrame::OnAbout)
-	EVT_MENU(EF_MODULES, EditorFrame::OnModulesWindow)
+	EVT_MENU(wxID_EXIT, EditorFrame::onExit)
+	EVT_MENU(wxID_ABOUT, EditorFrame::onAbout)
 wxEND_EVENT_TABLE()
 
 EditorFrame::EditorFrame(const wxString& title, const wxPoint& pos, const wxSize& size):
@@ -47,7 +48,6 @@ EditorFrame::EditorFrame(const wxString& title, const wxPoint& pos, const wxSize
 	menu_help->Append(wxID_ABOUT);
 
 	_window_menu = new wxMenu;
-	_window_menu->Append(EF_MODULES, "Modules");
 
 	_menu_bar->Append(menu_file, "&File");
 	_menu_bar->Append(_window_menu, "&Window");
@@ -68,6 +68,28 @@ EditorFrame::EditorFrame(const wxString& title, const wxPoint& pos, const wxSize
 	);
 
 	_aui_mgr.Update();
+
+	// Add all IEditorWindows to the Window menu.
+	ReflectionManager& refl_mgr = GetApp().getReflectionManager();
+
+	const Vector<const Gaff::IReflectionDefinition*> editor_windows = refl_mgr.getReflectionWithAttribute(Reflection<EditorWindowAttribute>::GetHash());
+
+	for (const Gaff::IReflectionDefinition* const ref_def : editor_windows) {
+		const EditorWindowAttribute* const ew_attr = ref_def->getClassAttribute<EditorWindowAttribute>();
+		const int id = _next_id++;
+
+		_window_menu->Append(id, ew_attr->getPath());
+
+		Bind(
+			wxEVT_MENU,
+			&EditorFrame::onSpawnWindow,
+			this,
+			id,
+			-1,
+			// wxWidgets doesn't try to de-allocate this, so it's safe. Still kind of hacky.
+			const_cast<wxObject*>(reinterpret_cast<const wxObject*>(ref_def))
+		);
+	}
 }
 
 EditorFrame::~EditorFrame(void)
@@ -75,17 +97,12 @@ EditorFrame::~EditorFrame(void)
 	_aui_mgr.UnInit();
 }
 
-void EditorFrame::setApp(App& app)
-{
-	_app = &app;
-}
-
-void EditorFrame::OnExit(wxCommandEvent&)
+void EditorFrame::onExit(wxCommandEvent&)
 {
 	Close(true);
 }
 
-void EditorFrame::OnAbout(wxCommandEvent&)
+void EditorFrame::onAbout(wxCommandEvent&)
 {
 	wxMessageBox(
 		"This is the Shibboleth Editor!\nEverything is WIP!",
@@ -94,15 +111,18 @@ void EditorFrame::OnAbout(wxCommandEvent&)
 	);
 }
 
-void EditorFrame::OnModulesWindow(wxCommandEvent&)
+void EditorFrame::onSpawnWindow(wxCommandEvent& event)
 {
-	ModulesWindow* modules_window = new ModulesWindow(this, *_app);
+	const Gaff::IReflectionDefinition* const ref_def = reinterpret_cast<Gaff::IReflectionDefinition*>(event.GetEventUserData());
+	const EditorWindowAttribute* const ew_attr = ref_def->getClassAttribute<EditorWindowAttribute>();
+
+	wxWindow* const window = ref_def->createAllocT<wxWindow>(Gaff::FNV1aHash64Const("wxWindow"), ARG_HASH(wxWindow*), *GetAllocator(), this);
 	wxAuiPaneInfo pane;
 
-	pane.Caption("Loaded Modules");
+	pane.Caption(ew_attr->getCaption());
 	pane.Float();
 
-	_aui_mgr.AddPane(modules_window, pane);
+	_aui_mgr.AddPane(window, pane);
 	_aui_mgr.Update();
 }
 

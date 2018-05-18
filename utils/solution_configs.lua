@@ -5,7 +5,7 @@ function AddConfigOption(config)
 	table.insert(config_options, { config, config })
 end
 
-if _OPTIONS["gen-clang"] and (_ACTION == "vs2015" or _ACTION == "vs2017") then
+if _OPTIONS["gen-clang"] and _ACTION == "vs2017" then
 	configs =
 	{
 		"Debug", "Release",
@@ -14,7 +14,7 @@ if _OPTIONS["gen-clang"] and (_ACTION == "vs2015" or _ACTION == "vs2017") then
 		"Profile", "Profile_Clang",
 		"Optimized_Debug", "Optimized_Debug_Clang"
 	}
-elseif _ACTION == "vs2015" or _ACTION == "vs2017" then
+elseif _ACTION == "vs2017" then
 	configs =
 	{
 		"Debug", "Release", "Analyze",

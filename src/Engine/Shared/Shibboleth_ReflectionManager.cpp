@@ -39,8 +39,16 @@ ReflectionManager::ReflectionManager(void)
 {
 }
 
+ReflectionManager::~ReflectionManager(void)
+{
+	destroy();
+}
+
 void ReflectionManager::destroy(void)
 {
+	_module_enum_owners.clear();
+	_module_owners.clear();
+
 	_enum_reflection_map.clear();
 	_reflection_map.clear();
 	_type_buckets.clear();

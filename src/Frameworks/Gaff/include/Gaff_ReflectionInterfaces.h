@@ -29,6 +29,11 @@ THE SOFTWARE.
 #define GET_CLASS_ATTRIBUTE(T) getClassAttribute<T>(Gaff::FNV1aHash64Const(#T))
 #define GET_ENUM_ATTRIBUTE(T) getEnumAttribute<T>(Gaff::FNV1aHash64Const(#T))
 
+#ifdef PLATFORM_WINDOWS
+	#pragma warning(push)
+	#pragma warning(disable: 4307)
+#endif
+
 NS_GAFF
 
 class ISerializeReader;
@@ -241,11 +246,28 @@ public:
 	}
 
 	template <class T, class... Args>
+	T* createAllocT(Hash64 interface_hash, Hash64 factory_hash, IAllocator& allocator, Args&&... args) const
+	{
+		GAFF_ASSERT(hasInterface(interface_hash));
+
+		FactoryFunc<Args...> factory_func = reinterpret_cast< FactoryFunc<Args...> >(getFactory(factory_hash));
+
+		T* instance = nullptr;
+
+		if (factory_func) {
+			void* data = factory_func(allocator, std::forward<Args>(args)...);
+			instance = reinterpret_cast<T*>(getInterface(interface_hash, data));
+		}
+
+		return instance;
+	}
+
+	template <class T, class... Args>
 	T* createAllocT(Hash64 interface_hash, IAllocator& allocator, Args&&... args) const
 	{
 		GAFF_ASSERT(hasInterface(interface_hash));
 
-		Hash64 ctor_hash = CalcTemplateHash<Args...>(INIT_HASH64);
+		constexpr Hash64 ctor_hash = CalcTemplateHash<Args...>(INIT_HASH64);
 
 		FactoryFunc<Args...> factory_func = reinterpret_cast< FactoryFunc<Args...> >(getFactory(ctor_hash));
 
@@ -265,7 +287,7 @@ public:
 		Hash64 hash = GAFF_REFLECTION_NAMESPACE::Reflection<T>::GetHash();
 		GAFF_ASSERT(hasInterface(hash));
 
-		Hash64 ctor_hash = CalcTemplateHash<Args...>(INIT_HASH64);
+		constexpr Hash64 ctor_hash = CalcTemplateHash<Args...>(INIT_HASH64);
 
 		FactoryFunc<Args...> factory_func = reinterpret_cast< FactoryFunc<Args...> >(getFactory(ctor_hash));
 
@@ -282,7 +304,7 @@ public:
 	template <class... Args>
 	void* createAlloc(IAllocator& allocator, Args&&... args) const
 	{
-		Hash64 ctor_hash = CalcTemplateHash<Args...>(INIT_HASH64);
+		constexpr Hash64 ctor_hash = CalcTemplateHash<Args...>(INIT_HASH64);
 
 		FactoryFunc<Args...> factory_func = reinterpret_cast< FactoryFunc<Args...> >(getFactory(ctor_hash));
 
@@ -389,14 +411,14 @@ public:
 	template <class... Args>
 	FactoryFunc<Args...> getFactory(void) const
 	{
-		Hash64 ctor_hash = Gaff::CalcTemplateHash<Args...>(INIT_HASH64);
+		constexpr Hash64 ctor_hash = Gaff::CalcTemplateHash<Args...>(INIT_HASH64);
 		return reinterpret_cast< FactoryFunc<Args...> >(getFactory(ctor_hash));
 	}
 
 	template <class Ret, class... Args>
 	IReflectionFunction<Ret, Args...>* getFunc(Hash32 name) const
 	{
-		Hash64 arg_hash = Gaff::CalcTemplateHash<Ret, Args...>(INIT_HASH64);
+		constexpr Hash64 arg_hash = Gaff::CalcTemplateHash<Ret, Args...>(INIT_HASH64);
 		void* functor = getFunc(name, arg_hash);
 
 		if (functor) {
@@ -578,3 +600,7 @@ public:
 };
 
 NS_END
+
+#ifdef PLATFORM_WINDOWS
+	#pragma warning(pop)
+#endif

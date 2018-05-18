@@ -6,7 +6,7 @@ project "Esprit"
 	kind "StaticLib"
 	language "C++"
 
-	filter { "configurations:not *Clang", "configurations:not Analyze*" }
+	filter { "configurations:not Analyze*" }
 		flags { "FatalWarnings" }
 
 	filter {}

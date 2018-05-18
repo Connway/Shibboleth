@@ -24,6 +24,7 @@ THE SOFTWARE.
 
 #include "Shibboleth_Math.h"
 
+SHIB_REFLECTION_EXTERNAL_DEFINE(glm::quat)
 SHIB_REFLECTION_BUILDER_BEGIN(glm::quat)
 	.var("x", &glm::quat::x)
 	.var("y", &glm::quat::y)
@@ -31,6 +32,7 @@ SHIB_REFLECTION_BUILDER_BEGIN(glm::quat)
 	.var("w", &glm::quat::w)
 SHIB_REFLECTION_BUILDER_END(glm::quat)
 
+SHIB_REFLECTION_EXTERNAL_DEFINE(glm::vec4)
 SHIB_REFLECTION_BUILDER_BEGIN(glm::vec4)
 	.var("x", &glm::vec4::x)
 	.var("y", &glm::vec4::y)
@@ -38,23 +40,27 @@ SHIB_REFLECTION_BUILDER_BEGIN(glm::vec4)
 	.var("w", &glm::vec4::w)
 SHIB_REFLECTION_BUILDER_END(glm::vec4)
 
+SHIB_REFLECTION_EXTERNAL_DEFINE(glm::vec3)
 SHIB_REFLECTION_BUILDER_BEGIN(glm::vec3)
 	.var("x", &glm::vec3::x)
 	.var("y", &glm::vec3::y)
 	.var("z", &glm::vec3::z)
 SHIB_REFLECTION_BUILDER_END(glm::vec3)
 
+SHIB_REFLECTION_EXTERNAL_DEFINE(glm::vec2)
 SHIB_REFLECTION_BUILDER_BEGIN(glm::vec2)
 	.var("x", &glm::vec2::x)
 	.var("y", &glm::vec2::y)
 SHIB_REFLECTION_BUILDER_END(glm::vec2)
 
+SHIB_REFLECTION_EXTERNAL_DEFINE(Gleam::Transform)
 SHIB_REFLECTION_BUILDER_BEGIN(Gleam::Transform)
 	.var("rotation", &Gleam::Transform::getRotation, &Gleam::Transform::setRotation)
 	.var("translation", &Gleam::Transform::getTranslation, &Gleam::Transform::setTranslation)
 	.var("scale", &Gleam::Transform::getScale, &Gleam::Transform::setScale)
 SHIB_REFLECTION_BUILDER_END(Gleam::Transform)
 
+SHIB_REFLECTION_EXTERNAL_DEFINE(Gleam::AABB)
 SHIB_REFLECTION_BUILDER_BEGIN(Gleam::AABB)
 	.var("min", &Gleam::AABB::getMin, &Gleam::AABB::setMin)
 	.var("max", &Gleam::AABB::getMax, &Gleam::AABB::setMax)

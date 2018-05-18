@@ -480,7 +480,7 @@ AngelScriptClassRegister<T, B>& AngelScriptClassRegister<T, B>::func(const char 
 	char temp_a[TEMP_DECL_SIZE] = { 0 };
 	char temp_b[TEMP_DECL_SIZE] = { 0 };
 
-	using R = std::remove_reference< std::remove_const<Ret>::type >::type;
+	using R = typename std::remove_reference< std::remove_const<Ret>::type >::type;
 
 	snprintf(
 		temp_a,
@@ -509,7 +509,7 @@ AngelScriptClassRegister<T, B>& AngelScriptClassRegister<T, B>::func(const char 
 	char temp_a[1024] = { 0 };
 	char temp_b[1024] = { 0 };
 
-	using R = std::remove_reference< std::remove_const<Ret>::type >::type;
+	using R = typename std::remove_reference< std::remove_const<Ret>::type >::type;
 
 	snprintf(
 		temp_a,

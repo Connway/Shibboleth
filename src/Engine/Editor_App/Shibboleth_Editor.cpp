@@ -24,6 +24,7 @@ THE SOFTWARE.
 
 #include "Shibboleth_Editor.h"
 #include <Shibboleth_EditorFrame.h>
+#include <Shibboleth_Utilities.h>
 
 wxIMPLEMENT_APP(Shibboleth::Editor);
 
@@ -31,14 +32,22 @@ NS_SHIBBOLETH
 
 bool Editor::OnInit(void)
 {
-	EditorFrame* const frame = new EditorFrame("Shibboleth Editor", wxDefaultPosition, wxSize(800, 600));
-	frame->Show(true);
-
-	frame->setApp(_engine_instance);
+	Shibboleth::SetApp(_engine_instance);
 
 	const char* args[] = { "cfg/editor.cfg" };
+	const bool success = _engine_instance.init(1, args);
 
-	return _engine_instance.init(1, args);
+	if (!success) {
+		return false;
+	}
+
+	EditorFrame* const frame = new EditorFrame("Shibboleth Editor", wxDefaultPosition, wxSize(800, 600));
+	return frame && frame->Show(true);
+}
+
+void Editor::CleanUp(void)
+{
+	_engine_instance.destroy();
 }
 
 NS_END
