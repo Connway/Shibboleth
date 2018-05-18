@@ -63,6 +63,11 @@ void ShibbolethFree(void* data)
 	SHIB_FREE(data, g_allocator);
 }
 
+void SetLogDir(const char* dir)
+{
+	g_allocator.setLogDir(dir);
+}
+
 void AllocatorThreadInit(void)
 {
 	coherent_rpmalloc::rpmalloc_thread_initialize();

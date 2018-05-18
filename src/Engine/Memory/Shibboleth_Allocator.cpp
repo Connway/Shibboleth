@@ -271,6 +271,15 @@ const char* Allocator::getPoolName(size_t pool_index) const
 	return _tagged_pools[pool_index].pool_name;
 }
 
+void Allocator::setLogDir(const char* log_dir)
+{
+	for (int32_t i = 0; log_dir[i] && i < ARRAY_SIZE(_log_dir); ++i) {
+		_log_dir[i] = log_dir[i];
+	}
+
+	_log_dir[ARRAY_SIZE(_log_dir) - 1] = 0;
+}
+
 void Allocator::setHeaderData(
 	AllocationHeader* header,
 	int32_t pool_index,
@@ -307,10 +316,13 @@ void Allocator::setHeaderData(
 
 void Allocator::writeAllocationLog(void) const
 {
-	char log_file_name[64] = { 0 };
-	Gaff::GetCurrentTimeString(log_file_name, 64, "logs/AllocationLog %Y-%m-%d %H-%M-%S.txt");
+	char time_string[64] = { 0 };
+	Gaff::GetCurrentTimeString(time_string, ARRAY_SIZE(time_string), "%Y-%m-%d_%H-%M-%S");
 
-	if (!Gaff::CreateDir("./logs", 0777)) {
+	char log_file_name[64] = { 0 };
+	snprintf(log_file_name, ARRAY_SIZE(log_file_name), "%s/AllocationLog_%s.txt", _log_dir, time_string);
+
+	if (!Gaff::CreateDir(_log_dir, 0777)) {
 		return;
 	}
 
@@ -321,7 +333,9 @@ void Allocator::writeAllocationLog(void) const
 	}
 
 #ifdef GATHER_ALLOCATION_STACKTRACE
-	Gaff::GetCurrentTimeString(log_file_name, 64, "logs/CallstackLog %Y-%m-%d %H-%M-%S.txt");
+	snprintf(log_file_name, ARRAY_SIZE(log_file_name), "%s/CallstackLog_%s.txt", _log_dir, time_string);
+
+	Gaff::GetCurrentTimeString(log_file_name, ARRAY_SIZE(log_file_name), time_format);
 	Gaff::File callstack_log;
 
 	if (callstack_log.open(log_file_name, Gaff::File::WRITE)) {
@@ -408,8 +422,11 @@ void Allocator::writeLeakLog(void) const
 		return;
 	}
 
+	char time_string[64] = { 0 };
+	Gaff::GetCurrentTimeString(time_string, ARRAY_SIZE(time_string), "%Y-%m-%d_%H-%M-%S");
+
 	char log_file_name[64] = { 0 };
-	Gaff::GetCurrentTimeString(log_file_name, 64, "logs/LeakLog %Y-%m-%d %H-%M-%S.txt");
+	snprintf(log_file_name, ARRAY_SIZE(log_file_name), "%s/LeakLog_%s.txt", _log_dir, time_string);
 
 	Gaff::File log;
 

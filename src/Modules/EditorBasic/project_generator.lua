@@ -40,7 +40,7 @@ project "EditorBasicModule"
 	files { "Shibboleth_EditorBasicModule.cpp" }
 
 	ModuleGen("EditorBasic")
-	ModuleCopy()
+	ModuleEditorCopy()
 
 	filter { "configurations:not Analyze*" }
 		flags { "FatalWarnings" }

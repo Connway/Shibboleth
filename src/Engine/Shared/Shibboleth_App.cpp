@@ -123,9 +123,13 @@ bool App::initInternal(void)
 		return false;
 	}
 
-	if (!Gaff::CreateDir(_configs["log_dir"].getString("logs"), 0777)) {
+	const char* const log_dir = _configs["log_dir"].getString("./logs");
+
+	if (!Gaff::CreateDir(log_dir, 0777)) {
 		return false;
 	}
+
+	SetLogDir(log_dir);
 
 	removeExtraLogs(); // Make sure we don't have more than ten logs per log type
 
@@ -445,7 +449,7 @@ void App::removeExtraLogs(void)
 	int32_t game_log_count = 0;
 	int32_t leak_log_count = 0;
 
-	const char* const log_dir = _configs["log_dir"].getString("logs");
+	const char* const log_dir = _configs["log_dir"].getString("./logs");
 
 	Gaff::ForEachTypeInDirectory<Gaff::FDT_RegularFile>(log_dir, [&](const char* name, size_t) -> bool
 	{

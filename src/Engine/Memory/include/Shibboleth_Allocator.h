@@ -63,6 +63,8 @@ public:
 	size_t getNumFrees(size_t pool_index) const;
 	const char* getPoolName(size_t pool_index) const;
 
+	void setLogDir(const char* log_dir);
+
 private:
 	struct MemoryPoolInfo
 	{
@@ -84,6 +86,8 @@ private:
 	MemoryPoolInfo _tagged_pools[NUM_TAG_POOLS + 1];
 	eastl::fixed_vector<Gaff::Hash32, NUM_TAG_POOLS, false> _tag_ids;
 	std::mutex _alloc_lock;
+
+	char _log_dir[64] = { '.', '/', 'l', 'o', 'g', 's', 0 };
 
 	void setHeaderData(
 		AllocationHeader* header,

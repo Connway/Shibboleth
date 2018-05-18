@@ -46,6 +46,7 @@ MEMORY_API void* ShibbolethAllocate(size_t size, size_t alignment);
 MEMORY_API void* ShibbolethAllocate(size_t size);
 MEMORY_API void ShibbolethFree(void* data);
 
+MEMORY_API void SetLogDir(const char* dir);
 MEMORY_API void AllocatorThreadInit(void);
 
 NS_END
