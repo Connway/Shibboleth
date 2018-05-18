@@ -97,7 +97,8 @@ function IncludeWxWidgets()
 		-- "WXBUILDING",
 		"wxUSE_ZLIB_H_IN_PATH",
 		-- "wxUSE_GUI=1",
-		-- "wxUSE_BASE=1"
+		-- "wxUSE_BASE=1",
+		"WXUSINGDLL"
 	}
 
 	filter { "system:windows" }

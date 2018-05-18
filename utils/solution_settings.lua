@@ -25,7 +25,14 @@ nativewchar "Default"
 floatingpoint "Fast"
 startproject "Game_App"
 symbols "On"
-cppdialect "C++14"
+
+filter { "action:not vs*" }
+	cppdialect "C++17"
+
+filter { "action:vs*" }
+	buildoptions { "/std:c++17" }
+
+filter {}
 
 defines { "UNICODE", "_UNICODE" }
 
@@ -42,7 +49,7 @@ SetIntermediateAndTargetDirs("Analyze")
 SetIntermediateAndTargetDirs("Profile")
 SetIntermediateAndTargetDirs("Optimized_Debug")
 
-if _OPTIONS["gen-clang"] and (_ACTION == "vs2015" or _ACTION == "vs2017") then
+if _OPTIONS["gen-clang"] and _ACTION == "vs2017" then
 	SetIntermediateAndTargetDirs("Debug_Clang")
 	SetIntermediateAndTargetDirs("Release_Clang")
 	SetIntermediateAndTargetDirs("Analyze_Clang")
@@ -90,9 +97,6 @@ filter { "system:windows" }
 
 filter { "system:windows", "platforms:x64" }
 	defines { "WIN64" }
-
-filter { "system:windows", "configurations:*Clang", "action:vs2015" }
-	toolset "msc-llvm-vs2014"
 
 filter { "system:windows", "configurations:*Clang", "action:vs2017" }
 	toolset "v141_clang_c2"

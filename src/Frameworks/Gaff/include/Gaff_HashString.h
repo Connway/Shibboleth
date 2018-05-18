@@ -95,8 +95,9 @@ public:
 	HashString(HashType hash, HashFunc hash_func = nullptr, const Allocator& allocator = Allocator());
 	HashString(HashFunc hash_func = nullptr, const Allocator& allocator = Allocator());
 
-	HashString(const HashString<T, HashType, Allocator>& string) = default;
+	HashString(const HashString<T, HashType, Allocator>& rhs) = default;
 	HashString(HashString<T, HashType, Allocator>&& rhs) = default;
+
 	~HashString(void) = default;
 
 	HashString<T, HashType, Allocator>& operator=(const HashString<T, HashType, Allocator>& rhs) = default;

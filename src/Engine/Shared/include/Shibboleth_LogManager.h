@@ -80,11 +80,14 @@ private:
 	VectorMap<HashString32, Gaff::File> _channels;
 	Vector<LogCallback> _log_callbacks;
 	Queue<LogTask> _logs;
+
 	std::mutex _log_condition_lock;
 	std::mutex _log_callback_lock;
 	std::mutex _log_queue_lock;
 
 	std::thread _log_thread;
+
+	U8String _log_dir = "logs";
 
 
 	bool logMessageHelper(LogType type, Gaff::Hash32 channel, const char* format, va_list& vl);

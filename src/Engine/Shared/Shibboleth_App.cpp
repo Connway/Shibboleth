@@ -123,13 +123,13 @@ bool App::initInternal(void)
 		return false;
 	}
 
-	if (!_log_mgr.init()) {
+	if (!Gaff::CreateDir(_configs["log_dir"].getString("logs"), 0777)) {
 		return false;
 	}
 
 	removeExtraLogs(); // Make sure we don't have more than ten logs per log type
 
-	if (!Gaff::CreateDir("./logs", 0777)) {
+	if (!_log_mgr.init()) {
 		return false;
 	}
 
@@ -416,7 +416,7 @@ bool App::loadModule(const char* module_path)
 #ifdef PLATFORM_WINDOWS
 	DynamicLoader::ModulePtr module = _dynamic_loader.loadModule((U8String("../") + module_path).data(), module_path);
 #else
-	DynamicLoader::ModulePtr module = _dynamic_loader.loadModule(module_path, name);
+	DynamicLoader::ModulePtr module = _dynamic_loader.loadModule(module_path, module_path);
 #endif
 
 	if (!module) {
@@ -445,7 +445,9 @@ void App::removeExtraLogs(void)
 	int32_t game_log_count = 0;
 	int32_t leak_log_count = 0;
 
-	Gaff::ForEachTypeInDirectory<Gaff::FDT_RegularFile>("./Logs", [&](const char* name, size_t) -> bool
+	const char* const log_dir = _configs["log_dir"].getString("logs");
+
+	Gaff::ForEachTypeInDirectory<Gaff::FDT_RegularFile>(log_dir, [&](const char* name, size_t) -> bool
 	{
 		if (std::regex_match(name, std::regex("Log.+\.txt"))) {
 			++game_log_count;
@@ -467,7 +469,7 @@ void App::removeExtraLogs(void)
 	callstack_log_count = alloc_log_count = game_log_count = leak_log_count = 0;
 	U8String temp;
 
-	Gaff::ForEachTypeInDirectory<Gaff::FDT_RegularFile>("./logs", [&](const char* name, size_t) -> bool
+	Gaff::ForEachTypeInDirectory<Gaff::FDT_RegularFile>(log_dir, [&](const char* name, size_t) -> bool
 	{
 		if (std::regex_match(name, std::regex("GameLog.+\.txt")) && game_log_count < game_logs_delete) {
 			temp = U8String("./logs/") + name;

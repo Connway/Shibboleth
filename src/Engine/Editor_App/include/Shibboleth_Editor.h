@@ -22,7 +22,6 @@ THE SOFTWARE.
 
 #pragma once
 
-#include <Shibboleth_IEditor.h>
 #include <Shibboleth_App.h>
 #include <EASTL/unique_ptr.h>
 #include <EASTL/vector_map.h>
@@ -33,10 +32,11 @@ NS_SHIBBOLETH
 
 class EditorFrame;
 
-class Editor : public wxApp, public IEditor
+class Editor : public wxApp
 {
 public:
 	bool OnInit(void) override;
+	void CleanUp(void) override;
 
 private:
 	EditorFrame* _frame = nullptr;

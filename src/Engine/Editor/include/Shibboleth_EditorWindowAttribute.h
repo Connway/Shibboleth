@@ -29,9 +29,21 @@ NS_SHIBBOLETH
 class EditorWindowAttribute final : public Gaff::IAttribute
 {
 public:
+	EditorWindowAttribute(
+		const char* menu_path,
+		const char* caption
+	);
+
+	const char* getCaption(void) const;
+	const char* getPath(void) const;
+
 	IAttribute* clone(void) const override;
 
 	SHIB_REFLECTION_CLASS_DECLARE(EditorWindowAttribute);
+
+private:
+	const char* _menu_path = nullptr;
+	const char* _caption = nullptr;
 };
 
 NS_END

@@ -22,14 +22,41 @@ THE SOFTWARE.
 
 #pragma once
 
-#include <Shibboleth_Defines.h>
+#include <Shibboleth_Reflection.h>
+
+#ifdef PLATFORM_WINDOWS
+	#include <wx/msw/winundef.h>
+#endif
+
+#include <wx/treebase.h>
+#include <wx/panel.h>
+
+class wxTreeCtrl;
+class wxListBox;
 
 NS_SHIBBOLETH
 
-class IEditor
+class LoadedModulesWindow : public wxPanel
 {
 public:
-	virtual ~IEditor(void) {}
+	LoadedModulesWindow(
+		wxWindow* parent,
+		wxWindowID id = wxID_ANY,
+		const wxPoint& pos = wxDefaultPosition,
+		const wxSize& size = wxDefaultSize
+	);
+
+private:
+	wxTreeCtrl* _reflection_tree = nullptr;
+	wxListBox* _modules_list = nullptr;
+
+	wxArrayString _reflection_types;
+	wxArrayTreeItemIds _tree_ids;
+
+	void initTree(void);
+	void onModuleSelected(wxCommandEvent& event);
 };
 
 NS_END
+
+SHIB_REFLECTION_DECLARE(LoadedModulesWindow)

@@ -28,34 +28,26 @@ THE SOFTWARE.
 
 NS_SHIBBOLETH
 
-class App;
-
 class EditorFrame : public wxFrame
 {
 public:
 	EditorFrame(const wxString& title, const wxPoint& pos, const wxSize& size);
 	~EditorFrame(void);
 
-	void setApp(App& app);
-
 private:
-	App* _app = nullptr;
 	wxAuiManager _aui_mgr;
 
 	wxMenuBar* _menu_bar = nullptr;
 	wxMenu* _window_menu = nullptr;
 
-	void OnExit(wxCommandEvent&);
-	void OnAbout(wxCommandEvent&);
+	int _next_id = 0;
 
-	void OnModulesWindow(wxCommandEvent&);
+	void onExit(wxCommandEvent&);
+	void onAbout(wxCommandEvent&);
+
+	void onSpawnWindow(wxCommandEvent& event);
 
 	wxDECLARE_EVENT_TABLE();
-};
-
-enum EditorFrameEventID
-{
-	EF_MODULES = 1
 };
 
 NS_END

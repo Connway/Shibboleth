@@ -21,8 +21,11 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Shibboleth_LogManager.h"
+#include <Shibboleth_Utilities.h>
+#include <Shibboleth_IApp.h>
 #include <EASTL/algorithm.h>
 #include <Gaff_Utils.h>
+#include <Gaff_JSON.h>
 #include <mutex>
 
 NS_SHIBBOLETH
@@ -82,6 +85,12 @@ LogManager::~LogManager(void)
 
 bool LogManager::init(void)
 {
+	const Gaff::JSON log_dir = GetApp().getConfigs()["log_dir"];
+
+	if (log_dir.isString()) {
+		_log_dir = log_dir.getString();
+	}
+
 	addChannel("Default", "Log");
 
 	std::thread log_thread(LogThread, std::ref(*this));
@@ -138,12 +147,13 @@ void LogManager::addChannel(Gaff::HashStringTemp32 channel, const char* file)
 		char8_t time_string[64] = { 0 };
 		char8_t file_name[256] = { 0 };
 
-		Gaff::GetCurrentTimeString(time_string, ARRAY_SIZE(time_string), "%Y-%m-%d %H-%M-%S");
+		Gaff::GetCurrentTimeString(time_string, ARRAY_SIZE(time_string), "%Y-%m-%d_%H-%M-%S");
 
 		snprintf(
 			file_name,
 			ARRAY_SIZE(file_name),
-			"Logs/%s %s.txt",
+			"%s/%s_%s.txt",
+			_log_dir.data(),
 			file,
 			time_string
 		);

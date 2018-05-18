@@ -45,7 +45,7 @@ project "assimp"
 	rtti "On"
 
 	filter { "system:windows" }
-		defines { "_CRT_SECURE_NO_WARNINGS", "_SCL_SECURE_NO_WARNINGS" }
+		defines { "_CRT_SECURE_NO_WARNINGS", "_SCL_SECURE_NO_WARNINGS", "_SILENCE_CXX17_ITERATOR_BASE_CLASS_DEPRECATION_WARNING" }
 
 	filter { "action:vs*" }
 		buildoptions { "/bigobj" }

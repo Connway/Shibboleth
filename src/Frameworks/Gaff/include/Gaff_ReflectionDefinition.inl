@@ -197,8 +197,14 @@ void ReflectionDefinition<T, Allocator>::VarFuncPtr<Ret, Var>::setData(void* obj
 	GAFF_ASSERT(object);
 	GAFF_ASSERT(_setter);
 	GAFF_ASSERT(data);
+
+	using VarNoRef = std::remove_reference<Var>::type;
+	using VarNoPointer = std::remove_pointer<VarNoRef>::type;
+	using VarNoConst = std::remove_const<VarNoPointer>::type;
+	using VarFinal = ValueHelper<std::is_pointer<VarNoRef>::value>::type<VarNoConst>;
+
 	T* obj = reinterpret_cast<T*>(object);
-	(obj->*_setter)(*reinterpret_cast<const Var*>(data));
+	(obj->*_setter)(*reinterpret_cast<const VarFinal*>(data));
 }
 
 template <class T, class Allocator>
@@ -208,8 +214,14 @@ void ReflectionDefinition<T, Allocator>::VarFuncPtr<Ret, Var>::setDataMove(void*
 	GAFF_ASSERT(object);
 	GAFF_ASSERT(_setter);
 	GAFF_ASSERT(data);
+
+	using VarNoRef = std::remove_reference<Var>::type;
+	using VarNoPointer = std::remove_pointer<VarNoRef>::type;
+	using VarNoConst = std::remove_const<VarNoPointer>::type;
+	using VarFinal = ValueHelper<std::is_pointer<VarNoRef>::value>::type<VarNoConst>;
+
 	T* obj = reinterpret_cast<T*>(object);
-	(obj->*_setter)(*reinterpret_cast<Var*>(data));
+	(obj->*_setter)(*reinterpret_cast<VarFinal*>(data));
 }
 
 template <class T, class Allocator>
@@ -1010,9 +1022,21 @@ ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::base(voi
 
 template <class T, class Allocator>
 template <class... Args>
+ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::ctor(Hash64 factory_hash)
+{
+	GAFF_ASSERT(!getFactory(factory_hash));
+
+	FactoryFunc<Args...> factory_func = Gaff::FactoryFunc<T, Args...>;
+	_ctors.emplace(factory_hash, reinterpret_cast<VoidFunc>(factory_func));
+
+	return *this;
+}
+
+template <class T, class Allocator>
+template <class... Args>
 ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::ctor(void)
 {
-	Hash64 hash = CalcTemplateHash<Args...>(INIT_HASH64);
+	constexpr Hash64 hash = CalcTemplateHash<Args...>(INIT_HASH64);
 	GAFF_ASSERT(!getFactory(hash));
 
 	FactoryFunc<Args...> factory_func = Gaff::FactoryFunc<T, Args...>;
@@ -1128,7 +1152,7 @@ ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::func(con
 
 	const ptrdiff_t offset_interface = Gaff::OffsetOfClass< ReflectionFunction<Ret, Args...>, IReflectionFunction<Ret, Args...> >();
 	const ptrdiff_t offset_ptr = Gaff::OffsetOfClass<ReflectionFunction<Ret, Args...>, VirtualDestructor>();
-	const Hash64 arg_hash = CalcTemplateHash<Ret, Args...>(INIT_HASH64);
+	constexpr Hash64 arg_hash = CalcTemplateHash<Ret, Args...>(INIT_HASH64);
 
 	if (it == _funcs.end()) {
 		ReflectionFunction<Ret, Args...>* const ref_func = SHIB_ALLOCT(
@@ -1183,7 +1207,7 @@ ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::func(con
 
 	const ptrdiff_t offset_interface = Gaff::OffsetOfClass< ReflectionFunction<Ret, Args...>, IReflectionFunction<Ret, Args...> >();
 	const ptrdiff_t offset_ptr = Gaff::OffsetOfClass<ReflectionFunction<Ret, Args...>, VirtualDestructor>();
-	const Hash64 arg_hash = CalcTemplateHash<Ret, Args...>(INIT_HASH64);
+	constexpr Hash64 arg_hash = CalcTemplateHash<Ret, Args...>(INIT_HASH64);
 
 	if (it == _funcs.end()) {
 		ReflectionFunction<Ret, Args...>* const ref_func = SHIB_ALLOCT(

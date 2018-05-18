@@ -34,9 +34,29 @@ SHIB_REFLECTION_CLASS_DEFINE_BEGIN(EditorWindowAttribute)
 	.BASE(Gaff::IAttribute)
 SHIB_REFLECTION_CLASS_DEFINE_END(EditorWindowAttribute)
 
+EditorWindowAttribute::EditorWindowAttribute(
+	const char* menu_path,
+	const char* caption
+):
+	_menu_path(menu_path),
+	_caption(caption)
+{
+}
+
+const char* EditorWindowAttribute::getCaption(void) const
+{
+	return _caption;
+}
+
+const char* EditorWindowAttribute::getPath(void) const
+{
+	return _menu_path;
+}
+
 Gaff::IAttribute* EditorWindowAttribute::clone(void) const
 {
-	return SHIB_ALLOCT_POOL(EditorWindowAttribute, GetAllocator()->getPoolIndex("Reflection"), *GetAllocator());
+	Shibboleth::IAllocator* const allocator = GetAllocator();
+	return SHIB_ALLOCT_POOL(EditorWindowAttribute, allocator->getPoolIndex("Reflection"), *allocator, _menu_path, _caption);
 }
 
 NS_END

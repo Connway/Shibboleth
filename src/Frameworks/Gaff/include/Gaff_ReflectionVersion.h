@@ -38,6 +38,9 @@ public:
 	ReflectionVersion& base(void);
 
 	template <class... Args>
+	ReflectionVersion& ctor(Hash64 factory_hash);
+
+	template <class... Args>
 	ReflectionVersion& ctor(void);
 
 	template <class Var, size_t size>

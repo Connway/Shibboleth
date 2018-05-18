@@ -20,14 +20,12 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#pragma once
+#include "Gen_ReflectionInit.h"
+#include <Shibboleth_Utilities.h>
 
-#include <Shibboleth_Defines.h>
-
-NS_SHIBBOLETH
-
-class Inspector
+DYNAMICEXPORT_C bool InitModule(Shibboleth::IApp* app)
 {
-};
-
-NS_END
+	Shibboleth::SetApp(*app);
+	Gen::InitReflection();
+	return true;
+}
