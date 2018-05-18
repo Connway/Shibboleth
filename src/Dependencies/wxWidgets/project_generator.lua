@@ -42,11 +42,13 @@ function wxWidgetsProject(proj_name, lib_type)
 
 	filter {}
 
-	-- postbuildcommands
-	-- {
-	-- 	"{MKDIR} ../../../../workingdir/bin",
-	-- 	"{COPY} %{cfg.targetdir}/%{cfg.buildtarget.name} ../../../../workingdir/Modules"
-	-- }
+	if lib_type == "SharedLib" then
+		postbuildcommands
+		{
+			"{MKDIR} ../../../../workingdir/bin",
+			"{COPY} %{cfg.targetdir}/%{cfg.buildtarget.name} ../../../../workingdir/bin"
+		}
+	end
 
 	dofile(string.lower(proj_name) .. "_files.lua")
 end

@@ -15,6 +15,14 @@ function ModuleCopy()
 	}
 end
 
+function ModuleEditorCopy()
+	postbuildcommands
+	{
+		"{MKDIR} ../../../../workingdir/EditorModules",
+		"{COPY} %{cfg.targetdir}/%{cfg.buildtarget.name} ../../../../workingdir/EditorModules"
+	}
+end
+
 function NewDeleteLinkFix()
 	if _ACTION == nil then
 		return

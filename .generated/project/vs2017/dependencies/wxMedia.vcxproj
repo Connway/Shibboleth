@@ -135,6 +135,10 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <ImportLibrary>..\..\..\build\vs2017\output\x64\Debug\wxMedia64d.lib</ImportLibrary>
     </Link>
+    <PostBuildEvent>
+      <Command>IF NOT EXIST ..\..\..\..\workingdir\bin (mkdir ..\..\..\..\workingdir\bin)
+IF EXIST ..\..\..\build\vs2017\output\x64\Debug\$(TargetFileName)\ (xcopy /Q /E /Y /I ..\..\..\build\vs2017\output\x64\Debug\$(TargetFileName) ..\..\..\..\workingdir\bin &gt; nul) ELSE (xcopy /Q /Y /I ..\..\..\build\vs2017\output\x64\Debug\$(TargetFileName) ..\..\..\..\workingdir\bin &gt; nul)</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -160,6 +164,10 @@
       <OptimizeReferences>true</OptimizeReferences>
       <ImportLibrary>..\..\..\build\vs2017\output\x64\Release\wxMedia64.lib</ImportLibrary>
     </Link>
+    <PostBuildEvent>
+      <Command>IF NOT EXIST ..\..\..\..\workingdir\bin (mkdir ..\..\..\..\workingdir\bin)
+IF EXIST ..\..\..\build\vs2017\output\x64\Release\$(TargetFileName)\ (xcopy /Q /E /Y /I ..\..\..\build\vs2017\output\x64\Release\$(TargetFileName) ..\..\..\..\workingdir\bin &gt; nul) ELSE (xcopy /Q /Y /I ..\..\..\build\vs2017\output\x64\Release\$(TargetFileName) ..\..\..\..\workingdir\bin &gt; nul)</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Analyze|x64'">
     <ClCompile>
@@ -185,6 +193,10 @@
       <OptimizeReferences>true</OptimizeReferences>
       <ImportLibrary>..\..\..\build\vs2017\output\x64\Analyze\wxMedia64a.lib</ImportLibrary>
     </Link>
+    <PostBuildEvent>
+      <Command>IF NOT EXIST ..\..\..\..\workingdir\bin (mkdir ..\..\..\..\workingdir\bin)
+IF EXIST ..\..\..\build\vs2017\output\x64\Analyze\$(TargetFileName)\ (xcopy /Q /E /Y /I ..\..\..\build\vs2017\output\x64\Analyze\$(TargetFileName) ..\..\..\..\workingdir\bin &gt; nul) ELSE (xcopy /Q /Y /I ..\..\..\build\vs2017\output\x64\Analyze\$(TargetFileName) ..\..\..\..\workingdir\bin &gt; nul)</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">
     <ClCompile>
@@ -210,6 +222,10 @@
       <OptimizeReferences>true</OptimizeReferences>
       <ImportLibrary>..\..\..\build\vs2017\output\x64\Profile\wxMedia64p.lib</ImportLibrary>
     </Link>
+    <PostBuildEvent>
+      <Command>IF NOT EXIST ..\..\..\..\workingdir\bin (mkdir ..\..\..\..\workingdir\bin)
+IF EXIST ..\..\..\build\vs2017\output\x64\Profile\$(TargetFileName)\ (xcopy /Q /E /Y /I ..\..\..\build\vs2017\output\x64\Profile\$(TargetFileName) ..\..\..\..\workingdir\bin &gt; nul) ELSE (xcopy /Q /Y /I ..\..\..\build\vs2017\output\x64\Profile\$(TargetFileName) ..\..\..\..\workingdir\bin &gt; nul)</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Optimized_Debug|x64'">
     <ClCompile>
@@ -235,6 +251,10 @@
       <OptimizeReferences>true</OptimizeReferences>
       <ImportLibrary>..\..\..\build\vs2017\output\x64\Optimized_Debug\wxMedia64od.lib</ImportLibrary>
     </Link>
+    <PostBuildEvent>
+      <Command>IF NOT EXIST ..\..\..\..\workingdir\bin (mkdir ..\..\..\..\workingdir\bin)
+IF EXIST ..\..\..\build\vs2017\output\x64\Optimized_Debug\$(TargetFileName)\ (xcopy /Q /E /Y /I ..\..\..\build\vs2017\output\x64\Optimized_Debug\$(TargetFileName) ..\..\..\..\workingdir\bin &gt; nul) ELSE (xcopy /Q /Y /I ..\..\..\build\vs2017\output\x64\Optimized_Debug\$(TargetFileName) ..\..\..\..\workingdir\bin &gt; nul)</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\..\src\Dependencies\wxWidgets\include\wx\mediactrl.h" />
