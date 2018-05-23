@@ -51,7 +51,7 @@ THE SOFTWARE.
 
 #define APP_NAME "App" BIT_EXTENSION
 
-//#define INIT_STACKTRACE_SYSTEM
+#define INIT_STACKTRACE_SYSTEM
 
 #define SHIB_INTERFACE_NAME(ManagerName) \
 	public: \

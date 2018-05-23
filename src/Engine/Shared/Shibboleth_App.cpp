@@ -42,13 +42,16 @@ THE SOFTWARE.
 
 NS_SHIBBOLETH
 
-App::App(void):
-	_running(true), _main_loop(nullptr)
+App::App(void)
 {
 	Gaff::InitializeCrashHandler();
 	// Set crash handler here
 
 	SetApp(*this);
+
+#ifdef INIT_STACKTRACE_SYSTEM
+	GAFF_ASSERT(Gaff::StackTrace::Init());
+#endif
 }
 
 App::~App(void)
@@ -115,10 +118,6 @@ bool App::init(void)
 
 bool App::initInternal(void)
 {
-#ifdef INIT_STACKTRACE_SYSTEM
-	GAFF_ASSERT(Gaff::StackTrace::Init());
-#endif
-
 	if (!initApp()) {
 		return false;
 	}
@@ -157,10 +156,6 @@ bool App::initInternal(void)
 		return false;
 	}
 
-#ifdef INIT_STACKTRACE_SYSTEM
-	Gaff::StackTrace::RefreshModuleList(); // Will fix symbols from DLLs not resolving.
-#endif
-
 	_reflection_mgr.registerTypeBucket(Gaff::FNV1aHash64Const("Gaff::IAttribute"));
 	_reflection_mgr.registerTypeBucket(Gaff::FNV1aHash64Const("IManager"));
 	_reflection_mgr.registerTypeBucket(Gaff::FNV1aHash64Const("**")); // All types not registered with a type bucket.
@@ -170,17 +165,9 @@ bool App::initInternal(void)
 		return false;
 	}
 
-#ifdef INIT_STACKTRACE_SYSTEM
-	Gaff::StackTrace::RefreshModuleList(); // Will fix symbols from DLLs not resolving.
-#endif
-
 	if (!loadMainLoop()) {
 		return false;
 	}
-
-#ifdef INIT_STACKTRACE_SYSTEM
-	Gaff::StackTrace::RefreshModuleList(); // Will fix symbols from DLLs not resolving.
-#endif
 
 	LogInfoDefault("Game Successfully Initialized\n\n");
 	return true;
@@ -202,6 +189,10 @@ bool App::loadFileSystem(void)
 			LogInfoDefault("Failed to find filesystem '%s'.\n", fs.data());
 			return false;
 		}
+
+#ifdef INIT_STACKTRACE_SYSTEM
+		Gaff::StackTrace::RefreshModuleList(); // Will fix symbols from DLLs not resolving.
+#endif
 
 		LogInfoDefault("Found '%s'. Creating file system.\n", fs.data());
 
@@ -251,6 +242,10 @@ bool App::loadMainLoop(void)
 	DynamicLoader::ModulePtr module = _dynamic_loader.loadModule(main_loop_module, "MainLoop");
 
 	if (module) {
+#ifdef INIT_STACKTRACE_SYSTEM
+		Gaff::StackTrace::RefreshModuleList(); // Will fix symbols from DLLs not resolving.
+#endif
+
 		InitModuleFunc init_func = module->getFunc<InitModuleFunc>("InitModule");
 
 		if (!init_func) {
@@ -427,6 +422,10 @@ bool App::loadModule(const char* module_path)
 		LogWarningDefault("Failed to find or load dynamic module '%s'\n", module_path);
 		return false;
 	}
+
+#ifdef INIT_STACKTRACE_SYSTEM
+	Gaff::StackTrace::RefreshModuleList(); // Will fix symbols from DLLs not resolving.
+#endif
 
 	InitModuleFunc init_func = module->getFunc<InitModuleFunc>("InitModule");
 

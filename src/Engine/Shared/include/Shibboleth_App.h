@@ -81,8 +81,8 @@ private:
 
 	using MainLoopFunc = void (*)(void);
 
-	bool _running;
-	MainLoopFunc _main_loop;
+	bool _running = true;
+	MainLoopFunc _main_loop = nullptr;
 
 	ReflectionManager _reflection_mgr;
 

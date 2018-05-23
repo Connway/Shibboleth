@@ -37,13 +37,10 @@ THE SOFTWARE.
 	#pragma warning(disable: 4324)
 #endif
 
-//#define GATHER_ALLOCATION_STACKTRACE
+#define GATHER_ALLOCATION_STACKTRACE
 
 #ifdef GATHER_ALLOCATION_STACKTRACE
-	#include <Gaff_DefaultAlignedAllocator.h>
-	#include <Gaff_ScopedExit.h>
 	#include <Gaff_StackTrace.h>
-	#include <Gaff_Map.h>
 #endif
 
 namespace coherent_rpmalloc
@@ -71,6 +68,8 @@ struct alignas(16) AllocationHeader
 
 	AllocationHeader* next = nullptr;
 	AllocationHeader* prev = nullptr;
+
+	Gaff::StackTrace trace;
 };
 
 
@@ -222,17 +221,6 @@ void Allocator::free(void* data)
 	MemoryPoolInfo& mem_pool_info = _tagged_pools[header->pool_index];
 	++mem_pool_info.num_frees;
 
-#ifdef GATHER_ALLOCATION_STACKTRACE
-	auto& allocs = g_allocs[header->pool_index];
-	g_pt_locks[header->pool_index].lock();
-
-	auto it = allocs.linearSearch(header);
-	GAFF_GAFF_ASSERT(it != allocs.end());
-	allocs.fastErase(it);
-
-	g_pt_locks[header->pool_index].unlock();
-#endif
-
 	// Process the free
 	if (header->prev) {
 		header->prev->next = header->next;
@@ -300,6 +288,8 @@ void Allocator::setHeaderData(
 	header->line = line;
 	header->next = header->prev = nullptr;
 
+	header->trace.captureStack("", 16, 3);
+
 	// Add to the leak list.
 	_alloc_lock.lock();
 
@@ -331,19 +321,6 @@ void Allocator::writeAllocationLog(void) const
 	if (!log.open(log_file_name, Gaff::File::WRITE)) {
 		return;
 	}
-
-#ifdef GATHER_ALLOCATION_STACKTRACE
-	snprintf(log_file_name, ARRAY_SIZE(log_file_name), "%s/CallstackLog_%s.txt", _log_dir, time_string);
-
-	Gaff::GetCurrentTimeString(log_file_name, ARRAY_SIZE(log_file_name), time_format);
-	Gaff::File callstack_log;
-
-	if (callstack_log.open(log_file_name, Gaff::File::WRITE)) {
-		callstack_log.printf("===================================\n");
-		callstack_log.printf("    Leaked Memory Callstack Log\n");
-		callstack_log.printf("===================================\n\n");
-	}
-#endif
 
 	size_t total_bytes = 0;
 	size_t total_allocs = 0;
@@ -378,24 +355,6 @@ void Allocator::writeAllocationLog(void) const
 			log.printf("\tWARNING: A memory leak was caused by this pool!\n");
 			log.printf("\t===========================================================\n\n");
 		}
-
-#ifdef GATHER_ALLOCATION_STACKTRACE
-		if (callstack_log.isOpen()) {
-			for (auto it_st = g_allocs[i].begin(); it_st != g_allocs[i].end(); ++it_st) {
-				callstack_log.printf("Address 0x%p:\n", *it_st);
-
-				for (unsigned short j = 0; j < (*it_st)->stack_trace.getNumCapturedFrames(); ++j) {
-					callstack_log.printf(
-						"\t(0x%llX) [%s:(%u)] %s\n", (*it_st)->stack_trace.getAddress(j),
-						(*it_st)->stack_trace.getFileName(j), (*it_st)->stack_trace.getLineNumber(j),
-						(*it_st)->stack_trace.getSymbolName(j)
-						);
-				}
-
-				callstack_log.printf("\n");
-			}
-		}
-#endif
 	}
 
 	log.printf("Total Bytes Allocated: %zu\n", total_bytes);
@@ -405,13 +364,7 @@ void Allocator::writeAllocationLog(void) const
 	if (total_allocs != total_frees) {
 		log.printf("\n===========================================================\n");
 		log.printf("WARNING: Application has a memory leak(s)!\n");
-
-#ifdef GATHER_ALLOCATION_STACKTRACE
-		if (callstack_log.isOpen()) {
-			log.printf("         See '%s' for allocation callstacks.\n", log_file_name);
-		}
-#endif
-
+		log.printf("         See 'LeakLog' for allocation callstacks.\n");
 		log.printf("===========================================================\n");
 	}
 }
@@ -441,7 +394,28 @@ void Allocator::writeLeakLog(void) const
 	);
 
 	for (AllocationHeader* header = _list_head; header;) {
-		log.printf("%s:(%i) [%s]\n", header->file, header->line, _tagged_pools[header->pool_index].pool_name);
+		const char* const pool_name = _tagged_pools[header->pool_index].pool_name;
+
+#ifdef GATHER_ALLOCATION_STACKTRACE
+		log.printf("Address 0x%p [%s]:\n", reinterpret_cast<const char*>(header) + sizeof(AllocationHeader), pool_name);
+
+		const int32_t frames = header->trace.getNumCapturedFrames();
+
+		for (int32_t i = 0; i < frames; ++i) {
+			log.printf(
+				"\t(0x%llX) [%s:(%u)] %s\n",
+				header->trace.getAddress(i),
+				header->trace.getFileName(i),
+				header->trace.getLineNumber(i),
+				header->trace.getSymbolName(i)
+			);
+		}
+
+		log.printf("\n");
+#else
+		log.printf("%s:(%i) [%s]\n", header->file, header->line, pool_name);
+#endif
+
 		AllocationHeader* old_header = header;
 		header = header->next;
 
