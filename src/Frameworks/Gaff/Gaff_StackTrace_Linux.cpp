@@ -82,7 +82,7 @@ const StackTrace& StackTrace::operator=(const StackTrace& rhs)
 	return *this;
 }
 
-unsigned short StackTrace::captureStack(const char* app_name, unsigned int frames_to_capture)
+int32_t StackTrace::captureStack(const char* app_name, uint32_t frames_to_capture, uint32_t /*frames_to_skip*/)
 {
 	_total_frames = backtrace(_stack, frames_to_capture);
 
@@ -92,7 +92,7 @@ unsigned short StackTrace::captureStack(const char* app_name, unsigned int frame
 
 	_strings = backtrace_symbols(_stack, _total_frames);
 
-	for (unsigned int i = 0; i < _total_frames; ++i) {
+	for (int32_t i = 0; i < _total_frames; ++i) {
 		char command[256] = { 0 };
 
 #ifdef PLATFORM_MAC
@@ -111,7 +111,7 @@ unsigned short StackTrace::captureStack(const char* app_name, unsigned int frame
 		pclose(stream);
 		_file_name_cache[i][NAME_SIZE - 1] = 0;
 
-		for (int j = NAME_SIZE - 2; j > -1; --j) {
+		for (int32_t j = NAME_SIZE - 2; j > -1; --j) {
 			if (_file_name_cache[i][j] == ':') {
 				_file_name_size[i] = j;
 				_file_name_cache[i][j] = 0;
@@ -123,29 +123,29 @@ unsigned short StackTrace::captureStack(const char* app_name, unsigned int frame
 	return _total_frames;
 }
 
-unsigned short StackTrace::getNumCapturedFrames(void) const
+int32_t StackTrace::getNumCapturedFrames(void) const
 {
 	return _total_frames;
 }
 
-uint64_t StackTrace::getAddress(unsigned short frame) const
+uint64_t StackTrace::getAddress(int32_t frame) const
 {
-	return reinterpret_cast<unsigned long long>(_stack[frame]);
+	return reinterpret_cast<uint64_t>(_stack[frame]);
 }
 
-unsigned int StackTrace::getLineNumber(unsigned short frame) const
+uint32_t StackTrace::getLineNumber(int32_t frame) const
 {
 	GAFF_ASSERT(frame < _total_frames);
-	return static_cast<unsigned int>(atoi(&_file_name_cache[frame][_file_name_size[frame] + 1]));
+	return static_cast<uint32_t>(atoi(&_file_name_cache[frame][_file_name_size[frame] + 1]));
 }
 
-const char* StackTrace::getSymbolName(unsigned short frame) const
+const char* StackTrace::getSymbolName(int32_t frame) const
 {
 	GAFF_ASSERT(frame < _total_frames);
 	return _strings[frame];
 }
 
-const char* StackTrace::getFileName(unsigned short frame) const
+const char* StackTrace::getFileName(int32_t frame) const
 {
 	GAFF_ASSERT(frame < _total_frames);
 	return _file_name_cache[frame];

@@ -52,7 +52,7 @@ bool StackTrace::Init(void)
 		_handle = GetCurrentProcess();
 	}
 
-	return SymInitialize(_handle, nullptr, TRUE) == TRUE;;
+	return SymInitialize(_handle, nullptr, TRUE) == TRUE;
 }
 
 void StackTrace::Destroy(void)
@@ -87,10 +87,10 @@ const StackTrace& StackTrace::operator=(const StackTrace& rhs)
 	return *this;
 }
 
-unsigned short StackTrace::captureStack(const char*, unsigned int frames_to_capture)
+int32_t StackTrace::captureStack(const char*, uint32_t frames_to_capture, uint32_t frames_to_skip)
 {
 	GAFF_ASSERT(frames_to_capture <= MAX_FRAMES);
-	_frames = CaptureStackBackTrace(0, frames_to_capture, _stack, nullptr);
+	_frames = CaptureStackBackTrace(frames_to_skip, frames_to_capture, _stack, nullptr);
 
 	char data[sizeof(SYMBOL_INFO) + NAME_SIZE - 1];
 	SYMBOL_INFO* sym = reinterpret_cast<SYMBOL_INFO*>(data);
@@ -100,7 +100,7 @@ unsigned short StackTrace::captureStack(const char*, unsigned int frames_to_capt
 	IMAGEHLP_LINE64 image_help = { sizeof(IMAGEHLP_LINE) };
 	DWORD displacement = 0;
 
-	for (unsigned short i = 0; i < _frames; ++i) {
+	for (int32_t i = 0; i < _frames; ++i) {
 		_symbol_info[i].symbol_name[0] = 0;
 		_symbol_info[i].file_name[0] = 0;
 		_symbol_info[i].line_number = 0;
@@ -120,28 +120,32 @@ unsigned short StackTrace::captureStack(const char*, unsigned int frames_to_capt
 	return _frames;
 }
 
-unsigned short StackTrace::getNumCapturedFrames(void) const
+int32_t StackTrace::getNumCapturedFrames(void) const
 {
 	return _frames;
 }
 
-uint64_t StackTrace::getAddress(unsigned short frame) const
+uint64_t StackTrace::getAddress(int32_t frame) const
 {
+	GAFF_ASSERT(frame < _frames);
 	return _symbol_info[frame].address;
 }
 
-unsigned int StackTrace::getLineNumber(unsigned short frame) const
+uint32_t StackTrace::getLineNumber(int32_t frame) const
 {
+	GAFF_ASSERT(frame < _frames);
 	return _symbol_info[frame].line_number;
 }
 
-const char* StackTrace::getSymbolName(unsigned short frame) const
+const char* StackTrace::getSymbolName(int32_t frame) const
 {
+	GAFF_ASSERT(frame < _frames);
 	return _symbol_info[frame].symbol_name;
 }
 
-const char* StackTrace::getFileName(unsigned short frame) const
+const char* StackTrace::getFileName(int32_t frame) const
 {
+	GAFF_ASSERT(frame < _frames);
 	return _symbol_info[frame].file_name;
 }
 

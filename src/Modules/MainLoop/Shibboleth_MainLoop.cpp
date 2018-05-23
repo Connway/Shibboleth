@@ -165,22 +165,22 @@ void MainLoop::update(void)
 
 	//std::this_thread::yield();
 
-	ResourceManager& res_mgr = GetApp().getManagerTUnsafe<ResourceManager>();
-	PrefabResourcePtr prefab = res_mgr.requestResourceT<PrefabResource>("Objects/test2.prefab");
+	//ResourceManager& res_mgr = GetApp().getManagerTUnsafe<ResourceManager>();
+	//PrefabResourcePtr prefab = res_mgr.requestResourceT<PrefabResource>("Objects/test2.prefab");
 
-	res_mgr.waitForResource(*prefab);
+	//res_mgr.waitForResource(*prefab);
 
-	if (prefab->hasFailed()) {
-		GetApp().quit();
-		return;
-	}
+	//if (prefab->hasFailed()) {
+	//	GetApp().quit();
+	//	return;
+	//}
 
-	const Object* const object = prefab->getPrefab();
+	//const Object* const object = prefab->getPrefab();
 
-	const AngelScriptComponent* const asc = object->getComponent<AngelScriptComponent>();
-	const AngelScriptResourcePtr& script = asc->getScript();
+	//const AngelScriptComponent* const asc = object->getComponent<AngelScriptComponent>();
+	//const AngelScriptResourcePtr& script = asc->getScript();
 
-	res_mgr.waitForResource(*script);
+	//res_mgr.waitForResource(*script);
 
 	GetApp().quit();
 }

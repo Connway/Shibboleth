@@ -25,8 +25,12 @@ project "Memory"
 	filter { "configurations:not Analyze*" }
 		flags { "FatalWarnings" }
 
-	filter { "system:windows", "options:symbols" }
+	filter { "system:windows"--[[, "options:symbols"--]] }
 		links { "Dbghelp" }
+
+	-- filter { "system:windows" }
+	-- 	links { "iphlpapi.lib", "psapi.lib", "userenv.lib" }
+
 
 	filter {}
 

@@ -36,7 +36,7 @@ project "Game_App"
 		flags { "FatalWarnings" }
 
 	filter { "system:windows" }
-		links { "ws2_32.lib", "iphlpapi.lib", "psapi.lib", "userenv.lib" }
+		links { "iphlpapi.lib", "psapi.lib", "userenv.lib" }
 		includedirs { "../../Dependencies/dirent" }
 		links { "Dbghelp" }
 

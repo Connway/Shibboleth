@@ -48,6 +48,7 @@ bool Editor::OnInit(void)
 void Editor::CleanUp(void)
 {
 	_engine_instance.destroy();
+	wxApp::CleanUp();
 }
 
 NS_END
