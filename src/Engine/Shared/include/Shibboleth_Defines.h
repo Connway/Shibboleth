@@ -49,9 +49,10 @@ THE SOFTWARE.
 	#error "Cannot deduce platform bit-age."
 #endif
 
-#define APP_NAME "App" BIT_EXTENSION
+#define GAME_APP_NAME "Game_App" BIT_EXTENSION
+#define EDITOR_APP_NAME "Editor_App" BIT_EXTENSION
 
-#define INIT_STACKTRACE_SYSTEM
+//#define INIT_STACKTRACE_SYSTEM
 
 #define SHIB_INTERFACE_NAME(ManagerName) \
 	public: \
