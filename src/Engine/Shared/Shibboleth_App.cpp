@@ -128,18 +128,28 @@ bool App::initInternal(void)
 		return false;
 	}
 
-	SetLogDir(log_dir);
+	char log_file_with_time[64] = { 0 };
+	char time_string[64] = { 0 };
+
+	Gaff::GetCurrentTimeString(time_string, ARRAY_SIZE(time_string), "%Y-%m-%d_%H-%M-%S");
+	snprintf(log_file_with_time, ARRAY_SIZE(log_file_with_time), "%s/%s", log_dir, time_string);
+
+	if (!Gaff::CreateDir(log_file_with_time, 0777)) {
+		return false;
+	}
+
+	SetLogDir(log_file_with_time);
 
 	removeExtraLogs(); // Make sure we don't have more than ten logs per log type
 
-	if (!_log_mgr.init()) {
+	if (!_log_mgr.init(log_file_with_time)) {
 		return false;
 	}
 
 	LogInfoDefault(
 		"==================================================\n"
 		"==================================================\n"
-		"Initializing Game...\n"
+		"Initializing...\n"
 	);
 
 	auto thread_init = []()

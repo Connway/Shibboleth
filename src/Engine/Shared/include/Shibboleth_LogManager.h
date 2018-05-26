@@ -50,7 +50,7 @@ public:
 	LogManager(void);
 	~LogManager(void);
 
-	bool init(void);
+	bool init(const char* log_dir);
 	void destroy(void);
 
 	void addLogCallback(const LogCallback& callback);

@@ -6,7 +6,6 @@ project "Editor_App"
 	debugdir "../../../workingdir"
 	kind "WindowedApp"
 	language "C++"
-	targetname "Editor"
 
 	files { "**.h", "**.cpp", "**.inl" }
 

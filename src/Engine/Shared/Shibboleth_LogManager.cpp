@@ -83,13 +83,9 @@ LogManager::~LogManager(void)
 	destroy();
 }
 
-bool LogManager::init(void)
+bool LogManager::init(const char* log_dir)
 {
-	const Gaff::JSON log_dir = GetApp().getConfigs()["log_dir"];
-
-	if (log_dir.isString()) {
-		_log_dir = log_dir.getString();
-	}
+	_log_dir = log_dir;
 
 	addChannel("Default", "Log");
 
@@ -144,23 +140,19 @@ void LogManager::addChannel(Gaff::HashStringTemp32 channel, const char* file)
 	auto it = Gaff::Find(_channels, channel);
 
 	if (it == _channels.end()) {
-		char8_t time_string[64] = { 0 };
 		char8_t file_name[256] = { 0 };
-
-		Gaff::GetCurrentTimeString(time_string, ARRAY_SIZE(time_string), "%Y-%m-%d_%H-%M-%S");
 
 		snprintf(
 			file_name,
 			ARRAY_SIZE(file_name),
-			"%s/%s_%s.txt",
+			"%s/%s.txt",
 			_log_dir.data(),
-			file,
-			time_string
+			file
 		);
 
 		auto pair = eastl::make_pair<HashString32, Gaff::File>(HashString32(channel), Gaff::File());
 
-		if (pair.second.open(file_name, Gaff::File::WRITE) && channel.getHash() != LOG_CHANNEL_DEFAULT) {
+		if (pair.second.open(file_name, Gaff::File::WRITE)) {
 			_channels.insert(std::move(pair));
 
 		} else {

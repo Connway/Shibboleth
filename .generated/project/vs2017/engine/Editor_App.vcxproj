@@ -86,35 +86,35 @@
     <LinkIncremental>true</LinkIncremental>
     <OutDir>..\..\..\build\vs2017\output\x64\Debug\</OutDir>
     <IntDir>..\..\..\build\vs2017\intermediate\x64\Debug\Editor_App\</IntDir>
-    <TargetName>Editor64d</TargetName>
+    <TargetName>Editor_App64d</TargetName>
     <TargetExt>.exe</TargetExt>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
     <OutDir>..\..\..\build\vs2017\output\x64\Release\</OutDir>
     <IntDir>..\..\..\build\vs2017\intermediate\x64\Release\Editor_App\</IntDir>
-    <TargetName>Editor64</TargetName>
+    <TargetName>Editor_App64</TargetName>
     <TargetExt>.exe</TargetExt>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Analyze|x64'">
     <LinkIncremental>false</LinkIncremental>
     <OutDir>..\..\..\build\vs2017\output\x64\Analyze\</OutDir>
     <IntDir>..\..\..\build\vs2017\intermediate\x64\Analyze\Editor_App\</IntDir>
-    <TargetName>Editor64a</TargetName>
+    <TargetName>Editor_App64a</TargetName>
     <TargetExt>.exe</TargetExt>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">
     <LinkIncremental>false</LinkIncremental>
     <OutDir>..\..\..\build\vs2017\output\x64\Profile\</OutDir>
     <IntDir>..\..\..\build\vs2017\intermediate\x64\Profile\Editor_App\</IntDir>
-    <TargetName>Editor64p</TargetName>
+    <TargetName>Editor_App64p</TargetName>
     <TargetExt>.exe</TargetExt>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Optimized_Debug|x64'">
     <LinkIncremental>false</LinkIncremental>
     <OutDir>..\..\..\build\vs2017\output\x64\Optimized_Debug\</OutDir>
     <IntDir>..\..\..\build\vs2017\intermediate\x64\Optimized_Debug\Editor_App\</IntDir>
-    <TargetName>Editor64od</TargetName>
+    <TargetName>Editor_App64od</TargetName>
     <TargetExt>.exe</TargetExt>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">

@@ -37,7 +37,7 @@ THE SOFTWARE.
 	#pragma warning(disable: 4324)
 #endif
 
-#define GATHER_ALLOCATION_STACKTRACE
+//#define GATHER_ALLOCATION_STACKTRACE
 
 #ifdef GATHER_ALLOCATION_STACKTRACE
 	#include <Gaff_StackTrace.h>
@@ -69,7 +69,9 @@ struct alignas(16) AllocationHeader
 	AllocationHeader* next = nullptr;
 	AllocationHeader* prev = nullptr;
 
+#ifdef GATHER_ALLOCATION_STACKTRACE
 	Gaff::StackTrace trace;
+#endif
 };
 
 
@@ -288,7 +290,9 @@ void Allocator::setHeaderData(
 	header->line = line;
 	header->next = header->prev = nullptr;
 
+#ifdef GATHER_ALLOCATION_STACKTRACE
 	header->trace.captureStack("", 16, 3);
+#endif
 
 	// Add to the leak list.
 	_alloc_lock.lock();
@@ -306,15 +310,12 @@ void Allocator::setHeaderData(
 
 void Allocator::writeAllocationLog(void) const
 {
-	char time_string[64] = { 0 };
-	Gaff::GetCurrentTimeString(time_string, ARRAY_SIZE(time_string), "%Y-%m-%d_%H-%M-%S");
-
-	char log_file_name[64] = { 0 };
-	snprintf(log_file_name, ARRAY_SIZE(log_file_name), "%s/AllocationLog_%s.txt", _log_dir, time_string);
-
 	if (!Gaff::CreateDir(_log_dir, 0777)) {
 		return;
 	}
+
+	char log_file_name[64] = { 0 };
+	snprintf(log_file_name, ARRAY_SIZE(log_file_name), "%s/AllocationLog.txt", _log_dir);
 
 	Gaff::File log;
 
@@ -364,22 +365,19 @@ void Allocator::writeAllocationLog(void) const
 	if (total_allocs != total_frees) {
 		log.printf("\n===========================================================\n");
 		log.printf("WARNING: Application has a memory leak(s)!\n");
-		log.printf("         See 'LeakLog' for allocation callstacks.\n");
+		log.printf("         See 'LeakLog.txt' for allocation callstacks.\n");
 		log.printf("===========================================================\n");
 	}
 }
 
 void Allocator::writeLeakLog(void) const
 {
-	if (!_list_head) {
+	if (!_list_head || !Gaff::CreateDir(_log_dir, 0777)) {
 		return;
 	}
 
-	char time_string[64] = { 0 };
-	Gaff::GetCurrentTimeString(time_string, ARRAY_SIZE(time_string), "%Y-%m-%d_%H-%M-%S");
-
 	char log_file_name[64] = { 0 };
-	snprintf(log_file_name, ARRAY_SIZE(log_file_name), "%s/LeakLog_%s.txt", _log_dir, time_string);
+	snprintf(log_file_name, ARRAY_SIZE(log_file_name), "%s/LeakLog.txt", _log_dir);
 
 	Gaff::File log;
 
