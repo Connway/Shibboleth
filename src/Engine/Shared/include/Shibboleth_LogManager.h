@@ -64,8 +64,8 @@ public:
 private:
 	struct LogTask
 	{
-		LogTask(Gaff::File& f, const char* m, LogType t):
-			file(f), message(m), type(t)
+		LogTask(Gaff::File& f, U8String&& m, LogType t):
+			file(f), message(std::move(m)), type(t)
 		{
 		}
 

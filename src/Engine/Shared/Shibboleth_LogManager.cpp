@@ -212,8 +212,11 @@ void LogManager::logMessage(LogType type, Gaff::Hash32 channel, const char* form
 
 bool LogManager::logMessageHelper(LogType type, Gaff::Hash32 channel, const char* format, va_list& vl)
 {
-	char temp[2048] = { 0 };
-	vsnprintf(temp, ARRAY_SIZE(temp), format, vl);
+	char time_string[64] = { 0 };
+	Gaff::GetCurrentTimeString(time_string, ARRAY_SIZE(time_string), "[%H-%M-%S] ");
+
+	char message[2048] = { 0 };
+	vsnprintf(message, ARRAY_SIZE(message), format, vl);
 
 	auto it = Gaff::Find(_channels, channel);
 
@@ -223,7 +226,7 @@ bool LogManager::logMessageHelper(LogType type, Gaff::Hash32 channel, const char
 
 	{
 		std::lock_guard<std::mutex> lock(_log_queue_lock);
-		_logs.emplace_back(it->second, temp, type);
+		_logs.emplace_back(it->second, U8String(time_string) + message, type);
 	}
 
 	_log_event.notify_all();
