@@ -146,11 +146,7 @@ bool App::initInternal(void)
 		return false;
 	}
 
-	LogInfoDefault(
-		"==================================================\n"
-		"==================================================\n"
-		"Initializing...\n"
-	);
+	LogInfoDefault("Initializing...");
 
 	auto thread_init = []()
 	{
@@ -158,7 +154,7 @@ bool App::initInternal(void)
 	};
 
 	if (!_job_pool.init(JPI_SIZE - 1, static_cast<int32_t>(Gaff::GetNumberOfCores()), thread_init)) {
-		LogErrorDefault("ERROR - Failed to initialize thread pool\n");
+		LogErrorDefault("[ERROR] Failed to initialize thread pool.");
 		return false;
 	}
 
@@ -179,7 +175,7 @@ bool App::initInternal(void)
 		return false;
 	}
 
-	LogInfoDefault("Game Successfully Initialized\n\n");
+	LogInfoDefault("Game Successfully Initialized.");
 	return true;
 }
 
@@ -196,7 +192,7 @@ bool App::loadFileSystem(void)
 		_fs.file_system_module = _dynamic_loader.loadModule(fs.data(), "File System");
 
 		if (!_fs.file_system_module) {
-			LogInfoDefault("Failed to find filesystem '%s'.\n", fs.data());
+			LogInfoDefault("Failed to find filesystem '%s'.", fs.data());
 			return false;
 		}
 
@@ -204,12 +200,12 @@ bool App::loadFileSystem(void)
 		Gaff::StackTrace::RefreshModuleList(); // Will fix symbols from DLLs not resolving.
 #endif
 
-		LogInfoDefault("Found '%s'. Creating file system.\n", fs.data());
+		LogInfoDefault("Found '%s'. Creating file system.", fs.data());
 
 		InitModuleFunc init_func = _fs.file_system_module->getFunc<InitModuleFunc>("InitModule");
 
 		if (init_func && !init_func(*this)) {
-			LogErrorDefault("ERROR - Failed to init file system module.\n");
+			LogErrorDefault("[ERROR] Failed to init file system module.");
 			return false;
 		}
 
@@ -217,28 +213,28 @@ bool App::loadFileSystem(void)
 		_fs.create_func = _fs.file_system_module->getFunc<FileSystemData::CreateFileSystemFunc>("CreateFileSystem");
 
 		if (!_fs.create_func) {
-			LogErrorDefault("ERROR - Failed to find 'CreateFileSystem' in '%s'.\n", fs.data());
+			LogErrorDefault("[ERROR] Failed to find 'CreateFileSystem' in '%s'.", fs.data());
 			return false;
 		}
 
 		if (!_fs.destroy_func) {
-			LogErrorDefault("ERROR - Failed to find 'DestroyFileSystem' in '%s'.\n", fs.data());
+			LogErrorDefault("[ERROR] Failed to find 'DestroyFileSystem' in '%s'.", fs.data());
 			return false;
 		}
 
 		_fs.file_system = _fs.create_func();
 
 		if (!_fs.file_system) {
-			LogErrorDefault("ERROR - Failed to create file system from '%s'.\n", fs.data());
+			LogErrorDefault("[ERROR] Failed to create file system from '%s'.", fs.data());
 			return false;
 		}
 
 	} else {
-		LogInfoDefault("Defaulting to loose file system.\n", fs.data());
+		LogInfoDefault("Defaulting to loose file system.", fs.data());
 		_fs.file_system = SHIB_ALLOCT(LooseFileSystem, *GetAllocator());
 
 		if (!_fs.file_system) {
-			LogErrorDefault("ERROR - Failed to create loose file system.\n");
+			LogErrorDefault("[ERROR] Failed to create loose file system.");
 			return false;
 		}
 	}
@@ -259,24 +255,24 @@ bool App::loadMainLoop(void)
 		InitModuleFunc init_func = module->getFunc<InitModuleFunc>("InitModule");
 
 		if (!init_func) {
-			LogErrorDefault("ERROR - Failed to find function 'InitModule' in dynamic module '%s'\n", main_loop_module);
+			LogErrorDefault("[ERROR] Failed to find function 'InitModule' in dynamic module '%s'.", main_loop_module);
 			return false;
 		}
 
 		_main_loop = module->getFunc<MainLoopFunc>("MainLoop");
 
 		if (!_main_loop) {
-			LogErrorDefault("ERROR - Failed to find function 'MainLoop' in dynamic module '%s'\n", main_loop_module);
+			LogErrorDefault("[ERROR] Failed to find function 'MainLoop' in dynamic module '%s'.", main_loop_module);
 			return false;
 		}
 
 		if (!init_func(*this)) {
-			LogErrorDefault("ERROR - Failed to initialize '%s'\n", main_loop_module);
+			LogErrorDefault("[ERROR] Failed to initialize '%s'.", main_loop_module);
 			return false;
 		}
 
 	} else {
-		LogErrorDefault("ERROR - Failed to open module '%s'\n", main_loop_module);
+		LogErrorDefault("[ERROR] Failed to open module '%s'.", main_loop_module);
 		return false;
 	}
 
@@ -289,12 +285,12 @@ bool App::loadModules(void)
 	const Gaff::JSON& module_dirs = _configs["module_directories"];
 
 	if (!module_dirs.isNull() && !module_dirs.isArray()) {
-		LogErrorDefault("ERROR - 'module_directories' config option is not an array of strings!\n");
+		LogErrorDefault("[ERROR] 'module_directories' config option is not an array of strings!");
 		return false;
 	}
 
 	if (!module_load_order.isNull() && !module_load_order.isArray()) {
-		LogErrorDefault("ERROR - 'module_load_order' config option is not an array of strings!\n");
+		LogErrorDefault("[ERROR] 'module_load_order' config option is not an array of strings!");
 		return false;
 	}
 
@@ -309,7 +305,7 @@ bool App::loadModules(void)
 			const U8String path = U8String(module.getString()) + BIT_EXTENSION DYNAMIC_EXTENSION;
 
 			if (!loadModule(path.data())) {
-				LogErrorDefault("ERROR - Failed to load module '%s'!\n", path.data());
+				LogErrorDefault("[ERROR] Failed to load module '%s'!", path.data());
 				return false;
 			}
 		}
@@ -344,7 +340,7 @@ bool App::loadModules(void)
 
 		if (!manager->init()) {
 			// log error
-			LogErrorDefault("ERROR - Failed to initialize manager '%s'!\n", ref_def->getReflectionInstance().getName());
+			LogErrorDefault("[ERROR] Failed to initialize manager '%s'!", ref_def->getReflectionInstance().getName());
 			SHIB_FREET(manager, *GetAllocator());
 			return false;
 		}
@@ -382,7 +378,7 @@ bool App::initApp(void)
 
 	if (wd.isString()) {
 		if (!Gaff::SetWorkingDir(wd.getString())) {
-			LogErrorDefault("ERROR - Failed to set working directory to '%s'.\n", wd.getString());
+			LogErrorDefault("[ERROR] Failed to set working directory to '%s'.", wd.getString());
 			return false;
 		}
 
@@ -398,13 +394,13 @@ bool App::initApp(void)
 		}
 
 		if (!SetDllDirectory(temp)) {
-			LogErrorDefault("ERROR - Failed to set working directory to '%s'.\n", wd.getString());
+			LogErrorDefault("[ERROR] Failed to set working directory to '%s'.", wd.getString());
 			return false;
 		}
 
 	} else {
 		if (!SetDllDirectory(TEXT("bin"))) {
-			LogErrorDefault("ERROR - Failed to set working directory to '%s'.\n", wd.getString());
+			LogErrorDefault("[ERROR] Failed to set working directory to '%s'.", wd.getString());
 			return false;
 		}
 #endif
@@ -429,7 +425,7 @@ bool App::loadModule(const char* module_path)
 #endif
 
 	if (!module) {
-		LogWarningDefault("Failed to find or load dynamic module '%s'\n", module_path);
+		LogWarningDefault("Failed to find or load dynamic module '%s'.", module_path);
 		return false;
 	}
 
@@ -440,11 +436,11 @@ bool App::loadModule(const char* module_path)
 	InitModuleFunc init_func = module->getFunc<InitModuleFunc>("InitModule");
 
 	if (!init_func) {
-		LogErrorDefault("Failed to find function 'InitModule' in dynamic module '%s'\n", module_path);
+		LogErrorDefault("Failed to find function 'InitModule' in dynamic module '%s'.", module_path);
 		return false;
 	}
 	else if (!init_func(*this)) {
-		LogErrorDefault("Failed to initialize dynamic module '%s'\n", module_path);
+		LogErrorDefault("Failed to initialize dynamic module '%s'.", module_path);
 		return false;
 	}
 
