@@ -31,6 +31,8 @@ THE SOFTWARE.
 
 NS_SHIBBOLETH
 
+class IMainLoop;
+
 class App : public IApp
 {
 public:
@@ -82,7 +84,7 @@ private:
 	using MainLoopFunc = void (*)(void);
 
 	bool _running = true;
-	MainLoopFunc _main_loop = nullptr;
+	IMainLoop* _main_loop = nullptr;
 
 	ReflectionManager _reflection_mgr;
 

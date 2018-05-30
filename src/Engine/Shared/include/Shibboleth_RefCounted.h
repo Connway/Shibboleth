@@ -37,7 +37,7 @@ public: \
 	{ \
 		int32_t new_count = --_count; \
 		if (!new_count) { \
-			SHIB_FREET(this, *Shibboleth::GetAllocator()); \
+			SHIB_FREET(this, Shibboleth::GetAllocator()); \
 		} \
 	} \
 	int32_t getRefCount(void) const \
@@ -64,7 +64,7 @@ public:
 		int32_t new_count = --_count;
 
 		if (!new_count) {
-			SHIB_FREET(this, *GetAllocator());
+			SHIB_FREET(this, GetAllocator());
 		}
 	}
 

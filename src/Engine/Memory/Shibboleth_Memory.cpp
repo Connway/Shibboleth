@@ -33,9 +33,9 @@ int32_t GetPoolIndex(const char* pool_name)
 	return g_allocator.getPoolIndex(pool_name);
 }
 
-IAllocator* GetAllocator(void)
+IAllocator& GetAllocator(void)
 {
-	return &g_allocator;
+	return g_allocator;
 }
 
 void* ShibbolethAllocate(size_t size, size_t alignment, int32_t pool_index)

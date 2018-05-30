@@ -23,7 +23,8 @@ THE SOFTWARE.
 #pragma once
 
 //#include <Shibboleth_IResourceManager.h>
-#include <Shibboleth_Defines.h>
+#include <Shibboleth_Reflection.h>
+#include <Shibboleth_IMainLoop.h>
 
 NS_SHIBBOLETH
 
@@ -31,12 +32,12 @@ NS_SHIBBOLETH
 //class IUpdateManager;
 //class Object;
 
-class MainLoop
+class MainLoop : public IMainLoop
 {
 public:
-	bool init(void);
-	void cleanup(void);
-	void update(void);
+	bool init(void) override;
+	void destroy(void) override;
+	void update(void) override;
 
 private:
 	//IRenderManager* _render_mgr = nullptr;
@@ -49,6 +50,10 @@ private:
 	//std::mutex _res_lock;
 
 	//void ResReq(ResourcePtr& res);
+
+	SHIB_REFLECTION_CLASS_DECLARE(MainLoop);
 };
 
 NS_END
+
+SHIB_REFLECTION_DECLARE(MainLoop)

@@ -41,7 +41,14 @@ THE SOFTWARE.
 #include <Shibboleth_AngelScriptComponent.h>
 #include <Shibboleth_AngelScriptResource.h>
 
+SHIB_REFLECTION_DEFINE(MainLoop)
+
 NS_SHIBBOLETH
+
+SHIB_REFLECTION_CLASS_DEFINE_BEGIN(MainLoop)
+	.BASE(IMainLoop)
+	.ctor<>()
+SHIB_REFLECTION_CLASS_DEFINE_END(MainLoop)
 
 //static size_t g_image_pool_index = 0;
 //
@@ -58,20 +65,6 @@ NS_SHIBBOLETH
 
 bool MainLoop::init(void)
 {
-	Gaff::IReflection* head = Gaff::GetAttributeReflectionChainHead();
-
-	while (head) {
-		head->init();
-		head = head->attr_next;
-	}
-
-	head = Gaff::GetReflectionChainHead();
-
-	while (head) {
-		head->init();
-		head = head->next;
-	}
-
 	//_render_mgr = &GetApp().getManagerT<IRenderManager>();
 	//_update_mgr = &GetApp().getManagerT<IUpdateManager>();
 
@@ -128,7 +121,7 @@ bool MainLoop::init(void)
 	return true;
 }
 
-void MainLoop::cleanup(void)
+void MainLoop::destroy(void)
 {
 	//IApp& app = GetApp();
 	//auto& occ_mgr = GetApp().getManagerT<IOcclusionManager>();

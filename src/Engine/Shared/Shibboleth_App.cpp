@@ -23,6 +23,7 @@ THE SOFTWARE.
 #include "Shibboleth_App.h"
 #include "Shibboleth_LooseFileSystem.h"
 #include "Shibboleth_Utilities.h"
+#include "Shibboleth_IMainLoop.h"
 #include "Shibboleth_IManager.h"
 #include "Gaff_ReflectionInterfaces.h"
 #include <Gaff_CrashHandler.h>
@@ -163,6 +164,7 @@ bool App::initInternal(void)
 	}
 
 	_reflection_mgr.registerTypeBucket(Gaff::FNV1aHash64Const("Gaff::IAttribute"));
+	_reflection_mgr.registerTypeBucket(Gaff::FNV1aHash64Const("IMainLoop"));
 	_reflection_mgr.registerTypeBucket(Gaff::FNV1aHash64Const("IManager"));
 	_reflection_mgr.registerTypeBucket(Gaff::FNV1aHash64Const("**")); // All types not registered with a type bucket.
 	_reflection_mgr.registerTypeBucket(Gaff::FNV1aHash64Const("*"));  // All reflection.
@@ -231,7 +233,7 @@ bool App::loadFileSystem(void)
 
 	} else {
 		LogInfoDefault("Defaulting to loose file system.", fs.data());
-		_fs.file_system = SHIB_ALLOCT(LooseFileSystem, *GetAllocator());
+		_fs.file_system = SHIB_ALLOCT(LooseFileSystem, GetAllocator());
 
 		if (!_fs.file_system) {
 			LogErrorDefault("[ERROR] Failed to create loose file system.");
@@ -244,35 +246,24 @@ bool App::loadFileSystem(void)
 
 bool App::loadMainLoop(void)
 {
-	const char* main_loop_module = "MainLoop" BIT_EXTENSION DYNAMIC_EXTENSION;
-	DynamicLoader::ModulePtr module = _dynamic_loader.loadModule(main_loop_module, "MainLoop");
+	const Vector<const Gaff::IReflectionDefinition*>* bucket = _reflection_mgr.getTypeBucket(Gaff::FNV1aHash64Const("IMainLoop"));
 
-	if (module) {
-#ifdef INIT_STACKTRACE_SYSTEM
-		Gaff::StackTrace::RefreshModuleList(); // Will fix symbols from DLLs not resolving.
-#endif
+	if (!bucket || bucket->empty()) {
+		LogErrorDefault("[ERROR] Failed to find a class that implements the 'IMainLoop' interface.");
+		return false;
+	}
 
-		InitModuleFunc init_func = module->getFunc<InitModuleFunc>("InitModule");
+	// Just take the first one we find.
+	const Gaff::IReflectionDefinition* const refl = bucket->front();
+	_main_loop = refl->createAllocT<IMainLoop>(Gaff::FNV1aHash64Const("IMainLoop"), GetAllocator());
 
-		if (!init_func) {
-			LogErrorDefault("[ERROR] Failed to find function 'InitModule' in dynamic module '%s'.", main_loop_module);
-			return false;
-		}
-
-		_main_loop = module->getFunc<MainLoopFunc>("MainLoop");
-
-		if (!_main_loop) {
-			LogErrorDefault("[ERROR] Failed to find function 'MainLoop' in dynamic module '%s'.", main_loop_module);
-			return false;
-		}
-
-		if (!init_func(*this)) {
-			LogErrorDefault("[ERROR] Failed to initialize '%s'.", main_loop_module);
-			return false;
-		}
-
-	} else {
-		LogErrorDefault("[ERROR] Failed to open module '%s'.", main_loop_module);
+	if (!_main_loop) {
+		LogErrorDefault("[ERROR] Failed to construct main loop class '%s'.", refl->getReflectionInstance().getName());
+		return false;
+	}
+	
+	if (!_main_loop->init()) {
+		LogErrorDefault("[ERROR] Failed to initialize main loop class '%s'.", refl->getReflectionInstance().getName());
 		return false;
 	}
 
@@ -341,7 +332,7 @@ bool App::loadModules(void)
 		if (!manager->init()) {
 			// log error
 			LogErrorDefault("[ERROR] Failed to initialize manager '%s'!", ref_def->getReflectionInstance().getName());
-			SHIB_FREET(manager, *GetAllocator());
+			SHIB_FREET(manager, GetAllocator());
 			return false;
 		}
 
@@ -510,12 +501,18 @@ void App::run(void)
 	while (_running) {
 		//uv_run(uv_default_loop(), UV_RUN_NOWAIT);
 		//_broadcaster.update();
-		_main_loop();
+		_main_loop->update();
 	}
 }
 
 void App::destroy(void)
 {
+	if (_main_loop) {
+		_main_loop->destroy();
+		SHIB_FREET(_main_loop, GetAllocator());
+		_main_loop = nullptr;
+	}
+
 	_job_pool.destroy();
 
 	_reflection_mgr.destroy();
@@ -540,7 +537,7 @@ void App::destroy(void)
 		_fs.destroy_func(_fs.file_system);
 		_fs.file_system_module = nullptr;
 	} else if (_fs.file_system) {
-		SHIB_FREET(_fs.file_system, *GetAllocator());
+		SHIB_FREET(_fs.file_system, GetAllocator());
 	}
 
 #ifdef INIT_STACKTRACE_SYSTEM

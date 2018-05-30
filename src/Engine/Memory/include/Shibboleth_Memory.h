@@ -37,7 +37,7 @@ class IAllocator;
 
 // GetPoolIndex() is not thread-safe. Applications need to ensure they've created all their pools before threading.
 MEMORY_API int32_t GetPoolIndex(const char* pool_name);
-MEMORY_API IAllocator* GetAllocator(void);
+MEMORY_API IAllocator& GetAllocator(void);
 
 MEMORY_API void* ShibbolethAllocate(size_t size, size_t alignment, int32_t pool_index);
 MEMORY_API void* ShibbolethAllocate(size_t size, int32_t pool_index);

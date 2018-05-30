@@ -35,7 +35,7 @@ LooseFile::LooseFile(void)
 LooseFile::~LooseFile(void)
 {
 	if (_file_buffer) {
-		SHIB_FREE(_file_buffer, *GetAllocator());
+		SHIB_FREE(_file_buffer, GetAllocator());
 	}
 }
 
@@ -62,7 +62,7 @@ LooseFileSystem::LooseFileSystem(void)
 LooseFileSystem::~LooseFileSystem(void)
 {
 	for (auto it = _files.begin(); it != _files.end(); ++it) {
-		SHIB_FREET(it->file, *GetAllocator());
+		SHIB_FREET(it->file, GetAllocator());
 	}
 }
 
@@ -85,7 +85,7 @@ IFile* LooseFileSystem::openFile(const char* file_name)
 			return nullptr;
 		}
 
-		LooseFile* file = SHIB_ALLOCT(LooseFile, *GetAllocator());
+		LooseFile* file = SHIB_ALLOCT(LooseFile, GetAllocator());
 
 		// Should probably log that the allocation failed
 		if (!file) {
@@ -93,15 +93,15 @@ IFile* LooseFileSystem::openFile(const char* file_name)
 		}
 
 		file->_file_size= loose_file.getFileSize();
-		file->_file_buffer = SHIB_ALLOC_GLOBAL_CAST(char*, file->_file_size + 1, *GetAllocator());
+		file->_file_buffer = SHIB_ALLOC_GLOBAL_CAST(char*, file->_file_size + 1, GetAllocator());
 
 		if (!file->_file_buffer) {
-			SHIB_FREET(it->file, *GetAllocator());
+			SHIB_FREET(it->file, GetAllocator());
 			return nullptr;
 		}
 
 		if (!loose_file.readEntireFile(file->_file_buffer)) {
-			SHIB_FREET(it->file, *GetAllocator());
+			SHIB_FREET(it->file, GetAllocator());
 			return nullptr;
 		}
 
@@ -136,7 +136,7 @@ void LooseFileSystem::closeFile(IFile* file)
 		int32_t new_count = --it->count;
 
 		if (!new_count) {
-			SHIB_FREET(it->file, *GetAllocator());
+			SHIB_FREET(it->file, GetAllocator());
 			_files.erase_unsorted(it);
 		}
 	}

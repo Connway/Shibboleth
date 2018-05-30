@@ -61,7 +61,7 @@ public:
 
 	Gaff::IAttribute* clone(void) const override
 	{
-		return SHIB_ALLOCT_POOL(LoadFileCallbackAttribute, GetAllocator()->getPoolIndex("Reflection"), *GetAllocator(), _callback);
+		return SHIB_ALLOCT_POOL(LoadFileCallbackAttribute, GetAllocator().getPoolIndex("Reflection"), GetAllocator(), _callback);
 	}
 
 private:

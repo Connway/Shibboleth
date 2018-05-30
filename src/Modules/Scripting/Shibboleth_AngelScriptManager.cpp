@@ -38,11 +38,11 @@ SHIB_REFLECTION_CLASS_DEFINE_BEGIN(AngelScriptManager)
 SHIB_REFLECTION_CLASS_DEFINE_END(AngelScriptManager)
 
 // Ensure creation of pool index.
-static int32_t g_as_alloc_pool = GetAllocator()->getPoolIndex("AngelScript");
+static int32_t g_as_alloc_pool = GetAllocator().getPoolIndex("AngelScript");
 
 static void* ASAlloc(size_t size)
 {
-	return SHIB_ALLOC(size, g_as_alloc_pool, *GetAllocator());
+	return SHIB_ALLOC(size, g_as_alloc_pool, GetAllocator());
 }
 
 AngelScriptManager::~AngelScriptManager(void)

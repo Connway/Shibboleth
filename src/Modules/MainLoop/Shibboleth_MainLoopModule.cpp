@@ -20,23 +20,12 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#include "Shibboleth_MainLoop.h"
+#include "Gen_ReflectionInit.h"
 #include <Shibboleth_Utilities.h>
-
-static Shibboleth::MainLoop g_main_loop;
 
 DYNAMICEXPORT_C bool InitModule(Shibboleth::IApp& app)
 {
 	Shibboleth::SetApp(app);
-	return g_main_loop.init();
-}
-
-DYNAMICEXPORT_C void ShutdownModule(void)
-{
-	g_main_loop.cleanup();
-}
-
-DYNAMICEXPORT_C void MainLoop(void)
-{
-	g_main_loop.update();
+	Gen::InitReflection();
+	return true;
 }

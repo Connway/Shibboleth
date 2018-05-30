@@ -236,7 +236,7 @@ public:
 
 		if (!new_count) {
 			printf("Freeing TestRefCount instance!\n");
-			SHIB_FREET(this, *Shibboleth::GetAllocator());
+			SHIB_FREET(this, Shibboleth::GetAllocator());
 		}
 	}
 

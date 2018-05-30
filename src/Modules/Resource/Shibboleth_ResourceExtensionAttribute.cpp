@@ -42,7 +42,7 @@ const HashStringTemp32& ResExtAttribute::getExtension(void) const
 
 Gaff::IAttribute* ResExtAttribute::clone(void) const
 {
-	return SHIB_ALLOCT_POOL(ResExtAttribute, GetAllocator()->getPoolIndex("Reflection"), *GetAllocator(), _extension.getBuffer());
+	return SHIB_ALLOCT_POOL(ResExtAttribute, GetAllocator().getPoolIndex("Reflection"), GetAllocator(), _extension.getBuffer());
 }
 
 NS_END
