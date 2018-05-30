@@ -37,6 +37,8 @@ bool ReflectionManager::CompareRefHash(const Gaff::IReflectionDefinition* lhs, G
 
 ReflectionManager::ReflectionManager(void)
 {
+	registerTypeBucket(Gaff::FNV1aHash64Const("**")); // All types not registered with a type bucket.
+	registerTypeBucket(Gaff::FNV1aHash64Const("*"));  // All reflection.
 }
 
 ReflectionManager::~ReflectionManager(void)

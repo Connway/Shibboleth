@@ -114,9 +114,9 @@ NS_END
 #define LogWithApp(app, type, channel, message, ...) app.getLogManager().logMessage(type, channel, message, __VA_ARGS__)
 
 #define LogType(type, channel, message, ...) LogWithApp(Shibboleth::GetApp(), type, channel, message, __VA_ARGS__)
-#define LogError(channel, message, ...) LogWithApp(Shibboleth::GetApp(), Shibboleth::LOG_ERROR, channel, message, __VA_ARGS__)
-#define LogWarning(channel, message, ...) LogWithApp(Shibboleth::GetApp(), Shibboleth::LOG_WARNING, channel, message, __VA_ARGS__)
+#define LogError(channel, message, ...) LogWithApp(Shibboleth::GetApp(), Shibboleth::LOG_ERROR, channel, "[ERROR] "##message, __VA_ARGS__)
+#define LogWarning(channel, message, ...) LogWithApp(Shibboleth::GetApp(), Shibboleth::LOG_WARNING, channel, "[WARNING] "##message, __VA_ARGS__)
 #define LogInfo(channel, message, ...) LogWithApp(Shibboleth::GetApp(), Shibboleth::LOG_NORMAL, channel, message, __VA_ARGS__)
-#define LogErrorDefault(message, ...) LogWithApp(Shibboleth::GetApp(), Shibboleth::LOG_ERROR, Shibboleth::LOG_CHANNEL_DEFAULT, message, __VA_ARGS__)
-#define LogWarningDefault(message, ...) LogWithApp(Shibboleth::GetApp(), Shibboleth::LOG_WARNING, Shibboleth::LOG_CHANNEL_DEFAULT, message, __VA_ARGS__)
+#define LogErrorDefault(message, ...) LogWithApp(Shibboleth::GetApp(), Shibboleth::LOG_ERROR, Shibboleth::LOG_CHANNEL_DEFAULT, "[ERROR] "##message, __VA_ARGS__)
+#define LogWarningDefault(message, ...) LogWithApp(Shibboleth::GetApp(), Shibboleth::LOG_WARNING, Shibboleth::LOG_CHANNEL_DEFAULT, "[WARNING] "##message, __VA_ARGS__)
 #define LogInfoDefault(message, ...) LogWithApp(Shibboleth::GetApp(), Shibboleth::LOG_NORMAL, Shibboleth::LOG_CHANNEL_DEFAULT, message, __VA_ARGS__)

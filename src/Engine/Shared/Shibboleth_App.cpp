@@ -155,7 +155,7 @@ bool App::initInternal(void)
 	};
 
 	if (!_job_pool.init(JPI_SIZE - 1, static_cast<int32_t>(Gaff::GetNumberOfCores()), thread_init)) {
-		LogErrorDefault("[ERROR] Failed to initialize thread pool.");
+		LogErrorDefault("Failed to initialize thread pool.");
 		return false;
 	}
 
@@ -166,8 +166,6 @@ bool App::initInternal(void)
 	_reflection_mgr.registerTypeBucket(Gaff::FNV1aHash64Const("Gaff::IAttribute"));
 	_reflection_mgr.registerTypeBucket(Gaff::FNV1aHash64Const("IMainLoop"));
 	_reflection_mgr.registerTypeBucket(Gaff::FNV1aHash64Const("IManager"));
-	_reflection_mgr.registerTypeBucket(Gaff::FNV1aHash64Const("**")); // All types not registered with a type bucket.
-	_reflection_mgr.registerTypeBucket(Gaff::FNV1aHash64Const("*"));  // All reflection.
 
 	if (!loadModules()) {
 		return false;
@@ -207,7 +205,7 @@ bool App::loadFileSystem(void)
 		InitModuleFunc init_func = _fs.file_system_module->getFunc<InitModuleFunc>("InitModule");
 
 		if (init_func && !init_func(*this)) {
-			LogErrorDefault("[ERROR] Failed to init file system module.");
+			LogErrorDefault("Failed to init file system module.");
 			return false;
 		}
 
@@ -215,19 +213,19 @@ bool App::loadFileSystem(void)
 		_fs.create_func = _fs.file_system_module->getFunc<FileSystemData::CreateFileSystemFunc>("CreateFileSystem");
 
 		if (!_fs.create_func) {
-			LogErrorDefault("[ERROR] Failed to find 'CreateFileSystem' in '%s'.", fs.data());
+			LogErrorDefault("Failed to find 'CreateFileSystem' in '%s'.", fs.data());
 			return false;
 		}
 
 		if (!_fs.destroy_func) {
-			LogErrorDefault("[ERROR] Failed to find 'DestroyFileSystem' in '%s'.", fs.data());
+			LogErrorDefault("Failed to find 'DestroyFileSystem' in '%s'.", fs.data());
 			return false;
 		}
 
 		_fs.file_system = _fs.create_func();
 
 		if (!_fs.file_system) {
-			LogErrorDefault("[ERROR] Failed to create file system from '%s'.", fs.data());
+			LogErrorDefault("Failed to create file system from '%s'.", fs.data());
 			return false;
 		}
 
@@ -236,7 +234,7 @@ bool App::loadFileSystem(void)
 		_fs.file_system = SHIB_ALLOCT(LooseFileSystem, GetAllocator());
 
 		if (!_fs.file_system) {
-			LogErrorDefault("[ERROR] Failed to create loose file system.");
+			LogErrorDefault("Failed to create loose file system.");
 			return false;
 		}
 	}
@@ -249,7 +247,7 @@ bool App::loadMainLoop(void)
 	const Vector<const Gaff::IReflectionDefinition*>* bucket = _reflection_mgr.getTypeBucket(Gaff::FNV1aHash64Const("IMainLoop"));
 
 	if (!bucket || bucket->empty()) {
-		LogErrorDefault("[ERROR] Failed to find a class that implements the 'IMainLoop' interface.");
+		LogErrorDefault("Failed to find a class that implements the 'IMainLoop' interface.");
 		return false;
 	}
 
@@ -258,12 +256,12 @@ bool App::loadMainLoop(void)
 	_main_loop = refl->createAllocT<IMainLoop>(Gaff::FNV1aHash64Const("IMainLoop"), GetAllocator());
 
 	if (!_main_loop) {
-		LogErrorDefault("[ERROR] Failed to construct main loop class '%s'.", refl->getReflectionInstance().getName());
+		LogErrorDefault("Failed to construct main loop class '%s'.", refl->getReflectionInstance().getName());
 		return false;
 	}
 	
 	if (!_main_loop->init()) {
-		LogErrorDefault("[ERROR] Failed to initialize main loop class '%s'.", refl->getReflectionInstance().getName());
+		LogErrorDefault("Failed to initialize main loop class '%s'.", refl->getReflectionInstance().getName());
 		return false;
 	}
 
@@ -276,12 +274,12 @@ bool App::loadModules(void)
 	const Gaff::JSON& module_dirs = _configs["module_directories"];
 
 	if (!module_dirs.isNull() && !module_dirs.isArray()) {
-		LogErrorDefault("[ERROR] 'module_directories' config option is not an array of strings!");
+		LogErrorDefault("'module_directories' config option is not an array of strings!");
 		return false;
 	}
 
 	if (!module_load_order.isNull() && !module_load_order.isArray()) {
-		LogErrorDefault("[ERROR] 'module_load_order' config option is not an array of strings!");
+		LogErrorDefault("'module_load_order' config option is not an array of strings!");
 		return false;
 	}
 
@@ -296,7 +294,7 @@ bool App::loadModules(void)
 			const U8String path = U8String(module.getString()) + BIT_EXTENSION DYNAMIC_EXTENSION;
 
 			if (!loadModule(path.data())) {
-				LogErrorDefault("[ERROR] Failed to load module '%s'!", path.data());
+				LogErrorDefault("Failed to load module '%s'!", path.data());
 				return false;
 			}
 		}
@@ -331,7 +329,7 @@ bool App::loadModules(void)
 
 		if (!manager->init()) {
 			// log error
-			LogErrorDefault("[ERROR] Failed to initialize manager '%s'!", ref_def->getReflectionInstance().getName());
+			LogErrorDefault("Failed to initialize manager '%s'!", ref_def->getReflectionInstance().getName());
 			SHIB_FREET(manager, GetAllocator());
 			return false;
 		}
@@ -369,7 +367,7 @@ bool App::initApp(void)
 
 	if (wd.isString()) {
 		if (!Gaff::SetWorkingDir(wd.getString())) {
-			LogErrorDefault("[ERROR] Failed to set working directory to '%s'.", wd.getString());
+			LogErrorDefault("Failed to set working directory to '%s'.", wd.getString());
 			return false;
 		}
 
@@ -385,13 +383,13 @@ bool App::initApp(void)
 		}
 
 		if (!SetDllDirectory(temp)) {
-			LogErrorDefault("[ERROR] Failed to set working directory to '%s'.", wd.getString());
+			LogErrorDefault("Failed to set working directory to '%s'.", wd.getString());
 			return false;
 		}
 
 	} else {
 		if (!SetDllDirectory(TEXT("bin"))) {
-			LogErrorDefault("[ERROR] Failed to set working directory to '%s'.", wd.getString());
+			LogErrorDefault("Failed to set working directory to '%s'.", wd.getString());
 			return false;
 		}
 #endif
