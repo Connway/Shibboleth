@@ -26,12 +26,12 @@ THE SOFTWARE.
 
 void* operator new(size_t count)
 {
-	return SHIB_ALLOC(count, 0, *Shibboleth::GetAllocator());
+	return SHIB_ALLOC(count, 0, Shibboleth::GetAllocator());
 }
 
 void* operator new[](size_t count)
 {
-	return SHIB_ALLOC(count, 0, *Shibboleth::GetAllocator());
+	return SHIB_ALLOC(count, 0, Shibboleth::GetAllocator());
 }
 
 //void* operator new (size_t count, std::align_val_t al)
@@ -44,12 +44,12 @@ void* operator new[](size_t count)
 
 void* operator new(size_t count, const std::nothrow_t&) noexcept
 {
-	return SHIB_ALLOC(count, 0, *Shibboleth::GetAllocator());
+	return SHIB_ALLOC(count, 0, Shibboleth::GetAllocator());
 }
 
 void* operator new[](size_t count, const std::nothrow_t&) noexcept
 {
-	return SHIB_ALLOC(count, 0, *Shibboleth::GetAllocator());
+	return SHIB_ALLOC(count, 0, Shibboleth::GetAllocator());
 }
 
 //void* operator new(size_t count, std::align_val_t al, const std::nothrow_t&) noexcept
@@ -63,12 +63,12 @@ void* operator new[](size_t count, const std::nothrow_t&) noexcept
 
 void operator delete(void* ptr) noexcept
 {
-	SHIB_FREE(ptr, *Shibboleth::GetAllocator());
+	SHIB_FREE(ptr, Shibboleth::GetAllocator());
 }
 
 void operator delete[](void* ptr) noexcept
 {
-	SHIB_FREE(ptr, *Shibboleth::GetAllocator());
+	SHIB_FREE(ptr, Shibboleth::GetAllocator());
 }
 
 //void operator delete(void* ptr, std::align_val_t al) noexcept
@@ -81,12 +81,12 @@ void operator delete[](void* ptr) noexcept
 
 void operator delete(void* ptr, size_t) noexcept
 {
-	SHIB_FREE(ptr, *Shibboleth::GetAllocator());
+	SHIB_FREE(ptr, Shibboleth::GetAllocator());
 }
 
 void operator delete[](void* ptr, size_t) noexcept
 {
-	SHIB_FREE(ptr, *Shibboleth::GetAllocator());
+	SHIB_FREE(ptr, Shibboleth::GetAllocator());
 }
 
 //void operator delete(void* ptr, std::size_t sz, std::align_val_t al) noexcept
@@ -99,12 +99,12 @@ void operator delete[](void* ptr, size_t) noexcept
 
 void operator delete(void* ptr, const std::nothrow_t&) noexcept
 {
-	SHIB_FREE(ptr, *Shibboleth::GetAllocator());
+	SHIB_FREE(ptr, Shibboleth::GetAllocator());
 }
 
 void operator delete[](void* ptr, const std::nothrow_t&) noexcept
 {
-	SHIB_FREE(ptr, *Shibboleth::GetAllocator());
+	SHIB_FREE(ptr, Shibboleth::GetAllocator());
 }
 
 //void operator delete(void* ptr, std::align_val_t al, const std::nothrow_t&) noexcept
@@ -117,10 +117,10 @@ void operator delete[](void* ptr, const std::nothrow_t&) noexcept
 
 void* operator new[](size_t size, const char* /*pName*/, int /*flags*/, unsigned /*debugFlags*/, const char* file, int line)
 {
-	return Shibboleth::GetAllocator()->alloc(size, file, line);
+	return Shibboleth::GetAllocator().alloc(size, file, line);
 }
 
 void* operator new[](size_t size, size_t alignment, size_t /*alignmentOffset*/, const char* /*pName*/, int /*flags*/, unsigned /*debugFlags*/, const char* file, int line)
 {
-	return Shibboleth::GetAllocator()->alloc(size, alignment, file, line);
+	return Shibboleth::GetAllocator().alloc(size, alignment, file, line);
 }

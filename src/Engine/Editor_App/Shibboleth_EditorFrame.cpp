@@ -116,7 +116,7 @@ void EditorFrame::onSpawnWindow(wxCommandEvent& event)
 	const Gaff::IReflectionDefinition* const ref_def = reinterpret_cast<Gaff::IReflectionDefinition*>(event.GetEventUserData());
 	const EditorWindowAttribute* const ew_attr = ref_def->getClassAttribute<EditorWindowAttribute>();
 
-	wxWindow* const window = ref_def->createAllocT<wxWindow>(Gaff::FNV1aHash64Const("wxWindow"), ARG_HASH(wxWindow*), *GetAllocator(), this);
+	wxWindow* const window = ref_def->createAllocT<wxWindow>(Gaff::FNV1aHash64Const("wxWindow"), ARG_HASH(wxWindow*), GetAllocator(), this);
 	wxAuiPaneInfo pane;
 
 	pane.Caption(ew_attr->getCaption());

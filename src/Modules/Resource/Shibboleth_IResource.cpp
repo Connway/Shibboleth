@@ -40,7 +40,7 @@ static void LoadJob(void* data)
 	cb_attr->callCallback(job_data->first->getBasePointer(), job_data->second);
 
 	GetApp().getFileSystem()->closeFile(job_data->second);
-	SHIB_FREET(job_data, *GetAllocator());
+	SHIB_FREET(job_data, GetAllocator());
 }
 
 void IResource::load(void)
@@ -78,7 +78,7 @@ void IResource::release(void) const
 
 	if (!new_count) {
 		_res_mgr->removeResource(this);
-		SHIB_FREET(this, *GetAllocator());
+		SHIB_FREET(this, GetAllocator());
 	}
 }
 

@@ -68,7 +68,7 @@ NS_SHIBBOLETH
 //
 //	// PROGRAM BUFFERS CREATOR
 //	{
-//		ProgramBuffersCreator* program_buffers_creator = SHIB_ALLOCT(ProgramBuffersCreator, *GetAllocator());
+//		ProgramBuffersCreator* program_buffers_creator = SHIB_ALLOCT(ProgramBuffersCreator, GetAllocator());
 //
 //		if (!program_buffers_creator) {
 //			app.getLogManager().logMessage(LogManager::LOG_ERROR, app.getLogFileName(), "ERROR - Failed to create program buffers creator.\n");
@@ -82,7 +82,7 @@ NS_SHIBBOLETH
 //
 //	// BUFFER CREATOR
 //	{
-//		BufferCreator* buffer_creator = SHIB_ALLOCT(BufferCreator, *GetAllocator());
+//		BufferCreator* buffer_creator = SHIB_ALLOCT(BufferCreator, GetAllocator());
 //
 //		if (!buffer_creator) {
 //			app.getLogManager().logMessage(LogManager::LOG_ERROR, app.getLogFileName(), "ERROR - Failed to create buffer creator.\n");
@@ -96,7 +96,7 @@ NS_SHIBBOLETH
 //
 //	// TEXTURE LOADER
 //	{
-//		TextureLoader* texture_loader = SHIB_ALLOCT(TextureLoader, *GetAllocator(), render_mgr);
+//		TextureLoader* texture_loader = SHIB_ALLOCT(TextureLoader, GetAllocator(), render_mgr);
 //
 //		if (!texture_loader) {
 //			app.getLogManager().logMessage(LogManager::LOG_ERROR, app.getLogFileName(), "ERROR - Failed to create texture loader.\n");
@@ -110,7 +110,7 @@ NS_SHIBBOLETH
 //
 //	// IMAGE LOADER
 //	{
-//		ImageLoader* image_loader = SHIB_ALLOCT(ImageLoader, *GetAllocator());
+//		ImageLoader* image_loader = SHIB_ALLOCT(ImageLoader, GetAllocator());
 //
 //		if (!image_loader) {
 //			app.getLogManager().logMessage(LogManager::LOG_ERROR, app.getLogFileName(), "ERROR - Failed to create image loader.\n");
@@ -134,7 +134,7 @@ NS_SHIBBOLETH
 //
 //	// SAMPLER STATE LOADER
 //	{
-//		SamplerStateLoader* sampler_loader = SHIB_ALLOCT(SamplerStateLoader, *GetAllocator(), render_mgr);
+//		SamplerStateLoader* sampler_loader = SHIB_ALLOCT(SamplerStateLoader, GetAllocator(), render_mgr);
 //
 //		if (!sampler_loader) {
 //			app.getLogManager().logMessage(LogManager::LOG_ERROR, app.getLogFileName(), "ERROR - Failed to create sampler state loader.\n");
@@ -148,7 +148,7 @@ NS_SHIBBOLETH
 //
 //	// SHADER LOADER
 //	{
-//		ShaderLoader* shader_loader = SHIB_ALLOCT(ShaderLoader, *GetAllocator(), render_mgr);
+//		ShaderLoader* shader_loader = SHIB_ALLOCT(ShaderLoader, GetAllocator(), render_mgr);
 //
 //		if (!shader_loader) {
 //			app.getLogManager().logMessage(LogManager::LOG_ERROR, app.getLogFileName(), "ERROR - Failed to create shader loader.\n");
@@ -164,7 +164,7 @@ NS_SHIBBOLETH
 //	{
 //		ISchemaManager& schema_mgr = app.getManagerT<ISchemaManager>();
 //
-//		ShaderProgramLoader* shader_program_loader = SHIB_ALLOCT(ShaderProgramLoader, *GetAllocator(), res_mgr, schema_mgr, render_mgr);
+//		ShaderProgramLoader* shader_program_loader = SHIB_ALLOCT(ShaderProgramLoader, GetAllocator(), res_mgr, schema_mgr, render_mgr);
 //
 //		if (!shader_program_loader) {
 //			app.getLogManager().logMessage(LogManager::LOG_ERROR, app.getLogFileName(), "ERROR - Failed to create shader program loader.\n");
@@ -178,7 +178,7 @@ NS_SHIBBOLETH
 //
 //	// LUA LOADER
 //	{
-//		LuaLoader* lua_loader = SHIB_ALLOCT(LuaLoader, *GetAllocator());
+//		LuaLoader* lua_loader = SHIB_ALLOCT(LuaLoader, GetAllocator());
 //
 //		if (!lua_loader) {
 //			app.getLogManager().logMessage(LogManager::LOG_ERROR, app.getLogFileName(), "ERROR - Failed to create Lua loader.\n");
@@ -192,7 +192,7 @@ NS_SHIBBOLETH
 //
 //	// HOLDING LOADER
 //	{
-//		HoldingLoader* holding_loader = SHIB_ALLOCT(HoldingLoader, *GetAllocator());
+//		HoldingLoader* holding_loader = SHIB_ALLOCT(HoldingLoader, GetAllocator());
 //
 //		if (!holding_loader) {
 //			app.getLogManager().logMessage(LogManager::LOG_ERROR, app.getLogFileName(), "ERROR - Failed to create Holding loader.\n");
@@ -251,7 +251,7 @@ NS_SHIBBOLETH
 //
 //	// MODEL LOADER
 //	{
-//		ModelLoader* model_loader = SHIB_ALLOCT(ModelLoader, *GetAllocator(), render_mgr, res_mgr, *app.getFileSystem());
+//		ModelLoader* model_loader = SHIB_ALLOCT(ModelLoader, GetAllocator(), render_mgr, res_mgr, *app.getFileSystem());
 //
 //		if (!model_loader) {
 //			app.getLogManager().logMessage(LogManager::LOG_ERROR, app.getLogFileName(), "ERROR - Failed to create Model loader.\n");
@@ -265,7 +265,7 @@ NS_SHIBBOLETH
 //
 //	// RENDER TARGET LOADER
 //	{
-//		RenderTargetLoader* render_target_loader = SHIB_ALLOCT(RenderTargetLoader, *GetAllocator());
+//		RenderTargetLoader* render_target_loader = SHIB_ALLOCT(RenderTargetLoader, GetAllocator());
 //
 //		if (!render_target_loader) {
 //			app.getLogManager().logMessage(LogManager::LOG_ERROR, app.getLogFileName(), "ERROR - Failed to create Render Target loader.\n");
@@ -279,7 +279,7 @@ NS_SHIBBOLETH
 //
 //	// PHYSICS LOADER
 //	{
-//		PhysicsLoader* physics_loader = SHIB_ALLOCT(PhysicsLoader, *GetAllocator());
+//		PhysicsLoader* physics_loader = SHIB_ALLOCT(PhysicsLoader, GetAllocator());
 //
 //		if (!physics_loader) {
 //			app.getLogManager().logMessage(LogManager::LOG_ERROR, app.getLogFileName(), "ERROR - Failed to create Physics loader.\n");

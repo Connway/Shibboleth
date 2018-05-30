@@ -36,6 +36,9 @@
     <ClInclude Include="..\..\..\..\src\Engine\Shared\include\Shibboleth_IFileSystem.h">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\..\src\Engine\Shared\include\Shibboleth_IMainLoop.h">
+      <Filter>include</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\..\src\Engine\Shared\include\Shibboleth_IManager.h">
       <Filter>include</Filter>
     </ClInclude>

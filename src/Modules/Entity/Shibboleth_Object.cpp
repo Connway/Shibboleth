@@ -114,7 +114,7 @@ bool Object::save(Gaff::ISerializeWriter& writer)
 void Object::destroy(void)
 {
 	for (Component* const component : _components) {
-		SHIB_FREET(component, *GetAllocator());
+		SHIB_FREET(component, GetAllocator());
 	}
 
 	removeChildren();
@@ -377,7 +377,7 @@ void Object::removeComponent(Component* component, bool destroy)
 	}
 
 	if (destroy) {
-		SHIB_FREET(component, *GetAllocator());
+		SHIB_FREET(component, GetAllocator());
 	}
 }
 

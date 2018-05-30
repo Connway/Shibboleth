@@ -30,7 +30,7 @@ NS_SHIBBOLETH
 class ProxyAllocator : public Gaff::IAllocator
 {
 public:
-	//explicit ProxyAllocator(const char* pool_tag = nullptr, Shibboleth::IAllocator* allocator = GetAllocator()):
+	//explicit ProxyAllocator(const char* pool_tag = nullptr, Shibboleth::IAllocator& allocator = GetAllocator()):
 	//	_allocator(allocator), _pool_index(0)
 	//{
 	//	if (pool_tag) {
@@ -55,7 +55,7 @@ public:
 		//_pool_index(0)
 	{
 		if (_pool_tag) {
-			_pool_index = _allocator->getPoolIndex(_pool_tag);
+			_pool_index = _allocator.getPoolIndex(_pool_tag);
 		}
 	}
 
@@ -102,27 +102,27 @@ public:
 		_pool_tag = pName;
 
 		if (_pool_tag) {
-			_pool_index = _allocator->getPoolIndex(_pool_tag);
+			_pool_index = _allocator.getPoolIndex(_pool_tag);
 		}
 	}
 
 	void* alloc(size_t size_bytes, size_t alignment, const char* file, int line) override
 	{
-		return _allocator->alloc(size_bytes, alignment, _pool_index, file, line);
+		return _allocator.alloc(size_bytes, alignment, _pool_index, file, line);
 	}
 
 	void* alloc(size_t size_bytes, const char* file, int line) override
 	{
-		return _allocator->alloc(size_bytes, _pool_index, file, line);
+		return _allocator.alloc(size_bytes, _pool_index, file, line);
 	}
 
 	void free(void* data) override
 	{
-		_allocator->free(data);
+		_allocator.free(data);
 	}
 
 private:
-	Shibboleth::IAllocator* _allocator = GetAllocator();
+	Shibboleth::IAllocator& _allocator = GetAllocator();
 	const char* _pool_tag = nullptr;
 	int32_t _pool_index = 0;
 };

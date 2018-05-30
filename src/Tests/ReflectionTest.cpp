@@ -412,7 +412,7 @@ public:
 
 class TestAttr : public Gaff::IAttribute
 {
-	Gaff::IAttribute* clone(void) const { return SHIB_ALLOCT(TestAttr, *Shibboleth::GetAllocator()); }
+	Gaff::IAttribute* clone(void) const { return SHIB_ALLOCT(TestAttr, Shibboleth::GetAllocator()); }
 
 	SHIB_REFLECTION_CLASS_DECLARE(TestAttr);
 };
@@ -491,7 +491,7 @@ TEST_CASE("reflection func test", "[shibboleth_func]")
 	Gaff::IReflectionFunction<const int&>* const ref_get_func = ref_def.getFunc<const int&>(Gaff::FNV1aHash32Const("getIntRef"));
 	Gaff::IReflectionFunction<void, const int&>* const ref_set_func = ref_def.getFunc<void, const int&>(Gaff::FNV1aHash32Const("setIntRef"));
 
-	void* data = ref_def.createAlloc(*Shibboleth::GetAllocator());
+	void* data = ref_def.createAlloc(Shibboleth::GetAllocator());
 
 	REQUIRE(data);
 	REQUIRE(get_func);
@@ -532,7 +532,7 @@ TEST_CASE("reflection func test", "[shibboleth_func]")
 	REQUIRE(ref_get_func->call(data) == 1111);
 	printf("setIntRef: %i\n", ref_get_func->call(data));
 
-	SHIB_FREE(data, *Shibboleth::GetAllocator());
+	SHIB_FREE(data, Shibboleth::GetAllocator());
 }
 
 enum TestEnum

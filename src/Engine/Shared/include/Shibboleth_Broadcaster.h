@@ -99,7 +99,7 @@ private:
 		GAFF_MOVE_DEFAULT(ListenerData);
 
 		Vector<Listener> listeners;
-		UniquePtr<Gaff::ReadWriteSpinLock> lock = UniquePtr<Gaff::ReadWriteSpinLock>(SHIB_ALLOCT(Gaff::ReadWriteSpinLock, *GetAllocator()));
+		UniquePtr<Gaff::ReadWriteSpinLock> lock = UniquePtr<Gaff::ReadWriteSpinLock>(SHIB_ALLOCT(Gaff::ReadWriteSpinLock, GetAllocator()));
 	};
 
 	Vector< std::pair<int32_t, IMessage*> > _message_queues[2];

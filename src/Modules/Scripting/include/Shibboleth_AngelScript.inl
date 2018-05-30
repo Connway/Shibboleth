@@ -86,10 +86,10 @@ struct RefCountedHelper<false>
 template <class T, class... Args>
 T* ASFactoryFunc(Args... args)
 {
-	IAllocator* const allocator = GetAllocator();
-	int32_t pool_index = allocator->getPoolIndex("AngelScript");
+	IAllocator& allocator = GetAllocator();
+	int32_t pool_index = allocator.getPoolIndex("AngelScript");
 
-	T* const instance = SHIB_ALLOC_CAST(T, pool_index, *allocator);
+	T* const instance = SHIB_ALLOC_CAST(T, pool_index, allocator);
 	Gaff::ConstructExact(instance, args...);
 	RefCountedHelper<std::is_base_of<Gaff::IRefCounted, T>::value>::AddRef(*instance);
 	return instance;
@@ -583,7 +583,7 @@ RegisterAngelScriptAttribute<T>::RegisterAngelScriptAttribute(AngelScriptFlags f
 template <class T>
 Gaff::IAttribute* RegisterAngelScriptAttribute<T>::clone(void) const
 {
-	return SHIB_ALLOCT_POOL(RegisterAngelScriptAttribute<T>, GetAllocator()->getPoolIndex("Reflection"), *GetAllocator(), _flags);
+	return SHIB_ALLOCT_POOL(RegisterAngelScriptAttribute<T>, GetAllocator().getPoolIndex("Reflection"), GetAllocator(), _flags);
 }
 
 template <class T>

@@ -44,7 +44,7 @@ THE SOFTWARE.
 //		it->second->call(*msg_data.second);
 //	}
 //
-//	SHIB_FREET(msg_data.second, *GetAllocator());
+//	SHIB_FREET(msg_data.second, GetAllocator());
 //}
 //
 //Broadcaster::Broadcaster(void)
@@ -55,13 +55,13 @@ THE SOFTWARE.
 //{
 //	for (unsigned int i = 0; i < 2; ++i) {
 //		for (auto it = _message_queues[i].begin(); it != _message_queues[i].end(); ++it) {
-//			SHIB_FREET(it->second, *GetAllocator());
+//			SHIB_FREET(it->second, GetAllocator());
 //		}
 //	}
 //
 //	for (auto it1 = _listeners.begin(); it1 != _listeners.end(); ++it1) {
 //		for (auto it2 = it1->second.listeners.begin(); it2 != it1->second.listeners.end(); ++it2) {
-//			SHIB_FREET(it2->second, *GetAllocator());
+//			SHIB_FREET(it2->second, GetAllocator());
 //		}
 //	}
 //

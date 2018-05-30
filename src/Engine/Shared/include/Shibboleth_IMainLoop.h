@@ -22,41 +22,16 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Shibboleth_EditorWindowAttribute.h"
-#include <Shibboleth_IAllocator.h>
-#include <Shibboleth_Memory.h>
-
-SHIB_REFLECTION_DEFINE(EditorWindowAttribute)
+#include <Shibboleth_Defines.h>
 
 NS_SHIBBOLETH
 
-SHIB_REFLECTION_CLASS_DEFINE_BEGIN(EditorWindowAttribute)
-	.BASE(Gaff::IAttribute)
-SHIB_REFLECTION_CLASS_DEFINE_END(EditorWindowAttribute)
-
-EditorWindowAttribute::EditorWindowAttribute(
-	const char* menu_path,
-	const char* caption
-):
-	_menu_path(menu_path),
-	_caption(caption)
+class IMainLoop
 {
-}
-
-const char* EditorWindowAttribute::getCaption(void) const
-{
-	return _caption;
-}
-
-const char* EditorWindowAttribute::getPath(void) const
-{
-	return _menu_path;
-}
-
-Gaff::IAttribute* EditorWindowAttribute::clone(void) const
-{
-	Shibboleth::IAllocator& allocator = GetAllocator();
-	return SHIB_ALLOCT_POOL(EditorWindowAttribute, allocator.getPoolIndex("Reflection"), allocator, _menu_path, _caption);
-}
+public:
+	virtual bool init(void) = 0;
+	virtual void destroy(void) = 0;
+	virtual void update(void) = 0;
+};
 
 NS_END

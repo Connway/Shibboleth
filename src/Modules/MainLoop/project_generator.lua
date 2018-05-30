@@ -6,8 +6,6 @@ project "MainLoopModule"
 	kind "SharedLib"
 	language "C++"
 
-	targetname "MainLoop"
-
 	files { "**.h", "**.cpp", "**.inl" }
 
 	filter { "configurations:not Analyze*" }
@@ -49,8 +47,5 @@ project "MainLoopModule"
 	dependson(deps)
 	links(deps)
 
-	postbuildcommands
-	{
-		"{MKDIR} ../../../../workingdir/bin",
-		"{COPY} %{cfg.targetdir}/%{cfg.buildtarget.name} ../../../../workingdir/bin"
-	}
+	ModuleGen("MainLoop")
+	ModuleCopy("MainLoop")
