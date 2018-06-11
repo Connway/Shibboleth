@@ -26,4 +26,5 @@ THE SOFTWARE.
 	#define WIN32_LEAN_AND_MEAN
 #endif
 
-#include <d3d11.h>
+#include <d3d11_4.h>
+#include <dxgi1_6.h>

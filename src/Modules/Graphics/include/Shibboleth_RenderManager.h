@@ -49,9 +49,14 @@ public:
 	Gleam::IModel* createModel(void) const override;
 	Gleam::IMesh* createMesh(void) const override;
 
-	void setActiveCamera(CameraComponent* camera) override;
+	void manageRenderDevice(Gleam::IRenderDevice* device, const char* name) /*override*/;
+
+	//void setActiveCamera(CameraComponent* camera) override;
 
 	SHIB_REFLECTION_CLASS_DECLARE(RenderManager);
+
+private:
+	VectorMap< Gaff::Hash32, UniquePtr<Gleam::IRenderDevice> > _render_devices;
 };
 
 NS_END

@@ -6,6 +6,9 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\..\..\src\Modules\MainLoop\include\Gen_ReflectionInit.h">
+      <Filter>include</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\..\src\Modules\MainLoop\include\Shibboleth_MainLoop.h">
       <Filter>include</Filter>
     </ClInclude>

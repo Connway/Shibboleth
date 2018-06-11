@@ -77,7 +77,11 @@ LoadedModulesWindow::LoadedModulesWindow(
 	sizer->SetSizeHints(this);
 	SetSizer(sizer);
 
-	Connect(wxEVT_LISTBOX, wxCommandEventHandler(LoadedModulesWindow::onModuleSelected));
+	Bind(
+		wxEVT_LISTBOX,
+		&LoadedModulesWindow::onModuleSelected,
+		this
+	);
 
 	initTree();
 

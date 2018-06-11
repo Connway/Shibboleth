@@ -24,9 +24,9 @@ THE SOFTWARE.
 
 #include "Gleam_Defines.h"
 
-struct ID3D11DeviceContext;
-struct ID3D11Device;
-struct IDXGIAdapter;
+struct ID3D11DeviceContext3;
+struct ID3D11Device5;
+struct IDXGIAdapter4;
 
 NS_GLEAM
 
@@ -36,9 +36,9 @@ public:
 	IRenderDeviceD3D11(void) {}
 	virtual ~IRenderDeviceD3D11(void) {}
 
-	virtual ID3D11DeviceContext* getDeviceContext(void) = 0;
-	virtual ID3D11Device* getDevice(void) = 0;
-	virtual IDXGIAdapter* getAdapter(void) = 0;
+	virtual ID3D11DeviceContext3* getDeviceContext(void) = 0;
+	virtual ID3D11Device5* getDevice(void) = 0;
+	virtual IDXGIAdapter4* getAdapter(void) = 0;
 };
 
 NS_END

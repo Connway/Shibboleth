@@ -360,7 +360,7 @@ bool Window::init(const char* app_name, MODE window_mode,
 	unsigned long mask = CWBorderPixel | CWColormap | CWEventMask;
 
 	switch (window_mode) {
-		case FULLSCREEN_WINDOWED:
+		case BORDERLESS_WINDOWED:
 			pos_x = pos_y = 0;
 
 			XWindowAttributes attributes;
@@ -446,11 +446,11 @@ bool Window::init(const char* app_name, MODE window_mode,
 	XSetStandardProperties(_display, _window, app_name, app_name, None, nullptr, 0, nullptr);
 
 	switch (_window_mode) {
-		// On Linux, FULLSCREEN and FULLSCREEN_WINDOWED are basically the same thing
+		// On Linux, FULLSCREEN and BORDERLESS_WINDOWED are basically the same thing
 		case FULLSCREEN:
 			XRRSetScreenConfigAndRate(_display, config, root, final_size, _original_rotation, rates[final_rate], CurrentTime);
 
-		case FULLSCREEN_WINDOWED: {
+		case BORDERLESS_WINDOWED: {
 			Atom motif = XInternAtom(_display, "_MOTIF_WM_HINTS", False);
 			Atom state = XInternAtom(_display, "_NET_WM_STATE", False);
 			Atom fscreen = XInternAtom(_display, "_NET_WM_STATE_FULLSCREEN", False);
@@ -644,7 +644,7 @@ bool Window::setWindowMode(MODE window_mode, int width, int height, short refres
 		}
 
 		// Fullscreen will drop down to here and run this code as well
-		case FULLSCREEN_WINDOWED: {
+		case BORDERLESS_WINDOWED: {
 			Atom motif = XInternAtom(_display, "_MOTIF_WM_HINTS", False);
 			Atom state = XInternAtom(_display, "_NET_WM_STATE", False);
 			Atom fscreen = XInternAtom(_display, "_NET_WM_STATE_FULLSCREEN", False);

@@ -43,6 +43,8 @@ public:
 	Window(void);
 	~Window(void);
 
+	bool init(HWND hwnd);
+
 	bool init(const char* app_name, MODE window_mode = FULLSCREEN,
 				int32_t width = 0, int32_t height = 0,
 				int32_t pos_x = 0, int32_t pos_y = 0, const char* compat = nullptr) override;
@@ -71,21 +73,26 @@ public:
 
 	bool setIcon(const char* icon) override;
 
+	void setPos(int32_t x, int32_t y) override;
+	void setDimensions(int32_t width, int32_t height) override;
+
 	HINSTANCE getHInstance(void) const;
 	HWND getHWnd(void) const;
 
 private:
 	int32_t _pos_x, _pos_y;
 	int32_t _width, _height;
-	U8String _application_name;
-	HINSTANCE _hinstance;
-	HWND _hwnd;
 
-	MODE _window_mode;
-	int32_t _original_width;
-	int32_t _original_height;
-	bool _cursor_visible;
-	bool _contain;
+	MODE _window_mode = FULLSCREEN;
+	int32_t _original_width = 0;
+	int32_t _original_height = 0;
+	bool _cursor_visible = true;
+	bool _contain = false;
+
+	U8String _application_name;
+	HINSTANCE _hinstance = nullptr;
+	HWND _hwnd = nullptr;
+	bool _owns_window = true;
 
 	Vector<MessageHandler> _window_callbacks;
 

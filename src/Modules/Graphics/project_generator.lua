@@ -1,5 +1,44 @@
 function DoGraphicsModule(renderer)
-	project("GraphicsModule" .. renderer)
+	project("Graphics" .. renderer)
+		if _ACTION then
+			location(GetModulesLocation())
+		end
+
+		kind "StaticLib"
+		language "C++"
+
+		files { "**.h", "**.cpp", "**.inl" }
+		removefiles { "Shibboleth_GraphicsModule.cpp" }
+
+		if renderer == "Direct3D11" then
+			defines { "USE_D3D11" }
+		elseif renderer == "Vulkan" then
+			defines { "USE_VULKAN" }
+		end
+
+		filter { "configurations:not Analyze*" }
+			flags { "FatalWarnings" }
+
+		filter {}
+
+		includedirs
+		{
+			"include",
+			"../../Engine/Memory/include",
+			"../../Engine/Shared/include",
+			"../../Dependencies/EASTL/include",
+			-- "../../Dependencies/angelscript/angelscript/include",
+			-- "../../Dependencies/rapidjson",
+			-- "../../Dependencies/glm",
+			-- "../../Dependencies/mpack",
+			"../../Frameworks/Gaff/include",
+			"../../Frameworks/Gleam/include",
+			"../Entity/include",
+			-- "../Scripting/include"
+		}
+
+
+	project("Graphics" .. renderer .. "Module")
 		if _ACTION then
 			location(GetModulesLocation())
 		end
@@ -7,8 +46,7 @@ function DoGraphicsModule(renderer)
 		kind "SharedLib"
 		language "C++"
 
-		-- files { "Shibboleth_GraphicsModule.cpp" }
-		files { "**.h", "**.cpp", "**.inl" }
+		files { "Shibboleth_GraphicsModule.cpp" }
 
 		ModuleGen("Graphics")
 		ModuleCopy()
@@ -34,27 +72,28 @@ function DoGraphicsModule(renderer)
 			"../../Engine/Memory/include",
 			"../../Engine/Shared/include",
 			"../../Dependencies/EASTL/include",
-			"../../Dependencies/angelscript/angelscript/include",
-			-- "../../Dependencies/rapidjson",
-			-- "../../Dependencies/glm",
-			-- "../../Dependencies/mpack",
+			-- "../../Dependencies/angelscript/angelscript/include",
+			-- -- "../../Dependencies/rapidjson",
+			-- -- "../../Dependencies/glm",
+			-- -- "../../Dependencies/mpack",
 			"../../Frameworks/Gaff/include",
 			"../../Frameworks/Gleam/include",
 			"../Entity/include",
-			"../Scripting/include"
+			-- "../Scripting/include"
 		}
 
 		local deps =
 		{
+			"Graphics" .. renderer,
 			"Memory",
 			"Gaff",
 			"Gleam",
 			"Shared",
 			"EASTL",
 			"Entity",
-			"Scripting",
-			"Resource",
-			"angelscript",
+			-- "Scripting",
+			-- "Resource",
+			-- "angelscript",
 			-- "mpack"
 		}
 

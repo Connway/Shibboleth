@@ -27,10 +27,6 @@ THE SOFTWARE.
 #include <Gaff_RefPtr.h>
 #include <dxgi1_2.h>
 
-struct ID3D11DeviceContext;
-struct ID3D11Device;
-struct IDXGIAdapter;
-
 NS_GLEAM
 
 class RenderDeviceD3D11 : public IRenderDevice, public IRenderDeviceD3D11
@@ -51,14 +47,14 @@ public:
 	void resetRenderState(void) override;
 	void renderNoVertexInput(int32_t vert_count) override;
 
-	ID3D11DeviceContext* getDeviceContext(void) override;
-	ID3D11Device* getDevice(void) override;
-	IDXGIAdapter1* getAdapter(void) override;
+	ID3D11DeviceContext3* getDeviceContext(void) override;
+	ID3D11Device5* getDevice(void) override;
+	IDXGIAdapter4* getAdapter(void) override;
 
 private:
 	struct OutputInfo
 	{
-		Vector<DXGI_MODE_DESC> display_mode_list;
+		Vector<DXGI_MODE_DESC1> display_mode_list;
 	};
 
 	struct AdapterInfo
@@ -70,9 +66,9 @@ private:
 
 	static Vector<AdapterInfo> g_display_info;
 
-	Gaff::COMRefPtr<ID3D11DeviceContext> _context;
-	Gaff::COMRefPtr<ID3D11Device> _device;
-	Gaff::COMRefPtr<IDXGIAdapter1> _adapter;
+	Gaff::COMRefPtr<ID3D11DeviceContext3> _context;
+	Gaff::COMRefPtr<ID3D11Device5> _device;
+	Gaff::COMRefPtr<IDXGIAdapter4> _adapter;
 
 	bool _is_deferred = false;
 

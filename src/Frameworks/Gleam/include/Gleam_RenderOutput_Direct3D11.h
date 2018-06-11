@@ -37,19 +37,19 @@ public:
 
 	RendererType getRendererType(void) const override;
 
-	Gaff::COMRefPtr<IDXGISwapChain1>& getSwapChain(void);
+	Gaff::COMRefPtr<IDXGISwapChain4>& getSwapChain(void);
 	D3D11_VIEWPORT getViewport(void) const;
 	bool isVSync(void) const;
 
 private:
 	Gaff::RefPtr<RenderTargetD3D11> _render_target;
 
-	Gaff::COMRefPtr<IDXGISwapChain1> _swap_chain;
-	Gaff::COMRefPtr<ID3D11DeviceContext> _context;
-	Gaff::COMRefPtr<ID3D11Device> _device;
+	Gaff::COMRefPtr<IDXGISwapChain4> _swap_chain;
+	Gaff::COMRefPtr<ID3D11DeviceContext3> _context;
+	Gaff::COMRefPtr<ID3D11Device5> _device;
 
-	Gaff::COMRefPtr<ID3D11RenderTargetView> _render_target_view;
-	Gaff::COMRefPtr<IDXGIOutput> _output;
+	Gaff::COMRefPtr<ID3D11RenderTargetView1> _render_target_view;
+	Gaff::COMRefPtr<IDXGIOutput6> _output;
 	bool _vsync;
 };
 

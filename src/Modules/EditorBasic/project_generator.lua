@@ -20,6 +20,7 @@ project "EditorBasic"
 		"../../Dependencies/EASTL/include",
 		"../../Dependencies/rapidjson",
 		"../../Frameworks/Gaff/include",
+		"../../Frameworks/Gleam/include",
 		"../../Engine/Editor/include",
 		"../../Engine/Shared/include",
 		"../../Engine/Memory/include"
@@ -59,6 +60,7 @@ project "EditorBasicModule"
 		"include",
 		"../../Dependencies/EASTL/include",
 		"../../Frameworks/Gaff/include",
+		"../../Frameworks/Gleam/include",
 		"../../Engine/Editor/include",
 		"../../Engine/Shared/include",
 		"../../Engine/Memory/include"
@@ -73,6 +75,7 @@ project "EditorBasicModule"
 		"Shared",
 		"Memory",
 		"Gaff",
+		"Gleam",
 		"EASTL",
 		"libpng",
 		"zlib-ng",

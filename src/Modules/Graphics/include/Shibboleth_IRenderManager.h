@@ -68,7 +68,7 @@ public:
 	virtual Gleam::IModel* createModel(void) const = 0;
 	virtual Gleam::IMesh* createMesh(void) const = 0;
 
-	virtual void setActiveCamera(CameraComponent* camera) = 0;
+	//virtual void setActiveCamera(CameraComponent* camera) = 0;
 };
 
 NS_END

@@ -39,64 +39,78 @@ template <>
 IRenderDevice::AdapterList GetDisplayModes<RENDERER_DIRECT3D11>(void)
 {
 	if (RenderDeviceD3D11::g_display_info.empty()) {
-		IDXGIFactory2* factory = nullptr;
-		IDXGIAdapter1* adapter = nullptr;
+		IDXGIFactory6* factory = nullptr;
+		IDXGIAdapter4* adapter = nullptr;
 		IDXGIOutput* adapter_output = nullptr;
-		DXGI_ADAPTER_DESC adapter_desc;
+		DXGI_ADAPTER_DESC3 adapter_desc;
 
-		HRESULT result = CreateDXGIFactory(__uuidof(IDXGIFactory2), reinterpret_cast<void**>(&factory));
+		HRESULT result = CreateDXGIFactory(IID_PPV_ARGS(&factory));
 		IRenderDevice::AdapterList adapters;
 
 		if (FAILED(result)) {
 			return adapters;
 		}
 
-		for (DWORD i = 0; factory->EnumAdapters1(i, &adapter) != DXGI_ERROR_NOT_FOUND; ++i) {
+		for (UINT i = 0; factory->EnumAdapterByGpuPreference(i, DXGI_GPU_PREFERENCE_HIGH_PERFORMANCE, IID_PPV_ARGS(&adapter)) != DXGI_ERROR_NOT_FOUND; ++i) {
 			RenderDeviceD3D11::AdapterInfo info;
-			Gaff::COMRefPtr<IDXGIAdapter> adapter_ptr;
+			Gaff::COMRefPtr<IDXGIAdapter4> adapter_ptr;
 
 			adapter_ptr.attach(adapter);
 
-			result = adapter->GetDesc(&adapter_desc);
+			result = adapter->GetDesc3(&adapter_desc);
 
 			if (FAILED(result)) {
 				continue;
 			}
 
-			info.memory = static_cast<UINT>(adapter_desc.DedicatedVideoMemory / 1024) / 1024;
-			wcsncpy_s(info.adapter_name, 128, adapter_desc.Description, 128);
+			info.memory = static_cast<int32_t>(adapter_desc.DedicatedVideoMemory / 1024) / 1024;
+			wcsncpy_s(info.adapter_name, ARRAY_SIZE(info.adapter_name), adapter_desc.Description, ARRAY_SIZE(adapter_desc.Description));
 
-			for (DWORD j = 0; adapter->EnumOutputs(j, &adapter_output) != DXGI_ERROR_NOT_FOUND; ++j) {
+			for (UINT j = 0; adapter->EnumOutputs(j, &adapter_output) != DXGI_ERROR_NOT_FOUND; ++j) {
 				RenderDeviceD3D11::OutputInfo out_info;
-				Gaff::COMRefPtr<IDXGIOutput> output;
+				Gaff::COMRefPtr<IDXGIOutput6> output;
 				UINT num_modes;
 
-				output.attach(adapter_output);
+				IDXGIOutput6* temp = nullptr;
+				adapter_output->QueryInterface(&temp);
+				adapter_output->Release();
+
+				output.attach(temp);
 				//out_info.output.attach(adapter_output);
 
-				result = adapter_output->GetDisplayModeList(DXGI_FORMAT_R8G8B8A8_UNORM, 0UL, &num_modes, nullptr);
+				result = temp->GetDisplayModeList1(DXGI_FORMAT_R8G8B8A8_UNORM, 0, &num_modes, nullptr);
 
 				if (FAILED(result)) {
 					continue;
 				}
 
 				out_info.display_mode_list.resize(num_modes);
-				adapter_output->GetDisplayModeList(DXGI_FORMAT_R8G8B8A8_UNORM, 0UL, &num_modes, out_info.display_mode_list.data());
+				temp->GetDisplayModeList1(DXGI_FORMAT_R8G8B8A8_UNORM, 0, &num_modes, out_info.display_mode_list.data());
+
+				// Remove all stereo displays.
+				for (int32_t k = 0; k < static_cast<int32_t>(out_info.display_mode_list.size());) {
+					if (out_info.display_mode_list[k].Stereo) {
+						out_info.display_mode_list.erase(out_info.display_mode_list.begin() + k);
+						continue;
+					}
+
+					++k;
+				}
 
 				// Remove duplicate entries. We don't care about the scaling or scanline order
 				for (int32_t k = 1; k < static_cast<int32_t>(out_info.display_mode_list.size());) {
-					const DXGI_MODE_DESC& curr = out_info.display_mode_list[k];
-					const DXGI_MODE_DESC& prev = out_info.display_mode_list[k - 1];
+					const DXGI_MODE_DESC1& curr = out_info.display_mode_list[k];
+					const DXGI_MODE_DESC1& prev = out_info.display_mode_list[k - 1];
 
 					if (curr.Width == prev.Width && curr.Height == prev.Height &&
 						curr.RefreshRate.Numerator == prev.RefreshRate.Numerator &&
 						curr.RefreshRate.Denominator == prev.RefreshRate.Denominator) {
 
 						out_info.display_mode_list.erase(out_info.display_mode_list.begin() + k);
-
-					} else {
-						++k;
+						continue;
 					}
+
+					++k;
 				}
 
 				info.output_info.emplace_back(out_info);
@@ -118,7 +132,7 @@ IRenderDevice::AdapterList GetDisplayModes<RENDERER_DIRECT3D11>(void)
 		const wchar_t*  src_begin = adpt_info.adapter_name;
 		const wchar_t* src_end = src_begin + eastl::CharStrlen(adpt_info.adapter_name);
 		char* dest_begin = adpt.adapter_name;
-		char* dest_end = adpt.adapter_name + 128;
+		char* dest_end = adpt.adapter_name + ARRAY_SIZE(adpt.adapter_name);
 
 		eastl::DecodePart(src_begin, src_end, dest_begin, dest_end);
 
@@ -133,7 +147,7 @@ IRenderDevice::AdapterList GetDisplayModes<RENDERER_DIRECT3D11>(void)
 			display.id = j;
 
 			for (int32_t k = 0; k < static_cast<int32_t>(out_info.display_mode_list.size()); ++k) {
-				const DXGI_MODE_DESC& mode_desc = out_info.display_mode_list[k];
+				const DXGI_MODE_DESC1& mode_desc = out_info.display_mode_list[k];
 
 				IRenderDevice::DisplayMode mode = {
 					static_cast<int32_t>(mode_desc.RefreshRate.Numerator / mode_desc.RefreshRate.Denominator),
@@ -159,16 +173,23 @@ bool RenderDeviceD3D11::init(int32_t adapter_id)
 {
 	GAFF_ASSERT(g_display_info.size() > adapter_id);
 
-	IDXGIFactory2* factory = nullptr;
-	IDXGIAdapter1* adapter = nullptr;
-	HRESULT result = CreateDXGIFactory(__uuidof(IDXGIFactory2), reinterpret_cast<void**>(&factory));
+	IDXGIFactory6* factory = nullptr;
+	IDXGIAdapter4* adapter = nullptr;
+
+//#ifdef _DEBUG
+//	constexpr UINT factory_flags = D3D11_CREATE_DEVICE_DEBUG | D3D11_CREATE_DEVICE_DEBUGGABLE;
+//#else
+	constexpr UINT factory_flags = 0;
+//#endif
+
+	HRESULT result = CreateDXGIFactory2(factory_flags, IID_PPV_ARGS(&factory));
 
 	if (FAILED(result)) {
 		// Log error
 		return false;
 	}
 
-	if (factory->EnumAdapters1(static_cast<DWORD>(adapter_id), &adapter) == DXGI_ERROR_NOT_FOUND) {
+	if (factory->EnumAdapterByGpuPreference(static_cast<UINT>(adapter_id), DXGI_GPU_PREFERENCE_HIGH_PERFORMANCE, IID_PPV_ARGS(&adapter)) == DXGI_ERROR_NOT_FOUND) {
 		// Log error
 		return false;
 	}
@@ -180,21 +201,40 @@ bool RenderDeviceD3D11::init(int32_t adapter_id)
 
 	// Apparently trying to make the device as debug/debuggable causes it to fail. :/
 //#ifdef _DEBUG
-//	UINT flags = D3D11_CREATE_DEVICE_DEBUG | D3D11_CREATE_DEVICE_DEBUGGABLE;
+//	constexpr UINT flags = D3D11_CREATE_DEVICE_DEBUG | D3D11_CREATE_DEVICE_DEBUGGABLE;
 //#else
-	UINT flags = 0;
+	constexpr UINT device_flags = 0;
 //#endif
 
 	D3D_FEATURE_LEVEL feature_level = D3D_FEATURE_LEVEL_11_1;
-	result = D3D11CreateDevice(_adapter.get(), D3D_DRIVER_TYPE_UNKNOWN, 0, flags, &feature_level, 1, D3D11_SDK_VERSION, &device, 0, &context);
+	result = D3D11CreateDevice(
+		_adapter.get(),
+		D3D_DRIVER_TYPE_UNKNOWN,
+		0,
+		device_flags,
+		&feature_level, 1,
+		D3D11_SDK_VERSION,
+		&device,
+		0,
+		&context
+	);
 
 	if (FAILED(result)) {
 		// Log error
 		return false;
 	}
 
-	_device.attach(device);
-	_context.attach(context);
+	ID3D11DeviceContext3* final_context = nullptr;
+	ID3D11Device5* final_device = nullptr;
+
+	context->QueryInterface(&final_context);
+	device->QueryInterface(&final_device);
+
+	context->Release();
+	device->Release();
+
+	_device.attach(final_device);
+	_context.attach(final_context);
 
 	return true;
 
@@ -211,7 +251,7 @@ bool RenderDeviceD3D11::init(int32_t adapter_id)
 	//swap_chain_desc.Windowed = TRUE;
 	//swap_chain_desc.BufferDesc.ScanlineOrdering = DXGI_MODE_SCANLINE_ORDER_UNSPECIFIED;
 	//swap_chain_desc.BufferDesc.Scaling = DXGI_MODE_SCALING_UNSPECIFIED;
-	//swap_chain_desc.SwapEffect = DXGI_SWAP_EFFECT_DISCARD;
+	//swap_chain_desc.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD;
 	//swap_chain_desc.Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH;
 
 	//if (!vsync) {
@@ -491,9 +531,9 @@ RendererType RenderDeviceD3D11::getRendererType(void) const
 
 IRenderDevice* RenderDeviceD3D11::createDeferredRenderDevice(void)
 {
-	ID3D11DeviceContext* deferred_context = nullptr;
+	ID3D11DeviceContext3* deferred_context = nullptr;
 
-	if (FAILED(_device->CreateDeferredContext(0, &deferred_context))) {
+	if (FAILED(_device->CreateDeferredContext3(0, &deferred_context))) {
 		return nullptr;
 	}
 
@@ -545,17 +585,17 @@ void RenderDeviceD3D11::renderNoVertexInput(int32_t vert_count)
 	_context->Draw(vert_count, 0);
 }
 
-ID3D11DeviceContext* RenderDeviceD3D11::getDeviceContext(void)
+ID3D11DeviceContext3* RenderDeviceD3D11::getDeviceContext(void)
 {
 	return _context.get();
 }
 
-ID3D11Device* RenderDeviceD3D11::getDevice(void)
+ID3D11Device5* RenderDeviceD3D11::getDevice(void)
 {
 	return _device.get();
 }
 
-IDXGIAdapter1* RenderDeviceD3D11::getAdapter(void)
+IDXGIAdapter4* RenderDeviceD3D11::getAdapter(void)
 {
 	return _adapter.get();
 }

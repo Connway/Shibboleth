@@ -22,14 +22,15 @@ THE SOFTWARE.
 
 #include "Shibboleth_CameraComponent.h"
 #include "Shibboleth_IRenderManager.h"
-#include <Shibboleth_AngelScript.h>
+//#include <Shibboleth_AngelScript.h>
+#include <Shibboleth_IManager.h>
 
 SHIB_REFLECTION_DEFINE(CameraComponent)
 
 NS_SHIBBOLETH
 
 SHIB_REFLECTION_CLASS_DEFINE_BEGIN(CameraComponent)
-	.classAttrs(RegisterAngelScriptAttribute<CameraComponent>(AS_VALUE_AS_REF))
+	//.classAttrs(RegisterAngelScriptAttribute<CameraComponent>(AS_VALUE_AS_REF))
 
 	.BASE(Component)
 	.ctor<>()
@@ -46,7 +47,7 @@ void CameraComponent::onAddToWorld(void)
 	_render_mgr = INTERFACE_CAST(IRenderManager, *GetApp().getManager(Gaff::FNV1aHash64Const("IRenderManager")));
 
 	if (_start_active) {
-		_render_mgr->setActiveCamera(this);
+		//_render_mgr->setActiveCamera(this);
 	}
 }
 

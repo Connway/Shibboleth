@@ -50,9 +50,15 @@ bool RenderOutputD3D11::init(IRenderDevice& device, const IWindow& window, int32
 	const Window& wnd = reinterpret_cast<const Window&>(window);
 
 	IDXGISwapChain1* swap_chain = nullptr;
-	IDXGIFactory2* factory = nullptr;
+	IDXGIFactory6* factory = nullptr;
 	
-	HRESULT result = CreateDXGIFactory(__uuidof(IDXGIFactory2), reinterpret_cast<void**>(&factory));
+//#ifdef _DEBUG
+//	constexpr UINT factory_flags = D3D11_CREATE_DEVICE_DEBUG | D3D11_CREATE_DEVICE_DEBUGGABLE;
+//#else
+	constexpr UINT factory_flags = 0;
+//#endif
+
+	HRESULT result = CreateDXGIFactory2(factory_flags, IID_PPV_ARGS(&factory));
 
 	if (FAILED(result)) {
 		// Log error
@@ -77,11 +83,11 @@ bool RenderOutputD3D11::init(IRenderDevice& device, const IWindow& window, int32
 	swap_chain_desc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
 	swap_chain_desc.BufferCount = 2; // Double-buffering
 	swap_chain_desc.Scaling = DXGI_SCALING_ASPECT_RATIO_STRETCH;
-	swap_chain_desc.SwapEffect = DXGI_SWAP_EFFECT_DISCARD;
+	swap_chain_desc.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD;
 	swap_chain_desc.AlphaMode = DXGI_ALPHA_MODE_UNSPECIFIED;
 	swap_chain_desc.Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH;
 
-	if (wnd.getWindowMode() != IWindow::WINDOWED) {
+	if (wnd.getWindowMode() == IWindow::FULLSCREEN) {
 		DXGI_SWAP_CHAIN_FULLSCREEN_DESC swap_chain_fullscreen_desc;
 		swap_chain_fullscreen_desc.Scaling = DXGI_MODE_SCALING_UNSPECIFIED;
 		swap_chain_fullscreen_desc.ScanlineOrdering = DXGI_MODE_SCANLINE_ORDER_UNSPECIFIED;
@@ -107,36 +113,41 @@ bool RenderOutputD3D11::init(IRenderDevice& device, const IWindow& window, int32
 		return false;
 	}
 
+	IDXGISwapChain4* final_swap_chain = nullptr;
+	swap_chain->QueryInterface(&final_swap_chain);
+
+	swap_chain->Release();
+
 	if (window.getWindowMode() == IWindow::FULLSCREEN) {
-		result = swap_chain->SetFullscreenState(TRUE, adapter_output);
+		result = final_swap_chain->SetFullscreenState(TRUE, adapter_output);
 	} else {
-		result = swap_chain->SetFullscreenState(FALSE, NULL);
+		result = final_swap_chain->SetFullscreenState(FALSE, NULL);
 	}
 
 	if (FAILED(result)) {
 		// Log error
-		swap_chain->Release();
+		final_swap_chain->Release();
 		adapter_output->Release();
 		return false;
 	}
 
 	ID3D11Texture2D* back_buffer_ptr = nullptr;
-	result = swap_chain->GetBuffer(0, __uuidof(ID3D11Texture2D), reinterpret_cast<LPVOID*>(&back_buffer_ptr));
+	result = final_swap_chain->GetBuffer(0, __uuidof(ID3D11Texture2D), reinterpret_cast<LPVOID*>(&back_buffer_ptr));
 	
 	if (FAILED(result)) {
 		// Log error
-		swap_chain->Release();
+		final_swap_chain->Release();
 		adapter_output->Release();
 		return false;
 	}
 
-	ID3D11RenderTargetView* render_target_view = nullptr;
-	result = dvc.getDevice()->CreateRenderTargetView(back_buffer_ptr, nullptr, &render_target_view);
+	ID3D11RenderTargetView1* render_target_view = nullptr;
+	result = dvc.getDevice()->CreateRenderTargetView1(back_buffer_ptr, nullptr, &render_target_view);
 	
 	back_buffer_ptr->Release();
 	
 	if (FAILED(result)) {
-		swap_chain->Release();
+		final_swap_chain->Release();
 		adapter_output->Release();
 		return false;
 	}
@@ -144,14 +155,19 @@ bool RenderOutputD3D11::init(IRenderDevice& device, const IWindow& window, int32
 	if (FAILED(result)) {
 		// Log error
 		render_target_view->Release();
-		swap_chain->Release();
+		final_swap_chain->Release();
 		adapter_output->Release();
 		return false;
 	}
 
+	IDXGIOutput6* final_output = nullptr;
+	adapter_output->QueryInterface(&final_output);
+
+	adapter_output->Release();
+
 	_render_target_view.attach(render_target_view);
-	_swap_chain.attach(swap_chain);
-	_output.attach(adapter_output);
+	_swap_chain.attach(final_swap_chain);
+	_output.attach(final_output);
 
 	D3D11_VIEWPORT viewport;
 	viewport.Width = static_cast<float>(wnd.getWidth());
@@ -173,7 +189,7 @@ RendererType RenderOutputD3D11::getRendererType(void) const
 	return RENDERER_DIRECT3D11;
 }
 
-Gaff::COMRefPtr<IDXGISwapChain1>& RenderOutputD3D11::getSwapChain(void)
+Gaff::COMRefPtr<IDXGISwapChain4>& RenderOutputD3D11::getSwapChain(void)
 {
 	return _swap_chain;
 }
