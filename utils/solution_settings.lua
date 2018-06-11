@@ -93,7 +93,7 @@ filter { "action:vs*" }
 
 filter { "system:windows" }
 	defines { "WIN32", "_WINDOWS" }
-	-- systemversion "10.0.16299.0"
+	systemversion "10.0.17134.0"
 
 filter { "system:windows", "platforms:x64" }
 	defines { "WIN64" }

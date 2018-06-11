@@ -142,15 +142,45 @@ LRESULT CALLBACK Window::WindowProc(HWND hwnd, UINT msg, WPARAM w, LPARAM l)
 	return DefWindowProc(hwnd, msg, w, l);
 }
 
-Window::Window(void):
-	_hinstance(nullptr), _hwnd(nullptr), _window_mode(FULLSCREEN),
-	_cursor_visible(true), _contain(false)
+Window::Window(void)
 {
 }
 
 Window::~Window(void)
 {
 	destroy();
+}
+
+bool Window::init(HWND hwnd)
+{
+	if (g_first_init) {
+		g_left_keys[VK_CONTROL] = KEY_LEFTCONTROL;
+		g_left_keys[VK_MENU] = KEY_LEFTALT;
+		g_left_keys[VK_SHIFT] = KEY_LEFTSHIFT;
+
+		g_right_keys[VK_CONTROL] = KEY_RIGHTCONTROL;
+		g_right_keys[VK_MENU] = KEY_RIGHTALT;
+		g_right_keys[VK_SHIFT] = KEY_RIGHTSHIFT;
+
+		InitWindowProcHelpers();
+
+		g_first_init = false;
+	}
+
+	_window_mode = WINDOWED;
+	_owns_window = false;
+	_hwnd = hwnd;
+
+	RECT rect;
+	GetWindowRect(_hwnd, &rect);
+
+	_pos_x = rect.left;
+	_pos_y = rect.top;
+
+	_width = rect.right - rect.left;
+	_height = rect.bottom - rect.top;
+
+	return true;
 }
 
 bool Window::init(const char* app_name, MODE window_mode,
@@ -209,7 +239,7 @@ bool Window::init(const char* app_name, MODE window_mode,
 	_original_height = GetSystemMetrics(SM_CYSCREEN);
 
 	switch (window_mode) {
-		case FULLSCREEN_WINDOWED:
+		case BORDERLESS_WINDOWED:
 			pos_x = pos_y = 0;
 			width = _original_width;
 			height = _original_height;
@@ -293,6 +323,11 @@ bool Window::init(const char* app_name, MODE window_mode,
 
 void Window::destroy(void)
 {
+	if (!_owns_window) {
+		_hwnd = nullptr;
+		return;
+	}
+
 	auto it = Gaff::Find(g_windows, this);
 	GAFF_ASSERT(it != g_windows.end());
 	g_windows.erase_unsorted(it);
@@ -381,7 +416,7 @@ bool Window::setWindowMode(MODE window_mode)
 	DWORD flags = 0;
 
 	switch (window_mode) {
-		case FULLSCREEN_WINDOWED:
+		case BORDERLESS_WINDOWED:
 			_pos_x = _pos_y = 0;
 			_width = GetSystemMetrics(SM_CXSCREEN);
 			_height = GetSystemMetrics(SM_CYSCREEN);
@@ -484,6 +519,26 @@ bool Window::setIcon(const char* icon)
 
 	SendMessage(_hwnd, WM_SETICON, ICON_SMALL, reinterpret_cast<LPARAM>(hIcon));
 	return true;
+}
+
+void Window::setPos(int32_t x, int32_t y)
+{
+	_pos_x = x;
+	_pos_y = y;
+
+	if (_owns_window) {
+		MoveWindow(_hwnd, _pos_x, _pos_y, _width, _height, false);
+	}
+}
+
+void Window::setDimensions(int32_t width, int32_t height)
+{
+	_width = width;
+	_height = height;
+
+	if (_owns_window) {
+		MoveWindow(_hwnd, _pos_x, _pos_y, _width, _height, false);
+	}
 }
 
 HINSTANCE Window::getHInstance(void) const

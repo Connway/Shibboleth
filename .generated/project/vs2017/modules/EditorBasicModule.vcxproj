@@ -27,6 +27,7 @@
     <IgnoreWarnCompileDuplicatedFilename>true</IgnoreWarnCompileDuplicatedFilename>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>EditorBasicModule</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0.17134.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
@@ -123,7 +124,7 @@
       <WarningLevel>Level4</WarningLevel>
       <TreatWarningAsError>true</TreatWarningAsError>
       <PreprocessorDefinitions>UNICODE;_UNICODE;_DEBUG;DEBUG;WIN32;_WINDOWS;WIN64;NOPCH;wxUSE_ZLIB_H_IN_PATH;WXUSINGDLL;__WXMSW__;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\..\..\..\src\Modules\EditorBasic\include;..\..\..\..\src\Dependencies\EASTL\include;..\..\..\..\src\Frameworks\Gaff\include;..\..\..\..\src\Engine\Editor\include;..\..\..\..\src\Engine\Shared\include;..\..\..\..\src\Engine\Memory\include;..\..\..\..\src\Dependencies\wxWidgets\include;..\..\..\..\src\Dependencies\wxWidgets\include\msvc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\..\src\Modules\EditorBasic\include;..\..\..\..\src\Dependencies\EASTL\include;..\..\..\..\src\Frameworks\Gaff\include;..\..\..\..\src\Frameworks\Gleam\include;..\..\..\..\src\Engine\Editor\include;..\..\..\..\src\Engine\Shared\include;..\..\..\..\src\Engine\Memory\include;..\..\..\..\src\Dependencies\wxWidgets\include;..\..\..\..\src\Dependencies\wxWidgets\include\msvc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
       <ExceptionHandling>Async</ExceptionHandling>
@@ -154,7 +155,7 @@ IF EXIST ..\..\..\build\vs2017\output\x64\Debug\$(TargetFileName)\ (xcopy /Q /E 
       <WarningLevel>Level4</WarningLevel>
       <TreatWarningAsError>true</TreatWarningAsError>
       <PreprocessorDefinitions>UNICODE;_UNICODE;NDEBUG;WIN32;_WINDOWS;WIN64;NOPCH;wxUSE_ZLIB_H_IN_PATH;WXUSINGDLL;__WXMSW__;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\..\..\..\src\Modules\EditorBasic\include;..\..\..\..\src\Dependencies\EASTL\include;..\..\..\..\src\Frameworks\Gaff\include;..\..\..\..\src\Engine\Editor\include;..\..\..\..\src\Engine\Shared\include;..\..\..\..\src\Engine\Memory\include;..\..\..\..\src\Dependencies\wxWidgets\include;..\..\..\..\src\Dependencies\wxWidgets\include\msvc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\..\src\Modules\EditorBasic\include;..\..\..\..\src\Dependencies\EASTL\include;..\..\..\..\src\Frameworks\Gaff\include;..\..\..\..\src\Frameworks\Gleam\include;..\..\..\..\src\Engine\Editor\include;..\..\..\..\src\Engine\Shared\include;..\..\..\..\src\Engine\Memory\include;..\..\..\..\src\Dependencies\wxWidgets\include;..\..\..\..\src\Dependencies\wxWidgets\include\msvc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -190,7 +191,7 @@ IF EXIST ..\..\..\build\vs2017\output\x64\Release\$(TargetFileName)\ (xcopy /Q /
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level4</WarningLevel>
       <PreprocessorDefinitions>UNICODE;_UNICODE;NDEBUG;WIN32;_WINDOWS;WIN64;NOPCH;wxUSE_ZLIB_H_IN_PATH;WXUSINGDLL;__WXMSW__;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\..\..\..\src\Modules\EditorBasic\include;..\..\..\..\src\Dependencies\EASTL\include;..\..\..\..\src\Frameworks\Gaff\include;..\..\..\..\src\Engine\Editor\include;..\..\..\..\src\Engine\Shared\include;..\..\..\..\src\Engine\Memory\include;..\..\..\..\src\Dependencies\wxWidgets\include;..\..\..\..\src\Dependencies\wxWidgets\include\msvc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\..\src\Modules\EditorBasic\include;..\..\..\..\src\Dependencies\EASTL\include;..\..\..\..\src\Frameworks\Gaff\include;..\..\..\..\src\Frameworks\Gleam\include;..\..\..\..\src\Engine\Editor\include;..\..\..\..\src\Engine\Shared\include;..\..\..\..\src\Engine\Memory\include;..\..\..\..\src\Dependencies\wxWidgets\include;..\..\..\..\src\Dependencies\wxWidgets\include\msvc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -226,7 +227,7 @@ IF EXIST ..\..\..\build\vs2017\output\x64\Analyze\$(TargetFileName)\ (xcopy /Q /
       <WarningLevel>Level4</WarningLevel>
       <TreatWarningAsError>true</TreatWarningAsError>
       <PreprocessorDefinitions>UNICODE;_UNICODE;NDEBUG;SHIB_PROFILE;WIN32;_WINDOWS;WIN64;NOPCH;wxUSE_ZLIB_H_IN_PATH;WXUSINGDLL;__WXMSW__;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\..\..\..\src\Modules\EditorBasic\include;..\..\..\..\src\Dependencies\EASTL\include;..\..\..\..\src\Frameworks\Gaff\include;..\..\..\..\src\Engine\Editor\include;..\..\..\..\src\Engine\Shared\include;..\..\..\..\src\Engine\Memory\include;..\..\..\..\src\Dependencies\wxWidgets\include;..\..\..\..\src\Dependencies\wxWidgets\include\msvc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\..\src\Modules\EditorBasic\include;..\..\..\..\src\Dependencies\EASTL\include;..\..\..\..\src\Frameworks\Gaff\include;..\..\..\..\src\Frameworks\Gleam\include;..\..\..\..\src\Engine\Editor\include;..\..\..\..\src\Engine\Shared\include;..\..\..\..\src\Engine\Memory\include;..\..\..\..\src\Dependencies\wxWidgets\include;..\..\..\..\src\Dependencies\wxWidgets\include\msvc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -263,7 +264,7 @@ IF EXIST ..\..\..\build\vs2017\output\x64\Profile\$(TargetFileName)\ (xcopy /Q /
       <WarningLevel>Level4</WarningLevel>
       <TreatWarningAsError>true</TreatWarningAsError>
       <PreprocessorDefinitions>UNICODE;_UNICODE;_DEBUG;DEBUG;WIN32;_WINDOWS;WIN64;NOPCH;wxUSE_ZLIB_H_IN_PATH;WXUSINGDLL;__WXMSW__;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\..\..\..\src\Modules\EditorBasic\include;..\..\..\..\src\Dependencies\EASTL\include;..\..\..\..\src\Frameworks\Gaff\include;..\..\..\..\src\Engine\Editor\include;..\..\..\..\src\Engine\Shared\include;..\..\..\..\src\Engine\Memory\include;..\..\..\..\src\Dependencies\wxWidgets\include;..\..\..\..\src\Dependencies\wxWidgets\include\msvc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\..\src\Modules\EditorBasic\include;..\..\..\..\src\Dependencies\EASTL\include;..\..\..\..\src\Frameworks\Gaff\include;..\..\..\..\src\Frameworks\Gleam\include;..\..\..\..\src\Engine\Editor\include;..\..\..\..\src\Engine\Shared\include;..\..\..\..\src\Engine\Memory\include;..\..\..\..\src\Dependencies\wxWidgets\include;..\..\..\..\src\Dependencies\wxWidgets\include\msvc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -312,6 +313,9 @@ IF EXIST ..\..\..\build\vs2017\output\x64\Optimized_Debug\$(TargetFileName)\ (xc
     </ProjectReference>
     <ProjectReference Include="..\frameworks\Gaff.vcxproj">
       <Project>{99A8857C-85DF-860D-2ECC-6C101AE2020F}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\frameworks\Gleam.vcxproj">
+      <Project>{6BBF400D-D7D3-68BE-A055-0C1E0C2965EF}</Project>
     </ProjectReference>
     <ProjectReference Include="..\dependencies\EASTL.vcxproj">
       <Project>{BEAB040D-2AC0-2CBE-F341-D01D5F1529EF}</Project>

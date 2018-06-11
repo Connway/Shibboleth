@@ -481,7 +481,7 @@ NS_SHIBBOLETH
 //			wnd_mode = Gleam::IWindow::WINDOWED;
 //		}
 //		else if (!strncmp(window_mode.getString(), "Fullscreen-Windowed", strlen("Fullscreen-Windowed"))) {
-//			wnd_mode = Gleam::IWindow::FULLSCREEN_WINDOWED;
+//			wnd_mode = Gleam::IWindow::BORDERLESS_WINDOWED;
 //		}
 //		else {
 //			app.getLogManager().logMessage(LogManager::LOG_ERROR, app.getLogFileName(), "Malformed config file.\n");

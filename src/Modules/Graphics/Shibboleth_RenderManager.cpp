@@ -39,7 +39,6 @@ THE SOFTWARE.
 #include <Gleam_Layout.h>
 #include <Gleam_Model.h>
 #include <Gleam_Mesh.h>
-#include <Gleam_IncludeD3D11.h>
 
 SHIB_REFLECTION_DEFINE(RenderManager)
 
@@ -68,7 +67,7 @@ SHIB_REFLECTION_CLASS_DEFINE_BEGIN(RenderManager)
 	//.func("createModel", &RenderManager::createModel)
 	//.func("createMesh", &RenderManager::createMesh)
 
-	.func("setActiveCamera", &RenderManager::setActiveCamera)
+	//.func("setActiveCamera", &RenderManager::setActiveCamera)
 SHIB_REFLECTION_CLASS_DEFINE_END(RenderManager)
 
 Gleam::IShaderResourceView* RenderManager::createShaderResourceView(void) const
@@ -156,9 +155,17 @@ Gleam::IMesh* RenderManager::createMesh(void) const
 	return SHIB_ALLOCT(Gleam::Mesh, GetAllocator());
 }
 
-void RenderManager::setActiveCamera(CameraComponent* camera)
+void RenderManager::manageRenderDevice(Gleam::IRenderDevice* device, const char* name)
 {
-	GAFF_REF(camera);
+	const Gaff::Hash32 hash = Gaff::FNV1aHash32String(name);
+	GAFF_ASSERT(_render_devices.find(hash) == _render_devices.end());
+
+	_render_devices[hash].reset(device);
 }
+
+//void RenderManager::setActiveCamera(CameraComponent* camera)
+//{
+//	GAFF_REF(camera);
+//}
 
 NS_END

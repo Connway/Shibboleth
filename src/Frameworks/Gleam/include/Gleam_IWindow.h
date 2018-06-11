@@ -32,7 +32,7 @@ using MessageHandler = eastl::function<bool (const AnyMessage&)>;
 class IWindow
 {
 public:
-	enum MODE { FULLSCREEN = 0, WINDOWED, FULLSCREEN_WINDOWED };
+	enum MODE { FULLSCREEN = 0, WINDOWED, BORDERLESS_WINDOWED };
 
 	IWindow(void) {}
 	virtual ~IWindow(void) {}
@@ -68,6 +68,9 @@ public:
 	virtual bool isFullScreen(void) const = 0;
 
 	virtual bool setIcon(const char* icon) = 0;
+
+	virtual void setPos(int32_t x, int32_t y) = 0;
+	virtual void setDimensions(int32_t width, int32_t height) = 0;
 };
 
 NS_END
