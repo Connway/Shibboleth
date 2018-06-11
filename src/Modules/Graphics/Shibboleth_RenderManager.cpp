@@ -163,6 +163,12 @@ void RenderManager::manageRenderDevice(Gleam::IRenderDevice* device, const char*
 	_render_devices[hash].reset(device);
 }
 
+Gleam::IRenderDevice* RenderManager::getRenderDevice(const char* name)
+{
+	const auto it = _render_devices.find(Gaff::FNV1aHash32String(name));
+	return it == _render_devices.end() ? nullptr : it->second.get();
+}
+
 //void RenderManager::setActiveCamera(CameraComponent* camera)
 //{
 //	GAFF_REF(camera);

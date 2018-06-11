@@ -56,6 +56,8 @@ ViewportWindow::ViewportWindow(
 #ifdef PLATFORM_WINDOWS
 	_window.init(GetHWND());
 #endif
+
+
 }
 
 void ViewportWindow::onResize(wxSizeEvent& event)

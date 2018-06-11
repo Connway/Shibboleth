@@ -42,7 +42,7 @@ THE SOFTWARE.
 
 NS_SHIBBOLETH
 
-class CameraComponent;
+//class CameraComponent;
 
 // Only reason this exists is to force create*() code to run through the module DLL.
 class IRenderManager
@@ -67,6 +67,9 @@ public:
 	virtual Gleam::ILayout* createLayout(void) const = 0;
 	virtual Gleam::IModel* createModel(void) const = 0;
 	virtual Gleam::IMesh* createMesh(void) const = 0;
+
+	virtual void manageRenderDevice(Gleam::IRenderDevice* device, const char* name) = 0;
+	virtual Gleam::IRenderDevice* getRenderDevice(const char* name) = 0;
 
 	//virtual void setActiveCamera(CameraComponent* camera) = 0;
 };
