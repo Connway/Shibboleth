@@ -49,7 +49,8 @@ public:
 	Gleam::IModel* createModel(void) const override;
 	Gleam::IMesh* createMesh(void) const override;
 
-	void manageRenderDevice(Gleam::IRenderDevice* device, const char* name) /*override*/;
+	void manageRenderDevice(Gleam::IRenderDevice* device, const char* name) override;
+	Gleam::IRenderDevice* getRenderDevice(const char* name) override;
 
 	//void setActiveCamera(CameraComponent* camera) override;
 
