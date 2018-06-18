@@ -23,7 +23,7 @@ THE SOFTWARE.
 #if defined(_WIN32) || defined(_WIN64)
 
 #include "Gleam_SamplerState_Direct3D11.h"
-#include "Gleam_IRenderDevice_Direct3D11.h"
+#include "Gleam_RenderDevice_Direct3D11.h"
 #include "Gleam_IRenderDevice.h"
 #include "Gleam_IncludeD3D11.h"
 
@@ -77,7 +77,7 @@ bool SamplerStateD3D11::init(
 	desc.MinLOD = min_lod;
 	desc.MipLODBias = lod_bias;
 
-	IRenderDeviceD3D11& rd3d = reinterpret_cast<IRenderDeviceD3D11&>(*(reinterpret_cast<char*>(&rd) + sizeof(IRenderDevice)));
+	RenderDeviceD3D11& rd3d = reinterpret_cast<RenderDeviceD3D11&>(rd);
 	HRESULT result = rd3d.getDevice()->CreateSamplerState(&desc, &_sampler_state);
 	return SUCCEEDED(result);
 }

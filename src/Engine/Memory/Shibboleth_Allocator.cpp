@@ -82,7 +82,7 @@ Allocator::Allocator(void):
 	mem_pool_info.total_bytes_allocated = 0;
 	mem_pool_info.num_allocations = 0;
 	mem_pool_info.num_frees = 0;
-	strncpy(mem_pool_info.pool_name, "Untagged", POOL_NAME_SIZE);
+	strncpy(mem_pool_info.pool_name, "Untagged", POOL_NAME_SIZE - 1);
 
 	coherent_rpmalloc::rpmalloc_initialize();
 }
@@ -132,7 +132,7 @@ int32_t Allocator::getPoolIndex(const char* pool_name)
 		_tag_ids.push_back(alloc_tag);
 		it = _tag_ids.end() - 1;
 
-		strncpy(_tagged_pools[_tag_ids.size()].pool_name, pool_name, POOL_NAME_SIZE);
+		strncpy(_tagged_pools[_tag_ids.size()].pool_name, pool_name, POOL_NAME_SIZE - 1);
 	}
 
 	int32_t index = static_cast<int32_t>(eastl::distance(_tag_ids.begin(), it));
@@ -285,7 +285,7 @@ void Allocator::setHeaderData(
 	// Set the header data.
 	header->alloc_size = size_bytes;
 	header->pool_index = pool_index;
-	strncpy_s(header->file, file, 256);
+	strncpy_s(header->file, file, ARRAY_SIZE(header->file) - 1);
 	header->pool_index = pool_index;
 	header->line = line;
 	header->next = header->prev = nullptr;

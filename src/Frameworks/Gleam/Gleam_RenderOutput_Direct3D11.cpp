@@ -22,6 +22,7 @@ THE SOFTWARE.
 
 #include "Gleam_RenderOutput_Direct3D11.h"
 #include "Gleam_RenderDevice_Direct3D11.h"
+#include "Gleam_IRenderDevice.h"
 #include "Gleam_Window.h"
 #include <Gaff_Assert.h>
 
@@ -30,33 +31,20 @@ NS_GLEAM
 bool RenderOutputD3D11::init(IRenderDevice& device, const IWindow& window, int32_t output_id, bool vsync)
 {
 	GAFF_ASSERT(device.getRendererType() == RENDERER_DIRECT3D11);
-	// If fullscreen, find closest display mode.
-	// Else, use width/height values.
+	GAFF_ASSERT(output_id > -1 || window.getWindowMode() != IWindow::WM_FULLSCREEN);
+	_vsync = output_id > -1 && vsync;
 
-	GAFF_REF(window);
-	GAFF_REF(output_id);
-	GAFF_REF(vsync);
-
-	return true;
-}
-
-// Axe mode_id?
-bool RenderOutputD3D11::init(IRenderDevice& device, const IWindow& window, int32_t output_id, int32_t /*mode_id*/, bool vsync)
-{
-	GAFF_ASSERT(device.getRendererType() == RENDERER_DIRECT3D11);
-	_vsync = vsync;
-
-	RenderDeviceD3D11& dvc = reinterpret_cast<RenderDeviceD3D11&>(device);
+	RenderDeviceD3D11& rd3d = reinterpret_cast<RenderDeviceD3D11&>(device);
 	const Window& wnd = reinterpret_cast<const Window&>(window);
 
 	IDXGISwapChain1* swap_chain = nullptr;
 	IDXGIFactory6* factory = nullptr;
-	
-//#ifdef _DEBUG
-//	constexpr UINT factory_flags = D3D11_CREATE_DEVICE_DEBUG | D3D11_CREATE_DEVICE_DEBUGGABLE;
-//#else
+
+	//#ifdef _DEBUG
+	//	constexpr UINT factory_flags = D3D11_CREATE_DEVICE_DEBUG | D3D11_CREATE_DEVICE_DEBUGGABLE;
+	//#else
 	constexpr UINT factory_flags = 0;
-//#endif
+	//#endif
 
 	HRESULT result = CreateDXGIFactory2(factory_flags, IID_PPV_ARGS(&factory));
 
@@ -67,7 +55,7 @@ bool RenderOutputD3D11::init(IRenderDevice& device, const IWindow& window, int32
 
 	IDXGIOutput* adapter_output = nullptr;
 
-	if (dvc.getAdapter()->EnumOutputs(static_cast<DWORD>(output_id), &adapter_output) == DXGI_ERROR_NOT_FOUND) {
+	if (rd3d.getAdapter()->EnumOutputs(static_cast<DWORD>(output_id), &adapter_output) == DXGI_ERROR_NOT_FOUND) {
 		// Log error
 		factory->Release();
 		return false;
@@ -87,7 +75,7 @@ bool RenderOutputD3D11::init(IRenderDevice& device, const IWindow& window, int32
 	swap_chain_desc.AlphaMode = DXGI_ALPHA_MODE_UNSPECIFIED;
 	swap_chain_desc.Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH;
 
-	if (wnd.getWindowMode() == IWindow::FULLSCREEN) {
+	if (output_id > -1 && wnd.getWindowMode() == IWindow::WM_FULLSCREEN) {
 		DXGI_SWAP_CHAIN_FULLSCREEN_DESC swap_chain_fullscreen_desc;
 		swap_chain_fullscreen_desc.Scaling = DXGI_MODE_SCALING_UNSPECIFIED;
 		swap_chain_fullscreen_desc.ScanlineOrdering = DXGI_MODE_SCANLINE_ORDER_UNSPECIFIED;
@@ -98,10 +86,10 @@ bool RenderOutputD3D11::init(IRenderDevice& device, const IWindow& window, int32
 			swap_chain_fullscreen_desc.RefreshRate.Denominator = 0;
 		}
 
-		result = factory->CreateSwapChainForHwnd(dvc.getDevice(), wnd.getHWnd(), &swap_chain_desc, &swap_chain_fullscreen_desc, adapter_output, &swap_chain);
+		result = factory->CreateSwapChainForHwnd(rd3d.getDevice(), wnd.getHWnd(), &swap_chain_desc, &swap_chain_fullscreen_desc, adapter_output, &swap_chain);
 
 	} else {
-		result = factory->CreateSwapChainForHwnd(dvc.getDevice(), wnd.getHWnd(), &swap_chain_desc, NULL, NULL, &swap_chain);
+		result = factory->CreateSwapChainForHwnd(rd3d.getDevice(), wnd.getHWnd(), &swap_chain_desc, NULL, NULL, &swap_chain);
 	}
 
 	factory->Release();
@@ -109,7 +97,6 @@ bool RenderOutputD3D11::init(IRenderDevice& device, const IWindow& window, int32
 	if (FAILED(result)) {
 		// Log error
 		adapter_output->Release();
-		swap_chain->Release();
 		return false;
 	}
 
@@ -118,56 +105,42 @@ bool RenderOutputD3D11::init(IRenderDevice& device, const IWindow& window, int32
 
 	swap_chain->Release();
 
-	if (window.getWindowMode() == IWindow::FULLSCREEN) {
+	if (output_id > -1 && window.getWindowMode() == IWindow::WM_FULLSCREEN) {
 		result = final_swap_chain->SetFullscreenState(TRUE, adapter_output);
 	} else {
 		result = final_swap_chain->SetFullscreenState(FALSE, NULL);
 	}
 
+	adapter_output->Release();
+
 	if (FAILED(result)) {
 		// Log error
 		final_swap_chain->Release();
-		adapter_output->Release();
 		return false;
 	}
 
-	ID3D11Texture2D* back_buffer_ptr = nullptr;
-	result = final_swap_chain->GetBuffer(0, __uuidof(ID3D11Texture2D), reinterpret_cast<LPVOID*>(&back_buffer_ptr));
+	ID3D11Texture2D1* back_buffer_ptr = nullptr;
+	result = final_swap_chain->GetBuffer(0, IID_PPV_ARGS(&back_buffer_ptr));
 	
 	if (FAILED(result)) {
 		// Log error
 		final_swap_chain->Release();
-		adapter_output->Release();
 		return false;
 	}
 
 	ID3D11RenderTargetView1* render_target_view = nullptr;
-	result = dvc.getDevice()->CreateRenderTargetView1(back_buffer_ptr, nullptr, &render_target_view);
+	result = rd3d.getDevice()->CreateRenderTargetView1(back_buffer_ptr, nullptr, &render_target_view);
 	
 	back_buffer_ptr->Release();
 	
 	if (FAILED(result)) {
-		final_swap_chain->Release();
-		adapter_output->Release();
-		return false;
-	}
-
-	if (FAILED(result)) {
 		// Log error
-		render_target_view->Release();
 		final_swap_chain->Release();
-		adapter_output->Release();
 		return false;
 	}
-
-	IDXGIOutput6* final_output = nullptr;
-	adapter_output->QueryInterface(&final_output);
-
-	adapter_output->Release();
 
 	_render_target_view.attach(render_target_view);
 	_swap_chain.attach(final_swap_chain);
-	_output.attach(final_output);
 
 	D3D11_VIEWPORT viewport;
 	viewport.Width = static_cast<float>(wnd.getWidth());
@@ -180,7 +153,7 @@ bool RenderOutputD3D11::init(IRenderDevice& device, const IWindow& window, int32
 	RenderTargetD3D11* rt = GLEAM_ALLOCT(RenderTargetD3D11);
 	rt->setRTV(_render_target_view.get(), viewport);
 	_render_target = rt;
-	
+
 	return true;
 }
 

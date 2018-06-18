@@ -45,7 +45,7 @@ public:
 
 	bool init(HWND hwnd);
 
-	bool init(const char* app_name, MODE window_mode = FULLSCREEN,
+	bool init(const char* app_name, WindowMode window_mode = WM_FULLSCREEN,
 				int32_t width = 0, int32_t height = 0,
 				int32_t pos_x = 0, int32_t pos_y = 0, const char* compat = nullptr) override;
 	void destroy(void) override;
@@ -60,8 +60,8 @@ public:
 	bool isCursorVisible(void) const override;
 	bool isCursorContained(void) const override;
 
-	bool setWindowMode(MODE window_mode) override;
-	MODE getWindowMode(void) const override;
+	bool setWindowMode(WindowMode window_mode) override;
+	WindowMode getWindowMode(void) const override;
 
 	void getPos(int32_t& x, int32_t& y) const override;
 	void getDimensions(int32_t& width, int32_t& height) const override;
@@ -83,7 +83,7 @@ private:
 	int32_t _pos_x, _pos_y;
 	int32_t _width, _height;
 
-	MODE _window_mode = FULLSCREEN;
+	WindowMode _window_mode = WM_FULLSCREEN;
 	int32_t _original_width = 0;
 	int32_t _original_height = 0;
 	bool _cursor_visible = true;

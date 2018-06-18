@@ -58,12 +58,12 @@ public:
 	D3D11_VIEWPORT getViewport(void) const;
 
 private:
-	Vector<ID3D11RenderTargetView*> _render_target_views;
+	Vector<ID3D11RenderTargetView1*> _render_target_views;
 	D3D11_VIEWPORT _viewport;
 	ID3D11DepthStencilView* _depth_stencil_view;
 
 	friend class RenderOutputD3D11;
-	void setRTV(ID3D11RenderTargetView* rt, const D3D11_VIEWPORT& viewport);
+	void setRTV(ID3D11RenderTargetView1* rt, const D3D11_VIEWPORT& viewport);
 
 	GLEAM_REF_COUNTED(RenderTargetD3D11);
 };

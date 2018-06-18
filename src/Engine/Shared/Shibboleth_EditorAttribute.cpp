@@ -20,25 +20,22 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#pragma once
+#include "Shibboleth_EditorAttribute.h"
+#include <Shibboleth_IAllocator.h>
+#include <Shibboleth_Memory.h>
 
-#include "Gleam_Defines.h"
+SHIB_REFLECTION_DEFINE(EditorAttribute)
 
-struct ID3D11DeviceContext3;
-struct ID3D11Device5;
-struct IDXGIAdapter4;
+NS_SHIBBOLETH
 
-NS_GLEAM
+SHIB_REFLECTION_CLASS_DEFINE_BEGIN(EditorAttribute)
+	.BASE(Gaff::IAttribute)
+SHIB_REFLECTION_CLASS_DEFINE_END(EditorAttribute)
 
-class IRenderDeviceD3D11
+Gaff::IAttribute* EditorAttribute::clone(void) const
 {
-public:
-	IRenderDeviceD3D11(void) {}
-	virtual ~IRenderDeviceD3D11(void) {}
-
-	virtual ID3D11DeviceContext3* getDeviceContext(void) = 0;
-	virtual ID3D11Device5* getDevice(void) = 0;
-	virtual IDXGIAdapter4* getAdapter(void) = 0;
-};
+	Shibboleth::IAllocator& allocator = GetAllocator();
+	return SHIB_ALLOCT_POOL(EditorAttribute, allocator.getPoolIndex("Reflection"), allocator);
+}
 
 NS_END

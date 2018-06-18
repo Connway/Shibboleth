@@ -23,7 +23,7 @@ THE SOFTWARE.
 #if defined(_WIN32) || defined(_WIN64)
 
 #include "Gleam_ShaderResourceView_Direct3D11.h"
-#include "Gleam_IRenderDevice_Direct3D11.h"
+#include "Gleam_RenderDevice_Direct3D11.h"
 #include "Gleam_Texture_Direct3D11.h"
 #include "Gleam_Buffer_Direct3D11.h"
 #include "Gleam_IRenderDevice.h"
@@ -53,9 +53,10 @@ ShaderResourceViewD3D11::~ShaderResourceViewD3D11(void)
 
 bool ShaderResourceViewD3D11::init(IRenderDevice& rd, const ITexture* texture)
 {
-	IRenderDeviceD3D11& rd3d = reinterpret_cast<IRenderDeviceD3D11&>(*(reinterpret_cast<char*>(&rd) + sizeof(IRenderDevice)));
-	ID3D11Device* device = rd3d.getDevice();
 	GAFF_ASSERT(texture);
+
+	RenderDeviceD3D11& rd3d = reinterpret_cast<RenderDeviceD3D11&>(rd);
+	ID3D11Device5* const device = rd3d.getDevice();
 
 	_view_type = VIEW_TEXTURE;
 
@@ -74,9 +75,10 @@ bool ShaderResourceViewD3D11::init(IRenderDevice& rd, const ITexture* texture)
 
 bool ShaderResourceViewD3D11::init(IRenderDevice& rd, const IBuffer* buffer)
 {
-	IRenderDeviceD3D11& rd3d = reinterpret_cast<IRenderDeviceD3D11&>(*(reinterpret_cast<char*>(&rd) + sizeof(IRenderDevice)));
-	ID3D11Device* device = rd3d.getDevice();
 	GAFF_ASSERT(buffer);
+
+	RenderDeviceD3D11& rd3d = reinterpret_cast<RenderDeviceD3D11&>(rd);
+	ID3D11Device5* const device = rd3d.getDevice();
 
 	_view_type = VIEW_TEXTURE;
 

@@ -23,7 +23,7 @@ THE SOFTWARE.
 #if defined(_WIN32) || defined(_WIN64)
 
 #include "Gleam_Texture_Direct3D11.h"
-#include "Gleam_IRenderDevice_Direct3D11.h"
+#include "Gleam_RenderDevice_Direct3D11.h"
 #include "Gleam_IRenderDevice.h"
 #include <cmath>
 
@@ -232,8 +232,8 @@ bool TextureD3D11::init3D(IRenderDevice& rd, int32_t width, int32_t height, int3
 	GAFF_ASSERT(width > 0 && height > 0 && depth > 0 && mip_levels > 0);
 	GAFF_ASSERT(rd.getRendererType() == RENDERER_DIRECT3D11);
 
-	IRenderDeviceD3D11& rd3d = reinterpret_cast<IRenderDeviceD3D11&>(*(reinterpret_cast<char*>(&rd) + sizeof(IRenderDevice)));
-	ID3D11Device* device = rd3d.getDevice();
+	RenderDeviceD3D11& rd3d = reinterpret_cast<RenderDeviceD3D11&>(rd);
+	ID3D11Device5* const device = rd3d.getDevice();
 
 	_mip_levels = static_cast<int32_t>(mip_levels);
 	_format = format;
@@ -277,8 +277,8 @@ bool TextureD3D11::init2D(IRenderDevice& rd, int32_t width, int32_t height, Form
 	GAFF_ASSERT(width > 0 && height > 0 && mip_levels > 0);
 	GAFF_ASSERT(rd.getRendererType() == RENDERER_DIRECT3D11);
 
-	IRenderDeviceD3D11& rd3d = reinterpret_cast<IRenderDeviceD3D11&>(*(reinterpret_cast<char*>(&rd) + sizeof(IRenderDevice)));
-	ID3D11Device* device = rd3d.getDevice();
+	RenderDeviceD3D11& rd3d = reinterpret_cast<RenderDeviceD3D11&>(rd);
+	ID3D11Device5* const device = rd3d.getDevice();
 
 	_mip_levels = static_cast<int32_t>(mip_levels);
 	_format = format;
@@ -324,8 +324,8 @@ bool TextureD3D11::init1D(IRenderDevice& rd, int32_t width, Format format, int32
 	GAFF_ASSERT(width > 0 && mip_levels > 0);
 	GAFF_ASSERT(rd.getRendererType() == RENDERER_DIRECT3D11);
 
-	IRenderDeviceD3D11& rd3d = reinterpret_cast<IRenderDeviceD3D11&>(*(reinterpret_cast<char*>(&rd) + sizeof(IRenderDevice)));
-	ID3D11Device* device = rd3d.getDevice();
+	RenderDeviceD3D11& rd3d = reinterpret_cast<RenderDeviceD3D11&>(rd);
+	ID3D11Device5* const device = rd3d.getDevice();
 
 	_mip_levels = static_cast<int32_t>(mip_levels);
 	_format = format;
@@ -368,8 +368,8 @@ bool TextureD3D11::initCubemap(IRenderDevice& rd, int32_t width, int32_t height,
 	GAFF_ASSERT(width > 0 && height > 0 && mip_levels > 0);
 	GAFF_ASSERT(rd.getRendererType() == RENDERER_DIRECT3D11);
 
-	IRenderDeviceD3D11& rd3d = reinterpret_cast<IRenderDeviceD3D11&>(*(reinterpret_cast<char*>(&rd) + sizeof(IRenderDevice)));
-	ID3D11Device* device = rd3d.getDevice();
+	RenderDeviceD3D11& rd3d = reinterpret_cast<RenderDeviceD3D11&>(rd);
+	ID3D11Device5* const device = rd3d.getDevice();
 
 	_mip_levels = static_cast<int32_t>(mip_levels);
 	_format = format;
@@ -415,8 +415,8 @@ bool TextureD3D11::initDepthStencil(IRenderDevice& rd, int32_t width, int32_t he
 	GAFF_ASSERT(width > 0 && height > 0);
 	GAFF_ASSERT(rd.getRendererType() == RENDERER_DIRECT3D11);
 
-	IRenderDeviceD3D11& rd3d = reinterpret_cast<IRenderDeviceD3D11&>(*(reinterpret_cast<char*>(&rd) + sizeof(IRenderDevice)));
-	ID3D11Device* device = rd3d.getDevice();
+	RenderDeviceD3D11& rd3d = reinterpret_cast<RenderDeviceD3D11&>(rd);
+	ID3D11Device5* const device = rd3d.getDevice();
 	DXGI_FORMAT typeless_format = DXGI_FORMAT_R24G8_TYPELESS;
 
 	_format = format;

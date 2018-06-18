@@ -39,11 +39,11 @@ public:
 
 	IAttribute* clone(void) const override;
 
-	SHIB_REFLECTION_CLASS_DECLARE(EditorWindowAttribute);
-
 private:
 	const char* _menu_path = nullptr;
 	const char* _caption = nullptr;
+
+	SHIB_REFLECTION_CLASS_DECLARE(EditorWindowAttribute);
 };
 
 NS_END

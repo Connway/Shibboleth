@@ -301,7 +301,7 @@ void Window::WindowProc(XEvent& event)
 
 
 Window::Window(void):
-	_window_mode(FULLSCREEN), _cursor_visible(true),
+	_window_mode(WM_FULLSCREEN), _cursor_visible(true),
 	_contain(false), _display(nullptr),
 	_visual_info(nullptr), _window(0),
 	_delete_window(None), _protocols(None)
@@ -313,7 +313,7 @@ Window::~Window(void)
 	destroy();
 }
 
-bool Window::init(const char* app_name, MODE window_mode,
+bool Window::init(const char* app_name, WindowMode window_mode,
 					unsigned int width, unsigned int height,
 					short refresh_rate, int pos_x, int pos_y,
 					const char* display_name)
@@ -730,7 +730,7 @@ bool Window::setWindowMode(MODE window_mode, int width, int height, short refres
 	return true;
 }
 
-Window::MODE Window::getWindowMode(void) const
+Window::WindowMode Window::getWindowMode(void) const
 {
 	return _window_mode;
 }
@@ -769,7 +769,7 @@ unsigned int Window::getHeight(void) const
 
 bool Window::isFullScreen(void) const
 {
-	return _window_mode == FULLSCREEN;
+	return _window_mode == WM_FULLSCREEN;
 }
 
 bool Window::setIcon(const char*)
@@ -908,7 +908,7 @@ int Window::chooseClosestRate(short* rates, int num_rates, short rate)
 
 void Window::setToOriginalResolutionRate(void)
 {
-	if (_window_mode != FULLSCREEN || ((int)_width == _original_size.width &&
+	if (_window_mode != WM_FULLSCREEN || ((int)_width == _original_size.width &&
 		(int)_height == _original_size.height && _refresh_rate == _original_rate)) {
 
 		// Setting _width and _height for calls to setWindowMode()

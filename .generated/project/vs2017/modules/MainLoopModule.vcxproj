@@ -296,16 +296,12 @@ IF EXIST ..\..\..\build\vs2017\output\x64\Optimized_Debug\$(TargetFileName)\ (xc
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\..\..\src\Modules\MainLoop\include\Gen_ReflectionInit.h" />
-    <ClInclude Include="..\..\..\..\src\Modules\MainLoop\include\Shibboleth_MainLoop.h" />
-    <ClInclude Include="..\..\..\..\src\Modules\MainLoop\include\Shibboleth_SetupFunctions.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="..\..\..\..\src\Modules\MainLoop\Shibboleth_MainLoop.cpp" />
     <ClCompile Include="..\..\..\..\src\Modules\MainLoop\Shibboleth_MainLoopModule.cpp" />
-    <ClCompile Include="..\..\..\..\src\Modules\MainLoop\Shibboleth_SetupFunctions.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="MainLoop.vcxproj">
+      <Project>{041C31B3-F0E8-8BBE-1902-7A66052EC14C}</Project>
+    </ProjectReference>
     <ProjectReference Include="..\engine\Shared.vcxproj">
       <Project>{7C480CD1-68EA-36A7-51A5-4AFB3DE6BDF7}</Project>
     </ProjectReference>

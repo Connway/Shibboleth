@@ -22,33 +22,23 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Gleam_RenderTarget_Direct3D11.h"
-#include "Gleam_IRenderOutput.h"
+#include <Shibboleth_Reflection.h>
+#include <Shibboleth_IMainLoop.h>
 
-struct IDXGISwapChain1;
+NS_SHIBBOLETH
 
-NS_GLEAM
-
-class RenderOutputD3D11 : public IRenderOutput
+class EditorMainLoop : public IMainLoop
 {
 public:
-	bool init(IRenderDevice& device, const IWindow& window, int32_t output_id = -1, bool vsync = false) override;
-
-	RendererType getRendererType(void) const override;
-
-	Gaff::COMRefPtr<IDXGISwapChain4>& getSwapChain(void);
-	D3D11_VIEWPORT getViewport(void) const;
-	bool isVSync(void) const;
+	bool init(void) override;
+	void destroy(void) override;
+	void update(void) override;
 
 private:
-	Gaff::RefPtr<RenderTargetD3D11> _render_target;
 
-	Gaff::COMRefPtr<IDXGISwapChain4> _swap_chain;
-	Gaff::COMRefPtr<ID3D11DeviceContext3> _context;
-	Gaff::COMRefPtr<ID3D11Device5> _device;
-
-	Gaff::COMRefPtr<ID3D11RenderTargetView1> _render_target_view;
-	bool _vsync;
+	SHIB_REFLECTION_CLASS_DECLARE(EditorMainLoop);
 };
 
 NS_END
+
+SHIB_REFLECTION_DECLARE(EditorMainLoop)

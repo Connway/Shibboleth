@@ -23,7 +23,7 @@ THE SOFTWARE.
 #if defined(_WIN32) || defined(_WIN64)
 
 #include "Gleam_Mesh_Direct3D11.h"
-#include "Gleam_IRenderDevice_Direct3D11.h"
+#include "Gleam_RenderDevice_Direct3D11.h"
 #include "Gleam_Buffer_Direct3D11.h"
 #include "Gleam_IRenderDevice.h"
 
@@ -100,8 +100,9 @@ void MeshD3D11::renderNonIndexed(IRenderDevice& rd, int32_t vert_count, int32_t 
 {
 	GAFF_ASSERT(rd.getRendererType() == RENDERER_DIRECT3D11 && _vert_data.size() && _indices && _indices->getRendererType() == RENDERER_DIRECT3D11);
 
-	IRenderDeviceD3D11& rd3d = reinterpret_cast<IRenderDeviceD3D11&>(*(reinterpret_cast<char*>(&rd) + sizeof(IRenderDevice)));
-	ID3D11DeviceContext* context = rd3d.getDeviceContext();
+	RenderDeviceD3D11& rd3d = reinterpret_cast<RenderDeviceD3D11&>(rd);
+	ID3D11DeviceContext3* const context = rd3d.getDeviceContext();
+
 	context->IASetVertexBuffers(0, static_cast<UINT>(_buffers.size()), _buffers.data(), _strides.data(), _offsets.data());
 	context->IASetPrimitiveTopology(_d3d_topology);
 	context->Draw(vert_count, start_location);
@@ -111,8 +112,9 @@ void MeshD3D11::renderInstanced(IRenderDevice& rd, int32_t count)
 {
 	GAFF_ASSERT(rd.getRendererType() == RENDERER_DIRECT3D11 && _vert_data.size() && _indices && _indices->getRendererType() == RENDERER_DIRECT3D11);
 
-	IRenderDeviceD3D11& rd3d = reinterpret_cast<IRenderDeviceD3D11&>(*(reinterpret_cast<char*>(&rd) + sizeof(IRenderDevice)));
-	ID3D11DeviceContext* context = rd3d.getDeviceContext();
+	RenderDeviceD3D11& rd3d = reinterpret_cast<RenderDeviceD3D11&>(rd);
+	ID3D11DeviceContext3* const context = rd3d.getDeviceContext();
+
 	context->IASetVertexBuffers(0, static_cast<UINT>(_buffers.size()), _buffers.data(), _strides.data(), _offsets.data());
 	context->IASetIndexBuffer(reinterpret_cast<BufferD3D11*>(_indices)->getBuffer(), DXGI_FORMAT_R32_UINT, 0);
 	context->IASetPrimitiveTopology(_d3d_topology);
@@ -123,8 +125,9 @@ void MeshD3D11::render(IRenderDevice& rd)
 {
 	GAFF_ASSERT(rd.getRendererType() == RENDERER_DIRECT3D11 && _vert_data.size() && _indices && _indices->getRendererType() == RENDERER_DIRECT3D11);
 
-	IRenderDeviceD3D11& rd3d = reinterpret_cast<IRenderDeviceD3D11&>(*(reinterpret_cast<char*>(&rd) + sizeof(IRenderDevice)));
-	ID3D11DeviceContext* context = rd3d.getDeviceContext();
+	RenderDeviceD3D11& rd3d = reinterpret_cast<RenderDeviceD3D11&>(rd);
+	ID3D11DeviceContext3* const context = rd3d.getDeviceContext();
+
 	context->IASetVertexBuffers(0, static_cast<UINT>(_buffers.size()), _buffers.data(), _strides.data(), _offsets.data());
 	context->IASetIndexBuffer(reinterpret_cast<BufferD3D11*>(_indices)->getBuffer(), DXGI_FORMAT_R32_UINT, 0);
 	context->IASetPrimitiveTopology(_d3d_topology);

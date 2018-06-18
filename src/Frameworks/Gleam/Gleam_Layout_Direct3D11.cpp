@@ -23,7 +23,7 @@ THE SOFTWARE.
 #if defined(_WIN32) || defined(_WIN64)
 
 #include "Gleam_Layout_Direct3D11.h"
-#include "Gleam_IRenderDevice_Direct3D11.h"
+#include "Gleam_RenderDevice_Direct3D11.h"
 #include "Gleam_Texture_Direct3D11.h"
 #include "Gleam_Shader_Direct3D11.h"
 #include "Gleam_IRenderDevice.h"
@@ -69,8 +69,8 @@ bool LayoutD3D11::init(IRenderDevice& rd, const LayoutDescription* layout_desc, 
 	}
 
 	ID3DBlob* shader_buffer = reinterpret_cast<const ShaderD3D11*>(shader)->getByteCodeBuffer();
-	IRenderDeviceD3D11& rd3d = reinterpret_cast<IRenderDeviceD3D11&>(*(reinterpret_cast<char*>(&rd) + sizeof(IRenderDevice)));
-	ID3D11Device* device = rd3d.getDevice();
+	RenderDeviceD3D11& rd3d = reinterpret_cast<RenderDeviceD3D11&>(rd);
+	ID3D11Device5* const device = rd3d.getDevice();
 
 	HRESULT result = device->CreateInputLayout(input_desc.data(), static_cast<UINT>(layout_desc_size), shader_buffer->GetBufferPointer(), shader_buffer->GetBufferSize(), &_layout);
 	return SUCCEEDED(result);
@@ -84,16 +84,16 @@ void LayoutD3D11::destroy(void)
 void LayoutD3D11::setLayout(IRenderDevice& rd, const IMesh*)
 {
 	GAFF_ASSERT(rd.getRendererType() == RENDERER_DIRECT3D11);
-	IRenderDeviceD3D11& rd3d = reinterpret_cast<IRenderDeviceD3D11&>(*(reinterpret_cast<char*>(&rd) + sizeof(IRenderDevice)));
-	ID3D11DeviceContext* context = rd3d.getDeviceContext();
+	RenderDeviceD3D11& rd3d = reinterpret_cast<RenderDeviceD3D11&>(rd);
+	ID3D11DeviceContext3* const context = rd3d.getDeviceContext();
 	context->IASetInputLayout(_layout);
 }
 
 void LayoutD3D11::unsetLayout(IRenderDevice& rd)
 {
 	GAFF_ASSERT(rd.getRendererType() == RENDERER_DIRECT3D11);
-	IRenderDeviceD3D11& rd3d = reinterpret_cast<IRenderDeviceD3D11&>(*(reinterpret_cast<char*>(&rd) + sizeof(IRenderDevice)));
-	ID3D11DeviceContext* context = rd3d.getDeviceContext();
+	RenderDeviceD3D11& rd3d = reinterpret_cast<RenderDeviceD3D11&>(rd);
+	ID3D11DeviceContext3* const context = rd3d.getDeviceContext();
 	context->IASetInputLayout(NULL);
 }
 

@@ -227,7 +227,7 @@ void AngelScriptComponent::onScriptLoaded(IResource* /*res*/)
 	//	}
 
 	//	char temp[128] = { 0 };
-	//	strncpy_s(temp, path.data(), ext_index - begin_index);
+	//	strncpy_s(temp, path.data(), ext_index - begin_index - 1);
 
 	//	_type_info = module->GetTypeInfoByName(temp);
 	//}
