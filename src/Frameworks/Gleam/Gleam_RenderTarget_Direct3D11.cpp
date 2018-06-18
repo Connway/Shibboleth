@@ -23,7 +23,7 @@ THE SOFTWARE.
 #if defined(_WIN32) || defined(_WIN64)
 
 #include "Gleam_RenderTarget_Direct3D11.h"
-#include "Gleam_IRenderDevice_Direct3D11.h"
+#include "Gleam_RenderDevice_Direct3D11.h"
 #include "Gleam_Texture_Direct3D11.h"
 #include "Gleam_IRenderDevice.h"
 
@@ -46,7 +46,7 @@ bool RenderTargetD3D11::init(void)
 
 void RenderTargetD3D11::destroy(void)
 {
-	for (unsigned int i = 0; i < _render_target_views.size(); ++i) {
+	for (int32_t i = 0; i < static_cast<int32_t>(_render_target_views.size()); ++i) {
 		_render_target_views[i]->Release();
 	}
 
@@ -60,9 +60,9 @@ bool RenderTargetD3D11::addTexture(IRenderDevice& rd, const ITexture* color_text
 	GAFF_ASSERT(color_texture && color_texture->getRendererType() == RENDERER_DIRECT3D11);
 	GAFF_ASSERT(rd.getRendererType() == RENDERER_DIRECT3D11);
 
-	ID3D11RenderTargetView* render_target_view = nullptr;
+	ID3D11RenderTargetView1* render_target_view = nullptr;
 
-	D3D11_RENDER_TARGET_VIEW_DESC desc;
+	D3D11_RENDER_TARGET_VIEW_DESC1 desc;
 	desc.Format = TextureD3D11::GetD3DFormat(color_texture->getFormat());
 
 	if (face == NONE) {
@@ -76,9 +76,9 @@ bool RenderTargetD3D11::addTexture(IRenderDevice& rd, const ITexture* color_text
 		desc.Texture2DArray.FirstArraySlice = face;
 	}
 
-	IRenderDeviceD3D11& rd3d = reinterpret_cast<IRenderDeviceD3D11&>(*(reinterpret_cast<char*>(&rd) + sizeof(IRenderDevice)));
+	RenderDeviceD3D11& rd3d = reinterpret_cast<RenderDeviceD3D11&>(rd);
 
-	HRESULT result = rd3d.getDevice()->CreateRenderTargetView(reinterpret_cast<const TextureD3D11*>(color_texture)->getTexture2D(), &desc, &render_target_view);
+	HRESULT result = rd3d.getDevice()->CreateRenderTargetView1(reinterpret_cast<const TextureD3D11*>(color_texture)->getTexture2D(), &desc, &render_target_view);
 	RETURNIFFAILED(result)
 
 	// This is the first one, use this texture's width/height
@@ -116,7 +116,7 @@ bool RenderTargetD3D11::addDepthStencilBuffer(IRenderDevice& rd, const ITexture*
 	desc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
 	desc.Texture2D.MipSlice = 0;
 
-	IRenderDeviceD3D11& rd3d = reinterpret_cast<IRenderDeviceD3D11&>(*(reinterpret_cast<char*>(&rd) + sizeof(IRenderDevice)));
+	RenderDeviceD3D11& rd3d = reinterpret_cast<RenderDeviceD3D11&>(rd);
 	HRESULT result = rd3d.getDevice()->CreateDepthStencilView(reinterpret_cast<const TextureD3D11*>(depth_stencil_texture)->getTexture2D(), &desc, &_depth_stencil_view);
 	return SUCCEEDED(result);
 }
@@ -125,33 +125,35 @@ void RenderTargetD3D11::bind(IRenderDevice& rd)
 {
 	GAFF_ASSERT(rd.getRendererType() == RENDERER_DIRECT3D11);
 
-	IRenderDeviceD3D11& rd3d = reinterpret_cast<IRenderDeviceD3D11&>(*(reinterpret_cast<char*>(&rd) + sizeof(IRenderDevice)));
+	RenderDeviceD3D11& rd3d = reinterpret_cast<RenderDeviceD3D11&>(rd);
+	ID3D11DeviceContext3* const context = rd3d.getDeviceContext();
 
-	rd3d.getDeviceContext()->OMSetRenderTargets(static_cast<UINT>(_render_target_views.size()), _render_target_views.data(), _depth_stencil_view);
-	rd3d.getDeviceContext()->RSSetViewports(1, &_viewport);
+	context->OMSetRenderTargets(static_cast<UINT>(_render_target_views.size()), reinterpret_cast<ID3D11RenderTargetView**>(_render_target_views.data()), _depth_stencil_view);
+	context->RSSetViewports(1, &_viewport);
 }
 
 void RenderTargetD3D11::unbind(IRenderDevice& rd)
 {
 	GAFF_ASSERT(rd.getRendererType() == RENDERER_DIRECT3D11);
-	IRenderDeviceD3D11& rd3d = reinterpret_cast<IRenderDeviceD3D11&>(*(reinterpret_cast<char*>(&rd) + sizeof(IRenderDevice)));
+	RenderDeviceD3D11& rd3d = reinterpret_cast<RenderDeviceD3D11&>(rd);
 	rd3d.getDeviceContext()->OMSetRenderTargets(0, nullptr, nullptr);
 }
 
 void RenderTargetD3D11::clear(IRenderDevice& rd, uint32_t clear_flags, float clear_depth, uint8_t clear_stencil, float* clear_color)
 {
 	GAFF_ASSERT(rd.getRendererType() == RENDERER_DIRECT3D11);
-	IRenderDeviceD3D11& rd3d = reinterpret_cast<IRenderDeviceD3D11&>(*(reinterpret_cast<char*>(&rd) + sizeof(IRenderDevice)));
+	RenderDeviceD3D11& rd3d = reinterpret_cast<RenderDeviceD3D11&>(rd);
+	ID3D11DeviceContext3* const context = rd3d.getDeviceContext();
 
 	if (clear_flags & CLEAR_COLOR) {
 		for (int32_t i = 0; i < static_cast<int32_t>(_render_target_views.size()); ++i) {
-			//rd3d.getDeviceContext()->ClearRenderTargetView(_render_target_views[i], (clear_color) ? clear_color : rd3d.getClearColor());
-			rd3d.getDeviceContext()->ClearRenderTargetView(_render_target_views[i], clear_color);
+			//context->ClearRenderTargetView(_render_target_views[i], (clear_color) ? clear_color : rd3d.getClearColor());
+			context->ClearRenderTargetView(_render_target_views[i], clear_color);
 		}
 	}
 
 	if (_depth_stencil_view) {
-		rd3d.getDeviceContext()->ClearDepthStencilView(_depth_stencil_view, clear_flags, clear_depth, clear_stencil);
+		context->ClearDepthStencilView(_depth_stencil_view, clear_flags, clear_depth, clear_stencil);
 	}
 }
 
@@ -170,7 +172,7 @@ D3D11_VIEWPORT RenderTargetD3D11::getViewport(void) const
 	return _viewport;
 }
 
-void RenderTargetD3D11::setRTV(ID3D11RenderTargetView* rt, const D3D11_VIEWPORT& viewport)
+void RenderTargetD3D11::setRTV(ID3D11RenderTargetView1* rt, const D3D11_VIEWPORT& viewport)
 {
 	GAFF_ASSERT(rt);
 	_render_target_views.emplace_back(rt);

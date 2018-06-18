@@ -23,7 +23,8 @@ project "EditorBasic"
 		"../../Frameworks/Gleam/include",
 		"../../Engine/Editor/include",
 		"../../Engine/Shared/include",
-		"../../Engine/Memory/include"
+		"../../Engine/Memory/include",
+		"../Graphics/include"
 	}
 
 	IncludeWxWidgets()

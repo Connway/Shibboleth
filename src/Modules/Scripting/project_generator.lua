@@ -44,7 +44,7 @@ project "ScriptingModule"
 	files { "Shibboleth_ScriptingModule.cpp" }
 
 	ModuleGen("Scripting")
-	ModuleCopy("Scripting")
+	ModuleCopy()
 
 	filter { "configurations:not Analyze*" }
 		flags { "FatalWarnings" }

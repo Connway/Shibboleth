@@ -90,9 +90,6 @@
     <ClInclude Include="..\..\..\..\src\Frameworks\Gleam\include\Gleam_IRenderDevice.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\src\Frameworks\Gleam\include\Gleam_IRenderDevice_Direct3D11.h">
-      <Filter>include</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\..\src\Frameworks\Gleam\include\Gleam_IRenderOutput.h">
       <Filter>include</Filter>
     </ClInclude>

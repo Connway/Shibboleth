@@ -21,6 +21,9 @@
     <ClInclude Include="..\..\..\..\src\Engine\Shared\include\Shibboleth_DynamicLoader.h">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\..\src\Engine\Shared\include\Shibboleth_EditorAttribute.h">
+      <Filter>include</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\..\src\Engine\Shared\include\Shibboleth_EnumReflection.h">
       <Filter>include</Filter>
     </ClInclude>
@@ -94,6 +97,7 @@
   <ItemGroup>
     <ClCompile Include="..\..\..\..\src\Engine\Shared\Shibboleth_App.cpp" />
     <ClCompile Include="..\..\..\..\src\Engine\Shared\Shibboleth_Broadcaster.cpp" />
+    <ClCompile Include="..\..\..\..\src\Engine\Shared\Shibboleth_EditorAttribute.cpp" />
     <ClCompile Include="..\..\..\..\src\Engine\Shared\Shibboleth_LogManager.cpp" />
     <ClCompile Include="..\..\..\..\src\Engine\Shared\Shibboleth_LooseFileSystem.cpp" />
     <ClCompile Include="..\..\..\..\src\Engine\Shared\Shibboleth_Math.cpp" />

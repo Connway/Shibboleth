@@ -23,7 +23,7 @@ THE SOFTWARE.
 #if defined(_WIN32) || defined(_WIN64)
 
 #include "Gleam_Buffer_Direct3D11.h"
-#include "Gleam_IRenderDevice_Direct3D11.h"
+#include "Gleam_RenderDevice_Direct3D11.h"
 #include "Gleam_IRenderDevice.h"
 #include "Gleam_IncludeD3D11.h"
 
@@ -60,8 +60,8 @@ bool BufferD3D11::init(
 {
 	GAFF_ASSERT(rd.getRendererType() == RENDERER_DIRECT3D11 && !_buffer);
 
-	IRenderDeviceD3D11& rd3d = reinterpret_cast<IRenderDeviceD3D11&>(*(reinterpret_cast<char*>(&rd) + sizeof(IRenderDevice)));
-	ID3D11Device* device = rd3d.getDevice();
+	RenderDeviceD3D11& rd3d = reinterpret_cast<RenderDeviceD3D11&>(rd);
+	ID3D11Device5* const device = rd3d.getDevice();
 
 	D3D11_SUBRESOURCE_DATA subres_data;
 	D3D11_BUFFER_DESC desc;
@@ -108,8 +108,8 @@ void BufferD3D11::destroy(void)
 bool BufferD3D11::update(IRenderDevice& rd, const void* data, size_t size, size_t offset)
 {
 	GAFF_ASSERT(rd.getRendererType() == RENDERER_DIRECT3D11 && data && size);
-	IRenderDeviceD3D11& rd3d = reinterpret_cast<IRenderDeviceD3D11&>(*(reinterpret_cast<char*>(&rd) + sizeof(IRenderDevice)));
-	ID3D11DeviceContext* context = rd3d.getDeviceContext();
+	RenderDeviceD3D11& rd3d = reinterpret_cast<RenderDeviceD3D11&>(rd);
+	ID3D11DeviceContext3* const context = rd3d.getDeviceContext();
 	D3D11_MAPPED_SUBRESOURCE mapped_resource;
 
 	HRESULT result = context->Map(_buffer, 0, (offset) ? D3D11_MAP_WRITE_NO_OVERWRITE : D3D11_MAP_WRITE_DISCARD, 0, &mapped_resource);
@@ -124,8 +124,8 @@ bool BufferD3D11::update(IRenderDevice& rd, const void* data, size_t size, size_
 void* BufferD3D11::map(IRenderDevice& rd, MapType map_type)
 {
 	GAFF_ASSERT(rd.getRendererType() == RENDERER_DIRECT3D11 && map_type != NONE);
-	IRenderDeviceD3D11& rd3d = reinterpret_cast<IRenderDeviceD3D11&>(*(reinterpret_cast<char*>(&rd) + sizeof(IRenderDevice)));
-	ID3D11DeviceContext* context = rd3d.getDeviceContext();
+	RenderDeviceD3D11& rd3d = reinterpret_cast<RenderDeviceD3D11&>(rd);
+	ID3D11DeviceContext3* const context = rd3d.getDeviceContext();
 	D3D11_MAPPED_SUBRESOURCE mapped_resource;
 
 	HRESULT result = context->Map(_buffer, 0, _map_map[map_type], 0, &mapped_resource);
@@ -135,8 +135,8 @@ void* BufferD3D11::map(IRenderDevice& rd, MapType map_type)
 void BufferD3D11::unmap(IRenderDevice& rd)
 {
 	GAFF_ASSERT(rd.getRendererType() == RENDERER_DIRECT3D11);
-	IRenderDeviceD3D11& rd3d = reinterpret_cast<IRenderDeviceD3D11&>(*(reinterpret_cast<char*>(&rd) + sizeof(IRenderDevice)));
-	ID3D11DeviceContext* context = rd3d.getDeviceContext();
+	RenderDeviceD3D11& rd3d = reinterpret_cast<RenderDeviceD3D11&>(rd);
+	ID3D11DeviceContext3* const context = rd3d.getDeviceContext();
 	context->Unmap(_buffer, 0);
 }
 

@@ -22,6 +22,8 @@ THE SOFTWARE.
 
 #include "Shibboleth_ViewportWindow.h"
 #include <Shibboleth_EditorWindowAttribute.h>
+#include <Shibboleth_IRenderManager.h>
+#include <Shibboleth_IManager.h>
 
 SHIB_REFLECTION_EXTERNAL_DEFINE(Shibboleth::ViewportWindow)
 
@@ -57,7 +59,11 @@ ViewportWindow::ViewportWindow(
 	_window.init(GetHWND());
 #endif
 
+	IRenderManager& rm = GetApp().GETMANAGERT(RenderManager);
+	Gleam::IRenderDevice* const rd = rm.getRenderDevice("main");
 
+	Gleam::IRenderOutput* const ro = nullptr;
+	ro->init(*rd, _window);
 }
 
 void ViewportWindow::onResize(wxSizeEvent& event)

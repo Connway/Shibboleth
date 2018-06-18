@@ -25,7 +25,7 @@ THE SOFTWARE.
 #include "Gleam_Program_Direct3D11.h"
 #include "Gleam_ShaderResourceView_Direct3D11.h"
 #include "Gleam_SamplerState_Direct3D11.h"
-#include "Gleam_IRenderDevice_Direct3D11.h"
+#include "Gleam_RenderDevice_Direct3D11.h"
 #include "Gleam_Shader_Direct3D11.h"
 #include "Gleam_Buffer_Direct3D11.h"
 #include "Gleam_IRenderDevice.h"
@@ -169,8 +169,8 @@ IProgramBuffers* ProgramBuffersD3D11::clone(void) const
 void ProgramBuffersD3D11::bind(IRenderDevice& rd)
 {
 	GAFF_ASSERT(rd.getRendererType() == RENDERER_DIRECT3D11);
-	IRenderDeviceD3D11& rd3d = reinterpret_cast<IRenderDeviceD3D11&>(*(reinterpret_cast<char*>(&rd) + sizeof(IRenderDevice)));
-	ID3D11DeviceContext* context = rd3d.getDeviceContext();
+	RenderDeviceD3D11& rd3d = reinterpret_cast<RenderDeviceD3D11&>(rd);
+	ID3D11DeviceContext3* const context = rd3d.getDeviceContext();
 
 	for (unsigned int i = 0; i < IShader::SHADER_TYPE_SIZE; ++i) {
 		Vector<ID3D11ShaderResourceView*>& res_views = _res_views[i];
@@ -319,8 +319,8 @@ void ProgramD3D11::detach(IShader::ShaderType shader)
 void ProgramD3D11::bind(IRenderDevice& rd)
 {
 	GAFF_ASSERT(rd.getRendererType() == RENDERER_DIRECT3D11);
-	IRenderDeviceD3D11& rd3d = reinterpret_cast<IRenderDeviceD3D11&>(*(reinterpret_cast<char*>(&rd) + sizeof(IRenderDevice)));
-	ID3D11DeviceContext* context = rd3d.getDeviceContext();
+	RenderDeviceD3D11& rd3d = reinterpret_cast<RenderDeviceD3D11&>(rd);
+	ID3D11DeviceContext3* const context = rd3d.getDeviceContext();
 
 	context->VSSetShader(_shader_vertex, NULL, 0);
 	context->PSSetShader(_shader_pixel, NULL, 0);
@@ -333,8 +333,8 @@ void ProgramD3D11::bind(IRenderDevice& rd)
 void ProgramD3D11::unbind(IRenderDevice& rd)
 {
 	GAFF_ASSERT(rd.getRendererType() == RENDERER_DIRECT3D11);
-	IRenderDeviceD3D11& rd3d = reinterpret_cast<IRenderDeviceD3D11&>(*(reinterpret_cast<char*>(&rd) + sizeof(IRenderDevice)));
-	ID3D11DeviceContext* context = rd3d.getDeviceContext();
+	RenderDeviceD3D11& rd3d = reinterpret_cast<RenderDeviceD3D11&>(rd);
+	ID3D11DeviceContext3* const context = rd3d.getDeviceContext();
 
 	context->VSSetShader(NULL, NULL, 0);
 	context->PSSetShader(NULL, NULL, 0);

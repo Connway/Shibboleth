@@ -20,35 +20,45 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#pragma once
+#include "Shibboleth_EditorMainLoop.h"
+#include <Shibboleth_EditorAttribute.h>
+#include <Shibboleth_IRenderManager.h>
+#include <Shibboleth_IManager.h>
 
-#include "Gleam_RenderTarget_Direct3D11.h"
-#include "Gleam_IRenderOutput.h"
+SHIB_REFLECTION_DEFINE(EditorMainLoop)
 
-struct IDXGISwapChain1;
+NS_SHIBBOLETH
 
-NS_GLEAM
+SHIB_REFLECTION_CLASS_DEFINE_BEGIN(EditorMainLoop)
+	.classAttrs(EditorAttribute())
 
-class RenderOutputD3D11 : public IRenderOutput
+	.BASE(IMainLoop)
+	.ctor<>()
+SHIB_REFLECTION_CLASS_DEFINE_END(EditorMainLoop)
+
+bool EditorMainLoop::init(void)
 {
-public:
-	bool init(IRenderDevice& device, const IWindow& window, int32_t output_id = -1, bool vsync = false) override;
+	IRenderManager& rm = GetApp().GETMANAGERT(RenderManager);
+	Gleam::IRenderDevice* const rd = rm.createRenderDevice();
 
-	RendererType getRendererType(void) const override;
+	// Initialize to the main graphics adapter.
+	if (!rd->init(0)) {
+		// Log error
+		SHIB_FREET(rd, GetAllocator());
+		return false;
+	}
 
-	Gaff::COMRefPtr<IDXGISwapChain4>& getSwapChain(void);
-	D3D11_VIEWPORT getViewport(void) const;
-	bool isVSync(void) const;
+	rm.manageRenderDevice(rd, "main");
 
-private:
-	Gaff::RefPtr<RenderTargetD3D11> _render_target;
+	return true;
+}
 
-	Gaff::COMRefPtr<IDXGISwapChain4> _swap_chain;
-	Gaff::COMRefPtr<ID3D11DeviceContext3> _context;
-	Gaff::COMRefPtr<ID3D11Device5> _device;
+void EditorMainLoop::destroy(void)
+{
+}
 
-	Gaff::COMRefPtr<ID3D11RenderTargetView1> _render_target_view;
-	bool _vsync;
-};
+void EditorMainLoop::update(void)
+{
+}
 
 NS_END

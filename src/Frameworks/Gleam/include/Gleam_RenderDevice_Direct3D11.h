@@ -22,14 +22,16 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Gleam_IRenderDevice_Direct3D11.h"
 #include "Gleam_IRenderDevice.h"
 #include <Gaff_RefPtr.h>
-#include <dxgi1_2.h>
+#include <dxgi1_6.h>
+
+struct ID3D11DeviceContext3;
+struct ID3D11Device5;
 
 NS_GLEAM
 
-class RenderDeviceD3D11 : public IRenderDevice, public IRenderDeviceD3D11
+class RenderDeviceD3D11 : public IRenderDevice
 {
 public:
 	bool init(int32_t adapter_id) override;
@@ -47,9 +49,9 @@ public:
 	void resetRenderState(void) override;
 	void renderNoVertexInput(int32_t vert_count) override;
 
-	ID3D11DeviceContext3* getDeviceContext(void) override;
-	ID3D11Device5* getDevice(void) override;
-	IDXGIAdapter4* getAdapter(void) override;
+	ID3D11DeviceContext3* getDeviceContext(void);
+	ID3D11Device5* getDevice(void);
+	IDXGIAdapter4* getAdapter(void);
 
 private:
 	struct OutputInfo

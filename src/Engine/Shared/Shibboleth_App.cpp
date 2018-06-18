@@ -251,8 +251,17 @@ bool App::loadMainLoop(void)
 		return false;
 	}
 
-	// Just take the first one we find.
-	const Gaff::IReflectionDefinition* const refl = bucket->front();
+	const Gaff::IReflectionDefinition* refl = bucket->front();
+
+	if (_configs["editor_mode"].getBool(false)) {
+		for (const Gaff::IReflectionDefinition* ref_def : *bucket) {
+			if (ref_def->getClassAttribute(Gaff::FNV1aHash64Const("EditorAttribute"))) {
+				refl = ref_def;
+				break;
+			}
+		}
+	}
+
 	_main_loop = refl->createAllocT<IMainLoop>(Gaff::FNV1aHash64Const("IMainLoop"), GetAllocator());
 
 	if (!_main_loop) {

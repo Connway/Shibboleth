@@ -171,8 +171,6 @@ IRenderDevice::AdapterList GetDisplayModes<RENDERER_DIRECT3D11>(void)
 
 bool RenderDeviceD3D11::init(int32_t adapter_id)
 {
-	GAFF_ASSERT(g_display_info.size() > adapter_id);
-
 	IDXGIFactory6* factory = nullptr;
 	IDXGIAdapter4* adapter = nullptr;
 
@@ -306,7 +304,7 @@ bool RenderDeviceD3D11::init(int32_t adapter_id)
 //			return false;
 //		}
 //
-//		if (wnd.getWindowMode() == IWindow::FULLSCREEN) {
+//		if (wnd.getWindowMode() == IWindow::WM_FULLSCREEN) {
 //			result = swap_chain->SetFullscreenState(TRUE, g_display_info[adapter_id].output_info[display_id].output.get());
 //		} else {
 //			result = swap_chain->SetFullscreenState(FALSE, nullptr);
@@ -374,7 +372,7 @@ bool RenderDeviceD3D11::init(int32_t adapter_id)
 //			return false;
 //		}
 //
-//		if (wnd.getWindowMode() == IWindow::FULLSCREEN) {
+//		if (wnd.getWindowMode() == IWindow::WM_FULLSCREEN) {
 //			result = swap_chain->SetFullscreenState(TRUE, g_display_info[adapter_id].output_info[display_id].output.get());
 //		} else {
 //			result = swap_chain->SetFullscreenState(FALSE, nullptr);
@@ -478,7 +476,7 @@ void RenderDeviceD3D11::frameEnd(IRenderOutput& output)
 //					rtv.attach(render_target_view);
 //					reinterpret_cast<RenderTargetD3D*>(rt.get())->setRTV(render_target_view, viewport);
 //
-//					if (wnd.getWindowMode() == IWindow::FULLSCREEN) {
+//					if (wnd.getWindowMode() == IWindow::WM_FULLSCREEN) {
 //						result = sc->SetFullscreenState(TRUE, g_display_info[i].output_info[j].output.get());
 //					} else {
 //						result = sc->SetFullscreenState(FALSE, nullptr);
@@ -506,7 +504,7 @@ void RenderDeviceD3D11::frameEnd(IRenderOutput& output)
 //
 //			if (SUCCEEDED(sc->GetDesc(&sc_desc))) {
 //				if (sc_desc.OutputWindow == wnd.getHWnd()) {
-//					if (wnd.getWindowMode() == IWindow::FULLSCREEN) {
+//					if (wnd.getWindowMode() == IWindow::WM_FULLSCREEN) {
 //						return SUCCEEDED(sc->SetFullscreenState(TRUE, g_display_info[i].output_info[j].output.get()));
 //					} else {
 //						return SUCCEEDED(sc->SetFullscreenState(FALSE, nullptr));

@@ -167,7 +167,7 @@ bool Window::init(HWND hwnd)
 		g_first_init = false;
 	}
 
-	_window_mode = WINDOWED;
+	_window_mode = WM_WINDOWED;
 	_owns_window = false;
 	_hwnd = hwnd;
 
@@ -183,7 +183,7 @@ bool Window::init(HWND hwnd)
 	return true;
 }
 
-bool Window::init(const char* app_name, MODE window_mode,
+bool Window::init(const char* app_name, WindowMode window_mode,
 					int32_t width, int32_t height,
 					int32_t pos_x, int32_t pos_y, const char*)
 {
@@ -239,13 +239,13 @@ bool Window::init(const char* app_name, MODE window_mode,
 	_original_height = GetSystemMetrics(SM_CYSCREEN);
 
 	switch (window_mode) {
-		case BORDERLESS_WINDOWED:
+		case WM_BORDERLESS_WINDOWED:
 			pos_x = pos_y = 0;
 			width = _original_width;
 			height = _original_height;
 			break;
 
-		case FULLSCREEN:
+		case WM_FULLSCREEN:
 			pos_x = pos_y = 0;
 
 			if (!width || !height) {
@@ -256,7 +256,7 @@ bool Window::init(const char* app_name, MODE window_mode,
 			flags = WS_POPUP;
 			break;
 
-		case WINDOWED:
+		case WM_WINDOWED:
 			if (!width || !height) {
 				width = 800;
 				height = 600;
@@ -271,7 +271,7 @@ bool Window::init(const char* app_name, MODE window_mode,
 	_width = width;
 	_height = height;
 
-	if (window_mode == FULLSCREEN) {
+	if (window_mode == WM_FULLSCREEN) {
 		// If full screen set the screen to maximum size of the users desktop and 32-bit.
 		DEVMODE dm_screen_settings;
 		memset(&dm_screen_settings, 0, sizeof(dm_screen_settings));
@@ -287,7 +287,7 @@ bool Window::init(const char* app_name, MODE window_mode,
 	// Adjust window to make the drawable area to be the desired resolution.
 	RECT window_rect = { _pos_x, pos_y, _pos_x + static_cast<int>(_width), _pos_y + static_cast<int>(_height) };
 
-	if (window_mode == WINDOWED) {
+	if (window_mode == WM_WINDOWED) {
 		AdjustWindowRectEx(&window_rect, flags, FALSE, WS_EX_APPWINDOW);
 
 		if (_pos_x == 0 && _pos_y == 0) {
@@ -311,7 +311,7 @@ bool Window::init(const char* app_name, MODE window_mode,
 	}
 
 	// Bring the window up on the screen and set it as main focus.
-	ShowWindow(_hwnd, (window_mode == FULLSCREEN) ? SW_MAXIMIZE : SW_SHOW);
+	ShowWindow(_hwnd, (window_mode == WM_FULLSCREEN) ? SW_MAXIMIZE : SW_SHOW);
 	SetForegroundWindow(_hwnd);
 	SetFocus(_hwnd);
 
@@ -335,7 +335,7 @@ void Window::destroy(void)
 	containCursor(false);
 	showCursor(true);
 
-	if (_window_mode == FULLSCREEN) {
+	if (_window_mode == WM_FULLSCREEN) {
 		ChangeDisplaySettings(NULL, 0);
 	}
 
@@ -410,30 +410,30 @@ bool Window::isCursorContained(void) const
 	return _contain;
 }
 
-bool Window::setWindowMode(MODE window_mode)
+bool Window::setWindowMode(WindowMode window_mode)
 {
 	_window_mode = window_mode;
 	DWORD flags = 0;
 
 	switch (window_mode) {
-		case BORDERLESS_WINDOWED:
+		case WM_BORDERLESS_WINDOWED:
 			_pos_x = _pos_y = 0;
 			_width = GetSystemMetrics(SM_CXSCREEN);
 			_height = GetSystemMetrics(SM_CYSCREEN);
 			break;
 
-		case FULLSCREEN:
+		case WM_FULLSCREEN:
 			_pos_x = _pos_y = 0;
 			flags = WS_POPUP;
 			break;
 
-		case WINDOWED:
+		case WM_WINDOWED:
 			flags = WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_THICKFRAME | WS_MINIMIZEBOX;
 			break;
 	}
 
 	// Setup the screen settings depending on whether it is running in full screen or in windowed mode.
-	if (window_mode == FULLSCREEN) {
+	if (window_mode == WM_FULLSCREEN) {
 		DEVMODE dm_screen_settings;
 		// If full screen set the screen to maximum size of the users desktop and 32bit.
 		memset(&dm_screen_settings, 0, sizeof(dm_screen_settings));
@@ -466,7 +466,7 @@ bool Window::setWindowMode(MODE window_mode)
 	return SetWindowPos(_hwnd, HWND_TOP, _pos_x, _pos_y, _width, _height, SWP_SHOWWINDOW | SWP_DRAWFRAME) != FALSE;
 }
 
-Window::MODE Window::getWindowMode(void) const
+Window::WindowMode Window::getWindowMode(void) const
 {
 	return _window_mode;
 }
@@ -505,7 +505,7 @@ int32_t Window::getHeight(void) const
 
 bool Window::isFullScreen(void) const
 {
-	return _window_mode == FULLSCREEN;
+	return _window_mode == WM_FULLSCREEN;
 }
 
 bool Window::setIcon(const char* icon)

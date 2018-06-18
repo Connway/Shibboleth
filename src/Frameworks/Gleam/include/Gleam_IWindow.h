@@ -32,13 +32,13 @@ using MessageHandler = eastl::function<bool (const AnyMessage&)>;
 class IWindow
 {
 public:
-	enum MODE { FULLSCREEN = 0, WINDOWED, BORDERLESS_WINDOWED };
+	enum WindowMode { WM_FULLSCREEN = 0, WM_WINDOWED, WM_BORDERLESS_WINDOWED };
 
 	IWindow(void) {}
 	virtual ~IWindow(void) {}
 
 	virtual bool init(
-		const char* app_name, MODE window_mode = FULLSCREEN,
+		const char* app_name, WindowMode window_mode = WM_FULLSCREEN,
 		int32_t width = 0, int32_t height = 0,
 		int32_t pos_x = 0, int32_t pos_y = 0,
 		const char* compat = nullptr
@@ -56,8 +56,8 @@ public:
 	virtual bool isCursorVisible(void) const = 0;
 	virtual bool isCursorContained(void) const = 0;
 
-	virtual bool setWindowMode(MODE window_mode) = 0;
-	virtual MODE getWindowMode(void) const = 0;
+	virtual bool setWindowMode(WindowMode window_mode) = 0;
+	virtual WindowMode getWindowMode(void) const = 0;
 
 	virtual void getPos(int& x, int& y) const = 0;
 	virtual void getDimensions(int32_t& width, int32_t& height) const = 0;

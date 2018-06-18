@@ -107,12 +107,12 @@ int32_t StackTrace::captureStack(const char*, uint32_t frames_to_capture, uint32
 		_symbol_info[i].address = 0;
 
 		if (SymFromAddr(_handle, reinterpret_cast<DWORD64>(_stack[i]), nullptr, sym)) {
-			strncpy(_symbol_info[i].symbol_name, sym->Name, NAME_SIZE);
+			strncpy(_symbol_info[i].symbol_name, sym->Name, NAME_SIZE - 1);
 			_symbol_info[i].address = sym->Address;
 		}
 
 		if (SymGetLineFromAddr64(_handle, reinterpret_cast<DWORD64>(_stack[i]), &displacement, &image_help)) {
-			strncpy(_symbol_info[i].file_name, image_help.FileName, NAME_SIZE);
+			strncpy(_symbol_info[i].file_name, image_help.FileName, NAME_SIZE - 1);
 			_symbol_info[i].line_number = image_help.LineNumber;
 		}
 	}

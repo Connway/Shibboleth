@@ -572,7 +572,7 @@ const char* JSON::getKey(char* buffer, size_t buf_size, int32_t index) const
 {
 	GAFF_ASSERT(_value.IsObject() && index < size());
 	const char* const key = (_value.MemberBegin() + index)->name.GetString();
-	strncpy(buffer, key, buf_size);
+	strncpy(buffer, key, buf_size - 1);
 	return buffer;
 }
 
@@ -590,7 +590,7 @@ JSON JSON::getValue(int32_t index) const
 
 const char* JSON::getString(char* buffer, size_t buf_size, const char* default_value) const
 {
-	return (_value.IsNull()) ? default_value : strncpy(buffer, _value.GetString(), buf_size);
+	return (_value.IsNull()) ? default_value : strncpy(buffer, _value.GetString(), buf_size - 1);
 }
 
 const char* JSON::getString(const char* default_value) const
@@ -660,7 +660,7 @@ bool JSON::getBool(bool default_value) const
 
 const char* JSON::getString(char* buffer, size_t buf_size) const
 {
-	return strncpy(buffer, _value.GetString(), buf_size);
+	return strncpy(buffer, _value.GetString(), buf_size - 1);
 }
 
 const char* JSON::getString(void) const

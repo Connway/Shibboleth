@@ -212,7 +212,7 @@ void WindowMouseWheel(AnyMessage* message, Window*, WPARAM w, LPARAM)
 
 void WindowSetFocus(AnyMessage* message, Window* window, WPARAM, LPARAM)
 {
-	if (window->_window_mode == IWindow::FULLSCREEN) {
+	if (window->_window_mode == IWindow::WM_FULLSCREEN) {
 		// If full screen set the screen to maximum size of the users desktop and 32-bit.
 		DEVMODE dm_screen_settings;
 		memset(&dm_screen_settings, 0, sizeof(dm_screen_settings));
@@ -230,7 +230,7 @@ void WindowSetFocus(AnyMessage* message, Window* window, WPARAM, LPARAM)
 
 void WindowKillFocus(AnyMessage* message, Window* window, WPARAM, LPARAM)
 {
-	if (window->_window_mode == IWindow::FULLSCREEN) {
+	if (window->_window_mode == IWindow::WM_FULLSCREEN) {
 		DEVMODE dm_screen_settings;
 		memset(&dm_screen_settings, 0, sizeof(dm_screen_settings));
 		dm_screen_settings.dmSize = sizeof(dm_screen_settings);
