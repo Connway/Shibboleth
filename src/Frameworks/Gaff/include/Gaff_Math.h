@@ -26,9 +26,9 @@ THE SOFTWARE.
 
 NS_GAFF
 
-const float Pi = 3.141592654f;
-const float DegToRad = Pi / 180.0f;
-const float RadToDeg = 180.0f / Pi;
+constexpr float Pi = 3.141592654f;
+constexpr float DegToRad = Pi / 180.0f;
+constexpr float RadToDeg = 180.0f / Pi;
 
 template <class T>
 const T& Min(const T& v1, const T& v2)

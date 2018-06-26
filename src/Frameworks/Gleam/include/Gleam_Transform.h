@@ -37,10 +37,49 @@ THE SOFTWARE.
 
 NS_GLEAM
 
+class Transform;
+
+class TransformRT
+{
+public:
+	TransformRT(const glm::vec3& translation = glm::vec3(), const glm::quat& rotation = glm::quat());
+	TransformRT(const TransformRT& tform);
+	TransformRT(const Transform& tform);
+
+	TransformRT& operator=(const TransformRT& rhs);
+	bool operator==(const TransformRT& rhs) const;
+	bool operator!=(const TransformRT& rhs) const;
+
+	TransformRT& operator+=(const TransformRT& rhs);
+	TransformRT operator+(const TransformRT& rhs) const;
+
+	const glm::quat& getRotation(void) const;
+	void setRotation(const glm::quat& rotation);
+	const glm::vec3& getTranslation(void) const;
+	void setTranslation(const glm::vec3& translation);
+
+	TransformRT concat(const TransformRT& rhs) const;
+	TransformRT inverse(void) const;
+	TransformRT& concatThis(const TransformRT& rhs);
+	TransformRT& inverseThis(void);
+
+	glm::vec3 transformVector(const glm::vec3& rhs) const;
+	glm::vec3 transformPoint(const glm::vec3& rhs) const;
+	glm::mat4x4 toMatrix(void) const;
+
+	TransformRT lerp(const TransformRT& end, float t);
+	TransformRT& lerpThis(const TransformRT& end, float t);
+
+private:
+	glm::vec3 _translation;
+	glm::quat _rotation;
+};
+
 class Transform
 {
 public:
 	Transform(const glm::vec3& translation = glm::vec3(), const glm::quat& rotation = glm::quat(), const glm::vec3& scale = glm::vec3(1.0f));
+	Transform(const TransformRT& tform, const glm::vec3& scale = glm::vec3(1.0f));
 	Transform(const Transform& tform);
 
 	Transform& operator=(const Transform& rhs);
@@ -70,8 +109,8 @@ public:
 	Transform& lerpThis(const Transform& end, float t);
 
 private:
-	glm::quat _rotation;
 	glm::vec3 _translation;
+	glm::quat _rotation;
 	glm::vec3 _scale;
 };
 

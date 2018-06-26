@@ -376,7 +376,7 @@ private:
 			return *this;
 		}
 
-		static constexpr int32_t NUM_OVERLOADS = 8;
+		constexpr static int32_t NUM_OVERLOADS = 8;
 		Hash64 hash[NUM_OVERLOADS];
 		IRefFuncPtr func[NUM_OVERLOADS];
 		int32_t offset[NUM_OVERLOADS];
