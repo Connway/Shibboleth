@@ -122,6 +122,7 @@ public:
 	virtual const char* getName(void) const = 0;
 	virtual Hash64 getHash(void) const = 0;
 	virtual Hash64 getVersion(void) const = 0;
+	virtual int32_t size(void) const = 0;
 
 	IReflection* attr_next = nullptr;
 	IReflection* next = nullptr;

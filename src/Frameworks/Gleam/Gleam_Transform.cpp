@@ -27,8 +27,144 @@ THE SOFTWARE.
 
 NS_GLEAM
 
+TransformRT::TransformRT(const glm::vec3& translation, const glm::quat& rotation):
+	_translation(translation), _rotation(rotation)
+{
+}
+
+TransformRT::TransformRT(const TransformRT& tform):
+	_translation(tform.getTranslation()), _rotation(tform.getRotation())
+{
+}
+
+TransformRT::TransformRT(const Transform& tform):
+	_translation(tform.getTranslation()), _rotation(tform.getRotation())
+{
+}
+
+TransformRT& TransformRT::operator=(const TransformRT& rhs)
+{
+	_translation = rhs.getTranslation();
+	_rotation = rhs.getRotation();
+	return *this;
+}
+
+bool TransformRT::operator==(const TransformRT& rhs) const
+{
+	return _translation == rhs._translation &&
+		_rotation == rhs._rotation;
+}
+
+bool TransformRT::operator!=(const TransformRT& rhs) const
+{
+	return _translation != rhs._translation &&
+		_rotation != rhs._rotation;
+}
+
+TransformRT& TransformRT::operator+=(const TransformRT& rhs)
+{
+	return concatThis(rhs);
+}
+
+TransformRT TransformRT::operator+(const TransformRT& rhs) const
+{
+	return concat(rhs);
+}
+
+const glm::quat& TransformRT::getRotation(void) const
+{
+	return _rotation;
+}
+
+void TransformRT::setRotation(const glm::quat& rotation)
+{
+	_rotation = rotation;
+}
+
+const glm::vec3& TransformRT::getTranslation(void) const
+{
+	return _translation;
+}
+
+void TransformRT::setTranslation(const glm::vec3& translation)
+{
+	_translation = translation;
+}
+
+TransformRT TransformRT::concat(const TransformRT& rhs) const
+{
+	return TransformRT(
+		_translation + rhs._translation,
+		_rotation * rhs._rotation
+	);
+}
+
+TransformRT TransformRT::inverse(void) const
+{
+	return Transform(
+		-_translation,
+		glm::inverse(_rotation)
+	);
+}
+
+TransformRT& TransformRT::concatThis(const TransformRT& rhs)
+{
+	_translation += rhs._translation;
+	_rotation *= rhs._rotation;
+	return *this;
+}
+
+TransformRT& TransformRT::inverseThis(void)
+{
+	_translation = -_translation;
+	_rotation = glm::inverse(_rotation);
+	return *this;
+}
+
+glm::vec3 TransformRT::transformVector(const glm::vec3& rhs) const
+{
+	return _rotation * rhs;
+}
+
+glm::vec3 TransformRT::transformPoint(const glm::vec3& rhs) const
+{
+	return _translation * (_rotation * rhs);
+}
+
+glm::mat4x4 TransformRT::toMatrix(void) const
+{
+	glm::mat4x4 matrix = glm::mat4_cast(_rotation);
+	matrix[3][0] = _translation.x;
+	matrix[3][1] = _translation.y;
+	matrix[3][2] = _translation.z;
+
+	return matrix;
+}
+
+TransformRT TransformRT::lerp(const TransformRT& end, float t)
+{
+	return TransformRT(
+		_translation + t * (end._translation - _translation),
+		glm::slerp(_rotation, end._rotation, t)
+	);
+}
+
+TransformRT& TransformRT::lerpThis(const TransformRT& end, float t)
+{
+	_translation += t * (end._translation - _translation);
+	_rotation = glm::slerp(_rotation, end._rotation, t);
+	return *this;
+}
+
+
+
 Transform::Transform(const glm::vec3& translation, const glm::quat& rotation, const glm::vec3& scale):
 	_translation(translation), _rotation(rotation), _scale(scale)
+{
+}
+
+Transform::Transform(const TransformRT& tform, const glm::vec3& scale):
+	_translation(tform.getTranslation()), _rotation(tform.getRotation()), _scale(scale)
 {
 }
 
@@ -111,7 +247,7 @@ Transform Transform::concat(const Transform& rhs) const
 Transform Transform::inverse(void) const
 {
 	return Transform(
-		-_translation ,
+		-_translation,
 		glm::inverse(_rotation),
 		glm::vec3(1.0f) / _scale
 	);

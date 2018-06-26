@@ -58,6 +58,10 @@ namespace GAFF_REFLECTION_NAMESPACE { \
 		{ \
 			return GetVersion(); \
 		} \
+		int32_t size(void) const override \
+		{ \
+			return sizeof(type); \
+		} \
 		void init(void) override \
 		{ \
 			Init(); \
@@ -89,6 +93,10 @@ namespace GAFF_REFLECTION_NAMESPACE { \
 		static void Save(Gaff::ISerializeWriter& writer, const type& object) \
 		{ \
 			g_instance.save(writer, &object); \
+		} \
+		constexpr static int32_t Size(void) \
+		{ \
+			return sizeof(type); \
 		} \
 		static void Init(void); \
 		void load(const Gaff::ISerializeReader& reader, void* object) const override; \
@@ -146,6 +154,10 @@ namespace GAFF_REFLECTION_NAMESPACE { \
 		{ \
 			return GetVersion(); \
 		} \
+		int32_t size(void) const override \
+		{ \
+			return sizeof(type); \
+		} \
 		void init(void) override \
 		{ \
 			Init(); \
@@ -157,6 +169,10 @@ namespace GAFF_REFLECTION_NAMESPACE { \
 		static Gaff::Hash64 GetVersion(void) \
 		{ \
 			return g_version.getHash(); \
+		} \
+		constexpr static int32_t Size(void) \
+		{ \
+			return sizeof(type); \
 		} \
 		static bool IsDefined(void) \
 		{ \
@@ -339,6 +355,10 @@ namespace GAFF_REFLECTION_NAMESPACE { \
 		{ \
 			return GetVersion(); \
 		} \
+		int32_t size(void) const override \
+		{ \
+			return sizeof(type<__VA_ARGS__>); \
+		} \
 		void init(void) override \
 		{ \
 			Init(); \
@@ -373,6 +393,10 @@ namespace GAFF_REFLECTION_NAMESPACE { \
 		static Gaff::Hash64 GetVersion(void) \
 		{ \
 			return g_version.getHash(); \
+		} \
+		constexpr static int32_t Size(void) \
+		{ \
+			return sizeof(type<__VA_ARGS__>); \
 		} \
 		static const Gaff::ReflectionDefinition<type<__VA_ARGS__>, allocator>& GetReflectionDefinition(void) \
 		{ \
@@ -604,6 +628,10 @@ NS_END
 		{ \
 			return GetVersion(); \
 		} \
+		int32_t size(void) const override \
+		{ \
+			return sizeof(type); \
+		} \
 		static void Load(const Gaff::ISerializeReader& reader, type& value) \
 		{ \
 			value = reader.read##read_write_suffix(); \
@@ -619,6 +647,10 @@ NS_END
 		constexpr static Gaff::Hash64 GetVersion(void) \
 		{ \
 			return GetHash(); \
+		} \
+		constexpr static int32_t Size(void) \
+		{ \
+			return sizeof(type); \
 		} \
 		constexpr static const char* GetName(void) \
 		{ \

@@ -66,6 +66,10 @@ public:
 	{
 		return GetVersion();
 	}
+	int32_t size(void) const override
+	{
+		return sizeof(U8String);
+	}
 	static void Load(const Gaff::ISerializeReader& reader, U8String& value)
 	{
 		value = reader.readString();
@@ -82,6 +86,10 @@ public:
 	{
 		return GetHash();
 	}
+	constexpr static int32_t Size(void)
+	{
+		return sizeof(U8String);
+	} 
 	constexpr static const char* GetName(void)
 	{
 		return "U8String";
