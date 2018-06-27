@@ -754,7 +754,7 @@ const void* ReflectionDefinition<T, Allocator>::getInterface(Hash64 class_hash, 
 		return object;
 	}
 
-	auto it = Gaff::Find(_base_class_offsets, class_hash);
+	auto it = Find(_base_class_offsets, class_hash);
 
 	if (it == _base_class_offsets.end()) {
 		return nullptr;
@@ -776,7 +776,7 @@ bool ReflectionDefinition<T, Allocator>::hasInterface(Hash64 class_hash) const
 		return true;
 	}
 
-	auto it = Gaff::Find(_base_class_offsets, class_hash);
+	auto it = Find(_base_class_offsets, class_hash);
 	return it != _base_class_offsets.end();
 }
 
@@ -949,7 +949,7 @@ template <class T, class Allocator>
 template <class Base>
 ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::base(const char* name)
 {
-	const ptrdiff_t offset = Gaff::OffsetOfClass<T, Base>();
+	const ptrdiff_t offset = OffsetOfClass<T, Base>();
 	auto pair = std::move(
 		eastl::make_pair(
 			HashString64<Allocator>(name, nullptr, _allocator),
@@ -1150,8 +1150,8 @@ ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::func(con
 {
 	auto it = Find(_funcs, FNV1aHash32Const(name));
 
-	const ptrdiff_t offset_interface = Gaff::OffsetOfClass< ReflectionFunction<Ret, Args...>, IReflectionFunction<Ret, Args...> >();
-	const ptrdiff_t offset_ptr = Gaff::OffsetOfClass<ReflectionFunction<Ret, Args...>, VirtualDestructor>();
+	const ptrdiff_t offset_interface = OffsetOfClass< ReflectionFunction<Ret, Args...>, IReflectionFunction<Ret, Args...> >();
+	const ptrdiff_t offset_ptr = OffsetOfClass<ReflectionFunction<Ret, Args...>, VirtualDestructor>();
 	constexpr Hash64 arg_hash = CalcTemplateHash<Ret, Args...>(INIT_HASH64);
 
 	if (it == _funcs.end()) {
@@ -1205,8 +1205,8 @@ ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::func(con
 {
 	auto it = Find(_funcs, FNV1aHash32Const(name));
 
-	const ptrdiff_t offset_interface = Gaff::OffsetOfClass< ReflectionFunction<Ret, Args...>, IReflectionFunction<Ret, Args...> >();
-	const ptrdiff_t offset_ptr = Gaff::OffsetOfClass<ReflectionFunction<Ret, Args...>, VirtualDestructor>();
+	const ptrdiff_t offset_interface = OffsetOfClass< ReflectionFunction<Ret, Args...>, IReflectionFunction<Ret, Args...> >();
+	const ptrdiff_t offset_ptr = OffsetOfClass<ReflectionFunction<Ret, Args...>, VirtualDestructor>();
 	constexpr Hash64 arg_hash = CalcTemplateHash<Ret, Args...>(INIT_HASH64);
 
 	if (it == _funcs.end()) {
@@ -1216,12 +1216,11 @@ ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::func(con
 			ptr, false
 		);
 
-		eastl::pair<HashString32<Allocator>, FuncData> pair(
+		it = _funcs.emplace(
 			HashString32<Allocator>(name, size - 1, nullptr, _allocator),
 			FuncData()
-		);
-
-		it = _funcs.insert(std::move(pair)).first;
+		).first;
+		
 		it->second.func[0].reset(ref_func);
 		it->second.hash[0] = arg_hash;
 		it->second.offset[0] = static_cast<int32_t>(offset_ptr - offset_interface);
@@ -1255,6 +1254,42 @@ ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::func(con
 }
 
 template <class T, class Allocator>
+template <size_t size, class Ret, class... Args>
+ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::staticFunc(const char (&name)[size], Ret (*func)(Args...))
+{
+	constexpr Hash64 arg_hash = CalcTemplateHash<Ret, Args...>(INIT_HASH64);
+	auto it = Find(_static_funcs, FNV1aHash32Const(name));
+
+	if (it == _static_funcs.end()) {
+		it = _static_funcs.emplace(
+			HashString32<Allocator>(name, size - 1, nullptr, _allocator),
+			StaticFuncData()
+		).first;
+
+		it->second.func[0] = reinterpret_cast<VoidFunc>(func);
+		it->second.hash[0] = arg_hash;
+
+	} else {
+		StaticFuncData& func_data = it->second;
+		bool found = false;
+
+		for (int32_t i = 0; i < FuncData::NUM_OVERLOADS; ++i) {
+			if (func_data.func[i]) {
+				continue;
+			}
+
+			func_data.func[i] = reinterpret_cast<VoidFunc>(func);
+			func_data.hash[i] = arg_hash;
+			found = true;
+		}
+
+		GAFF_ASSERT_MSG(found, "Function overloading only supports 8 overloads per function name!");
+	}
+
+	return *this;
+}
+
+template <class T, class Allocator>
 template <class... Args>
 ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::classAttrs(const Args&... args)
 {
@@ -1275,6 +1310,15 @@ template <size_t size, class... Args>
 ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::funcAttrs(const char (&name)[size], const Args&... args)
 {
 	auto& attrs = _func_attrs[FNV1aHash32Const(name)];
+	attrs.set_allocator(_allocator);
+	return addAttributes(attrs, args...);
+}
+
+template <class T, class Allocator>
+template <size_t size, class... Args>
+ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::staticFuncAttrs(const char (&name)[size], const Args&... args)
+{
+	auto& attrs = _static_func_attrs[FNV1aHash32Const(name)];
 	attrs.set_allocator(_allocator);
 	return addAttributes(attrs, args...);
 }
