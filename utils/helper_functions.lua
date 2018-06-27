@@ -3,7 +3,7 @@ function ModuleGen(module_name)
 	prebuildcommands
 	{
 		"cd ../../../../utils",
-		"premake5 gen_module_file --module=" .. module_name
+		"premake5 gen_module_header --module=" .. module_name
 	}
 end
 
