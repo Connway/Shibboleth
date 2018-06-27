@@ -135,14 +135,14 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>ws2_32.lib;iphlpapi.lib;psapi.lib;userenv.lib;..\..\..\build\vs2017\output\x64\Debug\Shared.lib;msvcrtd.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>..\..\..\build\vs2017\output\x64\Debug\Shared.lib;msvcrtd.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ImportLibrary>..\..\..\build\vs2017\output\x64\Debug\EntityModule64d.lib</ImportLibrary>
       <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
       <IgnoreSpecificDefaultLibraries>msvcrt.lib;msvcrtd.lib</IgnoreSpecificDefaultLibraries>
     </Link>
     <PreBuildEvent>
       <Command>cd ../../../../utils
-premake5 gen_module_file --module=Entity</Command>
+premake5 gen_module_header --module=Entity</Command>
       <Message>Generating Gen_ReflectionInit.h for module Entity!</Message>
     </PreBuildEvent>
     <PostBuildEvent>
@@ -173,14 +173,14 @@ IF EXIST ..\..\..\build\vs2017\output\x64\Debug\$(TargetFileName)\ (xcopy /Q /E 
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>ws2_32.lib;iphlpapi.lib;psapi.lib;userenv.lib;..\..\..\build\vs2017\output\x64\Release\Shared.lib;msvcrt.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>..\..\..\build\vs2017\output\x64\Release\Shared.lib;msvcrt.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ImportLibrary>..\..\..\build\vs2017\output\x64\Release\EntityModule64.lib</ImportLibrary>
       <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
       <IgnoreSpecificDefaultLibraries>msvcrt.lib;msvcrtd.lib</IgnoreSpecificDefaultLibraries>
     </Link>
     <PreBuildEvent>
       <Command>cd ../../../../utils
-premake5 gen_module_file --module=Entity</Command>
+premake5 gen_module_header --module=Entity</Command>
       <Message>Generating Gen_ReflectionInit.h for module Entity!</Message>
     </PreBuildEvent>
     <PostBuildEvent>
@@ -210,13 +210,13 @@ IF EXIST ..\..\..\build\vs2017\output\x64\Release\$(TargetFileName)\ (xcopy /Q /
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>ws2_32.lib;iphlpapi.lib;psapi.lib;userenv.lib;..\..\..\build\vs2017\output\x64\Release\Shared.lib;msvcrt.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>..\..\..\build\vs2017\output\x64\Release\Shared.lib;msvcrt.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ImportLibrary>..\..\..\build\vs2017\output\x64\Analyze\EntityModule64a.lib</ImportLibrary>
       <IgnoreSpecificDefaultLibraries>msvcrt.lib;msvcrtd.lib</IgnoreSpecificDefaultLibraries>
     </Link>
     <PreBuildEvent>
       <Command>cd ../../../../utils
-premake5 gen_module_file --module=Entity</Command>
+premake5 gen_module_header --module=Entity</Command>
       <Message>Generating Gen_ReflectionInit.h for module Entity!</Message>
     </PreBuildEvent>
     <PostBuildEvent>
@@ -247,14 +247,14 @@ IF EXIST ..\..\..\build\vs2017\output\x64\Analyze\$(TargetFileName)\ (xcopy /Q /
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>ws2_32.lib;iphlpapi.lib;psapi.lib;userenv.lib;..\..\..\build\vs2017\output\x64\Release\Shared.lib;msvcrt.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>..\..\..\build\vs2017\output\x64\Release\Shared.lib;msvcrt.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ImportLibrary>..\..\..\build\vs2017\output\x64\Profile\EntityModule64p.lib</ImportLibrary>
       <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
       <IgnoreSpecificDefaultLibraries>msvcrt.lib;msvcrtd.lib</IgnoreSpecificDefaultLibraries>
     </Link>
     <PreBuildEvent>
       <Command>cd ../../../../utils
-premake5 gen_module_file --module=Entity</Command>
+premake5 gen_module_header --module=Entity</Command>
       <Message>Generating Gen_ReflectionInit.h for module Entity!</Message>
     </PreBuildEvent>
     <PostBuildEvent>
@@ -285,14 +285,14 @@ IF EXIST ..\..\..\build\vs2017\output\x64\Profile\$(TargetFileName)\ (xcopy /Q /
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>ws2_32.lib;iphlpapi.lib;psapi.lib;userenv.lib;..\..\..\build\vs2017\output\x64\Debug\Shared.lib;msvcrtd.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>..\..\..\build\vs2017\output\x64\Debug\Shared.lib;msvcrtd.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ImportLibrary>..\..\..\build\vs2017\output\x64\Optimized_Debug\EntityModule64od.lib</ImportLibrary>
       <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
       <IgnoreSpecificDefaultLibraries>msvcrt.lib;msvcrtd.lib</IgnoreSpecificDefaultLibraries>
     </Link>
     <PreBuildEvent>
       <Command>cd ../../../../utils
-premake5 gen_module_file --module=Entity</Command>
+premake5 gen_module_header --module=Entity</Command>
       <Message>Generating Gen_ReflectionInit.h for module Entity!</Message>
     </PreBuildEvent>
     <PostBuildEvent>

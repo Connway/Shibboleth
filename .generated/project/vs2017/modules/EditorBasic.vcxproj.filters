@@ -9,6 +9,9 @@
     <ClInclude Include="..\..\..\..\src\Modules\EditorBasic\include\Gen_ReflectionInit.h">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\..\src\Modules\EditorBasic\include\Shibboleth_ArchetypeEditor.h">
+      <Filter>include</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\..\src\Modules\EditorBasic\include\Shibboleth_LoadedModulesWindow.h">
       <Filter>include</Filter>
     </ClInclude>
@@ -17,6 +20,7 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\..\..\src\Modules\EditorBasic\Shibboleth_ArchetypeEditor.cpp" />
     <ClCompile Include="..\..\..\..\src\Modules\EditorBasic\Shibboleth_LoadedModulesWindow.cpp" />
     <ClCompile Include="..\..\..\..\src\Modules\EditorBasic\Shibboleth_ViewportWindow.cpp" />
   </ItemGroup>

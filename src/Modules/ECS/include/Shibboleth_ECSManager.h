@@ -22,42 +22,36 @@ THE SOFTWARE.
 
 #pragma once
 
-#include <Shibboleth_Reflection.h>
-#include <Gleam_Window.h>
-
-#ifdef PLATFORM_WINDOWS
-	#include <wx/msw/winundef.h>
-#endif
-
-#include <wx/panel.h>
-
-NS_GLEAM
-	class IRenderOutput;
-NS_END
+#include <Shibboleth_ECSArchetype.h>
+#include <Shibboleth_IManager.h>
 
 NS_SHIBBOLETH
 
-class ViewportWindow : public wxPanel
+class ECSManager final : public IManager
 {
 public:
-	ViewportWindow(
-		wxWindow* parent,
-		wxWindowID id = wxID_ANY,
-		const wxPoint& pos = wxDefaultPosition,
-		const wxSize& size = wxDefaultSize
-	);
+	bool init(void) override;
 
-	~ViewportWindow(void);
+	void addArchetype(const ECSArchetype& archetype, const char* name);
+	void addArchetype(ECSArchetype&& archetype, const char* name);
+	const ECSArchetype& getArchetype(Gaff::Hash64 name) const;
+	const ECSArchetype& getArchetype(const char* name) const;
 
 private:
-	Gleam::IRenderOutput* _output = nullptr;
-	Gleam::Window _window;
+	struct alignas(16) EntityPage
+	{
+		EntityPage* next_page = nullptr;
+		uint8_t data[EA_KIBIBYTE(64) - sizeof(EntityPage*)]; // 64KiB
+	};
 
-	void onResize(wxSizeEvent& event);
+	VectorMap<Gaff::Hash64, ECSArchetype> _archetypes;
+	VectorMap<Gaff::Hash64, EntityPage*> _entity_pages; // Key: Archetype. Key of * is entities without an archetype.
+	VectorMap< Gaff::Hash64, Vector<int32_t> > _component_map;
+	Vector<void*> _entities;
 
-	wxDECLARE_EVENT_TABLE();
+	SHIB_REFLECTION_CLASS_DECLARE(ECSManager);
 };
 
 NS_END
 
-SHIB_REFLECTION_DECLARE(ViewportWindow)
+SHIB_REFLECTION_DECLARE(ECSManager)

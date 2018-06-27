@@ -28,6 +28,8 @@ THE SOFTWARE.
 
 NS_SHIBBOLETH
 
+class Camera;
+
 class RenderManager final : public IManager, public IRenderManager
 {
 public:
@@ -52,7 +54,9 @@ public:
 	void manageRenderDevice(Gleam::IRenderDevice* device, const char* name) override;
 	Gleam::IRenderDevice* getRenderDevice(const char* name) override;
 
-	//void setActiveCamera(CameraComponent* camera) override;
+	void setCameraOutput(const char* camera_name, Gleam::IRenderOutput* output) /*override*/;
+	void addCamera(const Camera* camera, const char* name) /*override*/;
+
 
 	SHIB_REFLECTION_CLASS_DECLARE(RenderManager);
 

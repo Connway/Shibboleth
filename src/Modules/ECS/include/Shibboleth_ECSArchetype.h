@@ -23,41 +23,23 @@ THE SOFTWARE.
 #pragma once
 
 #include <Shibboleth_Reflection.h>
-#include <Gleam_Window.h>
-
-#ifdef PLATFORM_WINDOWS
-	#include <wx/msw/winundef.h>
-#endif
-
-#include <wx/panel.h>
-
-NS_GLEAM
-	class IRenderOutput;
-NS_END
 
 NS_SHIBBOLETH
 
-class ViewportWindow : public wxPanel
+class ECSArchetype
 {
 public:
-	ViewportWindow(
-		wxWindow* parent,
-		wxWindowID id = wxID_ANY,
-		const wxPoint& pos = wxDefaultPosition,
-		const wxSize& size = wxDefaultSize
-	);
+	// We will follow the ref_def properties all the way down to the leaf node
+	// and use those for our memory layout.
+	void add(const Vector<const Gaff::IReflection*>& ref_defs);
+	void add(const Gaff::IReflection* ref_def);
 
-	~ViewportWindow(void);
+	int32_t size(void) const;
 
 private:
-	Gleam::IRenderOutput* _output = nullptr;
-	Gleam::Window _window;
-
-	void onResize(wxSizeEvent& event);
-
-	wxDECLARE_EVENT_TABLE();
+	// Leaf nodes from the add() call.
+	Vector<const Gaff::IReflection*> _vars;
+	int32_t _alloc_size = 0;
 };
 
 NS_END
-
-SHIB_REFLECTION_DECLARE(ViewportWindow)
