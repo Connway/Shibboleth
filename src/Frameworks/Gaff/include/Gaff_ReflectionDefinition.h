@@ -139,6 +139,9 @@ public:
 	template <size_t size, class Ret, class... Args>
 	ReflectionDefinition& func(const char (&name)[size], Ret (T::*ptr)(Args...));
 
+	template <size_t size, class Ret, class... Args>
+	ReflectionDefinition& staticFunc(const char (&name)[size], Ret (*func)(Args...));
+
 	template <class... Args>
 	ReflectionDefinition& classAttrs(const Args&... args);
 
@@ -147,6 +150,9 @@ public:
 
 	template <size_t size, class... Args>
 	ReflectionDefinition& funcAttrs(const char (&name)[size], const Args&... args);
+
+	template <size_t size, class... Args>
+	ReflectionDefinition& staticFuncAttrs(const char (&name)[size], const Args&... args);
 
 	ReflectionDefinition& attrFile(const char* file);
 
@@ -382,14 +388,40 @@ private:
 		int32_t offset[NUM_OVERLOADS];
 	};
 
+	struct StaticFuncData
+	{
+		StaticFuncData(void)
+		{
+			memset(func, 0, sizeof(VoidFunc) * NUM_OVERLOADS);
+		}
+
+		StaticFuncData(const StaticFuncData& rhs)
+		{
+			*this = rhs;
+		}
+
+		StaticFuncData& operator=(const StaticFuncData& rhs)
+		{
+			memcpy(func, rhs.func, sizeof(VoidFunc) * NUM_OVERLOADS);
+			memcpy(hash, rhs.hash, sizeof(Hash64) * NUM_OVERLOADS);
+			return *this;
+		}
+
+		constexpr static int32_t NUM_OVERLOADS = 8;
+		Hash64 hash[NUM_OVERLOADS];
+		VoidFunc func[NUM_OVERLOADS];
+	};
+
 	VectorMap<HashString64<Allocator>, ptrdiff_t, Allocator> _base_class_offsets;
 	VectorMap<HashString32<Allocator>, IVarPtr, Allocator> _vars;
 	VectorMap<HashString32<Allocator>, FuncData, Allocator> _funcs;
+	VectorMap<HashString32<Allocator>, VoidFunc, Allocator> _static_funcs;
 	VectorMap<Hash64, VoidFunc, Allocator> _ctors;
 	VectorMap<Hash64, const IReflectionDefinition*, Allocator> _base_classes;
 
 	VectorMap<Hash32, Vector<IAttributePtr, Allocator>, Allocator> _var_attrs;
 	VectorMap<Hash32, Vector<IAttributePtr, Allocator>, Allocator> _func_attrs;
+	VectorMap<Hash32, Vector<IAttributePtr, Allocator>, Allocator> _static_func_attrs;
 	Vector<IAttributePtr, Allocator> _class_attrs;
 
 	mutable Allocator _allocator;
