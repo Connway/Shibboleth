@@ -1,4 +1,4 @@
-local gen_file = [[
+local gen_header = [[
 // This file is generated! Any modifications will be lost in subsequent builds!
 
 #pragma once
@@ -47,17 +47,148 @@ namespace Gen
 }
 ]]
 
+local gen_entry = [[
+/************************************************************************************
+Copyright (C) 2018 by Nicholas LaCroix
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+************************************************************************************/
+
+#include "Gen_ReflectionInit.h"
+#include <Shibboleth_Utilities.h>
+#include <Shibboleth_IApp.h>
+
+DYNAMICEXPORT_C bool InitModule(Shibboleth::IApp* app)
+{
+	Shibboleth::SetApp(*app);
+	Gen::InitReflection();
+	return true;
+}
+]]
+
+local gen_project = [[
+project "%s"
+	if _ACTION then
+		location(GetModulesLocation())
+	end
+
+	kind "StaticLib"
+	language "C++"
+
+	files { "**.h", "**.cpp", "**.inl" }
+	removefiles { "Shibboleth_%sModule.cpp" }
+
+	filter { "configurations:not Analyze*" }
+		flags { "FatalWarnings" }
+
+	filter {}
+
+	includedirs
+	{
+		"include",
+		"../../Engine/Memory/include",
+		"../../Engine/Shared/include",
+		"../../Dependencies/EASTL/include",
+		"../../Frameworks/Gaff/include"
+	}
+
+project "%sModule"
+	if _ACTION then
+		location(GetModulesLocation())
+	end
+
+	kind "SharedLib"
+	language "C++"
+
+	files { "Shibboleth_%sModule.cpp" }
+
+	ModuleGen("%s")
+	ModuleCopy()
+
+	filter { "configurations:not Analyze*" }
+		flags { "FatalWarnings" }
+
+	filter {}
+
+	includedirs
+	{
+		"include",
+		"../../Engine/Memory/include",
+		"../../Engine/Shared/include",
+		"../../Dependencies/EASTL/include",
+		"../../Frameworks/Gaff/include"
+	}
+
+	local deps =
+	{
+		"Memory",
+		"Shared",
+		"EASTL",
+		"Gaff",
+		"%s",
+	}
+
+	dependson(deps)
+	links(deps)
+
+	NewDeleteLinkFix()
+]]
+
+
 newoption
 {
 	trigger = "module",
 	value = "NAME",
-	description = "The name of the module to generate the 'Gen_ReflectionInit.h' file for. ('gen_module_file' only)"
+	description = "The name of the module to generate the 'Gen_ReflectionInit.h' file for. ('gen_module_*' only)"
 }
 
 newaction
 {
-	trigger = "gen_module_file",
-	description = "Generate the 'Gen_ReflectionInit.h' file for a module.",
+	trigger = "gen_module_create",
+	description = "Generates the module folder and the 'Shibboleth<module_name>Module.cpp' file.",
+	execute = function()
+		local module_name = _OPTIONS["module"]
+		local path = "../src/Modules/" .. module_name
+
+		-- Make src/Modules/<module_name> and /include directories.
+		os.mkdir(path)
+		os.mkdir(path .. "/include")
+
+		-- Make Shibboleth_<module_name>Module.cpp file.
+		io.writefile(path .. "/Shibboleth_" .. module_name .. "Module.cpp", gen_entry)
+
+		-- Make project_generator.lua file.
+		io.writefile(
+			path .. "/project_generator.lua",
+			gen_project:format(
+				module_name, module_name,
+				module_name, module_name,
+				module_name, module_name
+			)
+		)
+	end
+}
+
+newaction
+{
+	trigger = "gen_module_header",
+	description = "Generates the 'Gen_ReflectionInit.h' file for a module.",
 	execute = function()
 		local source_folder = "../src/Modules/" .. _OPTIONS["module"]
 		local include_folder = source_folder .. "/include"
@@ -192,6 +323,6 @@ newaction
 		end
 
 		local file_path = include_folder .. "/Gen_ReflectionInit.h"
-		io.writefile(file_path, gen_file:format(include_files, using_namespaces, init_enum_funcs, init_attr_funcs, init_funcs, module_registers))
+		io.writefile(file_path, gen_header:format(include_files, using_namespaces, init_enum_funcs, init_attr_funcs, init_funcs, module_registers))
 	end
 }

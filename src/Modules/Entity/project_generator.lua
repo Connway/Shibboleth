@@ -45,9 +45,6 @@ project "EntityModule"
 	filter { "configurations:not Analyze*" }
 		flags { "FatalWarnings" }
 
-	filter { "system:windows" }
-		links { "ws2_32.lib", "iphlpapi.lib", "psapi.lib", "userenv.lib" }
-
 	filter {}
 
 	includedirs
