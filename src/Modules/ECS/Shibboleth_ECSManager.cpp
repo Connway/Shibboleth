@@ -40,24 +40,24 @@ bool ECSManager::init(void)
 	return true;
 }
 
-void ECSManager::addArchetype(const Archetype& archetype, const char* name)
+void ECSManager::addArchetype(const ECSArchetype& archetype, const char* name)
 {
 	_archetypes.emplace(Gaff::FNV1aHash64String(name), archetype);
 }
 
-void ECSManager::addArchetype(Archetype&& archetype, const char* name)
+void ECSManager::addArchetype(ECSArchetype&& archetype, const char* name)
 {
 	_archetypes.emplace(Gaff::FNV1aHash64String(name), std::move(archetype));
 }
 
-const Archetype& ECSManager::getArchetype(Gaff::Hash64 name) const
+const ECSArchetype& ECSManager::getArchetype(Gaff::Hash64 name) const
 {
-	const VectorMap<Gaff::Hash64, Archetype>::const_iterator it = _archetypes.find(name);
+	const VectorMap<Gaff::Hash64, ECSArchetype>::const_iterator it = _archetypes.find(name);
 	GAFF_ASSERT(it && it != _archetypes.end());
 	return it->second;
 }
 
-const Archetype& ECSManager::getArchetype(const char* name) const
+const ECSArchetype& ECSManager::getArchetype(const char* name) const
 {
 	return getArchetype(Gaff::FNV1aHash64String(name));
 }

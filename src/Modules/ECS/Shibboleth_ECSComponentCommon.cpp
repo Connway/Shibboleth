@@ -34,22 +34,27 @@ SHIB_REFLECTION_CLASS_DEFINE_END(Position)
 
 void Position::Set(const glm::vec3& value)
 {
+	GAFF_REF(value);
 }
 
 glm::vec3 Position::Get()
 {
+	return glm::vec3();
 }
 
 glm_vec4 Position::GetX()
 {
+	return glm_vec4();
 }
 
 glm_vec4 Position::GetY()
 {
+	return glm_vec4();
 }
 
 glm_vec4 Position::GetZ()
 {
+	return glm_vec4();
 }
 
 NS_END
