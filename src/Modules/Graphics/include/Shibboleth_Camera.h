@@ -22,42 +22,26 @@ THE SOFTWARE.
 
 #pragma once
 
-#include <Shibboleth_Reflection.h>
-#include <Gleam_Window.h>
-
-#ifdef PLATFORM_WINDOWS
-	#include <wx/msw/winundef.h>
-#endif
-
-#include <wx/panel.h>
-
-NS_GLEAM
-	class IRenderOutput;
-NS_END
+#include <Shibboleth_Defines.h>
+#include <Gleam_Transform.h>
+#include <Gaff_Math.h>
 
 NS_SHIBBOLETH
 
-class ViewportWindow : public wxPanel
+class Camera final
 {
 public:
-	ViewportWindow(
-		wxWindow* parent,
-		wxWindowID id = wxID_ANY,
-		const wxPoint& pos = wxDefaultPosition,
-		const wxSize& size = wxDefaultSize
-	);
+	const Gleam::TransformRT& getTransform(void) const { return _transform; }
+	Gleam::TransformRT& getTransform(void) { return _transform; }
+	void setTransform(const Gleam::TransformRT& transform) { _transform = transform; }
 
-	~ViewportWindow(void);
+	float getHFOVRadians(void) const { return _h_fov * Gaff::RadToDeg; }
+	float getHFOV(void) const { return _h_fov; }
+	void setHFOV(float h_fov) { _h_fov = h_fov; }
 
 private:
-	Gleam::IRenderOutput* _output = nullptr;
-	Gleam::Window _window;
-
-	void onResize(wxSizeEvent& event);
-
-	wxDECLARE_EVENT_TABLE();
+	Gleam::TransformRT _transform;
+	float _h_fov = 90.0f;
 };
 
 NS_END
-
-SHIB_REFLECTION_DECLARE(ViewportWindow)

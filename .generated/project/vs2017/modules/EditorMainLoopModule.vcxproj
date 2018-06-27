@@ -140,7 +140,7 @@
     </Link>
     <PreBuildEvent>
       <Command>cd ../../../../utils
-premake5 gen_module_file --module=EditorMainLoop</Command>
+premake5 gen_module_header --module=EditorMainLoop</Command>
       <Message>Generating Gen_ReflectionInit.h for module EditorMainLoop!</Message>
     </PreBuildEvent>
     <PostBuildEvent>
@@ -176,7 +176,7 @@ IF EXIST ..\..\..\build\vs2017\output\x64\Debug\$(TargetFileName)\ (xcopy /Q /E 
     </Link>
     <PreBuildEvent>
       <Command>cd ../../../../utils
-premake5 gen_module_file --module=EditorMainLoop</Command>
+premake5 gen_module_header --module=EditorMainLoop</Command>
       <Message>Generating Gen_ReflectionInit.h for module EditorMainLoop!</Message>
     </PreBuildEvent>
     <PostBuildEvent>
@@ -210,7 +210,7 @@ IF EXIST ..\..\..\build\vs2017\output\x64\Release\$(TargetFileName)\ (xcopy /Q /
     </Link>
     <PreBuildEvent>
       <Command>cd ../../../../utils
-premake5 gen_module_file --module=EditorMainLoop</Command>
+premake5 gen_module_header --module=EditorMainLoop</Command>
       <Message>Generating Gen_ReflectionInit.h for module EditorMainLoop!</Message>
     </PreBuildEvent>
     <PostBuildEvent>
@@ -246,7 +246,7 @@ IF EXIST ..\..\..\build\vs2017\output\x64\Analyze\$(TargetFileName)\ (xcopy /Q /
     </Link>
     <PreBuildEvent>
       <Command>cd ../../../../utils
-premake5 gen_module_file --module=EditorMainLoop</Command>
+premake5 gen_module_header --module=EditorMainLoop</Command>
       <Message>Generating Gen_ReflectionInit.h for module EditorMainLoop!</Message>
     </PreBuildEvent>
     <PostBuildEvent>
@@ -282,7 +282,7 @@ IF EXIST ..\..\..\build\vs2017\output\x64\Profile\$(TargetFileName)\ (xcopy /Q /
     </Link>
     <PreBuildEvent>
       <Command>cd ../../../../utils
-premake5 gen_module_file --module=EditorMainLoop</Command>
+premake5 gen_module_header --module=EditorMainLoop</Command>
       <Message>Generating Gen_ReflectionInit.h for module EditorMainLoop!</Message>
     </PreBuildEvent>
     <PostBuildEvent>

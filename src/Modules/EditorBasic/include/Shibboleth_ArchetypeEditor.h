@@ -23,7 +23,6 @@ THE SOFTWARE.
 #pragma once
 
 #include <Shibboleth_Reflection.h>
-#include <Gleam_Window.h>
 
 #ifdef PLATFORM_WINDOWS
 	#include <wx/msw/winundef.h>
@@ -31,33 +30,23 @@ THE SOFTWARE.
 
 #include <wx/panel.h>
 
-NS_GLEAM
-	class IRenderOutput;
-NS_END
-
 NS_SHIBBOLETH
 
-class ViewportWindow : public wxPanel
+class ArchetypeEditor : public wxPanel
 {
 public:
-	ViewportWindow(
+	ArchetypeEditor(
 		wxWindow* parent,
 		wxWindowID id = wxID_ANY,
 		const wxPoint& pos = wxDefaultPosition,
 		const wxSize& size = wxDefaultSize
 	);
 
-	~ViewportWindow(void);
+	~ArchetypeEditor(void);
 
 private:
-	Gleam::IRenderOutput* _output = nullptr;
-	Gleam::Window _window;
-
-	void onResize(wxSizeEvent& event);
-
-	wxDECLARE_EVENT_TABLE();
 };
 
 NS_END
 
-SHIB_REFLECTION_DECLARE(ViewportWindow)
+SHIB_REFLECTION_DECLARE(ArchetypeEditor)

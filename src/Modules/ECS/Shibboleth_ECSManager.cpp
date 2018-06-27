@@ -20,44 +20,46 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#pragma once
+#include "Shibboleth_ECSManager.h"
 
-#include <Shibboleth_Reflection.h>
-#include <Gleam_Window.h>
-
-#ifdef PLATFORM_WINDOWS
-	#include <wx/msw/winundef.h>
-#endif
-
-#include <wx/panel.h>
-
-NS_GLEAM
-	class IRenderOutput;
-NS_END
+SHIB_REFLECTION_DEFINE(ECSManager)
 
 NS_SHIBBOLETH
 
-class ViewportWindow : public wxPanel
+SHIB_REFLECTION_CLASS_DEFINE_BEGIN(ECSManager)
+	.BASE(IManager)
+	.ctor<>()
+SHIB_REFLECTION_CLASS_DEFINE_END(ECSManager)
+
+bool ECSManager::init(void)
 {
-public:
-	ViewportWindow(
-		wxWindow* parent,
-		wxWindowID id = wxID_ANY,
-		const wxPoint& pos = wxDefaultPosition,
-		const wxSize& size = wxDefaultSize
-	);
+	GetApp().getReflectionManager().registerTypeBucket(Gaff::FNV1aHash64Const("IECSComponent"));
 
-	~ViewportWindow(void);
+	// Load all archetypes from config directory
+	// Create component buckets
+	return true;
+}
 
-private:
-	Gleam::IRenderOutput* _output = nullptr;
-	Gleam::Window _window;
+void ECSManager::addArchetype(const Archetype& archetype, const char* name)
+{
+	_archetypes.emplace(Gaff::FNV1aHash64String(name), archetype);
+}
 
-	void onResize(wxSizeEvent& event);
+void ECSManager::addArchetype(Archetype&& archetype, const char* name)
+{
+	_archetypes.emplace(Gaff::FNV1aHash64String(name), std::move(archetype));
+}
 
-	wxDECLARE_EVENT_TABLE();
-};
+const Archetype& ECSManager::getArchetype(Gaff::Hash64 name) const
+{
+	const VectorMap<Gaff::Hash64, Archetype>::const_iterator it = _archetypes.find(name);
+	GAFF_ASSERT(it && it != _archetypes.end());
+	return it->second;
+}
+
+const Archetype& ECSManager::getArchetype(const char* name) const
+{
+	return getArchetype(Gaff::FNV1aHash64String(name));
+}
 
 NS_END
-
-SHIB_REFLECTION_DECLARE(ViewportWindow)

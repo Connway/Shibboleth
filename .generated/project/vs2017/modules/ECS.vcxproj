@@ -23,10 +23,10 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{EA402CAF-D624-ED04-3F85-E7572B88D786}</ProjectGuid>
+    <ProjectGuid>{60E1870B-CCEA-877C-5566-9E7CC16E937C}</ProjectGuid>
     <IgnoreWarnCompileDuplicatedFilename>true</IgnoreWarnCompileDuplicatedFilename>
     <Keyword>Win32Proj</Keyword>
-    <RootNamespace>GraphicsDirect3D11</RootNamespace>
+    <RootNamespace>ECS</RootNamespace>
     <WindowsTargetPlatformVersion>10.0.17134.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -85,32 +85,32 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <OutDir>..\..\..\build\vs2017\output\x64\Debug\</OutDir>
-    <IntDir>..\..\..\build\vs2017\intermediate\x64\Debug\GraphicsDirect3D11\</IntDir>
-    <TargetName>GraphicsDirect3D11</TargetName>
+    <IntDir>..\..\..\build\vs2017\intermediate\x64\Debug\ECS\</IntDir>
+    <TargetName>ECS</TargetName>
     <TargetExt>.lib</TargetExt>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <OutDir>..\..\..\build\vs2017\output\x64\Release\</OutDir>
-    <IntDir>..\..\..\build\vs2017\intermediate\x64\Release\GraphicsDirect3D11\</IntDir>
-    <TargetName>GraphicsDirect3D11</TargetName>
+    <IntDir>..\..\..\build\vs2017\intermediate\x64\Release\ECS\</IntDir>
+    <TargetName>ECS</TargetName>
     <TargetExt>.lib</TargetExt>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Analyze|x64'">
     <OutDir>..\..\..\build\vs2017\output\x64\Analyze\</OutDir>
-    <IntDir>..\..\..\build\vs2017\intermediate\x64\Analyze\GraphicsDirect3D11\</IntDir>
-    <TargetName>GraphicsDirect3D11</TargetName>
+    <IntDir>..\..\..\build\vs2017\intermediate\x64\Analyze\ECS\</IntDir>
+    <TargetName>ECS</TargetName>
     <TargetExt>.lib</TargetExt>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">
     <OutDir>..\..\..\build\vs2017\output\x64\Profile\</OutDir>
-    <IntDir>..\..\..\build\vs2017\intermediate\x64\Profile\GraphicsDirect3D11\</IntDir>
-    <TargetName>GraphicsDirect3D11</TargetName>
+    <IntDir>..\..\..\build\vs2017\intermediate\x64\Profile\ECS\</IntDir>
+    <TargetName>ECS</TargetName>
     <TargetExt>.lib</TargetExt>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Optimized_Debug|x64'">
     <OutDir>..\..\..\build\vs2017\output\x64\Optimized_Debug\</OutDir>
-    <IntDir>..\..\..\build\vs2017\intermediate\x64\Optimized_Debug\GraphicsDirect3D11\</IntDir>
-    <TargetName>GraphicsDirect3D11</TargetName>
+    <IntDir>..\..\..\build\vs2017\intermediate\x64\Optimized_Debug\ECS\</IntDir>
+    <TargetName>ECS</TargetName>
     <TargetExt>.lib</TargetExt>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -118,8 +118,8 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level4</WarningLevel>
       <TreatWarningAsError>true</TreatWarningAsError>
-      <PreprocessorDefinitions>UNICODE;_UNICODE;_DEBUG;DEBUG;WIN32;_WINDOWS;WIN64;USE_D3D11;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\..\..\..\src\Modules\Graphics\include;..\..\..\..\src\Engine\Memory\include;..\..\..\..\src\Engine\Shared\include;..\..\..\..\src\Dependencies\EASTL\include;..\..\..\..\src\Frameworks\Gaff\include;..\..\..\..\src\Frameworks\Gleam\include;..\..\..\..\src\Modules\Entity\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>UNICODE;_UNICODE;_DEBUG;DEBUG;WIN32;_WINDOWS;WIN64;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\..\..\..\src\Modules\ECS\include;..\..\..\..\src\Engine\Memory\include;..\..\..\..\src\Engine\Shared\include;..\..\..\..\src\Dependencies\EASTL\include;..\..\..\..\src\Dependencies\glm;..\..\..\..\src\Frameworks\Gaff\include;..\..\..\..\src\Frameworks\Gleam\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
       <ExceptionHandling>Async</ExceptionHandling>
@@ -140,8 +140,8 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level4</WarningLevel>
       <TreatWarningAsError>true</TreatWarningAsError>
-      <PreprocessorDefinitions>UNICODE;_UNICODE;NDEBUG;WIN32;_WINDOWS;WIN64;USE_D3D11;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\..\..\..\src\Modules\Graphics\include;..\..\..\..\src\Engine\Memory\include;..\..\..\..\src\Engine\Shared\include;..\..\..\..\src\Dependencies\EASTL\include;..\..\..\..\src\Frameworks\Gaff\include;..\..\..\..\src\Frameworks\Gleam\include;..\..\..\..\src\Modules\Entity\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>UNICODE;_UNICODE;NDEBUG;WIN32;_WINDOWS;WIN64;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\..\..\..\src\Modules\ECS\include;..\..\..\..\src\Engine\Memory\include;..\..\..\..\src\Engine\Shared\include;..\..\..\..\src\Dependencies\EASTL\include;..\..\..\..\src\Dependencies\glm;..\..\..\..\src\Frameworks\Gaff\include;..\..\..\..\src\Frameworks\Gleam\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -167,8 +167,8 @@
     <ClCompile>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level4</WarningLevel>
-      <PreprocessorDefinitions>UNICODE;_UNICODE;NDEBUG;WIN32;_WINDOWS;WIN64;USE_D3D11;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\..\..\..\src\Modules\Graphics\include;..\..\..\..\src\Engine\Memory\include;..\..\..\..\src\Engine\Shared\include;..\..\..\..\src\Dependencies\EASTL\include;..\..\..\..\src\Frameworks\Gaff\include;..\..\..\..\src\Frameworks\Gleam\include;..\..\..\..\src\Modules\Entity\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>UNICODE;_UNICODE;NDEBUG;WIN32;_WINDOWS;WIN64;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\..\..\..\src\Modules\ECS\include;..\..\..\..\src\Engine\Memory\include;..\..\..\..\src\Engine\Shared\include;..\..\..\..\src\Dependencies\EASTL\include;..\..\..\..\src\Dependencies\glm;..\..\..\..\src\Frameworks\Gaff\include;..\..\..\..\src\Frameworks\Gleam\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -192,8 +192,8 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level4</WarningLevel>
       <TreatWarningAsError>true</TreatWarningAsError>
-      <PreprocessorDefinitions>UNICODE;_UNICODE;NDEBUG;SHIB_PROFILE;WIN32;_WINDOWS;WIN64;USE_D3D11;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\..\..\..\src\Modules\Graphics\include;..\..\..\..\src\Engine\Memory\include;..\..\..\..\src\Engine\Shared\include;..\..\..\..\src\Dependencies\EASTL\include;..\..\..\..\src\Frameworks\Gaff\include;..\..\..\..\src\Frameworks\Gleam\include;..\..\..\..\src\Modules\Entity\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>UNICODE;_UNICODE;NDEBUG;SHIB_PROFILE;WIN32;_WINDOWS;WIN64;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\..\..\..\src\Modules\ECS\include;..\..\..\..\src\Engine\Memory\include;..\..\..\..\src\Engine\Shared\include;..\..\..\..\src\Dependencies\EASTL\include;..\..\..\..\src\Dependencies\glm;..\..\..\..\src\Frameworks\Gaff\include;..\..\..\..\src\Frameworks\Gleam\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -220,8 +220,8 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level4</WarningLevel>
       <TreatWarningAsError>true</TreatWarningAsError>
-      <PreprocessorDefinitions>UNICODE;_UNICODE;_DEBUG;DEBUG;WIN32;_WINDOWS;WIN64;USE_D3D11;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\..\..\..\src\Modules\Graphics\include;..\..\..\..\src\Engine\Memory\include;..\..\..\..\src\Engine\Shared\include;..\..\..\..\src\Dependencies\EASTL\include;..\..\..\..\src\Frameworks\Gaff\include;..\..\..\..\src\Frameworks\Gleam\include;..\..\..\..\src\Modules\Entity\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>UNICODE;_UNICODE;_DEBUG;DEBUG;WIN32;_WINDOWS;WIN64;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\..\..\..\src\Modules\ECS\include;..\..\..\..\src\Engine\Memory\include;..\..\..\..\src\Engine\Shared\include;..\..\..\..\src\Dependencies\EASTL\include;..\..\..\..\src\Dependencies\glm;..\..\..\..\src\Frameworks\Gaff\include;..\..\..\..\src\Frameworks\Gleam\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -244,15 +244,15 @@
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\..\..\src\Modules\Graphics\include\Gen_ReflectionInit.h" />
-    <ClInclude Include="..\..\..\..\src\Modules\Graphics\include\Shibboleth_Camera.h" />
-    <ClInclude Include="..\..\..\..\src\Modules\Graphics\include\Shibboleth_CameraComponent.h" />
-    <ClInclude Include="..\..\..\..\src\Modules\Graphics\include\Shibboleth_IRenderManager.h" />
-    <ClInclude Include="..\..\..\..\src\Modules\Graphics\include\Shibboleth_RenderManager.h" />
+    <ClInclude Include="..\..\..\..\src\Modules\ECS\include\Gen_ReflectionInit.h" />
+    <ClInclude Include="..\..\..\..\src\Modules\ECS\include\Shibboleth_ECSArchetype.h" />
+    <ClInclude Include="..\..\..\..\src\Modules\ECS\include\Shibboleth_ECSComponentCommon.h" />
+    <ClInclude Include="..\..\..\..\src\Modules\ECS\include\Shibboleth_ECSManager.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\..\src\Modules\Graphics\Shibboleth_CameraComponent.cpp" />
-    <ClCompile Include="..\..\..\..\src\Modules\Graphics\Shibboleth_RenderManager.cpp" />
+    <ClCompile Include="..\..\..\..\src\Modules\ECS\Shibboleth_ECSArchetype.cpp" />
+    <ClCompile Include="..\..\..\..\src\Modules\ECS\Shibboleth_ECSComponentCommon.cpp" />
+    <ClCompile Include="..\..\..\..\src\Modules\ECS\Shibboleth_ECSManager.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -9,6 +9,9 @@
     <ClInclude Include="..\..\..\..\src\Modules\Graphics\include\Gen_ReflectionInit.h">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\..\src\Modules\Graphics\include\Shibboleth_Camera.h">
+      <Filter>include</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\..\src\Modules\Graphics\include\Shibboleth_CameraComponent.h">
       <Filter>include</Filter>
     </ClInclude>

@@ -20,14 +20,12 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#include "Shibboleth_ViewportWindow.h"
+#include "Shibboleth_ArchetypeEditor.h"
 #include <Shibboleth_EditorWindowAttribute.h>
-#include <Shibboleth_IRenderManager.h>
-#include <Shibboleth_IManager.h>
 
-SHIB_REFLECTION_EXTERNAL_DEFINE(Shibboleth::ViewportWindow)
+SHIB_REFLECTION_EXTERNAL_DEFINE(Shibboleth::ArchetypeEditor)
 
-SHIB_REFLECTION_BUILDER_BEGIN(Shibboleth::ViewportWindow)
+SHIB_REFLECTION_BUILDER_BEGIN(Shibboleth::ArchetypeEditor)
 	.CTOR(wxWindow*, wxWindowID, const wxPoint&, const wxSize&)
 	.CTOR(wxWindow*, wxWindowID, const wxPoint&)
 	.CTOR(wxWindow*, wxWindowID)
@@ -36,18 +34,14 @@ SHIB_REFLECTION_BUILDER_BEGIN(Shibboleth::ViewportWindow)
 	.BASE(wxWindow)
 
 	.classAttrs(
-		EditorWindowAttribute("&Viewport", "Viewport")
+		EditorWindowAttribute("Editors/Archetype Editor", "Archetype Editor")
 	)
 
-SHIB_REFLECTION_BUILDER_END(Shibboleth::ViewportWindow)
+SHIB_REFLECTION_BUILDER_END(Shibboleth::ArchetypeEditor)
 
 NS_SHIBBOLETH
 
-wxBEGIN_EVENT_TABLE(ViewportWindow, wxPanel)
-	EVT_SIZE(ViewportWindow::onResize)
-wxEND_EVENT_TABLE()
-
-ViewportWindow::ViewportWindow(
+ArchetypeEditor::ArchetypeEditor(
 	wxWindow* parent,
 	wxWindowID id,
 	const wxPoint& pos,
@@ -55,26 +49,15 @@ ViewportWindow::ViewportWindow(
 ):
 	wxPanel(parent, id, pos, size)
 {
-#ifdef PLATFORM_WINDOWS
-	_window.init(GetHWND());
-#endif
+	const auto* const comp_ref_defs = GetApp().getReflectionManager().getTypeBucket(Gaff::FNV1aHash64Const("IECSComponent"));
 
-	IRenderManager& rm = GetApp().GETMANAGERT(RenderManager);
-	Gleam::IRenderDevice* const rd = rm.getRenderDevice("main");
-
-	_output = rm.createRenderOutput();
-	_output->init(*rd, _window);
+	for (const Gaff::IReflectionDefinition* ref_def : *comp_ref_defs) {
+		GAFF_REF(ref_def);
+	}
 }
 
-ViewportWindow::~ViewportWindow(void)
+ArchetypeEditor::~ArchetypeEditor(void)
 {
-	SHIB_FREET(_output, GetAllocator());
-}
-
-void ViewportWindow::onResize(wxSizeEvent& event)
-{
-	const wxSize size = event.GetSize();
-	_window.setDimensions(size.GetWidth(), size.GetHeight());
 }
 
 NS_END
