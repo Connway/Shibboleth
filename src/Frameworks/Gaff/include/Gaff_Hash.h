@@ -30,8 +30,8 @@ NS_GAFF
 using Hash64 = uint64_t;
 using Hash32 = uint32_t;
 
-const Hash64 INIT_HASH64 = 14695981039346656037ULL;
-const Hash32 INIT_HASH32 = 2166136261U;
+constexpr Hash64 INIT_HASH64 = 14695981039346656037ULL;
+constexpr Hash32 INIT_HASH32 = 2166136261U;
 
 using HashFunc64 = Hash64 (*)(const char*, size_t);
 using HashFunc32 = Hash32 (*)(const char*, size_t);
