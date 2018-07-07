@@ -12,6 +12,9 @@
     <ClInclude Include="..\..\..\..\src\Modules\ECS\include\Shibboleth_ECSArchetype.h">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\..\src\Modules\ECS\include\Shibboleth_ECSAttributes.h">
+      <Filter>include</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\..\src\Modules\ECS\include\Shibboleth_ECSComponentCommon.h">
       <Filter>include</Filter>
     </ClInclude>
@@ -21,6 +24,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\..\src\Modules\ECS\Shibboleth_ECSArchetype.cpp" />
+    <ClCompile Include="..\..\..\..\src\Modules\ECS\Shibboleth_ECSAttributes.cpp" />
     <ClCompile Include="..\..\..\..\src\Modules\ECS\Shibboleth_ECSComponentCommon.cpp" />
     <ClCompile Include="..\..\..\..\src\Modules\ECS\Shibboleth_ECSManager.cpp" />
   </ItemGroup>

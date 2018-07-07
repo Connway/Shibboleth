@@ -269,6 +269,7 @@
     <ClInclude Include="..\..\..\..\src\Engine\Shared\include\Shibboleth_ReflectionManager.h" />
     <ClInclude Include="..\..\..\..\src\Engine\Shared\include\Shibboleth_SmartPtrs.h" />
     <ClInclude Include="..\..\..\..\src\Engine\Shared\include\Shibboleth_String.h" />
+    <ClInclude Include="..\..\..\..\src\Engine\Shared\include\Shibboleth_UniqueAttribute.h" />
     <ClInclude Include="..\..\..\..\src\Engine\Shared\include\Shibboleth_Utilities.h" />
     <ClInclude Include="..\..\..\..\src\Engine\Shared\include\Shibboleth_Vector.h" />
     <ClInclude Include="..\..\..\..\src\Engine\Shared\include\Shibboleth_VectorMap.h" />
@@ -284,6 +285,7 @@
     <ClCompile Include="..\..\..\..\src\Engine\Shared\Shibboleth_NewDelete.cpp" />
     <ClCompile Include="..\..\..\..\src\Engine\Shared\Shibboleth_Reflection.cpp" />
     <ClCompile Include="..\..\..\..\src\Engine\Shared\Shibboleth_ReflectionManager.cpp" />
+    <ClCompile Include="..\..\..\..\src\Engine\Shared\Shibboleth_UniqueAttribute.cpp" />
     <ClCompile Include="..\..\..\..\src\Engine\Shared\Shibboleth_Utilities.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

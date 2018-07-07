@@ -20,49 +20,22 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#pragma once
+#include "Shibboleth_UniqueAttribute.h"
+#include <Shibboleth_IAllocator.h>
+#include <Shibboleth_Memory.h>
 
-#include <Shibboleth_Reflection.h>
-
-#ifdef PLATFORM_WINDOWS
-	#include <wx/msw/winundef.h>
-#endif
-
-//#include <wx/treebase.h>
-#include <wx/panel.h>
-#include <wx/dnd.h>
-
-class wxTreeEvent;
-class wxTreeCtrl;
-class wxListBox;
+SHIB_REFLECTION_DEFINE(UniqueAttribute)
 
 NS_SHIBBOLETH
 
-class ArchetypeEditor : public wxPanel, public wxDropTarget
+SHIB_REFLECTION_CLASS_DEFINE_BEGIN(UniqueAttribute)
+.BASE(Gaff::IAttribute)
+SHIB_REFLECTION_CLASS_DEFINE_END(UniqueAttribute)
+
+Gaff::IAttribute* UniqueAttribute::clone(void) const
 {
-public:
-	ArchetypeEditor(
-		wxWindow* parent,
-		wxWindowID id = wxID_ANY,
-		const wxPoint& pos = wxDefaultPosition,
-		const wxSize& size = wxDefaultSize
-	);
-
-	~ArchetypeEditor(void);
-
-	wxDragResult OnData(wxCoord x, wxCoord y, wxDragResult result) override;
-
-private:
-	wxTreeCtrl* _ecs_components = nullptr;
-	wxListBox* _archetype = nullptr;
-
-	//wxArrayString _reflection_types;
-	//wxArrayTreeItemIds _tree_ids;
-
-	void onDragBegin(wxTreeEvent&);
-	void initComponentList(void);
-};
+	Shibboleth::IAllocator& allocator = GetAllocator();
+	return SHIB_ALLOCT_POOL(UniqueAttribute, allocator.getPoolIndex("Reflection"), allocator);
+}
 
 NS_END
-
-SHIB_REFLECTION_DECLARE(ArchetypeEditor)

@@ -60,7 +60,8 @@ project "ECSModule"
 		"Shared",
 		"EASTL",
 		"Gaff",
-		"ECS",
+		"Gleam",
+		"ECS"
 	}
 
 	dependson(deps)

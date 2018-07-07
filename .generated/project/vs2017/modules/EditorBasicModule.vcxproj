@@ -332,6 +332,9 @@ IF EXIST ..\..\..\build\vs2017\output\x64\Optimized_Debug\$(TargetFileName)\ (xc
     <ProjectReference Include="..\dependencies\wxCore.vcxproj">
       <Project>{BD081726-A9AA-41FC-9265-55507EA6C84C}</Project>
     </ProjectReference>
+    <ProjectReference Include="ECS.vcxproj">
+      <Project>{60E1870B-CCEA-877C-5566-9E7CC16E937C}</Project>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

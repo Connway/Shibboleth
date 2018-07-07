@@ -904,7 +904,23 @@ template <class T, class Allocator>
 IReflectionDefinition::VoidFunc ReflectionDefinition<T, Allocator>::getFactory(Hash64 ctor_hash) const
 {
 	auto it = _ctors.find(ctor_hash);
-	return it == _ctors.end() ? 0 : it->second;
+	return it == _ctors.end() ? nullptr : it->second;
+}
+
+template <class T, class Allocator>
+IReflectionDefinition::VoidFunc ReflectionDefinition<T, Allocator>::getStaticFunc(Hash32 name, Hash64 args) const
+{
+	auto it = Find(_static_funcs, name);
+
+	if (it != _static_funcs.end()) {
+		for (int32_t i = 0; i < StaticFuncData::NUM_OVERLOADS; ++i) {
+			if (it->second.hash[i] == args) {
+				return it->second.func[i];
+			}
+		}
+	}
+
+	return nullptr;
 }
 
 template <class T, class Allocator>

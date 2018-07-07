@@ -103,6 +103,7 @@ public:
 	const IAttribute* getFuncAttribute(Hash32 name, int32_t index) const override;
 
 	VoidFunc getFactory(Hash64 ctor_hash) const override;
+	VoidFunc getStaticFunc(Hash32 name, Hash64 args) const override;
 	void* getFunc(Hash32 name, Hash64 args) const override;
 
 	const HashString32<Allocator>& getVariableName(int32_t index) const;
@@ -415,7 +416,7 @@ private:
 	VectorMap<HashString64<Allocator>, ptrdiff_t, Allocator> _base_class_offsets;
 	VectorMap<HashString32<Allocator>, IVarPtr, Allocator> _vars;
 	VectorMap<HashString32<Allocator>, FuncData, Allocator> _funcs;
-	VectorMap<HashString32<Allocator>, VoidFunc, Allocator> _static_funcs;
+	VectorMap<HashString32<Allocator>, StaticFuncData, Allocator> _static_funcs;
 	VectorMap<Hash64, VoidFunc, Allocator> _ctors;
 	VectorMap<Hash64, const IReflectionDefinition*, Allocator> _base_classes;
 

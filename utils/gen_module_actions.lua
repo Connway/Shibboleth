@@ -141,7 +141,7 @@ project "%sModule"
 		"Shared",
 		"EASTL",
 		"Gaff",
-		"%s",
+		"%s"
 	}
 
 	dependson(deps)

@@ -455,6 +455,7 @@ public:
 	virtual const IAttribute* getFuncAttribute(Hash32 name, int32_t index) const = 0;
 
 	virtual VoidFunc getFactory(Hash64 ctor_hash) const = 0;
+	virtual VoidFunc getStaticFunc(Hash32 name, Hash64 args) const = 0;
 	virtual void* getFunc(Hash32 name, Hash64 args) const = 0;
 };
 
