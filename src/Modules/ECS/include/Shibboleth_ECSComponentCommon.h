@@ -31,7 +31,7 @@ NS_SHIBBOLETH
 class Position
 {
 public:
-	// Slow versions for reflection and posterity.
+	// Slow versions for posterity.
 	static void Set(const glm::vec3& value);
 	static glm::vec3 Get();
 
@@ -42,6 +42,22 @@ public:
 	SHIB_REFLECTION_CLASS_DECLARE(Position);
 };
 
+class Rotation
+{
+public:
+	// Slow versions for posterity.
+	static void Set(const glm::quat& value);
+	static glm::quat Get();
+
+	static glm_vec4 GetX();
+	static glm_vec4 GetY();
+	static glm_vec4 GetZ();
+	static glm_vec4 GetW();
+
+	SHIB_REFLECTION_CLASS_DECLARE(Rotation);
+};
+
 NS_END
 
 SHIB_REFLECTION_DECLARE(Position)
+SHIB_REFLECTION_DECLARE(Rotation)

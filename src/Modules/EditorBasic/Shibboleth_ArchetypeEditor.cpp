@@ -75,7 +75,7 @@ ArchetypeEditor::ArchetypeEditor(
 	wxPanel(parent, id, pos, size)
 {
 	_ecs_components = new wxTreeCtrl(this, wxID_ANY);
-	_ecs_components->SetWindowStyleFlag(wxTR_HIDE_ROOT);
+	_ecs_components->SetWindowStyleFlag(wxTR_HIDE_ROOT | wxTR_MULTIPLE);
 	_ecs_components->AddRoot(wxT(""));
 
 	_archetype = new wxListBox(this, wxID_ANY);
@@ -128,6 +128,10 @@ void ArchetypeEditor::onDragBegin(wxTreeEvent& event)
 	RefDefItem** ref_def_items = nullptr;
 
 	if (ids.IsEmpty()) {
+		if (_ecs_components->HasChildren(event.GetItem())) {
+			return;
+		}
+
 		RefDefItem* const item = reinterpret_cast<RefDefItem*>(_ecs_components->GetItemData(event.GetItem()));
 
 		if (item->isDisabled()) {
@@ -145,6 +149,10 @@ void ArchetypeEditor::onDragBegin(wxTreeEvent& event)
 		memset(ref_def_items, 0, sizeof(RefDefItem*) * size);
 
 		for (size_t i = 0; i < size; ++i) {
+			if (_ecs_components->HasChildren(ids[i])) {
+				continue;
+			}
+			
 			RefDefItem* const item = reinterpret_cast<RefDefItem*>(_ecs_components->GetItemData(ids[i]));
 
 			if (item->isDisabled()) {

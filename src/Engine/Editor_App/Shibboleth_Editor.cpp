@@ -41,7 +41,7 @@ bool Editor::OnInit(void)
 		return false;
 	}
 
-	EditorFrame* const frame = new EditorFrame("Shibboleth Editor", wxDefaultPosition, wxSize(800, 600));
+	EditorFrame* const frame = new EditorFrame("Shibboleth Editor", wxDefaultPosition, wxSize(1024, 768));
 	return frame && frame->Show(true);
 }
 

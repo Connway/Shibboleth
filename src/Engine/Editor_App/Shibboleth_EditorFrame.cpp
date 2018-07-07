@@ -142,6 +142,7 @@ void EditorFrame::onSpawnWindow(wxCommandEvent& event)
 	wxAuiPaneInfo pane;
 
 	pane.Caption(ew_attr->getCaption());
+	pane.BestSize(wxSize(800, 600));
 	pane.Float();
 
 	_aui_mgr.AddPane(window, pane);
