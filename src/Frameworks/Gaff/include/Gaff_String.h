@@ -61,13 +61,31 @@ size_t FindFirstOf(const T* string, size_t str_size, const T* substr, size_t sub
 template <class T>
 size_t FindFirstOf(const T* string, size_t str_size, const T* substr)
 {
-	return FindFirstOf(string, str_size, substr, length(substr));
+	return FindFirstOf(string, str_size, substr, eastl::CharStrlen(substr));
 }
 
 template <class T>
 size_t FindFirstOf(const T* string, const T* substr)
 {
-	return FindFirstOf(string, length(string), substr, length(substr));
+	return FindFirstOf(string, eastl::CharStrlen(string), substr, eastl::CharStrlen(substr));
+}
+
+template <class T>
+size_t FindFirstOf(const T* string, size_t size, T character)
+{
+	for (size_t i = 0; i < size; ++i) {
+		if (string[i] == character) {
+			return i;
+		}
+	}
+
+	return SIZE_T_FAIL;
+}
+
+template <class T>
+size_t FindFirstOf(const T* string, T character)
+{
+	return FindFirstOf(string, eastl::CharStrlen(string), character);
 }
 
 template <class T>
@@ -89,25 +107,13 @@ size_t FindLastOf(const T* string, size_t str_size, const T* substr, size_t subs
 template <class T>
 size_t FindLastOf(const T* string, size_t str_size, const T* substr)
 {
-	return FindLastOf(string, str_size, substr, length(substr));
+	return FindLastOf(string, str_size, substr, eastl::CharStrlen(substr));
 }
 
 template <class T>
 size_t FindLastOf(const T* string, const T* substr)
 {
-	return FindLastOf(string, length(string), substr, length(substr));
-}
-
-template <class T>
-size_t FindFirstOf(const T* string, size_t size, T character)
-{
-	for (size_t i = 0; i < size; ++i) {
-		if (string[i] == character) {
-			return i;
-		}
-	}
-
-	return SIZE_T_FAIL;
+	return FindLastOf(string, eastl::CharStrlen(string), substr, eastl::CharStrlen(substr));
 }
 
 template <class T>

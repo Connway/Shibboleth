@@ -20,49 +20,35 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#pragma once
+#include "Shibboleth_ECSAttributes.h"
 
-#include <Shibboleth_Reflection.h>
-
-#ifdef PLATFORM_WINDOWS
-	#include <wx/msw/winundef.h>
-#endif
-
-//#include <wx/treebase.h>
-#include <wx/panel.h>
-#include <wx/dnd.h>
-
-class wxTreeEvent;
-class wxTreeCtrl;
-class wxListBox;
+SHIB_REFLECTION_DEFINE(ECSClassAttribute)
 
 NS_SHIBBOLETH
 
-class ArchetypeEditor : public wxPanel, public wxDropTarget
+SHIB_REFLECTION_CLASS_DEFINE_BEGIN(ECSClassAttribute)
+	.BASE(Gaff::IAttribute)
+SHIB_REFLECTION_CLASS_DEFINE_END(ECSClassAttribute)
+
+ECSClassAttribute::ECSClassAttribute(const char* name, const char* category):
+	_name(name), _category(category)
 {
-public:
-	ArchetypeEditor(
-		wxWindow* parent,
-		wxWindowID id = wxID_ANY,
-		const wxPoint& pos = wxDefaultPosition,
-		const wxSize& size = wxDefaultSize
-	);
+}
 
-	~ArchetypeEditor(void);
+const char* ECSClassAttribute::getCategory(void) const
+{
+	return _category;
+}
 
-	wxDragResult OnData(wxCoord x, wxCoord y, wxDragResult result) override;
+const char* ECSClassAttribute::getName(void) const
+{
+	return _name ? _name : Reflection<ECSClassAttribute>::GetName();
+}
 
-private:
-	wxTreeCtrl* _ecs_components = nullptr;
-	wxListBox* _archetype = nullptr;
-
-	//wxArrayString _reflection_types;
-	//wxArrayTreeItemIds _tree_ids;
-
-	void onDragBegin(wxTreeEvent&);
-	void initComponentList(void);
-};
+Gaff::IAttribute* ECSClassAttribute::clone(void) const
+{
+	Shibboleth::IAllocator& allocator = GetAllocator();
+	return SHIB_ALLOCT_POOL(ECSClassAttribute, allocator.getPoolIndex("Reflection"), allocator);
+}
 
 NS_END
-
-SHIB_REFLECTION_DECLARE(ArchetypeEditor)

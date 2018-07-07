@@ -24,45 +24,16 @@ THE SOFTWARE.
 
 #include <Shibboleth_Reflection.h>
 
-#ifdef PLATFORM_WINDOWS
-	#include <wx/msw/winundef.h>
-#endif
-
-//#include <wx/treebase.h>
-#include <wx/panel.h>
-#include <wx/dnd.h>
-
-class wxTreeEvent;
-class wxTreeCtrl;
-class wxListBox;
-
 NS_SHIBBOLETH
 
-class ArchetypeEditor : public wxPanel, public wxDropTarget
+class UniqueAttribute final : public Gaff::IAttribute
 {
 public:
-	ArchetypeEditor(
-		wxWindow* parent,
-		wxWindowID id = wxID_ANY,
-		const wxPoint& pos = wxDefaultPosition,
-		const wxSize& size = wxDefaultSize
-	);
+	IAttribute * clone(void) const override;
 
-	~ArchetypeEditor(void);
-
-	wxDragResult OnData(wxCoord x, wxCoord y, wxDragResult result) override;
-
-private:
-	wxTreeCtrl* _ecs_components = nullptr;
-	wxListBox* _archetype = nullptr;
-
-	//wxArrayString _reflection_types;
-	//wxArrayTreeItemIds _tree_ids;
-
-	void onDragBegin(wxTreeEvent&);
-	void initComponentList(void);
+	SHIB_REFLECTION_CLASS_DECLARE(UniqueAttribute);
 };
 
 NS_END
 
-SHIB_REFLECTION_DECLARE(ArchetypeEditor)
+SHIB_REFLECTION_DECLARE(UniqueAttribute)

@@ -78,7 +78,29 @@ EditorFrame::EditorFrame(const wxString& title, const wxPoint& pos, const wxSize
 		const EditorWindowAttribute* const ew_attr = ref_def->getClassAttribute<EditorWindowAttribute>();
 		const int id = _next_id++;
 
-		_window_menu->Append(id, ew_attr->getPath());
+		const char* const path = ew_attr->getPath();
+		size_t curr = 0;
+		size_t next = Gaff::FindFirstOf(path, '/');
+		wxMenu* curr_menu = _window_menu;
+
+		while (next != SIZE_T_FAIL) {
+			const wxString menu_name(path + curr, path + next);
+			const int32_t menu_id = curr_menu->FindItem(menu_name);
+
+			if (menu_id > -1) {
+				wxMenuItem* const item = curr_menu->FindItem(menu_id);
+				curr_menu = item->GetMenu();
+			} else {
+				wxMenu* const new_menu = new wxMenu();
+				curr_menu->AppendSubMenu(new_menu, menu_name);
+				curr_menu = new_menu;
+			}
+
+			curr = next;
+			next = Gaff::FindFirstOf(path + curr + 1, '/');
+		}
+
+		curr_menu->Append(id, path + curr + 1);
 
 		Bind(
 			wxEVT_MENU,

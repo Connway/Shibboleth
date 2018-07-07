@@ -246,11 +246,13 @@
   <ItemGroup>
     <ClInclude Include="..\..\..\..\src\Modules\ECS\include\Gen_ReflectionInit.h" />
     <ClInclude Include="..\..\..\..\src\Modules\ECS\include\Shibboleth_ECSArchetype.h" />
+    <ClInclude Include="..\..\..\..\src\Modules\ECS\include\Shibboleth_ECSAttributes.h" />
     <ClInclude Include="..\..\..\..\src\Modules\ECS\include\Shibboleth_ECSComponentCommon.h" />
     <ClInclude Include="..\..\..\..\src\Modules\ECS\include\Shibboleth_ECSManager.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\..\src\Modules\ECS\Shibboleth_ECSArchetype.cpp" />
+    <ClCompile Include="..\..\..\..\src\Modules\ECS\Shibboleth_ECSAttributes.cpp" />
     <ClCompile Include="..\..\..\..\src\Modules\ECS\Shibboleth_ECSComponentCommon.cpp" />
     <ClCompile Include="..\..\..\..\src\Modules\ECS\Shibboleth_ECSManager.cpp" />
   </ItemGroup>

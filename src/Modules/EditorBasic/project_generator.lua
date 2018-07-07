@@ -24,7 +24,8 @@ project "EditorBasic"
 		"../../Engine/Editor/include",
 		"../../Engine/Shared/include",
 		"../../Engine/Memory/include",
-		"../Graphics/include"
+		"../Graphics/include",
+		"../ECS/include"
 	}
 
 	IncludeWxWidgets()
@@ -81,7 +82,8 @@ project "EditorBasicModule"
 		"libpng",
 		"zlib-ng",
 		"wxBase",
-		"wxCore"
+		"wxCore",
+		"ECS"
 	}
 
 	dependson(deps)

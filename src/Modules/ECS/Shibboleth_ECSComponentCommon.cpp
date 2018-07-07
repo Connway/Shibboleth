@@ -21,15 +21,17 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Shibboleth_ECSComponentCommon.h"
+#include "Shibboleth_ECSAttributes.h"
 
 SHIB_REFLECTION_DEFINE(Position)
 
 NS_SHIBBOLETH
 
 SHIB_REFLECTION_CLASS_DEFINE_BEGIN(Position)
-	.BASE(IECSComponent)
-
-	//.classAttrs()
+	.classAttrs(
+		ECSClassAttribute(nullptr, "Transform"),
+		ECSVarAttribute<glm::vec3>()
+	)
 SHIB_REFLECTION_CLASS_DEFINE_END(Position)
 
 void Position::Set(const glm::vec3& value)

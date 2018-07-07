@@ -33,8 +33,6 @@ SHIB_REFLECTION_CLASS_DEFINE_END(ECSManager)
 
 bool ECSManager::init(void)
 {
-	GetApp().getReflectionManager().registerTypeBucket(Gaff::FNV1aHash64Const("IECSComponent"));
-
 	// Load all archetypes from config directory
 	// Create component buckets
 	return true;

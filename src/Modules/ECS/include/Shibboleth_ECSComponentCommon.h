@@ -28,14 +28,7 @@ THE SOFTWARE.
 
 NS_SHIBBOLETH
 
-class IECSComponent
-{
-public:
-	IECSComponent(void) {}
-	virtual ~IECSComponent(void) {}
-};
-
-class Position : public IECSComponent
+class Position
 {
 public:
 	// Slow versions for reflection and posterity.
