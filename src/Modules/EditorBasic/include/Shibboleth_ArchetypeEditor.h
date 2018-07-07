@@ -56,9 +56,6 @@ private:
 	wxTreeCtrl* _ecs_components = nullptr;
 	wxListBox* _archetype = nullptr;
 
-	//wxArrayString _reflection_types;
-	//wxArrayTreeItemIds _tree_ids;
-
 	void onDragBegin(wxTreeEvent&);
 	void initComponentList(void);
 };

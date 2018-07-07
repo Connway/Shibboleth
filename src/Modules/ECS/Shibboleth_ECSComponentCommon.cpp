@@ -24,6 +24,7 @@ THE SOFTWARE.
 #include "Shibboleth_ECSAttributes.h"
 
 SHIB_REFLECTION_DEFINE(Position)
+SHIB_REFLECTION_DEFINE(Rotation)
 
 NS_SHIBBOLETH
 
@@ -55,6 +56,45 @@ glm_vec4 Position::GetY()
 }
 
 glm_vec4 Position::GetZ()
+{
+	return glm_vec4();
+}
+
+
+
+SHIB_REFLECTION_CLASS_DEFINE_BEGIN(Rotation)
+	.classAttrs(
+		ECSClassAttribute(nullptr, "Transform"),
+		ECSVarAttribute<glm::quat>()
+	)
+SHIB_REFLECTION_CLASS_DEFINE_END(Rotation)
+
+void Rotation::Set(const glm::quat& value)
+{
+	GAFF_REF(value);
+}
+
+glm::quat Rotation::Get()
+{
+	return glm::quat();
+}
+
+glm_vec4 Rotation::GetX()
+{
+	return glm_vec4();
+}
+
+glm_vec4 Rotation::GetY()
+{
+	return glm_vec4();
+}
+
+glm_vec4 Rotation::GetZ()
+{
+	return glm_vec4();
+}
+
+glm_vec4 Rotation::GetW()
 {
 	return glm_vec4();
 }
