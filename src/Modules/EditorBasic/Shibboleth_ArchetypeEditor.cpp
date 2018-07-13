@@ -25,6 +25,7 @@ THE SOFTWARE.
 #include <Shibboleth_EditorWindowAttribute.h>
 #include <Shibboleth_UniqueAttribute.h>
 
+#include <wx/stattext.h>
 #include <wx/treectrl.h>
 #include <wx/listbox.h>
 #include <wx/sizer.h>
@@ -79,18 +80,39 @@ ArchetypeEditor::ArchetypeEditor(
 	_ecs_components->AddRoot(wxT(""));
 
 	_archetype = new wxListBox(this, wxID_ANY);
+	_archetype->SetWindowStyleFlag(wxLB_MULTIPLE);
 	_archetype->SetDropTarget(this);
 
-	wxBoxSizer* const sizer = new wxBoxSizer(wxHORIZONTAL);
+	wxBoxSizer* const height_sizer_left = new wxBoxSizer(wxVERTICAL);
+	wxBoxSizer* const height_sizer_right = new wxBoxSizer(wxVERTICAL);
+	wxBoxSizer* const width_sizer = new wxBoxSizer(wxHORIZONTAL);
 
-	sizer->Add(_archetype, 1, wxEXPAND | wxALL, 5);
-	sizer->Add(_ecs_components, 1, wxEXPAND | wxALL, 5);
+	wxStaticText* const archetype_text = new wxStaticText(this, wxID_ANY, "Archetype");
+	wxStaticText* const component_text = new wxStaticText(this, wxID_ANY, "Components List");
+	archetype_text->SetWindowStyleFlag(wxALIGN_CENTRE_HORIZONTAL | wxBORDER_THEME);
+	component_text->SetWindowStyleFlag(wxALIGN_CENTRE_HORIZONTAL | wxBORDER_THEME);
 
-	sizer->SetSizeHints(this);
-	SetSizer(sizer);
+	height_sizer_left->Add(archetype_text, 1, wxEXPAND | wxALL, 5);
+	height_sizer_left->Add(_archetype, 15, wxEXPAND | wxALL, 5);
+
+	height_sizer_right->Add(component_text, 1, wxEXPAND | wxALL, 5);
+	height_sizer_right->Add(_ecs_components, 15, wxEXPAND | wxALL, 5);
+
+	//width_sizer->Add(_archetype, 1, wxEXPAND | wxALL, 5);
+	//width_sizer->Add(_ecs_components, 1, wxEXPAND | wxALL, 5);
+
+	width_sizer->Add(height_sizer_left, 1, wxEXPAND | wxALL, 5);
+	width_sizer->Add(height_sizer_right, 1, wxEXPAND | wxALL, 5);
+
+	height_sizer_left->SetSizeHints(this);
+	height_sizer_right->SetSizeHints(this);
+	width_sizer->SetSizeHints(this);
+
+	SetSizer(width_sizer);
 
 	initComponentList();
 
+	Bind(wxEVT_TREE_ITEM_RIGHT_CLICK, &ArchetypeEditor::onRightClick, this, _ecs_components->GetId());
 	Bind(wxEVT_TREE_BEGIN_DRAG, &ArchetypeEditor::onDragBegin, this, _ecs_components->GetId());
 
 	m_dataObject = new wxCustomDataObject(s_ref_def_format);
@@ -107,18 +129,37 @@ wxDragResult ArchetypeEditor::OnData(wxCoord /*x*/, wxCoord /*y*/, wxDragResult 
 	const int32_t num_items = static_cast<int32_t>(data->GetDataSize()) / sizeof(RefDefItem*);
 
 	for (int32_t i = 0; i < num_items && items[i]; ++i) {
-		RefDefItem* const item = items[i];
-		const Gaff::IReflectionDefinition* const ref_def = item->getRefDef();
-
-		if (ref_def->getClassAttribute<UniqueAttribute>()) {
-			_ecs_components->SetItemTextColour(item->GetId(), g_grey);
-			item->setDisabled(true);
-		}
-
-		_archetype->Append(ref_def->getReflectionInstance().getName(), (wxClientData*)item);
+		addItem(items[i]);
 	}
 
 	return result;
+}
+
+void ArchetypeEditor::onRightClick(wxTreeEvent& event)
+{
+	wxArrayTreeItemIds ids;
+	size_t size = _ecs_components->GetSelections(ids);
+
+	if (ids.IsEmpty()) {
+		RefDefItem* const item = getItem(event.GetItem());
+
+		if (!item) {
+			return;
+		}
+
+		addItem(item);
+
+	} else {
+		for (size_t i = 0; i < size; ++i) {
+			RefDefItem* const item = getItem(ids[i]);
+
+			if (!item) {
+				return;
+			}
+
+			addItem(item);
+		}
+	}
 }
 
 void ArchetypeEditor::onDragBegin(wxTreeEvent& event)
@@ -128,13 +169,9 @@ void ArchetypeEditor::onDragBegin(wxTreeEvent& event)
 	RefDefItem** ref_def_items = nullptr;
 
 	if (ids.IsEmpty()) {
-		if (_ecs_components->HasChildren(event.GetItem())) {
-			return;
-		}
+		RefDefItem* const item = getItem(event.GetItem());
 
-		RefDefItem* const item = reinterpret_cast<RefDefItem*>(_ecs_components->GetItemData(event.GetItem()));
-
-		if (item->isDisabled()) {
+		if (!item) {
 			return;
 		}
 
@@ -149,13 +186,9 @@ void ArchetypeEditor::onDragBegin(wxTreeEvent& event)
 		memset(ref_def_items, 0, sizeof(RefDefItem*) * size);
 
 		for (size_t i = 0; i < size; ++i) {
-			if (_ecs_components->HasChildren(ids[i])) {
-				continue;
-			}
-			
-			RefDefItem* const item = reinterpret_cast<RefDefItem*>(_ecs_components->GetItemData(ids[i]));
+			RefDefItem* const item = getItem(ids[i]);
 
-			if (item->isDisabled()) {
+			if (!item) {
 				continue;
 			}
 
@@ -174,6 +207,33 @@ void ArchetypeEditor::onDragBegin(wxTreeEvent& event)
 	wxDropSource source(this);
 	source.SetData(*m_dataObject);
 	source.DoDragDrop();
+}
+
+RefDefItem* ArchetypeEditor::getItem(const wxTreeItemId& id) const
+{
+	if (_ecs_components->HasChildren(id)) {
+		return nullptr;
+	}
+
+	RefDefItem* const item = reinterpret_cast<RefDefItem*>(_ecs_components->GetItemData(id));
+
+	if (item->isDisabled()) {
+		return nullptr;
+	}
+
+	return item;
+}
+
+void ArchetypeEditor::addItem(RefDefItem* item)
+{
+	const Gaff::IReflectionDefinition* const ref_def = item->getRefDef();
+
+	if (ref_def->getClassAttribute<UniqueAttribute>()) {
+		_ecs_components->SetItemTextColour(item->GetId(), g_grey);
+		item->setDisabled(true);
+	}
+
+	_archetype->Append(ref_def->getReflectionInstance().getName(), reinterpret_cast<wxClientData*>(item));
 }
 
 void ArchetypeEditor::initComponentList(void)

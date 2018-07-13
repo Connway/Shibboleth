@@ -32,11 +32,14 @@ THE SOFTWARE.
 #include <wx/panel.h>
 #include <wx/dnd.h>
 
+class wxTreeItemId;
 class wxTreeEvent;
 class wxTreeCtrl;
 class wxListBox;
 
 NS_SHIBBOLETH
+
+class RefDefItem;
 
 class ArchetypeEditor : public wxPanel, public wxDropTarget
 {
@@ -56,7 +59,11 @@ private:
 	wxTreeCtrl* _ecs_components = nullptr;
 	wxListBox* _archetype = nullptr;
 
-	void onDragBegin(wxTreeEvent&);
+	void onRightClick(wxTreeEvent& event);
+	void onDragBegin(wxTreeEvent& event);
+
+	RefDefItem* getItem(const wxTreeItemId& id) const;
+	void addItem(RefDefItem* item);
 	void initComponentList(void);
 };
 
