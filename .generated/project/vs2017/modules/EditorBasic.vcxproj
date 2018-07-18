@@ -246,11 +246,15 @@
   <ItemGroup>
     <ClInclude Include="..\..\..\..\src\Modules\EditorBasic\include\Gen_ReflectionInit.h" />
     <ClInclude Include="..\..\..\..\src\Modules\EditorBasic\include\Shibboleth_ArchetypeEditor.h" />
+    <ClInclude Include="..\..\..\..\src\Modules\EditorBasic\include\Shibboleth_AssetBrowser.h" />
+    <ClInclude Include="..\..\..\..\src\Modules\EditorBasic\include\Shibboleth_DirectoryControl.h" />
     <ClInclude Include="..\..\..\..\src\Modules\EditorBasic\include\Shibboleth_LoadedModulesWindow.h" />
     <ClInclude Include="..\..\..\..\src\Modules\EditorBasic\include\Shibboleth_ViewportWindow.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\..\src\Modules\EditorBasic\Shibboleth_ArchetypeEditor.cpp" />
+    <ClCompile Include="..\..\..\..\src\Modules\EditorBasic\Shibboleth_AssetBrowser.cpp" />
+    <ClCompile Include="..\..\..\..\src\Modules\EditorBasic\Shibboleth_DirectoryControl.cpp" />
     <ClCompile Include="..\..\..\..\src\Modules\EditorBasic\Shibboleth_LoadedModulesWindow.cpp" />
     <ClCompile Include="..\..\..\..\src\Modules\EditorBasic\Shibboleth_ViewportWindow.cpp" />
   </ItemGroup>

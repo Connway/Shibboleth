@@ -51,6 +51,7 @@ public:
 
 	IFileSystem* getFileSystem(void) override;
 	const Gaff::JSON& getConfigs(void) const override;
+	const U8String& getProjectDirectory(void) const override;
 
 	//MessageBroadcaster& getBroadcaster(void) override;
 	const ReflectionManager& getReflectionManager(void) const override;
@@ -97,6 +98,7 @@ private:
 
 	VectorMap< Gaff::Hash64, UniquePtr<IManager> > _manager_map;
 	Gaff::JSON _configs;
+	U8String _project_dir = ".";
 
 	bool initInternal(void);
 	bool loadFileSystem(void);

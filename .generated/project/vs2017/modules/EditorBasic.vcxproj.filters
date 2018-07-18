@@ -12,6 +12,12 @@
     <ClInclude Include="..\..\..\..\src\Modules\EditorBasic\include\Shibboleth_ArchetypeEditor.h">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\..\src\Modules\EditorBasic\include\Shibboleth_AssetBrowser.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\Modules\EditorBasic\include\Shibboleth_DirectoryControl.h">
+      <Filter>include</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\..\src\Modules\EditorBasic\include\Shibboleth_LoadedModulesWindow.h">
       <Filter>include</Filter>
     </ClInclude>
@@ -21,6 +27,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\..\src\Modules\EditorBasic\Shibboleth_ArchetypeEditor.cpp" />
+    <ClCompile Include="..\..\..\..\src\Modules\EditorBasic\Shibboleth_AssetBrowser.cpp" />
+    <ClCompile Include="..\..\..\..\src\Modules\EditorBasic\Shibboleth_DirectoryControl.cpp" />
     <ClCompile Include="..\..\..\..\src\Modules\EditorBasic\Shibboleth_LoadedModulesWindow.cpp" />
     <ClCompile Include="..\..\..\..\src\Modules\EditorBasic\Shibboleth_ViewportWindow.cpp" />
   </ItemGroup>

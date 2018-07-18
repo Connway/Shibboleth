@@ -81,6 +81,9 @@
     <ClInclude Include="..\..\..\..\src\Engine\Shared\include\Shibboleth_String.h">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\..\src\Engine\Shared\include\Shibboleth_UniqueAttribute.h">
+      <Filter>include</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\..\src\Engine\Shared\include\Shibboleth_Utilities.h">
       <Filter>include</Filter>
     </ClInclude>
@@ -91,9 +94,6 @@
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\src\Engine\Shared\include\Shibboleth_Watcher.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\src\Engine\Shared\include\Shibboleth_UniqueAttribute.h">
       <Filter>include</Filter>
     </ClInclude>
   </ItemGroup>
@@ -107,7 +107,7 @@
     <ClCompile Include="..\..\..\..\src\Engine\Shared\Shibboleth_NewDelete.cpp" />
     <ClCompile Include="..\..\..\..\src\Engine\Shared\Shibboleth_Reflection.cpp" />
     <ClCompile Include="..\..\..\..\src\Engine\Shared\Shibboleth_ReflectionManager.cpp" />
-    <ClCompile Include="..\..\..\..\src\Engine\Shared\Shibboleth_Utilities.cpp" />
     <ClCompile Include="..\..\..\..\src\Engine\Shared\Shibboleth_UniqueAttribute.cpp" />
+    <ClCompile Include="..\..\..\..\src\Engine\Shared\Shibboleth_Utilities.cpp" />
   </ItemGroup>
 </Project>

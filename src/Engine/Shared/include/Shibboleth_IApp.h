@@ -97,6 +97,7 @@ public:
 
 	virtual IFileSystem* getFileSystem(void) = 0;
 	virtual const Gaff::JSON& getConfigs(void) const = 0;
+	virtual const U8String& getProjectDirectory(void) const = 0;
 
 	virtual const ReflectionManager& getReflectionManager(void) const = 0;
 	virtual ReflectionManager& getReflectionManager(void) = 0;

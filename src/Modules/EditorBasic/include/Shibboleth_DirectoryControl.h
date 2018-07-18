@@ -22,51 +22,46 @@ THE SOFTWARE.
 
 #pragma once
 
-#include <Shibboleth_Reflection.h>
+#include <Shibboleth_Defines.h>
 
 #ifdef PLATFORM_WINDOWS
 	#include <wx/msw/winundef.h>
 #endif
 
-//#include <wx/treebase.h>
-#include <wx/panel.h>
-#include <wx/dnd.h>
+#include <wx/window.h>
+#include <wx/dirctrl.h>
 
-class wxTreeItemId;
-class wxTreeEvent;
-class wxTreeCtrl;
-class wxListBox;
+class wxDir;
 
 NS_SHIBBOLETH
 
-class RefDefItem;
+enum
+{
+	DC_SINGLE_DEPTH = 0x0400
+};
 
-class ArchetypeEditor : public wxPanel, public wxDropTarget
+// Forces the default directory to be the root of the tree.
+class DirectoryControl : public wxGenericDirCtrl
 {
 public:
-	ArchetypeEditor(
-		wxWindow* parent,
-		wxWindowID id = wxID_ANY,
+	DirectoryControl(
+		wxWindow *parent,
+		const wxWindowID id = wxID_ANY,
+		const wxString& dir = wxDirDialogDefaultFolderStr,
 		const wxPoint& pos = wxDefaultPosition,
-		const wxSize& size = wxDefaultSize
+		const wxSize& size = wxDefaultSize,
+		long style = wxDIRCTRL_3D_INTERNAL,
+		const wxString& filter = wxEmptyString,
+		int defaultFilter = 0,
+		const wxString& name = wxTreeCtrlNameStr
 	);
 
-	~ArchetypeEditor(void);
-
-	wxDragResult OnData(wxCoord x, wxCoord y, wxDragResult result) override;
+	void reset(const wxString& path);
 
 private:
-	wxTreeCtrl* _ecs_components = nullptr;
-	wxListBox* _archetype = nullptr;
-
-	void onAddComponents(wxTreeEvent& event);
-	void onDragBegin(wxTreeEvent& event);
-
-	RefDefItem* getItem(const wxTreeItemId& id) const;
-	void addItem(RefDefItem* item);
-	void initComponentList(void);
+	void SetupSections(void) override;
+	void ExpandRoot(void) override;
+	bool openDir(wxDir& dir);
 };
 
 NS_END
-
-SHIB_REFLECTION_DECLARE(ArchetypeEditor)
