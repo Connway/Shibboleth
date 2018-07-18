@@ -28,45 +28,36 @@ THE SOFTWARE.
 	#include <wx/msw/winundef.h>
 #endif
 
-//#include <wx/treebase.h>
 #include <wx/panel.h>
-#include <wx/dnd.h>
 
-class wxTreeItemId;
+class wxGenericDirCtrl;
 class wxTreeEvent;
-class wxTreeCtrl;
-class wxListBox;
 
 NS_SHIBBOLETH
 
-class RefDefItem;
+class DirectoryControl;
 
-class ArchetypeEditor : public wxPanel, public wxDropTarget
+class AssetBrowser : public wxPanel
 {
 public:
-	ArchetypeEditor(
+	AssetBrowser(
 		wxWindow* parent,
 		wxWindowID id = wxID_ANY,
 		const wxPoint& pos = wxDefaultPosition,
 		const wxSize& size = wxDefaultSize
 	);
 
-	~ArchetypeEditor(void);
-
-	wxDragResult OnData(wxCoord x, wxCoord y, wxDragResult result) override;
+	~AssetBrowser(void);
 
 private:
-	wxTreeCtrl* _ecs_components = nullptr;
-	wxListBox* _archetype = nullptr;
+	DirectoryControl* _file_ctrl = nullptr;
+	DirectoryControl* _dir_ctrl = nullptr;
 
-	void onAddComponents(wxTreeEvent& event);
-	void onDragBegin(wxTreeEvent& event);
-
-	RefDefItem* getItem(const wxTreeItemId& id) const;
-	void addItem(RefDefItem* item);
-	void initComponentList(void);
+	void onDirectorySelection(wxTreeEvent& event);
+	void onFileSelection(wxTreeEvent& event);
+	void onFileActivated(wxTreeEvent& event);
 };
 
 NS_END
 
-SHIB_REFLECTION_DECLARE(ArchetypeEditor)
+SHIB_REFLECTION_DECLARE(AssetBrowser)

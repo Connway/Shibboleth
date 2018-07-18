@@ -44,7 +44,6 @@ SHIB_REFLECTION_BUILDER_BEGIN(Shibboleth::ArchetypeEditor)
 	.classAttrs(
 		EditorWindowAttribute("&Editors/&Archetype Editor", "Archetype Editor")
 	)
-
 SHIB_REFLECTION_BUILDER_END(Shibboleth::ArchetypeEditor)
 
 NS_SHIBBOLETH
@@ -83,36 +82,29 @@ ArchetypeEditor::ArchetypeEditor(
 	_archetype->SetWindowStyleFlag(wxLB_MULTIPLE);
 	_archetype->SetDropTarget(this);
 
-	wxBoxSizer* const height_sizer_left = new wxBoxSizer(wxVERTICAL);
-	wxBoxSizer* const height_sizer_right = new wxBoxSizer(wxVERTICAL);
-	wxBoxSizer* const width_sizer = new wxBoxSizer(wxHORIZONTAL);
-
 	wxStaticText* const archetype_text = new wxStaticText(this, wxID_ANY, "Archetype");
 	wxStaticText* const component_text = new wxStaticText(this, wxID_ANY, "Components List");
 	archetype_text->SetWindowStyleFlag(wxALIGN_CENTRE_HORIZONTAL | wxBORDER_THEME);
 	component_text->SetWindowStyleFlag(wxALIGN_CENTRE_HORIZONTAL | wxBORDER_THEME);
 
-	height_sizer_left->Add(archetype_text, 1, wxEXPAND | wxALL, 5);
-	height_sizer_left->Add(_archetype, 15, wxEXPAND | wxALL, 5);
+	wxFlexGridSizer* const sizer = new wxFlexGridSizer(2, 2, wxSize(0, 0));
+	sizer->Add(archetype_text, 1, wxEXPAND | wxALL, 1);
+	sizer->Add(component_text, 1, wxEXPAND | wxALL, 1);
 
-	height_sizer_right->Add(component_text, 1, wxEXPAND | wxALL, 5);
-	height_sizer_right->Add(_ecs_components, 15, wxEXPAND | wxALL, 5);
+	sizer->Add(_archetype, 15, wxEXPAND | wxALL, 1);
+	sizer->Add(_ecs_components, 15, wxEXPAND | wxALL, 1);
 
-	//width_sizer->Add(_archetype, 1, wxEXPAND | wxALL, 5);
-	//width_sizer->Add(_ecs_components, 1, wxEXPAND | wxALL, 5);
+	sizer->AddGrowableRow(1, 15);
+	sizer->AddGrowableCol(0, 1);
+	sizer->AddGrowableCol(1, 1);
 
-	width_sizer->Add(height_sizer_left, 1, wxEXPAND | wxALL, 5);
-	width_sizer->Add(height_sizer_right, 1, wxEXPAND | wxALL, 5);
-
-	height_sizer_left->SetSizeHints(this);
-	height_sizer_right->SetSizeHints(this);
-	width_sizer->SetSizeHints(this);
-
-	SetSizer(width_sizer);
+	sizer->SetSizeHints(this);
+	SetSizer(sizer);
 
 	initComponentList();
 
-	Bind(wxEVT_TREE_ITEM_RIGHT_CLICK, &ArchetypeEditor::onRightClick, this, _ecs_components->GetId());
+	Bind(wxEVT_TREE_ITEM_RIGHT_CLICK, &ArchetypeEditor::onAddComponents, this, _ecs_components->GetId());
+	Bind(wxEVT_TREE_ITEM_ACTIVATED, &ArchetypeEditor::onAddComponents, this, _ecs_components->GetId());
 	Bind(wxEVT_TREE_BEGIN_DRAG, &ArchetypeEditor::onDragBegin, this, _ecs_components->GetId());
 
 	m_dataObject = new wxCustomDataObject(s_ref_def_format);
@@ -135,7 +127,7 @@ wxDragResult ArchetypeEditor::OnData(wxCoord /*x*/, wxCoord /*y*/, wxDragResult 
 	return result;
 }
 
-void ArchetypeEditor::onRightClick(wxTreeEvent& event)
+void ArchetypeEditor::onAddComponents(wxTreeEvent& event)
 {
 	wxArrayTreeItemIds ids;
 	size_t size = _ecs_components->GetSelections(ids);

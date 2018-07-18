@@ -31,6 +31,7 @@ THE SOFTWARE.
 #include <Gaff_Utils.h>
 #include <Gaff_JSON.h>
 #include <Gaff_File.h>
+#include <filesystem>
 #include <regex>
 
 #ifdef PLATFORM_WINDOWS
@@ -72,14 +73,19 @@ bool App::init(int argc, const char** argv)
 		const char* const arg = argv[i];
 		Gaff::JSON extra_configs;
 
-		if (!Gaff::File::CheckExtension(arg, ".cfg") || !extra_configs.parseFile(arg)) {
-			continue;
-		}
+		if (Gaff::File::CheckExtension(arg, ".cfg")) {
+			if (!extra_configs.parseFile(arg)) {
+				continue;
+			}
 
-		extra_configs.forEachInObject([&](const char* key, const Gaff::JSON& value) -> bool {
-			_configs.setObject(key, value);
-			return false;
-		});
+			extra_configs.forEachInObject([&](const char* key, const Gaff::JSON& value) -> bool {
+				_configs.setObject(key, value);
+				return false;
+			});
+
+		} else if (std::filesystem::is_directory(arg)) {
+			_project_dir = arg;
+		}
 	}
 
 	return initInternal();
@@ -579,6 +585,11 @@ IFileSystem* App::getFileSystem(void)
 const Gaff::JSON& App::getConfigs(void) const
 {
 	return _configs;
+}
+
+const U8String& App::getProjectDirectory(void) const
+{
+	return _project_dir;
 }
 
 const ReflectionManager& App::getReflectionManager(void) const

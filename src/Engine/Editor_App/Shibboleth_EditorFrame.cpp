@@ -79,8 +79,8 @@ EditorFrame::EditorFrame(const wxString& title, const wxPoint& pos, const wxSize
 		const int id = _next_id++;
 
 		const char* const path = ew_attr->getPath();
-		size_t curr = 0;
 		size_t next = Gaff::FindFirstOf(path, '/');
+		size_t curr = (next == SIZE_T_FAIL) ? -1 : 0;
 		wxMenu* curr_menu = _window_menu;
 
 		while (next != SIZE_T_FAIL) {

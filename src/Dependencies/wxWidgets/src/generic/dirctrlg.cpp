@@ -97,7 +97,7 @@ extern WXDLLEXPORT_DATA(const char) wxFileSelectorDefaultWildcardStr[];
 #undef GetFirstChild
 #endif
 
-bool wxIsDriveAvailable(const wxString& dirName);
+WXDLLEXPORT bool wxIsDriveAvailable(const wxString& dirName);
 
 // ----------------------------------------------------------------------------
 // events

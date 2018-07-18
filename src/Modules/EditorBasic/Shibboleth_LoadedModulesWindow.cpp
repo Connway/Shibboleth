@@ -108,15 +108,13 @@ void LoadedModulesWindow::initTree(void)
 
 			const Vector<const Gaff::IReflectionDefinition*>* const bucket = refl_mgr.getTypeBucket(Gaff::FNV1aHash64String(refl_name.getString()));
 
-			if (!bucket) {
-				continue;
-			}
-
 			const wxTreeItemId id = _reflection_tree->AppendItem(root_id, name.getString());
 			_tree_ids.Add(id);
 
-			for (const Gaff::IReflectionDefinition* ref_def : *bucket) {
-				_reflection_tree->AppendItem(id, ref_def->getReflectionInstance().getName());
+			if (bucket) {
+				for (const Gaff::IReflectionDefinition* ref_def : *bucket) {
+					_reflection_tree->AppendItem(id, ref_def->getReflectionInstance().getName());
+				}
 			}
 		}
 	}
@@ -139,12 +137,10 @@ void LoadedModulesWindow::onModuleSelected(wxCommandEvent& event)
 		const wxTreeItemId& id = _tree_ids[i];
 		_reflection_tree->DeleteChildren(id);
 
-		if (!bucket) {
-			continue;
-		}
-
-		for (const Gaff::IReflectionDefinition* ref_def : *bucket) {
-			_reflection_tree->AppendItem(id, ref_def->getReflectionInstance().getName());
+		if (bucket) {
+			for (const Gaff::IReflectionDefinition* ref_def : *bucket) {
+				_reflection_tree->AppendItem(id, ref_def->getReflectionInstance().getName());
+			}
 		}
 	}
 }
