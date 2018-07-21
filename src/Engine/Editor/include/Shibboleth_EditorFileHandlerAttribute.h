@@ -20,32 +20,28 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#include "Shibboleth_EditorFileTypeHandler.h"
-#include <Shibboleth_IAllocator.h>
-#include <Shibboleth_Memory.h>
+#pragma once
 
-SHIB_REFLECTION_DEFINE(EditorFileTypeHandler)
+#include <Shibboleth_Reflection.h>
 
 NS_SHIBBOLETH
 
-SHIB_REFLECTION_CLASS_DEFINE_BEGIN(EditorFileTypeHandler)
-	.BASE(Gaff::IAttribute)
-SHIB_REFLECTION_CLASS_DEFINE_END(EditorFileTypeHandler)
-
-EditorFileTypeHandler::EditorFileTypeHandler(const char* file_extension):
-	_extension(file_extension)
+class EditorFileHandlerAttribute final : public Gaff::IAttribute
 {
-}
+public:
+	EditorFileHandlerAttribute(const char* file_extension);
 
-const char* EditorFileTypeHandler::getExtension(void) const
-{
-	return _extension;
-}
+	const char* getExtension(void) const;
 
-Gaff::IAttribute* EditorFileTypeHandler::clone(void) const
-{
-	Shibboleth::IAllocator& allocator = GetAllocator();
-	return SHIB_ALLOCT_POOL(EditorFileTypeHandler, allocator.getPoolIndex("Reflection"), allocator, _extension);
-}
+	IAttribute* clone(void) const override;
+
+private:
+	const char* _extension = nullptr;
+
+	SHIB_REFLECTION_CLASS_DECLARE(EditorFileHandlerAttribute);
+
+};
 
 NS_END
+
+SHIB_REFLECTION_DECLARE(EditorFileHandlerAttribute)
