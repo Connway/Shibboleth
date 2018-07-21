@@ -23,6 +23,7 @@ THE SOFTWARE.
 #include "Shibboleth_ArchetypeEditor.h"
 #include "Shibboleth_ECSAttributes.h"
 #include <Shibboleth_EditorWindowAttribute.h>
+#include <Shibboleth_EditorFileTypeHandler.h>
 #include <Shibboleth_UniqueAttribute.h>
 
 #include <wx/stattext.h>
@@ -42,7 +43,8 @@ SHIB_REFLECTION_BUILDER_BEGIN(Shibboleth::ArchetypeEditor)
 	.BASE(wxWindow)
 
 	.classAttrs(
-		EditorWindowAttribute("&Editors/&Archetype Editor", "Archetype Editor")
+		EditorWindowAttribute("&Editors/&Archetype Editor", "Archetype Editor"),
+		EditorFileTypeHandler(".archetype")
 	)
 SHIB_REFLECTION_BUILDER_END(Shibboleth::ArchetypeEditor)
 

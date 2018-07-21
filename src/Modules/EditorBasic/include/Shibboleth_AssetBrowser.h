@@ -37,7 +37,7 @@ NS_SHIBBOLETH
 
 class DirectoryControl;
 
-class AssetBrowser : public wxPanel
+class AssetBrowser final : public wxPanel
 {
 public:
 	AssetBrowser(
