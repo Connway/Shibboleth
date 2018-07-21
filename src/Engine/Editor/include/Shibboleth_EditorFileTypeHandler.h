@@ -24,49 +24,24 @@ THE SOFTWARE.
 
 #include <Shibboleth_Reflection.h>
 
-#ifdef PLATFORM_WINDOWS
-	#include <wx/msw/winundef.h>
-#endif
-
-//#include <wx/treebase.h>
-#include <wx/panel.h>
-#include <wx/dnd.h>
-
-class wxTreeItemId;
-class wxTreeEvent;
-class wxTreeCtrl;
-class wxListBox;
-
 NS_SHIBBOLETH
 
-class RefDefItem;
-
-class ArchetypeEditor final : public wxPanel, public wxDropTarget
+class EditorFileTypeHandler final : public Gaff::IAttribute
 {
 public:
-	ArchetypeEditor(
-		wxWindow* parent,
-		wxWindowID id = wxID_ANY,
-		const wxPoint& pos = wxDefaultPosition,
-		const wxSize& size = wxDefaultSize
-	);
+	EditorFileTypeHandler(const char* file_extension);
 
-	~ArchetypeEditor(void);
+	const char* getExtension(void) const;
 
-	wxDragResult OnData(wxCoord x, wxCoord y, wxDragResult result) override;
+	IAttribute* clone(void) const override;
 
 private:
-	wxTreeCtrl* _ecs_components = nullptr;
-	wxListBox* _archetype = nullptr;
+	const char* _extension = nullptr;
 
-	void onAddComponents(wxTreeEvent& event);
-	void onDragBegin(wxTreeEvent& event);
+	SHIB_REFLECTION_CLASS_DECLARE(EditorFileTypeHandler);
 
-	RefDefItem* getItem(const wxTreeItemId& id) const;
-	void addItem(RefDefItem* item);
-	void initComponentList(void);
 };
 
 NS_END
 
-SHIB_REFLECTION_DECLARE(ArchetypeEditor)
+SHIB_REFLECTION_DECLARE(EditorFileTypeHandler)

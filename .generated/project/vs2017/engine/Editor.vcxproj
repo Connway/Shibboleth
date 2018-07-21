@@ -244,9 +244,11 @@
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\..\..\src\Engine\Editor\include\Shibboleth_EditorFileTypeHandler.h" />
     <ClInclude Include="..\..\..\..\src\Engine\Editor\include\Shibboleth_EditorWindowAttribute.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\..\..\src\Engine\Editor\Shibboleth_EditorFileTypeHandler.cpp" />
     <ClCompile Include="..\..\..\..\src\Engine\Editor\Shibboleth_EditorWindowAttribute.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

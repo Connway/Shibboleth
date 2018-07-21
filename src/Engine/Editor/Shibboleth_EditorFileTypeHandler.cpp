@@ -20,53 +20,32 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#pragma once
+#include "Shibboleth_EditorFileTypeHandler.h"
+#include <Shibboleth_IAllocator.h>
+#include <Shibboleth_Memory.h>
 
-#include <Shibboleth_Reflection.h>
-
-#ifdef PLATFORM_WINDOWS
-	#include <wx/msw/winundef.h>
-#endif
-
-//#include <wx/treebase.h>
-#include <wx/panel.h>
-#include <wx/dnd.h>
-
-class wxTreeItemId;
-class wxTreeEvent;
-class wxTreeCtrl;
-class wxListBox;
+SHIB_REFLECTION_DEFINE(EditorFileTypeHandler)
 
 NS_SHIBBOLETH
 
-class RefDefItem;
+SHIB_REFLECTION_CLASS_DEFINE_BEGIN(EditorFileTypeHandler)
+	.BASE(Gaff::IAttribute)
+SHIB_REFLECTION_CLASS_DEFINE_END(EditorFileTypeHandler)
 
-class ArchetypeEditor final : public wxPanel, public wxDropTarget
+EditorFileTypeHandler::EditorFileTypeHandler(const char* file_extension):
+	_extension(file_extension)
 {
-public:
-	ArchetypeEditor(
-		wxWindow* parent,
-		wxWindowID id = wxID_ANY,
-		const wxPoint& pos = wxDefaultPosition,
-		const wxSize& size = wxDefaultSize
-	);
+}
 
-	~ArchetypeEditor(void);
+const char* EditorFileTypeHandler::getExtension(void) const
+{
+	return _extension;
+}
 
-	wxDragResult OnData(wxCoord x, wxCoord y, wxDragResult result) override;
-
-private:
-	wxTreeCtrl* _ecs_components = nullptr;
-	wxListBox* _archetype = nullptr;
-
-	void onAddComponents(wxTreeEvent& event);
-	void onDragBegin(wxTreeEvent& event);
-
-	RefDefItem* getItem(const wxTreeItemId& id) const;
-	void addItem(RefDefItem* item);
-	void initComponentList(void);
-};
+Gaff::IAttribute* EditorFileTypeHandler::clone(void) const
+{
+	Shibboleth::IAllocator& allocator = GetAllocator();
+	return SHIB_ALLOCT_POOL(EditorFileTypeHandler, allocator.getPoolIndex("Reflection"), allocator, _extension);
+}
 
 NS_END
-
-SHIB_REFLECTION_DECLARE(ArchetypeEditor)
