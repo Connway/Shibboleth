@@ -25,9 +25,11 @@ THE SOFTWARE.
 #include <Shibboleth_IRenderManager.h>
 #include <Shibboleth_IManager.h>
 
-SHIB_REFLECTION_EXTERNAL_DEFINE(Shibboleth::ViewportWindow)
+SHIB_REFLECTION_DEFINE(ViewportWindow)
 
-SHIB_REFLECTION_BUILDER_BEGIN(Shibboleth::ViewportWindow)
+NS_SHIBBOLETH
+
+SHIB_REFLECTION_CLASS_DEFINE_BEGIN(ViewportWindow)
 	.CTOR(wxWindow*, wxWindowID, const wxPoint&, const wxSize&)
 	.CTOR(wxWindow*, wxWindowID, const wxPoint&)
 	.CTOR(wxWindow*, wxWindowID)
@@ -38,14 +40,7 @@ SHIB_REFLECTION_BUILDER_BEGIN(Shibboleth::ViewportWindow)
 	.classAttrs(
 		EditorWindowAttribute("&Viewport", "Viewport")
 	)
-
-SHIB_REFLECTION_BUILDER_END(Shibboleth::ViewportWindow)
-
-NS_SHIBBOLETH
-
-wxBEGIN_EVENT_TABLE(ViewportWindow, wxPanel)
-	EVT_SIZE(ViewportWindow::onResize)
-wxEND_EVENT_TABLE()
+SHIB_REFLECTION_CLASS_DEFINE_END(ViewportWindow)
 
 ViewportWindow::ViewportWindow(
 	wxWindow* parent,
@@ -64,6 +59,8 @@ ViewportWindow::ViewportWindow(
 
 	_output = rm.createRenderOutput();
 	_output->init(*rd, _window);
+
+	Bind(wxEVT_SIZE, &ViewportWindow::onResize, this, GetId());
 }
 
 ViewportWindow::~ViewportWindow(void)

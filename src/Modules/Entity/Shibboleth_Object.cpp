@@ -573,7 +573,7 @@ bool Object::createComponents(const Gaff::ISerializeReader& reader)
 		}
 
 		ProxyAllocator allocator("Components");
-		Component* const component = ref_def->CREATEALLOCT(Component, allocator);
+		Component* const component = ref_def->CREATET(Component, allocator);
 
 		if (!component) {
 			// TODO: log error

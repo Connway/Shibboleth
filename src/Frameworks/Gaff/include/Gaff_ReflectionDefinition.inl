@@ -695,7 +695,7 @@ template <class T, class Allocator>
 template <class... Args>
 T* ReflectionDefinition<T, Allocator>::create(Args&&... args) const
 {
-	return createAllocT<T>(_allocator, std::forward<Args>(args)...);
+	return createT<T>(_allocator, std::forward<Args>(args)...);
 }
 
 template <class T, class Allocator>

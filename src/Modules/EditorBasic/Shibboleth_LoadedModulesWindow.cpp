@@ -30,23 +30,23 @@ THE SOFTWARE.
 #include <wx/sizer.h>
 #include <wx/event.h>
 
-SHIB_REFLECTION_EXTERNAL_DEFINE(Shibboleth::LoadedModulesWindow)
+SHIB_REFLECTION_DEFINE(LoadedModulesWindow)
 
-SHIB_REFLECTION_BUILDER_BEGIN(Shibboleth::LoadedModulesWindow)
+NS_SHIBBOLETH
+
+SHIB_REFLECTION_CLASS_DEFINE_BEGIN(LoadedModulesWindow)
 	.CTOR(wxWindow*, wxWindowID, const wxPoint&, const wxSize&)
 	.CTOR(wxWindow*, wxWindowID, const wxPoint&)
 	.CTOR(wxWindow*, wxWindowID)
 	.CTOR(wxWindow*)
 
+	.BASE(Gaff::IReflectionObject)
 	.BASE(wxWindow)
 
 	.classAttrs(
 		EditorWindowAttribute("&Modules", "Loaded Modules")
 	)
-
-SHIB_REFLECTION_BUILDER_END(Shibboleth::LoadedModulesWindow)
-
-NS_SHIBBOLETH
+SHIB_REFLECTION_CLASS_DEFINE_END(LoadedModulesWindow)
 
 LoadedModulesWindow::LoadedModulesWindow(
 	wxWindow* parent,
