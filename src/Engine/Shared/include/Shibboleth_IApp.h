@@ -43,6 +43,7 @@ class ReflectionManager;
 class IFileSystem;
 class LogManager;
 class IManager;
+class IEditor;
 
 class IApp
 {
@@ -89,6 +90,10 @@ public:
 
 	IApp(void) {}
 	virtual ~IApp(void) {}
+
+	virtual const IEditor* getEditor(void) const = 0;
+	virtual IEditor* getEditor(void) = 0;
+	virtual void setEditor(IEditor* editor) = 0;
 
 	virtual const IManager* getManager(Gaff::Hash64 name) const = 0;
 	virtual IManager* getManager(Gaff::Hash64 name) = 0;

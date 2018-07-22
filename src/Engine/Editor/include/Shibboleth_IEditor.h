@@ -22,44 +22,19 @@ THE SOFTWARE.
 
 #pragma once
 
-#include <Shibboleth_Reflection.h>
-
-#ifdef PLATFORM_WINDOWS
-	#include <wx/msw/winundef.h>
-#endif
-
-#include <wx/panel.h>
-
-class wxGenericDirCtrl;
-class wxTreeEvent;
+#include <Shibboleth_Defines.h>
+#include <Gaff_ReflectionInterfaces.h>
 
 NS_SHIBBOLETH
 
-class DirectoryControl;
-
-class AssetBrowser final : public wxPanel, public Gaff::IReflectionObject
+class IEditor
 {
 public:
-	AssetBrowser(
-		wxWindow* parent,
-		wxWindowID id = wxID_ANY,
-		const wxPoint& pos = wxDefaultPosition,
-		const wxSize& size = wxDefaultSize
-	);
+	IEditor(void) {}
+	virtual ~IEditor(void) {}
 
-	~AssetBrowser(void);
-
-private:
-	DirectoryControl* _file_ctrl = nullptr;
-	DirectoryControl* _dir_ctrl = nullptr;
-
-	void onDirectorySelection(wxTreeEvent& event);
-	void onFileSelection(wxTreeEvent& event);
-	void onFileActivated(wxTreeEvent& event);
-
-	SHIB_REFLECTION_CLASS_DECLARE(AssetBrowser);
+	virtual void addEditorWindow(Gaff::IReflectionObject* window) = 0;
+	virtual void removeEditorWindow(Gaff::IReflectionObject* window) = 0;
 };
 
 NS_END
-
-SHIB_REFLECTION_DECLARE(AssetBrowser)

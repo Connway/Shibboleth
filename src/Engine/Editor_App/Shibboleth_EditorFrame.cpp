@@ -24,6 +24,7 @@ THE SOFTWARE.
 #include "Shibboleth_EditorWindowAttribute.h"
 #include <Shibboleth_ReflectionManager.h>
 #include <Shibboleth_Utilities.h>
+#include <Shibboleth_IEditor.h>
 #include <Shibboleth_IApp.h>
 #include <Gaff_JSON.h>
 #include <wx/msgdlg.h>
@@ -138,7 +139,11 @@ void EditorFrame::onSpawnWindow(wxCommandEvent& event)
 	const Gaff::IReflectionDefinition* const ref_def = reinterpret_cast<Gaff::IReflectionDefinition*>(event.GetEventUserData());
 	const EditorWindowAttribute* const ew_attr = ref_def->getClassAttribute<EditorWindowAttribute>();
 
-	wxWindow* const window = ref_def->createAllocT<wxWindow>(Gaff::FNV1aHash64Const("wxWindow"), ARG_HASH(wxWindow*), GetAllocator(), this);
+	Gaff::IReflectionObject* const instance = ref_def->createT<Gaff::IReflectionObject>(CLASS_HASH(Gaff::IReflectionObject), ARG_HASH(wxWindow*), GetAllocator(), this);
+	GAFF_ASSERT(instance);
+	wxWindow* const window = ref_def->getInterface<wxWindow>(CLASS_HASH(wxWindow), instance->getBasePointer());
+	GAFF_ASSERT(window);
+
 	wxAuiPaneInfo pane;
 
 	pane.Caption(ew_attr->getCaption());
@@ -147,6 +152,8 @@ void EditorFrame::onSpawnWindow(wxCommandEvent& event)
 
 	_aui_mgr.AddPane(window, pane);
 	_aui_mgr.Update();
+
+	GetApp().getEditor()->addEditorWindow(instance);
 }
 
 NS_END

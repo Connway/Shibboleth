@@ -106,8 +106,11 @@ class IAttribute : public IReflectionObject
 {
 public:
 	virtual IAttribute* clone(void) const = 0;
+
 	virtual void finish(Gaff::IReflectionDefinition* /*ref_def*/) {}
 	virtual void finish(Gaff::IEnumReflectionDefinition* /*ref_def*/) {}
+
+	virtual void instantiated(Gaff::IReflectionDefinition* /*ref_def*/, void* /*object*/) {}
 };
 
 class IReflection
@@ -224,7 +227,7 @@ public:
 	virtual bool isConst(void) const = 0;
 };
 
-#define CREATEALLOCT(Class, allocator, ...) createAllocT<Class>(Gaff::FNV1aHash64Const(#Class), allocator, __VA_ARGS__)
+#define CREATET(Class, allocator, ...) createT<Class>(Gaff::FNV1aHash64Const(#Class), allocator, __VA_ARGS__)
 
 class IReflectionDefinition
 {
@@ -241,79 +244,68 @@ public:
 	}
 
 	template <class T>
-	T* getInterface(void* object)
+	T* getInterface(void* object) const
 	{
 		return reinterpret_cast<T*>(getInterface(T::GetReflectionHash(), object));
 	}
 
-	template <class T, class... Args>
-	T* createAllocT(Hash64 interface_hash, Hash64 factory_hash, IAllocator& allocator, Args&&... args) const
+	template <class T>
+	const T* getInterface(Hash64 interface_hash, const void* object) const
 	{
-		GAFF_ASSERT(hasInterface(interface_hash));
+		return reinterpret_cast<const T*>(getInterface(interface_hash, object));
+	}
 
-		FactoryFunc<Args...> factory_func = reinterpret_cast< FactoryFunc<Args...> >(getFactory(factory_hash));
-
-		T* instance = nullptr;
-
-		if (factory_func) {
-			void* data = factory_func(allocator, std::forward<Args>(args)...);
-			instance = reinterpret_cast<T*>(getInterface(interface_hash, data));
-		}
-
-		return instance;
+	template <class T>
+	T* getInterface(Hash64 interface_hash, void* object) const
+	{
+		return reinterpret_cast<T*>(getInterface(interface_hash, object));
 	}
 
 	template <class T, class... Args>
-	T* createAllocT(Hash64 interface_hash, IAllocator& allocator, Args&&... args) const
+	T* createT(Hash64 interface_hash, Hash64 factory_hash, IAllocator& allocator, Args&&... args) const
 	{
 		GAFF_ASSERT(hasInterface(interface_hash));
+		void* const data = create(factory_hash, allocator, std::forward<Args>(args)...);
 
-		constexpr Hash64 ctor_hash = CalcTemplateHash<Args...>(INIT_HASH64);
-
-		FactoryFunc<Args...> factory_func = reinterpret_cast< FactoryFunc<Args...> >(getFactory(ctor_hash));
-
-		T* instance = nullptr;
-
-		if (factory_func) {
-			void* data = factory_func(allocator, std::forward<Args>(args)...);
-			instance = reinterpret_cast<T*>(getInterface(interface_hash, data));
+		if (data) {
+			return reinterpret_cast<T*>(getInterface(interface_hash, data));
 		}
 
-		return instance;
+		return nullptr;
 	}
 
 	template <class T, class... Args>
-	T* createAllocT(IAllocator& allocator, Args&&... args) const
+	T* createT(Hash64 interface_hash, IAllocator& allocator, Args&&... args) const
 	{
-		Hash64 hash = GAFF_REFLECTION_NAMESPACE::Reflection<T>::GetHash();
-		GAFF_ASSERT(hasInterface(hash));
-
 		constexpr Hash64 ctor_hash = CalcTemplateHash<Args...>(INIT_HASH64);
+		return createT<T>(interface_hash, ctor_hash, allocator, std::forward<Args>(args)...);
+	}
 
-		FactoryFunc<Args...> factory_func = reinterpret_cast< FactoryFunc<Args...> >(getFactory(ctor_hash));
-
-		T* instance = nullptr;
-
-		if (factory_func) {
-			void* data = factory_func(allocator, std::forward<Args>(args)...);
-			instance = reinterpret_cast<T*>(getInterface(hash, data));
-		}
-
-		return instance;
+	template <class T, class... Args>
+	T* createT(IAllocator& allocator, Args&&... args) const
+	{
+		constexpr Hash64 interface_hash = GAFF_REFLECTION_NAMESPACE::Reflection<T>::GetHash();
+		constexpr Hash64 ctor_hash = CalcTemplateHash<Args...>(INIT_HASH64);
+		return createT<T>(interface_hash, ctor_hash, allocator, std::forward<Args>(args)...);
 	}
 
 	template <class... Args>
-	void* createAlloc(IAllocator& allocator, Args&&... args) const
+	void* create(Hash64 factory_hash, IAllocator& allocator, Args&&... args) const
 	{
-		constexpr Hash64 ctor_hash = CalcTemplateHash<Args...>(INIT_HASH64);
-
-		FactoryFunc<Args...> factory_func = reinterpret_cast< FactoryFunc<Args...> >(getFactory(ctor_hash));
+		FactoryFunc<Args...> factory_func = reinterpret_cast< FactoryFunc<Args...> >(getFactory(factory_hash));
 
 		if (factory_func) {
 			return factory_func(allocator, std::forward<Args>(args)...);
 		}
 
 		return nullptr;
+	}
+
+	template <class... Args>
+	void* create(IAllocator& allocator, Args&&... args) const
+	{
+		constexpr Hash64 ctor_hash = CalcTemplateHash<Args...>(INIT_HASH64);
+		return create(ctor_hash, allocator, std::forward<Args>(args)...);
 	}
 
 	template <class T>

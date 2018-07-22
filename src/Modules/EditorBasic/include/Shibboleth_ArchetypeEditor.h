@@ -41,7 +41,7 @@ NS_SHIBBOLETH
 
 class RefDefItem;
 
-class ArchetypeEditor final : public wxPanel, public wxDropTarget
+class ArchetypeEditor final : public wxPanel, public wxDropTarget, public Gaff::IReflectionObject
 {
 public:
 	ArchetypeEditor(
@@ -65,6 +65,8 @@ private:
 	RefDefItem* getItem(const wxTreeItemId& id) const;
 	void addItem(RefDefItem* item);
 	void initComponentList(void);
+
+	SHIB_REFLECTION_CLASS_DECLARE(ArchetypeEditor);
 };
 
 NS_END
