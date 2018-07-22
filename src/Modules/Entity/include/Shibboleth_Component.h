@@ -42,7 +42,7 @@ public:
 		GAFF_ASSERT(it != components->end() && (*it)->getReflectionInstance().getHash() == component_name);
 
 		ProxyAllocator allocator("Components");
-		return (*it)->createAllocT<T>(allocator);
+		return (*it)->createT<T>(allocator);
 	}
 
 	static void* Create(Gaff::Hash64 component_name)
@@ -54,7 +54,7 @@ public:
 		GAFF_ASSERT(it != components->end() && (*it)->getReflectionInstance().getHash() == component_name);
 
 		ProxyAllocator allocator("Components");
-		return (*it)->createAlloc(allocator);
+		return (*it)->create(allocator);
 	}
 
 	Component(void);

@@ -55,7 +55,7 @@ private:
 
 	void onResize(wxSizeEvent& event);
 
-	wxDECLARE_EVENT_TABLE();
+	SHIB_REFLECTION_CLASS_DECLARE(ViewportWindow);
 };
 
 NS_END

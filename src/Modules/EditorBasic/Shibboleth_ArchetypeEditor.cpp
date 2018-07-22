@@ -32,23 +32,24 @@ THE SOFTWARE.
 #include <wx/sizer.h>
 #include <wx/event.h>
 
-SHIB_REFLECTION_EXTERNAL_DEFINE(Shibboleth::ArchetypeEditor)
+SHIB_REFLECTION_DEFINE(ArchetypeEditor)
 
-SHIB_REFLECTION_BUILDER_BEGIN(Shibboleth::ArchetypeEditor)
+NS_SHIBBOLETH
+
+SHIB_REFLECTION_CLASS_DEFINE_BEGIN(ArchetypeEditor)
 	.CTOR(wxWindow*, wxWindowID, const wxPoint&, const wxSize&)
 	.CTOR(wxWindow*, wxWindowID, const wxPoint&)
 	.CTOR(wxWindow*, wxWindowID)
 	.CTOR(wxWindow*)
 
+	.BASE(Gaff::IReflectionObject)
 	.BASE(wxWindow)
 
 	.classAttrs(
 		EditorWindowAttribute("&Editors/&Archetype Editor", "Archetype Editor"),
 		EditorFileHandlerAttribute(".archetype")
 	)
-SHIB_REFLECTION_BUILDER_END(Shibboleth::ArchetypeEditor)
-
-NS_SHIBBOLETH
+SHIB_REFLECTION_CLASS_DEFINE_END(ArchetypeEditor)
 
 constexpr static const char* const s_ref_def_format = "RefDefItemFormat";
 static wxColour g_grey(127, 127, 127);

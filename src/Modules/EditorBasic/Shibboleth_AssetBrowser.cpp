@@ -27,22 +27,23 @@ THE SOFTWARE.
 #include <wx/sizer.h>
 #include <filesystem>
 
-SHIB_REFLECTION_EXTERNAL_DEFINE(Shibboleth::AssetBrowser)
+SHIB_REFLECTION_DEFINE(AssetBrowser)
 
-SHIB_REFLECTION_BUILDER_BEGIN(Shibboleth::AssetBrowser)
+NS_SHIBBOLETH
+
+SHIB_REFLECTION_CLASS_DEFINE_BEGIN(AssetBrowser)
 	.CTOR(wxWindow*, wxWindowID, const wxPoint&, const wxSize&)
 	.CTOR(wxWindow*, wxWindowID, const wxPoint&)
 	.CTOR(wxWindow*, wxWindowID)
 	.CTOR(wxWindow*)
 
+	.BASE(Gaff::IReflectionObject)
 	.BASE(wxWindow)
 
 	.classAttrs(
 		EditorWindowAttribute("Asset &Browser", "Asset Browser")
 	)
-SHIB_REFLECTION_BUILDER_END(Shibboleth::ArchetypeEditor)
-
-NS_SHIBBOLETH
+SHIB_REFLECTION_CLASS_DEFINE_END(AssetBrowser)
 
 AssetBrowser::AssetBrowser(
 	wxWindow* parent,
