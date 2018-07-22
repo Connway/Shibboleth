@@ -41,6 +41,8 @@ bool Editor::OnInit(void)
 		return false;
 	}
 
+	_engine_instance.setEditor(this);
+
 	EditorFrame* const frame = new EditorFrame("Shibboleth Editor", wxDefaultPosition, wxSize(1024, 768));
 	return frame && frame->Show(true);
 }
@@ -50,5 +52,20 @@ void Editor::CleanUp(void)
 	_engine_instance.destroy();
 	wxApp::CleanUp();
 }
+
+void Editor::addEditorWindow(Gaff::IReflectionObject* window)
+{
+	_editor_windows.emplace_back(window);
+}
+
+void Editor::removeEditorWindow(Gaff::IReflectionObject* window)
+{
+	const auto it = Gaff::Find(_editor_windows, window);
+
+	if (it != _editor_windows.end()) {
+		_editor_windows.erase_unsorted(it);
+	}
+}
+
 
 NS_END

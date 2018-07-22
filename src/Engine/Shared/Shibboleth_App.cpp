@@ -268,7 +268,7 @@ bool App::loadMainLoop(void)
 		}
 	}
 
-	_main_loop = refl->createAllocT<IMainLoop>(Gaff::FNV1aHash64Const("IMainLoop"), GetAllocator());
+	_main_loop = refl->createT<IMainLoop>(Gaff::FNV1aHash64Const("IMainLoop"), GetAllocator());
 
 	if (!_main_loop) {
 		LogErrorDefault("Failed to construct main loop class '%s'.", refl->getReflectionInstance().getName());
@@ -340,7 +340,7 @@ bool App::loadModules(void)
 
 	for (const Gaff::IReflectionDefinition* ref_def : *manager_bucket) {
 		ProxyAllocator allocator;
-		IManager* manager = ref_def->CREATEALLOCT(IManager, allocator);
+		IManager* manager = ref_def->CREATET(IManager, allocator);
 
 		if (!manager->init()) {
 			// log error
@@ -556,6 +556,21 @@ void App::destroy(void)
 #ifdef INIT_STACKTRACE_SYSTEM
 	Gaff::StackTrace::Destroy();
 #endif
+}
+
+const IEditor* App::getEditor(void) const
+{
+	return _editor;
+}
+
+IEditor* App::getEditor(void)
+{
+	return _editor;
+}
+
+void App::setEditor(IEditor* editor)
+{
+	_editor = editor;
 }
 
 const IManager* App::getManager(Gaff::Hash64 name) const

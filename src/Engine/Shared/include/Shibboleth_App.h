@@ -33,7 +33,7 @@ NS_SHIBBOLETH
 
 class IMainLoop;
 
-class App : public IApp
+class App final : public IApp
 {
 public:
 	App(void);
@@ -45,6 +45,10 @@ public:
 #endif
 	void run(void);
 	void destroy(void);
+
+	const IEditor* getEditor(void) const override;
+	IEditor* getEditor(void) override;
+	void setEditor(IEditor* editor) override;
 
 	const IManager* getManager(Gaff::Hash64 name) const override;
 	IManager* getManager(Gaff::Hash64 name) override;
@@ -99,6 +103,8 @@ private:
 	VectorMap< Gaff::Hash64, UniquePtr<IManager> > _manager_map;
 	Gaff::JSON _configs;
 	U8String _project_dir = ".";
+
+	IEditor* _editor = nullptr;
 
 	bool initInternal(void);
 	bool loadFileSystem(void);
