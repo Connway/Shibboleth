@@ -36,7 +36,7 @@ static void LoadJob(void* data)
 {
 	eastl::pair<IResource*, IFile*>* job_data = reinterpret_cast<eastl::pair<IResource*, IFile*>*>(data);
 
-	const ILoadFileCallbackAttribute* const cb_attr = job_data->first->getReflectionDefinition().GET_CLASS_ATTRIBUTE(ILoadFileCallbackAttribute);
+	const ILoadFileCallbackAttribute* const cb_attr = job_data->first->getReflectionDefinition().GET_CLASS_ATTR(ILoadFileCallbackAttribute);
 	cb_attr->callCallback(job_data->first->getBasePointer(), job_data->second);
 
 	GetApp().getFileSystem()->closeFile(job_data->second);
@@ -52,7 +52,7 @@ void IResource::load(void)
 	IFile* const file = loadFile(getFilePath().getBuffer());
 
 	if (file) {
-		const ILoadFileCallbackAttribute* const cb_attr = getReflectionDefinition().GET_CLASS_ATTRIBUTE(ILoadFileCallbackAttribute);
+		const ILoadFileCallbackAttribute* const cb_attr = getReflectionDefinition().GET_CLASS_ATTR(ILoadFileCallbackAttribute);
 		GAFF_ASSERT(cb_attr);
 
 		eastl::pair<IResource*, IFile*>* const res_data = SHIB_ALLOCT(

@@ -223,7 +223,7 @@ void ArchetypeEditor::addItem(RefDefItem* item)
 {
 	const Gaff::IReflectionDefinition* const ref_def = item->getRefDef();
 
-	if (ref_def->getClassAttribute<UniqueAttribute>()) {
+	if (ref_def->getClassAttr<UniqueAttribute>()) {
 		_ecs_components->SetItemTextColour(item->GetId(), g_grey);
 		item->setDisabled(true);
 	}
@@ -233,11 +233,11 @@ void ArchetypeEditor::addItem(RefDefItem* item)
 
 void ArchetypeEditor::initComponentList(void)
 {
-	const auto comp_ref_defs = GetApp().getReflectionManager().getReflectionWithAttribute(Reflection<ECSClassAttribute>::GetHash());
+	const auto comp_ref_defs = GetApp().getReflectionManager().getReflectionWithAttribute<ECSClassAttribute>();
 	const wxTreeItemId root = _ecs_components->GetRootItem();
 
 	for (const Gaff::IReflectionDefinition* ref_def : comp_ref_defs) {
-		const ECSClassAttribute* const ecs = ref_def->getClassAttribute<ECSClassAttribute>();
+		const ECSClassAttribute* const ecs = ref_def->getClassAttr<ECSClassAttribute>();
 		wxTreeItemId category_id = root;
 
 		if (const char* const category = ecs->getCategory()) {

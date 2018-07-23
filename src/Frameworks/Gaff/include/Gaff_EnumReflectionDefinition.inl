@@ -105,20 +105,20 @@ const char* EnumReflectionDefinition<Enum, Allocator>::getEntryName(Enum value) 
 }
 
 template <class Enum, class Allocator>
-int32_t EnumReflectionDefinition<Enum, Allocator>::getNumEnumAttributes(void) const
+int32_t EnumReflectionDefinition<Enum, Allocator>::getNumEnumAttrs(void) const
 {
 	return static_cast<int32_t>(_enum_attrs.size());
 }
 
 template <class Enum, class Allocator>
-const IAttribute* EnumReflectionDefinition<Enum, Allocator>::getEnumAttribute(int32_t index) const
+const IAttribute* EnumReflectionDefinition<Enum, Allocator>::getEnumAttr(int32_t index) const
 {
 	GAFF_ASSERT(index < static_cast<int32_t>(_enum_attrs.size()));
 	return _enum_attrs[index].get();
 }
 
 template <class Enum, class Allocator>
-int32_t EnumReflectionDefinition<Enum, Allocator>::getNumEntryAttributes(Hash32 name) const
+int32_t EnumReflectionDefinition<Enum, Allocator>::getNumEntryAttrs(Hash32 name) const
 {
 	auto it = _entry_attrs.find(name);
 	GAFF_ASSERT(it != _entry_attrs.end());
@@ -126,7 +126,7 @@ int32_t EnumReflectionDefinition<Enum, Allocator>::getNumEntryAttributes(Hash32 
 }
 
 template <class Enum, class Allocator>
-const IAttribute* EnumReflectionDefinition<Enum, Allocator>::getEntryAttribute(Hash32 name, int32_t index) const
+const IAttribute* EnumReflectionDefinition<Enum, Allocator>::getEntryAttr(Hash32 name, int32_t index) const
 {
 	auto it = _entry_attrs.find(name);
 	GAFF_ASSERT(it != _entry_attrs.end());

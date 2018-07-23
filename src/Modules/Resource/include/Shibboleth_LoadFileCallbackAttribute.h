@@ -45,7 +45,7 @@ private:
 };
 
 template <class T>
-class LoadFileCallbackAttribute : public ILoadFileCallbackAttribute
+class LoadFileCallbackAttribute final : public ILoadFileCallbackAttribute
 {
 public:
 	LoadFileCallbackAttribute(void (T::*callback)(IFile*), int32_t pool = JPI_ANY):
@@ -61,7 +61,8 @@ public:
 
 	Gaff::IAttribute* clone(void) const override
 	{
-		return SHIB_ALLOCT_POOL(LoadFileCallbackAttribute, GetAllocator().getPoolIndex("Reflection"), GetAllocator(), _callback);
+		Shibboleth::IAllocator& allocator = GetAllocator();
+		return SHIB_ALLOCT_POOL(LoadFileCallbackAttribute, allocator.getPoolIndex("Reflection"), allocator, _callback);
 	}
 
 private:

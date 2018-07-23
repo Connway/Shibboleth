@@ -25,7 +25,7 @@ THE SOFTWARE.
 #include "Shibboleth_Utilities.h"
 #include "Shibboleth_IMainLoop.h"
 #include "Shibboleth_IManager.h"
-#include "Gaff_ReflectionInterfaces.h"
+#include "Shibboleth_EditorAttribute.h"
 #include <Gaff_CrashHandler.h>
 #include <Gaff_Directory.h>
 #include <Gaff_Utils.h>
@@ -261,7 +261,7 @@ bool App::loadMainLoop(void)
 
 	if (_configs["editor_mode"].getBool(false)) {
 		for (const Gaff::IReflectionDefinition* ref_def : *bucket) {
-			if (ref_def->getClassAttribute(Gaff::FNV1aHash64Const("EditorAttribute"))) {
+			if (ref_def->getClassAttr<EditorAttribute>()) {
 				refl = ref_def;
 				break;
 			}
