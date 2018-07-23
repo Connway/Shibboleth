@@ -90,8 +90,8 @@ void ReflectionDefinition<T, Allocator>::IVar::setElementMoveT(T& object, int32_
 // VarPtr
 template <class T, class Allocator>
 template <class Var>
-ReflectionDefinition<T, Allocator>::VarPtr<Var>::VarPtr(Var T::*ptr, bool read_only):
-	_ptr(ptr), _read_only(read_only)
+ReflectionDefinition<T, Allocator>::VarPtr<Var>::VarPtr(Var T::*ptr):
+	_ptr(ptr)
 {
 	GAFF_ASSERT(ptr);
 }
@@ -115,7 +115,6 @@ template <class T, class Allocator>
 template <class Var>
 void ReflectionDefinition<T, Allocator>::VarPtr<Var>::setData(void* object, const void* data)
 {
-	GAFF_ASSERT(!_read_only);
 	T* const obj = reinterpret_cast<T*>(object);
 	(obj->*_ptr) = *reinterpret_cast<const Var*>(data);
 }
@@ -124,16 +123,8 @@ template <class T, class Allocator>
 template <class Var>
 void ReflectionDefinition<T, Allocator>::VarPtr<Var>::setDataMove(void* object, void* data)
 {
-	GAFF_ASSERT(!_read_only);
 	T* const obj = reinterpret_cast<T*>(object);
 	(obj->*_ptr) = std::move(*reinterpret_cast<Var*>(data));
-}
-
-template <class T, class Allocator>
-template <class Var>
-bool ReflectionDefinition<T, Allocator>::VarPtr<Var>::isReadOnly(void) const
-{
-	return _read_only;
 }
 
 template <class T, class Allocator>
@@ -222,13 +213,6 @@ void ReflectionDefinition<T, Allocator>::VarFuncPtr<Ret, Var>::setDataMove(void*
 
 	T* obj = reinterpret_cast<T*>(object);
 	(obj->*_setter)(*reinterpret_cast<VarFinal*>(data));
-}
-
-template <class T, class Allocator>
-template <class Ret, class Var>
-bool ReflectionDefinition<T, Allocator>::VarFuncPtr<Ret, Var>::isReadOnly(void) const
-{
-	return _setter == nullptr;
 }
 
 template <class T, class Allocator>
@@ -325,13 +309,6 @@ bool ReflectionDefinition<T, Allocator>::BaseVarPtr<Base>::isVector(void) const
 
 template <class T, class Allocator>
 template <class Base>
-bool ReflectionDefinition<T, Allocator>::BaseVarPtr<Base>::isReadOnly(void) const
-{
-	return _base_var->isReadOnly();
-}
-
-template <class T, class Allocator>
-template <class Base>
 int32_t ReflectionDefinition<T, Allocator>::BaseVarPtr<Base>::size(const void* object) const
 {
 	GAFF_ASSERT(object);
@@ -410,8 +387,8 @@ void ReflectionDefinition<T, Allocator>::BaseVarPtr<Base>::save(ISerializeWriter
 // ArrayPtr
 template <class T, class Allocator>
 template <class Var, size_t array_size>
-ReflectionDefinition<T, Allocator>::ArrayPtr<Var, array_size>::ArrayPtr(Var (T::*ptr)[array_size], bool read_only):
-	_ptr(ptr), _read_only(read_only)
+ReflectionDefinition<T, Allocator>::ArrayPtr<Var, array_size>::ArrayPtr(Var (T::*ptr)[array_size]):
+	_ptr(ptr)
 {
 	GAFF_ASSERT(ptr);
 }
@@ -545,8 +522,8 @@ void ReflectionDefinition<T, Allocator>::ArrayPtr<Var, array_size>::save(ISerial
 // VectorPtr
 template <class T, class Allocator>
 template <class Var, class Vec_Allocator>
-ReflectionDefinition<T, Allocator>::VectorPtr<Var, Vec_Allocator>::VectorPtr(Vector<Var, Vec_Allocator> (T::*ptr), bool read_only):
-	_ptr(ptr), _read_only(read_only)
+ReflectionDefinition<T, Allocator>::VectorPtr<Var, Vec_Allocator>::VectorPtr(Vector<Var, Vec_Allocator> (T::*ptr)):
+	_ptr(ptr)
 {
 	GAFF_ASSERT(ptr);
 }
@@ -713,38 +690,42 @@ void ReflectionDefinition<T, Allocator>::save(ISerializeWriter& writer, const vo
 template <class T, class Allocator>
 void ReflectionDefinition<T, Allocator>::load(const ISerializeReader& reader, T& object) const
 {
-	for (auto& entry : _vars) {
-		if (!entry.second->isReadOnly()) {
-			ScopeGuard scope = reader.enterElementGuard(entry.first.getBuffer());
-			entry.second->load(reader, object);
-		}
-	}
+	GAFF_REF(reader); GAFF_REF(object);
+	//for (auto& entry : _vars) {
+	//	if (!getVarAttr<ReadOnlyAttribute>(entry.first.getHash())) {
+	//		if (!entry.second->isReadOnly()) {
+	//			ScopeGuard scope = reader.enterElementGuard(entry.first.getBuffer());
+	//			entry.second->load(reader, object);
+	//		}
+	//	}
+	//}
 }
 
 template <class T, class Allocator>
 void ReflectionDefinition<T, Allocator>::save(ISerializeWriter& writer, const T& object) const
 {
-	uint32_t writable_vars = 0;
+	GAFF_REF(writer); GAFF_REF(object);
+	//uint32_t writable_vars = 0;
 
-	// Count how many vars we're actually writing to the object.
-	for (auto& entry : _vars) {
-		// If not read-only and does not have the NoSerialize attribute.
-		if (!entry.second->isReadOnly()) {
-			++writable_vars;
-		}
-	}
+	//// Count how many vars we're actually writing to the object.
+	//for (auto& entry : _vars) {
+	//	// If not read-only and does not have the NoSerialize attribute.
+	//	if (!entry.second->isReadOnly()) {
+	//		++writable_vars;
+	//	}
+	//}
 
-	// Write out the object.
-	writer.startObject(writable_vars);
+	//// Write out the object.
+	//writer.startObject(writable_vars);
 
-	for (auto& entry : _vars) {
-		if (!entry.second->isReadOnly()) {
-			writer.writeKey(entry.first.getBuffer());
-			entry.second->save(writer, object);
-		}
-	}
+	//for (auto& entry : _vars) {
+	//	if (!entry.second->isReadOnly()) {
+	//		writer.writeKey(entry.first.getBuffer());
+	//		entry.second->save(writer, object);
+	//	}
+	//}
 
-	writer.endObject();
+	//writer.endObject();
 }
 
 template <class T, class Allocator>
@@ -802,69 +783,95 @@ const IReflection& ReflectionDefinition<T, Allocator>::getReflectionInstance(voi
 }
 
 template <class T, class Allocator>
-int32_t ReflectionDefinition<T, Allocator>::getNumVariables(void) const
+int32_t ReflectionDefinition<T, Allocator>::getNumVars(void) const
 {
 	return static_cast<int32_t>(_vars.size());
 }
 
 template <class T, class Allocator>
-Hash32 ReflectionDefinition<T, Allocator>::getVariableHash(int32_t index) const
+Hash32 ReflectionDefinition<T, Allocator>::getVarHash(int32_t index) const
 {
-	GAFF_ASSERT(index < _vars.size());
-	return getVariableName(index).getHash();
+	GAFF_ASSERT(index < static_cast<int32_t>(_vars.size()));
+	return getVarName(index).getHash();
 }
 
 template <class T, class Allocator>
-IReflectionVar* ReflectionDefinition<T, Allocator>::getVariable(int32_t index) const
+IReflectionVar* ReflectionDefinition<T, Allocator>::getVar(int32_t index) const
 {
-	GAFF_ASSERT(index < _vars.size());
-	return getVar(index);
+	GAFF_ASSERT(index < static_cast<int32_t>(_vars.size()));
+	return getVarT(index);
 }
 
 template <class T, class Allocator>
-IReflectionVar* ReflectionDefinition<T, Allocator>::getVariable(Hash32 name) const
+IReflectionVar* ReflectionDefinition<T, Allocator>::getVar(Hash32 name) const
 {
 	GAFF_ASSERT(Find(_vars, name) != _vars.end());
-	return getVar(name);
+	return getVarT(name);
 }
 
 template <class T, class Allocator>
-int32_t ReflectionDefinition<T, Allocator>::getNumClassAttributes(void) const
+int32_t ReflectionDefinition<T, Allocator>::getNumFuncs(void) const
+{
+	return static_cast<int32_t>(_funcs.size());
+}
+
+template <class T, class Allocator>
+Hash32 ReflectionDefinition<T, Allocator>::getFuncHash(int32_t index) const
+{
+	GAFF_ASSERT(index < static_cast<int32_t>(_funcs.size()));
+	return getFuncName(index).getHash();
+}
+
+template <class T, class Allocator>
+int32_t ReflectionDefinition<T, Allocator>::getNumStaticFuncs(void) const
+{
+	return static_cast<int32_t>(_static_funcs.size());
+}
+
+template <class T, class Allocator>
+Hash32 ReflectionDefinition<T, Allocator>::getStaticFuncHash(int32_t index) const
+{
+	GAFF_ASSERT(index < static_cast<int32_t>(_static_funcs.size()));
+	return getStaticFuncName(index).getHash();
+}
+
+template <class T, class Allocator>
+int32_t ReflectionDefinition<T, Allocator>::getNumClassAttrs(void) const
 {
 	return static_cast<int32_t>(_class_attrs.size());
 }
 
 template <class T, class Allocator>
-const IAttribute* ReflectionDefinition<T, Allocator>::getClassAttribute(int32_t index) const
+const IAttribute* ReflectionDefinition<T, Allocator>::getClassAttr(int32_t index) const
 {
-	GAFF_ASSERT(index < getNumClassAttributes());
+	GAFF_ASSERT(index < getNumClassAttrs());
 	return _class_attrs[index].get();
 }
 
 template <class T, class Allocator>
-int32_t ReflectionDefinition<T, Allocator>::getNumVarAttributes(Hash32 name) const
+int32_t ReflectionDefinition<T, Allocator>::getNumVarAttrs(Hash32 name) const
 {
-	auto it = _var_attrs.find(name);
+	const auto it = _var_attrs.find(name);
 	return (it != _var_attrs.end()) ? static_cast<int32_t>(it->second.size()) : 0;
 }
 
 template <class T, class Allocator>
-const IAttribute* ReflectionDefinition<T, Allocator>::getVarAttribute(Hash32 name, int32_t index) const
+const IAttribute* ReflectionDefinition<T, Allocator>::getVarAttr(Hash32 name, int32_t index) const
 {
-	auto it = _var_attrs.find(name);
+	const auto it = _var_attrs.find(name);
 	GAFF_ASSERT(it != _var_attrs.end());
 	GAFF_ASSERT(index < static_cast<int32_t>(it->second.size()));
 	return it->second[index].get();
 }
 
 template <class T, class Allocator>
-int32_t ReflectionDefinition<T, Allocator>::getNumFuncAttributes(Hash32 name) const
+int32_t ReflectionDefinition<T, Allocator>::getNumFuncAttrs(Hash32 name) const
 {
-	auto it = _func_attrs.find(name);
+	const auto it = _func_attrs.find(name);
 
 	if (it == _func_attrs.end()) {
 		for (auto it_base = _base_classes.begin(); it_base != _base_classes.end(); ++it_base) {
-			const int32_t num = it_base->second->getNumFuncAttributes(name);
+			const int32_t num = it_base->second->getNumFuncAttrs(name);
 
 			if (num > 0) {
 				return num;
@@ -879,21 +886,66 @@ int32_t ReflectionDefinition<T, Allocator>::getNumFuncAttributes(Hash32 name) co
 }
 
 template <class T, class Allocator>
-const IAttribute* ReflectionDefinition<T, Allocator>::getFuncAttribute(Hash32 name, int32_t index) const
+const IAttribute* ReflectionDefinition<T, Allocator>::getFuncAttr(Hash32 name, int32_t index) const
 {
-	auto it = _func_attrs.find(name);
+	const auto it = _func_attrs.find(name);
 
 	if (it == _func_attrs.end()) {
 		for (auto it_base = _base_classes.begin(); it_base != _base_classes.end(); ++it_base) {
-			const int32_t num = it_base->second->getNumFuncAttributes(name);
+			const int32_t num = it_base->second->getNumFuncAttrs(name);
 
 			if (num > 0) {
 				GAFF_ASSERT(index < num);
-				return it_base->second->getFuncAttribute(name, index);
+				return it_base->second->getFuncAttr(name, index);
 			}
 		}
 
 	} else {
+		GAFF_ASSERT(index < static_cast<int32_t>(it->second.size()));
+		return it->second[index].get();
+	}
+
+	return nullptr;
+}
+
+template <class T, class Allocator>
+int32_t ReflectionDefinition<T, Allocator>::getNumStaticFuncAttrs(Hash32 name) const
+{
+	const auto it = _static_func_attrs.find(name);
+
+	if (it == _static_func_attrs.end()) {
+		for (auto it_base = _base_classes.begin(); it_base != _base_classes.end(); ++it_base) {
+			const int32_t num = it_base->second->getNumStaticFuncAttrs(name);
+
+			if (num > 0) {
+				return num;
+			}
+		}
+
+	} else {
+		return static_cast<int32_t>(it->second.size());
+	}
+
+	return 0;
+}
+
+template <class T, class Allocator>
+const IAttribute* ReflectionDefinition<T, Allocator>::getStaticFuncAttr(Hash32 name, int32_t index) const
+{
+	const auto it = _static_func_attrs.find(name);
+
+	if (it == _static_func_attrs.end()) {
+		for (auto it_base = _base_classes.begin(); it_base != _base_classes.end(); ++it_base) {
+			const int32_t num = it_base->second->getNumStaticFuncAttrs(name);
+
+			if (num > 0) {
+				GAFF_ASSERT(index < num);
+				return it_base->second->getStaticFuncAttr(name, index);
+			}
+		}
+
+	} else {
+		GAFF_ASSERT(index < static_cast<int32_t>(it->second.size()));
 		return it->second[index].get();
 	}
 
@@ -903,14 +955,14 @@ const IAttribute* ReflectionDefinition<T, Allocator>::getFuncAttribute(Hash32 na
 template <class T, class Allocator>
 IReflectionDefinition::VoidFunc ReflectionDefinition<T, Allocator>::getFactory(Hash64 ctor_hash) const
 {
-	auto it = _ctors.find(ctor_hash);
+	const auto it = _ctors.find(ctor_hash);
 	return it == _ctors.end() ? nullptr : it->second;
 }
 
 template <class T, class Allocator>
 IReflectionDefinition::VoidFunc ReflectionDefinition<T, Allocator>::getStaticFunc(Hash32 name, Hash64 args) const
 {
-	auto it = Find(_static_funcs, name);
+	const auto it = Find(_static_funcs, name);
 
 	if (it != _static_funcs.end()) {
 		for (int32_t i = 0; i < StaticFuncData::NUM_OVERLOADS; ++i) {
@@ -926,7 +978,7 @@ IReflectionDefinition::VoidFunc ReflectionDefinition<T, Allocator>::getStaticFun
 template <class T, class Allocator>
 void* ReflectionDefinition<T, Allocator>::getFunc(Hash32 name, Hash64 args) const
 {
-	auto it = Find(_funcs, name);
+	const auto it = Find(_funcs, name);
 
 	if (it != _funcs.end()) {
 		for (int32_t i = 0; i < FuncData::NUM_OVERLOADS; ++i) {
@@ -940,25 +992,39 @@ void* ReflectionDefinition<T, Allocator>::getFunc(Hash32 name, Hash64 args) cons
 }
 
 template <class T, class Allocator>
-const HashString32<Allocator>& ReflectionDefinition<T, Allocator>::getVariableName(int32_t index) const
+const HashString32<Allocator>& ReflectionDefinition<T, Allocator>::getVarName(int32_t index) const
 {
-	GAFF_ASSERT(index < _vars.size());
+	GAFF_ASSERT(index < static_cast<int32_t>(_vars.size()));
 	return (_vars.begin() + index)->first;
 }
 
 template <class T, class Allocator>
-typename ReflectionDefinition<T, Allocator>::IVar* ReflectionDefinition<T, Allocator>::getVar(int32_t index) const
+typename ReflectionDefinition<T, Allocator>::IVar* ReflectionDefinition<T, Allocator>::getVarT(int32_t index) const
 {
-	GAFF_ASSERT(index < _vars.size());
+	GAFF_ASSERT(index < static_cast<int32_t>(_vars.size()));
 	return (_vars.begin() + index)->second.get();
 }
 
 template <class T, class Allocator>
-typename ReflectionDefinition<T, Allocator>::IVar* ReflectionDefinition<T, Allocator>::getVar(Hash32 name) const
+typename ReflectionDefinition<T, Allocator>::IVar* ReflectionDefinition<T, Allocator>::getVarT(Hash32 name) const
 {
-	auto it = Find(_vars, name);
+	const auto it = Find(_vars, name);
 	GAFF_ASSERT(it != _vars.end());
 	return it->second.get();
+}
+
+template <class T, class Allocator>
+const HashString32<Allocator>& ReflectionDefinition<T, Allocator>::getFuncName(int32_t index) const
+{
+	GAFF_ASSERT(index < static_cast<int32_t>(_funcs.size()));
+	return (_funcs.begin() + index)->first;
+}
+
+template <class T, class Allocator>
+const HashString32<Allocator>& ReflectionDefinition<T, Allocator>::getStaticFuncName(int32_t index) const
+{
+	GAFF_ASSERT(index < static_cast<int32_t>(_static_funcs.size()));
+	return (_static_funcs.begin() + index)->first;
 }
 
 template <class T, class Allocator>
@@ -996,10 +1062,12 @@ ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::base(voi
 		);
 
 		// Base class vars
-		for (int32_t i = 0; i < base_ref_def.getNumVariables(); ++i) {
+		const int32_t num_vars = base_ref_def.getNumVars();
+
+		for (int32_t i = 0; i < num_vars; ++i) {
 			eastl::pair<HashString32<Allocator>, IVarPtr> pair(
-				base_ref_def.getVariableName(i),
-				IVarPtr(GAFF_ALLOCT(BaseVarPtr<Base>, _allocator, base_ref_def.getVar(i)))
+				base_ref_def.getVarName(i),
+				IVarPtr(GAFF_ALLOCT(BaseVarPtr<Base>, _allocator, base_ref_def.getVarT(i)))
 			);
 
 			GAFF_ASSERT(_vars.find(pair.first) == _vars.end());
@@ -1007,10 +1075,10 @@ ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::base(voi
 
 			// Base class var attrs
 			const Hash32 var_hash = pair.first.getHash();
-			const int32_t num_var_attrs = base_ref_def.getNumVarAttributes(var_hash);
+			const int32_t num_var_attrs = base_ref_def.getNumVarAttrs(var_hash);
 
 			for (int32_t j = 0; j < num_var_attrs; ++j) {
-				const IAttribute* const attribute = base_ref_def.getVarAttribute(var_hash, j);
+				const IAttribute* const attribute = base_ref_def.getVarAttr(var_hash, j);
 
 				auto& attrs = _var_attrs[var_hash];
 				attrs.set_allocator(_allocator);
@@ -1019,10 +1087,18 @@ ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::base(voi
 		}
 
 		// Base class funcs
+		//for (int32_t i = 0; i < base_ref_def.getNumFuncs(); ++i) {
+		//}
+
+		// Base class static funcs
+		//for (int32_t i = 0; i < base_ref_def.getNumStaticFuncs(); ++i) {
+		//}
 
 		// Base class class attrs
-		for (int32_t i = 0; i < base_ref_def.getNumClassAttributes(); ++i) {
-			_class_attrs.emplace_back(base_ref_def.getClassAttribute(i)->clone());
+		const int32_t num_class_attrs = base_ref_def.getNumClassAttrs();
+
+		for (int32_t i = 0; i < num_class_attrs; ++i) {
+			_class_attrs.emplace_back(base_ref_def.getClassAttr(i)->clone());
 		}
 
 	// Register for callback if base class hasn't been defined yet.
@@ -1062,17 +1138,23 @@ ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::ctor(voi
 }
 
 template <class T, class Allocator>
-template <class Var, size_t size>
-ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::var(const char (&name)[size], Var T::*ptr, bool read_only)
+template <class Var, size_t size, class... Attrs>
+ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::var(const char (&name)[size], Var T::*ptr, const Attrs&... attributes)
 {
 	static_assert(GAFF_REFLECTION_NAMESPACE::Reflection<Var>::HasReflection, "Type is not reflected!");
 
 	eastl::pair<HashString32<Allocator>, IVarPtr> pair(
 		HashString32<Allocator>(name, size - 1, nullptr, _allocator),
-		IVarPtr(GAFF_ALLOCT(VarPtr<Var>, _allocator, ptr, read_only))
+		IVarPtr(GAFF_ALLOCT(VarPtr<Var>, _allocator, ptr))
 	);
 
 	GAFF_ASSERT(_vars.find(pair.first) == _vars.end());
+
+	//if constexpr (sizeof...(Attrs) > 0) {
+	//	auto& attrs = _var_attrs[FNV1aHash32Const(name)];
+	//	attrs.set_allocator(_allocator);
+	//	addAttributes(ptr, attrs, attributes...);
+	//}
 
 	_vars.insert(std::move(pair));
 	return *this;
@@ -1096,18 +1178,18 @@ struct ValueHelper<false>
 };
 
 template <class T, class Allocator>
-template <class Ret, class Var, size_t size>
-ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::var(const char (&name)[size], Ret (T::*getter)(void) const, void (T::*setter)(Var))
+template <class Ret, class Var, size_t size, class... Attrs>
+ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::var(const char (&name)[size], Ret (T::*getter)(void) const, void (T::*setter)(Var), const Attrs&... attributes)
 {
-	using RetNoRef = std::remove_reference<Ret>::type;
-	using RetNoPointer = std::remove_pointer<RetNoRef>::type;
-	using RetNoConst = std::remove_const<RetNoPointer>::type;
-	using RetFinal = ValueHelper<std::is_pointer<RetNoRef>::value>::type<RetNoConst>;
+	using RetNoRef = typename std::remove_reference<Ret>::type;
+	using RetNoPointer = typename std::remove_pointer<RetNoRef>::type;
+	using RetNoConst = typename std::remove_const<RetNoPointer>::type;
+	using RetFinal = typename ValueHelper<std::is_pointer<RetNoRef>::value>::type<RetNoConst>;
 
-	using VarNoRef = std::remove_reference<Var>::type;
-	using VarNoPointer = std::remove_pointer<VarNoRef>::type;
-	using VarNoConst = std::remove_const<VarNoPointer>::type;
-	using VarFinal = ValueHelper<std::is_pointer<VarNoRef>::value>::type<VarNoConst>;
+	using VarNoRef = typename std::remove_reference<Var>::type;
+	using VarNoPointer = typename std::remove_pointer<VarNoRef>::type;
+	using VarNoConst = typename std::remove_const<VarNoPointer>::type;
+	using VarFinal = typename ValueHelper<std::is_pointer<VarNoRef>::value>::type<VarNoConst>;
 
 	static_assert(GAFF_REFLECTION_NAMESPACE::Reflection<RetFinal>::HasReflection, "Getter return type is not reflected!");
 	static_assert(GAFF_REFLECTION_NAMESPACE::Reflection<VarFinal>::HasReflection, "Setter arg type is not reflected!");
@@ -1120,49 +1202,67 @@ ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::var(cons
 
 	GAFF_ASSERT(_vars.find(pair.first) == _vars.end());
 
+	if constexpr (sizeof...(Attrs) > 0) {
+		auto& attrs = _var_attrs[FNV1aHash32Const(name)];
+		attrs.set_allocator(_allocator);
+		addAttributes(getter, setter, attrs, attributes...);
+	}
+
 	_vars.insert(std::move(pair));
 	return *this;
 }
 
 template <class T, class Allocator>
-template <class Var, class Vec_Allocator, size_t size>
-ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::var(const char (&name)[size], Vector<Var, Vec_Allocator> T::*vec, bool read_only)
+template <class Var, class Vec_Allocator, size_t size, class... Attrs>
+ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::var(const char (&name)[size], Vector<Var, Vec_Allocator> T::*vec, const Attrs&... attributes)
 {
 	static_assert(!std::is_pointer<Var>::value, "Cannot reflect pointers.");
 	using PtrType = VectorPtr<Var, Vec_Allocator>;
 
 	eastl::pair<HashString32<Allocator>, IVarPtr> pair(
 		HashString32<Allocator>(name, size - 1, nullptr, _allocator),
-		IVarPtr(GAFF_ALLOCT(PtrType, _allocator, vec, read_only))
+		IVarPtr(GAFF_ALLOCT(PtrType, _allocator, vec))
 	);
 
 	GAFF_ASSERT(_vars.find(pair.first) == _vars.end());
+
+	if constexpr (sizeof...(Attrs) > 0) {
+		auto& attrs = _var_attrs[FNV1aHash32Const(name)];
+		attrs.set_allocator(_allocator);
+		addAttributes(vec, attrs, attributes...);
+	}
 
 	_vars.insert(std::move(pair));
 	return *this;
 }
 
 template <class T, class Allocator>
-template <class Var, size_t array_size, size_t name_size>
-ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::var(const char (&name)[name_size], Var (T::*arr)[array_size], bool read_only)
+template <class Var, size_t array_size, size_t name_size, class... Attrs>
+ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::var(const char (&name)[name_size], Var (T::*arr)[array_size], const Attrs&... attributes)
 {
 	static_assert(!std::is_pointer<Var>::value, "Cannot reflect pointers.");
 	using PtrType = ArrayPtr<Var, array_size>;
 
 	eastl::pair<HashString32<Allocator>, IVarPtr> pair(
 		HashString32<Allocator>(name, name_size - 1, nullptr, _allocator),
-		IVarPtr(GAFF_ALLOCT(PtrType, _allocator, arr, read_only))
+		IVarPtr(GAFF_ALLOCT(PtrType, _allocator, arr))
 	);
 
 	GAFF_ASSERT(_vars.find(pair.first) == _vars.end());
+
+	if constexpr (sizeof...(Attrs) > 0) {
+		auto& attrs = _var_attrs[FNV1aHash32Const(name)];
+		attrs.set_allocator(_allocator);
+		addAttributes(arr, attrs, attributes...);
+	}
 
 	_vars.insert(std::move(pair));
 	return *this;
 }
 
 template <class T, class Allocator>
-template <size_t size, class Ret, class... Args>
-ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::func(const char (&name)[size], Ret (T::*ptr)(Args...) const)
+template <size_t size, class Ret, class... Args, class... Attrs>
+ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::func(const char (&name)[size], Ret (T::*ptr)(Args...) const, const Attrs&... attributes)
 {
 	auto it = Find(_funcs, FNV1aHash32Const(name));
 
@@ -1174,7 +1274,8 @@ ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::func(con
 		ReflectionFunction<Ret, Args...>* const ref_func = SHIB_ALLOCT(
 			GAFF_SINGLE_ARG(ReflectionFunction<Ret, Args...>),
 			_allocator,
-			ptr, true
+			ptr,
+			true
 		);
 
 		eastl::pair<HashString32<Allocator>, FuncData> pair(
@@ -1212,12 +1313,18 @@ ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::func(con
 		GAFF_ASSERT_MSG(found, "Function overloading only supports 8 overloads per function name!");
 	}
 
+	if constexpr (sizeof...(Attrs) > 0) {
+		auto& attrs = _func_attrs[FNV1aHash32Const(name)];
+		attrs.set_allocator(_allocator);
+		addAttributes(ptr, attributes...);
+	}
+
 	return *this;
 }
 
 template <class T, class Allocator>
-template <size_t size, class Ret, class... Args>
-ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::func(const char (&name)[size], Ret (T::*ptr)(Args...))
+template <size_t size, class Ret, class... Args, class... Attrs>
+ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::func(const char (&name)[size], Ret (T::*ptr)(Args...), const Attrs&... attributes)
 {
 	auto it = Find(_funcs, FNV1aHash32Const(name));
 
@@ -1229,7 +1336,8 @@ ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::func(con
 		ReflectionFunction<Ret, Args...>* const ref_func = SHIB_ALLOCT(
 			GAFF_SINGLE_ARG(ReflectionFunction<Ret, Args...>),
 			_allocator,
-			ptr, false
+			ptr,
+			false
 		);
 
 		it = _funcs.emplace(
@@ -1266,12 +1374,18 @@ ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::func(con
 		GAFF_ASSERT_MSG(found, "Function overloading only supports 8 overloads per function name!");
 	}
 
+	if constexpr (sizeof...(Attrs) > 0) {
+		auto& attrs = _func_attrs[FNV1aHash32Const(name)];
+		attrs.set_allocator(_allocator);
+		addAttributes(ptr, attributes...);
+	}
+
 	return *this;
 }
 
 template <class T, class Allocator>
-template <size_t size, class Ret, class... Args>
-ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::staticFunc(const char (&name)[size], Ret (*func)(Args...))
+template <size_t size, class Ret, class... Args, class... Attrs>
+ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::staticFunc(const char (&name)[size], Ret (*func)(Args...), const Attrs&... attributes)
 {
 	constexpr Hash64 arg_hash = CalcTemplateHash<Ret, Args...>(INIT_HASH64);
 	auto it = Find(_static_funcs, FNV1aHash32Const(name));
@@ -1302,48 +1416,54 @@ ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::staticFu
 		GAFF_ASSERT_MSG(found, "Function overloading only supports 8 overloads per function name!");
 	}
 
+	if constexpr (sizeof...(Attrs) > 0) {
+		auto& attrs = _static_func_attrs[FNV1aHash32Const(name)];
+		attrs.set_allocator(_allocator);
+		addAttributes(ptr, attributes...);
+	}
+
 	return *this;
 }
 
 template <class T, class Allocator>
-template <class... Args>
-ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::classAttrs(const Args&... args)
+template <class... Attrs>
+ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::classAttrs(const Attrs&... attributes)
 {
-	return addAttributes(_class_attrs, args...);
+	return addAttributes(_class_attrs, attributes...);
 }
 
 template <class T, class Allocator>
-template <size_t size, class... Args>
-ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::varAttrs(const char (&name)[size], const Args&... args)
+template <size_t size, class... Attrs>
+ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::varAttrs(const char (&name)[size], const Attrs&... attributes)
 {
 	auto& attrs = _var_attrs[FNV1aHash32Const(name)];
 	attrs.set_allocator(_allocator);
-	return addAttributes(attrs, args...);
+	return addAttributes(attrs, attributes...);
 }
 
 template <class T, class Allocator>
-template <size_t size, class... Args>
-ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::funcAttrs(const char (&name)[size], const Args&... args)
+template <size_t size, class... Attrs>
+ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::funcAttrs(const char (&name)[size], const Attrs&... attributes)
 {
 	auto& attrs = _func_attrs[FNV1aHash32Const(name)];
 	attrs.set_allocator(_allocator);
-	return addAttributes(attrs, args...);
+	return addAttributes(attrs, attributes...);
 }
 
 template <class T, class Allocator>
-template <size_t size, class... Args>
-ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::staticFuncAttrs(const char (&name)[size], const Args&... args)
+template <size_t size, class... Attrs>
+ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::staticFuncAttrs(const char (&name)[size], const Attrs&... attributes)
 {
 	auto& attrs = _static_func_attrs[FNV1aHash32Const(name)];
 	attrs.set_allocator(_allocator);
-	return addAttributes(attrs, args...);
+	return addAttributes(attrs, attributes...);
 }
 
-template <class T, class Allocator>
-ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::attrFile(const char* file)
-{
-	_attr_file = file;
-}
+//template <class T, class Allocator>
+//ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::attrFile(const char* file)
+//{
+//	_attr_file = file;
+//}
 
 template <class T, class Allocator>
 ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::version(uint32_t /*version*/)
@@ -1397,11 +1517,111 @@ void ReflectionDefinition<T, Allocator>::RegisterBaseVariables(void)
 	ref_def.finish();
 }
 
+
+// Variables
+template <class T, class Allocator>
+template <class Var, class First, class... Rest>
+ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::addAttributes(Var T::*var, Vector<IAttributePtr, Allocator>& attrs, const First& first, const Rest&... rest)
+{
+	First* const clone = reinterpret_cast<First*>(first.clone());
+	attrs.emplace_back(IAttributePtr(clone));
+
+	clone->apply(var);
+
+	return addAttributes(var, attrs, rest...);
+}
+
+template <class T, class Allocator>
+template <class Var, class Ret, class First, class... Rest>
+ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::addAttributes(Ret (T::*getter)(void) const, void (T::*setter)(Var), Vector<IAttributePtr, Allocator>& attrs, const First& first, const Rest&... rest)
+{
+	First* const clone = reinterpret_cast<First*>(first.clone());
+	attrs.emplace_back(IAttributePtr(clone));
+
+	clone->apply(getter, setter);
+
+	return addAttributes(getter, setter, attrs, rest...);
+}
+
+template <class T, class Allocator>
+template <class Var, class First, class... Rest>
+ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::addAttributes(Var T::*, Vector<IAttributePtr, Allocator>&)
+{
+	return *this;
+}
+
+template <class T, class Allocator>
+template <class Var, class Ret, class First, class... Rest>
+ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::addAttributes(Ret (T::*)(void) const, void (T::*)(Var), Vector<IAttributePtr, Allocator>&)
+{
+	return *this;
+}
+
+// Functions
+template <class T, class Allocator>
+template <class Ret, class... Args, class First, class... Rest>
+ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::addAttributes(Ret (T::*func)(Args...) const, Vector<IAttributePtr, Allocator>& attrs, const First& first, const Rest&... rest)
+{
+	First* const clone = reinterpret_cast<First*>(first.clone());
+	attrs.emplace_back(IAttributePtr(clone));
+
+	clone->apply(func);
+	
+	return addAttributes(func, attrs, rest...);
+}
+
+template <class T, class Allocator>
+template <class Ret, class... Args, class First, class... Rest>
+ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::addAttributes(Ret (T::*func)(Args...), Vector<IAttributePtr, Allocator>& attrs, const First& first, const Rest&... rest)
+{
+	First* const clone = reinterpret_cast<First*>(first.clone());
+	attrs.emplace_back(IAttributePtr(clone));
+
+	clone->apply(func);
+
+	return addAttributes(func, attrs, rest...);
+}
+
+template <class T, class Allocator>
+template <class Ret, class... Args>
+ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::addAttributes(Ret (T::*)(Args...) const, Vector<IAttributePtr, Allocator>&)
+{
+	return *this;
+}
+
+template <class T, class Allocator>
+template <class Ret, class... Args>
+ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::addAttributes(Ret (T::*)(Args...), Vector<IAttributePtr, Allocator>&)
+{
+	return *this;
+}
+
+// Static Functions
+template <class T, class Allocator>
+template <class Ret, class... Args, class First, class... Rest>
+ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::addAttributes(Ret (*func)(Args...), Vector<IAttributePtr, Allocator>& attrs, const First& first, const Rest&... rest)
+{
+	First* const clone = reinterpret_cast<First*>(first.clone());
+	attrs.emplace_back(IAttributePtr(clone));
+
+	clone->apply(func);
+
+	return addAttributes(func, attrs, rest...);
+}
+
+template <class T, class Allocator>
+template <class Ret, class... Args>
+ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::addAttributes(Ret (*)(Args...), Vector<IAttributePtr, Allocator>&)
+{
+	return *this;
+}
+
+// Non-apply() call version.
 template <class T, class Allocator>
 template <class First, class... Rest>
 ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::addAttributes(Vector<IAttributePtr, Allocator>& attrs, const First& first, const Rest&... rest)
 {
-	attrs.emplace_back(IAttributePtr(GAFF_ALLOCT(First, _allocator, first)));
+	attrs.emplace_back(IAttributePtr(first.clone()));
 	return addAttributes(attrs, rest...);
 }
 

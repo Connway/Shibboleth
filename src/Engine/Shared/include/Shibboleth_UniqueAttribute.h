@@ -29,7 +29,7 @@ NS_SHIBBOLETH
 class UniqueAttribute final : public Gaff::IAttribute
 {
 public:
-	IAttribute * clone(void) const override;
+	IAttribute* clone(void) const override;
 
 	SHIB_REFLECTION_CLASS_DECLARE(UniqueAttribute);
 };

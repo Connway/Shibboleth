@@ -27,12 +27,13 @@ THE SOFTWARE.
 
 NS_SHIBBOLETH
 
-class ResExtAttribute : public Gaff::IAttribute
+class ResExtAttribute final : public Gaff::IAttribute
 {
 public:
 	ResExtAttribute(const char* extension);
 
 	const HashStringTemp32& getExtension(void) const;
+
 	Gaff::IAttribute* clone(void) const override;
 
 private:

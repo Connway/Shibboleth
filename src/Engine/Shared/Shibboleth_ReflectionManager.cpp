@@ -190,32 +190,6 @@ const Vector<const Gaff::IReflectionDefinition*>* ReflectionManager::getTypeBuck
 	return (it == _type_buckets.end()) ? nullptr : &it->second;
 }
 
-Vector<const Gaff::IEnumReflectionDefinition*> ReflectionManager::getEnumReflectionWithAttribute(Gaff::Hash64 name) const
-{
-	Vector<const Gaff::IEnumReflectionDefinition*> out;
-
-	for (const auto& entry : _enum_reflection_map) {
-		if (entry.second->getEnumAttribute(name)) {
-			out.push_back(entry.second.get());
-		}
-	}
-
-	return out;
-}
-
-Vector<const Gaff::IReflectionDefinition*> ReflectionManager::getReflectionWithAttribute(Gaff::Hash64 name) const
-{
-	Vector<const Gaff::IReflectionDefinition*> out;
-
-	for (const auto& entry : _reflection_map) {
-		if (entry.second->getClassAttribute(name)) {
-			out.push_back(entry.second.get());
-		}
-	}
-
-	return out;
-}
-
 Vector<HashString64> ReflectionManager::getModules(void) const
 {
 	Vector<HashString64> out;
