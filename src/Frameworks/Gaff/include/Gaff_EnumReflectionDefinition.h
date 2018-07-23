@@ -53,11 +53,11 @@ public:
 
 	const char* getEntryName(Enum value) const;
 
-	int32_t getNumEnumAttributes(void) const override;
-	const IAttribute* getEnumAttribute(int32_t index) const override;
+	int32_t getNumEnumAttrs(void) const override;
+	const IAttribute* getEnumAttr(int32_t index) const override;
 
-	int32_t getNumEntryAttributes(Hash32 name) const override;
-	const IAttribute* getEntryAttribute(Hash32 name, int32_t index) const override;
+	int32_t getNumEntryAttrs(Hash32 name) const override;
+	const IAttribute* getEntryAttr(Hash32 name, int32_t index) const override;
 
 	void setAllocator(const Allocator& allocator);
 	Hash64 getVersion(void) const;

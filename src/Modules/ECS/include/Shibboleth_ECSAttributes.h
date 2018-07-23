@@ -28,7 +28,7 @@ THE SOFTWARE.
 
 NS_SHIBBOLETH
 
-class ECSClassAttribute : public Gaff::IAttribute
+class ECSClassAttribute final : public Gaff::IAttribute
 {
 public:
 	ECSClassAttribute(const char* name = nullptr, const char* category = nullptr);

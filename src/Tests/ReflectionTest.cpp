@@ -144,9 +144,9 @@ TEST_CASE("reflection class test", "[shibboleth_reflection_class]")
 	Gaff::Hash64 hash = Shibboleth::Reflection<Derived>::GetVersion();
 	printf("Version Hash: %llu\n", hash);
 
-	int test_get_func_ref = Shibboleth::Reflection<Derived>::GetReflectionDefinition().getVar(Gaff::FNV1aHash32Const("cRef"))->getDataT<int>(*ref_result);
-	int test_get_func = Shibboleth::Reflection<Derived>::GetReflectionDefinition().getVar(Gaff::FNV1aHash32Const("cFunc"))->getDataT<int>(*ref_result);
-	int test_get = Shibboleth::Reflection<Derived>::GetReflectionDefinition().getVar(Gaff::FNV1aHash32Const("c"))->getDataT<int>(*ref_result);
+	int test_get_func_ref = Shibboleth::Reflection<Derived>::GetReflectionDefinition().getVarT(Gaff::FNV1aHash32Const("cRef"))->getDataT<int>(*ref_result);
+	int test_get_func = Shibboleth::Reflection<Derived>::GetReflectionDefinition().getVarT(Gaff::FNV1aHash32Const("cFunc"))->getDataT<int>(*ref_result);
+	int test_get = Shibboleth::Reflection<Derived>::GetReflectionDefinition().getVarT(Gaff::FNV1aHash32Const("c"))->getDataT<int>(*ref_result);
 
 	printf(
 		"GetFuncRef: %i\n"
@@ -161,7 +161,7 @@ TEST_CASE("reflection class test", "[shibboleth_reflection_class]")
 	REQUIRE(test_get_func == ref_result->c);
 	REQUIRE(test_get == ref_result->c);
 
-	auto* ref_var = Shibboleth::Reflection<Derived>::GetReflectionDefinition().getVar(Gaff::FNV1aHash32Const("a"));
+	auto* ref_var = Shibboleth::Reflection<Derived>::GetReflectionDefinition().getVarT(Gaff::FNV1aHash32Const("a"));
 	int test_base_get = ref_var->getDataT<int>(*ref_result);
 	printf("GetBase: %i\n", test_base_get);
 
@@ -257,9 +257,9 @@ TEST_CASE("reflection array/vector test", "[shibboleth_reflection_vector_array]"
 	Gaff::IReflectionObject* ptr = &instance;
 
 	const Gaff::ReflectionDefinition<VecTest, Shibboleth::ProxyAllocator>& ref_def = Shibboleth::Reflection<VecTest>::GetReflectionDefinition();
-	Gaff::IReflectionVar* vec_var = ref_def.getVariable(Gaff::FNV1aHash32Const("vec"));
-	Gaff::IReflectionVar* arr_var = ref_def.getVariable(Gaff::FNV1aHash32Const("arr"));
-	Gaff::IReflectionVar* base_var = ref_def.getVariable(Gaff::FNV1aHash32Const("base"));
+	Gaff::IReflectionVar* vec_var = ref_def.getVar(Gaff::FNV1aHash32Const("vec"));
+	Gaff::IReflectionVar* arr_var = ref_def.getVar(Gaff::FNV1aHash32Const("arr"));
+	Gaff::IReflectionVar* base_var = ref_def.getVar(Gaff::FNV1aHash32Const("base"));
 	void* base_ptr = ptr->getBasePointer();
 
 	REQUIRE(vec_var->isVector());
@@ -410,8 +410,9 @@ public:
 	SHIB_REFLECTION_CLASS_DECLARE(AttrTest);
 };
 
-class TestAttr : public Gaff::IAttribute
+class TestAttr final : public Gaff::IAttribute
 {
+public:
 	Gaff::IAttribute* clone(void) const { return SHIB_ALLOCT(TestAttr, Shibboleth::GetAllocator()); }
 
 	SHIB_REFLECTION_CLASS_DECLARE(TestAttr);

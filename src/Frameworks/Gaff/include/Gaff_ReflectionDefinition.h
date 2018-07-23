@@ -88,27 +88,39 @@ public:
 
 	const IReflection& getReflectionInstance(void) const override;
 
-	int32_t getNumVariables(void) const override;
-	Hash32 getVariableHash(int32_t index) const override;
-	IReflectionVar* getVariable(int32_t index) const override;
-	IReflectionVar* getVariable(Hash32 name) const override;
+	int32_t getNumVars(void) const override;
+	Hash32 getVarHash(int32_t index) const override;
+	IReflectionVar* getVar(int32_t index) const override;
+	IReflectionVar* getVar(Hash32 name) const override;
 
-	int32_t getNumClassAttributes(void) const override;
-	const IAttribute* getClassAttribute(int32_t index) const override;
+	int32_t getNumFuncs(void) const override;
+	Hash32 getFuncHash(int32_t index) const override;
 
-	int32_t getNumVarAttributes(Hash32 name) const override;
-	const IAttribute* getVarAttribute(Hash32 name, int32_t index) const override;
+	int32_t getNumStaticFuncs(void) const override;
+	Hash32 getStaticFuncHash(int32_t index) const override;
 
-	int32_t getNumFuncAttributes(Hash32 name) const override;
-	const IAttribute* getFuncAttribute(Hash32 name, int32_t index) const override;
+	int32_t getNumClassAttrs(void) const override;
+	const IAttribute* getClassAttr(int32_t index) const override;
+
+	int32_t getNumVarAttrs(Hash32 name) const override;
+	const IAttribute* getVarAttr(Hash32 name, int32_t index) const override;
+
+	int32_t getNumFuncAttrs(Hash32 name) const override;
+	const IAttribute* getFuncAttr(Hash32 name, int32_t index) const override;
+
+	int32_t getNumStaticFuncAttrs(Hash32 name) const override;
+	const IAttribute* getStaticFuncAttr(Hash32 name, int32_t index) const override;
 
 	VoidFunc getFactory(Hash64 ctor_hash) const override;
 	VoidFunc getStaticFunc(Hash32 name, Hash64 args) const override;
 	void* getFunc(Hash32 name, Hash64 args) const override;
 
-	const HashString32<Allocator>& getVariableName(int32_t index) const;
-	IVar* getVar(int32_t index) const;
-	IVar* getVar(Hash32 name) const;
+	const HashString32<Allocator>& getVarName(int32_t index) const;
+	IVar* getVarT(int32_t index) const;
+	IVar* getVarT(Hash32 name) const;
+
+	const HashString32<Allocator>& getFuncName(int32_t index) const;
+	const HashString32<Allocator>& getStaticFuncName(int32_t index) const;
 
 	template <class Base>
 	ReflectionDefinition& base(const char* name);
@@ -122,40 +134,41 @@ public:
 	template <class... Args>
 	ReflectionDefinition& ctor(void);
 
-	template <class Var, size_t size>
-	ReflectionDefinition& var(const char (&name)[size], Var T::*ptr, bool read_only = false);
+	template <class Var, size_t size, class... Attrs>
+	ReflectionDefinition& var(const char (&name)[size], Var T::*ptr, const Attrs&... attributes);
 
-	template <class Ret, class Var, size_t size>
-	ReflectionDefinition& var(const char (&name)[size], Ret (T::*getter)(void) const, void (T::*setter)(Var));
+	template <class Ret, class Var, size_t size, class... Attrs>
+	ReflectionDefinition& var(const char (&name)[size], Ret (T::*getter)(void) const, void (T::*setter)(Var), const Attrs&... attributes);
 
-	template <class Var, class Vec_Allocator, size_t size>
-	ReflectionDefinition& var(const char (&name)[size], Vector<Var, Vec_Allocator> T::*vec, bool read_only = false);
+	template <class Var, class Vec_Allocator, size_t size, class... Attrs>
+	ReflectionDefinition& var(const char (&name)[size], Vector<Var, Vec_Allocator> T::*vec, const Attrs&... attributes);
 
-	template <class Var, size_t array_size, size_t name_size>
-	ReflectionDefinition& var(const char (&name)[name_size], Var (T::*arr)[array_size], bool read_only = false);
+	template <class Var, size_t array_size, size_t name_size, class... Attrs>
+	ReflectionDefinition& var(const char (&name)[name_size], Var (T::*arr)[array_size], const Attrs&... attributes);
 
-	template <size_t size, class Ret, class... Args>
-	ReflectionDefinition& func(const char (&name)[size], Ret (T::*ptr)(Args...) const);
+	template <size_t size, class Ret, class... Args, class... Attrs>
+	ReflectionDefinition& func(const char (&name)[size], Ret (T::*ptr)(Args...) const, const Attrs&... attributes);
 
-	template <size_t size, class Ret, class... Args>
-	ReflectionDefinition& func(const char (&name)[size], Ret (T::*ptr)(Args...));
+	template <size_t size, class Ret, class... Args, class... Attrs>
+	ReflectionDefinition& func(const char (&name)[size], Ret (T::*ptr)(Args...), const Attrs&... attributes);
 
-	template <size_t size, class Ret, class... Args>
-	ReflectionDefinition& staticFunc(const char (&name)[size], Ret (*func)(Args...));
+	template <size_t size, class Ret, class... Args, class... Attrs>
+	ReflectionDefinition& staticFunc(const char (&name)[size], Ret (*func)(Args...), const Attrs&... attributes);
 
-	template <class... Args>
-	ReflectionDefinition& classAttrs(const Args&... args);
+	// apply() is not called on these functions. Mainly for use with the attribute file.
+	template <class... Attrs>
+	ReflectionDefinition& classAttrs(const Attrs&... attributes);
 
-	template <size_t size, class... Args>
-	ReflectionDefinition& varAttrs(const char (&name)[size], const Args&... args);
+	template <size_t size, class... Attrs>
+	ReflectionDefinition& varAttrs(const char (&name)[size], const Attrs&... attributes);
 
-	template <size_t size, class... Args>
-	ReflectionDefinition& funcAttrs(const char (&name)[size], const Args&... args);
+	template <size_t size, class... Attrs>
+	ReflectionDefinition& funcAttrs(const char (&name)[size], const Attrs&... attributes);
 
-	template <size_t size, class... Args>
-	ReflectionDefinition& staticFuncAttrs(const char (&name)[size], const Args&... args);
+	template <size_t size, class... Attrs>
+	ReflectionDefinition& staticFuncAttrs(const char (&name)[size], const Attrs&... attributes);
 
-	ReflectionDefinition& attrFile(const char* file);
+	//ReflectionDefinition& attrFile(const char* file);
 
 	ReflectionDefinition& version(uint32_t version);
 
@@ -166,21 +179,18 @@ private:
 	class VarPtr final : public IVar
 	{
 	public:
-		VarPtr(Var T::*ptr, bool read_only);
+		VarPtr(Var T::*ptr);
 
 		ReflectionValueType getType(void) const override;
 		const void* getData(const void* object) const override;
 		void setData(void* object, const void* data) override;
 		void setDataMove(void* object, void* data) override;
 
-		bool isReadOnly(void) const override;
-
 		void load(const ISerializeReader& reader, T& object) override;
 		void save(ISerializeWriter& writer, const T& object) override;
 
 	private:
 		Var T::*_ptr = nullptr;
-		const bool _read_only = false;
 	};
 
 	template <class Ret, class Var>
@@ -196,8 +206,6 @@ private:
 		const void* getData(const void* object) const override;
 		void setData(void* object, const void* data) override;
 		void setDataMove(void* object, void* data) override;
-
-		bool isReadOnly(void) const override;
 
 		void load(const ISerializeReader& reader, T& object) override;
 		void save(ISerializeWriter& writer, const T& object) override;
@@ -226,7 +234,6 @@ private:
 
 		bool isFixedArray(void) const override;
 		bool isVector(void) const override;
-		bool isReadOnly(void) const override;
 		int32_t size(const void*) const override;
 
 		const void* getElement(const void* object, int32_t index) const override;
@@ -246,7 +253,7 @@ private:
 	class ArrayPtr final : public IVar
 	{
 	public:
-		ArrayPtr(Var (T::*ptr)[array_size], bool read_only);
+		ArrayPtr(Var (T::*ptr)[array_size]);
 
 		ReflectionValueType getType(void) const override;
 		const void* getData(const void* object) const override;
@@ -255,7 +262,6 @@ private:
 
 		bool isFixedArray(void) const override { return true; }
 		bool isVector(void) const override { return false; }
-		bool isReadOnly(void) const { return _read_only; }
 		int32_t size(const void*) const override { return static_cast<int32_t>(array_size); }
 
 		const void* getElement(const void* object, int32_t index) const override;
@@ -269,14 +275,13 @@ private:
 
 	private:
 		Var (T::*_ptr)[array_size] = nullptr;
-		bool _read_only = false;
 	};
 
 	template <class Var, class Vec_Allocator>
 	class VectorPtr final : public IVar
 	{
 	public:
-		VectorPtr(Vector<Var, Vec_Allocator> T::*ptr, bool read_only);
+		VectorPtr(Vector<Var, Vec_Allocator> T::*ptr);
 
 		ReflectionValueType getType(void) const override;
 		const void* getData(const void* object) const override;
@@ -285,7 +290,6 @@ private:
 
 		bool isFixedArray(void) const override { return false; }
 		bool isVector(void) const override { return true; }
-		bool isReadOnly(void) const { return _read_only; }
 		int32_t size(const void* object) const override;
 
 		const void* getElement(const void* object, int32_t index) const override;
@@ -299,7 +303,6 @@ private:
 
 	private:
 		Vector<Var, Vec_Allocator> T::*_ptr = nullptr;
-		bool _read_only = false;
 	};
 
 	class VirtualDestructor
@@ -428,11 +431,39 @@ private:
 	mutable Allocator _allocator;
 
 	int32_t _base_classes_remaining = 0;
-	const char* _attr_file = nullptr;
+	//const char* _attr_file = nullptr;
 
 	template <class Base>
 	static void RegisterBaseVariables(void);
 
+	// Variables
+	template <class Var, class First, class... Rest>
+	ReflectionDefinition& addAttributes(Var T::*var, Vector<IAttributePtr, Allocator>& attrs, const First& first, const Rest&... rest);
+	template <class Var, class Ret, class First, class... Rest>
+	ReflectionDefinition& addAttributes(Ret (T::*getter)(void) const, void (T::*setter)(Var), Vector<IAttributePtr, Allocator>& attrs, const First& first, const Rest&... rest);
+	template <class Var, class First, class... Rest>
+	ReflectionDefinition& addAttributes(Var T::*, Vector<IAttributePtr, Allocator>&);
+	template <class Var, class Ret, class First, class... Rest>
+	ReflectionDefinition& addAttributes(Ret (T::*)(void) const, void (T::*)(Var), Vector<IAttributePtr, Allocator>&);
+
+
+	// Functions
+	template <class Ret, class... Args, class First, class... Rest>
+	ReflectionDefinition& addAttributes(Ret (T::*func)(Args...) const, Vector<IAttributePtr, Allocator>& attrs, const First& first, const Rest&... rest);
+	template <class Ret, class... Args, class First, class... Rest>
+	ReflectionDefinition& addAttributes(Ret (T::*func)(Args...), Vector<IAttributePtr, Allocator>& attrs, const First& first, const Rest&... rest);
+	template <class Ret, class... Args>
+	ReflectionDefinition& addAttributes(Ret (T::*)(Args...) const, Vector<IAttributePtr, Allocator>&);
+	template <class Ret, class... Args>
+	ReflectionDefinition& addAttributes(Ret (T::*)(Args...), Vector<IAttributePtr, Allocator>&);
+
+	// Static Functions
+	template <class Ret, class... Args, class First, class... Rest>
+	ReflectionDefinition& addAttributes(Ret (*func)(Args...), Vector<IAttributePtr, Allocator>& attrs, const First& first, const Rest&... rest);
+	template <class Ret, class... Args>
+	ReflectionDefinition& addAttributes(Ret (*)(Args...), Vector<IAttributePtr, Allocator>&);
+
+	// Non-apply() call version.
 	template <class First, class... Rest>
 	ReflectionDefinition& addAttributes(Vector<IAttributePtr, Allocator>& attrs, const First& first, const Rest&... rest);
 	ReflectionDefinition& addAttributes(Vector<IAttributePtr, Allocator>&);
