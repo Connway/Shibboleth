@@ -39,7 +39,6 @@ private:
 	const char* _extension = nullptr;
 
 	SHIB_REFLECTION_CLASS_DECLARE(EditorFileHandlerAttribute);
-
 };
 
 NS_END

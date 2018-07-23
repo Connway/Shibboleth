@@ -59,7 +59,7 @@ void ResourceManager::allModulesLoaded(void)
 	for (const Gaff::IReflectionDefinition* ref_def : *type_bucket) {
 		FactoryFunc factory_func = ref_def->template getFactory<>();
 
-		ref_def->getClassAttributes(ext_attrs);
+		ref_def->getClassAttrs(ext_attrs);
 
 		GAFF_ASSERT_MSG(factory_func, "Resource '%s' does not have a default constructor!", ref_def->getReflectionInstance().getName());
 		GAFF_ASSERT_MSG(!ext_attrs.empty(), "Resource '%s' does not have any ResExtAttribute's!", ref_def->getReflectionInstance().getName());

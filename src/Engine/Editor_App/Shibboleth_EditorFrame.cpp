@@ -73,10 +73,10 @@ EditorFrame::EditorFrame(const wxString& title, const wxPoint& pos, const wxSize
 	// Add all IEditorWindows to the Window menu.
 	ReflectionManager& refl_mgr = GetApp().getReflectionManager();
 
-	const Vector<const Gaff::IReflectionDefinition*> editor_windows = refl_mgr.getReflectionWithAttribute(Reflection<EditorWindowAttribute>::GetHash());
+	const Vector<const Gaff::IReflectionDefinition*> editor_windows = refl_mgr.getReflectionWithAttribute<EditorWindowAttribute>();
 
 	for (const Gaff::IReflectionDefinition* const ref_def : editor_windows) {
-		const EditorWindowAttribute* const ew_attr = ref_def->getClassAttribute<EditorWindowAttribute>();
+		const EditorWindowAttribute* const ew_attr = ref_def->getClassAttr<EditorWindowAttribute>();
 		const int id = _next_id++;
 
 		const char* const path = ew_attr->getPath();
@@ -137,7 +137,8 @@ void EditorFrame::onAbout(wxCommandEvent&)
 void EditorFrame::onSpawnWindow(wxCommandEvent& event)
 {
 	const Gaff::IReflectionDefinition* const ref_def = reinterpret_cast<Gaff::IReflectionDefinition*>(event.GetEventUserData());
-	const EditorWindowAttribute* const ew_attr = ref_def->getClassAttribute<EditorWindowAttribute>();
+	const EditorWindowAttribute* const ew_attr = ref_def->getClassAttr<EditorWindowAttribute>();
+	GAFF_ASSERT(ew_attr);
 
 	Gaff::IReflectionObject* const instance = ref_def->createT<Gaff::IReflectionObject>(CLASS_HASH(Gaff::IReflectionObject), ARG_HASH(wxWindow*), GetAllocator(), this);
 	GAFF_ASSERT(instance);

@@ -583,7 +583,8 @@ RegisterAngelScriptAttribute<T>::RegisterAngelScriptAttribute(AngelScriptFlags f
 template <class T>
 Gaff::IAttribute* RegisterAngelScriptAttribute<T>::clone(void) const
 {
-	return SHIB_ALLOCT_POOL(RegisterAngelScriptAttribute<T>, GetAllocator().getPoolIndex("Reflection"), GetAllocator(), _flags);
+	Shibboleth::IAllocator& allocator = GetAllocator();
+	return SHIB_ALLOCT_POOL(RegisterAngelScriptAttribute<T>, allocator.getPoolIndex("Reflection"), allocator, _flags);
 }
 
 template <class T>
