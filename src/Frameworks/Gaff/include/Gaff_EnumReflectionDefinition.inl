@@ -164,19 +164,19 @@ EnumReflectionDefinition<Enum, Allocator>& EnumReflectionDefinition<Enum, Alloca
 }
 
 template <class Enum, class Allocator>
-template <class... Args>
-EnumReflectionDefinition<Enum, Allocator>& EnumReflectionDefinition<Enum, Allocator>::enumAttrs(const Args&... args)
+template <class... Attrs>
+EnumReflectionDefinition<Enum, Allocator>& EnumReflectionDefinition<Enum, Allocator>::enumAttrs(const Attrs&... attrs)
 {
-	return addAttributes(_entry_attrs, args...);
+	return addAttributes(_entry_attrs, attrs...);
 }
 
 template <class Enum, class Allocator>
-template <size_t size, class... Args>
-EnumReflectionDefinition<Enum, Allocator>& EnumReflectionDefinition<Enum, Allocator>::entryAttrs(const char (&name)[size], const Args&... args)
+template <size_t size, class... Attrs>
+EnumReflectionDefinition<Enum, Allocator>& EnumReflectionDefinition<Enum, Allocator>::entryAttrs(const char (&name)[size], const Attrs&... attrs)
 {
-	auto& attrs = _entry_attrs[FNV1aHash32Const(name)];
+	auto& attrs_list = _entry_attrs[FNV1aHash32Const(name)];
 	attrs.set_allocator(_allocator);
-	return addAttributes(attrs, args...);
+	return addAttributes(attrs_list, attrs...);
 }
 
 template <class Enum, class Allocator>
@@ -189,7 +189,7 @@ template <class Enum, class Allocator>
 template <class First, class... Rest>
 EnumReflectionDefinition<Enum, Allocator>& EnumReflectionDefinition<Enum, Allocator>::addAttributes(Vector<IAttributePtr, Allocator>& attrs, const First& first, const Rest&... rest)
 {
-	attrs.emplace_back(IAttributePtr(GAFF_ALLOCT(First, _allocator, first)));
+	attrs.emplace_back(IAttributePtr(first->clone()));
 	return addAttributes(attrs, rest...);
 }
 
