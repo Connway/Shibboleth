@@ -24,15 +24,6 @@ project "MainLoop"
 		"../../Engine/Memory/include",
 		"../../Frameworks/Gaff/include",
 		"../../Dependencies/EASTL/include"
-
-		, "../Scripting/include",
-		"../Resource/include",
-		"../../Dependencies/angelscript/angelscript/include",
-		"../../Dependencies/angelscript/add_on/scriptbuilder",
-		"../Entity/include",
-		"../../Frameworks/Gleam/include",
-		"../../Dependencies/glm",
-		"../../Dependencies/rapidjson"
 	}
 
 project "MainLoopModule"
@@ -61,15 +52,6 @@ project "MainLoopModule"
 		"../../Engine/Memory/include",
 		"../../Frameworks/Gaff/include",
 		"../../Dependencies/EASTL/include"
-
-		, "../Scripting/include",
-		"../Resource/include",
-		"../../Dependencies/angelscript/angelscript/include",
-		"../../Dependencies/angelscript/add_on/scriptbuilder",
-		"../Entity/include",
-		"../../Frameworks/Gleam/include",
-		"../../Dependencies/glm",
-		"../../Dependencies/rapidjson"
 	}
 
 	local deps = {
@@ -78,8 +60,6 @@ project "MainLoopModule"
 		"Gaff",
 		"Memory",
 		"EASTL"
-
-		, "Scripting", "Resource", "angelscript", "Entity", "Gleam", "mpack"
 	}
 
 	dependson(deps)

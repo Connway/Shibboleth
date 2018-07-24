@@ -43,32 +43,32 @@ public:
 	template <class... Args>
 	ReflectionVersion& ctor(void);
 
-	template <class Var, size_t size>
-	ReflectionVersion& var(const char (&name)[size], Var T::*ptr, bool read_only = false);
+	template <class Var, size_t size, class... Attrs>
+	ReflectionVersion& var(const char (&name)[size], Var T::*ptr, const Attrs&... attributes);
 
-	template <class Ret, class Var, size_t size>
-	ReflectionVersion& var(const char (&name)[size], Ret (T::*getter)(void) const, void (T::*setter)(Var));
+	template <class Ret, class Var, size_t size, class... Attrs>
+	ReflectionVersion& var(const char (&name)[size], Ret (T::*getter)(void) const, void (T::*setter)(Var), const Attrs&... attributes);
 
-	template <size_t size, class Ret, class... Args>
-	ReflectionVersion& func(const char (&name)[size], Ret (T::*ptr)(Args...) const);
+	template <size_t size, class Ret, class... Args, class... Attrs>
+	ReflectionVersion& func(const char (&name)[size], Ret (T::*ptr)(Args...) const, const Attrs&... attributes);
 
-	template <size_t size, class Ret, class... Args>
-	ReflectionVersion& func(const char (&name)[size], Ret (T::*ptr)(Args...));
+	template <size_t size, class Ret, class... Args, class... Attrs>
+	ReflectionVersion& func(const char (&name)[size], Ret (T::*ptr)(Args...), const Attrs&... attributes);
 
-	template <size_t size, class Ret, class... Args>
-	ReflectionVersion& staticFunc(const char (&name)[size], Ret (*func)(Args...));
+	template <size_t size, class Ret, class... Args, class... Attrs>
+	ReflectionVersion& staticFunc(const char (&name)[size], Ret (*func)(Args...), const Attrs&... attributes);
 
-	template <class... Args>
-	ReflectionVersion& classAttrs(const Args&...);
+	template <class... Attrs>
+	ReflectionVersion& classAttrs(const Attrs&...);
 
-	template <size_t size, class... Args>
-	ReflectionVersion& varAttrs(const char (&name)[size], const Args&...);
+	template <size_t size, class... Attrs>
+	ReflectionVersion& varAttrs(const char (&name)[size], const Attrs&...);
 
-	template <size_t size, class... Args>
-	ReflectionVersion& funcAttrs(const char (&name)[size], const Args&...);
+	template <size_t size, class... Attrs>
+	ReflectionVersion& funcAttrs(const char (&name)[size], const Attrs&...);
 
-	template <size_t size, class... Args>
-	ReflectionVersion& staticFuncAttrs(const char (&name)[size], const Args&...);
+	template <size_t size, class... Attrs>
+	ReflectionVersion& staticFuncAttrs(const char (&name)[size], const Attrs&...);
 
 	ReflectionVersion& version(uint32_t version);
 

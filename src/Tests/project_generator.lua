@@ -46,37 +46,37 @@ local tests = {
 			filter {}
 		end
 	},
-	{
-		name = "ScriptTest",
+	-- {
+	-- 	name = "ScriptTest",
 
-		includedirs = {
-			"../Dependencies/EASTL/include",
-			"../Dependencies/CATCH",
-			"../Dependencies/angelscript/angelscript/include",
-			"../Dependencies/angelscript/add_on/scriptbuilder",
-			"../Dependencies/rapidjson",
+	-- 	includedirs = {
+	-- 		"../Dependencies/EASTL/include",
+	-- 		"../Dependencies/CATCH",
+	-- 		"../Dependencies/angelscript/angelscript/include",
+	-- 		"../Dependencies/angelscript/add_on/scriptbuilder",
+	-- 		"../Dependencies/rapidjson",
 
-			"../Frameworks/Gaff/include",
-			"../Engine/Shared/include",
-			"../Engine/Memory/include",
-			"../Modules/Scripting/include"
-		},
+	-- 		"../Frameworks/Gaff/include",
+	-- 		"../Engine/Shared/include",
+	-- 		"../Engine/Memory/include",
+	-- 		"../Modules/Scripting/include"
+	-- 	},
 
-		links = {
-			"Gaff", "Memory",
-			"EASTL", "Shared",
-			"Scripting", "Entity",
-			"Resource", "Gleam",
-			"angelscript"
-		},
+	-- 	links = {
+	-- 		"Gaff", "Memory",
+	-- 		"EASTL", "Shared",
+	-- 		"Scripting", "Entity",
+	-- 		"Resource", "Gleam",
+	-- 		"angelscript"
+	-- 	},
 
-		extra = function ()
-			filter { "system:windows" }
-				links { "ws2_32.lib", "iphlpapi.lib", "psapi.lib", "userenv.lib", "DbgHelp" }
+	-- 	extra = function ()
+	-- 		filter { "system:windows" }
+	-- 			links { "ws2_32.lib", "iphlpapi.lib", "psapi.lib", "userenv.lib", "DbgHelp" }
 
-			filter {}
-		end
-	}
+	-- 		filter {}
+	-- 	end
+	-- }
 }
 
 function GenTest(settings)
