@@ -65,11 +65,11 @@ public:
 	template <size_t size>
 	EnumReflectionDefinition& entry(const char (&name)[size], Enum value);
 
-	template <class... Args>
-	EnumReflectionDefinition& enumAttrs(const Args&... args);
+	template <class... Attrs>
+	EnumReflectionDefinition& enumAttrs(const Attrs&... attrs);
 
-	template <size_t size, class... Args>
-	EnumReflectionDefinition& entryAttrs(const char (&name)[size], const Args&... args);
+	template <size_t size, class... Attrs>
+	EnumReflectionDefinition& entryAttrs(const char (&name)[size], const Attrs&... attrs);
 
 	void finish(void);
 
