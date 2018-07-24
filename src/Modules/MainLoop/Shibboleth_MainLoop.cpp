@@ -35,11 +35,8 @@ THE SOFTWARE.
 
 //#include <Shibboleth_ICameraComponent.h>
 
-#include <Shibboleth_ResourceManager.h>
-#include <Shibboleth_PrefabResource.h>
-
-#include <Shibboleth_AngelScriptComponent.h>
-#include <Shibboleth_AngelScriptResource.h>
+//#include <Shibboleth_ResourceManager.h>
+//#include <Shibboleth_PrefabResource.h>
 
 SHIB_REFLECTION_DEFINE(MainLoop)
 

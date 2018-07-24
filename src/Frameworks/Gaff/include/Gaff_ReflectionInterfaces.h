@@ -741,6 +741,21 @@ class IEnumReflectionDefinition
 {
 public:
 	template <class T>
+	const T* getEnumAttr(Hash64 attr_name) const
+	{
+		for (int32_t i = 0; i < getNumEnumAttrs(); ++i) {
+			const IAttribute* const attribute = getEnumAttr(i);
+			const void* attr = attribute->getReflectionDefinition().getInterface(attr_name, attribute->getBasePointer());
+
+			if (attr) {
+				return reinterpret_cast<const T*>(attr);
+			}
+		}
+
+		return nullptr;
+	}
+
+	template <class T>
 	const T* getEnumAttr(void) const
 	{
 		for (int32_t i = 0; i < getNumEnumAttrs(); ++i) {

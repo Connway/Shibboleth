@@ -101,18 +101,30 @@ void LoadedModulesWindow::initTree(void)
 
 		for (int32_t i = 0; i < module_display.size(); ++i) {
 			const Gaff::JSON entry = module_display[i];
+			const Gaff::JSON refl_attr_name = entry["reflection_attribute_name"];
 			const Gaff::JSON refl_name = entry["reflection_name"];
 			const Gaff::JSON name = entry["name"];
 
-			_reflection_types.Add(refl_name.getString());
+			if (refl_name.isNull()) {
+				_reflection_types.Add(refl_attr_name.getString());
+			} else {
+				_reflection_types.Add(refl_name.getString());
+			}
 
-			const Vector<const Gaff::IReflectionDefinition*>* const bucket = refl_mgr.getTypeBucket(Gaff::FNV1aHash64String(refl_name.getString()));
+			const Vector<const Gaff::IReflectionDefinition*>* const bucket = refl_mgr.getTypeBucket(Gaff::FNV1aHash64String(refl_name.getString("")));
 
 			const wxTreeItemId id = _reflection_tree->AppendItem(root_id, name.getString());
 			_tree_ids.Add(id);
 
 			if (bucket) {
 				for (const Gaff::IReflectionDefinition* ref_def : *bucket) {
+					_reflection_tree->AppendItem(id, ref_def->getReflectionInstance().getName());
+				}
+			}
+			else {
+				const Vector<const Gaff::IReflectionDefinition*> ref_defs = refl_mgr.getReflectionWithAttribute(Gaff::FNV1aHash64String(refl_attr_name.getString()));
+
+				for (const Gaff::IReflectionDefinition* ref_def : ref_defs) {
 					_reflection_tree->AppendItem(id, ref_def->getReflectionInstance().getName());
 				}
 			}
@@ -139,6 +151,14 @@ void LoadedModulesWindow::onModuleSelected(wxCommandEvent& event)
 
 		if (bucket) {
 			for (const Gaff::IReflectionDefinition* ref_def : *bucket) {
+				_reflection_tree->AppendItem(id, ref_def->getReflectionInstance().getName());
+			}
+		} else {
+			const Vector<const Gaff::IReflectionDefinition*> ref_defs = (is_all_modules) ?
+				refl_mgr.getReflectionWithAttribute(type_hash) :
+				refl_mgr.getReflectionWithAttribute(type_hash, module_hash);
+
+			for (const Gaff::IReflectionDefinition* ref_def : ref_defs) {
 				_reflection_tree->AppendItem(id, ref_def->getReflectionInstance().getName());
 			}
 		}

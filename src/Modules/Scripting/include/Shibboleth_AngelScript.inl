@@ -557,10 +557,10 @@ AngelScriptClassRegister<T, B>& AngelScriptClassRegister<T, B>::attrFile(const c
 	return *this;
 }
 
-template <class T, class B>
-void AngelScriptClassRegister<T, B>::finish(void)
-{
-}
+//template <class T, class B>
+//void AngelScriptClassRegister<T, B>::finish(void)
+//{
+//}
 
 
 

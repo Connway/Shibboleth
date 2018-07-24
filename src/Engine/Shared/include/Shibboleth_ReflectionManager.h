@@ -39,29 +39,13 @@ public:
 	template <class T>
 	Vector<const Gaff::IEnumReflectionDefinition*> getEnumReflectionWithAttribute(void) const
 	{
-		Vector<const Gaff::IEnumReflectionDefinition*> out;
-
-		for (const auto& entry : _enum_reflection_map) {
-			if (entry.second->getEnumAttribute<T>()) {
-				out.push_back(entry.second.get());
-			}
-		}
-
-		return out;
+		return getEnumReflectionWithAttribute(Reflection<T>::GetHash());
 	}
 
 	template <class T>
 	Vector<const Gaff::IReflectionDefinition*> getReflectionWithAttribute(void) const
 	{
-		Vector<const Gaff::IReflectionDefinition*> out;
-
-		for (const auto& entry : _reflection_map) {
-			if (entry.second->getClassAttr<T>()) {
-				out.push_back(entry.second.get());
-			}
-		}
-
-		return out;
+		return getReflectionWithAttribute(Reflection<T>::GetHash());
 	}
 
 
@@ -81,6 +65,11 @@ public:
 	const Vector<const Gaff::IReflectionDefinition*>* getTypeBucket(Gaff::Hash64 name, Gaff::Hash64 module_name) const;
 	const Vector<const Gaff::IReflectionDefinition*>* getTypeBucket(Gaff::Hash64 name) const;
 	void registerTypeBucket(Gaff::Hash64 name);
+
+	Vector<const Gaff::IEnumReflectionDefinition*> getEnumReflectionWithAttribute(Gaff::Hash64 name, Gaff::Hash64 module_name) const;
+	Vector<const Gaff::IEnumReflectionDefinition*> getEnumReflectionWithAttribute(Gaff::Hash64 name) const;
+	Vector<const Gaff::IReflectionDefinition*> getReflectionWithAttribute(Gaff::Hash64 name, Gaff::Hash64 module_name) const;
+	Vector<const Gaff::IReflectionDefinition*> getReflectionWithAttribute(Gaff::Hash64 name) const;
 
 	Vector<HashString64> getModules(void) const;
 

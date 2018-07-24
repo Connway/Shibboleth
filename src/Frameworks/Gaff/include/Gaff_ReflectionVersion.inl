@@ -56,85 +56,109 @@ ReflectionVersion<T>& ReflectionVersion<T>::ctor(void)
 }
 
 template <class T>
-template <class Var, size_t size>
-ReflectionVersion<T>& ReflectionVersion<T>::var(const char (&name)[size], Var T::*ptr, bool read_only)
+template <class Var, size_t size, class... Attrs>
+ReflectionVersion<T>& ReflectionVersion<T>::var(const char (&name)[size], Var T::*ptr, const Attrs&... attributes)
 {
 	_hash = FNV1aHash64(name, size ,_hash);
 	_hash = FNV1aHash64T(&ptr, _hash);
-	_hash = FNV1aHash64T(&read_only, _hash);
+
+	if constexpr (sizeof...(Attrs) > 0) {
+		varAttrs(name, attributes...);
+	}
+
 	return *this;
 }
 
 template <class T>
-template <class Ret, class Var, size_t size>
-ReflectionVersion<T>& ReflectionVersion<T>::var(const char (&name)[size], Ret (T::*getter)(void) const, void (T::*setter)(Var))
+template <class Ret, class Var, size_t size, class... Attrs>
+ReflectionVersion<T>& ReflectionVersion<T>::var(const char (&name)[size], Ret (T::*getter)(void) const, void (T::*setter)(Var), const Attrs&... attributes)
 {
 	_hash = FNV1aHash64(name, size - 1, _hash);
 	_hash = FNV1aHash64T(&getter, _hash);
 	_hash = FNV1aHash64T(&setter, _hash);
+
+	if constexpr (sizeof...(Attrs) > 0) {
+		varAttrs(name, attributes...);
+	}
+
 	return *this;
 }
 
 template <class T>
-template <size_t size, class Ret, class... Args>
-ReflectionVersion<T>& ReflectionVersion<T>::func(const char (&name)[size], Ret (T::*ptr)(Args...) const)
+template <size_t size, class Ret, class... Args, class... Attrs>
+ReflectionVersion<T>& ReflectionVersion<T>::func(const char (&name)[size], Ret (T::*ptr)(Args...) const, const Attrs&... attributes)
 {
 	_hash = FNV1aHash64(name, size - 1, _hash);
 	_hash = FNV1aHash64T(&ptr, _hash);
+
+	if constexpr (sizeof...(Attrs) > 0) {
+		funcAttrs(name, attributes...);
+	}
+
 	return *this;
 }
 
 template <class T>
-template <size_t size, class Ret, class... Args>
-ReflectionVersion<T>& ReflectionVersion<T>::func(const char (&name)[size], Ret (T::*ptr)(Args...))
+template <size_t size, class Ret, class... Args, class... Attrs>
+ReflectionVersion<T>& ReflectionVersion<T>::func(const char (&name)[size], Ret (T::*ptr)(Args...), const Attrs&... attributes)
 {
 	_hash = FNV1aHash64(name, size - 1, _hash);
 	_hash = FNV1aHash64T(&ptr, _hash);
+
+	if constexpr (sizeof...(Attrs) > 0) {
+		funcAttrs(name, attributes...);
+	}
+
 	return *this;
 }
 
 template <class T>
-template <size_t size, class Ret, class... Args>
-ReflectionVersion<T>& ReflectionVersion<T>::staticFunc(const char (&name)[size], Ret (*func)(Args...))
+template <size_t size, class Ret, class... Args, class... Attrs>
+ReflectionVersion<T>& ReflectionVersion<T>::staticFunc(const char (&name)[size], Ret (*func)(Args...), const Attrs&... attributes)
 {
 	_hash = FNV1aHash64(name, size - 1, _hash);
 	_hash = FNV1aHash64T(&ptr, _hash);
+	
+	if constexpr (sizeof...(Attrs) > 0) {
+		staticFuncAttrs(attributes...);
+	}
+
 	return *this;
 }
 
 template <class T>
-template <class... Args>
-ReflectionVersion<T>& ReflectionVersion<T>::classAttrs(const Args&...)
+template <class... Attrs>
+ReflectionVersion<T>& ReflectionVersion<T>::classAttrs(const Attrs&...)
 {
 	_hash = FNV1aHash64String("class", _hash);
-	_hash = CalcTemplateHash<Args...>(_hash);
+	_hash = CalcTemplateHash<Attrs...>(_hash);
 	return *this;
 }
 
 template <class T>
-template <size_t size, class... Args>
-ReflectionVersion<T>& ReflectionVersion<T>::varAttrs(const char (&name)[size], const Args&...)
+template <size_t size, class... Attrs>
+ReflectionVersion<T>& ReflectionVersion<T>::varAttrs(const char (&name)[size], const Attrs&...)
 {
 	_hash = FNV1aHash64(name, size - 1, _hash);
-	_hash = CalcTemplateHash<Args...>(_hash);
+	_hash = CalcTemplateHash<Attrs...>(_hash);
 	return *this;
 }
 
 template <class T>
-template <size_t size, class... Args>
-ReflectionVersion<T>& ReflectionVersion<T>::funcAttrs(const char (&name)[size], const Args&...)
+template <size_t size, class... Attrs>
+ReflectionVersion<T>& ReflectionVersion<T>::funcAttrs(const char (&name)[size], const Attrs&...)
 {
 	_hash = FNV1aHash64(name, size - 1, _hash);
-	_hash = CalcTemplateHash<Args...>(_hash);
+	_hash = CalcTemplateHash<Attrs...>(_hash);
 	return *this;
 }
 
 template <class T>
-template <size_t size, class... Args>
-ReflectionVersion<T>& ReflectionVersion<T>::staticFuncAttrs(const char (&name)[size], const Args&...)
+template <size_t size, class... Attrs>
+ReflectionVersion<T>& ReflectionVersion<T>::staticFuncAttrs(const char (&name)[size], const Attrs&...)
 {
 	_hash = FNV1aHash64(name, size - 1, _hash);
-	_hash = CalcTemplateHash<Args...>(_hash);
+	_hash = CalcTemplateHash<Attrs...>(_hash);
 	return *this;
 }
 

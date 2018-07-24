@@ -70,7 +70,7 @@ public:
 	template <size_t size, class... Args>
 	AngelScriptClassRegister& varAttrs(const char (&)[size], const Args&...);
 
-	AngelScriptClassRegister& attrFile(const char*);
+	//AngelScriptClassRegister& attrFile(const char*);
 
 	void finish(void);
 
