@@ -62,8 +62,8 @@ public:
 	void setAllocator(const Allocator& allocator);
 	Hash64 getVersion(void) const;
 
-	template <size_t size>
-	EnumReflectionDefinition& entry(const char (&name)[size], Enum value);
+	template <size_t size, class... Attrs>
+	EnumReflectionDefinition& entry(const char (&name)[size], Enum value, const Attrs&... attrs);
 
 	template <class... Attrs>
 	EnumReflectionDefinition& enumAttrs(const Attrs&... attrs);
@@ -80,6 +80,10 @@ private:
 
 	Hash64 _version = INIT_HASH64;
 	Allocator _allocator;
+
+	template <class First, class... Rest>
+	EnumReflectionDefinition& addAttributes(Enum value, Vector<IAttributePtr, Allocator>& attrs, const First& first, const Rest&... rest);
+	EnumReflectionDefinition& addAttributes(Enum, Vector<IAttributePtr, Allocator>&);
 
 	template <class First, class... Rest>
 	EnumReflectionDefinition& addAttributes(Vector<IAttributePtr, Allocator>& attrs, const First& first, const Rest&... rest);

@@ -148,8 +148,8 @@ Hash64 EnumReflectionDefinition<Enum, Allocator>::getVersion(void) const
 }
 
 template <class Enum, class Allocator>
-template <size_t size>
-EnumReflectionDefinition<Enum, Allocator>& EnumReflectionDefinition<Enum, Allocator>::entry(const char (&name)[size], Enum value)
+template <size_t size, class... Attrs>
+EnumReflectionDefinition<Enum, Allocator>& EnumReflectionDefinition<Enum, Allocator>::entry(const char (&name)[size], Enum value, const Attrs&... attrs)
 {
 	eastl::pair<HashString32<Allocator>, Enum> pair(
 		HashString32<Allocator>(name, size - 1, nullptr, _allocator),
@@ -160,6 +160,13 @@ EnumReflectionDefinition<Enum, Allocator>& EnumReflectionDefinition<Enum, Alloca
 	_entries.insert(std::move(pair));
 
 	_version = FNV1aHash64(name, size - 1, _version);
+
+	if constexpr (sizeof...(Attrs) > 0) {
+		auto& attrs_list = _entry_attrs[FNV1aHash32Const(name)];
+		attrs_list.set_allocator(_allocator);
+		addAttributes(value, attrs_list, attrs...);
+	}
+
 	return *this;
 }
 
@@ -175,7 +182,7 @@ template <size_t size, class... Attrs>
 EnumReflectionDefinition<Enum, Allocator>& EnumReflectionDefinition<Enum, Allocator>::entryAttrs(const char (&name)[size], const Attrs&... attrs)
 {
 	auto& attrs_list = _entry_attrs[FNV1aHash32Const(name)];
-	attrs.set_allocator(_allocator);
+	attrs_list.set_allocator(_allocator);
 	return addAttributes(attrs_list, attrs...);
 }
 
@@ -183,6 +190,24 @@ template <class Enum, class Allocator>
 void EnumReflectionDefinition<Enum, Allocator>::finish(void)
 {
 	GAFF_REFLECTION_NAMESPACE::EnumReflection<Enum>::g_defined = true;
+}
+
+template <class Enum, class Allocator>
+template <class First, class... Rest>
+EnumReflectionDefinition<Enum, Allocator>& EnumReflectionDefinition<Enum, Allocator>::addAttributes(Enum value, Vector<IAttributePtr, Allocator>& attrs, const First& first, const Rest&... rest)
+{
+	First* const clone = reinterpret_cast<First*>(first.clone());
+	attrs.emplace_back(IAttributePtr(clone));
+
+	clone->apply(value);
+
+	return addAttributes(value, attrs, rest...);
+}
+
+template <class Enum, class Allocator>
+EnumReflectionDefinition<Enum, Allocator>& EnumReflectionDefinition<Enum, Allocator>::addAttributes(Enum, Vector<IAttributePtr, Allocator>&)
+{
+	return *this;
 }
 
 template <class Enum, class Allocator>
