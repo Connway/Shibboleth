@@ -13,7 +13,7 @@ project "Editor_App"
 	{
 		"include",
 		"../Editor/include",
-		"../Shared/include",
+		"../Engine/include",
 		"../Memory/include",
 		"../../Frameworks/Gaff/include",
 		"../../Dependencies/rapidjson",
@@ -22,7 +22,7 @@ project "Editor_App"
 
 	local deps =
 	{
-		"Shared",
+		"Engine",
 		"Memory",
 		"Editor",
 		"Gaff",

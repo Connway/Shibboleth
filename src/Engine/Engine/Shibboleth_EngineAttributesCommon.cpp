@@ -20,13 +20,25 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#include "Shibboleth_EditorAttribute.h"
+#include "Shibboleth_EngineAttributesCommon.h"
 #include <Shibboleth_IAllocator.h>
 #include <Shibboleth_Memory.h>
 
+SHIB_REFLECTION_DEFINE(ReadOnlyAttribute)
 SHIB_REFLECTION_DEFINE(EditorAttribute)
 
 NS_SHIBBOLETH
+
+SHIB_REFLECTION_CLASS_DEFINE_BEGIN(ReadOnlyAttribute)
+	.BASE(Gaff::IAttribute)
+SHIB_REFLECTION_CLASS_DEFINE_END(ReadOnlyAttribute)
+
+Gaff::IAttribute* ReadOnlyAttribute::clone(void) const
+{
+	Shibboleth::IAllocator& allocator = GetAllocator();
+	return SHIB_ALLOCT_POOL(ReadOnlyAttribute, allocator.getPoolIndex("Reflection"), allocator);
+}
+
 
 SHIB_REFLECTION_CLASS_DEFINE_BEGIN(EditorAttribute)
 	.BASE(Gaff::IAttribute)

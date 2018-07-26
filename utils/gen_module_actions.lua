@@ -103,7 +103,7 @@ project "%s"
 	{
 		"include",
 		"../../Engine/Memory/include",
-		"../../Engine/Shared/include",
+		"../../Engine/Engine/include",
 		"../../Dependencies/EASTL/include",
 		"../../Frameworks/Gaff/include"
 	}
@@ -130,7 +130,7 @@ project "%sModule"
 	{
 		"include",
 		"../../Engine/Memory/include",
-		"../../Engine/Shared/include",
+		"../../Engine/Engine/include",
 		"../../Dependencies/EASTL/include",
 		"../../Frameworks/Gaff/include"
 	}
@@ -138,7 +138,7 @@ project "%sModule"
 	local deps =
 	{
 		"Memory",
-		"Shared",
+		"Engine",
 		"EASTL",
 		"Gaff",
 		"%s"

@@ -18,7 +18,7 @@ project "Entity"
 	{
 		"include",
 		"../../Engine/Memory/include",
-		"../../Engine/Shared/include",
+		"../../Engine/Engine/include",
 		"../../Dependencies/EASTL/include",
 		"../../Dependencies/rapidjson",
 		"../../Dependencies/glm",
@@ -51,7 +51,7 @@ project "EntityModule"
 	{
 		"include",
 		"../../Engine/Memory/include",
-		"../../Engine/Shared/include",
+		"../../Engine/Engine/include",
 		"../../Dependencies/EASTL/include",
 		"../../Dependencies/rapidjson",
 		"../../Dependencies/glm",
@@ -66,7 +66,7 @@ project "EntityModule"
 		"Memory",
 		"Gaff",
 		"Gleam",
-		"Shared",
+		"Engine",
 		"EASTL",
 		"Entity",
 		"Resource",

@@ -16,7 +16,7 @@ project "Game_App"
 
 	includedirs
 	{
-		"../Shared/include",
+		"../Engine/include",
 		"../Memory/include",
 		"../../Frameworks/Gaff/include",
 		"../../Dependencies/rapidjson",
@@ -25,8 +25,10 @@ project "Game_App"
 
 	local deps =
 	{
-		"Shared", "Gaff",
-		"Memory", "EASTL"
+		"Engine",
+		"Gaff",
+		"Memory",
+		"EASTL"
 	}
 
 	dependson(deps)

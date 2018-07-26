@@ -18,7 +18,7 @@ project "ECS"
 	{
 		"include",
 		"../../Engine/Memory/include",
-		"../../Engine/Shared/include",
+		"../../Engine/Engine/include",
 		"../../Dependencies/EASTL/include",
 		"../../Dependencies/glm",
 		"../../Frameworks/Gaff/include",
@@ -47,7 +47,7 @@ project "ECSModule"
 	{
 		"include",
 		"../../Engine/Memory/include",
-		"../../Engine/Shared/include",
+		"../../Engine/Engine/include",
 		"../../Dependencies/EASTL/include",
 		"../../Dependencies/glm",
 		"../../Frameworks/Gaff/include",
@@ -57,7 +57,7 @@ project "ECSModule"
 	local deps =
 	{
 		"Memory",
-		"Shared",
+		"Engine",
 		"EASTL",
 		"Gaff",
 		"Gleam",

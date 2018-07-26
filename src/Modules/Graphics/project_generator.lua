@@ -25,16 +25,13 @@ function DoGraphicsModule(renderer)
 		{
 			"include",
 			"../../Engine/Memory/include",
-			"../../Engine/Shared/include",
+			"../../Engine/Engine/include",
 			"../../Dependencies/EASTL/include",
-			-- "../../Dependencies/angelscript/angelscript/include",
 			-- "../../Dependencies/rapidjson",
 			-- "../../Dependencies/glm",
 			-- "../../Dependencies/mpack",
 			"../../Frameworks/Gaff/include",
-			"../../Frameworks/Gleam/include",
-			"../Entity/include",
-			-- "../Scripting/include"
+			"../../Frameworks/Gleam/include"
 		}
 
 
@@ -70,16 +67,13 @@ function DoGraphicsModule(renderer)
 		{
 			"include",
 			"../../Engine/Memory/include",
-			"../../Engine/Shared/include",
+			"../../Engine/Engine/include",
 			"../../Dependencies/EASTL/include",
-			-- "../../Dependencies/angelscript/angelscript/include",
 			-- -- "../../Dependencies/rapidjson",
 			-- -- "../../Dependencies/glm",
 			-- -- "../../Dependencies/mpack",
 			"../../Frameworks/Gaff/include",
-			"../../Frameworks/Gleam/include",
-			"../Entity/include",
-			-- "../Scripting/include"
+			"../../Frameworks/Gleam/include"
 		}
 
 		local deps =
@@ -88,12 +82,9 @@ function DoGraphicsModule(renderer)
 			"Memory",
 			"Gaff",
 			"Gleam",
-			"Shared",
+			"Engine",
 			"EASTL",
-			"Entity",
-			-- "Scripting",
 			-- "Resource",
-			-- "angelscript",
 			-- "mpack"
 		}
 

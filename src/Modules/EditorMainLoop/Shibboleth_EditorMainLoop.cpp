@@ -21,7 +21,7 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Shibboleth_EditorMainLoop.h"
-#include <Shibboleth_EditorAttribute.h>
+#include <Shibboleth_EngineAttributesCommon.h>
 #include <Shibboleth_IRenderManager.h>
 #include <Shibboleth_IManager.h>
 

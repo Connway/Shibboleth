@@ -22,16 +22,17 @@ THE SOFTWARE.
 
 #pragma once
 
-#include <Shibboleth_Component.h>
+//#include <Shibboleth_Component.h>
+#include <Shibboleth_Reflection.h>
 
 NS_SHIBBOLETH
 
 class IRenderManager;
 
-class CameraComponent final : public Component
+class CameraComponent final /*: public Component*/
 {
 public:
-	void onAddToWorld(void) override;
+	//void onAddToWorld(void) override;
 
 private:
 	IRenderManager* _render_mgr = nullptr;

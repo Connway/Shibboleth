@@ -7,13 +7,13 @@ local tests = {
 			"../Dependencies/CATCH",
 
 			"../Frameworks/Gaff/include",
-			"../Engine/Shared/include",
+			"../Engine/Engine/include",
 			"../Engine/Memory/include"
 		},
 
 		links = {
 			"Gaff", "Memory",
-			"EASTL", "Shared"
+			"EASTL", "Engine"
 		}
 	},
 	{
@@ -26,13 +26,13 @@ local tests = {
 			"../Dependencies/rapidjson",
 
 			"../Frameworks/Gaff/include",
-			"../Engine/Shared/include",
+			"../Engine/Engine/include",
 			"../Engine/Memory/include"
 		},
 
 		links = {
 			"Gaff", "Memory",
-			"EASTL", "Shared",
+			"EASTL", "Engine",
 			"mpack"
 		},
 
@@ -57,14 +57,14 @@ local tests = {
 	-- 		"../Dependencies/rapidjson",
 
 	-- 		"../Frameworks/Gaff/include",
-	-- 		"../Engine/Shared/include",
+	-- 		"../Engine/Engine/include",
 	-- 		"../Engine/Memory/include",
 	-- 		"../Modules/Scripting/include"
 	-- 	},
 
 	-- 	links = {
 	-- 		"Gaff", "Memory",
-	-- 		"EASTL", "Shared",
+	-- 		"EASTL", "Engine",
 	-- 		"Scripting", "Entity",
 	-- 		"Resource", "Gleam",
 	-- 		"angelscript"

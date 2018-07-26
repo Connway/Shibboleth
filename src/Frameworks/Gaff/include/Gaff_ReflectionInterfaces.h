@@ -119,25 +119,25 @@ public:
 	// The apply function corresponds directly to calls in reflection definition. Apply all that apply.
 
 	// Attributes that are applied to functions need to implement these template functions.
-	//template <class T, class Ret, class... Args
-	//void apply(Ret (T::*func)(Args...) const);
-	//template <class T, class Ret, class... Args>
-	//void apply(Ret (T::*func)(Args...));
+	//template <size_t size, class T, class Ret, class... Args>
+	//void apply(const char(&name)[size], Ret (T::*func)(Args...) const);
+	//template <size_t size, class T, class Ret, class... Args>
+	//void apply(const char(&name)[size], Ret (T::*func)(Args...));
 
 	// Attributes that are applied to static class functions need to implement this template function.
-	//template <class T, class Ret, class... Args
-	//void apply(Ret (T::*func)(Args...));
+	//template <size_t size, class T, class Ret, class... Args>
+	//void apply(const char(&name)[size], Ret (T::*func)(Args...));
 
 	// Attributes that are applied to variables need to implement these template functions,
 	// or at least the ones they apply to.
-	//template <class T, class Var>
-	//void apply(Var T::*var);
-	//template <class T, class Var, class Ret>
-	//void apply(Ret (T::*getter)(void) const, void (T::*setter)(Var));
-	//template <class Var, class Vec_Allocator>
-	//void apply(Vector<Var, Vec_Allocator> T::*vec);
-	//template <class T, class Var, size_t size>
-	//void apply(Var (T::*arr)[size]);
+	//template <size_t size, class T, class Var>
+	//void apply(const char(&name)[size], Var T::*var);
+	//template <size_t size, class T, class Var, class Ret>
+	//void apply(const char(&name)[size], Ret (T::*getter)(void) const, void (T::*setter)(Var));
+	//template <size_t size, class Var, class Vec_Allocator>
+	//void apply(const char(&name)[size], Vector<Var, Vec_Allocator> T::*vec);
+	//template <size_t size, class T, class Var, size_t array_size>
+	//void apply(const char(&name)[size], Var (T::*arr)[array_size]);
 };
 
 class IReflection
@@ -240,6 +240,12 @@ public:
 	{
 		GAFF_ASSERT_MSG(false, "Reflection variable is not a vector!");
 	}
+
+	void setReadOnly(bool read_only) { _read_only = read_only; }
+	bool isReadOnly(void) const { return _read_only; }
+
+private:
+	bool _read_only = false;
 };
 
 template <class Ret, class... Args>
