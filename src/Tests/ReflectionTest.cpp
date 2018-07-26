@@ -434,16 +434,10 @@ SHIB_REFLECTION_CLASS_DEFINE_BEGIN(AttrTest)
 		TestAttr(),
 		TestAttr()
 	)
-	.varAttrs
-	(
-		"a",
-		TestAttr(),
-		TestAttr()
-	)
 
 	.ctor<>()
 	.ctor<int>()
-	.var("a", &AttrTest::a)
+	.var("a", &AttrTest::a, TestAttr(), TestAttr())
 SHIB_REFLECTION_CLASS_DEFINE_END(AttrTest)
 
 

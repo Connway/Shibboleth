@@ -17,7 +17,7 @@ project "EditorMainLoop"
 	includedirs
 	{
 		"include",
-		"../../Engine/Shared/include",
+		"../../Engine/Engine/include",
 		"../../Engine/Memory/include",
 		"../../Frameworks/Gaff/include",
 		"../../Frameworks/Gleam/include",
@@ -47,7 +47,7 @@ project "EditorMainLoopModule"
 	includedirs
 	{
 		"include",
-		"../../Engine/Shared/include",
+		"../../Engine/Engine/include",
 		"../../Engine/Memory/include",
 		"../../Frameworks/Gaff/include",
 		"../../Frameworks/Gleam/include",
@@ -56,7 +56,7 @@ project "EditorMainLoopModule"
 
 	local deps = {
 		"EditorMainLoop",
-		"Shared",
+		"Engine",
 		"Gaff",
 		"Gleam",
 		"Memory",

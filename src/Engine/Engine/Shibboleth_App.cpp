@@ -21,11 +21,11 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Shibboleth_App.h"
+#include "Shibboleth_EngineAttributesCommon.h"
 #include "Shibboleth_LooseFileSystem.h"
 #include "Shibboleth_Utilities.h"
 #include "Shibboleth_IMainLoop.h"
 #include "Shibboleth_IManager.h"
-#include "Shibboleth_EditorAttribute.h"
 #include <Gaff_CrashHandler.h>
 #include <Gaff_Directory.h>
 #include <Gaff_Utils.h>

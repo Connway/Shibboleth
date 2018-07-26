@@ -18,7 +18,7 @@ project "Resource"
 	{
 		"include",
 		"../../Engine/Memory/include",
-		"../../Engine/Shared/include",
+		"../../Engine/Engine/include",
 		"../../Dependencies/EASTL/include",
 		"../../Frameworks/Gaff/include"
 	}
@@ -51,7 +51,7 @@ project "ResourceModule"
 	{
 		"include",
 		"../../Engine/Memory/include",
-		"../../Engine/Shared/include",
+		"../../Engine/Engine/include",
 		"../../Dependencies/EASTL/include",
 		"../../Dependencies/rapidjson",
 		"../../Frameworks/Gaff/include"
@@ -61,7 +61,7 @@ project "ResourceModule"
 	{
 		"Memory",
 		"Gaff",
-		"Shared",
+		"Engine",
 		"EASTL",
 		"Resource"
 	}

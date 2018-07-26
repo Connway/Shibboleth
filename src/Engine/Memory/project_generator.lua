@@ -12,7 +12,7 @@ project "Memory"
 	includedirs
 	{
 		"include",
-		"../Shared/include",
+		"../Engine/include",
 		"../../Frameworks/Gaff/include",
 		"../../Dependencies/rpmalloc",
 		"../../Dependencies/EASTL/include",

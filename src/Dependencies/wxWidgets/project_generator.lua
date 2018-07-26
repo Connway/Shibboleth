@@ -21,7 +21,7 @@ function wxWidgetsProject(proj_name, lib_type)
 	}
 
 	-- To use our overrided new/delete.
-	links { "Shared", "Memory" }
+	links { "Engine", "Memory" }
 
 	if lib_type == "SharedLib" then
 		defines { "WXMAKINGDLL_" .. proj_name:sub(3):upper() }

@@ -11,7 +11,7 @@ project "Editor"
 	includedirs
 	{
 		"include",
-		"../Shared/include",
+		"../Engine/include",
 		"../Memory/include",
 		"../../Frameworks/Gaff/include",
 		"../../Dependencies/EASTL/include"

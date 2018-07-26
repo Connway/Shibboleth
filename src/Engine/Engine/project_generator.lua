@@ -1,4 +1,4 @@
-project "Shared"
+project "Engine"
 	if _ACTION then
 		location(GetEngineLocation())
 	end
@@ -25,4 +25,4 @@ project "Shared"
 		"../../Frameworks/Gleam/include",
 		"../../Dependencies/EASTL/include",
 		"../../Dependencies/glm"
-		}
+	}

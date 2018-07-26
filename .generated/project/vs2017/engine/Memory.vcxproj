@@ -124,7 +124,7 @@
       <WarningLevel>Level4</WarningLevel>
       <TreatWarningAsError>true</TreatWarningAsError>
       <PreprocessorDefinitions>UNICODE;_UNICODE;_DEBUG;DEBUG;WIN32;_WINDOWS;WIN64;IS_MEMORY;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\..\..\..\src\Engine\Memory\include;..\..\..\..\src\Engine\Shared\include;..\..\..\..\src\Frameworks\Gaff\include;..\..\..\..\src\Dependencies\rpmalloc;..\..\..\..\src\Dependencies\EASTL\include;..\..\..\..\src\Dependencies\dirent;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\..\src\Engine\Memory\include;..\..\..\..\src\Engine\Engine\include;..\..\..\..\src\Frameworks\Gaff\include;..\..\..\..\src\Dependencies\rpmalloc;..\..\..\..\src\Dependencies\EASTL\include;..\..\..\..\src\Dependencies\dirent;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
       <ExceptionHandling>Async</ExceptionHandling>
@@ -150,7 +150,7 @@ IF EXIST ..\..\..\build\vs2017\output\x64\Debug\$(TargetFileName)\ (xcopy /Q /E 
       <WarningLevel>Level4</WarningLevel>
       <TreatWarningAsError>true</TreatWarningAsError>
       <PreprocessorDefinitions>UNICODE;_UNICODE;NDEBUG;WIN32;_WINDOWS;WIN64;IS_MEMORY;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\..\..\..\src\Engine\Memory\include;..\..\..\..\src\Engine\Shared\include;..\..\..\..\src\Frameworks\Gaff\include;..\..\..\..\src\Dependencies\rpmalloc;..\..\..\..\src\Dependencies\EASTL\include;..\..\..\..\src\Dependencies\dirent;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\..\src\Engine\Memory\include;..\..\..\..\src\Engine\Engine\include;..\..\..\..\src\Frameworks\Gaff\include;..\..\..\..\src\Dependencies\rpmalloc;..\..\..\..\src\Dependencies\EASTL\include;..\..\..\..\src\Dependencies\dirent;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -181,7 +181,7 @@ IF EXIST ..\..\..\build\vs2017\output\x64\Release\$(TargetFileName)\ (xcopy /Q /
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level4</WarningLevel>
       <PreprocessorDefinitions>UNICODE;_UNICODE;NDEBUG;WIN32;_WINDOWS;WIN64;IS_MEMORY;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\..\..\..\src\Engine\Memory\include;..\..\..\..\src\Engine\Shared\include;..\..\..\..\src\Frameworks\Gaff\include;..\..\..\..\src\Dependencies\rpmalloc;..\..\..\..\src\Dependencies\EASTL\include;..\..\..\..\src\Dependencies\dirent;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\..\src\Engine\Memory\include;..\..\..\..\src\Engine\Engine\include;..\..\..\..\src\Frameworks\Gaff\include;..\..\..\..\src\Dependencies\rpmalloc;..\..\..\..\src\Dependencies\EASTL\include;..\..\..\..\src\Dependencies\dirent;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -212,7 +212,7 @@ IF EXIST ..\..\..\build\vs2017\output\x64\Analyze\$(TargetFileName)\ (xcopy /Q /
       <WarningLevel>Level4</WarningLevel>
       <TreatWarningAsError>true</TreatWarningAsError>
       <PreprocessorDefinitions>UNICODE;_UNICODE;NDEBUG;SHIB_PROFILE;WIN32;_WINDOWS;WIN64;IS_MEMORY;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\..\..\..\src\Engine\Memory\include;..\..\..\..\src\Engine\Shared\include;..\..\..\..\src\Frameworks\Gaff\include;..\..\..\..\src\Dependencies\rpmalloc;..\..\..\..\src\Dependencies\EASTL\include;..\..\..\..\src\Dependencies\dirent;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\..\src\Engine\Memory\include;..\..\..\..\src\Engine\Engine\include;..\..\..\..\src\Frameworks\Gaff\include;..\..\..\..\src\Dependencies\rpmalloc;..\..\..\..\src\Dependencies\EASTL\include;..\..\..\..\src\Dependencies\dirent;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -244,7 +244,7 @@ IF EXIST ..\..\..\build\vs2017\output\x64\Profile\$(TargetFileName)\ (xcopy /Q /
       <WarningLevel>Level4</WarningLevel>
       <TreatWarningAsError>true</TreatWarningAsError>
       <PreprocessorDefinitions>UNICODE;_UNICODE;_DEBUG;DEBUG;WIN32;_WINDOWS;WIN64;IS_MEMORY;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\..\..\..\src\Engine\Memory\include;..\..\..\..\src\Engine\Shared\include;..\..\..\..\src\Frameworks\Gaff\include;..\..\..\..\src\Dependencies\rpmalloc;..\..\..\..\src\Dependencies\EASTL\include;..\..\..\..\src\Dependencies\dirent;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\..\src\Engine\Memory\include;..\..\..\..\src\Engine\Engine\include;..\..\..\..\src\Frameworks\Gaff\include;..\..\..\..\src\Dependencies\rpmalloc;..\..\..\..\src\Dependencies\EASTL\include;..\..\..\..\src\Dependencies\dirent;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>

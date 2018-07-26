@@ -26,6 +26,14 @@ THE SOFTWARE.
 
 NS_SHIBBOLETH
 
+class ReadOnlyAttribute final : public Gaff::IAttribute
+{
+public:
+	IAttribute * clone(void) const override;
+
+	SHIB_REFLECTION_CLASS_DECLARE(ReadOnlyAttribute);
+};
+
 class EditorAttribute final : public Gaff::IAttribute
 {
 public:
@@ -36,4 +44,5 @@ public:
 
 NS_END
 
+SHIB_REFLECTION_DECLARE(ReadOnlyAttribute)
 SHIB_REFLECTION_DECLARE(EditorAttribute)

@@ -22,7 +22,7 @@ project "EditorBasic"
 		"../../Frameworks/Gaff/include",
 		"../../Frameworks/Gleam/include",
 		"../../Engine/Editor/include",
-		"../../Engine/Shared/include",
+		"../../Engine/Engine/include",
 		"../../Engine/Memory/include",
 		"../Graphics/include",
 		"../ECS/include"
@@ -64,7 +64,7 @@ project "EditorBasicModule"
 		"../../Frameworks/Gaff/include",
 		"../../Frameworks/Gleam/include",
 		"../../Engine/Editor/include",
-		"../../Engine/Shared/include",
+		"../../Engine/Engine/include",
 		"../../Engine/Memory/include"
 	}
 
@@ -74,7 +74,7 @@ project "EditorBasicModule"
 	{
 		"EditorBasic",
 		"Editor",
-		"Shared",
+		"Engine",
 		"Memory",
 		"Gaff",
 		"Gleam",

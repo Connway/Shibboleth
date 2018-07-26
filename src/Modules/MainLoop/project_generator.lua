@@ -20,7 +20,7 @@ project "MainLoop"
 	includedirs
 	{
 		"include",
-		"../../Engine/Shared/include",
+		"../../Engine/Engine/include",
 		"../../Engine/Memory/include",
 		"../../Frameworks/Gaff/include",
 		"../../Dependencies/EASTL/include"
@@ -48,7 +48,7 @@ project "MainLoopModule"
 	includedirs
 	{
 		"include",
-		"../../Engine/Shared/include",
+		"../../Engine/Engine/include",
 		"../../Engine/Memory/include",
 		"../../Frameworks/Gaff/include",
 		"../../Dependencies/EASTL/include"
@@ -56,7 +56,7 @@ project "MainLoopModule"
 
 	local deps = {
 		"MainLoop",
-		"Shared",
+		"Engine",
 		"Gaff",
 		"Memory",
 		"EASTL"

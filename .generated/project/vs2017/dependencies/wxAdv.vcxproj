@@ -378,8 +378,8 @@ IF EXIST ..\..\..\build\vs2017\output\x64\Optimized_Debug\$(TargetFileName)\ (xc
     <ClCompile Include="..\..\..\..\src\Dependencies\wxWidgets\src\msw\timectrl.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\engine\Shared.vcxproj">
-      <Project>{7C480CD1-68EA-36A7-51A5-4AFB3DE6BDF7}</Project>
+    <ProjectReference Include="..\engine\Engine.vcxproj">
+      <Project>{DBC7D3B0-C769-FE86-B024-12DB9C6585D7}</Project>
     </ProjectReference>
     <ProjectReference Include="..\engine\Memory.vcxproj">
       <Project>{BE94DDC2-AA36-0899-93F1-1BED7F328FE9}</Project>

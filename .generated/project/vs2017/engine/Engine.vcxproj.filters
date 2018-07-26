@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="include">
+      <UniqueIdentifier>{89AF369E-F58E-B539-FEA6-40106A051C9B}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\..\src\Engine\Engine\include\Shibboleth_App.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\Engine\Engine\include\Shibboleth_Broadcaster.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\Engine\Engine\include\Shibboleth_Broadcaster.inl">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\Engine\Engine\include\Shibboleth_Defines.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\Engine\Engine\include\Shibboleth_DynamicLoader.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\Engine\Engine\include\Shibboleth_EngineAttributesCommon.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\Engine\Engine\include\Shibboleth_EnumReflection.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\Engine\Engine\include\Shibboleth_Function.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\Engine\Engine\include\Shibboleth_HashString.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\Engine\Engine\include\Shibboleth_IApp.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\Engine\Engine\include\Shibboleth_IFileSystem.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\Engine\Engine\include\Shibboleth_IMainLoop.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\Engine\Engine\include\Shibboleth_IManager.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\Engine\Engine\include\Shibboleth_IncludeAngelScript.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\Engine\Engine\include\Shibboleth_JobPool.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\Engine\Engine\include\Shibboleth_LogManager.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\Engine\Engine\include\Shibboleth_LooseFileSystem.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\Engine\Engine\include\Shibboleth_Math.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\Engine\Engine\include\Shibboleth_ProxyAllocator.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\Engine\Engine\include\Shibboleth_Queue.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\Engine\Engine\include\Shibboleth_RefCounted.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\Engine\Engine\include\Shibboleth_Reflection.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\Engine\Engine\include\Shibboleth_ReflectionManager.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\Engine\Engine\include\Shibboleth_SmartPtrs.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\Engine\Engine\include\Shibboleth_String.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\Engine\Engine\include\Shibboleth_UniqueAttribute.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\Engine\Engine\include\Shibboleth_Utilities.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\Engine\Engine\include\Shibboleth_Vector.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\Engine\Engine\include\Shibboleth_VectorMap.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\Engine\Engine\include\Shibboleth_Watcher.h">
+      <Filter>include</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\..\..\src\Engine\Engine\Shibboleth_App.cpp" />
+    <ClCompile Include="..\..\..\..\src\Engine\Engine\Shibboleth_Broadcaster.cpp" />
+    <ClCompile Include="..\..\..\..\src\Engine\Engine\Shibboleth_EngineAttributesCommon.cpp" />
+    <ClCompile Include="..\..\..\..\src\Engine\Engine\Shibboleth_LogManager.cpp" />
+    <ClCompile Include="..\..\..\..\src\Engine\Engine\Shibboleth_LooseFileSystem.cpp" />
+    <ClCompile Include="..\..\..\..\src\Engine\Engine\Shibboleth_Math.cpp" />
+    <ClCompile Include="..\..\..\..\src\Engine\Engine\Shibboleth_NewDelete.cpp" />
+    <ClCompile Include="..\..\..\..\src\Engine\Engine\Shibboleth_Reflection.cpp" />
+    <ClCompile Include="..\..\..\..\src\Engine\Engine\Shibboleth_ReflectionManager.cpp" />
+    <ClCompile Include="..\..\..\..\src\Engine\Engine\Shibboleth_UniqueAttribute.cpp" />
+    <ClCompile Include="..\..\..\..\src\Engine\Engine\Shibboleth_Utilities.cpp" />
+  </ItemGroup>
+</Project>
