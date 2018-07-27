@@ -691,41 +691,39 @@ template <class T, class Allocator>
 void ReflectionDefinition<T, Allocator>::load(const ISerializeReader& reader, T& object) const
 {
 	GAFF_REF(reader); GAFF_REF(object);
-	//for (auto& entry : _vars) {
-	//	if (!getVarAttr<ReadOnlyAttribute>(entry.first.getHash())) {
-	//		if (!entry.second->isReadOnly()) {
-	//			ScopeGuard scope = reader.enterElementGuard(entry.first.getBuffer());
-	//			entry.second->load(reader, object);
-	//		}
-	//	}
-	//}
+	for (auto& entry : _vars) {
+		if (!entry.second->isReadOnly()) {
+			ScopeGuard scope = reader.enterElementGuard(entry.first.getBuffer());
+			entry.second->load(reader, object);
+		}
+	}
 }
 
 template <class T, class Allocator>
 void ReflectionDefinition<T, Allocator>::save(ISerializeWriter& writer, const T& object) const
 {
 	GAFF_REF(writer); GAFF_REF(object);
-	//uint32_t writable_vars = 0;
+	uint32_t writable_vars = 0;
 
-	//// Count how many vars we're actually writing to the object.
-	//for (auto& entry : _vars) {
-	//	// If not read-only and does not have the NoSerialize attribute.
-	//	if (!entry.second->isReadOnly()) {
-	//		++writable_vars;
-	//	}
-	//}
+	// Count how many vars we're actually writing to the object.
+	for (auto& entry : _vars) {
+		// If not read-only and does not have the NoSerialize attribute.
+		if (!entry.second->isReadOnly()) {
+			++writable_vars;
+		}
+	}
 
-	//// Write out the object.
-	//writer.startObject(writable_vars);
+	// Write out the object.
+	writer.startObject(writable_vars);
 
-	//for (auto& entry : _vars) {
-	//	if (!entry.second->isReadOnly()) {
-	//		writer.writeKey(entry.first.getBuffer());
-	//		entry.second->save(writer, object);
-	//	}
-	//}
+	for (auto& entry : _vars) {
+		if (!entry.second->isReadOnly()) {
+			writer.writeKey(entry.first.getBuffer());
+			entry.second->save(writer, object);
+		}
+	}
 
-	//writer.endObject();
+	writer.endObject();
 }
 
 template <class T, class Allocator>
@@ -1153,7 +1151,7 @@ ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::var(cons
 	if constexpr (sizeof...(Attrs) > 0) {
 		auto& attrs = _var_attrs[FNV1aHash32Const(name)];
 		attrs.set_allocator(_allocator);
-		addAttributes(name, ptr, attrs, attributes...);
+		addAttributes(pair.second.get(), ptr, attrs, attributes...);
 	}
 
 	_vars.insert(std::move(pair));
@@ -1205,7 +1203,7 @@ ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::var(cons
 	if constexpr (sizeof...(Attrs) > 0) {
 		auto& attrs = _var_attrs[FNV1aHash32Const(name)];
 		attrs.set_allocator(_allocator);
-		addAttributes(name, getter, setter, attrs, attributes...);
+		addAttributes(pair.second.get(), getter, setter, attrs, attributes...);
 	}
 
 	_vars.insert(std::move(pair));
@@ -1229,7 +1227,7 @@ ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::var(cons
 	if constexpr (sizeof...(Attrs) > 0) {
 		auto& attrs = _var_attrs[FNV1aHash32Const(name)];
 		attrs.set_allocator(_allocator);
-		addAttributes(name, vec, attrs, attributes...);
+		addAttributes(pair.second.get(), vec, attrs, attributes...);
 	}
 
 	_vars.insert(std::move(pair));
@@ -1253,7 +1251,7 @@ ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::var(cons
 	if constexpr (sizeof...(Attrs) > 0) {
 		auto& attrs = _var_attrs[FNV1aHash32Const(name)];
 		attrs.set_allocator(_allocator);
-		addAttributes(name, arr, attrs, attributes...);
+		addAttributes(pair.second.get(), arr, attrs, attributes...);
 	}
 
 	_vars.insert(std::move(pair));
@@ -1316,7 +1314,7 @@ ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::func(con
 	if constexpr (sizeof...(Attrs) > 0) {
 		auto& attrs = _func_attrs[FNV1aHash32Const(name)];
 		attrs.set_allocator(_allocator);
-		addAttributes(name, ptr, attributes...);
+		addAttributes(ptr, attributes...);
 	}
 
 	return *this;
@@ -1377,7 +1375,7 @@ ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::func(con
 	if constexpr (sizeof...(Attrs) > 0) {
 		auto& attrs = _func_attrs[FNV1aHash32Const(name)];
 		attrs.set_allocator(_allocator);
-		addAttributes(name, ptr, attributes...);
+		addAttributes(ptr, attributes...);
 	}
 
 	return *this;
@@ -1419,7 +1417,7 @@ ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::staticFu
 	if constexpr (sizeof...(Attrs) > 0) {
 		auto& attrs = _static_func_attrs[FNV1aHash32Const(name)];
 		attrs.set_allocator(_allocator);
-		addAttributes(name, ptr, attributes...);
+		addAttributes(ptr, attributes...);
 	}
 
 	return *this;
@@ -1487,98 +1485,98 @@ void ReflectionDefinition<T, Allocator>::RegisterBaseVariables(void)
 
 // Variables
 template <class T, class Allocator>
-template <size_t size, class Var, class First, class... Rest>
-ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::addAttributes(const char(&name)[size], Var T::*var, Vector<IAttributePtr, Allocator>& attrs, const First& first, const Rest&... rest)
+template <class Var, class First, class... Rest>
+ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::addAttributes(Gaff::IReflectionVar* ref_var, Var T::*var, Vector<IAttributePtr, Allocator>& attrs, const First& first, const Rest&... rest)
 {
 	First* const clone = reinterpret_cast<First*>(first.clone());
 	attrs.emplace_back(IAttributePtr(clone));
 
-	clone->apply(name, var);
-
-	return addAttributes(var, attrs, rest...);
+	clone->apply(ref_var, var);
+	
+	return addAttributes(ref_var, var, attrs, rest...);
 }
 
 template <class T, class Allocator>
-template <size_t size, class Var, class Ret, class First, class... Rest>
-ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::addAttributes(const char(&name)[size], Ret (T::*getter)(void) const, void (T::*setter)(Var), Vector<IAttributePtr, Allocator>& attrs, const First& first, const Rest&... rest)
+template <class Var, class Ret, class First, class... Rest>
+ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::addAttributes(Gaff::IReflectionVar* ref_var, Ret (T::*getter)(void) const, void (T::*setter)(Var), Vector<IAttributePtr, Allocator>& attrs, const First& first, const Rest&... rest)
 {
 	First* const clone = reinterpret_cast<First*>(first.clone());
 	attrs.emplace_back(IAttributePtr(clone));
 
-	clone->apply(name, getter, setter);
+	clone->apply(ref_var, getter, setter);
 
-	return addAttributes(getter, setter, attrs, rest...);
+	return addAttributes(ref_var, getter, setter, attrs, rest...);
 }
 
 template <class T, class Allocator>
-template <size_t size, class Var, class First, class... Rest>
-ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::addAttributes(const char(&name)[size], Var T::*, Vector<IAttributePtr, Allocator>&)
+template <class Var>
+ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::addAttributes(Gaff::IReflectionVar*, Var T::*, Vector<IAttributePtr, Allocator>&)
 {
 	return *this;
 }
 
 template <class T, class Allocator>
-template <size_t size, class Var, class Ret, class First, class... Rest>
-ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::addAttributes(const char(&name)[size], Ret (T::*)(void) const, void (T::*)(Var), Vector<IAttributePtr, Allocator>&)
-{const char(&name)[size], 
+template <class Var, class Ret>
+ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::addAttributes(Gaff::IReflectionVar*, Ret (T::*)(void) const, void (T::*)(Var), Vector<IAttributePtr, Allocator>&)
+{
 	return *this;
 }
 
 // Functions
 template <class T, class Allocator>
-template <size_t size, class Ret, class... Args, class First, class... Rest>
-ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::addAttributes(const char(&name)[size], Ret (T::*func)(Args...) const, Vector<IAttributePtr, Allocator>& attrs, const First& first, const Rest&... rest)
+template <class Ret, class... Args, class First, class... Rest>
+ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::addAttributes(Ret (T::*func)(Args...) const, Vector<IAttributePtr, Allocator>& attrs, const First& first, const Rest&... rest)
 {
 	First* const clone = reinterpret_cast<First*>(first.clone());
 	attrs.emplace_back(IAttributePtr(clone));
 
-	clone->apply(name, func);
+	clone->apply(func);
 	
 	return addAttributes(func, attrs, rest...);
 }
 
 template <class T, class Allocator>
-template <size_t size, class Ret, class... Args, class First, class... Rest>
-ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::addAttributes(const char(&name)[size], Ret (T::*func)(Args...), Vector<IAttributePtr, Allocator>& attrs, const First& first, const Rest&... rest)
+template <class Ret, class... Args, class First, class... Rest>
+ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::addAttributes(Ret (T::*func)(Args...), Vector<IAttributePtr, Allocator>& attrs, const First& first, const Rest&... rest)
 {
 	First* const clone = reinterpret_cast<First*>(first.clone());
 	attrs.emplace_back(IAttributePtr(clone));
 
-	clone->apply(name, func);
+	clone->apply(func);
 
 	return addAttributes(func, attrs, rest...);
 }
 
 template <class T, class Allocator>
-template <size_t size, class Ret, class... Args>
-ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::addAttributes(const char(&name)[size], Ret (T::*)(Args...) const, Vector<IAttributePtr, Allocator>&)
+template <class Ret, class... Args>
+ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::addAttributes(Ret (T::*)(Args...) const, Vector<IAttributePtr, Allocator>&)
 {
 	return *this;
 }
 
 template <class T, class Allocator>
-template <size_t size, class Ret, class... Args>
-ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::addAttributes(const char(&name)[size], Ret (T::*)(Args...), Vector<IAttributePtr, Allocator>&)
+template <class Ret, class... Args>
+ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::addAttributes(Ret (T::*)(Args...), Vector<IAttributePtr, Allocator>&)
 {
 	return *this;
 }
 
 // Static Functions
 template <class T, class Allocator>
-template <size_t size, class Ret, class... Args, class First, class... Rest>
-ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::addAttributes(const char(&name)[size], Ret (*func)(Args...), Vector<IAttributePtr, Allocator>& attrs, const First& first, const Rest&... rest)
+template <class Ret, class... Args, class First, class... Rest>
+ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::addAttributes(Ret (*func)(Args...), Vector<IAttributePtr, Allocator>& attrs, const First& first, const Rest&... rest)
 {
 	First* const clone = reinterpret_cast<First*>(first.clone());
 	attrs.emplace_back(IAttributePtr(clone));
 
-	clone->apply(name, func);
+	clone->apply(func);
 
 	return addAttributes(func, attrs, rest...);
 }
 
 template <class T, class Allocator>
-template <size_t size, class Ret, class... Args>
-ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::addAttributes(const char(&)[size], Ret (*)(Args...), Vector<IAttributePtr, Allocator>&)
+template <class Ret, class... Args>
+ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::addAttributes(Ret (*)(Args...), Vector<IAttributePtr, Allocator>&)
 {
 	return *this;
 }
