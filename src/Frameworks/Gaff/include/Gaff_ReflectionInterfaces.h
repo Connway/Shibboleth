@@ -106,40 +106,6 @@ public:
 	virtual void* getBasePointer(void) = 0;
 };
 
-class IAttribute : public IReflectionObject
-{
-public:
-	virtual IAttribute* clone(void) const = 0;
-
-	virtual void finish(Gaff::IReflectionDefinition* /*ref_def*/) {}
-	virtual void finish(Gaff::IEnumReflectionDefinition* /*ref_def*/) {}
-
-	virtual void instantiated(Gaff::IReflectionDefinition* /*ref_def*/, void* /*object*/) {}
-
-	// The apply function corresponds directly to calls in reflection definition. Apply all that apply.
-
-	// Attributes that are applied to functions need to implement these template functions.
-	//template <size_t size, class T, class Ret, class... Args>
-	//void apply(const char(&name)[size], Ret (T::*func)(Args...) const);
-	//template <size_t size, class T, class Ret, class... Args>
-	//void apply(const char(&name)[size], Ret (T::*func)(Args...));
-
-	// Attributes that are applied to static class functions need to implement this template function.
-	//template <size_t size, class T, class Ret, class... Args>
-	//void apply(const char(&name)[size], Ret (T::*func)(Args...));
-
-	// Attributes that are applied to variables need to implement these template functions,
-	// or at least the ones they apply to.
-	//template <size_t size, class T, class Var>
-	//void apply(const char(&name)[size], Var T::*var);
-	//template <size_t size, class T, class Var, class Ret>
-	//void apply(const char(&name)[size], Ret (T::*getter)(void) const, void (T::*setter)(Var));
-	//template <size_t size, class Var, class Vec_Allocator>
-	//void apply(const char(&name)[size], Vector<Var, Vec_Allocator> T::*vec);
-	//template <size_t size, class T, class Var, size_t array_size>
-	//void apply(const char(&name)[size], Var (T::*arr)[array_size]);
-};
-
 class IReflection
 {
 public:
@@ -246,6 +212,40 @@ public:
 
 private:
 	bool _read_only = false;
+};
+
+class IAttribute : public IReflectionObject
+{
+public:
+	virtual IAttribute* clone(void) const = 0;
+
+	virtual void finish(Gaff::IReflectionDefinition* /*ref_def*/) {}
+	virtual void finish(Gaff::IEnumReflectionDefinition* /*ref_def*/) {}
+
+	virtual void instantiated(Gaff::IReflectionDefinition* /*ref_def*/, void* /*object*/) {}
+
+	// The apply function corresponds directly to calls in reflection definition. Apply all that apply.
+
+	// Attributes that are applied to functions need to implement these template functions.
+	template <class T, class Ret, class... Args>
+	void apply(Ret (T::* /*func*/)(Args...) const) {}
+	template <class T, class Ret, class... Args>
+	void apply(Ret (T::* /*func*/)(Args...)) {}
+
+	// Attributes that are applied to static class functions need to implement this template function.
+	template <class T, class Ret, class... Args>
+	void apply(Ret (* /*func*/)(Args...)) {}
+
+	// Attributes that are applied to variables need to implement these template functions,
+	// or at least the ones they apply to.
+	template <class T, class Var>
+	void apply(IReflectionVar* /*ref_var*/, Var T::* /*var*/) {}
+	template <class T, class Var, class Ret>
+	void apply(IReflectionVar* /*ref_var*/, Ret (T::* /*getter*/)(void) const, void (T::* /*setter*/)(Var)) {}
+	template <class T, class Var, class Vec_Allocator, size_t size>
+	void apply(IReflectionVar* /*ref_var*/, Vector<Var, Vec_Allocator> T::* /*vec*/) {}
+	template <class T, class Var, size_t size>
+	void apply(IReflectionVar* /*ref_var*/, Var (T::* /*arr*/)[size]) {}
 };
 
 template <class Ret, class... Args>

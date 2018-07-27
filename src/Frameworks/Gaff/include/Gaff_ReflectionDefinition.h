@@ -425,31 +425,30 @@ private:
 	static void RegisterBaseVariables(void);
 
 	// Variables
-	template <size_t size, class Var, class First, class... Rest>
-	ReflectionDefinition& addAttributes(const char(&name)[size], Var T::*var, Vector<IAttributePtr, Allocator>& attrs, const First& first, const Rest&... rest);
-	template <size_t size, class Var, class Ret, class First, class... Rest>
-	ReflectionDefinition& addAttributes(const char(&name)[size], Ret (T::*getter)(void) const, void (T::*setter)(Var), Vector<IAttributePtr, Allocator>& attrs, const First& first, const Rest&... rest);
-	template <size_t size, class Var, class First, class... Rest>
-	ReflectionDefinition& addAttributes(const char(&name)[size], Var T::*, Vector<IAttributePtr, Allocator>&);
-	template <size_t size, class Var, class Ret, class First, class... Rest>
-	ReflectionDefinition& addAttributes(const char(&)[size], Ret (T::*)(void) const, void (T::*)(Var), Vector<IAttributePtr, Allocator>&);
-
+	template <class Var, class First, class... Rest>
+	ReflectionDefinition& addAttributes(Gaff::IReflectionVar* ref_var, Var T::*var, Vector<IAttributePtr, Allocator>& attrs, const First& first, const Rest&... rest);
+	template <class Var, class Ret, class First, class... Rest>
+	ReflectionDefinition& addAttributes(Gaff::IReflectionVar* ref_var, Ret (T::*getter)(void) const, void (T::*setter)(Var), Vector<IAttributePtr, Allocator>& attrs, const First& first, const Rest&... rest);
+	template <class Var>
+	ReflectionDefinition& addAttributes(Gaff::IReflectionVar*, Var T::*, Vector<IAttributePtr, Allocator>&);
+	template <class Var, class Ret>
+	ReflectionDefinition& addAttributes(Gaff::IReflectionVar*, Ret (T::*)(void) const, void (T::*)(Var), Vector<IAttributePtr, Allocator>&);
 
 	// Functions
-	template <size_t size, class Ret, class... Args, class First, class... Rest>
-	ReflectionDefinition& addAttributes(const char(&name)[size], Ret (T::*func)(Args...) const, Vector<IAttributePtr, Allocator>& attrs, const First& first, const Rest&... rest);
-	template <size_t size, class Ret, class... Args, class First, class... Rest>
-	ReflectionDefinition& addAttributes(const char(&name)[size], Ret (T::*func)(Args...), Vector<IAttributePtr, Allocator>& attrs, const First& first, const Rest&... rest);
-	template <size_t size, class Ret, class... Args>
-	ReflectionDefinition& addAttributes(const char(&name)[size], Ret (T::*)(Args...) const, Vector<IAttributePtr, Allocator>&);
-	template <size_t size, class Ret, class... Args>
-	ReflectionDefinition& addAttributes(const char(&)[size], Ret (T::*)(Args...), Vector<IAttributePtr, Allocator>&);
+	template <class Ret, class... Args, class First, class... Rest>
+	ReflectionDefinition& addAttributes(Ret (T::*func)(Args...) const, Vector<IAttributePtr, Allocator>& attrs, const First& first, const Rest&... rest);
+	template <class Ret, class... Args, class First, class... Rest>
+	ReflectionDefinition& addAttributes(Ret (T::*func)(Args...), Vector<IAttributePtr, Allocator>& attrs, const First& first, const Rest&... rest);
+	template <class Ret, class... Args>
+	ReflectionDefinition& addAttributes(Ret (T::*)(Args...) const, Vector<IAttributePtr, Allocator>&);
+	template <class Ret, class... Args>
+	ReflectionDefinition& addAttributes(Ret (T::*)(Args...), Vector<IAttributePtr, Allocator>&);
 
 	// Static Functions
-	template <size_t size, class Ret, class... Args, class First, class... Rest>
-	ReflectionDefinition& addAttributes(const char(&name)[size], Ret (*func)(Args...), Vector<IAttributePtr, Allocator>& attrs, const First& first, const Rest&... rest);
-	template <size_t size, class Ret, class... Args>
-	ReflectionDefinition& addAttributes(const char(&)[size], Ret (*)(Args...), Vector<IAttributePtr, Allocator>&);
+	template <class Ret, class... Args, class First, class... Rest>
+	ReflectionDefinition& addAttributes(Ret (*func)(Args...), Vector<IAttributePtr, Allocator>& attrs, const First& first, const Rest&... rest);
+	template <class Ret, class... Args>
+	ReflectionDefinition& addAttributes(Ret (*)(Args...), Vector<IAttributePtr, Allocator>&);
 
 	// Non-apply() call version.
 	template <class First, class... Rest>

@@ -26,10 +26,16 @@ THE SOFTWARE.
 
 NS_SHIBBOLETH
 
+
 class ReadOnlyAttribute final : public Gaff::IAttribute
 {
 public:
-	IAttribute * clone(void) const override;
+	IAttribute* clone(void) const override;
+
+	template <class T, class Var>
+	void apply(Gaff::IReflectionVar* ref_var, Var T::*) { ref_var->setReadOnly(true);  }
+	template <class T, class Var, class Ret>
+	void apply(Gaff::IReflectionVar* ref_var, Ret(T::*)(void) const, void (T::*)(Var)) { ref_var->setReadOnly(true); }
 
 	SHIB_REFLECTION_CLASS_DECLARE(ReadOnlyAttribute);
 };
