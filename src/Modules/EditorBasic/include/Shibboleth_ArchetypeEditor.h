@@ -61,10 +61,12 @@ private:
 
 	ECSArchetype _archetype;
 
+	void onRemoveComponents(wxTreeEvent& event);
 	void onAddComponents(wxTreeEvent& event);
 	void onDragBegin(wxTreeEvent& event);
 
 	RefDefItem* getItem(const wxTreeItemId& id) const;
+	void removeItem(RefDefItem* item);
 	void addItem(RefDefItem* item);
 	void initComponentList(void);
 
