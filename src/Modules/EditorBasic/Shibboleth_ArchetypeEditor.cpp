@@ -81,9 +81,9 @@ ArchetypeEditor::ArchetypeEditor(
 	_ecs_components->SetWindowStyleFlag(wxTR_HIDE_ROOT | wxTR_MULTIPLE);
 	_ecs_components->AddRoot(wxT(""));
 
-	_archetype = new wxListBox(this, wxID_ANY);
-	_archetype->SetWindowStyleFlag(wxLB_MULTIPLE);
-	_archetype->SetDropTarget(this);
+	_archetype_ui = new wxListBox(this, wxID_ANY);
+	_archetype_ui->SetWindowStyleFlag(wxLB_MULTIPLE);
+	_archetype_ui->SetDropTarget(this);
 
 	wxStaticText* const archetype_text = new wxStaticText(this, wxID_ANY, "Archetype");
 	wxStaticText* const component_text = new wxStaticText(this, wxID_ANY, "Components List");
@@ -94,7 +94,7 @@ ArchetypeEditor::ArchetypeEditor(
 	sizer->Add(archetype_text, 1, wxEXPAND | wxALL, 1);
 	sizer->Add(component_text, 1, wxEXPAND | wxALL, 1);
 
-	sizer->Add(_archetype, 15, wxEXPAND | wxALL, 1);
+	sizer->Add(_archetype_ui, 15, wxEXPAND | wxALL, 1);
 	sizer->Add(_ecs_components, 15, wxEXPAND | wxALL, 1);
 
 	sizer->AddGrowableRow(1, 15);
@@ -228,7 +228,8 @@ void ArchetypeEditor::addItem(RefDefItem* item)
 		item->setDisabled(true);
 	}
 
-	_archetype->Append(ref_def->getReflectionInstance().getName(), reinterpret_cast<wxClientData*>(item));
+	_archetype_ui->Append(ref_def->getReflectionInstance().getName(), reinterpret_cast<wxClientData*>(item));
+	_archetype.add(ref_def);
 }
 
 void ArchetypeEditor::initComponentList(void)

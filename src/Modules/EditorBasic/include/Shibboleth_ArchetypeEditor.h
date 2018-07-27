@@ -22,7 +22,7 @@ THE SOFTWARE.
 
 #pragma once
 
-#include <Shibboleth_Reflection.h>
+#include <Shibboleth_ECSArchetype.h>
 
 #ifdef PLATFORM_WINDOWS
 	#include <wx/msw/winundef.h>
@@ -57,7 +57,9 @@ public:
 
 private:
 	wxTreeCtrl* _ecs_components = nullptr;
-	wxListBox* _archetype = nullptr;
+	wxListBox* _archetype_ui = nullptr;
+
+	ECSArchetype _archetype;
 
 	void onAddComponents(wxTreeEvent& event);
 	void onDragBegin(wxTreeEvent& event);
