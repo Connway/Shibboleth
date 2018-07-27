@@ -29,16 +29,15 @@ NS_SHIBBOLETH
 class ECSArchetype
 {
 public:
-	// We will follow the ref_def properties all the way down to the leaf node
-	// and use those for our memory layout.
-	void add(const Vector<const Gaff::IReflection*>& ref_defs);
-	void add(const Gaff::IReflection* ref_def);
+	void add(const Vector<const Gaff::IReflectionDefinition*>& ref_defs);
+	void add(const Gaff::IReflectionDefinition* ref_def);
+	void remove(const Vector<const Gaff::IReflectionDefinition*>& ref_defs);
+	void remove(const Gaff::IReflectionDefinition* ref_def);
 
 	int32_t size(void) const;
 
 private:
-	// Leaf nodes from the add() call.
-	Vector<const Gaff::IReflection*> _vars;
+	Vector<const Gaff::IReflectionDefinition*> _vars;
 	int32_t _alloc_size = 0;
 };
 

@@ -564,6 +564,21 @@ public:
 	}
 
 	template <class T, class Allocator>
+	void getClassAttrs(Hash64 attr_name, Vector<const T*, Allocator>& out) const
+	{
+		for (int32_t i = 0; i < getNumClassAttrs(); ++i) {
+			const IAttribute* const attribute = getClassAttr(i);
+			const void* attr = attribute->getReflectionDefinition().getInterface(
+				attr_name, attribute->getBasePointer()
+			);
+
+			if (attr) {
+				out.emplace_back(reinterpret_cast<const T*>(attr));
+			}
+		}
+	}
+
+	template <class T, class Allocator>
 	void getVarAttrs(Hash32 name, Vector<const T*, Allocator>& out) const
 	{
 		const int32_t size = getNumVarAttrs(name);
