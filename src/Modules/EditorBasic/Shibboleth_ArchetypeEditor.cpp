@@ -108,6 +108,7 @@ ArchetypeEditor::ArchetypeEditor(
 
 	Bind(wxEVT_TREE_ITEM_RIGHT_CLICK, &ArchetypeEditor::onAddComponents, this, _ecs_components->GetId());
 	Bind(wxEVT_TREE_ITEM_ACTIVATED, &ArchetypeEditor::onAddComponents, this, _ecs_components->GetId());
+	Bind(wxEVT_TREE_DELETE_ITEM, &ArchetypeEditor::onRemoveComponents, this, _ecs_components->GetId());
 	Bind(wxEVT_TREE_BEGIN_DRAG, &ArchetypeEditor::onDragBegin, this, _ecs_components->GetId());
 
 	m_dataObject = new wxCustomDataObject(s_ref_def_format);
@@ -128,6 +129,33 @@ wxDragResult ArchetypeEditor::OnData(wxCoord /*x*/, wxCoord /*y*/, wxDragResult 
 	}
 
 	return result;
+}
+
+void ArchetypeEditor::onRemoveComponents(wxTreeEvent& event)
+{
+	wxArrayTreeItemIds ids;
+	size_t size = _ecs_components->GetSelections(ids);
+
+	if (ids.IsEmpty()) {
+		RefDefItem* const item = getItem(event.GetItem());
+
+		if (!item) {
+			return;
+		}
+
+		removeItem(item);
+
+	} else {
+		for (size_t i = 0; i < size; ++i) {
+			RefDefItem* const item = getItem(ids[i]);
+
+			if (!item) {
+				return;
+			}
+
+			removeItem(item);
+		}
+	}
 }
 
 void ArchetypeEditor::onAddComponents(wxTreeEvent& event)
@@ -217,6 +245,18 @@ RefDefItem* ArchetypeEditor::getItem(const wxTreeItemId& id) const
 	}
 
 	return item;
+}
+
+void ArchetypeEditor::removeItem(RefDefItem* item)
+{
+	const Gaff::IReflectionDefinition* const ref_def = item->getRefDef();
+
+	if (ref_def->getClassAttr<UniqueAttribute>()) {
+		_ecs_components->SetItemTextColour(item->GetId(), g_grey);
+		item->setDisabled(false);
+	}
+
+	_archetype.remove(ref_def);
 }
 
 void ArchetypeEditor::addItem(RefDefItem* item)
