@@ -21,65 +21,61 @@ THE SOFTWARE.
 ************************************************************************************/
 
 template <class Message>
-MessageBroadcaster::MessageFunctor<Message>::MessageFunctor(const Gaff::FunctionBinder<void, const Message&>& callback):
-	_callback(callback)
+BroadcastID Broadcaster::listen(const eastl::function<void (const Message&)>& callback)
 {
-}
+	std::lock_guard lock(_listener_lock);
 
-template <class Message>
-MessageBroadcaster::MessageFunctor<Message>::~MessageFunctor(void)
-{
-}
+	auto& listener_data = _listeners[Reflection<Message>::GetHash()];
+	BroadcastID id(Reflection<Message>::GetHash(), 0);
 
-template <class Message>
-void MessageBroadcaster::MessageFunctor<Message>::call(const IMessage& message)
-{
-	_callback(reinterpret_cast<const Message&>(message));
-}
+	const ListenerData::Listener func = [](const void* message) -> void {
+		const Message* const msg = reinterpret_cast<const Message*>(message);
+		callback(*msg);
+	};
 
-
-
-template <class Message>
-BroadcastID MessageBroadcaster::listen(const Gaff::FunctionBinder<void, const Message&>& callback)
-{
-	BroadcastID id(Message::GetReflectionHash(), AtomicIncrement(&_next_id));
-	IMessageFunctor* cb = SHIB_ALLOCT(MessageFunctor<Message>, GetAllocator(), callback);
-
-	_listener_add_lock.lock();
-	_listener_add_queue.emplacePush(id, cb);
-	_listener_add_lock.unlock();
+	if (it->unused_ids.empty()) {
+		id.second = listener_data.listeners.size();
+		listener_data.listeners.emplace_back(func);
+	} else {
+		id.second = listener_data.unused_ids.back();
+		listener_data.unused_ids.pop_back();
+		listener_data.listeners[id.second] = func;
+	}
 
 	return id;
 }
 
 template <class Message>
-void MessageBroadcaster::broadcastNow(const Message& message)
+void Broadcaster::broadcastSync(const Message& message)
 {
-	// Stop the listener map from being modified.
-	_listener_lock.readLock();
+	const auto it = _listeners.find(Reflection<Message>::GetHash());
 
-	auto it = _listeners.findElementWithKey(Message::GetReflectionHash());
-
-	if (it != _listeners.end()) {
-		// Stop listeners list from being modified
-		it->lock.readLock();
-
-		for (auto it_listeners = it->listeners.begin(); it_listeners != it->listeners.end(); ++it_listeners) {
-			it_listeners->call(message);
-		}
-
-		it->lock.readUnlock();
+	if (it == _listeners.end()) {
+		return;
 	}
 
-	_listener_lock.readUnlock();
+	for (const auto func : *it) {
+		func(&message);
+	}
 }
 
 template <class Message>
-void MessageBroadcaster::broadcast(const Message& message)
+void Broadcaster::broadcast(const Message& message)
 {
-	Message* message = SHIB_ALLOCT(Message, GetAllocator(), message);
+	const auto func = [this, message](void*) -> void {
+		std::lock_guard lock(_listener_lock);
 
-	_message_add_lock.lock();
-	_message_queues[1 - _curr_queue].emplacePush(Message::GetReflectionHash(), message);
-	_message_add_lock.unlock();
+		const auto it = _listeners.find(Reflection<Message>::GetHash());
+
+		if (it == _listeners.end()) {
+			return;
+		}
+
+		for (const auto cb : it->second.listeners) {
+			cb(message);
+		}
+	};
+
+	Gaff::JobData data{ func, nullptr };
+	_job_pool.addJobs(&data, 1, &_counter);
 }

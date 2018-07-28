@@ -73,7 +73,7 @@ private:
 template <class Fn, class T, class Allocator = DefaultAllocator>
 eastl::function<Fn> Func(T functor, const Allocator& allocator = Allocator())
 {
-	static_assert(std::is_function<Fn>::value, "Shibboleth::Func requires template argument Func to be a function type!");
+	static_assert(std::is_function<Fn>::value, "Gaff::Func requires template argument Func to be a function type!");
 	return eastl::function<Fn>(eastl::allocator_arg, allocator, functor);
 }
 

@@ -85,10 +85,10 @@ void JobPool<Allocator>::addJobs(JobData* jobs, size_t num_jobs, Counter** count
 		if (*counter) {
 			cnt = *counter;
 		} else {
-			*counter = cnt = GAFF_ALLOCT(Counter, _allocator);
+			*counter = cnt = GAFF_ALLOCT(Counter, _allocator, 0);
 		}
 
-		*cnt = static_cast<int32_t>(num_jobs);
+		*cnt += static_cast<int32_t>(num_jobs);
 	}
 
 	typename JobPool<Allocator>::JobQueue& job_queue = _job_pools[pool];

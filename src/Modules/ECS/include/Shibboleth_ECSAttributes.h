@@ -62,7 +62,7 @@ class ECSVarAttribute : public IECSVarAttribute
 public:
 	Gaff::IAttribute* clone(void) const override
 	{
-		Shibboleth::IAllocator& allocator = GetAllocator();
+		IAllocator& allocator = GetAllocator();
 		return SHIB_ALLOCT_POOL(ECSVarAttribute<T>, allocator.getPoolIndex("Reflection"), allocator);
 	}
 

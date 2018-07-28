@@ -34,7 +34,7 @@ SHIB_REFLECTION_CLASS_DEFINE_END(UniqueAttribute)
 
 Gaff::IAttribute* UniqueAttribute::clone(void) const
 {
-	Shibboleth::IAllocator& allocator = GetAllocator();
+	IAllocator& allocator = GetAllocator();
 	return SHIB_ALLOCT_POOL(UniqueAttribute, allocator.getPoolIndex("Reflection"), allocator);
 }
 

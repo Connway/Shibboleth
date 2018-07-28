@@ -35,7 +35,7 @@ SHIB_REFLECTION_CLASS_DEFINE_END(ReadOnlyAttribute)
 
 Gaff::IAttribute* ReadOnlyAttribute::clone(void) const
 {
-	Shibboleth::IAllocator& allocator = GetAllocator();
+	IAllocator& allocator = GetAllocator();
 	return SHIB_ALLOCT_POOL(ReadOnlyAttribute, allocator.getPoolIndex("Reflection"), allocator);
 }
 
@@ -46,7 +46,7 @@ SHIB_REFLECTION_CLASS_DEFINE_END(EditorAttribute)
 
 Gaff::IAttribute* EditorAttribute::clone(void) const
 {
-	Shibboleth::IAllocator& allocator = GetAllocator();
+	IAllocator& allocator = GetAllocator();
 	return SHIB_ALLOCT_POOL(EditorAttribute, allocator.getPoolIndex("Reflection"), allocator);
 }
 

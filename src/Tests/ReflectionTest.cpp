@@ -486,7 +486,7 @@ TEST_CASE("reflection func test", "[shibboleth_func]")
 	Gaff::IReflectionFunction<const int&>* const ref_get_func = ref_def.getFunc<const int&>(Gaff::FNV1aHash32Const("getIntRef"));
 	Gaff::IReflectionFunction<void, const int&>* const ref_set_func = ref_def.getFunc<void, const int&>(Gaff::FNV1aHash32Const("setIntRef"));
 
-	void* data = ref_def.create(Shibboleth::GetAllocator());
+	void* data = ref_def.create(Shibboleth::ProxyAllocator::GetGlobal());
 
 	REQUIRE(data);
 	REQUIRE(get_func);

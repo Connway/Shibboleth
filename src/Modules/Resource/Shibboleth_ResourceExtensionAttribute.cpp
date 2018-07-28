@@ -42,7 +42,7 @@ const HashStringTemp32& ResExtAttribute::getExtension(void) const
 
 Gaff::IAttribute* ResExtAttribute::clone(void) const
 {
-	Shibboleth::IAllocator& allocator = GetAllocator();
+	IAllocator& allocator = GetAllocator();
 	return SHIB_ALLOCT_POOL(ResExtAttribute, allocator.getPoolIndex("Reflection"), allocator, _extension.getBuffer());
 }
 

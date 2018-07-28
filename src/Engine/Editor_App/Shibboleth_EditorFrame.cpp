@@ -140,7 +140,13 @@ void EditorFrame::onSpawnWindow(wxCommandEvent& event)
 	const EditorWindowAttribute* const ew_attr = ref_def->getClassAttr<EditorWindowAttribute>();
 	GAFF_ASSERT(ew_attr);
 
-	Gaff::IReflectionObject* const instance = ref_def->createT<Gaff::IReflectionObject>(CLASS_HASH(Gaff::IReflectionObject), ARG_HASH(wxWindow*), GetAllocator(), this);
+	Gaff::IReflectionObject* const instance = ref_def->createT<Gaff::IReflectionObject>(
+		CLASS_HASH(Gaff::IReflectionObject),
+		ARG_HASH(wxWindow*),
+		ProxyAllocator::GetGlobal(),
+		this
+	);
+
 	GAFF_ASSERT(instance);
 	wxWindow* const window = ref_def->getInterface<wxWindow>(CLASS_HASH(wxWindow), instance->getBasePointer());
 	GAFF_ASSERT(window);

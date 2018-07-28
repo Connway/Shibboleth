@@ -283,6 +283,7 @@
     <ClCompile Include="..\..\..\..\src\Engine\Engine\Shibboleth_LooseFileSystem.cpp" />
     <ClCompile Include="..\..\..\..\src\Engine\Engine\Shibboleth_Math.cpp" />
     <ClCompile Include="..\..\..\..\src\Engine\Engine\Shibboleth_NewDelete.cpp" />
+    <ClCompile Include="..\..\..\..\src\Engine\Engine\Shibboleth_ProxyAllocator.cpp" />
     <ClCompile Include="..\..\..\..\src\Engine\Engine\Shibboleth_Reflection.cpp" />
     <ClCompile Include="..\..\..\..\src\Engine\Engine\Shibboleth_ReflectionManager.cpp" />
     <ClCompile Include="..\..\..\..\src\Engine\Engine\Shibboleth_UniqueAttribute.cpp" />
