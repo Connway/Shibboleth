@@ -47,7 +47,7 @@ const char* ECSClassAttribute::getName(void) const
 
 Gaff::IAttribute* ECSClassAttribute::clone(void) const
 {
-	Shibboleth::IAllocator& allocator = GetAllocator();
+	IAllocator& allocator = GetAllocator();
 	return SHIB_ALLOCT_POOL(ECSClassAttribute, allocator.getPoolIndex("Reflection"), allocator);
 }
 

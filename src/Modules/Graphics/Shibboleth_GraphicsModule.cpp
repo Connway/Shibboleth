@@ -29,7 +29,7 @@ THE SOFTWARE.
 DYNAMICEXPORT_C bool InitModule(Shibboleth::IApp* app)
 {
 	//Gaff::MessagePackSetMemoryFunctions(Shibboleth::ShibbolethAllocate, Shibboleth::ShibbolethFree);
-	Gleam::SetAllocator(&Shibboleth::GetAllocator());
+	Gleam::SetAllocator(&Shibboleth::ProxyAllocator::GetGlobal());
 	Shibboleth::SetApp(*app);
 	Gen::InitReflection();
 	return true;

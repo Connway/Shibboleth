@@ -27,8 +27,11 @@ THE SOFTWARE.
 
 #define GAFF_ALLOC_CAST(Type, size, allocator) reinterpret_cast<Type>(GAFF_ALLOC(size, allocator))
 
-#define GAFF_ALLOC_ARRAYT(Class, allocator, count, ...) (allocator).template allocArrayT<Class>(__FILE__, __LINE__, count, __VA_ARGS__)
+#define GAFF_ALLOC_ARRAYT_ALIGNED(Class, alignment, count, allocator, ...) (allocator).template allocArrayT<Class>(alignment, count, __FILE__, __LINE__, __VA_ARGS__)
+#define GAFF_ALLOC_ARRAYT(Class, count, allocator, ...) (allocator).template allocArrayT<Class>(alignment, __FILE__, __LINE__, __VA_ARGS__)
+#define GAFF_ALLOCT_ALIGNED(Class, alignment, allocator, ...) (allocator).template allocT<Class>(alignment, __FILE__, __LINE__, __VA_ARGS__)
 #define GAFF_ALLOCT(Class, allocator, ...) (allocator).template allocT<Class>(__FILE__, __LINE__, __VA_ARGS__)
+#define GAFF_ALLOC_ALIGNED(size, alignment, allocator) (allocator).alloc(size, alignment, __FILE__, __LINE__)
 #define GAFF_ALLOC(size, allocator) (allocator).alloc(size, __FILE__, __LINE__)
 #define GAFF_FREE_ARRAYT(ptr, size, allocator) (allocator).freeArrayT(ptr, size)
 #define GAFF_FREET(ptr, allocator) (allocator).freeT(ptr)
@@ -78,7 +81,19 @@ public:
 	virtual void free(void* data) = 0;
 
 	template <class T, class... Args>
-	T* allocArrayT(const char* file, int line, size_t count, Args&&... args)
+	T* allocArrayT(size_t alignment, size_t count, const char* file, int line, Args&&... args)
+	{
+		T* data = reinterpret_cast<T*>(alloc(sizeof(T) * count, alignment, file, line));
+
+		for (size_t i = 0; i < count; ++i) {
+			Construct(data + i, std::forward<Args>(args)...);
+		}
+
+		return data;
+	}
+
+	template <class T, class... Args>
+	T* allocArrayT(size_t count, const char* file, int line, Args&&... args)
 	{
 		T* data = reinterpret_cast<T*>(alloc(sizeof(T) * count, file, line));
 
@@ -87,6 +102,13 @@ public:
 		}
 
 		return data;
+	}
+
+	template <class T, class... Args>
+	T* allocT(size_t alignment, const char* file, int line, Args&&... args)
+	{
+		T* data = reinterpret_cast<T*>(alloc(sizeof(T), alignment, file, line));
+		return Construct(data, std::forward<Args>(args)...);
 	}
 
 	template <class T, class... Args>

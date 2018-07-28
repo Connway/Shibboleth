@@ -237,6 +237,7 @@ bool App::loadFileSystem(void)
 
 	} else {
 		LogInfoDefault("Defaulting to loose file system.", fs.data());
+
 		_fs.file_system = SHIB_ALLOCT(LooseFileSystem, GetAllocator());
 
 		if (!_fs.file_system) {
@@ -268,7 +269,7 @@ bool App::loadMainLoop(void)
 		}
 	}
 
-	_main_loop = refl->createT<IMainLoop>(Gaff::FNV1aHash64Const("IMainLoop"), GetAllocator());
+	_main_loop = refl->createT<IMainLoop>(CLASS_HASH(IMainLoop), ProxyAllocator::GetGlobal());
 
 	if (!_main_loop) {
 		LogErrorDefault("Failed to construct main loop class '%s'.", refl->getReflectionInstance().getName());
@@ -513,7 +514,6 @@ void App::run(void)
 {
 	while (_running) {
 		//uv_run(uv_default_loop(), UV_RUN_NOWAIT);
-		//_broadcaster.update();
 		_main_loop->update();
 	}
 }
@@ -615,6 +615,11 @@ const ReflectionManager& App::getReflectionManager(void) const
 ReflectionManager& App::getReflectionManager(void)
 {
 	return _reflection_mgr;
+}
+
+Broadcaster& App::getBroadcaster(void)
+{
+	return _broadcaster;
 }
 
 LogManager& App::getLogManager(void)

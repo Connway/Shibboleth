@@ -109,5 +109,6 @@
     <ClCompile Include="..\..\..\..\src\Engine\Engine\Shibboleth_ReflectionManager.cpp" />
     <ClCompile Include="..\..\..\..\src\Engine\Engine\Shibboleth_UniqueAttribute.cpp" />
     <ClCompile Include="..\..\..\..\src\Engine\Engine\Shibboleth_Utilities.cpp" />
+    <ClCompile Include="..\..\..\..\src\Engine\Engine\Shibboleth_ProxyAllocator.cpp" />
   </ItemGroup>
 </Project>

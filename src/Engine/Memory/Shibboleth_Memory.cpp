@@ -40,22 +40,22 @@ IAllocator& GetAllocator(void)
 
 void* ShibbolethAllocate(size_t size, size_t alignment, int32_t pool_index)
 {
-	return SHIB_ALLOC_ALIGNED(size, alignment, pool_index, g_allocator);
+	return SHIB_ALLOC_ALIGNED_POOL(size, alignment, pool_index, g_allocator);
 }
 
 void* ShibbolethAllocate(size_t size, int32_t pool_index)
 {
-	return SHIB_ALLOC(size, pool_index, g_allocator);
+	return SHIB_ALLOC_POOL(size, pool_index, g_allocator);
 }
 
 void* ShibbolethAllocate(size_t size, size_t alignment)
 {
-	return SHIB_ALLOC_ALIGNED(size, alignment, 0, g_allocator);
+	return SHIB_ALLOC_ALIGNED(size, alignment, g_allocator);
 }
 
 void* ShibbolethAllocate(size_t size)
 {
-	return SHIB_ALLOC(size, 0, g_allocator);
+	return SHIB_ALLOC(size, g_allocator);
 }
 
 void ShibbolethFree(void* data)

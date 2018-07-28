@@ -53,7 +53,7 @@ const char* EditorWindowAttribute::getPath(void) const
 
 Gaff::IAttribute* EditorWindowAttribute::clone(void) const
 {
-	Shibboleth::IAllocator& allocator = GetAllocator();
+	IAllocator& allocator = GetAllocator();
 	return SHIB_ALLOCT_POOL(EditorWindowAttribute, allocator.getPoolIndex("Reflection"), allocator, _menu_path, _caption);
 }
 

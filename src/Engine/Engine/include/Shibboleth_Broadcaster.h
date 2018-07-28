@@ -22,13 +22,13 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Shibboleth_Vector.h"
+#include "Shibboleth_Reflection.h"
 #include "Shibboleth_VectorMap.h"
-#include "Shibboleth_SmartPtrs.h"
+#include "Shibboleth_Function.h"
+#include "Shibboleth_JobPool.h"
+#include "Shibboleth_Vector.h"
 #include <Shibboleth_Memory.h>
-#include <Gaff_Function.h>
-#include <Gaff_SpinLock.h>
-#include <atomic>
+#include <mutex>
 
 NS_GAFF
 	using Counter = std::atomic_int32_t;
@@ -36,97 +36,37 @@ NS_END
 
 NS_SHIBBOLETH
 
-// Do not use messages for triggering things that need to happen this frame.
-
-class IMessage
-{
-public:
-	virtual ~IMessage(void) {}
-};
-
-
 // Message Hash and Listener ID
-using BroadcastID = std::pair<int32_t, int32_t>;
+using BroadcastID = std::pair<Gaff::Hash64, size_t>;
 
 class Broadcaster
 {
 public:
-	Broadcaster(void);
-	~Broadcaster(void);
+	template <class Message>
+	BroadcastID listen(const eastl::function<void (const Message&)>& callback);
 
 	template <class Message>
-	BroadcastID listen(const Gaff::FunctionBinder<void, const Message&>& callback);
-
-	template <class Message>
-	void broadcastNow(const Message& message);
+	void broadcastSync(const Message& message);
 
 	template <class Message>
 	void broadcast(const Message& message);
 
 	void remove(BroadcastID id);
 
-	void update(bool wait = false);
-
 private:
-	class IMessageFunctor
-	{
-	public:
-		IMessageFunctor(void) {}
-		virtual ~IMessageFunctor(void) {}
-
-		virtual void call(const IMessage& message) = 0;
-	};
-
-	template <class Message>
-	class MessageFunctor : public IMessageFunctor
-	{
-	public:
-		MessageFunctor(const Gaff::FunctionBinder<void, const Message&>& callback);
-		~MessageFunctor(void);
-
-		void call(const IMessage& message);
-
-	private:
-		Gaff::FunctionBinder<void, const Message&> _callback;
-	};
-
-	using Listener = std::pair<size_t, IMessageFunctor*>;
-
 	struct ListenerData
 	{
-		ListenerData(void) = default;
-		GAFF_COPY_DEFAULT(ListenerData);
-		GAFF_MOVE_DEFAULT(ListenerData);
+		using Listener = void (*)(const void*);
 
 		Vector<Listener> listeners;
-		UniquePtr<Gaff::ReadWriteSpinLock> lock = UniquePtr<Gaff::ReadWriteSpinLock>(SHIB_ALLOCT(Gaff::ReadWriteSpinLock, GetAllocator()));
+		Vector<size_t> unused_ids;
 	};
 
-	Vector< std::pair<int32_t, IMessage*> > _message_queues[2];
-	Gaff::SpinLock _message_add_lock;
+	VectorMap< Gaff::Hash64, ListenerData> _listeners;
+	std::mutex _listener_lock;
 
-	VectorMap<int32_t, ListenerData> _listeners;
-	Gaff::ReadWriteSpinLock _listener_lock;
-
-	Vector< std::pair<BroadcastID, IMessageFunctor*> > _listener_add_queue;
-	Gaff::SpinLock _listener_add_lock;
-
-	Vector<BroadcastID> _listener_remove_queue;
-	Gaff::SpinLock _listener_remove_lock;
-
-	Gaff::Counter* _counter;
-
-	std::atomic_int32_t _next_message;
-	std::atomic_int32_t _next_id;
-	int32_t _curr_queue;
-
-	void addListeners(void);
-	void removeListeners(void);
-	void swapMessageQueues(void);
-	void spawnBroadcastTasks(bool wait);
-	void waitForCounter(void);
-
-	friend void BroadcastJob(void*);
+	JobPool& _job_pool = GetApp().getJobPool();
+	Gaff::Counter* _counter = nullptr;
 };
 
 class BroadcastRemover
@@ -137,7 +77,7 @@ public:
 	~BroadcastRemover(void);
 
 	// Takes ownership
-	const BroadcastRemover& operator=(const BroadcastRemover& rhs);
+	const BroadcastRemover& operator=(BroadcastRemover&& rhs);
 
 	bool operator==(const BroadcastRemover& rhs) const;
 	bool operator!=(const BroadcastRemover& rhs) const;
@@ -146,8 +86,8 @@ public:
 
 private:
 	BroadcastID _id;
-	Broadcaster* _broadcaster;
-	bool _valid;
+	Broadcaster* _broadcaster = nullptr;
+	bool _valid = false;
 };
 
 #include "Shibboleth_Broadcaster.inl"

@@ -22,8 +22,7 @@ THE SOFTWARE.
 
 #pragma once
 
-//#include "Shibboleth_MessageBroadcaster.h"
-#include "Shibboleth_ReflectionManager.h"
+#include "Shibboleth_Broadcaster.h"
 #include "Shibboleth_LogManager.h"
 #include "Shibboleth_SmartPtrs.h"
 #include "Shibboleth_IApp.h"
@@ -57,9 +56,9 @@ public:
 	const Gaff::JSON& getConfigs(void) const override;
 	const U8String& getProjectDirectory(void) const override;
 
-	//MessageBroadcaster& getBroadcaster(void) override;
 	const ReflectionManager& getReflectionManager(void) const override;
 	ReflectionManager& getReflectionManager(void) override;
+	Broadcaster& getBroadcaster(void) override;
 	LogManager& getLogManager(void) override;
 	JobPool& getJobPool(void) override;
 
@@ -93,10 +92,10 @@ private:
 
 	ReflectionManager _reflection_mgr;
 
-	//MessageBroadcaster _broadcaster;
 	DynamicLoader _dynamic_loader;
-	JobPool _job_pool;
+	Broadcaster _broadcaster;
 	LogManager _log_mgr;
+	JobPool _job_pool;
 
 	FileSystemData _fs;
 

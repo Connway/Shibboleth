@@ -23,12 +23,8 @@ THE SOFTWARE.
 #pragma once
 
 #include "Shibboleth_DynamicLoader.h"
-#include "Shibboleth_JobPool.h"
-#include "Shibboleth_HashString.h"
-#include "Shibboleth_VectorMap.h"
-#include "Shibboleth_Vector.h"
-#include "Shibboleth_String.h"
 #include "Shibboleth_Reflection.h"
+#include "Shibboleth_JobPool.h"
 
 NS_GAFF
 	class IEnumReflectionDefinition;
@@ -38,9 +34,8 @@ NS_END
 
 NS_SHIBBOLETH
 
-class MessageBroadcaster;
-class ReflectionManager;
 class IFileSystem;
+class Broadcaster;
 class LogManager;
 class IManager;
 class IEditor;
@@ -98,7 +93,6 @@ public:
 	virtual const IManager* getManager(Gaff::Hash64 name) const = 0;
 	virtual IManager* getManager(Gaff::Hash64 name) = 0;
 
-	//virtual MessageBroadcaster& getBroadcaster(void) = 0;
 
 	virtual IFileSystem* getFileSystem(void) = 0;
 	virtual const Gaff::JSON& getConfigs(void) const = 0;
@@ -106,6 +100,7 @@ public:
 
 	virtual const ReflectionManager& getReflectionManager(void) const = 0;
 	virtual ReflectionManager& getReflectionManager(void) = 0;
+	virtual Broadcaster& getBroadcaster(void) = 0;
 	virtual LogManager& getLogManager(void) = 0;
 	virtual JobPool& getJobPool(void) = 0;
 

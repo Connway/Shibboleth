@@ -26,12 +26,12 @@ THE SOFTWARE.
 
 void* operator new(size_t count)
 {
-	return SHIB_ALLOC(count, 0, Shibboleth::GetAllocator());
+	return SHIB_ALLOC(count, Shibboleth::GetAllocator());
 }
 
 void* operator new[](size_t count)
 {
-	return SHIB_ALLOC(count, 0, Shibboleth::GetAllocator());
+	return SHIB_ALLOC(count, Shibboleth::GetAllocator());
 }
 
 //void* operator new (size_t count, std::align_val_t al)
@@ -44,12 +44,12 @@ void* operator new[](size_t count)
 
 void* operator new(size_t count, const std::nothrow_t&) noexcept
 {
-	return SHIB_ALLOC(count, 0, Shibboleth::GetAllocator());
+	return SHIB_ALLOC(count, Shibboleth::GetAllocator());
 }
 
 void* operator new[](size_t count, const std::nothrow_t&) noexcept
 {
-	return SHIB_ALLOC(count, 0, Shibboleth::GetAllocator());
+	return SHIB_ALLOC(count, Shibboleth::GetAllocator());
 }
 
 //void* operator new(size_t count, std::align_val_t al, const std::nothrow_t&) noexcept

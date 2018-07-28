@@ -25,24 +25,131 @@ THE SOFTWARE.
 #include <Shibboleth_Defines.h>
 #include <Gaff_IAllocator.h>
 
-#define SHIB_ALLOC_GLOBAL_CAST GAFF_ALLOC_CAST
-#define SHIB_ALLOC_CAST(Type, pool_index, allocator) reinterpret_cast<Type*>(SHIB_ALLOC(sizeof(Type), pool_index, allocator))
-#define SHIB_ALLOC_ALIGNED(size, alignment, pool_index, allocator) (allocator).alloc(size, alignment, pool_index, __FILE__, __LINE__)
-#define SHIB_ALLOC(size, pool_index, allocator) (allocator).alloc(size, pool_index, __FILE__, __LINE__)
-#define SHIB_ALLOC_GLOBAL GAFF_ALLOC
-#define SHIB_ALLOC_ARRAYT GAFF_ALLOC_ARRAYT
-#define SHIB_ALLOCT GAFF_ALLOCT
+#define SHIB_ALLOC_ARRAYT_ALIGNED_POOL(type, alignment, count, pool_index, allocator, ...) (allocator).template allocArrayT<type>(alignment, pool_index, __VA_ARGS__)
+#define SHIB_ALLOC_ARRAYT_ALIGNED(Class, alignment, count, allocator, ...) (allocator).template allocArrayT<Class>(alignment, count, __FILE__, __LINE__, __VA_ARGS__)
+#define SHIB_ALLOC_ARRAYT_POOL(type, count, pool_index, allocator, ...) (allocator).template allocArrayT<type>(pool_index, __FILE__, __LINE__, __VA_ARGS__)
+#define SHIB_ALLOC_ARRAYT(Class, count, allocator, ...) (allocator).template allocArrayT<Class>(alignment, __FILE__, __LINE__, __VA_ARGS__)
+
+#define SHIB_ALLOCT_ALIGNED_POOL(type, alignment, pool_index, allocator, ...) (allocator).template allocT<type>(alignment, pool_index, __FILE__, __LINE__, __VA_ARGS__)
+#define SHIB_ALLOCT_ALIGNED(Class, alignment, allocator, ...) (allocator).template allocT<Class>(alignment, __FILE__, __LINE__, __VA_ARGS__)
+#define SHIB_ALLOCT_POOL(type, pool_index, allocator, ...) (allocator).template allocT<type>(pool_index, __FILE__, __LINE__, __VA_ARGS__)
+#define SHIB_ALLOCT(Class, allocator, ...) (allocator).template allocT<Class>(__FILE__, __LINE__, __VA_ARGS__)
+
+#define SHIB_ALLOC_ALIGNED_POOL(size, alignment, pool_index, allocator) (allocator).alloc(size, alignment, pool_index, __FILE__, __LINE__)
+#define SHIB_ALLOC_ALIGNED GAFF_ALLOC_ALIGNED
+#define SHIB_ALLOC_POOL(size, pool_index, allocator) (allocator).alloc(size, pool_index, __FILE__, __LINE__)
+#define SHIB_ALLOC GAFF_ALLOC
+
 #define SHIB_FREE_ARRAYT GAFF_FREE_ARRAYT
 #define SHIB_FREET GAFF_FREET
 #define SHIB_FREE GAFF_FREE
 
-#define SHIB_ALLOCT_POOL(Type, pool_index, allocator, ...) Gaff::Construct(SHIB_ALLOC_CAST(Type, pool_index, allocator), __VA_ARGS__)
+#define SHIB_ALLOC_CAST_ALIGNED_POOL(type, size, alignment, pool_index, allocator) reinterpret_cast<type>(SHIB_ALLOC_ALIGNED_POOL(size, alignment, pool_index, allocator))
+#define SHIB_ALLOC_CAST_ALIGNED(type, size, alignment, allocator) reinterpret_cast<type>(SHIB_ALLOC_ALIGNED(size, alignment, allocator))
+#define SHIB_ALLOC_CAST_POOL(type, size, pool_index, allocator) reinterpret_cast<type>(SHIB_ALLOC_POOL(size, pool_index, allocator))
+#define SHIB_ALLOC_CAST(type, size, allocator) reinterpret_cast<type>(SHIB_ALLOC(size, allocator))
 
 NS_SHIBBOLETH
 
-class IAllocator : public Gaff::IAllocator
+class IAllocator
 {
 public:
+	// Pool versions.
+	template <class T, class... Args>
+	T* allocArrayT(size_t alignment, size_t count, int32_t pool_index, const char* file, int line, Args&&... args)
+	{
+		T* data = reinterpret_cast<T*>(alloc(sizeof(T) * count, alignment, pool_index, file, line));
+
+		for (size_t i = 0; i < count; ++i) {
+			Gaff::Construct(data + i, std::forward<Args>(args)...);
+		}
+
+		return data;
+	}
+
+	template <class T, class... Args>
+	T* allocArrayT(size_t count, int32_t pool_index, const char* file, int line, Args&&... args)
+	{
+		T* data = reinterpret_cast<T*>(alloc(sizeof(T) * count, pool_index, file, line));
+
+		for (size_t i = 0; i < count; ++i) {
+			Gaff::Construct(data + i, std::forward<Args>(args)...);
+		}
+
+		return data;
+	}
+
+	template <class T, class... Args>
+	T* allocT(size_t alignment, int32_t pool_index, const char* file, int line, Args&&... args)
+	{
+		T* data = reinterpret_cast<T*>(alloc(sizeof(T), alignment, pool_index, file, line));
+		return Gaff::Construct(data, std::forward<Args>(args)...);
+	}
+
+	template <class T, class... Args>
+	T* allocT(int32_t pool_index, const char* file, int line, Args&&... args)
+	{
+		T* data = reinterpret_cast<T*>(alloc(sizeof(T), pool_index, file, line));
+		return Gaff::Construct(data, std::forward<Args>(args)...);
+	}
+
+	// Regular versions.
+	template <class T, class... Args>
+	T* allocArrayT(size_t alignment, size_t count, const char* file, int line, Args&&... args)
+	{
+		T* data = reinterpret_cast<T*>(alloc(sizeof(T) * count, alignment, file, line));
+
+		for (size_t i = 0; i < count; ++i) {
+			Gaff::Construct(data + i, std::forward<Args>(args)...);
+		}
+
+		return data;
+	}
+
+	template <class T, class... Args>
+	T* allocArrayT(size_t count, const char* file, int line, Args&&... args)
+	{
+		T* data = reinterpret_cast<T*>(alloc(sizeof(T) * count, file, line));
+
+		for (size_t i = 0; i < count; ++i) {
+			Gaff::Construct(data + i, std::forward<Args>(args)...);
+		}
+
+		return data;
+	}
+
+	template <class T, class... Args>
+	T* allocT(size_t alignment, const char* file, int line, Args&&... args)
+	{
+		T* data = reinterpret_cast<T*>(alloc(sizeof(T), alignment, file, line));
+		return Gaff::Construct(data, std::forward<Args>(args)...);
+	}
+
+	template <class T, class... Args>
+	T* allocT(const char* file, int line, Args&&... args)
+	{
+		T* data = reinterpret_cast<T*>(alloc(sizeof(T), file, line));
+		return Gaff::Construct(data, std::forward<Args>(args)...);
+	}
+
+	template <class T>
+	void freeArrayT(T* data, size_t count)
+	{
+		for (size_t i = 0; i < count; ++i) {
+			Gaff::Deconstruct(data + i);
+		}
+
+		free((void*)(data));
+	}
+
+	template <class T>
+	void freeT(T* data)
+	{
+		Gaff::Deconstruct(data);
+		free((void*)(data));
+	}
+
+
 	IAllocator(void) {}
 	virtual ~IAllocator(void) {}
 
@@ -50,8 +157,18 @@ public:
 	virtual void* alloc(size_t size_bytes, size_t alignment, int32_t pool_index, const char* file, int line) = 0;
 	virtual void* alloc(size_t size_bytes, int32_t pool_index, const char* file, int line) = 0;
 
+	// Gaff::IAllocator stuff.
+	// For EASTL support.
+	virtual void* allocate(size_t n, int flags = 0) = 0;
+	virtual void* allocate(size_t n, size_t alignment, size_t offset, int flags = 0) = 0;
+	virtual void deallocate(void* p, size_t n) = 0;
+
+	virtual const char* get_name() const = 0;
+	virtual void set_name(const char* pName) = 0;
+
 	virtual void* alloc(size_t size_bytes, size_t alignment, const char* file, int line) = 0;
 	virtual void* alloc(size_t size_bytes, const char* file, int line) = 0;
+	virtual void free(void* data) = 0;
 
 	GAFF_NO_COPY(IAllocator);
 	GAFF_NO_MOVE(IAllocator);

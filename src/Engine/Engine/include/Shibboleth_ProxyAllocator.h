@@ -30,29 +30,10 @@ NS_SHIBBOLETH
 class ProxyAllocator : public Gaff::IAllocator
 {
 public:
-	//explicit ProxyAllocator(const char* pool_tag = nullptr, Shibboleth::IAllocator& allocator = GetAllocator()):
-	//	_allocator(allocator), _pool_index(0)
-	//{
-	//	if (pool_tag) {
-	//		_pool_index = _allocator->getPoolIndex(pool_tag);
-	//	}
-	//}
-
-	//ProxyAllocator(const ProxyAllocator& allocator):
-	//	_allocator(allocator._allocator), _pool_index(allocator._pool_index)
-	//{
-	//}
-
-	//const ProxyAllocator& operator=(const ProxyAllocator& rhs)
-	//{
-	//	_allocator = rhs._allocator;
-	//	_pool_index = rhs._pool_index;
-	//	return *this;
-	//}
+	static ProxyAllocator& GetGlobal(void);
 
 	explicit ProxyAllocator(const char* pool_tag):
-		/*_allocator(GetAllocator()), */_pool_tag(pool_tag)//,
-		//_pool_index(0)
+		_pool_tag(pool_tag)
 	{
 		if (_pool_tag) {
 			_pool_index = _allocator.getPoolIndex(_pool_tag);

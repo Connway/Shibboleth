@@ -44,7 +44,7 @@ const char* EditorFileHandlerAttribute::getExtension(void) const
 
 Gaff::IAttribute* EditorFileHandlerAttribute::clone(void) const
 {
-	Shibboleth::IAllocator& allocator = GetAllocator();
+	IAllocator& allocator = GetAllocator();
 	return SHIB_ALLOCT_POOL(EditorFileHandlerAttribute, allocator.getPoolIndex("Reflection"), allocator, _extension);
 }
 
