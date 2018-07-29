@@ -231,7 +231,11 @@ Vector<const Gaff::IReflectionDefinition*> ReflectionManager::getReflectionWithA
 	}
 
 	for (const Gaff::IReflectionDefinition* ref_def : *bucket) {
-		if (ref_def->getClassAttr<void>(name)) {
+		if (ref_def->getClassAttr<void>(name) ||
+			ref_def->getFuncAttr<void>(name).second ||
+			ref_def->getStaticFuncAttr<void>(name).second ||
+			ref_def->getVarAttr<void>(name).second
+		) {
 			out.push_back(ref_def);
 		}
 	}
@@ -244,7 +248,11 @@ Vector<const Gaff::IReflectionDefinition*> ReflectionManager::getReflectionWithA
 	Vector<const Gaff::IReflectionDefinition*> out;
 
 	for (const auto& entry : _reflection_map) {
-		if (entry.second->getClassAttr<void>(name)) {
+		if (entry.second->getClassAttr<void>(name) ||
+			entry.second->getFuncAttr<void>(name).second ||
+			entry.second->getStaticFuncAttr<void>(name).second ||
+			entry.second->getVarAttr<void>(name).second
+		) {
 			out.push_back(entry.second.get());
 		}
 	}

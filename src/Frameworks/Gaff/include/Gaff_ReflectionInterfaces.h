@@ -507,6 +507,30 @@ public:
 	}
 
 	template <class T>
+	eastl::pair<Hash32, const T*> getVarAttr(Hash64 attr_name) const
+	{
+		const int32_t num_vars = getNumVars();
+
+		for (int32_t j = 0; j < num_vars; ++j) {
+			const Hash32 name = getVarHash(j);
+			const int32_t size = getNumVarAttrs(name);
+
+			for (int32_t i = 0; i < size; ++i) {
+				const IAttribute* const attribute = getVarAttr(name, i);
+				const void* attr = attribute->getReflectionDefinition().getInterface(
+					attr_name, attribute->getBasePointer()
+				);
+
+				if (attr) {
+					return eastl::make_pair(name, reinterpret_cast<const T*>(attr));
+				}
+			}
+		}
+
+		return eastl::pair<Hash32, const T*>(0, nullptr);
+	}
+
+	template <class T>
 	eastl::pair<Hash32, const T*> getFuncAttr(void) const
 	{
 		const int32_t num_vars = getNumFuncs();
@@ -529,6 +553,30 @@ public:
 	}
 
 	template <class T>
+	eastl::pair<Hash32, const T*> getFuncAttr(Hash64 attr_name) const
+	{
+		const int32_t num_vars = getNumFuncs();
+
+		for (int32_t j = 0; j < num_vars; ++j) {
+			const Hash32 name = getFuncHash(j);
+			const int32_t size = getNumFuncAttributes(name);
+
+			for (int32_t i = 0; i < size; ++i) {
+				const IAttribute* const attribute = getFuncAttr(name, i);
+				const void* attr = attribute->getReflectionDefinition().getInterface(
+					attr_name, attribute->getBasePointer()
+				);
+
+				if (attr) {
+					return eastl::make_pair(name, reinterpret_cast<const T*>(attr));
+				}
+			}
+		}
+
+		return eastl::pair<Hash32, const T*>(0, nullptr);
+	}
+
+	template <class T>
 	eastl::pair<Hash32, const T*> getStaticFuncAttr(void) const
 	{
 		const int32_t num_vars = getNumStaticFuncs();
@@ -543,6 +591,30 @@ public:
 
 				if (attr) {
 					return eastl::make_pair(name, attr);
+				}
+			}
+		}
+
+		return eastl::pair<Hash32, const T*>(0, nullptr);
+	}
+
+	template <class T>
+	eastl::pair<Hash32, const T*> getStaticFuncAttr(Hash64 attr_name) const
+	{
+		const int32_t num_vars = getNumStaticFuncs();
+
+		for (int32_t j = 0; j < num_vars; ++j) {
+			const Hash32 name = getStaticFuncHash(j);
+			const int32_t size = getNumStaticFuncAttrs(name);
+
+			for (int32_t i = 0; i < size; ++i) {
+				const IAttribute* const attribute = getStaticFuncAttr(name, i);
+				const void* attr = attribute->getReflectionDefinition().getInterface(
+					attr_name, attribute->getBasePointer()
+				);
+
+				if (attr) {
+					return eastl::make_pair(name, reinterpret_cast<const T*>(attr));
 				}
 			}
 		}

@@ -23,6 +23,7 @@ THE SOFTWARE.
 #pragma once
 
 #include "Shibboleth_Editor.h"
+#include <Shibboleth_EditorFileHandlerAttribute.h>
 #include <Shibboleth_EditorFrame.h>
 #include <Shibboleth_Utilities.h>
 
@@ -67,5 +68,22 @@ void Editor::removeEditorWindow(Gaff::IReflectionObject* window)
 	}
 }
 
+void Editor::openEditorWindow(const char* file_extension)
+{
+	for (Gaff::IReflectionObject* ref_obj : _editor_windows) {
+		const auto result = ref_obj->getReflectionDefinition().getFuncAttr<EditorFileHandlerAttribute>();
+
+		// Already open.
+		if (result.second) {
+			return;
+		}
+	}
+
+	const auto result = GetApp().getReflectionManager().getReflectionWithAttribute<EditorFileHandlerAttribute>();
+
+	for (Gaff::IReflectionDefinition* ref_def : result) {
+
+	}
+}
 
 NS_END
