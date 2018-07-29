@@ -43,6 +43,8 @@ public:
 	void addEditorWindow(Gaff::IReflectionObject* window) override;
 	void removeEditorWindow(Gaff::IReflectionObject* window) override;
 
+	void openEditorWindow(const char* file_extension) override;
+
 private:
 	Vector<Gaff::IReflectionObject*> _editor_windows;
 
