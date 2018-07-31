@@ -165,6 +165,8 @@ bool App::initInternal(void)
 		return false;
 	}
 
+	_broadcaster.init();
+
 	if (!loadFileSystem()) {
 		return false;
 	}

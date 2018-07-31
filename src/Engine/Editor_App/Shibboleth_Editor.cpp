@@ -70,7 +70,7 @@ void Editor::removeEditorWindow(Gaff::IReflectionObject* window)
 
 void Editor::openEditorWindow(const char* file_extension)
 {
-	for (Gaff::IReflectionObject* ref_obj : _editor_windows) {
+	for (const Gaff::IReflectionObject* ref_obj : _editor_windows) {
 		const auto result = ref_obj->getReflectionDefinition().getFuncAttr<EditorFileHandlerAttribute>();
 
 		// Already open.
@@ -80,9 +80,14 @@ void Editor::openEditorWindow(const char* file_extension)
 	}
 
 	const auto result = GetApp().getReflectionManager().getReflectionWithAttribute<EditorFileHandlerAttribute>();
+	const size_t size = eastl::CharStrlen(file_extension);
 
-	for (Gaff::IReflectionDefinition* ref_def : result) {
-
+	for (const Gaff::IReflectionDefinition* ref_def : result) {
+		if (!eastl::Compare(file_extension, ref_def->getClassAttr<EditorFileHandlerAttribute>()->getExtension(), size)) {
+			// Found the window type. Now create it.
+			_frame->spawnWindow(ref_def);
+			break;
+		}
 	}
 }
 

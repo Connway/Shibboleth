@@ -32,75 +32,25 @@ class ProxyAllocator : public Gaff::IAllocator
 public:
 	static ProxyAllocator& GetGlobal(void);
 
-	explicit ProxyAllocator(const char* pool_tag):
-		_pool_tag(pool_tag)
-	{
-		if (_pool_tag) {
-			_pool_index = _allocator.getPoolIndex(_pool_tag);
-		}
-	}
+	explicit ProxyAllocator(const char* pool_tag);
 
 	ProxyAllocator(void) = default;
 	ProxyAllocator(const ProxyAllocator& allocator) = default;
 
-	bool operator==(const ProxyAllocator& rhs) const
-	{
-		return _pool_index == rhs._pool_index;
-	}
-
-	const ProxyAllocator& operator=(const ProxyAllocator& rhs)
-	{
-		_pool_tag = rhs._pool_tag;
-		_pool_index = rhs._pool_index;
-		return *this;
-	}
+	const ProxyAllocator& operator=(const ProxyAllocator& rhs);
+	bool operator==(const ProxyAllocator& rhs) const;
 
 	// For EASTL support.
-	void* allocate(size_t n, int flags = 0) override
-	{
-		GAFF_REF(flags);
-		return alloc(n, __FILE__, __LINE__);
-	}
+	void* allocate(size_t n, size_t alignment, size_t, int flags = 0);
+	void* allocate(size_t n, int flags = 0) override;
+	void deallocate(void* p, size_t) override;
 
-	void* allocate(size_t n, size_t alignment, size_t, int flags = 0) override
-	{
-		GAFF_REF(flags);
-		return alloc(n, alignment, __FILE__, __LINE__);
-	}
+	const char* get_name() const;
+	void set_name(const char* pName);
 
-	void deallocate(void* p, size_t) override
-	{
-		free(p);
-	}
-
-	const char* get_name() const
-	{
-		return _pool_tag;
-	}
-
-	void set_name(const char* pName)
-	{
-		_pool_tag = pName;
-
-		if (_pool_tag) {
-			_pool_index = _allocator.getPoolIndex(_pool_tag);
-		}
-	}
-
-	void* alloc(size_t size_bytes, size_t alignment, const char* file, int line) override
-	{
-		return _allocator.alloc(size_bytes, alignment, _pool_index, file, line);
-	}
-
-	void* alloc(size_t size_bytes, const char* file, int line) override
-	{
-		return _allocator.alloc(size_bytes, _pool_index, file, line);
-	}
-
-	void free(void* data) override
-	{
-		_allocator.free(data);
-	}
+	void* alloc(size_t size_bytes, size_t alignment, const char* file, int line) override;
+	void* alloc(size_t size_bytes, const char* file, int line) override;
+	void free(void* data) override;
 
 private:
 	Shibboleth::IAllocator& _allocator = GetAllocator();

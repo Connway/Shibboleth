@@ -54,7 +54,7 @@ void Broadcaster::broadcastSync(const Message& message)
 		return;
 	}
 
-	for (const auto func : *it) {
+	for (const auto func : it->second.listeners) {
 		func(&message);
 	}
 }

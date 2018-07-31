@@ -34,35 +34,35 @@ function NewDeleteLinkFix()
 	filter { "system:windows", "configurations:Debug*", "platforms:x64" }
 		links
 		{
-			"../../../.generated/build/" .. _ACTION .. "/output/x64/Debug/Shared.lib",
+			"../../../.generated/build/" .. _ACTION .. "/output/x64/Debug/Engine.lib",
 			"msvcrtd.lib"
 		}
 
 	filter { "system:windows", "configurations:Release*", "platforms:x64" }
 		links
 		{
-			"../../../.generated/build/" .. _ACTION .. "/output/x64/Release/Shared.lib",
+			"../../../.generated/build/" .. _ACTION .. "/output/x64/Release/Engine.lib",
 			"msvcrt.lib"
 		}
 
 	filter { "system:windows", "configurations:Analyze*", "platforms:x64" }
 		links
 		{
-			"../../../.generated/build/" .. _ACTION .. "/output/x64/Release/Shared.lib",
+			"../../../.generated/build/" .. _ACTION .. "/output/x64/Release/Engine.lib",
 			"msvcrt.lib"
 		}
 
 	filter { "system:windows", "configurations:Optimized_Debug*", "platforms:x64" }
 		links
 		{
-			"../../../.generated/build/" .. _ACTION .. "/output/x64/Debug/Shared.lib",
+			"../../../.generated/build/" .. _ACTION .. "/output/x64/Debug/Engine.lib",
 			"msvcrtd.lib"
 		}
 
 	filter { "system:windows", "configurations:Profile*", "platforms:x64" }
 		links
 		{
-			"../../../.generated/build/" .. _ACTION .. "/output/x64/Release/Shared.lib",
+			"../../../.generated/build/" .. _ACTION .. "/output/x64/Release/Engine.lib",
 			"msvcrt.lib"
 		}
 

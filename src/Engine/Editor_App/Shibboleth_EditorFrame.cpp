@@ -120,23 +120,8 @@ EditorFrame::~EditorFrame(void)
 	_aui_mgr.UnInit();
 }
 
-void EditorFrame::onExit(wxCommandEvent&)
+void EditorFrame::spawnWindow(const Gaff::IReflectionDefinition* ref_def)
 {
-	Close(true);
-}
-
-void EditorFrame::onAbout(wxCommandEvent&)
-{
-	wxMessageBox(
-		"This is the Shibboleth Editor!\nEverything is WIP!",
-		"About Shibboleth Editor",
-		wxOK | wxICON_INFORMATION
-	);
-}
-
-void EditorFrame::onSpawnWindow(wxCommandEvent& event)
-{
-	const Gaff::IReflectionDefinition* const ref_def = reinterpret_cast<Gaff::IReflectionDefinition*>(event.GetEventUserData());
 	const EditorWindowAttribute* const ew_attr = ref_def->getClassAttr<EditorWindowAttribute>();
 	GAFF_ASSERT(ew_attr);
 
@@ -161,6 +146,26 @@ void EditorFrame::onSpawnWindow(wxCommandEvent& event)
 	_aui_mgr.Update();
 
 	GetApp().getEditor()->addEditorWindow(instance);
+}
+
+void EditorFrame::onExit(wxCommandEvent&)
+{
+	Close(true);
+}
+
+void EditorFrame::onAbout(wxCommandEvent&)
+{
+	wxMessageBox(
+		"This is the Shibboleth Editor!\nEverything is WIP!",
+		"About Shibboleth Editor",
+		wxOK | wxICON_INFORMATION
+	);
+}
+
+void EditorFrame::onSpawnWindow(wxCommandEvent& event)
+{
+	const Gaff::IReflectionDefinition* const ref_def = reinterpret_cast<Gaff::IReflectionDefinition*>(event.GetEventUserData());
+	spawnWindow(ref_def);
 }
 
 NS_END
