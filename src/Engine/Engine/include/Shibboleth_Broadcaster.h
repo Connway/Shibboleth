@@ -25,7 +25,6 @@ THE SOFTWARE.
 #include "Shibboleth_Reflection.h"
 #include "Shibboleth_VectorMap.h"
 #include "Shibboleth_Function.h"
-#include "Shibboleth_JobPool.h"
 #include "Shibboleth_Vector.h"
 #include <Shibboleth_Memory.h>
 #include <mutex>
@@ -42,6 +41,8 @@ using BroadcastID = std::pair<Gaff::Hash64, size_t>;
 class Broadcaster
 {
 public:
+	void init(void);
+
 	template <class Message>
 	BroadcastID listen(const eastl::function<void (const Message&)>& callback);
 
@@ -62,10 +63,10 @@ private:
 		Vector<size_t> unused_ids;
 	};
 
-	VectorMap< Gaff::Hash64, ListenerData> _listeners;
+	VectorMap<Gaff::Hash64, ListenerData> _listeners;
 	std::mutex _listener_lock;
 
-	JobPool& _job_pool = GetApp().getJobPool();
+	JobPool* _job_pool = nullptr;
 	Gaff::Counter* _counter = nullptr;
 };
 

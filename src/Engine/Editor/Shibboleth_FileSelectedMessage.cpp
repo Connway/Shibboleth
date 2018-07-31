@@ -22,39 +22,22 @@ THE SOFTWARE.
 
 #pragma once
 
-#include <Shibboleth_Defines.h>
-#include <wx/aui/framemanager.h>
-#include <wx/frame.h>
+#include "Shibboleth_FileSelectedMessage.h"
 
-namespace Gaff
-{
-	class IReflectionDefinition;
-}
+SHIB_REFLECTION_DEFINE(FileSelectedMessage)
 
 NS_SHIBBOLETH
 
-class EditorFrame : public wxFrame
+SHIB_REFLECTION_CLASS_DEFINE(FileSelectedMessage)
+
+FileSelectedMessage::FileSelectedMessage(const char* path):
+	_path(path)
 {
-public:
-	EditorFrame(const wxString& title, const wxPoint& pos, const wxSize& size);
-	~EditorFrame(void);
+}
 
-	void spawnWindow(const Gaff::IReflectionDefinition* ref_def);
-
-private:
-	wxAuiManager _aui_mgr;
-
-	wxMenuBar* _menu_bar = nullptr;
-	wxMenu* _window_menu = nullptr;
-
-	int _next_id = 0;
-
-	void onExit(wxCommandEvent&);
-	void onAbout(wxCommandEvent&);
-
-	void onSpawnWindow(wxCommandEvent& event);
-
-	wxDECLARE_EVENT_TABLE();
-};
+const U8String& FileSelectedMessage::getPath(void) const
+{
+	return _path;
+}
 
 NS_END

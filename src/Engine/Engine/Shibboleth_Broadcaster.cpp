@@ -27,6 +27,11 @@ THE SOFTWARE.
 
 NS_SHIBBOLETH
 
+void Broadcaster::init(void)
+{
+	_job_pool = &GetApp().getJobPool();
+}
+
 void Broadcaster::remove(BroadcastID id)
 {
 	std::lock_guard lock(_listener_lock);

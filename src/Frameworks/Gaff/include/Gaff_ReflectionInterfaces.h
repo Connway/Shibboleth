@@ -537,7 +537,7 @@ public:
 
 		for (int32_t j = 0; j < num_vars; ++j) {
 			const Hash32 name = getFuncHash(j);
-			const int32_t size = getNumFuncAttributes(name);
+			const int32_t size = getNumFuncAttrs(name);
 
 			for (int32_t i = 0; i < size; ++i) {
 				const IAttribute* const attribute = getFuncAttr(name, i);
@@ -559,7 +559,7 @@ public:
 
 		for (int32_t j = 0; j < num_vars; ++j) {
 			const Hash32 name = getFuncHash(j);
-			const int32_t size = getNumFuncAttributes(name);
+			const int32_t size = getNumFuncAttrs(name);
 
 			for (int32_t i = 0; i < size; ++i) {
 				const IAttribute* const attribute = getFuncAttr(name, i);

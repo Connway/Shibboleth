@@ -22,6 +22,8 @@ THE SOFTWARE.
 
 #include "Shibboleth_AssetBrowser.h"
 #include <Shibboleth_EditorWindowAttribute.h>
+#include <Shibboleth_FileSelectedMessage.h>
+#include <Shibboleth_Broadcaster.h>
 #include "Shibboleth_DirectoryControl.h"
 #include <wx/splitter.h>
 #include <wx/sizer.h>
@@ -92,6 +94,7 @@ void AssetBrowser::onFileSelection(wxTreeEvent& event)
 	}
 
 	// If it's a file, send an event out that it has been selected.
+	GetApp().getBroadcaster().broadcastSync(FileSelectedMessage(data->m_path.c_str()));
 }
 
 void AssetBrowser::onFileActivated(wxTreeEvent& event)
