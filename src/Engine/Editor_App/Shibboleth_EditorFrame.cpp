@@ -146,6 +146,7 @@ void EditorFrame::spawnWindow(const Gaff::IReflectionDefinition* ref_def)
 	_aui_mgr.Update();
 
 	GetApp().getEditor()->addEditorWindow(instance);
+	window->Show();
 }
 
 void EditorFrame::onExit(wxCommandEvent&)

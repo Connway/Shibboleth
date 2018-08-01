@@ -54,6 +54,7 @@ private:
 	DirectoryControl* _dir_ctrl = nullptr;
 
 	void onDirectorySelection(wxTreeEvent& event);
+	void onFileRightClick(wxTreeEvent& event);
 	void onFileSelection(wxTreeEvent& event);
 	void onFileActivated(wxTreeEvent& event);
 
