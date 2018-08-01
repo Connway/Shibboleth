@@ -44,8 +44,8 @@ bool Editor::OnInit(void)
 
 	_engine_instance.setEditor(this);
 
-	EditorFrame* const frame = new EditorFrame("Shibboleth Editor", wxDefaultPosition, wxSize(1024, 768));
-	return frame && frame->Show(true);
+	_frame = new EditorFrame("Shibboleth Editor", wxDefaultPosition, wxSize(1024, 768));
+	return _frame && _frame->Show(true);
 }
 
 void Editor::CleanUp(void)
@@ -71,10 +71,10 @@ void Editor::removeEditorWindow(Gaff::IReflectionObject* window)
 void Editor::openEditorWindow(const char* file_extension)
 {
 	for (const Gaff::IReflectionObject* ref_obj : _editor_windows) {
-		const auto result = ref_obj->getReflectionDefinition().getFuncAttr<EditorFileHandlerAttribute>();
+		const EditorFileHandlerAttribute* const attr = ref_obj->getReflectionDefinition().getClassAttr<EditorFileHandlerAttribute>();
 
 		// Already open.
-		if (result.second) {
+		if (attr) {
 			return;
 		}
 	}

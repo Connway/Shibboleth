@@ -66,7 +66,7 @@ void DirectoryControl::SetupSections(void)
 	const wxString path = GetDefaultPath();
 	size_t index = path.find_last_of(wxFILE_SEP_PATH);
 
-	if (index == SIZE_T_FAIL) {
+	if (index == wxNOT_FOUND) {
 		return;
 	}
 
@@ -128,7 +128,7 @@ void DirectoryControl::ExpandRoot(void)
 
 	if (dir.GetFirst(&file, wxEmptyString, style)) {
 		do {
-			wxDirItemData* const dir_item = new wxDirItemData(path + wxFILE_SEP_PATH + file, file, true);
+			wxDirItemData* const dir_item = new wxDirItemData(path + wxFILE_SEP_PATH + file, file, false);
 			AppendItem(root, file, wxFileIconsTable::file, -1, dir_item);
 		} while (dir.GetNext(&file));
 	}

@@ -21,12 +21,14 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Shibboleth_AssetBrowser.h"
+#include "Shibboleth_DirectoryControl.h"
 #include <Shibboleth_EditorWindowAttribute.h>
 #include <Shibboleth_FileSelectedMessage.h>
 #include <Shibboleth_Broadcaster.h>
-#include "Shibboleth_DirectoryControl.h"
+#include <Shibboleth_IEditor.h>
 #include <wx/splitter.h>
 #include <wx/sizer.h>
+#include <wx/menu.h>
 #include <filesystem>
 
 SHIB_REFLECTION_DEFINE(AssetBrowser)
@@ -71,6 +73,7 @@ AssetBrowser::AssetBrowser(
 	SetSizer(sizer);
 
 	Bind(wxEVT_DIRCTRL_SELECTIONCHANGED, &AssetBrowser::onDirectorySelection, this, _dir_ctrl->GetId());
+	Bind(wxEVT_TREE_ITEM_RIGHT_CLICK, &AssetBrowser::onFileRightClick, this, _file_ctrl->GetTreeCtrl()->GetId());
 	Bind(wxEVT_DIRCTRL_SELECTIONCHANGED, &AssetBrowser::onFileSelection, this, _file_ctrl->GetId());
 	Bind(wxEVT_TREE_ITEM_ACTIVATED, &AssetBrowser::onFileActivated, this, _file_ctrl->GetTreeCtrl()->GetId());
 }
@@ -83,6 +86,11 @@ void AssetBrowser::onDirectorySelection(wxTreeEvent& event)
 {
 	wxDirItemData* const data = reinterpret_cast<wxDirItemData*>(_dir_ctrl->GetTreeCtrl()->GetItemData(event.GetItem()));
 	_file_ctrl->reset(data->m_path);
+}
+
+void AssetBrowser::onFileRightClick(wxTreeEvent& event)
+{
+	GAFF_REF(event);
 }
 
 void AssetBrowser::onFileSelection(wxTreeEvent& event)
@@ -101,11 +109,19 @@ void AssetBrowser::onFileActivated(wxTreeEvent& event)
 {
 	wxDirItemData* const data = reinterpret_cast<wxDirItemData*>(_file_ctrl->GetTreeCtrl()->GetItemData(event.GetItem()));
 	
-	if (!data->m_isDir) {
+	if (data->m_isDir) {
 		return;
 	}
 
-	_dir_ctrl->SelectPath(data->m_path);
+	const size_t index = data->m_path.find_last_of('.');
+
+	if (index == wxNOT_FOUND) {
+		return;
+	}
+
+	// Open a window for the editor for this file type if not already open and send the selection message.
+	GetApp().getEditor()->openEditorWindow(data->m_path.c_str() + index);
+	GetApp().getBroadcaster().broadcastSync(FileSelectedMessage(data->m_path.c_str()));
 }
 
 NS_END
