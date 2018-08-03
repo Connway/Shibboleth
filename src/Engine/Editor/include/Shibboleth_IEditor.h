@@ -34,7 +34,7 @@ public:
 	virtual ~IEditor(void) {}
 
 	virtual void addEditorWindow(Gaff::IReflectionObject* window) = 0;
-	virtual void removeEditorWindow(Gaff::IReflectionObject* window) = 0;
+	virtual void removeEditorWindow(const Gaff::IReflectionObject* window) = 0;
 
 	virtual void openEditorWindow(const char* file_extension) = 0;
 };

@@ -36,7 +36,7 @@ class wxListBox;
 
 NS_SHIBBOLETH
 
-class LoadedModulesWindow : public wxPanel, public Gaff::IReflectionObject
+class LoadedModulesWindow : public Gaff::IReflectionObject, public wxPanel
 {
 public:
 	LoadedModulesWindow(

@@ -23,6 +23,7 @@ THE SOFTWARE.
 #pragma once
 
 #include <Shibboleth_ECSArchetype.h>
+#include <Shibboleth_Reflection.h>
 #include <Shibboleth_IManager.h>
 
 NS_SHIBBOLETH

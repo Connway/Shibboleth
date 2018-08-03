@@ -41,7 +41,7 @@ public:
 	void CleanUp(void) override;
 
 	void addEditorWindow(Gaff::IReflectionObject* window) override;
-	void removeEditorWindow(Gaff::IReflectionObject* window) override;
+	void removeEditorWindow(const Gaff::IReflectionObject* window) override;
 
 	void openEditorWindow(const char* file_extension) override;
 

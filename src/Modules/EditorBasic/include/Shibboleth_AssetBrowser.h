@@ -37,7 +37,7 @@ NS_SHIBBOLETH
 
 class DirectoryControl;
 
-class AssetBrowser final : public wxPanel, public Gaff::IReflectionObject
+class AssetBrowser final : public Gaff::IReflectionObject, public wxPanel
 {
 public:
 	AssetBrowser(

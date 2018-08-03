@@ -37,7 +37,7 @@ NS_END
 
 NS_SHIBBOLETH
 
-class ViewportWindow : public wxPanel
+class ViewportWindow : public Gaff::IReflectionObject, public wxPanel
 {
 public:
 	ViewportWindow(
