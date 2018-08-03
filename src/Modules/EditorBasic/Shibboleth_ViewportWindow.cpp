@@ -35,6 +35,7 @@ SHIB_REFLECTION_CLASS_DEFINE_BEGIN(ViewportWindow)
 	.CTOR(wxWindow*, wxWindowID)
 	.CTOR(wxWindow*)
 
+	.BASE(Gaff::IReflectionObject)
 	.BASE(wxWindow)
 
 	.classAttrs(

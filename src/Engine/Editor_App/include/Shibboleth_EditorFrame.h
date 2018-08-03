@@ -53,6 +53,8 @@ private:
 	void onAbout(wxCommandEvent&);
 
 	void onSpawnWindow(wxCommandEvent& event);
+	void onWindowClose(wxAuiManagerEvent& event);
+	void onUpdate(wxUpdateUIEvent& event);
 
 	wxDECLARE_EVENT_TABLE();
 };

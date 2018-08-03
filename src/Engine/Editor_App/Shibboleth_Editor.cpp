@@ -59,7 +59,7 @@ void Editor::addEditorWindow(Gaff::IReflectionObject* window)
 	_editor_windows.emplace_back(window);
 }
 
-void Editor::removeEditorWindow(Gaff::IReflectionObject* window)
+void Editor::removeEditorWindow(const Gaff::IReflectionObject* window)
 {
 	const auto it = Gaff::Find(_editor_windows, window);
 
@@ -70,17 +70,18 @@ void Editor::removeEditorWindow(Gaff::IReflectionObject* window)
 
 void Editor::openEditorWindow(const char* file_extension)
 {
-	for (const Gaff::IReflectionObject* ref_obj : _editor_windows) {
-		const EditorFileHandlerAttribute* const attr = ref_obj->getReflectionDefinition().getClassAttr<EditorFileHandlerAttribute>();
+	const size_t size = eastl::CharStrlen(file_extension);
+
+	for (const Gaff::IReflectionObject* window : _editor_windows) {
+		const EditorFileHandlerAttribute* const attr = window->getReflectionDefinition().getClassAttr<EditorFileHandlerAttribute>();
 
 		// Already open.
-		if (attr) {
+		if (attr && !eastl::Compare(file_extension, attr->getExtension(), size)) {
 			return;
 		}
 	}
 
 	const auto result = GetApp().getReflectionManager().getReflectionWithAttribute<EditorFileHandlerAttribute>();
-	const size_t size = eastl::CharStrlen(file_extension);
 
 	for (const Gaff::IReflectionDefinition* ref_def : result) {
 		if (!eastl::Compare(file_extension, ref_def->getClassAttr<EditorFileHandlerAttribute>()->getExtension(), size)) {

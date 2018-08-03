@@ -1596,6 +1596,13 @@ ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::addAttri
 	return *this;
 }
 
+template <class T, class Allocator>
+ptrdiff_t ReflectionDefinition<T, Allocator>::getBasePointerOffset(Hash64 interface_name) const
+{
+	const auto it = Find(_base_class_offsets, interface_name);
+	return (it != _base_class_offsets.end()) ? it->second : -1;
+}
+
 NS_END
 
 #ifdef PLATFORM_WINDOWS

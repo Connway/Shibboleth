@@ -270,6 +270,32 @@ public:
 	using VoidFunc = void (*)(void);
 
 	template <class T>
+	const void* getBasePointer(const T* object, Hash64 interface_name) const
+	{
+		const ptrdiff_t offset = getBasePointerOffset(interface_name);
+		return reinterpret_cast<const char*>(object) - offset;
+	}
+
+	template <class T>
+	void* getBasePointer(T* object, Hash64 interface_name) const
+	{
+		const ptrdiff_t offset = getBasePointerOffset(interface_name);
+		return reinterpret_cast<char*>(object) - offset;
+	}
+
+	template <class T>
+	const void* getBasePointer(const T* object) const
+	{
+		return getBasePointer(object, Reflection<T>::GetHash());
+	}
+
+	template <class T>
+	void* getBasePointer(T* object) const
+	{
+		return getBasePointer(object, Reflection<T>::GetHash());
+	}
+
+	template <class T>
 	const T* getInterface(const void* object) const
 	{
 		return reinterpret_cast<const T*>(getInterface(T::GetReflectionHash(), object));
@@ -812,6 +838,9 @@ public:
 	virtual VoidFunc getFactory(Hash64 ctor_hash) const = 0;
 	virtual VoidFunc getStaticFunc(Hash32 name, Hash64 args) const = 0;
 	virtual void* getFunc(Hash32 name, Hash64 args) const = 0;
+
+private:
+	virtual ptrdiff_t getBasePointerOffset(Hash64 interface_name) const = 0;
 };
 
 class IEnumReflection

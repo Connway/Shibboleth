@@ -455,6 +455,8 @@ private:
 	ReflectionDefinition& addAttributes(Vector<IAttributePtr, Allocator>& attrs, const First& first, const Rest&... rest);
 	ReflectionDefinition& addAttributes(Vector<IAttributePtr, Allocator>&);
 
+	ptrdiff_t getBasePointerOffset(Hash64 interface_name) const override;
+
 	template <class RefT, class Allocator>
 	friend class ReflectionDefinition;
 };

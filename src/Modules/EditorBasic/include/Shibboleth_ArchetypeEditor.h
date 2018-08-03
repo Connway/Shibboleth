@@ -23,6 +23,7 @@ THE SOFTWARE.
 #pragma once
 
 #include <Shibboleth_ECSArchetype.h>
+#include <Shibboleth_Reflection.h>
 
 #ifdef PLATFORM_WINDOWS
 	#include <wx/msw/winundef.h>
@@ -41,7 +42,7 @@ NS_SHIBBOLETH
 
 class RefDefItem;
 
-class ArchetypeEditor final : public wxPanel, public wxDropTarget, public Gaff::IReflectionObject
+class ArchetypeEditor final : public Gaff::IReflectionObject, public wxPanel, public wxDropTarget
 {
 public:
 	ArchetypeEditor(

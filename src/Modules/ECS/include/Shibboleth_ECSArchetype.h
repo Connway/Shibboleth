@@ -22,7 +22,11 @@ THE SOFTWARE.
 
 #pragma once
 
-#include <Shibboleth_Reflection.h>
+#include <Shibboleth_Vector.h>
+
+NS_GAFF
+	class IReflectionDefinition;
+NS_END
 
 NS_SHIBBOLETH
 

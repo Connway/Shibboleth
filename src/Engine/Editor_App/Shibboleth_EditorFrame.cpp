@@ -35,6 +35,7 @@ NS_SHIBBOLETH
 wxBEGIN_EVENT_TABLE(EditorFrame, wxFrame)
 	EVT_MENU(wxID_EXIT, EditorFrame::onExit)
 	EVT_MENU(wxID_ABOUT, EditorFrame::onAbout)
+	EVT_AUI_PANE_CLOSE(EditorFrame::onWindowClose)
 wxEND_EVENT_TABLE()
 
 EditorFrame::EditorFrame(const wxString& title, const wxPoint& pos, const wxSize& size):
@@ -70,7 +71,7 @@ EditorFrame::EditorFrame(const wxString& title, const wxPoint& pos, const wxSize
 
 	_aui_mgr.Update();
 
-	// Add all IEditorWindows to the Window menu.
+	// Add all editor windows to the Window menu.
 	ReflectionManager& refl_mgr = GetApp().getReflectionManager();
 
 	const Vector<const Gaff::IReflectionDefinition*> editor_windows = refl_mgr.getReflectionWithAttribute<EditorWindowAttribute>();
@@ -113,6 +114,8 @@ EditorFrame::EditorFrame(const wxString& title, const wxPoint& pos, const wxSize
 			const_cast<wxObject*>(reinterpret_cast<const wxObject*>(ref_def))
 		);
 	}
+
+	Bind(wxEVT_UPDATE_UI, &EditorFrame::onUpdate, this, GetId());
 }
 
 EditorFrame::~EditorFrame(void)
@@ -145,7 +148,8 @@ void EditorFrame::spawnWindow(const Gaff::IReflectionDefinition* ref_def)
 	_aui_mgr.AddPane(window, pane);
 	_aui_mgr.Update();
 
-	GetApp().getEditor()->addEditorWindow(instance);
+	IEditor* const editor = GetApp().getEditor();
+	editor->addEditorWindow(instance);
 	window->Show();
 }
 
@@ -167,6 +171,17 @@ void EditorFrame::onSpawnWindow(wxCommandEvent& event)
 {
 	const Gaff::IReflectionDefinition* const ref_def = reinterpret_cast<Gaff::IReflectionDefinition*>(event.GetEventUserData());
 	spawnWindow(ref_def);
+}
+
+void EditorFrame::onWindowClose(wxAuiManagerEvent& event)
+{
+	Gaff::IReflectionObject* const instance = reinterpret_cast<Gaff::IReflectionObject*>(reinterpret_cast<char*>(event.GetPane()->window) - sizeof(Gaff::IReflectionObject));
+	GetApp().getEditor()->removeEditorWindow(instance);
+}
+
+void EditorFrame::onUpdate(wxUpdateUIEvent& /*event*/)
+{
+	_aui_mgr.Update();
 }
 
 NS_END
