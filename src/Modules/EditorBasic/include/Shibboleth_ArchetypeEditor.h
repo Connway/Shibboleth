@@ -31,7 +31,6 @@ THE SOFTWARE.
 
 //#include <wx/treebase.h>
 #include <wx/panel.h>
-#include <wx/dnd.h>
 
 class wxTreeItemId;
 class wxTreeEvent;
@@ -42,7 +41,7 @@ NS_SHIBBOLETH
 
 class RefDefItem;
 
-class ArchetypeEditor final : public Gaff::IReflectionObject, public wxPanel, public wxDropTarget
+class ArchetypeEditor final : public Gaff::IReflectionObject, public wxPanel
 {
 public:
 	ArchetypeEditor(
@@ -53,8 +52,6 @@ public:
 	);
 
 	~ArchetypeEditor(void);
-
-	wxDragResult OnData(wxCoord x, wxCoord y, wxDragResult result) override;
 
 private:
 	wxTreeCtrl* _ecs_components = nullptr;
@@ -70,6 +67,8 @@ private:
 	void removeItem(RefDefItem* item);
 	void addItem(RefDefItem* item);
 	void initComponentList(void);
+
+	friend class ArcheTypeEditorDropTarget;
 
 	SHIB_REFLECTION_CLASS_DECLARE(ArchetypeEditor);
 };
