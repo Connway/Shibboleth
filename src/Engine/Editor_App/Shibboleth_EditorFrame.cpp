@@ -143,6 +143,7 @@ void EditorFrame::spawnWindow(const Gaff::IReflectionDefinition* ref_def)
 
 	pane.Caption(ew_attr->getCaption());
 	pane.BestSize(wxSize(800, 600));
+	pane.DestroyOnClose();
 	pane.Float();
 
 	_aui_mgr.AddPane(window, pane);

@@ -31,10 +31,65 @@ THE SOFTWARE.
 #include <wx/listbox.h>
 #include <wx/sizer.h>
 #include <wx/event.h>
+#include <wx/dnd.h>
 
 SHIB_REFLECTION_DEFINE(ArchetypeEditor)
 
 NS_SHIBBOLETH
+
+constexpr static const char* const s_ref_def_format = "RefDefItemFormat";
+static wxColour g_grey(127, 127, 127);
+
+class RefDefItem final : public wxTreeItemData {
+public:
+	RefDefItem(const Gaff::IReflectionDefinition* ref_def) : _ref_def(ref_def) {}
+
+	const Gaff::IReflectionDefinition* getRefDef(void) const { return _ref_def; }
+
+	bool isDisabled(void) const { return _disabled; }
+	void setDisabled(bool disabled) { _disabled = disabled; }
+
+private:
+	const Gaff::IReflectionDefinition* const _ref_def = nullptr;
+	bool _disabled = false;
+};
+
+class RefDefItemContainer : public wxClientData {
+public:
+	RefDefItemContainer(const RefDefItem* ref_def_item): _ref_def_item(ref_def_item) {}
+
+	const RefDefItem* getRefDefItem(void) const { return _ref_def_item; }
+
+private:
+	const RefDefItem* const _ref_def_item = nullptr;
+};
+
+class ArcheTypeEditorDropTarget final : public wxDropTarget
+{
+public:
+	ArcheTypeEditorDropTarget(ArchetypeEditor& editor): _editor(editor)
+	{
+		m_dataObject = new wxCustomDataObject(s_ref_def_format);
+	}
+
+private:
+	ArchetypeEditor& _editor;
+
+	wxDragResult OnData(wxCoord /*x*/, wxCoord /*y*/, wxDragResult result) override
+	{
+		wxCustomDataObject* const data = reinterpret_cast<wxCustomDataObject*>(m_dataObject);
+		RefDefItem** const items = reinterpret_cast<RefDefItem** const>(data->GetData());
+		const int32_t num_items = static_cast<int32_t>(data->GetDataSize()) / sizeof(RefDefItem*);
+
+		for (int32_t i = 0; i < num_items && items[i]; ++i) {
+			_editor.addItem(items[i]);
+		}
+
+		data->Free();
+		return result;
+	}
+};
+
 
 SHIB_REFLECTION_CLASS_DEFINE_BEGIN(ArchetypeEditor)
 	.CTOR(wxWindow*, wxWindowID, const wxPoint&, const wxSize&)
@@ -51,24 +106,6 @@ SHIB_REFLECTION_CLASS_DEFINE_BEGIN(ArchetypeEditor)
 	)
 SHIB_REFLECTION_CLASS_DEFINE_END(ArchetypeEditor)
 
-constexpr static const char* const s_ref_def_format = "RefDefItemFormat";
-static wxColour g_grey(127, 127, 127);
-
-class RefDefItem final : public wxTreeItemData {
-public:
-	RefDefItem(const Gaff::IReflectionDefinition* ref_def): _ref_def(ref_def) {}
-
-	const Gaff::IReflectionDefinition* getRefDef(void) const { return _ref_def; }
-
-	bool isDisabled(void) const { return _disabled; }
-	void setDisabled(bool disabled) { _disabled = disabled; }
-
-private:
-	const Gaff::IReflectionDefinition* const _ref_def = nullptr;
-	bool _disabled = false;
-};
-
-
 ArchetypeEditor::ArchetypeEditor(
 	wxWindow* parent,
 	wxWindowID id,
@@ -83,7 +120,7 @@ ArchetypeEditor::ArchetypeEditor(
 
 	_archetype_ui = new wxListBox(this, wxID_ANY);
 	_archetype_ui->SetWindowStyleFlag(wxLB_MULTIPLE);
-	_archetype_ui->SetDropTarget(this);
+	_archetype_ui->SetDropTarget(new ArcheTypeEditorDropTarget(*this));
 
 	wxStaticText* const archetype_text = new wxStaticText(this, wxID_ANY, "Archetype");
 	wxStaticText* const component_text = new wxStaticText(this, wxID_ANY, "Components List");
@@ -108,27 +145,12 @@ ArchetypeEditor::ArchetypeEditor(
 
 	Bind(wxEVT_TREE_ITEM_RIGHT_CLICK, &ArchetypeEditor::onAddComponents, this, _ecs_components->GetId());
 	Bind(wxEVT_TREE_ITEM_ACTIVATED, &ArchetypeEditor::onAddComponents, this, _ecs_components->GetId());
-	Bind(wxEVT_TREE_DELETE_ITEM, &ArchetypeEditor::onRemoveComponents, this, _ecs_components->GetId());
+	Bind(wxEVT_TREE_DELETE_ITEM, &ArchetypeEditor::onRemoveComponents, this, _archetype_ui->GetId());
 	Bind(wxEVT_TREE_BEGIN_DRAG, &ArchetypeEditor::onDragBegin, this, _ecs_components->GetId());
-
-	m_dataObject = new wxCustomDataObject(s_ref_def_format);
 }
 
 ArchetypeEditor::~ArchetypeEditor(void)
 {
-}
-
-wxDragResult ArchetypeEditor::OnData(wxCoord /*x*/, wxCoord /*y*/, wxDragResult result)
-{
-	const wxCustomDataObject* const data = reinterpret_cast<wxCustomDataObject*>(m_dataObject);
-	RefDefItem** const items = reinterpret_cast<RefDefItem** const>(data->GetData());
-	const int32_t num_items = static_cast<int32_t>(data->GetDataSize()) / sizeof(RefDefItem*);
-
-	for (int32_t i = 0; i < num_items && items[i]; ++i) {
-		addItem(items[i]);
-	}
-
-	return result;
 }
 
 void ArchetypeEditor::onRemoveComponents(wxTreeEvent& event)
@@ -225,10 +247,11 @@ void ArchetypeEditor::onDragBegin(wxTreeEvent& event)
 		}
 	}
 
-	reinterpret_cast<wxCustomDataObject*>(m_dataObject)->TakeData(sizeof(RefDefItem*) * size, ref_def_items);
+	wxDataObject* const data = _archetype_ui->GetDropTarget()->GetDataObject();
+	reinterpret_cast<wxCustomDataObject*>(data)->TakeData(sizeof(RefDefItem*) * size, ref_def_items);
 
 	wxDropSource source(this);
-	source.SetData(*m_dataObject);
+	source.SetData(*data);
 	source.DoDragDrop();
 }
 
@@ -268,7 +291,7 @@ void ArchetypeEditor::addItem(RefDefItem* item)
 		item->setDisabled(true);
 	}
 
-	_archetype_ui->Append(ref_def->getReflectionInstance().getName(), reinterpret_cast<wxClientData*>(item));
+	_archetype_ui->Append(ref_def->getReflectionInstance().getName(), new RefDefItemContainer(item));
 	_archetype.add(ref_def);
 }
 
