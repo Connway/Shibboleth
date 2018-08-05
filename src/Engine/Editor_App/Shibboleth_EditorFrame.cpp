@@ -102,7 +102,7 @@ EditorFrame::EditorFrame(const wxString& title, const wxPoint& pos, const wxSize
 			next = Gaff::FindFirstOf(path + curr + 1, '/');
 		}
 
-		curr_menu->Append(id, path + curr + 1);
+		curr_menu->Append(id, path + curr + 1)->GetId();
 
 		Bind(
 			wxEVT_MENU,

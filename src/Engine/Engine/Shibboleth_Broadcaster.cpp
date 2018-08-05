@@ -57,7 +57,7 @@ BroadcastRemover::~BroadcastRemover(void)
 	remove();
 }
 
-const BroadcastRemover& BroadcastRemover::operator=(BroadcastRemover&& rhs)
+const BroadcastRemover& BroadcastRemover::operator=(const BroadcastRemover& rhs)
 {
 	remove();
 

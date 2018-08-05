@@ -72,6 +72,12 @@ void ECSArchetype::remove(const Gaff::IReflectionDefinition* ref_def)
 	}
 }
 
+void ECSArchetype::remove(int32_t index)
+{
+	GAFF_ASSERT(index < static_cast<int32_t>(_vars.size()));
+	_vars.erase(_vars.begin() + index);
+}
+
 int32_t ECSArchetype::size(void) const
 {
 	return _alloc_size;

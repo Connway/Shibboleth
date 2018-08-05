@@ -22,8 +22,8 @@ THE SOFTWARE.
 
 #include "Shibboleth_AssetBrowser.h"
 #include "Shibboleth_DirectoryControl.h"
+#include <Shibboleth_EditorFileSelectedMessage.h>
 #include <Shibboleth_EditorWindowAttribute.h>
-#include <Shibboleth_FileSelectedMessage.h>
 #include <Shibboleth_Broadcaster.h>
 #include <Shibboleth_IEditor.h>
 #include <wx/splitter.h>
@@ -102,7 +102,7 @@ void AssetBrowser::onFileSelection(wxTreeEvent& event)
 	}
 
 	// If it's a file, send an event out that it has been selected.
-	GetApp().getBroadcaster().broadcastSync(FileSelectedMessage(data->m_path.c_str()));
+	GetApp().getBroadcaster().broadcastSync(EditorFileSelectedMessage(data->m_path.c_str()));
 }
 
 void AssetBrowser::onFileActivated(wxTreeEvent& event)
@@ -121,7 +121,7 @@ void AssetBrowser::onFileActivated(wxTreeEvent& event)
 
 	// Open a window for the editor for this file type if not already open and send the selection message.
 	GetApp().getEditor()->openEditorWindow(data->m_path.c_str() + index);
-	GetApp().getBroadcaster().broadcastSync(FileSelectedMessage(data->m_path.c_str()));
+	GetApp().getBroadcaster().broadcastSync(EditorFileSelectedMessage(data->m_path.c_str()));
 }
 
 NS_END
