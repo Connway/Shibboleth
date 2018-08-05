@@ -219,10 +219,10 @@ class IAttribute : public IReflectionObject
 public:
 	virtual IAttribute* clone(void) const = 0;
 
-	virtual void finish(Gaff::IReflectionDefinition* /*ref_def*/) {}
-	virtual void finish(Gaff::IEnumReflectionDefinition* /*ref_def*/) {}
+	virtual void finish(const Gaff::IReflectionDefinition* /*ref_def*/) {}
+	virtual void finish(const Gaff::IEnumReflectionDefinition* /*ref_def*/) {}
 
-	virtual void instantiated(Gaff::IReflectionDefinition* /*ref_def*/, void* /*object*/) {}
+	virtual void instantiated(const Gaff::IReflectionDefinition* /*ref_def*/, void* /*object*/) {}
 
 	// The apply function corresponds directly to calls in reflection definition. Apply all that apply.
 
@@ -353,7 +353,9 @@ public:
 		FactoryFunc<Args...> factory_func = reinterpret_cast< FactoryFunc<Args...> >(getFactory(factory_hash));
 
 		if (factory_func) {
-			return factory_func(allocator, std::forward<Args>(args)...);
+			void* const object = factory_func(allocator, std::forward<Args>(args)...);
+			instantiated(object);
+			return object;
 		}
 
 		return nullptr;
@@ -841,6 +843,7 @@ public:
 
 private:
 	virtual ptrdiff_t getBasePointerOffset(Hash64 interface_name) const = 0;
+	virtual void instantiated(void* object) const = 0;
 };
 
 class IEnumReflection
