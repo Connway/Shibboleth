@@ -23,14 +23,16 @@ THE SOFTWARE.
 #include "Shibboleth_ArchetypeEditor.h"
 #include "Shibboleth_ECSAttributes.h"
 #include <Shibboleth_EditorFileHandlerAttribute.h>
+#include <Shibboleth_EditorFileSelectedMessage.h>
+#include <Shibboleth_EngineAttributesCommon.h>
 #include <Shibboleth_EditorWindowAttribute.h>
 #include <Shibboleth_UniqueAttribute.h>
 
-#include <wx/stattext.h>
+#include <wx/listctrl.h>
+#include <wx/editlbox.h>
+#include <wx/splitter.h>
 #include <wx/treectrl.h>
-#include <wx/listbox.h>
 #include <wx/sizer.h>
-#include <wx/event.h>
 #include <wx/dnd.h>
 
 SHIB_REFLECTION_DEFINE(ArchetypeEditor)
@@ -52,16 +54,6 @@ public:
 private:
 	const Gaff::IReflectionDefinition* const _ref_def = nullptr;
 	bool _disabled = false;
-};
-
-class RefDefItemContainer : public wxClientData {
-public:
-	RefDefItemContainer(const RefDefItem* ref_def_item): _ref_def_item(ref_def_item) {}
-
-	const RefDefItem* getRefDefItem(void) const { return _ref_def_item; }
-
-private:
-	const RefDefItem* const _ref_def_item = nullptr;
 };
 
 class ArcheTypeEditorDropTarget final : public wxDropTarget
@@ -104,6 +96,13 @@ SHIB_REFLECTION_CLASS_DEFINE_BEGIN(ArchetypeEditor)
 		EditorWindowAttribute("&Editors/&Archetype Editor", "Archetype Editor"),
 		EditorFileHandlerAttribute(".archetype")
 	)
+
+	.func(
+		"onFileSelected",
+		&ArchetypeEditor::onFileSelected,
+		GlobalMessageAttribute<ArchetypeEditor, EditorFileSelectedMessage>(&ArchetypeEditor::_remover)
+	)
+
 SHIB_REFLECTION_CLASS_DEFINE_END(ArchetypeEditor)
 
 ArchetypeEditor::ArchetypeEditor(
@@ -114,38 +113,29 @@ ArchetypeEditor::ArchetypeEditor(
 ):
 	wxPanel(parent, id, pos, size)
 {
-	_ecs_components = new wxTreeCtrl(this, wxID_ANY);
+	wxSplitterWindow* const splitter = new wxSplitterWindow(this);
+	splitter->SetWindowStyleFlag(wxSP_3D | wxSP_LIVE_UPDATE);
+
+	_ecs_components = new wxTreeCtrl(splitter, wxID_ANY);
 	_ecs_components->SetWindowStyleFlag(wxTR_HIDE_ROOT | wxTR_MULTIPLE);
 	_ecs_components->AddRoot(wxT(""));
 
-	_archetype_ui = new wxListBox(this, wxID_ANY);
-	_archetype_ui->SetWindowStyleFlag(wxLB_MULTIPLE);
+	_archetype_ui = new wxEditableListBox(splitter, wxID_ANY, "Archetype", wxDefaultPosition, wxDefaultSize, wxEL_ALLOW_DELETE);
 	_archetype_ui->SetDropTarget(new ArcheTypeEditorDropTarget(*this));
 
-	wxStaticText* const archetype_text = new wxStaticText(this, wxID_ANY, "Archetype");
-	wxStaticText* const component_text = new wxStaticText(this, wxID_ANY, "Components List");
-	archetype_text->SetWindowStyleFlag(wxALIGN_CENTRE_HORIZONTAL | wxBORDER_THEME);
-	component_text->SetWindowStyleFlag(wxALIGN_CENTRE_HORIZONTAL | wxBORDER_THEME);
+	splitter->SplitVertically(_archetype_ui, _ecs_components, 400);
 
-	wxFlexGridSizer* const sizer = new wxFlexGridSizer(2, 2, wxSize(0, 0));
-	sizer->Add(archetype_text, 1, wxEXPAND | wxALL, 1);
-	sizer->Add(component_text, 1, wxEXPAND | wxALL, 1);
-
-	sizer->Add(_archetype_ui, 15, wxEXPAND | wxALL, 1);
-	sizer->Add(_ecs_components, 15, wxEXPAND | wxALL, 1);
-
-	sizer->AddGrowableRow(1, 15);
-	sizer->AddGrowableCol(0, 1);
-	sizer->AddGrowableCol(1, 1);
-
+	wxBoxSizer* const sizer = new wxBoxSizer(wxHORIZONTAL);
+	sizer->Add(splitter, 1, wxEXPAND | wxALL);
 	sizer->SetSizeHints(this);
+
 	SetSizer(sizer);
 
 	initComponentList();
 
 	Bind(wxEVT_TREE_ITEM_RIGHT_CLICK, &ArchetypeEditor::onAddComponents, this, _ecs_components->GetId());
 	Bind(wxEVT_TREE_ITEM_ACTIVATED, &ArchetypeEditor::onAddComponents, this, _ecs_components->GetId());
-	Bind(wxEVT_TREE_DELETE_ITEM, &ArchetypeEditor::onRemoveComponents, this, _archetype_ui->GetId());
+	Bind(wxEVT_LIST_DELETE_ITEM, &ArchetypeEditor::onRemoveComponents, this, _archetype_ui->GetListCtrl()->GetId());
 	Bind(wxEVT_TREE_BEGIN_DRAG, &ArchetypeEditor::onDragBegin, this, _ecs_components->GetId());
 }
 
@@ -153,31 +143,16 @@ ArchetypeEditor::~ArchetypeEditor(void)
 {
 }
 
-void ArchetypeEditor::onRemoveComponents(wxTreeEvent& event)
+void ArchetypeEditor::onFileSelected(const EditorFileSelectedMessage& message)
 {
-	wxArrayTreeItemIds ids;
-	size_t size = _ecs_components->GetSelections(ids);
+	GAFF_REF(message);
+}
 
-	if (ids.IsEmpty()) {
-		RefDefItem* const item = getItem(event.GetItem());
-
-		if (!item) {
-			return;
-		}
-
-		removeItem(item);
-
-	} else {
-		for (size_t i = 0; i < size; ++i) {
-			RefDefItem* const item = getItem(ids[i]);
-
-			if (!item) {
-				return;
-			}
-
-			removeItem(item);
-		}
-	}
+void ArchetypeEditor::onRemoveComponents(wxListEvent& event)
+{
+	const long index = event.GetIndex();
+	_archetype_ui->GetListCtrl()->DeleteItem(event.GetIndex());
+	_archetype.remove(static_cast<int32_t>(event.GetIndex()));
 }
 
 void ArchetypeEditor::onAddComponents(wxTreeEvent& event)
@@ -291,7 +266,9 @@ void ArchetypeEditor::addItem(RefDefItem* item)
 		item->setDisabled(true);
 	}
 
-	_archetype_ui->Append(ref_def->getReflectionInstance().getName(), new RefDefItemContainer(item));
+	wxListCtrl* const list = _archetype_ui->GetListCtrl();
+
+	_archetype_ui->GetListCtrl()->InsertItem(list->GetItemCount(), ref_def->getReflectionInstance().getName());
 	_archetype.add(ref_def);
 }
 

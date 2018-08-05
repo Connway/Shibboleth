@@ -33,7 +33,7 @@ class ConstMemFuncBinder
 public:
 	using MemFunc = Ret (T::*)(Args...) const;
 
-	ConstMemFuncBinder(T* obj, MemFunc func):
+	ConstMemFuncBinder(const T* obj, MemFunc func):
 		_func(func), _obj(obj)
 	{
 	}
@@ -45,7 +45,7 @@ public:
 
 private:
 	MemFunc _func;
-	T* _obj;
+	const T* _obj;
 };
 
 template <class T, class Ret, class... Args>

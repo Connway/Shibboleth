@@ -28,12 +28,12 @@ BroadcastID Broadcaster::listen(const eastl::function<void (const Message&)>& ca
 	auto& listener_data = _listeners[Reflection<Message>::GetHash()];
 	BroadcastID id(Reflection<Message>::GetHash(), 0);
 
-	const ListenerData::Listener func = [](const void* message) -> void {
+	const ListenerData::Listener func = Shibboleth::Func<void (const void*)>([callback](const void* message) -> void {
 		const Message* const msg = reinterpret_cast<const Message*>(message);
 		callback(*msg);
-	};
+	});
 
-	if (it->unused_ids.empty()) {
+	if (listener_data.unused_ids.empty()) {
 		id.second = listener_data.listeners.size();
 		listener_data.listeners.emplace_back(func);
 	} else {

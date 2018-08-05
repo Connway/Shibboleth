@@ -1314,7 +1314,7 @@ ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::func(con
 	if constexpr (sizeof...(Attrs) > 0) {
 		auto& attrs = _func_attrs[FNV1aHash32Const(name)];
 		attrs.set_allocator(_allocator);
-		addAttributes(ptr, attributes...);
+		addAttributes(ptr, attrs, attributes...);
 	}
 
 	return *this;
@@ -1375,7 +1375,7 @@ ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::func(con
 	if constexpr (sizeof...(Attrs) > 0) {
 		auto& attrs = _func_attrs[FNV1aHash32Const(name)];
 		attrs.set_allocator(_allocator);
-		addAttributes(ptr, attributes...);
+		addAttributes(ptr, attrs, attributes...);
 	}
 
 	return *this;
@@ -1417,7 +1417,7 @@ ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::staticFu
 	if constexpr (sizeof...(Attrs) > 0) {
 		auto& attrs = _static_func_attrs[FNV1aHash32Const(name)];
 		attrs.set_allocator(_allocator);
-		addAttributes(ptr, attributes...);
+		addAttributes(func, attrs, attributes...);
 	}
 
 	return *this;

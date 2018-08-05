@@ -37,6 +37,7 @@ public:
 	void add(const Gaff::IReflectionDefinition* ref_def);
 	void remove(const Vector<const Gaff::IReflectionDefinition*>& ref_defs);
 	void remove(const Gaff::IReflectionDefinition* ref_def);
+	void remove(int32_t index);
 
 	int32_t size(void) const;
 

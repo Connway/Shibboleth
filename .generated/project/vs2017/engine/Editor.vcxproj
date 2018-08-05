@@ -245,14 +245,14 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\..\src\Engine\Editor\include\Shibboleth_EditorFileHandlerAttribute.h" />
+    <ClInclude Include="..\..\..\..\src\Engine\Editor\include\Shibboleth_EditorFileSelectedMessage.h" />
     <ClInclude Include="..\..\..\..\src\Engine\Editor\include\Shibboleth_EditorWindowAttribute.h" />
-    <ClInclude Include="..\..\..\..\src\Engine\Editor\include\Shibboleth_FileSelectedMessage.h" />
     <ClInclude Include="..\..\..\..\src\Engine\Editor\include\Shibboleth_IEditor.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\..\src\Engine\Editor\Shibboleth_EditorFileHandlerAttribute.cpp" />
+    <ClCompile Include="..\..\..\..\src\Engine\Editor\Shibboleth_EditorFileSelectedMessage.cpp" />
     <ClCompile Include="..\..\..\..\src\Engine\Editor\Shibboleth_EditorWindowAttribute.cpp" />
-    <ClCompile Include="..\..\..\..\src\Engine\Editor\Shibboleth_FileSelectedMessage.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

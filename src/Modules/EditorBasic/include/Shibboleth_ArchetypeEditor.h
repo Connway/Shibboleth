@@ -23,22 +23,24 @@ THE SOFTWARE.
 #pragma once
 
 #include <Shibboleth_ECSArchetype.h>
+#include <Shibboleth_Broadcaster.h>
 #include <Shibboleth_Reflection.h>
 
 #ifdef PLATFORM_WINDOWS
 	#include <wx/msw/winundef.h>
 #endif
 
-//#include <wx/treebase.h>
 #include <wx/panel.h>
 
+class wxEditableListBox;
 class wxTreeItemId;
 class wxTreeEvent;
+class wxListEvent;
 class wxTreeCtrl;
-class wxListBox;
 
 NS_SHIBBOLETH
 
+class EditorFileSelectedMessage;
 class RefDefItem;
 
 class ArchetypeEditor final : public Gaff::IReflectionObject, public wxPanel
@@ -55,11 +57,14 @@ public:
 
 private:
 	wxTreeCtrl* _ecs_components = nullptr;
-	wxListBox* _archetype_ui = nullptr;
+	wxEditableListBox* _archetype_ui = nullptr;
 
 	ECSArchetype _archetype;
+	BroadcastRemover _remover;
 
-	void onRemoveComponents(wxTreeEvent& event);
+	void onFileSelected(const EditorFileSelectedMessage& message);
+
+	void onRemoveComponents(wxListEvent& event);
 	void onAddComponents(wxTreeEvent& event);
 	void onDragBegin(wxTreeEvent& event);
 

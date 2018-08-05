@@ -61,15 +61,6 @@ public:
 	template <class... Attrs>
 	ReflectionVersion& classAttrs(const Attrs&...);
 
-	template <size_t size, class... Attrs>
-	ReflectionVersion& varAttrs(const char (&name)[size], const Attrs&...);
-
-	template <size_t size, class... Attrs>
-	ReflectionVersion& funcAttrs(const char (&name)[size], const Attrs&...);
-
-	template <size_t size, class... Attrs>
-	ReflectionVersion& staticFuncAttrs(const char (&name)[size], const Attrs&...);
-
 	ReflectionVersion& version(uint32_t version);
 
 	Hash64 getHash(void) const;

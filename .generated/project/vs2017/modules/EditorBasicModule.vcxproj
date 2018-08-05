@@ -332,6 +332,9 @@ IF EXIST ..\..\..\build\vs2017\output\x64\Optimized_Debug\$(TargetFileName)\ (xc
     <ProjectReference Include="..\dependencies\wxCore.vcxproj">
       <Project>{BD081726-A9AA-41FC-9265-55507EA6C84C}</Project>
     </ProjectReference>
+    <ProjectReference Include="..\dependencies\wxAdv.vcxproj">
+      <Project>{6F53AB10-DB67-D3C1-A4E9-762110BDCFF2}</Project>
+    </ProjectReference>
     <ProjectReference Include="ECS.vcxproj">
       <Project>{60E1870B-CCEA-877C-5566-9E7CC16E937C}</Project>
     </ProjectReference>

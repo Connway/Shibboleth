@@ -22,23 +22,22 @@ THE SOFTWARE.
 
 #pragma once
 
-#include <Shibboleth_Reflection.h>
+#include "Shibboleth_EditorFileSelectedMessage.h"
+
+SHIB_REFLECTION_DEFINE(EditorFileSelectedMessage)
 
 NS_SHIBBOLETH
 
-class FileSelectedMessage
+SHIB_REFLECTION_CLASS_DEFINE(EditorFileSelectedMessage)
+
+EditorFileSelectedMessage::EditorFileSelectedMessage(const char* path):
+	_path(path)
 {
-public:
-	FileSelectedMessage(const char* path);
+}
 
-	const U8String& getPath(void) const;
-
-private:
-	U8String _path;
-
-	SHIB_REFLECTION_CLASS_DECLARE(FileSelectedMessage);
-};
+const U8String& EditorFileSelectedMessage::getPath(void) const
+{
+	return _path;
+}
 
 NS_END
-
-SHIB_REFLECTION_DECLARE(FileSelectedMessage)

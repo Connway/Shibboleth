@@ -57,7 +57,7 @@ public:
 private:
 	struct ListenerData
 	{
-		using Listener = void (*)(const void*);
+		using Listener = eastl::function<void (const void*)>;
 
 		Vector<Listener> listeners;
 		Vector<size_t> unused_ids;
@@ -78,7 +78,7 @@ public:
 	~BroadcastRemover(void);
 
 	// Takes ownership
-	const BroadcastRemover& operator=(BroadcastRemover&& rhs);
+	const BroadcastRemover& operator=(const BroadcastRemover& rhs);
 
 	bool operator==(const BroadcastRemover& rhs) const;
 	bool operator!=(const BroadcastRemover& rhs) const;
