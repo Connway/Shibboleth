@@ -400,6 +400,15 @@ private:
 			return *this;
 		}
 
+		template <class T2, class A2>
+		typename ReflectionDefinition<T2, A2>::StaticFuncData toDerived(void) const
+		{
+			ReflectionDefinition<T2, A2>::StaticFuncData func_data;
+			memcpy(func_data.func, func, sizeof(VoidFunc) * NUM_OVERLOADS);
+			memcpy(func_data.hash, hash, sizeof(Hash64) * NUM_OVERLOADS);
+			return func_data;
+		}
+
 		constexpr static int32_t NUM_OVERLOADS = 8;
 		Hash64 hash[NUM_OVERLOADS];
 		VoidFunc func[NUM_OVERLOADS];
@@ -456,6 +465,7 @@ private:
 	ReflectionDefinition& addAttributes(Vector<IAttributePtr, Allocator>&);
 
 	ptrdiff_t getBasePointerOffset(Hash64 interface_name) const override;
+	void instantiated(void* object) const override;
 
 	template <class RefT, class Allocator>
 	friend class ReflectionDefinition;

@@ -1050,7 +1050,6 @@ ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::base(voi
 	// Add IVarPtr's and funcs from base class.
 	if (GAFF_REFLECTION_NAMESPACE::Reflection<Base>::g_defined) {
 		const ReflectionDefinition<Base, Allocator>& base_ref_def = GAFF_REFLECTION_NAMESPACE::Reflection<Base>::GetReflectionDefinition();
-
 		base<Base>(GAFF_REFLECTION_NAMESPACE::Reflection<Base>::GetName());
 
 		// For calling base class functions.
@@ -1060,43 +1059,41 @@ ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::base(voi
 		);
 
 		// Base class vars
-		const int32_t num_vars = base_ref_def.getNumVars();
-
-		for (int32_t i = 0; i < num_vars; ++i) {
+		for (auto& it : base_ref_def._vars) {
 			eastl::pair<HashString32<Allocator>, IVarPtr> pair(
-				base_ref_def.getVarName(i),
-				IVarPtr(GAFF_ALLOCT(BaseVarPtr<Base>, _allocator, base_ref_def.getVarT(i)))
+				it.first,
+				IVarPtr(GAFF_ALLOCT(BaseVarPtr<Base>, _allocator, it.second.get()))
 			);
 
 			GAFF_ASSERT(_vars.find(pair.first) == _vars.end());
 			_vars.insert(std::move(pair));
 
 			// Base class var attrs
-			const Hash32 var_hash = pair.first.getHash();
-			const int32_t num_var_attrs = base_ref_def.getNumVarAttrs(var_hash);
+			const auto attr_it = base_ref_def._var_attrs.find(pair.first.getHash());
 
-			for (int32_t j = 0; j < num_var_attrs; ++j) {
-				const IAttribute* const attribute = base_ref_def.getVarAttr(var_hash, j);
-
-				auto& attrs = _var_attrs[var_hash];
+			if (attr_it != base_ref_def._var_attrs.end()) {
+				auto& attrs = _var_attrs[pair.first.getHash()];
 				attrs.set_allocator(_allocator);
-				attrs.emplace_back(attribute->clone());
+
+				for (const IAttributePtr& attr : attr_it->second) {
+					attrs.emplace_back(attr->clone());
+				}
 			}
 		}
 
 		// Base class funcs
-		//for (int32_t i = 0; i < base_ref_def.getNumFuncs(); ++i) {
-		//}
+		for (auto& it : base_ref_def._funcs) {
+			GAFF_REF(it);
+		}
 
 		// Base class static funcs
-		//for (int32_t i = 0; i < base_ref_def.getNumStaticFuncs(); ++i) {
-		//}
+		for (auto& it : base_ref_def._static_funcs) {
+			_static_funcs.emplace(it.first, it.second.toDerived<T, Allocator>());
+		}
 
 		// Base class class attrs
-		const int32_t num_class_attrs = base_ref_def.getNumClassAttrs();
-
-		for (int32_t i = 0; i < num_class_attrs; ++i) {
-			_class_attrs.emplace_back(base_ref_def.getClassAttr(i)->clone());
+		for (const IAttributePtr& attr : base_ref_def._class_attrs) {
+			_class_attrs.emplace_back(attr->clone());
 		}
 
 	// Register for callback if base class hasn't been defined yet.
@@ -1442,19 +1439,25 @@ void ReflectionDefinition<T, Allocator>::finish(void)
 		GAFF_REFLECTION_NAMESPACE::Reflection<T>::g_defined = true;
 
 		// Call finish() on attributes first.
-		for (IAttributePtr& class_attr : _class_attrs) {
-			class_attr->finish(this);
+		for (IAttributePtr& attr : _class_attrs) {
+			attr->finish(this);
 		}
 
-		for (auto func_attr_it = _func_attrs.begin(); func_attr_it != _func_attrs.end(); ++func_attr_it) {
-			for (IAttributePtr& func_attr : func_attr_it->second) {
-				func_attr->finish(this);
+		for (auto& it : _var_attrs) {
+			for (IAttributePtr& attr : it.second) {
+				attr->finish(this);
 			}
 		}
 
-		for (auto var_attr_it = _func_attrs.begin(); var_attr_it != _var_attrs.end(); ++var_attr_it) {
-			for (IAttributePtr& var_attr : var_attr_it->second) {
-				var_attr->finish(this);
+		for (auto& it : _func_attrs) {
+			for (IAttributePtr& attr : it.second) {
+				attr->finish(this);
+			}
+		}
+
+		for (auto& it : _static_func_attrs) {
+			for (IAttributePtr& attr : it.second) {
+				attr->finish(this);
 			}
 		}
 
@@ -1601,6 +1604,32 @@ ptrdiff_t ReflectionDefinition<T, Allocator>::getBasePointerOffset(Hash64 interf
 {
 	const auto it = Find(_base_class_offsets, interface_name);
 	return (it != _base_class_offsets.end()) ? it->second : -1;
+}
+
+template <class T, class Allocator>
+void ReflectionDefinition<T, Allocator>::instantiated(void* object) const
+{
+	for (const IAttributePtr& attr : _class_attrs) {
+		const_cast<IAttributePtr&>(attr)->instantiated(this, object);
+	}
+
+	for (auto& it : _var_attrs) {
+		for (const IAttributePtr& attr : it.second) {
+			const_cast<IAttributePtr&>(attr)->instantiated(this, object);
+		}
+	}
+
+	for (auto& it : _func_attrs) {
+		for (const IAttributePtr& attr : it.second) {
+			const_cast<IAttributePtr&>(attr)->instantiated(this, object);
+		}
+	}
+
+	for (auto& it : _static_func_attrs) {
+		for (const IAttributePtr& attr : it.second) {
+			const_cast<IAttributePtr&>(attr)->instantiated(this, object);
+		}
+	}
 }
 
 NS_END
