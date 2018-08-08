@@ -49,6 +49,8 @@ public:
 	const char* get_name() const override;
 	void set_name(const char* pName) override;
 
+	void addOnFreeCallback(OnFreeCallback callback, void* data) override;
+	void removeOnFreeCallback(OnFreeCallback callback, void* data) override;
 
 	int32_t getPoolIndex(const char* pool_name) override;
 	void* alloc(size_t size_bytes, size_t alignment, int32_t pool_index, const char* file, int line) override;
