@@ -66,6 +66,9 @@ struct alignas(16) AllocationHeader
 	char file[256] = { 0 };
 	int line = 0;
 
+	static constexpr int32_t s_num_free_callbacks = 4;
+	Allocator::OnFreeCallback free_callbacks[s_num_free_callbacks] = { nullptr };
+
 	AllocationHeader* next = nullptr;
 	AllocationHeader* prev = nullptr;
 
@@ -119,6 +122,32 @@ const char* Allocator::get_name() const
 
 void Allocator::set_name(const char*)
 {
+}
+
+void Allocator::addOnFreeCallback(OnFreeCallback callback, void* data)
+{
+	AllocationHeader* const header = reinterpret_cast<AllocationHeader*>(reinterpret_cast<char*>(data) - sizeof(AllocationHeader));
+
+	for (int32_t i = 0; i < AllocationHeader::s_num_free_callbacks; ++i) {
+		if (!header->free_callbacks[i]) {
+			header->free_callbacks[i] = callback;
+			return;
+		}
+	}
+
+	GAFF_ASSERT_MSG(false, "Exceeded number of on free callbacks!");
+}
+
+void Allocator::removeOnFreeCallback(OnFreeCallback callback, void* data)
+{
+	AllocationHeader* const header = reinterpret_cast<AllocationHeader*>(reinterpret_cast<char*>(data) - sizeof(AllocationHeader));
+
+	for (int32_t i = 0; i < AllocationHeader::s_num_free_callbacks; ++i) {
+		if (header->free_callbacks[i] == callback) {
+			header->free_callbacks[i] = nullptr;
+			break;
+		}
+	}
 }
 
 int32_t Allocator::getPoolIndex(const char* pool_name)
@@ -237,6 +266,12 @@ void Allocator::free(void* data)
 	}
 
 	_alloc_lock.unlock();
+
+	for (OnFreeCallback callback : header->free_callbacks) {
+		if (callback) {
+			callback(data);
+		}
+	}
 
 	coherent_rpmalloc::rpfree(header);
 }

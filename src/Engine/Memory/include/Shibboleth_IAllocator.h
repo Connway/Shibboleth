@@ -149,9 +149,13 @@ public:
 		free((void*)(data));
 	}
 
+	using OnFreeCallback = void (*)(void*);
 
 	IAllocator(void) {}
 	virtual ~IAllocator(void) {}
+
+	virtual void addOnFreeCallback(OnFreeCallback callback, void* data) = 0;
+	virtual void removeOnFreeCallback(OnFreeCallback callback, void* data) = 0;
 
 	virtual int32_t getPoolIndex(const char* pool_name) = 0;
 	virtual void* alloc(size_t size_bytes, size_t alignment, int32_t pool_index, const char* file, int line) = 0;
