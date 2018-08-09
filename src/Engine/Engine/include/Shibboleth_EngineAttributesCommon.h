@@ -52,30 +52,25 @@ template <class T, class Msg>
 class GlobalMessageAttribute final : public Gaff::IAttribute
 {
 public:
-	GlobalMessageAttribute(BroadcastRemover T::* remover):
-		_remover(remover)
-	{
-	}
-
 	IAttribute* clone(void) const override
 	{
 		IAllocator& allocator = GetAllocator();
-		return SHIB_ALLOCT_POOL(GlobalMessageAttribute, allocator.getPoolIndex("Reflection"), allocator, _remover);
+		return SHIB_ALLOCT_POOL(GlobalMessageAttribute, allocator.getPoolIndex("Reflection"), allocator);
 	}
 
-	void instantiated(const Gaff::IReflectionDefinition*, void* object) override
+	void instantiated(const Gaff::IReflectionDefinition* ref_def, void* object) override
 	{
 		Broadcaster& broadcaster = GetApp().getBroadcaster();
-		T* const instance = reinterpret_cast<T*>(object);
-		GAFF_REF(broadcaster); GAFF_REF(instance);
+		T* const instance = ref_def->getInterface<T>(object);
 
-		if (_const_func) {
-			const BroadcastID id = broadcaster.listen(MemberFunc(instance, _const_func));
-			(instance->*_remover) = BroadcastRemover(id, broadcaster);
-		} else if (_func) {
-			const BroadcastID id = broadcaster.listen(MemberFunc(instance, _func));
-			(instance->*_remover) = BroadcastRemover(id, broadcaster);
-		}
+		const BroadcastID id = 
+			(_const_func) ?
+			broadcaster.listen(MemberFunc(instance, _const_func)) :
+			broadcaster.listen(MemberFunc(instance, _func));
+
+
+		s_removers.emplace(object, BroadcastRemover(id, broadcaster));
+		GetAllocator().addOnFreeCallback(OnFree, object);
 	}
 
 	void apply(void (T::*func)(const Msg&) const)
@@ -91,10 +86,19 @@ public:
 private:
 	void (T::*_const_func)(const Msg&) const = nullptr;
 	void (T::*_func)(const Msg&) = nullptr;
-	BroadcastRemover T::* _remover = nullptr;
+
+	static VectorMap<void*, BroadcastRemover> s_removers;
+
+	static void OnFree(void* object)
+	{
+		s_removers.erase(object);
+	}
 
 	SHIB_TEMPLATE_REFLECTION_CLASS_DECLARE(GlobalMessageAttribute, T, Msg);
 };
+
+template <class T, class Msg>
+VectorMap<void*, BroadcastRemover> GlobalMessageAttribute<T, Msg>::s_removers = VectorMap<void*, BroadcastRemover>();
 
 SHIB_TEMPLATE_REFLECTION_CLASS_DEFINE_BEGIN(GlobalMessageAttribute, T, Msg)
 	.BASE(Gaff::IAttribute)

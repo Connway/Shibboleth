@@ -43,6 +43,12 @@ void Broadcaster::remove(BroadcastID id)
 	it->second.listeners[id.second] = nullptr;
 }
 
+BroadcastRemover::BroadcastRemover(const BroadcastRemover& remover):
+	_id(remover._id), _broadcaster(remover._broadcaster), _valid(remover._valid)
+{
+	const_cast<BroadcastRemover&>(remover)._valid = false;
+}
+
 BroadcastRemover::BroadcastRemover(BroadcastID id, Broadcaster& broadcaster):
 	_id(id), _broadcaster(&broadcaster), _valid(true)
 {

@@ -74,6 +74,7 @@ class BroadcastRemover
 {
 public:
 	BroadcastRemover(BroadcastID id, Broadcaster& broadcaster);
+	BroadcastRemover(const BroadcastRemover& remover);
 	BroadcastRemover(void);
 	~BroadcastRemover(void);
 

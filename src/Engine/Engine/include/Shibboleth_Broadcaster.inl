@@ -55,7 +55,9 @@ void Broadcaster::broadcastSync(const Message& message)
 	}
 
 	for (const auto func : it->second.listeners) {
-		func(&message);
+		if (func) {
+			func(&message);
+		}
 	}
 }
 
@@ -72,7 +74,9 @@ void Broadcaster::broadcast(const Message& message)
 		}
 
 		for (const auto cb : it->second.listeners) {
-			cb(message);
+			if (cb) {
+				cb(message);
+			}
 		}
 	};
 

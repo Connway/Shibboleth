@@ -324,6 +324,7 @@ void Allocator::setHeaderData(
 	header->pool_index = pool_index;
 	header->line = line;
 	header->next = header->prev = nullptr;
+	memset(header->free_callbacks, 0, sizeof(AllocationHeader::free_callbacks));
 
 #ifdef GATHER_ALLOCATION_STACKTRACE
 	header->trace.captureStack("", 16, 3);

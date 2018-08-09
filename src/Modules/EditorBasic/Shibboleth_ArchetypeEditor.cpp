@@ -100,7 +100,7 @@ SHIB_REFLECTION_CLASS_DEFINE_BEGIN(ArchetypeEditor)
 	.func(
 		"onFileSelected",
 		&ArchetypeEditor::onFileSelected,
-		GlobalMessageAttribute<ArchetypeEditor, EditorFileSelectedMessage>(&ArchetypeEditor::_remover)
+		GlobalMessageAttribute<ArchetypeEditor, EditorFileSelectedMessage>()
 	)
 
 SHIB_REFLECTION_CLASS_DEFINE_END(ArchetypeEditor)
