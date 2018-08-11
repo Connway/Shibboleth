@@ -145,7 +145,15 @@ ArchetypeEditor::~ArchetypeEditor(void)
 
 void ArchetypeEditor::onFileSelected(const EditorFileSelectedMessage& message)
 {
-	GAFF_REF(message);
+	const U8String& path = message.getPath();
+
+	if (Gaff::CheckExtension(path.c_str(), path.size(), ".archetype")) {
+		return;
+	}
+
+	//save();
+	//_path = path;
+	//load();
 }
 
 void ArchetypeEditor::onRemoveComponents(wxListEvent& event)

@@ -68,15 +68,15 @@ void Editor::removeEditorWindow(const Gaff::IReflectionObject* window)
 	}
 }
 
-void Editor::openEditorWindow(const char* file_extension)
+void Editor::openEditorWindow(const char* file_path)
 {
-	const size_t size = eastl::CharStrlen(file_extension);
+	const size_t size = eastl::CharStrlen(file_path);
 
 	for (const Gaff::IReflectionObject* window : _editor_windows) {
 		const EditorFileHandlerAttribute* const attr = window->getReflectionDefinition().getClassAttr<EditorFileHandlerAttribute>();
 
 		// Already open.
-		if (attr && !eastl::Compare(file_extension, attr->getExtension(), size)) {
+		if (attr && Gaff::CheckExtension(file_path, size, attr->getExtension())) {
 			return;
 		}
 	}
@@ -84,7 +84,9 @@ void Editor::openEditorWindow(const char* file_extension)
 	const auto result = GetApp().getReflectionManager().getReflectionWithAttribute<EditorFileHandlerAttribute>();
 
 	for (const Gaff::IReflectionDefinition* ref_def : result) {
-		if (!eastl::Compare(file_extension, ref_def->getClassAttr<EditorFileHandlerAttribute>()->getExtension(), size)) {
+		const EditorFileHandlerAttribute* const attr = ref_def->getClassAttr<EditorFileHandlerAttribute>();
+
+		if (Gaff::CheckExtension(file_path, size, attr->getExtension())) {
 			// Found the window type. Now create it.
 			_frame->spawnWindow(ref_def);
 			break;
