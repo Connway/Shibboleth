@@ -23,6 +23,7 @@ THE SOFTWARE.
 #pragma once
 
 #include "Gaff_DefaultAllocator.h"
+#include <Gaff_Assert.h>
 #include <EASTL/string.h>
 
 NS_GAFF
@@ -132,6 +133,38 @@ template <class T>
 size_t FindLastOf(const T* string, T character)
 {
 	return FindLastOf(string, eastl::CharStrlen(string), character);
+}
+
+template <class T>
+bool CheckExtension(const T* file_name, size_t file_name_size, const T* extension, size_t extension_size)
+{
+	GAFF_ASSERT(file_name && extension);
+	return file_name_size > extension_size && !eastl::Compare(file_name + file_name_size - extension_size, extension, extension_size);
+}
+
+template <class T>
+bool CheckExtension(const T* file_name, size_t file_name_size, const T* extension)
+{
+	const size_t extension_size = eastl::CharStrlen(extension);
+	GAFF_ASSERT(file_name && extension && extension_size);
+	return CheckExtension(file_name, file_name_size, extension, extension_size);
+}
+
+template <class T>
+bool CheckExtension(const T* file_name, const T* extension, size_t extension_size)
+{
+	const size_t file_name_size = eastl::CharStrlen(file_name);
+	GAFF_ASSERT(file_name && extension && file_name_size);
+	return CheckExtension(file_name, file_name_size, extension, extension_size);
+}
+
+template <class T>
+bool CheckExtension(const T* file_name, const T* extension)
+{
+	const size_t file_name_size = eastl::CharStrlen(file_name);
+	const size_t extension_size = eastl::CharStrlen(extension);
+	GAFF_ASSERT(file_name && extension && file_name_size && extension_size);
+	return CheckExtension(file_name, file_name_size, extension, extension_size);
 }
 
 NS_END

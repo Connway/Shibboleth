@@ -49,14 +49,16 @@ NS_GAFF
 
 bool File::CheckExtension(const char* file_name, size_t file_name_size, const char* extension, size_t extension_size)
 {
-	GAFF_ASSERT(file_name && extension && file_name_size > extension_size);
-	return strcmp(file_name + file_name_size - extension_size, extension) == 0;
+	GAFF_ASSERT(file_name && extension);
+	return file_name_size > extension_size && !eastl::Compare(file_name + file_name_size - extension_size, extension, extension_size);
 }
 
 bool File::CheckExtension(const char* file_name, const char* extension)
 {
-	GAFF_ASSERT(file_name && extension && strlen(file_name) && strlen(extension));
-	return CheckExtension(file_name, strlen(file_name), extension, strlen(extension));
+	const size_t file_name_size = eastl::CharStrlen(file_name);
+	const size_t extension_size = eastl::CharStrlen(extension);
+	GAFF_ASSERT(file_name && extension && file_name_size && extension_size);
+	return CheckExtension(file_name, file_name_size, extension, extension_size);
 }
 
 

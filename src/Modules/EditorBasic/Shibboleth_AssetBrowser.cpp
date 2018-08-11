@@ -113,14 +113,8 @@ void AssetBrowser::onFileActivated(wxTreeEvent& event)
 		return;
 	}
 
-	const size_t index = data->m_path.find_last_of('.');
-
-	if (index == wxNOT_FOUND) {
-		return;
-	}
-
 	// Open a window for the editor for this file type if not already open and send the selection message.
-	GetApp().getEditor()->openEditorWindow(data->m_path.c_str() + index);
+	GetApp().getEditor()->openEditorWindow(data->m_path.c_str());
 	GetApp().getBroadcaster().broadcastSync(EditorFileSelectedMessage(data->m_path.c_str()));
 }
 
