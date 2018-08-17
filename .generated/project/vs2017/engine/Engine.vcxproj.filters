@@ -27,9 +27,6 @@
     <ClInclude Include="..\..\..\..\src\Engine\Engine\include\Shibboleth_EnumReflection.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\src\Engine\Engine\include\Shibboleth_Function.h">
-      <Filter>include</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\..\src\Engine\Engine\include\Shibboleth_HashString.h">
       <Filter>include</Filter>
     </ClInclude>

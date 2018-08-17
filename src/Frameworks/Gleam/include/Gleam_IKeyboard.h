@@ -47,22 +47,26 @@ public:
 	bool isKeyboard(void) const { return true; }
 	bool isMouse(void) const { return false; }
 
-	void addCharacterHandler(const CharacterHandler& handler)
+	int32_t addCharacterHandler(const CharacterHandler& handler)
 	{
-		_character_handlers.emplace_back(handler);
+		const int32_t id = _next_id++;
+		_character_handlers.emplace(id, handler);
+		return id;
 	}
 
-	void addCharacterHandler(CharacterHandler&& handler)
+	int32_t addCharacterHandler(CharacterHandler&& handler)
 	{
-		_character_handlers.emplace_back(std::move(handler));
+		const int32_t id = _next_id++;
+		_character_handlers.emplace(id, std::move(handler));
+		return id;
 	}
 
-	bool removeCharacterHandler(const CharacterHandler& handler)
+	bool removeCharacterHandler(int32_t id)
 	{
-		auto it = Gaff::Find(_character_handlers, handler);
+		const auto it = _character_handlers.find(id);
 
 		if (it != _character_handlers.end()) {
-			_character_handlers.erase_unsorted(it);
+			_character_handlers.erase(it);
 			return true;
 		}
 
@@ -70,7 +74,10 @@ public:
 	}
 
 protected:
-	Vector<CharacterHandler> _character_handlers;
+	VectorMap<int32_t, CharacterHandler> _character_handlers;
+
+private:
+	int32_t _next_id = 0;
 };
 
 NS_END

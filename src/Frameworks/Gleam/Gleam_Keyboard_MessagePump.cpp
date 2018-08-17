@@ -53,9 +53,9 @@ bool KeyboardMP::init(IWindow& window, bool no_windows_key)
 
 bool KeyboardMP::init(IWindow& window)
 {
-	auto cb = Gleam::MemberFunc(this, &KeyboardMP::handleMessage);
+	auto cb = Gaff::MemberFunc(this, &KeyboardMP::handleMessage);
 	_window = &window;
-	_window->addWindowMessageHandler(cb);
+	_id = _window->addWindowMessageHandler(cb);
 
 	return RegisterForRawInput(RAW_INPUT_KEYBOARD, window);
 }
@@ -71,8 +71,8 @@ bool KeyboardMP::init(bool no_windows_key)
 
 bool KeyboardMP::init(void)
 {
-	auto cb = MemberFunc(this, &KeyboardMP::handleMessage);
-	Window::AddGlobalMessageHandler(cb);
+	auto cb = Gaff::MemberFunc(this, &KeyboardMP::handleMessage);
+	_id = Window::AddGlobalMessageHandler(cb);
 
 	_flags |= KMP_GLOBAL_HANDLER;
 	return true;
@@ -80,14 +80,14 @@ bool KeyboardMP::init(void)
 
 void KeyboardMP::destroy(void)
 {
-	auto cb = MemberFunc(this, &KeyboardMP::handleMessage);
+	auto cb = Gaff::MemberFunc(this, &KeyboardMP::handleMessage);
 
 	if (_window) {
-		_window->removeWindowMessageHandler(cb);
+		_window->removeWindowMessageHandler(_id);
 		_window = nullptr;
 
 	} else {
-		Window::RemoveGlobalMessageHandler(cb);
+		Window::RemoveGlobalMessageHandler(_id);
 	}
 
 	_flags = 0;
@@ -98,8 +98,9 @@ void KeyboardMP::update(void)
 	if (areRepeatsAllowed()) {
 		for (int32_t i = 0; i < 256; ++i) {
 			uint8_t curr = _curr_state[i];
+			const int32_t size = static_cast<int32_t>(_input_handlers.size());
 
-			for (size_t j = 0; j < _input_handlers.size(); ++j) {
+			for (int32_t j = 0; j < size; ++j) {
 				_input_handlers[j](this, i, static_cast<float>(curr));
 			}
 		}
@@ -110,7 +111,9 @@ void KeyboardMP::update(void)
 			uint8_t prev = _prev_state[i];
 
 			if (curr != prev) {
-				for (size_t j = 0; j < _input_handlers.size(); ++j) {
+				const int32_t size = static_cast<int32_t>(_input_handlers.size());
+
+				for (int32_t j = 0; j < size; ++j) {
 					_input_handlers[j](this, i, static_cast<float>(curr));
 				}
 			}
@@ -175,12 +178,15 @@ bool KeyboardMP::handleMessage(const AnyMessage& message)
 			_curr_state[message.key_char.key] = false;
 			return true;
 
-		case IN_CHARACTER:
-			for (size_t i = 0; i < _character_handlers.size(); ++i) {
+		case IN_CHARACTER: {
+			const int32_t size = static_cast<int32_t>(_character_handlers.size());
+
+			for (int32_t i = 0; i < size; ++i) {
 				_character_handlers[i](this, message.key_char.character);
 			}
 
 			return true;
+		}
 
 		// To get rid of pesky "case not handled" warnings in GCC
 		default:

@@ -430,35 +430,41 @@ void Object::updateTransforms(void)
 	}
 }
 
-void Object::registerForLocalDirtyCallback(const DirtyCallback& callback, uint64_t user_data)
+int32_t Object::registerForLocalDirtyCallback(const DirtyCallback& callback)
 {
 	std::lock_guard<std::mutex> lock(_local_cb_lock);
-	_local_callbacks.emplace_back(callback, user_data);
+	const int32_t id = _next_local_id++;
+	_local_callbacks.emplace(id, callback);
+	return id;
 }
 
-void Object::unregisterForLocalDirtyCallback(const DirtyCallback& callback)
+int32_t Object::registerForLocalDirtyCallback(DirtyCallback&& callback)
+{
+	std::lock_guard<std::mutex> lock(_local_cb_lock);
+	const int32_t id = _next_local_id++;
+	_local_callbacks.emplace(id, std::move(callback));
+	return id;
+}
+
+bool Object::unregisterForLocalDirtyCallback(int32_t id)
 {
 	std::lock_guard<std::mutex> lock(_local_cb_lock);
 
-	auto it = Gaff::Find(
-		_local_callbacks,
-		callback,
-		[](const eastl::pair<DirtyCallback, uint64_t>& left, const DirtyCallback& right) -> bool
-		{
-			return left.first == right;
-		}
-	);
+	const auto it = _local_callbacks.find(id);
 
 	if (it != _local_callbacks.end()) {
-		_local_callbacks.erase_unsorted(it);
+		_local_callbacks.erase(it);
+		return true;
 	}
+
+	return false;
 }
 
 // This should occur in a non-thread contention situation.
 void Object::notifyLocalDirtyCallbacks(void)
 {
 	for (auto it = _local_callbacks.begin(); it != _local_callbacks.end(); ++it) {
-		it->first(this, it->second);
+		it->second(this);
 	}
 
 	// If we are marked as not-dirty, then we are a child of another object that has been updated.
@@ -471,35 +477,41 @@ void Object::notifyLocalDirtyCallbacks(void)
 	clearDirty();
 }
 
-void Object::registerForWorldDirtyCallback(const DirtyCallback& callback, uint64_t user_data)
+int32_t Object::registerForWorldDirtyCallback(const DirtyCallback& callback)
 {
 	std::lock_guard<std::mutex> lock(_world_cb_lock);
-	_world_callbacks.emplace_back(callback, user_data);
+	const int32_t id = _next_world_id++;
+	_world_callbacks.emplace(id, callback);
+	return id;
 }
 
-void Object::unregisterForWorldDirtyCallback(const DirtyCallback& callback)
+int32_t Object::registerForWorldDirtyCallback(DirtyCallback&& callback)
+{
+	std::lock_guard<std::mutex> lock(_world_cb_lock);
+	const int32_t id = _next_world_id++;
+	_world_callbacks.emplace(id, std::move(callback));
+	return id;
+}
+
+bool Object::unregisterForWorldDirtyCallback(int32_t id)
 {
 	std::lock_guard<std::mutex> lock(_world_cb_lock);
 
-	auto it = Gaff::Find(
-		_world_callbacks,
-		callback,
-		[](const eastl::pair<DirtyCallback, uint64_t>& left, const DirtyCallback& right) -> bool
-		{
-			return left.first == right;
-		}
-	);
+	const auto it = _world_callbacks.find(id);
 
 	if (it != _world_callbacks.end()) {
-		_world_callbacks.erase_unsorted(it);
+		_world_callbacks.erase(it);
+		return true;
 	}
+
+	return false;
 }
 
 // This should occur in a non-thread contention situation.
 void Object::notifyWorldDirtyCallbacks(void)
 {
 	for (auto it = _world_callbacks.begin(); it != _world_callbacks.end(); ++it) {
-		it->first(this, it->second);
+		it->second(this);
 	}
 
 	clearDirty();

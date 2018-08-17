@@ -61,6 +61,7 @@ project "EditorBasicModule"
 	{
 		"include",
 		"../../Dependencies/EASTL/include",
+		"../../Dependencies/rapidjson",
 		"../../Frameworks/Gaff/include",
 		"../../Frameworks/Gleam/include",
 		"../../Engine/Editor/include",

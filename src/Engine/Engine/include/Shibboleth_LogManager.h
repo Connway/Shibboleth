@@ -53,8 +53,9 @@ public:
 	bool init(const char* log_dir);
 	void destroy(void);
 
-	void addLogCallback(const LogCallback& callback);
-	void removeLogCallback(const LogCallback& callback);
+	int32_t addLogCallback(const LogCallback& callback);
+	int32_t addLogCallback(LogCallback&& callback);
+	bool removeLogCallback(int32_t id);
 	void notifyLogCallbacks(const char* message, LogType type);
 
 	void addChannel(Gaff::HashStringTemp32 channel, const char* file);
@@ -78,8 +79,10 @@ private:
 	std::condition_variable _log_event;
 
 	VectorMap<HashString32, Gaff::File> _channels;
-	Vector<LogCallback> _log_callbacks;
+	VectorMap<int32_t, LogCallback> _log_callbacks;
 	Queue<LogTask> _logs;
+
+	int32_t _next_id = 0;
 
 	std::mutex _log_condition_lock;
 	std::mutex _log_callback_lock;

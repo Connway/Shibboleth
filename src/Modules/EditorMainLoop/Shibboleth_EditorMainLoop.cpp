@@ -43,7 +43,7 @@ bool EditorMainLoop::init(void)
 
 	// Initialize to the main graphics adapter.
 	if (!rd->init(0)) {
-		// Log error
+		// TODO: Log error
 		SHIB_FREET(rd, GetAllocator());
 		return false;
 	}

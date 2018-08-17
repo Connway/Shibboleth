@@ -117,7 +117,7 @@ public:
 		return component;
 	}
 
-	using DirtyCallback = eastl::function<void (Object*, uint64_t)>;
+	using DirtyCallback = eastl::function<void (Object*)>;
 
 	Object(int32_t id);
 	~Object(void);
@@ -173,12 +173,14 @@ public:
 	void removeChildren(void);
 	void updateTransforms(void);
 
-	void registerForLocalDirtyCallback(const DirtyCallback& callback, uint64_t user_data = 0);
-	void unregisterForLocalDirtyCallback(const DirtyCallback& callback);
+	int32_t registerForLocalDirtyCallback(const DirtyCallback& callback);
+	int32_t registerForLocalDirtyCallback(DirtyCallback&& callback);
+	bool unregisterForLocalDirtyCallback(int32_t id);
 	void notifyLocalDirtyCallbacks(void);
 
-	void registerForWorldDirtyCallback(const DirtyCallback& callback, uint64_t user_data = 0);
-	void unregisterForWorldDirtyCallback(const DirtyCallback& callback);
+	int32_t registerForWorldDirtyCallback(const DirtyCallback& callback);
+	int32_t registerForWorldDirtyCallback(DirtyCallback&& callback);
+	bool unregisterForWorldDirtyCallback(int32_t id);
 	void notifyWorldDirtyCallbacks(void);
 
 	bool isDirty(void) const;
@@ -194,8 +196,8 @@ private:
 	Gleam::AABB _local_aabb;
 	Gleam::AABB _world_aabb;
 
-	Vector< eastl::pair<DirtyCallback, uint64_t> > _local_callbacks;
-	Vector< eastl::pair<DirtyCallback, uint64_t> > _world_callbacks;
+	VectorMap< int32_t, DirtyCallback > _local_callbacks;
+	VectorMap< int32_t, DirtyCallback > _world_callbacks;
 	std::mutex _local_cb_lock;
 	std::mutex _world_cb_lock;
 
@@ -209,8 +211,10 @@ private:
 	//IObjectManager& _obj_mgr;
 
 	int32_t _id;
-
 	int32_t _flags;
+
+	int32_t _next_local_id = 0;
+	int32_t _next_world_id = 0;
 
 	bool createComponents(const Gaff::ISerializeReader& reader);
 	void markDirty(void);

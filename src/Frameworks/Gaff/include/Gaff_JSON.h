@@ -101,8 +101,8 @@ public:
 	bool parse(const char* input, const JSON& schema_object);
 	bool parse(const char* input, const char* schema_input);
 	bool parse(const char* input);
-	bool dumpToFile(const char* filename);
-	char* dump(void);
+	bool dumpToFile(const char* filename) const;
+	const char* dump(void);
 
 	bool isObject(void) const;
 	bool isArray(void) const;

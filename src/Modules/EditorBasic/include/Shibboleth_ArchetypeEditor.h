@@ -60,7 +60,7 @@ private:
 	wxEditableListBox* _archetype_ui = nullptr;
 
 	ECSArchetype _archetype;
-	BroadcastRemover _remover;
+	U8String _path;
 
 	void onFileSelected(const EditorFileSelectedMessage& message);
 
@@ -72,6 +72,9 @@ private:
 	void removeItem(RefDefItem* item);
 	void addItem(RefDefItem* item);
 	void initComponentList(void);
+
+	void save(void);
+	void load(void);
 
 	friend class ArcheTypeEditorDropTarget;
 

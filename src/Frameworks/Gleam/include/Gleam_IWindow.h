@@ -46,9 +46,9 @@ public:
 
 	virtual void destroy(void) = 0;
 
-	virtual void addWindowMessageHandler(const MessageHandler& callback) = 0;
-	virtual void addWindowMessageHandler(MessageHandler&& callback) = 0;
-	virtual bool removeWindowMessageHandler(const MessageHandler& callback) = 0;
+	virtual int32_t addWindowMessageHandler(const MessageHandler& callback) = 0;
+	virtual int32_t addWindowMessageHandler(MessageHandler&& callback) = 0;
+	virtual bool removeWindowMessageHandler(int32_t id) = 0;
 
 	virtual void showCursor(bool show) = 0;
 	virtual void containCursor(bool contain) = 0;

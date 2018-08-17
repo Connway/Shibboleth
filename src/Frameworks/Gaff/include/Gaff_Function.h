@@ -70,25 +70,25 @@ private:
 };
 
 
-template <class Fn, class T, class Allocator = DefaultAllocator>
-eastl::function<Fn> Func(T functor, const Allocator& allocator = Allocator())
+template <class Fn, class T>
+eastl::function<Fn> Func(T functor)
 {
 	static_assert(std::is_function<Fn>::value, "Gaff::Func requires template argument Func to be a function type!");
-	return eastl::function<Fn>(eastl::allocator_arg, allocator, functor);
+	return eastl::function<Fn>(functor);
 }
 
-template <class T, class Allocator, class Ret, class... Args>
-eastl::function<Ret (Args...)> MemberFunc(const T* obj, Ret (T::*func)(Args...) const, const Allocator& allocator = Allocator())
+template <class T, class Ret, class... Args>
+eastl::function<Ret (Args...)> MemberFunc(const T* obj, Ret (T::*func)(Args...) const)
 {
 	ConstMemFuncBinder<T, Ret, Args...> mem_func_binder(obj, func);
-	return Func<Ret (Args...)>(mem_func_binder, allocator);
+	return Func<Ret (Args...)>(mem_func_binder);
 }
 
-template <class T, class Allocator, class Ret, class... Args>
-eastl::function<Ret (Args...)> MemberFunc(T* obj, Ret (T::*func)(Args...), const Allocator& allocator = Allocator())
+template <class T, class Ret, class... Args>
+eastl::function<Ret (Args...)> MemberFunc(T* obj, Ret (T::*func)(Args...))
 {
 	MemFuncBinder<T, Ret, Args...> mem_func_binder(obj, func);
-	return Func<Ret (Args...)>(mem_func_binder, allocator);
+	return Func<Ret (Args...)>(mem_func_binder);
 }
 
 NS_END

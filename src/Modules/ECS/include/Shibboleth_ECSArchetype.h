@@ -23,6 +23,7 @@ THE SOFTWARE.
 #pragma once
 
 #include <Shibboleth_Vector.h>
+#include <Gaff_JSON.h>
 
 NS_GAFF
 	class IReflectionDefinition;
@@ -40,6 +41,8 @@ public:
 	void remove(int32_t index);
 
 	int32_t size(void) const;
+
+	Gaff::JSON toJSON(void) const;
 
 private:
 	Vector<const Gaff::IReflectionDefinition*> _vars;

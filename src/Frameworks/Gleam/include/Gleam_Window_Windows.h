@@ -34,9 +34,9 @@ NS_GLEAM
 class Window : public IWindow
 {
 public:
-	static void AddGlobalMessageHandler(const MessageHandler& callback);
-	static void AddGlobalMessageHandler(MessageHandler&& callback);
-	static bool RemoveGlobalMessageHandler(const MessageHandler& callback);
+	static int32_t AddGlobalMessageHandler(const MessageHandler& callback);
+	static int32_t AddGlobalMessageHandler(MessageHandler&& callback);
+	static bool RemoveGlobalMessageHandler(int32_t id);
 
 	static void HandleWindowMessages(void);
 
@@ -50,9 +50,9 @@ public:
 				int32_t pos_x = 0, int32_t pos_y = 0, const char* compat = nullptr) override;
 	void destroy(void) override;
 
-	void addWindowMessageHandler(const MessageHandler& callback) override;
-	void addWindowMessageHandler(MessageHandler&& callback) override;
-	bool removeWindowMessageHandler(const MessageHandler& callback) override;
+	int32_t addWindowMessageHandler(const MessageHandler& callback) override;
+	int32_t addWindowMessageHandler(MessageHandler&& callback) override;
+	bool removeWindowMessageHandler(int32_t id) override;
 
 	void showCursor(bool show) override;
 	void containCursor(bool contain) override;
@@ -94,7 +94,7 @@ private:
 	HWND _hwnd = nullptr;
 	bool _owns_window = true;
 
-	Vector<MessageHandler> _window_callbacks;
+	VectorMap<int32_t, MessageHandler> _window_callbacks;
 
 	static VectorMap<uint16_t, KeyCode> g_right_keys;
 	static VectorMap<uint16_t, KeyCode> g_left_keys;

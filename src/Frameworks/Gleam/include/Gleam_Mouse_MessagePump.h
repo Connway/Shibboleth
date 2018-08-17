@@ -64,6 +64,7 @@ private:
 	int32_t _flags;
 
 	IWindow* _window;
+	int32_t _id;
 
 	bool handleMessage(const AnyMessage& message);
 };

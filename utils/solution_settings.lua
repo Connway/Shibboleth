@@ -34,7 +34,11 @@ filter { "action:vs*" }
 
 filter {}
 
-defines { "UNICODE", "_UNICODE" }
+defines
+{
+	"UNICODE", "_UNICODE",
+	"EA_COMPILER_NO_RTTI"
+}
 
 -- filter { "platforms:x86" }
 -- 	architecture "x32"
