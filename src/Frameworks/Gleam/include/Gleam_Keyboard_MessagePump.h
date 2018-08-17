@@ -60,6 +60,7 @@ private:
 	char _flags;
 
 	IWindow* _window;
+	int32_t _id;
 };
 
 NS_END

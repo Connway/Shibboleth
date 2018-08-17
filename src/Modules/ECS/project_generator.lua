@@ -20,6 +20,7 @@ project "ECS"
 		"../../Engine/Memory/include",
 		"../../Engine/Engine/include",
 		"../../Dependencies/EASTL/include",
+		"../../Dependencies/rapidjson",
 		"../../Dependencies/glm",
 		"../../Frameworks/Gaff/include",
 		"../../Frameworks/Gleam/include"
@@ -49,6 +50,7 @@ project "ECSModule"
 		"../../Engine/Memory/include",
 		"../../Engine/Engine/include",
 		"../../Dependencies/EASTL/include",
+		"../../Dependencies/rapidjson",
 		"../../Dependencies/glm",
 		"../../Frameworks/Gaff/include",
 		"../../Frameworks/Gleam/include"

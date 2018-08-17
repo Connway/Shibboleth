@@ -117,7 +117,7 @@
     <ClCompile>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level4</WarningLevel>
-      <PreprocessorDefinitions>UNICODE;_UNICODE;_DEBUG;DEBUG;WIN32;_WINDOWS;WIN64;_CRT_SECURE_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>UNICODE;_UNICODE;EA_COMPILER_NO_RTTI;_DEBUG;DEBUG;WIN32;_WINDOWS;WIN64;_CRT_SECURE_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>..\..\..\..\src\Dependencies\EASTL\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
@@ -135,7 +135,7 @@
     <ClCompile>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level4</WarningLevel>
-      <PreprocessorDefinitions>UNICODE;_UNICODE;NDEBUG;WIN32;_WINDOWS;WIN64;_CRT_SECURE_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>UNICODE;_UNICODE;EA_COMPILER_NO_RTTI;NDEBUG;WIN32;_WINDOWS;WIN64;_CRT_SECURE_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>..\..\..\..\src\Dependencies\EASTL\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <Optimization>MaxSpeed</Optimization>
@@ -159,7 +159,7 @@
     <ClCompile>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level4</WarningLevel>
-      <PreprocessorDefinitions>UNICODE;_UNICODE;NDEBUG;WIN32;_WINDOWS;WIN64;_CRT_SECURE_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>UNICODE;_UNICODE;EA_COMPILER_NO_RTTI;NDEBUG;WIN32;_WINDOWS;WIN64;_CRT_SECURE_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>..\..\..\..\src\Dependencies\EASTL\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <Optimization>MaxSpeed</Optimization>
@@ -183,7 +183,7 @@
     <ClCompile>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level4</WarningLevel>
-      <PreprocessorDefinitions>UNICODE;_UNICODE;NDEBUG;SHIB_PROFILE;WIN32;_WINDOWS;WIN64;_CRT_SECURE_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>UNICODE;_UNICODE;EA_COMPILER_NO_RTTI;NDEBUG;SHIB_PROFILE;WIN32;_WINDOWS;WIN64;_CRT_SECURE_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>..\..\..\..\src\Dependencies\EASTL\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <Optimization>MaxSpeed</Optimization>
@@ -207,7 +207,7 @@
     <ClCompile>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level4</WarningLevel>
-      <PreprocessorDefinitions>UNICODE;_UNICODE;_DEBUG;DEBUG;WIN32;_WINDOWS;WIN64;_CRT_SECURE_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>UNICODE;_UNICODE;EA_COMPILER_NO_RTTI;_DEBUG;DEBUG;WIN32;_WINDOWS;WIN64;_CRT_SECURE_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>..\..\..\..\src\Dependencies\EASTL\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <Optimization>MaxSpeed</Optimization>
@@ -250,19 +250,20 @@
     <ClInclude Include="..\..\..\..\src\Dependencies\EASTL\include\EASTL\bonus\call_traits.h" />
     <ClInclude Include="..\..\..\..\src\Dependencies\EASTL\include\EASTL\bonus\compressed_pair.h" />
     <ClInclude Include="..\..\..\..\src\Dependencies\EASTL\include\EASTL\bonus\fixed_ring_buffer.h" />
-    <ClInclude Include="..\..\..\..\src\Dependencies\EASTL\include\EASTL\bonus\fixed_string_abstract.h" />
+    <ClInclude Include="..\..\..\..\src\Dependencies\EASTL\include\EASTL\bonus\fixed_tuple_vector.h" />
     <ClInclude Include="..\..\..\..\src\Dependencies\EASTL\include\EASTL\bonus\intrusive_sdlist.h" />
     <ClInclude Include="..\..\..\..\src\Dependencies\EASTL\include\EASTL\bonus\intrusive_slist.h" />
     <ClInclude Include="..\..\..\..\src\Dependencies\EASTL\include\EASTL\bonus\list_map.h" />
     <ClInclude Include="..\..\..\..\src\Dependencies\EASTL\include\EASTL\bonus\ring_buffer.h" />
     <ClInclude Include="..\..\..\..\src\Dependencies\EASTL\include\EASTL\bonus\sort_extra.h" />
     <ClInclude Include="..\..\..\..\src\Dependencies\EASTL\include\EASTL\bonus\sparse_matrix.h" />
-    <ClInclude Include="..\..\..\..\src\Dependencies\EASTL\include\EASTL\bonus\string_abstract.h" />
+    <ClInclude Include="..\..\..\..\src\Dependencies\EASTL\include\EASTL\bonus\tuple_vector.h" />
     <ClInclude Include="..\..\..\..\src\Dependencies\EASTL\include\EASTL\chrono.h" />
     <ClInclude Include="..\..\..\..\src\Dependencies\EASTL\include\EASTL\core_allocator.h" />
     <ClInclude Include="..\..\..\..\src\Dependencies\EASTL\include\EASTL\core_allocator_adapter.h" />
     <ClInclude Include="..\..\..\..\src\Dependencies\EASTL\include\EASTL\deque.h" />
     <ClInclude Include="..\..\..\..\src\Dependencies\EASTL\include\EASTL\fixed_allocator.h" />
+    <ClInclude Include="..\..\..\..\src\Dependencies\EASTL\include\EASTL\fixed_function.h" />
     <ClInclude Include="..\..\..\..\src\Dependencies\EASTL\include\EASTL\fixed_hash_map.h" />
     <ClInclude Include="..\..\..\..\src\Dependencies\EASTL\include\EASTL\fixed_hash_set.h" />
     <ClInclude Include="..\..\..\..\src\Dependencies\EASTL\include\EASTL\fixed_list.h" />
@@ -286,6 +287,8 @@
     <ClInclude Include="..\..\..\..\src\Dependencies\EASTL\include\EASTL\internal\fill_help.h" />
     <ClInclude Include="..\..\..\..\src\Dependencies\EASTL\include\EASTL\internal\fixed_pool.h" />
     <ClInclude Include="..\..\..\..\src\Dependencies\EASTL\include\EASTL\internal\function.h" />
+    <ClInclude Include="..\..\..\..\src\Dependencies\EASTL\include\EASTL\internal\function_detail.h" />
+    <ClInclude Include="..\..\..\..\src\Dependencies\EASTL\include\EASTL\internal\function_help.h" />
     <ClInclude Include="..\..\..\..\src\Dependencies\EASTL\include\EASTL\internal\functional_base.h" />
     <ClInclude Include="..\..\..\..\src\Dependencies\EASTL\include\EASTL\internal\generic_iterator.h" />
     <ClInclude Include="..\..\..\..\src\Dependencies\EASTL\include\EASTL\internal\hashtable.h" />
@@ -293,8 +296,11 @@
     <ClInclude Include="..\..\..\..\src\Dependencies\EASTL\include\EASTL\internal\integer_sequence.h" />
     <ClInclude Include="..\..\..\..\src\Dependencies\EASTL\include\EASTL\internal\intrusive_hashtable.h" />
     <ClInclude Include="..\..\..\..\src\Dependencies\EASTL\include\EASTL\internal\mem_fn.h" />
+    <ClInclude Include="..\..\..\..\src\Dependencies\EASTL\include\EASTL\internal\memory_base.h" />
+    <ClInclude Include="..\..\..\..\src\Dependencies\EASTL\include\EASTL\internal\meta.h" />
     <ClInclude Include="..\..\..\..\src\Dependencies\EASTL\include\EASTL\internal\move_help.h" />
     <ClInclude Include="..\..\..\..\src\Dependencies\EASTL\include\EASTL\internal\pair_fwd_decls.h" />
+    <ClInclude Include="..\..\..\..\src\Dependencies\EASTL\include\EASTL\internal\piecewise_construct_t.h" />
     <ClInclude Include="..\..\..\..\src\Dependencies\EASTL\include\EASTL\internal\red_black_tree.h" />
     <ClInclude Include="..\..\..\..\src\Dependencies\EASTL\include\EASTL\internal\smart_ptr.h" />
     <ClInclude Include="..\..\..\..\src\Dependencies\EASTL\include\EASTL\internal\thread_support.h" />
@@ -314,6 +320,7 @@
     <ClInclude Include="..\..\..\..\src\Dependencies\EASTL\include\EASTL\list.h" />
     <ClInclude Include="..\..\..\..\src\Dependencies\EASTL\include\EASTL\map.h" />
     <ClInclude Include="..\..\..\..\src\Dependencies\EASTL\include\EASTL\memory.h" />
+    <ClInclude Include="..\..\..\..\src\Dependencies\EASTL\include\EASTL\meta.h" />
     <ClInclude Include="..\..\..\..\src\Dependencies\EASTL\include\EASTL\numeric.h" />
     <ClInclude Include="..\..\..\..\src\Dependencies\EASTL\include\EASTL\numeric_limits.h" />
     <ClInclude Include="..\..\..\..\src\Dependencies\EASTL\include\EASTL\optional.h" />
@@ -330,6 +337,7 @@
     <ClInclude Include="..\..\..\..\src\Dependencies\EASTL\include\EASTL\shared_ptr.h" />
     <ClInclude Include="..\..\..\..\src\Dependencies\EASTL\include\EASTL\slist.h" />
     <ClInclude Include="..\..\..\..\src\Dependencies\EASTL\include\EASTL\sort.h" />
+    <ClInclude Include="..\..\..\..\src\Dependencies\EASTL\include\EASTL\span.h" />
     <ClInclude Include="..\..\..\..\src\Dependencies\EASTL\include\EASTL\stack.h" />
     <ClInclude Include="..\..\..\..\src\Dependencies\EASTL\include\EASTL\string.h" />
     <ClInclude Include="..\..\..\..\src\Dependencies\EASTL\include\EASTL\string_hash_map.h" />
@@ -341,6 +349,7 @@
     <ClInclude Include="..\..\..\..\src\Dependencies\EASTL\include\EASTL\unordered_map.h" />
     <ClInclude Include="..\..\..\..\src\Dependencies\EASTL\include\EASTL\unordered_set.h" />
     <ClInclude Include="..\..\..\..\src\Dependencies\EASTL\include\EASTL\utility.h" />
+    <ClInclude Include="..\..\..\..\src\Dependencies\EASTL\include\EASTL\variant.h" />
     <ClInclude Include="..\..\..\..\src\Dependencies\EASTL\include\EASTL\vector.h" />
     <ClInclude Include="..\..\..\..\src\Dependencies\EASTL\include\EASTL\vector_map.h" />
     <ClInclude Include="..\..\..\..\src\Dependencies\EASTL\include\EASTL\vector_multimap.h" />
@@ -356,6 +365,9 @@
     <ClInclude Include="..\..\..\..\src\Dependencies\EASTL\include\EAStdC\EAStopwatch.h" />
     <ClInclude Include="..\..\..\..\src\Dependencies\EASTL\include\EAStdC\EAString.h" />
     <ClInclude Include="..\..\..\..\src\Dependencies\EASTL\include\EAStdC\EATextUtil.h" />
+    <ClInclude Include="..\..\..\..\src\Dependencies\EASTL\include\EAThread\eathread.h" />
+    <ClInclude Include="..\..\..\..\src\Dependencies\EASTL\include\EAThread\eathread_atomic.h" />
+    <ClInclude Include="..\..\..\..\src\Dependencies\EASTL\include\EAThread\eathread_thread.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\..\src\Dependencies\EASTL\source\EAMemory.cpp" />

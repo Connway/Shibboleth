@@ -45,7 +45,7 @@ Component::~Component(void)
 //	const Gaff::JSON& schema = getSchema();
 //
 //	if (!schema.isNull() && !json.validate(schema)) {
-//		// log error
+//		// TODO: Log error
 //		return false;
 //	}
 //

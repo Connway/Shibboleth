@@ -44,17 +44,17 @@ bool MouseMP::init(IWindow& window)
 	memset(&_curr_data, 0, sizeof(MouseData));
 	memset(&_prev_data, 0, sizeof(MouseData));
 
-	auto cb = MemberFunc(this, &MouseMP::handleMessage);
+	auto cb = Gaff::MemberFunc(this, &MouseMP::handleMessage);
 	_window = &window;
-	_window->addWindowMessageHandler(cb);
+	_id = _window->addWindowMessageHandler(cb);
 
 	return RegisterForRawInput(RAW_INPUT_MOUSE, window);
 }
 
 bool MouseMP::init(void)
 {
-	auto cb = MemberFunc(this, &MouseMP::handleMessage);
-	Window::AddGlobalMessageHandler(cb);
+	auto cb = Gaff::MemberFunc(this, &MouseMP::handleMessage);
+	_id = Window::AddGlobalMessageHandler(cb);
 
 	_flags |= MMP_GLOBAL_HANDLER;
 	return true;
@@ -62,14 +62,14 @@ bool MouseMP::init(void)
 
 void MouseMP::destroy(void)
 {
-	auto cb = MemberFunc(this, &MouseMP::handleMessage);
+	auto cb = Gaff::MemberFunc(this, &MouseMP::handleMessage);
 
 	if (_window) {
-		_window->removeWindowMessageHandler(cb);
+		_window->removeWindowMessageHandler(_id);
 		_window = nullptr;
 
 	} else {
-		Window::RemoveGlobalMessageHandler(cb);
+		Window::RemoveGlobalMessageHandler(_id);
 	}
 
 	_flags = 0;

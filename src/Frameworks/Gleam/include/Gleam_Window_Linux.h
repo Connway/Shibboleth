@@ -23,9 +23,9 @@ THE SOFTWARE.
 #pragma once
 
 #include "Gleam_Window_Defines.h"
-#include "Gleam_Function.h"
 #include "Gleam_IWindow.h"
 #include "Gleam_Vector.h"
+#include <Gaff_Function.h>
 #include <X11/X.h>
 #include <X11/Xlib.h>
 #include <X11/extensions/Xrandr.h>

@@ -123,6 +123,9 @@ ArchetypeEditor::ArchetypeEditor(
 	_archetype_ui = new wxEditableListBox(splitter, wxID_ANY, "Archetype", wxDefaultPosition, wxDefaultSize, wxEL_ALLOW_DELETE);
 	_archetype_ui->SetDropTarget(new ArcheTypeEditorDropTarget(*this));
 
+	_ecs_components->Disable();
+	_archetype_ui->Disable();
+
 	splitter->SplitVertically(_archetype_ui, _ecs_components, 400);
 
 	wxBoxSizer* const sizer = new wxBoxSizer(wxHORIZONTAL);
@@ -148,12 +151,17 @@ void ArchetypeEditor::onFileSelected(const EditorFileSelectedMessage& message)
 	const U8String& path = message.getPath();
 
 	if (Gaff::CheckExtension(path.c_str(), path.size(), ".archetype")) {
+		_ecs_components->Disable();
+		_archetype_ui->Disable();
 		return;
 	}
 
-	//save();
-	//_path = path;
-	//load();
+	_ecs_components->Enable();
+	_archetype_ui->Enable();
+
+	save();
+	_path = path;
+	load();
 }
 
 void ArchetypeEditor::onRemoveComponents(wxListEvent& event)
@@ -278,6 +286,8 @@ void ArchetypeEditor::addItem(RefDefItem* item)
 
 	_archetype_ui->GetListCtrl()->InsertItem(list->GetItemCount(), ref_def->getReflectionInstance().getName());
 	_archetype.add(ref_def);
+
+	save();
 }
 
 void ArchetypeEditor::initComponentList(void)
@@ -314,6 +324,39 @@ void ArchetypeEditor::initComponentList(void)
 	}
 
 	_ecs_components->ExpandAll();
+}
+
+void ArchetypeEditor::save(void)
+{
+	const Gaff::JSON json = _archetype.toJSON();
+	json.dumpToFile(_path.c_str());
+}
+
+void ArchetypeEditor::load(void)
+{
+	Gaff::JSON json;
+	
+	if (!json.parseFile(_path.c_str())) {
+		return;
+	}
+
+	const ReflectionManager& refl_mgr = GetApp().getReflectionManager();
+	ECSArchetype archetype;
+
+	json.forEachInArray([&](int32_t, const Gaff::JSON& value) -> bool {
+		const Gaff::IReflectionDefinition* const ref_def = refl_mgr.getReflection(Gaff::FNV1aHash64String(value.getString()));
+
+		if (!ref_def) {
+			// TODO: Log error
+			return false;
+		}
+
+		archetype.add(ref_def);
+
+		return false;
+	});
+
+	_archetype = archetype;
 }
 
 NS_END

@@ -87,23 +87,30 @@ int32_t IResource::getRefCount(void) const
 	return _count;
 }
 
-void IResource::addLoadedCallback(const eastl::function<void (IResource*)>& callback)
+int32_t IResource::addLoadedCallback(const eastl::function<void (IResource*)>& callback)
 {
-	_callbacks.emplace_back(callback);
+	const int32_t id = _next_id++;
+	_callbacks.emplace(id, callback);
+	return id;
 }
 
-void IResource::addLoadedCallback(eastl::function<void (IResource*)>&& callback)
+int32_t IResource::addLoadedCallback(eastl::function<void (IResource*)>&& callback)
 {
-	_callbacks.emplace_back(std::move(callback));
+	const int32_t id = _next_id++;
+	_callbacks.emplace(id, std::move(callback));
+	return id;
 }
 
-void IResource::removeLoadedCallback(const eastl::function<void (IResource*)>& callback)
+bool IResource::removeLoadedCallback(int32_t id)
 {
-	auto it = Gaff::Find(_callbacks, callback);
+	const auto it = _callbacks.find(id);
 
 	if (it != _callbacks.end()) {
-		_callbacks.erase_unsorted(it);
+		_callbacks.erase(it);
+		return true;
 	}
+
+	return false;
 }
 
 const HashString64& IResource::getFilePath(void) const
@@ -160,7 +167,7 @@ void IResource::failed(void)
 void IResource::callCallbacks(void)
 {
 	for (auto& cb : _callbacks) {
-		cb(this);
+		cb.second(this);
 	}
 
 	_callbacks.clear();

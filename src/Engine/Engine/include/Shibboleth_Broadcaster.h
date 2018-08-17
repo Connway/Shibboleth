@@ -24,9 +24,9 @@ THE SOFTWARE.
 
 #include "Shibboleth_Reflection.h"
 #include "Shibboleth_VectorMap.h"
-#include "Shibboleth_Function.h"
 #include "Shibboleth_Vector.h"
 #include <Shibboleth_Memory.h>
+#include <Gaff_Function.h>
 #include <mutex>
 
 NS_GAFF

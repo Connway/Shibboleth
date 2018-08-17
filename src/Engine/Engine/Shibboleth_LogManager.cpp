@@ -110,20 +110,35 @@ void LogManager::destroy(void)
 	_channels.clear();
 }
 
-void LogManager::addLogCallback(const LogCallback& callback)
+int32_t LogManager::addLogCallback(const LogCallback& callback)
 {
 	std::lock_guard<std::mutex> lock(_log_callback_lock);
-	_log_callbacks.emplace_back(callback);
+	const int32_t id = _next_id++;
+	_log_callbacks.emplace(id, callback);
+
+	return id;
 }
 
-void LogManager::removeLogCallback(const LogCallback& callback)
+int32_t LogManager::addLogCallback(LogCallback&& callback)
 {
 	std::lock_guard<std::mutex> lock(_log_callback_lock);
-	auto it = Gaff::Find(_log_callbacks, callback);
+	const int32_t id = _next_id++;
+	_log_callbacks.emplace(id, std::move(callback));
+
+	return id;
+}
+
+bool LogManager::removeLogCallback(int32_t id)
+{
+	std::lock_guard<std::mutex> lock(_log_callback_lock);
+	const auto it = _log_callbacks.find(id);
 
 	if (it != _log_callbacks.end()) {
-		_log_callbacks.erase_unsorted(it);
+		_log_callbacks.erase(it);
+		return true;
 	}
+	
+	return false;
 }
 
 void LogManager::notifyLogCallbacks(const char* message, LogType type)
@@ -131,7 +146,7 @@ void LogManager::notifyLogCallbacks(const char* message, LogType type)
 	std::lock_guard<std::mutex> lock(_log_callback_lock);
 
 	for (auto it = _log_callbacks.begin(); it != _log_callbacks.end(); ++it) {
-		(*it)(message, type);
+		it->second(message, type);
 	}
 }
 

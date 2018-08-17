@@ -6,15 +6,6 @@ project "Gaff"
 	kind "StaticLib"
 	language "C++"
 
-	filter { "configurations:not Analyze*" }
-		flags { "FatalWarnings" }
-
-	filter { "system:windows" }
-		includedirs { "../../Dependencies/dirent" }
-		defines { "_CRT_SECURE_NO_WARNINGS" }
-
-	filter {}
-
 	files { "**.h", "**.cpp", "**.inl" }
 
 	includedirs
@@ -24,3 +15,13 @@ project "Gaff"
 		"../../Dependencies/rapidjson",
 		"../../Dependencies/mpack"
 	}
+
+	filter { "configurations:not Analyze*" }
+		flags { "FatalWarnings" }
+
+	filter { "system:windows" }
+		includedirs { "../../Dependencies/dirent" }
+		defines { "_CRT_SECURE_NO_WARNINGS" }
+		excludes { "**/*_Linux.*", "*_Linux.*" }
+
+	filter {}

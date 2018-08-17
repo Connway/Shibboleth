@@ -22,15 +22,13 @@ THE SOFTWARE.
 
 #pragma once
 
-#include "Gleam_Function.h"
-#include "Gleam_Vector.h"
+#include "Gleam_VectorMap.h"
+#include <Gaff_Function.h>
 
 NS_GLEAM
 
 class IInputDevice;
 class IWindow;
-
-using InputHandler = void (*)(IInputDevice*, int32_t, float);
 
 class IInputDevice
 {
@@ -57,22 +55,26 @@ public:
 	virtual bool isKeyboard(void) const = 0;
 	virtual bool isMouse(void) const = 0;
 
-	void addInputHandler(const InputHandler& cb)
+	int32_t addInputHandler(const InputHandler& cb)
 	{
-		_input_handlers.emplace_back(cb);
+		const int32_t id = _next_id++;
+		_input_handlers.emplace(id, cb);
+		return id;
 	}
 
-	void addInputHandler(InputHandler&& cb)
+	int32_t addInputHandler(InputHandler&& cb)
 	{
-		_input_handlers.emplace_back(std::move(cb));
+		const int32_t id = _next_id++;
+		_input_handlers.emplace(id, std::move(cb));
+		return id;
 	}
 
-	bool removeInputHandler(const InputHandler& cb)
+	bool removeInputHandler(int32_t id)
 	{
-		auto it = Gaff::Find(_input_handlers, cb);
+		const auto it = _input_handlers.find(id);
 
 		if (it != _input_handlers.end()) {
-			_input_handlers.erase_unsorted(it);
+			_input_handlers.erase(it);
 			return true;
 		}
 
@@ -80,7 +82,10 @@ public:
 	}
 
 protected:
-	Vector<InputHandler> _input_handlers;
+	VectorMap<int32_t, InputHandler> _input_handlers;
+
+private:
+	int32_t _next_id = 0;
 
 	GAFF_NO_COPY(IInputDevice);
 	GAFF_NO_MOVE(IInputDevice);

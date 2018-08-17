@@ -99,7 +99,7 @@ IResourcePtr ResourceManager::requestResource(Gaff::HashStringTemp64 name)
 	size_t pos = Gaff::FindLastOf(name.getBuffer(), '.');
 
 	if (pos == SIZE_T_FAIL) {
-		// Log error
+		// TODO: Log error
 		return IResourcePtr();
 	}
 
@@ -108,7 +108,7 @@ IResourcePtr ResourceManager::requestResource(Gaff::HashStringTemp64 name)
 	auto it_fact = _resource_factories.find(res_file_hash);
 
 	if (it_fact == _resource_factories.end()) {
-		// Log error
+		// TODO: Log error
 		return IResourcePtr();
 	}
 

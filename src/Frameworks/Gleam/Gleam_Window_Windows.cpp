@@ -35,7 +35,8 @@ static Vector<Window*> g_windows;
 static bool g_first_init = true;
 static MSG g_msg;
 
-static Vector<MessageHandler> g_global_message_handlers;
+static VectorMap<int32_t, MessageHandler> g_global_message_handlers;
+static int32_t g_global_next_id = 0;
 
 VectorMap<uint16_t, KeyCode> Window::g_right_keys;
 VectorMap<uint16_t, KeyCode> Window::g_left_keys;
@@ -65,31 +66,35 @@ static void InitWindowProcHelpers(void)
 	g_window_helpers.emplace(WM_KILLFOCUS, WindowKillFocus);
 }
 
-static bool RemoveMessageHandler(Vector<MessageHandler>& handlers, const MessageHandler& callback)
+static bool RemoveMessageHandler(VectorMap<int32_t, MessageHandler>& handlers, int32_t id)
 {
-	auto it = Gaff::Find(handlers, callback);
+	const auto it = handlers.find(id);
 
 	if (it != handlers.end()) {
-		handlers.erase_unsorted(it);
+		handlers.erase(it);
 		return true;
 	}
 
 	return false;
 }
 
-void Window::AddGlobalMessageHandler(const MessageHandler& callback)
+int32_t Window::AddGlobalMessageHandler(const MessageHandler& callback)
 {
-	g_global_message_handlers.emplace_back(callback);
+	const int32_t id = g_global_next_id++;
+	g_global_message_handlers.emplace(id, callback);
+	return id;
 }
 
-void Window::AddGlobalMessageHandler(MessageHandler&& callback)
+int32_t Window::AddGlobalMessageHandler(MessageHandler&& callback)
 {
-	g_global_message_handlers.emplace_back(std::move(callback));
+	const int32_t id = g_global_next_id++;
+	g_global_message_handlers.emplace(id, std::move(callback));
+	return id;
 }
 
-bool Window::RemoveGlobalMessageHandler(const MessageHandler& callback)
+bool Window::RemoveGlobalMessageHandler(int32_t id)
 {
-	return RemoveMessageHandler(g_global_message_handlers, callback);
+	return RemoveMessageHandler(g_global_message_handlers, id);
 }
 
 void Window::HandleWindowMessages(void)
@@ -124,12 +129,14 @@ LRESULT CALLBACK Window::WindowProc(HWND hwnd, UINT msg, WPARAM w, LPARAM l)
 				helper_func(reinterpret_cast<AnyMessage*>(buffer), window, w, l);
 				reinterpret_cast<AnyMessage*>(buffer)->base.window = window;
 
-				for (unsigned int i = 0; i < window->_window_callbacks.size(); ++i) {
+				const int32_t size = static_cast<int32_t>(window->_window_callbacks.size());
+
+				for (int32_t i = 0; i < size; ++i) {
 					handled = handled || window->_window_callbacks[i](*message);
 				}
 
 				for (auto it_hnd = g_global_message_handlers.begin(); it_hnd != g_global_message_handlers.end(); ++it_hnd) {
-					handled = handled || (*it_hnd)(*message);
+					handled = handled || it_hnd->second(*message);
 				}
 
 				if (handled) {
@@ -354,19 +361,23 @@ void Window::destroy(void)
 	}
 }
 
-void Window::addWindowMessageHandler(const MessageHandler& callback)
+int32_t Window::addWindowMessageHandler(const MessageHandler& callback)
 {
-	_window_callbacks.emplace_back(callback);
+	const int32_t id = g_global_next_id++;
+	_window_callbacks.emplace(id, callback);
+	return id;
 }
 
-void Window::addWindowMessageHandler(MessageHandler&& callback)
+int32_t Window::addWindowMessageHandler(MessageHandler&& callback)
 {
-	_window_callbacks.emplace_back(std::move(callback));
+	const int32_t id = g_global_next_id++;
+	_window_callbacks.emplace(id, std::move(callback));
+	return id;
 }
 
-bool Window::removeWindowMessageHandler(const MessageHandler& callback)
+bool Window::removeWindowMessageHandler(int32_t id)
 {
-	return RemoveMessageHandler(_window_callbacks, callback);
+	return RemoveMessageHandler(_window_callbacks, id);
 }
 
 void Window::showCursor(bool show)

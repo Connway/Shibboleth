@@ -65,9 +65,9 @@ public:
 	void release(void) const override;
 	int32_t getRefCount(void) const override;
 
-	void addLoadedCallback(const eastl::function<void (IResource*)>& callback);
-	void addLoadedCallback(eastl::function<void (IResource*)>&& callback);
-	void removeLoadedCallback(const eastl::function<void (IResource*)>& callback);
+	int32_t addLoadedCallback(const eastl::function<void (IResource*)>& callback);
+	int32_t addLoadedCallback(eastl::function<void (IResource*)>&& callback);
+	bool removeLoadedCallback(int32_t id);
 
 	const HashString64& getFilePath(void) const;
 	ResourceState getState(void) const;
@@ -78,7 +78,8 @@ public:
 
 protected:
 	Vector<IResourcePtr> _sub_resources = Vector<IResourcePtr>(ProxyAllocator("Resource"));
-	Vector< eastl::function<void (IResource*)> > _callbacks;
+	VectorMap<int32_t, eastl::function<void (IResource*)> > _callbacks;
+	int32_t _next_id = 0;
 
 	IFile* loadFile(const char* file_path);
 

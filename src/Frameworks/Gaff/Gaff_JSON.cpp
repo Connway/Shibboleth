@@ -435,7 +435,7 @@ bool JSON::parse(const char* input)
 	return true;
 }
 
-bool JSON::dumpToFile(const char* filename)
+bool JSON::dumpToFile(const char* filename) const
 {
 	GAFF_ASSERT(_value.IsArray() || _value.IsObject());
 	FILE* file = nullptr;
@@ -459,7 +459,7 @@ bool JSON::dumpToFile(const char* filename)
 	return success;
 }
 
-char* JSON::dump(void)
+const char* JSON::dump(void)
 {
 	GAFF_ASSERT(_value.IsArray() || _value.IsObject());
 	JSONStringBuffer buffer;

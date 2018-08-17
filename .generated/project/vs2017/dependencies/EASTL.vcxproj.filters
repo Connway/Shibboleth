@@ -25,6 +25,9 @@
     <Filter Include="include\EAStdC">
       <UniqueIdentifier>{0C8DE3FC-F85A-D702-E1EE-4729CD5BB367}</UniqueIdentifier>
     </Filter>
+    <Filter Include="include\EAThread">
+      <UniqueIdentifier>{764D7FC5-6246-9E17-8B78-839C77D07D23}</UniqueIdentifier>
+    </Filter>
     <Filter Include="source">
       <UniqueIdentifier>{76FF3A1C-62A1-65F2-4B5C-7946379DEC42}</UniqueIdentifier>
     </Filter>
@@ -96,7 +99,7 @@
     <ClInclude Include="..\..\..\..\src\Dependencies\EASTL\include\EASTL\bonus\fixed_ring_buffer.h">
       <Filter>include\EASTL\bonus</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\src\Dependencies\EASTL\include\EASTL\bonus\fixed_string_abstract.h">
+    <ClInclude Include="..\..\..\..\src\Dependencies\EASTL\include\EASTL\bonus\fixed_tuple_vector.h">
       <Filter>include\EASTL\bonus</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\src\Dependencies\EASTL\include\EASTL\bonus\intrusive_sdlist.h">
@@ -117,7 +120,7 @@
     <ClInclude Include="..\..\..\..\src\Dependencies\EASTL\include\EASTL\bonus\sparse_matrix.h">
       <Filter>include\EASTL\bonus</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\src\Dependencies\EASTL\include\EASTL\bonus\string_abstract.h">
+    <ClInclude Include="..\..\..\..\src\Dependencies\EASTL\include\EASTL\bonus\tuple_vector.h">
       <Filter>include\EASTL\bonus</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\src\Dependencies\EASTL\include\EASTL\chrono.h">
@@ -133,6 +136,9 @@
       <Filter>include\EASTL</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\src\Dependencies\EASTL\include\EASTL\fixed_allocator.h">
+      <Filter>include\EASTL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\Dependencies\EASTL\include\EASTL\fixed_function.h">
       <Filter>include\EASTL</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\src\Dependencies\EASTL\include\EASTL\fixed_hash_map.h">
@@ -204,6 +210,12 @@
     <ClInclude Include="..\..\..\..\src\Dependencies\EASTL\include\EASTL\internal\function.h">
       <Filter>include\EASTL\internal</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\..\src\Dependencies\EASTL\include\EASTL\internal\function_detail.h">
+      <Filter>include\EASTL\internal</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\Dependencies\EASTL\include\EASTL\internal\function_help.h">
+      <Filter>include\EASTL\internal</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\..\src\Dependencies\EASTL\include\EASTL\internal\functional_base.h">
       <Filter>include\EASTL\internal</Filter>
     </ClInclude>
@@ -225,10 +237,19 @@
     <ClInclude Include="..\..\..\..\src\Dependencies\EASTL\include\EASTL\internal\mem_fn.h">
       <Filter>include\EASTL\internal</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\..\src\Dependencies\EASTL\include\EASTL\internal\memory_base.h">
+      <Filter>include\EASTL\internal</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\Dependencies\EASTL\include\EASTL\internal\meta.h">
+      <Filter>include\EASTL\internal</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\..\src\Dependencies\EASTL\include\EASTL\internal\move_help.h">
       <Filter>include\EASTL\internal</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\src\Dependencies\EASTL\include\EASTL\internal\pair_fwd_decls.h">
+      <Filter>include\EASTL\internal</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\Dependencies\EASTL\include\EASTL\internal\piecewise_construct_t.h">
       <Filter>include\EASTL\internal</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\src\Dependencies\EASTL\include\EASTL\internal\red_black_tree.h">
@@ -288,6 +309,9 @@
     <ClInclude Include="..\..\..\..\src\Dependencies\EASTL\include\EASTL\memory.h">
       <Filter>include\EASTL</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\..\src\Dependencies\EASTL\include\EASTL\meta.h">
+      <Filter>include\EASTL</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\..\src\Dependencies\EASTL\include\EASTL\numeric.h">
       <Filter>include\EASTL</Filter>
     </ClInclude>
@@ -336,6 +360,9 @@
     <ClInclude Include="..\..\..\..\src\Dependencies\EASTL\include\EASTL\sort.h">
       <Filter>include\EASTL</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\..\src\Dependencies\EASTL\include\EASTL\span.h">
+      <Filter>include\EASTL</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\..\src\Dependencies\EASTL\include\EASTL\stack.h">
       <Filter>include\EASTL</Filter>
     </ClInclude>
@@ -367,6 +394,9 @@
       <Filter>include\EASTL</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\src\Dependencies\EASTL\include\EASTL\utility.h">
+      <Filter>include\EASTL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\Dependencies\EASTL\include\EASTL\variant.h">
       <Filter>include\EASTL</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\src\Dependencies\EASTL\include\EASTL\vector.h">
@@ -413,6 +443,15 @@
     </ClInclude>
     <ClInclude Include="..\..\..\..\src\Dependencies\EASTL\include\EAStdC\EATextUtil.h">
       <Filter>include\EAStdC</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\Dependencies\EASTL\include\EAThread\eathread.h">
+      <Filter>include\EAThread</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\Dependencies\EASTL\include\EAThread\eathread_atomic.h">
+      <Filter>include\EAThread</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\Dependencies\EASTL\include\EAThread\eathread_thread.h">
+      <Filter>include\EAThread</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

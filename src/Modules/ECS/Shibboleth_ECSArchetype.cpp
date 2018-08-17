@@ -83,4 +83,15 @@ int32_t ECSArchetype::size(void) const
 	return _alloc_size;
 }
 
+Gaff::JSON ECSArchetype::toJSON(void) const
+{
+	Gaff::JSON json = Gaff::JSON::CreateArray();
+
+	for (const Gaff::IReflectionDefinition* ref_def : _vars) {
+		json.push(Gaff::JSON::CreateString(ref_def->getReflectionInstance().getName()));
+	}
+
+	return json;
+}
+
 NS_END
