@@ -26,8 +26,6 @@ THE SOFTWARE.
 #include <utility> // For std::move() and std::forward()
 #include <cstdint> // For (u)int*_t and size_t
 
-#define NUM_TRIES_UNTIL_YIELD 5
-
 #define NS_GAFF namespace Gaff {
 #ifndef NS_END
 	#define NS_END }

@@ -102,7 +102,7 @@ filter { "system:windows" }
 filter { "system:windows", "platforms:x64" }
 	defines { "WIN64" }
 
-filter { "system:windows", "configurations:*Clang", "action:vs2017" }
-	toolset "v141_clang_c2"
+filter { "configurations:*Clang", "action:vs*" }
+	toolset "msc-llvm-vs2014"
 
 filter {}
