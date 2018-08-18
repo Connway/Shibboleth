@@ -24,61 +24,57 @@ THE SOFTWARE.
 
 #include "Gaff_EnumReflectionDefinition.h"
 
-#ifndef GAFF_REFLECTION_NAMESPACE
-	#define GAFF_REFLECTION_NAMESPACE Gaff
-#endif
+NS_REFLECTION
 
-namespace GAFF_REFLECTION_NAMESPACE
+template <class T>
+class EnumReflection final : public Gaff::IEnumReflection
 {
-	template <class T>
-	class EnumReflection final : public Gaff::IEnumReflection
+public:
+	constexpr static bool HasReflection = false;
+
+	EnumReflection(void)
 	{
-	public:
-		constexpr static bool HasReflection = false;
+		GAFF_ASSERT_MSG(false, "Unknown enum.");
+	}
 
-		EnumReflection(void)
-		{
-			GAFF_ASSERT_MSG(false, "Unknown enum.");
-		}
-
-		void load(Gaff::ISerializeReader& /*reader*/, void* /*object*/) const override
-		{
-			GAFF_ASSERT_MSG(false, "Unknown enum.");
-		}
+	void load(Gaff::ISerializeReader& /*reader*/, void* /*object*/) const override
+	{
+		GAFF_ASSERT_MSG(false, "Unknown enum.");
+	}
 	
-		void save(Gaff::ISerializeWriter& /*writer*/, const void* /*object*/) const override
-		{
-			GAFF_ASSERT_MSG(false, "Unknown enum.");
-		}
+	void save(Gaff::ISerializeWriter& /*writer*/, const void* /*object*/) const override
+	{
+		GAFF_ASSERT_MSG(false, "Unknown enum.");
+	}
 
-		const char* getName(void) const override
-		{
-			GAFF_ASSERT_MSG(false, "Unknown enum.");
-			return nullptr;
-		}
+	const char* getName(void) const override
+	{
+		GAFF_ASSERT_MSG(false, "Unknown enum.");
+		return nullptr;
+	}
 
-		Gaff::Hash64 getHash(void) const override
-		{
-			GAFF_ASSERT_MSG(false, "Unknown enum.");
-			return 0;
-		}
+	Gaff::Hash64 getHash(void) const override
+	{
+		GAFF_ASSERT_MSG(false, "Unknown enum.");
+		return 0;
+	}
 
-		Gaff::Hash64 getVersion(void) const override
-		{
-			GAFF_ASSERT_MSG(false, "Unknown enum.");
-			return 0;
-		}
+	Gaff::Hash64 getVersion(void) const override
+	{
+		GAFF_ASSERT_MSG(false, "Unknown enum.");
+		return 0;
+	}
 
-		static bool IsDefined(void)
-		{
-			return false;
-		}
-	};
-}
+	static bool IsDefined(void)
+	{
+		return false;
+	}
+};
+
+NS_END
 
 #define GAFF_ENUM_REFLECTION_DECLARE_COMMON(type, allocator) \
-namespace GAFF_REFLECTION_NAMESPACE \
-{ \
+NS_REFLECTION \
 	template <> \
 	class EnumReflection<type> final : public Gaff::IEnumReflection \
 	{ \
@@ -162,7 +158,7 @@ namespace GAFF_REFLECTION_NAMESPACE \
 	private: \
 		static Gaff::EnumReflectionDefinition<type, allocator> g_enum_reflection_definition; \
 	}; \
-}
+NS_END
 
 #define GAFF_ENUM_REFLECTION_DECLARE(type, allocator) \
 	GAFF_ENUM_REFLECTION_DECLARE_COMMON(type, allocator) \

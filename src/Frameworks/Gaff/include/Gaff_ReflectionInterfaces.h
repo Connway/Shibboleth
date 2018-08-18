@@ -22,9 +22,11 @@ THE SOFTWARE.
 
 #pragma once
 
+#include "Gaff_SerializeInterfaces.h"
 #include "Gaff_Vector.h"
 #include "Gaff_Assert.h"
 #include "Gaff_Hash.h"
+#include <array>
 
 #define GET_CLASS_ATTR(T) getClassAttr<T>(Gaff::FNV1aHash64Const(#T))
 #define GET_VAR_ATTR(T, var_name) getVarAttr<T>(var_name, Gaff::FNV1aHash64Const(#T))
@@ -33,19 +35,351 @@ THE SOFTWARE.
 #define GET_ENUM_ATTR(T) getEnumAttr<T>(Gaff::FNV1aHash64Const(#T))
 #define GET_ENUM_VALUE_ATTR(T, value_name) getEnumValueAttr<T>(value_name, Gaff::FNV1aHash64Const(#T))
 
-#ifdef PLATFORM_WINDOWS
+#define INTERFACE_CAST(interface_type, object) Gaff::InterfaceCast<interface_type>(object, Gaff::FNV1aHash64Const(#interface_type))
+
+#ifdef _MSC_VER
 	#pragma warning(push)
 	#pragma warning(disable: 4307)
 #endif
 
-NS_GAFF
+#ifndef GAFF_REFLECTION_NAMESPACE
+	#define GAFF_REFLECTION_NAMESPACE Gaff
+#endif
 
-class ISerializeReader;
-class ISerializeWriter;
-class IAllocator;
+#ifndef NS_REFLECTION
+	#define NS_REFLECTION namespace GAFF_REFLECTION_NAMESPACE {
+#endif
+
+// These are defined in here instead of Gaff_Reflection.h for compilation purposes.
+#define GAFF_POD_SERIALIZABLE(type, read_write_suffix) \
+	template <> \
+	class Reflection<type> final : public Gaff::IReflection \
+	{ \
+	public: \
+		constexpr static bool HasReflection = true; \
+		void load(const Gaff::ISerializeReader& reader, void* object) const override \
+		{ \
+			GAFF_ASSERT(object); \
+			Load(reader, *reinterpret_cast<type*>(object)); \
+		} \
+		void save(Gaff::ISerializeWriter& writer, const void* object) const override \
+		{ \
+			GAFF_ASSERT(object); \
+			Save(writer, *reinterpret_cast<const type*>(object)); \
+		} \
+		void init(void) override \
+		{ \
+		} \
+		const char* getName(void) const override \
+		{ \
+			return GetName(); \
+		} \
+		Gaff::Hash64 getHash(void) const override \
+		{ \
+			return GetHash(); \
+		} \
+		Gaff::Hash64 getVersion(void) const override \
+		{ \
+			return GetVersion(); \
+		} \
+		int32_t size(void) const override \
+		{ \
+			return sizeof(type); \
+		} \
+		static void Load(const Gaff::ISerializeReader& reader, type& value) \
+		{ \
+			value = reader.read##read_write_suffix(); \
+		} \
+		static void Save(Gaff::ISerializeWriter& writer, type value) \
+		{ \
+			writer.write##read_write_suffix(value); \
+		} \
+		constexpr static Gaff::Hash64 GetHash(void) \
+		{ \
+			return Gaff::FNV1aHash64Const(#type); \
+		} \
+		constexpr static Gaff::Hash64 GetVersion(void) \
+		{ \
+			return GetHash(); \
+		} \
+		constexpr static int32_t Size(void) \
+		{ \
+			return sizeof(type); \
+		} \
+		constexpr static const char* GetName(void) \
+		{ \
+			return #type; \
+		} \
+		static Reflection<type>& GetInstance(void) \
+		{ \
+			return g_instance; \
+		} \
+		static bool IsDefined(void) \
+		{ \
+			return true; \
+		} \
+	private: \
+		static Reflection<type> g_instance; \
+	}
+
+
+NS_GAFF
 
 class IEnumReflectionDefinition;
 class IReflectionDefinition;
+class IAllocator;
+
+class IReflection
+{
+public:
+	virtual ~IReflection(void) {}
+
+	virtual void init(void) = 0;
+
+	virtual void load(const ISerializeReader& reader, void* object) const = 0;
+	virtual void save(ISerializeWriter& writer, const void* object) const = 0;
+	virtual const char* getName(void) const = 0;
+	virtual Hash64 getHash(void) const = 0;
+	virtual Hash64 getVersion(void) const = 0;
+	virtual int32_t size(void) const = 0;
+
+	IReflection* attr_next = nullptr;
+	IReflection* next = nullptr;
+};
+
+NS_END
+
+NS_REFLECTION
+
+template <class T>
+class Reflection final : public Gaff::IReflection
+{
+public:
+	constexpr static bool HasReflection = false;
+	constexpr static bool HasClassReflection = false;
+	Reflection(void)
+	{
+		GAFF_ASSERT_MSG(false, "Unknown object type.");
+	}
+	void load(const Gaff::ISerializeReader& /*reader*/, void* /*object*/) const override
+	{
+		GAFF_ASSERT_MSG(false, "Unknown object type.");
+	}
+	void save(Gaff::ISerializeWriter& /*writer*/, const void* /*object*/) const override
+	{
+		GAFF_ASSERT_MSG(false, "Unknown object type.");
+	}
+	const char* getName(void) const override
+	{
+		GAFF_ASSERT_MSG(false, "Unknown object type.");
+		return "Unknown";
+	}
+	Gaff::Hash64 getHash(void) const override
+	{
+		GAFF_ASSERT_MSG(false, "Unknown object type.");
+		return 0;
+	}
+	Gaff::Hash64 getVersion(void) const override
+	{
+		GAFF_ASSERT_MSG(false, "Unknown object type.");
+		return 0;
+	}
+	static bool IsDefined(void)
+	{
+		return false;
+	}
+	static void RegisterOnDefinedCallback(const eastl::function<void (void)>&)
+	{
+	}
+	static void RegisterOnDefinedCallback(eastl::function<void (void)>&&)
+	{
+	}
+};
+
+GAFF_POD_SERIALIZABLE(int8_t, Int8);
+GAFF_POD_SERIALIZABLE(int16_t, Int16);
+GAFF_POD_SERIALIZABLE(int32_t, Int32);
+GAFF_POD_SERIALIZABLE(int64_t, Int64);
+GAFF_POD_SERIALIZABLE(uint8_t, UInt8);
+GAFF_POD_SERIALIZABLE(uint16_t, UInt16);
+GAFF_POD_SERIALIZABLE(uint32_t, UInt32);
+GAFF_POD_SERIALIZABLE(uint64_t, UInt64);
+GAFF_POD_SERIALIZABLE(float, Float);
+GAFF_POD_SERIALIZABLE(double, Double);
+GAFF_POD_SERIALIZABLE(bool, Bool);
+
+NS_END
+
+
+NS_GAFF
+
+class IReflectionObject;
+
+template <class T>
+const T* ReflectionCast(const IReflectionObject& object);
+
+template <class T>
+T* ReflectionCast(IReflectionObject& object);
+
+template <class T>
+const T* InterfaceCast(const IReflectionObject& object, Hash64 interface_name);
+
+template <class T>
+T* InterfaceCast(IReflectionObject& object, Hash64 interface_name);
+
+template <class... T>
+constexpr int32_t GetNumArgs(void)
+{
+	return sizeof...(T);
+}
+
+template <class T>
+constexpr const char* GetTypeName(void)
+{
+	if constexpr (std::is_void<T>::value) {
+		return "void";
+	} else {
+		return GAFF_REFLECTION_NAMESPACE::Reflection<T>::GetName();
+	}
+}
+
+constexpr const char* GetTypeNameBegin(const char* type_name)
+{
+	const char* const const_string = "const";
+	const char* const_begin = const_string;
+	const char* type_begin = type_name;
+
+	while (*type_begin && *const_begin) {
+		// Type isn't const.
+		if (*type_begin != *const_begin) {
+			return type_name;
+		}
+
+		++const_begin;
+		++type_begin;
+	}
+
+	// len(type_name) < len(const_string)
+	if (!(*type_begin)) {
+		return type_name;
+	}
+
+	// We reaached the end of const_string, so the type name begins with "const"/
+	// Move pointer over one more to move over the space.
+	return type_begin + 1;
+}
+
+constexpr const char* GetTypeNameEnd(const char* type_name)
+{
+	// Find end of string.
+	while (*type_name) {
+		++type_name;
+	}
+
+	--type_name;
+
+	// Walk back until we hit the actual class name.
+	while (*type_name == '*' || *type_name == '&' || *type_name == ' ') {
+		--type_name;
+	}
+
+	// Move forward one so that length calculation is correct.
+	return type_name + 1;
+}
+
+template <class T>
+constexpr Hash64 CalcTypeHash(Hash64 init, const char* type_string, size_t size)
+{
+	using NoPtr = typename std::remove_pointer<T>::type;
+	using NoRef = typename std::remove_reference<NoPtr>::type;
+	//using V = typename std::remove_const<NoRef>::type;
+
+	if constexpr (std::is_const<NoRef>::value) {
+		init = FNV1aHash64Const("const", init);
+	}
+
+	init = FNV1aHash64Const(type_string, size, init);
+
+	if constexpr (std::is_reference<NoPtr>::value) {
+		init = FNV1aHash64Const("&", init);
+	}
+
+	if constexpr (std::is_pointer<T>::value) {
+		init = FNV1aHash64Const("*", init);
+	}
+
+	return init;
+}
+
+template <class T>
+constexpr Hash64 CalcTypeHash(Hash64 init, const char* type_string)
+{
+	using NoPtr = typename std::remove_pointer<T>::type;
+	using NoRef = typename std::remove_reference<NoPtr>::type;
+	//using V = typename std::remove_const<NoRef>::type;
+
+	if constexpr (std::is_const<NoRef>::value) {
+		init = FNV1aHash64Const("const", init);
+	}
+
+	init = FNV1aHash64StringConst(type_string, init);
+
+	if constexpr (std::is_reference<NoPtr>::value) {
+		init = FNV1aHash64Const("&", init);
+	}
+
+	if constexpr (std::is_pointer<T>::value) {
+		init = FNV1aHash64Const("*", init);
+	}
+
+	return init;
+}
+
+template <class First, class... Rest>
+constexpr Hash64 CalcTemplateHashHelper(Hash64 init, const char** type_names, int32_t index)
+{
+	const char* const begin = GetTypeNameBegin(*(type_names + index));
+	const char* const end = GetTypeNameEnd(*(type_names + index));
+
+	if constexpr (sizeof...(Rest) == 0) {
+		return CalcTypeHash<First>(init, begin, static_cast<size_t>(end - begin));
+	} else {
+		return CalcTemplateHashHelper<Rest...>(CalcTypeHash<First>(init, begin, static_cast<size_t>(end - begin)), type_names, index + 1);
+	}
+}
+
+template <class First, class... Rest>
+constexpr Hash64 CalcTemplateHashHelper(Hash64 init)
+{
+	using NoPtr = typename std::remove_pointer<First>::type;
+	using NoRef = typename std::remove_reference<NoPtr>::type;
+	using V = typename std::remove_const<NoRef>::type;
+
+	if constexpr (sizeof...(Rest) == 0) {
+		return CalcTypeHash<First>(init, GetTypeName<V>());
+	} else {
+		return CalcTemplateHashHelper<Rest...>(CalcTypeHash<First>(init, GetTypeName<V>()));
+	}
+}
+
+template <class... T>
+constexpr Hash64 CalcTemplateHash(Hash64 init, std::array<const char*, GetNumArgs<T...>()> type_names)
+{
+	static_assert(sizeof...(T) == type_names.size(), "Initializer list size must match number of template arguments.");
+	static_assert(sizeof...(T) > 0, "Initializer list version of CalcTemplateHash must be non-void.");
+
+	return CalcTemplateHashHelper<T...>(init, type_names.data(), 0);
+}
+
+template <class... T>
+constexpr Hash64 CalcTemplateHash(Hash64 init)
+{
+	if constexpr (sizeof...(T) == 0) {
+		return FNV1aHash64Const("void", init);
+	} else {
+		return CalcTemplateHashHelper<T...>(init);
+	}
+}
 
 enum ReflectionValueType
 {
@@ -104,24 +438,6 @@ public:
 
 	virtual const void* getBasePointer(void) const = 0;
 	virtual void* getBasePointer(void) = 0;
-};
-
-class IReflection
-{
-public:
-	virtual ~IReflection(void) {}
-
-	virtual void init(void) = 0;
-
-	virtual void load(const ISerializeReader& reader, void* object) const = 0;
-	virtual void save(ISerializeWriter& writer, const void* object) const = 0;
-	virtual const char* getName(void) const = 0;
-	virtual Hash64 getHash(void) const = 0;
-	virtual Hash64 getVersion(void) const = 0;
-	virtual int32_t size(void) const = 0;
-
-	IReflection* attr_next = nullptr;
-	IReflection* next = nullptr;
 };
 
 class IReflectionVar
@@ -286,13 +602,13 @@ public:
 	template <class T>
 	const void* getBasePointer(const T* object) const
 	{
-		return getBasePointer(object, Reflection<T>::GetHash());
+		return getBasePointer(object, GAFF_REFLECTION_NAMESPACE::Reflection<T>::GetHash());
 	}
 
 	template <class T>
 	void* getBasePointer(T* object) const
 	{
-		return getBasePointer(object, Reflection<T>::GetHash());
+		return getBasePointer(object, GAFF_REFLECTION_NAMESPACE::Reflection<T>::GetHash());
 	}
 
 	template <class T>
@@ -481,7 +797,7 @@ public:
 	template <class T>
 	const T* getFuncAttr(Hash32 name) const
 	{
-		const int32_t size = getNumFuncAttributes(name);
+		const int32_t size = getNumFuncAttrs(name);
 
 		for (int32_t i = 0; i < size; ++i) {
 			const IAttribute* const attribute = getFuncAttr(name, i);
@@ -716,7 +1032,7 @@ public:
 	template <class T, class Allocator>
 	void getFuncAttrs(Hash32 name, Vector<const T*, Allocator>& out) const
 	{
-		const int32_t size = getNumFuncAttributes(name);
+		const int32_t size = getNumFuncAttrs(name);
 
 		for (int32_t i = 0; i < size; ++i) {
 			const IAttribute* const attribute = getFuncAttr(name, i);
@@ -735,7 +1051,7 @@ public:
 
 		for (int32_t j = 0; j < num_vars; ++j) {
 			const Hash32 name = getFuncHash(j);
-			const int32_t size = getNumFuncAttributes(name);
+			const int32_t size = getNumFuncAttrs(name);
 
 			for (int32_t i = 0; i < size; ++i) {
 				const IAttribute* const attribute = getFuncAttr(name, i);
@@ -933,8 +1249,32 @@ public:
 	virtual const IAttribute* getEntryAttr(Hash32 name, int32_t index) const = 0;
 };
 
+template <class T>
+const T* ReflectionCast(const IReflectionObject& object)
+{
+	return object.getReflectionDefinition().getInterface<T>(object.getBasePointer());
+}
+
+template <class T>
+T* ReflectionCast(IReflectionObject& object)
+{
+	return object.getReflectionDefinition().getInterface<T>(object.getBasePointer());
+}
+
+template <class T>
+const T* InterfaceCast(const IReflectionObject& object, Hash64 interface_name)
+{
+	return reinterpret_cast<T*>(object.getReflectionDefinition().getInterface(interface_name, object.getBasePointer()));
+}
+
+template <class T>
+T* InterfaceCast(IReflectionObject& object, Hash64 interface_name)
+{
+	return reinterpret_cast<T*>(object.getReflectionDefinition().getInterface(interface_name, object.getBasePointer()));
+}
+
 NS_END
 
-#ifdef PLATFORM_WINDOWS
+#ifdef _MSC_VER
 	#pragma warning(pop)
 #endif

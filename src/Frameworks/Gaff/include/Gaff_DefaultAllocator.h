@@ -23,6 +23,7 @@ THE SOFTWARE.
 #pragma once
 
 #include "Gaff_IAllocator.h"
+#include <cstdlib>
 
 NS_GAFF
 
@@ -82,6 +83,7 @@ public:
 		::free(data);
 	}
 
+private:
 	const char* _name = nullptr;
 };
 

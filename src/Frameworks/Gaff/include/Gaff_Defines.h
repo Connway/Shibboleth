@@ -137,7 +137,9 @@ THE SOFTWARE.
 	// Disable nameless struct/union warning
 	// Disable assignment operator could not be generated warning
 	// Disable unrecognized character escape sequence warning
+#ifdef _MSC_VER
 	#pragma warning(disable : 4201 4512 4129)
+#endif
 
 	#ifndef _CRT_SECURE_NO_WARNINGS
 		#define _CRT_SECURE_NO_WARNINGS

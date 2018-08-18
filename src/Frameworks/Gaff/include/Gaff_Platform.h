@@ -43,10 +43,22 @@ THE SOFTWARE.
 	// Assuming little endian for now
 	#define PLATFORM_LITTLE_ENDIAN
 
-#elif defined(__GNUC__) || defined(__GNUG__) || defined(__clang__)
-	#if defined(__BYTE_ORDER__) && (__BYTE_ORDER__ == __LITTLE_ENDIAN__)
+#elif defined(__GNUC__) || defined(__GNUG__) || defined(__clang__) || defined(__MINGW32__) || defined(__MINGW64__)
+	#if defined(__BYTE_ORDER__) && (__BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__)
+		#define PLATFORM_LITTLE_ENDIAN
+	#elif defined(__BYTE_ORDER__) && (__BYTE_ORDER__ == __ORDER_BIG_ENDIAN__)
+		#define PLATFORM_BIG_ENDIAN
+	#elif defined(__BYTE_ORDER__) && (__BYTE_ORDER__ == __LITTLE_ENDIAN__)
 		#define PLATFORM_LITTLE_ENDIAN
 	#elif defined(__BYTE_ORDER__) && (__BYTE_ORDER__ == __BIG_ENDIAN__)
+		#define PLATFORM_BIG_ENDIAN
+	#elif defined (__BYTE_ORDER) && (__BYTE_ORDER == __LITTLE_ENDIAN)
+		#define PLATFORM_LITTLE_ENDIAN
+	#elif defined (__BYTE_ORDER) && (__BYTE_ORDER == __BIG_ENDIAN)
+		#define PLATFORM_BIG_ENDIAN
+	#elif defined (_BYTE_ORDER) && (_BYTE_ORDER == _LITTLE_ENDIAN)
+		#define PLATFORM_LITTLE_ENDIAN
+	#elif defined (_BYTE_ORDER) && (_BYTE_ORDER == _BIG_ENDIAN)
 		#define PLATFORM_BIG_ENDIAN
 	#endif
 #endif

@@ -29,20 +29,20 @@ NS_GAFF
 
 #ifdef GAFF_ASSERT_ENABLED
 	#define GAFF_ASSERT(expr) GAFF_ASSERT_MSG(expr, nullptr)
-	#define GAFF_ASSERT_MSG(expr, msg, ...) \
+	/*#define GAFF_ASSERT_MSG(expr, msg, ...) \
 		{ \
 			const bool __assert_result__ = expr; \
 			if (!__assert_result__) { \
 				Gaff::Assert(msg, #expr, __FILE__, __LINE__, __VA_ARGS__); \
 				assert(__assert_result__); \
 			} \
-		}
+		}*/
 
-	//#ifdef _MSC_VER
-	//	#define GAFF_ASSERT_MSG(expr, msg, ...) (void)((expr) || (Gaff::Assert(msg, #expr, __FILE__, __LINE__, __VA_ARGS__), 0)); assert(expr)
-	//#elif defined(__GNUC__) || defined(__GNUG__) || defined(__clang__)
-	//	#define GAFF_ASSERT_MSG(expr, msg, ...) (void)((expr) || (Gaff::Assert(msg, #expr, __FILE__, __LINE__, ##__VA_ARGS__) || assert(expr), 0)); assert(expr)
-	//#endif
+	#ifdef _MSC_VER
+		#define GAFF_ASSERT_MSG(expr, msg, ...) (void)((expr) || (Gaff::Assert(msg, #expr, __FILE__, __LINE__, __VA_ARGS__), 0)); assert(expr)
+	#elif defined(__GNUC__) || defined(__GNUG__) || defined(__clang__) || defined(__MINGW32__) || defined(__MINGW64__)
+		#define GAFF_ASSERT_MSG(expr, msg, ...) (void)((expr) || (Gaff::Assert(msg, #expr, __FILE__, __LINE__, ##__VA_ARGS__), 0)); assert(expr)
+	#endif
 
 #else
 	#define GAFF_ASSERT(expr)
