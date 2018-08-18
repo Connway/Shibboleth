@@ -23,7 +23,7 @@ THE SOFTWARE.
 #include "Gaff_JSON.h"
 #include "Gaff_File.h"
 
-#ifdef PLATFORM_WINDOWS
+#ifdef _MSC_VER
 	#pragma warning(push)
 	#pragma warning(disable : 4127)
 #endif
@@ -34,7 +34,7 @@ THE SOFTWARE.
 #include <rapidjson/error/en.h>
 #include <rapidjson/schema.h>
 
-#ifdef PLATFORM_WINDOWS
+#ifdef _MSC_VER
 	#pragma warning(pop)
 #endif
 
@@ -269,7 +269,7 @@ bool JSON::validate(const JSON& schema) const
 	using JSONSchemaDocument = rapidjson::GenericSchemaDocument<JSONValue, JSONInternalAllocator>;
 	using JSONSchemaValidator = rapidjson::GenericSchemaValidator<JSONSchemaDocument>;
 
-	JSONSchemaDocument sd(schema._value, nullptr, &g_allocator);
+	JSONSchemaDocument sd(schema._value, nullptr, 0, nullptr, &g_allocator);
 	JSONSchemaValidator validator(sd);
 
 	if (!_value.Accept(validator)) {
@@ -299,7 +299,7 @@ bool JSON::validate(const char* schema_input) const
 	return validate(schema);
 }
 
-bool JSON::parseFile(const char* filename, const JSON& schema_object)
+bool JSON::parseFile(const char* filename, const JSON& schema)
 {
 	using JSONSchemaDocument = rapidjson::GenericSchemaDocument<JSONValue, JSONInternalAllocator>;
 	using JSONSchemaValidator = rapidjson::GenericSchemaValidator<JSONSchemaDocument>;
@@ -314,7 +314,7 @@ bool JSON::parseFile(const char* filename, const JSON& schema_object)
 
 	char buffer[2048];
 
-	JSONSchemaDocument sd(schema_object._value, nullptr, &g_allocator);
+	JSONSchemaDocument sd(schema._value, nullptr, 0, nullptr, &g_allocator);
 	JSONSchemaValidator validator(sd);
 
 	rapidjson::FileReadStream stream(file, buffer, 2048);
@@ -381,7 +381,7 @@ bool JSON::parse(const char* input, const JSON& schema)
 	using JSONSchemaDocument = rapidjson::GenericSchemaDocument<JSONValue, JSONInternalAllocator>;
 	using JSONSchemaValidator = rapidjson::GenericSchemaValidator<JSONSchemaDocument>;
 
-	JSONSchemaDocument sd(schema._value, nullptr, &g_allocator);
+	JSONSchemaDocument sd(schema._value, nullptr, 0, nullptr, &g_allocator);
 	JSONSchemaValidator validator(sd);
 
 	rapidjson::StringStream stream(input);
@@ -405,9 +405,6 @@ bool JSON::parse(const char* input, const JSON& schema)
 
 bool JSON::parse(const char* input, const char* schema_input)
 {
-	using JSONSchemaDocument = rapidjson::GenericSchemaDocument<JSONValue, JSONInternalAllocator>;
-	using JSONSchemaValidator = rapidjson::GenericSchemaValidator<JSONSchemaDocument>;
-
 	JSON schema;
 
 	if (!schema.parse(schema_input)) {

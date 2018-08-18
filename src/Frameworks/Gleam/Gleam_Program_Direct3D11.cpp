@@ -131,7 +131,7 @@ void ProgramBuffersD3D11::popSamplerState(IShader::ShaderType type, int32_t coun
 
 IProgramBuffers* ProgramBuffersD3D11::clone(void) const
 {
-	ProgramBuffersD3D11* pb = GAFF_ALLOCT(ProgramBuffersD3D11, *GetAllocator());
+	ProgramBuffersD3D11* const pb = GAFF_ALLOCT(ProgramBuffersD3D11, *GetAllocator());
 
 	if (!pb) {
 		PrintfToLog("Failed to clone ProgramBuffersD3D11.", LOG_ERROR);
@@ -243,6 +243,7 @@ bool ProgramD3D11::init(void)
 void ProgramD3D11::attach(IShader* shader)
 {
 	GAFF_ASSERT(shader->getRendererType() == RENDERER_DIRECT3D11);
+	GAFF_ASSERT(shader->getType() < IShader::SHADER_TYPE_SIZE);
 
 	_attached_shaders[shader->getType()] = shader;
 
@@ -276,11 +277,15 @@ void ProgramD3D11::attach(IShader* shader)
 			SAFERELEASE(_shader_compute)
 			_shader_compute = reinterpret_cast<const ShaderD3D11*>(shader)->getComputeShader();
 			break;
+
+		default:
+			break;
 	}
 }
 
 void ProgramD3D11::detach(IShader::ShaderType shader)
 {
+	GAFF_ASSERT(shader < IShader::ShaderType::SHADER_TYPE_SIZE);
 	_attached_shaders[shader] = nullptr;
 
 	switch (shader) {
@@ -312,6 +317,9 @@ void ProgramD3D11::detach(IShader::ShaderType shader)
 		case IShader::SHADER_COMPUTE:
 			SAFERELEASE(_shader_compute)
 			_shader_compute = nullptr;
+			break;
+
+		default:
 			break;
 	}
 }
@@ -426,6 +434,10 @@ ShaderReflection ProgramD3D11::getShaderReflectionData(const IShader* shader, Pr
 			case D3D_SIT_STRUCTURED:
 				reflection.structured_buffers[reflection.num_structured_buffers] = res_desc.Name;
 				++reflection.num_structured_buffers;
+				break;
+
+			default:
+				// TODO: Handle other reflection data.
 				break;
 		}
 	}

@@ -22,6 +22,7 @@ THE SOFTWARE.
 
 #include "Gleam_AABB.h"
 #include "Gleam_Transform.h"
+#include <limits>
 
 NS_GLEAM
 
@@ -111,8 +112,11 @@ void AABB::addAABB(const AABB& aabb)
 
 void AABB::reset(void)
 {
-	_min = glm::vec3(FLT_MAX, FLT_MAX, FLT_MAX);
-	_max = glm::vec3(FLT_MIN, FLT_MIN, FLT_MIN);
+	constexpr float flt_min = std::numeric_limits<float>::min();
+	constexpr float flt_max = std::numeric_limits<float>::max();
+
+	_min = glm::vec3(flt_max, flt_max, flt_max);
+	_max = glm::vec3(flt_min, flt_min, flt_min);
 }
 
 glm::vec3* AABB::generatePoints(glm::vec3* out) const

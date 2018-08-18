@@ -5,9 +5,8 @@ local gen_header = [[
 
 // Includes
 %s
-#include <Gaff_ReflectionInterfaces.h>
+#include <Shibboleth_Reflection.h>
 #include <Gaff_EnumReflection.h>
-#include <Gaff_Reflection.h>
 
 namespace Gen
 {

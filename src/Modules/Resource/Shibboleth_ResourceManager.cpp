@@ -22,11 +22,11 @@ THE SOFTWARE.
 
 #include "Shibboleth_ResourceManager.h"
 #include "Shibboleth_ResourceExtensionAttribute.h"
+#include <Shibboleth_ReflectionInterfaces.h>
 #include <Shibboleth_IFileSystem.h>
 #include <Shibboleth_LogManager.h>
 #include <Shibboleth_Utilities.h>
 #include <Shibboleth_IApp.h>
-#include <Gaff_ReflectionInterfaces.h>
 #include <Gaff_Assert.h>
 #include <EASTL/algorithm.h>
 #include <mutex>

@@ -27,11 +27,16 @@ THE SOFTWARE.
 #include "Gaff_Assert.h"
 #include "Gaff_IncludeWindows.h"
 
-// Silence MS warnings
-#pragma warning(push)
-#pragma warning(disable: 4091)
+#ifdef _MSC_VER
+	#pragma warning(push)
+	#pragma warning(disable: 4091)
+#endif
+
 #include <DbgHelp.h>
-#pragma warning(pop)
+
+#ifdef _MSC_VER
+	#pragma warning(pop)
+#endif
 
 NS_GAFF
 
@@ -97,7 +102,9 @@ int32_t StackTrace::captureStack(const char*, uint32_t frames_to_capture, uint32
 	sym->SizeOfStruct = sizeof(SYMBOL_INFO);
 	sym->MaxNameLen = NAME_SIZE - 1;
 
-	IMAGEHLP_LINE64 image_help = { sizeof(IMAGEHLP_LINE) };
+	IMAGEHLP_LINE64 image_help;
+	image_help.SizeOfStruct = sizeof(IMAGEHLP_LINE);
+
 	DWORD displacement = 0;
 
 	for (int32_t i = 0; i < _frames; ++i) {

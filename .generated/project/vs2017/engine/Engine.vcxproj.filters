@@ -93,6 +93,9 @@
     <ClInclude Include="..\..\..\..\src\Engine\Engine\include\Shibboleth_Watcher.h">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\..\src\Engine\Engine\include\Shibboleth_ReflectionInterfaces.h">
+      <Filter>include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\..\src\Engine\Engine\Shibboleth_App.cpp" />

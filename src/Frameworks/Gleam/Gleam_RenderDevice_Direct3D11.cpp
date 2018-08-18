@@ -38,6 +38,8 @@ Vector<RenderDeviceD3D11::AdapterInfo> RenderDeviceD3D11::g_display_info;
 template <>
 IRenderDevice::AdapterList GetDisplayModes<RENDERER_DIRECT3D11>(void)
 {
+	using Factory = IDXGIFactory6;
+
 	if (RenderDeviceD3D11::g_display_info.empty()) {
 		IDXGIFactory6* factory = nullptr;
 		IDXGIAdapter4* adapter = nullptr;

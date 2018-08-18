@@ -265,6 +265,7 @@
     <ClInclude Include="..\..\..\..\src\Engine\Engine\include\Shibboleth_Queue.h" />
     <ClInclude Include="..\..\..\..\src\Engine\Engine\include\Shibboleth_RefCounted.h" />
     <ClInclude Include="..\..\..\..\src\Engine\Engine\include\Shibboleth_Reflection.h" />
+    <ClInclude Include="..\..\..\..\src\Engine\Engine\include\Shibboleth_ReflectionInterfaces.h" />
     <ClInclude Include="..\..\..\..\src\Engine\Engine\include\Shibboleth_ReflectionManager.h" />
     <ClInclude Include="..\..\..\..\src\Engine\Engine\include\Shibboleth_SmartPtrs.h" />
     <ClInclude Include="..\..\..\..\src\Engine\Engine\include\Shibboleth_String.h" />

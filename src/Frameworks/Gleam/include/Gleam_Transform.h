@@ -24,14 +24,14 @@ THE SOFTWARE.
 
 #include "Gleam_Defines.h"
 
-#ifdef PLATFORM_WINDOWS
+#ifdef _MSC_VER
 	#pragma warning(push)
 	#pragma warning(disable : 4701)
 #endif
 
 #include <gtc/quaternion.hpp>
 
-#ifdef PLATFORM_WINDOWS
+#ifdef _MSC_VER
 	#pragma warning(pop)
 #endif
 

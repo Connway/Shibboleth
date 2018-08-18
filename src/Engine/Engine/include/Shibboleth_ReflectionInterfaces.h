@@ -22,38 +22,9 @@ THE SOFTWARE.
 
 #pragma once
 
-#include <Gaff_Platform.h>
-#include <cstdint> // For (u)int*_t and size_t
-
-#define OPENGL_MULTITHREAD
-
-#define NS_GLEAM namespace Gleam {
-#ifndef NS_END
-	#define NS_END }
+#ifndef GAFF_REFLECTION_NAMESPACE
+	#define GAFF_REFLECTION_NAMESPACE Shibboleth
 #endif
 
-#define RETURNIFFAILEDCLEANUP(r, c) if (FAILED(r)) { c; return false; }
-#define RETURNIFFAILED(r) if (FAILED(r)) { return false; }
-#define RETURNIFFALSECLEANUP(r, c) if (!r) { c; return false; }
-#define RETURNIFFALSE(r) if (!r) { return false; }
-
-#ifndef _CRT_SECURE_NO_WARNINGS
-	#define _CRT_SECURE_NO_WARNINGS
-#endif
-
-#ifdef _MSC_VER
-	#pragma warning(disable : 4201)
-#else
-	#define __stdcall
-#endif
-
-
-NS_GLEAM
-
-enum RendererType
-{
-	RENDERER_DIRECT3D11 = 0,
-	RENDERER_VULKAN
-};
-
-NS_END
+#include "Shibboleth_Defines.h"
+#include <Gaff_ReflectionInterfaces.h>

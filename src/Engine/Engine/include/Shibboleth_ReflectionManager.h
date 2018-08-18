@@ -22,12 +22,12 @@ THE SOFTWARE.
 
 #pragma once
 
+#include <Shibboleth_ReflectionInterfaces.h>
 #include <Shibboleth_HashString.h>
 #include <Shibboleth_VectorMap.h>
 #include <Shibboleth_SmartPtrs.h>
 #include <Shibboleth_Vector.h>
 #include <Shibboleth_String.h>
-#include <Gaff_ReflectionInterfaces.h>
 
 NS_SHIBBOLETH
 
