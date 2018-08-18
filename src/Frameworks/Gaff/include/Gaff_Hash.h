@@ -41,7 +41,7 @@ Hash64 FNV1Hash64(const char* key, size_t len, Hash64 init);
 Hash32 FNV1aHash32(const char* key, size_t len, Hash32 init);
 Hash32 FNV1Hash32(const char* key, size_t len, Hash32 init);
 
-// These functions just call the above functiosn with INIT_HASH64/32
+// These functions just call the above functions with INIT_HASH64/32
 Hash64 FNV1aHash64(const char* key, size_t len);
 Hash64 FNV1Hash64(const char* key, size_t len);
 Hash32 FNV1aHash32(const char* key, size_t len);
@@ -234,7 +234,7 @@ constexpr Hash32 FNV1aHash32StringConst(const T* string, Hash32 init = INIT_HASH
 }
 
 template <class T>
-constexpr Hash32 FNV1Hash32StringConst(const char* T, Hash32 init = INIT_HASH32)
+constexpr Hash32 FNV1Hash32StringConst(const T* string, Hash32 init = INIT_HASH32)
 {
 	return (*string) ? FNV1Hash32StringConst(string + 1, (init ^ 16777619U) * static_cast<Hash32>(*string)) : init;
 }

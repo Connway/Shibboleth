@@ -29,10 +29,16 @@ THE SOFTWARE.
 #include <EASTL/algorithm.h>
 
 // Silence MS warnings
-#pragma warning(push)
-#pragma warning(disable: 4091)
+#if _MSC_VER
+	#pragma warning(push)
+	#pragma warning(disable: 4091)
+#endif
+
 #include <DbgHelp.h>
-#pragma warning(pop)
+
+#if _MSC_VER
+	#pragma warning(pop)
+#endif
 
 #include <Psapi.h>
 

@@ -173,7 +173,7 @@ HashType HashStringTemp<T, HashType>::getHash(void) const
 // HashString
 template <class T, class HashType, class Allocator>
 HashString<T, HashType, Allocator>::HashString(const String<T, Allocator>& string, HashFunc hash_func):
-	_string(string), _hash_value(CalculateHash(string, hash)), _hash_func(hash_func)
+	_string(string), _hash_value(CalculateHash(string, hash_func)), _hash_func(hash_func)
 {
 }
 

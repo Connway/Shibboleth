@@ -34,8 +34,6 @@ THE SOFTWARE.
 
 NS_SHIBBOLETH
 
-GAFF_REFLECTION_DECLARE_DEFAULT_AND_POD();
-
 template <>
 class Reflection<U8String> final : public Gaff::IReflection
 {
@@ -101,6 +99,8 @@ public:
 private:
 	static Reflection<U8String> g_instance;
 };
+
+NS_END
 
 
 #define SHIB_REFLECTION_DECLARE_SERIALIZE(type) GAFF_REFLECTION_DECLARE_SERIALIZE(type, ProxyAllocator)
@@ -338,5 +338,3 @@ NS_END \
 
 #define SHIB_TEMPLATE_REFLECTION_CLASS_DEFINE_BEGIN(type, ...) GAFF_TEMPLATE_REFLECTION_CLASS_DEFINE_BEGIN(type, Shibboleth::ProxyAllocator, __VA_ARGS__)
 #define SHIB_TEMPLATE_REFLECTION_CLASS_DEFINE_END GAFF_TEMPLATE_REFLECTION_CLASS_DEFINE_END
-
-NS_END
