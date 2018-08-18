@@ -86,6 +86,9 @@ bool BufferD3D11::init(
 		case READ_WRITE:
 			desc.CPUAccessFlags = D3D11_CPU_ACCESS_READ | D3D11_CPU_ACCESS_WRITE;
 			break;
+
+		default:
+			break;
 	}
 
 	subres_data.pSysMem = data;

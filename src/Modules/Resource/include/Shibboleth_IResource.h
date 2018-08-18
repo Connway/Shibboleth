@@ -30,11 +30,11 @@ THE SOFTWARE.
 #include <EASTL/functional.h>
 #include <atomic>
 
-#define LOG_RES_ERROR(msg, ...) LogError(LOG_CHANNEL_RESOURCE, msg, __VA_ARGS__)
+#define LOG_RES_ERROR(msg, ...) LogError(LOG_CHANNEL_RESOURCE, msg, ##__VA_ARGS__)
 
 #define RES_FAIL_MSG(cond, msg, ...) \
 	if (cond) { \
-		LOG_RES_ERROR(msg, __VA_ARGS__); \
+		LOG_RES_ERROR(msg, ##__VA_ARGS__); \
 		failed(); \
 		return; \
 	}

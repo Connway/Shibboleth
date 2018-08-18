@@ -109,6 +109,7 @@ template <RendererType type>
 IRenderDevice::AdapterList GetDisplayModes(void)
 {
 	GAFF_ASSERT_MSG(false, "Unrecognized RendererType!");
+	return IRenderDevice::AdapterList();
 }
 
 NS_END

@@ -26,15 +26,13 @@
 #include <limits>
 
 RAPIDJSON_DIAG_PUSH
-#ifdef _MSC_VER
-RAPIDJSON_DIAG_OFF(4127) // conditional expression is constant
-RAPIDJSON_DIAG_OFF(4244) // conversion from kXxxFlags to 'uint16_t', possible loss of data
-#endif
-
 #ifdef __clang__
 RAPIDJSON_DIAG_OFF(padded)
 RAPIDJSON_DIAG_OFF(switch-enum)
 RAPIDJSON_DIAG_OFF(c++98-compat)
+#elif defined(_MSC_VER)
+RAPIDJSON_DIAG_OFF(4127) // conditional expression is constant
+RAPIDJSON_DIAG_OFF(4244) // conversion from kXxxFlags to 'uint16_t', possible loss of data
 #endif
 
 #ifdef __GNUC__
@@ -450,6 +448,26 @@ struct TypeHelper<ValueType, unsigned> {
     static ValueType& Set(ValueType& v, unsigned data) { return v.SetUint(data); }
     static ValueType& Set(ValueType& v, unsigned data, typename ValueType::AllocatorType&) { return v.SetUint(data); }
 };
+
+#ifdef _MSC_VER
+RAPIDJSON_STATIC_ASSERT(sizeof(long) == sizeof(int));
+template<typename ValueType>
+struct TypeHelper<ValueType, long> {
+    static bool Is(const ValueType& v) { return v.IsInt(); }
+    static long Get(const ValueType& v) { return v.GetInt(); }
+    static ValueType& Set(ValueType& v, long data) { return v.SetInt(data); }
+    static ValueType& Set(ValueType& v, long data, typename ValueType::AllocatorType&) { return v.SetInt(data); }
+};
+
+RAPIDJSON_STATIC_ASSERT(sizeof(unsigned long) == sizeof(unsigned));
+template<typename ValueType>
+struct TypeHelper<ValueType, unsigned long> {
+    static bool Is(const ValueType& v) { return v.IsUint(); }
+    static unsigned long Get(const ValueType& v) { return v.GetUint(); }
+    static ValueType& Set(ValueType& v, unsigned long data) { return v.SetUint(data); }
+    static ValueType& Set(ValueType& v, unsigned long data, typename ValueType::AllocatorType&) { return v.SetUint(data); }
+};
+#endif
 
 template<typename ValueType> 
 struct TypeHelper<ValueType, int64_t> {
@@ -1495,7 +1513,7 @@ public:
         MemberIterator pos = MemberBegin() + (first - MemberBegin());
         for (MemberIterator itr = pos; itr != last; ++itr)
             itr->~Member();
-        std::memmove(&*pos, &*last, static_cast<size_t>(MemberEnd() - last) * sizeof(Member));
+        std::memmove(static_cast<void*>(&*pos), &*last, static_cast<size_t>(MemberEnd() - last) * sizeof(Member));
         data_.o.size -= static_cast<SizeType>(last - first);
         return pos;
     }
@@ -1698,8 +1716,8 @@ public:
         RAPIDJSON_ASSERT(last <= End());
         ValueIterator pos = Begin() + (first - Begin());
         for (ValueIterator itr = pos; itr != last; ++itr)
-            itr->~GenericValue();       
-        std::memmove(pos, last, static_cast<size_t>(End() - last) * sizeof(GenericValue));
+            itr->~GenericValue();
+        std::memmove(static_cast<void*>(pos), last, static_cast<size_t>(End() - last) * sizeof(GenericValue));
         data_.a.size -= static_cast<SizeType>(last - first);
         return pos;
     }
@@ -2014,7 +2032,7 @@ private:
         if (count) {
             GenericValue* e = static_cast<GenericValue*>(allocator.Malloc(count * sizeof(GenericValue)));
             SetElementsPointer(e);
-            std::memcpy(e, values, count * sizeof(GenericValue));
+            std::memcpy(static_cast<void*>(e), values, count * sizeof(GenericValue));
         }
         else
             SetElementsPointer(0);
@@ -2027,7 +2045,7 @@ private:
         if (count) {
             Member* m = static_cast<Member*>(allocator.Malloc(count * sizeof(Member)));
             SetMembersPointer(m);
-            std::memcpy(m, members, count * sizeof(Member));
+            std::memcpy(static_cast<void*>(m), members, count * sizeof(Member));
         }
         else
             SetMembersPointer(0);
@@ -2362,7 +2380,7 @@ public:
     //!@name Handling parse errors
     //!@{
 
-    //! Whether a parse error has occured in the last parsing.
+    //! Whether a parse error has occurred in the last parsing.
     bool HasParseError() const { return parseResult_.IsError(); }
 
     //! Get the \ref ParseErrorCode of last parsing.

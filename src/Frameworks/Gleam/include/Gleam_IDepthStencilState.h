@@ -25,7 +25,7 @@ THE SOFTWARE.
 #include "Gleam_Defines.h"
 #include <Gaff_IRefCounted.h>
 
-#if defined(_WIN32) || defined(_WIN64)
+#if _MSC_VER
 	#pragma warning(push)
 	#pragma warning(disable: 4309)
 #endif
@@ -96,6 +96,6 @@ public:
 
 NS_END
 
-#if defined(_WIN32) || defined(_WIN64)
+#if _MSC_VER
 	#pragma warning(pop)
 #endif

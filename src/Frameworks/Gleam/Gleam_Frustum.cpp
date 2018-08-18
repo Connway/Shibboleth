@@ -61,8 +61,9 @@ void Frustum::construct(float fov, float aspect_ratio, float z_near, float z_far
 
 bool Frustum::contains(const AABB& aabb) const
 {
-	// Assuming compiler will unroll this loop
-	for (int32_t i = 0; i < ARRAY_SIZE(_planes); ++i) {
+	const int32_t size = static_cast<int32_t>(ARRAY_SIZE(_planes));
+
+	for (int32_t i = 0; i < size; ++i) {
 		// Plane normals are pointing outside. Therefore, if we are in front of a plane, we are outside the frustum.
 		if (_planes[i].contains(aabb) == Plane::FRONT) {
 			return false;

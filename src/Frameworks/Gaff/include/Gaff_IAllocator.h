@@ -27,10 +27,10 @@ THE SOFTWARE.
 
 #define GAFF_ALLOC_CAST(Type, size, allocator) reinterpret_cast<Type>(GAFF_ALLOC(size, allocator))
 
-#define GAFF_ALLOC_ARRAYT_ALIGNED(Class, alignment, count, allocator, ...) (allocator).template allocArrayT<Class>(alignment, count, __FILE__, __LINE__, __VA_ARGS__)
-#define GAFF_ALLOC_ARRAYT(Class, count, allocator, ...) (allocator).template allocArrayT<Class>(alignment, __FILE__, __LINE__, __VA_ARGS__)
-#define GAFF_ALLOCT_ALIGNED(Class, alignment, allocator, ...) (allocator).template allocT<Class>(alignment, __FILE__, __LINE__, __VA_ARGS__)
-#define GAFF_ALLOCT(Class, allocator, ...) (allocator).template allocT<Class>(__FILE__, __LINE__, __VA_ARGS__)
+#define GAFF_ALLOC_ARRAYT_ALIGNED(Class, alignment, count, allocator, ...) (allocator).template allocArrayT<Class>(alignment, count, __FILE__, __LINE__, ##__VA_ARGS__)
+#define GAFF_ALLOC_ARRAYT(Class, count, allocator, ...) (allocator).template allocArrayT<Class>(alignment, __FILE__, __LINE__, ##__VA_ARGS__)
+#define GAFF_ALLOCT_ALIGNED(Class, alignment, allocator, ...) (allocator).template allocT<Class>(alignment, __FILE__, __LINE__, ##__VA_ARGS__)
+#define GAFF_ALLOCT(Class, allocator, ...) (allocator).template allocT<Class>(__FILE__, __LINE__, ##__VA_ARGS__)
 #define GAFF_ALLOC_ALIGNED(size, alignment, allocator) (allocator).alloc(size, alignment, __FILE__, __LINE__)
 #define GAFF_ALLOC(size, allocator) (allocator).alloc(size, __FILE__, __LINE__)
 #define GAFF_FREE_ARRAYT(ptr, size, allocator) (allocator).freeArrayT(ptr, size)

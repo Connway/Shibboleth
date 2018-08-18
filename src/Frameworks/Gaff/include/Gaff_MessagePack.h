@@ -24,14 +24,14 @@ THE SOFTWARE.
 
 #include "Gaff_Assert.h"
 
-#ifdef PLATFORM_WINDOWS
+#ifdef _MSC_VER
 	#pragma warning(push)
 	#pragma warning(disable : 4127)
 #endif
 
 #include <mpack.h>
 
-#ifdef PLATFORM_WINDOWS
+#ifdef _MSC_VER
 	#pragma warning(pop)
 #endif
 
