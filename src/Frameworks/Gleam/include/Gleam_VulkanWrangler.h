@@ -325,7 +325,7 @@ namespace Gleam
 extern PFN_vkGetInstanceProcAddr vkGetInstanceProcAddr;
 extern PFN_vkGetDeviceProcAddr vkGetDeviceProcAddr;
 
-//macro(vkCreateViSurfaceNN, __VA_ARGS__); \
+//macro(vkCreateViSurfaceNN, __VA_ARGS__);
 
 #define VULKAN_DECL VULKAN_GET_PROC_LIST(VULKAN_FUNC_DECL); VULKAN_FUNC_LIST(VULKAN_FUNC_DECL)
 #define VULKAN_IMPL VULKAN_GET_PROC_LIST(VULKAN_FUNC_IMPL); VULKAN_FUNC_LIST(VULKAN_FUNC_IMPL)

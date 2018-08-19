@@ -64,7 +64,7 @@ protected:
 private:
 	int32_t _index_count;
 
-	GLEAM_REF_COUNTED(MeshBase);
+	GLEAM_REF_COUNTED_OVERRIDE(MeshBase);
 };
 
 NS_END

@@ -23,8 +23,8 @@ THE SOFTWARE.
 #pragma once
 
 #include "Gleam_IRenderDevice.h"
+#include "Gleam_IncludeD3D11.h"
 #include <Gaff_RefPtr.h>
-#include <dxgi1_6.h>
 
 struct ID3D11DeviceContext3;
 struct ID3D11Device5;

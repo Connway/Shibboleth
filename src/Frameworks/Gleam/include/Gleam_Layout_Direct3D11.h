@@ -46,7 +46,7 @@ public:
 private:
 	ID3D11InputLayout* _layout;
 
-	GLEAM_REF_COUNTED(LayoutD3D11);
+	GLEAM_REF_COUNTED_OVERRIDE(LayoutD3D11);
 };
 
 NS_END

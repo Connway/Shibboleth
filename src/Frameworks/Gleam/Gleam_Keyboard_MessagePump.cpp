@@ -130,7 +130,7 @@ bool KeyboardMP::isKeyDown(KeyCode key) const
 
 bool KeyboardMP::isKeyUp(KeyCode key) const
 {
-	return !_curr_state[key] == 0;
+	return _curr_state[key] == 0;
 }
 
 void KeyboardMP::allowRepeats(bool allow)

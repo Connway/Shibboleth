@@ -47,7 +47,7 @@ public:
 private:
 	ID3D11BlendState* _blend_state;
 
-	GLEAM_REF_COUNTED(BlendStateD3D11);
+	GLEAM_REF_COUNTED_OVERRIDE(BlendStateD3D11);
 };
 
 NS_END

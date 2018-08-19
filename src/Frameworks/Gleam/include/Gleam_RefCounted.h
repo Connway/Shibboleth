@@ -27,6 +27,8 @@ THE SOFTWARE.
 
 NS_GLEAM
 
+
+#define GLEAM_REF_COUNTED_OVERRIDE(Class) GAFF_REF_COUNTED_OVERRIDE(Class, *Gleam::GetAllocator())
 #define GLEAM_REF_COUNTED(Class) GAFF_REF_COUNTED(Class, *Gleam::GetAllocator())
 
 using RefCounted = Gaff::RefCounted<Gleam::ProxyAllocator>;

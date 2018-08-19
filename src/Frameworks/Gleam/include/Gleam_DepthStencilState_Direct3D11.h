@@ -47,7 +47,7 @@ private:
 	ID3D11DepthStencilState* _depth_stencil_state;
 	unsigned int _stencil_ref;
 
-	GLEAM_REF_COUNTED(DepthStencilStateD3D11);
+	GLEAM_REF_COUNTED_OVERRIDE(DepthStencilStateD3D11);
 };
 
 NS_END

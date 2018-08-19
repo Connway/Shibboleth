@@ -210,6 +210,8 @@ void TextureD3D11::destroy(void)
 				_texture_1d->Release();
 				break;
 
+			case DEPTH_STENCIL:
+			case DEPTH:
 			case TWOD:
 				_texture_2d->Release();
 				break;
@@ -220,6 +222,9 @@ void TextureD3D11::destroy(void)
 
 			case CUBE:
 				_texture_2d->Release();
+				break;
+
+			default:
 				break;
 		}
 

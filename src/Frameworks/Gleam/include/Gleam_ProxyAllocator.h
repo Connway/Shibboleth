@@ -49,12 +49,12 @@ public:
 		return GetAllocator()->alloc(size_bytes, alignment, file, line);
 	}
 
-	void* alloc(size_t size_bytes, const char* file, int line)
+	void* alloc(size_t size_bytes, const char* file, int line) override
 	{
 		return GetAllocator()->alloc(size_bytes, file, line);
 	}
 
-	void free(void* data)
+	void free(void* data) override
 	{
 		GetAllocator()->free(data);
 	}
@@ -77,12 +77,12 @@ public:
 		free(p);
 	}
 
-	const char* get_name() const
+	const char* get_name() const override
 	{
 		return _name;
 	}
 
-	void set_name(const char* pName)
+	void set_name(const char* pName) override
 	{
 		_name = pName;
 	}
