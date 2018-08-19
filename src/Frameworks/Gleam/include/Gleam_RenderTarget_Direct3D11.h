@@ -65,7 +65,7 @@ private:
 	friend class RenderOutputD3D11;
 	void setRTV(ID3D11RenderTargetView1* rt, const D3D11_VIEWPORT& viewport);
 
-	GLEAM_REF_COUNTED(RenderTargetD3D11);
+	GLEAM_REF_COUNTED_OVERRIDE(RenderTargetD3D11);
 };
 
 NS_END

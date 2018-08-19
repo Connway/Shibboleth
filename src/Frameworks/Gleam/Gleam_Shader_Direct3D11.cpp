@@ -405,6 +405,9 @@ void ShaderD3D11::destroy(void)
 			case SHADER_COMPUTE:
 				_shader_compute->Release();
 				break;
+
+			default:
+				break;
 		}
 
 		_shader = nullptr;

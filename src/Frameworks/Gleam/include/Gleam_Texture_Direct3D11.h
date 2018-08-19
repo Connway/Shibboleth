@@ -65,7 +65,7 @@ private:
 		ID3D11Texture3D* _texture_3d;
 	};
 
-	GLEAM_REF_COUNTED(TextureD3D11);
+	GLEAM_REF_COUNTED_OVERRIDE(TextureD3D11);
 };
 
 NS_END

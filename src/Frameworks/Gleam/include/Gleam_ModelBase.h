@@ -56,7 +56,7 @@ private:
 	Vector<ILayout*> _layouts;
 	Vector<IMesh*> _meshes;
 
-	GLEAM_REF_COUNTED(ModelBase);
+	GLEAM_REF_COUNTED_OVERRIDE(ModelBase);
 };
 
 NS_END

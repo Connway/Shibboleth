@@ -46,7 +46,7 @@ public:
 private:
 	ID3D11RasterizerState* _raster_state;
 
-	GLEAM_REF_COUNTED(RasterStateD3D11);
+	GLEAM_REF_COUNTED_OVERRIDE(RasterStateD3D11);
 };
 
 NS_END

@@ -40,7 +40,7 @@ public:
 	const MouseData& getMouseData(void) const override;
 	void getAbsolutePosition(int32_t& x, int32_t& y) const override;
 	void getRelativePosition(int32_t& x, int32_t& y) const override;
-	void getDeltas(int32_t& dx, int32_t& dy) const;
+	void getDeltas(int32_t& dx, int32_t& dy) const override;
 	//void getNormalizedAbsolutePosition(float& nx, float& ny) const override;
 	void getNormalizedRelativePosition(float& nx, float& ny) const override;
 	void getNormalizedDeltas(float& ndx, float& ndy) const override;

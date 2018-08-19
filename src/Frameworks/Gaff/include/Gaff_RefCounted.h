@@ -28,6 +28,26 @@ THE SOFTWARE.
 
 NS_GAFF
 
+#define GAFF_REF_COUNTED_OVERRIDE(Class, Allocator) \
+public: \
+	void addRef(void) const override \
+	{ \
+		++_count; \
+	} \
+	void release(void) const override \
+	{ \
+		const int32_t new_count = --_count; \
+		if (!new_count) { \
+			GAFF_FREET(this, Allocator); \
+		} \
+	} \
+	int32_t getRefCount(void) const override \
+	{ \
+		return _count; \
+	} \
+private: \
+	mutable std::atomic_int32_t _count = 0
+
 #define GAFF_REF_COUNTED(Class, Allocator) \
 public: \
 	void addRef(void) const \

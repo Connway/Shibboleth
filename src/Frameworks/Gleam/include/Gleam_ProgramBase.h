@@ -71,7 +71,7 @@ protected:
 	Vector<ISamplerState*> _sampler_states[IShader::SHADER_TYPE_SIZE];
 	Vector<IBuffer*> _constant_buffers[IShader::SHADER_TYPE_SIZE];
 
-	GLEAM_REF_COUNTED(ProgramBuffersBase);
+	GLEAM_REF_COUNTED_OVERRIDE(ProgramBuffersBase);
 };
 
 class ProgramBase : public IProgram
@@ -88,7 +88,7 @@ public:
 protected:
 	Gaff::RefPtr<IShader> _attached_shaders[IShader::SHADER_TYPE_SIZE];
 
-	GLEAM_REF_COUNTED(ProgramBase);
+	GLEAM_REF_COUNTED_OVERRIDE(ProgramBase);
 };
 
 NS_END
