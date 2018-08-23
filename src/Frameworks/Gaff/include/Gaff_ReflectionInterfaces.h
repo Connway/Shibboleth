@@ -1249,29 +1249,53 @@ public:
 	virtual const IAttribute* getEntryAttr(Hash32 name, int32_t index) const = 0;
 };
 
-template <class T>
-const T* ReflectionCast(const IReflectionObject& object)
+template <class Derived, class Base>
+const Derived* ReflectionCast(const Base& object)
 {
-	return object.getReflectionDefinition().getInterface<T>(object.getBasePointer());
+	return object.getReflectionDefinition().getInterface<Derived>(object.getBasePointer());
 }
 
-template <class T>
-T* ReflectionCast(IReflectionObject& object)
+template <class Derived, class Base>
+Derived* ReflectionCast(Base& object)
 {
-	return object.getReflectionDefinition().getInterface<T>(object.getBasePointer());
+	return object.getReflectionDefinition().getInterface<Derived>(object.getBasePointer());
 }
 
-template <class T>
-const T* InterfaceCast(const IReflectionObject& object, Hash64 interface_name)
+template <class Derived, class Base>
+const Derived* InterfaceCast(const Base& object, Hash64 interface_name)
 {
-	return reinterpret_cast<T*>(object.getReflectionDefinition().getInterface(interface_name, object.getBasePointer()));
+	return reinterpret_cast<Derived*>(object.getReflectionDefinition().getInterface(interface_name, object.getBasePointer()));
 }
 
-template <class T>
-T* InterfaceCast(IReflectionObject& object, Hash64 interface_name)
+template <class Derived, class Base>
+Derived* InterfaceCast(Base& object, Hash64 interface_name)
 {
-	return reinterpret_cast<T*>(object.getReflectionDefinition().getInterface(interface_name, object.getBasePointer()));
+	return reinterpret_cast<Derived*>(object.getReflectionDefinition().getInterface(interface_name, object.getBasePointer()));
 }
+
+//template <class T>
+//const T* ReflectionCast(const IReflectionObject& object)
+//{
+//	return object.getReflectionDefinition().getInterface<T>(object.getBasePointer());
+//}
+//
+//template <class T>
+//T* ReflectionCast(IReflectionObject& object)
+//{
+//	return object.getReflectionDefinition().getInterface<T>(object.getBasePointer());
+//}
+
+//template <class T>
+//const T* InterfaceCast(const IReflectionObject& object, Hash64 interface_name)
+//{
+//	return reinterpret_cast<T*>(object.getReflectionDefinition().getInterface(interface_name, object.getBasePointer()));
+//}
+//
+//template <class T>
+//T* InterfaceCast(IReflectionObject& object, Hash64 interface_name)
+//{
+//	return reinterpret_cast<T*>(object.getReflectionDefinition().getInterface(interface_name, object.getBasePointer()));
+//}
 
 NS_END
 
