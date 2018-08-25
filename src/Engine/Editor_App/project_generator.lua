@@ -60,5 +60,5 @@ project "Editor_App"
 
 	postbuildcommands
 	{
-		"{COPY} %{cfg.targetdir}/%{cfg.buildtarget.name} ../../../../workingdir"
+		"{COPY} %{cfg.targetdir}/%{cfg.buildtarget.name} ../../../../../workingdir"
 	}

@@ -7,7 +7,7 @@ table.foreachi(actions, RunFile)
 
 solution "Shibboleth"
 	if _ACTION then
-		location("../.generated/project/" .. _ACTION)
+		location("../.generated/project/" .. os.target() .. "/" .. _ACTION)
 	end
 
 	configurations(configs)

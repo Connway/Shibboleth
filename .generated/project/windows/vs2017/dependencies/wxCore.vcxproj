@@ -1,0 +1,1119 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Analyze|x64">
+      <Configuration>Analyze</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Profile|x64">
+      <Configuration>Profile</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Optimized_Debug|x64">
+      <Configuration>Optimized_Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{BD081726-A9AA-41FC-9265-55507EA6C84C}</ProjectGuid>
+    <IgnoreWarnCompileDuplicatedFilename>true</IgnoreWarnCompileDuplicatedFilename>
+    <Keyword>Win32Proj</Keyword>
+    <RootNamespace>wxCore</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0.17134.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v141</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v141</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Analyze|x64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v141</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Profile|x64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v141</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Optimized_Debug|x64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v141</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Analyze|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Optimized_Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <LinkIncremental>true</LinkIncremental>
+    <OutDir>..\..\..\..\build\windows\vs2017\output\x64\Debug\</OutDir>
+    <IntDir>..\..\..\..\build\windows\vs2017\intermediate\x64\Debug\wxCore\</IntDir>
+    <TargetName>wxCore64d</TargetName>
+    <TargetExt>.dll</TargetExt>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <LinkIncremental>false</LinkIncremental>
+    <OutDir>..\..\..\..\build\windows\vs2017\output\x64\Release\</OutDir>
+    <IntDir>..\..\..\..\build\windows\vs2017\intermediate\x64\Release\wxCore\</IntDir>
+    <TargetName>wxCore64</TargetName>
+    <TargetExt>.dll</TargetExt>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Analyze|x64'">
+    <LinkIncremental>false</LinkIncremental>
+    <OutDir>..\..\..\..\build\windows\vs2017\output\x64\Analyze\</OutDir>
+    <IntDir>..\..\..\..\build\windows\vs2017\intermediate\x64\Analyze\wxCore\</IntDir>
+    <TargetName>wxCore64a</TargetName>
+    <TargetExt>.dll</TargetExt>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">
+    <LinkIncremental>false</LinkIncremental>
+    <OutDir>..\..\..\..\build\windows\vs2017\output\x64\Profile\</OutDir>
+    <IntDir>..\..\..\..\build\windows\vs2017\intermediate\x64\Profile\wxCore\</IntDir>
+    <TargetName>wxCore64p</TargetName>
+    <TargetExt>.dll</TargetExt>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Optimized_Debug|x64'">
+    <LinkIncremental>false</LinkIncremental>
+    <OutDir>..\..\..\..\build\windows\vs2017\output\x64\Optimized_Debug\</OutDir>
+    <IntDir>..\..\..\..\build\windows\vs2017\intermediate\x64\Optimized_Debug\wxCore\</IntDir>
+    <TargetName>wxCore64od</TargetName>
+    <TargetExt>.dll</TargetExt>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <WarningLevel>Level4</WarningLevel>
+      <PreprocessorDefinitions>UNICODE;_UNICODE;EA_COMPILER_NO_RTTI;_DEBUG;DEBUG;WIN32;_WINDOWS;WIN64;NOPCH;WXBUILDING;wxUSE_ZLIB_H_IN_PATH;_CRT_SECURE_NO_DEPRECATE=1;_CRT_NON_CONFORMING_SWPRINTFS=1;_SCL_SECURE_NO_WARNINGS=1;XML_STATIC;WXMAKINGDLL_CORE;WXUSINGDLL;__WXMSW__;wxUSE_BASE=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\..\..\..\..\src\Dependencies\wxWidgets\include;..\..\..\..\..\src\Dependencies\wxWidgets\include\msvc;..\..\..\..\..\src\Dependencies\libjpeg;..\..\..\..\..\src\Dependencies\libpng;..\..\..\..\..\src\Dependencies\libtiff;..\..\..\..\..\src\Dependencies\zlib-ng;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+      <Optimization>Disabled</Optimization>
+      <ExceptionHandling>Async</ExceptionHandling>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <FloatingPointModel>Fast</FloatingPointModel>
+      <AdditionalOptions>/std:c++17 /sdl %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>Comctl32.lib;Rpcrt4.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <ImportLibrary>..\..\..\..\build\windows\vs2017\output\x64\Debug\wxCore64d.lib</ImportLibrary>
+    </Link>
+    <PostBuildEvent>
+      <Command>IF NOT EXIST ..\..\..\..\..\workingdir\bin (mkdir ..\..\..\..\..\workingdir\bin)
+IF EXIST ..\..\..\..\build\windows\vs2017\output\x64\Debug\$(TargetFileName)\ (xcopy /Q /E /Y /I ..\..\..\..\build\windows\vs2017\output\x64\Debug\$(TargetFileName) ..\..\..\..\..\workingdir\bin &gt; nul) ELSE (xcopy /Q /Y /I ..\..\..\..\build\windows\vs2017\output\x64\Debug\$(TargetFileName) ..\..\..\..\..\workingdir\bin &gt; nul)</Command>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <WarningLevel>Level4</WarningLevel>
+      <PreprocessorDefinitions>UNICODE;_UNICODE;EA_COMPILER_NO_RTTI;NDEBUG;WIN32;_WINDOWS;WIN64;NOPCH;WXBUILDING;wxUSE_ZLIB_H_IN_PATH;_CRT_SECURE_NO_DEPRECATE=1;_CRT_NON_CONFORMING_SWPRINTFS=1;_SCL_SECURE_NO_WARNINGS=1;XML_STATIC;WXMAKINGDLL_CORE;WXUSINGDLL;__WXMSW__;wxUSE_BASE=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\..\..\..\..\src\Dependencies\wxWidgets\include;..\..\..\..\..\src\Dependencies\wxWidgets\include\msvc;..\..\..\..\..\src\Dependencies\libjpeg;..\..\..\..\..\src\Dependencies\libpng;..\..\..\..\..\src\Dependencies\libtiff;..\..\..\..\..\src\Dependencies\zlib-ng;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <MinimalRebuild>false</MinimalRebuild>
+      <StringPooling>true</StringPooling>
+      <ExceptionHandling>Async</ExceptionHandling>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <FloatingPointModel>Fast</FloatingPointModel>
+      <AdditionalOptions>/std:c++17 /sdl %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalDependencies>Comctl32.lib;Rpcrt4.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <ImportLibrary>..\..\..\..\build\windows\vs2017\output\x64\Release\wxCore64.lib</ImportLibrary>
+    </Link>
+    <PostBuildEvent>
+      <Command>IF NOT EXIST ..\..\..\..\..\workingdir\bin (mkdir ..\..\..\..\..\workingdir\bin)
+IF EXIST ..\..\..\..\build\windows\vs2017\output\x64\Release\$(TargetFileName)\ (xcopy /Q /E /Y /I ..\..\..\..\build\windows\vs2017\output\x64\Release\$(TargetFileName) ..\..\..\..\..\workingdir\bin &gt; nul) ELSE (xcopy /Q /Y /I ..\..\..\..\build\windows\vs2017\output\x64\Release\$(TargetFileName) ..\..\..\..\..\workingdir\bin &gt; nul)</Command>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Analyze|x64'">
+    <ClCompile>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <WarningLevel>Level4</WarningLevel>
+      <PreprocessorDefinitions>UNICODE;_UNICODE;EA_COMPILER_NO_RTTI;NDEBUG;WIN32;_WINDOWS;WIN64;NOPCH;WXBUILDING;wxUSE_ZLIB_H_IN_PATH;_CRT_SECURE_NO_DEPRECATE=1;_CRT_NON_CONFORMING_SWPRINTFS=1;_SCL_SECURE_NO_WARNINGS=1;XML_STATIC;WXMAKINGDLL_CORE;WXUSINGDLL;__WXMSW__;wxUSE_BASE=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\..\..\..\..\src\Dependencies\wxWidgets\include;..\..\..\..\..\src\Dependencies\wxWidgets\include\msvc;..\..\..\..\..\src\Dependencies\libjpeg;..\..\..\..\..\src\Dependencies\libpng;..\..\..\..\..\src\Dependencies\libtiff;..\..\..\..\..\src\Dependencies\zlib-ng;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <MinimalRebuild>false</MinimalRebuild>
+      <StringPooling>true</StringPooling>
+      <ExceptionHandling>Async</ExceptionHandling>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <FloatingPointModel>Fast</FloatingPointModel>
+      <AdditionalOptions>/std:c++17 /analyze /sdl %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalDependencies>Comctl32.lib;Rpcrt4.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <ImportLibrary>..\..\..\..\build\windows\vs2017\output\x64\Analyze\wxCore64a.lib</ImportLibrary>
+    </Link>
+    <PostBuildEvent>
+      <Command>IF NOT EXIST ..\..\..\..\..\workingdir\bin (mkdir ..\..\..\..\..\workingdir\bin)
+IF EXIST ..\..\..\..\build\windows\vs2017\output\x64\Analyze\$(TargetFileName)\ (xcopy /Q /E /Y /I ..\..\..\..\build\windows\vs2017\output\x64\Analyze\$(TargetFileName) ..\..\..\..\..\workingdir\bin &gt; nul) ELSE (xcopy /Q /Y /I ..\..\..\..\build\windows\vs2017\output\x64\Analyze\$(TargetFileName) ..\..\..\..\..\workingdir\bin &gt; nul)</Command>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">
+    <ClCompile>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <WarningLevel>Level4</WarningLevel>
+      <PreprocessorDefinitions>UNICODE;_UNICODE;EA_COMPILER_NO_RTTI;NDEBUG;SHIB_PROFILE;WIN32;_WINDOWS;WIN64;NOPCH;WXBUILDING;wxUSE_ZLIB_H_IN_PATH;_CRT_SECURE_NO_DEPRECATE=1;_CRT_NON_CONFORMING_SWPRINTFS=1;_SCL_SECURE_NO_WARNINGS=1;XML_STATIC;WXMAKINGDLL_CORE;WXUSINGDLL;__WXMSW__;wxUSE_BASE=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\..\..\..\..\src\Dependencies\wxWidgets\include;..\..\..\..\..\src\Dependencies\wxWidgets\include\msvc;..\..\..\..\..\src\Dependencies\libjpeg;..\..\..\..\..\src\Dependencies\libpng;..\..\..\..\..\src\Dependencies\libtiff;..\..\..\..\..\src\Dependencies\zlib-ng;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <MinimalRebuild>false</MinimalRebuild>
+      <StringPooling>true</StringPooling>
+      <ExceptionHandling>Async</ExceptionHandling>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <FloatingPointModel>Fast</FloatingPointModel>
+      <AdditionalOptions>/std:c++17 /sdl %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalDependencies>Comctl32.lib;Rpcrt4.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <ImportLibrary>..\..\..\..\build\windows\vs2017\output\x64\Profile\wxCore64p.lib</ImportLibrary>
+    </Link>
+    <PostBuildEvent>
+      <Command>IF NOT EXIST ..\..\..\..\..\workingdir\bin (mkdir ..\..\..\..\..\workingdir\bin)
+IF EXIST ..\..\..\..\build\windows\vs2017\output\x64\Profile\$(TargetFileName)\ (xcopy /Q /E /Y /I ..\..\..\..\build\windows\vs2017\output\x64\Profile\$(TargetFileName) ..\..\..\..\..\workingdir\bin &gt; nul) ELSE (xcopy /Q /Y /I ..\..\..\..\build\windows\vs2017\output\x64\Profile\$(TargetFileName) ..\..\..\..\..\workingdir\bin &gt; nul)</Command>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Optimized_Debug|x64'">
+    <ClCompile>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <WarningLevel>Level4</WarningLevel>
+      <PreprocessorDefinitions>UNICODE;_UNICODE;EA_COMPILER_NO_RTTI;_DEBUG;DEBUG;WIN32;_WINDOWS;WIN64;NOPCH;WXBUILDING;wxUSE_ZLIB_H_IN_PATH;_CRT_SECURE_NO_DEPRECATE=1;_CRT_NON_CONFORMING_SWPRINTFS=1;_SCL_SECURE_NO_WARNINGS=1;XML_STATIC;WXMAKINGDLL_CORE;WXUSINGDLL;__WXMSW__;wxUSE_BASE=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\..\..\..\..\src\Dependencies\wxWidgets\include;..\..\..\..\..\src\Dependencies\wxWidgets\include\msvc;..\..\..\..\..\src\Dependencies\libjpeg;..\..\..\..\..\src\Dependencies\libpng;..\..\..\..\..\src\Dependencies\libtiff;..\..\..\..\..\src\Dependencies\zlib-ng;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <MinimalRebuild>false</MinimalRebuild>
+      <StringPooling>true</StringPooling>
+      <ExceptionHandling>Async</ExceptionHandling>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <FloatingPointModel>Fast</FloatingPointModel>
+      <AdditionalOptions>/std:c++17 /sdl %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalDependencies>Comctl32.lib;Rpcrt4.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <ImportLibrary>..\..\..\..\build\windows\vs2017\output\x64\Optimized_Debug\wxCore64od.lib</ImportLibrary>
+    </Link>
+    <PostBuildEvent>
+      <Command>IF NOT EXIST ..\..\..\..\..\workingdir\bin (mkdir ..\..\..\..\..\workingdir\bin)
+IF EXIST ..\..\..\..\build\windows\vs2017\output\x64\Optimized_Debug\$(TargetFileName)\ (xcopy /Q /E /Y /I ..\..\..\..\build\windows\vs2017\output\x64\Optimized_Debug\$(TargetFileName) ..\..\..\..\..\workingdir\bin &gt; nul) ELSE (xcopy /Q /Y /I ..\..\..\..\build\windows\vs2017\output\x64\Optimized_Debug\$(TargetFileName) ..\..\..\..\..\workingdir\bin &gt; nul)</Command>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\aboutdlg.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\accel.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\access.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\affinematrix2d.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\affinematrix2dbase.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\anidecod.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\animate.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\animdecod.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\anybutton.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\artprov.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\aui\aui.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\aui\auibar.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\aui\auibook.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\aui\dockart.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\aui\floatpane.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\aui\framemanager.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\aui\tabart.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\aui\tabmdi.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\bannerwindow.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\bitmap.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\bmpbuttn.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\bmpcbox.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\bookctrl.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\brush.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\busyinfo.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\button.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\calctrl.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\caret.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\checkbox.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\checklst.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\choicdlg.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\choice.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\choicebk.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\clipbrd.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\clrpicker.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\cmdproc.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\cmndata.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\collpane.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\colordlg.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\colour.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\colourdata.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\combo.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\combobox.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\commandlinkbutton.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\compositewin.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\control.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\cshelp.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\ctrlsub.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\cursor.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\custombgwin.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\dataobj.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\dataview.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\datectrl.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\dateevt.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\datetimectrl.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\dc.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\dcbuffer.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\dcclient.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\dcgraph.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\dcmemory.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\dcmirror.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\dcprint.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\dcps.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\dcscreen.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\dcsvg.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\debugrpt.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\dialog.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\dialup.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\dirctrl.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\dirdlg.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\display.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\display_impl.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\dnd.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\docmdi.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\docview.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\dragimag.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\dvrenderers.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\editlbox.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\effects.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\encinfo.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\evtloopsrc.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\fdrepdlg.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\filectrl.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\filedlg.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\filehistory.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\filepicker.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\fmappriv.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\font.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\fontdata.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\fontdlg.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\fontenum.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\fontpicker.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\fontutil.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\frame.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\gauge.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\gbsizer.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\gdicmn.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\gdiobj.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\generic\aboutdlgg.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\generic\accel.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\generic\animate.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\generic\bmpcbox.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\generic\busyinfo.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\generic\buttonbar.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\generic\calctrlg.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\generic\choicdgg.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\generic\clrpickerg.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\generic\collpaneg.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\generic\colrdlgg.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\generic\combo.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\generic\ctrlsub.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\generic\custombgwin.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\generic\dataview.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\generic\datectrl.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\generic\dcpsg.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\generic\dirctrlg.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\generic\dirdlgg.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\generic\dragimgg.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\generic\dvrenderer.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\generic\dvrenderers.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\generic\fdrepdlg.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\generic\filectrlg.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\generic\filedlgg.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\generic\filepickerg.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\generic\fontdlgg.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\generic\fontpickerg.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\generic\grid.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\generic\gridctrl.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\generic\grideditors.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\generic\gridsel.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\generic\headerctrlg.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\generic\helpext.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\generic\hyperlink.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\generic\infobar.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\generic\laywin.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\generic\listctrl.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\generic\logg.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\generic\mdig.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\generic\msgdlgg.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\generic\notebook.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\generic\notifmsg.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\generic\numdlgg.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\generic\panelg.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\generic\printps.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\generic\prntdlgg.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\generic\progdlgg.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\generic\propdlg.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\generic\richmsgdlgg.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\generic\sashwin.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\generic\scrolwin.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\generic\spinctlg.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\generic\splash.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\generic\splitter.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\generic\srchctlg.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\generic\statbmpg.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\generic\stattextg.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\generic\statusbr.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\generic\textdlgg.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\generic\timectrl.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\generic\treectlg.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\generic\wizard.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\geometry.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\gifdecod.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\glcanvas.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\graphics.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\grid.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\headercol.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\headerctrl.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\help.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\helpbase.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\helphtml.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\helpwin.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\html\helpctrl.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\html\helpdata.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\html\helpdlg.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\html\helpfrm.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\html\helpwnd.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\html\htmlcell.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\html\htmldefs.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\html\htmlfilt.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\html\htmlpars.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\html\htmlproc.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\html\htmltag.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\html\htmlwin.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\html\htmprint.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\html\m_templ.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\html\styleparams.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\html\winpars.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\htmllbox.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\hyperlink.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\icon.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\iconbndl.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\imagbmp.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\image.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\imaggif.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\imagiff.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\imagjpeg.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\imaglist.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\imagpcx.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\imagpng.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\imagpnm.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\imagtga.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\imagtiff.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\imagxpm.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\infobar.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\itemid.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\joystick.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\layout.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\laywin.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\listbase.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\listbook.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\listbox.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\listctrl.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\matrix.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\mdi.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\mediactrl.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\menu.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\menuitem.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\metafile.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\minifram.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\modalhook.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\mousemanager.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\msgdlg.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\msw\accel.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\msw\anybutton.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\msw\app.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\msw\bitmap.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\msw\bmpbuttn.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\msw\bmpcbox.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\msw\brush.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\msw\button.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\msw\calctrl.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\msw\caret.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\msw\checkbox.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\msw\checklst.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\msw\choice.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\msw\clipbrd.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\msw\colordlg.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\msw\colour.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\msw\combo.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\msw\combobox.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\msw\commandlinkbutton.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\msw\control.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\msw\ctrlsub.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\msw\cursor.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\msw\custombgwin.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\msw\datectrl.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\msw\datetimectrl.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\msw\dc.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\msw\dcclient.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\msw\dcmemory.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\msw\dcprint.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\msw\dcscreen.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\msw\dialog.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\msw\dib.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\msw\dirdlg.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\msw\dragimag.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\msw\enhmeta.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\msw\evtloop.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\msw\fdrepdlg.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\msw\filedlg.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\msw\font.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\msw\fontdlg.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\msw\frame.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\msw\gauge.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\msw\gdiimage.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\msw\glcanvas.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\msw\headerctrl.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\msw\helpbest.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\msw\helpchm.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\msw\helpwin.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\msw\htmlhelp.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\msw\hyperlink.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\msw\icon.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\msw\imaglist.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\msw\iniconf.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\msw\init.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\msw\joystick.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\msw\listbox.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\msw\listctrl.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\msw\mdi.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\msw\menu.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\msw\menuitem.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\msw\metafile.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\msw\minifram.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\msw\missing.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\msw\msgdlg.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\msw\msvcrt.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\msw\nonownedwnd.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\msw\notebook.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\msw\notifmsg.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\msw\ole\access.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\msw\ole\activex.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\msw\ole\automtn.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\msw\ole\dataform.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\msw\ole\dataobj.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\msw\ole\dataobj2.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\msw\ole\dropsrc.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\msw\ole\droptgt.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\msw\ole\oleutils.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\msw\ole\uuid.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\msw\ownerdrw.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\msw\palette.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\msw\panel.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\msw\pen.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\msw\popupwin.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\msw\printdlg.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\msw\printwin.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\msw\progdlg.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\msw\radiobox.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\msw\radiobut.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\msw\rcdefs.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\msw\region.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\msw\richmsgdlg.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\msw\scrolbar.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\msw\slider.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\msw\sound.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\msw\spinbutt.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\msw\spinctrl.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\msw\statbmp.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\msw\statbox.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\msw\statline.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\msw\stattext.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\msw\statusbar.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\msw\taskbar.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\msw\textctrl.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\msw\textentry.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\msw\tglbtn.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\msw\timectrl.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\msw\toolbar.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\msw\tooltip.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\msw\toplevel.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\msw\treectrl.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\msw\uxtheme.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\msw\uxthemep.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\msw\webview_ie.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\msw\webviewhistoryitem_ie.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\msw\window.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\nativewin.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\nonownedwnd.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\notebook.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\notifmsg.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\numdlg.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\odcombo.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\overlay.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\ownerdrw.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\palette.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\panel.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\paper.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\pen.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\persist.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\persist\bookctrl.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\persist\splitter.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\persist\toplevel.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\persist\treebook.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\persist\window.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\pickerbase.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\popupwin.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\position.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\print.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\printdlg.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\prntbase.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\progdlg.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\propdlg.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\propgrid\advprops.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\propgrid\editors.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\propgrid\manager.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\propgrid\property.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\propgrid\propgrid.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\propgrid\propgriddefs.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\propgrid\propgridiface.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\propgrid\propgridpagestate.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\propgrid\props.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\quantize.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\radiobox.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\radiobut.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\range.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\rawbmp.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\rearrangectrl.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\region.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\renderer.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\ribbon\art.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\ribbon\art_internal.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\ribbon\bar.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\ribbon\buttonbar.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\ribbon\control.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\ribbon\gallery.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\ribbon\page.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\ribbon\panel.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\ribbon\toolbar.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\richmsgdlg.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\richtext\richtextbackgroundpage.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\richtext\richtextborderspage.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\richtext\richtextbuffer.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\richtext\richtextbulletspage.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\richtext\richtextctrl.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\richtext\richtextdialogpage.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\richtext\richtextfontpage.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\richtext\richtextformatdlg.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\richtext\richtexthtml.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\richtext\richtextimagedlg.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\richtext\richtextindentspage.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\richtext\richtextliststylepage.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\richtext\richtextmarginspage.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\richtext\richtextprint.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\richtext\richtextsizepage.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\richtext\richtextstyledlg.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\richtext\richtextstylepage.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\richtext\richtextstyles.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\richtext\richtextsymboldlg.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\richtext\richtextuicustomization.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\richtext\richtextxml.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\richtooltip.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\sashwin.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\scopeguard.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\scrolbar.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\scrolwin.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\selstore.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\settings.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\simplebook.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\sizer.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\slider.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\sound.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\spinbutt.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\spinctrl.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\splash.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\splitter.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\srchctrl.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\statbmp.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\statbox.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\statline.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\stattext.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\statusbr.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\stc\stc.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\taskbar.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\tbarbase.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\textcompleter.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\textctrl.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\textdlg.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\textentry.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\textwrapper.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\tglbtn.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\timectrl.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\tipdlg.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\tipwin.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\toolbar.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\toolbook.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\tooltip.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\toplevel.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\treebase.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\treebook.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\treectrl.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\treelist.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\uiaction.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\valgen.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\validate.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\valnum.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\valtext.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\vidmode.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\vlbox.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\vms_x_fix.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\vscroll.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\webview.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\webviewarchivehandler.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\window.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\windowid.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\windowptr.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\withimages.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\wizard.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\wrapsizer.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\wupdlock.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\wxhtml.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\xpmdecod.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\xpmhand.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\xrc\xh_all.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\xrc\xh_animatctrl.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\xrc\xh_bannerwindow.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\xrc\xh_bmp.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\xrc\xh_bmpbt.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\xrc\xh_bmpcbox.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\xrc\xh_bttn.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\xrc\xh_cald.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\xrc\xh_chckb.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\xrc\xh_chckl.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\xrc\xh_choic.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\xrc\xh_choicbk.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\xrc\xh_clrpicker.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\xrc\xh_cmdlinkbn.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\xrc\xh_collpane.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\xrc\xh_combo.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\xrc\xh_comboctrl.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\xrc\xh_datectrl.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\xrc\xh_dirpicker.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\xrc\xh_dlg.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\xrc\xh_editlbox.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\xrc\xh_filectrl.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\xrc\xh_filepicker.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\xrc\xh_fontpicker.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\xrc\xh_frame.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\xrc\xh_gauge.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\xrc\xh_gdctl.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\xrc\xh_grid.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\xrc\xh_html.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\xrc\xh_htmllbox.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\xrc\xh_hyperlink.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\xrc\xh_listb.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\xrc\xh_listbk.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\xrc\xh_listc.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\xrc\xh_mdi.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\xrc\xh_menu.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\xrc\xh_notbk.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\xrc\xh_odcombo.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\xrc\xh_panel.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\xrc\xh_propdlg.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\xrc\xh_radbt.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\xrc\xh_radbx.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\xrc\xh_scrol.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\xrc\xh_scwin.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\xrc\xh_sizer.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\xrc\xh_slidr.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\xrc\xh_spin.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\xrc\xh_split.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\xrc\xh_srchctrl.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\xrc\xh_statbar.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\xrc\xh_stbmp.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\xrc\xh_stbox.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\xrc\xh_stlin.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\xrc\xh_sttxt.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\xrc\xh_text.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\xrc\xh_tglbtn.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\xrc\xh_timectrl.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\xrc\xh_toolb.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\xrc\xh_toolbk.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\xrc\xh_tree.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\xrc\xh_treebk.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\xrc\xh_unkwn.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\xrc\xh_wizrd.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\xrc\xmlres.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\common\accelcmn.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\common\accesscmn.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\common\affinematrix2d.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\common\anidecod.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\common\appcmn.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\common\artprov.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\common\artstd.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\common\arttango.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\common\bmpbase.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\common\bmpbtncmn.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\common\bookctrl.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\common\btncmn.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\common\cairo.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\common\checkboxcmn.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\common\checklstcmn.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\common\choiccmn.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\common\clipcmn.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\common\clrpickercmn.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\common\cmdproc.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\common\cmndata.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\common\colourcmn.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\common\colourdata.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\common\combocmn.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\common\containr.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\common\cshelp.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\common\ctrlcmn.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\common\ctrlsub.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\common\dcbase.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\common\dcbufcmn.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\common\dcgraph.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\common\dcsvg.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\common\dirctrlcmn.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\common\dlgcmn.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\common\dndcmn.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\common\dobjcmn.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\common\docmdi.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\common\docview.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\common\dpycmn.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\common\dseldlg.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\common\dummy.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\common\effects.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\common\event.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\common\fddlgcmn.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\common\filectrlcmn.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\common\filehistorycmn.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\common\filepickercmn.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\common\fldlgcmn.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\common\fontcmn.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\common\fontdata.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\common\fontenumcmn.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\common\fontmap.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\common\fontpickercmn.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\common\fontutilcmn.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\common\framecmn.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\common\fs_mem.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\common\gaugecmn.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\common\gbsizer.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\common\gdicmn.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\common\geometry.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\common\gifdecod.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\common\graphcmn.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\common\headercolcmn.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\common\headerctrlcmn.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\common\helpbase.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\common\iconbndl.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\common\imagall.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\common\imagbmp.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\common\image.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\common\imagfill.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\common\imaggif.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\common\imagiff.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\common\imagjpeg.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\common\imagpcx.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\common\imagpng.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\common\imagpnm.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\common\imagtga.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\common\imagtiff.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\common\imagxpm.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\common\layout.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\common\lboxcmn.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\common\listctrlcmn.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\common\markupparser.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\common\matrix.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\common\menucmn.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\common\modalhook.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\common\mousemanager.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\common\msgout.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\common\nbkbase.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\common\overlaycmn.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\common\ownerdrwcmn.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\common\panelcmn.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\common\paper.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\common\persist.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\common\pickerbase.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\common\popupcmn.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\common\preferencescmn.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\common\prntbase.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\common\quantize.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\common\radiobtncmn.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\common\radiocmn.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\common\rearrangectrl.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\common\rendcmn.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\common\rgncmn.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\common\scrolbarcmn.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\common\settcmn.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\common\sizer.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\common\slidercmn.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\common\spinbtncmn.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\common\spinctrlcmn.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\common\srchcmn.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\common\statbar.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\common\statbmpcmn.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\common\statboxcmn.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\common\statlinecmn.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\common\stattextcmn.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\common\stockitem.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\common\tbarbase.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\common\textcmn.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\common\textentrycmn.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\common\textmeasurecmn.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\common\toplvcmn.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\common\treebase.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\common\uiactioncmn.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\common\utilscmn.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\common\valgen.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\common\validate.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\common\valnum.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\common\valtext.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\common\wincmn.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\common\windowid.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\common\wrapsizer.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\common\xpmdecod.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\generic\busyinfo.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\generic\buttonbar.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\generic\choicbkg.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\generic\choicdgg.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\generic\clrpickerg.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\generic\collpaneg.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\generic\combog.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\generic\dcpsg.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\generic\dirctrlg.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\generic\dragimgg.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\generic\filectrlg.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\generic\filepickerg.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\generic\fontpickerg.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\generic\graphicc.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\generic\headerctrlg.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\generic\infobar.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\generic\listbkg.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\generic\logg.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\generic\markuptext.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\generic\msgdlgg.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\generic\numdlgg.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\generic\preferencesg.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\generic\printps.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\generic\prntdlgg.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\generic\progdlgg.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\generic\renderg.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\generic\richmsgdlgg.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\generic\scrlwing.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\generic\selstore.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\generic\spinctlg.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\generic\splitter.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\generic\srchctlg.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\generic\statbmpg.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\generic\stattextg.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\generic\statusbr.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\generic\textdlgg.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\generic\tipwin.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\generic\toolbkg.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\generic\treebkg.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\generic\treectlg.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\generic\vlbox.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\generic\vscroll.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\msw\accel.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\msw\anybutton.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\msw\app.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\msw\artmsw.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\msw\bitmap.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\msw\bmpbuttn.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\msw\brush.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\msw\button.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\msw\caret.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\msw\checkbox.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\msw\checklst.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\msw\choice.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\msw\clipbrd.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\msw\colordlg.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\msw\colour.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\msw\combo.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\msw\combobox.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\msw\control.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\msw\cursor.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\msw\data.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\msw\dc.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\msw\dcclient.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\msw\dcmemory.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\msw\dcprint.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\msw\dcscreen.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\msw\dialog.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\msw\dialup.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\msw\dib.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\msw\dirdlg.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\msw\display.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\msw\dragimag.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\msw\enhmeta.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\msw\evtloop.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\msw\fdrepdlg.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\msw\filedlg.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\msw\font.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\msw\fontdlg.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\msw\fontenum.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\msw\fontutil.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\msw\frame.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\msw\gauge.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\msw\gdiimage.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\msw\gdiobj.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\msw\gdiplus.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\msw\graphics.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\msw\headerctrl.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\msw\helpchm.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\msw\helpwin.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\msw\icon.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\msw\imaglist.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\msw\iniconf.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\msw\listbox.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\msw\listctrl.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\msw\main.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\msw\mdi.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\msw\menu.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\msw\menuitem.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\msw\metafile.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\msw\minifram.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\msw\msgdlg.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\msw\mslu.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\msw\nativdlg.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\msw\nativewin.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\msw\nonownedwnd.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\msw\notebook.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\msw\ole\access.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\msw\ole\activex.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\msw\ole\automtn.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\msw\ole\dataobj.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\msw\ole\dropsrc.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\msw\ole\droptgt.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\msw\ole\oleutils.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\msw\ole\safearray.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\msw\ole\uuid.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\msw\ownerdrw.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\msw\palette.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\msw\panel.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\msw\pen.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\msw\popupwin.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\msw\printdlg.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\msw\printwin.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\msw\progdlg.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\msw\radiobox.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\msw\radiobut.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\msw\region.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\msw\renderer.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\msw\richmsgdlg.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\msw\scrolbar.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\msw\settings.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\msw\slider.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\msw\spinbutt.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\msw\spinctrl.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\msw\statbmp.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\msw\statbox.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\msw\statline.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\msw\stattext.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\msw\statusbar.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\msw\textctrl.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\msw\textentry.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\msw\textmeasure.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\msw\tglbtn.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\msw\toolbar.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\msw\tooltip.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\msw\toplevel.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\msw\treectrl.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\msw\uiaction.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\msw\utilsgui.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\msw\utilswin.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\msw\uxtheme.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\msw\volume.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\msw\window.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\xrc\xmlreshandler.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\engine\Engine.vcxproj">
+      <Project>{DBC7D3B0-C769-FE86-B024-12DB9C6585D7}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\engine\Memory.vcxproj">
+      <Project>{BE94DDC2-AA36-0899-93F1-1BED7F328FE9}</Project>
+    </ProjectReference>
+    <ProjectReference Include="wxBase.vcxproj">
+      <Project>{EF401626-DBE2-40FC-C49D-5450B0DEC74C}</Project>
+    </ProjectReference>
+    <ProjectReference Include="libjpeg.vcxproj">
+      <Project>{42546879-AE33-E714-B74B-72EB23AA4D76}</Project>
+    </ProjectReference>
+    <ProjectReference Include="libpng.vcxproj">
+      <Project>{C1DD6F0B-AD7F-9AE1-963A-AE35827B2132}</Project>
+    </ProjectReference>
+    <ProjectReference Include="libtiff.vcxproj">
+      <Project>{65B26D79-D191-EC14-DAA9-77EB46085376}</Project>
+    </ProjectReference>
+    <ProjectReference Include="zlib-ng.vcxproj">
+      <Project>{584D90B6-C42C-0F52-CD44-9A2839A375B3}</Project>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

@@ -16,12 +16,16 @@ Libraries Affected:
 	assimp
 		Changed '#include "../contrib/unzip/unzip.h' lines to "#include <unzip.h>", as I already have minizip compiled into a separate lib.
 		Fixed compilation error because a variable wasn't initialized.
-	minizip 
+	minizip
 		Commented out a block that says #define _CRT_SECURE_NO_WARNINGS, as I have it defined at the project level
 	dirent
 		Got rid of warnings in Visual Studio.
+	EASTL
+		Fixed compilation warnings/errors.
 	libuv
 		Fixing potentially uninitialized pointer errors.
+	rapidjson
+		Fixed compilation warnings/errors.
 	zlib-ng
 		Fixing compilation errors.
 		Adding OF macro

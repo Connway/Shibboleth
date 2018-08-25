@@ -43,7 +43,7 @@ project "libjpeg"
 	filter { "action:vs*" }
 		defines { "_CRT_SECURE_NO_WARNINGS" }
 
-	filter { "action:gmake", "toolset:gcc or clang" }
+	filter { "action:not vs*", "toolset:gcc or clang" }
 		buildoptions { "-fPIC" }
 
 	filter {}

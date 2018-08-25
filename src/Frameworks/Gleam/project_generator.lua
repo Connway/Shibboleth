@@ -9,6 +9,9 @@ project "Gleam"
 	filter { "configurations:not Analyze*" }
 		flags { "FatalWarnings" }
 
+	filter { "action:not vs*", "configurations:*Clang" }
+		buildoptions { "-Wno-varargs" }
+
 	filter {}
 
 	files { "**.h", "**.cpp" }

@@ -2,7 +2,7 @@ function ModuleGen(module_name)
 	prebuildmessage("Generating Gen_ReflectionInit.h for module " .. module_name .. "!")
 	prebuildcommands
 	{
-		"cd ../../../../utils",
+		"cd ../../../../../utils",
 		"premake5 gen_module_header --module=" .. module_name
 	}
 end
@@ -10,16 +10,16 @@ end
 function ModuleCopy()
 	postbuildcommands
 	{
-		"{MKDIR} ../../../../workingdir/Modules",
-		"{COPY} %{cfg.targetdir}/%{cfg.buildtarget.name} ../../../../workingdir/Modules"
+		"{MKDIR} ../../../../../workingdir/Modules",
+		"{COPY} %{cfg.targetdir}/%{cfg.buildtarget.name} ../../../../../workingdir/Modules"
 	}
 end
 
 function ModuleEditorCopy()
 	postbuildcommands
 	{
-		"{MKDIR} ../../../../workingdir/EditorModules",
-		"{COPY} %{cfg.targetdir}/%{cfg.buildtarget.name} ../../../../workingdir/EditorModules"
+		"{MKDIR} ../../../../../workingdir/EditorModules",
+		"{COPY} %{cfg.targetdir}/%{cfg.buildtarget.name} ../../../../../workingdir/EditorModules"
 	}
 end
 
@@ -34,35 +34,35 @@ function NewDeleteLinkFix()
 	filter { "system:windows", "configurations:Debug*", "platforms:x64" }
 		links
 		{
-			"../../../.generated/build/" .. _ACTION .. "/output/x64/Debug/Engine.lib",
+			"../../../.generated/build/" .. os.target() .. "/" .. _ACTION .. "/output/x64/Debug/Engine.lib",
 			"msvcrtd.lib"
 		}
 
 	filter { "system:windows", "configurations:Release*", "platforms:x64" }
 		links
 		{
-			"../../../.generated/build/" .. _ACTION .. "/output/x64/Release/Engine.lib",
+			"../../../.generated/build/" .. os.target() .. "/" .. _ACTION .. "/output/x64/Release/Engine.lib",
 			"msvcrt.lib"
 		}
 
 	filter { "system:windows", "configurations:Analyze*", "platforms:x64" }
 		links
 		{
-			"../../../.generated/build/" .. _ACTION .. "/output/x64/Release/Engine.lib",
+			"../../../.generated/build/" .. os.target() .. "/" .. _ACTION .. "/output/x64/Release/Engine.lib",
 			"msvcrt.lib"
 		}
 
 	filter { "system:windows", "configurations:Optimized_Debug*", "platforms:x64" }
 		links
 		{
-			"../../../.generated/build/" .. _ACTION .. "/output/x64/Debug/Engine.lib",
+			"../../../.generated/build/" .. os.target() .. "/" .. _ACTION .. "/output/x64/Debug/Engine.lib",
 			"msvcrtd.lib"
 		}
 
 	filter { "system:windows", "configurations:Profile*", "platforms:x64" }
 		links
 		{
-			"../../../.generated/build/" .. _ACTION .. "/output/x64/Release/Engine.lib",
+			"../../../.generated/build/" .. os.target() .. "/" .. _ACTION .. "/output/x64/Release/Engine.lib",
 			"msvcrt.lib"
 		}
 
@@ -71,7 +71,7 @@ end
 
 function GetActionLocation()
 	if _ACTION then
-		return "../../../.generated/project/" .. _ACTION
+		return "../../../.generated/project/" .. os.target() .. "/" .. _ACTION
 	else
 		return ""
 	end
@@ -91,6 +91,10 @@ end
 
 function GetEngineLocation()
 	return GetActionLocation() .. "/engine"
+end
+
+function GetTestsLocation()
+	return GetActionLocation() .. "/tests"
 end
 
 function RunFile(file)

@@ -82,7 +82,7 @@ local tests = {
 function GenTest(settings)
 	project(settings.name)
 		if _ACTION then
-			location ("../../.generated/project/" .. _ACTION .. "/tests")
+			location(GetTestsLocation())
 		end
 
 		kind "ConsoleApp"
