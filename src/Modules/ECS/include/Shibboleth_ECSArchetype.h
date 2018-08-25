@@ -24,6 +24,7 @@ THE SOFTWARE.
 
 #include <Shibboleth_Vector.h>
 #include <Gaff_JSON.h>
+#include <Gaff_Hash.h>
 
 NS_GAFF
 	class IReflectionDefinition;
@@ -34,19 +35,40 @@ NS_SHIBBOLETH
 class ECSArchetype
 {
 public:
+	void addShared(const Vector<const Gaff::IReflectionDefinition*>& ref_defs);
+	void addShared(const Gaff::IReflectionDefinition* ref_def);
+	void removeShared(const Vector<const Gaff::IReflectionDefinition*>& ref_defs);
+	void removeShared(const Gaff::IReflectionDefinition* ref_def);
+	void removeShared(int32_t index);
+
 	void add(const Vector<const Gaff::IReflectionDefinition*>& ref_defs);
 	void add(const Gaff::IReflectionDefinition* ref_def);
 	void remove(const Vector<const Gaff::IReflectionDefinition*>& ref_defs);
 	void remove(const Gaff::IReflectionDefinition* ref_def);
 	void remove(int32_t index);
 
+	int32_t sharedSize(void) const;
 	int32_t size(void) const;
 
+	Gaff::Hash64 getHash(void) const;
+
+	bool fromJSON(const Gaff::JSON& json);
 	Gaff::JSON toJSON(void) const;
 
 private:
+	Vector<const Gaff::IReflectionDefinition*> _shared_vars;
 	Vector<const Gaff::IReflectionDefinition*> _vars;
+
+	mutable Gaff::Hash64 _hash = Gaff::INIT_HASH64;
+
+	int32_t _shared_alloc_size = 0;
 	int32_t _alloc_size = 0;
+
+	void add(Vector<const Gaff::IReflectionDefinition*>& vars, int32_t& alloc_size, const Vector<const Gaff::IReflectionDefinition*>& ref_defs);
+	void add(Vector<const Gaff::IReflectionDefinition*>& vars, int32_t& alloc_size, const Gaff::IReflectionDefinition* ref_def);
+	void remove(Vector<const Gaff::IReflectionDefinition*>& vars, int32_t& alloc_size, const Vector<const Gaff::IReflectionDefinition*>& ref_defs);
+	void remove(Vector<const Gaff::IReflectionDefinition*>& vars, int32_t& alloc_size, const Gaff::IReflectionDefinition* ref_def);
+	void remove(Vector<const Gaff::IReflectionDefinition*>& vars, int32_t& alloc_size, int32_t index);
 };
 
 NS_END
