@@ -94,7 +94,11 @@ function GetEngineLocation()
 end
 
 function GetTestsLocation()
-	return GetActionLocation() .. "/tests"
+	if _ACTION then
+		return "../../.generated/project/" .. os.target() .. "/" .. _ACTION .. "/tests"
+	else
+		return ""
+	end
 end
 
 function RunFile(file)
