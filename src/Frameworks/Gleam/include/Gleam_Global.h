@@ -38,7 +38,7 @@ enum LogMsgType
 	LOG_ERROR
 };
 
-using LogFunc = void (*) (const char*, LogMsgType);
+using LogFunc = void (*)(const char*, LogMsgType);
 
 void SetAllocator(Gaff::IAllocator* allocator);
 Gaff::IAllocator* GetAllocator(void);

@@ -247,7 +247,7 @@ private:
 
                 case '{':
                     {
-                        unsigned n, m;
+                        unsigned n = 0, m = 0;
                         if (!ParseUnsigned(ds, &n))
                             return;
 

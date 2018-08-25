@@ -1,16 +1,16 @@
 function SetIntermediateAndTargetDirs(configuration)
 	if _ACTION then
 		filter { "configurations:" .. configuration, "platforms:x86" }
-			objdir("../.generated/build/" .. _ACTION .. "/intermediate")
-			targetdir("../.generated/build/" .. _ACTION .. "/output/x86/" .. configuration)
+			objdir("../.generated/build/" .. os.target() .. "/" .. _ACTION .. "/intermediate")
+			targetdir("../.generated/build/" .. os.target() .. "/" .. _ACTION .. "/output/x86/" .. configuration)
 
 		filter { "configurations:" .. configuration, "platforms:x64" }
-			objdir("../.generated/build/" .. _ACTION .. "/intermediate")
-			targetdir("../.generated/build/" .. _ACTION .. "/output/x64/" .. configuration)
+			objdir("../.generated/build/" .. os.target() .. "/" .. _ACTION .. "/intermediate")
+			targetdir("../.generated/build/" .. os.target() .. "/" .. _ACTION .. "/output/x64/" .. configuration)
 	end
 end
 
--- if os.get() == "windows" then
+-- if os.ishost("windows") then
 -- 	platforms { "x86", "x64" }
 -- else
 	platforms { "x64" }
@@ -53,7 +53,7 @@ SetIntermediateAndTargetDirs("Analyze")
 SetIntermediateAndTargetDirs("Profile")
 SetIntermediateAndTargetDirs("Optimized_Debug")
 
-if _OPTIONS["gen-clang"] and _ACTION == "vs2017" then
+if _OPTIONS["gen-clang"] then
 	SetIntermediateAndTargetDirs("Debug_Clang")
 	SetIntermediateAndTargetDirs("Release_Clang")
 	SetIntermediateAndTargetDirs("Analyze_Clang")
@@ -104,5 +104,8 @@ filter { "system:windows", "platforms:x64" }
 
 filter { "configurations:*Clang", "action:vs*" }
 	toolset "msc-llvm-vs2014"
+
+filter { "configurations:*Clang", "action:not vs*" }
+	toolset "clang"
 
 filter {}

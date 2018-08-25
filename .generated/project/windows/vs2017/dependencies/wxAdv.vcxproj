@@ -1,0 +1,397 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Analyze|x64">
+      <Configuration>Analyze</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Profile|x64">
+      <Configuration>Profile</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Optimized_Debug|x64">
+      <Configuration>Optimized_Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{6F53AB10-DB67-D3C1-A4E9-762110BDCFF2}</ProjectGuid>
+    <IgnoreWarnCompileDuplicatedFilename>true</IgnoreWarnCompileDuplicatedFilename>
+    <Keyword>Win32Proj</Keyword>
+    <RootNamespace>wxAdv</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0.17134.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v141</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v141</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Analyze|x64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v141</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Profile|x64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v141</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Optimized_Debug|x64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v141</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Analyze|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Optimized_Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <LinkIncremental>true</LinkIncremental>
+    <OutDir>..\..\..\..\build\windows\vs2017\output\x64\Debug\</OutDir>
+    <IntDir>..\..\..\..\build\windows\vs2017\intermediate\x64\Debug\wxAdv\</IntDir>
+    <TargetName>wxAdv64d</TargetName>
+    <TargetExt>.dll</TargetExt>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <LinkIncremental>false</LinkIncremental>
+    <OutDir>..\..\..\..\build\windows\vs2017\output\x64\Release\</OutDir>
+    <IntDir>..\..\..\..\build\windows\vs2017\intermediate\x64\Release\wxAdv\</IntDir>
+    <TargetName>wxAdv64</TargetName>
+    <TargetExt>.dll</TargetExt>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Analyze|x64'">
+    <LinkIncremental>false</LinkIncremental>
+    <OutDir>..\..\..\..\build\windows\vs2017\output\x64\Analyze\</OutDir>
+    <IntDir>..\..\..\..\build\windows\vs2017\intermediate\x64\Analyze\wxAdv\</IntDir>
+    <TargetName>wxAdv64a</TargetName>
+    <TargetExt>.dll</TargetExt>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">
+    <LinkIncremental>false</LinkIncremental>
+    <OutDir>..\..\..\..\build\windows\vs2017\output\x64\Profile\</OutDir>
+    <IntDir>..\..\..\..\build\windows\vs2017\intermediate\x64\Profile\wxAdv\</IntDir>
+    <TargetName>wxAdv64p</TargetName>
+    <TargetExt>.dll</TargetExt>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Optimized_Debug|x64'">
+    <LinkIncremental>false</LinkIncremental>
+    <OutDir>..\..\..\..\build\windows\vs2017\output\x64\Optimized_Debug\</OutDir>
+    <IntDir>..\..\..\..\build\windows\vs2017\intermediate\x64\Optimized_Debug\wxAdv\</IntDir>
+    <TargetName>wxAdv64od</TargetName>
+    <TargetExt>.dll</TargetExt>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <WarningLevel>Level4</WarningLevel>
+      <PreprocessorDefinitions>UNICODE;_UNICODE;EA_COMPILER_NO_RTTI;_DEBUG;DEBUG;WIN32;_WINDOWS;WIN64;NOPCH;WXBUILDING;wxUSE_ZLIB_H_IN_PATH;_CRT_SECURE_NO_DEPRECATE=1;_CRT_NON_CONFORMING_SWPRINTFS=1;_SCL_SECURE_NO_WARNINGS=1;XML_STATIC;WXMAKINGDLL_ADV;WXUSINGDLL;__WXMSW__;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\..\..\..\..\src\Dependencies\wxWidgets\include;..\..\..\..\..\src\Dependencies\wxWidgets\include\msvc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+      <Optimization>Disabled</Optimization>
+      <ExceptionHandling>Async</ExceptionHandling>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <FloatingPointModel>Fast</FloatingPointModel>
+      <AdditionalOptions>/std:c++17 /sdl %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>Winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <ImportLibrary>..\..\..\..\build\windows\vs2017\output\x64\Debug\wxAdv64d.lib</ImportLibrary>
+    </Link>
+    <PostBuildEvent>
+      <Command>IF NOT EXIST ..\..\..\..\..\workingdir\bin (mkdir ..\..\..\..\..\workingdir\bin)
+IF EXIST ..\..\..\..\build\windows\vs2017\output\x64\Debug\$(TargetFileName)\ (xcopy /Q /E /Y /I ..\..\..\..\build\windows\vs2017\output\x64\Debug\$(TargetFileName) ..\..\..\..\..\workingdir\bin &gt; nul) ELSE (xcopy /Q /Y /I ..\..\..\..\build\windows\vs2017\output\x64\Debug\$(TargetFileName) ..\..\..\..\..\workingdir\bin &gt; nul)</Command>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <WarningLevel>Level4</WarningLevel>
+      <PreprocessorDefinitions>UNICODE;_UNICODE;EA_COMPILER_NO_RTTI;NDEBUG;WIN32;_WINDOWS;WIN64;NOPCH;WXBUILDING;wxUSE_ZLIB_H_IN_PATH;_CRT_SECURE_NO_DEPRECATE=1;_CRT_NON_CONFORMING_SWPRINTFS=1;_SCL_SECURE_NO_WARNINGS=1;XML_STATIC;WXMAKINGDLL_ADV;WXUSINGDLL;__WXMSW__;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\..\..\..\..\src\Dependencies\wxWidgets\include;..\..\..\..\..\src\Dependencies\wxWidgets\include\msvc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <MinimalRebuild>false</MinimalRebuild>
+      <StringPooling>true</StringPooling>
+      <ExceptionHandling>Async</ExceptionHandling>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <FloatingPointModel>Fast</FloatingPointModel>
+      <AdditionalOptions>/std:c++17 /sdl %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalDependencies>Winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <ImportLibrary>..\..\..\..\build\windows\vs2017\output\x64\Release\wxAdv64.lib</ImportLibrary>
+    </Link>
+    <PostBuildEvent>
+      <Command>IF NOT EXIST ..\..\..\..\..\workingdir\bin (mkdir ..\..\..\..\..\workingdir\bin)
+IF EXIST ..\..\..\..\build\windows\vs2017\output\x64\Release\$(TargetFileName)\ (xcopy /Q /E /Y /I ..\..\..\..\build\windows\vs2017\output\x64\Release\$(TargetFileName) ..\..\..\..\..\workingdir\bin &gt; nul) ELSE (xcopy /Q /Y /I ..\..\..\..\build\windows\vs2017\output\x64\Release\$(TargetFileName) ..\..\..\..\..\workingdir\bin &gt; nul)</Command>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Analyze|x64'">
+    <ClCompile>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <WarningLevel>Level4</WarningLevel>
+      <PreprocessorDefinitions>UNICODE;_UNICODE;EA_COMPILER_NO_RTTI;NDEBUG;WIN32;_WINDOWS;WIN64;NOPCH;WXBUILDING;wxUSE_ZLIB_H_IN_PATH;_CRT_SECURE_NO_DEPRECATE=1;_CRT_NON_CONFORMING_SWPRINTFS=1;_SCL_SECURE_NO_WARNINGS=1;XML_STATIC;WXMAKINGDLL_ADV;WXUSINGDLL;__WXMSW__;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\..\..\..\..\src\Dependencies\wxWidgets\include;..\..\..\..\..\src\Dependencies\wxWidgets\include\msvc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <MinimalRebuild>false</MinimalRebuild>
+      <StringPooling>true</StringPooling>
+      <ExceptionHandling>Async</ExceptionHandling>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <FloatingPointModel>Fast</FloatingPointModel>
+      <AdditionalOptions>/std:c++17 /analyze /sdl %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalDependencies>Winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <ImportLibrary>..\..\..\..\build\windows\vs2017\output\x64\Analyze\wxAdv64a.lib</ImportLibrary>
+    </Link>
+    <PostBuildEvent>
+      <Command>IF NOT EXIST ..\..\..\..\..\workingdir\bin (mkdir ..\..\..\..\..\workingdir\bin)
+IF EXIST ..\..\..\..\build\windows\vs2017\output\x64\Analyze\$(TargetFileName)\ (xcopy /Q /E /Y /I ..\..\..\..\build\windows\vs2017\output\x64\Analyze\$(TargetFileName) ..\..\..\..\..\workingdir\bin &gt; nul) ELSE (xcopy /Q /Y /I ..\..\..\..\build\windows\vs2017\output\x64\Analyze\$(TargetFileName) ..\..\..\..\..\workingdir\bin &gt; nul)</Command>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">
+    <ClCompile>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <WarningLevel>Level4</WarningLevel>
+      <PreprocessorDefinitions>UNICODE;_UNICODE;EA_COMPILER_NO_RTTI;NDEBUG;SHIB_PROFILE;WIN32;_WINDOWS;WIN64;NOPCH;WXBUILDING;wxUSE_ZLIB_H_IN_PATH;_CRT_SECURE_NO_DEPRECATE=1;_CRT_NON_CONFORMING_SWPRINTFS=1;_SCL_SECURE_NO_WARNINGS=1;XML_STATIC;WXMAKINGDLL_ADV;WXUSINGDLL;__WXMSW__;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\..\..\..\..\src\Dependencies\wxWidgets\include;..\..\..\..\..\src\Dependencies\wxWidgets\include\msvc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <MinimalRebuild>false</MinimalRebuild>
+      <StringPooling>true</StringPooling>
+      <ExceptionHandling>Async</ExceptionHandling>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <FloatingPointModel>Fast</FloatingPointModel>
+      <AdditionalOptions>/std:c++17 /sdl %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalDependencies>Winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <ImportLibrary>..\..\..\..\build\windows\vs2017\output\x64\Profile\wxAdv64p.lib</ImportLibrary>
+    </Link>
+    <PostBuildEvent>
+      <Command>IF NOT EXIST ..\..\..\..\..\workingdir\bin (mkdir ..\..\..\..\..\workingdir\bin)
+IF EXIST ..\..\..\..\build\windows\vs2017\output\x64\Profile\$(TargetFileName)\ (xcopy /Q /E /Y /I ..\..\..\..\build\windows\vs2017\output\x64\Profile\$(TargetFileName) ..\..\..\..\..\workingdir\bin &gt; nul) ELSE (xcopy /Q /Y /I ..\..\..\..\build\windows\vs2017\output\x64\Profile\$(TargetFileName) ..\..\..\..\..\workingdir\bin &gt; nul)</Command>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Optimized_Debug|x64'">
+    <ClCompile>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <WarningLevel>Level4</WarningLevel>
+      <PreprocessorDefinitions>UNICODE;_UNICODE;EA_COMPILER_NO_RTTI;_DEBUG;DEBUG;WIN32;_WINDOWS;WIN64;NOPCH;WXBUILDING;wxUSE_ZLIB_H_IN_PATH;_CRT_SECURE_NO_DEPRECATE=1;_CRT_NON_CONFORMING_SWPRINTFS=1;_SCL_SECURE_NO_WARNINGS=1;XML_STATIC;WXMAKINGDLL_ADV;WXUSINGDLL;__WXMSW__;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\..\..\..\..\src\Dependencies\wxWidgets\include;..\..\..\..\..\src\Dependencies\wxWidgets\include\msvc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <MinimalRebuild>false</MinimalRebuild>
+      <StringPooling>true</StringPooling>
+      <ExceptionHandling>Async</ExceptionHandling>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <FloatingPointModel>Fast</FloatingPointModel>
+      <AdditionalOptions>/std:c++17 /sdl %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalDependencies>Winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <ImportLibrary>..\..\..\..\build\windows\vs2017\output\x64\Optimized_Debug\wxAdv64od.lib</ImportLibrary>
+    </Link>
+    <PostBuildEvent>
+      <Command>IF NOT EXIST ..\..\..\..\..\workingdir\bin (mkdir ..\..\..\..\..\workingdir\bin)
+IF EXIST ..\..\..\..\build\windows\vs2017\output\x64\Optimized_Debug\$(TargetFileName)\ (xcopy /Q /E /Y /I ..\..\..\..\build\windows\vs2017\output\x64\Optimized_Debug\$(TargetFileName) ..\..\..\..\..\workingdir\bin &gt; nul) ELSE (xcopy /Q /Y /I ..\..\..\..\build\windows\vs2017\output\x64\Optimized_Debug\$(TargetFileName) ..\..\..\..\..\workingdir\bin &gt; nul)</Command>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\aboutdlg.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\animate.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\bannerwindow.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\bmpcbox.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\calctrl.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\commandlinkbutton.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\dataview.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\datectrl.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\dateevt.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\datetimectrl.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\dcbuffer.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\dvrenderers.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\editlbox.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\generic\aboutdlgg.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\generic\animate.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\generic\bmpcbox.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\generic\calctrlg.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\generic\dataview.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\generic\datectrl.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\generic\dvrenderer.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\generic\dvrenderers.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\generic\grid.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\generic\gridctrl.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\generic\grideditors.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\generic\gridsel.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\generic\helpext.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\generic\hyperlink.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\generic\laywin.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\generic\notifmsg.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\generic\propdlg.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\generic\sashwin.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\generic\splash.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\generic\timectrl.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\generic\wizard.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\grid.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\hyperlink.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\joystick.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\laywin.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\msw\bmpcbox.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\msw\calctrl.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\msw\commandlinkbutton.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\msw\datectrl.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\msw\datetimectrl.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\msw\hyperlink.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\msw\joystick.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\msw\notifmsg.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\msw\sound.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\msw\taskbar.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\msw\timectrl.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\notifmsg.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\odcombo.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\propdlg.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\richtooltip.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\sashwin.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\sound.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\splash.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\taskbar.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\timectrl.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\tipdlg.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\treelist.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\wxWidgets\include\wx\wizard.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\common\animatecmn.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\common\bmpcboxcmn.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\common\calctrlcmn.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\common\datavcmn.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\common\dummy.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\common\gridcmn.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\common\hyperlnkcmn.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\common\odcombocmn.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\common\richtooltipcmn.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\common\taskbarcmn.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\generic\aboutdlgg.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\generic\animateg.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\generic\bannerwindow.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\generic\bmpcboxg.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\generic\calctrlg.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\generic\commandlinkbuttong.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\generic\datavgen.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\generic\datectlg.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\generic\editlbox.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\generic\grid.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\generic\gridctrl.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\generic\grideditors.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\generic\gridsel.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\generic\helpext.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\generic\hyperlinkg.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\generic\laywin.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\generic\notifmsgg.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\generic\odcombo.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\generic\propdlg.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\generic\richtooltipg.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\generic\sashwin.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\generic\splash.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\generic\timectrlg.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\generic\tipdlg.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\generic\treelist.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\generic\wizard.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\msw\aboutdlg.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\msw\bmpcbox.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\msw\calctrl.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\msw\commandlinkbutton.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\msw\datecontrols.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\msw\datectrl.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\msw\datetimectrl.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\msw\hyperlink.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\msw\joystick.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\msw\notifmsg.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\msw\richtooltip.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\msw\sound.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\msw\taskbar.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\wxWidgets\src\msw\timectrl.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\engine\Engine.vcxproj">
+      <Project>{DBC7D3B0-C769-FE86-B024-12DB9C6585D7}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\engine\Memory.vcxproj">
+      <Project>{BE94DDC2-AA36-0899-93F1-1BED7F328FE9}</Project>
+    </ProjectReference>
+    <ProjectReference Include="wxBase.vcxproj">
+      <Project>{EF401626-DBE2-40FC-C49D-5450B0DEC74C}</Project>
+    </ProjectReference>
+    <ProjectReference Include="wxCore.vcxproj">
+      <Project>{BD081726-A9AA-41FC-9265-55507EA6C84C}</Project>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

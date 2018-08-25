@@ -36,6 +36,6 @@ project "Memory"
 
 	postbuildcommands
 	{
-		"{MKDIR} ../../../../workingdir/bin",
-		"{COPY} %{cfg.targetdir}/%{cfg.buildtarget.name} ../../../../workingdir/bin"
+		"{MKDIR} ../../../../../workingdir/bin",
+		"{COPY} %{cfg.targetdir}/%{cfg.buildtarget.name} ../../../../../workingdir/bin"
 	}

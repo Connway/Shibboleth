@@ -1,18 +1,16 @@
 syntax: glob
 *.suo
 *.user
-build/*
 *.ncb
 *.sdf
 *.opensdf
 *.exp
 *.pyc
-workingdir/logs/*
-workingdir/bin/*
 *.VC.db
 *.opendb
-project/vs2017/.vs/*
-project/vs2015/.vs/*
-workingdir/App/logs/*
+*/.vs/*
 */Gen_ReflectionInit.h
+.generated/build/*
 workingdir/editor_logs/*
+workingdir/logs/*
+workingdir/bin/*
