@@ -261,7 +261,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ResourceModule", "modules\R
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{1FCE6517-8B83-DE0C-1478-D8E3802CD510}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "AllocatorTest", "..\..\..\..\..\.generated\project\windows\vs2017\tests\AllocatorTest.vcxproj", "{A6C019BC-1281-95F2-DBBB-DE6F473BDACE}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "AllocatorTest", "tests\AllocatorTest.vcxproj", "{A6C019BC-1281-95F2-DBBB-DE6F473BDACE}"
 	ProjectSection(ProjectDependencies) = postProject
 		{99A8857C-85DF-860D-2ECC-6C101AE2020F} = {99A8857C-85DF-860D-2ECC-6C101AE2020F}
 		{BE94DDC2-AA36-0899-93F1-1BED7F328FE9} = {BE94DDC2-AA36-0899-93F1-1BED7F328FE9}
@@ -269,7 +269,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "AllocatorTest", "..\..\..\.
 		{DBC7D3B0-C769-FE86-B024-12DB9C6585D7} = {DBC7D3B0-C769-FE86-B024-12DB9C6585D7}
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ReflectionTest", "..\..\..\..\..\.generated\project\windows\vs2017\tests\ReflectionTest.vcxproj", "{D023306B-BCF1-2371-A585-949791F2FFD5}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ReflectionTest", "tests\ReflectionTest.vcxproj", "{D023306B-BCF1-2371-A585-949791F2FFD5}"
 	ProjectSection(ProjectDependencies) = postProject
 		{99A8857C-85DF-860D-2ECC-6C101AE2020F} = {99A8857C-85DF-860D-2ECC-6C101AE2020F}
 		{BE94DDC2-AA36-0899-93F1-1BED7F328FE9} = {BE94DDC2-AA36-0899-93F1-1BED7F328FE9}

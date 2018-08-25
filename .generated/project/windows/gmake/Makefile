@@ -734,13 +734,13 @@ endif
 AllocatorTest: Gaff Memory EASTL Engine
 ifneq (,$(AllocatorTest_config))
 	@echo "==== Building AllocatorTest ($(AllocatorTest_config)) ===="
-	@${MAKE} --no-print-directory -C ../../../../../.generated/project/windows/gmake/tests -f AllocatorTest.make config=$(AllocatorTest_config)
+	@${MAKE} --no-print-directory -C tests -f AllocatorTest.make config=$(AllocatorTest_config)
 endif
 
 ReflectionTest: Gaff Memory EASTL Engine mpack
 ifneq (,$(ReflectionTest_config))
 	@echo "==== Building ReflectionTest ($(ReflectionTest_config)) ===="
-	@${MAKE} --no-print-directory -C ../../../../../.generated/project/windows/gmake/tests -f ReflectionTest.make config=$(ReflectionTest_config)
+	@${MAKE} --no-print-directory -C tests -f ReflectionTest.make config=$(ReflectionTest_config)
 endif
 
 clean:
@@ -792,8 +792,8 @@ clean:
 	@${MAKE} --no-print-directory -C modules -f MainLoopModule.make clean
 	@${MAKE} --no-print-directory -C modules -f Resource.make clean
 	@${MAKE} --no-print-directory -C modules -f ResourceModule.make clean
-	@${MAKE} --no-print-directory -C ../../../../../.generated/project/windows/gmake/tests -f AllocatorTest.make clean
-	@${MAKE} --no-print-directory -C ../../../../../.generated/project/windows/gmake/tests -f ReflectionTest.make clean
+	@${MAKE} --no-print-directory -C tests -f AllocatorTest.make clean
+	@${MAKE} --no-print-directory -C tests -f ReflectionTest.make clean
 
 help:
 	@echo "Usage: make [config=name] [target]"
