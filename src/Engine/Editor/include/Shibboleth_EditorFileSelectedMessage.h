@@ -26,7 +26,7 @@ THE SOFTWARE.
 
 NS_SHIBBOLETH
 
-class EditorFileSelectedMessage final
+class EditorFileSelectedMessage final : public Gaff::IReflectionObject
 {
 public:
 	EditorFileSelectedMessage(const char* path);

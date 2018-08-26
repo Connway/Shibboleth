@@ -28,7 +28,7 @@ THE SOFTWARE.
 #include "Gaff_Assert.h"
 #include "Gaff_Utils.h"
 
-#ifdef PLATFORM_WINDOWS
+#ifdef _MSC_VER
 	#pragma warning(push)
 	#pragma warning(disable : 4505)
 #endif
@@ -403,7 +403,7 @@ private:
 		template <class T2, class A2>
 		typename ReflectionDefinition<T2, A2>::StaticFuncData toDerived(void) const
 		{
-			ReflectionDefinition<T2, A2>::StaticFuncData func_data;
+			typename ReflectionDefinition<T2, A2>::StaticFuncData func_data;
 			memcpy(func_data.func, func, sizeof(VoidFunc) * NUM_OVERLOADS);
 			memcpy(func_data.hash, hash, sizeof(Hash64) * NUM_OVERLOADS);
 			return func_data;
@@ -467,7 +467,7 @@ private:
 	ptrdiff_t getBasePointerOffset(Hash64 interface_name) const override;
 	void instantiated(void* object) const override;
 
-	template <class RefT, class Allocator>
+	template <class RefT, class AllocatorT>
 	friend class ReflectionDefinition;
 };
 
@@ -476,10 +476,10 @@ NS_END
 #include "Gaff_ReflectionDefinition.inl"
 
 #define CLASS_HASH(Class) Gaff::FNV1aHash64Const(#Class)
-#define ARG_HASH(...) Gaff::CalcTemplateHash<__VA_ARGS__>(Gaff::INIT_HASH64, std::array<const char*, Gaff::GetNumArgs<__VA_ARGS__>()>{ GAFF_FOR_EACH_COMMA(GAFF_STR, __VA_ARGS__) })
-#define BASE(type) base<type>(#type)
+#define ARG_HASH(...) Gaff::CalcTemplateHash<__VA_ARGS__>(Gaff::INIT_HASH64, eastl::array<const char*, Gaff::GetNumArgs<__VA_ARGS__>()>{ GAFF_FOR_EACH_COMMA(GAFF_STR, __VA_ARGS__) })
+#define BASE(type) template base<type>(#type)
 #define CTOR(...) ctor<__VA_ARGS__>(ARG_HASH(__VA_ARGS__))
 
-#ifdef PLATFORM_WINDOWS
+#ifdef _MSC_VER
 	#pragma warning(pop)
 #endif

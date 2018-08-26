@@ -50,10 +50,16 @@ namespace eastl
 	template <typename T> 
 	inline void swap(T& a, T& b) EA_NOEXCEPT_IF(eastl::is_nothrow_move_constructible<T>::value && eastl::is_nothrow_move_assignable<T>::value)
 	{
+#ifdef EA_COMPILER_GNUC
 		T temp;
 		temp = EASTL_MOVE(a);  // EASTL_MOVE uses EASTL::move when available, else is a no-op.
 		a = EASTL_MOVE(b);
 		b = EASTL_MOVE(temp);
+#else
+		T temp(EASTL_MOVE(a));  // EASTL_MOVE uses EASTL::move when available, else is a no-op.
+		a = EASTL_MOVE(b);
+		b = EASTL_MOVE(temp);
+#endif
 	}
 
 

@@ -25,7 +25,7 @@ solution "Shibboleth"
 	group "Frameworks"
 	table.foreachi(framework_generators, RunFile)
 
-	group "Engine"
+	group "Core"
 	table.foreachi(engine_generators, RunFile)
 
 	group "Modules"

@@ -28,7 +28,7 @@ THE SOFTWARE.
 
 NS_SHIBBOLETH
 
-class Position
+class Position final : public Gaff::IReflectionObject
 {
 public:
 	// Slow versions for posterity.
@@ -42,7 +42,7 @@ public:
 	SHIB_REFLECTION_CLASS_DECLARE(Position);
 };
 
-class Rotation
+class Rotation final : public Gaff::IReflectionObject
 {
 public:
 	// Slow versions for posterity.

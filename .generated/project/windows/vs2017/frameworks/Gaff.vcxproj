@@ -251,8 +251,6 @@
     <ClInclude Include="..\..\..\..\..\src\Frameworks\Gaff\include\Gaff_DefaultAlignedAllocator.h" />
     <ClInclude Include="..\..\..\..\..\src\Frameworks\Gaff\include\Gaff_DefaultAllocator.h" />
     <ClInclude Include="..\..\..\..\..\src\Frameworks\Gaff\include\Gaff_Defines.h" />
-    <ClInclude Include="..\..\..\..\..\src\Frameworks\Gaff\include\Gaff_Directory.h" />
-    <ClInclude Include="..\..\..\..\..\src\Frameworks\Gaff\include\Gaff_Directory.inl" />
     <ClInclude Include="..\..\..\..\..\src\Frameworks\Gaff\include\Gaff_DynamicLoader.h" />
     <ClInclude Include="..\..\..\..\..\src\Frameworks\Gaff\include\Gaff_DynamicLoader.inl" />
     <ClInclude Include="..\..\..\..\..\src\Frameworks\Gaff\include\Gaff_DynamicModule.h" />

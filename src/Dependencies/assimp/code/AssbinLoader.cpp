@@ -3,7 +3,8 @@
 Open Asset Import Library (assimp)
 ---------------------------------------------------------------------------
 
-Copyright (c) 2006-2017, assimp team
+Copyright (c) 2006-2018, assimp team
+
 
 
 All rights reserved.
@@ -51,7 +52,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 // internal headers
 #include "AssbinLoader.h"
 #include "assbin_chunks.h"
-#include "MemoryIOWrapper.h"
+#include <assimp/MemoryIOWrapper.h>
 #include <assimp/mesh.h>
 #include <assimp/anim.h>
 #include <assimp/scene.h>
@@ -712,8 +713,8 @@ void AssbinImporter::InternReadFile( const std::string& pFile, aiScene* pScene, 
 
     if (compressed)
     {
-        size_t uncompressedSize = Read<uint32_t>(stream);
-		size_t compressedSize = static_cast<size_t>(stream->FileSize() - stream->Tell());
+        size_t uncompressedSize = static_cast<size_t>(Read<uint32_t>(stream));
+        uLongf compressedSize = static_cast<uLongf>(stream->FileSize() - stream->Tell());
 
         unsigned char * compressedData = new unsigned char[ compressedSize ];
         stream->Read( compressedData, 1, compressedSize );

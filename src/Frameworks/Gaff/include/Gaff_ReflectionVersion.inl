@@ -121,7 +121,7 @@ template <size_t size, class Ret, class... Args, class... Attrs>
 ReflectionVersion<T>& ReflectionVersion<T>::staticFunc(const char (&name)[size], Ret (*func)(Args...), const Attrs&...)
 {
 	_hash = FNV1aHash64(name, size - 1, _hash);
-	_hash = FNV1aHash64T(&ptr, _hash);
+	_hash = FNV1aHash64T(&func, _hash);
 	
 	if constexpr (sizeof...(Attrs) > 0) {
 		_hash = FNV1aHash64(name, size - 1, _hash);

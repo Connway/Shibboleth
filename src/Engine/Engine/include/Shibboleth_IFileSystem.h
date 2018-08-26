@@ -55,7 +55,7 @@ public:
 
 	// This function circumvents the file cache. If a file is already open, it will open it again and allocate another buffer.
 	// Should be used during initialization/loading phases only.
-	virtual bool forEachFile(const char* directory, eastl::function<bool (const char*, IFile*)>& callback) = 0;
+	virtual bool forEachFile(const char* directory, eastl::function<bool (const char*, IFile*)>& callback, bool recursive = false) = 0;
 };
 
 NS_END

@@ -9,7 +9,10 @@ project "Engine"
 	filter { "configurations:not Analyze*" }
 		flags { "FatalWarnings" }
 
-	filter { "system:windows" }
+	filter { "system:windows", "action:not vs*", "configurations:*Clang" }
+		includedirs { "../../Dependencies/dirent" }
+
+	filter { "system:windows", "action:vs*" }
 		includedirs { "../../Dependencies/dirent" }
 
 	filter {}

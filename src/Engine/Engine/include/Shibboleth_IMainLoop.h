@@ -26,9 +26,11 @@ THE SOFTWARE.
 
 NS_SHIBBOLETH
 
-class IMainLoop
+class IMainLoop : public Gaff::IReflectionObject
 {
 public:
+	virtual ~IMainLoop(void) {}
+
 	virtual bool init(void) = 0;
 	virtual void destroy(void) = 0;
 	virtual void update(void) = 0;

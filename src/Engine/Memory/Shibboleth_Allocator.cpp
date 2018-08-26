@@ -31,7 +31,7 @@ THE SOFTWARE.
 #include <eastl/algorithm.h>
 #include <rpmalloc.h>
 
-#ifdef PLATFORM_WINDOWS
+#ifdef _MSC_VER
 	// Disable "structure was padded due to alignment specifier" warning
 	#pragma warning(push)
 	#pragma warning(disable: 4324)
@@ -298,11 +298,7 @@ const char* Allocator::getPoolName(size_t pool_index) const
 
 void Allocator::setLogDir(const char* log_dir)
 {
-	for (int32_t i = 0; log_dir[i] && i < ARRAY_SIZE(_log_dir); ++i) {
-		_log_dir[i] = log_dir[i];
-	}
-
-	_log_dir[ARRAY_SIZE(_log_dir) - 1] = 0;
+	strncpy(_log_dir, log_dir, ARRAY_SIZE(_log_dir) - 1);
 }
 
 void Allocator::setHeaderData(
@@ -459,6 +455,6 @@ void Allocator::writeLeakLog(void) const
 
 NS_END
 
-#ifdef PLATFORM_WINDOWS
+#ifdef _MSC_VER
 	#pragma warning(pop)
 #endif

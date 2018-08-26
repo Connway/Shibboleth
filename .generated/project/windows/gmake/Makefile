@@ -427,7 +427,7 @@ endif
 
 PROJECTS := assimp EASTL easy_profiler expat libjpeg libpng libtiff libuv minizip mpack rpmalloc wxBase wxCore wxXML wxAdv wxAui wxHTML wxMedia wxPropGrid wxQA wxRegex wxRibbon wxRichText wxWebview wxXRC zlib-ng Esprit Gaff Gleam Editor Editor_App Engine Game_App Memory ECS ECSModule EditorBasic EditorBasicModule EditorMainLoop EditorMainLoopModule Entity EntityModule GraphicsDirect3D11 GraphicsDirect3D11Module MainLoop MainLoopModule Resource ResourceModule AllocatorTest ReflectionTest
 
-.PHONY: all clean help $(PROJECTS) Dependencies Dependencies/wxWidgets Frameworks Engine Modules Tests
+.PHONY: all clean help $(PROJECTS) Dependencies Dependencies/wxWidgets Frameworks Core Modules Tests
 
 all: $(PROJECTS)
 
@@ -437,7 +437,7 @@ Dependencies/wxWidgets: wxAdv wxAui wxBase wxCore wxHTML wxMedia wxPropGrid wxQA
 
 Frameworks: Esprit Gaff Gleam
 
-Engine: Editor Editor_App Engine Game_App Memory
+Core: Editor Editor_App Engine Game_App Memory
 
 Modules: ECS ECSModule EditorBasic EditorBasicModule EditorMainLoop EditorMainLoopModule Entity EntityModule GraphicsDirect3D11 GraphicsDirect3D11Module MainLoop MainLoopModule Resource ResourceModule
 

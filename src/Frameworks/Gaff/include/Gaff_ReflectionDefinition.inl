@@ -20,12 +20,29 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#ifdef PLATFORM_WINDOWS
+#ifdef _MSC_VER
 	#pragma warning(push)
 	#pragma warning(disable : 4307)
 #endif
 
 NS_GAFF
+
+template <bool is_pointer>
+struct ValueHelper;
+
+template <>
+struct ValueHelper<true>
+{
+	template <class T>
+	using type = typename std::add_pointer<T>::type;
+};
+
+template <>
+struct ValueHelper<false>
+{
+	template <class T>
+	using type = T;
+};
 
 template <class T, class... Args>
 void* FactoryFunc(IAllocator& allocator, Args... args)
@@ -189,10 +206,10 @@ void ReflectionDefinition<T, Allocator>::VarFuncPtr<Ret, Var>::setData(void* obj
 	GAFF_ASSERT(_setter);
 	GAFF_ASSERT(data);
 
-	using VarNoRef = std::remove_reference<Var>::type;
-	using VarNoPointer = std::remove_pointer<VarNoRef>::type;
-	using VarNoConst = std::remove_const<VarNoPointer>::type;
-	using VarFinal = ValueHelper<std::is_pointer<VarNoRef>::value>::type<VarNoConst>;
+	using VarNoRef = typename std::remove_reference<Var>::type;
+	using VarNoPointer = typename std::remove_pointer<VarNoRef>::type;
+	using VarNoConst = typename std::remove_const<VarNoPointer>::type;
+	using VarFinal = typename ValueHelper<std::is_pointer<VarNoRef>::value>::template type<VarNoConst>;
 
 	T* obj = reinterpret_cast<T*>(object);
 	(obj->*_setter)(*reinterpret_cast<const VarFinal*>(data));
@@ -206,10 +223,10 @@ void ReflectionDefinition<T, Allocator>::VarFuncPtr<Ret, Var>::setDataMove(void*
 	GAFF_ASSERT(_setter);
 	GAFF_ASSERT(data);
 
-	using VarNoRef = std::remove_reference<Var>::type;
-	using VarNoPointer = std::remove_pointer<VarNoRef>::type;
-	using VarNoConst = std::remove_const<VarNoPointer>::type;
-	using VarFinal = ValueHelper<std::is_pointer<VarNoRef>::value>::type<VarNoConst>;
+	using VarNoRef = typename std::remove_reference<Var>::type;
+	using VarNoPointer = typename std::remove_pointer<VarNoRef>::type;
+	using VarNoConst = typename std::remove_const<VarNoPointer>::type;
+	using VarFinal = typename ValueHelper<std::is_pointer<VarNoRef>::value>::template type<VarNoConst>;
 
 	T* obj = reinterpret_cast<T*>(object);
 	(obj->*_setter)(*reinterpret_cast<VarFinal*>(data));
@@ -222,7 +239,7 @@ void ReflectionDefinition<T, Allocator>::VarFuncPtr<Ret, Var>::load(const ISeria
 	GAFF_ASSERT(_getter);
 	GAFF_ASSERT(_setter);
 
-	using Type = std::remove_const<std::remove_reference<Ret>::type>::type;
+	using Type = typename std::remove_const<typename std::remove_reference<Ret>::type>::type;
 
 	if (std::is_reference<Ret>::value) {
 		const Type& val = (object.*_getter)();
@@ -242,7 +259,7 @@ void ReflectionDefinition<T, Allocator>::VarFuncPtr<Ret, Var>::save(ISerializeWr
 {
 	GAFF_ASSERT(_getter);
 
-	using Type = std::remove_const<std::remove_reference<Ret>::type>::type;
+	using Type = typename std::remove_const<typename std::remove_reference<Ret>::type>::type;
 	const Type& val = (object.*_getter)();
 	GAFF_REFLECTION_NAMESPACE::Reflection<Type>::Save(writer, val);
 }
@@ -1088,7 +1105,7 @@ ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::base(voi
 
 		// Base class static funcs
 		for (auto& it : base_ref_def._static_funcs) {
-			_static_funcs.emplace(it.first, it.second.toDerived<T, Allocator>());
+			_static_funcs.emplace(it.first, it.second.template toDerived<T, Allocator>());
 		}
 
 		// Base class class attrs
@@ -1155,23 +1172,6 @@ ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::var(cons
 	return *this;
 }
 
-template <bool is_pointer>
-struct ValueHelper;
-
-template <>
-struct ValueHelper<true>
-{
-	template <class T>
-	using type = typename std::add_pointer<T>::type;
-};
-
-template <>
-struct ValueHelper<false>
-{
-	template <class T>
-	using type = T;
-};
-
 template <class T, class Allocator>
 template <class Ret, class Var, size_t size, class... Attrs>
 ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::var(const char (&name)[size], Ret (T::*getter)(void) const, void (T::*setter)(Var), const Attrs&... attributes)
@@ -1179,12 +1179,12 @@ ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::var(cons
 	using RetNoRef = typename std::remove_reference<Ret>::type;
 	using RetNoPointer = typename std::remove_pointer<RetNoRef>::type;
 	using RetNoConst = typename std::remove_const<RetNoPointer>::type;
-	using RetFinal = typename ValueHelper<std::is_pointer<RetNoRef>::value>::type<RetNoConst>;
+	using RetFinal = typename ValueHelper<std::is_pointer<RetNoRef>::value>::template type<RetNoConst>;
 
 	using VarNoRef = typename std::remove_reference<Var>::type;
 	using VarNoPointer = typename std::remove_pointer<VarNoRef>::type;
 	using VarNoConst = typename std::remove_const<VarNoPointer>::type;
-	using VarFinal = typename ValueHelper<std::is_pointer<VarNoRef>::value>::type<VarNoConst>;
+	using VarFinal = typename ValueHelper<std::is_pointer<VarNoRef>::value>::template type<VarNoConst>;
 
 	static_assert(GAFF_REFLECTION_NAMESPACE::Reflection<RetFinal>::HasReflection, "Getter return type is not reflected!");
 	static_assert(GAFF_REFLECTION_NAMESPACE::Reflection<VarFinal>::HasReflection, "Setter arg type is not reflected!");
@@ -1634,6 +1634,6 @@ void ReflectionDefinition<T, Allocator>::instantiated(void* object) const
 
 NS_END
 
-#ifdef PLATFORM_WINDOWS
+#ifdef _MSC_VER
 	#pragma warning(pop)
 #endif

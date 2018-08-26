@@ -255,15 +255,15 @@ NS_END
 		{ \
 			return #type; \
 		} \
-		virtual const Gaff::IReflectionDefinition& getReflectionDefinition(void) const \
+		virtual const Gaff::IReflectionDefinition& getReflectionDefinition(void) const override \
 		{ \
 			return GetReflectionDefinition(); \
 		} \
-		virtual const void* getBasePointer(void) const \
+		virtual const void* getBasePointer(void) const override \
 		{ \
 			return this; \
 		} \
-		virtual void* getBasePointer(void) \
+		virtual void* getBasePointer(void) override \
 		{ \
 			return this; \
 		} \
@@ -292,7 +292,7 @@ NS_END
 #define GAFF_REFLECTION_EXTERNAL_DEFINE_END GAFF_REFLECTION_DEFINE_END
 
 #define GAFF_REFLECTION_DEFINE(type, allocator) \
-	GAFF_REFLECTION_DEFINE_BEGIN(type, allocator) \
+	GAFF_REFLECTION_DEFINE_BEGIN_NO_BUILD(type, allocator) \
 	GAFF_REFLECTION_DEFINE_END(type, allocator)
 
 #define GAFF_REFLECTION_DEFINE_BEGIN(type, allocator) \
@@ -311,13 +311,18 @@ NS_END
 	{ \
 		builder
 
+#define GAFF_REFLECTION_BUILDER_BEGIN_NO_BUILD(type) \
+	template <class ReflectionBuilder> \
+	void GAFF_REFLECTION_NAMESPACE::Reflection<type>::BuildReflection(ReflectionBuilder& builder) \
+	{ \
+
 #define GAFF_REFLECTION_BUILDER_END(type) \
 		; \
 		builder.finish(); \
 	}
 
 #define GAFF_REFLECTION_CLASS_DEFINE(type, allocator) \
-	GAFF_REFLECTION_CLASS_DEFINE_BEGIN(type, allocator) \
+	GAFF_REFLECTION_CLASS_DEFINE_BEGIN_NO_BUILD(type, allocator) \
 	GAFF_REFLECTION_CLASS_DEFINE_END(type, allocator)
 
 #define GAFF_REFLECTION_CLASS_DEFINE_BEGIN(type, allocator) \
@@ -329,6 +334,15 @@ NS_END
 	void type::BuildReflection(ReflectionBuilder& builder) \
 	{ \
 		builder
+
+#define GAFF_REFLECTION_CLASS_DEFINE_BEGIN_NO_BUILD(type, allocator) \
+	const Gaff::ReflectionDefinition<type, allocator>& type::GetReflectionDefinition(void) \
+	{ \
+		return GAFF_REFLECTION_NAMESPACE::Reflection<type>::GetReflectionDefinition(); \
+	} \
+	template <class ReflectionBuilder> \
+	void type::BuildReflection(ReflectionBuilder& builder) \
+	{ \
 
 #define GAFF_REFLECTION_CLASS_DEFINE_END(type, ...) GAFF_REFLECTION_BUILDER_END(type)
 
@@ -498,15 +512,15 @@ NS_END
 			} \
 			return s_name; \
 		} \
-		virtual const Gaff::IReflectionDefinition& getReflectionDefinition(void) const \
+		virtual const Gaff::IReflectionDefinition& getReflectionDefinition(void) const override \
 		{ \
 			return GetReflectionDefinition(); \
 		} \
-		virtual const void* getBasePointer(void) const \
+		virtual const void* getBasePointer(void) const override \
 		{ \
 			return this; \
 		} \
-		virtual void* getBasePointer(void) \
+		virtual void* getBasePointer(void) override \
 		{ \
 			return this; \
 		} \
@@ -541,7 +555,7 @@ NS_END
 #define GAFF_TEMPLATE_REFLECTION_EXTERNAL_DEFINE_END GAFF_REFLECTION_DEFINE_END
 
 #define GAFF_TEMPLATE_REFLECTION_DEFINE(type, allocator, ...) \
-	GAFF_TEMPLATE_REFLECTION_DEFINE_BEGIN(type, allocator, __VA_ARGS__) \
+	GAFF_TEMPLATE_REFLECTION_DEFINE_BEGIN_NO_BUILD(type, allocator, __VA_ARGS__) \
 	GAFF_TEMPLATE_REFLECTION_DEFINE_END(type, allocator, __VA_ARGS__) \
 
 #define GAFF_TEMPLATE_REFLECTION_DEFINE_BEGIN(type, allocator, ...) \
@@ -562,10 +576,16 @@ NS_END
 	{ \
 		builder
 
+#define GAFF_TEMPLATE_REFLECTION_BUILDER_BEGIN_NO_BUILD(type, ...) \
+	template < GAFF_FOR_EACH_COMMA(GAFF_TEMPLATE_REFLECTION_CLASS, __VA_ARGS__) > \
+	template <class ReflectionBuilder> \
+	void GAFF_REFLECTION_NAMESPACE::Reflection<type>::BuildReflection(ReflectionBuilder& builder) \
+	{
+
 #define GAFF_TEMPLATE_REFLECTION_BUILDER_END GAFF_REFLECTION_BUILDER_END
 
 #define GAFF_TEMPLATE_REFLECTION_CLASS_DEFINE(type, allocator, ...) \
-	GAFF_TEMPLATE_REFLECTION_CLASS_DEFINE_BEGIN(type, allocator, __VA_ARGS__) \
+	GAFF_TEMPLATE_REFLECTION_CLASS_DEFINE_BEGIN_NO_BUILD(type, allocator, __VA_ARGS__) \
 	GAFF_TEMPLATE_REFLECTION_CLASS_DEFINE_END(type, allocator, __VA_ARGS__)
 
 #define GAFF_TEMPLATE_REFLECTION_CLASS_DEFINE_BEGIN(type, allocator, ...) \
@@ -579,6 +599,17 @@ NS_END
 	void type<__VA_ARGS__>::BuildReflection(ReflectionBuilder& builder) \
 	{ \
 		builder
+
+#define GAFF_TEMPLATE_REFLECTION_CLASS_DEFINE_BEGIN_NO_BUILD(type, allocator, ...) \
+	template < GAFF_FOR_EACH_COMMA(GAFF_TEMPLATE_REFLECTION_CLASS, __VA_ARGS__) > \
+	const Gaff::ReflectionDefinition<type<__VA_ARGS__>, allocator>& type<__VA_ARGS__>::GetReflectionDefinition(void) \
+	{ \
+		return GAFF_REFLECTION_NAMESPACE::Reflection< type<__VA_ARGS__> >::GetReflectionDefinition(); \
+	} \
+	template < GAFF_FOR_EACH_COMMA(GAFF_TEMPLATE_REFLECTION_CLASS, __VA_ARGS__) > \
+	template <class ReflectionBuilder> \
+	void type<__VA_ARGS__>::BuildReflection(ReflectionBuilder& builder) \
+	{
 
 #define GAFF_TEMPLATE_REFLECTION_CLASS_DEFINE_END GAFF_REFLECTION_CLASS_DEFINE_END
 

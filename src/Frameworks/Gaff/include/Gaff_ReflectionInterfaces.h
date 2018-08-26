@@ -26,7 +26,7 @@ THE SOFTWARE.
 #include "Gaff_Vector.h"
 #include "Gaff_Assert.h"
 #include "Gaff_Hash.h"
-#include <array>
+#include <EASTL/array.h>
 
 #define GET_CLASS_ATTR(T) getClassAttr<T>(Gaff::FNV1aHash64Const(#T))
 #define GET_VAR_ATTR(T, var_name) getVarAttr<T>(var_name, Gaff::FNV1aHash64Const(#T))
@@ -363,7 +363,7 @@ constexpr Hash64 CalcTemplateHashHelper(Hash64 init)
 }
 
 template <class... T>
-constexpr Hash64 CalcTemplateHash(Hash64 init, std::array<const char*, GetNumArgs<T...>()> type_names)
+constexpr Hash64 CalcTemplateHash(Hash64 init, eastl::array<const char*, GetNumArgs<T...>()> type_names)
 {
 	static_assert(sizeof...(T) == type_names.size(), "Initializer list size must match number of template arguments.");
 	static_assert(sizeof...(T) > 0, "Initializer list version of CalcTemplateHash must be non-void.");
@@ -575,7 +575,7 @@ public:
 	virtual bool isConst(void) const = 0;
 };
 
-#define CREATET(Class, allocator, ...) createT<Class>(Gaff::FNV1aHash64Const(#Class), allocator, __VA_ARGS__)
+#define CREATET(Class, allocator, ...) template createT<Class>(Gaff::FNV1aHash64Const(#Class), allocator ##__VA_ARGS__)
 
 class IReflectionDefinition
 {

@@ -48,6 +48,12 @@
 
 		extern "C" long  __stdcall _InterlockedCompareExchange(long volatile* Dest, long Exchange, long Comp);
 		#pragma intrinsic (_InterlockedCompareExchange)
+	#elif defined(EA_PLATFORM_MINGW)
+		extern "C" long  _InterlockedIncrement(long volatile* Addend);
+
+		extern "C" long _InterlockedDecrement(long volatile* Addend);
+
+		extern "C" long _InterlockedCompareExchange(long volatile* Dest, long Exchange, long Comp);
 	#else
 		extern "C" long  _InterlockedIncrement(long volatile* Addend);
 		#pragma intrinsic (_InterlockedIncrement)
