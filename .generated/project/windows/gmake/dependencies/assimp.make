@@ -280,6 +280,7 @@ OBJECTS := \
 	$(OBJDIR)/BaseProcess.o \
 	$(OBJDIR)/Bitmap.o \
 	$(OBJDIR)/BlenderBMesh.o \
+	$(OBJDIR)/BlenderCustomData.o \
 	$(OBJDIR)/BlenderDNA.o \
 	$(OBJDIR)/BlenderLoader.o \
 	$(OBJDIR)/BlenderModifier.o \
@@ -304,6 +305,7 @@ OBJECTS := \
 	$(OBJDIR)/DefaultIOStream.o \
 	$(OBJDIR)/DefaultIOSystem.o \
 	$(OBJDIR)/DefaultLogger.o \
+	$(OBJDIR)/EmbedTexturesProcess.o \
 	$(OBJDIR)/Exporter.o \
 	$(OBJDIR)/FBXAnimation.o \
 	$(OBJDIR)/FBXBinaryTokenizer.o \
@@ -311,6 +313,9 @@ OBJECTS := \
 	$(OBJDIR)/FBXDeformer.o \
 	$(OBJDIR)/FBXDocument.o \
 	$(OBJDIR)/FBXDocumentUtil.o \
+	$(OBJDIR)/FBXExportNode.o \
+	$(OBJDIR)/FBXExportProperty.o \
+	$(OBJDIR)/FBXExporter.o \
 	$(OBJDIR)/FBXImporter.o \
 	$(OBJDIR)/FBXMaterial.o \
 	$(OBJDIR)/FBXMeshGeometry.o \
@@ -328,6 +333,9 @@ OBJECTS := \
 	$(OBJDIR)/GenFaceNormalsProcess.o \
 	$(OBJDIR)/GenVertexNormalsProcess.o \
 	$(OBJDIR)/HMPLoader.o \
+	$(OBJDIR)/IRRLoader.o \
+	$(OBJDIR)/IRRMeshLoader.o \
+	$(OBJDIR)/IRRShared.o \
 	$(OBJDIR)/IFCBoolean.o \
 	$(OBJDIR)/IFCCurve.o \
 	$(OBJDIR)/IFCGeometry.o \
@@ -335,12 +343,12 @@ OBJECTS := \
 	$(OBJDIR)/IFCMaterial.o \
 	$(OBJDIR)/IFCOpenings.o \
 	$(OBJDIR)/IFCProfile.o \
-	$(OBJDIR)/IFCReaderGen1.o \
-	$(OBJDIR)/IFCReaderGen2.o \
+	$(OBJDIR)/IFCReaderGen1_2x3.o \
+	$(OBJDIR)/IFCReaderGen2_2x3.o \
+	$(OBJDIR)/IFCReaderGen_4.o \
 	$(OBJDIR)/IFCUtil.o \
-	$(OBJDIR)/IRRLoader.o \
-	$(OBJDIR)/IRRMeshLoader.o \
-	$(OBJDIR)/IRRShared.o \
+	$(OBJDIR)/STEPFileEncoding.o \
+	$(OBJDIR)/STEPFileReader.o \
 	$(OBJDIR)/Importer.o \
 	$(OBJDIR)/ImporterRegistry.o \
 	$(OBJDIR)/ImproveCacheLocality.o \
@@ -396,8 +404,6 @@ OBJECTS := \
 	$(OBJDIR)/SGSpatialSort.o \
 	$(OBJDIR)/SIBImporter.o \
 	$(OBJDIR)/SMDLoader.o \
-	$(OBJDIR)/STEPFileEncoding.o \
-	$(OBJDIR)/STEPFileReader.o \
 	$(OBJDIR)/STLExporter.o \
 	$(OBJDIR)/STLLoader.o \
 	$(OBJDIR)/ScaleProcess.o \
@@ -441,6 +447,7 @@ OBJECTS := \
 	$(OBJDIR)/glTFExporter.o \
 	$(OBJDIR)/glTFImporter.o \
 	$(OBJDIR)/scene.o \
+	$(OBJDIR)/simd.o \
 	$(OBJDIR)/clipper.o \
 	$(OBJDIR)/irrXML.o \
 	$(OBJDIR)/DDLNode.o \
@@ -674,6 +681,14 @@ else
 	$(SILENT) mkdir $(subst /,\\,$(OBJDIR))
 endif
 	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
+$(OBJDIR)/BlenderCustomData.o: ../../../../../src/Dependencies/assimp/code/BlenderCustomData.cpp
+	@echo $(notdir $<)
+ifeq (posix,$(SHELLTYPE))
+	$(SILENT) mkdir -p $(OBJDIR)
+else
+	$(SILENT) mkdir $(subst /,\\,$(OBJDIR))
+endif
+	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
 $(OBJDIR)/BlenderDNA.o: ../../../../../src/Dependencies/assimp/code/BlenderDNA.cpp
 	@echo $(notdir $<)
 ifeq (posix,$(SHELLTYPE))
@@ -866,6 +881,14 @@ else
 	$(SILENT) mkdir $(subst /,\\,$(OBJDIR))
 endif
 	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
+$(OBJDIR)/EmbedTexturesProcess.o: ../../../../../src/Dependencies/assimp/code/EmbedTexturesProcess.cpp
+	@echo $(notdir $<)
+ifeq (posix,$(SHELLTYPE))
+	$(SILENT) mkdir -p $(OBJDIR)
+else
+	$(SILENT) mkdir $(subst /,\\,$(OBJDIR))
+endif
+	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
 $(OBJDIR)/Exporter.o: ../../../../../src/Dependencies/assimp/code/Exporter.cpp
 	@echo $(notdir $<)
 ifeq (posix,$(SHELLTYPE))
@@ -915,6 +938,30 @@ else
 endif
 	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
 $(OBJDIR)/FBXDocumentUtil.o: ../../../../../src/Dependencies/assimp/code/FBXDocumentUtil.cpp
+	@echo $(notdir $<)
+ifeq (posix,$(SHELLTYPE))
+	$(SILENT) mkdir -p $(OBJDIR)
+else
+	$(SILENT) mkdir $(subst /,\\,$(OBJDIR))
+endif
+	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
+$(OBJDIR)/FBXExportNode.o: ../../../../../src/Dependencies/assimp/code/FBXExportNode.cpp
+	@echo $(notdir $<)
+ifeq (posix,$(SHELLTYPE))
+	$(SILENT) mkdir -p $(OBJDIR)
+else
+	$(SILENT) mkdir $(subst /,\\,$(OBJDIR))
+endif
+	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
+$(OBJDIR)/FBXExportProperty.o: ../../../../../src/Dependencies/assimp/code/FBXExportProperty.cpp
+	@echo $(notdir $<)
+ifeq (posix,$(SHELLTYPE))
+	$(SILENT) mkdir -p $(OBJDIR)
+else
+	$(SILENT) mkdir $(subst /,\\,$(OBJDIR))
+endif
+	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
+$(OBJDIR)/FBXExporter.o: ../../../../../src/Dependencies/assimp/code/FBXExporter.cpp
 	@echo $(notdir $<)
 ifeq (posix,$(SHELLTYPE))
 	$(SILENT) mkdir -p $(OBJDIR)
@@ -1058,86 +1105,6 @@ else
 	$(SILENT) mkdir $(subst /,\\,$(OBJDIR))
 endif
 	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
-$(OBJDIR)/IFCBoolean.o: ../../../../../src/Dependencies/assimp/code/IFCBoolean.cpp
-	@echo $(notdir $<)
-ifeq (posix,$(SHELLTYPE))
-	$(SILENT) mkdir -p $(OBJDIR)
-else
-	$(SILENT) mkdir $(subst /,\\,$(OBJDIR))
-endif
-	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
-$(OBJDIR)/IFCCurve.o: ../../../../../src/Dependencies/assimp/code/IFCCurve.cpp
-	@echo $(notdir $<)
-ifeq (posix,$(SHELLTYPE))
-	$(SILENT) mkdir -p $(OBJDIR)
-else
-	$(SILENT) mkdir $(subst /,\\,$(OBJDIR))
-endif
-	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
-$(OBJDIR)/IFCGeometry.o: ../../../../../src/Dependencies/assimp/code/IFCGeometry.cpp
-	@echo $(notdir $<)
-ifeq (posix,$(SHELLTYPE))
-	$(SILENT) mkdir -p $(OBJDIR)
-else
-	$(SILENT) mkdir $(subst /,\\,$(OBJDIR))
-endif
-	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
-$(OBJDIR)/IFCLoader.o: ../../../../../src/Dependencies/assimp/code/IFCLoader.cpp
-	@echo $(notdir $<)
-ifeq (posix,$(SHELLTYPE))
-	$(SILENT) mkdir -p $(OBJDIR)
-else
-	$(SILENT) mkdir $(subst /,\\,$(OBJDIR))
-endif
-	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
-$(OBJDIR)/IFCMaterial.o: ../../../../../src/Dependencies/assimp/code/IFCMaterial.cpp
-	@echo $(notdir $<)
-ifeq (posix,$(SHELLTYPE))
-	$(SILENT) mkdir -p $(OBJDIR)
-else
-	$(SILENT) mkdir $(subst /,\\,$(OBJDIR))
-endif
-	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
-$(OBJDIR)/IFCOpenings.o: ../../../../../src/Dependencies/assimp/code/IFCOpenings.cpp
-	@echo $(notdir $<)
-ifeq (posix,$(SHELLTYPE))
-	$(SILENT) mkdir -p $(OBJDIR)
-else
-	$(SILENT) mkdir $(subst /,\\,$(OBJDIR))
-endif
-	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
-$(OBJDIR)/IFCProfile.o: ../../../../../src/Dependencies/assimp/code/IFCProfile.cpp
-	@echo $(notdir $<)
-ifeq (posix,$(SHELLTYPE))
-	$(SILENT) mkdir -p $(OBJDIR)
-else
-	$(SILENT) mkdir $(subst /,\\,$(OBJDIR))
-endif
-	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
-$(OBJDIR)/IFCReaderGen1.o: ../../../../../src/Dependencies/assimp/code/IFCReaderGen1.cpp
-	@echo $(notdir $<)
-ifeq (posix,$(SHELLTYPE))
-	$(SILENT) mkdir -p $(OBJDIR)
-else
-	$(SILENT) mkdir $(subst /,\\,$(OBJDIR))
-endif
-	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
-$(OBJDIR)/IFCReaderGen2.o: ../../../../../src/Dependencies/assimp/code/IFCReaderGen2.cpp
-	@echo $(notdir $<)
-ifeq (posix,$(SHELLTYPE))
-	$(SILENT) mkdir -p $(OBJDIR)
-else
-	$(SILENT) mkdir $(subst /,\\,$(OBJDIR))
-endif
-	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
-$(OBJDIR)/IFCUtil.o: ../../../../../src/Dependencies/assimp/code/IFCUtil.cpp
-	@echo $(notdir $<)
-ifeq (posix,$(SHELLTYPE))
-	$(SILENT) mkdir -p $(OBJDIR)
-else
-	$(SILENT) mkdir $(subst /,\\,$(OBJDIR))
-endif
-	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
 $(OBJDIR)/IRRLoader.o: ../../../../../src/Dependencies/assimp/code/IRRLoader.cpp
 	@echo $(notdir $<)
 ifeq (posix,$(SHELLTYPE))
@@ -1155,6 +1122,110 @@ else
 endif
 	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
 $(OBJDIR)/IRRShared.o: ../../../../../src/Dependencies/assimp/code/IRRShared.cpp
+	@echo $(notdir $<)
+ifeq (posix,$(SHELLTYPE))
+	$(SILENT) mkdir -p $(OBJDIR)
+else
+	$(SILENT) mkdir $(subst /,\\,$(OBJDIR))
+endif
+	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
+$(OBJDIR)/IFCBoolean.o: ../../../../../src/Dependencies/assimp/code/Importer/IFC/IFCBoolean.cpp
+	@echo $(notdir $<)
+ifeq (posix,$(SHELLTYPE))
+	$(SILENT) mkdir -p $(OBJDIR)
+else
+	$(SILENT) mkdir $(subst /,\\,$(OBJDIR))
+endif
+	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
+$(OBJDIR)/IFCCurve.o: ../../../../../src/Dependencies/assimp/code/Importer/IFC/IFCCurve.cpp
+	@echo $(notdir $<)
+ifeq (posix,$(SHELLTYPE))
+	$(SILENT) mkdir -p $(OBJDIR)
+else
+	$(SILENT) mkdir $(subst /,\\,$(OBJDIR))
+endif
+	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
+$(OBJDIR)/IFCGeometry.o: ../../../../../src/Dependencies/assimp/code/Importer/IFC/IFCGeometry.cpp
+	@echo $(notdir $<)
+ifeq (posix,$(SHELLTYPE))
+	$(SILENT) mkdir -p $(OBJDIR)
+else
+	$(SILENT) mkdir $(subst /,\\,$(OBJDIR))
+endif
+	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
+$(OBJDIR)/IFCLoader.o: ../../../../../src/Dependencies/assimp/code/Importer/IFC/IFCLoader.cpp
+	@echo $(notdir $<)
+ifeq (posix,$(SHELLTYPE))
+	$(SILENT) mkdir -p $(OBJDIR)
+else
+	$(SILENT) mkdir $(subst /,\\,$(OBJDIR))
+endif
+	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
+$(OBJDIR)/IFCMaterial.o: ../../../../../src/Dependencies/assimp/code/Importer/IFC/IFCMaterial.cpp
+	@echo $(notdir $<)
+ifeq (posix,$(SHELLTYPE))
+	$(SILENT) mkdir -p $(OBJDIR)
+else
+	$(SILENT) mkdir $(subst /,\\,$(OBJDIR))
+endif
+	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
+$(OBJDIR)/IFCOpenings.o: ../../../../../src/Dependencies/assimp/code/Importer/IFC/IFCOpenings.cpp
+	@echo $(notdir $<)
+ifeq (posix,$(SHELLTYPE))
+	$(SILENT) mkdir -p $(OBJDIR)
+else
+	$(SILENT) mkdir $(subst /,\\,$(OBJDIR))
+endif
+	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
+$(OBJDIR)/IFCProfile.o: ../../../../../src/Dependencies/assimp/code/Importer/IFC/IFCProfile.cpp
+	@echo $(notdir $<)
+ifeq (posix,$(SHELLTYPE))
+	$(SILENT) mkdir -p $(OBJDIR)
+else
+	$(SILENT) mkdir $(subst /,\\,$(OBJDIR))
+endif
+	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
+$(OBJDIR)/IFCReaderGen1_2x3.o: ../../../../../src/Dependencies/assimp/code/Importer/IFC/IFCReaderGen1_2x3.cpp
+	@echo $(notdir $<)
+ifeq (posix,$(SHELLTYPE))
+	$(SILENT) mkdir -p $(OBJDIR)
+else
+	$(SILENT) mkdir $(subst /,\\,$(OBJDIR))
+endif
+	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
+$(OBJDIR)/IFCReaderGen2_2x3.o: ../../../../../src/Dependencies/assimp/code/Importer/IFC/IFCReaderGen2_2x3.cpp
+	@echo $(notdir $<)
+ifeq (posix,$(SHELLTYPE))
+	$(SILENT) mkdir -p $(OBJDIR)
+else
+	$(SILENT) mkdir $(subst /,\\,$(OBJDIR))
+endif
+	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
+$(OBJDIR)/IFCReaderGen_4.o: ../../../../../src/Dependencies/assimp/code/Importer/IFC/IFCReaderGen_4.cpp
+	@echo $(notdir $<)
+ifeq (posix,$(SHELLTYPE))
+	$(SILENT) mkdir -p $(OBJDIR)
+else
+	$(SILENT) mkdir $(subst /,\\,$(OBJDIR))
+endif
+	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
+$(OBJDIR)/IFCUtil.o: ../../../../../src/Dependencies/assimp/code/Importer/IFC/IFCUtil.cpp
+	@echo $(notdir $<)
+ifeq (posix,$(SHELLTYPE))
+	$(SILENT) mkdir -p $(OBJDIR)
+else
+	$(SILENT) mkdir $(subst /,\\,$(OBJDIR))
+endif
+	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
+$(OBJDIR)/STEPFileEncoding.o: ../../../../../src/Dependencies/assimp/code/Importer/IFC/STEPFileEncoding.cpp
+	@echo $(notdir $<)
+ifeq (posix,$(SHELLTYPE))
+	$(SILENT) mkdir -p $(OBJDIR)
+else
+	$(SILENT) mkdir $(subst /,\\,$(OBJDIR))
+endif
+	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
+$(OBJDIR)/STEPFileReader.o: ../../../../../src/Dependencies/assimp/code/Importer/IFC/STEPFileReader.cpp
 	@echo $(notdir $<)
 ifeq (posix,$(SHELLTYPE))
 	$(SILENT) mkdir -p $(OBJDIR)
@@ -1602,22 +1673,6 @@ else
 	$(SILENT) mkdir $(subst /,\\,$(OBJDIR))
 endif
 	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
-$(OBJDIR)/STEPFileEncoding.o: ../../../../../src/Dependencies/assimp/code/STEPFileEncoding.cpp
-	@echo $(notdir $<)
-ifeq (posix,$(SHELLTYPE))
-	$(SILENT) mkdir -p $(OBJDIR)
-else
-	$(SILENT) mkdir $(subst /,\\,$(OBJDIR))
-endif
-	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
-$(OBJDIR)/STEPFileReader.o: ../../../../../src/Dependencies/assimp/code/STEPFileReader.cpp
-	@echo $(notdir $<)
-ifeq (posix,$(SHELLTYPE))
-	$(SILENT) mkdir -p $(OBJDIR)
-else
-	$(SILENT) mkdir $(subst /,\\,$(OBJDIR))
-endif
-	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
 $(OBJDIR)/STLExporter.o: ../../../../../src/Dependencies/assimp/code/STLExporter.cpp
 	@echo $(notdir $<)
 ifeq (posix,$(SHELLTYPE))
@@ -1955,6 +2010,14 @@ else
 endif
 	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
 $(OBJDIR)/scene.o: ../../../../../src/Dependencies/assimp/code/scene.cpp
+	@echo $(notdir $<)
+ifeq (posix,$(SHELLTYPE))
+	$(SILENT) mkdir -p $(OBJDIR)
+else
+	$(SILENT) mkdir $(subst /,\\,$(OBJDIR))
+endif
+	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
+$(OBJDIR)/simd.o: ../../../../../src/Dependencies/assimp/code/simd.cpp
 	@echo $(notdir $<)
 ifeq (posix,$(SHELLTYPE))
 	$(SILENT) mkdir -p $(OBJDIR)

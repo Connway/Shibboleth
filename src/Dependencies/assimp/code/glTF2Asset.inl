@@ -2,7 +2,8 @@
 Open Asset Import Library (assimp)
 ----------------------------------------------------------------------
 
-Copyright (c) 2006-2017, assimp team
+Copyright (c) 2006-2018, assimp team
+
 
 All rights reserved.
 
@@ -39,7 +40,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ----------------------------------------------------------------------
 */
 
-#include "StringUtils.h"
+#include <assimp/StringUtils.h>
 
 // Header files, Assimp
 #include <assimp/DefaultLogger.hpp>
@@ -460,21 +461,46 @@ inline void Buffer::EncodedRegion_SetCurrent(const std::string& pID)
 	throw DeadlyImportError("GLTF: EncodedRegion with ID: \"" + pID + "\" not found.");
 }
 
-inline bool Buffer::ReplaceData(const size_t pBufferData_Offset, const size_t pBufferData_Count, const uint8_t* pReplace_Data, const size_t pReplace_Count)
+inline 
+bool Buffer::ReplaceData(const size_t pBufferData_Offset, const size_t pBufferData_Count, const uint8_t* pReplace_Data, const size_t pReplace_Count)
 {
-const size_t new_data_size = byteLength + pReplace_Count - pBufferData_Count;
 
-uint8_t* new_data;
+	if((pBufferData_Count == 0) || (pReplace_Count == 0) || (pReplace_Data == nullptr)) {
+		return false;
+	}
 
-	if((pBufferData_Count == 0) || (pReplace_Count == 0) || (pReplace_Data == nullptr)) return false;
+        const size_t new_data_size = byteLength + pReplace_Count - pBufferData_Count;
+	uint8_t *new_data = new uint8_t[new_data_size];
+	// Copy data which place before replacing part.
+	::memcpy(new_data, mData.get(), pBufferData_Offset);
+	// Copy new data.
+	::memcpy(&new_data[pBufferData_Offset], pReplace_Data, pReplace_Count);
+	// Copy data which place after replacing part.
+	::memcpy(&new_data[pBufferData_Offset + pReplace_Count], &mData.get()[pBufferData_Offset + pBufferData_Count], pBufferData_Offset);
+	// Apply new data
+	mData.reset(new_data, std::default_delete<uint8_t[]>());
+	byteLength = new_data_size;
 
-	new_data = new uint8_t[new_data_size];
+	return true;
+}
+	
+inline 
+bool Buffer::ReplaceData_joint(const size_t pBufferData_Offset, const size_t pBufferData_Count, const uint8_t* pReplace_Data, const size_t pReplace_Count)
+{
+	if((pBufferData_Count == 0) || (pReplace_Count == 0) || (pReplace_Data == nullptr)) {
+		return false;
+	}
+
+	const size_t new_data_size = byteLength + pReplace_Count - pBufferData_Count;
+	uint8_t* new_data = new uint8_t[new_data_size];
 	// Copy data which place before replacing part.
 	memcpy(new_data, mData.get(), pBufferData_Offset);
 	// Copy new data.
 	memcpy(&new_data[pBufferData_Offset], pReplace_Data, pReplace_Count);
 	// Copy data which place after replacing part.
-	memcpy(&new_data[pBufferData_Offset + pReplace_Count], &mData.get()[pBufferData_Offset + pBufferData_Count], pBufferData_Offset);
+    memcpy(&new_data[pBufferData_Offset + pReplace_Count], &mData.get()[pBufferData_Offset + pBufferData_Count]
+            , new_data_size - (pBufferData_Offset + pReplace_Count)
+          );
 	// Apply new data
 	mData.reset(new_data, std::default_delete<uint8_t[]>());
 	byteLength = new_data_size;
@@ -485,7 +511,8 @@ uint8_t* new_data;
 inline size_t Buffer::AppendData(uint8_t* data, size_t length)
 {
     size_t offset = this->byteLength;
-    Grow(length);
+    // Force alignment to 4 bits
+    Grow((length + 3) & ~3);
     memcpy(mData.get() + offset, data, length);
     return offset;
 }
@@ -667,7 +694,7 @@ inline Image::Image()
 
 }
 
-inline void Image::Read(Value& obj, Asset& /*r*/)
+inline void Image::Read(Value& obj, Asset& r)
 {
     if (!mDataLength) {
         if (Value* uri = FindString(obj, "uri")) {
@@ -682,6 +709,19 @@ inline void Image::Read(Value& obj, Asset& /*r*/)
             }
             else {
                 this->uri = uristr;
+            }
+        }
+        else if (Value* bufferViewVal = FindUInt(obj, "bufferView")) {
+            this->bufferView = r.bufferViews.Retrieve(bufferViewVal->GetUint());
+            Ref<Buffer> buffer = this->bufferView->buffer;
+
+            this->mDataLength = this->bufferView->byteLength;
+            // maybe this memcpy could be avoided if aiTexture does not delete[] pcData at destruction.
+            this->mData = new uint8_t [this->mDataLength];
+            memcpy(this->mData, buffer->GetPointer() + this->bufferView->byteOffset, this->mDataLength);
+
+            if (Value* mtype = FindString(obj, "mimeType")) {
+                this->mimeType = mtype->GetString();
             }
         }
     }
@@ -820,6 +860,8 @@ inline void Material::Read(Value& material, Asset& r)
                 this->pbrSpecularGlossiness = Nullable<PbrSpecularGlossiness>(pbrSG);
             }
         }
+
+        unlit = nullptr != FindObject(*extensions, "KHR_materials_unlit");
     }
 }
 
@@ -842,6 +884,7 @@ inline void Material::SetDefaults()
     alphaMode = "OPAQUE";
     alphaCutoff = 0.5;
     doubleSided = false;
+    unlit = false;
 }
 
 inline void PbrSpecularGlossiness::SetDefaults()
@@ -888,6 +931,21 @@ namespace {
         else return false;
         return true;
     }
+
+    inline bool GetAttribTargetVector(Mesh::Primitive& p, const int targetIndex, const char* attr, Mesh::AccessorList*& v, int& pos)
+    {
+        if ((pos = Compare(attr, "POSITION"))) {
+            v = &(p.targets[targetIndex].position);
+        }
+        else if ((pos = Compare(attr, "NORMAL"))) {
+            v = &(p.targets[targetIndex].normal);
+        }
+        else if ((pos = Compare(attr, "TANGENT"))) {
+            v = &(p.targets[targetIndex].tangent);
+        }
+        else return false;
+        return true;
+    }
 }
 
 inline void Mesh::Read(Value& pJSON_Object, Asset& pAsset_Root)
@@ -922,6 +980,26 @@ inline void Mesh::Read(Value& pJSON_Object, Asset& pAsset_Root)
                 }
             }
 
+            if (Value* targetsArray = FindArray(primitive, "targets")) {
+                prim.targets.resize(targetsArray->Size());
+                for (unsigned int i = 0; i < targetsArray->Size(); ++i) {
+                    Value& target = (*targetsArray)[i];
+                    if (!target.IsObject()) continue;
+                    for (Value::MemberIterator it = target.MemberBegin(); it != target.MemberEnd(); ++it) {
+                        if (!it->value.IsUint()) continue;
+                        const char* attr = it->name.GetString();
+                        // Valid attribute semantics include POSITION, NORMAL, TANGENT
+                        int undPos = 0;
+                        Mesh::AccessorList* vec = 0;
+                        if (GetAttribTargetVector(prim, i, attr, vec, undPos)) {
+                            size_t idx = (attr[undPos] == '_') ? atoi(attr + undPos + 1) : 0;
+                            if ((*vec).size() <= idx) (*vec).resize(idx + 1);
+                            (*vec)[idx] = pAsset_Root.accessors.Retrieve(it->value.GetUint());
+                        }
+                    }
+                }
+            }
+
             if (Value* indices = FindUInt(primitive, "indices")) {
 				prim.indices = pAsset_Root.accessors.Retrieve(indices->GetUint());
             }
@@ -929,6 +1007,16 @@ inline void Mesh::Read(Value& pJSON_Object, Asset& pAsset_Root)
             if (Value* material = FindUInt(primitive, "material")) {
 				prim.material = pAsset_Root.materials.Retrieve(material->GetUint());
             }
+        }
+    }
+
+    if (Value* weights = FindArray(pJSON_Object, "weights")) {
+        this->weights.resize(weights->Size());
+        for (unsigned int i = 0; i < weights->Size(); ++i) {
+          Value& weightValue = (*weights)[i];
+          if (weightValue.IsNumber()) {
+            this->weights[i] = weightValue.GetFloat();
+          }
         }
     }
 }
@@ -1173,12 +1261,15 @@ inline void Asset::Load(const std::string& pFile, bool isBinary)
 
     // Read the "scene" property, which specifies which scene to load
     // and recursively load everything referenced by it
+    unsigned int sceneIndex = 0;
     if (Value* scene = FindUInt(doc, "scene")) {
-        unsigned int sceneIndex = scene->GetUint();
+        sceneIndex = scene->GetUint();
+    }
 
-        Ref<Scene> s = scenes.Retrieve(sceneIndex);
-
-        this->scene = s;
+    if (Value* scenesArray = FindArray(doc, "scenes")) {
+        if (sceneIndex < scenesArray->Size()) {
+            this->scene = scenes.Retrieve(sceneIndex);
+        }
     }
 
     // Clean up
@@ -1213,6 +1304,7 @@ inline void Asset::ReadExtensionsUsed(Document& doc)
         if (exts.find(#EXT) != exts.end()) extensionsUsed.EXT = true;
 
     CHECK_EXT(KHR_materials_pbrSpecularGlossiness);
+    CHECK_EXT(KHR_materials_unlit);
 
     #undef CHECK_EXT
 }

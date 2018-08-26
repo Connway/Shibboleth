@@ -29,7 +29,7 @@ NS_SHIBBOLETH
 
 class IRenderManager;
 
-class CameraComponent final /*: public Component*/
+class CameraComponent final /*: public Component*/ : public Gaff::IReflectionObject
 {
 public:
 	//void onAddToWorld(void) override;

@@ -33,7 +33,7 @@ THE SOFTWARE.
 
 Shibboleth::App g_app;
 
-class Base /*: public Gaff::IReflectionObject*/
+class Base : public Gaff::IReflectionObject
 {
 public:
 	int a = 1;
@@ -77,7 +77,7 @@ SHIB_REFLECTION_CLASS_DEFINE_END(Derived)
 // Namespace Test
 namespace Foo
 {
-	class NamespaceClass
+	class NamespaceClass : public Gaff::IReflectionObject
 	{
 		SHIB_REFLECTION_CLASS_DECLARE(NamespaceClass);
 	};
@@ -176,7 +176,7 @@ TEST_CASE("reflection class test", "[shibboleth_reflection_class]")
 }
 
 template <class T>
-class Test1
+class Test1 : public Gaff::IReflectionObject
 {
 	double a = 20.0;
 	T t;
@@ -193,7 +193,7 @@ SHIB_TEMPLATE_REFLECTION_CLASS_DEFINE_END(Test1, T)
 
 
 template <class T1, class T2>
-class Test2
+class Test2 : public Gaff::IReflectionObject
 {
 	float a = 11.0f;
 	T1 t1;
@@ -353,7 +353,7 @@ TEST_CASE("reflection array/vector test", "[shibboleth_reflection_vector_array]"
 }
 
 
-class CtorTest
+class CtorTest : public Gaff::IReflectionObject
 {
 public:
 	CtorTest(void) {}
@@ -399,7 +399,7 @@ TEST_CASE("reflection module test", "[shibboleth_reflection_module]")
 }
 
 
-class AttrTest
+class AttrTest : public Gaff::IReflectionObject
 {
 public:
 	AttrTest(void) {}

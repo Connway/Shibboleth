@@ -53,13 +53,11 @@ SetIntermediateAndTargetDirs("Analyze")
 SetIntermediateAndTargetDirs("Profile")
 SetIntermediateAndTargetDirs("Optimized_Debug")
 
-if _OPTIONS["gen-clang"] then
-	SetIntermediateAndTargetDirs("Debug_Clang")
-	SetIntermediateAndTargetDirs("Release_Clang")
-	SetIntermediateAndTargetDirs("Analyze_Clang")
-	SetIntermediateAndTargetDirs("Profile_Clang")
-	SetIntermediateAndTargetDirs("Optimized_Debug_Clang")
-end
+SetIntermediateAndTargetDirs("Debug_Clang")
+SetIntermediateAndTargetDirs("Release_Clang")
+SetIntermediateAndTargetDirs("Analyze_Clang")
+SetIntermediateAndTargetDirs("Profile_Clang")
+SetIntermediateAndTargetDirs("Optimized_Debug_Clang")
 
 dofile("module_suffix.lua")
 
@@ -104,6 +102,9 @@ filter { "system:windows", "platforms:x64" }
 
 filter { "configurations:*Clang", "action:vs*" }
 	toolset "msc-llvm-vs2014"
+
+filter { "configurations:*Clang", "action:not vs*" }
+	toolset "gcc"
 
 filter { "configurations:*Clang", "action:not vs*" }
 	toolset "clang"

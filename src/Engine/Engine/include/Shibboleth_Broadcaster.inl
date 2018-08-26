@@ -28,7 +28,7 @@ BroadcastID Broadcaster::listen(const eastl::function<void (const Message&)>& ca
 	auto& listener_data = _listeners[Reflection<Message>::GetHash()];
 	BroadcastID id(Reflection<Message>::GetHash(), 0);
 
-	const ListenerData::Listener func = Shibboleth::Func<void (const void*)>([callback](const void* message) -> void {
+	const ListenerData::Listener func = Gaff::Func<void (const void*)>([callback](const void* message) -> void {
 		const Message* const msg = reinterpret_cast<const Message*>(message);
 		callback(*msg);
 	});
@@ -81,5 +81,5 @@ void Broadcaster::broadcast(const Message& message)
 	};
 
 	Gaff::JobData data{ func, nullptr };
-	_job_pool.addJobs(&data, 1, &_counter);
+	_job_pool->addJobs(&data, 1, &_counter);
 }

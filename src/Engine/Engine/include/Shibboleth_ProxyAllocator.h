@@ -41,12 +41,12 @@ public:
 	bool operator==(const ProxyAllocator& rhs) const;
 
 	// For EASTL support.
-	void* allocate(size_t n, size_t alignment, size_t, int flags = 0);
+	void* allocate(size_t n, size_t alignment, size_t, int flags = 0) override;
 	void* allocate(size_t n, int flags = 0) override;
 	void deallocate(void* p, size_t) override;
 
-	const char* get_name() const;
-	void set_name(const char* pName);
+	const char* get_name() const override;
+	void set_name(const char* pName) override;
 
 	void* alloc(size_t size_bytes, size_t alignment, const char* file, int line) override;
 	void* alloc(size_t size_bytes, const char* file, int line) override;

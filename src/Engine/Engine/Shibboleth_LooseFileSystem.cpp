@@ -22,9 +22,9 @@ THE SOFTWARE.
 
 #include "Shibboleth_LooseFileSystem.h"
 #include "Shibboleth_String.h"
-#include <Gaff_Directory.h>
 #include <Gaff_Utils.h>
 #include <Gaff_File.h>
+#include <filesystem>
 
 NS_SHIBBOLETH
 
@@ -77,48 +77,47 @@ IFile* LooseFileSystem::openFile(const char* file_name)
 		return lhs.name == rhs;
 	});
 
-	if (it == _files.end()) {
-		U8String name = U8String("./") + file_name; // Pre-pend './' to name
-		Gaff::File loose_file;
-
-		if (!loose_file.open(name.data(), Gaff::File::READ_BINARY)) {
-			return nullptr;
-		}
-
-		LooseFile* file = SHIB_ALLOCT(LooseFile, GetAllocator());
-
-		// Should probably log that the allocation failed
-		if (!file) {
-			return nullptr;
-		}
-
-		file->_file_size= loose_file.getFileSize();
-		file->_file_buffer = SHIB_ALLOC_CAST(char*, file->_file_size + 1, GetAllocator());
-
-		if (!file->_file_buffer) {
-			SHIB_FREET(it->file, GetAllocator());
-			return nullptr;
-		}
-
-		if (!loose_file.readEntireFile(file->_file_buffer)) {
-			SHIB_FREET(it->file, GetAllocator());
-			return nullptr;
-		}
-
-		file->_file_buffer[file->_file_size] = 0;
-
-		FileData file_data;
-		file_data.name = file_name;
-		file_data.file = file;
-		file_data.count = 1;
-
-		_files.emplace_back(std::move(file_data));
-		return file;
-
-	} else {
+	if (it != _files.end()) {
 		++it->count;
 		return it->file;
 	}
+
+	U8String name = U8String("./") + file_name; // Pre-pend './' to name
+	Gaff::File loose_file;
+
+	if (!loose_file.open(name.data(), Gaff::File::READ_BINARY)) {
+		return nullptr;
+	}
+
+	LooseFile* file = SHIB_ALLOCT(LooseFile, GetAllocator());
+
+	// Should probably log that the allocation failed
+	if (!file) {
+		return nullptr;
+	}
+
+	file->_file_size= loose_file.getFileSize();
+	file->_file_buffer = SHIB_ALLOC_CAST(char*, file->_file_size + 1, GetAllocator());
+
+	if (!file->_file_buffer) {
+		SHIB_FREET(it->file, GetAllocator());
+		return nullptr;
+	}
+
+	if (!loose_file.readEntireFile(file->_file_buffer)) {
+		SHIB_FREET(it->file, GetAllocator());
+		return nullptr;
+	}
+
+	file->_file_buffer[file->_file_size] = 0;
+
+	FileData file_data;
+	file_data.name = file_name;
+	file_data.file = file;
+	file_data.count = 1;
+
+	_files.emplace_back(std::move(file_data));
+	return file;
 }
 
 void LooseFileSystem::closeFile(IFile* file)
@@ -142,26 +141,46 @@ void LooseFileSystem::closeFile(IFile* file)
 	}
 }
 
-bool LooseFileSystem::forEachFile(const char* directory, eastl::function<bool (const char*, IFile*)>& callback)
+bool LooseFileSystem::forEachFile(const char* directory, eastl::function<bool (const char*, IFile*)>& callback, bool recursive)
 {
-	return Gaff::ForEachTypeInDirectory<Gaff::FDT_RegularFile>(directory, [&](const char* file_name, size_t) -> bool
-	{
-		U8String full_path(directory);
+	U8String path(directory);
 
-		if (full_path[full_path.size() - 1] != '/') {
-			full_path += '/';
+	if (path[path.size() - 1] != '/') {
+		path += '/';
+	}
+
+	for (const auto& dir_entry : std::filesystem::directory_iterator(directory)) {
+		if (!recursive && !dir_entry.is_regular_file()) {
+			continue;
 		}
 
-		full_path += file_name;
+		const wchar_t* file_name = dir_entry.path().c_str();
+		CONVERT_STRING(char, temp, file_name);
 
-		IFile* file = openFile(full_path.data());
+		const U8String full_path = path + temp;
+
+		if (recursive && dir_entry.is_directory()) {
+			forEachFile(full_path.data(), callback, recursive);
+			continue;
+		}
+
+		if (!dir_entry.is_regular_file()) {
+			continue;
+		}
+
+		IFile* const file = openFile(full_path.data());
 
 		//if (!file) {
-		//	// handle failure
+		//	// TODO: Log error
+		//	continue;
 		//}
 
-		return callback(file_name, file);
-	});
+		if (callback(temp, file)) {
+			return true;
+		}
+	}
+
+	return true;
 }
 
 NS_END

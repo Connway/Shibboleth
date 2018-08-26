@@ -16,7 +16,7 @@ ifeq ($(config),debug_x64)
   TARGET = $(TARGETDIR)/Engine.lib
   OBJDIR = ../../../../build/windows/gmake/intermediate/x64/Debug/Engine
   DEFINES += -DUNICODE -D_UNICODE -DEA_COMPILER_NO_RTTI -D_DEBUG -DDEBUG -DWIN32 -D_WINDOWS -DWIN64
-  INCLUDES += -I../../../../../src/Dependencies/dirent -I../../../../../src/Engine/Engine/include -I../../../../../src/Engine/Memory/include -I../../../../../src/Dependencies/rapidjson -I../../../../../src/Frameworks/Gaff/include -I../../../../../src/Frameworks/Gleam/include -I../../../../../src/Dependencies/EASTL/include -I../../../../../src/Dependencies/glm
+  INCLUDES += -I../../../../../src/Engine/Engine/include -I../../../../../src/Engine/Memory/include -I../../../../../src/Dependencies/rapidjson -I../../../../../src/Frameworks/Gaff/include -I../../../../../src/Frameworks/Gleam/include -I../../../../../src/Dependencies/EASTL/include -I../../../../../src/Dependencies/glm
   FORCE_INCLUDE +=
   ALL_CPPFLAGS += $(CPPFLAGS) -MMD -MP $(DEFINES) $(INCLUDES)
   ALL_CFLAGS += $(CFLAGS) $(ALL_CPPFLAGS) -m64 -Werror -ffast-math -Og -g -Wall -Wextra
@@ -43,7 +43,7 @@ ifeq ($(config),release_x64)
   TARGET = $(TARGETDIR)/Engine.lib
   OBJDIR = ../../../../build/windows/gmake/intermediate/x64/Release/Engine
   DEFINES += -DUNICODE -D_UNICODE -DEA_COMPILER_NO_RTTI -DNDEBUG -DWIN32 -D_WINDOWS -DWIN64
-  INCLUDES += -I../../../../../src/Dependencies/dirent -I../../../../../src/Engine/Engine/include -I../../../../../src/Engine/Memory/include -I../../../../../src/Dependencies/rapidjson -I../../../../../src/Frameworks/Gaff/include -I../../../../../src/Frameworks/Gleam/include -I../../../../../src/Dependencies/EASTL/include -I../../../../../src/Dependencies/glm
+  INCLUDES += -I../../../../../src/Engine/Engine/include -I../../../../../src/Engine/Memory/include -I../../../../../src/Dependencies/rapidjson -I../../../../../src/Frameworks/Gaff/include -I../../../../../src/Frameworks/Gleam/include -I../../../../../src/Dependencies/EASTL/include -I../../../../../src/Dependencies/glm
   FORCE_INCLUDE +=
   ALL_CPPFLAGS += $(CPPFLAGS) -MMD -MP $(DEFINES) $(INCLUDES)
   ALL_CFLAGS += $(CFLAGS) $(ALL_CPPFLAGS) -m64 -flto -Werror -ffast-math -O3 -g -Wall -Wextra
@@ -140,7 +140,7 @@ ifeq ($(config),profile_x64)
   TARGET = $(TARGETDIR)/Engine.lib
   OBJDIR = ../../../../build/windows/gmake/intermediate/x64/Profile/Engine
   DEFINES += -DUNICODE -D_UNICODE -DEA_COMPILER_NO_RTTI -DNDEBUG -DSHIB_PROFILE -DWIN32 -D_WINDOWS -DWIN64
-  INCLUDES += -I../../../../../src/Dependencies/dirent -I../../../../../src/Engine/Engine/include -I../../../../../src/Engine/Memory/include -I../../../../../src/Dependencies/rapidjson -I../../../../../src/Frameworks/Gaff/include -I../../../../../src/Frameworks/Gleam/include -I../../../../../src/Dependencies/EASTL/include -I../../../../../src/Dependencies/glm
+  INCLUDES += -I../../../../../src/Engine/Engine/include -I../../../../../src/Engine/Memory/include -I../../../../../src/Dependencies/rapidjson -I../../../../../src/Frameworks/Gaff/include -I../../../../../src/Frameworks/Gleam/include -I../../../../../src/Dependencies/EASTL/include -I../../../../../src/Dependencies/glm
   FORCE_INCLUDE +=
   ALL_CPPFLAGS += $(CPPFLAGS) -MMD -MP $(DEFINES) $(INCLUDES)
   ALL_CFLAGS += $(CFLAGS) $(ALL_CPPFLAGS) -m64 -flto -Werror -ffast-math -O3 -g -Wall -Wextra
@@ -202,7 +202,7 @@ ifeq ($(config),optimized_debug_x64)
   TARGET = $(TARGETDIR)/Engine.lib
   OBJDIR = ../../../../build/windows/gmake/intermediate/x64/Optimized_Debug/Engine
   DEFINES += -DUNICODE -D_UNICODE -DEA_COMPILER_NO_RTTI -D_DEBUG -DDEBUG -DWIN32 -D_WINDOWS -DWIN64
-  INCLUDES += -I../../../../../src/Dependencies/dirent -I../../../../../src/Engine/Engine/include -I../../../../../src/Engine/Memory/include -I../../../../../src/Dependencies/rapidjson -I../../../../../src/Frameworks/Gaff/include -I../../../../../src/Frameworks/Gleam/include -I../../../../../src/Dependencies/EASTL/include -I../../../../../src/Dependencies/glm
+  INCLUDES += -I../../../../../src/Engine/Engine/include -I../../../../../src/Engine/Memory/include -I../../../../../src/Dependencies/rapidjson -I../../../../../src/Frameworks/Gaff/include -I../../../../../src/Frameworks/Gleam/include -I../../../../../src/Dependencies/EASTL/include -I../../../../../src/Dependencies/glm
   FORCE_INCLUDE +=
   ALL_CPPFLAGS += $(CPPFLAGS) -MMD -MP $(DEFINES) $(INCLUDES)
   ALL_CFLAGS += $(CFLAGS) $(ALL_CPPFLAGS) -m64 -flto -Werror -ffast-math -O3 -g -Wall -Wextra

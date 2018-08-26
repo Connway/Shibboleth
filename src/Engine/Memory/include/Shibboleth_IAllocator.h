@@ -25,15 +25,15 @@ THE SOFTWARE.
 #include <Shibboleth_Defines.h>
 #include <Gaff_IAllocator.h>
 
-#define SHIB_ALLOC_ARRAYT_ALIGNED_POOL(type, alignment, count, pool_index, allocator, ...) (allocator).template allocArrayT<type>(alignment, pool_index, __VA_ARGS__)
-#define SHIB_ALLOC_ARRAYT_ALIGNED(Class, alignment, count, allocator, ...) (allocator).template allocArrayT<Class>(alignment, count, __FILE__, __LINE__, __VA_ARGS__)
-#define SHIB_ALLOC_ARRAYT_POOL(type, count, pool_index, allocator, ...) (allocator).template allocArrayT<type>(pool_index, __FILE__, __LINE__, __VA_ARGS__)
-#define SHIB_ALLOC_ARRAYT(Class, count, allocator, ...) (allocator).template allocArrayT<Class>(alignment, __FILE__, __LINE__, __VA_ARGS__)
+#define SHIB_ALLOC_ARRAYT_ALIGNED_POOL(type, alignment, count, pool_index, allocator, ...) (allocator).template allocArrayT<type>(alignment, pool_index, ##__VA_ARGS__)
+#define SHIB_ALLOC_ARRAYT_ALIGNED(Class, alignment, count, allocator, ...) (allocator).template allocArrayT<Class>(alignment, count, __FILE__, __LINE__, ##__VA_ARGS__)
+#define SHIB_ALLOC_ARRAYT_POOL(type, count, pool_index, allocator, ...) (allocator).template allocArrayT<type>(pool_index, __FILE__, __LINE__, ##__VA_ARGS__)
+#define SHIB_ALLOC_ARRAYT(Class, count, allocator, ...) (allocator).template allocArrayT<Class>(alignment, __FILE__, __LINE__, ##__VA_ARGS__)
 
-#define SHIB_ALLOCT_ALIGNED_POOL(type, alignment, pool_index, allocator, ...) (allocator).template allocT<type>(alignment, pool_index, __FILE__, __LINE__, __VA_ARGS__)
-#define SHIB_ALLOCT_ALIGNED(Class, alignment, allocator, ...) (allocator).template allocT<Class>(alignment, __FILE__, __LINE__, __VA_ARGS__)
-#define SHIB_ALLOCT_POOL(type, pool_index, allocator, ...) (allocator).template allocT<type>(pool_index, __FILE__, __LINE__, __VA_ARGS__)
-#define SHIB_ALLOCT(Class, allocator, ...) (allocator).template allocT<Class>(__FILE__, __LINE__, __VA_ARGS__)
+#define SHIB_ALLOCT_ALIGNED_POOL(type, alignment, pool_index, allocator, ...) (allocator).template allocT<type>(alignment, pool_index, __FILE__, __LINE__, ##__VA_ARGS__)
+#define SHIB_ALLOCT_ALIGNED(Class, alignment, allocator, ...) (allocator).template allocT<Class>(alignment, __FILE__, __LINE__, ##__VA_ARGS__)
+#define SHIB_ALLOCT_POOL(type, pool_index, allocator, ...) (allocator).template allocT<type>(pool_index, __FILE__, __LINE__, ##__VA_ARGS__)
+#define SHIB_ALLOCT(Class, allocator, ...) (allocator).template allocT<Class>(__FILE__, __LINE__, ##__VA_ARGS__)
 
 #define SHIB_ALLOC_ALIGNED_POOL(size, alignment, pool_index, allocator) (allocator).alloc(size, alignment, pool_index, __FILE__, __LINE__)
 #define SHIB_ALLOC_ALIGNED GAFF_ALLOC_ALIGNED
