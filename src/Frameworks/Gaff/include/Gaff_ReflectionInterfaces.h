@@ -365,9 +365,7 @@ constexpr Hash64 CalcTemplateHashHelper(Hash64 init)
 template <class... T>
 constexpr Hash64 CalcTemplateHash(Hash64 init, eastl::array<const char*, GetNumArgs<T...>()> type_names)
 {
-	static_assert(sizeof...(T) == type_names.size(), "Initializer list size must match number of template arguments.");
 	static_assert(sizeof...(T) > 0, "Initializer list version of CalcTemplateHash must be non-void.");
-
 	return CalcTemplateHashHelper<T...>(init, type_names.data(), 0);
 }
 
