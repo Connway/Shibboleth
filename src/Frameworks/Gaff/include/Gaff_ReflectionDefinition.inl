@@ -1117,7 +1117,7 @@ ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::base(voi
 	} else {
 		++_base_classes_remaining;
 
-		eastl::function<void (void)> cb(eastl::allocator_arg, _allocator, &RegisterBaseVariables<Base>);
+		eastl::function<void (void)> cb(&RegisterBaseVariables<Base>);
 		GAFF_REFLECTION_NAMESPACE::Reflection<Base>::g_on_defined_callbacks.emplace_back(std::move(cb));
 	}
 
