@@ -57,9 +57,9 @@ public:
 
 private:
 	wxTreeCtrl* _ecs_components = nullptr;
+	wxEditableListBox* _archetype_shared_ui = nullptr;
 	wxEditableListBox* _archetype_ui = nullptr;
 
-	ECSArchetype _archetype;
 	U8String _path;
 
 	void onFileSelected(const EditorFileSelectedMessage& message);
