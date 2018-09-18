@@ -143,12 +143,6 @@ void LooseFileSystem::closeFile(IFile* file)
 
 bool LooseFileSystem::forEachFile(const char* directory, eastl::function<bool (const char*, IFile*)>& callback, bool recursive)
 {
-	U8String path(directory);
-
-	if (path[path.size() - 1] != '/') {
-		path += '/';
-	}
-
 	for (const auto& dir_entry : std::filesystem::directory_iterator(directory)) {
 		if (!recursive && !dir_entry.is_regular_file()) {
 			continue;
@@ -157,10 +151,8 @@ bool LooseFileSystem::forEachFile(const char* directory, eastl::function<bool (c
 		const wchar_t* file_name = dir_entry.path().c_str();
 		CONVERT_STRING(char, temp, file_name);
 
-		const U8String full_path = path + temp;
-
 		if (recursive && dir_entry.is_directory()) {
-			forEachFile(full_path.data(), callback, recursive);
+			forEachFile(temp, callback, recursive);
 			continue;
 		}
 
@@ -168,7 +160,7 @@ bool LooseFileSystem::forEachFile(const char* directory, eastl::function<bool (c
 			continue;
 		}
 
-		IFile* const file = openFile(full_path.data());
+		IFile* const file = openFile(temp);
 
 		//if (!file) {
 		//	// TODO: Log error

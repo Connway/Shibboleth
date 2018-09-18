@@ -31,7 +31,6 @@ THE SOFTWARE.
 #include <Gaff_JSON.h>
 #include <Gaff_File.h>
 #include <filesystem>
-#include <regex>
 
 #ifdef PLATFORM_WINDOWS
 	#include <shellapi.h>
@@ -333,9 +332,7 @@ bool App::loadModules(void)
 				const wchar_t* name = dir_entry.path().c_str();
 				CONVERT_STRING(char, temp, name);
 
-				const U8String md = dir.getString() + U8String("/") + temp;
-
-				if (!(_dynamic_loader.getModule(md.data()) || loadModule(md.data()))) {
+				if (!(_dynamic_loader.getModule(temp) || loadModule(temp))) {
 					return false;
 				}
 			}
@@ -460,66 +457,28 @@ bool App::loadModule(const char* module_path)
 
 void App::removeExtraLogs(void)
 {
-	int32_t callstack_log_count = 0;
-	int32_t alloc_log_count = 0;
-	int32_t game_log_count = 0;
-	int32_t leak_log_count = 0;
-
 	const char* const log_dir = _configs["log_dir"].getString("./logs");
+	int32_t dir_count = 0;
 
 	for (const auto& dir_entry : std::filesystem::directory_iterator(log_dir)) {
-		if (!dir_entry.is_regular_file()) {
+		if (!dir_entry.is_directory()) {
 			continue;
 		}
 
-		const wchar_t* name = dir_entry.path().c_str();
-		CONVERT_STRING(char, temp, name);
-
-		if (std::regex_match(temp, std::regex("Log.+\\.txt"))) {
-			++game_log_count;
-		} else if (std::regex_match(temp, std::regex("AllocationLog.+\\.txt"))) {
-			++alloc_log_count;
-		} else if (std::regex_match(temp, std::regex("CallstackLog.+\\.txt"))) {
-			++callstack_log_count;
-		} else if (std::regex_match(temp, std::regex("LeakLog.+\\.txt"))) {
-			++leak_log_count;
-		}
+		++dir_count;
 	}
 
-	int32_t callstack_logs_delete = (callstack_log_count > 10) ? callstack_log_count - 10 : 0;
-	int32_t alloc_logs_delete = (alloc_log_count > 10) ? alloc_log_count - 10 : 0;
-	int32_t game_logs_delete = (game_log_count > 10) ? game_log_count - 10 : 0;
-	int32_t leak_logs_delete = (leak_log_count > 10) ? leak_log_count - 10 : 0;
-	callstack_log_count = alloc_log_count = game_log_count = leak_log_count = 0;
-
 	for (const auto& dir_entry : std::filesystem::directory_iterator(log_dir)) {
-		if (!dir_entry.is_regular_file()) {
+		if (dir_count <= 10) {
+			break;
+		}
+
+		if (!dir_entry.is_directory()) {
 			continue;
 		}
 
-		const wchar_t* name = dir_entry.path().c_str();
-		CONVERT_STRING(char, temp, name);
-
-		if (std::regex_match(temp, std::regex("GameLog.+\\.txt")) && game_log_count < game_logs_delete) {
-			const U8String temp2 = U8String("./logs/") + temp;
-			std::remove(temp2.data());
-			++game_log_count;
-
-		} else if (std::regex_match(temp, std::regex("AllocationLog.+\\.txt")) && alloc_log_count < alloc_logs_delete) {
-			const U8String temp2 = U8String("./logs/") + temp;
-			std::remove(temp2.data());
-			++alloc_log_count;
-
-		} else if (std::regex_match(temp, std::regex("CallstackLog.+\\.txt")) && callstack_log_count < callstack_logs_delete) {
-			const U8String temp2 = U8String("./logs/") + temp;
-			std::remove(temp2.data());
-			++callstack_log_count;
-
-		} else if (std::regex_match(temp, std::regex("LeakLog.+\\.txt")) && leak_log_count < leak_logs_delete) {
-			const U8String temp2 = U8String("./logs/") + temp;
-			std::remove(temp2.data());
-			++leak_log_count;
-		}
+		std::filesystem::remove_all(dir_entry.path());
+		--dir_count;
 	}
 }
 

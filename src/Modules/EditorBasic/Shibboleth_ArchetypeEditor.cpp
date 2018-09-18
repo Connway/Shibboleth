@@ -120,13 +120,19 @@ ArchetypeEditor::ArchetypeEditor(
 	_ecs_components->SetWindowStyleFlag(wxTR_HIDE_ROOT | wxTR_MULTIPLE);
 	_ecs_components->AddRoot(wxT(""));
 
-	_archetype_ui = new wxEditableListBox(splitter, wxID_ANY, "Archetype", wxDefaultPosition, wxDefaultSize, wxEL_ALLOW_DELETE);
+	wxSplitterWindow* const splitter_archetype = new wxSplitterWindow(splitter);
+	_archetype_shared_ui = new wxEditableListBox(splitter_archetype, wxID_ANY, "Shared Components", wxDefaultPosition, wxDefaultSize, wxEL_ALLOW_DELETE);
+	_archetype_shared_ui->SetDropTarget(new ArcheTypeEditorDropTarget(*this));
+
+	_archetype_ui = new wxEditableListBox(splitter_archetype, wxID_ANY, "Components", wxDefaultPosition, wxDefaultSize, wxEL_ALLOW_DELETE);
 	_archetype_ui->SetDropTarget(new ArcheTypeEditorDropTarget(*this));
 
 	_ecs_components->Disable();
+	_archetype_shared_ui->Disable();
 	_archetype_ui->Disable();
 
-	splitter->SplitVertically(_archetype_ui, _ecs_components, 400);
+	splitter_archetype->SplitHorizontally(_archetype_shared_ui, _archetype_ui, 200);
+	splitter->SplitVertically(splitter_archetype, _ecs_components, 400);
 
 	wxBoxSizer* const sizer = new wxBoxSizer(wxHORIZONTAL);
 	sizer->Add(splitter, 1, wxEXPAND | wxALL);
@@ -150,13 +156,15 @@ void ArchetypeEditor::onFileSelected(const EditorFileSelectedMessage& message)
 {
 	const U8String& path = message.getPath();
 
-	if (Gaff::CheckExtension(path.c_str(), path.size(), ".archetype")) {
+	if (!Gaff::CheckExtension(path.c_str(), path.size(), ".archetype")) {
 		_ecs_components->Disable();
+		_archetype_shared_ui->Disable();
 		_archetype_ui->Disable();
 		return;
 	}
 
 	_ecs_components->Enable();
+	_archetype_shared_ui->Enable();
 	_archetype_ui->Enable();
 
 	save();
@@ -168,7 +176,6 @@ void ArchetypeEditor::onRemoveComponents(wxListEvent& event)
 {
 	const long index = event.GetIndex();
 	_archetype_ui->GetListCtrl()->DeleteItem(event.GetIndex());
-	_archetype.remove(static_cast<int32_t>(event.GetIndex()));
 }
 
 void ArchetypeEditor::onAddComponents(wxTreeEvent& event)
@@ -269,8 +276,6 @@ void ArchetypeEditor::removeItem(RefDefItem* item)
 		_ecs_components->SetItemTextColour(item->GetId(), g_grey);
 		item->setDisabled(false);
 	}
-
-	_archetype.remove(ref_def);
 }
 
 void ArchetypeEditor::addItem(RefDefItem* item)
@@ -285,7 +290,6 @@ void ArchetypeEditor::addItem(RefDefItem* item)
 	wxListCtrl* const list = _archetype_ui->GetListCtrl();
 
 	_archetype_ui->GetListCtrl()->InsertItem(list->GetItemCount(), ref_def->getReflectionInstance().getName());
-	_archetype.add(ref_def);
 
 	save();
 }
@@ -328,8 +332,6 @@ void ArchetypeEditor::initComponentList(void)
 
 void ArchetypeEditor::save(void)
 {
-	const Gaff::JSON json = _archetype.toJSON();
-	json.dumpToFile(_path.c_str());
 }
 
 void ArchetypeEditor::load(void)
@@ -341,9 +343,10 @@ void ArchetypeEditor::load(void)
 	}
 
 	const ReflectionManager& refl_mgr = GetApp().getReflectionManager();
-	ECSArchetype archetype;
+	const Gaff::JSON shared_components = json["shared_components"];
+	const Gaff::JSON components = json["components"];
 
-	json.forEachInArray([&](int32_t, const Gaff::JSON& value) -> bool {
+	shared_components.forEachInArray([&](int32_t, const Gaff::JSON& value) -> bool {
 		const Gaff::IReflectionDefinition* const ref_def = refl_mgr.getReflection(Gaff::FNV1aHash64String(value.getString()));
 
 		if (!ref_def) {
@@ -351,12 +354,25 @@ void ArchetypeEditor::load(void)
 			return false;
 		}
 
-		archetype.add(ref_def);
+		// Add to shared components list.
 
 		return false;
 	});
 
-	_archetype = archetype;
+	components.forEachInArray([&](int32_t, const Gaff::JSON& value) -> bool {
+		const Gaff::IReflectionDefinition* const ref_def = refl_mgr.getReflection(Gaff::FNV1aHash64String(value.getString()));
+
+		if (!ref_def) {
+			// TODO: Log error
+			return false;
+		}
+
+		// Find component from the list.
+		// Call addItem();
+		//_ecs_components->GetItemData()
+
+		return false;
+	});
 }
 
 NS_END

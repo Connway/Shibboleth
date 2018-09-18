@@ -110,6 +110,7 @@ void AssetBrowser::onFileActivated(wxTreeEvent& event)
 	wxDirItemData* const data = reinterpret_cast<wxDirItemData*>(_file_ctrl->GetTreeCtrl()->GetItemData(event.GetItem()));
 	
 	if (data->m_isDir) {
+		_dir_ctrl->SelectPath(data->m_path);
 		return;
 	}
 
