@@ -64,13 +64,17 @@ private:
 
 	void onFileSelected(const EditorFileSelectedMessage& message);
 
+	void onRemoveSharedComponents(wxListEvent& event);
 	void onRemoveComponents(wxListEvent& event);
+
 	void onAddComponents(wxTreeEvent& event);
 	void onDragBegin(wxTreeEvent& event);
 
+	void onRemoveComponentsHelper(wxListEvent& event, wxEditableListBox* ui);
+
 	RefDefItem* getItem(const wxTreeItemId& id) const;
-	void removeItem(RefDefItem* item);
-	void addItem(RefDefItem* item);
+	void removeItem(RefDefItem* item, wxEditableListBox* ui);
+	void addItem(RefDefItem* item, wxEditableListBox* ui);
 	void initComponentList(void);
 
 	void save(void);
