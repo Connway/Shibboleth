@@ -427,7 +427,7 @@ bool App::loadModule(const char* module_path)
 	}
 
 #ifdef PLATFORM_WINDOWS
-	DynamicLoader::ModulePtr module = _dynamic_loader.loadModule((U8String("../") + module_path).data(), module_path);
+	DynamicLoader::ModulePtr module = _dynamic_loader.loadModule((U8String("..\\") + module_path).data(), module_path);
 #else
 	DynamicLoader::ModulePtr module = _dynamic_loader.loadModule(module_path, module_path);
 #endif
@@ -468,17 +468,22 @@ void App::removeExtraLogs(void)
 		++dir_count;
 	}
 
-	for (const auto& dir_entry : std::filesystem::directory_iterator(log_dir)) {
-		if (dir_count <= 10) {
-			break;
-		}
+	if (dir_count <= 10) {
+		return;
+	}
 
+	for (const auto& dir_entry : std::filesystem::directory_iterator(log_dir)) {
 		if (!dir_entry.is_directory()) {
 			continue;
 		}
 
-		std::filesystem::remove_all(dir_entry.path());
+		const std::filesystem::path& path = dir_entry.path();
+		std::filesystem::remove_all(path);
 		--dir_count;
+
+		if (dir_count <= 10) {
+			break;
+		}
 	}
 }
 

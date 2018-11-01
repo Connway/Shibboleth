@@ -18,10 +18,17 @@
     <ClInclude Include="..\..\..\..\..\src\Engine\Editor\include\Shibboleth_IEditor.h">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Engine\Editor\include\Shibboleth_EditorItemSelectedMessage.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Engine\Editor\include\Shibboleth_EditorInspectorAttribute.h">
+      <Filter>include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\..\..\src\Engine\Editor\Shibboleth_EditorFileHandlerAttribute.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Engine\Editor\Shibboleth_EditorFileSelectedMessage.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Engine\Editor\Shibboleth_EditorWindowAttribute.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Engine\Editor\Shibboleth_EditorItemSelectedMessage.cpp" />
   </ItemGroup>
 </Project>

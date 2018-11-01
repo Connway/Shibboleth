@@ -215,17 +215,17 @@ NS_GAFF
 
 class IReflectionObject;
 
-template <class T>
-const T* ReflectionCast(const IReflectionObject& object);
+//template <class T>
+//const T* ReflectionCast(const IReflectionObject& object);
+//
+//template <class T>
+//T* ReflectionCast(IReflectionObject& object);
 
-template <class T>
-T* ReflectionCast(IReflectionObject& object);
-
-template <class T>
-const T* InterfaceCast(const IReflectionObject& object, Hash64 interface_name);
-
-template <class T>
-T* InterfaceCast(IReflectionObject& object, Hash64 interface_name);
+//template <class T>
+//const T* InterfaceCast(const IReflectionObject& object, Hash64 interface_name);
+//
+//template <class T>
+//T* InterfaceCast(IReflectionObject& object, Hash64 interface_name);
 
 template <class... T>
 constexpr int32_t GetNumArgs(void)

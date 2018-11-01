@@ -22,6 +22,7 @@ THE SOFTWARE.
 
 #pragma once
 
+#include <Shibboleth_EditorInspectorAttribute.h>
 #include <Shibboleth_ECSArchetype.h>
 #include <Shibboleth_Broadcaster.h>
 #include <Shibboleth_Reflection.h>
@@ -43,7 +44,7 @@ NS_SHIBBOLETH
 class EditorFileSelectedMessage;
 class RefDefItem;
 
-class ArchetypeEditor final : public Gaff::IReflectionObject, public wxPanel
+class ArchetypeEditor final : public Gaff::IReflectionObject, public wxPanel, public IInspectorLogic
 {
 public:
 	ArchetypeEditor(
@@ -54,6 +55,8 @@ public:
 	);
 
 	~ArchetypeEditor(void);
+
+	void populate(Gaff::IReflectionObject& inspector) override;
 
 private:
 	wxTreeCtrl* _ecs_components = nullptr;
@@ -79,6 +82,8 @@ private:
 
 	void save(void);
 	void load(void);
+
+	void updateInspector(void);
 
 	friend class ArcheTypeEditorDropTarget;
 

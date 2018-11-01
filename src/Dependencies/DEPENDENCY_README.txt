@@ -17,8 +17,6 @@ Libraries Affected:
 		Fixed compilation errors.
 	minizip
 		Commented out a block that says #define _CRT_SECURE_NO_WARNINGS, as I have it defined at the project level
-	dirent
-		Got rid of warnings in Visual Studio.
 	EASTL
 		Fixed compilation warnings/errors.
 	libuv

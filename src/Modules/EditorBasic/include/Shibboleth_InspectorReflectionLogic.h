@@ -22,56 +22,14 @@ THE SOFTWARE.
 
 #pragma once
 
-#include <Shibboleth_Reflection.h>
-#include <Shibboleth_Math.h>
-#include <simd/geometric.h>
+#include <Shibboleth_EditorInspectorAttribute.h>
 
 NS_SHIBBOLETH
 
-class Position final : public Gaff::IReflectionObject
+class InspectorReflectionLogic : public IInspectorLogic
 {
 public:
-	// Slow versions for posterity.
-	static void Set(const glm::vec3& value);
-	static glm::vec3 Get();
-
-	static glm_vec4 GetX();
-	static glm_vec4 GetY();
-	static glm_vec4 GetZ();
-
-	SHIB_REFLECTION_CLASS_DECLARE(Position);
-};
-
-class Rotation final : public Gaff::IReflectionObject
-{
-public:
-	// Slow versions for posterity.
-	static void Set(const glm::quat& value);
-	static glm::quat Get();
-
-	static glm_vec4 GetX();
-	static glm_vec4 GetY();
-	static glm_vec4 GetZ();
-	static glm_vec4 GetW();
-
-	SHIB_REFLECTION_CLASS_DECLARE(Rotation);
-};
-
-class Scale final : public Gaff::IReflectionObject
-{
-public:
-	static void Set(const glm::vec3& value);
-	static glm::vec3 Get();
-
-	static glm_vec4 GetX();
-	static glm_vec4 GetY();
-	static glm_vec4 GetZ();
-
-	SHIB_REFLECTION_CLASS_DECLARE(Scale);
+	void populate(Gaff::IReflectionObject& inspector) override;
 };
 
 NS_END
-
-SHIB_REFLECTION_DECLARE(Position)
-SHIB_REFLECTION_DECLARE(Rotation)
-SHIB_REFLECTION_DECLARE(Scale)

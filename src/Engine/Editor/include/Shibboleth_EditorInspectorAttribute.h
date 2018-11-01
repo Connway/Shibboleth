@@ -23,55 +23,45 @@ THE SOFTWARE.
 #pragma once
 
 #include <Shibboleth_Reflection.h>
-#include <Shibboleth_Math.h>
-#include <simd/geometric.h>
 
 NS_SHIBBOLETH
 
-class Position final : public Gaff::IReflectionObject
+class IInspectorLogic
 {
 public:
-	// Slow versions for posterity.
-	static void Set(const glm::vec3& value);
-	static glm::vec3 Get();
+	IInspectorLogic(void) {}
+	virtual ~IInspectorLogic(void) {}
 
-	static glm_vec4 GetX();
-	static glm_vec4 GetY();
-	static glm_vec4 GetZ();
-
-	SHIB_REFLECTION_CLASS_DECLARE(Position);
+	virtual void populate(Gaff::IReflectionObject& inspector) = 0;
 };
 
-class Rotation final : public Gaff::IReflectionObject
+template <class T>
+class EditorInspectorAttribute final : public Gaff::IAttribute, public IInspectorLogic
 {
 public:
-	// Slow versions for posterity.
-	static void Set(const glm::quat& value);
-	static glm::quat Get();
+	IAttribute* clone(void) const override
+	{
+		IAllocator& allocator = GetAllocator();
+		return SHIB_ALLOCT_POOL(EditorInspectorAttribute, allocator.getPoolIndex("Reflection"), allocator);
+	}
 
-	static glm_vec4 GetX();
-	static glm_vec4 GetY();
-	static glm_vec4 GetZ();
-	static glm_vec4 GetW();
+	void populate(Gaff::IReflectionObject& inspector) override
+	{
+		_inspector_populator.populate(inspector);
+	}
 
-	SHIB_REFLECTION_CLASS_DECLARE(Rotation);
+private:
+	T _inspector_populator;
+
+	SHIB_TEMPLATE_REFLECTION_CLASS_DECLARE(EditorInspectorAttribute, T);
 };
 
-class Scale final : public Gaff::IReflectionObject
-{
-public:
-	static void Set(const glm::vec3& value);
-	static glm::vec3 Get();
-
-	static glm_vec4 GetX();
-	static glm_vec4 GetY();
-	static glm_vec4 GetZ();
-
-	SHIB_REFLECTION_CLASS_DECLARE(Scale);
-};
+SHIB_TEMPLATE_REFLECTION_CLASS_DEFINE_BEGIN(EditorInspectorAttribute, T)
+	.BASE(Gaff::IAttribute)
+	.BASE(IInspectorLogic)
+SHIB_TEMPLATE_REFLECTION_CLASS_DEFINE_END(EditorInspectorAttribute, T)
 
 NS_END
 
-SHIB_REFLECTION_DECLARE(Position)
-SHIB_REFLECTION_DECLARE(Rotation)
-SHIB_REFLECTION_DECLARE(Scale)
+SHIB_TEMPLATE_REFLECTION_DECLARE(EditorInspectorAttribute, T)
+SHIB_TEMPLATE_REFLECTION_DEFINE(EditorInspectorAttribute, T)
