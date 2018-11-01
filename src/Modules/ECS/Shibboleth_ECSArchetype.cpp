@@ -166,11 +166,20 @@ bool ECSArchetype::fromJSON(const Gaff::JSON& json)
 
 Gaff::JSON ECSArchetype::toJSON(void) const
 {
-	Gaff::JSON json = Gaff::JSON::CreateArray();
+	Gaff::JSON shared_components = Gaff::JSON::CreateArray();
+	Gaff::JSON components = Gaff::JSON::CreateArray();
+
+	for (const Gaff::IReflectionDefinition* ref_def : _shared_vars) {
+		shared_components.push(Gaff::JSON::CreateString(ref_def->getReflectionInstance().getName()));
+	}
 
 	for (const Gaff::IReflectionDefinition* ref_def : _vars) {
-		json.push(Gaff::JSON::CreateString(ref_def->getReflectionInstance().getName()));
+		components.push(Gaff::JSON::CreateString(ref_def->getReflectionInstance().getName()));
 	}
+
+	Gaff::JSON json = Gaff::JSON::CreateObject();
+	json.setObject("SharedComponents", shared_components);
+	json.setObject("Components", components);
 
 	return json;
 }

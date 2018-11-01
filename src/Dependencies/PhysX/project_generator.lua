@@ -1,74 +1,55 @@
-if _OPTIONS["physx"] then
-	project "PhysX"
-		if _ACTION then
-			location(GetDependenciesLocation())
-		end
+function PhysXStaticLib(proj_name)
+	project(proj_name)
 
-		kind "Makefile"
+	if _ACTION then
+		location(GetDependenciesLocation())
+	end
 
-		filter { "configurations:Debug*", "platforms:x86", "action:vs2015" }
-			buildcommands
-			{
-				"msbuild ../../../dependencies/PhysX/PhysXSDK/Source/compiler/vc14win32/PhysX.sln /t:Build /p:Configuration=debug /p:Platform=Win32"
-			}
+	local wildcard = "PhysX_3.4/Source/" .. proj_name
 
-			rebuildcommands
-			{
-				"msbuild ../../../dependencies/PhysX/PhysXSDK/Source/compiler/vc14win32/PhysX.sln /t:Rebuild /p:Configuration=debug /p:Platform=Win32"
-			}
+	kind("StaticLib")
+	language "C++"
 
-			cleancommands
-			{
-				"msbuild ../../../dependencies/PhysX/PhysXSDK/Source/compiler/vc14win32/PhysX.sln /t:Clean /p:Configuration=debug /p:Platform=Win32"
-			}
+	defines
+	{
+		"PX_PHYSX_STATIC_LIB",
+		"PX_DEBUG=1",
+		"PX_CHECKED=1",
+		-- "PX_NVTX=1",
+		"PX_SUPPORT_PVD=1",
+		"PX_PHYSX_DLL_NAME_POSTFIX=DEBUG"
+	}
 
-		filter { "configurations:Release* or Optimized_Debug* or Profile*", "platforms:x86", "action:vs2015" }
-			buildcommands
-			{
-				"msbuild ../../../dependencies/PhysX/PhysXSDK/Source/compiler/vc14win32/PhysX.sln /t:Build /p:Configuration=release /p:Platform=Win32"
-			}
+	includedirs { "include" }
 
-			rebuildcommands
-			{
-				"msbuild ../../../dependencies/PhysX/PhysXSDK/Source/compiler/vc14win32/PhysX.sln /t:Rebuild /p:Configuration=release /p:Platform=Win32"
-			}
+	files
+	{
+		wildcard .. "/**.h",
+		wildcard .. "/**.cpp"
+	}
 
-			cleancommands
-			{
-				"msbuild ../../../dependencies/PhysX/PhysXSDK/Source/compiler/vc14win32/PhysX.sln /t:Clean /p:Configuration=release /p:Platform=Win32"
-			}
+	filter { "action:vs*" }
+		defines
+		{
+			"_CRT_SECURE_NO_DEPRECATE",
+			"_CRT_NONSTDC_NO_DEPRECATE",
+			"_WINSOCK_DEPRECATED_NO_WARNINGS"
+		}
 
-		filter { "configurations:Debug*", "platforms:x64", "action:vs2015" }
-			buildcommands
-			{
-				"msbuild ../../../dependencies/PhysX/PhysXSDK/Source/compiler/vc14win64/PhysX.sln /t:Build /p:Configuration=debug /p:Platform=x64"
-			}
+	filter {}
 
-			rebuildcommands
-			{
-				"msbuild ../../../dependencies/PhysX/PhysXSDK/Source/compiler/vc14win64/PhysX.sln /t:Rebuild /p:Configuration=debug /p:Platform=x64"
-			}
-
-			cleancommands
-			{
-				"msbuild ../../../dependencies/PhysX/PhysXSDK/Source/compiler/vc14win64/PhysX.sln /t:Clean /p:Configuration=debug /p:Platform=x64"
-			}
-
-		filter { "configurations:Release* or Optimized_Debug* or Analyze*", "platforms:x64", "action:vs2015" }
-			buildcommands
-			{
-				"msbuild ../../../dependencies/PhysX/PhysXSDK/Source/compiler/vc14win64/PhysX.sln /t:Build /p:Configuration=release /p:Platform=x64"
-			}
-
-			rebuildcommands
-			{
-				"msbuild ../../../dependencies/PhysX/PhysXSDK/Source/compiler/vc14win64/PhysX.sln /t:Rebuild /p:Configuration=release /p:Platform=x64"
-			}
-
-			cleancommands
-			{
-				"msbuild ../../../dependencies/PhysX/PhysXSDK/Source/compiler/vc14win64/PhysX.sln /t:Clean /p:Configuration=release /p:Platform=x64"
-			}
-
-		filter {}
+	-- if lib_type == "SharedLib" then
+	-- 	postbuildcommands
+	-- 	{
+	-- 		"{MKDIR} ../../../../../workingdir/bin",
+	-- 		"{COPY} %{cfg.targetdir}/%{cfg.buildtarget.name} ../../../../../workingdir/bin"
+	-- 	}
+	-- end
 end
+
+function PhysXSharedLib(proj_name)
+end
+
+group "Dependencies/PhysX"
+
+PhysXStaticLib("LowLevel")

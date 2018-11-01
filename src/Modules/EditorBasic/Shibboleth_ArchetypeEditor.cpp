@@ -104,7 +104,6 @@ SHIB_REFLECTION_CLASS_DEFINE_BEGIN(ArchetypeEditor)
 		&ArchetypeEditor::onFileSelected,
 		GlobalMessageAttribute<ArchetypeEditor, EditorFileSelectedMessage>()
 	)
-
 SHIB_REFLECTION_CLASS_DEFINE_END(ArchetypeEditor)
 
 ArchetypeEditor::ArchetypeEditor(
@@ -156,6 +155,12 @@ ArchetypeEditor::~ArchetypeEditor(void)
 {
 }
 
+void ArchetypeEditor::populate(Gaff::IReflectionObject& inspector)
+{
+	wxWindow* const window = INTERFACE_CAST(wxWindow, inspector);
+	GAFF_REF(window);
+}
+
 void ArchetypeEditor::onFileSelected(const EditorFileSelectedMessage& message)
 {
 	const U8String& path = message.getPath();
@@ -174,6 +179,8 @@ void ArchetypeEditor::onFileSelected(const EditorFileSelectedMessage& message)
 	save();
 	_path = path;
 	load();
+
+	updateInspector();
 }
 
 void ArchetypeEditor::onRemoveSharedComponents(wxListEvent& event)
@@ -211,6 +218,8 @@ void ArchetypeEditor::onAddComponents(wxTreeEvent& event)
 			addItem(item, _archetype_ui);
 		}
 	}
+
+	updateInspector();
 }
 
 void ArchetypeEditor::onDragBegin(wxTreeEvent& event)
@@ -270,6 +279,8 @@ void ArchetypeEditor::onRemoveComponentsHelper(wxListEvent& event, wxEditableLis
 {
 	GAFF_REF(event);
 	GAFF_REF(ui);
+
+	updateInspector();
 }
 
 RefDefItem* ArchetypeEditor::getItem(const wxTreeItemId& id) const
@@ -394,6 +405,10 @@ void ArchetypeEditor::load(void)
 
 		return false;
 	});
+}
+
+void ArchetypeEditor::updateInspector(void)
+{
 }
 
 NS_END

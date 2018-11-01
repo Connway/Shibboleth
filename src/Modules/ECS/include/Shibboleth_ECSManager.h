@@ -31,6 +31,12 @@ NS_SHIBBOLETH
 class ECSManager final : public IManager
 {
 public:
+	struct EntityID
+	{
+		int32_t archetype_index;
+		int32_t entity_index;
+	};
+
 	bool init(void) override;
 
 	void addArchetype(const ECSArchetype& archetype, const char* name);
@@ -41,14 +47,23 @@ public:
 private:
 	struct alignas(16) EntityPage
 	{
-		EntityPage* next_page = nullptr;
 		uint8_t data[EA_KIBIBYTE(64) - sizeof(EntityPage*)]; // 64KiB
+		EntityPage* next_page = nullptr;
+	};
+
+	struct EntityData
+	{
+		ECSArchetype archetype;
+
+		int32_t num_entities_per_page = 0;
+		int32_t num_entities = 0;
+
+		void* shared_components = nullptr;
+		EntityPage* entities = nullptr;
 	};
 
 	VectorMap<Gaff::Hash64, ECSArchetype> _archetypes;
-	VectorMap<Gaff::Hash64, EntityPage*> _entity_pages; // Key: Archetype. Key of * is entities without an archetype.
-	VectorMap< Gaff::Hash64, Vector<int32_t> > _component_map;
-	Vector<void*> _entities;
+	VectorMap<Gaff::Hash64, EntityData> _entity_pages;
 
 	SHIB_REFLECTION_CLASS_DECLARE(ECSManager);
 };

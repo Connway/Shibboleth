@@ -20,58 +20,22 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#pragma once
+#include "Shibboleth_EditorItemSelectedMessage.h"
 
-#include <Shibboleth_Reflection.h>
-#include <Shibboleth_Math.h>
-#include <simd/geometric.h>
+SHIB_REFLECTION_DEFINE(EditorItemSelectedMessage)
 
 NS_SHIBBOLETH
 
-class Position final : public Gaff::IReflectionObject
+SHIB_REFLECTION_CLASS_DEFINE(EditorItemSelectedMessage)
+
+EditorItemSelectedMessage::EditorItemSelectedMessage(Gaff::IReflectionObject* item):
+	_item(item)
 {
-public:
-	// Slow versions for posterity.
-	static void Set(const glm::vec3& value);
-	static glm::vec3 Get();
+}
 
-	static glm_vec4 GetX();
-	static glm_vec4 GetY();
-	static glm_vec4 GetZ();
-
-	SHIB_REFLECTION_CLASS_DECLARE(Position);
-};
-
-class Rotation final : public Gaff::IReflectionObject
+Gaff::IReflectionObject* EditorItemSelectedMessage::getItem(void) const
 {
-public:
-	// Slow versions for posterity.
-	static void Set(const glm::quat& value);
-	static glm::quat Get();
-
-	static glm_vec4 GetX();
-	static glm_vec4 GetY();
-	static glm_vec4 GetZ();
-	static glm_vec4 GetW();
-
-	SHIB_REFLECTION_CLASS_DECLARE(Rotation);
-};
-
-class Scale final : public Gaff::IReflectionObject
-{
-public:
-	static void Set(const glm::vec3& value);
-	static glm::vec3 Get();
-
-	static glm_vec4 GetX();
-	static glm_vec4 GetY();
-	static glm_vec4 GetZ();
-
-	SHIB_REFLECTION_CLASS_DECLARE(Scale);
-};
+	return _item;
+}
 
 NS_END
-
-SHIB_REFLECTION_DECLARE(Position)
-SHIB_REFLECTION_DECLARE(Rotation)
-SHIB_REFLECTION_DECLARE(Scale)

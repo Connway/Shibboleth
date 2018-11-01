@@ -25,6 +25,7 @@ THE SOFTWARE.
 
 SHIB_REFLECTION_DEFINE(Position)
 SHIB_REFLECTION_DEFINE(Rotation)
+SHIB_REFLECTION_DEFINE(Scale)
 
 NS_SHIBBOLETH
 
@@ -95,6 +96,40 @@ glm_vec4 Rotation::GetZ()
 }
 
 glm_vec4 Rotation::GetW()
+{
+	return glm_vec4();
+}
+
+
+
+SHIB_REFLECTION_CLASS_DEFINE_BEGIN(Scale)
+	.classAttrs(
+		ECSClassAttribute(nullptr, "Transform"),
+		ECSVarAttribute<glm::vec3>()
+	)
+SHIB_REFLECTION_CLASS_DEFINE_END(Scale)
+
+void Scale::Set(const glm::vec3& value)
+{
+	GAFF_REF(value);
+}
+
+glm::vec3 Scale::Get()
+{
+	return glm::vec3();
+}
+
+glm_vec4 Scale::GetX()
+{
+	return glm_vec4();
+}
+
+glm_vec4 Scale::GetY()
+{
+	return glm_vec4();
+}
+
+glm_vec4 Scale::GetZ()
 {
 	return glm_vec4();
 }

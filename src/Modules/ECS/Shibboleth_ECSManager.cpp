@@ -34,17 +34,28 @@ SHIB_REFLECTION_CLASS_DEFINE_END(ECSManager)
 bool ECSManager::init(void)
 {
 	// Load all archetypes from config directory
-	// Create component buckets
 	return true;
 }
 
 void ECSManager::addArchetype(const ECSArchetype& archetype, const char* name)
 {
+	GAFF_ASSERT(_entity_pages.find(archetype.getHash()) == _entity_pages.end());
 	_archetypes.emplace(Gaff::FNV1aHash64String(name), archetype);
+
+	EntityData& data = _entity_pages[archetype.getHash()];
+	data.num_entities_per_page = (EA_KIBIBYTE(64) - sizeof(EntityPage*)) / archetype.size();
+	data.archetype = archetype;
 }
 
 void ECSManager::addArchetype(ECSArchetype&& archetype, const char* name)
 {
+	GAFF_ASSERT(_entity_pages.find(archetype.getHash()) == _entity_pages.end());
+
+	EntityData& data = _entity_pages[archetype.getHash()];
+	data.num_entities_per_page = (EA_KIBIBYTE(64) - sizeof(EntityPage*)) / archetype.size();
+	data.archetype = archetype;
+
+	// Do this last so the reference is still valid when we make a copy in above code.
 	_archetypes.emplace(Gaff::FNV1aHash64String(name), std::move(archetype));
 }
 

@@ -23,55 +23,41 @@ THE SOFTWARE.
 #pragma once
 
 #include <Shibboleth_Reflection.h>
-#include <Shibboleth_Math.h>
-#include <simd/geometric.h>
+
+#ifdef PLATFORM_WINDOWS
+	#include <wx/msw/winundef.h>
+#endif
+
+#include <wx/panel.h>
 
 NS_SHIBBOLETH
 
-class Position final : public Gaff::IReflectionObject
+class EditorItemSelectedMessage;
+class IInspectorLogic;
+
+class Inspector final : public Gaff::IReflectionObject, public wxPanel
 {
 public:
-	// Slow versions for posterity.
-	static void Set(const glm::vec3& value);
-	static glm::vec3 Get();
+	Inspector(
+		wxWindow* parent,
+		wxWindowID id = wxID_ANY,
+		const wxPoint& pos = wxDefaultPosition,
+		const wxSize& size = wxDefaultSize
+	);
 
-	static glm_vec4 GetX();
-	static glm_vec4 GetY();
-	static glm_vec4 GetZ();
+	~Inspector(void);
 
-	SHIB_REFLECTION_CLASS_DECLARE(Position);
-};
+private:
+	IInspectorLogic* _default_logic = nullptr;
+	IInspectorLogic* _logic = nullptr;
 
-class Rotation final : public Gaff::IReflectionObject
-{
-public:
-	// Slow versions for posterity.
-	static void Set(const glm::quat& value);
-	static glm::quat Get();
+	void onItemSelected(const EditorItemSelectedMessage& message);
 
-	static glm_vec4 GetX();
-	static glm_vec4 GetY();
-	static glm_vec4 GetZ();
-	static glm_vec4 GetW();
+	void clear(void);
 
-	SHIB_REFLECTION_CLASS_DECLARE(Rotation);
-};
-
-class Scale final : public Gaff::IReflectionObject
-{
-public:
-	static void Set(const glm::vec3& value);
-	static glm::vec3 Get();
-
-	static glm_vec4 GetX();
-	static glm_vec4 GetY();
-	static glm_vec4 GetZ();
-
-	SHIB_REFLECTION_CLASS_DECLARE(Scale);
+	SHIB_REFLECTION_CLASS_DECLARE(Inspector);
 };
 
 NS_END
 
-SHIB_REFLECTION_DECLARE(Position)
-SHIB_REFLECTION_DECLARE(Rotation)
-SHIB_REFLECTION_DECLARE(Scale)
+SHIB_REFLECTION_DECLARE(Inspector)
