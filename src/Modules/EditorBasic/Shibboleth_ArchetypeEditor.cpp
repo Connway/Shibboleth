@@ -116,12 +116,16 @@ ArchetypeEditor::ArchetypeEditor(
 {
 	wxSplitterWindow* const splitter = new wxSplitterWindow(this);
 	splitter->SetWindowStyleFlag(wxSP_3D | wxSP_LIVE_UPDATE);
+	splitter->SetMinimumPaneSize(10);
 
 	_ecs_components = new wxTreeCtrl(splitter, wxID_ANY);
 	_ecs_components->SetWindowStyleFlag(wxTR_HIDE_ROOT | wxTR_MULTIPLE);
 	_ecs_components->AddRoot(wxT(""));
 
 	wxSplitterWindow* const splitter_archetype = new wxSplitterWindow(splitter);
+	splitter_archetype->SetWindowStyleFlag(wxSP_3D | wxSP_LIVE_UPDATE);
+	splitter_archetype->SetMinimumPaneSize(10);
+
 	_archetype_shared_ui = new wxEditableListBox(splitter_archetype, wxID_ANY, "Shared Components", wxDefaultPosition, wxDefaultSize, wxEL_ALLOW_DELETE);
 	_archetype_shared_ui->SetDropTarget(new ArcheTypeEditorDropTarget(*this, _archetype_shared_ui));
 
