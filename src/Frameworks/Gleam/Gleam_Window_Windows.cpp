@@ -28,7 +28,7 @@ THE SOFTWARE.
 
 NS_GLEAM
 
-using WindowProcHelper = void (*)(AnyMessage*, Window*, WPARAM, LPARAM);
+using WindowProcHelper = void (*)(AnyMessage&, Window*, WPARAM, LPARAM);
 
 static VectorMap<UINT, WindowProcHelper> g_window_helpers;
 static Vector<Window*> g_windows;
@@ -109,8 +109,7 @@ void Window::HandleWindowMessages(void)
 LRESULT CALLBACK Window::WindowProc(HWND hwnd, UINT msg, WPARAM w, LPARAM l)
 {
 	bool handled = false;
-	char buffer[sizeof(AnyMessage)];
-	AnyMessage* message = reinterpret_cast<AnyMessage*>(buffer);
+	AnyMessage message;
 
 	auto it_wnd = Gaff::Find(g_windows, hwnd, [](const Window* lhs, const HWND rhs) -> bool
 	{
@@ -126,17 +125,17 @@ LRESULT CALLBACK Window::WindowProc(HWND hwnd, UINT msg, WPARAM w, LPARAM l)
 			WindowProcHelper helper_func = g_window_helpers[msg];
 
 			if (helper_func) {
-				helper_func(reinterpret_cast<AnyMessage*>(buffer), window, w, l);
-				reinterpret_cast<AnyMessage*>(buffer)->base.window = window;
+				helper_func(message, window, w, l);
+				message.base.window = window;
 
 				const int32_t size = static_cast<int32_t>(window->_window_callbacks.size());
 
 				for (int32_t i = 0; i < size; ++i) {
-					handled = handled || window->_window_callbacks[i](*message);
+					handled = handled || window->_window_callbacks[i](message);
 				}
 
 				for (auto it_hnd = g_global_message_handlers.begin(); it_hnd != g_global_message_handlers.end(); ++it_hnd) {
-					handled = handled || it_hnd->second(*message);
+					handled = handled || it_hnd->second(message);
 				}
 
 				if (handled) {

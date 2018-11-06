@@ -76,14 +76,21 @@ void Inspector::onItemSelected(const EditorItemSelectedMessage& message)
 		return;
 	}
 
+	// Check for an attribute with inspector logic.
 	const Gaff::IReflectionDefinition& ref_def = item->getReflectionDefinition();
 	_logic = const_cast<IInspectorLogic*>(ref_def.GET_CLASS_ATTR(IInspectorLogic));
 
+	// If no attribute, check if the item itself is the inspector logic.
 	if (!_logic) {
-		_logic = _default_logic;
+		_logic = const_cast<IInspectorLogic*>(INTERFACE_CAST(IInspectorLogic, *item));
+
+		// Default to reflection inspector.
+		if (!_logic) {
+			_logic = _default_logic;
+		}
 	}
 
-	_logic->populate(*this);
+	_logic->populate(*this, *item);
 }
 
 void Inspector::clear(void)

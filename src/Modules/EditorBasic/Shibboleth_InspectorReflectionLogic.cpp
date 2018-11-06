@@ -24,9 +24,22 @@ THE SOFTWARE.
 
 NS_SHIBBOLETH
 
-void InspectorReflectionLogic::populate(Gaff::IReflectionObject& inspector)
+wxWindow* CreateInspectorWidgetWithReflection(Gaff::IReflectionObject& object)
+{
+	const Gaff::IReflectionDefinition& ref_def = object.getReflectionDefinition();
+	const int32_t num_vars = ref_def.getNumVars();
+
+	for (int32_t i = 0; i < num_vars; ++i) {
+
+	}
+
+	return nullptr;
+}
+
+void InspectorReflectionLogic::populate(Gaff::IReflectionObject& inspector, Gaff::IReflectionObject& object)
 {
 	GAFF_REF(inspector);
+	GAFF_REF(object);
 }
 
 NS_END

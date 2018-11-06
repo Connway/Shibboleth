@@ -24,12 +24,16 @@ THE SOFTWARE.
 
 #include <Shibboleth_EditorInspectorAttribute.h>
 
+class wxWindow;
+
 NS_SHIBBOLETH
+
+wxWindow* CreateInspectorWidgetWithReflection(Gaff::IReflectionObject& object);
 
 class InspectorReflectionLogic : public IInspectorLogic
 {
 public:
-	void populate(Gaff::IReflectionObject& inspector) override;
+	void populate(Gaff::IReflectionObject& inspector, Gaff::IReflectionObject& object) override;
 };
 
 NS_END

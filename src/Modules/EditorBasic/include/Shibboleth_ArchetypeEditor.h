@@ -56,13 +56,14 @@ public:
 
 	~ArchetypeEditor(void);
 
-	void populate(Gaff::IReflectionObject& inspector) override;
+	void populate(Gaff::IReflectionObject& inspector, Gaff::IReflectionObject& object) override;
 
 private:
 	wxTreeCtrl* _ecs_components = nullptr;
 	wxEditableListBox* _archetype_shared_ui = nullptr;
 	wxEditableListBox* _archetype_ui = nullptr;
 
+	Broadcaster& _broadcaster;
 	U8String _path;
 
 	void onFileSelected(const EditorFileSelectedMessage& message);
@@ -82,8 +83,6 @@ private:
 
 	void save(void);
 	void load(void);
-
-	void updateInspector(void);
 
 	friend class ArcheTypeEditorDropTarget;
 

@@ -32,7 +32,7 @@ public:
 	IInspectorLogic(void) {}
 	virtual ~IInspectorLogic(void) {}
 
-	virtual void populate(Gaff::IReflectionObject& inspector) = 0;
+	virtual void populate(Gaff::IReflectionObject& inspector, Gaff::IReflectionObject& object) = 0;
 };
 
 template <class T>
@@ -45,9 +45,9 @@ public:
 		return SHIB_ALLOCT_POOL(EditorInspectorAttribute, allocator.getPoolIndex("Reflection"), allocator);
 	}
 
-	void populate(Gaff::IReflectionObject& inspector) override
+	void populate(Gaff::IReflectionObject& inspector, Gaff::IReflectionObject& object) override
 	{
-		_inspector_populator.populate(inspector);
+		_inspector_populator.populate(inspector, object);
 	}
 
 private:
