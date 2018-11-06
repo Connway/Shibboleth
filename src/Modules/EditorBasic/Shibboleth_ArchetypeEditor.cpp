@@ -128,9 +128,11 @@ ArchetypeEditor::ArchetypeEditor(
 
 	_archetype_shared_ui = new wxEditableListBox(splitter_archetype, wxID_ANY, "Shared Components", wxDefaultPosition, wxDefaultSize, wxEL_ALLOW_DELETE);
 	_archetype_shared_ui->SetDropTarget(new ArcheTypeEditorDropTarget(*this, _archetype_shared_ui));
+	_archetype_shared_ui->GetListCtrl()->DeleteAllItems();
 
 	_archetype_ui = new wxEditableListBox(splitter_archetype, wxID_ANY, "Components", wxDefaultPosition, wxDefaultSize, wxEL_ALLOW_DELETE);
 	_archetype_ui->SetDropTarget(new ArcheTypeEditorDropTarget(*this, _archetype_ui));
+	_archetype_ui->GetListCtrl()->DeleteAllItems();
 
 	_ecs_components->Disable();
 	_archetype_shared_ui->Disable();

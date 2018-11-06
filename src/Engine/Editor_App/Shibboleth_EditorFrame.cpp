@@ -115,7 +115,7 @@ EditorFrame::EditorFrame(const wxString& title, const wxPoint& pos, const wxSize
 		);
 	}
 
-	Bind(wxEVT_UPDATE_UI, &EditorFrame::onUpdate, this, GetId());
+	//Bind(wxEVT_UPDATE_UI, &EditorFrame::onUpdate, this, GetId());
 }
 
 EditorFrame::~EditorFrame(void)
@@ -180,9 +180,8 @@ void EditorFrame::onWindowClose(wxAuiManagerEvent& event)
 	GetApp().getEditor()->removeEditorWindow(instance);
 }
 
-void EditorFrame::onUpdate(wxUpdateUIEvent& /*event*/)
-{
-	_aui_mgr.Update();
-}
+//void EditorFrame::onUpdate(wxUpdateUIEvent& /*event*/)
+//{
+//}
 
 NS_END
