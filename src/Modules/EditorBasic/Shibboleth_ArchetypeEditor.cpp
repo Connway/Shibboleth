@@ -24,6 +24,7 @@ THE SOFTWARE.
 #include "Shibboleth_ECSAttributes.h"
 #include <Shibboleth_EditorFileHandlerAttribute.h>
 #include <Shibboleth_EditorFileSelectedMessage.h>
+#include <Shibboleth_EditorItemSelectedMessage.h>
 #include <Shibboleth_EngineAttributesCommon.h>
 #include <Shibboleth_EditorWindowAttribute.h>
 #include <Shibboleth_UniqueAttribute.h>
@@ -112,7 +113,8 @@ ArchetypeEditor::ArchetypeEditor(
 	const wxPoint& pos,
 	const wxSize& size
 ):
-	wxPanel(parent, id, pos, size)
+	wxPanel(parent, id, pos, size),
+	_broadcaster(GetApp().getBroadcaster())
 {
 	wxSplitterWindow* const splitter = new wxSplitterWindow(this);
 	splitter->SetWindowStyleFlag(wxSP_3D | wxSP_LIVE_UPDATE);
@@ -161,7 +163,7 @@ ArchetypeEditor::~ArchetypeEditor(void)
 {
 }
 
-void ArchetypeEditor::populate(Gaff::IReflectionObject& inspector)
+void ArchetypeEditor::populate(Gaff::IReflectionObject& inspector, Gaff::IReflectionObject&)
 {
 	wxWindow* const window = INTERFACE_CAST(wxWindow, inspector);
 	GAFF_REF(window);
@@ -186,7 +188,7 @@ void ArchetypeEditor::onFileSelected(const EditorFileSelectedMessage& message)
 	_path = path;
 	load();
 
-	updateInspector();
+	_broadcaster.broadcastSync(EditorItemSelectedMessage(this));
 }
 
 void ArchetypeEditor::onRemoveSharedComponents(wxListEvent& event)
@@ -225,7 +227,7 @@ void ArchetypeEditor::onAddComponents(wxTreeEvent& event)
 		}
 	}
 
-	updateInspector();
+	_broadcaster.broadcastSync(EditorItemSelectedMessage(this));
 }
 
 void ArchetypeEditor::onDragBegin(wxTreeEvent& event)
@@ -286,7 +288,7 @@ void ArchetypeEditor::onRemoveComponentsHelper(wxListEvent& event, wxEditableLis
 	GAFF_REF(event);
 	GAFF_REF(ui);
 
-	updateInspector();
+	_broadcaster.broadcastSync(EditorItemSelectedMessage(this));
 }
 
 RefDefItem* ArchetypeEditor::getItem(const wxTreeItemId& id) const
@@ -411,10 +413,6 @@ void ArchetypeEditor::load(void)
 
 		return false;
 	});
-}
-
-void ArchetypeEditor::updateInspector(void)
-{
 }
 
 NS_END

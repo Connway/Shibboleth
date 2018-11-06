@@ -29,22 +29,22 @@ NS_GLEAM
 
 class Window;
 
-void WindowClosed(AnyMessage* message, Window* window, WPARAM w, LPARAM l);
-void WindowDestroyed(AnyMessage* message, Window* window, WPARAM w, LPARAM l);
-void WindowMoved(AnyMessage* message, Window* window, WPARAM w, LPARAM l);
-void WindowResized(AnyMessage* message, Window* window, WPARAM w, LPARAM l);
-void WindowCharacter(AnyMessage* message, Window* window, WPARAM w, LPARAM l);
-void WindowInput(AnyMessage* message, Window* window, WPARAM w, LPARAM l);
-void WindowLeftButtonDown(AnyMessage* message, Window* window, WPARAM w, LPARAM l);
-void WindowRightButtonDown(AnyMessage* message, Window* window, WPARAM w, LPARAM l);
-void WindowMiddleButtonDown(AnyMessage* message, Window* window, WPARAM w, LPARAM l);
-void WindowXButtonDown(AnyMessage* message, Window* window, WPARAM w, LPARAM l);
-void WindowLeftButtonUp(AnyMessage* message, Window* window, WPARAM w, LPARAM l);
-void WindowRightButtonUp(AnyMessage* message, Window* window, WPARAM w, LPARAM l);
-void WindowMiddleButtonUp(AnyMessage* message, Window* window, WPARAM w, LPARAM l);
-void WindowXButtonUp(AnyMessage* message, Window* window, WPARAM w, LPARAM l);
-void WindowMouseWheel(AnyMessage* message, Window* window, WPARAM w, LPARAM l);
-void WindowSetFocus(AnyMessage* message, Window* window, WPARAM w, LPARAM l);
-void WindowKillFocus(AnyMessage* message, Window* window, WPARAM w, LPARAM l);
+void WindowClosed(AnyMessage& message, Window* window, WPARAM w, LPARAM l);
+void WindowDestroyed(AnyMessage& message, Window* window, WPARAM w, LPARAM l);
+void WindowMoved(AnyMessage& message, Window* window, WPARAM w, LPARAM l);
+void WindowResized(AnyMessage& message, Window* window, WPARAM w, LPARAM l);
+void WindowCharacter(AnyMessage& message, Window* window, WPARAM w, LPARAM l);
+void WindowInput(AnyMessage& message, Window* window, WPARAM w, LPARAM l);
+void WindowLeftButtonDown(AnyMessage& message, Window* window, WPARAM w, LPARAM l);
+void WindowRightButtonDown(AnyMessage& message, Window* window, WPARAM w, LPARAM l);
+void WindowMiddleButtonDown(AnyMessage& message, Window* window, WPARAM w, LPARAM l);
+void WindowXButtonDown(AnyMessage& message, Window* window, WPARAM w, LPARAM l);
+void WindowLeftButtonUp(AnyMessage& message, Window* window, WPARAM w, LPARAM l);
+void WindowRightButtonUp(AnyMessage& message, Window* window, WPARAM w, LPARAM l);
+void WindowMiddleButtonUp(AnyMessage& message, Window* window, WPARAM w, LPARAM l);
+void WindowXButtonUp(AnyMessage& message, Window* window, WPARAM w, LPARAM l);
+void WindowMouseWheel(AnyMessage& message, Window* window, WPARAM w, LPARAM l);
+void WindowSetFocus(AnyMessage& message, Window* window, WPARAM w, LPARAM l);
+void WindowKillFocus(AnyMessage& message, Window* window, WPARAM w, LPARAM l);
 
 NS_END

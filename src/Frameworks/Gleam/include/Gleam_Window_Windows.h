@@ -101,11 +101,11 @@ private:
 
 	static LRESULT CALLBACK WindowProc(HWND hwnd, UINT msg, WPARAM w, LPARAM l);
 
-	friend void WindowMoved(AnyMessage*, Window*, WPARAM, LPARAM);
-	friend void WindowResized(AnyMessage*, Window*, WPARAM, LPARAM);
-	friend void WindowInput(AnyMessage*, Window*, WPARAM, LPARAM);
-	friend void WindowSetFocus(AnyMessage*, Window*, WPARAM, LPARAM);
-	friend void WindowKillFocus(AnyMessage*, Window*, WPARAM, LPARAM);
+	friend void WindowMoved(AnyMessage&, Window*, WPARAM, LPARAM);
+	friend void WindowResized(AnyMessage&, Window*, WPARAM, LPARAM);
+	friend void WindowInput(AnyMessage&, Window*, WPARAM, LPARAM);
+	friend void WindowSetFocus(AnyMessage&, Window*, WPARAM, LPARAM);
+	friend void WindowKillFocus(AnyMessage&, Window*, WPARAM, LPARAM);
 
 	GAFF_NO_COPY(Window);
 	GAFF_NO_MOVE(Window);
