@@ -50,79 +50,6 @@ THE SOFTWARE.
 	#define NS_REFLECTION namespace GAFF_REFLECTION_NAMESPACE {
 #endif
 
-// These are defined in here instead of Gaff_Reflection.h for compilation purposes.
-#define GAFF_POD_SERIALIZABLE(type, read_write_suffix) \
-	template <> \
-	class Reflection<type> final : public Gaff::IReflection \
-	{ \
-	public: \
-		constexpr static bool HasReflection = true; \
-		void load(const Gaff::ISerializeReader& reader, void* object) const override \
-		{ \
-			GAFF_ASSERT(object); \
-			Load(reader, *reinterpret_cast<type*>(object)); \
-		} \
-		void save(Gaff::ISerializeWriter& writer, const void* object) const override \
-		{ \
-			GAFF_ASSERT(object); \
-			Save(writer, *reinterpret_cast<const type*>(object)); \
-		} \
-		void init(void) override \
-		{ \
-		} \
-		const char* getName(void) const override \
-		{ \
-			return GetName(); \
-		} \
-		Gaff::Hash64 getHash(void) const override \
-		{ \
-			return GetHash(); \
-		} \
-		Gaff::Hash64 getVersion(void) const override \
-		{ \
-			return GetVersion(); \
-		} \
-		int32_t size(void) const override \
-		{ \
-			return sizeof(type); \
-		} \
-		static void Load(const Gaff::ISerializeReader& reader, type& value) \
-		{ \
-			value = reader.read##read_write_suffix(); \
-		} \
-		static void Save(Gaff::ISerializeWriter& writer, type value) \
-		{ \
-			writer.write##read_write_suffix(value); \
-		} \
-		constexpr static Gaff::Hash64 GetHash(void) \
-		{ \
-			return Gaff::FNV1aHash64Const(#type); \
-		} \
-		constexpr static Gaff::Hash64 GetVersion(void) \
-		{ \
-			return GetHash(); \
-		} \
-		constexpr static int32_t Size(void) \
-		{ \
-			return sizeof(type); \
-		} \
-		constexpr static const char* GetName(void) \
-		{ \
-			return #type; \
-		} \
-		static Reflection<type>& GetInstance(void) \
-		{ \
-			return g_instance; \
-		} \
-		static bool IsDefined(void) \
-		{ \
-			return true; \
-		} \
-	private: \
-		static Reflection<type> g_instance; \
-	}
-
-
 NS_GAFF
 
 class IEnumReflectionDefinition;
@@ -142,6 +69,7 @@ public:
 	virtual Hash64 getHash(void) const = 0;
 	virtual Hash64 getVersion(void) const = 0;
 	virtual int32_t size(void) const = 0;
+	virtual const Gaff::IReflectionDefinition& getReflectionDefinition(void) const = 0;
 
 	IReflection* attr_next = nullptr;
 	IReflection* next = nullptr;
@@ -196,17 +124,17 @@ public:
 	}
 };
 
-GAFF_POD_SERIALIZABLE(int8_t, Int8);
-GAFF_POD_SERIALIZABLE(int16_t, Int16);
-GAFF_POD_SERIALIZABLE(int32_t, Int32);
-GAFF_POD_SERIALIZABLE(int64_t, Int64);
-GAFF_POD_SERIALIZABLE(uint8_t, UInt8);
-GAFF_POD_SERIALIZABLE(uint16_t, UInt16);
-GAFF_POD_SERIALIZABLE(uint32_t, UInt32);
-GAFF_POD_SERIALIZABLE(uint64_t, UInt64);
-GAFF_POD_SERIALIZABLE(float, Float);
-GAFF_POD_SERIALIZABLE(double, Double);
-GAFF_POD_SERIALIZABLE(bool, Bool);
+//GAFF_BUILTIN_SERIALIZABLE(int8_t, Int8);
+//GAFF_BUILTIN_SERIALIZABLE(int16_t, Int16);
+//GAFF_BUILTIN_SERIALIZABLE(int32_t, Int32);
+//GAFF_BUILTIN_SERIALIZABLE(int64_t, Int64);
+//GAFF_BUILTIN_SERIALIZABLE(uint8_t, UInt8);
+//GAFF_BUILTIN_SERIALIZABLE(uint16_t, UInt16);
+//GAFF_BUILTIN_SERIALIZABLE(uint32_t, UInt32);
+//GAFF_BUILTIN_SERIALIZABLE(uint64_t, UInt64);
+//GAFF_BUILTIN_SERIALIZABLE(float, Float);
+//GAFF_BUILTIN_SERIALIZABLE(double, Double);
+//GAFF_BUILTIN_SERIALIZABLE(bool, Bool);
 
 NS_END
 

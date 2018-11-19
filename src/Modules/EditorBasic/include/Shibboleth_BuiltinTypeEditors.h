@@ -20,26 +20,34 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#include "Shibboleth_InspectorReflectionLogic.h"
+#pragma once
+
+#include <Shibboleth_Reflection.h>
+
+#ifdef PLATFORM_WINDOWS
+	#include <wx/msw/winundef.h>
+#endif
+
+#include <wx/panel.h>
 
 NS_SHIBBOLETH
 
-wxWindow* CreateInspectorWidgetWithReflection(Gaff::IReflectionObject& object)
+class IntegerEditor final : public Gaff::IReflectionObject, public wxPanel
 {
-	const Gaff::IReflectionDefinition& ref_def = object.getReflectionDefinition();
-	const int32_t num_vars = ref_def.getNumVars();
+public:
+	IntegerEditor(const Gaff::IReflectionDefinition& type, wxWindow* parent, wxWindowID id, const wxPoint& pos, const wxSize& size);
+	IntegerEditor(const Gaff::IReflectionDefinition& type, wxWindow* parent, wxWindowID id, const wxPoint& pos);
+	IntegerEditor(const Gaff::IReflectionDefinition& type, wxWindow* parent, wxWindowID id);
+	IntegerEditor(const Gaff::IReflectionDefinition& type, wxWindow* parent = nullptr);
 
-	for (int32_t i = 0; i < num_vars; ++i) {
+private:
+	const Gaff::IReflectionDefinition& _type;
 
-	}
+	void init(void);
 
-	return nullptr;
-}
-
-void InspectorReflectionLogic::populate(Gaff::IReflectionObject& inspector, Gaff::IReflectionObject& object)
-{
-	GAFF_REF(inspector);
-	GAFF_REF(object);
-}
+	SHIB_REFLECTION_CLASS_DECLARE(IntegerEditor);
+};
 
 NS_END
+
+SHIB_REFLECTION_DECLARE(IntegerEditor);

@@ -27,7 +27,7 @@
     <ClInclude Include="..\..\..\..\..\src\Modules\EditorBasic\include\Shibboleth_Inspector.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Modules\EditorBasic\include\Shibboleth_InspectorReflectionLogic.h">
+    <ClInclude Include="..\..\..\..\..\src\Modules\EditorBasic\include\Shibboleth_BuiltinTypeEditors.h">
       <Filter>include</Filter>
     </ClInclude>
   </ItemGroup>
@@ -38,6 +38,6 @@
     <ClCompile Include="..\..\..\..\..\src\Modules\EditorBasic\Shibboleth_LoadedModulesWindow.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Modules\EditorBasic\Shibboleth_ViewportWindow.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Modules\EditorBasic\Shibboleth_Inspector.cpp" />
-    <ClCompile Include="..\..\..\..\..\src\Modules\EditorBasic\Shibboleth_InspectorReflectionLogic.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Modules\EditorBasic\Shibboleth_BuitinTypeEditors.cpp" />
   </ItemGroup>
 </Project>

@@ -26,17 +26,17 @@ THE SOFTWARE.
 
 NS_SHIBBOLETH
 
-class IInspectorLogic
+class IEditorInspectorAttribute : public Gaff::IAttribute
 {
 public:
-	IInspectorLogic(void) {}
-	virtual ~IInspectorLogic(void) {}
+	IEditorInspectorAttribute(void) {}
+	virtual ~IEditorInspectorAttribute(void) {}
 
-	virtual void populate(Gaff::IReflectionObject& inspector, Gaff::IReflectionObject& object) = 0;
+	virtual const Gaff::IReflection& getType(void) const = 0;
 };
 
 template <class T>
-class EditorInspectorAttribute final : public Gaff::IAttribute, public IInspectorLogic
+class EditorInspectorAttribute final : public IEditorInspectorAttribute
 {
 public:
 	IAttribute* clone(void) const override
@@ -45,20 +45,17 @@ public:
 		return SHIB_ALLOCT_POOL(EditorInspectorAttribute, allocator.getPoolIndex("Reflection"), allocator);
 	}
 
-	void populate(Gaff::IReflectionObject& inspector, Gaff::IReflectionObject& object) override
+	const Gaff::IReflection& getType(void) const override
 	{
-		_inspector_populator.populate(inspector, object);
+		return Reflection<T>::GetInstance();
 	}
 
 private:
-	T _inspector_populator;
-
 	SHIB_TEMPLATE_REFLECTION_CLASS_DECLARE(EditorInspectorAttribute, T);
 };
 
 SHIB_TEMPLATE_REFLECTION_CLASS_DEFINE_BEGIN(EditorInspectorAttribute, T)
 	.BASE(Gaff::IAttribute)
-	.BASE(IInspectorLogic)
 SHIB_TEMPLATE_REFLECTION_CLASS_DEFINE_END(EditorInspectorAttribute, T)
 
 NS_END

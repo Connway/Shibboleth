@@ -37,93 +37,6 @@ THE SOFTWARE.
 #define GAFF_TEMPLATE_GET_NAME(x) GAFF_REFLECTION_NAMESPACE::Reflection<x>::GetName()
 #define GAFF_TEMPLATE_REFLECTION_CLASS(x) class x
 
-#define GAFF_REFLECTION_DECLARE_SERIALIZE(type, allocator) \
-namespace GAFF_REFLECTION_NAMESPACE { \
-	template <> \
-	class Reflection<type> final : public Gaff::IReflection \
-	{ \
-	public: \
-		constexpr static bool HasReflection = true; \
-		constexpr static bool HasClassReflection = false; \
-		Reflection(void) \
-		{ \
-			Gaff::AddToReflectionChain(this); \
-		} \
-		const char* getName(void) const override \
-		{ \
-			return GetName(); \
-		} \
-		Gaff::Hash64 getHash(void) const override \
-		{ \
-			return GetHash(); \
-		} \
-		Gaff::Hash64 getVersion(void) const override \
-		{ \
-			return GetVersion(); \
-		} \
-		int32_t size(void) const override \
-		{ \
-			return sizeof(type); \
-		} \
-		void init(void) override \
-		{ \
-			Init(); \
-		} \
-		static Reflection<type>& GetInstance(void) \
-		{ \
-			return g_instance; \
-		} \
-		constexpr static const char* GetName(void) \
-		{ \
-			return #type; \
-		} \
-		constexpr static Gaff::Hash64 GetHash(void) \
-		{ \
-			return Gaff::FNV1aHash64Const(#type); \
-		} \
-		static Gaff::Hash64 GetVersion(void) \
-		{ \
-			return g_version.getHash(); \
-		} \
-		static const Gaff::ReflectionDefinition<type, allocator>& GetReflectionDefinition(void) \
-		{ \
-			return g_reflection_definition; \
-		} \
-		static void Load(const Gaff::ISerializeReader& reader, type& object) \
-		{ \
-			g_instance.load(reader, &object); \
-		} \
-		static void Save(Gaff::ISerializeWriter& writer, const type& object) \
-		{ \
-			g_instance.save(writer, &object); \
-		} \
-		constexpr static int32_t Size(void) \
-		{ \
-			return sizeof(type); \
-		} \
-		static void Init(void); \
-		void load(const Gaff::ISerializeReader& reader, void* object) const override; \
-		void save(Gaff::ISerializeWriter& writer, const void* object) const override; \
-	private: \
-		static Gaff::ReflectionDefinition<type, allocator> g_reflection_definition; \
-		static Gaff::ReflectionVersion<type> g_version; \
-		static Reflection<type> g_instance; \
-	}; \
-}
-
-#define GAFF_REFLECTION_DEFINE_SERIALIZE_INIT(type, allocator) \
-	Gaff::ReflectionDefinition<type, allocator> GAFF_REFLECTION_NAMESPACE::Reflection<type>::g_reflection_definition; \
-	Gaff::ReflectionVersion<type> GAFF_REFLECTION_NAMESPACE::Reflection<type>::g_version; \
-	GAFF_REFLECTION_NAMESPACE::Reflection<type> GAFF_REFLECTION_NAMESPACE::Reflection<type>::g_instance; \
-	void GAFF_REFLECTION_NAMESPACE::Reflection<type>::Init(void)
-
-#define GAFF_REFLECTION_DEFINE_SERIALIZE_LOAD(type) \
-	void GAFF_REFLECTION_NAMESPACE::Reflection<type>::load(const Gaff::ISerializeReader& reader, void* object) const
-
-#define GAFF_REFLECTION_DEFINE_SERIALIZE_SAVE(type) \
-	void GAFF_REFLECTION_NAMESPACE::Reflection<type>::save(Gaff::ISerializeWriter& writer, const void* object) const
-
-
 #define GAFF_REFLECTION_DECLARE_COMMON(type, allocator) \
 	class Reflection<type> final : public Gaff::IReflection \
 	{ \
@@ -160,6 +73,10 @@ namespace GAFF_REFLECTION_NAMESPACE { \
 		int32_t size(void) const override \
 		{ \
 			return sizeof(type); \
+		} \
+		const Gaff::IReflectionDefinition& getReflectionDefinition(void) const override \
+		{ \
+			return GetReflectionDefinition(); \
 		} \
 		void init(void) override \
 		{ \
@@ -348,114 +265,6 @@ NS_END
 
 
 // Template Reflection
-#define GAFF_TEMPLATE_REFLECTION_DECLARE_SERIALIZE(type, allocator, ...) \
-namespace GAFF_REFLECTION_NAMESPACE { \
-	template < GAFF_FOR_EACH_COMMA(GAFF_TEMPLATE_REFLECTION_CLASS, __VA_ARGS__) > \
-	class Reflection< type<__VA_ARGS__> > final : public Gaff::IReflection \
-	{ \
-	public: \
-		constexpr static bool HasReflection = true; \
-		constexpr static bool HasClassReflection = false; \
-		Reflection(void) \
-		{ \
-			Gaff::AddToReflectionChain(this); \
-		} \
-		const char* getName(void) const override \
-		{ \
-			return GetName(); \
-		} \
-		Gaff::Hash64 getHash(void) const override \
-		{ \
-			return GetHash(); \
-		} \
-		Gaff::Hash64 getVersion(void) const override \
-		{ \
-			return GetVersion(); \
-		} \
-		int32_t size(void) const override \
-		{ \
-			return sizeof(type<__VA_ARGS__>); \
-		} \
-		void init(void) override \
-		{ \
-			Init(); \
-		} \
-		static Reflection< type<__VA_ARGS__> >& GetInstance(void) \
-		{ \
-			return g_instance; \
-		} \
-		static const char* GetName(void) \
-		{ \
-			static char s_name[128] = { 0 }; \
-			if (!s_name[0]) { \
-				char format[64] = { 0 }; \
-				int32_t index = snprintf(format, 32, "%s<", #type); \
-				for (int32_t i = 0; i < Gaff::GetNumArgs<__VA_ARGS__>(); ++i) { \
-					if (i) { \
-						format[index++] = ','; \
-						format[index++] = ' '; \
-					} \
-					format[index++] = '%'; \
-					format[index++] = 's'; \
-				} \
-				format[index++] = '>'; \
-				snprintf(s_name, 128, format, GAFF_FOR_EACH_COMMA(GAFF_TEMPLATE_GET_NAME, __VA_ARGS__)); \
-			} \
-			return s_name; \
-		} \
-		constexpr static Gaff::Hash64 GetHash(void) \
-		{ \
-			return Gaff::CalcTemplateHash<__VA_ARGS__>(Gaff::FNV1aHash64Const(#type)); \
-		} \
-		static Gaff::Hash64 GetVersion(void) \
-		{ \
-			return g_version.getHash(); \
-		} \
-		constexpr static int32_t Size(void) \
-		{ \
-			return sizeof(type<__VA_ARGS__>); \
-		} \
-		static const Gaff::ReflectionDefinition<type<__VA_ARGS__>, allocator>& GetReflectionDefinition(void) \
-		{ \
-			return g_reflection_definition; \
-		} \
-		static void Load(const Gaff::ISerializeReader& reader, type<__VA_ARGS__>& object) \
-		{ \
-			g_instance.load(reader, &object); \
-		} \
-		static void Save(Gaff::ISerializeWriter& writer, const type<__VA_ARGS__>& object) \
-		{ \
-			g_instance.save(writer, &object); \
-		} \
-		static void Init(void); \
-		void load(const Gaff::ISerializeReader& reader, void* object) const override; \
-		void save(Gaff::ISerializeWriter& writer, const void* object) const override; \
-	private: \
-		static Gaff::ReflectionDefinition<type<__VA_ARGS__>, allocator> g_reflection_definition; \
-		static Gaff::ReflectionVersion< type<__VA_ARGS__> > g_version; \
-		static Reflection< type<__VA_ARGS__> > g_instance; \
-	}; \
-}
-
-#define GAFF_TEMPLATE_REFLECTION_DEFINE_SERIALIZE_INIT(type, allocator, ...) \
-	template < GAFF_FOR_EACH_COMMA(GAFF_TEMPLATE_REFLECTION_CLASS, __VA_ARGS__) > \
-	Gaff::ReflectionDefinition<type<__VA_ARGS__>, allocator> GAFF_REFLECTION_NAMESPACE::Reflection< type<__VA_ARGS__> >::g_reflection_definition; \
-	template < GAFF_FOR_EACH_COMMA(GAFF_TEMPLATE_REFLECTION_CLASS, __VA_ARGS__) > \
-	Gaff::ReflectionVersion< type<__VA_ARGS__> > GAFF_REFLECTION_NAMESPACE::Reflection< type<__VA_ARGS__> >::g_version; \
-	template < GAFF_FOR_EACH_COMMA(GAFF_TEMPLATE_REFLECTION_CLASS, __VA_ARGS__) > \
-	GAFF_REFLECTION_NAMESPACE::Reflection< type<__VA_ARGS__> > GAFF_REFLECTION_NAMESPACE::Reflection< type<__VA_ARGS__> >::g_instance; \
-	template < GAFF_FOR_EACH_COMMA(GAFF_TEMPLATE_REFLECTION_CLASS, __VA_ARGS__) > \
-	void GAFF_REFLECTION_NAMESPACE::Reflection< type<__VA_ARGS__> >::Init(void)
-
-#define GAFF_TEMPLATE_REFLECTION_DEFINE_SERIALIZE_LOAD(type, ...) \
-	template < GAFF_FOR_EACH_COMMA(GAFF_TEMPLATE_REFLECTION_CLASS, __VA_ARGS__) > \
-	void GAFF_REFLECTION_NAMESPACE::Reflection< type<__VA_ARGS__> >::load(const Gaff::ISerializeReader& reader, void* object) const
-
-#define GAFF_TEMPLATE_REFLECTION_DEFINE_SERIALIZE_SAVE(type, ...) \
-	template < GAFF_FOR_EACH_COMMA(GAFF_TEMPLATE_REFLECTION_CLASS, __VA_ARGS__) > \
-	void GAFF_REFLECTION_NAMESPACE::Reflection< type<__VA_ARGS__> >::save(Gaff::ISerializeWriter& writer, const void* object) const
-
-
 #define GAFF_TEMPLATE_REFLECTION_DECLARE(type, allocator, ...) \
 namespace GAFF_REFLECTION_NAMESPACE { \
 	template < GAFF_FOR_EACH_COMMA(GAFF_TEMPLATE_REFLECTION_CLASS, __VA_ARGS__) > \
@@ -512,15 +321,15 @@ NS_END
 			} \
 			return s_name; \
 		} \
-		virtual const Gaff::IReflectionDefinition& getReflectionDefinition(void) const override \
+		const Gaff::IReflectionDefinition& getReflectionDefinition(void) const override \
 		{ \
 			return GetReflectionDefinition(); \
 		} \
-		virtual const void* getBasePointer(void) const override \
+		const void* getBasePointer(void) const override \
 		{ \
 			return this; \
 		} \
-		virtual void* getBasePointer(void) override \
+		void* getBasePointer(void) override \
 		{ \
 			return this; \
 		} \
@@ -572,17 +381,17 @@ NS_END
 #define GAFF_TEMPLATE_REFLECTION_BUILDER_BEGIN(type, ...) \
 	template < GAFF_FOR_EACH_COMMA(GAFF_TEMPLATE_REFLECTION_CLASS, __VA_ARGS__) > \
 	template <class ReflectionBuilder> \
-	void GAFF_REFLECTION_NAMESPACE::Reflection<type>::BuildReflection(ReflectionBuilder& builder) \
+	void GAFF_REFLECTION_NAMESPACE::Reflection< type<__VA_ARGS__> >::BuildReflection(ReflectionBuilder& builder) \
 	{ \
 		builder
 
 #define GAFF_TEMPLATE_REFLECTION_BUILDER_BEGIN_NO_BUILD(type, ...) \
 	template < GAFF_FOR_EACH_COMMA(GAFF_TEMPLATE_REFLECTION_CLASS, __VA_ARGS__) > \
 	template <class ReflectionBuilder> \
-	void GAFF_REFLECTION_NAMESPACE::Reflection<type>::BuildReflection(ReflectionBuilder& builder) \
+	void GAFF_REFLECTION_NAMESPACE::Reflection< type<__VA_ARGS__> >::BuildReflection(ReflectionBuilder& builder) \
 	{
 
-#define GAFF_TEMPLATE_REFLECTION_BUILDER_END GAFF_REFLECTION_BUILDER_END
+#define GAFF_TEMPLATE_REFLECTION_BUILDER_END(type, ...) GAFF_REFLECTION_BUILDER_END(type)
 
 #define GAFF_TEMPLATE_REFLECTION_CLASS_DEFINE(type, allocator, ...) \
 	GAFF_TEMPLATE_REFLECTION_CLASS_DEFINE_BEGIN_NO_BUILD(type, allocator, __VA_ARGS__) \
@@ -629,21 +438,6 @@ NS_END
 	{ \
 		Gaff::Reflection<type>::Init(); \
 	}
-
-#define GAFF_REFLECTION_DEFINE_POD() \
-	Reflection<int8_t> Reflection<int8_t>::g_instance; \
-	Reflection<int16_t> Reflection<int16_t>::g_instance; \
-	Reflection<int32_t> Reflection<int32_t>::g_instance; \
-	Reflection<int64_t> Reflection<int64_t>::g_instance; \
-	Reflection<uint8_t> Reflection<uint8_t>::g_instance; \
-	Reflection<uint16_t> Reflection<uint16_t>::g_instance; \
-	Reflection<uint32_t> Reflection<uint32_t>::g_instance; \
-	Reflection<uint64_t> Reflection<uint64_t>::g_instance; \
-	Reflection<float> Reflection<float>::g_instance; \
-	Reflection<double> Reflection<double>::g_instance; \
-	Reflection<bool> Reflection<bool>::g_instance
-
-
 
 #define REFLECTION_CAST_PTR_NAME(T, name, object) \
 	reinterpret_cast<T*>( \

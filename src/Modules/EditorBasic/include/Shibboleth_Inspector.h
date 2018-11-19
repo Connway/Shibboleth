@@ -48,8 +48,8 @@ public:
 	~Inspector(void);
 
 private:
-	IInspectorLogic* _default_logic = nullptr;
-	IInspectorLogic* _logic = nullptr;
+	//IInspectorLogic* _default_logic = nullptr;
+	//IInspectorLogic* _logic = nullptr;
 
 	void onItemSelected(const EditorItemSelectedMessage& message);
 

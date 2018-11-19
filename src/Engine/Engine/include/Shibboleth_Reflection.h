@@ -32,82 +32,6 @@ THE SOFTWARE.
 #include "Shibboleth_IApp.h"
 #include <Gaff_Reflection.h>
 
-NS_SHIBBOLETH
-
-template <>
-class Reflection<U8String> final : public Gaff::IReflection
-{
-public:
-	constexpr static bool HasReflection = true;
-	void load(const Gaff::ISerializeReader& reader, void* object) const override
-	{
-		GAFF_ASSERT(object);
-		Load(reader, *reinterpret_cast<U8String*>(object));
-	}
-	void save(Gaff::ISerializeWriter& writer, const void* object) const override
-	{
-		GAFF_ASSERT(object);
-		Save(writer, *reinterpret_cast<const U8String*>(object));
-	}
-	void init(void) override
-	{
-	}
-	const char* getName(void) const override
-	{
-		return GetName();
-	}
-	Gaff::Hash64 getHash(void) const override
-	{
-		return GetHash();
-	}
-	Gaff::Hash64 getVersion(void) const override
-	{
-		return GetVersion();
-	}
-	int32_t size(void) const override
-	{
-		return sizeof(U8String);
-	}
-	static void Load(const Gaff::ISerializeReader& reader, U8String& value)
-	{
-		value = reader.readString();
-	}
-	static void Save(Gaff::ISerializeWriter& writer, const U8String& value)
-	{
-		writer.writeString(value.data());
-	}
-	constexpr static Gaff::Hash64 GetHash(void)
-	{
-		return Gaff::FNV1aHash64Const("U8String");
-	}
-	constexpr static Gaff::Hash64 GetVersion(void)
-	{
-		return GetHash();
-	}
-	constexpr static int32_t Size(void)
-	{
-		return sizeof(U8String);
-	} 
-	constexpr static const char* GetName(void)
-	{
-		return "U8String";
-	}
-	static Reflection<U8String>& GetInstance(void)
-	{
-		return g_instance;
-	}
-private:
-	static Reflection<U8String> g_instance;
-};
-
-NS_END
-
-
-#define SHIB_REFLECTION_DECLARE_SERIALIZE(type) GAFF_REFLECTION_DECLARE_SERIALIZE(type, ProxyAllocator)
-#define SHIB_REFLECTION_DEFINE_SERIALIZE_INIT(type) GAFF_REFLECTION_DEFINE_SERIALIZE_INIT(type, Shibboleth::ProxyAllocator)
-#define SHIB_REFLECTION_DEFINE_SERIALIZE_LOAD GAFF_REFLECTION_DEFINE_SERIALIZE_LOAD
-#define SHIB_REFLECTION_DEFINE_SERIALIZE_SAVE GAFF_REFLECTION_DEFINE_SERIALIZE_SAVE
-
 #define SHIB_REFLECTION_DECLARE_BASE(type) \
 		void load(const Gaff::ISerializeReader& reader, void* object) const override \
 		{ \
@@ -236,11 +160,6 @@ NS_END
 
 
 // Temlate Reflection
-#define SHIB_TEMPLATE_REFLECTION_DECLARE_SERIALIZE(type, ...) GAFF_TEMPLATE_REFLECTION_DECLARE_SERIALIZE(type, ProxyAllocator, __VA_ARGS__)
-#define SHIB_TEMPLATE_REFLECTION_DEFINE_SERIALIZE_INIT(type, ...) GAFF_TEMPLATE_REFLECTION_DEFINE_SERIALIZE_INIT(type, Shibboleth::ProxyAllocator, __VA_ARGS__)
-#define SHIB_TEMPLATE_REFLECTION_DEFINE_SERIALIZE_LOAD GAFF_TEMPLATE_REFLECTION_DEFINE_SERIALIZE_LOAD
-#define SHIB_TEMPLATE_REFLECTION_DEFINE_SERIALIZE_SAVE GAFF_TEMPLATE_REFLECTION_DEFINE_SERIALIZE_SAVE
-
 #define SHIB_TEMPLATE_REFLECTION_DECLARE(type, ...) \
 NS_SHIBBOLETH \
 	template < GAFF_FOR_EACH_COMMA(GAFF_TEMPLATE_REFLECTION_CLASS, __VA_ARGS__) > \
@@ -315,7 +234,7 @@ NS_SHIBBOLETH \
 			g_reflection_definition->setAllocator(ProxyAllocator("Reflection")); \
 			BuildReflection(*g_reflection_definition);
 
-#define SHIB_TEMPLATE_REFLECTION_EXTERNAL_DEFINE_END GAFF_TEMPLATE_REFLECTION_EXTERNAL_DEFINE_END
+#define SHIB_TEMPLATE_REFLECTION_EXTERNAL_DEFINE_END SHIB_REFLECTION_DEFINE_END
 
 #define SHIB_TEMPLATE_REFLECTION_DEFINE_BEGIN(type, ...) \
 NS_SHIBBOLETH \
@@ -340,3 +259,16 @@ NS_END \
 #define SHIB_TEMPLATE_REFLECTION_CLASS_DEFINE_BEGIN(type, ...) GAFF_TEMPLATE_REFLECTION_CLASS_DEFINE_BEGIN(type, Shibboleth::ProxyAllocator, __VA_ARGS__)
 #define SHIB_TEMPLATE_REFLECTION_CLASS_DEFINE_BEGIN_NO_BUILD(type, ...) GAFF_TEMPLATE_REFLECTION_CLASS_DEFINE_BEGIN_NO_BUILD(type, Shibboleth::ProxyAllocator, __VA_ARGS__)
 #define SHIB_TEMPLATE_REFLECTION_CLASS_DEFINE_END GAFF_TEMPLATE_REFLECTION_CLASS_DEFINE_END
+
+SHIB_REFLECTION_DECLARE(int8_t)
+SHIB_REFLECTION_DECLARE(int16_t)
+SHIB_REFLECTION_DECLARE(int32_t)
+SHIB_REFLECTION_DECLARE(int64_t)
+SHIB_REFLECTION_DECLARE(uint8_t)
+SHIB_REFLECTION_DECLARE(uint16_t)
+SHIB_REFLECTION_DECLARE(uint32_t)
+SHIB_REFLECTION_DECLARE(uint64_t)
+SHIB_REFLECTION_DECLARE(float)
+SHIB_REFLECTION_DECLARE(double)
+SHIB_REFLECTION_DECLARE(bool)
+SHIB_REFLECTION_DECLARE(U8String)
