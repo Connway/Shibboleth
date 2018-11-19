@@ -145,6 +145,15 @@ ReflectionVersion<T>& ReflectionVersion<T>::version(uint32_t version)
 {
 	GAFF_ASSERT(_hash == INIT_HASH64);
 	_hash = FNV1aHash64T(&version, _hash);
+	return *this;
+}
+
+template <class T>
+ReflectionVersion<T>& ReflectionVersion<T>::serialize(LoadFunc serialize_load, SaveFunc serialize_save)
+{
+	_hash = FNV1aHash64T(&serialize_load, _hash);
+	_hash = FNV1aHash64T(&serialize_save, _hash);
+	return *this;
 }
 
 template <class T>

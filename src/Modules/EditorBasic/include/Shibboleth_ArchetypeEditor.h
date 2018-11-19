@@ -44,7 +44,7 @@ NS_SHIBBOLETH
 class EditorFileSelectedMessage;
 class RefDefItem;
 
-class ArchetypeEditor final : public Gaff::IReflectionObject, public wxPanel, public IInspectorLogic
+class ArchetypeEditor final : public Gaff::IReflectionObject, public wxPanel
 {
 public:
 	ArchetypeEditor(
@@ -55,8 +55,6 @@ public:
 	);
 
 	~ArchetypeEditor(void);
-
-	void populate(Gaff::IReflectionObject& inspector, Gaff::IReflectionObject& object) override;
 
 private:
 	wxTreeCtrl* _ecs_components = nullptr;

@@ -87,6 +87,22 @@ constexpr Gaff::Hash32 LOG_CHANNEL_RESOURCE = Gaff::FNV1aHash32Const("Resource")
 	#pragma warning(pop)
 #endif
 
+template <class T>
+void LoadRefPtr(const Gaff::ISerializeReader& reader, U8String& out)
+{
+	static_assert(std::is_base_of<IResource, T>::value, "Expected RefPtr<T> to be an IResource. Override reflection if you wish to use this class with reflection.");
+	const char* const res_path = reader.readString();
+	Gaff::RefPtr<T>& res_ptr = reinterpret_cast< Gaff::RefPtr<T>& >(out);
+	res_ptr = GetApp().getManagerTUnsafe<ResourceManager>().requestResourceT<T>(res_path);
+}
+
+template <class T>
+void SaveRefPtr(Gaff::ISerializeWriter& writer, const U8String& value)
+{
+	static_assert(std::is_base_of<IResource, T>::value, "Expected RefPtr<T> to be an IResource. Override reflection if you wish to use this class with reflection.");
+	const Gaff::RefPtr<T>& res_ptr = *reinterpret_cast< const Gaff::RefPtr<T>* >(object);
+	writer.writeString(res_ptr->getFilePath().getBuffer());
+}
 
 NS_END
 
@@ -94,22 +110,29 @@ SHIB_REFLECTION_DECLARE(ResourceManager)
 
 
 // Gaff::RefPtr
-SHIB_TEMPLATE_REFLECTION_DECLARE_SERIALIZE(Gaff::RefPtr, T);
+SHIB_TEMPLATE_REFLECTION_DECLARE(Gaff::RefPtr, T);
+SHIB_TEMPLATE_REFLECTION_EXTERNAL_DEFINE(Gaff::RefPtr, T)
 
-SHIB_TEMPLATE_REFLECTION_DEFINE_SERIALIZE_INIT(Gaff::RefPtr, T)
-{
-	static_assert(std::is_base_of<IResource, T>::value, "Expected RefPtr<T> to be an IResource. Override reflection if you wish to use this class with reflection.");
-}
+SHIB_TEMPLATE_REFLECTION_BUILDER_BEGIN(Gaff::RefPtr, T)
+	.serialize(LoadRefPtr<T>, SaveRefPtr<T>)
+SHIB_TEMPLATE_REFLECTION_BUILDER_END(Gaff::RefPtr, T)
 
-SHIB_TEMPLATE_REFLECTION_DEFINE_SERIALIZE_LOAD(Gaff::RefPtr, T)
-{
-	const char* const res_path = reader.readString();
-	Gaff::RefPtr<T>& res_ptr = *reinterpret_cast< Gaff::RefPtr<T>* >(object);
-	res_ptr = GetApp().getManagerTUnsafe<ResourceManager>().requestResourceT<T>(res_path);
-}
+//SHIB_TEMPLATE_REFLECTION_DECLARE_SERIALIZE(Gaff::RefPtr, T);
 
-SHIB_TEMPLATE_REFLECTION_DEFINE_SERIALIZE_SAVE(Gaff::RefPtr, T)
-{
-	const Gaff::RefPtr<T>& res_ptr = *reinterpret_cast< const Gaff::RefPtr<T>* >(object);
-	writer.writeString(res_ptr->getFilePath().getBuffer());
-}
+//SHIB_TEMPLATE_REFLECTION_DEFINE_SERIALIZE_INIT(Gaff::RefPtr, T)
+//{
+//	static_assert(std::is_base_of<IResource, T>::value, "Expected RefPtr<T> to be an IResource. Override reflection if you wish to use this class with reflection.");
+//}
+//
+//SHIB_TEMPLATE_REFLECTION_DEFINE_SERIALIZE_LOAD(Gaff::RefPtr, T)
+//{
+//	const char* const res_path = reader.readString();
+//	Gaff::RefPtr<T>& res_ptr = *reinterpret_cast< Gaff::RefPtr<T>* >(object);
+//	res_ptr = GetApp().getManagerTUnsafe<ResourceManager>().requestResourceT<T>(res_path);
+//}
+//
+//SHIB_TEMPLATE_REFLECTION_DEFINE_SERIALIZE_SAVE(Gaff::RefPtr, T)
+//{
+//	const Gaff::RefPtr<T>& res_ptr = *reinterpret_cast< const Gaff::RefPtr<T>* >(object);
+//	writer.writeString(res_ptr->getFilePath().getBuffer());
+//}

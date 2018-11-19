@@ -163,12 +163,6 @@ ArchetypeEditor::~ArchetypeEditor(void)
 {
 }
 
-void ArchetypeEditor::populate(Gaff::IReflectionObject& inspector, Gaff::IReflectionObject&)
-{
-	wxWindow* const window = INTERFACE_CAST(wxWindow, inspector);
-	GAFF_REF(window);
-}
-
 void ArchetypeEditor::onFileSelected(const EditorFileSelectedMessage& message)
 {
 	const U8String& path = message.getPath();

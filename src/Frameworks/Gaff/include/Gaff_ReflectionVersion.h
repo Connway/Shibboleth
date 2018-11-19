@@ -27,10 +27,16 @@ THE SOFTWARE.
 
 NS_GAFF
 
+class ISerializeReader;
+class ISerializeWriter;
+
 template <class T>
 class ReflectionVersion final
 {
 public:
+	using LoadFunc = void (*)(const ISerializeReader&, T&);
+	using SaveFunc = void (*)(ISerializeWriter&, const T&);
+
 	template <class Base>
 	ReflectionVersion& base(const char* name);
 
@@ -63,6 +69,8 @@ public:
 
 	ReflectionVersion& version(uint32_t version);
 
+	ReflectionVersion& serialize(LoadFunc serialize_load, SaveFunc serialize_save);
+
 	Hash64 getHash(void) const;
 
 	void finish(void);
@@ -70,6 +78,27 @@ public:
 private:
 	Hash64 _hash = INIT_HASH64;
 };
+
+#define REF_VER_BUILTIN(type) \
+	template <> \
+	class ReflectionVersion<type> final \
+	{ \
+	public: \
+		Hash64 getHash(void) const { return Gaff::FNV1aHash64Const(#type); } \
+		void finish(void) {} \
+	}
+
+REF_VER_BUILTIN(int8_t);
+REF_VER_BUILTIN(int16_t);
+REF_VER_BUILTIN(int32_t);
+REF_VER_BUILTIN(int64_t);
+REF_VER_BUILTIN(uint8_t);
+REF_VER_BUILTIN(uint16_t);
+REF_VER_BUILTIN(uint32_t);
+REF_VER_BUILTIN(uint64_t);
+REF_VER_BUILTIN(float);
+REF_VER_BUILTIN(double);
+REF_VER_BUILTIN(bool);
 
 NS_END
 

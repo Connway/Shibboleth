@@ -707,11 +707,15 @@ void ReflectionDefinition<T, Allocator>::save(ISerializeWriter& writer, const vo
 template <class T, class Allocator>
 void ReflectionDefinition<T, Allocator>::load(const ISerializeReader& reader, T& object) const
 {
-	GAFF_REF(reader); GAFF_REF(object);
-	for (auto& entry : _vars) {
-		if (!entry.second->isReadOnly()) {
-			ScopeGuard scope = reader.enterElementGuard(entry.first.getBuffer());
-			entry.second->load(reader, object);
+	if (_serialize_load) {
+		_serialize_load(reader, object);
+
+	} else {
+		for (auto& entry : _vars) {
+			if (!entry.second->isReadOnly()) {
+				ScopeGuard scope = reader.enterElementGuard(entry.first.getBuffer());
+				entry.second->load(reader, object);
+			}
 		}
 	}
 }
@@ -719,28 +723,32 @@ void ReflectionDefinition<T, Allocator>::load(const ISerializeReader& reader, T&
 template <class T, class Allocator>
 void ReflectionDefinition<T, Allocator>::save(ISerializeWriter& writer, const T& object) const
 {
-	GAFF_REF(writer); GAFF_REF(object);
-	uint32_t writable_vars = 0;
+	if (_serialize_save) {
+		_serialize_save(writer, object);
 
-	// Count how many vars we're actually writing to the object.
-	for (auto& entry : _vars) {
-		// If not read-only and does not have the NoSerialize attribute.
-		if (!entry.second->isReadOnly()) {
-			++writable_vars;
+	} else {
+		uint32_t writable_vars = 0;
+
+		// Count how many vars we're actually writing to the object.
+		for (auto& entry : _vars) {
+			// If not read-only and does not have the NoSerialize attribute.
+			if (!entry.second->isReadOnly()) {
+				++writable_vars;
+			}
 		}
-	}
 
-	// Write out the object.
-	writer.startObject(writable_vars);
+		// Write out the object.
+		writer.startObject(writable_vars);
 
-	for (auto& entry : _vars) {
-		if (!entry.second->isReadOnly()) {
-			writer.writeKey(entry.first.getBuffer());
-			entry.second->save(writer, object);
+		for (auto& entry : _vars) {
+			if (!entry.second->isReadOnly()) {
+				writer.writeKey(entry.first.getBuffer());
+				entry.second->save(writer, object);
+			}
 		}
-	}
 
-	writer.endObject();
+		writer.endObject();
+	}
 }
 
 template <class T, class Allocator>
@@ -1430,6 +1438,15 @@ ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::classAtt
 template <class T, class Allocator>
 ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::version(uint32_t /*version*/)
 {
+	return *this;
+}
+
+template <class T, class Allocator>
+ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::serialize(LoadFunc serialize_load, SaveFunc serialize_save)
+{
+	_serialize_load = serialize_load;
+	_serialize_save = serialize_save;
+	return *this;
 }
 
 template <class T, class Allocator>

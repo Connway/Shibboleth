@@ -21,7 +21,6 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Shibboleth_Inspector.h"
-#include "Shibboleth_InspectorReflectionLogic.h"
 #include <Shibboleth_EditorItemSelectedMessage.h>
 #include <Shibboleth_EditorInspectorAttribute.h>
 #include <Shibboleth_EngineAttributesCommon.h>
@@ -59,7 +58,7 @@ Inspector::Inspector(
 ):
 	wxPanel(parent, id, pos, size)
 {
-	_default_logic = new InspectorReflectionLogic;
+	//_default_logic = new InspectorReflectionLogic;
 }
 
 Inspector::~Inspector(void)
@@ -78,19 +77,20 @@ void Inspector::onItemSelected(const EditorItemSelectedMessage& message)
 
 	// Check for an attribute with inspector logic.
 	const Gaff::IReflectionDefinition& ref_def = item->getReflectionDefinition();
-	_logic = const_cast<IInspectorLogic*>(ref_def.GET_CLASS_ATTR(IInspectorLogic));
+	GAFF_REF(ref_def);
+	//_logic = const_cast<IInspectorLogic*>(ref_def.GET_CLASS_ATTR(IInspectorLogic));
 
-	// If no attribute, check if the item itself is the inspector logic.
-	if (!_logic) {
-		_logic = const_cast<IInspectorLogic*>(INTERFACE_CAST(IInspectorLogic, *item));
+	//// If no attribute, check if the item itself is the inspector logic.
+	//if (!_logic) {
+	//	_logic = const_cast<IInspectorLogic*>(INTERFACE_CAST(IInspectorLogic, *item));
 
-		// Default to reflection inspector.
-		if (!_logic) {
-			_logic = _default_logic;
-		}
-	}
+	//	// Default to reflection inspector.
+	//	if (!_logic) {
+	//		_logic = _default_logic;
+	//	}
+	//}
 
-	_logic->populate(*this, *item);
+	//_logic->populate(*this, *item);
 }
 
 void Inspector::clear(void)
@@ -103,7 +103,7 @@ void Inspector::clear(void)
 		delete child;
 	}
 
-	_logic = nullptr;
+	//_logic = nullptr;
 }
 
 NS_END
