@@ -91,6 +91,7 @@ public:
 	const IReflection& getReflectionInstance(void) const override;
 
 	int32_t getNumVars(void) const override;
+	const char* getVarName(int32_t index) const override;
 	Hash32 getVarHash(int32_t index) const override;
 	IReflectionVar* getVar(int32_t index) const override;
 	IReflectionVar* getVar(Hash32 name) const override;
@@ -117,7 +118,6 @@ public:
 	VoidFunc getStaticFunc(Hash32 name, Hash64 args) const override;
 	void* getFunc(Hash32 name, Hash64 args) const override;
 
-	const HashString32<Allocator>& getVarName(int32_t index) const;
 	IVar* getVarT(int32_t index) const;
 	IVar* getVarT(Hash32 name) const;
 
@@ -492,6 +492,7 @@ private:
 		void* getInterface(Hash64, void*) const override { return nullptr; } \
 		bool hasInterface(Hash64) const override { return false; } \
 		int32_t getNumVars(void) const override { return 0; } \
+		const char* getVarName(int32_t) const override { return nullptr; } \
 		Hash32 getVarHash(int32_t) const override { return 0; } \
 		IReflectionVar* getVar(int32_t) const override { return nullptr; } \
 		IReflectionVar* getVar(Hash32) const override { return nullptr; } \

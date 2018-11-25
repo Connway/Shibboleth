@@ -812,10 +812,17 @@ int32_t ReflectionDefinition<T, Allocator>::getNumVars(void) const
 }
 
 template <class T, class Allocator>
+const char* ReflectionDefinition<T, Allocator>::getVarName(int32_t index) const
+{
+	GAFF_ASSERT(index < static_cast<int32_t>(_vars.size()));
+	return (_vars.begin() + index)->first.getBuffer();
+}
+
+template <class T, class Allocator>
 Hash32 ReflectionDefinition<T, Allocator>::getVarHash(int32_t index) const
 {
 	GAFF_ASSERT(index < static_cast<int32_t>(_vars.size()));
-	return getVarName(index).getHash();
+	return (_vars.begin() + index)->first.getHash();
 }
 
 template <class T, class Allocator>
@@ -1012,13 +1019,6 @@ void* ReflectionDefinition<T, Allocator>::getFunc(Hash32 name, Hash64 args) cons
 	}
 
 	return nullptr;
-}
-
-template <class T, class Allocator>
-const HashString32<Allocator>& ReflectionDefinition<T, Allocator>::getVarName(int32_t index) const
-{
-	GAFF_ASSERT(index < static_cast<int32_t>(_vars.size()));
-	return (_vars.begin() + index)->first;
 }
 
 template <class T, class Allocator>

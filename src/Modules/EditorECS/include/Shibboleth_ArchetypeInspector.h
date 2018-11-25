@@ -32,22 +32,9 @@ THE SOFTWARE.
 
 NS_SHIBBOLETH
 
-class IntegerEditor final : public Gaff::IReflectionObject, public wxPanel
+class ArchetypeInspector final : public Gaff::IReflectionObject, public wxPanel
 {
-public:
-	IntegerEditor(const Gaff::IReflectionDefinition& type, wxWindow* parent, wxWindowID id, const wxPoint& pos, const wxSize& size);
-	IntegerEditor(const Gaff::IReflectionDefinition& type, wxWindow* parent, wxWindowID id, const wxPoint& pos);
-	IntegerEditor(const Gaff::IReflectionDefinition& type, wxWindow* parent, wxWindowID id);
-	IntegerEditor(const Gaff::IReflectionDefinition& type, wxWindow* parent = nullptr);
 
-private:
-	const Gaff::IReflectionDefinition& _type;
-
-	void init(void);
-
-	SHIB_REFLECTION_CLASS_DECLARE(IntegerEditor);
 };
 
 NS_END
-
-SHIB_REFLECTION_DECLARE(IntegerEditor);

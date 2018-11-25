@@ -27,7 +27,7 @@
     <IgnoreWarnCompileDuplicatedFilename>true</IgnoreWarnCompileDuplicatedFilename>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>EditorBasic</RootNamespace>
-    <WindowsTargetPlatformVersion>10.0.17134.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0.17763.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
@@ -148,6 +148,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <MinimalRebuild>false</MinimalRebuild>
       <StringPooling>true</StringPooling>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <ExceptionHandling>Async</ExceptionHandling>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <FloatingPointModel>Fast</FloatingPointModel>
@@ -175,6 +176,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <MinimalRebuild>false</MinimalRebuild>
       <StringPooling>true</StringPooling>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <ExceptionHandling>Async</ExceptionHandling>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <FloatingPointModel>Fast</FloatingPointModel>
@@ -200,6 +202,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <MinimalRebuild>false</MinimalRebuild>
       <StringPooling>true</StringPooling>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <ExceptionHandling>Async</ExceptionHandling>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <FloatingPointModel>Fast</FloatingPointModel>
@@ -228,6 +231,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <MinimalRebuild>false</MinimalRebuild>
       <StringPooling>true</StringPooling>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <ExceptionHandling>Async</ExceptionHandling>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <FloatingPointModel>Fast</FloatingPointModel>
@@ -245,24 +249,22 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\..\..\src\Modules\EditorBasic\include\Gen_ReflectionInit.h" />
-    <ClInclude Include="..\..\..\..\..\src\Modules\EditorBasic\include\Shibboleth_ArchetypeEditor.h" />
     <ClInclude Include="..\..\..\..\..\src\Modules\EditorBasic\include\Shibboleth_AssetBrowser.h" />
-    <ClInclude Include="..\..\..\..\..\src\Modules\EditorBasic\include\Shibboleth_BuiltinTypeEditors.h" />
     <ClInclude Include="..\..\..\..\..\src\Modules\EditorBasic\include\Shibboleth_DirectoryControl.h" />
     <ClInclude Include="..\..\..\..\..\src\Modules\EditorBasic\include\Shibboleth_Inspector.h" />
     <ClInclude Include="..\..\..\..\..\src\Modules\EditorBasic\include\Shibboleth_LoadedModulesWindow.h" />
+    <ClInclude Include="..\..\..\..\..\src\Modules\EditorBasic\include\Shibboleth_NumberInspector.h" />
     <ClInclude Include="..\..\..\..\..\src\Modules\EditorBasic\include\Shibboleth_ViewportWindow.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\..\..\src\Modules\EditorBasic\Shibboleth_ArchetypeEditor.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Modules\EditorBasic\Shibboleth_AssetBrowser.cpp" />
-    <ClCompile Include="..\..\..\..\..\src\Modules\EditorBasic\Shibboleth_BuitinTypeEditors.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Modules\EditorBasic\Shibboleth_DirectoryControl.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Modules\EditorBasic\Shibboleth_Inspector.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Modules\EditorBasic\Shibboleth_LoadedModulesWindow.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Modules\EditorBasic\Shibboleth_NumberInspector.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Modules\EditorBasic\Shibboleth_ViewportWindow.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
-</Project>
+</Project> 

@@ -9,35 +9,31 @@
     <ClInclude Include="..\..\..\..\..\src\Modules\EditorBasic\include\Gen_ReflectionInit.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Modules\EditorBasic\include\Shibboleth_ArchetypeEditor.h">
-      <Filter>include</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Modules\EditorBasic\include\Shibboleth_AssetBrowser.h">
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Modules\EditorBasic\include\Shibboleth_DirectoryControl.h">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Modules\EditorBasic\include\Shibboleth_Inspector.h">
+      <Filter>include</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Modules\EditorBasic\include\Shibboleth_LoadedModulesWindow.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Modules\EditorBasic\include\Shibboleth_NumberInspector.h">
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Modules\EditorBasic\include\Shibboleth_ViewportWindow.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Modules\EditorBasic\include\Shibboleth_Inspector.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Modules\EditorBasic\include\Shibboleth_BuiltinTypeEditors.h">
-      <Filter>include</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\..\..\src\Modules\EditorBasic\Shibboleth_ArchetypeEditor.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Modules\EditorBasic\Shibboleth_AssetBrowser.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Modules\EditorBasic\Shibboleth_DirectoryControl.cpp" />
-    <ClCompile Include="..\..\..\..\..\src\Modules\EditorBasic\Shibboleth_LoadedModulesWindow.cpp" />
-    <ClCompile Include="..\..\..\..\..\src\Modules\EditorBasic\Shibboleth_ViewportWindow.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Modules\EditorBasic\Shibboleth_Inspector.cpp" />
-    <ClCompile Include="..\..\..\..\..\src\Modules\EditorBasic\Shibboleth_BuitinTypeEditors.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Modules\EditorBasic\Shibboleth_LoadedModulesWindow.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Modules\EditorBasic\Shibboleth_NumberInspector.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Modules\EditorBasic\Shibboleth_ViewportWindow.cpp" />
   </ItemGroup>
 </Project>
