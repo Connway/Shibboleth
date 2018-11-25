@@ -192,7 +192,7 @@ constexpr const char* GetTypeNameBegin(const char* type_name)
 		return type_name;
 	}
 
-	// We reaached the end of const_string, so the type name begins with "const"/
+	// We reached the end of const_string, so the type name begins with "const".
 	// Move pointer over one more to move over the space.
 	return type_begin + 1;
 }
@@ -1057,6 +1057,7 @@ public:
 	virtual bool hasInterface(Hash64 class_hash) const = 0;
 
 	virtual int32_t getNumVars(void) const = 0;
+	virtual const char* getVarName(int32_t index) const = 0;
 	virtual Hash32 getVarHash(int32_t index) const = 0;
 	virtual IReflectionVar* getVar(int32_t index) const = 0;
 	virtual IReflectionVar* getVar(Hash32 name) const = 0;

@@ -27,7 +27,7 @@
     <IgnoreWarnCompileDuplicatedFilename>true</IgnoreWarnCompileDuplicatedFilename>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>EditorBasicModule</RootNamespace>
-    <WindowsTargetPlatformVersion>10.0.17134.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0.17763.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
@@ -162,6 +162,7 @@ IF EXIST ..\..\..\..\build\windows\vs2017\output\x64\Debug\$(TargetFileName)\ (x
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <MinimalRebuild>false</MinimalRebuild>
       <StringPooling>true</StringPooling>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <ExceptionHandling>Async</ExceptionHandling>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <FloatingPointModel>Fast</FloatingPointModel>
@@ -198,6 +199,7 @@ IF EXIST ..\..\..\..\build\windows\vs2017\output\x64\Release\$(TargetFileName)\ 
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <MinimalRebuild>false</MinimalRebuild>
       <StringPooling>true</StringPooling>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <ExceptionHandling>Async</ExceptionHandling>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <FloatingPointModel>Fast</FloatingPointModel>
@@ -234,6 +236,7 @@ IF EXIST ..\..\..\..\build\windows\vs2017\output\x64\Analyze\$(TargetFileName)\ 
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <MinimalRebuild>false</MinimalRebuild>
       <StringPooling>true</StringPooling>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <ExceptionHandling>Async</ExceptionHandling>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <FloatingPointModel>Fast</FloatingPointModel>
@@ -271,6 +274,7 @@ IF EXIST ..\..\..\..\build\windows\vs2017\output\x64\Profile\$(TargetFileName)\ 
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <MinimalRebuild>false</MinimalRebuild>
       <StringPooling>true</StringPooling>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <ExceptionHandling>Async</ExceptionHandling>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <FloatingPointModel>Fast</FloatingPointModel>

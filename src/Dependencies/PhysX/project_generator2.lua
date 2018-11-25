@@ -53,3 +53,6 @@ end
 group "Dependencies/PhysX"
 
 PhysXStaticLib("LowLevel")
+
+
+group "Dependencies"
