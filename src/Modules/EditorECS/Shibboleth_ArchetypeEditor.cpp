@@ -96,7 +96,7 @@ SHIB_REFLECTION_CLASS_DEFINE_BEGIN(ArchetypeEditor)
 	.BASE(wxWindow)
 
 	.classAttrs(
-		EditorWindowAttribute("&Editors/&Archetype Editor", "Archetype Editor"),
+		EditorWindowAttribute("&Archetype Editor", "Window_Editors"),
 		EditorFileHandlerAttribute(".archetype")
 	)
 

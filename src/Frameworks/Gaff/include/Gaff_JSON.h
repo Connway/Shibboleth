@@ -30,7 +30,7 @@ THE SOFTWARE.
 
 NS_GAFF
 
-class JSON
+class JSON final
 {
 public:
 	using JSONAlloc = void* (*)(size_t);

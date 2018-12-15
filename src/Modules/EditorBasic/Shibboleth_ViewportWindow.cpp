@@ -39,7 +39,7 @@ SHIB_REFLECTION_CLASS_DEFINE_BEGIN(ViewportWindow)
 	.BASE(wxWindow)
 
 	.classAttrs(
-		EditorWindowAttribute("&Viewport", "Viewport")
+		EditorWindowAttribute("&Viewport", "Window_Editors")
 	)
 SHIB_REFLECTION_CLASS_DEFINE_END(ViewportWindow)
 

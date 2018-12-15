@@ -62,10 +62,12 @@ const Gaff::IEnumReflectionDefinition* ReflectionManager::getEnumReflection(Gaff
 	return (it == _enum_reflection_map.end()) ? nullptr : it->second.get();
 }
 
-void ReflectionManager::registerEnumReflection(Gaff::Hash64 name, Gaff::IEnumReflectionDefinition* ref_def)
+void ReflectionManager::registerEnumReflection(Gaff::IEnumReflectionDefinition* ref_def)
 {
+	const Gaff::Hash64 name = ref_def->getReflectionInstance().getHash();
+
 	GAFF_ASSERT(_enum_reflection_map.find(name) == _enum_reflection_map.end());
-	_enum_reflection_map[name].reset(ref_def);
+	_enum_reflection_map[name].reset(ref_def);	
 }
 
 void ReflectionManager::registerEnumOwningModule(Gaff::Hash64 name, const char* module_name)
@@ -84,30 +86,15 @@ const Gaff::IReflectionDefinition* ReflectionManager::getReflection(Gaff::Hash64
 	return (it == _reflection_map.end()) ? nullptr : it->second.get();
 }
 
-void ReflectionManager::registerReflection(Gaff::Hash64 name, Gaff::IReflectionDefinition* ref_def)
+void ReflectionManager::registerReflection(Gaff::IReflectionDefinition* ref_def)
 {
+	const Gaff::Hash64 name = ref_def->getReflectionInstance().getHash();
+
 	GAFF_ASSERT(_reflection_map.find(name) == _reflection_map.end());
 	_reflection_map[name].reset(ref_def);
 
-	bool was_inserted = false;
-
-	// Check if this type implements an interface that has a type bucket request.
-	for (auto it = _type_buckets.begin(); it != _type_buckets.end(); ++it) {
-		if (ref_def->hasInterface(it->first)) {
-			insertType(it->second, ref_def);
-			was_inserted = true;
-		}
-	}
-
-	// Insert into no bucket bucket.
-	if (!was_inserted) {
-		const auto it = _type_buckets.find(Gaff::FNV1aHash64Const("**"));
-		insertType(it->second, ref_def);
-	}
-
-	// Insert into all bucket.
-	const auto it = _type_buckets.find(Gaff::FNV1aHash64Const("*"));
-	insertType(it->second, ref_def);
+	addToAttributeBuckets(ref_def);
+	addToTypeBuckets(ref_def);
 }
 
 void ReflectionManager::registerOwningModule(Gaff::Hash64 name, const char* module_name)
@@ -125,6 +112,29 @@ void ReflectionManager::registerOwningModule(Gaff::Hash64 name, const char* modu
 			insertType(module_types[bucket_pair.first], it_refl->second.get());
 		}
 	}
+}
+
+const Vector<const Gaff::IReflectionDefinition*>* ReflectionManager::getTypeBucket(Gaff::Hash64 name, Gaff::Hash64 module_name) const
+{
+	const auto it_module = _module_owners.find(HashString64(module_name));
+
+	if (it_module == _module_owners.end() || it_module->first.getHash() != module_name) {
+		return nullptr;
+	}
+
+	const auto it_bucket = it_module->second.find(name);
+
+	if (it_bucket == it_module->second.end() || it_bucket->first != name) {
+		return nullptr;
+	}
+
+	return &it_bucket->second;
+}
+
+const Vector<const Gaff::IReflectionDefinition*>* ReflectionManager::getTypeBucket(Gaff::Hash64 name) const
+{
+	const auto it = _type_buckets.find(name);
+	return (it == _type_buckets.end()) ? nullptr : &it->second;
 }
 
 void ReflectionManager::registerTypeBucket(Gaff::Hash64 name)
@@ -167,27 +177,33 @@ void ReflectionManager::registerTypeBucket(Gaff::Hash64 name)
 	}
 }
 
-const Vector<const Gaff::IReflectionDefinition*>* ReflectionManager::getTypeBucket(Gaff::Hash64 name, Gaff::Hash64 module_name) const
+const Vector<const Gaff::IReflectionDefinition*>* ReflectionManager::getAttributeBucket(Gaff::Hash64 name) const
 {
-	const auto it_module = _module_owners.find(HashString64(module_name));
-
-	if (it_module == _module_owners.end() || it_module->first.getHash() != module_name) {
-		return nullptr;
-	}
-
-	const auto it_bucket = it_module->second.find(name);
-	
-	if (it_bucket == it_module->second.end() || it_bucket->first != name) {
-		return nullptr;
-	}
-
-	return &it_bucket->second;
+	const auto it = _attr_buckets.find(name);
+	return (it == _attr_buckets.end()) ? nullptr : &it->second;
 }
 
-const Vector<const Gaff::IReflectionDefinition*>* ReflectionManager::getTypeBucket(Gaff::Hash64 name) const
+void ReflectionManager::registerAttributeBucket(Gaff::Hash64 attr_name)
 {
-	const auto it = _type_buckets.find(name);
-	return (it == _type_buckets.end()) ? nullptr : &it->second;
+	GAFF_ASSERT(_attr_buckets.find(attr_name) == _attr_buckets.end());
+
+	TypeBucket& bucket = _attr_buckets[attr_name];
+
+	for (const auto& ref_map_pair : _reflection_map) {
+		const UniquePtr<Gaff::IReflectionDefinition>& ref_def = ref_map_pair.second;
+
+		// Check if we have anything with this attribute.
+		if (ref_def->getClassAttr<Gaff::IAttribute>(attr_name) ||
+			ref_def->getFuncAttr<Gaff::IAttribute>(attr_name).second ||
+			ref_def->getStaticFuncAttr<Gaff::IAttribute>(attr_name).second ||
+			ref_def->getVarAttr<Gaff::IAttribute>(attr_name).second) {
+
+			bucket.emplace_back(ref_def.get());
+		}
+	}
+
+	// Sort the list for quicker lookup.
+	eastl::sort(bucket.begin(), bucket.end(), CompareRefDef);
 }
 
 Vector<const Gaff::IEnumReflectionDefinition*> ReflectionManager::getEnumReflectionWithAttribute(Gaff::Hash64 name, Gaff::Hash64 module_name) const
@@ -285,6 +301,45 @@ void ReflectionManager::removeType(TypeBucket& bucket, const Gaff::IReflectionDe
 	if (it != bucket.end() && *it == ref_def) {
 		bucket.erase(it);
 	}
+}
+
+void ReflectionManager::addToAttributeBuckets(const Gaff::IReflectionDefinition* ref_def)
+{
+	for (auto& bucket_pair : _attr_buckets) {
+		const Gaff::Hash64 attr_name = bucket_pair.first;
+
+		// Check if we have anything with this attribute.
+		if (ref_def->getClassAttr<Gaff::IAttribute>(bucket_pair.first) ||
+			ref_def->getFuncAttr<Gaff::IAttribute>(bucket_pair.first).second ||
+			ref_def->getStaticFuncAttr<Gaff::IAttribute>(bucket_pair.first).second ||
+			ref_def->getVarAttr<Gaff::IAttribute>(bucket_pair.first).second) {
+
+			insertType(bucket_pair.second, ref_def);
+		}
+	}
+}
+
+void ReflectionManager::addToTypeBuckets(const Gaff::IReflectionDefinition* ref_def)
+{
+	bool was_inserted = false;
+
+	// Check if this type implements an interface that has a type bucket request.
+	for (auto it = _type_buckets.begin(); it != _type_buckets.end(); ++it) {
+		if (ref_def->hasInterface(it->first)) {
+			insertType(it->second, ref_def);
+			was_inserted = true;
+		}
+	}
+
+	// Insert into no bucket bucket.
+	if (!was_inserted) {
+		const auto it = _type_buckets.find(Gaff::FNV1aHash64Const("**"));
+		insertType(it->second, ref_def);
+	}
+
+	// Insert into all bucket.
+	const auto it = _type_buckets.find(Gaff::FNV1aHash64Const("*"));
+	insertType(it->second, ref_def);
 }
 
 NS_END

@@ -44,7 +44,7 @@ SHIB_REFLECTION_CLASS_DEFINE_BEGIN(LoadedModulesWindow)
 	.BASE(wxWindow)
 
 	.classAttrs(
-		EditorWindowAttribute("&Modules", "Loaded Modules")
+		EditorWindowAttribute("Loaded &Modules", "Window_Editors")
 	)
 SHIB_REFLECTION_CLASS_DEFINE_END(LoadedModulesWindow)
 
