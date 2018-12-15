@@ -142,7 +142,7 @@ NS_END \
 	SHIB_REFLECTION_EXTERNAL_DEFINE_BEGIN(type)
 
 #define SHIB_REFLECTION_DEFINE_END(type, ...) \
-			GetApp().getReflectionManager().registerReflection(GetHash(), g_reflection_definition); \
+			GetApp().getReflectionManager().registerReflection(g_reflection_definition); \
 		} \
 	} \
 NS_END

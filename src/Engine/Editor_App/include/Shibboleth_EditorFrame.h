@@ -29,6 +29,7 @@ THE SOFTWARE.
 namespace Gaff
 {
 	class IReflectionDefinition;
+	class JSON;
 }
 
 NS_SHIBBOLETH
@@ -45,9 +46,8 @@ private:
 	wxAuiManager _aui_mgr;
 
 	wxMenuBar* _menu_bar = nullptr;
-	wxMenu* _window_menu = nullptr;
 
-	int _next_id = 0;
+	void initMenu(void);
 
 	void onExit(wxCommandEvent&);
 	void onAbout(wxCommandEvent&);

@@ -20,17 +20,14 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#include "Shibboleth_Inspector.h"
-#include <Shibboleth_EditorItemSelectedMessage.h>
-#include <Shibboleth_EditorInspectorAttribute.h>
-#include <Shibboleth_EngineAttributesCommon.h>
+#include "Shibboleth_TodoWindow.h"
 #include <Shibboleth_EditorWindowAttribute.h>
 
-SHIB_REFLECTION_DEFINE(Inspector)
+SHIB_REFLECTION_DEFINE(TodoWindow)
 
 NS_SHIBBOLETH
 
-SHIB_REFLECTION_CLASS_DEFINE_BEGIN(Inspector)
+SHIB_REFLECTION_CLASS_DEFINE_BEGIN(TodoWindow)
 	.CTOR(wxWindow*, wxWindowID, const wxPoint&, const wxSize&)
 	.CTOR(wxWindow*, wxWindowID, const wxPoint&)
 	.CTOR(wxWindow*, wxWindowID)
@@ -40,70 +37,22 @@ SHIB_REFLECTION_CLASS_DEFINE_BEGIN(Inspector)
 	.BASE(wxWindow)
 
 	.classAttrs(
-		EditorWindowAttribute("&Inspector", "Window_Editors")
+		EditorWindowAttribute("&Todo Window", "Window_Editors")
 	)
+SHIB_REFLECTION_CLASS_DEFINE_END(TodoWindow)
 
-	.func(
-		"onItemSelected",
-		&Inspector::onItemSelected,
-		GlobalMessageAttribute<Inspector, EditorItemSelectedMessage>()
-	)
-SHIB_REFLECTION_CLASS_DEFINE_END(Inspector)
-
-Inspector::Inspector(
+TodoWindow::TodoWindow(
 	wxWindow* parent,
 	wxWindowID id,
 	const wxPoint& pos,
 	const wxSize& size
-):
+) :
 	wxPanel(parent, id, pos, size)
 {
-	//_default_logic = new InspectorReflectionLogic;
 }
 
-Inspector::~Inspector(void)
+TodoWindow::~TodoWindow(void)
 {
-}
-
-void Inspector::onItemSelected(const EditorItemSelectedMessage& message)
-{
-	clear();
-
-	Gaff::IReflectionObject* const item = message.getItem();
-
-	if (!item) {
-		return;
-	}
-
-	// Check for an attribute with inspector logic.
-	const Gaff::IReflectionDefinition& ref_def = item->getReflectionDefinition();
-	GAFF_REF(ref_def);
-	//_logic = const_cast<IInspectorLogic*>(ref_def.GET_CLASS_ATTR(IInspectorLogic));
-
-	//// If no attribute, check if the item itself is the inspector logic.
-	//if (!_logic) {
-	//	_logic = const_cast<IInspectorLogic*>(INTERFACE_CAST(IInspectorLogic, *item));
-
-	//	// Default to reflection inspector.
-	//	if (!_logic) {
-	//		_logic = _default_logic;
-	//	}
-	//}
-
-	//_logic->populate(*this, *item);
-}
-
-void Inspector::clear(void)
-{
-	// Copy m_children.
-	const wxWindowList children = m_children;
-
-	for (wxWindow* child : children) {
-		//RemoveChild(child);
-		delete child;
-	}
-
-	//_logic = nullptr;
 }
 
 NS_END

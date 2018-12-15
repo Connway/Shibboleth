@@ -27,6 +27,7 @@ THE SOFTWARE.
 #include <Shibboleth_IEditor.h>
 #include <Shibboleth_IApp.h>
 #include <Gaff_JSON.h>
+#include <EASTL/sort.h>
 #include <wx/msgdlg.h>
 #include <wx/menu.h>
 
@@ -49,13 +50,9 @@ EditorFrame::EditorFrame(const wxString& title, const wxPoint& pos, const wxSize
 	wxMenu* const menu_help = new wxMenu;
 	menu_help->Append(wxID_ABOUT);
 
-	_window_menu = new wxMenu;
-
 	_menu_bar->Append(menu_file, "&File");
-	_menu_bar->Append(_window_menu, "&Window");
+	initMenu();
 	_menu_bar->Append(menu_help, "&Help");
-
-	// Check reflection for editor windows.
 
 	SetMenuBar(_menu_bar);
 	CreateStatusBar();
@@ -70,50 +67,6 @@ EditorFrame::EditorFrame(const wxString& title, const wxPoint& pos, const wxSize
 	);
 
 	_aui_mgr.Update();
-
-	// Add all editor windows to the Window menu.
-	ReflectionManager& refl_mgr = GetApp().getReflectionManager();
-
-	const Vector<const Gaff::IReflectionDefinition*> editor_windows = refl_mgr.getReflectionWithAttribute<EditorWindowAttribute>();
-
-	for (const Gaff::IReflectionDefinition* const ref_def : editor_windows) {
-		const EditorWindowAttribute* const ew_attr = ref_def->getClassAttr<EditorWindowAttribute>();
-		const int id = _next_id++;
-
-		const char* const path = ew_attr->getPath();
-		size_t next = Gaff::FindFirstOf(path, '/');
-		size_t curr = (next == SIZE_T_FAIL) ? -1 : 0;
-		wxMenu* curr_menu = _window_menu;
-
-		while (next != SIZE_T_FAIL) {
-			const wxString menu_name(path + curr, path + next);
-			const int32_t menu_id = curr_menu->FindItem(menu_name);
-
-			if (menu_id > -1) {
-				wxMenuItem* const item = curr_menu->FindItem(menu_id);
-				curr_menu = item->GetMenu();
-			} else {
-				wxMenu* const new_menu = new wxMenu();
-				curr_menu->AppendSubMenu(new_menu, menu_name);
-				curr_menu = new_menu;
-			}
-
-			curr = next;
-			next = Gaff::FindFirstOf(path + curr + 1, '/');
-		}
-
-		curr_menu->Append(id, path + curr + 1)->GetId();
-
-		Bind(
-			wxEVT_MENU,
-			&EditorFrame::onSpawnWindow,
-			this,
-			id,
-			-1,
-			// wxWidgets doesn't try to de-allocate this, so it's safe. Still kind of hacky.
-			const_cast<wxObject*>(reinterpret_cast<const wxObject*>(ref_def))
-		);
-	}
 
 	//Bind(wxEVT_UPDATE_UI, &EditorFrame::onUpdate, this, GetId());
 }
@@ -141,7 +94,10 @@ void EditorFrame::spawnWindow(const Gaff::IReflectionDefinition* ref_def)
 
 	wxAuiPaneInfo pane;
 
-	pane.Caption(ew_attr->getCaption());
+	U8String name = ew_attr->getName();
+	Gaff::EraseAllOccurences(name, '&');
+
+	pane.Caption(name.data());
 	pane.BestSize(wxSize(800, 600));
 	pane.DestroyOnClose();
 	pane.Float();
@@ -152,6 +108,143 @@ void EditorFrame::spawnWindow(const Gaff::IReflectionDefinition* ref_def)
 	IEditor* const editor = GetApp().getEditor();
 	editor->addEditorWindow(instance);
 	window->Show();
+}
+
+// This function is not very pretty, but it gets the job done.
+void EditorFrame::initMenu(void)
+{
+	Gaff::JSON group_cfg;
+
+	if (!group_cfg.parseFile("cfg/editor_menus.cfg")) {
+		// $TODO: Log error.
+		return;
+ 	}
+
+	if (!group_cfg.isObject()) {
+		// $TODO: Log error
+		return;
+	}
+
+	using GroupData = eastl::pair<wxMenu*, const Gaff::IReflectionDefinition*>;
+
+	ReflectionManager& refl_mgr = GetApp().getReflectionManager();
+	VectorMap< HashString32, Vector<GroupData> > group_map;
+	VectorMap<HashString32, wxMenu*> group_menus;
+
+	// Populate group_map with all ref_defs.
+	const Vector<const Gaff::IReflectionDefinition*> editor_windows = refl_mgr.getReflectionWithAttribute<EditorWindowAttribute>();
+
+	for (const Gaff::IReflectionDefinition* const ref_def : editor_windows) {
+		const EditorWindowAttribute* const ew_attr = ref_def->getClassAttr<EditorWindowAttribute>();
+
+		const char* const group_name = ew_attr->getGroup();
+		auto& group = group_map[HashString32(group_name)];
+
+		group.emplace_back(eastl::make_pair(nullptr, ref_def));
+	}
+
+	// Populate group_map and group_menus with menus.
+	group_cfg.forEachInObject([&](const char* name, const Gaff::JSON& value) -> bool
+	{
+		if (!value.isObject()) {
+			// $TODO: Log error
+			return false;
+		}
+
+		const Gaff::JSON groups = value["Groups"];
+
+		// Menu with no groups has no entries, don't process.
+		if (!groups.isArray()) {
+			// $TODO: Log error
+			return false;
+		}
+
+		const Gaff::JSON parent_group = value["Parent Group"];
+		wxMenu* const menu = new wxMenu();
+
+		// Add to group list for our parent group.
+		if (parent_group.isString()) {
+			const HashString32 parent_group_name(parent_group.getString());
+
+			group_map[parent_group_name].emplace_back(eastl::make_pair(menu, nullptr));
+			menu->SetClientData(reinterpret_cast<void*>(const_cast<char*>(name)));
+
+		// No parent group, add to menu bar.
+		} else {
+			_menu_bar->Append(menu, name);
+		}
+
+		groups.forEachInArray([&](int32_t, const Gaff::JSON& group_value) -> bool
+		{
+			if (!group_value.isString()) {
+				// $TODO: Log error
+				return false;
+			}
+
+			const HashString32 group_name(group_value.getString());
+
+			// Cyclical or duplicate group reference.
+			if (group_menus[group_name]) {
+				// $TODO: Log error
+				return false;
+			}
+
+			group_menus[group_name] = menu;
+			return false;
+		});
+
+		return false;
+	});
+
+	// Sort each group list.
+	for (auto& data : group_map) {
+		eastl::sort(data.second.begin(), data.second.end(), [](const GroupData& lhs, const GroupData& rhs) -> bool
+		{
+			const EditorWindowAttribute* const lhs_attr = (lhs.second) ? lhs.second->getClassAttr<EditorWindowAttribute>() : nullptr;
+			const EditorWindowAttribute* const rhs_attr = (rhs.second) ? rhs.second->getClassAttr<EditorWindowAttribute>() : nullptr;
+
+			U8String lhs_name = (lhs_attr) ? lhs_attr->getName() : reinterpret_cast<const char*>(lhs.first->GetClientData());
+			U8String rhs_name = (rhs_attr) ? rhs_attr->getName() : reinterpret_cast<const char*>(rhs.first->GetClientData());
+
+			Gaff::EraseAllOccurences(lhs_name, '&');
+			Gaff::EraseAllOccurences(rhs_name, '&');
+
+			return lhs_name < rhs_name;
+		});
+	}
+
+	// For each group, and the list of entries to the appropriate menu.
+	for (const auto& group_pair : group_map) {
+		wxMenu* const menu = group_menus[group_pair.first];
+
+		// Add a separator if there are things to separate.
+		if (menu->GetMenuItemCount() > 0 && !group_pair.second.empty()) {
+			menu->AppendSeparator();
+		}
+
+		for (const auto& group_data : group_pair.second) {
+			// Add the submenu and clear the client data.
+			if (group_data.first) {
+				menu->AppendSubMenu(group_data.first, reinterpret_cast<const char*>(group_data.first->GetClientData()));
+				group_data.first->SetClientData(nullptr);
+
+			// Add entry and bind the button.
+			} else {
+				const EditorWindowAttribute* const ew_attr = group_data.second->getClassAttr<EditorWindowAttribute>();
+				const int id = menu->Append(wxID_ANY, ew_attr->getName())->GetId();
+
+				Bind(
+					wxEVT_MENU,
+					&EditorFrame::onSpawnWindow,
+					this,
+					id,
+					-1,
+					// wxWidgets doesn't try to de-allocate this, so it's safe. Still kind of hacky.
+					const_cast<wxObject*>(reinterpret_cast<const wxObject*>(group_data.second))
+				);
+			}
+		}
+	}
 }
 
 void EditorFrame::onExit(wxCommandEvent&)

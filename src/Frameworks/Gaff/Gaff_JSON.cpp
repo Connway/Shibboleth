@@ -362,7 +362,7 @@ bool JSON::parseFile(const char* filename)
 	rapidjson::FileReadStream stream(file, buffer, 2048);
 
 	JSONDocument document;
-	document.ParseStream<rapidjson::kParseValidateEncodingFlag>(stream);
+	document.ParseStream(stream);
 
 	fclose(file);
 
@@ -420,7 +420,7 @@ bool JSON::parse(const char* input)
 	GAFF_ASSERT(input && strlen(input));
 
 	JSONDocument document;
-	document.Parse<rapidjson::kParseValidateEncodingFlag>(input);
+	document.Parse(input);
 
 	if (document.HasParseError()) {
 		_error.Set(document.GetParseError(), document.GetErrorOffset());

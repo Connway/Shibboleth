@@ -45,7 +45,7 @@ SHIB_REFLECTION_CLASS_DEFINE_BEGIN(AssetBrowser)
 	.BASE(wxWindow)
 
 	.classAttrs(
-		EditorWindowAttribute("Asset &Browser", "Asset Browser")
+		EditorWindowAttribute("Asset &Browser", "Window_Editors")
 	)
 SHIB_REFLECTION_CLASS_DEFINE_END(AssetBrowser)
 

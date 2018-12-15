@@ -55,16 +55,19 @@ public:
 	void destroy(void);
 
 	const Gaff::IEnumReflectionDefinition* getEnumReflection(Gaff::Hash64 name) const;
-	void registerEnumReflection(Gaff::Hash64 name, Gaff::IEnumReflectionDefinition* ref_def);
+	void registerEnumReflection(Gaff::IEnumReflectionDefinition* ref_def);
 	void registerEnumOwningModule(Gaff::Hash64 name, const char* module_name);
 
 	const Gaff::IReflectionDefinition* getReflection(Gaff::Hash64 name) const;
-	void registerReflection(Gaff::Hash64 name, Gaff::IReflectionDefinition* ref_def);
+	void registerReflection(Gaff::IReflectionDefinition* ref_def);
 	void registerOwningModule(Gaff::Hash64 name, const char* module_name);
 
 	const Vector<const Gaff::IReflectionDefinition*>* getTypeBucket(Gaff::Hash64 name, Gaff::Hash64 module_name) const;
 	const Vector<const Gaff::IReflectionDefinition*>* getTypeBucket(Gaff::Hash64 name) const;
 	void registerTypeBucket(Gaff::Hash64 name);
+
+	const Vector<const Gaff::IReflectionDefinition*>* getAttributeBucket(Gaff::Hash64 name) const;
+	void registerAttributeBucket(Gaff::Hash64 attr_name);
 
 	Vector<const Gaff::IEnumReflectionDefinition*> getEnumReflectionWithAttribute(Gaff::Hash64 name, Gaff::Hash64 module_name) const;
 	Vector<const Gaff::IEnumReflectionDefinition*> getEnumReflectionWithAttribute(Gaff::Hash64 name) const;
@@ -79,6 +82,7 @@ private:
 
 	VectorMap< Gaff::Hash64, UniquePtr<Gaff::IEnumReflectionDefinition> > _enum_reflection_map;
 	VectorMap< Gaff::Hash64, UniquePtr<Gaff::IReflectionDefinition> > _reflection_map;
+	TypeBucketMap _attr_buckets;
 	TypeBucketMap _type_buckets;
 
 	VectorMap< HashString64, Vector<const Gaff::IEnumReflectionDefinition*> > _module_enum_owners;
@@ -86,6 +90,9 @@ private:
 
 	void insertType(TypeBucket& bucket, const Gaff::IReflectionDefinition* ref_def);
 	void removeType(TypeBucket& bucket, const Gaff::IReflectionDefinition* ref_def);
+
+	void addToAttributeBuckets(const Gaff::IReflectionDefinition* ref_def);
+	void addToTypeBuckets(const Gaff::IReflectionDefinition* ref_def);
 
 	GAFF_NO_COPY(ReflectionManager);
 	GAFF_NO_MOVE(ReflectionManager);

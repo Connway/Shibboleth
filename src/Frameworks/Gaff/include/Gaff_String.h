@@ -40,6 +40,14 @@ using U16String = eastl::basic_string<char16_t, Allocator>;
 template <class Allocator = DefaultAllocator>
 using U32String = eastl::basic_string<char32_t, Allocator>;
 
+
+template <class T>
+using StringView = eastl::basic_string_view<T>;
+
+using U8StringView = eastl::u8string_view;
+using U16StringView = eastl::u16string_view;
+using U32StringView = eastl::u32string_view;
+
 // Helper Functions
 template <class T>
 size_t FindFirstOf(const T* string, size_t str_size, const T* substr, size_t substr_size)
@@ -133,6 +141,34 @@ template <class T>
 size_t FindLastOf(const T* string, T character)
 {
 	return FindLastOf(string, eastl::CharStrlen(string), character);
+}
+
+template <class T, class Allocator>
+void EraseAllOccurences(String<T, Allocator>& string, const T* substring, size_t size)
+{
+	size_t index = string.find_first_of(substring, 0, size);
+
+	while (index != String<T>::npos) {
+		string.erase(index, size);
+		index = string.find_first_of(substring, index, size);
+	}
+}
+
+template <class T, class Allocator>
+void EraseAllOccurences(String<T, Allocator>& string, const T* substring)
+{
+	EraseAllOccurences(string, substring, eastl::CharStrlen(substring));
+}
+
+template <class T, class Allocator>
+void EraseAllOccurences(String<T, Allocator>& string, T character)
+{
+	size_t index = string.find_first_of(character);
+
+	while (index != String<T>::npos) {
+		string.erase(index, 1);
+		index = string.find_first_of(character);
+	}
 }
 
 template <class T>

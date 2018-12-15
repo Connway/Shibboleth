@@ -24,28 +24,31 @@ THE SOFTWARE.
 
 #include <Shibboleth_Reflection.h>
 
+#ifdef PLATFORM_WINDOWS
+#include <wx/msw/winundef.h>
+#endif
+
+#include <wx/panel.h>
+
 NS_SHIBBOLETH
 
-class EditorWindowAttribute final : public Gaff::IAttribute
+class TodoWindow final : public Gaff::IReflectionObject, public wxPanel
 {
 public:
-	EditorWindowAttribute(
-		const char* name,
-		const char* group
+	TodoWindow(
+		wxWindow* parent,
+		wxWindowID id = wxID_ANY,
+		const wxPoint& pos = wxDefaultPosition,
+		const wxSize& size = wxDefaultSize
 	);
 
-	const char* getGroup(void) const;
-	const char* getName(void) const;
-
-	IAttribute* clone(void) const override;
+	~TodoWindow(void);
 
 private:
-	const char* _group = nullptr;
-	const char* _name = nullptr;
 
-	SHIB_REFLECTION_CLASS_DECLARE(EditorWindowAttribute);
+	SHIB_REFLECTION_CLASS_DECLARE(TodoWindow);
 };
 
 NS_END
 
-SHIB_REFLECTION_DECLARE(EditorWindowAttribute)
+SHIB_REFLECTION_DECLARE(TodoWindow)
