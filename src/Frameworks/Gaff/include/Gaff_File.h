@@ -104,19 +104,19 @@ public:
 	void printf(const char* format_string, ...);
 
 	bool writeChar(char c);
-	int readChar(void);
+	int32_t readChar(void);
 
 	bool writeString(const char* s);
-	bool readString(char* buffer, int max_byte_count);
+	bool readString(char* buffer, int32_t max_byte_count);
 
-	long getFilePos(void) const;
+	int32_t getFilePos(void) const;
 	bool seek(long offset, SEEK_ORIGIN origin = BEGINNING);
 	void rewind(void);
 
 	bool openTempFile(void);
 
 	// Only useful in BINARY mode
-	long getFileSize(void);
+	int32_t getFileSize(void);
 	bool readEntireFile(char* buffer);
 
 private:

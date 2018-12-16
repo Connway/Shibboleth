@@ -31,3 +31,4 @@ Libraries Affected:
 		Fixing setup.h wxSETUPH_PATH macro.
 		Fixing compiler errors with VS2017.
 		Exporting helper function.
+		Injecting Shibboleth allocator initialization to wxThreadInternal::WinThreadStart.

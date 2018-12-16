@@ -24,6 +24,7 @@ THE SOFTWARE.
 #include <Shibboleth_EditorWindowAttribute.h>
 #include <Shibboleth_Utilities.h>
 #include <Gaff_JSON.h>
+#include <Gaff_File.h>
 
 #include <wx/listctrl.h>
 #include <wx/sizer.h>
@@ -66,14 +67,40 @@ TodoWindow::TodoWindow(
 
 	SetSizer(sizer);
 
-	const char* const dir = GetApp().getConfigs()["source_dir"].getString("../src");
+	const Gaff::JSON dirs = GetApp().getConfigs()["todo_watch_dirs"];
 
-	if (std::filesystem::is_directory(dir)) {
-		_fs_watcher.AddTree(wxFileName(dir));
+	if (!dirs.isArray()) {
+		return;
+	}
+
+	dirs.forEachInArray([&](int32_t, const Gaff::JSON& value) -> bool
+	{
+		if (!value.isString()) {
+			// $TODO: Log error
+			return false;
+		}
+
+		const char* const dir = value.getString();
+
+		if (!std::filesystem::is_directory(dir)) {
+			// $TODO: Log error
+			return false;
+		}
+
+		// Makes sure the path ends with a '/'.
+		const wxString str = (Gaff::EndsWith(dir, "/", 1)) ? dir : wxString(dir) + "/";
+
+		wxFileName path(str);
+		path.MakeAbsolute();
+
+		_fs_watcher.AddTree(path, wxFSW_EVENT_ALL);
 		_fs_watcher.SetOwner(this);
 
 		Bind(wxEVT_FSWATCHER, &TodoWindow::fileChanged, this);
-	}
+
+		//initialPopulate(dir);
+		return false;
+	});
 }
 
 TodoWindow::~TodoWindow(void)
@@ -82,9 +109,102 @@ TodoWindow::~TodoWindow(void)
 
 void TodoWindow::fileChanged(const wxFileSystemWatcherEvent& event)
 {
-	GAFF_REF(event);
-	int i = 0;
-	i += 5;
+	const wxFileName& path = event.GetPath();
+	const wxString fullName = path.GetFullName();
+	const char* const file_name = fullName.c_str();
+
+	// Filter out files we can't inspect.
+	if (!canParseFile(file_name)) {
+		return;
+	}
+
+	switch (event.GetChangeType()) {
+		case wxFSW_EVENT_CREATE:
+			break;
+
+		case wxFSW_EVENT_DELETE:
+			break;
+
+		case wxFSW_EVENT_RENAME:
+			break;
+
+		case wxFSW_EVENT_MODIFY:
+			break;
+	}
+}
+
+bool TodoWindow::canParseFile(const char* file_name) const
+{
+	return Gaff::EndsWith(file_name, ".h") || Gaff::EndsWith(file_name, ".cpp") || Gaff::EndsWith(file_name, ".cfg");
+}
+
+void TodoWindow::initialPopulate(const char* path)
+{
+	for (const auto& entry : std::filesystem::directory_iterator(path)) {
+		const wchar_t* name = entry.path().c_str();
+		CONVERT_STRING(char, file_name, name);
+
+		if (!entry.is_regular_file() || !canParseFile(file_name)) {
+			continue;
+		}
+
+		parseFile(file_name);
+	}
+}
+
+void TodoWindow::parseFile(const char* file_name)
+{
+	long item_index = _list_view->FindItem(-1, file_name);
+
+	while (item_index > -1) {
+		_list_view->DeleteItem(item_index);
+		item_index = _list_view->FindItem(-1, file_name);
+	}
+
+	Gaff::File file(file_name);
+
+	if (!file.isOpen()) {
+		// $TODO: Log error
+		return;
+	}
+
+	char line[1024];
+
+	while (file.readString(line, ARRAY_SIZE(line))) {
+		size_t todo_index = Gaff::FindFirstOf(line, "$TODO");
+		size_t prev_index = 0;
+
+		while (todo_index != SIZE_T_FAIL) {
+			size_t walk_start = todo_index - 2;
+			bool comment_start_found = false;
+
+			while (walk_start > prev_index) {
+				// Single line comment.
+				if (line[walk_start] == '/' && line[walk_start + 1] == '/') {
+					wxString todo_text = line[walk_start + 2];
+					todo_text.Trim();
+
+					//_list_view->InsertItem()
+
+					comment_start_found = true;
+					break;
+
+				// Multi-line comment.
+				//} else if (line[walk_start] == '/' && line[walk_start + 1] == '*') {
+				//	comment_start_found = true;
+				//	break;
+				}
+
+				--walk_start;
+			}
+
+			if (!comment_start_found) {
+				// $TODO: Log error
+			}
+
+			todo_index = Gaff::FindFirstOf(line + todo_index + 5, "$TODO");
+		}
+	}
 }
 
 NS_END
