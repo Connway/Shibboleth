@@ -53,6 +53,9 @@ private:
 	wxFileSystemWatcher _fs_watcher;
 
 	void fileChanged(const wxFileSystemWatcherEvent& event);
+	bool canParseFile(const char* file_name) const;
+	void initialPopulate(const char* path);
+	void parseFile(const char* file_name);
 
 	SHIB_REFLECTION_CLASS_DECLARE(TodoWindow);
 };

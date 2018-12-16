@@ -74,7 +74,7 @@ void Editor::openEditorWindow(const char* file_path)
 		const EditorFileHandlerAttribute* const attr = window->getReflectionDefinition().getClassAttr<EditorFileHandlerAttribute>();
 
 		// Already open.
-		if (attr && Gaff::CheckExtension(file_path, size, attr->getExtension())) {
+		if (attr && Gaff::EndsWith(file_path, size, attr->getExtension())) {
 			return;
 		}
 	}
@@ -84,7 +84,7 @@ void Editor::openEditorWindow(const char* file_path)
 	for (const Gaff::IReflectionDefinition* ref_def : result) {
 		const EditorFileHandlerAttribute* const attr = ref_def->getClassAttr<EditorFileHandlerAttribute>();
 
-		if (Gaff::CheckExtension(file_path, size, attr->getExtension())) {
+		if (Gaff::EndsWith(file_path, size, attr->getExtension())) {
 			// Found the window type. Now create it.
 			_frame->spawnWindow(ref_def);
 			break;

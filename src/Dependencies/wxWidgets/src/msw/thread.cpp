@@ -43,6 +43,8 @@
 
 #include "wx/dynlib.h"
 
+#include <Shibboleth_Memory.h>
+
 // must have this symbol defined to get _beginthread/_endthread declarations
 #ifndef _MT
     #define _MT
@@ -598,6 +600,8 @@ THREAD_RETVAL THREAD_CALLCONV wxThreadInternal::WinThreadStart(void *param)
     thread->m_critsect.Enter();
     const bool hasExited = thread->m_internal->GetState() == STATE_EXITED;
     thread->m_critsect.Leave();
+
+	Shibboleth::AllocatorThreadInit();
 
     // run the thread function itself inside a SEH try/except block
     wxSEH_TRY

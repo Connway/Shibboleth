@@ -56,10 +56,18 @@ end
 group "Dependencies/wxWidgets"
 
 wxWidgetsProject("wxBase", "SharedLib")
-	includedirs { "src/regex", "../zlib-ng" }
+	includedirs
+	{
+		"src/regex",
+		"../zlib-ng",
+		"../../Frameworks/Gaff/include",
+		"../../Engine/Memory/include",
+		"../../Engine/Engine/include"
+	}
+
 	defines { "wxUSE_GUI=0", "wxUSE_BASE=1" }
 
-	local base_deps = { "zlib-ng", "wxRegex" }
+	local base_deps = { "zlib-ng", "wxRegex", "Memory" }
 	dependson(base_deps)
 	links(base_deps)
 

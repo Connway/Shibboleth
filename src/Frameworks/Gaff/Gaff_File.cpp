@@ -49,16 +49,12 @@ NS_GAFF
 
 bool File::CheckExtension(const char* file_name, size_t file_name_size, const char* extension, size_t extension_size)
 {
-	GAFF_ASSERT(file_name && extension);
-	return file_name_size > extension_size && !eastl::Compare(file_name + file_name_size - extension_size, extension, extension_size);
+	return EndsWith(file_name, file_name_size, extension, extension_size);
 }
 
 bool File::CheckExtension(const char* file_name, const char* extension)
 {
-	const size_t file_name_size = eastl::CharStrlen(file_name);
-	const size_t extension_size = eastl::CharStrlen(extension);
-	GAFF_ASSERT(file_name && extension && file_name_size && extension_size);
-	return CheckExtension(file_name, file_name_size, extension, extension_size);
+	return EndsWith(file_name, extension);
 }
 
 
@@ -257,7 +253,7 @@ bool File::writeChar(char c)
 	return fputc(c, _file) != EOF;
 }
 
-int File::readChar(void)
+int32_t File::readChar(void)
 {
 	GAFF_ASSERT(_file);
 	return fgetc(_file);
@@ -269,17 +265,17 @@ bool File::writeString(const char* s)
 	return fputs(s, _file) != EOF;
 }
 
-bool File::readString(char* buffer, int max_byte_count)
+bool File::readString(char* buffer, int32_t max_byte_count)
 {
 	GAFF_ASSERT(_file && buffer && max_byte_count > -1);
 	char* tmp = fgets(buffer, max_byte_count, _file);
 	return tmp != nullptr;
 }
 
-long File::getFilePos(void) const
+int32_t File::getFilePos(void) const
 {
 	GAFF_ASSERT(_file);
-	return ftell(_file);
+	return static_cast<int32_t>(ftell(_file));
 }
 
 bool File::seek(long offset, SEEK_ORIGIN origin)
@@ -301,7 +297,7 @@ bool File::openTempFile(void)
 	return _file != nullptr;
 }
 
-long File::getFileSize(void)
+int32_t File::getFileSize(void)
 {
 	GAFF_ASSERT(_file);
 	long size;
@@ -313,7 +309,7 @@ long File::getFileSize(void)
 	size = ftell(_file);
 	::rewind(_file);
 
-	return size;
+	return static_cast<int32_t>(size);
 }
 
 bool File::readEntireFile(char* buffer)
