@@ -36,7 +36,10 @@ template <class T>
 template <class Base>
 ReflectionVersion<T>& ReflectionVersion<T>::base(void)
 {
-	return base<Base>(GAFF_REFLECTION_NAMESPACE::Reflection<Base>::GetName());
+	const Gaff::Hash64 version = GAFF_REFLECTION_NAMESPACE::Reflection<Base>::GetVersion();
+	base<Base>(GAFF_REFLECTION_NAMESPACE::Reflection<Base>::GetName());
+	_hash = FNV1aHash64T(&version, _hash);
+	return *this;
 }
 
 template <class T>
@@ -72,11 +75,10 @@ ReflectionVersion<T>& ReflectionVersion<T>::var(const char (&name)[size], Var T:
 
 template <class T>
 template <class Ret, class Var, size_t size, class... Attrs>
-ReflectionVersion<T>& ReflectionVersion<T>::var(const char (&name)[size], Ret (T::*getter)(void) const, void (T::*setter)(Var), const Attrs&...)
+ReflectionVersion<T>& ReflectionVersion<T>::var(const char (&name)[size], Ret (T::* /*getter*/)(void) const, void (T::* /*setter*/)(Var), const Attrs&...)
 {
 	_hash = FNV1aHash64(name, size - 1, _hash);
-	_hash = FNV1aHash64T(&getter, _hash);
-	_hash = FNV1aHash64T(&setter, _hash);
+	_hash = CalcTemplateHash<Ret, Var>(_hash);
 
 	if constexpr (sizeof...(Attrs) > 0) {
 		_hash = FNV1aHash64(name, size - 1, _hash);
@@ -88,10 +90,10 @@ ReflectionVersion<T>& ReflectionVersion<T>::var(const char (&name)[size], Ret (T
 
 template <class T>
 template <size_t size, class Ret, class... Args, class... Attrs>
-ReflectionVersion<T>& ReflectionVersion<T>::func(const char (&name)[size], Ret (T::*ptr)(Args...) const, const Attrs&...)
+ReflectionVersion<T>& ReflectionVersion<T>::func(const char (&name)[size], Ret (T::* /*ptr*/)(Args...) const, const Attrs&...)
 {
 	_hash = FNV1aHash64(name, size - 1, _hash);
-	_hash = FNV1aHash64T(&ptr, _hash);
+	_hash = CalcTemplateHash<Ret, Args...>(_hash);
 
 	if constexpr (sizeof...(Attrs) > 0) {
 		_hash = FNV1aHash64(name, size - 1, _hash);
@@ -103,10 +105,10 @@ ReflectionVersion<T>& ReflectionVersion<T>::func(const char (&name)[size], Ret (
 
 template <class T>
 template <size_t size, class Ret, class... Args, class... Attrs>
-ReflectionVersion<T>& ReflectionVersion<T>::func(const char (&name)[size], Ret (T::*ptr)(Args...), const Attrs&...)
+ReflectionVersion<T>& ReflectionVersion<T>::func(const char (&name)[size], Ret (T::* /*ptr*/)(Args...), const Attrs&...)
 {
 	_hash = FNV1aHash64(name, size - 1, _hash);
-	_hash = FNV1aHash64T(&ptr, _hash);
+	_hash = CalcTemplateHash<Ret, Args...>(_hash);
 
 	if constexpr (sizeof...(Attrs) > 0) {
 		_hash = FNV1aHash64(name, size - 1, _hash);
@@ -118,11 +120,11 @@ ReflectionVersion<T>& ReflectionVersion<T>::func(const char (&name)[size], Ret (
 
 template <class T>
 template <size_t size, class Ret, class... Args, class... Attrs>
-ReflectionVersion<T>& ReflectionVersion<T>::staticFunc(const char (&name)[size], Ret (*func)(Args...), const Attrs&...)
+ReflectionVersion<T>& ReflectionVersion<T>::staticFunc(const char (&name)[size], Ret (* /*func*/)(Args...), const Attrs&...)
 {
 	_hash = FNV1aHash64(name, size - 1, _hash);
-	_hash = FNV1aHash64T(&func, _hash);
-	
+	_hash = CalcTemplateHash<Ret, Args...>(_hash);
+
 	if constexpr (sizeof...(Attrs) > 0) {
 		_hash = FNV1aHash64(name, size - 1, _hash);
 		_hash = CalcTemplateHash<Attrs...>(_hash);
@@ -151,6 +153,7 @@ ReflectionVersion<T>& ReflectionVersion<T>::version(uint32_t version)
 template <class T>
 ReflectionVersion<T>& ReflectionVersion<T>::serialize(LoadFunc serialize_load, SaveFunc serialize_save)
 {
+	// Unsure if this is a reliable hashing mechanism.
 	_hash = FNV1aHash64T(&serialize_load, _hash);
 	_hash = FNV1aHash64T(&serialize_save, _hash);
 	return *this;

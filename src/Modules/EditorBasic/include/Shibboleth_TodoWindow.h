@@ -28,7 +28,11 @@ THE SOFTWARE.
 #include <wx/msw/winundef.h>
 #endif
 
+#include <wx/fswatcher.h>
 #include <wx/panel.h>
+
+class wxFileSystemWatcherEvent;
+class wxListView;
 
 NS_SHIBBOLETH
 
@@ -45,6 +49,10 @@ public:
 	~TodoWindow(void);
 
 private:
+	wxListView* _list_view = nullptr;
+	wxFileSystemWatcher _fs_watcher;
+
+	void fileChanged(const wxFileSystemWatcherEvent& event);
 
 	SHIB_REFLECTION_CLASS_DECLARE(TodoWindow);
 };

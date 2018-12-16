@@ -22,6 +22,13 @@ THE SOFTWARE.
 
 #include "Shibboleth_TodoWindow.h"
 #include <Shibboleth_EditorWindowAttribute.h>
+#include <Shibboleth_Utilities.h>
+#include <Gaff_JSON.h>
+
+#include <wx/listctrl.h>
+#include <wx/sizer.h>
+
+#include <filesystem>
 
 SHIB_REFLECTION_DEFINE(TodoWindow)
 
@@ -49,10 +56,35 @@ TodoWindow::TodoWindow(
 ) :
 	wxPanel(parent, id, pos, size)
 {
+	_list_view = new wxListView(this);
+	_list_view->AppendColumn("File", wxLIST_FORMAT_LEFT, 400);
+	_list_view->AppendColumn("Comment", wxLIST_FORMAT_LEFT, 400);
+
+	wxBoxSizer* const sizer = new wxBoxSizer(wxHORIZONTAL);
+	sizer->Add(_list_view, 1, wxEXPAND | wxALL);
+	sizer->SetSizeHints(this);
+
+	SetSizer(sizer);
+
+	const char* const dir = GetApp().getConfigs()["source_dir"].getString("../src");
+
+	if (std::filesystem::is_directory(dir)) {
+		_fs_watcher.AddTree(wxFileName(dir));
+		_fs_watcher.SetOwner(this);
+
+		Bind(wxEVT_FSWATCHER, &TodoWindow::fileChanged, this);
+	}
 }
 
 TodoWindow::~TodoWindow(void)
 {
+}
+
+void TodoWindow::fileChanged(const wxFileSystemWatcherEvent& event)
+{
+	GAFF_REF(event);
+	int i = 0;
+	i += 5;
 }
 
 NS_END
