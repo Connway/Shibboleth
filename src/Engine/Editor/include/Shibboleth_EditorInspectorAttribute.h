@@ -32,7 +32,7 @@ public:
 	IEditorInspectorAttribute(void) {}
 	virtual ~IEditorInspectorAttribute(void) {}
 
-	virtual const Gaff::IReflection& getType(void) const = 0;
+	virtual const Gaff::IReflectionDefinition& getType(void) const = 0;
 };
 
 template <class T>
@@ -45,9 +45,9 @@ public:
 		return SHIB_ALLOCT_POOL(EditorInspectorAttribute, allocator.getPoolIndex("Reflection"), allocator);
 	}
 
-	const Gaff::IReflection& getType(void) const override
+	const Gaff::IReflectionDefinition& getType(void) const override
 	{
-		return Reflection<T>::GetInstance();
+		return Reflection<T>::GetReflectionDefinition();
 	}
 
 private:

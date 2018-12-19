@@ -91,6 +91,7 @@ private:
 	void insertType(TypeBucket& bucket, const Gaff::IReflectionDefinition* ref_def);
 	void removeType(TypeBucket& bucket, const Gaff::IReflectionDefinition* ref_def);
 
+	bool hasAttribute(const Gaff::IReflectionDefinition& ref_def, Gaff::Hash64 name) const;
 	void addToAttributeBuckets(const Gaff::IReflectionDefinition* ref_def);
 	void addToTypeBuckets(const Gaff::IReflectionDefinition* ref_def);
 
