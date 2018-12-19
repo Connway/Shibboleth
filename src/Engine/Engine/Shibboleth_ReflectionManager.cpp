@@ -247,11 +247,7 @@ Vector<const Gaff::IReflectionDefinition*> ReflectionManager::getReflectionWithA
 	}
 
 	for (const Gaff::IReflectionDefinition* ref_def : *bucket) {
-		if (ref_def->getClassAttr<void>(name) ||
-			ref_def->getFuncAttr<void>(name).second ||
-			ref_def->getStaticFuncAttr<void>(name).second ||
-			ref_def->getVarAttr<void>(name).second
-		) {
+		if (hasAttribute(*ref_def, name)) {
 			out.push_back(ref_def);
 		}
 	}
@@ -261,14 +257,17 @@ Vector<const Gaff::IReflectionDefinition*> ReflectionManager::getReflectionWithA
 
 Vector<const Gaff::IReflectionDefinition*> ReflectionManager::getReflectionWithAttribute(Gaff::Hash64 name) const
 {
+	const auto it = _attr_buckets.find(name);
+
+	if (it != _attr_buckets.end()) {
+		return it->second;
+	}
+
+	// Search manually.
 	Vector<const Gaff::IReflectionDefinition*> out;
 
 	for (const auto& entry : _reflection_map) {
-		if (entry.second->getClassAttr<void>(name) ||
-			entry.second->getFuncAttr<void>(name).second ||
-			entry.second->getStaticFuncAttr<void>(name).second ||
-			entry.second->getVarAttr<void>(name).second
-		) {
+		if (hasAttribute(*entry.second, name)) {
 			out.push_back(entry.second.get());
 		}
 	}
@@ -303,17 +302,20 @@ void ReflectionManager::removeType(TypeBucket& bucket, const Gaff::IReflectionDe
 	}
 }
 
+bool ReflectionManager::hasAttribute(const Gaff::IReflectionDefinition& ref_def, Gaff::Hash64 name) const
+{
+	return	ref_def.getClassAttr<Gaff::IAttribute>(name) ||
+			ref_def.getFuncAttr<Gaff::IAttribute>(name).second ||
+			ref_def.getStaticFuncAttr<Gaff::IAttribute>(name).second ||
+			ref_def.getVarAttr<Gaff::IAttribute>(name).second;
+}
+
 void ReflectionManager::addToAttributeBuckets(const Gaff::IReflectionDefinition* ref_def)
 {
 	for (auto& bucket_pair : _attr_buckets) {
 		const Gaff::Hash64 attr_name = bucket_pair.first;
 
-		// Check if we have anything with this attribute.
-		if (ref_def->getClassAttr<Gaff::IAttribute>(bucket_pair.first) ||
-			ref_def->getFuncAttr<Gaff::IAttribute>(bucket_pair.first).second ||
-			ref_def->getStaticFuncAttr<Gaff::IAttribute>(bucket_pair.first).second ||
-			ref_def->getVarAttr<Gaff::IAttribute>(bucket_pair.first).second) {
-
+		if (hasAttribute(*ref_def, bucket_pair.first)) {
 			insertType(bucket_pair.second, ref_def);
 		}
 	}

@@ -81,10 +81,12 @@ void EditorFrame::spawnWindow(const Gaff::IReflectionDefinition* ref_def)
 	const EditorWindowAttribute* const ew_attr = ref_def->getClassAttr<EditorWindowAttribute>();
 	GAFF_ASSERT(ew_attr);
 
+	ProxyAllocator allocator("Editor");
+
 	Gaff::IReflectionObject* const instance = ref_def->createT<Gaff::IReflectionObject>(
 		CLASS_HASH(Gaff::IReflectionObject),
 		ARG_HASH(wxWindow*),
-		ProxyAllocator::GetGlobal(),
+		allocator,
 		this
 	);
 

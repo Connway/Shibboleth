@@ -921,6 +921,15 @@ public:
 	}
 
 	template <class T, class Allocator>
+	Vector<const T*, Allocator> getClassAttrs(Hash64 attr_name) const
+	{
+		Vector<const T*, Allocator> out;
+		getClassAttrs(attr_name, out);
+
+		return out;
+	}
+
+	template <class T, class Allocator>
 	void getVarAttrs(Hash32 name, Vector<const T*, Allocator>& out) const
 	{
 		const int32_t size = getNumVarAttrs(name);

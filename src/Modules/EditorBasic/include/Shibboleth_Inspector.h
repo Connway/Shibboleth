@@ -48,11 +48,9 @@ public:
 	~Inspector(void);
 
 private:
-	//IInspectorLogic* _default_logic = nullptr;
-	//IInspectorLogic* _logic = nullptr;
-
 	void onItemSelected(const EditorItemSelectedMessage& message);
 
+	wxPanel* reflectionInit(const Gaff::IReflectionObject& item);
 	void clear(void);
 
 	SHIB_REFLECTION_CLASS_DECLARE(Inspector);
