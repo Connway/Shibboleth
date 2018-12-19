@@ -146,7 +146,7 @@ IFile* IResource::loadFile(const char* file_path)
 	IFile* file = GetApp().getFileSystem()->openFile(temp);
 
 	if (!file) {
-		// TODO: Log error.
+		// $TODO: Log error.
 		_state = RS_FAILED;
 	}
 

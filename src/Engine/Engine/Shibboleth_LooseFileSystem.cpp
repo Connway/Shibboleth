@@ -163,7 +163,7 @@ bool LooseFileSystem::forEachFile(const char* directory, eastl::function<bool (c
 		IFile* const file = openFile(temp);
 
 		//if (!file) {
-		//	// TODO: Log error
+		//	// $TODO: Log error
 		//	continue;
 		//}
 

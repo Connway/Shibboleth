@@ -437,7 +437,7 @@ ShaderReflection ProgramD3D11::getShaderReflectionData(const IShader* shader, Pr
 				break;
 
 			default:
-				// TODO: Handle other reflection data.
+				// $TODO: Handle other reflection data.
 				break;
 		}
 	}

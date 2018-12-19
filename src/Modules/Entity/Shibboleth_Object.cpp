@@ -56,7 +56,7 @@ bool Object::load(const Gaff::ISerializeReader& reader)
 		GAFF_REF(guard);
 
 		if (!reader.isString()) {
-			// TODO: log error
+			// $TODO: log error
 			return false;
 		}
 
@@ -70,7 +70,7 @@ bool Object::load(const Gaff::ISerializeReader& reader)
 		GAFF_REF(guard);
 
 		if (!reader.isObject()) {
-			// TODO: log error
+			// $TODO: log error
 			return false;
 		}
 
@@ -557,7 +557,7 @@ bool Object::createComponents(const Gaff::ISerializeReader& reader)
 	const bool error = reader.forEachInObject([&](const char* key) -> bool
 	{
 		if (!reader.isObject()) {
-			// TODO: log error
+			// $TODO: log error
 			return true;
 		}
 
@@ -568,7 +568,7 @@ bool Object::createComponents(const Gaff::ISerializeReader& reader)
 			char type[128] = {};
 
 			if (!reader.isString()) {
-				// TODO: log error
+				// $TODO: log error
 				return true;
 			}
 
@@ -580,7 +580,7 @@ bool Object::createComponents(const Gaff::ISerializeReader& reader)
 		const Gaff::IReflectionDefinition* const ref_def = Shibboleth::GetApp().getReflectionManager().getReflection(name);
 
 		if (!ref_def) {
-			// TODO: log error
+			// $TODO: log error
 			return false;
 		}
 
@@ -588,7 +588,7 @@ bool Object::createComponents(const Gaff::ISerializeReader& reader)
 		Component* const component = ref_def->CREATET(Component, allocator);
 
 		if (!component) {
-			// TODO: log error
+			// $TODO: log error
 			return true;
 		}
 
@@ -597,7 +597,7 @@ bool Object::createComponents(const Gaff::ISerializeReader& reader)
 		component->setIndex(_components.size());
 
 		//if (!component->validate(value)) {
-		//	// TODO: log error
+		//	// $TODO: log error
 		//	return false;
 		//}
 

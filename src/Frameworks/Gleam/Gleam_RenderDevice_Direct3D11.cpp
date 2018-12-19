@@ -181,12 +181,12 @@ bool RenderDeviceD3D11::init(int32_t adapter_id)
 	HRESULT result = CreateDXGIFactory2(factory_flags, IID_PPV_ARGS(&factory));
 
 	if (FAILED(result)) {
-		// TODO: Log error
+		// $TODO: Log error
 		return false;
 	}
 
 	if (factory->EnumAdapterByGpuPreference(static_cast<UINT>(adapter_id), DXGI_GPU_PREFERENCE_HIGH_PERFORMANCE, IID_PPV_ARGS(&adapter)) == DXGI_ERROR_NOT_FOUND) {
-		// TODO: Log error
+		// $TODO: Log error
 		return false;
 	}
 
@@ -216,7 +216,7 @@ bool RenderDeviceD3D11::init(int32_t adapter_id)
 	);
 
 	if (FAILED(result)) {
-		// TODO: Log error
+		// $TODO: Log error
 		return false;
 	}
 

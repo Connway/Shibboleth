@@ -384,7 +384,7 @@ void ArchetypeEditor::load(void)
 		const Gaff::IReflectionDefinition* const ref_def = refl_mgr.getReflection(Gaff::FNV1aHash64String(value.getString()));
 
 		if (!ref_def) {
-			// TODO: Log error
+			// $TODO: Log error
 			return false;
 		}
 
@@ -397,7 +397,7 @@ void ArchetypeEditor::load(void)
 		const Gaff::IReflectionDefinition* const ref_def = refl_mgr.getReflection(Gaff::FNV1aHash64String(value.getString()));
 
 		if (!ref_def) {
-			// TODO: Log error
+			// $TODO: Log error
 			return false;
 		}
 

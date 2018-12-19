@@ -54,7 +54,7 @@ Gaff::IReflectionObject* CreateInspectorForType(const char* name, const Gaff::IR
 	const Gaff::IReflectionDefinition* const ref_def_inspector = GetInspectorForType(ref_def);
 
 	if (!ref_def_inspector) {
-		// TODO: Log error
+		// $TODO: Log error
 		return nullptr;
 	}
 

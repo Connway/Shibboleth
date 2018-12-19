@@ -109,7 +109,7 @@ public:
 		T* const component = Reflection<T>::GetReflectionDefinition().create(std::forward<Args>(args)...);
 
 		if (!component) {
-			// TODO: log error
+			// $TODO: log error
 			return nullptr;
 		}
 
