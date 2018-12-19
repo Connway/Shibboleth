@@ -55,6 +55,7 @@ private:
 	void fileChanged(const wxFileSystemWatcherEvent& event);
 	bool canParseFile(const char* file_name) const;
 	void initialPopulate(const char* path);
+	long removeFile(const char* file_name);
 	void parseFile(const char* file_name);
 
 	SHIB_REFLECTION_CLASS_DECLARE(TodoWindow);

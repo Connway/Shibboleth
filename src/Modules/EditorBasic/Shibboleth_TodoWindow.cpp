@@ -35,6 +35,21 @@ SHIB_REFLECTION_DEFINE(TodoWindow)
 
 NS_SHIBBOLETH
 
+static int wxCALLBACK TodoSort(wxIntPtr item1, wxIntPtr item2, wxIntPtr data)
+{
+	const wxListView* const list_view = reinterpret_cast<wxListView*>(data);
+	const wxString text1 = list_view->GetItemText(item1, 1);
+	const wxString text2 = list_view->GetItemText(item2, 1);
+
+	if (text1 < text2) {
+		return -1;
+	} else if (text1 > text2) {
+		return 1;
+	}
+
+	return 0;
+}
+
 SHIB_REFLECTION_CLASS_DEFINE_BEGIN(TodoWindow)
 	.CTOR(wxWindow*, wxWindowID, const wxPoint&, const wxSize&)
 	.CTOR(wxWindow*, wxWindowID, const wxPoint&)
@@ -58,7 +73,8 @@ TodoWindow::TodoWindow(
 	wxPanel(parent, id, pos, size)
 {
 	_list_view = new wxListView(this);
-	_list_view->AppendColumn("File", wxLIST_FORMAT_LEFT, 400);
+	_list_view->AppendColumn("Line", wxLIST_FORMAT_LEFT, 60);
+	_list_view->AppendColumn("File", wxLIST_FORMAT_LEFT, 340);
 	_list_view->AppendColumn("Comment", wxLIST_FORMAT_LEFT, 400);
 
 	wxBoxSizer* const sizer = new wxBoxSizer(wxHORIZONTAL);
@@ -93,14 +109,19 @@ TodoWindow::TodoWindow(
 		wxFileName path(str);
 		path.MakeAbsolute();
 
+		const wxString path_string = path.GetFullPath();
+
 		_fs_watcher.AddTree(path, wxFSW_EVENT_ALL);
 		_fs_watcher.SetOwner(this);
 
 		Bind(wxEVT_FSWATCHER, &TodoWindow::fileChanged, this);
 
-		//initialPopulate(dir);
+		// $TODO: Maybe think about threading the initial populate so this window doesn't stall when opening on large codebases.
+		initialPopulate(path_string.c_str());
 		return false;
 	});
+
+	_list_view->SortItems(TodoSort, reinterpret_cast<wxIntPtr>(_list_view));
 }
 
 TodoWindow::~TodoWindow(void)
@@ -110,8 +131,10 @@ TodoWindow::~TodoWindow(void)
 void TodoWindow::fileChanged(const wxFileSystemWatcherEvent& event)
 {
 	const wxFileName& path = event.GetPath();
-	const wxString fullName = path.GetFullName();
-	const char* const file_name = fullName.c_str();
+	wxString full_path = path.GetFullPath();
+	full_path.Replace("\\", "/");
+
+	const char* const file_name = full_path.c_str();
 
 	// Filter out files we can't inspect.
 	if (!canParseFile(file_name)) {
@@ -120,15 +143,36 @@ void TodoWindow::fileChanged(const wxFileSystemWatcherEvent& event)
 
 	switch (event.GetChangeType()) {
 		case wxFSW_EVENT_CREATE:
+			parseFile(file_name);
+			_list_view->SortItems(TodoSort, reinterpret_cast<wxIntPtr>(_list_view));
 			break;
 
 		case wxFSW_EVENT_DELETE:
+			removeFile(file_name);
 			break;
 
-		case wxFSW_EVENT_RENAME:
-			break;
+		case wxFSW_EVENT_RENAME: {
+			wxString new_full_path = event.GetNewPath().GetFullPath();
+			new_full_path.Replace("\\", "/");
+
+			if (!canParseFile(new_full_path.c_str())) {
+				removeFile(file_name);
+				return;
+			}
+
+			long item_index = _list_view->FindItem(-1, file_name);
+
+			while (item_index > -1) {
+				_list_view->SetItem(item_index, 1, new_full_path);
+				item_index = _list_view->FindItem(-1, file_name);
+			}
+
+			_list_view->SortItems(TodoSort, reinterpret_cast<wxIntPtr>(_list_view));
+		} break;
 
 		case wxFSW_EVENT_MODIFY:
+			parseFile(file_name);
+			_list_view->SortItems(TodoSort, reinterpret_cast<wxIntPtr>(_list_view));
 			break;
 	}
 }
@@ -144,6 +188,17 @@ void TodoWindow::initialPopulate(const char* path)
 		const wchar_t* name = entry.path().c_str();
 		CONVERT_STRING(char, file_name, name);
 
+		for (int32_t i = 0; file_name[i]; ++i) {
+			if (file_name[i] == '\\') {
+				file_name[i] = '/';
+			}
+		}
+
+		if (entry.is_directory() && !Gaff::EndsWith(file_name, "Dependencies")) {
+			initialPopulate(file_name);
+			continue;
+		}
+
 		if (!entry.is_regular_file() || !canParseFile(file_name)) {
 			continue;
 		}
@@ -152,14 +207,31 @@ void TodoWindow::initialPopulate(const char* path)
 	}
 }
 
+long TodoWindow::removeFile(const char* file_name)
+{
+	const int32_t num_items = _list_view->GetItemCount();
+	int32_t start_index = -1;
+
+	for (int32_t i = 0; i < num_items; ++i) {
+		if (_list_view->GetItemText(i, 1) == file_name) {
+			start_index = i;
+			break;
+		}
+	}
+
+	if (start_index != -1) {
+		do {
+			_list_view->DeleteItem(start_index);
+		} while (start_index < _list_view->GetItemCount() && _list_view->GetItemText(start_index, 1) == file_name);
+	}
+
+	return start_index;
+}
+
 void TodoWindow::parseFile(const char* file_name)
 {
-	long item_index = _list_view->FindItem(-1, file_name);
-
-	while (item_index > -1) {
-		_list_view->DeleteItem(item_index);
-		item_index = _list_view->FindItem(-1, file_name);
-	}
+	long insert_index = removeFile(file_name);
+	insert_index = (insert_index> -1) ? insert_index : _list_view->GetItemCount();
 
 	Gaff::File file(file_name);
 
@@ -168,38 +240,41 @@ void TodoWindow::parseFile(const char* file_name)
 		return;
 	}
 
+	int32_t line_number = 0;
 	char line[1024];
 
 	while (file.readString(line, ARRAY_SIZE(line))) {
 		size_t todo_index = Gaff::FindFirstOf(line, "$TODO");
 		size_t prev_index = 0;
 
+		const int32_t start_line = ++line_number;
+
 		while (todo_index != SIZE_T_FAIL) {
 			size_t walk_start = todo_index - 2;
-			bool comment_start_found = false;
+			wxString todo_text;
 
 			while (walk_start > prev_index) {
 				// Single line comment.
 				if (line[walk_start] == '/' && line[walk_start + 1] == '/') {
-					wxString todo_text = line[walk_start + 2];
-					todo_text.Trim();
-
-					//_list_view->InsertItem()
-
-					comment_start_found = true;
+					todo_text = line + walk_start + 2;
 					break;
-
-				// Multi-line comment.
-				//} else if (line[walk_start] == '/' && line[walk_start + 1] == '*') {
-				//	comment_start_found = true;
-				//	break;
 				}
 
 				--walk_start;
 			}
 
-			if (!comment_start_found) {
+			if (todo_text.IsEmpty()) {
 				// $TODO: Log error
+
+			} else {
+				todo_text.Trim(false);
+				todo_text.Trim();
+
+				_list_view->InsertItem(insert_index, wxString::Format(wxT("%i"), start_line));
+				_list_view->SetItem(insert_index, 1, file_name);
+				_list_view->SetItem(insert_index, 2, todo_text);
+				_list_view->SetItemData(insert_index, insert_index);
+				++insert_index;
 			}
 
 			todo_index = Gaff::FindFirstOf(line + todo_index + 5, "$TODO");

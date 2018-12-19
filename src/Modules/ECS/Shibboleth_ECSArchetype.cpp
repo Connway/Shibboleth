@@ -116,14 +116,14 @@ bool ECSArchetype::fromJSON(const Gaff::JSON& json)
 	if (shared_components.isArray()) {
 		const bool failed = shared_components.forEachInArray([&](int32_t, const Gaff::JSON& value) -> bool {
 			if (!value.isString()) {
-				// TODO: Log error
+				// $TODO: Log error
 				return true;
 			}
 
 			const Gaff::IReflectionDefinition* const ref_def = refl_mgr.getReflection(Gaff::FNV1aHash64String(value.getString()));
 
 			if (!ref_def) {
-				// TODO: Log error
+				// $TODO: Log error
 				return true;
 			}
 
@@ -140,14 +140,14 @@ bool ECSArchetype::fromJSON(const Gaff::JSON& json)
 	if (components.isArray()) {
 		const bool failed = components.forEachInArray([&](int32_t, const Gaff::JSON& value) -> bool {
 			if (!value.isString()) {
-				// TODO: Log error
+				// $TODO: Log error
 				return true;
 			}
 
 			const Gaff::IReflectionDefinition* const ref_def = refl_mgr.getReflection(Gaff::FNV1aHash64String(value.getString()));
 
 			if (!ref_def) {
-				// TODO: Log error
+				// $TODO: Log error
 				return true;
 			}
 

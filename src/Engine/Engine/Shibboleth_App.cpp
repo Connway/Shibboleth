@@ -347,7 +347,7 @@ bool App::loadModules(void)
 		IManager* manager = ref_def->CREATET(IManager, allocator);
 
 		if (!manager->init()) {
-			// TODO: Log error
+			// $TODO: Log error
 			LogErrorDefault("Failed to initialize manager '%s'!", ref_def->getReflectionInstance().getName());
 			SHIB_FREET(manager, GetAllocator());
 			return false;
