@@ -307,54 +307,6 @@ constexpr Hash64 CalcTemplateHash(Hash64 init)
 	}
 }
 
-enum ReflectionValueType
-{
-	VT_BOOL = 0,
-	VT_INT8,
-	VT_INT16,
-	VT_INT32,
-	VT_INT64,
-	VT_UINT8,
-	VT_UINT16,
-	VT_UINT32,
-	VT_UINT64,
-	VT_ENUM,
-	VT_FLOAT,
-	VT_DOUBLE,
-	VT_STRING,
-	VT_OBJECT,
-	VT_SIZE
-};
-
-template <class T>
-constexpr ReflectionValueType GetRVT(void)
-{
-	return (std::is_enum<T>()) ?
-			VT_ENUM :
-			(std::is_class<T>()) ?
-				VT_OBJECT :
-				VT_SIZE;
-}
-
-#define RVT_FUNC(type, value) \
-	template <> \
-	inline ReflectionValueType GetRVT<type>(void) \
-	{ \
-		return value; \
-	}
-
-RVT_FUNC(bool, VT_BOOL)
-RVT_FUNC(int8_t, VT_INT8)
-RVT_FUNC(int16_t, VT_INT16)
-RVT_FUNC(int32_t, VT_INT32)
-RVT_FUNC(int64_t, VT_INT64)
-RVT_FUNC(uint8_t, VT_UINT8)
-RVT_FUNC(uint16_t, VT_UINT16)
-RVT_FUNC(uint32_t, VT_UINT32)
-RVT_FUNC(uint64_t, VT_UINT64)
-RVT_FUNC(float, VT_FLOAT)
-RVT_FUNC(double, VT_DOUBLE)
-
 class IReflectionObject
 {
 public:
@@ -409,7 +361,7 @@ public:
 		setElementMove(object, index, &data);
 	}
 
-	virtual ReflectionValueType getType(void) const = 0;
+	virtual const Gaff::IReflectionDefinition& getReflectionDefinition(void) const = 0;
 	virtual const void* getData(const void* object) const = 0;
 	virtual void setData(void* object, const void* data) = 0;
 	virtual void setDataMove(void* object, void* data) = 0;

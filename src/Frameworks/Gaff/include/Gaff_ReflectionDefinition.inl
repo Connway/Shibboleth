@@ -115,9 +115,9 @@ ReflectionDefinition<T, Allocator>::VarPtr<Var>::VarPtr(Var T::*ptr):
 
 template <class T, class Allocator>
 template <class Var>
-ReflectionValueType ReflectionDefinition<T, Allocator>::VarPtr<Var>::getType(void) const
+const Gaff::IReflectionDefinition& ReflectionDefinition<T, Allocator>::VarPtr<Var>::getReflectionDefinition(void) const
 {
-	return GetRVT<Var>();
+	return GAFF::REFLECTION_NAMESPACE::Reflection<Var>::GetReflectionDefinition();
 }
 
 template <class T, class Allocator>
@@ -173,10 +173,10 @@ ReflectionDefinition<T, Allocator>::VarFuncPtr<Ret, Var>::VarFuncPtr(Getter gett
 
 template <class T, class Allocator>
 template <class Ret, class Var>
-ReflectionValueType ReflectionDefinition<T, Allocator>::VarFuncPtr<Ret, Var>::getType(void) const
+const Gaff::IReflectionDefinition& ReflectionDefinition<T, Allocator>::VarFuncPtr<Ret, Var>::getReflectionDefinition(void) const
 {
 	using Type = typename std::remove_const<typename std::remove_reference<Ret>::type>::type;
-	return GetRVT<Type>();
+	return GAFF::REFLECTION_NAMESPACE::Reflection<Type>::GetReflectionDefinition();
 }
 
 template <class T, class Allocator>
@@ -276,9 +276,9 @@ ReflectionDefinition<T, Allocator>::BaseVarPtr<Base>::BaseVarPtr(typename Reflec
 
 template <class T, class Allocator>
 template <class Base>
-ReflectionValueType ReflectionDefinition<T, Allocator>::BaseVarPtr<Base>::getType(void) const
+const Gaff::IReflectionDefinition& ReflectionDefinition<T, Allocator>::BaseVarPtr<Base>::getReflectionDefinition(void) const
 {
-	return _base_var->getType();
+	return _base_var->getReflectionDefinition();
 }
 
 template <class T, class Allocator>
@@ -412,9 +412,9 @@ ReflectionDefinition<T, Allocator>::ArrayPtr<Var, array_size>::ArrayPtr(Var (T::
 
 template <class T, class Allocator>
 template <class Var, size_t array_size>
-ReflectionValueType ReflectionDefinition<T, Allocator>::ArrayPtr<Var, array_size>::getType(void) const
+const Gaff::IReflectionDefinition& ReflectionDefinition<T, Allocator>::ArrayPtr<Var, array_size>::getReflectionDefinition(void) const
 {
-	return GetRVT<Var>();
+	return GAFF::REFLECTION_NAMESPACE::Reflection<Var>::GetReflectionDefinition();
 }
 
 template <class T, class Allocator>
@@ -547,9 +547,9 @@ ReflectionDefinition<T, Allocator>::VectorPtr<Var, Vec_Allocator>::VectorPtr(Vec
 
 template <class T, class Allocator>
 template <class Var, class Vec_Allocator>
-ReflectionValueType ReflectionDefinition<T, Allocator>::VectorPtr<Var, Vec_Allocator>::getType(void) const
+const Gaff::IReflectionDefinition& ReflectionDefinition<T, Allocator>::VectorPtr<Var, Vec_Allocator>::getReflectionDefinition(void) const
 {
-	return GetRVT<Var>();
+	return GAFF::REFLECTION_NAMESPACE::Reflection<Var>::GetReflectionDefinition();
 }
 
 template <class T, class Allocator>
