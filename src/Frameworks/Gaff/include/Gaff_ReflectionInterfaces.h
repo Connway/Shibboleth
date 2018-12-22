@@ -326,38 +326,43 @@ public:
 	template <class DataType>
 	void setDataT(void* object, const DataType& data)
 	{
-		GAFF_ASSERT(getType() == GetRVT< std::remove_reference<DataType>::type >());
+		using Type = std::remove_reference<DataType>::type;
+		GAFF_ASSERT(&getReflectionDefinition() == &GAFF_REFLECTION_NAMESPACE::Reflection<Type>::GetReflectionDefinition());
 		setData(object, &data);
 	}
 
 	template <class DataType>
 	void setDataMoveT(void* object, DataType&& data)
 	{
-		GAFF_ASSERT(getType() == GetRVT< std::remove_reference<DataType>::type >());
+		using Type = std::remove_reference<DataType>::type;
+		GAFF_ASSERT(&getReflectionDefinition() == &GAFF_REFLECTION_NAMESPACE::Reflection<Type>::GetReflectionDefinition());
 		setDataMove(object, &data);
 	}
 
 	template <class DataType>
 	const DataType& getElementT(const void* object, int32_t index) const
 	{
+		using Type = std::remove_reference<DataType>::type;
+		GAFF_ASSERT(&getReflectionDefinition() == &GAFF_REFLECTION_NAMESPACE::Reflection<Type>::GetReflectionDefinition());
 		GAFF_ASSERT((isFixedArray() || isVector()) && size(object) > index);
-		GAFF_ASSERT(getType() == GetRVT< std::remove_reference<DataType>::type >());
 		return *reinterpret_cast<const DataType*>(getElement(object, index));
 	}
 
 	template <class DataType>
 	void setElementT(void* object, int32_t index, const DataType& data)
 	{
+		using Type = std::remove_reference<DataType>::type;
+		GAFF_ASSERT(&getReflectionDefinition() == &GAFF_REFLECTION_NAMESPACE::Reflection<Type>::GetReflectionDefinition());
 		GAFF_ASSERT((isFixedArray() || isVector()) && size(object) > index);
-		GAFF_ASSERT(getType() == GetRVT< std::remove_reference<DataType>::type >());
 		setElement(object, index, &data);
 	}
 
 	template <class DataType>
 	void setElementMoveT(void* object, int32_t index, DataType&& data)
 	{
+		using Type = std::remove_reference<DataType>::type;
+		GAFF_ASSERT(&getReflectionDefinition() == &GAFF_REFLECTION_NAMESPACE::Reflection<Type>::GetReflectionDefinition());
 		GAFF_ASSERT((isFixedArray() || isVector()) && size(object) > index);
-		GAFF_ASSERT(getType() == GetRVT< std::remove_reference<DataType>::type >());
 		setElementMove(object, index, &data);
 	}
 
