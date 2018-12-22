@@ -130,6 +130,7 @@ void Inspector::onItemSelected(const EditorItemSelectedMessage& message)
 wxPanel* Inspector::reflectionInit(const Gaff::IReflectionObject& item)
 {
 	const Gaff::IReflectionDefinition& ref_def = item.getReflectionDefinition();
+	GAFF_REF(ref_def);
 
 	return nullptr;
 }
