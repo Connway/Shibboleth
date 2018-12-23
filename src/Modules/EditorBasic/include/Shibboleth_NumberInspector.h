@@ -30,22 +30,36 @@ THE SOFTWARE.
 
 #include <wx/panel.h>
 
+class wxScrollWinEvent;
+class wxCommandEvent;
+class wxTextCtrl;
+
 NS_SHIBBOLETH
 
 class NumberInspector final : public Gaff::IReflectionObject, public wxPanel
 {
 public:
-	NumberInspector(const Gaff::IReflectionDefinition& type, const char* name, wxWindow* parent, wxWindowID id, const wxPoint& pos, const wxSize& size);
-	NumberInspector(const Gaff::IReflectionDefinition& type, const char* name, wxWindow* parent, wxWindowID id, const wxPoint& pos);
-	NumberInspector(const Gaff::IReflectionDefinition& type, const char* name, wxWindow* parent, wxWindowID id);
-	NumberInspector(const Gaff::IReflectionDefinition& type, const char* name, wxWindow* parent);
-	NumberInspector(const Gaff::IReflectionDefinition& type, const char* name);
+	NumberInspector(
+		void* value,
+		const Gaff::IReflectionDefinition& ref_def,
+		const Gaff::IReflectionDefinition* parent_ref_def,
+		wxWindow* parent = nullptr,
+		wxWindowID id = wxID_ANY,
+		const wxPoint& pos = wxDefaultPosition,
+		const wxSize& size = wxDefaultSize
+	);
 
 private:
-	const Gaff::IReflectionDefinition& _type;
+	wxTextCtrl* _text = nullptr;
+	void* _value = nullptr;
+	double _step = 1.0f;
 
-	wxValidator* createValidator(void) const;
-	void init(const char* name);
+	void (*_step_func)(void* value, double step) = nullptr;
+
+	wxValidator* createValidator(void* value, const Gaff::IReflectionDefinition& ref_def, const Gaff::IReflectionDefinition* parent_ref_def);
+	void onTextChange(const wxCommandEvent&);
+	void onScrollDown(const class wxScrollWinEvent&);
+	void onScrollUp(const class wxScrollWinEvent&);
 
 	SHIB_REFLECTION_CLASS_DECLARE(NumberInspector);
 };

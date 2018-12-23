@@ -26,6 +26,11 @@ THE SOFTWARE.
 #include <Shibboleth_EngineAttributesCommon.h>
 #include <Shibboleth_EditorWindowAttribute.h>
 
+#include <Shibboleth_NumberInspector.h>
+
+#include <wx/stattext.h>
+#include <wx/sizer.h>
+
 SHIB_REFLECTION_DEFINE(Inspector)
 
 NS_SHIBBOLETH
@@ -58,7 +63,14 @@ Inspector::Inspector(
 ):
 	wxPanel(parent, id, pos, size)
 {
-	//_default_logic = new InspectorReflectionLogic;
+	//auto* const ni = new NumberInspector(new double(123.0f), Reflection<double>::GetReflectionDefinition(), &getReflectionDefinition(), this);
+
+	//wxBoxSizer* const sizer = new wxBoxSizer(wxHORIZONTAL);
+	//sizer->Add(new wxStaticText(this, wxID_ANY, "Test Number"), 2, wxEXPAND | wxALL | wxCENTER | wxALIGN_CENTER, 5);
+	//sizer->Add(ni, 5, wxEXPAND | wxALL | wxCENTER | wxALIGN_LEFT, 5);
+	//sizer->SetSizeHints(this);
+
+	//SetSizer(sizer);
 }
 
 Inspector::~Inspector(void)
@@ -109,22 +121,6 @@ void Inspector::onItemSelected(const EditorItemSelectedMessage& message)
 	} else {
 		inspector = reflectionInit(*item);
 	}
-
-	AddChild(inspector);
-
-	//_logic = const_cast<IInspectorLogic*>(ref_def.GET_CLASS_ATTR(IInspectorLogic));
-
-	//// If no attribute, check if the item itself is the inspector logic.
-	//if (!_logic) {
-	//	_logic = const_cast<IInspectorLogic*>(INTERFACE_CAST(IInspectorLogic, *item));
-
-	//	// Default to reflection inspector.
-	//	if (!_logic) {
-	//		_logic = _default_logic;
-	//	}
-	//}
-
-	//_logic->populate(*this, *item);
 }
 
 wxPanel* Inspector::reflectionInit(const Gaff::IReflectionObject& item)

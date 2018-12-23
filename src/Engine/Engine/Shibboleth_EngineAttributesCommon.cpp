@@ -26,12 +26,11 @@ THE SOFTWARE.
 
 SHIB_REFLECTION_DEFINE(ReadOnlyAttribute)
 SHIB_REFLECTION_DEFINE(EditorAttribute)
+SHIB_REFLECTION_DEFINE(RangeAttribute)
 
 NS_SHIBBOLETH
 
-SHIB_REFLECTION_CLASS_DEFINE_BEGIN(ReadOnlyAttribute)
-	.BASE(Gaff::IAttribute)
-SHIB_REFLECTION_CLASS_DEFINE_END(ReadOnlyAttribute)
+SHIB_REFLECTION_CLASS_DEFINE_WITH_BASE(ReadOnlyAttribute, Gaff::IAttribute)
 
 Gaff::IAttribute* ReadOnlyAttribute::clone(void) const
 {
@@ -40,14 +39,41 @@ Gaff::IAttribute* ReadOnlyAttribute::clone(void) const
 }
 
 
-SHIB_REFLECTION_CLASS_DEFINE_BEGIN(EditorAttribute)
-	.BASE(Gaff::IAttribute)
-SHIB_REFLECTION_CLASS_DEFINE_END(EditorAttribute)
+SHIB_REFLECTION_CLASS_DEFINE_WITH_BASE(EditorAttribute, Gaff::IAttribute)
 
 Gaff::IAttribute* EditorAttribute::clone(void) const
 {
 	IAllocator& allocator = GetAllocator();
 	return SHIB_ALLOCT_POOL(EditorAttribute, allocator.getPoolIndex("Reflection"), allocator);
+}
+
+
+SHIB_REFLECTION_CLASS_DEFINE_WITH_BASE(RangeAttribute, Gaff::IAttribute)
+
+RangeAttribute::RangeAttribute(double min, double max, double step):
+	_step(step), _min(min), _max(max)
+{
+}
+
+double RangeAttribute::getStep(void) const
+{
+	return _step;
+}
+
+double RangeAttribute::getMin(void) const
+{
+	return _min;
+}
+
+double RangeAttribute::getMax(void) const
+{
+	return _max;
+}
+
+Gaff::IAttribute* RangeAttribute::clone(void) const
+{
+	IAllocator& allocator = GetAllocator();
+	return SHIB_ALLOCT_POOL(RangeAttribute, allocator.getPoolIndex("Reflection"), allocator, _min, _max);
 }
 
 NS_END

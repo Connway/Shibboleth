@@ -40,6 +40,7 @@ public:
 	SHIB_REFLECTION_CLASS_DECLARE(ReadOnlyAttribute);
 };
 
+
 class EditorAttribute final : public Gaff::IAttribute
 {
 public:
@@ -47,6 +48,7 @@ public:
 
 	SHIB_REFLECTION_CLASS_DECLARE(EditorAttribute);
 };
+
 
 template <class T, class Msg>
 class GlobalMessageAttribute final : public Gaff::IAttribute
@@ -100,6 +102,26 @@ private:
 template <class T, class Msg>
 VectorMap<void*, BroadcastRemover> GlobalMessageAttribute<T, Msg>::s_removers = VectorMap<void*, BroadcastRemover>();
 
+
+class RangeAttribute final : public Gaff::IAttribute
+{
+public:
+	RangeAttribute(double min = eastl::numeric_limits<double>::min(), double max = eastl::numeric_limits<double>::max(), double step = 1.0);
+
+	double getStep(void) const;
+	double getMin(void) const;
+	double getMax(void) const;
+
+	IAttribute* clone(void) const override;
+
+private:
+	double _step;
+	double _min;
+	double _max;
+
+	SHIB_REFLECTION_CLASS_DECLARE(RangeAttribute);
+};
+
 SHIB_TEMPLATE_REFLECTION_CLASS_DEFINE_BEGIN(GlobalMessageAttribute, T, Msg)
 	.BASE(Gaff::IAttribute)
 SHIB_TEMPLATE_REFLECTION_CLASS_DEFINE_END(GlobalMessageAttribute, T, Msg)
@@ -108,5 +130,6 @@ NS_END
 
 SHIB_REFLECTION_DECLARE(ReadOnlyAttribute)
 SHIB_REFLECTION_DECLARE(EditorAttribute)
+SHIB_REFLECTION_DECLARE(RangeAttribute)
 SHIB_TEMPLATE_REFLECTION_DECLARE(GlobalMessageAttribute, T, Msg)
 SHIB_TEMPLATE_REFLECTION_DEFINE(GlobalMessageAttribute, T, Msg)
