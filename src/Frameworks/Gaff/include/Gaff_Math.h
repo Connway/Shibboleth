@@ -31,31 +31,63 @@ constexpr float DegToRad = Pi / 180.0f;
 constexpr float RadToDeg = 180.0f / Pi;
 
 template <class T>
-const T& Min(const T& v1, const T& v2)
+constexpr const T& Min(const T& v1, const T& v2)
 {
 	return (v1 < v2) ? v1 : v2;
 }
 
 template <class T>
-const T& Max(const T& v1, const T& v2)
+constexpr const T& Min(const T& v)
+{
+	return v;
+}
+
+template <class First, class... Rest>
+constexpr const First& Min(const First& first, const Rest&... rest)
+{
+	return Min(first, Min(rest...));
+}
+
+
+template <class T>
+constexpr const T& Max(const T& v1, const T& v2)
 {
 	return (v1 > v2) ? v1 : v2;
 }
 
 template <class T>
-const T& Clamp(const T& val, const T& min_bound, const T& max_bound)
+constexpr const T& Max(const T& v)
+{
+	return v;
+}
+
+template <class First, class... Rest>
+constexpr const First& Max(const First& first, const Rest&... rest)
+{
+	return Max(first, Max(rest...));
+}
+
+
+template <class T>
+constexpr const T& Clamp(const T& val, const T& min_bound, const T& max_bound)
 {
 	return Min(Max(val, min_bound), max_bound);
 }
 
 template <class T>
-T Lerp(const T& begin, const T& end, float t)
+constexpr const T& Saturate(const T& val)
+{
+	return Clamp(val, static_cast<T>(0), static_cast<T>(1));
+}
+
+template <class T>
+constexpr T Lerp(const T& begin, const T& end, float t)
 {
 	return begin + t * (end - begin);
 }
 
 template <class T>
-bool Between(const T& val, const T& min_val, const T& max_val)
+constexpr bool Between(const T& val, const T& min_val, const T& max_val)
 {
 	return val >= min_val && val <= max_val;
 }

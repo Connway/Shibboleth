@@ -101,6 +101,7 @@ void EditorFrame::spawnWindow(const Gaff::IReflectionDefinition* ref_def)
 
 	pane.Caption(name.data());
 	pane.BestSize(wxSize(800, 600));
+	pane.MinSize(wxSize(100, 100));
 	pane.DestroyOnClose();
 	pane.Float();
 

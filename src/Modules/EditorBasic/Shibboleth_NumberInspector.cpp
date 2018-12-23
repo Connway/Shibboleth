@@ -22,21 +22,21 @@ THE SOFTWARE.
 
 #include "Shibboleth_NumberInspector.h"
 #include <Shibboleth_EditorInspectorAttribute.h>
-#include <wx/stattext.h>
+#include <Shibboleth_EngineAttributesCommon.h>
 #include <wx/textctrl.h>
-#include <wx/sizer.h>
 #include <wx/valnum.h>
+#include <wx/sizer.h>
 
 SHIB_REFLECTION_DEFINE(NumberInspector)
 
 NS_SHIBBOLETH
 
 SHIB_REFLECTION_CLASS_DEFINE_BEGIN(NumberInspector)
-	.CTOR(const Gaff::IReflectionDefinition&, const char*, wxWindow*, wxWindowID, const wxPoint&, const wxSize&)
-	.CTOR(const Gaff::IReflectionDefinition&, const char*, wxWindow*, wxWindowID, const wxPoint&)
-	.CTOR(const Gaff::IReflectionDefinition&, const char*, wxWindow*, wxWindowID)
-	.CTOR(const Gaff::IReflectionDefinition&, const char*, wxWindow*)
-	.CTOR(const Gaff::IReflectionDefinition&, const char*)
+	.CTOR(void*, const Gaff::IReflectionDefinition&, const Gaff::IReflectionDefinition*, wxWindow*, wxWindowID, const wxPoint&, const wxSize&)
+	.CTOR(void*, const Gaff::IReflectionDefinition&, const Gaff::IReflectionDefinition*, wxWindow*, wxWindowID, const wxPoint&)
+	.CTOR(void*, const Gaff::IReflectionDefinition&, const Gaff::IReflectionDefinition*, wxWindow*, wxWindowID)
+	.CTOR(void*, const Gaff::IReflectionDefinition&, const Gaff::IReflectionDefinition*, wxWindow*)
+	.CTOR(void*, const Gaff::IReflectionDefinition&, const Gaff::IReflectionDefinition*)
 
 	.BASE(Gaff::IReflectionObject)
 	.BASE(wxWindow)
@@ -55,82 +55,166 @@ SHIB_REFLECTION_CLASS_DEFINE_BEGIN(NumberInspector)
 	)
 SHIB_REFLECTION_CLASS_DEFINE_END(NumberInspector)
 
-NumberInspector::NumberInspector(const Gaff::IReflectionDefinition& type, const char* name, wxWindow* parent, wxWindowID id, const wxPoint& pos, const wxSize& size):
-	wxPanel(parent, id, pos, size), _type(type)
+template <class T>
+static void StepHelper(void* value, double step)
 {
-	init(name);
+	if (step > 0.0) {
+		*reinterpret_cast<T*>(value) += static_cast<T>(step);
+	} else {
+		*reinterpret_cast<T*>(value) -= static_cast<T>(-step);
+	}
 }
 
-NumberInspector::NumberInspector(const Gaff::IReflectionDefinition& type, const char* name, wxWindow* parent, wxWindowID id, const wxPoint& pos):
-	wxPanel(parent, id, pos), _type(type)
+template <class T, class Validator>
+static void SetMinMaxHelper(Validator& validator, double min, double max)
 {
-	init(name);
+	min = Gaff::Max<double>(eastl::numeric_limits<T>::min(), min);
+	max = Gaff::Min<double>(eastl::numeric_limits<T>::max(), max);
+	validator.SetRange(static_cast<T>(min), static_cast<T>(max));
 }
 
-NumberInspector::NumberInspector(const Gaff::IReflectionDefinition& type, const char* name, wxWindow* parent, wxWindowID id):
-	wxPanel(parent, id), _type(type)
+NumberInspector::NumberInspector(
+	void* value,
+	const Gaff::IReflectionDefinition& ref_def,
+	const Gaff::IReflectionDefinition* parent_ref_def,
+	wxWindow* parent,
+	wxWindowID id,
+	const wxPoint& pos,
+	const wxSize& size
+):
+	wxPanel(parent, id, pos, size),
+	_value(value),
+	_step(1.0)
 {
-	init(name);
+	wxBoxSizer* const sizer = new wxBoxSizer(wxHORIZONTAL);
+
+	const wxValidator* const validator = createValidator(value, ref_def, parent_ref_def);
+	_text = new wxTextCtrl(this, wxID_ANY);
+	_text->SetMaxSize(wxSize(150, 50));
+	_text->SetWindowStyle(wxVSCROLL);
+	_text->SetValidator(*validator);
+
+	delete validator;
+
+	_text->GetValidator()->TransferToWindow();
+
+	sizer->Add(_text, 1, wxLEFT | wxRIGHT | wxCENTER | wxALIGN_CENTER);
+	sizer->SetSizeHints(this);
+	SetSizer(sizer);
+
+	_text->Bind(wxEVT_SCROLLWIN_LINEDOWN, &NumberInspector::onScrollDown, this);
+	_text->Bind(wxEVT_SCROLLWIN_LINEUP, &NumberInspector::onScrollUp, this);
+
+	Bind(wxEVT_TEXT, &NumberInspector::onTextChange, this, _text->GetId());
 }
 
-NumberInspector::NumberInspector(const Gaff::IReflectionDefinition& type, const char* name, wxWindow* parent):
-	wxPanel(parent), _type(type)
+wxValidator* NumberInspector::createValidator(void* value, const Gaff::IReflectionDefinition& ref_def, const Gaff::IReflectionDefinition* parent_ref_def)
 {
-	init(name);
-}
+	const Gaff::Hash64 hash = ref_def.getReflectionInstance().getHash();
 
-NumberInspector::NumberInspector(const Gaff::IReflectionDefinition& type, const char* name):
-	wxPanel(nullptr), _type(type)
-{
-	init(name);
-}
+	double min = eastl::numeric_limits<double>::min();
+	double max = eastl::numeric_limits<double>::max();
 
-wxValidator* NumberInspector::createValidator(void) const
-{
-	const Gaff::Hash64 hash = _type.getReflectionInstance().getHash();
+	// Get value range.
+	if (parent_ref_def) {
+		const auto* const range = parent_ref_def->getClassAttr<RangeAttribute>();
 
-	// Get min/max.
+		if (range) {
+			_step = range->getStep();
+			min = range->getMin();
+			max = range->getMax();
+		}
+	}
 
 	if (hash == Reflection<int8_t>::GetHash()) {
-		return new wxIntegerValidator<int8_t>();
+		auto* const validator = new wxIntegerValidator<int8_t>(reinterpret_cast<int8_t*>(value));
+		SetMinMaxHelper<int8_t>(*validator, min, max);
+		_step_func = StepHelper<int8_t>;
+
+		return validator;
+
 	} else if (hash == Reflection<int16_t>::GetHash()) {
-		return new wxIntegerValidator<int16_t>();
+		auto* const validator = new wxIntegerValidator<int16_t>(reinterpret_cast<int16_t*>(value));
+		SetMinMaxHelper<int16_t>(*validator, min, max);
+		_step_func = StepHelper<int16_t>;
+
+		return validator;
+
 	} else if (hash == Reflection<int32_t>::GetHash()) {
-		return new wxIntegerValidator<int32_t>();
+		auto* const validator = new wxIntegerValidator<int32_t>(reinterpret_cast<int32_t*>(value));
+		SetMinMaxHelper<int32_t>(*validator, min, max);
+		_step_func = StepHelper<int32_t>;
+
+		return validator;
+
 	} else if (hash == Reflection<int64_t>::GetHash()) {
-		return new wxIntegerValidator<int64_t>();
+		auto* const validator = new wxIntegerValidator<int64_t>(reinterpret_cast<int64_t*>(value));
+		SetMinMaxHelper<int64_t>(*validator, min, max);
+		_step_func = StepHelper<int64_t>;
+
+		return validator;
+
 	} else if (hash == Reflection<uint8_t>::GetHash()) {
-		return new wxIntegerValidator<uint8_t>();
+		auto* const validator = new wxIntegerValidator<uint8_t>(reinterpret_cast<uint8_t*>(value));
+		SetMinMaxHelper<uint8_t>(*validator, min, max);
+		_step_func = StepHelper<uint8_t>;
+
+		return validator;
+
 	} else if (hash == Reflection<uint16_t>::GetHash()) {
-		return new wxIntegerValidator<uint16_t>();
+		auto* const validator = new wxIntegerValidator<uint16_t>(reinterpret_cast<uint16_t*>(value));
+		SetMinMaxHelper<uint16_t>(*validator, min, max);
+		_step_func = StepHelper<uint16_t>;
+
+		return validator;
+
 	} else if (hash == Reflection<uint32_t>::GetHash()) {
-		return new wxIntegerValidator<uint32_t>();
+		auto* const validator = new wxIntegerValidator<uint32_t>(reinterpret_cast<uint32_t*>(value));
+		SetMinMaxHelper<uint32_t>(*validator, min, max);
+		_step_func = StepHelper<uint32_t>;
+
+		return validator;
+
 	} else if (hash == Reflection<uint64_t>::GetHash()) {
-		return new wxIntegerValidator<uint64_t>();
+		auto* const validator = new wxIntegerValidator<uint64_t>(reinterpret_cast<uint64_t*>(value));
+		SetMinMaxHelper<uint64_t>(*validator, min, max);
+		_step_func = StepHelper<uint64_t>;
+
+		return validator;
+
 	} else if (hash == Reflection<float>::GetHash()) {
-		return new wxFloatingPointValidator<float>(nullptr, wxNUM_VAL_NO_TRAILING_ZEROES);
+		auto* const validator = new wxFloatingPointValidator<float>(3, reinterpret_cast<float*>(value), wxNUM_VAL_NO_TRAILING_ZEROES);
+		SetMinMaxHelper<float>(*validator, min, max);
+		_step_func = StepHelper<float>;
+
+		return validator;
+
 	} else if (hash == Reflection<double>::GetHash()) {
-		return new wxFloatingPointValidator<double>(nullptr, wxNUM_VAL_NO_TRAILING_ZEROES);
+		auto* const validator = new wxFloatingPointValidator<double>(6, reinterpret_cast<double*>(value), wxNUM_VAL_NO_TRAILING_ZEROES);
+		_step_func = StepHelper<double>;
+		validator->SetRange(min, max);
+
+		return validator;
 	}
 
 	return nullptr;
 }
 
-void NumberInspector::init(const char* name)
+void NumberInspector::onTextChange(const wxCommandEvent&)
 {
-	wxStaticText* const label = new wxStaticText(this, wxID_ANY, name);
-	wxTextCtrl* const text = new wxTextCtrl(this, wxID_ANY/*, default_value*/);
-	wxBoxSizer* const sizer = new wxBoxSizer(wxHORIZONTAL);
+	_text->GetValidator()->TransferFromWindow();
+}
 
-	const wxValidator* const validator = createValidator();
-	text->SetValidator(*validator);
-	delete validator;
+void NumberInspector::onScrollDown(const wxScrollWinEvent&)
+{
+	_step_func(_value, -_step);
+	_text->GetValidator()->TransferToWindow();
+}
 
-	sizer->Add(label, 1/*, wxEXPAND | wxALL*/);
-	sizer->Add(text, 1, wxEXPAND | wxALL);
-	sizer->SetSizeHints(this);
-
-	SetSizer(sizer);
+void NumberInspector::onScrollUp(const wxScrollWinEvent&)
+{
+	_step_func(_value, _step);
+	_text->GetValidator()->TransferToWindow();
 }
 
 NS_END

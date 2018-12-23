@@ -57,7 +57,8 @@ THE SOFTWARE.
 #define SAFEGAFFRELEASE(x) if (x) { x->release(); x = nullptr; } // Safely releases pointers that implement IRefCounted.
 #define SAFEGAFFADDREF(x) if (x) { x->addRef(); } // Safely adds a reference to pointers that implement IRefCounted.
 
-#define GAFF_REF(x) ((void)x)
+#define GAFF_REF_HELPER(x) ((void)x)
+#define GAFF_REF(...) GAFF_FOR_EACH(GAFF_REF_HELPER, __VA_ARGS__)
 
 #define UFAIL(type) static_cast<type>(-1)
 #define SIZE_T_FAIL UFAIL(size_t) // Returned from functions that use size_t's, but can potentially fail
