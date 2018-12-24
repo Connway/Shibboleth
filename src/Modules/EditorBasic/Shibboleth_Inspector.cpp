@@ -88,8 +88,32 @@ void Inspector::onItemSelected(const EditorItemSelectedMessage& message)
 	}
 
 	// Check for an attribute with inspector logic.
-	const auto inspectors = GetApp().getReflectionManager().getReflectionWithAttribute(CLASS_HASH(IEditorInspectorAttribute));
 	const Gaff::IReflectionDefinition& ref_def = item->getReflectionDefinition();
+	const Gaff::IReflectionDefinition* const inspector_ref_def = getInspectorReflection(ref_def);
+
+	wxPanel* inspector = nullptr;
+
+	if (inspector_ref_def) {
+		ProxyAllocator allocator("Editor");
+
+		inspector = inspector_ref_def->createT<wxPanel>(
+			CLASS_HASH(wxPanel),
+			ARG_HASH(void*, const Gaff::IReflectionDefinition&, const Gaff::IReflectionDefinition*, wxWindow*),
+			allocator,
+			item->getBasePointer(),
+			ref_def,
+			nullptr,
+			this
+		);
+
+	} else {
+		inspector = reflectionInit(*item);
+	}
+}
+
+const Gaff::IReflectionDefinition* Inspector::getInspectorReflection(const Gaff::IReflectionDefinition& ref_def) const
+{
+	const auto inspectors = GetApp().getReflectionManager().getReflectionWithAttribute(CLASS_HASH(IEditorInspectorAttribute));
 
 	const auto it = eastl::find(inspectors.begin(), inspectors.end(), ref_def, [](const Gaff::IReflectionDefinition* inspector_def, const Gaff::IReflectionDefinition& item_def) -> bool
 	{
@@ -104,29 +128,20 @@ void Inspector::onItemSelected(const EditorItemSelectedMessage& message)
 		return false;
 	});
 
-	wxPanel* inspector = nullptr;
-
-	if (it != inspectors.end()) {
-		ProxyAllocator allocator("Editor");
-
-		inspector = (*it)->createT<wxPanel>(
-			CLASS_HASH(wxPanel),
-			ARG_HASH(const Gaff::IReflectionDefinition&, const char*, wxWindow*),
-			allocator,
-			ref_def,
-			ref_def.getReflectionInstance().getName(),
-			this
-		);
-
-	} else {
-		inspector = reflectionInit(*item);
-	}
+	return (it != inspectors.end()) ? *it : nullptr;
 }
 
 wxPanel* Inspector::reflectionInit(const Gaff::IReflectionObject& item)
 {
 	const Gaff::IReflectionDefinition& ref_def = item.getReflectionDefinition();
 	GAFF_REF(ref_def);
+
+	const int32_t num_vars = ref_def.getNumVars();
+
+	for (int32_t i = 0; i < num_vars; ++i) {
+		//Gaff::IReflectionVar* const var = ref_def.getVar(i);
+		//var->getData
+	}
 
 	return nullptr;
 }
@@ -140,8 +155,6 @@ void Inspector::clear(void)
 		//RemoveChild(child);
 		delete child;
 	}
-
-	//_logic = nullptr;
 }
 
 NS_END

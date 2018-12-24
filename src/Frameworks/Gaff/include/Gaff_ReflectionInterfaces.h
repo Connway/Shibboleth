@@ -356,6 +356,7 @@ public:
 
 	virtual const Gaff::IReflectionDefinition& getReflectionDefinition(void) const = 0;
 	virtual const void* getData(const void* object) const = 0;
+	virtual void* getData(void* object) = 0;
 	virtual void setData(void* object, const void* data) = 0;
 	virtual void setDataMove(void* object, void* data) = 0;
 
@@ -373,6 +374,12 @@ public:
 		GAFF_ASSERT_MSG(false, "Reflection variable is not an array or vector!");
 		return nullptr;
 	}
+
+	virtual void* getElement(void*, int32_t)
+	{
+		GAFF_ASSERT_MSG(false, "Reflection variable is not an array or vector!");
+		return nullptr;
+		}
 
 	virtual void setElement(void*, int32_t, const void*)
 	{
@@ -405,6 +412,8 @@ class IAttribute : public IReflectionObject
 {
 public:
 	virtual IAttribute* clone(void) const = 0;
+
+	virtual Hash64 applyVersioning(Hash64 hash) const { return hash; }
 
 	virtual void finish(const Gaff::IReflectionDefinition* /*ref_def*/) {}
 	virtual void finish(const Gaff::IEnumReflectionDefinition* /*ref_def*/) {}

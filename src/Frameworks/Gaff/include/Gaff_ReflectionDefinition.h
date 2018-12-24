@@ -176,6 +176,7 @@ private:
 
 		const Gaff::IReflectionDefinition& getReflectionDefinition(void) const override;
 		const void* getData(const void* object) const override;
+		void* getData(void* object) override;
 		void setData(void* object, const void* data) override;
 		void setDataMove(void* object, void* data) override;
 
@@ -197,6 +198,7 @@ private:
 
 		const Gaff::IReflectionDefinition& getReflectionDefinition(void) const override;
 		const void* getData(const void* object) const override;
+		void* getData(void* object) override;
 		void setData(void* object, const void* data) override;
 		void setDataMove(void* object, void* data) override;
 
@@ -207,11 +209,7 @@ private:
 		Getter _getter = nullptr;
 		Setter _setter = nullptr;
 
-		union
-		{
-			mutable const typename std::remove_reference<Ret>::type* _copy_ptr = nullptr;
-			mutable typename std::remove_const< typename std::remove_reference<Ret>::type >::type _copy;
-		};
+		using RetType = typename std::remove_const< typename std::remove_pointer< typename std::remove_reference<Ret>::type >::type >::type;
 	};
 
 	template <class Base>
@@ -222,6 +220,7 @@ private:
 
 		const Gaff::IReflectionDefinition& getReflectionDefinition(void) const override;
 		const void* getData(const void* object) const override;
+		void* getData(void* object) override;
 		void setData(void* object, const void* data) override;
 		void setDataMove(void* object, void* data) override;
 
@@ -230,6 +229,7 @@ private:
 		int32_t size(const void*) const override;
 
 		const void* getElement(const void* object, int32_t index) const override;
+		void* getElement(void* object, int32_t index) override;
 		void setElement(void* object, int32_t index, const void* data) override;
 		void setElementMove(void* object, int32_t index, void* data) override;
 		void swap(void* object, int32_t index_a, int32_t index_b) override;
@@ -250,6 +250,7 @@ private:
 
 		const Gaff::IReflectionDefinition& getReflectionDefinition(void) const override;
 		const void* getData(const void* object) const override;
+		void* getData(void* object) override;
 		void setData(void* object, const void* data) override;
 		void setDataMove(void* object, void* data) override;
 
@@ -258,6 +259,7 @@ private:
 		int32_t size(const void*) const override { return static_cast<int32_t>(array_size); }
 
 		const void* getElement(const void* object, int32_t index) const override;
+		void* getElement(void* object, int32_t index) override;
 		void setElement(void* object, int32_t index, const void* data) override;
 		void setElementMove(void* object, int32_t index, void* data) override;
 		void swap(void* object, int32_t index_a, int32_t index_b) override;
@@ -278,6 +280,7 @@ private:
 
 		const Gaff::IReflectionDefinition& getReflectionDefinition(void) const override;
 		const void* getData(const void* object) const override;
+		void* getData(void* object) override;
 		void setData(void* object, const void* data) override;
 		void setDataMove(void* object, void* data) override;
 
@@ -286,6 +289,7 @@ private:
 		int32_t size(const void* object) const override;
 
 		const void* getElement(const void* object, int32_t index) const override;
+		void* getElement(void* object, int32_t index) override;
 		void setElement(void* object, int32_t index, const void* data) override;
 		void setElementMove(void* object, int32_t index, void* data) override;
 		void swap(void* object, int32_t index_a, int32_t index_b) override;

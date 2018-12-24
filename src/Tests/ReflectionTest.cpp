@@ -69,7 +69,7 @@ SHIB_REFLECTION_CLASS_DEFINE_BEGIN(Derived)
 	.BASE(Base2)
 
 	.var("c", &Derived::c)
-	.var("cFunc", &Derived::getC, &Derived::setC)
+	//.var("cFunc", &Derived::getC, &Derived::setC)
 	.var("cRef", &Derived::getCRef, &Derived::setC)
 SHIB_REFLECTION_CLASS_DEFINE_END(Derived)
 
@@ -145,20 +145,20 @@ TEST_CASE("reflection class test", "[shibboleth_reflection_class]")
 	printf("Version Hash: %llu\n", hash);
 
 	int test_get_func_ref = Shibboleth::Reflection<Derived>::GetReflectionDefinition().getVarT(Gaff::FNV1aHash32Const("cRef"))->getDataT<int>(*ref_result);
-	int test_get_func = Shibboleth::Reflection<Derived>::GetReflectionDefinition().getVarT(Gaff::FNV1aHash32Const("cFunc"))->getDataT<int>(*ref_result);
+	//int test_get_func = Shibboleth::Reflection<Derived>::GetReflectionDefinition().getVarT(Gaff::FNV1aHash32Const("cFunc"))->getDataT<int>(*ref_result);
 	int test_get = Shibboleth::Reflection<Derived>::GetReflectionDefinition().getVarT(Gaff::FNV1aHash32Const("c"))->getDataT<int>(*ref_result);
 
 	printf(
 		"GetFuncRef: %i\n"
-		"GetFunc: %i\n"
+		//"GetFunc: %i\n"
 		"GetVar: %i\n",
 		test_get_func_ref,
-		test_get_func,
+		//test_get_func,
 		test_get
 	);
 
 	REQUIRE(test_get_func_ref == ref_result->c);
-	REQUIRE(test_get_func == ref_result->c);
+	//REQUIRE(test_get_func == ref_result->c);
 	REQUIRE(test_get == ref_result->c);
 
 	auto* ref_var = Shibboleth::Reflection<Derived>::GetReflectionDefinition().getVarT(Gaff::FNV1aHash32Const("a"));
