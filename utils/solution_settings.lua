@@ -75,9 +75,16 @@ filter { "configurations:Debug* or Optimized_Debug*" }
 
 filter { "configurations:Release* or Profile* or Analyze*" }
 	flags { "LinkTimeOptimization" }
-	defines { "NDEBUG" }
 	optimize "Speed"
 	runtime "Release"
+
+	defines
+	{
+		"_HAS_ITERATOR_DEBUGGING=0",
+		"_ITERATOR_DEBUG_LEVEL=0",
+		"NDEBUG"
+	}
+
 
 filter { "configurations:Optimized_Debug*" }
 	flags { "LinkTimeOptimization" }

@@ -50,6 +50,7 @@ public:
 private:
 	void onItemSelected(const EditorItemSelectedMessage& message);
 
+	const Gaff::IReflectionDefinition* getInspectorReflection(const Gaff::IReflectionDefinition& ref_def) const;
 	wxPanel* reflectionInit(const Gaff::IReflectionObject& item);
 	void clear(void);
 

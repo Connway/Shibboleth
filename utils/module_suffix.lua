@@ -1,3 +1,5 @@
+local suffix = ""
+
 filter { "kind:SharedLib or WindowedApp or ConsoleApp", "configurations:Debug*", "platforms:x86" }
 	targetsuffix "32d"
 

@@ -136,6 +136,14 @@ const void* ReflectionDefinition<T, Allocator>::VarPtr<Var>::getData(const void*
 
 template <class T, class Allocator>
 template <class Var>
+void* ReflectionDefinition<T, Allocator>::VarPtr<Var>::getData(void* object)
+{
+	T* const obj = reinterpret_cast<T*>(object);
+	return &(obj->*_ptr);
+}
+
+template <class T, class Allocator>
+template <class Var>
 void ReflectionDefinition<T, Allocator>::VarPtr<Var>::setData(void* object, const void* data)
 {
 	T* const obj = reinterpret_cast<T*>(object);
@@ -181,8 +189,7 @@ template <class T, class Allocator>
 template <class Ret, class Var>
 const Gaff::IReflectionDefinition& ReflectionDefinition<T, Allocator>::VarFuncPtr<Ret, Var>::getReflectionDefinition(void) const
 {
-	using Type = typename std::remove_const<typename std::remove_reference<Ret>::type>::type;
-	return GAFF_REFLECTION_NAMESPACE::Reflection<Type>::GetReflectionDefinition();
+	return GAFF_REFLECTION_NAMESPACE::Reflection<RetType>::GetReflectionDefinition();
 }
 
 template <class T, class Allocator>
@@ -192,15 +199,33 @@ const void* ReflectionDefinition<T, Allocator>::VarFuncPtr<Ret, Var>::getData(co
 	GAFF_ASSERT(object);
 	GAFF_ASSERT(_getter);
 
-	const T* obj = reinterpret_cast<const T*>(object);
+	const T* const obj = reinterpret_cast<const T*>(object);
 
-	if (std::is_reference<Ret>::value) {
+	if constexpr (std::is_reference<Ret>::value) {
 		const Ret& val = (obj->*_getter)();
-		_copy_ptr = &val;
-		return _copy_ptr;
-	} else {
-		_copy = (obj->*_getter)();
-		return &_copy;
+		return &val;
+
+	} else if (std::is_pointer<Ret>::value) {
+		return (obj->*_getter)();
+	}
+}
+
+template <class T, class Allocator>
+template <class Ret, class Var>
+void* ReflectionDefinition<T, Allocator>::VarFuncPtr<Ret, Var>::getData(void* object)
+{
+	GAFF_ASSERT(object);
+	GAFF_ASSERT(_getter);
+
+	T* const obj = reinterpret_cast<T*>(object);
+
+	if constexpr (std::is_reference<Ret>::value) {
+		const Ret& val = (obj->*_getter)();
+		RetType* const ptr = const_cast<RetType*>(&val);
+		return ptr;
+
+	} else if (std::is_pointer<Ret>::value) {
+		return const_cast<RetType*>((obj->*_getter)());
 	}
 }
 
@@ -212,13 +237,8 @@ void ReflectionDefinition<T, Allocator>::VarFuncPtr<Ret, Var>::setData(void* obj
 	GAFF_ASSERT(_setter);
 	GAFF_ASSERT(data);
 
-	using VarNoRef = typename std::remove_reference<Var>::type;
-	using VarNoPointer = typename std::remove_pointer<VarNoRef>::type;
-	using VarNoConst = typename std::remove_const<VarNoPointer>::type;
-	using VarFinal = typename ValueHelper<std::is_pointer<VarNoRef>::value>::template type<VarNoConst>;
-
-	T* obj = reinterpret_cast<T*>(object);
-	(obj->*_setter)(*reinterpret_cast<const VarFinal*>(data));
+	T* const obj = reinterpret_cast<T*>(object);
+	(obj->*_setter)(*reinterpret_cast<const RetType*>(data));
 }
 
 template <class T, class Allocator>
@@ -229,13 +249,8 @@ void ReflectionDefinition<T, Allocator>::VarFuncPtr<Ret, Var>::setDataMove(void*
 	GAFF_ASSERT(_setter);
 	GAFF_ASSERT(data);
 
-	using VarNoRef = typename std::remove_reference<Var>::type;
-	using VarNoPointer = typename std::remove_pointer<VarNoRef>::type;
-	using VarNoConst = typename std::remove_const<VarNoPointer>::type;
-	using VarFinal = typename ValueHelper<std::is_pointer<VarNoRef>::value>::template type<VarNoConst>;
-
-	T* obj = reinterpret_cast<T*>(object);
-	(obj->*_setter)(*reinterpret_cast<VarFinal*>(data));
+	T* const obj = reinterpret_cast<T*>(object);
+	(obj->*_setter)(*reinterpret_cast<RetType*>(data));
 }
 
 template <class T, class Allocator>
@@ -245,17 +260,13 @@ void ReflectionDefinition<T, Allocator>::VarFuncPtr<Ret, Var>::load(const ISeria
 	GAFF_ASSERT(_getter);
 	GAFF_ASSERT(_setter);
 
-	using Type = typename std::remove_const<typename std::remove_reference<Ret>::type>::type;
-
-	if (std::is_reference<Ret>::value) {
-		const Type& val = (object.*_getter)();
-		Type& ref = const_cast<Type&>(val);
-		GAFF_REFLECTION_NAMESPACE::Reflection<Type>::Load(reader, ref);
+	if constexpr (std::is_reference<Ret>::value) {
+		RetType& val = const_cast<RetType&>((object.*_getter)());
+		GAFF_REFLECTION_NAMESPACE::Reflection<RetType>::Load(reader, val);
 
 	} else {
-		Type val = Type();
-		GAFF_REFLECTION_NAMESPACE::Reflection<Type>::Load(reader, val);
-		(object.*_setter)(val);
+		RetType* const val = const_cast<RetType*>((object.*_getter)());
+		GAFF_REFLECTION_NAMESPACE::Reflection<RetType>::Load(reader, *val);
 	}
 }
 
@@ -265,9 +276,14 @@ void ReflectionDefinition<T, Allocator>::VarFuncPtr<Ret, Var>::save(ISerializeWr
 {
 	GAFF_ASSERT(_getter);
 
-	using Type = typename std::remove_const<typename std::remove_reference<Ret>::type>::type;
-	const Type& val = (object.*_getter)();
-	GAFF_REFLECTION_NAMESPACE::Reflection<Type>::Save(writer, val);
+	if constexpr (std::is_reference<Ret>::value) {
+		const RetType& val = (object.*_getter)();
+		GAFF_REFLECTION_NAMESPACE::Reflection<RetType>::Save(writer, val);
+
+	} else {
+		const RetType* const val = (object.*_getter)();
+		GAFF_REFLECTION_NAMESPACE::Reflection<RetType>::Save(writer, *val);
+	}
 }
 
 
@@ -292,7 +308,16 @@ template <class Base>
 const void* ReflectionDefinition<T, Allocator>::BaseVarPtr<Base>::getData(const void* object) const
 {
 	GAFF_ASSERT(object);
-	const Base* obj = reinterpret_cast<const T*>(object);
+	const Base* const obj = reinterpret_cast<const T*>(object);
+	return _base_var->getData(obj);
+}
+
+template <class T, class Allocator>
+template <class Base>
+void* ReflectionDefinition<T, Allocator>::BaseVarPtr<Base>::getData(void* object)
+{
+	GAFF_ASSERT(object);
+	Base* const obj = reinterpret_cast<T*>(object);
 	return _base_var->getData(obj);
 }
 
@@ -302,7 +327,7 @@ void ReflectionDefinition<T, Allocator>::BaseVarPtr<Base>::setData(void* object,
 {
 	GAFF_ASSERT(object);
 	GAFF_ASSERT(data);
-	Base* obj = reinterpret_cast<T*>(object);
+	Base* const obj = reinterpret_cast<T*>(object);
 	_base_var->setData(obj, data);
 }
 
@@ -312,7 +337,7 @@ void ReflectionDefinition<T, Allocator>::BaseVarPtr<Base>::setDataMove(void* obj
 {
 	GAFF_ASSERT(object);
 	GAFF_ASSERT(data);
-	Base* obj = reinterpret_cast<T*>(object);
+	Base* const obj = reinterpret_cast<T*>(object);
 	_base_var->setData(obj, data);
 }
 
@@ -335,7 +360,7 @@ template <class Base>
 int32_t ReflectionDefinition<T, Allocator>::BaseVarPtr<Base>::size(const void* object) const
 {
 	GAFF_ASSERT(object);
-	const Base* obj = reinterpret_cast<const T*>(object);
+	const Base* const obj = reinterpret_cast<const T*>(object);
 	return _base_var->size(obj);
 }
 
@@ -345,7 +370,17 @@ const void* ReflectionDefinition<T, Allocator>::BaseVarPtr<Base>::getElement(con
 {
 	GAFF_ASSERT(index < size(object));
 	GAFF_ASSERT(object);
-	const Base* obj = reinterpret_cast<const T*>(object);
+	const Base* const obj = reinterpret_cast<const T*>(object);
+	return _base_var->getElement(obj, index);
+}
+
+template <class T, class Allocator>
+template <class Base>
+void* ReflectionDefinition<T, Allocator>::BaseVarPtr<Base>::getElement(void* object, int32_t index)
+{
+	GAFF_ASSERT(index < size(object));
+	GAFF_ASSERT(object);
+	Base* const obj = reinterpret_cast<T*>(object);
 	return _base_var->getElement(obj, index);
 }
 
@@ -356,7 +391,7 @@ void ReflectionDefinition<T, Allocator>::BaseVarPtr<Base>::setElement(void* obje
 	GAFF_ASSERT(index < size(object));
 	GAFF_ASSERT(object);
 	GAFF_ASSERT(data);
-	Base* obj = reinterpret_cast<T*>(object);
+	Base* const obj = reinterpret_cast<T*>(object);
 	_base_var->setElement(obj, index, data);
 }
 
@@ -367,7 +402,7 @@ void ReflectionDefinition<T, Allocator>::BaseVarPtr<Base>::setElementMove(void* 
 	GAFF_ASSERT(index < size(object));
 	GAFF_ASSERT(object);
 	GAFF_ASSERT(data);
-	Base* obj = reinterpret_cast<T*>(object);
+	Base* const obj = reinterpret_cast<T*>(object);
 	_base_var->setElementMove(obj, index, data);
 }
 
@@ -378,7 +413,7 @@ void ReflectionDefinition<T, Allocator>::BaseVarPtr<Base>::swap(void* object, in
 	GAFF_ASSERT(index_a < size(object));
 	GAFF_ASSERT(index_b < size(object));
 	GAFF_ASSERT(object);
-	Base* obj = reinterpret_cast<T*>(object);
+	Base* const obj = reinterpret_cast<T*>(object);
 	_base_var->swap(obj, index_a, index_b);
 }
 
@@ -387,7 +422,7 @@ template <class Base>
 void ReflectionDefinition<T, Allocator>::BaseVarPtr<Base>::resize(void* object, size_t new_size)
 {
 	GAFF_ASSERT(object);
-	Base* obj = reinterpret_cast<T*>(object);
+	Base* const obj = reinterpret_cast<T*>(object);
 	_base_var->resize(obj, new_size);
 }
 
@@ -429,7 +464,17 @@ const void* ReflectionDefinition<T, Allocator>::ArrayPtr<Var, array_size>::getDa
 {
 	GAFF_ASSERT(object);
 
-	const T* obj = reinterpret_cast<const T*>(object);
+	const T* const obj = reinterpret_cast<const T*>(object);
+	return (obj->*_ptr);
+}
+
+template <class T, class Allocator>
+template <class Var, size_t array_size>
+void* ReflectionDefinition<T, Allocator>::ArrayPtr<Var, array_size>::getData(void* object)
+{
+	GAFF_ASSERT(object);
+
+	T* const obj = reinterpret_cast<T*>(object);
 	return (obj->*_ptr);
 }
 
@@ -440,8 +485,8 @@ void ReflectionDefinition<T, Allocator>::ArrayPtr<Var, array_size>::setData(void
 	GAFF_ASSERT(object);
 	GAFF_ASSERT(data);
 
-	const Var* vars = reinterpret_cast<const Var*>(data);
-	T* obj = reinterpret_cast<T*>(object);
+	const Var* const vars = reinterpret_cast<const Var*>(data);
+	T* const obj = reinterpret_cast<T*>(object);
 
 	for (int32_t i = 0; i < static_cast<int32_t>(array_size); ++i) {
 		(obj->*_ptr)[i] = vars[i];
@@ -455,8 +500,8 @@ void ReflectionDefinition<T, Allocator>::ArrayPtr<Var, array_size>::setDataMove(
 	GAFF_ASSERT(object);
 	GAFF_ASSERT(data);
 
-	const Var* vars = reinterpret_cast<Var*>(data);
-	T* obj = reinterpret_cast<T*>(object);
+	const Var* const vars = reinterpret_cast<Var*>(data);
+	T* const obj = reinterpret_cast<T*>(object);
 
 	for (int32_t i = 0; i < static_cast<int32_t>(array_size); ++i) {
 		(obj->*_ptr)[i] = std::move(vars[i]);
@@ -469,7 +514,17 @@ const void* ReflectionDefinition<T, Allocator>::ArrayPtr<Var, array_size>::getEl
 {
 	GAFF_ASSERT(index < array_size);
 	GAFF_ASSERT(object);
-	const T* obj = reinterpret_cast<const T*>(object);
+	const T* const obj = reinterpret_cast<const T*>(object);
+	return &(obj->*_ptr)[index];
+}
+
+template <class T, class Allocator>
+template <class Var, size_t array_size>
+void* ReflectionDefinition<T, Allocator>::ArrayPtr<Var, array_size>::getElement(void* object, int32_t index)
+{
+	GAFF_ASSERT(index < array_size);
+	GAFF_ASSERT(object);
+	T* const obj = reinterpret_cast<T*>(object);
 	return &(obj->*_ptr)[index];
 }
 
@@ -480,7 +535,7 @@ void ReflectionDefinition<T, Allocator>::ArrayPtr<Var, array_size>::setElement(v
 	GAFF_ASSERT(index < array_size);
 	GAFF_ASSERT(object);
 	GAFF_ASSERT(data);
-	T* obj = reinterpret_cast<T*>(object);
+	T* const obj = reinterpret_cast<T*>(object);
 	(obj->*_ptr)[index] = *reinterpret_cast<const Var*>(data);
 }
 
@@ -491,7 +546,7 @@ void ReflectionDefinition<T, Allocator>::ArrayPtr<Var, array_size>::setElementMo
 	GAFF_ASSERT(index < array_size);
 	GAFF_ASSERT(object);
 	GAFF_ASSERT(data);
-	T* obj = reinterpret_cast<T*>(object);
+	T* const obj = reinterpret_cast<T*>(object);
 	(obj->*_ptr)[index] = std::move(*reinterpret_cast<Var*>(data));
 }
 
@@ -502,7 +557,7 @@ void ReflectionDefinition<T, Allocator>::ArrayPtr<Var, array_size>::swap(void* o
 	GAFF_ASSERT(index_a < array_size);
 	GAFF_ASSERT(index_b < array_size);
 	GAFF_ASSERT(object);
-	T* obj = reinterpret_cast<T*>(object);
+	T* const obj = reinterpret_cast<T*>(object);
 	eastl::swap((obj->*_ptr)[index_a], (obj->*_ptr)[index_b]);
 }
 
@@ -564,7 +619,17 @@ const void* ReflectionDefinition<T, Allocator>::VectorPtr<Var, Vec_Allocator>::g
 {
 	GAFF_ASSERT(object);
 
-	const T* obj = reinterpret_cast<const T*>(object);
+	const T* const obj = reinterpret_cast<const T*>(object);
+	return &(obj->*_ptr);
+}
+
+template <class T, class Allocator>
+template <class Var, class Vec_Allocator>
+void* ReflectionDefinition<T, Allocator>::VectorPtr<Var, Vec_Allocator>::getData(void* object)
+{
+	GAFF_ASSERT(object);
+
+	T* const obj = reinterpret_cast<T*>(object);
 	return &(obj->*_ptr);
 }
 
@@ -575,8 +640,8 @@ void ReflectionDefinition<T, Allocator>::VectorPtr<Var, Vec_Allocator>::setData(
 	GAFF_ASSERT(object);
 	GAFF_ASSERT(data);
 
-	const Var* vars = reinterpret_cast<const Var*>(data);
-	T* obj = reinterpret_cast<T*>(object);
+	const Var* const vars = reinterpret_cast<const Var*>(data);
+	T* const obj = reinterpret_cast<T*>(object);
 	int32_t arr_size = size(object);
 
 	for (int32_t i = 0; i < arr_size; ++i) {
@@ -591,8 +656,8 @@ void ReflectionDefinition<T, Allocator>::VectorPtr<Var, Vec_Allocator>::setDataM
 	GAFF_ASSERT(object);
 	GAFF_ASSERT(data);
 
-	const Var* vars = reinterpret_cast<Var*>(data);
-	T* obj = reinterpret_cast<T*>(object);
+	const Var* const vars = reinterpret_cast<Var*>(data);
+	T* const obj = reinterpret_cast<T*>(object);
 	int32_t arr_size = size(object);
 
 	for (int32_t i = 0; i < arr_size; ++i) {
@@ -605,7 +670,7 @@ template <class Var, class Vec_Allocator>
 int32_t ReflectionDefinition<T, Allocator>::VectorPtr<Var, Vec_Allocator>::size(const void* object) const
 {
 	GAFF_ASSERT(object);
-	const T* obj = reinterpret_cast<const T*>(object);
+	const T* const obj = reinterpret_cast<const T*>(object);
 	return static_cast<int32_t>((obj->*_ptr).size());
 }
 
@@ -615,7 +680,17 @@ const void* ReflectionDefinition<T, Allocator>::VectorPtr<Var, Vec_Allocator>::g
 {
 	GAFF_ASSERT(index < size(object));
 	GAFF_ASSERT(object);
-	const T* obj = reinterpret_cast<const T*>(object);
+	const T* const obj = reinterpret_cast<const T*>(object);
+	return &(obj->*_ptr)[index];
+}
+
+template <class T, class Allocator>
+template <class Var, class Vec_Allocator>
+void* ReflectionDefinition<T, Allocator>::VectorPtr<Var, Vec_Allocator>::getElement(void* object, int32_t index)
+{
+	GAFF_ASSERT(index < size(object));
+	GAFF_ASSERT(object);
+	T* const obj = reinterpret_cast<T*>(object);
 	return &(obj->*_ptr)[index];
 }
 
@@ -626,7 +701,7 @@ void ReflectionDefinition<T, Allocator>::VectorPtr<Var, Vec_Allocator>::setEleme
 	GAFF_ASSERT(index < size(object));
 	GAFF_ASSERT(object);
 	GAFF_ASSERT(data);
-	T* obj = reinterpret_cast<T*>(object);
+	T* const obj = reinterpret_cast<T*>(object);
 	(obj->*_ptr)[index] = *reinterpret_cast<const Var*>(data);
 }
 
@@ -637,7 +712,7 @@ void ReflectionDefinition<T, Allocator>::VectorPtr<Var, Vec_Allocator>::setEleme
 	GAFF_ASSERT(index < size(object));
 	GAFF_ASSERT(object);
 	GAFF_ASSERT(data);
-	T* obj = reinterpret_cast<T*>(object);
+	T* const obj = reinterpret_cast<T*>(object);
 	(obj->*_ptr)[index] = std::move(*reinterpret_cast<Var*>(data));
 }
 
@@ -648,7 +723,7 @@ void ReflectionDefinition<T, Allocator>::VectorPtr<Var, Vec_Allocator>::swap(voi
 	GAFF_ASSERT(index_a < size(object));
 	GAFF_ASSERT(index_b < size(object));
 	GAFF_ASSERT(object);
-	T* obj = reinterpret_cast<T*>(object);
+	T* const obj = reinterpret_cast<T*>(object);
 	eastl::swap((obj->*_ptr)[index_a], (obj->*_ptr)[index_b]);
 }
 
@@ -657,7 +732,7 @@ template <class Var, class Vec_Allocator>
 void ReflectionDefinition<T, Allocator>::VectorPtr<Var, Vec_Allocator>::resize(void* object, size_t new_size)
 {
 	GAFF_ASSERT(object);
-	T* obj = reinterpret_cast<T*>(object);
+	T* const obj = reinterpret_cast<T*>(object);
 	(obj->*_ptr).resize(new_size);
 }
 
@@ -1190,6 +1265,8 @@ template <class T, class Allocator>
 template <class Ret, class Var, size_t size, class... Attrs>
 ReflectionDefinition<T, Allocator>& ReflectionDefinition<T, Allocator>::var(const char (&name)[size], Ret (T::*getter)(void) const, void (T::*setter)(Var), const Attrs&... attributes)
 {
+	static_assert(std::is_reference<Ret>::value || std::is_pointer<Ret>::value, "Function version of var() only supports reference and pointer return types!");
+
 	using RetNoRef = typename std::remove_reference<Ret>::type;
 	using RetNoPointer = typename std::remove_pointer<RetNoRef>::type;
 	using RetNoConst = typename std::remove_const<RetNoPointer>::type;
