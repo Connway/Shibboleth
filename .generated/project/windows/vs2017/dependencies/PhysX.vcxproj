@@ -174,8 +174,11 @@ rmdir /S /Q ..\..\..\..\..\src\Dependencies\PhysX\physx\bin\win.x86_64.vc141.mt\
     <PostBuildEvent>
       <Command>IF NOT EXIST ..\..\..\..\..\workingdir\bin (mkdir ..\..\..\..\..\workingdir\bin)
 IF EXIST ..\..\..\..\build\windows\vs2017\output\x64\Release\$(TargetFileName)\ (xcopy /Q /E /Y /I ..\..\..\..\build\windows\vs2017\output\x64\Release\$(TargetFileName) ..\..\..\..\..\workingdir\bin &gt; nul) ELSE (xcopy /Q /Y /I ..\..\..\..\build\windows\vs2017\output\x64\Release\$(TargetFileName) ..\..\..\..\..\workingdir\bin &gt; nul)
-IF NOT EXIST ..\..\..\..\..\workingdir\bin (mkdir ..\..\..\..\..\workingdir\bin)
-IF EXIST ..\..\..\..\..\src\Dependencies\PhysX\physx\bin\win.x86_64.vc141.mt\release\PhysXGpu_64.dll\ (xcopy /Q /E /Y /I ..\..\..\..\..\src\Dependencies\PhysX\physx\bin\win.x86_64.vc141.mt\release\PhysXGpu_64.dll ..\..\..\..\..\workingdir\bin\PhysXGpu_64.dll &gt; nul) ELSE (xcopy /Q /Y /I ..\..\..\..\..\src\Dependencies\PhysX\physx\bin\win.x86_64.vc141.mt\release\PhysXGpu_64.dll ..\..\..\..\..\workingdir\bin\PhysXGpu_64.dll &gt; nul)</Command>
+IF NOT EXIST ..\..\..\..\..\src\Dependencies\PhysX\physx\bin\win.x86_64.vc141.mt\release\temp (mkdir ..\..\..\..\..\src\Dependencies\PhysX\physx\bin\win.x86_64.vc141.mt\release\temp)
+IF EXIST ..\..\..\..\..\src\Dependencies\PhysX\physx\bin\win.x86_64.vc141.mt\release\PhysXGpu_64.dll\ (xcopy /Q /E /Y /I ..\..\..\..\..\src\Dependencies\PhysX\physx\bin\win.x86_64.vc141.mt\release\PhysXGpu_64.dll ..\..\..\..\..\src\Dependencies\PhysX\physx\bin\win.x86_64.vc141.mt\debug\temp &gt; nul) ELSE (xcopy /Q /Y /I ..\..\..\..\..\src\Dependencies\PhysX\physx\bin\win.x86_64.vc141.mt\release\PhysXGpu_64.dll ..\..\..\..\..\src\Dependencies\PhysX\physx\bin\win.x86_64.vc141.mt\debug\temp &gt; nul)
+move /Y ..\..\..\..\..\src\Dependencies\PhysX\physx\bin\win.x86_64.vc141.mt\release\temp\PhysXGpu_64.dll ..\..\..\..\..\src\Dependencies\PhysX\physx\bin\win.x86_64.vc141.mt\debug\temp\PhysXGpu_64d.dll
+IF EXIST ..\..\..\..\..\src\Dependencies\PhysX\physx\bin\win.x86_64.vc141.mt\release\temp\PhysXGpu_64d.dll\ (xcopy /Q /E /Y /I ..\..\..\..\..\src\Dependencies\PhysX\physx\bin\win.x86_64.vc141.mt\release\temp\PhysXGpu_64d.dll ..\..\..\..\..\workingdir\bin &gt; nul) ELSE (xcopy /Q /Y /I ..\..\..\..\..\src\Dependencies\PhysX\physx\bin\win.x86_64.vc141.mt\release\temp\PhysXGpu_64d.dll ..\..\..\..\..\workingdir\bin &gt; nul)
+rmdir /S /Q ..\..\..\..\..\src\Dependencies\PhysX\physx\bin\win.x86_64.vc141.mt\release\temp</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Analyze|x64'">
