@@ -25,10 +25,6 @@ THE SOFTWARE.
 #include "Gleam_Defines.h"
 #include <Gaff_IAllocator.h>
 
-#ifdef __linux__
-	#include <stddef.h>
-#endif
-
 NS_GLEAM
 
 enum LogMsgType
@@ -38,18 +34,18 @@ enum LogMsgType
 	LOG_ERROR
 };
 
-using LogFunc = void (*)(const char*, LogMsgType);
+using LogFunc = void (*)(const char*, int32_t);
 
 void SetAllocator(Gaff::IAllocator* allocator);
 Gaff::IAllocator* GetAllocator(void);
-void* GleamAlloc(size_t size_bytes, const char* filename, unsigned int line_number);
+void* GleamAlloc(size_t size_bytes, const char* filename, uint32_t line_number);
 void GleamFree(void* data);
 
 void SetLogFunc(LogFunc log_func);
 void PrintfToLog(const char* format_string, LogMsgType type, ...);
 
 template <class T, class... Args>
-T* GleamAllocT(const char* filename, unsigned int line_number, Args... args)
+T* GleamAllocT(const char* filename, uint32_t line_number, Args... args)
 {
 	T* data = reinterpret_cast<T*>(GleamAlloc(sizeof(T), filename, line_number));
 

@@ -44,6 +44,9 @@ project "assimp"
 
 	rtti "On"
 
+	filter { "toolset:clang"--[[, "rtti:on"--]] }
+		defines { "_HAS_STATIC_RTTI=1" }
+
 	filter { "system:windows" }
 		defines { "_CRT_SECURE_NO_WARNINGS", "_SCL_SECURE_NO_WARNINGS", "_SILENCE_CXX17_ITERATOR_BASE_CLASS_DEPRECATION_WARNING" }
 

@@ -30,6 +30,7 @@ NS_SHIBBOLETH
 void Broadcaster::init(void)
 {
 	_job_pool = &GetApp().getJobPool();
+	GAFF_REF(_counter);
 }
 
 void Broadcaster::remove(BroadcastID id)
@@ -72,7 +73,7 @@ const BroadcastRemover& BroadcastRemover::operator=(const BroadcastRemover& rhs)
 	_valid = true;
 
 	const_cast<BroadcastRemover&>(rhs)._valid = false;
-	
+
 	return *this;
 }
 

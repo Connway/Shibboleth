@@ -67,7 +67,7 @@ void ReflectionManager::registerEnumReflection(Gaff::IEnumReflectionDefinition* 
 	const Gaff::Hash64 name = ref_def->getReflectionInstance().getHash();
 
 	GAFF_ASSERT(_enum_reflection_map.find(name) == _enum_reflection_map.end());
-	_enum_reflection_map[name].reset(ref_def);	
+	_enum_reflection_map[name].reset(ref_def);
 }
 
 void ReflectionManager::registerEnumOwningModule(Gaff::Hash64 name, const char* module_name)
@@ -313,8 +313,6 @@ bool ReflectionManager::hasAttribute(const Gaff::IReflectionDefinition& ref_def,
 void ReflectionManager::addToAttributeBuckets(const Gaff::IReflectionDefinition* ref_def)
 {
 	for (auto& bucket_pair : _attr_buckets) {
-		const Gaff::Hash64 attr_name = bucket_pair.first;
-
 		if (hasAttribute(*ref_def, bucket_pair.first)) {
 			insertType(bucket_pair.second, ref_def);
 		}

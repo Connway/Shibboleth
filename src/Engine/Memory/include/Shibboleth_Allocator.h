@@ -23,7 +23,7 @@ THE SOFTWARE.
 #pragma once
 
 #include "Shibboleth_IAllocator.h"
-#include <eastl/fixed_vector.h>
+#include <EASTL/fixed_vector.h>
 #include <Gaff_Hash.h>
 #include <atomic>
 #include <mutex>

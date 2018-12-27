@@ -19,12 +19,6 @@ newoption
 
 newoption
 {
-	trigger = "physx",
-	description = "Specify to generate the PhysX build project."
-}
-
-newoption
-{
 	trigger = "gen-clang",
 	description = "Generate Clang configurations for Visual Studio projects."
 }
