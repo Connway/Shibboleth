@@ -28,7 +28,7 @@ THE SOFTWARE.
 #include "Shibboleth_Allocator.h"
 #include <Gaff_Utils.h>
 #include <Gaff_File.h>
-#include <eastl/algorithm.h>
+#include <EASTL/algorithm.h>
 #include <rpmalloc.h>
 
 #ifdef _MSC_VER

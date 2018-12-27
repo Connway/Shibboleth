@@ -70,6 +70,9 @@ filter { "configurations:Debug*", "toolset:gcc", "options:debug_optimization" }
 filter { "configurations:Debug*", "toolset:not gcc" }
 	optimize "Debug"
 
+filter { "toolset:clang"--[[, "rtti:off"--]] }
+	defines { "_HAS_STATIC_RTTI=0" }
+
 filter { "configurations:Debug* or Optimized_Debug*" }
 	defines { "_DEBUG", "DEBUG" }
 

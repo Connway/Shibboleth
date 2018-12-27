@@ -100,8 +100,6 @@ newaction
 			elseif _OPTIONS["clean"] then
 				os.execute(make_cmd .. " clean")
 			else
-				print(make_dir)
-				print(make_cmd .. " " .. target)
 				os.execute(make_cmd .. " " .. target)
 			end
 		end
