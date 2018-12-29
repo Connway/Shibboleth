@@ -253,6 +253,7 @@
     <ClInclude Include="..\..\..\..\..\src\Modules\EditorBasic\include\Shibboleth_DirectoryControl.h" />
     <ClInclude Include="..\..\..\..\..\src\Modules\EditorBasic\include\Shibboleth_EditorTest.h" />
     <ClInclude Include="..\..\..\..\..\src\Modules\EditorBasic\include\Shibboleth_Inspector.h" />
+    <ClInclude Include="..\..\..\..\..\src\Modules\EditorBasic\include\Shibboleth_InspectorProperty.h" />
     <ClInclude Include="..\..\..\..\..\src\Modules\EditorBasic\include\Shibboleth_LoadedModulesWindow.h" />
     <ClInclude Include="..\..\..\..\..\src\Modules\EditorBasic\include\Shibboleth_TodoWindow.h" />
     <ClInclude Include="..\..\..\..\..\src\Modules\EditorBasic\include\Shibboleth_ViewportWindow.h" />
