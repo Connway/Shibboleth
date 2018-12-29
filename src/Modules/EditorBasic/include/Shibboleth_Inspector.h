@@ -30,10 +30,12 @@ THE SOFTWARE.
 
 #include <wx/panel.h>
 
+class wxPropertyGrid;
+class wxPGProperty;
+
 NS_SHIBBOLETH
 
 class EditorItemSelectedMessage;
-class IInspectorLogic;
 
 class Inspector final : public Gaff::IReflectionObject, public wxPanel
 {
@@ -48,11 +50,13 @@ public:
 	~Inspector(void);
 
 private:
+	//wxGridBagSizer* _sizer = nullptr;
+	wxPropertyGrid* _properties = nullptr;
+
 	void onItemSelected(const EditorItemSelectedMessage& message);
 
 	const Gaff::IReflectionDefinition* getInspectorReflection(const Gaff::IReflectionDefinition& ref_def) const;
-	wxPanel* reflectionInit(const Gaff::IReflectionObject& item);
-	void clear(void);
+	void createEditors(void* object, const Gaff::IReflectionDefinition& ref_def, wxPGProperty* root_category = nullptr);
 
 	SHIB_REFLECTION_CLASS_DECLARE(Inspector);
 };

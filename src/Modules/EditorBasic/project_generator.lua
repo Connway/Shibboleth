@@ -86,7 +86,7 @@ project "EditorBasicModule"
 		"wxBase",
 		"wxCore",
 		"wxAdv",
-		"ECS"
+		"wxPropGrid"
 	}
 
 	dependson(deps)

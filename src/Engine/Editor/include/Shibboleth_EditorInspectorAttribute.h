@@ -55,6 +55,7 @@ private:
 };
 
 SHIB_TEMPLATE_REFLECTION_CLASS_DEFINE_BEGIN(EditorInspectorAttribute, T)
+	.BASE(IEditorInspectorAttribute)
 	.BASE(Gaff::IAttribute)
 SHIB_TEMPLATE_REFLECTION_CLASS_DEFINE_END(EditorInspectorAttribute, T)
 

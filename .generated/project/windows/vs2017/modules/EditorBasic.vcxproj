@@ -251,18 +251,18 @@
     <ClInclude Include="..\..\..\..\..\src\Modules\EditorBasic\include\Gen_ReflectionInit.h" />
     <ClInclude Include="..\..\..\..\..\src\Modules\EditorBasic\include\Shibboleth_AssetBrowser.h" />
     <ClInclude Include="..\..\..\..\..\src\Modules\EditorBasic\include\Shibboleth_DirectoryControl.h" />
+    <ClInclude Include="..\..\..\..\..\src\Modules\EditorBasic\include\Shibboleth_EditorTest.h" />
     <ClInclude Include="..\..\..\..\..\src\Modules\EditorBasic\include\Shibboleth_Inspector.h" />
     <ClInclude Include="..\..\..\..\..\src\Modules\EditorBasic\include\Shibboleth_LoadedModulesWindow.h" />
-    <ClInclude Include="..\..\..\..\..\src\Modules\EditorBasic\include\Shibboleth_NumberInspector.h" />
     <ClInclude Include="..\..\..\..\..\src\Modules\EditorBasic\include\Shibboleth_TodoWindow.h" />
     <ClInclude Include="..\..\..\..\..\src\Modules\EditorBasic\include\Shibboleth_ViewportWindow.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\..\..\src\Modules\EditorBasic\Shibboleth_AssetBrowser.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Modules\EditorBasic\Shibboleth_DirectoryControl.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Modules\EditorBasic\Shibboleth_EditorTest.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Modules\EditorBasic\Shibboleth_Inspector.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Modules\EditorBasic\Shibboleth_LoadedModulesWindow.cpp" />
-    <ClCompile Include="..\..\..\..\..\src\Modules\EditorBasic\Shibboleth_NumberInspector.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Modules\EditorBasic\Shibboleth_TodoWindow.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Modules\EditorBasic\Shibboleth_ViewportWindow.cpp" />
   </ItemGroup>

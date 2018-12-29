@@ -28,42 +28,15 @@ THE SOFTWARE.
 	#include <wx/msw/winundef.h>
 #endif
 
-#include <wx/panel.h>
-
-class wxScrollWinEvent;
-class wxCommandEvent;
-class wxTextCtrl;
+#include <wx/propgrid/property.h>
 
 NS_SHIBBOLETH
 
-class NumberInspector final : public Gaff::IReflectionObject, public wxPanel
+class InspectorProperty final : public wxPGProperty
 {
 public:
-	NumberInspector(
-		void* value,
-		const Gaff::IReflectionDefinition& ref_def,
-		const Gaff::IReflectionDefinition* parent_ref_def,
-		wxWindow* parent = nullptr,
-		wxWindowID id = wxID_ANY,
-		const wxPoint& pos = wxDefaultPosition,
-		const wxSize& size = wxDefaultSize
-	);
 
 private:
-	wxTextCtrl* _text = nullptr;
-	void* _value = nullptr;
-	double _step = 1.0f;
-
-	void (*_step_func)(void* value, double step) = nullptr;
-
-	wxValidator* createValidator(void* value, const Gaff::IReflectionDefinition& ref_def, const Gaff::IReflectionDefinition* parent_ref_def);
-	void onTextChange(const wxCommandEvent&);
-	void onScrollDown(const class wxScrollWinEvent&);
-	void onScrollUp(const class wxScrollWinEvent&);
-
-	SHIB_REFLECTION_CLASS_DECLARE(NumberInspector);
 };
 
 NS_END
-
-SHIB_REFLECTION_DECLARE(NumberInspector);
