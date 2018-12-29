@@ -30,6 +30,9 @@
     <ClInclude Include="..\..\..\..\..\src\Modules\EditorBasic\include\Shibboleth_EditorTest.h">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Modules\EditorBasic\include\Shibboleth_InspectorProperty.h">
+      <Filter>include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\..\..\src\Modules\EditorBasic\Shibboleth_AssetBrowser.cpp" />
