@@ -28,15 +28,24 @@ THE SOFTWARE.
 	#include <wx/msw/winundef.h>
 #endif
 
-#include <wx/propgrid/property.h>
+#include <wx/propgrid/propgrid.h>
 
 NS_SHIBBOLETH
 
 class InspectorProperty final : public wxPGProperty
 {
 public:
+	InspectorProperty(
+		const Gaff::IReflectionDefinition& ref_def,
+		void* object = nullptr,
+		const wxString& label = wxPG_LABEL,
+		const wxString& name = wxPG_LABEL
+	);
+
+	const Gaff::IReflectionDefinition& getReflectionDefinition(void) const;
 
 private:
+	const Gaff::IReflectionDefinition& _ref_def;
 };
 
 NS_END

@@ -34,7 +34,6 @@ bool Editor::OnInit(void)
 	Shibboleth::SetApp(_engine_instance);
 
 	ReflectionManager& refl_mgr = _engine_instance.getReflectionManager();
-	refl_mgr.registerAttributeBucket(Gaff::FNV1aHash64Const("IEditorInspectorAttribute"));
 	refl_mgr.registerAttributeBucket(Gaff::FNV1aHash64Const("EditorWindowAttribute"));
 
 	const char* args[] = { "cfg/editor.cfg" };

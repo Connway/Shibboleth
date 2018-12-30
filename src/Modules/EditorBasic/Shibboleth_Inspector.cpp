@@ -220,11 +220,6 @@ Inspector::Inspector(
 ):
 	wxPanel(parent, id, pos, size)
 {
-	if (!wxPGGlobalVars) {
-		wxPGInitResourceModule();
-		wxPropertyGrid::RegisterAdditionalEditors();
-	}
-
 	wxBoxSizer* const sizer = new wxBoxSizer(wxHORIZONTAL);
 	sizer->SetSizeHints(this);
 	SetSizer(sizer);

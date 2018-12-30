@@ -252,7 +252,6 @@
     <ClInclude Include="..\..\..\..\..\src\Engine\Editor\include\Shibboleth_EditorFileSelectedMessage.h" />
     <ClInclude Include="..\..\..\..\..\src\Engine\Editor\include\Shibboleth_EditorInspectorAttribute.h" />
     <ClInclude Include="..\..\..\..\..\src\Engine\Editor\include\Shibboleth_EditorItemSelectedMessage.h" />
-    <ClInclude Include="..\..\..\..\..\src\Engine\Editor\include\Shibboleth_EditorUtilities.h" />
     <ClInclude Include="..\..\..\..\..\src\Engine\Editor\include\Shibboleth_EditorWindowAttribute.h" />
     <ClInclude Include="..\..\..\..\..\src\Engine\Editor\include\Shibboleth_IEditor.h" />
   </ItemGroup>
@@ -260,7 +259,6 @@
     <ClCompile Include="..\..\..\..\..\src\Engine\Editor\Shibboleth_EditorFileHandlerAttribute.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Engine\Editor\Shibboleth_EditorFileSelectedMessage.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Engine\Editor\Shibboleth_EditorItemSelectedMessage.cpp" />
-    <ClCompile Include="..\..\..\..\..\src\Engine\Editor\Shibboleth_EditorUtilities.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Engine\Editor\Shibboleth_EditorWindowAttribute.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

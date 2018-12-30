@@ -24,9 +24,9 @@ THE SOFTWARE.
 #include <Shibboleth_Utilities.h>
 #include <Shibboleth_IApp.h>
 
-DYNAMICEXPORT_C bool InitModule(Shibboleth::IApp* app)
+DYNAMICEXPORT_C bool InitModule(Shibboleth::IApp& app)
 {
-	Shibboleth::SetApp(*app);
+	Shibboleth::SetApp(app);
 	Gen::InitReflection();
 	return true;
 }

@@ -49,6 +49,7 @@ private:
 
 	void initMenu(void);
 
+	void onSave(wxCommandEvent&);
 	void onExit(wxCommandEvent&);
 	void onAbout(wxCommandEvent&);
 
