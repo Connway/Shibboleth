@@ -25,11 +25,11 @@ THE SOFTWARE.
 #include <Shibboleth_IApp.h>
 #include <Gaff_MessagePack.h>
 
-DYNAMICEXPORT_C bool InitModule(Shibboleth::IApp* app)
+DYNAMICEXPORT_C bool InitModule(Shibboleth::IApp& app)
 {
-	app->getReflectionManager().registerTypeBucket(Gaff::FNV1aHash64Const("Component"));
+	app.getReflectionManager().registerTypeBucket(Gaff::FNV1aHash64Const("Component"));
 	Gaff::MessagePackSetMemoryFunctions(Shibboleth::ShibbolethAllocate, Shibboleth::ShibbolethFree);
-	Shibboleth::SetApp(*app);
+	Shibboleth::SetApp(app);
 	Gen::InitReflection();
 	return true;
 }

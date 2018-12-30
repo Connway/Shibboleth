@@ -10,9 +10,20 @@
 
 NS_SHIBBOLETH
 
+class TestType final : public Gaff::IReflectionObject
+{
+private:
+	int32_t t1 = 123;
+	float t2 = 456.0f;
+
+	SHIB_REFLECTION_CLASS_DECLARE(TestType);
+};
+
 class TestPropertyEditor final : public Gaff::IReflectionObject, public wxPGEditor
 {
 public:
+	static void Init(void);
+
 	wxPGWindowList CreateControls(
 		wxPropertyGrid* prop_grid,
 		wxPGProperty* property,
@@ -37,3 +48,4 @@ private:
 NS_END
 
 SHIB_REFLECTION_DECLARE(TestPropertyEditor);
+SHIB_REFLECTION_DECLARE(TestType);

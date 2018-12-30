@@ -20,19 +20,25 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#pragma once
-
-#include <Shibboleth_ReflectionInterfaces.h>
+#include "Shibboleth_InspectorProperty.h"
 
 NS_SHIBBOLETH
 
-const Gaff::IReflectionDefinition* GetInspectorForType(const Gaff::IReflectionDefinition& ref_def);
-Gaff::IReflectionObject* CreateInspectorForType(const char* name, const Gaff::IReflectionDefinition& ref_def);
+InspectorProperty::InspectorProperty(
+	const Gaff::IReflectionDefinition& ref_def,
+	void* object,
+	const wxString& label,
+	const wxString& name
+):
+	wxPGProperty(label, name),
+	_ref_def(ref_def)
+{
+	SetValue(object);
+}
 
-Gaff::IReflectionObject* CreateInspector(
-	const char* name,
-	const Gaff::IReflectionDefinition& ref_def_type,
-	const Gaff::IReflectionDefinition& ref_def_inspector
-);
+const Gaff::IReflectionDefinition& InspectorProperty::getReflectionDefinition(void) const
+{
+	return _ref_def;
+}
 
 NS_END

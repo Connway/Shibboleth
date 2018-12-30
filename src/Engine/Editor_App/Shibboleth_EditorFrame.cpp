@@ -34,6 +34,7 @@ THE SOFTWARE.
 NS_SHIBBOLETH
 
 wxBEGIN_EVENT_TABLE(EditorFrame, wxFrame)
+	EVT_MENU(wxID_SAVE, EditorFrame::onSave)
 	EVT_MENU(wxID_EXIT, EditorFrame::onExit)
 	EVT_MENU(wxID_ABOUT, EditorFrame::onAbout)
 	EVT_AUI_PANE_CLOSE(EditorFrame::onWindowClose)
@@ -45,6 +46,8 @@ EditorFrame::EditorFrame(const wxString& title, const wxPoint& pos, const wxSize
 	_menu_bar = new wxMenuBar;
 
 	wxMenu* const menu_file = new wxMenu;
+	menu_file->Append(wxID_SAVE, "&Save");
+	menu_file->AppendSeparator();
 	menu_file->Append(wxID_EXIT, "E&xit");
 
 	wxMenu* const menu_help = new wxMenu;
@@ -248,6 +251,12 @@ void EditorFrame::initMenu(void)
 			}
 		}
 	}
+}
+
+void EditorFrame::onSave(wxCommandEvent&)
+{
+	// Broadcast save event.
+	//GetApp().getBroadcaster()
 }
 
 void EditorFrame::onExit(wxCommandEvent&)
