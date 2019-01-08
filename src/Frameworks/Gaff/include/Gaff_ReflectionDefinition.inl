@@ -45,7 +45,7 @@ struct ValueHelper<false>
 };
 
 template <class T, class... Args>
-void* FactoryFunc(IAllocator& allocator, Args... args)
+void* FactoryFunc(IAllocator& allocator, Args&&... args)
 {
 	return GAFF_ALLOCT(T, allocator, std::forward<Args>(args)...);
 }

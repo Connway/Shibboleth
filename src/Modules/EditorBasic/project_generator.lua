@@ -19,13 +19,13 @@ project "EditorBasic"
 		"include",
 		"../../Dependencies/EASTL/include",
 		"../../Dependencies/rapidjson",
+		"../../Dependencies/glm",
 		"../../Frameworks/Gaff/include",
 		"../../Frameworks/Gleam/include",
 		"../../Engine/Editor/include",
 		"../../Engine/Engine/include",
 		"../../Engine/Memory/include",
-		"../Graphics/include",
-		"../ECS/include"
+		"../Graphics/include"
 	}
 
 	IncludeWxWidgets()
@@ -66,8 +66,7 @@ project "EditorBasicModule"
 		"../../Frameworks/Gleam/include",
 		"../../Engine/Editor/include",
 		"../../Engine/Engine/include",
-		"../../Engine/Memory/include",
-		"../ECS/include"
+		"../../Engine/Memory/include"
 	}
 
 	IncludeWxWidgets()

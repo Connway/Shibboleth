@@ -461,7 +461,7 @@ class IReflectionDefinition
 {
 public:
 	template <class... Args>
-	using FactoryFunc = void* (*)(IAllocator&, Args...);
+	using FactoryFunc = void* (*)(IAllocator&, Args&&...);
 
 	using VoidFunc = void (*)(void);
 
