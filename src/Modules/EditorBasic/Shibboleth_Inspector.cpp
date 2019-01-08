@@ -26,16 +26,22 @@ THE SOFTWARE.
 #include <Shibboleth_EngineAttributesCommon.h>
 #include <Shibboleth_EditorWindowAttribute.h>
 
+#include <wx/collpane.h>
+#include <wx/stattext.h>
+
 #include <wx/propgrid/propgrid.h>
 #include <wx/propgrid/advprops.h>
 #include <wx/sizer.h>
 
-//NS_SHIBBOLETH
+#include "Shibboleth_Math.h"
+
+NS_SHIBBOLETH
 //class Test final : public Gaff::IReflectionObject
 //{
 //private:
 //	int32_t t1 = 123;
 //	float t2 = 456.0f;
+//	glm::vec3 t3 = glm::vec3(0.0f, 1.0f, 2.0f);
 //
 //	SHIB_REFLECTION_CLASS_DECLARE(Test);
 //};
@@ -47,7 +53,7 @@ THE SOFTWARE.
 //
 //	SHIB_REFLECTION_CLASS_DECLARE(TestInner);
 //};
-//
+
 //class TestOuter final : public Gaff::IReflectionObject
 //{
 //private:
@@ -55,140 +61,79 @@ THE SOFTWARE.
 //
 //	SHIB_REFLECTION_CLASS_DECLARE(TestOuter);
 //};
-//NS_END
-//
+NS_END
+
 //SHIB_REFLECTION_DECLARE(Test)
 //SHIB_REFLECTION_DEFINE(Test)
-//
+
 //SHIB_REFLECTION_DECLARE(TestOuter)
 //SHIB_REFLECTION_DEFINE(TestOuter)
-//
+
 //SHIB_REFLECTION_DECLARE(TestInner)
 //SHIB_REFLECTION_DEFINE(TestInner)
-//
-//NS_SHIBBOLETH
+
+NS_SHIBBOLETH
 //SHIB_REFLECTION_CLASS_DEFINE_BEGIN(Test)
 //	.BASE(Gaff::IReflectionObject)
 //	.var("IntProp", &Test::t1)
 //	.var("FloatProp", &Test::t2)
+//	.var("Vec3Prop", &Test::t3)
 //SHIB_REFLECTION_CLASS_DEFINE_END(Test)
-//
+
 //SHIB_REFLECTION_CLASS_DEFINE_BEGIN(TestOuter)
 //	.BASE(Gaff::IReflectionObject)
 //	.var("InnerClass", &TestOuter::t)
 //SHIB_REFLECTION_CLASS_DEFINE_END(TestOuter)
-//
+
 //SHIB_REFLECTION_CLASS_DEFINE_BEGIN(TestInner)
 //	.BASE(Gaff::IReflectionObject)
 //	.var("InnerClassAgain", &TestInner::t)
 //SHIB_REFLECTION_CLASS_DEFINE_END(TestInner)
-//NS_END
+NS_END
 
 
 SHIB_REFLECTION_DEFINE(Inspector)
 
 NS_SHIBBOLETH
 
-template <class T>
-static wxPGProperty* CreateNumericProperty(const RangeAttribute* range, void* data, const char* name)
+static wxCollapsiblePane* CreateCollapsiblePane(wxWindow* parent, const wxString& label)
 {
-	double step = 1.0;
-	double min = 0.0;
-	double max = 0.0;
-
-	if (range) {
-		min = Gaff::Max<double, double>(range->getMin(), eastl::numeric_limits<T>::min());
-		max = Gaff::Min<double, double>(range->getMax(), eastl::numeric_limits<T>::max());
-		step = range->getStep();
-	} else {
-		min = eastl::numeric_limits<T>::min();
-		max = eastl::numeric_limits<T>::max();
-	}
-
-	wxPGProperty* property = nullptr;
-
-	// int**_t value
-	if constexpr (eastl::is_integral_v<T> && eastl::is_signed<T>::value) {
-		property = new wxIntProperty(name);
-		property->SetValue(wxVariant(wxLongLong(*reinterpret_cast<T*>(data))));
-		property->SetAttribute(wxPG_ATTR_MIN, wxVariant(wxLongLong(static_cast<T>(min))));
-		property->SetAttribute(wxPG_ATTR_MAX, wxVariant(wxLongLong(static_cast<T>(max))));
-		property->SetAttribute(wxPG_ATTR_SPINCTRL_STEP, wxVariant(wxLongLong(static_cast<T>(step))));
-		property->SetAttribute(wxPG_ATTR_SPINCTRL_WRAP, wxVariant(false));
-		property->SetEditor(wxPGEditor_SpinCtrl);
-
-	// uint**_t value
-	} else if (eastl::is_integral_v<T> && eastl::is_unsigned<T>::value) {
-		property = new wxUIntProperty(name);
-		property->SetValue(wxVariant(wxULongLong(*reinterpret_cast<T*>(data))));
-		property->SetAttribute(wxPG_ATTR_MIN, wxVariant(wxULongLong(static_cast<T>(min))));
-		property->SetAttribute(wxPG_ATTR_MAX, wxVariant(wxULongLong(static_cast<T>(max))));
-		property->SetAttribute(wxPG_ATTR_SPINCTRL_STEP, wxVariant(wxULongLong(static_cast<T>(step))));
-		property->SetAttribute(wxPG_ATTR_SPINCTRL_WRAP, wxVariant(false));
-		property->SetEditor(wxPGEditor_SpinCtrl);
-
-	// Floating point value
-	} else if (eastl::is_floating_point_v<T>) {
-		property = new wxFloatProperty(name);
-		property->SetValue(wxVariant(static_cast<double>(*reinterpret_cast<T*>(data))));
-		property->SetAttribute(wxPG_ATTR_MIN, wxVariant(min));
-		property->SetAttribute(wxPG_ATTR_MAX, wxVariant(max));
-		property->SetAttribute(wxPG_ATTR_SPINCTRL_STEP, wxVariant(step));
-		property->SetAttribute(wxPG_ATTR_SPINCTRL_WRAP, wxVariant(false));
-		property->SetEditor(wxPGEditor_SpinCtrl);
-
-		if (Reflection<T>::GetHash() == Reflection<double>::GetHash()) {
-			property->SetAttribute(wxPG_FLOAT_PRECISION, wxVariant(6));
-		} else {
-			property->SetAttribute(wxPG_FLOAT_PRECISION, wxVariant(3));
-		}
-	}
-
-	return property;
+	return new wxCollapsiblePane(
+		parent,
+		wxID_ANY,
+		wxEmptyString,
+		wxDefaultPosition,
+		wxDefaultSize,
+		wxCP_DEFAULT_STYLE | wxCP_NO_TLW_RESIZE,
+		wxDefaultValidator,
+		wxCollapsiblePaneNameStr,
+		label
+	);
 }
 
-static wxPGProperty* GetBuiltInProperty(
-	void* object,
+static wxWindow* CreateInspector(
+	void* value,
+	const Gaff::IReflectionDefinition& inspector_ref_def,
 	const Gaff::IReflectionDefinition& ref_def,
+	const Gaff::IReflectionDefinition* parent_ref_def,
 	int32_t var_index,
-	const Gaff::IReflectionDefinition& var_ref_def
+	wxWindow* parent
 )
 {
-	const Gaff::Hash32 var_name_hash = ref_def.getVarHash(var_index);
-	const char* const var_name = ref_def.getVarName(var_index);
+	ProxyAllocator allocator("Editor");
 
-	const RangeAttribute* const range = ref_def.getVarAttr<RangeAttribute>(var_name_hash);
-	const Gaff::Hash64 hash = var_ref_def.getReflectionInstance().getHash();
+	wxWindow* const inspector = inspector_ref_def.createT<wxWindow>(
+		CLASS_HASH(wxWindow),
+		ARG_HASH(void*, const Gaff::IReflectionDefinition&, const Gaff::IReflectionDefinition*, int32_t, wxWindow*),
+		allocator,
+		value,
+		ref_def,
+		parent_ref_def,
+		var_index,
+		parent
+	);
 
-	if (hash == Reflection<int8_t>::GetHash()) {
-		return CreateNumericProperty<int8_t>(range, object, var_name);
-	} else if (hash == Reflection<int16_t>::GetHash()) {
-		return CreateNumericProperty<int16_t>(range, object, var_name);
-	} else if (hash == Reflection<int32_t>::GetHash()) {
-		return CreateNumericProperty<int32_t>(range, object, var_name);
-	} else if (hash == Reflection<int64_t>::GetHash()) {
-		return CreateNumericProperty<int64_t>(range, object, var_name);
-
-	} else if (hash == Reflection<uint8_t>::GetHash()) {
-		return CreateNumericProperty<uint8_t>(range, object, var_name);
-	} else if (hash == Reflection<uint16_t>::GetHash()) {
-		return CreateNumericProperty<uint16_t>(range, object, var_name);
-	} else if (hash == Reflection<uint32_t>::GetHash()) {
-		return CreateNumericProperty<uint32_t>(range, object, var_name);
-	} else if (hash == Reflection<uint64_t>::GetHash()) {
-		return CreateNumericProperty<uint64_t>(range, object, var_name);
-
-	} else if (hash == Reflection<float>::GetHash()) {
-		return CreateNumericProperty<float>(range, object, var_name);
-	} else if (hash == Reflection<double>::GetHash()) {
-		return CreateNumericProperty<double>(range, object, var_name);
-
-	} else if (hash == Reflection<U8String>::GetHash()) {
-		wxStringProperty* const property = new wxStringProperty(var_name);
-		property->SetValue(wxVariant(reinterpret_cast<U8String*>(object)->data()));
-	}
-
-	return nullptr;
+	return inspector;
 }
 
 
@@ -220,19 +165,12 @@ Inspector::Inspector(
 ):
 	wxPanel(parent, id, pos, size)
 {
-	wxBoxSizer* const sizer = new wxBoxSizer(wxHORIZONTAL);
+	// $TODO: Think about using a flex grid sizer or something.
+	wxBoxSizer* const sizer = new wxBoxSizer(wxVERTICAL);
 	sizer->SetSizeHints(this);
 	SetSizer(sizer);
 
-	_properties = new wxPropertyGrid(this);
-	_properties->SetWindowStyle(wxPG_SPLITTER_AUTO_CENTER);
-	_properties->SetColumnProportion(0, 2);
-	_properties->SetColumnProportion(1, 5);
-	_properties->CenterSplitter(true);
-
-	sizer->Add(_properties, 1, wxEXPAND | wxALL | wxCENTER | wxALIGN_CENTER);
-
-	//onItemSelected(EditorItemSelectedMessage(new TestOuter));
+	//onItemSelected(EditorItemSelectedMessage(new TestInner));
 }
 
 Inspector::~Inspector(void)
@@ -241,7 +179,8 @@ Inspector::~Inspector(void)
 
 void Inspector::onItemSelected(const EditorItemSelectedMessage& message)
 {
-	_properties->Clear();
+	wxSizer* const sizer = GetSizer();
+	sizer->Clear();
 
 	Gaff::IReflectionObject* const item = message.getItem();
 
@@ -250,25 +189,24 @@ void Inspector::onItemSelected(const EditorItemSelectedMessage& message)
 	}
 
 	const Gaff::IReflectionDefinition& ref_def = item->getReflectionDefinition();
-	const Gaff::IReflectionDefinition* const inspector_ref_def = getInspectorReflection(ref_def);
 
 	// Check if we have an property editor for this object.
-	if (inspector_ref_def) {
-		//ProxyAllocator allocator("Editor");
+	if (const Gaff::IReflectionDefinition* const inspector_ref_def = getInspectorReflection(ref_def)) {
+		wxWindow* const inspector = CreateInspector(item->getBasePointer(), *inspector_ref_def, ref_def, nullptr, -1, this);
 
-		//wxPGProperty* const property = inspector_ref_def->createT<wxPGProperty>(
-		//	CLASS_HASH(wxPGProperty),
-		//	ARG_HASH(const Gaff::IReflectionDefinition&),
-		//	allocator,
-		//	ref_def
-		//);
+		if (!inspector) {
+			// $TODO: Log error.
+			return;
+		}
 
-		//_properties->Append(property);
+		sizer->Add(inspector, 1, wxEXPAND | wxALL);
 
 	// Iteratively create all the properties.
 	} else {
-		createEditors(item->getBasePointer(), item->getReflectionDefinition());
+		createEditors(item->getBasePointer(), ref_def, sizer, 0);
 	}
+
+	Layout();
 }
 
 const Gaff::IReflectionDefinition* Inspector::getInspectorReflection(const Gaff::IReflectionDefinition& ref_def) const
@@ -291,57 +229,62 @@ const Gaff::IReflectionDefinition* Inspector::getInspectorReflection(const Gaff:
 	return (it != inspectors.end()) ? *it : nullptr;
 }
 
-void Inspector::createEditors(void* object, const Gaff::IReflectionDefinition& ref_def, wxPGProperty* root_category)
+void Inspector::createEditors(void* object, const Gaff::IReflectionDefinition& ref_def, wxSizer* parent_sizer, int32_t spacer)
 {
 	const int32_t num_vars = ref_def.getNumVars();
-
-	if (num_vars <= 0) {
-		return;
-	}
 
 	for (int32_t i = 0; i < num_vars; ++i) {
 		Gaff::IReflectionVar* const var = ref_def.getVar(i);
 		const Gaff::IReflectionDefinition& var_ref_def = var->getReflectionDefinition();
-
 		void* const var_obj = var->getData(object);
 
-		if (wxPGProperty* const built_in_prop = GetBuiltInProperty(var_obj, ref_def, i, var_ref_def)) {
-			if (root_category) {
-				_properties->AppendIn(root_category, built_in_prop);
-			} else {
-				_properties->Append(built_in_prop);
+		wxWindow* const parent_window = parent_sizer->GetContainingWindow();
+		wxSizer* const sizer = new wxBoxSizer(wxHORIZONTAL);
+
+		if (spacer > 0) {
+			sizer->AddSpacer(spacer);
+		}
+
+		if (const Gaff::IReflectionDefinition* const inspector_ref_def = getInspectorReflection(var_ref_def)) {
+			wxWindow* const inspector = CreateInspector(var_obj, *inspector_ref_def, var_ref_def, &ref_def, i, parent_window);
+
+			if (!inspector) {
+				// $TODO: Log error.
+				delete sizer;
+				continue;
 			}
 
-		} else if (const Gaff::IReflectionDefinition* const inspector_ref_def = getInspectorReflection(ref_def)) {
-			//ProxyAllocator allocator("Editor");
+			wxStaticText* const label = new wxStaticText(parent_window, wxID_ANY, ref_def.getVarName(i));
 
-			//wxPGProperty* const property = inspector_ref_def->createT<wxPGProperty>(
-			//	CLASS_HASH(wxPGProperty),
-			//	ARG_HASH(const Gaff::IReflectionDefinition&, const Gaff::IReflectionDefinition*, int32_t),
-			//	allocator,
-			//	var_ref_def,
-			//	&ref_def,
-			//	i
-			//);
-
-			//if (root_category) {
-			//	_properties->AppendIn(root_category, property);
-			//} else {
-			//	_properties->Append(property);
-			//}
+			sizer->Add(label, 0, /*wxEXPAND |*/ wxLEFT | wxRIGHT | wxALIGN_CENTER_VERTICAL, 5);
+			sizer->Add(inspector, 5, /*wxEXPAND |*/ wxLEFT | wxRIGHT | wxALIGN_CENTER_VERTICAL, 5);
 
 		} else {
-			wxPropertyCategory* const category = new wxPropertyCategory(ref_def.getVarName(i));
-
-			if (root_category) {
-				_properties->AppendIn(root_category, category);
-			} else {
-				_properties->Append(category);
+			if (var_ref_def.getNumVars() <= 0) {
+				// $TODO: Log error.
+				continue;
 			}
 
-			createEditors(var_obj, var_ref_def, category);
+			wxCollapsiblePane* const coll_pane = CreateCollapsiblePane(parent_window, ref_def.getVarName(i));
+			wxBoxSizer* const coll_sizer = new wxBoxSizer(wxVERTICAL);
+			wxWindow* const window = coll_pane->GetPane();
+			coll_sizer->SetSizeHints(window);
+			window->SetSizer(coll_sizer);
+
+			sizer->Add(coll_pane, 1, wxEXPAND | wxALIGN_CENTER_VERTICAL);
+
+			Bind(wxEVT_COLLAPSIBLEPANE_CHANGED, &Inspector::paneChanged, this, coll_pane->GetId());
+
+			createEditors(var_obj, var_ref_def, coll_sizer, 15);
 		}
+
+		parent_sizer->Add(sizer, 0, /*wxEXPAND |*/ wxALL | wxALIGN_CENTER_VERTICAL, 5);
 	}
+}
+
+void Inspector::paneChanged(const wxCollapsiblePaneEvent&)
+{
+	Layout();
 }
 
 NS_END

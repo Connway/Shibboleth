@@ -15,16 +15,13 @@
     <ClInclude Include="..\..\..\..\..\src\Modules\EditorBasic\include\Shibboleth_DirectoryControl.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Modules\EditorBasic\include\Shibboleth_EditorTest.h">
-      <Filter>include</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Modules\EditorBasic\include\Shibboleth_Inspector.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Modules\EditorBasic\include\Shibboleth_InspectorProperty.h">
+    <ClInclude Include="..\..\..\..\..\src\Modules\EditorBasic\include\Shibboleth_LoadedModulesWindow.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Modules\EditorBasic\include\Shibboleth_LoadedModulesWindow.h">
+    <ClInclude Include="..\..\..\..\..\src\Modules\EditorBasic\include\Shibboleth_NumberInspector.h">
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Modules\EditorBasic\include\Shibboleth_TodoWindow.h">
@@ -33,15 +30,18 @@
     <ClInclude Include="..\..\..\..\..\src\Modules\EditorBasic\include\Shibboleth_ViewportWindow.h">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Modules\EditorBasic\include\Shibboleth_VectorInspector.h">
+      <Filter>include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\..\..\src\Modules\EditorBasic\Shibboleth_AssetBrowser.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Modules\EditorBasic\Shibboleth_DirectoryControl.cpp" />
-    <ClCompile Include="..\..\..\..\..\src\Modules\EditorBasic\Shibboleth_EditorTest.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Modules\EditorBasic\Shibboleth_Inspector.cpp" />
-    <ClCompile Include="..\..\..\..\..\src\Modules\EditorBasic\Shibboleth_InspectorProperty.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Modules\EditorBasic\Shibboleth_LoadedModulesWindow.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Modules\EditorBasic\Shibboleth_NumberInspector.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Modules\EditorBasic\Shibboleth_TodoWindow.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Modules\EditorBasic\Shibboleth_ViewportWindow.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Modules\EditorBasic\Shibboleth_VectorInspector.cpp" />
   </ItemGroup>
 </Project>

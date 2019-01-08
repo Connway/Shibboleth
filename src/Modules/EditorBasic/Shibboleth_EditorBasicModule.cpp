@@ -21,24 +21,12 @@ THE SOFTWARE.
 ************************************************************************************/
 
 #include "Gen_ReflectionInit.h"
-#include "Shibboleth_EditorTest.h"
-
 #include <Shibboleth_Utilities.h>
 
 DYNAMICEXPORT_C bool InitModule(Shibboleth::IApp& app)
 {
 	Shibboleth::SetApp(app);
 	Gen::InitReflection();
-
-	Shibboleth::ReflectionManager& refl_mgr = app.getReflectionManager();
-	refl_mgr.registerAttributeBucket(Gaff::FNV1aHash64Const("IEditorInspectorAttribute"));
-
-	if (!wxPGGlobalVars) {
-		wxPGInitResourceModule();
-		wxPropertyGrid::RegisterAdditionalEditors();
-	}
-
-	Shibboleth::TestPropertyEditor::Init();
 
 	return true;
 }

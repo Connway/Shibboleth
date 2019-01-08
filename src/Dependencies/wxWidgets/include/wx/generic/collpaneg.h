@@ -14,6 +14,7 @@
 // forward declared
 class WXDLLIMPEXP_FWD_CORE wxButton;
 class WXDLLIMPEXP_FWD_CORE wxStaticLine;
+class WXDLLIMPEXP_FWD_CORE wxStaticText;
 #if defined( __WXMAC__ ) && !defined(__WXUNIVERSAL__)
 class WXDLLIMPEXP_FWD_CORE wxDisclosureTriangle;
 #endif
@@ -37,11 +38,12 @@ public:
                         const wxSize& size = wxDefaultSize,
                         long style = wxCP_DEFAULT_STYLE,
                         const wxValidator& val = wxDefaultValidator,
-                        const wxString& name = wxCollapsiblePaneNameStr)
-    {
+                        const wxString& name = wxCollapsiblePaneNameStr,
+                        const wxString& linelabel = wxEmptyString)
+	{
         Init();
 
-        Create(parent, winid, label, pos, size, style, val, name);
+        Create(parent, winid, label, pos, size, style, val, name, linelabel);
     }
 
     virtual ~wxGenericCollapsiblePane();
@@ -53,7 +55,8 @@ public:
                 const wxSize& size = wxDefaultSize,
                 long style = wxCP_DEFAULT_STYLE,
                 const wxValidator& val = wxDefaultValidator,
-                const wxString& name = wxCollapsiblePaneNameStr);
+                const wxString& name = wxCollapsiblePaneNameStr,
+                const wxString& linelabel = wxEmptyString);
 
     // public wxCollapsiblePane API
     virtual void Collapse(bool collapse = true);
@@ -89,6 +92,7 @@ protected:
 #else
     wxButton *m_pButton;
 #endif
+	wxStaticText *m_pLineLabel;
     wxStaticLine *m_pStaticLine;
     wxWindow *m_pPane;
     wxSizer *m_sz;

@@ -30,8 +30,7 @@ THE SOFTWARE.
 
 #include <wx/panel.h>
 
-class wxPropertyGrid;
-class wxPGProperty;
+class wxCollapsiblePaneEvent;
 
 NS_SHIBBOLETH
 
@@ -50,13 +49,12 @@ public:
 	~Inspector(void);
 
 private:
-	//wxGridBagSizer* _sizer = nullptr;
-	wxPropertyGrid* _properties = nullptr;
-
 	void onItemSelected(const EditorItemSelectedMessage& message);
 
 	const Gaff::IReflectionDefinition* getInspectorReflection(const Gaff::IReflectionDefinition& ref_def) const;
-	void createEditors(void* object, const Gaff::IReflectionDefinition& ref_def, wxPGProperty* root_category = nullptr);
+	void createEditors(void* object, const Gaff::IReflectionDefinition& ref_def, wxSizer* parent_sizer, int32_t spacer);
+
+	void paneChanged(const wxCollapsiblePaneEvent&);
 
 	SHIB_REFLECTION_CLASS_DECLARE(Inspector);
 };

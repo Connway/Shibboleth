@@ -20,25 +20,60 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ************************************************************************************/
 
-#include "Shibboleth_InspectorProperty.h"
+#pragma once
+
+#include <Shibboleth_Reflection.h>
+
+#ifdef PLATFORM_WINDOWS
+	#include <wx/msw/winundef.h>
+#endif
+
+#include <wx/panel.h>
+
+class wxScrollWinEvent;
+class wxCommandEvent;
+class wxTextCtrl;
 
 NS_SHIBBOLETH
 
-InspectorProperty::InspectorProperty(
-	const Gaff::IReflectionDefinition& ref_def,
-	void* object,
-	const wxString& label,
-	const wxString& name
-):
-	wxPGProperty(label, name),
-	_ref_def(ref_def)
+class NumberInspector final : public Gaff::IReflectionObject, public wxPanel
 {
-	SetValue(object);
-}
+public:
+	NumberInspector(
+		void* value,
+		const Gaff::IReflectionDefinition& ref_def,
+		const Gaff::IReflectionDefinition* parent_ref_def,
+		int32_t var_index,
+		wxWindow* parent
+	);
 
-const Gaff::IReflectionDefinition& InspectorProperty::getReflectionDefinition(void) const
-{
-	return _ref_def;
-}
+	NumberInspector(
+		void* value,
+		const Gaff::IReflectionDefinition& ref_def,
+		wxWindow* parent = nullptr
+	);
+
+private:
+	wxTextCtrl* _text = nullptr;
+	void* _value = nullptr;
+	double _step = 1.0f;
+
+	void(*_step_func)(void* value, double step) = nullptr;
+
+	wxValidator* createValidator(
+		void* value,
+		const Gaff::IReflectionDefinition& ref_def,
+		const Gaff::IReflectionDefinition* parent_ref_def,
+		int32_t var_index
+	);
+
+	void onTextChange(const wxCommandEvent&);
+	void onScrollDown(const class wxScrollWinEvent&);
+	void onScrollUp(const class wxScrollWinEvent&);
+
+	SHIB_REFLECTION_CLASS_DECLARE(NumberInspector);
+};
 
 NS_END
+
+SHIB_REFLECTION_DECLARE(NumberInspector);

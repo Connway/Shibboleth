@@ -33,6 +33,7 @@
     #include "wx/panel.h"
 #endif // !WX_PRECOMP
 
+#include "wx/stattext.h"
 #include "wx/statline.h"
 
 // ----------------------------------------------------------------------------
@@ -62,6 +63,7 @@ void wxGenericCollapsiblePane::Init()
 {
     m_pButton = NULL;
     m_pPane = NULL;
+	m_pLineLabel = NULL;
     m_pStaticLine = NULL;
     m_sz = NULL;
 }
@@ -73,7 +75,8 @@ bool wxGenericCollapsiblePane::Create(wxWindow *parent,
                                       const wxSize& size,
                                       long style,
                                       const wxValidator& val,
-                                      const wxString& name)
+                                      const wxString& name,
+                                      const wxString& linelabel)
 {
     if ( !wxControl::Create(parent, id, pos, size, style, val, name) )
         return false;
@@ -92,11 +95,13 @@ bool wxGenericCollapsiblePane::Create(wxWindow *parent,
     // create children and lay them out using a wxBoxSizer
     // (so that we automatically get RTL features)
     m_pButton = new wxButton(this, wxID_ANY, GetBtnLabel(), wxPoint(0, 0),
-                             wxDefaultSize, wxBU_EXACTFIT);
+                             wxSize(30, 30), wxBU_EXACTFIT);
+    m_pLineLabel = new wxStaticText(this, wxID_ANY, linelabel);
     m_pStaticLine = new wxStaticLine(this, wxID_ANY);
 
     // on other platforms we put the static line and the button horizontally
     m_sz->Add(m_pButton, 0, wxLEFT|wxTOP|wxBOTTOM, GetBorder());
+	m_sz->Add(m_pLineLabel, 0, wxLEFT | wxTOP | wxBOTTOM, GetBorder());
     m_sz->Add(m_pStaticLine, 1, wxALIGN_CENTER|wxLEFT|wxRIGHT, GetBorder());
 #endif
 
@@ -149,7 +154,7 @@ wxString wxGenericCollapsiblePane::GetBtnLabel() const
 #ifdef __WXMAC__
     return m_strLabel;
 #else
-    return m_strLabel + (IsCollapsed() ? wxT(" >>") : wxT(" <<"));
+    return m_strLabel + (IsCollapsed() ? wxT("\u25B6") : wxT("\u25BC"));
 #endif
 }
 
