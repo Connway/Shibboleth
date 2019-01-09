@@ -27,10 +27,10 @@
     <ClInclude Include="..\..\..\..\..\src\Modules\EditorBasic\include\Shibboleth_TodoWindow.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Modules\EditorBasic\include\Shibboleth_ViewportWindow.h">
+    <ClInclude Include="..\..\..\..\..\src\Modules\EditorBasic\include\Shibboleth_VectorInspector.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Modules\EditorBasic\include\Shibboleth_VectorInspector.h">
+    <ClInclude Include="..\..\..\..\..\src\Modules\EditorBasic\include\Shibboleth_ViewportWindow.h">
       <Filter>include</Filter>
     </ClInclude>
   </ItemGroup>
@@ -41,7 +41,7 @@
     <ClCompile Include="..\..\..\..\..\src\Modules\EditorBasic\Shibboleth_LoadedModulesWindow.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Modules\EditorBasic\Shibboleth_NumberInspector.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Modules\EditorBasic\Shibboleth_TodoWindow.cpp" />
-    <ClCompile Include="..\..\..\..\..\src\Modules\EditorBasic\Shibboleth_ViewportWindow.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Modules\EditorBasic\Shibboleth_VectorInspector.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Modules\EditorBasic\Shibboleth_ViewportWindow.cpp" />
   </ItemGroup>
 </Project>

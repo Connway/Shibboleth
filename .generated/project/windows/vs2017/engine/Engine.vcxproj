@@ -271,6 +271,7 @@
     <ClInclude Include="..\..\..\..\..\src\Engine\Engine\include\Shibboleth_Reflection.h" />
     <ClInclude Include="..\..\..\..\..\src\Engine\Engine\include\Shibboleth_ReflectionInterfaces.h" />
     <ClInclude Include="..\..\..\..\..\src\Engine\Engine\include\Shibboleth_ReflectionManager.h" />
+    <ClInclude Include="..\..\..\..\..\src\Engine\Engine\include\Shibboleth_SerializeReader.h" />
     <ClInclude Include="..\..\..\..\..\src\Engine\Engine\include\Shibboleth_SmartPtrs.h" />
     <ClInclude Include="..\..\..\..\..\src\Engine\Engine\include\Shibboleth_String.h" />
     <ClInclude Include="..\..\..\..\..\src\Engine\Engine\include\Shibboleth_UniqueAttribute.h" />
@@ -296,4 +297,4 @@
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
-</Project>
+</Project> 

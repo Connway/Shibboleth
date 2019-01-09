@@ -322,14 +322,14 @@ void wxEditableListBox::OnItemSelected(wxListEvent& event)
     m_selection = event.GetIndex();
     if (!(m_style & wxEL_NO_REORDER))
     {
-        m_bUp->Enable(m_selection != 0 && m_selection < m_listCtrl->GetItemCount()-1);
-        m_bDown->Enable(m_selection < m_listCtrl->GetItemCount()-2);
+        m_bUp->Enable(m_selection != 0 && m_selection < m_listCtrl->GetItemCount());
+        m_bDown->Enable(m_selection < m_listCtrl->GetItemCount()-1);
     }
 
     if (m_style & wxEL_ALLOW_EDIT)
-        m_bEdit->Enable(m_selection < m_listCtrl->GetItemCount()-1);
+        m_bEdit->Enable(m_selection < m_listCtrl->GetItemCount());
     if (m_style & wxEL_ALLOW_DELETE)
-        m_bDel->Enable(m_selection < m_listCtrl->GetItemCount()-1);
+        m_bDel->Enable(m_selection < m_listCtrl->GetItemCount());
 }
 
 void wxEditableListBox::OnNewItem(wxCommandEvent& WXUNUSED(event))

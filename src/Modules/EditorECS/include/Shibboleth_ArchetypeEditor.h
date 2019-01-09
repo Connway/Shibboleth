@@ -42,7 +42,7 @@ class wxTreeCtrl;
 NS_SHIBBOLETH
 
 class EditorFileSelectedMessage;
-class RefDefItem;
+class ArchetypeItem;
 
 class ArchetypeEditor final : public Gaff::IReflectionObject, public wxPanel
 {
@@ -74,9 +74,9 @@ private:
 
 	void onRemoveComponentsHelper(wxListEvent& event, wxEditableListBox* ui);
 
-	RefDefItem* getItem(const wxTreeItemId& id) const;
-	void removeItem(RefDefItem* item, wxEditableListBox* ui);
-	void addItem(RefDefItem* item, wxEditableListBox* ui);
+	ArchetypeItem* getItem(const wxTreeItemId& id) const;
+	void removeItem(ArchetypeItem* item, wxEditableListBox* ui);
+	void addItem(ArchetypeItem* item, wxEditableListBox* ui);
 	void initComponentList(void);
 
 	void save(void);

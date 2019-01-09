@@ -185,26 +185,6 @@ void LogManager::addChannel(Gaff::HashStringTemp32 channel, const char* file)
 	}
 }
 
-void LogManager::logMessage(LogType type, Gaff::HashStringTemp32 channel, const char* format, ...)
-{
-	va_list vl;
-	va_start(vl, format);
-
-	if(!logMessageHelper(type, channel.getHash(), format, vl) && channel.getHash() != LOG_CHANNEL_DEFAULT) {
-		logMessage(
-			LOG_ERROR,
-			LOG_CHANNEL_DEFAULT,
-			"Failed to find channel '%s'!",
-			channel.getBuffer()
-		);
-
-		// Log the message to the default channel.
-		logMessageHelper(type, LOG_CHANNEL_DEFAULT, format, vl);
-	}
-
-	va_end(vl);
-}
-
 void LogManager::logMessage(LogType type, Gaff::Hash32 channel, const char* format, ...)
 {
 	va_list vl;

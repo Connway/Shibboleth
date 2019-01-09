@@ -74,6 +74,8 @@ public:
 	const T* getBuffer(void) const;
 	HashType getHash(void) const;
 
+	operator HashType(void) const;
+
 private:
 	const T* const _string;
 	HashType _hash_value;
