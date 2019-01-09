@@ -9,7 +9,7 @@ if _ACTION == "vs2017" then
 	if _OPTIONS["gen-clang"] then
 		configs =
 		{
-			"Debug", "Release", "Analyze",
+			"Debug", "Release",
 			"Debug_Clang", "Release_Clang",
 			"Profile", "Profile_Clang",
 			"Optimized_Debug", "Optimized_Debug_Clang"
@@ -17,7 +17,7 @@ if _ACTION == "vs2017" then
 	else
 		configs =
 		{
-			"Debug", "Release", "Analyze",
+			"Debug", "Release",
 			"Profile", "Optimized_Debug"
 		}
 	end

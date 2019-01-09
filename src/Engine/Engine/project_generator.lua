@@ -6,8 +6,7 @@ project "Engine"
 	kind "StaticLib"
 	language "C++"
 
-	filter { "configurations:not Analyze*" }
-		flags { "FatalWarnings" }
+	flags { "FatalWarnings" }
 
 	filter { "system:windows", "action:not vs*", "configurations:*Clang" }
 		includedirs { "../../Dependencies/dirent" }

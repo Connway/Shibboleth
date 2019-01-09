@@ -16,8 +16,7 @@ project "Gaff"
 		"../../Dependencies/mpack"
 	}
 
-	filter { "configurations:not Analyze*" }
-		flags { "FatalWarnings" }
+	flags { "FatalWarnings" }
 
 	filter { "system:windows" }
 		includedirs { "../../Dependencies/dirent" }

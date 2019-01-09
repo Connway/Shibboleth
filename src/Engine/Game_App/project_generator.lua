@@ -34,8 +34,7 @@ project "Game_App"
 	dependson(deps)
 	links(deps)
 
-	filter { "configurations:not Analyze*" }
-		flags { "FatalWarnings" }
+	flags { "FatalWarnings" }
 
 	filter { "system:windows" }
 		links { "iphlpapi.lib", "psapi.lib", "userenv.lib" }

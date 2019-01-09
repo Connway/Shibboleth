@@ -9,10 +9,7 @@ project "Scripting"
 	files { "**.h", "**.cpp", "**.inl" }
 	removefiles { "Shibboleth_ScriptingModule.cpp" }
 
-	filter { "configurations:not Analyze*" }
-		flags { "FatalWarnings" }
-
-	filter {}
+	flags { "FatalWarnings" }
 
 	includedirs
 	{
@@ -46,8 +43,7 @@ project "ScriptingModule"
 	ModuleGen("Scripting")
 	ModuleCopy()
 
-	filter { "configurations:not Analyze*" }
-		flags { "FatalWarnings" }
+	flags { "FatalWarnings" }
 
 	filter { "system:windows" }
 		links { "ws2_32.lib", "iphlpapi.lib", "psapi.lib", "userenv.lib" }

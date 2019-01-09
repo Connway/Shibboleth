@@ -6,10 +6,7 @@ project "Esprit"
 	kind "StaticLib"
 	language "C++"
 
-	filter { "configurations:not Analyze*" }
-		flags { "FatalWarnings" }
-
-	filter {}
+	flags { "FatalWarnings" }
 
 	files { "**.h", "**.cpp" }
 

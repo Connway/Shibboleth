@@ -93,10 +93,7 @@ project "%s"
 	files { "**.h", "**.cpp", "**.inl" }
 	removefiles { "Shibboleth_%sModule.cpp" }
 
-	filter { "configurations:not Analyze*" }
-		flags { "FatalWarnings" }
-
-	filter {}
+	flags { "FatalWarnings" }
 
 	includedirs
 	{
@@ -120,10 +117,7 @@ project "%sModule"
 	ModuleGen("%s")
 	ModuleCopy()
 
-	filter { "configurations:not Analyze*" }
-		flags { "FatalWarnings" }
-
-	filter {}
+	flags { "FatalWarnings" }
 
 	includedirs
 	{

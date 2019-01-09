@@ -9,10 +9,6 @@
       <Configuration>Release</Configuration>
       <Platform>x64</Platform>
     </ProjectConfiguration>
-    <ProjectConfiguration Include="Analyze|x64">
-      <Configuration>Analyze</Configuration>
-      <Platform>x64</Platform>
-    </ProjectConfiguration>
     <ProjectConfiguration Include="Profile|x64">
       <Configuration>Profile</Configuration>
       <Platform>x64</Platform>
@@ -43,13 +39,6 @@
     <PlatformToolset>v141</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Analyze|x64'" Label="Configuration">
-    <ConfigurationType>DynamicLibrary</ConfigurationType>
-    <UseDebugLibraries>false</UseDebugLibraries>
-    <CharacterSet>Unicode</CharacterSet>
-    <PlatformToolset>v141</PlatformToolset>
-    <WholeProgramOptimization>true</WholeProgramOptimization>
-  </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Profile|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
@@ -73,9 +62,6 @@
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
-  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Analyze|x64'">
-    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-  </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
@@ -95,13 +81,6 @@
     <OutDir>..\..\..\..\build\windows\vs2017\output\x64\Release\</OutDir>
     <IntDir>..\..\..\..\build\windows\vs2017\intermediate\x64\Release\PhysX\</IntDir>
     <TargetName>PhysX64</TargetName>
-    <TargetExt>.dll</TargetExt>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Analyze|x64'">
-    <LinkIncremental>false</LinkIncremental>
-    <OutDir>..\..\..\..\build\windows\vs2017\output\x64\Analyze\</OutDir>
-    <IntDir>..\..\..\..\build\windows\vs2017\intermediate\x64\Analyze\PhysX\</IntDir>
-    <TargetName>PhysX64a</TargetName>
     <TargetExt>.dll</TargetExt>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">
@@ -179,36 +158,6 @@ IF EXIST ..\..\..\..\..\src\Dependencies\PhysX\physx\bin\win.x86_64.vc141.mt\rel
 move /Y ..\..\..\..\..\src\Dependencies\PhysX\physx\bin\win.x86_64.vc141.mt\release\temp\PhysXGpu_64.dll ..\..\..\..\..\src\Dependencies\PhysX\physx\bin\win.x86_64.vc141.mt\debug\temp\PhysXGpu_64d.dll
 IF EXIST ..\..\..\..\..\src\Dependencies\PhysX\physx\bin\win.x86_64.vc141.mt\release\temp\PhysXGpu_64d.dll\ (xcopy /Q /E /Y /I ..\..\..\..\..\src\Dependencies\PhysX\physx\bin\win.x86_64.vc141.mt\release\temp\PhysXGpu_64d.dll ..\..\..\..\..\workingdir\bin &gt; nul) ELSE (xcopy /Q /Y /I ..\..\..\..\..\src\Dependencies\PhysX\physx\bin\win.x86_64.vc141.mt\release\temp\PhysXGpu_64d.dll ..\..\..\..\..\workingdir\bin &gt; nul)
 rmdir /S /Q ..\..\..\..\..\src\Dependencies\PhysX\physx\bin\win.x86_64.vc141.mt\release\temp</Command>
-    </PostBuildEvent>
-  </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Analyze|x64'">
-    <ClCompile>
-      <PrecompiledHeader>NotUsing</PrecompiledHeader>
-      <WarningLevel>Level4</WarningLevel>
-      <PreprocessorDefinitions>UNICODE;_UNICODE;EA_COMPILER_NO_RTTI;_HAS_ITERATOR_DEBUGGING=0;_ITERATOR_DEBUG_LEVEL=0;NDEBUG;WIN32;_WINDOWS;WIN64;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;_WINSOCK_DEPRECATED_NO_WARNINGS;PX_FOUNDATION_DLL=1;PX_PHYSX_CORE_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\..\..\..\..\src\Dependencies\PhysX\physx\include;..\..\..\..\..\src\Dependencies\PhysX\pxshared\include;..\..\..\..\..\src\Dependencies\PhysX\physx\source\foundation\include;..\..\..\..\..\src\Dependencies\PhysX\physx\include\common;..\..\..\..\..\src\Dependencies\PhysX\physx\include\geometry;..\..\..\..\..\src\Dependencies\PhysX\physx\include\geomutils;..\..\..\..\..\src\Dependencies\PhysX\physx\include\gpu;..\..\..\..\..\src\Dependencies\PhysX\physx\include\pvd;..\..\..\..\..\src\Dependencies\PhysX\physx\source\common\include;..\..\..\..\..\src\Dependencies\PhysX\physx\source\common\src;..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\include;..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src;..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\ccd;..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\common;..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\contact;..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\convex;..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\distance;..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\gjk;..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\hf;..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\intersection;..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\mesh;..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\pcm;..\..\..\..\..\src\Dependencies\PhysX\physx\source\geomutils\src\sweep;..\..\..\..\..\src\Dependencies\PhysX\physx\source\immediatemode\include;..\..\..\..\..\src\Dependencies\PhysX\physx\source\lowlevel\api\include;..\..\..\..\..\src\Dependencies\PhysX\physx\source\lowlevel\common\include\pipeline;..\..\..\..\..\src\Dependencies\PhysX\physx\source\lowlevel\software\include;..\..\..\..\..\src\Dependencies\PhysX\physx\source\lowlevelaabb\include;..\..\..\..\..\src\Dependencies\PhysX\physx\source\lowleveldynamics\include;..\..\..\..\..\src\Dependencies\PhysX\physx\source\physxcooking\src;..\..\..\..\..\src\Dependencies\PhysX\physx\source\physxcooking\src\convex;..\..\..\..\..\src\Dependencies\PhysX\physx\source\physxcooking\src\mesh;..\..\..\..\..\src\Dependencies\PhysX\physx\source\physxgpu\include;..\..\..\..\..\src\Dependencies\PhysX\physx\source\physxmetadata\core\include;..\..\..\..\..\src\Dependencies\PhysX\physx\source\physx\src\buffering;..\..\..\..\..\src\Dependencies\PhysX\physx\source\physx\src\device;..\..\..\..\..\src\Dependencies\PhysX\physx\source\physx\src;..\..\..\..\..\src\Dependencies\PhysX\physx\source\pvd\include;..\..\..\..\..\src\Dependencies\PhysX\physx\source\scenequery\include;..\..\..\..\..\src\Dependencies\PhysX\physx\source\simulationcontroller\include;..\..\..\..\..\src\Dependencies\PhysX\physx\source\simulationcontroller\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <Optimization>MaxSpeed</Optimization>
-      <FunctionLevelLinking>true</FunctionLevelLinking>
-      <IntrinsicFunctions>true</IntrinsicFunctions>
-      <MinimalRebuild>false</MinimalRebuild>
-      <StringPooling>true</StringPooling>
-      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
-      <ExceptionHandling>Async</ExceptionHandling>
-      <RuntimeTypeInfo>false</RuntimeTypeInfo>
-      <FloatingPointModel>Fast</FloatingPointModel>
-      <AdditionalOptions>/std:c++17 /analyze /sdl %(AdditionalOptions)</AdditionalOptions>
-    </ClCompile>
-    <Link>
-      <SubSystem>Windows</SubSystem>
-      <GenerateDebugInformation>true</GenerateDebugInformation>
-      <EnableCOMDATFolding>true</EnableCOMDATFolding>
-      <OptimizeReferences>true</OptimizeReferences>
-      <ImportLibrary>..\..\..\..\build\windows\vs2017\output\x64\Analyze\PhysX64a.lib</ImportLibrary>
-    </Link>
-    <PostBuildEvent>
-      <Command>IF NOT EXIST ..\..\..\..\..\workingdir\bin (mkdir ..\..\..\..\..\workingdir\bin)
-IF EXIST ..\..\..\..\build\windows\vs2017\output\x64\Analyze\$(TargetFileName)\ (xcopy /Q /E /Y /I ..\..\..\..\build\windows\vs2017\output\x64\Analyze\$(TargetFileName) ..\..\..\..\..\workingdir\bin &gt; nul) ELSE (xcopy /Q /Y /I ..\..\..\..\build\windows\vs2017\output\x64\Analyze\$(TargetFileName) ..\..\..\..\..\workingdir\bin &gt; nul)</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">

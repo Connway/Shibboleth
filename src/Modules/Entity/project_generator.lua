@@ -9,10 +9,7 @@ project "Entity"
 	files { "**.h", "**.cpp", "**.inl" }
 	removefiles { "Shibboleth_EntityModule.cpp" }
 
-	filter { "configurations:not Analyze*" }
-		flags { "FatalWarnings" }
-
-	filter {}
+	flags { "FatalWarnings" }
 
 	includedirs
 	{
@@ -42,10 +39,7 @@ project "EntityModule"
 	ModuleGen("Entity")
 	ModuleCopy()
 
-	filter { "configurations:not Analyze*" }
-		flags { "FatalWarnings" }
-
-	filter {}
+	flags { "FatalWarnings" }
 
 	includedirs
 	{

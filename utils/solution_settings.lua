@@ -49,13 +49,11 @@ filter { "platforms:x64" }
 
 SetIntermediateAndTargetDirs("Debug")
 SetIntermediateAndTargetDirs("Release")
-SetIntermediateAndTargetDirs("Analyze")
 SetIntermediateAndTargetDirs("Profile")
 SetIntermediateAndTargetDirs("Optimized_Debug")
 
 SetIntermediateAndTargetDirs("Debug_Clang")
 SetIntermediateAndTargetDirs("Release_Clang")
-SetIntermediateAndTargetDirs("Analyze_Clang")
 SetIntermediateAndTargetDirs("Profile_Clang")
 SetIntermediateAndTargetDirs("Optimized_Debug_Clang")
 
@@ -76,7 +74,7 @@ filter { "toolset:clang"--[[, "rtti:off"--]] }
 filter { "configurations:Debug* or Optimized_Debug*" }
 	defines { "_DEBUG", "DEBUG" }
 
-filter { "configurations:Release* or Profile* or Analyze*" }
+filter { "configurations:Release* or Profile*" }
 	flags { "LinkTimeOptimization" }
 	optimize "Speed"
 	runtime "Release"
@@ -96,9 +94,6 @@ filter { "configurations:Optimized_Debug*" }
 
 filter { "configurations:Profile" }
 	defines { "SHIB_PROFILE" }
-
-filter { "action:vs*", "configurations:Analyze*"}
-	buildoptions { "/analyze" }
 
 filter { "action:vs*" }
 	buildoptions { "/sdl" }

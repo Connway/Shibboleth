@@ -9,10 +9,7 @@ project "ECS"
 	files { "**.h", "**.cpp", "**.inl" }
 	removefiles { "Shibboleth_ECSModule.cpp" }
 
-	filter { "configurations:not Analyze*" }
-		flags { "FatalWarnings" }
-
-	filter {}
+	flags { "FatalWarnings" }
 
 	includedirs
 	{
@@ -39,10 +36,7 @@ project "ECSModule"
 	ModuleGen("ECS")
 	ModuleCopy()
 
-	filter { "configurations:not Analyze*" }
-		flags { "FatalWarnings" }
-
-	filter {}
+	flags { "FatalWarnings" }
 
 	includedirs
 	{

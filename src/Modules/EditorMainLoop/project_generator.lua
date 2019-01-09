@@ -9,10 +9,7 @@ project "EditorMainLoop"
 	files { "**.h", "**.cpp", "**.inl" }
 	removefiles { "Shibboleth_EditorMainLoopModule.cpp" }
 
-	filter { "configurations:not Analyze*" }
-		flags { "FatalWarnings" }
-
-	filter {}
+	flags { "FatalWarnings" }
 
 	includedirs
 	{
@@ -35,14 +32,13 @@ project "EditorMainLoopModule"
 
 	files { "Shibboleth_EditorMainLoopModule.cpp" }
 
-	filter { "configurations:not Analyze*" }
-		flags { "FatalWarnings" }
+	flags { "FatalWarnings" }
 
 	-- filter { "system:windows" }
 	-- 	links { "ws2_32.lib", "iphlpapi.lib", "psapi.lib", "userenv.lib" }
 	-- 	includedirs { "../../Dependencies/dirent" }
 
-	filter {}
+	-- filter {}
 
 	includedirs
 	{

@@ -9,10 +9,7 @@ project "EditorECS"
 	files { "**.h", "**.cpp", "**.inl" }
 	removefiles { "Shibboleth_EditorECSModule.cpp" }
 
-	filter { "configurations:not Analyze*" }
-		flags { "FatalWarnings" }
-
-	filter {}
+	flags { "FatalWarnings" }
 
 	includedirs
 	{
@@ -43,8 +40,7 @@ project "EditorECSModule"
 	ModuleGen("EditorECS")
 	ModuleEditorCopy()
 
-	filter { "configurations:not Analyze*" }
-		flags { "FatalWarnings" }
+	flags { "FatalWarnings" }
 
 	filter { "system:windows" }
 		links

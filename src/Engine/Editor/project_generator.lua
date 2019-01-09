@@ -17,7 +17,4 @@ project "Editor"
 		"../../Dependencies/EASTL/include"
 	}
 
-	filter { "configurations:not Analyze*" }
-		flags { "FatalWarnings" }
-
-	filter {}
+	flags { "FatalWarnings" }

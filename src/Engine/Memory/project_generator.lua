@@ -22,8 +22,7 @@ project "Memory"
 	dependson { "Gaff", "EASTL", "rpmalloc" }
 	links { "Gaff", "EASTL", "rpmalloc" }
 
-	filter { "configurations:not Analyze*" }
-		flags { "FatalWarnings" }
+	flags { "FatalWarnings" }
 
 	filter { "system:windows"--[[, "options:symbols"--]] }
 		links { "Dbghelp" }

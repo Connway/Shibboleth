@@ -45,13 +45,6 @@ function NewDeleteLinkFix()
 			"msvcrt.lib"
 		}
 
-	filter { "system:windows", "configurations:Analyze*", "platforms:x64" }
-		links
-		{
-			"../../../.generated/build/" .. os.target() .. "/" .. _ACTION .. "/output/x64/Release/Engine.lib",
-			"msvcrt.lib"
-		}
-
 	filter { "system:windows", "configurations:Optimized_Debug*", "platforms:x64" }
 		links
 		{

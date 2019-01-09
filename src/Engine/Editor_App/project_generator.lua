@@ -41,8 +41,7 @@ project "Editor_App"
 	dependson(deps)
 	links(deps)
 
-	filter { "configurations:not Analyze*" }
-		flags { "FatalWarnings" }
+	flags { "FatalWarnings" }
 
 	filter { "system:windows" }
 		includedirs { "../../Dependencies/dirent" }
