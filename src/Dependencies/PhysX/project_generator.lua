@@ -475,9 +475,6 @@ PhysXProject("PhysX", "SharedLib")
 			"{RMDIR} ../../../../../src/Dependencies/PhysX/physx/bin/win.x86_64.vc141.mt/release/temp"
 		}
 
-	filter { "system:windows", "configurations:Analyze*" }
-		-- targetsuffix "64a"
-
 	filter { "system:windows", "configurations:Profile*" }
 		-- targetsuffix "64p"
 

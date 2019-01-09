@@ -6,8 +6,7 @@ project "Gleam"
 	kind "StaticLib"
 	language "C++"
 
-	filter { "configurations:not Analyze*" }
-		flags { "FatalWarnings" }
+	flags { "FatalWarnings" }
 
 	filter { "action:not vs*", "configurations:*Clang" }
 		buildoptions { "-Wno-varargs" }

@@ -9,8 +9,7 @@ project "MainLoop"
 	files { "**.h", "**.cpp", "**.inl" }
 	removefiles { "Shibboleth_MainLoopModule.cpp" }
 
-	filter { "configurations:not Analyze*" }
-		flags { "FatalWarnings" }
+	flags { "FatalWarnings" }
 
 	filter { "system:windows" }
 		includedirs { "../../Dependencies/dirent" }
@@ -36,8 +35,7 @@ project "MainLoopModule"
 
 	files { "Shibboleth_MainLoopModule.cpp" }
 
-	filter { "configurations:not Analyze*" }
-		flags { "FatalWarnings" }
+	flags { "FatalWarnings" }
 
 	filter { "system:windows" }
 		links { "ws2_32.lib", "iphlpapi.lib", "psapi.lib", "userenv.lib" }

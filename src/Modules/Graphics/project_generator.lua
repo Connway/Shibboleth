@@ -16,10 +16,7 @@ function DoGraphicsModule(renderer)
 			defines { "USE_VULKAN" }
 		end
 
-		filter { "configurations:not Analyze*" }
-			flags { "FatalWarnings" }
-
-		filter {}
+		flags { "FatalWarnings" }
 
 		includedirs
 		{
@@ -55,8 +52,7 @@ function DoGraphicsModule(renderer)
 			defines { "USE_VULKAN" }
 		end
 
-		filter { "configurations:not Analyze*" }
-			flags { "FatalWarnings" }
+		flags { "FatalWarnings" }
 
 		filter { "system:windows" }
 			links { "ws2_32.lib", "iphlpapi.lib", "psapi.lib", "userenv.lib" }

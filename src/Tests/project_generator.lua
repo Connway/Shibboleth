@@ -88,10 +88,7 @@ function GenTest(settings)
 		kind "ConsoleApp"
 		language "C++"
 
-		filter { "configurations:not Analyze*" }
-			flags { "FatalWarnings" }
-
-		filter {}
+		flags { "FatalWarnings" }
 
 		if settings.files then
 			files(settings.files)

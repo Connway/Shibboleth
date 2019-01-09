@@ -9,10 +9,7 @@ project "EditorBasic"
 	files { "**.h", "**.cpp", "**.inl" }
 	removefiles { "Shibboleth_EditorBasicModule.cpp" }
 
-	filter { "configurations:not Analyze*" }
-		flags { "FatalWarnings" }
-
-	filter {}
+	flags { "FatalWarnings" }
 
 	includedirs
 	{
@@ -45,8 +42,7 @@ project "EditorBasicModule"
 	ModuleGen("EditorBasic")
 	ModuleEditorCopy()
 
-	filter { "configurations:not Analyze*" }
-		flags { "FatalWarnings" }
+	flags { "FatalWarnings" }
 
 	filter { "system:windows" }
 		links

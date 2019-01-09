@@ -9,10 +9,7 @@ project "Resource"
 	files { "**.h", "**.cpp", "**.inl" }
 	removefiles { "Shibboleth_ResourceModule.cpp" }
 
-	filter { "configurations:not Analyze*" }
-		flags { "FatalWarnings" }
-
-	filter {}
+	flags { "FatalWarnings" }
 
 	includedirs
 	{
@@ -37,8 +34,7 @@ project "ResourceModule"
 	ModuleGen("Resource")
 	ModuleCopy()
 
-	filter { "configurations:not Analyze*" }
-		flags { "FatalWarnings" }
+	flags { "FatalWarnings" }
 
 	filter { "system:windows" }
 		links { "ws2_32.lib", "iphlpapi.lib", "psapi.lib", "userenv.lib" }
