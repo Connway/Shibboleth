@@ -28,6 +28,7 @@ THE SOFTWARE.
 #include <Shibboleth_EngineAttributesCommon.h>
 #include <Shibboleth_EditorWindowAttribute.h>
 #include <Shibboleth_UniqueAttribute.h>
+#include <Shibboleth_SerializeReader.h>
 
 #include <wx/listctrl.h>
 #include <wx/editlbox.h>
@@ -40,20 +41,27 @@ SHIB_REFLECTION_DEFINE(ArchetypeEditor)
 
 NS_SHIBBOLETH
 
-constexpr static const char* const s_ref_def_format = "RefDefItemFormat";
+constexpr static const char* const s_ref_def_format = "ArchetypeItemFormat";
 static wxColour g_grey(127, 127, 127);
 
-class RefDefItem final : public wxTreeItemData {
+class ArchetypeItem final : public wxTreeItemData {
 public:
-	RefDefItem(const Gaff::IReflectionDefinition* ref_def) : _ref_def(ref_def) {}
+	ArchetypeItem(const Gaff::IReflectionDefinition* ref_def, void* object):
+		_ref_def(ref_def),
+		_object(object)
+	{
+	}
 
 	const Gaff::IReflectionDefinition* getRefDef(void) const { return _ref_def; }
+	const void* getObject(void) const { return _object; }
+	void* getObject(void) { return _object; }
 
 	bool isDisabled(void) const { return _disabled; }
 	void setDisabled(bool disabled) { _disabled = disabled; }
 
 private:
 	const Gaff::IReflectionDefinition* const _ref_def = nullptr;
+	void* _object = nullptr;
 	bool _disabled = false;
 };
 
@@ -73,8 +81,8 @@ private:
 	wxDragResult OnData(wxCoord /*x*/, wxCoord /*y*/, wxDragResult result) override
 	{
 		wxCustomDataObject* const data = reinterpret_cast<wxCustomDataObject*>(m_dataObject);
-		RefDefItem** const items = reinterpret_cast<RefDefItem** const>(data->GetData());
-		const int32_t num_items = static_cast<int32_t>(data->GetDataSize()) / sizeof(RefDefItem*);
+		ArchetypeItem** const items = reinterpret_cast<ArchetypeItem** const>(data->GetData());
+		const int32_t num_items = static_cast<int32_t>(data->GetDataSize()) / sizeof(ArchetypeItem*);
 
 		for (int32_t i = 0; i < num_items && items[i]; ++i) {
 			_editor.addItem(items[i], _ui);
@@ -201,7 +209,7 @@ void ArchetypeEditor::onAddComponents(wxTreeEvent& event)
 	size_t size = _ecs_components->GetSelections(ids);
 
 	if (ids.IsEmpty()) {
-		RefDefItem* const item = getItem(event.GetItem());
+		ArchetypeItem* const item = getItem(event.GetItem());
 
 		if (!item) {
 			return;
@@ -211,7 +219,7 @@ void ArchetypeEditor::onAddComponents(wxTreeEvent& event)
 
 	} else {
 		for (size_t i = 0; i < size; ++i) {
-			RefDefItem* const item = getItem(ids[i]);
+			ArchetypeItem* const item = getItem(ids[i]);
 
 			if (!item) {
 				return;
@@ -228,27 +236,27 @@ void ArchetypeEditor::onDragBegin(wxTreeEvent& event)
 {
 	wxArrayTreeItemIds ids;
 	size_t size = _ecs_components->GetSelections(ids);
-	RefDefItem** ref_def_items = nullptr;
+	ArchetypeItem** ref_def_items = nullptr;
 
 	if (ids.IsEmpty()) {
-		RefDefItem* const item = getItem(event.GetItem());
+		ArchetypeItem* const item = getItem(event.GetItem());
 
 		if (!item) {
 			return;
 		}
 
-		ref_def_items = new RefDefItem*[1];
+		ref_def_items = new ArchetypeItem*[1];
 		ref_def_items[0] = item;
 		size = 1;
 
 	} else {
-		ref_def_items = new RefDefItem*[size];
+		ref_def_items = new ArchetypeItem*[size];
 		int32_t index = 0;
 
-		memset(ref_def_items, 0, sizeof(RefDefItem*) * size);
+		memset(ref_def_items, 0, sizeof(ArchetypeItem*) * size);
 
 		for (size_t i = 0; i < size; ++i) {
-			RefDefItem* const item = getItem(ids[i]);
+			ArchetypeItem* const item = getItem(ids[i]);
 
 			if (!item) {
 				continue;
@@ -265,10 +273,10 @@ void ArchetypeEditor::onDragBegin(wxTreeEvent& event)
 	}
 
 	wxDataObject* const shared_data = _archetype_shared_ui->GetDropTarget()->GetDataObject();
-	reinterpret_cast<wxCustomDataObject*>(shared_data)->SetData(sizeof(RefDefItem*) * size, ref_def_items);
+	reinterpret_cast<wxCustomDataObject*>(shared_data)->SetData(sizeof(ArchetypeItem*) * size, ref_def_items);
 
 	wxDataObject* const data = _archetype_ui->GetDropTarget()->GetDataObject();
-	reinterpret_cast<wxCustomDataObject*>(data)->SetData(sizeof(RefDefItem*) * size, ref_def_items);
+	reinterpret_cast<wxCustomDataObject*>(data)->SetData(sizeof(ArchetypeItem*) * size, ref_def_items);
 
 	delete [] ref_def_items;
 
@@ -285,13 +293,13 @@ void ArchetypeEditor::onRemoveComponentsHelper(wxListEvent& event, wxEditableLis
 	_broadcaster.broadcastSync(EditorItemSelectedMessage(this));
 }
 
-RefDefItem* ArchetypeEditor::getItem(const wxTreeItemId& id) const
+ArchetypeItem* ArchetypeEditor::getItem(const wxTreeItemId& id) const
 {
 	if (_ecs_components->HasChildren(id)) {
 		return nullptr;
 	}
 
-	RefDefItem* const item = reinterpret_cast<RefDefItem*>(_ecs_components->GetItemData(id));
+	ArchetypeItem* const item = reinterpret_cast<ArchetypeItem*>(_ecs_components->GetItemData(id));
 
 	if (item->isDisabled()) {
 		return nullptr;
@@ -300,7 +308,7 @@ RefDefItem* ArchetypeEditor::getItem(const wxTreeItemId& id) const
 	return item;
 }
 
-void ArchetypeEditor::removeItem(RefDefItem* item, wxEditableListBox* ui)
+void ArchetypeEditor::removeItem(ArchetypeItem* item, wxEditableListBox* ui)
 {
 	GAFF_REF(ui);
 
@@ -312,7 +320,7 @@ void ArchetypeEditor::removeItem(RefDefItem* item, wxEditableListBox* ui)
 	}
 }
 
-void ArchetypeEditor::addItem(RefDefItem* item, wxEditableListBox* ui)
+void ArchetypeEditor::addItem(ArchetypeItem* item, wxEditableListBox* ui)
 {
 	const Gaff::IReflectionDefinition* const ref_def = item->getRefDef();
 
@@ -356,8 +364,8 @@ void ArchetypeEditor::initComponentList(void)
 		}
 
 		// Referencing otherwise GetItemData() returns null in on onDragBegin(). Might be some DLL weirdness.
-		const wxTreeItemId id = _ecs_components->AppendItem(category_id, ref_def->getReflectionInstance().getName(), -1, -1, new RefDefItem(ref_def));
-		RefDefItem* const item = reinterpret_cast<RefDefItem*>(_ecs_components->GetItemData(id));
+		const wxTreeItemId id = _ecs_components->AppendItem(category_id, ref_def->getReflectionInstance().getName(), -1, -1, new ArchetypeItem(ref_def, nullptr));
+		ArchetypeItem* const item = reinterpret_cast<ArchetypeItem*>(_ecs_components->GetItemData(id));
 		GAFF_REF(item);
 	}
 
@@ -380,20 +388,44 @@ void ArchetypeEditor::load(void)
 	const Gaff::JSON shared_components = json["shared_components"];
 	const Gaff::JSON components = json["components"];
 
-	shared_components.forEachInArray([&](int32_t, const Gaff::JSON& value) -> bool {
-		const Gaff::IReflectionDefinition* const ref_def = refl_mgr.getReflection(Gaff::FNV1aHash64String(value.getString()));
+	shared_components.forEachInObject([&](const char* component, const Gaff::JSON& value) -> bool {
+		const Gaff::IReflectionDefinition* const ref_def = refl_mgr.getReflection(Gaff::FNV1aHash64String(component));
 
 		if (!ref_def) {
+			// $TODO: Log error
+			return false;
+		}
+
+		const ECSClassAttribute* const ecs = ref_def->getClassAttr<ECSClassAttribute>();
+
+		if (!ecs) {
 			// $TODO: Log error
 			return false;
 		}
 
 		// Add to shared components list.
+		ProxyAllocator allocator("Editor");
+		void* const instance = ref_def->create(allocator);
+
+		if (!instance) {
+			// $TODO: Log error
+			return false;
+		}
+
+		SerializeReader<Gaff::JSON> reader(value, allocator);
+		ref_def->load(reader, instance);
+
+		addItem(new ArchetypeItem(ref_def, instance), _archetype_shared_ui);
 
 		return false;
 	});
 
 	components.forEachInArray([&](int32_t, const Gaff::JSON& value) -> bool {
+		if (!value.isString()) {
+			// $TODO: Log error.
+			return false;
+		}
+
 		const Gaff::IReflectionDefinition* const ref_def = refl_mgr.getReflection(Gaff::FNV1aHash64String(value.getString()));
 
 		if (!ref_def) {
@@ -401,10 +433,14 @@ void ArchetypeEditor::load(void)
 			return false;
 		}
 
-		// Find component from the list.
-		// Call addItem();
-		//_ecs_components->GetItemData()
+		const ECSClassAttribute* const ecs = ref_def->getClassAttr<ECSClassAttribute>();
 
+		if (!ecs) {
+			// $TODO: Log error
+			return false;
+		}
+
+		addItem(new ArchetypeItem(ref_def, nullptr), _archetype_ui);
 		return false;
 	});
 }

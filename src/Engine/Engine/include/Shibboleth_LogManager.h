@@ -59,7 +59,6 @@ public:
 	void notifyLogCallbacks(const char* message, LogType type);
 
 	void addChannel(Gaff::HashStringTemp32 channel, const char* file);
-	void logMessage(LogType type, Gaff::HashStringTemp32 channel, const char* format, ...);
 	void logMessage(LogType type, Gaff::Hash32 channel, const char* format, ...);
 
 private:

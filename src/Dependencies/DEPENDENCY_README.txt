@@ -33,3 +33,4 @@ Libraries Affected:
 		Exporting helper function.
 		Injecting Shibboleth allocator initialization to wxThreadInternal::WinThreadStart.
 		Modified wxCollapsiblePane to include a label and changed the Windows collapse button text.
+		Fixed off by one bugs in editlbox.cpp.

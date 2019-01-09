@@ -168,6 +168,13 @@ HashType HashStringTemp<T, HashType>::getHash(void) const
 	return _hash_value;
 }
 
+template <class T, class HashType>
+HashStringTemp<T, HashType>::operator HashType(void) const
+{
+	return _hash_value;
+}
+
+
 
 
 // HashString
