@@ -60,6 +60,7 @@ public:
 class Scale final : public Gaff::IReflectionObject
 {
 public:
+	// Slow versions for posterity.
 	static void Set(const glm::vec3& value);
 	static glm::vec3 Get();
 
