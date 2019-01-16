@@ -41,27 +41,21 @@ SHIB_REFLECTION_DEFINE(ArchetypeEditor)
 
 NS_SHIBBOLETH
 
-constexpr static const char* const s_ref_def_format = "ArchetypeItemFormat";
-static wxColour g_grey(127, 127, 127);
+constexpr static const char* const s_ref_def_format = "RefDefItemFormat";
+static wxColour s_grey(127, 127, 127);
 
-class ArchetypeItem final : public wxTreeItemData {
+class RefDefItem final : public wxTreeItemData
+{
 public:
-	ArchetypeItem(const Gaff::IReflectionDefinition* ref_def, void* object):
-		_ref_def(ref_def),
-		_object(object)
-	{
-	}
+	RefDefItem(const Gaff::IReflectionDefinition& ref_def): _ref_def(ref_def) {}
 
-	const Gaff::IReflectionDefinition* getRefDef(void) const { return _ref_def; }
-	const void* getObject(void) const { return _object; }
-	void* getObject(void) { return _object; }
+	const Gaff::IReflectionDefinition& getRefDef(void) const { return _ref_def; }
 
 	bool isDisabled(void) const { return _disabled; }
 	void setDisabled(bool disabled) { _disabled = disabled; }
 
 private:
-	const Gaff::IReflectionDefinition* const _ref_def = nullptr;
-	void* _object = nullptr;
+	const Gaff::IReflectionDefinition& _ref_def;
 	bool _disabled = false;
 };
 
@@ -81,11 +75,11 @@ private:
 	wxDragResult OnData(wxCoord /*x*/, wxCoord /*y*/, wxDragResult result) override
 	{
 		wxCustomDataObject* const data = reinterpret_cast<wxCustomDataObject*>(m_dataObject);
-		ArchetypeItem** const items = reinterpret_cast<ArchetypeItem** const>(data->GetData());
-		const int32_t num_items = static_cast<int32_t>(data->GetDataSize()) / sizeof(ArchetypeItem*);
+		RefDefItem** const items = reinterpret_cast<RefDefItem** const>(data->GetData());
+		const int32_t num_items = static_cast<int32_t>(data->GetDataSize()) / sizeof(RefDefItem*);
 
 		for (int32_t i = 0; i < num_items && items[i]; ++i) {
-			_editor.addItem(items[i], _ui);
+			_editor.addItem(*items[i], *_ui);
 		}
 
 		data->Free();
@@ -195,12 +189,12 @@ void ArchetypeEditor::onFileSelected(const EditorFileSelectedMessage& message)
 
 void ArchetypeEditor::onRemoveSharedComponents(wxListEvent& event)
 {
-	onRemoveComponentsHelper(event, _archetype_shared_ui);
+	onRemoveComponentsHelper(event, *_archetype_shared_ui);
 }
 
 void ArchetypeEditor::onRemoveComponents(wxListEvent& event)
 {
-	onRemoveComponentsHelper(event, _archetype_ui);
+	onRemoveComponentsHelper(event, *_archetype_ui);
 }
 
 void ArchetypeEditor::onAddComponents(wxTreeEvent& event)
@@ -209,23 +203,23 @@ void ArchetypeEditor::onAddComponents(wxTreeEvent& event)
 	size_t size = _ecs_components->GetSelections(ids);
 
 	if (ids.IsEmpty()) {
-		ArchetypeItem* const item = getItem(event.GetItem());
+		RefDefItem* const item = getItem(event.GetItem());
 
 		if (!item) {
 			return;
 		}
 
-		addItem(item, _archetype_ui);
+		addItem(*item, *_archetype_ui);
 
 	} else {
 		for (size_t i = 0; i < size; ++i) {
-			ArchetypeItem* const item = getItem(ids[i]);
+			RefDefItem* const item = getItem(ids[i]);
 
 			if (!item) {
 				return;
 			}
 
-			addItem(item, _archetype_ui);
+			addItem(*item, *_archetype_ui);
 		}
 	}
 
@@ -236,27 +230,27 @@ void ArchetypeEditor::onDragBegin(wxTreeEvent& event)
 {
 	wxArrayTreeItemIds ids;
 	size_t size = _ecs_components->GetSelections(ids);
-	ArchetypeItem** ref_def_items = nullptr;
+	RefDefItem** ref_def_items = nullptr;
 
 	if (ids.IsEmpty()) {
-		ArchetypeItem* const item = getItem(event.GetItem());
+		RefDefItem* const item = getItem(event.GetItem());
 
 		if (!item) {
 			return;
 		}
 
-		ref_def_items = new ArchetypeItem*[1];
+		ref_def_items = new RefDefItem*[1];
 		ref_def_items[0] = item;
 		size = 1;
 
 	} else {
-		ref_def_items = new ArchetypeItem*[size];
+		ref_def_items = new RefDefItem*[size];
 		int32_t index = 0;
 
-		memset(ref_def_items, 0, sizeof(ArchetypeItem*) * size);
+		memset(ref_def_items, 0, sizeof(RefDefItem*) * size);
 
 		for (size_t i = 0; i < size; ++i) {
-			ArchetypeItem* const item = getItem(ids[i]);
+			RefDefItem* const item = getItem(ids[i]);
 
 			if (!item) {
 				continue;
@@ -273,10 +267,10 @@ void ArchetypeEditor::onDragBegin(wxTreeEvent& event)
 	}
 
 	wxDataObject* const shared_data = _archetype_shared_ui->GetDropTarget()->GetDataObject();
-	reinterpret_cast<wxCustomDataObject*>(shared_data)->SetData(sizeof(ArchetypeItem*) * size, ref_def_items);
+	reinterpret_cast<wxCustomDataObject*>(shared_data)->SetData(sizeof(RefDefItem*) * size, ref_def_items);
 
 	wxDataObject* const data = _archetype_ui->GetDropTarget()->GetDataObject();
-	reinterpret_cast<wxCustomDataObject*>(data)->SetData(sizeof(ArchetypeItem*) * size, ref_def_items);
+	reinterpret_cast<wxCustomDataObject*>(data)->SetData(sizeof(RefDefItem*) * size, ref_def_items);
 
 	delete [] ref_def_items;
 
@@ -285,21 +279,46 @@ void ArchetypeEditor::onDragBegin(wxTreeEvent& event)
 	source.DoDragDrop();
 }
 
-void ArchetypeEditor::onRemoveComponentsHelper(wxListEvent& event, wxEditableListBox* ui)
+void ArchetypeEditor::onRemoveComponentsHelper(wxListEvent& event, wxEditableListBox& ui)
 {
-	GAFF_REF(event);
-	GAFF_REF(ui);
+	if (&ui == _archetype_shared_ui) {
+		const auto it = _shared_object_instances.begin() + event.GetIndex();
+		delete *it;
+
+		_shared_object_instances.erase(it);
+	}
+
+	const wxString& name = event.GetText();
+	const int32_t index = event.GetIndex();
+
+	wxTreeItemIdValue unused;
+	wxTreeItemId id = _ecs_components->GetFirstChild(_ecs_components->GetRootItem(), unused);
+
+	while (id.IsOk()) {
+		if (_ecs_components->GetItemText(id) == name) {
+			RefDefItem* const item = static_cast<RefDefItem*>(_ecs_components->GetItemData(id));
+
+			if (item->getRefDef().getClassAttr<UniqueAttribute>()) {
+				_ecs_components->SetItemTextColour(item->GetId(), s_grey);
+				item->setDisabled(false);
+			}
+
+			break;
+		}
+
+		id = _ecs_components->GetNextSibling(id);
+	}
 
 	_broadcaster.broadcastSync(EditorItemSelectedMessage(this));
 }
 
-ArchetypeItem* ArchetypeEditor::getItem(const wxTreeItemId& id) const
+RefDefItem* ArchetypeEditor::getItem(const wxTreeItemId& id) const
 {
 	if (_ecs_components->HasChildren(id)) {
 		return nullptr;
 	}
 
-	ArchetypeItem* const item = reinterpret_cast<ArchetypeItem*>(_ecs_components->GetItemData(id));
+	RefDefItem* const item = reinterpret_cast<RefDefItem*>(_ecs_components->GetItemData(id));
 
 	if (item->isDisabled()) {
 		return nullptr;
@@ -308,30 +327,30 @@ ArchetypeItem* ArchetypeEditor::getItem(const wxTreeItemId& id) const
 	return item;
 }
 
-void ArchetypeEditor::removeItem(ArchetypeItem* item, wxEditableListBox* ui)
+void ArchetypeEditor::addItem(RefDefItem& item, wxEditableListBox& ui)
 {
-	GAFF_REF(ui);
+	const Gaff::IReflectionDefinition& ref_def = item.getRefDef();
 
-	const Gaff::IReflectionDefinition* const ref_def = item->getRefDef();
-
-	if (ref_def->getClassAttr<UniqueAttribute>()) {
-		_ecs_components->SetItemTextColour(item->GetId(), g_grey);
-		item->setDisabled(false);
-	}
-}
-
-void ArchetypeEditor::addItem(ArchetypeItem* item, wxEditableListBox* ui)
-{
-	const Gaff::IReflectionDefinition* const ref_def = item->getRefDef();
-
-	if (ref_def->getClassAttr<UniqueAttribute>()) {
-		_ecs_components->SetItemTextColour(item->GetId(), g_grey);
-		item->setDisabled(true);
+	if (ref_def.getClassAttr<UniqueAttribute>()) {
+		_ecs_components->SetItemTextColour(item.GetId(), s_grey);
+		item.setDisabled(true);
 	}
 
-	wxListCtrl* const list = ui->GetListCtrl();
+	wxListCtrl* const list = ui.GetListCtrl();
 
-	list->InsertItem(list->GetItemCount(), ref_def->getReflectionInstance().getName());
+	if (&ui == _archetype_shared_ui) {
+		const auto var_attrs = ref_def.getClassAttrs<IECSVarAttribute, ProxyAllocator>(CLASS_HASH(IECSVarAttribute));
+		auto& instances = _shared_object_instances[&ref_def];
+		ProxyAllocator allocator("Editor");
+
+		for (const IECSVarAttribute* attr : var_attrs) {
+			void* const instance = attr->getType().create(allocator);
+			instances.emplace_back(instance);
+		}
+	}
+
+	const int32_t index = static_cast<int32_t>(list->GetItemCount());
+	list->InsertItem(index, ref_def.getReflectionInstance().getName());
 
 	save();
 }
@@ -342,6 +361,20 @@ void ArchetypeEditor::initComponentList(void)
 	const wxTreeItemId root = _ecs_components->GetRootItem();
 
 	for (const Gaff::IReflectionDefinition* ref_def : comp_ref_defs) {
+		const auto var_attrs = ref_def->getClassAttrs<IECSVarAttribute, ProxyAllocator>(CLASS_HASH(IECSVarAttribute));
+		bool invalid_var = false;
+
+		for (const IECSVarAttribute* attr : var_attrs) {
+			if (!attr->getType().getFactory()) {
+				// $TODO: Log error.
+				invalid_var = true;
+			}
+		}
+
+		if (invalid_var) {
+			continue;
+		}
+
 		const ECSClassAttribute* const ecs = ref_def->getClassAttr<ECSClassAttribute>();
 		wxTreeItemId category_id = root;
 
@@ -364,8 +397,8 @@ void ArchetypeEditor::initComponentList(void)
 		}
 
 		// Referencing otherwise GetItemData() returns null in on onDragBegin(). Might be some DLL weirdness.
-		const wxTreeItemId id = _ecs_components->AppendItem(category_id, ref_def->getReflectionInstance().getName(), -1, -1, new ArchetypeItem(ref_def, nullptr));
-		ArchetypeItem* const item = reinterpret_cast<ArchetypeItem*>(_ecs_components->GetItemData(id));
+		const wxTreeItemId id = _ecs_components->AppendItem(category_id, ref_def->getReflectionInstance().getName(), -1, -1, new RefDefItem(*ref_def));
+		RefDefItem* const item = reinterpret_cast<RefDefItem*>(_ecs_components->GetItemData(id));
 		GAFF_REF(item);
 	}
 
@@ -404,19 +437,13 @@ void ArchetypeEditor::load(void)
 		}
 
 		// Add to shared components list.
+		RefDefItem ref_def_item(*ref_def);
+		addItem(ref_def_item, *_archetype_shared_ui);
+
 		ProxyAllocator allocator("Editor");
-		void* const instance = ref_def->create(allocator);
-
-		if (!instance) {
-			// $TODO: Log error
-			return false;
-		}
-
 		SerializeReader<Gaff::JSON> reader(value, allocator);
-		ref_def->load(reader, instance);
 
-		addItem(new ArchetypeItem(ref_def, instance), _archetype_shared_ui);
-
+		ref_def->load(reader, _shared_object_instances.back());
 		return false;
 	});
 
@@ -440,7 +467,8 @@ void ArchetypeEditor::load(void)
 			return false;
 		}
 
-		addItem(new ArchetypeItem(ref_def, nullptr), _archetype_ui);
+		RefDefItem ref_def_item(*ref_def);
+		addItem(ref_def_item, *_archetype_ui);
 		return false;
 	});
 }

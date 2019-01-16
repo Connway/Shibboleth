@@ -18,7 +18,7 @@ namespace Gen
 %s
 		Gaff::IEnumReflection* enum_head = Gaff::GetEnumReflectionChainHead();
 
-		while(enum_head) {
+		while (enum_head) {
 			enum_head->init();
 			enum_head = enum_head->next;
 		}
