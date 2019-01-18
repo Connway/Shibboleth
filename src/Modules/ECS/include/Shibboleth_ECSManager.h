@@ -47,7 +47,7 @@ public:
 private:
 	struct alignas(16) EntityPage
 	{
-		uint8_t data[EA_KIBIBYTE(64) - sizeof(EntityPage*)]; // 64KiB
+		int8_t data[EA_KIBIBYTE(64) - sizeof(EntityPage*)]; // 64KiB
 		EntityPage* next_page = nullptr;
 	};
 

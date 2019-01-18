@@ -283,7 +283,10 @@ void ArchetypeEditor::onRemoveComponentsHelper(wxListEvent& event, wxEditableLis
 {
 	if (&ui == _archetype_shared_ui) {
 		const auto it = _shared_object_instances.begin() + event.GetIndex();
-		delete *it;
+
+		for (void* object : it->second) {
+			delete object;
+		}
 
 		_shared_object_instances.erase(it);
 	}
@@ -440,10 +443,19 @@ void ArchetypeEditor::load(void)
 		RefDefItem ref_def_item(*ref_def);
 		addItem(ref_def_item, *_archetype_shared_ui);
 
+		// Load all variable instances.
 		ProxyAllocator allocator("Editor");
-		SerializeReader<Gaff::JSON> reader(value, allocator);
+		const auto var_attrs = ref_def->getClassAttrs<IECSVarAttribute, ProxyAllocator>(CLASS_HASH(IECSVarAttribute));
+		auto& instances = _shared_object_instances[ref_def];
 
-		ref_def->load(reader, _shared_object_instances.back());
+		value.forEachInArray([&](int32_t index, const Gaff::JSON& ecs_var) -> bool
+		{
+			SerializeReader<Gaff::JSON> reader(ecs_var, allocator);
+			var_attrs[index]->getType().load(reader, instances[index]);
+
+			return false;
+		});
+
 		return false;
 	});
 
