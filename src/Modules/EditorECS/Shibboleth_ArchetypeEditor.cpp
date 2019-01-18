@@ -29,6 +29,7 @@ THE SOFTWARE.
 #include <Shibboleth_EditorWindowAttribute.h>
 #include <Shibboleth_UniqueAttribute.h>
 #include <Shibboleth_SerializeReader.h>
+#include <Gaff_JSON.h>
 
 #include <wx/listctrl.h>
 #include <wx/editlbox.h>

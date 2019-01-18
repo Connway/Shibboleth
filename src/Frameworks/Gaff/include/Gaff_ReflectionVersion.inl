@@ -28,7 +28,7 @@ ReflectionVersion<T>& ReflectionVersion<T>::base(const char* name)
 {
 	const ptrdiff_t offset = Gaff::OffsetOfClass<T, Base>();
 	_hash = FNV1aHash64String(name, _hash);
-	_hash = FNV1aHash64T(&offset, _hash);
+	_hash = FNV1aHash64T(offset, _hash);
 	return *this;
 }
 
@@ -38,7 +38,7 @@ ReflectionVersion<T>& ReflectionVersion<T>::base(void)
 {
 	const Gaff::Hash64 version = GAFF_REFLECTION_NAMESPACE::Reflection<Base>::GetVersion();
 	base<Base>(GAFF_REFLECTION_NAMESPACE::Reflection<Base>::GetName());
-	_hash = FNV1aHash64T(&version, _hash);
+	_hash = FNV1aHash64T(version, _hash);
 	return *this;
 }
 
@@ -46,7 +46,7 @@ template <class T>
 template <class... Args>
 ReflectionVersion<T>& ReflectionVersion<T>::ctor(Hash64 factory_hash)
 {
-	_hash = FNV1aHash64T(&factory_hash, _hash);
+	_hash = FNV1aHash64T(factory_hash, _hash);
 	return *this;
 }
 
@@ -63,7 +63,7 @@ template <class Var, size_t size, class... Attrs>
 ReflectionVersion<T>& ReflectionVersion<T>::var(const char (&name)[size], Var T::*ptr, const Attrs&... attributes)
 {
 	_hash = FNV1aHash64(name, size ,_hash);
-	_hash = FNV1aHash64T(&ptr, _hash);
+	_hash = FNV1aHash64T(ptr, _hash);
 
 	if constexpr (sizeof...(Attrs) > 0) {
 		_hash = FNV1aHash64(name, size - 1, _hash);
@@ -152,7 +152,7 @@ template <class T>
 ReflectionVersion<T>& ReflectionVersion<T>::version(uint32_t version)
 {
 	GAFF_ASSERT(_hash == INIT_HASH64);
-	_hash = FNV1aHash64T(&version, _hash);
+	_hash = FNV1aHash64T(version, _hash);
 	return *this;
 }
 
@@ -160,8 +160,8 @@ template <class T>
 ReflectionVersion<T>& ReflectionVersion<T>::serialize(LoadFunc serialize_load, SaveFunc serialize_save)
 {
 	// Unsure if this is a reliable hashing mechanism.
-	_hash = FNV1aHash64T(&serialize_load, _hash);
-	_hash = FNV1aHash64T(&serialize_save, _hash);
+	_hash = FNV1aHash64T(serialize_load, _hash);
+	_hash = FNV1aHash64T(serialize_save, _hash);
 	return *this;
 }
 

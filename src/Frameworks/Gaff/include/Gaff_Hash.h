@@ -124,27 +124,27 @@ Hash32 FNV1aHash32V(const Args*... args)
 }
 
 template <class T>
-Hash64 FNV1aHash64T(const T* value, Hash64 init = INIT_HASH64)
+Hash64 FNV1aHash64T(const T& value, Hash64 init = INIT_HASH64)
 {
-	return FNV1aHash64(reinterpret_cast<const char*>(value), sizeof(T), init);
+	return FNV1aHash64(reinterpret_cast<const char*>(&value), sizeof(T), init);
 }
 
 template <class T>
-Hash64 FNV1Hash64T(const T* value, Hash64 init = INIT_HASH64)
+Hash64 FNV1Hash64T(const T& value, Hash64 init = INIT_HASH64)
 {
-	return FNV1Hash64(reinterpret_cast<const char*>(value), sizeof(T), init);
+	return FNV1Hash64(reinterpret_cast<const char*>(&value), sizeof(T), init);
 }
 
 template <class T>
-Hash32 FNV1aHash32T(const T* value, Hash32 init = INIT_HASH32)
+Hash32 FNV1aHash32T(const T& value, Hash32 init = INIT_HASH32)
 {
-	return FNV1aHash32(reinterpret_cast<const char*>(value), sizeof(T), init);
+	return FNV1aHash32(reinterpret_cast<const char*>(&value), sizeof(T), init);
 }
 
 template <class T>
-Hash32 FNV1Hash32T(const T* value, Hash32 init = INIT_HASH32)
+Hash32 FNV1Hash32T(const T& value, Hash32 init = INIT_HASH32)
 {
-	return FNV1Hash32(reinterpret_cast<const char*>(value), sizeof(T), init);
+	return FNV1Hash32(reinterpret_cast<const char*>(&value), sizeof(T), init);
 }
 
 constexpr Hash64 FNV1aHash64Const(const char* key, size_t len, Hash64 init)
