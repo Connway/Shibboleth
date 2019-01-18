@@ -23,7 +23,6 @@ THE SOFTWARE.
 #pragma once
 
 #include <Shibboleth_Vector.h>
-#include <Gaff_JSON.h>
 #include <Gaff_Hash.h>
 
 NS_GAFF
@@ -35,6 +34,8 @@ NS_SHIBBOLETH
 class ECSArchetype
 {
 public:
+	void setSharedName(Gaff::Hash64 name);
+	void setSharedName(const char* name);
 	void addShared(const Vector<const Gaff::IReflectionDefinition*>& ref_defs);
 	void addShared(const Gaff::IReflectionDefinition* ref_def);
 	void removeShared(const Vector<const Gaff::IReflectionDefinition*>& ref_defs);
@@ -49,17 +50,16 @@ public:
 
 	int32_t sharedSize(void) const;
 	int32_t size(void) const;
+	int32_t totalSize(void) const;
 
 	Gaff::Hash64 getHash(void) const;
-
-	bool fromJSON(const Gaff::JSON& json);
-	Gaff::JSON toJSON(void) const;
 
 private:
 	Vector<const Gaff::IReflectionDefinition*> _shared_vars;
 	Vector<const Gaff::IReflectionDefinition*> _vars;
 
 	mutable Gaff::Hash64 _hash = Gaff::INIT_HASH64;
+	Gaff::Hash64 _shared_name = Gaff::INIT_HASH64;
 
 	int32_t _shared_alloc_size = 0;
 	int32_t _alloc_size = 0;
