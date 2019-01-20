@@ -172,7 +172,7 @@ bool LooseFileSystem::forEachFile(const char* directory, eastl::function<bool (c
 		}
 	}
 
-	return true;
+	return false;
 }
 
 NS_END

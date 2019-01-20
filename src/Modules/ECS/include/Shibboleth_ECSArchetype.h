@@ -50,7 +50,6 @@ public:
 
 	int32_t sharedSize(void) const;
 	int32_t size(void) const;
-	int32_t totalSize(void) const;
 
 	Gaff::Hash64 getHash(void) const;
 

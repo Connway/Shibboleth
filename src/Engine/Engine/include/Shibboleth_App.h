@@ -52,7 +52,7 @@ public:
 	const IManager* getManager(Gaff::Hash64 name) const override;
 	IManager* getManager(Gaff::Hash64 name) override;
 
-	IFileSystem* getFileSystem(void) override;
+	IFileSystem& getFileSystem(void) override;
 	const Gaff::JSON& getConfigs(void) const override;
 	const U8String& getProjectDirectory(void) const override;
 

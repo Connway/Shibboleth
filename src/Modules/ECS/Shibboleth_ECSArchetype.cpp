@@ -27,12 +27,13 @@ NS_SHIBBOLETH
 
 void ECSArchetype::setSharedName(Gaff::Hash64 name)
 {
-	GAFF_REF(name);
+	_shared_name = name;
+	_hash = Gaff::INIT_HASH64;
 }
 
 void ECSArchetype::setSharedName(const char* name)
 {
-	GAFF_REF(name);
+	setSharedName(Gaff::FNV1aHash32String(name));
 }
 
 void ECSArchetype::addShared(const Vector<const Gaff::IReflectionDefinition*>& ref_defs)
@@ -96,14 +97,11 @@ int32_t ECSArchetype::size(void) const
 	return _alloc_size;
 }
 
-int32_t ECSArchetype::totalSize(void) const
-{
-	return _shared_alloc_size + _alloc_size;
-}
-
 Gaff::Hash64 ECSArchetype::getHash(void) const
 {
 	if (_hash == Gaff::INIT_HASH64) {
+		_hash = Gaff::FNV1aHash64T(_shared_name, _hash);
+
 		for (const Gaff::IReflectionDefinition* ref_def : _shared_vars) {
 			const Gaff::Hash64 hash = ref_def->getReflectionInstance().getHash();
 			_hash = Gaff::FNV1aHash64T(hash, _hash);

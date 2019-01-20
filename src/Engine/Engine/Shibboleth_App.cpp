@@ -569,9 +569,9 @@ IManager* App::getManager(Gaff::Hash64 name)
 //	return _broadcaster;
 //}
 
-IFileSystem* App::getFileSystem(void)
+IFileSystem& App::getFileSystem(void)
 {
-	return _fs.file_system;
+	return *_fs.file_system;
 }
 
 const Gaff::JSON& App::getConfigs(void) const
