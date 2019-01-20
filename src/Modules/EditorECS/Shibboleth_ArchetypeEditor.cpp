@@ -425,7 +425,13 @@ void ArchetypeEditor::load(void)
 	const Gaff::JSON shared_components = json["shared_components"];
 	const Gaff::JSON components = json["components"];
 
-	shared_components.forEachInObject([&](const char* component, const Gaff::JSON& value) -> bool {
+	shared_components.forEachInObject([&](const char* component, const Gaff::JSON& value) -> bool
+	{
+		if (!value.isArray()) {
+			// $TODO: Log error
+			return false;
+		}
+
 		const Gaff::IReflectionDefinition* const ref_def = refl_mgr.getReflection(Gaff::FNV1aHash64String(component));
 
 		if (!ref_def) {
@@ -460,7 +466,8 @@ void ArchetypeEditor::load(void)
 		return false;
 	});
 
-	components.forEachInArray([&](int32_t, const Gaff::JSON& value) -> bool {
+	components.forEachInArray([&](int32_t, const Gaff::JSON& value) -> bool
+	{
 		if (!value.isString()) {
 			// $TODO: Log error.
 			return false;

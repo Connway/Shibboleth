@@ -94,7 +94,7 @@ public:
 	virtual IManager* getManager(Gaff::Hash64 name) = 0;
 
 
-	virtual IFileSystem* getFileSystem(void) = 0;
+	virtual IFileSystem& getFileSystem(void) = 0;
 	virtual const Gaff::JSON& getConfigs(void) const = 0;
 	virtual const U8String& getProjectDirectory(void) const = 0;
 

@@ -28,6 +28,8 @@ THE SOFTWARE.
 
 NS_SHIBBOLETH
 
+class IFile;
+
 class ECSManager final : public IManager
 {
 public:
@@ -62,8 +64,10 @@ private:
 		EntityPage* entities = nullptr;
 	};
 
-	VectorMap<Gaff::Hash64, ECSArchetype> _archetypes;
+	VectorMap<Gaff::Hash64, Gaff::Hash64> _archtypes;
 	VectorMap<Gaff::Hash64, EntityData> _entity_pages;
+
+	bool loadFile(const char* file_name, IFile* file);
 
 	SHIB_REFLECTION_CLASS_DECLARE(ECSManager);
 };
