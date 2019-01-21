@@ -28,5 +28,8 @@ DYNAMICEXPORT_C bool InitModule(Shibboleth::IApp& app)
 {
 	Shibboleth::SetApp(app);
 	Gen::InitReflection();
+
+	app.getReflectionManager().registerAttributeBucket(Shibboleth::Reflection<Shibboleth::ECSClassAttribute>::GetHash());
+
 	return true;
 }
