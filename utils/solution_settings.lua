@@ -26,26 +26,25 @@ floatingpoint "Fast"
 startproject "Game_App"
 symbols "On"
 
+defines
+{
+	"UNICODE", "_UNICODE",
+	"EA_COMPILER_NO_RTTI",
+	"GLM_FORCE_SSE42"
+}
+
+-- vectorextensions "SSE4.2"
+
 filter { "action:not vs*" }
 	cppdialect "C++17"
 
 filter { "action:vs*" }
 	buildoptions { "/std:c++17" }
 
-filter {}
-
-defines
-{
-	"UNICODE", "_UNICODE",
-	"EA_COMPILER_NO_RTTI"
-}
-
--- filter { "platforms:x86" }
--- 	architecture "x32"
--- 	vectorextensions "SSE2"
-
 filter { "platforms:x64" }
 	architecture "x64"
+
+filter {}
 
 SetIntermediateAndTargetDirs("Debug")
 SetIntermediateAndTargetDirs("Release")
@@ -108,7 +107,7 @@ filter { "system:windows", "platforms:x64" }
 filter { "configurations:*Clang", "action:vs*" }
 	toolset "msc-llvm-vs2014"
 
-filter { "configurations:*Clang", "action:not vs*" }
+filter { "configurations:not *Clang", "action:not vs*" }
 	toolset "gcc"
 
 filter { "configurations:*Clang", "action:not vs*" }
