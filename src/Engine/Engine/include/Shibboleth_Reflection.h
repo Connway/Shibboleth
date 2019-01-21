@@ -106,7 +106,7 @@ NS_SHIBBOLETH \
 		if (g_reflection_definition) { \
 			return; \
 		} \
-		g_reflection_definition = reinterpret_cast< Gaff::ReflectionDefinition<type, ProxyAllocator>* >( \
+		g_reflection_definition = static_cast< Gaff::ReflectionDefinition<type, ProxyAllocator>* >( \
 			const_cast< Gaff::IReflectionDefinition* >( \
 				GetApp().getReflectionManager().getReflection(GetHash()) \
 			) \
@@ -216,7 +216,7 @@ NS_SHIBBOLETH \
 		if (g_reflection_definition) { \
 			return; \
 		} \
-		g_reflection_definition = reinterpret_cast< Gaff::ReflectionDefinition<type<__VA_ARGS__>, ProxyAllocator>* >( \
+		g_reflection_definition = static_cast< Gaff::ReflectionDefinition<type<__VA_ARGS__>, ProxyAllocator>* >( \
 			const_cast< Gaff::IReflectionDefinition* >( \
 				GetApp().getReflectionManager().getReflection(GetHash()) \
 			) \

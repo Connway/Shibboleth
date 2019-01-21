@@ -24,85 +24,72 @@ THE SOFTWARE.
 #include "Shibboleth_ECSAttributes.h"
 #include <Shibboleth_SerializeReader.h>
 #include <Gaff_JSON.h>
-#include <EASTL/algorithm.h>
 
 NS_SHIBBOLETH
 
-void ECSArchetype::setSharedName(Gaff::Hash64 name)
+ECSArchetype::ECSArchetype(ECSArchetype&& archetype):
+	_shared_vars(std::move(archetype._shared_vars)),
+	_vars(std::move(archetype._vars)),
+	_hash(archetype._hash),
+	_shared_alloc_size(archetype._shared_alloc_size),
+	_alloc_size(archetype._alloc_size),
+	_shared_instances(archetype._shared_instances)
 {
-	_shared_name = name;
-	_hash = Gaff::INIT_HASH64;
+	archetype._shared_instances = nullptr;
 }
 
-void ECSArchetype::setSharedName(const char* name)
+ECSArchetype& ECSArchetype::operator=(ECSArchetype&& rhs)
 {
-	setSharedName(Gaff::FNV1aHash32String(name));
+	_shared_vars = std::move(rhs._shared_vars);
+	_vars = std::move(rhs._vars);
+	_hash = rhs._hash;
+	_shared_alloc_size = rhs._shared_alloc_size;
+	_alloc_size = rhs._alloc_size;
+	_shared_instances = rhs._shared_instances;
+
+	rhs._shared_instances = nullptr;
+
+	return *this;
+}
+
+ECSArchetype::~ECSArchetype(void)
+{
+	if (_shared_instances) {
+		SHIB_FREE(_shared_instances, GetAllocator());
+	}
 }
 
 void ECSArchetype::addShared(const Vector<const Gaff::IReflectionDefinition*>& ref_defs)
 {
-	for (const Gaff::IReflectionDefinition* ref_def : ref_defs) {
-		addShared(*ref_def);
-	}
+	add(_shared_vars, _shared_alloc_size, ref_defs);
 }
 
 void ECSArchetype::addShared(const Gaff::IReflectionDefinition& ref_def)
 {
-	Vector<const IECSVarAttribute*> attrs;
-	ref_def.getClassAttrs(CLASS_HASH(IECSVarAttribute), attrs);
-
-	if (attrs.empty()) {
-		// $TODO: Log warning.
-		return;
-	}
-
-	_shared_vars.emplace_back(SharedVarData{ ref_def, Vector<VarData>() });
-	SharedVarData& shared_var_data = _shared_vars.back();
-
-	for (const IECSVarAttribute* attr : attrs) {
-		shared_var_data.var_attrs.emplace_back(VarData{ *attr, _shared_alloc_size });
-		_shared_alloc_size += attr->getType().getReflectionInstance().size();
-	}
-
-	_hash = Gaff::INIT_HASH64;
+	add(_shared_vars, _shared_alloc_size, ref_def);
 }
 
 void ECSArchetype::removeShared(const Vector<const Gaff::IReflectionDefinition*>& ref_defs)
 {
-	for (const Gaff::IReflectionDefinition* ref_def : ref_defs) {
-		removeShared(*ref_def);
-	}
+	remove(_shared_vars, _shared_alloc_size, ref_defs);
 }
 
 void ECSArchetype::removeShared(const Gaff::IReflectionDefinition& ref_def)
 {
-	const auto it = Gaff::Find(_shared_vars, ref_def, [](const SharedVarData& lhs, const Gaff::IReflectionDefinition& rhs) -> bool
-	{
-		return &lhs.ref_def == &rhs;
-	});
-
-	if (it == _shared_vars.end()) {
-		return;
-	}
-
-	removeShared(static_cast<int32_t>(it - _shared_vars.begin()));
+	remove(_shared_vars, _shared_alloc_size, ref_def);
 }
 
 void ECSArchetype::removeShared(int32_t index)
 {
-	GAFF_ASSERT(index < static_cast<int32_t>(_shared_vars.size()));
-	const auto attrs = _shared_vars[index].ref_def.getClassAttrs<IECSVarAttribute, ProxyAllocator>(CLASS_HASH(IECSVarAttribute));
-
-	for (const IECSVarAttribute* attr : attrs) {
-		_shared_alloc_size -= attr->getType().getReflectionInstance().size();
-	}
-
-	_shared_vars.erase(_shared_vars.begin() + index);
-	_hash = Gaff::INIT_HASH64;
+	remove(_shared_vars, _shared_alloc_size, index);
 }
 
 void ECSArchetype::initShared(const Gaff::JSON& json)
 {
+	if (!_shared_alloc_size) {
+		return;
+	}
+
 	ProxyAllocator allocator("ECS");
 	_shared_instances = SHIB_ALLOC(_shared_alloc_size, allocator);
 
@@ -111,10 +98,10 @@ void ECSArchetype::initShared(const Gaff::JSON& json)
 
 	json.forEachInObject([&](const char* component, const Gaff::JSON& value) -> bool
 	{
-		const SharedVarData& shared_var_data = _shared_vars[index];
+		const Gaff::IReflectionDefinition* const ref_def = _shared_vars[index];
 
 		// Class had an issue and was not added to the archetype.
-		if (shared_var_data.ref_def.getReflectionInstance().getHash() != Gaff::FNV1aHash64String(component)) {
+		if (ref_def->getReflectionInstance().getHash() != Gaff::FNV1aHash64String(component)) {
 			return false;
 		}
 
@@ -123,9 +110,9 @@ void ECSArchetype::initShared(const Gaff::JSON& json)
 		value.forEachInArray([&](int32_t, const Gaff::JSON& ecs_var) -> bool
 		{
 			SerializeReader<Gaff::JSON> reader(ecs_var, allocator);
-			shared_var_data.ref_def.load(reader, reinterpret_cast<int8_t*>(_shared_instances) + offset);
+			ref_def->load(reader, reinterpret_cast<int8_t*>(_shared_instances) + offset);
 
-			offset += shared_var_data.ref_def.getReflectionInstance().size();
+			offset += ref_def->getReflectionInstance().size();
 			return false;
 		});
 
@@ -138,7 +125,7 @@ void ECSArchetype::add(const Vector<const Gaff::IReflectionDefinition*>& ref_def
 	add(_vars, _alloc_size, ref_defs);
 }
 
-void ECSArchetype::add(const Gaff::IReflectionDefinition* ref_def)
+void ECSArchetype::add(const Gaff::IReflectionDefinition& ref_def)
 {
 	add(_vars, _alloc_size, ref_def);
 }
@@ -148,10 +135,9 @@ void ECSArchetype::remove(const Vector<const Gaff::IReflectionDefinition*>& ref_
 	remove(_vars, _alloc_size, ref_defs);
 }
 
-void ECSArchetype::remove(const Gaff::IReflectionDefinition* ref_def)
+void ECSArchetype::remove(const Gaff::IReflectionDefinition& ref_def)
 {
 	remove(_vars, _alloc_size, ref_def);
-
 }
 
 void ECSArchetype::remove(int32_t index)
@@ -172,10 +158,12 @@ int32_t ECSArchetype::size(void) const
 Gaff::Hash64 ECSArchetype::getHash(void) const
 {
 	if (_hash == Gaff::INIT_HASH64) {
-		_hash = Gaff::FNV1aHash64T(_shared_name, _hash);
+		if (_shared_instances) {
+			_hash = Gaff::FNV1aHash64(reinterpret_cast<char*>(_shared_instances), static_cast<size_t>(_shared_alloc_size));
+		}
 
-		for (const SharedVarData& var_data : _shared_vars) {
-			const Gaff::Hash64 hash = var_data.ref_def.getReflectionInstance().getHash();
+		for (const Gaff::IReflectionDefinition* ref_def : _shared_vars) {
+			const Gaff::Hash64 hash = ref_def->getReflectionInstance().getHash();
 			_hash = Gaff::FNV1aHash64T(hash, _hash);
 		}
 
@@ -186,6 +174,11 @@ Gaff::Hash64 ECSArchetype::getHash(void) const
 	}
 
 	return _hash;
+}
+
+void ECSArchetype::dirtyHash(void)
+{
+	_hash = Gaff::INIT_HASH64;
 }
 
 bool ECSArchetype::fromJSON(const Gaff::JSON& json)
@@ -249,7 +242,7 @@ bool ECSArchetype::fromJSON(const Gaff::JSON& json)
 			return false;
 		}
 
-		add(ref_def);
+		add(*ref_def);
 		return false;
 	});
 
@@ -259,14 +252,14 @@ bool ECSArchetype::fromJSON(const Gaff::JSON& json)
 void ECSArchetype::add(Vector<const Gaff::IReflectionDefinition*>& vars, int32_t& alloc_size, const Vector<const Gaff::IReflectionDefinition*>& ref_defs)
 {
 	for (const Gaff::IReflectionDefinition* ref_def : ref_defs) {
-		add(vars, alloc_size, ref_def);
+		add(vars, alloc_size, *ref_def);
 	}
 }
 
-void ECSArchetype::add(Vector<const Gaff::IReflectionDefinition*>& vars, int32_t& alloc_size, const Gaff::IReflectionDefinition* ref_def)
+void ECSArchetype::add(Vector<const Gaff::IReflectionDefinition*>& vars, int32_t& alloc_size, const Gaff::IReflectionDefinition& ref_def)
 {
 	Vector<const IECSVarAttribute*> attrs;
-	ref_def->getClassAttrs(CLASS_HASH(IECSVarAttribute), attrs);
+	ref_def.getClassAttrs(CLASS_HASH(IECSVarAttribute), attrs);
 
 	if (attrs.empty()) {
 		// $TODO: Log warning.
@@ -275,36 +268,28 @@ void ECSArchetype::add(Vector<const Gaff::IReflectionDefinition*>& vars, int32_t
 
 	for (const IECSVarAttribute* attr : attrs) {
 		alloc_size += attr->getType().getReflectionInstance().size();
-		vars.emplace_back(ref_def);
+		vars.emplace_back(&ref_def);
 	}
 
-	_hash = Gaff::INIT_HASH64;
+	dirtyHash();
 }
 
 void ECSArchetype::remove(Vector<const Gaff::IReflectionDefinition*>& vars, int32_t& alloc_size, const Vector<const Gaff::IReflectionDefinition*>& ref_defs)
 {
 	for (const Gaff::IReflectionDefinition* ref_def : ref_defs) {
-		remove(vars, alloc_size, ref_def);
+		remove(vars, alloc_size, *ref_def);
 	}
 }
 
-void ECSArchetype::remove(Vector<const Gaff::IReflectionDefinition*>& vars, int32_t& alloc_size, const Gaff::IReflectionDefinition* ref_def)
+void ECSArchetype::remove(Vector<const Gaff::IReflectionDefinition*>& vars, int32_t& alloc_size, const Gaff::IReflectionDefinition& ref_def)
 {
-	const auto it = Gaff::Find(vars, ref_def);
+	const auto it = Gaff::Find(vars, &ref_def);
 
 	if (it == vars.end()) {
 		return;
 	}
 
-	vars.erase_unsorted(it);
-
-	const auto attrs = ref_def->getClassAttrs<IECSVarAttribute, ProxyAllocator>(CLASS_HASH(IECSVarAttribute));
-
-	for (const IECSVarAttribute* attr : attrs) {
-		alloc_size -= attr->getType().getReflectionInstance().size();
-	}
-
-	_hash = Gaff::INIT_HASH64;
+	remove(vars, alloc_size, static_cast<int32_t>(it - vars.begin()));
 }
 
 void ECSArchetype::remove(Vector<const Gaff::IReflectionDefinition*>& vars, int32_t& alloc_size, int32_t index)
@@ -317,7 +302,6 @@ void ECSArchetype::remove(Vector<const Gaff::IReflectionDefinition*>& vars, int3
 	}
 
 	vars.erase(vars.begin() + index);
-	_hash = Gaff::INIT_HASH64;
+	dirtyHash();
 }
-
 NS_END

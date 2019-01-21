@@ -42,7 +42,7 @@ bool BlendStateD3D11::init(IRenderDevice& rd, const BlendStateSettings& settings
 {
 	GAFF_ASSERT(rd.getRendererType() == RENDERER_DIRECT3D11);
 
-	RenderDeviceD3D11& rd3d = reinterpret_cast<RenderDeviceD3D11&>(rd);
+	RenderDeviceD3D11& rd3d = static_cast<RenderDeviceD3D11&>(rd);
 	ID3D11Device5* const device = rd3d.getDevice();
 
 	D3D11_BLEND_DESC blend_desc;
@@ -66,7 +66,7 @@ bool BlendStateD3D11::init(IRenderDevice& rd, const BlendStateSettings* settings
 {
 	GAFF_ASSERT(rd.getRendererType() == RENDERER_DIRECT3D11);
 
-	RenderDeviceD3D11& rd3d = reinterpret_cast<RenderDeviceD3D11&>(rd);
+	RenderDeviceD3D11& rd3d = static_cast<RenderDeviceD3D11&>(rd);
 	ID3D11Device5* const device = rd3d.getDevice();
 
 	D3D11_BLEND_DESC blend_desc;
@@ -96,7 +96,7 @@ void BlendStateD3D11::destroy(void)
 void BlendStateD3D11::set(IRenderDevice& rd) const
 {
 	GAFF_ASSERT(rd.getRendererType() == RENDERER_DIRECT3D11);
-	RenderDeviceD3D11& rd3d = reinterpret_cast<RenderDeviceD3D11&>(rd);
+	RenderDeviceD3D11& rd3d = static_cast<RenderDeviceD3D11&>(rd);
 	ID3D11DeviceContext3* const context = rd3d.getDeviceContext();
 
 	context->OMSetBlendState(_blend_state, NULL, 0xFFFFFFFF);
@@ -105,7 +105,7 @@ void BlendStateD3D11::set(IRenderDevice& rd) const
 void BlendStateD3D11::unset(IRenderDevice& rd) const
 {
 	GAFF_ASSERT(rd.getRendererType() == RENDERER_DIRECT3D11);
-	RenderDeviceD3D11& rd3d = reinterpret_cast<RenderDeviceD3D11&>(rd);
+	RenderDeviceD3D11& rd3d = static_cast<RenderDeviceD3D11&>(rd);
 	ID3D11DeviceContext3* const context = rd3d.getDeviceContext();
 
 	context->OMSetBlendState(NULL, NULL, 0xFFFFFFFF);

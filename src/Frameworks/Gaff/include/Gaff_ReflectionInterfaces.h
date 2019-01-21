@@ -476,7 +476,7 @@ public:
 	void* getBasePointer(T* object, Hash64 interface_name) const
 	{
 		const ptrdiff_t offset = getBasePointerOffset(interface_name);
-		return reinterpret_cast<char*>(object) - offset;
+		return reinterpret_cast<int8_t*>(object) - offset;
 	}
 
 	template <class T>

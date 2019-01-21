@@ -1094,7 +1094,7 @@ void* ReflectionDefinition<T, Allocator>::getFunc(Hash32 name, Hash64 args) cons
 	if (it != _funcs.end()) {
 		for (int32_t i = 0; i < FuncData::NUM_OVERLOADS; ++i) {
 			if (it->second.hash[i] == args) {
-				return reinterpret_cast<char*>(it->second.func[i].get()) - it->second.offset[i];
+				return reinterpret_cast<int8_t*>(it->second.func[i].get()) - it->second.offset[i];
 			}
 		}
 	}

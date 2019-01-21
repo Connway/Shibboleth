@@ -75,8 +75,8 @@ private:
 
 	wxDragResult OnData(wxCoord /*x*/, wxCoord /*y*/, wxDragResult result) override
 	{
-		wxCustomDataObject* const data = reinterpret_cast<wxCustomDataObject*>(m_dataObject);
-		RefDefItem** const items = reinterpret_cast<RefDefItem** const>(data->GetData());
+		wxCustomDataObject* const data = static_cast<wxCustomDataObject*>(m_dataObject);
+		RefDefItem** const items = static_cast<RefDefItem** const>(data->GetData());
 		const int32_t num_items = static_cast<int32_t>(data->GetDataSize()) / sizeof(RefDefItem*);
 
 		for (int32_t i = 0; i < num_items && items[i]; ++i) {
@@ -268,10 +268,10 @@ void ArchetypeEditor::onDragBegin(wxTreeEvent& event)
 	}
 
 	wxDataObject* const shared_data = _archetype_shared_ui->GetDropTarget()->GetDataObject();
-	reinterpret_cast<wxCustomDataObject*>(shared_data)->SetData(sizeof(RefDefItem*) * size, ref_def_items);
+	static_cast<wxCustomDataObject*>(shared_data)->SetData(sizeof(RefDefItem*) * size, ref_def_items);
 
 	wxDataObject* const data = _archetype_ui->GetDropTarget()->GetDataObject();
-	reinterpret_cast<wxCustomDataObject*>(data)->SetData(sizeof(RefDefItem*) * size, ref_def_items);
+	static_cast<wxCustomDataObject*>(data)->SetData(sizeof(RefDefItem*) * size, ref_def_items);
 
 	delete [] ref_def_items;
 
@@ -322,7 +322,7 @@ RefDefItem* ArchetypeEditor::getItem(const wxTreeItemId& id) const
 		return nullptr;
 	}
 
-	RefDefItem* const item = reinterpret_cast<RefDefItem*>(_ecs_components->GetItemData(id));
+	RefDefItem* const item = static_cast<RefDefItem*>(_ecs_components->GetItemData(id));
 
 	if (item->isDisabled()) {
 		return nullptr;
@@ -402,7 +402,7 @@ void ArchetypeEditor::initComponentList(void)
 
 		// Referencing otherwise GetItemData() returns null in on onDragBegin(). Might be some DLL weirdness.
 		const wxTreeItemId id = _ecs_components->AppendItem(category_id, ref_def->getReflectionInstance().getName(), -1, -1, new RefDefItem(*ref_def));
-		RefDefItem* const item = reinterpret_cast<RefDefItem*>(_ecs_components->GetItemData(id));
+		RefDefItem* const item = static_cast<RefDefItem*>(_ecs_components->GetItemData(id));
 		GAFF_REF(item);
 	}
 

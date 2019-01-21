@@ -84,7 +84,7 @@ AssetBrowser::~AssetBrowser(void)
 
 void AssetBrowser::onDirectorySelection(wxTreeEvent& event)
 {
-	wxDirItemData* const data = reinterpret_cast<wxDirItemData*>(_dir_ctrl->GetTreeCtrl()->GetItemData(event.GetItem()));
+	wxDirItemData* const data = static_cast<wxDirItemData*>(_dir_ctrl->GetTreeCtrl()->GetItemData(event.GetItem()));
 	_file_ctrl->reset(data->m_path);
 }
 
@@ -95,7 +95,7 @@ void AssetBrowser::onFileRightClick(wxTreeEvent& event)
 
 void AssetBrowser::onFileSelection(wxTreeEvent& event)
 {
-	wxDirItemData* const data = reinterpret_cast<wxDirItemData*>(_file_ctrl->GetTreeCtrl()->GetItemData(event.GetItem()));
+	wxDirItemData* const data = static_cast<wxDirItemData*>(_file_ctrl->GetTreeCtrl()->GetItemData(event.GetItem()));
 
 	if (data->m_isDir) {
 		return;
@@ -107,7 +107,7 @@ void AssetBrowser::onFileSelection(wxTreeEvent& event)
 
 void AssetBrowser::onFileActivated(wxTreeEvent& event)
 {
-	wxDirItemData* const data = reinterpret_cast<wxDirItemData*>(_file_ctrl->GetTreeCtrl()->GetItemData(event.GetItem()));
+	wxDirItemData* const data = static_cast<wxDirItemData*>(_file_ctrl->GetTreeCtrl()->GetItemData(event.GetItem()));
 	
 	if (data->m_isDir) {
 		_dir_ctrl->SelectPath(data->m_path);

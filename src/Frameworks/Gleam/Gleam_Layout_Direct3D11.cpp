@@ -68,8 +68,8 @@ bool LayoutD3D11::init(IRenderDevice& rd, const LayoutDescription* layout_desc, 
 		input_desc[i].InstanceDataStepRate = 0;
 	}
 
-	ID3DBlob* shader_buffer = reinterpret_cast<const ShaderD3D11*>(shader)->getByteCodeBuffer();
-	RenderDeviceD3D11& rd3d = reinterpret_cast<RenderDeviceD3D11&>(rd);
+	ID3DBlob* shader_buffer = static_cast<const ShaderD3D11*>(shader)->getByteCodeBuffer();
+	RenderDeviceD3D11& rd3d = static_cast<RenderDeviceD3D11&>(rd);
 	ID3D11Device5* const device = rd3d.getDevice();
 
 	HRESULT result = device->CreateInputLayout(input_desc.data(), static_cast<UINT>(layout_desc_size), shader_buffer->GetBufferPointer(), shader_buffer->GetBufferSize(), &_layout);
@@ -84,7 +84,7 @@ void LayoutD3D11::destroy(void)
 void LayoutD3D11::setLayout(IRenderDevice& rd, const IMesh*)
 {
 	GAFF_ASSERT(rd.getRendererType() == RENDERER_DIRECT3D11);
-	RenderDeviceD3D11& rd3d = reinterpret_cast<RenderDeviceD3D11&>(rd);
+	RenderDeviceD3D11& rd3d = static_cast<RenderDeviceD3D11&>(rd);
 	ID3D11DeviceContext3* const context = rd3d.getDeviceContext();
 	context->IASetInputLayout(_layout);
 }
@@ -92,7 +92,7 @@ void LayoutD3D11::setLayout(IRenderDevice& rd, const IMesh*)
 void LayoutD3D11::unsetLayout(IRenderDevice& rd)
 {
 	GAFF_ASSERT(rd.getRendererType() == RENDERER_DIRECT3D11);
-	RenderDeviceD3D11& rd3d = reinterpret_cast<RenderDeviceD3D11&>(rd);
+	RenderDeviceD3D11& rd3d = static_cast<RenderDeviceD3D11&>(rd);
 	ID3D11DeviceContext3* const context = rd3d.getDeviceContext();
 	context->IASetInputLayout(NULL);
 }

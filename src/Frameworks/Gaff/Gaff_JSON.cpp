@@ -468,7 +468,7 @@ const char* JSON::dump(void)
 
 	if (WriteJSON(*this, writer)) {
 		size_t size = buffer.GetSize();
-		char* str = reinterpret_cast<char*>(g_alloc(size + 1));
+		char* const str = reinterpret_cast<char*>(g_alloc(size + 1));
 
 		memcpy_s(str, size, buffer.GetString(), size);
 		str[size] = 0;

@@ -34,8 +34,8 @@ bool RenderOutputD3D11::init(IRenderDevice& device, const IWindow& window, int32
 	GAFF_ASSERT(output_id > -1 || window.getWindowMode() != IWindow::WM_FULLSCREEN);
 	_vsync = output_id > -1 && vsync;
 
-	RenderDeviceD3D11& rd3d = reinterpret_cast<RenderDeviceD3D11&>(device);
-	const Window& wnd = reinterpret_cast<const Window&>(window);
+	RenderDeviceD3D11& rd3d = static_cast<RenderDeviceD3D11&>(device);
+	const Window& wnd = static_cast<const Window&>(window);
 
 	IDXGISwapChain1* swap_chain = nullptr;
 	IDXGIFactory6* factory = nullptr;

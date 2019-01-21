@@ -281,7 +281,7 @@ void EditorFrame::onSpawnWindow(wxCommandEvent& event)
 
 void EditorFrame::onWindowClose(wxAuiManagerEvent& event)
 {
-	Gaff::IReflectionObject* const instance = reinterpret_cast<Gaff::IReflectionObject*>(reinterpret_cast<char*>(event.GetPane()->window) - sizeof(Gaff::IReflectionObject));
+	Gaff::IReflectionObject* const instance = reinterpret_cast<Gaff::IReflectionObject*>(reinterpret_cast<int8_t*>(event.GetPane()->window) - sizeof(Gaff::IReflectionObject));
 	GetApp().getEditor()->removeEditorWindow(instance);
 }
 

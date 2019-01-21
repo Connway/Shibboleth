@@ -126,7 +126,7 @@ void Allocator::set_name(const char*)
 
 void Allocator::addOnFreeCallback(OnFreeCallback callback, void* data)
 {
-	AllocationHeader* const header = reinterpret_cast<AllocationHeader*>(reinterpret_cast<char*>(data) - sizeof(AllocationHeader));
+	AllocationHeader* const header = reinterpret_cast<AllocationHeader*>(reinterpret_cast<int8_t*>(data) - sizeof(AllocationHeader));
 
 	for (int32_t i = 0; i < AllocationHeader::s_num_free_callbacks; ++i) {
 		if (!header->free_callbacks[i]) {
@@ -140,7 +140,7 @@ void Allocator::addOnFreeCallback(OnFreeCallback callback, void* data)
 
 void Allocator::removeOnFreeCallback(OnFreeCallback callback, void* data)
 {
-	AllocationHeader* const header = reinterpret_cast<AllocationHeader*>(reinterpret_cast<char*>(data) - sizeof(AllocationHeader));
+	AllocationHeader* const header = reinterpret_cast<AllocationHeader*>(reinterpret_cast<int8_t*>(data) - sizeof(AllocationHeader));
 
 	for (int32_t i = 0; i < AllocationHeader::s_num_free_callbacks; ++i) {
 		if (header->free_callbacks[i] == callback) {
@@ -181,7 +181,7 @@ void* Allocator::alloc(size_t size_bytes, size_t alignment, int32_t pool_index, 
 			line
 		);
 
-		return reinterpret_cast<char*>(data) + sizeof(AllocationHeader);
+		return reinterpret_cast<int8_t*>(data) + sizeof(AllocationHeader);
 	}
 
 	return nullptr;
@@ -200,7 +200,7 @@ void* Allocator::alloc(size_t size_bytes, int32_t pool_index, const char* file, 
 			line
 		);
 
-		return reinterpret_cast<char*>(data) + sizeof(AllocationHeader);
+		return reinterpret_cast<int8_t*>(data) + sizeof(AllocationHeader);
 	}
 
 	return nullptr;
@@ -226,15 +226,15 @@ void Allocator::free(void* data)
 
 	// Looping over the alloc list is a terrible way of determining if a call to delete is valid.
 
-	//AllocationHeader* header = reinterpret_cast<AllocationHeader*>(reinterpret_cast<char*>(data) - sizeof(AllocationHeader));
+	//AllocationHeader* header = reinterpret_cast<AllocationHeader*>(reinterpret_cast<int8_t*>(data) - sizeof(AllocationHeader));
 	AllocationHeader* header = nullptr;
 
 	_alloc_lock.lock();
 
 	//bool found = false;
 	for (AllocationHeader* list = _list_head; list; list = list->next) {
-		if (data >= reinterpret_cast<char*>(list) + sizeof(AllocationHeader) &&
-			data < reinterpret_cast<char*>(list) + list->alloc_size + sizeof(AllocationHeader)) {
+		if (data >= reinterpret_cast<int8_t*>(list) + sizeof(AllocationHeader) &&
+			data < reinterpret_cast<int8_t*>(list) + list->alloc_size + sizeof(AllocationHeader)) {
 
 			header = list;
 			break;
@@ -427,7 +427,7 @@ void Allocator::writeLeakLog(void) const
 		const char* const pool_name = _tagged_pools[header->pool_index].pool_name;
 
 #ifdef GATHER_ALLOCATION_STACKTRACE
-		log.printf("Address 0x%p [%s]:\n", reinterpret_cast<const char*>(header) + sizeof(AllocationHeader), pool_name);
+		log.printf("Address 0x%p [%s]:\n", reinterpret_cast<const int8_t*>(header) + sizeof(AllocationHeader), pool_name);
 
 		const int32_t frames = header->trace.getNumCapturedFrames();
 
@@ -446,7 +446,7 @@ void Allocator::writeLeakLog(void) const
 		log.printf("%s:(%i) [%s]\n", header->file, header->line, pool_name);
 #endif
 
-		AllocationHeader* old_header = header;
+		AllocationHeader* const old_header = header;
 		header = header->next;
 
 		coherent_rpmalloc::rpfree(old_header);

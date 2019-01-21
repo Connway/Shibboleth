@@ -41,7 +41,7 @@ public:
 
 	bool init(void) override;
 
-	void addArchetype(const ECSArchetype& archetype, const char* name);
+	//void addArchetype(const ECSArchetype& archetype, const char* name);
 	void addArchetype(ECSArchetype&& archetype, const char* name);
 	const ECSArchetype& getArchetype(Gaff::Hash64 name) const;
 	const ECSArchetype& getArchetype(const char* name) const;
