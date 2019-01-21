@@ -93,71 +93,13 @@ bool ECSManager::loadFile(const char* file_name, IFile* file)
 		return false;
 	}
 
-	const ReflectionManager& refl_mgr = GetApp().getReflectionManager();
 	const Gaff::JSON shared_components = json["shared_components"];
 	const Gaff::JSON components = json["components"];
 
 	ECSArchetype archetype;
 	archetype.setSharedName(file_name);
 
-	shared_components.forEachInObject([&](const char* component, const Gaff::JSON& value) -> bool
-	{
-		if (!value.isArray()) {
-			// $TODO: Log error
-			return false;
-		}
-
-		const Gaff::IReflectionDefinition* const ref_def = refl_mgr.getReflection(Gaff::FNV1aHash64String(component));
-
-		if (!ref_def) {
-			// $TODO: Log error
-			return false;
-		}
-
-		const ECSClassAttribute* const ecs = ref_def->getClassAttr<ECSClassAttribute>();
-
-		if (!ecs) {
-			// $TODO: Log error
-			return false;
-		}
-
-		archetype.addShared(ref_def);
-
-		//value.forEachInArray([&](int32_t index, const Gaff::JSON& ecs_var) -> bool
-		//{
-		//	SerializeReader<Gaff::JSON> reader(ecs_var, allocator);
-		//	var_attrs[index]->getType().load(reader, instances[index]);
-
-		//	return false;
-		//});
-
-		return false;
-	});
-
-	components.forEachInArray([&](int32_t, const Gaff::JSON& value) -> bool
-	{
-		if (!value.isString()) {
-			// $TODO: Log error.
-			return false;
-		}
-
-		const Gaff::IReflectionDefinition* const ref_def = refl_mgr.getReflection(Gaff::FNV1aHash64String(value.getString()));
-
-		if (!ref_def) {
-			// $TODO: Log error
-			return false;
-		}
-
-		const ECSClassAttribute* const ecs = ref_def->getClassAttr<ECSClassAttribute>();
-
-		if (!ecs) {
-			// $TODO: Log error
-			return false;
-		}
-
-		archetype.add(ref_def);
-		return false;
-	});
+	archetype.fromJSON(json);
 
 	return false;
 }

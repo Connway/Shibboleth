@@ -24,6 +24,7 @@ THE SOFTWARE.
 
 SHIB_REFLECTION_EXTERNAL_DEFINE(glm::quat)
 SHIB_REFLECTION_BUILDER_BEGIN(glm::quat)
+	.ctor<const glm::quat&>()
 	.ctor<>()
 
 	.var("x", &glm::quat::x)
@@ -34,6 +35,7 @@ SHIB_REFLECTION_BUILDER_END(glm::quat)
 
 SHIB_REFLECTION_EXTERNAL_DEFINE(glm::vec4)
 SHIB_REFLECTION_BUILDER_BEGIN(glm::vec4)
+	.ctor<const glm::vec4&>()
 	.ctor<>()
 
 	.var("x", &glm::vec4::x)
@@ -44,6 +46,7 @@ SHIB_REFLECTION_BUILDER_END(glm::vec4)
 
 SHIB_REFLECTION_EXTERNAL_DEFINE(glm::vec3)
 SHIB_REFLECTION_BUILDER_BEGIN(glm::vec3)
+	.ctor<const glm::vec3&>()
 	.ctor<>()
 
 	.var("x", &glm::vec3::x)
@@ -53,6 +56,7 @@ SHIB_REFLECTION_BUILDER_END(glm::vec3)
 
 SHIB_REFLECTION_EXTERNAL_DEFINE(glm::vec2)
 SHIB_REFLECTION_BUILDER_BEGIN(glm::vec2)
+	.ctor<const glm::vec2&>()
 	.ctor<>()
 
 	.var("x", &glm::vec2::x)
@@ -61,6 +65,7 @@ SHIB_REFLECTION_BUILDER_END(glm::vec2)
 
 SHIB_REFLECTION_EXTERNAL_DEFINE(Gleam::Transform)
 SHIB_REFLECTION_BUILDER_BEGIN(Gleam::Transform)
+	.ctor<const Gleam::Transform&>()
 	.ctor<>()
 
 	.var("rotation", &Gleam::Transform::getRotation, &Gleam::Transform::setRotation)
@@ -70,6 +75,7 @@ SHIB_REFLECTION_BUILDER_END(Gleam::Transform)
 
 SHIB_REFLECTION_EXTERNAL_DEFINE(Gleam::AABB)
 SHIB_REFLECTION_BUILDER_BEGIN(Gleam::AABB)
+	.ctor<const Gleam::AABB&>()
 	.ctor<>()
 
 	.var("min", &Gleam::AABB::getMin, &Gleam::AABB::setMin)
