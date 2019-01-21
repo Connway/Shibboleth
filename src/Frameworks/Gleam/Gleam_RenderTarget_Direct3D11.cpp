@@ -76,9 +76,9 @@ bool RenderTargetD3D11::addTexture(IRenderDevice& rd, const ITexture* color_text
 		desc.Texture2DArray.FirstArraySlice = face;
 	}
 
-	RenderDeviceD3D11& rd3d = reinterpret_cast<RenderDeviceD3D11&>(rd);
+	RenderDeviceD3D11& rd3d = static_cast<RenderDeviceD3D11&>(rd);
 
-	HRESULT result = rd3d.getDevice()->CreateRenderTargetView1(reinterpret_cast<const TextureD3D11*>(color_texture)->getTexture2D(), &desc, &render_target_view);
+	HRESULT result = rd3d.getDevice()->CreateRenderTargetView1(static_cast<const TextureD3D11*>(color_texture)->getTexture2D(), &desc, &render_target_view);
 	RETURNIFFAILED(result)
 
 	// This is the first one, use this texture's width/height
@@ -116,8 +116,8 @@ bool RenderTargetD3D11::addDepthStencilBuffer(IRenderDevice& rd, const ITexture*
 	desc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
 	desc.Texture2D.MipSlice = 0;
 
-	RenderDeviceD3D11& rd3d = reinterpret_cast<RenderDeviceD3D11&>(rd);
-	HRESULT result = rd3d.getDevice()->CreateDepthStencilView(reinterpret_cast<const TextureD3D11*>(depth_stencil_texture)->getTexture2D(), &desc, &_depth_stencil_view);
+	RenderDeviceD3D11& rd3d = static_cast<RenderDeviceD3D11&>(rd);
+	HRESULT result = rd3d.getDevice()->CreateDepthStencilView(static_cast<const TextureD3D11*>(depth_stencil_texture)->getTexture2D(), &desc, &_depth_stencil_view);
 	return SUCCEEDED(result);
 }
 
@@ -125,7 +125,7 @@ void RenderTargetD3D11::bind(IRenderDevice& rd)
 {
 	GAFF_ASSERT(rd.getRendererType() == RENDERER_DIRECT3D11);
 
-	RenderDeviceD3D11& rd3d = reinterpret_cast<RenderDeviceD3D11&>(rd);
+	RenderDeviceD3D11& rd3d = static_cast<RenderDeviceD3D11&>(rd);
 	ID3D11DeviceContext3* const context = rd3d.getDeviceContext();
 
 	context->OMSetRenderTargets(static_cast<UINT>(_render_target_views.size()), reinterpret_cast<ID3D11RenderTargetView**>(_render_target_views.data()), _depth_stencil_view);
@@ -135,14 +135,14 @@ void RenderTargetD3D11::bind(IRenderDevice& rd)
 void RenderTargetD3D11::unbind(IRenderDevice& rd)
 {
 	GAFF_ASSERT(rd.getRendererType() == RENDERER_DIRECT3D11);
-	RenderDeviceD3D11& rd3d = reinterpret_cast<RenderDeviceD3D11&>(rd);
+	RenderDeviceD3D11& rd3d = static_cast<RenderDeviceD3D11&>(rd);
 	rd3d.getDeviceContext()->OMSetRenderTargets(0, nullptr, nullptr);
 }
 
 void RenderTargetD3D11::clear(IRenderDevice& rd, uint32_t clear_flags, float clear_depth, uint8_t clear_stencil, float* clear_color)
 {
 	GAFF_ASSERT(rd.getRendererType() == RENDERER_DIRECT3D11);
-	RenderDeviceD3D11& rd3d = reinterpret_cast<RenderDeviceD3D11&>(rd);
+	RenderDeviceD3D11& rd3d = static_cast<RenderDeviceD3D11&>(rd);
 	ID3D11DeviceContext3* const context = rd3d.getDeviceContext();
 
 	if (clear_flags & CLEAR_COLOR) {

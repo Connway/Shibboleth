@@ -55,7 +55,7 @@ bool ShaderResourceViewD3D11::init(IRenderDevice& rd, const ITexture* texture)
 {
 	GAFF_ASSERT(texture);
 
-	RenderDeviceD3D11& rd3d = reinterpret_cast<RenderDeviceD3D11&>(rd);
+	RenderDeviceD3D11& rd3d = static_cast<RenderDeviceD3D11&>(rd);
 	ID3D11Device5* const device = rd3d.getDevice();
 
 	_view_type = VIEW_TEXTURE;
@@ -67,7 +67,7 @@ bool ShaderResourceViewD3D11::init(IRenderDevice& rd, const ITexture* texture)
 	shader_desc.Texture2D.MostDetailedMip = 0;
 	shader_desc.Texture2D.MipLevels = texture->getMipLevels();
 
-	ID3D11Resource* resource = reinterpret_cast<ID3D11Resource*>(reinterpret_cast<const TextureD3D11*>(texture)->getTexture());
+	ID3D11Resource* resource = static_cast<ID3D11Resource*>(static_cast<const TextureD3D11*>(texture)->getTexture());
 
 	HRESULT result = device->CreateShaderResourceView(resource, &shader_desc, &_resource_view);
 	return SUCCEEDED(result);
@@ -77,7 +77,7 @@ bool ShaderResourceViewD3D11::init(IRenderDevice& rd, const IBuffer* buffer)
 {
 	GAFF_ASSERT(buffer);
 
-	RenderDeviceD3D11& rd3d = reinterpret_cast<RenderDeviceD3D11&>(rd);
+	RenderDeviceD3D11& rd3d = static_cast<RenderDeviceD3D11&>(rd);
 	ID3D11Device5* const device = rd3d.getDevice();
 
 	_view_type = VIEW_TEXTURE;
@@ -89,7 +89,7 @@ bool ShaderResourceViewD3D11::init(IRenderDevice& rd, const IBuffer* buffer)
 	shader_desc.Buffer.NumElements = static_cast<UINT>(static_cast<int32_t>(buffer->getSize()) / buffer->getStructuredByteStride());
 	shader_desc.Buffer.FirstElement = 0;
 
-	ID3D11Resource* resource = reinterpret_cast<const BufferD3D11*>(buffer)->getBuffer();
+	ID3D11Resource* resource = static_cast<const BufferD3D11*>(buffer)->getBuffer();
 
 	HRESULT result = device->CreateShaderResourceView(resource, &shader_desc, &_resource_view);
 	return SUCCEEDED(result);

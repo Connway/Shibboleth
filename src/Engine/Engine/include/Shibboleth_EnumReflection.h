@@ -81,7 +81,7 @@ THE SOFTWARE.
 		if (g_enum_reflection_definition) { \
 			return; \
 		} \
-		g_enum_reflection_definition = reinterpret_cast< Gaff::EnumReflectionDefinition<type, ProxyAllocator>* >( \
+		g_enum_reflection_definition = static_cast< Gaff::EnumReflectionDefinition<type, ProxyAllocator>* >( \
 			const_cast< Gaff::IEnumReflectionDefinition* >( \
 				GetApp().getReflectionManager().getEnumReflection(Gaff::FNV1aHash64Const(#type)) \
 			) \

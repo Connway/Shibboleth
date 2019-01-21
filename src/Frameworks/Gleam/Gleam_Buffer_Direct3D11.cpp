@@ -60,7 +60,7 @@ bool BufferD3D11::init(
 {
 	GAFF_ASSERT(rd.getRendererType() == RENDERER_DIRECT3D11 && !_buffer);
 
-	RenderDeviceD3D11& rd3d = reinterpret_cast<RenderDeviceD3D11&>(rd);
+	RenderDeviceD3D11& rd3d = static_cast<RenderDeviceD3D11&>(rd);
 	ID3D11Device5* const device = rd3d.getDevice();
 
 	D3D11_SUBRESOURCE_DATA subres_data;
@@ -111,14 +111,14 @@ void BufferD3D11::destroy(void)
 bool BufferD3D11::update(IRenderDevice& rd, const void* data, size_t size, size_t offset)
 {
 	GAFF_ASSERT(rd.getRendererType() == RENDERER_DIRECT3D11 && data && size);
-	RenderDeviceD3D11& rd3d = reinterpret_cast<RenderDeviceD3D11&>(rd);
+	RenderDeviceD3D11& rd3d = static_cast<RenderDeviceD3D11&>(rd);
 	ID3D11DeviceContext3* const context = rd3d.getDeviceContext();
 	D3D11_MAPPED_SUBRESOURCE mapped_resource;
 
 	HRESULT result = context->Map(_buffer, 0, (offset) ? D3D11_MAP_WRITE_NO_OVERWRITE : D3D11_MAP_WRITE_DISCARD, 0, &mapped_resource);
 	RETURNIFFAILED(result)
 
-	memcpy(reinterpret_cast<char*>(mapped_resource.pData) + offset, data, size);
+	memcpy(reinterpret_cast<int8_t*>(mapped_resource.pData) + offset, data, size);
 	context->Unmap(_buffer, 0);
 
 	return true;
@@ -127,7 +127,7 @@ bool BufferD3D11::update(IRenderDevice& rd, const void* data, size_t size, size_
 void* BufferD3D11::map(IRenderDevice& rd, MapType map_type)
 {
 	GAFF_ASSERT(rd.getRendererType() == RENDERER_DIRECT3D11 && map_type != NONE);
-	RenderDeviceD3D11& rd3d = reinterpret_cast<RenderDeviceD3D11&>(rd);
+	RenderDeviceD3D11& rd3d = static_cast<RenderDeviceD3D11&>(rd);
 	ID3D11DeviceContext3* const context = rd3d.getDeviceContext();
 	D3D11_MAPPED_SUBRESOURCE mapped_resource;
 
@@ -138,7 +138,7 @@ void* BufferD3D11::map(IRenderDevice& rd, MapType map_type)
 void BufferD3D11::unmap(IRenderDevice& rd)
 {
 	GAFF_ASSERT(rd.getRendererType() == RENDERER_DIRECT3D11);
-	RenderDeviceD3D11& rd3d = reinterpret_cast<RenderDeviceD3D11&>(rd);
+	RenderDeviceD3D11& rd3d = static_cast<RenderDeviceD3D11&>(rd);
 	ID3D11DeviceContext3* const context = rd3d.getDeviceContext();
 	context->Unmap(_buffer, 0);
 }

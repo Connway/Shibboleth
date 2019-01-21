@@ -169,7 +169,7 @@ IProgramBuffers* ProgramBuffersD3D11::clone(void) const
 void ProgramBuffersD3D11::bind(IRenderDevice& rd)
 {
 	GAFF_ASSERT(rd.getRendererType() == RENDERER_DIRECT3D11);
-	RenderDeviceD3D11& rd3d = reinterpret_cast<RenderDeviceD3D11&>(rd);
+	RenderDeviceD3D11& rd3d = static_cast<RenderDeviceD3D11&>(rd);
 	ID3D11DeviceContext3* const context = rd3d.getDeviceContext();
 
 	for (unsigned int i = 0; i < IShader::SHADER_TYPE_SIZE; ++i) {
@@ -195,7 +195,7 @@ void ProgramBuffersD3D11::cacheResViews(IShader::ShaderType type)
 	res_views.clear();
 
 	for (size_t i = 0; i < resource_views.size(); ++i) {
-		res_views.emplace_back(reinterpret_cast<const ShaderResourceViewD3D11*>(resource_views[i])->getResourceView());
+		res_views.emplace_back(static_cast<const ShaderResourceViewD3D11*>(resource_views[i])->getResourceView());
 	}
 }
 
@@ -206,7 +206,7 @@ void ProgramBuffersD3D11::cacheSamplers(IShader::ShaderType type)
 	samplers.clear();
 
 	for (size_t i = 0; i < sampler_states.size(); ++i) {
-		samplers.emplace_back(reinterpret_cast<const SamplerStateD3D11*>(sampler_states[i])->getSamplerState());
+		samplers.emplace_back(static_cast<const SamplerStateD3D11*>(sampler_states[i])->getSamplerState());
 	}
 }
 
@@ -217,7 +217,7 @@ void ProgramBuffersD3D11::cacheBuffers(IShader::ShaderType type)
 	buffers.clear();
 
 	for (size_t i = 0; i < const_bufs.size(); ++i) {
-		buffers.emplace_back(reinterpret_cast<BufferD3D11*>(const_bufs[i])->getBuffer());
+		buffers.emplace_back(static_cast<BufferD3D11*>(const_bufs[i])->getBuffer());
 	}
 }
 
@@ -250,32 +250,32 @@ void ProgramD3D11::attach(IShader* shader)
 	switch (shader->getType()) {
 		case IShader::SHADER_VERTEX:
 			SAFERELEASE(_shader_vertex)
-			_shader_vertex = reinterpret_cast<const ShaderD3D11*>(shader)->getVertexShader();
+			_shader_vertex = static_cast<const ShaderD3D11*>(shader)->getVertexShader();
 			break;
 
 		case IShader::SHADER_PIXEL:
 			SAFERELEASE(_shader_pixel)
-			_shader_pixel = reinterpret_cast<const ShaderD3D11*>(shader)->getPixelShader();
+			_shader_pixel = static_cast<const ShaderD3D11*>(shader)->getPixelShader();
 			break;
 
 		case IShader::SHADER_DOMAIN:
 			SAFERELEASE(_shader_domain)
-			_shader_domain = reinterpret_cast<const ShaderD3D11*>(shader)->getDomainShader();
+			_shader_domain = static_cast<const ShaderD3D11*>(shader)->getDomainShader();
 			break;
 
 		case IShader::SHADER_GEOMETRY:
 			SAFERELEASE(_shader_geometry)
-			_shader_geometry = reinterpret_cast<const ShaderD3D11*>(shader)->getGeometryShader();
+			_shader_geometry = static_cast<const ShaderD3D11*>(shader)->getGeometryShader();
 			break;
 
 		case IShader::SHADER_HULL:
 			SAFERELEASE(_shader_hull)
-			_shader_hull = reinterpret_cast<const ShaderD3D11*>(shader)->getHullShader();
+			_shader_hull = static_cast<const ShaderD3D11*>(shader)->getHullShader();
 			break;
 
 		case IShader::SHADER_COMPUTE:
 			SAFERELEASE(_shader_compute)
-			_shader_compute = reinterpret_cast<const ShaderD3D11*>(shader)->getComputeShader();
+			_shader_compute = static_cast<const ShaderD3D11*>(shader)->getComputeShader();
 			break;
 
 		default:
@@ -327,7 +327,7 @@ void ProgramD3D11::detach(IShader::ShaderType shader)
 void ProgramD3D11::bind(IRenderDevice& rd)
 {
 	GAFF_ASSERT(rd.getRendererType() == RENDERER_DIRECT3D11);
-	RenderDeviceD3D11& rd3d = reinterpret_cast<RenderDeviceD3D11&>(rd);
+	RenderDeviceD3D11& rd3d = static_cast<RenderDeviceD3D11&>(rd);
 	ID3D11DeviceContext3* const context = rd3d.getDeviceContext();
 
 	context->VSSetShader(_shader_vertex, NULL, 0);
@@ -341,7 +341,7 @@ void ProgramD3D11::bind(IRenderDevice& rd)
 void ProgramD3D11::unbind(IRenderDevice& rd)
 {
 	GAFF_ASSERT(rd.getRendererType() == RENDERER_DIRECT3D11);
-	RenderDeviceD3D11& rd3d = reinterpret_cast<RenderDeviceD3D11&>(rd);
+	RenderDeviceD3D11& rd3d = static_cast<RenderDeviceD3D11&>(rd);
 	ID3D11DeviceContext3* const context = rd3d.getDeviceContext();
 
 	context->VSSetShader(NULL, NULL, 0);
@@ -374,7 +374,7 @@ ShaderReflection ProgramD3D11::getShaderReflectionData(const IShader* shader, Pr
 {
 	ShaderReflection reflection;
 
-	ID3DBlob* blob = reinterpret_cast<const ShaderD3D11*>(shader)->getByteCodeBuffer();
+	ID3DBlob* blob = static_cast<const ShaderD3D11*>(shader)->getByteCodeBuffer();
 
 	ID3D11ShaderReflection* refl = nullptr;
 	HRESULT result = D3DReflect(

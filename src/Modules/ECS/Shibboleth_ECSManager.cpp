@@ -40,23 +40,23 @@ bool ECSManager::init(void)
 	// Load all archetypes from config directory
 	auto callback = Gaff::MemberFunc(this, &ECSManager::loadFile);
 	IApp& app = GetApp();
-	const char* const archetype_dir = app.getConfigs()["archetype_dir"].getString("archetypes");
+	const char* const archetype_dir = app.getConfigs()["archetype_dir"].getString("Resources/Archetypes");
 	app.getFileSystem().forEachFile(archetype_dir, callback);
 	return true;
 }
 
-void ECSManager::addArchetype(const ECSArchetype& archetype, const char* name)
-{
-	GAFF_ASSERT(_entity_pages.find(archetype.getHash()) == _entity_pages.end());
-	EntityData& data = _entity_pages[archetype.getHash()];
-	data.num_entities_per_page = (EA_KIBIBYTE(64) - sizeof(EntityPage*)) / archetype.size();
-	data.archetype = archetype;
-
-	ProxyAllocator allocator("ECS");
-	data.shared_components = SHIB_ALLOC_ALIGNED(archetype.sharedSize(), 16, allocator);
-
-	_archtypes[Gaff::FNV1aHash64String(name)] = archetype.getHash();
-}
+//void ECSManager::addArchetype(const ECSArchetype& archetype, const char* name)
+//{
+//	GAFF_ASSERT(_entity_pages.find(archetype.getHash()) == _entity_pages.end());
+//	EntityData& data = _entity_pages[archetype.getHash()];
+//	data.num_entities_per_page = (EA_KIBIBYTE(64) - sizeof(EntityPage*)) / archetype.size();
+//	data.archetype = archetype;
+//
+//	ProxyAllocator allocator("ECS");
+//	data.shared_components = SHIB_ALLOC_ALIGNED(archetype.sharedSize(), 16, allocator);
+//
+//	_archtypes[Gaff::FNV1aHash64String(name)] = archetype.getHash();
+//}
 
 void ECSManager::addArchetype(ECSArchetype&& archetype, const char* name)
 {
@@ -84,7 +84,7 @@ const ECSArchetype& ECSManager::getArchetype(const char* name) const
 	return getArchetype(Gaff::FNV1aHash64String(name));
 }
 
-bool ECSManager::loadFile(const char* file_name, IFile* file)
+bool ECSManager::loadFile(const char*, IFile* file)
 {
 	Gaff::JSON json;
 
@@ -93,13 +93,10 @@ bool ECSManager::loadFile(const char* file_name, IFile* file)
 		return false;
 	}
 
-	const Gaff::JSON shared_components = json["shared_components"];
-	const Gaff::JSON components = json["components"];
-
 	ECSArchetype archetype;
-	archetype.setSharedName(file_name);
-
 	archetype.fromJSON(json);
+
+	addArchetype(std::move(archetype), "");
 
 	return false;
 }

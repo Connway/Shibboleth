@@ -100,7 +100,7 @@ void MeshD3D11::renderNonIndexed(IRenderDevice& rd, int32_t vert_count, int32_t 
 {
 	GAFF_ASSERT(rd.getRendererType() == RENDERER_DIRECT3D11 && _vert_data.size() && _indices && _indices->getRendererType() == RENDERER_DIRECT3D11);
 
-	RenderDeviceD3D11& rd3d = reinterpret_cast<RenderDeviceD3D11&>(rd);
+	RenderDeviceD3D11& rd3d = static_cast<RenderDeviceD3D11&>(rd);
 	ID3D11DeviceContext3* const context = rd3d.getDeviceContext();
 
 	context->IASetVertexBuffers(0, static_cast<UINT>(_buffers.size()), _buffers.data(), _strides.data(), _offsets.data());
@@ -112,11 +112,11 @@ void MeshD3D11::renderInstanced(IRenderDevice& rd, int32_t count)
 {
 	GAFF_ASSERT(rd.getRendererType() == RENDERER_DIRECT3D11 && _vert_data.size() && _indices && _indices->getRendererType() == RENDERER_DIRECT3D11);
 
-	RenderDeviceD3D11& rd3d = reinterpret_cast<RenderDeviceD3D11&>(rd);
+	RenderDeviceD3D11& rd3d = static_cast<RenderDeviceD3D11&>(rd);
 	ID3D11DeviceContext3* const context = rd3d.getDeviceContext();
 
 	context->IASetVertexBuffers(0, static_cast<UINT>(_buffers.size()), _buffers.data(), _strides.data(), _offsets.data());
-	context->IASetIndexBuffer(reinterpret_cast<BufferD3D11*>(_indices)->getBuffer(), DXGI_FORMAT_R32_UINT, 0);
+	context->IASetIndexBuffer(static_cast<BufferD3D11*>(_indices)->getBuffer(), DXGI_FORMAT_R32_UINT, 0);
 	context->IASetPrimitiveTopology(_d3d_topology);
 	context->DrawIndexedInstanced(getIndexCount(), count, 0, 0, 0);
 }
@@ -125,11 +125,11 @@ void MeshD3D11::render(IRenderDevice& rd)
 {
 	GAFF_ASSERT(rd.getRendererType() == RENDERER_DIRECT3D11 && _vert_data.size() && _indices && _indices->getRendererType() == RENDERER_DIRECT3D11);
 
-	RenderDeviceD3D11& rd3d = reinterpret_cast<RenderDeviceD3D11&>(rd);
+	RenderDeviceD3D11& rd3d = static_cast<RenderDeviceD3D11&>(rd);
 	ID3D11DeviceContext3* const context = rd3d.getDeviceContext();
 
 	context->IASetVertexBuffers(0, static_cast<UINT>(_buffers.size()), _buffers.data(), _strides.data(), _offsets.data());
-	context->IASetIndexBuffer(reinterpret_cast<BufferD3D11*>(_indices)->getBuffer(), DXGI_FORMAT_R32_UINT, 0);
+	context->IASetIndexBuffer(static_cast<BufferD3D11*>(_indices)->getBuffer(), DXGI_FORMAT_R32_UINT, 0);
 	context->IASetPrimitiveTopology(_d3d_topology);
 	context->DrawIndexed(getIndexCount(), 0, 0);
 }
@@ -150,7 +150,7 @@ void MeshD3D11::cacheBuffers(void)
 	for (unsigned int i = 0; i < _vert_data.size(); ++i) {
 		temp = _vert_data[i];
 		GAFF_ASSERT(temp && temp->getRendererType() == RENDERER_DIRECT3D11);
-		_buffers.emplace_back(reinterpret_cast<BufferD3D11*>(temp)->getBuffer());
+		_buffers.emplace_back(static_cast<BufferD3D11*>(temp)->getBuffer());
 		_strides.emplace_back(temp->getStride());
 		_offsets.emplace_back(0);
 	}

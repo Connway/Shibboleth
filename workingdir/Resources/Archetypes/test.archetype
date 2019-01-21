@@ -1,0 +1,14 @@
+{
+	"name": "Test",
+
+	"shared_components": {
+		//"Model": {
+		//}
+		"Scale": [{ "x": 0, "y": 1, "z": 2 }]
+	}
+
+	"components": [
+		"Position",
+		"Rotation"
+	]
+}

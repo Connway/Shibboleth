@@ -43,7 +43,7 @@ SHIB_REFLECTION_CLASS_DEFINE_END(PrefabResource)
 PrefabResource::~PrefabResource(void)
 {
 	if (_prefab) {
-		GetApp().getManagerTUnsafe<ObjectManager>().destroyObject(_prefab);
+		GetApp().getManagerTFast<ObjectManager>().destroyObject(_prefab);
 	}
 }
 
@@ -80,7 +80,7 @@ bool PrefabResource::loadMPack(IFile* file, const ProxyAllocator& allocator)
 
 void PrefabResource::loadPrefab(IFile* file)
 {
-	ObjectManager& obj_mgr = GetApp().getManagerTUnsafe<ObjectManager>();
+	ObjectManager& obj_mgr = GetApp().getManagerTFast<ObjectManager>();
 	ProxyAllocator allocator("Resource");
 
 	_prefab = obj_mgr.createObject();

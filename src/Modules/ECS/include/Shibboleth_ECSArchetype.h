@@ -34,11 +34,16 @@ NS_SHIBBOLETH
 
 class IECSVarAttribute;
 
-class ECSArchetype
+class ECSArchetype final
 {
+	GAFF_NO_COPY(ECSArchetype);
+
 public:
-	void setSharedName(Gaff::Hash64 name);
-	void setSharedName(const char* name);
+	ECSArchetype(ECSArchetype&& archetype);
+	ECSArchetype(void) = default;
+	~ECSArchetype(void);
+
+	ECSArchetype& operator=(ECSArchetype&& rhs);
 
 	void addShared(const Vector<const Gaff::IReflectionDefinition*>& ref_defs);
 	void addShared(const Gaff::IReflectionDefinition& ref_def);
@@ -49,36 +54,24 @@ public:
 	void initShared(const Gaff::JSON& json);
 
 	void add(const Vector<const Gaff::IReflectionDefinition*>& ref_defs);
-	void add(const Gaff::IReflectionDefinition* ref_def);
+	void add(const Gaff::IReflectionDefinition& ref_def);
 	void remove(const Vector<const Gaff::IReflectionDefinition*>& ref_defs);
-	void remove(const Gaff::IReflectionDefinition* ref_def);
+	void remove(const Gaff::IReflectionDefinition& ref_def);
 	void remove(int32_t index);
 
 	int32_t sharedSize(void) const;
 	int32_t size(void) const;
 
 	Gaff::Hash64 getHash(void) const;
+	void dirtyHash(void);
 
 	bool fromJSON(const Gaff::JSON& json);
 
 private:
-	struct VarData final
-	{
-		const IECSVarAttribute& var_attr;
-		int32_t offset;
-	};
-
-	struct SharedVarData final
-	{
-		const Gaff::IReflectionDefinition& ref_def;
-		Vector<VarData> var_attrs;
-	};
-
-	Vector<SharedVarData> _shared_vars;
+	Vector<const Gaff::IReflectionDefinition*> _shared_vars;
 	Vector<const Gaff::IReflectionDefinition*> _vars;
 
 	mutable Gaff::Hash64 _hash = Gaff::INIT_HASH64;
-	Gaff::Hash64 _shared_name = Gaff::INIT_HASH64;
 
 	int32_t _shared_alloc_size = 0;
 	int32_t _alloc_size = 0;
@@ -86,9 +79,9 @@ private:
 	void* _shared_instances = nullptr;
 
 	void add(Vector<const Gaff::IReflectionDefinition*>& vars, int32_t& alloc_size, const Vector<const Gaff::IReflectionDefinition*>& ref_defs);
-	void add(Vector<const Gaff::IReflectionDefinition*>& vars, int32_t& alloc_size, const Gaff::IReflectionDefinition* ref_def);
+	void add(Vector<const Gaff::IReflectionDefinition*>& vars, int32_t& alloc_size, const Gaff::IReflectionDefinition& ref_def);
 	void remove(Vector<const Gaff::IReflectionDefinition*>& vars, int32_t& alloc_size, const Vector<const Gaff::IReflectionDefinition*>& ref_defs);
-	void remove(Vector<const Gaff::IReflectionDefinition*>& vars, int32_t& alloc_size, const Gaff::IReflectionDefinition* ref_def);
+	void remove(Vector<const Gaff::IReflectionDefinition*>& vars, int32_t& alloc_size, const Gaff::IReflectionDefinition& ref_def);
 	void remove(Vector<const Gaff::IReflectionDefinition*>& vars, int32_t& alloc_size, int32_t index);
 };
 

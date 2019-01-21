@@ -44,15 +44,15 @@ class IApp
 {
 public:
 	template <class T>
-	const T& getManagerTUnsafe(void) const
+	const T& getManagerTFast(void) const
 	{
-		return *reinterpret_cast<T*>(getManager(Reflection<T>::GetHash()));
+		return *static_cast<T*>(getManager(Reflection<T>::GetHash()));
 	}
 
 	template <class T>
-	T& getManagerTUnsafe(void)
+	T& getManagerTFast(void)
 	{
-		return *reinterpret_cast<T*>(getManager(Reflection<T>::GetHash()));
+		return *static_cast<T*>(getManager(Reflection<T>::GetHash()));
 	}
 
 	template <class T>

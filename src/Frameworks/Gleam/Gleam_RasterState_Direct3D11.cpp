@@ -41,7 +41,7 @@ bool RasterStateD3D11::init(IRenderDevice& rd, const RasterStateSettings& settin
 {
 	GAFF_ASSERT(rd.getRendererType() == RENDERER_DIRECT3D11);
 
-	RenderDeviceD3D11& rd3d = reinterpret_cast<RenderDeviceD3D11&>(rd);
+	RenderDeviceD3D11& rd3d = static_cast<RenderDeviceD3D11&>(rd);
 	ID3D11Device5* const device = rd3d.getDevice();
 
 	D3D11_RASTERIZER_DESC raster_desc;
@@ -68,7 +68,7 @@ void RasterStateD3D11::destroy(void)
 void RasterStateD3D11::set(IRenderDevice& rd) const
 {
 	GAFF_ASSERT(rd.getRendererType() == RENDERER_DIRECT3D11);
-	RenderDeviceD3D11& rd3d = reinterpret_cast<RenderDeviceD3D11&>(rd);
+	RenderDeviceD3D11& rd3d = static_cast<RenderDeviceD3D11&>(rd);
 	ID3D11DeviceContext3* const context = rd3d.getDeviceContext();
 
 	context->RSSetState(_raster_state);
@@ -77,7 +77,7 @@ void RasterStateD3D11::set(IRenderDevice& rd) const
 void RasterStateD3D11::unset(IRenderDevice& rd) const
 {
 	GAFF_ASSERT(rd.getRendererType() == RENDERER_DIRECT3D11);
-	RenderDeviceD3D11& rd3d = reinterpret_cast<RenderDeviceD3D11&>(rd);
+	RenderDeviceD3D11& rd3d = static_cast<RenderDeviceD3D11&>(rd);
 	ID3D11DeviceContext3* const context = rd3d.getDeviceContext();
 
 	context->RSSetState(NULL);

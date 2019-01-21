@@ -413,7 +413,7 @@ bool RenderDeviceD3D11::init(int32_t adapter_id)
 void RenderDeviceD3D11::frameBegin(IRenderOutput& output)
 {
 	GAFF_ASSERT(output.getRendererType() == RENDERER_DIRECT3D11);
-	RenderOutputD3D11& out = reinterpret_cast<RenderOutputD3D11&>(output);
+	RenderOutputD3D11& out = static_cast<RenderOutputD3D11&>(output);
 	D3D11_VIEWPORT viewport = out.getViewport();
 
 	resetRenderState();
@@ -423,7 +423,7 @@ void RenderDeviceD3D11::frameBegin(IRenderOutput& output)
 void RenderDeviceD3D11::frameEnd(IRenderOutput& output)
 {
 	GAFF_ASSERT(output.getRendererType() == RENDERER_DIRECT3D11);
-	RenderOutputD3D11& out = reinterpret_cast<RenderOutputD3D11&>(output);
+	RenderOutputD3D11& out = static_cast<RenderOutputD3D11&>(output);
 	out.getSwapChain()->Present(out.isVSync(), 0);
 }
 
@@ -440,7 +440,7 @@ void RenderDeviceD3D11::frameEnd(IRenderOutput& output)
 
 //bool RenderDeviceD3D11::resize(const IWindow& window)
 //{
-//	const Window& wnd = reinterpret_cast<const Window&>(window);
+//	const Window& wnd = static_cast<const Window&>(window);
 //
 //	for (int32_t i = 0; i < static_cast<int32_t>(_devices.size()); ++i) {
 //		Device& device = _devices[i];
@@ -472,7 +472,7 @@ void RenderDeviceD3D11::frameEnd(IRenderOutput& output)
 //					viewport.Width = (float)wnd.getWidth();
 //					viewport.Height = (float)wnd.getHeight();
 //					rtv.attach(render_target_view);
-//					reinterpret_cast<RenderTargetD3D*>(rt.get())->setRTV(render_target_view, viewport);
+//					static_cast<RenderTargetD3D*>(rt.get())->setRTV(render_target_view, viewport);
 //
 //					if (wnd.getWindowMode() == IWindow::WM_FULLSCREEN) {
 //						result = sc->SetFullscreenState(TRUE, g_display_info[i].output_info[j].output.get());
@@ -491,7 +491,7 @@ void RenderDeviceD3D11::frameEnd(IRenderOutput& output)
 //
 //bool RenderDeviceD3D11::handleFocusGained(const IWindow& window)
 //{
-//	const Window& wnd = reinterpret_cast<const Window&>(window);
+//	const Window& wnd = static_cast<const Window&>(window);
 //
 //	for (int32_t i = 0; i < static_cast<int32_t>(_devices.size()); ++i) {
 //		Device& device = _devices[i];
@@ -545,7 +545,7 @@ IRenderDevice* RenderDeviceD3D11::createDeferredRenderDevice(void)
 void RenderDeviceD3D11::executeCommandList(ICommandList* command_list)
 {
 	GAFF_ASSERT(command_list->getRendererType() == RENDERER_DIRECT3D11 && _context);
-	CommandListD3D11* cmd_list = reinterpret_cast<CommandListD3D11*>(command_list);
+	CommandListD3D11* cmd_list = static_cast<CommandListD3D11*>(command_list);
 	GAFF_ASSERT(cmd_list->getCommandList());
 	_context->ExecuteCommandList(cmd_list->getCommandList(), FALSE);
 }
@@ -554,7 +554,7 @@ bool RenderDeviceD3D11::finishCommandList(ICommandList* command_list)
 {
 	GAFF_ASSERT(_is_deferred && command_list->getRendererType() == RENDERER_DIRECT3D11 && _context);
 
-	CommandListD3D11* cmd_list = reinterpret_cast<CommandListD3D11*>(command_list);
+	CommandListD3D11* cmd_list = static_cast<CommandListD3D11*>(command_list);
 	ID3D11CommandList* cl = nullptr;
 
 	if (FAILED(_context->FinishCommandList(FALSE, &cl))) {

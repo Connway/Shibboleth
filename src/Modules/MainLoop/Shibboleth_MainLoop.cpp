@@ -155,7 +155,7 @@ void MainLoop::update(void)
 
 	//std::this_thread::yield();
 
-	//ResourceManager& res_mgr = GetApp().getManagerTUnsafe<ResourceManager>();
+	//ResourceManager& res_mgr = GetApp().getManagerTFast<ResourceManager>();
 	//PrefabResourcePtr prefab = res_mgr.requestResourceT<PrefabResource>("Objects/test2.prefab");
 
 	//res_mgr.waitForResource(*prefab);

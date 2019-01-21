@@ -52,7 +52,6 @@ public:
 	virtual ~IECSVarAttribute(void) {}
 
 	virtual const Gaff::IReflectionDefinition& getType(void) const = 0;
-	virtual void copy(void* src, void* dest) const = 0;
 };
 
 template <class T>
@@ -70,11 +69,6 @@ public:
 	const Gaff::IReflectionDefinition& getType(void) const override
 	{
 		return Reflection<T>::GetReflectionDefinition();
-	}
-
-	void copy(void* src, void* dest) const override
-	{
-		Gaff::Construct(reinterpret_cast<T*>(dest), *reinterpret_cast<T*>(src));
 	}
 
 	SHIB_TEMPLATE_REFLECTION_CLASS_DECLARE(ECSVarAttribute, T);

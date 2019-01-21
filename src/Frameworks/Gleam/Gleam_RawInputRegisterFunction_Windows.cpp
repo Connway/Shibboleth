@@ -36,7 +36,7 @@ bool RegisterForRawInput(uint16_t device, const IWindow& window)
 	rid.usUsagePage = HID_USAGE_PAGE_GENERIC;
 	rid.usUsage = device;
 	rid.dwFlags = 0;
-	rid.hwndTarget = reinterpret_cast<const Window&>(window).getHWnd();
+	rid.hwndTarget = static_cast<const Window&>(window).getHWnd();
 
 	return RegisterRawInputDevices(&rid, 1, sizeof(RAWINPUTDEVICE)) == TRUE;
 }
