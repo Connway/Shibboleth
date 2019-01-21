@@ -60,6 +60,9 @@
     <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EABase\eaunits.h">
       <Filter>include\EABase</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EABase\int128.h">
+      <Filter>include\EABase</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\EASTL\include\EABase\nullptr.h">
       <Filter>include\EABase</Filter>
     </ClInclude>

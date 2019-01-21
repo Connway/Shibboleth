@@ -13,14 +13,22 @@
 #endif
 #include <EASTL/internal/config.h>
 
-#if defined(EA_HAVE_CPP11_MUTEX) && !defined(EA_PLATFORM_MICROSOFT) && !defined(EA_PLATFORM_UNIX) // We stick with platform-specific mutex support to the extent possible, as it's currently more reliably available.
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+// NOTE(rparolin): We need a fallback mutex implementation because the Microsoft implementation 
+// of std::mutex can not be included in managed-cpp code.
+//
+// fatal error C1189: <mutex> is not supported when compiling with /clr or /clr:pure 
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+#if defined(EA_HAVE_CPP11_MUTEX) && !defined(EA_COMPILER_MANAGED_CPP)
 	#define EASTL_CPP11_MUTEX_ENABLED 1
 #else
 	#define EASTL_CPP11_MUTEX_ENABLED 0
 #endif
 
 #if EASTL_CPP11_MUTEX_ENABLED
+	EA_DISABLE_ALL_VC_WARNINGS()
 	#include <mutex>
+	EA_RESTORE_ALL_VC_WARNINGS()
 #endif
 
 #if defined(EA_PLATFORM_MICROSOFT)
@@ -48,12 +56,6 @@
 
 		extern "C" long  __stdcall _InterlockedCompareExchange(long volatile* Dest, long Exchange, long Comp);
 		#pragma intrinsic (_InterlockedCompareExchange)
-	#elif defined(EA_PLATFORM_MINGW)
-		extern "C" long  _InterlockedIncrement(long volatile* Addend);
-
-		extern "C" long _InterlockedDecrement(long volatile* Addend);
-
-		extern "C" long _InterlockedCompareExchange(long volatile* Dest, long Exchange, long Comp);
 	#else
 		extern "C" long  _InterlockedIncrement(long volatile* Addend);
 		#pragma intrinsic (_InterlockedIncrement)
@@ -218,13 +220,8 @@ namespace eastl
 		protected:
 			mutex* pMutex;
 
-			#if defined(EA_COMPILER_NO_DELETED_FUNCTIONS)
-				auto_mutex(const auto_mutex&) : pMutex(NULL) {}
-				void operator=(const auto_mutex&) {}
-			#else
-				auto_mutex(const auto_mutex&) = delete;
-				void operator=(const auto_mutex&) = delete;
-			#endif
+			auto_mutex(const auto_mutex&) = delete;
+			void operator=(const auto_mutex&) = delete;
 		};
 
 
@@ -234,10 +231,8 @@ namespace eastl
 		public:
 			shared_ptr_auto_mutex(const void* pSharedPtr);
 
-			#if !defined(EA_COMPILER_NO_DELETED_FUNCTIONS)
-				shared_ptr_auto_mutex(const shared_ptr_auto_mutex&) = delete;
-				void operator=(shared_ptr_auto_mutex&&) = delete;
-			#endif
+			shared_ptr_auto_mutex(const shared_ptr_auto_mutex&) = delete;
+			void operator=(shared_ptr_auto_mutex&&) = delete;
 		};
 
 
