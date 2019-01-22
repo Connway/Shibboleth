@@ -20,7 +20,7 @@ void check_match(deflate_state *s, IPos start, IPos match, int length);
 #else
 #define check_match(s, start, match, length)
 #endif
-void flush_pending(z_stream *strm);
+void flush_pending(PREFIX3(stream) *strm);
 
 /* ===========================================================================
  * Insert string str in the dictionary and set match_head to the previous head
@@ -37,12 +37,15 @@ static inline Pos insert_string_c(deflate_state *const s, const Pos str, unsigne
 
     for (idx = 0; idx < count; idx++) {
         UPDATE_HASH(s, s->ins_h, str+idx);
-        if (s->head[s->ins_h] != str+idx) {
-            s->prev[(str+idx) & s->w_mask] = s->head[s->ins_h];
-            s->head[s->ins_h] = str+idx;
-            if (idx == count-1) {
-                ret = s->prev[(str+idx) & s->w_mask];
-            }
+
+        Pos head = s->head[s->ins_h];
+        if (head != str+idx) {
+          s->prev[(str+idx) & s->w_mask] = head;
+          s->head[s->ins_h] = str+idx;
+          if (idx == count - 1)
+            ret = head;
+        } else if (idx == count - 1) {
+          ret = str + idx;
         }
     }
     return ret;

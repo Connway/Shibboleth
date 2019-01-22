@@ -5,6 +5,7 @@
 
 /* @(#) $Id$ */
 
+#include "zbuild.h"
 #include "zutil.h"
 #include "functable.h"
 
@@ -87,7 +88,8 @@ uint32_t adler32_c(uint32_t adler, const unsigned char *buf, size_t len) {
 
     /* in case short lengths are provided, keep it somewhat fast */
     if (len < 16) {
-        while (len--) {
+        while (len) {
+            --len;
             adler += *buf++;
             sum2 += adler;
         }
@@ -100,13 +102,13 @@ uint32_t adler32_c(uint32_t adler, const unsigned char *buf, size_t len) {
     /* do length NMAX blocks -- requires just one modulo operation */
     while (len >= NMAX) {
         len -= NMAX;
-#ifndef UNROLL_LESS
+#ifdef UNROLL_MORE
         n = NMAX / 16;          /* NMAX is divisible by 16 */
 #else
         n = NMAX / 8;           /* NMAX is divisible by 8 */
 #endif
         do {
-#ifndef UNROLL_LESS
+#ifdef UNROLL_MORE
             DO16(buf);          /* 16 sums unrolled */
             buf += 16;
 #else
@@ -120,7 +122,7 @@ uint32_t adler32_c(uint32_t adler, const unsigned char *buf, size_t len) {
 
     /* do remaining bytes (less than NMAX, still just one modulo) */
     if (len) {                  /* avoid modulos if none remaining */
-#ifndef UNROLL_LESS
+#ifdef UNROLL_MORE
         while (len >= 16) {
             len -= 16;
             DO16(buf);
@@ -132,7 +134,8 @@ uint32_t adler32_c(uint32_t adler, const unsigned char *buf, size_t len) {
             buf += 8;
 #endif
         }
-        while (len--) {
+        while (len) {
+            --len;
             adler += *buf++;
             sum2 += adler;
         }
@@ -144,12 +147,12 @@ uint32_t adler32_c(uint32_t adler, const unsigned char *buf, size_t len) {
     return adler | (sum2 << 16);
 }
 
-uint32_t ZEXPORT adler32_z(uint32_t adler, const unsigned char *buf, size_t len) {
+uint32_t ZEXPORT PREFIX(adler32_z)(uint32_t adler, const unsigned char *buf, size_t len) {
     return functable.adler32(adler, buf, len);
 }
 
 /* ========================================================================= */
-uint32_t ZEXPORT adler32(uint32_t adler, const unsigned char *buf, uint32_t len) {
+uint32_t ZEXPORT PREFIX(adler32)(uint32_t adler, const unsigned char *buf, uint32_t len) {
     return functable.adler32(adler, buf, len);
 }
 
@@ -179,10 +182,10 @@ static uint32_t adler32_combine_(uint32_t adler1, uint32_t adler2, z_off64_t len
 }
 
 /* ========================================================================= */
-uint32_t ZEXPORT adler32_combine(uint32_t adler1, uint32_t adler2, z_off_t len2) {
+uint32_t ZEXPORT PREFIX(adler32_combine)(uint32_t adler1, uint32_t adler2, z_off_t len2) {
     return adler32_combine_(adler1, adler2, len2);
 }
 
-uint32_t ZEXPORT adler32_combine64(uint32_t adler1, uint32_t adler2, z_off64_t len2) {
+uint32_t ZEXPORT PREFIX(adler32_combine64)(uint32_t adler1, uint32_t adler2, z_off64_t len2) {
     return adler32_combine_(adler1, adler2, len2);
 }

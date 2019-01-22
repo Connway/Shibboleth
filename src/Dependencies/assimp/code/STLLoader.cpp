@@ -182,7 +182,7 @@ void STLImporter::InternReadFile( const std::string& pFile, aiScene* pScene, IOS
     std::unique_ptr<IOStream> file( pIOHandler->Open( pFile, "rb"));
 
     // Check whether we can read from the file
-    if( file.get() == NULL) {
+    if( file.get() == nullptr) {
         throw DeadlyImportError( "Failed to open STL file " + pFile + ".");
     }
 
@@ -190,11 +190,11 @@ void STLImporter::InternReadFile( const std::string& pFile, aiScene* pScene, IOS
 
     // allocate storage and copy the contents of the file to a memory buffer
     // (terminate it with zero)
-    std::vector<char> mBuffer2;
-    TextFileToBuffer(file.get(),mBuffer2);
+    std::vector<char> buffer2;
+    TextFileToBuffer(file.get(),buffer2);
 
     this->pScene = pScene;
-    this->mBuffer = &mBuffer2[0];
+    this->mBuffer = &buffer2[0];
 
     // the default vertex color is light gray.
     clrColorDefault.r = clrColorDefault.g = clrColorDefault.b = clrColorDefault.a = (ai_real) 0.6;
@@ -214,11 +214,10 @@ void STLImporter::InternReadFile( const std::string& pFile, aiScene* pScene, IOS
 
     // create a single default material, using a white diffuse color for consistency with
     // other geometric types (e.g., PLY).
-    aiMaterial* pcMat = aiCreateAndRegisterDefaultMaterial();
-    /*aiMaterial* pcMat = new aiMaterial();
+    aiMaterial* pcMat = new aiMaterial();
     aiString s;
     s.Set(AI_DEFAULT_MATERIAL_NAME);
-    pcMat->AddProperty(&s, AI_MATKEY_NAME);*/
+    pcMat->AddProperty(&s, AI_MATKEY_NAME);
 
     aiColor4D clrDiffuse(ai_real(1.0),ai_real(1.0),ai_real(1.0),ai_real(1.0));
     if (bMatClr) {
@@ -232,6 +231,8 @@ void STLImporter::InternReadFile( const std::string& pFile, aiScene* pScene, IOS
     pScene->mNumMaterials = 1;
     pScene->mMaterials = new aiMaterial*[1];
     pScene->mMaterials[0] = pcMat;
+
+    mBuffer = nullptr;
 }
 
 // ------------------------------------------------------------------------------------------------

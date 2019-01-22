@@ -31,6 +31,7 @@
 */
 
 #include <stdint.h>
+#include <stdarg.h>
 #include "zconf.h"
 
 #ifdef __cplusplus
@@ -108,10 +109,7 @@ typedef struct z_stream_s {
 
     int                   data_type;  /* best guess about the data type: binary or text
                                          for deflate, or the decoding state for inflate */
-    uint32_t              adler;      /* Adler-32 or CRC-32 value of the uncompressed data */
-#if defined(ZLIB_COMPAT) && defined(X86_64)
-    uint32_t              padding;    /* pad out to the same size as the zlib struct */
-#endif
+    unsigned long         adler;      /* Adler-32 or CRC-32 value of the uncompressed data */
     unsigned long         reserved;   /* reserved for future use */
 } z_stream;
 
@@ -543,8 +541,7 @@ ZEXTERN int ZEXPORT deflateInit2 (z_stream *strm,
                                      int  strategy);
 
      This is another version of deflateInit with more compression options.  The
-   fields next_in, zalloc, zfree and opaque must be initialized before by the
-   caller.
+   fields zalloc, zfree and opaque must be initialized before by the caller.
 
      The method parameter is the compression method.  It must be Z_DEFLATED in
    this version of the library.
@@ -707,11 +704,12 @@ ZEXTERN int ZEXPORT deflateParams(z_stream *strm, int level, int strategy);
    used to switch between compression and straight copy of the input data, or
    to switch to a different kind of input data requiring a different strategy.
    If the compression approach (which is a function of the level) or the
-   strategy is changed, and if any input has been consumed in a previous
-   deflate() call, then the input available so far is compressed with the old
-   level and strategy using deflate(strm, Z_BLOCK).  There are three approaches
-   for the compression levels 0, 1..3, and 4..9 respectively.  The new level
-   and strategy will take effect at the next call of deflate().
+   strategy is changed, and if there have been any deflate() calls since the
+   state was initialized or reset, then the input available so far is
+   compressed with the old level and strategy using deflate(strm, Z_BLOCK).
+   There are three approaches for the compression levels 0, 1..3, and 4..9
+   respectively.  The new level and strategy will take effect at the next call
+   of deflate().
 
      If a deflate(strm, Z_BLOCK) is performed by deflateParams(), and it does
    not have enough output space to complete, then the parameter change will not
@@ -849,9 +847,11 @@ ZEXTERN int ZEXPORT inflateInit2(z_stream *strm, int  windowBits);
    detection, or add 16 to decode only the gzip format (the zlib format will
    return a Z_DATA_ERROR).  If a gzip stream is being decoded, strm->adler is a
    CRC-32 instead of an Adler-32.  Unlike the gunzip utility and gzread() (see
-   below), inflate() will not automatically decode concatenated gzip streams.
-   inflate() will return Z_STREAM_END at the end of the gzip stream.  The state
-   would need to be reset to continue decoding a subsequent gzip stream.
+   below), inflate() will *not* automatically decode concatenated gzip members.
+   inflate() will return Z_STREAM_END at the end of the gzip member.  The state
+   would need to be reset to continue decoding a subsequent gzip member.  This
+   *must* be done if there is more data after a gzip member, in order for the
+   decompression to be compliant with the gzip standard (RFC 1952).
 
      inflateInit2 returns Z_OK if success, Z_MEM_ERROR if there was not enough
    memory, Z_VERSION_ERROR if the zlib library version is incompatible with the
@@ -1194,7 +1194,7 @@ ZEXTERN unsigned long ZEXPORT zlibCompileFlags(void);
    you need special options.
 */
 
-ZEXTERN int ZEXPORT compress(unsigned char *dest, size_t *destLen, const unsigned char *source, size_t sourceLen);
+ZEXTERN int ZEXPORT compress(unsigned char *dest, unsigned long *destLen, const unsigned char *source, unsigned long sourceLen);
 /*
      Compresses the source buffer into the destination buffer.  sourceLen is
    the byte length of the source buffer.  Upon entry, destLen is the total size
@@ -1208,8 +1208,8 @@ ZEXTERN int ZEXPORT compress(unsigned char *dest, size_t *destLen, const unsigne
    buffer.
 */
 
-ZEXTERN int ZEXPORT compress2(unsigned char *dest, size_t *destLen, const unsigned char *source,
-                              size_t sourceLen, int level);
+ZEXTERN int ZEXPORT compress2(unsigned char *dest, unsigned long *destLen, const unsigned char *source,
+                              unsigned long sourceLen, int level);
 /*
      Compresses the source buffer into the destination buffer.  The level
    parameter has the same meaning as in deflateInit.  sourceLen is the byte
@@ -1223,14 +1223,14 @@ ZEXTERN int ZEXPORT compress2(unsigned char *dest, size_t *destLen, const unsign
    Z_STREAM_ERROR if the level parameter is invalid.
 */
 
-ZEXTERN size_t ZEXPORT compressBound(size_t sourceLen);
+ZEXTERN unsigned long ZEXPORT compressBound(unsigned long sourceLen);
 /*
      compressBound() returns an upper bound on the compressed size after
    compress() or compress2() on sourceLen bytes.  It would be used before a
    compress() or compress2() call to allocate the destination buffer.
 */
 
-ZEXTERN int ZEXPORT uncompress(unsigned char *dest, size_t *destLen, const unsigned char *source, size_t sourceLen);
+ZEXTERN int ZEXPORT uncompress(unsigned char *dest, unsigned long *destLen, const unsigned char *source, unsigned long sourceLen);
 /*
      Decompresses the source buffer into the destination buffer.  sourceLen is
    the byte length of the source buffer.  Upon entry, destLen is the total size
@@ -1248,8 +1248,8 @@ ZEXTERN int ZEXPORT uncompress(unsigned char *dest, size_t *destLen, const unsig
 */
 
 
-ZEXTERN int ZEXPORT uncompress2 (unsigned char *dest,         size_t *destLen,
-                                 const unsigned char *source, size_t *sourceLen);
+ZEXTERN int ZEXPORT uncompress2 (unsigned char *dest,         unsigned long *destLen,
+                                 const unsigned char *source, unsigned long *sourceLen);
 /*
      Same as uncompress, except that sourceLen is a pointer, where the
    length of the source is *sourceLen.  On return, *sourceLen is the number of
@@ -1257,7 +1257,6 @@ ZEXTERN int ZEXPORT uncompress2 (unsigned char *dest,         size_t *destLen,
 */
 
 
-#ifdef WITH_GZFILEOP
                         /* gzip file access functions */
 
 /*
@@ -1637,7 +1636,6 @@ ZEXTERN void ZEXPORT gzclearerr(gzFile file);
    file that is being written concurrently.
 */
 
-#endif /* WITH_GZFILEOP */
 
                         /* checksum functions */
 
@@ -1714,6 +1712,22 @@ ZEXTERN uint32_t ZEXPORT crc32_combine(uint32_t crc1, uint32_t crc2, z_off64_t l
    len2.
 */
 
+/*
+ZEXTERN void ZEXPORT crc32_combine_gen(uint32_t op[32], z_off_t len2);
+
+     Generate the operator op corresponding to length len2, to be used with
+   crc32_combine_op(). op must have room for 32 z_crc_t values. (32 is the
+   number of bits in the CRC.)
+*/
+
+ZEXTERN uint32_t ZEXPORT crc32_combine_op(uint32_t crc1, uint32_t crc2,
+                                          const uint32_t *op);
+/*
+     Give the same result as crc32_combine(), using op in place of len2. op is
+   is generated from len2 by crc32_combine_gen(). This will be faster than
+   crc32_combine() if the generated op is used many times.
+*/
+
 
                         /* various hacks, don't look :) */
 
@@ -1736,7 +1750,6 @@ ZEXTERN int ZEXPORT inflateBackInit_(z_stream *strm, int windowBits, unsigned ch
 #define inflateBackInit(strm, windowBits, window) \
                         inflateBackInit_((strm), (windowBits), (window), ZLIB_VERSION, (int)sizeof(z_stream))
 
-#ifdef WITH_GZFILEOP
 
 /* gzgetc() macro and its supporting function and exposed data structure.  Note
  * that the real internal state is much larger than the exposed structure.
@@ -1783,7 +1796,6 @@ ZEXTERN int ZEXPORT gzgetc_(gzFile file);  /* backward compatibility */
    ZEXTERN z_off_t ZEXPORT gztell(gzFile);
    ZEXTERN z_off_t ZEXPORT gzoffset(gzFile);
 #endif
-#endif /* WITH_GZFILEOP */
 
 
 /* provide 64-bit offset functions if _LARGEFILE64_SOURCE defined, and/or
@@ -1795,18 +1807,22 @@ ZEXTERN int ZEXPORT gzgetc_(gzFile file);  /* backward compatibility */
 #ifdef Z_LARGE64
    ZEXTERN uint32_t ZEXPORT adler32_combine64(uint32_t, uint32_t, z_off64_t);
    ZEXTERN uint32_t ZEXPORT crc32_combine64(uint32_t, uint32_t, z_off64_t);
+   ZEXTERN void ZEXPORT crc32_combine_gen64(uint32_t *op, z_off64_t);
 #endif
 
 #if !defined(ZLIB_INTERNAL) && defined(Z_WANT64)
 #    define adler32_combine adler32_combine64
 #    define crc32_combine crc32_combine64
+#    define crc32_combine_gen crc32_combine_gen64
 #  ifndef Z_LARGE64
      ZEXTERN uint32_t ZEXPORT adler32_combine64(uint32_t, uint32_t, z_off_t);
      ZEXTERN uint32_t ZEXPORT crc32_combine64(uint32_t, uint32_t, z_off_t);
+     ZEXTERN void ZEXPORT crc32_combine_gen64(uint32_t *op, z_off64_t);
 #  endif
 #else
    ZEXTERN uint32_t ZEXPORT adler32_combine(uint32_t, uint32_t, z_off_t);
    ZEXTERN uint32_t ZEXPORT crc32_combine(uint32_t, uint32_t, z_off_t);
+   ZEXTERN void ZEXPORT crc32_combine_gen(uint32_t *op, z_off_t);
 #endif
 
 
@@ -1820,40 +1836,10 @@ ZEXTERN unsigned long    ZEXPORT inflateCodesUsed (z_stream *);
 ZEXTERN int              ZEXPORT inflateResetKeep (z_stream *);
 ZEXTERN int              ZEXPORT deflateResetKeep (z_stream *);
 
-#ifdef WITH_GZFILEOP
-# if (defined(WIN32) || defined(__CYGWIN__) || defined(__MINGW__))
+#if (defined(WIN32) || defined(__MINGW__))
     ZEXTERN gzFile ZEXPORT gzopen_w(const wchar_t *path, const char *mode);
-# endif
+#endif
 ZEXTERN int ZEXPORTVA gzvprintf(gzFile file, const char *format, va_list va);
-#endif
-
-#if !defined(__GNUC__)
-	#if defined(__WORDSIZE) // Defined by some variations of GCC.
-		#define Z_PLATFORM_PTR_SIZE ((__WORDSIZE) / 8)
-	#elif defined(_WIN64) || defined(__LP64__) || defined(_LP64) || defined(_M_IA64) || defined(__ia64__) || defined(__arch64__) || defined(__aarch64__) || defined(__mips64__) || defined(__64BIT__) || defined(__Ptr_Is_64)
-		#define Z_PLATFORM_PTR_SIZE 8
-	#elif defined(__CC_ARM) && (__sizeof_ptr == 8)
-		#define Z_PLATFORM_PTR_SIZE 8
-	#else
-		#define Z_PLATFORM_PTR_SIZE 4
-	#endif
-
-	// As of this writing, all non-GCC compilers significant to us implement 
-	// uintptr_t the same as size_t. However, this isn't guaranteed to be 
-	// so for all compilers, as size_t may be based on int, long, or long long.
-	#if !defined(Z_SSIZE_T_) && !defined(Z_SSIZE_T_DEFINED)
-		#define Z_SSIZE_T_
-		#define Z_SSIZE_T_DEFINED
-
-		#if defined(_MSC_VER) && (Z_PLATFORM_PTR_SIZE == 8)
-			typedef __int64 ssize_t;
-		#else
-			typedef long ssize_t;
-		#endif
-	#endif
-#else
-	#include <sys/types.h>
-#endif
 
 #ifdef __cplusplus
 }

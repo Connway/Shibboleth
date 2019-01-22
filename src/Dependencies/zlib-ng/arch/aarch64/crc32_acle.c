@@ -7,12 +7,16 @@
 
 #ifdef __ARM_FEATURE_CRC32
 #include <arm_acle.h>
-#include "zconf.h"
+#ifdef ZLIB_COMPAT
+#  include <zconf.h>
+#else
+#  include <zconf-ng.h>
+#endif
 #ifdef __linux__
 #  include <stddef.h>
 #endif
 
-uint32_t crc32_acle(uint32_t crc, const unsigned char *buf, size_t len) {
+uint32_t crc32_acle(uint32_t crc, const unsigned char *buf, uint64_t len) {
     register uint32_t c;
     register const uint16_t *buf2;
     register const uint32_t *buf4;
@@ -34,24 +38,24 @@ uint32_t crc32_acle(uint32_t crc, const unsigned char *buf, size_t len) {
     }
 
     if ((len > 4) && ((ptrdiff_t)buf & 4)) {
-        c = __crc32b(c, *buf4++);
+        c = __crc32w(c, *buf4++);
         len -= 4;
     }
 
     buf8 = (const uint64_t *) buf4;
 
-#ifndef UNROLL_LESS
+#ifdef UNROLL_MORE
     while (len >= 32) {
-        c = __crc32b(c, *buf8++);
-        c = __crc32b(c, *buf8++);
-        c = __crc32b(c, *buf8++);
-        c = __crc32b(c, *buf8++);
+        c = __crc32d(c, *buf8++);
+        c = __crc32d(c, *buf8++);
+        c = __crc32d(c, *buf8++);
+        c = __crc32d(c, *buf8++);
         len -= 32;
     }
 #endif
 
     while (len >= 8) {
-        c = __crc32b(c, *buf8++);
+        c = __crc32d(c, *buf8++);
         len -= 8;
     }
 

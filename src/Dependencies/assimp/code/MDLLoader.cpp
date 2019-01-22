@@ -403,7 +403,7 @@ void MDLImporter::InternReadFile_Quake1() {
 
     // now get a pointer to the first frame in the file
     BE_NCONST MDL::Frame* pcFrames = (BE_NCONST MDL::Frame*)szCurrent;
-    BE_NCONST MDL::SimpleFrame* pcFirstFrame = nullptr;
+    BE_NCONST MDL::SimpleFrame* pcFirstFrame;
 
     if (0 == pcFrames->type) {
         // get address of single frame
@@ -413,8 +413,9 @@ void MDLImporter::InternReadFile_Quake1() {
 
 #if 1
         // FIXME: the cast is wrong and cause a warning on clang 5.0
-        // disable thi code for now, fix it later
+        // disable this code for now, fix it later
         ai_assert(false && "Bad pointer cast");
+        pcFirstFrame = nullptr; // Workaround: msvc++ C4703 error
 #else
         BE_NCONST MDL::GroupFrame* pcFrames2 = (BE_NCONST MDL::GroupFrame*)pcFrames;
         pcFirstFrame = (BE_NCONST MDL::SimpleFrame*)(&pcFrames2->time + pcFrames->type);

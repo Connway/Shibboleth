@@ -3,7 +3,8 @@
 Open Asset Import Library (assimp)
 ---------------------------------------------------------------------------
 
-Copyright (c) 2006-2017, assimp team
+Copyright (c) 2006-2018, assimp team
+
 
 All rights reserved.
 
@@ -672,6 +673,12 @@ enum aiComponent
 #define AI_CONFIG_IMPORT_SMD_KEYFRAME       "IMPORT_SMD_KEYFRAME"
 #define AI_CONFIG_IMPORT_UNREAL_KEYFRAME    "IMPORT_UNREAL_KEYFRAME"
 
+// ---------------------------------------------------------------------------
+/** Smd load multiple animations
+ *
+ *  Property type: bool. Default value: true.
+ */
+#define AI_CONFIG_IMPORT_SMD_LOAD_ANIMATION_LIST "IMPORT_SMD_LOAD_ANIMATION_LIST"
 
 // ---------------------------------------------------------------------------
 /** @brief  Configures the AC loader to collect all surfaces which have the

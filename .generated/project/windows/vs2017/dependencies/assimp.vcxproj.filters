@@ -10,6 +10,12 @@
     <Filter Include="code\Importer\IFC">
       <UniqueIdentifier>{A2222456-0E39-22EC-57B0-AD0DC305F373}</UniqueIdentifier>
     </Filter>
+    <Filter Include="code\Importer\STEPParser">
+      <UniqueIdentifier>{D98C39F5-C5B1-8875-EEFC-6D05DA808793}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="code\Importer\StepFile">
+      <UniqueIdentifier>{ACA0D8FC-989A-014F-8107-985F6DA067BB}</UniqueIdentifier>
+    </Filter>
     <Filter Include="code\res">
       <UniqueIdentifier>{B9362C2A-A503-8735-CE1C-75DDBA48BCC3}</UniqueIdentifier>
     </Filter>
@@ -213,6 +219,9 @@
     <ClInclude Include="..\..\..\..\..\src\Dependencies\assimp\code\DefaultProgressHandler.h">
       <Filter>code</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\assimp\code\DropFaceNormalsProcess.h">
+      <Filter>code</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\assimp\code\EmbedTexturesProcess.h">
       <Filter>code</Filter>
     </ClInclude>
@@ -324,11 +333,17 @@
     <ClInclude Include="..\..\..\..\..\src\Dependencies\assimp\code\Importer\IFC\IFCUtil.h">
       <Filter>code\Importer\IFC</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\assimp\code\Importer\IFC\STEPFileEncoding.h">
-      <Filter>code\Importer\IFC</Filter>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\assimp\code\Importer\STEPParser\STEPFileEncoding.h">
+      <Filter>code\Importer\STEPParser</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\assimp\code\Importer\IFC\STEPFileReader.h">
-      <Filter>code\Importer\IFC</Filter>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\assimp\code\Importer\STEPParser\STEPFileReader.h">
+      <Filter>code\Importer\STEPParser</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\assimp\code\Importer\StepFile\StepFileImporter.h">
+      <Filter>code\Importer\StepFile</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\assimp\code\Importer\StepFile\StepReaderGen.h">
+      <Filter>code\Importer\StepFile</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\assimp\code\ImproveCacheLocality.h">
       <Filter>code</Filter>
@@ -514,9 +529,6 @@
       <Filter>code</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\assimp\code\RemoveVCProcess.h">
-      <Filter>code</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\assimp\code\SGSpatialSort.h">
       <Filter>code</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\assimp\code\SIBImporter.h">
@@ -1127,6 +1139,9 @@
     <ClCompile Include="..\..\..\..\..\src\Dependencies\assimp\code\DefaultLogger.cpp">
       <Filter>code</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\assimp\code\DropFaceNormalsProcess.cpp">
+      <Filter>code</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\..\..\..\src\Dependencies\assimp\code\EmbedTexturesProcess.cpp">
       <Filter>code</Filter>
     </ClCompile>
@@ -1256,11 +1271,23 @@
     <ClCompile Include="..\..\..\..\..\src\Dependencies\assimp\code\Importer\IFC\IFCUtil.cpp">
       <Filter>code\Importer\IFC</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\..\src\Dependencies\assimp\code\Importer\IFC\STEPFileEncoding.cpp">
-      <Filter>code\Importer\IFC</Filter>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\assimp\code\Importer\STEPParser\STEPFileEncoding.cpp">
+      <Filter>code\Importer\STEPParser</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\..\src\Dependencies\assimp\code\Importer\IFC\STEPFileReader.cpp">
-      <Filter>code\Importer\IFC</Filter>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\assimp\code\Importer\STEPParser\STEPFileReader.cpp">
+      <Filter>code\Importer\STEPParser</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\assimp\code\Importer\StepFile\StepFileGen1.cpp">
+      <Filter>code\Importer\StepFile</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\assimp\code\Importer\StepFile\StepFileGen2.cpp">
+      <Filter>code\Importer\StepFile</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\assimp\code\Importer\StepFile\StepFileGen3.cpp">
+      <Filter>code\Importer\StepFile</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\assimp\code\Importer\StepFile\StepFileImporter.cpp">
+      <Filter>code\Importer\StepFile</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\src\Dependencies\assimp\code\ImporterRegistry.cpp">
       <Filter>code</Filter>
