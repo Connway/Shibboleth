@@ -5,9 +5,9 @@
  *
  */
 
-#ifdef __ARM_FEATURE_CRC32
+#if defined(__ARM_FEATURE_CRC32) && defined(ARM_ACLE_CRC_HASH)
 #include <arm_acle.h>
-#endif
+#include "zbuild.h"
 #include "deflate.h"
 
 /* ===========================================================================
@@ -18,7 +18,6 @@
  *    input characters and the first MIN_MATCH bytes of str are valid
  *    (except for the last MIN_MATCH-1 bytes of the input file).
  */
-#ifdef ARM_ACLE_CRC_HASH
 Pos insert_string_acle(deflate_state *const s, const Pos str, unsigned int count) {
     Pos p, lp, ret;
 
@@ -41,12 +40,14 @@ Pos insert_string_acle(deflate_state *const s, const Pos str, unsigned int count
         h = __crc32w(0, val);
         hm = h & s->hash_mask;
 
-        if (s->head[hm] != p) {
-            s->prev[p & s->w_mask] = s->head[hm];
+        Pos head = s->head[hm];
+        if (head != p) {
+            s->prev[p & s->w_mask] = head;
             s->head[hm] = p;
-            if (p == lp) {
-                ret = s->prev[lp & s->w_mask];
-            }
+            if (p == lp)
+              ret = head;
+        } else if (p == lp) {
+          ret = p;
         }
     }
     return ret;

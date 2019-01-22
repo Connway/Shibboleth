@@ -10,12 +10,13 @@
  */
 #ifdef X86_SSE2_FILL_WINDOW
 
+#include "zbuild.h"
 #include <immintrin.h>
 #include "deflate.h"
 #include "deflate_p.h"
 #include "functable.h"
 
-extern int read_buf(z_stream *strm, unsigned char *buf, unsigned size);
+extern int read_buf(PREFIX3(stream) *strm, unsigned char *buf, unsigned size);
 
 ZLIB_INTERNAL void fill_window_sse(deflate_state *s) {
     const __m128i xmm_wsize = _mm_set1_epi16(s->w_size);
@@ -48,7 +49,7 @@ ZLIB_INTERNAL void fill_window_sse(deflate_state *s) {
          */
         if (s->strstart >= wsize+MAX_DIST(s)) {
             memcpy(s->window, s->window+wsize, (unsigned)wsize);
-            s->match_start -= wsize;
+            s->match_start = (s->match_start >= wsize) ? s->match_start - wsize : 0;
             s->strstart    -= wsize; /* we now have strstart >= MAX_DIST */
             s->block_start -= (long) wsize;
 

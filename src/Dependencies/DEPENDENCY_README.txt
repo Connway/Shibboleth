@@ -13,8 +13,6 @@ Libraries Affected:
 		Can't remember, probably compilation errors.
 	libjpeg
 		Can't remember, probably compilation errors.
-	assimp
-		Fixed compilation errors.
 	minizip
 		Commented out a block that says #define _CRT_SECURE_NO_WARNINGS, as I have it defined at the project level
 	EASTL
@@ -22,7 +20,8 @@ Libraries Affected:
 	rapidjson
 		Fixed compilation warnings/errors.
 	zlib-ng
-		Fixing compilation errors.
+		Fixed compilation errors.
+		Fixed linking errors.
 		Adding OF macro
 		Adding STDC defines
 	wxWidgets

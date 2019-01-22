@@ -5,6 +5,7 @@
  *
  */
 
+#include "zbuild.h"
 #include "deflate.h"
 
 /* ===========================================================================
@@ -19,11 +20,11 @@
 ZLIB_INTERNAL Pos insert_string_sse(deflate_state *const s, const Pos str, unsigned int count) {
     Pos ret = 0;
     unsigned int idx;
-    unsigned *ip, val, h;
+    unsigned int *ip, val, h;
 
     for (idx = 0; idx < count; idx++) {
         ip = (unsigned *)&s->window[str+idx];
-        val = *ip;
+        memcpy(&val, ip, sizeof(val));
         h = 0;
 
         if (s->level >= TRIGGER_LEVEL)
@@ -31,6 +32,8 @@ ZLIB_INTERNAL Pos insert_string_sse(deflate_state *const s, const Pos str, unsig
 
 #ifdef _MSC_VER
         h = _mm_crc32_u32(h, val);
+#elif defined(X86_SSE4_2_CRC_INTRIN)
+        h = __builtin_ia32_crc32si(h, val);
 #else
         __asm__ __volatile__ (
             "crc32 %1,%0\n\t"
@@ -38,13 +41,14 @@ ZLIB_INTERNAL Pos insert_string_sse(deflate_state *const s, const Pos str, unsig
             : "r" (val)
         );
 #endif
-
-        if (s->head[h & s->hash_mask] != str+idx) {
-            s->prev[(str+idx) & s->w_mask] = s->head[h & s->hash_mask];
+        Pos head = s->head[h & s->hash_mask];
+        if (head != str+idx) {
+            s->prev[(str+idx) & s->w_mask] = head;
             s->head[h & s->hash_mask] = str+idx;
-            if (idx == count-1) {
-                ret = s->prev[(str+idx) & s->w_mask];
-            }
+            if (idx == count-1)
+              ret = head;
+        } else if (idx == count - 1) {
+          ret = str + idx;
         }
     }
     return ret;

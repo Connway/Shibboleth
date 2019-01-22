@@ -22,15 +22,19 @@
     <ClInclude Include="..\..\..\..\..\src\Dependencies\zlib-ng\deflate.h" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\zlib-ng\deflate_p.h" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\zlib-ng\functable.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\zlib-ng\gzendian.h" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\zlib-ng\gzguts.h" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\zlib-ng\inffast.h" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\zlib-ng\inffixed.h" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\zlib-ng\inflate.h" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\zlib-ng\inftrees.h" />
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\zlib-ng\match.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\zlib-ng\match_p.h" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\zlib-ng\memcopy.h" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\zlib-ng\trees.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\zlib-ng\zbuild.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\zlib-ng\zconf-ng.h" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\zlib-ng\zconf.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\zlib-ng\zlib-ng.h" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\zlib-ng\zlib.h" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\zlib-ng\zutil.h" />
   </ItemGroup>
@@ -69,7 +73,6 @@
     <ClCompile Include="..\..\..\..\..\src\Dependencies\zlib-ng\inffast.c" />
     <ClCompile Include="..\..\..\..\..\src\Dependencies\zlib-ng\inflate.c" />
     <ClCompile Include="..\..\..\..\..\src\Dependencies\zlib-ng\inftrees.c" />
-    <ClCompile Include="..\..\..\..\..\src\Dependencies\zlib-ng\match.c" />
     <ClCompile Include="..\..\..\..\..\src\Dependencies\zlib-ng\trees.c" />
     <ClCompile Include="..\..\..\..\..\src\Dependencies\zlib-ng\uncompr.c" />
     <ClCompile Include="..\..\..\..\..\src\Dependencies\zlib-ng\zutil.c" />

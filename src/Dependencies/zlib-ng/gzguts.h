@@ -27,17 +27,26 @@
 #include <stdlib.h>
 #include <limits.h>
 #include <fcntl.h>
-#include "zlib.h"
+
+#if defined(ZLIB_COMPAT)
+# include "zlib.h"
+#else
+# include "zlib-ng.h"
+#endif
 
 #ifdef WIN32
 #  include <stddef.h>
+#endif
+
+#if !defined(_MSC_VER) || defined(__MINGW__)
+#  include <unistd.h>       /* for lseek(), read(), close(), write(), unlink() */
 #endif
 
 #if defined(_MSC_VER) || defined(WIN32)
 #  include <io.h>
 #endif
 
-#if defined(_WIN32) || defined(__CYGWIN__) || defined(__MINGW__)
+#if defined(_WIN32) || defined(__MINGW__)
 #  define WIDECHAR
 #endif
 
@@ -74,10 +83,10 @@
 
 /* provide prototypes for these when building zlib without LFS */
 #if (!defined(_LARGEFILE64_SOURCE) || _LFS64_LARGEFILE-0 == 0) && defined(WITH_GZFILEOP)
-    ZEXTERN gzFile ZEXPORT gzopen64(const char *, const char *);
-    ZEXTERN z_off64_t ZEXPORT gzseek64(gzFile, z_off64_t, int);
-    ZEXTERN z_off64_t ZEXPORT gztell64(gzFile);
-    ZEXTERN z_off64_t ZEXPORT gzoffset64(gzFile);
+    ZEXTERN gzFile ZEXPORT PREFIX(gzopen64)(const char *, const char *);
+    ZEXTERN z_off64_t ZEXPORT PREFIX(gzseek64)(gzFile, z_off64_t, int);
+    ZEXTERN z_off64_t ZEXPORT PREFIX(gztell64)(gzFile);
+    ZEXTERN z_off64_t ZEXPORT PREFIX(gzoffset64)(gzFile);
 #endif
 
 /* default memLevel */
@@ -133,7 +142,7 @@ typedef struct {
     int err;                /* error code */
     char *msg;              /* error message */
         /* zlib inflate or deflate stream */
-    z_stream strm;          /* stream structure in-place (not a pointer) */
+    PREFIX3(stream) strm;  /* stream structure in-place (not a pointer) */
 } gz_state;
 typedef gz_state *gz_statep;
 

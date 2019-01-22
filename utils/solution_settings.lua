@@ -30,7 +30,8 @@ defines
 {
 	"UNICODE", "_UNICODE",
 	"EA_COMPILER_NO_RTTI",
-	"GLM_FORCE_SSE42"
+	"GLM_FORCE_SSE42",
+	"ZLIB_COMPAT"
 }
 
 -- vectorextensions "SSE4.2"

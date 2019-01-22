@@ -97,7 +97,7 @@
     <ClCompile>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
-      <PreprocessorDefinitions>UNICODE;_UNICODE;EA_COMPILER_NO_RTTI;GLM_FORCE_SSE42;_DEBUG;DEBUG;WIN32;_WINDOWS;WIN64;ASSIMP_BUILD_BOOST_WORKAROUND;ASSIMP_BUILD_NO_OWN_ZLIB;ASSIMP_BUILD_NO_C4D_IMPORTER;ASSIMP_BUILD_NO_IFC_IMPORTER;OPENDDL_STATIC_LIBARY;_CRT_SECURE_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS;_SILENCE_CXX17_ITERATOR_BASE_CLASS_DEPRECATION_WARNING;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>UNICODE;_UNICODE;EA_COMPILER_NO_RTTI;GLM_FORCE_SSE42;ZLIB_COMPAT;_DEBUG;DEBUG;WIN32;_WINDOWS;WIN64;ASSIMP_BUILD_BOOST_WORKAROUND;ASSIMP_BUILD_NO_OWN_ZLIB;ASSIMP_BUILD_NO_C4D_IMPORTER;ASSIMP_BUILD_NO_IFC_IMPORTER;OPENDDL_STATIC_LIBARY;_CRT_SECURE_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS;_SILENCE_CXX17_ITERATOR_BASE_CLASS_DEPRECATION_WARNING;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>..\..\..\..\..\src\Dependencies\assimp;..\..\..\..\..\src\Dependencies\assimp\contrib\openddlparser\include;..\..\..\..\..\src\Dependencies\assimp\contrib\irrXML;..\..\..\..\..\src\Dependencies\assimp\include;..\..\..\..\..\src\Dependencies\rapidjson;..\..\..\..\..\src\Dependencies\minizip;..\..\..\..\..\src\Dependencies\zlib-ng;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
@@ -115,7 +115,7 @@
     <ClCompile>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
-      <PreprocessorDefinitions>UNICODE;_UNICODE;EA_COMPILER_NO_RTTI;GLM_FORCE_SSE42;_HAS_ITERATOR_DEBUGGING=0;_ITERATOR_DEBUG_LEVEL=0;NDEBUG;WIN32;_WINDOWS;WIN64;ASSIMP_BUILD_BOOST_WORKAROUND;ASSIMP_BUILD_NO_OWN_ZLIB;ASSIMP_BUILD_NO_C4D_IMPORTER;ASSIMP_BUILD_NO_IFC_IMPORTER;OPENDDL_STATIC_LIBARY;_CRT_SECURE_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS;_SILENCE_CXX17_ITERATOR_BASE_CLASS_DEPRECATION_WARNING;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>UNICODE;_UNICODE;EA_COMPILER_NO_RTTI;GLM_FORCE_SSE42;ZLIB_COMPAT;_HAS_ITERATOR_DEBUGGING=0;_ITERATOR_DEBUG_LEVEL=0;NDEBUG;WIN32;_WINDOWS;WIN64;ASSIMP_BUILD_BOOST_WORKAROUND;ASSIMP_BUILD_NO_OWN_ZLIB;ASSIMP_BUILD_NO_C4D_IMPORTER;ASSIMP_BUILD_NO_IFC_IMPORTER;OPENDDL_STATIC_LIBARY;_CRT_SECURE_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS;_SILENCE_CXX17_ITERATOR_BASE_CLASS_DEPRECATION_WARNING;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>..\..\..\..\..\src\Dependencies\assimp;..\..\..\..\..\src\Dependencies\assimp\contrib\openddlparser\include;..\..\..\..\..\src\Dependencies\assimp\contrib\irrXML;..\..\..\..\..\src\Dependencies\assimp\include;..\..\..\..\..\src\Dependencies\rapidjson;..\..\..\..\..\src\Dependencies\minizip;..\..\..\..\..\src\Dependencies\zlib-ng;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <Optimization>MaxSpeed</Optimization>
@@ -140,7 +140,7 @@
     <ClCompile>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
-      <PreprocessorDefinitions>UNICODE;_UNICODE;EA_COMPILER_NO_RTTI;GLM_FORCE_SSE42;_HAS_ITERATOR_DEBUGGING=0;_ITERATOR_DEBUG_LEVEL=0;NDEBUG;SHIB_PROFILE;WIN32;_WINDOWS;WIN64;ASSIMP_BUILD_BOOST_WORKAROUND;ASSIMP_BUILD_NO_OWN_ZLIB;ASSIMP_BUILD_NO_C4D_IMPORTER;ASSIMP_BUILD_NO_IFC_IMPORTER;OPENDDL_STATIC_LIBARY;_CRT_SECURE_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS;_SILENCE_CXX17_ITERATOR_BASE_CLASS_DEPRECATION_WARNING;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>UNICODE;_UNICODE;EA_COMPILER_NO_RTTI;GLM_FORCE_SSE42;ZLIB_COMPAT;_HAS_ITERATOR_DEBUGGING=0;_ITERATOR_DEBUG_LEVEL=0;NDEBUG;SHIB_PROFILE;WIN32;_WINDOWS;WIN64;ASSIMP_BUILD_BOOST_WORKAROUND;ASSIMP_BUILD_NO_OWN_ZLIB;ASSIMP_BUILD_NO_C4D_IMPORTER;ASSIMP_BUILD_NO_IFC_IMPORTER;OPENDDL_STATIC_LIBARY;_CRT_SECURE_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS;_SILENCE_CXX17_ITERATOR_BASE_CLASS_DEPRECATION_WARNING;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>..\..\..\..\..\src\Dependencies\assimp;..\..\..\..\..\src\Dependencies\assimp\contrib\openddlparser\include;..\..\..\..\..\src\Dependencies\assimp\contrib\irrXML;..\..\..\..\..\src\Dependencies\assimp\include;..\..\..\..\..\src\Dependencies\rapidjson;..\..\..\..\..\src\Dependencies\minizip;..\..\..\..\..\src\Dependencies\zlib-ng;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <Optimization>MaxSpeed</Optimization>
@@ -165,7 +165,7 @@
     <ClCompile>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
-      <PreprocessorDefinitions>UNICODE;_UNICODE;EA_COMPILER_NO_RTTI;GLM_FORCE_SSE42;_DEBUG;DEBUG;WIN32;_WINDOWS;WIN64;ASSIMP_BUILD_BOOST_WORKAROUND;ASSIMP_BUILD_NO_OWN_ZLIB;ASSIMP_BUILD_NO_C4D_IMPORTER;ASSIMP_BUILD_NO_IFC_IMPORTER;OPENDDL_STATIC_LIBARY;_CRT_SECURE_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS;_SILENCE_CXX17_ITERATOR_BASE_CLASS_DEPRECATION_WARNING;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>UNICODE;_UNICODE;EA_COMPILER_NO_RTTI;GLM_FORCE_SSE42;ZLIB_COMPAT;_DEBUG;DEBUG;WIN32;_WINDOWS;WIN64;ASSIMP_BUILD_BOOST_WORKAROUND;ASSIMP_BUILD_NO_OWN_ZLIB;ASSIMP_BUILD_NO_C4D_IMPORTER;ASSIMP_BUILD_NO_IFC_IMPORTER;OPENDDL_STATIC_LIBARY;_CRT_SECURE_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS;_SILENCE_CXX17_ITERATOR_BASE_CLASS_DEPRECATION_WARNING;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>..\..\..\..\..\src\Dependencies\assimp;..\..\..\..\..\src\Dependencies\assimp\contrib\openddlparser\include;..\..\..\..\..\src\Dependencies\assimp\contrib\irrXML;..\..\..\..\..\src\Dependencies\assimp\include;..\..\..\..\..\src\Dependencies\rapidjson;..\..\..\..\..\src\Dependencies\minizip;..\..\..\..\..\src\Dependencies\zlib-ng;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <Optimization>MaxSpeed</Optimization>
@@ -232,6 +232,7 @@
     <ClInclude Include="..\..\..\..\..\src\Dependencies\assimp\code\DXFLoader.h" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\assimp\code\DeboneProcess.h" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\assimp\code\DefaultProgressHandler.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\assimp\code\DropFaceNormalsProcess.h" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\assimp\code\EmbedTexturesProcess.h" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\assimp\code\FBXCommon.h" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\assimp\code\FBXCompileConfig.h" />
@@ -269,8 +270,10 @@
     <ClInclude Include="..\..\..\..\..\src\Dependencies\assimp\code\Importer\IFC\IFCReaderGen_2x3.h" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\assimp\code\Importer\IFC\IFCReaderGen_4.h" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\assimp\code\Importer\IFC\IFCUtil.h" />
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\assimp\code\Importer\IFC\STEPFileEncoding.h" />
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\assimp\code\Importer\IFC\STEPFileReader.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\assimp\code\Importer\STEPParser\STEPFileEncoding.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\assimp\code\Importer\STEPParser\STEPFileReader.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\assimp\code\Importer\StepFile\StepFileImporter.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\assimp\code\Importer\StepFile\StepReaderGen.h" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\assimp\code\ImproveCacheLocality.h" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\assimp\code\JoinVerticesProcess.h" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\assimp\code\LWOAnimation.h" />
@@ -333,7 +336,6 @@
     <ClInclude Include="..\..\..\..\..\src\Dependencies\assimp\code\RawLoader.h" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\assimp\code\RemoveRedundantMaterials.h" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\assimp\code\RemoveVCProcess.h" />
-    <ClInclude Include="..\..\..\..\..\src\Dependencies\assimp\code\SGSpatialSort.h" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\assimp\code\SIBImporter.h" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\assimp\code\SMDLoader.h" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\assimp\code\STEPFile.h" />
@@ -538,6 +540,7 @@
     <ClCompile Include="..\..\..\..\..\src\Dependencies\assimp\code\DefaultIOStream.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Dependencies\assimp\code\DefaultIOSystem.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Dependencies\assimp\code\DefaultLogger.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\assimp\code\DropFaceNormalsProcess.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Dependencies\assimp\code\EmbedTexturesProcess.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Dependencies\assimp\code\Exporter.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Dependencies\assimp\code\FBXAnimation.cpp" />
@@ -581,8 +584,12 @@
     <ClCompile Include="..\..\..\..\..\src\Dependencies\assimp\code\Importer\IFC\IFCReaderGen2_2x3.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Dependencies\assimp\code\Importer\IFC\IFCReaderGen_4.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Dependencies\assimp\code\Importer\IFC\IFCUtil.cpp" />
-    <ClCompile Include="..\..\..\..\..\src\Dependencies\assimp\code\Importer\IFC\STEPFileEncoding.cpp" />
-    <ClCompile Include="..\..\..\..\..\src\Dependencies\assimp\code\Importer\IFC\STEPFileReader.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\assimp\code\Importer\STEPParser\STEPFileEncoding.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\assimp\code\Importer\STEPParser\STEPFileReader.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\assimp\code\Importer\StepFile\StepFileGen1.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\assimp\code\Importer\StepFile\StepFileGen2.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\assimp\code\Importer\StepFile\StepFileGen3.cpp" />
+    <ClCompile Include="..\..\..\..\..\src\Dependencies\assimp\code\Importer\StepFile\StepFileImporter.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Dependencies\assimp\code\ImporterRegistry.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Dependencies\assimp\code\ImproveCacheLocality.cpp" />
     <ClCompile Include="..\..\..\..\..\src\Dependencies\assimp\code\JoinVerticesProcess.cpp" />

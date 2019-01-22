@@ -124,8 +124,8 @@ typedef void       *voidp;
 #  define Z_HAVE_UNISTD_H
 #endif
 
-#ifdef HAVE_STDARG_H    /* may be set to #if 1 by ./configure */
-#  define Z_HAVE_STDARG_H
+#ifdef NEED_PTRDIFF_T    /* may be set to #if 1 by ./configure */
+typedef PTRDIFF_TYPE ptrdiff_t;
 #endif
 
 #include <sys/types.h>      /* for off_t */
@@ -162,7 +162,7 @@ typedef void       *voidp;
 #  define Z_WANT64
 #endif
 
-#if !defined(SEEK_SET) && defined(WITH_GZFILEOP)
+#if !defined(SEEK_SET)
 #  define SEEK_SET        0       /* Seek from beginning of file.  */
 #  define SEEK_CUR        1       /* Seek from current position.  */
 #  define SEEK_END        2       /* Set file pointer to EOF plus "offset" */
