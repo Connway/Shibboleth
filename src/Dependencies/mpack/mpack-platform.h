@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015-2016 Nicholas Fraser
+ * Copyright (c) 2015-2018 Nicholas Fraser
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
  * this software and associated documentation files (the "Software"), to deal in
@@ -44,11 +44,23 @@
 
 
 
+/* Doxygen preprocs */
+#if defined(MPACK_DOXYGEN) && MPACK_DOXYGEN
+#define MPACK_HAS_CONFIG 0
+// We give these their default values of 0 here even though they are defined to
+// 1 in the doxyfile. Doxygen will show this as the value in the docs, even
+// though it ignores it when parsing the rest of the source. This is what we
+// want, since we want the documentation to show these defaults but still
+// generate documentation for the functions they add when they're on.
+#define MPACK_COMPATIBILITY 0
+#define MPACK_EXTENSIONS 0
+#endif
+
+
+
 /* Include the custom config file if enabled */
 
-#ifdef MPACK_DOXYGEN
-#define MPACK_HAS_CONFIG 1
-#elif defined(MPACK_HAS_CONFIG) && MPACK_HAS_CONFIG
+#if defined(MPACK_HAS_CONFIG) && MPACK_HAS_CONFIG
 #include "mpack-config.h"
 #endif
 
@@ -56,13 +68,12 @@
  * Now that the optional config is included, we define the defaults
  * for any of the configuration options and other switches that aren't
  * yet defined.
- *
- * In development mode, or when the library is used without being
- * amalgamated, we set the defaults by including the sample config
- * directly. When amalgamated, this is disabled and the contents
- * of the sample config have been inserted into the top of mpack.h.
  */
-#include "mpack-config.h.sample"
+#if defined(MPACK_DOXYGEN) && MPACK_DOXYGEN
+#include "mpack-defaults-doxygen.h"
+#else
+#include "mpack-defaults.h"
+#endif
 
 /*
  * All remaining configuration options that have not yet been set must
@@ -179,16 +190,15 @@
 #endif
 
 #define MPACK_HEADER_START \
-    MPACK_EXTERN_C_START \
     MPACK_WSHADOW_WARNING_START \
     MPACK_DECLARED_INLINE_WARNING_START
 
 #define MPACK_HEADER_END \
     MPACK_DECLARED_INLINE_WARNING_END \
-    MPACK_WSHADOW_WARNING_END \
-    MPACK_EXTERN_C_END
+    MPACK_WSHADOW_WARNING_END
 
 MPACK_HEADER_START
+MPACK_EXTERN_C_START
 
 
 
@@ -198,6 +208,25 @@ MPACK_HEADER_START
 
 #define MPACK_STRINGIFY_IMPL(arg) #arg
 #define MPACK_STRINGIFY(arg) MPACK_STRINGIFY_IMPL(arg)
+
+// This is a workaround for MSVC's incorrect expansion of __VA_ARGS__. It
+// treats __VA_ARGS__ as a single preprocessor token when passed in the
+// argument list of another macro unless we use an outer wrapper to expand it
+// lexically first. (For safety/consistency we use this in all variadic macros
+// that don't ignore the variadic arguments regardless of whether __VA_ARGS__
+// is passed to another macro.)
+//     https://stackoverflow.com/a/32400131
+#define MPACK_EXPAND(x) x
+
+// Extracts the first argument of a variadic macro list, where there might only
+// be one argument.
+#define MPACK_EXTRACT_ARG0_IMPL(first, ...) first
+#define MPACK_EXTRACT_ARG0(...) MPACK_EXPAND(MPACK_EXTRACT_ARG0_IMPL( __VA_ARGS__ , ignored))
+
+// Stringifies the first argument of a variadic macro list, where there might
+// only be one argument.
+#define MPACK_STRINGIFY_ARG0_impl(first, ...) #first
+#define MPACK_STRINGIFY_ARG0(...) MPACK_EXPAND(MPACK_STRINGIFY_ARG0_impl( __VA_ARGS__ , ignored))
 
 
 
@@ -245,8 +274,9 @@ MPACK_HEADER_START
     #define MPACK_INLINE inline
 
 #elif defined(_MSC_VER)
-    // MSVC 2013 always uses COMDAT linkage, but it doesn't treat
-    // 'inline' as a keyword in C99 mode.
+    // MSVC 2013 always uses COMDAT linkage, but it doesn't treat 'inline' as a
+    // keyword in C99 mode. (This appears to be fixed in a later version of
+    // MSVC but we don't bother detecting it.)
     #define MPACK_INLINE __inline
     #define MPACK_STATIC_INLINE static __inline
 
@@ -637,29 +667,50 @@ MPACK_HEADER_START
     MPACK_NORETURN(void mpack_assert_fail_wrapper(const char* message));
     #if MPACK_STDIO
         MPACK_NORETURN(void mpack_assert_fail_format(const char* format, ...));
-        #define mpack_assert_fail_at(line, file, expr, ...) \
-                mpack_assert_fail_format("mpack assertion failed at " file ":" #line "\n" expr "\n" __VA_ARGS__)
+        #define mpack_assert_fail_at(line, file, exprstr, format, ...) \
+                MPACK_EXPAND(mpack_assert_fail_format("mpack assertion failed at " file ":" #line "\n%s\n" format, exprstr, __VA_ARGS__))
     #else
-        #define mpack_assert_fail_at(line, file, ...) \
-                mpack_assert_fail_wrapper("mpack assertion failed at " file ":" #line )
+        #define mpack_assert_fail_at(line, file, exprstr, format, ...) \
+                mpack_assert_fail_wrapper("mpack assertion failed at " file ":" #line "\n" exprstr "\n")
     #endif
 
-    #define mpack_assert_fail_pos(line, file, expr, ...) mpack_assert_fail_at(line, file, expr, __VA_ARGS__)
-    #define mpack_assert(expr, ...) ((!(expr)) ? mpack_assert_fail_pos(__LINE__, __FILE__, #expr, __VA_ARGS__) : (void)0)
+    #define mpack_assert_fail_pos(line, file, exprstr, expr, ...) \
+            MPACK_EXPAND(mpack_assert_fail_at(line, file, exprstr, __VA_ARGS__))
+
+    // This contains a workaround to the pedantic C99 requirement of having at
+    // least one argument to a variadic macro. The first argument is the
+    // boolean expression, the optional second argument (if provided) must be a
+    // literal format string, and any additional arguments are the format
+    // argument list.
+    //
+    // Unfortunately this means macros are expanded in the expression before it
+    // gets stringified. I haven't found a workaround to this.
+    //
+    // This adds two unused arguments to the format argument list when a
+    // format string is provided, so this would complicate the use of
+    // -Wformat and __attribute__((format)) on mpack_assert_fail_format() if we
+    // ever bothered to implement it.
+    #define mpack_assert(...) \
+            MPACK_EXPAND(((!(MPACK_EXTRACT_ARG0(__VA_ARGS__))) ? \
+                mpack_assert_fail_pos(__LINE__, __FILE__, MPACK_STRINGIFY_ARG0(__VA_ARGS__) , __VA_ARGS__ , "", NULL) : \
+                (void)0))
 
     void mpack_break_hit(const char* message);
     #if MPACK_STDIO
         void mpack_break_hit_format(const char* format, ...);
         #define mpack_break_hit_at(line, file, ...) \
-                mpack_break_hit_format("mpack breakpoint hit at " file ":" #line "\n" __VA_ARGS__)
+                MPACK_EXPAND(mpack_break_hit_format("mpack breakpoint hit at " file ":" #line "\n" __VA_ARGS__))
     #else
         #define mpack_break_hit_at(line, file, ...) \
                 mpack_break_hit("mpack breakpoint hit at " file ":" #line )
     #endif
-    #define mpack_break_hit_pos(line, file, ...) mpack_break_hit_at(line, file, __VA_ARGS__)
-    #define mpack_break(...) mpack_break_hit_pos(__LINE__, __FILE__, __VA_ARGS__)
+    #define mpack_break_hit_pos(line, file, ...) MPACK_EXPAND(mpack_break_hit_at(line, file, __VA_ARGS__))
+    #define mpack_break(...) MPACK_EXPAND(mpack_break_hit_pos(__LINE__, __FILE__, __VA_ARGS__))
 #else
-    #define mpack_assert(expr, ...) ((!(expr)) ? MPACK_UNREACHABLE, (void)0 : (void)0)
+    #define mpack_assert(...) \
+            (MPACK_EXPAND((!(MPACK_EXTRACT_ARG0(__VA_ARGS__))) ? \
+                (MPACK_UNREACHABLE, (void)0) : \
+                (void)0))
     #define mpack_break(...) ((void)0)
 #endif
 
@@ -748,7 +799,8 @@ size_t mpack_strlen(const char* s);
 
 /* Debug logging */
 #if 0
-    #define mpack_log(...) (printf(__VA_ARGS__), fflush(stdout))
+    #include <stdio.h>
+    #define mpack_log(...) (MPACK_EXPAND(printf(__VA_ARGS__), fflush(stdout)))
 #else
     #define mpack_log(...) ((void)0)
 #endif
@@ -800,6 +852,7 @@ size_t mpack_strlen(const char* s);
  * @}
  */
 
+MPACK_EXTERN_C_END
 MPACK_HEADER_END
 
 #endif

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015-2016 Nicholas Fraser
+ * Copyright (c) 2015-2018 Nicholas Fraser
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
  * this software and associated documentation files (the "Software"), to deal in
@@ -575,48 +575,6 @@ const char* mpack_read_utf8_inplace(mpack_reader_t* reader, size_t count) {
     return str;
 }
 
-static void mpack_parse_timestamp(mpack_reader_t* reader, mpack_tag_t* tag, uint32_t length, const char* p) {
-    mpack_timestamp_t timestamp;
-
-    switch (length) {
-        case 4:
-            timestamp.nanoseconds = 0;
-            timestamp.seconds = mpack_load_u32(p);
-            break;
-        case 8:
-            timestamp.nanoseconds = mpack_load_u32(p) >> 2;
-            timestamp.seconds = mpack_load_u64(p) & ((UINT64_C(1) << 34) - 1);
-            break;
-        case 12:
-            timestamp.nanoseconds = mpack_load_u32(p);
-            timestamp.seconds = mpack_load_i64(p + 4);
-            break;
-        default:
-            mpack_reader_flag_error(reader, mpack_error_invalid);
-            return;
-    }
-
-    if (timestamp.nanoseconds > MPACK_TIMESTAMP_NANOSECONDS_MAX) {
-        mpack_reader_flag_error(reader, mpack_error_invalid);
-        return;
-    }
-
-    *tag = mpack_tag_make_timestamp_struct(timestamp);
-}
-
-static size_t mpack_parse_ext(mpack_reader_t* reader, mpack_tag_t* tag, size_t tagsize, uint32_t length, const char* p) {
-    int8_t exttype = mpack_load_i8(p++);
-
-    if (exttype == MPACK_TIMESTAMP_EXTTYPE) {
-        mpack_parse_timestamp(reader, tag, length, p);
-        tagsize += length;
-    } else {
-        *tag = mpack_tag_make_ext(exttype, length);
-    }
-
-    return tagsize;
-}
-
 static size_t mpack_parse_tag(mpack_reader_t* reader, mpack_tag_t* tag) {
     mpack_assert(reader->error == mpack_ok, "reader cannot be in an error state!");
 
@@ -751,23 +709,28 @@ static size_t mpack_parse_tag(mpack_reader_t* reader, mpack_tag_t* tag) {
             *tag = mpack_tag_make_bin(mpack_load_u32(reader->data + 1));
             return MPACK_TAG_SIZE_BIN32;
 
+        #if MPACK_EXTENSIONS
         // ext8
         case 0xc7:
             if (!mpack_reader_ensure(reader, MPACK_TAG_SIZE_EXT8))
                 return 0;
-            return mpack_parse_ext(reader, tag, MPACK_TAG_SIZE_EXT8, mpack_load_u8(reader->data + 1), reader->data + 2);
+            *tag = mpack_tag_make_ext(mpack_load_i8(reader->data + 2), mpack_load_u8(reader->data + 1));
+            return MPACK_TAG_SIZE_EXT8;
 
         // ext16
         case 0xc8:
             if (!mpack_reader_ensure(reader, MPACK_TAG_SIZE_EXT16))
                 return 0;
-            return mpack_parse_ext(reader, tag, MPACK_TAG_SIZE_EXT16, mpack_load_u16(reader->data + 1), reader->data + 3);
+            *tag = mpack_tag_make_ext(mpack_load_i8(reader->data + 3), mpack_load_u16(reader->data + 1));
+            return MPACK_TAG_SIZE_EXT16;
 
         // ext32
         case 0xc9:
             if (!mpack_reader_ensure(reader, MPACK_TAG_SIZE_EXT32))
                 return 0;
-            return mpack_parse_ext(reader, tag, MPACK_TAG_SIZE_EXT32, mpack_load_u32(reader->data + 1), reader->data + 5);
+            *tag = mpack_tag_make_ext(mpack_load_i8(reader->data + 5), mpack_load_u32(reader->data + 1));
+            return MPACK_TAG_SIZE_EXT32;
+        #endif
 
         // float
         case 0xca:
@@ -839,35 +802,42 @@ static size_t mpack_parse_tag(mpack_reader_t* reader, mpack_tag_t* tag) {
             *tag = mpack_tag_make_int(mpack_load_i64(reader->data + 1));
             return MPACK_TAG_SIZE_I64;
 
+        #if MPACK_EXTENSIONS
         // fixext1
         case 0xd4:
             if (!mpack_reader_ensure(reader, MPACK_TAG_SIZE_FIXEXT1))
                 return 0;
-            return mpack_parse_ext(reader, tag, MPACK_TAG_SIZE_FIXEXT1, 1, reader->data + 1);
+            *tag = mpack_tag_make_ext(mpack_load_i8(reader->data + 1), 1);
+            return MPACK_TAG_SIZE_FIXEXT1;
 
         // fixext2
         case 0xd5:
             if (!mpack_reader_ensure(reader, MPACK_TAG_SIZE_FIXEXT2))
                 return 0;
-            return mpack_parse_ext(reader, tag, MPACK_TAG_SIZE_FIXEXT2, 2, reader->data + 1);
+            *tag = mpack_tag_make_ext(mpack_load_i8(reader->data + 1), 2);
+            return MPACK_TAG_SIZE_FIXEXT2;
 
         // fixext4
         case 0xd6:
             if (!mpack_reader_ensure(reader, MPACK_TAG_SIZE_FIXEXT4))
                 return 0;
-            return mpack_parse_ext(reader, tag, MPACK_TAG_SIZE_FIXEXT4, 4, reader->data + 1);
+            *tag = mpack_tag_make_ext(mpack_load_i8(reader->data + 1), 4);
+            return 2;
 
         // fixext8
         case 0xd7:
             if (!mpack_reader_ensure(reader, MPACK_TAG_SIZE_FIXEXT8))
                 return 0;
-            return mpack_parse_ext(reader, tag, MPACK_TAG_SIZE_FIXEXT8, 8, reader->data + 1);
+            *tag = mpack_tag_make_ext(mpack_load_i8(reader->data + 1), 8);
+            return MPACK_TAG_SIZE_FIXEXT8;
 
         // fixext16
         case 0xd8:
             if (!mpack_reader_ensure(reader, MPACK_TAG_SIZE_FIXEXT16))
                 return 0;
-            return mpack_parse_ext(reader, tag, MPACK_TAG_SIZE_FIXEXT16, 16, reader->data + 1);
+            *tag = mpack_tag_make_ext(mpack_load_i8(reader->data + 1), 16);
+            return MPACK_TAG_SIZE_FIXEXT16;
+        #endif
 
         // str8
         case 0xd9:
@@ -920,18 +890,32 @@ static size_t mpack_parse_tag(mpack_reader_t* reader, mpack_tag_t* tag) {
 
         // reserved
         case 0xc1:
-            break;
+            mpack_reader_flag_error(reader, mpack_error_invalid);
+            return 0;
+
+        #if !MPACK_EXTENSIONS
+        // ext
+        case 0xc7: // fallthrough
+        case 0xc8: // fallthrough
+        case 0xc9: // fallthrough
+        // fixext
+        case 0xd4: // fallthrough
+        case 0xd5: // fallthrough
+        case 0xd6: // fallthrough
+        case 0xd7: // fallthrough
+        case 0xd8:
+            mpack_reader_flag_error(reader, mpack_error_unsupported);
+            return 0;
+        #endif
 
         #if MPACK_OPTIMIZE_FOR_SIZE
         // any other bytes should have been handled by the infix switch
         default:
-            mpack_assert(0, "unreachable");
             break;
         #endif
     }
 
-    // unrecognized type
-    mpack_reader_flag_error(reader, mpack_error_invalid);
+    mpack_assert(0, "unreachable");
     return 0;
 }
 
@@ -955,14 +939,14 @@ mpack_tag_t mpack_read_tag(mpack_reader_t* reader) {
     switch (tag.type) {
         case mpack_type_map:
         case mpack_type_array:
-            track_error = mpack_track_push(&reader->track, tag.type, tag.v.l);
-            break;
-        case mpack_type_str:
-        case mpack_type_bin:
             track_error = mpack_track_push(&reader->track, tag.type, tag.v.n);
             break;
+        #if MPACK_EXTENSIONS
         case mpack_type_ext:
-            track_error = mpack_track_push(&reader->track, tag.type, tag.v.ext.length);
+        #endif
+        case mpack_type_str:
+        case mpack_type_bin:
+            track_error = mpack_track_push(&reader->track, tag.type, tag.v.l);
             break;
         default:
             break;
@@ -1006,10 +990,12 @@ void mpack_discard(mpack_reader_t* reader) {
             mpack_skip_bytes(reader, var.v.l);
             mpack_done_bin(reader);
             break;
+        #if MPACK_EXTENSIONS
         case mpack_type_ext:
-            mpack_skip_bytes(reader, var.v.ext.length);
+            mpack_skip_bytes(reader, var.v.l);
             mpack_done_ext(reader);
             break;
+        #endif
         case mpack_type_array: {
             for (; var.v.n > 0; --var.v.n) {
                 mpack_discard(reader);
@@ -1034,6 +1020,53 @@ void mpack_discard(mpack_reader_t* reader) {
     }
 }
 
+#if MPACK_EXTENSIONS
+mpack_timestamp_t mpack_read_timestamp(mpack_reader_t* reader, size_t size) {
+    mpack_timestamp_t timestamp = {0, 0};
+
+    if (size != 4 && size != 8 && size != 12) {
+        mpack_reader_flag_error(reader, mpack_error_invalid);
+        return timestamp;
+    }
+
+    char buf[12];
+    mpack_read_bytes(reader, buf, size);
+    mpack_done_ext(reader);
+    if (mpack_reader_error(reader) != mpack_ok)
+        return timestamp;
+
+    switch (size) {
+        case 4:
+            timestamp.seconds = (int64_t)(uint64_t)mpack_load_u32(buf);
+            break;
+
+        case 8: {
+            uint64_t packed = mpack_load_u64(buf);
+            timestamp.seconds = (int64_t)(packed & ((UINT64_C(1) << 34) - 1));
+            timestamp.nanoseconds = (uint32_t)(packed >> 34);
+            break;
+        }
+
+        case 12:
+            timestamp.nanoseconds = mpack_load_u32(buf);
+            timestamp.seconds = mpack_load_i64(buf + 4);
+            break;
+
+        default:
+            mpack_assert(false, "unreachable");
+            break;
+    }
+
+    if (timestamp.nanoseconds > MPACK_TIMESTAMP_NANOSECONDS_MAX) {
+        mpack_reader_flag_error(reader, mpack_error_invalid);
+        mpack_timestamp_t zero = {0, 0};
+        return zero;
+    }
+
+    return timestamp;
+}
+#endif
+
 #if MPACK_READ_TRACKING
 void mpack_done_type(mpack_reader_t* reader, mpack_type_t type) {
     if (mpack_reader_error(reader) == mpack_ok)
@@ -1042,67 +1075,84 @@ void mpack_done_type(mpack_reader_t* reader, mpack_type_t type) {
 #endif
 
 #if MPACK_DEBUG && MPACK_STDIO
-static void mpack_print_element(mpack_reader_t* reader, size_t depth, FILE* file) {
+static size_t mpack_print_read_prefix(mpack_reader_t* reader, size_t length, char* buffer, size_t buffer_size) {
+    if (length == 0)
+        return 0;
+
+    size_t read = (length < buffer_size) ? length : buffer_size;
+    mpack_read_bytes(reader, buffer, read);
+    if (mpack_reader_error(reader) != mpack_ok)
+        return 0;
+
+    mpack_skip_bytes(reader, length - read);
+    return read;
+}
+
+static void mpack_print_element(mpack_reader_t* reader, mpack_print_t* print, size_t depth) {
     mpack_tag_t val = mpack_read_tag(reader);
     if (mpack_reader_error(reader) != mpack_ok)
         return;
 
+    // We read some bytes from bin and ext so we can print its prefix in hex.
+    char buffer[MPACK_PRINT_BYTE_COUNT];
+    size_t count = 0;
+
     switch (val.type) {
         case mpack_type_str:
-            putc('"', file);
+            mpack_print_append_cstr(print, "\"");
             for (size_t i = 0; i < val.v.l; ++i) {
                 char c;
                 mpack_read_bytes(reader, &c, 1);
                 if (mpack_reader_error(reader) != mpack_ok)
                     return;
                 switch (c) {
-                    case '\n': fprintf(file, "\\n"); break;
-                    case '\\': fprintf(file, "\\\\"); break;
-                    case '"': fprintf(file, "\\\""); break;
-                    default: putc(c, file); break;
+                    case '\n': mpack_print_append_cstr(print, "\\n"); break;
+                    case '\\': mpack_print_append_cstr(print, "\\\\"); break;
+                    case '"': mpack_print_append_cstr(print, "\\\""); break;
+                    default: mpack_print_append(print, &c, 1); break;
                 }
             }
-            putc('"', file);
+            mpack_print_append_cstr(print, "\"");
             mpack_done_str(reader);
             return;
 
         case mpack_type_array:
-            fprintf(file, "[\n");
+            mpack_print_append_cstr(print, "[\n");
             for (size_t i = 0; i < val.v.n; ++i) {
                 for (size_t j = 0; j < depth + 1; ++j)
-                    fprintf(file, "    ");
-                mpack_print_element(reader, depth + 1, file);
+                    mpack_print_append_cstr(print, "    ");
+                mpack_print_element(reader, print, depth + 1);
                 if (mpack_reader_error(reader) != mpack_ok)
                     return;
                 if (i != val.v.n - 1)
-                    putc(',', file);
-                putc('\n', file);
+                    mpack_print_append_cstr(print, ",");
+                mpack_print_append_cstr(print, "\n");
             }
             for (size_t i = 0; i < depth; ++i)
-                fprintf(file, "    ");
-            putc(']', file);
+                mpack_print_append_cstr(print, "    ");
+            mpack_print_append_cstr(print, "]");
             mpack_done_array(reader);
             return;
 
         case mpack_type_map:
-            fprintf(file, "{\n");
+            mpack_print_append_cstr(print, "{\n");
             for (size_t i = 0; i < val.v.n; ++i) {
                 for (size_t j = 0; j < depth + 1; ++j)
-                    fprintf(file, "    ");
-                mpack_print_element(reader, depth + 1, file);
+                    mpack_print_append_cstr(print, "    ");
+                mpack_print_element(reader, print, depth + 1);
                 if (mpack_reader_error(reader) != mpack_ok)
                     return;
-                fprintf(file, ": ");
-                mpack_print_element(reader, depth + 1, file);
+                mpack_print_append_cstr(print, ": ");
+                mpack_print_element(reader, print, depth + 1);
                 if (mpack_reader_error(reader) != mpack_ok)
                     return;
                 if (i != val.v.n - 1)
-                    putc(',', file);
-                putc('\n', file);
+                    mpack_print_append_cstr(print, ",");
+                mpack_print_append_cstr(print, "\n");
             }
             for (size_t i = 0; i < depth; ++i)
-                fprintf(file, "    ");
-            putc('}', file);
+                mpack_print_append_cstr(print, "    ");
+            mpack_print_append_cstr(print, "}");
             mpack_done_map(reader);
             return;
 
@@ -1110,45 +1160,113 @@ static void mpack_print_element(mpack_reader_t* reader, size_t depth, FILE* file
         // below cases break and print pseudo-json.
 
         case mpack_type_bin:
-            mpack_skip_bytes(reader, val.v.l);
+            count = mpack_print_read_prefix(reader, mpack_tag_bin_length(&val), buffer, sizeof(buffer));
             mpack_done_bin(reader);
             break;
 
+        #if MPACK_EXTENSIONS
         case mpack_type_ext:
-            mpack_skip_bytes(reader, val.v.ext.length);
+            count = mpack_print_read_prefix(reader, mpack_tag_ext_length(&val), buffer, sizeof(buffer));
             mpack_done_ext(reader);
             break;
+        #endif
 
         default:
             break;
     }
 
     char buf[256];
-    mpack_tag_debug_pseudo_json(val, buf, sizeof(buf));
-    fputs(buf, file);
+    mpack_tag_debug_pseudo_json(val, buf, sizeof(buf), buffer, count);
+    mpack_print_append_cstr(print, buf);
 }
 
-void mpack_print_file(const char* data, size_t len, FILE* file) {
+static void mpack_print_and_destroy(mpack_reader_t* reader, mpack_print_t* print, size_t depth) {
+    for (size_t i = 0; i < depth; ++i)
+        mpack_print_append_cstr(print, "    ");
+    mpack_print_element(reader, print, depth);
+
+    size_t remaining = mpack_reader_remaining(reader, NULL);
+
+    char buf[256];
+    if (mpack_reader_destroy(reader) != mpack_ok) {
+        mpack_snprintf(buf, sizeof(buf), "\n<mpack parsing error %s>", mpack_error_to_string(mpack_reader_error(reader)));
+        buf[sizeof(buf) - 1] = '\0';
+        mpack_print_append_cstr(print, buf);
+    } else if (remaining > 0) {
+        mpack_snprintf(buf, sizeof(buf), "\n<%i extra bytes at end of message>", (int)remaining);
+        buf[sizeof(buf) - 1] = '\0';
+        mpack_print_append_cstr(print, buf);
+    }
+}
+
+static void mpack_print_data(const char* data, size_t len, mpack_print_t* print, size_t depth) {
+    mpack_reader_t reader;
+    mpack_reader_init_data(&reader, data, len);
+    mpack_print_and_destroy(&reader, print, depth);
+}
+
+void mpack_print_data_to_buffer(const char* data, size_t data_size, char* buffer, size_t buffer_size) {
+    if (buffer_size == 0) {
+        mpack_assert(false, "buffer size is zero!");
+        return;
+    }
+
+    mpack_print_t print;
+    mpack_memset(&print, 0, sizeof(print));
+    print.buffer = buffer;
+    print.size = buffer_size;
+    mpack_print_data(data, data_size, &print, 0);
+    mpack_print_append(&print, "",  1); // null-terminator
+    mpack_print_flush(&print);
+
+    // we always make sure there's a null-terminator at the end of the buffer
+    // in case we ran out of space.
+    print.buffer[print.size - 1] = '\0';
+}
+
+void mpack_print_data_to_callback(const char* data, size_t size, mpack_print_callback_t callback, void* context) {
+    char buffer[1024];
+    mpack_print_t print;
+    mpack_memset(&print, 0, sizeof(print));
+    print.buffer = buffer;
+    print.size = sizeof(buffer);
+    print.callback = callback;
+    print.context = context;
+    mpack_print_data(data, size, &print, 0);
+    mpack_print_flush(&print);
+}
+
+void mpack_print_data_to_file(const char* data, size_t len, FILE* file) {
     mpack_assert(data != NULL, "data is NULL");
     mpack_assert(file != NULL, "file is NULL");
 
+    char buffer[1024];
+    mpack_print_t print;
+    mpack_memset(&print, 0, sizeof(print));
+    print.buffer = buffer;
+    print.size = sizeof(buffer);
+    print.callback = &mpack_print_file_callback;
+    print.context = file;
+
+    mpack_print_data(data, len, &print, 2);
+    mpack_print_append_cstr(&print, "\n");
+    mpack_print_flush(&print);
+}
+
+void mpack_print_stdfile_to_callback(FILE* file, mpack_print_callback_t callback, void* context) {
+    char buffer[1024];
+    mpack_print_t print;
+    mpack_memset(&print, 0, sizeof(print));
+    print.buffer = buffer;
+    print.size = sizeof(buffer);
+    print.callback = callback;
+    print.context = context;
+
     mpack_reader_t reader;
-    mpack_reader_init_data(&reader, data, len);
-
-    size_t depth = 2;
-    for (size_t i = 0; i < depth; ++i)
-        fprintf(file, "    ");
-    mpack_print_element(&reader, depth, file);
-    putc('\n', file);
-
-    size_t remaining = mpack_reader_remaining(&reader, NULL);
-
-    if (mpack_reader_destroy(&reader) != mpack_ok)
-        fprintf(file, "<mpack parsing error %s>\n", mpack_error_to_string(mpack_reader_error(&reader)));
-    else if (remaining > 0)
-        fprintf(file, "<%i extra bytes at end of mpack>\n", (int)remaining);
+    mpack_reader_init_stdfile(&reader, file, false);
+    mpack_print_and_destroy(&reader, &print, 0);
+    mpack_print_flush(&print);
 }
 #endif
 
 #endif
-

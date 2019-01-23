@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015-2016 Nicholas Fraser
+ * Copyright (c) 2015-2018 Nicholas Fraser
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
  * this software and associated documentation files (the "Software"), to deal in
@@ -31,6 +31,7 @@
 #include "mpack-reader.h"
 
 MPACK_HEADER_START
+MPACK_EXTERN_C_START
 
 #if MPACK_EXPECT
 
@@ -43,6 +44,10 @@ MPACK_HEADER_START
  *
  * The MPack Expect API allows you to easily read MessagePack data when you
  * expect it to follow a predefined schema.
+ *
+ * @note If you are not writing code for an embedded device (or otherwise do
+ * not need maximum performance with minimal memory usage), you should not use
+ * this. You probably want to use the @link node Node API@endlink instead.
  *
  * See @ref docs/expect.md for examples.
  *
@@ -554,14 +559,29 @@ void mpack_expect_true(mpack_reader_t* reader);
 void mpack_expect_false(mpack_reader_t* reader);
 
 /**
+ * @}
+ */
+
+/**
+ * @name Extension Functions
+ * @{
+ */
+
+#if MPACK_EXTENSIONS
+/**
  * Reads a timestamp.
+ *
+ * @note This requires @ref MPACK_EXTENSIONS.
  */
 mpack_timestamp_t mpack_expect_timestamp(mpack_reader_t* reader);
 
 /**
  * Reads a timestamp in seconds, truncating the nanoseconds (if any).
+ *
+ * @note This requires @ref MPACK_EXTENSIONS.
  */
 int64_t mpack_expect_timestamp_truncate(mpack_reader_t* reader);
+#endif
 
 /**
  * @}
@@ -1030,7 +1050,7 @@ MPACK_INLINE void mpack_expect_cstr_match(mpack_reader_t* reader, const char* cs
  */
 
 /**
- * @name Binary Data / Extension Functions
+ * @name Binary Data
  * @{
  */
 
@@ -1096,28 +1116,66 @@ size_t mpack_expect_bin_buf(mpack_reader_t* reader, char* buf, size_t size);
 char* mpack_expect_bin_alloc(mpack_reader_t* reader, size_t maxsize, size_t* size);
 
 /**
+ * @}
+ */
+
+/**
+ * @name Extension Functions
+ * @{
+ */
+
+#if MPACK_EXTENSIONS
+/**
  * Reads the start of an extension blob, returning its size in bytes and
- * placing the type (0-127) into @p type.
+ * placing the type into @p type.
  *
  * The bytes follow and must be read separately with mpack_read_bytes()
  * or mpack_read_bytes_inplace(). @ref mpack_done_ext() must be called
  * once all bytes have been read.
  *
+ * @p type will be a user-defined type in the range [0,127] or a reserved type
+ * in the range [-128,-2].
+ *
  * mpack_error_type is raised if the value is not an extension blob. The @p
- * type value is unchanged if an error is raised.
+ * type value is zero if an error occurs.
+ *
+ * @note This cannot be used to match a timestamp. @ref mpack_error_type will
+ * be flagged if the value is a timestamp. Use mpack_expect_timestamp() or
+ * mpack_expect_timestamp_truncate() instead.
+ *
+ * @note This requires @ref MPACK_EXTENSIONS.
+ *
+ * @warning Be careful when using reserved types. They may no longer be ext
+ * types in the future, and previously valid data containing reserved types may
+ * become invalid in the future.
  */
 uint32_t mpack_expect_ext(mpack_reader_t* reader, int8_t* type);
 
 /**
  * Reads the start of an extension blob, raising an error if its length is not
- * at most the given number of bytes and placing the type (0-127) into @p type.
+ * at most the given number of bytes and placing the type into @p type.
  *
  * The bytes follow and must be read separately with mpack_read_bytes()
  * or mpack_read_bytes_inplace(). @ref mpack_done_ext() must be called
  * once all bytes have been read.
  *
  * mpack_error_type is raised if the value is not an extension blob or if its
- * length does not match. The @p type value is unchanged if an error is raised.
+ * length does not match. The @p type value is zero if an error is raised.
+ *
+ * @p type will be a user-defined type in the range [0,127] or a reserved type
+ * in the range [-128,-2].
+ *
+ * @note This cannot be used to match a timestamp. @ref mpack_error_type will
+ * be flagged if the value is a timestamp. Use mpack_expect_timestamp() or
+ * mpack_expect_timestamp_truncate() instead.
+ *
+ * @note This requires @ref MPACK_EXTENSIONS.
+ *
+ * @warning Be careful when using reserved types. They may no longer be ext
+ * types in the future, and previously valid data containing reserved types may
+ * become invalid in the future.
+ *
+ * @see mpack_expect_ext()
  */
 MPACK_INLINE uint32_t mpack_expect_ext_max(mpack_reader_t* reader, int8_t* type, uint32_t maxsize) {
     uint32_t length = mpack_expect_ext(reader, type);
@@ -1130,35 +1188,87 @@ MPACK_INLINE uint32_t mpack_expect_ext_max(mpack_reader_t* reader, int8_t* type,
 
 /**
  * Reads the start of an extension blob, raising an error if its length is not
- * exactly the given number of bytes and placing the type (0-127) into @p type.
+ * exactly the given number of bytes and placing the type into @p type.
  *
  * The bytes follow and must be read separately with mpack_read_bytes()
  * or mpack_read_bytes_inplace(). @ref mpack_done_ext() must be called
  * once all bytes have been read.
  *
  * mpack_error_type is raised if the value is not an extension blob or if its
- * length does not match. The @p type error is unchanged if an error is raised.
+ * length does not match. The @p type value is zero if an error is raised.
+ *
+ * @p type will be a user-defined type in the range [0,127] or a reserved type
+ * in the range [-128,-2].
+ *
+ * @note This cannot be used to match a timestamp. @ref mpack_error_type will
+ * be flagged if the value is a timestamp. Use mpack_expect_timestamp() or
+ * mpack_expect_timestamp_truncate() instead.
+ *
+ * @note This requires @ref MPACK_EXTENSIONS.
+ *
+ * @warning Be careful when using reserved types. They may no longer be ext
+ * types in the future, and previously valid data containing reserved types may
+ * become invalid in the future.
+ *
+ * @see mpack_expect_ext()
  */
 MPACK_INLINE void mpack_expect_ext_size(mpack_reader_t* reader, int8_t* type, uint32_t count) {
-    if (mpack_expect_ext(reader, type) != count)
+    if (mpack_expect_ext(reader, type) != count) {
+        *type = 0;
         mpack_reader_flag_error(reader, mpack_error_type);
+    }
 }
 
 /**
  * Reads an extension blob into the given buffer, returning its size in bytes
- * and placing the type (0-127) into @p type.
+ * and placing the type into @p type.
  *
- * For compatibility, this will accept if the underlying type is string or
- * binary (since in MessagePack 1.0, strings and binary data were combined
- * under the "raw" type which became string in 1.1.)
+ * mpack_error_type is raised if the value is not an extension blob or if its
+ * length does not match. The @p type value is zero if an error is raised.
+ *
+ * @p type will be a user-defined type in the range [0,127] or a reserved type
+ * in the range [-128,-2].
+ *
+ * @note This cannot be used to match a timestamp. @ref mpack_error_type will
+ * be flagged if the value is a timestamp. Use mpack_expect_timestamp() or
+ * mpack_expect_timestamp_truncate() instead.
+ *
+ * @warning Be careful when using reserved types. They may no longer be ext
+ * types in the future, and previously valid data containing reserved types may
+ * become invalid in the future.
+ *
+ * @note This requires @ref MPACK_EXTENSIONS.
+ *
+ * @see mpack_expect_ext()
  */
 size_t mpack_expect_ext_buf(mpack_reader_t* reader, int8_t* type, char* buf, size_t size);
+#endif
 
+#if MPACK_EXTENSIONS && defined(MPACK_MALLOC)
 /**
  * Reads an extension blob with the given total maximum size, allocating
- * storage for it, and placing the type (0-127) into @p type.
+ * storage for it, and placing the type into @p type.
+ *
+ * mpack_error_type is raised if the value is not an extension blob or if its
+ * length does not match. The @p type value is zero if an error is raised.
+ *
+ * @p type will be a user-defined type in the range [0,127] or a reserved type
+ * in the range [-128,-2].
+ *
+ * @note This cannot be used to match a timestamp. @ref mpack_error_type will
+ * be flagged if the value is a timestamp. Use mpack_expect_timestamp() or
+ * mpack_expect_timestamp_truncate() instead.
+ *
+ * @warning Be careful when using reserved types. They may no longer be ext
+ * types in the future, and previously valid data containing reserved types may
+ * become invalid in the future.
+ *
+ * @note This requires @ref MPACK_EXTENSIONS and @ref MPACK_MALLOC.
+ *
+ * @see mpack_expect_ext()
  */
 char* mpack_expect_ext_alloc(mpack_reader_t* reader, int8_t* type, size_t maxsize, size_t* size);
+#endif
 
 /**
  * @}
@@ -1323,6 +1433,7 @@ size_t mpack_expect_key_cstr(mpack_reader_t* reader, const char* keys[],
 
 #endif
 
+MPACK_EXTERN_C_END
 MPACK_HEADER_END
 
 #endif

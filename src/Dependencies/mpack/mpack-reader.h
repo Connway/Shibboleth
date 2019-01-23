@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015-2016 Nicholas Fraser
+ * Copyright (c) 2015-2018 Nicholas Fraser
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
  * this software and associated documentation files (the "Software"), to deal in
@@ -31,6 +31,7 @@
 #include "mpack-common.h"
 
 MPACK_HEADER_START
+MPACK_EXTERN_C_START
 
 #if MPACK_READER
 
@@ -43,11 +44,19 @@ struct mpack_track_t;
 #define MPACK_READER_SMALL_FRACTION_DENOMINATOR 32
 
 /**
- * @defgroup reader Core Reader API
+ * @defgroup reader Reader API
  *
- * The MPack Core Reader API contains functions for imperatively reading
- * dynamically typed data from a MessagePack stream. This forms the basis
- * of the Expect API.
+ * The MPack Reader API contains functions for imperatively reading dynamically
+ * typed data from a MessagePack stream.
+ *
+ * See @ref docs/reader.md for examples.
+ *
+ * @note If you are not writing code for an embedded device (or otherwise do
+ * not need maximum performance with minimal memory usage), you should not use
+ * this. You probably want to use the @link node Node API@endlink instead.
+ *
+ * This forms the basis of the @link expect Expect API@endlink, which can be
+ * used to interpret the stream of elements in expected types and value ranges.
  *
  * @{
  */
@@ -88,6 +97,8 @@ typedef struct mpack_reader_t mpack_reader_t;
  * less than the requested count as long as some non-zero number of bytes
  * are read; if more bytes are needed, the read function will simply be
  * called again.
+ *
+ * @see mpack_reader_context()
  */
 typedef size_t (*mpack_reader_fill_t)(mpack_reader_t* reader, char* buffer, size_t count);
 
@@ -96,6 +107,8 @@ typedef size_t (*mpack_reader_fill_t)(mpack_reader_t* reader, char* buffer, size
  * of bytes from the source (for example by seeking forward.)
  *
  * In case of error, it should flag an appropriate error on the reader.
+ *
+ * @see mpack_reader_context()
  */
 typedef void (*mpack_reader_skip_t)(mpack_reader_t* reader, size_t count);
 
@@ -275,9 +288,22 @@ mpack_error_t mpack_reader_destroy(mpack_reader_t* reader);
  *
  * @param reader The MPack reader.
  * @param context User data to pass to the reader callbacks.
+ *
+ * @see mpack_reader_context()
  */
 MPACK_INLINE void mpack_reader_set_context(mpack_reader_t* reader, void* context) {
     reader->context = context;
+}
+
+/**
+ * Returns the custom context for reader callbacks.
+ *
+ * @see mpack_reader_set_context
+ * @see mpack_reader_set_fill
+ * @see mpack_reader_set_skip
+ */
+MPACK_INLINE void* mpack_reader_context(mpack_reader_t* reader) {
+    return reader->context;
 }
 
 /**
@@ -683,6 +709,26 @@ MPACK_INLINE bool mpack_should_read_bytes_inplace(mpack_reader_t* reader, size_t
     return (reader->size == 0 || count <= reader->size / MPACK_READER_SMALL_FRACTION_DENOMINATOR);
 }
 
+#if MPACK_EXTENSIONS
+/**
+ * Reads a timestamp contained in an ext object of the given size, closing the
+ * ext type.
+ *
+ * An ext object of exttype @ref MPACK_EXTTYPE_TIMESTAMP must have been opened
+ * by a call to e.g. mpack_read_tag() or mpack_expect_ext().
+ *
+ * You must NOT call mpack_done_ext() after calling this. A timestamp ext
+ * object can only contain a single timestamp value, so this calls
+ * mpack_done_ext() automatically.
+ *
+ * @note This requires @ref MPACK_EXTENSIONS.
+ *
+ * @throws mpack_error_invalid if the size is not one of the supported
+ * timestamp sizes, or if the nanoseconds are out of range.
+ */
+mpack_timestamp_t mpack_read_timestamp(mpack_reader_t* reader, size_t size);
+#endif
+
 /**
  * @}
  */
@@ -749,16 +795,20 @@ MPACK_INLINE void mpack_done_bin(mpack_reader_t* reader) {
     mpack_done_type(reader, mpack_type_bin);
 }
 
+#if MPACK_EXTENSIONS
 /**
  * @fn mpack_done_ext(mpack_reader_t* reader)
  *
  * Finishes reading an extended type binary data blob.
  *
  * This will track reads to ensure that the correct number of bytes are read.
+ *
+ * @note This requires @ref MPACK_EXTENSIONS.
  */
 MPACK_INLINE void mpack_done_ext(mpack_reader_t* reader) {
     mpack_done_type(reader, mpack_type_ext);
 }
+#endif
 
 /**
  * Reads and discards the next object. This will read and discard all
@@ -770,30 +820,72 @@ void mpack_discard(mpack_reader_t* reader);
  * @}
  */
 
+/** @cond */
+
 #if MPACK_DEBUG && MPACK_STDIO
 /**
  * @name Debugging Functions
  * @{
  */
+/*
+ * Converts a blob of MessagePack to a pseudo-JSON string for debugging
+ * purposes, placing the result in the given buffer with a null-terminator.
+ *
+ * If the buffer does not have enough space, the result will be truncated (but
+ * it is guaranteed to be null-terminated.)
+ *
+ * This is only available in debug mode, and only if stdio is available (since
+ * it uses snprintf().) It's strictly for debugging purposes.
+ */
+void mpack_print_data_to_buffer(const char* data, size_t data_size, char* buffer, size_t buffer_size);
 
-/**
+/*
+ * Converts a node to pseudo-JSON for debugging purposes, calling the given
+ * callback as many times as is necessary to output the character data.
+ *
+ * No null-terminator or trailing newline will be written.
+ *
+ * This is only available in debug mode, and only if stdio is available (since
+ * it uses snprintf().) It's strictly for debugging purposes.
+ */
+void mpack_print_data_to_callback(const char* data, size_t size, mpack_print_callback_t callback, void* context);
+
+/*
  * Converts a blob of MessagePack to pseudo-JSON for debugging purposes
  * and pretty-prints it to the given file.
  */
-void mpack_print_file(const char* data, size_t len, FILE* file);
+void mpack_print_data_to_file(const char* data, size_t len, FILE* file);
 
-/**
+/*
  * Converts a blob of MessagePack to pseudo-JSON for debugging purposes
  * and pretty-prints it to stdout.
  */
+MPACK_INLINE void mpack_print_data_to_stdout(const char* data, size_t len) {
+    mpack_print_data_to_file(data, len, stdout);
+}
+
+/*
+ * Converts the MessagePack contained in the given `FILE*` to pseudo-JSON for
+ * debugging purposes, calling the given callback as many times as is necessary
+ * to output the character data.
+ */
+void mpack_print_stdfile_to_callback(FILE* file, mpack_print_callback_t callback, void* context);
+
+/*
+ * Deprecated.
+ *
+ * \deprecated Renamed to mpack_print_data_to_stdout().
+ */
 MPACK_INLINE void mpack_print(const char* data, size_t len) {
-    mpack_print_file(data, len, stdout);
+    mpack_print_data_to_stdout(data, len);
 }
 
 /**
  * @}
  */
 #endif
+
+/** @endcond */
 
 /**
  * @}
@@ -865,6 +957,7 @@ MPACK_INLINE mpack_error_t mpack_reader_track_str_bytes_all(mpack_reader_t* read
 
 #endif
 
+MPACK_EXTERN_C_END
 MPACK_HEADER_END
 
 #endif

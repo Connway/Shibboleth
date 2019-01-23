@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015-2016 Nicholas Fraser
+ * Copyright (c) 2015-2018 Nicholas Fraser
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
  * this software and associated documentation files (the "Software"), to deal in
@@ -30,12 +30,17 @@
 
 #include "mpack-platform.h"
 
+#ifndef MPACK_PRINT_BYTE_COUNT
+#define MPACK_PRINT_BYTE_COUNT 12
+#endif
+
 MPACK_HEADER_START
+MPACK_EXTERN_C_START
 
 
 
 /**
- * @defgroup common Common Elements
+ * @defgroup common Tags and Common Elements
  *
  * Contains types, constants and functions shared by both the encoding
  * and decoding portions of MPack.
@@ -45,8 +50,8 @@ MPACK_HEADER_START
 
 /* Version information */
 
-#define MPACK_VERSION_MAJOR 0  /**< The major version number of MPack. */
-#define MPACK_VERSION_MINOR 9  /**< The minor version number of MPack. */
+#define MPACK_VERSION_MAJOR 1  /**< The major version number of MPack. */
+#define MPACK_VERSION_MINOR 0  /**< The minor version number of MPack. */
 #define MPACK_VERSION_PATCH 0  /**< The patch version number of MPack. */
 
 /** A number containing the version number of MPack for comparison purposes. */
@@ -100,15 +105,19 @@ MPACK_HEADER_START
  *
  * The maximum encoded size of a tag in bytes.
  */
-#define MPACK_MAXIMUM_TAG_SIZE MPACK_TAG_SIZE_TIMESTAMP12 // 15
+#define MPACK_MAXIMUM_TAG_SIZE 9
 /** @endcond */
 
+#if MPACK_EXTENSIONS
 /**
  * @def MPACK_TIMESTAMP_NANOSECONDS_MAX
  *
  * The maximum value of nanoseconds for a timestamp.
+ *
+ * @note This requires @ref MPACK_EXTENSIONS.
  */
 #define MPACK_TIMESTAMP_NANOSECONDS_MAX 999999999
+#endif
 
 
 
@@ -120,7 +129,7 @@ MPACK_HEADER_START
  * version of the MessagePack spec. This is necessary to interface with
  * older MessagePack libraries that do not support new MessagePack features.
  *
- * This requires @ref MPACK_COMPATIBILITY.
+ * @note This requires @ref MPACK_COMPATIBILITY.
  */
 typedef enum mpack_version_t {
 
@@ -130,8 +139,7 @@ typedef enum mpack_version_t {
     mpack_version_v4 = 4,
 
     /**
-     * Version 2.0/v5, supporting the @c str8, @c bin and @c ext types
-     * (including timestamp.)
+     * Version 2.0/v5, supporting the @c str8, @c bin and @c ext types.
      */
     mpack_version_v5 = 5,
 
@@ -154,6 +162,7 @@ typedef enum mpack_error_t {
     mpack_ok = 0,        /**< No error. */
     mpack_error_io = 2,  /**< The reader or writer failed to fill or flush, or some other file or socket error occurred. */
     mpack_error_invalid, /**< The data read is not valid MessagePack. */
+    mpack_error_unsupported, /**< The data read is not supported by this configuration of MPack. (See @ref MPACK_EXTENSIONS.) */
     mpack_error_type,    /**< The type or value range did not match what was expected by the caller. */
     mpack_error_too_big, /**< A read or write was bigger than the maximum size allowed for that operation. */
     mpack_error_memory,  /**< An allocation failure occurred. */
@@ -170,20 +179,32 @@ const char* mpack_error_to_string(mpack_error_t error);
 
 /**
  * Defines the type of a MessagePack tag.
+ *
+ * Note that extension types, both user defined and built-in, are represented
+ * in tags as @ref mpack_type_ext. The value for an extension type is stored
+ * separately.
  */
 typedef enum mpack_type_t {
-    mpack_type_nil = 1,   /**< A null value. */
-    mpack_type_bool,      /**< A boolean (true or false.) */
-    mpack_type_int,       /**< A 64-bit signed integer. */
-    mpack_type_uint,      /**< A 64-bit unsigned integer. */
-    mpack_type_float,     /**< A 32-bit IEEE 754 floating point number. */
-    mpack_type_double,    /**< A 64-bit IEEE 754 floating point number. */
-    mpack_type_str,       /**< A string. */
-    mpack_type_bin,       /**< A chunk of binary data. */
-    mpack_type_ext,       /**< A typed MessagePack extension object containing a chunk of binary data. */
-    mpack_type_array,     /**< An array of MessagePack objects. */
-    mpack_type_map,       /**< An ordered map of key/value pairs of MessagePack objects. */
-    mpack_type_timestamp, /**< A timestamp. */
+    mpack_type_missing = 0, /**< Special type indicating a missing optional value. */
+    mpack_type_nil,         /**< A null value. */
+    mpack_type_bool,        /**< A boolean (true or false.) */
+    mpack_type_int,         /**< A 64-bit signed integer. */
+    mpack_type_uint,        /**< A 64-bit unsigned integer. */
+    mpack_type_float,       /**< A 32-bit IEEE 754 floating point number. */
+    mpack_type_double,      /**< A 64-bit IEEE 754 floating point number. */
+    mpack_type_str,         /**< A string. */
+    mpack_type_bin,         /**< A chunk of binary data. */
+    mpack_type_array,       /**< An array of MessagePack objects. */
+    mpack_type_map,         /**< An ordered map of key/value pairs of MessagePack objects. */
+
+    #if MPACK_EXTENSIONS
+    /**
+     * A typed MessagePack extension object containing a chunk of binary data.
+     *
+     * @note This requires @ref MPACK_EXTENSIONS.
+     */
+    mpack_type_ext,
+    #endif
 } mpack_type_t;
 
 /**
@@ -192,21 +213,26 @@ typedef enum mpack_type_t {
  */
 const char* mpack_type_to_string(mpack_type_t type);
 
+#if MPACK_EXTENSIONS
 /**
  * A timestamp.
+ *
+ * @note This requires @ref MPACK_EXTENSIONS.
  */
 typedef struct mpack_timestamp_t {
     int64_t seconds; /*< The number of seconds (signed) since 1970-01-01T00:00:00Z. */
     uint32_t nanoseconds; /*< The number of additional nanoseconds, between 0 and 999,999,999. */
 } mpack_timestamp_t;
+#endif
 
 /**
- * An MPack tag is a MessagePack object header. It is a variant type representing
- * any kind of object, and includes the value of that object when it is not a
- * compound type (i.e. boolean, integer, float.)
+ * An MPack tag is a MessagePack object header. It is a variant type
+ * representing any kind of object, and includes the length of compound types
+ * (e.g. map, array, string) or the value of non-compound types (e.g. boolean,
+ * integer, float.)
  *
- * If the type is compound (str, bin, ext, array or map), the embedded data is
- * stored separately.
+ * If the type is compound (str, bin, ext, array or map), the contained
+ * elements or bytes are stored separately.
  *
  * This structure is opaque; its fields should not be accessed outside
  * of MPack.
@@ -216,61 +242,29 @@ typedef struct mpack_tag_t mpack_tag_t;
 /* Hide internals from documentation */
 /** @cond */
 struct mpack_tag_t {
+    mpack_type_t type; /*< The type of value. */
+
+    #if MPACK_EXTENSIONS
+    int8_t exttype; /*< The extension type if the type is @ref mpack_type_ext. */
+    #endif
+
     /* The value for non-compound types. */
-    union
-    {
+    union {
         uint64_t u; /*< The value if the type is unsigned int. */
         int64_t  i; /*< The value if the type is signed int. */
         double   d; /*< The value if the type is double. */
         float    f; /*< The value if the type is float. */
         bool     b; /*< The value if the type is bool. */
 
-        /* The number of bytes if the type is a str or bin. */
+        /* The number of bytes if the type is str, bin or ext. */
         uint32_t l;
 
         /* The element count if the type is an array, or the number of
             key/value pairs if the type is map. */
         uint32_t n;
-
-        /*
-         * The extension data if the type is @ref mpack_type_ext.
-         */
-        struct {
-            int8_t exttype; /*< The extension type. */
-            uint32_t length; /*< The number of bytes. */
-        } ext;
-
-        /* The value if the type is @ref mpack_type_timestamp. */
-        mpack_timestamp_t timestamp;
     } v;
-
-    /* The type of value. */
-    mpack_type_t type;
 };
 /** @endcond */
-
-/**
- * @name Other tag functions
- * @{
- */
-
-/** @cond */
-// Currently defined extension types
-#define MPACK_TIMESTAMP_EXTTYPE ((int8_t)(-1))
-/** @endcond */
-
-MPACK_INLINE void mpack_tag_assert_valid(mpack_tag_t* tag) {
-    mpack_assert(tag->type != mpack_type_ext || tag->v.ext.exttype != MPACK_TIMESTAMP_EXTTYPE,
-            "ext tag of exttype %i is reserved for timestamps.", MPACK_TIMESTAMP_EXTTYPE);
-    mpack_assert(tag->type != mpack_type_timestamp ||
-            tag->v.timestamp.nanoseconds <= MPACK_TIMESTAMP_NANOSECONDS_MAX,
-            "timestamp tag is not valid! %u nanoseconds is out of bounds",
-            tag->v.timestamp.nanoseconds);
-}
-
-/**
- * @}
- */
 
 /**
  * @name Tag Generators
@@ -278,11 +272,18 @@ MPACK_INLINE void mpack_tag_assert_valid(mpack_tag_t* tag) {
  */
 
 /**
+ * @def MPACK_TAG_ZERO
+ *
  * An @ref mpack_tag_t initializer that zeroes the given tag.
  *
- * This does not make the tag nil! The tag's type is invalid when initialized this way.
+ * @warning This does not make the tag nil! The tag's type is invalid when
+ * initialized this way. Use @ref mpack_tag_make_nil() to generate a nil tag.
  */
-#define MPACK_TAG_ZERO {{0}, (mpack_type_t)0}
+#if MPACK_EXTENSIONS
+#define MPACK_TAG_ZERO {(mpack_type_t)0, 0, {0}}
+#else
+#define MPACK_TAG_ZERO {(mpack_type_t)0, {0}}
+#endif
 
 /** Generates a nil tag. */
 MPACK_INLINE mpack_tag_t mpack_tag_make_nil(void) {
@@ -379,44 +380,20 @@ MPACK_INLINE mpack_tag_t mpack_tag_make_bin(uint32_t length) {
     return ret;
 }
 
-/** Generates an ext tag. */
+#if MPACK_EXTENSIONS
+/**
+ * Generates an ext tag.
+ *
+ * @note This requires @ref MPACK_EXTENSIONS.
+ */
 MPACK_INLINE mpack_tag_t mpack_tag_make_ext(int8_t exttype, uint32_t length) {
     mpack_tag_t ret = MPACK_TAG_ZERO;
     ret.type = mpack_type_ext;
-    ret.v.ext.exttype = exttype;
-    ret.v.ext.length = length;
-    mpack_tag_assert_valid(&ret);
+    ret.exttype = exttype;
+    ret.v.l = length;
     return ret;
 }
-
-/** Generates a timestamp tag from a number of seconds and nanoseconds. */
-MPACK_INLINE mpack_tag_t mpack_tag_make_timestamp(int64_t seconds, uint32_t nanoseconds) {
-    mpack_tag_t ret = MPACK_TAG_ZERO;
-    ret.type = mpack_type_timestamp;
-    ret.v.timestamp.seconds = seconds;
-    ret.v.timestamp.nanoseconds = nanoseconds;
-    mpack_tag_assert_valid(&ret);
-    return ret;
-}
-
-/** Generates a timestamp tag from a number of seconds (with zero nanoseconds.) */
-MPACK_INLINE mpack_tag_t mpack_tag_make_timestamp_seconds(int64_t seconds) {
-    mpack_tag_t ret = MPACK_TAG_ZERO;
-    ret.type = mpack_type_timestamp;
-    ret.v.timestamp.seconds = seconds;
-    ret.v.timestamp.nanoseconds = 0;
-    mpack_tag_assert_valid(&ret);
-    return ret;
-}
-
-/** Generates a timestamp tag from an mpack_timestamp_t. */
-MPACK_INLINE mpack_tag_t mpack_tag_make_timestamp_struct(mpack_timestamp_t timestamp) {
-    mpack_tag_t ret = MPACK_TAG_ZERO;
-    ret.type = mpack_type_timestamp;
-    ret.v.timestamp = timestamp;
-    mpack_tag_assert_valid(&ret);
-    return ret;
-}
+#endif
 
 /**
  * @}
@@ -437,6 +414,9 @@ MPACK_INLINE mpack_type_t mpack_tag_type(mpack_tag_t* tag) {
 /**
  * Gets the boolean value of a bool-type tag. The tag must be of type @ref
  * mpack_type_bool.
+ *
+ * This asserts that the type in the tag is @ref mpack_type_bool. (No check is
+ * performed if MPACK_DEBUG is not set.)
  */
 MPACK_INLINE bool mpack_tag_bool_value(mpack_tag_t* tag) {
     mpack_assert(tag->type == mpack_type_bool, "tag is not a bool!");
@@ -446,7 +426,13 @@ MPACK_INLINE bool mpack_tag_bool_value(mpack_tag_t* tag) {
 /**
  * Gets the signed integer value of an int-type tag.
  *
- * This does not convert between signed and unsigned tags! A positive integer may be stored in a tag as either @ref mpack_type_int or @ref mpack_type_uint. You must check the type first; this can only be used if the type is @ref mpack_type_int.
+ * This asserts that the type in the tag is @ref mpack_type_int. (No check is
+ * performed if MPACK_DEBUG is not set.)
+ *
+ * @warning This does not convert between signed and unsigned tags! A positive
+ * integer may be stored in a tag as either @ref mpack_type_int or @ref
+ * mpack_type_uint. You must check the type first; this can only be used if the
+ * type is @ref mpack_type_int.
  *
  * @see mpack_type_int
  */
@@ -456,9 +442,15 @@ MPACK_INLINE int64_t mpack_tag_int_value(mpack_tag_t* tag) {
 }
 
 /**
- * Gets the unsigned integer value of an uint-type tag.
+ * Gets the unsigned integer value of a uint-type tag.
  *
- * This does not convert between signed and unsigned tags! A positive integer may be stored in a tag as either @ref mpack_type_int or @ref mpack_type_uint. You must check the type first; this can only be used if the type is @ref mpack_type_uint.
+ * This asserts that the type in the tag is @ref mpack_type_uint. (No check is
+ * performed if MPACK_DEBUG is not set.)
+ *
+ * @warning This does not convert between signed and unsigned tags! A positive
+ * integer may be stored in a tag as either @ref mpack_type_int or @ref
+ * mpack_type_uint. You must check the type first; this can only be used if the
+ * type is @ref mpack_type_uint.
  *
  * @see mpack_type_uint
  */
@@ -470,7 +462,11 @@ MPACK_INLINE uint64_t mpack_tag_uint_value(mpack_tag_t* tag) {
 /**
  * Gets the float value of a float-type tag.
  *
- * This does not convert between float and double tags. This can only be used if the type is @ref mpack_type_float.
+ * This asserts that the type in the tag is @ref mpack_type_float. (No check is
+ * performed if MPACK_DEBUG is not set.)
+ *
+ * @warning This does not convert between float and double tags! This can only
+ * be used if the type is @ref mpack_type_float.
  *
  * @see mpack_type_float
  */
@@ -482,7 +478,11 @@ MPACK_INLINE float mpack_tag_float_value(mpack_tag_t* tag) {
 /**
  * Gets the double value of a double-type tag.
  *
- * This does not convert between float and double tags. This can only be used if the type is @ref mpack_type_double.
+ * This asserts that the type in the tag is @ref mpack_type_double. (No check
+ * is performed if MPACK_DEBUG is not set.)
+ *
+ * @warning This does not convert between float and double tags! This can only
+ * be used if the type is @ref mpack_type_double.
  *
  * @see mpack_type_double
  */
@@ -494,6 +494,9 @@ MPACK_INLINE double mpack_tag_double_value(mpack_tag_t* tag) {
 /**
  * Gets the number of elements in an array tag.
  *
+ * This asserts that the type in the tag is @ref mpack_type_array. (No check is
+ * performed if MPACK_DEBUG is not set.)
+ *
  * @see mpack_type_array
  */
 MPACK_INLINE uint32_t mpack_tag_array_count(mpack_tag_t* tag) {
@@ -503,6 +506,9 @@ MPACK_INLINE uint32_t mpack_tag_array_count(mpack_tag_t* tag) {
 
 /**
  * Gets the number of key-value pairs in a map tag.
+ *
+ * This asserts that the type in the tag is @ref mpack_type_map. (No check is
+ * performed if MPACK_DEBUG is not set.)
  *
  * @see mpack_type_map
  */
@@ -514,6 +520,9 @@ MPACK_INLINE uint32_t mpack_tag_map_count(mpack_tag_t* tag) {
 /**
  * Gets the length in bytes of a str-type tag.
  *
+ * This asserts that the type in the tag is @ref mpack_type_str. (No check is
+ * performed if MPACK_DEBUG is not set.)
+ *
  * @see mpack_type_str
  */
 MPACK_INLINE uint32_t mpack_tag_str_length(mpack_tag_t* tag) {
@@ -524,6 +533,9 @@ MPACK_INLINE uint32_t mpack_tag_str_length(mpack_tag_t* tag) {
 /**
  * Gets the length in bytes of a bin-type tag.
  *
+ * This asserts that the type in the tag is @ref mpack_type_bin. (No check is
+ * performed if MPACK_DEBUG is not set.)
+ *
  * @see mpack_type_bin
  */
 MPACK_INLINE uint32_t mpack_tag_bin_length(mpack_tag_t* tag) {
@@ -531,24 +543,58 @@ MPACK_INLINE uint32_t mpack_tag_bin_length(mpack_tag_t* tag) {
     return tag->v.l;
 }
 
+#if MPACK_EXTENSIONS
 /**
  * Gets the length in bytes of an ext-type tag.
+ *
+ * This asserts that the type in the tag is @ref mpack_type_ext. (No check is
+ * performed if MPACK_DEBUG is not set.)
+ *
+ * @note This requires @ref MPACK_EXTENSIONS.
  *
  * @see mpack_type_ext
  */
 MPACK_INLINE uint32_t mpack_tag_ext_length(mpack_tag_t* tag) {
     mpack_assert(tag->type == mpack_type_ext, "tag is not an ext!");
-    return tag->v.ext.length;
+    return tag->v.l;
 }
 
 /**
  * Gets the extension type (exttype) of an ext-type tag.
  *
+ * This asserts that the type in the tag is @ref mpack_type_ext. (No check is
+ * performed if MPACK_DEBUG is not set.)
+ *
+ * @note This requires @ref MPACK_EXTENSIONS.
+ *
  * @see mpack_type_ext
  */
 MPACK_INLINE int8_t mpack_tag_ext_exttype(mpack_tag_t* tag) {
     mpack_assert(tag->type == mpack_type_ext, "tag is not an ext!");
-    return tag->v.ext.exttype;
+    return tag->exttype;
+}
+#endif
+
+/**
+ * Gets the length in bytes of a str-, bin- or ext-type tag.
+ *
+ * This asserts that the type in the tag is @ref mpack_type_str, @ref
+ * mpack_type_bin or @ref mpack_type_ext. (No check is performed if MPACK_DEBUG
+ * is not set.)
+ *
+ * @see mpack_type_str
+ * @see mpack_type_bin
+ * @see mpack_type_ext
+ */
+MPACK_INLINE uint32_t mpack_tag_bytes(mpack_tag_t* tag) {
+    #if MPACK_EXTENSIONS
+    mpack_assert(tag->type == mpack_type_str || tag->type == mpack_type_bin
+            || tag->type == mpack_type_ext, "tag is not a str, bin or ext!");
+    #else
+    mpack_assert(tag->type == mpack_type_str || tag->type == mpack_type_bin,
+            "tag is not a str or bin!");
+    #endif
+    return tag->v.l;
 }
 
 /**
@@ -559,6 +605,15 @@ MPACK_INLINE int8_t mpack_tag_ext_exttype(mpack_tag_t* tag) {
  * @name Other tag functions
  * @{
  */
+
+#if MPACK_EXTENSIONS
+/**
+ * The extension type for a timestamp.
+ *
+ * @note This requires @ref MPACK_EXTENSIONS.
+ */
+#define MPACK_EXTTYPE_TIMESTAMP ((int8_t)(-1))
+#endif
 
 /**
  * Compares two tags with an arbitrary fixed ordering. Returns 0 if the tags are
@@ -586,7 +641,7 @@ int mpack_tag_cmp(mpack_tag_t left, mpack_tag_t right);
  * is equal to the value 1 stored in a 64-bit unsigned integer field.
  *
  * The "extension type" of an extension object is considered part of the value
- * and much match exactly.
+ * and must match exactly.
  *
  * \warning Floating point numbers are compared bit-for-bit, not using the language's
  * operator==. This means that NaNs with matching representation will compare equal.
@@ -602,8 +657,12 @@ MPACK_INLINE bool mpack_tag_equal(mpack_tag_t left, mpack_tag_t right) {
  *
  * This is only available in debug mode, and only if stdio is available (since
  * it uses snprintf().) It's strictly for debugging purposes.
+ *
+ * The prefix is used to print the first few hexadecimal bytes of a bin or ext
+ * type. Pass NULL if not a bin or ext.
  */
-void mpack_tag_debug_pseudo_json(mpack_tag_t tag, char* buffer, size_t buffer_size);
+void mpack_tag_debug_pseudo_json(mpack_tag_t tag, char* buffer, size_t buffer_size,
+        const char* prefix, size_t prefix_size);
 
 /**
  * Generates a debug string description of the given tag into the given buffer.
@@ -612,6 +671,38 @@ void mpack_tag_debug_pseudo_json(mpack_tag_t tag, char* buffer, size_t buffer_si
  * it uses snprintf().) It's strictly for debugging purposes.
  */
 void mpack_tag_debug_describe(mpack_tag_t tag, char* buffer, size_t buffer_size);
+
+/** @cond */
+
+/*
+ * A callback function for printing pseudo-JSON for debugging purposes.
+ *
+ * @see mpack_node_print_callback
+ */
+typedef void (*mpack_print_callback_t)(void* context, const char* data, size_t count);
+
+// helpers for printing debug output
+// i feel a bit like i'm re-implementing a buffered writer again...
+typedef struct mpack_print_t {
+    char* buffer;
+    size_t size;
+    size_t count;
+    mpack_print_callback_t callback;
+    void* context;
+} mpack_print_t;
+
+void mpack_print_append(mpack_print_t* print, const char* data, size_t count);
+
+MPACK_INLINE void mpack_print_append_cstr(mpack_print_t* print, const char* cstr) {
+    mpack_print_append(print, cstr, mpack_strlen(cstr));
+}
+
+void mpack_print_flush(mpack_print_t* print);
+
+void mpack_print_file_callback(void* context, const char* data, size_t count);
+
+/** @endcond */
+
 #endif
 
 /**
@@ -693,10 +784,12 @@ MPACK_INLINE mpack_tag_t mpack_tag_bin(int32_t length) {
     return mpack_tag_make_bin((uint32_t)length);
 }
 
+#if MPACK_EXTENSIONS
 /** \deprecated Renamed to mpack_tag_make_ext(). */
 MPACK_INLINE mpack_tag_t mpack_tag_ext(int8_t exttype, int32_t length) {
     return mpack_tag_make_ext(exttype, (uint32_t)length);
 }
+#endif
 
 /**
  * @}
@@ -815,6 +908,7 @@ MPACK_INLINE void mpack_store_i64(char* p, int64_t val) {mpack_store_u64(p, (uin
 
 MPACK_INLINE float mpack_load_float(const char* p) {
     MPACK_CHECK_FLOAT_ORDER();
+    MPACK_STATIC_ASSERT(sizeof(float) == sizeof(uint32_t), "float is wrong size??");
     union {
         float f;
         uint32_t u;
@@ -825,6 +919,7 @@ MPACK_INLINE float mpack_load_float(const char* p) {
 
 MPACK_INLINE double mpack_load_double(const char* p) {
     MPACK_CHECK_FLOAT_ORDER();
+    MPACK_STATIC_ASSERT(sizeof(double) == sizeof(uint64_t), "double is wrong size??");
     union {
         double d;
         uint64_t u;
@@ -893,9 +988,11 @@ MPACK_INLINE void mpack_store_double(char* p, double value) {
 #define MPACK_TAG_SIZE_EXT8     3
 #define MPACK_TAG_SIZE_EXT16    4
 #define MPACK_TAG_SIZE_EXT32    6
-#define MPACK_TAG_SIZE_TIMESTAMP4 (MPACK_TAG_SIZE_FIXEXT4 + 4)
-#define MPACK_TAG_SIZE_TIMESTAMP8 (MPACK_TAG_SIZE_FIXEXT8 + 8)
-#define MPACK_TAG_SIZE_TIMESTAMP12 (MPACK_TAG_SIZE_EXT8 + 12)
+
+// size in bytes for complete ext types
+#define MPACK_EXT_SIZE_TIMESTAMP4 (MPACK_TAG_SIZE_FIXEXT4 + 4)
+#define MPACK_EXT_SIZE_TIMESTAMP8 (MPACK_TAG_SIZE_FIXEXT8 + 8)
+#define MPACK_EXT_SIZE_TIMESTAMP12 (MPACK_TAG_SIZE_EXT8 + 12)
 
 /** @endcond */
 
@@ -964,6 +1061,15 @@ bool mpack_str_check_no_null(const char* str, size_t bytes);
 
 
 
+/**
+ * @}
+ */
+
+/**
+ * @}
+ */
+
+MPACK_EXTERN_C_END
 MPACK_HEADER_END
 
 #endif

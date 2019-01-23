@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015-2016 Nicholas Fraser
+ * Copyright (c) 2015-2018 Nicholas Fraser
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
  * this software and associated documentation files (the "Software"), to deal in
@@ -300,22 +300,27 @@ void mpack_expect_false(mpack_reader_t* reader) {
         mpack_reader_flag_error(reader, mpack_error_type);
 }
 
+#if MPACK_EXTENSIONS
 mpack_timestamp_t mpack_expect_timestamp(mpack_reader_t* reader) {
-    mpack_tag_t var = mpack_read_tag(reader);
-    if (var.type == mpack_type_timestamp)
-        return var.v.timestamp;
-    mpack_reader_flag_error(reader, mpack_error_type);
     mpack_timestamp_t zero = {0, 0};
-    return zero;
+
+    mpack_tag_t tag = mpack_read_tag(reader);
+    if (tag.type != mpack_type_ext) {
+        mpack_reader_flag_error(reader, mpack_error_type);
+        return zero;
+    }
+    if (mpack_tag_ext_exttype(&tag) != MPACK_EXTTYPE_TIMESTAMP) {
+        mpack_reader_flag_error(reader, mpack_error_type);
+        return zero;
+    }
+
+    return mpack_read_timestamp(reader, mpack_tag_ext_length(&tag));
 }
 
 int64_t mpack_expect_timestamp_truncate(mpack_reader_t* reader) {
-    mpack_tag_t var = mpack_read_tag(reader);
-    if (var.type == mpack_type_timestamp)
-        return var.v.timestamp.seconds;
-    mpack_reader_flag_error(reader, mpack_error_type);
-    return 0;
+    return mpack_expect_timestamp(reader).seconds;
 }
+#endif
 
 
 // Compound Types
@@ -531,11 +536,14 @@ size_t mpack_expect_bin_buf(mpack_reader_t* reader, char* buf, size_t bufsize) {
     return binsize;
 }
 
+#if MPACK_EXTENSIONS
 uint32_t mpack_expect_ext(mpack_reader_t* reader, int8_t* type) {
     mpack_tag_t var = mpack_read_tag(reader);
-    if (var.type == mpack_type_ext)
-        *type = var.v.ext.exttype;
-        return var.v.ext.length;
+    if (var.type == mpack_type_ext) {
+        *type = mpack_tag_ext_exttype(&var);
+        return mpack_tag_ext_length(&var);
+    }
+    *type = 0;
     mpack_reader_flag_error(reader, mpack_error_type);
     return 0;
 }
@@ -547,15 +555,19 @@ size_t mpack_expect_ext_buf(mpack_reader_t* reader, int8_t* type, char* buf, siz
     if (mpack_reader_error(reader))
         return 0;
     if (extsize > bufsize) {
+        *type = 0;
         mpack_reader_flag_error(reader, mpack_error_too_big);
         return 0;
     }
     mpack_read_bytes(reader, buf, extsize);
-    if (mpack_reader_error(reader))
+    if (mpack_reader_error(reader)) {
+        *type = 0;
         return 0;
+    }
     mpack_done_ext(reader);
     return extsize;
 }
+#endif
 
 void mpack_expect_cstr(mpack_reader_t* reader, char* buf, size_t bufsize) {
     uint32_t length = mpack_expect_str(reader);
@@ -657,6 +669,9 @@ char* mpack_expect_bin_alloc(mpack_reader_t* reader, size_t maxsize, size_t* siz
         maxsize = UINT32_MAX;
 
     size_t length = mpack_expect_bin_max(reader, (uint32_t)maxsize);
+    if (mpack_reader_error(reader))
+        return NULL;
+
     char* data = mpack_read_bytes_alloc(reader, length);
     mpack_done_bin(reader);
 
@@ -666,7 +681,7 @@ char* mpack_expect_bin_alloc(mpack_reader_t* reader, size_t maxsize, size_t* siz
 }
 #endif
 
-#ifdef MPACK_MALLOC
+#if MPACK_EXTENSIONS && defined(MPACK_MALLOC)
 char* mpack_expect_ext_alloc(mpack_reader_t* reader, int8_t* type, size_t maxsize, size_t* size) {
     mpack_assert(size != NULL, "size cannot be NULL");
     *size = 0;
@@ -675,11 +690,17 @@ char* mpack_expect_ext_alloc(mpack_reader_t* reader, int8_t* type, size_t maxsiz
         maxsize = UINT32_MAX;
 
     size_t length = mpack_expect_ext_max(reader, type, (uint32_t)maxsize);
+    if (mpack_reader_error(reader))
+        return NULL;
+
     char* data = mpack_read_bytes_alloc(reader, length);
     mpack_done_ext(reader);
 
-    if (data)
+    if (data) {
         *size = length;
+    } else {
+        *type = 0;
+    }
     return data;
 }
 #endif

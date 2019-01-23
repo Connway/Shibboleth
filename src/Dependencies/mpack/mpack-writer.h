@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015-2016 Nicholas Fraser
+ * Copyright (c) 2015-2018 Nicholas Fraser
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
  * this software and associated documentation files (the "Software"), to deal in
@@ -30,9 +30,10 @@
 
 #include "mpack-common.h"
 
-MPACK_HEADER_START
-
 #if MPACK_WRITER
+
+MPACK_HEADER_START
+MPACK_EXTERN_C_START
 
 #if MPACK_WRITE_TRACKING
 struct mpack_track_t;
@@ -306,7 +307,7 @@ mpack_error_t mpack_writer_destroy(mpack_writer_t* writer);
  * This can be used to interface with older libraries that do not support
  * the newest MessagePack features (such as the @c str8 type.)
  *
- * This requires @ref MPACK_COMPATIBILITY.
+ * @note This requires @ref MPACK_COMPATIBILITY.
  */
 MPACK_INLINE void mpack_writer_set_version(mpack_writer_t* writer, mpack_version_t version) {
     writer->version = version;
@@ -319,9 +320,21 @@ MPACK_INLINE void mpack_writer_set_version(mpack_writer_t* writer, mpack_version
  *
  * @param writer The MPack writer.
  * @param context User data to pass to the writer callbacks.
+ *
+ * @see mpack_writer_context()
  */
 MPACK_INLINE void mpack_writer_set_context(mpack_writer_t* writer, void* context) {
     writer->context = context;
+}
+
+/**
+ * Returns the custom context for writer callbacks.
+ *
+ * @see mpack_writer_set_context
+ * @see mpack_writer_set_flush
+ */
+MPACK_INLINE void* mpack_writer_context(mpack_writer_t* writer) {
+    return writer->context;
 }
 
 /**
@@ -335,6 +348,8 @@ MPACK_INLINE void mpack_writer_set_context(mpack_writer_t* writer, void* context
  *
  * @param writer The MPack writer.
  * @param flush The function to write out data from the buffer.
+ *
+ * @see mpack_writer_context()
  */
 void mpack_writer_set_flush(mpack_writer_t* writer, mpack_writer_flush_t flush);
 
@@ -541,9 +556,13 @@ void mpack_write_nil(mpack_writer_t* writer);
 /** Write a pre-encoded messagepack object */
 void mpack_write_object_bytes(mpack_writer_t* writer, const char* data, size_t bytes);
 
+#if MPACK_EXTENSIONS
 /**
  * Writes a timestamp.
  *
+ * @note This requires @ref MPACK_EXTENSIONS.
+ *
+ * @param writer The writer
  * @param seconds The (signed) number of seconds since 1970-01-01T00:00:00Z.
  * @param nanoseconds The additional number of nanoseconds from 0 to 999,999,999 inclusive.
  */
@@ -552,6 +571,9 @@ void mpack_write_timestamp(mpack_writer_t* writer, int64_t seconds, uint32_t nan
 /**
  * Writes a timestamp with the given number of seconds (and zero nanoseconds).
  *
+ * @note This requires @ref MPACK_EXTENSIONS.
+ *
+ * @param writer The writer
  * @param seconds The (signed) number of seconds since 1970-01-01T00:00:00Z.
  */
 MPACK_INLINE void mpack_write_timestamp_seconds(mpack_writer_t* writer, int64_t seconds) {
@@ -560,10 +582,13 @@ MPACK_INLINE void mpack_write_timestamp_seconds(mpack_writer_t* writer, int64_t 
 
 /**
  * Writes a timestamp.
+ *
+ * @note This requires @ref MPACK_EXTENSIONS.
  */
 MPACK_INLINE void mpack_write_timestamp_struct(mpack_writer_t* writer, mpack_timestamp_t timestamp) {
     mpack_write_timestamp(writer, timestamp.seconds, timestamp.nanoseconds);
 }
+#endif
 
 /**
  * @}
@@ -729,6 +754,7 @@ void mpack_write_utf8_cstr_or_nil(mpack_writer_t* writer, const char* cstr);
  */
 void mpack_write_bin(mpack_writer_t* writer, const char* data, uint32_t count);
 
+#if MPACK_EXTENSIONS
 /**
  * Writes an extension type.
  *
@@ -739,8 +765,11 @@ void mpack_write_bin(mpack_writer_t* writer, const char* data, uint32_t count);
  *
  * You should not call mpack_finish_ext() after calling this; this
  * performs both start and finish.
+ *
+ * @note This requires @ref MPACK_EXTENSIONS.
  */
 void mpack_write_ext(mpack_writer_t* writer, int8_t exttype, const char* data, uint32_t count);
+#endif
 
 /**
  * @}
@@ -771,6 +800,7 @@ void mpack_start_str(mpack_writer_t* writer, uint32_t count);
  */
 void mpack_start_bin(mpack_writer_t* writer, uint32_t count);
 
+#if MPACK_EXTENSIONS
 /**
  * Opens an extension type. `count` bytes should be written with calls
  * to mpack_write_bytes(), and mpack_finish_ext() should be called
@@ -778,8 +808,11 @@ void mpack_start_bin(mpack_writer_t* writer, uint32_t count);
  *
  * Extension types [0, 127] are available for application-specific types. Extension
  * types [-128, -1] are reserved for future extensions of MessagePack.
+ *
+ * @note This requires @ref MPACK_EXTENSIONS.
  */
 void mpack_start_ext(mpack_writer_t* writer, int8_t exttype, uint32_t count);
+#endif
 
 /**
  * Writes a portion of bytes for a string, binary blob or extension type which
@@ -835,6 +868,7 @@ MPACK_INLINE void mpack_finish_bin(mpack_writer_t* writer) {
     mpack_writer_track_pop(writer, mpack_type_bin);
 }
 
+#if MPACK_EXTENSIONS
 /**
  * Finishes writing an extended type binary data blob.
  *
@@ -843,12 +877,15 @@ MPACK_INLINE void mpack_finish_bin(mpack_writer_t* writer) {
  *
  * This will track writes to ensure that the correct number of bytes are written.
  *
+ * @note This requires @ref MPACK_EXTENSIONS.
+ *
  * @see mpack_start_ext()
  * @see mpack_write_bytes()
  */
 MPACK_INLINE void mpack_finish_ext(mpack_writer_t* writer) {
     mpack_writer_track_pop(writer, mpack_type_ext);
 }
+#endif
 
 /**
  * Finishes writing the given compound type.
@@ -867,7 +904,7 @@ MPACK_INLINE void mpack_finish_type(mpack_writer_t* writer, mpack_type_t type) {
  * @}
  */
 
-#if MPACK_WRITER && MPACK_HAS_GENERIC && !defined(__cplusplus)
+#if MPACK_HAS_GENERIC && !defined(__cplusplus)
 
 /**
  * @name Type-Generic Writers
@@ -931,23 +968,20 @@ MPACK_INLINE void mpack_finish_type(mpack_writer_t* writer, mpack_type_t type) {
  * @}
  */
 
-#endif
+#endif // MPACK_HAS_GENERIC && !defined(__cplusplus)
 
-/**
- * @}
- */
-
-#endif
-
-MPACK_HEADER_END
+// The rest of this file contains C++ overloads, so we end extern "C" here.
+MPACK_EXTERN_C_END
 
 #if defined(__cplusplus) || defined(MPACK_DOXYGEN)
 
+/**
+ * @name C++ write overloads
+ * @{
+ */
+
 /*
  * C++ generic writers for primitive values
- *
- * These currently sit outside of MPACK_HEADER_END because it defines
- * extern "C". They'll be moved to a C++-specific header soon.
  */
 
 #ifdef MPACK_DOXYGEN
@@ -1073,6 +1107,19 @@ MPACK_INLINE void mpack_write_kv(mpack_writer_t* writer, const char *key, const 
     mpack_write_cstr(writer, key);
     mpack_write_cstr_or_nil(writer, value);
 }
+
+/**
+ * @}
+ */
+
 #endif /* __cplusplus */
+
+/**
+ * @}
+ */
+
+MPACK_HEADER_END
+
+#endif // MPACK_WRITER
 
 #endif

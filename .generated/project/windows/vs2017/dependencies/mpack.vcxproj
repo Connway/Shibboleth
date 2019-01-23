@@ -185,6 +185,7 @@
   <ItemGroup>
     <ClInclude Include="..\..\..\..\..\src\Dependencies\mpack\mpack-common.h" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\mpack\mpack-config.h" />
+    <ClInclude Include="..\..\..\..\..\src\Dependencies\mpack\mpack-defaults.h" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\mpack\mpack-expect.h" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\mpack\mpack-node.h" />
     <ClInclude Include="..\..\..\..\..\src\Dependencies\mpack\mpack-platform.h" />

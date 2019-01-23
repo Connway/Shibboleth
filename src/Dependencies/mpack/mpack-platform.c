@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015-2016 Nicholas Fraser
+ * Copyright (c) 2015-2018 Nicholas Fraser
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
  * this software and associated documentation files (the "Software"), to deal in
@@ -83,7 +83,7 @@ void mpack_assert_fail_wrapper(const char* message) {
     mpack_assert_fail(message);
 
     // mpack_assert_fail() is not supposed to return. in case it does, we
-    // abort. it is not safe to resume execution after this.
+    // abort.
 
     #if !MPACK_NO_BUILTINS
     #if defined(__GNUC__) || defined(__clang__)
