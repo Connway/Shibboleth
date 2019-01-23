@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015-2016 Nicholas Fraser
+ * Copyright (c) 2015-2018 Nicholas Fraser
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
  * this software and associated documentation files (the "Software"), to deal in
@@ -459,28 +459,33 @@ mpack_error_t mpack_writer_destroy(mpack_writer_t* writer) {
 
 void mpack_write_tag(mpack_writer_t* writer, mpack_tag_t value) {
     switch (value.type) {
-        case mpack_type_nil:    mpack_write_nil   (writer);            break;
-        case mpack_type_bool:   mpack_write_bool  (writer, value.v.b); break;
-        case mpack_type_float:  mpack_write_float (writer, value.v.f); break;
-        case mpack_type_double: mpack_write_double(writer, value.v.d); break;
-        case mpack_type_int:    mpack_write_int   (writer, value.v.i); break;
-        case mpack_type_uint:   mpack_write_uint  (writer, value.v.u); break;
+        case mpack_type_missing:
+            mpack_break("cannot write a missing value!");
+            mpack_writer_flag_error(writer, mpack_error_bug);
+            return;
 
-        case mpack_type_str: mpack_start_str(writer, value.v.l); break;
-        case mpack_type_bin: mpack_start_bin(writer, value.v.l); break;
-        case mpack_type_ext: mpack_start_ext(writer, value.v.ext.exttype, value.v.ext.length); break;
+        case mpack_type_nil:    mpack_write_nil   (writer);            return;
+        case mpack_type_bool:   mpack_write_bool  (writer, value.v.b); return;
+        case mpack_type_float:  mpack_write_float (writer, value.v.f); return;
+        case mpack_type_double: mpack_write_double(writer, value.v.d); return;
+        case mpack_type_int:    mpack_write_int   (writer, value.v.i); return;
+        case mpack_type_uint:   mpack_write_uint  (writer, value.v.u); return;
 
-        case mpack_type_array: mpack_start_array(writer, value.v.n); break;
-        case mpack_type_map:   mpack_start_map(writer, value.v.n);   break;
+        case mpack_type_str: mpack_start_str(writer, value.v.l); return;
+        case mpack_type_bin: mpack_start_bin(writer, value.v.l); return;
 
-        case mpack_type_timestamp:
-            mpack_write_timestamp(writer, value.v.timestamp.seconds, value.v.timestamp.nanoseconds);
-            break;
+        #if MPACK_EXTENSIONS
+        case mpack_type_ext:
+            mpack_start_ext(writer, mpack_tag_ext_exttype(&value), mpack_tag_ext_length(&value));
+            return;
+        #endif
 
-        default:
-            mpack_assert(0, "unrecognized type %i", (int)value.type);
-            break;
+        case mpack_type_array: mpack_start_array(writer, value.v.n); return;
+        case mpack_type_map:   mpack_start_map(writer, value.v.n);   return;
     }
+
+    mpack_break("unrecognized type %i", (int)value.type);
+    mpack_writer_flag_error(writer, mpack_error_bug);
 }
 
 MPACK_STATIC_INLINE void mpack_write_byte_element(mpack_writer_t* writer, char value) {
@@ -659,6 +664,7 @@ MPACK_STATIC_INLINE void mpack_encode_bin32(char* p, uint32_t count) {
     mpack_store_u32(p + 1, count);
 }
 
+#if MPACK_EXTENSIONS
 MPACK_STATIC_INLINE void mpack_encode_fixext1(char* p, int8_t exttype) {
     mpack_store_u8(p, 0xd4);
     mpack_store_i8(p + 1, exttype);
@@ -706,23 +712,24 @@ MPACK_STATIC_INLINE void mpack_encode_ext32(char* p, int8_t exttype, uint32_t co
 }
 
 MPACK_STATIC_INLINE void mpack_encode_timestamp_4(char* p, uint32_t seconds) {
-    mpack_encode_fixext4(p, MPACK_TIMESTAMP_EXTTYPE);
+    mpack_encode_fixext4(p, MPACK_EXTTYPE_TIMESTAMP);
     mpack_store_u32(p + MPACK_TAG_SIZE_FIXEXT4, seconds);
 }
 
 MPACK_STATIC_INLINE void mpack_encode_timestamp_8(char* p, int64_t seconds, uint32_t nanoseconds) {
     mpack_assert(nanoseconds <= MPACK_TIMESTAMP_NANOSECONDS_MAX);
-    mpack_encode_fixext8(p, MPACK_TIMESTAMP_EXTTYPE);
+    mpack_encode_fixext8(p, MPACK_EXTTYPE_TIMESTAMP);
     uint64_t encoded = ((uint64_t)nanoseconds << 34) | (uint64_t)seconds;
     mpack_store_u64(p + MPACK_TAG_SIZE_FIXEXT8, encoded);
 }
 
 MPACK_STATIC_INLINE void mpack_encode_timestamp_12(char* p, int64_t seconds, uint32_t nanoseconds) {
     mpack_assert(nanoseconds <= MPACK_TIMESTAMP_NANOSECONDS_MAX);
-    mpack_encode_ext8(p, MPACK_TIMESTAMP_EXTTYPE, 12);
+    mpack_encode_ext8(p, MPACK_EXTTYPE_TIMESTAMP, 12);
     mpack_store_u32(p + MPACK_TAG_SIZE_EXT8, nanoseconds);
     mpack_store_i64(p + MPACK_TAG_SIZE_EXT8 + 4, seconds);
 }
+#endif
 
 
 
@@ -735,7 +742,7 @@ MPACK_STATIC_INLINE void mpack_encode_timestamp_12(char* p, int64_t seconds, uin
 // it will flag an error so we don't have to do anything.
 #define MPACK_WRITE_ENCODED(encode_fn, size, ...) do {                                                 \
     if (MPACK_LIKELY(mpack_writer_buffer_left(writer) >= size) || mpack_writer_ensure(writer, size)) { \
-        encode_fn(writer->current, __VA_ARGS__);                                                       \
+        MPACK_EXPAND(encode_fn(writer->current, __VA_ARGS__));                                         \
         writer->current += size;                                                                       \
     }                                                                                                  \
 } while (0)
@@ -910,6 +917,7 @@ void mpack_write_double(mpack_writer_t* writer, double value) {
     MPACK_WRITE_ENCODED(mpack_encode_double, MPACK_TAG_SIZE_DOUBLE, value);
 }
 
+#if MPACK_EXTENSIONS
 void mpack_write_timestamp(mpack_writer_t* writer, int64_t seconds, uint32_t nanoseconds) {
     #if MPACK_COMPATIBILITY
     if (writer->version <= mpack_version_v4) {
@@ -928,13 +936,14 @@ void mpack_write_timestamp(mpack_writer_t* writer, int64_t seconds, uint32_t nan
     mpack_writer_track_element(writer);
 
     if (seconds < 0 || seconds >= (INT64_C(1) << 34)) {
-        MPACK_WRITE_ENCODED(mpack_encode_timestamp_12, MPACK_TAG_SIZE_TIMESTAMP12, seconds, nanoseconds);
+        MPACK_WRITE_ENCODED(mpack_encode_timestamp_12, MPACK_EXT_SIZE_TIMESTAMP12, seconds, nanoseconds);
     } else if (seconds > UINT32_MAX || nanoseconds > 0) {
-        MPACK_WRITE_ENCODED(mpack_encode_timestamp_8, MPACK_TAG_SIZE_TIMESTAMP8, seconds, nanoseconds);
+        MPACK_WRITE_ENCODED(mpack_encode_timestamp_8, MPACK_EXT_SIZE_TIMESTAMP8, seconds, nanoseconds);
     } else {
-        MPACK_WRITE_ENCODED(mpack_encode_timestamp_4, MPACK_TAG_SIZE_TIMESTAMP4, (uint32_t)seconds);
+        MPACK_WRITE_ENCODED(mpack_encode_timestamp_4, MPACK_EXT_SIZE_TIMESTAMP4, (uint32_t)seconds);
     }
 }
+#endif
 
 void mpack_start_array(mpack_writer_t* writer, uint32_t count) {
     mpack_writer_track_element(writer);
@@ -1015,6 +1024,7 @@ void mpack_start_bin(mpack_writer_t* writer, uint32_t count) {
     mpack_writer_track_push(writer, mpack_type_bin, count);
 }
 
+#if MPACK_EXTENSIONS
 void mpack_start_ext(mpack_writer_t* writer, int8_t exttype, uint32_t count) {
     #if MPACK_COMPATIBILITY
     if (writer->version <= mpack_version_v4) {
@@ -1046,6 +1056,7 @@ void mpack_start_ext(mpack_writer_t* writer, int8_t exttype, uint32_t count) {
 
     mpack_writer_track_push(writer, mpack_type_ext, count);
 }
+#endif
 
 
 
@@ -1115,12 +1126,14 @@ void mpack_write_bin(mpack_writer_t* writer, const char* data, uint32_t count) {
     mpack_finish_bin(writer);
 }
 
+#if MPACK_EXTENSIONS
 void mpack_write_ext(mpack_writer_t* writer, int8_t exttype, const char* data, uint32_t count) {
     mpack_assert(data != NULL, "data pointer for ext of type %i and %i bytes is NULL", exttype, (int)count);
     mpack_start_ext(writer, exttype, count);
     mpack_write_bytes(writer, data, count);
     mpack_finish_ext(writer);
 }
+#endif
 
 void mpack_write_bytes(mpack_writer_t* writer, const char* data, size_t count) {
     mpack_assert(data != NULL, "data pointer for %i bytes is NULL", (int)count);
